@@ -43,6 +43,11 @@ global string datadir = yast2dir + "/data";
 global string ydatadir = datadir;
 
 /**
+ * Directory for schema (RNC,DTD,RNG)
+ */
+global string schemadir = datadir + "/schema";
+
+/**
  * Directory for includes
  */
 global string includedir = yast2dir + "/include";
