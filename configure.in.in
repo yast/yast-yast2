@@ -11,5 +11,5 @@
 @YAST2-CHECKS-TESTSUITE@
 
 ## and generate the output
-AC_CONFIG_FILES(modules/Version.ycp)
+AC_CONFIG_FILES(./modules/Version.ycp)
 @YAST2-OUTPUT@

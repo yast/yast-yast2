@@ -83,5 +83,21 @@ global string scrconfdir = yast2dir + "/scrconf";
  */
 global string configdir = yast2dir + "/config";
 
+/**
+ * Directory for temporary files
+ */
+global string tmpdir = "/tmp";
+
+/**
+ * Constructor
+ */
+global define Directory() ``{
+    tmpdir = SCR::Read(.target.tmpdir);
+    if(tmpdir == "" || tmpdir == nil) {
+	y2error("Failed to set temporary directory: %1", tmpdir);
+	tmpdir = "/tmp";
+    }
+}
+
 /* EOF */
 }
