@@ -19,6 +19,7 @@
     import "Label";
     import "Popup";
     import "Directory";
+    import "SuSERelease";
 
     // keep trailing "/" !!
     string theme_path = Directory::themedir + "/current";
@@ -472,6 +473,8 @@
     global void CreateDialog()
     {
         // Set productname for help text
+	if (product_name == "")
+	    product_name = SuSERelease::ReleaseName ();
         UI::SetProductName(product_name);
 
 	Wizard::OpenNextBackDialog();

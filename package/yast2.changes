@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 31 13:05:13 CEST 2005 - jsrain@suse.cz
+
+- initialize product macro for help texts from /etc/*-release
+  (#61247)
+
+-------------------------------------------------------------------
 Thu Mar 31 11:10:12 CEST 2005 - locilka@suse.cz
 
 - Changed firewall proposal texts to be clearly translatable
