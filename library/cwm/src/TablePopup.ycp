@@ -490,7 +490,7 @@ define boolean ValidateTableDescr (string key, map<string,any> descr) {
 	UI::OpenDialog (contents);
 	if (popup_descr["init"]:nil != nil)
 	{
-	    void(any, any) toEval = (void(any, any)) (popup_descr["init"]:nil);
+	    void(any, string) toEval = (void(any, string)) (popup_descr["init"]:nil);
 	    toEval (opt_id, opt_key);
 	}
 	any ret = nil;
@@ -530,7 +530,7 @@ define boolean ValidateTableDescr (string key, map<string,any> descr) {
 	}
 	if (ret == `_tp_ok && popup_descr["store"]:nil != nil)
 	{
-	    void(any, any) toEval = (void(any, any)) (popup_descr["store"]:nil);
+	    void(any, string) toEval = (void(any, string)) (popup_descr["store"]:nil);
 	    toEval (opt_id, opt_key);
 	}
 
@@ -667,7 +667,8 @@ define boolean ValidateTableDescr (string key, map<string,any> descr) {
 	    any toEval = option_map["table", "handle"]:nil;
 	    if (toEval != nil)
 	    {
-		if (is (toEval, symbol))
+//		if (is (toEval, symbol))
+		if (! is (toEval, symbol(any, any, map)))
 		{
 		    symbol ret = (symbol)toEval;
 		    return ret;
