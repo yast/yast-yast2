@@ -197,6 +197,15 @@ global boolean has_smp		= SCR::Read(.probe.has_smp);
  */
 global define void setSMP(boolean is_smp) ``{ has_smp = is_smp; }
 
+/**
+ * run X11 configuration after inital boot
+ * this is false in case of:
+ * installation on iSeries
+ * installation on S390
+ *
+ * Also see Mode::x11_setup_needed.
+ */
+global define bool x11_setup_needed	= true;
 
 /**
  * Constructor
@@ -242,6 +251,12 @@ global define void Arch() ``{
     else if (i386)
     {
 	board_wintel = true;
+    }
+
+    // disable X11 setup after initial boot
+    if (board_iseries || s390)
+    {
+	x11_setup_needed = false;
     }
 }
 

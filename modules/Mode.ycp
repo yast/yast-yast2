@@ -14,8 +14,6 @@
 {
     module "Mode";
 
-    import "Arch";
-
     /**
      * we're doing a fresh installation
      */
@@ -113,8 +111,8 @@
      * installation via serial console
      * installation via ssh
      * installation via vnc
-     * installation on iSeries
-     * installation on s390
+     *
+     * Also see Arch::x11_setup_needed.
      */
     global boolean x11_setup_needed	= true;
 
@@ -258,8 +256,7 @@
 	}
 
 	// disable X11 setup after initial boot
-	if (Arch::board_iseries || Arch::s390 ||
-	    serial_console || vnc || usessh)
+	if (serial_console || vnc || usessh)
 	{
 	    x11_setup_needed = false;
 	}

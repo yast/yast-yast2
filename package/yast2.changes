@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Tue Aug 20 19:07:38 CEST 2002 - arvin@suse.de
 
-- added variable Mode::x11_setup_needed
+- added variable Mode::x11_setup_needed and Arch::x11_setup_needed
 
 -------------------------------------------------------------------
 Tue Aug 20 11:29:36 CEST 2002 - arvin@suse.de
