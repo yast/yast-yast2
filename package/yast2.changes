@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 17 08:59:45 CEST 2003 - visnov@suse.de
+
+- enable interactive mode for command line again
+- 2.8.30
+
+-------------------------------------------------------------------
 Mon Sep 15 17:56:07 CEST 2003 - jsrain@suse.de
 
 - fixed X11Version.ycp to prefix Require:: when calling function

@@ -57,7 +57,7 @@
 			],
 			"ip"	: $[
 				"help": "device address",
-				"type": "ipaddress"
+				"type": "ip"
 			],
 			"netmask":$[
 				"help": "network mask",

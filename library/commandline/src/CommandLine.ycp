@@ -28,15 +28,15 @@
 	    "longhelp": $[
 		"help":_("Print a long version of help for this module")
 	    ],
-/*	    "interactive"	: $[
-		"help": _("start interactive shell to control the module")
+	    "interactive"	: $[
+		"help": _("Start interactive shell to control the module")
 	    ],
 	    "exit"	: $[
-		"help": _("exit interactive mode and save the changes")
+		"help": _("Exit interactive mode and save the changes")
 	    ],
 	    "quit"	: $[
-		"help": _("quit interactive mode without saving the changes")
-	    ]*/
+		"help": _("Quit interactive mode without saving the changes")
+	    ]
 	],
 	"options"	: $[
 	    "help"	: $[
@@ -50,8 +50,9 @@
 	],
 	"mappings"	: $[
 	    "help"	: ["help", "verbose"],
-/*	    "interactive":  ["verbose"]
-*/
+	    "interactive":  ["help", "verbose"],
+	    "exit":  ["help"],
+	    "quit":  ["help"],
 	]
     ];
 
@@ -428,6 +429,14 @@
      */
     define boolean ProcessSystemCommands (map command) ``{
 
+	// handle help for specific command
+	// this needs to be before general help, so "help help" works
+	if( lookup( command["options"]:$[], "help", nil ) != nil ) {
+	    PrintHead();
+	    PrintActionHelp( command["command"]:"" );
+	    return true;
+	}
+
 	/* Process command "interactive" */
 	if( command["command"]:"" == "interactive" ) {
 	    interactive = true;
@@ -445,14 +454,6 @@
 	if( command["command"]:"" == "quit" ) {
 	    done = true;
 	    aborted = true;
-	    return true;
-	}
-
-	// handle help for specific command
-	// this needs to be before general help, so "help help" works
-	if( lookup( command["options"]:$[], "help", nil ) != nil ) {
-	    PrintHead();
-	    PrintActionHelp( command["command"]:"" );
 	    return true;
 	}
 
@@ -496,9 +497,9 @@
 	Print(_("Basic Syntax:"));
 
 	if( ! interactive ) {
-/*	    // translators: module command line help, %1 is the module name
+	    // translators: module command line help, %1 is the module name
 	    Print(sformat(("    yast2 %1 interactive"), modulecommands["id"]:""));
-*/
+
 	    // translators: module command line help, %1 is the module name
 	    // translate <command> and [options] only!
 	    Print(sformat(_("    yast2 %1 <command> [verbose] [options]"), modulecommands["id"]:""));
