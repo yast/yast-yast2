@@ -11,7 +11,7 @@
 {
 
     module "CWM";
-    textdomain "dhcp-server";
+    textdomain "base";
 
     import "Label";
     import "Mode";

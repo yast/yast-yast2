@@ -11,7 +11,7 @@
 {
 
     module "LogView";
-    textdomain "dns-server";
+    textdomain "base";
 
     import "Popup";
     import "Label";
