@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Nov  1 10:32:10 CET 2004 - visnov@suse.cz
+
+- fix processing of command line arguments in Mode and Stage 
+
+-------------------------------------------------------------------
 Mon Nov  1 09:34:44 CET 2004 - msvec@suse.cz
 
 - use ll_LL in .desktop files (#47668)
