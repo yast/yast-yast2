@@ -201,7 +201,7 @@
 			    if( ! interactive ) aborted = true;
 			}
 		    } else if( opttype == "enum" ) {
-			ret = TypeRepository::enum_validator ( lookup( cmdoptions[o]:$[], "typespec", [] ), v );
+			ret = TypeRepository::enum_validator ( cmdoptions[o, "typespec"]: [], v );
 			if( ret != true ) {
 			    // translators: error message, %2 is the value given
 			    Print( sformat(_("Invalid value for option '%1': %2"), o, v ) );
@@ -391,7 +391,7 @@
 
 	// handle help for specific command
 	// this needs to be before general help, so "help help" works
-	if( lookup( command["options"]:$[], "help", nil ) != nil ) {
+	if( command["options", "help"]: nil != nil ) {
 	    PrintHead();
 	    PrintActionHelp( command["command"]:"" );
 	    return true;
