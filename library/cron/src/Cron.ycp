@@ -1,0 +1,45 @@
+/**
+ * File:	modules/Cron.ycp
+ * Package:	yast2
+ * Summary:	Read and Write Crontabs
+ * Authors:	Anas Nashif <nashif@suse.de>
+ *
+ * $Id$
+ *
+ */
+
+{
+
+module "Cron";
+textdomain "base";
+
+
+
+/**
+ * Read crontab contents
+ * @param string filename
+ * @param map options (not implemented yet)
+ * @return list crontab contents
+ */
+global define list Read(string filename , map options) ``{
+
+	list crontab = (list)SCR::Read(.cron, filename, options);
+	return crontab;
+}
+
+
+/**
+ * Write crontab contents
+ * @param string filename
+ * @param list blocks
+ * @return boolean true on success
+ */
+global define boolean Write(string filename, list blocks) ``{
+
+	boolean ret = SCR::Write(.cron, filename, blocks);
+	return ret;
+}
+
+
+/* EOF */
+}

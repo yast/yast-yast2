@@ -22,6 +22,8 @@
     import "Label";
     import "Mode";
 
+	boolean feedback_open = false;
+
 
     /**
      * Internal function that actually creates a popup dialog layout.
@@ -569,6 +571,41 @@ You will need to reinstall.");
 	UI::UserInput();
 	UI::CloseDialog();
     };
+
+
+
+	/**
+     *
+     */
+	global define void ClearFeedback() ``{
+    if ( feedback_open )
+        UI::CloseDialog();
+
+	};
+
+	/**
+     *
+     */
+	global define void FinishFeedback() ``{
+    feedback_open = false;
+	};
+
+	/**
+     *
+     */
+	global define void ShowFeedback(string headline, string message) ``{
+	if (feedback_open) {
+		UI::CloseDialog();
+	}
+	term button_box =  `Empty();
+	UI::BusyCursor();
+	UI::OpenDialog(
+		       `opt(`decorated),
+		       createPopupLayoutInternal( headline, message, button_box )
+		       );
+
+	feedback_open = true;
+	};
 
 
     /**
