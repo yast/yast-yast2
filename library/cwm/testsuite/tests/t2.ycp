@@ -1,0 +1,102 @@
+/**
+ * File:
+ *  t1.ycp
+ *
+ * Module:
+ *  Common Widget Manipulation
+ *
+ * Summary:
+ *  Common Widget Manipulation tests
+ *
+ * Authors:
+ *  Jiri Srain <jsrain@suse.cz>
+ *
+ * $Id$
+ *
+ */
+
+{
+    global define UI::OpenDialog (term t) ``{};
+    global define UI::CloseDialog () ``{};
+    global define term UI::UserInput()``{return `_tp_cancel ;}
+
+    include "testsuite.ycp";
+    import "CWM";
+    import "./tests/TestFunc.ym";
+    import "Mode";
+
+    Mode::test = true;
+
+
+    global define map MyCreateTable () ``{
+        map ret = CWM::CreateTable ($[]);
+	ret = union (ret, $[
+	    "init" : ``(CWM::TableInit (TestFunc::widgets["table"]:$[])),
+	    "handle" : ``(CWM::TableHandle (TestFunc::widgets["table"]:$[])),
+	    "ids" : ``(TestFunc::getIdList ()),
+	    "id2key" : ``(TestFunc::id2key ()),
+	    "options" : TestFunc::popups,
+	    "fallback" : $[
+		"init" : ``(TestFunc::arg2 ("fallback_popup_init")),
+		"store" : ``(TestFunc::arg2 ("fallback_popup_save")),
+		"summary" : ``(TestFunc::arg2 ("fallback_option_summary")),
+	    ],
+	]);
+        return ret;
+    }
+
+
+    map functions = $[
+	"init" : ``(TestFunc::arg1 ("generic_init")),
+	"store" : ``(TestFunc::arg2 ("generic_save")),
+    ];
+
+    any ret = nil;
+
+    DUMP ("=========================================");
+    DUMP ("============   Table/Popup   ============");
+    DUMP ("=========================================");
+
+    TestFunc::widgets = $[ "table" : MyCreateTable (), ];
+    list(map) widget_data = CWM::CreateWidgets ([ "table" ], TestFunc::widgets);
+//    DUMP (sformat ("W: %1", widget_data[0]:nil));
+
+    DUMP ("=========================================");
+    DUMP ("Init");
+    CWM::initWidgets (widget_data);
+
+    DUMP ("=========================================");
+    DUMP ("Handle");
+
+    ret = CWM::handleWidgets (widget_data, `_tp_edit);
+    DUMP (sformat ("Returned %1", ret));
+    widget_data[0, "options", "a", "table", "handle"]
+	= ``(TestFunc::arg3 ("option_a_handle"));
+    ret = CWM::handleWidgets (widget_data, `_tp_edit);
+    DUMP (sformat ("Returned %1", ret));
+
+    DUMP ("=========================================");
+    DUMP ("Popups");
+    DUMP ("======");
+
+    DUMP ("========================================");
+    DUMP ("Merge functions");
+    map option = CWM::key2descr (widget_data[0]:$[], "a");
+    DUMP (sformat ("Before: %1", option));
+    option = CWM::updateOptionMap (option, widget_data[0, "fallback"]:$[]);
+    DUMP (sformat ("After: %1", option));
+
+    DUMP ("=========================================");
+    DUMP ("Prepare widget");
+    map popup = option["popup"]:$[];
+    popup = add (popup, "____", "____"); // needed just to create a real copy
+    popup = CWM::prepareWidget (popup);
+    popup = remove (popup, "____");
+    DUMP (sformat ("Prepared: %1", popup));
+
+    DUMP ("=========================================");
+    DUMP ("Run popup");
+
+    CWM::singleOptionEditPopup (option);
+
+}

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jun 24 10:52:31 CEST 2003 - jsrain@suse.de
+
+- added testsuite for CWM module
+
+-------------------------------------------------------------------
 Tue Jun 24 10:42:34 CEST 2003 - visnov@suse.cz
 
 - removed modules directory at the top-level

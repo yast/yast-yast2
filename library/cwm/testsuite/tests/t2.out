@@ -1,0 +1,36 @@
+Dump	=========================================
+Dump	============   Table/Popup   ============
+Dump	=========================================
+Dump	=========================================
+Dump	Init
+Dump	Returning list of ids for table table
+Dump	Translating id a of table to key
+Dump	wanting summary for a:a
+Dump	Translating id b of table to key
+Log	Called arg2 as fallback_option_summary with b b
+Dump	Translating id c of table to key
+Log	Called arg2 as fallback_option_summary with c c
+Dump	=========================================
+Dump	Handle
+Dump	Translating id nil of table to key
+Dump	nil branch, returning a
+Dump	Returned `a_handle
+Dump	Translating id nil of table to key
+Dump	nil branch, returning a
+Log	Called arg3 as option_a_handle with nil a `_tp_edit
+Dump	Returned nil
+Dump	=========================================
+Dump	Popups
+Dump	======
+Dump	========================================
+Dump	Merge functions
+Dump	Before: $["_cwm_key":"a", "popup":$["_cwm_key":"a", "handle":TestFunc::arg3 ("'a' option handle"), "label":"'a' option label", "widget":`textentry], "table":$["_cwm_key":"a", "handle":TestFunc::arg3 ("option_a_handle"), "label":"'a' option label", "summary":TestFunc::opt_sum (), "widget":`checkbox]]
+Dump	After: $["_cwm_key":"a", "popup":$["_cwm_key":"a", "handle":TestFunc::arg3 ("'a' option handle"), "init":TestFunc::arg2 ("fallback_popup_init"), "label":"'a' option label", "store":TestFunc::arg2 ("fallback_popup_save"), "widget":`textentry], "table":$["_cwm_key":"a", "handle":TestFunc::arg3 ("option_a_handle"), "label":"'a' option label", "summary":TestFunc::opt_sum (), "widget":`checkbox]]
+Dump	=========================================
+Dump	Prepare widget
+Dump	Prepared: $["_cwm_key":"a", "custom_widget":nil, "handle":TestFunc::arg3 ("'a' option handle"), "init":TestFunc::arg2 ("fallback_popup_init"), "label":"'a' option label", "store":TestFunc::arg2 ("fallback_popup_save"), "widget":`TextEntry (`id ("a"), `opt (), "'a' option label")]
+Dump	=========================================
+Dump	Run popup
+Log	Called arg2 as fallback_popup_init with 0 a
+Log	Called arg3 as 'a' option handle with 0 a `_tp_ok
+Log	Called arg2 as fallback_popup_save with 0 a

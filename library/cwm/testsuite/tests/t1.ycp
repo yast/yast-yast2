@@ -1,0 +1,78 @@
+/**
+ * File:
+ *  t1.ycp
+ *
+ * Module:
+ *  Common Widget Manipulation
+ *
+ * Summary:
+ *  Common Widget Manipulation tests
+ *
+ * Authors:
+ *  Jiri Srain <jsrain@suse.cz>
+ *
+ * $Id$
+ *
+ */
+
+{
+    include "testsuite.ycp";
+    import "CWM";
+    import "./tests/TestFunc.ym";
+
+
+    map functions = $[
+	"init" : ``(TestFunc::arg1 ("generic_init")),
+	"store" : ``(TestFunc::arg2 ("generic_save")),
+    ];
+
+    list(string) widget_names = [ "w1", "w2" ];
+
+    any ret = nil;
+
+    DUMP ("========================================");
+    DUMP ("==========   Common stuff   ============");
+    DUMP ("========================================");
+
+    list(map) widget_data = CWM::CreateWidgets (widget_names, TestFunc::widgets);
+    DUMP (sformat ("W1: %1", widget_data[0]:nil));
+    DUMP (sformat ("W2: %1", widget_data[1]:nil));
+
+    DUMP ("========================================");
+    DUMP ("Merge functions");
+    widget_data = CWM::mergeFunctions (widget_data, functions);
+    DUMP (sformat ("Merged W1: %1", widget_data[0]:nil));
+    DUMP (sformat ("Merged W2: %1", widget_data[1]:nil));
+
+    DUMP ("=========================================");
+    DUMP ("Init");
+
+    CWM::initWidgets (widget_data);
+
+    DUMP ("=========================================");
+    DUMP ("Handle");
+
+    DUMP ("- Both will run");
+    ret = CWM::handleWidgets (widget_data, `event);
+    DUMP (sformat ("Returned %1", ret));
+    DUMP ("- First causes event loop finish");
+    widget_data[0, "handle"] = ``(TestFunc::symbol2 ("handle_w1"));
+    ret = CWM::handleWidgets (widget_data, `event);
+    DUMP (sformat ("Returned %1", ret));
+
+    DUMP ("=========================================");
+    DUMP ("Validate");
+    DUMP ("- Run both");
+    ret = CWM::validateWidgets (widget_data, `event);
+    DUMP (sformat ("Returned %1", ret));
+    DUMP ("- First fails");
+    widget_data[0, "validate_function"] = ``(TestFunc::false2 ("valid_w1"));
+    ret = CWM::validateWidgets (widget_data, `event);
+    DUMP (sformat ("Returned %1", ret));
+
+
+    DUMP ("=========================================");
+    DUMP ("Save");
+    CWM::saveWidgets (widget_data, `event);
+
+}
