@@ -18,8 +18,8 @@
     import "Report";
 
 
-    define void RunCommand (map param, integer max_lines) ``{
-	string command = param["command"]:nil;
+    define void RunCommand (map<string, any> param, integer max_lines) ``{
+	string command = (string) (param["command"]:nil);
 	if (command == nil)
 	{
 	    string grep = param["grep"]:"";
@@ -110,7 +110,7 @@
       *                   is used
       * </pre>
       */
-    global define void Display (map param) ``{
+    global define void Display (map<string, any> param) ``{
 	// logview caption
 	string caption = param["log_label"]:_("&Log");
 	// menubutton
@@ -147,7 +147,7 @@
 	    // menubutton entry
 	    menubutton = add (menubutton, [`save, _("Save Log")]);
 
-	list actions = param["actions"]:[];
+	list<any> actions = param["actions"]:[];
 	if (size (actions) > 0)
 	{
 	    integer index = 0;
@@ -224,7 +224,7 @@
 	    }
 	    else if (ret != nil && is (ret, integer))
 	    {
-		eval (actions[ret, 1]:nil);
+		eval ((term) (actions[ret, 1]:nil));
 		if (actions[ret, 2]:nil == true)
 		{
 		    SCR::Execute (.background.kill);
