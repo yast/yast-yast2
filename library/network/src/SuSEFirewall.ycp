@@ -349,7 +349,7 @@
      *
      * @return	map [zone, list [of allowed ports] ]
      */
-    define map <string, list <string> > GetBroadcastAllowedPorts () {
+    global define map <string, list <string> > GetBroadcastAllowedPorts () {
 
 	map <string, list <string> > allowed_ports = $[];
 
@@ -380,7 +380,9 @@
      *
      * @param	map [zone_string, list [of allowed ports] ]
      */
-    void SetBroadcastAllowedPorts (map <string, list <string> > broadcast) {
+    global define void SetBroadcastAllowedPorts (map <string, list <string> > broadcast) {
+	SetModified();
+
 	foreach (string zone, GetKnownFirewallZones(), {
 	    SetBroadcastConfiguration(zone, mergestring(broadcast[zone]:[], " "));
 	});
@@ -2259,6 +2261,37 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 	} else {
 	    y2error("Possible rules are only 'ACCEPT' or 'DROP'");
 	}
+    }
+
+    /**
+     * Function returns yes/no - ingoring broadcast for zone
+     *
+     * @param	string zone
+     */
+    global define string GetIgnoreLoggingBroadcast (string zone) {
+	if (! IsKnownZone(zone)) {
+	    y2error("Unknown zone '%1'", zone);
+	    return nil;
+	}
+
+	return SETTINGS["FW_IGNORE_FW_BROADCAST_" + zone]:"no";
+    }
+
+    /**
+     * Function sets yes/no - ingoring broadcast for zone
+     *
+     * @param	string zone
+     * @param	string ignore 'yes' or 'no'
+     */
+    global define void SetIgnoreLoggingBroadcast (string zone, string bcast) {
+	if (! IsKnownZone(zone)) {
+	    y2error("Unknown zone '%1'", zone);
+	    return nil;
+	}
+
+	SetModified();
+
+	SETTINGS["FW_IGNORE_FW_BROADCAST_" + zone] = bcast;
     }
 
     # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
