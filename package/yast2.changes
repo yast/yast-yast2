@@ -1,7 +1,6 @@
 -------------------------------------------------------------------
 Tue Feb  3 14:09:58 CET 2004 - msvec@suse.cz
 
-- fixed passing of arguments with spaces
 - call %suse_update_desktop_file for the group files
 
 -------------------------------------------------------------------
