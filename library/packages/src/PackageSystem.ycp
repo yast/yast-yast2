@@ -275,7 +275,7 @@ global boolean InstallKernel (list<string> kernel_modules) {
     
     // TODO: for 9.2, we always install all packages, but
     // we could only install those really needed (#44394)
-    return DoInstall ( Kernel::ComputePackages () );
+    return InstallAll ( Kernel::ComputePackages () );
 }
 
 /* EOF */
