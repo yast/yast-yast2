@@ -276,6 +276,7 @@
 
 	output = output + "<ul>\n";
 	output = output + sformat(
+	    // TRANSLATORS: Network proposal informative text "Firewall is enabled/disabled"
 	    _("<li>Firewall is %1</li>\n"),
 	    (firewall_is_enabled ?
 		// TRANSLATORS: Proposal rich text item value - Firewall is enabled
@@ -288,12 +289,13 @@
 
 	if (firewall_is_enabled) {
 	    output = output + sformat(
+		// TRANSLATORS: Network proposal informative text "SSH is enabled/disabled"
 		_("<li>SSH: %1</li>\n"),
 		(is_ssh_enabled ?
-		    // TRANSLATORS: Proposal rich text value SSH: enabled
+		    // TRANSLATORS: Network proposal informative text "SSH is enabled"
 		    sformat("<a href=\"firewall--disable_ssh_in_proposal\">%1</a>", _("enabled"))
 		    :
-		    // TRANSLATORS: Proposal rich text value SSH: disabled
+		    // TRANSLATORS: Network proposal informative text "SSH is disabled"
 		    sformat("<a href=\"firewall--enable_ssh_in_proposal\">%1</a>", _("disabled"))
 		)
 	    );
