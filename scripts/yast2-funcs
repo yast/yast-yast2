@@ -84,8 +84,10 @@ function set_lang_from_sysconfig()
 
 function set_qt_home_dir()
 {
-    export QT_HOME_DIR="`eval echo ~$USER/.qt/`"
-#    [ -d "$QT_HOME_DIR" ] || FONT="-fn $Y2_XFONT"
+    temp_QT_HOME_DIR="`eval echo ~$USER/.qt/`"
+    if test -r "$temp_QT_HOME_DIR/.qtrc"; then
+        export QT_HOME_DIR="$temp_QT_HOME_DIR"
+    fi
 }
 
 
