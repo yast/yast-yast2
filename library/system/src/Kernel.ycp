@@ -337,7 +337,7 @@
      *	Set a custom kernel.
      *	@return void
      */
-    global define void Set (list custom_kernels)
+    global define void Set (list<string> custom_kernels)
     ``{
 	kernel_packages = custom_kernels;
 
