@@ -64,7 +64,6 @@
 ################################################################
 
 export LC_ALL=C
-exec 2>/dev/null
 
 # InitScripts can initialize this to a different value
 #  Useful for .comments
@@ -145,14 +144,14 @@ get_script_info () {
 	    for (i = 3; i<= NF; i++) printf ("\"%s\", ", $i) ;
 	    print "],";
 	}
-    in_continue && in_comment && ($2 ~ /^(X-SuSE-|X-UnitedLinux-|)Should-Start:$") {
+    in_continue && in_comment && ($2 ~ /^(X-SuSE-|X-UnitedLinux-|)Should-Start:$/) {
 	    in_continue = 0;
 	    in_descr = 0;
 	    printf "     \"shouldstart\" : [ ";
 	    for (i = 3; i<= NF; i++) printf ("\"%s\", ", $i) ;
 	    print "],";
 	}
-    in_continue && in_comment && ($2 ~ /^(X-SuSE-|X-UnitedLinux-|)Should-Stop:$") {
+    in_continue && in_comment && ($2 ~ /^(X-SuSE-|X-UnitedLinux-|)Should-Stop:$/) {
 	    in_continue = 0;
 	    in_descr = 0;
 	    printf "     \"shouldstop\" : [ ";
