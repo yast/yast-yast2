@@ -303,8 +303,12 @@
 	}
 	else if (Arch::s390)
 	{
-	    binary = "none";				// not required on S390
-	    kernel_packages = ["kernel-default"];
+	    if (Arch::s390_64)
+		kernel_packages = ["kernel-s390x"];
+	    else
+		kernel_packages = ["kernel-s390"];
+	    
+	    binary = "none";
 	    switched = true;
 	}
 

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 17 15:37:45 CET 2004 - sh@suse.de
+
+- Fixed bug #34617: New kernel names on S/390
+- 2.9.24
+
+-------------------------------------------------------------------
 Tue Feb 17 12:00:56 CET 2004 - sh@suse.de
 
 - Applied olh's patch for bug #34602: PPC kernel renamed
