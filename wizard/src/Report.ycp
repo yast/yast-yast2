@@ -53,25 +53,44 @@ global define string Summary()
     string summary = "";
     summary = Summary::AddHeader(summary, _("Messages"));
     summary = Summary::OpenList(summary);
+
+    // Report configuration - will be normal messages displayed?
+    // '%1' will be replaced by translated string "Yes" or "No"
     summary = Summary::AddListItem(summary, sformat(_("Display Messages: %1"), (display_messages) ?
 						    _("Yes") : _("No")));
+    // Report configuration - will have normal messages timeout?
+    // '%1' will be replaced by number of seconds
     summary = Summary::AddListItem(summary, sformat(_("Timeout Messages: %1"), timeout_messages));
+    // Report configuration - will be normal messages logged to file?
+    // '%1' will be replaced by translated string "Yes" or "No"
     summary = Summary::AddListItem(summary, sformat(_("Log Messages: %1"), (log_messages) ?
 						    _("Yes") : _("No")));
     summary = Summary::CloseList(summary);
     summary = Summary::AddHeader(summary, _("Warnings"));
     summary = Summary::OpenList(summary);
+    // Report configuration - will be warning messages displayed?
+    // '%1' will be replaced by translated string "Yes" or "No"
     summary = Summary::AddListItem(summary, sformat(_("Display Warnings: %1"), (display_warnings) ?
 						    _("Yes") : _("No")));
+    // Report configuration - will have warning messages timeout?
+    // '%1' will be replaced by number of seconds
     summary = Summary::AddListItem(summary, sformat(_("Timeout Warnings: %1"), timeout_warnings));
+    // Report configuration - will be warning messages logged to file?
+    // '%1' will be replaced by translated string "Yes" or "No"
     summary = Summary::AddListItem(summary, sformat(_("Log Warnings: %1"), (log_warnings) ?
 						    _("Yes") : _("No")));
     summary = Summary::CloseList(summary);
     summary = Summary::AddHeader(summary, _("Errors"));
     summary = Summary::OpenList(summary);
+    // Report configuration - will be error messages displayed?
+    // '%1' will be replaced by translated string "Yes" or "No"
     summary = Summary::AddListItem(summary, sformat(_("Display Errors: %1"), (display_errors) ?
 						    _("Yes") : _("No")));
+    // Report configuration - will have error messages timeout?
+    // '%1' will be replaced by number of seconds
     summary = Summary::AddListItem(summary, sformat(_("Timeout Errors: %1"), timeout_errors));
+    // Report configuration - will be error messages logged to file?
+    // '%1' will be replaced by translated string "Yes" or "No"
     summary = Summary::AddListItem(summary, sformat(_("Log Errors: %1"), (log_errors) ?
 						    _("Yes") : _("No")));
     summary = Summary::CloseList(summary);
