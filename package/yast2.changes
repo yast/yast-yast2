@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 11 16:28:56 CET 2004 - locilka@suse.cz
+
+- Created FileUtils module for getting information about system
+  files and directories.
+
+-------------------------------------------------------------------
 Thu Nov 11 15:32:43 CET 2004 - mvidner@suse.cz
 
 - Added String::ValidCharsFilename, NetworkDevices::ValidCharsIfcfg
