@@ -19,59 +19,59 @@ import "Service";
 
 global string error_msg = "";
 
-global define map ServiceInfo (string name) ``{
-    y2debug("Runlevel module is deprecated, use Service instead");
+global define map ServiceInfo (string name) {
+    y2warning("Runlevel module is deprecated, use Service instead");
     map ret = Service::Info(name);
-    error_msg = Service::error_msg;
+    error_msg = Service::Error();
     return ret;
 }
 
-global define integer ServiceStatus (string name) ``{
-    y2debug("Runlevel module is deprecated, use Service instead");
+global define integer ServiceStatus (string name) {
+    y2warning("Runlevel module is deprecated, use Service instead");
     integer ret = Service::Status(name);
-    error_msg = Service::error_msg;
+    error_msg = Service::Error();
     return ret;
 }
 
-global define map ServiceFullInfo (string name) ``{
-    y2debug("Runlevel module is deprecated, use Service instead");
+global define map ServiceFullInfo (string name) {
+    y2warning("Runlevel module is deprecated, use Service instead");
     map ret = Service::FullInfo(name);
-    error_msg = Service::error_msg;
+    error_msg = Service::Error();
     return ret;
 }
 
-global define boolean ServiceAdjust (string name, string action) ``{
-    y2debug("Runlevel module is deprecated, use Service instead");
+global define boolean ServiceAdjust (string name, string action) {
+    y2warning("Runlevel module is deprecated, use Service instead");
     boolean ret = Service::Adjust(name, action);
-    error_msg = Service::error_msg;
+    error_msg = Service::Error();
     return ret;
 }
 
-global define boolean ServiceFinetune (string name, list rl) ``{
-    y2debug("Runlevel module is deprecated, use Service instead");
+global define boolean ServiceFinetune (string name, list rl) {
+    y2warning("Runlevel module is deprecated, use Service instead");
     boolean ret = Service::Finetune(name, rl);
-    error_msg = Service::error_msg;
+    error_msg = Service::Error();
     return ret;
 }
 
-global define boolean ServiceEnabled (string name) ``{
-    y2debug("Runlevel module is deprecated, use Service instead");
+global define boolean ServiceEnabled (string name) {
+    y2warning("Runlevel module is deprecated, use Service instead");
     boolean ret = Service::Enabled(name);
-    error_msg = Service::error_msg;
+    error_msg = Service::Error();
     return ret;
 }
 
-global define integer RunInitScript (string name, string param) ``{
-    y2debug("Runlevel module is deprecated, use Service instead");
+global define integer RunInitScript (string name, string param) {
+    y2warning("Runlevel module is deprecated, use Service instead");
     integer ret = Service::RunInitScript(name, param);
-    error_msg = Service::error_msg;
+    error_msg = Service::Error();
     return ret;
 }
 
-global define map RunInitScriptOutput (string name, string param) ``{
-    y2debug("Runlevel module is deprecated, use Service instead");
+global define map RunInitScriptOutput (string name, string param) {
+    y2warning("Runlevel module is deprecated, use Service instead");
     map ret = Service::RunInitScriptOutput(name, param);
-    error_msg = Service::error_msg;
+    error_msg = Service::Error();
     return ret;
 }
 

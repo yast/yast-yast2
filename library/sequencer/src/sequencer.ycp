@@ -12,11 +12,11 @@
 
 {
 
-textdomain "base";
-
 import "Sequencer";
 
-define symbol WizardSequencer(map aliases, map sequence) ``{
+define symbol WizardSequencer(map aliases, map sequence) {
+    y2warning("The sequencer include is obsolete");
+    y2warning("Use Sequencer module instead");
     return Sequencer::Run(aliases, sequence);
 }
 

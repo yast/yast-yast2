@@ -29,8 +29,8 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
  * @param packages list of packages
  * @return true if yes
  */
-global define boolean AvailableAll(list<string> packages) ``{
-    string which = find(string p, packages, ``{
+global define boolean AvailableAll(list<string> packages) {
+    string which = find(string p, packages, {
 	return ! Available(p);
     });
     return which == nil;
@@ -41,8 +41,8 @@ global define boolean AvailableAll(list<string> packages) ``{
  * @param packages list of packages
  * @return true if yes
  */
-global define boolean AvailableAny(list<string> packages) ``{
-    string which = find(string p, packages, ``{
+global define boolean AvailableAny(list<string> packages) {
+    string which = find(string p, packages, {
 	return Available(p);
     });
     return which != nil;
@@ -53,8 +53,8 @@ global define boolean AvailableAny(list<string> packages) ``{
  * @param packages list of packages
  * @return true if yes
  */
-global define boolean InstalledAll(list<string> packages) ``{
-    string which = find(string p, packages, ``{
+global define boolean InstalledAll(list<string> packages) {
+    string which = find(string p, packages, {
 	return ! Installed(p);
     });
     return which == nil;
@@ -65,8 +65,8 @@ global define boolean InstalledAll(list<string> packages) ``{
  * @param packages list of packages
  * @return true if yes
  */
-global define boolean InstalledAny(list<string> packages) ``{
-    string which = find(string p, packages, ``{
+global define boolean InstalledAny(list<string> packages) {
+    string which = find(string p, packages, {
 	return Installed(p);
     });
     return which != nil;
@@ -86,7 +86,7 @@ boolean PackageDialog(list<string> packages, boolean install) {
     /* Popup Text */
     if(install == false) text = _("These packages need to be removed:") + "<p>";
 
-    foreach(string p, packages, ``{ text = text + sformat("%1<br>", p); });
+    foreach(string p, packages, { text = text + sformat("%1<br>", p); });
 
     term contents = `VBox(
 	`HSpacing(40),
@@ -135,7 +135,7 @@ global boolean RemoveAll(list<string> packages) {
  * Run SUSEconfig, create new wizard dialog before it,
  * close after it is finished
  */
-global void RunSUSEConfig() {
+global void RunSUSEconfig() {
     Wizard::CreateDialog ();
     // inst_suseconfig returns `auto or `next
     // (update mode or Args(2) is true) => no error checking
@@ -148,7 +148,7 @@ global void RunSUSEConfig() {
  * Use immediately after calling any Package*:: function
  * @return true if it was
  */
-global boolean LastOperationCanceled () {
+global boolean LastOperationCanceled() {
     return last_op_canceled;
 }
 

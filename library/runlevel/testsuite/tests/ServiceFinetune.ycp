@@ -1,6 +1,6 @@
 {
     include "testsuite.ycp";
-    import "Runlevel";
+    import "Service";
 
     map READ = $[];
     map EXEC = $[
@@ -13,10 +13,10 @@
     READ = $[ "init" : $[ "scripts" : $[
 		"exists" : true,
 	] ] ];
-    TEST (``(Runlevel::ServiceFinetune ("aaa", ["A", "B", "C"])), [ READ, $[], EXEC ], nil);
+    TEST (``(Service::Finetune ("aaa", ["A", "B", "C"])), [ READ, $[], EXEC ], nil);
 
     READ = $[ "init" : $[ "scripts" : $[
 		"exists" : true,
 	] ] ];
-    TEST (``(Runlevel::ServiceFinetune ("aaa", [])), [ READ, $[], EXEC ], nil);
+    TEST (``(Service::Finetune ("aaa", [])), [ READ, $[], EXEC ], nil);
 }

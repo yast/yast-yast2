@@ -1,8 +1,8 @@
 {
     include "testsuite.ycp";
-    import "Runlevel";
+    import "Service";
 
-    TEST (``(Runlevel::RunInitScript ("aaa", "start")), [$[], $[], $[
+    TEST (``(Service::RunInitScript ("aaa", "start")), [$[], $[], $[
 	    "target" : $[ "bash" : 0 ]
 	    ]], nil);
 }

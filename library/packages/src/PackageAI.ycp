@@ -25,7 +25,7 @@ global boolean DoInstall(list<string> packages) {
 }
 
 global boolean DoRemove(list<string> packages) {
-    Packages = filter(string p, Packages, ``{
+    Packages = filter(string p, Packages, {
 	return !contains(packages, p);
     });
     return true;

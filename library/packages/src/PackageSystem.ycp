@@ -88,7 +88,7 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
     EnsureTargetInit ();
     boolean ok = true;
 
-    foreach (string p, toinstall, ``{
+    foreach (string p, toinstall, {
 	if(ok == true)
 	    if(Pkg::PkgInstall(p) != true) {
 		y2error("Package install: %1", p);
@@ -97,7 +97,7 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
     });
     if(ok != true) return false;
 
-    foreach (string p, toremove, ``{
+    foreach (string p, toremove, {
 	if(ok == true)
 	    if(Pkg::PkgDelete(p) != true) {
 		y2error("Package delete: %1", p);
@@ -119,7 +119,7 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
 	return false;
     }
 
-    foreach (string remaining, (list<string>) (result[2]:[]), ``{
+    foreach (string remaining, (list<string>) (result[2]:[]), {
 	if(ok == true)
 	    if(contains(toinstall, remaining)) {
 		y2error("Package remain: %1", remaining);
@@ -137,7 +137,7 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
     import "Mode";
     if (!Mode::initial && !Mode::cont)
     {
-	RunSUSEConfig ();
+	RunSUSEconfig ();
     }
 
     return true;
