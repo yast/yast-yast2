@@ -104,6 +104,14 @@ global define string DownButton() ``{
   /* Button label */
   return _("Do&wn");
 }
+global define string SelectButton() ``{
+  /* Button label */
+  return _("Sele&ct");
+}
+global define string RemoveButton() ``{
+  /* Button label */
+  return _("Remo&ve");
+}
 global define string RefreshButton() ``{
   /* Button label */
   return _("&Refresh");
