@@ -23,7 +23,7 @@
     integer current_stage = 0;	// Cache for the current wizard stage (image no.)
 
     // keep trailing "/" !!
-    string theme_path = Directory::themedir + "/";
+    string theme_path = Directory::themedir + "/current/";
 
     boolean have_fancy_ui = false;
 
