@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jun 11 16:08:13 CEST 2003 - arvin@suse.de
+
+- added /usr/share/doc/packages/yast2 to file list
+
+-------------------------------------------------------------------
 Fri Jun  6 12:54:25 CEST 2003 - mvidner@suse.cz
 
 - common_popups: fixed an embarassing syntax error
@@ -15,7 +20,7 @@ Fri Jun  6 10:03:29 CEST 2003 - mvidner@suse.cz
 -------------------------------------------------------------------
 Tue Jun  3 18:28:06 CEST 2003 - sh@suse.de
 
-- Fixed bug #27213: Default sort order in NCurses control center 
+- Fixed bug #27213: Default sort order in NCurses control center
 
 -------------------------------------------------------------------
 Fri May 30 10:03:23 CEST 2003 - mvidner@suse.cz

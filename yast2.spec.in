@@ -71,6 +71,7 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 @yncludedir@/readconfig.ycp
 
 # documentation (not included in devel subpackage)
+%docdir @docdir@
 %doc @docdir@/*.*
 %doc @docdir@/COPYING
 %doc @docdir@/README
