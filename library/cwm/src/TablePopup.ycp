@@ -503,7 +503,7 @@ define boolean ValidateTableDescr (string key, map<string,any> descr) {
 	    ret = event_descr["ID"]:nil;
 	    if (popup_descr["handle"]:nil != nil)
 	    {
-		void(any, any, map) toEval = (void(any, any, map)) (popup_descr["handle"]:nil);
+		void(any, string, map) toEval = (void(any, string, map)) (popup_descr["handle"]:nil);
 		toEval (opt_id, opt_key, event_descr);
 	    }
 	    if (ret == `_tp_ok)
@@ -511,8 +511,8 @@ define boolean ValidateTableDescr (string key, map<string,any> descr) {
 		symbol val_type = (symbol) (popup_descr["validate_type"]:nil);
 		if (val_type == `function)
 		{
-		    boolean (any, any, map) toEval
-			= (boolean(any, any, map)) (popup_descr["validate_function"]:nil);
+		    boolean (any, string, map) toEval
+			= (boolean(any, string, map)) (popup_descr["validate_function"]:nil);
 		    if (toEval != nil)
 		    {
 			if (! toEval (opt_id, opt_key, event_descr))
@@ -668,15 +668,15 @@ define boolean ValidateTableDescr (string key, map<string,any> descr) {
 	    if (toEval != nil)
 	    {
 //		if (is (toEval, symbol))
-		if (! is (toEval, symbol(any, any, map)))
+		if (! is (toEval, symbol(any, string, map)))
 		{
 		    symbol ret = (symbol)toEval;
 		    return ret;
 		}
 		else
 		{
-		    symbol(any, any, map) toEval_c
-			= (symbol(any, any, map)) (option_map["table", "handle"]:nil);
+		    symbol(any, string, map) toEval_c
+			= (symbol(any, string, map)) (option_map["table", "handle"]:nil);
 		    symbol ret = toEval_c (opt_id, opt_key, event_descr);
 		    if (ret != `_tp_normal)
 			return ret;
