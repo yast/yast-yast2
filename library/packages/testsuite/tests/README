@@ -1,0 +1,4 @@
+There's an interactive test in ".../testsuite/packages-test.ycp",
+run it as root with 'yast2 packages-test.ycp'. You need to NOT have
+installed xntp-doc and mtx packages. There's a summary report at
+the end of the test, look for <4> and <5> in the y2log for details.

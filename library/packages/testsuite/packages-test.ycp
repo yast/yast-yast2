@@ -35,7 +35,7 @@ define void T(any f, boolean expect) {
     }
 }
 
-/* FIXME: test presence of mtx */
+/* FIXME: test presence of mtx, xntp-doc */
 
 // failtest: T(``(Package::Installed("rpm")), false);
 
