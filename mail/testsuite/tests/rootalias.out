@@ -1,6 +1,7 @@
 Read	.target.size "/etc/install.inf" nil
 Read	.etc.install_inf.Sourcemounted nil
 Read	.etc.install_inf.AutoYaST nil
+Read	.etc.install_inf.Repair nil
 Read	.etc.install_inf.Demo nil
 Read	.etc.install_inf.Textmode nil
 Read	.etc.install_inf.Manual nil
