@@ -1,0 +1,69 @@
+<html><head><title>
+YaST2 Runlevel Editor Configuration Tool
+</title></head><body>
+<h2>YaST2 Runlevel Editor Configuration Tool</h2>
+<h3>Purpose</h3>
+<P><ul>
+<li>setting default runlevel</li>
+<li>setting which runlevels services run in</li>
+</ul>
+</P>
+<H3>Pre-requisites</H3>
+<P>
+Runlevel editor strongly depends on SuSE Linux conventions. Expected
+<tt>/etc/inittab</tt> format:<ul>
+<li><b>Default runlevel:</b> is read from line <tt>^id:.:initdefault:</tt> where
+it is supposed that default runlevel is at the place of .</li>
+<li><b>List of runlevels:</b> It is supposed that runlevels are changed via
+running script <tt>/etc/init.d/rc</tt>. So to get list of runlevels we search
+for parameters given to this script, because this script expects runlevel name
+as an argument. We search for: 
+<tt>/^[^#]..*\/etc\/init\.d\/rc ARGUMENT</tt>. </li>
+</ul>
+<b>Current runlevel</b> is read from output of <tt>/sbin/runlevel</tt>.<br>
+List of <b>init scripts</b> is obtained from <tt>/etc/init.d/</tt>. Some names
+are skipped, because they are not init scripts: <tt>core, README, rc, rx,
+*.rpm*, *.ba*, *~, ... </tt>. For each init script, comment is read and default 
+runlevels and description are taken from it. See
+<a href="http://www.linuxbase.org/spec/gLSB/gLSB/initscrcomconv.html">
+LSB</a> for specification of init script comments. Current settings, which mean
+list of runlevels service is started in is taken from <tt>/etc/init.d/rc?.d</tt>
+subdirectories. E.g. if there is a script <tt>/etc/init.d/rc5.d/S08network</tt>
+then it means that service <tt>network</tt> is started in runlevel 5.<br>
+<b>Service status</b> is obtained by running <tt>initscript status</tt>.<br>
+</P>
+<h3>Functionality</h3>
+<P>
+Now as we have all settings read, we may change them. Changing default runlevel
+is straightforward. Just pick a new value from combobox. Note that this setting
+means which runlevel system switches to after boot!!! So this option has no
+immediate effect. <br>
+<b>Detailed service editation</b> enable changing which runlevels service runs
+in. Some special options are available:
+FIXME: WILL WE USE START_VARIABLES?
+<ul>
+<li><b>Reset to default</b> which resets service to state after installation. If
+service was installed disabled, it will be disabled after this action!</li>
+<li><b>Reset all services to default</b> does the same for all services.</li>
+<li><b>Enable the service</b> enables disabled service and lets it run in
+runlevels default for it. If you want to know which runlevels are default to
+service, look into its init script
+(<tt>/etc/init.d/service_name_as_seen_in_runlevel_editor</tt>).</li> 
+</ul>
+All above settings are saved after button [Finish] is pressed. But following
+operations happen immediately: 
+<ul>
+<li><b>Start service</b></li>
+<li><b>Stop service</b></li>
+<li><b>Refresh status</b></li> 
+</ul>
+</P>
+<h3>Saving</h3>
+<P>
+Default runlevel is saved to the same place it was read from. <br>
+Services are saved using
+<br>
+<tt>/sbin/insserv -r servicename</tt><br>
+<tt>/sbin/insserv servicename,start=list_of_runlevels</tt><br>
+</P>
+</body></html>
