@@ -12,6 +12,7 @@
  */
 {
     include "testsuite.ycp";
+    TESTSUITE_INIT ([ $[], $[], $[] ], nil);
     import "MailAliases";
 
     list(map) aliases = [

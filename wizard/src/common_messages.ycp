@@ -158,6 +158,9 @@
   global define string AbortButtonLabel() ``{
       return UI::AbortButtonLabel();
   }
+  global define string IgnoreButtonLabel() ``{
+      return UI::IgnoreButtonLabel();
+  }
   global define string NextButtonLabel() ``{
       return UI::NextButtonLabel();
   }

@@ -146,7 +146,7 @@ string cut_str (char *str)
 	}
 
     for (string::reverse_iterator i = result.rbegin (); i != result.rend (); i++)
-	if (*i == '\"')
+	if ((*i == '\"') || (*i == ' '))
 	{
 	    result.erase (i.base () - 1, result.end ());
 	    break;

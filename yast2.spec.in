@@ -5,8 +5,8 @@
 @HEADER@
 Requires:	yast2-core yast2_ui yast2_theme
 
-Provides:	yast yast2-lib-sequencer
-Obsoletes:	yast yast2-lib-sequencer
+Provides:	yast2-lib-sequencer
+Obsoletes:	yast2-lib-sequencer
 Provides:	yast2-lib-wizard yast2-lib-wizard-devel yast2-trans-wizard
 Obsoletes:	yast2-lib-wizard yast2-lib-wizard-devel yast2-trans-wizard
 Provides:	yast2-trans-menu y2t_menu

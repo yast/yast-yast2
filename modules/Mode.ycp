@@ -226,6 +226,12 @@
 	if ( demo )		test = true;
 
 
+	if (initial)
+	{
+	    language = SCR::Read(.content.LANGUAGE);
+	    if (language == nil) language = "";
+	}
+
 	// only use the /etc/install.inf agent when file is present
 
 	if (SCR::Read (.target.size, "/etc/install.inf") != -1)

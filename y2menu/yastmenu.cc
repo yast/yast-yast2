@@ -1,9 +1,15 @@
+/*
+  Textdomain "base"
+*/
+
+#include <locale.h>
 #include <string>
 using std::string;
 
 #include "yastfunc.h"
 #include "yast.h"
 #include "parseyast.h"
+#include "myintl.h"
 
 static int max_mod_width, box_x = 2, box_y, menu_width, tag_x, item_x;
 static int mod_width, mod_tag_x, mod_item_x, max_mod_dsp;
@@ -29,7 +35,6 @@ print_sec_item (WINDOW * win, string tag, const char *item,
   wnoutrefresh (win);
 }
 
-
 static void
 print_help_item (WINDOW * win, string tag, const char *item,
 		 int choice, int selected, int width)
@@ -46,7 +51,6 @@ print_help_item (WINDOW * win, string tag, const char *item,
   waddstr (win, item);
   wnoutrefresh (win);
 }
-
 
 static void
 print_mod_item (WINDOW * win, string tag, const char *item,
@@ -175,15 +179,16 @@ yast_mod_menu (WINDOW * dialog, WINDOW * menu, int section, int width,
     print_mod_item (menu, modules[section][i].textstr, "",
 		    i, yast_mod_auto ? FALSE : i == 0);
   wnoutrefresh (menu);
-/*
+
   if (height < item_no)
    {
      wattrset (dialog, darrow_attr);
-     wmove (dialog, box_y + height + 1, box_x + mod_tag_x + 1);
+     wmove (dialog, INFO_Y - 1, box_x + menu_width + 1 + (mod_width / 2));
      waddch (dialog, ACS_DARROW);
-     wmove (dialog, box_y + height + 1, box_x + mod_tag_x + 2);
+//     wmove (dialog, box_y + height + 1, box_x + mod_tag_x + 2);
+     wmove (dialog, INFO_Y - 1, 2 + box_x + menu_width + (mod_width / 2));
      waddstr (dialog, "(+)");
-   } */
+   }
 
   wrefresh (dialog);
   /* register the new window, along with its borders */
@@ -245,16 +250,48 @@ mod_nav (WINDOW * dialog, WINDOW * menu, int section, int box_x, int box_y,
 /* dirty hack to re-init the static variables */
   if (key == DEHIGHLIGHT)
    {
-     print_mod_item (menu, modules[section][scroll + choice].textstr, "", 0,
-		     FALSE);
+     print_mod_item (menu, modules[section][scroll + choice].textstr, "",
+		     choice, FALSE);
+     if (scroll > 0)
+     {
+	 wattrset (dialog, darrow_attr);
+	 wmove (dialog, box_y - 1, box_x + menu_width + 1);
+	 waddch (dialog, ACS_UARROW);
+	 wmove (dialog, box_y - 1, box_x + menu_width + 2);
+	 waddstr (dialog, "(-)");
+     }
+     if (menu_height + scroll < item_no)
+      {
+	wattrset (dialog, darrow_attr);
+	wmove (dialog, INFO_Y - 1, box_x + menu_width + 1);
+	waddch (dialog, ACS_DARROW);
+	wmove (dialog, INFO_Y - 1, box_x + menu_width + 2);
+	waddstr (dialog, "(+)");
+      }
      wnoutrefresh (menu);
      return 0;
    }
 
   if (key == HIGHLIGHT)
    {
-     print_mod_item (menu, modules[section][scroll + choice].textstr, "", 0,
-		     TRUE);
+     print_mod_item (menu, modules[section][scroll + choice].textstr, "",
+		     choice, TRUE);
+      if (scroll > 0)
+     {
+	 wattrset (dialog, darrow_attr);
+	 wmove (dialog, box_y - 1, box_x + menu_width + 1);
+	 waddch (dialog, ACS_UARROW);
+	 wmove (dialog, box_y - 1, box_x + menu_width + 2);
+	 waddstr (dialog, "(-)");
+     }
+     if (menu_height + scroll < item_no)
+      {
+	wattrset (dialog, darrow_attr);
+	wmove (dialog, INFO_Y - 1, box_x + menu_width + 1);
+	waddch (dialog, ACS_DARROW);
+	wmove (dialog, INFO_Y - 1, box_x + menu_width + 2);
+	waddstr (dialog, "(+)");
+      }
      wnoutrefresh (menu);
      return 0;
    }
@@ -265,6 +302,14 @@ mod_nav (WINDOW * dialog, WINDOW * menu, int section, int box_x, int box_y,
      choice = 0;
      print_mod_item (menu, modules[section][0].textstr, "", 0, TRUE);
      print_mod_info (dialog, modules[section][scroll + choice].infostr);
+     if (menu_height < item_no)
+      {
+	wattrset (dialog, darrow_attr);
+	wmove (dialog, INFO_Y - 1, box_x + menu_width + 1);
+	waddch (dialog, ACS_DARROW);
+	wmove (dialog, INFO_Y - 1, box_x + menu_width + 2);
+	waddstr (dialog, "(+)");
+      }
 
      wnoutrefresh (menu);
      return 0;
@@ -275,7 +320,24 @@ mod_nav (WINDOW * dialog, WINDOW * menu, int section, int box_x, int box_y,
      print_mod_item (menu, modules[section][scroll + choice].textstr,
 		     "", choice, FALSE);
      print_mod_info (dialog, "");
+     if (scroll > 0)
+     {
+	 wattrset (dialog, darrow_attr);
+	 wmove (dialog, box_y - 1, box_x + menu_width + 1);
+	 waddch (dialog, ACS_UARROW);
+	 wmove (dialog, box_y - 1, box_x + menu_width + 2);
+	 waddstr (dialog, "(-)");
+     }
+     if (menu_height < item_no - scroll)
+     {
+	 wattrset (dialog, darrow_attr);
+	 wmove (dialog, INFO_Y - 1, box_x + menu_width + 1);
+	 waddch (dialog, ACS_DARROW);
+	 wmove (dialog, INFO_Y - 1, box_x + menu_width + 2);
+	 waddstr (dialog, "(+)");
+     }
      wnoutrefresh (menu);
+     wrefresh (dialog);
      return 0;
    }
 
@@ -286,7 +348,8 @@ mod_nav (WINDOW * dialog, WINDOW * menu, int section, int box_x, int box_y,
      tmpstr = string ("yast ") + modules[section][scroll + choice].name +
        " " + modules[section][scroll + choice].args;
 
-     print_mod_info (dialog, "loading module");
+     set_textdomain ("base");
+     print_mod_info (dialog, _("loading module"));
      wrefresh (dialog);
      system (tmpstr.c_str ());
      wrefresh (dialog);
@@ -391,7 +454,6 @@ mod_nav (WINDOW * dialog, WINDOW * menu, int section, int box_x, int box_y,
 	 {
 	   if (scroll)
 	    {
-
 	      /* Scroll menu down */
 	      getyx (dialog, cur_y, cur_x);
 	      if (menu_height > 1)
@@ -530,7 +592,7 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
   int mod_menu_on = 0;
   int i, x, y, cur_x, cur_y;
   int key = 0;
-  static int button = BUTTON_OK, choice = 0, scroll = 0;
+  static int button = BUTTON_OK, oldchoice=1,choice = 0, scroll = 0;
   int max_choice = MIN (MAX_GRP_DSP, groups.size ());
   int menu_height = max_choice;
   WINDOW *dialog, *menu, *mod_menu = NULL;
@@ -686,7 +748,6 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
 
 		while (scroll + choice != i)
 		 {
-
 		   print_sec_item (menu, groups[scroll + choice].textstr,
 				   "", choice, FALSE);
 		   /* auto-close module frame */
@@ -712,7 +773,6 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
 		    }
 		   else
 		     choice++;
-
 		 }		/* while */
 		print_sec_item (menu, groups[scroll + choice].textstr,
 				"", choice, TRUE);
@@ -1282,18 +1342,17 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
 	    }
 	   else
 	    {
-	      mod_nav (dialog, mod_menu, scroll + choice,
-		       (mod_width / 2) + box_x + x, box_y + y + choice + 1,
-		       NAV_RESET);
 	      print_mod_info (dialog, "");
 	      yast_draw_frame (dialog, box_y + choice, 2 + box_x + menu_width,
 			       max_items + 2, mod_width + 2,
 			       menubox_border_attr, inputbox_attr);
+	      mod_nav (dialog, mod_menu, scroll + choice,
+		       (mod_width / 2) + box_x + x, box_y + y + choice + 1,
+		       NAV_RESET);
 	      print_sec_item (menu, groups[scroll + choice].textstr,
 			      "->", choice, TRUE);
 	      wrefresh (dialog);
 	    }
-
 	 }
 	break;
 
@@ -1354,7 +1413,8 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
 	   /*  init the menu-navigation */
 	   mod_nav (dialog, mod_menu, scroll + choice,
 		    (mod_width / 2) + box_x + x, box_y + y + choice + 1,
-		    NAV_INIT);
+		    (oldchoice==choice)?HIGHLIGHT:NAV_INIT);
+oldchoice=choice;
 	 }
 	wnoutrefresh (menu);
 	wrefresh (dialog);
@@ -1456,13 +1516,13 @@ yast_grp_menu (WINDOW * dialog, WINDOW * menu, int choice, int width,
    }
 }
 
-int
-yast_help (WINDOW* main)
+int yast_help (WINDOW * main)
 {
   int winhight = LINES - 10, winwidth = COLS - 6;
   int i = 0;
 
-  WINDOW* helpwin = subwin (main, winhight, winwidth, 5, 3);
+  WINDOW *helpwin = subwin (main, winhight, winwidth, 5, 3);
+
   yast_draw_box (main, 4, 2, LINES - 5, COLS - 4, menubox_border_attr,
 		 menubox_attr);
   yast_print_button (main, "Ok", LINES - 4, ((COLS - 4) / 2), TRUE);
@@ -1474,6 +1534,7 @@ yast_help (WINDOW* main)
    {
      wrefresh (main);
      int key = mouse_wgetch (main);
+
      switch (key)
       {
       case KEY_DOWN:
@@ -1482,7 +1543,8 @@ yast_help (WINDOW* main)
 	   scrollok (helpwin, TRUE);
 	   wscrl (helpwin, 1);
 	   scrollok (helpwin, FALSE);
-	   print_help_item (helpwin, helptext[i], "", winhight - 1, FALSE, winwidth);
+	   print_help_item (helpwin, helptext[i], "", winhight - 1, FALSE,
+			    winwidth);
 	   i++;
 	 }
 	break;
@@ -1493,7 +1555,8 @@ yast_help (WINDOW* main)
 	   wscrl (helpwin, -1);
 	   scrollok (helpwin, FALSE);
 	   i--;
-	   print_help_item (helpwin, helptext[i - winhight], "", 0, FALSE, winwidth);
+	   print_help_item (helpwin, helptext[i - winhight], "", 0, FALSE,
+			    winwidth);
 	 }
 	break;
       case '\n':
