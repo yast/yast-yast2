@@ -46,7 +46,7 @@
 	993	:	"imaps",
 	995	:	"pop3s",
 	3128	:	"ndl-aas",
-	4500	:	"ipsec-msft",
+	4500	:	"ipsec-nat-t",
 	8080	:	"http-alt",
     ];
 
@@ -78,7 +78,7 @@
 	"imaps"		:	993,
 	"pop3s"		:	995,
 	"ndl-aas"	:	3128,
-	"ipsec-msft"	:	4500,
+	"ipsec-nat-t"	:	4500,
 	"http-alt"	:	8080,
     ];
 

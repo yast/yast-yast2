@@ -168,7 +168,7 @@
 	"ipsec" : $[
 	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
 	    "name"	: _("IPsec"),
-	    "udp_ports" : [ "isakmp", "ipsec-msft" ],
+	    "udp_ports" : [ "isakmp", "ipsec-nat-t" ],
 	    "ip_protocols" : [ "esp" ],
 	],
     ];

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Mar  9 13:17:46 CET 2005 - locilka@suse.cz
+
+- Adjusting to changed /etc/services
+  "ipsec-msft" have been changed to "ipsec-nat-t"
+- 2.11.41
+
+-------------------------------------------------------------------
 Fri Mar  4 14:09:28 CET 2005 - lslezak@suse.cz
 
 - HWConfig.ycp - /etc/sysconfig/hardware/hwcfg-* file access
