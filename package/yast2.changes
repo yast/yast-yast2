@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Feb 18 11:56:24 CET 2003 - arvin@suse.de
+
+- added AsciiFile module from yast2-storage
+
+-------------------------------------------------------------------
 Mon Feb 17 17:17:42 CET 2003 - arvin@suse.de
 
 - disable x11 setup on mips
