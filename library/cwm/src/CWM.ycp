@@ -116,7 +116,7 @@
 		possible,
 		UI::QueryWidget (`id (`_tp_value), `Value)))
 	    {
-		nonfunction_validation_failed = true;
+		failed = true;
 	    }
 	}
 	if (failed)
@@ -127,7 +127,7 @@
 		// message popup, %1 is a label of some widget
 		_("The value of %1 is invalid."),
 		wname));
-	    UI::SetFoxus (`id (w["_cwm_key"]:""));
+	    UI::SetFocus (`id (w["_cwm_key"]:""));
 	}
 	return ! failed;
     }
