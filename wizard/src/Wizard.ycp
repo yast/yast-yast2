@@ -17,7 +17,7 @@
     textdomain "base";
 
     include "ui/common_messages.ycp";
-    include "ui/common_popups.ycp";
+    import "Popup";
     import "Directory";
 
     integer current_stage = 0;	// Cache for the current wizard stage (image no.)
@@ -486,7 +486,7 @@
      * @param help_text the text to display
      **/
     global define void ShowHelp( string help_text ) ``{
-	UI::LongTextPopup(
+	Popup::LongText(
 			  // Heading for help popup window
 			  _("Help"),
 			  `RichText( help_text ),
