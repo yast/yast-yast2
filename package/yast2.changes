@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar 21 13:51:43 CET 2005 - jsrain@suse.cz
+
+- fixed setting bootsplash resolutino if framebuffer modes couldn't
+  be detected (#74052)
+
+-------------------------------------------------------------------
 Fri Mar 18 14:29:17 CET 2005 - jsrain@suse.cz
 
 - fixed determining if firewall is enabled (#73819)
