@@ -33,5 +33,5 @@ cwm.html: $(SOURCES)
 	db2html cwm.xml
 	chmod -R og+rX cwm
 
-check-local: cwm.xml
+check-manual: cwm.xml
 	xmllint --nonet --noout $^
