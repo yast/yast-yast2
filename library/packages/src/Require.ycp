@@ -14,9 +14,10 @@
 {
 
     module "Require";
-    textdomain "packager";
+    textdomain "base";
 
     import "Label";
+    import "PackageCallbacksInit";
     import "Wizard";	// some modules call us without any dialog open
     import "Mode";
 
@@ -64,7 +65,7 @@
      * This may become superfluous.
      */
     global define void EnsureTargetInit () ``{
-	import "PackageCallbacks";
+	PackageCallbacksInit::InitPackageCallbacks();
 	target_initialized = target_initialized || Pkg::TargetInit ("/", false);
     }
 
@@ -74,7 +75,7 @@
     global define void EnsureSourceInit () ``{
 	if (!source_initialized)
 	{
-	    import "PackageCallbacks";		// trigger constructor
+	    PackageCallbacksInit::InitPackageCallbacks();
 	    // popup when initializing the package manager
 	    UI::OpenDialog(`opt(`decorated ),`Label(_("Reading package information; One moment please...")));
 	    list sources = Pkg::SourceStartCache (true);
@@ -354,7 +355,7 @@
 	});
 	if(ok != true) return false;
 
-	if(Pkg::PkgSolve () != true) {
+	if(Pkg::PkgSolve (false) != true) {
 	    y2error("Package solve failed");
 	    return false;
 	}
