@@ -359,6 +359,22 @@ CommandLine API useful for this:</para>
                 </para>
             </listitem>
         </varlistentry>
+        <varlistentry>
+            <term>void <link linkend="Module_CommandLine_Print">CommandLine::Print</link>(string)</term>
+            <listitem>
+                <para>
+                    prints the string
+                </para>
+            </listitem>
+        </varlistentry>
+        <varlistentry>
+            <term>void <link linkend="Module_CommandLine_PrintVerbose">CommandLine::PrintVerbose</link>(string)</term>
+            <listitem>
+                <para>
+                    same as CommandLine::Print, but the string is printed only in verbose mode
+                </para>
+            </listitem>
+        </varlistentry>
     </variablelist>
 
 

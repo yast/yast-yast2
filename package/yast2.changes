@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Jan 12 16:16:20 CET 2005 - lslezak@suse.cz
+
+- command line mode enhancements: accept integer type,
+  added CommandLine::PrintVerbose(), cutom help option,
+  testsuite update, small fixes
+- version 2.11.15
+
+-------------------------------------------------------------------
 Tue Jan 11 16:52:35 CET 2005 - jsrain@suse.cz
 
 -reverted fix of #49483

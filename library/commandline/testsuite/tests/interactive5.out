@@ -9,6 +9,7 @@ Write	.dev.tty "Basic Syntax:" true
 Write	.dev.tty "    <command> [options]" true
 Write	.dev.tty "    <command> help" true
 Write	.dev.tty "    help" true
+Write	.dev.tty "    longhelp" true
 Write	.dev.tty "" true
 Write	.dev.tty "    exit" true
 Write	.dev.tty "    quit" true
