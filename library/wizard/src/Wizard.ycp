@@ -432,6 +432,7 @@
 	    UI::WizardCommand(`SetHelpText( help_text ) );
 	    UI::WizardCommand(`EnableNextButton( has_next ) );
 	    UI::WizardCommand(`EnableBackButton( has_back ) );
+	    UI::WizardCommand(`SetFocusToNextButton() );
 	}
 	else
 	{
