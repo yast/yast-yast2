@@ -53,7 +53,7 @@ global define void TypeRepository() ``{
 	"host4"		: ``( Address::Check4() ),
 	"host6"		: ``( Address::Check6() ),
 	"hostname"	: ``( Hostname::Check() ),
-	"fqhostname"	: ``( Hostname::CheckFQ() ),
+	"fullhostname"	: ``( Hostname::CheckFQ() ),
 	"domain"	: ``( Hostname::CheckDomain() ),
 	"url"		: ``( URL::Check() ),
 	"string"	: ``( is_string() ),
