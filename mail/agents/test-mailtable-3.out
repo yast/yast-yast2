@@ -4,9 +4,7 @@
 "
 [
 $["comment":" leading whitespace means a continuation line
-","value":"destination1
-  destination2
-\011destination3","key":"alias1",] ,
+","value":"destination1  destination2\011destination3","key":"alias1",] ,
 $["comment":" backslash before newline means continuation too
 ","value":"foobar  baz  qux","key":"alias2",] ,
 $["comment":" now a combination of the two
