@@ -1,0 +1,145 @@
+/**
+ * File:
+ *   NetworkPopup.ycp
+ *
+ * Summary:
+ *   Popup dialogs for browsing the local network
+ *
+ * Authors:
+ *	Martin Vidner <mvidner@suse.cz>
+ *	Ladislav Slezak <lslezak@suse.cz>
+ *
+ * $Id$
+ *
+ * Network browsing dialogs - all hosts, NFS servers, exports of the NFS server
+ *
+ */
+
+{
+    module "NetworkPopup";
+
+    textdomain "base";
+
+    import "Label";
+
+    // cache all found hosts on the local network
+    list(string) found_hosts = nil;
+
+    // cache all found NFS servers on the local network
+    list(string) found_nfs_servers = nil;
+
+    /**
+     * Let the user choose one of a list of items
+     * @param title	selectionbox title
+     * @param items	a list of items
+     * @param selected	preselected a value in the list
+     * @return		one item or nil
+     */
+    global define string ChooseItem (string title, list(string) items, string selected) ``{
+	string item = nil;
+
+	list Items = maplist(string i, items,  ``{
+		return `item(`id(i), i, i == selected);
+	    }
+	);
+
+	UI::OpenDialog (
+	    `VBox (
+		`HSpacing (40),
+		`HBox (
+		    `SelectionBox (`id (`items), title, Items),
+		    `VSpacing(10)
+		    ),
+		`HBox (
+		    `PushButton (`id(`ok), `opt(`default, `key_F10),
+				 Label::OKButton()),
+		    `PushButton (`id(`cancel), `opt(`key_F9),
+				 Label::CancelButton())
+		    )
+		));
+	UI::SetFocus (`id (`items));
+	any ret = nil;
+	do
+	{
+	    ret = UI::UserInput();
+	}
+	while (ret != `cancel && ret != `ok);
+
+	if (ret == `ok)
+	{
+	    item = UI::QueryWidget (`id (`items), `CurrentItem);
+	}
+	UI::CloseDialog();
+
+	return item;
+    }
+
+    /**
+     * Give me NFS server name on the local network - display dialog with all local NFS servers
+     * @param selected	preselected a value in the list
+     * @return		a hostname or nil if "Cancel" was pressed
+     */
+    global define string NFSServer(string selected) ``{
+
+	if (found_nfs_servers == nil)
+	{
+	    // label message
+	    UI::OpenDialog(`Label(_("Scanning for hosts on this LAN...")));
+	    found_nfs_servers = sort(SCR::Read(.net.hostnames.rpc, "nfs"));
+	    UI::CloseDialog();
+
+	    if (found_nfs_servers == nil)
+	    {
+		found_nfs_servers = [];
+	    }
+	}
+
+	// selection box label
+	string ret = ChooseItem(_("&NFS servers"), found_nfs_servers, selected);
+	return ret;
+    }
+
+    /**
+     * Give me one host name on the local network - display dialog with all hosts on the local network
+     * @param selected	preselect a value in the list
+     * @return		a hostname or nil if "Cancel" was pressed
+     */
+    global define string HostName(string selected) ``{
+	if (found_hosts == nil)
+	{
+	    // label message
+	    UI::OpenDialog(`Label(_("Scanning for hosts on this LAN...")));
+	    found_hosts = sort(SCR::Read(.net.hostnames));
+	    UI::CloseDialog();
+
+	    if (found_hosts == nil)
+	    {
+		found_hosts = [];
+	    }
+	}
+
+	// selection box label
+	string ret = ChooseItem(_("Re&mote hosts"), found_hosts, selected);
+	return ret;
+    }
+
+    /**
+     * Give me export path of selected server - display dialog with all exported directories from the selected server
+     * @param server	a NFS server name
+     * @param selected	preselected a value in the list
+     * @return		an export or nil if "Cancel" was pressed
+     */
+    global define string NFSExport(string server, string selected) ``{
+	list(string) dirs = SCR::Read(.net.showexports, server);
+
+	if (dirs == nil)
+	{
+	    dirs = [];
+	}
+
+	// selection box label
+	string ret = ChooseItem(_("&Exported directories"), dirs, selected);
+	return ret;
+    }
+
+}
