@@ -501,5 +501,17 @@ global define string EscapeTags (string text) ``{
     return text;
 }
 
+/**
+ * Shorthand for select (splitstring (s, separators), 0, "")
+ * Useful now that the above produces a deprecation warning.
+ * @param s string to be split
+ * @param separators characters which delimit components
+ * @return first component or ""
+ */
+global string FirstChunk (string s, string separators) {
+    list <string> l = splitstring (s, separators);
+    return l[0]:"";
+}
+
 /* EOF */
 }
