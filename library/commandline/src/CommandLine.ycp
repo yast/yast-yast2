@@ -588,7 +588,7 @@
 		systemcommands["mappings"]:$[] )
 	];
 
-	if( size(args) < 1 || ! Mode::normal ) {
+	if( size(args) < 1 || Mode::stage != "normal" || Mode::firstboot ) {
 	    Mode::commandline = false;
 	    // start GUI, module has some work to do :-)
 	    return true;
