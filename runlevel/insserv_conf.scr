@@ -1,0 +1,45 @@
+/**
+ * File:
+ *   insserv_conf.scr
+ * Summary:
+ *   SCR Agent for reading LSB system facilites definition.
+ * Access:
+ *   read-only
+ * Authors:
+ *   Martin Vidner <mvidner@suse.cz>
+ * See:
+ *   yast2-agent-any/anyagent.html
+ * Example:
+ *   Read(.init.insserv_conf)
+ *	$[
+ *		"$local_fs":["boot"],
+ *		"$network":["network", "pcmcia", "hotplug"],
+ *		"$remote_fs":["$local_fs", "nfs"],
+ *		...
+ *	]
+ * 
+ * $Id$
+ */
+.init.insserv_conf
+
+`ag_anyagent (
+    Description (
+	`File ("/etc/insserv.conf"),
+	"#\n",
+	true,
+	/* man insserv(8) */
+	``(
+	    Tuple (
+		Name (String ("^\t\n ")),
+		Whitespace(),
+		Value (
+		    List(
+			String ("^\t\n "),
+			Whitespace ()
+			)
+		    ),
+		Continue ("\n")
+		)
+	    )
+	)
+    )
