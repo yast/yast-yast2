@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar 12 15:35:56 CET 2004 - nashif@suse.de
+
+- Custom wizard added (sh@suse.de)
+
+-------------------------------------------------------------------
 Thu Mar 11 18:17:52 CET 2004 - msvec@suse.cz
 
 - proper event ID type handling (#35602)
