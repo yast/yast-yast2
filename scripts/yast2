@@ -117,11 +117,22 @@ set_lang_from_sysconfig
 # use text mode if DISPLAY is not set or no qt plugin installed
 if [ -z "$DISPLAY" ] || ! check_qt ; then
     if check_ncurses ; then
-	case "$LANG" in
-	    # if it is known that a language doesn't yet work well with ncurses
-	    # use English instead:
-	    ja*|ko*|zh*) export LANG=en_US ;;
-	esac
+        if [ "$TERM" = "linux" ] ; then
+	    case "$LANG" in
+		# if it is known that a language doesn't yet work well with ncurses
+		# on console use English instead:
+		ja*|ko*|zh*)
+		    case "`locale charmap 2>/dev/null`" in
+			UTF-8)
+			    export LANG=en_US.UTF-8
+			;;
+			*)
+		            export LANG=en_US
+		        ;;
+		    esac
+	        ;;
+	    esac
+	fi
 	# use menu.ycp
 	if [ $module == "menu" ] ; then
 	    $ybindir/y2base menu ncurses
