@@ -18,7 +18,7 @@
     module "Kernel";
 
     import "Arch";
-
+    import "ProductFeatures";
     import "Mode";
 
     textdomain "base";
@@ -366,8 +366,8 @@
 	    ExtractCmdlineParameters (tmp);
 	}
 
-	// FIXME should be configurable
-	AddCmdLine ("desktop", "");
+	if (ProductFeatures::use_desktop_scheduler)
+	    AddCmdLine ("desktop", "");
 	}
 
 	ProbeKernel ();
