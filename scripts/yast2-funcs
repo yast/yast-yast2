@@ -4,8 +4,6 @@
 # Authors:	Arvin Schnell <arvin@suse.de>
 #
 # $Id$
-#
-#/-*/
 
 # some path definitions
 ybindir=/usr/lib/YaST2/bin
