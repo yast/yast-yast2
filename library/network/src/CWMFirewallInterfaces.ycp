@@ -619,6 +619,41 @@ global symbol OpenFirewallHandleWrapper (string key, map event) {
 }
 
 /**
+ * Check if the widget was modified
+ * @param key strnig the widget key
+ * @return boolean true if widget was modified
+ */
+global boolean OpenFirewallModified (string key) {
+    return configuration_changed;
+}
+
+/**
+ * Enable the whole firewal widget
+ * @param key strnig the widget key
+ */
+global void EnableOpenFirewallWidget () {
+    if (! UI::WidgetExists (`id ("_cwm_open_firewall")))
+	return;
+    if (! UI::WidgetExists (`id ("_cwm_firewall_details")))
+	return;
+    UI::ChangeWidget (`id ("_cwm_open_firewall"), `Enabled, true);
+    EnableOrDisableFirewallDetails ();
+}
+
+/**
+ * Disable the whole firewal widget
+ * @param key strnig the widget key
+ */
+global void DisableOpenFirewallWidget () {
+    if (! UI::WidgetExists (`id ("_cwm_open_firewall")))
+	return;
+    if (! UI::WidgetExists (`id ("_cwm_firewall_details")))
+	return;
+    UI::ChangeWidget (`id ("_cwm_open_firewall"), `Enabled, false);
+    UI::ChangeWidget (`id ("_cwm_firewall_details"), `Enabled, false);
+}
+
+/**
  * Get the template for the help text to the firewall opening widget
  * @param restart_displayed shold be true if "Save and restart" is displayed
  * @return string help text template with %1 and %2 placeholders
