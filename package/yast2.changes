@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Feb  1 12:56:56 CET 2005 - lslezak@suse.cz
+
+- fixed finish call handling (don't call finish handler (Write)
+  when module is not initialized)
+- 2.11.22
+
+-------------------------------------------------------------------
 Mon Jan 31 17:47:43 CET 2005 - sh@suse.de
 
 - Added Show|HideReleaseNotesButton() to Wizard::
