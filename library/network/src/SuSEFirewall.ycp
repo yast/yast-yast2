@@ -938,7 +938,7 @@
 
 	    if (!all_ok) {
 		// TRANSLATORS: a popup error message
-		Report::Error(sformat(_("Cannot enable service '%1'"), service));
+		Report::Error(sformat(_("Cannot enable service '%1'."), service));
 		break;
 	    }
 	});
@@ -960,7 +960,7 @@
 
 	    if (!all_ok) {
 		// TRANSLATORS: a popup error message
-		Report::Error(sformat(_("Cannot disable service '%1'"), service));
+		Report::Error(sformat(_("Cannot disable service '%1'."), service));
 		break;
 	    }
 	});
@@ -1345,7 +1345,8 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 		if (interface == nil) {
 		    // TRANSLATORS: Error message, %1 = interface name (like eth0)
 		    Report::Error(sformat(_("Interface '%1' is not assigned to any firewall zone.
-You will have to run YaST2 Firewall and assign it by hand."), interface)
+Run YaST2 Firewall and assign it by hand.
+"), interface)
 		    );
 		    y2warning("Interface '%1' is not assigned to any firewall zone", interface);
 		    return false;
@@ -1399,7 +1400,8 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 		if (interface == nil) {
 		    // TRANSLATORS: Error message, %1 = interface name (like eth0)
 		    Report::Error(sformat(_("Interface '%1' is not assigned to any firewall zone.
-You will have to run YaST2 Firewall and assign it by hand."), interface)
+Run YaST2 Firewall and assign it by hand.
+"), interface)
 		    );
 		    y2warning("Interface '%1' is not assigned to any firewall zone", interface);
 		    return false;
@@ -1689,7 +1691,7 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 
 	if (have_progress) {
 	    // TRANSLATORS: Dialog caption
-	    string read_caption = _("Initializing firewall configuration");
+	    string read_caption = _("Initializing Firewall Configuration");
 
 	    Progress::New( read_caption, " ", 3,
 		[
@@ -1702,11 +1704,11 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 		],
 		[
 		    // TRANSLATORS: Progress step
-		    _("Checking for network devices"),
+		    _("Checking for network devices..."),
 		    // TRANSLATORS: Progress step
-		    _("Reading current configuration"),
+		    _("Reading current configuration..."),
 		    // TRANSLATORS: Progress step
-		    _("Checking possibly conflicting services"),
+		    _("Checking possibly conflicting services..."),
 		    Message::Finished(),
 		],
 		""
@@ -1801,7 +1803,7 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 
 	if (have_progress) {
 	    // TRANSLATORS: Dialog caption
-	    string write_caption = _("Writing firewall configuration");
+	    string write_caption = _("Writing Firewall Configuration");
 
 	    Progress::New( write_caption, " ", 2,
 		[
@@ -1812,9 +1814,9 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 		],
 		[
 		    // TRANSLATORS: Progress step
-		    _("Writing firewall settings"),
+		    _("Writing firewall settings..."),
 		    // TRANSLATORS: Progress step
-		    _("Adjusting firewall service"),
+		    _("Adjusting firewall service..."),
 		    // TRANSLATORS: Progress step
 		    Message::Finished(),
 		],

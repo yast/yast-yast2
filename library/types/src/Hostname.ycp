@@ -35,8 +35,9 @@ start or end a component and the last component may not begin with a digit.");
  */
 global string ValidHost () {
     //Translators: hyphen: "-"
-    return _("A valid host name conhsists of letters, digits, and hyphens.
-A host name may not begin or end with a hyphen.");
+    return _("A valid host name consists of letters, digits, and hyphens.
+A host name may not begin or end with a hyphen.
+");
 }
 
 /**

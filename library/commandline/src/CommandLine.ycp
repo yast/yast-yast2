@@ -95,7 +95,7 @@
     boolean verbose = false;
 
     // string: command line interface is not supported
-    string nosupport = _("This YaST2 module does not support command line interface.");
+    string nosupport = _("This YaST2 module does not support the command line interface.");
 
     /**
      *  @short Print a String
