@@ -4,17 +4,10 @@
     <title>Advanced stuff</title>
 <section id="widget_help"><title>Helps</title>
 <para>
-Help is usually related to some widget. There is no reason why not to add help
+Help is usually related to a widget. There is no reason not to add help
 as attribute of a widget description, and move it with the widget between
 dialogs. Each widget description map can have a "help" key, that specifies
 the help related to the widget.
-</para>
-<para>
-Then function CWM::MergeHelps (list(map) widgets) will merge the helps
-of the widgets in the same order as the widgets were specified in the argument
-of the CreateWidgets function. In fact it only concatenates the help attributes of
-the widgets. For advanced helps (eg. add some text not related to any widgets)
-programmer must use his own function.
 </para>
 <example><title>Help manipulation</title><screen>
 map widget_descr = $[
@@ -27,10 +20,11 @@ map widget_descr = $[
 ]
 
 list widgets = // see <xref linkend="simple_dialog"/>
-
-string help = CWM::MergeHelps (widgets); // and use this
-            // help for Wizard::SetContentsButtons (...)
  </screen></example>
+  <para>
+If you need to add a help that is not bound to any widget, see
+<xref linkend="create_control"/>
+  </para>
 </section>
 
 <section id="validation"><title>Widget validation</title>
@@ -43,9 +37,9 @@ two ways.
 First means validation function. It can be specified in the widget
 description map. It returns a boolean value, if true, validation is OK,
 false if validation failed. In case of failure it is task of the validation
-function to inform user where the problem is. Before evaluation, the
-arguments specifying the widget key and the event that caused the validation,
-are added. Validation type must be set to `function.
+function to inform user where the problem is. The validation function has as
+argument the widget key and the event that caused the validation.
+Validation type must be set to `function.
 </para>
 <para>
 Second possibility is to validate widget by type. Supported are validation
@@ -61,14 +55,31 @@ entry in the map is shown to user, otherwise generic error message is shown.
 If no validation type is defined, validation is always OK.
 </para>
 <example><title>Widget validation</title><screen>
-module "MyModule";
+define boolean MyValidateWidget (string key, map event) {
+    boolean value = UI::QueryWidget (
+        `id (key),
+        `Value);
+    if (! value)
+        return true;
+    else
+    {
+        if (UI::YesNoPopup (_("You decided insert CWD to root's path.
+Are you sure?")))
+            return true;
+        else
+        {
+            UI::SetFocus (key);
+            return false;
+        }
+    }
+}
 
 map widget_descr = $[
   "CWD_IN_ROOT_PATH" : $[
     "widget" : `checkbox,
     "label" : _("&amp;Current Directory in root's Path"),
     "validate_type" : `function,
-    "validate_function" : ``(MyModule::my_validate_widget ()),
+    "validate_function" : MyValidateWidget,
   ],
   "TEXT_ENTRY" : $[
     "widget" : `textentry,
@@ -85,24 +96,6 @@ String cannot be empty");
     "validate_typespec" : ["Word1", "Word2"],
   ],
 ]
-
-global define boolean my_validate_widget (string key, map event) ``{
-    boolean value = UI::QueryWidget (
-        `id ("CWD_IN_ROOT_PATH"),
-        `Value);
-    if (! value)
-        return true;
-    else
-    {
-        if (UI::YesNoPopup (_("You decided insert CWD to root's path.
-Are you sure?")))
-            return true;
-        else
-        {
-            UI::SetFocus ("CWD_IN_ROOT_PATH");
-            return false;
-        }
-    }
  </screen></example>
 </section>
 
@@ -115,13 +108,11 @@ are empty ( `opt () ).
 </para>
 
 <example><title>Widget options</title><screen>
-module "MyModule";
-
 map widget_descr = $[
   "CWD_IN_ROOT_PATH" : $[
     "label" : _("&amp;Current Directory in root's Path"),
     "widget" : `checkbox,
-    "opt" : [ `notify ],
+    "opt" : [ `notify , `immediate],
   ],
 ]
  </screen></example>
@@ -134,37 +125,35 @@ Some (super)widgets (see <xref linkend="radio_buttons"/>)
 can require their own function for
 initializing themselves, or storing their settings. These functions must be set
 in the widget description map. They are specified using key "init" for
-the initialization function, and "store" for the storing functions. The functions
-are defined as terms, that get added a parameter (identifier of the widget),
-and then evaluated. If widget doesn't have any "init" or "store" function
+the initialization function, and "store" for the storing functions. The
+functions are defined as function refernces. The init function must have
+as an argument the widget key (string), the store function must have
+two arguments - widget key (string) and event that caused storing the settings
+(map). If widget doesn't have any "init" or "store" function
 specified, generic one is used (see <xref linkend="concept"/>).
-Before the evaluation of the "store" term, the arguments specifying the widget key and
-event that caused the storing are added.
 </para>
 
 <example><title>Widget with own init and store functions</title><screen>
-module "MyModule";
+define void MyInitializeWidget (string key) {
+    boolean value = this_global_variable;
+    UI::ChangeWidget (`id (key), `Value, value);
+}
+
+define void MyStoreWidget (string key, map event) {
+    boolean value = UI::QueryWidget (
+        `id (key),
+        `Value);
+    this_global_variable = value;
+}
 
 map widget_descr = $[
   "CWD_IN_ROOT_PATH" : $[
     "label" : _("&amp;Current Directory in root's Path"),
     "widget" : `checkbox,
-    "init" : ``(MyModule::my_initialize_widget ()),
-    "store" : ``(MyModule::my_store_widget ()),
+    "init" : MyInitializeWidget,
+    "store" : MyStoreWidget,
   ],
 ]
-
-global define void my_initialize_widget (string key) ``{
-    boolean value = MyModule::this_variable;
-    UI::ChangeWidget (`id ("CWD_IN_ROOT_PATH"), `Value, value);
-}
-
-global define void my_store_widget (string key, map event) ``{
-    boolean value = UI::QueryWidget (
-        `id ("CWD_IN_ROOT_PATH"),
-        `Value);
-    MyModule::this_variable = value;
-}
  </screen></example>
 </section>
 
@@ -175,10 +164,11 @@ events that don't switch to other dialog nor should store anything, eg.
 gray/un-gray some widget according to value of a check box. To do this,
 every event, that occurs, must be handled. This handling function can
 be specified in the widget description map. If not defined, no handling
-is done. Note, that the handle event term is evaluated in both of the 
+is done. Note, that the handle event function is run in both of the 
 situations - if the storing is and isn't to be done.
-Before evaluation, the arguments specifying the widget key and the event that
-occurred are added. Return value of handle
+The handling function must have two parameters the widget key (string) and
+the event that is handler (map).
+Return value of handle
 function is described in <xref linkend="retval_sect"/>.
 </para>
 <para>
@@ -187,22 +177,20 @@ via the "handle_events" key. If it is empty, or not present, then the
 handle function is called for every generated event.
 </para>
 <example><title>Event handling function</title><screen>
-module "MyModule";
+define symbol MyHandleWidget (string key, map event) {
+    UI::MessagePopup (_("You checked the checkbox. Restart to
+make the change effective ;-)"));
+    return nil;
+}
 
 map widget_descr = $[
   "CWD_IN_ROOT_PATH" : $[
     "label" : _("&amp;Current Directory in root's Path"),
     "widget" : `checkbox,
     "help" : _("This is help to the widget"),
-    "handle" : ``(MyModule::my_handle_widget ()),
+    "handle" : MyHandleWidget,
   ],
 ]
-
-global define symbol my_handle_widget (string key, map event) ``{
-    UI::MessagePopup (_("You checked the checkbox. Restart to
-make the change effective ;-)"));
-    return nil;
-}
  </screen></example>
 </section>
 
@@ -234,23 +222,21 @@ member of the event map.
 </para>
 
 <example><title>Return value of handle function</title><screen>
-module "MyModule";
-
-map widget_descr = $[
-  "PUSH_BUTTON" : $[
-    "label" : _("&amp;Exit dialog different way"),
-    "widget" : `push_button,
-    "handle" : ``(MyModule::my_handle_button ()),
-  ],
-]
-
-global define symbol my_handle_button (map event) ``{
+global define symbol MyHandleButton (map event) {
     if (event["ID"]:nil == "PUSH_BUTTON")
 	return `leave_dialog_other_way;
     else
 	return nil; // don't leave the dialog
                     // because of this widget
 }
+
+map widget_descr = $[
+  "PUSH_BUTTON" : $[
+    "label" : _("&amp;Exit dialog different way"),
+    "widget" : `push_button,
+    "handle" : MyHandleButton ()),
+  ],
+]
  </screen></example>
 </section>
 
@@ -265,39 +251,58 @@ The superwidget can be specified in the widget description map via the
 See <xref linkend="repl_widget_example"/>.
 </para>
 <para>
-Note: It may be needed not to specify the superwidget directly, but only
-a function. Because of this the term is evaluated. It doesn't break anything
-if the superwidget is specified directly, and allows the widget to differ
-according to actual system settings. Additionally, if the building of the
-term calls some other functions, that need some time, they aren't called
-when YaST2 component starts, but when it is really needed.
+In some cases it may be needed to create the widget "on-thefly". It is also
+possible via specifying a function that is run every time a dialog with
+the widget is started. In this case the "widget" entry must be specified
+as `func and "widget_func" entry must contain a reference of a function
+that returns the term to be displayed.
+Also note that if the building of the widget creating function calls
+other functions, that need some time, they aren't called
+when YaST2 component starts, but when it is really needed (but every time
+the widget is displayed).
 </para>
 
 <example id="repl_widget_example"><title>Replacing whole widget</title><screen>
-module "MyModule";
+define term getW2 () {
+    return `VBox (`PushButton (`id (`w), _("W")));
+}
 
 map widget_descr = $[
   "W1" : $[
     "widget" : `custom,
     "custom_widget" : `VBox (`PushButton (`id (`w), _("W"))),
-    "init" : ``(MyModule::w_init ()),
-    "store" : ``(MyModule::w_store ()),
+    "init" : WInit,
+    "store" : WStore,
   ],
   "W2" : $[
     "widget" : `custom,
-    "custom_widget" : ``(MyModule::getW2 ()),
-    "init" : ``(MyModule::w_init ()),
-    "store" : ``(MyModule::w_store ()),
+    "custom_widget" : getW2,
+    "init" : WInit,
+    "store" : WStore,
   ],
 ];
-
-global define term getW2 () ``{
-    return `VBox (`PushButton (`id (`w), _("W")));
-}
  </screen>
 <para>
 These two widgets (W1 and W2) are identical.
 </para></example>
+</section>
+
+<section id="repl_buttons"><title>Replacing and Hiding Back/Abort/Next buttons</title>
+<para>
+To specify the labels of the Abort, Back and Next buttons, use the entries
+"abort_button", "back_button", "next_button" in the map that is passed
+to CWM::ShowAndRun as argument. If any of the keys is not specified, then
+the default button label is set. If the label of the button is empty string
+or nil, then the button is not shown.
+</para>
+<example id="repl_button_example"><title>Replacing the wizard buttons</title><screen>
+CWM::ShowAndRun ($[
+    "back_button" : nil, // will be hidden
+    "next_button" : Label::FinishButton (), // label of the "Next" button
+                   // abort button is not specified, will be "Abort" (default)
+    ....
+]);
+ </screen></example>
 </section>
 
 <section id="create_control">
@@ -310,28 +315,30 @@ dalog as in <xref linkend="simple_dialog"/> is created in
    </para>
 
 <example id="simple_dial_adv"><title>More control on dialog creation</title><screen>
-module "MyModule";
-
 // include <xref linkend="simple_widgets"/> here
 
-global define symbol runSomeDialog ``{
+global define symbol runSomeDialog {
     // create list of maps representing wanted widgets
-    list(map) widgets
+    list&lt;map&gt; widgets
         = CWM::CreateWidgets (
             [ "CWD_IN_ROOT_PATH", "CWD_IN_USER_PATH" ],
             widget_descr);
+
     term contents = `VBox (
-        widgets[0, "widget"]:`VSpacing (0),// "widget" here is
-        widgets[1, "widget"]:`VSpacing (0) // the _real_ widget
-    )
-    Wizard::SetContentsButtons ("Dialog", contents, "Help",
+        "CWD_IN_ROOT_PATH",
+        "CWD_IN_USER_PATH"
+    );
+    contents = CWM::PrepareDialog (contents, w);
+    string help = CWM::MergeHelps (widgets);
+
+    Wizard::SetContentsButtons ("Dialog", contents, help,
         "Back", "Next");
     // here comes additional stuff, eg. renaming the "Abort"
-    // button to "Cancel" // if needed
+    // button to "Cancel" if needed
 
     map functions = $[
-        "initialize" : ``(MyModule::initialize_widget ()),
-        "store" : ``(MyModule::store_widget ()),
+        "initialize" : InitializeWidget,
+        "store" : StoreWidget,
     ];
 
     // run the dialog
@@ -342,19 +349,29 @@ global define symbol runSomeDialog ``{
     <para>
 The first step is to process the relevant widgets from the widgets description map
 in order to create the "real" widgets. The second task is to create the dialog term.
-You still may use the widget names instead of the descriptions, but in this case
-you must use the CWM::PrepareDialog function. In this case the dialog would look like 
+Instead of using widget names and calling CWM::PrepareDialog function, you may
+use the preprocessed widget. In this case you should write
     </para><screen>
     term contents = `VBox (
-        "CWD_IN_ROOT_PATH",
-        "CWD_IN_USER_PATH"
+        "widgets[0. "widget"]:`VBox (),
+        "widgets[1. "widget"]:`VBox (),
     )
-    contents = CWM::PrepareDialog (contents, widgets);
 </screen><para>
+Note that the "widget" entry in preprocessed widget contains the real term.
+</para>
+<para>
+Then function CWM::MergeHelps (list&lt;map&gt; widgets) will merge the helps
+of the widgets in the same order as the widgets were specified in the argument
+of the CreateWidgets function. In fact it only concatenates the help attributes
+of the widgets.
+For advanced helps (eg. add some text not related to any widgets)
+programmer must use his own function.
+    </para>
+    <para>
     Then you can create the dialog (including setting the help and buttons). Additionally,
 you can do any tasks you need (eg. remove the Back button, change the label of the Abort
 button). Fallback handlers are to be set the same way as when use the ShowAndRun wrapper.
-The last step is to start the event loop fia the Run function.
+The last step is to start the event loop via the Run function.
     </para>
 </section>
 
