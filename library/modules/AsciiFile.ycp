@@ -53,7 +53,7 @@ define string AssertLineValid( map& file, integer line )
 	
 	return lstr;
 	}
-	return "";
+	return file["l",line,"line"]:"";
     }
 
 global define void ReadFile( map& file, string pathname )
