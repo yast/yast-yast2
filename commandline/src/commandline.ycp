@@ -18,6 +18,16 @@ textdomain "base";
 import "CommandLine";
 import "Progress";
 
+global define any RunFunction( term funct ) ``{
+    Report::ClearAll();
+    any ret = eval( funct );
+    string report = Report::GetMessages(
+	Report::NumWarnings()>0,Report::NumErrors()>0,Report::NumMessages()>0);
+    if( size(report) > 0 )
+	CommandLine::Print( CommandLine::Rich2Plain( report )  );
+    return ret;
+}
+
 /**
  * Function to parse the command line, start a GUI or handle interactive and
  * command line actions as supported by the @ref CommandLine module.
@@ -34,7 +44,7 @@ global define boolean CommandLineRun( map commandline ) ``{
 
     /* Initialize the arguments */
     if(!CommandLine::Init(commandline, WFM::Args())) {
-	return ! Aborted();
+	return ! CommandLine::Aborted();
     }
     
     boolean ret = true;
@@ -52,6 +62,14 @@ global define boolean CommandLineRun( map commandline ) ``{
 	y2debug("GUI handler ret=%1", ret);
 	return ret;
     } else {
+	// disable Reports, we handle them on our own
+	Report::Import( $[ 
+	    "messages"	:$[ "show":false ], 
+	    "warnings"	:$[ "show":false ],
+	    "errors"	:$[ "show":false ]
+	]);
+	
+    
 	/* non-GUI handling */
 	
 	verbose = !contains( Args(), "quiet" );
@@ -65,7 +83,7 @@ global define boolean CommandLineRun( map commandline ) ``{
     
 	/* Start initialization */
 	if( commandline["initialize"]:nil != nil ) {
-	    boolean ret = eval( commandline["initialize"]:nil );
+	    boolean ret = RunFunction( commandline["initialize"]:nil );
 	    if( !ret ) {
 		y2milestone( "Module initialization failed" );
 		return false;
@@ -94,7 +112,7 @@ global define boolean CommandLineRun( map commandline ) ``{
     	    // there is a handler, execute the action
 	    if( exec != nil ) {
 		exec = add( exec, options );
-		eval( exec );
+		RunFunction( exec );
 	    } 
 	    else 
 	    {
@@ -111,7 +129,7 @@ global define boolean CommandLineRun( map commandline ) ``{
     if( ret && commandline["finish"]:nil != nil ) {
 	if( verbose )
 	    CommandLine::Print( _("Finishing") );
-	ret = eval( commandline["finish"]:nil );
+	ret = RunFunction( commandline["finish"]:nil );
 	if( !ret ) {
 	    y2milestone( "Module finishing failed" );
 	    return false;
