@@ -1,0 +1,108 @@
+/**
+ * File:	modules/ProductFetures.ycp
+ * Package:	installation
+ * Summary:	Product features
+ * Authors:	Anas Nashif <nashif@suse.de>
+ *
+ * $Id$
+ */
+
+{
+    module "ProductFeatures";
+    textdomain "base";
+
+    /*********************************************************************
+      *   Those are variables from the content file, we can override them
+      *   in the control file
+     *********************************************************************/
+
+    /**
+     * url of release notes (downloaded during internet test)
+     */
+    global string relnotesurl	= "";
+
+    /**
+     *  Run YOU during the Internet connection test.
+     */
+    global boolean run_you	= true;
+
+    /**
+     * list of flags from content file
+     */
+    global list flags		= [];
+
+
+    /*********************************************************************
+      *   Packages and Selections
+     *********************************************************************/
+
+    /**
+     *  Control how the base selection is chosen:
+     *    `fixed - the base selection is fixed (see fixed_base_selection below)
+     *    `auto  - a base selection is automatically choosen (depending on disk
+     *             space)
+     */
+    global symbol base_selection_choice		= `auto;
+
+    /**
+     *  Name of the fixed base selection.
+     */
+    global string fixed_base_selection		= "";
+
+    /**
+     *  If non-empty it will be called with WFM::CallFunction
+     *	from Packages::ComputeSystemPackageList. Gets a list of packages
+     *  as the one and only argument and must return a list of packages
+     *  again.
+     */
+    global string packages_transmogrify		= "";
+
+
+    /***
+      * On some products, this can be turned on to prevent old
+      * RPMs from being deleted (#35235)
+      */
+    global boolean delete_old_packages          = true;
+
+    /*********************************************************************
+      *   Partitioning
+     *********************************************************************/
+
+    /**
+     * Flexible partitioning
+     */
+    global boolean flexible_partitioning = false;
+
+    /**
+     * Flexible partitioning map
+     */
+    global map FlexiblePartitioning = $[];
+
+
+
+
+    /*********************************************************************
+      *   Misc. Features
+      *
+     *********************************************************************/
+
+
+    /**
+     * autologin is enabled by default.
+     */
+    global boolean enable_autologin = true;
+
+
+
+
+
+    // -----------------------------------------------
+    /**
+     * Constructor
+     */
+    global define void ProductFeatures () ``{
+        return;
+    }
+
+/* EOF */
+}
