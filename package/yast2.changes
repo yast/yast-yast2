@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Nov 24 00:32:55 CET 2003 - ro@suse.de
+
+- remove file conflict with yast2-pam (Autologin.ycp moved there)
+
+-------------------------------------------------------------------
 Mon Nov 17 18:10:50 CET 2003 - arvin@suse.de
 
 - adapted plugindir detection for NPTL
