@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sat Jan 31 21:58:23 CET 2004 - arvin@suse.de
+
+- added function to build a url from tokens
+
+-------------------------------------------------------------------
 Fri Jan 30 16:46:34 CET 2004 - mvidner@suse.cz
 
 - removed lookups in Service to fix configuration modules testsuites
