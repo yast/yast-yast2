@@ -218,6 +218,15 @@ global define symbol HandleWrapper (string key, map event) {
 }
 
 /**
+ * Validate function of the widget
+ * @param key strnig the widget key
+ * @param event map that caused widget data storing
+ */
+global define boolean Validate (string key, map event) {
+    return TabValidate (current_tab_map, event);
+}
+
+/**
  * Get the widget description map
  * @param tab_order a list of the IDs of the tabs
  * @param tabs a map of all tabs (key is tab ID, value is a map describing
@@ -278,6 +287,8 @@ global define map<string,any> CreateWidget (map settings) {
 	"init" : InitWrapper,
 	"store" : Store,
 	"handle" : HandleWrapper,
+	"validate_type": `function,
+	"validate_function": Validate,
 	"initial_tab" : initial_tab,
 	"tabs" : tabs,
 	"tabs_list" : tab_order,

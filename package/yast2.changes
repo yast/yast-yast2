@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Dec 21 11:46:19 CET 2004 - jsrain@suse.cz
+
+- fixed validation of widgets inside CWM Tab widget
+
+-------------------------------------------------------------------
 Tue Dec 14 17:17:12 CET 2004 - mvidner@suse.cz
 
 - Added Progress::set, fixed docs a bit.
