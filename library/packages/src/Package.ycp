@@ -33,34 +33,35 @@ map FunctionsAI = $[
     "Installed"	: PackageAI::Installed,
 ];
 
-map Functions = FunctionsSystem;
-if(Mode::config) Functions = FunctionsAI;
+map Functions = Mode::config ? FunctionsAI : FunctionsSystem;
 
-include "package/common.ycp";
+boolean last_op_canceled = false;
 
-boolean DoInstall(list<string> packages) {
-    term function = Functions["DoInstall"]:nil;
+include "packages/common.ycp";
+
+global boolean DoInstall(list<string> packages) {
+    boolean (list<string>) function = (boolean (list<string>)) (Functions["DoInstall"]:nil);
     return function(packages);
 }
 
-boolean DoRemove(list<string> packages) {
-    term function = Functions["DoRemove"]:nil;
+global boolean DoRemove(list<string> packages) {
+    boolean (list<string>) function = (boolean (list<string>)) (Functions["DoRemove"]:nil);
     return function(packages);
 }
 
-boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove) {
-    term function = Functions["DoInstallAndRemove"]:nil;
-    return function(packages);
+global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove) {
+    boolean (list, list) function = (boolean (list, list)) (Functions["DoInstallAndRemove"]:nil);
+    return function(toinstall, toremove);
 }
 
-boolean Available(string package) {
-    term function = Functions["Available"]:nil;
-    return function(packages);
+global boolean Available(string package) {
+    boolean (string) function = (boolean (string)) (Functions["Available"]:nil);
+    return function(package);
 }
 
-boolean Installed(string package) {
-    term function = Functions["Installed"]:nil;
-    return function(packages);
+global boolean Installed(string package) {
+    boolean (string) function = (boolean (string)) (Functions["Installed"]:nil);
+    return function(package);
 }
 
 /* EOF */
