@@ -74,6 +74,11 @@ global define boolean InstalledAny(list<string> packages) {
 }
 
 /**
+ * Main package installatio|removal dialog
+ * @param packages list of packages
+ * @param install true if install, false if remove
+ * @param message optional installation|removal text (nil -> standard will be used)
+ * @return true on success
  */
 boolean PackageDialog(list<string> packages, boolean install, string message) {
 
@@ -93,11 +98,12 @@ boolean PackageDialog(list<string> packages, boolean install, string message) {
     if (message != nil)
 	text = sformat (message, mergestring (packages, ", "));
 
-    boolean doit = Popup::AnyQuestionRichText (
+    boolean doit = Popup::AnyQuestionRichText(
 	"", text, 40, 10,
 	Label::ContinueButton (), Label::CancelButton (),
 	`focus_yes
-	);
+    );
+
     if (doit)
     {
 	last_op_canceled = false;
@@ -120,7 +126,6 @@ global boolean InstallAll(list<string> packages) {
 global boolean InstallAny(list<string> packages);
 // FIXME
 
-
 global boolean Remove(string package) {
     return PackageDialog([package], false, nil);
 }
@@ -139,7 +144,6 @@ global boolean InstallAllMsg(list<string> packages, string message) {
 
 global boolean InstallAnyMsg(list<string> packages, string message);
 // FIXME
-
 
 global boolean RemoveMsg(string package, string message) {
     return PackageDialog([package], false, message);

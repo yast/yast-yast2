@@ -49,7 +49,7 @@ global define string Rich2Plain (string richtext) ``{
 	}
 	/* P */
 	else if( tag == "p" ) {
-	    result = result + "\n\n";
+	    result = result + "\n";
 	}
 	/* UL */
 	else if( tag == "ul" ) {
@@ -77,6 +77,7 @@ global define string Rich2Plain (string richtext) ``{
 
 	if(s != -1) lpart = String::CutBlanks(substring(lpart, s+1));
 	if(regexpmatch(lpart, "^[ \n	]*$")) return;
+	if(lpart == "&nbsp;") return;
 
 	if(lpart != "" && inli) {
 	    integer i = 1;
