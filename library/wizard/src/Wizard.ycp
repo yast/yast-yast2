@@ -26,6 +26,9 @@
 
     boolean have_fancy_ui_cache = nil;
 
+    // this variable is set from Product:: constructor
+    // to setup correct &product; macro in UI
+    string product_name = "";
 
     boolean haveFancyUI()
     {
@@ -418,8 +421,7 @@
 	}
 	else
 	{
-	    y2error( "Wizard::ReplaceHelpSpace() works only for dialogs "
-		     + "opened with Wizard::OpenSimpleDialog() !" );
+	    y2error( "Wizard::ReplaceHelpSpace() works only for dialogs opened with Wizard::OpenSimpleDialog() !" );
 	}
     }
 
@@ -468,6 +470,9 @@
      **/
     global void CreateDialog()
     {
+        // Set productname for help text
+        UI::SetProductName(product_name);
+
 	Wizard::OpenNextBackDialog();
     }
 
@@ -1322,6 +1327,18 @@
         }
         return;
     }
+
+
+    /**
+     * Set the product name for UI
+     * @param name the product name
+     * @return void
+     **/
+    global void SetProductName (string name) {
+        y2milestone ("Setting product name to '%1'", name);
+        product_name = name;
+    }
+
 
 /* EOF */
 }
