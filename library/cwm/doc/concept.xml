@@ -106,7 +106,7 @@ global define void initialize_widget (any key) ``{
 }
 
 // function for storing is similar
-global define void store_widget (any key, any event) ``{
+global define void store_widget (any key, map event) ``{
     settings[key] = UI::QueryWidget (`id (`key), `Value);
 }
         </screen></para>
@@ -213,7 +213,8 @@ are event names
 ("init" and "store") and values are terms. Each term gets before evaluation
 additional parameter specifying the widget name, store term gets one more
 parameter specifying the event that caused storing the settings (in typical
-case the value can be ignored).  Return value of the store handler is described
+case the value can be ignored). The value is in the same form as return value
+of UI::WaitForEvent (). Return value of the store handler is described
 in Advanced stuff. See <xref linkend="simple_dialog"/>.
 	</para>
     </section>

@@ -86,7 +86,7 @@ String cannot be empty");
   ],
 ]
 
-global define boolean my_validate_widget (any key, any event) ``{
+global define boolean my_validate_widget (any key, map event) ``{
     boolean value = UI::QueryWidget (
         `id ("CWD_IN_ROOT_PATH"),
         `Value);
@@ -159,7 +159,7 @@ global define void my_initialize_widget (any key) ``{
     UI::ChangeWidget (`id ("CWD_IN_ROOT_PATH"), `Value, value);
 }
 
-global define void my_store_widget (any key, any event) ``{
+global define void my_store_widget (any key, map event) ``{
     boolean value = UI::QueryWidget (
         `id ("CWD_IN_ROOT_PATH"),
         `Value);
@@ -198,7 +198,7 @@ map widget_descr = $[
   ],
 ]
 
-global define symbol my_handle_widget (any key, any event) ``{
+global define symbol my_handle_widget (any key, map event) ``{
     UI::MessagePopup (_("You checked the checkbox. Restart to
 make the change effective ;-)"));
     return nil;
@@ -229,7 +229,8 @@ functions are processed in the same order as widgets are specified in
 the argument of CreateWidgets function.
 </para>
 <para>
-The returned value (if not nil) is passed to the store functions.
+The returned value (if not nil) is passed to the store functions as the "ID"
+member of the event map.
 </para>
 
 <example><title>Return value of handle function</title><screen>
@@ -243,8 +244,8 @@ map widget_descr = $[
   ],
 ]
 
-global define symbol my_handle_button (any event) ``{
-    if (event == "PUSH_BUTTON")
+global define symbol my_handle_button (map event) ``{
+    if (event["ID"]:nil == "PUSH_BUTTON")
 	return `leave_dialog_other_way;
     else
 	return nil; // don't leave the dialog
