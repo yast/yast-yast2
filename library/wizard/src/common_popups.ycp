@@ -232,7 +232,7 @@
 	  {
 	      // Warning text for aborting an installation before anything is installed
 	      what_will_happen = _( "If you abort the installation now,
-SuSE Linux will not be installed.
+Linux will not be installed.
 Your hard disk will remain untouched." );
 	  }
 	  else if ( severity == `incomplete )
@@ -241,7 +241,7 @@ Your hard disk will remain untouched." );
 	      // - After some installation steps have been performed - e.g.
 	      // disks formatted / some packages already installed
 	      what_will_happen = _( "If you abort the installation now, you will
-have an incomplete SuSE Linux system
+have an incomplete Linux system
 which may or may not be usable.
 You may need to reinstall." );
 	  }
@@ -250,7 +250,7 @@ You may need to reinstall." );
 	      // Warning text for aborting an installation during the install process
 	      // right in the middle of some critical process (e.g. formatting)
 	      what_will_happen = _( "If you abort the installation now,
-SuSE Linux will be unusable.
+Linux will be unusable.
 You will need to reinstall." );
 	  }
 	  else
@@ -554,7 +554,7 @@ You will need to reinstall." );
 				       // "Cancel" button for timeout message: Close popup dialog
 				       // (i.e. cancel the action in "message")
 				       `PushButton(`id(`timed_cancel),
-						   `opt (`key_F9), 
+						   `opt (`key_F9),
 						   CancelButtonLabel() )
 				       ),
 				 `VSpacing(0.2)
@@ -632,7 +632,7 @@ You will need to reinstall." );
 				        `opt(`default, `key_F10),
 					yes_button_message);
 	      no_button  = `PushButton( `id(`no_button),
-					`opt (`key_F9), 
+					`opt (`key_F9),
 					no_button_message );
 	  }
 
@@ -686,7 +686,7 @@ You will need to reinstall." );
 	  if ( focus == `focus_no )
 	  {
 	      yes_button = `PushButton( `id(`yes),
-					`opt (`key_F10), 
+					`opt (`key_F10),
 					yes_button_message );
 	      no_button  = `PushButton( `id(`no),
 					`opt(`default, `key_F9),
@@ -701,19 +701,19 @@ You will need to reinstall." );
 				       `opt(`default, `key_F10),
 				       yes_button_message);
 	      no_button  = `PushButton( `id(`no),
-					`opt (`key_F9), 
+					`opt (`key_F9),
 					no_button_message );
 	      retry_button  = `PushButton( `id(`retry),
-					   `opt (`key_F6), 
+					   `opt (`key_F6),
 					   retry_button_message );
 	  }
 	  else
 	  {
 	      yes_button = `PushButton(`id(`yes),
-				       `opt (`key_F10), 
+				       `opt (`key_F10),
 				       yes_button_message);
 	      no_button  = `PushButton( `id(`no),
-					`opt (`key_F9), 
+					`opt (`key_F9),
 					no_button_message );
 	      retry_button  = `PushButton( `id(`retry),
 					   `opt(`default, `key_F6),
@@ -765,7 +765,7 @@ You will need to reinstall." );
 				 `VSpacing(0.2),
 				 `Heading(text),
 				 `HBox(
-				     `PushButton(`id(`back),   `opt (`key_F8), 
+				     `PushButton(`id(`back),   `opt (`key_F8),
 						 BackButtonLabel()  ),
 				     `PushButton(`id(`again),  `opt (`key_F6),
 						 RetryButtonLabel() ),
