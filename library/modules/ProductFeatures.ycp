@@ -204,6 +204,9 @@
 
 
 
+    /**
+     * Set a feature section
+     */
     global void SetSection(string section_name, map section_map) {
 
         y2debug("Setting section: %1", section_name);
@@ -211,11 +214,19 @@
         return;
     }
 
+    /**
+     * Get a complete section for evaluation
+     */
     global map GetSection(string section_name) {
         return features[section_name]:$[];
     }
 
 
+    /**
+     * Get Feature properties
+     * @param feature for example "globals/<feature name>"
+     * @return any 
+     */
     global any GetFeatureProperties(string feature) {
         list<string> p = [];
         if (issubstring(feature, "/")) {
@@ -228,6 +239,9 @@
 
 
     /**
+     * Check if a feature is enabled
+     * 
+     * Use for boolean properties
      * @example IsFeatureEnabled("globals/firewall_enable_ssh");
      */
     global boolean IsFeatureEnabled(string feature) {
@@ -240,22 +254,76 @@
      */
     global void Save()
     {
-        SCR::Write(.product.features.UI_MODE, ui_mode );
+        SCR::Write(.product.features.UI_MODE, 
+                (string)GetFeatureProperties("globals/ui_mode") );
+
         SCR::Write(.product.features.ENABLE_AUTOLOGIN,
-                (enable_autologin) ? "yes" : "no" );
+                (IsFeatureEnabled("globals/enable_autologin")) ? "yes" : "no" );
+        
         SCR::Write(.product.features.EVMS_CONFIG,
-                (evms_config) ?  "yes" : "no" );
+                (IsFeatureEnabled("partitioning/evms_config")) ?  "yes" : "no" );
+        
         SCR::Write (.product.features, nil );     // flush
         return;
 
     }
 
 
+    void ReadBoolFeature(string sysconfig, string feature, string default )
+    {
+        path ps = .product.features;
+        ps=add(ps, topath(sysconfig));
+
+	any val = Misc::SysconfigRead( ps, default);
+        list<string> p = [];
+        string section = "";
+        string key = "";
+        if (issubstring(feature, "/")) {
+            p = splitstring(feature, "/");
+            section = p[0]:"";
+            key = p[1]:"";
+            if (!haskey(features, section))
+                features[section]=$[];
+            features[section, key] = (val == "yes");
+        } else {
+            key = feature;
+            features[ key] = (val == "yes" );
+        }
+        return;
+    }
+
+    void ReadStrFeature(string sysconfig, string feature, string default )
+    {
+        path ps = .product.features;
+        ps=add(ps, topath(sysconfig));
+
+	any val = Misc::SysconfigRead( ps, default);
+        list<string> p = [];
+        string section = "";
+        string key = "";
+        if (issubstring(feature, "/")) {
+            p = splitstring(feature, "/");
+            section = p[0]:"";
+            key = p[1]:"";
+            if (!haskey(features, section))
+                features[section]=$[];
+            features[section, key] = val;
+        } else {
+            key = feature;
+            features[ key] = val;
+        }
+        return;
+    }
+
     /**
      * Restore product features in running system
      */
     global void Restore()
     {
+        ReadStrFeature("UI_MODE", "globals/ui_mode", "expert");
+        ReadBoolFeature("ENABLE_AUTOLOGIN", "globals/enable_autologin", "yes");
+        ReadBoolFeature("EVMS_CONFIG", "partitioning/evms_config", "no");
+
 	ui_mode = Misc::SysconfigRead(
 		.product.features.UI_MODE, "expert");
         
@@ -274,8 +342,11 @@
      * Constructor
      */
     global define void ProductFeatures () {
-        if (Mode::normal () && !Stage::initial () && !Stage::cont ())
+
+        if (Stage::normal () || Stage::firstboot())
+        {
             Restore();
+        }
         return;
     }
 

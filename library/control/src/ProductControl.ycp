@@ -137,7 +137,7 @@ global define boolean ReadControlFile( string controlfile)
 
     // Storage
     partitioning = productControl["partitioning"]:$[];
-    ProductFeatures::SetSection("storage", partitioning);
+    ProductFeatures::SetSection("partitioning", partitioning);
 
     if (haskey(productControl, "partitioning"))
     {
