@@ -13,7 +13,7 @@ The easiest is to use a map, where key is name of configuration file entry and v
 </para>
 
 <screen>
-map settings = $[
+global map settings = $[
     "option1" : "value1",
     "option2" : "value2",
 ];
@@ -32,11 +32,13 @@ They can (in most cases) look the following way:
 
 <screen>
 global define void MyInit (any widget_id) ``{
-    UI::ChangeWidget (`id (widget_id), `Value, settings[widget_id]:"")
+    UI::ChangeWidget (`id (widget_id), `Value,
+        settings[widget_id]:"");
 } 
 
-global define void MyStore (any widget_id, any event) ``{
-    settings[widget_id] = UI::QueryWidget (`id (widget_id), `Value);
+global define void MyStore (any widget_id, map event) ``{
+    settings[widget_id] = UI::QueryWidget (`id (widget_id),
+        `Value);
 }
  </screen>
 
@@ -85,11 +87,13 @@ For radio button group the callback will look following way:
 
 <screen>
 global define void RadioButtonsInit (any widget_id) ``{
-    UI::ChangeWidget (`id (widget_id), `CurrentButton, settings[widget_id]:"")
+    UI::ChangeWidget (`id (widget_id), `CurrentButton,
+        settings[widget_id]:"");
 }
 
-global define void RadioButtonsStore (any widget_id, any event) ``{
-    settings[widget_id] = UI::QueryWidget (`id (widget_id), `CurrentButton);
+global define void RadioButtonsStore (any widget_id, map event) ``{
+    settings[widget_id] = UI::QueryWidget (`id (widget_id),
+        `CurrentButton);
 }
  </screen>
 </section>
@@ -97,14 +101,14 @@ global define void RadioButtonsStore (any widget_id, any event) ``{
 <section><title>Create and run the dialog</title>
 
 <para>
-It means to create dialog layout and call SHowAndRun with appropriate parameters.
+It means to create dialog layout and call ShowAndRun with appropriate parameters. This should be contents of the function that is called from wizard sequencer.
 </para>
 
 <screen>
 term contents = `VBox (
     "option1",
     `VSpacing (2),
-    "option2",
+    "option2"
 );
 
 map fallback_func = $[
@@ -112,8 +116,105 @@ map fallback_func = $[
     "store" : ``(MyModule::MyStore ()),
 ];
 
-return CWM::ShowAndRun (["option1", "option2"], widgets, contents, _("Dialog caption"), Label::BackButton (), Label::NextButton (), fallback_func);
+return CWM::ShowAndRun (["option1", "option2"], widgets,
+    contents, _("Dialog caption"),
+    Label::BackButton (), Label::NextButton (), fallback_func);
  </screen>
 </section>
+<section><title>Whole example (runnable)</title>
+<para>
+/usr/share/YaST2/modules/MyModule.ycp
+</para>
+<screen>
+{
+
+module "MyModule";
+
+import "CWM";
+
+global map settings = $[
+    "option1" : "value1",
+    "option2" : "item1",
+];
+
+global define void MyInit (any widget_id) ``{
+    UI::ChangeWidget (`id (widget_id), `Value,
+        settings[widget_id]:"");
+}
+
+global define void MyStore (any widget_id, map event) ``{
+    settings[widget_id] = UI::QueryWidget (`id (widget_id),
+        `Value);
+}
+
+global map widgets = $[
+    "option1" : $[
+        "label" : _("The &amp;first option"),
+        "widget" : `textentry,
+        "help" : _("Some clever help"),
+    ],
+    "option2" : $[
+        "label" : _("The second option"),
+        "widget" : `radio_buttons,
+        "items" : [
+            [ "item1", _("&amp;This is label of the first radio button") ],
+            [ "item2", _("&amp;And the second radio button") ],
+        ],
+        "help" : _("Next clever help"),
+        "init" : ``(MyModule::RadioButtonsInit ()),
+        "store" : ``(MyModule::RadioButtonsStore ()),
+    ],
+];
+
+global define void RadioButtonsInit (any widget_id) ``{
+    UI::ChangeWidget (`id (widget_id), `CurrentButton,
+        settings[widget_id]:"");
+}
+
+global define void RadioButtonsStore (any widget_id, map event) ``{
+    settings[widget_id] = UI::QueryWidget (`id (widget_id),
+        `CurrentButton);
+}
+
+global define symbol RunMyDialog () ``{
+
+    term contents = `VBox (
+        "option1",
+        `VSpacing (2),
+        "option2"
+    );
+
+    map fallback_func = $[
+        "init" : ``(MyModule::MyInit ()),
+        "store" : ``(MyModule::MyStore ()),
+    ];
+
+    return CWM::ShowAndRun (["option1", "option2"], widgets,
+        contents, _("Dialog caption"),
+        Label::BackButton (), Label::NextButton (), fallback_func);
+}
+
+}
+ </screen>
+<para>
+/usr/share/YaST2/clients/myexample.ycp
+</para>
+<screen>
+{
+    import "MyModule";
+    import "Wizard";
+
+    Wizard::CreateDialog ();
+
+    y2error ("Configuration before dialog: %1", MyModule::settings);
+
+    MyModule::RunMyDialog ();
+
+    y2error ("Configuration after dialog: %1", MyModule::settings);
+
+    UI::CloseDialog ();
+}
+ </screen>
+ </section>
 </section>
 </chapter>

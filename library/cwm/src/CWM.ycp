@@ -242,7 +242,10 @@
 	    {
 		save = true;
 		if (handle_ret != nil)
+		{
 		    ret = handle_ret;
+		    event_descr["ID"] = ret;
+		}
 	    }
 
 	    if (ret == `cancel)
