@@ -49,7 +49,8 @@
 	    else if (is (arg, term) && arg != nil)
 	    {
 		symbol s = symbolof ((term)arg);
-		if (contains ([ `VBox, `HBox, `Left, `Right, `Frame], s))
+		if (contains ([ `VBox, `HBox, `Left, `Right, `Frame,
+		    `HWeight, `VWeight], s))
 		{
 		    arg = ProcessTerm ((term)arg, widgets);
 		}
@@ -198,7 +199,7 @@
       * @return a list of modified widget description maps
       */
     global define list<map> mergeFunctions (list<map> widgets, map functions)``{
-	functions = filter (`k, `v, functions, ``(k != "abort"));
+	functions = filter (any k, any v, functions, ``(k != "abort"));
 	return maplist (map w, widgets, ``(
 	    union (functions, w)
 	));
@@ -507,7 +508,7 @@
       */
     global define string MergeHelps (list<map> widgets) ``{
 	list<string> helps = maplist (map<string, any> w, widgets, ``((string)(w["help"]:nil)));
-	helps = filter (`h, helps, ``(h != nil));
+	helps = filter (string h, helps, ``(h != nil));
 	return mergestring (helps, "\n");
     }
 
