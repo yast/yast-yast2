@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Sep 24 08:07:29 CEST 2004 - visnov@suse.cz
+
+- always initialize SourceCache when installing packages
+- use installed kernel to compute kernel packages (#45905) 
+- 2.10.18
+
+-------------------------------------------------------------------
 Thu Sep 23 09:49:52 CEST 2004 - mvidner@suse.cz
 
 - Fixed empty runlevel editor (#45858).
