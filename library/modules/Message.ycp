@@ -154,5 +154,23 @@ global define string UnknownError (string reason) {
 Description: %1"), reason);
 }
 
+/**
+ * Question: Delete selected entry?
+ * @return string Delete selected entry?
+ */
+global define string DeleteSelectedEntry () {
+  /* TRANSLATORS: Popup question */
+  return _("Delete selected entry?");
+}
+
+/**
+ * Required text item
+ * @return This item is required to be filled in
+ */
+global define string RequiredItem () {
+  /* TRANSLATORS: Popup message */
+  return _("This item is required to be filled in");
+}
+
 /* EOF */
 }
