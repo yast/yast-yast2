@@ -34,8 +34,8 @@ map FunctionsSystem = $[
 ];
 
 map FunctionsAI = $[
-    "DoInstall"	: PackageAI::Install,
-    "DoRemove"	: PackageAI::Remove,
+    "DoInstall"	: PackageAI::DoInstall,
+    "DoRemove"	: PackageAI::DoRemove,
     "DoInstallAndRemove" : PackageAI::DoInstallAndRemove,
     "Available"	: PackageAI::Available,
     "Installed"	: PackageAI::Installed,
