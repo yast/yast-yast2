@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 14 17:03:30 CET 2003 - sh@suse.de
+
+- V 2.7.29
+- Removed excess quotes in yast2 script when starting in kcontrol
+
+-------------------------------------------------------------------
 Fri Mar 14 16:45:19 CET 2003 - sh@suse.de
 
 - V 2.7.28
