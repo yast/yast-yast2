@@ -71,7 +71,7 @@ global define void Read(list Values) ``{
 	list values = SCR::Dir(filepath);
 	foreach(string value, values, ``{
 	    string ret = (string) SCR::Read(add(filepath, value));
-	    // y2milestone("%1[%2]=%3", file, value, ret);
+	    // y2milestone("%1[%2]=%3", filepath, value, ret);
 	    if(ret != nil) filemap[value] = ret;
 	});
 	filemap["modules"] = [];
@@ -141,9 +141,9 @@ global define list ModuleList(string group) ``{
     list mods = Groups[group, "modules"]:[];
     list l = [];
 
-    foreach(string k, map v, Modules, ``{
-	if(contains(mods, k))
-	    change(l, `item(`id(k), v["Name"]:"???"));
+    foreach(string m, mods, ``{
+	if(haskey(Modules, m))
+	    l = add(l, `item(`id(m), Modules[m,"Name"]:"???"));
     });
 
     // y2debug too costly: y2debug("%1", m);
