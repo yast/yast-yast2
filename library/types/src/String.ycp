@@ -513,5 +513,88 @@ global string FirstChunk (string s, string separators) {
     return l[0]:"";
 }
 
+// character sets, suitable for ValidChars
+
+string cupper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+string clower = "abcdefghijklmnopqrstuvwxyz";
+string calpha = cupper + clower;
+string cdigit = "0123456789";
+string cxdigit = cdigit + "ABCDEFabcdef";
+string calnum = calpha + cdigit;
+string cpunct = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+string cgraph = calnum + cpunct;
+string cspace = " \f\r\n\t\013";
+string cprint = cspace + cgraph;
+
+/**
+ * @return the 26 uppercase ASCII letters
+ */
+global string CUpper () {
+    return cupper;
+}
+
+/**
+ * @return the 26 lowercase ASCII letters
+ */
+global string CLower () {
+    return clower;
+}
+
+/**
+ * @return the 52 upper and lowercase ASCII letters
+ */
+global string CAlpha () {
+    return calpha;
+}
+
+/**
+ * @return 0123456789
+ */
+global string CDigit () {
+    return cdigit;
+}
+
+/**
+ * @return hexadecimal digits: 0123456789ABCDEFabcdef
+ */
+global string CXdigit () {
+    return cxdigit;
+}
+
+/**
+ * @return the 52 upper and lowercase ASCII letters and digits
+ */
+global string CAlnum () {
+    return calnum;
+}
+
+/**
+ * @return the ASCII printable non-blank non-alphanumeric characters
+ */
+global string CPunct () {
+    return cpunct;
+}
+
+/**
+ * @return printable ASCII charcters except whitespace
+ */
+global string CGraph () {
+    return cgraph;
+}
+
+/**
+ * @return ASCII whitespace
+ */
+global string CSpace () {
+    return cspace;
+}
+
+/**
+ * @return printable ASCII charcters including whitespace
+ */
+global string CPrint () {
+    return cprint;
+}
+
 /* EOF */
 }

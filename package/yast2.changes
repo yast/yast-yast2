@@ -1,6 +1,7 @@
 -------------------------------------------------------------------
-Thu Nov 11 09:43:21 CET 2004 - mvidner@suse.cz
+Thu Nov 11 13:39:12 CET 2004 - mvidner@suse.cz
 
+- Added character set functions to String.
 - PackageSystem::InstallKernel: return early if the module list is
   empty, thus slashing "yast2 lan" startup time.
 - Desktop::RunViaDesktop now accepts arguments (#46828).
