@@ -1,10 +1,9 @@
 /**
- * File:	modules/Wizard.ycp
+ * File:	Wizard.ycp
  * Package:	yast2
  * Summary:	Wizard dialog
  * Authors:	Stefan Hundhammer <sh@suse.de>
  *
- * $Id$
  * Provides the wizard dialog (common screen for all YaST2 installation
  * modules) and functions to set the contents, to replace and restore
  * special widgets.
@@ -264,8 +263,8 @@
      * Open a dialog with "Accept", "Cancel"
      * and set the keyboard focus to "Accept".
      **/
-    global define void OpenAcceptDialog() {
-
+    global define void OpenAcceptDialog()
+    {
 	if ( haveFancyUI() )
 	{
 	    UI::OpenDialog(`opt(`defaultsize ),
@@ -290,7 +289,6 @@
      **/
     global define void OpenAbortApplyFinishDialog()
     {
-
 	if ( haveFancyUI() )
 	{
 	    UI::OpenDialog(`opt(`defaultsize ),
@@ -309,8 +307,8 @@
     /**
      * Open a dialog with "Accept", "Cancel" that will also accept workflow steps.
      **/
-    global define void OpenAcceptStepsDialog() {
-
+    global define void OpenAcceptStepsDialog()
+    {
 	if ( haveFancyUI() )
 	{
 	    UI::OpenDialog(`opt(`defaultsize ),
@@ -333,8 +331,8 @@
     /**
      * Open a dialog with "Accept", "Cancel" that will also accept workflow steps.
      **/
-    global define void OpenAcceptAbortStepsDialog() {
-
+    global define void OpenAcceptAbortStepsDialog()
+    {
 	if ( haveFancyUI() )
 	{
 	    UI::OpenDialog(`opt(`defaultsize ),
@@ -356,8 +354,8 @@
     /**
      * Open a dialog with "Back", "Next", "Abort" that will also accept workflow steps.
      **/
-    global define void OpenNextBackStepsDialog() {
-
+    global define void OpenNextBackStepsDialog()
+    {
 	if ( haveFancyUI() )
 	{
 	    UI::OpenDialog(`opt(`defaultsize ),
@@ -371,6 +369,49 @@
 	    OpenNextBackDialog();
 	}
     }
+
+
+    /**
+     * Open a wizard dialog with simple layout - no graphics, no steps,
+     * only a help widget buttons (by default "Back", "Abort", "Next").
+     *
+     * This is the only type of wizard dialog which still allows replacing
+     * the help space - either already upon opening it or later with
+     * Wizard::ReplaceCustomHelp().
+     *
+     * If help_space_contents is 'nil', the normal help widget will remain.
+     * If button_box is 'nil', Wizard::BackAbortNextButtonBox() is used.
+     **/
+    global define void OpenCustomDialog( term help_space_contents,
+					 term button_box )
+    {
+	if ( button_box == nil )
+	    button_box = BackAbortNextButtonBox();
+	
+	UI::OpenDialog(`opt(`defaultsize),
+		       GenericDialog( BackAbortNextButtonBox() ) );
+
+	if ( help_space_contents != nil )
+	    UI::ReplaceWidget(`id(`helpSpace), help_space_contents );
+    }
+
+
+    /**
+     * Replace the help widget for dialogs opened with Wizard::OpenCustomDialog().
+     **/
+    global define void ReplaceCustomHelp( term contents )
+    {
+	if ( UI::WidgetExists( `id(`helpSpace ) ) )
+	{
+	    UI::ReplaceWidget(`id(`helpSpace), contents);
+	}
+	else
+	{
+	    y2error( "Wizard::ReplaceHelpSpace() works only for dialogs "
+		     + "opened with Wizard::OpenSimpleDialog() !" );
+	}
+    }
+    
 
 
     /**
