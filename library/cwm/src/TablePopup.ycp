@@ -97,7 +97,7 @@
 	// ensure that the submaps exist
 	opt_descr["table"] = opt_descr["table"]:$[];
 	opt_descr["popup"] = opt_descr["popup"]:$[];
-	foreach (string k, ["init", "store"], ``{
+	foreach (string k, ["init", "store" ], ``{
 	    if (! haskey (opt_descr["popup"]:$[], k) && haskey (fallbacks, k))
 		opt_descr["popup", k] = fallbacks[k]:nil;
 	});
@@ -105,6 +105,11 @@
 	    && haskey (fallbacks, "summary"))
 	{
 	    opt_descr["table", "summary"] = fallbacks["summary"]:nil;
+	}
+	if (! haskey (opt_descr["table"]:$[], "label_func")
+	    && haskey (fallbacks, "label_func"))
+	{
+	    opt_descr["table", "label_func"] = fallbacks["label_func"]:nil;
 	}
 	if (! haskey (opt_descr["table"]:$[], "changed")
 	    && haskey (fallbacks, "changed"))
@@ -207,10 +212,6 @@
 	return nil;
     }
 
-
-
-
-
     /**
       * Redraw completely the table
       * @param descr map description map of the whole table
@@ -229,7 +230,14 @@
 	    boolean opt_changed = false;
 	    string opt_key = id2key (descr, opt_id);
 	    map<string, any> opt_descr = key2descr (descr, opt_key);
+	    string label = opt_descr["table", "label"]:sformat ("%1", opt_key);
 	    opt_descr = updateOptionMap (opt_descr, descr["fallback"]:$[]);
+	    if (haskey (opt_descr["table"]:$[], "label_func"))
+	    {
+		string(any,string) label_func = (string(any,string))
+		    opt_descr["table", "label_func"]:nil;
+		label = label_func (opt_id, opt_key);
+	    }
 	    if (opt_key != "____sep")
 	    {
 		opt_val = tableEntryValue (opt_id, opt_descr);
@@ -242,13 +250,13 @@
 		return (`item (
 		    `id (opt_id),
 		    opt_changed ? "*" : "",
-		    opt_descr["table", "label"]:sformat ("%1", opt_key),
+		    label,
 		    sformat ("%1", opt_val)));
 
 	    }
 	    return (`item (
 		`id (opt_id),
-		opt_descr["table", "label"]:sformat ("%1", opt_key),
+		label,
 		sformat ("%1", opt_val)));
 	});
 	UI::ChangeWidget (`id (`_tp_table), `Items, entries);
@@ -261,10 +269,16 @@
       *   to provide
       * @param editable boolean true means that it is possible to add non-listed
       *   options
+      * @param descr a map table description map
       * @return string option identifies, nil if canceled
       */
-    global define string askForNewOption (list possible, boolean editable) ``{
+    global define string askForNewOption (list possible, boolean editable, map<string,any> descr) ``{
 	possible = sort (possible);
+	possible = maplist (string p, possible, ``{
+	    map<string, any> opt_descr = key2descr (descr, p);
+	    string label = opt_descr["table", "label"]:sformat ("%1", p);
+	    return `item (`id (p), label);
+	});
 	term widget = `HBox (`HSpacing (1), `VBox (
 	    `VSpacing (1),
 	    `ComboBox (`id (`optname), editable ? `opt (`editable) : `opt (),
@@ -499,7 +513,8 @@
 		    boolean selected = false;
 		    while (! selected)
 		    {
-			opt_key = askForNewOption (add_opts, add_unlisted);
+			opt_key = askForNewOption (add_opts, add_unlisted,
+			    descr);
 			if (opt_key == nil)
 			    return nil;
 			if (contains (present, opt_key))

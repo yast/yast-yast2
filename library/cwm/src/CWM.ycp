@@ -585,6 +585,18 @@
 		    }
 		}
 	    }
+            else if (ret == `back)
+	    {
+		if (functions[`back]:nil != nil)
+		{
+		    boolean () toEval = (boolean()) (functions[`back]:nil);
+		    if (toEval != nil)
+		    {
+			boolean eval_ret = toEval ();
+			ret = eval_ret ? `back : nil;
+		    }
+		}
+	    }
 
 	    if (ret == nil)
 		continue;
