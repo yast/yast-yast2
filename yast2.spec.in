@@ -67,6 +67,7 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 @ybindir@/*
 
 %doc @docdir@/*.*
+%doc @docdir@/pot
 
 /sbin/yast2
 /sbin/zast2
