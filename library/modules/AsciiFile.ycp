@@ -14,21 +14,42 @@ textdomain "base";
 
 string blanks = "                                                             ";
 
+/**
+ * Sets the string how the comment starts
+ *
+ * @param map		file content
+ * @param string	comment delimiter
+ */
 global define void SetComment( map& file, string comment )
     ``{
     file["comment"] = comment + ".*";
     };
 
+/**
+ * Sets the widths of records on one line
+ *
+ * @param map		file content
+ * @param list		of widths
+ */
 global define void SetListWidth( map& file, list widths )
     ``{
     file["widths"] = widths;
     };
 
+/**
+ * Sets the delimiter between the records on one line
+ *
+ * @param map		file content
+ * @param string	delimiter
+ */
 global define void SetDelimiter( map& file, string delim )
     ``{
     file["delim"] = delim;
     };
 
+/**
+ * Private function
+ */
 define string AssertLineValid( map& file, integer line )
     ``{
     if( haskey( file["l"]:$[], line ) && file["l",line,"buildline"]:false )
@@ -56,6 +77,12 @@ define string AssertLineValid( map& file, integer line )
 	return file["l",line,"line"]:"";
     }
 
+/**
+ * Reads the file from the disk
+ *
+ * @param map		file content
+ * @param string	file name
+ */
 global define void ReadFile( map& file, string pathname )
     ``{
     y2milestone( "path=%1", pathname );
@@ -108,6 +135,14 @@ global define void ReadFile( map& file, string pathname )
     file["l"] = lmap;
     };
 
+/**
+ * Returns the list of rows where matches searched string in the defined column
+ *
+ * @param map			file content
+ * @param integer		column (counted from 0 to n)
+ * @param string		searched string
+ * @return list<integer>	matching rows
+ */
 global define list<integer> FindLineField( map file, integer field, string content )
     ``{
     list<integer> ret = [];
@@ -122,6 +157,13 @@ global define list<integer> FindLineField( map file, integer field, string conte
     return( ret );
     }
 
+/**
+ * Returns map of wanted lines
+ *
+ * @param map			file content
+ * @param list<integer>		rows (counted from 1 to n)
+ * @return map<integer, map>	with wanted lines
+ */
 global define map<integer, map>  GetLines( map& file, list<integer> lines )
     ``{
     map<integer, map> ret = $[];
@@ -137,6 +179,13 @@ global define map<integer, map>  GetLines( map& file, list<integer> lines )
     return( ret );
     };
 
+/**
+ * Returns map of wanted line
+ *
+ * @param map		file content
+ * @param integer	row number (counted from 1 to n)
+ * @return map		of wanted line
+ */
 global define map GetLine( map& file, integer line )
     ``{
     map ret = $[];
@@ -149,11 +198,25 @@ global define map GetLine( map& file, integer line )
     return( ret );
     };
 
+
+/**
+ * Returns count of lines in file
+ *
+ * @param map		file content
+ * @return integer	count of lines
+ */
 global define integer NumLines( map file )
     ``{
     return( size(file["l"]:$[]) );
     }
 
+/**
+ * Changes the record in the file defined by row and column
+ *
+ * @param map		file content
+ * @param integer	row number (counted from 1 to n)
+ * @param integer	column number (counted from 0 to n)
+ */
 global define void ChangeLineField( map& file, integer line, integer field,
                                     string entry )
     ``{
@@ -187,6 +250,12 @@ global define void ChangeLineField( map& file, integer line, integer field,
 	}
     }
 
+/**
+ * Appends a new line at the bottom
+ *
+ * @param map	file content
+ * @param list	of new entries on one line
+ */
 global define void AppendLine( map& file, list entry )
     ``{
     integer line = size(file["l"]:$[]) + 1;
@@ -197,6 +266,12 @@ global define void AppendLine( map& file, list entry )
     file["l",line,"buildline"] = true;
     }
 
+/**
+ * Removes lines
+ *
+ * @param map		file content
+ * @param list<integer>	lines to remove (counted from 1 to n)
+ */
 global define void RemoveLines( map& file, list<integer> lines )
     ``{
     y2debug( "lines %1", lines );
@@ -209,6 +284,12 @@ global define void RemoveLines( map& file, list<integer> lines )
 	});
     }
 
+/**
+ * Writes a content into the file
+ *
+ * @param map		file content
+ * @param string	file name
+ */
 global define void RewriteFile( map& file, string fpath )
     ``{
     y2milestone( "path %1", fpath );
