@@ -24,7 +24,7 @@ boolean docheck = true;
  * Test (run) all dialogs in the aliases map
  * @param aliases the map of aliases
  * @return returned values of tested dialogs
- * @see <a href="..">WS documentation for the format of aliases map</a>
+ * @see WS documentation for the format of aliases map
  */
 define list WS_testall(map aliases) {
     return maplist(any id, any func, aliases, { return eval(func); });
@@ -151,7 +151,7 @@ define boolean WS_check(map aliases, map sequence) {
  * Report error and return nil
  * @param error the error message text
  * @return always nil
- * @see <a href="http://bugzilla.suse.de/show_bug.cgi?id=6474">bug #6474</a>
+ * @see bug #6474
  */
 define any WS_error(string error) {
     y2error(1, "sequencer: %1", error);
