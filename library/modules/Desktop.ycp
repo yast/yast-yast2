@@ -85,6 +85,16 @@ global define void Read(list Values) ``{
 
 /**
  */
+define string Translate(string key) ``{
+    if(regexpmatch(key, "_\\(\"(.*)\"\\)") == true) {
+        locale ke = regexpsub(key, "_\\(\"(.*)\"\\)", "\\1");
+        key = (string) eval(ke);
+    }
+    return key;
+}
+
+/**
+ */
 define list CreateList(map M) ``{
     list keys = Map::Keys(M);
     keys = sort(string x, string y, keys, ``{
@@ -119,16 +129,6 @@ global define list ModuleList(string group) ``{
     return maplist(string name, Map::Keys(m), ``{
 	return `item(`id(name), m[name, key]:(m[name, "Name"]:"???"));
     });
-}
-
-/**
- */
-define string Translate(string key) ``{
-    if(regexpmatch(key, "_\\(\"(.*)\"\\)") == true) {
-        locale ke = regexpsub(key, "_\\(\"(.*)\"\\)", "\\1");
-        key = eval(ke);
-    }
-    return key;
 }
 
 /* EOF */

@@ -1,14 +1,14 @@
 /**
  * File:	yast2_desktop.scr
- * Summary:	Agent for reading/writing yast2 menuentries
+ * Summary:	Agent for reading/writing yast2 .desktop files
  * Author:	Michal Svec <msvec@suse.cz>
  * Access:	read / write
  *
  * Example:
- *   Dir(.yast2.menuentry)
+ *   Dir(.yast2.desktop)
  *   (["lan", "modem", "isdn", ...])
  **
- *   Read(.yast2.menuentry.lan)
+ *   Read(.yast2.desktop.lan)
  *   ("3")
  *
  * $Id$
