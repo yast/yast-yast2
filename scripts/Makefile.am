@@ -5,7 +5,7 @@
 sbindir = /sbin
 sbin_SCRIPTS = yast2
 
-ybin_SCRIPTS = YaST2 yast2 yast2_kde
+ybin_SCRIPTS = YaST2 yast2 yast2_kde yast2-funcs
 
 EXTRA_DIST = $(sbin_SCRIPTS) $(ybin_SCRIPTS)
 
