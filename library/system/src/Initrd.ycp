@@ -102,7 +102,8 @@
 		    "jfs",
 		    "xfs",
 		];
-		modules_to_skip = union (modules_to_skip, ppc_modules_to_skip);
+		modules_to_skip = (list<string>)
+		    merge (modules_to_skip, ppc_modules_to_skip);
 	    }
 	}
 	return modules_to_skip;
