@@ -3,6 +3,7 @@ Thu Feb 10 16:35:17 CET 2005 - mvidner@suse.cz
 
 - Do not propose a dynamic address if the product (OES) says
   force_static_ip (#50524).
+- 2.11.29
 
 -------------------------------------------------------------------
 Wed Feb  9 19:19:42 CET 2005 - nashif@suse.de
