@@ -4,6 +4,7 @@ Tue Aug  3 15:41:32 CEST 2004 - jsrain@suse.cz
 - fixed types in CWM, changed interface of CWM::ShowAndRun ()
 - split the CWMServiceStart widget into multiple widgets (one for
   each part)
+- 2.10.6
 
 -------------------------------------------------------------------
 Fri Jul 30 11:37:44 CEST 2004 - jsrain@suse.cz
