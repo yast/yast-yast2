@@ -220,23 +220,13 @@
 	    integer fourGB = 0x100000000;
 	    y2milestone ("Physical memory %1", memsize);
 
-	    if (Arch::has_smp)
+	    // for memory > 4GB and PAE support we install kernel-bigsmp,
+	    // regardles of SMP or not.
+	    if (memsize > fourGB && contains (cpuflags, "pae"))
 	    {
-		if (memsize > fourGB && contains (cpuflags, "pae"))
-		{
-		    y2milestone ("Kernel switch: SMP && mem > 4GB && PAE");
-		    kernel_packages = ["kernel-bigsmp"];
-		    switched = true;
-		}
-	    }
-	    else
-	    {
-		if (memsize > fourGB)
-		{
-		    y2milestone ("Kernel switch: !SMP && mem > 4GB");
-		    kernel_packages = ["kernel-bigsmp"];
-		    switched = true;
-		}
+		y2milestone ("Kernel switch: mem > 4GB && PAE");
+		kernel_packages = ["kernel-bigsmp"];
+		switched = true;
 	    }
 	}
 
