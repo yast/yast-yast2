@@ -121,11 +121,31 @@ global define string CutBlanks(string input) ``{
     if(pos == nil) return "";
     string output = substring(input, pos);
 
+    /* FIXME: use findlastnotof */
     pos = size(output) - 1;
-    while(substring(output, pos, 1) == " ") { // XXX: or \t
+    string c = "";
+    do {
+	c = substring(output, pos, 1);
 	pos = pos - 1;
-    }
-    return substring(output, pos); // XXX
+    } while(c == " " || c == "\t");
+
+    return substring(output, 0, pos+2);
+}
+
+/**
+ * Remove any leading zeros that make tointeger inadvertently
+ * assume an octal number (e.g. "09" -> "9", "0001" -> "1",
+ * but "0" -> "0")
+ *
+ * @param input number that might contain leadig zero
+ * @return string that has leading zeros removed
+ */
+global define string CutZeros(string input) ``{
+    if(input == nil || size(input) < 1) return "";
+    if(!regexpmatch(input, "^0.*")) return input;
+    string output = regexpsub(input, "^0+(.*)$", "\\1");
+    if(size(output) < 1) return "0";
+    return output;
 }
 
 /* EOF */

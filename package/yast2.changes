@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 22 16:19:53 CEST 2003 - msvec@suse.cz
+
+- further String updates and fixes
+- 2.8.13
+
+-------------------------------------------------------------------
 Wed Jul  9 10:06:34 CEST 2003 - fehr@suse.de
 
 - remove Mode::language, now handled in Laguage module (#27115)

@@ -34,3 +34,25 @@ Dump	String::CutBlanks
 Return	
 Return	
 Return	
+Return	abc
+Return	abc
+Return	abc
+Return	abc
+Return	abc
+Return	abc
+Return	ab c
+Return	ab c
+Return	ab c
+Return	ab c
+Return	ab c
+Return	ab c
+Return	ab c
+Return	ab  c
+Dump	String::CutZeros
+Return	
+Return	
+Return	1
+Return	1
+Return	1
+Return	0
+Return	0
