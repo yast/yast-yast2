@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Feb 12 17:50:24 CET 2004 - lslezak@suse.cz
+
+- CWM: added better `back event handling, correctly displaying
+  option names in the new option checkbox (jsrain)
+- added function String::FormatSizeWithPrecision,
+  updated testsuite
+- version 2.9.19
+
+-------------------------------------------------------------------
 Wed Feb 11 11:02:20 CET 2004 - msvec@suse.cz
 
 - adapt remote clients for the new interpreter

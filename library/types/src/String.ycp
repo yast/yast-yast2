@@ -40,15 +40,19 @@ global define string UnQuote(string var) ``{
 }
 
 /**
- * Return a pretty description of a byte count, with two fraction digits
+ * Return a pretty description of a byte count, with required precision
  * and using KB, MB or GB as unit as appropriate.
  *
- * @param bytes	size (e.g. free diskspace) in Bytes
+ * @param bytes	size (e.g. free diskspace, memory size) in Bytes
+ * @param precision number of fraction digits in output
+ * @param omit_zeroes if true then do not add zeroes
+ *	(usefull for memory size - 128 MB RAM looks better than 128.00 MB RAM)
  * @return formatted string
  *
- * @example FormatSize(23456767890) -> "223.70 MB"
+ * @example FormatSizeWithPrecision(4096, 2, true) -> "4 KB"
+ * @example FormatSizeWithPrecision(4096, 2, false) -> "4.00 KB"
  */
-global define string FormatSize(integer bytes) ``{
+global define string FormatSizeWithPrecision(integer bytes, integer precision, boolean omit_zeroes) ``{
 
     if(bytes == nil) return "";
 
@@ -72,7 +76,25 @@ global define string FormatSize(integer bytes) ``{
 	index = index + 1;
     }
 
-    return tostring(whole, 2) + " " + unit;
+    if (precision == nil || precision < 0 || (omit_zeroes == true && (whole - tointeger(whole) == 0.0)))
+    {
+	precision = 0;
+    }
+
+    return tostring(whole, precision) + " " + unit;
+}
+
+/**
+ * Return a pretty description of a byte count, with two fraction digits
+ * and using KB, MB or GB as unit as appropriate.
+ *
+ * @param bytes	size (e.g. free diskspace) in Bytes
+ * @return formatted string
+ *
+ * @example FormatSize(23456767890) -> "223.70 MB"
+ */
+global define string FormatSize(integer bytes) ``{
+    return FormatSizeWithPrecision(bytes, 2, false);
 }
 
 /**
