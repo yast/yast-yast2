@@ -17,6 +17,7 @@ module "NetworkDevices";
 
 import "Arch";
 import "Map";
+import "Netmask";
 import "String";
 
 /**
@@ -277,6 +278,53 @@ global string RealType (string type, string hotplug) {
 // ---------------------------------------------------------------------------
 
 /**
+ * Canonicalize netmask data (#46885)
+ * Sysconfig allows:
+ * IPADDR=10.0.0.1/8
+ * IPADDR=10.0.0.1 PREFIXLEN=8
+ * IPADDR=10.0.0.1 NETMASK=255.0.0.0
+ * (IPADDR overrides PREFIXLEN, NETMASK used only if prefix length unspecified)
+ * If prefix length and NETMASK are unspecified, 32 is implied.
+ * Canonicalize it to
+ * IPADDR=10.0.0.1 PREFIXLEN= NETMASK=255.0.0.0
+ * @param ifcfg a map containing IPADDR and possibly NETMASK, PREFIXLEN
+ * and possibly other fields
+ * @return the map with IPADDR, NETMASK adjusted; PREFIXLEN ""
+ * others unchanged. If IPADDR is empty, return the original.
+ */
+global map CanonicalizeIP (map ifcfg) {
+    if (ifcfg == nil)
+    {
+	return nil;
+    }
+
+    list<string> ip_and_prefix = splitstring (ifcfg["IPADDR"]:"", "/");
+    string ipaddr = ip_and_prefix[0]:"";
+    if (ipaddr == "")		// DHCP or inconsistent
+    {
+	return ifcfg;
+    }
+    string prefixlen = ip_and_prefix[1]:"";
+    if (prefixlen == "")
+    {
+	prefixlen = ifcfg["PREFIXLEN"]:"";
+    }
+    if (prefixlen == "")
+    {
+	prefixlen = tostring (Netmask::ToBits (ifcfg["NETMASK"]:""));
+    }
+
+    // Now we have ipaddr and prefixlen
+    // Let's compute the rest
+    string netmask = Netmask::FromBits (tointeger (prefixlen));
+    map ret = ifcfg;
+    ret["IPADDR"] = ipaddr;
+    ret["PREFIXLEN"] = "";
+    ret["NETMASK"] = netmask;
+    return ret;
+}
+
+/**
  * Read devices from files
  * @return true if sucess
  */
@@ -355,6 +403,16 @@ global define boolean Read() {
 	    }
 	});
 	y2milestone("config=%1", config);
+
+	// canonicalize, #46885
+	map <string, map> caliases = mapmap (string a, map c, (map<string,map>)config["_aliases"]:$[], {
+	    return $[a: CanonicalizeIP (c)];
+	});
+	if (caliases != $[])	// unconditionally?
+	{
+	    config["_aliases"] = caliases;
+	}
+	config = CanonicalizeIP (config);
 
 	dev[devnum] = config;
 	Devices[devtype] = dev;
