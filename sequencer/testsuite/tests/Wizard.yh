@@ -1,7 +1,7 @@
 {
 
 include "testsuite.ycp";
-include "wizard/sequencer.ycp";
+include "./../src/sequencer.ycp";
 
 global define ok() ``{ y2error("ok"); return `ok; }
 global define back() ``{ y2error("back"); return `back; }

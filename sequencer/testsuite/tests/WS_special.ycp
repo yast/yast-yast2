@@ -1,7 +1,7 @@
 {
 
 include "testsuite.ycp";
-include "wizard/sequencer.ycp";
+include "./../src/sequencer.ycp";
 
 map Aliases = $[
     "normal"	: ``(Normal()),

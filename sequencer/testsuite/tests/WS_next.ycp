@@ -1,7 +1,7 @@
 {
 
 include "testsuite.ycp";
-include "wizard/sequencer.ycp";
+include "./../src/sequencer.ycp";
 
 define f1() ``{ return "1"; }
 define f2() ``{ return 2; }
