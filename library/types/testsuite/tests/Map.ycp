@@ -33,4 +33,36 @@ TEST(``(Map::KeysToUpper($["a":1])), [], nil);
 TEST(``(Map::KeysToUpper($["A":1])), [], nil);
 TEST(``(Map::KeysToUpper($["A":1,"b":1])), [], nil);
 
+DUMP("Map::CheckKeys");
+TEST(``(Map::CheckKeys(nil, [1])), [], nil);
+TEST(``(Map::CheckKeys($[], [1])), [], nil);
+TEST(``(Map::CheckKeys($[1:2], [nil])), [], nil);
+TEST(``(Map::CheckKeys($[1:2], [1])), [], nil);
+TEST(``(Map::CheckKeys($[1:2], [2])), [], nil);
+TEST(``(Map::CheckKeys($["2":3], [1])), [], nil);
+TEST(``(Map::CheckKeys($["2":3], ["2"])), [], nil);
+TEST(``(Map::CheckKeys($[`x:4], [`x])), [], nil);
+TEST(``(Map::CheckKeys($[`x:4], [`y])), [], nil);
+TEST(``(Map::CheckKeys($[`x:4], [1])), [], nil);
+TEST(``(Map::CheckKeys($[1:2,3:4], [1])), [], nil);
+TEST(``(Map::CheckKeys($[1:2,3:4], [1,3])), [], nil);
+TEST(``(Map::CheckKeys($[1:2,3:4], [3,1])), [], nil);
+TEST(``(Map::CheckKeys($[1:2,3:4], [2,3])), [], nil);
+TEST(``(Map::CheckKeys($[1:2,3:4], [4,5])), [], nil);
+TEST(``(Map::CheckKeys($[1:2,3:4], [2,1])), [], nil);
+TEST(``(Map::CheckKeys($[1:2,3:4], [`x])), [], nil);
+
+DUMP("Map::ToString");
+TEST(``(Map::ToString(nil)), [], nil);
+TEST(``(Map::ToString($[])), [], nil);
+TEST(``(Map::ToString($["io":"0x340"])), [], nil);
+TEST(``(Map::ToString($["io":"0x340", "irq":"9"])), [], nil);
+
+DUMP("Map::FromString");
+TEST(``(Map::FromString(nil)), [], nil);
+TEST(``(Map::FromString("")), [], nil);
+TEST(``(Map::FromString(" ")), [], nil);
+TEST(``(Map::FromString("io=0x340")), [], nil);
+TEST(``(Map::FromString("io=0x340 irq=9")), [], nil);
+
 }

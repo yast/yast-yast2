@@ -12,6 +12,8 @@
 module "Map";
 textdomain "base";
 
+import "String";
+
 /**
  * Return all keys from the map
  * @param m the map
@@ -50,6 +52,62 @@ global define map KeysToLower(map m) ``{
 global define map KeysToUpper(map m) ``{
     if(m == nil) return $[];
     return mapmap(string k, string v, m, ``([toupper(k), v]));
+}
+
+/**
+ * Check if a map contains all needed keys
+ * @param m map to be checked
+ * @param keys needed keys
+ * @return true if map kontains all keys
+ */
+global define boolean CheckKeys(map m, list keys) ``{
+    if(m == nil || keys == nil)
+	return false;
+
+    boolean ret = true;
+    foreach(any k, keys, ``{
+	if(!haskey(m, k)) {
+	    y2error("Missing key: %1", k);
+	    ret = false;
+	}
+    });
+
+    return ret;
+}
+
+/**
+ * Convert options map $[var:val, ...] to string "var=val ..."
+ * @param m map to be converted
+ * @return converted map
+ */
+global define string ToString(map m) ``{
+    if(m == nil) return "";
+
+    string ret = "";
+    foreach(string var, string val, m, ``{
+	ret = ret + sformat(" %1=%2", var, val);
+    });
+    return String::CutBlanks(ret);
+}
+
+/**
+ * Convert string "var=val ..." to map $[val:var, ...]
+ * @param s string to be converted
+ * @return converted string
+ */
+global define map FromString(string s) ``{
+    if(s == nil) return $[];
+
+    map ret = $[];
+    foreach(string vals, splitstring(s, " "), ``{
+	list val = splitstring(vals, "=");
+	if(size(val) < 1 || val[0]:"" == "") return;
+	if(size(val) > 1)
+	    change(ret, val[0]:"", val[1]:"");
+	else
+	    change(ret, val[0]:"", "");
+    });
+    return ret;
 }
 
 /* EOF */
