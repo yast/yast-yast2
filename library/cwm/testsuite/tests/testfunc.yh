@@ -23,12 +23,12 @@
 	return sformat ("%1:%2", opt_id, opt_key);
     }
 
-    define symbol tableOptionHandle (any opt_id, any opt_key, any event) ``{
+    define symbol tableOptionHandle (any opt_id, string opt_key, any event) ``{
 	DUMP (sformat ("Handling op %1 on %2 (key %3)", event, opt_id, opt_key));
 	return `new_event;
     }
 
-    define symbol a_handle (any id, any key, map event) ``{
+    define symbol a_handle (any id, string key, map event) ``{
 	y2error ("a_handle: id %1, key %2, event %3", id, key, event);
 	return nil;
     }

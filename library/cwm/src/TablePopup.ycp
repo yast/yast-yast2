@@ -161,7 +161,7 @@ define boolean ValidateTableDescr (string key, map<string,any> descr) {
       * @return string option key
       */
     global define string id2key (map<string, any> descr, any opt_id) ``{
-	if (is (opt_id, string) && size ((string)opt_id) >= 7
+	if (opt_id != nil && is (opt_id, string) && size ((string)opt_id) >= 7
 	    && substring ((string)opt_id, 0, 7) == "____sep")
 	{
 	    return "____sep";

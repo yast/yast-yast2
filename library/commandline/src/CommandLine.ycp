@@ -485,7 +485,7 @@
      *  @see Command
      */
     global define boolean Init (map cmdlineinfo, list<any> args) ``{
-	any id_string = cmdlineinfo["id"]:nil;
+	any id_string = cmdlineinfo["id"]:"";
 	// sanity checks on cmdlineinfo
 	// check for id string , it must exist, and non-empty
 	if( id_string == "" || ! is( id_string, string ) ) {
