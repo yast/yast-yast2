@@ -12,26 +12,24 @@
 module "Desktop";
 textdomain "base";
 
-//
-// YaST Module Configuration
-//
+/**
+ * YaST configuration modules
+ */
 global map Modules = $[];
 
-//
-// YaST Configuration Groups
-//
+/**
+ * YaST configuration groups
+ */
 global map Groups = $[];
 
-
-//
-// The agent Path
-//
+/**
+ * The optional agent path to the desktop files
+ */
 global path AgentPath = .yast2.desktop;
 
 /**
- * Read Module and Group data from desktop files.
- * @param List of values to be parsed
- * @return void
+ * Read module and group data from desktop files
+ * @param Values list of values to be parsed (empty to read all)
  */
 global define void Read(list Values) ``{
 
@@ -41,19 +39,21 @@ global define void Read(list Values) ``{
     string name = nil;
 
     path ps = add(AgentPath, "s");
-
     list files = SCR::Dir(ps);
 
+    /* read modules */
     foreach(string file, files, ``{
 	filemap = $[];
 	path pv = add(AgentPath, "v");
 	filepath = add(pv, file) + ."Desktop Entry";
-	name = (string) SCR::Read(filepath + ."X-SuSE-YaST-Call");
-	foreach(string value, Values, ``{
+	list values = SCR::Dir(filepath);
+	if(Values != nil && Values != []) values = Values;
+	foreach(string value, values, ``{
 	    string ret = (string) SCR::Read(add(filepath, value));
 	    if(ret != nil) filemap[value] = ret;
 	});
-	Modules[name] = filemap;
+	name = (string) SCR::Read(filepath + ."X-SuSE-YaST-Call");
+	if(name != "" && name != nil) Modules[name] = filemap;
     });
 
     /* read groups */
@@ -69,8 +69,8 @@ global define void Read(list Values) ``{
 	});
 	Groups[group] = filemap;
     });
-}
 
+}
 
 /* EOF */
 }
