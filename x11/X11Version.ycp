@@ -18,7 +18,7 @@ STATUS        : Development
 **************/
 {
 module "X11Version";
-import "Display";
+import "Directory";
 
 //=======================================
 // System Global Variables
@@ -59,7 +59,7 @@ global define void GetVersion() ``{
 	// XFree86 3 has to be used for this card
 	// ---
 	integer ver = SCR::Execute( .target.bash,
-		"/usr/" + Display::lib + "/YaST2/bin/version"
+		Directory::bindir + "/version"
 	);
 	if (ver == 4) {
 		version = "4";
