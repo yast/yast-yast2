@@ -88,18 +88,45 @@ global define boolean Write (boolean write_only) ``{
 }
 
 /**
- * Disable autologin and write it
+ * Disable autologin
+ */
+global define void Disable () ``{
+
+    user	= "";
+    pw_less	= false;
+    used	= false;
+    modified	= true;
+}
+
+/**
+ * Disable autologin and write it (used probably for automatic
+ * disabling without asking)
  * @param write_only when true, suseconfig script will not be run
  * @return written anything?
  */
 global define boolean DisableAndWrite (boolean write_only) ``{
 
-    user	= "";
-    pw_less	= false;
-    modified	= true;
+    Disable ();
     return Write (write_only);
 }
 
+/**
+ * Ask if autologin should be disabled (and disable it in such case)
+ * @param new The reason for disabling autologin (e.g. new set of users)
+ * @return Is autologin used?
+ */
+global define boolean AskForDisabling (string new) ``{
+
+    // popup text (%1 is user name, %2 is additional info,
+    // like "Now LDAP was enabled")
+    string question = sformat (_("The autologin feature is enabled for user %1.
+%2
+Do you want to disable autologin?"), user, new);
+
+    if (used && Popup::YesNo (question))
+	Disable ();
+    return used;
+}
 
 /* EOF */
 }
