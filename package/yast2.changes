@@ -1,6 +1,8 @@
 -------------------------------------------------------------------
-Wed Nov 10 17:20:10 CET 2004 - mvidner@suse.cz
+Thu Nov 11 09:43:21 CET 2004 - mvidner@suse.cz
 
+- PackageSystem::InstallKernel: return early if the module list is
+  empty, thus slashing "yast2 lan" startup time.
 - Desktop::RunViaDesktop now accepts arguments (#46828).
 
 -------------------------------------------------------------------

@@ -281,6 +281,13 @@ packages, YaST may not work properly.
 }
 
 global boolean InstallKernel (list<string> kernel_modules) {
+    // this function may be responsible for the horrible startup time
+    y2milestone ("want: %1", kernel_modules);
+    if (kernel_modules == [])
+    {
+	return true;		// nothing to do
+    }
+
     EnsureSourceInit ();
     EnsureTargetInit ();
 
