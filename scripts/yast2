@@ -16,6 +16,7 @@ export PATH=/sbin:/usr/sbin:$PATH
 
 # load common script functions
 . /usr/lib/YaST2/bin/yast2-funcs
+export Y2DEBUG=1
 
 # Accumulated arguments for both the Qt UI and y2cc; currently supported:
 # --fullscreen
@@ -68,7 +69,7 @@ listmodules()
 # to become larger than the screen anyway.
 Y2_GEOMETRY=${Y2_GEOMETRY:-800x600}
 
-TEMP=`getopt -o hlg:s:Si --long help,list,geometry:,style:,strings,install,fullscreen,noborder \
+TEMP=`getopt -o hlg:s:Si --long help,list,kcontrol,geometry:,style:,strings,install,fullscreen,noborder \
      -n 'yast2' -- "$@"`
 
 if [ $? != 0 ] ; then echo "Exit." >&2 ; exit 1 ; fi
@@ -84,6 +85,7 @@ while true ; do
 		-i|--install) Y2_INSTALL_PACKAGES=true; shift ;;
                 --fullscreen) Y2QT_ARGS="$Y2QT_ARGS --fullscreen"; shift ;;
 		--noborder)   Y2QT_ARGS="$Y2QT_ARGS --noborder"  ; shift ;;
+		--kcontrol)   Y2QT_ARGS="$Y2QT_ARGS --kcontrol_id 'YaST'" ; shift ;;
 		--) shift ; break ;;
 		*) echo "Unrecognized option $1" ; exit 1 ;;
 
