@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Fri Dec 20 15:23:50 CET 2002 - mvidner@suse.de
+
+- file_popups: in qt, use the new widgets
+- Arch: fallback for .probe.system being nil (msvec)
+- workaround for CallFunction scope bug (#22486) (msvec)
+- sequencer: check that all aliases are used (msvec)
+- common_messages: DoNotAcceptButtonLabel (arvin)
+- Wizard: use opt(key_F1) for Help (gs)
+- 2.7.1
+
+-------------------------------------------------------------------
 Wed Nov 13 15:14:33 CET 2002 - ms@suse.de
 
 - forgot to add hwinfo and hwinfo-devel to neededforbuild
