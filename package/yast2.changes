@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Nov 03 14:32:15 CET 2004 - arvin@suse.de
+
+- removed deprecated lookup
+
+-------------------------------------------------------------------
 Tue Nov  2 16:36:35 CET 2004 - mvidner@suse.cz
 
 - Allow overriding sbindir so that we can install to a prefix.
@@ -7,12 +12,12 @@ Tue Nov  2 16:36:35 CET 2004 - mvidner@suse.cz
 -------------------------------------------------------------------
 Mon Nov  1 14:29:34 CET 2004 - visnov@suse.cz
 
-- set product name in wizard when opening a dialog (#46247) 
+- set product name in wizard when opening a dialog (#46247)
 
 -------------------------------------------------------------------
 Mon Nov  1 10:32:10 CET 2004 - visnov@suse.cz
 
-- fix processing of command line arguments in Mode and Stage 
+- fix processing of command line arguments in Mode and Stage
 
 -------------------------------------------------------------------
 Mon Nov  1 09:34:44 CET 2004 - msvec@suse.cz
@@ -58,7 +63,7 @@ Mon Oct  4 16:42:21 CEST 2004 - mvidner@suse.cz
 -------------------------------------------------------------------
 Fri Oct  1 13:44:58 CEST 2004 - sh@suse.de
 
-- Fixed bug #46598: Layout broken due to 800x600 default size 
+- Fixed bug #46598: Layout broken due to 800x600 default size
 - V 2.10.24
 
 -------------------------------------------------------------------
