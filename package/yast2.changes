@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jan 23 12:29:29 CET 2004 - arvin@suse.de
+
+- fixed Require.ycp for brand new interpreter
+
+-------------------------------------------------------------------
 Mon Jan 19 08:52:19 CET 2004 - jsrain@suse.de
 
 - merged the new interpreter branch
