@@ -139,10 +139,11 @@ global define boolean Import(map settings)``{
  * @return map map with settings
  */
 global define map Export ()``{
+    
     return ($[
-	      "messages": message_settings,
-	      "errors": error_settings,
-	      "warnings": warning_settings
+	      "messages": $["log": log_messages, "timeout": timeout_messages, "show": display_messages ],
+	      "errors": $["log": log_errors, "timeout": timeout_errors, "show": display_errors ],
+	      "warnings": $["log": log_warnings, "timeout": timeout_warnings, "show": display_warnings ],
     ]);
 }
 
@@ -322,6 +323,8 @@ global define void DisplayErrors(boolean display, integer timeout)
 ``{
     display_errors = display;
     timeout_errors = timeout;
+   
+    return;
 }
 
 
@@ -337,6 +340,8 @@ global define void DisplayWarnings(boolean display, integer timeout)
 ``{
     display_warnings = display;
     timeout_warnings = timeout;
+   
+    return;
 }
 
 
@@ -353,6 +358,8 @@ global define void DisplayMessages(boolean display, integer timeout)
 ``{
     display_messages = display;
     timeout_messages = timeout;
+   
+    return;
 }
 
 
@@ -365,6 +372,7 @@ global define void DisplayMessages(boolean display, integer timeout)
 global define void LogWarnings(boolean log)
 ``{
     log_warnings = log;
+    
 }
 
 /**
@@ -376,6 +384,7 @@ global define void LogWarnings(boolean log)
 global define void LogMessages(boolean log)
 ``{
     log_messages = log;
+   
 }
 
 /**
@@ -387,6 +396,7 @@ global define void LogMessages(boolean log)
 global define void LogErrors(boolean log)
 ``{
     log_errors = log;
+    
 }
 
 
