@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Feb 25 13:11:07 CET 2005 - lslezak@suse.cz
+
+- commandline - don't check mandatory keys when the command line
+  mode is "unsupported", testsuite updated
+- 2.11.36
+
+-------------------------------------------------------------------
 Fri Feb 25 13:20:17 CET 2005 - visnov@suse.cz
 
 - 2.11.35 
