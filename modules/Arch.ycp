@@ -205,7 +205,7 @@ global define void setSMP(boolean is_smp) ``{ has_smp = is_smp; }
  *
  * Also see Mode::x11_setup_needed.
  */
-global define bool x11_setup_needed	= true;
+global boolean x11_setup_needed	= true;
 
 /**
  * Constructor
