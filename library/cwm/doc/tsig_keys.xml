@@ -90,6 +90,15 @@ The map contains all keys mentioned in "get_keys_info" odcumentation.
 Other supported parameters are following:
     <itemizedlist>
       <listitem><para><computeroutput>
+"list_used_keys"
+      </computeroutput>
+is a reference to a function of type
+<computeroutput>list&lt;string&gt;()</computeroutput>
+returning a list of at the moment used TSIG keys.
+The list is used to prevent used TSIG keys from
+being deleted. If not present, all keys may get deleted.
+      </para></listitem>
+      <listitem><para><computeroutput>
 "help"
       </computeroutput>
 the complete help for the widget. If it is not present, generic help is used

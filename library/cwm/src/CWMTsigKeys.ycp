@@ -261,6 +261,27 @@ global define symbol Handle (map<string,any> widget, string key, map event) {
 	string key = (string)UI::QueryWidget (`id ("_cwm_key_listing_table"),
 	    `CurrentItem);
 	string delete_filename = Key2File (key);
+	if (widget["list_used_keys"]:nil != nil
+	    && is (widget["list_used_keys"]:nil, list<string>()))
+	{
+	    list<string>() lister = (list<string>())
+		widget["list_used_keys"]:nil;
+	    list<string> used_keys = lister ();
+	    list<string> keys_to_delete = AnalyzeTSIGKeyFile (delete_filename);
+	    keys_to_delete = filter (string k, keys_to_delete, {
+		return contains (used_keys, k);
+	    });
+	    if (size (keys_to_delete) > 0)
+	    {
+		string message = mergestring (keys_to_delete, ", ");
+		// popup message
+		message = _("The selected TSIG key cannot be deleted,
+because it is in use.
+Stop using it in the configuration first.");
+		Popup::AnyMessage (_("Cannot delete TSIG key"), message);
+		return nil;
+	    }
+	}
 	RemoveTSIGKeyFile (delete_filename);
     }
     else if (ret == "_cwm_browse_existing_key_file")
@@ -494,6 +515,9 @@ global define void StoreWrapper (string key, map event) {
  *                       TSIG keys
  *
  * Additional settings:
+ * - "list_used_keys" : list<string>() -- function for getting the list of
+ *          used TSIG keys. The list is used to prevent used TSIG keys from
+ *          being deleted. If not present, all keys may get deleted.
  * - "help" : string -- help to the whole widget. If not specified, generic help
  *          is used (button labels are patched correctly)
  * </pre>
@@ -521,8 +545,10 @@ create the key and the <b>Key ID</b> to identify the key then click
     // tsig keys management dialog help 4/4
     _("<p><big><b>Removing a TSIG Key</b></big><br>
 To remove a configured TSIG key, select it and click <b>Delete</b>.
-Remember that all keys in that same file are deleted.</p>
-");
+Remember that all keys in that same file are deleted.
+If a TSIG key is in use in the configuration
+of the server, it cannot be deleted. The server must stop referring it
+in the configuration first.</p>");
 
     term add_existing = `VSquash (`HBox (
 	// Frame label - adding a created server key
