@@ -10,8 +10,9 @@
 
 {
 
-module "Package";
+module "PackageSystem";
 textdomain "base";
+
 import "PackageCallbacksInit";
 
 /**
