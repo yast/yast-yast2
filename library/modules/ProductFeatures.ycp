@@ -120,6 +120,11 @@
      */
     global string timezone = "";
 
+    /**
+     * needed for desktop product to use shorter timeslices.
+     */
+    global boolean use_desktop_scheduler = true;
+
 
 
     // -----------------------------------------------
