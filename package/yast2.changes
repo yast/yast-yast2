@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 27 12:34:14 CET 2005 - locilka@suse.cz
+
+- Rewritten SuSEFirewall::ActivateConfiguration() function
+- Fixed some y2error message
+
+-------------------------------------------------------------------
 Wed Jan 26 16:39:19 CET 2005 - mvidner@suse.cz
 
 - Fixed a typo preventing from adding an Altix XP interface (#50044).
