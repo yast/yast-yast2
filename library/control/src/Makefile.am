@@ -6,6 +6,7 @@ productdir = ${sysconfdir}/YaST2
 
 module_DATA =			\
 	ProductControl.ycp	\
+	ProductFeatures.ycp	\
 	Hooks.ycp
 
 product_DATA = ProductFeatures
