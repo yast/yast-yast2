@@ -98,9 +98,10 @@ define void ShowNcursesHelp() ``{
     /* NCurses Control Center help 1/8 */
     string help = _("<p>1) <i>General</i><br>
 Navigate through the dialog elements with [TAB] to go to
-the next element and [SHIFT] (or [ALT]) + [TAB] to move backwards.</p>
-<p>Select or activate elements with [SPACE] or [ENTER].
-Some elements use arrow keys (e.g. to scroll in lists).</p>") +
+the next element and [SHIFT] (or [ALT]) + [TAB] to move backwards.
+Select or activate elements with [SPACE] or [ENTER].
+Some elements use arrow keys (e.g., to scroll in lists).</p>
+") +
 
     /* NCurses Control Center help 2/8 */
     _("<p>Buttons are equipped with shortcut keys (the highlighted
@@ -139,8 +140,9 @@ F9  = Abort or Cancel<br>
 F10 = OK, Next, Finish, or Accept<br>") +
 
     /* NCurses Control Center help 8/8 */
-    _("<p>Please note that in some environments, all or some
-F keys are not availiable.</p>");
+    _("<p>In some environments, all or some
+F keys are not availiable.</p>
+");
 
     Popup::LongText(headline, `RichText(help), 60, 20);
 
