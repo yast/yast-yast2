@@ -76,8 +76,9 @@ define void OpenMenu() {
 }
 
 /**
+ * @return boolean true if control center is to be resatrted
  */
-define void Launch(string modul) {
+define boolean Launch(string modul) {
     string function = Modules[modul, "X-SuSE-YaST-Call"]:"";
     list arguments = splitstring(Modules[modul, "X-SuSE-YaST-Argument"]:"", " ");
     y2debug("Calling: %1 (%2)", function, arguments);
@@ -85,7 +86,12 @@ define void Launch(string modul) {
     if(function != "") {
 	any ret = WFM::CallFunction (function, arguments);
 	y2debug("WFM::CallFunction (%1, %2) returns: %3", function, arguments, ret);
+	// online_update always returns 0, so the ret value checking
+	//  makes no sense
+	if (function == "online_update"/* && ret != `abort*/)
+	    return true;
     }
+    return false;
 }
 
 /**
@@ -221,7 +227,8 @@ while(true) {
 		  && event["EventReason"]:"" == "Activated" )
 	{
 	    string program = (string) UI::QueryWidget(`id(`progs), `CurrentItem);
-	    Launch(program);
+	    if (Launch(program))
+		break;
 	}
 	else if ( eventid == `groups
 		  && event["EventReason"]:"" == "Activated" )
