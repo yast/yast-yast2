@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 23 16:11:46 CET 2004 - msvec@suse.cz
+
+- added agents for sysconfig/sysctl and /suseconfig
+- 2.9.6
+
+-------------------------------------------------------------------
 Fri Jan 23 12:29:29 CET 2004 - arvin@suse.de
 
 - fixed Require.ycp for brand new interpreter
