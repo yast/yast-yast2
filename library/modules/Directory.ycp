@@ -84,6 +84,11 @@ global string scrconfdir = yast2dir + "/scrconf";
 global string configdir = yast2dir + "/config";
 
 /**
+ * Directory for desktop files
+ */
+global string desktopdir = "/usr/share/applications/YaST2";
+
+/**
  * Directory for temporary files
  */
 global string tmpdir = "/tmp";
