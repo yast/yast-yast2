@@ -28,6 +28,11 @@
 
     # <!-- SuSEFirewall VARIABLES //-->
 
+    /* configuration hasn't been read for the default
+     * this should reduce the readings to only ONE
+     */
+    boolean configuration_has_been_read = false;
+
     /* firewall settings map */
     map<string, any> SETTINGS = $[];
 
@@ -723,6 +728,13 @@
      */
     global define boolean GetModified () {
 	return modified;
+    }
+
+    /**
+     * Function resets flag which doesn't allow to read configuration from disk again
+     */
+    global define void ResetReadFlag () {
+	configuration_has_been_read = false;
     }
 
     /**
@@ -1686,6 +1698,11 @@ Run YaST2 Firewall and assign it by hand.
      * Fills internal variables only.
      */
     global define boolean Read () {
+	if (configuration_has_been_read) {
+	    y2milestone("SuSEfirewall2 configuration has been read already.");
+	    return true;
+	}
+
 	// Progress only for normal configuration
 	boolean have_progress = (Mode::normal());
 
@@ -1741,6 +1758,8 @@ Run YaST2 Firewall and assign it by hand.
 	CheckAllPossiblyConflictingServices();
 
 	y2milestone("Firewall configuration has been read: %1.", SETTINGS);
+	// to read configuration only once
+	configuration_has_been_read = true;
 
 	if (have_progress) Progress::NextStage();
 
