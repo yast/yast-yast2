@@ -1,19 +1,24 @@
 # Makefile.am for yast2/library/packages/src
 
-YCPCFLAGS = -M ../../modules/ -M ../../wizard/src/
+yncludedir = $(yncludedir)/packages
+
+YCPCFLAGS = -M ../../modules/ -M ../../wizard/src/ -I .
 
 module_DATA =			\
 	Require.ycp		\
-	PackageCallbacksInit.ycp	
-#	Package.ycp		\
-#	PackageAI.ycp		\
-#	PackageSystem.ycp
+	Package.ycp		\
+	PackageAI.ycp		\
+	PackageSystem.ycp	\
+	PackageCallbacksInit.ycp
 
-#ynclude_DATA =			\
-#	common.ycp
+ynclude_DATA =			\
+	common.ycp
 
-EXTRA_DIST = $(module_DATA) 
+symlinks:
+	test -L packages || ln -sf . packages
 
-#$(ynclude_DATA)
+ycpchook = symlinks
+
+EXTRA_DIST = $(module_DATA) $(ynclude_DATA)
 
 include $(top_srcdir)/Makefile.am.common

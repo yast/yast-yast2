@@ -17,12 +17,12 @@ import "Wizard";
 
 /* Main module prototypes */
 
-boolean Available(string package);
-boolean Installed(string package);
+global boolean Available(string package);
+global boolean Installed(string package);
 
-boolean DoInstall(list<string> packages);
-boolean DoRemove(list<string> packages);
-boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove);
+global boolean DoInstall(list<string> packages);
+global boolean DoRemove(list<string> packages);
+global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove);
 
 /**
  * Are all of these packages available?
@@ -79,18 +79,18 @@ boolean PackageDialog(list<string> packages, boolean install) {
     y2debug("Asking for packages: %1", packages);
 
     if(size(packages) < 1) return true;
-    if(AllInstalled(packages)) return true;
+    if(InstalledAll(packages)) return true;
 
     string text = _("These packages need to be installed:") + "<p>";
     if(install == false) text = _("These packages need to be removed:") + "<p>";
 
-    foreach(string p, packages, ``{ text = text + sformat("%1<br>",l); });
+    foreach(string p, packages, ``{ text = text + sformat("%1<br>", p); });
 
     term contents = `VBox(
 	`HSpacing(40),
 	`RichText(text),
 	`HBox(
-	    `PushButton(`id(`continue), `opt(`default), Label::ContinueBotton()),
+	    `PushButton(`id(`continue), `opt(`default), Label::ContinueButton()),
 	    `PushButton(`id(`cancel), Label::CancelButton())
 	)
     );
