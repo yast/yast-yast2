@@ -104,7 +104,8 @@ void getgroup ()
 	{
 	    if (!strncmp (tmpstr, "Name", 4))
 	    {
-		set_textdomain ("general");
+		/* FIXME: we should read the Textdomain field */
+		set_textdomain ("base");
 		group.textstr = string (_(cut_str (tmpstr).c_str ()));
 	    }
 	    else if (!strncmp (tmpstr, "SortKey", 7))
