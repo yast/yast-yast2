@@ -3,6 +3,10 @@
 include "testsuite.ycp";
 include "./../src/sequencer.ycp";
 
+void func1() { return; }
+void func2() { return; }
+void func3() { return; }
+
 map aliases = $[
     "1" : nil,
     "2" : ``(func1()),

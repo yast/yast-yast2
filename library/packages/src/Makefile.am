@@ -1,6 +1,6 @@
 # Makefile.am for yast2/library/packages/src
 
-yncludedir = $(yncludedir)/packages
+yncludedir = @yncludedir@/packages
 
 YCPCFLAGS = -M ../../modules/ -M ../../wizard/src/ -I .
 

@@ -12,6 +12,7 @@
 
 module "Package";
 textdomain "base";
+import "PackageCallbacksInit";
 
 /**
  * Was last operation canceled?
@@ -43,7 +44,7 @@ include "packages/common.ycp";
  * This may become superfluous.
  */
 global void EnsureTargetInit() {
-    import "PackageCallbacks";
+    PackageCallbacksInit::InitPackageCallbacks ();
     target_initialized = target_initialized || Pkg::TargetInit ("/", false);
 }
 
@@ -53,8 +54,7 @@ global void EnsureTargetInit() {
 global void EnsureSourceInit() {
     if(source_initialized) return;
 
-    /* Trigger constructor */
-    import "PackageCallbacks";
+    PackageCallbacksInit::InitPackageCallbacks ();
 
     /* Popup when initializing the package manager */
     UI::OpenDialog(`opt(`decorated ), `Label(_("Reading package information; One moment please...")));

@@ -3,9 +3,9 @@
 include "testsuite.ycp";
 include "./../src/sequencer.ycp";
 
-define f1() ``{ return "1"; }
-define f2() ``{ return 2; }
-define f3() ``{ return `id3; }
+define any f1() ``{ return "1"; }
+define any f2() ``{ return 2; }
+define any f3() ``{ return `id3; }
 
 map aliases = $[
     "1" : ``(f1()),
