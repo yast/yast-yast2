@@ -169,8 +169,8 @@ global define string PleaseWaitMsg() ``{
   return _("Please wait...");
 }
 
-global define map DefaultFunctionKeyMap() ``{
-    map fkeys = $[];
+global define map<string, integer> DefaultFunctionKeyMap() ``{
+    map<string, integer> fkeys = $[];
 
     // A map only accepts constants as keys, so we have to add() each
     // item. It will always be a term since it has to go through the

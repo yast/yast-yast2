@@ -39,10 +39,10 @@ global define list Values(map m) ``{
  * @param m input map
  * @return map with keys converted to lower case
  */
-global define map KeysToLower(map m) ``{
+global define map KeysToLower(map<string, any> m) ``{
     string newk = nil;
     if(m == nil) return $[];
-    return mapmap(string k, string v, m, ``{
+    return mapmap(string k, any v, m, ``{
 	newk = tolower(k);
 	return $[newk: v];
     });
@@ -53,10 +53,10 @@ global define map KeysToLower(map m) ``{
  * @param m input map
  * @return map with keys converted to lower case
  */
-global define map KeysToUpper(map m) ``{
+global define map KeysToUpper(map<string, any> m) ``{
     string newk = nil;
     if(m == nil) return $[];
-    return mapmap(string k, string v, m, ``{
+    return mapmap(string k, any v, m, ``{
 	newk = toupper(k);
 	return $[newk: v];
     });
@@ -92,7 +92,7 @@ global define string ToString(map m) ``{
     if(m == nil) return "";
 
     string ret = "";
-    foreach(string var, string val, m, ``{
+    foreach (any var, any val, m, ``{
 	ret = ret + sformat(" %1=%2", var, val);
     });
     return String::CutBlanks(ret);

@@ -37,7 +37,7 @@ global define string Restore() {
     map m = (map) SCR::Execute( .target.bash_output, "locale -k charmap" );
     if(m == nil) m = $[];
 
-    list out = splitstring(m["stdout"]:"", "\n");
+    list<string> out = splitstring(m["stdout"]:"", "\n");
     y2milestone( "list %1", out );
 
     out = filter( string e, out, ``(find(e, "charmap=")==0) );

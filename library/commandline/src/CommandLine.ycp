@@ -17,43 +17,45 @@
 
     textdomain "base";
 
+    typedef map<string, map <string, any > > commands_t;
+
     /**
      * Map of commands for every module. ATM the list of commands this module handles internally.
      */
-    map systemcommands = $[
+    commands_t systemcommands = (commands_t)$[
 	"actions"	: $[
-	    "help"	: $[
-		"help":_("Print the help for this module")
-	    ],
-	    "longhelp": $[
-		"help":_("Print a long version of help for this module")
-	    ],
-	    "interactive"	: $[
-		"help": _("Start interactive shell to control the module")
-	    ],
-	    "exit"	: $[
-		"help": _("Exit interactive mode and save the changes")
-	    ],
-	    "quit"	: $[
-		"help": _("Quit interactive mode without saving the changes")
-	    ]
-	],
+			    "help"	: $[
+				"help":_("Print the help for this module")
+			    ],
+			    "longhelp": $[
+				"help":_("Print a long version of help for this module")
+			    ],
+			    "interactive"	: $[
+				"help": _("Start interactive shell to control the module")
+			    ],
+			    "exit"	: $[
+				"help": _("Exit interactive mode and save the changes")
+			    ],
+			    "quit"	: $[
+				"help": _("Quit interactive mode without saving the changes")
+			    ]
+			],
 	"options"	: $[
-	    "help"	: $[
-		// translators:  command line "help" option 
-		"help"	: _("Print the help for this command"),
-	    ],
-	    "verbose"	: $[
-		// translators: command line "verbose" option
-		"help"	: _("Show progress information"),
-	    ],
-	],
+			    "help"	: $[
+				// translators:  command line "help" option 
+				"help"	: _("Print the help for this command"),
+			    ],
+			    "verbose"	: $[
+				// translators: command line "verbose" option
+				"help"	: _("Show progress information"),
+			    ],
+			],
 	"mappings"	: $[
-	    "help"	: ["help", "verbose"],
-	    "interactive":  ["help", "verbose"],
-	    "exit":  ["help"],
-	    "quit":  ["help"],
-	]
+			    "help"	: ["help", "verbose"],
+			    "interactive":["help", "verbose"],
+			    "exit"	: ["help"],
+			    "quit"	: ["help"],
+			]
     ];
 
     /**
@@ -82,7 +84,7 @@
     boolean aborted = false;
 
     /** a cache for already parsed but not processed command */
-    map commandcache = $[];
+    map<string, any> commandcache = $[];
 
     /**
      *  Print a string to /dev/tty in interactive mode, to stderr in non-interactive
@@ -119,8 +121,8 @@
      *  @return map		containing the command and it's option. In case of
      *				error it is an empty map.
      */
-    global define map Parse (list arguments) ``{
-	list args = arguments;
+    global define map<string, any> Parse (list<any> arguments) ``{
+	list<any> args = arguments;
 	if(size(args) < 1) return $[];
 
 	/* Parse command */
@@ -145,17 +147,19 @@
 	list opts = allcommands["mappings", command]:[];
 	map allopts = allcommands["options"]:$[];
 	map cmdoptions = $[];
-	maplist( string k, opts, ``{
-	    cmdoptions = add( cmdoptions, k, allopts[k]:$[] );
+	maplist( any k, opts, {
+	    if (is(k, string)) cmdoptions = add( cmdoptions, k, allopts[k]:$[] );
 	} );
 
 	boolean ret = true;
 
 	/* Parse options */
-	map givenoptions = $[];
-	maplist(string os, args, ``{
-	    y2debug("os=%1", os);
-	    list o = regexptokenize(os, "([^=]+)=(.+)");
+	map<string, string> givenoptions = $[];
+	maplist(any aos, args, ``{
+	    y2debug("os=%1", aos);
+	    if (!is(aos, string)) continue;
+	    string os = (string)aos;
+	    list<string> o = regexptokenize(os, "([^=]+)=(.+)");
 	    y2debug("o=%1", o);
 	    if( size(o) == 2 ) givenoptions = add(givenoptions, o[0]:"", o[1]:"");
 	    else if( size(o) == 0 ) {
@@ -312,7 +316,7 @@
 	integer longestopt = 0;
 	integer longestarg = 0;
 
-	foreach( string opt, opts, ``{
+	foreach( any opt, opts, ``{
 	    map op = allopts[opt]:$[];
 	    string t = op["type"]:"";
 
@@ -327,11 +331,15 @@
 
 	    if( size(t) > longestarg ) longestarg = size(t);
 
-	    if( size(opt) > longestopt ) longestopt = size(opt);
+	    if( is (opt, string)
+		&& size((string)opt) > longestopt )
+	    {
+		longestopt = size((string)opt);
+	    }
 	} );
 
 
-	foreach( string opt, opts, ``{
+	foreach( any opt, opts, ``{
 	    map op = allopts[opt]:$[];
 	    string t = op["type"]:"";
 
@@ -345,7 +353,10 @@
 	    }
 	    else t = "    ";
 
-	    Print(sformat("        %1  %2  %3", String::Pad(opt,longestopt), String::Pad(t, longestarg), op["help"]:""));
+	    if (is (opt, string))
+	    {
+		Print(sformat("        %1  %2  %3", String::Pad((string)opt,longestopt), String::Pad(t, longestarg), op["help"]:""));
+	    }
 	} );
 
 	if( haskey( command, "example" ) ) {
@@ -471,7 +482,7 @@
      *  @return boolean		true, if there are some commands to be processed
      *  @see Command
      */
-    global define boolean Init (map cmdlineinfo, list args) ``{
+    global define boolean Init (map cmdlineinfo, list<any> args) ``{
 	any id_string = cmdlineinfo["id"]:nil;
 	// sanity checks on cmdlineinfo
 	// check for id string , it must exist, and non-empty
@@ -547,9 +558,10 @@
 		    aborted = true;
 		}
 
-		foreach( string mapopt, def, ``{
+		foreach( any mapopt, def, ``{
+		    if (!is(mapopt, string)) continue;
 		    // is this option defined?
-		    if( ! haskey( cmdlineinfo["options"]:$[], mapopt ) ) {
+		    if( ! haskey( cmdlineinfo["options"]:$[], (string)mapopt ) ) {
 			y2error( "Command line specification maps undefined option '%1' for action '%2'", mapopt, mapaction );
 
 			// it's better to quit now
@@ -610,7 +622,7 @@
      *
      * @return list the list of command line parts, nil for end of file
      */
-    global define list Scan() ``{
+    global define list<string> Scan() ``{
 	string res = (string)SCR::Read( .dev.tty );
 	if( res == nil ) return nil;
 	return String::ParseOptions(res,$[ "separator":" " ]);
@@ -644,7 +656,7 @@
 	    if( interactive ) {
 		// handle all system commands as long as possible
 		do {
-		    list newcommand = [];
+		    list<string> newcommand = [];
 		    do {
 			newcommand = Scan();
 		    } while( size(newcommand) == 0 );
@@ -731,7 +743,7 @@
      * @param unique_options	list of mutually exclusive options to check against
      * @return	nil if there is a problem, otherwise the unique option found
      */
-    global define string UniqueOption( map options, list unique_options ) ``{
+    global define string UniqueOption( map<string, string> options, list unique_options ) ``{
 	// sanity check
 	if( size( unique_options ) == 0 ) {
 	    y2error( "Unique test of options required, but the list of the possible options is empty");

@@ -27,7 +27,7 @@
     include "./tests/testfunc.yh";
 
 
-    map functions = $[
+    map<string, any> functions = $[
 	"init" : generic_init,
 	"store" : generic_save,
     ];
@@ -40,7 +40,7 @@
     DUMP ("==========   Common stuff   ============");
     DUMP ("========================================");
 
-    list<map> widget_data = CWM::CreateWidgets (widget_names, widgets);
+    list<map <string, any> > widget_data = CWM::CreateWidgets (widget_names, widgets);
     DUMP (sformat ("W1: %1", widget_data[0]:nil));
     DUMP (sformat ("W2: %1", widget_data[1]:nil));
 

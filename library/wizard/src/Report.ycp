@@ -20,9 +20,9 @@ import "Popup";
 import "Summary";
 
 // stored messages
-list errors = [];
-list warnings = [];
-list messages = [];
+list<string> errors = [];
+list<string> warnings = [];
+list<string> messages = [];
 
 // display flags
 boolean display_errors = true;
@@ -374,7 +374,7 @@ global define string GetMessages(boolean w, boolean e, boolean m) ``{
 	richtext = richtext + "<P><B>" + _("Warning:", "Warnings:", size(warnings) ) + "</B><BR>";
 
 	foreach(string s, warnings, ``{
-		list strs = splitstring(s, "\n");
+		list<string> strs = splitstring(s, "\n");
 		foreach(string line, strs, ``{richtext = richtext + line + "<BR>";});
 	    }
 	);
@@ -387,7 +387,7 @@ global define string GetMessages(boolean w, boolean e, boolean m) ``{
 	richtext = richtext + "<P><B>" + _("Error:", "Errors:", size(errors)) + "</B><BR>";
 
 	foreach(string s, errors, ``{
-		list strs = splitstring(s, "\n");
+		list<string> strs = splitstring(s, "\n");
 		foreach(string line, strs, ``{richtext = richtext + line + "<BR>";});
 	    }
 	);
@@ -400,7 +400,7 @@ global define string GetMessages(boolean w, boolean e, boolean m) ``{
 	richtext = richtext + "<P><B>" + _("Message:", "Messages:", size(messages)) + "</B><BR>";
 
 	foreach(string s, messages, ``{
-		list strs = splitstring(s, "\n");
+		list<string> strs = splitstring(s, "\n");
 		foreach(string line, strs, ``{richtext = richtext + line + "<BR>";});
 	    }
 	);

@@ -55,7 +55,7 @@
      * @param devices A list of output of the summaryDevice() calls
      * @return string The resulting text.
      */
-    global define string DevicesList(list devices) ``{
+    global define string DevicesList(list<string> devices) ``{
 	string text = "";
 	if (size(devices) == 0)
 	{

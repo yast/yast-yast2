@@ -16,7 +16,7 @@ import "Map";
 /**
  * YaST configuration modules
  */
-global map Modules = $[];
+global map<string,map> Modules = $[];
 
 /**
  * YaST configuration groups
@@ -35,7 +35,7 @@ global map Modules = $[];
  * </PRE>
  */
 
-global map Groups = $[];
+global map<string,map> Groups = $[];
 
 /**
  * Optional agent path to the desktop files
@@ -67,7 +67,7 @@ define string ReadLocalizedKey(path keypath, string key) ``{
  * Read module and group data from desktop files
  * @param Values list of values to be parsed (empty to read all)
  */
-global define void Read(list Values) ``{
+global define void Read(list<string> Values) ``{
 
     /* read modules */
     map filemap = $[];
@@ -75,7 +75,7 @@ global define void Read(list Values) ``{
     string name = nil;
 
     path ps = add(AgentPath, "s");
-    list files = SCR::Dir(ps);
+    list<string> files = SCR::Dir(ps);
 
     /* read language */
     Language = WFM::GetLanguage();
@@ -84,7 +84,7 @@ global define void Read(list Values) ``{
     y2debug("%1", Language);
 
     /* read groups */
-    list groups = SCR::Dir(.yast2.groups.s);
+    list<string> groups = SCR::Dir(.yast2.groups.s);
     y2debug("groups=%1", groups);
     foreach(string group, groups, ``{
 	filemap = $[];
@@ -104,7 +104,7 @@ global define void Read(list Values) ``{
     foreach(string file, files, ``{
 	filemap = $[];
 	filepath = AgentPath + .v + file + ."Desktop Entry";
-	list values = SCR::Dir(filepath);
+	list<string> values = SCR::Dir(filepath);
 	if(Values != nil && Values != []) values = Values;
 	foreach(string value, values, ``{
 	    string ret = ReadLocalizedKey(filepath, value);
@@ -137,27 +137,27 @@ global define string Translate(string key) ``{
  */
 define list <term> CreateList(map M) ``{
     list keys = Map::Keys(M);
-    keys = sort(string x, string y, keys, ``{
+    keys = sort(any x, any y, keys, ``{
 	return M[x, "SortKey"]:"" < M[y, "SortKey"]:"";
     });
     y2debug("keys=%1", keys);
 
-    return maplist(string name, keys, ``{
+    return maplist(any name, keys, ``{
 	return `item(`id(name), Translate(M[name, "Name"]:"???"));
     });
 }
 
 /**
  */
-global define list<term> GroupList() ``{
+global define list <term> GroupList() ``{
     return CreateList(Groups);
 }
 
 /**
  */
-global define list ModuleList(string group) ``{
-    list mods = Groups[group, "modules"]:[];
-    list l = [];
+global define list <term> ModuleList(string group) ``{
+    list <string> mods = Groups[group, "modules"]:[];
+    list <term> l = [];
 
     foreach(string m, mods, ``{
 	if(haskey(Modules, m))

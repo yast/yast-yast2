@@ -24,10 +24,10 @@ define string DropWS(string text) ``{
  * @param richtext the text to be converted
  * @return the converted text
  */
-global define string Rich2Plain(string richtext) ``{
+global define string Rich2Plain (string richtext) ``{
     y2debug("richtext=%1", richtext);
 
-    list lparts = splitstring(DropWS(richtext), "<");
+    list<string> lparts = splitstring(DropWS(richtext), "<");
     y2debug("lparts=%1", lparts);
 
     /* Am I in <LI>? */
@@ -37,7 +37,7 @@ global define string Rich2Plain(string richtext) ``{
     integer indents = 0;
 
     string result = "";
-    foreach( string lpart, lparts, ``{
+    foreach (string lpart, lparts, ``{
 	integer s = find( lpart, ">" );
 	string tag = tolower(substring( lpart, 0, s ));
 

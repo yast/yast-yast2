@@ -219,7 +219,7 @@ global boolean x11_setup_needed	= true;
 global define void Arch() ``{
 
     string checkgeneration = "";
-    list systemProbe = (list) SCR::Read(.probe.system);
+    list<map> systemProbe = (list<map>) SCR::Read(.probe.system);
     if(systemProbe == nil) systemProbe = [];
 
     foreach (map systemEntry, systemProbe, ``{
