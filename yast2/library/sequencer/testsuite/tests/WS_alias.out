@@ -1,0 +1,13 @@
+Log	sequencer: Alias not found: blah
+Return	nil
+Log	sequencer: Alias not found: blah
+Return	nil
+Log	sequencer: Alias not found: 1
+Return	nil
+Return	func1 ()
+Log	sequencer: Invalid alias: []
+Return	nil
+Log	sequencer: Invalid alias: nil
+Return	nil
+Return	func2 ()
+Return	func3 ()

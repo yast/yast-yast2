@@ -1,0 +1,228 @@
+/**
+ * File:	modules/Desktop.ycp
+ * Package:	yast2
+ * Summary:	Handling of .desktop entries
+ * Author:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+module "Desktop";
+textdomain "base";
+import "Map";
+
+/**
+ * YaST configuration modules
+ */
+global map<string,map> Modules = $[];
+
+/**
+ * YaST configuration groups
+ *
+ * <PRE>
+    Groups=$[
+	"Hardware":$[
+	    "Icon":"hardware56.png",
+	    "Name":"_(\"Hardware\")",
+	    "SortKey":"20",
+	    "Textdomain":"base",
+	    "modules":["cdrom", "hwinfo", ...]
+	],
+	...
+   ];
+ * </PRE>
+ */
+global map<string,map> Groups = $[];
+
+/**
+ * Optional agent path to the desktop files
+ */
+global path AgentPath = .yast2.desktop;
+
+/**
+ * Optional language for reading translated entries
+ */
+string Language = "";
+string LanguageFull = "";
+
+/**
+ */
+define string ReadLocalizedKey(path keypath, string key) {
+
+    if(key != "Name" && key != "GenericName")
+	return (string) SCR::Read(add(keypath, key));
+
+    string ret = "";
+    string newkey = "";
+
+    if(LanguageFull != nil || LanguageFull != "") {
+	newkey = sformat("%1[%2]", key, LanguageFull);
+	ret = (string) SCR::Read(add(keypath, newkey));
+	if(ret != nil && ret != "") return ret;
+    }
+
+    if(Language != nil || Language != "") {
+	newkey = sformat("%1[%2]", key, Language);
+	ret = (string) SCR::Read(add(keypath, newkey));
+	if(ret != nil && ret != "") return ret;
+    }
+
+    return (string) SCR::Read(add(keypath, key));
+}
+
+/**
+ * Read module and group data from desktop files
+ * @param Values list of values to be parsed (empty to read all)
+ */
+global define void Read(list<string> Values) {
+
+    /* read modules */
+    map filemap = $[];
+    path filepath = nil;
+    string name = nil;
+
+    path ps = add(AgentPath, "s");
+    list<string> files = (list<string>) SCR::Dir(ps);
+
+    /* read language */
+    LanguageFull = "";
+    Language = WFM::GetLanguage();
+    if(regexpmatch(Language, "(.*_[^.]*)\..*"))
+	LanguageFull = regexpsub(Language, "(.*_[^.]*)\..*", "\\1");
+    if(regexpmatch(Language, "(.*)_"))
+	Language = regexpsub(Language, "(.*)_", "\\1");
+    y2debug("LanguageFull=%1", LanguageFull);
+    y2debug("Language=%1", Language);
+
+    /* read groups */
+    list<string> groups = (list<string>) SCR::Dir(.yast2.groups.s);
+    y2debug("groups=%1", groups);
+    foreach(string group, groups, {
+	filemap = $[];
+	filepath = .yast2.groups.v + group + "Desktop Entry";
+
+	filemap["Icon"] = SCR::Read(filepath + "Icon");
+	filemap["SortKey"] = SCR::Read(filepath + "X-SuSE-YaST-SortKey");
+	filemap["Hidden"] = SCR::Read(filepath + "Hidden");
+	filemap["Name"] = ReadLocalizedKey(filepath, "Name");
+	filemap["modules"] = [];
+
+	string name = (string) SCR::Read(filepath + "X-SuSE-YaST-Group");
+	Groups[name] = filemap;
+    });
+    y2debug("Groups=%1", Groups);
+
+    /* read modules */
+    foreach(string file, files, {
+	filemap = $[];
+	filepath = AgentPath + .v + file + ."Desktop Entry";
+	list<string> values = (list<string>) SCR::Dir(filepath);
+	if(Values != nil && Values != []) values = Values;
+	foreach(string value, values, {
+	    string ret = ReadLocalizedKey(filepath, value);
+	    if(ret != nil && ret != "") filemap[value] = ret;
+	});
+	string name = regexpsub(file, "^.*/(.*)\.desktop", "\\1");
+	if(name != "" && name != nil) {
+	    Modules[name] = filemap;
+	    string group = filemap["X-SuSE-YaST-Group"]:"";
+	    if(group != "") Groups[group, "modules", size(Groups[group,"modules"]:[])] = name;
+	}
+    });
+    y2debug("Groups=%1", Groups);
+    y2debug("Modules=%1", Modules);
+
+}
+
+/**
+ */
+global define string Translate(string key) {
+    if(regexpmatch(key, "_\\(\"(.*)\"\\)") == true) {
+	locale ke = regexpsub(key, "_\\(\"(.*)\"\\)", "\\1");
+	key = (string) eval(ke);
+	y2milestone("%1 -> %2", ke, key);
+    }
+    return key;
+}
+
+/**
+ */
+define list <term> CreateList(map M) {
+    list keys = Map::Keys(M);
+    keys = sort(any x, any y, keys, {
+	return M[x, "SortKey"]:"" < M[y, "SortKey"]:"";
+    });
+    
+    keys = filter (any key, keys, {
+	return M[key, "Hidden"]:"false" != "true";
+    });
+    
+    y2debug("keys=%1", keys);
+
+    return maplist(any name, keys, {
+	return `item(`id(name), Translate(M[name, "Name"]:"???"));
+    });
+}
+
+/**
+ */
+global define list <term> GroupList() {
+    return CreateList(Groups);
+}
+
+/**
+ */
+global define list <term> ModuleList(string group) {
+    list <string> mods = Groups[group, "modules"]:[];
+    list <term> l = [];
+
+    /* support sort keys: #36466 */
+    mods = sort(string x, string y, mods, {
+	// y2internal("%1 < %2", Modules[x, "X-SuSE-YaST-SortKey"]:(Modules[x,"Name"]:""), Modules[y, "X-SuSE-YaST-SortKey"]:(Modules[y,"Name"]:""));
+	return Modules[x, "X-SuSE-YaST-SortKey"]:(Modules[x,"Name"]:"") < Modules[y, "X-SuSE-YaST-SortKey"]:(Modules[y,"Name"]:"");
+    });
+
+    foreach(string m, mods, {
+	if(haskey(Modules, m) &&  Modules[m, "Hidden"]:"false" != "true")
+	    l = add(l, `item(`id(m), Modules[m,"Name"]:"???"));
+    });
+
+    // y2debug too costly: y2debug("%1", m);
+    return l;
+}
+
+/**
+ */
+map<string, string> MakeAutostartMap (string exec, list<string> args) {
+    return $[
+	"Encoding": "UTF-8",
+	"Name": exec,
+	"Exec": exec,
+	"X-SuSE-Autostart": exec + " " + mergestring (args, " "),
+	"Hidden": "true",
+	"Icon": exec,
+	"Type": "Application",
+    ];
+}
+
+/**
+ * Runs a program by writing a special desktop file.
+ * Works with KDE and GNOME.
+ * Useful for kinternet, see bug 37864#c17
+ * @param exec program to exec (basename)
+ */
+global void RunViaDesktop (string exec, list<string> args) {
+    string content = "[KDE Desktop Entry]\n";
+    foreach (string key, string value, MakeAutostartMap (exec, args), {
+	content = content + sformat ("%1=%2\n", key, value);
+    });
+    string dir = "/var/lib/Desktop";
+    SCR::Write (.target.string,
+	    sformat ("%1/yast2-run-%2.desktop", dir, exec),
+	    content);
+}
+
+/* EOF */
+}

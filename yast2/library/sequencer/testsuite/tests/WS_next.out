@@ -1,0 +1,13 @@
+Log	sequencer: Current not found: blah
+Return	nil
+Log	sequencer: Current not found: blah
+Return	nil
+Log	sequencer: Symbol not found: `id3
+Return	nil
+Log	sequencer: Symbol not found: `id3
+Return	nil
+Log	sequencer: Symbol not found: `id3
+Return	nil
+Return	config
+Return	end
+Return	`ws_finish

@@ -1,0 +1,71 @@
+Write	.dev.tty.prompt "YaST2 lan> " true
+Write	.dev.tty.stderr "\nYaST Configuration Module lan\n------------------------------\n" true
+Write	.dev.tty.stderr "Configuration of network cards\n" true
+Write	.dev.tty.stderr "Basic Syntax:" true
+Write	.dev.tty.stderr "    yast2 lan interactive" true
+Write	.dev.tty.stderr "    yast2 lan <command> [verbose] [options]" true
+Write	.dev.tty.stderr "    yast2 lan help" true
+Write	.dev.tty.stderr "    yast2 lan longhelp" true
+Write	.dev.tty.stderr "    yast2 lan <command> help" true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Commands:" true
+Write	.dev.tty.stderr "    add     add a network card" true
+Write	.dev.tty.stderr "    delete  delete a network card" true
+Write	.dev.tty.stderr "    list    display configuration summary" true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Run 'yast2 lan <command> help' for a list of available options." true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Command 'add'" true
+Write	.dev.tty.stderr "    add a network card" true
+Write	.dev.tty.stderr "\n    Options:" true
+Write	.dev.tty.stderr "        device   [string]    device ID" true
+Write	.dev.tty.stderr "        ip       [ip]        device address" true
+Write	.dev.tty.stderr "        netmask  [netmask]   network mask" true
+Write	.dev.tty.stderr "        blem                 other argument (without spaces and '1')" true
+Write	.dev.tty.stderr "        atboot   [ yes no ]  turning on the device at boot" true
+Write	.dev.tty.stderr "        help                 Print the help for this command" true
+Write	.dev.tty.stderr "        verbose              Show progress information" true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Command 'delete'" true
+Write	.dev.tty.stderr "    delete a network card" true
+Write	.dev.tty.stderr "\n    Options:" true
+Write	.dev.tty.stderr "        device   [string]  device ID" true
+Write	.dev.tty.stderr "        help               Print the help for this command" true
+Write	.dev.tty.stderr "        verbose            Show progress information" true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Command 'exit'" true
+Write	.dev.tty.stderr "    Exit interactive mode and save the changes" true
+Write	.dev.tty.stderr "\n    Options:" true
+Write	.dev.tty.stderr "        help        Print the help for this command" true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Command 'help'" true
+Write	.dev.tty.stderr "    Print the help for this module" true
+Write	.dev.tty.stderr "\n    Options:" true
+Write	.dev.tty.stderr "        help           Print the help for this command" true
+Write	.dev.tty.stderr "        verbose        Show progress information" true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Command 'interactive'" true
+Write	.dev.tty.stderr "    Start interactive shell to control the module" true
+Write	.dev.tty.stderr "\n    Options:" true
+Write	.dev.tty.stderr "        help           Print the help for this command" true
+Write	.dev.tty.stderr "        verbose        Show progress information" true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Command 'list'" true
+Write	.dev.tty.stderr "    display configuration summary" true
+Write	.dev.tty.stderr "\n    Options:" true
+Write	.dev.tty.stderr "        configured          list only configured cards" true
+Write	.dev.tty.stderr "        unconfigured        list only not configured cards" true
+Write	.dev.tty.stderr "        help                Print the help for this command" true
+Write	.dev.tty.stderr "        verbose             Show progress information" true
+Write	.dev.tty.stderr "\n    Example:" true
+Write	.dev.tty.stderr "        lan list configured" true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Command 'longhelp'" true
+Write	.dev.tty.stderr "    Print a long version of help for this module" true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Command 'quit'" true
+Write	.dev.tty.stderr "    Quit interactive mode without saving the changes" true
+Write	.dev.tty.stderr "\n    Options:" true
+Write	.dev.tty.stderr "        help        Print the help for this command" true
+Write	.dev.tty.stderr "" true
+Return	false

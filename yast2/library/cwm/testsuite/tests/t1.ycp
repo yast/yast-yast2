@@ -1,0 +1,85 @@
+/**
+ * File:
+ *  t1.ycp
+ *
+ * Module:
+ *  Common Widget Manipulation
+ *
+ * Summary:
+ *  Common Widget Manipulation tests
+ *
+ * Authors:
+ *  Jiri Srain <jsrain@suse.cz>
+ *
+ * $Id$
+ *
+ * testedfiles: CWM.ycp testfunc.yh Testsuite.ycp
+ */
+
+{
+    include "testsuite.ycp";
+    import "CWM";
+    import "Report";
+
+    // disable use of UI
+    Report::display_errors = false;
+    Report::log_errors = true;
+
+    include "./tests/testfunc.yh";
+
+
+    map<string, any> functions = $[
+	"init" : generic_init,
+	"store" : generic_save,
+    ];
+
+    list<string> widget_names = [ "w1", "w2" ];
+
+    any ret = nil;
+
+    DUMP ("========================================");
+    DUMP ("==========   Common stuff   ============");
+    DUMP ("========================================");
+
+    list<map <string, any> > widget_data = CWM::CreateWidgets (widget_names, widgets);
+    DUMP (sformat ("W1: %1", widget_data[0]:nil));
+    DUMP (sformat ("W2: %1", widget_data[1]:nil));
+
+    DUMP ("========================================");
+    DUMP ("Merge functions");
+    widget_data = CWM::mergeFunctions (widget_data, functions);
+    DUMP (sformat ("Merged W1: %1", widget_data[0]:nil));
+    DUMP (sformat ("Merged W2: %1", widget_data[1]:nil));
+
+    DUMP ("=========================================");
+    DUMP ("Init");
+
+    CWM::initWidgets (widget_data);
+
+    DUMP ("=========================================");
+    DUMP ("Handle");
+
+    DUMP ("- Both will run");
+    ret = CWM::handleWidgets (widget_data, $[ "ID" : `event]);
+    DUMP (sformat ("Returned %1", ret));
+    DUMP ("- First causes event loop finish");
+    widget_data[0, "handle"] = w1_handle_symbol;
+    ret = CWM::handleWidgets (widget_data, $[ "ID" : `event]);
+    DUMP (sformat ("Returned %1", ret));
+
+    DUMP ("=========================================");
+    DUMP ("Validate");
+    DUMP ("- Run both");
+    ret = CWM::validateWidgets (widget_data, $[ "ID" : `event]);
+    DUMP (sformat ("Returned %1", ret));
+    DUMP ("- First fails");
+    widget_data[0, "validate_function"] = w1_validat_false;
+    ret = CWM::validateWidgets (widget_data, $[ "ID" : `event]);
+    DUMP (sformat ("Returned %1", ret));
+
+
+    DUMP ("=========================================");
+    DUMP ("Save");
+    CWM::saveWidgets (widget_data, $[ "ID" : `event]);
+
+}

@@ -1,0 +1,19 @@
+/**
+ * File:	regextype.ycp
+ * Package:	yast2
+ * Summary:	regular expression generic validator test
+ * Author:	Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+    include "testsuite.ycp";
+    import "TypeRepository";
+
+    TEST(``(TypeRepository::regex_validator( "^[abc]+.*m$", "blem" )),[],nil);
+    TEST(``(TypeRepository::regex_validator( "^[abc]+.*m$", "blec" )),[],nil);
+
+/* EOF */
+}
