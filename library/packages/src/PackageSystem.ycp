@@ -216,8 +216,9 @@ global boolean Installed(string package) {
 }
 
 /**
- * Check if packages are installed
- * Install them if they are not and user approves installation
+ * @short Check if packages are installed
+ * @descr Install them if they are not and user approves installation
+ *
  * @param a list of packages to check (and install)
  * @return boolean true if installation succeeded or packages were installed,
  * false otherwise
@@ -231,10 +232,12 @@ global boolean CheckAndInstallPackages (list<string> packages) {
 }
 
 /**
- * Check if packages are installed
- * Install them if they are not and user approves installation
+ * @short Check if packages are installed
+ *
+ * @descr Install them if they are not and user approves installation
  * If installation fails (or wasn't allowed), ask user if he wants to continue
- * @param a list of packages to check (and install)
+ *
+ * @param packages a list of packages to check (and install)
  * @return boolean true if installation succeeded, packages were installed
  * before or user decided to continue, false otherwise
  */

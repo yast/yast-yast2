@@ -2,7 +2,7 @@
  * File:	modules/TypeRepository.ycp
  * Package:	yast2
  * Summary:	Type repository for validation of user-defined types
- * Author:	Stanislav Visnovsky <visnov@suse.cz>
+ * Authors:	Stanislav Visnovsky <visnov@suse.cz>
  *
  * $Id$
  */
