@@ -56,49 +56,56 @@
     /**
       * List of modules which should be not added/removed to/from initrd
       */
-    list modules_to_skip = [];
+    list<string> modules_to_skip = nil;
 
 // module functions
 
     /**
-      * Constructor
-      */
-    global define void Initrd () ``{
-        // usb and cdrom modules dont belong to initrd,
-        // they're loaded by hotplug
-	modules_to_skip = [
-	    "usbcore",
-	    "usb-uhci",
-	    "uhci",
-            "usb-ohci",
-	    "uhci-hcd",
-	    "ehci-hcd",
-	    "ohci-hcd",
-            "input",
-            "hid",
-            "usbhid",
-            "keybdev",
-            "mousedev",
-            "usb-storage",
-            "cdrom",
-            "ide-cd",
-            "sr_mod",
-	    "xfs_support",
-	    "xfs_dmapi",
-	    "ide-scsi",
-        ];
-        // some other modules don't belong to initrd on PPC
-        if (Arch::ppc ())
-        {
-            list ppc_modules_to_skip = [
-		"reiserfs",
-                "ext3",
-                "jbd",
-                "jfs",
-                "xfs",
-            ];
-            modules_to_skip = union (modules_to_skip, ppc_modules_to_skip);
+     * Get the list of modules which don't belong to initrd
+     * Initialize the list if was not initialized before according to the
+     * architecture
+     * @return a list of modules
+     */
+    global list<string> getModulesToSkip () {
+	if (modules_to_skip == nil)
+	{
+	    // usb and cdrom modules dont belong to initrd,
+	    // they're loaded by hotplug
+	    modules_to_skip = [
+		"usbcore",
+		"usb-uhci",
+		"uhci",
+		"usb-ohci",
+		"uhci-hcd",
+		"ehci-hcd",
+		"ohci-hcd",
+		"input",
+		"hid",
+		"usbhid",
+		"keybdev",
+		"mousedev",
+		"usb-storage",
+		"cdrom",
+		"ide-cd",
+		"sr_mod",
+		"xfs_support",
+		"xfs_dmapi",
+		"ide-scsi",
+	    ];
+	    // some other modules don't belong to initrd on PPC
+	    if (Arch::ppc ())
+	    {
+		list ppc_modules_to_skip = [
+		    "reiserfs",
+		    "ext3",
+		    "jbd",
+		    "jfs",
+		    "xfs",
+		];
+		modules_to_skip = union (modules_to_skip, ppc_modules_to_skip);
+	    }
 	}
+	return modules_to_skip;
     }
 
     /**
@@ -166,7 +173,7 @@
 	    || ((modname == "aic7xxx_old")
 		&& !contains ( ListModules (), "aic7xxx")))
         {
-            if ( ! contains (modules_to_skip, modname))
+            if ( ! contains (getModulesToSkip (), modname))
 	    {
 		changed = true;
 		modules = add (modules, modname);
@@ -229,9 +236,9 @@
     global define void Update () ``{
 	// add other required changes here
 	modules = filter (string m, modules,
-	    { return (! contains (modules_to_skip, m)); });
+	    { return (! contains (getModulesToSkip (), m)); });
 	modules_settings = filter (string k, any v, modules_settings,
-	    { return (! contains (modules_to_skip, k)); });
+	    { return (! contains (getModulesToSkip (), k)); });
 	changed = true;
     }
 
