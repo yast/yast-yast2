@@ -97,7 +97,7 @@ if [ "$Y2_INSTALL_PACKAGES" = "true" ]; then
 	export module=sw_single
 else
 	# allow module as argument, defaults to "menu"
-	export module=${1-menu}
+	export module="${1-menu}"
 	shift
 fi
 
@@ -142,8 +142,8 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 	if [ $module == "menu" ] ; then
 	    $ybindir/y2base menu ncurses
 	else
-	    set -- $(for x in "$@"; do echo "(\"$x\")"; done) # surround args by ("...")
-	    $ybindir/y2base $module "$@" ncurses
+	    set -- "$(for x in "$@"; do echo "(\"$x\")"; done)" # surround args by ("...")
+	    $ybindir/y2base "$module" "$@" ncurses
 	fi
 	if [ "$uc_started" ] ; then
 	    unicode_stop
@@ -179,7 +179,7 @@ else
 	    fi
 	fi
 
-	set -- $(for x in "$@"; do echo "(\"$x\")"; done) # surround args by ("...")
+	set -- "$(for x in "$@"; do echo "(\"$x\")"; done)" # surround args by ("...")
 	$ybindir/y2base $module "$@" qt -geometry "$Y2_GEOMETRY" $Y2QT_ARGS
     fi
 fi
