@@ -162,7 +162,7 @@
     }
 
 
-    
+
     /**
      * Check if the topmost dialog is a wizard dialog
      * (i.e. has a widget with `id(`WizardDialog) )
@@ -260,9 +260,9 @@
      * and set the keyboard focus to "Accept".
      **/
     global define void OpenAcceptDialog() {
-	
+
 	if ( have_fancy_ui == nil ) Init();
-	
+
 	if ( have_fancy_ui )
 	{
 	    UI::OpenDialog(`opt(`defaultsize ),
@@ -283,7 +283,7 @@
      **/
     global define void OpenAcceptStepsDialog() {
 	if ( have_fancy_ui == nil ) Init();
-	
+
 	if ( have_fancy_ui )
 	{
 	    UI::OpenDialog(`opt(`defaultsize ),
@@ -298,14 +298,14 @@
 	}
     }
 
-    
+
 
     /**
      * Open a dialog with "Accept", "Cancel" that will also accept workflow steps.
      **/
     global define void OpenAcceptAbortStepsDialog() {
 	if ( have_fancy_ui == nil ) Init();
-	
+
 	if ( have_fancy_ui )
 	{
 	    UI::OpenDialog(`opt(`defaultsize ),
@@ -320,7 +320,7 @@
 	}
     }
 
-    
+
     /**
      * Open a dialog with "Back", "Next", "Abort" that will also accept workflow steps.
      **/
@@ -410,7 +410,7 @@
 		UI::ChangeWidget(`id(`next), `Enabled, has_next);
 		UI::SetFocus( `id(`next) );
 	    }
-	
+
 	    if ( UI::WidgetExists(`id(`back	) ) )	UI::ChangeWidget(`id(`back), `Enabled, has_back);
 	    if ( UI::WidgetExists(`id(`accept	) ) )	UI::SetFocus( `id(`accept ) );
 	    if ( UI::WidgetExists(`id(`abort	) ) )	UI::ChangeWidget(`id(`abort),`Enabled, true);
@@ -589,30 +589,94 @@
      *
      * @param button_box the new button box - something like `HBox(...)
      **/
-    global define void ReplaceButtonBox( term button_box ) {
+    global define void ReplaceButtonBox( term button_box )
+    {
 	UI::ReplaceWidget(`id(`rep_button_box ), button_box );
     }
 
+
+
     /**
-     * Enable the wizard's "Abort" button
+     * Enable the wizard's "Abort" (or "Cancel") button.
      **/
-    global define void EnableAbortButton() {
-	UI::ChangeWidget(`id(`abort), `Enabled, true );
+    global define void EnableAbortButton()
+    {
+	if ( ! UI::WizardCommand(`EnableAbortButton( true ) ) )
+	{
+	    if ( UI::WidgetExists(`id(`abort ) ) )
+		UI::ChangeWidget(`id(`abort), `Enabled, true );
+	    else
+		UI::ChangeWidget(`id(`cancel), `Enabled, true );
+	    
+	}
     }
 
 
     /**
      * Disable the wizard's "Abort" button.
-     * Use inside a module if there is no way to abort.
-     * This button will automatically be re-enabled on the next call
-     * to Wizard::SetContents().
-     *
-     * Note: There is no corresponding function for the wizard's "Next"
-     * or "Back" buttons - this is handled in Wizard::SetContents().
      **/
-    global define void DisableAbortButton() {
-	UI::ChangeWidget(`id(`abort), `Enabled, false);
+    global define void DisableAbortButton()
+    {
+	if ( ! UI::WizardCommand(`EnableAbortButton( false ) ) )
+	{
+	    if ( UI::WidgetExists(`id(`abort ) ) )
+		UI::ChangeWidget(`id(`abort), `Enabled, false );
+	    else
+		UI::ChangeWidget(`id(`cancel), `Enabled, false );
+	    
+	}
     }
+
+
+    /**
+     * Disable the wizard's "Next" (or "Accept") button.
+     **/
+    global define void DisableNextButton()
+    {
+	if ( ! UI::WizardCommand(`EnableNextButton( false ) ) )
+	{
+	    if ( UI::WidgetExists(`id(`next ) ) )
+		UI::ChangeWidget(`id(`next), `Enabled, false );
+	    else
+		UI::ChangeWidget(`id(`accept), `Enabled, false );
+	}
+    }
+
+
+    /**
+     * Enable the wizard's "Next" (or "Accept") button.
+     **/
+    global define void EnableNextButton()
+    {
+	if ( ! UI::WizardCommand(`EnableNextButton( true ) ) )
+	{
+	    if ( UI::WidgetExists(`id(`next ) ) )
+		UI::ChangeWidget(`id(`next), `Enabled, true );
+	    else
+		UI::ChangeWidget(`id(`accept), `Enabled, true );
+	}
+    }
+
+
+    /**
+     * Disable the wizard's "Back" button.
+     **/
+    global define void DisableBackButton()
+    {
+	if ( ! UI::WizardCommand(`EnableBackButton( false ) ) )
+	    UI::ChangeWidget(`id(`back ), `Enabled, false );
+    }
+
+    /**
+     * Enable the wizard's "Back" button.
+     **/
+    global define void EnableBackButton()
+    {
+	if ( ! UI::WizardCommand(`EnableBackButton( true ) ) )
+	    UI::ChangeWidget(`id(`back ), `Enabled, true );
+    }
+
+
 
 
     /* ------------------------------------------------------------ */
