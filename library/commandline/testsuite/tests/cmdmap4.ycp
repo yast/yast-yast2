@@ -10,7 +10,7 @@
 {
 
     include "testsuite.ycp";
-    import "./../src/TypeRepository.ycp";
+    import "./../../types/src/TypeRepository.ycp";
     import "./../src/CommandLine.ycp";
 
     // map must define help for each option

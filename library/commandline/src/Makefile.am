@@ -12,7 +12,6 @@ config_DATA =
 #	commandline.y2cc
 
 module_DATA =			\
-	CommandLine.ycp		\
-	TypeRepository.ycp
+	CommandLine.ycp		
 
 EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(config_DATA) $(module_DATA)
