@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Aug 19 08:52:50 CEST 2003 - arvin@suse.de
+
+- optimized String::CutBlanks
+
+-------------------------------------------------------------------
 Fri Aug 15 15:16:37 CEST 2003 - arvin@suse.de
 
 - added Popup::ShowText
