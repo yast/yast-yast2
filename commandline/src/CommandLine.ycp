@@ -10,7 +10,8 @@
 {
     module "CommandLine";
 
-    import "TypeRepository.ycp";
+    import "TypeRepository";
+    import "Report";
 
     include "ui/common_functions.ycp";
 
@@ -989,6 +990,60 @@
 	});
 	
 	return result;
+    }
+    
+    /**
+     * Check uniqueness of an option. Simply pass the list of user-specified
+     * options and a list of mutually exclusive options. In case of
+     * error, Report::Error is used.
+     * 
+     * @param options  options specified by the user on the command line to be checked
+     * @param unique_options 	list of mutually exclusive options to check against
+     * @return 	nil if there is a problem, otherwise the unique option found
+     */
+    global define string UniqueOption( map options, list unique_options ) ``{
+	// sanity check
+	if( size( unique_options ) == 0 ) {
+	    y2error( "Unique test of options required, but the list of the possible options is empty");
+	    return nil;
+	}
+	
+	// first do a filtering, then convert to a list of keys
+	list cmds = maplist( string key, string value, 
+	    filter( string opt, string value, options, ``( contains( unique_options, opt ) ) ),
+	    ``( key )
+	);
+	
+	// if it is OK, quickly return    
+	if( size( cmds ) == 1 ) return cmds[0]:nil;
+	
+	// something is wrong, prepare the error report
+	integer i = 0;
+	string opt_list = "";
+	while( i < size( unique_options )-1 ) {
+	    opt_list = opt_list + sformat( "'%1', ", unique_options[i]:nil );
+	    i = i + 1;
+	}
+	
+	opt_list = opt_list + sformat( _("or '%1'"), unique_options[i]:nil );
+	
+	if( size( cmds ) == 0 ) {
+	    if( size( unique_list ) == 1 ) {
+		Report::Error( sformat( _("You must specify the command '%1'."), unique_options[0]:nil ) );
+	    } else {    
+    		Report::Error( sformat( _("You must specify one of the commands: %1."), opt_list ) );
+	    }
+    	    return nil;
+	}	
+
+	if( size( cmds ) != 1 ) {
+	    // size( unique_options ) == 1 here does not make sense
+	    
+    	    Report::Error( sformat( _("You can specify only one of the commands: %1."), opt_list ) );
+	    return nil;
+	}
+
+	return cmds[0]:nil;
     }
 
 /* EOF */
