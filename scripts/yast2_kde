@@ -35,8 +35,8 @@ fi
 if [ "$DISPLAY" ] ; then
     set_qt_home_dir
     if [ $module == "menu" ] ; then
-	$ybindir/y2controlcenter $arg2 $arg3 $FONT
+	$ybindir/y2controlcenter $arg2 $arg3
     else
-	$ybindir/y2base $module $arg2 $arg3 qt $FONT -kcontrol_id "YaST"
+	$ybindir/y2base $module $arg2 $arg3 qt -kcontrol_id "YaST"
     fi
 fi

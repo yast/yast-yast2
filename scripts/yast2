@@ -136,7 +136,7 @@ else
     set_qt_home_dir
     # use ycp menu if the control center is not installed
     if [ $module == "menu" -a -e "$ybindir/y2controlcenter" ] ; then
-	$ybindir/y2controlcenter $Y2QT_ARGS $FONT "$@"
+	$ybindir/y2controlcenter $Y2QT_ARGS "$@"
     else
 
 	# Special case: "sw_single" needs a lot of screen space - 
@@ -149,7 +149,7 @@ else
 	fi
 
 	set -- $(for x in "$@"; do echo "(\"$x\")"; done) # surround args by ("...")
-	$ybindir/y2base $module "$@" qt -geometry "$Y2_GEOMETRY" $Y2QT_ARGS $FONT
+	$ybindir/y2base $module "$@" qt -geometry "$Y2_GEOMETRY" $Y2QT_ARGS
     fi
 fi
 

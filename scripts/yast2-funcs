@@ -11,7 +11,8 @@ logdir=/var/log/YaST2
 
 
 # font for qt
-Y2_XFONT="-gnu-unifont-medium-r-normal--16-160-75-75-p-80-iso10646-1"
+# obsolete, we should not need it anymore, adrian
+# Y2_XFONT="-gnu-unifont-medium-r-normal--16-160-75-75-p-80-iso10646-1"
 
 
 #
@@ -84,7 +85,7 @@ function set_lang_from_sysconfig()
 function set_qt_home_dir()
 {
     export QT_HOME_DIR="`eval echo ~$USER/.qt/`"
-    [ -d "$QT_HOME_DIR" ] || FONT="-fn $Y2_XFONT"
+#    [ -d "$QT_HOME_DIR" ] || FONT="-fn $Y2_XFONT"
 }
 
 
