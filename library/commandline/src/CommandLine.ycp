@@ -67,11 +67,6 @@
     map allcommands = systemcommands;
 
     /**
-     * User want to start the module UI
-     */
-    boolean nocommands = true;
-
-    /**
      * User asked for interactive session
      */
     boolean interactive = false;
@@ -96,7 +91,7 @@
      *  @param s	the string to be printed
      */
     global define void Print(string s) ``{
-	if( nocommands ) return;
+	if( ! Mode::commandline ) return;
 	if( interactive ) SCR::Write(.dev.tty, s);
 	else SCR::Write(.dev.tty.stderr, s);
     }
@@ -552,11 +547,11 @@
 	];
 
 	if( size(args) < 1 || ! Mode::normal ) {
-	    nocommands = true;
+	    Mode::commandline = false;
 	    // start GUI, module has some work to do :-)
 	    return true;
 	} else {
-	    nocommands = false;
+	    Mode::commandline = true;
 	}
 
 	// setup prompt
@@ -660,7 +655,7 @@
      *  @return boolean true, if the user asked for standard UI (no parameter was passed by command line)
      */
     global define boolean StartGUI() ``{
-	return nocommands;
+	return ! Mode::commandline;
     }
 
     /**
