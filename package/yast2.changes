@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 17 17:17:42 CET 2003 - arvin@suse.de
+
+- disable x11 setup on mips
+- make Next and Accept the default button
+
+-------------------------------------------------------------------
 Mon Feb 10 20:53:53 CET 2003 - arvin@suse.de
 
 - setup complete environment for qt during installation
