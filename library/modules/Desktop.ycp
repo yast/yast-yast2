@@ -1,0 +1,80 @@
+/**
+ * File:	modules/Desktop.ycp
+ * Package:	yast2
+ * Summary:	Handling of .dektop entries
+ * Author:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+module "Desktop";
+textdomain "base";
+
+//
+// YaST Module Configuration
+//
+global map Modules = $[];
+
+//
+// YaST Configuration Groups
+//
+global map Groups = $[];
+
+//
+// Values to be read
+//
+global list Values = [];
+
+
+//
+// The agent Path
+//
+global path AgentPath = .yast2.desktop;
+
+/**
+ * Read Module and Group data from desktop files.
+ * @return void
+ */
+global define void Read() ``{
+
+    /* read modules */
+    map filemap = $[];
+    path filepath = nil;
+    string name = nil;
+
+    path ps = add(AgentPath, "s");
+
+    list files = SCR::Dir(ps);
+
+    foreach(string file, files, ``{
+	filemap = $[];
+	path pv = add(AgentPath, "v");
+	filepath = add(pv, file) + ."Desktop Entry";
+	name = SCR::Read(filepath + ."X-SuSE-YaST-Call");
+	foreach(string value, Values, ``{
+	    string ret = SCR::Read(add(filepath, value));
+	    if(ret != nil) filemap[value] = ret;
+	});
+	Modules[name] = filemap;
+    });
+
+    /* read groups */
+    list groups = SCR::Dir(.yast2.groups.s);
+    foreach(string group, groups, ``{
+	filemap = $[];
+	filepath = add(.yast2.groups.v, group);
+	list values = SCR::Dir(filepath);
+	foreach(string value, values, ``{
+	    string ret = SCR::Read(add(filepath, value));
+	    // y2milestone("%1[%2]=%3", file, value, ret);
+	    if(ret != nil) filemap[value] = ret;
+	});
+	Groups[group] = filemap;
+    });
+}
+
+
+/* EOF */
+}
