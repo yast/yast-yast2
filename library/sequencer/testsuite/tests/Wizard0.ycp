@@ -23,12 +23,12 @@ map Sequence = $[
     ]
 ];
 
-TEST(``(WizardSequencer(nil, nil)), [], nil);
-TEST(``(WizardSequencer($[], $[])), [], nil);
-TEST(``(WizardSequencer($[], nil)), [], nil);
-TEST(``(WizardSequencer(nil, $[])), [], nil);
-TEST(``(WizardSequencer($[], Sequence)), [], nil);
-TEST(``(WizardSequencer(Aliases, $[])), [], nil);
-TEST(``(WizardSequencer($[], $[ "ws_start" : `ok ])), [], nil);
+TEST(``(Sequencer::Run(nil, nil)), [], nil);
+TEST(``(Sequencer::Run($[], $[])), [], nil);
+TEST(``(Sequencer::Run($[], nil)), [], nil);
+TEST(``(Sequencer::Run(nil, $[])), [], nil);
+TEST(``(Sequencer::Run($[], Sequence)), [], nil);
+TEST(``(Sequencer::Run(Aliases, $[])), [], nil);
+TEST(``(Sequencer::Run($[], $[ "ws_start" : `ok ])), [], nil);
 
 }

@@ -1,8 +1,8 @@
 {
 
 include "testsuite.ycp";
-include "./../src/sequencer.ycp";
+import "Sequencer";
 
-TEST(``(WS_error("testsuite message")), [], nil);
+TEST(``(Sequencer::WS_error("testsuite message")), [], nil);
 
 }

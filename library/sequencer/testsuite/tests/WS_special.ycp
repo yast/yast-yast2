@@ -1,7 +1,7 @@
 {
 
 include "testsuite.ycp";
-include "./../src/sequencer.ycp";
+import "Sequencer";
 
 define any Normal() { return 1; }
 define any SpecialN() { return 1; }
@@ -13,9 +13,9 @@ map Aliases = $[
     "special_y"	: [ ``(SpecialY()), true ]
 ];
 
-TEST(``(WS_special(Aliases,"normal")), [], nil);
-TEST(``(WS_special(Aliases,"special_n")), [], nil);
-TEST(``(WS_special(Aliases,"special_y")), [], nil);
-TEST(``(WS_special(Aliases,"missing")), [], nil);
+TEST(``(Sequencer::WS_special(Aliases,"normal")), [], nil);
+TEST(``(Sequencer::WS_special(Aliases,"special_n")), [], nil);
+TEST(``(Sequencer::WS_special(Aliases,"special_y")), [], nil);
+TEST(``(Sequencer::WS_special(Aliases,"missing")), [], nil);
 
 }

@@ -1,11 +1,11 @@
 {
 
 include "testsuite.ycp";
-include "./../src/sequencer.ycp";
+import "Sequencer";
 
-TEST(``(WS_push(nil,4)), [], nil);
-TEST(``(WS_push([],4)), [], nil);
-TEST(``(WS_push([1,3,5,7,9,11],4)), [], nil);
-TEST(``(WS_push([1,3,5,7,9,11],7)), [], nil);
+TEST(``(Sequencer::WS_push(nil,4)), [], nil);
+TEST(``(Sequencer::WS_push([],4)), [], nil);
+TEST(``(Sequencer::WS_push([1,3,5,7,9,11],4)), [], nil);
+TEST(``(Sequencer::WS_push([1,3,5,7,9,11],7)), [], nil);
 
 }

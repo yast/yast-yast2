@@ -3,6 +3,7 @@
  * Package:	yast2
  * Summary:	Rich text manipulation routines
  * Authors:	Michal Svec <msvec@suse.cz>
+ *		Stano Visnovsky <visnov@suse.cz>
  *
  * $Id$
  */
@@ -11,44 +12,90 @@
 
 module "RichText";
 textdomain "base";
+import "String";
 
+define string DropWS(string text) ``{
+    list<string> filteredlist = splitstring(text, "\n	");
+    return String::CutBlanks(mergestring(filteredlist, " "));
+}
 
-    /**
-     * Convert a richtext string into a formatted plain text.
-     *
-     * @param richtext  the text to be converted
-     * @return the converted text
-     */
-    global define string Rich2Plain( string richtext ) ``{
-	string result = "";
-	list lparts = splitstring( richtext, "<" );
-	y2debug("richtext=%1", richtext);
+/**
+ * Convert a richtext string into a formatted plain text.
+ * @param richtext the text to be converted
+ * @return the converted text
+ */
+global define string Rich2Plain(string richtext) ``{
+    y2debug("richtext=%1", richtext);
 
-	boolean inli = false;
-	integer indents = 0;
+    list lparts = splitstring(DropWS(richtext), "<");
+    y2debug("lparts=%1", lparts);
 
-	foreach( string lpart, lparts, ``{
-	    integer s = find( lpart, ">" );
-	    string tag = substring( lpart, 0, s );
+    /* Am I in <LI>? */
+    boolean inli = false;
 
-	    // handled tags
-	    if( tolower(tag) == "br" ) result = result + "\n";
-	    else if( tolower(tag) == "p" ) result = result + "\n\n";
-	    else if( tolower(tag) == "ul" ) indents = indents + 1;
-	    else if( tolower(tag) == "/ul" ) indents = indents - 1;
-	    else if( tolower(tag) == "li" ) inli = true;
-	    else if( tolower(tag) == "/li" ) inli = false;
+    /* Indentation level */
+    integer indents = 0;
 
-	    // add the text
-	    if( s != -1 ) lpart = substring( lpart, s+1 );
-	    if(lpart != "" && inli) lpart = "* " + lpart;
-	    result = result + lpart;
-	});
-	
-	y2error( result );
+    string result = "";
+    foreach( string lpart, lparts, ``{
+	integer s = find( lpart, ">" );
+	string tag = tolower(substring( lpart, 0, s ));
 
-	return result;
-    }
+	/**** Handle tags *****/
+
+	/* BR */
+	if( tag == "br" ) {
+	    result = result + "\n";
+	}
+	/* P */
+	else if( tag == "p" ) {
+	    result = result + "\n\n";
+	}
+	/* UL */
+	else if( tag == "ul" ) {
+	    inli = true;
+	    indents = indents + 1;
+	}
+	/* /UL */
+	else if( tag == "/ul" ) {
+	    if(inli && indents == 1) result = result + "\n";
+	    indents = indents - 1;
+	    inli = false;
+	}
+	/* LI */
+	else if( tag == "li" ) {
+	    if(inli) result = result + "\n";
+	    inli = true;
+	}
+	/* /LI */
+	else if( tag == "/li" ) {
+	    inli = false;
+	    result = result + "\n";
+	}
+
+	/**** Add the text *****/
+
+	if(s != -1) lpart = String::CutBlanks(substring(lpart, s+1));
+	if(regexpmatch(lpart, "^[ \n	]*$")) return;
+
+	if(lpart != "" && inli) {
+	    integer i = 1;
+	    while(i < indents) {
+		result = result + "  ";
+		i = i + 1;
+	    }
+	    lpart = "* " + lpart;
+	}
+	// result = result + "[" + lpart + "]";
+	result = result + lpart;
+    });
+    result = String::CutBlanks(result);
+    if((size(result) > 0) && (substring(result, size(result)-1) != "\n"))
+	result = result + "\n";
+
+    y2debug(result);
+    return result;
+}
 
 /* EOF */
 }

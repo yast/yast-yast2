@@ -1,7 +1,7 @@
 {
 
 include "testsuite.ycp";
-include "./../src/sequencer.ycp";
+import "Sequencer";
 
 void func1() { return; }
 void func2() { return; }
@@ -16,13 +16,13 @@ map aliases = $[
     "6" : [ ``(func3()), `blah ]
 ];
 
-TEST(``(WS_alias($[], "blah")), [], nil);
-TEST(``(WS_alias(aliases, "blah")), [], nil);
-TEST(``(WS_alias(aliases, "1")), [], nil);
-TEST(``(WS_alias(aliases, "2")), [], nil);
-TEST(``(WS_alias(aliases, "3")), [], nil);
-TEST(``(WS_alias(aliases, "4")), [], nil);
-TEST(``(WS_alias(aliases, "5")), [], nil);
-TEST(``(WS_alias(aliases, "6")), [], nil);
+TEST(``(Sequencer::WS_alias($[], "blah")), [], nil);
+TEST(``(Sequencer::WS_alias(aliases, "blah")), [], nil);
+TEST(``(Sequencer::WS_alias(aliases, "1")), [], nil);
+TEST(``(Sequencer::WS_alias(aliases, "2")), [], nil);
+TEST(``(Sequencer::WS_alias(aliases, "3")), [], nil);
+TEST(``(Sequencer::WS_alias(aliases, "4")), [], nil);
+TEST(``(Sequencer::WS_alias(aliases, "5")), [], nil);
+TEST(``(Sequencer::WS_alias(aliases, "6")), [], nil);
 
 }
