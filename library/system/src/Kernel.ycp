@@ -242,17 +242,29 @@
 
 	    if (Arch::board_mac_new || Arch::board_mac_old)
 	    {
-		kernel_packages = ["kernel-default"];
+	        if (Arch::board_compatible == "MacRISC4")
+		{
+		    // G5 and newer
+		    if (Arch::ppc32)
+			kernel_packages = ["kernel-pmac64_32bit"];
+		    else
+			kernel_packages = ["kernel-pmac64"];
+		}
+		else
+		{
+		    // MacRISC, MacRISC2, MacRISC3
+		    kernel_packages = ["kernel-default"];
+		}
 	    }
 
 	    if (Arch::board_mac_nubus)
 	    {
 		kernel_packages = ["kernel-nubus"];
-//		binary = "vmlinux-nubus";
 	    }
 
 	    if (Arch::board_chrp)
 	    {
+	        // why "fixme"?
 		// XXX fixme
 		string chrp_cpu = "";
 		list<map> cpuProbe = (list<map>) SCR::Read(.probe.cpu);
@@ -265,12 +277,10 @@
 		if (issubstring (chrp_cpu, "power3") && Arch::ppc32)
 		{
 		    kernel_packages = ["kernel-power3"];
-//		    binary = "vmlinux-power3";
 		}
 		else if (Arch::ppc64)
 		{
 		    kernel_packages = ["kernel-ppc64"];
-//		    binary = "vmlinuz";
 		}
 		else
 		{
@@ -280,12 +290,10 @@
 	    else if (Arch::board_iseries)
 	    {
 		kernel_packages = ["kernel-iseries64"];
-//		binary = "vmlinux64";
 	    }
 	    else if (Arch::board_prep)
 	    {
 		kernel_packages = ["kernel-default"];
-//		binary = "zImage.prep";
 	    }
 	}
 	else if (Arch::ia64)

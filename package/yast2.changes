@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 16 18:27:14 CET 2004 - arvin@suse.de
+
+- recognize newer macs (bug #34587)
+
+-------------------------------------------------------------------
 Mon Feb 16 17:06:46 CET 2004 - jsrain@suse.de
 
 - kernel image is now /boot/vmlinux on all PPC subarchs (#34588)

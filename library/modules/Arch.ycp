@@ -126,6 +126,7 @@ global boolean x86_64	= (architecture == "x86_64");
 /* ************************************************************ */
 /* general system board types (initialized in constructor)	*/
 
+global string board_compatible	= "";
 /**
  * true for all PPC "MacRISC" boards
  */
@@ -154,7 +155,7 @@ global boolean board_chrp	= false;
 /**
  * true for all "iSeries" ppc boards
  */
-global boolean board_iseries = false;
+global boolean board_iseries	= false;
 
 /**
  * true for all "PReP" ppc boards
@@ -212,7 +213,6 @@ global boolean x11_setup_needed	= true;
  */
 global define void Arch() ``{
 
-    string board_type = "";
     string checkgeneration = "";
     list systemProbe = (list) SCR::Read(.probe.system);
     if(systemProbe == nil) systemProbe = [];
@@ -222,20 +222,23 @@ global define void Arch() ``{
 	checkgeneration = systemEntry["generation"]:"";
 	if (checksys != "")
 	{
-	    board_type = checksys;
+	    board_compatible = checksys;
 	}
     });
 
     if (ppc)
     {
 	// board properties (depend on CPU)
-	if (board_type == "MacRISC")
+	if (board_compatible == "MacRISC"  ||
+	    board_compatible == "MacRISC2" ||
+	    board_compatible == "MacRISC3" ||
+	    board_compatible == "MacRISC4" )
 	    board_mac = true;
-	else if (board_type == "CHRP")
+	else if (board_compatible == "CHRP")
 	    board_chrp = true;
-	else if (board_type == "iSeries")
+	else if (board_compatible == "iSeries")
 	    board_iseries = true;
-	else if (board_type == "PReP")
+	else if (board_compatible == "PReP")
 	    board_prep = true;
 
        // PowerMacs can be NuBus, OldWorld, NewWorld
