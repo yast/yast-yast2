@@ -94,8 +94,8 @@
      */
     boolean verbose = false;
 
-    // TODO: support simple minimal cmdline interface
-    string nosupport = _("This YaST module does not support command line interface");
+    // string: command line interface is not supported
+    string nosupport = _("This YaST2 module does not support command line interface.");
 
     /**
      *  @short Print a String
@@ -565,6 +565,7 @@
      *  @see Command
      */
     global define boolean Init (map cmdlineinfo, list<any> args) ``{
+
 	// initialize verbose flag
 	verbose = contains( WFM::Args(), "verbose" );
 
@@ -678,6 +679,21 @@
 	} else {
 	    Mode::SetUI ("commandline");
 	}
+
+
+	// check whether the command line mode is really supported by the module
+	if (!haskey(cmdlineinfo, "actions"))
+	{
+	    // command line is not supported
+	    CommandLine::Print(String::UnderlinedHeader("YaST2 " + cmdlineinfo["id"]:"", 0));
+	    CommandLine::Print("");
+	    CommandLine::Print(cmdlineinfo["help"]:"");
+	    CommandLine::Print("");
+	    CommandLine::Print(nosupport);
+	    CommandLine::Print("");
+	    return false;
+	}
+
 
 	// setup prompt
 	cmdlineprompt = "YaST2 " + cmdlineinfo["id"]:"" + "> ";
@@ -1022,16 +1038,6 @@ global any Run( map commandline ) {
 	/* Turn off progress bar if not GUI */
 	Progress::off();
 
-
-	/* Start initialization */
-	if( commandline["initialize"]:nil != nil ) {
-	    boolean ret = RunFunction( commandline["initialize"]:fake_false );
-	    if( !ret ) {
-		y2milestone( "Module initialization failed" );
-		return false;
-	    }
-	}
-
 	CommandLine::PrintVerbose( _("Ready") );
 
 	ret = true;
@@ -1043,10 +1049,29 @@ global any Run( map commandline ) {
         string exit = "";
         list l = [];
 
+	boolean initialized = false;
+
 	while(!CommandLine::Done()) {
 	    map m = CommandLine::Command();
             command = m["command"]:"exit";
 	    options = m["options"]:$[];
+
+	    // start initialization code if it wasn't already used
+	    if (!initialized)
+	    {
+		// check whether command is defined in the map (i.e. it is not predefined command or invalid command)
+		// and start initialization if it's defined
+		if( haskey(commandline["actions"]:$[], command) && commandline["initialize"]:nil != nil ) {
+		    boolean ret = RunFunction( commandline["initialize"]:fake_false );
+		    if( !ret ) {
+			y2milestone( "Module initialization failed" );
+			return false;
+		    }
+
+		}
+
+		initialized = true;
+	    }
 
 	    boolean(map<string,string>) exec = (boolean(map<string,string>))
 		commandline["actions", command, "handler"]:nil;
