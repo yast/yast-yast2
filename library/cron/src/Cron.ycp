@@ -41,5 +41,45 @@ global define boolean Write(string filename, list blocks) ``{
 }
 
 
+/**
+  * Add a simple cron job with comment and env. variables
+  * @param string comment
+  * @param map map with environment variables
+  * @param string command
+  * @param map event event time: dom, dow, hour, minute, month, special
+  * @param string file path to write cron to
+  * @return boolean true on success
+  */
+global define boolean AddSimple(
+        string comment,
+        map envs, string command ,
+        map event,
+        string file
+        ) ``{
+
+    map cron = $[];
+    // Comments first
+    list<string> comments = [];
+    comments = add(comments, comment);
+    cron["comments"] = comments;
+
+    // Variables
+    cron["envs"] = envs;
+
+    // Events
+    list<map> events = [];
+    event["command"] = command;
+
+    events = add(events, event);
+
+    cron["events"] = events;
+
+    list<map> crons = [];
+    crons=add(crons, cron);
+
+    boolean ret = Write(file, crons);
+    return ret;
+}
+
 /* EOF */
 }
