@@ -389,7 +389,7 @@
 	    button_box = BackAbortNextButtonBox();
 	
 	UI::OpenDialog(`opt(`defaultsize),
-		       GenericDialog( BackAbortNextButtonBox() ) );
+		       GenericDialog( button_box ) );
 
 	if ( help_space_contents != nil )
 	    UI::ReplaceWidget(`id(`helpSpace), help_space_contents );
