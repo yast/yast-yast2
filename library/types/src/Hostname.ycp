@@ -75,7 +75,7 @@ global define boolean CheckFQ(string host) ``{
  * @example Hostname::SplitFQ("ftp.suse.cz") -> ["ftp", "suse.cz"]
  * @example Hostname::SplitFQ("ftp") -> ["ftp"]
  */
-global define list SplitFQ(string fqhostname) ``{
+global define list<string> SplitFQ(string fqhostname) ``{
     if (fqhostname == "" || fqhostname == nil) {
 	y2error("Bad FQ hostname: %1", fqhostname);
 	return [];
@@ -96,6 +96,17 @@ global define list SplitFQ(string fqhostname) ``{
     }
 
     return [ hn, dn ];
+}
+
+/**
+ * Merge short hostname and domain to full-qualified host name
+ * @param hostname short host name
+ * @param domain domain name
+ * @return FQ hostname
+ */
+global define string MergeFQ(string hostname, string domain) {
+    if(domain == "" || domain == nil) return hostname;
+    return hostname + "." + domain;
 }
 
 /* EOF */
