@@ -1,0 +1,76 @@
+{
+
+include "testsuite.ycp";
+import "Netmask";
+
+DUMP("Netmask::Check4");
+TEST(``(Netmask::Check4("128.0.0.0")), [], nil);
+TEST(``(Netmask::Check4("192.0.0.0")), [], nil);
+TEST(``(Netmask::Check4("224.0.0.0")), [], nil);
+TEST(``(Netmask::Check4("240.0.0.0")), [], nil);
+TEST(``(Netmask::Check4("248.0.0.0")), [], nil);
+TEST(``(Netmask::Check4("252.0.0.0")), [], nil);
+TEST(``(Netmask::Check4("254.0.0.0")), [], nil);
+TEST(``(Netmask::Check4("255.0.0.0")), [], nil);
+TEST(``(Netmask::Check4("255.128.0.0")), [], nil);
+TEST(``(Netmask::Check4("255.192.0.0")), [], nil);
+TEST(``(Netmask::Check4("255.224.0.0")), [], nil);
+TEST(``(Netmask::Check4("255.240.0.0")), [], nil);
+TEST(``(Netmask::Check4("255.248.0.0")), [], nil);
+TEST(``(Netmask::Check4("255.252.0.0")), [], nil);
+TEST(``(Netmask::Check4("255.254.0.0")), [], nil);
+TEST(``(Netmask::Check4("255.255.0.0")), [], nil);
+TEST(``(Netmask::Check4("255.255.128.0")), [], nil);
+TEST(``(Netmask::Check4("255.255.192.0")), [], nil);
+TEST(``(Netmask::Check4("255.255.224.0")), [], nil);
+TEST(``(Netmask::Check4("255.255.240.0")), [], nil);
+TEST(``(Netmask::Check4("255.255.248.0")), [], nil);
+TEST(``(Netmask::Check4("255.255.252.0")), [], nil);
+TEST(``(Netmask::Check4("255.255.254.0")), [], nil);
+TEST(``(Netmask::Check4("255.255.255.0")), [], nil);
+TEST(``(Netmask::Check4("255.255.255.128")), [], nil);
+TEST(``(Netmask::Check4("255.255.255.192")), [], nil);
+TEST(``(Netmask::Check4("255.255.255.224")), [], nil);
+TEST(``(Netmask::Check4("255.255.255.240")), [], nil);
+TEST(``(Netmask::Check4("255.255.255.248")), [], nil);
+TEST(``(Netmask::Check4("255.255.255.252")), [], nil);
+TEST(``(Netmask::Check4("255.255.255.254")), [], nil);
+TEST(``(Netmask::Check4("255.255.255.255")), [], nil);
+TEST(``(Netmask::Check4("1.2.3.4")), [], nil);
+TEST(``(Netmask::Check4("1.A.3.4")), [], nil);
+TEST(``(Netmask::Check4("0.0.0.0")), [], nil);
+
+TEST(``(Netmask::Check4(nil)), [], nil);
+TEST(``(Netmask::Check4("")), [], nil);
+TEST(``(Netmask::Check4("33")), [], nil);
+TEST(``(Netmask::Check4("0")), [], nil);
+TEST(``(Netmask::Check4("24")), [], nil);
+TEST(``(Netmask::Check4("32")), [], nil);
+
+DUMP("Netmask::Check6");
+TEST(``(Netmask::Check6(nil)), [], nil);
+TEST(``(Netmask::Check6("")), [], nil);
+TEST(``(Netmask::Check6("345")), [], nil);
+TEST(``(Netmask::Check6("128")), [], nil);
+
+DUMP("Netmask::ToBits");
+TEST(``(Netmask::ToBits("255.255.255.255")), [], nil);
+TEST(``(Netmask::ToBits("255.255.255.240")), [], nil);
+TEST(``(Netmask::ToBits("255.255.255.224")), [], nil);
+TEST(``(Netmask::ToBits("255.255.255.0")), [], nil);
+TEST(``(Netmask::ToBits("255.255.240.0")), [], nil);
+TEST(``(Netmask::ToBits("255.240.0.0")), [], nil);
+TEST(``(Netmask::ToBits("240.0.0.0")), [], nil);
+TEST(``(Netmask::ToBits("0.0.0.0")), [], nil);
+
+DUMP("Netmask::FromBits");
+TEST(``(Netmask::FromBits(32)), [], nil);
+TEST(``(Netmask::FromBits(27)), [], nil);
+TEST(``(Netmask::FromBits(28)), [], nil);
+TEST(``(Netmask::FromBits(24)), [], nil);
+TEST(``(Netmask::FromBits(20)), [], nil);
+TEST(``(Netmask::FromBits(12)), [], nil);
+TEST(``(Netmask::FromBits(4)), [], nil);
+TEST(``(Netmask::FromBits(0)), [], nil);
+
+}

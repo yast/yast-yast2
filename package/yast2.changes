@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jul  4 16:55:41 CEST 2003 - msvec@suse.cz
+
+- added a first library of simple types:
+    IP, Netmask, Hostname, Address, String, URL
+- 2.8.12
+
+-------------------------------------------------------------------
 Wed Jul  2 08:52:29 CEST 2003 - visnov@suse.de
 
 - propagate y2base exit code from yast2 script 

@@ -1,0 +1,12 @@
+Dump	String::Quote
+Return	
+Return	
+Return	a
+Return	a'\''b
+Return	a'\''b'\''c
+Dump	String::UnQuote
+Return	
+Return	
+Return	a
+Return	a'b
+Return	a'b'c

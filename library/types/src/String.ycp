@@ -1,0 +1,43 @@
+/**
+ * File:	modules/String.ycp
+ * Package:	yast2
+ * Summary:	String manipulation routines
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+module "String";
+textdomain "base";
+
+/**
+ * Quote a string with 's
+ * @param var unquoted string
+ * @return quoted string
+ * @example quote("a'b") -> "a'\''b"
+ */
+global define string Quote(string var) ``{
+    if(var == nil || var == "") return "";
+    return mergestring(splitstring(var, "'"), "'\\''");
+}
+
+/**
+ * Unquote a string with 's (quoted with quote)
+ * @param var quoted string
+ * @return unquoted string
+ * @see quote
+ */
+global define string UnQuote(string var) ``{
+    if(var == nil || var == "") return "";
+    y2debug("var=%1", var);
+    while(regexpmatch(var, "'\\\\''")) {
+	var = regexpsub(var, "(.*)'\\\\''(.*)", "\\1'\\2");
+	y2debug("var=%1", var);
+    }
+    return var;
+}
+
+/* EOF */
+}
