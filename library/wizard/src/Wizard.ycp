@@ -1083,6 +1083,19 @@
         return mm;
     }
 
+
+    global string QueryTreeItem() {
+
+        if (haveFancyUI() )
+        {
+            return (string)UI::QueryWidget(`id(`wizard), `CurrentItem );
+        }
+        else
+        {
+            return (string)UI::QueryWidget(`id(`wizardTree), `CurrentItem );
+        }
+    }
+
     /**
      * Create the tree in the dialog, replaces helpspace with new tree widget
      * @param list<map> Tree data
