@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sat Sep 25 10:55:58 CEST 2004 - mvidner@suse.cz
+
+- Change directory to / in /sbin/yast2 (#46055).
+- 2.10.20
+
+-------------------------------------------------------------------
 Fri Sep 24 19:03:41 CEST 2004 - mvidner@suse.cz
 
 - Added Desktop::RunViaDesktop (#37864).

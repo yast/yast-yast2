@@ -12,6 +12,11 @@
 # wise ncurses. It starts then the module 'menu' which implements
 # the configuration and administration menu.
 
+# Workaround for bug #46055:
+# Go to the directory which is hopefully not mounted over the
+# network so that yast survives network restart.
+cd /
+
 export PATH=/sbin:/usr/sbin:$PATH
 
 # load common script functions
