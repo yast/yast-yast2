@@ -124,7 +124,6 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
 	{
 	    y2milestone("License not accepted: %1", toinstall);
 	    last_op_canceled = true;
-	    Pkg::SourceFinishAll ();
 	    return false;
 	}
 	foreach (string p, string l, licenses, {
@@ -143,11 +142,7 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
 		ok = false;
 	    }
     });
-    if(ok != true)
-    {
-	Pkg::SourceFinishAll ();
-	return false;
-    }
+    if(ok != true) return false;
 
     foreach (string p, toremove, {
 	if(ok == true)
@@ -156,17 +151,12 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
 		ok = false;
 	    }
     });
-    if(ok != true)
-    {
-	Pkg::SourceFinishAll ();
-	return false;
-    }
+    if(ok != true) return false;
 
     if(Pkg::PkgSolve (false) != true) {
 	y2error("Package solve failed: %1", Pkg::LastError());
 	if (packages_consistent)
 	{
-	    Pkg::SourceFinishAll ();
 	    return false;
 	}
     }
@@ -174,7 +164,6 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
     //[int successful, list failed, list remaining, list srcremaining]
     list result = Pkg::PkgCommit (0);
     y2debug ("PkgCommit: %1", result);
-    Pkg::SourceFinishAll ();
     if(result[1]:[] != []) {
 	y2error("Package commit failed: %1", result[1]:[]);
 	return false;
@@ -209,9 +198,7 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
  */
 global boolean Available(string package) {
     EnsureSourceInit();
-    boolean ret = Pkg::IsAvailable(package);
-    Pkg::SourceFinishAll ();
-    return ret;
+    return Pkg::IsAvailable(package);
 }
 
 /**
