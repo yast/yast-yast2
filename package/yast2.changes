@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Feb 28 17:16:04 CET 2003 - kkaempf@suse.de
+
+- honor 'manual' on kernel command line (#24462)
+
+-------------------------------------------------------------------
 Tue Feb 25 18:46:42 CET 2003 - kkaempf@suse.de
 
 - fix mkdir silence option.

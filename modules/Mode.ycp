@@ -252,6 +252,19 @@
 	    text = SCR::Read (.etc.install_inf.Textmode) == "1";
 
 	    manual = SCR::Read (.etc.install_inf.Manual) == "1";
+	    // we might be in 'continue' mode (after first time booting into
+	    // installed system). Give the user a chance to enter "manual"
+	    // at kernel command line to be asked for module loading
+	    // because of #24462, network modules are loaded automagically.
+	    // This won't harm for 99.99% but you never know ...
+	    if (!manual)
+	    {
+		string tmp = SCR::Read (.target.string, "/proc/cmdline");
+		if (contains (splitstring (tmp, " \n"), "manual"))
+		{
+		    manual = true;
+		}
+	    }
 
 	    serial_console = SCR::Read (.etc.install_inf.Console) != nil;
 
