@@ -939,6 +939,31 @@
 	    UI::ChangeWidget(`id(`cancel ), `Enabled, true );
     }
 
+    /**
+     * Show a "Release Notes" button with the specified label and ID if there is a "steps" panel
+     **/
+    global void ShowReleaseNotesButton( string label, any id )
+    {
+	if ( UI::WizardCommand(`ShowReleaseNotesButton( label, id ) ) == false )
+	{
+	    // FIXME: do something in the NCurses case
+	    integer dummy_so_ycpc_doesnt_complain = 0;
+	}
+    }
+
+
+    /**
+     * Hide the "Release Notes" button, if there is any
+     **/
+    global void HideReleaseNotesButton()
+    {
+	if ( UI::WizardCommand(`HideReleaseNotesButton() ) == false )
+	{
+	    // FIXME: do something in the NCurses case
+	    integer dummy_so_ycpc_doesnt_complain = 0;
+	}
+    }
+
 
     /**
      * Retranslate the wizard buttons.
