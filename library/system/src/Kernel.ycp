@@ -280,7 +280,7 @@
 		}
 		else if (Arch::ppc64)
 		{
-		    kernel_packages = ["kernel-ppc64"];
+		    kernel_packages = ["kernel-pseries64"];
 		}
 		else
 		{
