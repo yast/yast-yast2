@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Apr  2 06:41:58 CEST 2004 - nashif@suse.de
+
+- added wrapper functions around Tree and Menu enabled Wizards to 
+  support ncurses mode (#37581)
+
+-------------------------------------------------------------------
 Thu Apr 01 14:28:23 CEST 2004 - arvin@suse.de
 
 - don't set download callbacks globaly (bug #37151)
