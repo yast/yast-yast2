@@ -42,6 +42,7 @@ mkdir -p "$RPM_BUILD_ROOT"@moduledir@
 mkdir -p "$RPM_BUILD_ROOT"@scrconfdir@
 mkdir -p "$RPM_BUILD_ROOT"@ybindir@
 mkdir -p "$RPM_BUILD_ROOT"@ydatadir@
+mkdir -p "$RPM_BUILD_ROOT"@ynclude@
 mkdir -p "$RPM_BUILD_ROOT"@vardir@
 
 @CLEAN@
@@ -60,6 +61,7 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 %dir @scrconfdir@
 %dir @ybindir@
 %dir @ydatadir@
+%dir @ynclude@
 %dir @vardir@
 
 # yast2

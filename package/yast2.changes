@@ -2,6 +2,7 @@
 Thu Aug 14 14:35:30 CEST 2003 - arvin@suse.de
 
 - removed y2menu for good
+- added /usr/share/YaST2/include to file list (bug #28807)
 
 -------------------------------------------------------------------
 Mon Aug 11 15:40:00 CEST 2003 - gs@suse.de
