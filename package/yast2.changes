@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Dec 15 15:58:45 CET 2003 - jsrain@suse.de
+
+- Moved Label.ycp and Popup.ycp from source/yast2/library/wizard/src
+  to source/yas t2/library/module because of building with the new
+  interpreter
+
+-------------------------------------------------------------------
 Mon Dec 15 11:34:19 CET 2003 - msvec@suse.cz
 
 - better services handling: Service (from Runlevel)
