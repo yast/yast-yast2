@@ -106,15 +106,11 @@ global define map Parse(string url) ``{
  * @see also perl-URI: URI(3)
  */
 global define boolean Check(string url) ``{
-    y2debug("0");
-
     /* We don't allow empty URLs */
     if(url == nil || size(url) < 1) return false;
-    y2debug("1");
 
     /* We don't allow URLs with spaces */
     if(find(url, " ") != -1) return false;
-    y2debug("2");
 
     map tokens = Parse(url);
 
@@ -122,16 +118,13 @@ global define boolean Check(string url) ``{
     if(!regexpmatch(tokens["scheme"]:"", "^[a-z]*$"))
 	return false;
 
-    y2debug("3");
     /* Check "host"    : "www.suse.cz" */
     if((!Hostname::CheckFQ(tokens["host"]:"") && !IP::Check(tokens["host"]:""))
             && tokens["host"]:"" != "")
 	return false;
 
-    y2debug("4");
     /* Check "path"    : /path/index.html" */
 
-    y2debug("5");
     /* Check "port"    : "80" */
     if(!regexpmatch(tokens["port"]:"", "^[0-9]*$"))
 	return false;
