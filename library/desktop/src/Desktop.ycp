@@ -105,6 +105,7 @@ global define void Read(list<string> Values) {
 
 	filemap["Icon"] = SCR::Read(filepath + "Icon");
 	filemap["SortKey"] = SCR::Read(filepath + "X-SuSE-YaST-SortKey");
+	filemap["Hidden"] = SCR::Read(filepath + "Hidden");
 	filemap["Name"] = ReadLocalizedKey(filepath, "Name");
 	filemap["modules"] = [];
 
@@ -153,6 +154,11 @@ define list <term> CreateList(map M) {
     keys = sort(any x, any y, keys, {
 	return M[x, "SortKey"]:"" < M[y, "SortKey"]:"";
     });
+    
+    keys = filter (any key, keys, {
+	return M[key, "Hidden"]:"no" != "yes";
+    });
+    
     y2debug("keys=%1", keys);
 
     return maplist(any name, keys, {
@@ -179,7 +185,7 @@ global define list <term> ModuleList(string group) {
     });
 
     foreach(string m, mods, {
-	if(haskey(Modules, m))
+	if(haskey(Modules, m) &&  Modules[m, "Hidden"]:"false" != "true")
 	    l = add(l, `item(`id(m), Modules[m,"Name"]:"???"));
     });
 
