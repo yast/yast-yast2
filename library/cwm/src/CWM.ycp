@@ -523,7 +523,9 @@
 	    {
 		if (functions[ret]:nil != nil)
 		{
-		    ret = (boolean)(eval (functions[ret]:nil)) ? `abort : nil;
+		    term to_eval = functions[ret]:nil;
+		    any eval_ret = eval (to_eval);
+		    ret = (boolean)eval_ret ? `abort : nil;
 		}
 	    }
 
