@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Sep 14 16:58:38 CEST 2004 - mvidner@suse.cz
+
+- Ignore /etc/init.d/Makefile (#45198).
+
+-------------------------------------------------------------------
 Tue Sep 14 10:51:01 CEST 2004 - jsrain@suse.cz
 
 - added ProductFeatures::enable_firewall and firewall_ssh_enable
