@@ -116,36 +116,36 @@
 	 * test command line arguments for test mode and continue mode
 	 */
 
-	integer arg_count = size(Args());
+	integer arg_count = size(WFM::Args());
 	integer arg_no = 0;
 
 	while ( arg_no < arg_count )
 	{
-	    y2debug("option #%1: %2", arg_no, Args(arg_no) );
+	    y2debug("option #%1: %2", arg_no, WFM::Args(arg_no) );
 
-	    if	    (Args(arg_no) == "test"	   )
+	    if	    (WFM::Args(arg_no) == "test"	   )
 	    {
 		test = true;
 		y2warning("***** Test mode enabled *****");
 	    }
-	    else if (Args(arg_no) == "initial"	    ) initial	= true;
-	    else if (Args(arg_no) == "continue"	    ) cont	= true;
-	    else if (Args(arg_no) == "demo"	    )
+	    else if (WFM::Args(arg_no) == "initial"	    ) initial	= true;
+	    else if (WFM::Args(arg_no) == "continue"	    ) cont	= true;
+	    else if (WFM::Args(arg_no) == "demo"	    )
 	    {
 		demo = true;
 		y2warning("***** Demo mode enabled *****");
 	    }
-	    else if (Args(arg_no) == "screenshots"  )
+	    else if (WFM::Args(arg_no) == "screenshots"  )
 	    {
 		screen_shot = true;
 		y2warning("***** Screen shot mode enabled *****");
 	    }
-	    else if (Args(arg_no) == "text_fallback") text_fallback   = true;
-	    else if (Args(arg_no) == "no_x11"       ) no_x11	      = true;
-	    else if (Args(arg_no) == "reprobe"      ) reprobe	      = true;
+	    else if (WFM::Args(arg_no) == "text_fallback") text_fallback   = true;
+	    else if (WFM::Args(arg_no) == "no_x11"       ) no_x11	      = true;
+	    else if (WFM::Args(arg_no) == "reprobe"      ) reprobe	      = true;
 	    else
 	    {
-		y2milestone ("skipping unknown option %1", Args(arg_no) );
+		y2milestone ("skipping unknown option %1", WFM::Args(arg_no) );
 	    }
 
 	    arg_no = arg_no + 1;
