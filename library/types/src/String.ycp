@@ -628,7 +628,7 @@ global string ValidCharsFilename () {
 	    foreach (string col, row, {
 		integer col_size = size(col);
 		// found longer record for this column
-		if (col_size>longest[col_counter]:0) longest[col_counter] = col_size;
+		if (col_size>longest[col_counter]:-1) longest[col_counter] = col_size;
 		// next column
 		col_counter = col_counter + 1;
 	    });
