@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar  8 17:53:29 CET 2004 - sh@suse.de
+
+- Changed X cursor theme (adrian) 
+
+-------------------------------------------------------------------
 Mon Mar  8 15:56:52 CET 2004 - msvec@suse.cz
 
 - Added Wizard::SetDesktopIcon to set the title icon
