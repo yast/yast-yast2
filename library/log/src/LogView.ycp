@@ -43,6 +43,9 @@
       *              in the log (for getting relevant  parts of
       *              /var/log/messages. If empty or not present, whole file
       *              is used
+      *  - "command" -- allows to specify comand to get the log for cases
+      *                 where grep isn't enough. If used, file and grep entries
+      *                 are ignored
       *  - "save" -- boolean, if true, then log saving is possible
       *  - "actions" -- list, allows to specify additional actions.
       *                 Each member is a 2-entry list, first entry is a
@@ -65,26 +68,31 @@
 	// menubutton
 	string mb_label = param["mb_label"]:_("Ad&vanced");
 	integer max_lines = param["max_lines"]:100;
-	string grep = param["grep"]:"";
-	if (grep != "")
-	    grep = sformat ("| grep --line-buffered %1", grep);
-	string lc_command
-	    = sformat ("cat %1 %2 | wc -l", param["file"]:"", grep);
-	map bash_output = SCR::Execute (.target.bash_output, lc_command);
-	string command = "tail -f -n +0 " + param["file"]:"";
-	string addon = "";
-	if (bash_output["exit"]:1 == 0)
+	string command = param["command"]:nil;
+	if (command == nil)
 	{
-	    string lc = bash_output["stdout"]:"";
-	    lc = filterchars (lc, "1234567890");
-	    integer lines_count = tointeger (lc);
-	    lines_count = lines_count - 2 * max_lines; // don't know why without
+	    string grep = param["grep"]:"";
+	    if (grep != "")
+		grep = sformat ("| grep --line-buffered %1", grep);
+	    string lc_command
+		= sformat ("cat %1 %2 | wc -l", param["file"]:"", grep);
+	    map bash_output = SCR::Execute (.target.bash_output, lc_command);
+	    command = "tail -f -n +0 " + param["file"]:"";
+	    string addon = "";
+	    if (bash_output["exit"]:1 == 0)
+	    {
+		string lc = bash_output["stdout"]:"";
+		lc = filterchars (lc, "1234567890");
+		integer lines_count = tointeger (lc);
+		lines_count = lines_count - 2 * max_lines;
+			// don't know why without
 			// doubling it discards more lines, out of YaST2
 			// it works
-	    if (max_lines != 0 && lines_count > 0)
-		addon = sformat ("| tail -n +%1", lines_count);
+		if (max_lines != 0 && lines_count > 0)
+		    addon = sformat ("| tail -n +%1", lines_count);
+	    }
+	    command = sformat ("%1 %2 %3", command, grep, addon);
 	}
-	command = sformat ("%1 %2 %3", command, grep, addon);
 	y2milestone ("Calling background agent with command %1", command);
 	boolean cmdret = SCR::Execute (.background.run_output, command);
 	if (! cmdret)

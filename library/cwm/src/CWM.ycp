@@ -27,7 +27,21 @@
       */
     any previous_selected_item = nil;
 
+    /**
+      * Cache full event, not only item id for being used by callbacks
+      * Is local, use GetEventDescr () instead to reading it
+      */
+    map event_descr = $[];
+
 // functions
+
+    /**
+      * Return full description of event that is currently handled
+      * @return map event description
+      */
+    global define map GetEventDescr () ``{
+	return event_descr;
+    }
 
     /**
       * Create a term with OK and Cancel buttons placed horizontally
@@ -235,7 +249,8 @@
 	boolean save = false;
         while (ret != `back && ret != `abort && ! save)
         {
-            ret = UI::UserInput ();
+	    event_descr = UI::WaitForEvent ();
+	    ret = event_descr["ID"]:nil;
 	    symbol handle_ret = handleWidgets (widgets, ret);
 	    if (handle_ret != nil || contains (save_exits, ret))
 	    {
@@ -538,6 +553,15 @@ in the list.</p>");
       */
     global define any TableHandle (map descr, any key, any event) ``{
 	UI::SetFocus (`id (`_tp_table));
+	if (event == `_tp_table)
+	{
+	    map ev_descr = GetEventDescr ();
+	    if (ev_descr["EventReason"]:"" == "Activated"
+		&& ev_descr["EventType"]:"" == "WidgetEvent")
+	    {
+		event = `_tp_edit;
+	    }
+	}
         if (event == `_tp_edit || event == `_tp_add)
         {
             any opt_key = nil;
