@@ -70,7 +70,6 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 @scrconfdir@/*
 @ybindir@/*
 @agentdir@/ag_*
-@ydatadir@/y2menu-color
 @yncludedir@/readconfig.ycp
 
 # documentation (not included in devel subpackage)
