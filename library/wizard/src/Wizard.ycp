@@ -385,6 +385,8 @@
      *
      * If help_space_contents is 'nil', the normal help widget will remain.
      * If button_box is 'nil', Wizard::BackAbortNextButtonBox() is used.
+     * @param help_space_contents Help space contents
+     * @param button_box Buttom Box
      **/
     global void OpenCustomDialog( term help_space_contents,
 					 term button_box )
@@ -402,6 +404,7 @@
 
     /**
      * Replace the help widget for dialogs opened with Wizard::OpenCustomDialog().
+     * @param contents Replace custom help with supplied contents
      **/
     global void ReplaceCustomHelp( term contents )
     {
@@ -415,7 +418,6 @@
 		     + "opened with Wizard::OpenSimpleDialog() !" );
 	}
     }
-    
 
 
     /**
@@ -519,10 +521,14 @@
      * @param back_label label of back button
      * @param next_label label of next button
      **/
-    global void SetContentsButtons (string title, term contents, string help_text, string back_label, string next_label)
+    global void SetContentsButtons (string title,
+            term contents,
+            string help_text,
+            string back_label,
+            string next_label)
     {
 	UI::PostponeShortcutCheck ();
-	
+
 	if ( UI::WizardCommand(`SetBackButtonLabel( back_label ) ) == true )
 	{
 	    UI::WizardCommand(`SetNextButtonLabel( next_label ) );
@@ -547,6 +553,7 @@
      * Replace the wizard help subwindow with a custom widget.
      *
      * THIS FUNCTION IS DEPRECATED!
+     * @param contents Replace Help with contents
      **/
     global void ReplaceHelp(term contents) {
 	if ( UI::WidgetExists( `id(`helpSpace ) ) )
@@ -564,6 +571,7 @@
 
     /**
      * Set a new help text.
+     * @param help_text Help text
      **/
     global void SetHelpText(string help_text)
     {
@@ -577,6 +585,7 @@
 
     /**
      * Restore the wizard help subwindow.
+     * @param help_text Help text
      **/
     global void RestoreHelp(string help_text)
     {
@@ -586,6 +595,8 @@
 
     /**
      * Set the dialog's "Next" button with a new label and a new ID
+     * @param id Button ID
+     * @param label Button Label
      **/
     global void SetNextButton( any id, string label )
     {
@@ -608,6 +619,8 @@
 
     /**
      * Set the dialog's "Back" button with a new label and a new ID
+     * @param id Button ID
+     * @param label Button Label
      **/
     global void SetBackButton( any id, string label )
     {
@@ -629,6 +642,8 @@
 
     /**
      * Set the dialog's "Abort" button with a new label and a new ID
+     * @param id Button ID
+     * @param label Button Label
      **/
     global void SetAbortButton( any id, string label )
     {
@@ -730,6 +745,7 @@
     /**
      * Replace the wizard 'back' button with a custom widget.
      * THIS FUNCTION IS DEPRECATED!
+     * @param contents a term describing the new contents
      **/
     global void ReplaceBackButton(term contents) {
 	if ( UI::WidgetExists(`id(`rep_back ) ) )
@@ -742,6 +758,7 @@
     /**
      * Replace the wizard 'abort' button with a custom widget.
      * THIS FUNCTION IS DEPRECATED!
+     * @param contents a term describing the new contents
      **/
     global void ReplaceAbortButton(term contents) {
 	if ( UI::WidgetExists(`id(`rep_abort ) ) )
@@ -779,6 +796,9 @@
 
 
     /**
+     * Set Desktop Icon
+     * @param string Icon name
+     * @return boolean true on success
      */
     global boolean SetDesktopIcon( string file )
     {
@@ -934,7 +954,6 @@
 	}
     }
 
-    
     /**
      * Set the keyboard focus to the wizard's "Back" (or "Cancel") button.
      **/
@@ -1038,10 +1057,10 @@
 
     /**
      * Add Tree Item to tree enabled Wizard
-     * @param list<map> Tree data
-     * @param string parent
-     * @param string title
-     * @param string id
+     * @param Tree Tree Data
+     * @param parent Parent of this item
+     * @param title Item Title
+     * @param id Item ID
      * @return list<map> Updated Tree Data
      **/
     global list<map> AddTreeItem(list<map> Tree, string parent , string title, string id) {
@@ -1059,8 +1078,8 @@
 
     /**
      * Create the Tree Items
-     * @param list<map> Tree data
-     * @param string parent
+     * @param Tree Tree data
+     * @param parent Parent of current Item
      * @return list Tree Items
      **/
     list CreateTreeInternal(list<map> Tree, string parent) {
@@ -1081,6 +1100,10 @@
     }
 
 
+    /**
+     * Query Tree Item
+     * @return Tree Item
+     */
     global string QueryTreeItem() {
 
         if (haveFancyUI() )
@@ -1095,9 +1118,8 @@
 
     /**
      * Create the tree in the dialog, replaces helpspace with new tree widget
-     * @param list<map> Tree data
-     * @param string tree title
-     * @return void
+     * @param Tree Tree data
+     * @param title Tree title
      **/
     global void CreateTree(list<map> Tree, string title) {
         if ( !haveFancyUI() )
@@ -1128,7 +1150,7 @@
 
     /**
      * Select Tree item
-     * @param string tree item
+     * @param tree_item tree item
      */
     global void SelectTreeItem(string tree_item) {
         if ( haveFancyUI() )
@@ -1142,7 +1164,6 @@
     }
     /**
      * Delete Tree items
-     * @return void
      */
     global void DeleteTreeItems() {
         if ( haveFancyUI() )
@@ -1157,7 +1178,6 @@
 
     /**
      * Delete Menu items
-     * @return void
      */
     global void DeleteMenus() {
         if ( haveFancyUI() )
@@ -1171,9 +1191,9 @@
     }
     /**
      * Add Menu
-     * @param list<map> Tree data
-     * @param string title
-     * @param string id
+     * @param Menu  Menu data
+     * @param title Menu Title
+     * @param id Menu ID
      * @return list<map> Updated Menu Data
      **/
     global list<map> AddMenu(list<map> Menu, string title, string id) {
@@ -1190,10 +1210,10 @@
 
     /**
      * Add Sub Menu
-     * @param list<map> Tree data
-     * @param string parent
-     * @param string title
-     * @param string id
+     * @param Menu Menu data
+     * @param parent Menu Parent
+     * @param title Menu Title
+     * @param id Menu ID
      * @return list<map> Updated Menu Data
      **/
     global list<map>  AddSubMenu(list<map> Menu, string parent_id, string title, string id) {
@@ -1210,10 +1230,10 @@
 
     /**
      * Add Menu Entry
-     * @param list<map> Tree data
-     * @param string parent
-     * @param string title
-     * @param string id
+     * @param Menu Menu data
+     * @param parent Menu Parent
+     * @param title Menu Title
+     * @param id Menu ID
      * @return list<map> Updated Menu Data
      **/
     global list<map> AddMenuEntry(list<map> Menu, string parent_id, string title, string id) {
@@ -1230,8 +1250,8 @@
 
     /**
      * Create the Menu Items
-     * @param list<map> Menu data
-     * @param string parent
+     * @param Menu Menu data
+     * @param parent Menu Parent
      * @return list Menu Items
      **/
     list CreateMenuInternal(list<map> Menu, string parent) {
@@ -1256,7 +1276,7 @@
 
     /**
      * Create the menu in the dialog
-     * @param list<map> Menu data
+     * @param Menu Menu data
      * @return void
      **/
     global void CreateMenu(list<map> Menu) {

@@ -177,7 +177,7 @@ global define boolean Import(map settings) ``{
 
 /**
  * Dump the Report settings to a map, for autoinstallation use.
- * @return map map with settings
+ * @return map Map with settings
  */
 global define map Export () ``{
 
@@ -267,8 +267,13 @@ global define integer NumErrors() ``{
 }
 
 /**
- * Store new yes/no message text
- * @return void
+ * Question with headline and Yes/No Buttons
+ * @param headline Popup Headline
+ * @param message Popup Message
+ * @param yes_button_message Yes Button Message
+ * @param no_button_message No Button Message
+ * @param focus Which Button has the focus
+ * @return boolean True if Yes is pressed, otherwise false
  */
 global define boolean AnyQuestion( string headline,
 				       string message,
