@@ -1,5 +1,5 @@
 Write	.dev.tty.prompt "YaST2 lan> " true
-Write	.dev.tty.stderr "\nConfiguration of network cards\n------------------------------\n" true
+Write	.dev.tty.stderr "\nYaST Configuration module lan\n------------------------------\n" true
 Write	.dev.tty.stderr "Command 'add'" true
 Write	.dev.tty.stderr "    add a network card" true
 Write	.dev.tty.stderr "\n    Options:" true
@@ -8,7 +8,7 @@ Write	.dev.tty.stderr "        ip       [ipaddress]  device address" true
 Write	.dev.tty.stderr "        netmask  [netmask]    network mask" true
 Write	.dev.tty.stderr "        blem                  other argument (without spaces and '1')" true
 Write	.dev.tty.stderr "        atboot   [ yes no ]   turning on the device at boot" true
-Write	.dev.tty.stderr "        help                  Print the Help for This Command" true
-Write	.dev.tty.stderr "        verbose               Show Progress Information" true
+Write	.dev.tty.stderr "        help                  Print the help for this command" true
+Write	.dev.tty.stderr "        verbose               Show progress information" true
 Write	.dev.tty.stderr "" true
 Return	false
