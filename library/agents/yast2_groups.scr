@@ -1,17 +1,17 @@
 /**
- * File:	yast2_config.scr
- * Summary:	Agent for yast2 config (y2cc) files
+ * File:	yast2_groups.scr
+ * Summary:	Agent for yast2 groups (y2cc groups)
  * Author:	Michal Svec <msvec@suse.cz>
  * Access:	read only
  *
  * Example:
- *   Dir(.yast2.config)
+ *   Dir(.yast2.groups)
  *   (["lan", "modem", "isdn", ...])
  **
- *   Dir(.yast2.config.lan)
+ *   Dir(.yast2.groups.lan)
  *   (["Name", "Group", ...])
  **
- *   Read(.yast2.config.lan.Textdomain)
+ *   Read(.yast2.groups.lan.Textdomain)
  *   ("network")
  *
  * $Id$
