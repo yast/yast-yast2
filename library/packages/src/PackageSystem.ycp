@@ -114,6 +114,9 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
 	last_op_canceled = false;
     }
 
+    // check if the database os consistent before packages were added
+    boolean packages_consistent = Pkg::PkgSolveCheckTargetOnly();
+
     foreach (string p, toinstall, {
 	if(ok == true)
 	    if(Pkg::PkgInstall(p) != true) {
@@ -134,7 +137,10 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
 
     if(Pkg::PkgSolve (false) != true) {
 	y2error("Package solve failed");
-	return false;
+	if (packages_consistent)
+	{
+	    return false;
+	}
     }
 
     //[int successful, list failed, list remaining, list srcremaining]
