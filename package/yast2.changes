@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov  4 11:00:06 CET 2004 - mvidner@suse.cz
+
+- Added String::FirstChunk.
+- 2.11.5
+
+-------------------------------------------------------------------
 Wed Nov 03 14:32:15 CET 2004 - arvin@suse.de
 
 - removed deprecated lookup
