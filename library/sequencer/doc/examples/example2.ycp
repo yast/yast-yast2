@@ -1,12 +1,12 @@
 {
 
+import "Sequencer";
 include "./examples.ycp";
-include "wizard/sequencer.ycp";
 
-define BeginDialog() ``{ return GUI("Begin",[`back, `next]); }
-define EndDialog() ``{ return GUI("End",[`back,`finish]); }
-define ConfigDialog() ``{ return GUI("Config",[`back,`details,`next]); }
-define DetailsDialog() ``{ return GUI("Details",[`back,`ok]); }
+define any BeginDialog() { return GUI("Begin",[`back, `next]); }
+define any EndDialog() { return GUI("End",[`back,`finish]); }
+define any ConfigDialog() { return GUI("Config",[`back,`details,`next]); }
+define any DetailsDialog() { return GUI("Details",[`back,`ok]); }
 
 map Sequence = $[
     "ws_start" : "begin",
@@ -25,7 +25,7 @@ map Sequence = $[
     ]
 ];
 
-any result = WizardSequencer(Aliases(),Sequence);
+any result = Sequencer::Run(Aliases(),Sequence);
 y2debug("result=%1",result);
 
 }

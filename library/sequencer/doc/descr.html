@@ -11,12 +11,12 @@
 <p><a name="description"><u><h2>Description</h2></u>
 
 Here is a formal description (prototypes) of types and functions used 
-by the WizardSequencer.
+by the Wizard Sequencer.
 
 <p>
-The WizardSequencer function:
+The Sequencer::Run function:
 <table bgcolor=#e0e0e0><tr><td><pre>
-	symbol|void WizardSequencer(
+	symbol|void Sequencer::Run(
 		map Aliases,
 		map Sequence
 	);
@@ -85,7 +85,7 @@ It should be able of handling buttons and dialogs so, that you are able
 of exchange two dialogs without any change.
 
 <table bgcolor=#e0e0e0><tr><td><pre>
-	YCPString WizardSequencerNG(
+	YCPString Sequencer::RunNG(
 		map Aliases,
 		map Sequence,
 		map Default,
