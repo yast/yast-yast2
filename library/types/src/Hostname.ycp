@@ -20,9 +20,9 @@ global string ValidCharsFQ = ValidCharsDomain;
 
 /**
  * describe a valid domain name
- * @return describtion
+ * @return description
  */
-global define string ValidDomain() ``{
+global string ValidDomain () {
     //Translators: dot: ".", hyphen: "-"
     return _("A valid domain name consists of components separated by dots.
 Each component contains letters, digits, and hyphens. A hyphen may not
@@ -30,10 +30,20 @@ start or end a component and the last component may not begin with a digit.");
 }
 
 /**
+ * describe a valid host name
+ * @return description
+ */
+global string ValidHost () {
+    //Translators: hyphen: "-"
+    return _("A valid host name conhsists of letters, digits, and hyphens.
+A host name may not begin or end with a hyphen.");
+}
+
+/**
  * describe a valid FQ host name
  * @return describe a valid FQ host name
  */
-global define string ValidFQ() ``{
+global string ValidFQ() {
     return ValidDomain();
 }
 
