@@ -1,38 +1,39 @@
 /**
  * File:	modules/PackageCallbacksInit.ycp
- * Package:	YaST2
+ * Package:	yast2
  * Summary:	Initialize packager callbacks
  * Authors:	Jiri Srain <jsrain@suse.cz>
  *
  * $Id$
  *
  * This module is used to initialize package manager callbacks
- *
  */
 
 {
 
-    module "PackageCallbacksInit";
-    textdomain "base";
+module "PackageCallbacksInit";
+textdomain "base";
 
-    /**
-     * Register callbacks for media change
-     */
-    global define void SetMediaCallbacks () ``{
-	Pkg::CallbackMediaChange ("PackageCallbacks::MediaChange");
-	Pkg::CallbackSourceChange ("PackageCallbacks::SourceChange");
-    }
+/**
+ * Register callbacks for media change
+ */
+global define void SetMediaCallbacks () {
+    Pkg::CallbackMediaChange ("PackageCallbacks::MediaChange");
+    Pkg::CallbackSourceChange ("PackageCallbacks::SourceChange");
+}
 
-    /**
-     * Register package manager callbacks
-     */
-    global define void InitPackageCallbacks() ``{
-        Pkg::CallbackStartProvide ("PackageCallbacks::StartProvide");
-        Pkg::CallbackProgressProvide ("PackageCallbacks::ProgressProvide");
-        Pkg::CallbackDoneProvide ("PackageCallbacks::DoneProvide");
-        Pkg::CallbackStartPackage ("PackageCallbacks::StartPackage");
-        Pkg::CallbackProgressPackage ("PackageCallbacks::ProgressPackage");
-        Pkg::CallbackDonePackage ("PackageCallbacks::DonePackage");
-        SetMediaCallbacks ();
-    }
+/**
+ * Register package manager callbacks
+ */
+global define void InitPackageCallbacks() {
+    Pkg::CallbackStartProvide ("PackageCallbacks::StartProvide");
+    Pkg::CallbackProgressProvide ("PackageCallbacks::ProgressProvide");
+    Pkg::CallbackDoneProvide ("PackageCallbacks::DoneProvide");
+    Pkg::CallbackStartPackage ("PackageCallbacks::StartPackage");
+    Pkg::CallbackProgressPackage ("PackageCallbacks::ProgressPackage");
+    Pkg::CallbackDonePackage ("PackageCallbacks::DonePackage");
+    SetMediaCallbacks ();
+}
+
+/* EOF */
 }

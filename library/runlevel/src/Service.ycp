@@ -55,7 +55,7 @@ string init_d = "/etc/init.d";
  *
  * Never cleared.
  */
-global string error_msg = "";
+string error_msg = "";
 
 /**
  * Check that a service exists.
@@ -63,7 +63,7 @@ global string error_msg = "";
  * @param name service name without a path, eg. nfsserver
  * @return does the service exist?
  */
-define boolean checkExists (string name) ``{
+define boolean checkExists (string name) {
     if(name == nil || name == "") {
 	// Error message.
 	// %1 is a name of an init script in /etc/init.d,
@@ -88,7 +88,7 @@ define boolean checkExists (string name) ``{
  * @param name name of the service
  * @return service information or $[]
  */
-global define map Info (string name) ``{
+global define map Info (string name) {
     if(!checkExists (name)) return $[];
     map read = (map) SCR::Read (.init.scripts.runlevel, name);
     map detail = read[name]:$[];
@@ -105,7 +105,7 @@ global define map Info (string name) ``{
  * @param name name of the service
  * @return init script exit status or -1 if it does not exist
  */
-global define integer Status (string name) ``{
+global define integer Status (string name) {
     if(!checkExists (name)) return -1;
     return (integer) SCR::Execute (.target.bash, sformat ("%2/%1 status", name, init_d), $["TERM":"raw"]);
 }
@@ -115,7 +115,7 @@ global define integer Status (string name) ``{
  * @param name name of the service
  * @return service map or $[]
  */
-global define map FullInfo (string name) ``{
+global define map FullInfo (string name) {
     if(!checkExists (name)) return $[];
     return add (Info (name), "started", Status (name));
 }
@@ -127,7 +127,7 @@ global define map FullInfo (string name) ``{
  * @param force pass "-f" to insserv (workaround for #17608, #27370)
  * @return success state
  */
-define boolean serviceDisable (string name, boolean force) ``{
+define boolean serviceDisable (string name, boolean force) {
     map ret = (map)SCR::Execute (.target.bash_output,
 			    sformat ("/sbin/insserv -r%3 %2/%1",
 				     name, init_d, force? "f": ""));
@@ -155,7 +155,7 @@ define boolean serviceDisable (string name, boolean force) ``{
  *    defaults.
  * @return success state
  */
-global define boolean Adjust (string name, string action) ``{
+global define boolean Adjust (string name, string action) {
     if (! checkExists (name))
     {
 	return false;
@@ -208,7 +208,7 @@ global define boolean Adjust (string name, string action) ``{
  * @param rl list of runlevels in which service should start
  * @return success state
  */
-global define boolean Finetune (string name, list rl) ``{
+global define boolean Finetune (string name, list rl) {
     if (! checkExists (name))
     {
 	return false;
@@ -255,7 +255,7 @@ global define boolean Finetune (string name, list rl) ``{
  * @param name service name
  * @return true if service is set to run in any runlevel
  */
-global define boolean Enabled (string name) ``{
+global define boolean Enabled (string name) {
     if(!checkExists (name)) return false;
     map<string, any> details = (map<string, any>) SCR::Read (.init.scripts.runlevel, name);
     map<string, any> detail  = (map<string, any>) details[name]:$[];
@@ -268,7 +268,7 @@ global define boolean Enabled (string name) ``{
  * @param param init script argument
  * @return integer exit value
  */
-global define integer RunInitScript (string name, string param) ``{
+global define integer RunInitScript (string name, string param) {
     y2milestone("Running service initscript %1 %2", name, param);
     return (integer) SCR::Execute (.target.bash,
 	    sformat ("%2/%1 %3", name, init_d, param),
@@ -283,7 +283,7 @@ string lang = nil;
  * @param param init script argument
  * @return map of $[ "stdout" : "...", "stderr" : "...", "exit" : int,]
  */
-global define map RunInitScriptOutput (string name, string param) ``{
+global define map RunInitScriptOutput (string name, string param) {
     map env = $["TERM": "raw"];
 
     // encoding problems - append .UTF-8 to LANG
@@ -319,7 +319,7 @@ global define map RunInitScriptOutput (string name, string param) ``{
  * @param service service to be enabled
  * @return true if success
  */
-global define boolean Enable(string service) ``{
+global define boolean Enable(string service) {
     if(!checkExists(service)) return false;
     y2milestone("Enabling service %1", service);
     return Adjust(service, "enable");
@@ -330,7 +330,7 @@ global define boolean Enable(string service) ``{
  * @param service service to be disabled
  * @return true if success
  */
-global define boolean Disable(string service) ``{
+global define boolean Disable(string service) {
     if(!checkExists(service)) return false;
     y2milestone("Disabling service %1", service);
     return Adjust(service, "disable");
@@ -341,7 +341,7 @@ global define boolean Disable(string service) ``{
  * @param service service to be started
  * @return true if success
  */
-global define boolean Start(string service) ``{
+global define boolean Start(string service) {
     if(!checkExists(service)) return false;
     integer ret = nil;
     y2milestone("Starting service %1", service);
@@ -355,7 +355,7 @@ global define boolean Start(string service) ``{
  * @param service service to be restarted
  * @return true if success
  */
-global define boolean Restart(string service) ``{
+global define boolean Restart(string service) {
     if(!checkExists(service)) return false;
     integer ret = nil;
     y2milestone("Restarting service %1", service);
@@ -369,7 +369,7 @@ global define boolean Restart(string service) ``{
  * @param service service to be reloaded
  * @return true if success
  */
-global define boolean Reload(string service) ``{
+global define boolean Reload(string service) {
     if(!checkExists(service)) return false;
     integer ret = nil;
     y2milestone("Reloading service %1", service);
@@ -383,13 +383,23 @@ global define boolean Reload(string service) ``{
  * @param service service to be stopped
  * @return true if success
  */
-global define boolean Stop(string service) ``{
+global define boolean Stop(string service) {
     if(!checkExists(service)) return false;
     integer ret = nil;
     y2milestone("Stopping service %1", service);
     ret = RunInitScript(service, "stop");
     y2debug("ret=%1", ret);
     return ret == 0;
+}
+
+/**
+ * After a function returns an error, this function would return
+ * an error message, including insserv stderr and possibly containing
+ * newlines.
+ * @return error message from the last operation
+ */
+global define string Error() {
+    return error_msg;
 }
 
 /* EOF */

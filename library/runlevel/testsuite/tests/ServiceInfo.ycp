@@ -1,7 +1,7 @@
 
 {
     include "testsuite.ycp";
-    import "Runlevel";
+    import "Service";
 
     map READ = $[];
 
@@ -25,5 +25,5 @@
             ]
         ];
 
-    TEST (``(Runlevel::ServiceInfo ("aaa")), [ READ, $[], $[] ], nil);
+    TEST (``(Service::Info ("aaa")), [ READ, $[], $[] ], nil);
 }

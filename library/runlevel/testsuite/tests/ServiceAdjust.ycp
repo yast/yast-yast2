@@ -1,6 +1,6 @@
 {
     include "testsuite.ycp";
-    import "Runlevel";
+    import "Service";
 
     map READ = $[];
     map EXEC = $[
@@ -26,7 +26,7 @@
                     ],
 		"exists" : false,
 	] ] ];
-    TEST (``(Runlevel::ServiceAdjust ("aaa", "disable")), [ READ, $[], EXEC ], nil);
+    TEST (``(Service::Adjust ("aaa", "disable")), [ READ, $[], EXEC ], nil);
 
     // service exists and may run
     READ = $[ "init" : $[ "scripts" : $[
@@ -44,7 +44,7 @@
                     ],
 		"exists" : true,
 	] ] ];
-    TEST (``(Runlevel::ServiceAdjust ("aaa", "disable")), [ READ, $[], EXEC ], nil);
+    TEST (``(Service::Adjust ("aaa", "disable")), [ READ, $[], EXEC ], nil);
 
     // service exists and does not run
     READ = $[ "init" : $[ "scripts" : $[
@@ -62,7 +62,7 @@
                     ],
 		"exists" : true,
 	] ] ];
-    TEST (``(Runlevel::ServiceAdjust ("aaa", "disable")), [ READ, $[], EXEC ], nil);
+    TEST (``(Service::Adjust ("aaa", "disable")), [ READ, $[], EXEC ], nil);
 
     // service exists and does not run
     READ = $[ "init" : $[ "scripts" : $[
@@ -80,7 +80,7 @@
                     ],
 		"exists" : true,
 	] ] ];
-    TEST (``(Runlevel::ServiceAdjust ("aaa", "enable")), [ READ, $[], EXEC ], nil);
+    TEST (``(Service::Adjust ("aaa", "enable")), [ READ, $[], EXEC ], nil);
 
     READ = $[ "init" : $[ "scripts" : $[
                 "runlevel" : $[
@@ -97,7 +97,7 @@
                     ],
 		"exists" : true,
 	] ] ];
-    TEST (``(Runlevel::ServiceAdjust ("aaa", "enable")), [ READ, $[], EXEC ], nil);
+    TEST (``(Service::Adjust ("aaa", "enable")), [ READ, $[], EXEC ], nil);
 
     READ = $[ "init" : $[ "scripts" : $[
                 "runlevel" : $[
@@ -114,7 +114,7 @@
                     ],
 		"exists" : true,
 	] ] ];
-    TEST (``(Runlevel::ServiceAdjust ("aaa", "default")), [ READ, $[], EXEC ], nil);
+    TEST (``(Service::Adjust ("aaa", "default")), [ READ, $[], EXEC ], nil);
 
     READ = $[ "init" : $[ "scripts" : $[
                 "runlevel" : $[
@@ -131,6 +131,6 @@
                     ],
 		"exists" : true,
 	] ] ];
-    TEST (``(Runlevel::ServiceAdjust ("aaa", "default")), [ READ, $[], EXEC ], nil);
+    TEST (``(Service::Adjust ("aaa", "default")), [ READ, $[], EXEC ], nil);
 
 }
