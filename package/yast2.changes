@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Feb  8 16:09:19 CET 2005 - nashif@suse.de
+
+- Moved ProductControl. Hooks from installation
+
+-------------------------------------------------------------------
 Tue Feb  8 14:48:37 CET 2005 - nashif@suse.de
 
 - Moved XML module to library
