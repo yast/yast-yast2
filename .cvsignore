@@ -20,4 +20,4 @@ ltmain.sh
 missing
 mkinstalldirs
 stamp-h*
-*.pot
+base.pot
