@@ -118,20 +118,24 @@ set_lang_from_sysconfig
 if [ -z "$DISPLAY" ] || ! check_qt ; then
     if check_ncurses ; then
         if [ "$TERM" = "linux" ] ; then
+	    # always start yast in UTF-8 locale
 	    case "$LANG" in
 		# if it is known that a language doesn't yet work well with ncurses
 		# on console use English instead:
 		ja*|ko*|zh*)
-		    case "`locale charmap 2>/dev/null`" in
-			UTF-8)
-			    export LANG=en_US.UTF-8
-			;;
-			*)
-		            export LANG=en_US
-		        ;;
-		    esac
+		    export LANG=en_US.UTF-8
+		    export LC_CTYPE=en_US.UTF-8
+		;;
+		*)
+	            # get rid of encoding and/or modifier
+		    export LANG=${LANG%%[.@]*}.UTF-8
+		    export LC_CTYPE=${LANG%%[.@]*}.UTF-8
 	        ;;
 	    esac
+	    if testutf8 ; [ $? -eq 1 ] ; then
+		unicode_start
+		uc_started=1
+	    fi
 	fi
 	# use menu.ycp
 	if [ $module == "menu" ] ; then
@@ -140,6 +144,9 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 	    set -- $(for x in "$@"; do echo "(\"$x\")"; done) # surround args by ("...")
 	    $ybindir/y2base $module "$@" ncurses
 	fi
+	if [ "$uc_started" ] ; then
+	    unicode_stop
+	fi    
     else
 	echo "You need to install yast2-ncurses to use the YaST2 text mode interface"
 	exit 1
