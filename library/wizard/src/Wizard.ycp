@@ -427,11 +427,8 @@
     global define void SetContents(string title, term contents, string help_text,
 				   boolean has_back, boolean has_next) {
 
-	if ( have_fancy_ui == nil ) Init();
-
-	if ( have_fancy_ui )
+	if ( UI::WizardCommand(`SetDialogHeading( title ) ) )
 	{
-	    UI::WizardCommand(`SetDialogHeading( title ) );
 	    UI::WizardCommand(`SetHelpText( help_text ) );
 	    UI::WizardCommand(`EnableNextButton( has_next ) );
 	    UI::WizardCommand(`EnableBackButton( has_back ) );
@@ -477,15 +474,23 @@
      * @param back_label label of back button
      * @param next_label label of next button
      **/
-    global define void SetContentsButtons (string title, term contents, string help_text, string back_label, string next_label) {
-	UI::PostponeShortcutCheck ();
-	// Set button labels first to avoid geometry problems: SetContents()
-	// calls ReplaceWidget() wich triggers a re-layout.
+    global define void SetContentsButtons (string title, term contents, string help_text, string back_label, string next_label)
+    {
+	if ( UI::WizardCommand(`SetBackButtonLabel( back_label ) ) )
+	{
+	    UI::WizardCommand(`SetNextButtonLabel( next_label ) );
+	}
+	else
+	{
+	    UI::PostponeShortcutCheck ();
+	    // Set button labels first to avoid geometry problems: SetContents()
+	    // calls ReplaceWidget() wich triggers a re-layout.
 
-	if ( UI::WidgetExists(`id(`back ) ) )	UI::ChangeWidget(`id (`back), `Label, back_label);
-	if ( UI::WidgetExists(`id(`next ) ) )	UI::ChangeWidget(`id (`next), `Label, next_label);
-	Wizard::SetContents( title, contents, help_text, true, true );
-	UI::CheckShortcuts ();
+	    if ( UI::WidgetExists(`id(`back ) ) )	UI::ChangeWidget(`id (`back), `Label, back_label);
+	    if ( UI::WidgetExists(`id(`next ) ) )	UI::ChangeWidget(`id (`next), `Label, next_label);
+	    Wizard::SetContents( title, contents, help_text, true, true );
+	    UI::CheckShortcuts ();
+	}
     }
 
 
@@ -509,7 +514,10 @@
      * Restore the wizard help subwindow after Wizard::ReplaceHelp().
      **/
     global define void RestoreHelp(string help_text) {
-	UI::ReplaceWidget(`id(`helpSpace), `RichText(`id(`HelpText), help_text ) );
+	if ( ! UI::WizardCommand(`SetHelpText( help_text ) ) )
+	{
+	    UI::ReplaceWidget(`id(`helpSpace), `RichText(`id(`HelpText), help_text ) );
+	}
     }
 
 
@@ -524,13 +532,21 @@
     /**
      * Restore the wizard 'back' button after Wizard::ReplaceBackButton().
      **/
-    global define void RestoreBackButton() {
-	if ( UI::WidgetExists(`id(`rep_back ) ) )
+    global define void RestoreBackButton()
+    {
+	if ( UI::WizardCommand(`SetNextButtonLabel( Label::BackButton() ) ) )
 	{
-	    UI::ReplaceWidget(`id(`rep_back),
-			      `PushButton(`id(`back), `opt (`key_F8),
-					  Label::BackButton() )
-			      );
+	    UI::WizardCommand(`SetBackButtonID( `back ) );
+	}
+	else
+	{
+	    if ( UI::WidgetExists(`id(`rep_back ) ) )
+	    {
+		UI::ReplaceWidget(`id(`rep_back),
+				  `PushButton(`id(`back), `opt (`key_F8),
+					      Label::BackButton() )
+				  );
+	    }
 	}
     }
 
@@ -548,21 +564,93 @@
     /**
      * Restore the wizard 'next' button after ReplaceNextButton().
      **/
-    global define void RestoreNextButton() {
-	if ( UI::WidgetExists(`id(`rep_next ) ) )
+    global define void RestoreNextButton()
+    {
+	if ( UI::WizardCommand(`SetNextButtonLabel( Label::NextButton() ) ) )
 	{
-	    UI::ReplaceWidget(`id(`rep_next),
-			      `PushButton(`id(`next), `opt (`key_F10, `default),
-					  Label::NextButton() )
-			      );
+	    UI::WizardCommand(`SetNextButtonID( `next ) );
+	}
+	else
+	{
+	    if ( UI::WidgetExists(`id(`rep_next ) ) )
+	    {
+		UI::ReplaceWidget(`id(`rep_next),
+				  `PushButton(`id(`next), `opt (`key_F10, `default),
+					      Label::NextButton() )
+				  );
+	    }
 	}
     }
 
 
     /**
+     * Set the dialog's "Next" button with a new label and a new ID
+     **/
+    global define void SetNextButton( any id, string label )
+    {
+	if ( UI::WizardCommand(`SetNextButtonLabel( label ) ) )
+	{
+	    UI::WizardCommand(`SetBackButtonID( id ) );
+	}
+	else
+	{
+	    if ( UI::WidgetExists(`id(`rep_next ) ) )
+	    {
+		UI::ReplaceWidget(`id(`rep_next ),
+				  `PushButton( `id( id ), `opt (`key_F10), label ) 
+				  );
+	    }
+	}
+	    
+    }
+
+
+    /**
+     * Set the dialog's "Back" button with a new label and a new ID
+     **/
+    global define void SetBackButton( any id, string label )
+    {
+	if ( UI::WizardCommand(`SetNextButtonLabel( label ) ) )
+	{
+	    UI::WizardCommand(`SetBackButtonID( id ) );
+	}
+	else
+	{
+	    if ( UI::WidgetExists(`id(`rep_back ) ) )
+	    {
+		UI::ReplaceWidget(`id(`rep_back),
+				  `PushButton( `id( id ), `opt (`key_F8), label )
+				  );
+	    }
+	}
+	    
+    }
+
+
+    /**
+     * Set the dialog's "Abort" button with a new label and a new ID
+     **/
+    global define void SetAbortButton( any id, string label )
+    {
+	if ( UI::WizardCommand(`SetAbortButtonLabel( label ) ) )
+	{
+	    UI::WizardCommand(`SetAbortButtonID( id ) );
+	}
+	else
+	{
+	    if ( UI::WidgetExists(`id(`rep_abort ) ) )
+	    {
+		UI::ReplaceWidget(`id(`rep_abort ),
+				  `PushButton( `id( id ), `opt (`key_F9), label )
+				  );
+	    }
+	}
+	    
+    }
+
+
+    /**
      * Replace the wizard 'abort' button with a custom widget.
-     *
-     * @param contents a term describing the new contents
      **/
     global define void ReplaceAbortButton(term contents) {
 	UI::ReplaceWidget(`id(`rep_abort), contents);
