@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Apr  8 13:56:41 CEST 2004 - jsrain@suse.cz
+
+- use the 'desktop' kernel parameter only for desktop products
+
+-------------------------------------------------------------------
 Mon Apr  5 18:00:23 CEST 2004 - nashif@suse.de
 
 - Removed unconfigurable options from report summary
