@@ -161,10 +161,10 @@ global define void Init (map<string,any> widget, string key) {
  */
 global define symbol Handle (map<string,any> widget, string key, map event) {
     list<string> all_tabs = widget["tabs_list"]:[];
-    any ret = TabHandle (current_tab_map, event);
-    if (ret != nil)
-	return (symbol) ret;
-    ret = event["ID"]:nil;
+    symbol h_ret = TabHandle (current_tab_map, event);
+    if (h_ret != nil)
+	return h_ret;
+    any ret = event["ID"]:nil;
     if (is (ret, string) && contains (all_tabs, (string)ret))
     {
 	map<string,map<string,any> > tab_maps = widget["tabs"]:$[];

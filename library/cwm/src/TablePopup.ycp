@@ -55,6 +55,7 @@ define boolean ValidateTableAttr (map<string,any> attr) {
         "add_delete_buttons" : "boolean",
         "changed_column" : "boolean",
         "up_down_buttons" : "boolean",
+	"unique_keys" : "boolean",
     ];
     boolean ret = true;
     foreach (string k, any v, attr, {
