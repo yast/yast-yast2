@@ -27,21 +27,7 @@
       */
     any previous_selected_item = nil;
 
-    /**
-      * Cache full event, not only item id for being used by callbacks
-      * Is local, use GetEventDescr () instead to reading it
-      */
-    map event_descr = $[];
-
 // functions
-
-    /**
-      * Return full description of event that is currently handled
-      * @return map event description
-      */
-    global define map GetEventDescr () ``{
-	return event_descr;
-    }
 
     /**
       * Create a term with OK and Cancel buttons placed horizontally
@@ -82,13 +68,13 @@
     /**
       * Validate dialog contents for allow it to be saved
       * @param widgets list of widgets to validate
-      * @param action any event that caused validation
+      * @param event map event that caused validation
       * @return boolean true if everything is OK, false  if something is wrong
       */
-    global define boolean validateWidgets (list widgets, any action) ``{
+    global define boolean validateWidgets (list widgets, map event) ``{
 	boolean result = true;
 	foreach (`w, widgets, ``{
-	    result = result && validateWidget (w, action, [w["_cwm_key"]:""]);
+	    result = result && validateWidget (w, event, [w["_cwm_key"]:""]);
 	});
 	return result;
     }
@@ -96,11 +82,11 @@
     /**
       * Validate single widget
       * @param widget widget description map
-      * @param action any action that caused validation
+      * @param event map event that caused validation
       * @param args list of arguments to be added to widget validation function
       * @return true if validation succeeded
       */
-    global define boolean validateWidget (map widget, any action, list args) ``{
+    global define boolean validateWidget (map widget, map event, list args) ``{
 	boolean failed = false;
 	symbol val_type = widget["validate_type"]:nil;
 	if (val_type == `function)
@@ -111,7 +97,7 @@
 		foreach (`a, args, ``{
 		    t = add (t, a);
 		});
-		return eval (add (t, action));
+		return eval (add (t, event));
 	    }
 	}
 	else if (val_type == `regexp)
@@ -152,17 +138,17 @@
     /**
       * Handle change of widget after event generated
       * @param widgets list of maps represenging widgets
-      * @param action any wizard sequencer symbol
+      * @param event_descr map event that occured
       * @return any modified action (sometimes may be needed)
       */
-    global define any handleWidgets (list widgets, any action) ``{
+    global define any handleWidgets (list widgets, map event_descr) ``{
         any ret = nil;
         foreach (`w, widgets, ``{
 	    if (ret == nil)
 	    {
 		term t = w["handle"]:nil;
 		list events = w["handle_events"]:[];
-		if (t != nil && (events == [] || contains (events, action)))
+		if (t != nil && (events == [] || contains (events, event_descr["ID"]:nil)))
 		{
 		    any arg0 = nil;
 		    if (w["_cwm_fallback_table_handle"]:false)
@@ -170,8 +156,7 @@
 			arg0 = select (t, 0, nil);
 			t = ``(CWM::TableHandle (arg0));
 		    }
-
-                    ret = eval (add (add (t, w["_cwm_key"]:""), action));
+                    ret = eval (add (add (t, w["_cwm_key"]:""), event_descr));
 		}
 	    }
         });
@@ -181,14 +166,14 @@
     /**
       * Save changes of widget after event generated
       * @param widgets list of maps represenging widgets
-      * @param action any wizard sequencer symbol
+      * @param event map event that occured
       */
-    global define void saveWidgets (list widgets, any action) ``{
+    global define void saveWidgets (list widgets, map event) ``{
         foreach (`w, widgets, ``{
             term t = w["store"]:nil;
             if (t != nil)
             {
-                eval (add (add (t, w["_cwm_key"]:""), action));
+                eval (add (add (t, w["_cwm_key"]:""), event));
             }
         });
     }
@@ -247,11 +232,12 @@
 	any ret = nil;
 	list save_exits = [`next, `ok];
 	boolean save = false;
+	map event_descr = $[];
         while (ret != `back && ret != `abort && ! save)
         {
 	    event_descr = UI::WaitForEvent ();
 	    ret = event_descr["ID"]:nil;
-	    symbol handle_ret = handleWidgets (widgets, ret);
+	    symbol handle_ret = handleWidgets (widgets, event_descr);
 	    if (handle_ret != nil || contains (save_exits, ret))
 	    {
 		save = true;
@@ -274,12 +260,12 @@
 
 	    if (save)
 	    {
-		if (! validateWidgets (widgets, ret))
+		if (! validateWidgets (widgets, event_descr))
 	            ret = nil;
 	    }
         }
 	if (save)
-	    saveWidgets (widgets, ret);
+	    saveWidgets (widgets, event_descr);
         return ret;
     }
 
@@ -548,26 +534,26 @@ in the list.</p>");
       * Handle the event that happened on the table
       * @param descr map description of the table
       * @param key table widget key
-      * @param event any event id
+      * @param event map event to handle
       * @return any modified event if needed
       */
-    global define any TableHandle (map descr, any key, any event) ``{
+    global define any TableHandle (map descr, any key, map event_descr) ``{
+	any event_id = event_descr["ID"]:nil;
 	UI::SetFocus (`id (`_tp_table));
-	if (event == `_tp_table)
+	if (event_id == `_tp_table)
 	{
-	    map ev_descr = GetEventDescr ();
-	    if (ev_descr["EventReason"]:"" == "Activated"
-		&& ev_descr["EventType"]:"" == "WidgetEvent")
+	    if (event_descr["EventReason"]:"" == "Activated"
+		&& event_descr["EventType"]:"" == "WidgetEvent")
 	    {
-		event = `_tp_edit;
+		event_id = `_tp_edit;
 	    }
 	}
-        if (event == `_tp_edit || event == `_tp_add)
+        if (event_id == `_tp_edit || event_id == `_tp_add)
         {
             any opt_key = nil;
             any opt_id = nil;
 
-            if (event == `_tp_add)
+            if (event_id == `_tp_add)
             {
 		boolean add_unlisted = descr["add_unlisted"]:true;
 		if (! add_unlisted && size (descr["add_items"]:[]) == 1)
@@ -609,7 +595,7 @@ in the list.</p>");
                 if (opt_key == nil)
                     return nil;
             }
-            else if (event == `_tp_edit)
+            else if (event_id == `_tp_edit)
             {
                 opt_id = UI::QueryWidget (`id (`_tp_table), `CurrentItem);
                 opt_key = id2key (descr, opt_id);
@@ -625,7 +611,7 @@ in the list.</p>");
 		else
 		{
 		    symbol ret = eval (
-			add (add (add (toEval, opt_id), opt_key), event));
+			add (add (add (toEval, opt_id), opt_key), event_descr));
 		    if (ret != `_tp_normal)
 			return ret;
 		}
@@ -637,11 +623,11 @@ in the list.</p>");
             symbol ret = singleOptionEditPopup (option_map);
             if (ret == `_tp_ok)
             {
-                if (event == `_tp_add)
+                if (event_id == `_tp_add)
                 {
                     TableInit (descr, key);
                 }
-                else if (event == `_tp_edit)
+                else if (event_id == `_tp_edit)
                 {
 		    UI::ChangeWidget (`id (`_tp_table),
 			`Item (opt_id, 1),
@@ -649,13 +635,13 @@ in the list.</p>");
                 }
             }
         }
-	else if (event == `_tp_delete)
+	else if (event_id == `_tp_delete)
 	{
 	    any opt_id = UI::QueryWidget (`id (`_tp_table), `CurrentItem);
 	    if (deleteTableItem (opt_id, descr))
 		TableInit (descr, key);
 	}
-	else if (event == `_tp_table)
+	else if (event_id == `_tp_table)
 	{
 	    any opt_id = UI::QueryWidget (`id (`_tp_table), `CurrentItem);
 	    any key = id2key (descr, opt_id);
@@ -693,7 +679,7 @@ in the list.</p>");
 	    map opt_descr = key2descr (descr, key);
 	    updateButtons (descr, opt_descr);
 	}
-	else if (event == `_tp_up || event == `_tp_down)
+	else if (event_id == `_tp_up || event_id == `_tp_down)
 	{
 	    any opt_id = UI::QueryWidget (`id (`_tp_table), `CurrentItem);
 	    if (moveTableItem (opt_id, descr, event == `_tp_up ? `up : `down))
@@ -989,21 +975,24 @@ in the list.</p>");
 	    eval (toEval);
 	}
 	any ret = nil;
+	map event_descr = $[];
 	while (ret != `_tp_ok && ret != `_tp_cancel)
 	{
-	    ret = UI::UserInput ();
+	    map event_descr = UI::WaitForEvent ();
 	    if (Mode::test)
-		ret = `_tp_ok;
+		event_descr = $[ "ID" : `_tp_ok];
+	    ret = event_descr["ID"]:nil;
 	    if (popup_descr["handle"]:nil != nil)
 	    {
 		term toEval = popup_descr["handle"]:nil;
 		toEval = add (add (toEval, opt_id), opt_key);
-		toEval = add (toEval, ret);
+		toEval = add (toEval, event_descr);
 		eval (toEval);
 	    }
 	    if (ret == `_tp_ok)
 	    {
-		if (! validateWidget (popup_descr, ret, [opt_id, opt_key]))
+		if (! validateWidget (popup_descr, event_descr,
+		    [opt_id, opt_key]))
 		    ret = nil;
 	    }
 	}

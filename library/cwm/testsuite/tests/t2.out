@@ -17,7 +17,7 @@ Dump	nil branch, returning a
 Dump	Returned `a_handle
 Dump	Translating id nil of table to key
 Dump	nil branch, returning a
-Log	Called arg3 as option_a_handle with nil a `_tp_edit
+Log	Called arg3 as option_a_handle with nil a $["ID":`_tp_edit]
 Dump	Returned nil
 Dump	=========================================
 Dump	Popups
@@ -32,5 +32,5 @@ Dump	Prepared: $["_cwm_key":"a", "custom_widget":nil, "handle":TestFunc::arg3 ("
 Dump	=========================================
 Dump	Run popup
 Log	Called arg2 as fallback_popup_init with 0 a
-Log	Called arg3 as 'a' option handle with 0 a `_tp_ok
+Log	Called arg3 as 'a' option handle with 0 a $["ID":`_tp_ok]
 Log	Called arg2 as fallback_popup_save with 0 a

@@ -16,22 +16,22 @@ Log	Called arg1 as generic_init with w2
 Dump	=========================================
 Dump	Handle
 Dump	- Both will run
-Log	Called arg2 as handle_w1 with w1 `event
-Log	Called arg2 as handle_w2 with w2 `event
+Log	Called arg2 as handle_w1 with w1 $["ID":`event]
+Log	Called arg2 as handle_w2 with w2 $["ID":`event]
 Dump	Returned nil
 Dump	- First causes event loop finish
-Log	Called symbol2 as handle_w1 with w1 `event
+Log	Called symbol2 as handle_w1 with w1 $["ID":`event]
 Dump	Returned `symbol
 Dump	=========================================
 Dump	Validate
 Dump	- Run both
-Log	Called true2 as valid_w1 with w1 `event
-Log	Called true2 as valid_w2 with w2 `event
+Log	Called true2 as valid_w1 with w1 $["ID":`event]
+Log	Called true2 as valid_w2 with w2 $["ID":`event]
 Dump	Returned true
 Dump	- First fails
-Log	Called false1 as valid_w1 with w1 `event
+Log	Called false1 as valid_w1 with w1 $["ID":`event]
 Dump	Returned false
 Dump	=========================================
 Dump	Save
-Log	Called arg2 as generic_save with w1 `event
-Log	Called arg2 as save_w2 with w2 `event
+Log	Called arg2 as generic_save with w1 $["ID":`event]
+Log	Called arg2 as save_w2 with w2 $["ID":`event]
