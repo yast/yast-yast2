@@ -79,11 +79,6 @@ global string moduledir = yast2dir + "/modules";
 global string scrconfdir = yast2dir + "/scrconf";
 
 /**
- * Directory for config files
- */
-global string configdir = yast2dir + "/config";
-
-/**
  * Directory for desktop files
  */
 global string desktopdir = "/usr/share/applications/YaST2";
