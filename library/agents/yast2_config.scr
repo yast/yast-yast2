@@ -19,7 +19,7 @@
 .yast2.config
 
 `ag_ini(
-    IniAgent( [ "/usr/share/YaST2/config/*.y2cc" ],
+    `IniAgent( [ "/usr/share/YaST2/config/*.y2cc" ],
 	$[
 	    "options"	: [ "read_only", /* "flat", */ "global_values" ],
 	    "comments"	: [ "^[ \t]*\\[.*", "^[ \t]*;.*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],

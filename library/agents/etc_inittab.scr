@@ -21,7 +21,7 @@
 .etc.inittab
 
 `ag_ini(
-    IniAgent( "/etc/inittab",
+    `IniAgent( "/etc/inittab",
 	$[
 	    "options"	: [ "global_values", "flat" ],
 	    "comments"	: [ "^#.*", "^[ \t]*$" ],

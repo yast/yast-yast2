@@ -13,5 +13,5 @@
 .sysconfig.displaymanager
 
 `ag_ini(
-  SysConfigFile("/etc/sysconfig/displaymanager")
+  `SysConfigFile("/etc/sysconfig/displaymanager")
 )
