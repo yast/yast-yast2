@@ -487,6 +487,12 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 			opt_term,
 			w["label"]:w["_cwm_key"]:"");
 		}
+		else if (widget == `richtext)
+		{
+		    w["widget"] = `RichText (`id (w["_cwm_key"]:""),
+			opt_term,
+			"");
+		}
 	}
 	w["custom_widget"] = nil; // not needed any more
 	return w;
