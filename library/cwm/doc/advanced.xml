@@ -24,6 +24,21 @@ list&lt;string&gt; widget_names = // see <xref linkend="simple_dialog"/>
 If you need to add a help that is not bound to any widget, see
 <xref linkend="create_control"/>
   </para>
+  <para>
+If you don't want to add help to a widget and want to avoid errors in the
+log, add a key <computeroutput>"no_help"</computeroutput> with any value
+to the widget instead.
+<example><title>Widget without help</title><screen>
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "CWD_IN_ROOT_PATH" : $[
+    "label" : _("&amp;Current Directory in root's Path"),
+    "widget" : `checkbox,
+    "no_help" : true,
+  ],
+  .....
+]
+ </screen></example>
+  </para>
 </section>
 
 <section id="validation"><title>Widget validation</title>

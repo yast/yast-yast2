@@ -369,7 +369,11 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 		to_check = [];
 	    else
 		to_check = ["label", "widget"];
-	    to_check = (list<string>)merge (to_check, ["help"]);
+
+	    if (! haskey (v, "no_help"))
+	    {
+		to_check = (list<string>)merge (to_check, ["help"]);
+	    }
 	    foreach (string key, to_check, ``{
 		if (v["widget"]:nil != `radio_buttons || key != "label")
 		{
