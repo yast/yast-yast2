@@ -22,7 +22,7 @@
 
     include "testsuite.ycp";
     import "CWM";
-    import "./tests/TestFunc.ym";
+    import "./tests/TestFunc.yh";
     import "Mode";
 
     Mode::test = true;

@@ -18,7 +18,7 @@
 {
     include "testsuite.ycp";
     import "CWM";
-    import "./tests/TestFunc.ym";
+    import "./tests/TestFunc.yh";
 
 
     map functions = $[

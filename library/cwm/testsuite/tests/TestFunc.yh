@@ -1,0 +1,109 @@
+{
+    module "TestFunc";
+    include "testsuite.ycp";
+
+    global define void arg0 (any as) ``{
+        y2error ("Called arg0 as %1", as);
+    };
+
+    global define void arg1 (any as, any a1) ``{
+        y2error ("Called arg1 as %1 with %2", as, a1);
+    }
+
+    global define void arg2 (any as, any a1, any a2) ``{
+        y2error ("Called arg2 as %1 with %2 %3", as, a1, a2);
+    }
+
+    global define void arg3 (any as, any a1, any a2, any a3) ``{
+        y2error ("Called arg3 as %1 with %2 %3 %4", as, a1, a2, a3);
+    }
+
+    global define boolean true1 (any as, any a1) ``{
+        y2error ("Called true1 as %1 with %2", as, a1);
+	return true;
+    }
+
+    global define boolean true2 (any as, any a1, any a2) ``{
+        y2error ("Called true2 as %1 with %2 %3", as, a1, a2);
+        return true;
+    }
+
+    global define boolean false1 (any as, any a1) ``{
+        y2error ("Called false1 as %1 with %2", as, a1);
+	return false;
+    }
+
+    global define boolean false2 (any as, any a1, any a2) ``{
+        y2error ("Called false1 as %1 with %2 %3", as, a1, a2);
+        return false;
+    }
+
+    global define symbol symbol2 (any as, any a1, any a2) ``{
+        y2error ("Called symbol2 as %1 with %2 %3", as, a1, a2);
+	return `symbol;
+    }
+
+    global map popups = $[
+        "a" : $[
+            "table" : $[
+                "widget" : `checkbox,
+		"summary" : ``(TestFunc::opt_sum ()),
+		"handle" : `a_handle,
+		"label" : _("'a' option label"),
+            ],
+            "popup" : $[
+                "widget" : `textentry,
+		"handle" : ``(TestFunc::arg3 ("'a' option handle")),
+            ],
+        ],
+        "b" : $[
+
+        ],
+    ];
+
+    global map widgets = $[
+        "w1" : $[
+            "widget" : `checkbox,
+            "opt" : [ `notify, `immediate ],
+            "label" : _("Check&Box"),
+            "init" : ``(TestFunc::arg1 ("init_w1")),
+            "handle" : ``(TestFunc::arg2 ("handle_w1")),
+            "validate_type" : `function,
+            "validate_function" : ``(TestFunc::true2 ("valid_w1")),
+        ],
+        "w2" : $[
+            "widget" : `textentry,
+            "label" : _("Text&Entry"),
+            "store" : ``(TestFunc::arg2 ("save_w2")),
+            "handle" : ``(TestFunc::arg2 ("handle_w2")),
+            "validate_type" : `function,
+            "validate_function" : ``(TestFunc::true2 ("valid_w2")),
+        ],
+    ];  
+
+    global define list getIdList (map descr) ``{
+	DUMP (sformat ("Returning list of ids for table %1", descr["_cwm_key"]:""));
+	return ["a", "b", "c"];
+    }
+
+    global define any id2key (any descr, any opt_id) ``{
+	DUMP (sformat ("Translating id %1 of %2 to key", opt_id, descr["_cwm_key"]:""));
+	if (opt_id == nil)
+	{
+	    DUMP ("nil branch, returning a");
+	    return "a";
+	}
+	return opt_id;
+    }
+
+    global define string opt_sum (any opt_id, any opt_key) ``{
+	DUMP (sformat ("wanting summary for %1:%2", opt_id, opt_key));
+	return sformat ("%1:%2", opt_id, opt_key);
+    }
+
+    global define symbol tableOptionHandle (any opt_id, any opt_key, any event) ``{
+	DUMP (sformat ("Handling op %1 on %2 (key %3)", event, opt_id, opt_key));
+	return `new_event;
+    }
+
+}

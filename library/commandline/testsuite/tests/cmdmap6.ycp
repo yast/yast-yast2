@@ -10,8 +10,8 @@
 {
 
     include "testsuite.ycp";
-    include "./tests/include/testsuitedata.ycp";
-    
+    include "./tests/testsuitedata.yh";
+
     import "./../../types/src/TypeRepository.ycp";
     import "./../src/CommandLine.ycp";
 
@@ -19,9 +19,9 @@
     TEST(``(CommandLine::Init( cmdline ,[]) ),[],nil);
     TEST(``(CommandLine::Done()),[],nil);
     TEST(``(CommandLine::Aborted()),[],nil);
-    
+
     DUMP( CommandLine::modulecommands );
-    
+
     DUMP( CommandLine::allcommands );
 
 /* EOF */

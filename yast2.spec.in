@@ -101,3 +101,4 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 %doc @docdir@/wizard
 %doc @docdir@/autodocs
 %doc @docdir@/commandline
+%doc @docdir@/types
