@@ -8,6 +8,7 @@
 {
     import "Label";
     import "Popup";
+    import "Mode";
 
     UI::OpenDialog (
 		    `VBox (

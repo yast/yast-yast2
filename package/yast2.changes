@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Sep 01 09:56:12 CEST 2003 - arvin@suse.de
+
+- handle repair mode in Popup::ConfirmAbort
+
+-------------------------------------------------------------------
 Fri Aug 29 14:18:39 CEST 2003 - visnov@suse.de
 
 - fix error reporting, use RichText::Rich2Plain()
