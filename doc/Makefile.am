@@ -8,5 +8,6 @@ htmldir = $(docdir)
 
 doc_DATA =
 html_DATA =
+man_MANS = yast2.8
 
-EXTRA_DIST = $(doc_DATA) $(html_DATA)
+EXTRA_DIST = $(doc_DATA) $(html_DATA) $(man_MANS)
