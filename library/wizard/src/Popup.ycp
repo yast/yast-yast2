@@ -547,7 +547,7 @@ You will need to reinstall." );
 				       // "Cancel" button for timeout message: Close popup dialog
 				       // (i.e. cancel the action in "message")
 				       `PushButton(`id(`timed_cancel),
-						   `opt (`key_F9), 
+						   `opt (`key_F9),
 						   Label::CancelButton() )
 				       ),
 				 `VSpacing(0.2)
@@ -625,7 +625,7 @@ You will need to reinstall." );
 				        `opt(`default, `key_F10),
 					yes_button_message);
 	      no_button  = `PushButton( `id(`no_button),
-					`opt (`key_F9), 
+					`opt (`key_F9),
 					no_button_message );
 	  }
 
@@ -679,7 +679,7 @@ You will need to reinstall." );
 	  if ( focus == `focus_no )
 	  {
 	      yes_button = `PushButton( `id(`yes),
-					`opt (`key_F10), 
+					`opt (`key_F10),
 					yes_button_message );
 	      no_button  = `PushButton( `id(`no),
 					`opt(`default, `key_F9),
@@ -694,19 +694,19 @@ You will need to reinstall." );
 				       `opt(`default, `key_F10),
 				       yes_button_message);
 	      no_button  = `PushButton( `id(`no),
-					`opt (`key_F9), 
+					`opt (`key_F9),
 					no_button_message );
 	      retry_button  = `PushButton( `id(`retry),
-					   `opt (`key_F6), 
+					   `opt (`key_F6),
 					   retry_button_message );
 	  }
 	  else
 	  {
 	      yes_button = `PushButton(`id(`yes),
-				       `opt (`key_F10), 
+				       `opt (`key_F10),
 				       yes_button_message);
 	      no_button  = `PushButton( `id(`no),
-					`opt (`key_F9), 
+					`opt (`key_F9),
 					no_button_message );
 	      retry_button  = `PushButton( `id(`retry),
 					   `opt(`default, `key_F6),
@@ -758,7 +758,7 @@ You will need to reinstall." );
 				 `VSpacing(0.2),
 				 `Heading(text),
 				 `HBox(
-				     `PushButton(`id(`back),   `opt (`key_F8), 
+				     `PushButton(`id(`back),   `opt (`key_F8),
 						 Label::BackButton()  ),
 				     `PushButton(`id(`again),  `opt (`key_F6),
 						 Label::RetryButton() ),
@@ -990,10 +990,7 @@ You will need to reinstall." );
 
       string file_contents = SCR::Read (.target.string, (filename) );
 
-      UI(``{
-	  string headline = WFM::headline;
-
-	  OpenDialog( `opt(`decorated ),
+      UI::OpenDialog( `opt(`decorated ),
 		      `VBox(
 			    `HSpacing( 70 ),	// force width
 			    `VSpacing( 0.3 ),
@@ -1015,13 +1012,11 @@ You will need to reinstall." );
 			    )
 		      );
 
-	  // Fill the LogView with file contents
-	  ChangeWidget( `id(`log ), `Value, WFM::file_contents );
+      // Fill the LogView with file contents
+      UI::ChangeWidget( `id(`log ), `Value, file_contents );
 
-	  UserInput();
-	  CloseDialog();
-      });
-
+      UI::UserInput();
+      UI::CloseDialog();
   }
 
 /* EOF */
