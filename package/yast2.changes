@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct  1 10:47:19 CEST 2003 - jsuchome@suse.cz
+
+- added Autologin.ycp module to handle autologin configuration
+- 2.9.0
+
+-------------------------------------------------------------------
 Wed Sep 17 16:18:48 CEST 2003 - gs@suse.de
 
 - script/yast2: start textmode yast in UTF-8 environment (bug #30512)  
