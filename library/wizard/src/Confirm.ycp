@@ -91,12 +91,12 @@ global define boolean MustBeRoot ()
     boolean root = out["stdout"]:"" == "0\n";
     return root || Popup::ContinueCancelHeadline (
 	// popup headline
-	_("Root privileges needed"),
+	_("Root Privileges Needed"),
 	// message in a continue/cancel popup
 	_("This module needs to be run as root.
 If you continue now, the module may not function properly.
 For example, some settings can be read improperly
-and almost certainly you will not be able to write them.")
+and it is unlikely that settings can be written.")
 	);
 }
 

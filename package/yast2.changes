@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Apr 19 13:05:04 CEST 2004 - arvin@suse.de
+
+- merged proofread messages
+
+-------------------------------------------------------------------
 Thu Apr  8 13:56:41 CEST 2004 - jsrain@suse.cz
 
 - use the 'desktop' kernel parameter only for desktop products
@@ -24,7 +29,7 @@ Fri Apr 02 15:59:59 CEST 2004 - arvin@suse.de
 -------------------------------------------------------------------
 Fri Apr  2 06:41:58 CEST 2004 - nashif@suse.de
 
-- added wrapper functions around Tree and Menu enabled Wizards to 
+- added wrapper functions around Tree and Menu enabled Wizards to
   support ncurses mode (#37581)
 
 -------------------------------------------------------------------
