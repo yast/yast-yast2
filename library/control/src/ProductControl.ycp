@@ -225,6 +225,12 @@ global define boolean ReadControlFile( string controlfile)
             globals["additional_kernel_parameters"]:"";
     }
 
+    if (haskey(productControl, "network"))
+    {
+	map network = productControl["network"]:$[];
+	ProductFeatures::force_static_ip = network["force_static_ip"]:false;
+    }
+
     return true;
 }
 
