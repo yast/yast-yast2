@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sun Aug 18 20:24:48 CEST 2002 - kkaempf@suse.de
+
+- honor /etc/install.inf:UseSSH (#18053)
+
+-------------------------------------------------------------------
 Fri Aug 16 17:31:33 CEST 2002 - arvin@suse.de
 
 - marked more texts for translation
