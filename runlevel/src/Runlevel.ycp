@@ -50,6 +50,11 @@
     //
 
     /**
+     * Script location
+     */
+    string init_d = "/etc/init.d";
+
+    /**
      * After a function returns an error, this holds an error message,
      * including insserv stderr and possibly containing newlines.
      *
@@ -111,7 +116,7 @@
 	{
 	    return -1;
 	}
-	return SCR::Execute (.target.bash, sformat ("/etc/init.d/%1 status", name), $["TERM":"raw"]);
+	return SCR::Execute (.target.bash, sformat ("%2/%1 status", name, init_d), $["TERM":"raw"]);
     }
     /**
      * Get service info and finds out whether service is running.
@@ -130,11 +135,13 @@
      * Call insserv -r and record errors.
      * Does not check if it exists
      * @param name service name
+     * @param force pass "-f" to insserv (workaround for #17608)
      * @return success state
      */
-    define boolean serviceDisable (string name) ``{
+    define boolean serviceDisable (string name, boolean force) ``{
 	map ret = SCR::Execute (.target.bash_output,
-				sformat ("/sbin/insserv -r %1", name));
+				sformat ("/sbin/insserv -r%3 %2/%1",
+					 name, init_d, force? "f": ""));
 	if (0 != ret["exit"]:-1)
 	{
 	    // Error message.
@@ -169,7 +176,7 @@
 	{
 	    if (size (service["start"]:[]) != 0)
 	    {
-		return serviceDisable (name);
+		return serviceDisable (name, false);
 	    }
 	    return true;
 	}
@@ -183,7 +190,8 @@
 	    else
 	    {
 		map ret = SCR::Execute (.target.bash_output,
-					sformat ("/sbin/insserv -d %1", name));
+					sformat ("/sbin/insserv -d %2/%1",
+						 name, init_d));
 		if (0 != ret["exit"]:-1)
 		{
 		    // Error message.
@@ -218,17 +226,17 @@
 	}
 	// we must remove it first because insserv start=... adds
 	// runlevels, not replace runlevels!!
-	if (! serviceDisable (name))
+	if (! serviceDisable (name, false))
 	{
 	    return false;
 	}
-	
+
 	string rls = mergestring (rl, ",");
 	if (rls != "")
 	{
 	    map ret = SCR::Execute (.target.bash_output,
-				    sformat ("/sbin/insserv %1,start=%2",
-					     name, rls));
+				    sformat ("/sbin/insserv %2/%1,start=%3",
+					     name, init_d, rls));
 	    if (0 != ret["exit"]:-1)
 	    {
 		// Error message.
@@ -272,7 +280,7 @@
      */
     global define integer RunInitScript (string name, string param) ``{
 	return SCR::Execute (.target.bash,
-			     sformat ("/etc/init.d/%1 %2", name, param),
+			     sformat ("%2/%1 %3", name, init_d, param),
 			     $[ "TERM" : "raw"]);
     }
 
@@ -309,7 +317,7 @@
 	// locale_debug = "; ls /nono 2>&1; /usr/bin/locale; /usr/bin/env";
 
 	return SCR::Execute (.target.bash_output,
-			     sformat ("/etc/init.d/%1 %2 2>&1", name, param)
+			     sformat ("%2/%1 %3 2>&1", name, init_d, param)
 			     + locale_debug,
 			     env);
     }
