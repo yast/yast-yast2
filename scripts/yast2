@@ -19,15 +19,22 @@ export PATH=/sbin:/usr/sbin:$PATH
 # load common script functions
 . /usr/lib/YaST2/bin/yast2-funcs
 
+# Accumulated arguments for both the Qt UI and y2cc; currently supported:
+# --fullscreen
+# --noborder
+Y2QT_ARGS=""
+
 printhelp()
 {
 	echo "Usage: $0 [OPTIONS] [MODULE] [module specific parameters]"
 	echo
 	echo "OPTIONS:"
+	echo "	-h, --help	this message"
 	echo "	-l, --list	list all available modules"
 	echo "	-g, --geometry	default window size (qt only)"
 	echo "	-s, --style	widget style (qt only)"
-	echo "	-h, --help	this screen"
+	echo "	--noborder      no window manager border for main window"
+	echo "	--fullscreen    use full screen"
 	echo
 	echo "exceptional case for installing packages:"
 	echo "$0 OPTION <package>"
@@ -63,10 +70,10 @@ listmodules()
 # to become larger than the screen anyway.
 Y2_GEOMETRY=${Y2_GEOMETRY:-800x600}
 
-TEMP=`getopt -o hlg:s:Si --long help,list,geometry:,style:,strings,install \
+TEMP=`getopt -o hlg:s:Si --long help,list,geometry:,style:,strings,install,fullscreen,noborder \
      -n 'yast2' -- "$@"`
 
-if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
+if [ $? != 0 ] ; then echo "Exit." >&2 ; exit 1 ; fi
 
 # Note the quotes around `$TEMP': they are essential!
 eval set -- "$TEMP"
@@ -76,9 +83,14 @@ while true ; do
 		-h|--help) printhelp; exit 0  ;;
 		-l|--list) listmodules; exit 0  ;;
 		-g|--geometry) Y2_GEOMETRY="$2"; shift 2; ;;
-		-i|--install) Y2_INSTALL_PACKAGES=true; shift 1;;
+		-i|--install) Y2_INSTALL_PACKAGES=true; shift ;;
+                --fullscreen) Y2QT_ARGS="$Y2QT_ARGS --fullscreen"; shift ;;
+		--noborder)   Y2QT_ARGS="$Y2QT_ARGS --noborder"  ; shift ;;
 		--) shift ; break ;;
 		*) echo "Unrecognized option $1" ; exit 1 ;;
+
+	        # IMPORTANT: Remember to change that "getopt" call above, too 
+	        # if you change anything here!
 	esac
 done
 
@@ -126,10 +138,10 @@ else
     set_qt_home_dir
     # use ycp menu if the control center is not installed
     if [ $module == "menu" -a -e "$ybindir/y2controlcenter" ] ; then
-	$ybindir/y2controlcenter $FONT "$@"
+	$ybindir/y2controlcenter $Y2QT_ARGS $FONT "$@"
     else
 	set -- $(for x in "$@"; do echo "(\"$x\")"; done) # surround args by ("...")
-	$ybindir/y2base $module "$@" qt -geometry "$Y2_GEOMETRY" $FONT
+	$ybindir/y2base $module "$@" qt -geometry "$Y2_GEOMETRY" $Y2QT_ARGS $FONT
     fi
 fi
 
