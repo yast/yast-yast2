@@ -13,8 +13,7 @@
 
     import "Report";
     import "TypeRepository";
-
-    include "ui/common_functions.ycp";
+    import "String";
 
     textdomain "base";
 
@@ -517,12 +516,12 @@
 
 	Print("");
 	Print(_("Commands:"));
-	
+
 	integer longest = 0;
 	foreach( string action, map desc, modulecommands["actions"]:$[], ``{
 	    if( size(action) > longest ) longest = size(action);
 	});
-	
+
 	maplist(string cmd, map desc, modulecommands["actions"]:$[], ``{
 	    Print(sformat("    %1  %2", padding(cmd, longest), desc["help"]:_("No help available.")));
 	});
@@ -560,7 +559,7 @@
 	Print(_("\n    Options:"));
 
 	map allopts = allcommands["options"]:$[];
-	
+
 	integer longestopt = 0;
 	integer longestarg = 0;
 
@@ -576,9 +575,9 @@
 		});
 		t = t + "\]";
 	    }
-	    
+
 	    if( size(t) > longestarg ) longestarg = size(t);
-	    
+
 	    if( size(opt) > longestopt ) longestopt = size(opt);
 	} );
 
@@ -678,53 +677,6 @@
 
 
     /**
-    * @param input	string, usually an user input
-    *
-    * @return string
-    *
-    * Remove blanks at begin and end of input string
-    * (blanks between remain untouched).
-    *
-    * @example CutBlanks ( "  any input     " );
-    */
-
-    global define string CutBlanks( string input ) ``{
-        string  output = input;
-        boolean go_on = true;
-
-        if ( size ( output ) > 0 )
-        {
-	    integer pos = findfirstnotof( output, " \t" );
-
-	    if ( pos != nil )
-	    {
-	        output = substring( output, pos );
-	    }
-	    else
-	    {
-		return "";
-	    }
-
-	    integer last_pos = size ( output ) - 1;
-
-	    while ( go_on )
-	    {
-	        string lastchar = substring( output, last_pos );
-	        if ( lastchar == " " || lastchar == "\t")
-	        {
-		    output = substring( output, 0, last_pos );
-		    last_pos = last_pos-1;
-	        }
-	        else
-	        {
-		    go_on = false;
-	        }
-	    }
-        }
-	return output;
-    };
-
-    /**
      * Parse string of values - split string to values, quoting and backslash sequences are supported
      * @param options Input string
      * @param parameters Parmeter used at parsing - map with keys:
@@ -766,7 +718,7 @@
 	    foreach (string v, values, ``{
 		if (remove_whitespace == true)
 		{
-		    v = CutBlanks(v);
+		    v = String::CutBlanks(v);
 		}
 
 		if (unique == true)
@@ -1096,7 +1048,7 @@
 
 	return cmds[0]:nil;
     }
-    
+
     define string padding( string text, integer length ) ``{
 	integer rest = length-size(text);
 	string pad = "";
