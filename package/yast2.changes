@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Aug 01 16:12:05 CEST 2003 - arvin@suse.de
+
+- added directory for desktop files
+
+-------------------------------------------------------------------
 Tue Jul 29 14:48:06 CEST 2003 - jsrain@suse.de
 
 - passing whole event information from CWM to handlers
@@ -25,7 +30,7 @@ Wed Jul  9 10:06:34 CEST 2003 - fehr@suse.de
 -------------------------------------------------------------------
 Mon Jul  7 14:06:06 CEST 2003 - visnov@suse.de
 
-- let TypeRepository module use the simple types 
+- let TypeRepository module use the simple types
 
 -------------------------------------------------------------------
 Fri Jul  4 16:55:41 CEST 2003 - msvec@suse.cz
@@ -37,7 +42,7 @@ Fri Jul  4 16:55:41 CEST 2003 - msvec@suse.cz
 -------------------------------------------------------------------
 Wed Jul  2 08:52:29 CEST 2003 - visnov@suse.de
 
-- propagate y2base exit code from yast2 script 
+- propagate y2base exit code from yast2 script
 
 -------------------------------------------------------------------
 Tue Jul  1 10:19:44 CEST 2003 - jsrain@suse.de
@@ -48,7 +53,7 @@ Tue Jul  1 10:19:44 CEST 2003 - jsrain@suse.de
 -------------------------------------------------------------------
 Thu Jun 26 13:38:26 CEST 2003 - visnov@suse.de
 
-- print to stderr in non-interactive mode 
+- print to stderr in non-interactive mode
 
 -------------------------------------------------------------------
 Wed Jun 25 13:11:47 CEST 2003 - visnov@suse.de
@@ -103,7 +108,7 @@ Wed Jun 18 11:22:41 CEST 2003 - visnov@suse.de
 Wed Jun 18 10:42:22 CEST 2003 - lslezak@suse.de
 
 - spec file: added yast2-network to Requires/neededforbuild
-- version 2.8.7  
+- version 2.8.7
 
 -------------------------------------------------------------------
 Mon Jun 16 16:06:43 CEST 2003 - lslezak@suse.cz
