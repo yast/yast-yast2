@@ -64,7 +64,7 @@ define boolean checkExists (string name) ``{
 	// Error message.
 	// %1 is a name of an init script in /etc/init.d,
 	// eg. nfsserver
-	error_msg = sformat (_("Wrong service: %1."), name);
+	error_msg = sformat (_("Empty service name: %1."), name);
 	y2error(1, error_msg);
 	return false;
     }
