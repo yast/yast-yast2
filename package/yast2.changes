@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar  2 11:22:33 CET 2005 - locilka@suse.cz
+
+- merged proofed texts
+- 2.11.38 
+
+-------------------------------------------------------------------
 Fri Feb 25 15:24:07 CET 2005 - lslezak@suse.cz
 
 - command line - fixed checking of the mandatory keys - don't

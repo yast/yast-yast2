@@ -111,7 +111,7 @@
 	// TRANSLATORS: popup informing message, allowed characters for port-names
 	return _("A port name may consist of the characters 'a-z', 'A-Z', '0-9', and '*+._-'.
 A port number may be a number from 0 to 65535.
-No spaces are allowed at all.
+No spaces are allowed.
 ");
     }
 
