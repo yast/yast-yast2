@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Apr 24 11:08:10 CEST 2003 - kkaempf@suse.de
+
+- rename 'axp' to 'alpha'
+
+-------------------------------------------------------------------
 Wed Apr 23 11:51:42 CEST 2003 - ms@suse.de
 
 - added getX11Link function to solve the X11 link
