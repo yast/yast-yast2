@@ -1,0 +1,77 @@
+/**
+ * File:
+ *	Encoding.ycp
+ *
+ * Module:
+ *	Encoding
+ *
+ * Summary:
+ *      provide the encoding stuff
+ *<BR>
+ * sysconfig /etc/sysconfig/console:<BR>
+ *<UL>
+ *<LI>	CONSOLE_ENCODING	string	console encoding</LI>
+ *</UL>
+ *
+ * $Id$
+ *
+ * Author:
+ *	Klaus Kaempf <kkaempf@suse.de>
+ *
+ */
+
+{
+    module "Encoding";
+
+    import "Mode";
+
+    /**
+     * @return encoding string defining current (ISO) encoding
+     */
+    global string console      = "ISO-8859-1";
+
+    /**
+     * restore data to system (rc.config agent)
+     * returns console encoding
+     */
+
+    global define string Restore ()
+    ``{
+	console   = (string)SCR::Read (.sysconfig.console.CONSOLE_ENCODING);
+        list out = splitstring( lookup( (map)SCR::Execute( .target.bash_output, 
+							   "locale -k charmap" ),
+					"stdout", "" ),
+				 "\n" );
+	y2milestone( "list %1", out );
+	out = filter( string e, out, ``(find(e, "charmap=")==0) );
+	y2milestone( "list %1", out );
+	if( size(out[0]:"")>0 )
+	    {
+	    string enc = substring( out[0]:"", 8 );
+	    y2milestone( "enc %1", enc );
+	    enc = deletechars( enc, "\" " );
+	    y2milestone( "enc %1", enc );
+	    if( size(enc)>0 )
+		console = enc;
+	    }
+	y2milestone( "encoding %1", console );
+	return console;
+    }
+
+    /**
+     * constructor
+     * does nothing in initial mode
+     * restores console encoding from /etc/sysconfig
+     * in normal mode
+     */
+
+    global define void Encoding ()
+    ``{
+	if (! Mode::initial)
+	{
+	    Restore ();
+	}
+
+	return;
+    }
+}
