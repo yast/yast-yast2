@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Feb 18 11:33:32 CET 2005 - visnov@suse.cz
+
+- Don't show desktop files with "Hidden" set to yes in ncurses menu
+
+-------------------------------------------------------------------
 Thu Feb 17 07:16:41 CET 2005 - nashif@suse.de
 
 - Added function to reset install.inf data to initiate a reread of

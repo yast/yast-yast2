@@ -160,6 +160,7 @@ list<string> Values = [
     "X-SuSE-YaST-Call",
     "X-SuSE-YaST-Group",
     "X-SuSE-YaST-SortKey",
+    "Hidden",
 ];
 
 Desktop::Read(Values);
