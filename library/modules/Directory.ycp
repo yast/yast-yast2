@@ -32,6 +32,11 @@ global string logdir = "/var/log/YaST2";
 global string vardir = "/var/lib/YaST2";
 
 /**
+ * Directory for configuration data
+ */
+global string etcdir = "/etc/YaST2";
+
+/**
  * Directory with agents
  */
 global string agentdir = execcompdir + "/servers_non_y2";
