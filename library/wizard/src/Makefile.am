@@ -6,6 +6,7 @@ htmldir = @docdir@/wizard
 yncludedir = @yncludedir@/ui
 
 module_DATA =			\
+	Confirm.ycp		\
 	Popup.ycp		\
 	NetworkPopup.ycp	\
 	Label.ycp		\
