@@ -2,15 +2,15 @@ Write	.dev.tty.prompt "YaST2 lan> " true
 Write	.dev.tty "\nConfiguration of network cards\n------------------------------\n" true
 Write	.dev.tty "Configuration of network cards" true
 Write	.dev.tty "Basic syntax:" true
-Write	.dev.tty "    yast2 lan <command> [options]" true
+Write	.dev.tty "    yast2 lan <command> [verbose] [options]" true
 Write	.dev.tty "    yast2 lan help" true
 Write	.dev.tty "    yast2 lan longhelp" true
 Write	.dev.tty "    yast2 lan <command> help" true
 Write	.dev.tty "" true
 Write	.dev.tty "Commands:" true
-Write	.dev.tty "    add \tadd a network card" true
-Write	.dev.tty "    delete \tdelete a network card" true
-Write	.dev.tty "    list \tdisplay configuration summary" true
+Write	.dev.tty "    add     add a network card" true
+Write	.dev.tty "    delete  delete a network card" true
+Write	.dev.tty "    list    display configuration summary" true
 Write	.dev.tty "" true
 Write	.dev.tty "Run 'yast2 lan <command> help' for a list of available options." true
 Write	.dev.tty "" true

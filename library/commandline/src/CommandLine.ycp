@@ -43,13 +43,13 @@
 	    "help"	: $[
 		"help"	: _("print the help for this command" ),
 	    ],
-	    "quiet"	: $[
-		"help"	: _("do not show progress information" ),
+	    "verbose"	: $[
+		"help"	: _("show progress information" ),
 	    ],
 	],
 	"mappings"	: $[
-	    "help"	: ["help", "quiet"],
-/*	    "interactive":  ["quiet"]
+	    "help"	: ["help", "verbose"],
+/*	    "interactive":  ["verbose"]
 */
 	]
     ];
@@ -188,13 +188,13 @@
 
 	modulecommands = cmdlineinfo;
 
-	// build allcommands - help and quiet options are added specially
+	// build allcommands - help and verbose options are added specially
 	allcommands = $[
 	    "actions": union( modulecommands["actions"]:$[], systemcommands["actions"]:$[] ),
 	    "options": union( modulecommands["options"]:$[], systemcommands["options"]:$[] ),
 	    "mappings": union(
 		mapmap( string act, list opts, modulecommands["mappings"]:$[], ``(
-		    [act, union( opts, ["help", "quiet"] )] ) ),
+		    [act, union( opts, ["help", "verbose"] )] ) ),
 		systemcommands["mappings"]:$[] )
 	];
 
@@ -491,9 +491,10 @@
 	if( ! interactive ) {
 /*	    // translators: module command line help, %1 is the module name
 	    Print(sformat(("    yast2 %1 interactive"), modulecommands["id"]:""));
-*/	    // translators: module command line help, %1 is the module name
+*/
+	    // translators: module command line help, %1 is the module name
 	    // translate <command> and [options] only!
-	    Print(sformat(_("    yast2 %1 <command> [options]"), modulecommands["id"]:""));
+	    Print(sformat(_("    yast2 %1 <command> [verbose] [options]"), modulecommands["id"]:""));
 	    // translators: module command line help, %1 is the module name
 	    Print(sformat(("    yast2 %1 help"), modulecommands["id"]:""));
 	    Print(sformat(("    yast2 %1 longhelp"), modulecommands["id"]:""));
@@ -516,8 +517,14 @@
 
 	Print("");
 	Print(_("Commands:"));
+	
+	integer longest = 0;
+	foreach( string action, map desc, modulecommands["actions"]:$[], ``{
+	    if( size(action) > longest ) longest = size(action);
+	});
+	
 	maplist(string cmd, map desc, modulecommands["actions"]:$[], ``{
-	    Print(sformat("    %1 \t%2", cmd, desc["help"]:_("No help available.")));
+	    Print(sformat("    %1  %2", padding(cmd, longest), desc["help"]:_("No help available.")));
 	});
 	Print("");
 	// translators: module command line help, %1 is the module name
@@ -553,6 +560,28 @@
 	Print(_("\n    Options:"));
 
 	map allopts = allcommands["options"]:$[];
+	
+	integer longestopt = 0;
+	integer longestarg = 0;
+
+	foreach( string opt, opts, ``{
+	    map op = allopts[opt]:$[];
+	    string t = op["type"]:"";
+
+	    if ( t != "regex" && t != "enum" && t != "" ) t = "["+t+"]";
+	    else if( t == "enum" ) {
+		t = "\[ ";
+		foreach( string s, op["typespec"]:[], ``{
+		    t = t+ s+" ";
+		});
+		t = t + "\]";
+	    }
+	    
+	    if( size(t) > longestarg ) longestarg = size(t);
+	    
+	    if( size(opt) > longestopt ) longestopt = size(opt);
+	} );
+
 
 	foreach( string opt, opts, ``{
 	    map op = allopts[opt]:$[];
@@ -568,7 +597,7 @@
 	    }
 	    else t = "    ";
 
-	    Print(sformat("        %1  \t%2    \t%3", opt, t, op["help"]:""));
+	    Print(sformat("        %1  %2  %3", padding(opt,longestopt), padding(t, longestarg), op["help"]:""));
 	} );
 
 	if( haskey( command, "example" ) ) {
@@ -1064,6 +1093,16 @@
 	}
 
 	return cmds[0]:nil;
+    }
+    
+    define string padding( string text, integer length ) ``{
+	integer rest = length-size(text);
+	string pad = "";
+	while( rest > 0 ) {
+	    pad = pad + " ";
+	    rest = rest-1;
+	}
+	return text+pad;
     }
 
 /* EOF */

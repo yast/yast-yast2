@@ -49,7 +49,7 @@ global define boolean CommandLineRun( map commandline ) ``{
     }
 
     boolean ret = true;
-    boolean verbose = true;
+    boolean verbose = false;
 
     /* Start GUI */
     if(CommandLine::StartGUI()) {
@@ -73,7 +73,7 @@ global define boolean CommandLineRun( map commandline ) ``{
 
 	/* non-GUI handling */
 
-	verbose = !contains( Args(), "quiet" );
+	verbose = contains( Args(), "verbose" );
 
 	if( verbose )
 	    CommandLine::Print( _("Initializing") );
