@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Feb 28 17:25:39 CET 2003 - ms@suse.de
+
+- use require.ycp for package checks in X11Version.ycp (#24488)
+
+-------------------------------------------------------------------
 Fri Feb 28 17:16:04 CET 2003 - kkaempf@suse.de
 
 - honor 'manual' on kernel command line (#24462)

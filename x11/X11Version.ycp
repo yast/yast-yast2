@@ -19,6 +19,7 @@ STATUS        : Development
 {
 module "X11Version";
 import "Directory";
+include "require.ycp";
 
 //=======================================
 // System Global Variables
@@ -70,22 +71,24 @@ global define void GetVersion() ``{
 	return( version );
 }
 
-global define boolean have_x11 ()
-    ``{
+//---[ have_x11 ]----//
+global define boolean have_x11 () ``{
+	// ...
+	// check if the required packages are installed
+	// ---
+	boolean ret = true;
+	list pacs = ["XFree86", "yast2-x11"];
 
-    boolean ret = true;
-
-    list pacs = ["XFree86", "yast2-x11"];
-    foreach (`pac, pacs, ``{
-	if (!Pkg::IsProvided (pac))
-	{
-	    y2debug ("%1 is missing", pac);
-	    ret = false;
+	if (!RequireAndConflict (pacs, [],
+		// notification 1/2
+		_("<p>To access the X11-System, the <b>%1</b> package must be installed.</p>") +
+		// notification 2/2
+		_("<p>Do you want to install it now?</p>"))
+	) {
+		return false;
 	}
-    });
-
-    y2milestone ("have_x11 = %1", ret);
-    return ret;
+	y2milestone ("have_x11 = %1", ret);
+	return ret;
 }
 
 }
