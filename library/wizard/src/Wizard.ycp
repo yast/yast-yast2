@@ -596,7 +596,7 @@
 	    if ( UI::WidgetExists(`id(`rep_next ) ) )
 	    {
 		UI::ReplaceWidget(`id(`rep_next ),
-				  `PushButton( `id( id ), `opt (`key_F10), label ) 
+				  `PushButton( `id( id ), `opt (`key_F10, `default), label ) 
 				  );
 	    }
 	}
