@@ -151,6 +151,7 @@
 	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
 	    "name"	: _("NTP Server"),
 	    "udp_ports" : [ "ntp" ],
+	    "broadcast_ports" : [ "ntp" ],
 	],
 	"ldap" : $[
 	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
