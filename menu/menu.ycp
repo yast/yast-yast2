@@ -18,6 +18,9 @@ import "Desktop";
 import "Label";
 import "Popup";
 
+map Groups = $[];
+map Modules = $[];
+
 /**
  */
 global define void DisplaySplash() ``{
@@ -80,8 +83,8 @@ global define void Launch(string modul) ``{
     y2debug("Calling: %1 (%2)", function, arguments);
 
     if(function != "") {
-	any ret = WFM::CallModule (function, arguments);
-	y2debug("WFM::CallModule (%1, %2) returns: %3", function, arguments, ret);
+	any ret = WFM::CallFunction (function, arguments);
+	y2debug("WFM::CallFunction (%1, %2) returns: %3", function, arguments, ret);
     }
 }
 
@@ -154,8 +157,8 @@ list Values = [
 ];
 
 Desktop::Read(Values);
-map Groups = Desktop::Groups;
-map Modules = Desktop::Modules;
+Groups = Desktop::Groups;
+Modules = Desktop::Modules;
 y2debug("Groups=%1", Groups);
 y2debug("Modules=%1", Modules);
 
@@ -165,7 +168,7 @@ list GroupList = Desktop::GroupList();
 UI::ReplaceWidget(`id(`groups_rep), `SelectionBox(`id (`groups), `opt(`notify, `immediate, `keyEvents), "", GroupList));
 y2debug("%1", GroupList);
 
-string first = select(select(GroupList[0]:[], 0, []), 0, nil);
+string first = (string) select((list)select(GroupList[0]:[], 0, []), 0, nil);
 y2debug("%1", first);
 
 /**
@@ -185,14 +188,14 @@ while(true) {
     if (event["ID"]:`none == `groups
 	 && event["EventReason"]:"" == "SelectionChanged" )
     {
-	string id = UI::QueryWidget(`id(`groups), `CurrentItem);
+	string id = (string) UI::QueryWidget(`id(`groups), `CurrentItem);
 	if(is(id, string)) ReplaceModuleList(id);
 	continue;
     }
     else if ( event["ID"]:`none == `progs
 	      && event["EventReason"]:"" == "Activated" )
     {
-	string program = UI::QueryWidget(`id(`progs), `CurrentItem);
+	string program = (string) UI::QueryWidget(`id(`progs), `CurrentItem);
 	Launch(program);
     }
     else if ( event["ID"]:`none == `groups
