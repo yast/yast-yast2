@@ -184,34 +184,33 @@
 	return optmap;
     }
 
-    
+
     /**
      * SysconfigRead()
      *
      * Try an SCR::Read(...) and return the result if successful.
      * On failure return the the second parameter (default value)
      *
-     * @param 	sysconfig_path   Sysconfig SCR path.
+     * @param	sysconfig_path   Sysconfig SCR path.
      * @param	default          Default value
      *
      * @return  Success --> Result of SCR::Read<br>
      *		Failure --> Default value
      *
-     * @see	
      */
-    
+
     global define string SysconfigRead( path sysconfig_path, string default )
     ``{
 	string local_ret = (string)SCR::Read( sysconfig_path );
 
 	if ( local_ret == nil )
 	{
-	    y2error("Failed reading <%1>", sysconfig_path );
+	    y2error("Failed reading '%1'", sysconfig_path );
 	    return( default );
 	}
 	else
 	{
-	    y2milestone("%1: <%2>", sysconfig_path, local_ret );
+	    y2milestone("%1: '%2'", sysconfig_path, local_ret );
 	    return( local_ret );
 	}
     }	// SysconfigRead()
