@@ -89,9 +89,15 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 %dir @yncludedir@/ui
 @yncludedir@/ui/*.ycp
 
+# commandline
+
+%dir @yncludedir@/commandline
+@yncludedir@/commandline/*.ycp
+
 # documentation
 
 %files devel
 %doc @docdir@/sequencer
 %doc @docdir@/wizard
 %doc @docdir@/autodocs
+%doc @docdir@/commandline

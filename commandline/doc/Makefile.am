@@ -4,9 +4,8 @@
 
 SUBDIRS = autodocs
 
-htmldir = $(docdir)
+htmldir = $(docdir)/commandline
 
-doc_DATA = CommandLine.txt lan-simple.ycp lan-simpler.ycp
-html_DATA =
+html_DATA = CommandLine.txt lan-simple.ycp lan-simpler.ycp
 
-EXTRA_DIST = $(doc_DATA) $(html_DATA)
+EXTRA_DIST = $(html_DATA)
