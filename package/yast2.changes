@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Sep  1 16:56:22 CEST 2003 - visnov@suse.de
+
+- do not print module help twice in the header
+- revert capitalization for the command line actions/options from
+  proofreader 
+
+-------------------------------------------------------------------
 Mon Sep  1 15:50:49 CEST 2003 - jsrain@suse.de
 
 - added support for immutable options to Table/Popup

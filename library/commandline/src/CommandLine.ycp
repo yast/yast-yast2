@@ -22,10 +22,10 @@
     map systemcommands = $[
 	"actions"	: $[
 	    "help"	: $[
-		"help":_("Print the Help for This Module")
+		"help":_("Print the help for this module")
 	    ],
 	    "longhelp": $[
-		"help":_("Print a Long Version of Help for This Module")
+		"help":_("Print a long version of help for this module")
 	    ],
 /*	    "interactive"	: $[
 		"help": _("start interactive shell to control the module")
@@ -39,10 +39,12 @@
 	],
 	"options"	: $[
 	    "help"	: $[
-		"help"	: _("Print the Help for This Command"),
+		// translators:  command line "help" option 
+		"help"	: _("Print the help for this command"),
 	    ],
 	    "verbose"	: $[
-		"help"	: _("Show Progress Information"),
+		// translators: command line "verbose" option
+		"help"	: _("Show progress information"),
 	    ],
 	],
 	"mappings"	: $[
@@ -400,8 +402,12 @@
 	// wrong, let's print the help message
 	if( ret != true ) {
 	    if( interactive ) {
+		// translators: error message, how to get command line help for interactive mode
+		// %1 is the module name, %2 is the action name
 		Print(sformat(_("Use '%1 %2 help' for a complete list of available options."), modulecommands["id"]:"", command));
 	    } else {
+		// translators: error message, how to get command line help for non-interactive mode
+		// %1 is the module name, %2 is the action name
 		Print(sformat(_("Use 'yast2 %1 %2 help' for a complete list of available options."), modulecommands["id"]:"", command));
 	    }
 	    return $[];
@@ -471,8 +477,10 @@
      * Print a nice heading for this module
      */
     define void PrintHead() ``{
-	string head = modulecommands["help"]:"" + "\n";
-	integer i=0; while(i<size(modulecommands["help"]:"")) { head = head + "-"; i=i+1; }
+	// translators: command line interface header, %1 is identification of the module
+	string head = sformat(_("YaST Configuration module %1\n"), modulecommands["id"]:"YaST");
+	integer headlen = size(head);
+	integer i=0; while (i<headlen) { head = head + "-"; i=i+1; }
 	head = "\n" + head + "\n";
 
 	Print( head );
@@ -483,7 +491,7 @@
      */
     define void PrintGeneralHelp() ``{
 	// translators: default module description if none is provided by the module itself
-	Print( modulecommands["help"]: _("This is a YaST2 module.") );
+	Print( modulecommands["help"]: _("This is a YaST2 module.")+"\n" );
 	Print(_("Basic Syntax:"));
 
 	if( ! interactive ) {
