@@ -86,7 +86,7 @@
      * @see: cmdLine
      */
     global define void AddCmdLine (string name, string arg)
-    ``{
+    {
 	cmdLine = cmdLine + " " + name;
 	if (arg != "")
 	{
@@ -104,7 +104,7 @@
      * Parameters to the important cmdline parts.
      */
     define void ExtractCmdlineParameters (string line)
-    ``{
+    {
 	// discard \n
 	line = deletechars (line, "\n");
 
@@ -157,7 +157,7 @@
 	}
 
 	foreach (string parameter, cmdlist,
-	``{
+	{
 	    // split "key=value" to ["key", "value"]
 
 	    list<string> param_value_list = splitstring (parameter, "=");
@@ -187,7 +187,7 @@
      * @return void
      */
     global define void ProbeKernel ()
-    ``{
+    {
 	if (!Arch::has_smp)
 	{
 	    y2milestone ("ProbeKernel: non SMP board");
@@ -269,8 +269,7 @@
 		// XXX fixme
 		string chrp_cpu = "";
 		list<map> cpuProbe = (list<map>) SCR::Read(.probe.cpu);
-		foreach (map cpuProbe_map, cpuProbe,
-		``{
+		foreach (map cpuProbe_map, cpuProbe, {
 		    chrp_cpu = cpuProbe_map["model"]:"";
 		    chrp_cpu = tolower (chrp_cpu);
 		});
@@ -323,7 +322,7 @@
      * add the module name to sysconfig variable
      */
     global define void AddModuleToLoad (string name)
-    ``{
+    {
 	kernelModules = kernelModules + " " + name;
     }
 
@@ -332,7 +331,7 @@
      *	@return void
      */
     global define void Set (list<string> custom_kernels)
-    ``{
+    {
 	kernel_packages = custom_kernels;
 
 	return;
@@ -343,18 +342,19 @@
      * save the sysconfig variable to the file
      */
     global define void SaveModulesToLoad ()
-    ``{
+    {
 	y2milestone ("Modules to be loader at boot time: %1", kernelModules);
 	SCR::Write (.sysconfig.kernel.MODULES_LOADED_ON_BOOT, kernelModules);
 	SCR::Write (.sysconfig.kernel, nil);
     }
-    
+
 
     /**
      * Compute kernel package
      * @return string selected kernel
      */
-    global string ComputePackage () {
+    global string ComputePackage ()
+    {
 	    string the_kernel = kernel_packages[0]:"";
 	    y2milestone ("Selecting '%1' as kernel package", the_kernel);
 	    while (the_kernel != ""
@@ -371,7 +371,7 @@
 	    else
 	    {
 		y2warning ("%1 not available, using kernel-default",
-						kernel_packages);
+			   kernel_packages);
                 return "kernel-default";
 	    }
     }
@@ -381,8 +381,8 @@
      * Compute kernel packages
      * @return list of selected kernel packages
      */
-    global list <string> ComputePackages () {
-
+    global list <string> ComputePackages ()
+    {
 	    string kernel = ComputePackage ();
 	    string kernel_nongpl = kernel + "-nongpl";
 
@@ -401,7 +401,7 @@
      * @return void
      */
     global define void Kernel ()
-    ``{
+    {
 	if (Mode::initial || Mode::cont)
 	{
 	    string tmp = (string) SCR::Read (.etc.install_inf.Cmdline);
