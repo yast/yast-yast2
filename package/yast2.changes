@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep 05 17:48:13 CEST 2002 - arvin@suse.de
+
+- wizard loads it's images from the theme dir
+
+-------------------------------------------------------------------
 Wed Sep  4 19:08:56 CEST 2002 - mvidner@suse.cz
 
 - ncurses menu: fixed shortcut cycling in the group menu (#18258).

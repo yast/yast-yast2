@@ -54,6 +54,11 @@ global string yncludedir = includedir;
 global string imagedir = yast2dir + "/images";
 
 /**
+ * Directory for themes
+ */
+global string themedir = yast2dir + "/theme";
+
+/**
  * Directory for locales
  */
 global string localedir = yast2dir + "/locale";

@@ -23,7 +23,7 @@
     integer current_stage = 0;	// Cache for the current wizard stage (image no.)
 
     // keep trailing "/" !!
-    string image_path = Directory::imagedir + "/";
+    string theme_path = Directory::themedir + "/";
 
     boolean have_fancy_ui = false;
 
@@ -149,11 +149,11 @@
 	    image =
 		`VBox(
 		      `HBox(
-			    `Image( image_path + "topRow_left.png", "YaST2" ),
+			    `Image( theme_path + "topRow_left.png", "YaST2" ),
 			    `HWeight( 1, // Layout trick: Lower layout priority with weight
 				      `HBox(
-					    `Image(`opt(`tiled, `zeroWidth ), image_path + "topRow_centerTile.png", "" ),
-					    `Image(`opt(`easterEgg ) , image_path + "topRow_right.png", "SuSE" )
+					    `Image(`opt(`tiled, `zeroWidth ), theme_path + "topRow_centerTile.png", "" ),
+					    `Image(`opt(`easterEgg ) , theme_path + "topRow_right.png", "SuSE" )
 					    )
 				      )
 			    )
@@ -161,7 +161,7 @@
 
 	    if ( add_bottom_tile )
 	    {
-		image = add( image, `Image(`opt(`tiled, `zeroWidth ) , image_path + "topRow_bottomTile.png", "" ) );
+		image = add( image, `Image(`opt(`tiled, `zeroWidth ) , theme_path + "topRow_bottomTile.png", "" ) );
 	    }
 	}
 
@@ -254,22 +254,22 @@
 	return `HSquash(
 			`VBox(
 			      `HBox(
-				    `Image( image_path + "full_1.png", "" ),
-				    `Image(`opt(`tiled, `zeroHeight ), image_path + "active_leftTile.png",  "" )
+				    `Image( theme_path + "full_1.png", "" ),
+				    `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" )
 				    ),
 			      easyInstallationCard( step_descriptions[0]:"Step 1",
 						    current_step, 1,
 						    "card1_left.png", "card1_right.png" ),
 			      `HBox(
-				    `Image( image_path + "full_2.png", "" ),
-				    `Image(`opt(`tiled, `zeroHeight ), image_path + "active_leftTile.png",  "" )
+				    `Image( theme_path + "full_2.png", "" ),
+				    `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" )
 				    ),
 			      easyInstallationCard( step_descriptions[1]:"Step 2",
 						    current_step, 2,
 						    "card2_left.png", "card2_right.png" ),
 			      `HBox(
-				    `Image( image_path + "full_3.png", "" ),
-				    `Image(`opt(`tiled, `zeroHeight ), image_path + "active_leftTile.png",  "" )
+				    `Image( theme_path + "full_3.png", "" ),
+				    `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" )
 				    ),
 			      easyInstallationCard( step_descriptions[2]:"Step 3",
 						    current_step, 3,
@@ -277,17 +277,17 @@
 			      `VWeight( 1, // Layout trick: Lower layout priority with weight
 					`HBox(
 					      `VBox(
-						    `Image( image_path + "full_4.png", "" ),
-						    `VWeight( 1, `Image(`opt(`tiled, `zeroHeight ), image_path + "fullBottom_tile.png", "" ) ),
-						    `Image( image_path + "help_top.png", "" ),
+						    `Image( theme_path + "full_4.png", "" ),
+						    `VWeight( 1, `Image(`opt(`tiled, `zeroHeight ), theme_path + "fullBottom_tile.png", "" ) ),
+						    `Image( theme_path + "help_top.png", "" ),
 						    `HBox(
-							  `Top(`Image( image_path + "help_left.png", "" ) ),
+							  `Top(`Image( theme_path + "help_left.png", "" ) ),
 							  `PushButton(`id(`help), HelpButtonLabel() ),
-							  `Top(`Image(`opt(`zeroWidth), image_path + "help_right.png", "" ) )
+							  `Top(`Image(`opt(`zeroWidth), theme_path + "help_right.png", "" ) )
 							  )
-						    // `Image( image_path + "help_bottom.png", "" )
+						    // `Image( theme_path + "help_bottom.png", "" )
 						    ),
-					      `Image(`opt(`tiled, `zeroHeight ), image_path + "active_leftTile.png",  "" )
+					      `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" )
 					      )
 					)
 			      )
@@ -317,16 +317,16 @@
 	if ( step_no == current_step )
 	{
 	    card = `HBox(
-			 `Image( image_path + left_image_name, "" ),
+			 `Image( theme_path + left_image_name, "" ),
 			 `VBox(
 			       `HBox(
-				     `Image( image_path + "active_topLeft_corner.png",  "" ),
-				     `Image(`opt(`tiled, `zeroWidth ), image_path + "active_topTile.png",  "" ),
-				     `Image( image_path + "active_insideTop_corner.png", "" )
+				     `Image( theme_path + "active_topLeft_corner.png",  "" ),
+				     `Image(`opt(`tiled, `zeroWidth ), theme_path + "active_topTile.png",  "" ),
+				     `Image( theme_path + "active_insideTop_corner.png", "" )
 				     ),
 			       `HBox(
-				     `Image(`opt(`tiled, `zeroHeight ), image_path + "active_leftTile.png",  "" ),
-				     `Image( image_path + "button_active.png", "" ),
+				     `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" ),
+				     `Image( theme_path + "button_active.png", "" ),
 				     `ColoredLabel(`opt(`hstretch, `vstretch),
 						   text,
 						   `rgb( 0, 0, 0 ),		// black foreground
@@ -334,9 +334,9 @@
 						   10 )				// margin
 				     ),
 			       `HBox(
-				     `Image( image_path + "active_bottomLeft_corner.png",  "" ),
-				     `Image(`opt(`tiled, `zeroWidth ), image_path + "active_bottomTile.png",  "" ),
-				     `Image( image_path + "active_insideBottom_corner.png", "" )
+				     `Image( theme_path + "active_bottomLeft_corner.png",  "" ),
+				     `Image(`opt(`tiled, `zeroWidth ), theme_path + "active_bottomTile.png",  "" ),
+				     `Image( theme_path + "active_insideBottom_corner.png", "" )
 				     )
 			       )
 			 );
@@ -347,31 +347,31 @@
 	    string button_image = current_step > step_no ? "button_done.png" : "button_normal.png";
 
 	    card = `HBox(
-			 `Image( image_path + left_image_name, "" ),
+			 `Image( theme_path + left_image_name, "" ),
 			 `VBox(
 			       `HBox(
-				     `Image( image_path + "inactive_topLeft_corner.png",  "" ),
-				     `Image(`opt(`tiled, `zeroWidth ), image_path + "inactive_topTile.png",  "" ),
-				     `Image( image_path + "inactive_topRight_corner.png", "" )
+				     `Image( theme_path + "inactive_topLeft_corner.png",  "" ),
+				     `Image(`opt(`tiled, `zeroWidth ), theme_path + "inactive_topTile.png",  "" ),
+				     `Image( theme_path + "inactive_topRight_corner.png", "" )
 				     ),
 			       `HBox(
-				     `Image(`opt(`tiled, `zeroHeight ), image_path + "inactive_leftTile.png",  "" ),
-				     `Image( image_path + button_image, "" ),
+				     `Image(`opt(`tiled, `zeroHeight ), theme_path + "inactive_leftTile.png",  "" ),
+				     `Image( theme_path + button_image, "" ),
 				     `ColoredLabel(`opt(`hstretch, `vstretch),
 						   text,
 						   `rgb( 0, 0, 0 ),		// black foreground
 						   `rgb( 204, 204, 204 ),	// light green background
 						   10 ),			// margin
-				     `Image(`opt(`tiled, `zeroHeight ), image_path + "inactive_rightTile.png",  "" )
+				     `Image(`opt(`tiled, `zeroHeight ), theme_path + "inactive_rightTile.png",  "" )
 				     ),
 			       `HBox(
-				     `Image( image_path + "inactive_bottomLeft_corner.png",  "" ),
-				     `Image(`opt(`tiled, `zeroWidth ), image_path + "inactive_bottomTile.png",  "" ),
-				     `Image( image_path + "inactive_bottomRight_corner.png", "" )
+				     `Image( theme_path + "inactive_bottomLeft_corner.png",  "" ),
+				     `Image(`opt(`tiled, `zeroWidth ), theme_path + "inactive_bottomTile.png",  "" ),
+				     `Image( theme_path + "inactive_bottomRight_corner.png", "" )
 				     )
 			       ),
-			 `Image( image_path + right_image_name, "" ),
-			 `Image(`opt(`tiled, `zeroHeight ), image_path + "active_leftTile.png",  "" )
+			 `Image( theme_path + right_image_name, "" ),
+			 `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" )
 			 );
 	}
 
@@ -424,7 +424,7 @@
 					    `HWeight( 1, // Layout trick: Lower layout priority with weight
 						      `VBox(
 							    have_fancy_ui ? `Image(`opt(`tiled, `zeroWidth ),	// Top 3D border
-										   image_path + "topRow_bottomTile.png", "" )
+										   theme_path + "topRow_bottomTile.png", "" )
 							    : `Empty(),
 							    `VSpacing(0.2),
 							    contents_box
@@ -767,7 +767,7 @@
 	y2debug("Setting stage to %1", stage );
 
 	// Set the header image according to the stage
-	UI::SetImageUI( Read (.local.byte, sformat( image_path+"stage%1.png", stage ) ) );
+	UI::SetImageUI( Read (.local.byte, sformat( theme_path+"stage%1.png", stage ) ) );
 
 	// Cache the current stage
 	current_stage = stage;
