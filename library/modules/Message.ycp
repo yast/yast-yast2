@@ -164,8 +164,8 @@ global define string DeleteSelectedEntry () {
 }
 
 /**
- * Question: Delete selected entry?
- * @return string Delete selected entry?
+ * Question: Delete entry '%1'?
+ * @return string Delete entry '%1'?
  */
 global define string DeleteThisEntry (string entry) {
   /* TRANSLATORS: Popup question */
@@ -189,6 +189,36 @@ global define string DirectoryDoesNotExistCreate (string directory) {
   /* TRANSLATORS: Popup question */
   return sformat(_("The directory '%1' does not exist.
 Create it?"), directory);
+}
+
+/**
+ * Domain has changed, you have to reboot now for domain
+ * to take effect
+ * @return The domain has changed.\nYou must reboot for the changes to take effect.
+ */
+global define string DomainHasChangedMustReboot () {
+  /* TRANSLATORS: Popup message */
+  return _("The domain has changed.
+You must reboot for the changes to take effect.");
+}
+
+/**
+ * Push Button / CheckBox for not to disturb with this message again
+ * @return string Do Not Show This Message &Again
+ */
+global define string DoNotShowMessageAgain () {
+  /* TRANSLATORS: CheckBox / Button */
+  return _("Do Not Show This Message &Again");
+}
+
+/**
+ * Cannot ajust 'service_name' service
+ * @param string service_name
+ * @return string Cannot adjust 'service_name' service
+ */
+global define string CannotAdjustService (string service_name) {
+  /* TRANSLATORS: Popup message, %1 is a service name like "smbd" */
+  return sformat(_("Cannot adjust '%1' service"), service_name);
 }
 
 /* EOF */
