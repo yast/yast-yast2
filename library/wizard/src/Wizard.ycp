@@ -159,6 +159,7 @@
      **/
     global define term GenericDialog( term button_box ) {
 	return `VBox( `id(`WizardDialog),
+                      `ReplacePoint( `id(`topmenu ), `Empty() ),
 		      `HBox(
 			    `HWeight( 30, `ReplacePoint( `id(`helpSpace), `RichText(`id(`HelpText), ""))),
 			    `HSpacing(1),
