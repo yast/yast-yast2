@@ -19,17 +19,43 @@
 
 // local variables
 
-    /**
-     * Widget that is being currently processed
-     */
-    map<string, any> processed_widget = $[];
+/**
+ * Widget that is being currently processed
+ */
+map<string, any> processed_widget = $[];
 
-    /**
-     * All widgets of the current dialog, in the correct order
-     */
-    list<map<string,any> > current_dialog_widgets = [];
+/**
+ * All widgets of the current dialog, in the correct order
+ */
+list<map<string,any> > current_dialog_widgets = [];
+
+/**
+ * stack of settings of nested calls of CWM
+ */
+list<map<string,any> > settings_stack = [];
 
 // local functions
+
+/**
+ * Push the settings of the currently run dialog to the stack
+ */
+void PushSettings () {
+    settings_stack = prepend (settings_stack, $[
+	"widgets" : current_dialog_widgets,
+    ]);
+}
+
+/**
+ * Pop the settings of the currently run dialog from the stack
+ */
+void PopSettings () {
+    map<string,any> current_dialog = settings_stack[0]:$[];
+    settings_stack[0] = nil;
+    settings_stack = filter (map<string,any> e, settings_stack, {
+	return e != nil;
+    });
+    current_dialog_widgets = current_dialog["widgets"]:[];
+}
 
     /**
       * Process term with the dialog, replace strings in the term with
@@ -72,6 +98,30 @@
 	return ret;
     }
 
+/**
+ * Validate the value against the basic type
+ * @param value any a value to validate
+ * @param type string type information
+ * @return boolean true on success or if do not know how to validate
+ */
+global boolean ValidateBasicType (any value, string type) {
+    if (type == "term")
+	return is (value, term);
+    if (type == "string")
+	return is (value, string);
+    if (type == "symbol")
+	return is (value, symbol);
+    if (type == "list")
+	return is (value, list);
+    if (type == "map")
+	return is (value, map);
+    if (type == "boolean")
+	return is (value, boolean);
+
+    y2error ("Unknown value type %1", type);
+    return true;
+}
+
     /**
       * Validate type of entry of the widget/option description map
       * Also checks option description maps if present
@@ -80,78 +130,49 @@
       * @param widget any name of the widget/option
       * @return boolean true if validation succeeded
       */
-    define boolean ValidateValueType (string key, any value, string widget) {
+    global define boolean ValidateValueType (string key, any value, string widget) {
 	map<string, string> types = $[
-//	    "handle" : "term",
-//	    "init" : block<void(any)>,
-//	    "store" : "term",
-	    "handle_events" : "list",
+	    // general
+	    "widget" : "symbol",
 	    "custom_widget" : "term",
+	    "handle_events" : "list",
 	    "help" : "string",
 	    "label" : "string",
+	    "opt" : "list",
+	    "ui_timeout" : "integer",
+	    "validate_type" : "symbol",
+	    // int field
 	    "minimum" : "integer",
 	    "maximum" : "integer",
-	    "widget" : "symbol",
-	    "items" : "list",
-	    "opt" : "list",
+
 	    "_cwm_attrib" : "map",
-	    "add_items" : "list",
 	    "fallback" : "map",
-//	    "ids" : "term",
-//	    "option_delete" : "term",
-	    "options" : "map",
-//	    "id2key" : "term",
-	    "optional" : "boolean",
-//	    "summary" : "term",
-//	    "validate_function" : "term",
-	    "validate_type" : "symbol",
 	];
 	string type = (string) (types[key]:nil);
 	boolean success = true;
 	if (type == nil)
 	{
-	    if (key == "init")
-		success = is (value, void(string))
-		    || is (value, void(any,string));
+	    if (key == "widget_func")
+		success = is (value, term());
+	    else if (key == "init")
+		success = is (value, void(string));
 	    else if (key == "handle")
-		success = is (value, symbol(string,map))
-		    || is (value, void(any,string,map));
-		// FIXME separate checker for table-option popups (they have
-		// additional parameter
+		success = is (value, symbol(string,map));
 	    else if (key == "store")
-		success = is (value, void(string,map))
-		    || is (value, void(any,string));
-	    else if (key == "id2key")
-		success = is (value, string(map,any));
-	    else if (key == "ids")
-		success = is (value, list(map));
-	    else if (key == "option_delete")
-		success = is (value, boolean(any,string));
-	    else if (key == "summary")
-		success = is (value, string(any,string));
+		success = is (value, void(string,map));
+	    else if (key == "cleanup")
+		success = is (value, void(string));
 	    else if (key == "validate_function")
-		success = is (value, boolean(string,map))
-		    || is (value, boolean(any,string,map));
+		success = is (value, boolean(string,map));
+	    else if (key == "items")
+		success = is (value, list<list<string> >);
+	    else if (key == "_cwm_do_validate")
+		success = is (value, boolean(string,map<string,any>));
 	}
-	else if (type == "term")
-	    success = is (value, term);
-	else if (type == "string")
-	    success = is (value, string);
-	else if (type == "symbol")
-	    success = is (value, symbol);
-	else if (type == "list")
-	    success = is (value, list);
-	else if (type == "map")
-	    success = is (value, map);
-	else if (type == "boolean")
-	    success = is (value, boolean);
 	else
-	    y2debug ("Unknown option %1 in description map of %2",
-		key, widget);
-
-	// simplified handle of table options
-	if (! success && key == "handle" && is (value, symbol))
-	    success = true;
+	{
+	    success = ValidateBasicType (value, type);
+	}
 
 	if (! success)
 	    y2error ("Wrong type of option %1 in description map of %2",
@@ -340,8 +361,13 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 		ret = ValidateValueType (kk, vv, k) && ret;
 	    });
 	    list<string> to_check = [];
-	    if (v["widget"]:nil != `custom)
-		to_check = ["label", "help", "widget"];
+	    if (v["widget"]:nil == `custom)
+		to_check = ["custom_widget"];
+	    else if (v["widget"]:nil == `empty)
+		to_check = [];
+	    else
+		to_check = ["label", "widget"];
+	    to_check = (list<string>)merge (to_check, ["help"]);
 	    foreach (string key, to_check, ``{
 		if (v["widget"]:nil != `radio_buttons || key != "label")
 		{
@@ -351,18 +377,17 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 	    if (v["widget"]:nil == `custom)
 		ret = ValidateValueContents ("custom_widget",
 		    v["custom_widget"]:nil, k) && ret;
-	});
-	if (! ret)
-	    return false;
-	foreach (string k, map<string,any> v, widgets, ``{
-	    foreach (any kk, map vv, v["options"]:$[], ``{
-		foreach (string kkk, any vvv, vv["table"]:$[], ``{
-		    ret = ValidateValueType (kkk, vvv, k) && ret;
-		});
-		foreach (string kkk, any vvv, vv["popup"]:$[], ``{
-		    ret = ValidateValueType (kkk, vvv, k) && ret;
-		});
-	    });
+
+	    // validate widget-specific entries
+	    if (haskey (v, "_cwm_do_validate"))
+	    {
+		boolean(string,map<string,any>) val_func
+		   = (boolean(string,map<string,any>))v["_cwm_do_validate"]:nil;
+		if (val_func != nil)
+		{
+		    ret = val_func (k, v) && ret;
+		}
+	    }
 	});
 	return ret;
     }
@@ -375,7 +400,11 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
     global define map<string, any> prepareWidget (map<string, any> widget_descr) ``{
 	map<string, any> w = widget_descr;
 	symbol widget = w["widget"]:`textentry;
-	if (w["widget"]:nil == `custom && w["custom_widget"]:nil != nil)
+	if (w["widget"]:nil == `empty)
+	{
+	    w["widget"] = `VBox ();
+	}
+	else if (w["widget"]:nil == `custom && w["custom_widget"]:nil != nil)
 	{
 	    w["widget"] = w["custom_widget"]:`VSpacing (0);
 	}
@@ -411,7 +440,7 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 		{
 		    w["widget"] = `ComboBox (`id (w["_cwm_key"]:""), opt_term,
 			w["label"]:w["_cwm_key"]:"",
-			maplist (list i, w["items"]:[], ``(
+			maplist (list<string> i, w["items"]:[], ``(
 			    `item (`id (i[0]:""), i[1]:i[0]:"")
 			)));
 		}
@@ -428,7 +457,7 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 		    integer hspacing = w["hspacing"]:0;
 		    integer vspacing = w["vspacing"]:0;
 		    term buttons = `VBox (`VSpacing (vspacing));
-		    foreach (list i, w["items"]:[], ``{
+		    foreach (list<string> i, w["items"]:[], ``{
 			buttons = add (buttons, `Left( `RadioButton (
 			    `id (i[0]:""), opt_term, i[1]:i[0]:"")) );
 			buttons = add (buttons, `VSpacing (vspacing));
@@ -605,6 +634,7 @@ global define void ReplaceWidgetHelp (string widget, string help) {
       */
     global define symbol Run (list<map<string, any> > widgets, map<any, any> functions) ``{
 	widgets = mergeFunctions (widgets, functions);
+	PushSettings ();
 	current_dialog_widgets = widgets;
 	initWidgets (widgets);
 	any ret = nil;
@@ -680,6 +710,7 @@ global define void ReplaceWidgetHelp (string widget, string help) {
 	if (save)
 	    saveWidgets (widgets, event_descr);
 	cleanupWidgets (widgets);
+	PopSettings ();
         return (symbol)ret;
     }
 
