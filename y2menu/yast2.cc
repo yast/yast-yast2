@@ -16,8 +16,8 @@ using std::string;
 
 /* sortorder */
 #define NOSORT 0
-#define BYNAME 1
-#define BYKEY 2			/* default */
+#define BYNAME 1		/* default */
+#define BYKEY 2	
 
 void printhelp ();
 int parseopt (char *option);
@@ -25,7 +25,7 @@ int parseopt (char *option);
 vector < grp_data > groups;
 vector < vector < mod_data > > modules;
 vector < string > helptext;
-int sort = BYKEY;
+int sort = BYNAME;
 int yast_mod_auto = 1;
 int yast_grp_all = 0;
 int yast_dyn_mod = 0;
@@ -232,8 +232,8 @@ int parseopt (char *option)
 void printhelp ()
 {
   printf ("sort groups and modules:\n");
-  printf (" -sk          sort by sortkey (default)\n");
-  printf (" -sa          sort by name\n");
+  printf (" -sk          sort by sortkey\n");
+  printf (" -sa          sort by name (default)\n");
   printf (" -sn          no sort\n\n");
   printf (" --help       print this help\n");
   printf (" --dump       print groups and modules to stderr and exit\n");
