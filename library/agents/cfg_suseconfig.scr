@@ -1,0 +1,16 @@
+/**
+ * File:
+ *   cfg_suseconfig.scr
+ * Summary:
+ *   SCR Agent for reading/writing /etc/sysconfig/suseconfig
+ *   using the sysconfig-agent
+ * $Id$
+ *
+ * Read/Sets the values defined in <tt>/etc/sysconfig/suseconfig</tt>
+ * in an easy manner.
+ */
+.sysconfig.suseconfig
+
+`ag_ini(
+    `SysConfigFile("/etc/sysconfig/suseconfig")
+)
