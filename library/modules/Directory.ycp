@@ -90,18 +90,26 @@ global string desktopdir = "/usr/share/applications/YaST2";
 
 /**
  * Directory for temporary files
+ * Must be updated with ResetTmpDir() call after the SCR change!
  */
 global string tmpdir = "/tmp";
+
+/**
+ * Set temporary directory
+ */
+global define void ResetTmpDir() ``{
+    tmpdir = (string) SCR::Read(.target.tmpdir);
+    if(tmpdir == "" || tmpdir == nil) {
+	y2error("Failed to set temporary directory: %1", tmpdir);
+	tmpdir = "/tmp";
+    }
+}
 
 /**
  * Constructor
  */
 global define void Directory() ``{
-    tmpdir = (string)SCR::Read(.target.tmpdir);
-    if(tmpdir == "" || tmpdir == nil) {
-	y2error("Failed to set temporary directory: %1", tmpdir);
-	tmpdir = "/tmp";
-    }
+    ResetTmpDir();
 }
 
 /* EOF */

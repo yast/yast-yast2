@@ -21,10 +21,6 @@
      *
      */
     global string boot_msg = "";
-    /**
-     * must re-init if target agent is re-started !
-     */
-    global string tmpdir = (string)SCR::Read(.target.tmpdir);
 
     /**
      * @param	first	string	name of first file to try
@@ -219,26 +215,5 @@
 	    return( local_ret );
 	}
     }	// SysconfigRead()
-
-    /**
-     * RemoveLeadingZero()
-     *
-     * Remove any leading zeros that make tointeger inadvertently 
-     * assume an octal number (e.g. "09" -> "9", "0001" -> "1", 
-     * but "0" -> "0")
-     *
-     * @param 	number           number that might contain leadig zero
-     *
-     * @return  string that has leading zeros removed
-     *
-     * @see	
-     */
-    
-    global define string RemoveLeadingZero( string number )
-	``{
-	while( size(number)>1 && substring( number, 0, 1 ) == "0" )
-	    number = substring( number, 1 );
-	return( number );
-	}	// RemoveLeadingZero()
 
 }
