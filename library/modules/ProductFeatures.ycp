@@ -49,6 +49,12 @@
      */
     global string fixed_base_selection		= "";
 
+
+    /**
+     * List of additional packages to add
+     */
+    global list<string> packages = [];
+
     /**
      *  If non-empty it will be called with WFM::CallFunction
      *	from Packages::ComputeSystemPackageList. Gets a list of packages
