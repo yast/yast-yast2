@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Jun 18 11:22:41 CEST 2003 - visnov@suse.de
+
+- disabled ipaddress type for command line
+- disabled interactive mode for command line
+- reverted yast2-network from neededforbuild
+- version 2.8.8
+
+-------------------------------------------------------------------
 Wed Jun 18 10:42:22 CEST 2003 - lslezak@suse.de
 
 - spec file: added yast2-network to Requires/neededforbuild
