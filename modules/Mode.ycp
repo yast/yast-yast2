@@ -106,6 +106,17 @@
     global boolean no_x11		= false;	// no x11 or not enough memory for qt
 
     /**
+     * run X11 configuration after inital boot
+     * this is false in case of:
+     * installation via serial console
+     * installation via ssh
+     * installation via vnc
+     * installation on iSeries
+     * installation on s390
+     */
+    global boolean x11_setup_needed	= true;
+
+    /**
      * This flag indicates that a config module has been called due to
      * a change in the system hardware that has been detected on boot
      * time.
@@ -242,6 +253,13 @@
 
 	    boot = SCR::Read (.etc.install_inf.InstMode);
 	    if (boot == nil) boot = "cd";
+	}
+
+	// disable X11 setup after initial boot
+	if (Arch::board_iseries || Arch::s390 ||
+	    serial_console || vnc || usessh)
+	{
+	    x11_setup_needed = false;
 	}
 
     }
