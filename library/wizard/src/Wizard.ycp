@@ -803,7 +803,7 @@
 	y2debug("Setting stage to %1", stage );
 
 	// Set the header image according to the stage
-	SetImage( SCR::Read (.local.byte, sformat( theme_path+"stage%1.png", stage ) ) );
+	SetImage( (byteblock)SCR::Read (.local.byte, sformat( theme_path+"stage%1.png", stage ) ) );
 
 	// Cache the current stage
 	current_stage = stage;
