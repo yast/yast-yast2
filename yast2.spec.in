@@ -60,7 +60,6 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 @moduledir@/*
 @scrconfdir@/*
 @ybindir@/*
-@imagedir@/*
 
 %doc @docdir@/*.*
 
