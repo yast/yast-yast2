@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar 11 10:45:17 CET 2005 - locilka@suse.cz
+
+- Added new testsuite for SuSEFirewall module
+
+-------------------------------------------------------------------
 Wed Mar  9 13:17:46 CET 2005 - locilka@suse.cz
 
 - Adjusting to changed /etc/services
