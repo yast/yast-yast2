@@ -189,12 +189,12 @@ global define list <term> ModuleList(string group) {
 
 /**
  */
-map<string, string> MakeAutostartMap (string exec) {
+map<string, string> MakeAutostartMap (string exec, list<string> args) {
     return $[
 	"Encoding": "UTF-8",
 	"Name": exec,
 	"Exec": exec,
-	"X-SuSE-Autostart": exec,
+	"X-SuSE-Autostart": exec + " " + mergestring (args, " "),
 	"Hidden": "true",
 	"Icon": exec,
 	"Type": "Application",
@@ -207,9 +207,9 @@ map<string, string> MakeAutostartMap (string exec) {
  * Useful for kinternet, see bug 37864#c17
  * @param exec program to exec (basename)
  */
-global void RunViaDesktop (string exec) {
+global void RunViaDesktop (string exec, list<string> args) {
     string content = "[KDE Desktop Entry]\n";
-    foreach (string key, string value, MakeAutostartMap (exec), {
+    foreach (string key, string value, MakeAutostartMap (exec, args), {
 	content = content + sformat ("%1=%2\n", key, value);
     });
     string dir = "/var/lib/Desktop";
