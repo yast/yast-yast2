@@ -23,7 +23,7 @@ textdomain "base";
  * @return returned values of tested dialogs
  * @see <a href="..">WS documentation for the format of aliases map</a>
  */
-global define list WS_testall(map aliases) ``{
+define list WS_testall(map aliases) ``{
     return maplist(`id, `func, aliases, ``(eval(func)));
 }
 
@@ -33,7 +33,7 @@ global define list WS_testall(map aliases) ``{
  * @param sequence the sequence of dialogs
  * @return check passed?
  */
-global define boolean WS_check(map aliases, map sequence) ``{
+define boolean WS_check(map aliases, map sequence) ``{
     list ret = [];
 
     /* check if aliases is not a nil */
@@ -150,7 +150,7 @@ global define boolean WS_check(map aliases, map sequence) ``{
  * @return always nil
  * @see <a href="http://bugzilla.suse.de/show_bug.cgi?id=6474">bug #6474</a>
  */
-global define any WS_error(string error) ``{
+define any WS_error(string error) ``{
     y2error(1, "sequencer: %1", error);
     return nil;
 }
@@ -161,7 +161,7 @@ global define any WS_error(string error) ``{
  * @param alias given alias
  * @return term belonging to the given alias or nil, if error
  */
-global define any WS_alias(map aliases, string alias) ``{
+define any WS_alias(map aliases, string alias) ``{
     any found = lookup(aliases, alias, nil);
     if (found == nil)
         return WS_error(sformat("Alias not found: %1", alias));
@@ -184,7 +184,7 @@ global define any WS_alias(map aliases, string alias) ``{
  * @param alias given alias
  * @return true if the given alias is special or nil, if not found
  */
-global define boolean WS_special(map aliases, string alias) ``{
+define boolean WS_special(map aliases, string alias) ``{
     any found = lookup(aliases, alias, nil);
     if (found == nil)
         return (boolean) WS_error(sformat("Alias not found: %1", alias));
@@ -202,7 +202,7 @@ global define boolean WS_special(map aliases, string alias) ``{
  * @param ret returned value (determines the next dialog)
  * @return next dialog (symbol), WS action (string) or nil, if error (current or next not found)
  */
-global define any WS_next(map sequence, string current, symbol ret) ``{
+define any WS_next(map sequence, string current, symbol ret) ``{
     map found = lookup(sequence, current, nil);
     if (found == nil) return WS_error(sformat("Current not found: %1", current));
     /* string|symbol next */
@@ -217,7 +217,7 @@ global define any WS_next(map sequence, string current, symbol ret) ``{
  * @param id function to run
  * @return returned value from function or nil, if function is nil or returned something else than symbol
  */
-global define symbol WS_run(map aliases, string id) ``{
+define symbol WS_run(map aliases, string id) ``{
     y2debug("Running: %1", id);
     any function = nil;
 
@@ -239,7 +239,7 @@ global define symbol WS_run(map aliases, string id) ``{
  * @param item item to be pushed
  * @return the new stack or nil, if the stack is nil
  */
-global define list WS_push(list stack, any item) ``{
+define list WS_push(list stack, any item) ``{
     if (stack == nil)
         return nil;
 
@@ -261,7 +261,7 @@ global define list WS_push(list stack, any item) ``{
  * @param stack stack of previously run dialogsk
  * @return [ new stack, poped value ] or nil if the stack is empty or nil
  */
-global define list WS_pop(list stack) ``{
+define list WS_pop(list stack) ``{
     if (stack == nil) return nil;
     integer num = size(stack);
     if (num < 2) return nil;
@@ -276,7 +276,7 @@ global define list WS_pop(list stack) ``{
  * @param sequence the sequence of dialogs
  * @return final symbol or nil, if error (see the y2log)
  */
-global define symbol WizardSequencer(map aliases, map sequence) ``{
+define symbol WizardSequencer(map aliases, map sequence) ``{
 
     /* Check aliases and sequence correctness */
     if (WS_check(aliases, sequence) != true)
