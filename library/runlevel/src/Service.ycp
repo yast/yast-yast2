@@ -61,7 +61,7 @@ string error_msg = "";
  * Check that a service exists.
  * If not, set error_msg.
  * @param name service name without a path, eg. nfsserver
- * @return does the service exist?
+ * @return Return true if the service exists.
  */
 define boolean checkExists (string name) {
     if(name == nil || name == "") {
@@ -86,7 +86,7 @@ define boolean checkExists (string name) {
 /**
  * Get service info without peeking if service runs.
  * @param name name of the service
- * @return service information or $[]
+ * @return Service information or empty map ($[])
  */
 global define map Info (string name) {
     if(!checkExists (name)) return $[];
@@ -100,7 +100,9 @@ global define map Info (string name) {
 }
 
 /**
- * Get service status. The status is the output from "service status".
+ * Get service status.
+ *
+ * The status is the output from "service status".
  * It should conform to LSB. 0 means the service is running.
  * @param name name of the service
  * @return init script exit status or -1 if it does not exist
@@ -113,7 +115,7 @@ global define integer Status (string name) {
 /**
  * Get service info and find out whether service is running.
  * @param name name of the service
- * @return service map or $[]
+ * @return service map or empty map ($[])
  */
 global define map FullInfo (string name) {
     if(!checkExists (name)) return $[];
@@ -281,7 +283,7 @@ string lang = nil;
  * Run init script and also return its output (stdout and stderr merged).
  * @param name init service name
  * @param param init script argument
- * @return map of $[ "stdout" : "...", "stderr" : "...", "exit" : int,]
+ * @return A map of $[ "stdout" : "...", "stderr" : "...", "exit" : int]
  */
 global define map RunInitScriptOutput (string name, string param) {
     map env = $["TERM": "raw"];
@@ -317,7 +319,7 @@ global define map RunInitScriptOutput (string name, string param) {
 /**
  * Enable service
  * @param service service to be enabled
- * @return true if success
+ * @return true if operation is  successful
  */
 global define boolean Enable(string service) {
     if(!checkExists(service)) return false;
@@ -328,7 +330,7 @@ global define boolean Enable(string service) {
 /**
  * Disable service
  * @param service service to be disabled
- * @return true if success
+ * @return true if operation is  successful
  */
 global define boolean Disable(string service) {
     if(!checkExists(service)) return false;
@@ -339,7 +341,7 @@ global define boolean Disable(string service) {
 /**
  * Start service
  * @param service service to be started
- * @return true if success
+ * @return true if operation is  successful
  */
 global define boolean Start(string service) {
     if(!checkExists(service)) return false;
@@ -353,7 +355,7 @@ global define boolean Start(string service) {
 /**
  * Restart service
  * @param service service to be restarted
- * @return true if success
+ * @return true if operation is  successful
  */
 global define boolean Restart(string service) {
     if(!checkExists(service)) return false;
@@ -367,7 +369,7 @@ global define boolean Restart(string service) {
 /**
  * Reload service
  * @param service service to be reloaded
- * @return true if success
+ * @return true if operation is  successful
  */
 global define boolean Reload(string service) {
     if(!checkExists(service)) return false;
@@ -381,7 +383,7 @@ global define boolean Reload(string service) {
 /**
  * Stop service
  * @param service service to be stopped
- * @return true if success
+ * @return true if operation is  successful
  */
 global define boolean Stop(string service) {
     if(!checkExists(service)) return false;
@@ -393,6 +395,8 @@ global define boolean Stop(string service) {
 }
 
 /**
+ * Error Message
+ *
  * If a Service function returns an error, this function would return
  * an error message, including insserv stderr and possibly containing
  * newlines.
