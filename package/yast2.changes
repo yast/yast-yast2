@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Jul 23 09:33:04 CEST 2003 - jsrain@suse.de
+
+- updated CWM to use WaitForEvent instead of UserInput, tables of
+  table/popup dialogs display popup on double-click or enter key
+- allow to specify command to display log directly, not only as
+  filename and argument for grep for LogView
+
+-------------------------------------------------------------------
 Tue Jul 22 16:19:53 CEST 2003 - msvec@suse.cz
 
 - further String updates and fixes
