@@ -191,16 +191,6 @@
     }
 
 
-    //	/**
-    //	 * Check if the topmost dialog has a "Next" button
-    //	 * @return true if widget with `id(`next) is present, false otherwise
-    //	 **/
-    //	global define boolean HasNextButton() {
-    //		return UI::WidgetExists(`id(`next) );
-    //	}
-
-
-
     /**
      * Open a popup dialog that displays a help text (rich text format).
      *
