@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep 15 10:18:36 CEST 2003 - ms@suse.de
+
+- fixed X11Version.ycp to use 'import "Require"' instead of
+  'include "require.ycp"'
+
+-------------------------------------------------------------------
 Thu Sep 11 21:02:32 CEST 2003 - arvin@suse.de
 
 - cool mouse cursor theme for 2nd stage installation (bug #30552)
