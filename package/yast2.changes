@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov  4 17:56:47 CET 2004 - sh@suse.de
+
+- Added save_y2logs script for easier bug reporting
+- V 2.11.6 
+
+-------------------------------------------------------------------
 Thu Nov  4 11:00:06 CET 2004 - mvidner@suse.cz
 
 - Added String::FirstChunk.

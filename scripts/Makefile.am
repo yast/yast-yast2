@@ -2,7 +2,7 @@
 # Makefile.am for yast2/scripts
 #
 
-sbin_SCRIPTS = yast2
+sbin_SCRIPTS = yast2 save_y2logs
 
 ybin_SCRIPTS = yast2 yast2-funcs
 

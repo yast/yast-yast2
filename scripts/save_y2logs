@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# save_y2logs - save YaST2 logs to a compressed tar file
+#		to attach it to a Bugzilla bug report
+#
+# Author: Stefan Hundhammer <sh@suse.de>
+
+if [ $# != 1 ]; then
+    echo "Usage: $0 <tgz-file-name>"
+    echo ""
+    echo "Copies the YaST2 logs to a compressed tar archive."
+    exit 1
+fi
+
+TARGET=$1
+
+cd /var/log && tar czf $TARGET YaST2 && exit 0
+exit 2
