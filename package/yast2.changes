@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep 23 09:49:52 CEST 2004 - mvidner@suse.cz
+
+- Fixed empty runlevel editor (#45858).
+
+-------------------------------------------------------------------
 Tue Sep 21 11:31:00 CEST 2004 - arvin@suse.de
 
 - adapted path for qtrc (bug #44803)
