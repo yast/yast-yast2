@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sat Feb  7 16:29:32 CET 2004 - msvec@suse.cz
+
+- own configdir until all modules are updated
+- 2.9.15  
+
+-------------------------------------------------------------------
 Fri Feb  6 14:34:35 CET 2004 - msvec@suse.cz
 
 - call %suse_update_desktop_file for the group files
