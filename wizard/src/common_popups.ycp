@@ -368,7 +368,7 @@ You will need to reinstall." );
 
       global define void WarningPopup(string message) ``{
 
-	  AnyMessagePopup( Label::WarningMsg(), message );
+	  AnyMessagePopup( WarningMsg(), message );
 
       };
 
@@ -390,7 +390,7 @@ You will need to reinstall." );
 
       global define void ErrorPopup(string message) ``{
 
-	  AnyMessagePopup( Label::ErrorMsg(), message );
+	  AnyMessagePopup( ErrorMsg(), message );
 
       };
 
@@ -607,7 +607,7 @@ You will need to reinstall." );
        * @see YesNoPopup
        * @see ContinueCancelPopup
        *
-       * @example AnyQuestionPopup( Label::WarningMsg(), "Do really want to ...?", "Install", "Don't do it", `focus_no );
+       * @example AnyQuestionPopup( WarningMsg(), "Do really want to ...?", "Install", "Don't do it", `focus_no );
        */
       global define boolean AnyQuestionPopup( string headline,
 					      string message,
@@ -670,7 +670,7 @@ You will need to reinstall." );
        *
        * @see AnyQuestionPopup
        *
-       * @example AnyQuestionPopup3( Label::WarningMsg(), _("... failed"), _("Continue"), _("Cancel"), _("Retry"), `focus_yes );
+       * @example AnyQuestionPopup3( WarningMsg(), _("... failed"), _("Continue"), _("Cancel"), _("Retry"), `focus_yes );
        */
 
       global define symbol AnyQuestionPopup3( string headline,
@@ -959,7 +959,7 @@ You will need to reinstall." );
 
       global define void TimedWarningPopup(string message, integer timeout_seconds)
       ``{
-	  AnyTimedMessagePopup(Label::WarningMsg(), message, timeout_seconds);
+	  AnyTimedMessagePopup(WarningMsg(), message, timeout_seconds);
       };
 
 
@@ -978,7 +978,7 @@ You will need to reinstall." );
 
       global define void TimedErrorPopup(string message, integer timeout_seconds)
       ``{
-	  AnyTimedMessagePopup(Label::ErrorMsg(), message, timeout_seconds);
+	  AnyTimedMessagePopup(ErrorMsg(), message, timeout_seconds);
       };
 
   });
