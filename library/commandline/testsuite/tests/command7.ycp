@@ -1,0 +1,23 @@
+/**
+ * File:	command6.ycp
+ * Package:	yast2
+ * Summary:	test command-line parsing for non-strict actions
+ * Author:	Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+    include "testsuite.ycp";
+    include "./tests/testsuitedata.yh";
+
+    import "CommandLine";
+
+    // list is non-strict, so any parameter can be passed to it, but known are checked, 
+    // so configured is incorrect here
+    TEST(``(CommandLine::Init( cmdline ,["list", "eth0", "configured=1"]) ),[],nil);
+    TEST(``(CommandLine::Command()), [], nil );
+
+/* EOF */
+}

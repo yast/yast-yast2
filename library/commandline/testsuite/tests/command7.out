@@ -1,0 +1,5 @@
+Write	.dev.tty.prompt "YaST2 lan> " true
+Write	.dev.tty.stderr "Option 'configured' cannot have a value. Given value: 1" true
+Write	.dev.tty.stderr "Use 'yast2 lan list help' for a complete list of available options." true
+Return	false
+Return	$["command":"quit"]

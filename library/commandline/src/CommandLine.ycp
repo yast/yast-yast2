@@ -177,14 +177,28 @@
 	y2debug("options=%1", givenoptions);
 
 	/* Check options */
+	
+	// find out, if the action has a "non-strict" option set
+	boolean non_strict = contains ( allcommands["actions", command, "options"]: [], "non_strict");
+	if (non_strict)
+	{
+	    y2debug ( "Using non-strict check for %1", command );
+	}
+	
 	maplist(string o, string v, givenoptions, ``{
 	    if(ret != true) return;
 	    if( cmdoptions[o]:nil == nil ) {
-		// translators: error message, %1 is a command, %2 is the wrong option given by the user
-		Print(sformat(_("Unknown option for command '%1': %2"), command, o));
-		if( ! interactive ) aborted = true;
+		if( ! non_strict )
+		{
+		    // translators: error message, %1 is a command, %2 is the wrong option given by the user
+		    Print(sformat(_("Unknown option for command '%1': %2"), command, o));
+		    if( ! interactive ) 
+		    {
+			aborted = true;
+		    }
 		    ret = false;
-		} else {
+		}
+	    } else {
 
 		// this option is valid, let's check the type
 
@@ -216,6 +230,20 @@
 			    Print( sformat(_("Invalid value for option '%1' -- expected '%2', received %3"), o, opttype, v ) );
 			    if( ! interactive ) aborted = true;
 			}
+		    }
+		}
+		else
+		{
+		    // option without type
+		    if( v != "" )
+		    {
+			// translators: error message if option has a value, but cannot have one
+			Print( sformat( _("Option '%1' cannot have a value. Given value: %2"), o, v ) );
+			if( ! interactive ) 
+			{
+			    aborted = true;
+			}
+			ret = false;
 		    }
 		}
 	    }
@@ -747,6 +775,164 @@
 
 	return (string)(cmds[0]:nil);
     }
+
+boolean fake_false() ``{
+    return false;
+}
+
+boolean RunFunction( boolean() funct ) {
+    Report::ClearAll();
+    boolean() my_funct = funct;
+    boolean ret = my_funct();
+    string report = Report::GetMessages(
+	Report::NumWarnings()>0,Report::NumErrors()>0,Report::NumMessages()>0);
+    if( size(report) > 0 )
+    {
+	import "RichText";
+	CommandLine::Print( RichText::Rich2Plain( report )  );
+    }
+    return ret;
+}
+
+boolean RunMapFunction( boolean(map<string,string>) funct,
+    map<string,string> arg )
+{
+    Report::ClearAll();
+    boolean(map<string,string>) my_funct = funct;
+    boolean ret = my_funct(arg);
+    string report = Report::GetMessages(
+	Report::NumWarnings()>0,Report::NumErrors()>0,Report::NumMessages()>0);
+    if( size(report) > 0 )
+    {
+	import "RichText";
+	CommandLine::Print( RichText::Rich2Plain( report )  );
+    }
+    return ret;
+}
+
+/**
+ * Function to parse the command line, start a GUI or handle interactive and
+ * command line actions as supported by the @ref CommandLine module.
+ *
+ * @param commandline	a map used in the CommandLine module with information
+ *                      about the handlers for GUI and commands.
+ * @return boolean	true if the changes should be written, false
+ *                      if there was an error or no changes to be written (for example "help").
+ */
+global boolean Run( map commandline ) {
+    /* The main () */
+    y2milestone("----------------------------------------");
+    y2milestone("Command line interface started");
+
+    /* Initialize the arguments */
+    if(!CommandLine::Init(commandline, WFM::Args())) {
+	return ! CommandLine::Aborted();
+    }
+
+    boolean ret = true;
+    boolean verbose = false;
+
+    /* Start GUI */
+    if(CommandLine::StartGUI()) {
+	if( !haskey (commandline, "guihandler") ) {
+	    y2error( "Missing GUI handler for %1", commandline["id"]:"<unknown>" );
+	    CommandLine::Error( _("There is no user interface available for this module.") );
+	    return false;
+	}
+	boolean() exec = commandline[ "guihandler" ]: fake_false;
+	ret = exec();
+	y2debug("GUI handler ret=%1", ret);
+	return ret;
+    } else {
+	import "Progress";
+
+	// disable Reports, we handle them on our own
+	Report::Import( $[
+	    "messages"	:$[ "show":false ],
+	    "warnings"	:$[ "show":false ],
+	    "errors"	:$[ "show":false ]
+	]);
+
+
+	/* non-GUI handling */
+
+	verbose = contains( WFM::Args(), "verbose" );
+
+	if( verbose )
+	    CommandLine::Print( _("Initializing") );
+
+	/* Turn off progress bar if not GUI */
+	Progress::off();
+
+
+	/* Start initialization */
+	if( commandline["initialize"]:nil != nil ) {
+	    boolean ret = RunFunction( commandline["initialize"]:fake_false );
+	    if( !ret ) {
+		y2milestone( "Module initialization failed" );
+		return false;
+	    }
+	}
+
+	if( verbose )
+	    CommandLine::Print( _("Ready") );
+
+	ret = true;
+
+	/* Init variables */
+	string command = "";
+	list flags = [];
+	map<string,string> options = $[];
+        string exit = "";
+        list l = [];
+
+	while(!CommandLine::Done()) {
+	    map m = CommandLine::Command();
+            command = m["command"]:"exit";
+	    options = m["options"]:$[];
+
+	    boolean(map<string,string>) exec = (boolean(map<string,string>))
+		lookup (commandline["actions", command]:$[], "handler", nil);
+
+	    // there is a handler, execute the action
+	    if( exec != nil ) {
+		boolean res = RunMapFunction( exec, options );
+
+		// if it is not interactive, abort on errors
+		if( !CommandLine::Interactive() && res == false )
+		    CommandLine::Abort();
+	    }
+	    else
+	    {
+		if( !CommandLine::Done() ) {
+		    y2error("Unknown command '%1' from CommandLine", command );
+		    continue;
+		}
+	    }
+	}
+
+	ret = ! CommandLine::Aborted();
+    }
+
+    if( ret && commandline["finish"]:nil != nil ) {
+	if( verbose )
+	    CommandLine::Print( _("Finishing") );
+	ret = RunFunction( commandline["finish"]:fake_false );
+	if( !ret ) {
+	    y2milestone( "Module finishing failed" );
+	    return false;
+	}
+	// translators: The command line interface is finished
+	if( verbose )
+	    CommandLine::Print( _("Done") );
+    } else if( verbose )
+	    CommandLine::Print( _("Quitting (without changes)") );
+
+    y2milestone("Commandline interface finished");
+    y2milestone("----------------------------------------");
+
+    return ret;
+}
 
 /* EOF */
 }

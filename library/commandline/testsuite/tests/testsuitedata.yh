@@ -32,7 +32,8 @@
 		"actions"	: $[
 			"list"	: $[
 				"help": "display configuration summary",
-				"example": "lan list configured"
+				"example": "lan list configured",
+				"options": [ "non_strict" ]
 			],
 			"add"	: $[
 				"help": "add a network card" ],
