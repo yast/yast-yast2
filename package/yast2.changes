@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Sep 27 15:09:44 CEST 2004 - arvin@suse.de
+
+- fixed generation of desktop files
+
+-------------------------------------------------------------------
 Sat Sep 25 10:55:58 CEST 2004 - mvidner@suse.cz
 
 - Change directory to / in /sbin/yast2 (#46055).
@@ -14,7 +19,7 @@ Fri Sep 24 19:03:41 CEST 2004 - mvidner@suse.cz
 Fri Sep 24 08:07:29 CEST 2004 - visnov@suse.cz
 
 - always initialize SourceCache when installing packages
-- use installed kernel to compute kernel packages (#45905) 
+- use installed kernel to compute kernel packages (#45905)
 - 2.10.18
 
 -------------------------------------------------------------------
