@@ -182,12 +182,6 @@ void ParseInstallationKernelCmdline ();
 	    suse_update = true;
 	}
 
-	// vga= shouldn't be used on some architectures
-	if (Arch::ia64 ())
-	{
-	    discardlist = add (discardlist, "vga");
-	}
-
 	foreach (string parameter, cmdlist,
 	{
 	    // split "key=value" to ["key", "value"]

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jan 11 16:52:35 CET 2005 - jsrain@suse.cz
+
+-reverted fix of #49483
+
+-------------------------------------------------------------------
 Mon Jan 10 14:03:48 CET 2005 - jsrain@suse.cz
 
 - added new function to compute additional packages (eg. -nongpl)
