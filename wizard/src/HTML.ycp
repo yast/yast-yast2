@@ -85,11 +85,12 @@
 
     /**
      * Make a HTML list item, i.e. embed a text into
-     * [li]...[/li]
+     * [li][p]...[/p][/li]
      *
      * You might consider using HTML::list() instead which takes a list of
      * items and does all the rest by itself.
      *
+     * @param text plain text or HTML fragment
      * @return HTML code
      **/
     global define string ListItem( string text ) ``{
@@ -189,6 +190,7 @@
     /**
      * Make a number of forced HTML line breaks, i.e. [br]
      *
+     * @param count how many of them
      * @return HTML code
      **/
     global define string Newlines( integer count ) ``{
