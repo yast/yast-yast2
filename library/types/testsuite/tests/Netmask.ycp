@@ -53,24 +53,20 @@ TEST(``(Netmask::Check6("")), [], nil);
 TEST(``(Netmask::Check6("345")), [], nil);
 TEST(``(Netmask::Check6("128")), [], nil);
 
-DUMP("Netmask::ToBits");
-TEST(``(Netmask::ToBits("255.255.255.255")), [], nil);
-TEST(``(Netmask::ToBits("255.255.255.240")), [], nil);
-TEST(``(Netmask::ToBits("255.255.255.224")), [], nil);
-TEST(``(Netmask::ToBits("255.255.255.0")), [], nil);
-TEST(``(Netmask::ToBits("255.255.240.0")), [], nil);
-TEST(``(Netmask::ToBits("255.240.0.0")), [], nil);
-TEST(``(Netmask::ToBits("240.0.0.0")), [], nil);
-TEST(``(Netmask::ToBits("0.0.0.0")), [], nil);
-
+integer i = nil;
 DUMP("Netmask::FromBits");
-TEST(``(Netmask::FromBits(32)), [], nil);
-TEST(``(Netmask::FromBits(27)), [], nil);
-TEST(``(Netmask::FromBits(28)), [], nil);
-TEST(``(Netmask::FromBits(24)), [], nil);
-TEST(``(Netmask::FromBits(20)), [], nil);
-TEST(``(Netmask::FromBits(12)), [], nil);
-TEST(``(Netmask::FromBits(4)), [], nil);
-TEST(``(Netmask::FromBits(0)), [], nil);
+i = 32;
+while (i >= 0) {
+    TEST(``(Netmask::FromBits (i)), [], nil);
+    i = i - 1;
+}
+
+// this test relies on the previous one
+DUMP("Netmask::ToBits");
+i = 32;
+while (i >= 0) {
+    TEST(``(Netmask::ToBits (Netmask::FromBits (i))), [], nil);
+    i = i - 1;
+}
 
 }
