@@ -1,6 +1,6 @@
 @HEADER-COMMENT@
 
-# neededforbuild  gpp hwinfo hwinfo-devel libgpp popt yast2-devel-packages
+# neededforbuild  yast2-devel-packages
 
 @HEADER@
 # Need the new file popups
