@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb  9 12:03:50 CET 2005 - locilka@suse.cz
+
+- Fixed reading SuSEfirewall2 configuration to be done only once
+  in network proposal.
+
+-------------------------------------------------------------------
 Tue Feb  8 17:03:02 CET 2005 - sh@suse.de
 
 - Added icons to standard popups

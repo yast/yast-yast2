@@ -245,6 +245,7 @@
      * Function fills up default configuration into internal values
      */
     global define void Reset () {
+	SuSEFirewall::ResetReadFlag();
 	SuSEFirewall::Read();
     }
 
