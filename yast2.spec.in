@@ -70,19 +70,7 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 %doc @docdir@/*.*
 %doc @docdir@/pot
 
-/sbin/yast2
-/sbin/zast2
-/sbin/YaST2
-/sbin/ZaST2
-/sbin/zastì
-/sbin/ZaSTì
-/sbin/yastì
-/sbin/YaSTì
-
-/sbin/yast
-/sbin/zast
-/sbin/YaST
-/sbin/ZaST
+/sbin/*
 
 # sequencer
 

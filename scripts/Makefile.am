@@ -18,7 +18,3 @@ install-data-local:
 	ln -snf $(sbindir)/yast2 $(DESTDIR)$(sbindir)/zast
 	ln -snf $(sbindir)/yast2 $(DESTDIR)$(sbindir)/YaST
 	ln -snf $(sbindir)/yast2 $(DESTDIR)$(sbindir)/ZaST
-	ln -snf $(sbindir)/yast2 $(DESTDIR)$(sbindir)/zastì
-	ln -snf $(sbindir)/yast2 $(DESTDIR)$(sbindir)/ZaSTì
-	ln -snf $(sbindir)/yast2 $(DESTDIR)$(sbindir)/YaSTì
-	ln -snf $(sbindir)/yast2 $(DESTDIR)$(sbindir)/yastì
