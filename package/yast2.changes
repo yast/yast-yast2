@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar  7 16:06:09 CET 2003 - sh@suse.de
+
+- Dropped "Notify" header for notify popups (#24782) 
+
+-------------------------------------------------------------------
 Fri Mar  7 14:20:31 CET 2003 - sh@suse.de
 
 - Fixed bug #24809: sw_single window outside screen

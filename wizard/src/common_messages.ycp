@@ -116,10 +116,6 @@
 	  // this is a button label
 	  return _("C&lose");
       }
-      global define string NotifyMsg() ``{
-	  // this string is usually used as headline of a popup
-	  return _("Notify");
-      }
       global define string WarningMsg() ``{
 	  // this string is usually used as headline of a popup
 	  return _("Warning");
@@ -244,9 +240,6 @@
   }
   global define string CloseButtonLabel() ``{
       return UI::CloseButtonLabel();
-  }
-  global define string NotifyMsg() ``{
-      return UI::NotifyMsg();
   }
   global define string WarningMsg() ``{
       return UI::WarningMsg();
