@@ -1,0 +1,175 @@
+/**
+ * File:        modules/FileUtils.ycp
+ * Package:     YaST2
+ * Authors:     Lukas Ocilka <lukas.ocilka@suse.cz>
+ * Summary:     Module for getting information about files and directories.
+ *		Their types and sizes.
+ *
+ * $Id$
+ */
+{
+    /**
+     * Known bugs: Link returns the type of linked object instead of `link`.
+     * On the other hand, is is impossible to get the name of linked object.
+     * So, it is better to return linked object's type.
+     */
+
+    module "FileUtils";
+    
+    textdomain "base";
+
+    import "SCR";
+
+    /**
+     * Function which determines if the requested file/directory exists.
+     *
+     * @return	true if exists
+     * @param	string file name
+     */
+    global define boolean Exists (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+
+	if (info != $[]) {
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Function which determines if the requested file/directory is a directory.
+     *
+     * @return	true if it is a directory, nil if doesn't exist
+     * @param	string file name
+     */
+    global define boolean IsDirectory (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+	boolean default = (info != $[] ? false:nil);
+
+	return (boolean) info["isdir"]:default;
+    }
+
+    /**
+     * Function which determines if the requested file/directory is a regular file.
+     *
+     * @return	true if it is a regular file, nil if doesn't exist
+     * @param	string file name
+     */
+    global define boolean IsFile (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+	boolean default = (info != $[] ? false:nil);
+
+	return (boolean) info["isreg"]:default;
+    }
+
+    /**
+     * Function which determines if the requested file/directory is a block file (device).
+     *
+     * @return	true if it is a block file, nil if doesn't exist
+     * @param	string file name
+     */
+    global define boolean IsBlock (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+	boolean default = (info != $[] ? false:nil);
+
+	return (boolean) info["isblock"]:default;
+    }
+
+    /**
+     * Function which determines if the requested file/directory is a fifo.
+     *
+     * @return	true if it is a fifo, nil if doesn't exist
+     * @param	string file name
+     */
+    global define boolean IsFifo (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+	boolean default = (info != $[] ? false:nil);
+
+	return (boolean) info["isfifo"]:default;
+    }
+
+    /**
+     * Function which determines if the requested file/directory is a link.
+     *
+     * @return	true if it is a link, nil if doesn't exist
+     * @param	string file name
+     */
+    global define boolean IsLink (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+	boolean default = (info != $[] ? false:nil);
+
+	return (boolean) info["islink"]:default;
+    }
+
+    /**
+     * Function which determines if the requested file/directory is a socket.
+     *
+     * @return	true if it is a socket, nil if doesn't exist
+     * @param	string file name
+     */
+    global define boolean IsSocket (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+	boolean default = (info != $[] ? false:nil);
+
+	return (boolean) info["issock"]:default;
+    }
+
+    /**
+     * Function returns the type of requested file/directory.
+     *
+     * @return	string fle type (directory|regular|block|fifo|link|socket), nil if doesn't exist
+     * @param	string file name
+     */
+    global define string GetFileType (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+
+	if (info["isdir"]:false == true) {
+	    return "directory";
+	} else if (info["isreg"]:false == true) {
+	    return "regular";
+	} else if (info["isblock"]:false == true) {
+	    return "block";
+	} else if (info["isfifo"]:false == true) {
+	    return "fifo";
+	} else if (info["islink"]:false == true) {
+	    return "link";
+	} else if (info["issock"]:false == true) {
+	    return "socket";
+	} else {
+	    return nil;
+	}
+    }
+
+    /**
+     * Function which returns the size of requested file/directory.
+     *
+     * @return	integer file size, -1 if doesn't exist
+     * @param	string file name
+     */
+    global define integer GetSize (string target) {
+	return (integer) SCR::Read(.target.size, target);
+    }
+
+    /**
+     * Function which determines the owner's user ID of requested file/directory.
+     *
+     * @return	integer UID, nil if doesn't exist
+     * @param	string file name
+     */
+    global define integer GetOwnerUserID (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+
+	return (integer) info["uid"]:nil;
+    }
+
+    /**
+     * Function which determines the owner's group ID of requested file/directory.
+     *
+     * @return	integer GID, nil if doesn't exist
+     * @param	string file name
+     */
+    global define integer GetOwnerGroupID (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+
+	return (integer) info["gid"]:nil;
+    }
+}
