@@ -2,6 +2,7 @@
 # Makefile.am for yast2/wizard/src
 #
 
+htmldir = @docdir@/wizard
 yncludedir = @yncludedir@/ui
 
 module_DATA =			\
@@ -20,4 +21,6 @@ ynclude_DATA =			\
 	common_functions.ycp	\
 	summary.ycp
 
-EXTRA_DIST = $(ynclude_DATA) $(module_DATA)
+html_DATA = README.popups
+
+EXTRA_DIST = $(ynclude_DATA) $(module_DATA) $(html_DATA)

@@ -3,18 +3,18 @@
  *
  * Authors:             Gabriele Strattner <gs@suse.de>
  *
- * Purpose:
+ * $Id$
  *
  * Contains commonly used popup dialogs
  * for general usage, e.g. Popup::YesNo(), Popup::ContinueCancel().
+ *
+ * See also <a href="../README.popups">README.popups</a>
  *
  * It is a replacement for the include common_popups.ycp,
  * (For performance reasons: using "include" in multiple files parses
  * the inclusion each time, whereas "import" needs to parse a file only once.)
  *
  * NOTE: remember to keep the both files in sync while they coexist!
- *
- * $Id$
  */
 
 {
@@ -48,6 +48,8 @@
        *
        * Returns true if Continue is clicked.
        *
+       * <p><img src="../ContinueCancelHeadline.png" /></p>
+       *
        * @param  headline short headline or Popup::NoHeadline()
        * @param  message  message string
        * @return boolean
@@ -80,6 +82,8 @@
        * The default button is Continue.
        * Returns true if Continue is clicked.
        *
+       * <p><img src="../ContinueCancel.png" /></p>
+       *
        * @param  message  message string
        * @return boolean
        *
@@ -105,6 +109,8 @@
        * The default button is Yes.
        *
        * Returns true if <b>Yes</b> is clicked.
+       *
+       * <p><img src="../YesNoHeadline.png" /></p>
        *
        * @param  headline	short headline or Popup::NoHeadline()
        * @param  message	message string
@@ -138,6 +144,8 @@
        * The default button is Yes.
        * Returns true if <b>Yes</b> is clicked.
        *
+       * <p><img src="../YesNo.png" /></p>
+       *
        * @param  message	message string
        * @return boolean
        *
@@ -163,6 +171,8 @@
        * Pass a RichText widget with the parameters appropriate for your text -
        * i.e. without special parameters for HTML-like text or with
        * `opt(`plainText) for plain ASCII text without HTML tags.
+       *
+       * <p><img src="../LongText.png" /></p>
        *
        * @param  headline short headline
        * @param  richtext  text input is `Richtext()
@@ -200,6 +210,8 @@
        *
        * According to the "severity" parameter an appropriate text will be
        * displayed indicating what the user has to expect when he really aborts now.
+       *
+       * <p><img src="../ConfirmAbort.png" /></p>
        *
        * @param severity		`painless, `incomplete, `unusable
        *
@@ -299,6 +311,8 @@ You will need to reinstall." );
       /**
        * Show a simple message and wait until user clicked "OK".
        *
+       * <p><img src="../Message.png" /></p>
+       *
        * @param message		message string
        *
        * @example  Popup::Message("This is an information about ... ." );
@@ -336,6 +350,8 @@ You will need to reinstall." );
       /**
        * Show a warning message and wait until user clicked "OK".
        *
+       * <p><img src="../Warning.png" /></p>
+       *
        * @param message warning message string
        *
        * @example Popup::Warning("Something is wrong. Please check your configuration." );
@@ -356,6 +372,8 @@ You will need to reinstall." );
       /**
        * Show an error message and wait until user clicked "OK".
        *
+       * <p><img src="../Error.png" /></p>
+       *
        * @param message	error message string
        *
        * @example  Popup::Error("The configuration was not succesful." );
@@ -375,6 +393,8 @@ You will need to reinstall." );
 
       /**
        * Show a notification message and wait until user clicked "OK".
+       *
+       * <p><img src="../Notify.png" /> TODO no more header</p>
        *
        * @param  message	notify message string
        *
@@ -429,6 +449,8 @@ You will need to reinstall." );
        * There is also a "stop" button that will stop the countdown. If the
        * user clicks that, the popup will wait forever (or until "OK" is
        * clicked, of course).
+       *
+       * <p><img src="../TimedMessage.png" /></p>
        *
        * @param message		message to display
        * @param timeout_seconds		the timeout in seconds
@@ -566,6 +588,8 @@ You will need to reinstall." );
        * "OK", "continue" etc., the second its opposite ("no", "cancel", ...).
        * NEVER use this generic question popup to simply exchange the order of
        * yes/no, continue/cancel or ok/cancel buttons!
+       *
+       * <p><img src="../AnyQuestion.png" /></p>
        *
        * @param headline		headline or Popup::NoHeadline()
        * @param message			message string
@@ -719,6 +743,8 @@ You will need to reinstall." );
        * "next" - skip this faulty module and directly go to the next one
        * "again" - try it again (after fixing something in the code, of course)
        * "cancel" - exit program
+       *
+       * <p><img src="../ModuleError.png" /></p>
        *
        * @param text	 string
        * @return symbol `back, `again, `cancel, `next
@@ -917,6 +943,8 @@ You will need to reinstall." );
       /**
        * Show a warning message and wait specified amount of time or until user clicked "OK".
        *
+       * <p><img src="../TimedWarninngPopup.png" /></p>
+       *
        * @param message warning message string
        * @param timeout_seconds time out in seconds
        *
@@ -933,6 +961,8 @@ You will need to reinstall." );
 
       /**
        * Show an error message and wait specified amount of time or until user clicked "OK".
+       *
+       * <p><img src="../TimedErrorPopup.png" /></p>
        *
        * @param message	error message string
        * @param timeout_seconds time out in seconds
