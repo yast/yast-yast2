@@ -61,4 +61,23 @@ TEST(``(NetworkDevices::device_name("tr-pcmcia-","1")), [], nil);
 
 TEST(``(NetworkDevices::alias_name("eth-pcmcia-","0","1")), [], nil);
 TEST(``(NetworkDevices::alias_name("tr-pcmcia-","1","1")), [], nil);
+
+DUMP ("CanonicalizeIP:");
+list<map> addresses = [
+    // normal cases
+    $["IPADDR": "10.0.0.1/8", "other": "data"],
+    $["IPADDR": "10.0.0.1", "PREFIXLEN": "8", "other": "data"],
+    $["IPADDR": "10.0.0.1", "NETMASK": "255.0.0.0", "other": "data"],
+    $["BOOTPROTO": "dhcp"],
+    // conflicting cases
+    $["IPADDR": "10.0.0.1/8", "PREFIXLEN": "16", "NETMASK": "255.255.255.0", "other": "data"],
+    // error cases
+    nil,
+    $[],
+    $["IPADDR": "10.0.0.1", "other": "data"],
+    ];
+foreach (map address, addresses, {
+    TEST (``(NetworkDevices::CanonicalizeIP (address)), [], nil);
+});
+
 }
