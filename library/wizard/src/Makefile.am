@@ -17,7 +17,6 @@ module_DATA =			\
 	HTML.ycp
 
 ynclude_DATA =			\
-	file_popups.ycp		\
-	common_functions.ycp
+	file_popups.ycp
 
 EXTRA_DIST = $(ynclude_DATA) $(module_DATA)
