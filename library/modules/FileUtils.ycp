@@ -113,10 +113,24 @@
     }
 
     /**
+     * Function which determines if the requested file/directory is
+     * a character device or link to a character device.
+     *
+     * @return	true if it is a charcater device, nil if doesn't exist
+     * @param	string file name
+     */
+    global define boolean IsCharacterDevice (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+	boolean default = (info != $[] ? false:nil);
+
+	return (boolean) info["ischr"]:default;
+    }
+
+    /**
      * Function returns the real type of requested file/directory.
      * If the file is a link to any object, "link" is returned.
      *
-     * @return	string fle type (directory|regular|block|fifo|link|socket), nil if doesn't exist
+     * @return	string fle type (directory|regular|block|fifo|link|socket|chr_device), nil if doesn't exist
      * @param	string file name
      */
     global define string GetFileRealType (string target) {
@@ -134,6 +148,8 @@
 	    return "fifo";
 	} else if (info["issock"]:false == true) {
 	    return "socket";
+	} else if (info["ischr"]:false == true) {
+	    return "chr_device";
 	} else {
 	    return nil;
 	}
@@ -143,7 +159,7 @@
      * Function returns the type of requested file/directory.
      * If the file is a link to any object, the object's type is returned.
      *
-     * @return	string fle type (directory|regular|block|fifo|link|socket), nil if doesn't exist
+     * @return	string fle type (directory|regular|block|fifo|link|socket|chr_device), nil if doesn't exist
      * @param	string file name
      */
     global define string GetFileType (string target) {
@@ -162,6 +178,8 @@
 	    return "socket";
 	} else if (info["islink"]:false == true) {
 	    return "link";
+	} else if (info["ischr"]:false == true) {
+	    return "chr_device";
 	} else {
 	    return nil;
 	}
