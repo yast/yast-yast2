@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Mar 17 11:48:25 CET 2004 - arvin@suse.de
+
+- added download progress callbacks (bug #31445)
+
+-------------------------------------------------------------------
 Mon Mar 15 16:49:00 CET 2004 - fehr@suse.de
 
 - add functions {Set,Get}EncLang() && GetCodePage() to Encoding module
