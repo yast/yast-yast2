@@ -131,7 +131,7 @@
      * installation via ssh
      * installation via vnc
      *
-     * Also see Arch::x11_setup_needed.
+     * Also see Arch::x11_setup_needed ().
      */
     global boolean x11_setup_needed	= true;
 

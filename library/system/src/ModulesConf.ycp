@@ -54,7 +54,7 @@
      */
     global define void RunDepmod (boolean force)
     ``{
-	if (Arch::s390)
+	if (Arch::s390 ())
 	    return;
 
 	import "Kernel";
