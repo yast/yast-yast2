@@ -2,11 +2,7 @@
 <?$$?>
 <chapter id = "advanced">
     <title>Advanced stuff</title>
-
-
-
-
-<section><title>Helps</title>
+<section id="widget_help"><title>Helps</title>
 <para>
 Help is usually related to some widget. There is no reason why not to add help
 as attribute of a widget description, and move it with the widget between
@@ -302,5 +298,64 @@ global define term getW2 () ``{
 These two widgets (W1 and W2) are identical.
 </para></example>
 </section>
+
+<section id="create_control">
+    <title>More control over the dialog creation</title>
+    <para>
+In some cases it may not be sufficient to use the standard dialog layout
+creation. You may eg. need to add some additional help text. The same
+dalog as in <xref linkend="simple_dialog"/> is created in 
+<xref linkend="simple_dial_adv"/>.
+   </para>
+
+<example id="simple_dial_adv"><title>More control on dialog creation</title><screen>
+module "MyModule";
+
+// include <xref linkend="simple_widgets"/> here
+
+global define symbol runSomeDialog ``{
+    // create list of maps representing wanted widgets
+    list(map) widgets
+        = CWM::CreateWidgets (
+            [ "CWD_IN_ROOT_PATH", "CWD_IN_USER_PATH" ],
+            widget_descr);
+    term contents = `VBox (
+        widgets[0, "widget"]:`VSpacing (0),// "widget" here is
+        widgets[1, "widget"]:`VSpacing (0) // the _real_ widget
+    )
+    Wizard::SetContentsButtons ("Dialog", contents, "Help",
+        "Back", "Next");
+    // here comes additional stuff, eg. renaming the "Abort"
+    // button to "Cancel" // if needed
+
+    map functions = $[
+        "initialize" : ``(MyModule::initialize_widget ()),
+        "store" : ``(MyModule::store_widget ()),
+    ];
+
+    // run the dialog
+    any ret = CWM::Run (widgets, functions);
+
+    return ret;
+</screen></example>
+    <para>
+The first step is to process the relevant widgets from the widgets description map
+in order to create the "real" widgets. The second task is to create the dialog term.
+You still may use the widget names instead of the descriptions, but in this case
+you must use the CWM::PrepareDialog function. In this case the dialog would look like 
+    </para><screen>
+    term contents = `VBox (
+        "CWD_IN_ROOT_PATH",
+        "CWD_IN_USER_PATH"
+    )
+    contents = CWM::PrepareDialog (contents, widgets);
+</screen><para>
+    Then you can create the dialog (including setting the help and buttons). Additionally,
+you can do any tasks you need (eg. remove the Back button, change the label of the Abort
+button). Fallback handlers are to be set the same way as when use the ShowAndRun wrapper.
+The last step is to start the event loop fia the Run function.
+    </para>
+</section>
+
 
 </chapter>
