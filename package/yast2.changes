@@ -1,7 +1,13 @@
 -------------------------------------------------------------------
+Tue Jul 20 13:48:00 CEST 2004 - jsrain@suse.cz
+
+- enhanced the TSIG keys management widget to do more checks before
+  creating a new TSIG key (#40845)
+
+-------------------------------------------------------------------
 Mon Jul 19 12:26:40 CEST 2004 - jsrain@suse.cz
 
-- enhnced functionality of Package*.yvp modules (popups with custom
+- enhnced functionality of Package*.ycp modules (popups with custom
   message, package check for read functions with error feedback)
 
 -------------------------------------------------------------------

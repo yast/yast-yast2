@@ -79,7 +79,7 @@ define string Key2File (string key) {
  * Remove file with all TSIG keys it contains
  * @param filename string filename of the file with the TSIG keys
  */
-define void RemoveTsigKeyFile (string filename) {
+define void RemoveTSIGKeyFile (string filename) {
     new_tsig_keys = filter (string f, new_tsig_keys, {
 	return f != filename;
     });
@@ -93,16 +93,16 @@ define void RemoveTsigKeyFile (string filename) {
  * Remove file containing specified TSIG key
  * @param key string key ID
  */
-define void RemoveTsigKey (string key) {
+define void RemoveTSIGKey (string key) {
     string filename = Key2File (key);
-    RemoveTsigKeyFile (filename);
+    RemoveTSIGKeyFile (filename);
 }
 
 /**
  * Add new file with TSIG key
  * @param filename string filename of the file with the TSIG key
  */
-define void AddTsigKeyFile (string filename) {
+define void AddTSIGKeyFile (string filename) {
     deleted_tsig_keys = filter (string f, deleted_tsig_keys, {
 	return f != filename;
     });
@@ -166,6 +166,21 @@ global define list<string> AnalyzeTSIGKeyFile (string filename) {
 }
 
 /**
+ * Remove all 3 files holding the TSIG key data
+ * @param main string filename of the main file
+ */
+global define void DeleteTSIGKeyFromDisk (string main) {
+    list<string> keys = AnalyzeTSIGKeyFile (main);
+    y2milestone ("Removing file %1, found keys: %2", main, keys);
+    foreach (string k, keys, {
+	SCR::Execute (.target.bash, sformat (
+	    "rm -f /etc/named.d/K%1\\.* ",
+	    tolower (k)));
+    });
+    SCR::Execute (.target.remove, main);
+}
+
+/**
  * Transformate the list of files to the list of TSIG key description maps
  * @param filenames a list of file names of the TSIG keys
  * @return a list of TSIG key describing maps
@@ -220,7 +235,7 @@ global define void Init (map<string,any> widget, string key) {
 	list<string> files = info["key_files"]:[];
 	tsig_keys = Files2KeyMaps (files);
     }
-    string initial_path = "/etc";
+    string initial_path = "/etc/named.d/";
     UI::ChangeWidget (`id ("_cwm_existing_key_file"), `Value, initial_path);
     UI::ChangeWidget (`id ("_cwm_new_key_file"), `Value, initial_path);
     UI::ChangeWidget (`id ("_cwm_new_key_id"), `ValidChars,
@@ -246,7 +261,7 @@ global define symbol Handle (map<string,any> widget, string key, map event) {
 	string key = (string)UI::QueryWidget (`id ("_cwm_key_listing_table"),
 	    `CurrentItem);
 	string delete_filename = Key2File (key);
-	RemoveTsigKeyFile (delete_filename);
+	RemoveTSIGKeyFile (delete_filename);
     }
     else if (ret == "_cwm_browse_existing_key_file")
     {
@@ -292,6 +307,11 @@ global define symbol Handle (map<string,any> widget, string key, map event) {
 	    {
 		return nil;
 	    }
+	    else
+	    {
+		DeleteTSIGKeyFromDisk (new_filename);
+		RemoveTSIGKeyFile (new_filename);
+	    }
 	}
 	if (key == nil || key == "")
 	{
@@ -300,6 +320,42 @@ global define symbol Handle (map<string,any> widget, string key, map event) {
 	    Popup::Error (_("The TSIG key ID was not specified."));
 	    return nil;
 	}
+	// specified key exists
+	if (Key2File (key) != "")
+	{
+	    if (! Popup::YesNo (_("The key with the specified ID exists and is used.
+Remove it?")))
+	    {
+		return nil;
+	    }
+	    else
+	    {
+		string remove_file = Key2File (key);
+		DeleteTSIGKeyFromDisk (remove_file);
+		RemoveTSIGKeyFile (remove_file);
+	    }
+	}
+	// specified key is present on the disk, but not used
+	if (0 == SCR::Execute (.target.bash, sformat (
+	    "ls /etc/named.d/K%1\\.*",
+	    tolower (key))))
+	{
+	    if (Popup::YesNo (_("A key with the specified ID was found
+on your disk. Remove it?")))
+	    {
+		SCR::Execute (.target.bash, sformat (
+		    "rm -f `ls /etc/named.d/K%1\\.*`",
+		    tolower (key)));
+		list<string> files = (list<string>)SCR::Read (
+		    .target.dir,
+		    "/etc/named.d");
+		foreach (string f, files, {
+		    if ( contains (AnalyzeTSIGKeyFile (f), key))
+			DeleteTSIGKeyFromDisk (f);
+		});
+	    }
+	}
+
 	// yes-no popup
 	if (! Popup::YesNo (_("The key will be created now. Continue?")))
 	    return nil;
@@ -351,11 +407,11 @@ Old keys will be removed. Continue?")))
 	    else
 	    {
 		foreach (string f, coliding_files, {
-		    RemoveTsigKeyFile (f);
+		    RemoveTSIGKeyFile (f);
 		});
 	    }
 	}
-	AddTsigKeyFile (existing_filename);
+	AddTSIGKeyFile (existing_filename);
     }
     DdnsKeysWidgetRedraw ();
     return nil;
