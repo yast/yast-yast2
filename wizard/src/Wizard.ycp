@@ -240,7 +240,7 @@
 	    step = step + 1;
 	});
 
-	vbox = add( vbox, `PushButton(`id(`help), HelpButtonLabel() ) );
+	vbox = add( vbox, `PushButton(`id(`help), `opt(`key_F1), HelpButtonLabel() ) );
 
 	return vbox;
     };
