@@ -23,7 +23,7 @@ map Modules = $[];
 
 /**
  */
-global define void DisplaySplash() ``{
+define void DisplaySplash() ``{
     UI::OpenDialog(`opt(`defaultsize), `VBox(
 	`VStretch (),
 	/* Message shown while loading modules information */
@@ -34,7 +34,7 @@ global define void DisplaySplash() ``{
 
 /**
  */
-global define void OpenMenu() ``{
+define void OpenMenu() ``{
     UI::OpenDialog(`opt(`defaultsize), `VBox(
 	`HBox(
 	    `HSpacing(1),
@@ -77,7 +77,7 @@ global define void OpenMenu() ``{
 
 /**
  */
-global define void Launch(string modul) ``{
+define void Launch(string modul) ``{
     string function = Modules[modul, "X-SuSE-YaST-Call"]:"";
     list arguments = splitstring(Modules[modul, "X-SuSE-YaST-Argument"]:"", " ");
     y2debug("Calling: %1 (%2)", function, arguments);
@@ -90,7 +90,7 @@ global define void Launch(string modul) ``{
 
 /**
  */
-global define void ShowNcursesHelp() ``{
+define void ShowNcursesHelp() ``{
 
     /* NCurses Control Center headline */
     string headline = _("Controlling YaST2 ncurses with the Keyboard");
@@ -173,7 +173,7 @@ y2debug("%1", first);
 
 /**
  */
-global define void ReplaceModuleList(string group) ``{
+define void ReplaceModuleList(string group) ``{
     UI::ReplaceWidget(`id (`progs_rep), `SelectionBox( `id (`progs), `opt (`notify, `keyEvents), "", Desktop::ModuleList(group)));
 }
 
