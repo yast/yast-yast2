@@ -62,6 +62,13 @@ global void SetEncLang( string new_lang )
     y2milestone( "SetEncLang %1", lang );
     }
 
+global string GetEncLang()
+    ``{
+    string ret = lang;
+    y2milestone( "GetEncLang ret %1", ret );
+    return( ret );
+    }
+
 global define string GetCodePage( string enc ) 
     ``{
     string code = "437";
