@@ -14,6 +14,10 @@ fi
 
 TARGET=$1
 
-cd /var/log && tar czf $TARGET YaST2 && exit 0
+LIST=YaST2
+
+[ -f /var/log/evms-engine.log ] && LIST="$LIST evms-engine.*"
+
+cd /var/log && tar czf $TARGET $LIST && exit 0
 exit 2
 
