@@ -15,3 +15,4 @@ Icon=network_advanced56
 
 Name=Network Services
 Name[cs]=Síťové služby
+X-KDE-SubstituteUID=true

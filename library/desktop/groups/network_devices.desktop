@@ -15,3 +15,4 @@ Icon=network56
 
 Name=Network Devices
 Name[cs]=Síťová zařízení
+X-KDE-SubstituteUID=true
