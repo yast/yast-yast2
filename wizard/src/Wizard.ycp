@@ -44,6 +44,8 @@
 	    && UI::HasSpecialWidget(`ColoredLabel);
 
 	// have_fancy_ui = false;
+
+	UI::SetFunctionKeys( UI::DefaultFunctionKeyMap() );
     };
 
 

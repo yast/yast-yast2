@@ -1,7 +1,8 @@
 /**
- * Module:				common_messages.ycp
+ * Module:		common_messages.ycp
  *
  * Authors:             Gabriele Strattner <gs@suse.de>
+ *			Stefan Hundhammer <sh@suse.de>
  *
  * Purpose:
  *
@@ -132,6 +133,40 @@
 	  return _( "Please wait..." );
       }
 
+
+      global define map DefaultFunctionKeyMap() ``{
+	  map fkeys = $[];
+
+	  // A map only accepts constants as keys, so we have to add() each
+	  // item. It will always be a term since it has to go through the
+	  // translator.
+
+	  fkeys = add( fkeys, HelpButtonLabel()		, 1 );
+	  fkeys = add( fkeys, AddButtonLabel()		, 3 );
+	  fkeys = add( fkeys, EditButtonLabel()		, 4 );
+	  fkeys = add( fkeys, DeleteButtonLabel()	, 5 );
+
+	   // Negative Answers: [F9]
+	  fkeys = add( fkeys, BackButtonLabel()		, 9 );
+	  fkeys = add( fkeys, CancelButtonLabel()	, 9 );
+	  fkeys = add( fkeys, DoNotAcceptButtonLabel()	, 9 );
+	  fkeys = add( fkeys, DontInstallButtonLabel()	, 9 );
+	  fkeys = add( fkeys, NoButtonLabel()		, 9 );
+	  fkeys = add( fkeys, QuitButtonLabel()		, 9 );
+
+	  // Positive Answers: [F10]
+	  fkeys = add( fkeys, AcceptButtonLabel()	, 10 );
+	  fkeys = add( fkeys, CloseButtonLabel()	, 10 );
+	  fkeys = add( fkeys, ContinueButtonLabel()	, 10 );
+	  fkeys = add( fkeys, FinishButtonLabel()	, 10 );
+	  fkeys = add( fkeys, InstallButtonLabel()	, 10 );
+	  fkeys = add( fkeys, NextButtonLabel()		, 10 );
+	  fkeys = add( fkeys, OKButtonLabel()		, 10 );
+	  fkeys = add( fkeys, SaveButtonLabel()		, 10 );
+	  fkeys = add( fkeys, YesButtonLabel()		, 10 );
+
+	  return fkeys;
+      }
 
   });
 
