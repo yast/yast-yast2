@@ -46,7 +46,7 @@ global define string UnQuote(string var) ``{
  * @param bytes	size (e.g. free diskspace) in Bytes
  * @return formatted string
  *
- * @example size_text(23456767890) -> "223.70 MB"
+ * @example FormatSize(23456767890) -> "223.70 MB"
  */
 global define string FormatSize(integer bytes) ``{
 
@@ -73,37 +73,6 @@ global define string FormatSize(integer bytes) ``{
     }
 
     return tostring(whole, 2) + " " + unit;
-}
-
-/**
- * Byte input is transformed to "MB" and the string is formatted
- * with appropriate number of whitespaces, so the output has always
- * the same length (which is useful for sorting).
- *
- * @param bytes	size (e.g. free diskspace ) in Byte
- * @return formatted string
- *
- * @example format_size_text(234567678);
- */
-global define string FormatSizeFixed(integer bytes)``{
-
-    if(bytes == nil) return "";
-
-    /* MegaByte abbreviated */
-    string unit = UI(_("MB"));
-    float whole = tofloat(bytes) / 1024.0 / 1024.0;
-
-    /* NNN.NN  999.99 MB */
-    string size_str = tostring(whole, 2);
-    integer num = size(size_str);
-    integer anz = 6 - num;
-
-    if(anz <= 0)
-	return size_str + " " + unit + " " ;
-    else if(anz == 1)
-	return " " + size_str + " " + unit + " ";
-    else
-	return "  " + size_str + " " + unit + " ";
 }
 
 /**

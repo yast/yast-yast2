@@ -27,18 +27,6 @@ TEST(``(String::FormatSize(1074000000)), [], nil);
 TEST(``(String::FormatSize(1100000000000)), [], nil);
 TEST(``(String::FormatSize(1126000000000000)), [], nil);
 
-DUMP("String::FormatSizeFixed");
-TEST(``(String::FormatSizeFixed(nil)), [], nil);
-TEST(``(String::FormatSizeFixed(0)), [], nil);
-TEST(``(String::FormatSizeFixed(1)), [], nil);
-TEST(``(String::FormatSizeFixed(1025)), [], nil);
-TEST(``(String::FormatSizeFixed(1049000)), [], nil);
-TEST(``(String::FormatSizeFixed(10490000)), [], nil);
-TEST(``(String::FormatSizeFixed(104900000)), [], nil);
-TEST(``(String::FormatSizeFixed(1074000000)), [], nil);
-TEST(``(String::FormatSizeFixed(1100000000000)), [], nil);
-TEST(``(String::FormatSizeFixed(1126000000000000)), [], nil);
-
 DUMP("String::CutBlanks");
 TEST(``(String::CutBlanks(nil)), [], nil);
 TEST(``(String::CutBlanks("")), [], nil);
