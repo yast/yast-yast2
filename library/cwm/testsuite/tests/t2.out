@@ -9,11 +9,12 @@ Dump	, "store": (any id, string key)
 Dump	{
 Dump	    y2error ("fallback_store: id %1, key %2", id, key);
 Dump	}
-Dump	, "summary": (any id, string key)
+Dump	, "summary": (any opt_id, string opt_key)
 Dump	{
-Dump	    y2error ("fallback_summary: id %1, key %2", id, key);
+Dump	    y2error ("fallback_summary: id %1, key %2", opt_id, opt_key);
+Dump	    return sformat ("%1:%2", opt_id, opt_key);
 Dump	}
-Dump	], "handle": (any key, map event_descr)
+Dump	], "handle": (string key, map event_descr)
 Dump	{
 Dump	    return TablePopup::TableHandle (CWM::GetProcessedWidget (), key, event_descr);
 Dump	}
@@ -33,7 +34,7 @@ Dump	{
 Dump	    DUMP (sformat ("Returning list of ids for table %1", /* any -> string */descr["_cwm_key"]:""));
 Dump	    return ["a", "b", "c"];
 Dump	}
-Dump	, "init": (any key)
+Dump	, "init": (string key)
 Dump	{
 Dump	    TablePopup::TableInit (CWM::GetProcessedWidget (), key);
 Dump	}
@@ -42,7 +43,7 @@ Dump	{
 Dump	    y2error ("a_handle: id %1, key %2, event %3", id, key, event);
 Dump	    return nil;
 Dump	}
-Dump	, "widget":`textentry], "table":$["handle":`a_handle, "label":"'a' option label", "summary": (any opt_id, any opt_key)
+Dump	, "widget":`textentry], "table":$["handle":`a_handle, "label":"'a' option label", "summary": (any opt_id, string opt_key)
 Dump	{
 Dump	    DUMP (sformat ("wanting summary for %1:%2", opt_id, opt_key));
 Dump	    return sformat ("%1:%2", opt_id, opt_key);
@@ -81,7 +82,7 @@ Dump	{
 Dump	    y2error ("a_handle: id %1, key %2, event %3", id, key, event);
 Dump	    return nil;
 Dump	}
-Dump	, "label":"'a' option label", "summary": (any opt_id, any opt_key)
+Dump	, "label":"'a' option label", "summary": (any opt_id, string opt_key)
 Dump	{
 Dump	    DUMP (sformat ("wanting summary for %1:%2", opt_id, opt_key));
 Dump	    return sformat ("%1:%2", opt_id, opt_key);
@@ -105,7 +106,7 @@ Dump	{
 Dump	    y2error ("a_handle: id %1, key %2, event %3", id, key, event);
 Dump	    return nil;
 Dump	}
-Dump	, "label":"'a' option label", "summary": (any opt_id, any opt_key)
+Dump	, "label":"'a' option label", "summary": (any opt_id, string opt_key)
 Dump	{
 Dump	    DUMP (sformat ("wanting summary for %1:%2", opt_id, opt_key));
 Dump	    return sformat ("%1:%2", opt_id, opt_key);

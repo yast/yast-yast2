@@ -18,7 +18,7 @@
 	return (string)opt_id;
     }
 
-    define string opt_sum (any opt_id, any opt_key) ``{
+    define string opt_sum (any opt_id, string opt_key) ``{
 	DUMP (sformat ("wanting summary for %1:%2", opt_id, opt_key));
 	return sformat ("%1:%2", opt_id, opt_key);
     }
@@ -37,8 +37,9 @@
 	y2error ("fallback_init: id %1, key %2", id, key);
     }
 
-    define void fallback_summary (any id, string key) ``{
-	y2error ("fallback_summary: id %1, key %2", id, key);
+    define string fallback_summary (any opt_id, string opt_key) ``{
+	y2error ("fallback_summary: id %1, key %2", opt_id, opt_key);
+	return sformat ("%1:%2", opt_id, opt_key);
     }
 
     define void fallback_store (any id, string key) ``{
