@@ -251,6 +251,27 @@ global define void ChangeLineField( map& file, integer line, integer field,
     }
 
 /**
+ * Changes a complete line 
+ *
+ * @param map		file content
+ * @param integer	row number (counted from 1 to n)
+ * @param list	        of new entries on the line
+ */
+global define void ReplaceLine( map& file, integer line,
+				list<string> entry )
+    ``{
+    y2debug( "line %1 entry %2", line, entry );
+    boolean changed = false;
+    if( !haskey( file["l"]:$[], line ))
+	{
+	file["l",line] = $[];
+	}
+    file["l",line,"fields"] = entry;
+    file["l",line,"changed"] = true;
+    file["l",line,"buildline"] = true;
+    }
+
+/**
  * Appends a new line at the bottom
  *
  * @param map	file content
