@@ -74,6 +74,11 @@
     global boolean flexible_partitioning = false;
 
     /**
+     * EVMS config in YaST2
+     */
+    global boolean evms_config = false;
+
+    /**
      * Flexible partitioning map
      */
     global map FlexiblePartitioning = $[];
