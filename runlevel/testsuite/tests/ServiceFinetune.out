@@ -1,0 +1,7 @@
+Read	.init.scripts.exists "aaa" true
+Execute	.target.bash "/sbin/insserv -r aaa" 0
+Execute	.target.bash "/sbin/insserv aaa,start=A,B,C" 0
+Return	true
+Read	.init.scripts.exists "aaa" true
+Execute	.target.bash "/sbin/insserv -r aaa" 0
+Return	true
