@@ -726,6 +726,8 @@ global define void ReplaceWidgetHelp (string widget, string help) {
     {
 	if (UI::HasSpecialWidget (`Wizard))
 	    help = "";
+	if (help == nil)
+	    help = "";
 	if (next == nil)
 	    next = "";
 	if (back == nil)
@@ -748,7 +750,7 @@ global define void ReplaceWidgetHelp (string widget, string help) {
 	    if (back != "")
 		Wizard::SetBackButton (`back, back);
 	    else if (help != "")
-		Wizard::SetBackButton (`help, Label::HelpButton ());
+		Wizard::SetBackButton (`help, help);
 	    else
 		Wizard::HideBackButton ();
 	}
@@ -769,9 +771,9 @@ global define void ReplaceWidgetHelp (string widget, string help) {
 	    = settings["widget_descr"]:$[];
 	term contents = settings["contents"]:`VBox ();
 	string caption = settings["caption"]:"";
-	string back_button = settings["back_button"]:"";
-	string next_button = settings["next_button"]:"";
-	string abort_button = settings["abort_button"]:"";
+	string back_button = settings["back_button"]:Label::BackButton ();
+	string next_button = settings["next_button"]:Label::NextButton ();
+	string abort_button = settings["abort_button"]:Label::AbortButton ();
 	map<any,any> fallback = settings["fallback_functions"]:$[];
 
 	list<map <string, any> > w = CreateWidgets (widget_names, widget_descr);
@@ -779,8 +781,7 @@ global define void ReplaceWidgetHelp (string widget, string help) {
 	contents = PrepareDialog (contents, w);
 	Wizard::SetContentsButtons (caption, contents, help,
 	    back_button, next_button);
-	Wizard::RestoreBackButton ();
-	Wizard::RestoreAbortButton ();
+	AdjustButtons (next_button, back_button, abort_button, nil);
 	return Run (w, fallback);
     }
 
