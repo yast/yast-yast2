@@ -95,7 +95,7 @@
 
     /* Internal function for loading unknown ports into memory and returning them as list[string] */
     string LoadAndReturnPortToName (integer port_number) {
-	string command = "grep \"[ \\t]" + port_number + "\/\" /etc/services | sed \"s/\\([^ \\t]*\\)[ \\t]*.*/\\1/\"";
+	string command = "grep \"^[^#].*[ \\t]" + port_number + "\/\" /etc/services | sed \"s/\\([^ \\t]*\\)[ \\t]*.*/\\1/\"";
 	map found = (map) SCR::Execute(.target.bash_output, command);
 	list <string> aliases = [];
 
