@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Apr 02 15:59:59 CEST 2004 - arvin@suse.de
+
+- finally changed license to GPL for good
+
+-------------------------------------------------------------------
 Fri Apr  2 06:41:58 CEST 2004 - nashif@suse.de
 
 - added wrapper functions around Tree and Menu enabled Wizards to 
