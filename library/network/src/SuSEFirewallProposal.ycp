@@ -9,8 +9,6 @@
  * ... er ehm?
  */
 
-// NOTE: Change SuSEFirewall to SuSEFirewall
-
 {
     module "SuSEFirewallProposal";
     textdomain "base";
@@ -22,6 +20,9 @@
 
     /* proposal was changed by user */
     boolean proposal_changed_by_user = false;
+
+    /* proposal was initialized yet */
+    boolean proposal_initialized = false;
 
     /* known interfaces */
     list <string> known_interfaces = [];
@@ -77,7 +78,6 @@
     list <string> GetKnownInterfaces () {
 	return known_interfaces;
     }
-
 
     /**
      * Function returns if interface is a dial-up type.
@@ -196,6 +196,8 @@
 	    if (ProductFeatures::firewall_enable_ssh)
 		SuSEFirewall::SetServicesForZones(["ssh"], ["EXT"], true);
 	}
+
+	SetKnownInterfaces(SuSEFirewall::GetListOfKnownInterfaces());
     }
     
     # <!-- SuSEFirewall LOCAL FUNCTIONS //-->
@@ -203,7 +205,7 @@
     # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
 
     /**
-     * Local function sets that proposal was changed by user
+     * Function sets that proposal was changed by user
      *
      * @param	boolean if changed by user
      */
@@ -219,6 +221,24 @@
      */
     global define boolean GetChangedByUser () {
 	return proposal_changed_by_user;
+    }
+
+    /**
+     * Function sets that proposal was initialized
+     *
+     * @param	boolean if initialized
+     */
+    global define void SetProposalInitialized (boolean initialized) {
+	proposal_initialized = initialized;
+    }
+
+    /**
+     * Local function returns if proposal was initialized already
+     *
+     * @return	boolean if proposal was initialized
+     */
+    global define boolean GetProposalInitialized () {
+	return proposal_initialized;
     }
 
     /**
@@ -248,14 +268,11 @@
 
 	boolean firewall_is_enabled = (SuSEFirewall::GetEnableService() == true);
 
-	// checking for enabled ssh
+	// checking for enabled ssh in EXT zone
 	boolean is_ssh_enabled = false;
-	foreach (string zone, SuSEFirewall::GetKnownFirewallZones(), {
-	    if (SuSEFirewall::IsServiceSupportedInZone ("ssh", zone)) {
-		is_ssh_enabled = true;
-		break;
-	    }
-	});
+	if (size(SuSEFirewall::GetInterfacesInZone("EXT"))>0
+	    && (SuSEFirewall::IsServiceSupportedInZone ("ssh", "EXT"))
+	) is_ssh_enabled = true;
 
 	output = output + "<ul>\n";
 	output = output + sformat(
@@ -284,19 +301,18 @@
 	    list <string> warnings_strings = GetWarnings();
 	    if (size(warnings_strings)>0) {
 		ClearWarnings();
-		warning = warning + "</ul>\n";
 		foreach (string single_warning, warnings_strings, {
 		    warning = warning + "<li>" + single_warning + "</li>\n";
 		});
-		warning = warning + "</ul>\n";
+		warning = "<ul>\n" + warning + "</ul>\n";
 	    }
 	}
 
 	output = output + "</ul>\n";
 
 	return $[
-	    "output"  : output,
-	    "warning" : warning
+	    "output"		: output,
+	    "warning"		: warning,
 	];
     }
 
