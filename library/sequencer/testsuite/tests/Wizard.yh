@@ -1,7 +1,8 @@
 {
 
 include "testsuite.ycp";
-include "./../src/sequencer.ycp";
+import "Sequencer";
+Sequencer::docheck = false;
 
 define symbol ok() ``{ y2error("ok"); return `ok; }
 define symbol back() ``{ y2error("back"); return `back; }
@@ -10,7 +11,7 @@ define symbol finish() ``{ y2error("finish"); return `finish; }
 define symbol details() ``{ y2error("details"); return `details; }
 define symbol expert() ``{ y2error("expert"); return `expert; }
 
-define boolean WS_check(map aliases, map sequence) ``{ return true; }
+// define boolean WS_check(map aliases, map sequence) ``{ return true; }
 
 /*
  * integer cur = 0;
@@ -108,6 +109,6 @@ return Sequence5;
 }
 
 if(cur!=-1)
-    TEST(``(WizardSequencer(aliases(), sequence())), [], nil);
+    TEST(``(Sequencer::Run(aliases(), sequence())), [], nil);
 
 }
