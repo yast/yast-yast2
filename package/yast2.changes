@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Oct 19 13:29:57 CEST 2004 - locilka@suse.de
+
+- added several messages into Message.ycp
+- added several labels into Label.ycp
+- added two functions into Confirm.ycp
+- 2.11.1
+
+-------------------------------------------------------------------
 Mon Oct 11 14:53:47 CEST 2004 - jsrain@suse.cz
 
 - changed Arch.ycp to functional interface, probing the settings
