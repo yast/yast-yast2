@@ -255,7 +255,7 @@ global define void Arch() ``{
     }
 
     // disable X11 setup after initial boot
-    if (board_iseries || s390)
+    if (board_iseries || s390 || mips)
     {
 	x11_setup_needed = false;
     }
