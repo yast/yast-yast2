@@ -164,11 +164,11 @@ y2debug("Modules=%1", Modules);
 
 OpenMenu();
 
-list<string> GroupList = Desktop::GroupList();
+list<term> GroupList = Desktop::GroupList();
 UI::ReplaceWidget(`id(`groups_rep), `SelectionBox(`id (`groups), `opt(`notify, `immediate, `keyEvents), "", GroupList));
 y2debug("%1", GroupList);
 
-string first = GroupList[0]:"";
+string first = (string) select((list)select(GroupList[0]:[], 0, []), 0, nil);
 y2debug("%1", first);
 
 /**
@@ -223,7 +223,7 @@ while(true) {
     }
     else
     {
-	y2warning ( "Event or widget ID not handled" );
+	y2warning ( "Event or widget ID not handled: %1", event );
     }
 
 }
