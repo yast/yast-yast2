@@ -48,16 +48,32 @@ boolean last_op_canceled = false;
 
 include "packages/common.ycp";
 
+/**
+ * Install list of packages
+ * @param packages list of packages to be installed
+ * @return True on success
+ */
 global boolean DoInstall(list<string> packages) {
     boolean (list<string>) function = (boolean (list<string>)) (Functions["DoInstall"]:nil);
     return function(packages);
 }
 
+/**
+ * Remove list of packages
+ * @param packages list of packages to be removed
+ * @return True on success
+ */
 global boolean DoRemove(list<string> packages) {
     boolean (list<string>) function = (boolean (list<string>)) (Functions["DoRemove"]:nil);
     return function(packages);
 }
 
+/**
+ * Install and Remove list of packages in one go
+ * @param toinstall list of packages to be installed
+ * @param toremove list of packages to be removed
+ * @return True on success
+ */
 global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove) {
     boolean (list<string>, list<string>) function = (boolean (list<string>, list<string>)) (Functions["DoInstallAndRemove"]:nil);
     return function(toinstall, toremove);
