@@ -40,7 +40,9 @@ global define string UnQuote(string var) ``{
 }
 
 /**
- * Return a pretty description of a byte count, with required precision
+ * Return a pretty description of a byte count
+ * 
+ * Return a pretty description of a byte count with required precision
  * and using KB, MB or GB as unit as appropriate.
  *
  * @param bytes	size (e.g. free diskspace, memory size) in Bytes
@@ -85,6 +87,8 @@ global define string FormatSizeWithPrecision(integer bytes, integer precision, b
 }
 
 /**
+ * Return a pretty description of a byte count
+ *
  * Return a pretty description of a byte count, with two fraction digits
  * and using KB, MB or GB as unit as appropriate.
  *
@@ -116,6 +120,8 @@ global define string CutBlanks(string input) ``{
 }
 
 /**
+ * Remove any leading zeros
+ *
  * Remove any leading zeros that make tointeger inadvertently
  * assume an octal number (e.g. "09" -> "9", "0001" -> "1",
  * but "0" -> "0")
@@ -132,6 +138,8 @@ global define string CutZeros(string input) ``{
 }
 
 /**
+ * Add spaces after the text to make it long enough
+ *
  * Add spaces after the text to make it long enough. If the text is longer
  * than requested, no changes are made.
  *
@@ -153,6 +161,8 @@ global define string Pad(string text, integer length) {
 }
 
 /**
+ * Add zeros before the text to make it long enough. 
+ *
  * Add zeros before the text to make it long enough. If the text is longer
  * than requested, no changes are made.
  *
@@ -174,6 +184,8 @@ global define string PadZeros(string text, integer length) {
 }
 
 /**
+ * Parse string of values
+ *
  * Parse string of values - split string to values, quoting and backslash sequences are supported
  * @param options Input string
  * @param parameters Parmeter used at parsing - map with keys:
@@ -446,6 +458,7 @@ global define list<string> ParseOptions(string options, map parameters) ``{
 
 /**
  * Remove first or every match of given regular expression from a string
+ *
  * (e.g. CutRegexMatch( "abcdef12ef34gh000", "[0-9]+", true ) -> "abcdefefgh",
  * CutRegexMatch( "abcdef12ef34gh000", "[0-9]+", false ) -> "abcdefef34gh000")
  *
@@ -474,6 +487,7 @@ global define string CutRegexMatch(string input, string regex, boolean glob) ``{
 /**
  * Function for escaping (replacing) (HTML|XML...) tags with their
  * (HTML|XML...) meaning.
+ *
  * Usable to present text "as is" in RichText.
  *
  * @param string	text to escape

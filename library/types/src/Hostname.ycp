@@ -19,7 +19,8 @@ global string ValidCharsDomain = ValidChars + ".";
 global string ValidCharsFQ = ValidCharsDomain;
 
 /**
- * @return describe a valid domain name
+ * describe a valid domain name
+ * @return describtion
  */
 global define string ValidDomain() ``{
     //Translators: dot: ".", hyphen: "-"
@@ -29,6 +30,7 @@ start or end a component and the last component may not begin with a digit.");
 }
 
 /**
+ * describe a valid FQ host name
  * @return describe a valid FQ host name
  */
 global define string ValidFQ() ``{

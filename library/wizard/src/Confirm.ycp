@@ -1,7 +1,10 @@
 /**
  * File:	modules/Confirm.ycp
+ *
  * Package:	yast2
+ *
  * Summary:	Confirmation routines
+ *
  * Author:	Michal Svec <msvec@suse.cz>
  *
  * $Id$
@@ -82,6 +85,7 @@ y2milestone("--%1", Detection("modems"));
 
 /**
  * If we are running as root, return true.
+ *
  * Otherwise ask the user whether we should continue even though things
  * might not work
  * @return true if running as root

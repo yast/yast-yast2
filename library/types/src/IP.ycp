@@ -17,7 +17,8 @@ global string ValidChars4 = "0123456789.";
 global string ValidChars6 = "0123456789abcdefABCDEF:";
 
 /**
- * @return describe a valid IPv4 address
+ * Describe a valid IPv4 address
+ * @return string describtion a valid IPv4 address
  */
 global define string Valid4() ``{
     //Translators: dot: "."
@@ -136,8 +137,9 @@ global define string ComputeNetwork(string ip, string mask) ``{
 }
 
 /**
- * Compute IPv4 broadcast address from ip4 address and network mask. The
- * broadcast address is the highest address of network address range.
+ * Compute IPv4 broadcast address from ip4 address and network mask.
+ *
+ * The broadcast address is the highest address of network address range.
  * @param ip IPv4 address
  * @param mask netmask
  * @return computed broadcast

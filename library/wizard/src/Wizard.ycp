@@ -154,9 +154,9 @@
 
 
     /**
-     * Create a Generic Dialog
+     * @short Create a Generic Dialog
      *
-     * Returns a term describing a generic wizard dialog with a configurable
+     * @descr Returns a term describing a generic wizard dialog with a configurable
      * button box.
      *
      * @param	button_box term that contains a `HBox() with buttons in it
@@ -194,7 +194,7 @@
      * Check if the topmost dialog is a wizard dialog
      * (i.e. has a widget with `id(`WizardDialog) )
      *
-     * @return true, if topmost dialog is a wizard dialog, false otherwise
+     * @return boolean True if topmost dialog is a wizard dialog, false otherwise
      **/
     global boolean IsWizardDialog() {
 	return
@@ -319,10 +319,10 @@
 	{
 	    UI::OpenDialog(`opt(`defaultsize ),
 			   `Wizard(`opt(`stepsEnabled),
-				   `no_back_button,   	"",
+				   `no_back_button,	"",
 				   `cancel,		Label::CancelButton(),
 				   `accept,		Label::AcceptButton() ) );
-	    
+
 	    // Don't let sloppy calls to Wizard::SetContents() disable this button by accident
 	    UI::WizardCommand(`ProtectNextButton( true ) );
 	}
@@ -346,7 +346,7 @@
 				   `no_back_button,   	"",
 				   `abort,		Label::AbortButton(),
 				   `accept,		Label::AcceptButton() ) );
-	    
+ 
 	    // Don't let sloppy calls to Wizard::SetContents() disable this button by accident
 	    UI::WizardCommand(`ProtectNextButton( true ) );
 	}
@@ -378,7 +378,9 @@
 
 
     /**
-     * Open a wizard dialog with simple layout - no graphics, no steps,
+     * Open a wizard dialog with simple layout
+     *
+     * no graphics, no steps,
      * only a help widget buttons (by default "Back", "Abort", "Next").
      *
      * This is the only type of wizard dialog which still allows replacing
@@ -438,7 +440,9 @@
 
 
     /**
-     * Substitute for UI::UserInput that transparently handles different
+     * Substitute for UI::UserInput
+     *
+     * This function transparently handles different
      * variations of the wizard layout. Returns `next if `next or `accept were
      * clicked, `back if `back or `cancel were clicked. Simply replace
      *    ret = UI::UserInput()
@@ -469,8 +473,18 @@
 
 
     /**
-     * how the general framework for the installation wizard should
+     * Set the contents of a wizard dialog
+     *
+     * How the general framework for the installation wizard should
      * look like. This function creates and shows a dialog.
+     *
+     * @param title Dialog Title
+     * @param contents The Dialog contents
+     * @param help_text Help text
+     * @param has_back Is the Back button enabled?
+     * @param has_next Is the Next button enabled?
+     * @example_file ../examples/wizard1.ycp
+     * @screenshot screenshots/wizard1.png
      **/
     global void SetContents(string title, term contents, string help_text,
 				   boolean has_back, boolean has_next) {
@@ -516,7 +530,9 @@
 
 
     /**
-     * Set contents of wizard dialog + its title, help_text and buttons labels. Enables both back and next button.
+     * Set contents and Buttons of wizard dialog
+     *
+     * Additionally set its title, help_text and buttons labels. Enables both back and next button.
      * @param title title of window
      * @param contents contents of dialog
      * @param help_text help text
@@ -554,7 +570,7 @@
     /**
      * Replace the wizard help subwindow with a custom widget.
      *
-     * THIS FUNCTION IS DEPRECATED!
+     * @deprecated
      * @param contents Replace Help with contents
      **/
     global void ReplaceHelp(term contents) {
@@ -574,6 +590,7 @@
     /**
      * Set a new help text.
      * @param help_text Help text
+     * @example Wizard::SetHelpText("This is a help Text");
      **/
     global void SetHelpText(string help_text)
     {
@@ -752,7 +769,7 @@
     global void ReplaceBackButton(term contents) {
 	if ( UI::WidgetExists(`id(`rep_back ) ) )
 	    UI::ReplaceWidget(`id(`rep_back), contents);
-	
+
 	y2warning( "Wizard::ReplaceBackButton() is deprecated!" );
     }
 
@@ -765,14 +782,15 @@
     global void ReplaceAbortButton(term contents) {
 	if ( UI::WidgetExists(`id(`rep_abort ) ) )
 	    UI::ReplaceWidget(`id(`rep_abort), contents);
-	
+
 	y2warning( "Wizard::ReplaceAbortButton() is deprecated!" );
     }
 
 
 
-    
     /**
+     * Set the wizard 'title' icon
+     *
      * Set the wizard 'title' icon to the specified icon from the standard icon
      * directory.
      *
@@ -915,7 +933,9 @@
 
 
     /**
-     * Retranslate the wizard buttons. This will revert button labels and IDs
+     * Retranslate the wizard buttons.
+     *
+     * This will revert button labels and IDs
      * to the default that were used upon Wizard::CreateDialog(),
      * Wizard::OpenNextBackDialog(), or Wizard::OpenAcceptDialog().
      **/
@@ -986,6 +1006,8 @@
     list<string> screenshot_name_stack = [];
 
     /**
+     * Declare a name for the current dialog
+     *
      * Declare a name for the current dialog to ease making screenshots.
      * By convention, the name is
      * {rpm-name-without-yast2}-{sorting-prefix}-{description}
@@ -1001,6 +1023,7 @@
 
     /**
      * Restore the screenshot name.
+     *
      * If it does not match a SetScreenShotName, "yast2" is used
      * and a y2error logged.
      */
