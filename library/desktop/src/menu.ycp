@@ -107,8 +107,9 @@ Some elements use arrow keys (e.g., to scroll in lists).</p>") +
 letter). Use [ALT] and the letter to activate the button.</p>") +
 
    /* NCurses Control Center help 3/9 */
-    _("<p>Press [ESC] to close selection popups (e.g., from
-menu buttons) without choosing anything.</p>") +
+    _("<p>Press [ESC] to close selection pop-ups (e.g., from
+menu buttons) without choosing anything.</p>
+") +
 
     /* NCurses Control Center help 4/9 */
     _("<p>2) <i>Substitution of Keystrokes</i><br>
@@ -170,17 +171,29 @@ y2debug("Modules=%1", Modules);
 OpenMenu();
 
 list<term> GroupList = Desktop::GroupList();
-UI::ReplaceWidget(`id(`groups_rep), `SelectionBox(`id (`groups), `opt(`notify, `immediate, `keyEvents), "", GroupList));
-y2debug("%1", GroupList);
-
 /* GroupList = [`item (`id ("Software"), "Software"), ...] */
-string first = (string) select((term) select(GroupList[0]:`empty(), 0, `empty()), 0, nil);
-y2debug("%1", first);
+UI::ReplaceWidget(`id(`groups_rep), `SelectionBox(`id (`groups), `opt(`notify, `immediate, `keyEvents), "", GroupList));
+y2debug("GroupList=%1", GroupList);
+
+/* precache groups (#38363) */
+list<string> groups = maplist(term gr, GroupList, ``{
+    return (string) select((term) select(gr, 0, `empty()), 0, nil);
+});
+y2debug("groups=%1", groups);
+
+map<string,list<term> > modules = listmap(string gr, groups, ``{
+    return $[ gr : Desktop::ModuleList(gr) ];
+});
+y2debug("modules=%1", modules);
+
+string first = select(groups, 0, nil);
+y2debug("first=%1", first);
 
 /**
  */
 define void ReplaceModuleList(string group) {
-    UI::ReplaceWidget(`id (`progs_rep), `SelectionBox( `id (`progs), `opt (`notify, `keyEvents), "", Desktop::ModuleList(group)));
+    // y2debug too costly: y2debug("group=%1", group);
+    UI::ReplaceWidget(`id (`progs_rep), `SelectionBox( `id (`progs), `opt (`notify, `keyEvents), "", modules[group]:[]));
 }
 
 ReplaceModuleList(first);
@@ -199,7 +212,8 @@ while(true) {
 	     && event["EventReason"]:"" == "SelectionChanged" )
 	{
 	    string id = (string) UI::QueryWidget(`id(`groups), `CurrentItem);
-	    ReplaceModuleList(id);
+	    // ReplaceModuleList(id);
+	    UI::ReplaceWidget(`id (`progs_rep), `SelectionBox( `id (`progs), `opt (`notify, `keyEvents), "", modules[id]:[]));
 	    continue;
 	}
 	else if (  eventid == `progs

@@ -350,7 +350,7 @@
 	}
 	else
 	{
-	    OpenAcceptDialog();
+	    Wizard::OpenDialog( GenericDialog( AbortAcceptButtonBox() ) );
 	}
     }
 
@@ -1065,14 +1065,16 @@
      **/
     list CreateTreeInternal(list<map> Tree, string parent) {
         list<map> m = filter(map c, Tree, ``((c["parent"]:"" == parent )));
-
+        map ccbak = nil; // #38596, broken recursion for iterators
         list mm = maplist(map cc, m, ``{
                     string TreeEntry = cc["id"]:"";
+                    ccbak = cc;
                     list items = CreateTreeInternal(Tree, TreeEntry);
+                    cc = ccbak;
                     if (size(items)>0)
-                        return(`item(`id(TreeEntry), cc["title"]:"", items));
+                        return(`item(`id(cc["id"]:""), cc["title"]:"", items));
                     else
-                        return(`item(`id(TreeEntry), cc["title"]:""));
+                        return(`item(`id(cc["id"]:""), cc["title"]:""));
                 });
         y2debug("items: %1", mm );
         return mm;

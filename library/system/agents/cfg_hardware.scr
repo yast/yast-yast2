@@ -21,7 +21,7 @@
     `IniAgent( [ "/etc/sysconfig/hardware/hwcfg-*" ],
 	$[
 	    /* values at the top level, allow comments after value */
-	    "options"	: [ "global_values", "comments_last", "join_multiline"],
+	    "options"	: [ "global_values", "comments_last", ],
 	    /* empty lines, comments after value and whole-line comments */
 	    "comments"	: [ "^[ \t]*$", "[ \t]*#.*$", "^[ \t]*#.*$" ],
 	    /* matching rules */
@@ -30,7 +30,7 @@
 		$[
 		    "match" : [ "^[ \t]*([a-zA-Z0-9_]+)=\"([^\"]*)\"", "%s='%s'"],
 		    /* multiple line rules */
-		    "multiline" : [ "([^=]+)=\"([^\"])*", "([^\"]*\")" ],
+		    "multiline" : [ "([^=]+)=\"([^\"]*)", "([^\"]*\")" ],
 		],
 		/* VAR1='val1' */
 		$[

@@ -126,7 +126,8 @@ global define boolean Check(string url) ``{
 
     y2debug("3");
     /* Check "host"    : "www.suse.cz" */
-    if(!Hostname::CheckFQ(tokens["host"]:"") && !IP::Check(tokens["host"]:""))
+    if((!Hostname::CheckFQ(tokens["host"]:"") && !IP::Check(tokens["host"]:""))
+            && tokens["host"]:"" != "")
 	return false;
 
     y2debug("4");

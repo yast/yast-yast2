@@ -1138,6 +1138,71 @@ global define void TimedError(string message, integer timeout_seconds) {
 
 // it is misaligned because there used to be UI() around it
 
+/**
+ * Show the contents of an entire file in a popup.
+ *
+ * @param headline	headline text
+ * @param text	text to show
+ *
+ * @example Popup::ShowText ("Boot Messages", "kernel panic");
+ */
+global define void ShowTextTimed (string headline, string text,
+        integer timeout) {
+
+    term heading = `Empty( );
+
+    if ( size(headline) == 0 )
+    {
+	heading = `VSpacing(0.2);
+    }
+    else
+    {
+	heading = `Heading( headline );
+    }
+
+    UI::OpenDialog( `opt(`decorated ),
+		    `VBox(
+			  `HSpacing( 70 ),	// force width
+			  heading,
+			  `VWeight( 1,
+				    `HBox(
+					  `VSpacing( 18 ),	// force height
+					  `HSpacing( 0.7 ),
+					  `RichText(`id(`text),
+						    `opt(`plainText),
+						    text),
+					  `HSpacing( 0.7 )
+					  )
+				    ),
+                          `VSpacing( 0.3 ),
+                          `Label(`id(`label), sformat("%1", timeout)),
+                          `VSpacing(0.2),
+                          `PushButton(`id(`ok_msg),  `opt(`default, `key_F10),
+				       Label::OKButton() ),
+			  `VSpacing( 0.3 )
+			  )
+		    );
+
+    symbol s = nil;
+    integer tout = timeout;
+
+    while (tout > 0 && s != `ok_msg)
+    {
+	integer t = 10;
+
+	while (t > 0 && s != `ok_msg)
+	{
+	    s = (symbol) UI::TimeoutUserInput( 100 );
+	    t = t - 1;
+	}
+
+	tout = tout - 1;
+
+	UI::ChangeWidget(`id(`label), `Value, sformat("%1", tout));
+    }
+
+    UI::CloseDialog();
+}
 
 /**
  * Show the contents of an entire file in a popup.
