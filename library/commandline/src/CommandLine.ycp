@@ -90,6 +90,14 @@
     map<string, any> commandcache = $[];
 
     /**
+     * Verbose mode flag
+     */
+    boolean verbose = false;
+
+    // TODO: support simple minimal cmdline interface
+    string nosupport = _("This YaST module does not support command line interface");
+
+    /**
      *  @short Print a String
      *  @descr Print a string to /dev/tty in interactive mode, to stderr in non-interactive
      *  Suppress printing if there are no commands to be handled (starting GUI)
@@ -98,8 +106,28 @@
      */
     global define void Print(string s) ``{
 	if( ! Mode::commandline () ) return;
+
+	// avoid using of uninitialized value in .dev.tty perl agent
+	if( s == nil )
+	{
+	    y2warning("CommandLine::Print: invalid argument (nil)");
+	    return;
+	}
+
 	if( interactive ) SCR::Write(.dev.tty, s);
 	else SCR::Write(.dev.tty.stderr, s);
+    }
+
+    /**
+     * Same as Print(), but the string is printed only when verbose command
+     * line mode was activated
+     * @param s string to print
+     */
+    global define void PrintVerbose(string s) {
+	if (verbose)
+	{
+	    Print(s);
+	}
     }
 
     /**
@@ -160,7 +188,7 @@
 	boolean ret = true;
 
 	/* Parse options */
-	map<string, string> givenoptions = $[];
+	map<string, any> givenoptions = $[];
 	maplist(any aos, args, ``{
 	    y2debug("os=%1", aos);
 	    if (!is(aos, string)) continue;
@@ -194,8 +222,11 @@
 	{
 	    y2debug ( "Using non-strict check for %1", command );
 	}
-	
-	maplist(string o, string v, givenoptions, ``{
+
+
+	// check (and convert data types)
+	maplist(string o, any val, givenoptions, ``{
+	    string v = (string)val;
 	    if(ret != true) return;
 	    if( cmdoptions[o]:nil == nil ) {
 		if( ! non_strict )
@@ -231,6 +262,19 @@
 			    Print( sformat(_("Invalid value for option '%1': %2"), o, v ) );
 			    if( ! interactive ) aborted = true;
 			}
+		    } else if( opttype == "integer" ) {
+			integer i = tointeger(v);
+			ret = (i != nil);
+			if( ret != true ) {
+			    // translators: error message, %2 is the value given
+			    Print( sformat(_("Invalid value for option '%1': %2"), o, v ) );
+			    if( ! interactive ) aborted = true;
+			}
+			else
+			{
+			    // update value of the option to integer
+			    givenoptions[o] = i;
+			}
 		    } else {
 			if( v == "" ) ret = false;
 			else ret = TypeRepository::is_a( v, opttype );
@@ -244,9 +288,10 @@
 		}
 		else
 		{
-		    // option without type
+		    // type is missing
 		    if( v != "" )
 		    {
+			y2error("Type specification for option '%1' is missing, cannot assign a value to the option", o);
 			// translators: error message if option has a value, but cannot have one
 			Print( sformat( _("Option '%1' cannot have a value. Given value: %2"), o, v ) );
 			if( ! interactive ) 
@@ -367,7 +412,25 @@
 
 	if( haskey( command, "example" ) ) {
 	    Print( _("\n    Example:"));
-	    Print( sformat("        %1", command["example"]:"" ) );
+
+	    any example = command["example"]:nil;
+
+	    if (is(example, string))
+	    {
+		Print(sformat("        %1", example));
+	    }
+	    else if (is(example, list<string>))
+	    {
+		foreach(string e, (list<string>)example, ``{
+			Print(sformat("        %1", e));
+		    }
+		);
+	    }
+	    else
+	    {
+		y2error("Unsupported data type - value: %1", example);
+	    }
+
 	}
 	Print("");
     }
@@ -376,6 +439,13 @@
      * Print a general help - list of available command.
      */
     define void PrintGeneralHelp() ``{
+	// display custom defined help instead of generic one
+	if (haskey(modulecommands, "customhelp"))
+	{
+	    Print(modulecommands["customhelp"]:"");
+	    return;
+	}
+
 	// translators: default module description if none is provided by the module itself
 	Print( modulecommands["help"]: _("This is a YaST2 module.")+"\n" );
 	Print(_("Basic Syntax:"));
@@ -402,6 +472,7 @@
 	    Print(_("    <command> help"));
 	    // translators: module command line help
 	    Print("    help");
+	    Print("    longhelp");
 	    Print("");
 	    Print("    exit");
 	    Print("    quit");
@@ -463,7 +534,11 @@
 	}
 
 	if( command["command"]:"" == "help" ) {
-	    PrintHead();
+	    // don't print header when custom help is defined
+	    if (!haskey(modulecommands, "customhelp"))
+	    {
+		PrintHead();
+	    }
 	    PrintGeneralHelp();
 	    return true;
 	}
@@ -490,6 +565,9 @@
      *  @see Command
      */
     global define boolean Init (map cmdlineinfo, list<any> args) ``{
+	// initialize verbose flag
+	verbose = contains( WFM::Args(), "verbose" );
+
 	any id_string = cmdlineinfo["id"]:"";
 	// sanity checks on cmdlineinfo
 	// check for id string , it must exist, and non-empty
@@ -904,7 +982,6 @@ global any Run( map commandline ) {
     }
 
     boolean ret = true;
-    boolean verbose = false;
 
     /* Start GUI */
     if(CommandLine::StartGUI()) {
@@ -913,7 +990,7 @@ global any Run( map commandline ) {
 	    CommandLine::Error( _("There is no user interface available for this module.") );
 	    return false;
 	}
-	
+
 	if ( is(commandline[ "guihandler" ]:nil, symbol() ) )
 	{
 	    symbol() exec = (symbol())commandline[ "guihandler" ]: nil;
@@ -940,11 +1017,7 @@ global any Run( map commandline ) {
 
 
 	/* non-GUI handling */
-
-	verbose = contains( WFM::Args(), "verbose" );
-
-	if( verbose )
-	    CommandLine::Print( _("Initializing") );
+	CommandLine::PrintVerbose( _("Initializing") );
 
 	/* Turn off progress bar if not GUI */
 	Progress::off();
@@ -959,8 +1032,7 @@ global any Run( map commandline ) {
 	    }
 	}
 
-	if( verbose )
-	    CommandLine::Print( _("Ready") );
+	CommandLine::PrintVerbose( _("Ready") );
 
 	ret = true;
 
@@ -1000,18 +1072,16 @@ global any Run( map commandline ) {
     }
 
     if( ret && commandline["finish"]:nil != nil ) {
-	if( verbose )
-	    CommandLine::Print( _("Finishing") );
+	CommandLine::PrintVerbose( _("Finishing") );
 	ret = RunFunction( commandline["finish"]:fake_false );
 	if( !ret ) {
 	    y2milestone( "Module finishing failed" );
 	    return false;
 	}
 	// translators: The command line interface is finished
-	if( verbose )
-	    CommandLine::Print( _("Done") );
-    } else if( verbose )
-	    CommandLine::Print( _("Quitting (without changes)") );
+	CommandLine::PrintVerbose( _("Done") );
+    } else
+	CommandLine::PrintVerbose( _("Quitting (without changes)") );
 
     y2milestone("Commandline interface finished");
     y2milestone("----------------------------------------");
