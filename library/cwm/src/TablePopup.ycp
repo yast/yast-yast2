@@ -285,11 +285,17 @@
       * @return string option identifies, nil if canceled
       */
     global define string askForNewOption (list possible, boolean editable, map<string,any> descr) ``{
-	possible = sort (possible);
+	boolean do_sort = ! descr["add_items_keep_order"]:false;
+	if (do_sort)
+	    possible = sort (possible);
+	map<string,string> val2key = $[];
+	map<string,boolean> known_keys = $[];
 	possible = maplist (any p, possible, ``{
 	    if (!is (p, string)) continue;
 	    map<string, any> opt_descr = key2descr (descr, (string)p);
 	    string label = opt_descr["table", "label"]:sformat ("%1", p);
+	    known_keys[(string)p] = true;
+	    val2key[label] = (string)p;
 	    return `item (`id (p), label);
 	});
 	term widget = `HBox (`HSpacing (1), `VBox (
@@ -324,7 +330,9 @@
 	UI::CloseDialog ();
 	if (ret == `_tp_cancel)
 	    return nil;
-	return option;
+	if (known_keys[option]:false)
+	    return option;
+	return val2key[option]:option;
     }
 
     /**
