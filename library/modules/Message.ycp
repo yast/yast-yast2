@@ -164,6 +164,15 @@ global define string DeleteSelectedEntry () {
 }
 
 /**
+ * Question: Delete selected entry?
+ * @return string Delete selected entry?
+ */
+global define string DeleteThisEntry (string entry) {
+  /* TRANSLATORS: Popup question */
+  return sformat(_("Delete entry '%1'?"), entry);
+}
+
+/**
  * Required text item
  * @return This item is required to be filled in
  */
