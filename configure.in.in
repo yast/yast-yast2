@@ -1,13 +1,13 @@
-## YCP module configure.in.in
 
-## Initialize
+## initialize
 @YAST2-INIT-COMMON@
 @YAST2-INIT-YCP@
 
 ## some common checks
 @YAST2-CHECKS-COMMON@
 @YAST2-CHECKS-YCP@
+@YAST2-CHECKS-TESTSUITE@
 
-## and generate the output...
+## and generate the output
 AC_CONFIG_FILES(modules/Version.ycp)
 @YAST2-OUTPUT@
