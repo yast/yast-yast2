@@ -9,6 +9,9 @@
 if test "${sbindir}" = '${exec_prefix}/sbin'; then
     sbindir=/sbin
 fi
+if test "${sysconfdir}" = '${prefix}/etc'; then
+    sysconfdir=/etc
+fi
 
 ## some common checks
 @YAST2-CHECKS-COMMON@
