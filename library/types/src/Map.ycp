@@ -41,7 +41,7 @@ global define list Values(map m) ``{
  */
 global define map KeysToLower(map m) ``{
     if(m == nil) return $[];
-    return mapmap(string k, string v, m, ``([tolower(k), v]));
+    return mapmap(string k, string v, m, ``($[tolower(k): v]));
 }
 
 /**
@@ -51,7 +51,7 @@ global define map KeysToLower(map m) ``{
  */
 global define map KeysToUpper(map m) ``{
     if(m == nil) return $[];
-    return mapmap(string k, string v, m, ``([toupper(k), v]));
+    return mapmap(string k, string v, m, ``($[toupper(k): v]));
 }
 
 /**
