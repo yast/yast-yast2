@@ -1,18 +1,17 @@
+#
 # Makefile.am for yast2/library/commandline/src/
+#
 
 yncludedir = @yncludedir@/commandline
 
-client_DATA =			
+client_DATA =
 
 ynclude_DATA = commandline.ycp
 
-config_DATA =			
-#	commandline.y2cc
-
 module_DATA =			\
-	CommandLine.ycp		
+	CommandLine.ycp
 
-EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(config_DATA) $(module_DATA)
+EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA)
 
 YCPCFLAGS = -M ../../types/src -M ../../modules -M ../../wizard/src
 
