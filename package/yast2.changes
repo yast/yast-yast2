@@ -1,8 +1,10 @@
 -------------------------------------------------------------------
-Mon Nov  8 09:42:07 CET 2004 - jsrain@suse.cz
+Mon Nov  8 12:53:46 CET 2004 - jsrain@suse.cz
 
 - added optional "no_help" key to CWM widget description map
   in order to suppress errors in log if no help wanted (#47938)
+- added protection against removing used TSIG keys to the CWM
+  TSIG keys management widget (#47480)
 
 -------------------------------------------------------------------
 Thu Nov  4 17:56:47 CET 2004 - sh@suse.de
