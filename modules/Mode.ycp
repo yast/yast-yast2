@@ -94,7 +94,12 @@
     /**
      * this is a beta-version
      */
-    global boolean beta		= false;	// this is a beta version
+    global boolean beta		= false;
+
+    /**
+     * this is for certify labs (uses by Packages.ycp)
+     */
+    global boolean certify	= false;
 
     /**
      * no resources/packages for X11
