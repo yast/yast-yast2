@@ -72,7 +72,6 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 @scrconfdir@/*
 @ybindir@/*
 @agentdir@/ag_*
-@yncludedir@/readconfig.ycp
 
 # documentation (not included in devel subpackage)
 %doc %dir @docdir@

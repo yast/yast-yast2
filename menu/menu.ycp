@@ -1,407 +1,393 @@
 /**
- * File:	yast2/menu/menu.ycp
+ * File:	clients/menu.ycp
  * Module:	yast2
  * Summary:	List of available modules
  * Authors:	Ludwig Nussel <lnussel@suse.de>
+ *
+ * $Id$
  *
  * Provides a list of available yast2 modules. This module is inteded for use
  * with ncurses, for X the yast2 control center should be used.
  */
 
 {
-    textdomain "base";
 
-    import "Popup";
-    
-    map GroupMap = $[];
-    map ModuleMap = $[];
-    integer ModuleNumber = 0;
+textdomain "base";
 
-    UI::``{
-	global define `OpenMenu() ``{
-	    
-	    OpenDialog(`opt(`defaultsize),
-		       `VBox(
-			     `HBox(`HSpacing(1),
-				   `Frame( "",
-					   `VBox(
-						 `VSpacing(0.4),
-						 `HBox(
-						       `HSpacing(2),
-						       // heading for "YaST2 Control Center"
-						       `HCenter(`Heading( _("YaST2 Control Center")) ),
-						       `HSpacing(2)
-						       ),
-						 `VSpacing(0.4)
-						 )
-					   ),
-				   `HSpacing(1.5)
-				   ),
-			     `VSpacing(1.0),
-			     `HBox(`HSpacing(1),
-				   `HWeight( 30, `ReplacePoint( `id(`groups_rep),
-								`SelectionBox( `id (`groups),
-									       `opt (`notify, `immediate, `keyEvents),
-									       "", [] )
-								)
-					     ),
-				   `HSpacing(1),
-				   `HWeight( 70, `ReplacePoint( `id(`progs_rep),
-								`SelectionBox(`id (`progs), `opt (`notify, `keyEvents), "", [])
-								)
-					     ),		
-				   `HSpacing(1)
-				   ),
-			     `VSpacing(1.0),
-			     `HBox(
-				   `HSpacing(2),
-				   `Left( `PushButton(`id(`help), `opt(`key_F1), _("&Help")) ),
-				   `Right( `PushButton(`id(`quit), `opt(`key_F9), _("&Quit")) ),
-				   `HSpacing(2)
-				   ),
-			     `VSpacing(1)
-			     )
-		       );
-	};
-       
-	global define string CreateGroupList (map Groups)  ``{
-	    list grouplist = [];
-	    list translated = [];
-	    
-	    grouplist = SortGroups (Groups, maplist (`rawname, `group, Groups, ``(rawname)));
+import "Label";
+import "Popup";
 
-	    foreach (`rawname, grouplist,
-	    ``{
-		translated = add( translated, `item(`id(rawname), Groups[rawname, "Name"]:"???") );
-		});
-	    
-	    ReplaceWidget (`id (`groups_rep), `SelectionBox(`id (`groups),
-							    `opt(`notify, `immediate, `keyEvents),
-							    "", translated) );
+map GroupMap = $[];
+map ModuleMap = $[];
+integer ModuleNumber = 0;
 
-	    return grouplist[0]:"";
-	}
+global define void OpenMenu() ``{
 
-	global define SortGroups (map GroupMap, list GroupList) ``{
-	    return
-		sort (`x, `y, GroupList,
-		      ``{
-		    string first = GroupMap[x, "SortKey"]:"";
-		    string second = GroupMap[y, "SortKey"]:"";
-		    return (first <= second);
-		});
-	}
+    UI::OpenDialog(`opt(`defaultsize), `VBox(
+	`HBox(
+	    `HSpacing(1),
+	    `Frame( "", `VBox(
+		`VSpacing(0.4),
+		`HBox(
+		    `HSpacing(2),
+		    /* Heading for "YaST2 Control Center" */
+		    `HCenter(`Heading( _("YaST2 Control Center")) ),
+		    `HSpacing(2)
+		),
+		`VSpacing(0.4)
+	    )),
+	    `HSpacing(1.5)
+	),
 
-	global define DisplayModuleList (list modulelist) ``{
-	    term modulebox = `SelectionBox( `id (`progs), `opt (`notify, `keyEvents), "" );
-	    modulebox = add (modulebox, modulelist);
-	    ReplaceWidget (`id (`progs_rep), modulebox);
-	}
+	`VSpacing(1.0),
+	`HBox(
+	    `HSpacing(1),
+	    `HWeight( 30, `ReplacePoint(`id(`groups_rep),
+		    `SelectionBox(`id(`groups), `opt(`notify, `immediate, `keyEvents), "", [])
+	    )),
+	    `HSpacing(1),
+	    `HWeight( 70, `ReplacePoint( `id(`progs_rep),
+		    `SelectionBox(`id(`progs), `opt(`notify, `keyEvents), "", [])
+	    )),
+	`HSpacing(1)
+	),
 
-	global define `DisplaySplash () ``{
-	    OpenDialog (`opt (`defaultsize),
-			`VBox (
-			       `VStretch (),
-			       // message show while loading modules informations
-			       `Label (_("Loading modules, please wait ...")),
-			       `VStretch ()
-			       )
-			);
-	}
+	`VSpacing(1.0),
+	`HBox(
+	    `HSpacing(2),
+	    `Left(`PushButton(`id(`help), `opt(`key_F1), Label::HelpButton())),
+	    `Right(`PushButton(`id(`quit), `opt(`key_F9), Label::QuitButton())),
+	    `HSpacing(2)
+	),
+	`VSpacing(1)
+    ));
 
-    };
+}
 
-    global define Translate (string text, string domain )
-    ``{
-	// set textdomain to the domain if the certain module 
-	string dummy = textdomain (domain);
+global define string CreateGroupList(map Groups) ``{
+    list grouplist = [];
+    list translated = [];
 
-        // remove _(" and ")
-	if (regexpmatch (text, ".*_\\(.*\"(.*)\".*\\).*"))
-	{
-	    text = regexpsub (text, ".*_\\(.*\"(.*)\".*\\).*", "\\1");
-	    //Workaround for 7.3 Bug
-	    //text = regexpsub (text, "(.*)\".*\\).*", "\\1");
-	}
-	locale l = text;
+    grouplist = SortGroups(Groups, maplist(`rawname, `group, Groups, ``(rawname)));
 
-	return mergestring (splitstring (eval (l), "\n"), " ");
-    }
+    foreach(`rawname, grouplist, ``{
+	translated = add(translated, `item(`id(rawname), Groups[rawname, "Name"]:"???"));
+    });
 
-    // strip space
-    global define trim (string text)
-    ``{
-	while (substring (text, 0, 1)==" ")
-	{
-	    text=substring (text, 1);
-	}
-	return text;
-    }
+    UI::ReplaceWidget(`id(`groups_rep), `SelectionBox(`id (`groups), `opt(`notify, `immediate, `keyEvents), "", translated));
+    return grouplist[0]:"";
+}
 
-    // return selectionbox content for one group
-    global define BuildSelectionBoxListForGroup (map Group)
-    ``{
-	list modules = SortModuleNumberList (Group["Modules"]:[]);
-	return BuildSelectionBoxListForModuleList (modules);
-    }
-
-    // accepts a list of module numbers, returns selectionbox content
-    global define BuildSelectionBoxListForModuleList (list Modules)
-    ``{
-	list displaymodules = [];
-	foreach (`modulenr, Modules,
-	``{
-	    map Module = ModuleMap[modulenr]:$[];
-	    string name = Module["Name"]:"??";
-	    term item = `item (`id (modulenr), name);
-	    displaymodules = add (displaymodules, item);
-	});
-	return displaymodules;
-    }
-
-    global define SortModuleNumberList (list modules)
-    ``{
-	return sort (`x, `y, modules, ``{
-	    string first = ModuleMap[x, "Name"]:"";
-	    string second = ModuleMap[y, "Name"]:"";
+global define SortGroups(map GroupMap, list GroupList) ``{
+    return
+	sort(`x, `y, GroupList, ``{
+	    string first = GroupMap[x, "SortKey"]:"";
+	    string second = GroupMap[y, "SortKey"]:"";
 	    return (first <= second);
 	});
+}
+
+global define void DisplayModuleList(list modulelist) ``{
+    term modulebox = `SelectionBox( `id (`progs), `opt (`notify, `keyEvents), "" );
+    modulebox = add (modulebox, modulelist);
+    UI::ReplaceWidget (`id (`progs_rep), modulebox);
+}
+
+global define void DisplaySplash () ``{
+    UI::OpenDialog(`opt(`defaultsize), `VBox(
+	`VStretch (),
+	/* Message shown while loading modules information */
+	`Label (_("Loading modules, please wait ...")),
+	`VStretch ()
+    ));
+}
+
+global define Translate(string text, string domain ) ``{
+
+    // set textdomain to the domain if the certain module
+    string dummy = textdomain (domain);
+
+    // remove _(" and ")
+    if (regexpmatch (text, ".*_\\(.*\"(.*)\".*\\).*"))
+    {
+	text = regexpsub (text, ".*_\\(.*\"(.*)\".*\\).*", "\\1");
+	//Workaround for 7.3 Bug
+	//text = regexpsub (text, "(.*)\".*\\).*", "\\1");
     }
+    locale l = text;
 
+    return mergestring (splitstring (eval (l), "\n"), " ");
+}
 
+// strip space
+global define trim (string text) ``{
+    while (substring (text, 0, 1)==" ")
+    {
+	text=substring (text, 1);
+    }
+    return text;
+}
 
-    global define Launch (map Module)
+// return selectionbox content for one group
+global define BuildSelectionBoxListForGroup (map Group) ``{
+    list modules = SortModuleNumberList (Group["Modules"]:[]);
+    return BuildSelectionBoxListForModuleList (modules);
+}
+
+// accepts a list of module numbers, returns selectionbox content
+global define BuildSelectionBoxListForModuleList (list Modules) ``{
+    list displaymodules = [];
+    foreach (`modulenr, Modules,
     ``{
-	string function = Module["YCPFunction"]:"";
-	list arguments = splitstring (Module["Arguments"]:"", " ");
-	if (function != "")
-	{
-	    any ret = WFM::CallModule (function, arguments);
-	    y2debug ( "WFM::CallModule (%1, %2) returns: %3", function, arguments, ret );
-	}
+	map Module = ModuleMap[modulenr]:$[];
+	string name = Module["Name"]:"??";
+	term item = `item (`id (modulenr), name);
+	displaymodules = add (displaymodules, item);
+    });
+    return displaymodules;
+}
+
+global define SortModuleNumberList (list modules) ``{
+    return sort (`x, `y, modules, ``{
+	string first = ModuleMap[x, "Name"]:"";
+	string second = ModuleMap[y, "Name"]:"";
+	return (first <= second);
+    });
+}
+
+
+
+global define Launch (map Module) ``{
+    string function = Module["YCPFunction"]:"";
+    list arguments = splitstring (Module["Arguments"]:"", " ");
+    if (function != "")
+    {
+	any ret = WFM::CallModule (function, arguments);
+	y2debug ( "WFM::CallModule (%1, %2) returns: %3", function, arguments, ret );
     }
+}
 
-    global define DefaultOnNil (any value, any defaultvalue)
-    ``{
-	if (value == nil)
-	    return defaultvalue;
-	return value;
-    }
+global define DefaultOnNil (any value, any defaultvalue) ``{
+    if (value == nil)
+	return defaultvalue;
+    return value;
+}
 
-    textdomain "base";
+textdomain "base";
 
-    global define ShowNcursesHelp() ``{
-	string help_text = "";
+global define ShowNcursesHelp() ``{
+    string help_text = "";
 
-	// help text for ncurses control center
-	string headline = _("Controlling YaST2 ncurses with the Keyboard");
+    // help text for ncurses control center
+    string headline = _("Controlling YaST2 ncurses with the Keyboard");
 
-	// help text for ncurses control center continous
-	string help1 = _("<p>1) <b>General</b><br>
+    // help text for ncurses control center continous
+    string help1 = _("<p>1) <b>General</b><br>
 Navigate through the dialog elements with
 [TAB] and [SHIFT] + [TAB] or [TAB] and [ALT] + [TAB].
 Select or activate elements with [SPACE] or [ENTER].
 Some elements use arrow keys.</p>
 ");
 
-	// help text for ncurses control center continous
-	string help2  = _("<p>Buttons are equipped with shortcut keys like [ALT] and a
+    // help text for ncurses control center continous
+    string help2  = _("<p>Buttons are equipped with shortcut keys like [ALT] and a
 letter. Because the environment can affect the use of
 the keyboard, there is more than one way to
 navigate the dialog pages. See the next section.</p>");
 
-	// help text for ncurses control center continous
-	string help3  = _("<p>2) <b>Substitution of Keystrokes</b><br>
+    // help text for ncurses control center continous
+    string help3  = _("<p>2) <b>Substitution of Keystrokes</b><br>
 If [TAB] and [SHIFT] + [TAB] or [TAB] and [ALT] + [TAB] do not work,
 move focus forward with [CTRL] + [F] and backward with [CTRL] + [B].</p>
 ");
 
-	// help text for ncurses control center continous
-	string help4  = _("<p>If [ALT] + [letter] does not work,
+    // help text for ncurses control center continous
+    string help4  = _("<p>If [ALT] + [letter] does not work,
 try [ESC] + [letter]. Example: [ESC] + [H] for [ALT] + [H].
 [ESC] + [TAB] is also a substitute for [ALT] + [TAB].</p>
 ");
 
-	// help text for ncurses control center continous
-	string help5  = _("<p>3) <b>Function Keys</b><br>
+    // help text for ncurses control center continous
+    string help5  = _("<p>3) <b>Function Keys</b><br>
 F keys provide a quick access to main functions.
 There are many modules with special functions and it is not
 possible to apply the following system to all of them.</p>
 ");
 
-	// help text for ncurses control center continous
-	string help6 = _("<p>In some environments, all or some
+    // help text for ncurses control center continous
+    string help6 = _("<p>In some environments, all or some
 F keys are not availiable.
 There is no solution for this problem yet.</p>
 ");
 
-	// help text for ncurses control center continous
-	string help7  = _("F1  = Help<br>
+    // help text for ncurses control center continous
+    string help7  = _("F1  = Help<br>
 F2  = Info or Description<br>
 F3  = Add<br>
 F4  = Edit or Configure<br>
 F5  = Delete<br>");
-	
-	// help text for ncurses control center continous
-	string help8  = _("F6  = Test<br>
+
+    // help text for ncurses control center continous
+    string help8  = _("F6  = Test<br>
 F7  = Expert or Advanced<br>
 F8  = Back<br>
 F9  = Abort<br>
 F10 = OK, Next, Finish, or Accept<br>");
 
-	help_text = help1+help2+help3+help4+help5+help6+help7+help8;
+    help_text = help1+help2+help3+help4+help5+help6+help7+help8;
 
-	Popup::LongText( headline, `RichText(help_text), 60, 20 );
-	
-    }
-	
-    UI::DisplaySplash ();
+    Popup::LongText( headline, `RichText(help_text), 60, 20 );
 
-    path menuentrypath = .yast2.menuentry.section;
+}
 
-    // go through all menuentry files as defined in menuentries.scr
-    foreach (`file, SCR::Dir (menuentrypath),
-     ``{
-	// go through all sections (those things enclosed in []) in this file
-	list sections = SCR::Dir (add (menuentrypath, file));
-	foreach (`section, sections,
-	``{
-	    if (find (section, "Y2Group") == 0 && size (section) > 8)
+DisplaySplash ();
+
+path menuentrypath = .yast2.menuentry.section;
+
+// go through all menuentry files as defined in menuentries.scr
+foreach (`file, SCR::Dir (menuentrypath), ``{
+    // go through all sections (those things enclosed in []) in this file
+    list sections = SCR::Dir (add (menuentrypath, file));
+    foreach (`section, sections,
+    ``{
+	if (find (section, "Y2Group") == 0 && size (section) > 8)
+	{
+	    map group = $[];
+	    path MenuentryPathToThisSection = add (add (.yast2.menuentry.value, file), section);
+
+	    group["Name"] = Translate (SCR::Read (add (MenuentryPathToThisSection, "Name")), "base");
+	    group["Icon"] = Translate (SCR::Read (add (MenuentryPathToThisSection, "Icon")), "base");
+	    group["SortKey"] = SCR::Read (add (MenuentryPathToThisSection, "SortKey"));
+
+	    string rawgroupname=trim (substring (section, 7));
+	    GroupMap[rawgroupname] = group;
+	}
+	if (find (section, "Y2Module") == 0 && size (section) > 9)
+	{
+	    map Module = $[];
+	    path MenuentryPathToThisSection = add (add (.yast2.menuentry.value, file), section);
+
+	    string func = trim (substring (section, 8));
+
+	    string name = SCR::Read (add (MenuentryPathToThisSection, "Name"));
+	    string group = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Group")), "Misc");
+	    // string icon = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Icon")), "");
+	    string help = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Helptext")), "");
+	    string args = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Arguments")), "");
+	    boolean reqroot = SCR::Read (add (MenuentryPathToThisSection, "RequiresRoot"))=="false"?false:true;
+	    string textdom = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Textdomain")), "general");
+	    string sortkey = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "SortKey")), "");
+
+	    if (name != nil)
 	    {
-		map group = $[];
-		path MenuentryPathToThisSection = add (add (.yast2.menuentry.value, file), section);
+		// workaround: set textdomain in 'Translate' and reset it to "base" below
+		Module["Name"]	   = Translate (name, textdom);
+		// Module["Icon"]	   = Translate (icon, textdom);
+		Module["Helptext"]	   = Translate (help, textdom);
+		Module["Arguments"]    = args;
+		Module["RequiresRoot"] = reqroot;
+		Module["YCPFunction"]  = func;
+		Module["SortKey"]	   = sortkey;
 
-		group["Name"] = Translate (SCR::Read (add (MenuentryPathToThisSection, "Name")), "base");
-		group["Icon"] = Translate (SCR::Read (add (MenuentryPathToThisSection, "Icon")), "base");
-		group["SortKey"] = SCR::Read (add (MenuentryPathToThisSection, "SortKey"));
+		ModuleNumber = ModuleNumber + 1;
 
-		string rawgroupname=trim (substring (section, 7));
-		GroupMap[rawgroupname] = group;
+		// Get Group in GroupMap
+		map grouptomodify	    = GroupMap[group]:$[];
+
+		// get geht list of modules for that group
+		list modulelist	    = grouptomodify["Modules"]:[];
+
+		// add the current module number
+		modulelist		    = add (modulelist, ModuleNumber);
+
+		// put the modulelist back in the group
+		grouptomodify["Modules"] = modulelist;
+
+		// put the group back into the groupmap
+		GroupMap[group]	     = grouptomodify;
+
+		// put Module into the ModuleMap
+		ModuleMap[ModuleNumber]  = Module;
+
+		// workaround
+		string dummy2 = textdomain ("base");
 	    }
-	    if (find (section, "Y2Module") == 0 && size (section) > 9)
-	    {
-		map Module = $[];
-		path MenuentryPathToThisSection = add (add (.yast2.menuentry.value, file), section);
-
-		string func = trim (substring (section, 8));
-
-		string name = SCR::Read (add (MenuentryPathToThisSection, "Name"));
-		string group = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Group")), "Misc");
-		// string icon = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Icon")), "");
-		string help = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Helptext")), "");
-		string args = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Arguments")), "");
-		boolean reqroot = SCR::Read (add (MenuentryPathToThisSection, "RequiresRoot"))=="false"?false:true;
-		string textdom = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Textdomain")), "general");
-		string sortkey = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "SortKey")), "");
-
-		if (name != nil)
-		{
-		    // workaround: set textdomain in 'Translate' and reset it to "base" below
-		    Module["Name"]	   = Translate (name, textdom);
-		    // Module["Icon"]	   = Translate (icon, textdom);
-		    Module["Helptext"]	   = Translate (help, textdom);
-		    Module["Arguments"]    = args;
-		    Module["RequiresRoot"] = reqroot;
-		    Module["YCPFunction"]  = func;
-		    Module["SortKey"]	   = sortkey;
-
-		    ModuleNumber = ModuleNumber + 1;
-
-		    // Get Group in GroupMap
-		    map grouptomodify	    = GroupMap[group]:$[];
-
-		    // get geht list of modules for that group
-		    list modulelist	    = grouptomodify["Modules"]:[];
-
-		    // add the current module number
-		    modulelist		    = add (modulelist, ModuleNumber);
-
-		    // put the modulelist back in the group
-		    grouptomodify["Modules"] = modulelist;
-
-		    // put the group back into the groupmap
-		    GroupMap[group]	     = grouptomodify;
-
-		    // put Module into the ModuleMap
-		    ModuleMap[ModuleNumber]  = Module;
-
-		    // workaround
-		    string dummy2 = textdomain ("base");
-		}
-	    }
-	});
+	}
     });
+});
 
-    // open dialog
-    
-    UI::OpenMenu ();
+// open dialog
 
-    string first_group = UI::CreateGroupList (GroupMap);
+OpenMenu ();
 
-    if (is (first_group, string))
+string first_group = CreateGroupList (GroupMap);
+
+if (is (first_group, string))
+{
+    map group = GroupMap[first_group]:$[];
+    if (group != $[])
     {
-	map group = GroupMap[first_group]:$[];
-	if (group != $[])
+	DisplayModuleList (BuildSelectionBoxListForGroup (group));
+    }
+}
+
+UI::SetFocus( `id(`groups) );
+
+repeat
+{
+    map event = UI::WaitForEvent();
+
+    y2debug( "Input: %1", event );
+
+    if ( event["ID"]:`none == `groups
+	 && event["EventReason"]:"" == "SelectionChanged" )
+    {
+	string id = UI::QueryWidget( `id(`groups), `CurrentItem);
+	if (is (id, string))
 	{
-	    UI::DisplayModuleList (BuildSelectionBoxListForGroup (group));
+	    map group = GroupMap[id]:$[];
+	    if (group != $[])
+	    {
+		DisplayModuleList (BuildSelectionBoxListForGroup (group));
+	    }
 	}
     }
-
-    UI::SetFocus( `id(`groups) );
-    
-    repeat
+    else if ( event["ID"]:`none == `progs
+	      && event["EventReason"]:"" == "Activated" )
     {
-        map event = UI::WaitForEvent();
+	integer prog_no = UI::QueryWidget( `id(`progs), `CurrentItem);
+	map program = ModuleMap[prog_no]:"";
+	// start the module
+	Launch (program);
+    }
+    else if ( event["ID"]:`none == `groups
+	      && event["EventReason"]:"" == "Activated" )
+    {
+	UI::SetFocus ( `id(`progs) );
+    }
+    else if ( event["FocusWidgetID"]:`none == `groups
+	      && event["ID"]:"" == "CursorRight" )
+    {
+	UI::SetFocus ( `id(`progs) );
+    }
+    else if ( event["FocusWidgetID"]:`none == `progs
+	      && event["ID"]:"" == "CursorLeft" )
+    {
+	UI::SetFocus ( `id(`groups) );
+    }
+    else if ( event["ID"]:`none == `help )
+    {
+	ShowNcursesHelp();
+    }
+    else
+    {
+	y2warning ( "Event or widget ID not handled" );
+    }
 
-        y2debug( "Input: %1", event );
-
-        if ( event["ID"]:`none == `groups
-             && event["EventReason"]:"" == "SelectionChanged" )
-        {
-	    string id = UI::QueryWidget( `id(`groups), `CurrentItem);
-	    if (is (id, string))
-	    {
-		map group = GroupMap[id]:$[];
-		if (group != $[])
-		{
-		    UI::DisplayModuleList (BuildSelectionBoxListForGroup (group));
-		}
-	    }
-        }
-        else if ( event["ID"]:`none == `progs
-                  && event["EventReason"]:"" == "Activated" )
-        {
-            integer prog_no = UI::QueryWidget( `id(`progs), `CurrentItem);
-	    map program = ModuleMap[prog_no]:"";
-	    // start the module
-	    Launch (program);
-        }
-        else if ( event["ID"]:`none == `groups
-                  && event["EventReason"]:"" == "Activated" )
-        {
-            UI::SetFocus ( `id(`progs) );
-        }
-        else if ( event["FocusWidgetID"]:`none == `groups
-                  && event["ID"]:"" == "CursorRight" )
-        {
-            UI::SetFocus ( `id(`progs) );
-        }
-        else if ( event["FocusWidgetID"]:`none == `progs
-                  && event["ID"]:"" == "CursorLeft" )
-        {
-            UI::SetFocus ( `id(`groups) );
-        }
-	else if ( event["ID"]:`none == `help )
-	{
-	    ShowNcursesHelp();
-	}
-	else
-	{
-	    y2warning ( "Event or widget ID not handled" );
-	}
-
-    }  until ( event["ID"]:`none == `quit );
+}  until ( event["ID"]:`none == `quit );
 
 
-    UI::CloseDialog ();
+UI::CloseDialog ();
+
+/* EOF */
 }
