@@ -38,13 +38,18 @@
 	    return t;
 	term ret = toterm (substring (sformat ("%1", symbolof (t)), 1));
 	integer index = 0;
+	symbol current = symbolof (t);
 	while (index < args)
 	{
 	    any arg = select (t, index, nil);
-	    if (is (arg, term) && arg != nil)
+	    if (current == `Frame && index == 0)
+	    {
+		y2debug ("Leaving untouched %1", arg);
+	    }
+	    else if (is (arg, term) && arg != nil)
 	    {
 		symbol s = symbolof ((term)arg);
-		if (contains ([ `VBox, `HBox, `Left, `Right], s))
+		if (contains ([ `VBox, `HBox, `Left, `Right, `Frame], s))
 		{
 		    arg = ProcessTerm ((term)arg, widgets);
 		}
@@ -76,8 +81,8 @@
 	    "custom_widget" : "term",
 	    "help" : "string",
 	    "label" : "string",
-	    "minimum" : "string",
-	    "maximum" : "string",
+	    "minimum" : "integer",
+	    "maximum" : "integer",
 	    "widget" : "symbol",
 	    "items" : "list",
 	    "opt" : "list",
@@ -297,7 +302,10 @@
 	    if (v["widget"]:nil != `custom)
 		to_check = ["label", "help", "widget"];
 	    foreach (string key, to_check, ``{
-		ret = ValidateValueContents (key, v[key]:nil, k) && ret;
+		if (v["widget"]:nil != `radio_buttons || key != "label")
+		{
+		    ret = ValidateValueContents (key, v[key]:nil, k) && ret;
+		}
 	    });
 	    if (v["widget"]:nil == `custom)
 		ret = ValidateValueContents ("custom_widget",
@@ -376,14 +384,20 @@
 		}
 		else if (widget == `radio_buttons)
 		{
-		    term buttons = `VBox ();
+		    integer hspacing = w["hspacing"]:0;
+		    integer vspacing = w["vspacing"]:0;
+		    term buttons = `VBox (`VSpacing (vspacing));
 		    foreach (list i, w["items"]:[], ``{
 			buttons = add (buttons, `Left( `RadioButton (
 			    `id (i[0]:""), opt_term, i[1]:i[0]:"")) );
+			buttons = add (buttons, `VSpacing (vspacing));
 		    });
 		    w["widget"] = `Frame (
 			w["label"]:w["_cwm_key"]:"",
-			`RadioButtonGroup (`id (w["_cwm_key"]:""), buttons));
+			`HBox (`HSpacing (hspacing),
+			    `RadioButtonGroup (`id (w["_cwm_key"]:""), buttons),
+			`HSpacing (hspacing))
+		    );
 		}
 		else if (widget == `push_button)
 		{
@@ -537,14 +551,14 @@
     global define symbol Run (list<map> widgets, map<symbol, any> functions) ``{
 	widgets = mergeFunctions (widgets, functions);
 	initWidgets (widgets);
-	symbol ret = nil;
+	any ret = nil;
 	list save_exits = [`next, `ok];
 	boolean save = false;
 	map<string, any> event_descr = $[];
         while (ret != `back && ret != `abort && ! save)
         {
 	    event_descr = (map<string, any>) UI::WaitForEvent ();
-	    ret = (symbol) (event_descr["ID"]:nil);
+	    ret = (event_descr["ID"]:nil);
 	    symbol handle_ret = handleWidgets (widgets, event_descr);
 	    if (handle_ret != nil || contains (save_exits, ret))
 	    {
@@ -560,9 +574,9 @@
 		ret = `abort;
             if (ret == `abort)
 	    {
-		if (functions[ret]:nil != nil)
+		if (functions[`abort]:nil != nil)
 		{
-		    boolean () toEval = (boolean()) (functions[ret]:nil);
+		    boolean () toEval = (boolean()) (functions[`abort]:nil);
 		    if (toEval != nil)
 		    {
 			boolean eval_ret = toEval ();
@@ -588,7 +602,7 @@
         }
 	if (save)
 	    saveWidgets (widgets, event_descr);
-        return ret;
+        return (symbol)ret;
     }
 
     /**
