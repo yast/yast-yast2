@@ -31,7 +31,7 @@ global string Name = "";
 
 /**
  * Current device information
- * @example $["BOOTPROTO":"dhcp", "STARTMODE":"onboot"]
+ * @example $["BOOTPROTO":"dhcp", "STARTMODE":"auto"]
  */
 global map<string,any> Current = $[];
 
@@ -278,6 +278,20 @@ global string RealType (string type, string hotplug) {
 // ---------------------------------------------------------------------------
 
 /**
+ * STARTMODE: onboot, on and boot are aliases for auto
+ */
+global map CanonicalizeStartmode (map ifcfg) {
+    map <string, string> canonicalize_startmode = $[
+	"on": "auto",
+	"boot": "auto",
+	"onboot": "auto",
+	];
+    string startmode = ifcfg["STARTMODE"]:"";
+    ifcfg["STARTMODE"] = canonicalize_startmode[startmode]:startmode;
+    return ifcfg;
+}
+
+/**
  * Canonicalize netmask data (#46885)
  * Sysconfig allows:
  * IPADDR=10.0.0.1/8
@@ -413,6 +427,7 @@ global define boolean Read() {
 	    config["_aliases"] = caliases;
 	}
 	config = CanonicalizeIP (config);
+	config = CanonicalizeStartmode (config);
 
 	dev[devnum] = config;
 	Devices[devtype] = dev;
@@ -448,7 +463,7 @@ global map<string,map> FilterDevices (string devregex) {
 
 /**
  */
-define map FilterNOT(map<string,map> devices, string devregex) {
+define map<string,map> FilterNOT(map<string,map> devices, string devregex) {
     if(devices == nil || devregex == nil || devregex == "")
 	return $[];
 
@@ -596,6 +611,15 @@ global define boolean Write(string devregex) {
 global define boolean Import(string devregex, map<string,map> devices) {
     map Devs = FilterNOT(Devices, devregex);
     y2debug("Devs=%1", Devs);
+
+    devices = mapmap(string typ, map devsmap, devices, {
+	return $[typ: mapmap(string num, map config, (map<string,map>) devsmap, {
+	    config = CanonicalizeIP (config);
+	    config = CanonicalizeStartmode (config);
+	    return $[num: config];
+	})];
+    });
+
     Devices = (map<string,map>) union(Devs, devices);
     OriginalDevices = nil;
     return true;
