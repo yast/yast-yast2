@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Apr 01 14:28:23 CEST 2004 - arvin@suse.de
+
+- don't set download callbacks globaly (bug #37151)
+
+-------------------------------------------------------------------
 Wed Mar 31 19:52:42 CEST 2004 - nashif@suse.de
 
 - New ProductFeature variables
@@ -12,7 +17,7 @@ Wed Mar 31 17:53:05 CEST 2004 - msvec@suse.cz
 -------------------------------------------------------------------
 Wed Mar 31 14:06:43 CEST 2004 - gs@suse.de
 
-- show header of ShowText popup (bug #37171) 
+- show header of ShowText popup (bug #37171)
 
 -------------------------------------------------------------------
 Wed Mar 31 12:20:54 CEST 2004 - arvin@suse.de
