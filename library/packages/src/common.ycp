@@ -13,9 +13,7 @@
 textdomain "base";
 
 import "Label";
-import "Mode";
 import "Popup";
-import "Report";
 import "Wizard";
 
 /* Main module prototypes */
