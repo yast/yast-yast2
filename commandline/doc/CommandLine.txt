@@ -81,7 +81,10 @@ line description map. It must take no arguments and return boolean,
 true on success.
 The initialize resp. finish handler is specified by the
 "initialize" resp. "finish" key of the description map. They
-do not take any arguments and must return boolean, true on success.
+do not take any arguments and must return boolean, true on success. Notice 
+that "initialize" and "finish" handlers are not used if a user
+asked for GUI (guihandler is used instead and therefore it must
+do initializing and finishing on its own).
 The handler for an action is specified in the "handler" key of the
 action description map. Each handler must take a single argument
 containing the options entered by the user.
@@ -219,6 +222,8 @@ Example of an event-loop:
 
 		return;
 	}
+	
+	<initialize call>
 
 	while( ! CommandLine::Done() )
 	{
@@ -226,6 +231,8 @@ Example of an event-loop:
 
 		<handle commands here>
 	}
+	
+	<finish call>
 
 The CommandLine::Init() returns boolean whether the module has
 something to do. If the user only requested help or the arguments
