@@ -215,6 +215,7 @@ global define void Arch() ``{
     string board_type = "";
     string checkgeneration = "";
     list systemProbe = SCR::Read(.probe.system);
+    if(systemProbe == nil) systemProbe = [];
 
     foreach (`systemEntry, systemProbe, ``{
 	string checksys = lookup (systemEntry, "system", "");
