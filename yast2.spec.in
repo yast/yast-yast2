@@ -16,6 +16,9 @@ Summary:	YaST2 Modules for installation
 -
 
 @HEADER-DEVEL@
+Provides:	yast2-lib-sequencer-devel
+Obsoletes:	yast2-lib-sequencer-devel
+
 Summary:	Documentation for Wizard and Sequencer
 
 %description devel
