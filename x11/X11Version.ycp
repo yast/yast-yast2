@@ -28,6 +28,7 @@ include "require.ycp";
 // System Global Variables
 //---------------------------------------
 global string  version  = "";
+global string  versionLink = "";
 
 //=======================================
 // Global Functions
@@ -75,15 +76,20 @@ global define void GetVersion() ``{
 }
 
 //---[ GetX11Link ]----//
-global define integer GetX11Link() ``{
+global define void GetX11Link() ``{
 	// ...
 	// Read the endpoint of the X11 link
 	// ---
 	integer ver = SCR::Execute( .target.bash,
 		Directory::bindir + "/version -link " + Installation::destdir
 	);
-	y2milestone( "xfree_version [-link]: <%1>", ver );
-	return( ver );
+	if (ver == 4) {
+		versionLink = "4";
+	} else {
+		versionLink = "3";
+	}
+	y2milestone( "xfree_version [-link]: <%1>", versionLink );
+	return( versionLink );
 }
 
 //---[ have_x11 ]----//
