@@ -43,12 +43,13 @@ else
   fi
 fi
 
-if [ -z "$DISPLAY" ] ; then
-    $ybindir/y2base $module $arg2 $arg3 ncurses
-else
+if [ "$DISPLAY" ] ; then
+    export QT_HOME_DIR="`eval echo ~$USER/.qt/`"
+    [ "$QT_HOME_DIR" ] || FONT="-fn $Y2_XFONT"
+
     if [ $module == "menu" ] ; then
-	$ybindir/y2controlcenter $arg2 $arg3 -fn $Y2_XFONT
+	$ybindir/y2controlcenter $arg2 $arg3 $FONT
     else
-	$ybindir/y2base $module $arg2 $arg3 qt -fn $Y2_XFONT
+	$ybindir/y2base $module $arg2 $arg3 qt $FONT
     fi
 fi
