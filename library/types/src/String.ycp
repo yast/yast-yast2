@@ -471,5 +471,21 @@ global define string CutRegexMatch(string input, string regex, boolean glob) ``{
     return output;
 }
 
+/**
+ * Function for escaping (replacing) (HTML|XML...) tags with their
+ * (HTML|XML...) meaning.
+ * Usable to present text "as is" in RichText.
+ *
+ * @param string	text to escape
+ * @return string	escaped text
+ */
+global define string escapetags (string text) ``{
+    text = mergestring(splitstring(text, "&"), "&amp;");
+    text = mergestring(splitstring(text, "<"), "&lt;");
+    text = mergestring(splitstring(text, ">"), "&gt;");
+
+    return text;
+}
+
 /* EOF */
 }

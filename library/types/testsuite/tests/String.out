@@ -105,3 +105,6 @@ Return	abc
 Return	abcdefghi
 Return	abcdef345ghi678900
 Return	
+Dump	Strings::escapetags
+Return	&lt;font size='2'&gt;&lt;b&gt;text &amp; another&lt;/b&gt;&lt;/font&gt;
+Return	2 &gt; 1
