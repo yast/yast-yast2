@@ -313,10 +313,6 @@
 	    switched = true;
 	}
 
-	// add the nongpl kernel package
-	if (size (kernel_packages) == 1)
-	    kernel_packages = add (kernel_packages, kernel_packages[0]:"" + "-nongpl");
-
 	y2milestone("ProbeKernel determined: %1", kernel_packages);
 
     }  // ProbeKernel ()
