@@ -4,6 +4,7 @@ Mon Oct 11 14:53:47 CEST 2004 - jsrain@suse.cz
 - changed Arch.ycp to functional interface, probing the settings
   when they are needed (instead of constructor)
 - update Initrd.ycp not to use Arch:: in its constructor
+- 2.11.0
 
 -------------------------------------------------------------------
 Fri Oct  1 13:44:58 CEST 2004 - sh@suse.de
