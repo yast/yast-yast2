@@ -368,7 +368,7 @@
 	    return false;
 	}
 
-	foreach (string remaining, result[2]:[], ``{
+	foreach (string remaining, (list<string>) (result[2]:[]), ``{
 	    if(ok == true)
 		if(contains(toinstall, remaining)) {
 		    y2error("Package remain: %1", remaining);
