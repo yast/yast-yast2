@@ -268,7 +268,10 @@
 	    }
 
 	    if (ret == nil)
+	    {
+		save = false;
 		continue;
+	    }
         }
 	if (save)
 	    saveWidgets (widgets, event_descr);
