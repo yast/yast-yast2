@@ -13,7 +13,9 @@
 module "PackageSystem";
 textdomain "base";
 
+import "Mode";
 import "PackageCallbacksInit";
+import "Report";
 
 /**
  * Was last operation canceled?
