@@ -187,6 +187,14 @@ global boolean has_apm		= (boolean)SCR::Read(.probe.has_apm);
 global boolean has_pcmcia	= (boolean)SCR::Read(.probe.has_pcmcia);
 
 /* ************************************************************ */
+/* UML stuff							*/
+
+/**
+ * true if UML
+ */
+global boolean is_uml		= false; // FIXME
+
+/* ************************************************************ */
 /* SMP stuff							*/
 
 /**

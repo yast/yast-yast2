@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Mar 10 09:26:03 CET 2004 - arvin@suse.de
+
+- install kernel-um in uml
+
+-------------------------------------------------------------------
 Wed Mar 10 07:03:41 CET 2004 - nashif@suse.de
 
 - Fixed Progress for new Wizard
@@ -8,12 +13,12 @@ Wed Mar 10 07:03:41 CET 2004 - nashif@suse.de
 Wed Mar 10 01:42:25 CET 2004 - sh@suse.de
 
 - V 2.9.37
-- Migration to new wizard 
+- Migration to new wizard
 
 -------------------------------------------------------------------
 Mon Mar  8 17:53:29 CET 2004 - sh@suse.de
 
-- Changed X cursor theme (adrian) 
+- Changed X cursor theme (adrian)
 
 -------------------------------------------------------------------
 Mon Mar  8 15:56:52 CET 2004 - msvec@suse.cz
@@ -38,7 +43,7 @@ Fri Mar  5 12:43:40 CET 2004 - msvec@suse.cz
 -------------------------------------------------------------------
 Thu Mar  4 20:05:13 CET 2004 - visnov@suse.cz
 
-- 2.9.32 
+- 2.9.32
 - late initialization of Wizard and Progress (for command line)
 
 -------------------------------------------------------------------
@@ -50,7 +55,7 @@ Thu Mar  4 17:24:56 CET 2004 - msvec@suse.cz
 -------------------------------------------------------------------
 Thu Mar  4 16:09:18 CET 2004 - visnov@suse.cz
 
-- added type info (kkaempf, visnov) 
+- added type info (kkaempf, visnov)
 
 -------------------------------------------------------------------
 Thu Mar  4 15:47:00 CET 2004 - msvec@suse.cz

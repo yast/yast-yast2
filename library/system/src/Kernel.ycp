@@ -15,7 +15,6 @@
  */
 
 {
-
     module "Kernel";
 
     import "Arch";
@@ -202,7 +201,13 @@
 	    switched = true;
 	}
 
-	if (Arch::i386)
+	if (Arch::is_uml)
+	{
+	    y2milestone ("ProbeKernel: UML");
+	    kernel_packages = ["kernel-um"];
+	    switched = true;
+	}
+	else if (Arch::i386)
 	{
 	    // get flags from WFM /proc/cpuinfo (for pae and tsc tests below)
 
