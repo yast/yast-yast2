@@ -22,11 +22,6 @@ global map Modules = $[];
 //
 global map Groups = $[];
 
-//
-// Values to be read
-//
-global list Values = [];
-
 
 //
 // The agent Path
@@ -35,9 +30,10 @@ global path AgentPath = .yast2.desktop;
 
 /**
  * Read Module and Group data from desktop files.
+ * @param List of values to be parsed
  * @return void
  */
-global define void Read() ``{
+global define void Read(list Values) ``{
 
     /* read modules */
     map filemap = $[];
