@@ -86,8 +86,8 @@
     map <string, list <string> > allowed_conflict_services = $[];
 
     /* services needed for well-running firewall */
-    list <string> firewall_services = ["SuSEfirewall2_init", "SuSEfirewall2_setup", "SuSEfirewall2_final"];
-    list <string> firewall_services_reverse = ["SuSEfirewall2_final", "SuSEfirewall2_setup", "SuSEfirewall2_init"];
+    list <string> firewall_services = [ "SuSEfirewall2_init", "SuSEfirewall2_setup" ];
+    list <string> firewall_services_reverse = [ "SuSEfirewall2_setup", "SuSEfirewall2_init" ];
 
     list <string> SuSEFirewall_variables = [
 	// zones and interfaces
@@ -1755,8 +1755,8 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
      */
     global define boolean ActivateConfiguration () {
 	if (GetModified()) {
-	    y2milestone("Stopping firewall services");
-	    if (! StopServices()) {
+	    if (IsStarted() && !StopServices()) {
+		y2milestone("Stopping firewall services");
 		return false;
 	    }
 
@@ -1866,6 +1866,11 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
      * @return	boolean if succesfull
      */
     global define boolean Write () {
+	// Firewall should be stopped before writing the configuration
+	if (GetModified()) {
+	    StopServices();
+	}
+
 	if (! WriteConfiguration())	return false;
 
 	if (! ActivateConfiguration())	return false;
