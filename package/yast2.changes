@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Mar 24 13:07:15 CET 2005 - jsrain@suse.cz
+
+- changed kernel packages for PPC (#72344)
+
+-------------------------------------------------------------------
 Mon Mar 21 13:51:43 CET 2005 - jsrain@suse.cz
 
 - fixed setting bootsplash resolutino if framebuffer modes couldn't
