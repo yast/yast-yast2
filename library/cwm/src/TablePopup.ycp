@@ -99,6 +99,8 @@ define boolean ValidateValueType (string key, any value, string widget, boolean 
 	    success = is (value, boolean(any,string,map));
 	else if (key == "optional")
 	    success = is (value, boolean);
+	else if (key == "label_func")
+	    success = is (value, string(any,string));
 	else
 	    return CWM::ValidateValueType (key, value, widget);
     }
