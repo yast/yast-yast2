@@ -267,7 +267,7 @@
 	    `VBox(
 		  `HSpacing(80),
 		  `ReplacePoint (`id(`rephead),
-				 `Heading (`id (`head), sformat (_("Selected directory: %1")), dir)
+				 `Heading (`id (`head), sformat (_("Selected directory: %1"), dir))
 				 ),
 		  `VSpacing (),
 		  `HBox (
