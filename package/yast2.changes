@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Feb 19 18:04:31 CET 2004 - jsrain@suse.de
+
+- added agent for handling /etc/sysconfig/hardware/hwcfg-*
+
+-------------------------------------------------------------------
 Thu Feb 19 15:33:17 CET 2004 - arvin@suse.de
 
 - removed function Kernel::IDERecorders since "ide-scsi" is not
