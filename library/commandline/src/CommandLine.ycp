@@ -322,7 +322,7 @@
 	}
 
 	// build the list of options for the command
-	list opts = lookup( allcommands["mappings"]:$[], command, [] );
+	list opts = allcommands["mappings", command]:[];
 	map allopts = allcommands["options"]:$[];
 	map cmdoptions = $[];
 	maplist( string k, opts, ``{
@@ -368,12 +368,12 @@
 
 		// this option is valid, let's check the type
 
-		string opttype = lookup( cmdoptions[o]:$[], "type", "" );
+		string opttype = cmdoptions[o, "type"]:"";
 
 		if( opttype != "" ) {
 		    // need to check the type
 		    if( opttype == "regex" )  {
-			string opttypespec = lookup( cmdoptions[o]:$[], "typespec", "" );
+			string opttypespec = cmdoptions[o, "typespec"]:"";
 			ret = TypeRepository::regex_validator( opttypespec, v );
 			if( ret != true ) {
 			    // translators: error message, %2 is the value given
@@ -549,14 +549,14 @@
      */
     define void PrintActionHelp (string action) ``{
 	// lookup action in actions
-	map command = lookup(allcommands["actions"]:$[], action, $[]);
+	map command = allcommands["actions", action]:$[];
 	string commandhelp = command["help"]:_("No help available");
 	/* Process <command> "help" */
 	// translators: %1 is the command name
 	Print(sformat(_("Command '%1'"), action));
 	Print(sformat("    %1", commandhelp));
 
-	list opts = lookup( allcommands["mappings"]:$[], action, [] );
+	list opts = allcommands["mappings", action]:[];
 
 	// no options, skip the rest
 	if( size(opts) == 0 ) {

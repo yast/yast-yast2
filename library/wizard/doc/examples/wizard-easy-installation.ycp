@@ -50,7 +50,7 @@
 	if ( is(button, integer) )
 	{
 	    y2milestone( "Switching to step #%1", button );
-	    Wizard::SetEasyInstallationStep( EasyInstallationStepDescriptions(), button );
+	    Wizard::SetEasyInstallationStep( EasyInstallationStepDescriptions(), (integer)button );
 	}
 	    
     } while ( button != `abort && button != `next );

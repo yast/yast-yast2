@@ -23,10 +23,10 @@
     import "Label";
 
     // cache all found hosts on the local network
-    list(string) found_hosts = nil;
+    list<string> found_hosts = nil;
 
     // cache all found NFS servers on the local network
-    list(string) found_nfs_servers = nil;
+    list<string> found_nfs_servers = nil;
 
     /**
      * Let the user choose one of a list of items
@@ -35,7 +35,7 @@
      * @param selected	preselected a value in the list
      * @return		one item or nil
      */
-    global define string ChooseItem (string title, list(string) items, string selected) ``{
+    global define string ChooseItem (string title, list<string> items, string selected) ``{
 	string item = nil;
 
 	list Items = maplist(string i, items,  ``{
@@ -58,16 +58,16 @@
 		    )
 		));
 	UI::SetFocus (`id (`items));
-	any ret = nil;
+	symbol ret = nil;
 	do
 	{
-	    ret = UI::UserInput();
+	    ret = (symbol)UI::UserInput();
 	}
 	while (ret != `cancel && ret != `ok);
 
 	if (ret == `ok)
 	{
-	    item = UI::QueryWidget (`id (`items), `CurrentItem);
+	    item = (string)UI::QueryWidget (`id (`items), `CurrentItem);
 	}
 	UI::CloseDialog();
 
@@ -85,7 +85,7 @@
 	{
 	    // label message
 	    UI::OpenDialog(`Label(_("Scanning for hosts on this LAN...")));
-	    found_nfs_servers = sort(SCR::Read(.net.hostnames.rpc, "nfs"));
+	    found_nfs_servers = sort( (list<string>)SCR::Read(.net.hostnames.rpc, "nfs"));
 	    UI::CloseDialog();
 
 	    if (found_nfs_servers == nil)
@@ -109,7 +109,7 @@
 	{
 	    // label message
 	    UI::OpenDialog(`Label(_("Scanning for hosts on this LAN...")));
-	    found_hosts = sort(SCR::Read(.net.hostnames));
+	    found_hosts = (list<string>)sort((list)SCR::Read(.net.hostnames));
 	    UI::CloseDialog();
 
 	    if (found_hosts == nil)
@@ -130,7 +130,7 @@
      * @return		an export or nil if "Cancel" was pressed
      */
     global define string NFSExport(string server, string selected) ``{
-	list(string) dirs = SCR::Read(.net.showexports, server);
+	list<string> dirs = (list<string>)SCR::Read(.net.showexports, server);
 
 	if (dirs == nil)
 	{

@@ -22,4 +22,4 @@
  */
 .dev.tty
 
-`ag_tty ( TTY() )
+`ag_tty ( `TTY() )

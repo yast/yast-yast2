@@ -90,10 +90,10 @@
 	    progress_title = " ";
 	}
 	term bar = `ProgressBar(`id(`pb), progress_title, steps, 0);
-	UI (``{
-	    if (UI::WidgetExists (`id (`back)))	ChangeWidget (`id (`back), `Enabled, false);
-	    if (UI::WidgetExists (`id (`next)))	ChangeWidget (`id (`next), `Enabled, false);
-	});
+	
+	if (UI::WidgetExists (`id (`back)))	UI::ChangeWidget (`id (`back), `Enabled, false);
+	if (UI::WidgetExists (`id (`next)))	UI::ChangeWidget (`id (`next), `Enabled, false);
+
 	if ("" != help_text && nil != help_text && UI::WidgetExists (`id (`HelpText)))
 	{
 	    UI::ChangeWidget (`id (`HelpText), `Value, help_text);
@@ -139,7 +139,7 @@
 	{ // version with stages
 	    bar = `VBox (`VSpacing (1));
 	    integer i = 0;
-	    foreach (`item, stg, ``{
+	    foreach (string item, stg, ``{
 		string label_label = sformat ("bar_label_%1",i);
 		string label_heading = "-   ";
 		bar = add (bar,
@@ -169,10 +169,10 @@
 		    ));
 	    }
 	}
-	UI (``{
-	    if (UI::WidgetExists (`id (`back)))	ChangeWidget (`id (`back), `Enabled, false);
-	    if (UI::WidgetExists (`id (`next)))	ChangeWidget (`id (`next), `Enabled, false);
-	});
+
+	if (UI::WidgetExists (`id (`back)))	UI::ChangeWidget (`id (`back), `Enabled, false);
+	if (UI::WidgetExists (`id (`next)))	UI::ChangeWidget (`id (`next), `Enabled, false);
+
 	if ("" != help_text && nil != help_text && UI::WidgetExists (`id (`HelpText)))
 	{
 	    UI::ChangeWidget (`id (`HelpText), `Value, help_text);
@@ -180,16 +180,23 @@
 	UI::ChangeWidget (`id (`title), `Value, window_title);
 	UI::ReplaceWidget (`id (`contents), bar);
     }
+
     /**
-     * Jumps to the next stage and sets step to st.
-     * @param st new progress bar value
+     * Some people say it is the best operating system ever. But now to the
+     * function. Advances progress bar value by 1.
      */
-    global define void NextStageStep (integer st) ``{
-	if (!visible)
+    global define void NextStep () ``{
+	if (!visible || 0 == steps)
 	    return ;
-	NextStage ();
-	Step (st);
+	current_step = current_step + 1;
+	if (current_step > steps)
+	{
+	    y2error ("Progress bar doesn't have so many steps.");
+	    return ;
+	}
+	UI::ChangeWidget (`id (`pb), `Value, current_step);
     }
+
     /**
      * Advance stage, advance step by 1 and set progress bar caption to
      * that defined in New.
@@ -213,7 +220,7 @@
 	    current_stage = current_stage + 1;
 	    if (current_stage < size (titles))
 	    {
-		UI::ChangeWidget(`id(`pb), 0 == steps ? `Value : `Label, select (titles, current_stage, ""));
+		UI::ChangeWidget(`id(`pb), 0 == steps ? `Value : `Label, titles[current_stage]:"");
 	    }
 	    if (current_stage < stages)
 	    {
@@ -221,6 +228,22 @@
 	    }
 	}
     }
+    /**
+     * Changes progress bar value to st.
+     * @param st new value
+     */
+    global define void Step (integer st) ``{
+	if (!visible || 0 == steps)
+	    return ;
+	current_step = st;
+	if (current_step > steps)
+	{
+	    y2error ("Progress bar doesn't have so many steps.");
+	    return ;
+	}
+	UI::ChangeWidget (`id (`pb), `Value, current_step);
+    }
+
     /**
      * Go to stage st, change progress bar title to title and set progress
      * bar step to step.
@@ -244,7 +267,7 @@
 	string s = "";
 	if (current_stage < size (titles))
 	{
-	    s = select (titles, current_stage, "");
+	    s = (string) (titles[current_stage]:"");
 	}
 	if (nil != title)
 	{
@@ -259,36 +282,19 @@
 	    UI::ChangeWidget(`id (sformat ("bar_label_%1", current_stage)), `Value, UI::Glyph(`BulletArrowRight));
 	}
     }
+
+
     /**
-     * Some people say it is the best operating system ever. But now to the
-     * function. Advances progress bar value by 1.
+     * Jumps to the next stage and sets step to st.
+     * @param st new progress bar value
      */
-    global define void NextStep () ``{
-	if (!visible || 0 == steps)
+    global define void NextStageStep (integer st) ``{
+	if (!visible)
 	    return ;
-	current_step = current_step + 1;
-	if (current_step > steps)
-	{
-	    y2error ("Progress bar doesn't have so many steps.");
-	    return ;
-	}
-	UI::ChangeWidget (`id (`pb), `Value, current_step);
+	NextStage ();
+	Step (st);
     }
-    /**
-     * Changes progress bar value to st.
-     * @param st new value
-     */
-    global define void Step (integer st) ``{
-	if (!visible || 0 == steps)
-	    return ;
-	current_step = st;
-	if (current_step > steps)
-	{
-	    y2error ("Progress bar doesn't have so many steps.");
-	    return ;
-	}
-	UI::ChangeWidget (`id (`pb), `Value, current_step);
-    }
+
     /**
      * Change progress bar title.
      * @param t new title. Use ""(empty string) if you want an empty progress bar.
@@ -327,7 +333,7 @@
 	integer idx = 0;
 	super_steps = size (stages);
 	super_step = -1;
-	foreach (`i, stages, ``{
+	foreach (string i, stages, ``{
 	    string id = sformat ("super_progress_%1", idx);
 	    left = add (left, `Heading (`id (id), "-  "));
 	    right = add (right, `Label (`opt (`hstretch), i));
