@@ -1,0 +1,32 @@
+/**
+ * File:
+ *   cfg_ypserv.scr
+ * Summary:
+ *   SCR Agent for reading/writing /etc/sysconfig/ypserv using the ini-agent
+ * Access:
+ *   read/write
+ * Authors:
+ *   Martin Vidner <mvidner@suse.cz>
+ * See:
+ *   yast2-agent-ini/ini.html
+ *   libscr
+ * Example:
+ *   Dir(.sysconfig.ypserv)
+ *   ([YPPWD_SRCDIR, YPPWD_CHFN, YPPWD_CHSH, ...])
+ **
+ *   Read(.sysconfig.ypserv.YPPWD_CHSH)
+ *   ("yes")
+ **
+ *   Write(.sysconfig.ypserv.YPPWD_CHSH, "no")
+ *   (true)
+ * 
+ * $Id$
+ *
+ * Read/Sets the values defined in <tt>/etc/sysconfig/ypserv</tt>
+ * in an easy manner.
+ */
+.sysconfig.ypserv
+
+`ag_ini(
+  SysConfigFile("/etc/sysconfig/ypserv")
+)
