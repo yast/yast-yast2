@@ -1,0 +1,111 @@
+{
+
+include "testsuite.ycp";
+include "wizard/sequencer.ycp";
+
+global define ok() ``{ y2error("ok"); return `ok; }
+global define back() ``{ y2error("back"); return `back; }
+global define next() ``{ y2error("next"); return `next; }
+global define finish() ``{ y2error("finish"); return `finish; }
+global define details() ``{ y2error("details"); return `details; }
+global define expert() ``{ y2error("expert"); return `expert; }
+
+global define WS_check(map aliases, map sequence) ``{ return true; }
+
+/*
+ * integer cur = 0;
+ * list clicks = [ `next, `next, `details, `ok, `next ];
+ * list clicks = [ `n, `n, `d, `o, `n];
+ */
+global define click() ``{
+    symbol ret = nil;
+    integer s = size(clicks);
+    if(cur<s && is(select(clicks,cur,nil),symbol))
+        ret = select(clicks,cur,nil);
+    cur = cur + 1;
+    string log = sformat("%1",ret);
+    if(substring(log, 0, 1) == "`")
+        log = substring(log,1,size(log));
+    y2error("%1",log);
+    return ret;
+}
+
+/*
+ * sequence = sequence();
+ * cur = lookup(sequnce,"ws_start");
+ */
+global define clickng() ``{
+    any ret = lookup(sequence,cur,$[]);
+    list l = mapkeys(ret);
+    integer i = random(size(l)+1);
+    if(i<size(l)) {
+	cur = lookup(ret,select(l,i,nil),nil);
+	/* push cur */
+	ret = select(l,i,nil);
+    }
+    else {
+	/* pop cur */
+	ret = `back;
+    }
+    return ret;
+}
+
+/*
+ * aliases
+ */
+global define aliases() ``{
+    return $[
+        "begin"  : ``(click()),
+        "config" : ``(click()),
+        "end"    : ``(click()),
+        "expert" : ``(click()),
+        "expert2": ``(click()),
+        "details": ``(click()),
+        "superdetails": ``(click())
+    ];
+}
+
+/*
+ * example5.ycp sequence
+ */
+global define sequence() ``{
+
+map Sequence5 = $[
+    "ws_start" : "begin",
+    "begin" : $[
+        `next : "config"
+    ],
+    "expert" : $[
+        `next : "expert2"
+    ],
+    "expert2" : $[
+        `next : "end",
+        `ok : "config"
+    ],
+    "config" : $[
+        `next : "end",
+        `details : "details",
+        `expert: "expert"
+    ],
+    "details" : $[
+        `next : "end",
+        `details: "superdetails",
+        `ok : "config"
+    ],
+    "superdetails" : $[
+        `next: "end",
+        `ok: "details"
+    ],
+    "end" : $[
+        `finish : `ws_finish
+    ]
+];
+
+return Sequence5;
+
+}
+
+if(cur!=-1)
+    TEST(``(WizardSequencer(aliases(), sequence())), [], nil);
+
+}

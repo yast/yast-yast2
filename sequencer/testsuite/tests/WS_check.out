@@ -1,0 +1,16 @@
+Log	sequencer check: ws_start needs to be defined
+Return	false
+Log	sequencer check: not a term: 1
+Log	sequencer check: list too small: [] (2)
+Log	sequencer check: list too small: [f1 ()] (3)
+Log	sequencer check: not a term: 4
+Log	sequencer check: not a boolean: 5
+Log	sequencer check: not a string: `x
+Log	sequencer check: alias not found: 0
+Log	sequencer check: not a map: 8 []
+Log	sequencer check: not a symbol: blah
+Log	sequencer check: alias not found: huu
+Log	sequencer check: alias not found: missing
+Return	false
+Return	true
+Return	true

@@ -1,0 +1,33 @@
+{
+
+integer cur = -1;
+include "./tests/Wizard.yh";
+
+map aliases = $[
+    "0" : ``(next()),
+    "1" : ``(next()),
+    "F" : ``(finish())
+];
+
+map sequence = $[
+    "ws_start" : "0",
+    "0" : $[
+        `next : "1"
+    ],
+    "1" : $[
+        `next : "F"
+    ],
+    "F" : $[
+        `finish : `ws_finish
+    ]
+];
+
+TEST(``(WizardSequencer(nil, nil)), [], nil);
+TEST(``(WizardSequencer($[], $[])), [], nil);
+TEST(``(WizardSequencer($[], nil)), [], nil);
+TEST(``(WizardSequencer(nil, $[])), [], nil);
+TEST(``(WizardSequencer($[], sequence)), [], nil);
+TEST(``(WizardSequencer(aliases, $[])), [], nil);
+TEST(``(WizardSequencer($[], $[ "ws_start" : `ok ])), [], nil);
+
+}

@@ -1,0 +1,22 @@
+{
+
+include "testsuite.ycp";
+include "wizard/sequencer.ycp";
+
+define f1() ``{ return "1"; }
+define f2() ``{ return 2; }
+define f3() ``{ return `id3; }
+
+map aliases = $[
+    "1" : ``(f1()),
+    "2" : ``(f2()),
+    "3" : ``(f3())
+];
+
+TEST(``(WS_run($[], "blah")), [], nil);
+TEST(``(WS_run(aliases, "blah")), [], nil);
+TEST(``(WS_run(aliases, "1")), [], nil);
+TEST(``(WS_run(aliases, "2")), [], nil);
+TEST(``(WS_run(aliases, "3")), [], nil);
+
+}

@@ -1,0 +1,48 @@
+{
+
+include "./examples.ycp";
+include "wizard/sequencer.ycp";
+
+define BeginDialog() ``{ return GUI("Begin",[`back, `next]); }
+define EndDialog() ``{ return GUI("End",[`back,`finish]); }
+define ConfigDialog() ``{ return GUI("Config",[`back,`details,`expert,`next]); }
+define DetailsDialog() ``{ return GUI("Details",[`back,`ok,`details,`next]); }
+define SuperDetailsDialog() ``{ return GUI("Super details",[`back,`ok,`next]); }
+define ExpertDialog() ``{ return GUI("Expert",[`back,`next]); }
+define Expert2Dialog() ``{ return GUI("Expert2",[`back,`ok,`next]); }
+
+map Sequence = $[
+    "ws_start" : "begin",
+    "begin" : $[
+        `next : "config"
+    ],
+    "expert" : $[
+            `next : "expert2"
+    ],
+    "expert2" : $[
+            `next : "end",
+        `ok : "config"
+    ],
+    "config" : $[
+        `next : "end",
+        `details : "details",
+        `expert: "expert"
+    ],
+    "details" : $[
+        `next : "end",
+        `details: "superdetails",
+        `ok : "config"
+    ],
+    "superdetails" : $[
+        `next: "end",
+        `ok: "details"
+    ],
+    "end" : $[
+        `finish : `ws_finish
+    ]
+];
+
+any result = WizardSequencer(Aliases(),Sequence);
+y2debug("result=%1",result);
+
+}

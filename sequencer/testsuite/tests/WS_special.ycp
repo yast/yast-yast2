@@ -1,0 +1,17 @@
+{
+
+include "testsuite.ycp";
+include "wizard/sequencer.ycp";
+
+map Aliases = $[
+    "normal"	: ``(Normal()),
+    "special_n"	: [ ``(SpecialN()), false ],
+    "special_y"	: [ ``(SpecialY()), true ]
+];
+
+TEST(``(WS_special(Aliases,"normal")), [], nil);
+TEST(``(WS_special(Aliases,"special_n")), [], nil);
+TEST(``(WS_special(Aliases,"special_y")), [], nil);
+TEST(``(WS_special(Aliases,"missing")), [], nil);
+
+}

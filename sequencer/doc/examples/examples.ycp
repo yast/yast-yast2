@@ -1,0 +1,45 @@
+{
+
+global define Aliases() ``{
+    map aliases = $[
+	"begin"		: ``(BeginDialog()),
+	"end"		: ``(EndDialog()),
+	"config"	: ``(ConfigDialog()),
+	"details"	: ``(DetailsDialog()),
+	"superdetails"	: ``(SuperDetailsDialog()),
+	"expert"	: ``(ExpertDialog()),
+	"expert2"	: ``(Expert2Dialog()),
+	"decide"	: [ ``(Decide()), true ]
+    ];
+    return aliases;
+}
+
+global define GUI(string text, list buttons) ``{
+    integer i = 0;
+    term t = `HBox();
+    map Buttons = $[
+	`back : "Back",
+	`next : "Next",
+	`finish : "Finish",
+	`details : "Details",
+	`expert : "Expert",
+	`yes : "Yes",
+	`no : "No",
+	`ok : "OK"
+    ];
+    while(i < size(buttons)) {
+	string B = lookup(Buttons,select(buttons,i,nil),"-");
+	if(B=="-")
+	    t = add(t,`PushButton(B));
+	else
+	    t = add(t,`PushButton(`id(select(buttons,i,nil)), B));
+	i=i+1;
+    }
+
+    UI(`OpenDialog(`VBox(`Label(text),t)));
+    any ret = UI(`UserInput());
+    UI(`CloseDialog());
+    return ret;
+}
+
+}

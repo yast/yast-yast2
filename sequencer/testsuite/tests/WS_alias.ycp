@@ -1,0 +1,24 @@
+{
+
+include "testsuite.ycp";
+include "wizard/sequencer.ycp";
+
+map aliases = $[
+    "1" : nil,
+    "2" : ``(func1()),
+    "3" : [],
+    "4" : [ nil ],
+    "5" : [ ``(func2()) ],
+    "6" : [ ``(func3()), `blah ]
+];
+
+TEST(``(WS_alias($[], "blah")), [], nil);
+TEST(``(WS_alias(aliases, "blah")), [], nil);
+TEST(``(WS_alias(aliases, "1")), [], nil);
+TEST(``(WS_alias(aliases, "2")), [], nil);
+TEST(``(WS_alias(aliases, "3")), [], nil);
+TEST(``(WS_alias(aliases, "4")), [], nil);
+TEST(``(WS_alias(aliases, "5")), [], nil);
+TEST(``(WS_alias(aliases, "6")), [], nil);
+
+}

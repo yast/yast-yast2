@@ -1,0 +1,31 @@
+{
+
+include "./examples.ycp";
+include "wizard/sequencer.ycp";
+
+define BeginDialog() ``{ return GUI("Begin",[`back, `next]); }
+define EndDialog() ``{ return GUI("End",[`back,`finish]); }
+define ConfigDialog() ``{ return GUI("Config",[`back,`next]); }
+define Decide() ``{ return GUI("Decide",[`yes,`no]); }
+
+map Sequence = $[
+    "ws_start" : "begin",
+    "begin" : $[
+        `next : "decide"
+    ],
+    "config" : $[
+        `next : "end"
+    ],
+    "decide" : $[
+        `no : "end",
+        `yes: "config"
+    ],
+    "end" : $[
+        `finish : `ws_finish
+    ]
+];
+
+any result = WizardSequencer(Aliases(),Sequence);
+y2debug("result=%1",result);
+
+}

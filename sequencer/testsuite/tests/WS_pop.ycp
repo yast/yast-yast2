@@ -1,0 +1,12 @@
+{
+
+include "testsuite.ycp";
+include "wizard/sequencer.ycp";
+
+TEST(``(WS_pop(nil)), [], nil);
+TEST(``(WS_pop([])), [], nil);
+TEST(``(WS_pop([1])), [], nil);
+TEST(``(WS_pop([1,3])), [], nil);
+TEST(``(WS_pop([1,3,5,7,9,11])), [], nil);
+
+}

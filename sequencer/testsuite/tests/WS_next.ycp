@@ -1,0 +1,43 @@
+{
+
+include "testsuite.ycp";
+include "wizard/sequencer.ycp";
+
+define f1() ``{ return "1"; }
+define f2() ``{ return 2; }
+define f3() ``{ return `id3; }
+
+map aliases = $[
+    "1" : ``(f1()),
+    "2" : ``(f2()),
+    "3" : ``(f3())
+];
+
+map sequence = $[
+    "ws_start" : "begin",
+    "begin" : $[
+        `next : "decide"
+    ],
+    "config" : $[
+        `next : "end"
+    ],
+    "decide" : $[
+        `no : "end",
+        `yes: "config"
+    ],
+    "end" : $[
+        `finish : `ws_finish
+    ]
+];
+
+TEST(``(WS_next($[], "blah", `id3)), [], nil);
+TEST(``(WS_next(sequence, "blah", `id3)), [], nil);
+TEST(``(WS_next(sequence, "begin", `id3)), [], nil);
+TEST(``(WS_next(sequence, "begin", `id3)), [], nil);
+TEST(``(WS_next(sequence, "begin", `id3)), [], nil);
+//TEST(``(WS_next(sequence, "ws_start", `next)), [], nil);
+TEST(``(WS_next(sequence, "decide", `yes)), [], nil);
+TEST(``(WS_next(sequence, "decide", `no)), [], nil);
+TEST(``(WS_next(sequence, "end", `finish)), [], nil);
+
+}
