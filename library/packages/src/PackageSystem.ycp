@@ -198,5 +198,68 @@ global boolean Installed(string package) {
     // return Pkg::IsProvided (package);
 }
 
+/**
+ * Check if packages are installed
+ * Install them if they are not and user approves installation
+ * @param a list of packages to check (and install)
+ * @return boolean true if installation succeeded or packages were installed,
+ *  false otherwise
+ */
+global boolean CheckAndInstallPackages (list<string> packages) {
+    if (Mode::config)
+	return true;
+    if (InstalledAll (packages))
+	return true;
+    return InstallAll (packages);
+}
+
+/**
+ * Check if packages are installed
+ * Install them if they are not and user approves installation
+ * If installation fails (or wasn't allowed), ask user if he wants to continue
+ * @param a list of packages to check (and install)
+ * @return boolean true if installation succeeded, packages were installed
+ *  before or user decided to continue, false otherwise
+ */
+global boolean CheckAndInstallPackagesInteractive (list<string> packages) {
+    boolean success = CheckAndInstallPackages (packages);
+    if (! success)
+    {
+	if (! LastOperationCanceled ())
+	{
+	    if (Mode::commandline)
+	    {
+		// error report
+		Report::Error (_("Installing required packages failed."));
+	    }
+	    else
+	    {
+		success = Popup::ContinueCancel (
+		    // continue/cancel popup
+		    _("Installing required packages failed. If you continue
+without required packages being installed,
+YaST may not work properly."));
+	    }
+	}
+	else
+	{
+	    if (Mode::commandline)
+	    {
+		Report::Error (
+		    // error report
+		    _("Cannot continue without installing required packages."));
+	    }
+	    else
+	    {
+		success = Popup::ContinueCancel (
+		    // continue/cancel popup
+		    _("If you continue without required packages being
+installed, YaST may not work properly."));
+	    }
+	}
+    }
+    return success;
+}
+
 /* EOF */
 }

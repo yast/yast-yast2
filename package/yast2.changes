@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul 19 12:26:40 CEST 2004 - jsrain@suse.cz
+
+- enhnced functionality of Package*.yvp modules (popups with custom
+  message, package check for read functions with error feedback)
+
+-------------------------------------------------------------------
 Wed Jul 14 11:27:23 CEST 2004 - jsrain@suse.cz
 
 - fixed typos in CWMServiceStart.ycp

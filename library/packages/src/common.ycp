@@ -13,7 +13,9 @@
 textdomain "base";
 
 import "Label";
+import "Mode";
 import "Popup";
+import "Report";
 import "Wizard";
 
 /* Main module prototypes */
@@ -75,7 +77,7 @@ global define boolean InstalledAny(list<string> packages) {
 
 /**
  */
-boolean PackageDialog(list<string> packages, boolean install) {
+boolean PackageDialog(list<string> packages, boolean install, string message) {
 
     y2debug("Asking for packages: %1", packages);
 
@@ -89,6 +91,9 @@ boolean PackageDialog(list<string> packages, boolean install) {
     if(install == false) text = _("These packages need to be removed:") + "<p>";
 
     foreach(string p, packages, { text = text + sformat("%1<br>", p); });
+
+    if (message != nil)
+	text = sformat (message, mergestring (packages, ", "));
 
     boolean doit = Popup::AnyQuestionRichText (
 	"", text, 40, 10,
@@ -107,11 +112,11 @@ boolean PackageDialog(list<string> packages, boolean install) {
 }
 
 global boolean Install(string package) {
-    return PackageDialog([package], true);
+    return PackageDialog([package], true, nil);
 }
 
 global boolean InstallAll(list<string> packages) {
-    return PackageDialog(packages, true);
+    return PackageDialog(packages, true, nil);
 }
 
 global boolean InstallAny(list<string> packages);
@@ -119,11 +124,31 @@ global boolean InstallAny(list<string> packages);
 
 
 global boolean Remove(string package) {
-    return PackageDialog([package], false);
+    return PackageDialog([package], false, nil);
 }
 
 global boolean RemoveAll(list<string> packages) {
-    return PackageDialog(packages, false);
+    return PackageDialog(packages, false, nil);
+}
+
+global boolean InstallMsg(string package, string message) {
+    return PackageDialog([package], true, message);
+}
+
+global boolean InstallAllMsg(list<string> packages, string message) {
+    return PackageDialog(packages, true, message);
+}
+
+global boolean InstallAnyMsg(list<string> packages, string message);
+// FIXME
+
+
+global boolean RemoveMsg(string package, string message) {
+    return PackageDialog([package], false, message);
+}
+
+global boolean RemoveAllMsg(list<string> packages, string message) {
+    return PackageDialog(packages, false, message);
 }
 
 /**
