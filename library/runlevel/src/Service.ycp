@@ -86,8 +86,10 @@ define boolean checkExists (string name) ``{
  */
 global define map Info (string name) ``{
     if(!checkExists (name)) return $[];
-    map detail = lookup ( (map) SCR::Read (.init.scripts.runlevel, name), name, $[]);
-    map service = lookup ( (map) SCR::Read (.init.scripts.comment, name), name, $[]);
+    map read = (map) SCR::Read (.init.scripts.runlevel, name);
+    map detail = read[name]:$[];
+    read = (map) SCR::Read (.init.scripts.comment, name);
+    map service = read[name]:$[];
     return add (
 	add (service, "start", detail["start"]:[]),
 	"stop", detail["stop"]:[]);
@@ -213,7 +215,7 @@ global define boolean Finetune (string name, list rl) ``{
     // and calls us only once for each modified service.
     // In general we cannot do it with dependencies in a single pass.
 
-    string rls = mergestring (rl, ",");
+    string rls = mergestring ((list<string>)rl, ",");
     // we must remove it first because insserv start=... adds
     // runlevels, not replace runlevels!!
     if (! serviceDisable (name, true))
