@@ -121,6 +121,11 @@ global define string CloseButton() ``{
   return _("C&lose");
 }
 
+global define string BrowseButton() ``{
+  /* Button label */
+  return _("Bro&wse");
+}
+
 global define string WarningMsg() ``{
   // this string is usually used as headline of a popup
   return _("Warning");
