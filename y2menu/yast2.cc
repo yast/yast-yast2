@@ -67,7 +67,7 @@ int main (int argc, const char *const *argv)
 
      group.name = string ("All");
      // button to show all yast2 modules
-     group.textstr = string (_( "&All" ) + 1);	// FIXME !!! HELP !!!
+     group.textstr = string (remove_and (_( "&All" )));
      group.skey = 0;
      groups.push_back (group);
      modules.push_back (vector < mod_data > ());

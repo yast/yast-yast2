@@ -19,6 +19,26 @@ using std::vector;
 */
 
 
+char *remove_and(const char *in)
+{
+    string str(in);
+    // position of '&' character
+    string::size_type andpos;
+
+    // remove '&' chars
+    while((andpos = str.find('&')) != string::npos)
+    {
+	str.erase(andpos, 1);
+    }
+
+    // create a copy of the result
+    char * ret = new char[str.size() + 1];
+    strcpy(ret, str.c_str());
+
+    return ret;
+}
+
+
 void getmodules ()
 {
     string mod_name;
@@ -211,8 +231,8 @@ void getbuttons ()
     set_textdomain ("base");
 
     // help button
-    button_help = _("&Help") + 1; // FIXME !!! HELP !!!
+    button_help = remove_and(_("&Help"));
 
     // quit button
-    button_cancel = _("&Quit") + 1; // FIXEM !!! HELP !!!
+    button_cancel = remove_and(_("&Quit"));
 }
