@@ -11,6 +11,7 @@
 {
     textdomain "base";
 
+    import "Popup";
     
     map GroupMap = $[];
     map ModuleMap = $[];
@@ -52,8 +53,8 @@
 			     `VSpacing(1.0),
 			     `HBox(
 				   `HSpacing(2),
-				   `Left( `PushButton(`id(`help), _("&Help")) ),
-				   `Right( `PushButton(`id(`quit), _("&Quit")) ),
+				   `Left( `PushButton(`id(`help), `opt(`key_F1), _("&Help")) ),
+				   `Right( `PushButton(`id(`quit), `opt(`key_F9), _("&Quit")) ),
 				   `HSpacing(2)
 				   ),
 			     `VSpacing(1)
@@ -63,16 +64,21 @@
        
 	global define string CreateGroupList (map Groups)  ``{
 	    list grouplist = [];
-
+	    list translated = [];
+	    
 	    grouplist = SortGroups (Groups, maplist (`rawname, `group, Groups, ``(rawname)));
 
-	    ReplaceWidget (`id (`groups_rep), `SelectionBox(`id (`groups), `opt (`notify, `immediate), "", grouplist) );
+	    foreach (`rawname, grouplist,
+	    ``{
+		translated = add( translated, `item(`id(rawname), Groups[rawname, "Name"]:"???") );
+		});
+	    
+	    ReplaceWidget (`id (`groups_rep), `SelectionBox(`id (`groups), `opt (`notify, `immediate), "", translated) );
 
 	    return grouplist[0]:"";
 	}
 
-	global define SortGroups (map GroupMap, list GroupList)
-	    ``{
+	global define SortGroups (map GroupMap, list GroupList) ``{
 	    return
 		sort (`x, `y, GroupList,
 		      ``{
@@ -82,16 +88,13 @@
 		});
 	}
 
-	global define DisplayModuleList (list modulelist)
-	    ``{
-	    // heading for list of modules
+	global define DisplayModuleList (list modulelist) ``{
 	    term modulebox = `SelectionBox( `id (`progs), `opt (`notify), "" );
 	    modulebox = add (modulebox, modulelist);
 	    ReplaceWidget (`id (`progs_rep), modulebox);
 	}
 
-	global define `DisplaySplash ()
-	    ``{
+	global define `DisplaySplash () ``{
 	    OpenDialog (`opt (`defaultsize),
 			`VBox (
 			       `VStretch (),
@@ -104,9 +107,12 @@
 
     };
 
-    global define Translate (string text)
+    global define Translate (string text, string domain )
     ``{
-	// remove _(" and ")
+	// set textdomain to the domain if the certain module 
+	string dummy = textdomain (domain);
+
+        // remove _(" and ")
 	if (regexpmatch (text, ".*_\\(.*\"(.*)\".*\\).*"))
 	{
 	    text = regexpsub (text, ".*_\\(.*\"(.*)\".*\\).*", "\\1");
@@ -114,6 +120,7 @@
 	    //text = regexpsub (text, "(.*)\".*\\).*", "\\1");
 	}
 	locale l = text;
+
 	return mergestring (splitstring (eval (l), "\n"), " ");
     }
 
@@ -165,8 +172,8 @@
 	list arguments = splitstring (Module["Arguments"]:"", " ");
 	if (function != "")
 	{
-	    y2milestone ("WFM::CallModule (%1, %2)", function, arguments);
-	    WFM::CallModule (function, arguments);
+	    any ret = WFM::CallModule (function, arguments);
+	    y2milestone ( "WFM::CallModule (%1, %2) returns: %3", function, arguments, ret );
 	}
     }
 
@@ -179,6 +186,66 @@
 
     textdomain "base";
 
+    global define ShowNcursesHelp() ``{
+	string help_text = "";
+
+	// help text for ncurses control center
+	string headline = _( "Controlling YaST2 ncurses with the Keyboard" );
+
+	// help text for ncurses control center continous
+	string help1 = _( "<p>1) <b>General</b><br>
+Navigate through the dialog elements with
+<TAB> and <SHIFT>+<TAB> or <TAB> and <ALT>+<TAB>.
+Select or activate elements with <SPACE> or <ENTER>.
+Some elements use <ARROW> keys.</p>"    );
+
+	// help text for ncurses control center continous
+	string help2  = _( "<p>Buttons are equipped with shortcut keys like <ALT> and a
+letter. Because the environment can affect the use of
+the keyboard, there is more than one way to
+navigate the dialog pages. See the next section.</p>");
+
+	// help text for ncurses control center continous
+	string help3  = _( "<p>2) <b>Substitution of Keystrokes</b><br>
+If <TAB> and <SHIFT>+<TAB> or <TAB> and <ALT>+<TAB> do not work,
+move focus forward with <CTRL>+'f' and backward with <CTRL>+'b'.</p>" );
+
+	// help text for ncurses control center continous
+	string help4  = _( "<p>If <ALT>+<letter> does not work,
+try <ESC>+<letter>. Example: <ALT>+<H> as <ESC>+<H>.
+<ESC>+<TAB> is also a substitute for <ALT>+<TAB>.</p>" );
+
+	// help text for ncurses control center continous
+	string help5  = _( "<p>3) <b>Function Keys</b><br>
+F-keys provide a quick access to main functions.
+There are many modules with special functions and it is not
+possible to apply the following system to all of them.</p>" );
+
+	// help text for ncurses control center continous
+	string help6 = _( "<p>In some environments, all or some
+F-keys are not availiable.
+There is no solution for this problem yet.</p>" );
+
+	// help text for ncurses control center continous
+	string help7  = _( "F1  = Help<br>
+F2  = Info or Description<br>
+F3  = Add<br>
+F4  = Edit or Configure<br>
+F5  = Delete<br>" );
+	
+	// help text for ncurses control center continous
+	string help8  = _( "F6  = Test<br>
+F7  = Expert or Advanced<br>
+F8  = Back<br>
+F9  = Abort<br>
+F10 = OK, Next, Finish, or Accept<br>" );
+
+	help_text = help1+help2+help3+help4+help5+help6+help7+help8;
+
+	Popup::LongText( headline, `RichText(help_text), 60, 20 );
+	
+    }
+	
     UI::DisplaySplash ();
 
     path menuentrypath = .yast2.menuentry.section;
@@ -195,8 +262,8 @@
 		map group = $[];
 		path MenuentryPathToThisSection = add (add (.yast2.menuentry.value, file), section);
 
-		group["Name"] = Translate (SCR::Read (add (MenuentryPathToThisSection, "Name")));
-		group["Icon"] = Translate (SCR::Read (add (MenuentryPathToThisSection, "Icon")));
+		group["Name"] = Translate (SCR::Read (add (MenuentryPathToThisSection, "Name")), "base");
+		group["Icon"] = Translate (SCR::Read (add (MenuentryPathToThisSection, "Icon")), "base");
 		group["SortKey"] = SCR::Read (add (MenuentryPathToThisSection, "SortKey"));
 
 		string rawgroupname=trim (substring (section, 7));
@@ -220,11 +287,10 @@
 
 		if (name != nil)
 		{
-		    // FIXME: workaround
-		    string dummy = textdomain (textdom);
-		    Module["Name"]	   = Translate (name);
-		    // Module["Icon"]	   = Translate (icon);
-		    Module["Helptext"]	   = Translate (help);
+		    // workaround: set textdomain in 'Translate' and reset it to "base" below
+		    Module["Name"]	   = Translate (name, textdom);
+		    // Module["Icon"]	   = Translate (icon, textdom);
+		    Module["Helptext"]	   = Translate (help, textdom);
 		    Module["Arguments"]    = args;
 		    Module["RequiresRoot"] = reqroot;
 		    Module["YCPFunction"]  = func;
@@ -250,7 +316,7 @@
 		    // put Module into the ModuleMap
 		    ModuleMap[ModuleNumber]  = Module;
 
-		    // FIXME: workaround
+		    // workaround
 		    string dummy2 = textdomain ("base");
 		}
 	    }
@@ -278,11 +344,12 @@
     {
         map event = UI::WaitForEvent();
 
+        y2milestone( "Input: %1", event );
+
         if ( event["ID"]:`none == `groups
              && event["EventReason"]:"" == "SelectionChanged" )
         {
 	    string id = UI::QueryWidget( `id(`groups), `CurrentItem);
-
 	    if (is (id, string))
 	    {
 		map group = GroupMap[id]:$[];
@@ -299,7 +366,6 @@
 	    map program = ModuleMap[prog_no]:"";
 	    // start the module
 	    Launch (program);
-	    y2milestone( "Start %1", program );
         }
         else if ( event["ID"]:`none == `groups
                   && event["EventReason"]:"" == "Activated" )
@@ -316,7 +382,14 @@
         {
             UI::SetFocus ( `id(`groups) );
         }
-        y2milestone( "Input: %1", event );
+	else if ( event["ID"]:`none == `help )
+	{
+	    ShowNcursesHelp();
+	}
+	else
+	{
+	    y2warning ( "Event or widget ID not handled" );
+	}
 
     }  until ( event["ID"]:`none == `quit );
 
