@@ -92,41 +92,45 @@ define void Launch(string modul) ``{
  */
 define void ShowNcursesHelp() ``{
 
-    /* NCurses Control Center headline */
+    /* NCurses (textmode) Control Center headline */
     string headline = _("Controlling YaST2 ncurses with the Keyboard");
 
-    /* NCurses Control Center help 1/8 */
+    /* NCurses Control Center help 1/ */
     string help = _("<p>1) <i>General</i><br>
 Navigate through the dialog elements with [TAB] to go to
 the next element and [SHIFT] (or [ALT]) + [TAB] to move backwards.
 Select or activate elements with [SPACE] or [ENTER].
 Some elements use arrow keys (e.g., to scroll in lists).</p>") +
 
-    /* NCurses Control Center help 2/8 */
+    /* NCurses Control Center help 2/9 */
     _("<p>Buttons are equipped with shortcut keys (the highlighted
 letter). Use [ALT] and the letter to activate the button.</p>") +
 
-    /* NCurses Control Center help 3/8 */
+   /* NCurses Control Center help 3/9 */
+    _("<p>Press [ESC] to close selection popups (e.g., from
+menu buttons) without choosing anything.</p>") +
+	
+    /* NCurses Control Center help 4/9 */
     _("<p>2) <i>Substitution of Keystrokes</i><br>
 <p>Because the environment can affect the use of the keyboard,
 there is more than one way to navigate the dialog pages.
 If [TAB] and [SHIFT] (or [ALT]) + [TAB] do not work,
 move focus forward with [CTRL] + [F] and backward with [CTRL] + [B].</p>") +
 
-    /* NCurses Control Center help 4/8 */
+    /* NCurses Control Center help 5/9 */
     _("<p>If [ALT] + [letter] does not work,
 try [ESC] + [letter]. Example: [ESC] + [H] for [ALT] + [H].
 [ESC] + [TAB] is also a substitute for [ALT] + [TAB].</p>") +
 
-    /* NCurses Control Center help 5/8 */
+    /* NCurses Control Center help 6/9 */
     _("<p>3) <i>Function Keys</i><br>
 F keys provide a quick access to main functions.
 Press F1 to get the function key bindings for the current dialog.</p>") +
 
-    /* NCurses Control Center help 6/8 */
+    /* NCurses Control Center help 7/9 */
     _("<p>The F keys are usually connected to a certain action:</p>") +
 
-    /* NCurses Control Center help 7/8 */
+    /* NCurses Control Center help 8/9 */
     _("F1  = Help<br>
 F2  = Info or Description<br>
 F3  = Add<br>
@@ -138,7 +142,7 @@ F8  = Back<br>
 F9  = Abort or Cancel<br>
 F10 = OK, Next, Finish, or Accept<br>") +
 
-    /* NCurses Control Center help 8/8 */
+    /* NCurses Control Center help 9/9 */
     _("<p>In some environments, all or some
 F keys are not availiable.</p>");
 
