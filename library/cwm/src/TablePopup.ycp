@@ -173,7 +173,7 @@
       * @param descr map table description map
       * @param opt_descr map selected option description map
       */
-    global define byteblock updateButtons (map descr, map opt_descr) ``{
+    global define void updateButtons (map descr, map opt_descr) ``{
 	if (descr["_cwm_attrib", "add_delete_buttons"]:true)
 	{
 	    UI::ChangeWidget (`id (`_tp_delete), `Enabled,
@@ -217,7 +217,7 @@
       * @param update_buttons boolean true if buttons status (enabled/disabled)
       *  should be updated according to currently selected item
       */
-    define byteblock TableRedraw (map<string, any> descr, boolean update_buttons) ``{
+    define void TableRedraw (map<string, any> descr, boolean update_buttons) ``{
 	list id_list = getIdList (descr);
 	if (previous_selected_item == nil)
 	{
@@ -404,7 +404,7 @@
       * Disable whole table
       * @param descr map table widget description map
       */
-    global define byteblock DisableTable (map descr) ``{
+    global define void DisableTable (map descr) ``{
 	UI::ChangeWidget (`id (`_tp_table), `Enabled, false);
 	UI::ChangeWidget (`id (`_tp_edit), `Enabled, false);
 	if (descr["_cwm_attrib", "add_delete_buttons"]:true)
@@ -424,7 +424,7 @@
       * currently selected table row
       * @param descr map table widget description map
       */
-    global define byteblock EnableTable (map<string, any> descr) ``{
+    global define void EnableTable (map<string, any> descr) ``{
 	UI::ChangeWidget (`id (`_tp_table), `Enabled, true);
 	UI::ChangeWidget (`id (`_tp_edit), `Enabled, true);
 	if (descr["_cwm_attrib", "add_delete_buttons"]:true)
@@ -443,7 +443,7 @@
       * @param descr map description map of the whole table
       * @param key table widget key
       */
-    global define byteblock TableInit (map<string, any> descr, any key) ``{
+    global define void TableInit (map<string, any> descr, any key) ``{
 	previous_selected_item = nil;
 	descr["_cwm_key"] = key;
 	TableRedraw (descr, true);
@@ -633,7 +633,7 @@
       * widget description map
       * @param key any widget key
       */
-    global define byteblock TableInitWrapper (any key) ``{
+    global define void TableInitWrapper (any key) ``{
 	TableInit (CWM::GetProcessedWidget (), key);
     }
 
