@@ -6,7 +6,7 @@ Read	.dev.tty "add device=eth0"
 Return	$["command":"add", "options":$["device":"eth0"]]
 Return	false
 Return	false
-Read	.dev.tty "quit"
-Return	$["command":"quit"]
+Read	.dev.tty "abort"
+Return	$["command":"abort"]
 Return	true
 Return	true

@@ -12,14 +12,14 @@ Write	.dev.tty "    help" true
 Write	.dev.tty "    longhelp" true
 Write	.dev.tty "" true
 Write	.dev.tty "    exit" true
-Write	.dev.tty "    quit" true
+Write	.dev.tty "    abort" true
 Write	.dev.tty "" true
 Write	.dev.tty "Commands:" true
 Write	.dev.tty "    add     add a network card" true
 Write	.dev.tty "    delete  delete a network card" true
 Write	.dev.tty "    list    display configuration summary" true
 Write	.dev.tty "" true
-Read	.dev.tty "quit"
-Return	$["command":"quit"]
+Read	.dev.tty "abort"
+Return	$["command":"abort"]
 Return	true
 Return	true

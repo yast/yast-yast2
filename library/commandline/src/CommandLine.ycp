@@ -39,8 +39,8 @@
 			    "exit"	: $[
 				"help": _("Exit interactive mode and save the changes")
 			    ],
-			    "quit"	: $[
-				"help": _("Quit interactive mode without saving the changes")
+			    "abort"	: $[
+				"help": _("Abort interactive mode, don't save the changes")
 			    ]
 			],
 	"options"	: $[
@@ -57,7 +57,7 @@
 			    "help"	: ["help", "verbose"],
 			    "interactive":["help", "verbose"],
 			    "exit"	: ["help"],
-			    "quit"	: ["help"],
+			    "abort"	: ["help"],
 			]
     ];
 
@@ -491,7 +491,7 @@
 	    Print("    longhelp");
 	    Print("");
 	    Print("    exit");
-	    Print("    quit");
+	    Print("    abort");
 	}
 
 	Print("");
@@ -543,7 +543,7 @@
 	}
 
 	/* Process command "abort" */
-	if( command["command"]:"" == "quit" ) {
+	if( command["command"]:"" == "abort" ) {
 	    done = true;
 	    aborted = true;
 	    return true;
@@ -599,7 +599,7 @@
 	    // translators: fallback name for a module at command line
 	    cmdlineinfo = add( cmdlineinfo, "id", _("unknown"));
 
-	    // it's better to quit now
+	    // it's better to abort now
 	    done = true;
 	    aborted = true;
 	}
@@ -609,7 +609,7 @@
 	if( ! haskey( cmdlineinfo, "help" ) ) {
 	    y2error( "Command line specification does not define global help for the module" );
 
-	    // it's better to quit now
+	    // it's better to abort now
 	    done = true;
 	    aborted = true;
 	}
@@ -620,7 +620,7 @@
 		if( ! haskey( def, "help" ) ) {
 		    y2error( "Command line specification does not define help for action '%1'", action );
 
-		    // it's better to quit now
+		    // it's better to abort now
 		    done = true;
 		    aborted = true;
 		}
@@ -633,7 +633,7 @@
 		if( ! haskey( def, "help" ) ) {
 		    y2error( "Command line specification does not define help for option '%1'", option );
 
-		    // it's better to quit now
+		    // it's better to abort now
 		    done = true;
 		    aborted = true;
 		}
@@ -641,7 +641,7 @@
 		if( ( def["type"]:"" == "regex" || def["type"]:"" == "enum" ) && ! haskey( def, "typespec" ) ) {
 		    y2error( "Command line specification does not define typespec for option '%1'", option );
 
-		    // it's better to quit now
+		    // it's better to abort now
 		    done = true;
 		    aborted = true;
 		}
@@ -655,7 +655,7 @@
 		if( ! haskey( cmdlineinfo["actions"]:$[], mapaction ) ) {
 		    y2error( "Command line specification maps undefined action '%1'", mapaction );
 
-		    // it's better to quit now
+		    // it's better to abort now
 		    done = true;
 		    aborted = true;
 		}
@@ -666,7 +666,7 @@
 		    if( ! haskey( cmdlineinfo["options"]:$[], (string)mapopt ) ) {
 			y2error( "Command line specification maps undefined option '%1' for action '%2'", mapopt, mapaction );
 
-			// it's better to quit now
+			// it's better to abort now
 			done = true;
 			aborted = true;
 		    }
@@ -801,7 +801,7 @@
      *  @descr Get next user-given command. If there is a command available, returns it, otherwise ask
      *  the user for a command (in interactive mode). Also processes system commands.
      *
-     *  @return map of the new command. If there is no more commands, it returns exit or quit depending
+     *  @return map of the new command. If there are no more commands, it returns exit or abort depending
      *  on the result user asked for.
      *
      *  @see Parse
@@ -809,7 +809,7 @@
     global define map Command () ``{
 	// if we are done already, return the result
 	if( done ) {
-	    if( aborted ) return $[ "command" : "quit" ];
+	    if( aborted ) return $[ "command" : "abort" ];
 	    else return $[ "command" : "exit" ];
 	}
 
@@ -841,7 +841,7 @@
 		} while( ProcessSystemCommands( commandcache ) && ! done );
 
 		if( done ) {
-		    if( aborted ) return $[ "command" : "quit" ];
+		    if( aborted ) return $[ "command" : "abort" ];
 		    else return $[ "command" : "exit" ];
 		}
 

@@ -27,7 +27,7 @@
     TEST(``(CommandLine::Aborted()), [], nil );
 
     // quit
-    TEST(``(CommandLine::Command() ), [$[ "dev":$[ "tty": "quit" ] ] ],nil);
+    TEST(``(CommandLine::Command() ), [$[ "dev":$[ "tty": "abort" ] ] ],nil);
     TEST(``(CommandLine::Done()), [], nil );
     TEST(``(CommandLine::Aborted()), [], nil );
 

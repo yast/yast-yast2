@@ -2,7 +2,7 @@ Write	.dev.tty.prompt "YaST2 lan> " true
 Return	true
 Return	false
 Return	false
-Read	.dev.tty "quit"
-Return	$["command":"quit"]
+Read	.dev.tty "abort"
+Return	$["command":"abort"]
 Return	true
 Return	true

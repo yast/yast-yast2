@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 23 14:25:44 CET 2005 - lslezak@suse.cz
+
+- command line - use command 'abort' instead of 'quit',
+  testsuite updated
+
+-------------------------------------------------------------------
 Mon Feb 21 18:31:12 CET 2005 - nashif@suse.de
 
 - Fixed reading of global variable which breaks testsuites
