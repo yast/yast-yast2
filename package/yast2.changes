@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Nov  1 08:00:06 CET 2004 - jsrain@suse.cz
+
+- fixed parameters to sformat in Commandline.ycp
+- 2.11.3
+
+-------------------------------------------------------------------
 Tue Oct 26 12:35:59 CEST 2004 - jsrain@suse.cz
 
 - Mode.ycp split to Mode.ycp, Stage.ycp, Linuxrc.ycp and
