@@ -16,10 +16,7 @@
  */
 
 {
-    import "Pkg";
     include "testsuite.ycp";
-    import "Initrd";
-    import "Mode";
 
     // minimal "don't care" SCR data to work with the constructor
     map READ = $[
@@ -28,7 +25,27 @@
 		"INITRD_MODULES" : "reiserfs lvmmod",
 	    ],
         ],
+	"probe" : $[
+	    "architecture" : "i386",
+	    "has_apm" : true,
+	    "has_pcmcia" : false,
+	    "has_smp" : false,
+	    "system" : nil,
+	],
+	"target" : $[
+	    "string" : "",
+	],
+	"etc" : $[
+	    "install_inf" : $[
+		"InstMode" : "",
+	    ],
+	],
     ];
+
+    TESTSUITE_INIT ([READ, $[], $[]], 0);
+
+    import "Initrd";
+    import "Mode";
 
     TEST(``(Initrd::ListModules ()), [READ, $[], $[]], 0);
     DUMP("Now reseting");

@@ -1,6 +1,6 @@
 @HEADER-COMMENT@
 
-# neededforbuild  yast2-devel-packages hwinfo
+# neededforbuild  yast2-devel-packages
 
 @HEADER@
 # Need the new file popups
