@@ -43,4 +43,9 @@ void add_module (std::string mod_name, std::string namestr, std::string group,
 		 std::string infostr,std:: string textdomain, std::string args,
 		 int skey);
 
+
+// return new copy of the input string without '&' characters
+char *remove_and(const char *in);
+
+
 #endif
