@@ -340,8 +340,10 @@
         evms_config = Misc::SysconfigRead(
                 .product.features.EVMS_CONFIG, "no") == "yes";
 
+        /*
         incomplete_translation_treshold = Misc::SysconfigRead(
                 .product.features.INCOMPLETE_TRANSLATION_TRESHOLD, "95");
+                */
 
         return;
     }
