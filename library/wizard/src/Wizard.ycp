@@ -24,14 +24,14 @@
 
     // keep trailing "/" !!
     string theme_path = Directory::themedir + "/current/";
-    string icon_path  = theme_path;
+    string icon_path  = Directory::icondir; // theme_path;
 
     boolean have_fancy_ui = nil;
 
     /**
      * Initialization
      **/
-    define void Init() ``{
+    define void Init() {
 	map ui_info = UI::GetDisplayInfo();
 
 	have_fancy_ui = ui_info[ "HasImageSupport" ]:false
@@ -44,13 +44,13 @@
 	// have_fancy_ui = false;
 
 	UI::SetFunctionKeys( Label::DefaultFunctionKeyMap() );
-    };
+    }
 
     /**
      * Change the image at the top of the window (UI context)
      * @param imagedata image
      **/
-    global define void SetImage( byteblock imagedata ) ``{
+    global define void SetImage( byteblock imagedata ) {
 	if (imagedata == nil) {
 	    y2warning ("SetImage(): Invalid image - using fallback" );
 	    UI::ReplaceWidget( `id(`image), `Image(`opt(`zeroWidth, `easterEgg), `suseheader, "SuSE") );
@@ -64,7 +64,7 @@
      * Returns a button box with buttons "Back", "Abort", "Next"
      * @return a widget tree
      **/
-    global define term BackAbortNextButtonBox() ``{
+    global define term BackAbortNextButtonBox() {
 	return `HBox(
 		     `HWeight(1, `ReplacePoint(`id(`rep_back ), `PushButton(`id(`back ), `opt (`key_F8), Label::BackButton()  ) ) ),
 		     `HStretch(),
@@ -72,14 +72,14 @@
 		     `HStretch(),
 		     `HWeight(1, `ReplacePoint(`id(`rep_next ), `PushButton(`id(`next), `opt (`key_F10, `default), Label::NextButton()  ) ) )
 		     );
-    };
+    }
 
 
     /**
      * Returns a button box with buttons "Back", "Abort Installation", "Next"
      * @return a widget tree
      **/
-    global define term BackAbortInstallationNextButtonBox() ``{
+    global define term BackAbortInstallationNextButtonBox() {
 	return `HBox(
 		     `HWeight(1, `ReplacePoint(`id(`rep_back ), `PushButton(`id(`back ), `opt (`key_F8), Label::BackButton()  ) ) ),
 		     `HStretch(),
@@ -87,27 +87,27 @@
 		     `HStretch(),
 		     `HWeight(1, `ReplacePoint(`id(`rep_next ), `PushButton(`id(`next), `opt (`key_F10, `default), Label::NextButton()  ) ) )
 		     );
-    };
+    }
 
 
     /**
      * Returns a button box with buttons "Back", "Next"
      * @return a widget tree
      **/
-    global define term BackNextButtonBox() ``{
+    global define term BackNextButtonBox() {
 	return `HBox(
 		     `HWeight(1, `ReplacePoint(`id(`rep_back ), `PushButton(`id(`back ), `opt (`key_F8), Label::BackButton()  ) ) ),
 		     `HStretch(),
 		     `HWeight(1, `ReplacePoint(`id(`rep_next ), `PushButton(`id(`next ), `opt (`key_F10, `default), Label::NextButton()  ) ) )
 		     );
-    };
+    }
 
 
     /**
      * Returns a button box with buttons "Cancel", "Accept"
      * @return a widget tree
      **/
-    global define term CancelAcceptButtonBox() ``{
+    global define term CancelAcceptButtonBox() {
 	return `HBox(
 		     `HWeight(1, `Empty() ),	// Layout trick to make sure the center button is centered
 		     `HStretch(),
@@ -115,14 +115,14 @@
 		     `HStretch(),
 		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10, `default), Label::AcceptButton()  ) )
 		     );
-    };
+    }
 
 
     /**
      * Returns a button box with buttons "Abort", "Accept"
      * @return a widget tree
      **/
-    global define term AbortAcceptButtonBox() ``{
+    global define term AbortAcceptButtonBox() {
 	return `HBox(
 		     `HWeight(1, `Empty() ),	// Layout trick to make sure the center button is centered
 		     `HStretch(),
@@ -130,14 +130,14 @@
 		     `HStretch(),
 		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10, `default), Label::AcceptButton()  ) )
 		     );
-    };
+    }
 
 
     /**
      * Returns a button box with buttons "Abort Installation", "Accept"
      * @return a widget tree
      **/
-    global define term AbortInstallationAcceptButtonBox() ``{
+    global define term AbortInstallationAcceptButtonBox() {
 	return `HBox(
 		     `HWeight(1, `Empty() ),	// Layout trick to make sure the center button is centered
 		     `HStretch(),
@@ -145,7 +145,7 @@
 		     `HStretch(),
 		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10, `default), Label::AcceptButton()  ) )
 		     );
-    };
+    }
 
 
     /**
@@ -154,9 +154,9 @@
      * @param add_bottom_tile add a 3D border at the bottom?
      * @return term describing the header image.
      **/
-    global define term HeaderImage( boolean add_bottom_tile ) ``{
+    global define term HeaderImage( boolean add_bottom_tile ) {
 	term image = `Image( `opt(`zeroWidth, `easterEgg), `suseheader, "SuSE");
-	
+
 	if ( have_fancy_ui == nil ) Init ();
 
 	if ( have_fancy_ui )
@@ -181,7 +181,7 @@
 	}
 
 	return image;
-    };
+    }
 
 
     /**
@@ -191,7 +191,7 @@
      * @param	button_box term that contains a `HBox() with buttons in it
      * @return	term describing the dialog.
      **/
-    global define term GenericDialog( term button_box ) ``{
+    global define term GenericDialog( term button_box ) {
 	return `VBox( `id(`WizardDialog),
 		      `ReplacePoint( `id(`image ), HeaderImage( true ) ),
 		      `HBox(
@@ -216,7 +216,7 @@
 			    `HSpacing(1)
 			    )
 		      );
-    };
+    }
 
 
 
@@ -227,13 +227,13 @@
      * @param current_step	number (from 1) of the current step
      * @return term describing the steps
      **/
-    define term simpleEasyInstallationSteps( list<string> step_descriptions, integer current_step ) ``{
+    define term simpleEasyInstallationSteps( list<string> step_descriptions, integer current_step ) {
 
 	integer step = 1;
 	term vbox = `VBox();
 	vbox = add( vbox, `VStretch() );
 
-	foreach ( string step_desc, step_descriptions, ``{
+	foreach ( string step_desc, step_descriptions, {
 	    term widget = step == current_step ? `Heading( step_desc ) : `Label( step_desc );
 	    vbox = add( vbox, `HBox( `HSpacing( 3 ), `Left( widget ) ) );
 	    vbox = add( vbox, `VStretch() );
@@ -243,7 +243,7 @@
 	vbox = add( vbox, `PushButton(`id(`help), `opt(`key_F1), Label::HelpButton() ) );
 
 	return vbox;
-    };
+    }
 
 
     /**
@@ -261,7 +261,7 @@
 				      integer	step_no,
 				      string	left_image_name,
 				      string	right_image_name )
-    ``{
+    {
 
 	term card = nil;
 
@@ -327,7 +327,7 @@
 	}
 
 	return card;
-    };
+    }
 
 
     /**
@@ -337,7 +337,7 @@
      * @param current_step	 number (from 1) of the current step
      * @return term describing the steps
      **/
-    define term fancyEasyInstallationSteps( list step_descriptions, integer current_step ) ``{
+    define term fancyEasyInstallationSteps( list step_descriptions, integer current_step ) {
 
 	return `HSquash(
 			`VBox(
@@ -380,7 +380,7 @@
 					)
 			      )
 			);
-    };
+    }
 
 
     /**
@@ -391,11 +391,11 @@
      * @param current_step	number (from 1) of the current step
      * @return term describing the steps
      **/
-    global define term EasyInstallationSteps( list<string> step_descriptions, integer current_step ) ``{
+    global define term EasyInstallationSteps( list<string> step_descriptions, integer current_step ) {
 	if ( have_fancy_ui == nil ) Init ();
 	return have_fancy_ui ? fancyEasyInstallationSteps( step_descriptions, current_step )
 	    : simpleEasyInstallationSteps( step_descriptions, current_step );
-    };
+    }
 
 
     /**
@@ -404,10 +404,10 @@
      * @param step_descriptions	list of installation step descriptions (strings)
      * @param current_step	number (from 1) of the current step
      **/
-    global define void SetEasyInstallationStep( list<string> step_descriptions, integer current_step ) ``{
+    global define void SetEasyInstallationStep( list<string> step_descriptions, integer current_step ) {
 	y2milestone( "Installation step #%1", current_step );
 	UI::ReplaceWidget(`id(`rep_installation_steps), EasyInstallationSteps( step_descriptions, current_step ) );
-    };
+    }
 
 
     /**
@@ -417,7 +417,7 @@
      * @param	steps list of installation step descriptions (strings)
      * @return	term describing the dialog.
      **/
-    global define term EasyInstallationDialog( term button_box, list<string> steps ) ``{
+    global define term EasyInstallationDialog( term button_box, list<string> steps ) {
 
 	if ( have_fancy_ui == nil ) Init ();
 
@@ -457,7 +457,7 @@
 				      )
 			     );
 	return dialog;
-    };
+    }
 
 
 
@@ -467,27 +467,27 @@
      *
      * @return true, if topmost dialog is a wizard dialog, false otherwise
      **/
-    global define boolean IsWizardDialog() ``{
+    global define boolean IsWizardDialog() {
 	return UI::WidgetExists(`id(`WizardDialog) );
-    };
+    }
 
 
     /**
      * Check if the topmost dialog has a "Next" button
      * @return true if widget with `id(`next) is present, false otherwise
      **/
-    global define boolean HasNextButton() ``{
+    global define boolean HasNextButton() {
 	return UI::WidgetExists(`id(`next) );
-    };
+    }
 
 
     /**
      * Check if the topmost dialog has an "Accept" button
      * @return true if widget with `id(`accept) is present, false otherwise
      **/
-    global define boolean HasAcceptButton() ``{
+    global define boolean HasAcceptButton() {
 	return UI::WidgetExists(`id(`accept) );
-    };
+    }
 
 
     /**
@@ -495,66 +495,66 @@
      *
      * @param help_text the text to display
      **/
-    global define void ShowHelp( string help_text ) ``{
+    global define void ShowHelp( string help_text ) {
 	Popup::LongText(
 			  // Heading for help popup window
 			  _("Help"),
 			  `RichText( help_text ),
 			  50, 20 );
-    };
+    }
 
 
     /**
      * Returns a standard wizard dialog with buttons "Next", "Back", "Abort".
      * @return term describing the dialog.
      **/
-    global define term NextBackDialog() ``{
+    global define term NextBackDialog() {
 	return GenericDialog( BackAbortNextButtonBox() );
-    };
+    }
 
 
     /**
      * Returns a standard wizard dialog with buttons "Cancel", "Accept"
      * @return term describing the dialog.
      **/
-    global define term AcceptDialog() ``{
+    global define term AcceptDialog() {
 	return GenericDialog( CancelAcceptButtonBox() );
-    };
+    }
 
 
     /**
      * Open any wizard dialog.
      * @param	dialog	a wizard dialog, e.g. Wizard::GenericDialog()
      **/
-    global define void OpenDialog( term dialog ) ``{
+    global define void OpenDialog( term dialog ) {
 	UI::OpenDialog( `opt(`defaultsize), dialog );
-    };
+    }
 
 
     /**
      * Open a dialog with buttons "Next", "Back", "Abort"
      * and set the keyboard focus to "Next".
      **/
-    global define void OpenNextBackDialog() ``{
+    global define void OpenNextBackDialog() {
 	Wizard::OpenDialog( NextBackDialog() );
 	UI::SetFocus(`id(`next) );
-    };
+    }
 
 
     /**
      * Open a dialog with "Accept", "Cancel"
      * and set the keyboard focus to "Accept".
      **/
-    global define void OpenAcceptDialog() ``{
+    global define void OpenAcceptDialog() {
 	Wizard::OpenDialog( AcceptDialog() );
 	UI::SetFocus(`id(`accept) );
-    };
+    }
 
 
     /**
      * Close a wizard dialog.
      **/
-    global define void CloseDialog() ``{
+    global define void CloseDialog() {
 	if ( IsWizardDialog() )
 	{
 	    UI::CloseDialog();
@@ -563,7 +563,7 @@
 	{
 	    y2error( "Wizard::CloseDialog(): Topmost dialog is not a wizard dialog!" );
 	}
-    };
+    }
 
 
     /**
@@ -576,14 +576,14 @@
      *
      * @return (maybe normalized) widget ID
      **/
-    global define any UserInput() ``{
+    global define any UserInput() {
 	any input = UI::UserInput();
 
 	if ( input == `accept )	return `next;
 	if ( input == `cancel )	return `back;
 
 	return input;
-    };
+    }
 
 
     /**
@@ -591,9 +591,9 @@
      *
      * For backwards compatibility only - don't use this any more in new modules.
      **/
-    global define void CreateDialog() ``{
+    global define void CreateDialog() {
 	Wizard::OpenDialog( NextBackDialog() );
-    };
+    }
 
 
     /**
@@ -601,7 +601,7 @@
      * look like. This function creates and shows a dialog.
      **/
     global define void SetContents(string title, term contents, string help_text,
-				   boolean has_back, boolean has_next) ``{
+				   boolean has_back, boolean has_next) {
 
 
 	if ( UI::WidgetExists(`id(`next ) ) )
@@ -616,7 +616,7 @@
 	if ( UI::WidgetExists(`id(`title	) ) )	UI::ChangeWidget(`id(`title), `Value, title);
 
 	UI::ReplaceWidget(`id(`contents), contents);
-    };
+    }
 
 
     /**
@@ -628,9 +628,9 @@
      * operation -> the user notices instant response, even though he
      * may in fact still have to wait.
      **/
-    global define void ClearContents() ``{
+    global define void ClearContents() {
 	Wizard::SetContents("", `Empty(), "", false, false);
-    };
+    }
 
 
     /**
@@ -641,7 +641,7 @@
      * @param back_label label of back button
      * @param next_label label of next button
      **/
-    global define void SetContentsButtons (string title, term contents, string help_text, string back_label, string next_label) ``{
+    global define void SetContentsButtons (string title, term contents, string help_text, string back_label, string next_label) {
 	UI::PostponeShortcutCheck ();
 	// Set button labels first to avoid geometry problems: SetContents()
 	// calls ReplaceWidget() wich triggers a re-layout.
@@ -650,7 +650,7 @@
 	if ( UI::WidgetExists(`id(`next ) ) )	UI::ChangeWidget(`id (`next), `Label, next_label);
 	Wizard::SetContents( title, contents, help_text, true, true );
 	UI::CheckShortcuts ();
-    };
+    }
 
 
 
@@ -664,31 +664,31 @@
      *
      * @param contents a term describing the new contents
      **/
-    global define void ReplaceHelp(term contents) ``{
+    global define void ReplaceHelp(term contents) {
 	UI::ReplaceWidget(`id(`helpSpace), contents);
-    };
+    }
 
 
     /**
      * Restore the wizard help subwindow after Wizard::ReplaceHelp().
      **/
-    global define void RestoreHelp(string help_text) ``{
+    global define void RestoreHelp(string help_text) {
 	UI::ReplaceWidget(`id(`helpSpace), `RichText(`id(`HelpText), help_text ) );
-    };
+    }
 
 
     /**
      * Replace the wizard 'back' button with a custom widget.
      **/
-    global define void ReplaceBackButton(term contents) ``{
+    global define void ReplaceBackButton(term contents) {
 	UI::ReplaceWidget(`id(`rep_back), contents);
-    };
+    }
 
 
     /**
      * Restore the wizard 'back' button after Wizard::ReplaceBackButton().
      **/
-    global define void RestoreBackButton() ``{
+    global define void RestoreBackButton() {
 	if ( UI::WidgetExists(`id(`rep_back ) ) )
 	{
 	    UI::ReplaceWidget(`id(`rep_back),
@@ -696,7 +696,7 @@
 					  Label::BackButton() )
 			      );
 	}
-    };
+    }
 
 
     /**
@@ -704,15 +704,15 @@
      *
      * @param contents a term describing the new contents
      **/
-    global define void ReplaceNextButton(term contents) ``{
+    global define void ReplaceNextButton(term contents) {
 	    UI::ReplaceWidget(`id(`rep_next), contents);
-    };
+    }
 
 
     /**
      * Restore the wizard 'next' button after ReplaceNextButton().
      **/
-    global define void RestoreNextButton() ``{
+    global define void RestoreNextButton() {
 	if ( UI::WidgetExists(`id(`rep_next ) ) )
 	{
 	    UI::ReplaceWidget(`id(`rep_next),
@@ -720,7 +720,7 @@
 					  Label::NextButton() )
 			      );
 	}
-    };
+    }
 
 
     /**
@@ -728,15 +728,15 @@
      *
      * @param contents a term describing the new contents
      **/
-    global define void ReplaceAbortButton(term contents) ``{
+    global define void ReplaceAbortButton(term contents) {
 	UI::ReplaceWidget(`id(`rep_abort), contents);
-    };
+    }
 
 
     /**
      * Restore the wizard 'abort' button after ReplaceAbortButton().
      **/
-    global define void RestoreAbortButton() ``{
+    global define void RestoreAbortButton() {
 	if ( UI::WidgetExists(`id(`rep_abort ) ) )
 	{
 	    UI::ReplaceWidget(`id(`rep_abort),
@@ -744,7 +744,7 @@
 					  Label::AbortButton() )
 			      );
 	}
-    };
+    }
 
 
     /**
@@ -752,12 +752,12 @@
      *
      * @param new_icon a term describing the new contents
      **/
-    global define void ReplaceTitleIcon( term new_icon ) ``{
+    global define void ReplaceTitleIcon( term new_icon ) {
 	if ( UI::WidgetExists(`id(`rep_title_icon ) ) )
 	{
 	    UI::ReplaceWidget(`id(`rep_title_icon ), new_icon );
 	}
-    };
+    }
 
 
     /**
@@ -766,16 +766,32 @@
      *
      * @param icon_name name (without path) of the new icon
      **/
-    global define void SetTitleIcon( string icon_name ) ``{
-	Wizard::ReplaceTitleIcon( `Image( icon_path + icon_name, "" ) );
-    };
+    global define void SetTitleIcon( string icon_name ) {
+	Wizard::ReplaceTitleIcon( `Image( icon_path + "/" + icon_name + ".png", "" ) );
+    }
 
 
     /**
      * Clear the wizard 'title' icon, i.e. replace it with nothing
      **/
-    global define void ClearTitleIcon() ``{
+    global define void ClearTitleIcon() {
 	Wizard::ReplaceTitleIcon( `Empty() );
+    }
+
+
+    /**
+     */
+    global define boolean SetDesktopIcon(string file) {
+	string filename = sformat("%1/%2.desktop", Directory::desktopdir, file);
+	path filepath = .yast2.desktop.v + filename + ."Desktop Entry".Icon;
+	string icon = (string) SCR::Read(filepath);
+	y2debug("icon: %1 (%2)", icon, filepath);
+
+	if(icon == nil) {
+	    return false;
+	}
+	SetTitleIcon(icon);
+	return true;
     }
 
     /**
@@ -783,14 +799,14 @@
      *
      * @param button_box the new button box - something like `HBox(...)
      **/
-    global define void ReplaceButtonBox( term button_box ) ``{
+    global define void ReplaceButtonBox( term button_box ) {
 	UI::ReplaceWidget(`id(`rep_button_box ), button_box );
-    };
+    }
 
     /**
      * Enable the wizard's "Abort" button
      **/
-    global define void EnableAbortButton() ``{
+    global define void EnableAbortButton() {
 	UI::ChangeWidget(`id(`abort), `Enabled, true );
     }
 
@@ -804,7 +820,7 @@
      * Note: There is no corresponding function for the wizard's "Next"
      * or "Back" buttons - this is handled in Wizard::SetContents().
      **/
-    global define void DisableAbortButton() ``{
+    global define void DisableAbortButton() {
 	UI::ChangeWidget(`id(`abort), `Enabled, false);
     }
 
@@ -816,7 +832,7 @@
      * @param stage new wizard stage
      * @param force don't use the internal cache
      **/
-    global define void SetStage( integer stage, boolean force ) ``{
+    global define void SetStage( integer stage, boolean force ) {
 
 	if ( stage == current_stage && ! force) {	// cache
 	    y2debug("Stage %1 cached - doing nothing", stage );
@@ -830,7 +846,7 @@
 
 	// Cache the current stage
 	current_stage = stage;
-    };
+    }
 
     /* ------------------------------------------------------------ */
     /*
@@ -855,7 +871,7 @@
      * @param s eg. "mail-1-conntype"
      * @see RestoreScreenShotName
      */
-    global define void SetScreenShotName (string s) ``{
+    global define void SetScreenShotName (string s) {
 	screenshot_name_stack = prepend (screenshot_name_stack, screenshot_name);
 	screenshot_name = s;
 	UI::SetModulename (screenshot_name);
@@ -866,7 +882,7 @@
      * If it does not match a SetScreenShotName, "yast2" is used
      * and a y2error logged.
      */
-    global define void RestoreScreenShotName () ``{
+    global define void RestoreScreenShotName () {
 	screenshot_name = screenshot_name_stack[0]:nil;
 	if (screenshot_name == nil)
 	{
@@ -879,8 +895,6 @@
 	}
 	UI::SetModulename (screenshot_name);
     }
-    
 
-
-
+/* EOF */
 }

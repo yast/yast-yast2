@@ -59,6 +59,11 @@ global string imagedir = yast2dir + "/images";
 global string themedir = yast2dir + "/theme";
 
 /**
+ * Directory for icons
+ */
+global string icondir = yast2dir + "/images";
+
+/**
  * Directory for locales
  */
 global string localedir = yast2dir + "/locale";
