@@ -4,6 +4,7 @@
  * Summary:	NCurses Control Center
  * Authors:	Michal Svec <msvec@suse.cz>
  *
+ * $Id$
  *
  * Provides a list of available yast2 modules. This module is inteded for use
  * with ncurses, for X the yast2 control center should be used.
