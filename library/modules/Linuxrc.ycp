@@ -38,6 +38,11 @@
 	});
     }
 
+    global void ResetInstallInf () {
+        install_inf = nil;
+        return;
+    }
+
     global string InstallInf (string key) {
 	if (install_inf == nil)
 	    ReadInstallInf ();
