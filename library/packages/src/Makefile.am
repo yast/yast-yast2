@@ -14,10 +14,10 @@ module_DATA =			\
 ynclude_DATA =			\
 	common.ycp
 
-symlinks:
-	test -L packages || ln -sf . packages
+packages:
+	ln -sf . packages
 
-ycpchook = symlinks
+ycpchook = packages
 
 EXTRA_DIST = $(module_DATA) $(ynclude_DATA)
 
