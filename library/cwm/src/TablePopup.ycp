@@ -333,7 +333,7 @@ define boolean ValidateTableDescr (string key, map<string,any> descr) {
 	any(any, string, symbol) toEval = (any(any, string, symbol)) (descr["option_move"]:nil);
 	if (nil != toEval)
 	{
-	    toEval (opt_id, id2key (descr, opt_id), dir);
+	    return toEval (opt_id, id2key (descr, opt_id), dir);
 	}
 	return nil;
     }
