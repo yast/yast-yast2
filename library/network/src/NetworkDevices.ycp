@@ -280,7 +280,7 @@ global string RealType (string type, string hotplug) {
 /**
  * STARTMODE: onboot, on and boot are aliases for auto
  */
-global map CanonicalizeStartmode (map ifcfg) {
+global map<string, any> CanonicalizeStartmode (map<string, any> ifcfg) {
     map <string, string> canonicalize_startmode = $[
 	"on": "auto",
 	"boot": "auto",
@@ -306,7 +306,7 @@ global map CanonicalizeStartmode (map ifcfg) {
  * @return the map with IPADDR, NETMASK adjusted; PREFIXLEN ""
  * others unchanged. If IPADDR is empty, return the original.
  */
-global map CanonicalizeIP (map ifcfg) {
+global map<string, any> CanonicalizeIP (map<string, any> ifcfg) {
     if (ifcfg == nil)
     {
 	return nil;
@@ -331,11 +331,56 @@ global map CanonicalizeIP (map ifcfg) {
     // Now we have ipaddr and prefixlen
     // Let's compute the rest
     string netmask = Netmask::FromBits (tointeger (prefixlen));
-    map ret = ifcfg;
+    map<string, any> ret = ifcfg;
     ret["IPADDR"] = ipaddr;
     ret["PREFIXLEN"] = "";
     ret["NETMASK"] = netmask;
     return ret;
+}
+
+/**
+ * Conceal secret information, such as WEP keys, so that the output
+ * can be passed to y2log and bugzilla.
+ * @param ifcfg one ifcfg
+ * @return ifcfg with secret fields masked out
+ */
+global map ConcealSecrets1 (map<string, any> ifcfg) {
+    if (ifcfg == nil)
+    {
+	return nil;
+    }
+    map out = mapmap (string k, any v, ifcfg, {
+	// see also Write "Permission change"
+	if ((substring (k, 0, 12) == "WIRELESS_KEY" // also _1 .. _4
+	     || k == "WIRELESS_WPA_PSK")
+	    && v != "")
+	{
+	    v = "CONCEALED";
+	}
+	return $[k: v];
+    });
+    return out;
+}
+
+/**
+ * Conceal secret information, such as WEP keys, so that the output
+ * can be passed to y2log and bugzilla. (#65741)
+ * @param devs a two-level map of ifcfgs like Devices
+ * @return ifcfgs with secret fields masked out
+ */
+global map ConcealSecrets (map devs) {
+    if (devs == nil)
+    {
+	return nil;
+    }
+    map out = mapmap (string t, map<string, map<string, any> > tdevs,
+		      (map<string, map<string, map<string, any> > >) devs, {
+	map tout = mapmap (string id, map<string, any> ifcfg, tdevs, {
+	    return $[id: ConcealSecrets1 (ifcfg)];
+	});
+	return $[t: tout];
+    });
+    return out;
 }
 
 /**
@@ -388,7 +433,7 @@ global define boolean Read() {
 	list<string> values = SCR::Dir(topath(pth));
 	y2debug("values=%1", values);
 
-	map config = $[];
+	map<string, any> config = $[];
 	maplist(string val, values, {
 	    string item = (string) SCR::Read(topath(pth + "." + val));
 	    y2debug("item=%1", item);
@@ -416,10 +461,10 @@ global define boolean Read() {
 		config["_aliases"] = _aliases;
 	    }
 	});
-	y2milestone("config=%1", config);
+	y2milestone("config=%1", ConcealSecrets1 (config));
 
 	// canonicalize, #46885
-	map <string, map> caliases = mapmap (string a, map c, (map<string,map>)config["_aliases"]:$[], {
+	map <string, map> caliases = mapmap (string a, map<string, any> c, (map<string,map<string, any> >)config["_aliases"]:$[], {
 	    return $[a: CanonicalizeIP (c)];
 	});
 	if (caliases != $[])	// unconditionally?
@@ -477,6 +522,35 @@ define map<string,map> FilterNOT(map<string,map> devices, string devregex) {
 }
 
 /**
+ * For the NAME field, filter out characters that will case problems
+ * for the shell or the ini agent. (#72164)
+ * It should be done in more places but this field is most susceptible.
+ * @param s a string
+ * @return s with some characters removed, esp. the single quote
+ */
+string ShellSafe (string s) {
+    s = filterchars (s, String::CGraph () + " ");
+    return deletechars (s, "'");
+}
+
+/**
+ * SCR::Write (p, ShellSafe (s)) and if s had to be changed,
+ * log the _path_ (not the value, for privacy).
+ * @see ShellSafe
+ * @param p SCR path
+ * @param s value
+ * @return success
+ */
+boolean ShellSafeWrite (path p, string s) {
+    string safe_s = ShellSafe (s);
+    if (safe_s != s)
+    {
+	y2milestone ("Changed: %1", p);
+    }
+    return SCR::Write (p, safe_s);
+}
+
+/**
  * Write devices to files
  * @param devregex regular expression for the device type
  * @return true if success
@@ -490,8 +564,8 @@ global define boolean Write(string devregex) {
 
     map Devs = Filter(Devices, devregex);
     map OriginalDevs = Filter(OriginalDevices, devregex);
-    y2milestone("OriginalDevs=%1", OriginalDevs);
-    y2milestone("Devs=%1", Devs);
+    y2milestone("OriginalDevs=%1", ConcealSecrets (OriginalDevs));
+    y2milestone("Devs=%1", ConcealSecrets (Devs));
 
     /* Check for changes */
     if(Devs == OriginalDevs) {
@@ -551,19 +625,19 @@ global define boolean Write(string devregex) {
 
 			maplist(string ak, string av, amap, {
 			    string akk = ak + "_" + anum;
-			    SCR::Write(topath(p + akk), av);
+			    ShellSafeWrite (topath (p + akk), av);
 			    seen_label = seen_label || ak == "LABEL";
 			});
 
 			if (!seen_label)
 			{
-			    SCR::Write(topath(p + ("LABEL_" + anum)), anum);
+			    ShellSafeWrite (topath (p + ("LABEL_" + anum)), anum);
 			}
 		    });
 		}
 		/* Write regular keys */
 		else
-		    SCR::Write(topath(p + k), devmap[k]:"");
+		    ShellSafeWrite (topath (p + k), devmap[k]:"");
 	    });
 
 	    /* update libhd unique number * /
@@ -573,6 +647,7 @@ global define boolean Write(string devregex) {
 	    */
 
 	    /* 0600 if contains encryption key (#24842) */
+	    // see also ConcealSecrets1, keep in sync
 	    boolean has_key =
 		devmap["WIRELESS_WPA_PSK"]:"" != "" ||
 		// the unnumbered one should be empty but just in case
@@ -613,7 +688,7 @@ global define boolean Import(string devregex, map<string,map> devices) {
     y2debug("Devs=%1", Devs);
 
     devices = mapmap(string typ, map devsmap, devices, {
-	return $[typ: mapmap(string num, map config, (map<string,map>) devsmap, {
+	return $[typ: mapmap(string num, map<string, any> config, (map<string,map<string, any> >) devsmap, {
 	    config = CanonicalizeIP (config);
 	    config = CanonicalizeStartmode (config);
 	    return $[num: config];
