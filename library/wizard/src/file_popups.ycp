@@ -314,9 +314,11 @@
 		      `PushButton (`id (`forward), `opt (`disabled, `key_F7), "-&>")
 		      ),
 		  `HBox (
+			 `HSpacing(1),
 			 `ReplacePoint (`id (`repdir),
 					`SelectionBox (`id (`dir), `opt(`notify), "", dirs)
 			     ),
+			 `HSpacing(1),
 			 `VSpacing(15)
 			 ),
 		  `HBox (
