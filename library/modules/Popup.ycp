@@ -10,1218 +10,1197 @@
  *
  * Contains commonly used popup dialogs
  * for general usage, e.g. Popup::YesNo(), Popup::ContinueCancel().
- *
- * See also <a href="../README.popups">README.popups</a>
+ * <br>
+ * See also <a href="../wizard/README.popups">README.popups</a>
  */
 
 {
-    module "Popup";
 
-    textdomain "base";
+module "Popup";
 
-    import "Label";
-    import "Mode";
+textdomain "base";
 
-	boolean feedback_open = false;
+import "Label";
+import "Mode";
 
-
-    /**
-     * Internal function that actually creates a popup dialog layout.
-     *
-     * @param headline	headline to show or Popup::NoHeadline()
-     * @param message		message text to show
-     * @param button_box	term with one or more buttons
-     *
-     * @return the layout contents as a term
-     */
-
-    define term createPopupLayoutInternal( string headline, string message, term button_box ) ``{
-
-	term contents = `Empty();
-	term heading  = `Empty();
-
-	if ( size(headline) == 0 )
-	{
-	    heading = `VSpacing(0.2);
-	}
-	else
-	{
-	    heading = `Heading( headline );
-	}
-
-	contents = `HBox(
-			 `HSpacing(1),
-			 `HCenter (
-				   `HSquash(
-					    `VBox (
-						   `HCenter (
-							     `HSquash(
-								      `VBox(
-									    `Left(heading),
-									    `VSpacing(0.2),
-									    `Left(`Label(message))
-									    )
-								      )
-							     ),
-						   `HSquash( button_box ),
-						   `VSpacing(0.2)
-						   )
-					    )
-				   ),
-			 `HSpacing(1)
-			 );
-
-	return contents;
-    };
+boolean feedback_open = false;
 
 
-    /**
-     * Internal function that actually creates a popup dialog with additional label.
-     *
-     * @param headline	headline to show or Popup::NoHeadline()
-     * @param message		message text to show
-     * @param button_box	term with one or more buttons
-     * @param label		second label with id `label which can be used e.g. for time out value displaying
-     *
-     * @return term the layout contents as a term
-     */
+/**
+ * Internal function that actually creates a popup dialog layout.
+ *
+ * @param headline	headline to show or Popup::NoHeadline()
+ * @param message		message text to show
+ * @param button_box	term with one or more buttons
+ *
+ * @return the layout contents as a term
+ */
+define term createPopupLayoutInternal( string headline, string message, term button_box ) {
 
-    define term createPopupLayoutInternalWithLabel(string headline, string message, term button_box, string label)
-	``{
+    term contents = `Empty();
+    term heading  = `Empty();
 
-	term contents = `Empty();
-	term heading  = `Empty();
-
-	if (size(headline) == 0)
-	{
-	    heading = `VSpacing(0.2);
-	}
-	else
-	{
-	    heading = `Heading(headline);
-	}
-
-	contents = `HBox(
-			 `HSpacing(1),
-			 `HCenter (
-				   `HSquash(
-					    `VBox (
-						   `HCenter (
-							     `HSquash(
-								      `VBox(
-									    `Left(heading),
-									    `VSpacing(0.2),
-									    `Left(`Label(message)),
-									    `VSpacing(0.2),
-									    `Label(`id(`label), label)
-									    )
-								      )
-							     ),
-						   `HSquash(button_box),
-						   `VSpacing(0.2)
-						   )
-					    )
-				   ),
-			 `HSpacing(1)
-			 );
-
-	return contents;
-    };
-
-
-    /**
-     * Indicator for empty headline for popups that can optionally have one
-     * This is really just an alias for the empty string "", but it is
-     * slightly better readable.
-     *
-     * @return empty string ("")
-     */
-
-    global define string NoHeadline() ``{
-	return "";
+    if ( size(headline) == 0 )
+    {
+	heading = `VSpacing(0.2);
+    }
+    else
+    {
+	heading = `Heading( headline );
     }
 
-    /**
-     * Button box for the AnyQuestion Dialog (internal function).
-     *
-     * @param yes_button_message	label on affirmative buttons (on left side)
-     * @param no_button_message	label on negating button (on right side)
-     * @param focus			`focus_yes (first button) or `focus_no (second button)
-     *
-     * @return term button box
-     */
-    define term AnyQuestionButtonBox (
-				       string yes_button_message,
-				       string no_button_message,
-				       symbol focus )	``{
-	term yes_button = `Empty();
-	term no_button = `Empty();
+    contents = `HBox(
+		     `HSpacing(1),
+		     `HCenter (
+			       `HSquash(
+					`VBox (
+					       `HCenter (
+							 `HSquash(
+								  `VBox(
+									`Left(heading),
+									`VSpacing(0.2),
+									`Left(`Label(message))
+									)
+								  )
+							 ),
+					       `HSquash( button_box ),
+					       `VSpacing(0.2)
+					       )
+					)
+			       ),
+		     `HSpacing(1)
+		     );
 
-	if ( focus == `focus_no )
-	{
-	    yes_button = `PushButton( `id(`yes),
-				      `opt (`key_F10),
-				      yes_button_message );
-	    no_button  = `PushButton( `id(`no_button),
-				      `opt(`default, `key_F9),
-				      no_button_message );
-	}
-	else
-	{
-	    yes_button = `PushButton( `id(`yes),
-				      `opt(`default, `key_F10),
-				      yes_button_message);
-	    no_button  = `PushButton( `id(`no_button),
-				      `opt (`key_F9),
-				      no_button_message );
-	}
+    return contents;
+}
 
-	term button_box =  `HBox(
-				 `HWeight( 1, yes_button),
-				 `HSpacing(2),
-				 `HWeight( 1, no_button )
-				 );
-        return button_box;
+
+/**
+ * Internal function that actually creates a popup dialog with additional label.
+ *
+ * @param headline	headline to show or Popup::NoHeadline()
+ * @param message		message text to show
+ * @param button_box	term with one or more buttons
+ * @param label		second label with id `label which can be used e.g. for time out value displaying
+ *
+ * @return term the layout contents as a term
+ */
+define term createPopupLayoutInternalWithLabel(string headline, string message, term button_box, string label) {
+
+    term contents = `Empty();
+    term heading  = `Empty();
+
+    if (size(headline) == 0)
+    {
+	heading = `VSpacing(0.2);
+    }
+    else
+    {
+	heading = `Heading(headline);
     }
 
-    /**
-     * Generic question popup with two buttons.
-     *
-     * Style guide hint: The first button has to have the semantics of "yes",
-     * "OK", "continue" etc., the second its opposite ("no", "cancel", ...).
-     * NEVER use this generic question popup to simply exchange the order of
-     * yes/no, continue/cancel or ok/cancel buttons!
-     *
-     * <p><img src="../AnyQuestion.png" /></p>
-     *
-     * @param headline		headline or Popup::NoHeadline()
-     * @param message			message string
-     * @param yes_button_message	label on affirmative buttons (on left side)
-     * @param no_button_message	label on negating button (on right side)
-     * @param focus			`focus_yes (first button) or `focus_no (second button)
-     *
-     * @return true:  first button has been clicked
-     *	 false: second button has been clicked
-     *
-     * @see YesNo
-     * @see ContinueCancel
-     *
-     * @example Popup::AnyQuestion( Label::WarningMsg(), "Do really want to ...?", "Install", "Don't do it", `focus_no );
-     */
+    contents = `HBox(
+		     `HSpacing(1),
+		     `HCenter (
+			       `HSquash(
+					`VBox (
+					       `HCenter (
+							 `HSquash(
+								  `VBox(
+									`Left(heading),
+									`VSpacing(0.2),
+									`Left(`Label(message)),
+									`VSpacing(0.2),
+									`Label(`id(`label), label)
+									)
+								  )
+							 ),
+					       `HSquash(button_box),
+					       `VSpacing(0.2)
+					       )
+					)
+			       ),
+		     `HSpacing(1)
+		     );
 
-    global define boolean AnyQuestion( string headline,
-				       string message,
-				       string yes_button_message,
-				       string no_button_message,
-				       symbol focus )	``{
-
-        term button_box = AnyQuestionButtonBox ( yes_button_message, no_button_message, focus);
-	UI::OpenDialog(
-		       `opt(`decorated),
-		       createPopupLayoutInternal( headline, message, button_box )
-		       );
-
-	any ret = UI::UserInput();
-	UI::CloseDialog();
-
-	return ret == `yes;
-    };
-
-    /**
-     * Timed question popup with two buttons and time display
-     *
-     * @param headline		headline or Popup::NoHeadline()
-     * @param message			message string
-     * @param yes_button_message	label on affirmative buttons (on left side)
-     * @param no_button_message	label on negating button (on right side)
-     * @param focus			`focus_yes (first button) or `focus_no (second button)
-     * @param integer			timeout, if 0, normal behaviour
-     * @see AnyQuestion
-     */
-    global define boolean TimedAnyQuestion( string headline,
-				       string message,
-				       string yes_button_message,
-				       string no_button_message,
-				       symbol focus ,
-                                       integer timeout_seconds)	``{
-
-        term button_box = AnyQuestionButtonBox ( yes_button_message, no_button_message, focus);
-        term timed =
-            `ReplacePoint(`id(`replace_buttons) ,
-                    `VBox(
-                        `HCenter(
-                            `Label(`id(`remaining_time), "" + timeout_seconds)
-                            ),
-                        `HBox(
-                            // "Stop" button for timeout message: Stop counting down
-                            // (i.e. leave the popup message open without timeout)
-                            `PushButton(`id(`timed_stop), Label::StopButton() ),
-                            `HSpacing(2),
-
-                            // "OK" button for timeout message: Close popup dialog
-                            // (i.e. confirm the message)
-                            `PushButton(`id(`timed_ok),
-                                `opt(`default, `key_F10),
-                                Label::OKButton() )
-                            ),
-                        `VSpacing(0.2)
-                        )
-                    );
+    return contents;
+}
 
 
-	UI::OpenDialog(
-		       `opt(`decorated),
-		       createPopupLayoutInternal( headline, message, timed )
-		       );
+/**
+ * Indicator for empty headline for popups that can optionally have one
+ * This is really just an alias for the empty string "", but it is
+ * slightly better readable.
+ *
+ * @return empty string ("")
+ */
+global define string NoHeadline() {
+    return "";
+}
 
-	sleep (1000);
-	any which_input = `empty;
-	while (timeout_seconds > 0) {
-	    which_input = UI::PollInput();
-	    if (which_input == `timed_ok)
-		break;
-	    if (which_input == `timed_stop)
-            {
-                UI::ReplaceWidget(`id(`replace_buttons), button_box);
-		while (which_input == `timed_stop)
-		    which_input = UI::UserInput();
-		break;
-            }
-	    sleep (1000);
-	    timeout_seconds = timeout_seconds - 1;
-	    UI::ChangeWidget (`id(`remaining_time), `Value, ""+timeout_seconds);
-	}
-	UI::CloseDialog();
+/**
+ * Button box for the AnyQuestion Dialog (internal function).
+ *
+ * @param yes_button_message	label on affirmative buttons (on left side)
+ * @param no_button_message	label on negating button (on right side)
+ * @param focus			`focus_yes (first button) or `focus_no (second button)
+ *
+ * @return term button box
+ */
+define term AnyQuestionButtonBox (
+	string yes_button_message,
+	string no_button_message,
+	symbol focus )
+{
 
-	return which_input == `yes;
-    };
+    term yes_button = `Empty();
+    term no_button = `Empty();
 
-    /**
-     * Dialog which displays the "message" and has a <b>Continue</b>
-     * and a <b>Cancel</b> button.
-     * This popup should be used to confirm possibly dangerous actions and if
-     * it's useful to display a short headline (without headline
-     * Popup::ContinueCancel() can be used).
-     * The default button is Continue.
-     *
-     * Returns true if Continue is clicked.
-     *
-     * <p><img src="../ContinueCancelHeadline.png" /></p>
-     *
-     * @param  headline short headline or Popup::NoHeadline()
-     * @param  message  message string
-     * @return boolean
-     *
-     * @example Popup::ContinueCancelHeadline ( "Short Header", "Going on with action....?" );
-     *
-     * @see	ContinueCancel
-     * @see	YesNo
-     * @see	AnyQuestion
-     */
-    global define boolean ContinueCancelHeadline (string headline, string message) ``{
-
-	boolean ret = AnyQuestion( headline,
-			       message,
-			       Label::ContinueButton(),
-			       Label::CancelButton(),
-			       `focus_yes
-			       );
-
-	y2debug("ContinueCancelHeadline returned: %1", ret );
-
-	return ret;
-    };
-
-
-    /**
-     * Dialog which displays the "message" and has a <b>Continue</b>
-     * and a <b>Cancel</b> button.
-     * This popup should be used to confirm possibly dangerous actions.
-     * The default button is Continue.
-     * Returns true if Continue is clicked.
-     *
-     * <p><img src="../ContinueCancel.png" /></p>
-     *
-     * @param  message  message string
-     * @return boolean
-     *
-     * @example Popup::ContinueCancel ( "Please insert required CD-ROM." );
-     *
-     * @see	AnyQuestion
-     */
-    global define boolean ContinueCancel (string message) ``{
-
-	boolean ret = ContinueCancelHeadline( NoHeadline(), message );
-	y2debug("ContinueCancel returned: %1", ret );
-
-	return ret;
+    if ( focus == `focus_no )
+    {
+	yes_button = `PushButton( `id(`yes),
+				  `opt (`key_F10),
+				  yes_button_message );
+	no_button  = `PushButton( `id(`no_button),
+				  `opt(`default, `key_F9),
+				  no_button_message );
+    }
+    else
+    {
+	yes_button = `PushButton( `id(`yes),
+				  `opt(`default, `key_F10),
+				  yes_button_message);
+	no_button  = `PushButton( `id(`no_button),
+				  `opt (`key_F9),
+				  no_button_message );
     }
 
+    term button_box =  `HBox(
+			     `HWeight( 1, yes_button),
+			     `HSpacing(2),
+			     `HWeight( 1, no_button )
+			     );
+    return button_box;
+}
 
-    /**
-     * This dialog displays "message" (a question) and has a <b>Yes</b> and
-     * a <b>No</b> button.
-     * It should be used for decisions about two about equivalent paths,
-     * not for simple confirmation - use "Popup::ContinueCancel()" for those.
-     * A short headline can be displayed (without headline you can use Popup::YesNo()).
-     *
-     * The default button is Yes.
-     *
-     * Returns true if <b>Yes</b> is clicked.
-     *
-     * <p><img src="../YesNoHeadline.png" /></p>
-     *
-     * @param  headline	short headline or Popup::NoHeadline()
-     * @param  message	message string
-     * @return boolean
-     *
-     * @example  Popup::YesNoHeadline ( "Resize Windows Partition?", "... explanation of dangers ..." );
-     *
-     * @see	YesNo
-     * @see	AnyQuestion
-     */
+/**
+ * Generic question popup with two buttons.
+ *
+ * Style guide hint: The first button has to have the semantics of "yes",
+ * "OK", "continue" etc., the second its opposite ("no", "cancel", ...).
+ * NEVER use this generic question popup to simply exchange the order of
+ * yes/no, continue/cancel or ok/cancel buttons!
+ *
+ * <p><img src="../AnyQuestion.png" /></p>
+ *
+ * @param headline		headline or Popup::NoHeadline()
+ * @param message			message string
+ * @param yes_button_message	label on affirmative buttons (on left side)
+ * @param no_button_message	label on negating button (on right side)
+ * @param focus			`focus_yes (first button) or `focus_no (second button)
+ *
+ * @return true:  first button has been clicked
+ *	 false: second button has been clicked
+ *
+ * @see YesNo
+ * @see ContinueCancel
+ *
+ * @example Popup::AnyQuestion( Label::WarningMsg(), "Do really want to ...?", "Install", "Don't do it", `focus_no );
+ */
+global define boolean AnyQuestion( string headline,
+				   string message,
+				   string yes_button_message,
+				   string no_button_message,
+				   symbol focus )	{
 
-    global define boolean YesNoHeadline(string headline, string message) ``{
+    term button_box = AnyQuestionButtonBox ( yes_button_message, no_button_message, focus);
+    UI::OpenDialog(
+		   `opt(`decorated),
+		   createPopupLayoutInternal( headline, message, button_box )
+		   );
 
-	boolean ret = AnyQuestion( headline,
-			       message,
-			       Label::YesButton(),
-			       Label::NoButton(),
-			       `focus_yes
-			       );
+    any ret = UI::UserInput();
+    UI::CloseDialog();
 
-	y2debug("YesNoHeadline returned: %1", ret );
+    return ret == `yes;
+}
 
-	return ret;
-    };
+/**
+ * Timed question popup with two buttons and time display
+ *
+ * @param headline		headline or Popup::NoHeadline()
+ * @param message			message string
+ * @param yes_button_message	label on affirmative buttons (on left side)
+ * @param no_button_message	label on negating button (on right side)
+ * @param focus			`focus_yes (first button) or `focus_no (second button)
+ * @param integer			timeout, if 0, normal behaviour
+ * @see AnyQuestion
+ */
+global define boolean TimedAnyQuestion( string headline,
+				   string message,
+				   string yes_button_message,
+				   string no_button_message,
+				   symbol focus ,
+				   integer timeout_seconds)	{
 
+    term button_box = AnyQuestionButtonBox ( yes_button_message, no_button_message, focus);
+    term timed =
+	`ReplacePoint(`id(`replace_buttons) ,
+		`VBox(
+		    `HCenter(
+			`Label(`id(`remaining_time), "" + timeout_seconds)
+			),
+		    `HBox(
+			// "Stop" button for timeout message: Stop counting down
+			// (i.e. leave the popup message open without timeout)
+			`PushButton(`id(`timed_stop), Label::StopButton() ),
+			`HSpacing(2),
 
-    /**
-     * Display a yes/no question and wait for answer.
-     * Should be used for decisions about two about equivalent paths,
-     * not for simple confirmation - use "Popup::ContinueCancel()" for those.
-     * The default button is Yes.
-     * Returns true if <b>Yes</b> is clicked.
-     *
-     * <p><img src="../YesNo.png" /></p>
-     *
-     * @param  message	message string
-     * @return boolean
-     *
-     * @example  Popup::YesNo ( "Create a backup of the config files?" );
-     *
-     * @see	YesNoHeadline
-     * @see	ContinueCancel
-     * @see	AnyQuestion
-     */
-
-    global define boolean YesNo(string message) ``{
-
-	boolean ret = YesNoHeadline( NoHeadline(), message);
-
-	y2debug("YesNo returned: %1", ret );
-
-	return ret;
-    };
-
-
-    /**
-     * Show a long text that might need scrolling.
-     *
-     * Pass a RichText widget with the parameters appropriate for your text -
-     * i.e. without special parameters for HTML-like text or with
-     * `opt(`plainText) for plain ASCII text without HTML tags.
-     *
-     * <p><img src="../LongText.png" /></p>
-     *
-     * @param  headline short headline
-     * @param  richtext  text input is `Richtext()
-     * @param  hdim  initial horizontal dimension of the popup
-     * @param  vdim  initial vertical dimension of the popup
-     *
-     * @example Popup::LongText ( "Package description", `Richtext("<p>Hello, this is a long description .....</p>"), 50, 20 );
-     */
-
-    global define void LongText( string headline, term richtext,
-				 integer hdim, integer vdim ) ``{
-
-	UI::OpenDialog( `opt( `decorated ),
-			`HBox( `VSpacing(vdim),
-			       `VBox (`HSpacing(hdim),
-				      `Left(`Heading( headline )),
-				      `VSpacing(0.2),
-				      richtext,	// scrolled text
-				      `PushButton( `id(`ok),
-						   `opt(`default, `key_F10),
-						   Label::OKButton() )
-				      )
-			       )
-			);
-
-	UI::SetFocus(`id(`ok ) );
-
-	UI::UserInput();
-	UI::CloseDialog();
-    };
-
-
-    /**
-     * Show a question that might need scrolling.
-     *
-     * @param  headline short headline
-     * @param  richtext  text input as a rich text
-     * @param  hdim  initial horizontal dimension of the popup
-     * @param  vdim  initial vertical dimension of the popup
-     * @param  yes_button_message message on the left/true button
-     * @param  no_button_message message on the right/false button
-     * @param  focus `focus_yes, `focus_no, `focus_none
-     * @return left button pressed?
-     */
-    global define boolean AnyQuestionRichText (string headline,
-					       string richtext,
-					       integer hdim, integer vdim,
-					       string yes_button_message,
-					       string no_button_message,
-					       symbol focus) ``{
-	term yes_button = `PushButton (
-	    `id (`ok),
-	    ( focus == `focus_yes ?
-	      `opt (`default, `key_F10) :
-	      `opt (`key_F10) ),
-	    yes_button_message);
-
-	term no_button = `PushButton (
-	    `id (`cancel),
-	    ( focus == `focus_no ?
-	      `opt (`default, `key_F9) :
-	      `opt (`key_F9) ),
-	    no_button_message);
-
-	term d = `HBox (
-	    `VSpacing (vdim),
-	    `VBox (
-		`HSpacing (hdim),
-		size (headline) > 0 ? `Left(`Heading( headline )) : `Empty (),
-		`VSpacing(0.2),
-		`RichText (richtext),
-		`HBox (
-		    yes_button,
-		    no_button
+			// "OK" button for timeout message: Close popup dialog
+			// (i.e. confirm the message)
+			`PushButton(`id(`timed_ok),
+			    `opt(`default, `key_F10),
+			    Label::OKButton() )
+			),
+		    `VSpacing(0.2)
 		    )
-		)
-	    );
-	UI::OpenDialog (`opt (`decorated), d);
-	any ui = UI::UserInput ();
-	UI::CloseDialog ();
-	return ui == `ok;
-    }
+		);
 
 
-    /**
-     * Confirmation for "Abort" button during installation.
-     *
-     * According to the "severity" parameter an appropriate text will be
-     * displayed indicating what the user has to expect when he really aborts now.
-     *
-     * <p><img src="../ConfirmAbort.png" /></p>
-     *
-     * @param severity		`painless, `incomplete, `unusable
-     *
-     * @return boolean
-     *
-     * @example Popup::ConfirmAbort ( `painless );
-     */
+    UI::OpenDialog(
+		   `opt(`decorated),
+		   createPopupLayoutInternal( headline, message, timed )
+		   );
 
-    global define boolean ConfirmAbort( symbol severity ) ``{
-
-	string what_will_happen = "";
-
-	// Confirm user request to abort installation
-	string abort_label = _("Really abort the installation?");
-	// Button that will really abort the installation
-	string abort_button = _("&Abort Installation");
-	// Button that will continue with the installation
-	string continue_button = _("&Continue Installation");
-
-	if ( severity == `painless )
+    sleep (1000);
+    any which_input = `empty;
+    while (timeout_seconds > 0) {
+	which_input = UI::PollInput();
+	if (which_input == `timed_ok)
+	    break;
+	if (which_input == `timed_stop)
 	{
-	    if (Mode::repair)
-	    {
-		// Confirm user request to abort System Repair
-		abort_label = _("Really abort YaST System Repair?");
-		// Button that will really abort the repair
-		abort_button = _("Abort System Repair");
-		// Button that will continue with the repair
-		continue_button = _("&Continue System Repair");
-	    }
-	    else
-	    {
-		// Warning text for aborting an installation before anything is installed
-		what_will_happen = _("If you abort the installation now,
+	    UI::ReplaceWidget(`id(`replace_buttons), button_box);
+	    while (which_input == `timed_stop)
+		which_input = UI::UserInput();
+	    break;
+	}
+	sleep (1000);
+	timeout_seconds = timeout_seconds - 1;
+	UI::ChangeWidget (`id(`remaining_time), `Value, ""+timeout_seconds);
+    }
+    UI::CloseDialog();
+
+    return which_input == `yes;
+}
+
+/**
+ * Dialog which displays the "message" and has a <b>Continue</b>
+ * and a <b>Cancel</b> button.
+ * This popup should be used to confirm possibly dangerous actions and if
+ * it's useful to display a short headline (without headline
+ * Popup::ContinueCancel() can be used).
+ * The default button is Continue.
+ *
+ * Returns true if Continue is clicked.
+ *
+ * <p><img src="../ContinueCancelHeadline.png" /></p>
+ *
+ * @param  headline short headline or Popup::NoHeadline()
+ * @param  message  message string
+ * @return boolean
+ *
+ * @example Popup::ContinueCancelHeadline ( "Short Header", "Going on with action....?" );
+ *
+ * @see	ContinueCancel
+ * @see	YesNo
+ * @see	AnyQuestion
+ */
+global define boolean ContinueCancelHeadline (string headline, string message) {
+
+    boolean ret = AnyQuestion( headline,
+			   message,
+			   Label::ContinueButton(),
+			   Label::CancelButton(),
+			   `focus_yes
+			   );
+
+    y2debug("ContinueCancelHeadline returned: %1", ret );
+
+    return ret;
+}
+
+
+/**
+ * Dialog which displays the "message" and has a <b>Continue</b>
+ * and a <b>Cancel</b> button.
+ * This popup should be used to confirm possibly dangerous actions.
+ * The default button is Continue.
+ * Returns true if Continue is clicked.
+ *
+ * <p><img src="../ContinueCancel.png" /></p>
+ *
+ * @param  message  message string
+ * @return boolean
+ *
+ * @example Popup::ContinueCancel ( "Please insert required CD-ROM." );
+ *
+ * @see	AnyQuestion
+ */
+global define boolean ContinueCancel (string message) {
+
+    boolean ret = ContinueCancelHeadline( NoHeadline(), message );
+    y2debug("ContinueCancel returned: %1", ret );
+
+    return ret;
+}
+
+
+/**
+ * This dialog displays "message" (a question) and has a <b>Yes</b> and
+ * a <b>No</b> button.
+ * It should be used for decisions about two about equivalent paths,
+ * not for simple confirmation - use "Popup::ContinueCancel()" for those.
+ * A short headline can be displayed (without headline you can use Popup::YesNo()).
+ *
+ * The default button is Yes.
+ *
+ * Returns true if <b>Yes</b> is clicked.
+ *
+ * <p><img src="../YesNoHeadline.png" /></p>
+ *
+ * @param  headline	short headline or Popup::NoHeadline()
+ * @param  message	message string
+ * @return boolean
+ *
+ * @example  Popup::YesNoHeadline ( "Resize Windows Partition?", "... explanation of dangers ..." );
+ *
+ * @see	YesNo
+ * @see	AnyQuestion
+ */
+global define boolean YesNoHeadline(string headline, string message) {
+
+    boolean ret = AnyQuestion( headline,
+			   message,
+			   Label::YesButton(),
+			   Label::NoButton(),
+			   `focus_yes
+			   );
+
+    y2debug("YesNoHeadline returned: %1", ret );
+
+    return ret;
+}
+
+
+/**
+ * Display a yes/no question and wait for answer.
+ * Should be used for decisions about two about equivalent paths,
+ * not for simple confirmation - use "Popup::ContinueCancel()" for those.
+ * The default button is Yes.
+ * Returns true if <b>Yes</b> is clicked.
+ *
+ * <p><img src="../YesNo.png" /></p>
+ *
+ * @param  message	message string
+ * @return boolean
+ *
+ * @example  Popup::YesNo ( "Create a backup of the config files?" );
+ *
+ * @see	YesNoHeadline
+ * @see	ContinueCancel
+ * @see	AnyQuestion
+ */
+global define boolean YesNo(string message) {
+
+    boolean ret = YesNoHeadline( NoHeadline(), message);
+
+    y2debug("YesNo returned: %1", ret );
+
+    return ret;
+}
+
+
+/**
+ * Show a long text that might need scrolling.
+ *
+ * Pass a RichText widget with the parameters appropriate for your text -
+ * i.e. without special parameters for HTML-like text or with
+ * `opt(`plainText) for plain ASCII text without HTML tags.
+ *
+ * <p><img src="../LongText.png" /></p>
+ *
+ * @param  headline short headline
+ * @param  richtext  text input is `Richtext()
+ * @param  hdim  initial horizontal dimension of the popup
+ * @param  vdim  initial vertical dimension of the popup
+ *
+ * @example Popup::LongText ( "Package description", `Richtext("<p>Hello, this is a long description .....</p>"), 50, 20 );
+ */
+global define void LongText( string headline, term richtext,
+			     integer hdim, integer vdim ) {
+
+    UI::OpenDialog( `opt( `decorated ),
+		    `HBox( `VSpacing(vdim),
+			   `VBox (`HSpacing(hdim),
+				  `Left(`Heading( headline )),
+				  `VSpacing(0.2),
+				  richtext,	// scrolled text
+				  `PushButton( `id(`ok),
+					       `opt(`default, `key_F10),
+					       Label::OKButton() )
+				  )
+			   )
+		    );
+
+    UI::SetFocus(`id(`ok ) );
+
+    UI::UserInput();
+    UI::CloseDialog();
+}
+
+
+/**
+ * Show a question that might need scrolling.
+ *
+ * @param  headline short headline
+ * @param  richtext  text input as a rich text
+ * @param  hdim  initial horizontal dimension of the popup
+ * @param  vdim  initial vertical dimension of the popup
+ * @param  yes_button_message message on the left/true button
+ * @param  no_button_message message on the right/false button
+ * @param  focus `focus_yes, `focus_no, `focus_none
+ * @return left button pressed?
+ */
+global define boolean AnyQuestionRichText (string headline,
+					   string richtext,
+					   integer hdim, integer vdim,
+					   string yes_button_message,
+					   string no_button_message,
+					   symbol focus) {
+    term yes_button = `PushButton (
+	`id (`ok),
+	( focus == `focus_yes ?
+	  `opt (`default, `key_F10) :
+	  `opt (`key_F10) ),
+	yes_button_message);
+
+    term no_button = `PushButton (
+	`id (`cancel),
+	( focus == `focus_no ?
+	  `opt (`default, `key_F9) :
+	  `opt (`key_F9) ),
+	no_button_message);
+
+    term d = `HBox (
+	`VSpacing (vdim),
+	`VBox (
+	    `HSpacing (hdim),
+	    size (headline) > 0 ? `Left(`Heading( headline )) : `Empty (),
+	    `VSpacing(0.2),
+	    `RichText (richtext),
+	    `HBox (
+		yes_button,
+		no_button
+		)
+	    )
+	);
+    UI::OpenDialog (`opt (`decorated), d);
+    any ui = UI::UserInput ();
+    UI::CloseDialog ();
+    return ui == `ok;
+}
+
+
+/**
+ * Confirmation for "Abort" button during installation.
+ *
+ * According to the "severity" parameter an appropriate text will be
+ * displayed indicating what the user has to expect when he really aborts now.
+ *
+ * <p><img src="../ConfirmAbort.png" /></p>
+ *
+ * @param severity		`painless, `incomplete, `unusable
+ *
+ * @return boolean
+ *
+ * @example Popup::ConfirmAbort ( `painless );
+ */
+global define boolean ConfirmAbort( symbol severity ) {
+
+    string what_will_happen = "";
+
+    // Confirm user request to abort installation
+    string abort_label = _("Really abort the installation?");
+    // Button that will really abort the installation
+    string abort_button = _("&Abort Installation");
+    // Button that will continue with the installation
+    string continue_button = _("&Continue Installation");
+
+    if ( severity == `painless )
+    {
+	if (Mode::repair)
+	{
+	    // Confirm user request to abort System Repair
+	    abort_label = _("Really abort YaST System Repair?");
+	    // Button that will really abort the repair
+	    abort_button = _("Abort System Repair");
+	    // Button that will continue with the repair
+	    continue_button = _("&Continue System Repair");
+	}
+	else
+	{
+	    // Warning text for aborting an installation before anything is installed
+	    what_will_happen = _("If you abort the installation now,
 Linux will not be installed.
 Your hard disk will remain untouched.");
-	    }
 	}
-	else if ( severity == `incomplete )
-	{
-	    // Warning text for aborting an installation during the install process
-	    // - After some installation steps have been performed - e.g.
-	    // disks formatted / some packages already installed
-	    what_will_happen = _("If you abort the installation now, you will
+    }
+    else if ( severity == `incomplete )
+    {
+	// Warning text for aborting an installation during the install process
+	// - After some installation steps have been performed - e.g.
+	// disks formatted / some packages already installed
+	what_will_happen = _("If you abort the installation now, you will
 have an incomplete Linux system
 that might or might not be usable.
 You might need to reinstall.
 ");
-	}
-	else if ( severity == `unusable )
-	{
-	    // Warning text for aborting an installation during the install process
-	    // right in the middle of some critical process (e.g. formatting)
-	    what_will_happen = _("If you abort the installation now,
+    }
+    else if ( severity == `unusable )
+    {
+	// Warning text for aborting an installation during the install process
+	// right in the middle of some critical process (e.g. formatting)
+	what_will_happen = _("If you abort the installation now,
 Linux will be unusable.
 You will need to reinstall.");
-	}
-	else
-	{
-	    y2error ("Unknown symbol for ConfirmAbort");
-	}
-
-	string message = abort_label + "\n\n" + what_will_happen;
-
-	boolean ret = AnyQuestion (NoHeadline (), message, abort_button,
-			       continue_button, `focus_no);
-
-	y2debug("ConfirmAbort returned: %1", ret);
-
-	return ret;
-    };
-
-
-    /**
-     * Confirmation popup when user clicked "Abort".
-     *
-     * Set "have changes" to "true" when there are changes that will be lost.
-     * Note: If there are none, it is good policy to ask for confirmation
-     * anyway, but of course with "have_changes" set to "false" so the user
-     * isn't warned about changes that might be lost.
-     *
-     * @param have_changes	true:  There are changes that will be lost
-     *			false: No changes
-     *
-     * @return	true: "abort" confirmed;
-     *		false: don't abort
-     */
-
-    global define boolean ReallyAbort( boolean have_changes ) ``{
-
-	symbol focus = `focus_yes;
-
-	// Confirm aborting the program
-	string message = _("Really abort?");
-
-	if ( have_changes )
-	{
-	    focus = `focus_no;
-
-	    // Additional hint when trying to abort program in spite of changes
-	    message = message + "\n" + _("All changes will be lost!");
-	}
-
-	boolean ret = AnyQuestion( NoHeadline(),
-			       message,
-			       Label::YesButton(),
-			       Label::NoButton(),
-			       `focus_no );
-
-	y2debug("ReallyAbort returned: %1", ret );
-
-	return ret;
-    };
-
-
-    /**
-     * Show a simple message and wait until user clicked "OK".
-     *
-     * <p><img src="../Message.png" /></p>
-     *
-     * @param message		message string
-     *
-     * @example  Popup::Message("This is an information about ... ." );
-     *
-     * @see AnyMessage
-     * @see Notify
-     * @see Warning
-     * @see Error
-     */
-
-    global define void Message(string message) ``{
-	// ok pushbutton: confirm the dialog
-	UI::OpenDialog(
-		       `opt(`decorated),
-		       `HBox(
-			     `HSpacing(1),
-			     `VBox(
-				   `VSpacing(0.2),
-				   `Label(message),
-				   `PushButton(`id(`ok),
-					       `opt(`default, `key_F10),
-					       Label::OKButton()),
-				   `VSpacing(0.2)
-				   ),
-			     `HSpacing(1)
-			     )
-		       );
-	UI::SetFocus(`id(`ok));
-	UI::UserInput();
-
-	UI::CloseDialog();
-    };
-
-
-    /**
-     * Generic message popup: Show a message with optional headline above and
-     * wait until user clicked "OK".
-     *
-     * @param headline	optional headline or Popup::NoHeadline()
-     * @param message		the message (maybe multi-line) to display.
-     *
-     * @see Message
-     * @see Notify
-     * @see Warning
-     * @see Error
-     */
-
-    global define void AnyMessage(string headline, string message) ``{
-
-	term button_box =  `PushButton( `id(`ok_msg),
-					`opt(`default, `key_F10),
-					Label::OKButton() );
-	UI::OpenDialog(
-		       `opt(`decorated),
-		       createPopupLayoutInternal( headline, message, button_box )
-		       );
-
-	UI::SetFocus(`id(`ok_msg) );
-
-	UI::UserInput();
-	UI::CloseDialog();
-    };
-
-
-
-    /**
-     * Clear feddback message
-     * @return void
-     */
-    global define void ClearFeedback() ``{
-        if ( feedback_open )
-            UI::CloseDialog();
-        feedback_open = false;
-    };
-
-
-    /**
-     * Show popup with a headline and a message for feedback
-     * @param string headline of Feedback popup
-     * @param string the feedback message
-     * @return void
-     */
-    global define void ShowFeedback(string headline, string message) ``{
-        if (feedback_open) {
-            UI::CloseDialog();
-        }
-        term button_box =  `Empty();
-        UI::BusyCursor();
-        UI::OpenDialog(
-                `opt(`decorated),
-                createPopupLayoutInternal( headline, message, button_box )
-                );
-
-        feedback_open = true;
-    };
-
-
-    /**
-     * Show a warning message and wait until user clicked "OK".
-     *
-     * <p><img src="../Warning.png" /></p>
-     *
-     * @param message warning message string
-     *
-     * @example Popup::Warning("Something is wrong. Please check your configuration." );
-     *
-     * @see Message
-     * @see Notify
-     * @see Error
-     * @see AnyMessage
-     */
-
-    global define void Warning(string message) ``{
-
-	AnyMessage( Label::WarningMsg(), message );
-
-    };
-
-
-    /**
-     * Show an error message and wait until user clicked "OK".
-     *
-     * <p><img src="../Error.png" /></p>
-     *
-     * @param message	error message string
-     *
-     * @example  Popup::Error("The configuration was not succesful." );
-     *
-     * @see Message
-     * @see Notify
-     * @see Warning
-     * @see AnyMessage
-     */
-
-    global define void Error(string message) ``{
-
-	AnyMessage( Label::ErrorMsg(), message );
-
-    };
-
-
-    /**
-     * Show a notification message and wait until user clicked "OK".
-     *
-     * <p><img src="../Notify.png" /> TODO no more header</p>
-     *
-     * @param  message	notify message string
-     *
-     * @example  Popup::Notify("Your printer is ready for use." );
-     *
-     * @see Message
-     * @see AnyMessage
-     */
-
-    global define void Notify(string message) ``{
-
-	AnyMessage( "", message );
-
-    };
-
-
-    /**
-     * Display a message with a timeout and return when the user clicks "OK"
-     * or when the timeout expires.
-     *
-     * There is also a "stop" button that will stop the countdown. If the
-     * user clicks that, the popup will wait forever (or until "OK" is
-     * clicked, of course).
-     *
-     * <p><img src="../TimedMessage.png" /></p>
-     *
-     * @param message		message to display
-     * @param timeout_seconds		the timeout in seconds
-     *
-     * @example Popup::TimedMessage("This is a timed message", 2 );
-     */
-
-    global define void TimedMessage(string message, integer timeout_seconds) ``{
-	UI::OpenDialog(
-		       `opt(`decorated),
-		       `HBox(
-			     `HSpacing(1),
-			     `VBox(
-				   `VSpacing(0.2),
-				   `Label(message),
-				   `HCenter(
-					    `Label(`id(`remaining_time), "" + timeout_seconds)
-					    ),
-				   `HBox(
-					 // "Stop" button for timeout message: Stop counting down
-					 // (i.e. leave the popup message open without timeout)
-					 `PushButton(`id(`timed_stop), Label::StopButton() ),
-					 `HSpacing(2),
-
-					 // "OK" button for timeout message: Close popup dialog
-					 // (i.e. confirm the message)
-					 `PushButton(`id(`timed_ok),
-						     `opt(`default, `key_F10),
-						     Label::OKButton() )
-					 ),
-				   `VSpacing(0.2)
-				   )
-			     )
-		       );
-
-	sleep (1000);
-	any which_input = `empty;
-	while (timeout_seconds > 0) {
-	    which_input = UI::PollInput();
-	    if (which_input == `timed_ok)
-		break;
-	    if (which_input == `timed_stop) {
-		while (which_input == `timed_stop)
-		    which_input = UI::UserInput();
-		break;
-	    }
-	    sleep (1000);
-	    timeout_seconds = timeout_seconds - 1;
-	    UI::ChangeWidget (`id(`remaining_time), `Value, ""+timeout_seconds);
-	}
-	UI::CloseDialog();
-    };
-
-
-    /**
-     * Display a message with a timeout and return when the user clicks "OK", "Cancel"
-     * or when the timeout expires ("OK" is assumed then).
-     *
-     * There is also a "stop" button that will stop the countdown. If the
-     * user clicks that, the popup will wait forever (or until "OK" or "Cancel" is
-     * clicked, of course).
-     *
-     * @param message		message to display
-     * @param timeout_seconds		the timeout in seconds
-     *
-     * @return true	--> "OK" or timer expired<br>
-     *	 false  --> "Cancel"
-     *
-     * @example boolean ret = Popup::TimedOKCancel("This is a timed message", 2 );
-     */
-
-    global define boolean TimedOKCancel(string message, integer timeout_seconds) ``{
-	UI::OpenDialog(
-		       `opt(`decorated),
-		       `HBox(
-			     `HSpacing(1),
-			     `VBox(
-				   `VSpacing(0.2),
-				   `Label(message),
-				   `HCenter(
-					    `Label(`id(`remaining_time), "" + timeout_seconds)
-					    ),
-				   `HBox(
-					 // "Stop" button for timeout message: Stop counting down
-					 // (i.e. leave the popup message open without timeout)
-					 `PushButton(`id(`timed_stop), Label::StopButton() ),
-					 `HSpacing(2),
-
-					 // "OK" button for timeout message: Close popup dialog
-					 // (i.e. confirm the action in "message")
-					 `PushButton(`id(`timed_ok),
-						     `opt(`default, `key_F10),
-						     Label::OKButton() ),
-					 `HSpacing(2),
-
-					 // "Cancel" button for timeout message: Close popup dialog
-					 // (i.e. cancel the action in "message")
-					 `PushButton(`id(`timed_cancel),
-						     `opt (`key_F9),
-						     Label::CancelButton() )
-					 ),
-				   `VSpacing(0.2)
-				   )
-			     )
-		       );
-
-	sleep (1000);
-	any which_input = `empty;
-	while (timeout_seconds > 0) {
-	    which_input = UI::PollInput();
-	    if (which_input == `timed_ok)
-		break;
-	    if (which_input == `timed_cancel)
-		break;
-	    if (which_input == `timed_stop) {
-		while (which_input == `timed_stop)
-		    which_input = UI::UserInput();
-		break;
-	    }
-	    sleep (1000);
-	    timeout_seconds = timeout_seconds - 1;
-	    UI::ChangeWidget (`id(`remaining_time), `Value, ""+timeout_seconds);
-	}
-	UI::CloseDialog();
-
-	return which_input != `timed_cancel;
-    };
-
-
-    /**
-     * Generic question popup with three buttons.
-     *
-     * @param headline		headline or Popup::NoHeadline()
-     * @param message			message string
-     * @param yes_button_message	label on affirmative button (on left side)
-     * @param no_button_message	label on negating button (middle)
-     * @param retry_button_message	label on retry button (on right side)
-     * @param focus			`focus_yes (first button), `focus_no (second button) or
-     *				`focus_retry (third button)
-     *
-     * @return `yes:  first button has been clicked
-     *	 `no: second button has been clicked
-     *	 `retry: third button has been clicked
-     *
-     * @see AnyQuestion
-     *
-     * @example Popup::AnyQuestion3( Label::WarningMsg(), _("... failed"), _("Continue"), _("Cancel"), _("Retry"), `focus_yes );
-     */
-
-    global define symbol AnyQuestion3( string headline,
-				       string message,
-				       string yes_button_message,
-				       string no_button_message,
-				       string retry_button_message,
-				       symbol focus )	``{
-	term yes_button = `Empty();
-	term no_button = `Empty();
-	term retry_button = `Empty();
-
-	if ( focus == `focus_no )
-	{
-	    yes_button = `PushButton( `id(`yes),
-				      `opt (`key_F10),
-				      yes_button_message );
-	    no_button  = `PushButton( `id(`no),
-				      `opt(`default, `key_F9),
-				      no_button_message );
-	    retry_button  = `PushButton( `id(`retry),
-					 `opt (`key_F6),
-					 retry_button_message );
-	}
-	else if ( focus == `focus_yes )
-	{
-	    yes_button = `PushButton(`id(`yes),
-				     `opt(`default, `key_F10),
-				     yes_button_message);
-	    no_button  = `PushButton( `id(`no),
-				      `opt (`key_F9),
-				      no_button_message );
-	    retry_button  = `PushButton( `id(`retry),
-					 `opt (`key_F6),
-					 retry_button_message );
-	}
-	else
-	{
-	    yes_button = `PushButton(`id(`yes),
-				     `opt (`key_F10),
-				     yes_button_message);
-	    no_button  = `PushButton( `id(`no),
-				      `opt (`key_F9),
-				      no_button_message );
-	    retry_button  = `PushButton( `id(`retry),
-					 `opt(`default, `key_F6),
-					 retry_button_message );
-	}
-
-	term button_box =  `HBox(
-				 `HWeight( 1, yes_button),
-				 `HSpacing(2),
-				 `HWeight( 1, no_button ),
-				 `HSpacing(2),
-				 `HWeight( 1, retry_button )
-				 );
-
-	UI::OpenDialog(
-		       `opt(`decorated),
-		       createPopupLayoutInternal( headline, message, button_box )
-		       );
-
-	symbol ret = (symbol)UI::UserInput();
-	UI::CloseDialog();
-
-	return ret;
-    };
-
-
-    /**
-     * Special error popup for YCP modules that don't work.
-     * The user can choose one of:
-     * "back" - go back to the previous module
-     * "next" - skip this faulty module and directly go to the next one
-     * "again" - try it again (after fixing something in the code, of course)
-     * "cancel" - exit program
-     *
-     * <p><img src="../ModuleError.png" /></p>
-     *
-     * @param text	 string
-     * @return symbol `back, `again, `cancel, `next
-     *
-     * @example Popup::ModuleError( "The module " + symbolof(argterm) + " does not work." );
-     */
-
-    global define symbol ModuleError(string text) ``{
-	UI::OpenDialog(
-		       `opt(`decorated, `warncolor),
-		       `HBox(
-			     `HSpacing(1),
-			     `VBox(
-				   `VSpacing(0.2),
-				   `Heading(text),
-				   `HBox(
-					 `PushButton(`id(`back),   `opt (`key_F8),
-						     Label::BackButton()  ),
-					 `PushButton(`id(`again),  `opt (`key_F6),
-						     Label::RetryButton() ),
-					 `PushButton(`id(`cancel), `opt (`key_F9),
-						     Label::QuitButton()  ),
-					 `PushButton(`id(`next),   `opt (`key_F10),
-						     Label::NextButton()  )
-					 ),
-				   `VSpacing(0.2)
-				   ),
-			     `HSpacing(1)
-			     )
-		       );
-	symbol ret = (symbol)UI::UserInput();
-	UI::CloseDialog();
-	return ret;
-    };
-
-
-    /**
-     * Generic message popup: Show a message with optional headline above and
-     * wait until user clicked "OK".
-     *
-     * @param headline	optional headline or Popup::NoHeadline()
-     * @param message		the message (maybe multi-line) to display.
-     * @param timeout		After timeout seconds dialog will be automatically closed
-     *
-     * @return void
-     *
-     */
-
-    global define void AnyTimedMessage(string headline, string message, integer timeout) ``{
-
-	term button_box =  `PushButton( `id(`ok_msg),
-					`opt(`default, `key_F10),
-					Label::OKButton() );
-	// ok pushbutton: confirm the dialog
-	UI::OpenDialog(
-		       `opt(`decorated),
-		       createPopupLayoutInternalWithLabel( headline, message,
-							   button_box, sformat("%1", timeout) )
-		       );
-
-	UI::SetFocus(`id(`ok_msg));
-
-
-	symbol s = nil;
-	integer tout = timeout;
-
-	while (tout > 0 && s != `ok_msg)
-	{
-	    integer t = 10;
-
-	    while (t > 0 && s != `ok_msg)
-	    {
-		s = (symbol) UI::PollInput();
-
-		if (s != `ok_msg)
-		{
-		    sleep(100);
-		}
-
-		t = t - 1;
-	    }
-
-	    tout = tout - 1;
-
-	    UI::ChangeWidget(`id(`label), `Value, sformat("%1", tout));
-	}
-
-	UI::CloseDialog();
+    }
+    else
+    {
+	y2error ("Unknown symbol for ConfirmAbort");
     }
 
+    string message = abort_label + "\n\n" + what_will_happen;
 
-    /**
-     * Show a warning message and wait specified amount of time or until user clicked "OK".
-     *
-     * <p><img src="../TimedWarninngPopup.png" /></p>
-     *
-     * @param message warning message string
-     * @param timeout_seconds time out in seconds
-     *
-     * @return void
-     *
-     * @see Warning
-     */
+    boolean ret = AnyQuestion (NoHeadline (), message, abort_button,
+			   continue_button, `focus_no);
 
-    global define void TimedWarning(string message, integer timeout_seconds)
-	``{
-	AnyTimedMessage(Label::WarningMsg(), message, timeout_seconds);
-    };
+    y2debug("ConfirmAbort returned: %1", ret);
+
+    return ret;
+}
 
 
-    /**
-     * Show an error message and wait specified amount of time or until user clicked "OK".
-     *
-     * <p><img src="../TimedErrorPopup.png" /></p>
-     *
-     * @param message	error message string
-     * @param timeout_seconds time out in seconds
-     *
-     * @return void
-     *
-     * @see Error
-     */
+/**
+ * Confirmation popup when user clicked "Abort".
+ *
+ * Set "have changes" to "true" when there are changes that will be lost.
+ * Note: If there are none, it is good policy to ask for confirmation
+ * anyway, but of course with "have_changes" set to "false" so the user
+ * isn't warned about changes that might be lost.
+ *
+ * @param have_changes	true:  There are changes that will be lost
+ *			false: No changes
+ *
+ * @return	true: "abort" confirmed;
+ *		false: don't abort
+ */
+global define boolean ReallyAbort( boolean have_changes ) {
 
-    global define void TimedError(string message, integer timeout_seconds) ``{
-	AnyTimedMessage(Label::ErrorMsg(), message, timeout_seconds);
-    };
+    symbol focus = `focus_yes;
 
-    // it is misaligned because there used to be UI() around it
+    // Confirm aborting the program
+    string message = _("Really abort?");
+
+    if ( have_changes )
+    {
+	focus = `focus_no;
+
+	// Additional hint when trying to abort program in spite of changes
+	message = message + "\n" + _("All changes will be lost!");
+    }
+
+    boolean ret = AnyQuestion( NoHeadline(),
+			   message,
+			   Label::YesButton(),
+			   Label::NoButton(),
+			   `focus_no );
+
+    y2debug("ReallyAbort returned: %1", ret );
+
+    return ret;
+}
 
 
-    /**
-     * Show the contents of an entire file in a popup.
-     *
-     * @param headline	headline text
-     * @param text	text to show
-     *
-     * @example Popup::ShowText ("Boot Messages", "kernel panic");
-     */
+/**
+ * Show a simple message and wait until user clicked "OK".
+ *
+ * <p><img src="../Message.png" /></p>
+ *
+ * @param message		message string
+ *
+ * @example  Popup::Message("This is an information about ... ." );
+ *
+ * @see AnyMessage
+ * @see Notify
+ * @see Warning
+ * @see Error
+ */
+global define void Message(string message) {
+    // ok pushbutton: confirm the dialog
+    UI::OpenDialog(
+		   `opt(`decorated),
+		   `HBox(
+			 `HSpacing(1),
+			 `VBox(
+			       `VSpacing(0.2),
+			       `Label(message),
+			       `PushButton(`id(`ok),
+					   `opt(`default, `key_F10),
+					   Label::OKButton()),
+			       `VSpacing(0.2)
+			       ),
+			 `HSpacing(1)
+			 )
+		   );
+    UI::SetFocus(`id(`ok));
+    UI::UserInput();
 
-    global define void ShowText (string headline, string text) ``{
+    UI::CloseDialog();
+}
 
-	UI::OpenDialog( `opt(`decorated ),
-			`VBox(
-			      `HSpacing( 70 ),	// force width
-			      `VSpacing( 0.3 ),
-			      `VWeight( 1,
-					`HBox(
-					      `VSpacing( 18 ),	// force height
-					      `HSpacing( 0.7 ),
-					      `RichText(`id(`text),
-							`opt(`plainText),
-							text),
-					      `HSpacing( 0.7 )
-					      )
+
+/**
+ * Generic message popup: Show a message with optional headline above and
+ * wait until user clicked "OK".
+ *
+ * @param headline	optional headline or Popup::NoHeadline()
+ * @param message		the message (maybe multi-line) to display.
+ *
+ * @see Message
+ * @see Notify
+ * @see Warning
+ * @see Error
+ */
+global define void AnyMessage(string headline, string message) {
+
+    term button_box =  `PushButton( `id(`ok_msg),
+				    `opt(`default, `key_F10),
+				    Label::OKButton() );
+    UI::OpenDialog(
+		   `opt(`decorated),
+		   createPopupLayoutInternal( headline, message, button_box )
+		   );
+
+    UI::SetFocus(`id(`ok_msg) );
+
+    UI::UserInput();
+    UI::CloseDialog();
+}
+
+
+
+/**
+ * Clear feddback message
+ * @return void
+ */
+global define void ClearFeedback() {
+    if ( feedback_open )
+	UI::CloseDialog();
+    feedback_open = false;
+}
+
+
+/**
+ * Show popup with a headline and a message for feedback
+ * @param string headline of Feedback popup
+ * @param string the feedback message
+ * @return void
+ */
+global define void ShowFeedback(string headline, string message) {
+    if (feedback_open) {
+	UI::CloseDialog();
+    }
+    term button_box =  `Empty();
+    UI::BusyCursor();
+    UI::OpenDialog(
+	    `opt(`decorated),
+	    createPopupLayoutInternal( headline, message, button_box )
+	    );
+
+    feedback_open = true;
+}
+
+
+/**
+ * Show a warning message and wait until user clicked "OK".
+ *
+ * <p><img src="../Warning.png" /></p>
+ *
+ * @param message warning message string
+ *
+ * @example Popup::Warning("Something is wrong. Please check your configuration." );
+ *
+ * @see Message
+ * @see Notify
+ * @see Error
+ * @see AnyMessage
+ */
+global define void Warning(string message) {
+
+    AnyMessage( Label::WarningMsg(), message );
+
+}
+
+
+/**
+ * Show an error message and wait until user clicked "OK".
+ *
+ * <p><img src="../Error.png" /></p>
+ *
+ * @param message	error message string
+ *
+ * @example  Popup::Error("The configuration was not succesful." );
+ *
+ * @see Message
+ * @see Notify
+ * @see Warning
+ * @see AnyMessage
+ */
+global define void Error(string message) {
+
+    AnyMessage( Label::ErrorMsg(), message );
+
+}
+
+
+/**
+ * Show a notification message and wait until user clicked "OK".
+ *
+ * <p><img src="../Notify.png" /> TODO no more header</p>
+ *
+ * @param  message	notify message string
+ *
+ * @example  Popup::Notify("Your printer is ready for use." );
+ *
+ * @see Message
+ * @see AnyMessage
+ */
+global define void Notify(string message) {
+
+    AnyMessage( "", message );
+
+}
+
+
+/**
+ * Display a message with a timeout and return when the user clicks "OK"
+ * or when the timeout expires.
+ *
+ * There is also a "stop" button that will stop the countdown. If the
+ * user clicks that, the popup will wait forever (or until "OK" is
+ * clicked, of course).
+ *
+ * <p><img src="../TimedMessage.png" /></p>
+ *
+ * @param message		message to display
+ * @param timeout_seconds		the timeout in seconds
+ *
+ * @example Popup::TimedMessage("This is a timed message", 2 );
+ */
+global define void TimedMessage(string message, integer timeout_seconds) {
+    UI::OpenDialog(
+		   `opt(`decorated),
+		   `HBox(
+			 `HSpacing(1),
+			 `VBox(
+			       `VSpacing(0.2),
+			       `Label(message),
+			       `HCenter(
+					`Label(`id(`remaining_time), "" + timeout_seconds)
 					),
-			      `VSpacing( 0.3 ),
-			      `PushButton( `opt(`default, `key_F10),
-					   Label::OKButton() ),
-			      `VSpacing( 0.3 )
-			      )
-			);
+			       `HBox(
+				     // "Stop" button for timeout message: Stop counting down
+				     // (i.e. leave the popup message open without timeout)
+				     `PushButton(`id(`timed_stop), Label::StopButton() ),
+				     `HSpacing(2),
 
-	UI::UserInput();
-	UI::CloseDialog();
+				     // "OK" button for timeout message: Close popup dialog
+				     // (i.e. confirm the message)
+				     `PushButton(`id(`timed_ok),
+						 `opt(`default, `key_F10),
+						 Label::OKButton() )
+				     ),
+			       `VSpacing(0.2)
+			       )
+			 )
+		   );
+
+    sleep (1000);
+    any which_input = `empty;
+    while (timeout_seconds > 0) {
+	which_input = UI::PollInput();
+	if (which_input == `timed_ok)
+	    break;
+	if (which_input == `timed_stop) {
+	    while (which_input == `timed_stop)
+		which_input = UI::UserInput();
+	    break;
+	}
+	sleep (1000);
+	timeout_seconds = timeout_seconds - 1;
+	UI::ChangeWidget (`id(`remaining_time), `Value, ""+timeout_seconds);
+    }
+    UI::CloseDialog();
+}
+
+
+/**
+ * Display a message with a timeout and return when the user clicks "OK", "Cancel"
+ * or when the timeout expires ("OK" is assumed then).
+ *
+ * There is also a "stop" button that will stop the countdown. If the
+ * user clicks that, the popup will wait forever (or until "OK" or "Cancel" is
+ * clicked, of course).
+ *
+ * @param message		message to display
+ * @param timeout_seconds		the timeout in seconds
+ *
+ * @return true	--> "OK" or timer expired<br>
+ *	 false  --> "Cancel"
+ *
+ * @example boolean ret = Popup::TimedOKCancel("This is a timed message", 2 );
+ */
+global define boolean TimedOKCancel(string message, integer timeout_seconds) {
+    UI::OpenDialog(
+		   `opt(`decorated),
+		   `HBox(
+			 `HSpacing(1),
+			 `VBox(
+			       `VSpacing(0.2),
+			       `Label(message),
+			       `HCenter(
+					`Label(`id(`remaining_time), "" + timeout_seconds)
+					),
+			       `HBox(
+				     // "Stop" button for timeout message: Stop counting down
+				     // (i.e. leave the popup message open without timeout)
+				     `PushButton(`id(`timed_stop), Label::StopButton() ),
+				     `HSpacing(2),
+
+				     // "OK" button for timeout message: Close popup dialog
+				     // (i.e. confirm the action in "message")
+				     `PushButton(`id(`timed_ok),
+						 `opt(`default, `key_F10),
+						 Label::OKButton() ),
+				     `HSpacing(2),
+
+				     // "Cancel" button for timeout message: Close popup dialog
+				     // (i.e. cancel the action in "message")
+				     `PushButton(`id(`timed_cancel),
+						 `opt (`key_F9),
+						 Label::CancelButton() )
+				     ),
+			       `VSpacing(0.2)
+			       )
+			 )
+		   );
+
+    sleep (1000);
+    any which_input = `empty;
+    while (timeout_seconds > 0) {
+	which_input = UI::PollInput();
+	if (which_input == `timed_ok)
+	    break;
+	if (which_input == `timed_cancel)
+	    break;
+	if (which_input == `timed_stop) {
+	    while (which_input == `timed_stop)
+		which_input = UI::UserInput();
+	    break;
+	}
+	sleep (1000);
+	timeout_seconds = timeout_seconds - 1;
+	UI::ChangeWidget (`id(`remaining_time), `Value, ""+timeout_seconds);
+    }
+    UI::CloseDialog();
+
+    return which_input != `timed_cancel;
+}
+
+
+/**
+ * Generic question popup with three buttons.
+ *
+ * @param headline		headline or Popup::NoHeadline()
+ * @param message			message string
+ * @param yes_button_message	label on affirmative button (on left side)
+ * @param no_button_message	label on negating button (middle)
+ * @param retry_button_message	label on retry button (on right side)
+ * @param focus			`focus_yes (first button), `focus_no (second button) or
+ *				`focus_retry (third button)
+ *
+ * @return `yes:  first button has been clicked
+ *	 `no: second button has been clicked
+ *	 `retry: third button has been clicked
+ *
+ * @see AnyQuestion
+ *
+ * @example Popup::AnyQuestion3( Label::WarningMsg(), _("... failed"), _("Continue"), _("Cancel"), _("Retry"), `focus_yes );
+ */
+global define symbol AnyQuestion3( string headline,
+				   string message,
+				   string yes_button_message,
+				   string no_button_message,
+				   string retry_button_message,
+				   symbol focus )	{
+    term yes_button = `Empty();
+    term no_button = `Empty();
+    term retry_button = `Empty();
+
+    if ( focus == `focus_no )
+    {
+	yes_button = `PushButton( `id(`yes),
+				  `opt (`key_F10),
+				  yes_button_message );
+	no_button  = `PushButton( `id(`no),
+				  `opt(`default, `key_F9),
+				  no_button_message );
+	retry_button  = `PushButton( `id(`retry),
+				     `opt (`key_F6),
+				     retry_button_message );
+    }
+    else if ( focus == `focus_yes )
+    {
+	yes_button = `PushButton(`id(`yes),
+				 `opt(`default, `key_F10),
+				 yes_button_message);
+	no_button  = `PushButton( `id(`no),
+				  `opt (`key_F9),
+				  no_button_message );
+	retry_button  = `PushButton( `id(`retry),
+				     `opt (`key_F6),
+				     retry_button_message );
+    }
+    else
+    {
+	yes_button = `PushButton(`id(`yes),
+				 `opt (`key_F10),
+				 yes_button_message);
+	no_button  = `PushButton( `id(`no),
+				  `opt (`key_F9),
+				  no_button_message );
+	retry_button  = `PushButton( `id(`retry),
+				     `opt(`default, `key_F6),
+				     retry_button_message );
     }
 
-    /**
-     * Show the contents of an entire file in a popup.
-     * Notice: This is a WFM function, NOT an UI function!
-     *
-     * @param headline	headline text
-     * @param filename	filename with path of the file to show
-     *
-     * @example Popup::ShowFile ("Boot Messages", "/var/log/boot.msg");
-     */
+    term button_box =  `HBox(
+			     `HWeight( 1, yes_button),
+			     `HSpacing(2),
+			     `HWeight( 1, no_button ),
+			     `HSpacing(2),
+			     `HWeight( 1, retry_button )
+			     );
 
-    global define void ShowFile (string headline, string filename) ``{
+    UI::OpenDialog(
+		   `opt(`decorated),
+		   createPopupLayoutInternal( headline, message, button_box )
+		   );
 
-	string text = (string)SCR::Read (.target.string, filename);
+    symbol ret = (symbol)UI::UserInput();
+    UI::CloseDialog();
 
-	ShowText (headline, text);
+    return ret;
+}
 
+
+/**
+ * Special error popup for YCP modules that don't work.
+ * The user can choose one of:
+ * "back" - go back to the previous module
+ * "next" - skip this faulty module and directly go to the next one
+ * "again" - try it again (after fixing something in the code, of course)
+ * "cancel" - exit program
+ *
+ * <p><img src="../ModuleError.png" /></p>
+ *
+ * @param text	 string
+ * @return symbol `back, `again, `cancel, `next
+ *
+ * @example Popup::ModuleError( "The module " + symbolof(argterm) + " does not work." );
+ */
+global define symbol ModuleError(string text) {
+    UI::OpenDialog(
+		   `opt(`decorated, `warncolor),
+		   `HBox(
+			 `HSpacing(1),
+			 `VBox(
+			       `VSpacing(0.2),
+			       `Heading(text),
+			       `HBox(
+				     `PushButton(`id(`back),   `opt (`key_F8),
+						 Label::BackButton()  ),
+				     `PushButton(`id(`again),  `opt (`key_F6),
+						 Label::RetryButton() ),
+				     `PushButton(`id(`cancel), `opt (`key_F9),
+						 Label::QuitButton()  ),
+				     `PushButton(`id(`next),   `opt (`key_F10),
+						 Label::NextButton()  )
+				     ),
+			       `VSpacing(0.2)
+			       ),
+			 `HSpacing(1)
+			 )
+		   );
+    symbol ret = (symbol)UI::UserInput();
+    UI::CloseDialog();
+    return ret;
+}
+
+
+/**
+ * Generic message popup: Show a message with optional headline above and
+ * wait until user clicked "OK".
+ *
+ * @param headline	optional headline or Popup::NoHeadline()
+ * @param message		the message (maybe multi-line) to display.
+ * @param timeout		After timeout seconds dialog will be automatically closed
+ *
+ * @return void
+ *
+ */
+global define void AnyTimedMessage(string headline, string message, integer timeout) {
+
+    term button_box =  `PushButton( `id(`ok_msg),
+				    `opt(`default, `key_F10),
+				    Label::OKButton() );
+    // ok pushbutton: confirm the dialog
+    UI::OpenDialog(
+		   `opt(`decorated),
+		   createPopupLayoutInternalWithLabel( headline, message,
+						       button_box, sformat("%1", timeout) )
+		   );
+
+    UI::SetFocus(`id(`ok_msg));
+
+
+    symbol s = nil;
+    integer tout = timeout;
+
+    while (tout > 0 && s != `ok_msg)
+    {
+	integer t = 10;
+
+	while (t > 0 && s != `ok_msg)
+	{
+	    s = (symbol) UI::PollInput();
+
+	    if (s != `ok_msg)
+	    {
+		sleep(100);
+	    }
+
+	    t = t - 1;
+	}
+
+	tout = tout - 1;
+
+	UI::ChangeWidget(`id(`label), `Value, sformat("%1", tout));
     }
+
+    UI::CloseDialog();
+}
+
+
+/**
+ * Show a warning message and wait specified amount of time or until user clicked "OK".
+ *
+ * <p><img src="../TimedWarninngPopup.png" /></p>
+ *
+ * @param message warning message string
+ * @param timeout_seconds time out in seconds
+ *
+ * @return void
+ *
+ * @see Warning
+ */
+global define void TimedWarning(string message, integer timeout_seconds)
+    {
+    AnyTimedMessage(Label::WarningMsg(), message, timeout_seconds);
+}
+
+
+/**
+ * Show an error message and wait specified amount of time or until user clicked "OK".
+ *
+ * <p><img src="../TimedErrorPopup.png" /></p>
+ *
+ * @param message	error message string
+ * @param timeout_seconds time out in seconds
+ *
+ * @return void
+ *
+ * @see Error
+ */
+global define void TimedError(string message, integer timeout_seconds) {
+    AnyTimedMessage(Label::ErrorMsg(), message, timeout_seconds);
+}
+
+// it is misaligned because there used to be UI() around it
+
+
+/**
+ * Show the contents of an entire file in a popup.
+ *
+ * @param headline	headline text
+ * @param text	text to show
+ *
+ * @example Popup::ShowText ("Boot Messages", "kernel panic");
+ */
+global define void ShowText (string headline, string text) {
+
+    UI::OpenDialog( `opt(`decorated ),
+		    `VBox(
+			  `HSpacing( 70 ),	// force width
+			  `VSpacing( 0.3 ),
+			  `VWeight( 1,
+				    `HBox(
+					  `VSpacing( 18 ),	// force height
+					  `HSpacing( 0.7 ),
+					  `RichText(`id(`text),
+						    `opt(`plainText),
+						    text),
+					  `HSpacing( 0.7 )
+					  )
+				    ),
+			  `VSpacing( 0.3 ),
+			  `PushButton( `opt(`default, `key_F10),
+				       Label::OKButton() ),
+			  `VSpacing( 0.3 )
+			  )
+		    );
+
+    UI::UserInput();
+    UI::CloseDialog();
+}
+
+/**
+ * Show the contents of an entire file in a popup.
+ * Notice: This is a WFM function, NOT an UI function!
+ *
+ * @param headline	headline text
+ * @param filename	filename with path of the file to show
+ *
+ * @example Popup::ShowFile ("Boot Messages", "/var/log/boot.msg");
+ */
+global define void ShowFile (string headline, string filename) {
+
+    string text = (string)SCR::Read (.target.string, filename);
+
+    ShowText (headline, text);
+
+}
 
 
 /* EOF */

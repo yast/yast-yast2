@@ -16,160 +16,306 @@
 module "Label";
 textdomain "base";
 
-global define string AddButton() ``{
+/**
+ * Add Button
+ */
+global define string AddButton() {
   /* Button label */
   return _("&Add");
 }
-global define string CancelButton() ``{
+
+/**
+ * Cancel Button
+ */
+global define string CancelButton() {
   /* Button label */
   return _("&Cancel");
 }
-global define string ContinueButton() ``{
+
+/**
+ * Continue Button
+ */
+global define string ContinueButton() {
   /* Button label */
   return _("C&ontinue");
 }
-global define string YesButton() ``{
+
+/**
+ * Yes Button
+ */
+global define string YesButton() {
   /* Button label */
   return _("&Yes");
 }
-global define string NoButton() ``{
+
+/**
+ * No Button
+ */
+global define string NoButton() {
   /* Button label */
   return _("&No");
 }
-global define string FinishButton() ``{
+
+/**
+ * Finish Button
+ */
+global define string FinishButton() {
   /* Button label */
   return _("&Finish");
 }
-global define string EditButton() ``{
+
+/**
+ * Edit Button
+ */
+global define string EditButton() {
   /* Button label */
   return _("Ed&it");
 }
-global define string OKButton() ``{
+
+/**
+ * OK Button
+ */
+global define string OKButton() {
   /* Button label */
   return _("&OK");
 }
-global define string AbortButton() ``{
+
+/**
+ * Abort Button
+ */
+global define string AbortButton() {
     /* Button label */
     return _("Abo&rt");
 }
-global define string AbortInstallationButton () ``{
+
+/**
+ * Abort Installation Button
+ */
+global define string AbortInstallationButton () {
     /* Button label */
     return _("Abo&rt Installation");
 }
-global define string IgnoreButton() ``{
+
+/**
+ * Ignore Button
+ */
+global define string IgnoreButton() {
   /* Button label */
   return _("&Ignore");
 }
-global define string NextButton() ``{
+
+/**
+ * Next Button
+ */
+global define string NextButton() {
   /* Button label */
   return _("&Next");
 }
-global define string NewButton() ``{
+
+/**
+ * New Button
+ */
+global define string NewButton() {
   /* Button label */
   return _("Ne&w");
 }
-global define string DeleteButton() ``{
+
+/**
+ * Delete Button
+ */
+global define string DeleteButton() {
   /* Button label */
   return _("Dele&te");
 }
-global define string BackButton() ``{
+
+/**
+ * Back Button
+ */
+global define string BackButton() {
   /* Button label */
   return _("&Back");
 }
-global define string AcceptButton() ``{
+
+/**
+ * Accept Button
+ */
+global define string AcceptButton() {
   /* Button label */
   return _("&Accept");
 }
-global define string DoNotAcceptButton() ``{
+
+/**
+ * Do Not Accept Button
+ */
+global define string DoNotAcceptButton() {
   /* Button label */
   return _("&Do Not Accept");
 }
-global define string QuitButton() ``{
+
+/**
+ * Quit Button
+ */
+global define string QuitButton() {
   /* Button label */
   return _("&Quit");
 }
-global define string RetryButton() ``{
+
+/**
+ * Retry Button
+ */
+global define string RetryButton() {
   /* Button label */
   return _("&Retry");
 }
-global define string ReplaceButton() ``{
+
+/**
+ * Replace Button
+ */
+global define string ReplaceButton() {
   /* Button label */
   return _("&Replace");
 }
-global define string UpButton() ``{
+
+/**
+ * Up Button
+ */
+global define string UpButton() {
   /* Button label */
   return _("&Up");
 }
-global define string DownButton() ``{
+
+/**
+ * Down Button
+ */
+global define string DownButton() {
   /* Button label */
   return _("Do&wn");
 }
-global define string SelectButton() ``{
+
+/**
+ * Select Button
+ */
+global define string SelectButton() {
   /* Button label */
   return _("Sele&ct");
 }
-global define string RemoveButton() ``{
+
+/**
+ * Remove Button
+ */
+global define string RemoveButton() {
   /* Button label */
   return _("Remo&ve");
 }
-global define string RefreshButton() ``{
+
+/**
+ * Refresh Button
+ */
+global define string RefreshButton() {
   /* Button label */
   return _("&Refresh");
 }
-global define string HelpButton() ``{
+
+/**
+ * Help Button
+ */
+global define string HelpButton() {
   /* Button label */
   return _("&Help");
 }
-global define string InstallButton() ``{
+
+/**
+ * Install Button
+ */
+global define string InstallButton() {
   /* Button label */
   return _("&Install");
 }
-global define string DontInstallButton() ``{
+
+/**
+ * Don't Install Button
+ */
+global define string DontInstallButton() {
   /* Button label */
   return _("&Don't install");
 }
-global define string DownloadButton() ``{
+
+/**
+ * Download Button
+ */
+global define string DownloadButton() {
   /* Button label */
   return _("&Download");
 }
-global define string SaveButton() ``{
+
+/**
+ * Save Button
+ */
+global define string SaveButton() {
   /* Button label */
   return _("&Save");
 }
-global define string StopButton() ``{
+
+/**
+ * Stop Button
+ */
+global define string StopButton() {
   /* Button label */
   return _("&Stop");
 }
-global define string CloseButton() ``{
+
+/**
+ * Close Button
+ */
+global define string CloseButton() {
   /* Button label */
   return _("C&lose");
 }
 
-global define string BrowseButton() ``{
+/**
+ * Browse Button
+ */
+global define string BrowseButton() {
   /* Button label */
   return _("Bro&wse");
 }
-global define string CreateButton() ``{
+
+/**
+ * Create Button
+ */
+global define string CreateButton() {
   /* Button label */
   return _("Crea&te");
 }
 
-global define string WarningMsg() ``{
+/**
+ * Warning Message
+ */
+global define string WarningMsg() {
   // this string is usually used as headline of a popup
   return _("Warning");
 }
 
-global define string ErrorMsg() ``{
+/**
+ * Error Message
+ */
+global define string ErrorMsg() {
   // this string is usually used as headline of a popup
   return _("Error");
 }
 
-global define string PleaseWaitMsg() ``{
+/**
+ * Please wait Message
+ */
+global define string PleaseWaitMsg() {
   // this string is usually used as headline of a popup
   return _("Please wait...");
 }
 
-global define map<string, integer> DefaultFunctionKeyMap() ``{
+/**
+ * Default function key map
+ */
+global define map<string, integer> DefaultFunctionKeyMap() {
     map<string, integer> fkeys = $[];
 
     // A map only accepts constants as keys, so we have to add() each
