@@ -1,8 +1,9 @@
 -------------------------------------------------------------------
-Wed Aug 28 18:13:49 CEST 2002 - mvidner@suse.cz
+Wed Aug 28 18:29:15 CEST 2002 - mvidner@suse.cz
 
 - mail aliases: fixed line continuation processing (#18487).
 - file_popups::PopupDir: fixed the Selected directory heading.
+- 2.6.28
 
 -------------------------------------------------------------------
 Tue Aug 27 20:00:00 CEST 2002 - jsuchome@suse.cz
