@@ -1,7 +1,7 @@
 Read	.init.scripts.exists "aaa" true
-Execute	.target.bash "/sbin/insserv -r aaa" 0
-Execute	.target.bash "/sbin/insserv aaa,start=A,B,C" 0
+Execute	.target.bash_output "/sbin/insserv -r aaa" $["exit":0, "stderr":"", "stdout":""]
+Execute	.target.bash_output "/sbin/insserv aaa,start=A,B,C" $["exit":0, "stderr":"", "stdout":""]
 Return	true
 Read	.init.scripts.exists "aaa" true
-Execute	.target.bash "/sbin/insserv -r aaa" 0
+Execute	.target.bash_output "/sbin/insserv -r aaa" $["exit":0, "stderr":"", "stdout":""]
 Return	true

@@ -24,7 +24,7 @@
 
 {
     module "Runlevel";
-    // no translatable strings, no text domain needed
+    textdomain "base";
 
     /**
      * @struct service
@@ -49,18 +49,50 @@
     //
     //
 
+    /**
+     * After a function returns an error, this holds an error message,
+     * including insserv stderr and possibli containing newlines.
+     *
+     * Set by
+     * checkExists: Service[Full]Info, ServiceStatus, ServiceEnabled
+     * ServiceAdjust, ServiceFinetune
+     *
+     * Never cleared.
+     */
+    global string error_msg = "";
+
+    /**
+     * Check that a service exists.
+     * If not, set error_msg.
+     * @param name service name without a path, eg. nfsserver
+     * @return does the service exist?
+     */
+    define boolean checkExists (string name) ``{
+	if (!SCR::Read (.init.scripts.exists, name))
+	{
+	    // Error message.
+	    // %1 is a name of an init script in /etc/init.d,
+	    // eg. nfsserver
+	    error_msg = sformat (_("Service %1 does not exist."), name);
+	    y2error (1, error_msg);
+	    return false;
+	}
+	return true;
+    }
 
     /**
      * Get service info without peeking if service runs.
      * @param name name of the service
-     * @return service information
+     * @return service information or $[]
      */
     global define map ServiceInfo (string name) ``{
 	// This is an info achieved just by a call of
 	// the 2 main agent calls. Nothing about service
 	// status is obtained.
-	if (!SCR::Read (.init.scripts.exists, name))
+	if (! checkExists (name))
+	{
 	    return $[];
+	}
 	map detail = lookup (SCR::Read (.init.scripts.runlevel, name), name, $[]);
 	map service = lookup (SCR::Read (.init.scripts.comment, name), name, $[]);
 	return add (
@@ -69,25 +101,54 @@
     }
 
     /**
-     * Get service status. It is output from "rcservice status".
+     * Get service status. It is output from "service status".
      * It should conform to LSB. 0 means running.
      * @param name name of the service
      * @return init script exit status or -1 if it does not exist
      */
     global define integer ServiceStatus (string name) ``{
-	if (!SCR::Read (.init.scripts.exists, name))
+	if (! checkExists (name))
+	{
 	    return -1;
+	}
 	return SCR::Execute (.target.bash, sformat ("/etc/init.d/%1 status", name), $["TERM":"raw"]);
     }
     /**
      * Get service info and finds out whether service is running.
      * @param name name of the service
-     * @return service map
+     * @return service map or $[]
      */
     global define map ServiceFullInfo (string name) ``{
-	if (!SCR::Read (.init.scripts.exists, name))
+	if (! checkExists (name))
+	{
 	    return $[];
+	}
 	return add (ServiceInfo (name), "started", ServiceStatus (name));
+    }
+
+    /**
+     * Call insserv -r and record errors.
+     * Does not check if it exists
+     * @param name service name
+     * @return success state
+     */
+    define boolean serviceDisable (string name) ``{
+	map ret = SCR::Execute (.target.bash_output,
+				sformat ("/sbin/insserv -r %1", name));
+	if (0 != ret["exit"]:-1)
+	{
+	    // Error message.
+	    // %1 is a name of an init script in /etc/init.d,
+	    // Disabling means that the service should not start
+	    // in appropriate runlevels, eg. at boot time.
+	    // %2 is the stderr output of insserv(8)
+	    error_msg = sformat(_("Unable to disable service %1:\n%2"),
+				name, ret[stderr]:"");
+	    // the user is two levels up
+	    y2error (2, error_msg);
+	    return false;
+	}
+	return true;
     }
 
     /**
@@ -99,36 +160,48 @@
      * @return success state
      */
     global define boolean ServiceAdjust (string name, string action) ``{
-	if (!SCR::Read (.init.scripts.exists, name))
+	if (! checkExists (name))
 	{
-	    y2error ("Init script %1 does not exist.", name);
 	    return false;
 	}
 	map service = ServiceInfo (name);
 	if ("disable" == action)
 	{
-	    if (size (lookup (service, "start", [])) != 0)
+	    if (size (service["start"]:[]) != 0)
 	    {
-		if (0 != SCR::Execute (.target.bash, sformat ("/sbin/insserv -r %1", name)))
-		    return false;
+		return serviceDisable (name);
 	    }
 	    return true;
 	}
-	if ("enable" == action)
+	if (("default" == action) || ("enable" == action))
 	{
-	    if (size (lookup (service, "start", [])) == 0)
+	    if ("enable" == action && size (service["start"]:[]) != 0)
 	    {
-		if (0 != SCR::Execute (.target.bash, sformat ("/sbin/insserv -d %1", name)))
+		// nothing to do
+		return true;
+	    }
+	    else
+	    {
+		map ret = SCR::Execute (.target.bash_output,
+					sformat ("/sbin/insserv -d %1", name));
+		if (0 != ret["exit"]:-1)
+		{
+		    // Error message.
+		    // %1 is a name of an init script in /etc/init.d,
+		    // Enabling means that the service should start
+		    // in appropriate runlevels, eg. at boot time.
+		    // %2 is the stderr output of insserv(8)
+		    error_msg = sformat(_("Unable to enable service %1:\n%2"),
+					name, ret[stderr]:"");
+		    y2error (1, error_msg);
 		    return false;
+		}
 	    }
 	    return true;
 	}
-	if ("default" == action)
-	{
-	    return ((0 != SCR::Execute (.target.bash, sformat ("/sbin/insserv -d %1", name))))
-		? false : true;
-	}
-	y2error ("ServiceAdjust: bad action %1", action);
+	// not translated
+	error_msg = sformat ("Invalid parameter: %1", action);
+	y2internal (1, error_msg);
 	return false;
     }
 
@@ -139,23 +212,38 @@
      * @return success state
      */
     global define boolean ServiceFinetune (string name, list rl) ``{
-	if (!SCR::Read (.init.scripts.exists, name))
+	if (! checkExists (name))
 	{
-	    y2error ("Init script %1 does not exist.", name);
 	    return false;
 	}
-	string fill = "";
-	string out = "";
-	foreach (`i, rl, ``{
-	    out = out + fill + sformat ("%1", i);
-	    fill = ",";
-	});
 	// we must remove it first because insserv start=... adds
 	// runlevels, not replace runlevels!!
-	integer ret = SCR::Execute (.target.bash, sformat ("/sbin/insserv -r %1", name));
-	if ("" == out)
-	    return 0 == ret;
-	return 0 == SCR::Execute (.target.bash, sformat ("/sbin/insserv %1,start=%2", name, out));
+	if (! serviceDisable (name))
+	{
+	    return false;
+	}
+	
+	string rls = mergestring (rl, ",");
+	if (rls != "")
+	{
+	    map ret = SCR::Execute (.target.bash_output,
+				    sformat ("/sbin/insserv %1,start=%2",
+					     name, rls));
+	    if (0 != ret["exit"]:-1)
+	    {
+		// Error message.
+		// %1 is a name of an init script in /etc/init.d,
+		// Enabling means that the service should start
+		// in appropriate runlevels, eg. at boot time.
+		// %2 is the stderr output of insserv(8)
+		// %3 is a comma separated list of runlevels
+		error_msg = sformat(_("Unable to enable service %1 in runlevels %2:\n%3"),
+				    name, rls, ret[stderr]:"");
+		y2error (1, error_msg);
+		return false;
+	    }
+	}
+	return true;
     }
 
     /**
@@ -165,12 +253,11 @@
      * @return true if service is set to run in any runlevel
      */
     global define boolean ServiceEnabled (string name) ``{
-	// Fhis is an info achieved just by a call of
+	// This is an info achieved just by a call of
 	// the 2 main agent calls. Nothing about service
 	// status is obtained.
-	if (!SCR::Read (.init.scripts.exists, name))
+	if (! checkExists (name))
 	{
-	    y2error ("Service does not exist: %1", name);
 	    return false;
 	}
 	map detail = lookup (SCR::Read (.init.scripts.runlevel, name), name, $[]);

@@ -3,7 +3,12 @@
     import "Runlevel";
 
     map READ = $[];
-    map EXEC = $[];
+    map EXEC = $[
+	"target": $[
+	    "bash": 0,
+	    "bash_output": $["exit": 0, "stdout": "", "stderr" :""],
+	    ],
+	];
 
     // service does not exist
     READ = $[ "init" : $[ "scripts" : $[
@@ -21,7 +26,6 @@
                     ],
 		"exists" : false,
 	] ] ];
-    EXEC = $[ "target" : $[ "bash" : 0 ]];
     TEST (``(Runlevel::ServiceAdjust ("aaa", "disable")), [ READ, $[], EXEC ], nil);
 
     // service exists and may run
@@ -40,7 +44,6 @@
                     ],
 		"exists" : true,
 	] ] ];
-    EXEC = $[ "target" : $[ "bash" : 0 ]];
     TEST (``(Runlevel::ServiceAdjust ("aaa", "disable")), [ READ, $[], EXEC ], nil);
 
     // service exists and does not run
@@ -59,7 +62,6 @@
                     ],
 		"exists" : true,
 	] ] ];
-    EXEC = $[ "target" : $[ "bash" : 0 ]];
     TEST (``(Runlevel::ServiceAdjust ("aaa", "disable")), [ READ, $[], EXEC ], nil);
 
     // service exists and does not run
@@ -78,7 +80,6 @@
                     ],
 		"exists" : true,
 	] ] ];
-    EXEC = $[ "target" : $[ "bash" : 0 ]];
     TEST (``(Runlevel::ServiceAdjust ("aaa", "enable")), [ READ, $[], EXEC ], nil);
 
     READ = $[ "init" : $[ "scripts" : $[
@@ -96,7 +97,6 @@
                     ],
 		"exists" : true,
 	] ] ];
-    EXEC = $[ "target" : $[ "bash" : 0 ]];
     TEST (``(Runlevel::ServiceAdjust ("aaa", "enable")), [ READ, $[], EXEC ], nil);
 
     READ = $[ "init" : $[ "scripts" : $[
@@ -114,7 +114,6 @@
                     ],
 		"exists" : true,
 	] ] ];
-    EXEC = $[ "target" : $[ "bash" : 0 ]];
     TEST (``(Runlevel::ServiceAdjust ("aaa", "default")), [ READ, $[], EXEC ], nil);
 
     READ = $[ "init" : $[ "scripts" : $[
@@ -132,7 +131,6 @@
                     ],
 		"exists" : true,
 	] ] ];
-    EXEC = $[ "target" : $[ "bash" : 0 ]];
     TEST (``(Runlevel::ServiceAdjust ("aaa", "default")), [ READ, $[], EXEC ], nil);
 
 }
