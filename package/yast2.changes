@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 31 17:53:05 CEST 2004 - msvec@suse.cz
+
+- added /etc/YaST2 dir (for log.conf)
+- 2.9.54
+
+-------------------------------------------------------------------
 Wed Mar 31 14:06:43 CEST 2004 - gs@suse.de
 
 - show header of ShowText popup (bug #37171) 
