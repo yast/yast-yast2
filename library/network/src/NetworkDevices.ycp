@@ -522,6 +522,35 @@ define map<string,map> FilterNOT(map<string,map> devices, string devregex) {
 }
 
 /**
+ * For the NAME field, filter out characters that will case problems
+ * for the shell or the ini agent. (#72164)
+ * It should be done in more places but this field is most susceptible.
+ * @param s a string
+ * @return s with some characters removed, esp. the single quote
+ */
+string ShellSafe (string s) {
+    s = filterchars (s, String::CGraph () + " ");
+    return deletechars (s, "'");
+}
+
+/**
+ * SCR::Write (p, ShellSafe (s)) and if s had to be changed,
+ * log the _path_ (not the value, for privacy).
+ * @see ShellSafe
+ * @param p SCR path
+ * @param s value
+ * @return success
+ */
+boolean ShellSafeWrite (path p, string s) {
+    string safe_s = ShellSafe (s);
+    if (safe_s != s)
+    {
+	y2milestone ("Changed: %1", p);
+    }
+    return SCR::Write (p, safe_s);
+}
+
+/**
  * Write devices to files
  * @param devregex regular expression for the device type
  * @return true if success
@@ -596,19 +625,19 @@ global define boolean Write(string devregex) {
 
 			maplist(string ak, string av, amap, {
 			    string akk = ak + "_" + anum;
-			    SCR::Write(topath(p + akk), av);
+			    ShellSafeWrite (topath (p + akk), av);
 			    seen_label = seen_label || ak == "LABEL";
 			});
 
 			if (!seen_label)
 			{
-			    SCR::Write(topath(p + ("LABEL_" + anum)), anum);
+			    ShellSafeWrite (topath (p + ("LABEL_" + anum)), anum);
 			}
 		    });
 		}
 		/* Write regular keys */
 		else
-		    SCR::Write(topath(p + k), devmap[k]:"");
+		    ShellSafeWrite (topath (p + k), devmap[k]:"");
 	    });
 
 	    /* update libhd unique number * /
