@@ -213,7 +213,9 @@
 	}
 	if (current_stage >= 0)
 	{
-	    UI::ChangeWidget(`id (sformat ("bar_label_%1", current_stage)), `Value, UI::Glyph(`CheckMark));
+	    any glyph = UI::Glyph(`CheckMark);
+	    if(glyph != nil)
+		UI::ChangeWidget(`id (sformat ("bar_label_%1", current_stage)), `Value, glyph);
 	}
 	if (current_stage < stages )
 	{
@@ -224,7 +226,9 @@
 	    }
 	    if (current_stage < stages)
 	    {
-		UI::ChangeWidget(`id (sformat ("bar_label_%1", current_stage)), `Value, UI::Glyph(`BulletArrowRight));
+		any glyph = UI::Glyph(`BulletArrowRight);
+		if(glyph != nil)
+		    UI::ChangeWidget(`id (sformat ("bar_label_%1", current_stage)), `Value, glyph);
 	    }
 	}
     }
