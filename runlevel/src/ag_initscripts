@@ -21,33 +21,24 @@
 # .init.scripts.comments
 #    returns a map of services, e.g.:
 #     $[
-#    "xdm" : $[
-#	   "provides" : [ "xdm", ],		# apache has apache, httpd
-#          "reqstart" : [ "$remote_fs", "$syslog", "ypbind", ],
-#          "reqstop" : [ ],
-#	   "shouldstart" : [ ],
-#	   "shouldstop" : [ ],
-#          "defstart" : [ "5", ],
-#          "defstop" : [ ],
-#          "description": "X Display Manager",
-#     ],
 #     "inetd" : $[
-#	   "provides" : [ "inetd",],
+#	   "provides" : [ "inetd",],		# apache has apache, httpd
 #          "reqstart" : [ "$network", "$remote_fs", ],
 #          "reqstop" : [ "$network", ],
 #	   "shouldstart" : [ "portmap", "autofs", ],
 #	   "shouldstop" : [ "portmap", ],
 #          "defstart" : [ "3", "5", ],
 #          "defstop" : [ "0", "1", "2", "6", ],
+#	   "defenabled": false,
 #          "description": "Start the inet daemon.",
+#	   "shortdescription": "Inet daemon",
 #     ],
 #     ]
 # .init.scripts.comment
 #   Read (.init.scripts.comment, "script")
-#   reads the same but for given script
+#   reads the same but for a given script, a singleton map
 #
 # Not all of the fields are needed/used by the runlevel editor.
-# TODO: shortdescription
 # TODO: what if some fields are missing?
 ################################################################
 # .init.scripts.runlevels
@@ -61,7 +52,7 @@
 #     ]
 # .init.scripts.runlevel
 #   Read (.init.scripts.runlevel, "script")
-#   reads the same but for given script
+#   reads the same but for a given script, a singleton map
 ################################################################
 # .init.scripts.current_runlevel
 #   return string -- current runlevel.
@@ -80,6 +71,9 @@
 export LC_ALL=C
 exec 2>/dev/null
 
+# InitScripts can initialize this to a different value
+#  Useful for .comments
+#  Does not work for .runlevels which wants a fixed number of slashes
 INITD="/etc/init.d"
 
 get_script_info () {
@@ -166,6 +160,16 @@ get_script_info () {
 	    for (i = 3; i<= NF; i++) printf ("\"%s\", ", $i) ;
 	    print "],";
 	}
+    in_continue && in_comment && $2 == "X-UnitedLinux-Default-Enabled:" {
+	    in_continue = 0;
+	    in_descr = 0;
+	    printf "     \"defenabled\" : ";
+	    if ($3 == "yes" || $3 == "true")
+		printf "true";
+	    else
+		printf "false";
+ 	    print ",";
+	}
     in_continue && in_comment && $2 == "Provides:" {
 	    in_continue = 0;
 	    in_descr = 0;
@@ -216,21 +220,23 @@ read_runlevels () {
     /usr/bin/find $INITD -name "*$1" | /usr/bin/awk -F / '
     BEGIN { SUBSEP = ":"; }
     $4 ~ /^rc.\.d$/ && $5 ~ /^[SK][0-9][0-9]/ {
-	scripts [substr ($5, 4)] = 1;
+	script = substr ($5, 4);
+	scripts [script] = 1;
 	if (substr ($5, 1, 1) == "K") {
-	    K [substr ($5, 4)] = K [substr ($5, 4)] "\"" substr ($4, 3, 1) "\", ";
+	    K [script] = K [script] "\"" substr ($4, 3, 1) "\", ";
 	}
 	else if (substr ($5, 1, 1) == "S") {
-	    S [substr ($5, 4)] = S [substr ($5, 4)] "\"" substr ($4, 3, 1) "\", ";
+	    S [script] = S [script] "\"" substr ($4, 3, 1) "\", ";
 	}
     }
     $4 ~ /^boot.d$/ && $5 ~ /^[SK][0-9][0-9]/ {
-	scripts [substr ($5, 4)] = 1;
+	script = substr ($5, 4);
+	scripts [script] = 1;
 	if (substr ($5, 1, 1) == "K") {
-	    K [substr ($5, 4)] = K [substr ($5, 4)] "\"B\", ";
+	    K [script] = K [script] "\"B\", ";
 	}
 	else if (substr ($5, 1, 1) == "S") {
-	    S [substr ($5, 4)] = S [substr ($5, 4)] "\"B\", ";
+	    S [script] = S [script] "\"B\", ";
 	}
     }
     END {
