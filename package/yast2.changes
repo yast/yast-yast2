@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Sep 10 15:24:28 CEST 2003 - gs@suse.de
+
+- V 2.8.27
+- menu/menu.ycp: replace <key> by [key] in help text (to avoid
+  misinterpretation in RichText) 
+
+-------------------------------------------------------------------
 Fri Sep  5 14:34:09 CEST 2003 - visnov@suse.de
 
 - library/commandline: care about command line only in normal mode (#30144)
