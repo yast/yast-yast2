@@ -1,0 +1,59 @@
+/**
+ * File:	modules/CustomDialogs.ycp
+ * Module:	yast2
+ * Summary:	Installation mode
+ * Authors:	Klaus Kaempf <kkaempf@suse.de>
+ *
+ * $Id: Mode.ycp,v 1.24 2004/11/01 09:08:44 visnov Exp $
+ *
+ */
+{
+    module "CustomDialogs";
+    import "Language";
+
+    global map load_file_locale (list<string> patterns, string file_path )
+    {
+        string text = "";
+        string file = "";
+        integer i = 0;
+        while (i < size(patterns))
+        {
+            string p = patterns[i]:"";
+            string tmp = file_path + "/" + p;
+            if (!issubstring(p, "%"))
+            {
+                y2debug("no pattern");
+                y2debug("checking for %1", tmp );
+                text = (string)SCR::Read (.target.string, [tmp, ""]);
+                if (text != "")
+                    break;
+                else
+                {
+                    i = i + 1;
+                    continue;
+                }
+            }
+            file = sformat (tmp, Language::language);
+            y2debug("checking for %1", file );
+            text = (string)SCR::Read (.target.string, [file, ""]);
+            if (text != "")
+                break;
+
+            file = sformat (tmp, substring (Language::language, 0, 2));
+            y2debug("checking for %1", file );
+            text = (string)SCR::Read (.target.string, [file, ""]);
+            if (text != "")
+                break;
+
+            file = sformat (tmp, "en");
+            y2debug("checking for %1", file );
+            text = (string)SCR::Read (.target.string, [file, ""]);
+            if (text != "")
+                break;
+            i = i + 1;
+        }
+        return $["text":text, "file":file];
+    }
+
+
+}
