@@ -15,7 +15,8 @@ module_DATA =			\
 	Progress.ycp		\
 	Report.ycp		\
 	Summary.ycp		\
-	HTML.ycp
+	HTML.ycp		\
+	Autologin.ycp
 
 ynclude_DATA =			\
 	file_popups.ycp

@@ -1,0 +1,105 @@
+/**
+ * File:	modules/Autologin.ycp
+ * Package:	yast2
+ * Summary:	Autologin read/write routines
+ * Author:	Jiri Suchomel <jsuchome@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+module "Autologin";
+
+textdomain "base";
+
+import "Require";
+
+/**
+ * User to log in automaticaly
+ */
+global string user = "";
+
+/**
+ * Login without passwords?
+ */
+global boolean pw_less = false;
+
+/**
+ * Is autologin feature available?
+ */
+global boolean available = true;
+
+/**
+ * Is autogion used? Usualy true when user is not empty, but for the first
+ * time (during installation), this is true by default although user is ""
+ */
+global boolean used = true;
+
+/**
+ * Autologin settings modified?
+ */
+global boolean modified = false;
+
+/**
+ * Read autologin settings
+ * @return used?
+ */
+global define boolean Read () ``{
+
+    if (SCR::Read (.sysconfig.displaymanager.DISPLAYMANAGER) != "kdm" ||
+	!Require::IsAnyPackageInstalled (["kdebase3-kdm"]))
+    {
+	available = false;
+	user = "";
+    }
+    else
+    {
+	user = SCR::Read (.sysconfig.displaymanager.DISPLAYMANAGER_AUTOLOGIN);
+	pw_less = SCR::Read (.sysconfig.displaymanager.DISPLAYMANAGER_PASSWORD_LESS_LOGIN) == "yes";
+
+	if (user == nil || user == "")
+	    user = "";
+    }
+    used = (user != "");
+    return used;
+}
+
+
+/**
+ * Write autologin settings
+ * @param write_only when true, suseconfig script will not be run
+ * @return written anything?
+ */
+global define boolean Write (boolean write_only) ``{
+
+    if (!available || !modified)
+	return false;
+
+    SCR::Write (.sysconfig.displaymanager.DISPLAYMANAGER_AUTOLOGIN, user);
+    SCR::Write (.sysconfig.displaymanager.DISPLAYMANAGER_PASSWORD_LESS_LOGIN,
+	pw_less ? "yes" : "no" );
+    SCR::Write(.sysconfig.displaymanager, nil);
+
+    if (!write_only)
+	SCR::Execute (.target.bash, "/sbin/SuSEconfig --module kdm3");
+
+    return true;
+}
+
+/**
+ * Disable autologin and write it
+ * @param write_only when true, suseconfig script will not be run
+ * @return written anything?
+ */
+global define boolean DisableAndWrite (boolean write_only) ``{
+
+    user	= "";
+    pw_less	= false;
+    modified	= true;
+    return Write (write_only);
+}
+
+
+/* EOF */
+}
