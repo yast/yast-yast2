@@ -10,7 +10,7 @@
 {
     module "TypeRepository";
 
-    include "network/ip.ycp";
+//    include "network/ip.ycp";
 
     /* Map of known types, empty initially */
     map types = $[];
@@ -38,7 +38,7 @@
      */
     global define void TypeRepository() ``{
 	types = $[
-	    "ipaddress": ``( check_ip() ),
+//	    "ipaddress": ``( check_ip() ),
 	    "string": ``( is_string() )
 	];
     }
