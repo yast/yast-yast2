@@ -32,4 +32,24 @@
         return;
     }
 
+    /*
+     * Copy /etc/install.inf into built system so that the
+     * second phase of the installation can find it.
+     */
+    global boolean SaveInstallInf(string root)
+    {
+
+        if (Mode::initial && !Mode::test )
+        {
+            SCR::Execute (.target.bash, "/bin/grep -v Sourcemounted /etc/install.inf >" +
+                    root + "/etc/install.inf");
+
+            // just for debug so we can see the original install.inf later
+            SCR::Execute (.target.bash, "/bin/cp /etc/install.inf " +
+                    root + "/var/lib/YaST2/install.inf");
+            SCR::Execute (.target.bash, "/bin/chmod 0600 " +
+                    root + "/var/lib/YaST2/install.inf");
+        }
+        return true;
+    }
 }
