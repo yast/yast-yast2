@@ -1,6 +1,6 @@
 /**
  * File:	yast2_groups.scr
- * Summary:	Agent for yast2 groups (y2cc groups)
+ * Summary:	Agent for reading yast2 groups .desktop files
  * Author:	Michal Svec <msvec@suse.cz>
  * Access:	read only
  *
@@ -8,33 +8,33 @@
  *   Dir(.yast2.groups)
  *   (["lan", "modem", "isdn", ...])
  **
- *   Dir(.yast2.groups.lan)
- *   (["Name", "Group", ...])
- **
- *   Read(.yast2.groups.lan.Textdomain)
- *   ("network")
+ *   Read(.yast2.groups.misc)
+ *   ("3")
  *
  * $Id$
  */
 .yast2.groups
 
 `ag_ini(
-    `IniAgent( "/usr/share/YaST2/config/y2cc.groups",
+    `IniAgent( [ "/usr/share/applications/YaST2/groups/*.desktop" ],
 	$[
-	    "options"	: [ "read_only" ],
+	    "options"	: [ ],
 	    "comments"	: [ "^[ \t]*;.*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],
 	    "sections"	: [
 		$[ "begin" : [
-		    "^[ \t]*\\[[ \t]*Y2Group[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
-		    "[Y2Group %s]",
+		    "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
+		    "[%s]",
 		]],
 	    ],
 	    "params" : [
 		$[ "match" : [
-		    "^[ \t]*([^ ]*)[ \t]*=[ \t]*(.*)[ \t]*$",
-		    "%s = %s",
+		    "^[ \t]*([^=]*[^ \t=])[ \t]*=[ \t]*(.*[^ \t]|)[ \t]*$" ,
+		    "%s=%s",
 		]],
 	    ],
+//	    "rewrite" : [
+//		[ "/usr/share/applications/YaST2/(.*)\.desktop", "/usr/share/applications/YaST2/%s.desktop" ],
+//	    ],
 	]
     )
 )

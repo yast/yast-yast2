@@ -112,7 +112,7 @@ letter). Use [ALT] and the letter to activate the button.</p>") +
 there is more than one way to navigate the dialog pages.
 If [TAB] and [SHIFT] (or [ALT]) + [TAB] do not work,
 move focus forward with [CTRL] + [F] and backward with [CTRL] + [B].</p>") +
-	
+
     /* NCurses Control Center help 4/8 */
     _("<p>If [ALT] + [letter] does not work,
 try [ESC] + [letter]. Example: [ESC] + [H] for [ALT] + [H].
@@ -141,7 +141,7 @@ F10 = OK, Next, Finish, or Accept<br>") +
     /* NCurses Control Center help 8/8 */
     _("<p>Please note that in some environments, all or some
 F keys are not availiable.</p>");
-    
+
     Popup::LongText(headline, `RichText(help), 60, 20);
 
 }
@@ -190,7 +190,7 @@ while(true) {
 	 && event["EventReason"]:"" == "SelectionChanged" )
     {
 	string id = (string) UI::QueryWidget(`id(`groups), `CurrentItem);
-	if(is(id, string)) ReplaceModuleList(id);
+	ReplaceModuleList(id);
 	continue;
     }
     else if ( event["ID"]:`none == `progs

@@ -38,7 +38,6 @@ for f in `find $RPM_BUILD_ROOT/usr/share/applications/YaST2/groups/*.desktop` ; 
 done
 
 mkdir -p "$RPM_BUILD_ROOT"@clientdir@
-mkdir -p "$RPM_BUILD_ROOT"@configdir@
 mkdir -p "$RPM_BUILD_ROOT"@desktopdir@
 mkdir -p "$RPM_BUILD_ROOT"@imagedir@
 mkdir -p "$RPM_BUILD_ROOT"@localedir@
@@ -57,7 +56,6 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 # basic directory structure
 
 %dir @clientdir@
-%dir @configdir@
 %dir @desktopdir@
 @desktopdir@/groups
 %dir @imagedir@
@@ -72,7 +70,6 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 # yast2
 
 @clientdir@/*
-@configdir@/*
 @moduledir@/*
 @scrconfdir@/*
 @ybindir@/*

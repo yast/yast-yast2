@@ -20,7 +20,21 @@ global map Modules = $[];
 
 /**
  * YaST configuration groups
+ *
+ * <PRE>
+    Groups=$[
+	"Hardware":$[
+	    "Icon":"hardware56.png",
+	    "Name":"_(\"Hardware\")",
+	    "SortKey":"20",
+	    "Textdomain":"base",
+	    "modules":["cdrom", "hwinfo", ...]
+	],
+	...
+   ];
+ * </PRE>
  */
+
 global map Groups = $[];
 
 /**
@@ -63,32 +77,33 @@ global define void Read(list Values) ``{
     path ps = add(AgentPath, "s");
     list files = SCR::Dir(ps);
 
-    /* read groups */
-    list groups = SCR::Dir(.yast2.groups.s);
-    foreach(string group, groups, ``{
-	filemap = $[];
-	filepath = add(.yast2.groups.v, group);
-	list values = SCR::Dir(filepath);
-	foreach(string value, values, ``{
-	    string ret = (string) SCR::Read(add(filepath, value));
-	    // y2milestone("%1[%2]=%3", filepath, value, ret);
-	    if(ret != nil) filemap[value] = ret;
-	});
-	filemap["modules"] = [];
-	Groups[group] = filemap;
-    });
-
     /* read language */
     Language = WFM::GetLanguage();
     if(regexpmatch(Language, "(.*)_"))
 	Language = regexpsub(Language, "(.*)_", "\\1");
     y2debug("%1", Language);
 
+    /* read groups */
+    list groups = SCR::Dir(.yast2.groups.s);
+    y2debug("groups=%1", groups);
+    foreach(string group, groups, ``{
+	filemap = $[];
+	filepath = .yast2.groups.v + group + "Desktop Entry";
+
+	filemap["Icon"] = SCR::Read(filepath + "Icon");
+	filemap["SortKey"] = SCR::Read(filepath + "X-SuSE-YaST-SortKey");
+	filemap["Name"] = ReadLocalizedKey(filepath, "Name");
+	filemap["modules"] = [];
+
+	string name = (string) SCR::Read(filepath + "X-SuSE-YaST-Group");
+	Groups[name] = filemap;
+    });
+    y2debug("Groups=%1", Groups);
+
     /* read modules */
     foreach(string file, files, ``{
 	filemap = $[];
-	path pv = add(AgentPath, "v");
-	filepath = add(pv, file) + ."Desktop Entry";
+	filepath = AgentPath + .v + file + ."Desktop Entry";
 	list values = SCR::Dir(filepath);
 	if(Values != nil && Values != []) values = Values;
 	foreach(string value, values, ``{
@@ -102,6 +117,8 @@ global define void Read(list Values) ``{
 	    if(group != "") Groups[group, "modules", size(Groups[group,"modules"]:[])] = name;
 	}
     });
+    y2debug("Groups=%1", Groups);
+    y2debug("Modules=%1", Modules);
 
 }
 
@@ -109,8 +126,9 @@ global define void Read(list Values) ``{
  */
 global define string Translate(string key) ``{
     if(regexpmatch(key, "_\\(\"(.*)\"\\)") == true) {
-        locale ke = regexpsub(key, "_\\(\"(.*)\"\\)", "\\1");
-        key = (string) eval(ke);
+	locale ke = regexpsub(key, "_\\(\"(.*)\"\\)", "\\1");
+	key = (string) eval(ke);
+	y2milestone("%1 -> %2", ke, key);
     }
     return key;
 }
