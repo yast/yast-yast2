@@ -1,0 +1,426 @@
+/**
+ * File:	modules/Kernel.ycp
+ * Package:	Installation
+ * Summary:	Kernel related functions and data
+ * Authors:	Klaus Kaempf <kkaempf@suse.de>
+ *		Arvin Schnell <arvin@suse.de>
+ *
+ * $Id$
+ *
+ * <ul>
+ * <li>determine kernel rpm</li>
+ * <li>determine flags</li>
+ * <li>determine hard reboot</li>
+ * </ul>
+ */
+
+{
+
+    module "Kernel";
+
+    import "Arch";
+
+    import "Mode";
+
+    textdomain "base";
+
+    /**
+     * @return	switched	if the kernel was switches during
+     *				installation (e.g. from k_deftl to k_smp)
+     *				(Determines hard boot vs. warm boot)
+     */
+    global boolean switched = false;
+
+    /**
+     * @return	binary		determines the name of the kernel binary
+     *				below '/boot'.
+     */
+    global string binary = "vmlinuz";
+
+    /**
+     * @return	string	the kernel command line
+     * Don't write it directly, @see: AddCmdLine()
+     */
+    global string cmdLine = "";
+
+    /**
+     * list of modules which shall be probed ASAP after root is mounted
+     */
+    global string kernelModules = "";
+
+    /**
+     * @return strign  the kernel vga paramter
+     */
+    global string vgaType = "";
+
+    /**
+     * @return	kernel_packages	a list kernels to be installed.
+     */
+    global list kernel_packages = [];
+
+    /**
+     * @return  if "suse_update" given in cmdline
+     */
+    global boolean suse_update = false;
+
+    //---------------------------------------------------------------
+    // local defines
+
+    /**
+     * AddCmdLine ()
+     * @param	string	name of parameter
+     * @param	string	args of parameter
+     *
+     * add "name=args" to kernel boot parameters
+     * add just "name" if args = ""
+     * @see: cmdLine
+     */
+    global define void AddCmdLine (string name, string arg)
+    ``{
+	cmdLine = cmdLine + " " + name;
+	if (arg != "")
+	{
+	    cmdLine = cmdLine + "=" + arg;
+	}
+	y2milestone ("cmdLine '%1'", cmdLine);
+	return;
+    }
+
+    /**
+     * @param	cmdline	string
+     *
+     * @return	void
+     * Filters out yast2 specific boot parameters and sets
+     * Parameters to the important cmdline parts.
+     */
+    define void ExtractCmdlineParameters (string line)
+    ``{
+	// discard \n
+	line = deletechars (line, "\n");
+
+	// list of parameters to be discarded (yast internals)
+
+	list discardlist = [
+	];
+
+	list<string> cmdlist = [];
+
+	integer parse_index = 0;
+	boolean in_quotes = false;
+	boolean after_backslash = false;
+	string current_param = "";
+	while (parse_index < size (line))
+	{
+	    string current_char = substring (line, parse_index, 1);
+	    if (current_char == "\"" && ! after_backslash)
+		in_quotes = ! in_quotes;
+	    if (current_char == " " && ! in_quotes)
+	    {
+		cmdlist = add (cmdlist, current_param);
+		current_param = "";
+	    }
+	    else
+		current_param = current_param + current_char;
+	    if (current_char == "\\")
+		after_backslash = true;
+	    else
+		after_backslash = false;
+	    parse_index = parse_index + 1;
+	}
+	cmdlist = add (cmdlist, current_param);
+
+//	this is wrong because of eg. >>o="p a r a m"<<, see bugzilla 26147
+//	list cmdlist = splitstring (line, " ");
+
+	// some systems (pseries) can autodetect the serial console
+	if (contains (cmdlist, "AUTOCONSOLE"))
+	{
+	    discardlist = add (discardlist, "console");
+	    discardlist = add (discardlist, "AUTOCONSOLE");
+	}
+
+	// backdoor to re-enable update on UL/SLES
+	if (contains (cmdlist, "suse_update"))
+	{
+	    discardlist = add (discardlist, "suse_update");
+	    suse_update = true;
+	}
+
+	foreach (string parameter, cmdlist,
+	``{
+	    // split "key=value" to ["key", "value"]
+
+	    list<string> param_value_list = splitstring (parameter, "=");
+
+	    // now only collect keys not in discardlist
+	    if (size (param_value_list) > 0)
+	    {
+		if (param_value_list[0]:"" == "vga")
+		{
+		    vgaType = param_value_list[1]:"";
+		}
+		else if (!contains (discardlist, param_value_list[0]:""))
+		{
+		    AddCmdLine (param_value_list[0]:"", param_value_list[1]:"");
+		}
+	    }
+	});
+
+	return;
+    }
+
+    //---------------------------------------------------------------
+
+    /**
+     * select kernel depending on architecture and system type.
+     *
+     * @return void
+     */
+    global define void ProbeKernel ()
+    ``{
+	kernel_packages = ["k_deflt"];
+
+	if (Arch::has_smp)
+	{
+	    y2milestone ("Kernel switch: SMP board !");
+	    kernel_packages = ["k_smp"];
+	    switched = true;
+	}
+
+	if (Arch::i386)
+	{
+	    // get flags from WFM /proc/cpuinfo (for pae and tsc tests below)
+
+	    string cpuinfo_flags = (string) SCR::Read(.proc.cpuinfo.value."0"."flags");	// check only first processor
+	    list cpuflags = (size(cpuinfo_flags) > 0) ? splitstring(cpuinfo_flags, " ") : [];
+
+	    // check for > 4GB memory
+	    list memories = (list) SCR::Read(.probe.memory);
+	    integer memsize = memories[0,"resource","phys_mem",0,"range"]:0;
+	    integer fourGB = 0x100000000;
+	    y2milestone ("Physical memory %1", memsize);
+
+	    if (Arch::has_smp)
+	    {
+		// x86, SMP -> must check PAE
+		if ((memsize <= fourGB)
+		    || !contains (cpuflags, "pae"))
+		{
+		    y2milestone ("Kernel switch: SMP, mem <= 4GB or no PAE support !");
+		    kernel_packages = ["k_smp4G"];
+		    switched = true;
+		}
+	    }
+	    else if (memsize > fourGB)				// > 4GB
+	    {
+		y2milestone ("Kernel switch: SMP, mem > 4GB");
+		kernel_packages = ["k_smp"];
+		switched = true;
+	    }
+	    else
+	    {
+		// non-smp
+
+		// read cpu specific information (for first cpu only)
+		map cpu = (map) select ((list) SCR::Read (.probe.cpu), 0, $[]);
+		integer cpu_family = cpu["family"]:0;
+
+		if ((cpu["vendor"]:"" == "AuthenticAMD")
+		    && (cpu_family >= 6))
+		{
+		    y2milestone ("Kernel switch: Athlon !");
+		    kernel_packages = ["k_athlon"];
+		    switched = true;
+		}
+	    }
+	}
+	else if (Arch::alpha
+		 && !Arch::has_smp)
+	{
+	    if (Mode::serial_console)
+	    {
+		kernel_packages = ["k_serial"];
+		switched = true;
+	    }
+
+// I comment this condition cause this is unique occurence of this variable over all sources
+/*	    if (tga_controller_found)
+	    {
+		kernel_packages = ["k_tga"];
+		switched = true;
+	    }*/
+	}
+	else if (Arch::ppc)
+	{
+	    binary = "vmlinux";
+	    switched = false;
+	    if (Arch::board_mac_new
+		|| Arch::board_mac_old)
+	    {
+		kernel_packages = ["k_deflt"];
+	    }
+
+	    if (Arch::board_mac_nubus)
+	    {
+		kernel_packages = ["kernel-nubus"];
+		binary = "vmlinux-nubus";
+	    }
+
+	    if (Arch::board_chrp)
+	    {
+		// XXX fixme
+		string chrp_cpu = "";
+		list<map> cpuProbe = (list<map>) SCR::Read(.probe.cpu);
+		foreach (map cpuProbe_map, cpuProbe,
+		``{
+		    chrp_cpu = cpuProbe_map["model"]:"";
+		    chrp_cpu = tolower (chrp_cpu);
+		});
+
+		if (issubstring (chrp_cpu, "power3")
+		    && Arch::ppc32)
+		{
+		    kernel_packages = ["kernel-power3"];
+		    binary = "vmlinux-power3";
+		}
+		else if (Arch::ppc64)
+		{
+		    kernel_packages = ["kernel-ppc64"];
+		    binary = "vmlinuz";
+		}
+		else
+		{
+		    kernel_packages = ["k_deflt"];
+		}
+	    }
+	    else if (Arch::board_iseries)
+	    {
+		kernel_packages = ["kernel-iseries64"];
+		binary = "vmlinux64";
+	    }
+	    else if (Arch::board_prep)
+	    {
+		kernel_packages = ["k_deflt"];
+		binary = "zImage.prep";
+	    }
+	}
+	else if (Arch::sparc64)
+	{
+	    if (Arch::has_smp)
+	    {
+		kernel_packages = ["k_smp"];
+		switched = true;
+	    }
+	    else
+	    {
+		kernel_packages = ["k_deflt"];
+	    }
+	}
+	else if (Arch::ia64)
+	{
+	    list<map> cpuProbe = (list<map>) SCR::Read (.probe.cpu);
+	    string model = cpuProbe[0,"model"]:"Itanium";
+	    if (issubstring(model, "Itanium 2"))
+	    {
+		if (Arch::has_smp)
+		    kernel_packages = ["k_itanium2-smp"];
+		else
+		    kernel_packages = ["k_itanium2"];
+		switched = true;
+	    }
+	}
+	else if (Arch::s390)
+	{
+	    binary = "none";				// not required on S390
+	    kernel_packages = ["k_deflt"];
+	    switched = true;				// force reboot
+	}
+
+	y2milestone("Kernel determined: %1", kernel_packages);
+	return;
+
+    }  // ProbeKernel ()
+
+    /**
+     * AddModuleToLoad ()
+     * @param string module name
+     * add the module name to sysconfig variable
+     */
+    global define void AddModuleToLoad (string name)
+    ``{
+	kernelModules = kernelModules + " " + name;
+    }
+
+    /**
+     * IDERecorders ()
+     * @param	list<string>	list of ide cdrecorders (i.e. ["hdc", "hdd"])
+     */
+    global define void IDERecorders (list<string> idecdrws)
+    ``{
+	y2milestone ("IDERecorders(%1)", idecdrws);
+	if (size (idecdrws) > 0)
+	{
+// Don't add to initrd because of #19376
+//	    Initrd::AddModule ("ide-scsi", "");
+	    AddModuleToLoad ("cdrom");
+	    AddModuleToLoad ("ide-cd");
+	    AddModuleToLoad ("ide-scsi");
+	    y2milestone ("old boot_parameters '%1'", cmdLine);
+	    foreach (string dev, idecdrws,
+	    ``{
+		AddCmdLine (dev, "ide-scsi");
+		AddCmdLine (dev + "lun", "0");
+	    });
+	    y2milestone ("new boot_parameters '%1'", cmdLine);
+
+	    switched = true;	// must do a hard reboot !
+	}
+	return;
+    };
+
+    /*
+     *	Set a custom kernel.
+     *	@return void
+     */
+    global define void Set (list custom_kernels)
+    ``{
+	kernel_packages = custom_kernels;
+
+	return;
+    }
+
+    /**
+     * SaveModuleToLoad ()
+     * save the sysconfig variable to the file
+     */
+    global define void SaveModulesToLoad ()
+    ``{
+	y2milestone ("Modules to be loader at boot time: %1", kernelModules);
+	SCR::Write (.sysconfig.kernel.MODULES_LOADED_ON_BOOT, kernelModules);
+	SCR::Write (.sysconfig.kernel, nil);
+    }
+
+    /**
+     * Constructor
+     * extract relevant settings from Cmdline in install.inf
+     * @return void
+     */
+    global define void Kernel ()
+    ``{
+	if (Mode::initial || Mode::cont) {
+	string tmp = (string) SCR::Read (.etc.install_inf.Cmdline);
+	y2milestone ("cmdline from install.inf is: %1", tmp);
+	if (tmp != nil) {
+	    // extract extra boot parameters given in installation
+	    ExtractCmdlineParameters (tmp);
+	}
+
+	// FIXME should be configurable
+	AddCmdLine ("desktop", "");
+	}
+
+	ProbeKernel ();
+    }
+
+/* EOF */
+}
