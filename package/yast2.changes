@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov  2 16:36:35 CET 2004 - mvidner@suse.cz
+
+- Allow overriding sbindir so that we can install to a prefix.
+- Merged changes from the 9.2 branch.
+
+-------------------------------------------------------------------
 Mon Nov  1 14:29:34 CET 2004 - visnov@suse.cz
 
 - set product name in wizard when opening a dialog (#46247) 
@@ -42,6 +48,12 @@ Mon Oct 11 14:53:47 CEST 2004 - jsrain@suse.cz
   when they are needed (instead of constructor)
 - update Initrd.ycp not to use Arch:: in its constructor
 - 2.11.0
+
+-------------------------------------------------------------------
+Mon Oct  4 16:42:21 CEST 2004 - mvidner@suse.cz
+
+- Moved the "cd /" workaround to yast2-network (#46055).
+- 2.10.27
 
 -------------------------------------------------------------------
 Fri Oct  1 13:44:58 CEST 2004 - sh@suse.de
