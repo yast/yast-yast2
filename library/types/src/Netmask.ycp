@@ -79,7 +79,7 @@ global define string FromBits(integer bits) ``{
 	5:"248", 6:"252", 7:"254", 8:"255",
     ];
 
-    return l[b]:"" + (d!=0? m[d]:""+(b!=3?".":"") : "") + r[d==0?b:b+1]:"";
+    return l[b]:"" + (d!=0? m[d]:""+(b!=3?".":"") : "") + r[d==0?b:(b+1)]:"";
 }
 
 /**

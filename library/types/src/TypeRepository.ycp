@@ -18,7 +18,7 @@ import "Netmask";
 import "URL";
 
 /* Map of known types, empty initially */
-map types = $[];
+map<string, boolean(any)> types = $[];
 
 /**
  * Validate, that the given value is of given type.
@@ -28,10 +28,9 @@ map types = $[];
  * @return true, if the value can be considered to be of a given type
  */
 global define boolean is_a(any value, string type) ``{
-    term validator = types[type]:nil;
+    boolean(any) validator = types[type]:nil;
     if ( validator != nil )	{
-	validator = add( validator, value );
-	return (boolean)eval(validator);
+	return validator(value);
     } else {
 	y2error( "Request to validate unknown type %1", type  );
     }
@@ -53,20 +52,20 @@ define boolean is_string( any s ) ``{
  */
 global define void TypeRepository() ``{
     types = $[
-	"ip"		: ``( IP::Check() ),
-	"ip4"		: ``( IP::Check4() ),
-	"ip6"		: ``( IP::Check6() ),
-	"netmask"	: ``( Netmask::Check() ),
-	"netmask4"	: ``( Netmask::Check4() ),
-	"netmask6"	: ``( Netmask::Check6() ),
-	"host"		: ``( Address::Check() ),
-	"host4"		: ``( Address::Check4() ),
-	"host6"		: ``( Address::Check6() ),
-	"hostname"	: ``( Hostname::Check() ),
-	"fullhostname"	: ``( Hostname::CheckFQ() ),
-	"domain"	: ``( Hostname::CheckDomain() ),
-	"url"		: ``( URL::Check() ),
-	"string"	: ``( is_string() ),
+	"ip"		: IP::Check,
+	"ip4"		: IP::Check4,
+	"ip6"		: IP::Check6,
+	"netmask"	: Netmask::Check,
+	"netmask4"	: Netmask::Check4,
+	"netmask6"	: Netmask::Check6,
+	"host"		: Address::Check,
+	"host4"		: Address::Check4,
+	"host6"		: Address::Check6,
+	"hostname"	: Hostname::Check,
+	"fullhostname"	: Hostname::CheckFQ,
+	"domain"	: Hostname::CheckDomain,
+	"url"		: URL::Check,
+	"string"	: is_string,
     ];
 }
 

@@ -36,46 +36,47 @@
       * @param descr map table description map
       * @return list of IDs of the table
       */
-    define list getIdList (map descr) ``{
-        term toEval = (term)(descr["ids"]:nil);
+    define list getIdList (map<string, any> descr) ``{
+        list(map) toEval = (list(map)) (descr["ids"]:nil);
         if (toEval != nil)
         {
-            toEval = add (toEval, ``(descr));
-            return (list)(eval (toEval));
+	    return toEval (descr);
         }
 	return [];
     }
 
     /**
       * Get option key from the option id
+      * global only because of testsuites
       * @param descr map description of the table
       * @param opt_id any id of the option
       * @return any option key
       */
-    define any id2key (map descr, any opt_id) ``{
+    global define any id2key (map<string, any> descr, any opt_id) ``{
 	if (is (opt_id, string) && size ((string)opt_id) >= 7
 	    && substring ((string)opt_id, 0, 7) == "____sep")
 	{
 	    return "____sep";
 	}
-	term toEval = (term)(descr["id2key"]:nil);
+	any (map, any) toEval = (any(map, any)) (descr["id2key"]:nil);
 	if (toEval != nil)
-	    return eval (add (add (toEval, ``(descr)), opt_id));
+	    return toEval (descr, opt_id);
 	else
 	    return opt_id;
     }
 
     /**
       * Get option description map from the key
+      * global only because of testsuites
       * @param descr map description of the table
       * @param opt_key any option key
       * @return map option description map
       */
-    define map key2descr (map descr, any opt_key) ``{
+    global define map<string, any> key2descr (map<string, any> descr, any opt_key) ``{
 	map options = (map)(descr["options"]:$[]);
-	map opt_descr = (map)(options[opt_key]:$[]);
+	map<string, any> opt_descr = (map<string, any>)(options[opt_key]:$[]);
 	// a copy wanted here
-	opt_descr = add (opt_descr, "_cwm_key", opt_key);
+	opt_descr = (map<string, any>) add (opt_descr, "_cwm_key", opt_key);
 	// a deep copy
 	opt_descr["table"] = add ((map)(opt_descr["table"]:$[]), "_cwm_key", opt_key);
 	opt_descr["popup"] = add ((map)(opt_descr["popup"]:$[]), "_cwm_key", opt_key);
@@ -87,11 +88,12 @@
     /**
       * Update the option description map in order to contain handlers of
       *  all needed functions
+      * global only because of testsuites
       * @param opt_descr map option description map
       * @param fallbacks map of fallback handlers
       * @return map updated option description map
       */
-    define map updateOptionMap (map opt_descr, map fallbacks) ``{
+    global define map<string, any> updateOptionMap (map<string, any> opt_descr, map fallbacks) ``{
 	// ensure that the submaps exist
 	opt_descr["table"] = opt_descr["table"]:$[];
 	opt_descr["popup"] = opt_descr["popup"]:$[];
@@ -123,12 +125,12 @@
       * @param opt_descr map option description map
       * @return string text to the table
       */
-    define string tableEntryValue (any opt_id, map opt_descr) ``{
+    define string tableEntryValue (any opt_id, map<string, any> opt_descr) ``{
 	any opt_key = opt_descr["_cwm_key"]:"";
-	term toEval = (term)(opt_descr["table", "summary"]:nil);
+	string (any, any) toEval = (string(any, any)) (opt_descr["table", "summary"]:nil);
 	if (toEval != nil)
 	{
-	    return (string)(eval (add (add (toEval, opt_id), opt_key)));
+	    return toEval (opt_id, opt_key);
 	}
 	return "";
     }
@@ -139,12 +141,12 @@
       * @param opt_descr map option description map
       * @return boolean true if was changed
       */
-    global define boolean tableEntryChanged (any opt_id, map opt_descr) ``{
+    global define boolean tableEntryChanged (any opt_id, map<string, any> opt_descr) ``{
 	any opt_key = opt_descr["_cwm_key"]:"";
-	term toEval = opt_descr["table", "changed"]:nil;
+	boolean (any, any) toEval = (boolean(any, any)) (opt_descr["table", "changed"]:nil);
 	if (toEval != nil)
 	{
-	    return (boolean)(eval (add (add (toEval, opt_id), opt_key)));
+	    return toEval (opt_id, opt_key);
 	}
 	return false;
     }
@@ -156,12 +158,12 @@
       * @param descr map table description map
       * @return boolean true if was really deleted
       */
-    global define boolean deleteTableItem (any opt_id, map descr) ``{
-	term toEval = (term)(descr["option_delete"]:nil);
+    global define boolean deleteTableItem (any opt_id, map<string, any> descr) ``{
+	boolean(any, any) toEval = (boolean(any, any)) (descr["option_delete"]:nil);
 	if (nil != toEval)
 	{
 	    any opt_key = id2key (descr, opt_id);
-	    return (boolean)(eval (add (add (toEval, opt_id), opt_key)));
+	    return toEval (opt_id, opt_key);
 	}
 	return false;
    }
@@ -196,14 +198,11 @@
       * @param dir symbol `up or `down (according to the button user pressed)
       * @return any new id of selected option, nil if wasn't reordered
       */
-    define any moveTableItem (any opt_id, map descr, symbol dir) ``{
-	term toEval = descr["option_move"]:nil;
+    define any moveTableItem (any opt_id, map<string, any> descr, symbol dir) ``{
+	any(any, any, symbol) toEval = (any(any, any, symbol)) (descr["option_move"]:nil);
 	if (nil != toEval)
 	{
-	    toEval = add (toEval, opt_id);
-	    toEval = add (toEval, id2key (descr, opt_id));
-	    toEval = add (toEval, dir);
-	    return eval (toEval);
+	    toEval (opt_id, id2key (descr, opt_id), dir);
 	}
 	return nil;
     }
@@ -218,7 +217,7 @@
       * @param update_buttons boolean true if buttons status (enabled/disabled)
       *  should be updated according to currently selected item
       */
-    define byteblock TableRedraw (map descr, boolean update_buttons) ``{
+    define byteblock TableRedraw (map<string, any> descr, boolean update_buttons) ``{
 	list id_list = getIdList (descr);
 	if (previous_selected_item == nil)
 	{
@@ -229,7 +228,7 @@
 	    string val = "";
 	    boolean opt_changed = false;
 	    any opt_key = id2key (descr, opt_id);
-	    map opt_descr = key2descr (descr, opt_key);
+	    map<string, any> opt_descr = key2descr (descr, opt_key);
 	    opt_descr = updateOptionMap (opt_descr, descr["fallback"]:$[]);
 	    if (opt_key != "____sep")
 	    {
@@ -309,7 +308,7 @@
       */
     global define symbol singleOptionEditPopup (map option)``{
 	string opt_key = option["_cwm_key"]:"";
-	any opt_id = option["_cwm_id"]:0;
+	any opt_id = option["_cwm_id"]:nil;
 
 	string label = sformat ("%1", option["table", "label"]:opt_key);
 	term header = `HBox (
@@ -318,7 +317,7 @@
 	    `Label (label),
 	    `HStretch ()
 	);
-	map popup_descr = CWM::prepareWidget (option["popup"]:$[]);
+	map<string, any> popup_descr = CWM::prepareWidget (option["popup"]:$[]);
 	term widget = (term)(popup_descr["widget"]:`VBox ());
 	string help = (string)(popup_descr["help"]:"");
 	if (help == nil)
@@ -348,43 +347,52 @@
 	UI::OpenDialog (contents);
 	if (popup_descr["init"]:nil != nil)
 	{
-	    term toEval = popup_descr["init"]:nil;
-	    toEval = add (add (toEval, opt_id), opt_key);
-	    eval (toEval);
+	    void(any, any) toEval = (void(any, any)) (popup_descr["init"]:nil);
+	    toEval (opt_id, opt_key);
 	}
-	symbol ret = nil;
-	map event_descr = $[];
+	any ret = nil;
+	map<string, any> event_descr = $[];
 	while (ret != `_tp_ok && ret != `_tp_cancel)
 	{
-	    map event_descr = (map)(UI::WaitForEvent ());
+	    map<string, any> event_descr = (map<string, any>)(UI::WaitForEvent ());
 	    if (Mode::test)
 		event_descr = $[ "ID" : `_tp_ok];
-	    ret = is (event_descr["ID"]:nil, symbol)
-		? event_descr["ID"]:nil
-		: nil;
+	    ret = event_descr["ID"]:nil;
 	    if (popup_descr["handle"]:nil != nil)
 	    {
-		term toEval = popup_descr["handle"]:nil;
-		toEval = add (add (toEval, opt_id), opt_key);
-		toEval = add (toEval, event_descr);
-		eval (toEval);
+		void(any, any, map) toEval = (void(any, any, map)) (popup_descr["handle"]:nil);
+		toEval (opt_id, opt_key, event_descr);
 	    }
 	    if (ret == `_tp_ok)
 	    {
-		if (! CWM::validateWidget (popup_descr, event_descr,
-		    [opt_id, opt_key]))
+		symbol val_type = (symbol) (popup_descr["validate_type"]:nil);
+		if (val_type == `function)
+		{
+		    boolean (any, any, map) toEval
+			= (boolean(any, any, map)) (popup_descr["validate_function"]:nil);
+		    if (toEval != nil)
+		    {
+			if (! toEval (opt_id, opt_key, event_descr))
+			{
+			    ret = nil;
+			}
+		    }
+		}
+		else if (! CWM::validateWidget (popup_descr, event_descr,
+		    opt_key))
+		{
 		    ret = nil;
+		}
 	    }
 	}
 	if (ret == `_tp_ok && popup_descr["store"]:nil != nil)
 	{
-	    term toEval = popup_descr["store"]:nil;
-	    toEval = add (add (toEval, opt_id), opt_key);
-	    eval (toEval);
+	    void(any, any) toEval = (void(any, any)) (popup_descr["store"]:nil);
+	    toEval (opt_id, opt_key);
 	}
 
 	UI::CloseDialog ();
-	return ret;
+	return (symbol)ret;
     }
 
 
@@ -416,7 +424,7 @@
       * currently selected table row
       * @param descr map table widget description map
       */
-    global define byteblock EnableTable (map descr) ``{
+    global define byteblock EnableTable (map<string, any> descr) ``{
 	UI::ChangeWidget (`id (`_tp_table), `Enabled, true);
 	UI::ChangeWidget (`id (`_tp_edit), `Enabled, true);
 	if (descr["_cwm_attrib", "add_delete_buttons"]:true)
@@ -435,7 +443,7 @@
       * @param descr map description map of the whole table
       * @param key table widget key
       */
-    global define byteblock TableInit (map descr, any key) ``{
+    global define byteblock TableInit (map<string, any> descr, any key) ``{
 	previous_selected_item = nil;
 	descr["_cwm_key"] = key;
 	TableRedraw (descr, true);
@@ -448,7 +456,7 @@
       * @param event_descr map event to handle
       * @return symbol modified event if needed
       */
-    global define symbol TableHandle (map descr, any key, map event_descr) ``{
+    global define symbol TableHandle (map<string, any> descr, any key, map event_descr) ``{
 	any event_id = event_descr["ID"]:nil;
 	UI::SetFocus (`id (`_tp_table));
 	if (event_id == `_tp_table)
@@ -475,17 +483,17 @@
 		{
 		    list add_opts = descr["add_items"]:[];
 		    list ids = getIdList (descr);
-		    list present = maplist (`i, ids, ``(
+		    list present = maplist (any i, ids, ``(
 			id2key (descr, i)
 		    ));
 		    if (! descr["_cwm_attrib", "unique_keys"]:false)
 		    {
-			present = filter (`i, present, ``{
+			present = filter (any i, present, ``{
 			    map opt_descr = key2descr (descr, opt_key);
 			    return ! opt_descr["table", "optional"]:true;
 			});
 		    }
-		    add_opts = filter (`o, add_opts, ``(
+		    add_opts = filter (any o, add_opts, ``(
 			! contains (present, o)
 		    ));
 		    boolean selected = false;
@@ -511,7 +519,7 @@
                 opt_id = UI::QueryWidget (`id (`_tp_table), `CurrentItem);
                 opt_key = id2key (descr, opt_id);
             }
-            map option_map = key2descr (descr, opt_key);
+            map<string, any> option_map = key2descr (descr, opt_key);
 	    any toEval = option_map["table", "handle"]:nil;
 	    if (toEval != nil)
 	    {
@@ -522,9 +530,9 @@
 		}
 		else
 		{
-		    symbol ret = (symbol)(eval (
-			add (add (add ((term)toEval, opt_id), opt_key),
-			event_descr)));
+		    symbol(any, any, map) toEval_c
+			= (symbol(any, any, map)) (option_map["table", "handle"]:nil);
+		    symbol ret = toEval_c (opt_id, opt_key, event_descr);
 		    if (ret != `_tp_normal)
 			return ret;
 		}
@@ -532,7 +540,7 @@
             option_map["_cwm_id"] = opt_id;
 	    option_map["_cwm_key"] = opt_key;
 	    // add generic handlers if needed
-	    option_map = updateOptionMap (option_map, descr["fallback"]:$[]);
+	    option_map = updateOptionMap (option_map, (map<string, any>) (descr["fallback"]:$[]));
             symbol ret = singleOptionEditPopup (option_map);
             if (ret == `_tp_ok)
             {
@@ -575,13 +583,13 @@
 		if (previous_selected_item != nil)
 		{
 		    previous_index = -1;
-		    find (`e, id_list, ``{
+		    find (any e, id_list, ``{
 			previous_index = previous_index + 1;
 			return e == previous_selected_item;
 		    });
 		}
 		integer current_index = -1;
-		find (`e, id_list, ``{
+		find (any e, id_list, ``{
 		    current_index = current_index + 1;
 		    return e == opt_id;
 		});
@@ -594,7 +602,8 @@
 		    step = 1;
 		else
 		    step = -1;
-		opt_id = id_list[current_index + step]:nil;
+		integer new_index = current_index + step;
+		opt_id = id_list[new_index]:nil;
 		key = id2key (descr, opt_id);
 		UI::ChangeWidget (`id (`_tp_table), `CurrentItem, opt_id);
 	    }
@@ -725,11 +734,11 @@ in the list.</p>");
 
 	if (! haskey (ret, "init"))
 	{
-	    ret["init"] = ``(TablePopup::TableInitWrapper ());
+	    ret["init"] = TablePopup::TableInitWrapper;
 	}
 	if (! haskey (ret, "handle"))
 	{
-	    ret["handle"] = ``(TablePopup::TableHandleWrapper ());
+	    ret["handle"] = TablePopup::TableHandleWrapper;
 	}
 
 	return ret;

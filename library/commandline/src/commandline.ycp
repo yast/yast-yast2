@@ -20,9 +20,26 @@ import "Progress";
 import "Report";
 import "RichText";
 
-global define any RunFunction( term funct ) ``{
+
+define boolean fake_false() ``{
+    return false;
+}
+
+global define boolean RunFunction( boolean() funct ) ``{
     Report::ClearAll();
-    any ret = eval( funct );
+    boolean ret = funct();
+    string report = Report::GetMessages(
+	Report::NumWarnings()>0,Report::NumErrors()>0,Report::NumMessages()>0);
+    if( size(report) > 0 )
+	CommandLine::Print( RichText::Rich2Plain( report )  );
+    return ret;
+}
+
+global define boolean RunMapFunction( boolean(map<string,string>) funct,
+    map<string,string> arg )
+``{
+    Report::ClearAll();
+    boolean ret = funct(arg);
     string report = Report::GetMessages(
 	Report::NumWarnings()>0,Report::NumErrors()>0,Report::NumMessages()>0);
     if( size(report) > 0 )
@@ -54,13 +71,13 @@ global define boolean CommandLineRun( map commandline ) ``{
 
     /* Start GUI */
     if(CommandLine::StartGUI()) {
-	term exec = commandline[ "guihandler" ]: nil;
-	if( exec == nil ) {
+	if( !haskey (commandline, "guihandler") ) {
 	    y2error( "Missing GUI handler for %1", commandline["id"]:"<unknown>" );
 	    CommandLine::Error( _("There is no user interface available for this module.") );
 	    return false;
 	}
-	any ret = eval( exec );
+	boolean() exec = commandline[ "guihandler" ]: fake_false;
+	ret = exec();
 	y2debug("GUI handler ret=%1", ret);
 	return ret;
     } else {
@@ -74,7 +91,7 @@ global define boolean CommandLineRun( map commandline ) ``{
 
 	/* non-GUI handling */
 
-	verbose = contains( Args(), "verbose" );
+	verbose = contains( WFM::Args(), "verbose" );
 
 	if( verbose )
 	    CommandLine::Print( _("Initializing") );
@@ -85,7 +102,7 @@ global define boolean CommandLineRun( map commandline ) ``{
 
 	/* Start initialization */
 	if( commandline["initialize"]:nil != nil ) {
-	    boolean ret = RunFunction( commandline["initialize"]:nil );
+	    boolean ret = RunFunction( commandline["initialize"]:fake_false );
 	    if( !ret ) {
 		y2milestone( "Module initialization failed" );
 		return false;
@@ -100,7 +117,7 @@ global define boolean CommandLineRun( map commandline ) ``{
 	/* Init variables */
 	string command = "";
 	list flags = [];
-	map options = $[];
+	map<string,string> options = $[];
         string exit = "";
         list l = [];
 
@@ -109,15 +126,15 @@ global define boolean CommandLineRun( map commandline ) ``{
             command = m["command"]:"exit";
 	    options = m["options"]:$[];
 
-	    term exec = commandline["actions", command, "handler" ]: nil;
+	    boolean(map<string,string>) exec = (boolean(map<string,string>))
+		lookup (commandline["actions", command]:$[], "handler", nil);
 
 	    // there is a handler, execute the action
 	    if( exec != nil ) {
-		exec = add( exec, options );
-		any res = RunFunction( exec );
-		
+		boolean res = RunMapFunction( exec, options );
+
 		// if it is not interactive, abort on errors
-		if( !CommandLine::Interactive() && is( res, boolean ) && res == false )
+		if( !CommandLine::Interactive() && res == false )
 		    CommandLine::Abort();
 	    }
 	    else
@@ -135,7 +152,7 @@ global define boolean CommandLineRun( map commandline ) ``{
     if( ret && commandline["finish"]:nil != nil ) {
 	if( verbose )
 	    CommandLine::Print( _("Finishing") );
-	ret = RunFunction( commandline["finish"]:nil );
+	ret = RunFunction( commandline["finish"]:fake_false );
 	if( !ret ) {
 	    y2milestone( "Module finishing failed" );
 	    return false;

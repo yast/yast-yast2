@@ -110,10 +110,11 @@ global define map FromString(string s) ``{
     foreach(string vals, splitstring(s, " "), ``{
 	list val = splitstring(vals, "=");
 	if(size(val) < 1 || val[0]:"" == "") return;
+	string key = val[0]:"";
 	if(size(val) > 1)
-	    ret[val[0]:""] = val[1]:"";
+	    ret[key] = val[1]:"";
 	else
-	    ret[val[0]:""] = "";
+	    ret[key] = "";
     });
     return ret;
 }

@@ -1,15 +1,62 @@
 Dump	=========================================
 Dump	============   Table/Popup   ============
 Dump	=========================================
+Dump	W: $["_cwm_attrib":$[], "_cwm_key":"table", "custom_widget":nil, "fallback":$["init": (any id, string key)
+Dump	{
+Dump	    y2error ("fallback_init: id %1, key %2", id, key);
+Dump	}
+Dump	, "store": (any id, string key)
+Dump	{
+Dump	    y2error ("fallback_store: id %1, key %2", id, key);
+Dump	}
+Dump	, "summary": (any id, string key)
+Dump	{
+Dump	    y2error ("fallback_summary: id %1, key %2", id, key);
+Dump	}
+Dump	], "handle": (any key, map event_descr)
+Dump	{
+Dump	    return TablePopup::TableHandle (CWM::GetProcessedWidget (), key, event_descr);
+Dump	}
+Dump	, "help":"<p><b><big>Editing the Settings</big></b><br>\nTo edit the settings, choose the appropriate\nentry of the table then click <b>Edit</b>.</p><p>To add a new option, click <b>Add</b>. To remove\nan option, select it and click <b>Delete</b>.</p>", "id2key": (map descr, any opt_id)
+Dump	{
+Dump	    DUMP (sformat ("Translating id %1 of %2 to key", opt_id, descr["_cwm_key"]:""));
+Dump	    if ((opt_id == nil))
+Dump	    {
+Dump	    DUMP ("nil branch, returning a");
+Dump	    return "a";
+Dump	}
+Dump	
+Dump	    return /* any -> string */opt_id;
+Dump	}
+Dump	, "ids": (map descr)
+Dump	{
+Dump	    DUMP (sformat ("Returning list of ids for table %1", descr["_cwm_key"]:""));
+Dump	    return ["a", "b", "c"];
+Dump	}
+Dump	, "init": (any key)
+Dump	{
+Dump	    TablePopup::TableInit (CWM::GetProcessedWidget (), key);
+Dump	}
+Dump	, "options":$["a":$["popup":$["handle": (any id, any key, map event)
+Dump	{
+Dump	    y2error ("a_handle: id %1, key %2, event %3", id, key, event);
+Dump	    return nil;
+Dump	}
+Dump	, "widget":`textentry], "table":$["handle":`a_handle, "label":"'a' option label", "summary": (any opt_id, any opt_key)
+Dump	{
+Dump	    DUMP (sformat ("wanting summary for %1:%2", opt_id, opt_key));
+Dump	    return sformat ("%1:%2", opt_id, opt_key);
+Dump	}
+Dump	, "widget":`checkbox]], "b":$[]], "widget":`HBox (`HSpacing (2), `VBox (`HBox (`Table (`id (`_tp_table), `opt (`immediate, `notify, `keepSorting), `header ("Option", "Value"), []), `HSpacing (0)), `HBox (`PushButton (`id (`_tp_add), `opt (`key_F3), "&Add"), `PushButton (`id (`_tp_edit), `opt (`key_F4), "Ed&it"), `PushButton (`id (`_tp_delete), `opt (`key_F5), "Dele&te"), `HStretch (), `ReplacePoint (`id (`_tp_table_repl), `HSpacing (0)))), `HSpacing (2))]
 Dump	=========================================
 Dump	Init
 Dump	Returning list of ids for table table
 Dump	Translating id a of table to key
 Dump	wanting summary for a:a
 Dump	Translating id b of table to key
-Log	Called arg2 as fallback_option_summary with b b
+Log	fallback_summary: id b, key b
 Dump	Translating id c of table to key
-Log	Called arg2 as fallback_option_summary with c c
+Log	fallback_summary: id c, key c
 Dump	=========================================
 Dump	Handle
 Dump	Translating id nil of table to key
@@ -17,20 +64,71 @@ Dump	nil branch, returning a
 Dump	Returned `a_handle
 Dump	Translating id nil of table to key
 Dump	nil branch, returning a
-Log	Called arg3 as option_a_handle with nil a $["ID":`_tp_edit]
+Log	a_handle: id nil, key a, event $["ID":`_tp_edit]
 Dump	Returned nil
 Dump	=========================================
 Dump	Popups
 Dump	======
 Dump	========================================
 Dump	Merge functions
-Dump	Before: $["_cwm_key":"a", "popup":$["_cwm_key":"a", "handle":TestFunc::arg3 ("'a' option handle"), "label":"'a' option label", "widget":`textentry], "table":$["_cwm_key":"a", "handle":TestFunc::arg3 ("option_a_handle"), "label":"'a' option label", "summary":TestFunc::opt_sum (), "widget":`checkbox]]
-Dump	After: $["_cwm_key":"a", "popup":$["_cwm_key":"a", "handle":TestFunc::arg3 ("'a' option handle"), "init":TestFunc::arg2 ("fallback_popup_init"), "label":"'a' option label", "store":TestFunc::arg2 ("fallback_popup_save"), "widget":`textentry], "table":$["_cwm_key":"a", "handle":TestFunc::arg3 ("option_a_handle"), "label":"'a' option label", "summary":TestFunc::opt_sum (), "widget":`checkbox]]
+Dump	Before: $["_cwm_key":"a", "popup":$["_cwm_key":"a", "handle": (any id, any key, map event)
+Dump	{
+Dump	    y2error ("a_handle: id %1, key %2, event %3", id, key, event);
+Dump	    return nil;
+Dump	}
+Dump	, "label":"'a' option label", "widget":`textentry], "table":$["_cwm_key":"a", "handle": (any id, any key, map event)
+Dump	{
+Dump	    y2error ("a_handle: id %1, key %2, event %3", id, key, event);
+Dump	    return nil;
+Dump	}
+Dump	, "label":"'a' option label", "summary": (any opt_id, any opt_key)
+Dump	{
+Dump	    DUMP (sformat ("wanting summary for %1:%2", opt_id, opt_key));
+Dump	    return sformat ("%1:%2", opt_id, opt_key);
+Dump	}
+Dump	, "widget":`checkbox]]
+Dump	After: $["_cwm_key":"a", "popup":$["_cwm_key":"a", "handle": (any id, any key, map event)
+Dump	{
+Dump	    y2error ("a_handle: id %1, key %2, event %3", id, key, event);
+Dump	    return nil;
+Dump	}
+Dump	, "init": (any id, string key)
+Dump	{
+Dump	    y2error ("fallback_init: id %1, key %2", id, key);
+Dump	}
+Dump	, "label":"'a' option label", "store": (any id, string key)
+Dump	{
+Dump	    y2error ("fallback_store: id %1, key %2", id, key);
+Dump	}
+Dump	, "widget":`textentry], "table":$["_cwm_key":"a", "handle": (any id, any key, map event)
+Dump	{
+Dump	    y2error ("a_handle: id %1, key %2, event %3", id, key, event);
+Dump	    return nil;
+Dump	}
+Dump	, "label":"'a' option label", "summary": (any opt_id, any opt_key)
+Dump	{
+Dump	    DUMP (sformat ("wanting summary for %1:%2", opt_id, opt_key));
+Dump	    return sformat ("%1:%2", opt_id, opt_key);
+Dump	}
+Dump	, "widget":`checkbox]]
 Dump	=========================================
 Dump	Prepare widget
-Dump	Prepared: $["_cwm_key":"a", "custom_widget":nil, "handle":TestFunc::arg3 ("'a' option handle"), "init":TestFunc::arg2 ("fallback_popup_init"), "label":"'a' option label", "store":TestFunc::arg2 ("fallback_popup_save"), "widget":`TextEntry (`id ("a"), `opt (), "'a' option label")]
+Dump	Prepared: $["_cwm_key":"a", "custom_widget":nil, "handle": (any id, any key, map event)
+Dump	{
+Dump	    y2error ("a_handle: id %1, key %2, event %3", id, key, event);
+Dump	    return nil;
+Dump	}
+Dump	, "init": (any id, string key)
+Dump	{
+Dump	    y2error ("fallback_init: id %1, key %2", id, key);
+Dump	}
+Dump	, "label":"'a' option label", "store": (any id, string key)
+Dump	{
+Dump	    y2error ("fallback_store: id %1, key %2", id, key);
+Dump	}
+Dump	, "widget":`TextEntry (`id ("a"), `opt (), "'a' option label")]
 Dump	=========================================
 Dump	Run popup
-Log	Called arg2 as fallback_popup_init with 0 a
-Log	Called arg3 as 'a' option handle with 0 a $["ID":`_tp_ok]
-Log	Called arg2 as fallback_popup_save with 0 a
+Log	fallback_init: id 0, key a
+Log	a_handle: id 0, key a, event $["ID":`_tp_ok]
+Log	fallback_store: id 0, key a

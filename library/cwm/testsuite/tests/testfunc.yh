@@ -1,0 +1,133 @@
+{
+    include "testsuite.ycp";
+
+    define list getIdList (map descr) ``{
+	DUMP (sformat ("Returning list of ids for table %1",
+	    descr["_cwm_key"]:""));
+	return ["a", "b", "c"];
+    }
+
+    define string id2key (map descr, any opt_id) ``{
+	DUMP (sformat ("Translating id %1 of %2 to key",
+	    opt_id, descr["_cwm_key"]:""));
+	if (opt_id == nil)
+	{
+	    DUMP ("nil branch, returning a");
+	    return "a";
+	}
+	return (string)opt_id;
+    }
+
+    define string opt_sum (any opt_id, any opt_key) ``{
+	DUMP (sformat ("wanting summary for %1:%2", opt_id, opt_key));
+	return sformat ("%1:%2", opt_id, opt_key);
+    }
+
+    define symbol tableOptionHandle (any opt_id, any opt_key, any event) ``{
+	DUMP (sformat ("Handling op %1 on %2 (key %3)", event, opt_id, opt_key));
+	return `new_event;
+    }
+
+    define symbol a_handle (any id, any key, map event) ``{
+	y2error ("a_handle: id %1, key %2, event %3", id, key, event);
+	return nil;
+    }
+
+    define void fallback_init (any id, string key) ``{
+	y2error ("fallback_init: id %1, key %2", id, key);
+    }
+
+    define void fallback_summary (any id, string key) ``{
+	y2error ("fallback_summary: id %1, key %2", id, key);
+    }
+
+    define void fallback_store (any id, string key) ``{
+	y2error ("fallback_store: id %1, key %2", id, key);
+    }
+
+    define void w1_init (string key) ``{
+	y2error ("w1_init: Initing %1", key);
+    }
+
+    define symbol w1_handle (string key, map event) ``{
+	y2error ("w1_handle: Handling %1, event %2", key, event);
+	return nil;
+    }
+
+    define boolean w1_validate (string key, map event) ``{
+	y2error ("w1_validate: Validating %1, event %2", key, event);
+	return true;
+    }
+
+    define void w2_store (string key, map event) ``{
+	y2error ("w2_store: Saving %1, event %2", key, event);
+    }
+
+    define symbol w2_handle (string key, map event) ``{
+	y2error ("w2_handle: Handling %1, event %2", key, event);
+	return nil;
+    }
+
+    define boolean w2_validate (string key, map event) ``{
+	y2error ("w2_validate: Validating %1, event %2", key, event);
+	return true;
+    }
+
+    define void generic_init (string key) ``{
+	y2error ("generic_init: Initing %1", key);
+    }
+
+    define void generic_save (string key, map event) ``{
+	y2error ("generic_save: Saving %1, event %2", key, event);
+    }
+
+    define symbol w1_handle_symbol (string key, map event) ``{
+	y2error ("w1_handle_symbol: Handling %1, event %2", key, event);
+	return `symbol;
+    }
+
+    define boolean w1_validat_false (string key, map event) ``{
+	y2error ("w1_validate_false: Validating %1, event %2", key, event);
+	return false;
+    }
+
+    map popups = $[
+        "a" : $[
+            "table" : $[
+                "widget" : `checkbox,
+		"summary" : opt_sum,
+		"handle" : `a_handle,
+		"label" : "'a' option label",
+            ],
+            "popup" : $[
+                "widget" : `textentry,
+		"handle" : a_handle,
+            ],
+        ],
+        "b" : $[
+
+        ],
+    ];
+
+    map widgets = $[
+        "w1" : $[
+            "widget" : `checkbox,
+            "opt" : [ `notify, `immediate ],
+            "label" : "Check&Box",
+            "init" : w1_init,
+            "handle" : w1_handle,
+            "validate_type" : `function,
+            "validate_function" : w1_validate,
+        ],
+        "w2" : $[
+            "widget" : `textentry,
+            "label" : "Text&Entry",
+            "store" : w2_store,
+            "handle" : w2_handle,
+            "validate_type" : `function,
+            "validate_function" : w2_validate,
+        ],
+    ];
+
+
+}
