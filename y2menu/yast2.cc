@@ -1,3 +1,5 @@
+
+
 #include <vector>
 #include <string>
 #include <locale.h>
@@ -37,6 +39,7 @@ static int current_grp;
 int cmpgrp (const void *grp1, const void *grp2);
 
 void fillhelp ();
+
 int main (int argc, const char *const *argv)
 {
   int grp, mod, i;
@@ -236,64 +239,65 @@ void printhelp ()
   printf (" --auto       auto-open of module-frame (default)\n");
   printf (" --noauto     no-auto-open of module-frame\n");
   printf (" --grpall     add the \"all\" entry to group-list\n");
-  printf
-    (" --dynmod     dynamic-module-frame frame-width depends on length of modulename\n");
+  printf (" --dynmod     dynamic-module-frame frame-width depends on length of modulename\n");
   printf (" --noquitgrp  no \"quit\" entry in group-menu\n");
   printf ("\n");
 }
 
 void fillhelp ()
 {
-  helptext.push_back (_("Control YaST2 ncurses via keyboard"));
-  helptext.push_back (_(""));
-  helptext.push_back (_("1) General"));
-  helptext.push_back (_("Navigate through the dialog elements with"));
-  helptext.push_back (_("<TAB> and <SHIFT>+<TAB> or <TAB> and <ALT>+<TAB>."));
-  helptext.
-    push_back (_("Select or activate elements with <SPACE> or <ENTER>."));
-  helptext.push_back (_("Some elements use <ARROW> keys."));
-  helptext.
-    push_back (_
-	       ("Buttons are equipped with shortcut keys like <ALT> and a letter."));
-  helptext.
-    push_back (_
-	       ("One main problem is that the environment can affect the use of"));
-  helptext.
-    push_back (_("the keyboard. So you will find more than one way to"));
-  helptext.push_back (_("navigate the dialog pages. See the next section."));
-  helptext.push_back (_(""));
-  helptext.push_back (_("2) Substitution of keystrokes"));
-  helptext.
-    push_back (_
-	       ("If <TAB> and <SHIFT>+<TAB> or <TAB> and <ALT>+<TAB> do not work,"));
-  helptext.
-    push_back (_
-	       ("move focus forward with <CTRL>+<F> and backward with <CTRL>+<B>."));
-  helptext.
-    push_back (_
-	       ("If <ALT>+<letter> does not work, try <ESC>+<letter>. Example:"));
-  helptext.push_back (_("<ALT>+<H> as <ESC>+<H>."));
-  helptext.push_back (_("<ESC>+<TAB> is also a substitute for <ALT>+<TAB>."));
-  helptext.push_back (_(""));
-  helptext.push_back (_("3) Function keys"));
-  helptext.push_back (_("F-keys provide a quick access to main functions."));
-  helptext.
-    push_back (_
-	       ("There are many modules with special functions and it is not"));
-  helptext.
-    push_back (_
-	       ("possible to apply the following system to all of them. In some"));
-  helptext.
-    push_back (_("environments, all or some F-keys are not availiable."));
-  helptext.push_back (_("There is no solution for this problem yet."));
-  helptext.push_back (_("F1  = Help"));
-  helptext.push_back (_("F2  = Info or Description"));
-  helptext.push_back (_("F3  = Add"));
-  helptext.push_back (_("F4  = Edit or Configure"));
-  helptext.push_back (_("F5  = Delete"));
-  helptext.push_back (_("F6  = Test"));
-  helptext.push_back (_("F7  = Expert or Advanced"));
-  helptext.push_back (_("F8  = Back"));
-  helptext.push_back (_("F9  = Abort"));
-  helptext.push_back (_("F10 = OK , Next, Finish, or Accept"));
+    vector <string> tmp;
+
+    tmp.push_back (_("Control YaST2 ncurses via keyboard"));
+    tmp.push_back ("");
+
+    tmp.push_back (_("1) General"));
+    tmp.push_back (_("Navigate through the dialog elements with\n"
+		     "<TAB> and <SHIFT>+<TAB> or <TAB> and <ALT>+<TAB>.\n"
+		     "Select or activate elements with <SPACE> or <ENTER>.\n"
+		     "Some elements use <ARROW> keys.\n"));
+    tmp.push_back (_("Buttons are equipped with shortcut keys like <ALT> and a letter.\n"
+		     "One main problem is that the environment can affect the use of\n"
+		     "the keyboard. So you will find more than one way to\n"
+		     "navigate the dialog pages. See the next section."));
+    tmp.push_back ("");
+
+    tmp.push_back (_("2) Substitution of keystrokes"));
+    tmp.push_back (_("If <TAB> and <SHIFT>+<TAB> or <TAB> and <ALT>+<TAB> do not work,\n"
+		     "move focus forward with <CTRL>+<F> and backward with <CTRL>+<B>.\n"
+		     "If <ALT>+<letter> does not work, try <ESC>+<letter>. Example:\n"));
+    tmp.push_back (_("<ALT>+<H> as <ESC>+<H>.\n"));
+    tmp.push_back (_("<ESC>+<TAB> is also a substitute for <ALT>+<TAB>."));
+    tmp.push_back ("");
+
+    tmp.push_back (_("3) Function keys"));
+    tmp.push_back (_("F-keys provide a quick access to main functions.\n"
+		     "There are many modules with special functions and it is not\n"
+		     "possible to apply the following system to all of them. In some\n"
+		     "environments, all or some F-keys are not availiable.\n"
+		     "There is no solution for this problem yet."));
+    tmp.push_back ("");
+    tmp.push_back (_("F1  = Help"));
+    tmp.push_back (_("F2  = Info or Description"));
+    tmp.push_back (_("F3  = Add"));
+    tmp.push_back (_("F4  = Edit or Configure"));
+    tmp.push_back (_("F5  = Delete"));
+    tmp.push_back (_("F6  = Test"));
+    tmp.push_back (_("F7  = Expert or Advanced"));
+    tmp.push_back (_("F8  = Back"));
+    tmp.push_back (_("F9  = Abort"));
+    tmp.push_back (_("F10 = OK, Next, Finish, or Accept"));
+
+    for (vector <string>::const_iterator it = tmp.begin (); it != tmp.end (); it++)
+    {
+	string::size_type a = 0;
+	while (true)
+	{
+	    string::size_type b = it->find_first_of ('\n', a);
+	    helptext.push_back (it->substr (a, b - a));
+	    if (b == string::npos)
+		break;
+	    a = b + 1;
+	}
+    }
 }
