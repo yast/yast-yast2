@@ -25,7 +25,7 @@ Progress::New (
 	);
 </pre>
 This create progress bar that looks like this:<br>
-<img src="progress1.png"><br>
+<img src="screenshots/progress1.png"><br>
 The lines "Stage 1", "Stage 2", Stage 3" are called <b>stages</b>. 
 The 20 in Progress::New call has nothing to do with stages, it is length 
 of the progress bar widget at the bottom of the screen. Now let's try:<pre>
@@ -87,9 +87,9 @@ attempt to define such structure is package skeleton. Please look at it and use
 similar structure in your packages. You should define function Read and Write
 that will handle the progress bar themselves. If the caller of one of these
 functions does not want the progress bar, it just calls<pre>
-Progress::off ();
+boolean orig = Progress::set (false);
 MyPackage::Write (``{return false; });
-Progress::on ();
+Progress::set (orig);
 </pre>
 <br>
 <br>
@@ -114,7 +114,7 @@ a feature. What should I do?</b><br>
 <br>
 <b>Q: What's Superior Progress bar?</b><br>
 <b>A:</b> It's a way to have a progress bar in a progress bar. It looks like
-this:<br> <img src="progress2.png"><br>
+this:<br> <img src="screenshots/progress2.png"><br>
 I think it can be used in some cases, for example at the end of installation,
 when settings of configuration packages are saved. Example of code:<pre>
 {
