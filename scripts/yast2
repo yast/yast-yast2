@@ -60,11 +60,17 @@ printhelp()
 
 listmodules()
 {
+    list=`ls -1 /usr/share/YaST2/config/*.y2cc 2>/dev/null`
+
+    if [ -z "$list" ] ; then
+	echo "No modules installed"
+    else
 	echo "Available modules:"
 	echo
-	grep -h Y2Module /usr/share/YaST2/config/*.y2cc |\
-		sed 's/\[.*Y2Module *\(.\+\)\]/\1/' |\
-		sort -u
+	grep -h Y2Module $list | \
+	    sed 's/\[.*Y2Module *\(.\+\)\]/\1/' | \
+	    sort -u
+    fi
 }
 
 # assign default values if unset
