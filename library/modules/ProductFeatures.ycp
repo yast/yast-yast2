@@ -15,6 +15,8 @@
     import "Mode";
     import "Stage";
 
+    map features = $[];
+
     /*********************************************************************
       *   Those are variables from the content file, we can override them
       *   in the control file
@@ -201,16 +203,44 @@
     global boolean firewall_enable_ssh = false;
 
 
+
+    global void SetSection(string section_name, map section_map) {
+
+        y2debug("Setting section: %1", section_name);
+        features[section_name] = section_map;
+        return;
+    }
+
+    global map GetSection(string section_name) {
+        return features[section_name]:$[];
+    }
+
+
+    global any GetFeatureProperties(string feature) {
+        list<string> p = [];
+        if (issubstring(feature, "/")) {
+            p = splitstring(feature, "/");
+            return features[p[0]:"no", p[1]:"feature"]:nil;
+        } else {
+            return features[feature]:nil;
+        }
+    }
+
+
+    /**
+     * @example IsFeatureEnabled("globals/firewall_enable_ssh");
+     */
+    global boolean IsFeatureEnabled(string feature) {
+        return (boolean)GetFeatureProperties(feature);
+    }
+    
+
     /**
      * Save product features
      */
     global void Save()
     {
-        SCR::Write(.product.features.USE_DESKTOP_SCHEDULER,
-                (use_desktop_scheduler) ? "yes" : "no" );
         SCR::Write(.product.features.UI_MODE, ui_mode );
-        SCR::Write(.product.features.IO_SCHEDULER,
-		io_scheduler);
         SCR::Write(.product.features.ENABLE_AUTOLOGIN,
                 (enable_autologin) ? "yes" : "no" );
         SCR::Write(.product.features.EVMS_CONFIG,
@@ -226,12 +256,6 @@
      */
     global void Restore()
     {
-        use_desktop_scheduler = Misc::SysconfigRead(
-                .product.features.USE_DESKTOP_SCHEDULER, "yes" ) == "yes";
-        
-	io_scheduler = Misc::SysconfigRead(
-		.product.features.IO_SCHEDULER, "as");
-        
 	ui_mode = Misc::SysconfigRead(
 		.product.features.UI_MODE, "expert");
         
