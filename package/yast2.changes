@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 26 12:32:12 CET 2004 - jsrain@suse.de
+
+- preventing modules uhci-hcd, ehci-hcd, ohci-hcd from being put
+  into initrd (#35032)
+
+-------------------------------------------------------------------
 Tue Feb 24 13:03:03 CET 2004 - visnov@suse.cz
 
 - don't duplicate history entries in interactive command line (#34610)
