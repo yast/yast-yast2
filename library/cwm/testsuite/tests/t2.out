@@ -129,6 +129,6 @@ Dump	}
 Dump	, "widget":`TextEntry (`id ("a"), `opt (), "'a' option label")]
 Dump	=========================================
 Dump	Run popup
-Log	fallback_init: id 0, key a
-Log	a_handle: id 0, key a, event $["ID":`_tp_ok]
-Log	fallback_store: id 0, key a
+Log	fallback_init: id nil, key a
+Log	a_handle: id nil, key a, event $["ID":`_tp_ok]
+Log	fallback_store: id nil, key a
