@@ -131,8 +131,8 @@
 	if (s_modnames == nil)
 	    s_modnames = "";
 	modules = splitstring (s_modnames, " ");
-	modules = filter (`m, modules, ``(m != ""));
-	foreach (`m, modules, ``{modules_settings [m] = $[];});
+	modules = filter (string m, modules, { return m != "";});
+	foreach (string m, modules, { modules_settings [m] = $[]; });
 	read_modules = modules;
 	return true;
     }
@@ -213,8 +213,8 @@
     global define void RemoveModule (string modname) ``{
 	if (! was_read)
 	    Read ();
-	modules = filter (`k, modules, ``(k != modname));
-	modules_settings = filter (`k, `v, modules_settings, ``(k != modname));
+	modules = filter (string k, modules, { return k != modname; });
+	modules_settings = filter (string k, any v, modules_settings, { return k != modname; });
 	changed = true;
     }
 
@@ -223,10 +223,10 @@
       */
     global define void Update () ``{
 	// add other required changes here
-	modules = filter (`m, modules,
-	    ``(! contains (modules_to_skip, m)));
-	modules_settings = filter (`k, `v, modules_settings,
-	    ``(! contains (modules_to_skip, k)));
+	modules = filter (string m, modules,
+	    { return (! contains (modules_to_skip, m)); });
+	modules_settings = filter (string k, any v, modules_settings,
+	    { return (! contains (modules_to_skip, k)); });
 	changed = true;
     }
 
