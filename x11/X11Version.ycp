@@ -18,6 +18,7 @@ STATUS        : Development
 **************/
 {
 module "X11Version";
+import "Display";
 
 //=======================================
 // System Global Variables
@@ -51,23 +52,19 @@ global define void GetVersion() ``{
 	// ---
 	version = "";	// init
 
+	// ...
 	// Take a look into the system....
-	// This delivers nil if the argument is a file (not a link) or if the
-	// link target doesn't exist.
-	//
-	string x_link = SCR::Read( .target.symlink, "/var/X11R6/bin/X" );
-	y2milestone( "Symlink: <%1>", x_link );
-
-	if ( x_link != nil ) {
-		// Should be s.th. like /usr/X11R6/bin/...
-		// if X11 is used in the system
-		if ( issubstring( x_link, "/usr/X11R6/bin" ) ) {
-		// OK, X11 is there. Find out which one.
-		if ( issubstring( x_link, "XFree86" ) )
-		    version = "4";
-		else
-		    version = "3";
-	    }
+	// ask the libhd for the configuration stuff to this card
+	// if there is only one entry pointing to XFree86 version 3
+	// XFree86 3 has to be used for this card
+	// ---
+	integer ver = SCR::Execute( .target.bash,
+		"/usr/" + Display::lib + "/YaST2/bin/version"
+	);
+	if (ver == 4) {
+		version = "4";
+	} else {
+		version = "3";
 	}
 	y2milestone( "xfree_version: <%1>", version );
 	return( version );

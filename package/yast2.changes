@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Nov 13 12:07:47 CET 2002 - ms@suse.de
+
+- fixed GetVersion() function within the X11Version module. The code
+  to obtain the XFree86 version used to configure the installed
+  card was really broken. I add a libhd based C program to check
+  whether XFree86 4 or 3 is used to configure the card. This program
+  is called from the GetVersion() function now.
+
+-------------------------------------------------------------------
 Mon Oct 21 15:45:19 CEST 2002 - arvin@suse.de
 
 - print warning if qt frontend is installed but does not work
