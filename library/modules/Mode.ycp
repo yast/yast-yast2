@@ -61,11 +61,6 @@
     global boolean cont			= false;
 
     /**
-     * hard or softboot when starting installed system ?
-     */
-    global boolean hardBoot		= false;
-
-    /**
      * normal, running system
      */
     global boolean normal		= false;
