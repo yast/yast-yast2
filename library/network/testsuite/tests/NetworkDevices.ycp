@@ -1,0 +1,84 @@
+{
+
+include "testsuite.ycp";
+
+map READ = $[
+];
+
+TESTSUITE_INIT([READ], nil);
+import "NetworkDevices";
+
+DUMP("device_type");
+TEST(``(NetworkDevices::device_type("eth0")), [], nil);
+TEST(``(NetworkDevices::device_type("eth1")), [], nil);
+TEST(``(NetworkDevices::device_type("eth-pcmcia-0")), [], nil);
+TEST(``(NetworkDevices::device_type("eth-usb-1")), [], nil);
+TEST(``(NetworkDevices::device_type("tr-pcmcia-1")), [], nil);
+TEST(``(NetworkDevices::device_type("ippp2")), [], nil);
+TEST(``(NetworkDevices::device_type("ppp2")), [], nil);
+TEST(``(NetworkDevices::device_type("lo")), [], nil);
+TEST(``(NetworkDevices::device_type("eth0:1")), [], nil);
+TEST(``(NetworkDevices::device_type("eth1:20")), [], nil);
+TEST(``(NetworkDevices::device_type("eth-pcmcia-0:3")), [], nil);
+TEST(``(NetworkDevices::device_type("eth-usb-1:0")), [], nil);
+TEST(``(NetworkDevices::device_type("tr-pcmcia-2:432")), [], nil);
+TEST(``(NetworkDevices::device_type("ippp2:2")), [], nil);
+TEST(``(NetworkDevices::device_type("ppp2:2")), [], nil);
+TEST(``(NetworkDevices::device_type("lo:1")), [], nil);
+TEST(``(NetworkDevices::device_type("eth1:blah")), [], nil);
+
+DUMP("device_num");
+TEST(``(NetworkDevices::device_num("eth0")), [], nil);
+TEST(``(NetworkDevices::device_num("eth1")), [], nil);
+TEST(``(NetworkDevices::device_num("eth-pcmcia-0")), [], nil);
+TEST(``(NetworkDevices::device_num("eth-usb-1")), [], nil);
+TEST(``(NetworkDevices::device_num("tr-pcmcia-2")), [], nil);
+TEST(``(NetworkDevices::device_num("ippp2")), [], nil);
+TEST(``(NetworkDevices::device_num("ppp2")), [], nil);
+TEST(``(NetworkDevices::device_num("eth0:1")), [], nil);
+TEST(``(NetworkDevices::device_num("eth1:20")), [], nil);
+TEST(``(NetworkDevices::device_num("eth-pcmcia-0:3")), [], nil);
+TEST(``(NetworkDevices::device_num("eth-usb-1:0")), [], nil);
+TEST(``(NetworkDevices::device_num("tr-pcmcia-2:432")), [], nil);
+TEST(``(NetworkDevices::device_num("ippp2:2")), [], nil);
+TEST(``(NetworkDevices::device_num("ppp2:2")), [], nil);
+TEST(``(NetworkDevices::device_num("eth1:blah")), [], nil);
+TEST(``(NetworkDevices::device_num("lo:1")), [], nil);
+TEST(``(NetworkDevices::device_num("lo")), [], nil);
+
+/*
+DUMP("alias_num");
+TEST(``(NetworkDevices::alias_num("eth0:1")), [], nil);
+TEST(``(NetworkDevices::alias_num("eth1:20")), [], nil);
+TEST(``(NetworkDevices::alias_num("eth-pcmcia-0:3")), [], nil);
+TEST(``(NetworkDevices::alias_num("eth-usb-1:0")), [], nil);
+TEST(``(NetworkDevices::alias_num("tr-pcmcia-2:432")), [], nil);
+TEST(``(NetworkDevices::alias_num("ippp2:2")), [], nil);
+TEST(``(NetworkDevices::alias_num("ppp2:2")), [], nil);
+TEST(``(NetworkDevices::alias_num("lo:1")), [], nil);
+TEST(``(NetworkDevices::alias_num("eth0:blah")), [], nil);
+TEST(``(NetworkDevices::alias_num("eth0")), [], nil);
+TEST(``(NetworkDevices::alias_num("lo")), [], nil);
+*/
+
+DUMP("device_name");
+TEST(``(NetworkDevices::device_name("eth","0")), [], nil);
+TEST(``(NetworkDevices::device_name("eth","1")), [], nil);
+TEST(``(NetworkDevices::device_name("eth-pcmcia-","0")), [], nil);
+TEST(``(NetworkDevices::device_name("tr-pcmcia-","1")), [], nil);
+TEST(``(NetworkDevices::device_name("ippp","2")), [], nil);
+TEST(``(NetworkDevices::device_name("ppp","2")), [], nil);
+TEST(``(NetworkDevices::device_name("lo","")), [], nil);
+
+/*
+DUMP("alias_name");
+TEST(``(NetworkDevices::alias_name("eth","0","5")), [], nil);
+TEST(``(NetworkDevices::alias_name("eth","1","4")), [], nil);
+TEST(``(NetworkDevices::alias_name("eth-pcmcia-","0","1")), [], nil);
+TEST(``(NetworkDevices::alias_name("tr-pcmcia-","1","1")), [], nil);
+TEST(``(NetworkDevices::alias_name("ippp","2","0")), [], nil);
+TEST(``(NetworkDevices::alias_name("ppp","2","0")), [], nil);
+TEST(``(NetworkDevices::alias_name("lo", "", "7")), [], nil);
+*/
+
+}

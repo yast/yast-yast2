@@ -121,6 +121,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %doc @docdir@/cwm
 %doc @docdir@/desktop
 %doc @docdir@/log
+%doc @docdir@/network
 %doc @docdir@/packages
 %doc @docdir@/runlevel
 %doc @docdir@/sequencer
