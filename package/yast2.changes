@@ -2,6 +2,7 @@
 Tue Jan 25 12:39:26 CET 2005 - locilka@suse.cz
 
 - removed SuSEfirewall2_final init script (bugzilla #50157)
+- 2.11.18
 
 -------------------------------------------------------------------
 Fri Jan 21 10:50:28 CET 2005 - lslezak@suse.cz
