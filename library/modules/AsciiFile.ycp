@@ -14,22 +14,22 @@ textdomain "base";
 
 string blanks = "                                                             ";
 
-global define void SetComment( map file, string comment )
+global define void SetComment( map& file, string comment )
     ``{
     file["comment"] = comment + ".*";
     };
 
-global define void SetListWidth( map file, list widths )
+global define void SetListWidth( map& file, list widths )
     ``{
     file["widths"] = widths;
     };
 
-global define void SetDelimiter( map file, string delim )
+global define void SetDelimiter( map& file, string delim )
     ``{
     file["delim"] = delim;
     };
 
-define void AssertLineValid( map file, integer line )
+define string AssertLineValid( map& file, integer line )
     ``{
     if( haskey( file["l"]:$[], line ) && file["l",line,"buildline"]:false )
 	{
@@ -50,10 +50,13 @@ define void AssertLineValid( map file, integer line )
 	    });
 	file["l",line,"line"] = lstr;
 	file["l",line,"buildline"] = false;
+	
+	return lstr;
 	}
+	return "";
     }
 
-global define void ReadFile( map file, string pathname )
+global define void ReadFile( map& file, string pathname )
     ``{
     y2milestone( "path=%1", pathname );
     list lines = [];
@@ -79,12 +82,12 @@ global define void ReadFile( map file, string pathname )
 	    while( size(line)>0 )
 		{
 		pos = findfirstnotof( line, file["delim"]:"" );
-		if( pos>0 )
+		if( pos != nil && pos>0 )
 		    {
 		    line = substring( line, pos );
 		    }
 		pos = findfirstof( line, file["delim"]:"" );
-		if( pos>0 )
+		if( pos != nil && pos>0 )
 		    {
 		    fields = add( fields, substring( line, 0, pos ) );
 		    line = substring( line, pos );
@@ -119,7 +122,7 @@ global define list FindLineField( map file, integer field, string content )
     return( ret );
     }
 
-global define map<integer, map>  GetLines( map file, list lines )
+global define map<integer, map>  GetLines( map& file, list lines )
     ``{
     map<integer, map> ret = (map<integer, map>) $[];
     foreach( integer num, lines,
@@ -134,7 +137,7 @@ global define map<integer, map>  GetLines( map file, list lines )
     return( ret );
     };
 
-global define map GetLine( map file, integer line )
+global define map GetLine( map& file, integer line )
     ``{
     map ret = $[];
     if( haskey( file["l"]:$[], line ) )
@@ -151,7 +154,7 @@ global define integer NumLines( map file )
     return( size(file["l"]:$[]) );
     }
 
-global define void ChangeLineField( map file, integer line, integer field,
+global define void ChangeLineField( map& file, integer line, integer field,
                                     string entry )
     ``{
     y2debug( "line %1 field %2 entry %3", line, field, entry );
@@ -184,7 +187,7 @@ global define void ChangeLineField( map file, integer line, integer field,
 	}
     }
 
-global define void AppendLine( map file, list entry )
+global define void AppendLine( map& file, list entry )
     ``{
     integer line = size(file["l"]:$[]) + 1;
     y2debug( "new line %1 entry %2", line, entry );
@@ -194,7 +197,7 @@ global define void AppendLine( map file, list entry )
     file["l",line,"buildline"] = true;
     }
 
-global define void RemoveLines( map file, list lines )
+global define void RemoveLines( map& file, list lines )
     ``{
     y2debug( "lines %1", lines );
     foreach( integer num, lines,
@@ -206,15 +209,16 @@ global define void RemoveLines( map file, list lines )
 	});
     }
 
-global define void RewriteFile( map file, string fpath )
+global define void RewriteFile( map& file, string fpath )
     ``{
     y2milestone( "path %1", fpath );
+    y2milestone( "out: %1", file );
     string out = "";
     foreach( integer num, map entry, file["l"]:$[],
 	``{
-	AssertLineValid( file, num );
-	out = out + entry["line"]:"" + "\n";
+	out = out + AssertLineValid( file, num ) + "\n";
 	});
+    y2milestone ("Out text: %1", out );
     if( size(out)==0 )
 	{
 	if( SCR::Read( .target.size, fpath ) >= 0 )
