@@ -636,10 +636,15 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
       {
 	/* Check if key pressed matches first character of any
 	   item tag in menu */
-	for (i = 0; i < max_choice; i++)
-	  if (i != choice
-	      && toupper (key) == toupper (groups[scroll + i].textstr[0]))
+	unsigned int j;
+	/* omit 0 to start after the current choice */
+	for (i = 1; i < max_choice; i++) {
+	  j = (choice + i) % max_choice;
+	  if (toupper (key) == toupper (groups[scroll + j].textstr[0])) {
+	    i = j;
 	    break;
+	  }
+	}
 
 	if (i < max_choice ||
 	    (key >= '1' && key <= MIN ('9', '0' + max_choice)) ||
