@@ -5,7 +5,7 @@
 @HEADER@
 Provides:	yast
 Obsoletes:	yast
-Requires:	yast2-core yast2_ui
+Requires:	yast2-core yast2_ui yast2_theme
 BuildArchitectures: noarch
 Summary:	YaST2 Modules for installation
 
