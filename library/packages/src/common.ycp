@@ -80,7 +80,8 @@ boolean PackageDialog(list<string> packages, boolean install) {
     y2debug("Asking for packages: %1", packages);
 
     if(size(packages) < 1) return true;
-    if(InstalledAll(packages)) return true;
+    if(install && InstalledAll(packages)) return true;
+    if(! (install || InstalledAny(packages))) return true;
 
     /* Popup Text */
     string text = _("These packages need to be installed:") + "<p>";
