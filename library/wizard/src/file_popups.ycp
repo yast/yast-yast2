@@ -37,32 +37,23 @@
      * @param subdir directory to list
      * @return list of directories
      */
-    global define getsubdirs (string subdir) ``{
+    global define list<term> getsubdirs (string subdir) ``{
 	string subdir2 = subdir + ".*";
-	list files = splitstring (lookup (SCR::Execute (.target.bash_output, "/bin/ls -aFLd $DIR", $["DIR" : subdir]), "stdout", ""), "\n");
+	list<string> files = splitstring (lookup ( (map) SCR::Execute (.target.bash_output, "/bin/ls -aFLd $DIR", $["DIR" : subdir]), "stdout", ""), "\n");
 	if (size (files) == 0)
 	    return [];
 
 	subdir2 = subdir + "*";
-	files = splitstring (lookup (SCR::Execute (.target.bash_output, "/bin/ls -aFLd $DIR", $["DIR" : subdir2]), "stdout", ""), "\n");
+	files = splitstring (lookup ( (map) SCR::Execute (.target.bash_output, "/bin/ls -aFLd $DIR", $["DIR" : subdir2]), "stdout", ""), "\n");
 
 	// show directories and links
-	files = filter (`file, files, ``(size (file) > 0 && substring (file, size (file) - 1, 1) == "/") );
-	files = maplist (`f, files, ``(substring (f, 0, size (f) - 1)));
-	files = maplist (`f, files, ``(substring (f, findlastof (f, "/") + 1) + "/"));
+	files = filter (string file, files, ``(size (file) > 0 && substring (file, size (file) - 1, 1) == "/") );
+	files = maplist (string f, files, ``(substring (f, 0, size (f) - 1)));
+	files = maplist (string f, files, ``(substring (f, findlastof (f, "/") + 1) + "/"));
 	if ( subdir != "/" )
 	    files = prepend (files, "../");
 
-	return maplist (`file, files, ``(`item (`id (subdir + file), file)));
-    }
-
-    /**
-     * Returns itemized list of file
-     * @param subdir directory to list
-     * @return list of files
-     */
-    global define getfiles (string subdir) ``{
-	return getfileswithmask (subdir, ["*"]);
+	return maplist (string file, files, ``(`item (`id (subdir + file), file)));
     }
 
     /**
@@ -71,44 +62,65 @@
       * @param masks
       * @return list of files
       */
-    global define getfileswithmask (string subdir, list masks) ``{
-	masks = maplist (`e, masks, ``(
+    global define list<term> getfileswithmask (string subdir, list<string> masks) ``{
+	masks = maplist (string e, masks, ``(
 	    subdir+e
 	));
 	string maskstring = "";
-	foreach (`i, masks, ``{
+	foreach (string i, masks, ``{
 	    maskstring = maskstring + i + " ";
 	});
 
-	list files = splitstring (lookup (SCR::Execute (.target.bash_output, "/bin/ls -Fd $MASK", $["MASK" : maskstring]),
+	list<string> files = splitstring (lookup ( (map) SCR::Execute (.target.bash_output, "/bin/ls -Fd $MASK", $["MASK" : maskstring]),
 					  "stdout", ""), "\n");
 
-	files = filter (`file, files, ``(size (file) > 0 && !contains (["/", "=", "|"], substring (file, size (file) - 1, 1))));
-	files = maplist (`file, files, ``(substring (file, size (file) -1, 1) == "@" ? substring(file, 0, size (file) -1) : file));
+	files = filter (string file, files, ``(size (file) > 0 && !contains (["/", "=", "|"], substring (file, size (file) - 1, 1))));
+	files = maplist (string file, files, ``(substring (file, size (file) -1, 1) == "@" ? substring(file, 0, size (file) -1) : file));
 	y2milestone("fff %1", substring (subdir, size (subdir) - 1, 1));
 	if ( substring (subdir, size (subdir) - 1, 1) != "/") {
 	    subdir = subdir + "/";
 	}
-        files = maplist (`f, files, ``(substring (f, findlastof (f, "/") + 1)));
-	return maplist (`file, files, ``(`item (`id (subdir + file), file)));
+        files = maplist (string f, files, ``(substring (f, findlastof (f, "/") + 1)));
+	return maplist (string file, files, ``(`item (`id (subdir + file), file)));
     }
 
 
     /**
-     * Popup dialog to choose file
-     * @param dir string with path to start browsing with
-     * @return string with selected file, empty string on cancel
+     * Returns itemized list of file
+     * @param subdir directory to list
+     * @return list of files
      */
-    global define PopupFile (string dir) ``{
-	return PopupFileWithMask (dir, ["*"]);
+    global define list<term> getfiles (string subdir) ``{
+	return getfileswithmask (subdir, ["*"]);
     }
+
     /**
+     * Locally used to provide the correct directory name
+     */
+    global define string AdjustDirName( string dir ) ``{
+	if (size (dir) > 0 && substring (dir, size (dir) - 1, 1) != "/")
+	{
+	    dir = dir + "/";
+	}
+	else if ( dir == "" )
+	{
+	    // get the current directory
+	    map retmap =  (map) SCR::Execute( .target.bash_output, "/bin/pwd", $[] );
+	    
+	    dir = retmap["stdout"]:"";
+	    dir = substring (dir, 0, size (dir) - 1);	// get rid of newline
+    	    dir = dir + "/";
+	}	    
+	return dir;
+    }
+
+     /**
       * Popup dialog to choose file matching mask
       * @param dir string with path to start browsing with
       * @param masks
       * @return string with selected file, empty string on cancel
       */
-    global define PopupFileWithMask (string dir, list masks) ``{
+    global define string PopupFileWithMask (string dir, list masks) ``{
 	if (HaveFilePopups ())
 	{
 	    string r = UI::AskForExistingFile (dir, mergestring (masks, " "), "");
@@ -175,29 +187,29 @@
 	    if (ret == `backward)
 	    {
 		history_ptr = history_ptr > 0 ? history_ptr - 1 : history_ptr;
-		dirs   = select (select (history, history_ptr, [subdir, dirs]), 1, []);
-		subdir = select (select (history, history_ptr, [subdir, dirs]), 0, []);
+		dirs   = (list) select ((list) (history[history_ptr]:[subdir, dirs]), 1, []);
+		subdir = (string) select ((list) (history[history_ptr]:[subdir, dirs]), 0, "");
 
-		UI::ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (UI (_("Selected directory: %1")), subdir)));
-		UI::ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), UI (_("Directories")), dirs));
-		UI::ReplaceWidget (`id (`repfile), `SelectionBox (`id (`file), `opt(`notify), UI (_("Files")), getfileswithmask (subdir, masks)));
+		UI::ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (_("Selected directory: %1"), subdir)));
+		UI::ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), _("Directories"), dirs));
+		UI::ReplaceWidget (`id (`repfile), `SelectionBox (`id (`file), `opt(`notify), _("Files"), getfileswithmask (subdir, masks)));
 	    }
 
 	    if (ret == `forward)
 	    {
 		history_ptr = history_ptr + 1;
-		dirs   = select (select (history, history_ptr, [subdir, dirs]), 1, []);
-		subdir = select (select (history, history_ptr, [subdir, dirs]), 0, []);
+		dirs   = (list) select ((list) (history[history_ptr]:[subdir, dirs]), 1, []);
+		subdir = (string) select ((list) (history[history_ptr]:[subdir, dirs]), 0, "");
 
 		UI::ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (_("Selected directory: %1"), subdir)));
 		UI::ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), _("Directories"), dirs));
-		UI::ReplaceWidget (`id (`repfile), `SelectionBox (`id (`file), `opt(`notify), _("Files")), getfileswithmask (subdir, masks));
+		UI::ReplaceWidget (`id (`repfile), `SelectionBox (`id (`file), `opt(`notify), _("Files"), getfileswithmask (subdir, masks)));
 	    }
 
 	    if (ret == `dir)
 	    {
 		string old_dir = subdir;
-		subdir  = UI::QueryWidget(`id (`dir), `CurrentItem);
+		subdir  = (string) UI::QueryWidget(`id (`dir), `CurrentItem);
 		dirs = getsubdirs (subdir);
 
 		if (size (dirs) == 0)
@@ -224,7 +236,7 @@
 		if (history_ptr + 1 < size (history))
 		{
 		    integer counter = -1;
-		    history = filter (`e, history, ``{
+		    history = filter (any e, history, ``{
 			counter = counter + 1;
 			return counter < history_ptr + 1;
 		    });
@@ -249,7 +261,7 @@
 
 	if (ret == `ok_button)
 	{
-	    file = UI::QueryWidget (`id (`file), `CurrentItem);
+	    file = (string) UI::QueryWidget (`id (`file), `CurrentItem);
 	}
 
 	UI::CloseDialog ();
@@ -258,31 +270,20 @@
     }
 
     /**
-     * Locally used to provide the correct directory name
+     * Popup dialog to choose file
+     * @param dir string with path to start browsing with
+     * @return string with selected file, empty string on cancel
      */
-    global define AdjustDirName( string dir ) ``{
-	if (size (dir) > 0 && substring (dir, size (dir) - 1, 1) != "/")
-	{
-	    dir = dir + "/";
-	}
-	else if ( dir == "" )
-	{
-	    // get the current directory
-	    map retmap =  SCR::Execute( .target.bash_output, "/bin/pwd", $[] );
-	    
-	    dir = lookup( retmap, "stdout", "" );
-	    dir = substring (dir, 0, size (dir) - 1);	// get rid of newline
-    	    dir = dir + "/";
-	}	    
-	return dir;
+    global define string PopupFile (string dir) ``{
+	return PopupFileWithMask (dir, ["*"]);
     }
-    
+   
     /**
      * Popup dialog to choose file
      * @param dir string with path to start browsing with
      * @return string with selected directory
      */
-    global define PopupDir (string dir) ``{
+    global define string PopupDir (string dir) ``{
 	if (HaveFilePopups ())
 	{
 	    string r = UI::AskForExistingDirectory (dir, "");
@@ -336,7 +337,7 @@
 
 
 	any ret = nil;
-	string subdir = dir;
+	subdir = dir;
 	history = add (history, [subdir, dirs]);
 	history_ptr = history_ptr + 1;
 
@@ -346,20 +347,20 @@
 	    if (ret == `backward)
 	    {
 		history_ptr = history_ptr > 0 ? history_ptr - 1 : history_ptr;
-		dirs   = select (select (history, history_ptr, [subdir, dirs]), 1, []);
-		subdir = select (select (history, history_ptr, [subdir, dirs]), 0, []);
+		dirs   = (list) select ((list) (history[history_ptr]:[subdir, dirs]), 1, []);
+		subdir = (string) select ((list) (history[history_ptr]:[subdir, dirs]), 0, "");
 
-		UI::ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (UI (_("Selected directory: %1")), subdir)));
+		UI::ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (_("Selected directory: %1"), subdir)));
 		UI::ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), "", dirs));
 	    }
 
 	    if (ret == `forward)
 	    {
 		history_ptr = history_ptr + 1;
-		dirs   = select (select (history, history_ptr, [subdir, dirs]), 1, []);
-		subdir = select (select (history, history_ptr, [subdir, dirs]), 0,[]);
+		dirs   = (list) select ((list) (history[history_ptr]:[subdir, dirs]), 1, []);
+		subdir = (string) select ((list) (history[history_ptr]:[subdir, dirs]), 0, "");
 
-		UI::ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (UI (_("Selected directory: %1")), subdir)));
+		UI::ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (_("Selected directory: %1"), subdir)));
 		UI::ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), "", dirs));
 	    }
 
@@ -367,7 +368,7 @@
 	    {
 
 		string old_dir = subdir;
-		subdir  = UI::QueryWidget(`id (`dir), `CurrentItem);
+		subdir  = (string) UI::QueryWidget(`id (`dir), `CurrentItem);
 		dirs = getsubdirs (subdir);
 
 		if (size (dirs) == 0)
@@ -381,7 +382,7 @@
 		if (history_ptr + 1 < size (history))
 		{
 		    integer counter = -1;
-		    history = filter (`e, history, ``{
+		    history = filter (any e, history, ``{
 			counter = counter + 1;
 			return counter < history_ptr + 1;
 		    });
@@ -423,7 +424,7 @@
      * @param dir string with path to start browsing with
      * @return string with selected file, empty string on cancel
      */
-    global define SaveFileAs (string dir) ``{
+    global define string SaveFileAs (string dir) ``{
 	if (HaveFilePopups ())
 	{
 	    string r = UI::AskForSaveFileName (dir, "*", "");
@@ -493,8 +494,8 @@
 	    if (ret_map["ID"]:`none == `backward)
 	    {
 		history_ptr = history_ptr > 0 ? history_ptr - 1 : history_ptr;
-		dirs   = select (select (history, history_ptr, [subdir, dirs]), 1, []);
-		subdir = select (select (history, history_ptr, [subdir, dirs]), 0, []);
+		dirs   = (list) select ((list) (history[history_ptr]:[subdir, dirs]), 1, []);
+		subdir = (string) select ((list) (history[history_ptr]:[subdir, dirs]), 0, "");
 
 		UI::ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (_("Selected directory: %1"), subdir)));
 		UI::ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), _("Dire&ctories"), dirs));
@@ -503,8 +504,8 @@
 	    else  if (ret_map["ID"]:`none == `forward)
 	    {
 		history_ptr = history_ptr + 1;
-		dirs   = select (select (history, history_ptr, [subdir, dirs]), 1, []);
-		subdir = select (select (history, history_ptr, [subdir, dirs]), 0, []);
+		dirs   = (list) select ((list) (history[history_ptr]:[subdir, dirs]), 1, []);
+		subdir = (string) select ((list) (history[history_ptr]:[subdir, dirs]), 0, "");
 
 		UI::ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (_("Selected directory: %1"), subdir)));
 		UI::ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), _("Directories"), dirs));
@@ -514,8 +515,8 @@
 		     && ret_map["EventReason"]:"" == "Activated" )
 	    {
 		string old_dir = subdir;
-		subdir  = UI::QueryWidget(`id (`dir), `CurrentItem);		
-		dirs = getsubdirs (subdir);		
+		subdir  = (string) UI::QueryWidget(`id (`dir), `CurrentItem);
+		dirs = getsubdirs (subdir);
 		if (size (dirs) == 0)
 		{
 		    y2error ("No permissions for directory: %1", subdir);
@@ -538,7 +539,7 @@
 		if (history_ptr + 1 < size (history))
 		{
 		    integer counter = -1;
-		    history = filter (`e, history, ``{
+		    history = filter (any e, history, ``{
 			counter = counter + 1;
 			return counter < history_ptr + 1;
 		    });
@@ -572,10 +573,10 @@
 
 	if (ret_map["ID"]:`none == `ok_button)
 	{
-	    file = UI::QueryWidget (`id (`filename), `Value);
+	    file = (string) UI::QueryWidget (`id (`filename), `Value);
 
 	    if ("" == file)
-		file = UI::QueryWidget (`id (`file), `CurrentItem);
+		file = (string) UI::QueryWidget (`id (`file), `CurrentItem);
 
 	    // add directory if file has not absolute path
 	    if (size(file) > 0 && substring(file, 0, 1) != "/")

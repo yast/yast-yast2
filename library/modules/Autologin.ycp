@@ -11,6 +11,8 @@
 
 module "Autologin";
 
+import "Popup";
+
 textdomain "base";
 
 import "Require";
@@ -55,8 +57,8 @@ global define boolean Read () ``{
     }
     else
     {
-	user = SCR::Read (.sysconfig.displaymanager.DISPLAYMANAGER_AUTOLOGIN);
-	pw_less = SCR::Read (.sysconfig.displaymanager.DISPLAYMANAGER_PASSWORD_LESS_LOGIN) == "yes";
+	user = (string) SCR::Read (.sysconfig.displaymanager.DISPLAYMANAGER_AUTOLOGIN);
+	pw_less = (string) SCR::Read (.sysconfig.displaymanager.DISPLAYMANAGER_PASSWORD_LESS_LOGIN) == "yes";
 
 	if (user == nil || user == "")
 	    user = "";
