@@ -5,6 +5,6 @@ module_DATA =			\
 
 EXTRA_DIST = $(module_DATA)
 
-YCPCFLAGS = -M ../../modules -M ../../wizard/src
+YCPCFLAGS = -M ../../modules -M ../../wizard/src -M ../../cwm/src
 
 include $(top_srcdir)/Makefile.am.common
