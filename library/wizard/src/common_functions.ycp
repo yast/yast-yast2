@@ -43,45 +43,6 @@
       return tostring (whole, 2) + " " + unit;
   };
 
-  /**
-   * @param bytes	size (e.g. free diskspace ) in Byte
-   *
-   * @return string
-   *
-   * Byte input is transformed to "MB" and the string is formatted
-   * with appropriate number of whitespaces, so the output has always
-   * the same length (which is useful for sorting).
-   *
-   * @example format_size_text ( 234567678 );
-   */
-
-  global define string format_size_text (integer bytes)``{
-
-      if ( bytes == nil )
-	  return "";
-
-      float whole = tofloat (bytes) / 1024.0 / 1024.0;
-      string unit = UI(_("MB"));
-
-      // nnn.nn  999.99 MB
-
-      string size_str = tostring (whole, 2);
-      integer num = size(size_str);
-      integer anz = 6 - num;
-
-      if ( anz <= 0 )
-      {
-	  return ( size_str + " " + unit + " " );
-      }
-      else if ( anz == 1 )
-      {
-	  return ( " " + size_str + " " + unit+ " " );
-      }
-      else
-      {
-	  return ( "  " + size_str + " " + unit+ " " );
-      }
-  };
 
   /**
    * @param input	string, usually an user input
