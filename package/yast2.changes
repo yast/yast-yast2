@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 10 20:53:53 CET 2003 - arvin@suse.de
+
+- setup complete environment for qt during installation
+
+-------------------------------------------------------------------
 Mon Feb 10 18:18:00 CET 2003 - arvin@suse.de
 
 - make anti aliased fonts work
