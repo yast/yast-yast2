@@ -602,10 +602,10 @@
 				  );
 	    }
 	}
-	    
+
     }
 
-    
+
     /**
      * Set the dialog's "Back" button with a new label and a new ID
      **/
@@ -624,7 +624,6 @@
 				  );
 	    }
 	}
-	    
     }
 
 
@@ -646,10 +645,7 @@
 				  );
 	    }
 	}
-	    
     }
-
-    
     /**
      * Hide the Wizard's "Next" button.
      * Restore it later with RestoreNextButton():
@@ -663,7 +659,6 @@
 	}
     }
 
-    
     /**
      * Hide the Wizard's "Back" button.
      * Restore it later with RestoreBackButton():
@@ -1129,6 +1124,10 @@
 
     }
 
+    /**
+     * Select Tree item
+     * @param string tree item
+     */
     global void SelectTreeItem(string tree_item) {
         if ( haveFancyUI() )
         {
@@ -1139,7 +1138,35 @@
             UI::ChangeWidget(`id(`wizardTree), `CurrentItem, tree_item);
         }
     }
+    /**
+     * Delete Tree items
+     * @return void
+     */
+    global void DeleteTreeItems() {
+        if ( haveFancyUI() )
+        {
+            UI::WizardCommand(`DeleteTreeItems() );
+        }
+        else
+        {
+            Wizard::ReplaceCustomHelp(`Empty());
+        }
+    }
 
+    /**
+     * Delete Menu items
+     * @return void
+     */
+    global void DeleteMenus() {
+        if ( haveFancyUI() )
+        {
+            UI::WizardCommand(`DeleteMenus() );
+        }
+        else
+        {
+            UI::ReplaceWidget(`id(`topmenu), `Empty());
+        }
+    }
     /**
      * Add Menu
      * @param list<map> Tree data
