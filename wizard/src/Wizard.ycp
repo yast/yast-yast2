@@ -184,7 +184,7 @@
 			    `HSpacing(1),
 			    `HWeight( 70, `VBox(
 						`VSpacing(0.2),
-						`Left(`Heading(`id(`title), _("YaST2\nInitializing ..."))),
+						`Left(`Heading(`id(`title), `opt (`hstretch), _("YaST2\nInitializing ..."))),
 
 						`VWeight( 1, // Layout trick: Lower layout priority with weight
 							 `HVCenter(
@@ -404,7 +404,7 @@
 				  `HSpacing(1),
 				  `VBox(
 
-					`Left(`Heading(`id(`title), _("YaST2\nInitializing ..."))),
+					`Left(`Heading(`id(`title), `opt (`hstretch), _("YaST2\nInitializing ..."))),
 
 					`VWeight(1, // Layout trick: Lower layout priority with weight
 						 `HVCenter(
