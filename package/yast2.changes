@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr  5 14:45:07 CEST 2005 - visnov@suse.cz
+
+- fix NFB
+- 2.12.1 
+
+-------------------------------------------------------------------
 Mon Apr  4 10:27:58 CEST 2005 - jsrain@suse.cz
 
 - after running online update, exit ncurses control center (#63542)

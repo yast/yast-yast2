@@ -1,5 +1,5 @@
 @HEADER-COMMENT@
-# neededforbuild yast2-devel-packages
+# neededforbuild curl liby2util openssl perl-XML-Writer pkgconfig popt yast2-core yast2-core-devel yast2-devtools yast2-packagemanager openslp openslp-devel yast2-testsuite tcl dejagnu expect yast2-pkg-bindings update-desktop-files
 
 @HEADER@
 # Need the new file popups
