@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Mar 11 15:38:51 CET 2005 - mvidner@suse.cz
+
+- Added NetworkDevices::ConcealSecrets not to log sensitive
+  information (#65741).
+- 2.11.42
+
+-------------------------------------------------------------------
 Fri Mar 11 10:45:17 CET 2005 - locilka@suse.cz
 
 - Added new testsuite for SuSEFirewall module

@@ -63,7 +63,7 @@ TEST(``(NetworkDevices::alias_name("eth-pcmcia-","0","1")), [], nil);
 TEST(``(NetworkDevices::alias_name("tr-pcmcia-","1","1")), [], nil);
 
 DUMP ("CanonicalizeIP:");
-list<map> addresses = [
+list<map<string, any> > addresses = [
     // normal cases
     $["IPADDR": "10.0.0.1/8", "other": "data"],
     $["IPADDR": "10.0.0.1", "PREFIXLEN": "8", "other": "data"],
@@ -76,7 +76,7 @@ list<map> addresses = [
     $[],
     $["IPADDR": "10.0.0.1", "other": "data"],
     ];
-foreach (map address, addresses, {
+foreach (map<string, any> address, addresses, {
     TEST (``(NetworkDevices::CanonicalizeIP (address)), [], nil);
 });
 
