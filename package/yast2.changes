@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jul 19 12:01:11 CEST 2002 - mvidner@suse.cz
+
+- Added Wizard::{Set,Restore}ScreenShotName ().
+- Moved sysconfig/ypserv definition from yast2-nis-server.
+- 2.6.12
+
+-------------------------------------------------------------------
 Fri Jul 19 11:24:35 CEST 2002 - sh@suse.de
 
 - Wizard now uses consistent image names for easier OEM logo handling 
