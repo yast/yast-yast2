@@ -122,9 +122,9 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 	    # use English instead:
 	    ja*|ko*|zh*) export LANG=en_US ;;
 	esac
-	# use ycp menu if the y2menu is not installed
-	if [ $module == "menu" -a -e "$ybindir/y2menu" ] ; then
-	    $ybindir/y2menu
+	# use menu.ycp
+	if [ $module == "menu" ] ; then
+	    $ybindir/y2base menu ncurses
 	else
 	    set -- $(for x in "$@"; do echo "(\"$x\")"; done) # surround args by ("...")
 	    $ybindir/y2base $module "$@" ncurses
