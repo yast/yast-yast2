@@ -114,6 +114,7 @@
 	contents = add (contents,
 			`Table (
 			    `id (`table),
+			    `opt (`notify),
 			    table_header,
 			    table_contents));
 	if (nil != below_table)
