@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 03 17:40:14 CET 2003 - arvin@suse.de
+
+- new pot file handling
+
+-------------------------------------------------------------------
 Mon Jan 27 16:12:51 CET 2003 - arvin@suse.de
 
 - added popt to neededforbuild
