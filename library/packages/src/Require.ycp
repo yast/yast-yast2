@@ -17,6 +17,7 @@
     textdomain "base";
 
     import "Label";
+    import "Popup";
     import "PackageCallbacksInit";
     import "Wizard";	// some modules call us without any dialog open
     import "Mode";
@@ -337,6 +338,30 @@
 	EnsureTargetInit ();
 	boolean ok = true;
 
+	// licenses: #35250
+	map<string, string> licenses = Pkg::PkgGetLicensesToConfirm (toinstall);
+	if (size (licenses) > 0)
+	{
+	    list<string> rt_licenses_l = maplist (
+		string p, string l, licenses,
+		``( sformat ("<p><b>%1</b></p>\n%2", p, l) )
+		);
+	    if (! Popup::AnyQuestionRichText (
+		    // popup heading, with rich text widget and Yes/No buttons
+		    _("Do you accept this license agreement?",
+		      "Do you accept these license agreements?",
+		      size (licenses)),
+		    mergestring (rt_licenses_l, "\n"),
+		    70, 20,
+		    Label::YesButton (), Label::NoButton (),
+		    `focus_none))
+	    {
+		last_op_canceled = true;
+		return false;
+	    }
+	    last_op_canceled = false;
+	}
+
 	foreach (string p, toinstall, ``{
 	    if(ok == true)
 		if(Pkg::PkgInstall(p) != true) {
@@ -475,18 +500,12 @@
 				  mergestring (toinstall, ", "),
 				  mergestring (toremove, ", ")
 				  );
-	term d = `VBox (
-	    `HSpacing (40),
-	    `RichText (message),
-	    `HBox (
-		`PushButton (`id (`continue), `opt (`default), continue_button),
-		`PushButton (`id (`cancel), cancel_button)
-		)
+	boolean doit = Popup::AnyQuestionRichText (
+	    "", message, 40, 10,
+	    continue_button, cancel_button,
+	    `focus_yes
 	    );
-	UI::OpenDialog (d);
-	any ui = UI::UserInput ();
-	UI::CloseDialog ();
-	if (ui == `continue)
+	if (doit)
 	{
 	    last_op_canceled = false;
 	    return DoInstallAndRemovePkg (toinstall, toremove);

@@ -383,6 +383,58 @@
 
 
     /**
+     * Show a question that might need scrolling.
+     *
+     * @param  headline short headline
+     * @param  richtext  text input as a rich text
+     * @param  hdim  initial horizontal dimension of the popup
+     * @param  vdim  initial vertical dimension of the popup
+     * @param  yes_button_message message on the left/true button
+     * @param  no_button_message message on the right/false button
+     * @param  focus `focus_yes, `focus_no, `focus_none
+     * @return left button pressed?
+     */
+    global define boolean AnyQuestionRichText (string headline,
+					       string richtext,
+					       integer hdim, integer vdim,
+					       string yes_button_message,
+					       string no_button_message,
+					       symbol focus) ``{
+	term yes_button = `PushButton (
+	    `id (`ok),
+	    ( focus == `focus_yes ?
+	      `opt (`default, `key_F10) :
+	      `opt (`key_F10) ),
+	    yes_button_message);
+
+	term no_button = `PushButton (
+	    `id (`cancel),
+	    ( focus == `focus_no ?
+	      `opt (`default, `key_F9) :
+	      `opt (`key_F9) ),
+	    no_button_message);
+
+	term d = `HBox (
+	    `VSpacing (vdim),
+	    `VBox (
+		`HSpacing (hdim),
+		size (headline) > 0 ? `Left(`Heading( headline )) : `Empty (),
+		`VSpacing(0.2),
+		`RichText (richtext),
+		`HBox (
+		    yes_button,
+		    no_button
+		    )
+		)
+	    );
+	UI::OpenDialog (`opt (`decorated), d);
+	any ui = UI::UserInput ();
+	UI::CloseDialog ();
+	return ui == `ok;
+    }
+
+
+    /**
      * Confirmation for "Abort" button during installation.
      *
      * According to the "severity" parameter an appropriate text will be
