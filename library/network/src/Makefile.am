@@ -11,7 +11,8 @@ module_DATA =			\
 	SuSEFirewall.ycp	\
 	SuSEFirewallServices.ycp	\
 	PortAliases.ycp		\
-	SuSEFirewallProposal.ycp
+	SuSEFirewallProposal.ycp	\
+	CWMFirewallInterfaces.ycp
 
 EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA)
 
