@@ -46,11 +46,11 @@ global string filename = "/var/lib/YaST2/crash";
 global define void Read () ``{
     if (SCR::Read (.target.size, filename) != -1)
     {
-	map settings = (map)SCR::Read (.target.ycp, filename);
+	map<string, any> settings = (map<string, any>)SCR::Read (.target.ycp, filename);
 	y2milestone ("Read settings: %1", settings);
 	all_failed = settings["all_failed"]:[];
 	last_failed = settings["last_failed"]:[];
-	last_done = settings["last_done"]:nil;
+	last_done = (string) (settings["last_done"]:nil);
     }
 }
 

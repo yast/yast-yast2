@@ -822,7 +822,7 @@
     /**
      * Screenshot names overriden by nested SetScreenShotName calls
      */
-    list screenshot_name_stack = [];
+    list<string> screenshot_name_stack = [];
 
     /**
      * Declare a name for the current dialog to ease making screenshots.
