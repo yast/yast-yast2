@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar  3 13:40:45 CET 2005 - jsrain@suse.cz
+
+- precent Initrd module from automatical reading in Mode::config
+  (#67256)
+
+-------------------------------------------------------------------
 Wed Mar  2 11:22:33 CET 2005 - locilka@suse.cz
 
 - merged proofed texts

@@ -157,7 +157,7 @@
       * @return list of strings with modulenames
       */
     global define list ListModules () ``{
-	if (! was_read)
+	if (! (was_read || Mode::config ()))
 	    Read ();
 	return modules;
     }
@@ -168,7 +168,7 @@
       * @param modargs arguments to be passes to module
       */
     global define void AddModule (string modname, string modargs) ``{
-	if (! was_read)
+	if (! (was_read || Mode::config ()))
 	    Read ();
 	if ((!contains (ListModules (), modname))
 	    || ((modname == "aic7xxx")
@@ -201,7 +201,7 @@
       * @return map of initrd settings
       */
     global define map Export () ``{
-	if (! was_read)
+	if (! (was_read || Mode::config ()))
 	    Read ();
 	return $[
 	    "list" : modules,
@@ -214,7 +214,9 @@
       * @param settings map of initrd settings
       */
     global define void Import (map settings) ``{
-	Read (); // to set modules that were read and not add them to the list
+	if (! Mode::config ())
+	    Read (); // to set modules that were read
+		     // and not add them to the list
 	modules = settings["list"]:[];
 	modules_settings = settings["settings"]:$[];
 	was_read = true;
@@ -226,7 +228,7 @@
       * @param modname string name of module to remove
       */
     global define void RemoveModule (string modname) ``{
-	if (! was_read)
+	if (! (was_read || Mode::config ()))
 	    Read ();
 	modules = filter (string k, modules, { return k != modname; });
 	modules_settings = filter (string k, any v, modules_settings, { return k != modname; });
@@ -273,7 +275,7 @@
       * @return true on success
       */
     global define boolean Write () ``{
-	if (! was_read)
+	if (! (was_read || Mode::config ()))
 	    Read ();
 	if (Mode::update ())
 	    Update ();
