@@ -1,6 +1,7 @@
 $Id$
 Author: Stefan Hundhammer <sh@suse.de>,  2001-03-15
-Update: Martin Vidner <mvidner@suse.cz>, 2003-05-14
+Update: Stefan Hundhammer <sh@suse.de>,  2004-12-01
+
 
 			     COMMON POPUP DIALOGS
 			     ====================
@@ -201,75 +202,4 @@ If you can't classify your message, use Popup::Message().
 
 Use Popup::LongText() to display large amounts of text that might need
 scrolling. 
-
-
-				   MIGRATION
-				   =========
-
-* Add to your YCP file:
-
-import "Popup"
-import "Label"
-
-
-* Remove your own definitions of
-  - ContinueCancel()
-  - YesOrNo()
-  - YesNoOpt()
-  - DisplayMessage()
-  - DisplayTimedMessage()
-  - ModuleErrorPopup()
-  - size_text()
-
-  or similar functions that do the same as the new popups.
-
-
-* Delete the button label parameters ( _("Yes"), _("No"), ...) from:
-
-  - ContinueCancel()
-  - YesOrNo()
-
-  They are not needed any more.
-
-
-* Search and replace:
-
-  - YesOrNo()			-> Popup::YesNo()
-
-  - ContinueCancel()		-> Popup::ContinueCancel()
-
-  - DisplayMessage()		-> Popup::Message()
-
-  - DisplayTimedMessage()	-> Popup::TimedMessage()
-
-  - YesNoOpt()			-> Popup::AnyQuestion( "",
-						     message,
-						     Label::YesButton(),
-						     Label::NoButton(),
-						     `focus_no );
-
-
-* Go through each call to MessagePopup() and decide whether it makes sense to
-  change it to one of
-
-  - Popup::Error()
-  - Popup::Warning()
-  - Popup::Notify()
-
-  - but please don't change anything into Popup::Notify() for no good reason.
-    (it's the discussion about headlines all over again).
-
-
-* Change question popups with long messages to the corresponding
-  xxxHeadline() version and provide a concise headline (see above).
-
-
-* Search and replace common button labels for the rest of your dialogs:
-
-	_("&OK")	-> Label::OKButton()
-	_("&Cancel")	-> Label::CancelButton()
-	...
-
-  See "Label.ycp" for a complete list.
-
 
