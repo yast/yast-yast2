@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 24 12:00:54 CET 2005 - fehr@suse.de
+
+- Add AsciiFile::ReplaceLine
+- 2.11.34
+
+-------------------------------------------------------------------
 Thu Feb 24 08:54:01 CET 2005 - visnov@suse.cz
 
 - reading INCOMPLETE_TRANSLATION_TRESHOLD enabled
