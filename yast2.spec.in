@@ -1,10 +1,10 @@
 @HEADER-COMMENT@
-# neededforbuild gpp hwinfo hwinfo-devel libgpp popt yast2-devel-packages
+# neededforbuild gpp hwinfo hwinfo-devel libgpp popt yast2-devel-packages yast2-network
 
 @HEADER@
 # Need the new file popups
 Requires:	yast2-core >= 2.7.1
-Requires:	yast2_ui yast2_theme
+Requires:	yast2_ui yast2_theme yast2-network
 
 Provides:	yast2-lib-sequencer
 Obsoletes:	yast2-lib-sequencer
