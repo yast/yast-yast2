@@ -7,7 +7,7 @@
  */
 {
     import "Wizard";			// For the wizard dialog itself
-    include "ui/common_popups.ycp";	// For YesNoPopup()
+    import "Popup";	// For Popup::YesNo()
 
     integer current_stage = 0;	// Required globally for Wizard::SetStage()
 
@@ -86,7 +86,7 @@
 	if ( button_id == `abort ||	// the real "abort" button
 	     button_id == `cancel  )	// window manager close button
 	{
-	    if ( UI::YesNoPopup( "Really abort?" ) )
+	    if ( Popup::YesNo( "Really abort?" ) )
 	    {
 		return; // This is the only exit of the loop and thus the program
 	    }

@@ -6,7 +6,8 @@
  * $Id$
  */
 {
-    include "ui/common_popups.ycp";
+    import "Label";
+    import "Popup";
 
 
     UI::OpenDialog(
@@ -23,7 +24,7 @@
 			 `PushButton(`id(`abort_ch ),  	`opt(`hstretch), "Confirm Abort Popup (&with changes)" ),
 			 `PushButton(`id(`show_file ), 	`opt(`hstretch), "Show &File Popup" ),
 			 `VSpacing(),
-			 `PushButton(`id(`close), CloseButtonLabel() )
+			 `PushButton(`id(`close), Label::CloseButton() )
 			 )
 		   );
 
@@ -37,43 +38,43 @@
 
 	if ( button_id == `msg )
 	{
-	    UI::MessagePopup( "Hello, world!" );
+	    Popup::Message( "Hello, world!" );
 	}
 	else if ( button_id == `notify )
 	{
-	    UI::NotifyPopup( "Notify the world!" );
+	    Popup::Notify( "Notify the world!" );
 	}
 	else if ( button_id == `warn )
 	{
-	    UI::WarningPopup( "This is the only world we have!" );
+	    Popup::Warning( "This is the only world we have!" );
 	}
 	else if ( button_id == `err )
 	{
-	    UI::WarningPopup( "Cannot delete world -\nthis is the only world we have!" );
+	    Popup::Warning( "Cannot delete world -\nthis is the only world we have!" );
 	}
 	else if ( button_id == `timed )
 	{
-	    UI::TimedMessagePopup( "Just some seconds left to save the world...", 20 );
+	    Popup::TimedMessage( "Just some seconds left to save the world...", 20 );
 	}
 	else if ( button_id == `yesNo )
 	{
-	    ok = UI::YesNoPopup( "Really delete world?" );
+	    ok = Popup::YesNo( "Really delete world?" );
 	}
 	else if ( button_id == `contCancel )
 	{
-	    ok = UI::ContinueCancelPopup( "World will be deleted." );
+	    ok = Popup::ContinueCancel( "World will be deleted." );
 	}
 	else if ( button_id == `abort )
 	{
-	    ok = UI::ReallyAbortPopup( false );
+	    ok = Popup::ReallyAbort( false );
 	}
 	else if ( button_id == `abort_ch )
 	{
-	    ok = UI::ReallyAbortPopup( true );
+	    ok = Popup::ReallyAbort( true );
 	}
 	else if ( button_id == `show_file )
 	{
-	    ShowFilePopup( "Boot Messages", "/var/log/boot.msg" );
+	    Popup::ShowFile( "Boot Messages", "/var/log/boot.msg" );
 	}
     } while ( button_id != `close );
 
