@@ -33,8 +33,8 @@
  */
 
 {
-
     module "Progress";
+
     textdomain "base";
 
     import "Wizard";
@@ -75,7 +75,8 @@
      * @param length Number of steps.
      * @param help_text Help text.
      */
-    global define void Simple (string window_title, string progress_title, integer length, string help_text) ``{
+    global define void Simple (string window_title, string progress_title,
+			       integer length, string help_text) ``{
 	if (!visible)
 	    return ;
 	stages = 0;
@@ -90,9 +91,13 @@
 	    progress_title = " ";
 	}
 	term bar = `ProgressBar(`id(`pb), progress_title, steps, 0);
-	
-	if (UI::WidgetExists (`id (`back)))	UI::ChangeWidget (`id (`back), `Enabled, false);
-	if (UI::WidgetExists (`id (`next)))	UI::ChangeWidget (`id (`next), `Enabled, false);
+
+	if (UI::WidgetExists (`id (`back)))
+	    UI::ChangeWidget (`id (`back), `Enabled, false);
+	if (UI::WidgetExists (`id (`next)))
+	    UI::ChangeWidget (`id (`next), `Enabled, false);
+	if (UI::WidgetExists (`id (`accept)))
+	    UI::ChangeWidget (`id (`accept), `Enabled, false);
 
 	if ("" != help_text && nil != help_text && UI::WidgetExists (`id (`HelpText)))
 	{
@@ -117,7 +122,9 @@
      *             be nil/empty.
      * @param help_text help text
      */
-    global define void New (string window_title, string progress_title, integer length, list stg, list tits, string help_text) ``{
+    global define void New (string window_title, string progress_title,
+			    integer length, list stg, list tits,
+			    string help_text) ``{
 	if (!visible)
 	    return ;
 	steps = length;
@@ -170,8 +177,12 @@
 	    }
 	}
 
-	if (UI::WidgetExists (`id (`back)) == true)	UI::ChangeWidget (`id (`back), `Enabled, false);
-	if (UI::WidgetExists (`id (`next)) == true)	UI::ChangeWidget (`id (`next), `Enabled, false);
+	if (UI::WidgetExists (`id (`back)) == true)
+	    UI::ChangeWidget (`id (`back), `Enabled, false);
+	if (UI::WidgetExists (`id (`next)) == true)
+	    UI::ChangeWidget (`id (`next), `Enabled, false);
+	if (UI::WidgetExists (`id (`accept)) == true)
+	    UI::ChangeWidget (`id (`accept), `Enabled, false);
 
 	if ("" != help_text && nil != help_text && UI::WidgetExists (`id (`HelpText)))
 	{
