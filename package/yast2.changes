@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Mar 30 18:04:43 CEST 2004 - jsrain@suse.de
+
+- fixed map validator of CWM
+
+-------------------------------------------------------------------
 Mon Mar 29 16:18:49 CEST 2004 - jsrain@suse.de
 
 - fixed behavior of combo box for adding new option if it is
