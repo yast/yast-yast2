@@ -48,8 +48,12 @@
 	"FW_MASQUERADE"			: "no",
 	"FW_ALLOW_FW_TRACEROUTE"	: "yes",
 	"FW_ALLOW_PING_FW"		: "yes",
-	"FW_ALLOW_FW_BROADCAST"		: "no",
-	"FW_IGNORE_FW_BROADCAST"	: "no",
+	"FW_ALLOW_FW_BROADCAST_EXT"	: "no",
+	"FW_ALLOW_FW_BROADCAST_INT"	: "no",
+	"FW_ALLOW_FW_BROADCAST_DMZ"	: "no",
+	"FW_IGNORE_FW_BROADCAST_EXT"	: "yes",
+	"FW_IGNORE_FW_BROADCAST_INT"	: "no",
+	"FW_IGNORE_FW_BROADCAST_DMZ"	: "no",
 	"FW_IPSEC_TRUST"		: "no",
     ];
 
@@ -99,7 +103,8 @@
 	"FW_ROUTE", "FW_MASQUERADE", "FW_FORWARD_MASQ",
 
 	// broadcast packets
-	"FW_ALLOW_FW_BROADCAST", "FW_IGNORE_FW_BROADCAST",
+	"FW_ALLOW_FW_BROADCAST_EXT", "FW_ALLOW_FW_BROADCAST_INT", "FW_ALLOW_FW_BROADCAST_DMZ",
+	"FW_IGNORE_FW_BROADCAST_EXT", "FW_IGNORE_FW_BROADCAST_INT", "FW_IGNORE_FW_BROADCAST_DMZ",
 
 	// logging
 	"FW_LOG_DROP_CRIT", "FW_LOG_DROP_ALL", "FW_LOG_ACCEPT_CRIT", "FW_LOG_ACCEPT_ALL",
@@ -321,10 +326,9 @@
      *
      * @return	string with broadcast configuration
      */
-    string GetBroadcastConfiguration () {
-	SetModified();
+    string GetBroadcastConfiguration (string zone) {
 
-	return SETTINGS["FW_ALLOW_FW_BROADCAST"]:"no";
+	return SETTINGS["FW_ALLOW_FW_BROADCAST_" + zone]:"no";
     }
 
     /**
@@ -332,10 +336,10 @@
      *
      * @param	string with broadcast configuration
      */
-    void SetBroadcastConfiguration (string broadcast_configuration) {
+    void SetBroadcastConfiguration (string zone, string broadcast_configuration) {
 	SetModified();
 
-	SETTINGS["FW_ALLOW_FW_BROADCAST"] = broadcast_configuration;
+	SETTINGS["FW_ALLOW_FW_BROADCAST_" + zone] = broadcast_configuration;
     }
 
     /**
@@ -345,77 +349,26 @@
      *
      * @return	map [zone, list [of allowed ports] ]
      */
-    map <string, list <string> > GetBroadcastAllowedPorts () {
-	/*
-	 * Format: "yes" or "no", any combination of "int", "ext" and "dmz" and/or list
-	 *         of udp ports
-	 * Example: "int 631"
-	 * set defaults to "no" if not set
-	*/
+    define map <string, list <string> > GetBroadcastAllowedPorts () {
 
 	map <string, list <string> > allowed_ports = $[];
 
-	// Examples: "yes", "no", "int dmz", "dmz 35", "int 631 80 136 ext 255 dmz"
-	// "yes" = "int dmz ext"
-	string broadcast = GetBroadcastConfiguration();
-
-	list <string> known_zones_strings = [];
 	foreach (string zone, GetKnownFirewallZones(), {
-	    known_zones_strings = add (known_zones_strings, GetZoneConfigurationString(zone));
-	});
-
-	// `NO`
-	// broadcast is not allowed at all
-	if (broadcast == "no") {
-	    return allowed_ports;
-	// `OTHER` and `YES`
-	// Examples: "int dmz", "dmz 35", "int 631 80 136 ext 255 dmz"
-	} else {
-	    // "yes" = "int dmz ext..."
-	    if (broadcast == "yes") {
-		broadcast = mergestring(known_zones_strings, " ");
-	    }
-
-	    string last_bcas_zone = "";
-	    foreach (string bcast_item,
-		// list of allowed broadcast settings without spaces
-		filter (string not_space, splitstring(broadcast, " "), {
+	    string broadcast = GetBroadcastConfiguration(zone);
+	    // no broadcast allowed for this zone
+	    if (broadcast == "no") {
+		allowed_ports[zone] = [];
+	    // all UDP port allowed in zone also allow broadcast
+	    } else if (broadcast == "yes") {
+		allowed_ports[zone] = GetAllowedServicesForZoneProto (zone, "UDP");
+	    // only listed ports allows broadcast
+	    } else {
+		allowed_ports[zone] = splitstring(broadcast, " ");
+		allowed_ports[zone] = filter (string not_space, splitstring(broadcast, " "), {
 		    return not_space != "";
-		}), {
-		// item is a zone name
-		if (contains(known_zones_strings, bcast_item)) {
-		    last_bcas_zone = bcast_item;
-		    allowed_ports[bcast_item] = allowed_ports[bcast_item]:[];
-		// item is a port name
-		} else {
-		    // zone is defined
-		    if (last_bcas_zone != "") {
-			allowed_ports[last_bcas_zone] = add (allowed_ports[last_bcas_zone]:[], bcast_item);
-		    // no zone defined - works for all zones (I hope)
-		    } else {
-			foreach (string zone_string, known_zones_strings, {
-			    allowed_ports[zone_string] = add (allowed_ports[zone_string]:[], bcast_item);
-			});
-		    }
-		}
-	    });
-
-	    // all empty lists = all allowed UDP ports allows also broadcast
-	    foreach (string zone, GetKnownFirewallZones(), {
-		string zone_string = GetZoneConfigurationString(zone);
-		// zone is mentioned but empty => full zone is allowed
-		if (allowed_ports[zone_string]:nil == []) {
-		    list <string> allowed_udp_ports = GetAllowedServicesForZoneProto (zone, "UDP");
-		    // any port in zone is allowed
-		    if (size(allowed_udp_ports)>0) {
-			allowed_ports[zone_string] = allowed_udp_ports;
-		    // whole zone is allowed but there is no UDP port allowed at all
-		    } else {
-			allowed_ports = remove(allowed_ports, zone_string);
-		    }
-		}
-	    });
-	}
+		});
+	    }
+	});
 
 	y2debug("Allowed Broadcast Ports: %1", allowed_ports);
 
@@ -428,18 +381,9 @@
      * @param	map [zone_string, list [of allowed ports] ]
      */
     void SetBroadcastAllowedPorts (map <string, list <string> > broadcast) {
-	string broadcast_configuration = "";
-	list <string> ports_in_zones = [];
-	foreach (string zone, list <string> ports, broadcast, {
-	    if (size(ports)>0) {
-		ports_in_zones = add (ports_in_zones, zone + " " + mergestring(ports, " "));
-	    } else {
-		y2milestone("Removing '%1' from allowed broadcast ports", zone);
-	    }
+	foreach (string zone, GetKnownFirewallZones(), {
+	    SetBroadcastConfiguration(zone, mergestring(broadcast[zone]:[], " "));
 	});
-	broadcast_configuration = mergestring(ports_in_zones, " ");
-
-	SetBroadcastConfiguration(broadcast_configuration);
     }
 
     /**
@@ -451,19 +395,13 @@
      */
     boolean IsBroadcastAllowed (list <string> needed_ports, string zone) {
 	if (size(needed_ports)==0) {
-	    y2warning("Unknown service with zero needed ports!");
+	    y2warning("Unknown service with no needed ports!");
 	    return nil;
 	}
 
-	string this_zone_cfg_name = GetZoneConfigurationString(zone);
-	list <string> known_zones_strings = [];
-	foreach (string zone, GetKnownFirewallZones(), {
-	    known_zones_strings = add (known_zones_strings, GetZoneConfigurationString(zone));
-	});
-
 	// getting broadcast allowed ports
 	map <string, list <string> > allowed_ports_map = GetBroadcastAllowedPorts();
-	list <string> allowed_ports_list = allowed_ports_map[this_zone_cfg_name]:nil;
+	list <string> allowed_ports_list = allowed_ports_map[zone]:nil;
 
 	// checking aliases, when the list consists of any ports
 	if (allowed_ports_list != nil) {
@@ -499,10 +437,8 @@
     void RemoveAllowedBroadcast (list <string> needed_ports, string zone) {
 	SetModified();
 
-	string zone_string = GetZoneConfigurationString(zone);
-
 	map <string, list <string> > allowed_ports = GetBroadcastAllowedPorts();
-	list <string> list_ports_allowed = allowed_ports[zone_string]:[];
+	list <string> list_ports_allowed = allowed_ports[zone]:[];
 
 	// ports to be allowed one by one
 	foreach (string allow_this_port, needed_ports, {
@@ -512,7 +448,7 @@
 	        return (! contains(aliases_of_port, just_allowed));
 	    });
 	});
-	allowed_ports[zone_string] = list_ports_allowed;
+	allowed_ports[zone] = list_ports_allowed;
 
 	// save it using function
 	SetBroadcastAllowedPorts(allowed_ports);
@@ -528,10 +464,8 @@
 	if (! IsBroadcastAllowed (needed_ports, zone)) {
 	    SetModified();
 
-	    string zone_string = GetZoneConfigurationString(zone);
-
 	    map <string, list <string> > allowed_ports = GetBroadcastAllowedPorts();
-	    list <string> list_ports_allowed = allowed_ports[zone_string]:[];
+	    list <string> list_ports_allowed = allowed_ports[zone]:[];
 
 	    // ports to be allowed one by one
 	    foreach (string allow_this_port, needed_ports, {
@@ -543,7 +477,7 @@
 		// at second: add only one
 		list_ports_allowed = add(list_ports_allowed, allow_this_port);
 	    });
-	    allowed_ports[zone_string] = list_ports_allowed;
+	    allowed_ports[zone] = list_ports_allowed;
 
 	    // save it using function
 	    SetBroadcastAllowedPorts(allowed_ports);
