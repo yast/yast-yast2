@@ -161,21 +161,21 @@ global define any WS_error(string error) ``{
  * @param alias given alias
  * @return term belonging to the given alias or nil, if error
  */
-global define term WS_alias(map aliases, string alias) ``{
+global define any WS_alias(map aliases, string alias) ``{
     any found = lookup(aliases, alias, nil);
     if (found == nil)
-        return (term) WS_error(sformat("Alias not found: %1", alias));
+        return WS_error(sformat("Alias not found: %1", alias));
     if (is(found, list)) {
         if (size((list)found) <= 0)
-	    return (term) WS_error(sformat("Invalid alias: %1", found));
+	    return WS_error(sformat("Invalid alias: %1", found));
 	found = select((list)found, 0, nil);
     }
     if (found == nil)
-	return (term) WS_error(sformat("Invalid alias: %1", found));
+	return WS_error(sformat("Invalid alias: %1", found));
 /* FIXME: use function pointers
     if (is(found, term)) */
-        return (term)found;
-    return (term) WS_error(sformat("Invalid alias: %1", found));
+        return found;
+    return WS_error(sformat("Invalid alias: %1", found));
 }
 
 /**
@@ -219,7 +219,7 @@ global define any WS_next(map sequence, string current, symbol ret) ``{
  */
 global define symbol WS_run(map aliases, string id) ``{
     y2debug("Running: %1", id);
-    term function = nil;
+    any function = nil;
 
     function = WS_alias(aliases, id);
     if (function == nil)
