@@ -50,6 +50,7 @@ mkdir -p "$RPM_BUILD_ROOT"@ybindir@
 mkdir -p "$RPM_BUILD_ROOT"@ydatadir@
 mkdir -p "$RPM_BUILD_ROOT"@yncludedir@
 mkdir -p "$RPM_BUILD_ROOT"@vardir@
+mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 
 @CLEAN@
 
@@ -69,6 +70,7 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 %dir @ydatadir@
 %dir @yncludedir@
 %dir @vardir@
+%dir /etc/YaST2
 
 # yast2
 
