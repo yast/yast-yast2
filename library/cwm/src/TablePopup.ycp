@@ -45,6 +45,111 @@
 	return [];
     }
 
+/**
+ * Validate table options specifyign attributesA
+ * @param attr a map of table attributes
+ * @return boolean true if validation succeeded
+ */
+define boolean ValidateTableAttr (map<string,any> attr) {
+    map<string,string> types = $[
+        "add_delete_buttons" : "boolean",
+        "changed_column" : "boolean",
+        "up_down_buttons" : "boolean",
+    ];
+    boolean ret = true;
+    foreach (string k, any v, attr, {
+	string type = (string)types[k]:nil;
+	if (type == nil)
+	{
+	    y2error ("Unknown attribute %1", k);
+	    ret = false;
+	}
+	else
+	{
+	    ret = CWM::ValidateBasicType (v, type) && ret;
+	}
+    });
+    return ret;
+}
+
+
+/**
+ * Validate type of entry of the option description map
+ * Also checks option description maps if present
+ * @param key string key of the map entry
+ * @param value any value of the map entry
+ * @param widget any name of the widget/option
+ * @param popup boolean true if is option of a popup
+ * @return boolean true if validation succeeded
+ */
+define boolean ValidateValueType (string key, any value, string widget, boolean popup) {
+    boolean success = true;
+    if (popup)
+    {
+	if (key == "init")
+	    success = is (value, void(any,string));
+	else if (key == "handle")
+	    success = is (value, void(any,string,map))
+		|| is (value, symbol);
+	else if (key == "store")
+	    success = is (value, void(any,string));
+	else if (key == "cleanup")
+	    success = is (value, void(any,string));
+	else if (key == "validate_function")
+	    success = is (value, boolean(any,string,map));
+	else if (key == "optional")
+	    success = is (value, boolean);
+	else
+	    return CWM::ValidateValueType (key, value, widget);
+    }
+    else if (key == "id2key")
+	success = is (value, string(map,any));
+    else if (key == "ids")
+	success = is (value, list(map));
+    else if (key == "option_delete")
+	success = is (value, boolean(any,string));
+    else if (key == "summary")
+	success = is (value, string(any,string));
+    else if (key == "label_func")
+	success = is (value, string(any,string));
+    else if (key == "option_move")
+	success = is (value, any(any, string, symbol));
+    else if (key == "options")
+	success = is (value, map<string,any>);
+    else if (key == "add_items")
+	success = is (value, list);
+
+    if (! success)
+	y2error ("Wrong type of option %1 in description map of %2",
+	    key, widget);
+}
+
+/**
+ * Validate the table description
+ * @param descr a map containing the table description
+ * @return boolean true if validation succeeded
+ */
+define boolean ValidateTableDescr (string key, map<string,any> descr) {
+    boolean ret = true;
+    foreach (string k, any v, descr, {
+	ret = ValidateValueType (k, v, key, false) && ret;
+    });
+    map<string,any> options = descr["options"]:$[];
+    foreach (string w_key, any v, options, {
+	map<string,map<string,any> > des = (map<string,map<string,any> >)v;
+	foreach (string group, map<string,any> d, des, {
+	    if (group != "table" && group != "popup")
+	    {
+		y2error ("Unknown entry in option %1: %2", w_key, group);
+	    }
+	    foreach (string key, any value, d, {
+		ValidateValueType (key, value, w_key, true);
+	    });
+	});
+    });
+    return ret;
+}
+
     /**
       * Get option key from the option id
       * global only because of testsuites
@@ -222,7 +327,7 @@
       * @return any new id of selected option, nil if wasn't reordered
       */
     define any moveTableItem (any opt_id, map<string, any> descr, symbol dir) ``{
-	any(any, any, symbol) toEval = (any(any, any, symbol)) (descr["option_move"]:nil);
+	any(any, string, symbol) toEval = (any(any, string, symbol)) (descr["option_move"]:nil);
 	if (nil != toEval)
 	{
 	    toEval (opt_id, id2key (descr, opt_id), dir);
@@ -699,6 +804,7 @@
       * @return map table widget
       */
     global define map<string,any> CreateTableDescr (map<string,any> attrib, map<string,any> widget_descr) ``{
+	ValidateTableAttr (attrib);
 	term add_button = attrib["add_delete_buttons"]:true
 	    ? `PushButton (`id (`_tp_add), `opt (`key_F3), Label::AddButton ())
 	    : `HSpacing (0);
@@ -773,6 +879,7 @@ in the list.</p>");
 	    "_cwm_attrib" : attrib,
 	    "widget" : `custom,
 	    "help" : help,
+	    "_cwm_do_validate" : ValidateTableDescr,
 	], widget_descr);
 
 	if (! haskey (ret, "init"))
