@@ -2,7 +2,7 @@
   // test wizard_dialog
 
   textdomain "wizard_testsuite";
-  import "Wizard";
+  import "./../src/Wizard";
 
   Wizard::CreateDialog();
   Wizard::ReplaceHelp (`RichText(`id(`help), _("<p>This is the example of <tt>CreateWizardDialog()</tt></p>")));
