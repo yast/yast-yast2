@@ -73,6 +73,8 @@
 	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
 	    "name"	: _("Samba Server"),
 	    "tcp_ports" : [ "netbios-ns", "netbios-dgm", "netbios-ssn", "microsoft-ds" ],
+	    "udp_ports" : [ "netbios-ns" ],
+	    "broadcast_ports" : [ "netbios-ns" ],
 	],
 	"ssh" : $[
 	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
