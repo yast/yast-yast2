@@ -8,14 +8,18 @@
 #include <libintl.h>
 
 #include "parseyast.h"
+#include "myintl.h"
 
-#define LOCALE_DIR "/usr/share/YaST2/locale"
+
+/*
+  Textdomain "base"
+*/
 
 
 void getmodules ()
 {
     glob_t globbuf;
-    glob (CONFIG_DIR "/*.y2cc", GLOB_NOSORT, 0, &globbuf);
+    glob (CONFIGDIR "/*.y2cc", GLOB_NOSORT, 0, &globbuf);
 
     for (unsigned int i = 0; i < globbuf.gl_pathc; i++)
     {
@@ -103,8 +107,8 @@ void getgroup ()
 	{
 	    if (!strncmp (tmpstr, "Name", 4))
 	    {
-		strcpy (groups[grp_cnt].textstr,
-			translate ("general", cut_str (tmpstr)));
+		set_textdomain ("general");
+		strcpy (groups[grp_cnt].textstr, _(cut_str (tmpstr)));
 	    }
 	    else if (!strncmp (tmpstr, "SortKey", 7))
 	    {
@@ -184,11 +188,11 @@ void add_module (char *mod_name, char *namestr, char *group, char *infostr,
     if (!group_ok)
 	return;
 
+    set_textdomain (textdomain);
+
     strcpy (modules[i][groups[i].mod_cnt].name, mod_name);
-    strcpy (modules[i][groups[i].mod_cnt].textstr,
-	    (char *) translate (textdomain, namestr));
-    strcpy (modules[i][groups[i].mod_cnt].infostr,
-	    translate (textdomain, infostr));
+    strcpy (modules[i][groups[i].mod_cnt].textstr, _(namestr));
+    strcpy (modules[i][groups[i].mod_cnt].infostr, _(infostr));
     strcpy (modules[i][groups[i].mod_cnt].textdomain, textdomain);
     strcpy (modules[i][groups[i].mod_cnt].args, args);
     strcpy (modules[i][groups[i].mod_cnt].group, group);
@@ -198,10 +202,8 @@ void add_module (char *mod_name, char *namestr, char *group, char *infostr,
     if (yast_grp_all)
     {
 	strcpy (modules[0][groups[0].mod_cnt].name, mod_name);
-	strcpy (modules[0][groups[0].mod_cnt].textstr,
-		translate (textdomain, namestr));
-	strcpy (modules[0][groups[0].mod_cnt].infostr,
-		translate (textdomain, infostr));
+	strcpy (modules[0][groups[0].mod_cnt].textstr, _(namestr));
+	strcpy (modules[0][groups[0].mod_cnt].infostr, _(infostr));
 	strcpy (modules[0][groups[0].mod_cnt].textdomain, textdomain);
 	strcpy (modules[0][groups[0].mod_cnt].args, args);
 	strcpy (modules[0][groups[0].mod_cnt].group, group);
@@ -214,25 +216,10 @@ void add_module (char *mod_name, char *namestr, char *group, char *infostr,
 }
 
 
-char *translate (char *txtdomain, char *transstr)
-{
-    setlocale (LC_ALL, "");
-
-    bindtextdomain (txtdomain, LOCALE_DIR);
-    textdomain (txtdomain);
-    /* bind_textdomain_codeset (txtdomain, "UTF-8"); */
-
-    {
-	extern int _nl_msg_cat_cntr;
-	_nl_msg_cat_cntr++;
-    }
-
-    return dgettext (txtdomain, transstr);
-}
-
-
 void getbuttons ()
 {
-    strcpy (button_help, translate ("wizard", "&Help") + 1);
-    strcpy (button_cancel, translate ("wizard", "&Quit") + 1);
+    set_textdomain ("base");
+
+    strcpy (button_help, _("&Help") + 1); // FIXME !!! HELP !!!
+    strcpy (button_cancel, _("&Quit") + 1); // FIXEM !!! HELP !!!
 }

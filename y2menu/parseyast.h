@@ -6,7 +6,6 @@
 #define MAXGROUPS 100
 #define MAXMODULES 200
 #define GROUPS_FILE "/usr/share/YaST2/config/y2cc.groups"
-#define CONFIG_DIR "/usr/share/YaST2/config"
 #define GROUP_STR "[Y2Group "
 #define MOD_STR "[Y2Module "
 #define MOD_STR_LEN strlen(MOD_STR)
@@ -39,7 +38,6 @@ extern char button_help[20];
 extern char button_cancel[20];
 extern int yast_grp_all;
 
-char *translate (char *txtdomain, char *transstr);
 void getbuttons ();
 void getgroup (void);
 void getmodules (void);
