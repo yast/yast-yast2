@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Dec 14 17:17:12 CET 2004 - mvidner@suse.cz
+
+- Added Progress::set, fixed docs a bit.
+- 2.11.11
+
+-------------------------------------------------------------------
 Fri Dec  3 16:45:39 CET 2004 - mvidner@suse.cz
 
 - NetworkDevices: Canonicalize netmask data (#46885).

@@ -1,12 +1,25 @@
 /**
  * File:	modules/Progress.ycp
- * Module:	yast2
+ * Module:	Progress
  * Summary:	Progress bar
  * Authors:	Petr Blahos <pblahos@suse.cz>
  *
  * $Id$
  *
  * Functions for progress bar.<br>
+ * <pre>
+ * Dialog Title
+ *
+ * [x] Stage 1
+ * [x] Stage 2
+ *  => Stage 3
+ *  -  Stage 4
+ *  -  Stage 5
+ *
+ * Progress Title
+ * [============================90%=======================------]
+ *
+ * </pre>
  * Example of progress bar usage (note that I can not use underscore (not to confuse gettext here...):
  * Progress bar supposes main wizard dialog is created.<pre>
  * Progress::Simple ("Some progress bar", "Progress runs here...", 5, "");
@@ -60,14 +73,35 @@
     list super_stages = [];
 
     /**
-     * Turns progress bar off. All Progress:: calls return immediatelly.
+     * Sets progress bar state:
+     * on = normal operation, off = All Progress:: calls return immediatelly.
+     * @param state on or off
+     * @return previous state
      */
-    global define void off () ``{ visible = false; }
+    global define boolean set (boolean state) {
+	boolean prev = visible;
+	visible = state;
+	return prev;
+    }
+
+    /**
+     * Turns progress bar off. All Progress:: calls return immediatelly.
+     * @deprecated set
+     */
+    global define void off () {
+	// no "deprecated" warning
+	// because it is ok to use this function in testsuites
+	visible = false;
+    }
 
     /**
      * Turns progress bar on after calling Progress::off.
+     * @deprecated set
      */
-    global define void on () ``{ visible = true; }
+    global define void on () {
+	y2warning (-1, "Deprecated function. Use Progress::set instead");
+	visible = true;
+    }
 
     /**
      * Create simple progress bar with no stages, only with progress bar.
