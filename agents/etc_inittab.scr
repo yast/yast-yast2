@@ -1,0 +1,32 @@
+/**
+ * File:	etc_inittab.scr
+ * Summary:	Agent for reading/writing /etc/inittab
+ * Access:	read/write
+ * Authors:	Petr Blahos <pblahos@suse.cz>
+ *		Michal Svec <msvec@suse.cz>
+ * See:		initttab(5)
+ *
+ * Example:
+ *   Dir(.etc.inittab)
+ *   (["id", "si", "l0", "l1", "l2", "~~" ... ])
+ **
+ *   Read(.etc.inittab.id)
+ *   ("5:initdefault:")
+ **
+ *   Write(.etc.inittab.id, "3:initdefault:")
+ *   (true)
+ *
+ * $Id$
+ */
+.etc.inittab
+
+`ag_ini(
+    IniAgent( "/etc/inittab",
+	$[
+	    "options"	: [ "global_values", "flat" ],
+	    "comments"	: [ "^#.*", "^[ \t]*$" ],
+	    "params"	: [
+		$[ "match" : [ "([^:]+):(.*[^ \t])[ \t]*$", "%s:%s" ] ]
+	    ]
+	]
+))

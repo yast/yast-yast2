@@ -1,0 +1,40 @@
+/**
+ * File:	yast2_menuentry.scr
+ * Summary:	Agent for reading/writing yast2 menuentries
+ * Author:	yast2-hacker@suse.de
+ * Access:	read / write
+ *
+ * Example:
+ *   Dir(.yast2.menuentry)
+ *   (["lan", "modem", "isdn", ...])
+ **
+ *   Read(.yast2.menuentry.lan)
+ *   ("3")
+ *
+ * $Id$
+ *
+ * Read/Sets the values defined in <tt>/etc/login.defs</tt>
+ * in an easy manner.
+ */
+.yast2.menuentry
+
+`ag_ini(
+    IniAgent( [ "/usr/share/YaST2/config/y2cc.groups", "/usr/share/YaST2/config/*.y2cc" ],
+	$[
+	    "options"	: [ ],
+	    "comments"	: [ "^[ \t]*;.*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],
+	    "sections"	: [
+		$[ "begin" : [
+		    "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
+		    "[%s]",
+		]],
+	    ],
+	    "params" : [
+		$[ "match" : [
+		    "^[ \t]*([^=]*[^ \t=])[ \t]*=[ \t]*(.*[^ \t]|)[ \t]*$" ,
+		    "%s=%s",
+		]],
+	    ],
+	]
+    )
+)

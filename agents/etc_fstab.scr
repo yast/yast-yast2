@@ -20,25 +20,25 @@
  *     ...
  **
  *   Read(.etc.fstab)
- *   ([$["file":"swap", "freq":0, "mntops":"defaults", "passno":2, 
- *       "spec":"/dev/sda2", "vfstype":"swap"], 
- *     $["file":"/", "freq":1, "mntops":"defaults", "passno":1, 
- *       "spec":"/dev/sda3", "vfstype":"ext2"], 
- *     $["file":"/proc", "freq":0, "mntops":"defaults", "passno":0, 
- *       "spec":"proc", "vfstype":"proc"], 
+ *   ([$["file":"swap", "freq":0, "mntops":"defaults", "passno":2,
+ *       "spec":"/dev/sda2", "vfstype":"swap"],
+ *     $["file":"/", "freq":1, "mntops":"defaults", "passno":1,
+ *       "spec":"/dev/sda3", "vfstype":"ext2"],
+ *     $["file":"/proc", "freq":0, "mntops":"defaults", "passno":0,
+ *       "spec":"proc", "vfstype":"proc"],
  *     ...
  *   ])
  **
- *   Write(.etc.fstab, ([$["file":"/", "freq":1, "mntops":"defaults", 
- *                       "passno":1, "spec":"/dev/sda3", 
+ *   Write(.etc.fstab, ([$["file":"/", "freq":1, "mntops":"defaults",
+ *                       "passno":1, "spec":"/dev/sda3",
  *                       "vfstype":"ext2"]]))
  *   (0)
- * 
+ *
  * $Id$
  *
- * Returns/Takes a <b>list of maps</b>. Each map (list-entry) corresponds 
- * with one file system. 
- * Keys for the maps are: "spec", "file", "vfstype", "mntops", "freq", "passno" 
+ * Returns/Takes a <b>list of maps</b>. Each map (list-entry) corresponds
+ * with one file system.
+ * Keys for the maps are: "spec", "file", "vfstype", "mntops", "freq", "passno"
  */
 .etc.fstab
 
@@ -48,20 +48,20 @@
       "#\n",			// Comment
       false,			// read-only
       ``(List (
-    	Tuple (
-    	  `spec (String("^\t ")),
-    	  Separator ("\t "),
-    	  `file (String("^\t ")),
-    	  Separator ("\t "),
-    	  `vfstype (String("^\t ")),
-    	  Separator ("\t "),
-    	  `mntops (String("^ \t\n")),
-    	  Optional(Whitespace()),
-    	  Optional(`freq (Number())),
-    	  Optional(Whitespace()),
-    	  Optional(`passno (Number()))
-    	),
-    	"\n"
+	Tuple (
+	  `spec (String("^\t ")),
+	  Separator ("\t "),
+	  `file (String("^\t ")),
+	  Separator ("\t "),
+	  `vfstype (String("^\t ")),
+	  Separator ("\t "),
+	  `mntops (String("^ \t\n")),
+	  Optional(Whitespace()),
+	  Optional(`freq (Number())),
+	  Optional(Whitespace()),
+	  Optional(`passno (Number()))
+	),
+	"\n"
       ))
     )
 )
