@@ -142,4 +142,8 @@ TEST(``(String::CutRegexMatch("abc","[0-9]+",true)), [], nil);
 TEST(``(String::CutRegexMatch("abc12def345ghi678900","[0-9]+",true)), [], nil);
 TEST(``(String::CutRegexMatch("abc12def345ghi678900","[0-9]+",false)), [], nil);
 TEST(``(String::CutRegexMatch("abc12def345ghi678900",".*",false)), [], nil);
+
+DUMP("Strings::escapetags");
+TEST(``(String::escapetags("<font size='2'><b>text & another</b></font>")), [], nil);
+TEST(``(String::escapetags("2 > 1")), [], nil);
 }

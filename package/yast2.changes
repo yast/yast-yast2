@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep  2 13:01:38 CEST 2004 - locilka@suse.cz
+
+- added String::escapetags - function for escaping HTML/XML tags
+
+-------------------------------------------------------------------
 Mon Aug 30 15:10:19 CEST 2004 - arvin@suse.de
 
 - add nongpl kernel package during installation (bug #44394)
