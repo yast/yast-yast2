@@ -72,8 +72,8 @@ global define boolean CheckFQ(string host) ``{
  * Split FQ hostname to hostname and domain name
  * @param fqhostname FQ hostname
  * @return list of hostname and domain name
- * @example split_fqhostname("ftp.suse.cz") -> ["ftp", "suse.cz"]
- * @example split_fqhostname("ftp") -> ["ftp"]
+ * @example Hostname::SplitFQ("ftp.suse.cz") -> ["ftp", "suse.cz"]
+ * @example Hostname::SplitFQ("ftp") -> ["ftp"]
  */
 global define list SplitFQ(string fqhostname) ``{
     if(fqhostname == "" || fqhostname == nil) {
