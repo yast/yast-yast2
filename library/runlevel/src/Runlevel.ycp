@@ -1,330 +1,79 @@
 /**
- * File:
- *   Runlevel.ycp
- *
- * Package:
- *   Runlevel Editor (?)
- *
- * Summary:
- *   Exported functionality for service manipulation.
- *
- * Authors:
- *   Martin Vidner <mvidner@suse.cz>
+ * File:	modules/Runlevel.ycp
+ * Package:	yast2
+ * Summary:	Service manipulation
+ * Authors:	Martin Vidner <mvidner@suse.cz>
  *   Petr Blahos <pblahos@suse.cz>
  *
  * $Id$
  *
- * Functions for service (init script) handling
- * used by other modules.
- *
- * It should really be named Service or so, but it was introduced
- * in the runlevel editor and we maintain compatibility.
- * The split part is named RunlevelEd.ycp
+ * This module is obsolete and for compatibility only.
+ * Use Service instead.
  */
 
 {
-    module "Runlevel";
-    textdomain "base";
 
-    /**
-     * @struct service
-     * One service is described by such map: <pre>
-      "servicename" : $[
-	"defstart" : [ "2", "3", "5", ], // Default-Start comment
-	"defstop"  : [ "0", "1", "6", ], // Default-Stop  comment
+module "Runlevel";
+textdomain "base";
+import "Service";
 
-	"reqstart" : [ "$network", "portmap" ], // Required-Start comment
-	"reqstop"  : [ "$network", "portmap" ], // Required-Stop  comment
+global string error_msg = "";
 
-	"description" : "text...",       // Description comment
+global define map ServiceInfo (string name) ``{
+    y2debug("Runlevel module is deprecated, use Service instead");
+    map ret = Service::Info(name);
+    error_msg = Runlevel::error_msg;
+    return ret;
+}
 
-	"start" : [ "3", "5", ], // which runlevels service is really started/stopped in
-	"stop"  : [ "3", "5", ], // read from /etc/init.d/rc?.d/* links
+global define integer ServiceStatus (string name) ``{
+    y2debug("Runlevel module is deprecated, use Service instead");
+    integer ret = Service::Status(name);
+    error_msg = Runlevel::error_msg;
+    return ret;
+}
 
-	"started" : 0, // return from rcservice status (integer)
+global define map ServiceFullInfo (string name) ``{
+    y2debug("Runlevel module is deprecated, use Service instead");
+    map ret = Service::FullInfo(name);
+    error_msg = Runlevel::error_msg;
+    return ret;
+}
 
-	"dirty" : false, // was the entry changed?
-      ]</pre>
-     */
-    //
-    //
+global define boolean ServiceAdjust (string name, string action) ``{
+    y2debug("Runlevel module is deprecated, use Service instead");
+    boolean ret = Service::Adjust(name, action);
+    error_msg = Runlevel::error_msg;
+    return ret;
+}
 
-    /**
-     * Script location
-     */
-    string init_d = "/etc/init.d";
+global define boolean ServiceFinetune (string name, list rl) ``{
+    y2debug("Runlevel module is deprecated, use Service instead");
+    boolean ret = Service::Finetune(name, rl);
+    error_msg = Runlevel::error_msg;
+    return ret;
+}
 
-    /**
-     * After a function returns an error, this holds an error message,
-     * including insserv stderr and possibly containing newlines.
-     *
-     * Set by
-     * checkExists: Service[Full]Info, ServiceStatus, ServiceEnabled
-     * ServiceAdjust, ServiceFinetune
-     *
-     * Never cleared.
-     */
-    global string error_msg = "";
+global define boolean ServiceEnabled (string name) ``{
+    y2debug("Runlevel module is deprecated, use Service instead");
+    boolean ret = Service::Enabled(name);
+    error_msg = Runlevel::error_msg;
+    return ret;
+}
 
-    /**
-     * Check that a service exists.
-     * If not, set error_msg.
-     * @param name service name without a path, eg. nfsserver
-     * @return does the service exist?
-     */
-    define boolean checkExists (string name) ``{
-	if (! (boolean)SCR::Read (.init.scripts.exists, name))
-	{
-	    // Error message.
-	    // %1 is a name of an init script in /etc/init.d,
-	    // eg. nfsserver
-	    error_msg = sformat (_("Service %1 does not exist."), name);
-	    y2error (1, error_msg);
-	    return false;
-	}
-	return true;
-    }
+global define integer RunInitScript (string name, string param) ``{
+    y2debug("Runlevel module is deprecated, use Service instead");
+    integer ret = Service::RunInitScript(name, param);
+    error_msg = Runlevel::error_msg;
+    return ret;
+}
 
-    /**
-     * Get service info without peeking if service runs.
-     * @param name name of the service
-     * @return service information or $[]
-     */
-    global define map ServiceInfo (string name) ``{
-	// This is an info achieved just by a call of
-	// the 2 main agent calls. Nothing about service
-	// status is obtained.
-	if (! checkExists (name))
-	{
-	    return $[];
-	}
-	map detail = lookup ( (map) SCR::Read (.init.scripts.runlevel, name), name, $[]);
-	map service = lookup ( (map) SCR::Read (.init.scripts.comment, name), name, $[]);
-	return add (
-	    add (service, "start", detail["start"]:[]),
-	    "stop", detail["stop"]:[]);
-    }
+global define map RunInitScriptOutput (string name, string param) ``{
+    y2debug("Runlevel module is deprecated, use Service instead");
+    map ret = Service::RunInitScriptOutput(name, param);
+    error_msg = Runlevel::error_msg;
+    return ret;
+}
 
-    /**
-     * Get service status. It is output from "service status".
-     * It should conform to LSB. 0 means running.
-     * @param name name of the service
-     * @return init script exit status or -1 if it does not exist
-     */
-    global define integer ServiceStatus (string name) ``{
-	if (! checkExists (name))
-	{
-	    return -1;
-	}
-	return (integer)SCR::Execute (.target.bash, sformat ("%2/%1 status", name, init_d), $["TERM":"raw"]);
-    }
-    /**
-     * Get service info and finds out whether service is running.
-     * @param name name of the service
-     * @return service map or $[]
-     */
-    global define map ServiceFullInfo (string name) ``{
-	if (! checkExists (name))
-	{
-	    return $[];
-	}
-	return add (ServiceInfo (name), "started", ServiceStatus (name));
-    }
-
-    /**
-     * Call insserv -r and record errors.
-     * Does not check if it exists
-     * @param name service name
-     * @param force pass "-f" to insserv (workaround for #17608, #27370)
-     * @return success state
-     */
-    define boolean serviceDisable (string name, boolean force) ``{
-	map ret = (map)SCR::Execute (.target.bash_output,
-				sformat ("/sbin/insserv -r%3 %2/%1",
-					 name, init_d, force? "f": ""));
-	if (0 != ret["exit"]:-1)
-	{
-	    // Error message.
-	    // %1 is a name of an init script in /etc/init.d,
-	    // Disabling means that the service should not start
-	    // in appropriate runlevels, eg. at boot time.
-	    // %2 is the stderr output of insserv(8)
-	    error_msg = sformat(_("Unable to disable service %1:\n%2"),
-				name, ret["stderr"]:"");
-	    // the user is two levels up
-	    y2error (2, error_msg);
-	    return false;
-	}
-	return true;
-    }
-
-    /**
-     * Adjust runlevels in which service runs.
-     * @param name service name
-     * @param action "disable" -- remove links, "enable" -- if there are
-     *    no links, set default, otherwise do nothing, "default" -- set
-     *    defaults.
-     * @return success state
-     */
-    global define boolean ServiceAdjust (string name, string action) ``{
-	if (! checkExists (name))
-	{
-	    return false;
-	}
-	map service = ServiceInfo (name);
-	if ("disable" == action)
-	{
-	    if (size (service["start"]:[]) != 0)
-	    {
-		return serviceDisable (name, false);
-	    }
-	    return true;
-	}
-	if (("default" == action) || ("enable" == action))
-	{
-	    if ("enable" == action && size (service["start"]:[]) != 0)
-	    {
-		// nothing to do
-		return true;
-	    }
-	    else
-	    {
-		map ret = (map)SCR::Execute (.target.bash_output,
-					sformat ("/sbin/insserv -d %2/%1",
-						 name, init_d));
-		if (0 != ret["exit"]:-1)
-		{
-		    // Error message.
-		    // %1 is a name of an init script in /etc/init.d,
-		    // Enabling means that the service should start
-		    // in appropriate runlevels, eg. at boot time.
-		    // %2 is the stderr output of insserv(8)
-		    error_msg = sformat(_("Unable to enable service %1:\n%2"),
-					name, ret["stderr"]:"");
-		    y2error (1, error_msg);
-		    return false;
-		}
-	    }
-	    return true;
-	}
-	// not translated
-	error_msg = sformat ("Invalid parameter: %1", action);
-	y2internal (1, error_msg);
-	return false;
-    }
-
-    /**
-     * Set service to run in selected runlevels.
-     * @param name name of service to adjust
-     * @param rl list of runlevels in which service should start
-     * @return success state
-     */
-    global define boolean ServiceFinetune (string name, list rl) ``{
-	if (! checkExists (name))
-	{
-	    return false;
-	}
-
-	// Force because of #27370:
-	// RunlevelEd::Write has already solved the dependencies
-	// and calls us only once for each modified service.
-	// In general we cannot do it with dependencies in a single pass.
-	
-	string rls = mergestring (rl, ",");
-	// we must remove it first because insserv start=... adds
-	// runlevels, not replace runlevels!!
-	if (! serviceDisable (name, true))
-	{
-	    return false;
-	}
-
-	if (rls != "")
-	{
-	    map ret = (map)SCR::Execute (.target.bash_output,
-				    sformat ("/sbin/insserv -f %2/%1,start=%3",
-					     name, init_d, rls));
-	    if (0 != ret["exit"]:-1)
-	    {
-		// Error message.
-		// %1 is a name of an init script in /etc/init.d,
-		// Enabling means that the service should start
-		// in appropriate runlevels, eg. at boot time.
-		// %2 is the stderr output of insserv(8)
-		// %3 is a comma separated list of runlevels
-		error_msg = sformat(_("Unable to enable service %1 in runlevels %2:\n%3"),
-				    name, rls, ret["stderr"]:"");
-		y2error (1, error_msg);
-		return false;
-	    }
-	}
-	return true;
-    }
-
-    /**
-     * Returns true if any link in /etc/init.d/rc?.d/ exists for this
-     * script. If service does not exist, logs an error.
-     * @param name service name
-     * @return true if service is set to run in any runlevel
-     */
-    global define boolean ServiceEnabled (string name) ``{
-	// This is an info achieved just by a call of
-	// the 2 main agent calls. Nothing about service
-	// status is obtained.
-	if (! checkExists (name))
-	{
-	    return false;
-	}
-	map detail = lookup ( (map) SCR::Read (.init.scripts.runlevel, name), name, $[]);
-	return 0 != size (detail["start"]:[]);
-    }
-
-    /**
-     * Run init script.
-     * @param name init service name
-     * @param param init script argument
-     * @return integer exit value
-     */
-    global define integer RunInitScript (string name, string param) ``{
-	return (integer)SCR::Execute (.target.bash,
-			     sformat ("%2/%1 %3", name, init_d, param),
-			     $[ "TERM" : "raw"]);
-    }
-
-    string lang = nil;
-    /**
-     * Run init script and return also its output (stdout and stderr merged).
-     * @param name init service name
-     * @param param init script argument
-     * @return map of $[ "stdout" : "...", "stderr" : "...", "exit" : int,]
-     */
-    global define map RunInitScriptOutput (string name, string param) ``{
-	map env = $["TERM": "raw"];
-
-	// encoding problems - append .UTF-8 to LANG
-	if (lang == nil)
-	{
-	    lang = lookup ( (map) SCR::Execute (.target.bash_output, "echo -n $LANG"),
-			   "stdout", "");
-	    list ll = splitstring (lang, ".");
-	    lang = ll[0]:"";
-	    if (lang != "")
-	    {
-		lang = lang + ".UTF-8";
-	    }
-	    y2debug ("LANG: %1", lang);
-	}
-	if (lang != "")
-	{
-	    env = add (env, "LANG", lang);
-	}
-
-	// looks like a bug in bash...
-	string locale_debug = "";
-	// locale_debug = "; ls /nono 2>&1; /usr/bin/locale; /usr/bin/env";
-
-	return (map)SCR::Execute (.target.bash_output,
-			     sformat ("%2/%1 %3 2>&1", name, init_d, param)
-			     + locale_debug,
-			     env);
-    }
+/* EOF */
 }

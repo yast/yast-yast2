@@ -1,15 +1,10 @@
 #!/bin/bash
 
-#
-# File:
-#  ag_initscripts
-# Module:
-#  Runlevel editor.
-# Summary:
-#  Agent for reading initscripts info.
-# Authors:
-#  Martin Vidner <mvidner@suse.cz>, 2002
-#  Petr Blahos <pblahos@suse.cz>, 2001
+# File:		ag_initscripts
+# Package:	yast2
+# Summary:	Agent for reading initscripts info
+# Authors:	Martin Vidner <mvidner@suse.cz>
+#		Petr Blahos <pblahos@suse.cz>
 #
 # $Id$
 #
@@ -269,6 +264,10 @@ while true ; do
 	"InitScripts ("*)
 	    INITD=$(echo "$COMMAND" | sed 's/^InitScripts ("\(.*\)")/\1/')
 	    echo nil
+	    ;;
+
+	'Dir (.)')
+	    echo '[ "comments", "comment", "runlevels", "runlevel", "exists", "current_runlevel", "default_runlevel", "runlevel_list" ]'
 	    ;;
 
 	'Read (.comments)')
