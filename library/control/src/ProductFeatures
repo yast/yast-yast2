@@ -20,3 +20,10 @@ EVMS_CONFIG="no"
 # UI mode
 #
 UI_MODE="expert"
+
+## Type:    string(simple,expert)
+## Default: expert
+#
+# Warn about Incomplete Translations
+#
+INCOMPLETE_TRANSLATION_TRESHOLD="95"

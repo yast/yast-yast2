@@ -918,7 +918,6 @@ global symbol Run()
         if (!wasRun(step_name)) {
             Hooks::Checkpoint (sformat("%1", module_name), true);
             Hooks::Run (step_name, true);
-
         }
 
 	list args = [];
