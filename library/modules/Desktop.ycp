@@ -41,21 +41,6 @@ global define void Read(list Values) ``{
     path ps = add(AgentPath, "s");
     list files = SCR::Dir(ps);
 
-    /* read modules */
-    foreach(string file, files, ``{
-	filemap = $[];
-	path pv = add(AgentPath, "v");
-	filepath = add(pv, file) + ."Desktop Entry";
-	list values = SCR::Dir(filepath);
-	if(Values != nil && Values != []) values = Values;
-	foreach(string value, values, ``{
-	    string ret = (string) SCR::Read(add(filepath, value));
-	    if(ret != nil) filemap[value] = ret;
-	});
-	name = (string) SCR::Read(filepath + ."X-SuSE-YaST-Call");
-	if(name != "" && name != nil) Modules[name] = filemap;
-    });
-
     /* read groups */
     list groups = SCR::Dir(.yast2.groups.s);
     foreach(string group, groups, ``{
@@ -67,7 +52,27 @@ global define void Read(list Values) ``{
 	    // y2milestone("%1[%2]=%3", file, value, ret);
 	    if(ret != nil) filemap[value] = ret;
 	});
+	filemap["modules"] = [];
 	Groups[group] = filemap;
+    });
+
+    /* read modules */
+    foreach(string file, files, ``{
+	filemap = $[];
+	path pv = add(AgentPath, "v");
+	filepath = add(pv, file) + ."Desktop Entry";
+	list values = SCR::Dir(filepath);
+	if(Values != nil && Values != []) values = Values;
+	foreach(string value, values, ``{
+	    string ret = (string) SCR::Read(add(filepath, value));
+	    if(ret != nil) filemap[value] = ret;
+	});
+	string name = regexpsub(file, "^.*/(.*)\.desktop", "\\1");
+	if(name != "" && name != nil) {
+	    Modules[name] = filemap;
+	    string group = filemap["X-SuSE-YaST-Group"]:"";
+	    if(group != "") Groups[group, "modules", size(Groups[group,"modules"]:[])] = name;
+	}
     });
 
 }

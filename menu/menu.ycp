@@ -14,6 +14,7 @@
 
 textdomain "base";
 
+import "Desktop";
 import "Label";
 import "Popup";
 
@@ -78,7 +79,7 @@ global define string CreateGroupList(map Groups) ``{
     return grouplist[0]:"";
 }
 
-global define SortGroups(map GroupMap, list GroupList) ``{
+global define list SortGroups(map GroupMap, list GroupList) ``{
     return
 	sort(`x, `y, GroupList, ``{
 	    string first = GroupMap[x, "SortKey"]:"";
@@ -157,7 +158,7 @@ global define SortModuleNumberList (list modules) ``{
 
 
 
-global define Launch (map Module) ``{
+global define void Launch (map Module) ``{
     string function = Module["YCPFunction"]:"";
     list arguments = splitstring (Module["Arguments"]:"", " ");
     if (function != "")
@@ -167,7 +168,7 @@ global define Launch (map Module) ``{
     }
 }
 
-global define DefaultOnNil (any value, any defaultvalue) ``{
+global define any DefaultOnNil (any value, any defaultvalue) ``{
     if (value == nil)
 	return defaultvalue;
     return value;
@@ -175,7 +176,7 @@ global define DefaultOnNil (any value, any defaultvalue) ``{
 
 textdomain "base";
 
-global define ShowNcursesHelp() ``{
+global define void ShowNcursesHelp() ``{
     string help_text = "";
 
     // help text for ncurses control center
@@ -241,6 +242,26 @@ F10 = OK, Next, Finish, or Accept<br>");
 }
 
 DisplaySplash ();
+
+/* FIXME: use Desktop */
+if(false) {
+
+list Values = [
+    "Name",
+    "GenericName",
+    "X-SuSE-YaST-Argument",
+    "X-SuSE-YaST-Group",
+    "X-SuSE-YaST-SortKey",
+];
+
+Desktop::Read(Values);
+map Groups = Desktop::Groups;
+map Modules = Desktop::Modules;
+y2milestone("Groups=%1", Groups);
+y2milestone("Modules=%1", Modules);
+
+}
+/* FIXME: use Desktop */
 
 path menuentrypath = .yast2.menuentry.section;
 
