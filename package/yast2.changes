@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb 24 11:05:02 CET 2003 - jsrain@suse.de
+
+- added `opt (`notify) to Wizard_hw::ConfiguredContent table to 
+  allow double click handling (#24095)
+- 2.7.15
+
+-------------------------------------------------------------------
 Thu Feb 20 11:39:23 CET 2003 - arvin@suse.de
 
 - use title-style capitalization for menu names (bug #23848)
