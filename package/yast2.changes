@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Aug 29 14:18:39 CEST 2003 - visnov@suse.de
+
+- fix error reporting, use RichText::Rich2Plain()
+
+-------------------------------------------------------------------
 Wed Aug 27 16:14:09 CEST 2003 - msvec@suse.cz
 
 - new module for confirmation of detection (#26515)
