@@ -84,7 +84,6 @@ while ( <STDIN> )
 	    $_ = $term->readline($prompt);
 	    if( defined ($_) )
 	    {
-        	$term->addhistory($_) if /\S/;
 		ycp::Return ($_, 1);
 	    }
 	    else
