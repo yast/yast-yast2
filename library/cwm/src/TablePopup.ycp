@@ -359,7 +359,9 @@
 	    map event_descr = (map)(UI::WaitForEvent ());
 	    if (Mode::test)
 		event_descr = $[ "ID" : `_tp_ok];
-	    ret = event_descr["ID"]:nil;
+	    ret = is (event_descr["ID"]:nil, symbol)
+		? event_descr["ID"]:nil
+		: nil;
 	    if (popup_descr["handle"]:nil != nil)
 	    {
 		term toEval = popup_descr["handle"]:nil;
