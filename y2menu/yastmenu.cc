@@ -349,7 +349,7 @@ mod_nav (WINDOW * dialog, WINDOW * menu, int section, int box_x, int box_y,
        " " + modules[section][scroll + choice].args;
 
      set_textdomain ("base");
-     print_mod_info (dialog, _("loading module"));
+     print_mod_info (dialog, _("Loading Module..."));
      wrefresh (dialog);
      system (tmpstr.c_str ());
      wrefresh (dialog);
