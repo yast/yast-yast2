@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Aug 06 11:31:46 CEST 2002 - arvin@suse.de
+
+- fixed detection of autoinst in Mode.ycp
+
+-------------------------------------------------------------------
 Mon Aug 05 18:13:04 CEST 2002 - arvin@suse.de
 
 - adaption for new /etc/install.inf agent

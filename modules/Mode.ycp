@@ -211,7 +211,7 @@
 	{
 	    sourcemounted = SCR::Read (.etc.install_inf.Sourcemounted) == "1";
 
-	    autoinst = SCR::Read (.etc.install_inf.AutoYaST) != "";
+	    autoinst = SCR::Read (.etc.install_inf.AutoYaST) != nil;
 
 	    live_eval = SCR::Read (.etc.install_inf.Demo) == "1";
 
@@ -219,9 +219,9 @@
 
 	    manual = SCR::Read (.etc.install_inf.Manual) == "1";
 
-	    serial_console = SCR::Read (.etc.install_inf.Console) != "";
+	    serial_console = SCR::Read (.etc.install_inf.Console) != nil;
 
-	    braille = SCR::Read (.etc.install_inf.Braille) == "1";
+	    braille = SCR::Read (.etc.install_inf.Braille) != nil;
 
 	    vnc = SCR::Read (.etc.install_inf.VNC) == "1";
 
