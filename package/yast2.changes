@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar 10 14:56:22 CET 2003 - gs@suse.de
+
+- Fixed bugs #24866/#24865 in ncurses file selector (show links;
+  set focus to the directory list)
+
+-------------------------------------------------------------------
 Sun Mar  9 19:28:07 CET 2003 - nashif@suse.de
 
 - Fixed bug #24953: beta message during installation does not time out
