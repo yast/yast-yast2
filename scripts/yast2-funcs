@@ -1,0 +1,79 @@
+#
+# yast2-funcs - common functions for YaST2 start scripts
+#
+
+
+# path with most yast2 binaries and scripts
+ybindir=/usr/lib/YaST2/bin
+
+
+# font for qt
+Y2_XFONT="-gnu-unifont-medium-r-normal--16-160-75-75-p-80-iso10646-1"
+
+
+#
+# check if plugins are in lib or lib64 subdir and sets the variable
+# plugindir accordingly
+#
+function get_plugindir()
+{
+    plugindir=/usr/lib/YaST2/plugin
+    if `ldd $ybindir/y2base | grep --quiet /lib64/libc.so` ; then
+	plugindir=/usr/lib64/YaST2/plugin
+    fi
+}
+
+
+#
+# check if the qt plugin and all necessary libaries are present
+#
+function check_qt()
+{
+    get_plugindir
+    Y2_QT=$plugindir/libpy2qt.so.2
+
+    if [ -e "$Y2_QT" ] ; then
+	if ! `/usr/bin/ldd "$Y2_QT" | grep --quiet "=> not found"` ; then
+	    return 0		# success
+	fi
+    fi
+
+    return 1			# failure
+}
+
+
+#
+# check if the ncurses plugin and all necessary libaries are present
+#
+function check_ncurses()
+{
+    get_plugindir
+    Y2_NCURSES=$plugindir/libpy2ncurses.so.2
+
+    if [ -e "$Y2_NCURSES" ] ; then
+	if ! `/usr/bin/ldd "$Y2_NCURSES" | grep --quiet "=> not found"` ; then
+	    return 0		# success
+	fi
+    fi
+
+    return 1			# failure
+}
+
+
+#
+# if LANG is empty set LANG to RC_LANG in /etc/sysconfig/language
+#
+function set_lang_from_sysconfig()
+{
+    if [ -z "$LANG" -a -r /etc/sysconfig/language ] ; then
+	. /etc/sysconfig/language
+	if [ $RC_LANG ] ; then
+            export LANG=$RC_LANG
+	fi
+    fi
+}
+
+
+### Local Variables: ***
+### mode: shell-script ***
+### End: ***
