@@ -1,5 +1,6 @@
 @HEADER-COMMENT@
-# neededforbuild yast2-devel-packages
+
+# neededforbuild  yast2-devel-packages
 
 @HEADER@
 Requires:	yast2-core yast2_ui yast2_theme
@@ -22,9 +23,9 @@ Summary:	Documentation for Wizard and Sequencer
 
 @PREP@
 
-@BUILD-YCP@
+@BUILD@
 
-@INSTALL-YCP@
+@INSTALL@
 mkdir -p "$RPM_BUILD_ROOT"@clientdir@
 mkdir -p "$RPM_BUILD_ROOT"@configdir@
 mkdir -p "$RPM_BUILD_ROOT"@imagedir@
