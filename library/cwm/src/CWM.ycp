@@ -411,6 +411,12 @@
 			opt_term,
 			w["label"]:w["_cwm_key"]:"");
 		}
+		else if (widget == `multi_line_edit)
+		{
+		    w["widget"] = `MultiLineEdit (`id (w["_cwm_key"]:""),
+			opt_term,
+			w["label"]:w["_cwm_key"]:"");
+		}
 	}
 	w["custom_widget"] = nil; // not needed any more
 	return w;
