@@ -986,6 +986,10 @@
     global define string Rich2Plain( string richtext ) ``{
 	string result = "";
 	list lparts = splitstring( richtext, "<" );
+	y2debug("richtext=%1", richtext);
+
+	boolean inli = false;
+	integer indents = 0;
 
 	foreach( string lpart, lparts, ``{
 	    integer s = find( lpart, ">" );
@@ -994,10 +998,15 @@
 	    // handled tags
 	    if( tolower(tag) == "br" ) result = result + "\n";
 	    else if( tolower(tag) == "p" ) result = result + "\n\n";
+	    else if( tolower(tag) == "ul" ) indents = indents + 1;
+	    else if( tolower(tag) == "/ul" ) indents = indents - 1;
+	    else if( tolower(tag) == "li" ) inli = true;
+	    else if( tolower(tag) == "/li" ) inli = false;
 
 	    // add the text
-	    if( s == -1 ) result = result + lpart;
-	    else result = result + substring( lpart, s+1 );
+	    if( s != -1 ) lpart = substring( lpart, s+1 );
+	    if(lpart != "" && inli) lpart = "* " + lpart;
+	    result = result + lpart;
 	});
 
 	return result;
