@@ -42,7 +42,7 @@
 	list files = splitstring (lookup (SCR (`Execute (.target.bash_output, "/bin/ls -aFd $DIR", $["DIR" : subdir2])), "stdout", ""), "\n");
 	if (size (files) == 0)
 	    return [];
-	
+
 	subdir2 = subdir + "*";
 	files = splitstring (lookup (SCR (`Execute (.target.bash_output, "/bin/ls -aFd $DIR", $["DIR" : subdir2])), "stdout", ""), "\n");
 	// show directories and links
@@ -53,7 +53,7 @@
 	files = maplist (`f, files, ``(substring (f, findlastof (f, "/") + 1) + "/"));
 	if ( subdir != "/" )
 	    files = prepend (files, "../");
-	
+
 	return maplist (`file, files, ``(`item (`id (subdir + file), file)));
     }
 
@@ -123,7 +123,7 @@
 	y2error ("%1", subdir);
 	if (size (dirs) == 0)
 	{
-	    y2error ("No permitions for directory: %1, using /", dir);
+	    y2error ("No permissions for directory: %1, using /", dir);
 	    subdir = "/";
 	    dirs = getsubdirs (subdir);
 	}
@@ -203,7 +203,7 @@
 
 		if (size (dirs) == 0)
 		{
-		    y2error ("No permitions for directory: %1", subdir);
+		    y2error ("No permissions for directory: %1", subdir);
 		    subdir = old_dir;
 		    dirs = getsubdirs (subdir);
 		    continue;
@@ -290,7 +290,7 @@
 
 	if (size (dirs) == 0)
 	{
-	    y2error ("No permitions for directory: %1, using /", dir);
+	    y2error ("No permissions for directory: %1, using /", dir);
 	    dir = "/";
 	    dirs = getsubdirs (dir);
 	}
@@ -363,7 +363,7 @@
 
 		if (size (dirs) == 0)
 		{
-		    y2error ("No permitions for directory: %1", subdir);
+		    y2error ("No permissions for directory: %1", subdir);
 		    subdir = old_dir;
 		    dirs = getsubdirs (subdir);
 		    continue;
@@ -421,7 +421,7 @@
 	    return r==nil? "": r;
 	}
 
-	list dirs = getsubdirs (dir);	
+	list dirs = getsubdirs (dir);
 	sleep(1000);
 	string subdir = dir;
 	list history = [];
@@ -429,7 +429,7 @@
 
 	if (size (dirs) == 0)
 	{
-	    y2error ("No permitions for directory: %1, using /", dir);
+	    y2error ("No permissions for directory: %1, using /", dir);
 	    subdir = "/";
 	    dirs = getsubdirs (subdir);
 	}
@@ -513,7 +513,7 @@
 		dirs = getsubdirs (subdir);		
 		if (size (dirs) == 0)
 		{
-		    y2error ("No permitions for directory: %1", subdir);
+		    y2error ("No permissions for directory: %1", subdir);
 		    subdir = old_dir;
 		    dirs = getsubdirs (subdir);
 		    continue;
