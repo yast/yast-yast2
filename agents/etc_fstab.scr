@@ -43,7 +43,7 @@
 .etc.fstab
 
 `ag_anyagent(
-  Description (
+  SCR::AnyAgent (
       ``(File("/etc/fstab")),	// real file name
       "#\n",			// Comment
       false,			// read-only

@@ -5,7 +5,7 @@
 .yast2.menuentry
 
 `ag_ini(
-  IniAgent( [ "/usr/share/YaST2/config/y2cc.groups", "/usr/share/YaST2/config/*.y2cc" ],
+  SCR::IniAgent( [ "/usr/share/YaST2/config/y2cc.groups", "/usr/share/YaST2/config/*.y2cc" ],
     $[
       "options" : [ ],
       "comments": [ "^[ \t]*;.*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],
