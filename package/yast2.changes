@@ -1,7 +1,22 @@
 -------------------------------------------------------------------
+Fri Jun  6 10:03:29 CEST 2003 - mvidner@suse.cz
+
+- common_popups: revert from Label to common_messages.
+- Fixed file list (lslezak).
+- Directory: added tmpdir (msvec).
+- 2.8.2
+
+-------------------------------------------------------------------
 Tue Jun  3 18:28:06 CEST 2003 - sh@suse.de
 
 - Fixed bug #27213: Default sort order in NCurses control center 
+
+-------------------------------------------------------------------
+Fri May 30 10:03:23 CEST 2003 - mvidner@suse.cz
+
+- Added Label and Popup, replacements for common_{messages,popups}.
+- ag_initscripts: recognize X-UnitedLinux-Default-Enabled.
+- 2.8.1
 
 -------------------------------------------------------------------
 Thu Apr 24 11:08:10 CEST 2003 - kkaempf@suse.de
