@@ -37,13 +37,13 @@
 
 
 function log {
-    echo "$@" >>/var/log/y2start.log 2>/dev/null
+    echo "$@" >> $logdir/y2start.log 2>/dev/null
 }
 
 
 function logmeminfo {
-    echo -n "meminfo $1 = " >> /var/log/y2start.log
-    free | grep "Mem:" | sed -e 's/ \+/ /g' >> /var/log/y2start.log
+    echo -n "meminfo $1 = " >> $logdir/y2start.log
+    free | grep "Mem:" | sed -e 's/ \+/ /g' >> $logdir/y2start.log
 }
 
 
@@ -135,7 +135,7 @@ function y2cc_ncurses()
 # within a YaST2 environment
 export YAST2_RUNNING=$$
 
-echo -n >/var/log/y2start.log
+echo -n > $logdir/y2start.log
 log env
 log echo "Y2DEBUG ($Y2DEBUG)"
 logmeminfo "1"
