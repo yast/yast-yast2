@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 17 12:28:21 CET 2003 - mvidner@suse.de
+
+- Reverted sequencer checking: allow superfluous aliases.
+- 2.7.3
+
+-------------------------------------------------------------------
 Tue Jan 14 11:14:19 CET 2003 - mvidner@suse.de
 
 - Added function key shortcuts to common dialogs (try F1 in curses).
