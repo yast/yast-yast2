@@ -29,8 +29,8 @@
 
 
     global define map MyCreateTable () ``{
-        map ret = CWM::CreateTable ($[]);
-	ret = union (ret, $[
+        map ret = CWM::CreateTableDescr ($[],
+	    $[
 	    "init" : ``(CWM::TableInit (TestFunc::widgets["table"]:$[])),
 	    "handle" : ``(CWM::TableHandle (TestFunc::widgets["table"]:$[])),
 	    "ids" : ``(TestFunc::getIdList ()),

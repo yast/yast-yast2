@@ -15,6 +15,7 @@
 
     import "Label";
     import "Mode";
+    import "Report";
 
 // variables
 
@@ -53,6 +54,12 @@
 	    term toEval = w["init"]:nil;
 	    if (toEval != nil)
 	    {
+		any arg0 = nil;
+		if (w["_cwm_fallback_table_init"]:false)
+		{
+		    arg0 = select (toEval, 0, nil);
+		    toEval = ``(CWM::TableInit (arg0));
+		}
 		eval (add (toEval, w["_cwm_key"]:""));
 	    }
         });
@@ -117,7 +124,7 @@
 	{
 	    string wname = widget["label"]:widget["_cwm_key"]:"";
 	    wname = deletechars (wname, "&");
-	    Popup::Message (sformat (
+	    Report::Error (sformat (
 		// message popup, %1 is a label of some widget
 		_("Selected value of %1 is incorrect."),
 		wname));
@@ -143,6 +150,13 @@
 		list events = w["handle_events"]:[];
 		if (t != nil && (events == [] || contains (events, action)))
 		{
+		    any arg0 = nil;
+		    if (w["_cwm_fallback_table_handle"]:false)
+		    {
+			arg0 = select (t, 0, nil);
+			t = ``(CWM::TableHandle (arg0));
+		    }
+
                     ret = eval (add (add (t, w["_cwm_key"]:""), action));
 		}
 	    }
@@ -175,6 +189,32 @@
 	return maplist (map w, widgets, ``(
 	    union (functions, w)
 	));
+    }
+
+    /**
+      * Display the dialog and run its event loop
+      * @param widget_names list of names of widgets that will be used in the
+      *   dialog
+      * @param widget_descr map description map of all widgets
+      * @param contents term contents of the dialog, identifiers instead of
+      *   widgets
+      * @param caption string dialog caption
+      * @param back_button string label of the back button
+      * @param next_button string label of the next button
+      * @param functions map initialize/save/handle fallbacks if not specified
+      *   with the widgets.
+      * @return symbol wizard sequencer symbol
+      */
+    global define symbol ShowAndRun (list widget_names, map widget_descr,
+	term contents, string caption, string back_button, string next_button,
+	map fallback)
+    ``{
+	list w = CreateWidgets (widget_names, widget_descr);
+	string help = CWM::MergeHelps (w);
+	contents = CWM::PrepareDialog (contents, w);
+	Wizard::SetContentsButtons (caption, contents, help,
+	    back_button, next_button);
+	return Run (w, fallback);
     }
 
     /**
@@ -231,6 +271,7 @@
       * @return list of maps representing widgets
       */
     global define list CreateWidgets (list names, map source) ``{
+	ValidateMaps (source); // FIXME find better place
 	list ret = maplist (`w, names, ``{
 	    map m = source[w]:$[];
 	    // leave add here in order to make a copy of the structure
@@ -244,6 +285,25 @@
 	});
 	return ret;
     }
+
+    /**
+      * Prepare the dialog, replace strings in the term with appropriate
+      * widgets
+      * Processes only `VBox, `HBox, `Left and `Right
+      * @param dialog term dialog containing strings
+      * @param widgets list of widget description maps
+      * @return updated term ready to be used as a dialog
+      */
+    global define term PrepareDialog (term dialog, list widgets) ``{
+	integer args = size (dialog);
+	if (args == 0)
+	    return dialog;
+	map m = listmap (`w, widgets, ``(
+	    [w["_cwm_key"]:"", w]
+	));
+	return ProcessTerm (dialog, m);
+    }
+
 
     /**
       * Prepare a widget for usage
@@ -293,8 +353,8 @@
 		{
 		    term buttons = `VBox ();
 		    foreach (`i, w["items"]:[], ``{
-			buttons = add (buttons, `item (
-			    `id (i[0]:""), opt_term, i[1]:i[0]:""));
+			buttons = add (buttons, `Left( `RadioButton (
+			    `id (i[0]:""), opt_term, i[1]:i[0]:"")) );
 		    });
 		    w["widget"] = `Frame (
 			w["label"]:w["_cwm_key"]:"",
@@ -327,10 +387,31 @@
 
     /**
       * Get the map with the table widget
+      * FIXME remove when being sure nobody uses it
       * @param attrib map table attributes
       * @return map table widget skeleton
       */
     global define map CreateTable (map attrib) ``{
+	y2error ("Use CreateTableDescr instead of CreateTable");
+	y2error ("If you use CreateTable, you MUST specify init and handle callbacks");
+	map ret = CreateTableDescr (attrib, $[]);
+	foreach (`k, [ "init", "_cwm_fallback_table_init", "handle",
+	    "_cwm_fallback_table_handle"],
+	``{
+	    if (haskey (ret, k))
+		ret = remove (ret, k);
+	});
+	return ret;
+    }
+
+    /**
+      * Get the map with the table widget
+      * @param attrib map table attributes
+      * @param widget_descr map widget description map of the table, will be
+      *  unioned with the generated map
+      * @return map table widget
+      */
+    global define map CreateTableDescr (map attrib, map widget_descr) ``{
 	term add_button = attrib["add_delete_buttons"]:true
 	    ? `PushButton (`id (`_tp_add), `opt (`key_F3), Label::AddButton ())
 	    : `HSpacing (0);
@@ -365,7 +446,7 @@ in the list.</p>");
 	    )
 	    : `HSpacing (0);
 
-	return $[
+	map ret = union ($[
             "custom_widget" : (`HBox (`HSpacing (2), `VBox (
 		    `HBox (
 	                `Table (`id (`_tp_table),
@@ -389,7 +470,28 @@ in the list.</p>");
 	    "_cwm_attrib" : attrib,
 	    "widget" : `custom,
 	    "help" : help,
-	];
+	], widget_descr);
+
+	map ret_copy = mapmap (`k, `v, ret, ``(
+	    [k, v]
+	));
+
+	if (! haskey (ret, "init"))
+	{
+	    term t = ``(CWM::TableInit ());
+	    t = add (t, ret_copy);
+	    ret["init"] = t;
+	    ret["_cwm_fallback_table_init"] = true;
+	}
+	if (! haskey (ret, "handle"))
+	{
+	    term t = ``(CWM::TableHandle ());
+	    t = add (t, ret_copy);
+	    ret["handle"] = t;
+	    ret["_cwm_fallback_table_handle"] = true;
+	}
+
+	return ret;
     }
 
 
@@ -439,7 +541,42 @@ in the list.</p>");
             if (event == `_tp_add)
             {
 		boolean add_unlisted = descr["add_unlisted"]:true;
-                opt_key = askForNewOption (descr["add_items"]:[], add_unlisted);
+		if (! add_unlisted && size (descr["add_items"]:[]) == 1)
+		{
+		    opt_key = descr["add_items", 0]:"";
+		}
+		else
+		{
+		    list add_opts = descr["add_items"]:[];
+		    list ids = getIdList (descr);
+		    list present = maplist (`i, ids, ``(
+			id2key (descr, i)
+		    ));
+		    if (! descr["_cwm_attrib", "unique_keys"]:false)
+		    {
+			present = filter (`i, present, ``{
+			    map opt_descr = key2descr (descr, opt_key);
+			    return ! opt_descr["table", "optional"]:true;
+			});
+		    }
+		    add_opts = filter (`o, add_opts, ``(
+			! contains (present, o)
+		    ));
+		    boolean selected = false;
+		    while (! selected)
+		    {
+			opt_key = askForNewOption (add_opts, add_unlisted);
+			if (opt_key == nil)
+			    return nil;
+			if (contains (present, opt_key))
+			    Report::Error (
+				// error report
+				_("Selected option is already present"));
+			else
+			    selected = true;
+		    }
+
+		}
                 if (opt_key == nil)
                     return nil;
             }
@@ -534,6 +671,46 @@ in the list.</p>");
 		TableInit (descr, key);
 	}
 	return nil;
+    }
+
+    /**
+      * Disable whole table
+      * @param descr map table widget description map
+      */
+    global define void DisableTable (map descr) ``{
+	UI::ChangeWidget (`id (`_tp_table), `Enabled, false);
+	UI::ChangeWidget (`id (`_tp_edit), `Enabled, false);
+	if (descr["_cwm_attrib", "add_delete_buttons"]:true)
+	{
+	    UI::ChangeWidget (`id (`_tp_delete), `Enabled, false);
+	    UI::ChangeWidget (`id (`_tp_add), `Enabled, false);
+	}
+	if (descr["_cwm_attrib", "up_down"]:false)
+	{
+	    UI::ChangeWidget (`id (`_tp_up), `Enabled,
+		opt_descr["table", "ordering"]:true);
+	    UI::ChangeWidget (`id (`_tp_down), `Enabled,
+		opt_descr["table", "ordering"]:true);
+	}
+    }
+
+    /**
+      * Enable whole table (except buttons that should be grayed according to
+      * currently selected table row
+      * @param descr map table widget description map
+      */
+    global define void EnableTable (map descr) ``{
+	UI::ChangeWidget (`id (`_tp_table), `Enabled, true);
+	UI::ChangeWidget (`id (`_tp_edit), `Enabled, true);
+	if (descr["_cwm_attrib", "add_delete_buttons"]:true)
+	{
+	    UI::ChangeWidget (`id (`_tp_add), `Enabled, false);
+	}
+
+	any opt_id = UI::QueryWidget (`id (`_tp_table), `CurrentItem);
+	any opt_key = id2key (descr, opt_id);
+	map option_map = key2descr (descr, opt_key);
+	updateButtons (descr, option_map);
     }
 
     /**
@@ -811,5 +988,189 @@ in the list.</p>");
 	UI::CloseDialog ();
 	return ret;
     }
+
+    /**
+      * Validate widget description map, check for maps structure
+      * Also checks option description maps if present
+      * @param widgets map widgets description map
+      * @return boolean true on success
+      */
+    global define boolean ValidateMaps (map widgets) ``{
+	boolean ret = true;
+	foreach (`k, `v, widgets, ``{
+	    foreach (`kk, `vv, v, ``{
+		ret = ValidateValueType (kk, vv, k) && ret;
+	    });
+	    list to_check = [];
+	    if (v["widget"]:nil != `custom)
+		to_check = ["label", "help", "widget"];
+	    foreach (`key, to_check, ``{
+		ret = ValidateValueContents (key, v[key]:nil, k) && ret;
+	    });
+	    if (v["widget"]:nil == `custom)
+		ret = ValidateValueContents ("custom_widget",
+		    v["custom_widget"]:nil, k) && ret;
+	});
+	if (! ret)
+	    return false;
+	foreach (`k, `v, widgets, ``{
+	    foreach (`kk, `vv, v["options"]:$[], ``{
+		foreach (`kkk, `vvv, vv["table"]:$[], ``{
+		    ret = ValidateValueType (kkk, vvv, k) && ret;
+		});
+		foreach (`kkk, `vvv, vv["popup"]:$[], ``{
+		    ret = ValidateValueType (kkk, vvv, k) && ret;
+		});
+	    });
+	});
+	return ret;
+    }
+
+
+// local definitions
+
+
+    /**
+      * Validate value of entry of the widget/option description map
+      * @param key string key of the map entry
+      * @param value any value of the map entry
+      * @param widget any name of the widget/option
+      * Also checks option description maps if present
+      */
+    define boolean ValidateValueContents (string key, any value, any widget) ``{
+	string error = "";
+	if (key == "label")
+	{
+	    string s = value;
+	    if (s == nil || size (s) == 0)
+		error = "Empty label";
+	    else if (size (filterchars (s, "&")) != 1)
+		error = "Label has no shortcut or more than 1 shortcuts";
+	}
+	else if (key == "help")
+	{
+	    string s = value;
+	    if (s == nil || size (s) == 0)
+		error = "Empty help";
+	}
+	else if (key == "widget")
+	{
+	    symbol s = value;
+	    if (s == nil)
+		error = "No widget specified";
+	}
+	else if (key == "custom_widget")
+	{
+	    term s = value;
+	    if (s == nil)
+		error = "No custom widget specified";
+	}
+
+	if (error == "")
+	    return true;
+
+	y2error ("Error on key %1 of widget %2: %3", key, widget, error);
+	return false;
+    }
+
+    /**
+      * Validate type of entry of the widget/option description map
+      * @param key string key of the map entry
+      * @param value any value of the map entry
+      * @param widget any name of the widget/option
+      * Also checks option description maps if present
+      */
+    define boolean ValidateValueType (string key, any value, any widget) ``{
+	map types = $[
+	    "handle" : "term",
+	    "init" : "term",
+	    "store" : "term",
+	    "handle_events" : "list",
+	    "custom_widget" : "term",
+	    "help" : "string",
+	    "label" : "string",
+	    "minimum" : "string",
+	    "maximum" : "string",
+	    "widget" : "symbol",
+	    "items" : "list",
+	    "opt" : "list",
+	    "_cwm_attrib" : "map",
+	    "add_items" : "list",
+	    "fallback" : "map",
+	    "ids" : "term",
+	    "option_delete" : "term",
+	    "options" : "map",
+	    "id2key" : "term",
+	    "optional" : "boolean",
+	    "summary" : "term",
+	    "validate_function" : "term",
+	    "validate_type" : "symbol",
+	];
+	string type = types[key]:nil;
+	boolean success = true;
+	if (type == "term")
+	    success = is (value, term);
+	else if (type == "string")
+	    success = is (value, string);
+	else if (type == "symbol")
+	    success = is (value, symbol);
+	else if (type == "list")
+	    success = is (value, list);
+	else if (type == "map")
+	    success = is (value, map);
+	else if (type == "boolean")
+	    success = is (value, boolean);
+	else
+	    y2debug ("Unknown option %1 in description map of %2",
+		key, widget);
+
+	// simplified handle of table options
+	if (! success && key == "handle" && is (value, symbol))
+	    success = true;
+
+	if (! success)
+	    y2error ("Wrong type of option %1 in description map of %2",
+		key, widget);
+
+	return success;
+    }
+
+
+    /**
+      * Process term with the dialog, replace strings in the term with
+      * appropriate widgets
+      * Processes only `VBox, `HBox, `Left and `Right
+      * @param dialog term dialog containing strings
+      * @param widgets map of widget name -> widget description map
+      * @return updated term ready to be used as a dialog
+      */
+    define term ProcessTerm (term t, map widgets) ``{
+	integer args = size (t);
+	if (args == 0)
+	    return t;
+	term ret = toterm (substring (sformat ("%1", symbolof (t)), 1));
+	integer index = 0;
+	while (index < args)
+	{
+	    any arg = select (t, index, nil);
+	    if (is (arg, term) && arg != nil)
+	    {
+		symbol s = symbolof (arg);
+		if (contains ([ `VBox, `HBox, `Left, `Right], s))
+		{
+		    arg = ProcessTerm (arg, widgets);
+		}
+	    }
+	    else if (is (arg, string))
+	    {
+		arg = widgets[arg, "widget"]:`VBox ();
+	    }
+	    ret = add (ret, arg);
+	    index = index + 1;
+	}
+	return ret;
+    }
+
+
 
 }
