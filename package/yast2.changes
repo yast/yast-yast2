@@ -2,6 +2,7 @@
 Wed Mar  5 15:25:12 CET 2003 - ms@suse.de
 
 - added scr agent for /etc/sysconfig/displaymanager handling (#24669)
+- do not check for packages in autoinst mode (#24706)
 
 -------------------------------------------------------------------
 Mon Mar  3 17:14:44 CET 2003 - jsrain@suse.de
