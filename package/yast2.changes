@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jun 21 13:24:03 CEST 2004 - jsrain@suse.cz
+
+- added CWM widget for TSIG keys management
+
+-------------------------------------------------------------------
 Fri Jun 18 15:28:07 CEST 2004 - lslezak@suse.cz
 
 - CommandLine: read text or password from console

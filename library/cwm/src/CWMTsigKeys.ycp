@@ -1,0 +1,554 @@
+/**
+ * File:	modules/CWMTsigKeys.ycp
+ * Package:	Common widget manipulation, TSIG keys management widget
+ * Summary:	Routines for management of TSIG keys
+ * Authors:	Jiri Srain <jsrain@suse.cz>
+ *
+ * $Id$
+ *
+ */
+
+{
+
+module "CWMTsigKeys";
+textdomain "base";
+
+import "CWM";
+import "Label";
+import "Report";
+import "Popup";
+
+// pre-declarations
+
+global define list<string> AnalyzeTSIGKeyFile (string filename);
+
+
+// private variables
+
+/**
+ * Currently configured TSIG keys
+ * Each entry is a map with keys "filename" and "key"
+ */
+list<map<string,string> > tsig_keys = [];
+
+/**
+ * Filenames of the files that contained deleted TSIG keys
+ */
+list<string> deleted_tsig_keys = [];
+
+/**
+ * Filenames of the new added TSIG keys
+ */
+list<string> new_tsig_keys = [];
+
+
+// private functions
+
+/**
+ * Redraw the table of DDNS keys
+ */
+define void DdnsKeysWidgetRedraw () {
+    list items = maplist (map<string,string> k, tsig_keys, {
+	return `item (`id (k["key"]:""), k["key"]:"", k["filename"]:"");
+    });
+    UI::ChangeWidget (`id ("_cwm_delete_key"), `Enabled, size(items) > 0);
+    UI::ChangeWidget (`id ("_cwm_key_listing_table"), `Items, items);
+    UI::SetFocus (`id ("_cwm_key_listing_table"));
+}
+
+/**
+ * Get the file that contains the specified key
+ * @param key string key ID
+ * @return string file containing the key
+ */
+define string Key2File (string key) {
+    string filename = "";
+    find (map<string,string>k, tsig_keys, {
+	if (k["key"]:nil == key)
+	{
+	    filename = k["filename"]:"";
+	    return true;
+	}
+	return false;
+    });
+    y2milestone ("Key: %1, File: %2", key, filename);
+    return filename;
+}
+
+/**
+ * Remove file with all TSIG keys it contains
+ * @param filename string filename of the file with the TSIG keys
+ */
+define void RemoveTsigKeyFile (string filename) {
+    new_tsig_keys = filter (string f, new_tsig_keys, {
+	return f != filename;
+    });
+    deleted_tsig_keys = add (deleted_tsig_keys, filename);
+    tsig_keys = filter (map<string,string>k, tsig_keys, {
+	return k["filename"]:"" != filename;
+    });
+}
+
+/**
+ * Remove file containing specified TSIG key
+ * @param key string key ID
+ */
+define void RemoveTsigKey (string key) {
+    string filename = Key2File (key);
+    RemoveTsigKeyFile (filename);
+}
+
+/**
+ * Add new file with TSIG key
+ * @param filename string filename of the file with the TSIG key
+ */
+define void AddTsigKeyFile (string filename) {
+    deleted_tsig_keys = filter (string f, deleted_tsig_keys, {
+	return f != filename;
+    });
+    new_tsig_keys = add (new_tsig_keys, filename);
+    list<string> keys = AnalyzeTSIGKeyFile (filename);
+    foreach (string k, keys, {
+	tsig_keys = add (tsig_keys, $[
+	    "key" : k,
+	    "filename" : filename,
+	]);
+    });
+}
+
+
+// public routines related to TSIG keys management
+
+/**
+ * Remove leading and trailibg blanks and quotes from file name
+ * @param filename string file name
+ * @return file name without leading/trailing quotes and blanks
+ */
+global define string NormalizeFilename (string filename) {
+    while (filename != "" && (substring (filename, 0, 1) == " "
+	|| substring (filename, 0, 1) == "\""))
+    {
+	filename = substring (filename, 1);
+    }
+    while (filename != ""
+        && (substring (filename, size (filename) - 1, 1) == " "
+	    || substring (filename, size (filename) - 1, 1) == "\""))
+    {
+	filename = substring (filename, 0, size (filename) - 1);
+    }
+    return filename;
+}
+
+/**
+ * Analyze file that may contain TSIG keys
+ * @param filename string filename of the file that may contain TSIG keys
+ * @return a list of all TSIG key IDs in the file
+ */
+global define list<string> AnalyzeTSIGKeyFile (string filename) {
+    filename = NormalizeFilename (filename);
+    string contents = (string)SCR::Read (.target.string, filename);
+    if (contents == nil)
+    {
+	y2warning ("Unable to read file with TSIG keys: %1", filename);
+        return [];
+    }
+    list<string> ret = [];
+    list<string> parts = splitstring (contents, "{}");
+    foreach (string p, parts, {
+	if (regexpmatch (p, ".*key[ \\t]+[^ \\t}{;]+.* $"))
+	{
+	    ret = add (ret,
+		regexpsub (p, ".*key[ \\t]+([^ \\t}{;]+).* $", "\\1"));
+	}
+    });
+    y2milestone ("File: %1, Keys: %2", filename, ret);
+    return ret;
+}
+
+/**
+ * Transformate the list of files to the list of TSIG key description maps
+ * @param filenames a list of file names of the TSIG keys
+ * @return a list of TSIG key describing maps
+ */
+global define list<map<string,string> > Files2KeyMaps (list<string> filenames) {
+    list<list<map<string,string> > > tmpret = maplist (string f, filenames, {
+	list<string> keys = AnalyzeTSIGKeyFile (f);
+	return maplist (string k, keys, {
+	    return $[
+		"filename" : f,
+		"key" : k,
+	    ];
+	});
+    });
+    list<map<string,string> > ret = (list<map<string, string> >)
+	flatten (tmpret);
+    y2milestone ("Files: %1, Keys: %2", filenames, ret);
+    return ret;
+}
+
+/**
+ * Get all TSIG keys that present in the files
+ * @param filename a list of file names
+ * @return a list of all TSIG key IDs
+ */
+global define list<string> Files2Keys (list<string> filenames) {
+    list<map<string,string> > keys = Files2KeyMaps (filenames);
+    list<string> ret = maplist (map<string,string> k, keys, {
+	return k["key"]:"";
+    });
+    y2milestone ("Files: %1, Keys: %2", filenames, ret);
+    return ret;
+}
+
+
+// widget related functions
+
+/**
+ * Init function of the widget
+ * @param map widget a widget description map
+ * @param key strnig the widget key
+ */
+global define void Init (map<string,any> widget, string key) {
+    map<string,any>() get_keys_info = (map<string,any>())
+	widget["get_keys_info"]:nil;
+    map<string,any> info = get_keys_info ();
+    tsig_keys = info["tsig_keys"]:[];
+    deleted_tsig_keys = info["removed_files"]:[];
+    new_tsig_keys = info["new_files"]:[];
+    if (! haskey (info, "tsig_keys"))
+    {
+	list<string> files = info["key_files"]:[];
+	tsig_keys = Files2KeyMaps (files);
+    }
+    string initial_path = "/etc";
+    UI::ChangeWidget (`id ("_cwm_existing_key_file"), `Value, initial_path);
+    UI::ChangeWidget (`id ("_cwm_new_key_file"), `Value, initial_path);
+    UI::ChangeWidget (`id ("_cwm_new_key_id"), `ValidChars,
+	"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_");
+    DdnsKeysWidgetRedraw ();
+}
+
+/**
+ * Handle function of the widget
+ * @param map widget a widget description map
+ * @param key strnig the widget key
+ * @param event map event to be handled
+ * @return symbol for wizard sequencer or nil
+ */
+global define symbol Handle (map<string,any> widget, string key, map event) {
+    any ret = event["ID"]:nil;
+    string existing_filename = (string)
+	UI::QueryWidget (`id ("_cwm_existing_key_file"), `Value);
+    string new_filename = (string)
+	UI::QueryWidget (`id ("_cwm_new_key_file"), `Value);
+    if (ret == "_cwm_delete_key")
+    {
+	string key = (string)UI::QueryWidget (`id ("_cwm_key_listing_table"),
+	    `CurrentItem);
+	string delete_filename = Key2File (key);
+	RemoveTsigKeyFile (delete_filename);
+    }
+    else if (ret == "_cwm_browse_existing_key_file")
+    {
+	existing_filename = (string)UI::AskForExistingFile (
+	    existing_filename,
+	    "",
+	    // popup headline
+	    _("Select File with the Authentication Key"));
+	if (existing_filename != nil)
+	{
+	    UI::ChangeWidget (`id ("_cwm_existing_key_file"), `Value,
+		existing_filename);
+	}
+	return nil;
+    }
+    else if (ret == "_cwm_browse_new_key_file")
+    {
+	new_filename = (string)UI::AskForSaveFileName (
+	    new_filename,
+	    "",
+	    // popup headline
+	    _("Select File for the Authentication Key"));
+        if (new_filename != nil)
+            UI::ChangeWidget (`id ("_cwm_new_key_file"), `Value, new_filename);
+        return nil;
+    }
+    else if (ret == "_cwm_generate_key")
+    {
+	string key = (string)UI::QueryWidget (`id ("_cwm_new_key_id"), `Value);
+	map stat = (map)SCR::Read (.target.stat, new_filename);
+	if (size (stat) != 0)
+	{
+	    if (stat["isdir"]:false)
+	    {
+		UI::SetFocus (`id ("new_key_file"));
+                Report::Error (
+		    // error report
+		    _("Specified file name is an existing directory."));
+		return nil;
+	    }
+	    // yes-no popup
+	    if (! Popup::YesNo (_("Specified file exists. Rewrite it?")))
+	    {
+		return nil;
+	    }
+	}
+	if (key == nil || key == "")
+	{
+	    UI::SetFocus (`id ("new_key_name"));
+	    // error report
+	    Popup::Error (_("The TSIG key ID was not specified."));
+	    return nil;
+	}
+	// yes-no popup
+	if (! Popup::YesNo (_("The key will be created now. Continue?")))
+	    return nil;
+	SCR::Execute (.target.bash,
+	    "test -d /etc/named.d || mkdir /etc/named.d");
+	string gen_command = sformat (
+	    "/usr/bin/genDDNSkey --force  -f %1 -n %2 -d /etc/named.d",
+	    new_filename, key);
+	y2milestone ("Running %1", gen_command);
+	integer gen_ret = (integer)SCR::Execute (.target.bash, gen_command);
+	if (gen_ret != 0)
+	{
+	    Report::Error (_("Creating the TSIG key failed"));
+	    return nil;
+	}
+	ret = "_cwm_add_key";
+	existing_filename = new_filename;
+    }
+    if (ret == "_cwm_add_key")
+    {
+	map stat = (map)SCR::Read (.target.stat, new_filename);
+	if (size (stat) == 0)
+	{
+	    Report::Error (_("The specified file does not exist."));
+	    return nil;
+	}
+	list<string> keys = AnalyzeTSIGKeyFile (existing_filename);
+	if (size (keys) == 0)
+	{
+	    // message popup
+	    Popup::Message (_("The specified file does not contain any TSIG key."));
+	    return nil;
+	}
+	list<string> coliding_files = maplist (string k, keys, {
+	    return Key2File (k);
+	});
+	coliding_files = filter (string f, toset (coliding_files), {
+	    return f != "";
+	});
+	if (size (coliding_files) > 0)
+	{
+	    // yes-no popup
+	    if (!Popup::YesNo (_("The specified file contains a TSIG key with the same
+identifier as some of already present keys.
+Old keys will be removed. Continue?")))
+	    {
+		return nil;
+	    }
+	    else
+	    {
+		foreach (string f, coliding_files, {
+		    RemoveTsigKeyFile (f);
+		});
+	    }
+	}
+	AddTsigKeyFile (existing_filename);
+    }
+    DdnsKeysWidgetRedraw ();
+    return nil;
+}
+
+/**
+ * Store function of the widget
+ * @param map widget a widget description map
+ * @param key strnig the widget key
+ * @param event map that caused widget data storing
+ */
+global define void Store (map<string,any> widget, string key, map event) {
+    void(map<string,any>) set_info = (void (map<string,any>))
+	widget["set_keys_info"]:nil;
+    map<string,any> info = $[
+	"removed_files" : deleted_tsig_keys,
+	"new_files" : new_tsig_keys,
+	"tsig_keys" : tsig_keys,
+	"key_files" : toset (maplist (map<string,string> k, tsig_keys, {
+	    return k["filename"]:"";
+	})),
+    ];
+    set_info (info);
+}
+
+/**
+ * Store function of the widget
+ * @param map widget a widget description map
+ * @param key strnig the widget key
+ * @param event map that caused widget data storing/**
+ * Init function of the widget
+ * @param key strnig the widget key
+ */
+global define void InitWrapper (string key) {
+    Init (CWM::GetProcessedWidget (), key);
+}
+
+/**
+ * Handle function of the widget
+ * @param map widget a widget description map
+ * @param key strnig the widget key
+ * @param event map event to be handled
+ * @return symbol for wizard sequencer or nil
+ */
+global define symbol HandleWrapper (string key, map event) {
+    return Handle (CWM::GetProcessedWidget (), key, event);
+}
+
+/**
+ * Store function of the widget
+ * @param key strnig the widget key
+ * @param event map that caused widget data storing
+ */
+global define void StoreWrapper (string key, map event) {
+    Store (CWM::GetProcessedWidget (), key, event);
+}
+
+/**
+ * Get the widget description map
+ * @param settings a map of all parameters needed to create the widget properly
+ * <pre>
+ * "get_keys_info" : map<string,any>() -- function for getting information
+ *          about TSIG keys. Return map should contain:
+ *           - "removed_files" : list<string> -- files that have been removed
+ *           - "new_files" : list<string> -- files that have been added
+ *           - "tsig_keys" : list<map<string,string>> -- list of all TSIG keys
+ *           - "key_files" : list<string> -- list of all files that may contain
+ *                       TSIG keys
+ *           Either "tsig_keys" or "key_files" are mandatory
+ * "set_keys_info" : void (map<string,any>) -- function for storing information
+ *          about keys. Map has keys:
+ *           - "removed_files" : list<string> -- files that have been removed
+ *           - "new_files" : list<string> -- files that have been added
+ *           - "tsig_keys" : list<map<string,string>> -- list of all TSIG keys
+ *           - "key_files" : list<string> -- list of all files that contain
+ *                       TSIG keys
+ *
+ * Additional settings:
+ * - "help" : string -- help to the whole widget. If not specified, generic help
+ *          is used (button labels are patched correctly)
+ * </pre>
+ * @return a map the widget description map
+ */
+global define map<string,any> CreateWidget (map<string,any> settings) {
+    // tsig keys management dialog help 1/4
+    string help = _("<p><big><b>TSIG Keys Management</b></big><br>
+Use this dialog to manage the TSIG keys.</p>")
+    +
+    // tsig keys management dialog help 2/4
+    _("<p><big><b>Adding an existing TSIG key</b></big><br>
+To add an already created TSIG key, select a <b>File Name</b> of the file
+containing the key and click <b>Add</b>.</p>")
+    +
+    // tsig keys management dialog help 3/4
+    _("<p><big><b>Creating a new TSIG key</b></big><br>
+To create a new TSIG key, set the <b>File Name</b> of the file the key will
+be created to and the <b>Key ID</b> to identify the key, and click
+<b>Generate</b>.</p>")
+    +
+    // tsig keys management dialog help 4/4
+    _("<p><big><b>Removing a TSIG key</b></big><br>
+To remove a configured TSIG key, select it and click <b>Delete</b>.
+Remember that all keys that are in the same file will be deleted.</p>");
+
+    term add_existing = `VSquash (`HBox (
+	// Frame label - adding a created server key
+	`HWeight (9, `Frame (_("Add an Existing TSIG Key"), `HBox (
+	    `HWeight (7, `HBox (
+		`TextEntry (`id ("_cwm_existing_key_file"),
+		    `opt (`hstretch),
+		    // text entry
+		    _("&File Name"))
+	    )),
+	    `HWeight (2, `HBox (
+		`VBox (
+		    `Label (" "),
+		    `PushButton (`id ("_cwm_browse_existing_key_file"),
+			Label::BrowseButton ())
+		)
+	    ))
+	))),
+	`HWeight (2, `Bottom (
+	    `VSquash (`PushButton (`id ("_cwm_add_key"),
+		`opt (`hstretch),
+		Label::AddButton ()))
+	))
+    ));
+
+   term create_new = `VSquash (`HBox (
+	// Frame label - creating a new server key
+	`HWeight (9, `Frame (_("Create a New TSIG Key"), `HBox (
+	    `HWeight (7, `HBox (
+		`TextEntry (`id ("_cwm_new_key_id"),
+		    `opt (`hstretch),
+		    // text entry
+		    _("&Key ID")),
+		`TextEntry (`id ("_cwm_new_key_file"),
+		    `opt (`hstretch),
+		    // text entry
+		    _("File &Name"))
+	    )),
+	    `HWeight (2, `HBox (
+		`VBox (
+		    `Label (" "),
+		    `PushButton (`id ("_cwm_browse_new_key_file"),
+			Label::BrowseButton ())
+		)
+	    ))
+	))),
+	`HWeight (2, `Bottom (
+	    `VSquash (`PushButton (`id ("_cwm_generate_key"),
+		// push button
+		_("&Generate")))
+	))
+    ));
+
+    term current_keys = `VBox (
+	// Table header - in fact label
+	`Left (`Label (_("Current TSIG Keys"))),
+	`HBox (
+	    `HWeight (9, `Table (`id ("_cwm_key_listing_table"), `header (
+                                    // Table header item - DNS key listing
+                                    _("Key ID"),
+                                    // Table header item - DNS key listing
+                                    _("File Name")
+                                ), []
+	    )),
+	   `HWeight (2, `VBox (
+		`VSquash (`PushButton (`id ("_cwm_delete_key"),
+		    `opt (`hstretch),
+		    Label::DeleteButton ())),
+		`VStretch ()
+	    ))
+	)
+    );
+
+    term contents = `VBox (
+	add_existing,
+	create_new,
+	current_keys
+    );
+
+    map<string,any> ret = (map<string,any>)union ($[
+	"widget" : `custom,
+	"custom_widget" : contents,
+	"help" : help,
+	"init" : InitWrapper,
+	"store" : StoreWrapper,
+	"handle" : HandleWrapper,
+    ], settings);
+
+    return ret;
+}
+
+// EOF
+}
