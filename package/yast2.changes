@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep 24 19:03:41 CEST 2004 - mvidner@suse.cz
+
+- Added Desktop::RunViaDesktop (#37864).
+- 2.10.19
+
+-------------------------------------------------------------------
 Fri Sep 24 08:07:29 CEST 2004 - visnov@suse.cz
 
 - always initialize SourceCache when installing packages
