@@ -1,0 +1,17 @@
+/**
+ * File:	modules/RichText.ycp
+ * Package:	yast2
+ * Summary:	Rich text manipulation routines
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+module "RichText";
+textdomain "base";
+
+
+/* EOF */
+}

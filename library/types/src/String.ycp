@@ -39,5 +39,94 @@ global define string UnQuote(string var) ``{
     return var;
 }
 
+/**
+ * Return a pretty description of a byte count, with two fraction digits
+ * and using KB, MB or GB as unit as appropriate.
+ *
+ * @param bytes	size (e.g. free diskspace) in Bytes
+ * @return formatted string
+ *
+ * @example size_text(23456767890) -> "223.70 MB"
+ */
+global define string FormatSize(integer bytes) ``{
+
+    if(bytes == nil) return "";
+
+    string unit = "";
+    list units = [
+	/* KiloByte abbreviated */
+	_("KB"),
+	/* MegaByte abbreviated */
+	_("MB"),
+	/* GigaByte abbreviated */
+	_("GB"),
+	/* TeraByte abbreviated */
+	_("TB"),
+    ];
+    integer index = 0;
+    float whole = tofloat(bytes);
+
+    while((whole > 1024.0 || whole < -1024.0) && index < size(units)) {
+	whole = whole / 1024.0;
+	unit = units[index]:"";
+	index = index + 1;
+    }
+
+    return tostring(whole, 2) + " " + unit;
+}
+
+/**
+ * Byte input is transformed to "MB" and the string is formatted
+ * with appropriate number of whitespaces, so the output has always
+ * the same length (which is useful for sorting).
+ *
+ * @param bytes	size (e.g. free diskspace ) in Byte
+ * @return formatted string
+ *
+ * @example format_size_text(234567678);
+ */
+global define string FormatSizeFixed(integer bytes)``{
+
+    if(bytes == nil) return "";
+
+    /* MegaByte abbreviated */
+    string unit = UI(_("MB"));
+    float whole = tofloat(bytes) / 1024.0 / 1024.0;
+
+    /* NNN.NN  999.99 MB */
+    string size_str = tostring(whole, 2);
+    integer num = size(size_str);
+    integer anz = 6 - num;
+
+    if(anz <= 0)
+	return size_str + " " + unit + " " ;
+    else if(anz == 1)
+	return " " + size_str + " " + unit + " ";
+    else
+	return "  " + size_str + " " + unit + " ";
+}
+
+/**
+ * Remove blanks at begin and end of input string
+ * @param input	string to be stripped
+ * @return stripped string
+ * @example CutBlanks("  any input     ") -> "any input"
+ */
+global define string CutBlanks(string input) ``{
+
+    if(input == nil || size(input) < 1) return "";
+
+    integer pos = findfirstnotof(input, " \t");
+
+    if(pos == nil) return "";
+    string output = substring(input, pos);
+
+    pos = size(output) - 1;
+    while(substring(output, pos, 1) == " ") { // XXX: or \t
+	pos = pos - 1;
+    }
+    return substring(output, pos); // XXX
+}
+
 /* EOF */
 }

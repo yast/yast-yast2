@@ -1,0 +1,36 @@
+{
+
+include "testsuite.ycp";
+import "Map";
+
+DUMP("Map::Keys");
+TEST(``(Map::Keys(nil)), [], nil);
+TEST(``(Map::Keys($[])), [], nil);
+TEST(``(Map::Keys($[1:2])), [], nil);
+TEST(``(Map::Keys($["2":3])), [], nil);
+TEST(``(Map::Keys($[`x:4])), [], nil);
+TEST(``(Map::Keys($[1:2,3:4])), [], nil);
+
+DUMP("Map::Values");
+TEST(``(Map::Values(nil)), [], nil);
+TEST(``(Map::Values($[])), [], nil);
+TEST(``(Map::Values($[1:2])), [], nil);
+TEST(``(Map::Values($["2":3])), [], nil);
+TEST(``(Map::Values($[`x:4])), [], nil);
+TEST(``(Map::Values($[1:2,3:4])), [], nil);
+
+DUMP("Map::KeysToLower");
+TEST(``(Map::KeysToLower(nil)), [], nil);
+TEST(``(Map::KeysToLower($[])), [], nil);
+TEST(``(Map::KeysToLower($["a":1])), [], nil);
+TEST(``(Map::KeysToLower($["A":1])), [], nil);
+TEST(``(Map::KeysToLower($["A":1,"b":1])), [], nil);
+
+DUMP("Map::KeysToUpper");
+TEST(``(Map::KeysToUpper(nil)), [], nil);
+TEST(``(Map::KeysToUpper($[])), [], nil);
+TEST(``(Map::KeysToUpper($["a":1])), [], nil);
+TEST(``(Map::KeysToUpper($["A":1])), [], nil);
+TEST(``(Map::KeysToUpper($["A":1,"b":1])), [], nil);
+
+}

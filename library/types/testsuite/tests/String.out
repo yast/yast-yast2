@@ -10,3 +10,27 @@ Return
 Return	a
 Return	a'b
 Return	a'b'c
+Dump	String::FormatSize
+Return	
+Return	0.00 
+Return	1.00 
+Return	1.00 KB
+Return	1.00 MB
+Return	1.00 GB
+Return	1.00 TB
+Return	1024.09 TB
+Dump	String::FormatSizeFixed
+Return	
+Return	  0.00 MB 
+Return	  0.00 MB 
+Return	  0.00 MB 
+Return	  1.00 MB 
+Return	 10.00 MB 
+Return	100.04 MB 
+Return	1024.25 MB 
+Return	1049041.75 MB 
+Return	1073837280.27 MB 
+Dump	String::CutBlanks
+Return	
+Return	
+Return	
