@@ -1,0 +1,28 @@
+/**
+ * File:	cmpmap6.ycp
+ * Package:	yast2
+ * Summary:	sanity validation of the command line map
+ * Author:	Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+    include "testsuite.ycp";
+    include "./tests/include/testsuitedata.ycp";
+    
+    import "./../src/TypeRepository.ycp";
+    import "./../src/CommandLine.ycp";
+
+    // test of the resulting maps
+    TEST(``(CommandLine::Init( cmdline ,[]) ),[],nil);
+    TEST(``(CommandLine::Done()),[],nil);
+    TEST(``(CommandLine::Aborted()),[],nil);
+    
+    DUMP( CommandLine::modulecommands );
+    
+    DUMP( CommandLine::allcommands );
+
+/* EOF */
+}

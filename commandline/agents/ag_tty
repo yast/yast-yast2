@@ -1,0 +1,100 @@
+#!/usr/bin/perl -w
+#
+# $Id$
+# Author: Martin Vidner <mvidner@suse.cz>
+#         Stanislav Visnovsky <visnov@suse.cz>
+#
+
+# An agent for /dev/tty using Perl readline library
+
+use utf8;
+
+use ycp;
+use strict;
+use Term::ReadLine;
+
+# query the current encoding
+use I18N::Langinfo qw(langinfo CODESET);
+my $codeset = langinfo(CODESET());
+
+#
+# MAIN cycle
+#
+
+binmode STDIN, ":encoding(utf8)";
+# read the agent arguments
+$_ = <STDIN>;
+
+# no input at all - simply exit
+# exit if ! defined $_;
+# reply to the client (this actually gets eaten by the ScriptingAgent)
+ycp::Return (undef);
+
+  my $term = Term::ReadLine->new( 'Simple Readline interface');
+  my $prompt = "YaST2> ";
+  my $OUT = $term->OUT || \*STDOUT;
+  
+ $term->ornaments(0);
+ 
+  binmode $OUT, ":encoding($codeset)";
+  
+while ( <STDIN> )
+{
+    my ($command, $path, $argument) = ycp::ParseCommand ($_);
+    
+    if ($command eq "Write")
+    {
+	if( $path eq "." )
+	{
+	    print $OUT  $argument ,"\n";
+	    ycp::Return ( "true" );
+	}
+	elsif ( $path eq ".prompt" )
+	{
+	    $prompt = $argument;
+	    ycp::Return( "true" );
+	}
+	else 
+	{
+	    y2error ("Unrecognized path! '$path'");
+	    ycp::Return (undef);
+	}
+    }
+
+    elsif ($command eq "Read")
+    {
+
+	if ($path eq ".")
+	{
+	    # the 1 prevents returning strings as integers/booleans
+	    $_ = $term->readline($prompt);
+	    if( defined ($_) )
+	    {
+        	$term->addhistory($_) if /\S/;
+		ycp::Return ($_, 1);
+	    }
+	    else
+	    {
+		ycp::Return (undef);
+	    }
+	}
+	else
+	{
+	    y2error ("Unrecognized path! '$path'");
+	    ycp::Return (undef);
+	}
+    }
+
+    elsif ($command eq "result")
+    {
+	exit;
+    }
+
+    # Unknown command
+    else
+    {
+	y2error ("Unknown instruction $command or argument: ", ref ($argument));
+	ycp::Return (undef);
+    }
+    print "\n";
+}

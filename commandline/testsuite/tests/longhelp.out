@@ -1,0 +1,66 @@
+Write	.dev.tty.prompt "YaST2 lan> " true
+Write	.dev.tty "\nConfiguration of network cards\n------------------------------\n" true
+Write	.dev.tty "Configuration of network cards" true
+Write	.dev.tty "Basic syntax:" true
+Write	.dev.tty "    yast2 lan interactive" true
+Write	.dev.tty "    yast2 lan <command> [options]" true
+Write	.dev.tty "    yast2 lan help" true
+Write	.dev.tty "    yast2 lan longhelp" true
+Write	.dev.tty "    yast2 lan <command> help" true
+Write	.dev.tty "" true
+Write	.dev.tty "Commands:" true
+Write	.dev.tty "    add \tadd a network card" true
+Write	.dev.tty "    delete \tdelete a network card" true
+Write	.dev.tty "    list \tdisplay configuration summary" true
+Write	.dev.tty "" true
+Write	.dev.tty "Run 'yast2 lan <command> help' for a list of available options." true
+Write	.dev.tty "" true
+Write	.dev.tty "Command 'add'" true
+Write	.dev.tty "    add a network card" true
+Write	.dev.tty "\n    Options:" true
+Write	.dev.tty "        device  \t[string]    \tdevice ID" true
+Write	.dev.tty "        ip  \t[ipaddress]    \tdevice address" true
+Write	.dev.tty "        netmask  \t[netmask]    \tnetwork mask" true
+Write	.dev.tty "        blem  \t        \tother argument (without spaces and '1')" true
+Write	.dev.tty "        atboot  \t[ yes no ]    \tturning on the device at boot" true
+Write	.dev.tty "        help  \t        \tprint the help for this command" true
+Write	.dev.tty "        quiet  \t        \tdo not show progress information" true
+Write	.dev.tty "" true
+Write	.dev.tty "Command 'delete'" true
+Write	.dev.tty "    delete a network card" true
+Write	.dev.tty "\n    Options:" true
+Write	.dev.tty "        device  \t[string]    \tdevice ID" true
+Write	.dev.tty "        help  \t        \tprint the help for this command" true
+Write	.dev.tty "        quiet  \t        \tdo not show progress information" true
+Write	.dev.tty "" true
+Write	.dev.tty "Command 'exit'" true
+Write	.dev.tty "    exit interactive mode and save the changes" true
+Write	.dev.tty "" true
+Write	.dev.tty "Command 'help'" true
+Write	.dev.tty "    print the help for this module" true
+Write	.dev.tty "\n    Options:" true
+Write	.dev.tty "        help  \t        \tprint the help for this command" true
+Write	.dev.tty "        quiet  \t        \tdo not show progress information" true
+Write	.dev.tty "" true
+Write	.dev.tty "Command 'interactive'" true
+Write	.dev.tty "    start interactive shell to control the module" true
+Write	.dev.tty "\n    Options:" true
+Write	.dev.tty "        quiet  \t        \tdo not show progress information" true
+Write	.dev.tty "" true
+Write	.dev.tty "Command 'list'" true
+Write	.dev.tty "    display configuration summary" true
+Write	.dev.tty "\n    Options:" true
+Write	.dev.tty "        configured  \t        \tlist only configured cards" true
+Write	.dev.tty "        unconfigured  \t        \tlist only not configured cards" true
+Write	.dev.tty "        help  \t        \tprint the help for this command" true
+Write	.dev.tty "        quiet  \t        \tdo not show progress information" true
+Write	.dev.tty "\n    Example:" true
+Write	.dev.tty "        lan list configured" true
+Write	.dev.tty "" true
+Write	.dev.tty "Command 'longhelp'" true
+Write	.dev.tty "    print a long version of help for this module" true
+Write	.dev.tty "" true
+Write	.dev.tty "Command 'quit'" true
+Write	.dev.tty "    quit interactive mode without saving the changes" true
+Write	.dev.tty "" true
+Return	false

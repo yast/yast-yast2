@@ -1,0 +1,7 @@
+Log	Command line specification maps undefined option 'wrongoption' for action 'okaction'
+Log	Command line specification maps undefined action 'unknownaction'
+Log	Command line specification maps undefined option 'unknownoption' for action 'unknownaction'
+Log	Command line specification maps undefined action 'wrongaction'
+Return	false
+Return	true
+Return	true

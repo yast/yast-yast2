@@ -1,0 +1,25 @@
+/**
+ * File:
+ *   tty.scr
+ * Summary:
+ *   SCR Agent for reading/writing using readline
+ * Access:
+ *   read/write
+ * Authors:
+ *   Stanislav Visnovsky <visnov@suse.cz>
+ * See:
+ *   anyagent
+ *   libscr
+ * Example:
+
+ * $Id$
+ *
+ * Reads and writes <tt>/dev/tty</tt> using the Term::Readline Perl module.
+ * Supported paths are .dev.tty (Read and Write) for the readline, .dev.tty.prompt (Write)
+ * for setup of the prompt.
+ *
+ * TTY() in initialization is to make the Perl agent happy
+ */
+.dev.tty
+
+`ag_tty ( TTY() )

@@ -1,0 +1,81 @@
+/**
+ * File:	modules/TypeRepository.ycp
+ * Package:	yast2
+ * Summary:	Type repository for validation of user-defined types
+ * Author:	Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+    module "TypeRepository";
+
+    include "network/ip.ycp";
+
+    /* Map of known types, empty initially */
+    map types = $[];
+
+    /**
+     * Validate, that the given value is of given type.
+     *
+     * @param value	value to be validated
+     * @param type	type against which to validate
+     * @return boolean  true, if the value can be considered to be of a given type
+     */
+    global define boolean is_a(any value, string type) ``{
+	term validator = types[type]:nil;
+	if ( validator != nil )	{
+	    validator = add( validator, value );
+	    return eval(validator);
+	} else {
+	    y2error( "Request to validate unknown type %1", type  );
+	}
+    	return false;
+    }
+
+    /**
+     * Constructor, defines the known types. 
+     */
+    global define void TypeRepository() ``{
+	types = $[
+	    "ipaddress": ``( check_ip() ),
+	    "string": ``( is_string() )
+	];
+    }
+
+    /**
+     * Check, if s is a string.
+     *
+     * @param s		a value to be validated
+     * @return		true if s is string
+     */
+    define boolean is_string( any s ) ``{
+    	return is( s, string );
+    }
+
+/************************* generic validators *******************************/
+
+    /**
+     *  Generic regular expression validator.
+     *
+     *  @param regex	the regular expression to be matched
+     *  @param value	the value to be matched
+     *  @return 	true if successful
+     */
+    global define boolean regex_validator( string regex, string value ) ``{
+    	return regexpmatch( value, regex );
+    }
+
+    /**
+     *  Generic enumerated type validator.
+     *
+     *  @param values	a list of possible values
+     *  @param value	the value to be matched
+     *  @return 	true if successful
+     */
+    global define boolean enum_validator( list values, string value ) ``{
+	return contains( values, value );
+    }
+
+/* EOF */
+}
