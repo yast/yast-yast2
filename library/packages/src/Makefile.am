@@ -2,7 +2,7 @@
 
 yncludedir = @yncludedir@/packages
 
-YCPCFLAGS = -M ../../modules/ -M ../../wizard/src/ -M ../../system/src/ -I .
+YCPCFLAGS = -M ../../modules/ -M ../../wizard/src/ -M ../../system/src/
 
 module_DATA =			\
 	Require.ycp		\
