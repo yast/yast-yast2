@@ -76,6 +76,11 @@
     global boolean autoinst		= false;
 
     /**
+     * start repair module
+     */
+    global boolean repair		= false;
+    
+    /**
      * configuration for auto-installation, only in running system
      */
     global boolean config		= false;
@@ -240,6 +245,8 @@
 
 	    autoinst = SCR::Read (.etc.install_inf.AutoYaST) != nil;
 
+	    repair   = SCR::Read (.etc.install_inf.Repair )  != nil;
+	    
 	    live_eval = SCR::Read (.etc.install_inf.Demo) == "1";
 
 	    text = SCR::Read (.etc.install_inf.Textmode) == "1";
