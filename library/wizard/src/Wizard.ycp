@@ -497,91 +497,44 @@
 
     /**
      * Replace the wizard help subwindow with a custom widget.
-     * Call this BEFORE Wizard::SetContents() to avoid geometry
-     * management problems!
      *
-     * Remember to restore the help subwindow with
-     * RestoreHelp() before any other module is called!
-     *
-     * @param contents a term describing the new contents
+     * THIS FUNCTION IS DEPRECATED!
      **/
     global define void ReplaceHelp(term contents) {
-	UI::ReplaceWidget(`id(`helpSpace), contents);
+	if ( UI::WidgetExists( `id(`helpSpace ) ) )
+	{
+	    y2warning( "Wizard::ReplaceHelp() is deprecated!" );
+	    UI::ReplaceWidget(`id(`helpSpace), contents);
+	}
+	else
+	{
+	    y2error( "Wizard::ReplaceHelp() is not supported by the new Qt wizard!" );
+	}
     }
 
 
+
     /**
-     * Restore the wizard help subwindow after Wizard::ReplaceHelp().
+     * Set a new help text.
      **/
-    global define void RestoreHelp(string help_text) {
+    global define void SetHelpText(string help_text)
+    {
 	if ( ! UI::WizardCommand(`SetHelpText( help_text ) ) )
 	{
-	    UI::ReplaceWidget(`id(`helpSpace), `RichText(`id(`HelpText), help_text ) );
+	    if ( UI::WidgetExists( `id(`helpSpace ) ) )
+		UI::ReplaceWidget(`id(`helpSpace), `RichText(`id(`HelpText), help_text ) );
 	}
     }
-
-
-    /**
-     * Replace the wizard 'back' button with a custom widget.
-     **/
-    global define void ReplaceBackButton(term contents) {
-	UI::ReplaceWidget(`id(`rep_back), contents);
-    }
-
+    
 
     /**
-     * Restore the wizard 'back' button after Wizard::ReplaceBackButton().
+     * Restore the wizard help subwindow.
      **/
-    global define void RestoreBackButton()
+    global define void RestoreHelp(string help_text)
     {
-	if ( UI::WizardCommand(`SetNextButtonLabel( Label::BackButton() ) ) )
-	{
-	    UI::WizardCommand(`SetBackButtonID( `back ) );
-	}
-	else
-	{
-	    if ( UI::WidgetExists(`id(`rep_back ) ) )
-	    {
-		UI::ReplaceWidget(`id(`rep_back),
-				  `PushButton(`id(`back), `opt (`key_F8),
-					      Label::BackButton() )
-				  );
-	    }
-	}
+	Wizard::SetHelpText( help_text );
     }
-
-
-    /**
-     * Replace the wizard 'next' button with a custom widget.
-     *
-     * @param contents a term describing the new contents
-     **/
-    global define void ReplaceNextButton(term contents) {
-	    UI::ReplaceWidget(`id(`rep_next), contents);
-    }
-
-
-    /**
-     * Restore the wizard 'next' button after ReplaceNextButton().
-     **/
-    global define void RestoreNextButton()
-    {
-	if ( UI::WizardCommand(`SetNextButtonLabel( Label::NextButton() ) ) )
-	{
-	    UI::WizardCommand(`SetNextButtonID( `next ) );
-	}
-	else
-	{
-	    if ( UI::WidgetExists(`id(`rep_next ) ) )
-	    {
-		UI::ReplaceWidget(`id(`rep_next),
-				  `PushButton(`id(`next), `opt (`key_F10, `default),
-					      Label::NextButton() )
-				  );
-	    }
-	}
-    }
-
+    
 
     /**
      * Set the dialog's "Next" button with a new label and a new ID
@@ -590,7 +543,7 @@
     {
 	if ( UI::WizardCommand(`SetNextButtonLabel( label ) ) )
 	{
-	    UI::WizardCommand(`SetBackButtonID( id ) );
+	    UI::WizardCommand(`SetNextButtonID( id ) );
 	}
 	else
 	{
@@ -604,13 +557,13 @@
 	    
     }
 
-
+    
     /**
      * Set the dialog's "Back" button with a new label and a new ID
      **/
     global define void SetBackButton( any id, string label )
     {
-	if ( UI::WizardCommand(`SetNextButtonLabel( label ) ) )
+	if ( UI::WizardCommand(`SetBackButtonLabel( label ) ) )
 	{
 	    UI::WizardCommand(`SetBackButtonID( id ) );
 	}
@@ -648,29 +601,115 @@
 	    
     }
 
-
+    
     /**
-     * Replace the wizard 'abort' button with a custom widget.
+     * Hide the Wizard's "Next" button.
+     * Restore it later with RestoreNextButton():
      **/
-    global define void ReplaceAbortButton(term contents) {
-	UI::ReplaceWidget(`id(`rep_abort), contents);
+    global define void HideNextButton()
+    {
+	if ( ! UI::WizardCommand(`SetNextButtonLabel( "" ) ) )
+	{
+	    if ( UI::WidgetExists(`id(`rep_next ) ) )
+		UI::ReplaceWidget(`id(`rep_next ), `Empty() );
+	}
     }
 
-
+    
     /**
-     * Restore the wizard 'abort' button after ReplaceAbortButton().
+     * Hide the Wizard's "Back" button.
+     * Restore it later with RestoreBackButton():
      **/
-    global define void RestoreAbortButton() {
-	if ( UI::WidgetExists(`id(`rep_abort ) ) )
+    global define void HideBackButton()
+    {
+	if ( ! UI::WizardCommand(`SetBackButtonLabel( "" ) ) )
 	{
-	    UI::ReplaceWidget(`id(`rep_abort),
-			      `PushButton(`id(`abort), `opt (`key_F9),
-					  Label::AbortButton() )
-			      );
+	    if ( UI::WidgetExists(`id(`rep_back ) ) )
+		UI::ReplaceWidget(`id(`rep_back), `Empty() );
 	}
     }
 
 
+    /**
+     * Hide the Wizard's "Abort" button.
+     * Restore it later with RestoreAbortButton():
+     **/
+    global define void HideAbortButton()
+    {
+	if ( ! UI::WizardCommand(`SetAbortButtonLabel( "" ) ) )
+	{
+	    if ( UI::WidgetExists(`id(`rep_abort ) ) )
+		UI::ReplaceWidget(`id(`rep_abort ), `Empty() );
+	}
+    }
+
+
+    /**
+     * Restore the wizard 'back' button.
+     **/
+    global define void RestoreBackButton()
+    {
+	Wizard::SetBackButton( `back, Label::BackButton() );
+    }
+
+
+    /**
+     * Restore the wizard 'next' button.
+     **/
+    global define void RestoreNextButton()
+    {
+	Wizard::SetNextButton( `next, Label::NextButton() );
+    }
+
+
+    /**
+     * Restore the wizard 'abort' button.
+     **/
+    global define void RestoreAbortButton() {
+	Wizard::SetAbortButton( `abort, Label::AbortButton() );
+    }
+
+
+
+    /**
+     * Replace the wizard 'next' button with a custom widget.
+     * THIS FUNCTION IS DEPRECATED!
+     *
+     * @param contents a term describing the new contents
+     **/
+    global define void ReplaceNextButton(term contents) {
+	if ( UI::WidgetExists(`id(`rep_next ) ) )
+	    UI::ReplaceWidget(`id(`rep_next), contents);
+
+	y2warning( "Wizard::ReplaceNextButton() is deprecated!" );
+    }
+
+    /**
+     * Replace the wizard 'back' button with a custom widget.
+     * THIS FUNCTION IS DEPRECATED!
+     **/
+    global define void ReplaceBackButton(term contents) {
+	if ( UI::WidgetExists(`id(`rep_back ) ) )
+	    UI::ReplaceWidget(`id(`rep_back), contents);
+	
+	y2warning( "Wizard::ReplaceBackButton() is deprecated!" );
+    }
+
+
+    /**
+     * Replace the wizard 'abort' button with a custom widget.
+     * THIS FUNCTION IS DEPRECATED!
+     **/
+    global define void ReplaceAbortButton(term contents) {
+	if ( UI::WidgetExists(`id(`rep_abort ) ) )
+	    UI::ReplaceWidget(`id(`rep_abort), contents);
+	
+	y2warning( "Wizard::ReplaceAbortButton() is deprecated!" );
+    }
+
+
+
+    
     /**
      * Set the wizard 'title' icon to the specified icon from the standard icon
      * directory.
@@ -706,11 +745,9 @@
     }
 
     /**
-     * Replace the entire Wizard button box with a new one.
-     *
-     * @param button_box the new button box - something like `HBox(...)
+     * PRIVATE - Replace the entire Wizard button box with a new one.
      **/
-    global define void ReplaceButtonBox( term button_box )
+    define void ReplaceButtonBox( term button_box )
     {
 	UI::ReplaceWidget(`id(`rep_button_box ), button_box );
     }
