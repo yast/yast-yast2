@@ -164,11 +164,11 @@ y2debug("Modules=%1", Modules);
 
 OpenMenu();
 
-list GroupList = Desktop::GroupList();
+list<string> GroupList = Desktop::GroupList();
 UI::ReplaceWidget(`id(`groups_rep), `SelectionBox(`id (`groups), `opt(`notify, `immediate, `keyEvents), "", GroupList));
 y2debug("%1", GroupList);
 
-string first = (string) select((list)select(GroupList[0]:[], 0, []), 0, nil);
+string first = GroupList[0]:"";
 y2debug("%1", first);
 
 /**
