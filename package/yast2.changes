@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jan  5 16:52:31 CET 2005 - jsrain@suse.cz
+
+- changed Kernel.ycp to functional interface
+
+-------------------------------------------------------------------
 Tue Jan  4 09:41:35 CET 2005 - jsrain@suse.cz
 
 - fixed handling of sysconfig/kernel:MODULES_LOADED_ON_BOOT if

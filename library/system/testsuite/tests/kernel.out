@@ -1,5 +1,3 @@
-Read	.proc.cpuinfo.value."0"."flags" ""
-Read	.probe.memory []
 Dump	----------------------------------------
 Dump	Testing modules to load on boot behavior
 Return	nil
