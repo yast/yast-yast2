@@ -700,30 +700,37 @@
      *
      * @param icon_name name (without path) of the new icon
      **/
-    global define void SetTitleIcon( string icon_name ) {
-	    UI::WizardCommand(`SetDialogIcon( icon_path + "/" + icon_name + ".png", "" ) );
+    global define void SetTitleIcon( string icon_name )
+    {
+	string icon = icon_path + "/" + icon_name + ".png";
+
+	// UI::WizardCommand(`SetVerboseCommands( true ) );
+	UI::WizardCommand(`SetDialogIcon( icon ) );
+	// UI::WizardCommand(`SetVerboseCommands( false ) );
     }
 
 
     /**
      * Clear the wizard 'title' icon, i.e. replace it with nothing
      **/
-    global define void ClearTitleIcon() {
+    global define void ClearTitleIcon()
+    {
 	    UI::WizardCommand(`SetDialogIcon( "" ) );
     }
 
 
     /**
      */
-    global define boolean SetDesktopIcon(string file) {
+    global define boolean SetDesktopIcon( string file )
+    {
 	string filename = sformat("%1/%2.desktop", Directory::desktopdir, file);
 	path filepath = .yast2.desktop.v + filename + ."Desktop Entry".Icon;
 	string icon = (string) SCR::Read(filepath);
 	y2debug("icon: %1 (%2)", icon, filepath);
 
-	if(icon == nil) {
+	if (icon == nil) 
 	    return false;
-	}
+
 	SetTitleIcon(icon);
 	return true;
     }
