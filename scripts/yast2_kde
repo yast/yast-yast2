@@ -12,6 +12,7 @@
 
 # load common script functions
 . /usr/lib/YaST2/bin/yast2-funcs
+set_qt_home_dir
 
 # set lang from sysconfig
 set_lang_from_sysconfig
