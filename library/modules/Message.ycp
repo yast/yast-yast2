@@ -79,6 +79,29 @@ Reason: %2"), destination, reason);
 }
 
 /**
+ * Error writing file 'file'
+ * @param string file
+ * @return string Error writing file 'file'
+ */
+global define string ErrorWritingFile (string file) {
+  /* TRANSLATORS: Popup message, %1 is a file name like "/tmp/out" */
+  return sformat(_("Error writing file '%1'"), file);
+}
+
+/**
+ * Error writing file 'file'\n\nReason: reason
+ * @param string file
+ * @param string reason
+ * @return string Error writing file 'file'\n\nReason: reason
+ */
+global define string ErrorWritingFileBecause (string file, string reason) {
+  /* TRANSLATORS: Popup message, %1 is a file name like "/tmp/out", %2 is the reason of error */
+  return sformat(_("Error writing file '%1'.
+
+Reason: %2"), file, reason);
+}
+
+/**
  * Cannot open file 'file'
  * @param string file
  * @return string Cannot open file 'file'
