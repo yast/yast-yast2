@@ -252,16 +252,16 @@
 	    hardBoot = installMap["hardBoot"]:false;
 	}
 
-	language	= installMap["language"]:"";
-	live_eval	= installMap["demo"]:"0" == "1";
-	text		= installMap["textmode"]:"0" == "1";
-	manual		= installMap["manual"]:"" == "1";
-	serial_console	= installMap["console"]:"" != "";
-	braille		= installMap["braille"]:"" != "";
-	vnc		= installMap["runvnc"]:"" == "1";
-	boot		= installMap["instmode"]:"cd";
-	sourcemounted	= installMap["sourcemounted"]:"" == "1";
+	language	= installMap["Locale"]:"";
+	live_eval	= installMap["Demo"]:"0" == "1";
+	text		= installMap["Textmode"]:"0" == "1";
+	manual		= installMap["Manual"]:"" == "1";
+	serial_console	= installMap["Console"]:"" != "";
+	braille		= installMap["Braille"]:"" != "";
+	vnc		= installMap["VNC"]:"" == "1";
+	boot		= installMap["Instmode"]:"cd";
+	sourcemounted	= installMap["Sourcemounted"]:"" == "1";
 	// the value is a string
-	autoinst	= installMap["autoinstall"]:"" != "";
+	autoinst	= installMap["AutoYaST"]:"" != "";
     }
 }
