@@ -271,3 +271,4 @@ repeated) * optional/required arguments
 It would not support:
  * option with different data types, or possibility to omit its value
 
+2. handle stdin/stdout/strerr

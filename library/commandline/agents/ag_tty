@@ -7,11 +7,11 @@
 
 # An agent for /dev/tty using Perl readline library
 
-use utf8;
-
 use ycp;
 use strict;
 use Term::ReadLine;
+
+use Encode;
 
 # query the current encoding
 use I18N::Langinfo qw(langinfo CODESET);
@@ -21,7 +21,6 @@ my $codeset = langinfo(CODESET());
 # MAIN cycle
 #
 
-binmode STDIN, ":encoding(utf8)";
 # read the agent arguments
 $_ = <STDIN>;
 
@@ -36,8 +35,6 @@ ycp::Return (undef);
   
  $term->ornaments(0);
  
-  binmode $OUT, ":encoding($codeset)";
-  
 while ( <STDIN> )
 {
     my ($command, $path, $argument) = ycp::ParseCommand ($_);
@@ -46,7 +43,13 @@ while ( <STDIN> )
     {
 	if( $path eq "." )
 	{
-	    print $OUT  $argument ,"\n";
+	    # recode from utf8 (broken YaST)
+	    # it sends almost UTF-8 (but encodes some chars as octals), so Perl
+	    # does not like it as UTF-8. Let's force the conversion
+	    my $octets = encode( "iso-8859-1", $argument );
+	    Encode::from_to($octets, "utf-8", $codeset);
+	    
+	    print $OUT  $octets ,"\n";
 	    ycp::Return ( "true" );
 	}
 	elsif ( $path eq ".prompt" )

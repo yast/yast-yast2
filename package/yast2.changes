@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jun 25 13:11:47 CEST 2003 - visnov@suse.de
+
+- fixed Perl/encoding problem in commandline agent
+- fixed padding of helps in commandline
+- quiet is now default, verbose an option
+
+-------------------------------------------------------------------
 Tue Jun 24 11:05:50 CEST 2003 - visnov@suse.de
 
 - 2.8.11
