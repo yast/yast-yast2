@@ -3,6 +3,7 @@ Fri Aug  8 14:47:14 CEST 2003 - gs@suse.de
 
 - bugfix in file_popups.ycp/PopupDir(dir) (if the argument is an 
   empty string, 'pwd' is the directory)
+- menu.ycp: improved layout and usability
 
 -------------------------------------------------------------------
 Wed Aug  6 12:27:01 CEST 2003 - fehr@suse.de
