@@ -175,6 +175,19 @@
      */
     global string ui_mode = "expert";
 
+    /**
+     * True if firewall should be enabled by default during the installation
+     * proposal
+     * No need to save in the system
+     */
+    global boolean enable_firewall  = true;
+
+    /**
+     * True if SSH port should be open by default during the installation
+     * proposal
+     * No need to save in the system
+     */
+    global boolean firewall_enable_ssh = false;
 
 
     /**
