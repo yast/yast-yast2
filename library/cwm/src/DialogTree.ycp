@@ -1,0 +1,296 @@
+/**
+ * File:	modules/DialogTree.ycp
+ * Package:	Common widget manipulation
+ * Summary:	Routines for handling the dialog with tree on the left side
+ * Authors:	Jiri Srain <jsrain@suse.cz>
+ *
+ * $Id$
+ *
+ */
+
+{
+
+ module "DialogTree";
+textdomain "base";
+
+import "CWM";
+import "Label";
+import "Wizard";
+
+
+// local data
+
+/**
+ * Currently selected item in the tree
+ */
+string selected_screen = nil;
+
+/**
+ * Previously selected item in the tree
+ */
+string previous_screen = nil;
+
+
+// virtual DialogTree widget
+
+/**
+ * Init function of virtual DialogTree widget
+ * @param key string widget key
+ */
+define void DialogTreeInit (string key) {
+    if (UI::WidgetExists(`id(`wizardTree)))
+    {
+	UI::ChangeWidget(`id(`wizardTree), `CurrentItem, selected_screen);
+	UI::SetFocus (`id (`wizardTree));
+    }
+    else
+    {
+	UI::WizardCommand(`SelectTreeItem(selected_screen));
+    }
+}
+
+/**
+ * Handle function of virtual DialogTree widget
+ * @param key string widget key
+ * @param event map event that caused handler call
+ * @return symbol for wizard sequencer or nil
+ */
+define symbol DialogTreeHandle (string key, map event) {
+    any ret = event["ID"]:nil;
+
+    if (ret == `wizardTree)
+    {
+	ret = (string)UI::QueryWidget (`id (`wizardTree), `CurrentItem);
+    }
+    previous_screen = selected_screen;
+    selected_screen = (string)ret;
+    return `_cwm_internal_tree_handle;
+}
+
+/**
+ * Get the map of the virtal left tree widget
+ * @param ids a list of widget ids of all tree items
+ * @return map tree of the widget
+ */
+define map<string,any> GetVirtualDialogTreeWidget (list<string> ids) {
+    list handle_events = ids;
+    handle_events = add (handle_events, `wizardTree);
+    return $[
+	"init" : DialogTreeInit,
+	"handle_events" : handle_events,
+	"handle" : DialogTreeHandle,
+    ];
+}
+
+// internal functions
+
+/**
+ * Draw the screen related to the particular tree item
+ * @param current_screen a map describing the current screen
+ * @param widget_descr a map describing all widgets that may be present in the
+ *  screen
+ * extra_widget a map of the additional widget to be added at the end
+ *  of the list of widgets
+ * @return a list of preprocessed widgets that appear in this dialog
+ */
+define list<map<string,any> > DrawScreen (map<string,any> current_screen,
+    map<string,map<string,any> > widget_descr, map<string,any> extra_widget)
+{
+    list<string> widget_names = current_screen["widget_names"]:[];
+    term contents = current_screen["contents"]:`VBox ();
+    string caption = current_screen["caption"]:"";
+
+    list<map<string,any> > w = CWM::CreateWidgets (widget_names, widget_descr);
+    string help = CWM::MergeHelps (w);
+    contents = CWM::PrepareDialog (contents, w);
+    Wizard::SetContents (caption, contents, help, true, true);
+
+    // add virtual widget
+    w = add (w, extra_widget);
+
+    // return widgets of the dialog for further usage
+    return w;
+}
+
+/**
+ * Draw the dialog with the flat tree (only single level of the tree entries)
+ * @param ids_order a list of IDs in the same order as they are expected to be
+ *  in the left menu
+ * @param screens map of all screens (key is screen ID, value is screen
+ *  description map
+ */
+global define void ShowFlat (
+    list<string> ids_order,
+    map<string,map<string,any> > screens
+)
+{
+    Wizard::OpenTreeNextBackDialog();
+    list<map> tree = [];
+    foreach (string i, ids_order,{
+	tree = Wizard::AddTreeItem (tree, "",
+	    screens[i, "tree_item_label"]:screens[i, "caption"]:"" ,i);
+    });
+    Wizard::CreateTree(tree, "");
+}
+
+/**
+ * Draw the dialog with multi-level tree
+ * @param tree_handler a callback to a function that creates the tree using
+ *  Wizard::AddTreeItem and returns the resulting tree
+ */
+global define void ShowTree (list<map>() tree_handler) {
+    Wizard::OpenTreeNextBackDialog();
+    list<map> tree = tree_handler ();
+    Wizard::CreateTree(tree, "");
+}
+
+/**
+ * Adjust buttons at the bottom of the dialog
+ * @param buttons a map with keys "abort_button", "back_button" and
+ *  "next_button" adn values labels of appropriate buttons
+ */
+global define void AdjustButtons (map<string,string> buttons) {
+    CWM::AdjustButtons (
+	buttons["next_button"]:Label::NextButton (),
+	buttons["back_button"]:Label::BackButton (),
+	buttons["abort_button"]:Label::AbortButton (),
+	Label::HelpButton ()
+    );
+}
+
+/**
+ * Adjust buttons at the bottom of the dialog
+ * @param buttons a map with keys "abort_button", "back_button" and
+ *  "next_button" adn values labels of appropriate buttons, other keys
+ *  with values of other types are possible
+ */
+global define void AdjustButtonsAny (map<string,any> buttons) {
+    map<string,string> buttons2 = (map<string,string>)filter (string k, any v,
+	buttons,
+    {
+	return issubstring (k, "_button");
+    });
+    AdjustButtons (buttons2);
+}
+
+/**
+ * Generic function to create dialog and handle it's events.
+ * Run the event loop over the dialog with the left tree.
+ * @param setttings a map of settings of the dialog
+ * <pre>
+ * "screens" : map<string,map<string,any>> of all screens
+ *             (key is screen ID, value is screen description map)
+ * "widget_descr" : map<string,map<string,any>> description map of all widgets
+ * "initial_screen" : string the id of the screen that should be displayed
+ *                    as the first
+ * "fallback" : map<any,any> initialize/save/handle fallbacks if not specified
+ *              with the widgets, to be passed to CWM
+ * </pre>
+ * @return symbol wizard sequencer symbol
+ */
+global define symbol Run (map<string,any> settings) {
+    map<string,map<string,any> > screens = settings["screens"]:$[];
+    map<string,map<string,any> > widget_descr = settings["widget_descr"]:$[];
+    string initial_screen = settings["initial_screen"]:"";
+    map<any, any> functions = settings["fallback"]:$[];
+
+    if (initial_screen == "")
+    {
+	foreach (string k, map<string,any> v, screens, {
+	    if (initial_screen == "")
+		initial_screen = k;
+	});
+    }
+
+    selected_screen = initial_screen;
+    list<string> ids = maplist (string k, map<string,any> v, screens, ``(k));
+    map<string,any> extra_widget = GetVirtualDialogTreeWidget (ids);
+    list<map<string,any> > w
+	= DrawScreen (screens[selected_screen]:$[], widget_descr, extra_widget);
+
+    symbol ret = nil;
+    while (ret == nil)
+    {
+	ret = CWM::Run (w, functions);
+	// switching scrren, dialog was validated and stored
+	if (ret == `_cwm_internal_tree_handle)
+	{
+	    symbol(string) toEval = (symbol(string))
+		screens[selected_screen, "init"]:nil;
+	    symbol tab_init = nil;
+	    if (toEval != nil)
+		tab_init = toEval (selected_screen);
+	    if (tab_init == nil) // everything OK
+	    {
+		w = DrawScreen (screens[selected_screen]:$[], widget_descr,
+		    extra_widget);
+		ret = nil;
+	    }
+	    else if (tab_init == `refuse_display) // do not display this screen
+	    {
+		selected_screen = previous_screen;
+		ret = nil;
+	    }
+	    else // exit dialog
+	    {
+		ret = tab_init;
+	    }
+	}
+    }
+    return ret;
+}
+
+/**
+ * Run the event loop over the dialog with the left tree. After finished, run
+ *  UI::CloseDialog
+ * @param setttings a map of settings of the dialog. See @Run for possible keys
+ * @return symbol wizard sequencer symbol
+ */
+global define symbol RunAndHide (map<string,any> settings) {
+    symbol ret = Run (settings);
+    UI::CloseDialog ();
+    return ret;
+}
+
+/**
+ * Display the dialog and run its event loop
+ * @param setttings a map of settings of the dialog
+ * <pre>
+ * "ids_order" : list<string> of IDs in the same order as they are expected
+ *               to be in the left menu. Not used if "tree_creator" is defined
+ * "tree_creator" : list<map>() a callback to a function that creates
+ *                  the tree using Wizard::AddTreeItem and returns the
+ *                  resulting tree
+ * "back_button" : string label of the back button (optional)
+ * "next_button" : string label of the next button (optional)
+ * "abort_button" : string label of the abort button (optional)
+ * See @RunAndHide for other possible keys in the map
+ * </pre>
+ * @return symbol wizard sequencer symbol
+ */
+global define symbol ShowAndRun (map<string,any> settings) {
+    list<string> ids_order = settings["ids_order"]:[];
+    map<string,map<string,any> > screens = settings["screens"]:$[];
+    list<map>() tree_handler = (list<map>())settings["tree_creator"]:nil;
+
+    if (tree_handler != nil)
+    {
+	ShowTree (tree_handler);
+    }
+    else
+    {
+	ShowFlat (ids_order, screens);
+	if (settings["initial_screen"]:"" == "")
+	{
+	    find (string s, ids_order, {
+		settings["initial_screen"] = s;
+		return true;
+	    });
+	}
+    }
+    AdjustButtonsAny (settings);
+    return RunAndHide (settings);
+}
+
+// EOF
+}

@@ -4,7 +4,9 @@ YCPCFLAGS = -M ../../modules -M ../../wizard/src
 
 module_DATA =			\
 	CWM.ycp			\
-	TablePopup.ycp
+	TablePopup.ycp		\
+	DialogTree.ycp		\
+	CWMTab.ycp
 
 EXTRA_DIST = $(module_DATA)
 

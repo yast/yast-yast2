@@ -13,3 +13,4 @@ suse-html.dsl
 suse-print.dsl
 cwm
 *.junk
+db2html.*

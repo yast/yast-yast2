@@ -8,6 +8,8 @@
 <!ENTITY advanced SYSTEM "advanced.xml">
 <!ENTITY widgets SYSTEM "widgets.xml">
 <!ENTITY table_popup SYSTEM "table_popup.xml">
+<!ENTITY dialog_tree SYSTEM "dialog_tree.xml">
+<!ENTITY cwm_tab SYSTEM "cwm_tab.xml">
 <!ENTITY terminology SYSTEM "terminology.xml">
 <!ENTITY tutor SYSTEM "tutor.xml">
 
@@ -81,6 +83,8 @@ are handled.
 &advanced
 &widgets
 &table_popup
+&dialog_tree
+&cwm_tab
 &tutor
 </book>
 

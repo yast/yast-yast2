@@ -19,7 +19,15 @@
 
 // local variables
 
+    /**
+     * Widget that is being currently processed
+     */
     map<string, any> processed_widget = $[];
+
+    /**
+     * All widgets of the current dialog, in the correct order
+     */
+    list<map<string,any> > current_dialog_widgets = [];
 
 // local functions
 
@@ -196,6 +204,15 @@
 	return false;
     }
 
+define integer GetLowestTimeout (list<map<string, any> > widgets) {
+    integer minimum = 0;
+    foreach (map<string,any> w, widgets, {
+	integer timeout = w["ui_timeout"]:0;
+	if ((timeout < minimum && timeout > 0) || minimum == 0)
+	    minimum = timeout;
+    });
+    return minimum;
+}
     /**
       * Add fallback functions to a widget
       * global only because of testsuites
@@ -263,6 +280,16 @@
             if (toEval != nil)
             {
 		toEval (w["_cwm_key"]:"", event);
+            }
+        });
+    }
+
+    global define void cleanupWidgets (list<map> widgets) {
+        foreach (map w, widgets, ``{
+            void(string) toEval = (void(string)) (w["clean_up"]:nil);
+            if (toEval != nil)
+            {
+		toEval (w["_cwm_key"]:"");
             }
         });
     }
@@ -559,6 +586,25 @@
 	return ProcessTerm (dialog, m);
     }
 
+/**
+ * Replace help for a particular widget
+ * @param widget string widget ID of widget to replace help
+ * @param help string new help to the widget
+ */
+global define void ReplaceWidgetHelp (string widget, string help) {
+    current_dialog_widgets = maplist (map<string,any> w,
+	current_dialog_widgets,
+    {
+	if (w["_cwm_key"]:"" == widget)
+	{
+	    w["help"] = help;
+	}
+	return w;
+    });
+    string help = MergeHelps (current_dialog_widgets);
+    Wizard::RestoreHelp (help);
+}
+
     /**
       * Generic function to create dialog and handle it's events
       * @param widgets list of widget maps
@@ -568,14 +614,23 @@
       */
     global define symbol Run (list<map<string, any> > widgets, map<any, any> functions) ``{
 	widgets = mergeFunctions (widgets, functions);
+	current_dialog_widgets = widgets;
 	initWidgets (widgets);
 	any ret = nil;
 	list save_exits = [`next, `ok];
 	boolean save = false;
 	map<string, any> event_descr = $[];
+	integer timeout = GetLowestTimeout (widgets);
         while (ret != `back && ret != `abort && ! save)
         {
-	    event_descr = (map<string, any>) UI::WaitForEvent ();
+	    if (timeout > 0)
+	    {
+		event_descr = (map<string,any>) UI::WaitForEvent (timeout);
+	    }
+	    else
+	    {
+		event_descr = (map<string, any>) UI::WaitForEvent ();
+	    }
 	    ret = (event_descr["ID"]:nil);
 	    symbol handle_ret = handleWidgets (widgets, event_descr);
 	    if (handle_ret != nil
@@ -633,7 +688,53 @@
         }
 	if (save)
 	    saveWidgets (widgets, event_descr);
+	cleanupWidgets (widgets);
         return (symbol)ret;
+    }
+
+    /**
+     * Adjust the labels of the bottom buttons of the wizard sequencer
+     * @param next label of the "Next" button
+     * @param back string label of the "Back" button
+     * @param abort string label of the "Abort" button
+     * @param help string label of the additional "Help" button (if needed)
+     */
+    global define void AdjustButtons (string next, string back, string abort,
+	string help)
+    {
+	if (UI::HasSpecialWidget (`Wizard))
+	    help = "";
+	if (next == nil)
+	    next = "";
+	if (back == nil)
+	    back = "";
+	if (abort == nil)
+	    abort = "";
+	if (back == "" || help == "")
+	// back or help is missing, great!
+	{
+	    if (next != "")
+		Wizard::SetNextButton (`next, next);
+	    else
+		Wizard::HideNextButton ();
+
+	    if (abort != "")
+		Wizard::SetAbortButton (`abort, abort);
+	    else
+		Wizard::HideAbortButton ();
+
+	    if (back != "")
+		Wizard::SetBackButton (`back, back);
+	    else if (help != "")
+		Wizard::SetBackButton (`help, Label::HelpButton ());
+	    else
+		Wizard::HideBackButton ();
+	}
+	else
+	// both back and help are present, problem!
+	{
+	    // TODO this situation if it is needed
+	}
     }
 
     /**
