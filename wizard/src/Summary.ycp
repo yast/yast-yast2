@@ -1,0 +1,178 @@
+/**
+ * File:
+ *  Summary.ycp
+ *
+ * Modules:
+ *  Common ui library
+ *
+ * Summary:
+ *  Support for summaries of the configured devices
+ *
+ * Authors:
+ *  Jan Holesovsky <kendy@suse.cz>, 2001
+ *  Stefan Hundhammer <sh@suse.de>, 2001
+ *
+ * $Id$
+ *
+ * Create a unified-looking RichText description of the not configured/configured devices.
+ * This is used in <module_name>_summary.ycp modules.
+ */
+
+/**
+ * Example of Summary.ycp usage
+ *
+ * @example  {
+ * @example      import "Summary";
+ * @example
+ * @example      return Summary::DevicesList(
+ * @example      [
+ * @example          Summary::Device("Cannon BJC-6100", "Configured as lp."),
+ * @example          Summary::Device("Epson Stylus Color", Summary::NotConfigured())
+ * @example      ]);
+ * @example  }
+ *
+ * Another example of Summary.ycp usage
+ *
+ * @example  {
+ * @example      import "Summary";
+ * @example
+ * @example      return Summary::DevicesList([]);
+ * @example  }
+ */
+
+{
+    module "Summary";
+    import "Mode";
+    textdomain "wizard";
+
+    /**
+     * Function that creates the whole final product. "Not detected" will be returned
+     * if the list is empty.
+     *
+     * @param list devices A list of output of the summaryDevice() calls
+     * @return string The resulting text.
+     */
+    global define string DevicesList(list devices) ``{
+	string text = "";
+	if (size(devices) == 0)
+	{
+	    if (!Mode::config)
+		text = sformat("<ul><li>%1</li></ul>", UI(_("Not detected.")));
+	    else
+		text = sformat("<ul><li>%1</li></ul>", NotConfigured());
+	}
+	else
+	{
+	    foreach(`dev, devices, ``{
+		text = text+dev;
+	    });
+	    text = sformat("<ul>%1</ul>", text);
+	}
+
+	return text;
+    };
+
+    /**
+     * Function that creates description of one device.
+     *
+     * @param string name The name of the device given by probing
+     * @param string description Additional description (how it was confgured or so)
+     * @return string String with the item.
+     */
+    global define string Device(string name, string description) ``{
+	return sformat("<li><p>%1<br>%2</p></li>",
+		       name, description);
+    };
+
+    /**
+     * Function that creates a 'Not configured.' message.
+     * @return string String with the message.
+     */
+    global define NotConfigured() ``{
+	return UI(_("Not configured yet."));
+    };
+
+    /**
+     * Add a RichText section header to an existing summary.
+     *
+     * @param summary	previous RichText (HTML) summary to add to
+     * @param header	header to add (plain text, no HTML)
+     * @return string	the new summary including the new header
+     */
+    global define string AddHeader( string summary, string header ) ``{
+	return summary + "<h3>" + header + "</h3>";
+    };
+
+    /**
+     * Add a line to an existing summary.
+     *
+     * @param summary	previous RichText (HTML) summary to add to
+     * @param line	line to add (plain text, no HTML)
+     * @return string	the new summary including the new line
+     */
+    global define string AddLine( string summary, string line ) ``{
+	return summary + "<p>" + line + "</p>";
+    };
+
+    /**
+     * Add a newline to an existing summary.
+     *
+     * @param summary	previous RichText (HTML) summary to add to
+     * @return string	the new summary
+     */
+    global define string AddNewLine( string summary ) ``{
+	return summary + "<br>";
+    };
+
+    /**
+     * Start a list within a summary.
+     *
+     * @param summary	previous RichText (HTML) summary to add to
+     * @return string	the new summary
+     */
+    global define string OpenList( string summary ) ``{
+	return summary + "<ul>";
+    };
+
+    /**
+     * End a list within a summary.
+     *
+     * @param summary	previous RichText (HTML) summary to add to
+     * @return string	the new summary
+     */
+    global define string CloseList( string summary ) ``{
+	return summary + "</ul>";
+    };
+
+    /**
+     * Add a list item to an existing summary.
+     * Requires a previous call to 'summaryOpenList()'.
+     *
+     * @param summary	previous RichText (HTML) summary to add to
+     * @param item	item to add (plain text, no HTML)
+     * @return string	the new summary including the new line
+     */
+    global define string AddListItem( string summary, string item ) ``{
+	return summary + "\n<li>" + item + "</li>";
+    };
+
+
+    /**
+     * Add a simple section to an existing summary,
+     * consisting of a header and one single item.
+     *
+     * @param summary	previous RichText (HTML) summary to add to
+     * @param header	section header (plain text, no HTML)
+     * @param item	section item   (plain text, no HTML)
+     * @return string	the new summary including the new line
+     */
+    global define string AddSimpleSection( string summary, string header, string item ) ``{
+	summary = AddHeader	( summary, header );
+	summary = OpenList	( summary );
+	summary = AddListItem	( summary, item );
+	summary = CloseList	( summary );
+
+	return summary;
+    };
+
+}

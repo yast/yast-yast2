@@ -1,0 +1,9 @@
+Makefile
+Makefile.in
+.libs
+.deps
+site.exp
+*.sum
+*.log
+tmp.*
+tmp.*

@@ -1,0 +1,374 @@
+/**
+ * File:
+ *  Progress.ycp
+ *
+ * Module:
+ *  Common ui library
+ *
+ * Summary:
+ *  Progress bar support.
+ *
+ * Authors:
+ *  Petr Blahos <pblahos@suse.cz>, 2001
+ *
+ * $Id$
+ *
+ * Functions for progress bar.<br>
+ * Example of progress bar usage (note that I can not use underscore (not to confuse gettext here...):
+ * Progress bar supposes main wizard dialog is created.<pre>
+ * Progress::Simple ("Some progress bar", "Progress runs here...", 5, "");
+ * Progress::NextStep ();
+ * Progress::NextStep ();
+ * Progress::NextStep ();
+ * Progress::NextStep ();</pre>
+ *
+ * Another example:<pre>
+ * Progress::New ("Complex progress bar", " ", 100, [
+ *      "Stage1", "Stage2", "Stage3",
+ *      ], [
+ *      "Stage 1 ...", "Stage 2 ...", "Stage 3 ...", "Finished",
+ *      ], "Help text");
+ * Progress::NextStage ();
+ * Progress::NextStageStep (20);
+ * Progress::Stage (0, "I am back", 2);
+ * Progress::Title ("Still in stage 0");
+ * Progress::NextStageStep (90);
+ * Progress::Finish ();</pre>
+ *
+ * See also hand made documentation.
+ * <a href="../Progress.html">Progress.html</a>
+ */
+{
+    module "Progress";
+    import "Wizard";
+
+    // Number of stages.
+    integer stages = 0;
+    // Number of steps
+    integer steps = 0;
+    // Current stage
+    integer current_stage = 0;
+    // Current step
+    integer current_step = 0;
+    // list of stage-titles
+    list titles = [];
+
+    // is progress bar used?
+    boolean visible = true;
+
+    // superior progress (stages) bar
+    integer super_steps = 0;
+    integer super_step = 0;
+    list super_stages = [];
+
+    /**
+     * Turns progress bar off. All Progress:: calls return immediatelly.
+     */
+    global define void off () ``{ visible = false; }
+
+    /**
+     * Turns progress bar on after calling Progress::off.
+     */
+    global define void on () ``{ visible = true; }
+
+    /**
+     * Create simple progress bar with no stages, only with progress bar.
+     * @param window_title Title of the window.
+     * @param progress_title Title of the progress bar.
+     * @param length Number of steps.
+     * @param help_text Help text.
+     */
+    global define void Simple (string window_title, string progress_title, integer length, string help_text) ``{
+	if (!visible)
+	    return ;
+	stages = 0;
+	steps = length;
+	current_stage = -1;
+	current_step = -1;
+	if (progress_title == "")
+	{
+	    // Reservere space for future progress bar labels. The ProgressBar
+	    // widget will suppress the label above the progress bar if the
+	    // initial label string is empty.
+	    progress_title = " ";
+	}
+	term bar = `ProgressBar(`id(`pb), progress_title, steps, 0);
+	UI (``{
+	    if (UI::WidgetExists (`id (`back)))	ChangeWidget (`id (`back), `Enabled, false);
+	    if (UI::WidgetExists (`id (`next)))	ChangeWidget (`id (`next), `Enabled, false);
+	});
+	if ("" != help_text && nil != help_text && UI::WidgetExists (`id (`HelpText)))
+	{
+	    UI::ChangeWidget (`id (`HelpText), `Value, help_text);
+	}
+	UI::ChangeWidget (`id (`title), `Value, window_title);
+	UI::ReplaceWidget (`id (`contents), bar);
+
+    }
+    /**
+     * New complex progress bar with stages.
+     * @param window_title title of the window
+     * @param progress_title title of the progress bar. Pass at least " "
+     *                       (one space) if you want some progress bar title.
+     * @param length number of steps. If 0, no progress bar is created,
+     *               there are only stages and bottom title. THIS IS NOT
+     *               NUMBER OF STAGES!
+     * @param stg list of strings - stage names. If it is nil, then there
+     *            are no stages.
+     * @param tits Titles corresponding to stages. When stage changes,
+     *             progress bar title changes to one of these titles. May
+     *             be nil/empty.
+     * @param help_text help text
+     */
+    global define void New (string window_title, string progress_title, integer length, list stg, list tits, string help_text) ``{
+	if (!visible)
+	    return ;
+	steps = length;
+	stages = size (stg);
+	titles = tits;
+	current_step = -1;
+	current_stage = -1;
+	if (progress_title == "")
+	{
+	    // Reservere space for future progress bar labels. The ProgressBar
+	    // widget will suppress the label above the progress bar if the
+	    // initial label string is empty.
+	    progress_title = " ";
+	}
+	term bar = `VBox( // progressbar only
+	    `ProgressBar(`id(`pb),progress_title,length,0)
+	    );
+	if (0 != stages)
+	{ // version with stages
+	    bar = `VBox (`VSpacing (1));
+	    integer i = 0;
+	    foreach (`item, stg, ``{
+		string label_label = sformat ("bar_label_%1",i);
+		string label_heading = "-   ";
+		bar = add (bar,
+			  `HBox (
+			      `HSpacing (1),
+			      // check_ycp wants this text to be translatable. I do not know why.
+			      `Heading (`id (label_label), label_heading),
+			      `Label (`opt (`hstretch), item)
+			      )
+		    );
+		i = i+1;
+	    });
+	    if (0 != steps)
+	    {  // stages and progress
+		bar = add (bar, `VBox (
+		    `VStretch (),
+		    `ProgressBar (`id (`pb), progress_title, length, 0),
+		    `VSpacing (2)
+		    ));
+	    }
+	    else
+	    {  // stages only
+		bar = add (bar, `VBox (
+		    `VStretch (),
+		    `Label (`id (`pb), `opt (`hstretch), progress_title),
+		    `VSpacing (2)
+		    ));
+	    }
+	}
+	UI (``{
+	    if (UI::WidgetExists (`id (`back)))	ChangeWidget (`id (`back), `Enabled, false);
+	    if (UI::WidgetExists (`id (`next)))	ChangeWidget (`id (`next), `Enabled, false);
+	});
+	if ("" != help_text && nil != help_text && UI::WidgetExists (`id (`HelpText)))
+	{
+	    UI::ChangeWidget (`id (`HelpText), `Value, help_text);
+	}
+	UI::ChangeWidget (`id (`title), `Value, window_title);
+	UI::ReplaceWidget (`id (`contents), bar);
+    }
+    /**
+     * Jumps to the next stage and sets step to st.
+     * @param st new progress bar value
+     */
+    global define void NextStageStep (integer st) ``{
+	if (!visible)
+	    return ;
+	NextStage ();
+	Step (st);
+    }
+    /**
+     * Advance stage, advance step by 1 and set progress bar caption to
+     * that defined in New.
+     */
+    global define void NextStage () ``{
+	if (!visible)
+	    return ;
+	NextStep ();
+
+	if (0 == stages || current_stage > stages)
+	{
+	    y2error ("Non-existing stage requested.");
+	    return ;
+	}
+	if (current_stage >= 0)
+	{
+	    UI::ChangeWidget(`id (sformat ("bar_label_%1", current_stage)), `Value, UI::Glyph(`CheckMark));
+	}
+	if (current_stage < stages )
+	{
+	    current_stage = current_stage + 1;
+	    if (current_stage < size (titles))
+	    {
+		UI::ChangeWidget(`id(`pb), 0 == steps ? `Value : `Label, select (titles, current_stage, ""));
+	    }
+	    if (current_stage < stages)
+	    {
+		UI::ChangeWidget(`id (sformat ("bar_label_%1", current_stage)), `Value, UI::Glyph(`BulletArrowRight));
+	    }
+	}
+    }
+    /**
+     * Go to stage st, change progress bar title to title and set progress
+     * bar step to step.
+     * @param st New stage.
+     * @param title New title for progress bar. If nil, title specified in
+     *              New is used.
+     * @param step New step or -1 if step should not change.
+     */
+    global define void Stage (integer st, string title, integer step) ``{
+	if (!visible)
+	    return ;
+	if (-1 != step)
+	{
+	    Step (step);
+	}
+	if (current_stage >= 0)
+	{
+	    UI::ChangeWidget(`id (sformat ("bar_label_%1", current_stage)), `Value, st > current_stage ? UI::Glyph(`CheckMark): "-   ");
+	}
+	current_stage = st;
+	string s = "";
+	if (current_stage < size (titles))
+	{
+	    s = select (titles, current_stage, "");
+	}
+	if (nil != title)
+	{
+	    s = title;
+	}
+	if (current_stage < size (titles))
+	{
+	    UI::ChangeWidget(`id(`pb), 0 == steps ? `Value : `Label, s);
+	}
+	if (current_stage < stages)
+	{
+	    UI::ChangeWidget(`id (sformat ("bar_label_%1", current_stage)), `Value, UI::Glyph(`BulletArrowRight));
+	}
+    }
+    /**
+     * Some people say it is the best operating system ever. But now to the
+     * function. Advances progress bar value by 1.
+     */
+    global define void NextStep () ``{
+	if (!visible || 0 == steps)
+	    return ;
+	current_step = current_step + 1;
+	if (current_step > steps)
+	{
+	    y2error ("Progress bar doesn't have so many steps.");
+	    return ;
+	}
+	UI::ChangeWidget (`id (`pb), `Value, current_step);
+    }
+    /**
+     * Changes progress bar value to st.
+     * @param st new value
+     */
+    global define void Step (integer st) ``{
+	if (!visible || 0 == steps)
+	    return ;
+	current_step = st;
+	if (current_step > steps)
+	{
+	    y2error ("Progress bar doesn't have so many steps.");
+	    return ;
+	}
+	UI::ChangeWidget (`id (`pb), `Value, current_step);
+    }
+    /**
+     * Change progress bar title.
+     * @param t new title. Use ""(empty string) if you want an empty progress bar.
+     */
+    global define void Title (string t) ``{
+	if (visible)
+	    UI::ChangeWidget(`id( `pb), 0 == steps ? `Value : `Label, t);
+    }
+    /**
+     * Moves progress bar to the end and marks all stages as completed.
+     */
+    global define void Finish () ``{
+	if (!visible)
+	    return ;
+	if (0 != stages)
+	{
+	    while (current_stage < stages)
+		NextStage ();
+	}
+	if (0 != steps)
+	{
+	    UI::ChangeWidget (`id (`pb), `Value, steps);
+	}
+	UI::ChangeWidget(`id( `pb), 0 == steps ? `Value : `Label, " ");
+    }
+
+    /**
+     * Creates a higher-level progress bar made of stages. Currently it is
+     * placed instead of help text.
+     * @param title title of the progress...
+     * @param stages list of stage descriptions
+     */
+    global define void OpenSuperior (string title, list stages) ``{
+	term left = `VBox (`VStretch ());
+	term right = `VBox (`VStretch ());
+	integer idx = 0;
+	super_steps = size (stages);
+	super_step = -1;
+	foreach (`i, stages, ``{
+	    string id = sformat ("super_progress_%1", idx);
+	    left = add (left, `Heading (`id (id), "-  "));
+	    right = add (right, `Label (`opt (`hstretch), i));
+	    left = add (left, `VStretch ());
+	    right = add (right, `VStretch ());
+	    idx = idx + 1;
+	});
+	left = add (left, `HSpacing (4));
+	right = add (right, `HStretch ());
+	Wizard::ReplaceHelp (`VBox (
+		    `HBox (
+			`HSpacing (1),
+			`Frame (
+			    title,
+			    `HBox (`HSpacing (1), left, right)
+			    )
+			),
+		    `VSpacing (0.5)
+		    )
+		);
+    }
+    /**
+     * Replaces stages of superior progress by an empty help text.
+     */
+    global define void CloseSuperior () ``{
+	Wizard::RestoreHelp ("");
+	super_steps = 0;
+	super_step = 0;
+    }
+    /**
+     * Make one step in a superior progress bar.
+     */
+    global define void StepSuperior () ``{
+	if (super_step >= 0 && super_step < super_steps)
+	    UI::ChangeWidget (`id (sformat ("super_progress_%1", super_step)), `Value, UI::Glyph (`CheckMark));
+	super_step = super_step + 1;
+	if (super_step >= super_steps)
+	    return;
+	UI::ChangeWidget (`id (sformat ("super_progress_%1", super_step)), `Value, UI::Glyph (`BulletArrowRight));
+    }
+}

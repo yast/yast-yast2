@@ -1,0 +1,277 @@
+/**
+ * Module:		wizard_dialog.ycp
+ *
+ * Authors:		Gabriele Strattner <gs@suse.de>
+ *
+ * Purpose:
+ *
+ * Provides the WizardDialog (common screen for all YaST2 installation
+ * modules ) and functions to set the contents, to replace and restore
+ * special widgets.
+ *
+ * $Id$
+ */
+
+
+{
+    textdomain "wizard";
+    include "ui/common_messages.ycp";
+
+    y2error( "THIS INCLUDE FILE (ui/wizard_dialog.ycp) IS OUTDATED! Use 'import \"Wizard\"' instead!" );
+
+    /*
+      wizard_dialog.ycp
+
+      General function for Wizard dialogs
+
+      define CreateWizardDialog()
+
+      define SetWizardContents(string title, term contents, string helptext,
+      boolean has_back, boolean has_next)
+      Define how the general framework for the installation
+      wizard should look like. This Macro creates and shows a dialog.
+
+      define SetWizardImage(byteblock|void imagedata)
+      Change the image at the top of the window.
+    */
+
+	UI(``{
+
+	    /*
+	     *	Create a typical installation wizard dialog
+	     *
+	     */
+
+	    global define CreateWizardDialog() ``{
+		y2error( "THIS INCLUDE FILE (ui/wizard_dialog.ycp) IS OUTDATED! Use 'import \"Wizard\"' instead!" );
+		OpenDialog(
+			   `opt(`defaultsize),
+			   `VBox(
+				 `ReplacePoint( `id(`image ), `Image( `opt(`zeroWidth), `suseheader, "SuSE") ),
+				 `HBox(
+				       `HWeight( 30, `ReplacePoint( `id(`helpSpace), `RichText(`id(`help), ""))),
+				       `HSpacing(1),
+				       `HWeight( 70, `VBox(
+							   `VSpacing(0.2),
+							   `Left(`Heading(`id(`title), _("YaST2\nInitializing ..."))),
+
+							   `VWeight(1,
+								    // Dirty little layout trick: give the wizard contents
+								    // a weight which will lower its priority when space is limited
+								    `HVCenter(
+									      `ReplacePoint(`id(`contents), `Empty() )
+									      )
+								    ),
+							   `HBox(
+								 // "back" button: Return to the previous dialog
+								 `ReplacePoint( `id(`rep_back), `PushButton(`id(`back), BackButtonLabel() ) ),
+
+								 `HCenter(
+									  // "abort" button: The installation will be aborted
+									  `ReplacePoint( `id(`rep_abort), `PushButton(`id(`abort), AbortButtonLabel() ) )
+									  ),
+
+								 // "next" button: Proceed to the next dialog
+								 `ReplacePoint( `id(`rep_next), `PushButton(`id(`next), NextButtonLabel()) )
+								 ),
+							   `VSpacing(0.2)
+							   )
+						 ),
+				       `HSpacing(1)
+				       )
+				 )
+			   );
+	    }; // CreateWizardDialog()
+
+
+	    /*
+	     * Define how the general framework for the installation wizard should
+	     * look like. This Macro creates and show a dialog.
+	     */
+	    global define SetWizardContents(string title, term contents, string helptext,
+					    boolean has_back, boolean has_next) ``{
+		y2error( "THIS INCLUDE FILE (ui/wizard_dialog.ycp) IS OUTDATED! Use 'import \"Wizard\"' instead!" );
+		ChangeWidget(`id(`back), `Enabled, has_back);
+		ChangeWidget(`id(`next), `Enabled, has_next);
+		ChangeWidget(`id(`abort),`Enabled, true);
+		ChangeWidget(`id(`help), `Value, helptext);
+		ChangeWidget(`id(`title), `Value, title);
+		ReplaceWidget(`id(`contents), contents);
+		SetFocus( `id(`next) );
+	    };
+
+
+	    /*
+	     * Clear the wizard contents.
+	     *
+	     * This may sound silly, but it gives much faster feedback to the
+	     * user if used properly: Whenever the user clicks "Next" or
+	     * "Back", call ClearWizardContents() prior to any lengthy
+	     * operation -> the user notices instant response, even though he
+	     * may in fact still have to wait.
+	     */
+	    global define ClearWizardContents() ``{
+		SetWizardContents("", `Empty(), "", false, false);
+	    };
+
+
+	    /**
+	     * Set contents of wizard dialog + its title, help_text and buttons labels. Enables both back and next button.
+	     * @param title title of window
+	     * @param contents contents of dialog
+	     * @param help_text help text
+	     * @param back_label label of back button
+	     * @param next_label label of next button
+	     */
+	    global define SetWizardContentsButtons (string title, term contents, string helptext, string back_label, string next_label) ``{
+		ChangeWidget (`id (`back), `Label, back_label);
+		ChangeWidget (`id (`next), `Label, next_label);
+		ChangeWidget (`id (`back), `Enabled, true);
+		ChangeWidget (`id (`next), `Enabled, true);
+		ChangeWidget (`id (`help), `Value, helptext);
+		ChangeWidget (`id (`title), `Value, title);
+		ReplaceWidget (`id (`contents), contents);
+		SetFocus (`id (`next));
+	    };
+
+	    /*
+	     * Change the image at the top of the window.
+	     */
+
+	    global define SetWizardImage(byteblock imagedata) ``{
+		if (imagedata == nil) {
+		    y2warning ("SetWizardImage(): Invalid image - using fallback" );
+		    ReplaceWidget( `id(`image), `Image(`opt(`zeroWidth), `suseheader, "SuSE") );
+		}
+		else
+		    ReplaceWidget( `id(`image), `Image(`opt(`zeroWidth), imagedata, "SuSE") );
+	    };
+
+
+	    /*
+	     * Replace the wizard help subwindow with a custom widget.
+	     * Call this BEFORE SetWizardContents() to avoid geometry
+	     * management problems!
+	     *
+	     * Remember to restore the help subwindow with
+	     * RestoreWizardHelp() before any other module is called!
+	     */
+
+	    global define ReplaceWizardHelp(term contents) ``{
+		ReplaceWidget(`id(`helpSpace), contents);
+	    };
+
+
+	    /*
+	     * Restore the wizard help subwindow after ReplaceWizardHelp().
+	     */
+	    global define RestoreWizardHelp(string helpText) ``{
+		ReplaceWidget(`id(`helpSpace), `RichText(`id(`help), helpText ) );
+	    };
+
+
+	    /*
+	     * Replace the wizard 'back' button with a custom widget.
+	     */
+	    global define ReplaceWizardBackButton(term contents) ``{
+		ReplaceWidget(`id(`rep_back), contents);
+	    };
+
+
+	    /*
+	     * Restore the wizard 'back' button after ReplaceWizardBackButton().
+	     */
+	    global define RestoreWizardBackButton() ``{
+		ReplaceWidget(`id(`rep_back),
+			      `PushButton(`id(`back), BackButtonLabel() )
+			      );
+	    };
+
+	    /*
+	     * Replace the wizard 'next' button with a custom widget.
+	     */
+	    global define ReplaceWizardNextButton(term contents) ``{
+		ReplaceWidget(`id(`rep_next), contents);
+	    };
+
+
+	    /*
+	     * Restore the wizard 'next' button after ReplaceWizardNextButton().
+	     */
+	    global define RestoreWizardNextButton() ``{
+		ReplaceWidget(`id(`rep_next),
+			      `PushButton(`id(`next), NextButtonLabel() )
+			      );
+	    };
+
+
+	    /*
+	     * Replace the wizard 'abort' button with a custom widget.
+	     */
+	    global define ReplaceWizardAbortButton(term contents) ``{
+		ReplaceWidget(`id(`rep_abort), contents);
+	    };
+
+
+	    /*
+	     * Restore the wizard 'abort' button after ReplaceWizardAbortButton().
+	     */
+	    global define RestoreWizardAbortButton() ``{
+		ReplaceWidget(`id(`rep_abort),
+			      `PushButton(`id(`abort), AbortButtonLabel() )
+			      );
+	    };
+
+
+	    /**
+	     * Enable the wizard's "Abort" button
+	     */
+	    global define EnableWizardAbortButton() ``{
+		ChangeWidget(`id(`abort), `Enabled, true );
+	    }
+
+
+	    /**
+	     * Disable the wizard's "Abort" button.
+	     * Use inside a module if there is no way to abort.
+	     * This button will automatically be re-enabled on the next call
+	     * to SetWizardContents().
+	     *
+	     * Note: There is no corresponding function for the wizard's "Next"
+	     * or "Back" buttons - this is handled in SetWizardContents().
+	     */
+	    global define DisableWizardAbortButton() ``{
+		ChangeWidget(`id(`abort), `Enabled, false);
+	    }
+	});	// UI defines END
+
+    /*
+     * Set the wizard installation stage, i.e. the indicator of how
+     * far the installation has progressed yet.
+     * Sets the wizard header image accordingly.
+     *
+     * Notice: You need to declare a global variable
+     *	  integer current_stage = 0;
+     * to use this function.
+     * This is also why this is not defined in UI context, but in WFM context.
+     */
+
+    global define SetWizardStage( integer stage, boolean force ) ``{
+
+	if ( stage == current_stage && ! force) {	// cache
+	    y2debug("Stage %1 cached - doing nothing", stage );
+	    return;
+	}
+
+	y2debug("Setting stage to %1", stage );
+
+	// Set the header image according to the stage
+	UI( `SetWizardImage( Read (.local.byte, sformat( "/usr/lib/YaST2/images/stage%1.png", stage ) ) ) );
+
+	// Cache the current stage
+	current_stage = stage;
+    };
+
+
+
+}

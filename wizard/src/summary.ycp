@@ -1,0 +1,171 @@
+/**
+ * File:
+ *  summary.ycp
+ *
+ * Modules:
+ *  Common ui library
+ *
+ * Summary:
+ *  Support for summaries of the configured devices
+ *
+ * Authors:
+ *  Jan Holesovsky <kendy@suse.cz>, 2001
+ *  Stefan Hundhammer <sh@suse.de>, 2001
+ *
+ * $Id$
+ *
+ * Create a unified-looking RichText description of the not configured/configured devices.
+ * This is used in <module_name>_summary.ycp modules.
+ */
+
+/**
+ * Example of summary.ycp usage
+ *
+ * @example  {
+ * @example      include "ui/summary.ycp";
+ * @example  
+ * @example      return summaryDevicesList(
+ * @example      [
+ * @example          summaryDevice("Cannon BJC-6100", "Configured as lp."),
+ * @example          summaryDevice("Epson Stylus Color", summaryNotConfigured())
+ * @example      ]);
+ * @example  }
+ * 
+ * Another example of summary.ycp usage
+ *
+ * @example  {
+ * @example      include "ui/summary.ycp";
+ * @example  
+ * @example      return summaryDevicesList([]);
+ * @example  }
+ */
+
+{
+    textdomain "wizard";
+
+    /**
+     * Function that creates the whole final product. "Not detected" will be returned
+     * if the list is empty.
+     *
+     * @param list devices A list of output of the summaryDevice() calls
+     */
+    global define summaryDevicesList(list devices) ``{
+	string text = "";
+	if (size(devices) == 0)
+	{
+	    text = sformat("<ul><li>%1</li></ul>", UI(_("Not detected.")));
+	}
+	else
+	{
+	    foreach(`dev, devices, ``{
+		text = text+dev;
+	    });
+	    text = sformat("<ul>%1</ul>", text);
+	}
+
+	return text;
+    };
+    
+    /**
+     * Function that creates description of one device.
+     *
+     * @param string name The name of the device given by probing
+     * @param string description Additional description (how it was confgured or so)
+     */
+    global define summaryDevice(string name, string description) ``{
+	return sformat("<li><font color=blue>%1</font><br>%2</li>",
+		       name, description);
+    };
+    
+    /**
+     * Function that creates a 'Not configured.' message.
+     */
+    global define summaryNotConfigured() ``{
+	return UI(_("Not configured yet."));
+    };
+
+    
+    /**
+     * Add a RichText section header to an existing summary.
+     *
+     * @param summary	previous RichText (HTML) summary to add to
+     * @param header	header to add (plain text, no HTML)
+     * @return string	the new summary including the new header
+     */
+    global define summaryAddHeader( string summary, string header ) ``{
+	return summary + "<h3>" + header + "</h3>";
+    };
+
+    /**
+     * Add a line to an existing summary.
+     *
+     * @param summary	previous RichText (HTML) summary to add to
+     * @param line	line to add (plain text, no HTML)
+     * @return string	the new summary including the new line
+     */
+    global define summaryAddLine( string summary, string line ) ``{
+	return summary + "<p><font color=blue>" + line + "</font></p>";
+    };
+
+    /**
+     * Add a newline to an existing summary.
+     *
+     * @param summary	previous RichText (HTML) summary to add to
+     * @return string	the new summary
+     */
+    global define summaryAddNewLine( string summary ) ``{
+	return summary + "<br>";
+    };
+
+    /**
+     * Start a list within a summary.
+     *
+     * @param summary	previous RichText (HTML) summary to add to
+     * @return string	the new summary
+     */
+    global define summaryOpenList( string summary ) ``{
+	return summary + "<ul>";
+    };
+
+    /**
+     * End a list within a summary.
+     *
+     * @param summary	previous RichText (HTML) summary to add to
+     * @return string	the new summary
+     */
+    global define summaryCloseList( string summary ) ``{
+	return summary + "</ul>";
+    };
+
+    /**
+     * Add a list item to an existing summary.
+     * Requires a previous call to 'summaryOpenList()'.
+     *
+     * @param summary	previous RichText (HTML) summary to add to
+     * @param item	item to add (plain text, no HTML)
+     * @return string	the new summary including the new line
+     */
+    global define summaryAddListItem( string summary, string item ) ``{
+	return summary + "\n<li><font color=blue>" + item + "</font></li>";
+    };
+
+
+    /**
+     * Add a simple section to an existing summary,
+     * consisting of a header and one single item.
+     *
+     * @param summary	previous RichText (HTML) summary to add to
+     * @param header	section header (plain text, no HTML)
+     * @param item	section item   (plain text, no HTML)
+     * @return string	the new summary including the new line
+     */
+    global define summaryAddSimpleSection( string summary, string header, string item ) ``{
+	summary = summaryAddHeader	( summary, header );
+	summary = summaryOpenList	( summary );
+	summary = summaryAddListItem	( summary, item );
+	summary = summaryCloseList	( summary );
+
+	return summary;
+    };
+
+}

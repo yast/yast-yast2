@@ -1,0 +1,82 @@
+/*
+ * Trivial popups example
+ *
+ * Author: Stefan Hundhammer <sh@suse.de>
+ *
+ * $Id$
+ */
+{
+    include "ui/common_popups.ycp";
+
+
+    UI::OpenDialog(
+		   `VBox(
+			 `PushButton(`id(`msg  ),	`opt(`hstretch), "&Message Popup"	),
+			 `PushButton(`id(`notify ),	`opt(`hstretch), "&Notify Popup"	),
+			 `PushButton(`id(`warn ),	`opt(`hstretch), "&Warning Popup"	),
+			 `PushButton(`id(`err  ),	`opt(`hstretch), "&Error Popup"		),
+			 `PushButton(`id(`timed ),	`opt(`hstretch), "&Timed Message Popup"	),
+			 
+			 `PushButton(`id(`yesNo ),	`opt(`hstretch), "&Yes / No Popup" ),
+			 `PushButton(`id(`contCancel ), `opt(`hstretch), "C&ontinue / Cancel Popup" ),
+			 `PushButton(`id(`abort ),  	`opt(`hstretch), "Confirm &Abort Popup (no changes)" ),
+			 `PushButton(`id(`abort_ch ),  	`opt(`hstretch), "Confirm Abort Popup (&with changes)" ),
+			 `PushButton(`id(`show_file ), 	`opt(`hstretch), "Show &File Popup" ),
+			 `VSpacing(),
+			 `PushButton(`id(`close), CloseButtonLabel() )
+			 )
+		   );
+
+
+    symbol button_id = `dummy;
+    boolean ok = false;
+
+    do
+    {
+	button_id = UI::UserInput();
+
+	if ( button_id == `msg )
+	{
+	    UI::MessagePopup( "Hello, world!" );
+	}
+	else if ( button_id == `notify )
+	{
+	    UI::NotifyPopup( "Notify the world!" );
+	}
+	else if ( button_id == `warn )
+	{
+	    UI::WarningPopup( "This is the only world we have!" );
+	}
+	else if ( button_id == `err )
+	{
+	    UI::WarningPopup( "Cannot delete world -\nthis is the only world we have!" );
+	}
+	else if ( button_id == `timed )
+	{
+	    UI::TimedMessagePopup( "Just some seconds left to save the world...", 20 );
+	}
+	else if ( button_id == `yesNo )
+	{
+	    ok = UI::YesNoPopup( "Really delete world?" );
+	}
+	else if ( button_id == `contCancel )
+	{
+	    ok = UI::ContinueCancelPopup( "World will be deleted." );
+	}
+	else if ( button_id == `abort )
+	{
+	    ok = UI::ReallyAbortPopup( false );
+	}
+	else if ( button_id == `abort_ch )
+	{
+	    ok = UI::ReallyAbortPopup( true );
+	}
+	else if ( button_id == `show_file )
+	{
+	    ShowFilePopup( "Boot Messages", "/var/log/boot.msg" );
+	}
+    } while ( button_id != `close );
+
+
+    UI::CloseDialog();
+}

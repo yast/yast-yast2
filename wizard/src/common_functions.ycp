@@ -1,0 +1,127 @@
+/**
+ * Module:             	common_functions.ycp
+ *
+ * Authors:             Gabriele Strattner <gs@suse.de>
+ *			Stefan Hundhammer <sh@suse.de>
+ *
+ * Purpose:
+ *
+ * Provides frequently used common functions.
+ *
+ * $Id$
+ */
+
+{
+  textdomain "wizard";
+
+  /**
+   * @param bytes	size (e.g. free diskspace ) in Byte 
+   *
+   * @return string
+   *
+   * Return a pretty description of a byte count, with two fraction digits
+   * and using KB, MB or GB as unit as appropriate.
+   * 
+   * @example size_text ( 234567678 );
+   */
+      
+  global define string size_text (integer bytes) ``{
+      float whole = tofloat (bytes) / 1024.0;
+      // KiloByte abbreviated
+      string unit = _("KB");
+      if (whole > 1024.0 || whole < -1024.0) {
+	  whole = whole / 1024.0;
+	  // MegaByte abbreviated
+	  unit = _("MB");
+	  if (whole > 1024.0 || whole < -1024.0) {
+	      whole = whole / 1024.0;
+	      // GigaByte abbreviated
+	      unit = _("GB");
+	  }
+      }
+      return tostring (whole, 2) + " " + unit;
+  };
+
+  /**
+   * @param bytes	size (e.g. free diskspace ) in Byte 
+   *
+   * @return string
+   *
+   * Byte input is transformed to "MB" and the string is formatted
+   * with appropriate number of whitespaces, so the output has always
+   * the same length (which is useful for sorting).
+   *
+   * @example format_size_text ( 234567678 );
+   */
+  
+  global define string format_size_text (integer bytes)``{
+
+      if ( bytes == nil )
+	  return "";
+      
+      float whole = tofloat (bytes) / 1024.0 / 1024.0;
+      string unit = UI(_("MB"));
+
+      // nnn.nn  999.99 MB
+      
+      string size_str = tostring (whole, 2);
+      integer num = size(size_str);
+      integer anz = 6 - num;
+
+      if ( anz <= 0 )
+      {
+	  return ( size_str + " " + unit + " " );
+      }  
+      else if ( anz == 1 )
+      {
+	  return ( " " + size_str + " " + unit+ " " );
+      }
+      else
+      {
+	  return ( "  " + size_str + " " + unit+ " " );
+      }  
+  }; 
+      
+  /**
+   * @param input	string, usually an user input 
+   *
+   * @return string
+   *
+   * Remove blanks at begin and end of input string
+   * (blanks between remain untouched).
+   * 
+   * @example CutBlanks ( "  any input     " );
+   */
+  
+  global define string CutBlanks( string input ) ``{
+      string  output = input;
+      boolean go_on = true;
+
+      if ( size ( output ) > 0 )
+      {
+	  integer pos = findfirstnotof( output, " " );
+
+	  if ( pos != nil )
+	  {
+	      output = substring( output, pos );
+	  }
+	  integer last_pos = size ( output ) - 1;
+
+	  while ( go_on )
+	  {
+	      if ( substring( output, last_pos ) == " " )
+	      {
+		  output = substring( output, 0, last_pos );
+		  last_pos = last_pos-1;
+	      }
+	      else
+	      {
+		  go_on = false;
+	      }
+	  }
+      }	  
+      return output;
+  };
+
+  
+}

@@ -1,0 +1,13 @@
+{
+  // test wizard_dialog
+
+  textdomain "wizard_testsuite";
+  include "ui/wizard_dialog.ycp";
+
+  UI(`CreateWizardDialog());
+  UI(`ReplaceWizardHelp (`RichText(`id(`help), _("<p>This is the example of <tt>CreateWizardDialog()</tt></p>"))));
+  any ret = UI (`UserInput());
+  UI( `CloseDialog() );
+
+  return ret;
+}

@@ -1,0 +1,380 @@
+<HTML><HEAD><TITLE></TITLE></HEAD>
+<BODY bgcolor="#c8c8c8">
+<TABLE WIDTH="100%">
+<TR>
+<TD ALIGN="left" VALIGN="top"><i>YaST2 Developers Documentation:</i> <a href="index.html"><b></b></a></TD><TD ALIGN="RIGHT" VALIGN="TOP"><img src="/usr/share/doc/packages/yast2/images/yast2-mini.png" border=0>
+</TD>
+</TR>
+</TABLE>
+<hr>
+<TABLE>
+<TR><td valign=top align=center><img src="/usr/share/doc/packages/yast2/images/yast2-half.png">
+<br><br>
+</td>
+<TD VALIGN=TOP>
+<TD VALIGN=TOP>
+<table cellspacing=0 BGCOLOR="#f96500" width="100%"><tr><td><table width="100%" bgcolor="#ffc080" cellpadding=10><TR><TD><table width="100%" bgcolor="#ffc080" cellpadding=10><TR><TD><H1><font color="#e00000"></font></h1></TD></tr><tr><td></td></tr><tr><td>
+
+<H3>Purpose:</h3>
+<br>
+The include file <b>common_popups.ycp</b> contains commonly used popup dialogs<br>
+for general usage, e.g. YesNoPopup(), ContinueCancelPopup().
+<br><br></td></tr></table></td></tr></table><table width="100%" bgcolor="#ffc080" cellpadding=10><TR><td><table width="100%" bgcolor="#ffc080" cellpadding=10><TR><TD>
+<H1><font color="#e00000">Includes:</font></h1><ul>
+<li>ui/common_messages.ycp</li>
+</ul><H1><font color="#e00000">Exports</font></h1><ul>
+<li><a href="#      AnyQuestionPopup">      AnyQuestionPopup( symbol|string headline, string message, string yes_button_message, string no_button_message, symbol focus )</a></li>
+<li><a href="#      ConfirmAbortPopup">      ConfirmAbortPopup( symbol how_to ) </a></li>
+<li><a href="#      ContinueCancelHeadlinePopup">      ContinueCancelHeadlinePopup (symbol|string headline, string message) </a></li>
+<li><a href="#      ContinueCancelPopup">      ContinueCancelPopup (string message) </a></li>
+<li><a href="#      ErrorPopup">      ErrorPopup(string message) </a></li>
+<li><a href="#      LongTextPopup">      LongTextPopup( string headline, term richtext, integer hdim, integer vdim ) </a></li>
+<li><a href="#      MessagePopup">      MessagePopup(string message) </a></li>
+<li><a href="#      ModuleError">      ModuleError(string text) </a></li>
+<li><a href="#      NotifyPopup">      NotifyPopup(string message) </a></li>
+<li><a href="#      TimedMessagePopup">      TimedMessagePopup(string message, integer seconds) </a></li>
+<li><a href="#      TimedErrorPopup">TimedErrorPopup(string message, integer timeout_seconds)</a></li>
+<li><a href="#      TimedWarningPopup">TimedWarningPopup(string message, integer timeout_seconds)</a></li>
+<li><a href="#      WarningPopup">      WarningPopup(string message) </a></li>
+<li><a href="#      YesNoHeadlinePopup">      YesNoHeadlinePopup(symbol|string headline, string message) </a></li>
+<li><a href="#      YesNoPopup">      YesNoPopup(string message) </a></li>
+</ul>
+</td></tr></table></td></tr></table></td></tr></table>
+
+
+<p><table border=0 cellspacing=0 width="100%" bgcolor="#f96500" cellpadding=1><tr><td><table width="100%" bgcolor="#ffc080" cellspacing=0 cellpadding=3 border=0><tr><td><font size="+1"><tt><b>      ContinueCancelHeadlinePopup (symbol|string headline, string message) <a name="      ContinueCancelHeadlinePopup"><font color="#606060"> -> </font><font color="#c05000"> boolean</b></font></b></tt></font></td></tr></table></td></tr></table><p>
+<p>
+Dialog which displays the "message" and has a <b>Continue</b>
+and a <b>Cancel</b> button.
+This popup should be used to confirm possibly dangerous actions and if
+it's useful to display a short headline (without headline ContinueCancelPopup()
+can be used).
+The default button is Continue.
+
+Returns true if Continue is clicked.
+
+</p><dl><dt><b>Parameters</b>:<dd><table width="100%" border="0"><tr><td align="left" valign="top" width="20%"><font color="#c05000">headline
+</font></td><td align="left" valign="top">short headline or `noheadline
+</td></tr><tr><td align="left" valign="top" width="20%"><font color="#c05000">message
+</font></td><td align="left" valign="top">message string 
+</td></tr></table></dl><dl><dt><b>Example:</b><dd><table width="100%" border="0"><tr><td align="left" valign="top"><pre> ContinueCancelHeadlinePopup ( "Short Header", "Going on with action ....?" );
+</pre></td></tr></table></dl><dl><dt><b>See:</b><dd><table width="100%" border="0"><tr><td align="left" valign="top"> <a href="#ContinueCancelPopup()">ContinueCancelPopup()</a> <a href="#YesNoPopup()">YesNoPopup()</a> <a href="#AnyQuestionPopup()">AnyQuestionPopup()</a></td></tr></table></dl>
+
+<p>
+<img src="ContinueCancelHeadline.png">
+<p>
+
+<table border=0 cellspacing=0 width="100%" bgcolor="#f96500" cellpadding=1><tr><td><table width="100%" bgcolor="#ffc080" cellspacing=0 cellpadding=3 border=0><tr><td><font size="+1"><tt><b>      ContinueCancelPopup (string message) <a name="      ContinueCancelPopup"><font color="#606060"> -> </font><font color="#c05000"> boolean</b></font></b></tt></font></td></tr></table></td></tr></table><p>
+<p>
+Dialog which displays the "message" and has a <b>Continue</b>
+and a <b>Cancel</b> button.
+This popup should be used to confirm possibly dangerous actions.
+The default button is Continue.
+Returns true if Continue is clicked.
+
+</p><dl><dt><b>Parameters</b>:<dd><table width="100%" border="0"><tr><td align="left" valign="top" width="20%"><font color="#c05000">message
+</font></td><td align="left" valign="top">message string 
+</td></tr></table></dl><dl><dt><b>Example:</b><dd><table width="100%" border="0"><tr><td align="left" valign="top"><pre> ContinueCancelPopup ( "Please insert required CD-ROM." );</pre></td></tr></table></dl><dl><dt>
+<b>See:</b><dd><table width="100%" border="0"><tr><td align="left" valign="top"> <a href="#AnyQuestionPopup()">AnyQuestionPopup()</a></td></tr></table></dl>
+
+<p>
+<img src="ContinueCancel.png">
+<p>
+
+<table border=0 cellspacing=0 width="100%" bgcolor="#f96500" cellpadding=1><tr><td><table width="100%" bgcolor="#ffc080" cellspacing=0 cellpadding=3 border=0><tr><td><font size="+1"><tt><b>      YesNoHeadlinePopup(symbol|string headline, string message) <a name="      YesNoHeadlinePopup"><font color="#606060"> -> </font><font color="#c05000"> boolean</b></font></b></tt></font></td></tr></table></td></tr></table><p>
+<p>
+This dialog displays "message" (a question) and has a <b>Yes</b> and a <b>No</b> button.
+It should be used for decisions about two about equivalent paths,
+not for simple confirmation - use "ContinueCancel()" for those. 
+A short headline can be displayed (without headline you can use YesNoPopup()).
+
+The default button is Yes.
+
+Returns true if <b>Yes</b> is clicked.
+
+
+</p><dl><dt><b>Parameters</b>:<dd><table width="100%" border="0"><tr><td align="left" valign="top" width="20%"><font color="#c05000">headline
+</font></td><td align="left" valign="top">short headline or `noheadline
+</td></tr><tr><td align="left" valign="top" width="20%"><font color="#c05000">message
+</font></td><td align="left" valign="top">message string
+</td></tr></table></dl><dl><dt><b>Example:</b><dd><table width="100%" border="0"><tr><td align="left" valign="top"><pre>  YesNoHeadlinePopup ( "Resize Windows Partition?", "... explanation of dangers ..." );
+</pre></td></tr></table></dl><dl><dt><b>See:</b><dd><table width="100%" border="0"><tr><td align="left" valign="top"> <a href="#YesNoPopup()">YesNoPopup()</a> <a href="#AnyQuestionPopup()">AnyQuestionPopup()</a></td></tr></table></dl>
+
+<p>
+<img src="YesNoHeadline.png">
+<p>
+
+<table border=0 cellspacing=0 width="100%" bgcolor="#f96500" cellpadding=1><tr><td><table width="100%" bgcolor="#ffc080" cellspacing=0 cellpadding=3 border=0><tr><td><font size="+1"><tt><b>      YesNoPopup(string message) <a name="      YesNoPopup"><font color="#606060"> -> </font><font color="#c05000"> boolean</b></font></b></tt></font></td></tr></table></td></tr></table><p>
+<p>
+This dialog displays "message" (a question) and has a <b>Yes</b> and a <b>No</b> button.
+It should be used for decisions about two about equivalent paths,
+not for simple confirmation - use "ContinueCancel()" for those.
+The default button is Yes.
+Returns true if <b>Yes</b> is clicked.
+
+
+</p><dl><dt><b>Parameters</b>:<dd><table width="100%" border="0"><tr><td align="left" valign="top" width="20%"><font color="#c05000">message
+</font></td><td align="left" valign="top">message string
+</td></tr></table></dl><dl><dt><b>Example:</b><dd><table width="100%" border="0"><tr><td align="left" valign="top"><pre>  YesNoPopup ( "Create a backup of the config files?" );
+</pre></td></tr></table></dl><dl><dt><b>See:</b><dd><table width="100%" border="0"><tr><td align="left" valign="top"> <a href="#YesNoHeadlinePopup()">YesNoHeadlinePopup()</a> <a href="#ContinueCancelPopup()">ContinueCancelPopup()</a> <a href="#AnyQuestionPopup()">AnyQuestionPopup()</a></td></tr></table></dl>
+
+<p>
+<img src="YesNo.png">
+<p>
+
+<table border=0 cellspacing=0 width="100%" bgcolor="#f96500" cellpadding=1><tr><td><table width="100%" bgcolor="#ffc080" cellspacing=0 cellpadding=3 border=0><tr><td><font size="+1"><tt><b>      LongTextPopup( string headline, term richtext, integer hdim, integer vdim ) <a name="      LongTextPopup"><font color="#606060">  </font><font color="#c05000"> </b></font></b></tt></font></td></tr></table></td></tr></table><p>
+<p>
+This dialog displays large amounts of text in rich text format that might need scrolling.
+The text background color is a very light grey.
+
+
+</p><dl><dt><b>Parameters</b>:<dd><table width="100%" border="0"><tr><td align="left" valign="top" width="20%"><font color="#c05000">headline
+</font></td><td align="left" valign="top">short headline
+</td></tr><tr><td align="left" valign="top" width="20%"><font color="#c05000">richtext
+</font></td><td align="left" valign="top">text input is `Richtext()
+</td></tr><tr><td align="left" valign="top" width="20%"><font color="#c05000">hdim
+</font></td><td align="left" valign="top">initial horizontal dimension of the popup 
+</td></tr><tr><td align="left" valign="top" width="20%"><font color="#c05000">vdim
+</font></td><td align="left" valign="top">initial vertical dimension of the popup
+</td></tr></table></dl><dl><dt><b>Example:</b><dd><table width="100%" border="0"><tr><td align="left" valign="top"><pre> LongTextPopup ( "Package description", `Richtext("<p>Hello, this is a long description .....</p>"), 50, 20 );
+</pre></td></tr></table></dl>
+
+<p>
+<img src="LongText.png">
+<p>
+
+<table border=0 cellspacing=0 width="100%" bgcolor="#f96500" cellpadding=1><tr><td><table width="100%" bgcolor="#ffc080" cellspacing=0 cellpadding=3 border=0><tr><td><font size="+1"><tt><b>      ConfirmAbortPopup( symbol how_to ) <a name="      ConfirmAbortPopup"><font color="#606060"> -> </font><font color="#c05000"> boolean</b></font></b></tt></font></td></tr></table></td></tr></table><p>
+<p>
+
+			
+This dialog is used if "Abort" button in the installation dialogs
+is clicked.
+The popup shows a text (according to argument "how_to") and the buttons
+<b>Abort Installation</b> and <b>Continue Installation</b>.
+Returns true if Abort Installation is clicked.
+
+</p><dl><dt><b>Parameters</b>:<dd><table width="100%" border="0"><tr><td align="left" valign="top" width="20%"><font color="#c05000">how_to
+</font></td><td align="left" valign="top">`painless, `incomplete, `unusable 
+</td></tr></table></dl><dl><dt><b>Example:</b><dd><table width="100%" border="0"><tr><td align="left" valign="top"><pre> ConfirmAbortPopup ( `painless );
+</pre></td></tr></table></dl>
+
+<p>
+<img src="ConfirmAbort.png">
+<p>
+
+<table border=0 cellspacing=0 width="100%" bgcolor="#f96500" cellpadding=1><tr><td><table width="100%" bgcolor="#ffc080" cellspacing=0 cellpadding=3 border=0><tr><td><font size="+1"><tt><b>      MessagePopup(string message) <a name="      MessagePopup"><font color="#606060">  </font><font color="#c05000"> </b></font></b></tt></font></td></tr></table></td></tr></table><p>
+<p>
+A small dialog which shows the "message".
+The dialog is closed when user confirms with click on
+<b>OK</b> button.
+It should be used to display any user information.
+
+</p><dl><dt><b>Parameters</b>:<dd><table width="100%" border="0"><tr><td align="left" valign="top" width="20%"><font color="#c05000">message
+</font></td><td align="left" valign="top">message string 
+</td></tr></table></dl><dl><dt><b>Example:</b><dd><table width="100%" border="0"><tr><td align="left" valign="top"><pre>  MessagePopup("This is an information about ... ." );
+</pre></td></tr></table></dl>
+
+<p>
+<img src="Message.png">
+<p>
+
+<table border=0 cellspacing=0 width="100%" bgcolor="#f96500" cellpadding=1><tr><td><table width="100%" bgcolor="#ffc080" cellspacing=0 cellpadding=3 border=0><tr><td><font size="+1"><tt><b>      WarningPopup(string message) <a name="      WarningPopup"><font color="#606060">  </font><font color="#c05000"> </b></font></b></tt></font></td></tr></table></td></tr></table><p>
+<p>
+A popup with headline 'Warning' and the "message".
+The dialog is closed when user confirms with click on
+<b>OK</b> button.
+It should be used to display an important user information
+(e.g. if something goes wrong, changes are made).
+
+</p><dl><dt><b>Parameters</b>:<dd><table width="100%" border="0"><tr><td align="left" valign="top" width="20%"><font color="#c05000">message
+</font></td><td align="left" valign="top">warning message string 
+</td></tr></table></dl><dl><dt><b>Example:</b><dd><table width="100%" border="0"><tr><td align="left" valign="top"><pre> WarningPopup("Something is wrong. Please check your configuration." );
+</pre></td></tr></table></dl>
+
+<p>
+<img src="Warning.png">
+<p>
+
+<table border=0 cellspacing=0 width="100%" bgcolor="#f96500" cellpadding=1><tr><td><table width="100%" bgcolor="#ffc080" cellspacing=0 cellpadding=3 border=0><tr><td><font size="+1"><tt><b>      NotifyPopup(string message) <a name="      NotifyPopup"><font color="#606060">  </font><font color="#c05000"> </b></font></b></tt></font></td></tr></table></td></tr></table><p>
+<p>
+A popup with headline 'Notify' and the "message".
+The dialog is closed when user confirms with click on
+<b>OK</b> button.
+It should be used to inform the user about something.
+
+</p><dl><dt><b>Parameters</b>:<dd><table width="100%" border="0"><tr><td align="left" valign="top" width="20%"><font color="#c05000">message
+</font></td><td align="left" valign="top">notify message string 
+</td></tr></table></dl><dl><dt><b>Example:</b><dd><table width="100%" border="0"><tr><td align="left" valign="top"><pre>  NotifyPopup("Your printer is ready for use." );
+</pre></td></tr></table></dl>
+
+<p>
+<img src="Notify.png">
+<p>
+
+<table border=0 cellspacing=0 width="100%" bgcolor="#f96500" cellpadding=1><tr><td><table width="100%" bgcolor="#ffc080" cellspacing=0 cellpadding=3 border=0><tr><td><font size="+1"><tt><b>      ErrorPopup(string message) <a name="      ErrorPopup"><font color="#606060">  </font><font color="#c05000"> </b></font></b></tt></font></td></tr></table></td></tr></table><p>
+<p>
+A popup with headline 'Error' and the "message".
+The dialog is closed when user confirms with click on
+<b>OK</b>y button.
+It should be used to inform about an error.
+
+</p><dl><dt><b>Parameters</b>:<dd><table width="100%" border="0"><tr><td align="left" valign="top" width="20%"><font color="#c05000">message
+</font></td><td align="left" valign="top">error message string 
+</td></tr></table></dl><dl><dt><b>Example:</b><dd><table width="100%" border="0"><tr><td align="left" valign="top"><pre>  ErrorPopup("The configuration was not succesful." );
+</pre></td></tr></table></dl>
+
+<p>
+<img src="Error.png">
+<p>
+
+<table border=0 cellspacing=0 width="100%" bgcolor="#f96500" cellpadding=1><tr><td><table width="100%" bgcolor="#ffc080" cellspacing=0 cellpadding=3 border=0><tr><td><font size="+1"><tt><b>      TimedMessagePopup(string message, integer seconds) <a name="      TimedMessagePopup"><font color="#606060">  </font><font color="#c05000"> </b></font></b></tt></font></td></tr></table></td></tr></table><p>
+<p>				
+Displays a message with timeout to the user in a small dialog
+with an OK button.
+
+</p><dl><dt><b>Parameters</b>:<dd><table width="100%" border="0"><tr><td align="left" valign="top" width="20%"><font color="#c05000">message
+</font></td><td align="left" valign="top">string
+</td></tr><tr><td align="left" valign="top" width="20%"><font color="#c05000">seconds
+</font></td><td align="left" valign="top">time in seconds 
+</td></tr></table></dl><dl><dt><b>Example:</b><dd><table width="100%" border="0"><tr><td align="left" valign="top"><pre> TimedMessagePopup("This is a timed message", 2 );
+</pre></td></tr></table></dl>
+
+<p>
+<img src="TimedMessage.png">
+<p>
+
+<table border=0 cellspacing=0 width="100%" bgcolor="#f96500" cellpadding=1><tr><td><table width="100%" bgcolor="#ffc080" cellspacing=0 cellpadding=3 border=0><tr><td><font size="+1"><tt><b>      AnyQuestionPopup( symbol|string headline, string message, string yes_button_message, string no_button_message, symbol focus )<a name="      AnyQuestionPopup"><font color="#606060"> -> </font><font color="#c05000"> boolean</b></font></b></tt></font></td></tr></table></td></tr></table><p>
+<p>				
+
+
+A popup with the "headline", the "message" and two buttons (labeled according the arguments).
+Returns true if affirmative button is clicked.
+
+</p><dl><dt><b>Parameters</b>:<dd><table width="100%" border="0"><tr><td align="left" valign="top" width="20%"><font color="#c05000">headline
+</font></td><td align="left" valign="top">`notify, `warning, `noheadline	or string
+</td></tr><tr><td align="left" valign="top" width="20%"><font color="#c05000">message
+</font></td><td align="left" valign="top">message string
+</td></tr><tr><td align="left" valign="top" width="20%"><font color="#c05000">yes_button_message
+</font></td><td align="left" valign="top">label on affirmative buttons (on left side)
+</td></tr><tr><td align="left" valign="top" width="20%"><font color="#c05000">no_button_message
+</font></td><td align="left" valign="top">label on negating button (on right side)
+</td></tr><tr><td align="left" valign="top" width="20%"><font color="#c05000">focus
+</font></td><td align="left" valign="top">`focus_no, `focus_yes	  	(which button shall have the focus?)
+</td></tr></table></dl><dl><dt><b>Example:</b><dd><table width="100%" border="0"><tr><td align="left" valign="top"><pre> AnyQuestionPopup(`warning, "Do really want to ...?", "Install", "Don't do it", `focus_no );
+</pre></td></tr></table></dl>
+
+<p>
+<img src="AnyQuestion.png">
+<p>
+
+<table border=0 cellspacing=0 width="100%" bgcolor="#f96500" cellpadding=1>
+   <tr>
+      <td>
+          <table width="100%" bgcolor="#ffc080" cellspacing=0 cellpadding=3 border=0>
+              <tr>
+                 <td><font size="+1">
+                     <tt><b>      ModuleError(string text) <a name="      ModuleError"><font color="#606060"> -> </font><font color="#c05000">
+                                  symbol</b></font></b></tt></font>
+                 </td>
+              </tr>
+          </table>
+      </td>
+   </tr>
+</table>
+
+<p>
+
+<p>
+Popup indicates that there is an error in called module.
+Returns `id of the button which is clicked.
+</p>
+<dl><dt><b>Parameters</b>:<dd><table width="100%" border="0"><tr><td align="left" valign="top" width="20%"><font color="#c05000">text
+</font></td><td align="left" valign="top">string
+</td></tr></table></dl><dl><dt><b>Return value</b>:<dd><table width="100%" border="0"><tr><td align="left" valign="top" width="20%"><font color="#c05000"></font></td><td align="left" valign="top">`back, `again, `cancel, `next
+</td></tr></table></dl>
+
+<dl><dt><b>Example:</b>
+<dd><table width="100%" border="0"><tr><td align="left" valign="top"><pre> ModuleError( "The module " + symbolof(argterm)) + " does not work." );</pre></td></tr></table></dl>
+
+<p>
+<img src="ModuleError.png">
+<p>
+
+
+<p>
+<table bgcolor="#f96500" cellpadding=1 cellspacing=0 border=0 width="100%"><tr><td>
+<table bgcolor="#ffc080" cellpadding=3 cellspacing=0 border=0 width="100%"><tr><td><font size="+1">
+<tt>global <b>TimedErrorPopup (string message, integer timeout_seconds)<a name="      TimedErrorPopup"></a><font color="#606060"> -&gt; </font><font color="#c05000"> void</font></b></tt>
+</font></td></tr></table>
+</td></tr></table>
+<p>
+Show an error message and wait specified amount of time or until user clicked "OK".
+</p>
+<dl><dt><b>Parameters</b>:<dd><table width="100%" border="0">
+<tr><td align="left" valign="top" width="20%"><font color="#c05000">
+message</font></td>
+<td align="left" valign="top">error message string</td></tr>
+<tr><td align="left" valign="top" width="20%"><font color="#c05000">
+timeout_seconds</font></td>
+<td align="left" valign="top">time out in seconds
+</td></tr>
+</table></dl>
+<dl><dt><b>Return value</b>:<dd><table width="100%" border="0">
+<tr><td align="left" valign="top" width="20%"><font color="#c05000">
+</font></td>
+<td align="left" valign="top">
+</td></tr>
+</table></dl>
+<dl><dt><b>See:</b><dd>
+<table width="100%" border="0"><tr><td align="left" valign="top">
+<a href="#      ErrorPopup">ErrorPopup</a>
+</td></tr></table>
+</dl>
+
+<dl><dt><b>Example:</b>
+<dd><table width="100%" border="0"><tr><td align="left" valign="top"><pre> TimedErrorPopup("Some error message.", 5);</pre></td></tr></table></dl>
+
+<p>
+<img src="TimedErrorPopup.png">
+
+<p>
+<table bgcolor="#f96500" cellpadding=1 cellspacing=0 border=0 width="100%"><tr><td>
+<table bgcolor="#ffc080" cellpadding=3 cellspacing=0 border=0 width="100%"><tr><td><font size="+1">
+<tt>global <b>TimedWarningPopup (string message, integer timeout_seconds)<a name="      TimedWarningPopup"></a><font color="#606060"> -&gt; </font><font color="#c05000"> void</font></b></tt>
+</font></td></tr></table>
+</td></tr></table>
+<p>
+Show a warning message and wait specified amount of time or until user clicked "OK".
+</p>
+<dl><dt><b>Parameters</b>:<dd><table width="100%" border="0">
+<tr><td align="left" valign="top" width="20%"><font color="#c05000">
+message</font></td>
+<td align="left" valign="top">warning message string</td></tr>
+<tr><td align="left" valign="top" width="20%"><font color="#c05000">
+timeout_seconds</font></td>
+<td align="left" valign="top">time out in seconds
+</td></tr>
+</table></dl>
+<dl><dt><b>Return value</b>:<dd><table width="100%" border="0">
+<tr><td align="left" valign="top" width="20%"><font color="#c05000">
+</font></td>
+<td align="left" valign="top">
+</td></tr>
+</table></dl>
+<dl><dt><b>See:</b><dd>
+<table width="100%" border="0"><tr><td align="left" valign="top">
+<a href="#      WarningPopup">WarningPopup</a>
+</td></tr></table>
+</dl>
+
+<dl><dt><b>Example:</b>
+<dd><table width="100%" border="0"><tr><td align="left" valign="top"><pre> TimedWarningPopup("Two lines\nwarning message.", 5);</pre></td></tr></table></dl>
+
+<p>
+<img src="TimedWarningPopup.png">
+
+</td></tr></table>
+
+
+<HR><TABLE WIDTH="100%"><TR><TD ALIGN="left" VALIGN="top"><i>YaST2 Developers Documentation </i></TD><TD ALIGN="RIGHT" VALIGN="TOP"><img src="/usr/share/doc/packages/yast2/images/yast2-mini.png" border=0></TD></TR></TABLE></BODY></HTML>
+

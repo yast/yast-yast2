@@ -1,0 +1,204 @@
+/**
+ * Module:		HTML.ycp
+ *
+ * Purpose:		Generic HTML formatting.
+ *
+ *			Note: Inline doc uses [tag]...[/tag]
+ *			instead of <tag>...</tag> to avoid confusing "ycpdoc".
+ *
+ * $Id$
+ *
+ * Author:		Stefan Hundhammer <sh@suse.de>
+ **/
+{
+    module "HTML";
+
+
+    /**
+     * Make a HTML paragraph from a text, i.e. embed a text into
+     * [p]...[/p]
+     *
+     * @param text plain text or HTML fragment
+     * @return HTML code
+     **/
+    global define string Para( string text ) ``{
+	return "<p>" + text + "</p>";
+    };
+
+
+    /**
+     * Make a HTML heading from a text, i.e. embed a text into
+     * [h3]...[/h3]
+     *
+     * Note: There is only one heading level here since we don't have any more
+     * fonts anyway. 
+     *
+     * @param text plain text or HTML fragment
+     * @return HTML code
+     **/
+    global define string Heading( string text ) ``{
+	return "<h3>" + text + "</h3>";
+    };
+
+
+    /**
+     * Make a HTML link, i.e.
+     * [a href="..."]...[/a]
+     *
+     * You still need to embed that into a paragraph or heading etc.!
+     *
+     * @param text (translated) text the user will see
+     * @param link_id internal ID of that link returned by UserInput()
+     * @return HTML code
+     **/
+    global define string Link( string text, string link_id ) ``{
+	return sformat( "<a href=\"%1\">%2</a>", link_id, text );
+    };
+
+
+    /**
+     * Start a HTML (unsorted) list, i.e. [ul]
+     *
+     * You might consider using HTML::list() instead which takes a list of
+     * items and does all the rest by itself.
+     *
+     * @return HTML code
+     **/
+    global define string ListStart() ``{
+	return "<ul>";
+    };
+
+    
+    /**
+     * End a HTML (unsorted) list, i.e. [/ul]
+     *
+     * You might consider using HTML::list() instead which takes a list of
+     * items and does all the rest by itself.
+     *
+     * @return HTML code
+     **/
+    global define string ListEnd() ``{
+	return "</ul>";
+    };
+
+
+    /**
+     * Make a HTML list item, i.e. embed a text into
+     * [li]...[/li]
+     *
+     * You might consider using HTML::list() instead which takes a list of
+     * items and does all the rest by itself.
+     *
+     * @return HTML code
+     **/
+    global define string ListItem( string text ) ``{
+	return "<li><p>" + text + "</p></li>";
+    };
+
+
+    /**
+     * Make a HTL (unsorted) list from a list of strings, i.e.
+     * [ul]
+     *     [li]...[/li]
+     *     [li]...[/li]
+     *     ...
+     * [/ul]
+     *
+     * @param items list of strings for items
+     * @return HTML code
+     **/
+    global define string List( list items ) ``{
+	string html = "<ul>";
+
+	foreach( `item, items, ``{
+	    html = html + "<li>" + item + "</li>";
+	});
+
+	html = html + "</ul>";
+
+	return html;
+    };
+
+    
+    /**
+     * Make a HTL (unsorted) colored list from a list of strings, i.e.
+     * [ul]
+     *     [li][font color="..."]...[/font][/li]
+     *     [li][font color="..."]...[/font][/li]
+     *     ...
+     * [/ul]
+     *
+     * @param items list of strings for items
+     * @param color item color
+     * @return HTML code
+     **/
+    global define string ColoredList( list items, string color ) ``{
+	string html = "<ul>";
+
+	foreach( `item, items, ``{
+	    html = html + sformat ("<li><font color=\"%1\">%2</font></li>",
+				   color, item );
+	});
+
+	html = html + "</ul>";
+
+	return html;
+    };
+
+
+    /**
+     * Colorize a piece of HTML code, i.e. embed it into
+     * [font color="..."]...[/font]
+     *
+     * You still need to embed that into a paragraph or heading etc.!
+     *
+     * @param text text to colorize
+     * @param color item color
+     * @return HTML code
+     **/
+    global define string Colorize( string text, string color ) ``{
+	return sformat ("<font color=\"%1\">%2</font>", color, text );
+    };
+
+
+    /**
+     * Make a piece of HTML code bold, i.e. embed it into
+     * [b]...[/b]
+     *
+     * You still need to embed that into a paragraph or heading etc.!
+     *
+     * @param text text to make bold
+     * @return HTML code
+     **/
+    global define string Bold( string text ) ``{
+	return "<b>" + text + "</b>";
+    };
+    
+
+    /**
+     * Make a forced HTML line break, i.e. [br]
+     *
+     * @return HTML code
+     **/
+    global define string Newline() ``{
+	return "<br>";
+    };
+
+    
+    /**
+     * Make a number of forced HTML line breaks, i.e. [br]
+     *
+     * @return HTML code
+     **/
+    global define string Newlines( integer count ) ``{
+	string html = "";
+
+	while ( count > 0 )
+	{
+	    html = html + "<br>";
+	    count = count - 1;
+	}
+	return html;
+    };
+
+}

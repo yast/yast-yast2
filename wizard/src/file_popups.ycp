@@ -1,0 +1,536 @@
+/**
+ * File:
+ *   file_popups.ycp
+ *
+ * Module:
+ *   Wizard
+ *
+ * Summary:
+ *   File/Directory selection dialogs
+ *
+ * Authors:
+ *   Dan Vesely (dan@suse.cz)
+ *
+ * $Id$
+ *
+ * File/Directory selection dialogs
+ * example: PopupDir ("/mnt"), PopupFile ("/etc")
+ *
+ */
+
+{
+
+    textdomain "wizard";
+
+    include "ui/common_messages.ycp";
+
+
+    /**
+     * Returns itemized list of subdirs
+     * @param subdir directory to list
+     * @return list of directories
+     */
+    global define getsubdirs (string subdir) ``{
+	string subdir2 = subdir + ".*";
+	list files = splitstring (lookup (SCR (`Execute (.target.bash_output, "/bin/ls -aFd $DIR", $["DIR" : subdir2])), "stdout", ""), "\n");
+	if (size (files) == 0)
+	    return [];
+
+	subdir2 = subdir + "*";
+	files = splitstring (lookup (SCR (`Execute (.target.bash_output, "/bin/ls -aFd $DIR", $["DIR" : subdir2])), "stdout", ""), "\n");
+	files = filter (`file, files, ``(size (file) > 0 && substring (file, size (file) - 1, 1) == "/"));
+	files = maplist (`f, files, ``(substring (f, 0, size (f) - 1)));
+	files = maplist (`f, files, ``(substring (f, findlastof (f, "/") + 1) + "/"));
+	files = prepend (files, "../");
+	return maplist (`file, files, ``(`item (`id (subdir + file), file)));
+    }
+
+    /**
+     * Returns itemized list of file
+     * @param subdir directory to list
+     * @return list of files
+     */
+    global define getfiles (string subdir) ``{
+	return getfileswithmask (subdir, ["*"]);
+    }
+
+    /**
+      * Return itemizes list of file matching mask
+      * @param subdir directory to list
+      * @param masks
+      * @return list of files
+      */
+    global define getfileswithmask (string subdir, list masks) ``{
+	masks = maplist (`e, masks, ``(
+	    subdir+e
+	));
+	string maskstring = "";
+	foreach (`i, masks, ``{
+	    maskstring = maskstring + i + " ";
+	});
+
+	list files = splitstring (lookup (SCR (`Execute (.target.bash_output, "/bin/ls -Fd $MASK",
+							 $["MASK" : maskstring])), "stdout", ""), "\n");
+
+	files = filter (`file, files, ``(size (file) > 0 && !contains (["/", "=", "|"], substring (file, size (file) - 1, 1))));
+	files = maplist (`file, files, ``(substring (file, size (file) -1, 1) == "@" ? substring(file, 0, size (file) -1) : file));
+	y2milestone("fff %1", substring (subdir, size (subdir) - 1, 1));
+	if ( substring (subdir, size (subdir) - 1, 1) != "/") {
+	    subdir = subdir + "/";
+	}
+        files = maplist (`f, files, ``(substring (f, findlastof (f, "/") + 1)));
+	return maplist (`file, files, ``(`item (`id (subdir + file), file)));
+    }
+
+
+    /**
+     * Popup dialog to choose file
+     * @param dir string with path to start browsing with
+     * @return string with selected file, empty string on cancel
+     */
+    global define PopupFile (string dir) ``{
+	return PopupFileWithMask (dir, ["*"]);
+    }
+    /**
+      * Popup dialog to choose file matching mask
+      * @param dir string with path to start browsing with
+      * @param masks
+      * @return string with selected file, empty string on cancel
+      */
+    global define PopupFileWithMask (string dir, list masks) ``{
+
+	list dirs = getsubdirs (dir);
+	string subdir = dir;
+	list history = [];
+	integer history_ptr = -1;
+	y2error ("%1", subdir);
+	if (size (dirs) == 0)
+	{
+	    y2error ("No permitions for directory: %1, using /", dir);
+	    subdir = "/";
+	    dirs = getsubdirs (subdir);
+	}
+	y2error ("%1", subdir);
+
+	history = add (history, [subdir, dirs]);
+	history_ptr = history_ptr + 1;
+
+
+	term contents = `VBox(
+	    `HSpacing(80),
+	    `ReplacePoint (`id(`rephead),
+			   `Heading (`id (`head), sformat (UI (_("Selected directory: %1")), subdir))
+		),
+	    `VSpacing (),
+	    `HBox (
+		`PushButton (`id (`backward), `opt (`disabled), "&<-"),
+		`PushButton (`id (`forward), `opt (`disabled), "-&>")
+		),
+	    `HBox (
+		`ReplacePoint (`id (`repdir),
+			       `SelectionBox (`id (`dir), `opt(`notify), UI (_("&Directories")), dirs)
+		    ),
+		`VSpacing(15),
+		`ReplacePoint (`id (`repfile),
+			       `SelectionBox (`id (`file), UI (_("&Files")), getfileswithmask (subdir, masks))
+		    )
+		),
+	    `HBox (
+		    `PushButton (`id(`cancel_button), CancelButtonLabel()),
+		    `HStretch (),
+		    `PushButton (`id(`ok_button), OKButtonLabel() )
+		)
+	    );
+
+
+	UI (`OpenDialog (
+	    `opt (`decorated),
+	    contents
+	    ));
+
+
+
+	any ret = nil;
+
+	repeat {
+	    ret = UI (`UserInput ());
+	y2error ("User Input");
+
+	    if (ret == `backward)
+	    {
+		history_ptr = history_ptr > 0 ? history_ptr - 1 : history_ptr;
+		dirs   = select (select (history, history_ptr, [subdir, dirs]), 1, []);
+		subdir = select (select (history, history_ptr, [subdir, dirs]), 0, []);
+
+		UI (`ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (UI (_("Selected directory: %1")), subdir))));
+		UI (`ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), UI (_("Directories")), dirs)));
+		UI (`ReplaceWidget (`id (`repfile), `SelectionBox (`id (`file), `opt(`notify), UI (_("Files")), getfileswithmask (subdir, masks))));
+	    }
+
+	    if (ret == `forward)
+	    {
+		history_ptr = history_ptr + 1;
+		dirs   = select (select (history, history_ptr, [subdir, dirs]), 1, []);
+		subdir = select (select (history, history_ptr, [subdir, dirs]), 0, []);
+
+		UI (`ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (UI (_("Selected directory: %1")), subdir))));
+		UI (`ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), UI (_("Directories")), dirs)));
+		UI (`ReplaceWidget (`id (`repfile), `SelectionBox (`id (`file), `opt(`notify), UI (_("Files")), getfileswithmask (subdir, masks))));
+	    }
+
+	    if (ret == `dir)
+	    {
+		string old_dir = subdir;
+		subdir  = UI (`QueryWidget(`id (`dir), `CurrentItem));
+		dirs = getsubdirs (subdir);
+
+		if (size (dirs) == 0)
+		{
+		    y2error ("No permitions for directory: %1", subdir);
+		    subdir = old_dir;
+		    dirs = getsubdirs (subdir);
+		    continue;
+		}
+
+                if (size (subdir) > 2 && substring (subdir, size (subdir) - 3, 3) == "../")
+                {
+                    subdir = substring (subdir, 0, findlastof (substring (subdir, 0, size (subdir) - 4), "/") + 1);
+                    if ("" == subdir || nil == subdir)
+                        subdir = "/";
+                    dirs = getsubdirs (subdir);
+                }
+
+                if (size (subdir) > 1 && substring (subdir, size (subdir) - 2, 2) == "./")
+                {
+                    continue;
+                }
+
+		if (history_ptr + 1 < size (history))
+		{
+		    integer counter = -1;
+		    history = filter (`e, history, ``{
+			counter = counter + 1;
+			return counter < history_ptr + 1;
+		    });
+		}
+
+		history = add (history, [subdir, dirs]);
+		history_ptr = history_ptr + 1;
+
+		UI (`ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (UI (_("Selected directory: %1")), subdir))));
+		UI (`ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), UI (_("Directories")), dirs)));
+		UI (`ReplaceWidget (`id (`repfile), `SelectionBox (`id (`file), `opt(`notify), UI (_("Files")), getfileswithmask (subdir, masks))));
+	    }
+
+	    UI (`ChangeWidget (`id (`backward), `Enabled, (history_ptr > 0)));
+	    UI (`ChangeWidget (`id (`forward), `Enabled, history_ptr < size (history) - 1));
+
+	} until (ret == `ok_button || ret == `cancel_button);
+
+
+	string file = "";
+
+	if (ret == `ok_button)
+	{
+	    file = UI (`QueryWidget (`id (`file), `CurrentItem));
+	}
+
+	UI (`CloseDialog ());
+
+	return file;
+    }
+
+    /**
+     * Popup dialog to choose file
+     * @param dir string with path to start browsing with
+     * @return string with selected directory
+     */
+    global define PopupDir (string dir) ``{
+
+	if (size (dir) > 0 && substring (dir, size (dir) - 1, 1) != "/")
+	{
+	    dir = dir + "/";
+	}
+
+	list dirs = getsubdirs (dir);
+	list history = [];
+	integer history_ptr = -1;
+
+	if (size (dirs) == 0)
+	{
+	    y2error ("No permitions for directory: %1, using /", dir);
+	    dir = "/";
+	    dirs = getsubdirs (dir);
+	}
+
+	term contents =
+	    `VBox(
+		  `HSpacing(80),
+		  `ReplacePoint (`id(`rephead),
+				 `Heading (`id (`head), sformat (UI (_("Selected directory: %1")), dir))
+				 ),
+		  `VSpacing (),
+		  `HBox (
+		      `PushButton (`id (`backward), `opt (`disabled), "&<-"),
+		      `PushButton (`id (`forward), `opt (`disabled), "-&>")
+		      ),
+		  `HBox (
+			 `ReplacePoint (`id (`repdir),
+					`SelectionBox (`id (`dir), `opt(`notify), "", dirs)
+			     ),
+			 `VSpacing(15)
+			 ),
+		  `HBox (
+		      `PushButton (`id(`ok_button), OKButtonLabel() ),
+			 `HStretch (),
+		      `PushButton (`id(`cancel_button), CancelButtonLabel() )
+			 )
+		  );
+
+	UI (`OpenDialog (
+	    `opt (`decorated),
+	    contents
+	    ));
+
+
+
+	any ret = nil;
+	string subdir = dir;
+	history = add (history, [subdir, dirs]);
+	history_ptr = history_ptr + 1;
+
+	repeat {
+	    ret = UI (`UserInput ());
+
+	    if (ret == `backward)
+	    {
+		history_ptr = history_ptr > 0 ? history_ptr - 1 : history_ptr;
+		dirs   = select (select (history, history_ptr, [subdir, dirs]), 1, []);
+		subdir = select (select (history, history_ptr, [subdir, dirs]), 0, []);
+
+		UI (`ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (UI (_("Selected directory: %1")), subdir))));
+		UI (`ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), "", dirs)));
+	    }
+
+	    if (ret == `forward)
+	    {
+		history_ptr = history_ptr + 1;
+		dirs   = select (select (history, history_ptr, [subdir, dirs]), 1, []);
+		subdir = select (select (history, history_ptr, [subdir, dirs]), 0,[]);
+
+		UI (`ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (UI (_("Selected directory: %1")), subdir))));
+		UI (`ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), "", dirs)));
+	    }
+
+	    if (ret == `dir)
+	    {
+
+		string old_dir = subdir;
+		subdir  = UI (`QueryWidget(`id (`dir), `CurrentItem));
+		dirs = getsubdirs (subdir);
+
+		if (size (dirs) == 0)
+		{
+		    y2error ("No permitions for directory: %1", subdir);
+		    subdir = old_dir;
+		    dirs = getsubdirs (subdir);
+		    continue;
+		}
+
+		if (history_ptr + 1 < size (history))
+		{
+		    integer counter = -1;
+		    history = filter (`e, history, ``{
+			counter = counter + 1;
+			return counter < history_ptr + 1;
+		    });
+		}
+
+		history = add (history, [subdir, dirs]);
+		history_ptr = history_ptr + 1;
+
+		if (size (subdir) > 2 && substring (subdir, size (subdir) - 3, 3) == "../")
+		{
+		    subdir = substring (subdir, 0, findlastof (substring (subdir, 0, size (subdir) - 4), "/") + 1);
+		    dirs = getsubdirs (subdir);
+		}
+
+		if (size (subdir) > 1 && substring (subdir, size (subdir) - 2, 2) == "./")
+		{
+		    continue;
+		}
+
+		UI (`ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (UI (_("Selected directory: %1")), subdir))));
+		UI (`ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), "", dirs)));
+	    }
+
+	    UI (`ChangeWidget (`id (`backward), `Enabled, (history_ptr > 0)));
+	    UI (`ChangeWidget (`id (`forward), `Enabled, history_ptr < size (history) - 1));
+
+	} until (ret == `ok_button || ret == `cancel_button);
+
+	UI (`CloseDialog ());
+
+	return ret == `ok_button ? subdir : "";
+    }
+
+
+    
+    /**
+     * Popup dialog to choose file or enter a new file name
+     * @param dir string with path to start browsing with
+     * @return string with selected file, empty string on cancel
+     */
+    global define SaveFileAs (string dir) ``{
+
+	list dirs = getsubdirs (dir);
+	sleep(1000);
+	string subdir = dir;
+	list history = [];
+	integer history_ptr = -1;
+
+	if (size (dirs) == 0)
+	{
+	    y2error ("No permitions for directory: %1, using /", dir);
+	    subdir = "/";
+	    dirs = getsubdirs (subdir);
+	}
+
+	history = add (history, [subdir, dirs]);
+	history_ptr = history_ptr + 1;
+
+
+	term contents = `VBox(
+	    `HSpacing(80),
+	    `ReplacePoint (`id(`rephead),
+			   `Heading (`id (`head), sformat (UI (_("Selected directory: %1")), subdir))
+		),
+	    `VSpacing (),
+	    `HBox (
+		`PushButton (`id (`backward), `opt (`disabled), "&<-"),
+		`PushButton (`id (`forward), `opt (`disabled), "-&>")
+		),
+	    `HBox (
+		`ReplacePoint (`id (`repdir),
+			       `SelectionBox (`id (`dir), `opt(`notify), UI (_("D&irectories")), dirs)
+		    ),
+		`VSpacing(15),
+		`ReplacePoint (`id (`repfile),
+			       `SelectionBox (`id (`file),  `opt(`notify), UI (_("Fi&les")), getfiles (subdir))
+		    )
+		),
+	    `TextEntry(`id(`filename), _("File na&me")),
+	    `HBox (
+		   `PushButton (`id(`ok_button), OKButtonLabel() ),
+		   `HStretch (),
+		   `PushButton (`id(`cancel_button), CancelButtonLabel())
+		)
+	    );
+
+
+	UI (`OpenDialog (
+	    `opt (`decorated),
+	    contents
+	    ));
+
+
+
+	any ret = nil;
+
+	repeat {
+	    ret = UI (`UserInput ());
+	    any current_selected = UI::QueryWidget(`id(`file), `CurrentItem);
+	    if (current_selected!=nil) {
+		UI::ChangeWidget(`id(`filename), `Value, current_selected);
+	    }
+	    
+	    if (ret == `backward)
+	    {
+		history_ptr = history_ptr > 0 ? history_ptr - 1 : history_ptr;
+		dirs   = select (select (history, history_ptr, [subdir, dirs]), 1, []);
+		subdir = select (select (history, history_ptr, [subdir, dirs]), 0, []);
+
+		UI (`ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (UI (_("Selected director&y: %1")), subdir))));
+		UI (`ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), UI (_("Dire&ctories")), dirs)));
+		UI (`ReplaceWidget (`id (`repfile), `SelectionBox (`id (`file), `opt(`notify), UI (_("Fi&les")), getfiles (subdir))));
+	    }
+
+	    if (ret == `forward)
+	    {
+		history_ptr = history_ptr + 1;
+		dirs   = select (select (history, history_ptr, [subdir, dirs]), 1, []);
+		subdir = select (select (history, history_ptr, [subdir, dirs]), 0, []);
+
+		UI (`ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (UI (_("Selected directory: %1")), subdir))));
+		UI (`ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), UI (_("Directories")), dirs)));
+		UI (`ReplaceWidget (`id (`repfile), `SelectionBox (`id (`file), `opt(`notify), UI (_("Files")), getfiles (subdir))));
+	    }
+
+	    if (ret == `dir)
+	    {
+		string old_dir = subdir;
+		subdir  = UI (`QueryWidget(`id (`dir), `CurrentItem));
+		dirs = getsubdirs (subdir);
+
+		if (size (dirs) == 0)
+		{
+		    y2error ("No permitions for directory: %1", subdir);
+		    subdir = old_dir;
+		    dirs = getsubdirs (subdir);
+		    continue;
+		}
+
+                if (size (subdir) > 2 && substring (subdir, size (subdir) - 3, 3) == "../")
+                {
+                    subdir = substring (subdir, 0, findlastof (substring (subdir, 0, size (subdir) - 4), "/") + 1);
+                    dirs = getsubdirs (subdir);
+                }
+
+                if (size (subdir) > 1 && substring (subdir, size (subdir) - 2, 2) == "./")
+                {
+                    continue;
+                }
+
+		if (history_ptr + 1 < size (history))
+		{
+		    integer counter = -1;
+		    history = filter (`e, history, ``{
+			counter = counter + 1;
+			return counter < history_ptr + 1;
+		    });
+		}
+
+		history = add (history, [subdir, dirs]);
+		history_ptr = history_ptr + 1;
+
+		UI (`ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (UI (_("Selected directory: %1")), subdir))));
+		UI (`ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), UI (_("Directories")), dirs)));
+		UI (`ReplaceWidget (`id (`repfile), `SelectionBox (`id (`file), `opt(`notify), UI (_("Files")), getfiles (subdir))));
+	    }
+
+	    UI (`ChangeWidget (`id (`backward), `Enabled, (history_ptr > 0)));
+	    UI (`ChangeWidget (`id (`forward), `Enabled, history_ptr < size (history) - 1));
+
+	} until (ret == `ok_button || ret == `cancel_button);
+
+
+	string file = "";
+
+	if (ret == `ok_button)
+	{
+	    file = UI (`QueryWidget (`id (`filename), `Value));
+	    if ("" == file)
+		file = UI (`QueryWidget (`id (`file), `CurrentItem));
+
+	    // add directory if file has not absolute path
+	    if (size(file) > 0 && substring(file, 0, 1) != "/")
+	    {
+		file = subdir + file;
+	    }
+	}
+
+	UI (`CloseDialog ());
+
+	return file;
+    }
+}

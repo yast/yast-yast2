@@ -1,0 +1,956 @@
+/**
+ * Module:              common_popups.ycp
+ *
+ * Authors:             Gabriele Strattner <gs@suse.de>
+ *
+ * Purpose:
+ *
+ * The include file "common_popups.ycp" contains commonly used popup dialogs
+ * for general usage, e.g. YesNoPopup(), ContinueCancelPopup().
+ *
+ * $Id$
+ */
+
+{
+
+  textdomain "wizard";
+
+  include "ui/common_messages.ycp";
+
+
+  UI( ``{
+
+
+      /**
+       * Indicator for empty headline for popups that can optionally have one
+       * This is really just an alias for the empty string "", but it is
+       * slightly better readable.
+       *
+       * @return empty string ("")
+       */
+
+      global define string NoHeadline() ``{
+	  return "";
+      }
+
+
+      /**
+       * Dialog which displays the "message" and has a <b>Continue</b>
+       * and a <b>Cancel</b> button.
+       * This popup should be used to confirm possibly dangerous actions and if
+       * it's useful to display a short headline (without headline ContinueCancelPopup()
+       * can be used).
+       * The default button is Continue.
+       *
+       * Returns true if Continue is clicked.
+       *
+       * @param  headline short headline or NoHeadline()
+       * @param  message  message string
+       * @return boolean
+       *
+       * @example ContinueCancelHeadlinePopup ( "Short Header", "Going on with action ....?" );
+       *
+       * @see	ContinueCancelPopup()
+       * @see	YesNoPopup()
+       * @see	AnyQuestionPopup()
+       */
+      global  define boolean ContinueCancelHeadlinePopup (string headline, string message) ``{
+
+	  any ret = AnyQuestionPopup( headline,
+				      message,
+				      ContinueButtonLabel(),
+				      CancelButtonLabel(),
+				      `focus_yes
+				      );
+
+	  y2debug("ContinueCancelHeadlinePopup returned: %1", ret );
+
+	  return ( ret );
+      };
+
+
+      /**
+       * Dialog which displays the "message" and has a <b>Continue</b>
+       * and a <b>Cancel</b> button.
+       * This popup should be used to confirm possibly dangerous actions.
+       * The default button is Continue.
+       * Returns true if Continue is clicked.
+       *
+       * @param  message  message string
+       * @return boolean
+       *
+       * @example ContinueCancelPopup ( "Please insert required CD-ROM." );
+       *
+       * @see	AnyQuestionPopup()
+       */
+      global define boolean ContinueCancelPopup (string message) ``{
+
+	  any ret = ContinueCancelHeadlinePopup( NoHeadline(), message );
+	  y2debug("ContinueCancelPopup returned: %1", ret );
+
+	  return ( ret );
+      }
+
+
+      /**
+       * This dialog displays "message" (a question) and has a <b>Yes</b> and a <b>No</b> button.
+       * It should be used for decisions about two about equivalent paths,
+       * not for simple confirmation - use "ContinueCancelPopup()" for those.
+       * A short headline can be displayed (without headline you can use YesNoPopup()).
+       *
+       * The default button is Yes.
+       *
+       * Returns true if <b>Yes</b> is clicked.
+       *
+       * @param  headline	short headline or NoHeadline()
+       * @param  message	message string
+       * @return boolean
+       *
+       * @example  YesNoHeadlinePopup ( "Resize Windows Partition?", "... explanation of dangers ..." );
+       *
+       * @see	YesNoPopup()
+       * @see	AnyQuestionPopup()
+       */
+
+      global define boolean YesNoHeadlinePopup(string headline, string message) ``{
+
+	  any ret = AnyQuestionPopup( headline,
+				      message,
+				      YesButtonLabel(),
+				      NoButtonLabel(),
+				      `focus_yes
+				      );
+
+	  y2debug("YesNoHeadlinePopup returned: %1", ret );
+
+	  return (ret);
+      };
+
+
+      /**
+       * Display a yes/no question and wait for answer.
+       * Should be used for decisions about two about equivalent paths,
+       * not for simple confirmation - use "ContinueCancelPopup()" for those.
+       * The default button is Yes.
+       * Returns true if <b>Yes</b> is clicked.
+       *
+       * @param  message	message string
+       * @return boolean
+       *
+       * @example  YesNoPopup ( "Create a backup of the config files?" );
+       *
+       * @see	YesNoHeadlinePopup()
+       * @see	ContinueCancelPopup()
+       * @see	AnyQuestionPopup()
+       */
+
+      global define boolean YesNoPopup(string message) ``{
+
+	  any ret = YesNoHeadlinePopup( NoHeadline(), message);
+	  y2debug("YesNoPopup returned: %1", ret );
+
+	  return (ret);
+      };
+
+
+      /**
+       * Show a long text that might need scrolling.
+       *
+       * Pass a RichText widget with the parameters appropriate for your text -
+       * i.e. without special parameters for HTML-like text or with
+       * `opt(`plainText) for plain ASCII text without HTML tags.
+       *
+       * @param  headline short headline
+       * @param  richtext  text input is `Richtext()
+       * @param  hdim  initial horizontal dimension of the popup
+       * @param  vdim  initial vertical dimension of the popup
+       *
+       * @example LongTextPopup ( "Package description", `Richtext("<p>Hello, this is a long description .....</p>"), 50, 20 );
+       *
+       */
+
+      global define void LongTextPopup( string headline, term richtext, integer hdim, integer vdim ) ``{
+
+	  OpenDialog( `opt( `decorated ),
+		      `HBox( `VSpacing(vdim),
+			     `VBox (`HSpacing(hdim),
+				    `Left(`Heading( headline )),
+				    `VSpacing(0.2),
+				    richtext,	// scrolled text
+				    `PushButton( `id(`ok), `opt(`default), OKButtonLabel() )
+				    )
+			     )
+		      );
+
+	  SetFocus(`id(`ok ) );
+
+	  UserInput();
+	  CloseDialog();
+      };
+
+
+      /**
+       * Confirmation for "Abort" button during installation.
+       *
+       * According to the "severity" parameter an appropriate text will be
+       * displayed indicating what the user has to expect when he really aborts now.
+       *
+       * @param severity		`painless, `incomplete, `unusable
+       *
+       * @return boolean
+       *
+       * @example ConfirmAbortPopup ( `painless );
+       */
+
+      global define boolean ConfirmAbortPopup( symbol severity ) ``{
+	  string what_will_happen = "";
+
+
+	  if ( severity == `painless )
+	  {
+	      // Warning text for aborting an installation before anything is installed
+	      what_will_happen = _( "If you abort the installation now,
+SuSE Linux will not be installed.
+Your hard disk will remain untouched." );
+	  }
+	  else if ( severity == `incomplete )
+	  {
+	      // Warning text for aborting an installation during the install process
+	      // - After some installation steps have been performed - e.g.
+	      // disks formatted / some packages already installed
+	      what_will_happen = _( "If you abort the installation now, you will
+have an incomplete SuSE Linux system
+which may or may not be usable.
+You may need to reinstall." );
+	  }
+	  else if ( severity == `unusable )
+	  {
+	      // Warning text for aborting an installation during the install process
+	      // right in the middle of some critical process (e.g. formatting)
+	      what_will_happen = _( "If you abort the installation now,
+SuSE Linux will be unusable.
+You will need to reinstall." );
+	  }
+	  else
+	  {
+	      y2warning( "Unknown symbol for what will happen when aborting - please correct in calling module" );
+	  }
+
+	  string message = _("Really abort the installation?") + "\n\n" + what_will_happen;
+
+	  any ret = AnyQuestionPopup( NoHeadline(),
+				      message,
+				      _("&Abort Installation"),
+				      _("&Continue Installation"),
+				      `focus_no );
+
+	  y2debug("ConfirmAbortPopup returned: %1", ret );
+	  return (ret);
+      };
+
+
+      /**
+       * Confirmation popup when user clicked "Abort".
+       *
+       * Set "have changes" to "true" when there are changes that will be lost.
+       * Note: If there are none, it is good policy to ask for confirmation
+       * anyway, but of course with "have_changes" set to "false" so the user
+       * isn't warned about changes that might be lost.
+       *
+       * @param have_changes	true:  There are changes that will be lost
+       *			false: No changes
+       *
+       * @return	true: "abort" confirmed;
+       *		false: don't abort
+       */
+
+      global define boolean ReallyAbortPopup( boolean have_changes ) ``{
+
+	  symbol focus = `focus_yes;
+
+	  // Confirm aborting the program
+	  string message = _("Really abort?");
+
+	  if ( have_changes )
+	  {
+	      focus = `focus_no;
+
+	      // Additional hint when trying to abort program in spite of changes
+	      message = message + "\n" + _("All changes will be lost!");
+	  }
+
+	  any ret = AnyQuestionPopup( NoHeadline(),
+				      message,
+				      YesButtonLabel(),
+				      NoButtonLabel(),
+				      `focus_no );
+
+	  y2debug("ReallyAbortPopup returned: %1", ret );
+	  return (ret);
+      };
+
+
+      /**
+       * Show a simple message and wait until user clicked "OK".
+       *
+       * @param message		message string
+       *
+       * @example  MessagePopup("This is an information about ... ." );
+       *
+       * @see AnyMessagePopup
+       * @see NotifyPopup
+       * @see WarningPopup
+       * @see ErrorPopup
+       */
+
+      global define void MessagePopup(string message) ``{
+          // ok pushbutton: confirm the dialog
+          OpenDialog(
+		     `opt(`decorated),
+		     `HBox(
+			   `HSpacing(1),
+			   `VBox(
+				 `VSpacing(0.2),
+				 `Label(message),
+				 `PushButton(`id(`ok), `opt(`default), OKButtonLabel()),
+				 `VSpacing(0.2)
+				 ),
+			   `HSpacing(1)
+			   )
+		     );
+	  SetFocus(`id(`ok));
+	  UserInput();
+	  
+          CloseDialog();
+      };
+
+
+      /**
+       * Show a warning message and wait until user clicked "OK".
+       *
+       * @param message warning message string
+       *
+       * @example WarningPopup("Something is wrong. Please check your configuration." );
+       *
+       * @see MessagePopup
+       * @see NotifyPopup
+       * @see ErrorPopup
+       * @see AnyMessagePopup
+       */
+
+      global define void WarningPopup(string message) ``{
+
+	  AnyMessagePopup( WarningMsg(), message );
+
+      };
+
+
+      /**
+       * Show an error message and wait until user clicked "OK".
+       *
+       * @param message	error message string
+       *
+       * @example  ErrorPopup("The configuration was not succesful." );
+       *
+       * @see MessagePopup
+       * @see NotifyPopup
+       * @see WarningPopup
+       * @see AnyMessagePopup
+       */
+
+      global define void ErrorPopup(string message) ``{
+
+	  AnyMessagePopup( ErrorMsg(), message );
+
+      };
+
+
+      /**
+       * Show a notification message and wait until user clicked "OK".
+       *
+       * @param  message 	notify message string
+       *
+       * @example  NotifyPopup("Your printer is ready for use." );
+       *
+       * @see MessagePopup
+       * @see AnyMessagePopup
+       */
+
+      global define void NotifyPopup(string message) ``{
+
+	  AnyMessagePopup( NotifyMsg(), message );
+
+      };
+
+
+      /**
+       * Generic message popup: Show a message with optional headline above and
+       * wait until user clicked "OK".
+       *
+       * @param headline	optional headline or NoHeadline()
+       * @param message		the message (maybe multi-line) to display.
+       *
+       * @see MessagePopup
+       * @see NotifyPopup
+       * @see WarningPopup
+       * @see ErrorPopup
+       */
+
+      global define void AnyMessagePopup(string headline, string message) ``{
+
+	  term button_box =  `PushButton( `id(`ok_msg), `opt(`default), OKButtonLabel() );
+	  // ok pushbutton: confirm the dialog
+	  OpenDialog(
+		     `opt(`decorated),
+		     createPopupLayoutInternal( headline, message, button_box )
+		     );
+
+	  SetFocus(`id(`ok_msg) );
+
+	  UserInput();
+	  CloseDialog();
+      };
+
+
+
+      /**
+       * Display a message with a timeout and return when the user clicks "OK"
+       * or when the timeout expires.
+       *
+       * There is also a "stop" button that will stop the countdown. If the
+       * user clicks that, the popup will wait forever (or until "OK" is
+       * clicked, of course).
+       *
+       * @param message 		message to display
+       * @param timeout_seconds		the timeout in seconds
+       *
+       * @example TimedMessagePopup("This is a timed message", 2 );
+       */
+
+      global define void TimedMessagePopup(string message, integer timeout_seconds) ``{
+	  OpenDialog(
+		     `opt(`decorated),
+		     `HBox(
+			   `HSpacing(1),
+			   `VBox(
+				 `VSpacing(0.2),
+				 `Label(message),
+				 `HCenter(
+					  `Label(`id(`remaining_time), "" + timeout_seconds)
+					  ),
+				 `HBox(
+				       // "Stop" button for timeout message: Stop counting down
+				       // (i.e. leave the popup message open without timeout)
+				       `PushButton(`id(`timed_stop), StopButtonLabel() ),
+				       `HSpacing(2),
+
+				       // "OK" button for timeout message: Close popup dialog
+				       // (i.e. confirm the message)
+				       `PushButton(`id(`timed_ok), `opt(`default), OKButtonLabel() )
+				       ),
+				 `VSpacing(0.2)
+				 )
+			   )
+		     );
+
+	  sleep (1000);
+	  any which_input = `empty;
+	  while (timeout_seconds > 0) {
+	      which_input = PollInput();
+	      if (which_input == `timed_ok)
+		  break;
+	      if (which_input == `timed_stop) {
+		  while (which_input == `timed_stop)
+		      which_input = UserInput();
+		  break;
+	      }
+	      sleep (1000);
+	      timeout_seconds = timeout_seconds - 1;
+	      ChangeWidget (`id(`remaining_time), `Value, ""+timeout_seconds);
+	  }
+	  CloseDialog();
+      };
+
+
+
+      /**
+       * Display a message with a timeout and return when the user clicks "OK", "Cancel"
+       * or when the timeout expires ("OK" is assumed then).
+       *
+       * There is also a "stop" button that will stop the countdown. If the
+       * user clicks that, the popup will wait forever (or until "OK" or "Cancel" is
+       * clicked, of course).
+       *
+       * @param message 		message to display
+       * @param timeout_seconds		the timeout in seconds
+       *
+       * @return true	--> "OK" or timer expired<br>
+       *	 false  --> "Cancel"
+       *
+       * @example boolean ret = TimedOKCancelPopup("This is a timed message", 2 );
+       */
+
+      global define boolean TimedOKCancelPopup(string message, integer timeout_seconds) ``{
+	  OpenDialog(
+		     `opt(`decorated),
+		     `HBox(
+			   `HSpacing(1),
+			   `VBox(
+				 `VSpacing(0.2),
+				 `Label(message),
+				 `HCenter(
+					  `Label(`id(`remaining_time), "" + timeout_seconds)
+					  ),
+				 `HBox(
+				       // "Stop" button for timeout message: Stop counting down
+				       // (i.e. leave the popup message open without timeout)
+				       `PushButton(`id(`timed_stop), StopButtonLabel() ),
+				       `HSpacing(2),
+
+				       // "OK" button for timeout message: Close popup dialog
+				       // (i.e. confirm the action in "message")
+				       `PushButton(`id(`timed_ok), `opt(`default), OKButtonLabel() ),
+				       `HSpacing(2),
+				       
+				       // "Cancel" button for timeout message: Close popup dialog
+				       // (i.e. cancel the action in "message")
+				       `PushButton(`id(`timed_cancel), CancelButtonLabel() )
+				       ),
+				 `VSpacing(0.2)
+				 )
+			   )
+		     );
+
+	  sleep (1000);
+	  any which_input = `empty;
+	  while (timeout_seconds > 0) {
+	      which_input = PollInput();
+	      if (which_input == `timed_ok)
+		  break;
+	      if (which_input == `timed_cancel)
+		  break;
+	      if (which_input == `timed_stop) {
+		  while (which_input == `timed_stop)
+		      which_input = UserInput();
+		  break;
+	      }
+	      sleep (1000);
+	      timeout_seconds = timeout_seconds - 1;
+	      ChangeWidget (`id(`remaining_time), `Value, ""+timeout_seconds);
+	  }
+	  CloseDialog();
+
+	  return( which_input != `timed_cancel );
+      };
+
+
+      /**
+       * Generic question popup with two buttons.
+       *
+       * Style guide hint: The first button has to have the semantics of "yes",
+       * "OK", "continue" etc., the second its opposite ("no", "cancel", ...).
+       * NEVER use this generic question popup to simply exchange the order of
+       * yes/no, continue/cancel or ok/cancel buttons!
+       *
+       * @param headline		headline or NoHeadline()
+       * @param message			message string
+       * @param yes_button_message	label on affirmative buttons (on left side)
+       * @param no_button_message	label on negating button (on right side)
+       * @param focus			`focus_yes (first button) or `focus_no (second button)
+       *
+       * @return true:  first button has been clicked
+       *	 false: second button has been clicked
+       *
+       * @see YesNoPopup
+       * @see ContinueCancelPopup
+       *
+       * @example AnyQuestionPopup( WarningMsg(), "Do really want to ...?", "Install", "Don't do it", `focus_no );
+       */
+      global define boolean AnyQuestionPopup( string headline,
+					      string message,
+					      string yes_button_message,
+					      string no_button_message,
+					      symbol focus )	``{
+	  term yes_button = `Empty();
+	  term no_button = `Empty();
+
+	  if ( focus == `focus_no )
+	  {
+	      yes_button = `PushButton( `id(`yes),  yes_button_message );
+	      no_button  = `PushButton( `id(`no_button), `opt(`default), no_button_message );
+	  }
+	  else
+	  {
+	      yes_button = `PushButton(`id(`yes), `opt(`default), yes_button_message);
+	      no_button  = `PushButton( `id(`no_button), no_button_message );
+	  }
+
+	  term button_box =  `HBox(
+				   `HWeight( 1, yes_button),
+				   `HSpacing(2),
+				   `HWeight( 1, no_button )
+				   );
+
+	  OpenDialog(
+		     `opt(`decorated),
+		     createPopupLayoutInternal( headline, message, button_box )
+		     );
+
+	  any ret = UserInput();
+	  CloseDialog();
+
+	  return (ret == `yes);
+      };
+
+      /**
+       * Generic question popup with three buttons.
+       *
+       * @param headline		headline or NoHeadline()
+       * @param message			message string
+       * @param yes_button_message	label on affirmative button (on left side)
+       * @param no_button_message	label on negating button (middle)
+       * @param retry_button_message	label on retry button (on right side)
+       * @param focus			`focus_yes (first button), `focus_no (second button) or
+       *				`focus_retry (third button)
+       *
+       * @return `yes:  first button has been clicked
+       *	 `no: second button has been clicked
+       *	 `retry: third button has been clicked
+       *
+       * @see AnyQuestionPopup
+       *
+       * @example AnyQuestionPopup3( WarningMsg(), _("... failed"), _("Continue"), _("Cancel"), _("Retry"), `focus_yes );
+       */
+
+      global define symbol AnyQuestionPopup3( string headline,
+					      string message,
+					      string yes_button_message,
+					      string no_button_message,
+					      string retry_button_message,
+					      symbol focus )	``{
+	  term yes_button = `Empty();
+	  term no_button = `Empty();
+	  term retry_button = `Empty();
+
+	  if ( focus == `focus_no )
+	  {
+	      yes_button = `PushButton( `id(`yes),  yes_button_message );
+	      no_button  = `PushButton( `id(`no), `opt(`default), no_button_message );
+	      retry_button  = `PushButton( `id(`retry), retry_button_message );
+	  }
+	  else if ( focus == `focus_yes )
+	  {
+	      yes_button = `PushButton(`id(`yes), `opt(`default), yes_button_message);
+	      no_button  = `PushButton( `id(`no), no_button_message );
+	      retry_button  = `PushButton( `id(`retry), retry_button_message );
+	  }
+	  else
+	  {
+	      yes_button = `PushButton(`id(`yes), yes_button_message);
+	      no_button  = `PushButton( `id(`no), no_button_message );
+	      retry_button  = `PushButton( `id(`retry), `opt(`default), retry_button_message );
+	  }
+
+	  term button_box =  `HBox(
+				   `HWeight( 1, yes_button),
+				   `HSpacing(2),
+				   `HWeight( 1, no_button ),
+				   `HSpacing(2),
+				   `HWeight( 1, retry_button )
+				   );
+
+	  OpenDialog(
+		     `opt(`decorated),
+		     createPopupLayoutInternal( headline, message, button_box )
+		     );
+
+	  any ret = UserInput();
+	  CloseDialog();
+
+	  return (ret);
+      };
+
+
+      /**
+       * Special error popup for YCP modules that don't work.
+       * The user can choose one of:
+       * "back" - go back to the previous module
+       * "next" - skip this faulty module and directly go to the next one
+       * "again" - try it again (after fixing something in the code, of course)
+       * "cancel" - exit program
+       *
+       * @param text	 string
+       * @return symbol `back, `again, `cancel, `next
+       *
+       * @example ModuleError( "The module " + symbolof(argterm)) + " does not work." );
+       */
+
+      global define symbol ModuleError(string text) ``{
+	  OpenDialog(
+		     `opt(`decorated, `warncolor),
+		     `HBox(
+			   `HSpacing(1),
+			   `VBox(
+				 `VSpacing(0.2),
+				 `Heading(text),
+				 `HBox(
+				       `PushButton(`id(`back), 	 BackButtonLabel()	),
+				       `PushButton(`id(`again),	 RetryButtonLabel()	),
+				       `PushButton(`id(`cancel), QuitButtonLabel() 	),
+				       `PushButton(`id(`next), 	 NextButtonLabel()	)
+				       ),
+				 `VSpacing(0.2)
+				 ),
+			   `HSpacing(1)
+			   )
+		     );
+	  any r = UserInput();
+	  CloseDialog();
+	  return r;
+      };
+
+
+      /**
+       * Internal function that actually creates a popup dialog layout.
+       *
+       * @param headline	headline to show or NoHeadline()
+       * @param message		message text to show
+       * @param button_box	term with one or more buttons
+       *
+       * @return the layout contents as a term
+       */
+
+      global define term createPopupLayoutInternal( string headline, string message, term button_box ) ``{
+
+	  term contents = `Empty();
+	  term heading  = `Empty();
+
+	  if ( size(headline) == 0 )
+	  {
+	      heading = `VSpacing(0.2);
+	  }
+	  else
+	  {
+	      heading = `Heading( headline );
+	  }
+
+	  contents = `HBox(
+			   `HSpacing(1),
+			   `HCenter (
+				     `HSquash(
+					      `VBox (
+						     `HCenter (
+							       `HSquash(
+									`VBox(
+									      `Left(heading),
+									      `VSpacing(0.2),
+									      `Left(`Label(message))
+									      )
+									)
+							       ),
+						     `HSquash( button_box ),
+						     `VSpacing(0.2)
+						     )
+					      )
+				     ),
+			   `HSpacing(1)
+			   );
+
+	  return contents;
+      };
+
+
+      /**
+       * Internal function that actually creates a popup dialog with additional label.
+       *
+       * @param headline	headline to show or NoHeadline()
+       * @param message		message text to show
+       * @param button_box	term with one or more buttons
+       * @param label		second label with id `label which can be used e.g. for time out value displaying
+       *
+       * @return term the layout contents as a term
+       */
+
+      global define term createPopupLayoutInternalWithLabel(string headline, string message, term button_box, string label)
+      ``{
+
+	  term contents = `Empty();
+	  term heading  = `Empty();
+
+	  if (size(headline) == 0)
+	  {
+	      heading = `VSpacing(0.2);
+	  }
+	  else
+	  {
+	      heading = `Heading(headline);
+	  }
+
+	  contents = `HBox(
+			   `HSpacing(1),
+			   `HCenter (
+				     `HSquash(
+					      `VBox (
+						     `HCenter (
+							       `HSquash(
+									`VBox(
+									      `Left(heading),
+									      `VSpacing(0.2),
+									      `Left(`Label(message)),
+									      `VSpacing(0.2),
+									      `Label(`id(`label), label)
+									      )
+									)
+							       ),
+						     `HSquash(button_box),
+						     `VSpacing(0.2)
+						     )
+					      )
+				     ),
+			   `HSpacing(1)
+			   );
+
+	  return contents;
+      };
+
+
+      /**
+       * Generic message popup: Show a message with optional headline above and
+       * wait until user clicked "OK".
+       *
+       * @param headline	optional headline or NoHeadline()
+       * @param message		the message (maybe multi-line) to display.
+       * @param timeout		After timeout seconds dialog will be automatically closed
+       *
+       * @return void
+       *
+       */
+
+      global define void AnyTimedMessagePopup(string headline, string message, integer timeout)
+      ``{
+
+	  term button_box =  `PushButton( `id(`ok_msg), `opt(`default), OKButtonLabel() );
+	  // ok pushbutton: confirm the dialog
+	  OpenDialog(
+		`opt(`decorated),
+		createPopupLayoutInternalWithLabel( headline, message, button_box, sformat("%1", timeout) )
+	  );
+
+	  SetFocus(`id(`ok_msg));
+
+
+	  symbol s = nil;
+	  integer tout = timeout;
+
+	  while (tout > 0 && s != `ok_msg)
+	  {
+	      integer t = 10;
+
+	      while (t > 0 && s != `ok_msg)
+	      {
+		  s = UI::PollInput();
+
+		  if (s != `ok_msg)
+		  {
+		      sleep(100);
+		  }
+
+		  t = t - 1;
+	      }
+
+	      tout = tout - 1;
+
+	      UI::ChangeWidget(`id(`label), `Value, sformat("%1", tout));
+	  }
+
+	  UI::CloseDialog();
+      }
+
+
+      /**
+       * Show a warning message and wait specified amount of time or until user clicked "OK".
+       *
+       * @param message warning message string
+       * @param timeout_seconds time out in seconds
+       *
+       * @return void
+       *
+       * @see WarningPopup
+       */
+
+      global define void TimedWarningPopup(string message, integer timeout_seconds)
+      ``{
+	  AnyTimedMessagePopup(WarningMsg(), message, timeout_seconds);
+      };
+
+
+      /**
+       * Show an error message and wait specified amount of time or until user clicked "OK".
+       *
+       * @param message	error message string
+       * @param timeout_seconds time out in seconds
+       *
+       * @return void
+       *
+       * @see ErrorPopup
+       */
+
+      global define void TimedErrorPopup(string message, integer timeout_seconds)
+      ``{
+	  AnyTimedMessagePopup(ErrorMsg(), message, timeout_seconds);
+      };
+
+  });
+
+  /**
+   * Show the contents of an entire file in a popup.
+   * Notice: This is a WFM function, NOT an UI function!
+   *
+   * @param headline	headline text
+   * @param filename	filename with path of the file to show
+   *
+   * @example ShowFilePopup( "Boot Messages", "/var/log/boot.msg" );
+   */
+  global define void ShowFilePopup( string headline, string filename ) ``{
+
+      string file_contents = SCR::Read (.target.string, (filename) );
+
+      UI(``{
+	  string headline = WFM::headline;
+
+	  OpenDialog( `opt(`decorated ),
+		      `VBox(
+			    `HSpacing( 70 ),	// force width
+			    `VSpacing( 0.3 ),
+			    `VWeight( 1,
+				      `HBox(
+					    `VSpacing( 18 ),	// force height
+					    `HSpacing( 0.7 ),
+					    `LogView( `id(`log ),
+						      headline,
+						      3,	// height
+						      0 ),	// number of lines to show
+					    `HSpacing( 0.7 )
+					    )
+				      ),
+			    `VSpacing( 0.3 ),
+			    `PushButton( `opt(`default), OKButtonLabel() ),
+			    `VSpacing( 0.3 )
+			    )
+		      );
+
+	  // Fill the LogView with file contents
+	  ChangeWidget( `id(`log ), `Value, WFM::file_contents );
+
+	  UserInput();
+	  CloseDialog();
+      });
+
+  }
+
+  global define string NoHeadline() ``{
+	  return ( UI::NoHeadline() );
+  }
+
+}
+

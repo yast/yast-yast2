@@ -1,0 +1,205 @@
+/**
+ * Module:				common_messages.ycp
+ *
+ * Authors:             Gabriele Strattner <gs@suse.de>
+ *
+ * Purpose:
+ *
+ * Provides often used messages and button labels.
+ *
+ * $Id$
+ */
+
+{
+  textdomain "wizard";
+
+  UI (``{
+      global define string CancelButtonLabel() ``{
+	  // this is a button label
+	  return _( "&Cancel" );
+      }
+      global define string ContinueButtonLabel() ``{
+	  // this is a button label
+	  return _( "C&ontinue" );
+      }
+      global define string YesButtonLabel() ``{
+	  // this is a button label
+	  return _( "&Yes" );
+      }
+      global define string NoButtonLabel() ``{
+	  // this is a button label
+	  return _( "&No" );
+      }
+      global define string FinishButtonLabel() ``{
+	  // this is a button label
+	  return _( "&Finish" );
+      }
+       global define string EditButtonLabel() ``{
+	  // this is a button label
+	  return _( "Ed&it" );
+      }     
+      global define string OKButtonLabel() ``{
+	  // this is a button label
+	  return _( "&OK" );
+      }
+      global define string AbortButtonLabel() ``{
+	  // this is a button label
+	  return _( "Abo&rt" );
+      }
+      global define string NextButtonLabel() ``{
+	  // this is a button label
+	  return _( "&Next" );
+      }
+      global define string NewButtonLabel() ``{
+	  // this is a button label
+	  return _( "Ne&w" );
+      }
+      global define string DeleteButtonLabel() ``{
+	  // this is a button label
+	  return _( "Dele&te" );
+      }     
+      global define string BackButtonLabel() ``{
+	  // this is a button label
+	  return _( "&Back" );
+      }
+      global define string AcceptButtonLabel() ``{
+	  // this is a button label
+	  return _( "&Accept" );
+      }
+      global define string QuitButtonLabel() ``{
+	  // this is a button label
+	  return _( "&Quit" );
+      }
+      global define string RetryButtonLabel() ``{
+	  // this is a button label
+	  return _( "&Retry" );
+      }
+      global define string HelpButtonLabel() ``{
+	  // this is a button label
+	  return _( "&Help" );
+      }
+      global define string InstallButtonLabel() ``{
+	  // this is a button label
+	  return _( "&Install" );
+      }
+      global define string DontInstallButtonLabel() ``{
+	  // this is a button label
+	  return _( "&Don't install" );
+      }
+      global define string DownloadButtonLabel() ``{
+	  // this is a button label
+	  return _( "&Download" );
+      }
+      global define string SaveButtonLabel() ``{
+	  // this is a button label
+	  return _( "&Save" );
+      }
+      global define string StopButtonLabel() ``{
+	  // this is a button label
+	  return _( "&Stop" );
+      }
+      global define string CloseButtonLabel() ``{
+	  // this is a button label
+	  return _( "C&lose" );
+      }
+      global define string NotifyMsg() ``{
+	  // this string is usually used as headline of a popup
+	  return _( "Notify" );
+      }
+      global define string WarningMsg() ``{
+	  // this string is usually used as headline of a popup
+	  return _( "Warning" );
+      }
+      global define string ErrorMsg() ``{
+	  // this string is usually used as headline of a popup
+	  return _( "Error" );
+      }
+
+      global define string PleaseWaitMsg() ``{
+	  return _( "Please wait..." );
+      }
+
+
+  });
+
+  global define string EditButtonLabel() ``{
+      return UI::EditButtonLabel();
+  }
+  global define string CancelButtonLabel() ``{
+      return UI::CancelButtonLabel();
+  }
+  global define string ContinueButtonLabel() ``{
+      return UI::ContinueButtonLabel();
+  }
+  global define string YesButtonLabel() ``{
+      return UI::YesButtonLabel();
+  }
+  global define string NoButtonLabel() ``{
+      return UI::NoButtonLabel();
+  }
+  global define string FinishButtonLabel() ``{
+      return UI::FinishButtonLabel();
+  }
+  global define string OKButtonLabel() ``{
+      return UI::OKButtonLabel();
+  }
+  global define string AbortButtonLabel() ``{
+      return UI::AbortButtonLabel();
+  }
+  global define string NextButtonLabel() ``{
+      return UI::NextButtonLabel();
+  }
+  global define string NewButtonLabel() ``{
+      return UI::NewButtonLabel();
+  }
+  global define string DeleteButtonLabel() ``{
+      return UI::DeleteButtonLabel();
+  }     
+  global define string BackButtonLabel() ``{
+      return UI::BackButtonLabel();
+  }
+  global define string AcceptButtonLabel() ``{
+      return UI::AcceptButtonLabel();
+  }
+  global define string QuitButtonLabel() ``{
+      return UI::QuitButtonLabel();
+  }
+  global define string RetryButtonLabel() ``{
+      return UI::RetryButtonLabel();
+  }
+  global define string HelpButtonLabel() ``{
+      return UI::HelpButtonLabel();
+  }
+  global define string InstallButtonLabel() ``{
+      return UI::InstallButtonLabel();
+  }
+  global define string DontInstallButtonLabel() ``{
+      return UI::DontInstallButtonLabel();
+  }
+  global define string DownloadButtonLabel() ``{
+      return UI::DownloadButtonLabel();
+  }
+  global define string StopButtonLabel() ``{
+      return UI::StopButtonLabel();
+  }
+  global define string SaveButtonLabel() ``{
+      return UI::SaveButtonLabel();
+  }
+  global define string CloseButtonLabel() ``{
+      return UI::CloseButtonLabel();
+  }
+  global define string NotifyMsg() ``{
+      return UI::NotifyMsg();
+  }
+  global define string WarningMsg() ``{
+      return UI::WarningMsg();
+  }
+  global define string ErrorMsg() ``{
+      return UI::ErrorMsg();
+  }
+
+  global define string PleaseWaitMsg() ``{
+      return UI::PleaseWaitMsg();
+  }
+
+}

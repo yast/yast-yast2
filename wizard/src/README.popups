@@ -1,0 +1,268 @@
+$Id$
+
+
+			     COMMON POPUP DIALOGS
+			     ====================
+
+
+The include file "common_popups.ycp" contains commonly used popup dialogs for
+general usage. Use those dialogs rather than creating your own custom dialogs
+whenever possible.
+
+If you have your own definitions of equivalent popups (which is very likely),
+please remove them as soon as possible and use the popups from
+"common_popups.ycp". The new popups usually require fewer parameters - e.g. you
+no longer need to explicitly pass standard button labels like "Yes" or "No"
+etc. as parameters (we had to do that because of technical limitations with the
+translator module, but we found a workaround for that).
+
+
+
+			  SIMPLE AND EXPERT VERSIONS
+			  ==========================
+
+There are several versions for each type of popup, a simple version with a
+minimum number of parameters and one or more "expert" versions where you can
+pass lots of parameters to fine-tune many details.
+
+Use the simplest version one whenever you can. It's normally the version that
+makes most sense for most cases.
+
+If you use an "expert" version, try to stick to the default behaviour (i.e. the
+behaviour of the simple version) as closely as possible. Change only parameters
+you really need to change. In particular, only change the default button for
+very good reasons.
+
+If there is a specialized simple version, use it whenever you can. For example,
+use WarningPopup() rather than AnyMessagePopup() with the same message if you
+want to display a warning. This way we can make sure all warnings look the same
+and make them easily recognizable as warnings.
+
+
+
+			     HEADLINES, YES OR NO?
+			     =====================
+
+Sense or nonsense of providing headlines for each popup is a cause for endless
+discussion - we've been through that. Sometimes headlines make sense, sometimes
+they don't.
+
+As a general rule of thumb, don't provide a headline that is more or less the
+same as the message itself, i.e. don't
+
+
+:-(	CREATE BACKUP?
+
+	Should YaST2 create a backup of the config files?
+
+	[Yes] [No]
+
+
+- this is plainly redundant. This could be done much better like this:
+
+
+:-)	Create a backup of the config files?
+
+	[Yes] [No]
+
+
+- i.e. concise question, no lyrics around it, clear, plain and simple.
+
+If you need to provide more background information to the user so he can
+understand what tragedy could befall his machine should he chose either
+alternative, a headline makes perfect sense for the more experienced user who
+gets to this kind of question quite frequently:
+
+
+	RESIZE WINDOWS PARTITION?
+
+	...
+	(lengthy explanation of the dangers of this action)
+	...
+
+	[Yes] [No]
+
+
+(Note: This example might be a good candidate for ContinueCancel() - see below)
+
+If you use headlines, please use them to either
+- classify the type of popup (Error, Warning, ...)
+- summarize the question.
+
+Please DON'T use headlines like "Question" etc. - this doesn't have any
+informative value, yet it forces the user to read this useless headline.
+
+
+For all those reasons, most popups come in a generic version where you can pass
+a headline ("Headline" is included in the names of those) and a simple version
+for general usage.
+
+
+
+			      PREDEFINED MESSAGES
+			      ===================
+
+There are predefined messages for commonly used texts for the dialogs. Use them
+when you use the "expert" version of a dialog - don't pass your own messages if
+you can avoid it! Not only makes this life easier for our translators (they
+need to translate stuff like "Cancel" over and over again), it also gives us a
+chance to provide consistent keyboard shortcuts throughout the entire program.
+
+Example:
+
+Use
+
+`OpenDialog(
+            ...
+            `HBox(
+:-)               `PushButton( `id(`ok ), `opt(`default), OKButtonLabel() ),
+                  `PushButton( `id(`retry ), RetryButtonLabel() ),
+                  `PushButton( `id(`cancel), CancelButtonLabel() )
+                  )
+           )
+
+and NOT
+
+`OpenDialog(
+            ...
+            `HBox(
+:-(               `PushButton( `id(`ok ), `opt(`default), _("&OK") ),
+                  `PushButton( `id(`retry ), "&Retry"  ),
+                  `PushButton( `id(`cancel), "&Cancel" )
+                  )
+           )
+
+- even whenever you create your own dialogs.
+
+The first part of the name always is the message itself literally ("Retry"),
+the suffix indicates the type ("ButtonLabel") to indicate whether or not it has
+a keyboard shortcut. Currently we have "xxxButtonLabel" (with keyboard
+shortcut) and "xxxMsg" (without shortcut).
+
+
+
+			    WHEN TO USE WHAT POPUP
+			    ======================
+
+DECISION POPUPS - two buttons, return true or false
+---------------------------------------------------
+
+For confirmation of possibly dangerous things, use ContinueCancelPopup().
+
+Only when there are two really distinct paths of decision use YesNoPopup().
+- and no, cancelling the entire process doesn't count here - this is no
+equivalent decision.
+
+
+The positive case ("Yes" or "Continue") is the default. If you don't like that,
+use the generic AnyQuestionPopup() directly and pass `focus_no for the focus
+parameter. 
+
+Remember: Only do that for very good reasons - i.e. when it's a really
+dangerous decision that typically results in loss of data that can't easily be
+restored. 
+
+If you need to pass other button labels, think twice. 
+If you really need this, use AnyQuestionPopup().
+
+But NEVER use it so simply change the order of default buttons - 
+i.e. NEVER create dialogs like this:
+
+:-(	Format hard disk?
+
+	[Cancel] [Continue]
+
+
+:-(	Show installation log?
+
+	[No] [Yes]
+
+
+
+
+INFO POPUPS - just an "OK" button
+---------------------------------
+
+If you can classify a simple message accordingly, use one of
+
+- ErrorPopup()
+- WarningPopup()
+- NotifyPopup()
+
+they all have a headline that indicates the type (Error, Warning, Notify).
+
+If you can't classify your message, use MessagePopup().
+
+Use LongTextPopup() to display large amounts of text that might need
+scrolling. 
+
+
+				   MIGRATION
+				   =========
+
+* Add to your YCP file:
+
+include "ui/common_popups.ycp"
+
+
+* Remove your own definitions of
+  - ContinueCancel()
+  - YesOrNo()
+  - YesNoOpt()
+  - DisplayMessage()
+  - DisplayTimedMessage()
+  - ModuleError()
+  - size_text()
+
+  or similar functions that do the same as the new popups.
+
+
+* Delete the button label parameters ( _("Yes"), _("No"), ...) from:
+
+  - ContinueCancel()
+  - YesOrNo()
+
+  They are not needed any more.
+
+
+* Search and replace:
+
+  - YesOrNo()			-> YesNoPopup()
+
+  - ContinueCancel()		-> ContinueCancelPopup()
+
+  - DisplayMessage()		-> MessagePopup()
+
+  - DisplayTimedMessage()	-> TimedMessagePopup()
+
+  - YesNoOpt()			-> AnyQuestionPopup( `noheadline,
+						     message,
+						     YesButtonLabel(),
+						     NoButtonLabel(),
+						     `focus_no );
+
+
+* Go through each call to MessagePopup() and decide whether it makes sense to
+  change it to one of
+
+  - ErrorPopup()
+  - WarningPopup()
+  - NotifyPopup()
+
+  - but please don't change anything into NotifyPopup() for no good reason.
+    (it's the discussion about headlines all over again).
+
+
+* Change question popups with long messages to the corresponding
+  xxxHeadline() version and provide a concise headline (see above).
+
+
+* Search and replace common button labels for the rest of your dialogs:
+
+	_("&OK")	-> OKButtonLabel()
+	_("&Cancel")	-> CancelButtonLabel()
+	...
+
+  See "common_messages.ycp" for a complete list.
+
+

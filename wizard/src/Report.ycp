@@ -1,0 +1,469 @@
+/**
+ *  File:
+ *    Report.ycp
+ *
+ *  Module:
+ *    Report module
+ *
+ *  Authors:
+ *    Ladislav Slezak <lslezak@suse.cz>
+ *
+ *  $Id$
+ *
+ *  Report module collects warnings and errors from modules in auto installation mode.
+ *  Collected messages can be displayed later.
+ *
+ */
+
+{
+
+module "Report";
+
+include "ui/common_popups.ycp";
+
+textdomain "wizard";
+
+// stored messages
+list errors = [];
+list warnings = [];
+list messages = [];
+
+// display flags
+boolean display_errors = true;
+boolean display_warnings = true;
+boolean display_messages = true;
+
+// timeouts
+integer timeout_errors = 0;
+integer timeout_warnings = 0;
+integer timeout_messages = 0;
+
+// logging flags
+boolean log_errors = true;
+boolean log_warnings = true;
+boolean log_messages = true;
+
+
+/**
+ * Summary of current settings
+ * @return Html formatted configuration summary
+ */
+global define string Summary()
+``{
+    string summary = "";
+    summary = Summary::AddHeader(summary, _("Messages"));
+    summary = Summary::OpenList(summary);
+    summary = Summary::AddListItem(summary, sformat(_("Display Messages: %1"), (display_messages) ?
+						    _("Yes") : _("No")));
+    summary = Summary::AddListItem(summary, sformat(_("Timeout Messages: %1"), timeout_messages));
+    summary = Summary::AddListItem(summary, sformat(_("Log Messages: %1"), (log_messages) ?
+						    _("Yes") : _("No")));
+    summary = Summary::CloseList(summary);
+    summary = Summary::AddHeader(summary, _("Warnings"));
+    summary = Summary::OpenList(summary);
+    summary = Summary::AddListItem(summary, sformat(_("Display Warnings: %1"), (display_warnings) ?
+						    _("Yes") : _("No")));
+    summary = Summary::AddListItem(summary, sformat(_("Timeout Warnings: %1"), timeout_warnings));
+    summary = Summary::AddListItem(summary, sformat(_("Log Warnings: %1"), (log_warnings) ?
+						    _("Yes") : _("No")));
+    summary = Summary::CloseList(summary);
+    summary = Summary::AddHeader(summary, _("Errors"));
+    summary = Summary::OpenList(summary);
+    summary = Summary::AddListItem(summary, sformat(_("Display Errors: %1"), (display_errors) ?
+						    _("Yes") : _("No")));
+    summary = Summary::AddListItem(summary, sformat(_("Timeout Errors: %1"), timeout_errors));
+    summary = Summary::AddListItem(summary, sformat(_("Log Errors: %1"), (log_errors) ?
+						    _("Yes") : _("No")));
+    summary = Summary::CloseList(summary);
+    return summary;
+}
+
+/**
+ * Set module data
+ * @param settings map with settings
+ * @return void
+ */
+global define void Set(map settings) ``{
+    map msg = settings["messages"]:$[];
+    map err = settings["errors"]:$[];
+    map war = settings["warnings"]:$[];
+
+ // display flags
+    display_errors = msg["show"]:true;
+    display_warnings = war["show"]:true;
+    display_messages = err["show"]:true;
+
+// timeouts
+    timeout_errors = err["timeout"]:0;
+    timeout_warnings = war["timeout"]:0;
+    timeout_messages = msg["timeout"]:0;
+
+// logging flags
+    log_errors = err["log"]:true;;
+    log_warnings = war["log"]:true;;;
+    log_messages = msg["log"]:true;;
+
+}
+
+
+/**
+ * Get all the Report configuration from a map.
+ * the map may be empty.
+ * @param settings Map with settings (keys: "messages", "errors", "warnings"; values: map - see Set())
+ * @return	success
+ */
+global define boolean Import(map settings)``{
+    if (size (settings) == 0)
+    {
+	//Provide defaults for autoinstallation editing:
+	//Leave empty.
+	return true;
+    }
+
+    boolean missing = false;
+    foreach (`k, ["messages", "errors", "warnings"], ``{
+	if (! haskey (settings, k))
+	{
+	    y2error ("Missing at Import: '%1'.", k);
+	    missing = true;
+	}
+    });
+    if (missing)
+    {
+	return false;
+    }
+
+    Set(settings);
+    return true;
+}
+
+
+/**
+ * Dump the Report settings to a map, for autoinstallation use.
+ * @return map map with settings
+ */
+global define map Export ()``{
+    map msg = $[];
+    map err = $[];
+    map war = $[];
+
+    msg["show"] = display_messages;
+    msg["log"] = log_messages;
+    msg["timeout"] = timeout_messages;
+    err["show"] = display_errors;
+    err["log"] = log_errors;
+    err["timeout"] = timeout_errors;
+    war["show"] = display_warnings;
+    war["log"] = log_warnings;
+    war["timeout"] = timeout_warnings;
+    return ($[
+	      "messages": msg,
+	      "errors": err,
+	      "warnings": war
+    ]);
+}
+
+/**
+ * Clear all stored messages (errors, messages and warnings)
+ * @return void
+ */
+
+global define void ClearAll()
+``{
+    ClearErrors();
+    ClearWarnings();
+    ClearMessages();
+}
+
+
+/**
+ * Clear stored messages
+ * @return void
+ */
+
+global define void ClearMessages()
+``{
+    messages = [];
+}
+
+/**
+ * Clear stored errors
+ * @return void
+ */
+
+global define void ClearErrors()
+``{
+    errors = [];
+}
+
+
+/**
+ * Clear stored warnings
+ * @return void
+ */
+
+global define void ClearWarnings()
+``{
+    warnings = [];
+}
+
+
+/**
+ * Return number of stored messages
+ * @return integer number of messages
+ */
+
+global define integer NumMessages()
+``{
+    return size(messages);
+}
+
+/**
+ * Return number of stored warnings
+ * @return integer number of warnings
+ */
+
+global define integer NumWarnings()
+``{
+    return size(warnings);
+}
+
+
+/**
+ * Return number of stored errors
+ * @return integer number of errors
+ */
+
+global define integer NumErrors()
+``{
+    return size(errors);
+}
+
+
+/**
+ * Store new message text
+ * @param message_string message text, it can contain new line characters ("\n")
+ * @return void
+ */
+
+global define void Message(string message_string)
+``{
+    if (display_messages)
+    {
+	if (timeout_messages > 0)
+	{
+	    UI::TimedMessagePopup(message_string, timeout_messages);
+	}
+	else
+	{
+	    UI::MessagePopup(message_string);
+	}
+    }
+
+    if (log_messages)
+    {
+	y2milestone(1, "%1", message_string);
+    }
+
+    messages = add(messages, message_string);
+}
+
+
+/**
+ * Store new warning text
+ * @param warning_string warning text, it can contain new line characters ("\n")
+ * @return void
+ */
+
+global define void Warning(string warning_string)
+``{
+    if (display_warnings)
+    {
+	if (timeout_warnings > 0)
+	{
+	    UI::TimedWarningPopup(warning_string, timeout_warnings);
+	}
+	else
+	{
+	    UI::WarningPopup(warning_string);
+	}
+    }
+
+    if (log_warnings)
+    {
+	y2warning(1, "%1", warning_string);
+    }
+
+    warnings = add(warnings, warning_string);
+}
+
+
+/**
+ * Store new error text
+ * @param error_string error text, it can contain new line characters ("\n")
+ * @return void
+ */
+
+global define void Error(string error_string)
+``{
+    if (display_errors)
+    {
+	if (timeout_errors > 0)
+	{
+	    UI::TimedErrorPopup(error_string, timeout_errors);
+	}
+	else
+	{
+	    UI::ErrorPopup(error_string);
+	}
+    }
+
+    if (log_errors)
+    {
+	y2error(1, "%1", error_string);
+    }
+
+    errors = add(errors, error_string);
+}
+
+
+/**
+ * Error popup dialog can displayed immediately when new error is stored.
+ * This function enables or diables popuping of dialogs.
+ * @param display if true then display error popups immediately
+ * @param timeout dialog is automatically closed after timeout seconds. Value 0 means no time out, dialog will be closed only by user.
+ * @return void
+ */
+
+global define void DisplayErrors(boolean display, integer timeout)
+``{
+    display_errors = display;
+    timeout_errors = timeout;
+}
+
+
+/**
+ * Warning popup dialog can displayed immediately when new warningr is stored.
+ * This function enables or diables popuping of dialogs.
+ * @param display if true then display warning popups immediately
+ * @param timeout dialog is automatically closed after timeout seconds. Value 0 means no time out, dialog will be closed only by user.
+ * @return void
+ */
+
+global define void DisplayWarnings(boolean display, integer timeout)
+``{
+    display_warnings = display;
+    timeout_warnings = timeout;
+}
+
+
+
+/**
+ * Message popup dialog can be displayed immediately when a new message  is stored.
+ * This function enables or diables popuping of dialogs.
+ * @param display if true then display message popups immediately
+ * @param timeout dialog is automatically closed after timeout seconds. Value 0 means no time out, dialog will be closed only by user.
+ * @return void
+ */
+
+global define void DisplayMessages(boolean display, integer timeout)
+``{
+    display_messages = display;
+    timeout_messages = timeout;
+}
+
+
+/**
+ * Set warnings logging to .y2log file
+ * @param log if log is true then warning messages will be logged
+ * @return void
+ */
+
+global define void LogWarnings(boolean log)
+``{
+    log_warnings = log;
+}
+
+/**
+ * Set messages logging to .y2log file
+ * @param log if log is true then  messages will be logged
+ * @return void
+ */
+
+global define void LogMessages(boolean log)
+``{
+    log_messages = log;
+}
+
+/**
+ * Set warnings logging to .y2log file
+ * @param log if log is true then warning messages will be logged
+ * @return void
+ */
+
+global define void LogErrors(boolean log)
+``{
+    log_errors = log;
+}
+
+
+/**
+ * Create rich text string from stored warning, message or error messages.
+ * Every new line character "\n" is replaced by string "<BR>".
+ * @param w include warnings in returned string
+ * @param e include errors in returned string
+ * @param m include messages in returned string
+ * @return string rich text string
+ */
+
+define string GetMessages(boolean w, boolean e, boolean m)
+``{
+    string richtext = "";
+
+    if (w)
+    {
+	richtext = richtext + "<P><B>" + _("Warnings:") + "</B><BR>";
+
+	foreach(`s, warnings, ``{
+		list strs = splitstring(s, "\n");
+		foreach(`line, strs, ``{richtext = richtext + line + "<BR>";});
+	    }
+	);
+
+	richtext = richtext + "</P>";
+    }
+
+    if (e)
+    {
+	richtext = richtext + "<P><B>" + _("Errors:") + "</B><BR>";
+
+	foreach(`s, errors, ``{
+		list strs = splitstring(s, "\n");
+		foreach(`line, strs, ``{richtext = richtext + line + "<BR>";});
+	    }
+	);
+
+	richtext = richtext + "</P>";
+    }
+
+    if (m)
+    {
+	richtext = richtext + "<P><B>" + _("Messages:") + "</B><BR>";
+
+	foreach(`s, messages, ``{
+		list strs = splitstring(s, "\n");
+		foreach(`line, strs, ``{richtext = richtext + line + "<BR>";});
+	    }
+	);
+
+	richtext = richtext + "</P>";
+    }
+
+    return richtext;
+}
+
+
+
+
+
+}
