@@ -1,7 +1,8 @@
 -------------------------------------------------------------------
-Mon Mar 15 16:04:11 CET 2004 - fehr@suse.de
+Mon Mar 15 16:49:00 CET 2004 - fehr@suse.de
 
 - add functions {Set,Get}EncLang() && GetCodePage() to Encoding module
+- add global boolean evms_config to ProductFeatures.ycp
 
 -------------------------------------------------------------------
 Mon Mar 15 14:59:41 CET 2004 - arvin@suse.de
