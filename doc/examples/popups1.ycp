@@ -16,14 +16,15 @@
 			 `PushButton(`id(`notify ),	`opt(`hstretch), "&Notify Popup"	),
 			 `PushButton(`id(`warn ),	`opt(`hstretch), "&Warning Popup"	),
 			 `PushButton(`id(`err  ),	`opt(`hstretch), "&Error Popup"		),
-			 `PushButton(`id(`timed ),	`opt(`hstretch), "&Timed Message Popup"	),
-
-			 `PushButton(`id(`yesNo ),	`opt(`hstretch), "&Yes / No Popup" ),
+			 `PushButton(`id(`timed_msg ),	`opt(`hstretch), "&Timed Message Popup"	),
+			 `PushButton(`id(`timed_warn ),	`opt(`hstretch), "Ti&med WarningPopup"	),
+			 `PushButton(`id(`timed_err ),	`opt(`hstretch), "T&imed Error Popup"	),
+			 `PushButton(`id(`yesNo ),	`opt(`hstretch), "&Yes / No Popup" 	),
 			 `PushButton(`id(`contCancel ), `opt(`hstretch), "C&ontinue / Cancel Popup" ),
 			 `PushButton(`id(`abort ),  	`opt(`hstretch), "Confirm &Abort Popup (no changes)" ),
 			 `PushButton(`id(`abort_ch ),  	`opt(`hstretch), "Confirm Abort Popup (&with changes)" ),
-			 `PushButton(`id(`show_file ), 	`opt(`hstretch), "Show &File Popup" ),
-			 `PushButton(`id(`show_text ), 	`opt(`hstretch), "Show Te&xt Popup" ),
+			 `PushButton(`id(`show_file ), 	`opt(`hstretch), "Show &File Popup" 	),
+			 `PushButton(`id(`show_text ), 	`opt(`hstretch), "Show Te&xt Popup" 	),
 			 `VSpacing(),
 			 `PushButton(`id(`close), Label::CloseButton() )
 			 )
@@ -53,9 +54,17 @@
 	{
 	    Popup::Error( "Cannot delete world -\nthis is the only world we have!" );
 	}
-	else if ( button_id == `timed )
+	else if ( button_id == `timed_msg )
 	{
 	    Popup::TimedMessage( "Just some seconds left to save the world...", 20 );
+	}
+	else if ( button_id == `timed_warn )
+	{
+	    Popup::TimedWarning( "Time is running out to save the world...", 20 );
+	}
+	else if ( button_id == `timed_err )
+	{
+	    Popup::TimedError( "This world will be deleted...", 20 );
 	}
 	else if ( button_id == `yesNo )
 	{

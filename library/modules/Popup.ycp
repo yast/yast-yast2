@@ -22,108 +22,164 @@ textdomain "base";
 
 import "Label";
 import "Mode";
+import "Directory";
 
 boolean feedback_open = false;
 
 
 /**
- * Internal function that actually creates a popup dialog layout.
+ * Internal function that returns a popup dialog layout.
  *
  * @param headline	headline to show or Popup::NoHeadline()
  * @param message	message text to show
+ * @param icon_name	icon name (with full path) or Popup::NoIcon()
  * @param button_box	term with one or more buttons
  *
  * @return the layout contents as a term
  */
-define term createPopupLayoutInternal( string headline, string message, term button_box ) {
+define term popupLayoutInternal( string headline, string message, string icon_name, term button_box )
+{
+    term content = `Empty();
+    term icon    = `Empty();
 
-    term contents = `Empty();
-    term heading  = `Empty();
-
-    if ( size(headline) == 0 )
+    if ( size( icon_name ) > 0 )
     {
-	heading = `VSpacing(0.2);
+	map ui_capabilities = UI::GetDisplayInfo();
+
+	if ( ui_capabilities[ "HasLocalImageSupport" ]:false )
+	{
+	    icon = `Image( icon_name, "" );
+	}
     }
-    else
+
+    if ( size( headline ) > 0 )
     {
-	heading = `Heading( headline );
+	content =
+	    `VBox(
+		  `HBox(
+			`VCenter( icon ),
+			`HSpacing(1),
+			`VCenter(`Heading( headline ) ),
+			`HStretch()
+			),
+		  `VSpacing(0.2),
+		  `Left(`Label( message ) )
+		  );
+    }
+    else // no headline
+    {
+	content =
+	    `HBox(
+		  `Top( icon ),
+		  `HSpacing(1),
+		  `VCenter(`Label( message ) )
+		  );
     }
 
-    contents = `HBox(
-		     `HSpacing(1),
-		     `HCenter (
-			       `HSquash(
-					`VBox (
-					       `HCenter (
-							 `HSquash(
-								  `VBox(
-									`Left(heading),
-									`VSpacing(0.2),
-									`Left(`Label(message))
-									)
-								  )
-							 ),
-					       `HSquash( button_box ),
-					       `VSpacing(0.2)
-					       )
-					)
-			       ),
-		     `HSpacing(1)
-		     );
+    term dialog =
+	`HBox(
+	      `HSpacing(1),
+	      `VBox(
+		    `VSpacing(0.2),
+		    `HSquash( content ),
+		    `VStretch(),
+		    `HSquash( button_box ),
+		    `VStretch(),
+		    `VSpacing(0.2)
+		    ),
+	      `HSpacing(1)
+	      );
 
-    return contents;
+    return dialog;
 }
 
 
 /**
- * Internal function that actually creates a popup dialog with additional label.
+ * Internal function that returns a popup dialog with an additional label.
  *
  * @param headline	headline to show or Popup::NoHeadline()
  * @param message	message text to show
+ * @param icon_name	icon name (with full path) or Popup::NoIcon()
  * @param button_box	term with one or more buttons
  * @param label		second label with id `label which can be used e.g. for time out value displaying
  *
  * @return term the layout contents as a term
  */
-define term createPopupLayoutInternalWithLabel(string headline, string message, term button_box, string label) {
+define term popupLayoutInternalWithLabel( string headline,
+					  string message,
+					  string icon_name,
+					  term button_box,
+					  string label )
+{
+    term content = `Empty();
+    term heading = `VSpacing(0.2);
+    term icon    = `Empty();
 
-    term contents = `Empty();
-    term heading  = `Empty();
-
-    if (size(headline) == 0)
+    if ( size( icon_name ) > 0 )
     {
-	heading = `VSpacing(0.2);
+	map ui_capabilities = UI::GetDisplayInfo();
+
+	if ( ui_capabilities[ "HasLocalImageSupport" ]:false )
+	{
+	    icon = `Image( icon_name, "" );
+	}
     }
-    else
+
+    if ( size( headline ) > 0 )
     {
-	heading = `Heading(headline);
+	content =
+	    `VBox(
+		  `HBox(
+			`VCenter( icon ),
+			`HSpacing(1),
+			`VCenter(`Heading( headline ) ),
+			`HStretch()
+			),
+		  `VSpacing(0.2),
+		  `Left(`Label( message ) ),
+		  `VSpacing(0.2),
+		  `Label(`id(`label), label )
+		  );
+    }
+    else // no headline
+    {
+	content =
+	    `VBox(
+		  `HBox(
+			`Top( icon ),
+			`HSpacing(1),
+			`VCenter(`Label( message ) )
+			),
+		  `VSpacing(0.2),
+		  `Label(`id(`label), label )
+		  );
     }
 
-    contents = `HBox(
-		     `HSpacing(1),
-		     `HCenter (
-			       `HSquash(
-					`VBox (
-					       `HCenter (
-							 `HSquash(
-								  `VBox(
-									`Left(heading),
-									`VSpacing(0.2),
-									`Left(`Label(message)),
-									`VSpacing(0.2),
-									`Label(`id(`label), label)
-									)
-								  )
-							 ),
-					       `HSquash(button_box),
-					       `VSpacing(0.2)
-					       )
-					)
-			       ),
-		     `HSpacing(1)
-		     );
+    term dialog =
+	`HBox(
+	      `HSpacing(1),
+	      `VBox(
+		    `VSpacing(0.2),
+		    `HSquash( content ),
+		    `VStretch(),
+		    `HSquash( button_box ),
+		    `VStretch(),
+		    `VSpacing(0.2)
+		    ),
+	      `HSpacing(1)
+	      );
 
-    return contents;
+    return dialog;
+}
+
+
+/**
+ * Returns the full icon path for a icon with the specified base name.
+ * "warning.png" -> "/usr/lib/YaST2/theme/icons/32x32/apps/warning.png"
+ **/
+define string popupIcon( string icon_base_name )
+{
+    return Directory::icondir + "32x32/apps/" + icon_base_name;
 }
 
 
@@ -135,7 +191,17 @@ define term createPopupLayoutInternalWithLabel(string headline, string message, 
  *
  * @return empty string ("")
  */
-global define string NoHeadline() {
+global define string NoHeadline()
+{
+    return "";
+}
+
+
+/**
+ * Indicator for empty icon for popups that can have one - for code readability.
+ **/
+global define string NoIcon()
+{
     return "";
 }
 
@@ -153,7 +219,6 @@ define term AnyQuestionButtonBox (
 	string no_button_message,
 	symbol focus )
 {
-
     term yes_button = `Empty();
     term no_button = `Empty();
 
@@ -184,6 +249,7 @@ define term AnyQuestionButtonBox (
     return button_box;
 }
 
+
 /**
  * Generic question popup with two buttons.
  *
@@ -211,12 +277,12 @@ global define boolean AnyQuestion( string headline,
 				   string message,
 				   string yes_button_message,
 				   string no_button_message,
-				   symbol focus )	{
-
+				   symbol focus )
+{
     term button_box = AnyQuestionButtonBox ( yes_button_message, no_button_message, focus);
-    UI::OpenDialog(
+    UI::OpenDialog( 
 		   `opt(`decorated),
-		   createPopupLayoutInternal( headline, message, button_box )
+		   popupLayoutInternal( headline, message, NoIcon(), button_box )
 		   );
 
     any ret = UI::UserInput();
@@ -224,6 +290,7 @@ global define boolean AnyQuestion( string headline,
 
     return ret == `yes;
 }
+
 
 /**
  * Timed question popup with two buttons and time display
@@ -242,35 +309,28 @@ global define boolean TimedAnyQuestion( string headline,
 				   string yes_button_message,
 				   string no_button_message,
 				   symbol focus ,
-				   integer timeout_seconds)	{
-
+				   integer timeout_seconds)
+{
     term button_box = AnyQuestionButtonBox ( yes_button_message, no_button_message, focus);
     term timed =
 	`ReplacePoint(`id(`replace_buttons) ,
-		`VBox(
-		    `HCenter(
-			`Label(`id(`remaining_time), "" + timeout_seconds)
-			),
-		    `HBox(
-			// "Stop" button for timeout message: Stop counting down
-			// (i.e. leave the popup message open without timeout)
-			`PushButton(`id(`timed_stop), Label::StopButton() ),
-			`HSpacing(2),
-
-			// "OK" button for timeout message: Close popup dialog
-			// (i.e. confirm the message)
-			`PushButton(`id(`timed_ok),
-			    `opt(`default, `key_F10),
-			    Label::OKButton() )
-			),
-		    `VSpacing(0.2)
-		    )
-		);
+		      `VBox(
+			    `HCenter(
+				     `Label(`id(`remaining_time), "" + timeout_seconds)
+				     ),
+			    `HBox(
+				  `PushButton(`id(`timed_stop), Label::StopButton() ),
+				  `HSpacing(2),
+				  `PushButton(`id(`timed_ok), `opt(`default, `key_F10), Label::OKButton() )
+				  ),
+			    `VSpacing(0.2)
+			    )
+		      );
 
 
     UI::OpenDialog(
 		   `opt(`decorated),
-		   createPopupLayoutInternal( headline, message, timed )
+		   popupLayoutInternal( headline, message, NoIcon(), timed )
 		   );
 
     any which_input = nil;
@@ -293,6 +353,7 @@ global define boolean TimedAnyQuestion( string headline,
 
     return which_input == `yes;
 }
+
 
 /**
  * Dialog which displays the "message" and has a <b>Continue</b>
@@ -317,14 +378,14 @@ global define boolean TimedAnyQuestion( string headline,
  * @see	YesNo
  * @see	AnyQuestion
  */
-global define boolean ContinueCancelHeadline (string headline, string message) {
-
+global define boolean ContinueCancelHeadline (string headline, string message)
+{
     boolean ret = AnyQuestion( headline,
-			   message,
-			   Label::ContinueButton(),
-			   Label::CancelButton(),
-			   `focus_yes
-			   );
+			       message,
+			       Label::ContinueButton(),
+			       Label::CancelButton(),
+			       `focus_yes
+			       );
 
     y2debug("ContinueCancelHeadline returned: %1", ret );
 
@@ -349,7 +410,8 @@ global define boolean ContinueCancelHeadline (string headline, string message) {
  *
  * @see	AnyQuestion
  */
-global define boolean ContinueCancel (string message) {
+global define boolean ContinueCancel (string message)
+{
 
     boolean ret = ContinueCancelHeadline( NoHeadline(), message );
     y2debug("ContinueCancel returned: %1", ret );
@@ -381,14 +443,15 @@ global define boolean ContinueCancel (string message) {
  * @see	YesNo
  * @see	AnyQuestion
  */
-global define boolean YesNoHeadline(string headline, string message) {
+global define boolean YesNoHeadline(string headline, string message)
+{
 
     boolean ret = AnyQuestion( headline,
-			   message,
-			   Label::YesButton(),
-			   Label::NoButton(),
-			   `focus_yes
-			   );
+			       message,
+			       Label::YesButton(),
+			       Label::NoButton(),
+			       `focus_yes
+			       );
 
     y2debug("YesNoHeadline returned: %1", ret );
 
@@ -415,8 +478,8 @@ global define boolean YesNoHeadline(string headline, string message) {
  * @see	ContinueCancel
  * @see	AnyQuestion
  */
-global define boolean YesNo(string message) {
-
+global define boolean YesNo(string message)
+{
     boolean ret = YesNoHeadline( NoHeadline(), message);
 
     y2debug("YesNo returned: %1", ret );
@@ -442,17 +505,15 @@ global define boolean YesNo(string message) {
  * @example Popup::LongText ( "Package description", `Richtext("<p>Hello, this is a long description .....</p>"), 50, 20 );
  */
 global define void LongText( string headline, term richtext,
-			     integer hdim, integer vdim ) {
-
+			     integer hdim, integer vdim )
+{
     UI::OpenDialog( `opt( `decorated ),
 		    `HBox( `VSpacing(vdim),
 			   `VBox (`HSpacing(hdim),
 				  `Left(`Heading( headline )),
 				  `VSpacing(0.2),
 				  richtext,	// scrolled text
-				  `PushButton( `id(`ok),
-					       `opt(`default, `key_F10),
-					       Label::OKButton() )
+				  `PushButton( `id(`ok), `opt(`default, `key_F10), Label::OKButton() )
 				  )
 			   )
 		    );
@@ -481,7 +542,8 @@ global define boolean AnyQuestionRichText (string headline,
 					   integer hdim, integer vdim,
 					   string yes_button_message,
 					   string no_button_message,
-					   symbol focus) {
+					   symbol focus)
+{
     term yes_button = `PushButton (
 	`id (`ok),
 	( focus == `focus_yes ?
@@ -530,8 +592,8 @@ global define boolean AnyQuestionRichText (string headline,
  *
  * @example Popup::ConfirmAbort ( `painless );
  */
-global define boolean ConfirmAbort( symbol severity ) {
-
+global define boolean ConfirmAbort( symbol severity )
+{
     string what_will_happen = "";
 
     // Confirm user request to abort installation
@@ -609,8 +671,8 @@ You will need to reinstall.");
  * @return	true: "abort" confirmed;
  *		false: don't abort
  */
-global define boolean ReallyAbort( boolean have_changes ) {
-
+global define boolean ReallyAbort( boolean have_changes )
+{
     symbol focus = `focus_yes;
 
     // Confirm aborting the program
@@ -640,7 +702,7 @@ global define boolean ReallyAbort( boolean have_changes ) {
  * Show a simple message and wait until user clicked "OK".
  *
  *
- * @param message		message string
+ * @param message message string
  *
  * @example  Popup::Message("This is an information about ... ." );
  *
@@ -650,8 +712,8 @@ global define boolean ReallyAbort( boolean have_changes ) {
  * @see Warning
  * @see Error
  */
-global define void Message(string message) {
-    // ok pushbutton: confirm the dialog
+global define void Message(string message)
+{
     UI::OpenDialog(
 		   `opt(`decorated),
 		   `HBox(
@@ -659,9 +721,7 @@ global define void Message(string message) {
 			 `VBox(
 			       `VSpacing(0.2),
 			       `Label(message),
-			       `PushButton(`id(`ok),
-					   `opt(`default, `key_F10),
-					   Label::OKButton()),
+			       `PushButton(`id(`ok), `opt(`default, `key_F10), Label::OKButton()),
 			       `VSpacing(0.2)
 			       ),
 			 `HSpacing(1)
@@ -675,27 +735,20 @@ global define void Message(string message) {
 
 
 /**
- * Generic message popup
+ * Generic message popup - internal
  *
  * Show a message with optional headline above and
  * wait until user clicked "OK".
  *
  * @param headline	optional headline or Popup::NoHeadline()
- * @param message		the message (maybe multi-line) to display.
- *
- * @see Message
- * @see Notify
- * @see Warning
- * @see Error
+ * @param message	the message (maybe multi-line) to display.
  */
-global define void AnyMessage(string headline, string message) {
-
-    term button_box =  `PushButton( `id(`ok_msg),
-				    `opt(`default, `key_F10),
-				    Label::OKButton() );
+define void anyMessageInternal(string headline, string message, string icon_name )
+{
+    term button_box =  `PushButton( `id(`ok_msg), `opt(`default, `key_F10), Label::OKButton() );
     UI::OpenDialog(
 		   `opt(`decorated),
-		   createPopupLayoutInternal( headline, message, button_box )
+		   popupLayoutInternal( headline, message, icon_name, button_box )
 		   );
 
     UI::SetFocus(`id(`ok_msg) );
@@ -705,12 +758,28 @@ global define void AnyMessage(string headline, string message) {
 }
 
 
+/**
+ * Generic message popup
+ *
+ * Show a message with optional headline above and
+ * wait until user clicked "OK".
+ *
+ * @param headline	optional headline or Popup::NoHeadline()
+ * @param message	the message (maybe multi-line) to display.
+ * @param icon_name	icon name (with full path) or Popup::NoIcon()
+ */
+global define void AnyMessage(string headline, string message)
+{
+    anyMessageInternal( headline, message, NoIcon() );
+}
+    
 
 /**
  * Clear feedback message
  * @return void
  */
-global define void ClearFeedback() {
+global define void ClearFeedback()
+{
     if ( feedback_open )
 	UI::CloseDialog();
     feedback_open = false;
@@ -723,16 +792,18 @@ global define void ClearFeedback() {
  * @param message the feedback message
  * @return void
  */
-global define void ShowFeedback(string headline, string message) {
-    if (feedback_open) {
+global define void ShowFeedback(string headline, string message)
+{
+    if (feedback_open)
+    {
 	UI::CloseDialog();
     }
     term button_box =  `Empty();
     UI::BusyCursor();
     UI::OpenDialog(
-	    `opt(`decorated),
-	    createPopupLayoutInternal( headline, message, button_box )
-	    );
+		   `opt(`decorated),
+		   popupLayoutInternal( headline, message, NoIcon(), button_box )
+		   );
 
     feedback_open = true;
 }
@@ -752,10 +823,9 @@ global define void ShowFeedback(string headline, string message) {
  * @see Error
  * @see AnyMessage
  */
-global define void Warning(string message) {
-
-    AnyMessage( Label::WarningMsg(), message );
-
+global define void Warning(string message)
+{
+    anyMessageInternal( Label::WarningMsg(), message, popupIcon( "msg_warning.png" ) );
 }
 
 
@@ -772,10 +842,9 @@ global define void Warning(string message) {
  * @see Warning
  * @see AnyMessage
  */
-global define void Error(string message) {
-
-    AnyMessage( Label::ErrorMsg(), message );
-
+global define void Error(string message)
+{
+    anyMessageInternal( Label::ErrorMsg(), message, popupIcon( "msg_error.png" ) );
 }
 
 
@@ -784,17 +853,16 @@ global define void Error(string message) {
  *
  * @screenshot screenshots/Notify.png
  *
- * @param  message	notify message string
+ * @param  message notify message string
  *
  * @example  Popup::Notify("Your printer is ready for use." );
  *
  * @see Message
  * @see AnyMessage
  */
-global define void Notify(string message) {
-
-    AnyMessage( "", message );
-
+global define void Notify(string message)
+{
+    anyMessageInternal( "", message, popupIcon( "msg_info.png" ) );
 }
 
 
@@ -813,45 +881,36 @@ global define void Notify(string message) {
  *
  * @example Popup::TimedMessage("This is a timed message", 2 );
  */
-global define void TimedMessage(string message, integer timeout_seconds) {
+global define void TimedMessage(string message, integer timeout_seconds)
+{
+    term button_box =
+	`HBox(
+	      `HWeight( 1, `PushButton(`id(`timed_stop), Label::StopButton() ) ),
+	      `HSpacing(2),
+	      `HWeight( 1 , `PushButton(`id(`timed_ok), `opt(`default, `key_F10), Label::OKButton() ) )
+	      );
+    
     UI::OpenDialog(
 		   `opt(`decorated),
-		   `HBox(
-			 `HSpacing(1),
-			 `VBox(
-			       `VSpacing(0.2),
-			       `Label(message),
-			       `HCenter(
-					`Label(`id(`remaining_time), "" + timeout_seconds)
-					),
-			       `HBox(
-				     // "Stop" button for timeout message: Stop counting down
-				     // (i.e. leave the popup message open without timeout)
-				     `PushButton(`id(`timed_stop), Label::StopButton() ),
-				     `HSpacing(2),
-
-				     // "OK" button for timeout message: Close popup dialog
-				     // (i.e. confirm the message)
-				     `PushButton(`id(`timed_ok),
-						 `opt(`default, `key_F10),
-						 Label::OKButton() )
-				     ),
-			       `VSpacing(0.2)
-			       )
-			 )
+		   popupLayoutInternalWithLabel( NoHeadline(), message,
+						 popupIcon( "msg_info.png" ),
+						 button_box, sformat("%1", timeout_seconds ) )
 		   );
+    UI::SetFocus(`id(`timed_ok) );
 
-    while (timeout_seconds > 0) {
+    while (timeout_seconds > 0)
+    {
 	any which_input = UI::TimeoutUserInput( 1000 );
 	if (which_input == `timed_ok)
 	    break;
-	if (which_input == `timed_stop) {
+	if (which_input == `timed_stop)
+	{
 	    while (which_input == `timed_stop)
 		which_input = UI::UserInput();
 	    break;
 	}
 	timeout_seconds = timeout_seconds - 1;
-	UI::ChangeWidget (`id(`remaining_time), `Value, ""+timeout_seconds);
+	UI::ChangeWidget (`id(`label), `Value, ""+timeout_seconds);
     }
     UI::CloseDialog();
 }
@@ -875,7 +934,8 @@ global define void TimedMessage(string message, integer timeout_seconds) {
  *
  * @example boolean ret = Popup::TimedOKCancel("This is a timed message", 2 );
  */
-global define boolean TimedOKCancel(string message, integer timeout_seconds) {
+global define boolean TimedOKCancel(string message, integer timeout_seconds)
+{
     UI::OpenDialog(
 		   `opt(`decorated),
 		   `HBox(
@@ -887,23 +947,11 @@ global define boolean TimedOKCancel(string message, integer timeout_seconds) {
 					`Label(`id(`remaining_time), "" + timeout_seconds)
 					),
 			       `HBox(
-				     // "Stop" button for timeout message: Stop counting down
-				     // (i.e. leave the popup message open without timeout)
 				     `PushButton(`id(`timed_stop), Label::StopButton() ),
 				     `HSpacing(2),
-
-				     // "OK" button for timeout message: Close popup dialog
-				     // (i.e. confirm the action in "message")
-				     `PushButton(`id(`timed_ok),
-						 `opt(`default, `key_F10),
-						 Label::OKButton() ),
+				     `PushButton(`id(`timed_ok), `opt(`default, `key_F10), Label::OKButton() ),
 				     `HSpacing(2),
-
-				     // "Cancel" button for timeout message: Close popup dialog
-				     // (i.e. cancel the action in "message")
-				     `PushButton(`id(`timed_cancel),
-						 `opt (`key_F9),
-						 Label::CancelButton() )
+				     `PushButton(`id(`timed_cancel), `opt (`key_F9), Label::CancelButton() )
 				     ),
 			       `VSpacing(0.2)
 			       )
@@ -911,7 +959,7 @@ global define boolean TimedOKCancel(string message, integer timeout_seconds) {
 		   );
 
     any which_input = nil;
- 
+
     while (timeout_seconds > 0) {
 	which_input = UI::TimeoutUserInput( 1000 );
 	if (which_input == `timed_ok)
@@ -956,7 +1004,8 @@ global define symbol AnyQuestion3( string headline,
 				   string yes_button_message,
 				   string no_button_message,
 				   string retry_button_message,
-				   symbol focus )	{
+				   symbol focus )
+{
     term yes_button = `Empty();
     term no_button = `Empty();
     term retry_button = `Empty();
@@ -1008,7 +1057,7 @@ global define symbol AnyQuestion3( string headline,
 
     UI::OpenDialog(
 		   `opt(`decorated),
-		   createPopupLayoutInternal( headline, message, button_box )
+		   popupLayoutInternal( headline, message, NoIcon(), button_box )
 		   );
 
     symbol ret = (symbol)UI::UserInput();
@@ -1020,7 +1069,7 @@ global define symbol AnyQuestion3( string headline,
 
 /**
  * Special error popup for YCP modules that don't work.
-
+ *
  * The user can choose one of:
  * - "back" - go back to the previous module
  * - "next" - skip this faulty module and directly go to the next one
@@ -1034,7 +1083,8 @@ global define symbol AnyQuestion3( string headline,
  *
  * @example Popup::ModuleError( "The module " + symbolof(argterm) + " does not work." );
  */
-global define symbol ModuleError(string text) {
+global define symbol ModuleError(string text)
+{
     UI::OpenDialog(
 		   `opt(`decorated, `warncolor),
 		   `HBox(
@@ -1043,14 +1093,10 @@ global define symbol ModuleError(string text) {
 			       `VSpacing(0.2),
 			       `Heading(text),
 			       `HBox(
-				     `PushButton(`id(`back),   `opt (`key_F8),
-						 Label::BackButton()  ),
-				     `PushButton(`id(`again),  `opt (`key_F6),
-						 Label::RetryButton() ),
-				     `PushButton(`id(`cancel), `opt (`key_F9),
-						 Label::QuitButton()  ),
-				     `PushButton(`id(`next),   `opt (`key_F10),
-						 Label::NextButton()  )
+				     `PushButton(`id(`back),   `opt (`key_F8),  Label::BackButton()  ),
+				     `PushButton(`id(`again),  `opt (`key_F6),  Label::RetryButton() ),
+				     `PushButton(`id(`cancel), `opt (`key_F9),  Label::QuitButton()  ),
+				     `PushButton(`id(`next),   `opt (`key_F10), Label::NextButton()  )
 				     ),
 			       `VSpacing(0.2)
 			       ),
@@ -1064,10 +1110,52 @@ global define symbol ModuleError(string text) {
 
 
 /**
+ * Internal version of AnyTimedMessage
+ *
+ * Show a message with optional headline above and
+ * wait until user clicked "OK" or until a timeout runs out.
+ *
+ * @param headline	optional headline or Popup::NoHeadline()
+ * @param message	the message (maybe multi-line) to display.
+ * @param icon_name	icon name (with full path) or Popup::NoIcon()
+ * @param timeout	After timeout seconds dialog will be automatically closed
+ *
+ * @return void
+ **/
+define void anyTimedMessageInternal(string headline,
+				    string message,
+				    string icon_name,
+				    integer timeout )
+{
+    term button_box = `PushButton( `id(`ok_msg), `opt(`default, `key_F10), Label::OKButton() );
+    UI::OpenDialog(
+		   `opt(`decorated),
+		   popupLayoutInternalWithLabel( headline, message, icon_name,
+						 button_box, sformat("%1", timeout) )
+		   );
+
+    UI::SetFocus(`id(`ok_msg));
+
+
+    symbol button = nil;
+
+    while ( timeout > 0 && button != `ok_msg)
+    {
+	button = (symbol) UI::TimeoutUserInput( 1000 );
+	timeout = timeout - 1;
+
+	UI::ChangeWidget(`id(`label), `Value, sformat("%1", timeout ));
+    }
+
+    UI::CloseDialog();
+}
+
+
+/**
  * Generic message popup
  *
  * Show a message with optional headline above and
- * wait until user clicked "OK".
+ * wait until user clicked "OK" or until a timeout runs out.
  *
  * @param headline	optional headline or Popup::NoHeadline()
  * @param message	the message (maybe multi-line) to display.
@@ -1076,40 +1164,9 @@ global define symbol ModuleError(string text) {
  * @return void
  *
  */
-global define void AnyTimedMessage(string headline, string message, integer timeout) {
-
-    term button_box =  `PushButton( `id(`ok_msg),
-				    `opt(`default, `key_F10),
-				    Label::OKButton() );
-    // ok pushbutton: confirm the dialog
-    UI::OpenDialog(
-		   `opt(`decorated),
-		   createPopupLayoutInternalWithLabel( headline, message,
-						       button_box, sformat("%1", timeout) )
-		   );
-
-    UI::SetFocus(`id(`ok_msg));
-
-
-    symbol s = nil;
-    integer tout = timeout;
-
-    while (tout > 0 && s != `ok_msg)
-    {
-	integer t = 10;
-
-	while (t > 0 && s != `ok_msg)
-	{
-	    s = (symbol) UI::TimeoutUserInput( 100 );
-	    t = t - 1;
-	}
-
-	tout = tout - 1;
-
-	UI::ChangeWidget(`id(`label), `Value, sformat("%1", tout));
-    }
-
-    UI::CloseDialog();
+global define void AnyTimedMessage(string headline, string message, integer timeout)
+{
+    anyTimedMessageInternal( headline, message, nil, timeout );
 }
 
 
@@ -1126,8 +1183,8 @@ global define void AnyTimedMessage(string headline, string message, integer time
  * @see Warning
  */
 global define void TimedWarning(string message, integer timeout_seconds)
-    {
-    AnyTimedMessage(Label::WarningMsg(), message, timeout_seconds);
+{
+    anyTimedMessageInternal( Label::WarningMsg(), message, popupIcon( "msg_warning.png" ), timeout_seconds );
 }
 
 
@@ -1143,9 +1200,11 @@ global define void TimedWarning(string message, integer timeout_seconds)
  *
  * @see Error
  */
-global define void TimedError(string message, integer timeout_seconds) {
-    AnyTimedMessage(Label::ErrorMsg(), message, timeout_seconds);
+global define void TimedError(string message, integer timeout_seconds)
+{
+    anyTimedMessageInternal( Label::ErrorMsg(), message, popupIcon( "msg_error.png" ), timeout_seconds );
 }
+
 
 // it is misaligned because there used to be UI() around it
 
@@ -1159,8 +1218,8 @@ global define void TimedError(string message, integer timeout_seconds) {
  * @example Popup::ShowText ("Boot Messages", "kernel panic");
  */
 global define void ShowTextTimed (string headline, string text,
-        integer timeout) {
-
+				  integer timeout)
+{
     term heading = `Empty( );
 
     if ( size(headline) == 0 )
@@ -1180,41 +1239,31 @@ global define void ShowTextTimed (string headline, string text,
 				    `HBox(
 					  `VSpacing( 18 ),	// force height
 					  `HSpacing( 0.7 ),
-					  `RichText(`id(`text),
-						    `opt(`plainText),
-						    text),
+					  `RichText(`id(`text), `opt(`plainText), text),
 					  `HSpacing( 0.7 )
 					  )
 				    ),
                           `VSpacing( 0.3 ),
                           `Label(`id(`label), sformat("%1", timeout)),
                           `VSpacing(0.2),
-                          `PushButton(`id(`ok_msg),  `opt(`default, `key_F10),
-				       Label::OKButton() ),
+                          `PushButton(`id(`ok_msg),  `opt(`default, `key_F10), Label::OKButton() ),
 			  `VSpacing( 0.3 )
 			  )
 		    );
 
-    symbol s = nil;
-    integer tout = timeout;
+    symbol button = nil;
 
-    while (tout > 0 && s != `ok_msg)
+    while ( timeout > 0 && button != `ok_msg)
     {
-	integer t = 10;
+	button = (symbol) UI::TimeoutUserInput( 1000 );
+	timeout = timeout - 1;
 
-	while (t > 0 && s != `ok_msg)
-	{
-	    s = (symbol) UI::TimeoutUserInput( 100 );
-	    t = t - 1;
-	}
-
-	tout = tout - 1;
-
-	UI::ChangeWidget(`id(`label), `Value, sformat("%1", tout));
+	UI::ChangeWidget(`id(`label), `Value, sformat("%1", timeout ));
     }
 
     UI::CloseDialog();
 }
+
 
 /**
  * Show the contents of an entire file in a popup.
@@ -1224,8 +1273,8 @@ global define void ShowTextTimed (string headline, string text,
  *
  * @example Popup::ShowText ("Boot Messages", "kernel panic");
  */
-global define void ShowText (string headline, string text) {
-
+global define void ShowText (string headline, string text)
+{
     term heading = `Empty( );
 
     if ( size(headline) == 0 )
@@ -1245,16 +1294,12 @@ global define void ShowText (string headline, string text) {
 				    `HBox(
 					  `VSpacing( 18 ),	// force height
 					  `HSpacing( 0.7 ),
-					  `RichText(`id(`text),
-						    `opt(`plainText),
-						    text),
+					  `RichText(`id(`text), `opt(`plainText), text),
 					  `HSpacing( 0.7 )
 					  )
 				    ),
 			  `VSpacing( 0.3 ),
-			  `PushButton( `opt(`default, `key_F10),
-				       Label::OKButton() ),
-			  `VSpacing( 0.3 )
+			  `PushButton( `opt(`default, `key_F10), Label::OKButton() ), `VSpacing( 0.3 )
 			  )
 		    );
 
@@ -1272,14 +1317,13 @@ global define void ShowText (string headline, string text) {
  *
  * @example Popup::ShowFile ("Boot Messages", "/var/log/boot.msg");
  */
-global define void ShowFile (string headline, string filename) {
-
+global define void ShowFile (string headline, string filename)
+{
     string text = (string)SCR::Read (.target.string, filename);
 
     ShowText (headline, text);
-
 }
 
 
+}
 /* EOF */
-}
