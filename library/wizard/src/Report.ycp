@@ -143,17 +143,6 @@ global define map Export () ``{
 }
 
 /**
- * Clear all stored messages (errors, messages and warnings)
- * @return void
- */
-global define void ClearAll() ``{
-    ClearErrors();
-    ClearWarnings();
-    ClearMessages();
-}
-
-
-/**
  * Clear stored messages
  * @return void
  */
@@ -176,6 +165,17 @@ global define void ClearErrors() ``{
  */
 global define void ClearWarnings() ``{
     warnings = [];
+}
+
+
+/**
+ * Clear all stored messages (errors, messages and warnings)
+ * @return void
+ */
+global define void ClearAll() ``{
+    ClearErrors();
+    ClearWarnings();
+    ClearMessages();
 }
 
 
@@ -373,9 +373,9 @@ global define string GetMessages(boolean w, boolean e, boolean m) ``{
     {
 	richtext = richtext + "<P><B>" + _("Warning:", "Warnings:", size(warnings) ) + "</B><BR>";
 
-	foreach(`s, warnings, ``{
+	foreach(string s, warnings, ``{
 		list strs = splitstring(s, "\n");
-		foreach(`line, strs, ``{richtext = richtext + line + "<BR>";});
+		foreach(string line, strs, ``{richtext = richtext + line + "<BR>";});
 	    }
 	);
 
@@ -386,9 +386,9 @@ global define string GetMessages(boolean w, boolean e, boolean m) ``{
     {
 	richtext = richtext + "<P><B>" + _("Error:", "Errors:", size(errors)) + "</B><BR>";
 
-	foreach(`s, errors, ``{
+	foreach(string s, errors, ``{
 		list strs = splitstring(s, "\n");
-		foreach(`line, strs, ``{richtext = richtext + line + "<BR>";});
+		foreach(string line, strs, ``{richtext = richtext + line + "<BR>";});
 	    }
 	);
 
@@ -399,9 +399,9 @@ global define string GetMessages(boolean w, boolean e, boolean m) ``{
     {
 	richtext = richtext + "<P><B>" + _("Message:", "Messages:", size(messages)) + "</B><BR>";
 
-	foreach(`s, messages, ``{
+	foreach(string s, messages, ``{
 		list strs = splitstring(s, "\n");
-		foreach(`line, strs, ``{richtext = richtext + line + "<BR>";});
+		foreach(string line, strs, ``{richtext = richtext + line + "<BR>";});
 	    }
 	);
 

@@ -29,59 +29,16 @@
     boolean have_fancy_ui = false;
 
     /**
-     * Constructor
-     **/
-    global define void Wizard() ``{
-	ui_defines();
-
-	map ui_info = UI::GetDisplayInfo();
-
-	have_fancy_ui = ui_info[ "HasImageSupport" ]:false
-	    && ui_info[ "HasLocalImageSupport" ]:false
-	    && ui_info[ "Depth" ]:0 >= 15
-	    && ui_info[ "DefaultWidth" ]:0 >= 800
-	    && ui_info[ "DefaultHeight"]:0 >= 600
-	    && UI::HasSpecialWidget(`ColoredLabel);
-
-	// have_fancy_ui = false;
-
-	UI::SetFunctionKeys( Label::DefaultFunctionKeyMap() );
-    };
-
-
-    /**
-     * UI-defines for the wizard module.
-     *
-     * Workaround so the YCP interpreter doesn't complain about code
-     *  outside any 'define': Define UI functions right here.
-     **/
-    define void ui_defines() ``{
-	UI(``{
-
-	    /**
-	     * Change the image at the top of the window (UI context)
-	     * @param imagedata image
-	     **/
-	    global define void SetImageUI( byteblock imagedata ) ``{
-		if (imagedata == nil) {
-		    y2warning ("SetImage(): Invalid image - using fallback" );
-		    ReplaceWidget( `id(`image), `Image(`opt(`zeroWidth, `easterEgg), `suseheader, "SuSE") );
-		}
-		else
-		    ReplaceWidget( `id(`image), `Image(`opt(`zeroWidth, `easterEgg), imagedata, "SuSE") );
-	    };
-
-	});	// end UI defines
-    }
-
-
-    /**
-     * Change the image at the top of the window.
-     *
-     * @param imagedata the pixel data of the image
+     * Change the image at the top of the window (UI context)
+     * @param imagedata image
      **/
     global define void SetImage( byteblock imagedata ) ``{
-	UI::SetImageUI( imagedata );
+	if (imagedata == nil) {
+	    y2warning ("SetImage(): Invalid image - using fallback" );
+	    UI::ReplaceWidget( `id(`image), `Image(`opt(`zeroWidth, `easterEgg), `suseheader, "SuSE") );
+	}
+	else
+	    UI::ReplaceWidget( `id(`image), `Image(`opt(`zeroWidth, `easterEgg), imagedata, "SuSE") );
     }
 
 
@@ -244,20 +201,6 @@
 
 
     /**
-     * Returns a term describing steps in an "easy installation" dialog with
-     * step no. 'current_step' (from 0) highlighted.
-     *
-     * @param step_descriptions	list of installation step descriptions (strings)
-     * @param current_step	number (from 1) of the current step
-     * @return term describing the steps
-     **/
-    global define term EasyInstallationSteps( list step_descriptions, integer current_step ) ``{
-	return have_fancy_ui ? fancyEasyInstallationSteps( step_descriptions, current_step )
-	    : simpleEasyInstallationSteps( step_descriptions, current_step );
-    };
-
-
-    /**
      * Simple version of easy installation steps.
      *
      * @param step_descriptions	list of installation step descriptions (strings)
@@ -280,59 +223,6 @@
 	vbox = add( vbox, `PushButton(`id(`help), `opt(`key_F1), Label::HelpButton() ) );
 
 	return vbox;
-    };
-
-
-    /**
-     * "Fancy" (colorful, complex) version of easy installation steps.
-     *
-     * @param step_descriptions	 list of installation step descriptions (strings)
-     * @param current_step	 number (from 1) of the current step
-     * @return term describing the steps
-     **/
-    define term fancyEasyInstallationSteps( list step_descriptions, integer current_step ) ``{
-
-	return `HSquash(
-			`VBox(
-			      `HBox(
-				    `Image( theme_path + "full_1.png", "" ),
-				    `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" )
-				    ),
-			      easyInstallationCard( step_descriptions[0]:"Step 1",
-						    current_step, 1,
-						    "card1_left.png", "card1_right.png" ),
-			      `HBox(
-				    `Image( theme_path + "full_2.png", "" ),
-				    `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" )
-				    ),
-			      easyInstallationCard( step_descriptions[1]:"Step 2",
-						    current_step, 2,
-						    "card2_left.png", "card2_right.png" ),
-			      `HBox(
-				    `Image( theme_path + "full_3.png", "" ),
-				    `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" )
-				    ),
-			      easyInstallationCard( step_descriptions[2]:"Step 3",
-						    current_step, 3,
-						    "card3_left.png", "card3_right.png" ),
-			      `VWeight( 1, // Layout trick: Lower layout priority with weight
-					`HBox(
-					      `VBox(
-						    `Image( theme_path + "full_4.png", "" ),
-						    `VWeight( 1, `Image(`opt(`tiled, `zeroHeight ), theme_path + "fullBottom_tile.png", "" ) ),
-						    `Image( theme_path + "help_top.png", "" ),
-						    `HBox(
-							  `Top(`Image( theme_path + "help_left.png", "" ) ),
-							  `PushButton(`id(`help), `opt (`key_F1), Label::HelpButton() ),
-							  `Top(`Image(`opt(`zeroWidth), theme_path + "help_right.png", "" ) )
-							  )
-						    // `Image( theme_path + "help_bottom.png", "" )
-						    ),
-					      `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" )
-					      )
-					)
-			      )
-			);
     };
 
 
@@ -417,6 +307,73 @@
 	}
 
 	return card;
+    };
+
+
+    /**
+     * "Fancy" (colorful, complex) version of easy installation steps.
+     *
+     * @param step_descriptions	 list of installation step descriptions (strings)
+     * @param current_step	 number (from 1) of the current step
+     * @return term describing the steps
+     **/
+    define term fancyEasyInstallationSteps( list step_descriptions, integer current_step ) ``{
+
+	return `HSquash(
+			`VBox(
+			      `HBox(
+				    `Image( theme_path + "full_1.png", "" ),
+				    `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" )
+				    ),
+			      easyInstallationCard( step_descriptions[0]:"Step 1",
+						    current_step, 1,
+						    "card1_left.png", "card1_right.png" ),
+			      `HBox(
+				    `Image( theme_path + "full_2.png", "" ),
+				    `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" )
+				    ),
+			      easyInstallationCard( step_descriptions[1]:"Step 2",
+						    current_step, 2,
+						    "card2_left.png", "card2_right.png" ),
+			      `HBox(
+				    `Image( theme_path + "full_3.png", "" ),
+				    `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" )
+				    ),
+			      easyInstallationCard( step_descriptions[2]:"Step 3",
+						    current_step, 3,
+						    "card3_left.png", "card3_right.png" ),
+			      `VWeight( 1, // Layout trick: Lower layout priority with weight
+					`HBox(
+					      `VBox(
+						    `Image( theme_path + "full_4.png", "" ),
+						    `VWeight( 1, `Image(`opt(`tiled, `zeroHeight ), theme_path + "fullBottom_tile.png", "" ) ),
+						    `Image( theme_path + "help_top.png", "" ),
+						    `HBox(
+							  `Top(`Image( theme_path + "help_left.png", "" ) ),
+							  `PushButton(`id(`help), `opt (`key_F1), Label::HelpButton() ),
+							  `Top(`Image(`opt(`zeroWidth), theme_path + "help_right.png", "" ) )
+							  )
+						    // `Image( theme_path + "help_bottom.png", "" )
+						    ),
+					      `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" )
+					      )
+					)
+			      )
+			);
+    };
+
+
+    /**
+     * Returns a term describing steps in an "easy installation" dialog with
+     * step no. 'current_step' (from 0) highlighted.
+     *
+     * @param step_descriptions	list of installation step descriptions (strings)
+     * @param current_step	number (from 1) of the current step
+     * @return term describing the steps
+     **/
+    global define term EasyInstallationSteps( list step_descriptions, integer current_step ) ``{
+	return have_fancy_ui ? fancyEasyInstallationSteps( step_descriptions, current_step )
+	    : simpleEasyInstallationSteps( step_descriptions, current_step );
     };
 
 
@@ -846,7 +803,7 @@
 	y2debug("Setting stage to %1", stage );
 
 	// Set the header image according to the stage
-	UI::SetImageUI( Read (.local.byte, sformat( theme_path+"stage%1.png", stage ) ) );
+	SetImage( SCR::Read (.local.byte, sformat( theme_path+"stage%1.png", stage ) ) );
 
 	// Cache the current stage
 	current_stage = stage;
@@ -865,7 +822,7 @@
     /**
      * Screenshot names overriden by nested SetScreenShotName calls
      */
-    list(string) screenshot_name_stack = [];
+    list screenshot_name_stack = [];
 
     /**
      * Declare a name for the current dialog to ease making screenshots.
@@ -899,5 +856,25 @@
 	}
 	UI::SetModulename (screenshot_name);
     }
+
+    /**
+     * Constructor
+     **/
+    global define void Wizard() ``{
+	map ui_info = UI::GetDisplayInfo();
+
+	have_fancy_ui = ui_info[ "HasImageSupport" ]:false
+	    && ui_info[ "HasLocalImageSupport" ]:false
+	    && ui_info[ "Depth" ]:0 >= 15
+	    && ui_info[ "DefaultWidth" ]:0 >= 800
+	    && ui_info[ "DefaultHeight"]:0 >= 600
+	    && UI::HasSpecialWidget(`ColoredLabel);
+
+	// have_fancy_ui = false;
+
+	UI::SetFunctionKeys( Label::DefaultFunctionKeyMap() );
+    };
+
+
 
 }

@@ -27,7 +27,7 @@
 
     do
     {
-	button_id = UI::UserInput();
+	button_id = (symbol)UI::UserInput();
 
 	if ( button_id == `yesNo )
 	{

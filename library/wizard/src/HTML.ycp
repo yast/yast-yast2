@@ -113,7 +113,7 @@
     global define string List( list items ) ``{
 	string html = "<ul>";
 
-	foreach( `item, items, ``{
+	foreach( string item, items, ``{
 	    html = html + "<li>" + item + "</li>";
 	});
 
@@ -138,7 +138,7 @@
     global define string ColoredList( list items, string color ) ``{
 	string html = "<ul>";
 
-	foreach( `item, items, ``{
+	foreach( string item, items, ``{
 	    html = html + sformat ("<li><font color=\"%1\">%2</font></li>",
 				   color, item );
 	});

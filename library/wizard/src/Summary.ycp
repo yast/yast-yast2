@@ -41,6 +41,14 @@
     import "Mode";
 
     /**
+     * Function that creates a 'Not configured.' message.
+     * @return String with the message.
+     */
+    global define string NotConfigured() ``{
+	return _("Not configured yet.");
+    };
+
+    /**
      * Function that creates the whole final product. "Not detected" will be returned
      * if the list is empty.
      *
@@ -52,13 +60,13 @@
 	if (size(devices) == 0)
 	{
 	    if (!Mode::config)
-		text = sformat("<ul><li>%1</li></ul>", UI(_("Not detected.")));
+		text = sformat("<ul><li>%1</li></ul>", _("Not detected."));
 	    else
 		text = sformat("<ul><li>%1</li></ul>", NotConfigured());
 	}
 	else
 	{
-	    foreach(`dev, devices, ``{
+	    foreach(string dev, devices, ``{
 		text = text+dev;
 	    });
 	    text = sformat("<ul>%1</ul>", text);
@@ -77,14 +85,6 @@
     global define string Device(string name, string description) ``{
 	return sformat("<li><p>%1<br>%2</p></li>",
 		       name, description);
-    };
-
-    /**
-     * Function that creates a 'Not configured.' message.
-     * @return String with the message.
-     */
-    global define string NotConfigured() ``{
-	return UI(_("Not configured yet."));
     };
 
     /**
