@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 25 09:50:51 CET 2004 - locilka@suse.cz
+
+- added SuSEFirewallServices and PortAliases YCP Modules into
+  library/network.
+
+-------------------------------------------------------------------
 Wed Nov 17 17:21:29 CET 2004 - arvin@suse.de
 
 - fixed handling of command line arguments with space (bug #48264)
