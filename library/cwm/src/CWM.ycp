@@ -24,6 +24,10 @@
 
 // functions
 
+    /**
+      * Return description map of currently processed widget
+      * @return map description map of currently processed widget
+      */
     global define map GetProcessedWidget () ``{
 	return processed_widget;
     }
@@ -49,7 +53,7 @@
       * @param widgets list of maps represenging widgets
       */
     global define void initWidgets (list widgets) ``{
-        foreach (`w, widgets, ``{
+        foreach (map w, widgets, ``{
 	    processed_widget = w;
 	    term toEval = w["init"]:nil;
 	    if (toEval != nil)
@@ -67,7 +71,7 @@
       */
     global define boolean validateWidgets (list widgets, map event) ``{
 	boolean result = true;
-	foreach (`w, widgets, ``{
+	foreach (map w, widgets, ``{
 	    result = result && validateWidget (w, event, [w["_cwm_key"]:""]);
 	});
 	return result;
@@ -138,7 +142,7 @@
       */
     global define any handleWidgets (list widgets, map event_descr) ``{
         any ret = nil;
-        foreach (`w, widgets, ``{
+        foreach (map w, widgets, ``{
 	    if (ret == nil)
 	    {
 		processed_widget = w;
@@ -159,7 +163,7 @@
       * @param event map event that occured
       */
     global define void saveWidgets (list widgets, map event) ``{
-        foreach (`w, widgets, ``{
+        foreach (map w, widgets, ``{
             term t = w["store"]:nil;
             if (t != nil)
             {
@@ -191,7 +195,7 @@
       * @param caption string dialog caption
       * @param back_button string label of the back button
       * @param next_button string label of the next button
-      * @param functions map initialize/save/handle fallbacks if not specified
+      * @param fallback map initialize/save/handle fallbacks if not specified
       *   with the widgets.
       * @return symbol wizard sequencer symbol
       */
@@ -200,8 +204,8 @@
 	map fallback)
     ``{
 	list w = CreateWidgets (widget_names, widget_descr);
-	string help = CWM::MergeHelps (w);
-	contents = CWM::PrepareDialog (contents, w);
+	string help = MergeHelps (w);
+	contents = PrepareDialog (contents, w);
 	Wizard::SetContentsButtons (caption, contents, help,
 	    back_button, next_button);
 	Wizard::RestoreBackButton ();
@@ -277,7 +281,7 @@
       */
     global define list CreateWidgets (list names, map source) ``{
 	ValidateMaps (source); // FIXME find better place
-	list ret = maplist (`w, names, ``{
+	list ret = maplist (any w, names, ``{
 	    map m = source[w]:$[];
 	    // leave add here in order to make a copy of the structure
 	    // eval isn't usable because the map may contain terms, that can't
@@ -285,7 +289,7 @@
 	    m = add (m, "_cwm_key", w);
 	    return m;
         });
-	ret = maplist (`w, ret, ``{
+	ret = maplist (map w, ret, ``{
 	    return prepareWidget (w);
 	});
 	return ret;
@@ -303,7 +307,7 @@
 	integer args = size (dialog);
 	if (args == 0)
 	    return dialog;
-	map m = listmap (`w, widgets, ``(
+	map m = listmap (map w, widgets, ``(
 	    [w["_cwm_key"]:"", w]
 	));
 	return ProcessTerm (dialog, m);
@@ -354,7 +358,7 @@
 		{
 		    integer min = w["minimum"]:0;
 		    integer max = w["maximum"]:2147483647;
-		    w["widget"] = `IntField (`id (`w["_cwm_key"]:""), opt_term,
+		    w["widget"] = `IntField (`id (w["_cwm_key"]:""), opt_term,
 			w["label"]:w["_cwm_key"]:"",
 			min, max, min);
 		}
@@ -387,7 +391,7 @@
       * @return string merged helps of the widgets
       */
     global define string MergeHelps (list(map) widgets) ``{
-	list helps = maplist (`w, widgets, ``(w["help"]:nil));
+	list helps = maplist (map w, widgets, ``(w["help"]:nil));
 	helps = filter (`h, helps, ``(h != nil));
 	return mergestring (helps, "\n");
     }
@@ -435,10 +439,11 @@
 
     /**
       * Validate value of entry of the widget/option description map
+      * Also checks option description maps if present
       * @param key string key of the map entry
       * @param value any value of the map entry
       * @param widget any name of the widget/option
-      * Also checks option description maps if present
+      * @return boolean true if validation succeeded
       */
     define boolean ValidateValueContents (string key, any value, any widget) ``{
 	string error = "";
@@ -478,10 +483,11 @@
 
     /**
       * Validate type of entry of the widget/option description map
+      * Also checks option description maps if present
       * @param key string key of the map entry
       * @param value any value of the map entry
       * @param widget any name of the widget/option
-      * Also checks option description maps if present
+      * @return boolean true if validation succeeded
       */
     define boolean ValidateValueType (string key, any value, any widget) ``{
 	map types = $[
@@ -543,9 +549,9 @@
       * Process term with the dialog, replace strings in the term with
       * appropriate widgets
       * Processes only `VBox, `HBox, `Left and `Right
-      * @param dialog term dialog containing strings
+      * @param t term dialog containing strings
       * @param widgets map of widget name -> widget description map
-      * @return updated term ready to be used as a dialog
+      * @return term updated term ready to be used as a dialog
       */
     define term ProcessTerm (term t, map widgets) ``{
 	integer args = size (t);

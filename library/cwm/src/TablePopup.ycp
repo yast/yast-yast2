@@ -131,12 +131,23 @@ in the list.</p>");
 	return ret;
     }
 
-
+    /**
+      * Wrapper for TableInit using CWM::GetProcessedWidget () for getting
+      * widget description map
+      * @param key any widget key
+      */
     global define void TableInitWrapper (any key) ``{
 	TableInit (CWM::GetProcessedWidget (), key);
     }
 
-    global define any TableHandleWrapper (any key, map event_descr) ``{
+    /**
+      * Wrapper for TableHandle using CWM::GetProcessedWidget () for getting
+      * widget description map
+      * @param key any widget key
+      * @param event_descr map event description map
+      * @return symbol return value for wizard sequencer or nil
+      */
+    global define symbol TableHandleWrapper (any key, map event_descr) ``{
 	return TableHandle(CWM::GetProcessedWidget (), key, event_descr);
     }
 
@@ -186,10 +197,10 @@ in the list.</p>");
       * Handle the event that happened on the table
       * @param descr map description of the table
       * @param key table widget key
-      * @param event map event to handle
-      * @return any modified event if needed
+      * @param event_descr map event to handle
+      * @return symbol modified event if needed
       */
-    global define any TableHandle (map descr, any key, map event_descr) ``{
+    global define symbol TableHandle (map descr, any key, map event_descr) ``{
 	any event_id = event_descr["ID"]:nil;
 	UI::SetFocus (`id (`_tp_table));
 	if (event_id == `_tp_table)
@@ -456,7 +467,7 @@ in the list.</p>");
       * @param opt_descr map option description map
       * @return boolean true if was changed
       */
-    global define string tableEntryChanged (any opt_id, map opt_descr) ``{
+    global define boolean tableEntryChanged (any opt_id, map opt_descr) ``{
 	any opt_key = opt_descr["_cwm_key"]:"";
 	term toEval = opt_descr["table", "changed"]:nil;
 	if (toEval != nil)
