@@ -195,22 +195,22 @@
 	boolean write_status = true;
 
 	foreach (string variable, variables, {
-	    // nil means - write file now
-	    if (variable == nil) {
-		write_status = SCR::Write(.sysconfig.SuSEfirewall2, nil);
-	    } else {
-		write_status = (boolean) SCR::Write(
-		    add(.sysconfig.SuSEfirewall2,variable),
-		    // if variable is undefined, get default value
-		    SETTINGS[variable]:GetDefaultValue(variable)
-		);
-	    }
+	    write_status = (boolean) SCR::Write(
+		add(.sysconfig.SuSEfirewall2,variable),
+		// if variable is undefined, get default value
+		SETTINGS[variable]:GetDefaultValue(variable)
+	    );
 
 	    if (! write_status) {
 		Report::Error(Message::CannotWriteSettingsTo("/etc/sysconfig/SuSEFirewall"));
 		break;
 	    }
 	});
+
+	write_status = SCR::Write(.sysconfig.SuSEfirewall2, nil);
+	if (! write_status) {
+	    Report::Error(Message::CannotWriteSettingsTo("/etc/sysconfig/SuSEFirewall"));
+	}
 
 	return write_status;
     }
@@ -974,6 +974,7 @@
 	    all_ok = Service::Enable(service);
 
 	    if (!all_ok) {
+		// TRANSLATORS: a popup error message
 		Report::Error(sformat(_("Cannot enable service '%1'"), service));
 		break;
 	    }
@@ -995,6 +996,7 @@
 	    all_ok = Service::Disable(service);
 
 	    if (!all_ok) {
+		// TRANSLATORS: a popup error message
 		Report::Error(sformat(_("Cannot disable service '%1'"), service));
 		break;
 	    }
@@ -1540,12 +1542,13 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 
 	// for all services requested
 	foreach (string service, services, {
+	    services_status[service] = $[];
 	    // for all zones in configuration
 	    foreach (string zone, list <string> interfaces, interface_in_zone, {
-		boolean service_status = IsServiceSupportedInZone(service, zone);
+		boolean status = IsServiceSupportedInZone(service, zone);
 		// for all interfaces in zone
 		foreach (string interface, interfaces, {
-		    services_status[service, interface] = service_status;
+		    services_status[service, interface] = status;
 		});
 	    });
 	});
@@ -1722,7 +1725,8 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 	if (GetModified()) {
 	    y2milestone("Firewall settings were modified, saving configuration");
 	    // the last item must be `nil` to sync changed into disk
-	    if (! WriteSysconfigSuSEFirewall ( add (GetListOfSuSEFirewallVariables(), nil) )) {
+	    if (! WriteSysconfigSuSEFirewall ( GetListOfSuSEFirewallVariables() )) {
+		// TRANSLATORS: a popup error message
 		Report::Error(_("Writing settings failed"));
 		return false;
 	    }
