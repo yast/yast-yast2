@@ -215,6 +215,9 @@
   global define string AcceptButtonLabel() ``{
       return UI::AcceptButtonLabel();
   }
+  global define string DoNotAcceptButtonLabel() ``{
+      return UI::DoNotAcceptButtonLabel();
+  }
   global define string QuitButtonLabel() ``{
       return UI::QuitButtonLabel();
   }
