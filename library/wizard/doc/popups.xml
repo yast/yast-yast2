@@ -1,4 +1,8 @@
-<section>
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"/usr/share/xml/docbook/schema/dtd/4.2/docbookx.dtd">
+
+<section id="common_popups">
 <title>Common Popup Dialogs</title>
 <para>
 The module "Popup.ycp" contains commonly used popup dialogs for
@@ -88,13 +92,13 @@ gets to this kind of question quite frequently:
 </screen>
 <note>
 <para>This example might be a good candidate for ContinueCancel() - see below</para>
+</note>
 <para>
 If you use headlines, please use them to either
-<itemizedlis>
+<itemizedlist>
 <listitem><para>classify the type of popup (Error, Warning, ...)</para></listitem>
 <listitem><para>summarize the question.</para></listitem>
 </itemizedlist>
-<para>
 Please DON'T use headlines like "Question" etc. - this doesn't have any
 informative value, yet it forces the user to read this useless headline.
 </para>
@@ -133,14 +137,15 @@ and NOT
 `OpenDialog(
             ...
             `HBox(
-:-(               `PushButton( `id(`ok ), `opt(`default), _("&OK") ),
-                  `PushButton( `id(`retry ), "&Retry"  ),
-                  `PushButton( `id(`cancel), "&Cancel" )
+:-(               `PushButton( `id(`ok ), `opt(`default), _("&amp;OK") ),
+                  `PushButton( `id(`retry ), "&amp;Retry"  ),
+                  `PushButton( `id(`cancel), "&amp;Cancel" )
                   )
            )
 </programlisting>
 
 - even whenever you create your own dialogs.</para>
+</example>
 
 <para>
 The first part of the name always is the message itself literally ("Retry"),
