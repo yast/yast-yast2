@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jul 19 11:24:35 CEST 2002 - sh@suse.de
+
+- Wizard now uses consistent image names for easier OEM logo handling 
+
+-------------------------------------------------------------------
 Tue Jul 16 16:44:03 CEST 2002 - sh@suse.de
 
 - V 2.6.11
