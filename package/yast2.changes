@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul 31 13:49:39 CEST 2002 - mvidner@suse.cz
+
+- Moved private runlevel files back to yast2-runlevel.
+- 2.6.15
+
+-------------------------------------------------------------------
 Mon Jul 29 11:51:52 CEST 2002 - msvec@suse.cz
 
 - included some general purpose agents
