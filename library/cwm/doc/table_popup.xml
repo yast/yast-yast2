@@ -39,8 +39,8 @@ Following text will refer on <xref linkend="tp_basic"/>.
        define map&lt;string,any&gt; getGlobalTableWidget () {
 (1)        map&lt;string,any&gt; ret = CWM::CreateTableDescr (
                $[
-                   "add_delete" : true,
-                   "up_down" : true
+                   "add_delete_buttons" : true,
+                   "up_down_buttons" : true
                ],
                $[
 (2)                "init" : TableInit,
