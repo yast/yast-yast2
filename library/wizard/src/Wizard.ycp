@@ -1104,7 +1104,7 @@
             Wizard::ReplaceCustomHelp(
                     `VBox(
                         `Tree(
-                            `id(`wizard),
+                            `id(`wizardTree),
                             `opt(`notify, `vstretch),
                             title,
                             items
@@ -1123,7 +1123,7 @@
         }
         else
         {
-            UI::ChangeWidget(`id(`wizard), `CurrentItem, tree_item);
+            UI::ChangeWidget(`id(`wizardTree), `CurrentItem, tree_item);
         }
     }
 
