@@ -54,7 +54,7 @@ global boolean DoRemove(list<string> packages) {
 }
 
 global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove) {
-    boolean (list, list) function = (boolean (list, list)) (Functions["DoInstallAndRemove"]:nil);
+    boolean (list<string>, list<string>) function = (boolean (list<string>, list<string>)) (Functions["DoInstallAndRemove"]:nil);
     return function(toinstall, toremove);
 }
 
