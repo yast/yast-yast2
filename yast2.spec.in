@@ -55,6 +55,7 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 %dir @clientdir@
 %dir @configdir@
 %dir @desktopdir@
+@desktopdir@/groups
 %dir @imagedir@
 %dir @localedir@
 %dir @moduledir@

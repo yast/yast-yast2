@@ -1,5 +1,2 @@
 Makefile
 Makefile.in
-.libs
-.deps
-y2menu
