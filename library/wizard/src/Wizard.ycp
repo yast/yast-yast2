@@ -241,6 +241,28 @@
 	UI::OpenDialog( `opt(`defaultsize), dialog );
     }
 
+    /**
+     * Open a Tree  dialog with buttons "Next", "Back", "Abort"
+     * and set the keyboard focus to "Next".
+     **/
+    global void OpenTreeNextBackDialog()
+    {
+        if ( haveFancyUI() )
+        {
+            UI::OpenDialog(`opt(`defaultsize ),
+                    `Wizard(`opt(`treeEnabled),
+                        `back, Label::BackButton(),
+                        `abort, Label::AbortButton(),
+                        `next, Label::NextButton()
+                        )
+                    );
+        }
+        else
+        {
+	    Wizard::OpenDialog( NextBackDialog() );
+	    UI::SetFocus(`id(`next) );
+        }
+    }
 
     /**
      * Open a dialog with buttons "Next", "Back", "Abort"
@@ -452,6 +474,15 @@
 	return input;
     }
 
+    /**
+     * Create and open a Tree wizard dialog.
+     *
+     * For backwards compatibility only - don't use this any more in new modules.
+     **/
+    global void CreateTreeDialog()
+    {
+	Wizard::OpenTreeNextBackDialog();
+    }
 
     /**
      * Create and open a typical installation wizard dialog.

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Mar 31 19:52:42 CEST 2004 - nashif@suse.de
+
+- New ProductFeature variables
+
+-------------------------------------------------------------------
 Wed Mar 31 17:53:05 CEST 2004 - msvec@suse.cz
 
 - added /etc/YaST2 dir (for log.conf)
