@@ -45,7 +45,7 @@ global define boolean Detection(string class) ``{
 		`VSpacing(0.5),
 		// This is in information message. Next come the
 		// hardware class name (network cards).
-		`HVCenter(`Label(_("YaST2 is going to detect the following hardware:"))),
+		`HVCenter(`Label(_("YaST2 will detect the following hardware:"))),
 		`HVCenter(`Heading(class)),
 		`VSpacing(0.5)
 	    ))),

@@ -1,10 +1,15 @@
 -------------------------------------------------------------------
+Thu Sep 04 17:51:12 CEST 2003 - arvin@suse.de
+
+- proof-read messages
+
+-------------------------------------------------------------------
 Mon Sep  1 16:56:22 CEST 2003 - visnov@suse.de
 
 - do not print module help twice in the header
 - revert capitalization for the command line actions/options from
   proofreader
-- 2.8.25 
+- 2.8.25
 
 -------------------------------------------------------------------
 Mon Sep  1 15:50:49 CEST 2003 - jsrain@suse.de

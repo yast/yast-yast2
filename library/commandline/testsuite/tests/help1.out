@@ -1,5 +1,5 @@
 Write	.dev.tty.prompt "YaST2 lan> " true
-Write	.dev.tty.stderr "\nYaST Configuration module lan\n------------------------------\n" true
+Write	.dev.tty.stderr "\nYaST Configuration Module lan\n------------------------------\n" true
 Write	.dev.tty.stderr "Command 'add'" true
 Write	.dev.tty.stderr "    add a network card" true
 Write	.dev.tty.stderr "\n    Options:" true
