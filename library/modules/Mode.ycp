@@ -247,7 +247,7 @@
 	    && !config)
 	{
 	    normal = true;
-            mode = "normal";
+            stage = "normal";
 	}
 
 	// screen_shot ==> demo
