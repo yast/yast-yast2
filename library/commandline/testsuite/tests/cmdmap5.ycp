@@ -10,8 +10,8 @@
 {
 
     include "testsuite.ycp";
-    import "./../../types/src/TypeRepository.ycp";
-    import "./../src/CommandLine.ycp";
+    import "TypeRepository";
+    import "CommandLine";
 
     // mappings must refer to specified actions
     // mappings must refer to specified options

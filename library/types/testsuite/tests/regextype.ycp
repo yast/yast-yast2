@@ -10,7 +10,7 @@
 {
 
     include "testsuite.ycp";
-    import "./../src/TypeRepository.ycp";
+    import "TypeRepository";
 
     TEST(``(TypeRepository::regex_validator( "^[abc]+.*m$", "blem" )),[],nil);
     TEST(``(TypeRepository::regex_validator( "^[abc]+.*m$", "blec" )),[],nil);

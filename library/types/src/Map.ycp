@@ -74,7 +74,7 @@ global define boolean CheckKeys(map m, list keys) ``{
 
     boolean ret = true;
     foreach(any k, keys, ``{
-	if(!haskey(m, k)) {
+	if(k == nil || !haskey(m, k)) {
 	    y2error("Missing key: %1", k);
 	    ret = false;
 	}
@@ -111,9 +111,9 @@ global define map FromString(string s) ``{
 	list val = splitstring(vals, "=");
 	if(size(val) < 1 || val[0]:"" == "") return;
 	if(size(val) > 1)
-	    change(ret, val[0]:"", val[1]:"");
+	    ret[val[0]:""] = val[1]:"";
 	else
-	    change(ret, val[0]:"", "");
+	    ret[val[0]:""] = "";
     });
     return ret;
 }

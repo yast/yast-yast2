@@ -12,8 +12,8 @@
     include "testsuite.ycp";
     include "./tests/testsuitedata.yh";
 
-    import "./../../types/src/TypeRepository.ycp";
-    import "./../src/CommandLine.ycp";
+    import "TypeRepository";
+    import "CommandLine";
 
     // test of the resulting maps
     TEST(``(CommandLine::Init( cmdline ,[]) ),[],nil);

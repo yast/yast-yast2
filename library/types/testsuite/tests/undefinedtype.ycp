@@ -10,7 +10,7 @@
 {
 
     include "testsuite.ycp";
-    import "./../src/TypeRepository.ycp";
+    import "TypeRepository";
 
     // blem is undefined type
     TEST(``(TypeRepository::is_a( "10.20.0.0", "blem" )),[],nil);

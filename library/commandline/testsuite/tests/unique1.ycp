@@ -10,8 +10,8 @@
 {
 
     include "testsuite.ycp";
-    import "./../../types/src/TypeRepository.ycp";
-    import "./../src/CommandLine.ycp";
+    import "TypeRepository";
+    import "CommandLine";
 
     // fail: add and delete are mutually exclusive
     TEST(``(CommandLine::UniqueOption($["add":"", "delete":"" ],["add","delete"]) ),[],nil);
