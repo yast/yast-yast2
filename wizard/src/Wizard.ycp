@@ -20,7 +20,10 @@
     include "ui/common_popups.ycp";
 
     integer current_stage = 0;	// Cache for the current wizard stage (image no.)
+
+    // keep trailing "/" !!
     string image_path = "/usr/share/YaST2/images/";
+
     boolean have_fancy_ui = false;
 
     /**
@@ -509,7 +512,7 @@
      * and set the keyboard focus to "Next".
      **/
     global define void OpenNextBackDialog() ``{
-	OpenDialog( NextBackDialog() );
+	Wizard::OpenDialog( NextBackDialog() );
 	UI::SetFocus(`id(`next) );
     };
 
@@ -519,7 +522,7 @@
      * and set the keyboard focus to "Accept".
      **/
     global define void OpenAcceptDialog() ``{
-	OpenDialog( AcceptDialog() );
+	Wizard::OpenDialog( AcceptDialog() );
 	UI::SetFocus(`id(`accept) );
     };
 
@@ -565,7 +568,7 @@
      * For backwards compatibility only - don't use this any more in new modules.
      **/
     global define void CreateDialog() ``{
-	OpenDialog( NextBackDialog() );
+	Wizard::OpenDialog( NextBackDialog() );
     };
 
 
@@ -602,7 +605,7 @@
      * may in fact still have to wait.
      **/
     global define void ClearContents() ``{
-	SetContents("", `Empty(), "", false, false);
+	Wizard::SetContents("", `Empty(), "", false, false);
     };
 
 
@@ -620,7 +623,7 @@
 
 	if ( UI::WidgetExists(`id(`back ) ) )	UI::ChangeWidget(`id (`back), `Label, back_label);
 	if ( UI::WidgetExists(`id(`next ) ) )	UI::ChangeWidget(`id (`next), `Label, next_label);
-	SetContents( title, contents, help_text, true, true );
+	Wizard::SetContents( title, contents, help_text, true, true );
     };
 
 
@@ -763,7 +766,7 @@
 	y2debug("Setting stage to %1", stage );
 
 	// Set the header image according to the stage
-	UI::SetImageUI( Read (.local.byte, sformat( "/usr/lib/YaST2/images/stage%1.png", stage ) ) );
+	UI::SetImageUI( Read (.local.byte, sformat( image_path+"stage%1.png", stage ) ) );
 
 	// Cache the current stage
 	current_stage = stage;

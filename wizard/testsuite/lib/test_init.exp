@@ -32,7 +32,7 @@ proc wizard-run { src ui } {
   puts "Running $base_name..."   
 
   set result ""
-  set oops [catch { set result [exec "/usr/lib/YaST2/bin/y2$ui" "$src" "$ui" "-T" ">" "$tmpout_name" "2>" "$tmperr_name"] } catched]
+  set oops [catch { set result [exec "/usr/lib/YaST2/bin/y2base" "$src" "$ui" "-T" ">" "$tmpout_name" "2>" "$tmperr_name"] } catched]
 
   if {$oops != 0} {
     fail "y2$ui failed: $catched"
