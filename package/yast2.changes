@@ -1,8 +1,10 @@
 -------------------------------------------------------------------
-Thu Aug  8 09:24:14 CEST 2002 - mvidner@suse.de
+Fri Aug  9 15:32:54 CEST 2002 - mvidner@suse.cz
 
 - Fixed falling back to ncurses when DISPLAY is set
   but yast2-qt is not installed.
+- Added Runlevel::error_msg, to inform the user what went wrong.
+- 2.6.18
 
 -------------------------------------------------------------------
 Tue Aug 06 11:31:46 CEST 2002 - arvin@suse.de
