@@ -972,8 +972,8 @@
 	    string tag = substring( lpart, 0, s );
 	    
 	    // handled tags
-	    if( tag == "br" ) result = result + "\n";
-	    else if( tag == "p" ) result = result + "\n\n";
+	    if( tolower(tag) == "br" ) result = result + "\n";
+	    else if( tolower(tag) == "p" ) result = result + "\n\n";
 	    
 	    // add the text
 	    if( s == -1 ) result = result + lpart;
