@@ -365,12 +365,12 @@ global define void LogErrors(boolean log) ``{
  * @param m include messages in returned string
  * @return string rich text string
  */
-define string GetMessages(boolean w, boolean e, boolean m) ``{
+global define string GetMessages(boolean w, boolean e, boolean m) ``{
     string richtext = "";
 
     if (w)
     {
-	richtext = richtext + "<P><B>" + _("Warnings:") + "</B><BR>";
+	richtext = richtext + "<P><B>" + _("Warning:", "Warnings:", size(warnings) ) + "</B><BR>";
 
 	foreach(`s, warnings, ``{
 		list strs = splitstring(s, "\n");
@@ -383,7 +383,7 @@ define string GetMessages(boolean w, boolean e, boolean m) ``{
 
     if (e)
     {
-	richtext = richtext + "<P><B>" + _("Errors:") + "</B><BR>";
+	richtext = richtext + "<P><B>" + _("Error:", "Errors:", size(errors)) + "</B><BR>";
 
 	foreach(`s, errors, ``{
 		list strs = splitstring(s, "\n");
@@ -396,7 +396,7 @@ define string GetMessages(boolean w, boolean e, boolean m) ``{
 
     if (m)
     {
-	richtext = richtext + "<P><B>" + _("Messages:") + "</B><BR>";
+	richtext = richtext + "<P><B>" + _("Message:", "Messages:", size(messages)) + "</B><BR>";
 
 	foreach(`s, messages, ``{
 		list strs = splitstring(s, "\n");
