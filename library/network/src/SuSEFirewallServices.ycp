@@ -83,7 +83,7 @@
 	],
 	"rsync" : $[
 	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("Remote synchronization"),
+	    "name"	: _("Remote Synchronization"),
 	    "tcp_ports" : [ "rsync" ],
 	],
 	"dhcp-server" : $[
@@ -198,7 +198,7 @@
 	foreach (string service_id, map <string, any> service_definition, SERVICES, {
 	    supported_services[service_id] =
 		// TRANSLATORS: Name of unknown service. This should never happen, just for cases..., %1 is a requested service id like nis-server
-		(string) service_definition["name"]:sformat(_("Oops, unknown service '%1'"), service_id);
+		(string) service_definition["name"]:sformat(_("Unknown service '%1'"), service_id);
 	});
 
 	return supported_services;

@@ -138,7 +138,7 @@ global define boolean DeleteSelected() {
 global define boolean Delete(string delete) {
     return Popup::YesNo(
 	/* Popup question, %1 is an item to delete (or filename, etc.) */
-	sformat(_("Really delete '%1'"), delete)
+	sformat(_("Really delete '%1'?"), delete)
     );
 }
 

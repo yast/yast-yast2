@@ -160,7 +160,7 @@ Description: %1"), reason);
  */
 global define string RequiredItem () {
   /* TRANSLATORS: Popup message */
-  return _("This item is required to be filled in");
+  return _("This item must be completed.");
 }
 
 /**
@@ -200,7 +200,7 @@ global define string DoNotShowMessageAgain () {
  */
 global define string CannotAdjustService (string service_name) {
   /* TRANSLATORS: Popup message, %1 is a service name like "smbd" */
-  return sformat(_("Cannot adjust '%1' service"), service_name);
+  return sformat(_("Cannot adjust '%1' service."), service_name);
 }
 
 /**

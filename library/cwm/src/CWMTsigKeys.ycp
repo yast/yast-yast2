@@ -278,7 +278,7 @@ global define symbol Handle (map<string,any> widget, string key, map event) {
 		message = _("The selected TSIG key cannot be deleted,
 because it is in use.
 Stop using it in the configuration first.");
-		Popup::AnyMessage (_("Cannot delete TSIG key"), message);
+		Popup::AnyMessage (_("Cannot delete TSIG key."), message);
 		return nil;
 	    }
 	}
@@ -547,8 +547,9 @@ create the key and the <b>Key ID</b> to identify the key then click
 To remove a configured TSIG key, select it and click <b>Delete</b>.
 Remember that all keys in that same file are deleted.
 If a TSIG key is in use in the configuration
-of the server, it cannot be deleted. The server must stop referring it
-in the configuration first.</p>");
+of the server, it cannot be deleted. The server must stop using it
+in the configuration first.</p>
+");
 
     term add_existing = `VSquash (`HBox (
 	// Frame label - adding a created server key

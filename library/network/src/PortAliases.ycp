@@ -109,9 +109,10 @@
      */
     global define string AllowedPortNameOrNumber () {
 	// TRANSLATORS: popup informing message, allowed characters for port-names
-	return _("Allowed port name consists of characters 'a-z', 'A-Z', '0-9' and '*+._-'.
-Allowed port number is a number between 0 and 65535 (including them as well).
-No spaces are allowed at all.");
+	return _("A port name may consist of the characters 'a-z', 'A-Z', '0-9', and '*+._-'.
+A port number may be a number from 0 to 65535.
+No spaces are allowed at all.
+");
     }
 
     /* Internal function for preparing string for grep command */
