@@ -100,7 +100,7 @@
 	list menubutton = [];
 	if (param["save"]:false == true)
 	    // menubutton entry
-	    menubutton = add (menubutton, [`save, _("Save log")]);
+	    menubutton = add (menubutton, [`save, _("Save Log")]);
 
 	list(list) actions = param["actions"]:[];
 	if (size (actions) > 0)
@@ -170,7 +170,7 @@
 	    {
 		string filename = UI::AskForSaveFileName(
 		    // popup caption
-		    "/tmp", "*.log", _("Save log as..." ));
+		    "/tmp", "*.log", _("Save Log as..."));
 		if (filename != nil)
 		{
 		    SCR::Write (.target.string, filename,
@@ -247,7 +247,7 @@
 	if (! cmdret)
 	{
 	    // message popup
-	    Report::Error (_("Error while reading the log occured"));
+	    Report::Error (_("Error occurred while reading the log."));
 	    return;
 	}
 

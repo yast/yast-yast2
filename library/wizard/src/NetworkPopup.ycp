@@ -95,7 +95,7 @@
 	}
 
 	// selection box label
-	string ret = ChooseItem(_("&NFS servers"), found_nfs_servers, selected);
+	string ret = ChooseItem(_("&NFS Servers"), found_nfs_servers, selected);
 	return ret;
     }
 
@@ -119,7 +119,7 @@
 	}
 
 	// selection box label
-	string ret = ChooseItem(_("Re&mote hosts"), found_hosts, selected);
+	string ret = ChooseItem(_("Re&mote Hosts"), found_hosts, selected);
 	return ret;
     }
 
@@ -138,7 +138,7 @@
 	}
 
 	// selection box label
-	string ret = ChooseItem(_("&Exported directories"), dirs, selected);
+	string ret = ChooseItem(_("&Exported Directories"), dirs, selected);
 	return ret;
     }
 

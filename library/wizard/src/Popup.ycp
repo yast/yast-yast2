@@ -224,27 +224,28 @@
 	  if ( severity == `painless )
 	  {
 	      // Warning text for aborting an installation before anything is installed
-	      what_will_happen = _( "If you abort the installation now,
+	      what_will_happen = _("If you abort the installation now,
 Linux will not be installed.
-Your hard disk will remain untouched." );
+Your hard disk will remain untouched.");
 	  }
 	  else if ( severity == `incomplete )
 	  {
 	      // Warning text for aborting an installation during the install process
 	      // - After some installation steps have been performed - e.g.
 	      // disks formatted / some packages already installed
-	      what_will_happen = _( "If you abort the installation now, you will
+	      what_will_happen = _("If you abort the installation now, you will
 have an incomplete Linux system
-which may or may not be usable.
-You may need to reinstall." );
+that might or might not be usable.
+You might need to reinstall.
+");
 	  }
 	  else if ( severity == `unusable )
 	  {
 	      // Warning text for aborting an installation during the install process
 	      // right in the middle of some critical process (e.g. formatting)
-	      what_will_happen = _( "If you abort the installation now,
+	      what_will_happen = _("If you abort the installation now,
 Linux will be unusable.
-You will need to reinstall." );
+You will need to reinstall.");
 	  }
 	  else
 	  {

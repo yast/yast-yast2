@@ -126,7 +126,7 @@
 	    wname = deletechars (wname, "&");
 	    Report::Error (sformat (
 		// message popup, %1 is a label of some widget
-		_("Selected value of %1 is incorrect."),
+		_("The value of %1 is invalid."),
 		wname));
 	    UI::SetFoxus (`id (w["_cwm_key"]:""));
 	}
@@ -431,9 +431,10 @@
 	    : `HSpacing (0);
 	term replace_point = `ReplacePoint (`id (`_tp_table_repl), `HSpacing (0));
 	// help 1/3
-	string help = _("<p><b><big>Editing the settings</big></b><br>
+	string help = _("<p><b><big>Editing the Settings</big></b><br>
 To edit the settings, choose the appropriate
-entry of the table then click <b>Edit</b>.</p>");
+entry of the table then click <b>Edit</b>.</p>
+");
 	if (attrib["add_delete_buttons"]:true)
 	    // help 2/3, optional
 	    help = help + _("<p>To add a new option, click <b>Add</b>. To remove
@@ -589,7 +590,7 @@ in the list.</p>");
 			if (contains (present, opt_key))
 			    Report::Error (
 				// error report
-				_("Selected option is already present"));
+				_("The selected option is already present"));
 			else
 			    selected = true;
 		    }

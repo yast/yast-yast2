@@ -24,10 +24,10 @@
     map systemcommands = $[
 	"actions"	: $[
 	    "help"	: $[
-		"help":_("print the help for this module")
+		"help":_("Print the Help for This Module")
 	    ],
 	    "longhelp": $[
-		"help":_("print a long version of help for this module")
+		"help":_("Print a Long Version of Help for This Module")
 	    ],
 /*	    "interactive"	: $[
 		"help": _("start interactive shell to control the module")
@@ -41,10 +41,10 @@
 	],
 	"options"	: $[
 	    "help"	: $[
-		"help"	: _("print the help for this command" ),
+		"help"	: _("Print the Help for This Command"),
 	    ],
 	    "verbose"	: $[
-		"help"	: _("show progress information" ),
+		"help"	: _("Show Progress Information"),
 	    ],
 	],
 	"mappings"	: $[
@@ -108,7 +108,7 @@
 	    }
 
 	    // translators: fallback name for a module at command line
-	    cmdlineinfo = add( cmdlineinfo, "id", _("unknown" ));
+	    cmdlineinfo = add( cmdlineinfo, "id", _("unknown"));
 
 	    // it's better to quit now
 	    done = true;
@@ -314,7 +314,7 @@
 
 	/* Check command */
 	if(!haskey(allcommands["actions"]:$[], command) ) {
-	    Error(sformat(_("Unknown command: %1"), command));
+	    Error(sformat(_("Unknown Command: %1"), command));
 
 	    return $[];
 	}
@@ -375,14 +375,14 @@
 			ret = TypeRepository::regex_validator( opttypespec, v );
 			if( ret != true ) {
 			    // translators: error message, %2 is the value given
-			    Print( sformat(_("Incorrect value for option '%1': %2"), o, v ) );
+			    Print( sformat(_("Invalid value for option '%1': %2"), o, v ) );
 			    if( ! interactive ) aborted = true;
 			}
 		    } else if( opttype == "enum" ) {
 			ret = TypeRepository::enum_validator ( lookup( cmdoptions[o]:$[], "typespec", [] ), v );
 			if( ret != true ) {
 			    // translators: error message, %2 is the value given
-			    Print( sformat(_("Incorrect value for option '%1': %2"), o, v ) );
+			    Print( sformat(_("Invalid value for option '%1': %2"), o, v ) );
 			    if( ! interactive ) aborted = true;
 			}
 		    } else {
@@ -391,7 +391,7 @@
 
 			if( ret != true ) {
 			    // translators: error message, %2 is expected type, %3 is the value given
-			    Print( sformat(_("Incorrect value for option '%1', expected '%2', received: %3"), o, opttype, v ) );
+			    Print( sformat(_("Invalid value for option '%1' -- expected '%2', received %3"), o, opttype, v ) );
 			    if( ! interactive ) aborted = true;
 			}
 		    }
@@ -485,8 +485,8 @@
      */
     define void PrintGeneralHelp() ``{
 	// translators: default module description if none is provided by the module itself
-	Print( modulecommands["help"]: _("This is YaST2 module.") );
-	Print(_("Basic syntax:"));
+	Print( modulecommands["help"]: _("This is a YaST2 module.") );
+	Print(_("Basic Syntax:"));
 
 	if( ! interactive ) {
 /*	    // translators: module command line help, %1 is the module name
@@ -1080,9 +1080,9 @@
 
 	if( size( cmds ) == 0 ) {
 	    if( size( unique_list ) == 1 ) {
-		Report::Error( sformat( _("You must specify the command '%1'."), unique_options[0]:nil ) );
+		Report::Error( sformat( _("Specify the command '%1'."), unique_options[0]:nil ) );
 	    } else {
-		Report::Error( sformat( _("You must specify one of the commands: %1."), opt_list ) );
+		Report::Error( sformat( _("Specify one of the commands: %1."), opt_list ) );
 	    }
 	    return nil;
 	}
@@ -1090,7 +1090,7 @@
 	if( size( cmds ) != 1 ) {
 	    // size( unique_options ) == 1 here does not make sense
 
-	    Report::Error( sformat( _("You can specify only one of the commands: %1."), opt_list ) );
+	    Report::Error( sformat( _("Specify only one of the commands: %1."), opt_list ) );
 	    return nil;
 	}
 
