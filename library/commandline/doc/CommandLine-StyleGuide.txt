@@ -1,0 +1,133 @@
+ YaST2 Command Line Style Guide
+================================
+
+Author: Ladislav Slezak <lslezak@suse.cz>
+
+
+Introduction
+------------
+
+This document describes standard format and behavior of YaST modules in
+command line mode (look and feel). All YaST modules should (in addition to Qt
+and ncurses UI) also support configuration using command line mode.
+
+
+Commands and options - style
+----------------------------
+
+Entered commands and options are case-sensitive. The rule is to use only lower
+letters in command and option names.
+
+
+Predefined commands
+-------------------
+
+Standard predefined commands are:
+
+interactive	- start interactive mode
+help		- display general help and descriptions of the commands and options
+longhelp	- more detailed output
+exit		- finish interactive session (save changes)
+quit		- abort, don't save changes
+
+These command are implemented internally by CommandLine module.
+
+
+Recommended commands
+--------------------
+
+add	- configure a new device/service
+set	- change already configured device/service
+delete  - remove configuration of device/service
+summary - print configuration summary
+
+
+Other commands
+--------------
+
+It's possible to use any string for command and option, but the string should
+be similar to the action or the option name used in GUI.
+
+
+Command aliases
+---------------
+
+(This functionality is not implemented yet.)
+
+Long and frequently used commands should have defined short aliases for quick
+and easy writing in the interactive mode.
+
+There are more possibilities to create an alias from full name.
+An alias should be created by taking part of the string ('logging' => 'log')
+or from first letters of the words ('interface' => 'if').
+
+It should be easy to remember any alias, the main reason for aliases is the
+interactive mode.
+
+
+
+Output and input formatting
+---------------------------
+
+All commands, options have to be entered and processed in English language
+(translation should not be involved in the command line processing). 
+
+In contrast output printed in the command line mode should be translated,
+options and values should be printed in the current language.
+
+The best way is to use configuration summary used in installation proposal or
+summary displayed in autoyast during configuration.
+
+Yast supports only partially conversion from rich text to plain text, so format
+of the summary text should be simple.
+
+
+Progress in command line mode
+-----------------------------
+
+Operations which take long to process can print progress messages. The messages
+should be printed only in verbose mode (default behavior is to not print them)
+using CommandLine::PrintVerbose().
+
+Later it could be possible to enhance Progress:: to use
+CommandLine::PrintVerbose() instead of changing value of the progress bar.
+
+
+Product dependent commands
+--------------------------
+
+ProductFeatures - (TODO - support "expert" flag for commands or options)
+
+
+Package checking in command line mode
+-------------------------------------
+
+(bug #44083) Solution:
+Do not call module initialization when the command is internal in CommandLine::.
+Later add command line mode support for package installation.
+
+
+Minimal command line mode support
+---------------------------------
+
+Every yast client should have at leat minimal command line support (which means
+printing a message "Command line is not supported").
+
+
+Here is an example how to do it:
+
+
+    import "CommandLine";
+
+    map mini = $[
+    	// help text
+	"help"      : _("Configuration of XYZ"),
+	"id"        : "xyz",
+	// GUI handler (symbol()) 
+	"guihandler": MainSequence,
+    ];
+					
+    ret = CommandLine::Run(mini);
+
+
+
