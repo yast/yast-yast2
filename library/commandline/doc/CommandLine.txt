@@ -149,7 +149,7 @@ Example:	"actions"	: $[
 
 The option list is a map with the option name as a key. For each
 option, it is necessary to provide a description text in "help" key,
-and a "type" key (for options witharguments only). Optionally, an
+and a "type" key (for options with arguments only). Optionally, an
 option can contain an example.
 There are two kinds of options: flags and options, which require an
 argument.For flags ommit type key, or specify type as "". A type is a
