@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jul  7 14:06:06 CEST 2003 - visnov@suse.de
+
+- let TypeRepository module use the simple types 
+
+-------------------------------------------------------------------
 Fri Jul  4 16:55:41 CEST 2003 - msvec@suse.cz
 
 - added a first library of simple types:
