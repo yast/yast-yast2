@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Feb 19 13:24:44 CET 2004 - mvidner@suse.cz
+
+- changed sort to use "<" instead of "<=" because of the switch to std::sort
+
+-------------------------------------------------------------------
 Thu Feb 19 11:15:17 CET 2004 - visnov@suse.cz
 
 - restore AsciiFile::AssertLineValid behavior as in 9.0 

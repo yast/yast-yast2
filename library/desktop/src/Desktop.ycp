@@ -138,7 +138,7 @@ global define string Translate(string key) ``{
 define list <term> CreateList(map M) ``{
     list keys = Map::Keys(M);
     keys = sort(string x, string y, keys, ``{
-	return M[x, "SortKey"]:"" <= M[y, "SortKey"]:"";
+	return M[x, "SortKey"]:"" < M[y, "SortKey"]:"";
     });
     y2debug("keys=%1", keys);
 
