@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Mar 24 15:00:13 CET 2004 - sh@suse.de
+
+- Fixed bug #36850: Strange texts in y2qt wizard side bar 
+
+-------------------------------------------------------------------
 Wed Mar 24 11:17:25 CET 2004 - arvin@suse.de
 
 - fixed function name (bug #36783)
