@@ -590,7 +590,7 @@ global string CSpace () {
 }
 
 /**
- * @return printable ASCII charcters including whitespace
+ * @return printable ASCII characters including whitespace
  */
 global string CPrint () {
     return cprint;
@@ -606,6 +606,163 @@ global string ValidCharsFilename () {
     return deletechars (CGraph (), "/");
 }
 
+
+    // 64 characters is the base undeline length
+    string base_underline = "----------------------------------------------------------------";
+
+    /* - hidden for documentation -
+     *
+     * Local function for finding longest records in the table.
+     *
+     * @param	list <list <string> > table items
+     * @return	list <integer> longest records by columns
+     */
+    list <integer> FindLongestRecords (list <list <string> > items) {
+	list <integer> longest = [];
+
+	// searching all rows
+	foreach (list <string> row, items, {
+	    // starting with column 0
+	    integer col_counter = 0;
+	    // testing all columns on the row
+	    foreach (string col, row, {
+		integer col_size = size(col);
+		// found longer record for this column
+		if (col_size>longest[col_counter]:0) longest[col_counter] = col_size;
+		// next column
+		col_counter = col_counter + 1;
+	    });
+	});
+
+	return longest;
+    }
+
+    /* - hidden for documentation -
+     *
+     * Local function creates table row.
+     *
+     * @param	list <string> row items
+     * @param	list <integer> columns lengths
+     * @param	integer record horizontal padding
+     * @return	string padded table row
+     */
+    string CreateTableRow (list <string> row_items, list <integer> cols_lenghts, integer horizontal_padding) {
+	string row = "";
+
+	integer col_counter = 0;
+	integer records_count = size(row_items) - 1;
+
+	foreach (string record, row_items, {
+	    integer padding = cols_lenghts[col_counter]:0;
+	    if (col_counter<records_count) padding = padding + horizontal_padding;
+
+	    row = row + String::Pad(record, padding);
+	    col_counter = col_counter + 1;
+	});
+
+	return row;
+    }
+
+    /* - hidden for documentation -
+     *
+     * Local function returns underline string /length/ long.
+     *
+     * @param	integer length of underline
+     * @return	string /length/ long underline
+     */
+    string CreateUnderline (integer length) {
+	string underline = base_underline;
+	while (size(underline)<length) {
+	    underline = underline + base_underline;
+	}
+	underline = substring(underline, 0, length);
+	 
+	return underline;
+    }
+
+    /* - hidden for documentation -
+     *
+     * Local function for creating header underline for table.
+     * It uses maximal lengths of records defined in cols_lenghts.
+     *
+     * @param	list <integer> maximal lengths of records in columns
+     * @param	integer horizontal padding of records
+     * @return	string table header underline
+     */
+    string CreateTableHeaderUnderline (list <integer> cols_lenghts, integer horizontal_padding) {
+	integer col_counter = 0;
+	// count of added paddings
+	integer records_count = size(cols_lenghts) - 1;
+	// total length of underline
+	integer total_size = 0;
+
+	foreach (integer col_size, cols_lenghts, {
+	    total_size = total_size + col_size;
+	    // adding padding where necessary
+	    if (col_counter<records_count) {
+		total_size = total_size + horizontal_padding;
+	    }
+	    col_counter = col_counter + 1;
+	});
+
+	return CreateUnderline(total_size);
+    }
+
+    /**
+     * Function creates text table without using HTML tags.
+     * (Useful for commandline)
+     * Undefined option uses the default one.
+     *
+     * @param	list <string> header
+     * @param	list <list <string> > items
+     * @param	map <string, string> options
+     * @return	string table
+     *
+     * Header: [ "Id", "Configuration", "Device" ]
+     * Items: [ [ "1", "aaa", "Samsung Calex" ], [ "2", "bbb", "Trivial Trinitron" ] ]
+     * Possible Options: horizontal_padding (for columns), table_left_padding (for table)
+     */
+    global define string TextTable (list<string> header, list <list <string> > items, map <string, any> options) {
+
+	integer current_horizontal_padding	= (integer) options["horizontal_padding"]:2;
+	integer current_table_left_padding	= (integer) options["table_left_padding"]:4;
+
+	list <integer> cols_lenghts = FindLongestRecords(add(items, header));
+
+	// whole table is left-padded
+	string table_left_padding = String::Pad("", current_table_left_padding);
+	// the last row has no newline
+	integer rows_count = size(items);
+	string table = "";
+
+	table = table + table_left_padding
+	    + CreateTableRow(header, cols_lenghts, current_horizontal_padding) + "\n";
+	table = table + table_left_padding
+	    + CreateTableHeaderUnderline(cols_lenghts, current_horizontal_padding) + "\n";
+	integer rows_counter = 1;
+	foreach (list <string> row, items, {
+	    table = table + table_left_padding
+		+ CreateTableRow(row, cols_lenghts, current_horizontal_padding) +
+		(rows_counter<rows_count ? "\n":"");
+	    rows_counter = rows_counter + 1;
+	});
+	return table;
+    }
+
+    /**
+     * Function returns underlined text header without using HTML tags.
+     * (Useful for commandline)
+     *
+     * @param	string header line
+     * @param	integer left padding
+     * @return	string underlined header line
+     */
+    global define string UnderlinedHeader (string header_line, integer left_padding) {
+	
+	return
+	    Pad("", left_padding) + header_line + "\n" +
+	    Pad("", left_padding) + CreateUnderline(size(header_line));
+    }
 
 /* EOF */
 }

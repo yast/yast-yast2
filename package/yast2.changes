@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan  7 10:53:19 CET 2005 - locilka@suse.cz
+
+- added new functions into String module
+  TextTable() & UnderlinedHeader()
+
+-------------------------------------------------------------------
 Thu Jan  6 10:43:19 CET 2005 - jsrain@suse.cz
 
 - prevent vga= kernel parameter from being used on IA64 (#49483)
