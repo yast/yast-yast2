@@ -183,8 +183,8 @@
      * @return void
      */
     global void SwitchMode (string new_mode) {
-        y2milestone("Switching to %1 mode", new_mode)
-        if (new_mode == "update")
+        y2milestone("Switching to %1 mode", new_mode);
+	if (new_mode == "update")
         {
             Mode::mode = "update";
             Mode::update = true;
