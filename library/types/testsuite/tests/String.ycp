@@ -27,6 +27,22 @@ TEST(``(String::FormatSize(1074000000)), [], nil);
 TEST(``(String::FormatSize(1100000000000)), [], nil);
 TEST(``(String::FormatSize(1126000000000000)), [], nil);
 
+DUMP("String::FormatSizeWithPrecision");
+TEST(``(String::FormatSizeWithPrecision(nil,nil,nil)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(0, nil, true)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(1, 2, false)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(1025, 3, false)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(1049000, 2, true)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(1074000000, 3, false)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(1100000000000, 2, false)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(1126000000000000, 1, true)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(4096, 2, true)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(4096, 2, false)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(4097, 2, true)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(8589934592, 2, true)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(15, 5, false)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(23456767890, 3, true)), [], nil);
+
 DUMP("String::CutBlanks");
 TEST(``(String::CutBlanks(nil)), [], nil);
 TEST(``(String::CutBlanks("")), [], nil);
