@@ -1,6 +1,6 @@
 @HEADER-COMMENT@
 
-# neededforbuild  yast2-devel-packages
+# neededforbuild  gpp libgpp yast2-devel-packages
 
 @HEADER@
 Requires:	yast2-core yast2_ui yast2_theme

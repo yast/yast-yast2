@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Aug 20 11:29:36 CEST 2002 - arvin@suse.de
+
+- added ncurses based y2menu by Marco Skambraks
+
+-------------------------------------------------------------------
 Sun Aug 18 20:24:48 CEST 2002 - kkaempf@suse.de
 
 - honor /etc/install.inf:UseSSH (#18053)
