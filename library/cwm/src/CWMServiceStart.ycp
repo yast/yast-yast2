@@ -33,7 +33,7 @@ string service_is_stopped = "";
 /**
  * Last status of the service
  */
-integer last_status = nil;
+boolean last_status = nil;
 
 
 // private functions
@@ -157,7 +157,7 @@ global define void Init (map<string,any> widget, string key) {
 	= widget["service_not_running_label"]:_("Service is not running.");
     InitAutoStartWidget (widget);
     UpdateLdapWidget (widget);
-    last_service_running = nil;
+    last_status = nil;
     UpdateServiceStatusWidget (widget);
 }
 
