@@ -2,7 +2,6 @@
 # Makefile.am for yast2/scripts
 #
 
-sbindir = /sbin
 sbin_SCRIPTS = yast2
 
 ybin_SCRIPTS = yast2 yast2-funcs

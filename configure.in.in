@@ -3,6 +3,13 @@
 @YAST2-INIT-COMMON@
 @YAST2-INIT-YCP@
 
+# The yast2 script goes to /sbin.
+# If we change the default here instead of in Makefile.am
+# then it can be overriden at configure time
+if test "${sbindir}" = '${exec_prefix}/sbin'; then
+    sbindir=/sbin
+fi
+
 ## some common checks
 @YAST2-CHECKS-COMMON@
 @YAST2-CHECKS-YCP@
