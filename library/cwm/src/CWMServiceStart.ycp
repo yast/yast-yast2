@@ -46,7 +46,7 @@ boolean last_status = nil;
 void UpdateServiceStatusWidget (map<string,any> widget) {
     if (! UI::WidgetExists (`id ("_cwm_service_status_rp")))
 	return;
-    if (Mode::config)
+    if (Mode::config ())
     {
         UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
         UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, false);

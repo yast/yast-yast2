@@ -545,7 +545,7 @@ global define boolean ConfirmAbort( symbol severity ) {
 
     if ( severity == `painless )
     {
-	if (Mode::repair)
+	if (Mode::repair ())
 	{
 	    // Confirm user request to abort System Repair
 	    abort_label = _("Really abort YaST System Repair?");
