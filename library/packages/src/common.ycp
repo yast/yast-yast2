@@ -83,20 +83,22 @@ global define boolean InstalledAny(list<string> packages) {
 boolean PackageDialog(list<string> packages, boolean install, string message) {
 
     y2debug("Asking for packages: %1", packages);
+    list<string> packs = filter(string package, packages, {
+	return (install ? !Installed(package) : Installed(package));
+    });
+    y2debug("Remaining packages: %1", packs);
 
-    if(size(packages) < 1) return true;
-    if(install && InstalledAll(packages)) return true;
-    if(! (install || InstalledAny(packages))) return true;
+    if(size(packs) < 1) return true;
 
     /* Popup Text */
     string text = _("These packages need to be installed:") + "<p>";
     /* Popup Text */
     if(install == false) text = _("These packages need to be removed:") + "<p>";
 
-    foreach(string p, packages, { text = text + sformat("%1<br>", p); });
+    foreach(string p, packs, { text = text + sformat("%1<br>", p); });
 
     if (message != nil)
-	text = sformat (message, mergestring (packages, ", "));
+	text = sformat (message, mergestring (packs, ", "));
 
     boolean doit = Popup::AnyQuestionRichText(
 	"", text, 40, 10,
@@ -107,31 +109,12 @@ boolean PackageDialog(list<string> packages, boolean install, string message) {
     if (doit)
     {
 	last_op_canceled = false;
-	if(install == false) return DoRemove(packages);
-	return DoInstall(packages);
+	if(install == false) return DoRemove(packs);
+	return DoInstall(packs);
     }
 
     last_op_canceled = true;
     return false;
-}
-
-global boolean Install(string package) {
-    return PackageDialog([package], true, nil);
-}
-
-global boolean InstallAll(list<string> packages) {
-    return PackageDialog(packages, true, nil);
-}
-
-global boolean InstallAny(list<string> packages);
-// FIXME
-
-global boolean Remove(string package) {
-    return PackageDialog([package], false, nil);
-}
-
-global boolean RemoveAll(list<string> packages) {
-    return PackageDialog(packages, false, nil);
 }
 
 global boolean InstallMsg(string package, string message) {
@@ -151,6 +134,25 @@ global boolean RemoveMsg(string package, string message) {
 
 global boolean RemoveAllMsg(list<string> packages, string message) {
     return PackageDialog(packages, false, message);
+}
+
+global boolean Install(string package) {
+    return InstallMsg(package, nil);
+}
+
+global boolean InstallAll(list<string> packages) {
+    return InstallAllMsg(packages, nil);
+}
+
+global boolean InstallAny(list<string> packages);
+// FIXME
+
+global boolean Remove(string package) {
+    return RemoveMsg(package, nil);
+}
+
+global boolean RemoveAll(list<string> packages) {
+    return RemoveAllMsg(packages, nil);
 }
 
 /**
