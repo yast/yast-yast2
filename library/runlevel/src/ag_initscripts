@@ -83,6 +83,7 @@ get_script_info () {
 		FILENAME ~ /\.old$/ || FILENAME ~ /\.new$/ || FILENAME ~ /\.save$/ ||
 		FILENAME ~ /\.swp$/ || FILENAME ~ /\.core$/ || FILENAME ~ /~$/ ||
 		FILENAME ~ /boot\.klog/ ||
+		FILENAME ~ /^Makefile/ ||
 # why was this here??
 # bug 34775: dont skip boot.hotplug-beta, boot.restore_permissions
 #		FILENAME ~ /\.[^0-9$.#_\-\\*]*[0-9$.#_\-\\*]/
@@ -144,14 +145,14 @@ get_script_info () {
 	    for (i = 3; i<= NF; i++) printf ("\"%s\", ", $i) ;
 	    print "],";
 	}
-    in_continue && in_comment && ($2 == "X-SuSE-Should-Start:" || $2 == "X-UnitedLinux-Should-Start:") {
+    in_continue && in_comment && ($2 ~ /^(X-SuSE-|X-UnitedLinux-|)Should-Start:$") {
 	    in_continue = 0;
 	    in_descr = 0;
 	    printf "     \"shouldstart\" : [ ";
 	    for (i = 3; i<= NF; i++) printf ("\"%s\", ", $i) ;
 	    print "],";
 	}
-    in_continue && in_comment && ($2 == "X-SuSE-Should-Stop:" || $2 == "X-UnitedLinux-Should-Stop:") {
+    in_continue && in_comment && ($2 ~ /^(X-SuSE-|X-UnitedLinux-|)Should-Stop:$") {
 	    in_continue = 0;
 	    in_descr = 0;
 	    printf "     \"shouldstop\" : [ ";
