@@ -24,7 +24,7 @@
     /**
      * must re-init if target agent is re-started !
      */
-    global string tmpdir = SCR::Read(.target.tmpdir);
+    global string tmpdir = (string)SCR::Read(.target.tmpdir);
 
     /**
      * @param	first	string	name of first file to try
@@ -100,29 +100,6 @@
 	return t;
     }
 
-
-    /**
-     *
-     * @parm	filename string		name of file with message, in UTF-8
-     * @return	string			string to display (in correct encoding)
-     *
-     * reads a file in UTF-8 and recodes it to the current encoding for
-     * display via UI.
-     *
-     * I suppose this function is broken since it uses Installation::encoding.
-     * Luckily it seems to be unused at the moment.
-     */
-
-    global define string File2UI (string filename)
-    ``{
-	string content = SCR::Read (.target.string, [filename, ""]);
-	if (content != "")
-	{
-	    return UI::Recode ("UTF-8", Installation::encoding, content);
-	}
-	return content;
-    }
-
     /**
      * SysconfigWrite()
      * @param	path level	path behind .sysconfig for all values
@@ -141,7 +118,7 @@
 	else
 	    level = .sysconfig + level;
 
-	foreach (`entry, values,
+	foreach (list entry, values,
 	``{
 	    if (size (entry) != 2)
 		y2error ("bad entry in rc_write()");
@@ -166,7 +143,7 @@
     global define void WriteYaSTInf (map linuxrc)
     ``{
 	string yast_inf = "";
-	foreach (`ykey, `yvalue, linuxrc,
+	foreach (string ykey, string yvalue, linuxrc,
 	``{
 	    yast_inf = yast_inf + ykey + ": " + yvalue + "\n";
 	});
@@ -192,7 +169,7 @@
 
 	list options_split = splitstring (options, " ");
 
-	foreach (`options_element, options_split,
+	foreach (string options_element, options_split,
 	``{
 	    list options_values = splitstring (options_element, "=");
 
@@ -211,7 +188,7 @@
 	return optmap;
     }
 
-
+    
     /**
      * SysconfigRead()
      *
@@ -224,12 +201,12 @@
      * @return  Success --> Result of SCR::Read<br>
      *		Failure --> Default value
      *
-     * @see
+     * @see	
      */
-
+    
     global define string SysconfigRead( path sysconfig_path, string default )
     ``{
-	string local_ret = SCR::Read( sysconfig_path );
+	string local_ret = (string)SCR::Read( sysconfig_path );
 
 	if ( local_ret == nil )
 	{
@@ -246,17 +223,17 @@
     /**
      * RemoveLeadingZero()
      *
-     * Remove any leading zeros that make tointeger inadvertently
-     * assume an octal number (e.g. "09" -> "9", "0001" -> "1",
+     * Remove any leading zeros that make tointeger inadvertently 
+     * assume an octal number (e.g. "09" -> "9", "0001" -> "1", 
      * but "0" -> "0")
      *
      * @param 	number           number that might contain leadig zero
      *
      * @return  string that has leading zeros removed
      *
-     * @see
+     * @see	
      */
-
+    
     global define string RemoveLeadingZero( string number )
 	``{
 	while( size(number)>1 && substring( number, 0, 1 ) == "0" )

@@ -16,13 +16,13 @@ import "Popup";
 /**
  * All operations that failed when were running last time
  */
-list(string) all_failed = [];
+list<string> all_failed = [];
 
 /**
  * All operations that were the last started when crashed
  * when running last time
  */
-list(string) last_failed = [];
+list<string> last_failed = [];
 
 /**
  * Last successfully finished operation
@@ -32,7 +32,7 @@ string last_done = nil;
 /**
  * List of operations which are active during this YaST2 session
  */
-list(string) this_run_active = [];
+list<string> this_run_active = [];
 
 /**
  * Filename of file storing crash settings
@@ -46,7 +46,7 @@ global string filename = "/var/lib/YaST2/crash";
 global define void Read () ``{
     if (SCR::Read (.target.size, filename) != -1)
     {
-	map settings = SCR::Read (.target.ycp, filename);
+	map settings = (map)SCR::Read (.target.ycp, filename);
 	y2milestone ("Read settings: %1", settings);
 	all_failed = settings["all_failed"]:[];
 	last_failed = settings["last_failed"]:[];
@@ -77,7 +77,7 @@ global define void Run (string op) ``{
     if (! contains (all_failed, op))
 	all_failed = add (all_failed, op);
     if (size (this_run_active) > 0)
-	last_failed = filter (`f, last_failed,
+	last_failed = filter (string f, last_failed,
 	    ``(f != this_run_active[0]:nil));
     this_run_active = prepend (this_run_active, op);
     if (! contains (last_failed, op))
@@ -91,9 +91,9 @@ global define void Run (string op) ``{
  */
 global define void Finish (string op) ``{
     Read ();
-    all_failed = filter (`f, all_failed, ``(f != op));
-    this_run_active = filter (`f, this_run_active, ``(f != op));
-    last_failed = filter (`f, last_failed, ``(f != op));
+    all_failed = filter (string f, all_failed, ``(f != op));
+    this_run_active = filter (string f, this_run_active, ``(f != op));
+    last_failed = filter (string f, last_failed, ``(f != op));
     if (size (this_run_active) > 0)
 	last_failed = add (last_failed, this_run_active[0]:nil);
     last_done = op;

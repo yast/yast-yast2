@@ -146,12 +146,12 @@ global define list ParseOptions(string options, map parameters) ``{
         if (findfirstof(options, "\"") == nil && interpret_backslash == false)
 	{
 	    // easy case - no qouting, don't interpres backslash sequences => use splitstring
-	    list(string) values = splitstring(options, separator);
+	    list<string> values = splitstring(options, separator);
 
 	    foreach (string v, values, ``{
 		if (remove_whitespace == true)
 		{
-		    v = String::CutBlanks(v);
+		    v = CutBlanks(v);
 		}
 
 		if (unique == true)
@@ -310,7 +310,7 @@ global define list ParseOptions(string options, map parameters) ``{
 
 			if (remove_whitespace == true)
 			{
-			    str = String::CutBlanks(str);
+			    str = CutBlanks(str);
 			}
 
 			if (unique == true)
@@ -357,7 +357,7 @@ global define list ParseOptions(string options, map parameters) ``{
 	    {
 		if (remove_whitespace)
 		{
-		    str = String::CutBlanks(str);
+		    str = CutBlanks(str);
 		}
 
 		if (unique == true)

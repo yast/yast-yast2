@@ -17,7 +17,7 @@ module "Arch";
 /**
  * General architecture type
  */
-global string architecture	= SCR::Read(.probe.architecture);
+global string architecture	= (string)SCR::Read(.probe.architecture);
 
 /**
  * true for all x86 compatible architectures
@@ -173,12 +173,12 @@ global boolean board_wintel	= false;
 /**
  * true if the BIOS supports APM
  */
-global boolean has_apm		= SCR::Read(.probe.has_apm);
+global boolean has_apm		= (boolean)SCR::Read(.probe.has_apm);
 
 /**
  * true if the system supports PCMCIA
  */
-global boolean has_pcmcia	= SCR::Read(.probe.has_pcmcia);
+global boolean has_pcmcia	= (boolean)SCR::Read(.probe.has_pcmcia);
 
 /* ************************************************************ */
 /* SMP stuff							*/
@@ -187,7 +187,7 @@ global boolean has_pcmcia	= SCR::Read(.probe.has_pcmcia);
  * true if running on multiprocessor board. This only reflects the
  * board, not the actual number of CPUs or the running kernel!
  */
-global boolean has_smp		= SCR::Read(.probe.has_smp);
+global boolean has_smp		= (boolean)SCR::Read(.probe.has_smp);
 
 /**
  * Set "Arch::has_smp". Since Alpha doesn't reliably probe smp,
@@ -214,12 +214,12 @@ global define void Arch() ``{
 
     string board_type = "";
     string checkgeneration = "";
-    list systemProbe = SCR::Read(.probe.system);
+    list systemProbe = (list) SCR::Read(.probe.system);
     if(systemProbe == nil) systemProbe = [];
 
-    foreach (`systemEntry, systemProbe, ``{
-	string checksys = lookup (systemEntry, "system", "");
-	checkgeneration = lookup (systemEntry, "generation", "");
+    foreach (map systemEntry, systemProbe, ``{
+	string checksys = systemEntry["system"]:"";
+	checkgeneration = systemEntry["generation"]:"";
 	if (checksys != "")
 	{
 	    board_type = checksys;

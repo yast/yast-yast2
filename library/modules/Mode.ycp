@@ -169,7 +169,7 @@
     //---------------------------------------------------------------
     // constructor
 
-    global define Mode () ``{
+    global define void Mode () ``{
 
 	/*
 	 * test command line arguments for test mode and continue mode
@@ -248,7 +248,7 @@
 	    // This won't harm for 99.99% but you never know ...
 	    if (!manual)
 	    {
-		string tmp = SCR::Read (.target.string, "/proc/cmdline");
+		string tmp = (string)SCR::Read (.target.string, "/proc/cmdline");
 		if (tmp != nil && contains (splitstring (tmp, " \n"), "manual"))
 		{
 		    manual = true;
@@ -263,7 +263,7 @@
 
 	    usessh = SCR::Read (.etc.install_inf.UseSSH) == "1";
 
-	    boot = SCR::Read (.etc.install_inf.InstMode);
+	    boot = (string)SCR::Read (.etc.install_inf.InstMode);
 	    if (boot == nil) boot = "cd";
 	}
 

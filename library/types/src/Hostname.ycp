@@ -48,15 +48,6 @@ global define boolean Check(string host) ``{
 }
 
 /**
- * Check syntax of fully qualified hostname
- * @param host hostname
- * @return true if correct
- */
-global define boolean CheckFQ(string host) ``{
-    return CheckDomain(host);
-}
-
-/**
  * Check syntax of domain entry
  * @param domain domain name
  * @return true if correct
@@ -66,6 +57,15 @@ global define boolean CheckDomain(string domain) ``{
     list l = splitstring(domain, ".");
     if(contains(maplist(string h, l, ``(Check(h))), false)) return false;
     return !regexpmatch(domain, "\\.[[:digit:]][^.]*$");
+}
+
+/**
+ * Check syntax of fully qualified hostname
+ * @param host hostname
+ * @return true if correct
+ */
+global define boolean CheckFQ(string host) ``{
+    return CheckDomain(host);
 }
 
 /**

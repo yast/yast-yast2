@@ -29,15 +29,6 @@ global define string Valid4() ``{
 }
 
 /**
- * Check syntax of a network address (IP address or hostname)
- * @param address an address
- * @return true if correct
- */
-global define boolean Check(string address) ``{
-    return Check4(address) || Check6(address);
-}
-
-/**
  * Check syntax of a network address (ip4 or name)
  * @param address an address
  * @return true if correct
@@ -53,6 +44,15 @@ global define boolean Check4(string address) ``{
  */
 global define boolean Check6(string address) ``{
     return IP::Check6(address) || Hostname::CheckFQ(address);
+}
+
+/**
+ * Check syntax of a network address (IP address or hostname)
+ * @param address an address
+ * @return true if correct
+ */
+global define boolean Check(string address) ``{
+    return Check4(address) || Check6(address);
 }
 
 /* EOF */

@@ -17,15 +17,6 @@ global string ValidChars4 = "0123456789.";
 global string ValidChars6 = "0123456789";
 
 /**
- * Check the netmask
- * @param netmask network mask
- * @return true if correct
- */
-global define boolean Check(string netmask) ``{
-    return Check4(netmask) || Check6(netmask);
-}
-
-/**
  * Check the IPv4 netmask
  * Note that 0.0.0.0 is not a correct netmask.
  * @param netmask network mask
@@ -61,6 +52,15 @@ global define boolean Check6(string netmask) ``{
     if(!regexpmatch(netmask, "^[0-9]+$")) return false;
     integer nm = tointeger(netmask);
     return nm >= 0 && nm <= 256;
+}
+
+/**
+ * Check the netmask
+ * @param netmask network mask
+ * @return true if correct
+ */
+global define boolean Check(string netmask) ``{
+    return Check4(netmask) || Check6(netmask);
 }
 
 /**
