@@ -4,7 +4,7 @@
 @HEADER@
 # Need the new file popups
 Requires:	yast2-core >= 2.7.1
-Requires:	yast2_ui yast2_theme yast2-network
+Requires:	yast2_ui yast2_theme
 
 Provides:	yast2-lib-sequencer
 Obsoletes:	yast2-lib-sequencer

@@ -1,8 +1,10 @@
 -------------------------------------------------------------------
-Thu Jun 19 16:47:47 CEST 2003 - mvidner@suse.cz
+Fri Jun 20 09:10:48 CEST 2003 - mvidner@suse.cz
 
 - Runlevel editor: call insserv with force
   when writing multiple services (#27370).
+- reverted yast2-network from Requires
+- 2.8.9
 
 -------------------------------------------------------------------
 Wed Jun 18 11:22:41 CEST 2003 - visnov@suse.de
