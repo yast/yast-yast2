@@ -134,7 +134,7 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 	    $ybindir/y2base $module "$@" ncurses
 	fi
     else
-	echo "You need to install yast2-ui-ncurses to use the YaST2 text mode interface"
+	echo "You need to install yast2-ncurses to use the YaST2 text mode interface"
 	exit 1
     fi
 else
