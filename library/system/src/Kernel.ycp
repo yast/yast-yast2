@@ -248,7 +248,7 @@
 	    if (Arch::board_mac_nubus)
 	    {
 		kernel_packages = ["kernel-nubus"];
-		binary = "vmlinux-nubus";
+//		binary = "vmlinux-nubus";
 	    }
 
 	    if (Arch::board_chrp)
@@ -265,12 +265,12 @@
 		if (issubstring (chrp_cpu, "power3") && Arch::ppc32)
 		{
 		    kernel_packages = ["kernel-power3"];
-		    binary = "vmlinux-power3";
+//		    binary = "vmlinux-power3";
 		}
 		else if (Arch::ppc64)
 		{
 		    kernel_packages = ["kernel-ppc64"];
-		    binary = "vmlinuz";
+//		    binary = "vmlinuz";
 		}
 		else
 		{
@@ -280,12 +280,12 @@
 	    else if (Arch::board_iseries)
 	    {
 		kernel_packages = ["kernel-iseries64"];
-		binary = "vmlinux64";
+//		binary = "vmlinux64";
 	    }
 	    else if (Arch::board_prep)
 	    {
 		kernel_packages = ["kernel-default"];
-		binary = "zImage.prep";
+//		binary = "zImage.prep";
 	    }
 	}
 	else if (Arch::ia64)
