@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Mar 11 15:24:30 CET 2003 - arvin@suse.de
+
+- fixed syntax in start script (bug #25080)
+
+-------------------------------------------------------------------
 Mon Mar 10 14:56:22 CET 2003 - gs@suse.de
 
 - Fixed bugs #24866/#24865 in ncurses file selector (show links;
@@ -12,19 +17,19 @@ Sun Mar  9 19:28:07 CET 2003 - nashif@suse.de
 -------------------------------------------------------------------
 Fri Mar  7 16:06:09 CET 2003 - sh@suse.de
 
-- Dropped "Notify" header for notify popups (#24782) 
+- Dropped "Notify" header for notify popups (#24782)
 
 -------------------------------------------------------------------
 Fri Mar  7 14:20:31 CET 2003 - sh@suse.de
 
 - Fixed bug #24809: sw_single window outside screen
-  Now only using --fullscreen for sw_single with KDE running 
+  Now only using --fullscreen for sw_single with KDE running
 
 -------------------------------------------------------------------
 Fri Mar  7 13:39:03 CET 2003 - sh@suse.de
 
 - Fixed bug #24790 - Wrong Qt style in y2cc modules after inst.
-  (Adrian) 
+  (Adrian)
 
 -------------------------------------------------------------------
 Wed Mar  5 15:25:12 CET 2003 - ms@suse.de
