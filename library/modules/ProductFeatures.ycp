@@ -131,6 +131,12 @@
     global string language = "";
 
     /**
+     * Skip first Language if user has selected a langauge using
+     * syslinux or selected the language using linuxrc.
+     */
+    global boolean skip_language_dialog = false;
+
+    /**
      * Keyboard
      */
     global string keyboard = "";
