@@ -52,9 +52,9 @@ global define void Read() ``{
 	filemap = $[];
 	path pv = add(AgentPath, "v");
 	filepath = add(pv, file) + ."Desktop Entry";
-	name = SCR::Read(filepath + ."X-SuSE-YaST-Call");
+	name = (string) SCR::Read(filepath + ."X-SuSE-YaST-Call");
 	foreach(string value, Values, ``{
-	    string ret = SCR::Read(add(filepath, value));
+	    string ret = (string) SCR::Read(add(filepath, value));
 	    if(ret != nil) filemap[value] = ret;
 	});
 	Modules[name] = filemap;
@@ -67,7 +67,7 @@ global define void Read() ``{
 	filepath = add(.yast2.groups.v, group);
 	list values = SCR::Dir(filepath);
 	foreach(string value, values, ``{
-	    string ret = SCR::Read(add(filepath, value));
+	    string ret = (string) SCR::Read(add(filepath, value));
 	    // y2milestone("%1[%2]=%3", file, value, ret);
 	    if(ret != nil) filemap[value] = ret;
 	});
