@@ -1,0 +1,46 @@
+/**
+ * File:	cfg_hardware.scr
+ * Summary:	Agent for /etc/sysconfig/hardware/*
+ * Author:	Jiri Srain <jsrain@suse.cz>
+ * Access:	read / write
+ *
+ * General syntax:
+ *     # comment0
+ *     VAR1=val1 # comment1
+ *     VAR2="val 2 #blah" # comment2
+ *     VAR3='val3 x #blah2' # comment3
+ *
+ * $Id$
+ *
+ * <p>Reads/writes <tt>/etc/sysconfig/hardware/hwcfg-*</tt>. For more details
+ * see its own documentation.</p>
+ */
+.sysconfig.hardware
+
+`ag_ini(
+    `IniAgent( [ "/etc/sysconfig/hardware/hwcfg-*" ],
+	$[
+	    /* values at the top level, allow comments after value */
+	    "options"	: [ "global_values", "comments_last", "join_multiline"],
+	    /* empty lines, comments after value and whole-line comments */
+	    "comments"	: [ "^[ \t]*$", "[ \t]*#.*$", "^[ \t]*#.*$" ],
+	    /* matching rules */
+	    "params"	: [
+		/* VAR1="val1" */
+		$[
+		    "match" : [ "^[ \t]*([a-zA-Z0-9_]+)=(\"[^\"]*\")", "%s=%s"],
+		    /* multiple line rules */
+		    "multiline" : [ "([^=]+)=(\"[^\"]*)", "([^\"]*\")" ],
+		],
+		/* VAR1=val1 */
+		$[
+		    "match" : [ "^[ \t]*([a-zA-Z0-9_]+)=([^ \t\"$`'\\#]*)$", "%s=%s" ],
+		],
+	    ],
+	    /* matching rules */
+	    "rewrite"	: [
+		["/etc/sysconfig/hardware/hwcfg-(.*)",
+		 "/etc/sysconfig/hardware/hwcfg-%s"],
+	    ],
+	]
+))
