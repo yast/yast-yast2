@@ -281,12 +281,28 @@ global symbol StartStopHandle (map<string,any> widget, string key, map event) {
     any event_id = event["ID"]:nil;
     if (event_id == "_cwm_start_service_now")
     {
-	Service::Restart (widget["service_id"]:"");
+	if (haskey (widget, "start_now_action"))
+	{
+	    void () start_now_func = (void())widget["start_now_action"]:nil;
+	    start_now_func ();
+	}
+	else
+	{
+	    Service::Restart (widget["service_id"]:"");
+	}
 	sleep (500);
     }
     else if (event_id == "_cwm_stop_service_now")
     {
-	Service::Stop (widget["service_id"]:"");
+	if (haskey (widget, "stop_now_action"))
+	{
+	    void () stop_now_func = (void())widget["stop_now_action"]:nil;
+	    stop_now_func ();
+	}
+	else
+	{
+	    Service::Stop (widget["service_id"]:"");
+	}
 	sleep (500);
     }
     else if (event_id == "_cwm_save_settings_now")
@@ -386,6 +402,12 @@ global string StartStopHelp (boolean restart_displayed) {
  * - "save_now_action" : void () -- function that causes saving of all settings
  *          and restarting the service. If key is missing, the button
  *          is not displayed
+ * - "start_now_action" : void () -- function that causes starting the service
+ *          If not specified, generic function using "service_id" is used
+ *          instead
+ * - "stop_now_action" : void () -- function that causes stopping the service
+ *          If not specified, generic function using "service_id" is used
+ *          instead
  * - "service_running_label" : string -- label to be displayed if the service
  *          is running.
  * - "service_not_running_label" : string -- label to be displayed if the
