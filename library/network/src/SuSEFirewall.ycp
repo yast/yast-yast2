@@ -1564,6 +1564,10 @@ Run YaST2 Firewall and assign it.
 	foreach (string interface, GetListOfKnownInterfaces(), {
 	    // zone of interface
 	    string zone_used = GetZoneOfInterface(interface);
+	    // interface can be unassigned
+	    if (zone_used == nil || zone_used == "") {
+		return;
+	    }
 	    interface_in_zone[zone_used] = add (interface_in_zone[zone_used]:[], interface);
 	});
 
