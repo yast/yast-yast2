@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Feb 24 11:37:17 CET 2004 - kkaempf@suse.de
+
+- treat x86_64 as 'wintel' architecture (#34853)
+
+-------------------------------------------------------------------
 Mon Feb 23 13:02:40 CET 2004 - mvidner@suse.cz
 
 - Services: don't omit boot.hotplug-beta, boot.restore_permissions (#34775)

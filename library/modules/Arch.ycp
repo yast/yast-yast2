@@ -252,7 +252,7 @@ global define void Arch() ``{
 	       board_mac_nubus = true;
        }
     }
-    else if (i386)
+    else if (i386 || x86_64)
     {
 	board_wintel = true;
     }
