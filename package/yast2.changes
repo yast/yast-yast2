@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 30 16:46:34 CET 2004 - mvidner@suse.cz
+
+- removed lookups in Service to fix configuration modules testsuites
+- 2.9.11
+
+-------------------------------------------------------------------
 Thu Jan 29 18:09:39 CET 2004 - msvec@suse.cz
 
 - more testsuite fixes
