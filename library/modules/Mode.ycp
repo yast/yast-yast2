@@ -14,6 +14,8 @@
 {
     module "Mode";
 
+    textdomain "base";
+
     /**
      * Current mode
      */
@@ -211,6 +213,33 @@
         }
         return;
     }
+
+
+    // update warning
+    // the user has selected a 64bit partition (i.e. x86_64) for update
+    // but booted with the 32bit DVD (i.e. x86)
+    // This will replace all 64bit packages with 32bit counterparts.
+    // It is technically possibly but probably not what the user intended.
+
+    string update_32_64_warning = _("Warning")
+	+ _("You are about to upgrade a 64-bit system with a 32-bit system.")
+	+ "\n\n"
+	+ _("If you intend to upgrade the 64-bit distribution, use the other side
+	    of the medium for booting.");
+
+    // install warning
+    // the computer system has a 64bit (x86-64) bit processort but
+    // the user booted from a 32bit installation medium
+
+    string install_32_64_warning = _("Warning")
+	+ _("Your computer is a 64-bit x86-64 system.")
+	+ _("But you are trying to install a 32-bit distribution.")
+	+ "\n\n"
+	+ _("You can upgrade either the 32-bit or the 64-bit distribution on your
+	    AMD64 system and run both these flavors at the same time.")
+	+ _("If you intend to upgrade the 64-bit distribution, use the other side
+	    of the medium for booting.");
+
 
     //---------------------------------------------------------------
     // constructor
