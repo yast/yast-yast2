@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Nov 17 17:21:29 CET 2004 - arvin@suse.de
+
+- fixed handling of command line arguments with space (bug #48264)
+
+-------------------------------------------------------------------
 Tue Nov 16 12:15:15 CET 2004  - fehr@suse.de
 
 - add evms logfiles to save_y2logs if present

@@ -72,8 +72,8 @@ eval set -- "$TEMP"
 
 while true ; do
 	case "$1" in
-		-h|--help) printhelp; exit 0  ;;
-		-l|--list) listmodules; exit 0  ;;
+		-h|--help) printhelp; exit 0 ;;
+		-l|--list) listmodules; exit 0 ;;
 		-g|--geometry) Y2_GEOMETRY="-geometry $2"; shift 2; ;;
 		-i|--install) Y2_INSTALL_PACKAGES=true; shift ;;
                 --fullscreen) Y2QT_ARGS="$Y2QT_ARGS --fullscreen"; shift ;;
@@ -151,7 +151,14 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 	if [ $module == "menu" ] ; then
 	    $ybindir/y2base menu ncurses
 	else
-	    set -- $(for x in "$@"; do echo "(\"$x\")"; done) # surround args by ("...")
+
+	    # Transform every argument into a ycp string, that is surround all
+	    # args by ("...").  args may contain spaces.
+	    a=("$@")
+	    b=("${a[@]/#/(\"}")
+	    c=("${b[@]/%/\")}")
+	    set -- "${c[@]}"
+
 	    $ybindir/y2base "$module" "$@" ncurses
 	fi
 	if [ "$uc_started" ] ; then
@@ -188,7 +195,13 @@ else
 	    fi
 	fi
 
-	set -- $(for x in "$@"; do echo "(\"$x\")"; done) # surround args by ("...")
+	# Transform every argument into a ycp string, that is surround all
+	# args by ("...").  args may contain spaces.
+	a=("$@")
+	b=("${a[@]/#/(\"}")
+	c=("${b[@]/%/\")}")
+	set -- "${c[@]}"
+
 	$ybindir/y2base $module "$@" qt -geometry "$Y2_GEOMETRY" $Y2QT_ARGS
     fi
 fi
