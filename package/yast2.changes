@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Aug 19 13:15:38 CEST 2003 - arvin@suse.de
+
+- removed include file common_functions.ycp
+
+-------------------------------------------------------------------
 Tue Aug 19 08:52:50 CEST 2003 - arvin@suse.de
 
 - optimized String::CutBlanks
