@@ -743,6 +743,8 @@ in the list.</p>");
 	    UI::ChangeWidget (`id (`_tp_delete), `Enabled,
 		opt_descr["table", "optional"]:true);
 	}
+	UI::ChangeWidget (`id (`_tp_edit), `Enabled,
+	    ! opt_descr["table", "immutable"]:false);
 	if (descr["_cwm_attrib", "up_down"]:false)
 	{
 	    UI::ChangeWidget (`id (`_tp_up), `Enabled,
