@@ -221,5 +221,43 @@ global define string CannotAdjustService (string service_name) {
   return sformat(_("Cannot adjust '%1' service"), service_name);
 }
 
+/**
+ * When some parameter is missing
+ * @param string parameter
+ * @return string Missing parameter '%1'.
+ */
+global define string MissingParameter (string parameter) {
+  /* TRANSLATORS: Popup message, %1 is a missing-parameter name */
+  return sformat(_("Missing parameter '%1'."), parameter);
+}
+
+/**
+ * When is is not able to create directory
+ * @param string directory
+ * @return string Unable to create directory '%1'.
+ */
+global define string UnableToCreateDirectory (string directory) {
+  /* TRANSLATORS: Popup message, %1 is a directory name */
+  return sformat(_("Cannot create directory '%1'."), directory);
+}
+
+/**
+ * When is is not able to read current settings
+ * @return string Cannot read current settings.
+ */
+global define string CannotReadCurrentSettings () {
+  /* TRANSLATORS: Popup message */
+  return _("Cannot read current settings.");
+}
+
+/**
+ * Running SuSEConfig failed
+ * @return string SuSEconfig script failed.
+ */
+global define string SuSEConfigFailed () {
+  /* TRANSLATORS: Popup message */
+  return _("SuSEconfig script failed.");
+}
+
 /* EOF */
 }
