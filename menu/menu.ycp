@@ -10,84 +10,72 @@
 
 {
     textdomain "base";
-    import "Label";
 
+    
     map GroupMap = $[];
     map ModuleMap = $[];
     integer ModuleNumber = 0;
 
-    // this list is only built once for speed reasons
-    list listofallmodules = [];
-
     UI::``{
-	// Build a dialog with one menu button.
-	// Wait the user selects a menu entry,
-	// then close the dialog and terminate.
-
-	// Please note it's pretty pointless to create menu entries without an ID -
-	// you'd never know what entry the user selected.
-
-	global define `OpenMenu ()
-	``{
-	    // heading for "YaST2 Control Center"
-	    string heading = _("YaST2 Control Center");
-	    OpenDialog (`opt (`defaultsize),
-			`VBox (
-			       `Heading (heading),
-			       `HBox (
-				     `HWeight (30, `RadioButtonGroup (
-								     `VBox (
-									    // button to show list of all modules
-									   `Left (`RadioButton (`id (`allgroups), `opt (`notify), _("&All"), false)),
-									   `VSpacing (),
-									   `ReplacePoint (`id (`groups), `Empty ()),
-									   `VStretch ()
-									 )
-								   )
-					     ),
-				     `HWeight (70, `VBox (
-							  // heading for list of modules
-							 `ReplacePoint (`id (`modules), `SelectionBox (_("&Modules")))
-							)
-					     )
+	global define `OpenMenu() ``{
+	    
+	    OpenDialog(`opt(`defaultsize),
+		       `VBox(
+			     `HBox(`HSpacing(1),
+				   `Frame( "",
+					   `VBox(
+						 `VSpacing(0.4),
+						 `HBox(
+						       `HSpacing(2),
+						       // heading for "YaST2 Control Center"
+						       `HCenter(`Heading( _("YaST2 Control Center")) ),
+						       `HSpacing(2)
+						       ),
+						 `VSpacing(0.4)
+						 )
+					   ),
+				   `HSpacing(1.5)
 				   ),
-			       // help text
-			       `HBox (`Label (`id (`statusline), `opt (`outputField, `hstretch), _("Use TAB to switch groups"))),
-			       `HBox (
-				      `HSpacing (5),
-				      `PushButton (`id (`quit), Label::QuitButton ()),
-				      `HStretch (),
-				      // button to start the selected module
-				      `PushButton (`id (`launch), _("&Launch")),
-				      `HSpacing (5)
-				      )
-			       )
-		     );
+			     `VSpacing(1.0),
+			     `HBox(`HSpacing(1),
+				   `HWeight( 30, `ReplacePoint( `id(`groups_rep),
+								`SelectionBox(`id (`groups), `opt (`notify, `immediate), "", [])
+								)
+					     ),
+				   `HSpacing(1),
+				   `HWeight( 70, `ReplacePoint( `id(`progs_rep),
+								`SelectionBox(`id (`progs), `opt (`notify), "", [])
+								)
+					     ),		
+				   `HSpacing(1)
+				   ),
+			     `VSpacing(1.0),
+			     `HBox(
+				   `HSpacing(2),
+				   `Left( `PushButton(`id(`help), _("&Help")) ),
+				   `Right( `PushButton(`id(`quit), _("&Quit")) ),
+				   `HSpacing(2)
+				   ),
+			     `VSpacing(1)
+			     )
+		       );
 	};
-
-	global define string CreateGroupButtons (map Groups)
-	``{
-	    term groupwidget = `VBox ();
+       
+	global define string CreateGroupList (map Groups)  ``{
 	    list grouplist = [];
-	    grouplist = SortGroups (Groups, maplist (`rawname, `group, Groups, ``(rawname)));
-	    string is_first = "";
-	    foreach (`rawname, grouplist,
-	    ``{
-		groupwidget = add (groupwidget,
-					`Left (`RadioButton (`id (rawname), `opt (`notify, `autoShortcut),
-					Groups[rawname, "Name"]:"???", is_first=="")));
-		if (is_first == "") is_first = rawname;
 
-		});
-	    ReplaceWidget (`id (`groups), groupwidget);
-	    return is_first;
+	    grouplist = SortGroups (Groups, maplist (`rawname, `group, Groups, ``(rawname)));
+
+	    ReplaceWidget (`id (`groups_rep), `SelectionBox(`id (`groups), `opt (`notify, `immediate), "", grouplist) );
+
+	    return grouplist[0]:"";
 	}
 
 	global define SortGroups (map GroupMap, list GroupList)
-	``{
+	    ``{
 	    return
 		sort (`x, `y, GroupList,
-		``{
+		      ``{
 		    string first = GroupMap[x, "SortKey"]:"";
 		    string second = GroupMap[y, "SortKey"]:"";
 		    return (first <= second);
@@ -95,23 +83,23 @@
 	}
 
 	global define DisplayModuleList (list modulelist)
-	``{
+	    ``{
 	    // heading for list of modules
-	    term modulebox = `SelectionBox (`id (`modulebox), `opt (`notify), _("&Modules"));
+	    term modulebox = `SelectionBox( `id (`progs), `opt (`notify), "" );
 	    modulebox = add (modulebox, modulelist);
-	    ReplaceWidget (`id (`modules), modulebox);
+	    ReplaceWidget (`id (`progs_rep), modulebox);
 	}
 
 	global define `DisplaySplash ()
-	``{
+	    ``{
 	    OpenDialog (`opt (`defaultsize),
-		`VBox (
-		    `VStretch (),
-		    // message show while loading modules informations
-		    `Label (_("Loading modules, please wait ...")),
-		    `VStretch ()
-		)
-	   );
+			`VBox (
+			       `VStretch (),
+			       // message show while loading modules informations
+			       `Label (_("Loading modules, please wait ...")),
+			       `VStretch ()
+			       )
+			);
 	}
 
     };
@@ -137,19 +125,6 @@
 	    text=substring (text, 1);
 	}
 	return text;
-    }
-
-    // iterates through the whole GroupMap and returns a list suitable for the
-    // selectionbox
-    global define BuildSelectionBoxListForAllGroups (map Groups)
-    ``{
-	list modules = [];
-	foreach (`rawname, `group, Groups,
-	``{
-	    modules = union (modules, group["Modules"]:[]);
-	});
-	modules = SortModuleNumberList (modules);
-	return BuildSelectionBoxListForModuleList (modules);
     }
 
     // return selectionbox content for one group
@@ -182,51 +157,7 @@
 	});
     }
 
-    // returns what do do after userinput:
-    // `again: run InputLoop again
-    // `launch: launch
-    define VerifyInput (any id)
-    ``{
-	if (id == `launch)
-	{
-	    integer modulenr = UI::QueryWidget (`id (`modulebox), `CurrentItem);
-	    // nothing selected
-	    if (modulenr == nil) return `again;
-	    map Module = ModuleMap[modulenr]:0;
-	    // module does not exist
-	    if (Module == 0) return `again;
-	    Launch (Module);
-	}
-	else if (id == `quit)
-	{
-	    return `quit;
-	}
-	else if (id == `modulebox)
-	{
-	    // display helptext in stausbar
-	    integer number = UI::QueryWidget (`id (`modulebox), `CurrentItem);
-	    map selectedmodule = ModuleMap[number]:$[];
-	    string text = selectedmodule["Helptext"]:"";
-	    UI::ChangeWidget (`id (`statusline), `Value, text);
-	}
-	else if (id == `allgroups)
-	{
-	    // RadioButton "All" was selected
-	    //UI::DisplayModuleList (BuildSelectionBoxListForAllGroups (GroupMap));
-	    UI::DisplayModuleList (listofallmodules);
-	}
-	else if (is (id, string))
-	{
-	    map group = GroupMap[id]:$[];
-	    if (group != $[])
-	    {
-		UI::DisplayModuleList (BuildSelectionBoxListForGroup (group));
-	    }
 
-	}
-
-	return `again;
-    }
 
     global define Launch (map Module)
     ``{
@@ -326,21 +257,69 @@
 	});
     });
 
-    listofallmodules = BuildSelectionBoxListForAllGroups (GroupMap);
-    UI::CloseDialog ();
+    // open dialog
+    
     UI::OpenMenu ();
 
-    string first_group = UI::CreateGroupButtons (GroupMap);
-    VerifyInput (first_group);
+    string first_group = UI::CreateGroupList (GroupMap);
 
-    any id = nil;
-
-    id = UI::UserInput ();
-
-    while (id == nil || VerifyInput (id) == `again)
+    if (is (first_group, string))
     {
-	id = UI::UserInput ();
+	map group = GroupMap[first_group]:$[];
+	if (group != $[])
+	{
+	    UI::DisplayModuleList (BuildSelectionBoxListForGroup (group));
+	}
     }
+
+    UI::SetFocus( `id(`groups) );
+    
+    repeat
+    {
+        map event = UI::WaitForEvent();
+
+        if ( event["ID"]:`none == `groups
+             && event["EventReason"]:"" == "SelectionChanged" )
+        {
+	    string id = UI::QueryWidget( `id(`groups), `CurrentItem);
+
+	    if (is (id, string))
+	    {
+		map group = GroupMap[id]:$[];
+		if (group != $[])
+		{
+		    UI::DisplayModuleList (BuildSelectionBoxListForGroup (group));
+		}
+	    }
+        }
+        else if ( event["ID"]:`none == `progs
+                  && event["EventReason"]:"" == "Activated" )
+        {
+            integer prog_no = UI::QueryWidget( `id(`progs), `CurrentItem);
+	    map program = ModuleMap[prog_no]:"";
+	    // start the module
+	    Launch (program);
+	    y2milestone( "Start %1", program );
+        }
+        else if ( event["ID"]:`none == `groups
+                  && event["EventReason"]:"" == "Activated" )
+        {
+            UI::SetFocus ( `id(`progs) );
+        }
+        else if ( event["ID"]:`none == `groups
+                  && event["EventReason"]:"" == "ValueChanged" )
+        {
+            UI::SetFocus ( `id(`progs) );
+        }
+        else if ( event["ID"]:`none == `progs
+                  && event["EventReason"]:"" == "ValueChanged" )
+        {
+            UI::SetFocus ( `id(`groups) );
+        }
+        y2milestone( "Input: %1", event );
+
+    }  until ( event["ID"]:`none == `quit );
+
 
     UI::CloseDialog ();
 }
