@@ -61,7 +61,7 @@
     /**
      * @return	kernel_packages	a list kernels to be installed.
      */
-    global list kernel_packages = [];
+    global list<string> kernel_packages = [];
 
     /**
      * @return  if "suse_update" given in cmdline
