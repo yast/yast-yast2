@@ -74,6 +74,7 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 
 %doc @docdir@/*.*
 %doc @docdir@/pot
+%doc %{_mandir}/*/*
 
 /sbin/*
 

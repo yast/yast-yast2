@@ -5,4 +5,4 @@ Bugs:
 
 Enhancements:
 - document all modules
-- drop Debug (it's useless)
+- drop Debug.ycp and eval.ycp (useless?)
