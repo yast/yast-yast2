@@ -309,6 +309,8 @@
     global define symbol singleOptionEditPopup (map option)``{
 	string opt_key = option["_cwm_key"]:"";
 	any opt_id = option["_cwm_id"]:nil;
+	if (opt_id == nil)
+	    opt_id = 0;
 
 	string label = sformat ("%1", option["table", "label"]:opt_key);
 	term header = `HBox (
