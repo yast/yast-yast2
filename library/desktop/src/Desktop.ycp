@@ -1,7 +1,7 @@
 /**
  * File:	modules/Desktop.ycp
  * Package:	yast2
- * Summary:	Handling of .dektop entries
+ * Summary:	Handling of .desktop entries
  * Author:	Michal Svec <msvec@suse.cz>
  *
  * $Id$
@@ -171,6 +171,36 @@ global define list <term> ModuleList(string group) {
 
     // y2debug too costly: y2debug("%1", m);
     return l;
+}
+
+
+map<string, string> MakeAutostartMap (string exec) {
+    return $[
+	"Encoding": "UTF-8",
+	"Name": exec,
+	"Exec": exec,
+	"X-SuSE-Autostart": exec,
+	"Hidden": "true",
+	"Icon": exec,
+	"Type": "Application",
+	];
+}
+
+/**
+ * Runs a program by writing a special desktop file.
+ * Works with KDE and GNOME.
+ * Useful for kinternet, see bug 37864#c17
+ * @param exec program to exec (basename)
+ */
+global void RunViaDesktop (string exec) {
+    string content = "[KDE Desktop Entry]\n";
+    foreach (string key, string value, MakeAutostartMap (exec), {
+	content = content + sformat ("%1=%2\n", key, value);
+    });
+    string dir = "/var/lib/Desktop";
+    SCR::Write (.target.string,
+		sformat ("%1/yast2-run-%2.desktop", dir, exec),
+		content);
 }
 
 /* EOF */
