@@ -26,7 +26,7 @@ layer are the keys of widget properties.
 <title>Widgets description map</title>
     <para>
     <screen>
-map widget_descr = $[
+map&lt;string,any&gt; widget_descr = $[
   "CWD_IN_ROOT_PATH" : $[
     "label" : _("&amp;Current Directory in root's Path"),
     "widget" : `checkbox, 
@@ -64,71 +64,67 @@ Developer must specify following:
 into the dialog</para></listitem>
 <listitem><para>How to initialize them, how to validate them, how to store their
 settings</para></listitem>
-<listitem><para>Dialog caption, help, if Back button is to be present,...
+<listitem><para>Dialog caption, help, what buttons are to be present,...
 </para></listitem>
     </itemizedlist>
     </para>
     <example id="simple_dialog">
         <title>Running simple dialog</title>
         <para><screen>
-module "MyModule";
-
 // include <xref linkend="simple_widgets"/> here
 
-global define symbol runSomeDialog ``{
-    // create the basic layout
-    term contents = `VBox (
-	"CWD_IN_ROOT_PATH",
-	"CWD_IN_USER_PATH"
-    )
-
-    // here comes additional stuff, eg. renaming the "Abort"
-    // button to "Cancel" // if needed
-
-    map functions = $[
-        "initialize" : ``(MyModule::initialize_widget ()),
-        "store" : ``(MyModule::store_widget ()),
-    ];
-
-    // display and run the dialog
-    symbol ret = CWM::ShowAndRun ([ "CWD_IN_ROOT_PATH", "CWD_IN_USER_PATH" ],
-        widget_descr, contents, caption, Label::BackButton (),
-        Label::NextButton (), functions);
-
-    return ret;
-}
-
 // function to initialize widgets
-global define void initialize_widget (string key) ``{
+global define void InitializeWidget (string key) {
     // let's suppose that the settings are stored in a map
     // named settings
     UI::ChangeWidget (`id (key), settings[key]:false);
 }
 
 // function for storing is similar
-global define void store_widget (string key, map event) ``{
+global define void StoreWidget (string key, map event) {
     settings[key] = UI::QueryWidget (`id (`key), `Value);
+}
+
+define symbol runDialog {
+    // create the basic layout
+    term contents = `VBox (
+	"CWD_IN_ROOT_PATH",
+	"CWD_IN_USER_PATH"
+    )
+
+    map functions = $[
+        "init" : InitializeWidget,
+        "store" : StoreWidget,
+    ];
+
+    string caption = _("Dialog Caption");
+
+    // display and run the dialog
+    symbol ret = CWM::ShowAndRun ($[
+        "widget_names" : [ "CWD_IN_ROOT_PATH", "CWD_IN_USER_PATH" ],
+        "widget_desct" : widget_descr,
+        "contents" : contents,
+	"caption" : caption,
+        "fallback_functions" : functions
+    ]);
+
+    return ret;
 }
         </screen></para>
         <para>
 Notes:
 <orderedlist>
 <listitem><para>
-The widgets manipulation tool will be implemented as a YCP module.
-   This means, that when specifying the function
-   to initialize or store widgets the module name (in case of
-   <xref linkend="simple_dialog"/> MyModule) must be prefixed.
-</para></listitem>
-<listitem><para>
-initialize_widget and store_widget functions from <xref linkend="simple_dialog"/> 
+init and store functions from <xref linkend="simple_dialog"/> 
    cannot be used for
    radio button group widget (see <xref linkend="radio_buttons"/>),
    because it for getting currently selected radio button `CurrentButton
    must be used instead of `Value.
 </para></listitem>
 <listitem><para>
-Generic function will be available in CWM module for all internally
+   Generic function will be available in CWM module for all internally
    supported widgets, task of the developer will be (typically) just a wrapper.
+   This is still the future.
 </para></listitem>
 </orderedlist>
         </para>
@@ -141,8 +137,9 @@ but instead of putting the widget descriptions just putting the identifiers
 of the widgets. See <xref linkend="simple_dialog"/> for example.
 	</para>
 	<para>
-Note, that when processing the term, only VBoxes, HBoxes, Left and Right terms
-are processed into depth. If you need some other container widgets (eg.Frame), see
+Note, that when processing the term, only the VBox, HBox, Left, Right,
+Frame, HWeight, and VWeight terms
+are processed into depth. If you need some other container widgets, see
 <xref linkend="create_control"/>.
 	</para>
     </section>
@@ -151,11 +148,12 @@ are processed into depth. If you need some other container widgets (eg.Frame), s
 	<para>
 The first task of CWM::ShowAndRun function is to display the dialog, next tasks
 are described in following paragraphs. This function is just a wrapper for
-other global functions, but in most cases this wrapper is well usable. As
-parameters it takes names of widgets (the order is important if helps are used -
-see <xref linkend="widget_help"/>), map describing all of the widgets, term
-describing contents of the dialog, dialog caption, labels of back and next buttons
-and fallback widget handlers.
+other global functions, but in most cases this wrapper is well usable. As a
+parameter it takes a map containing names of widgets (the order is important
+if helps are used - see <xref linkend="widget_help"/>), map describing all
+of the widgets, term describing contents of the dialog, dialog caption, 
+optionally labels of back, abort and next buttons and functions that are
+used as fallback handlers and for confirming leaving dialog via Abort event.
 	</para>
 	<para>
 The first task of this wrapper is to create the "real" widgets from the widgets
@@ -171,7 +169,7 @@ See <xref linkend="simple_dialog"/>.
 	<para>
 Next task of the ShowAndRun function is to run the event loop. The complete
 task means to nitialize
-the widgets, run while-loop, ask UI::UserInput () for an event, check if the
+the widgets, run while-loop, ask UI::WaitForEvent () for an event, check if the
 event should finish the dialog. If not, then continue (for now, see
 <xref linkend="advanced"/>). Otherwise it will check if the settings are
 to be stored. If yes, then validates the widgets (see <xref linkend="advanced"/>)
@@ -186,13 +184,6 @@ what widgets are present in the dialog
 </para></listitem>
 <listitem><para>
 how to initialize the dialog and how to store settings
-</para></listitem>
-<listitem><para>
-what events should finish the dialog (think about PushButtons in the dialog)
-</para></listitem>
-<listitem><para>
-what events should finish the dialog with storing its settings
-  ( eg. PushButton "Abort" vs. PushButton "Next").
 </para></listitem>
 </itemizedlist>
 	</para>
@@ -210,12 +201,12 @@ Because of this the function running the event loop must know what handlers
 it should call for initialization of the widgets and storing their state.
 The Run function receives this information as a map. In this map the keys
 are event names
-("init" and "store") and values are terms. Each term gets before evaluation
-additional parameter specifying the widget name, store term gets one more
-parameter specifying the event that caused storing the settings (in typical
-case the value can be ignored). The value is in the same form as return value
-of UI::WaitForEvent (). Return value of the store handler is described
-in Advanced stuff. See <xref linkend="simple_dialog"/>.
+("init" and "store") and values are function references.
+The Init function must have as argument the widget key (string),
+the store function must have as arguments the widget key (string) and
+the evenet (map, the structure is the same as returned by UI::WaitForEvent ()).
+The widget key is the key of the processed widget, the event is the
+event that caused saving the settings. In most cases, it can be ignored.
 	</para>
     </section>
 </chapter>
