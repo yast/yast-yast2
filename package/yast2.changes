@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jun 24 10:42:34 CEST 2003 - visnov@suse.cz
+
+- removed modules directory at the top-level
+
+-------------------------------------------------------------------
 Mon Jun 23 17:06:34 CEST 2003 - jsrain@suse.de
 
 - moved YCP libraries to own subdirectory (visnov@suse.cz)
