@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Apr  5 18:00:23 CEST 2004 - nashif@suse.de
+
+- Removed unconfigurable options from report summary
+- Added optional list of package to product features
+- 2.9.60
+
+-------------------------------------------------------------------
 Fri Apr  2 22:16:33 CEST 2004 - nashif@suse.de
 
 - Fixed wrapper functions for new wizard
