@@ -85,12 +85,17 @@
 	{
 	    // label message
 	    UI::OpenDialog(`Label(_("Scanning for hosts on this LAN...")));
-	    found_nfs_servers = sort( (list<string>)SCR::Read(.net.hostnames.rpc, "nfs"));
+	    found_nfs_servers = (list<string>)SCR::Read(.net.hostnames.rpc, "nfs");
 	    UI::CloseDialog();
 
 	    if (found_nfs_servers == nil)
 	    {
 		found_nfs_servers = [];
+	    }
+	    else
+	    {
+		// sort list of servers
+		found_nfs_servers = sort(found_nfs_servers);
 	    }
 	}
 
