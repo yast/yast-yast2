@@ -183,7 +183,8 @@
 		    ));
 	    }
 	}
-        if ( UI::WizardCommand(`SetDialogHeading( window_title ) ) )
+        boolean ret = UI::WizardCommand(`SetDialogHeading( window_title ) );
+        if ( ret != nil && ret == true)
         {
             UI::WizardCommand(`SetHelpText( help_text ) );
             UI::WizardCommand(`EnableNextButton( false ) );

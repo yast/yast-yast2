@@ -517,13 +517,14 @@
      **/
     global define void SetHelpText(string help_text)
     {
-	if ( ! UI::WizardCommand(`SetHelpText( help_text ) ) )
+	boolean ret = UI::WizardCommand(`SetHelpText( help_text ));
+	if ( ret != nil && ret != true)
 	{
 	    if ( UI::WidgetExists( `id(`helpSpace ) ) )
 		UI::ReplaceWidget(`id(`helpSpace), `RichText(`id(`HelpText), help_text ) );
 	}
     }
-    
+
 
     /**
      * Restore the wizard help subwindow.
@@ -532,7 +533,7 @@
     {
 	Wizard::SetHelpText( help_text );
     }
-    
+
 
     /**
      * Set the dialog's "Next" button with a new label and a new ID
