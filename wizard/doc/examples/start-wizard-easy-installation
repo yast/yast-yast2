@@ -2,4 +2,4 @@
 #
 # Start the "wizard-easy-installation" example with correct parameters
 #
-y2base wizard-easy-installation.ycp qt -geometry 800x600 -bg '#cccccc'
+y2base wizard-easy-installation.ycp qt -geometry 800x600 -bg '#eeeaee'
