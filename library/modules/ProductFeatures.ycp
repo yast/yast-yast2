@@ -153,6 +153,7 @@
 
     /**
      * UI mode
+     * possible values: "simple" or "expert"
      */
     global string ui_mode = "expert";
 
