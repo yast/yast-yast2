@@ -42,7 +42,7 @@
 	list files = splitstring (lookup (SCR (`Execute (.target.bash_output, "/bin/ls -aFd $DIR", $["DIR" : subdir2])), "stdout", ""), "\n");
 	if (size (files) == 0)
 	    return [];
-
+	
 	subdir2 = subdir + "*";
 	files = splitstring (lookup (SCR (`Execute (.target.bash_output, "/bin/ls -aFd $DIR", $["DIR" : subdir2])), "stdout", ""), "\n");
 	// show directories and links
@@ -273,6 +273,15 @@
 	if (size (dir) > 0 && substring (dir, size (dir) - 1, 1) != "/")
 	{
 	    dir = dir + "/";
+	}
+	else if ( dir == "" )
+	{
+	    // get the current directory
+	    map retmap =  SCR::Execute( .target.bash_output, "/bin/pwd", $[] );
+	    
+	    dir = lookup( retmap, "stdout", "" );
+	    dir = substring (dir, 0, size (dir) - 1);	// get rid of newline
+    	    dir = dir + "/";
 	}
 
 	list dirs = getsubdirs (dir);
