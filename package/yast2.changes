@@ -2,6 +2,7 @@
 Tue Feb 17 12:00:56 CET 2004 - sh@suse.de
 
 - Applied olh's patch for bug #34602: PPC kernel renamed
+- 2.9.23
 
 -------------------------------------------------------------------
 Mon Feb 16 18:27:14 CET 2004 - arvin@suse.de
