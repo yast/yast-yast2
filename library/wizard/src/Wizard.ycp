@@ -241,28 +241,6 @@
 	UI::OpenDialog( `opt(`defaultsize), dialog );
     }
 
-    /**
-     * Open a Tree  dialog with buttons "Next", "Back", "Abort"
-     * and set the keyboard focus to "Next".
-     **/
-    global void OpenTreeNextBackDialog()
-    {
-        if ( haveFancyUI() )
-        {
-            UI::OpenDialog(`opt(`defaultsize ),
-                    `Wizard(`opt(`treeEnabled),
-                        `back, Label::BackButton(),
-                        `abort, Label::AbortButton(),
-                        `next, Label::NextButton()
-                        )
-                    );
-        }
-        else
-        {
-	    Wizard::OpenDialog( NextBackDialog() );
-	    UI::SetFocus(`id(`next) );
-        }
-    }
 
     /**
      * Open a dialog with buttons "Next", "Back", "Abort"
@@ -413,7 +391,7 @@
     {
 	if ( button_box == nil )
 	    button_box = BackAbortNextButtonBox();
-	
+
 	UI::OpenDialog(`opt(`defaultsize),
 		       GenericDialog( button_box ) );
 
@@ -474,15 +452,6 @@
 	return input;
     }
 
-    /**
-     * Create and open a Tree wizard dialog.
-     *
-     * For backwards compatibility only - don't use this any more in new modules.
-     **/
-    global void CreateTreeDialog()
-    {
-	Wizard::OpenTreeNextBackDialog();
-    }
 
     /**
      * Create and open a typical installation wizard dialog.
@@ -1031,6 +1000,240 @@
 	    screenshot_name_stack = remove (screenshot_name_stack, 0);
 	}
 	UI::SetModulename (screenshot_name);
+    }
+
+    /* ------------------------------------------------------------ */
+    /*
+     * Tree & Menu Wizard functions
+     */
+
+    /**
+     * Open a Tree  dialog with buttons "Next", "Back", "Abort"
+     * and set the keyboard focus to "Next".
+     **/
+    global void OpenTreeNextBackDialog()
+    {
+        if ( haveFancyUI() )
+        {
+            UI::OpenDialog(`opt(`defaultsize ),
+                    `Wizard(`opt(`treeEnabled),
+                        `back, Label::BackButton(),
+                        `abort, Label::AbortButton(),
+                        `next, Label::NextButton()
+                        )
+                    );
+        }
+        else
+        {
+	    Wizard::OpenDialog( NextBackDialog() );
+	    UI::SetFocus(`id(`next) );
+        }
+    }
+
+    /**
+     * Create and open a Tree wizard dialog.
+     *
+     * For backwards compatibility only - don't use this any more in new modules.
+     **/
+    global void CreateTreeDialog()
+    {
+	Wizard::OpenTreeNextBackDialog();
+        return;
+    }
+
+    /**
+     * Add Tree Item to tree enabled Wizard
+     * @param list<map> Tree data
+     * @param string parent
+     * @param string title
+     * @param string id
+     * @return list<map> Updated Tree Data
+     **/
+    global list<map> AddTreeItem(list<map> Tree, string parent , string title, string id) {
+        if ( haveFancyUI() )
+        {
+            UI::WizardCommand(`AddTreeItem( parent, title , id ) );
+        }
+        else
+        {
+            Tree = add(Tree, $[ "parent": parent, "title":title, "id": id]);
+        }
+        return Tree;
+    }
+
+
+    /**
+     * Create the Tree Items
+     * @param list<map> Tree data
+     * @param string parent
+     * @return list Tree Items
+     **/
+    list CreateTreeInternal(list<map> Tree, string parent) {
+        list<map> m = filter(map c, Tree, ``((c["parent"]:"" == parent )));
+
+        list mm = maplist(map cc, m, ``{
+                    string TreeEntry = cc["id"]:"";
+                    list items = CreateTreeInternal(Tree, TreeEntry);
+                    if (size(items)>0)
+                        return(`item(`id(TreeEntry), cc["title"]:"", items));
+                    else
+                        return(`item(`id(TreeEntry), cc["title"]:""));
+                });
+        y2debug("items: %1", mm );
+        return mm;
+    }
+
+    /**
+     * Create the tree in the dialog, replaces helpspace with new tree widget
+     * @param list<map> Tree data
+     * @param string tree title
+     * @return void
+     **/
+    global void CreateTree(list<map> Tree, string title) {
+        if ( !haveFancyUI() )
+        {
+            list items = [];
+            foreach(map i, Tree, ``{
+                    if (i["parent"]:"" == "")
+                    {
+                        items=add(items, `item(`id(i["id"]:""), i["title"]:"",
+                                CreateTreeInternal(Tree, i["id"]:"") ));
+                    }
+                    });
+            y2debug("tree items: %1", items);
+            Wizard::ReplaceCustomHelp(
+                    `VBox(
+                        `Tree(
+                            `id(`wizard),
+                            `opt(`notify, `vstretch),
+                            title,
+                            items
+                            ),
+                        `VSpacing(1))
+                    );
+        }
+        return;
+
+    }
+
+    global void SelectTreeItem(string tree_item) {
+        if ( haveFancyUI() )
+        {
+            UI::WizardCommand(`SelectTreeItem( tree_item ) );
+        }
+        else
+        {
+            UI::ChangeWidget(`id(`wizard), `CurrentItem, tree_item);
+        }
+    }
+
+    /**
+     * Add Menu
+     * @param list<map> Tree data
+     * @param string title
+     * @param string id
+     * @return list<map> Updated Menu Data
+     **/
+    global list<map> AddMenu(list<map> Menu, string title, string id) {
+        if ( haveFancyUI() )
+        {
+            UI::WizardCommand(`AddMenu( title, id ) );
+        }
+        else
+        {
+            Menu = add(Menu, $["type":"Menu", "title":title, "id": id]);
+        }
+        return Menu;
+    }
+
+    /**
+     * Add Sub Menu
+     * @param list<map> Tree data
+     * @param string parent
+     * @param string title
+     * @param string id
+     * @return list<map> Updated Menu Data
+     **/
+    global list<map>  AddSubMenu(list<map> Menu, string parent_id, string title, string id) {
+        if ( haveFancyUI() )
+        {
+            UI::WizardCommand(`AddSubMenu( parent_id, title, id ) );
+        }
+        else
+        {
+            Menu = add(Menu, $["type":"SubMenu", "parent": parent_id, "title":title, "id": id]);
+        }
+        return Menu;
+    }
+
+    /**
+     * Add Menu Entry
+     * @param list<map> Tree data
+     * @param string parent
+     * @param string title
+     * @param string id
+     * @return list<map> Updated Menu Data
+     **/
+    global list<map> AddMenuEntry(list<map> Menu, string parent_id, string title, string id) {
+        if ( haveFancyUI() )
+        {
+            UI::WizardCommand(`AddMenuEntry( parent_id, title, id ) );
+        }
+        else
+        {
+            Menu = add(Menu, $["type":"MenuEntry", "parent": parent_id, "title":title, "id": id]);
+        }
+        return Menu;
+    }
+
+    /**
+     * Create the Menu Items
+     * @param list<map> Menu data
+     * @param string parent
+     * @return list Menu Items
+     **/
+    list CreateMenuInternal(list<map> Menu, string parent) {
+        list<map> m = filter(map c, Menu, ``((c["parent"]:"" == parent )));
+
+        list mm = maplist(map cc, m, ``{
+                if(cc["type"]:"" == "MenuEntry")
+                {
+                    string MenuEntry = cc["id"]:"";
+                    return(`item(`id(MenuEntry), cc["title"]:""));
+                }
+                else if (cc["type"]:"" == "SubMenu")
+                {
+                    string SubMenu = cc["id"]:"";
+                    return(`menu( cc["title"]:"", CreateMenuInternal(Menu,
+                                SubMenu)));
+                }
+                });
+        y2debug("items: %1", mm );
+        return mm;
+    }
+
+    /**
+     * Create the menu in the dialog
+     * @param list<map> Menu data
+     * @return void
+     **/
+    global void CreateMenu(list<map> Menu) {
+        if (!haveFancyUI() )
+        {
+            term menu_term = `HBox();
+            foreach(map m, Menu, ``{
+                    if (m["type"]:"" == "Menu")
+                    {
+                        list menu_items = CreateMenuInternal(Menu, m["id"]:"");
+                        y2debug("menu_items: %1", menu_items );
+                        menu_term=add(menu_term, `MenuButton( m["title"]:"",
+                                menu_items));
+                    }
+                    });
+            y2milestone("menu: %1", menu_term );
+            UI::ReplaceWidget(`id(`topmenu), `Left(menu_term));
+        }
+        return;
     }
 
 /* EOF */
