@@ -6,6 +6,9 @@
  *		Michal Svec <msvec@suse.cz>
  *
  * $Id$
+ *
+ * The documentation is maintained at
+ * <a href="../index.html">.../docs/index.html</a>.
  */
 
 {
@@ -208,7 +211,7 @@ global boolean Installed(string package) {
  * Install them if they are not and user approves installation
  * @param a list of packages to check (and install)
  * @return boolean true if installation succeeded or packages were installed,
- *  false otherwise
+ * false otherwise
  */
 global boolean CheckAndInstallPackages (list<string> packages) {
     if (Mode::config)
@@ -224,7 +227,7 @@ global boolean CheckAndInstallPackages (list<string> packages) {
  * If installation fails (or wasn't allowed), ask user if he wants to continue
  * @param a list of packages to check (and install)
  * @return boolean true if installation succeeded, packages were installed
- *  before or user decided to continue, false otherwise
+ * before or user decided to continue, false otherwise
  */
 global boolean CheckAndInstallPackagesInteractive (list<string> packages) {
     boolean success = CheckAndInstallPackages (packages);
@@ -270,9 +273,9 @@ packages, YaST may not work properly.
 
 global boolean InstallKernel (list<string> kernel_modules) {
     EnsureSourceInit ();
-    
+
     import "Kernel";
-    
+
     // TODO: for 9.2, we always install all packages, but
     // we could only install those really needed (#44394)
     return InstallAll ( Kernel::ComputePackages () );
