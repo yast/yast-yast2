@@ -360,9 +360,12 @@ global define list<string> ParseOptions(string options, map parameters) ``{
 	    }
 
 	    // error - still in quoted string
-	    if (state == `in_quoted_string)
+	    if (state == `in_quoted_string || state == `in_quoted_string_after_dblqt)
 	    {
-		y2warning("Missing trainling double quote character(\") in input: '%1'", options);
+		if (state == `in_quoted_string)
+		{
+		    y2warning("Missing trainling double quote character(\") in input: '%1'", options);
+		}
 
 		if (unique == true)
 		{
