@@ -10,7 +10,7 @@
 
 {
     textdomain "base";
-    include "ui/common_popups.ycp";
+    import "Label";
 
     map GroupMap = $[];
     map ModuleMap = $[];
@@ -55,7 +55,7 @@
 			       `HBox (`Label (`id (`statusline), `opt (`outputField, `hstretch), _("Use TAB to switch groups"))),
 			       `HBox (
 				      `HSpacing (5),
-				      `PushButton (`id (`quit), QuitButtonLabel ()),
+				      `PushButton (`id (`quit), Label::QuitButton ()),
 				      `HStretch (),
 				      // button to start the selected module
 				      `PushButton (`id (`launch), _("&Launch")),
