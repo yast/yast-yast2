@@ -19,7 +19,7 @@
 .yast2.groups
 
 `ag_ini(
-    IniAgent( "/usr/share/YaST2/config/y2cc.groups",
+    `IniAgent( "/usr/share/YaST2/config/y2cc.groups",
 	$[
 	    "options"	: [ "read_only" ],
 	    "comments"	: [ "^[ \t]*;.*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],

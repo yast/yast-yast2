@@ -45,7 +45,7 @@
  */
 
 `ag_anyagent(
-  Description (
+  `Description (
 	``(Run("/sbin/ifconfig | /bin/sed -e '/.*inet6.*/d'")),
 	"\n",
 	true,

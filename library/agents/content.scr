@@ -16,7 +16,7 @@
 .content
 
 `ag_ini(
-    IniAgent( "/content",
+    `IniAgent( "/content",
 	$[
 	    "options" : [ "read_only", "global_values", "flat" ],
 	    "comments" : [ "^#.*", "^[ \t]*$", ],

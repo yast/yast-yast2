@@ -43,7 +43,7 @@
 .etc.fstab
 
 `ag_anyagent(
-  Description (
+  `Description (
       ``(File("/etc/fstab")),	// real file name
       "#\n",			// Comment
       false,			// read-only

@@ -22,7 +22,7 @@
 .etc.login_defs
 
 `ag_ini(
-    IniAgent( "/etc/login.defs",
+    `IniAgent( "/etc/login.defs",
 	$[
 	    "options"	: [ "global_values", "flat" ],
 	    "comments"	: [ "^#.*", "^[ \t]*$", ],

@@ -13,6 +13,6 @@
 .sysconfig.hotplug
 
 `ag_ini(
-  SysConfigFile("/etc/sysconfig/hotplug")
+  `SysConfigFile("/etc/sysconfig/hotplug")
 )
 
