@@ -25,6 +25,7 @@ import "Mode";
  */
 global string console = "ISO-8859-1";
 global string lang = "en_US";
+global boolean utf8 = true;
 
 /**
  * Restore data to system
@@ -69,37 +70,40 @@ global string GetEncLang()
     return( ret );
     }
 
+global void SetUtf8Lang( boolean new_utf8 )
+    ``{
+    utf8 = new_utf8;
+    y2milestone( "SetUtf8Lang %1", utf8 );
+    }
+
+global boolean GetUtf8Lang()
+    ``{
+    boolean ret = utf8;
+    y2milestone( "GetUtf8Lang ret %1", ret );
+    return( ret );
+    }
+
+map enc_map = $[ "euc-jp" : "932",
+                 "sjis"   : "932",
+		 "gb2312" : "936",
+		 "iso8859-2" : "852",
+		 "big5" : "950",
+		 "euc-kr" : "949" ];
+
+map lang_map = $[ "ja_JP" : "932",
+                  "zh_CN" : "936",
+                  "zh_TW" : "950",
+                  "zh_HK" : "950",
+                  "ko_KR" : "949" ];
+
 global define string GetCodePage( string enc ) 
     ``{
-    string code = "437";
-    if( lang == nil)
-        lang = "";
-
-    if( enc == "iso8859-2" )
-        {
-        code = "852";
-        }
-    else if( enc == "euc-jp" || enc == "sjis" ||
-	     (( enc == "utf8" ) && (substring( lang, 0, 5) == "ja_JP" )))
-        {
-        code = "932";
-        }
-    else if( enc == "gb2312" ||
-	     (( enc == "utf8" ) && (substring( lang, 0, 5) == "zh_CN" )))
-        {
-        code = "936";
-        }
-    else if( enc == "big5" ||
-	     (( enc == "utf8" ) && (substring( lang, 0, 5) == "zh_TW" )) ||
-	     (( enc == "utf8" ) && (substring( lang, 0, 5) == "zh_HK" )))
-        {
-        code = "950";
-        }
-    else if( enc == "euc-kr" ||
-	     (( enc == "utf8" ) && (substring( lang, 0, 5) == "ko_KR" )))
-        {
-        code = "949";
-        }
+    string code = enc_map[enc]:"";
+    if( size(code)==0 && lang != nil)
+	{
+	string l = substring( lang, 0, 5 );
+	code = lang_map[l]:"";
+	}
     y2milestone( "GetCodePage enc %1 lang %2 ret %3", enc, lang, code );
     return code;
     }
