@@ -90,7 +90,7 @@ global boolean ppc	= (ppc32 || ppc64);
 /**
  * true for all alpha architectures
  */
-global boolean alpha	= (architecture == "axp");
+global boolean alpha	= (architecture == "alpha");
 
 /**
  * true for all 32bit S/390 architectures
