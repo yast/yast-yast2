@@ -1015,6 +1015,13 @@ global any Run( map commandline ) {
 
     boolean ret = true;
 
+    boolean initialized = false;
+    if(commandline["initialize"]:nil == nil) {
+	// no initialization routine
+	// set initialized state to true => call finish handler at the end in command line mode
+	initialized = true;
+    }
+
     /* Start GUI */
     if(CommandLine::StartGUI()) {
 	if( !haskey (commandline, "guihandler") ) {
@@ -1048,9 +1055,6 @@ global any Run( map commandline ) {
 	]);
 
 
-	/* non-GUI handling */
-	CommandLine::PrintVerbose( _("Initializing") );
-
 	/* Turn off progress bar if not GUI */
 	Progress::off();
 
@@ -1065,7 +1069,6 @@ global any Run( map commandline ) {
         string exit = "";
         list l = [];
 
-	boolean initialized = false;
 
 	while(!CommandLine::Done()) {
 	    map m = CommandLine::Command();
@@ -1078,15 +1081,19 @@ global any Run( map commandline ) {
 		// check whether command is defined in the map (i.e. it is not predefined command or invalid command)
 		// and start initialization if it's defined
 		if( haskey(commandline["actions"]:$[], command) && commandline["initialize"]:nil != nil ) {
+		    /* non-GUI handling */
+		    CommandLine::PrintVerbose( _("Initializing") );
 		    boolean ret = RunFunction( commandline["initialize"]:fake_false );
+
 		    if( !ret ) {
 			y2milestone( "Module initialization failed" );
 			return false;
 		    }
-
+		    else
+		    {
+			initialized = true;
+		    }
 		}
-
-		initialized = true;
 	    }
 
 	    boolean(map<string,string>) exec = (boolean(map<string,string>))
@@ -1112,7 +1119,7 @@ global any Run( map commandline ) {
 	ret = ! CommandLine::Aborted();
     }
 
-    if( ret && commandline["finish"]:nil != nil ) {
+    if( ret && commandline["finish"]:nil != nil && initialized) {
 	CommandLine::PrintVerbose( _("Finishing") );
 	ret = RunFunction( commandline["finish"]:fake_false );
 	if( !ret ) {
