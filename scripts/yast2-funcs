@@ -84,7 +84,11 @@ function set_lang_from_sysconfig()
 
 function set_qt_home_dir()
 {
-    temp_QT_HOME_DIR="`eval echo ~$USER/.qt/`"
+    local user="$USER"
+    if [ "$KDESU_USER" ]; then
+       user="$KDESU_USER"
+    fi
+    temp_QT_HOME_DIR="`eval echo ~$user/.qt/`"
     if test -r "$temp_QT_HOME_DIR/qtrc"; then
         export QT_HOME_DIR="$temp_QT_HOME_DIR"
     fi
