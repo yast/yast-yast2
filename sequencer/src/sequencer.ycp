@@ -129,8 +129,8 @@ global define boolean WS_check(map aliases, map sequence) ``{
     /* check that all aliases are used */
     ret0 = maplist(`key, `val, aliases, ``{
         if (!haskey(sequence, key)) {
-            y2error(2, "sequencer check: alias not used: %1", key);
-            return false;
+            y2warning(2, "sequencer check: alias not used: %1", key);
+            // return false;
         }
 	return true;
     });
