@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Nov 30 12:40:31 CET 2004 - locilka@suse.cz
+
+- Moved CWMFirewallInterfaces from yast2-firewall to yast2 rpm 
+
+-------------------------------------------------------------------
 Tue Nov 30 10:47:06 CET 2004 - visnov@suse.cz
 
 - added testsuite infrastructure for library/modules
