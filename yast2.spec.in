@@ -1,6 +1,6 @@
 @HEADER-COMMENT@
 
-# neededforbuild yast2-devtools autoconf automake yast2-testsuite yast2-core yast2-core-devel
+# neededforbuild  yast2-devtools yast2-testsuite yast2-core yast2-core-devel
 
 @HEADER@
 Provides:	yast
@@ -39,6 +39,10 @@ Summary:	Documentation for Wizard and Sequencer
 @scrconfdir@/*
 %dir @ybindir@
 @ybindir@/*
+%dir @clientdir@
+@clientdir@/*
+%dir @configdir@
+@configdir@/*
 %doc @docdir@/*.*
 
 /sbin/yast2
