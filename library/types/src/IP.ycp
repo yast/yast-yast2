@@ -43,7 +43,7 @@ global define boolean Check4(string ip) ``{
  * @return true if correct
  */
 /*
-global defin boolean check_ip4_new(string ip) ``{
+global defin boolean Check4_new(string ip) ``{
     if(ip == nil || ip == "") return false;
     string num0 = "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[1-9])";
     string num1 = "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])";
@@ -96,7 +96,7 @@ global define boolean Check(string ip) ``{
  * @return ip address as integer
  */
 global define integer ToInteger(string ip) ``{
-    /* FIXME: check_ip4, also to compute_* */
+    /* FIXME: Check4, also to Compute* */
     list l = maplist(string e, splitstring(ip, "."), ``(tointeger(e)));
     return l[3]:0 + (l[2]:0<<8) + (l[1]:0<<16) + (l[0]:0<<24);
 }
