@@ -31,7 +31,7 @@ global define boolean is_a(any value, string type) ``{
     term validator = types[type]:nil;
     if ( validator != nil )	{
 	validator = add( validator, value );
-	return eval(validator);
+	return (boolean)eval(validator);
     } else {
 	y2error( "Request to validate unknown type %1", type  );
     }

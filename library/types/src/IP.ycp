@@ -26,15 +26,6 @@ in the range 0-255 separated by dots.");
 }
 
 /**
- * Check syntax of IP address
- * @param ip IP address
- * @return true if correct
- */
-global define boolean Check(string ip) ``{
-    return Check4(ip) || Check6(ip);
-}
-
-/**
  * Check syntax of IPv4 address
  * @param ip IPv4 address
  * @return true if correct
@@ -88,6 +79,16 @@ global define boolean Check6(string ip) ``{
 
     return false;
 }
+
+/**
+ * Check syntax of IP address
+ * @param ip IP address
+ * @return true if correct
+ */
+global define boolean Check(string ip) ``{
+    return Check4(ip) || Check6(ip);
+}
+
 
 /**
  * Convert IPv4 address from string to integer
