@@ -27,12 +27,12 @@
 	    "options"	: [ "global_values", "flat" ],
 	    "comments"	: [ "^#.*", "^[ \t]*$", ],
 	    "params"	: [
-		// quoted values
+		/* quoted values */
 		$[ "match" : [
 		    "^[ \t]*([a-zA-Z0-9_]+)[ \t]+\"([^\"]*)\"",
 		    "%s\t\"%s\"",
 		]],
-		// unquoted values
+		/* unquoted values */
 		$[ "match" : [
 		    "^[ \t]*([a-zA-Z0-9_]+)[ \t]+(.*[^ \t]|)[ \t]*$",
 		    "%s\t%s",
