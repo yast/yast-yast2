@@ -1,6 +1,5 @@
 @HEADER-COMMENT@
-
-# neededforbuild  gpp hwinfo hwinfo-devel libgpp popt yast2-devel-packages
+# neededforbuild gpp hwinfo hwinfo-devel libgpp popt yast2-devel-packages
 
 @HEADER@
 # Need the new file popups
@@ -14,7 +13,7 @@ Obsoletes:	yast2-lib-wizard yast2-lib-wizard-devel yast2-trans-wizard
 Provides:	yast2-trans-menu y2t_menu
 Obsoletes:	yast2-trans-menu y2t_menu
 
-Summary:	YaST2 Modules for installation
+Summary:	Main YaST2 package
 
 %description
 -
@@ -31,8 +30,6 @@ Summary:	Documentation for Wizard and Sequencer
 @PREP@
 
 @BUILD@
-
-(cd sequencer; make check)
 
 @INSTALL@
 mkdir -p "$RPM_BUILD_ROOT"@clientdir@
