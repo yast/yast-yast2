@@ -23,6 +23,7 @@
 			 `PushButton(`id(`abort ),  	`opt(`hstretch), "Confirm &Abort Popup (no changes)" ),
 			 `PushButton(`id(`abort_ch ),  	`opt(`hstretch), "Confirm Abort Popup (&with changes)" ),
 			 `PushButton(`id(`show_file ), 	`opt(`hstretch), "Show &File Popup" ),
+			 `PushButton(`id(`show_text ), 	`opt(`hstretch), "Show Te&xt Popup" ),
 			 `VSpacing(),
 			 `PushButton(`id(`close), Label::CloseButton() )
 			 )
@@ -75,6 +76,10 @@
 	else if ( button_id == `show_file )
 	{
 	    Popup::ShowFile( "Boot Messages", "/var/log/boot.msg" );
+	}
+	else if ( button_id == `show_text )
+	{
+	    Popup::ShowText( "Boot Messages", "kernel panic - have a nice day" );
 	}
     } while ( button_id != `close );
 
