@@ -94,11 +94,6 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 %dir @yncludedir@/ui
 @yncludedir@/ui/*.ycp
 
-# runlevel
-
-%dir @yncludedir@/runlevel
-@yncludedir@/runlevel/*.ycp
-
 # documentation
 
 %files devel
