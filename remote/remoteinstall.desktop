@@ -14,7 +14,7 @@ X-SuSE-YaST-RootOnly=true
 X-SuSE-YaST-AutoInst=
 X-SuSE-YaST-Geometry=
 X-SuSE-YaST-SortKey=
-X-SuSE-YaST-AutoinstResource=
+X-SuSE-YaST-AutoInstResource=
 
 Icon=default
 Exec=/sbin/yast2 remoteinstall 
