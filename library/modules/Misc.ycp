@@ -5,10 +5,8 @@
  *	Misc.ycp
  * Purpose:
  *	miscellaneous definitions for installation
- *
+ * Author:	Klaus Kaempf <kkaempf@suse.de>
  * $Id$
- *
- * Author:	Klaus Kämpf <kkaempf@suse.de>
  */
 {
 
