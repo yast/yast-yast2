@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sat Sep 07 23:00:24 CEST 2002 - arvin@suse.de
+
+- added help text in y2menu
+
+-------------------------------------------------------------------
 Thu Sep 05 17:48:13 CEST 2002 - arvin@suse.de
 
 - wizard loads it's images from the theme dir

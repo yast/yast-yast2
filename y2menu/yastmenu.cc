@@ -12,13 +12,11 @@ static void
 print_sec_item (WINDOW * win, string tag, const char *item,
 		int choice, int selected)
 {
-  int i;
-
   /* Clear 'residue' of last item */
 /*  wattrset (win, selected ? tag_selected_attr : menubox_attr);*/
   wattrset (win, 0);
   wmove (win, choice, 0);
-  for (i = 0; i < menu_width; i++)
+  for (int i = 0; i < menu_width; i++)
     waddch (win, (selected ? tag_selected_attr : menubox_attr) | ' ');
   wmove (win, choice, tag_x);
 /*    wattrset (win, selected ? tag_key_selected_attr : tag_key_attr);
@@ -30,17 +28,35 @@ print_sec_item (WINDOW * win, string tag, const char *item,
   waddstr (win, item);
   wnoutrefresh (win);
 }
+
+
+static void
+print_help_item (WINDOW * win, string tag, const char *item,
+		 int choice, int selected, int width)
+{
+  wattrset (win, 0);
+  wmove (win, choice, 0);
+  for (int i = 0; i < width; i++)
+    waddch (win, (selected ? tag_selected_attr : menubox_attr) | ' ');
+  wmove (win, choice, tag_x);
+  wattrset (win, selected ? tag_selected_attr : tag_attr);
+  waddstr (win, tag.c_str ());
+  wmove (win, choice, item_x);
+  wattrset (win, selected ? tag_selected_attr : tag_attr);
+  waddstr (win, item);
+  wnoutrefresh (win);
+}
+
+
 static void
 print_mod_item (WINDOW * win, string tag, const char *item,
 		int choice, int selected)
 {
-  int i;
-
   /* Clear 'residue' of last item */
   wattrset (win, selected ? tag_selected_attr : menubox_attr);
   wmove (win, choice, 0);
   wattrset (win, selected ? tag_selected_attr : menubox_attr);
-  for (i = 0; i < mod_width; i++)
+  for (int i = 0; i < mod_width; i++)
     waddch (win, ' ');
   wmove (win, choice, mod_tag_x);
   wattrset (win, selected ? tag_selected_attr : tag_attr);
@@ -59,13 +75,11 @@ void
 yast_draw_box (WINDOW * win, int y, int x, int height, int width,
 	       chtype box, chtype border)
 {
-  int i, j;
-
   wattrset (win, 0);
-  for (i = 0; i < height; i++)
+  for (int i = 0; i < height; i++)
    {
      wmove (win, y + i, x);
-     for (j = 0; j < width; j++)
+     for (int j = 0; j < width; j++)
        if (!i && !j)
 	 waddch (win, border | ACS_ULCORNER);
        else if (i == height - 1 && !j)
@@ -1405,6 +1419,7 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
   delwin (dialog);
   return -1;			/* ESC pressed */
 }
+
 void
 yast_grp_menu (WINDOW * dialog, WINDOW * menu, int choice, int width,
 	       int height)
@@ -1439,38 +1454,36 @@ yast_grp_menu (WINDOW * dialog, WINDOW * menu, int choice, int width,
      wmove (dialog, box_y + height + 1, box_x + tag_x + 2);
      waddstr (dialog, "(+)");
    }
-
 }
-int yast_help (WINDOW * main)
+
+int
+yast_help (WINDOW* main)
 {
-  WINDOW *helpwin;
   int winhight = LINES - 10, winwidth = COLS - 6;
   int i = 0;
 
-  helpwin = subwin (main, winhight, winwidth, 5, 3);
+  WINDOW* helpwin = subwin (main, winhight, winwidth, 5, 3);
   yast_draw_box (main, 4, 2, LINES - 5, COLS - 4, menubox_border_attr,
 		 menubox_attr);
   yast_print_button (main, "Ok", LINES - 4, ((COLS - 4) / 2), TRUE);
 
   for (i = 0; i < winhight && i < helptext.size (); i++)
-    print_sec_item (helpwin, helptext[i], "", i, FALSE);
+    print_help_item (helpwin, helptext[i], "", i, FALSE, winwidth);
 
   while (1)
    {
-     int key = 0, scroll = 0;
-
      wrefresh (main);
-     key = mouse_wgetch (main);
+     int key = mouse_wgetch (main);
      switch (key)
       {
       case KEY_DOWN:
-	if (i + 1 < helptext.size ())
+	if (i < helptext.size ())
 	 {
 	   scrollok (helpwin, TRUE);
 	   wscrl (helpwin, 1);
 	   scrollok (helpwin, FALSE);
+	   print_help_item (helpwin, helptext[i], "", winhight - 1, FALSE, winwidth);
 	   i++;
-	   print_sec_item (helpwin, helptext[i], "", winhight - 1, FALSE);
 	 }
 	break;
       case KEY_UP:
@@ -1480,13 +1493,11 @@ int yast_help (WINDOW * main)
 	   wscrl (helpwin, -1);
 	   scrollok (helpwin, FALSE);
 	   i--;
-	   print_sec_item (helpwin, helptext[i - winhight], "", 0, FALSE);
+	   print_help_item (helpwin, helptext[i - winhight], "", 0, FALSE, winwidth);
 	 }
 	break;
       case '\n':
 	return 0;
       }
-
    }				/* while */
-
 }
