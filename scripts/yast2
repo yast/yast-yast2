@@ -16,7 +16,6 @@ export PATH=/sbin:/usr/sbin:$PATH
 
 # load common script functions
 . /usr/lib/YaST2/bin/yast2-funcs
-export Y2DEBUG=1
 
 # Accumulated arguments for both the Qt UI and y2cc; currently supported:
 # --fullscreen
