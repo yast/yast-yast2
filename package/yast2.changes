@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Apr  4 10:27:58 CEST 2005 - jsrain@suse.cz
+
+- after running online update, exit ncurses control center (#63542)
+
+-------------------------------------------------------------------
 Thu Mar 31 13:05:13 CEST 2005 - jsrain@suse.cz
 
 - initialize product macro for help texts from /etc/*-release
