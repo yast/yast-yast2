@@ -54,7 +54,7 @@ global string default_control_file = "/control.xml";
 
 // The file above get saved into the installed system for later
 // processing
-global string saved_control_file = Directory::vardir + "/control.xml";
+global string saved_control_file = Directory::etcdir + "/control.xml";
 
 // The packaged file which contains all default worklfows
 global string packaged_control_file = "/usr/share/YaST2/control/control.xml";
@@ -774,7 +774,7 @@ global define boolean Init()
         [
 	 y2update_control_file,  // /y2update/control.xml
 	 default_control_file,  // /control.xml
-	 saved_control_file, // /var/lib/YaST2/control.xml
+	 saved_control_file, // /etc/YaST2/control.xml
 	 packaged_control_file // /usr/share/YaST2/control/control.xml
 	 ];
 

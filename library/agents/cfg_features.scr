@@ -13,5 +13,5 @@
 .product.features
 
 `ag_ini(
-  `SysConfigFile("/var/lib/YaST2/ProductFeatures")
+  `SysConfigFile("/etc/YaST2/ProductFeatures")
 )

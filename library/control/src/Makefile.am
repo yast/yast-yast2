@@ -2,7 +2,7 @@
 # Makefile.am for control/src
 #
 
-productdir = /var/lib/YaST2
+productdir = /etc/YaST2
 
 module_DATA =			\
 	ProductControl.ycp	\
