@@ -21,8 +21,8 @@
     import "Directory";
 
     // keep trailing "/" !!
-    string theme_path = Directory::themedir + "/current/";
-    string icon_path  = Directory::icondir; // theme_path;
+    string theme_path = Directory::themedir + "/current";
+    string icon_path  = theme_path + "/icons/22x22/apps";
 
     boolean have_fancy_ui_cache = nil;
 
