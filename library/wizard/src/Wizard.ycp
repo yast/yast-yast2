@@ -898,19 +898,32 @@
 
 
     /**
-     * Retranslate the wizard buttons.
+     * Retranslate the wizard buttons. This will revert button labels and IDs
+     * to the default that were used upon Wizard::CreateDialog(),
+     * Wizard::OpenNextBackDialog(), or Wizard::OpenAcceptDialog().
      **/
     global void RetranslateButtons()
     {
-	// TO DO for YQWizard
-	// TO DO for YQWizard
-	// TO DO for YQWizard
-	
 	if ( UI::WidgetExists(`id(`WizardDialog ) ) == true )
 	{
 	    ReplaceButtonBox( UI::WidgetExists(`id(`accept ) ) ?
 			      Wizard::AbortAcceptButtonBox() :
 			      Wizard::BackAbortNextButtonBox() );
+	}
+	else // Qt wizard
+	{
+	    if ( UI::WidgetExists(`accept) )
+	    {
+		UI::WizardCommand(`SetBackButtonLabel ( "" ) );
+		UI::WizardCommand(`SetAbortButtonLabel( Label::AbortButton()  ) );
+		UI::WizardCommand(`SetNextButtonLabel ( Label::AcceptButton() ) );
+	    }
+	    else
+	    {
+		UI::WizardCommand(`SetBackButtonLabel ( Label::BackButton()  ) );
+		UI::WizardCommand(`SetAbortButtonLabel( Label::AbortButton() ) );
+		UI::WizardCommand(`SetNextButtonLabel ( Label::NextButton()  ) );
+	    }
 	}
     }
 
