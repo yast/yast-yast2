@@ -177,7 +177,9 @@
 				    `Left(`Heading( headline )),
 				    `VSpacing(0.2),
 				    richtext,	// scrolled text
-				    `PushButton( `id(`ok), `opt(`default), OKButtonLabel() )
+				    `PushButton( `id(`ok),
+						 `opt(`default, `key_F10),
+						 OKButtonLabel() )
 				    )
 			     )
 		      );
@@ -304,15 +306,17 @@ You will need to reinstall." );
        */
 
       global define void MessagePopup(string message) ``{
-          // ok pushbutton: confirm the dialog
-          OpenDialog(
+	  // ok pushbutton: confirm the dialog
+	  OpenDialog(
 		     `opt(`decorated),
 		     `HBox(
 			   `HSpacing(1),
 			   `VBox(
 				 `VSpacing(0.2),
 				 `Label(message),
-				 `PushButton(`id(`ok), `opt(`default), OKButtonLabel()),
+				 `PushButton(`id(`ok),
+					     `opt(`default, `key_F10),
+					     OKButtonLabel()),
 				 `VSpacing(0.2)
 				 ),
 			   `HSpacing(1)
@@ -321,7 +325,7 @@ You will need to reinstall." );
 	  SetFocus(`id(`ok));
 	  UserInput();
 
-          CloseDialog();
+	  CloseDialog();
       };
 
 
@@ -398,7 +402,9 @@ You will need to reinstall." );
 
       global define void AnyMessagePopup(string headline, string message) ``{
 
-	  term button_box =  `PushButton( `id(`ok_msg), `opt(`default), OKButtonLabel() );
+	  term button_box =  `PushButton( `id(`ok_msg),
+					  `opt(`default, `key_F10),
+					  OKButtonLabel() );
 	  // ok pushbutton: confirm the dialog
 	  OpenDialog(
 		     `opt(`decorated),
@@ -446,7 +452,9 @@ You will need to reinstall." );
 
 				       // "OK" button for timeout message: Close popup dialog
 				       // (i.e. confirm the message)
-				       `PushButton(`id(`timed_ok), `opt(`default), OKButtonLabel() )
+				       `PushButton(`id(`timed_ok),
+						   `opt(`default, `key_F10),
+						   OKButtonLabel() )
 				       ),
 				 `VSpacing(0.2)
 				 )
@@ -509,12 +517,16 @@ You will need to reinstall." );
 
 				       // "OK" button for timeout message: Close popup dialog
 				       // (i.e. confirm the action in "message")
-				       `PushButton(`id(`timed_ok), `opt(`default), OKButtonLabel() ),
+				       `PushButton(`id(`timed_ok),
+						   `opt(`default, `key_F10),
+						   OKButtonLabel() ),
 				       `HSpacing(2),
 
 				       // "Cancel" button for timeout message: Close popup dialog
 				       // (i.e. cancel the action in "message")
-				       `PushButton(`id(`timed_cancel), CancelButtonLabel() )
+				       `PushButton(`id(`timed_cancel),
+						   `opt (`key_F9), 
+						   CancelButtonLabel() )
 				       ),
 				 `VSpacing(0.2)
 				 )
@@ -576,13 +588,21 @@ You will need to reinstall." );
 
 	  if ( focus == `focus_no )
 	  {
-	      yes_button = `PushButton( `id(`yes),  yes_button_message );
-	      no_button  = `PushButton( `id(`no_button), `opt(`default), no_button_message );
+	      yes_button = `PushButton( `id(`yes),
+					`opt (`key_F10),
+					yes_button_message );
+	      no_button  = `PushButton( `id(`no_button),
+					`opt(`default, `key_F9),
+					no_button_message );
 	  }
 	  else
 	  {
-	      yes_button = `PushButton(`id(`yes), `opt(`default), yes_button_message);
-	      no_button  = `PushButton( `id(`no_button), no_button_message );
+	      yes_button = `PushButton( `id(`yes),
+				        `opt(`default, `key_F10),
+					yes_button_message);
+	      no_button  = `PushButton( `id(`no_button),
+					`opt (`key_F9), 
+					no_button_message );
 	  }
 
 	  term button_box =  `HBox(
@@ -634,21 +654,39 @@ You will need to reinstall." );
 
 	  if ( focus == `focus_no )
 	  {
-	      yes_button = `PushButton( `id(`yes),  yes_button_message );
-	      no_button  = `PushButton( `id(`no), `opt(`default), no_button_message );
-	      retry_button  = `PushButton( `id(`retry), retry_button_message );
+	      yes_button = `PushButton( `id(`yes),
+					`opt (`key_F10), 
+					yes_button_message );
+	      no_button  = `PushButton( `id(`no),
+					`opt(`default, `key_F9),
+					no_button_message );
+	      retry_button  = `PushButton( `id(`retry),
+					   `opt (`key_F6),
+					   retry_button_message );
 	  }
 	  else if ( focus == `focus_yes )
 	  {
-	      yes_button = `PushButton(`id(`yes), `opt(`default), yes_button_message);
-	      no_button  = `PushButton( `id(`no), no_button_message );
-	      retry_button  = `PushButton( `id(`retry), retry_button_message );
+	      yes_button = `PushButton(`id(`yes),
+				       `opt(`default, `key_F10),
+				       yes_button_message);
+	      no_button  = `PushButton( `id(`no),
+					`opt (`key_F9), 
+					no_button_message );
+	      retry_button  = `PushButton( `id(`retry),
+					   `opt (`key_F6), 
+					   retry_button_message );
 	  }
 	  else
 	  {
-	      yes_button = `PushButton(`id(`yes), yes_button_message);
-	      no_button  = `PushButton( `id(`no), no_button_message );
-	      retry_button  = `PushButton( `id(`retry), `opt(`default), retry_button_message );
+	      yes_button = `PushButton(`id(`yes),
+				       `opt (`key_F10), 
+				       yes_button_message);
+	      no_button  = `PushButton( `id(`no),
+					`opt (`key_F9), 
+					no_button_message );
+	      retry_button  = `PushButton( `id(`retry),
+					   `opt(`default, `key_F6),
+					   retry_button_message );
 	  }
 
 	  term button_box =  `HBox(
@@ -694,10 +732,14 @@ You will need to reinstall." );
 				 `VSpacing(0.2),
 				 `Heading(text),
 				 `HBox(
-				       `PushButton(`id(`back),	 BackButtonLabel()	),
-				       `PushButton(`id(`again),	 RetryButtonLabel()	),
-				       `PushButton(`id(`cancel), QuitButtonLabel()	),
-				       `PushButton(`id(`next),	 NextButtonLabel()	)
+				     `PushButton(`id(`back),   `opt (`key_F8), 
+						 BackButtonLabel()  ),
+				     `PushButton(`id(`again),  `opt (`key_F6),
+						 RetryButtonLabel() ),
+				     `PushButton(`id(`cancel), `opt (`key_F9),
+						 QuitButtonLabel()  ),
+				     `PushButton(`id(`next),   `opt (`key_F10),
+						 NextButtonLabel()  )
 				       ),
 				 `VSpacing(0.2)
 				 ),
@@ -829,7 +871,9 @@ You will need to reinstall." );
       global define void AnyTimedMessagePopup(string headline, string message, integer timeout)
       ``{
 
-	  term button_box =  `PushButton( `id(`ok_msg), `opt(`default), OKButtonLabel() );
+	  term button_box =  `PushButton( `id(`ok_msg),
+					  `opt(`default, `key_F10),
+					  OKButtonLabel() );
 	  // ok pushbutton: confirm the dialog
 	  OpenDialog(
 		`opt(`decorated),
@@ -934,7 +978,8 @@ You will need to reinstall." );
 					    )
 				      ),
 			    `VSpacing( 0.3 ),
-			    `PushButton( `opt(`default), OKButtonLabel() ),
+			    `PushButton( `opt(`default, `key_F10),
+					 OKButtonLabel() ),
 			    `VSpacing( 0.3 )
 			    )
 		      );
@@ -953,4 +998,3 @@ You will need to reinstall." );
   }
 
 }
-
