@@ -72,7 +72,7 @@
      *    Set it to nil if you do not want to place anything here.
      * @param below_table Contents to place between table and buttons.
      *    Set it to nil if you do not want to place anything here.
-     * @param below_buttons Content to place bellow bottons.
+     * @param below_buttons Content to place below bottons.
      *    Set it to nil if you do not want to place anything here.
      * @param buttons Content to place rights from buttons. Usually
      *    an additional button, e.g. Set as default.
