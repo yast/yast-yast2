@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar 26 15:03:49 CET 2004 - arvin@suse.de
+
+- added uml detection to Arch module
+
+-------------------------------------------------------------------
 Wed Mar 24 16:59:37 CET 2004 - adrian@suse.de
 
 - fix yast qt ui themeing, export QT_HOME_DIR again
