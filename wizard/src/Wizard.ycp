@@ -18,11 +18,12 @@
 
     include "ui/common_messages.ycp";
     include "ui/common_popups.ycp";
+    import "Directory";
 
     integer current_stage = 0;	// Cache for the current wizard stage (image no.)
 
     // keep trailing "/" !!
-    string image_path = "/usr/share/YaST2/images/";
+    string image_path = Directory::imagedir + "/";
 
     boolean have_fancy_ui = false;
 
