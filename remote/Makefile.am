@@ -7,7 +7,7 @@ client_DATA =			\
 	remotechooser.ycp	\
 	remoteinstall.ycp
 
-config_DATA =			\
+config_DATA =#			\
 	remotechooser.y2cc	\
 	remoteinstall.y2cc
 
