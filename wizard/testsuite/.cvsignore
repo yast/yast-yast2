@@ -1,0 +1,7 @@
+Makefile
+Makefile.in
+*.bak
+*~
+site.exp
+wizard.log
+wizard.sum
