@@ -26,7 +26,6 @@
 #
 #/-*/
 export PATH=/sbin:/usr/sbin:$PATH
-export QT_XFT=0
 
 # This environment variable will tell child processes they are started from
 # within a YaST2 environment
@@ -73,7 +72,6 @@ listmodules()
 # Note: 800x600 by default is perfectly safe - the Qt UI will not allow windows
 # to become larger than the screen anyway.
 Y2_GEOMETRY=${Y2_GEOMETRY:-800x600}
-Y2_STYLE=${Y2_STYLE:-platinum}
 
 TEMP=`getopt -o hlg:s:Si --long help,list,geometry:,style:,strings,install \
      -n 'yast2' -- "$@"`
@@ -88,14 +86,11 @@ while true ; do
 		-h|--help) printhelp; exit 0  ;;
 		-l|--list) listmodules; exit 0  ;;
 		-g|--geometry) Y2_GEOMETRY="$2"; shift 2; ;;
-		-s|--style) Y2_STYLE="$2"; shift 2; ;;
 		-i|--install) Y2_INSTALL_PACKAGES=true; shift 1;;
 		--) shift ; break ;;
 		*) echo "Internal error!" ; exit 1 ;;
 	esac
 done
-
-export Y2_STYLE
 
 if [ "$Y2_INSTALL_PACKAGES" = "true" ]; then
 	export module=sw_single
@@ -135,10 +130,10 @@ if [ -z "$DISPLAY" -o ! check_qt ] ; then
 else
     # use ycp menu if the control center is not installed
     if [ $module == "menu" -a -e "$ybindir/y2controlcenter" ] ; then
-	$ybindir/y2controlcenter -style="$Y2_STYLE" -fn $Y2_XFONT "$@"
+	$ybindir/y2controlcenter -fn $Y2_XFONT "$@"
     else
 	set -- $(for x in "$@"; do echo "(\"$x\")"; done) # surround args by ("...")
-	$ybindir/y2base $module "$@" qt -geometry "$Y2_GEOMETRY" -style="$Y2_STYLE" -fn $Y2_XFONT
+	$ybindir/y2base $module "$@" qt -geometry "$Y2_GEOMETRY" -fn $Y2_XFONT
     fi
 fi
 
