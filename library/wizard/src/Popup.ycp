@@ -993,7 +993,7 @@ You will need to reinstall.");
 
     global define void ShowFile (string headline, string filename) ``{
 
-	string text = SCR::Read (.target.string, (filename));
+	string text = SCR::Read (.target.string, filename);
 
 	ShowText (headline, text);
 
