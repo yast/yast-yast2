@@ -145,25 +145,25 @@
 	  fkeys = add( fkeys, AddButtonLabel()		, 3 );
 	  fkeys = add( fkeys, EditButtonLabel()		, 4 );
 	  fkeys = add( fkeys, DeleteButtonLabel()	, 5 );
+	  fkeys = add( fkeys, BackButtonLabel()		, 8 );
 
 	   // Negative Answers: [F9]
-	  fkeys = add( fkeys, BackButtonLabel()		, 9 );
 	  fkeys = add( fkeys, CancelButtonLabel()	, 9 );
+	  fkeys = add( fkeys, NoButtonLabel()		, 9 );
 	  fkeys = add( fkeys, DoNotAcceptButtonLabel()	, 9 );
 	  fkeys = add( fkeys, DontInstallButtonLabel()	, 9 );
-	  fkeys = add( fkeys, NoButtonLabel()		, 9 );
 	  fkeys = add( fkeys, QuitButtonLabel()		, 9 );
 
 	  // Positive Answers: [F10]
+	  fkeys = add( fkeys, OKButtonLabel()		, 10 );
 	  fkeys = add( fkeys, AcceptButtonLabel()	, 10 );
+	  fkeys = add( fkeys, YesButtonLabel()		, 10 );
 	  fkeys = add( fkeys, CloseButtonLabel()	, 10 );
 	  fkeys = add( fkeys, ContinueButtonLabel()	, 10 );
 	  fkeys = add( fkeys, FinishButtonLabel()	, 10 );
 	  fkeys = add( fkeys, InstallButtonLabel()	, 10 );
 	  fkeys = add( fkeys, NextButtonLabel()		, 10 );
-	  fkeys = add( fkeys, OKButtonLabel()		, 10 );
 	  fkeys = add( fkeys, SaveButtonLabel()		, 10 );
-	  fkeys = add( fkeys, YesButtonLabel()		, 10 );
 
 	  return fkeys;
       }
