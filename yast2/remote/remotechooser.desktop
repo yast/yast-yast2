@@ -1,0 +1,57 @@
+[Desktop Entry]
+Type=Application
+Categories=Qt;X-SuSE-YaST;X-SuSE-YaST-Misc;
+
+X-KDE-ModuleType=Library
+X-KDE-RootOnly=true
+X-KDE-HasReadOnlyMode=true
+X-KDE-Library=yast2
+X-SuSE-YaST-Call=remotechooser
+
+X-SuSE-YaST-Group=Misc
+X-SuSE-YaST-Argument=
+X-SuSE-YaST-RootOnly=true
+X-SuSE-YaST-AutoInst=
+X-SuSE-YaST-Geometry=
+X-SuSE-YaST-SortKey=
+X-SuSE-YaST-AutoInstResource=
+
+Icon=default
+Exec=/sbin/yast2 remotechooser 
+
+Name=Remote Administration
+GenericName=Administer Remote Host
+Name[cs]=Vzdálená správa
+GenericName[cs]=Správa vzdáleného počítače
+Name[de]=Verwaltung entfernter Rechner (remote)
+GenericName[de]=Entfernten (remote) Rechner verwalten
+Name[es]=Administración remota
+GenericName[es]=Administrar ordenador remoto
+Name[hu]=Távoli karbantartás
+GenericName[hu]=Tartson karban egy távoli gépet
+Name[it]=Amministrazione remota
+GenericName[it]=Amministrare host remoto
+Name[ko]=원격 관리자
+GenericName[ko]=원격 호스트 관리자
+Name[nl]=Remote beheer
+GenericName[nl]=Remote host beheren
+Name[pt]=Administração Remota
+GenericName[pt]=Administrar Host remoto
+Name[sk]=Vzdialená administrácia
+GenericName[sk]=Správa vzdialeného počítača
+Name[sv]=Fjärradministration
+GenericName[sv]=Administrera fjärrdator
+Name[bg]=Отдалечено управление
+GenericName[bg]=Управление на отдалечена машина
+Name[da]=Fjern-Administration
+GenericName[da]=Adminstrere Fjern-vært
+Name[el]=Απομακρυσμένη διαχείριση
+GenericName[el]=Διαχείριση Απομακρυσμένου Κόμβου
+Name[fr]=Administration à distance
+GenericName[fr]=Administrer l'hôte distant
+Name[ja]=リモート管理
+GenericName[ja]=リモート・ホストを管理する
+Name[sl]=Oddaljeno upravljanje
+GenericName[sl]=Upravljanje oddaljenega gostitelja
+Name[tr]=Uzaktan yönetim
+GenericName[tr]=Uzak makine yönet

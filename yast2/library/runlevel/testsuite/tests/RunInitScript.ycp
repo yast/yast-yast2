@@ -1,0 +1,8 @@
+{
+    include "testsuite.ycp";
+    import "Service";
+
+    TEST (``(Service::RunInitScript ("aaa", "start")), [$[], $[], $[
+	    "target" : $[ "bash" : 0 ]
+	    ]], nil);
+}

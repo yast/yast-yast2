@@ -1,0 +1,110 @@
+Dump	String::Quote
+Return	
+Return	
+Return	a
+Return	a'\''b
+Return	a'\''b'\''c
+Dump	String::UnQuote
+Return	
+Return	
+Return	a
+Return	a'b
+Return	a'b'c
+Dump	String::FormatSize
+Return	
+Return	0.00 
+Return	1.00 
+Return	1.00 KB
+Return	1.00 MB
+Return	1.00 GB
+Return	1.00 TB
+Return	1024.09 TB
+Dump	String::FormatSizeWithPrecision
+Return	
+Return	0 
+Return	1.00 
+Return	1.001 KB
+Return	1.00 MB
+Return	1.000 GB
+Return	1.00 TB
+Return	1024.1 TB
+Return	4 KB
+Return	4.00 KB
+Return	4.00 KB
+Return	8 GB
+Return	15.00000 
+Return	21.846 GB
+Dump	String::CutBlanks
+Return	
+Return	
+Return	
+Return	abc
+Return	abc
+Return	abc
+Return	abc
+Return	abc
+Return	abc
+Return	ab c
+Return	ab c
+Return	ab c
+Return	ab c
+Return	ab c
+Return	ab c
+Return	ab c
+Return	ab  c
+Dump	String::CutZeros
+Return	
+Return	
+Return	1
+Return	1
+Return	1
+Return	0
+Return	0
+Dump	String::Pad
+Return	"  "
+Return	"  "
+Return	"a "
+Return	"ab"
+Return	"abc"
+Return	"a"
+Return	""
+Return	"a"
+Dump	String::PadZeros
+Return	0000
+Return	0000
+Return	0001
+Return	0012
+Return	0123
+Return	1234
+Return	12345
+Dump	String::ParseOptions
+Return	["a=3", "b=2"]
+Return	["a=3", "b=2"]
+Return	["a="]
+Return	[]
+Return	[]
+Return	[]
+Return	["abc", "123", "var"]
+Return	["abc", "123"]
+Return	["x", "y", "z"]
+Return	["0", "1, 2, 3", "4", "5"]
+Return	[]
+Return	["abc"]
+Return	[" abc "]
+Return	["ab", "sdf", "fwre  sdf"]
+Return	["1", "2", "5"]
+Return	["1", "2", "1", "1", "5"]
+Return	["\",", "2"]
+Return	["a", "b", "zx", ",,", ","]
+Return	["123\"56\"78", "bzx"]
+Return	["a", "\\", "b"]
+Return	["\n", "\""]
+Return	["   a   b zx ", " "]
+Dump	String::CutRegexMatch
+Return	abc
+Return	abcdefghi
+Return	abcdef345ghi678900
+Return	
+Dump	Strings::EscapeTags
+Return	&lt;font size='2'&gt;&lt;b&gt;text &amp; another&lt;/b&gt;&lt;/font&gt;
+Return	2 &gt; 1

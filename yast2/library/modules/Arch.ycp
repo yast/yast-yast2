@@ -1,0 +1,357 @@
+/**
+ * File:	modules/Arch.ycp
+ * Module:	yast2
+ * Summary:	Architecture, board and bios data
+ * Authors:	Klaus Kaempf <kkaempf@suse.de>
+ *
+ * $Id$
+ */
+
+{
+
+module "Arch";
+
+// local variables
+
+string _architecture = nil;
+
+string _board_compatible = nil;
+
+string _checkgeneration = "";
+
+boolean _has_pcmcia = nil;
+
+boolean _is_uml = nil;
+
+boolean _has_smp = nil;
+
+/* ************************************************************ */
+/* system architecture						*/
+
+/**
+ * General architecture type
+ */
+global string architecture () {
+    if (_architecture == nil)
+	_architecture = (string)SCR::Read(.probe.architecture);
+    return _architecture;
+}
+
+/**
+ * true for all x86 compatible architectures
+ */
+global boolean i386 () {
+    return architecture () == "i386";
+}
+
+/**
+ * true for all 32bit sparc architectures
+ * @see sparc
+ * @see sparc64
+ */
+global boolean sparc32 () {
+    return architecture () == "sparc";
+}
+
+/**
+ * true for all 64bit sparc architectures
+ * @see sparc
+ * @see sparc32
+ */
+global boolean sparc64 () {
+    return architecture () == "sparc64";
+}
+
+/**
+ * true for all sparc architectures (32 or 64 bit)
+ * @see sparc32
+ * @see sparc64
+ */
+global boolean sparc () {
+    return sparc32 () || sparc64 ();
+}
+
+/**
+ * true for all 32bit mips architectures
+ * @see mips
+ * @see mips64
+ */
+global boolean mips32 () {
+    return architecture () == "mips";
+}
+
+/**
+ * true for all 64bit mips architectures
+ * @see mips
+ * @see mips32
+ */
+global boolean mips64 () {
+    return architecture () == "mips64";
+}
+
+/**
+ * true for all mips architectures (32 or 64 bit)
+ * @see mips32
+ * @see mips64
+ */
+global boolean mips () {
+    return mips32 () || mips64 ();
+}
+
+/**
+ * true for all 32bit ppc architectures
+ * @see ppc
+ * @see ppc64
+ */
+global boolean ppc32 () {
+    return architecture () == "ppc";
+}
+
+/**
+ * true for all 64bit ppc architectures
+ * @see ppc
+ * @see ppc32
+ */
+global boolean ppc64 () {
+   return architecture () == "ppc64";
+}
+
+/**
+ * true for all ppc architectures (32 or 64 bit)
+ * @see ppc32
+ * @see ppc64
+ */
+global boolean ppc () {
+    return ppc32 () || ppc64 ();
+}
+
+/**
+ * true for all alpha architectures
+ */
+global boolean alpha () {
+    return architecture () == "alpha";
+}
+
+/**
+ * true for all 32bit S/390 architectures
+ * @see s390
+ * @see s390_64
+ */
+global boolean s390_32 () {
+    return architecture () == "s390_32";
+}
+
+/**
+ * true for all 64bit S/390 architectures
+ * @see s390
+ * @see s390_32
+ */
+global boolean s390_64 () {
+    return architecture () == "s390_64";
+}
+
+/**
+ * true for all S/390 architectures (32 or 64 bit)
+ * @see s390_32
+ * @see s390_64
+ */
+global boolean s390 () {
+    return s390_32 () || s390_64 ();
+}
+
+/**
+ * true for all IA64 (itanium) architectures
+ */
+global boolean ia64 () {
+    return architecture () == "ia64";
+}
+
+/**
+ * true for all x86-64 (AMD Hammer) architectures
+ */
+global boolean x86_64 () {
+    return architecture () == "x86_64";
+}
+
+/**
+ * General architecture type
+ */
+global string arch_short () {
+    if (sparc ())
+	return "sparc";
+    else if (mips ())
+	return  "mips";
+    else if (ppc ())
+	return  "ppc";
+    else if (s390 ())
+	return "s390";
+    else
+	return architecture ();
+}
+
+/* ************************************************************ */
+/* general system board types (initialized in constructor)	*/
+
+global string board_compatible () {
+    if (_board_compatible == nil)
+    {
+	_checkgeneration = "";
+	list<map> systemProbe = (list<map>) SCR::Read(.probe.system);
+	if(systemProbe == nil) systemProbe = [];
+
+	foreach (map systemEntry, systemProbe, ``{
+	    string checksys = systemEntry["system"]:"";
+	    _checkgeneration = systemEntry["generation"]:"";
+	    if (checksys != "")
+	    {
+		_board_compatible = checksys;
+	    }
+	});
+	if (i386 () || x86_64 ())
+	{
+	    _board_compatible = "wintel";
+	}
+	// avoid future re-probing if probing failed
+	// also avoid passing nil outside the module
+	if (board_compatible == nil)
+	    _board_compatible = "";
+    }
+    return _board_compatible;
+}
+/**
+ * true for all PPC "MacRISC" boards
+ */
+global boolean board_mac () {
+    return ppc () && (
+	board_compatible () == "MacRISC" ||
+	board_compatible () == "MacRISC2" ||
+	board_compatible () == "MacRISC3" ||
+	board_compatible () == "MacRISC4"
+    );
+}
+
+/**
+ * true for all "NewWorld" power macs
+ */
+global boolean board_mac_new () {
+    // board_mac calls board_compatible which intiializes _checkgeneration
+    return board_mac () && _checkgeneration == "NewWorld";
+}
+
+/**
+ * true for all "OldWorld" power macs
+ */
+global boolean board_mac_old () {
+    // board_mac calls board_compatible which intiializes _checkgeneration
+    return board_mac () && _checkgeneration == "OldWorld";
+}
+
+/**
+ * true for all "NuBus" power macs
+ */
+global boolean board_mac_nubus () {
+    // board_mac calls board_compatible which intiializes _checkgeneration
+    return board_mac () && _checkgeneration == "NuBus";
+}
+
+/**
+ * true for all "CHRP" ppc boards
+ */
+global boolean board_chrp () {
+    return ppc () && board_compatible () == "CHRP";
+}
+
+/**
+ * true for all "iSeries" ppc boards
+ */
+global boolean board_iseries () {
+    return ppc () && board_compatible () == "iSeries";
+}
+
+/**
+ * true for all "PReP" ppc boards
+ */
+global boolean board_prep () {
+    return ppc () && board_compatible () == "PReP";
+}
+
+/**
+ * true for all "Windows/Intel" compliant boards (x86 based)
+ */
+global boolean board_wintel () {
+    return board_compatible () == "wintel";
+
+}
+
+
+/* ************************************************************ */
+/* BIOS stuff							*/
+
+/**
+ * true if the system supports PCMCIA
+ */
+global boolean has_pcmcia () {
+    if (_has_pcmcia == nil)
+	_has_pcmcia = (boolean)SCR::Read(.probe.has_pcmcia);
+    return _has_pcmcia;
+}
+
+/* ************************************************************ */
+/* UML stuff							*/
+
+/**
+ * true if UML
+ */
+global boolean is_uml () {
+    if (_is_uml == nil)
+	_is_uml	= (boolean) SCR::Read(.probe.is_uml);
+    return _is_uml;
+}
+
+/* ************************************************************ */
+/* SMP stuff							*/
+
+/**
+ * Set "Arch::has_smp ()". Since Alpha doesn't reliably probe smp,
+ * 'has_smp' must be set later with this function.
+ * @param is_smp true if has_smp should be true
+ * @example setSMP(true);
+ */
+global define void setSMP(boolean is_smp) {
+    _has_smp = is_smp;
+}
+
+/**
+ * true if running on multiprocessor board. This only reflects the
+ * board, not the actual number of CPUs or the running kernel!
+ */
+global boolean has_smp () {
+    if (_has_smp == nil)
+	_has_smp = (boolean)SCR::Read(.probe.has_smp);
+    if (alpha ())
+    {
+        // get smp for alpha from /etc/install.inf
+        setSMP (SCR::Read (.etc.install_inf.SMP) == "1");
+    }
+    return _has_smp;
+}
+
+/**
+ * run X11 configuration after inital boot
+ * this is false in case of:
+ * installation on iSeries
+ * installation on S390
+ *
+ * Also see Installation::x11_setup_needed ().
+ */
+global boolean x11_setup_needed	() {
+    // disable X11 setup after initial boot
+    if (board_iseries () || s390 () || mips ())
+    {
+	return false;
+    }
+    return true;
+}
+
+/* EOF */
+}

@@ -1,0 +1,210 @@
+/**
+ * Module:		ModuleLoading.ycp
+ *
+ * Authors:		Klaus Kaempf <kkaempf@suse.de> (initial)
+ *
+ * Purpose:
+ * This module does all module loading stuff.
+ *
+ * $Id$
+ */
+{
+    module "ModuleLoading";
+
+    textdomain "base";
+
+    import "Mode";
+//    import "Initrd";
+    import "Label";
+
+    string vendor_name = "";
+    string device_name = "";
+
+    /**
+     * @param	map	controller
+     * @returns list	[string vendor, string device]
+     * Convert internal probing data to user readable string
+     * for module loading.
+     * @see ModuleLoading::Load
+     */
+
+    global define list prepareVendorDeviceInfo (map controller)
+    ``{
+	// build up vendor/device information
+
+	// if vendor not given, try sub_vendor
+
+	string controller_vendor = controller["vendor"]:(controller["sub_vendor"]:"");
+	if (controller_vendor != "")
+	{
+	    string controller_sub_vendor = controller["sub_vendor"]:"";
+	    if (controller_sub_vendor != "")
+	    {
+		controller_vendor = controller_vendor
+				+ "\n("
+				+ controller_sub_vendor
+				+ ")";
+	    }
+	}
+
+	// if device not given, try sub_device
+
+	string controller_device = controller["device"]:(controller["sub_device"]:"");
+	if (controller_device != "")
+	{
+	    string controller_sub_device = controller["sub_device"]:"";
+	    if (controller_sub_device != "")
+	    {
+		controller_device = controller_device
+				+ "\n("
+				+ controller_sub_device
+				+ ")";
+	    }
+	}
+
+	return [controller_vendor, controller_device];
+    };
+
+    /**
+     * @param	string modulename
+     * @param	string moduleargs
+     * @param	string vendorname
+     * @param	string devicename
+     * @param	boolean ask_before_loading
+     * @param	boolean with_modprobe
+     *
+     * @returns symbol:	`dont	user choose *not* to load module
+     *			`ok	module loaded ok
+     *			`fail	module loading failed
+     *
+     * load a module if not already loaded by linuxrc
+     */
+
+    global define symbol Load (string modulename, string moduleargs,
+			string vendorname, string devicename,
+			boolean ask_before_loading, boolean with_modprobe)
+    ``{
+	if ((modulename != "")
+// there is no reason for checking initrd, if I need the module to get loaded, I just  need to
+// check if it isn't already loaded
+//	    && (!contains (Initrd::ListModules (), modulename))
+	    && !Mode::test ())
+	{
+	    // always look whether the module is already loaded
+	    map loaded_modules = (map) SCR::Read(.proc.modules);
+	    if (size (loaded_modules[modulename]:$[]) > 0)
+	    {
+		// already loaded
+		return `ok;
+	    }
+
+	    // sformat( _("Loading module %1"), modulename);
+
+	    if (ask_before_loading && !Mode::autoinst())
+	    {
+
+		UI::OpenDialog(`opt(`decorated, `centered),
+			       `HBox (
+				      `HSpacing(1),
+				      `HCenter (
+						`HSquash(
+							 `VBox (
+								`HCenter (
+									  `HSquash(
+										   `VBox(
+											 // Popup-Box for manual driver installation.
+											 // If the user selects 'manual installation' when
+											 // booting from CD, YaST2 does not load any modules
+											 // automatically, but asks the user for confirmation
+											 // about every module.
+											 // The popup box informs the user about the detected
+											 // hardware and suggests a module to load.
+											 // The user can confirm the module or change
+											 // the suggested load command
+											 //
+											 // This is the heading of the popup box
+											 `Left(`Heading(_("Confirm driver activation"))),
+											 `VSpacing(0.2),
+											 // This is in information message. Next come the
+											 // vendor and device information strings as stored
+											 // in the hardware-probing database.
+											 `Left(`Label(_("YaST2 detected the following device"))),
+											 `Left(`Label(vendorname)),
+											 `Left(`Label(devicename)),
+											 `VSpacing(0.1),
+											 // Caption for Textentry with module information
+											 `Left(`TextEntry(`id(`mod_name), _("&Driver/Module to load"), modulename+" "+moduleargs))
+											 )
+										   )
+									  ),
+								`HSquash(
+									 `HBox(
+									       `HWeight( 1, `PushButton(`id(`ok_msg), `opt(`default), Label::OKButton())),
+									       `HSpacing(2),
+									       `HWeight( 1, `PushButton(`id(`cancel_msg), Label::CancelButton()))
+									       )
+									 ),
+								`VSpacing(0.2)
+								)
+							 )
+						),
+				      `HSpacing(1)
+				      )
+			       );
+		  UI::SetFocus (`id(`ok_msg));
+		  symbol ret = (symbol) UI::UserInput();
+		  if (ret == `ok_msg)
+		  {
+		      string module_data = (string) UI::QueryWidget(`id(`mod_name), `Value);
+		      if (size (module_data) > 0)
+		      {
+			  // skip leading spaces
+			  integer firstspace = findfirstnotof (module_data, " ");
+			  if (firstspace != nil)
+			  {
+			      module_data = substring (module_data, firstspace);
+			  }
+
+			  // split name and args
+			  firstspace = findfirstof (module_data, " ");
+
+			  if (firstspace == nil)
+			  {
+			      modulename = module_data;
+			      moduleargs = "";
+			  }
+			  else
+			  {
+			      modulename = substring (module_data, 0, firstspace);
+			      moduleargs = substring (module_data, firstspace+1);
+			  }
+		      }
+		  }
+		  UI::CloseDialog();
+
+		  if (ret == `cancel_msg)
+		  {
+		      y2milestone ("NOT loaded module %1 %2", modulename, moduleargs);
+		      return `dont;
+		  }
+	    } // ask_before_loading
+	}
+
+	boolean load_success = false;
+	if (with_modprobe)
+	{
+	    load_success = (boolean) SCR::Execute(.target.modprobe, modulename, moduleargs);
+	}
+	else
+	{
+	    load_success = (boolean) SCR::Execute(.target.insmod, modulename, moduleargs);
+	}
+	if (load_success == nil)
+	    load_success = false;
+
+	y2milestone ("Loaded module %1 %2 %3", modulename, moduleargs, load_success?"Ok":"Failed");
+
+	return (load_success?`ok:`fail);
+    };
+
+}

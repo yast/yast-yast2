@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding='ISO-8859-1'?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+          "/usr/share/sgml/db41xml/docbookx.dtd"
+[
+<!ENTITY version "0.01">
+<!ENTITY dx "DocBook-XML">
+]>
+
+<article>
+<title>crash module</title>
+    <section id="goals">
+	<title>Goals</title>
+	    <para> YaST2 as system assistant may crash because of some reasons.
+		Except the errors in the YaST2 code, there are possibilities
+		to crash on some machines because of
+		hardware related problems (eg. because some computers have 
+		non-standard BIOSes, and probing of their properties may 
+		result to computer freeze). Other typical problem may be electric
+		outblank.
+	    </para>
+	    <para>
+		Modules running only on installed system, can handle these situations
+		their own ways. Problem is a crash during installation (stage after
+		reboot -- if installatin crashes before reboot, most of status informations is lost
+		with ramdisk). In this case would be usefull to continue installation
+		in the same moment it was broken.
+	    </para>
+    </section>
+    <section>
+	<title>Solution</title>
+	<section>
+	    <title>Description</title>
+	    <para>
+		Each module, before it does any critical operaion (eg. detection of hardware),
+		should call some extra function, to notify the system, what's happening.
+		When hw detection finishes correctly, module tells that operation was 
+		done successfully, and normally continues.
+	    </para>
+	    <para>
+		In case of unexpected crash, when module is run next time, it will have possibility
+		to detect that in some operation an error occured, and skip this step
+		(or ask user - depending on every single module).
+	    </para>
+<?	    <para>
+		Other nice-to-have feature is solving crash problems during installation.
+		When installation fails eg. during X11 probing, current YaST2 has theoretically
+		2 possibilities:
+		<itemizedlist>
+		    <listitem><para>Start second phase of installation again</para></listitem>
+		    <listitem><para>Skip the missing parts of installation</para></listitem>
+		</itemizedlist>
+	    </para>
+	    <para>
+		Current installer cann't detect in what stage an problem occured,
+		and start installation in this point.
+		If every module will note it's critical (but not only them - start
+		and finish of the module can be logged too) operations, system (in
+		initial scripts) can after reboot check during what operation a problem 
+		occured, and start installation before or after the problematic step.
+	    </para>?>
+	</section>
+	<section>
+	    <title>Interface</title>
+	    <itemizedlist>
+		<listitem><para><computeroutput>void Run (string operation)</computeroutput>
+		    logs that specified operation will start. Nothing except loggins
+		    is done.</para></listitem>
+		<listitem><para><computeroutput>void Finish (string operation)</computeroutput>
+		    just logs that operation ended successfully (more percisely said removes information
+		    that operation started, because there is no more reason to have this information.
+		    </para></listitem>
+		<listitem><para><computeroutput>boolean Failed (string operation)</computeroutput>
+		    is used for checking whether during some operation crash occured. Returns true if operation
+		    caused crash in history, false otherwise.
+		    Flag stays set until Finish on specified operation is called.</para></listitem>
+		<listitem><para><computeroutput>boolean FailedLast (string operation)</computeroutput>
+		    returns true if asked operation was the last started operation in the moment the crash occured.</para></listitem>
+		<listitem><para><computeroutput>LastFinished ()</computeroutput> returns name of last operation,
+		    which was finished successfully.</para></listitem>
+		<listitem><para><computeroutput>AskRun (string operation, string question)</computeroutput>
+		    checks whether operation was <computeroutput>FailedLast</computeroutput>.
+		    If not, returns true (and operation should be run),
+		    otherwise asks user given question. Doesn't call the
+		    <computeroutput>Run()</computeroutput> function.</para></listitem>
+	    </itemizedlist>
+	</section>
+	<section>
+	    <title>Internals</title>
+	    <para>
+		Internal variables must be stored not in RAM, but in external memory (in this case HDD).
+		Storage map contains 3 parts:
+		<itemizedlist>
+	 	    <listitem><para>List of all actions, which were started, but not finished</para></listitem>
+		    <listitem><para>Last finished action</para></listitem>
+		    <listitem><para>List of actions, which were the last started during some fail</para></listitem>
+		</itemizedlist>
+		This map saves the state of current and all previous runs.
+	    </para>
+	</section>
+	<section>
+	    <title>Examples</title>
+	    <para><screen>
+if (Crash::AskRun ("printer_detection", "Printer detection failed last time. Try to detect printers?"))
+{
+    Crash::Run ("printer_detection");
+    // detect printers here
+    // ...
+    Crash::Finish ("printer_detection");
+}
+	    </screen></para>
+	    <para>
+In this case, printer detection starts everytime, until it causes system frereze.
+When running after system freeze, or after crash of YaST2 (or so something) during 
+priners detection, Crash::AskRun function will ask user given question. If he answers "No",
+gets question everytime again. If answers "Yes", and detection is successfull
+(Crash::Finish is called), then Crash::AskRun doesn't ask more (until next freeze)
+and returns always true.
+	    </para>
+	    <para><screen>
+if (Crash::FailedLast ("printer_detection"))
+{
+    // handle this situation your own way
+    // ...
+}
+else
+{
+    Crash::Run ("printer_detection");
+    // detect printers here
+    // ...
+    Crash::Finish ("printer_detection");
+
+}
+	    </screen></para>
+	    <para>
+In this case handling of the situation after freeze is fully done by the calling function
+itself.
+	    </para>
+	</section>
+    </section>
+
+</article>
+      
+	    

@@ -1,0 +1,197 @@
+/**
+ * Module:
+ *	Misc
+ * File:
+ *	Misc.ycp
+ * Purpose:
+ *	miscellaneous definitions for installation
+ * Author:	Klaus Kaempf <kkaempf@suse.de>
+ * $Id$
+ */
+{
+
+    module "Misc";
+
+
+    /*
+     * Message after finishing installation and before the system
+     * boots for the first time.
+     *
+     */
+    global string boot_msg = "";
+
+    /**
+     * @param	first	string	name of first file to try
+     * @param	second	string	name of second file to try
+     * @return	any	content of file
+     *
+     * try to read first file, if it doesn't exist, read second
+     * files must reside below /usr/lib/YaST2
+     * files must have ycp syntax
+     */
+
+    global define any ReadAlternateFile ( string first, string second)
+    ``{
+	any result = SCR::Read (.target.yast2, [first, nil]);
+	if (result == nil)
+	    result = SCR::Read (.target.yast2, second);
+	return result;
+    }
+
+    /**
+     * @param	hardware_entry	map	map of .probe entry
+     * @return	string	vendor and device name
+     *
+     * common function to extract 'name' of hardware
+     */
+
+    global define string hardware_name (map hardware_entry)
+    ``{
+	string sub_vendor = "";
+	string sub_device = "";
+
+	sub_vendor = hardware_entry["sub_vendor"]:"";
+	sub_device = hardware_entry["sub_device"]:"";
+
+	if ((sub_vendor != "") && (sub_device != ""))
+	{
+	    return (sub_vendor + "\n" + sub_device);
+	}
+	else
+	{
+	    string vendor = hardware_entry["vendor"]:"";
+	    return (vendor
+		    + ((vendor != "") ? "\n" : "")
+		    + hardware_entry["device"]:"");
+	}
+    }
+
+
+    /**
+     * @param lmap	map	map of language codes and translations
+     *				e.g. $[ "default" : "Defaultstring", "de" : "German....", ...]
+     * @param lang	string	language as ISO code, either 2 chars (de)
+     *				or 5 chars (de_DE)
+     * @return	string		translation
+     *
+     * Define a macro that looks up a localized string in a language map
+     * of the form $[ "default" : "Defaultstring", "de" : "German....", ...]
+     */
+
+    global define string translate(map lmap, string lang)
+    ``{
+	string t = lmap[lang]:"";
+	if ((size (t) == 0)
+	    && size(lang) > 2)
+	{
+	    t = lmap[substring(lang, 0, 2)]:"";
+	}
+	if (size (t) == 0)
+	{
+	    t = lmap["default"]:"";
+	}
+
+	return t;
+    }
+
+    /**
+     * SysconfigWrite()
+     * @param	path level	path behind .sysconfig for all values
+     * @param	list values	list of [ .NAME, value] lists
+     *
+     * @returns boolean		false if SCR::Write reported error
+     *
+     * write list of sysyconfig entries via rcconfig agent
+     */
+
+    global define boolean SysconfigWrite (path level, list<list> values)
+    ``{
+	boolean result = true;
+	if (level == .)
+	    level = .sysconfig;
+	else
+	    level = .sysconfig + level;
+
+	foreach (list entry, values,
+	``{
+	    if (size (entry) != 2)
+		y2error ("bad entry in rc_write()");
+	    else
+	    {
+		if (!SCR::Write (level + entry[0]:., entry[1]:""))
+		    result = false;
+	    }
+	});
+	return result;
+    }
+
+
+
+    /**
+     * MergeOptions
+     * Merges "opt1=val1 opt2=val2 ..." and $["opta":"vala", ..."]
+     * to $["opt1":"val1", "opt2":"val2", "opta":"vala", ...]
+     * as needed by modules.conf agent
+     * @param options	string	module options, e.g. "opt1=val1 opt2=val2 ..."
+     * @param optmap	map	possible old options $["opta":"vala", ...]
+     * @returns map	$["opt1":"val1", "opt2":"val2", ...]
+     */
+
+    global define map SplitOptions (string options, map optmap)
+    ``{
+	// step 1: split "opt1=val1 opt2=val2 ..."
+	// to ["opt1=val1", "opt2=val2", "..."]
+
+	list<string> options_split = splitstring (options, " ");
+
+	foreach (string options_element, options_split,
+	``{
+	    list options_values = splitstring (options_element, "=");
+
+	    if ((size (options_values) == 1)
+		&& (optmap[options_element]:"" == ""))
+	    {
+		// single argument
+		optmap[options_element] = "";
+	    }
+	    else if (size (options_values) == 2)
+	    {
+		// argument with value
+		optmap[options_values[0]:""] = options_values[1]:"";
+	    }
+	});
+	return optmap;
+    }
+
+
+    /**
+     * SysconfigRead()
+     *
+     * Try an SCR::Read(...) and return the result if successful.
+     * On failure return the the second parameter (default value)
+     *
+     * @param	sysconfig_path   Sysconfig SCR path.
+     * @param	default          Default value
+     *
+     * @return  Success --> Result of SCR::Read<br>
+     *		Failure --> Default value
+     *
+     */
+
+    global define string SysconfigRead( path sysconfig_path, string default )
+    ``{
+	string local_ret = (string)SCR::Read( sysconfig_path );
+
+	if ( local_ret == nil )
+	{
+	    y2error("Failed reading '%1'", sysconfig_path );
+	    return( default );
+	}
+	else
+	{
+	    y2milestone("%1: '%2'", sysconfig_path, local_ret );
+	    return( local_ret );
+	}
+    }	// SysconfigRead()
+
+}

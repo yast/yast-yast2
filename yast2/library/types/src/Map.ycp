@@ -1,0 +1,123 @@
+/**
+ * File:	modules/Map.ycp
+ * Package:	yast2
+ * Summary:	Map manipulation routines
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+module "Map";
+textdomain "base";
+
+import "String";
+
+/**
+ * Return all keys from the map
+ * @param m the map
+ * @return a list of all keys from the map
+ */
+global define list Keys(map m) ``{
+    if(m == nil || m == $[]) return [];
+    return maplist(any var, any val, m, ``(var));
+}
+
+/**
+ * Return all values from the map
+ * @param m the map
+ * @return a list of all values from the map
+ */
+global define list Values(map m) ``{
+    if(m == nil || m == $[]) return [];
+    return maplist(any var, any val, m, ``(val));
+}
+
+/**
+ * Switch map keys to lower case
+ * @param m input map
+ * @return map with keys converted to lower case
+ */
+global define map KeysToLower(map<string, any> m) ``{
+    string newk = nil;
+    if(m == nil) return $[];
+    return mapmap(string k, any v, m, ``{
+	newk = tolower(k);
+	return $[newk: v];
+    });
+}
+
+/**
+ * Switch map keys to upper case
+ * @param m input map
+ * @return map with keys converted to lower case
+ */
+global define map KeysToUpper(map<string, any> m) ``{
+    string newk = nil;
+    if(m == nil) return $[];
+    return mapmap(string k, any v, m, ``{
+	newk = toupper(k);
+	return $[newk: v];
+    });
+}
+
+/**
+ * Check if a map contains all needed keys
+ * @param m map to be checked
+ * @param keys needed keys
+ * @return true if map kontains all keys
+ */
+global define boolean CheckKeys(map m, list keys) ``{
+    if(m == nil || keys == nil)
+	return false;
+
+    boolean ret = true;
+    foreach(any k, keys, ``{
+	if(k == nil || !haskey(m, k)) {
+	    y2error("Missing key: %1", k);
+	    ret = false;
+	}
+    });
+
+    return ret;
+}
+
+/**
+ * Convert options map $[var:val, ...] to string "var=val ..."
+ * @param m map to be converted
+ * @return converted map
+ */
+global define string ToString(map m) ``{
+    if(m == nil) return "";
+
+    string ret = "";
+    foreach (any var, any val, m, ``{
+	ret = ret + sformat(" %1=%2", var, val);
+    });
+    return String::CutBlanks(ret);
+}
+
+/**
+ * Convert string "var=val ..." to map $[val:var, ...]
+ * @param s string to be converted
+ * @return converted string
+ */
+global define map FromString(string s) ``{
+    if(s == nil) return $[];
+
+    map ret = $[];
+    foreach(string vals, splitstring(s, " "), ``{
+	list val = splitstring(vals, "=");
+	if(size(val) < 1 || val[0]:"" == "") return;
+	string key = val[0]:"";
+	if(size(val) > 1)
+	    ret[key] = val[1]:"";
+	else
+	    ret[key] = "";
+    });
+    return ret;
+}
+
+/* EOF */
+}
