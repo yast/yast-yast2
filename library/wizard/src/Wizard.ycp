@@ -423,7 +423,7 @@
     global define void SetContents(string title, term contents, string help_text,
 				   boolean has_back, boolean has_next) {
 
-	if ( UI::WizardCommand(`SetDialogHeading( title ) ) )
+	if ( UI::WizardCommand(`SetDialogHeading( title ) ) == true )
 	{
 	    UI::WizardCommand(`SetHelpText( help_text ) );
 	    UI::WizardCommand(`EnableNextButton( has_next ) );
@@ -473,7 +473,7 @@
      **/
     global define void SetContentsButtons (string title, term contents, string help_text, string back_label, string next_label)
     {
-	if ( UI::WizardCommand(`SetBackButtonLabel( back_label ) ) )
+	if ( UI::WizardCommand(`SetBackButtonLabel( back_label ) ) == true )
 	{
 	    UI::WizardCommand(`SetNextButtonLabel( next_label ) );
 	    Wizard::SetContents( title, contents, help_text, true, true );
@@ -517,8 +517,7 @@
      **/
     global define void SetHelpText(string help_text)
     {
-	boolean ret = UI::WizardCommand(`SetHelpText( help_text ));
-	if ( ret != nil && ret != true)
+	if ( UI::WizardCommand(`SetHelpText( help_text ) ) == false )
 	{
 	    if ( UI::WidgetExists( `id(`helpSpace ) ) )
 		UI::ReplaceWidget(`id(`helpSpace), `RichText(`id(`HelpText), help_text ) );
@@ -540,7 +539,7 @@
      **/
     global define void SetNextButton( any id, string label )
     {
-	if ( UI::WizardCommand(`SetNextButtonLabel( label ) ) )
+	if ( UI::WizardCommand(`SetNextButtonLabel( label ) ) == true )
 	{
 	    UI::WizardCommand(`SetNextButtonID( id ) );
 	}
@@ -562,7 +561,7 @@
      **/
     global define void SetBackButton( any id, string label )
     {
-	if ( UI::WizardCommand(`SetBackButtonLabel( label ) ) )
+	if ( UI::WizardCommand(`SetBackButtonLabel( label ) ) == true )
 	{
 	    UI::WizardCommand(`SetBackButtonID( id ) );
 	}
@@ -584,7 +583,7 @@
      **/
     global define void SetAbortButton( any id, string label )
     {
-	if ( UI::WizardCommand(`SetAbortButtonLabel( label ) ) )
+	if ( UI::WizardCommand(`SetAbortButtonLabel( label ) ) == true )
 	{
 	    UI::WizardCommand(`SetAbortButtonID( id ) );
 	}
@@ -607,7 +606,7 @@
      **/
     global define void HideNextButton()
     {
-	if ( ! UI::WizardCommand(`SetNextButtonLabel( "" ) ) )
+	if ( UI::WizardCommand(`SetNextButtonLabel( "" ) ) == false )
 	{
 	    if ( UI::WidgetExists(`id(`rep_next ) ) )
 		UI::ReplaceWidget(`id(`rep_next ), `Empty() );
@@ -621,7 +620,7 @@
      **/
     global define void HideBackButton()
     {
-	if ( ! UI::WizardCommand(`SetBackButtonLabel( "" ) ) )
+	if ( UI::WizardCommand(`SetBackButtonLabel( "" ) ) == false )
 	{
 	    if ( UI::WidgetExists(`id(`rep_back ) ) )
 		UI::ReplaceWidget(`id(`rep_back), `Empty() );
@@ -635,7 +634,7 @@
      **/
     global define void HideAbortButton()
     {
-	if ( ! UI::WizardCommand(`SetAbortButtonLabel( "" ) ) )
+	if ( UI::WizardCommand(`SetAbortButtonLabel( "" ) ) == false )
 	{
 	    if ( UI::WidgetExists(`id(`rep_abort ) ) )
 		UI::ReplaceWidget(`id(`rep_abort ), `Empty() );
@@ -765,7 +764,7 @@
      **/
     global define void EnableAbortButton()
     {
-	if ( ! UI::WizardCommand(`EnableAbortButton( true ) ) )
+	if ( UI::WizardCommand(`EnableAbortButton( true ) ) == false )
 		UI::ChangeWidget(`id(`abort), `Enabled, true );
     }
 
@@ -775,7 +774,7 @@
      **/
     global define void DisableAbortButton()
     {
-	if ( ! UI::WizardCommand(`EnableAbortButton( false ) ) )
+	if ( UI::WizardCommand(`EnableAbortButton( false ) ) == false )
 	    UI::ChangeWidget(`id(`abort), `Enabled, false );
     }
 
@@ -785,7 +784,7 @@
      **/
     global define void DisableNextButton()
     {
-	if ( ! UI::WizardCommand(`EnableNextButton( false ) ) )
+	if ( UI::WizardCommand(`EnableNextButton( false ) ) == false )
 	{
 	    if ( UI::WidgetExists(`id(`next ) ) )
 		UI::ChangeWidget(`id(`next), `Enabled, false );
@@ -800,7 +799,7 @@
      **/
     global define void EnableNextButton()
     {
-	if ( ! UI::WizardCommand(`EnableNextButton( true ) ) )
+	if ( UI::WizardCommand(`EnableNextButton( true ) ) == false )
 	{
 	    if ( UI::WidgetExists(`id(`next ) ) )
 		UI::ChangeWidget(`id(`next), `Enabled, true );
@@ -815,7 +814,7 @@
      **/
     global define void DisableBackButton()
     {
-	if ( ! UI::WizardCommand(`EnableBackButton( false ) ) )
+	if ( UI::WizardCommand(`EnableBackButton( false ) ) == false )
 	    UI::ChangeWidget(`id(`back ), `Enabled, false );
     }
 
@@ -824,7 +823,7 @@
      **/
     global define void EnableBackButton()
     {
-	if ( ! UI::WizardCommand(`EnableBackButton( true ) ) )
+	if ( UI::WizardCommand(`EnableBackButton( true ) ) == false )
 	    UI::ChangeWidget(`id(`back ), `Enabled, true );
     }
 
@@ -834,7 +833,7 @@
      **/
     global define void DisableCancelButton()
     {
-	if ( ! UI::WizardCommand(`EnableCancelButton( false ) ) )
+	if ( UI::WizardCommand(`EnableCancelButton( false ) ) == false )
 	    UI::ChangeWidget(`id(`cancel ), `Enabled, false );
     }
 
@@ -843,7 +842,7 @@
      **/
     global define void EnableCancelButton()
     {
-	if ( ! UI::WizardCommand(`EnableCancelButton( true ) ) )
+	if ( UI::WizardCommand(`EnableCancelButton( true ) ) == false )
 	    UI::ChangeWidget(`id(`cancel ), `Enabled, true );
     }
 
@@ -857,7 +856,7 @@
 	// TO DO for YQWizard
 	// TO DO for YQWizard
 	
-	if ( UI::WidgetExists(`id(`WizardDialog ) ) )
+	if ( UI::WidgetExists(`id(`WizardDialog ) ) == true )
 	{
 	    ReplaceButtonBox( UI::WidgetExists(`id(`accept ) ) ?
 			      Wizard::AbortAcceptButtonBox() :
@@ -871,7 +870,7 @@
      **/
     global define void SetFocusToNextButton()
     {
-	if ( ! UI::WizardCommand(`SetFocusToNextButton() ) )
+	if ( UI::WizardCommand(`SetFocusToNextButton() ) == false )
 	{
 	    UI::SetFocus( UI::WidgetExists(`id(`next) ) ? `id(`next) : `id(`accept ) );
 	}
@@ -883,7 +882,7 @@
      **/
     global define void SetFocusToBackButton()
     {
-	if ( ! UI::WizardCommand(`SetFocusToBackButton() ) )
+	if ( UI::WizardCommand(`SetFocusToBackButton() ) == false )
 	{
 	    UI::SetFocus( UI::WidgetExists(`id(`back) ) ? `id(`back) : `id(`cancel ) );
 	}
