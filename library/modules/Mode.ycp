@@ -147,11 +147,6 @@
     global boolean serial_console	= false;
 
     /**
-     * language set in install.inf
-     */
-    global string language		= "en_US";
-
-    /**
      * braille mode ?
      */
     global boolean braille		= false;
@@ -231,12 +226,6 @@
 	if ( demo )		test = true;
 
 
-	if (initial)
-	{
-	    language = SCR::Read(.content.LANGUAGE);
-	    if (language == nil) language = "";
-	}
-
 	// only use the /etc/install.inf agent when file is present
 
 	if (SCR::Read (.target.size, "/etc/install.inf") != -1)
@@ -273,9 +262,6 @@
 	    vnc = SCR::Read (.etc.install_inf.VNC) == "1";
 
 	    usessh = SCR::Read (.etc.install_inf.UseSSH) == "1";
-
-	    language = SCR::Read (.etc.install_inf.Locale);
-	    if (language == nil) language = "";
 
 	    boot = SCR::Read (.etc.install_inf.InstMode);
 	    if (boot == nil) boot = "cd";
