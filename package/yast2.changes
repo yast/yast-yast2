@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Mar 23 16:54:37 CET 2004 - mvidner@suse.cz
+
+- added Confirm::MustBeRoot to easily alert the user (#35363)
+
+-------------------------------------------------------------------
 Tue Mar 23 09:05:39 CET 2004 - lslezak@suse.cz
 
 - fixed parsing quoted string in String::ParseOptions() (#36223)

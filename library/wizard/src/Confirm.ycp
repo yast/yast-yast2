@@ -80,5 +80,25 @@ y2milestone("--%1", Detection("network cards"));
 y2milestone("--%1", Detection("modems"));
 */
 
+/**
+ * If we are running as root, return true.
+ * Otherwise ask the user whether we should continue even though things
+ * might not work
+ */
+global define boolean MustBeRoot ()
+{
+    map out = SCR::Execute (.target.bash_output ("/usr/bin/id --user"));
+    boolean root = out["stdout"]:"" == "0\n";
+    return root || Popup::ContinueCancelHeadline (
+	// popup headline
+	_("Root privileges needed"),
+	// message in a continue/cancel popup
+	_("This module needs to be run as root.
+If you continue now, the module may not function properly.
+For example, some settings can be read improperly 
+and almost certainly you will not be able to write them.")
+	);
+}
+
 /* EOF */
 }
