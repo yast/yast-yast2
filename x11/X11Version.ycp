@@ -21,6 +21,7 @@ module "X11Version";
 textdomain "x11";
 
 import "Directory";
+import "Installation";
 include "require.ycp";
 
 //=======================================
@@ -71,6 +72,18 @@ global define void GetVersion() ``{
 	}
 	y2milestone( "xfree_version: <%1>", version );
 	return( version );
+}
+
+//---[ GetX11Link ]----//
+global define integer GetX11Link() ``{
+	// ...
+	// Read the endpoint of the X11 link
+	// ---
+	integer ver = SCR::Execute( .target.bash,
+		Directory::bindir + "/version -link " + Installation::destdir
+	);
+	y2milestone( "xfree_version [-link]: <%1>", ver );
+	return( ver );
 }
 
 //---[ have_x11 ]----//

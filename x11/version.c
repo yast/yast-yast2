@@ -25,12 +25,18 @@ STATUS        : Up to date
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <hd.h>
+
+//=====================================
+// Prototypes
+//-------------------------------------
+int getLink (char*);
 
 //=====================================
 // main
 //-------------------------------------
-int main (void) {
+int main (int argc,char*argv[]) {
 	hd_data_t *hd_data = NULL;
 	driver_info_t *di0 = NULL;
 	driver_info_t *di  = NULL;
@@ -41,6 +47,13 @@ int main (void) {
 	hd_data = calloc (1, sizeof *hd_data);
 	hd1 = hd_list (hd_data, hw_display, 1, NULL);
 	hd2 = hd1;
+
+	// ...
+	// follow X-link if option -link is given
+	// ---
+	if ((argc > 1) && (strcmp(argv[1],"-link") == 0)) {
+		exit (getLink(argv[2]));
+	}
 
 	// ...
 	// get number of cards if more than one card we
@@ -75,4 +88,23 @@ int main (void) {
 	// all other cases, version is 4
 	// ---
 	exit (4);
+}
+
+//=====================================
+// getLink
+//-------------------------------------
+int getLink (char* path) {
+	char start[128] = "";
+	char lsave[128] = "";
+	int count = 0;
+	sprintf(start,"%s/X",path);
+	while (readlink (start,lsave,sizeof(lsave)) != -1 ) {
+		sprintf(start,"%s",lsave);
+		if (count > 10) break;
+		count++;
+	}
+	if (strstr(start,"XFree86")) {
+		return (4);
+	}
+	return (3);
 }
