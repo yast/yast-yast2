@@ -89,7 +89,7 @@ Package::RemoveAll(el);
 Package::DoInstallAndRemove([], []);
 
 /* Other */
-Package::RunSUSEConfig();
+Package::RunSUSEconfig();
 
 }
 
