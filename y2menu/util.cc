@@ -10,7 +10,7 @@ const char *backtitle = NULL;
 
 const char *dialog_result;
 
-/* 
+/*
  * Attribute values, default is for mono display
  */
 chtype attributes[] = {
@@ -153,11 +153,9 @@ static void color_setup (void)
 void yast_init (void)
 {
   mouse_open ();
-#ifdef HAVE_RC_FILE
 #ifdef HAVE_NCURSES
   if (yast_parse_cfg (YAST_CFG_PATH, YAST_CFG_FILE) == -1)	/* Read the configuration file */
     exit (-1);
-#endif
 #endif
 
   initscr ();			/* Init curses */

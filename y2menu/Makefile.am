@@ -11,4 +11,6 @@ y2menu_SOURCES = parsecfg.cc parseyast.cc util.cc yast2.cc	\
 
 y2menu_LDADD = -lncurses
 
-y2menu_LDFLAGS =
+ydata_DATA = y2menu-color
+
+EXTRA_DIST = $(ydata_DATA)
