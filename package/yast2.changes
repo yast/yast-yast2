@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jan 29 11:32:55 CET 2004 - jsrain@suse.de
+
+- fixed cwm testsuite
+- fixed file list
+- 2.9.9
+
+-------------------------------------------------------------------
 Tue Jan 27 09:19:21 CET 2004 - jsrain@suse.de
 
 - removed hwinfo from neededforbuild

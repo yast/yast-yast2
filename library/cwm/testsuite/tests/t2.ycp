@@ -23,6 +23,12 @@
     include "testsuite.ycp";
     import "CWM";
     import "TablePopup";
+    import "Report";
+
+    // disable use of UI
+    Report::display_errors = false;
+    Report::log_errors = true;
+
     include "./tests/testfunc.yh";
     import "Mode";
 

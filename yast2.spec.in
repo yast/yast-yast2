@@ -87,11 +87,6 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 %dir @yncludedir@/wizard
 @yncludedir@/wizard/*.ycp
 
-# wizard
-
-%dir @yncludedir@/ui
-@yncludedir@/ui/*.ycp
-
 # commandline
 
 %dir @yncludedir@/commandline
