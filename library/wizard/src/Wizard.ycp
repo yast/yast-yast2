@@ -115,7 +115,7 @@
      **/
     global term AbortAcceptButtonBox() {
 	return `HBox(
-		     `HWeight(1, `Empty() ),	// Layout trick to make sure the center button is centered
+		     `HWeight(1, `ReplacePoint (`id (`back_rep), `Empty())),	// Layout trick to make sure the center button is centered
 		     `HStretch(),
 		     `PushButton(`id(`abort ), `opt (`key_F9), Label::AbortButton() ),
 		     `HStretch(),
@@ -946,8 +946,7 @@
     {
 	if ( UI::WizardCommand(`ShowReleaseNotesButton( label, id ) ) == false )
 	{
-	    // FIXME: do something in the NCurses case
-	    integer dummy_so_ycpc_doesnt_complain = 0;
+	    UI::ReplaceWidget (`id (`back_rep), `PushButton (`id (id), label));
 	}
     }
 
@@ -959,8 +958,7 @@
     {
 	if ( UI::WizardCommand(`HideReleaseNotesButton() ) == false )
 	{
-	    // FIXME: do something in the NCurses case
-	    integer dummy_so_ycpc_doesnt_complain = 0;
+	    UI::ReplaceWidget (`id (`back_rep), `Empty ());
 	}
     }
 
