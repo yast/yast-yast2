@@ -154,11 +154,13 @@
 
 
     /**
+     * Create a Generic Dialog
+     *
      * Returns a term describing a generic wizard dialog with a configurable
      * button box.
      *
      * @param	button_box term that contains a `HBox() with buttons in it
-     * @return	term describing the dialog.
+     * @return	term term describing the dialog.
      **/
     global term GenericDialog( term button_box ) {
 	return `VBox( `id(`WizardDialog),

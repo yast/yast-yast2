@@ -124,7 +124,7 @@
 
 
     /**
-     * Make a HTL (unsorted) colored list from a list of strings, i.e.
+     * Make a HTML (unsorted) colored list from a list of strings, i.e.
      * [ul]
      *     [li][font color="..."]...[/font][/li]
      *     [li][font color="..."]...[/font][/li]
