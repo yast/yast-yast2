@@ -24,6 +24,7 @@
 
     // keep trailing "/" !!
     string theme_path = Directory::themedir + "/current/";
+    string icon_path  = theme_path;
 
     boolean have_fancy_ui = false;
 
@@ -184,8 +185,11 @@
 			    `HSpacing(1),
 			    `HWeight( 70, `VBox(
 						`VSpacing(0.2),
-						`Left(`Heading(`id(`title), `opt (`hstretch), _("YaST2\nInitializing ..."))),
-
+						`HBox(
+						      `ReplacePoint(`id(`rep_title_icon), `Empty() ),
+						      `Heading(`id(`title), `opt (`hstretch), _("YaST2\nInitializing ...")),
+						      `HStretch()
+						      ),
 						`VWeight( 1, // Layout trick: Lower layout priority with weight
 							 `HVCenter(
 								   `ReplacePoint(`id(`contents), `Empty() )
@@ -403,9 +407,11 @@
 	term contents_box = `HBox(
 				  `HSpacing(1),
 				  `VBox(
-
-					`Left(`Heading(`id(`title), `opt (`hstretch), _("YaST2\nInitializing ..."))),
-
+					`HBox(
+					      `ReplacePoint(`id(`rep_title_icon), `Empty() ),
+					      `Heading(`id(`title), `opt (`hstretch), _("YaST2\nInitializing ...")),
+					      `HStretch()
+					      ),
 					`VWeight(1, // Layout trick: Lower layout priority with weight
 						 `HVCenter(
 							   `ReplacePoint(`id(`contents), `Empty() )
@@ -470,7 +476,7 @@
     /**
      * Open a popup dialog that displays a help text (rich text format).
      *
-     * @param
+     * @param help_text the text to display
      **/
     global define void ShowHelp( string help_text ) ``{
 	UI::LongTextPopup(
@@ -575,7 +581,7 @@
 
     /**
      * Define how the general framework for the installation wizard should
-     * look like. This Macro creates and show a dialog.
+     * look like. This function creates and shows a dialog.
      **/
     global define void SetContents(string title, term contents, string help_text,
 				   boolean has_back, boolean has_next) ``{
@@ -586,7 +592,7 @@
 	    UI::ChangeWidget(`id(`next), `Enabled, has_next);
 	    UI::SetFocus( `id(`next) );
 	}
-	if ( UI::WidgetExists(`id(`back	) ) )	UI::ChangeWidget(`id(`back), `Enabled, has_back);
+	if ( UI::WidgetExists(`id(`back		) ) )	UI::ChangeWidget(`id(`back), `Enabled, has_back);
 	if ( UI::WidgetExists(`id(`accept	) ) )	UI::SetFocus( `id(`accept ) );
 	if ( UI::WidgetExists(`id(`abort	) ) )	UI::ChangeWidget(`id(`abort),`Enabled, true);
 	if ( UI::WidgetExists(`id(`HelpText	) ) )	UI::ChangeWidget(`id(`HelpText), `Value, help_text);
@@ -637,7 +643,7 @@
      * Remember to restore the help subwindow with
      * RestoreHelp() before any other module is called!
      *
-     * @param a term describing the new contents
+     * @param contents a term describing the new contents
      **/
     global define void ReplaceHelp(term contents) ``{
 	UI::ReplaceWidget(`id(`helpSpace), contents);
@@ -676,7 +682,7 @@
     /**
      * Replace the wizard 'next' button with a custom widget.
      *
-     * @param a term describing the new contents
+     * @param contents a term describing the new contents
      **/
     global define void ReplaceNextButton(term contents) ``{
 	    UI::ReplaceWidget(`id(`rep_next), contents);
@@ -699,7 +705,7 @@
     /**
      * Replace the wizard 'abort' button with a custom widget.
      *
-     * @param a term describing the new contents
+     * @param contents a term describing the new contents
      **/
     global define void ReplaceAbortButton(term contents) ``{
 	UI::ReplaceWidget(`id(`rep_abort), contents);
@@ -718,6 +724,37 @@
 	}
     };
 
+    
+    /**
+     * Replace the wizard 'title' icon with a custom widget.
+     *
+     * @param new_icon a term describing the new contents
+     **/
+    global define void ReplaceTitleIcon( term new_icon ) ``{
+	if ( UI::WidgetExists(`id(`rep_title_icon ) ) )
+	{
+	    UI::ReplaceWidget(`id(`rep_title_icon ), new_icon );
+	}
+    };
+
+    
+    /**
+     * Set the wizard 'title' icon to the specified icon from the standard icon
+     * directory. 
+     *
+     * @param icon_name name (without path) of the new icon
+     **/
+    global define void SetTitleIcon( string icon_name ) ``{
+	Wizard::ReplaceTitleIcon( `Image( icon_path + icon_name, "" ) );
+    };
+
+
+    /**
+     * Clear the wizard 'title' icon, i.e. replace it with nothing
+     **/
+    global define void ClearTitleIcon() ``{
+	Wizard::ReplaceTitleIcon( `Empty() );
+    }
 
     /**
      * Replace the entire Wizard button box with a new one.
