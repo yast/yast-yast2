@@ -40,7 +40,7 @@
 				"help": _("Exit interactive mode and save the changes")
 			    ],
 			    "abort"	: $[
-				"help": _("Abort interactive mode, don't save the changes")
+				"help": _("Abort interactive mode without saving the changes")
 			    ]
 			],
 	"options"	: $[
