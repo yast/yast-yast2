@@ -339,10 +339,7 @@ global void SetCmdLine (string new_cmd_line) {
 	        if (Arch::board_compatible () == "MacRISC4")
 		{
 		    // G5 and newer
-		    if (Arch::ppc32 ())
-			kernel_packages = ["kernel-pmac64_32bit"];
-		    else
-			kernel_packages = ["kernel-pmac64"];
+		    kernel_packages = ["kernel-ppc64"];
 		}
 		else
 		{
@@ -367,13 +364,10 @@ global void SetCmdLine (string new_cmd_line) {
 		    chrp_cpu = tolower (chrp_cpu);
 		});
 
-		if (issubstring (chrp_cpu, "power3") && Arch::ppc32 ())
+		if ((issubstring (chrp_cpu, "power3") && Arch::ppc32 ())
+		    || Arch::ppc64 ())
 		{
-		    kernel_packages = ["kernel-power3"];
-		}
-		else if (Arch::ppc64 ())
-		{
-		    kernel_packages = ["kernel-pseries64"];
+		    kernel_packages = ["kernel-ppc64"];
 		}
 		else
 		{
