@@ -1,5 +1,4 @@
 
-
 #include <vector>
 #include <string>
 #include <locale.h>
@@ -66,6 +65,7 @@ int main (int argc, const char *const *argv)
      grp_data group;
 
      group.name = string ("All");
+     // button to show all yast2 modules
      group.textstr = string (_("&All") + 1);	// FIXME !!! HELP !!!
      group.skey = 0;
      groups.push_back (group);
@@ -248,44 +248,64 @@ void fillhelp ()
 {
     vector <string> tmp;
 
+    // help text for ncurses control center
     tmp.push_back (_("Control YaST2 ncurses via keyboard"));
     tmp.push_back ("");
 
+    // help text for ncurses control center
     tmp.push_back (_("1) General"));
+    // help text for ncurses control center
     tmp.push_back (_("Navigate through the dialog elements with\n"
 		     "<TAB> and <SHIFT>+<TAB> or <TAB> and <ALT>+<TAB>.\n"
 		     "Select or activate elements with <SPACE> or <ENTER>.\n"
 		     "Some elements use <ARROW> keys.\n"));
+    // help text for ncurses control center
     tmp.push_back (_("Buttons are equipped with shortcut keys like <ALT> and a letter.\n"
 		     "One main problem is that the environment can affect the use of\n"
 		     "the keyboard. So you will find more than one way to\n"
 		     "navigate the dialog pages. See the next section."));
     tmp.push_back ("");
 
+    // help text for ncurses control center
     tmp.push_back (_("2) Substitution of keystrokes"));
+    // help text for ncurses control center
     tmp.push_back (_("If <TAB> and <SHIFT>+<TAB> or <TAB> and <ALT>+<TAB> do not work,\n"
 		     "move focus forward with <CTRL>+<F> and backward with <CTRL>+<B>.\n"
 		     "If <ALT>+<letter> does not work, try <ESC>+<letter>. Example:\n"));
+    // help text for ncurses control center
     tmp.push_back (_("<ALT>+<H> as <ESC>+<H>.\n"));
+    // help text for ncurses control center
     tmp.push_back (_("<ESC>+<TAB> is also a substitute for <ALT>+<TAB>."));
     tmp.push_back ("");
 
+    // help text for ncurses control center
     tmp.push_back (_("3) Function keys"));
+    // help text for ncurses control center
     tmp.push_back (_("F-keys provide a quick access to main functions.\n"
 		     "There are many modules with special functions and it is not\n"
 		     "possible to apply the following system to all of them. In some\n"
 		     "environments, all or some F-keys are not availiable.\n"
 		     "There is no solution for this problem yet."));
     tmp.push_back ("");
+    // help text for ncurses control center
     tmp.push_back (_("F1  = Help"));
+    // help text for ncurses control center
     tmp.push_back (_("F2  = Info or Description"));
+    // help text for ncurses control center
     tmp.push_back (_("F3  = Add"));
+    // help text for ncurses control center
     tmp.push_back (_("F4  = Edit or Configure"));
+    // help text for ncurses control center
     tmp.push_back (_("F5  = Delete"));
+    // help text for ncurses control center
     tmp.push_back (_("F6  = Test"));
+    // help text for ncurses control center
     tmp.push_back (_("F7  = Expert or Advanced"));
+    // help text for ncurses control center
     tmp.push_back (_("F8  = Back"));
+    // help text for ncurses control center
     tmp.push_back (_("F9  = Abort"));
+    // help text for ncurses control center
     tmp.push_back (_("F10 = OK, Next, Finish, or Accept"));
 
     for (vector <string>::const_iterator it = tmp.begin (); it != tmp.end (); it++)

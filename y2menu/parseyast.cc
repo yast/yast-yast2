@@ -210,6 +210,9 @@ void getbuttons ()
 {
     set_textdomain ("base");
 
+    // help button
     button_help = _("&Help") + 1; // FIXME !!! HELP !!!
+
+    // quit button
     button_cancel = _("&Quit") + 1; // FIXEM !!! HELP !!!
 }
