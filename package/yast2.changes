@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug 14 11:54:01 CEST 2002 - arvin@suse.de
+
+- removed links to /sbin/yast2 with non ascii characters to
+  prevent screen corruption is some locales
+
+-------------------------------------------------------------------
 Tue Aug 13 14:20:37 CEST 2002 - arvin@suse.de
 
 - merged proofread texts
