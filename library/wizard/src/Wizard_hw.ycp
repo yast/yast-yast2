@@ -9,54 +9,49 @@
 
 {
 
-    module "Wizard_hw";
-    textdomain "base";
+module "Wizard_hw";
+textdomain "base";
 
-    /**
-     * Create the content of the screen with the detected devices.
-     * It is used in the SetWizardContent() or SetWizardContentButtons() functions.
-     *
-     * @param frame_label The frame around the detected devices
-     * @param detected A list of the detected devices for the SelectionBox. Must contain "Other (not detected)" as the last item.
-     * @param has_restart A button for restarting the detection.
-     * @param already_conf A content of the RichText. Describes the already configured devices.
-     * @return Content for the SetWizardContent[Buttons]()
-     */
-    global define term DetectedContent(string frame_label,
-				  list detected,
-				  boolean has_restart,
-				  string already_conf)
-    ``{
-	return
-	    `HBox(`HSpacing(1.5),
-		  `VBox(`VSpacing(0.4),
-			`Frame(frame_label,
-			       `HBox(`HSpacing(0.5),
-				     `VBox(`SelectionBox(`id(`detected_selbox),
-							 _("A&vailable are:"),
-							 detected),
-					   `HBox((has_restart? `PushButton(`id(`restart_button),
-									 _("Re&start detection")): `HSpacing(0.5)),
-						 `HStretch(),
-						 `PushButton(`id(`configure_button),
-							     `opt (`key_F3),
-							     _("&Configure..."))
-					   )
-				     ),
-				     `HSpacing(0.5)
-			       )
-			),
-			`VSpacing(0.3),
-			`RichText(`id(`configured_richtext),
-				  already_conf),
-		  `Right(`PushButton(`id(`edit_button),
-				     `opt (`key_F4), 
-				     _("C&hange..."))),
-		  `VSpacing(0.4)
-	      ),
-	      `HSpacing(1.5)
-	);
-    }
+/**
+ * Create the content of the screen with the detected devices.
+ * It is used in the SetWizardContent() or SetWizardContentButtons() functions.
+ *
+ * @param frame_label The frame around the detected devices
+ * @param detected A list of the detected devices for the SelectionBox. Must contain "Other (not detected)" as the last item.
+ * @param has_restart A button for restarting the detection.
+ * @param already_conf A content of the RichText. Describes the already configured devices.
+ * @return Content for the SetWizardContent[Buttons]()
+ */
+global define term DetectedContent(string frame_label, list detected,
+	boolean has_restart, string already_conf) ``{
+
+    return `HBox(
+	`HSpacing(1.5),
+	`VBox(
+	    `VSpacing(0.4),
+	    `Frame(frame_label, `HBox(
+		`HSpacing(0.5),
+		`VBox(
+		    `SelectionBox(`id(`detected_selbox), `opt(`notify),
+			_("A&vailable are:"), detected),
+		    `HBox(
+			(has_restart? `PushButton(`id(`restart_button),
+			      _("Re&start detection")): `HSpacing(0.5)),
+			`HStretch(),
+			`PushButton(`id(`configure_button), `opt (`key_F3), _("&Configure..."))
+		    )
+		),
+		`HSpacing(0.5)
+	    )),
+	    `VSpacing(0.3),
+	    `RichText(`id(`configured_richtext), already_conf),
+	    `Right(`PushButton(`id(`edit_button), `opt (`key_F4), _("C&hange..."))),
+	    `VSpacing(0.4)
+	),
+	`HSpacing(1.5)
+    );
+
+}
 
     /**
      * Create the contents of screen with configured items. It contains
