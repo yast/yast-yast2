@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 12 17:23:44 CEST 2002 - kkaempf@suse.de
+
+- read /etc/install.inf:InstMode correctly for Mode::boot
+- 2.6.20
+
+-------------------------------------------------------------------
 Sun Aug 11 21:16:04 CEST 2002 - mvidner@suse.cz
 
 - Runlevel: use full path of service scripts; force removal
