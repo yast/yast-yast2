@@ -10,7 +10,7 @@ dialogs. Each widget description map can have a "help" key, that specifies
 the help related to the widget.
 </para>
 <example><title>Help manipulation</title><screen>
-map widget_descr = $[
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "CWD_IN_ROOT_PATH" : $[
     "label" : _("&amp;Current Directory in root's Path"),
     "widget" : `checkbox,
@@ -19,7 +19,7 @@ map widget_descr = $[
   .....
 ]
 
-list widgets = // see <xref linkend="simple_dialog"/>
+list&lt;string&gt; widget_names = // see <xref linkend="simple_dialog"/>
  </screen></example>
   <para>
 If you need to add a help that is not bound to any widget, see
@@ -74,7 +74,7 @@ Are you sure?")))
     }
 }
 
-map widget_descr = $[
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "CWD_IN_ROOT_PATH" : $[
     "widget" : `checkbox,
     "label" : _("&amp;Current Directory in root's Path"),
@@ -108,7 +108,7 @@ are empty ( `opt () ).
 </para>
 
 <example><title>Widget options</title><screen>
-map widget_descr = $[
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "CWD_IN_ROOT_PATH" : $[
     "label" : _("&amp;Current Directory in root's Path"),
     "widget" : `checkbox,
@@ -146,7 +146,7 @@ define void MyStoreWidget (string key, map event) {
     this_global_variable = value;
 }
 
-map widget_descr = $[
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "CWD_IN_ROOT_PATH" : $[
     "label" : _("&amp;Current Directory in root's Path"),
     "widget" : `checkbox,
@@ -183,7 +183,7 @@ make the change effective ;-)"));
     return nil;
 }
 
-map widget_descr = $[
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "CWD_IN_ROOT_PATH" : $[
     "label" : _("&amp;Current Directory in root's Path"),
     "widget" : `checkbox,
@@ -222,7 +222,7 @@ member of the event map.
 </para>
 
 <example><title>Return value of handle function</title><screen>
-global define symbol MyHandleButton (map event) {
+define symbol MyHandleButton (map event) {
     if (event["ID"]:nil == "PUSH_BUTTON")
 	return `leave_dialog_other_way;
     else
@@ -230,7 +230,7 @@ global define symbol MyHandleButton (map event) {
                     // because of this widget
 }
 
-map widget_descr = $[
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "PUSH_BUTTON" : $[
     "label" : _("&amp;Exit dialog different way"),
     "widget" : `push_button,
@@ -267,7 +267,7 @@ define term getW2 () {
     return `VBox (`PushButton (`id (`w), _("W")));
 }
 
-map widget_descr = $[
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "W1" : $[
     "widget" : `custom,
     "custom_widget" : `VBox (`PushButton (`id (`w), _("W"))),
@@ -305,6 +305,66 @@ CWM::ShowAndRun ($[
  </screen></example>
 </section>
 
+<section><title>Generating UI event after specified timeout</title>
+<para>
+The new UI built-ins allow to emit an event after a specified timeout.
+Getting an event after specified timeout can be useful in order to
+update eg. s status label.
+</para>
+<para>
+To define the timeout, specify the "ui_timeout" entry in the widget description
+map with integer value in seconds specifying the timeout. Note that if there
+are multiple widgets in a dialog with UI timeout set, the lowest timeout is
+used (which means that the timeout event can be generated more often than
+specified).
+</para>
+<example id="ui_timeout_ex"><title>UI Timeout</title><screen>
+define symbol EventHandle (string key, map event) {
+    if (event["ID"] == `timeout)
+    {
+        string status = GetStatus ();
+        UI::ChangeWidget (`id (key), `Value, status);
+    }
+    return nil;
+}
+
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "status" : $[
+    "widget" : `text_entry,
+    "label" : _("Status"),
+    "ui_timeout" : 1, // each 1 second
+    "handle" : EventHandle,
+  ],
+]
+ </screen>
+</example>
+</section>
+
+<section><title>Empty widget</title>
+<para>
+Empty widget is just a `VBox () without any contents. It may be usable for
+handling some events but without displaying anything in the dialog.
+</para>
+<para>
+The only needed attribute to specify is the "widget" entry in the map that
+must have the value `empty. 
+</para>
+<example id="empty_widget_ex"><title>Empty Widget</title><screen>
+define symbol EventHandle (string key, map event) {
+    // to something interesting here
+    return nil;
+}
+
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "status" : $[
+    "widget" : `empty,
+    "handle" : EventHandle,
+  ],
+]
+ </screen>
+</example>
+</section>
+
 <section id="create_control">
     <title>More control over the dialog creation</title>
     <para>
@@ -317,9 +377,9 @@ dalog as in <xref linkend="simple_dialog"/> is created in
 <example id="simple_dial_adv"><title>More control on dialog creation</title><screen>
 // include <xref linkend="simple_widgets"/> here
 
-global define symbol runSomeDialog {
+define symbol runSomeDialog {
     // create list of maps representing wanted widgets
-    list&lt;map&gt; widgets
+    list&lt;map&lt;string,any&gt; &gt; widgets
         = CWM::CreateWidgets (
             [ "CWD_IN_ROOT_PATH", "CWD_IN_USER_PATH" ],
             widget_descr);
@@ -360,7 +420,7 @@ use the preprocessed widget. In this case you should write
 Note that the "widget" entry in preprocessed widget contains the real term.
 </para>
 <para>
-Then function CWM::MergeHelps (list&lt;map&gt; widgets) will merge the helps
+Then function CWM::MergeHelps (list&lt;map&lt;string,any&gt; &gt; widgets) will merge the helps
 of the widgets in the same order as the widgets were specified in the argument
 of the CreateWidgets function. In fact it only concatenates the help attributes
 of the widgets.

@@ -26,7 +26,7 @@ layer are the keys of widget properties.
 <title>Widgets description map</title>
     <para>
     <screen>
-map&lt;string,any&gt; widget_descr = $[
+map&lt;string,map&lt;string, any&gt; &gt; widget_descr = $[
   "CWD_IN_ROOT_PATH" : $[
     "label" : _("&amp;Current Directory in root's Path"),
     "widget" : `checkbox, 
@@ -97,12 +97,15 @@ define symbol runDialog {
         "store" : StoreWidget,
     ];
 
+    list&lt;string&gt; widget_names
+        = [ "CWD_IN_ROOT_PATH", "CWD_IN_USER_PATH" ];
+
     string caption = _("Dialog Caption");
 
     // display and run the dialog
     symbol ret = CWM::ShowAndRun ($[
-        "widget_names" : [ "CWD_IN_ROOT_PATH", "CWD_IN_USER_PATH" ],
-        "widget_desct" : widget_descr,
+        "widget_names" : widget_names,
+        "widget_descr" : widget_descr,
         "contents" : contents,
 	"caption" : caption,
         "fallback_functions" : functions

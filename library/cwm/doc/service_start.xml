@@ -1,50 +1,35 @@
 <?xml version="1.0" encoding='ISO-8859-1'?>
 <?$$?>
 <chapter id = "service_start">
-  <title>Advanced Service Starting Widget</title>
+  <title>Advanced Service Starting Widgets</title>
   <para>
-CWMServiceStart is a widget for CWM that can be used for setting
+CWMServiceStart is a set of widgets for CWM that can be used for setting
 service start-on-boot and immediately start/stop a service.
 It handles all the needed stuff via specified callback functions
 and via the Service module.
   </para>
-  <para>
-To create the service start widget, use the
-<computeroutput>CWMServiceStart::CreateWidget</computeroutput> function.
-As parameter, it takes a map with settings needed to create the widget
-and handle settings on it, returns a map with the widget for CWM. This map
-can be used the same way as maps for other widgets.
-  </para>
-
-<example id="service_start_basic">
-  <title>Usage of the Service Start dialog</title>
-<screen>
-        global define void SetUseLdap (boolean use_ldap) {...}
-        global define boolean GetUseLdap () {...}
-        global define void SaveAndRestart () {...}
-
-        map&lt;string,any&gt; widget = CWMServiceStart::CreateWidget ($[
-            "get_service_auto_start" : DhcpServer::GetStartService,
-            "set_service_auto_start" : DhcpServer::SetStartService,
-            "start_auto_button" : _("Start DHCP Server when &amp;Booting"),
-            "start_manual_button" : _("Start DHCP Server &amp;Manually"),
-
-            "get_use_ldap" : GetUseLdap,
-            "set_use_ldap" : SetUseLdap,
-            "use_ldap_checkbox" : _("Read DHCP Settings from &amp;LDAP"),
-
-            "service_id" : "dhcpd",
-            "service_running_label" : _("DHCP Server is running"),
-            "service_not_running_label" : _("DHCP Server is not running"),
-            "start_now_button" : _("&amp;Start DHCP Server Now"),
-            "stop_now_button" : _("S&amp;top DHCP Server Now"),
-            "save_now_action" : SaveAndRestart,
-            "save_now_button" : _("Save and Restart DHCP Server &amp;Now"),
-        ]);
- </screen>
-</example>
 <section>
   <title>Service start on boot</title>
+  <para>
+To create a widget for setting if service should be started on boot,
+use the CWMServiceStart::CreateAutoStartWidget () function. This function
+has one argument (a map from string to any).
+  </para>
+<example id="service_auto_start">
+  <title>Usage of the Service Start-on-Boot widget</title>
+<screen>
+boolean GetStartService () {...}
+boolean SetStartService (boolean start) {...}
+
+map&lt;string,any&gt; widget = CWMServiceStart::CreateAutoStartWidget ($[
+    "get_service_auto_start" : DhcpServer::GetStartService,
+    "set_service_auto_start" : DhcpServer::SetStartService,
+    "start_auto_button" : _("Start DHCP Server when &amp;Booting"),
+    "start_manual_button" : _("Start DHCP Server &amp;Manually"),
+    "help" : _("Help to the widget..."),
+]);
+ </screen>
+</example>
   <para>
 The parameters for service starting are following:
     <itemizedlist>
@@ -72,11 +57,38 @@ generic label is used.
 contains the label of the "Start only manually" radio button. If not present,
 generic label is used.
       </para></listitem>
+      <listitem><para><computeroutput>
+"help"
+      </computeroutput>
+contains the help to the widget. If not present, generic help is used.
+Note that if you change the labels of the buttons, you must specify the help.
+You can use CWMServiceStart::AutoStartHelpTemplate () and sformat to change
+only the button labels.
+      </para></listitem>
     </itemizedlist>
   </para>
 </section>
 <section>
   <title>LDAP support</title>
+<para>
+To create a widget for enabling or disabling the LDAP support,
+use the CWMServiceStart::CreateLdapWidget () function. This function
+has one argument (a map from string to any).
+</para>
+<example id="service_start_ldap">
+  <title>Usage of the LDAP enablement widget</title>
+<screen>
+global define void SetUseLdap (boolean use_ldap) {...}
+global define boolean GetUseLdap () {...}
+
+map&lt;string,any&gt; widget = CWMServiceStart::CreateWidget ($[
+    "get_use_ldap" : GetUseLdap,
+    "set_use_ldap" : SetUseLdap,
+    "use_ldap_checkbox" : _("Read DHCP Settings from &amp;LDAP"),
+    "help" : _("Help to the widget..."),
+]);
+ </screen>
+</example>
   <para>
 The parameters for LDAP support are following:
     <itemizedlist>
@@ -92,7 +104,6 @@ if LDAP support is enabled. If it is missing, LDAP check-box is not shown.
 is reference to a function with one boolean parameter saying if the LDAP support
 should be active and return type void. If it is missing, LDAP check-box is not
 shown.
-
       </para></listitem>
       <listitem><para><computeroutput>
 "use_ldap_checkbox"
@@ -100,11 +111,42 @@ shown.
 contains the label of the "Use LDAP" check-box. If not present, generic label
 is used.
       </para></listitem>
+      <listitem><para><computeroutput>
+"help"
+      </computeroutput>
+contains the help to the widget. If not present, generic help is used.
+Note that if you change the label of the check box, you must specify the help.
+You can use CWMServiceStart::EnableLdapHelpTemplate () and sformat to change
+only the check box label.
+      </para></listitem>
     </itemizedlist>
   </para>
 </section>
 <section>
   <title>Immediate actions</title>
+  <para>
+To create a widget for displaying service status and immediate starting
+or stopping the service,
+use the CWMServiceStart::CreateStartStopWidget () function. This function
+has one argument (a map from string to any).
+  </para>
+<example id="service_start_basic">
+  <title>Usage of the Immediate Actions Widget</title>
+<screen>
+define void SaveAndRestart () {...}
+
+map&lt;string,any&gt; widget = CWMServiceStart::CreateStartStopWidget ($[
+    "service_id" : "dhcpd",
+    "service_running_label" : _("DHCP Server is running"),
+    "service_not_running_label" : _("DHCP Server is not running"),
+    "start_now_button" : _("&amp;Start DHCP Server Now"),
+    "stop_now_button" : _("S&amp;top DHCP Server Now"),
+    "save_now_action" : SaveAndRestart,
+    "save_now_button" : _("Save and Restart DHCP Server &amp;Now"),
+    "help" : _("Help to the widget..."),
+]);
+ </screen>
+</example>
   <para>
 The parameters for Immediate actions are following:
     <itemizedlist>
@@ -152,22 +194,15 @@ It is is missing, the "Save and restart service now" button is not shown.
 label of the "Save and restart service now" button. If it is missing, generic
 label is used.
       </para></listitem>
-    </itemizedlist>
-  </para>
-</section>
-<section>
-  <title>Other stuff</title>
-  <para>
-Other supported parameters are following:
-    <itemizedlist>
       <listitem><para><computeroutput>
 "help"
       </computeroutput>
-the complete help for the widget. If it is not present, generic help is used
-(button labels are patched into the help texts.
+contains the help to the widget. If not present, generic help is used.
+Note that if you change the labels of the buttons, you must specify the help.
+You can use CWMServiceStart::StartStopHelpTemplate () and sformat to change
+only the button labels.
       </para></listitem>
     </itemizedlist>
   </para>
 </section>
-
 </chapter>

@@ -16,7 +16,7 @@ Parameters:
 </itemizedlist></para>
 
 <example><title>Check Box</title><screen>
-map widget_descr = $[
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "CHECKBOX" : $[
     "label" : _("&amp;Checkbox"),
     "widget" : `checkbox,
@@ -32,11 +32,11 @@ Parameters:
 <listitem><para>"widget" : must be set as `combobox</para></listitem>
 <listitem><para>"label" : label shown above the combobox</para></listitem>
 <listitem><para>"items" : list of two-item-lists of [id, label], each item represents one
-            item of the Combobox</para></listitem>
+            item of the Combobox. Both id and label must be strings.</para></listitem>
 </itemizedlist></para>
 
 <example><title>Combo Box</title><screen>
-map widget_descr = $[
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "COMBOBOX" : $[
     "label" : _("&amp;Combobox"),
     "widget" : `combobox,
@@ -61,7 +61,7 @@ Parameters:
 </itemizedlist></para>
 
 <example><title>Text Entry</title><screen>
-map widget_descr = $[
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "TEXTENTRY" : $[
     "label" : _("&amp;TextEntry"),
     "widget" : `textentry,
@@ -84,7 +84,7 @@ Parameters:
 </itemizedlist></para>
 
 <example><title>Int Field</title><screen>
-map widget_descr = $[
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "INTFIELD" : $[
     "label" : _("&amp;Intfield"),
     "widget" : `intfield,
@@ -104,7 +104,7 @@ Parameters:
 <listitem><para>"label" : label of the frame around the radio buttons
 </para></listitem>
 <listitem><para>"items" : list of two-item-lists of [id, label], each item
-            represents one radio button
+            represents one radio button. Both id and label must be strings.
 </para></listitem>
 <listitem><para>"orientation" : says if the radio buttons should be oriented
             horizontally or vertically. Allowed values are `horizontal and
@@ -113,7 +113,7 @@ Parameters:
 </itemizedlist></para>
 
 <example><title>Radio Buttons</title><screen>
-map widget_descr = $[
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "RADIO_BUTTONS" : $[
     "label" : _("RadioButtonGroup"),
     "widget" : `radio_buttons,
@@ -137,10 +137,29 @@ Parameters:
 </itemizedlist></para>
 
 <example><title>Push Button</title><screen>
-map widget_descr = $[
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "PUSH_BUTTON" : $[
     "widget" : `push_button,
     "label" : _("Push Button"),
+  ],
+  ....
+]
+ </screen></example>
+</section>
+
+<section id="multiline"><title>Multi-Line Edit Box</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `multi_line_edit</para></listitem>
+<listitem><para>"label" : title of the multiline widget</para></listitem>
+</itemizedlist></para>
+
+<example><title>Push Button</title><screen>
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "MULTI_EDIT" : $[
+    "widget" : `multi_line_edit,
+    "label" : _("Text editor"),
   ],
   ....
 ]
@@ -156,7 +175,7 @@ Parameters:
 </itemizedlist></para>
 
 <example><title>Custom widget</title><screen>
-map widget_descr = $[
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "PUSH_BUTTON" : $[
     "widget" : `custom,
     "custom_widget" : `PushButton (

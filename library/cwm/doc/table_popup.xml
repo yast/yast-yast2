@@ -26,31 +26,32 @@ Following text will refer on <xref linkend="tp_basic"/>.
 </para>
 <example id="tp_basic">
   <title>Usage of the Table/Popup widget - basic case</title><screen>
-       map options = $[
+       map&lt;string,map&lt;string,any&gt; &gt; options = $[
            "popup1" : popup1_description_map,
            "popup2" : popup2_description_map,
        ];
 
-
-       global define map getGlobalTableWidget () ``{
-(1)        map ret = CWM::CreateTable ($[
-               "add_delete" : true,
-               "up_down" : true
-           ]);
-	   ret = union (ret, $[
-(2)            "init" : ``(DhcpServer::globalsInit ());
-(3)            "handle" : ``(CWM::TableHandle (
-                    DhcpServer::widgets["global_table"]:$[]));
-(4)            "options" : options;
-(5)            "ids" : ``(DhcpServer::getTableContents ());
-           ];
-           return ret;
-       }
-
-       global define list getTableContents (map descr) ``{
+       define list getTableContents (map&lt;string,any&gt; descr) {
            return ["a", "b", "c"]; // to display 3 items
                                    // in the table
        }
+
+       define map&lt;string,any&gt; getGlobalTableWidget () {
+(1)        map&lt;string,any&gt; ret = CWM::CreateTableDescr (
+               $[
+                   "add_delete" : true,
+                   "up_down" : true
+               ],
+               $[
+(2)                "init" : TableInit,
+(3)                "handle" : CWM::TableHandleWrapper,
+(4)                "options" : options,
+(5)                "ids" : getTableContents,
+               ]
+           );
+           return ret;
+       }
+
  </screen>
 <para>
 Notes:
@@ -78,8 +79,11 @@ but instead of them table-widget-specific defaults are used.
 
 <section id="create_table"><title>Creating the table container (1) </title>
 <para>
-For getting the initial map the function map CWM::CreateTable () can be used.
-It takes as a parameter a map specifying the attributes of the table.
+For getting the initial map the function map&lt;string,any&gt; CWM::CreateTableDescr ()
+can be used.
+It takes as a parameters a map specifying the attributes of the table
+and a map specifying additional settings that will be merged to the
+description map (see below).
 Currently supported attributes are:
 <itemizedlist>
 <listitem><para>
@@ -111,7 +115,7 @@ needs.
 </para>
 <para>
 There are predefined functions for this stuff. In most cases, they can be used
-as they are, or via some wrapper.
+as they are, or via a wrapper.
 Typical case is that the initialize function copies the data from the global
 storage to some temporary variable (because of the Back button behavior), and
 then calls the predefined initialization function.
@@ -129,6 +133,11 @@ calls the delete handler or makes the event loop finish.
 It redraws whole table only if it is needed (reorder, add or delete an item), otherwise
 only changes affected items.
 </para>
+<para>
+Note that CWM::TableInit () and CWM::TableHandle () cannot be specified directly
+in the widget description map as these functions have one additional parameter.
+Use CWM::TableInitWrapper () resp. CWM::TableHandleWrapper () instead.
+</para>
 </section>
 
 <section><title>Transforming option key to option description map (4)</title>
@@ -142,8 +151,8 @@ under the "options" key.
 <section><title>The contents of the table (5)</title>
 <para>
 Specify here the contents of the table that will be displayed. Should 
-return the list of option ids. Before evaluation, the table description map
-will be added to the term.
+return the list of option ids. The function has one argument, the table widget
+description map.
 </para>
 </section>
 </section>
@@ -169,23 +178,9 @@ Following text will refer to <xref linkend="option_basic_ex"/>.
 </para>
 
 <example id="option_basic_ex"><title>Basic option description map</title><screen>
-map options = $[
-    "enable_service" : $[
-	"table" : $[
-(1)         "label" : _("Enable DHCP server at boot time"),
-(2)         "summary" : ``(DhcpServer::enableServiceSummary ()),
-        ],
-        "popup" : $[
-(3)         "init" : ``(DhcpServer::enableServiceInit ()),
-(4)         "store" : ``(DhcpServer::enableServiceSave ()),
-(5)         "widget" : `checkbox,
-        ],
-    ],
-];
-
-global define string enableServiceSummary (
+define string EnableServiceSummary (
     any opt_id, string opt_key)
-``{
+{
     if (settings["enable_service"]:false)
     {
         return _("Yes");
@@ -196,23 +191,37 @@ global define string enableServiceSummary (
     }
 }
 
-global define void enableServiceInit (
+define void EnableServiceInit (
     any opt_id, string opt_key)
-``{
+{
     UI::ChangeWidget (`id ("enable_service"), `Value,
         settings["__run_dhcp_server"]:false);
 }
 
-global define void enableServiceSave (
+define void EnableServiceStore (
     any opt_id, string opt_key)
-``{
+{
     settings["__run_dhcp_server"]
         = UI::QueryWidget (`id ("enable_service"), `Value);
 }
+
+map&lt;string,map&lt;string,any&gt; &gt; options = $[
+    "enable_service" : $[
+	"table" : $[
+(1)         "label" : _("Enable DHCP server at boot time"),
+(2)         "summary" : EnableServiceSummary,
+        ],
+        "popup" : $[
+(3)         "init" : EnableServiceInit,
+(4)         "store" : EnableServiceStore,
+(5)         "widget" : `checkbox,
+        ],
+    ],
+];
  </screen>
 <para>
 This example describes a simple option, that is represented by a check box in the
-popup, has label "Option label" and own functions to initialize the check
+popup, has label "Enable DHCP server at boot time" and own functions to initialize the check
 box after the popup is displayed, store its status before the dialog hides
 after user clicked the OK button, and generate the text for the right
 column of the table.
@@ -230,9 +239,9 @@ the option name is used instead.
 <section><title>Summary function (2)</title>
 <para>
 Summary function is used to get the (localizable) value for the right
-column of the table. The "summary" key contains a term, before evaluation
-the option id and option key will be added, returns the value description
-for the table.
+column of the table. The "summary" key contains a function reference,
+the function has two arguments - option id (any) and option key (string),
+returns the value description for the table (string).
 </para>
 </section>
 
@@ -240,8 +249,8 @@ for the table.
 <para>
 The initialization function is called immediately after the popup is
 displayed. Its task is to set appropriate value to the displayed widget.
-Before evaluation, parameters option id and option key are added to the
-term.
+Has two parameters - option id (any) and option key (string), return value
+is void.
 </para>
 </section>
 
@@ -249,8 +258,9 @@ term.
 <para>
 The state storing function is called before the popup is closed
 via the "OK" button. Its task is to grab the values from the
-popup and store them to appropriate variables. Before evaluation, parameters
-option id and option key are added to the term.
+popup and store them to appropriate variables.
+Has two parameters - option id (any) and option key (string), return value
+is void.
 </para>
 </section>
 
@@ -277,14 +287,18 @@ fallback handler or option-specific handler for every option must be defined.
 </para>
 
 <example><title>Fallback handlers definition</title><screen>
-global define map getTableWidget () ``{
-    map ret = CWM::CreateTable ($[]);
-    ret["fallback"] = $[
-        "init" : ``(DhcpServer::commonPopupInit ());
-        "store" : ``(DhcpServer::commonPopupSave ());
-        "summary" : ``(DhcpServer::commonTableEntrySummary ());
-    ];
-    // other updates of ret come here
+define map&lt;string,any&gt; getTableWidget () {
+    map&lt;string,any&gt; ret = CWM::CreateTableDescr (
+        $[],
+        $[
+            "fallback" : $[
+                "init" : commonPopupInit;
+                "store" : commonPopupSave;
+                "summary" : commonTableEntrySummary;
+            // other options of the widget description map come here
+            ],
+        ]
+    );
     return ret;
 }
  </screen></example>
@@ -293,18 +307,22 @@ global define map getTableWidget () ``{
 <section><title>Deleting entry</title>
 <para>
 For deleting an entry from the table (via the Delete button below it), this
-handler is used. Before evaluation of the term, option id and option key are
-added.
+handler is used. The handler has two parameter - the option id (any) and
+the option key (string).
 If return value is true, then it is assumed, that the entry was really deleted,
 and the table should be redrawn. Otherwise, the table is left as is.
 </para>
 
 <example><title> Deleting entry from table</title><screen>
-global define map getTableWidget () ``{
-    map ret = CWM::CreateTable ($[]);
-    ret["option_delete"]
-        = ``(DhcpServer::commonTableEntryDelete ());
-    // other updates of ret come here
+define map&lt;string,any&gt; getTableWidget () {
+    map&lt;string,any&gt; ret = CWM::CreateTableDescr (
+        $[],
+        $[
+            "option_delete" :
+                commonTableEntryDelete,
+            // other options of the widget description map come here
+        ]
+    );
     return ret;
 }
  </screen></example>
@@ -320,11 +338,15 @@ If not present, default is true.
 </para>
 
 <example><title>Entries for adding to the table</title><screen>
-global define map getTableWidget () ``{
-    map ret = CWM::CreateTable ($[]);
-    ret["add_items"] = ["a", "b", `item (`id ("c"), "C") ];
-    ret["add_unlisted"] = false;
-    // other updates of ret come here
+define map&lt;string,any&gt; getTableWidget () {
+    map&lt;string,any&gt; ret = CWM::CreateTableDescr (
+        $[],
+        $[
+            "add_items" : ["a", "b", `item (`id ("c"), "C") ],
+            "add_unlisted" : false,
+            // other options of the widget description map come here
+	]
+    );
     return ret;
 }
  </screen>
@@ -343,15 +365,19 @@ present, then option key is the same as option id.
 </para>
 
 <example><title>Transforming option id to option key</title><screen>
-global define map getTableWidget () ``{
-    map ret = CWM::CreateTable ($[]);
-    ret["id2key"] = ``(DhcpServer::id2key ());
-    // other updates of ret come here
-    return ret;
+define string id2key (map&lt;string,any&gt; descr, any opt_id) {
+    return opt_id; // 1:1 translation
 }
 
-global define string id2key (map descr, any opt_id) ``{
-    return opt_id; // 1:1 translation
+define map&lt;string,any&gt; getTableWidget () {
+    map&lt;string,any&gt; ret = CWM::CreateTableDescr (
+        $[],
+        $[
+            "id2key" : d2key,
+            // other options of the widget description map come here
+        ]
+    );
+    return ret;
 }
  </screen></example>
 </section>
@@ -362,22 +388,26 @@ If the order of items makes sense, then it is needed to specify a function
 that changes the order of items in appropriate structures. This function must
 be specified (if Up and Down buttons are to be displayed) via the "option_move"
 key in the table description map as a term.
-Before evaluation, the option id, option key and direction parameters are added.
-Direction is represented as a symbol with value `up or `down.
+Has parameters option id (any), option key (string) and direction (symbol `up
+or `down).
 Must return true if the order was really changed (in order to redraw the table).
 </para>
     
 <example><title>Specifying reordering function</title><screen>
-global define map getTableWidget () ``{
-    map ret = CWM::CreateTable ($[]);
-    ret["option_move"] = ``(DhcpServer::optMove ());
-    // other updates of ret come here
-    return ret;
-}
-
-global define any optMove (any opt_id, string opt_key, symbol direction) ``{
+global define any optMove (any opt_id, string opt_key, symbol direction) {
     // modify internal structure appropriate way here
     return true;
+}
+
+global define map&lt;string,any&gt; getTableWidget () {
+    map&lt;string,any&gt; ret = CWM::CreateTableDescr (
+        $[],
+        $[
+            "option_move" : optMove;
+            // other options of the widget description map come here
+        ]
+    );
+    return ret;
 }
  </screen></example>
 </section>
@@ -410,6 +440,12 @@ key can be present in the map only once. Default if false (if multiple
 occurrences of a key in map aren't disabled at all, see
 <xref linkend="create_table"/>).
 </para></section>
+<section><title>Label as function</title><para>
+If the option label isn't static, a function that creates it can be specified.
+Specify in the "table" submap the key "label_func" and set it as value a
+function that takes as arguments the widget id (any), widget key (string)
+and returns the label to the table (string).
+</para></section>
 <section><title>Option handlers</title><para>
 In some cases the generic behavior (display popup, initialize it, handle
 UI events and store the settings) may be unusable. If the "handle" key in
@@ -421,8 +457,9 @@ this event.
 It can be two types. If it is a symbol, then the symbol is immediately returned
 and the event loop finishes.
 </para>
-<para> If it is a term, then parameters option id, option key, and event that
-occurred are added to it, and it is evaluated. If returned value is nil, then
+<para> If it is a function reference, then it is called with parameters
+option id (any), option key (string) and event that occurred (map).
+If returned value is nil, then
 the event loop continues with handler of next widget in the dialog or next
 event. If a symbol is returned, then the event loop is finished, and returned
 value passed to wizard sequencer. If a special symbol `_tp_normal is returned,
@@ -449,9 +486,10 @@ before evaluation.
 
 <section><title>UI events handling</title><para>
 To handle the UI events, use the "handle" key in the "popup" submap.
-Before the evaluation, parameters option id and option key and returned UI
-event are added to the term. It is evaluated every time the
-UI::UserInput returns. If not set, no handling function is run.
+It must contain a function with parameters option id (any), option key (string)
+and event (map, return value of UI::WaitForEvent).
+It is called every time the
+UI::WaitForEvent returns. If not set, no handling function is run.
 </para></section>
 
 <section><title>Widget attributes</title><para>
@@ -481,7 +519,7 @@ map popups = $[
       "label" : _("Boot Loader Type"),
       // will return "GRUB" if grub is selected,
       // "LILO" if lilo is selected,...
-      "summary" : ``(loaderTypeSummary ()),
+      "summary" : loaderTypeSummary,
       // some bootloader must be always selected 
       "optional" : false,
       // the order of this entry in global
@@ -495,9 +533,9 @@ map popups = $[
     ],
     "popup" : $[
       // sets appropriate radio button selected
-      "init" : ``(loaderTypeInit ()),
+      "init" : loaderTypeInit,
       // queries for the active radio button, stores the result 
-      "store" : ``(loaderTypeSave ()),
+      "store" : loaderTypeSave,
       // no validation is done, validation always successful
 //    "validate" : not needed
       // generic widget is used, this option is not needed
