@@ -132,7 +132,7 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 		    export LC_CTYPE=${LANG%%[.@]*}.UTF-8
 	        ;;
 	    esac
-	    if testutf8 ; [ $? -eq 1 ] ; then
+	    if testutf8 ; [ $? -ne 2 ] ; then
 		unicode_start
 		uc_started=1
 	    fi
