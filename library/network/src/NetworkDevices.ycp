@@ -350,7 +350,10 @@ global map ConcealSecrets1 (map<string, any> ifcfg) {
 	return nil;
     }
     map out = mapmap (string k, any v, ifcfg, {
-	if (substring (k, 0, 12) == "WIRELESS_KEY") // also _1 .. _4
+	// see also Write "Permission change"
+	if ((substring (k, 0, 12) == "WIRELESS_KEY" // also _1 .. _4
+	     || k == "WIRELESS_WPA_PSK")
+	    && v != "")
 	{
 	    v = "CONCEALED";
 	}
@@ -615,6 +618,7 @@ global define boolean Write(string devregex) {
 	    */
 
 	    /* 0600 if contains encryption key (#24842) */
+	    // see also ConcealSecrets1, keep in sync
 	    boolean has_key =
 		devmap["WIRELESS_WPA_PSK"]:"" != "" ||
 		// the unnumbered one should be empty but just in case

@@ -1,8 +1,8 @@
 Dump	ConcealSecrets1:
-Return	$["WIRELESS_KEY":"CONCEALED", "WIRELESS_KEY_1":"CONCEALED", "WIRELESS_KEY_2":"CONCEALED", "WIRELESS_KEY_3":"CONCEALED", "WIRELESS_KEY_4":"CONCEALED", "_aliases":$["foo":$["WIRELESS_KEY":"not masked, should not be here", "alias":"data"]], "other":"data"]
+Return	$["WIRELESS_KEY":"CONCEALED", "WIRELESS_KEY_1":"CONCEALED", "WIRELESS_KEY_2":"CONCEALED", "WIRELESS_KEY_3":"CONCEALED", "WIRELESS_KEY_4":"", "WIRELESS_WPA_PSK":"CONCEALED", "_aliases":$["foo":$["WIRELESS_KEY":"not masked, should not be here", "alias":"data"]], "other":"data"]
 Return	nil
 Return	$[]
 Dump	ConcealSecrets:
-Return	$["eth":$["0":$["other":"data"], "1":$["other":"data"]], "wlan":$["id-00:11:22:33:44:55":$["WIRELESS_KEY":"CONCEALED", "WIRELESS_KEY_1":"CONCEALED", "WIRELESS_KEY_2":"CONCEALED", "WIRELESS_KEY_3":"CONCEALED", "WIRELESS_KEY_4":"CONCEALED", "_aliases":$["foo":$["WIRELESS_KEY":"not masked, should not be here", "alias":"data"]], "other":"data"], "id-aa:bb:cc:dd:ee:ff":$["WIRELESS_KEY":"CONCEALED", "WIRELESS_KEY_1":"CONCEALED", "WIRELESS_KEY_2":"CONCEALED", "WIRELESS_KEY_3":"CONCEALED", "WIRELESS_KEY_4":"CONCEALED", "_aliases":$["foo":$["WIRELESS_KEY":"not masked, should not be here", "alias":"data"]], "other":"data"]]]
+Return	$["eth":$["0":$["other":"data"], "1":$["other":"data"]], "wlan":$["id-00:11:22:33:44:55":$["WIRELESS_KEY":"CONCEALED", "WIRELESS_KEY_1":"CONCEALED", "WIRELESS_KEY_2":"CONCEALED", "WIRELESS_KEY_3":"CONCEALED", "WIRELESS_KEY_4":"", "WIRELESS_WPA_PSK":"CONCEALED", "_aliases":$["foo":$["WIRELESS_KEY":"not masked, should not be here", "alias":"data"]], "other":"data"], "id-aa:bb:cc:dd:ee:ff":$["WIRELESS_KEY":"CONCEALED", "WIRELESS_KEY_1":"CONCEALED", "WIRELESS_KEY_2":"CONCEALED", "WIRELESS_KEY_3":"CONCEALED", "WIRELESS_KEY_4":"", "WIRELESS_WPA_PSK":"CONCEALED", "_aliases":$["foo":$["WIRELESS_KEY":"not masked, should not be here", "alias":"data"]], "other":"data"]]]
 Return	nil
 Return	$[]
