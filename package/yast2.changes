@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Thu Jan 27 13:29:28 CET 2005 - mvidner@suse.cz
 
-- NetworkDevices: canonicalize STARTMODE (~#50059), also on Import.
+- NetworkDevices: canonicalize STARTMODE (~#50095), also on Import.
 - 2.11.19
 
 -------------------------------------------------------------------
