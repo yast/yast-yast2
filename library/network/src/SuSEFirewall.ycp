@@ -1866,10 +1866,6 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
      * @return	boolean if succesfull
      */
     global define boolean Write () {
-	// Firewall should be stopped before writing the configuration
-	if (GetModified()) {
-	    StopServices();
-	}
 
 	if (! WriteConfiguration())	return false;
 
