@@ -93,11 +93,10 @@ global define boolean MustBeRoot()
     if(root) return true;
 
     /* Message in a continue/cancel popup */
-    string pop = _("This module needs to be run as root.
+    string pop = _("This module must be run as root.
 If you continue now, the module may not function properly.
 For example, some settings can be read improperly
-and it is unlikely that settings can be written.
-");
+and it is unlikely that settings can be written.\n");
 
     /* Popup headline */
     if(Popup::ContinueCancelHeadline(_("Root Privileges Needed"), pop)) {

@@ -202,8 +202,9 @@ define void FillWidgetWithData (integer index) {
 global define string LogSelectionHelp () {
     // help for the log widget, part 1, alt. 1
     return _("<p><b><big>Displayed Log</big></b><br>
-Use <b>Log</b> to select the log you want to display. It will be displayed in
-the field below.</p>");
+Use <b>Log</b> to select the log to display. It will be displayed in
+the field below.</p>
+");
 }
 
 /**
@@ -252,7 +253,8 @@ global define string SaveHelp () {
     // help for the log widget, part 2, alt. 3
     return _("<p>
 To save the log into a file, click <b>Save Log</b> and select the file
-to save the log to.</p>");
+to which to save the log.</p>
+");
 }
 
 /**
