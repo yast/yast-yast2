@@ -210,7 +210,7 @@ global void InitAllowedInterfaces (list<string> services) {
     map<string,boolean> service_status = $[];
 
     map<string,map<string,boolean> > ifaces_info
-	= SuSEFirewall::GetServices (services);
+	= SuSEFirewall::GetServicesInZones (services);
     foreach (string s, map<string,boolean> status, ifaces_info, {
 	foreach (string iface, boolean en, status, {
 	    service_status[iface] = service_status[iface]:true && en;
