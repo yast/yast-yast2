@@ -1,0 +1,24 @@
+/**
+ * File:
+ *   initscripts.scr
+ * Summary:
+ *   SCR Agent for reading contents of scripts in /etc/init.d/
+ * Access:
+ *   read-only
+ * Authors:
+ *   Petr Blahos <pblahos@suse.cz>
+ * See:
+ *   libscr
+ * Example:
+ *   Read(.init.scripts)
+ * 
+ * $Id$
+ *
+ * reads contents of init scripts
+ * processes paths .init.scripts.runlevels and .init.scripts.comments
+ * See /usr/lib/YaST2/servers_non_y2/ag_initscripts for deeper
+ * documentation.
+ */
+.init.scripts
+
+`ag_initscripts ()
