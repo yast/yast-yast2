@@ -7,6 +7,7 @@ yncludedir = @yncludedir@/ui
 
 module_DATA =			\
 	Popup.ycp		\
+	Label.ycp		\
 	Wizard.ycp		\
 	Wizard_hw.ycp		\
 	Progress.ycp		\

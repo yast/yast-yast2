@@ -17,10 +17,11 @@ no longer need to explicitly pass standard button labels like "Yes" or "No"
 etc. as parameters (we had to do that because of technical limitations with the
 translator module, but we found a workaround for that).
 
-Popup.ycp is a replacement for the include common_popups.ycp.
+Popup.ycp and Label.ycp are replacements for the includes
+common_popups.ycp, common_messages.ycp.
 (For performance reasons: using "include" in multiple files parses
 the inclusion each time, whereas "import" needs to parse a file only once.)
-Use yast2/wizard/src/migrate_common_popups to convert your sources.
+Use devtools/yast2/migrate_common_messages_popups to convert your sources.
 
 			  SIMPLE AND EXPERT VERSIONS
 			  ==========================
@@ -120,9 +121,9 @@ Use
 `OpenDialog(
             ...
             `HBox(
-:-)               `PushButton( `id(`ok ), `opt(`default), OKButtonLabel() ),
-                  `PushButton( `id(`retry ), RetryButtonLabel() ),
-                  `PushButton( `id(`cancel), CancelButtonLabel() )
+:-)               `PushButton( `id(`ok ), `opt(`default), Label::OKButton() ),
+                  `PushButton( `id(`retry ), Label::RetryButton() ),
+                  `PushButton( `id(`cancel), Label::CancelButton() )
                   )
            )
 
@@ -140,9 +141,9 @@ and NOT
 - even whenever you create your own dialogs.
 
 The first part of the name always is the message itself literally ("Retry"),
-the suffix indicates the type ("ButtonLabel") to indicate whether or not it has
-a keyboard shortcut. Currently we have "xxxButtonLabel" (with keyboard
-shortcut) and "xxxMsg" (without shortcut).
+the suffix indicates the type ("Button") to indicate whether or not it has
+a keyboard shortcut. Currently we have "Label::xxxButton" (with keyboard
+shortcut) and "Label::xxxMsg" (without shortcut).
 
 
 
@@ -208,6 +209,7 @@ scrolling.
 * Add to your YCP file:
 
 import "Popup"
+import "Label"
 
 
 * Remove your own definitions of
@@ -242,8 +244,8 @@ import "Popup"
 
   - YesNoOpt()			-> Popup::AnyQuestion( "",
 						     message,
-						     YesButtonLabel(),
-						     NoButtonLabel(),
+						     Label::YesButton(),
+						     Label::NoButton(),
 						     `focus_no );
 
 
@@ -264,10 +266,10 @@ import "Popup"
 
 * Search and replace common button labels for the rest of your dialogs:
 
-	_("&OK")	-> OKButtonLabel()
-	_("&Cancel")	-> CancelButtonLabel()
+	_("&OK")	-> Label::OKButton()
+	_("&Cancel")	-> Label::CancelButton()
 	...
 
-  See "common_messages.ycp" for a complete list.
+  See "Label.ycp" for a complete list.
 
 

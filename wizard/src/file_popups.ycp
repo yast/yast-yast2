@@ -22,7 +22,7 @@
 
     textdomain "base";
 
-    include "ui/common_messages.ycp";
+    import "Label";
 
     /*
      * Updated to use the new qt widgets (only if available, of course)
@@ -153,9 +153,9 @@
 		    )
 		),
 	    `HBox (
-		   `PushButton (`id(`ok_button), `opt (`key_F10), OKButtonLabel() ),
+		   `PushButton (`id(`ok_button), `opt (`key_F10), Label::OKButton() ),
 		   `HStretch (),
-		   `PushButton (`id(`cancel_button), `opt (`key_F9), CancelButtonLabel())
+		   `PushButton (`id(`cancel_button), `opt (`key_F9), Label::CancelButton())
 		   )
 	    );
 
@@ -304,9 +304,9 @@
 			 `VSpacing(15)
 			 ),
 		  `HBox (
-		      `PushButton (`id(`ok_button), `opt (`key_F10), OKButtonLabel() ),
+		      `PushButton (`id(`ok_button), `opt (`key_F10), Label::OKButton() ),
 			 `HStretch (),
-		      `PushButton (`id(`cancel_button), `opt (`key_F9), CancelButtonLabel() )
+		      `PushButton (`id(`cancel_button), `opt (`key_F9), Label::CancelButton() )
 			 )
 		  );
 
@@ -450,9 +450,9 @@
 		),
 	    `TextEntry(`id(`filename), _("File na&me")),
 	    `HBox (
-		   `PushButton (`id(`ok_button), `opt (`key_F10), OKButtonLabel() ),
+		   `PushButton (`id(`ok_button), `opt (`key_F10), Label::OKButton() ),
 		   `HStretch (),
-		   `PushButton (`id(`cancel_button), `opt (`key_F9), CancelButtonLabel())
+		   `PushButton (`id(`cancel_button), `opt (`key_F9), Label::CancelButton())
 		)
 	    );
 

@@ -21,7 +21,7 @@
 
     textdomain "base";
 
-  include "ui/common_messages.ycp";
+  import "Label";
 
 
   UI( ``{
@@ -66,8 +66,8 @@
 
 	  any ret = AnyQuestionPopup( headline,
 				      message,
-				      ContinueButtonLabel(),
-				      CancelButtonLabel(),
+				      Label::ContinueButton(),
+				      Label::CancelButton(),
 				      `focus_yes
 				      );
 
@@ -128,8 +128,8 @@
 
 	  any ret = AnyQuestionPopup( headline,
 				      message,
-				      YesButtonLabel(),
-				      NoButtonLabel(),
+				      Label::YesButton(),
+				      Label::NoButton(),
 				      `focus_yes
 				      );
 
@@ -195,7 +195,7 @@
 				    richtext,	// scrolled text
 				    `PushButton( `id(`ok),
 						 `opt(`default, `key_F10),
-						 OKButtonLabel() )
+						 Label::OKButton() )
 				    )
 			     )
 		      );
@@ -301,8 +301,8 @@ You will need to reinstall." );
 
 	  any ret = AnyQuestionPopup( NoHeadline(),
 				      message,
-				      YesButtonLabel(),
-				      NoButtonLabel(),
+				      Label::YesButton(),
+				      Label::NoButton(),
 				      `focus_no );
 
 	  y2debug("ReallyAbortPopup returned: %1", ret );
@@ -336,7 +336,7 @@ You will need to reinstall." );
 				 `Label(message),
 				 `PushButton(`id(`ok),
 					     `opt(`default, `key_F10),
-					     OKButtonLabel()),
+					     Label::OKButton()),
 				 `VSpacing(0.2)
 				 ),
 			   `HSpacing(1)
@@ -366,7 +366,7 @@ You will need to reinstall." );
 
       global define void WarningPopup(string message) ``{
 
-	  AnyMessagePopup( WarningMsg(), message );
+	  AnyMessagePopup( Label::WarningMsg(), message );
 
       };
 
@@ -388,7 +388,7 @@ You will need to reinstall." );
 
       global define void ErrorPopup(string message) ``{
 
-	  AnyMessagePopup( ErrorMsg(), message );
+	  AnyMessagePopup( Label::ErrorMsg(), message );
 
       };
 
@@ -430,7 +430,7 @@ You will need to reinstall." );
 
 	  term button_box =  `PushButton( `id(`ok_msg),
 					  `opt(`default, `key_F10),
-					  OKButtonLabel() );
+					  Label::OKButton() );
 	  OpenDialog(
 		     `opt(`decorated),
 		     createPopupLayoutInternal( headline, message, button_box )
@@ -474,14 +474,14 @@ You will need to reinstall." );
 				 `HBox(
 				       // "Stop" button for timeout message: Stop counting down
 				       // (i.e. leave the popup message open without timeout)
-				       `PushButton(`id(`timed_stop), StopButtonLabel() ),
+				       `PushButton(`id(`timed_stop), Label::StopButton() ),
 				       `HSpacing(2),
 
 				       // "OK" button for timeout message: Close popup dialog
 				       // (i.e. confirm the message)
 				       `PushButton(`id(`timed_ok),
 						   `opt(`default, `key_F10),
-						   OKButtonLabel() )
+						   Label::OKButton() )
 				       ),
 				 `VSpacing(0.2)
 				 )
@@ -539,21 +539,21 @@ You will need to reinstall." );
 				 `HBox(
 				       // "Stop" button for timeout message: Stop counting down
 				       // (i.e. leave the popup message open without timeout)
-				       `PushButton(`id(`timed_stop), StopButtonLabel() ),
+				       `PushButton(`id(`timed_stop), Label::StopButton() ),
 				       `HSpacing(2),
 
 				       // "OK" button for timeout message: Close popup dialog
 				       // (i.e. confirm the action in "message")
 				       `PushButton(`id(`timed_ok),
 						   `opt(`default, `key_F10),
-						   OKButtonLabel() ),
+						   Label::OKButton() ),
 				       `HSpacing(2),
 
 				       // "Cancel" button for timeout message: Close popup dialog
 				       // (i.e. cancel the action in "message")
 				       `PushButton(`id(`timed_cancel),
 						   `opt (`key_F9), 
-						   CancelButtonLabel() )
+						   Label::CancelButton() )
 				       ),
 				 `VSpacing(0.2)
 				 )
@@ -605,7 +605,7 @@ You will need to reinstall." );
        * @see YesNoPopup
        * @see ContinueCancelPopup
        *
-       * @example AnyQuestionPopup( WarningMsg(), "Do really want to ...?", "Install", "Don't do it", `focus_no );
+       * @example AnyQuestionPopup( Label::WarningMsg(), "Do really want to ...?", "Install", "Don't do it", `focus_no );
        */
       global define boolean AnyQuestionPopup( string headline,
 					      string message,
@@ -668,7 +668,7 @@ You will need to reinstall." );
        *
        * @see AnyQuestionPopup
        *
-       * @example AnyQuestionPopup3( WarningMsg(), _("... failed"), _("Continue"), _("Cancel"), _("Retry"), `focus_yes );
+       * @example AnyQuestionPopup3( Label::WarningMsg(), _("... failed"), _("Continue"), _("Cancel"), _("Retry"), `focus_yes );
        */
 
       global define symbol AnyQuestionPopup3( string headline,
@@ -764,13 +764,13 @@ You will need to reinstall." );
 				 `Heading(text),
 				 `HBox(
 				     `PushButton(`id(`back),   `opt (`key_F8), 
-						 BackButtonLabel()  ),
+						 Label::BackButton()  ),
 				     `PushButton(`id(`again),  `opt (`key_F6),
-						 RetryButtonLabel() ),
+						 Label::RetryButton() ),
 				     `PushButton(`id(`cancel), `opt (`key_F9),
-						 QuitButtonLabel()  ),
+						 Label::QuitButton()  ),
 				     `PushButton(`id(`next),   `opt (`key_F10),
-						 NextButtonLabel()  )
+						 Label::NextButton()  )
 				       ),
 				 `VSpacing(0.2)
 				 ),
@@ -904,7 +904,7 @@ You will need to reinstall." );
 
 	  term button_box =  `PushButton( `id(`ok_msg),
 					  `opt(`default, `key_F10),
-					  OKButtonLabel() );
+					  Label::OKButton() );
 	  // ok pushbutton: confirm the dialog
 	  OpenDialog(
 		`opt(`decorated),
@@ -957,7 +957,7 @@ You will need to reinstall." );
 
       global define void TimedWarningPopup(string message, integer timeout_seconds)
       ``{
-	  AnyTimedMessagePopup(WarningMsg(), message, timeout_seconds);
+	  AnyTimedMessagePopup(Label::WarningMsg(), message, timeout_seconds);
       };
 
 
@@ -976,7 +976,7 @@ You will need to reinstall." );
 
       global define void TimedErrorPopup(string message, integer timeout_seconds)
       ``{
-	  AnyTimedMessagePopup(ErrorMsg(), message, timeout_seconds);
+	  AnyTimedMessagePopup(Label::ErrorMsg(), message, timeout_seconds);
       };
 
   });
@@ -1014,7 +1014,7 @@ You will need to reinstall." );
 				      ),
 			    `VSpacing( 0.3 ),
 			    `PushButton( `opt(`default, `key_F10),
-					 OKButtonLabel() ),
+					 Label::OKButton() ),
 			    `VSpacing( 0.3 )
 			    )
 		      );
