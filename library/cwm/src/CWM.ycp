@@ -560,7 +560,8 @@
 	    event_descr = (map<string, any>) UI::WaitForEvent ();
 	    ret = (event_descr["ID"]:nil);
 	    symbol handle_ret = handleWidgets (widgets, event_descr);
-	    if (handle_ret != nil || contains (save_exits, ret))
+	    if (handle_ret != nil
+		|| (is (ret, symbol) && contains (save_exits, ret)))
 	    {
 		save = true;
 		if (handle_ret != nil)

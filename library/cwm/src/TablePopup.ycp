@@ -50,29 +50,29 @@
       * global only because of testsuites
       * @param descr map description of the table
       * @param opt_id any id of the option
-      * @return any option key
+      * @return string option key
       */
-    global define any id2key (map<string, any> descr, any opt_id) ``{
+    global define string id2key (map<string, any> descr, any opt_id) ``{
 	if (is (opt_id, string) && size ((string)opt_id) >= 7
 	    && substring ((string)opt_id, 0, 7) == "____sep")
 	{
 	    return "____sep";
 	}
-	any (map, any) toEval = (any(map, any)) (descr["id2key"]:nil);
+	string (map, any) toEval = (string(map, any)) (descr["id2key"]:nil);
 	if (toEval != nil)
 	    return toEval (descr, opt_id);
 	else
-	    return opt_id;
+	    return (string)opt_id;
     }
 
     /**
       * Get option description map from the key
       * global only because of testsuites
       * @param descr map description of the table
-      * @param opt_key any option key
+      * @param opt_key string option key
       * @return map option description map
       */
-    global define map<string, any> key2descr (map<string, any> descr, any opt_key) ``{
+    global define map<string, any> key2descr (map<string, any> descr, string opt_key) ``{
 	map options = (map)(descr["options"]:$[]);
 	map<string, any> opt_descr = (map<string, any>)(options[opt_key]:$[]);
 	// a copy wanted here
@@ -126,8 +126,8 @@
       * @return string text to the table
       */
     define string tableEntryValue (any opt_id, map<string, any> opt_descr) ``{
-	any opt_key = opt_descr["_cwm_key"]:"";
-	string (any, any) toEval = (string(any, any)) (opt_descr["table", "summary"]:nil);
+	string opt_key = (string)(opt_descr["_cwm_key"]:"");
+	string (any, string) toEval = (string(any, string)) (opt_descr["table", "summary"]:nil);
 	if (toEval != nil)
 	{
 	    return toEval (opt_id, opt_key);
@@ -142,8 +142,8 @@
       * @return boolean true if was changed
       */
     global define boolean tableEntryChanged (any opt_id, map<string, any> opt_descr) ``{
-	any opt_key = opt_descr["_cwm_key"]:"";
-	boolean (any, any) toEval = (boolean(any, any)) (opt_descr["table", "changed"]:nil);
+	string opt_key = (string)(opt_descr["_cwm_key"]:"");
+	boolean (any, string) toEval = (boolean(any, string)) (opt_descr["table", "changed"]:nil);
 	if (toEval != nil)
 	{
 	    return toEval (opt_id, opt_key);
@@ -159,10 +159,10 @@
       * @return boolean true if was really deleted
       */
     global define boolean deleteTableItem (any opt_id, map<string, any> descr) ``{
-	boolean(any, any) toEval = (boolean(any, any)) (descr["option_delete"]:nil);
+	boolean(any, string) toEval = (boolean(any,string)) (descr["option_delete"]:nil);
 	if (nil != toEval)
 	{
-	    any opt_key = id2key (descr, opt_id);
+	    string opt_key = id2key (descr, opt_id);
 	    return toEval (opt_id, opt_key);
 	}
 	return false;
@@ -227,7 +227,7 @@
 	    string opt_val = "";
 	    string val = "";
 	    boolean opt_changed = false;
-	    any opt_key = id2key (descr, opt_id);
+	    string opt_key = id2key (descr, opt_id);
 	    map<string, any> opt_descr = key2descr (descr, opt_key);
 	    opt_descr = updateOptionMap (opt_descr, descr["fallback"]:$[]);
 	    if (opt_key != "____sep")
@@ -309,8 +309,6 @@
     global define symbol singleOptionEditPopup (map option)``{
 	string opt_key = option["_cwm_key"]:"";
 	any opt_id = option["_cwm_id"]:nil;
-	if (opt_id == nil)
-	    opt_id = 0;
 
 	string label = sformat ("%1", option["table", "label"]:opt_key);
 	term header = `HBox (
@@ -435,7 +433,7 @@
 	}
 
 	any opt_id = UI::QueryWidget (`id (`_tp_table), `CurrentItem);
-	any opt_key = id2key (descr, opt_id);
+	string opt_key = id2key (descr, opt_id);
 	map option_map = key2descr (descr, opt_key);
 	updateButtons (descr, option_map);
     }
@@ -471,7 +469,7 @@
 	}
         if (event_id == `_tp_edit || event_id == `_tp_add)
         {
-            any opt_key = nil;
+            string opt_key = nil;
             any opt_id = nil;
 
             if (event_id == `_tp_add)
@@ -483,19 +481,19 @@
 		}
 		else
 		{
-		    list add_opts = descr["add_items"]:[];
+		    list<string> add_opts = descr["add_items"]:[];
 		    list ids = getIdList (descr);
-		    list present = maplist (any i, ids, ``(
+		    list<string> present = maplist (any i, ids, ``(
 			id2key (descr, i)
 		    ));
 		    if (! descr["_cwm_attrib", "unique_keys"]:false)
 		    {
-			present = filter (any i, present, ``{
-			    map opt_descr = key2descr (descr, opt_key);
+			present = filter (string i, present, ``{
+			    map opt_descr = key2descr (descr, i);
 			    return ! opt_descr["table", "optional"]:true;
 			});
 		    }
-		    add_opts = filter (any o, add_opts, ``(
+		    add_opts = filter (string o, add_opts, ``(
 			! contains (present, o)
 		    ));
 		    boolean selected = false;
