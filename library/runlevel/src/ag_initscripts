@@ -83,7 +83,10 @@ get_script_info () {
 		FILENAME ~ /\.old$/ || FILENAME ~ /\.new$/ || FILENAME ~ /\.save$/ ||
 		FILENAME ~ /\.swp$/ || FILENAME ~ /\.core$/ || FILENAME ~ /~$/ ||
 		FILENAME ~ /boot\.klog/ ||
-		FILENAME ~ /\.[^0-9$.#_\-\\*]*[0-9$.#_\-\\*]/)
+# why was this here??
+# bug 34775: dont skip boot.hotplug-beta, boot.restore_permissions
+#		FILENAME ~ /\.[^0-9$.#_\-\\*]*[0-9$.#_\-\\*]/
+		0)
 		skipfile = 1;
 	    else {
 		printf "\"%s\" : $[\n", FILENAME ;

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 23 13:02:40 CET 2004 - mvidner@suse.cz
+
+- Services: don't omit boot.hotplug-beta, boot.restore_permissions (#34775)
+- 2.9.28
+
+-------------------------------------------------------------------
 Fri Feb 20 19:45:58 CET 2004 - arvin@suse.de
 
 - disable accept button during Progress (bug #30303)
