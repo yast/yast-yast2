@@ -31,7 +31,7 @@
 
     /**
      * how we were booted (the type of the installation medium)
-     * /etc/install.inf: Bootmode
+     * /etc/install.inf: Instmode
      */
     global string boot			= "cd";
 
@@ -43,12 +43,12 @@
     /**
      * dry-run of dialogues
      */
-    global boolean demo			= false;	// includes test_mode if set
+    global boolean demo			= false; // includes test_mode if set
 
     /**
      * dump screens to /tmp
      */
-    global boolean screen_shot		= false;	// includes demo_mode if set
+    global boolean screen_shot		= false; // includes demo_mode if set
 
     /**
      * starting installation in inst-sys system
@@ -166,8 +166,6 @@
 		test = true;
 		y2warning("***** Test mode enabled *****");
 	    }
-	    else if (WFM::Args(arg_no) == "initial"	    ) initial	= true;
-	    else if (WFM::Args(arg_no) == "continue"	    ) cont	= true;
 	    else if (WFM::Args(arg_no) == "demo"	    )
 	    {
 		demo = true;
@@ -178,9 +176,11 @@
 		screen_shot = true;
 		y2warning("***** Screen shot mode enabled *****");
 	    }
-	    else if (WFM::Args(arg_no) == "text_fallback") text_fallback   = true;
-	    else if (WFM::Args(arg_no) == "no_x11"       ) no_x11	      = true;
-	    else if (WFM::Args(arg_no) == "reprobe"      ) reprobe	      = true;
+	    else if (WFM::Args(arg_no) == "initial"	    ) initial	= true;
+	    else if (WFM::Args(arg_no) == "continue"	    ) cont	= true;
+	    else if (WFM::Args(arg_no) == "text_fallback") text_fallback= true;
+	    else if (WFM::Args(arg_no) == "no_x11"       ) no_x11	= true;
+	    else if (WFM::Args(arg_no) == "reprobe"      ) reprobe	= true;
 	    else
 	    {
 		y2milestone ("skipping unknown option %1", WFM::Args(arg_no) );
