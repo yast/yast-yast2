@@ -101,6 +101,8 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 # documentation
 
 %files devel
+%defattr(-,root,root)
+
 %doc @docdir@/sequencer
 %doc @docdir@/wizard
 %doc @docdir@/autodocs
