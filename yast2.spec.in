@@ -1,5 +1,6 @@
 @HEADER-COMMENT@
-# neededforbuild gpp hwinfo hwinfo-devel libgpp popt yast2-devel-packages 
+
+# neededforbuild  gpp hwinfo hwinfo-devel libgpp popt yast2-devel-packages
 
 @HEADER@
 # Need the new file popups
@@ -34,6 +35,7 @@ Summary:	Documentation for Wizard and Sequencer
 @INSTALL@
 mkdir -p "$RPM_BUILD_ROOT"@clientdir@
 mkdir -p "$RPM_BUILD_ROOT"@configdir@
+mkdir -p "$RPM_BUILD_ROOT"@desktopdir@
 mkdir -p "$RPM_BUILD_ROOT"@imagedir@
 mkdir -p "$RPM_BUILD_ROOT"@localedir@
 mkdir -p "$RPM_BUILD_ROOT"@moduledir@
@@ -51,6 +53,7 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 
 %dir @clientdir@
 %dir @configdir@
+%dir @desktopdir@
 %dir @imagedir@
 %dir @localedir@
 %dir @moduledir@
