@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun  6 12:54:25 CEST 2003 - mvidner@suse.cz
+
+- common_popups: fixed an embarassing syntax error
+- 2.8.3
+
+-------------------------------------------------------------------
 Fri Jun  6 10:03:29 CEST 2003 - mvidner@suse.cz
 
 - common_popups: revert from Label to common_messages.
