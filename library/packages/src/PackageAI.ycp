@@ -73,5 +73,13 @@ global boolean Installed(string package) {
     return contains(toinstall, package);
 }
 
+global boolean InstallKernel (list<string> kernel_modules) {
+    // TODO: for 9.2, we always install all packages, but
+    // we could only install those really needed (#44394)
+
+    // the kernel packages are handled by autoyast on its own
+    return true;
+}
+
 /* EOF */
 }
