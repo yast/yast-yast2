@@ -330,7 +330,7 @@
 				     `ColoredLabel(`opt(`hstretch, `vstretch),
 						   text,
 						   `rgb( 0, 0, 0 ),		// black foreground
-						   `rgb( 223, 219, 214 ),	// grey  background
+						   `rgb( 204, 204, 204),	// grey  background
 						   10 )				// margin
 				     ),
 			       `HBox(
@@ -360,7 +360,7 @@
 				     `ColoredLabel(`opt(`hstretch, `vstretch),
 						   text,
 						   `rgb( 0, 0, 0 ),		// black foreground
-						   `rgb( 176, 186, 156 ),	// light green background
+						   `rgb( 204, 204, 204 ),	// light green background
 						   10 ),			// margin
 				     `Image(`opt(`tiled, `zeroHeight ), image_path + "inactive_rightTile.png",  "" )
 				     ),
