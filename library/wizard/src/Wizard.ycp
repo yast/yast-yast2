@@ -101,6 +101,21 @@
 
 
     /**
+     * Returns a button box with buttons "Back", "Abort Installation", "Next"
+     * @return a widget tree
+     **/
+    global define term BackAbortInstallationNextButtonBox() ``{
+	return `HBox(
+		     `HWeight(1, `ReplacePoint(`id(`rep_back ), `PushButton(`id(`back ), `opt (`key_F8), Label::BackButton()  ) ) ),
+		     `HStretch(),
+		     `ReplacePoint(`id(`rep_abort), `PushButton(`id(`abort), `opt (`key_F9), Label::AbortInstallationButton() ) ),
+		     `HStretch(),
+		     `HWeight(1, `ReplacePoint(`id(`rep_next ), `PushButton(`id(`next), `opt (`key_F10, `default), Label::NextButton()  ) ) )
+		     );
+    };
+
+
+    /**
      * Returns a button box with buttons "Back", "Next"
      * @return a widget tree
      **/
@@ -137,6 +152,21 @@
 		     `HWeight(1, `Empty() ),	// Layout trick to make sure the center button is centered
 		     `HStretch(),
 		     `PushButton(`id(`abort ), `opt (`key_F9), Label::AbortButton() ),
+		     `HStretch(),
+		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10, `default), Label::AcceptButton()  ) )
+		     );
+    };
+
+
+    /**
+     * Returns a button box with buttons "Abort Installation", "Accept"
+     * @return a widget tree
+     **/
+    global define term AbortInstallationAcceptButtonBox() ``{
+	return `HBox(
+		     `HWeight(1, `Empty() ),	// Layout trick to make sure the center button is centered
+		     `HStretch(),
+		     `PushButton(`id(`abort ), `opt (`key_F9), Label::AbortInstallationButton() ),
 		     `HStretch(),
 		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10, `default), Label::AcceptButton()  ) )
 		     );
@@ -341,7 +371,7 @@
 				     `ColoredLabel(`opt(`hstretch, `vstretch),
 						   text,
 						   `rgb( 0, 0, 0 ),		// black foreground
-						   `rgb( 238, 234, 238 ),	
+						   `rgb( 238, 234, 238 ),
 						   10 )				// margin
 				     ),
 			       `HBox(
@@ -371,7 +401,7 @@
 				     `ColoredLabel(`opt(`hstretch, `vstretch),
 						   text,
 						   `rgb( 0, 0, 0 ),		// black foreground
-						   `rgb( 204, 204, 204 ),	
+						   `rgb( 204, 204, 204 ),
 						   10 ),			// margin
 				     `Image(`opt(`tiled, `zeroHeight ), theme_path + "inactive_rightTile.png",  "" )
 				     ),

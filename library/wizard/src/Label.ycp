@@ -4,6 +4,7 @@
  * Summary:	Often used messages and button labels
  * Authors:	Gabriele Strattner <gs@suse.de>
  *		Stefan Hundhammer <sh@suse.de>
+ *		Arvin Schnell <arvin@suse.de>
  *
  * $Id$
  *
@@ -48,10 +49,12 @@ global define string OKButton() ``{
   return _("&OK");
 }
 global define string AbortButton() ``{
-  // TODO resolve the hack in clients/installation.ycp
-  // where UI::AbortButtonLabel is overriden
-  /* Button label */
-  return _("Abo&rt");
+    /* Button label */
+    return _("Abo&rt");
+}
+global define string AbortInstallationButton () ``{
+    /* Button label */
+    return _("Abo&rt Installation");
 }
 global define string IgnoreButton() ``{
   /* Button label */
