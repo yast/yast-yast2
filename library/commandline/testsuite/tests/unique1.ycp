@@ -6,7 +6,7 @@
  *
  * $Id$
  *
- * testedfiles: CommandLine.ycp Report.ycp
+ * testedfiles: CommandLine.ycp Report.ycp Testsuite.ycp
  */
 
 {

@@ -15,7 +15,7 @@
  *
  */
 
-// testedfiles: Initrd.ycp
+// testedfiles: Initrd.ycp Testsuite.ycp
 
 {
     include "testsuite.ycp";
