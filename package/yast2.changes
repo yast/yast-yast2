@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Aug 27 20:00:00 CEST 2002 - jsuchome@suse.cz
+
+- provide/obsolete old translation packages
+
+-------------------------------------------------------------------
 Thu Aug 22 12:09:46 CEST 2002 - arvin@suse.de
 
 - make links to yast2 relative (bug #18170)
