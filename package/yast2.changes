@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 21 18:31:12 CET 2005 - nashif@suse.de
+
+- Fixed reading of global variable which breaks testsuites
+
+-------------------------------------------------------------------
 Mon Feb 21 16:22:21 CET 2005 - nashif@suse.de
 
 - Added incomplete_translation_treshold to product features

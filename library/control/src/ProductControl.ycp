@@ -208,6 +208,7 @@ global define boolean ReadControlFile( string controlfile)
         ProductFeatures::runlevel = globals["runlevel"]:"";
         
         ProductFeatures::timezone = globals["timezone"]:"";
+        ProductFeatures::incomplete_translation_treshold = globals["incomplete_translation_treshold"]:"95";
         
         ProductFeatures::ui_mode = globals["ui_mode"]:"expert";
         
