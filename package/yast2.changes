@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct  1 13:44:58 CEST 2004 - sh@suse.de
+
+- Fixed bug #46598: Layout broken due to 800x600 default size 
+- V 2.10.24
+
+-------------------------------------------------------------------
 Wed Sep 29 13:51:00 CEST 2004 - visnov@suse.cz
 
 - always reinitialize target (#45356)

@@ -67,12 +67,6 @@ listmodules()
     fi
 }
 
-# assign default values if unset
-#
-# Note: 800x600 by default is perfectly safe - the Qt UI will not allow windows
-# to become larger than the screen anyway.
-Y2_GEOMETRY=${Y2_GEOMETRY:-800x600}
-
 TEMP=`getopt -o hlg:s:Si --long help,list,kcontrol,geometry:,style:,strings,install,fullscreen,noborder \
      -n 'yast2' -- "$@"`
 
@@ -85,7 +79,7 @@ while true ; do
 	case "$1" in
 		-h|--help) printhelp; exit 0  ;;
 		-l|--list) listmodules; exit 0  ;;
-		-g|--geometry) Y2_GEOMETRY="$2"; shift 2; ;;
+		-g|--geometry) Y2_GEOMETRY="-geometry $2"; shift 2; ;;
 		-i|--install) Y2_INSTALL_PACKAGES=true; shift ;;
                 --fullscreen) Y2QT_ARGS="$Y2QT_ARGS --fullscreen"; shift ;;
 		--noborder)   Y2QT_ARGS="$Y2QT_ARGS --noborder"  ; shift ;;
