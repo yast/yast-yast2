@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar  4 11:01:20 CET 2005 - locilka@suse.cz
+
+- fixed bug #67335
+  fixed unnecessary warning aborting the unchanged configuration
+
+-------------------------------------------------------------------
 Fri Feb 25 13:11:07 CET 2005 - lslezak@suse.cz
 
 - commandline - don't check mandatory keys when the command line

@@ -130,6 +130,13 @@
 	modified = true;
     }
 
+    // Please, do not us this function
+    // Only for firewall installation proposal
+    global define void ResetModified () {
+	y2milestone("Reseting firewall-modified to 'false'");
+	modified = false;
+    }
+
     /**
      * Function returns list of known firewall zones (shortnames)
      *
@@ -858,7 +865,7 @@
      * @return	boolean if the firewall should start
      */
     global define boolean GetStartService () {
-	return (boolean) SETTINGS["start_firewall"]:true;
+	return (boolean) SETTINGS["start_firewall"]:false;
     }
 
     /**
@@ -867,10 +874,16 @@
      * @param	boolean start_service at Write() process
      */
     global define void SetStartService (boolean start_service) {
-	SetModified();
+	if (GetStartService() != start_service) {
+	    SetModified();
 
-	y2milestone("Setting start-firewall to %1", start_service);
-	SETTINGS["start_firewall"] = start_service;
+	    y2milestone("Setting start-firewall to %1", start_service);
+	    SETTINGS["start_firewall"] = start_service;
+	} else {
+	    // without set modified!
+	    y2milestone("start-firewall has been already set to %1", start_service);
+	    SETTINGS["start_firewall"] = start_service;
+	}
     }
 
     /**
@@ -879,7 +892,7 @@
      * @return	boolean if the firewall should start
      */
     global define boolean GetEnableService () {
-	return (boolean) SETTINGS["enable_firewall"]:true;
+	return (boolean) SETTINGS["enable_firewall"]:false;
     }
 
     /**
@@ -888,10 +901,16 @@
      * @param	boolean start_service at Write() process
      */
     global define void SetEnableService (boolean enable_service) {
-	SetModified();
+	if (GetEnableService() != enable_service) {
+	    SetModified();
 	
-	y2milestone("Setting enable-firewall to %1", enable_service);
-	SETTINGS["enable_firewall"] = enable_service;
+	    y2milestone("Setting enable-firewall to %1", enable_service);
+	    SETTINGS["enable_firewall"] = enable_service;
+	} else {
+	    // without set modified
+	    y2milestone("enable-firewall has been already set to %1", enable_service);
+	    SETTINGS["enable_firewall"] = enable_service;
+	}
     }
 
     /**
@@ -1752,7 +1771,8 @@ Run YaST2 Firewall and assign it.
 	    NetworkDevices::Read();
 	} else if (Mode::installation() || Mode::autoinst()) {
 	    // Allways modified for installation, allways save the final state
-	    SetModified();
+	    // fixing bug #67355
+	    // SetModified();
 	}
 
 	if (have_progress) Progress::NextStage();
