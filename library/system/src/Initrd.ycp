@@ -60,6 +60,39 @@
       */
     list<string> modules_to_skip = nil;
 
+    /**
+      * List of fallback vga modes to be used when hwinfo --framebuffer
+      * doesn't return any value
+      */
+    list<map> known_modes = [
+	$["color":8,  "height":200, "mode":816, "width":320],
+	$["color":16, "height":200, "mode":782, "width":320],
+	$["color":24, "height":200, "mode":783, "width":320],
+	$["color":8,  "height":240, "mode":820, "width":320],
+	$["color":16, "height":240, "mode":821, "width":320],
+	$["color":24, "height":240, "mode":822, "width":320],
+	$["color":8,  "height":400, "mode":817, "width":320],
+	$["color":16, "height":400, "mode":818, "width":320],
+	$["color":24, "height":400, "mode":819, "width":320],
+	$["color":8,  "height":400, "mode":768, "width":640],
+	$["color":16, "height":400, "mode":829, "width":640],
+	$["color":24, "height":400, "mode":830, "width":640],
+	$["color":8,  "height":480, "mode":769, "width":640],
+	$["color":16, "height":480, "mode":785, "width":640],
+	$["color":24, "height":480, "mode":786, "width":640],
+	$["color":8,  "height":600, "mode":771, "width":800],
+	$["color":16, "height":600, "mode":788, "width":800],
+	$["color":24, "height":600, "mode":789, "width":800],
+	$["color":8,  "height":768, "mode":773, "width":1024],
+	$["color":16, "height":768, "mode":791, "width":1024],
+	$["color":24, "height":768, "mode":792, "width":1024],
+	$["color":8,  "height":1024, "mode":775, "width":1280],
+	$["color":16, "height":1024, "mode":794, "width":1280],
+	$["color":24, "height":1024, "mode":795, "width":1280],
+	$["color":8,  "height":1200, "mode":837, "width":1600],
+	$["color":16, "height":1200, "mode":838, "width":1600]
+    ];
+
 // module functions
 
     /**
@@ -354,11 +387,17 @@
 	    changed = true;
 	    integer mode = tointeger (vga);
 	    list<map> all_modes = (list<map>) SCR::Read (.probe.framebuffer);
+	    if (all_modes == nil || size (all_modes) == 0)
+	    {
+		y2warning ("Probing VGA modes failed, using fallback list");
+		all_modes = known_modes;
+	    }
 	    foreach (map m, all_modes, ``{
 		if (m["mode"]:0 == mode
 		    && m["height"]:0 != 0 && m["width"]:0 != 0)
 		{
 		    splash = sformat ("%2x%1", m["height"]:0, m["width"]:0);
+		    y2milestone ("Setting splash resolution to %1", splash);
 		}
 	    });
 	}
