@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Feb  8 14:48:37 CET 2005 - nashif@suse.de
+
+- Moved XML module to library
+
+-------------------------------------------------------------------
 Tue Feb  8 10:48:25 CET 2005 - jsrain@suse.cz
 
 - added richtext and (multi)selection box widget support to CWM
