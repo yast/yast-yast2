@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sun Mar  9 19:28:07 CET 2003 - nashif@suse.de
+
+- Fixed bug #24953: beta message during installation does not time out
+
+-------------------------------------------------------------------
 Fri Mar  7 16:06:09 CET 2003 - sh@suse.de
 
 - Dropped "Notify" header for notify popups (#24782) 
