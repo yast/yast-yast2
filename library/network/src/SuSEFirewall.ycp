@@ -1357,7 +1357,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 		if (interface == nil) {
 		    // TRANSLATORS: Error message, %1 = interface name (like eth0)
 		    Report::Error(sformat(_("Interface '%1' is not assigned to any firewall zone.
-Run YaST2 Firewall and assign it by hand.
+Run YaST2 Firewall and assign it.
 "), interface)
 		    );
 		    y2warning("Interface '%1' is not assigned to any firewall zone", interface);
@@ -1412,7 +1412,7 @@ Run YaST2 Firewall and assign it by hand.
 		if (interface == nil) {
 		    // TRANSLATORS: Error message, %1 = interface name (like eth0)
 		    Report::Error(sformat(_("Interface '%1' is not assigned to any firewall zone.
-Run YaST2 Firewall and assign it by hand.
+Run YaST2 Firewall and assign it.
 "), interface)
 		    );
 		    y2warning("Interface '%1' is not assigned to any firewall zone", interface);

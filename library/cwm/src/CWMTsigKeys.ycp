@@ -545,7 +545,7 @@ create the key and the <b>Key ID</b> to identify the key then click
     // tsig keys management dialog help 4/4
     _("<p><big><b>Removing a TSIG Key</b></big><br>
 To remove a configured TSIG key, select it and click <b>Delete</b>.
-Remember that all keys in that same file are deleted.
+All keys in the same file are deleted.
 If a TSIG key is in use in the configuration
 of the server, it cannot be deleted. The server must stop using it
 in the configuration first.</p>
