@@ -190,7 +190,7 @@ global void RunSUSEconfig() {
     Wizard::CreateDialog ();
     // inst_suseconfig returns `auto or `next
     // (update mode or Args(2) is true) => no error checking
-    WFM::CallFunction("inst_suseconfig", [false, false]);
+    WFM::CallFunction("inst_suseconfig", [$["enable_back":false, "enable_next":false]]);
     Wizard::CloseDialog ();
 }
 

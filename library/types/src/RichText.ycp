@@ -101,10 +101,9 @@ global define string Rich2Plain (string richtext) ``{
 /**
  * Parse provided text and see if it contains richtext
  * @param file file path
- * @param richtext default text
- * @return term
+ * @return symbol
  */
-global term DetectRichText(string file, string richtext )
+global symbol DetectRichText(string file )
 {
     string text = "";
 
@@ -114,17 +113,18 @@ global term DetectRichText(string file, string richtext )
     }
     else 
     {
-        text = richtext;
+        return `error;
     }
+
     if (text == "")
     {
-        text = _("No Text Available");
+        return `empty;
     }
 
     if (regexpmatch(text, "</.*>")) {
-        return (`RichText(`id(`text), text));
+        return `richtext;
     } else {
-        return (`RichText(`id(`text), `opt(`plainText),  text));
+        return `plaintext;
     }
 }
 

@@ -94,6 +94,13 @@ global string desktopdir = "/usr/share/applications/YaST2";
  */
 global string tmpdir = "/tmp";
 
+
+/**
+ * Directory needed for custom installation workflows
+ * It can be set to the path containing additional file on a CDROM
+ */
+global string custom_workflow_dir = "";
+
 /**
  * Set temporary directory
  */
