@@ -148,6 +148,72 @@ global define boolean Check(string url) ``{
     return true;
 }
 
+
+/**
+ * Build URL from tokens as parsed with Parse
+ * @param map token as returned from Parse
+ * @return string url, empty string if invalid data is used to build the url.
+ * @see RFC 2396 (updated by RFC 2732)
+ * @see also perl-URI: URI(3)
+ */
+global define string Build (map tokens) ``{
+
+	string url = "";
+	string userpass = "";
+
+	if(regexpmatch(tokens["scheme"]:"", "^[a-z]*$"))
+	{
+		url = tokens["scheme"]:"";
+	}
+	y2debug("url: %1", url);
+
+	if (tokens["user"]:"" != "")
+	{
+		userpass = tokens["user"]:"";
+	}
+	if (size(userpass) != 0 && tokens["pass"]:"" != "" )
+	{
+		userpass = sformat("%1:%2", userpass, tokens["pass"]:"" );
+	}
+	if (size(userpass) > 0 )
+		userpass = userpass + "@";
+
+	url = sformat("%1://%2", url, userpass);
+	y2debug("url: %1", url);
+
+	if(Hostname::CheckFQ(tokens["host"]:"") || IP::Check(tokens["host"]:""))
+	{
+		url = sformat("%1%2", url, tokens["host"]:"");
+	}
+	y2debug("url: %1", url);
+
+	if (regexpmatch(tokens["port"]:"", "^[0-9]*$") && tokens["port"]:"" != "")
+	{
+		url = sformat("%1:%2", url, tokens["port"]:"");
+	}
+	y2debug("url: %1", url);
+
+	if (tokens["path"]:"" != "" && find (tokens["path"]:"", "/") != 0 )
+		url = sformat("%1/%2", url, tokens["path"]:"");
+	else if (tokens["path"]:"" != "" && find (tokens["path"]:"", "/") == 0 )
+		url = sformat("%1%2", url, tokens["path"]:"");
+	y2debug("url: %1", url);
+
+	if (tokens["query"]:"" != "" )
+		url = sformat("%1?%2", url, tokens["query"]:"");
+	if (tokens["fragment"]:"" != "" )
+		url = sformat("%1#%2", url, tokens["fragment"]:"");
+	y2debug("url: %1", url);
+
+	if (!Check(url)) {
+		y2error("Invalid URL: %1", url);
+		return "";
+	}
+
+	return url;
+
+}
+
 /*
 y2milestone("%1", Parse("http://a:b@www.suse.cz:33/ahoj/nekde?neco#blah"));
 y2milestone("%1", Parse("ftp://www.suse.cz/ah"));
