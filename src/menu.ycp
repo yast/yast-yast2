@@ -260,8 +260,8 @@ include "ui/common_popups.ycp";
 	list arguments = splitstring (Module["Arguments"]:"", " ");
 	if (function != "")
 	{
-	    y2milestone ("CallModule (%1, %2)", function, arguments);
-	    CallModule (function, arguments);
+	    y2milestone ("WFM::CallModule (%1, %2)", function, arguments);
+	    WFM::CallModule (function, arguments);
 	}
     }
 
