@@ -1,6 +1,4 @@
-#
-# Makefile.am for yast2/wizard/src
-#
+# Makefile.am for yast2/library/wizard/src
 
 htmldir = @docdir@/wizard
 yncludedir = @yncludedir@/ui
@@ -21,3 +19,5 @@ ynclude_DATA =			\
 	file_popups.ycp
 
 EXTRA_DIST = $(ynclude_DATA) $(module_DATA)
+
+include $(top_srcdir)/Makefile.am.common
