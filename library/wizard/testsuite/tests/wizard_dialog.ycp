@@ -5,7 +5,7 @@
   import "./../src/Wizard";
 
   Wizard::CreateDialog();
-  Wizard::ReplaceHelp (`RichText(`id(`help), _("<p>This is the example of <tt>CreateWizardDialog()</tt></p>")));
+  Wizard::SetHelpText( _("<p>This is the example of <tt>CreateWizardDialog()</tt></p>"));
   any ret = Wizard::UserInput();
   UI::CloseDialog();
 
