@@ -20,11 +20,32 @@ boolean last_op_canceled = false;
 
 include "packages/common.ycp";
 
+/* default value of settings modified */
+global boolean modified = false;
+
+/**
+ * Function sets internal variable, which indicates, that any
+ * settings were modified, to "true"
+ */
+global define void SetModified () {
+    y2milestone("SetModified");
+    modified = true;
+}
+
+/**
+ * Functions which returns if the settings were modified
+ * @return boolean  settings were modified
+ */
+global define boolean GetModified () {
+    return modified;
+}
+
 global boolean DoInstall(list<string> packages) {
     toinstall = (list<string>) union(toinstall, packages);
     toremove = filter(string p, toremove, {
 	return !contains(packages, p);
     });
+    modified = true;
     return true;
 }
 
@@ -33,12 +54,14 @@ global boolean DoRemove(list<string> packages) {
     toinstall = filter(string p, toinstall, {
 	return !contains(packages, p);
     });
+    modified = true;
     return true;
 }
 
 global boolean DoInstallAndRemove(list<string> toinst, list<string> torem) {
     DoInstall(toinst);
     DoRemove(torem);
+    modified = true;
     return true;
 }
 
