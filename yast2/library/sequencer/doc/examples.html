@@ -1,0 +1,201 @@
+<html><head>
+<title>Wizard sequencer -- Examples</title>
+</head><body bgcolor=#ffffff>
+<!-- Author: Michal Svec <msvec@suse.cz> -->
+<!-- $Id$ -->
+<a name="top"><p>
+<h1>Wizard sequencer -- Examples</h1>
+<hr>
+
+<!-- EXAMPLES -->
+<p><a name="examples"><u><h2>Examples</h2></u>
+
+For simplicity, all examples use common aliases definition and user
+interface dialogs are done via unified GUI function. This all is defined
+in the file <a href="examples/examples.ycp">examples.ycp</a>, which is
+included by all examples.
+
+<a href="examples/example1.ycp"><h3>Simple</h3></a>
+
+This example shows, how the simple workflow is defined and run.
+The workflow looks like this:
+
+<p><img src=images/ws1.png><p>
+
+<table bgcolor=#e0e0e0><tr><td><pre>
+map Aliases = $[
+    "begin"	: ``(BeginDialog()),
+    "end"	: ``(EndDialog()),
+    "config"	: ``(ConfigDialog()),
+    "details"	: ``(DetailsDialog())
+];
+
+map Sequence = $[
+    "ws_start" : "begin",
+    "begin" : $[
+	`next : "config"
+    ],
+    "config" : $[
+	`next : "end",
+	`details : "details"
+    ],
+    "details" : $[
+	`next : "end"
+    ],
+    "end" : $[
+	`finish : `ws_finish
+    ]
+];
+
+any result = Sequencer::Run(Aliases,Sequence);
+</pre></td></tr></table>
+
+<a name="branch">
+<a href="examples/example2.ycp"><h3>Simple modification to the previous example gives another workflow:</h3></a>
+
+<p><img src=images/ws2.png><p>
+
+The only thing we must do to make this change is to update the
+"details" map:
+
+<table bgcolor=#e0e0e0><tr><td><pre>
+    "details" : $[
+	`ok : "config"
+    ],
+</pre></td></tr></table>
+
+<p>
+The back arrow from "details" is blue because it closes the cycle.
+It means that it is not part of the wizard flow any more, as it is
+a special case. If the user clicks onto [Details] and [OK], he don't
+want with back to go through the whole branch back.
+<p>
+So, in the "config" dialog, after the clicks [Details], [OK] and [Back],
+the current dialog should be the "begin", not "details".
+
+<a href="examples/example3.ycp"><h3>Deeper nesting</h3></a>
+
+This example shows the deeper nesting of dialogs.
+There are more ways of reaching some dialogs only for demonstration
+of abilities of WS. In reality, there should be only one way.
+
+<p><img src=images/ws3.png><p>
+
+<table bgcolor=#e0e0e0><tr><td><pre>
+map Aliases = $[  
+    "begin"	: ``(BeginDialog()),
+    "end"	: ``(EndDialog()),
+    "config"	: ``(ConfigDialog()),
+    "details"	: ``(DetailsDialog()),
+    "superdetails" : ``(SuperDetailsDialog())
+];
+
+map Sequence = $[ 
+    "ws_start" : "begin",
+    "begin" : $[
+	`next : "config"
+    ],
+    "config" : $[ 
+	`next : "end",
+	`details : "details"
+    ],
+    "details" : $[
+	`next : "end",
+	`details: "superdetails",
+	`ok : "config"
+    ],
+    "superdetails" : $[
+	`next: "end",
+	`ok: "details"
+    ],
+    "end" : $[
+	`finish : `ws_finish
+    ]
+</pre></td></tr></table>
+
+<a href="examples/example4.ycp"><h3>Longer cycles</h3></a>
+
+This dialog adds longer cycle to the above dialog.
+<p><img src=images/ws4.png><p>
+
+<table bgcolor=#e0e0e0><tr><td><pre>
+map Sequence = $[
+    "ws_start" : "begin",
+    "begin" : $[
+        `next : "config"
+    ],
+    "config" : $[
+        `next : "end",
+        `details : "details",
+        `expert: "expert"
+    ],
+    "details" : $[
+        `next : "end",
+        `details: "superdetails",
+        `ok : "config"
+    ],
+    "superdetails" : $[
+        `next: "end",
+        `ok: "details"
+    ],
+    "expert" : $[
+        `next : "expert2"
+    ],
+    "expert2" : $[
+        `next : "end",
+        `ok : "config"
+    ],
+    "end" : $[
+        `finish : `ws_finish
+    ]
+];
+</pre></td></tr></table>
+
+As stated in the above <a href="#branch">example</a>, the clicks
+[Next], [Expert], [Next], [OK], [Back] leads back to the "begin"
+dialog. (And not to the "expert2" !)
+
+<a href="examples/example5.ycp"><h3>Special or void dialogs</h3></a>
+
+This is an example of the special widget. The [Decide] dialog is
+removed from the flow. It represents either popup or a special
+function which doesn't have any gui.
+<p><img src=images/ws5.png><p>
+
+<table bgcolor=#e0e0e0><tr><td><pre>
+map Aliases = $[
+    "begin"     : ``(BeginDialog()),
+    "end"       : ``(EndDialog()),
+    "config"    : ``(ConfigDialog()),
+    "decide"    : [ ``(Decide()), true ]
+];
+
+map Sequence = $[
+    "ws_start" : "begin",
+    "begin" : $[
+        `next : "decide"
+    ],
+    "config" : $[
+        `next : "end"
+    ],
+    "decide" : $[
+        `no : "end",
+        `yes: "config"
+    ],
+    "end" : $[
+        `finish : `ws_finish
+    ]
+];
+</pre></td></tr></table>
+
+The <b>true</b> means that this function is special.
+
+<h3>More advanced examples will follow</h3>
+
+<ul>
+<li>different buttons (next|finish, abort, ...)
+<li>with popups
+<li>nested WSs
+</ul>
+
+</body></html>

@@ -1,0 +1,53 @@
+/**
+ * File:	cmpmap4.ycp
+ * Package:	yast2
+ * Summary:	sanity validation of the command line map
+ * Author:	Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ *
+ * testedfiles: CommandLine.ycp Testsuite.ycp
+ */
+
+{
+
+    include "testsuite.ycp";
+    import "TypeRepository";
+    import "CommandLine";
+
+    // map must define help for each option
+    // map must contain typespec for types "regex" and "enum"
+    TEST(``(CommandLine::Init(
+	$[
+	    "id": "testsuite",
+	    "help": "help is there",
+	    "options": $[
+		"nohelpoption" : $[
+		    "type": "string"
+		],
+		"noregexoption" : $[
+		    "help": "some help",
+		    "type": "regex"
+		],
+		"noenumpoption" : $[
+		    "help": "some help",
+		    "type": "enum"
+		],
+		"okregexoption" : $[
+		    "help": "some help",
+		    "type": "regex",
+		    "typespec": "^[a]+$"
+		],
+		"okenumoption" : $[
+		    "help": "some help",
+		    "type": "enum",
+		    "typespec": [ "a", "b" ]
+		]
+	    ]
+	]
+	,[]) ),[],nil);
+    TEST(``(CommandLine::Done()),[],nil);
+    TEST(``(CommandLine::Aborted()),[],nil);
+
+/* EOF */
+}

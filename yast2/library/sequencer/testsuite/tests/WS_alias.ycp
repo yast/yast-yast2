@@ -1,0 +1,28 @@
+{
+
+include "testsuite.ycp";
+import "Sequencer";
+
+void func1() { return; }
+void func2() { return; }
+void func3() { return; }
+
+map aliases = $[
+    "1" : nil,
+    "2" : ``(func1()),
+    "3" : [],
+    "4" : [ nil ],
+    "5" : [ ``(func2()) ],
+    "6" : [ ``(func3()), `blah ]
+];
+
+TEST(``(Sequencer::WS_alias($[], "blah")), [], nil);
+TEST(``(Sequencer::WS_alias(aliases, "blah")), [], nil);
+TEST(``(Sequencer::WS_alias(aliases, "1")), [], nil);
+TEST(``(Sequencer::WS_alias(aliases, "2")), [], nil);
+TEST(``(Sequencer::WS_alias(aliases, "3")), [], nil);
+TEST(``(Sequencer::WS_alias(aliases, "4")), [], nil);
+TEST(``(Sequencer::WS_alias(aliases, "5")), [], nil);
+TEST(``(Sequencer::WS_alias(aliases, "6")), [], nil);
+
+}

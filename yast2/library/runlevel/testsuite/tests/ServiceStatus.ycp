@@ -1,0 +1,13 @@
+
+{
+    include "testsuite.ycp";
+    import "Service";
+
+    map READ = $[];
+    map EXEC = $[];
+
+    READ = $[ "init" : $[ "scripts" : $[ "exists" : true, ] ] ];
+    EXEC = $[ "target" : $[ "bash" : 3 ] ];
+
+    TEST (``(Service::Status ("aaa")), [ READ, $[], EXEC ], nil);
+}

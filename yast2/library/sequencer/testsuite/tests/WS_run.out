@@ -1,0 +1,11 @@
+Log	sequencer: Alias not found: blah
+Log	sequencer: Bad id: blah
+Return	nil
+Log	sequencer: Alias not found: blah
+Log	sequencer: Bad id: blah
+Return	nil
+Log	sequencer: Returned value not symbol: 1
+Return	nil
+Log	sequencer: Returned value not symbol: 2
+Return	nil
+Return	`id3

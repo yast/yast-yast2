@@ -1,0 +1,13 @@
+{
+  // test wizard_dialog
+
+  textdomain "wizard_testsuite";
+  import "./../src/Wizard";
+
+  Wizard::CreateDialog();
+  Wizard::SetHelpText( _("<p>This is the example of <tt>CreateWizardDialog()</tt></p>"));
+  any ret = Wizard::UserInput();
+  UI::CloseDialog();
+
+  return ret;
+}

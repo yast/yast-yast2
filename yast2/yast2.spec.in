@@ -1,0 +1,133 @@
+@HEADER-COMMENT@
+# neededforbuild yast2-devel-packages
+
+@HEADER@
+# Need the new file popups
+Requires:	yast2-core >= 2.7.1
+Requires:	yast2_ui yast2_theme
+# For Cron Agent, Module
+Requires:       perl-Config-Crontab
+# for ag_tty (/bin/stty)
+Requires:	coreutils
+Requires:	yast2-pkg-bindings, yast2-xml
+
+Provides:	yast2-lib-sequencer
+Obsoletes:	yast2-lib-sequencer
+Provides:	yast2-lib-wizard yast2-lib-wizard-devel yast2-trans-wizard
+Obsoletes:	yast2-lib-wizard yast2-lib-wizard-devel yast2-trans-wizard
+Provides:	yast2-trans-menu y2t_menu
+Obsoletes:	yast2-trans-menu y2t_menu
+
+Summary:	Main YaST2 package
+
+%description
+-
+
+@HEADER-DEVEL@
+Provides:	yast2-lib-sequencer-devel
+Obsoletes:	yast2-lib-sequencer-devel
+Requires:	yast2-core-devel
+
+Summary:	Documentation for Wizard and Sequencer
+
+%description devel
+-
+
+@PREP@
+
+@BUILD@
+
+@INSTALL@
+for f in `find $RPM_BUILD_ROOT/usr/share/applications/YaST2/groups/*.desktop` ; do
+    d=${f##*/}
+    %suse_update_desktop_file -d ycc_${d%.desktop} ${d%.desktop}
+done
+
+mkdir -p "$RPM_BUILD_ROOT"@clientdir@
+mkdir -p "$RPM_BUILD_ROOT"@desktopdir@
+mkdir -p "$RPM_BUILD_ROOT"@imagedir@
+mkdir -p "$RPM_BUILD_ROOT"@localedir@
+mkdir -p "$RPM_BUILD_ROOT"@moduledir@
+mkdir -p "$RPM_BUILD_ROOT"@scrconfdir@
+mkdir -p "$RPM_BUILD_ROOT"@ybindir@
+mkdir -p "$RPM_BUILD_ROOT"@ydatadir@
+mkdir -p "$RPM_BUILD_ROOT"@yncludedir@
+mkdir -p "$RPM_BUILD_ROOT"@vardir@
+mkdir -p "$RPM_BUILD_ROOT"@schemadir@/control/rnc
+mkdir -p "$RPM_BUILD_ROOT"@schemadir@/autoyast/rnc
+mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
+
+@CLEAN@
+
+%files
+%defattr(-,root,root)
+
+# basic directory structure
+
+%dir @clientdir@
+%dir @desktopdir@
+@desktopdir@/groups
+%dir @imagedir@
+%dir @localedir@
+%dir @moduledir@
+%dir @scrconfdir@
+%dir @ybindir@
+%dir @ydatadir@
+%dir @yncludedir@
+%dir @vardir@
+%dir @schemadir@
+%dir @schemadir@/control
+%dir @schemadir@/control/rnc
+%dir @schemadir@/autoyast
+%dir @schemadir@/autoyast/rnc
+%dir /etc/YaST2
+
+# yast2
+
+@clientdir@/*
+@moduledir@/*
+@scrconfdir@/*
+@ybindir@/*
+@agentdir@/ag_*
+
+# documentation (not included in devel subpackage)
+%doc %dir @docdir@
+%doc @docdir@/*.*
+%doc @docdir@/COPYING
+%doc @docdir@/README
+%doc %{_mandir}/*/*
+
+/sbin/*
+
+# wizard
+%dir @yncludedir@/wizard
+@yncludedir@/wizard/*.ycp
+
+# commandline
+%dir @yncludedir@/commandline
+@yncludedir@/commandline/*.ycp
+
+#packags
+%dir @yncludedir@/packages
+@yncludedir@/packages/*.ycp
+
+#features
+/etc/YaST2/ProductFeatures
+
+# documentation
+%files devel
+%defattr(-,root,root)
+
+%doc @docdir@/autodocs
+%doc @docdir@/commandline
+%doc @docdir@/cron
+%doc @docdir@/cwm
+%doc @docdir@/desktop
+%doc @docdir@/log
+%doc @docdir@/network
+%doc @docdir@/packages
+%doc @docdir@/runlevel
+%doc @docdir@/sequencer
+%doc @docdir@/system
+%doc @docdir@/types
+%doc @docdir@/wizard

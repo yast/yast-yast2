@@ -1,0 +1,19 @@
+Documentation:
+- finish documentation
+- limits (cycles)
+- more examples
+
+Testsuite:
+- finish (`back ways)
+- popup first and last
+
+Sequencer NG:
+- implement advanced features (dialogs and buttons handling)
+- map helps	$[ alias: "help", ... ]
+- map captions	$[ alias: "caption", ... ]
+- map buttons	$[ alias: "buttons", ... ]
+-		`default: "buttons"
+
+Questions:
+- voluntary cycles detection (printconf)?
+- allow terms in the sequence?

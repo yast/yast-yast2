@@ -1,0 +1,3 @@
+Log	Specify only one of the commands: 'add', or 'delete'.
+Return	nil
+Return	add

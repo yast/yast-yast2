@@ -1,0 +1,3 @@
+Write	.dev.tty.prompt "YaST2 lan> " true
+Return	true
+Return	$["command":"list", "options":$["eth0":""]]

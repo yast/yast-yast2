@@ -1,0 +1,198 @@
+{
+
+    include "testsuite.ycp";
+    // testedfiles: SuSEFirewall
+
+    map <string, any> SuSEfirewall2 = $[
+	"FW_ALLOW_FW_BROADCAST_DMZ":"no",
+	"FW_ALLOW_FW_BROADCAST_EXT":"no",
+	"FW_ALLOW_FW_BROADCAST_INT":"no",
+	"FW_DEV_DMZ":"",
+	"FW_DEV_EXT":"eth6 special-string eth8",
+	"FW_DEV_INT":"dsl0",
+	"FW_FORWARD_MASQ":"",
+	"FW_IGNORE_FW_BROADCAST_DMZ":"no",
+	"FW_IGNORE_FW_BROADCAST_EXT":"yes",
+	"FW_IGNORE_FW_BROADCAST_INT":"no",
+	"FW_IPSEC_TRUST":"no",
+	"FW_LOG_ACCEPT_ALL":"no",
+	"FW_LOG_ACCEPT_CRIT":"yes",
+	"FW_LOG_DROP_ALL":"no",
+	"FW_LOG_DROP_CRIT":"yes",
+	"FW_MASQUERADE":"no",
+	"FW_PROTECT_FROM_INT":"no",
+	"FW_ROUTE":"no",
+	"FW_SERVICES_DMZ_IP":"",
+	"FW_SERVICES_DMZ_RPC":"",
+	"FW_SERVICES_DMZ_TCP":"",
+	"FW_SERVICES_DMZ_UDP":"",
+	"FW_SERVICES_EXT_IP":"",
+	"FW_SERVICES_EXT_RPC":"",
+	"FW_SERVICES_EXT_TCP":"",
+	"FW_SERVICES_EXT_UDP":"",
+	"FW_SERVICES_INT_IP":"",
+	"FW_SERVICES_INT_RPC":"",
+	"FW_SERVICES_INT_TCP":"",
+	"FW_SERVICES_INT_UDP":"",
+	"enable_firewall":false,
+	"start_firewall":false,
+    ];
+
+    // data have been stolen from mvidner's testsuite 'NetworkDevices2.ycp'
+    map Network = $[
+	"section" : $[
+	    "arc5"	: nil,
+	    "atm5"	: nil,
+	    "ci5"	: nil,
+	    "ctc5"	: nil,
+	    "dummy5"	: nil,
+	    "escon5"	: nil,
+	    "eth5"	: nil,
+	    "eth6"	: nil,
+	    "eth7"	: nil,
+	    "eth8"	: nil,
+	    "eth9"	: nil,
+	    "fddi5"	: nil,
+	    "hippi5"	: nil,
+	    "hsi5"	: nil,
+	    "ippp5"	: nil,
+	    "iucv5"	: nil,
+	    "lo"	: nil,
+	    "myri5"	: nil,
+	    "ppp5"	: nil,
+	    "tr5"	: nil,
+	    "tr~"	: nil,
+	],
+	"value" : $[
+	    "arc5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "atm5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "ci5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "ctc5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "dummy5"	: $["BOOTPROTO":"static", "IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "STARTMODE" : "manual"],
+	    "escon5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "eth5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual", /* "IPADDR_x":"1.1.1.1", "NETMASK_x":"0.0.0.0" */],
+	    "eth6"	: $["BOOTPROTO":"static", "IPADDR":"1.2.3.4", "STARTMODE":"manual"],
+	    "eth7"	: $["STARTMODE":"manual"],
+	    "eth8"	: $["IPADDR":"1.2.3.4/8", "STARTMODE":"manual"],
+	    "eth9"	: $["IPADDR":"1.2.3.4", "PREFIXLEN":"8", "STARTMODE":"manual"],
+	    "fddi5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "hippi5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "hsi5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "ippp5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "iucv5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "lo"	: $["BROADCAST":"127.255.255.255", "IPADDR":"127.0.0.1", "NETMASK":"255.0.0.0", "NETWORK":"127.0.0.0", "STARTMODE":"onboot", /* "IPADDR_1":"7.7.7.7" */],
+	    "myri5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "ppp5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "tr5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	]
+    ];
+
+    map READ = $[
+	"sysconfig" : $[
+	    "SuSEfirewall2" : SuSEfirewall2,
+	],
+	"network" : Network,
+	"probe" : $[
+	    "system" : [],
+	],
+	"target" : $[
+	    "tmpdir" : "/tmp",
+	],
+    ];
+    
+    map WRITE = $[
+    ];
+    
+    map EXECUTE = $[
+    ];
+
+    TESTSUITE_INIT([READ, WRITE, EXECUTE], nil);
+    import "SuSEFirewall";
+
+    DUMP("== SuSEfirewall2 service ==");
+    TEST(``(SuSEFirewall::GetEnableService()), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetStartService()), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::SetEnableService(true)), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::SetStartService(true)), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetEnableService()), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetStartService()), [READ, WRITE, EXECUTE], nil);
+
+    DUMP("");
+    DUMP("== Read/Write ==");
+    TEST(``(SuSEFirewall::Read()), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::Write()), [READ, WRITE, EXECUTE], nil);
+
+    DUMP("");
+    DUMP("== Import/Export ==");
+    TEST(``(SuSEFirewall::Import(SuSEfirewall2)), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::Export()), [READ, WRITE, EXECUTE], nil);
+
+    DUMP("");
+    DUMP("== Firewall behaviour ==");
+    TEST(``(SuSEFirewall::GetAllKnownInterfaces()), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetKnownFirewallZones()), [READ, WRITE, EXECUTE], nil);
+
+    DUMP("");
+    DUMP("== Interfaces Handling ==");
+    TEST(``(SuSEFirewall::GetInterfacesInZone        ("EXT")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::AddInterfaceIntoZone       ("undefined", "EXT")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::AddInterfaceIntoZone       ("eth9", "EXT")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetInterfacesInZone        ("EXT")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetSpecialInterfacesInZone ("EXT")), [READ, WRITE, EXECUTE], nil);
+
+    TEST(``(SuSEFirewall::AddInterfaceIntoZone       ("eth9", "DMZ")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::RemoveInterfaceFromZone    ("eth6", "EXT")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::RemoveInterfaceFromZone    ("undefined", "EXT")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetInterfacesInZone        ("EXT")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetInterfacesInZone        ("DMZ")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetSpecialInterfacesInZone ("EXT")), [READ, WRITE, EXECUTE], nil);
+    
+    TEST(``(SuSEFirewall::GetZoneOfInterface         ("-none-")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetZoneOfInterface         ("eth9")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetZonesOfInterfaces       (["eth9","dsl0"])), [READ, WRITE, EXECUTE], nil);
+
+    DUMP("");
+    DUMP("== Logging settings ==");
+    TEST(``(SuSEFirewall::GetLoggingSettings("ACCEPT")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetLoggingSettings("DROP")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::SetLoggingSettings("ACCEPT","ALL")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::SetLoggingSettings("DROP","NONE")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetLoggingSettings("ACCEPT")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetLoggingSettings("DROP")), [READ, WRITE, EXECUTE], nil);
+
+    TEST(``(SuSEFirewall::GetIgnoreLoggingBroadcast("INT")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetIgnoreLoggingBroadcast("EXT")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetIgnoreLoggingBroadcast("DMZ")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::SetIgnoreLoggingBroadcast("INT","yes")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::SetIgnoreLoggingBroadcast("EXT","no" )), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::SetIgnoreLoggingBroadcast("DMZ","yes")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetIgnoreLoggingBroadcast("INT")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetIgnoreLoggingBroadcast("EXT")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetIgnoreLoggingBroadcast("DMZ")), [READ, WRITE, EXECUTE], nil);
+
+    DUMP("");
+    DUMP("== Services handling ==");
+    TEST(``(SuSEFirewall::IsServiceSupportedInZone ("dhcp-server", "EXT")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::SetServicesForZones (["dhcp-server","imaps"], ["EXT","DMZ"], true)), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::IsServiceSupportedInZone ("dhcp-server", "EXT")), [READ, WRITE, EXECUTE], nil);
+
+    DUMP("");
+    DUMP("== Ports handling ==");
+    TEST(``(SuSEFirewall::HaveService ("www", "TCP", "EXT")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::AddService ("www", "TCP", "EXT")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::HaveService ("80", "TCP", "EXT")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::RemoveService ("www-http", "TCP", "EXT")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::HaveService ("80", "TCP", "EXT")), [READ, WRITE, EXECUTE], nil);
+
+    DUMP("");
+    DUMP("== Broadcast handling ==");
+    TEST(``(SuSEFirewall::GetBroadcastAllowedPorts()), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::SetBroadcastAllowedPorts($["INT":[], "DMZ":["5","3","1"], "EXT":["22","33","44"]])), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetBroadcastAllowedPorts()), [READ, WRITE, EXECUTE], nil);
+
+    DUMP("");
+    DUMP("== Masquerade handling ==");
+    TEST(``(SuSEFirewall::GetMasquerade()), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::SetMasquerade(true)), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetMasquerade()), [READ, WRITE, EXECUTE], nil);
+}

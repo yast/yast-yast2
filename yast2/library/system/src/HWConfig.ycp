@@ -1,0 +1,142 @@
+/**
+ * File:
+ *	HWConfig.ycp
+ *
+ * Module:
+ *	HWConfig
+ *
+ * Authors:
+ *	Ladislav Slezak <lslezak@suse.cz>
+ *
+ * Summary:
+ *	Module for accessing hardware configuration files (/etc/sysconfig/hwcfg-*)
+ *
+ * $Id:$
+ */
+{
+    module "HWConfig";
+
+    textdomain "base";
+
+    /**
+     * Return list of all available hardware configuration files
+     * @return list<string> found files
+     */
+    global define list<string> ConfigFiles() {
+	/* read all files */
+	list<string> all = SCR::Dir(.sysconfig.hardware.section);
+
+	if (all == nil) all = [];
+
+	list<string> modules = filter(string file, all, {
+	    return !regexpmatch(file, "[~]");
+	});
+
+	y2debug("config files=%1", modules);
+
+	return all;
+    }
+
+    /**
+     * Return list of all available variable in the configuration file
+     * @param file to search
+     * @return list<string> found variables
+     */
+    global define list<string> Variables(string file) {
+	path p = .sysconfig.hardware.value + file;
+
+	list<string> values = SCR::Dir(p);
+	y2debug("values=%1", values);
+
+	return values;
+    }
+
+    /**
+     * Read all values from the file
+     * @param file configuration file to read
+     * @return map map $[ "VARIABLE" : "value" ]
+     */
+    global define map<string,string> Values(string file) {
+	list<string> vars = Variables(file);
+	map<string,string> ret = $[];
+	path p = .sysconfig.hardware.value + file;
+
+	maplist(string var, vars, {
+	    string item = (string) SCR::Read(p + var);
+	    if (item != nil)
+	    {
+		ret[var] = item;
+	    }
+	});
+
+	return ret;
+    }
+
+    /**
+     * Set value of the variable in the config file
+     * @param file config file
+     * @param variable name of the variable
+     * @param value the new value
+     * @return boolean true on success
+     */
+    global define boolean SetValue(string file, string variable, string value)
+    {
+	return (boolean) SCR::Write((.sysconfig.hardware.value + file) + variable, value);
+    }
+
+    /**
+     * Set comment of the variable in the config file
+     * @param file config file
+     * @param variable name of the variable
+     * @return string comment the new comment
+     */
+    global define string GetValue(string file, string variable)
+    {
+	return (string) SCR::Read((.sysconfig.hardware.value + file) + variable);
+    }
+
+    /**
+     * Set comment of the variable in the config file
+     * @param file config file
+     * @param variable name of the variable
+     * @param comment the new comment, the comment must be terminated by "\n" chacter!
+     * @return boolean true on success
+     */
+    global define boolean SetComment(string file, string variable, string comment)
+    {
+	return (boolean) SCR::Write((.sysconfig.hardware.value_comment + file) + variable, comment);
+    }
+
+    /**
+     * Get comment of the variable from the config file
+     * @param file config file
+     * @param variable name of the variable
+     * @return string comment of the variable
+     */
+    global define string GetComment(string file, string variable)
+    {
+	return (string) SCR::Read((.sysconfig.hardware.value_comment + file) + variable);
+    }
+
+    /**
+     * Remove configuration file from system
+     * @param file config name
+     * @return true on success
+     */
+    global define boolean RemoveConfig(string file)
+    {
+	path p = .sysconfig.hardware.section + file;
+	y2debug("deleting: %1", file);
+	return (boolean) SCR::Write(p, nil);
+    }
+
+    /**
+     * Flush - write the changes to files
+     * @return true on success
+     */
+    global define boolean Flush() {
+	// save all changes
+	return (boolean) SCR::Write(.sysconfig.hardware, nil);
+    }
+
+}

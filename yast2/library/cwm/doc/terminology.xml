@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding='ISO-8859-1'?>
+<chapter id = "terminology">
+    <title>Terminology</title>
+    <table frame="none"><title>Terminology</title>
+	<tgroup cols="4" align="left">
+	    <colspec colwidth="110"/>
+	    <colspec colwidth="310"/>
+	    <thead><row>
+		<entry/>
+		<entry/>
+	    </row></thead>
+	    <tbody>
+		<row>
+<entry>Widget</entry>
+<entry>Basic element of dialog. In most cases a check box, radio button, text entry,... but
+also a more complex widget (called superwidget in this document).</entry>
+		</row>
+                <row>
+<entry>Widgets description map</entry>
+<entry>Map describing widgets used by CWM. Contains information in a fixed
+format, but developer can add additional keys according to his needs, their
+types and meaning are not specified in this document.</entry>
+                </row>
+                <row>
+<entry>Superwidget</entry>
+<entry>A group of widgets, that build one entity, one without the other one doesn't
+make too much sense. Simple case can be eg. a widget, which
+consists of multiple radio buttons, one radio button group, and typically
+also a frame.</entry>
+                </row>
+                <row>
+<entry>Table</entry>
+<entry>Special superwidget, is to see eg. in the YaST2 bootloader module.
+Consists from the Table (in meaning of `Table basic widget), 
+3 push buttons (Add, Edit, Delete) bottom left, a replace point bottom
+right, and optionally Up and Down buttons right from the table.</entry>
+                </row>
+                <row>
+<entry>Table option</entry>
+<entry>One line in the table, representing some kind of information.</entry>
+                </row>
+                <row>
+<entry>Option id</entry>
+<entry>Identifier of an option. Must be unique in the whole table.</entry>
+                </row>
+                <row>
+<entry>Option key</entry>
+<entry>Identifier of the option type. Handlers are related to the option
+key. Multiple options with the same option key can be present in
+one table. CWM must know how to translate option id to option key.</entry>
+                </row>
+		<row>
+<entry>Options description map</entry>
+<entry>Map describing options of one table. Contains information in a fixed
+format, but developer can add additional keys according to his needs, their
+types and meaning are not specified in this document.</entry>
+		</row>
+                <row>
+<entry>Popup</entry>
+<entry>A popup that is shown when user clicks the Edit button when some 
+table option is selected. Is used to edit the value of the table option.</entry>
+                </row>
+                <row>
+<entry>Handler</entry>
+<entry>Callback function used by CWM module to make a well defined operation
+on the widget. Handlers can be sorted according
+to operation they handle, and according to entity it is related to.</entry>
+                </row>
+                <row>
+<entry>Widget handler</entry>
+<entry>Handler related to a widget in a dialog. "init", "store", "handle" and "validate"
+handlers are possible for the dialog widgets.</entry>
+                </row>
+                <row>
+<entry>Table handler</entry>
+<entry>Widget handler for the Table superwidget. Additionally, the "option_delete" handler
+is defined to delete the options from the table.</entry>
+                </row>
+                <row>
+<entry>Option handler</entry>
+<entry>Handler of an option in the table. Using this handler it is possible to change
+the default behavior of the option (displaying a popup). Only "handle" and "summary" handlers
+are possible for table options</entry>
+                </row>
+                <row>
+<entry>Popup handler</entry>
+<entry>Handler related to a popup. "init", "store", "handle" and "validate"
+handlers are possible for the popups.</entry>
+                </row>
+                <row>
+<entry>"init" handler</entry>
+<entry>Used to initialize the widget, typically to fetch settings from some structures,
+and set appropriate value to the widget.</entry>
+                </row>
+                <row>
+<entry>"store" handler</entry>
+<entry>Used to store the settings of the widget. Typically gets the state of the widget,
+and stores it to some internal variables.</entry>
+                </row>
+                <row>
+<entry>"handle" handler</entry>
+<entry>Used to handle events on the widgets. Is called every time the UI::UserInput ()
+returns, if the widgets wants to handle this event.</entry>
+                </row>
+                <row>
+<entry>"validate_function" handler</entry>
+<entry>Called before the widget settings are store, to ensure that the settings
+are consistent. Used if validation by function is set for the widget.</entry>
+                </row>
+                <row>
+                    <entry>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+
+
+
+	    </tbody>
+	</tgroup>
+    </table>
+</chapter>
