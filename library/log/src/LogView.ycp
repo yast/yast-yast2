@@ -143,12 +143,12 @@
 	    UI::ReplaceWidget (`id (`rep_left),
 		`PushButton (`id (`help), Label::HelpButton ()));
 	}
-	list menubutton = [];
+	list<any> menubutton = [];
 	if (param["save"]:false == true)
 	    // menubutton entry
 	    menubutton = add (menubutton, [`save, _("Save Log")]);
 
-	list<any> actions = param["actions"]:[];
+	list<list> actions = param["actions"]:[];
 	if (size (actions) > 0)
 	{
 	    integer index = 0;
@@ -160,11 +160,21 @@
 
 	if (size (menubutton) > 1)
 	{
-	    menubutton = filter (list m, menubutton, ``(
-		m[0]:nil != nil
+	    menubutton = filter (any m, menubutton, ``(
+		is(m,list) && (((list)m)[0]:nil != nil)
 	    ));
-	    menubutton = maplist (list m, menubutton, ``(
-		`item (`id (m[0]:nil), m[1]:"")));
+	    menubutton = maplist (any m, menubutton,
+		         {
+			   if (is (m, list))
+			   {
+			     list ml = (list)m;
+			     return `item (`id (ml[0]:nil), ml[1]:"");
+			   }
+			   else
+			   {
+			     return `item (`id (nil), "");
+			   }
+			 });
 	    UI::ReplaceWidget (`id (`rep_right),
 		`MenuButton (`id (`log_menu), mb_label, menubutton));
 	}

@@ -106,7 +106,7 @@
      * write list of sysyconfig entries via rcconfig agent
      */
 
-    global define boolean SysconfigWrite (path level, list values)
+    global define boolean SysconfigWrite (path level, list<list> values)
     ``{
 	boolean result = true;
 	if (level == .)
@@ -136,7 +136,7 @@
      *
      */
 
-    global define void WriteYaSTInf (map linuxrc)
+    global define void WriteYaSTInf (map<string,string> linuxrc)
     ``{
 	string yast_inf = "";
 	foreach (string ykey, string yvalue, linuxrc,
@@ -163,7 +163,7 @@
 	// step 1: split "opt1=val1 opt2=val2 ..."
 	// to ["opt1=val1", "opt2=val2", "..."]
 
-	list options_split = splitstring (options, " ");
+	list<string> options_split = splitstring (options, " ");
 
 	foreach (string options_element, options_split,
 	``{

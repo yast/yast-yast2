@@ -207,13 +207,13 @@
      * @param current_step	number (from 1) of the current step
      * @return term describing the steps
      **/
-    define term simpleEasyInstallationSteps( list step_descriptions, integer current_step ) ``{
+    define term simpleEasyInstallationSteps( list<string> step_descriptions, integer current_step ) ``{
 
 	integer step = 1;
 	term vbox = `VBox();
 	vbox = add( vbox, `VStretch() );
 
-	foreach ( `step_desc, step_descriptions, ``{
+	foreach ( string step_desc, step_descriptions, ``{
 	    term widget = step == current_step ? `Heading( step_desc ) : `Label( step_desc );
 	    vbox = add( vbox, `HBox( `HSpacing( 3 ), `Left( widget ) ) );
 	    vbox = add( vbox, `VStretch() );
@@ -371,7 +371,7 @@
      * @param current_step	number (from 1) of the current step
      * @return term describing the steps
      **/
-    global define term EasyInstallationSteps( list step_descriptions, integer current_step ) ``{
+    global define term EasyInstallationSteps( list<string> step_descriptions, integer current_step ) ``{
 	return have_fancy_ui ? fancyEasyInstallationSteps( step_descriptions, current_step )
 	    : simpleEasyInstallationSteps( step_descriptions, current_step );
     };
@@ -383,7 +383,7 @@
      * @param step_descriptions	list of installation step descriptions (strings)
      * @param current_step	number (from 1) of the current step
      **/
-    global define void SetEasyInstallationStep( list step_descriptions, integer current_step ) ``{
+    global define void SetEasyInstallationStep( list<string> step_descriptions, integer current_step ) ``{
 	y2milestone( "Installation step #%1", current_step );
 	UI::ReplaceWidget(`id(`rep_installation_steps), EasyInstallationSteps( step_descriptions, current_step ) );
     };
@@ -396,7 +396,7 @@
      * @param	steps list of installation step descriptions (strings)
      * @return	term describing the dialog.
      **/
-    global define term EasyInstallationDialog( term button_box, list steps ) ``{
+    global define term EasyInstallationDialog( term button_box, list<string> steps ) ``{
 
 	term contents_box = `HBox(
 				  `HSpacing(1),

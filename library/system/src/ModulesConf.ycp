@@ -22,7 +22,7 @@
 
     textdomain "base";
 
-    map modules = $[];
+    map<string, map> modules = $[];
 
     /**
      * ModuleArgs

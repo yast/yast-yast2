@@ -38,7 +38,7 @@
     /**
       * map of settings for modules for being contained in initrd
       */
-    map modules_settings = $[];
+    map<string, any> modules_settings = $[];
     /**
       * true if settings were changed and initrd needs to be rebuilt,
       * false otherwise
@@ -273,12 +273,13 @@
 
 	boolean modules_written = false;
 
-	foreach (string modname, map optmap, modules_settings, ``{
-	    if (size (optmap) > 0)
+	foreach (string modname, any optmap, modules_settings, ``{
+	    if (!is (optmap, map)) continue;
+	    if (size ((map)optmap) > 0)
 	    {
 		// write options to /etc/modules.conf
 		path p = add (.modules.options, modname);
-		SCR::Write (p, optmap);
+		SCR::Write (p, (map)optmap);
 		modules_written = true;
 	    }
 	});

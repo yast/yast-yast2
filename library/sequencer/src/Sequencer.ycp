@@ -37,7 +37,7 @@ define list WS_testall(map aliases) {
  * @return check passed?
  */
 define boolean WS_check(map aliases, map sequence) {
-    list ret = [];
+    list<boolean> ret = [];
 
     /* check if aliases is not a nil */
     if (aliases == nil) {
@@ -59,7 +59,7 @@ define boolean WS_check(map aliases, map sequence) {
     else ret = add(ret, true);
 
     /* check aliases map types */
-    list ret0 = maplist(any key, any val, aliases, {
+    list<boolean> ret0 = maplist(any key, any val, aliases, {
         if (!is(key, string)) {
             y2error(2, "sequencer check: not a string: %1", key);
             return false;
@@ -116,7 +116,7 @@ define boolean WS_check(map aliases, map sequence) {
             return false;
         }
         else {
-            list ret1 = maplist(any k, any v, (map) val, {
+            list<boolean> ret1 = maplist(any k, any v, (map) val, {
                 if (!is(k, symbol)) {
                     y2error(2, "sequencer check: not a symbol: %1", k);
                     return false;

@@ -110,7 +110,7 @@
      * @param items list of strings for items
      * @return HTML code
      **/
-    global define string List( list items ) ``{
+    global define string List( list<string> items ) ``{
 	string html = "<ul>";
 
 	foreach( string item, items, ``{
@@ -135,7 +135,7 @@
      * @param color item color
      * @return HTML code
      **/
-    global define string ColoredList( list items, string color ) ``{
+    global define string ColoredList( list<string> items, string color ) ``{
 	string html = "<ul>";
 
 	foreach( string item, items, ``{

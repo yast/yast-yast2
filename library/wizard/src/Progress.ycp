@@ -123,7 +123,7 @@
      * @param help_text help text
      */
     global define void New (string window_title, string progress_title,
-			    integer length, list stg, list tits,
+			    integer length, list<string> stg, list tits,
 			    string help_text) ``{
 	if (!visible)
 	    return ;
@@ -342,7 +342,7 @@
      * @param title title of the progress...
      * @param stages list of stage descriptions
      */
-    global define void OpenSuperior (string title, list stages) ``{
+    global define void OpenSuperior (string title, list<string> stages) ``{
 	term left = `VBox (`VStretch ());
 	term right = `VBox (`VStretch ());
 	integer idx = 0;

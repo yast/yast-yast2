@@ -59,7 +59,7 @@ define string AssertLineValid( map& file, integer line )
 global define void ReadFile( map& file, string pathname )
     ``{
     y2milestone( "path=%1", pathname );
-    list lines = [];
+    list<string> lines = [];
     if( SCR::Read( .target.size, pathname ) > 0 )
 	{
 	string value = (string)SCR::Read( .target.string, pathname );
@@ -108,9 +108,9 @@ global define void ReadFile( map& file, string pathname )
     file["l"] = lmap;
     };
 
-global define list FindLineField( map file, integer field, string content )
+global define list<integer> FindLineField( map file, integer field, string content )
     ``{
-    list ret = [];
+    list<integer> ret = [];
     foreach( integer num, map line, file["l"]:$[],
 	``{
 	if( !line["comment"]:false && line["fields",field]:"" == content )
@@ -122,9 +122,9 @@ global define list FindLineField( map file, integer field, string content )
     return( ret );
     }
 
-global define map<integer, map>  GetLines( map& file, list lines )
+global define map<integer, map>  GetLines( map& file, list<integer> lines )
     ``{
-    map<integer, map> ret = (map<integer, map>) $[];
+    map<integer, map> ret = $[];
     foreach( integer num, lines,
 	``{
 	if( haskey( file["l"]:$[], num ) )
@@ -197,7 +197,7 @@ global define void AppendLine( map& file, list entry )
     file["l",line,"buildline"] = true;
     }
 
-global define void RemoveLines( map& file, list lines )
+global define void RemoveLines( map& file, list<integer> lines )
     ``{
     y2debug( "lines %1", lines );
     foreach( integer num, lines,

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Mar  4 16:09:18 CET 2004 - visnov@suse.cz
+
+- added type info (kkaempf, visnov) 
+
+-------------------------------------------------------------------
 Thu Mar  4 15:47:00 CET 2004 - msvec@suse.cz
 
 - improved the packages testing client

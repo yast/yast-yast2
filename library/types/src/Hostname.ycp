@@ -43,7 +43,7 @@ global define string ValidFQ() ``{
  * @return true if correct
  */
 global define boolean Check(string host) ``{
-    if(host == nil || host == "" || size(host) > 63) return false;
+    if (host == nil || host == "" || size(host) > 63) return false;
     return regexpmatch(host, "^[[:alnum:]]([[:alnum:]-]*[[:alnum:]])?$");
 }
 
@@ -53,10 +53,10 @@ global define boolean Check(string host) ``{
  * @return true if correct
  */
 global define boolean CheckDomain(string domain) ``{
-    if(domain == nil || domain == "") return false;
-    list l = splitstring(domain, ".");
-    if(contains(maplist(string h, l, ``(Check(h))), false)) return false;
-    return !regexpmatch(domain, "\\.[[:digit:]][^.]*$");
+    if (domain == nil || domain == "") return false;
+    list <string> l = splitstring(domain, ".");
+    if (contains (maplist(string h, l, ``(Check(h))), false)) return false;
+    return !regexpmatch (domain, "\\.[[:digit:]][^.]*$");
 }
 
 /**
@@ -76,7 +76,7 @@ global define boolean CheckFQ(string host) ``{
  * @example Hostname::SplitFQ("ftp") -> ["ftp"]
  */
 global define list SplitFQ(string fqhostname) ``{
-    if(fqhostname == "" || fqhostname == nil) {
+    if (fqhostname == "" || fqhostname == nil) {
 	y2error("Bad FQ hostname: %1", fqhostname);
 	return [];
     }
@@ -85,7 +85,7 @@ global define list SplitFQ(string fqhostname) ``{
     string dn = "";
 
     integer dot = findfirstof(fqhostname, ".");
-    if(dot != nil) {
+    if (dot != nil) {
 	hn = substring(fqhostname, 0, dot);
 	dn = substring(fqhostname, dot+1);
 	return [ hn, dn ];

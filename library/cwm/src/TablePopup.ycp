@@ -286,8 +286,9 @@
       */
     global define string askForNewOption (list possible, boolean editable, map<string,any> descr) ``{
 	possible = sort (possible);
-	possible = maplist (string p, possible, ``{
-	    map<string, any> opt_descr = key2descr (descr, p);
+	possible = maplist (any p, possible, ``{
+	    if (!is (p, string)) continue;
+	    map<string, any> opt_descr = key2descr (descr, (string)p);
 	    string label = opt_descr["table", "label"]:sformat ("%1", p);
 	    return `item (`id (p), label);
 	});
