@@ -2,48 +2,48 @@
 [Y2Group Hardware]
 ; group name for configuration menu and yast2 control center
 Name = _("Hardware")
-Icon = hardware.png
+Icon = hardware56.png
 SortKey = 20
 Textdomain = base
 
 [Y2Group Misc]
 ; group name for configuration menu and yast2 control center
 Name = _("Misc")
-Icon = misc.png
+Icon = misc56.png
 SortKey = 99
 Textdomain = base
 
 [Y2Group Net_advanced]
 ; group name for configuration menu and yast2 control center
 Name = _("Network Services")
-Icon = network_advanced.png
+Icon = network_advanced56.png
 SortKey = 40
 Textdomain = base
 
 [Y2Group Network]
 ; group name for configuration menu and yast2 control center
 Name = _("Network Devices")
-Icon = network.png
+Icon = network56.png
 SortKey = 30
 Textdomain = base
 
 [Y2Group Security]
 ; group name for configuration menu and yast2 control center
 Name = _("Security and Users")
-Icon = security.png
+Icon = security56.png
 SortKey = 50
 Textdomain = base
 
 [Y2Group Software]
 ; group name for configuration menu and yast2 control center
 Name = _("Software")
-Icon = software.png
+Icon = software56.png
 SortKey = 10
 Textdomain = base
 
 [Y2Group System]
 ; group name for configuration menu and yast2 control center
 Name = _("System")
-Icon = system.png
+Icon = system56.png
 SortKey = 60
 Textdomain = base
