@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 17 11:01:59 CEST 2003 - jsrain@suse.de
+
+- Fixed "blinking" of Table/Popup's buttons when table content was
+  reordered
+
+-------------------------------------------------------------------
 Fri Oct  3 14:18:55 CEST 2003 - jsrain@suse.de
 
 - Table/Popup stuff splitt off from CWM.ycp to separate file
