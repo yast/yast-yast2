@@ -31,12 +31,12 @@ They can (in most cases) look the following way:
 </para>
 
 <screen>
-global define void MyInit (any widget_id) ``{
+global define void MyInit (string widget_id) ``{
     UI::ChangeWidget (`id (widget_id), `Value,
         settings[widget_id]:"");
 } 
 
-global define void MyStore (any widget_id, map event) ``{
+global define void MyStore (string widget_id, map event) ``{
     settings[widget_id] = UI::QueryWidget (`id (widget_id),
         `Value);
 }
@@ -86,12 +86,12 @@ For radio button group the callback will look following way:
 </para>
 
 <screen>
-global define void RadioButtonsInit (any widget_id) ``{
+global define void RadioButtonsInit (string widget_id) ``{
     UI::ChangeWidget (`id (widget_id), `CurrentButton,
         settings[widget_id]:"");
 }
 
-global define void RadioButtonsStore (any widget_id, map event) ``{
+global define void RadioButtonsStore (string widget_id, map event) ``{
     settings[widget_id] = UI::QueryWidget (`id (widget_id),
         `CurrentButton);
 }
@@ -137,12 +137,12 @@ global map settings = $[
     "option2" : "item1",
 ];
 
-global define void MyInit (any widget_id) ``{
+global define void MyInit (string widget_id) ``{
     UI::ChangeWidget (`id (widget_id), `Value,
         settings[widget_id]:"");
 }
 
-global define void MyStore (any widget_id, map event) ``{
+global define void MyStore (string widget_id, map event) ``{
     settings[widget_id] = UI::QueryWidget (`id (widget_id),
         `Value);
 }
@@ -166,12 +166,12 @@ global map widgets = $[
     ],
 ];
 
-global define void RadioButtonsInit (any widget_id) ``{
+global define void RadioButtonsInit (string widget_id) ``{
     UI::ChangeWidget (`id (widget_id), `CurrentButton,
         settings[widget_id]:"");
 }
 
-global define void RadioButtonsStore (any widget_id, map event) ``{
+global define void RadioButtonsStore (string widget_id, map event) ``{
     settings[widget_id] = UI::QueryWidget (`id (widget_id),
         `CurrentButton);
 }

@@ -86,7 +86,7 @@ String cannot be empty");
   ],
 ]
 
-global define boolean my_validate_widget (any key, map event) ``{
+global define boolean my_validate_widget (string key, map event) ``{
     boolean value = UI::QueryWidget (
         `id ("CWD_IN_ROOT_PATH"),
         `Value);
@@ -154,12 +154,12 @@ map widget_descr = $[
   ],
 ]
 
-global define void my_initialize_widget (any key) ``{
+global define void my_initialize_widget (string key) ``{
     boolean value = MyModule::this_variable;
     UI::ChangeWidget (`id ("CWD_IN_ROOT_PATH"), `Value, value);
 }
 
-global define void my_store_widget (any key, map event) ``{
+global define void my_store_widget (string key, map event) ``{
     boolean value = UI::QueryWidget (
         `id ("CWD_IN_ROOT_PATH"),
         `Value);
@@ -198,7 +198,7 @@ map widget_descr = $[
   ],
 ]
 
-global define symbol my_handle_widget (any key, map event) ``{
+global define symbol my_handle_widget (string key, map event) ``{
     UI::MessagePopup (_("You checked the checkbox. Restart to
 make the change effective ;-)"));
     return nil;
@@ -335,7 +335,7 @@ global define symbol runSomeDialog ``{
     ];
 
     // run the dialog
-    any ret = CWM::Run (widgets, functions);
+    symbol ret = CWM::Run (widgets, functions);
 
     return ret;
 </screen></example>
