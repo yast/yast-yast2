@@ -10,6 +10,7 @@
 {
     module "CommandLine";
 
+    import "Mode";
     import "Report";
     import "String";
     import "TypeRepository";
@@ -198,7 +199,7 @@
 		systemcommands["mappings"]:$[] )
 	];
 
-	if( size(args) < 1 ) {
+	if( size(args) < 1 || ! Mode::normal ) {
 	    nocommands = true;
 	    // start GUI, module has some work to do :-)
 	    return true;
