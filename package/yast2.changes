@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep  4 19:08:56 CEST 2002 - mvidner@suse.cz
+
+- ncurses menu: fixed shortcut cycling in the group menu (#18258).
+- 2.6.30
+
+-------------------------------------------------------------------
 Mon Sep  2 17:44:13 CEST 2002 - mvidner@suse.cz
 
 - ag_initscripts: fixed parsing Short-Descriptions.
