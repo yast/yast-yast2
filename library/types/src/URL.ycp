@@ -1,0 +1,166 @@
+/**
+ * File:	modules/URL.ycp
+ * Package:	yast2
+ * Summary:	Manipulate and Parse URLs
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *		Anas Nashif <nashif@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+module "URL";
+textdomain "base";
+
+import "Hostname";
+import "IP";
+
+/**
+ * TODO:
+ * - read URI(3)
+ * - esp. compare the regex mentioned in the URI(3) with ours:
+ *   my($scheme, $authority, $path, $query, $fragment) =
+ *   $uri =~ m|^(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?|;
+ */
+
+/**
+ * Valid characters in URL
+ */
+global string ValidChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.:_-/%";
+
+/**
+ * Tokenize URL
+ * @param url URL to be parsed
+ * @return URL split to tokens
+ * @example Parse("http://name:pass@www.suse.cz:80/path/index.html?question#part") ->
+ * <pre>
+ *     $[
+ *         "scheme"  : "http",
+ *         "host"    : "www.suse.cz"
+ *         "port"    : "80",
+ *         "path"    : /path/index.html",
+ *         "user"    : "name",
+ *         "pass"    : "pass",
+ *         "query"   : "question",
+ *         "fragment": "part"
+ *     ]
+ * </pre>
+ */
+global define map Parse(string url) ``{
+
+    y2debug("url=%1", url);
+
+    /* We don't parse empty URLs */
+    if(url == nil || size(url) < 1) return $[];
+
+    /* Extract basic URL parts: scheme://host/path?question#part */
+    list rawtokens = regexptokenize(url, "^" +
+	/* 0,1: http:// */
+	"(([^:/?#]+)://)?" +
+	/* 2: user:pass@www.suse.cz:23 */
+	"([^/?#]*)?" +
+	/* 3: /some/path */
+	"([^?#]*)?" +
+	/* 4,5: ?question */
+	"(\\?([^#]*))?" +
+	/* 6,7: #fragment */
+	"(#(.*))?"
+    );
+    y2debug("rawtokens=%1", rawtokens);
+
+    map tokens = $[];
+    tokens["scheme"] = rawtokens[1]:"";
+    tokens["path"] = rawtokens[3]:"";
+    tokens["query"] = rawtokens[5]:"";
+    tokens["fragment"] = rawtokens[7]:"";
+
+    /* Extract username:pass@host:port */
+    list userpass = regexptokenize(rawtokens[2]:"", "^" +
+	/* 0,1,2,3: user:pass@ */
+	"(([^@:]+)(:([^@:]+))?@)?" +
+	/* 4,5,6,7: hostname|[xxx] */
+	"(([^:@]+))" +
+	// FIXME "(([^:@]+)|(\\[([^]]+)\\]))" +
+	/* 8,9: port */
+	"(:([^:@]+))?"
+    );
+    y2debug("userpass=%1", userpass);
+
+    tokens["user"] = userpass[1]:"";
+    tokens["pass"] = userpass[3]:"";
+    tokens["port"] = userpass[7]:"";
+
+    if(userpass[5]:"" != "")
+	tokens["host"] = userpass[5]:"";
+    else
+	tokens["host"] = userpass[7]:"";
+
+    y2debug("tokens=%1", tokens);
+    return tokens;
+}
+
+/**
+ * Check URL
+ * @param url URL to be checked
+ * @return true if correct
+ * @see RFC 2396 (updated by RFC 2732)
+ * @see also perl-URI: URI(3)
+ */
+global define boolean Check(string url) ``{
+    y2debug("0");
+
+    /* We don't allow empty URLs */
+    if(url == nil || size(url) < 1) return false;
+    y2debug("1");
+
+    /* We don't allow URLs with spaces */
+    if(find(url, " ") != -1) return false;
+    y2debug("2");
+
+    map tokens = Parse(url);
+
+    /* Check "scheme"  : "http" */
+    if(!regexpmatch(tokens["scheme"]:"", "^[a-z]*$"))
+	return false;
+
+    y2debug("3");
+    /* Check "host"    : "www.suse.cz" */
+    if(!Hostname::CheckFQ(tokens["host"]:"") && !IP::Check(tokens["host"]:""))
+	return false;
+
+    y2debug("4");
+    /* Check "path"    : /path/index.html" */
+
+    y2debug("5");
+    /* Check "port"    : "80" */
+    if(!regexpmatch(tokens["port"]:"", "^[0-9]*$"))
+	return false;
+
+    /* Check "user"    : "name" */
+
+    /* Check "pass"    : "pass" */
+
+    /* Check "query"   : "question" */
+
+    /* Check "fragment": "part" */
+
+    return true;
+}
+
+/*
+y2milestone("%1", Parse("http://a:b@www.suse.cz:33/ahoj/nekde?neco#blah"));
+y2milestone("%1", Parse("ftp://www.suse.cz/ah"));
+y2milestone("%1", Parse("ftp://www.suse.cz:22/ah"));
+y2milestone("%1", Parse("www.suse.cz/ah"));
+
+y2milestone("%1", Check("http://a:b@www.suse.cz:33/ahoj/nekde?neco#blah"));
+y2milestone("%1", Check("ftp://www.suse.cz/ah"));
+y2milestone("%1", Check("ftp://www.suse.cz:22/ah"));
+y2milestone("%1", Check("www.suse.cz/ah"));
+y2milestone("%1", Check("www.suse.cz ah"));
+y2milestone("%1", Check(""));
+y2milestone("%1", Check(nil));
+*/
+
+}
