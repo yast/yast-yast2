@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Dec  1 11:37:39 CET 2004 - locilka@suse.cz
+
+- Added handling for 'all' parameter in old firewall functions
+  in SuSEFirewall module
+- Added CharacterDevice file-type into FileUtils.ycp.
+- Created testsuite for FileUtils module.
+
+-------------------------------------------------------------------
 Wed Dec  1 10:56:06 CET 2004 - mvidner@suse.cz
 
 - NetworkDevices: Improved ifcfg name handling,
