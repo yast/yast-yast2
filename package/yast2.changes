@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jan 27 16:12:51 CET 2003 - arvin@suse.de
+
+- added popt to neededforbuild
+
+-------------------------------------------------------------------
 Mon Jan 27 15:48:51 CET 2003 - msvec@suse.de
 
 - network groups: Network Devices and Network Services
