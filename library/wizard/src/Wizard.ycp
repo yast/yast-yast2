@@ -4,8 +4,6 @@
  * Summary:	Wizard dialog
  * Authors:	Stefan Hundhammer <sh@suse.de>
  *
- * $Id$
- *
  * Provides the wizard dialog (common screen for all YaST2 installation
  * modules) and functions to set the contents, to replace and restore
  * special widgets.
@@ -20,8 +18,6 @@
     import "Popup";
     import "Directory";
 
-    integer current_stage = 0;	// Cache for the current wizard stage (image no.)
-
     // keep trailing "/" !!
     string theme_path = Directory::themedir + "/current/";
     string icon_path  = Directory::icondir; // theme_path;
@@ -34,29 +30,14 @@
     define void Init() {
 	map ui_info = UI::GetDisplayInfo();
 
-	have_fancy_ui = ui_info[ "HasImageSupport" ]:false
-	    && ui_info[ "HasLocalImageSupport" ]:false
+	have_fancy_ui = UI::HasSpecialWidget(`Wizard )
 	    && ui_info[ "Depth" ]:0 >= 15
 	    && ui_info[ "DefaultWidth" ]:0 >= 800
-	    && ui_info[ "DefaultHeight"]:0 >= 600
-	    && UI::HasSpecialWidget(`ColoredLabel);
+	    && ui_info[ "DefaultHeight"]:0 >= 600;
 
 	// have_fancy_ui = false;
 
 	UI::SetFunctionKeys( Label::DefaultFunctionKeyMap() );
-    }
-
-    /**
-     * Change the image at the top of the window (UI context)
-     * @param imagedata image
-     **/
-    global define void SetImage( byteblock imagedata ) {
-	if (imagedata == nil) {
-	    y2warning ("SetImage(): Invalid image - using fallback" );
-	    UI::ReplaceWidget( `id(`image), `Image(`opt(`zeroWidth, `easterEgg), `suseheader, "SuSE") );
-	}
-	else
-	    UI::ReplaceWidget( `id(`image), `Image(`opt(`zeroWidth, `easterEgg), imagedata, "SuSE") );
     }
 
 
@@ -149,42 +130,6 @@
 
 
     /**
-     * Returns a term describing the default wizard header image.
-     *
-     * @param add_bottom_tile add a 3D border at the bottom?
-     * @return term describing the header image.
-     **/
-    global define term HeaderImage( boolean add_bottom_tile ) {
-	term image = `Image( `opt(`zeroWidth, `easterEgg), `suseheader, "SuSE");
-
-	if ( have_fancy_ui == nil ) Init ();
-
-	if ( have_fancy_ui )
-	{
-	    image =
-		`VBox(
-		      `HBox(
-			    `Image( theme_path + "topRow_left.png", "YaST2" ),
-			    `HWeight( 1, // Layout trick: Lower layout priority with weight
-				      `HBox(
-					    `Image(`opt(`tiled, `zeroWidth ), theme_path + "topRow_centerTile.png", "" ),
-					    `Image(`opt(`easterEgg ) , theme_path + "topRow_right.png", "SuSE" )
-					    )
-				      )
-			    )
-		      );
-
-	    if ( add_bottom_tile )
-	    {
-		image = add( image, `Image(`opt(`tiled, `zeroWidth ) , theme_path + "topRow_bottomTile.png", "" ) );
-	    }
-	}
-
-	return image;
-    }
-
-
-    /**
      * Returns a term describing a generic wizard dialog with a configurable
      * button box.
      *
@@ -193,14 +138,12 @@
      **/
     global define term GenericDialog( term button_box ) {
 	return `VBox( `id(`WizardDialog),
-		      `ReplacePoint( `id(`image ), HeaderImage( true ) ),
 		      `HBox(
 			    `HWeight( 30, `ReplacePoint( `id(`helpSpace), `RichText(`id(`HelpText), ""))),
 			    `HSpacing(1),
 			    `HWeight( 70, `VBox(
 						`VSpacing(0.2),
 						`HBox(
-						      `ReplacePoint(`id(`rep_title_icon), `Empty() ),
 						      `Heading(`id(`title), `opt (`hstretch), _("YaST2\nInitializing ...")),
 						      `HStretch()
 						      ),
@@ -219,248 +162,7 @@
     }
 
 
-
-    /**
-     * Simple version of easy installation steps.
-     *
-     * @param step_descriptions	list of installation step descriptions (strings)
-     * @param current_step	number (from 1) of the current step
-     * @return term describing the steps
-     **/
-    define term simpleEasyInstallationSteps( list<string> step_descriptions, integer current_step ) {
-
-	integer step = 1;
-	term vbox = `VBox();
-	vbox = add( vbox, `VStretch() );
-
-	foreach ( string step_desc, step_descriptions, {
-	    term widget = step == current_step ? `Heading( step_desc ) : `Label( step_desc );
-	    vbox = add( vbox, `HBox( `HSpacing( 3 ), `Left( widget ) ) );
-	    vbox = add( vbox, `VStretch() );
-	    step = step + 1;
-	});
-
-	vbox = add( vbox, `PushButton(`id(`help), `opt(`key_F1), Label::HelpButton() ) );
-
-	return vbox;
-    }
-
-
-    /**
-     * One of the installation steps as "cards" in "fancy" mode for easy installation.
-     *
-     * @param text		text to display in the card
-     * @param current_step	number of the current step (from 1)
-     * @param step_no		number of this step (from 1)
-     * @param left_image_name	name of the image to the left  of the card
-     * @param right_image_name	name of the image to the right of the card
-     * @return term describing the card
-     **/
-    define term easyInstallationCard( string	text,
-				      integer	current_step,
-				      integer	step_no,
-				      string	left_image_name,
-				      string	right_image_name )
-    {
-
-	term card = nil;
-
-	if ( step_no == current_step )
-	{
-	    card = `HBox(
-			 `Image( theme_path + left_image_name, "" ),
-			 `VBox(
-			       `HBox(
-				     `Image( theme_path + "active_topLeft_corner.png",  "" ),
-				     `Image(`opt(`tiled, `zeroWidth ), theme_path + "active_topTile.png",  "" ),
-				     `Image( theme_path + "active_insideTop_corner.png", "" )
-				     ),
-			       `HBox(
-				     `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" ),
-				     `Image( theme_path + "button_active.png", "" ),
-				     `ColoredLabel(`opt(`hstretch, `vstretch),
-						   text,
-						   `rgb( 0, 0, 0 ),		// black foreground
-						   `rgb( 238, 234, 238 ),
-						   10 )				// margin
-				     ),
-			       `HBox(
-				     `Image( theme_path + "active_bottomLeft_corner.png",  "" ),
-				     `Image(`opt(`tiled, `zeroWidth ), theme_path + "active_bottomTile.png",  "" ),
-				     `Image( theme_path + "active_insideBottom_corner.png", "" )
-				     )
-			       )
-			 );
-	}
-	else	// not the current step
-	{
-
-	    string button_image = current_step > step_no ? "button_done.png" : "button_normal.png";
-
-	    card = `HBox(
-			 `Image( theme_path + left_image_name, "" ),
-			 `VBox(
-			       `HBox(
-				     `Image( theme_path + "inactive_topLeft_corner.png",  "" ),
-				     `Image(`opt(`tiled, `zeroWidth ), theme_path + "inactive_topTile.png",  "" ),
-				     `Image( theme_path + "inactive_topRight_corner.png", "" )
-				     ),
-			       `HBox(
-				     `Image(`opt(`tiled, `zeroHeight ), theme_path + "inactive_leftTile.png",  "" ),
-				     `Image( theme_path + button_image, "" ),
-				     `ColoredLabel(`opt(`hstretch, `vstretch),
-						   text,
-						   `rgb( 0, 0, 0 ),		// black foreground
-						   `rgb( 204, 204, 204 ),
-						   10 ),			// margin
-				     `Image(`opt(`tiled, `zeroHeight ), theme_path + "inactive_rightTile.png",  "" )
-				     ),
-			       `HBox(
-				     `Image( theme_path + "inactive_bottomLeft_corner.png",  "" ),
-				     `Image(`opt(`tiled, `zeroWidth ), theme_path + "inactive_bottomTile.png",  "" ),
-				     `Image( theme_path + "inactive_bottomRight_corner.png", "" )
-				     )
-			       ),
-			 `Image( theme_path + right_image_name, "" ),
-			 `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" )
-			 );
-	}
-
-	return card;
-    }
-
-
-    /**
-     * "Fancy" (colorful, complex) version of easy installation steps.
-     *
-     * @param step_descriptions	 list of installation step descriptions (strings)
-     * @param current_step	 number (from 1) of the current step
-     * @return term describing the steps
-     **/
-    define term fancyEasyInstallationSteps( list step_descriptions, integer current_step ) {
-
-	return `HSquash(
-			`VBox(
-			      `HBox(
-				    `Image( theme_path + "full_1.png", "" ),
-				    `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" )
-				    ),
-			      easyInstallationCard( step_descriptions[0]:"Step 1",
-						    current_step, 1,
-						    "card1_left.png", "card1_right.png" ),
-			      `HBox(
-				    `Image( theme_path + "full_2.png", "" ),
-				    `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" )
-				    ),
-			      easyInstallationCard( step_descriptions[1]:"Step 2",
-						    current_step, 2,
-						    "card2_left.png", "card2_right.png" ),
-			      `HBox(
-				    `Image( theme_path + "full_3.png", "" ),
-				    `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" )
-				    ),
-			      easyInstallationCard( step_descriptions[2]:"Step 3",
-						    current_step, 3,
-						    "card3_left.png", "card3_right.png" ),
-			      `VWeight( 1, // Layout trick: Lower layout priority with weight
-					`HBox(
-					      `VBox(
-						    `Image( theme_path + "full_4.png", "" ),
-						    `VWeight( 1, `Image(`opt(`tiled, `zeroHeight ), theme_path + "fullBottom_tile.png", "" ) ),
-						    `Image( theme_path + "help_top.png", "" ),
-						    `HBox(
-							  `Top(`Image( theme_path + "help_left.png", "" ) ),
-							  `PushButton(`id(`help), `opt (`key_F1), Label::HelpButton() ),
-							  `Top(`Image(`opt(`zeroWidth), theme_path + "help_right.png", "" ) )
-							  )
-						    // `Image( theme_path + "help_bottom.png", "" )
-						    ),
-					      `Image(`opt(`tiled, `zeroHeight ), theme_path + "active_leftTile.png",  "" )
-					      )
-					)
-			      )
-			);
-    }
-
-
-    /**
-     * Returns a term describing steps in an "easy installation" dialog with
-     * step no. 'current_step' (from 0) highlighted.
-     *
-     * @param step_descriptions	list of installation step descriptions (strings)
-     * @param current_step	number (from 1) of the current step
-     * @return term describing the steps
-     **/
-    global define term EasyInstallationSteps( list<string> step_descriptions, integer current_step ) {
-	if ( have_fancy_ui == nil ) Init ();
-	return have_fancy_ui ? fancyEasyInstallationSteps( step_descriptions, current_step )
-	    : simpleEasyInstallationSteps( step_descriptions, current_step );
-    }
-
-
-    /**
-     * Set the "easy installation" step.
-     *
-     * @param step_descriptions	list of installation step descriptions (strings)
-     * @param current_step	number (from 1) of the current step
-     **/
-    global define void SetEasyInstallationStep( list<string> step_descriptions, integer current_step ) {
-	y2milestone( "Installation step #%1", current_step );
-	UI::ReplaceWidget(`id(`rep_installation_steps), EasyInstallationSteps( step_descriptions, current_step ) );
-    }
-
-
-    /**
-     * Returns a term describing an "easy installation" dialog.
-     *
-     * @param	button_box term that contains a `HBox() with buttons in it
-     * @param	steps list of installation step descriptions (strings)
-     * @return	term describing the dialog.
-     **/
-    global define term EasyInstallationDialog( term button_box, list<string> steps ) {
-
-	if ( have_fancy_ui == nil ) Init ();
-
-	term contents_box = `HBox(
-				  `HSpacing(1),
-				  `VBox(
-					`HBox(
-					      `ReplacePoint(`id(`rep_title_icon), `Empty() ),
-					      `Heading(`id(`title), `opt (`hstretch), _("YaST2\nInitializing ...")),
-					      `HStretch()
-					      ),
-					`VWeight(1, // Layout trick: Lower layout priority with weight
-						 `HVCenter(
-							   `ReplacePoint(`id(`contents), `Empty() )
-							   )
-						 ),
-					`ReplacePoint(`id(`rep_button_box), button_box ),
-					`VSpacing(0.2)
-					)
-				  );
-
-	term dialog = `VBox( `id(`WizardDialog),
-			     HeaderImage( ! have_fancy_ui ),
-			     `VWeight(1, // Layout trick: Lower layout priority with weight
-				      `HBox(
-					    `ReplacePoint( `id(`rep_installation_steps), EasyInstallationSteps( steps, 1 ) ),
-					    `HWeight( 1, // Layout trick: Lower layout priority with weight
-						      `VBox(
-							    have_fancy_ui ? `Image(`opt(`tiled, `zeroWidth ),	// Top 3D border
-										   theme_path + "topRow_bottomTile.png", "" )
-							    : `Empty(),
-							    `VSpacing(0.2),
-							    contents_box
-							    )
-						      )
-					    )
-				      )
-			     );
-	return dialog;
-    }
-
-
-
+    
     /**
      * Check if the topmost dialog is a wizard dialog
      * (i.e. has a widget with `id(`WizardDialog) )
@@ -468,17 +170,17 @@
      * @return true, if topmost dialog is a wizard dialog, false otherwise
      **/
     global define boolean IsWizardDialog() {
-	return UI::WidgetExists(`id(`WizardDialog) );
+	return UI::WidgetExists(`id(`WizardDialog) ) || UI::WidgetExists(`wizard);
     }
 
 
-    /**
-     * Check if the topmost dialog has a "Next" button
-     * @return true if widget with `id(`next) is present, false otherwise
-     **/
-    global define boolean HasNextButton() {
-	return UI::WidgetExists(`id(`next) );
-    }
+    //	/**
+    //	 * Check if the topmost dialog has a "Next" button
+    //	 * @return true if widget with `id(`next) is present, false otherwise
+    //	 **/
+    //	global define boolean HasNextButton() {
+    //		return UI::WidgetExists(`id(`next) );
+    //	}
 
 
     /**
@@ -536,8 +238,20 @@
      * and set the keyboard focus to "Next".
      **/
     global define void OpenNextBackDialog() {
-	Wizard::OpenDialog( NextBackDialog() );
-	UI::SetFocus(`id(`next) );
+	if ( have_fancy_ui == nil ) Init();
+
+	if ( have_fancy_ui )
+	{
+	    UI::OpenDialog(`opt(`defaultsize ),
+			   `Wizard(`back,  Label::BackButton(),
+				   `abort, Label::AbortButton(),
+				   `next,  Label::NextButton() ) );
+	}
+	else
+	{
+	    Wizard::OpenDialog( NextBackDialog() );
+	    UI::SetFocus(`id(`next) );
+	}
     }
 
 
@@ -546,8 +260,85 @@
      * and set the keyboard focus to "Accept".
      **/
     global define void OpenAcceptDialog() {
-	Wizard::OpenDialog( AcceptDialog() );
-	UI::SetFocus(`id(`accept) );
+	
+	if ( have_fancy_ui == nil ) Init();
+	
+	if ( have_fancy_ui )
+	{
+	    UI::OpenDialog(`opt(`defaultsize ),
+			   `Wizard(`no_back_button,   	"",
+				   `cancel,		Label::CancelButton(),
+				   `accept,		Label::AcceptButton() ) );
+	}
+	else
+	{
+	    Wizard::OpenDialog( AcceptDialog() );
+	    UI::SetFocus(`id(`accept) );
+	}
+    }
+
+
+    /**
+     * Open a dialog with "Accept", "Cancel" that will also accept workflow steps.
+     **/
+    global define void OpenAcceptStepsDialog() {
+	if ( have_fancy_ui == nil ) Init();
+	
+	if ( have_fancy_ui )
+	{
+	    UI::OpenDialog(`opt(`defaultsize ),
+			   `Wizard(`opt(`stepsEnabled),
+				   `no_back_button,   	"",
+				   `cancel,		Label::CancelButton(),
+				   `accept,		Label::AcceptButton() ) );
+	}
+	else
+	{
+	    OpenAcceptDialog();
+	}
+    }
+
+    
+
+    /**
+     * Open a dialog with "Accept", "Cancel" that will also accept workflow steps.
+     **/
+    global define void OpenAcceptAbortStepsDialog() {
+	if ( have_fancy_ui == nil ) Init();
+	
+	if ( have_fancy_ui )
+	{
+	    UI::OpenDialog(`opt(`defaultsize ),
+			   `Wizard(`opt(`stepsEnabled),
+				   `no_back_button,   	"",
+				   `abort,		Label::AbortButton(),
+				   `accept,		Label::AcceptButton() ) );
+	}
+	else
+	{
+	    OpenAcceptDialog();
+	}
+    }
+
+    
+    /**
+     * Open a dialog with "Back", "Next", "Abort" that will also accept workflow steps.
+     **/
+    global define void OpenNextBackStepsDialog() {
+	if ( have_fancy_ui == nil ) Init();
+
+	if ( have_fancy_ui )
+	{
+	    UI::OpenDialog(`opt(`defaultsize ),
+			   `Wizard(`opt(`stepsEnabled),
+				   `back,  Label::BackButton(),
+				   `abort, Label::AbortButton(),
+				   `next,  Label::NextButton() ) );
+	}
+	else
+	{
+	    OpenNextBackDialog();
+	}
     }
 
 
@@ -603,17 +394,29 @@
     global define void SetContents(string title, term contents, string help_text,
 				   boolean has_back, boolean has_next) {
 
+	if ( have_fancy_ui == nil ) Init();
 
-	if ( UI::WidgetExists(`id(`next ) ) )
+	if ( have_fancy_ui )
 	{
-	    UI::ChangeWidget(`id(`next), `Enabled, has_next);
-	    UI::SetFocus( `id(`next) );
+	    UI::WizardCommand(`SetDialogHeading( title ) );
+	    UI::WizardCommand(`SetHelpText( help_text ) );
+	    UI::WizardCommand(`EnableNextButton( has_next ) );
+	    UI::WizardCommand(`EnableBackButton( has_back ) );
 	}
-	if ( UI::WidgetExists(`id(`back		) ) )	UI::ChangeWidget(`id(`back), `Enabled, has_back);
-	if ( UI::WidgetExists(`id(`accept	) ) )	UI::SetFocus( `id(`accept ) );
-	if ( UI::WidgetExists(`id(`abort	) ) )	UI::ChangeWidget(`id(`abort),`Enabled, true);
-	if ( UI::WidgetExists(`id(`HelpText	) ) )	UI::ChangeWidget(`id(`HelpText), `Value, help_text);
-	if ( UI::WidgetExists(`id(`title	) ) )	UI::ChangeWidget(`id(`title), `Value, title);
+	else
+	{
+	    if ( UI::WidgetExists(`id(`next ) ) )
+	    {
+		UI::ChangeWidget(`id(`next), `Enabled, has_next);
+		UI::SetFocus( `id(`next) );
+	    }
+	
+	    if ( UI::WidgetExists(`id(`back	) ) )	UI::ChangeWidget(`id(`back), `Enabled, has_back);
+	    if ( UI::WidgetExists(`id(`accept	) ) )	UI::SetFocus( `id(`accept ) );
+	    if ( UI::WidgetExists(`id(`abort	) ) )	UI::ChangeWidget(`id(`abort),`Enabled, true);
+	    if ( UI::WidgetExists(`id(`HelpText	) ) )	UI::ChangeWidget(`id(`HelpText), `Value, help_text);
+	    if ( UI::WidgetExists(`id(`title	) ) )	UI::ChangeWidget(`id(`title), `Value, title);
+	}
 
 	UI::ReplaceWidget(`id(`contents), contents);
     }
@@ -748,26 +551,13 @@
 
 
     /**
-     * Replace the wizard 'title' icon with a custom widget.
-     *
-     * @param new_icon a term describing the new contents
-     **/
-    global define void ReplaceTitleIcon( term new_icon ) {
-	if ( UI::WidgetExists(`id(`rep_title_icon ) ) )
-	{
-	    UI::ReplaceWidget(`id(`rep_title_icon ), new_icon );
-	}
-    }
-
-
-    /**
      * Set the wizard 'title' icon to the specified icon from the standard icon
      * directory.
      *
      * @param icon_name name (without path) of the new icon
      **/
     global define void SetTitleIcon( string icon_name ) {
-	Wizard::ReplaceTitleIcon( `Image( icon_path + "/" + icon_name + ".png", "" ) );
+	    UI::WizardCommand(`SetDialogIcon( icon_path + "/" + icon_name + ".png", "" ) );
     }
 
 
@@ -775,7 +565,7 @@
      * Clear the wizard 'title' icon, i.e. replace it with nothing
      **/
     global define void ClearTitleIcon() {
-	Wizard::ReplaceTitleIcon( `Empty() );
+	    UI::WizardCommand(`SetDialogIcon( "" ) );
     }
 
 
@@ -824,29 +614,6 @@
 	UI::ChangeWidget(`id(`abort), `Enabled, false);
     }
 
-
-    /**
-     * Set the wizard installation stage, i.e. the indicator of how
-     * far the installation has progressed yet.
-     * Sets the wizard header image accordingly.
-     * @param stage new wizard stage
-     * @param force don't use the internal cache
-     **/
-    global define void SetStage( integer stage, boolean force ) {
-
-	if ( stage == current_stage && ! force) {	// cache
-	    y2debug("Stage %1 cached - doing nothing", stage );
-	    return;
-	}
-
-	y2debug("Setting stage to %1", stage );
-
-	// Set the header image according to the stage
-	SetImage( (byteblock)SCR::Read (.local.byte, sformat( theme_path+"stage%1.png", stage ) ) );
-
-	// Cache the current stage
-	current_stage = stage;
-    }
 
     /* ------------------------------------------------------------ */
     /*
