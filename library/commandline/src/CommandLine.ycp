@@ -8,14 +8,11 @@
  */
 
 {
-
     module "CommandLine";
 
     import "Report";
     import "String";
     import "TypeRepository";
-
-    include "ui/common_functions.ycp";
 
     textdomain "base";
 
@@ -518,12 +515,12 @@
 
 	Print("");
 	Print(_("Commands:"));
-	
+
 	integer longest = 0;
 	foreach( string action, map desc, modulecommands["actions"]:$[], ``{
 	    if( size(action) > longest ) longest = size(action);
 	});
-	
+
 	maplist(string cmd, map desc, modulecommands["actions"]:$[], ``{
 	    Print(sformat("    %1  %2", String::Pad(cmd, longest), desc["help"]:_("No help available.")));
 	});
@@ -561,7 +558,7 @@
 	Print(_("\n    Options:"));
 
 	map allopts = allcommands["options"]:$[];
-	
+
 	integer longestopt = 0;
 	integer longestarg = 0;
 
@@ -577,9 +574,9 @@
 		});
 		t = t + "\]";
 	    }
-	    
+
 	    if( size(t) > longestarg ) longestarg = size(t);
-	    
+
 	    if( size(opt) > longestopt ) longestopt = size(opt);
 	} );
 
@@ -746,6 +743,6 @@
 
 	return cmds[0]:nil;
     }
-    
+
 /* EOF */
 }
