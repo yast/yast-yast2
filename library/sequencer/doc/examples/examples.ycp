@@ -1,6 +1,16 @@
 {
 
-global define Aliases() ``{
+define any BeginDialog();
+define any EndDialog();
+define any ConfigDialog();
+define any DetailsDialog();
+
+define any SuperDetailsDialog();
+define any ExpertDialog();
+define any Expert2Dialog();
+define any Decide();
+
+define map Aliases() {
     map aliases = $[
 	"begin"		: ``(BeginDialog()),
 	"end"		: ``(EndDialog()),
@@ -14,7 +24,7 @@ global define Aliases() ``{
     return aliases;
 }
 
-global define GUI(string text, list buttons) ``{
+define any GUI(string text, list buttons) {
     integer i = 0;
     term t = `HBox();
     map Buttons = $[
@@ -36,9 +46,9 @@ global define GUI(string text, list buttons) ``{
 	i=i+1;
     }
 
-    UI(`OpenDialog(`VBox(`Label(text),t)));
-    any ret = UI(`UserInput());
-    UI(`CloseDialog());
+    UI::OpenDialog(`VBox(`Label(text),t));
+    any ret = UI::UserInput();
+    UI::CloseDialog();
     return ret;
 }
 
