@@ -94,8 +94,9 @@
       *  - "save" -- boolean, if true, then log saving is possible
       *  - "actions" -- list, allows to specify additional actions.
       *                 Each member is a 2- or 3-entry list, first entry is a
-      *                 label for the menubutton, the second one is a term
-      *                 that will be evaluated when the entry is selected,
+      *                 label for the menubutton, the second one is a function
+      *                 that will be called when the entry is selected,
+      *                 the signature of the function must be void(),
       *			optional 3rd argument, if set to true, forces
       *			restarting of the log displaying command after the
       *			action is performed
@@ -159,8 +160,11 @@
 
 	if (size (menubutton) > 1)
 	{
+	    menubutton = filter (list m, menubutton, ``(
+		m[0]:nil != nil
+	    ));
 	    menubutton = maplist (list m, menubutton, ``(
-		`item (`id (m[0]:""), m[1]:"")));
+		`item (`id (m[0]:nil), m[1]:"")));
 	    UI::ReplaceWidget (`id (`rep_right),
 		`MenuButton (`id (`log_menu), mb_label, menubutton));
 	}
@@ -225,7 +229,9 @@
 	    else if (ret != nil && is (ret, integer))
 	    {
 		integer iret = (integer)ret;
-		eval ((term) (actions[iret, 1]:nil));
+		void() func = (void())(actions[iret, 1]:nil);
+		if (func != nil)
+		    func ();
 		if (actions[iret, 2]:nil == true)
 		{
 		    SCR::Execute (.background.kill);
