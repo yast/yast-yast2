@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Sep  2 17:44:13 CEST 2002 - mvidner@suse.cz
+
+- ag_initscripts: fixed parsing Short-Descriptions.
+
+-------------------------------------------------------------------
 Sat Aug 31 01:16:44 CEST 2002 - schwab@suse.de
 
 - Don't waste tons of memory in y2menu.
