@@ -24,6 +24,13 @@
 
     include "ui/common_messages.ycp";
 
+    /*
+     * Updated to use the new qt widgets (only if available, of course)
+     */
+
+    global define boolean HaveFilePopups () ``{
+	return (lookup (UI::GetDisplayInfo (), "TextMode", true) == false);
+    }
 
     /**
      * Returns itemized list of subdirs
@@ -98,6 +105,11 @@
       * @return string with selected file, empty string on cancel
       */
     global define PopupFileWithMask (string dir, list masks) ``{
+	if (HaveFilePopups ())
+	{
+	    string r = UI::AskForExistingFile (dir, mergestring (masks, " "), "");
+	    return r==nil? "": r;
+	}
 
 	list dirs = getsubdirs (dir);
 	string subdir = dir;
@@ -246,6 +258,11 @@
      * @return string with selected directory
      */
     global define PopupDir (string dir) ``{
+	if (HaveFilePopups ())
+	{
+	    string r = UI::AskForExistingDirectory (dir, "");
+	    return r==nil? "": r;
+	}
 
 	if (size (dir) > 0 && substring (dir, size (dir) - 1, 1) != "/")
 	{
@@ -382,6 +399,11 @@ ret = UI::UserInput ();
      * @return string with selected file, empty string on cancel
      */
     global define SaveFileAs (string dir) ``{
+	if (HaveFilePopups ())
+	{
+	    string r = UI::AskForSaveFileName (dir, "*", "");
+	    return r==nil? "": r;
+	}
 
 	list dirs = getsubdirs (dir);	
 	sleep(1000);
