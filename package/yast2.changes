@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Mar 19 15:41:00 CET 2004 - sh@suse.de
+
+- V 2.9.45
+- Improved handling for all Popup::*timed*() dialogs:
+  Use UI::TimeoutUserInput() now, no more confusing busy cursor,
+  less delays (no more sleep() ) 
+
+-------------------------------------------------------------------
 Wed Mar 17 19:10:15 CET 2004 - fehr@suse.de
 
 - add functions {Set,Get}Utf8Lang() to Encoding module
