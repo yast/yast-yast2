@@ -10,7 +10,7 @@ define symbol finish() ``{ y2error("finish"); return `finish; }
 define symbol details() ``{ y2error("details"); return `details; }
 define symbol expert() ``{ y2error("expert"); return `expert; }
 
-// define boolean WS_check(map aliases, map sequence) ``{ return true; }
+define boolean WS_check(map aliases, map sequence) ``{ return true; }
 
 /*
  * integer cur = 0;
