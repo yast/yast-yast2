@@ -59,7 +59,7 @@
 
 	import "Kernel";
 
-	string kernel_version = (string) SCR::Read (.boot.vmlinuz_version, ["/boot/" + Kernel::binary]);
+	string kernel_version = (string) SCR::Read (.boot.vmlinuz_version, ["/boot/" + Kernel::GetBinary ()]);
 
 	y2milestone ("running /sbin/depmod");
 

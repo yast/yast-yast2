@@ -24,6 +24,48 @@
 
     textdomain "base";
 
+// kernel packages and binary
+
+boolean kernel_probed = false;
+
+/**
+ * the name of the kernel binary below '/boot'.
+ */
+string binary = "vmlinuz";
+
+/**
+ * a list kernels to be installed.
+ */
+list<string> kernel_packages = [];
+
+/**
+ * the final kernel to be installed after verification and
+ * availability checking
+ */
+string final_kernel = "";
+
+// kernel commandline
+
+boolean cmdline_parsed = false;
+
+/**
+ * string the kernel vga paramter
+ */
+string vgaType = "";
+
+/**
+ * if "suse_update" given in cmdline
+ */
+boolean suse_update = false;
+
+/**
+ * string the kernel command line
+ * Don't write it directly, @see: AddCmdLine()
+ */
+string cmdLine = "";
+
+// modules loaded on boot
+
 /**
  * List of changes in /etc/sysconfig/kernel:MODULES_LOADED_ON_BOOT
  * Needs to be stored as a list of changes due to the fact that some RPMs
@@ -33,70 +75,27 @@
  */
 list<map<string,string> > kernel_modules_to_load = [];
 
-    /**
-     *  A flag to indicate if a popup informing about the kernel change should
-     *  be displayed by inst_suseconfig.
-     */
-    boolean _inform_about_kernel_change = false;
 
-    /**
-     *  Set inform_about_kernel_change.
-     */
-    global define void set_inform_about_kernel_change (boolean b)
-    {
-	_inform_about_kernel_change = b;
-    }
+// kernel was reinstalled
 
-    /**
-     *  Get inform_about_kernel_change.
-     */
-    global define boolean get_inform_about_kernel_change ()
-    {
-	return _inform_about_kernel_change;
-    }
+/**
+ *  A flag to indicate if a popup informing about the kernel change should
+ *  be displayed by inst_suseconfig.
+ */
+boolean inform_about_kernel_change = false;
 
+// other variables
 
-    /**
-     * @return	binary		determines the name of the kernel binary
-     *				below '/boot'.
-     */
-    global string binary = "vmlinuz";
+/**
+ * fallback map for kernel
+ */
+map<string, string> fallbacks = $[
+	"kernel-bigsmp" : "kernel-smp",
+	"kernel-smp": "kernel-default"
+];
 
-    /**
-     * @return	string	the kernel command line
-     * Don't write it directly, @see: AddCmdLine()
-     */
-    global string cmdLine = "";
+void ParseInstallationKernelCmdline ();
 
-    /**
-     * @return strign  the kernel vga paramter
-     */
-    global string vgaType = "";
-
-    /**
-     * @return	kernel_packages	a list kernels to be installed.
-     */
-    global list<string> kernel_packages = [];
-
-    /**
-     * @return  if "suse_update" given in cmdline
-     */
-    global boolean suse_update = false;
-
-    /**
-     * @return fallback map for kernel
-     */
-    global map<string, string> fallbacks = $[
-		"kernel-bigsmp" : "kernel-smp",
-		"kernel-smp": "kernel-default" ];
-
-
-
-    /**
-     * @return the final kernel to be installed after verification and
-     * availability checking
-     */
-    global string final_kernel = "";
 
     //---------------------------------------------------------------
     // local defines
@@ -112,6 +111,8 @@ list<map<string,string> > kernel_modules_to_load = [];
      */
     global define void AddCmdLine (string name, string arg)
     {
+	if (! cmdline_parsed)
+	    ParseInstallationKernelCmdline ();
 	cmdLine = cmdLine + " " + name;
 	if (arg != "")
 	{
@@ -203,6 +204,73 @@ list<map<string,string> > kernel_modules_to_load = [];
 
 	return;
     }
+
+/**
+ * Parse installation kernel commad line got from install.inf
+ */
+void ParseInstallationKernelCmdline () {
+    cmdline_parsed = true;
+    if (! (Stage::initial () || Stage::cont ()))
+	return;
+    string tmp = (string) SCR::Read (.etc.install_inf.Cmdline);
+    y2milestone ("cmdline from install.inf is: %1", tmp);
+    if (tmp != nil) {
+	// extract extra boot parameters given in installation
+	ExtractCmdlineParameters (tmp);
+    }
+}
+
+/**
+ * Get the vga= kernel parameter
+ * @return string the vga= kernel parameter
+ */
+global string GetVgaType () {
+    if (! cmdline_parsed)
+	ParseInstallationKernelCmdline ();
+    return vgaType;
+}
+
+/**
+ * Set the vga= kernel argument
+ * FIXME is heer because of bootloader module, should be removed
+ */
+global void SetVgaType (string new_vga) {
+    if (! cmdline_parsed)
+	ParseInstallationKernelCmdline ();
+    vgaType = new_vga;
+}
+
+/**
+ * Check if suse_update kernel command line argument was passed
+ * @return boolean true if it was
+ */
+global boolean GetSuSEUpdate () {
+    if (! cmdline_parsed)
+	ParseInstallationKernelCmdline ();
+    return suse_update;
+}
+
+/**
+ * Get the kernel command line
+ * @return string the command line
+ */
+global string GetCmdLine () {
+    if (! cmdline_parsed)
+	ParseInstallationKernelCmdline ();
+    return cmdLine;
+}
+
+/**
+ * Set the kernel command line
+ * FIXME is heer because of bootloader module, should be removed
+ */
+global void SetCmdLine (string new_cmd_line) {
+    if (! cmdline_parsed)
+	ParseInstallationKernelCmdline ();
+    cmdLine = new_cmd_line;
+}
+
+
 
     //---------------------------------------------------------------
 
@@ -330,96 +398,109 @@ list<map<string,string> > kernel_modules_to_load = [];
 	    binary   = "image";
 	}
 
+	kernel_probed = true;
 	y2milestone("ProbeKernel determined: %1", kernel_packages);
 
     }  // ProbeKernel ()
 
-    /*
-     *	Set a custom kernel.
-     *	@return void
-     */
-    global define void Set (list<string> custom_kernels)
+/*
+ * Set a custom kernel.
+ * @param custom_kernels a list of kernel packages
+ */
+global define void SetPackages (list<string> custom_kernels) {
+    // probe to avoid later probing
+    if (! kernel_probed)
     {
-	kernel_packages = custom_kernels;
-
-	return;
-    }
-
-    /**
-     * Compute kernel package
-     * @return string selected kernel
-     */
-    global string ComputePackage ()
-    {
-	    string the_kernel = kernel_packages[0]:"";
-	    y2milestone ("Selecting '%1' as kernel package", the_kernel);
-	    while (the_kernel != ""
-		   && !Pkg::IsAvailable (the_kernel))
-	    {
-		the_kernel = fallbacks[the_kernel]:"";
-		y2milestone ("Not available, falling back to '%1'", the_kernel);
-	    }
-
-	    if (the_kernel != "")
-	    {
-                final_kernel = the_kernel;
-                return the_kernel;
-	    }
-	    else
-	    {
-		y2warning ("%1 not available, using kernel-default",
-			   kernel_packages);
-
-                final_kernel = "kernel-default";
-                return "kernel-default";
-	    }
-    }
-
-
-    /**
-     * Compute kernel packages
-     * @return list of selected kernel packages
-     */
-    global list <string> ComputePackages ()
-    {
-	    string kernel = ComputePackage ();
-	    string kernel_nongpl = kernel + "-nongpl";
-
-	    list <string> ret = [ kernel ];
-
-	    if (Pkg::IsAvailable (kernel_nongpl))
-		ret = add (ret, kernel_nongpl);
-
-	    return ret;
-    }
-
-
-    /**
-     * Constructor
-     * extract relevant settings from Cmdline in install.inf
-     * @return void
-     */
-    global define void Kernel ()
-    {
-	if (Stage::initial () || Stage::cont ())
-	{
-	    string tmp = (string) SCR::Read (.etc.install_inf.Cmdline);
-	    y2milestone ("cmdline from install.inf is: %1", tmp);
-	    if (tmp != nil) {
-		// extract extra boot parameters given in installation
-		ExtractCmdlineParameters (tmp);
-	    }
-	}
-
 	ProbeKernel ();
     }
+    kernel_packages = custom_kernels;
+}
 
 
+// functinos related to kernel packages
+
+/**
+ * Het the name of kernel binary under /boot
+ * @return string the name of the kernel binary
+ */
+global string GetBinary () {
+    if (! kernel_probed)
+    {
+	ProbeKernel ();
+    }
+    return binary;
+}
+
+/**
+ * Get the list of kernel packages
+ * @return a list of kernel packages
+ */
+global list<string> GetPackages () {
+    if (! kernel_probed)
+    {
+	ProbeKernel ();
+    }
+    return kernel_packages;
+}
+
+/**
+ * Compute kernel package
+ * @return string selected kernel
+ */
+global string ComputePackage () {
+    list<string> packages = GetPackages ();
+    string the_kernel = packages[0]:"";
+    y2milestone ("Selecting '%1' as kernel package", the_kernel);
+    while (the_kernel != ""
+	   && !Pkg::IsAvailable (the_kernel))
+    {
+	the_kernel = fallbacks[the_kernel]:"";
+	y2milestone ("Not available, falling back to '%1'", the_kernel);
+    }
+
+    if (the_kernel != "")
+    {
+	final_kernel = the_kernel;
+    }
+    else
+    {
+	y2warning ("%1 not available, using kernel-default",
+		   kernel_packages);
+
+	final_kernel = "kernel-default";
+    }
+    return final_kernel;
+}
+
+global string GetFinalKernel () {
+    if (final_kernel == nil)
+    {
+	ComputePackage ();
+    }
+    return final_kernel;
+}
+
+
+/**
+ * Compute kernel packages
+ * @return list of selected kernel packages
+ */
+global list <string> ComputePackages () {
+    string kernel = ComputePackage ();
+    string kernel_nongpl = kernel + "-nongpl";
+
+    list <string> ret = [ kernel ];
+
+    if (Pkg::IsAvailable (kernel_nongpl))
+	ret = add (ret, kernel_nongpl);
+
+    return ret;
+}
 
 // functions related to kernel's modules loaded on boot
 
 /**
- * AddModuleToLoad ()
+ * Add a kernel module to the list of modules to load after boot
  * @param string module name
  * add the module name to sysconfig variable
  */
@@ -431,6 +512,10 @@ global void AddModuleToLoad (string name) {
     ]);
 }
 
+/**
+ * Remove a kernel module from the list of modules to load after boot
+ * @param name string the name of the module
+ */
 global void RemoveModuleToLoad (string name) {
     y2milestone ("Removing module to be loaded at boot: %1", name);
     kernel_modules_to_load = add (kernel_modules_to_load, $[
@@ -480,6 +565,24 @@ global boolean SaveModulesToLoad () {
     modules_to_load_str = mergestring (modules_to_load, " ");
     SCR::Write (.sysconfig.kernel.MODULES_LOADED_ON_BOOT, modules_to_load_str);
     return (boolean)SCR::Write (.sysconfig.kernel, nil);
+}
+
+// kernel was reinstalled stuff
+
+/**
+ *  Set inform_about_kernel_change.
+ */
+global define void SetInformAboutKernelChange (boolean b)
+{
+    inform_about_kernel_change = b;
+}
+
+/**
+ *  Get inform_about_kernel_change.
+ */
+global define boolean GetInformAboutKernelChange ()
+{
+    return inform_about_kernel_change;
 }
 
 
