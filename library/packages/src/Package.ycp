@@ -42,7 +42,7 @@ map FunctionsAI = $[
     "InstallKernel" : PackageAI::InstallKernel,
 ];
 
-map Functions = Mode::config ? FunctionsAI : FunctionsSystem;
+map Functions = Mode::config () ? FunctionsAI : FunctionsSystem;
 
 boolean last_op_canceled = false;
 

@@ -19,6 +19,7 @@ textdomain "base";
 import "Label";
 import "Mode";
 import "Popup";
+import "Linuxrc";
 
 /**
  * Confirm hardware detection (only in manual installation)
@@ -27,7 +28,7 @@ import "Popup";
  */
 global define boolean Detection(string class) ``{
 
-    if(Mode::manual != true) return true;
+    if(Linuxrc::manual () != true) return true;
 
     UI::OpenDialog(`opt(`decorated), `HBox(
 	`HSpacing(1),
@@ -78,7 +79,7 @@ global define boolean Detection(string class) ``{
 
 /*
 y2milestone("--%1", Detection("graphics cards"));
-Mode::manual = true;
+Linuxrc::manual () = true;
 y2milestone("--%1", Detection("network cards"));
 y2milestone("--%1", Detection("modems"));
 */

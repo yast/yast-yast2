@@ -13,6 +13,7 @@
 
     import "Misc";
     import "Mode";
+    import "Stage";
 
     /*********************************************************************
       *   Those are variables from the content file, we can override them
@@ -234,7 +235,7 @@
      * Constructor
      */
     global define void ProductFeatures () ``{
-        if (Mode::normal && !Mode::initial && !Mode::cont)
+        if (Mode::normal () && !Stage::initial () && !Stage::cont ())
             Restore();
         return;
     }

@@ -33,8 +33,7 @@
     include "./tests/testfunc.yh";
     import "Mode";
 
-    Mode::test = true;
-
+    Mode::SetTest ("testsuite");
 
     define map<string,any> MyCreateTable () ``{
         map<string,any> ret = TablePopup::CreateTableDescr ($[],

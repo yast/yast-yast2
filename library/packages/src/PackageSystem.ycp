@@ -19,6 +19,7 @@ textdomain "base";
 import "Mode";
 import "PackageCallbacksInit";
 import "Report";
+import "Stage";
 
 /**
  * Was last operation canceled?
@@ -183,8 +184,7 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
 
     // But omit it during installation, one is run at its end.
     // #25071
-    import "Mode";
-    if (!Mode::initial && !Mode::cont)
+    if (!Stage::initial () && !Stage::cont ())
     {
 	RunSUSEconfig ();
     }
@@ -223,7 +223,7 @@ global boolean Installed(string package) {
  * false otherwise
  */
 global boolean CheckAndInstallPackages (list<string> packages) {
-    if (Mode::config)
+    if (Mode::config ())
 	return true;
     if (InstalledAll (packages))
 	return true;
@@ -244,7 +244,7 @@ global boolean CheckAndInstallPackagesInteractive (list<string> packages) {
     {
 	if (! LastOperationCanceled ())
 	{
-	    if (Mode::commandline)
+	    if (Mode::commandline ())
 	    {
 		// error report
 		Report::Error (_("Installing required packages failed."));
@@ -261,7 +261,7 @@ YaST may not work properly.
 	}
 	else
 	{
-	    if (Mode::commandline)
+	    if (Mode::commandline ())
 	    {
 		Report::Error (
 		    // error report

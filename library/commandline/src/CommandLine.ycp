@@ -11,6 +11,7 @@
     module "CommandLine";
 
     import "Mode";
+    import "Stage";
     import "Report";
     import "String";
     import "TypeRepository";
@@ -95,7 +96,7 @@
      *  @param s	the string to be printed
      */
     global define void Print(string s) ``{
-	if( ! Mode::commandline ) return;
+	if( ! Mode::commandline () ) return;
 	if( interactive ) SCR::Write(.dev.tty, s);
 	else SCR::Write(.dev.tty.stderr, s);
     }
@@ -588,12 +589,12 @@
 		systemcommands["mappings"]:$[] )
 	];
 
-	if( size(args) < 1 || Mode::stage != "normal" || Mode::firstboot ) {
-	    Mode::commandline = false;
+	if( size(args) < 1 || Stage::stage () != "normal" || Stage::firstboot () ) {
+	    Mode::SetUI ("dialog");
 	    // start GUI, module has some work to do :-)
 	    return true;
 	} else {
-	    Mode::commandline = true;
+	    Mode::SetUI ("commandline");
 	}
 
 	// setup prompt
@@ -748,7 +749,7 @@
      *  @return boolean true, if the user asked for standard UI (no parameter was passed by command line)
      */
     global define boolean StartGUI() ``{
-	return ! Mode::commandline;
+	return ! Mode::commandline ();
     }
 
     /**

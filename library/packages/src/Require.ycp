@@ -22,6 +22,7 @@
     import "PackageCallbacksInit";
     import "Wizard";	// some modules call us without any dialog open
     import "Mode";
+    import "Stage";
 
     // The constructor has a popup and calls Pkg::SourceStartCache
     // which is time consuming and annoying if not needed. (#20486)
@@ -126,7 +127,7 @@
      * <p>
      * Most functions have two public variants: Foo and FooTarget. In
      * normal mode they behave the same and act on the currently
-     * running system. In autoyast mode (Mode::config), FooTarget acts
+     * running system. In autoyast mode (Mode::config ()), FooTarget acts
      * on the autoyast package list only and Foo acts both on the
      * running system and the autoyast package list.
      *
@@ -141,7 +142,7 @@
      * <p>
      * We need to access AutoinstSoftware, which will not be typcally
      * installed.  So we import it only in FooAI which are called if
-     * Mode::config.
+     * Mode::config ().
      */
     global define void FooTarget () ``{
 	y2internal ("Do not call");
@@ -206,7 +207,7 @@
      */
     global define boolean AreAllPackagesInstalled (list<string> packages) ``{
 	boolean result = true;
-	if (Mode::config)
+	if (Mode::config ())
 	{
 	    result = result && AreAllPackagesInstalledAI (packages);
 	}
@@ -224,7 +225,7 @@
      * @return true/false
      */
     global define boolean AreAllPackagesInstalledTarget (list<string> packages) ``{
-	return Mode::config?
+	return Mode::config ()?
 	    AreAllPackagesInstalledAI (packages):
 	    AreAllPackagesInstalledPkg (packages);
     }
@@ -249,7 +250,7 @@
      * @see FooTarget
      */
     global define boolean IsPackageInstalledTarget (string package) ``{
-	return Mode::config?
+	return Mode::config ()?
 	    IsPackageInstalledAI (package):
 	    IsPackageInstalledPkg (package);
     }
@@ -289,7 +290,7 @@
      */
     global define boolean IsAnyPackageInstalled (list<string> packages) ``{
 	boolean result = false;
-	if (Mode::config)
+	if (Mode::config ())
 	{
 	    result = result || IsAnyPackageInstalledAI (packages);
 	}
@@ -307,7 +308,7 @@
      * @return true/false
      */
     global define boolean IsAnyPackageInstalledTarget (list<string> packages) ``{
-	return Mode::config?
+	return Mode::config ()?
 	    IsAnyPackageInstalledAI (packages):
 	    IsAnyPackageInstalledPkg (packages);
     }
@@ -409,7 +410,7 @@
 	// But omit it during installation, one is run at its end.
 	// #25071
 	import "Mode";
-	if (!Mode::initial && !Mode::cont)
+	if (!Stage::initial () && !Stage::cont ())
 	{
 	    RunSuSEconfig ();
 	}
@@ -440,7 +441,7 @@
      */
     global define boolean DoInstallAndRemove (list<string> toinstall, list<string> toremove) ``{
 	boolean ok = true;
-	if (Mode::config)
+	if (Mode::config ())
 	{
 	    ok = DoInstallAndRemoveAI (toinstall, toremove) && ok;
 	}
@@ -459,7 +460,7 @@
      */
     global define boolean DoInstallAndRemoveTarget (list<string> toinstall, list<string> toremove) ``{
 	boolean ok = true;
-	if (Mode::config)
+	if (Mode::config ())
 	{
 	    ok = DoInstallAndRemoveAI (toinstall, toremove) && ok;
 	}
@@ -551,7 +552,7 @@
 	string continue_button, string cancel_button ) ``{
 
 	boolean ok = true;
-	if (Mode::config)
+	if (Mode::config ())
 	{
 	    ok = RequireAndConflictAI (require, conflict) && ok;
 	}
@@ -573,7 +574,7 @@
 	string continue_button, string cancel_button ) ``{
 
 	boolean ok = true;
-	if (Mode::config)
+	if (Mode::config ())
 	{
 	    ok = RequireAndConflictAI (require, conflict) && ok;
 	}

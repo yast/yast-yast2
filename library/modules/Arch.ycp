@@ -352,7 +352,7 @@ global boolean has_smp () {
  * installation on iSeries
  * installation on S390
  *
- * Also see Mode::x11_setup_needed.
+ * Also see Installation::x11_setup_needed ().
  */
 global boolean x11_setup_needed	() {
     // disable X11 setup after initial boot

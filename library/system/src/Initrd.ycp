@@ -22,6 +22,7 @@
     import "Misc";
     import "Mode";
     import "Report";
+    import "Stage";
 
     textdomain "base";
 
@@ -128,7 +129,7 @@
     global define boolean Read () ``{
 	Reset ();
 	was_read = true;
-	if (Mode::initial && ! Mode::update) // nothing to read
+	if (Stage::initial () && ! Mode::update ()) // nothing to read
 	{
 	    return true;
 	}
@@ -273,12 +274,12 @@
     global define boolean Write () ``{
 	if (! was_read)
 	    Read ();
-	if (Mode::update)
+	if (Mode::update ())
 	    Update ();
 	y2milestone ("Initrd::Write called, changed: %1, list: %2", changed,
 	    ListModules ());
 	// check whether it is neccessary to write initrd
-	if ((! changed) && (Mode::normal))
+	if ((! changed) && (Mode::normal ()))
 	    return true;
 
 	boolean modules_written = false;

@@ -498,7 +498,7 @@ define boolean ValidateTableDescr (string key, map<string,any> descr) {
 	while (ret != `_tp_ok && ret != `_tp_cancel)
 	{
 	    map<string, any> event_descr = (map<string, any>)(UI::WaitForEvent ());
-	    if (Mode::test)
+	    if (Mode::test ())
 		event_descr = $[ "ID" : `_tp_ok];
 	    ret = event_descr["ID"]:nil;
 	    if (popup_descr["handle"]:nil != nil)

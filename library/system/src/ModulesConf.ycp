@@ -120,7 +120,7 @@
 
 	if (modules_conf_changed || force)
 	{
-	    if (!Mode::test)
+	    if (!Mode::test ())
 	    {
 		RunDepmod (true);
 	    }

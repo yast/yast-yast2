@@ -18,7 +18,7 @@
 module "Encoding";
 textdomain "base";
 
-import "Mode";
+import "Stage";
 
 /**
  * Current (ISO) encoding
@@ -116,7 +116,7 @@ global define string GetCodePage( string enc )
  * in normal mode
  */
 global define void Encoding() {
-    if(!Mode::initial) Restore();
+    if(!Stage::initial ()) Restore();
     return;
 }
 

@@ -19,6 +19,8 @@
 
     import "Arch";
     import "Mode";
+    import "Linuxrc";
+    import "Stage";
 
     textdomain "base";
 
@@ -230,7 +232,7 @@
 	}
 	else if (Arch::alpha ())
 	{
-	    if (!Arch::has_smp () && Mode::serial_console)
+	    if (!Arch::has_smp () && Linuxrc::serial_console ())
 	    {
 		kernel_packages = ["kernel-serial"];
 		switched = true;
@@ -402,7 +404,7 @@
      */
     global define void Kernel ()
     {
-	if (Mode::initial || Mode::cont)
+	if (Stage::initial () || Stage::cont ())
 	{
 	    string tmp = (string) SCR::Read (.etc.install_inf.Cmdline);
 	    y2milestone ("cmdline from install.inf is: %1", tmp);

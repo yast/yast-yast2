@@ -59,7 +59,7 @@
 	string text = "";
 	if (size(devices) == 0)
 	{
-	    if (!Mode::config)
+	    if (!Mode::config ())
 		text = sformat("<ul><li>%1</li></ul>", _("Not detected."));
 	    else
 		text = sformat("<ul><li>%1</li></ul>", NotConfigured());

@@ -88,7 +88,7 @@
 // there is no reason for checking initrd, if I need the module to get loaded, I just  need to
 // check if it isn't already loaded
 //	    && (!contains (Initrd::ListModules (), modulename))
-	    && !Mode::test)
+	    && !Mode::test ())
 	{
 	    // always look whether the module is already loaded
 	    map loaded_modules = (map) SCR::Read(.proc.modules);

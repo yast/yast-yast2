@@ -71,7 +71,7 @@
     DUMP("Writing");
     TEST(``(Initrd::Write ()), [READ, $[], $[]], 0);
     DUMP("Setting Mode::Update");
-    Mode::update = true;
+    Mode::SetMode ("update");
     DUMP("Importing with filtered module");
     TEST(``(Initrd::Import ($["list" : ["ne2k", "xfs_dmapi", "xfs_support", "lvmmod"]])), [READ, $[], $[]], 0);
     TEST(``(Initrd::ListModules ()), [READ, $[], $[]], 0);

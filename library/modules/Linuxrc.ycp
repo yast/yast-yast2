@@ -9,6 +9,7 @@
 {
     module "Linuxrc";
     import "Mode";
+    import "Stage";
 
     map<string,string> install_inf = nil;
 
