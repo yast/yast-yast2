@@ -970,7 +970,7 @@ global any Run( map commandline ) {
 	    options = m["options"]:$[];
 
 	    boolean(map<string,string>) exec = (boolean(map<string,string>))
-		lookup (commandline["actions", command]:$[], "handler", nil);
+		commandline["actions", command, "handler"]:nil;
 
 	    // there is a handler, execute the action
 	    if( exec != nil ) {
