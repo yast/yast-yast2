@@ -135,8 +135,8 @@
 		),
 	    `VSpacing (),
 	    `HBox (
-		`PushButton (`id (`backward), `opt (`disabled), "&<-"),
-		`PushButton (`id (`forward), `opt (`disabled), "-&>")
+		`PushButton (`id (`backward), `opt (`disabled, `key_F6), "&<-"),
+		`PushButton (`id (`forward), `opt (`disabled, `key_F7), "-&>")
 		),
 	    `HBox (
 		`ReplacePoint (`id (`repdir),
@@ -148,9 +148,9 @@
 		    )
 		),
 	    `HBox (
-		    `PushButton (`id(`cancel_button), CancelButtonLabel()),
+		    `PushButton (`id(`cancel_button), `opt (`key_F9), CancelButtonLabel()),
 		    `HStretch (),
-		    `PushButton (`id(`ok_button), OKButtonLabel() )
+		    `PushButton (`id(`ok_button), `opt (`key_F10), OKButtonLabel() )
 		)
 	    );
 
@@ -288,8 +288,8 @@
 				 ),
 		  `VSpacing (),
 		  `HBox (
-		      `PushButton (`id (`backward), `opt (`disabled), "&<-"),
-		      `PushButton (`id (`forward), `opt (`disabled), "-&>")
+		      `PushButton (`id (`backward), `opt (`disabled, `key_F6), "&<-"),
+		      `PushButton (`id (`forward), `opt (`disabled, `key_F7), "-&>")
 		      ),
 		  `HBox (
 			 `ReplacePoint (`id (`repdir),
@@ -298,9 +298,9 @@
 			 `VSpacing(15)
 			 ),
 		  `HBox (
-		      `PushButton (`id(`ok_button), OKButtonLabel() ),
+		      `PushButton (`id(`ok_button), `opt (`key_F10), OKButtonLabel() ),
 			 `HStretch (),
-		      `PushButton (`id(`cancel_button), CancelButtonLabel() )
+		      `PushButton (`id(`cancel_button), `opt (`key_F9), CancelButtonLabel() )
 			 )
 		  );
 
@@ -429,8 +429,8 @@ ret = UI::UserInput ();
 		),
 	    `VSpacing (),
 	    `HBox (
-		`PushButton (`id (`backward), `opt (`disabled), "&<-"),
-		`PushButton (`id (`forward), `opt (`disabled), "-&>")
+		`PushButton (`id (`backward), `opt (`disabled, `key_F6), "&<-"),
+		`PushButton (`id (`forward), `opt (`disabled, `key_F7), "-&>")
 		),
 	    `HBox (
 		`ReplacePoint (`id (`repdir),
@@ -443,9 +443,9 @@ ret = UI::UserInput ();
 		),
 	    `TextEntry(`id(`filename), _("File na&me")),
 	    `HBox (
-		   `PushButton (`id(`ok_button), OKButtonLabel() ),
+		   `PushButton (`id(`ok_button), `opt (`key_F10), OKButtonLabel() ),
 		   `HStretch (),
-		   `PushButton (`id(`cancel_button), CancelButtonLabel())
+		   `PushButton (`id(`cancel_button), `opt (`key_F9), CancelButtonLabel())
 		)
 	    );
 

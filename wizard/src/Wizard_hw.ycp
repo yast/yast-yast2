@@ -35,7 +35,7 @@
      * @param already_conf A content of the RichText. Describes the already configured devices.
      * @return term Content for the SetWizardContent[Buttons]()
      */
-    global define DetectedContent(string frame_label,
+    global define term DetectedContent(string frame_label,
 				  list detected,
 				  boolean has_restart,
 				  string already_conf)
@@ -52,6 +52,7 @@
 									 _("Re&start detection")): `HSpacing(0.5)),
 						 `HStretch(),
 						 `PushButton(`id(`configure_button),
+							     `opt (`key_F3),
 							     _("&Configure..."))
 					   )
 				     ),
@@ -62,6 +63,7 @@
 			`RichText(`id(`configured_richtext),
 				  already_conf),
 		  `Right(`PushButton(`id(`edit_button),
+				     `opt (`key_F4), 
 				     _("C&hange..."))),
 		  `VSpacing(0.4)
 	      ),
@@ -96,7 +98,7 @@
      * <tr><td>Button delete</td><td>`delete_button</td></tr>
      * </table>
      */
-    global define ConfiguredContent ( term table_header,
+    global define term ConfiguredContent ( term table_header,
 				      list table_contents,
 				      term above_table,
 				      term below_table,
@@ -121,9 +123,9 @@
 
 	term but_box = `HBox (
 	    `opt (`hstretch),
-	    `PushButton (`id (`add_button), _("A&dd")),
-	    `PushButton (`id (`edit_button),  _("&Edit")),
-	    `PushButton (`id (`delete_button), _("De&lete"))
+	    `PushButton (`id (`add_button), `opt (`key_F3), _("A&dd")),
+	    `PushButton (`id (`edit_button),  `opt (`key_F4), _("&Edit")),
+	    `PushButton (`id (`delete_button), `opt (`key_F5), _("De&lete"))
 	);
 
 

@@ -58,6 +58,7 @@
 
 	    /**
 	     * Change the image at the top of the window (UI context)
+	     * @param imagedata image
 	     **/
 	    global define void SetImageUI( byteblock imagedata ) ``{
 		if (imagedata == nil) {
@@ -84,54 +85,58 @@
 
     /**
      * Returns a button box with buttons "Back", "Abort", "Next"
+     * @return a widget tree
      **/
     global define term BackAbortNextButtonBox() ``{
 	return `HBox(
-		     `HWeight(1, `ReplacePoint(`id(`rep_back ), `PushButton(`id(`back ), BackButtonLabel()  ) ) ),
+		     `HWeight(1, `ReplacePoint(`id(`rep_back ), `PushButton(`id(`back ), `opt (`key_F8), BackButtonLabel()  ) ) ),
 		     `HStretch(),
-		     `ReplacePoint(`id(`rep_abort), `PushButton(`id(`abort), AbortButtonLabel() ) ),
+		     `ReplacePoint(`id(`rep_abort), `PushButton(`id(`abort), `opt (`key_F9), AbortButtonLabel() ) ),
 		     `HStretch(),
-		     `HWeight(1, `ReplacePoint(`id(`rep_next ), `PushButton(`id(`next ), NextButtonLabel()  ) ) )
+		     `HWeight(1, `ReplacePoint(`id(`rep_next ), `PushButton(`id(`next), `opt (`key_F10), NextButtonLabel()  ) ) )
 		     );
     };
 
 
     /**
      * Returns a button box with buttons "Back", "Next"
+     * @return a widget tree
      **/
     global define term BackNextButtonBox() ``{
 	return `HBox(
-		     `HWeight(1, `ReplacePoint(`id(`rep_back ), `PushButton(`id(`back ), BackButtonLabel()  ) ) ),
+		     `HWeight(1, `ReplacePoint(`id(`rep_back ), `PushButton(`id(`back ), `opt (`key_F8), BackButtonLabel()  ) ) ),
 		     `HStretch(),
-		     `HWeight(1, `ReplacePoint(`id(`rep_next ), `PushButton(`id(`next ), NextButtonLabel()  ) ) )
+		     `HWeight(1, `ReplacePoint(`id(`rep_next ), `PushButton(`id(`next ), `opt (`key_F10), NextButtonLabel()  ) ) )
 		     );
     };
 
 
     /**
      * Returns a button box with buttons "Cancel", "Accept"
+     * @return a widget tree
      **/
     global define term CancelAcceptButtonBox() ``{
 	return `HBox(
 		     `HWeight(1, `Empty() ),	// Layout trick to make sure the center button is centered
 		     `HStretch(),
-		     `HWeight(1, `PushButton(`id(`cancel ), CancelButtonLabel()  ) ),
+		     `HWeight(1, `PushButton(`id(`cancel ), `opt (`key_F9), CancelButtonLabel()  ) ),
 		     `HStretch(),
-		     `HWeight(1, `PushButton(`id(`accept ), AcceptButtonLabel()  ) )
+		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10), AcceptButtonLabel()  ) )
 		     );
     };
 
 
     /**
      * Returns a button box with buttons "Abort", "Accept"
+     * @return a widget tree
      **/
     global define term AbortAcceptButtonBox() ``{
 	return `HBox(
 		     `HWeight(1, `Empty() ),	// Layout trick to make sure the center button is centered
 		     `HStretch(),
-		     `PushButton(`id(`abort ), AbortButtonLabel() ),
+		     `PushButton(`id(`abort ), `opt (`key_F9), AbortButtonLabel() ),
 		     `HStretch(),
-		     `HWeight(1, `PushButton(`id(`accept ), AcceptButtonLabel()  ) )
+		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10), AcceptButtonLabel()  ) )
 		     );
     };
 
@@ -286,7 +291,7 @@
 						    `Image( theme_path + "help_top.png", "" ),
 						    `HBox(
 							  `Top(`Image( theme_path + "help_left.png", "" ) ),
-							  `PushButton(`id(`help), HelpButtonLabel() ),
+							  `PushButton(`id(`help), `opt (`key_F1), HelpButtonLabel() ),
 							  `Top(`Image(`opt(`zeroWidth), theme_path + "help_right.png", "" ) )
 							  )
 						    // `Image( theme_path + "help_bottom.png", "" )
@@ -625,12 +630,14 @@
      * @param next_label label of next button
      **/
     global define void SetContentsButtons (string title, term contents, string help_text, string back_label, string next_label) ``{
+	UI::PostponeShortcutCheck ();
 	// Set button labels first to avoid geometry problems: SetContents()
 	// calls ReplaceWidget() wich triggers a re-layout.
 
 	if ( UI::WidgetExists(`id(`back ) ) )	UI::ChangeWidget(`id (`back), `Label, back_label);
 	if ( UI::WidgetExists(`id(`next ) ) )	UI::ChangeWidget(`id (`next), `Label, next_label);
 	Wizard::SetContents( title, contents, help_text, true, true );
+	UI::CheckShortcuts ();
     };
 
 
@@ -673,7 +680,8 @@
 	if ( UI::WidgetExists(`id(`rep_back ) ) )
 	{
 	    UI::ReplaceWidget(`id(`rep_back),
-			      `PushButton(`id(`back), BackButtonLabel() )
+			      `PushButton(`id(`back), `opt (`key_F8),
+					  BackButtonLabel() )
 			      );
 	}
     };
@@ -696,7 +704,8 @@
 	if ( UI::WidgetExists(`id(`rep_next ) ) )
 	{
 	    UI::ReplaceWidget(`id(`rep_next),
-			      `PushButton(`id(`next), NextButtonLabel() )
+			      `PushButton(`id(`next), `opt (`key_F10),
+					  NextButtonLabel() )
 			      );
 	}
     };
@@ -719,12 +728,13 @@
 	if ( UI::WidgetExists(`id(`rep_abort ) ) )
 	{
 	    UI::ReplaceWidget(`id(`rep_abort),
-			      `PushButton(`id(`abort), AbortButtonLabel() )
+			      `PushButton(`id(`abort), `opt (`key_F9),
+					  AbortButtonLabel() )
 			      );
 	}
     };
 
-    
+
     /**
      * Replace the wizard 'title' icon with a custom widget.
      *
@@ -737,10 +747,10 @@
 	}
     };
 
-    
+
     /**
      * Set the wizard 'title' icon to the specified icon from the standard icon
-     * directory. 
+     * directory.
      *
      * @param icon_name name (without path) of the new icon
      **/
