@@ -1,26 +1,13 @@
 /**
- * File:
- *   Wizard_hw.ycp
- *
- * Module:
- *   Common ui library
- *
- * Summary:
- *   Common ui functions for the hardware configuration modules.
- *
- * Authors:
- *   Jan Holesovsky <kendy@suse.cz>, 2001
+ * File:	modules/Wizard_hw.ycp
+ * Package:	yast2
+ * Summary:	Wizard dialogs for hardware configuration
+ * Authors:	Jan Holesovsky <kendy@suse.cz>
  *
  * $Id$
- *
- * Common functions for the hardware configuration modules.
- *
  */
 
 {
-    /***
-     * <h3>Common functions for the hardware configuration modules</h3>
-     */
 
     module "Wizard_hw";
     textdomain "base";
@@ -33,7 +20,7 @@
      * @param detected A list of the detected devices for the SelectionBox. Must contain "Other (not detected)" as the last item.
      * @param has_restart A button for restarting the detection.
      * @param already_conf A content of the RichText. Describes the already configured devices.
-     * @return term Content for the SetWizardContent[Buttons]()
+     * @return Content for the SetWizardContent[Buttons]()
      */
     global define term DetectedContent(string frame_label,
 				  list detected,
@@ -90,7 +77,7 @@
      * @param buttons Content to place rights from buttons. Usually
      *    an additional button, e.g. Set as default.
      *    Set it to nil if you do not want to place anything here.
-     * @return term Content for the SetWizardContent[Buttons]()
+     * @return Content for the SetWizardContent[Buttons]()
      * <B>UI elements ids:</B><table>
      * <tr><td>Table</td><td>`table</td></tr>
      * <tr><td>Button add</td><td>`add_button</td></tr>
@@ -152,9 +139,9 @@
      * @param right Spacing on the right.
      * @param top Spacing on the top.
      * @param bottom Spacing on the bottom.
-     * @return term Content with spacings around it.
+     * @return Content with spacings around it.
      */
-    global define SpacingAround( term content,
+    global define term SpacingAround( term content,
 				 float left, float right,
 				 float top, float bottom )
     ``{
@@ -178,7 +165,7 @@
      * @param xsize Minimal size of content in the X direction
      * @param ysize Minimal size of content in the Y direction
      * @param content Content of the dialog
-     * @return term Contents sized at least <B>xsize</B>&nbsp;x&nbsp;<B>ysize</B>.
+     * @return Contents sized at least <B>xsize</B>&nbsp;x&nbsp;<B>ysize</B>.
      */
     global define term SizeAtLeast(term content, float xsize, float ysize)
     ``{
@@ -195,4 +182,6 @@
 		`VSpacing (0.4)
 	    );
     }
+
+/* EOF */
 }

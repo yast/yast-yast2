@@ -1,27 +1,22 @@
 /**
- *  File:
- *    Report.ycp
+ * File:	modules/Report.ycp
+ * Package:	yast2
+ * Summary:	Messages handling
+ * Authors:	Ladislav Slezak <lslezak@suse.cz>
  *
- *  Module:
- *    Report module
+ * $Id$
  *
- *  Authors:
- *    Ladislav Slezak <lslezak@suse.cz>
- *
- *  $Id$
- *
- *  Report module collects warnings and errors from modules in auto installation mode.
- *  Collected messages can be displayed later.
+ * Report module collects warnings and errors from modules in auto installation mode.
+ * Collected messages can be displayed later.
  *
  */
 
 {
 
 module "Report";
+textdomain "base";
 
 import "Popup";
-
-textdomain "base";
 
 // stored messages
 list errors = [];
@@ -53,8 +48,7 @@ global map warning_settings = $[];
  * Summary of current settings
  * @return Html formatted configuration summary
  */
-global define string Summary()
-``{
+global define string Summary() ``{
     string summary = "";
     summary = Summary::AddHeader(summary, _("Messages"));
     summary = Summary::OpenList(summary);
@@ -110,7 +104,7 @@ global define string Summary()
  * @param settings Map with settings (keys: "messages", "errors", "warnings"; values: map
  * @return	success
  */
-global define boolean Import(map settings)``{
+global define boolean Import(map settings) ``{
     message_settings  = settings["messages"]:$[];
     error_settings = settings["errors"]:$[];
     warning_settings = settings["warnings"]:$[];
@@ -138,8 +132,8 @@ global define boolean Import(map settings)``{
  * Dump the Report settings to a map, for autoinstallation use.
  * @return map map with settings
  */
-global define map Export ()``{
-    
+global define map Export () ``{
+
     return ($[
 	      "messages": $["log": log_messages, "timeout": timeout_messages, "show": display_messages ],
 	      "errors": $["log": log_errors, "timeout": timeout_errors, "show": display_errors ],
@@ -151,9 +145,7 @@ global define map Export ()``{
  * Clear all stored messages (errors, messages and warnings)
  * @return void
  */
-
-global define void ClearAll()
-``{
+global define void ClearAll() ``{
     ClearErrors();
     ClearWarnings();
     ClearMessages();
@@ -164,9 +156,7 @@ global define void ClearAll()
  * Clear stored messages
  * @return void
  */
-
-global define void ClearMessages()
-``{
+global define void ClearMessages() ``{
     messages = [];
 }
 
@@ -174,9 +164,7 @@ global define void ClearMessages()
  * Clear stored errors
  * @return void
  */
-
-global define void ClearErrors()
-``{
+global define void ClearErrors() ``{
     errors = [];
 }
 
@@ -185,9 +173,7 @@ global define void ClearErrors()
  * Clear stored warnings
  * @return void
  */
-
-global define void ClearWarnings()
-``{
+global define void ClearWarnings() ``{
     warnings = [];
 }
 
@@ -196,9 +182,7 @@ global define void ClearWarnings()
  * Return number of stored messages
  * @return integer number of messages
  */
-
-global define integer NumMessages()
-``{
+global define integer NumMessages() ``{
     return size(messages);
 }
 
@@ -206,9 +190,7 @@ global define integer NumMessages()
  * Return number of stored warnings
  * @return integer number of warnings
  */
-
-global define integer NumWarnings()
-``{
+global define integer NumWarnings() ``{
     return size(warnings);
 }
 
@@ -217,9 +199,7 @@ global define integer NumWarnings()
  * Return number of stored errors
  * @return integer number of errors
  */
-
-global define integer NumErrors()
-``{
+global define integer NumErrors() ``{
     return size(errors);
 }
 
@@ -229,9 +209,7 @@ global define integer NumErrors()
  * @param message_string message text, it can contain new line characters ("\n")
  * @return void
  */
-
-global define void Message(string message_string)
-``{
+global define void Message(string message_string) ``{
     if (display_messages)
     {
 	if (timeout_messages > 0)
@@ -258,9 +236,7 @@ global define void Message(string message_string)
  * @param warning_string warning text, it can contain new line characters ("\n")
  * @return void
  */
-
-global define void Warning(string warning_string)
-``{
+global define void Warning(string warning_string) ``{
     if (display_warnings)
     {
 	if (timeout_warnings > 0)
@@ -287,9 +263,7 @@ global define void Warning(string warning_string)
  * @param error_string error text, it can contain new line characters ("\n")
  * @return void
  */
-
-global define void Error(string error_string)
-``{
+global define void Error(string error_string) ``{
     if (display_errors)
     {
 	if (timeout_errors > 0)
@@ -318,12 +292,9 @@ global define void Error(string error_string)
  * @param timeout dialog is automatically closed after timeout seconds. Value 0 means no time out, dialog will be closed only by user.
  * @return void
  */
-
-global define void DisplayErrors(boolean display, integer timeout)
-``{
+global define void DisplayErrors(boolean display, integer timeout) ``{
     display_errors = display;
     timeout_errors = timeout;
-   
     return;
 }
 
@@ -335,12 +306,9 @@ global define void DisplayErrors(boolean display, integer timeout)
  * @param timeout dialog is automatically closed after timeout seconds. Value 0 means no time out, dialog will be closed only by user.
  * @return void
  */
-
-global define void DisplayWarnings(boolean display, integer timeout)
-``{
+global define void DisplayWarnings(boolean display, integer timeout) ``{
     display_warnings = display;
     timeout_warnings = timeout;
-   
     return;
 }
 
@@ -354,11 +322,9 @@ global define void DisplayWarnings(boolean display, integer timeout)
  * @return void
  */
 
-global define void DisplayMessages(boolean display, integer timeout)
-``{
+global define void DisplayMessages(boolean display, integer timeout) ``{
     display_messages = display;
     timeout_messages = timeout;
-   
     return;
 }
 
@@ -368,11 +334,8 @@ global define void DisplayMessages(boolean display, integer timeout)
  * @param log if log is true then warning messages will be logged
  * @return void
  */
-
-global define void LogWarnings(boolean log)
-``{
+global define void LogWarnings(boolean log) ``{
     log_warnings = log;
-    
 }
 
 /**
@@ -380,11 +343,8 @@ global define void LogWarnings(boolean log)
  * @param log if log is true then  messages will be logged
  * @return void
  */
-
-global define void LogMessages(boolean log)
-``{
+global define void LogMessages(boolean log) ``{
     log_messages = log;
-   
 }
 
 /**
@@ -392,11 +352,8 @@ global define void LogMessages(boolean log)
  * @param log if log is true then warning messages will be logged
  * @return void
  */
-
-global define void LogErrors(boolean log)
-``{
+global define void LogErrors(boolean log) ``{
     log_errors = log;
-    
 }
 
 
@@ -408,9 +365,7 @@ global define void LogErrors(boolean log)
  * @param m include messages in returned string
  * @return string rich text string
  */
-
-define string GetMessages(boolean w, boolean e, boolean m)
-``{
+define string GetMessages(boolean w, boolean e, boolean m) ``{
     string richtext = "";
 
     if (w)
@@ -455,8 +410,5 @@ define string GetMessages(boolean w, boolean e, boolean m)
     return richtext;
 }
 
-
-
-
-
+/* EOF */
 }

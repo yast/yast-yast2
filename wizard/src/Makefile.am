@@ -19,9 +19,6 @@ ynclude_DATA =			\
 	common_popups.ycp	\
 	file_popups.ycp		\
 	common_messages.ycp	\
-	common_functions.ycp	\
-	summary.ycp
+	common_functions.ycp
 
-html_DATA = README.popups
-
-EXTRA_DIST = $(ynclude_DATA) $(module_DATA) $(html_DATA)
+EXTRA_DIST = $(ynclude_DATA) $(module_DATA)

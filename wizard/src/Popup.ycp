@@ -1,7 +1,9 @@
 /**
- * Module:              Popup
- *
- * Authors:             Gabriele Strattner <gs@suse.de>
+ * File:	modules/Popup.ycp
+ * Package:	yast2
+ * Summary:	Commonly used popup dialogs
+ * Authors:	Gabriele Strattner <gs@suse.de>
+ *		Stefan Hundhammer <sh@suse.de>
  *
  * $Id$
  *
@@ -9,15 +11,10 @@
  * for general usage, e.g. Popup::YesNo(), Popup::ContinueCancel().
  *
  * See also <a href="../README.popups">README.popups</a>
- *
- * It is a replacement for the include common_popups.ycp,
- * (For performance reasons: using "include" in multiple files parses
- * the inclusion each time, whereas "import" needs to parse a file only once.)
- *
- * NOTE: remember to keep the both files in sync while they coexist!
  */
 
 {
+
     module "Popup";
     textdomain "base";
 
@@ -1027,4 +1024,5 @@ You will need to reinstall." );
 
   }
 
+/* EOF */
 }
