@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct  3 14:18:55 CEST 2003 - jsrain@suse.de
+
+- Table/Popup stuff splitt off from CWM.ycp to separate file
+- Added support for "Changed" column to Table/Popup
+
+-------------------------------------------------------------------
 Wed Oct  1 10:47:19 CEST 2003 - jsuchome@suse.cz
 
 - added Autologin.ycp module to handle autologin configuration
