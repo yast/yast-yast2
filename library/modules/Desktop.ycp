@@ -117,7 +117,7 @@ global define string Translate(string key) ``{
 
 /**
  */
-define list CreateList(map M) ``{
+define list <term> CreateList(map M) ``{
     list keys = Map::Keys(M);
     keys = sort(string x, string y, keys, ``{
 	return M[x, "SortKey"]:"" <= M[y, "SortKey"]:"";
@@ -131,7 +131,7 @@ define list CreateList(map M) ``{
 
 /**
  */
-global define list GroupList() ``{
+global define list<term> GroupList() ``{
     return CreateList(Groups);
 }
 
