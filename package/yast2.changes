@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Apr  2 22:16:33 CEST 2004 - nashif@suse.de
+
+- Fixed wrapper functions for new wizard
+- 2.9.59
+
+-------------------------------------------------------------------
 Fri Apr 02 15:59:59 CEST 2004 - arvin@suse.de
 
 - finally changed license to GPL for good
