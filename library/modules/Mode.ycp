@@ -37,6 +37,11 @@
     global boolean update		= false;
 
     /**
+     * Firstboot mode
+     */
+    global boolean firstboot	= false;
+
+    /**
      * /var/adm/mount has installation data mounted
      */
     global boolean sourcemounted	= false;
@@ -189,7 +194,8 @@
      * @param string new mode (installation|update|autoinst)
      * @return void
      */
-    global void SwitchMode (string new_mode) {
+    global void SwitchMode (string new_mode)
+    {
         y2milestone("Switching to %1 mode", new_mode);
 	if (new_mode == "update")
         {
@@ -286,6 +292,11 @@
 		demo = true;
                 mode = "demo";
 		y2warning("***** Demo mode enabled *****");
+	    }
+	    else if (WFM::Args(arg_no) == "firstboot"	    )
+	    {
+		firstboot = true;
+                mode = "firstboot";
 	    }
 	    else if (WFM::Args(arg_no) == "screenshots"  )
 	    {
