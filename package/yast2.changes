@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb  8 17:03:02 CET 2005 - sh@suse.de
+
+- Added icons to standard popups
+- V 2.11.26 
+
+-------------------------------------------------------------------
 Tue Feb  8 16:09:19 CET 2005 - nashif@suse.de
 
 - Moved ProductControl. Hooks from installation

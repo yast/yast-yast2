@@ -89,6 +89,11 @@ global string scrconfdir = yast2dir + "/scrconf";
 global string desktopdir = "/usr/share/applications/YaST2";
 
 /**
+ * Base directory for icons
+ **/
+global string icondir = themedir + "/current/icons/";
+
+/**
  * Directory for temporary files
  * Must be updated with ResetTmpDir() call after the SCR change!
  */
