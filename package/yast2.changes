@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Sep 17 16:18:48 CEST 2003 - gs@suse.de
+
+- script/yast2: start textmode yast in UTF-8 environment (bug #30512)  
+
+-------------------------------------------------------------------
 Wed Sep 17 08:59:45 CEST 2003 - visnov@suse.de
 
 - enable interactive mode for command line again
