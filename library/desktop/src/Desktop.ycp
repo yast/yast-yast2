@@ -48,7 +48,7 @@ string Language = "";
 
 /**
  */
-define string ReadLocalizedKey(path keypath, string key) ``{
+define string ReadLocalizedKey(path keypath, string key) {
 
     string ret = (string) SCR::Read(add(keypath, key));
 
@@ -66,7 +66,7 @@ define string ReadLocalizedKey(path keypath, string key) ``{
  * Read module and group data from desktop files
  * @param Values list of values to be parsed (empty to read all)
  */
-global define void Read(list<string> Values) ``{
+global define void Read(list<string> Values) {
 
     /* read modules */
     map filemap = $[];
@@ -85,7 +85,7 @@ global define void Read(list<string> Values) ``{
     /* read groups */
     list<string> groups = (list<string>) SCR::Dir(.yast2.groups.s);
     y2debug("groups=%1", groups);
-    foreach(string group, groups, ``{
+    foreach(string group, groups, {
 	filemap = $[];
 	filepath = .yast2.groups.v + group + "Desktop Entry";
 
@@ -100,12 +100,12 @@ global define void Read(list<string> Values) ``{
     y2debug("Groups=%1", Groups);
 
     /* read modules */
-    foreach(string file, files, ``{
+    foreach(string file, files, {
 	filemap = $[];
 	filepath = AgentPath + .v + file + ."Desktop Entry";
 	list<string> values = (list<string>) SCR::Dir(filepath);
 	if(Values != nil && Values != []) values = Values;
-	foreach(string value, values, ``{
+	foreach(string value, values, {
 	    string ret = ReadLocalizedKey(filepath, value);
 	    if(ret != nil) filemap[value] = ret;
 	});
@@ -123,7 +123,7 @@ global define void Read(list<string> Values) ``{
 
 /**
  */
-global define string Translate(string key) ``{
+global define string Translate(string key) {
     if(regexpmatch(key, "_\\(\"(.*)\"\\)") == true) {
 	locale ke = regexpsub(key, "_\\(\"(.*)\"\\)", "\\1");
 	key = (string) eval(ke);
@@ -134,31 +134,37 @@ global define string Translate(string key) ``{
 
 /**
  */
-define list <term> CreateList(map M) ``{
+define list <term> CreateList(map M) {
     list keys = Map::Keys(M);
-    keys = sort(any x, any y, keys, ``{
+    keys = sort(any x, any y, keys, {
 	return M[x, "SortKey"]:"" < M[y, "SortKey"]:"";
     });
     y2debug("keys=%1", keys);
 
-    return maplist(any name, keys, ``{
+    return maplist(any name, keys, {
 	return `item(`id(name), Translate(M[name, "Name"]:"???"));
     });
 }
 
 /**
  */
-global define list <term> GroupList() ``{
+global define list <term> GroupList() {
     return CreateList(Groups);
 }
 
 /**
  */
-global define list <term> ModuleList(string group) ``{
+global define list <term> ModuleList(string group) {
     list <string> mods = Groups[group, "modules"]:[];
     list <term> l = [];
 
-    foreach(string m, mods, ``{
+    /* support sort keys: #36466
+    mods = sort(string x, string y, mods, {
+	return Modules[x, "X-SuSE-YaST-SortKey"]:"" < Modules[y, "X-SuSE-YaST-SortKey"]:"";
+    });
+    */
+
+    foreach(string m, mods, {
 	if(haskey(Modules, m))
 	    l = add(l, `item(`id(m), Modules[m,"Name"]:"???"));
     });
