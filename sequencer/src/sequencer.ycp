@@ -80,7 +80,7 @@ global define boolean WS_check(map aliases, map sequence) ``{
             y2error(2, "sequencer check: not a term: %1", val);
             return false;
         }
-        else return true;
+	else return true;
     });
     ret = flatten([ret,ret0]);
 
@@ -124,7 +124,16 @@ global define boolean WS_check(map aliases, map sequence) ``{
             return true;
         }
     });
+    ret = flatten([ret,ret0]);
 
+    /* check that all aliases are used */
+    ret0 = maplist(`key, `val, aliases, ``{
+        if (!haskey(sequence, key)) {
+            y2error(2, "sequencer check: alias not used: %1", key);
+            return false;
+        }
+	return true;
+    });
     ret = flatten([ret,ret0]);
 
     if (find(`n,ret,``(n==false)) != nil) return false;

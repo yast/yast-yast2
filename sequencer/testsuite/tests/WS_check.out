@@ -11,6 +11,7 @@ Log	sequencer check: not a map: 8 []
 Log	sequencer check: not a symbol: blah
 Log	sequencer check: alias not found: huu
 Log	sequencer check: alias not found: missing
+Log	sequencer check: alias not used: 7
 Return	false
 Return	true
 Return	true
