@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Aug  6 12:27:01 CEST 2003 - fehr@suse.de
+
+- added function CutRegexMatch to String.ycp it can be used to
+  remove matches of a regular expression from a string
+- 2.8.16
+
+-------------------------------------------------------------------
 Mon Aug  4 14:21:17 CEST 2003 - jsrain@suse.de
 
 - added possiblity to restart command getting log after performing
