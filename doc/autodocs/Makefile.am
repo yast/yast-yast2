@@ -7,4 +7,4 @@ html_DATA = index.html $(wildcard *.html)
 CLEANFILES = $(html_DATA)
 
 index.html: $(srcdir)/../../library/*/*.ycp
-	@ybindir@/ycpdoc -d. $(srcdir)/../../library/*/*.ycp
+	${YCPDOC} -d. $(srcdir)/../../library/*/*.ycp
