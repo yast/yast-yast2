@@ -113,7 +113,9 @@ global define boolean CommandLineRun( map commandline ) ``{
 	    if( exec != nil ) {
 		exec = add( exec, options );
 		any res = RunFunction( exec );
-		if( is( res, boolean ) && res == false )
+		
+		// if it is not interactive, abort on errors
+		if( !CommandLine::Interactive() && is( res, boolean ) && res == false )
 		    CommandLine::Abort();
 	    } 
 	    else 

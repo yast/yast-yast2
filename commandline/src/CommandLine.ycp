@@ -28,7 +28,7 @@
 	    "longhelp": $[
 		"help":_("print a long version of help for this module")
     	    ],
-	    "interactive"	: $[
+/*	    "interactive"	: $[
 		"help": _("start interactive shell to control the module")
 	    ],
 	    "exit"	: $[
@@ -36,7 +36,7 @@
 	    ],
 	    "quit"	: $[
 		"help": _("quit interactive mode without saving the changes")
-	    ]
+	    ]*/
 	],
 	"options"	: $[
 	    "help"	: $[
@@ -48,7 +48,8 @@
 	],
 	"mappings"	: $[
 	    "help"	: ["help", "quiet"],
-	    "interactive":  ["quiet"]
+/*	    "interactive":  ["quiet"]
+*/
 	]
     ];
 
@@ -229,7 +230,7 @@
 
     /**
      *  Get next user-given command. If there is a command available, returns it, otherwise ask
-     *  the user for a command (in interactiver mode). Also processes system commands.
+     *  the user for a command (in interactive mode). Also processes system commands.
      *
      *  @return map of the new command. If there is no more commands, it returns exit or quit depending
      *  on the result user asked for.
@@ -487,9 +488,9 @@
 	Print(_("Basic syntax:"));
 
 	if( ! interactive ) {
-	    // translators: module command line help, %1 is the module name
+/*	    // translators: module command line help, %1 is the module name
 	    Print(sformat(("    yast2 %1 interactive"), modulecommands["id"]:""));
-	    // translators: module command line help, %1 is the module name
+*/	    // translators: module command line help, %1 is the module name
 	    // translate <command> and [options] only!
 	    Print(sformat(_("    yast2 %1 <command> [options]"), modulecommands["id"]:""));
 	    // translators: module command line help, %1 is the module name
@@ -605,6 +606,15 @@
      */
     global define boolean StartGUI() ``{
 	return nocommands;
+    }
+
+    /**
+     *  Is module started in interactive command-line mode?
+     *
+     *  @return boolean true, if the user asked for interactive command-line mode
+     */
+    global define boolean Interactive() ``{
+	return interactive;
     }
 
     /**

@@ -2,7 +2,6 @@ Write	.dev.tty.prompt "YaST2 lan> " true
 Write	.dev.tty "\nConfiguration of network cards\n------------------------------\n" true
 Write	.dev.tty "Configuration of network cards" true
 Write	.dev.tty "Basic syntax:" true
-Write	.dev.tty "    yast2 lan interactive" true
 Write	.dev.tty "    yast2 lan <command> [options]" true
 Write	.dev.tty "    yast2 lan help" true
 Write	.dev.tty "    yast2 lan longhelp" true
@@ -33,18 +32,10 @@ Write	.dev.tty "        device  \t[string]    \tdevice ID" true
 Write	.dev.tty "        help  \t        \tprint the help for this command" true
 Write	.dev.tty "        quiet  \t        \tdo not show progress information" true
 Write	.dev.tty "" true
-Write	.dev.tty "Command 'exit'" true
-Write	.dev.tty "    exit interactive mode and save the changes" true
-Write	.dev.tty "" true
 Write	.dev.tty "Command 'help'" true
 Write	.dev.tty "    print the help for this module" true
 Write	.dev.tty "\n    Options:" true
 Write	.dev.tty "        help  \t        \tprint the help for this command" true
-Write	.dev.tty "        quiet  \t        \tdo not show progress information" true
-Write	.dev.tty "" true
-Write	.dev.tty "Command 'interactive'" true
-Write	.dev.tty "    start interactive shell to control the module" true
-Write	.dev.tty "\n    Options:" true
 Write	.dev.tty "        quiet  \t        \tdo not show progress information" true
 Write	.dev.tty "" true
 Write	.dev.tty "Command 'list'" true
@@ -59,8 +50,5 @@ Write	.dev.tty "        lan list configured" true
 Write	.dev.tty "" true
 Write	.dev.tty "Command 'longhelp'" true
 Write	.dev.tty "    print a long version of help for this module" true
-Write	.dev.tty "" true
-Write	.dev.tty "Command 'quit'" true
-Write	.dev.tty "    quit interactive mode without saving the changes" true
 Write	.dev.tty "" true
 Return	false

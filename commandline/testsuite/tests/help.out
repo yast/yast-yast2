@@ -2,7 +2,6 @@ Write	.dev.tty.prompt "YaST2 lan> " true
 Write	.dev.tty "\nConfiguration of network cards\n------------------------------\n" true
 Write	.dev.tty "Configuration of network cards" true
 Write	.dev.tty "Basic syntax:" true
-Write	.dev.tty "    yast2 lan interactive" true
 Write	.dev.tty "    yast2 lan <command> [options]" true
 Write	.dev.tty "    yast2 lan help" true
 Write	.dev.tty "    yast2 lan longhelp" true
