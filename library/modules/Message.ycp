@@ -1,5 +1,5 @@
 /**
- * File:	modules/CommonMessage.ycp
+ * File:	modules/Message.ycp
  * Package:	yast2
  * Summary:	Often used messages
  * Authors:	Lukas Ocilka <locilka@suse.cz>
@@ -12,7 +12,7 @@
 
 {
 
-module "CommonMessage";
+module "Message";
 textdomain "base";
 
 /**
