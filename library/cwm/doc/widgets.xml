@@ -49,6 +49,34 @@ map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
  </screen></example>
 </section>
 
+<section><title>Selection Box</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `selection_box</para></listitem>
+<listitem><para>"label" : label shown above the selection_box</para></listitem>
+<listitem><para>"items" : list of two-item-lists of [id, label], each item represents one
+            item of the selection box. Both id and label must be strings.</para></listitem>
+</itemizedlist></para>
+<para>
+Usage is similar to Combo Box.
+</para>
+</section>
+
+<section><title>MultiSelection Box</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `multi_selection_box</para></listitem>
+<listitem><para>"label" : label shown above the selection box</para></listitem>
+<listitem><para>"items" : list of two-item-lists of [id, label], each item represents one
+            item of the selection box. Both id and label must be strings.</para></listitem>
+</itemizedlist></para>
+<para>
+Usage is similar to Combo Box.
+</para>
+</section>
+
 <section><title>Text Entry</title>
 <para>
 Parameters:
