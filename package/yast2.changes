@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Feb 24 13:03:03 CET 2004 - visnov@suse.cz
+
+- don't duplicate history entries in interactive command line (#34610)
+
+-------------------------------------------------------------------
 Tue Feb 24 11:37:17 CET 2004 - kkaempf@suse.de
 
 - treat x86_64 as 'wintel' architecture (#34853)
