@@ -119,8 +119,8 @@ global define string CutZeros(string input) ``{
  *"remove_whitespace":<boolean> - remove white spaces around values (default: true),
  * @return list List of strings
  */
-global define list ParseOptions(string options, map parameters) ``{
-	list ret = [];
+global define list<string> ParseOptions(string options, map parameters) ``{
+	list<string> ret = [];
 
         // parsing options
 	string separator = parameters["separator"]:" \t";
