@@ -20,86 +20,140 @@
 {
     module "Mode";
 
-    // we're doing a fresh installation
+    /**
+     * we're doing a fresh installation
+     */
     global boolean installation = true;
 
-    // we're doing an update
+    /**
+     * we're doing an update
+     */
     global boolean update	= false;
 
-    // /var/adm/mount has installation data mounted
+    /**
+     * /var/adm/mount has installation data mounted
+     */
     global boolean sourcemounted= false;
 
-    // how we were booted (the type of the installation medium)
-    // /etc/install.inf: Bootmode
+    /**
+     * how we were booted (the type of the installation medium)
+     * /etc/install.inf: Bootmode
+     */
     global string boot		= "cd";
 
-    // just testing
+    /**
+     * just testing
+     */
     global boolean test		= false;
 
-    // dry-run of dialogues
+    /**
+     * dry-run of dialogues
+     */
     global boolean demo		= false;	// includes test_mode if set
 
-    // dump screens to /tmp
+    /**
+     * dump screens to /tmp
+     */
     global boolean screen_shot	= false;	// includes demo_mode if set
 
-    // starting installation in inst-sys system
+    /**
+     * starting installation in inst-sys system
+     */
     global boolean initial	= false;
 
-    // continuing installation in target system
+    /**
+     * continuing installation in target system
+     */
     global boolean cont		= false;
 
-    // hard or softboot when starting installed system ?
+    /**
+     * hard or softboot when starting installed system ?
+     */
     global boolean hardBoot	= false;
 
-    // normal, running system
+    /**
+     * normal, running system
+     */
     global boolean normal	= false;
 
-    // do auto-installation
+    /**
+     * do auto-installation
+     */
     global boolean autoinst	= false;
 
-    // configuration for auto-installation, only in running system
+    /**
+     * configuration for auto-installation, only in running system
+     */
     global boolean config	= false;
 
-    // Preparing live-eval cd installation
+    /**
+     * Preparing live-eval cd installation
+     */
     global boolean live_eval	= false;
 
-    // this is a beta-version
+    /**
+     * this is a beta-version
+     */
     global boolean beta		= false;	// this is a beta version
 
-    // no resources/packages for X11
+    /**
+     * no resources/packages for X11
+     */
     global boolean text_fallback	= false;
 
-    // somehow, no X11 was started
+    /**
+     * somehow, no X11 was started
+     */
     global boolean no_x11		= false;	// no x11 or not enough memory for qt
 
-    // is set when called due to a hardware change
+    /**
+     * is set when called due to a hardware change
+     */
     global boolean reprobe		= false;
 
-    // we're running in textmode (-> UI::GetDisplayInfo())
+    /**
+     * we're running in textmode (-> UI::GetDisplayInfo())
+     */
     global boolean text		= false;
 
-    // we're running in manual mode (manual installation choosen in linuxrc)
+    /**
+     * we're running in manual mode (manual installation choosen in linuxrc)
+     */
     global boolean manual		= false;
 
-    // running via serial console
+    /**
+     * running via serial console
+     */
     global boolean serial_console	= false;
 
-    // Data from /etc/install.inf (linuxrc related)
+    /**
+     * Data from /etc/install.inf (linuxrc related)
+     */
     global map installMap		= $[];
 
-    // language set in install.inf
+    /**
+     * language set in install.inf
+     */
     global string language		= "en_US";
 
-    // braille mode ?
+    /**
+     * braille mode ?
+     */
     global boolean braille		= false;
 
-    // vnc mode ?
+    /**
+     * vnc mode ?
+     */
     global boolean vnc			= false;
 
-    // install map containing data for the online update
+    /**
+     * install map containing data for the online update
+     */
     global map youInstallMap		= $[];
 
-
+    /**
+     * save important data to installmap.ycp
+     */
     global define void Save ()
     ``{
 	installMap["updatemode"] = update;
@@ -108,7 +162,7 @@
     }
 
     //---------------------------------------------------------------
-    // constructor
+    * constructor
 
     global define Mode () ``{
 
@@ -183,9 +237,10 @@
 	{
 	    installMap = SCR::Read (.target.ycp, ["/var/lib/YaST2/installmap.ycp", $[]]);
 	    y2milestone("Reading /var/lib/YaST2/installmap.ycp: installMap: %1", installMap);
-
-	    // restore update only during installation/update, leave
-	    // it false in 'normal' mode.
+	    /**
+	     * restore update only during installation/update, leave
+	     * it false in 'normal' mode.
+	     */
 	    if (!Mode::normal)
 	    {
 		update = installMap["updatemode"]:false;
