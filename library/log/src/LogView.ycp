@@ -18,7 +18,7 @@
     import "Report";
 
 
-    define void RunCommand (map param) ``{
+    define void RunCommand (map param, integer max_lines) ``{
 	string command = param["command"]:nil;
 	if (command == nil)
 	{
@@ -117,7 +117,7 @@
 	string mb_label = param["mb_label"]:_("Ad&vanced");
 	integer max_lines = param["max_lines"]:100;
 
-	RunCommand (param);
+	RunCommand (param, max_lines);
 
 	term button_line = `HBox(
 	    `HWeight (1, `ReplacePoint (`id (`rep_left), `HSpacing (0))),
@@ -191,7 +191,7 @@
 		foreach (string l, new_lines, ``{
 		    UI::ChangeWidget (`id (`log), `LastLine, l + "\n");
 		});
-		lines = merge (lines, new_lines);
+		lines = (list<string>) merge (lines, new_lines);
 		lines = DeleteOldLines (lines, max_lines);
 	    }
 	    map event = (map)UI::WaitForEvent (1000);
@@ -229,7 +229,7 @@
 		{
 		    SCR::Execute (.background.kill);
 		    UI::ChangeWidget (`id (`log), `Value, "");
-		    RunCommand (param);
+		    RunCommand (param, max_lines);
 		}
 	    }
 	}

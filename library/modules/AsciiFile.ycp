@@ -119,9 +119,9 @@ global define list FindLineField( map file, integer field, string content )
     return( ret );
     }
 
-global define map GetLines( map file, list lines )
+global define map<integer, map>  GetLines( map file, list lines )
     ``{
-    map ret = $[];
+    map<integer, map> ret = (map<integer, map>) $[];
     foreach( integer num, lines,
 	``{
 	if( haskey( file["l"]:$[], num ) )

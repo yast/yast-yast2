@@ -150,7 +150,7 @@ global define boolean WS_check(map aliases, map sequence) ``{
  * @return always nil
  * @see <a href="http://bugzilla.suse.de/show_bug.cgi?id=6474">bug #6474</a>
  */
-global define void WS_error(string error) ``{
+global define any WS_error(string error) ``{
     y2error(1, "sequencer: %1", error);
     return nil;
 }
@@ -164,18 +164,18 @@ global define void WS_error(string error) ``{
 global define term WS_alias(map aliases, string alias) ``{
     any found = lookup(aliases, alias, nil);
     if (found == nil)
-        return WS_error(sformat("Alias not found: %1", alias));
+        return (term) WS_error(sformat("Alias not found: %1", alias));
     if (is(found, list)) {
         if (size((list)found) <= 0)
-	    return WS_error(sformat("Invalid alias: %1", found));
+	    return (term) WS_error(sformat("Invalid alias: %1", found));
 	found = select((list)found, 0, nil);
     }
     if (found == nil)
-	return WS_error(sformat("Invalid alias: %1", found));
+	return (term) WS_error(sformat("Invalid alias: %1", found));
 /* FIXME: use function pointers
     if (is(found, term)) */
         return (term)found;
-    return WS_error(sformat("Invalid alias: %1", found));
+    return (term) WS_error(sformat("Invalid alias: %1", found));
 }
 
 /**
@@ -187,7 +187,7 @@ global define term WS_alias(map aliases, string alias) ``{
 global define boolean WS_special(map aliases, string alias) ``{
     any found = lookup(aliases, alias, nil);
     if (found == nil)
-        return WS_error(sformat("Alias not found: %1", alias));
+        return (boolean) WS_error(sformat("Alias not found: %1", alias));
     boolean ret = false;
     if (is(found, list))
         if (size((list)found) > 1)
@@ -223,12 +223,12 @@ global define symbol WS_run(map aliases, string id) ``{
 
     function = WS_alias(aliases, id);
     if (function == nil)
-        return WS_error(sformat("Bad id: %1", id));
+        return (symbol) WS_error(sformat("Bad id: %1", id));
 
     any ret = eval(function);
 
     if (!is(ret, symbol))
-	return WS_error(sformat("Returned value not symbol: %1", ret));
+	return (symbol) WS_error(sformat("Returned value not symbol: %1", ret));
 
     return (symbol)ret;
 }
@@ -280,13 +280,13 @@ global define symbol WizardSequencer(map aliases, map sequence) ``{
 
     /* Check aliases and sequence correctness */
     if (WS_check(aliases, sequence) != true)
-	return WS_error("CHECK FAILED");
+	return (symbol) WS_error("CHECK FAILED");
 
     list stack = [];
     /* string|symbol current */
     any current = lookup(sequence, "ws_start", nil);
     if (current == nil)
-        return WS_error("Starting dialog not found");
+        return (symbol) WS_error("Starting dialog not found");
 
     while (true) {
         if (is(current, symbol)) {
@@ -299,7 +299,7 @@ global define symbol WizardSequencer(map aliases, map sequence) ``{
         any ret = WS_run(aliases, (string)current);
 
         if (ret == nil || !is(ret, symbol))
-            return WS_error(sformat("Invalid ret: %1", ret));
+            return (symbol) WS_error(sformat("Invalid ret: %1", ret));
 
         else if (ret == `back) {
             y2debug("Back");
@@ -321,7 +321,7 @@ global define symbol WizardSequencer(map aliases, map sequence) ``{
             current = WS_next(sequence, (string)current, (symbol)ret);
             y2debug("current=%1", current);
             if (current == nil)
-                return WS_error(sformat("Next not found: %1", current));
+                return (symbol) WS_error(sformat("Next not found: %1", current));
         }
     }
 
