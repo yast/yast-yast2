@@ -75,7 +75,7 @@ global define boolean have_x11 ()
 
     boolean ret = true;
 
-    list pacs = ["xf86", "yast2-x11"];
+    list pacs = ["XFree86", "yast2-x11"];
     foreach (`pac, pacs, ``{
 	if (!Pkg::IsProvided (pac))
 	{
