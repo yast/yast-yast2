@@ -79,7 +79,8 @@
 	}
 	else if ( button_id == `show_text )
 	{
-	    Popup::ShowText( "Boot Messages", "kernel panic - have a nice day" );
+	    string text = SCR::Read (.target.string, "/var/log/boot.msg");
+	    Popup::ShowText( "Boot Messages", text );
 	}
     } while ( button_id != `close );
 
