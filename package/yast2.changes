@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar  4 14:09:28 CET 2005 - lslezak@suse.cz
+
+- HWConfig.ycp - /etc/sysconfig/hardware/hwcfg-* file access
+- 2.11.40
+
+-------------------------------------------------------------------
 Fri Mar  4 10:25:56 CET 2005 - locilka@suse.cz
 
 - fixed bug #67335
