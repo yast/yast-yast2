@@ -2,6 +2,7 @@
 Tue Aug 17 11:26:37 CEST 2004 - jsrain@suse.cz
 
 - fixed function type casting in Table/Popup routines
+- prevent 'usbhid' module from being added to initrd (#36766)
 
 -------------------------------------------------------------------
 Mon Aug 16 23:36:18 CEST 2004 - nashif@suse.de
