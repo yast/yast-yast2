@@ -3,6 +3,7 @@ Mon Mar 29 16:18:49 CEST 2004 - jsrain@suse.de
 
 - fixed behavior of combo box for adding new option if it is
   editable (#37267)
+- 2.9.52
 
 -------------------------------------------------------------------
 Mon Mar 29 15:27:24 CEST 2004 - adrian@suse.de
