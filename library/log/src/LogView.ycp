@@ -85,11 +85,12 @@
 		addon = sformat ("| tail -n +%1", lines_count);
 	}
 	command = sformat ("%1 %2 %3", command, grep, addon);
+	y2milestone ("Calling background agent with command %1", command);
 	boolean cmdret = SCR::Execute (.background.run_output, command);
 	if (! cmdret)
 	{
 	    // message popup
-	    Popup::Message (_("Error while reading the log occured"));
+	    Report::Error (_("Error while reading the log occured"));
 	    return;
 	}
 

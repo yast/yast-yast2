@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul  1 10:19:44 CEST 2003 - jsrain@suse.de
+
+- updates of CWM module, added validation of used structures and
+  some wrappers for more complex tasks
+
+-------------------------------------------------------------------
 Thu Jun 26 13:38:26 CEST 2003 - visnov@suse.de
 
 - print to stderr in non-interactive mode 

@@ -1,6 +1,8 @@
 Dump	========================================
 Dump	==========   Common stuff   ============
 Dump	========================================
+Log	Error on key help of widget w1: Empty help
+Log	Error on key help of widget w2: Empty help
 Dump	W1: $["_cwm_key":"w1", "custom_widget":nil, "handle":TestFunc::arg2 ("handle_w1"), "init":TestFunc::arg1 ("init_w1"), "label":"Check&Box", "opt":[`notify, `immediate], "validate_function":TestFunc::true2 ("valid_w1"), "validate_type":`function, "widget":`CheckBox (`id ("w1"), `opt (`notify, `immediate), "Check&Box")]
 Dump	W2: $["_cwm_key":"w2", "custom_widget":nil, "handle":TestFunc::arg2 ("handle_w2"), "label":"Text&Entry", "store":TestFunc::arg2 ("save_w2"), "validate_function":TestFunc::true2 ("valid_w2"), "validate_type":`function, "widget":`TextEntry (`id ("w2"), `opt (), "Text&Entry")]
 Dump	========================================
