@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Aug 12 23:27:19 CEST 2004 - nashif@suse.de
+
+- Disable Commandline interface during firstboot phase
+- 2.10.7
+
+-------------------------------------------------------------------
 Tue Aug  3 15:41:32 CEST 2004 - jsrain@suse.cz
 
 - fixed types in CWM, changed interface of CWM::ShowAndRun ()
