@@ -1,8 +1,13 @@
 -------------------------------------------------------------------
+Wed Jun 11 18:09:37 CEST 2003 - arvin@suse.de
+
+- added /usr/share/doc/packages/yast2 to file list (2nd try)
+
+-------------------------------------------------------------------
 Wed Jun 11 17:04:50 CEST 2003 - visnov@suse.de
 
 - added command line interface
-- 2.8.4 
+- 2.8.4
 
 -------------------------------------------------------------------
 Wed Jun 11 16:08:13 CEST 2003 - arvin@suse.de
