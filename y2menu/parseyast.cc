@@ -166,7 +166,7 @@ char *trans_text (const char *textdomain, char *trans_str)
 void add_module (string mod_name, string namestr, string group, string infostr,
 		 string textdomain, string args, int skey)
 {
-    int i;
+    unsigned i;
     int group_ok = 0;
     mod_data module;
 

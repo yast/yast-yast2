@@ -219,7 +219,8 @@ static int parse_line (char *line, char **var, char **value);
 
 int yast_parse_cfg (char *cfg_path, char *cfg_file)
 {
-  int i, l = 1, parse, fg, bg, hl;
+  int l = 1, parse, fg, bg, hl;
+  unsigned i;
   char str[MAX_LEN + 1], *var, *value;
   FILE *rc_file;
 

@@ -41,7 +41,8 @@ void fillhelp ();
 
 int main (int argc, const char *const *argv)
 {
-  int grp, mod, i;
+  unsigned grp, mod;
+  int i;
   int ret = 0;
 
   yast_mod_auto = 1;
