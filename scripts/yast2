@@ -127,8 +127,13 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 	    # use English instead:
 	    ja*|ko*|zh*) export LANG=en_US ;;
 	esac
-	set -- $(for x in "$@"; do echo "(\"$x\")"; done) # surround args by ("...")
-	$ybindir/y2base $module "$@" ncurses
+	# use ycp menu if the y2menu is not installed
+	if [ $module == "menu" -a -e "$ybindir/y2menu" ] ; then
+	    $ybindir/y2menu
+	else
+	    set -- $(for x in "$@"; do echo "(\"$x\")"; done) # surround args by ("...")
+	    $ybindir/y2base $module "$@" ncurses
+	fi
     else
 	echo "You need to install yast2-ui-ncurses to use the YaST2 text mode interface"
 	exit 1
