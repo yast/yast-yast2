@@ -122,14 +122,27 @@ global define boolean ReadControlFile( string controlfile)
         return false;
     
     workflows = productControl["workflows"]:[];
-
     proposals = productControl["proposals"]:[];
+ 
+    // Software
+    software = productControl["software"]:$[];
+    ProductFeatures::SetSection("software", software);
+
+    // Network
+    ProductFeatures::SetSection("network", productControl["network"]:$[]);
+
+    // Globals
+    globals = productControl["globals"]:$[];
+    ProductFeatures::SetSection("globals", globals);
+
+    // Storage
+    partitioning = productControl["partitioning"]:$[];
+    ProductFeatures::SetSection("storage", partitioning);
 
     if (haskey(productControl, "partitioning"))
     {
         if (size( productControl["partitioning", "partitions"]:[] ) > 0)
         {
-            partitioning = productControl["partitioning"]:$[];
             
             ProductFeatures::flexible_partitioning = true;
             
@@ -142,7 +155,6 @@ global define boolean ReadControlFile( string controlfile)
     }
     if (haskey(productControl, "software"))
     {
-        software = productControl["software"]:$[];
 
         ProductFeatures::base_selection_choice = software["selection_type"]:`auto;
 
@@ -184,7 +196,6 @@ global define boolean ReadControlFile( string controlfile)
 
     if (haskey(productControl, "globals"))
     {
-        globals = productControl["globals"]:$[];
 
         ProductFeatures::enable_autologin = globals["enable_autologin"]:true;
         
