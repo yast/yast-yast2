@@ -74,7 +74,6 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 @yncludedir@/readconfig.ycp
 
 %doc @docdir@/*.*
-%doc @docdir@/pot
 %doc %{_mandir}/*/*
 
 /sbin/*
