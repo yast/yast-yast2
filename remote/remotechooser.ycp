@@ -19,7 +19,7 @@ string protocol = "ssh";
 
 list hosts = [];
 
-global define symbol ChooseDialog() ``{
+global define any ChooseDialog() ``{
 
 	/*
 	`Left(`HSquash(`RadioButtonGroup(`id(`protocol),
@@ -93,10 +93,10 @@ global define symbol ChooseDialog() ``{
 
     if(ret == `next) {
 
-	protocol = UI::QueryWidget(`id(`protocol), `Value);
-	modul = UI::QueryWidget(`id(`modul), `Value);
-	user = UI::QueryWidget(`id(`user), `Value);
-	host = UI::QueryWidget(`id(`host), `Value);
+	protocol = (string) UI::QueryWidget(`id(`protocol), `Value);
+	modul = (string) UI::QueryWidget(`id(`modul), `Value);
+	user = (string) UI::QueryWidget(`id(`user), `Value);
+	host = (string) UI::QueryWidget(`id(`host), `Value);
 
 	if(host == "") host = "localhost";
 	if(modul == "") modul = "menu";
@@ -112,12 +112,12 @@ y2milestone("Remote chooser module started");
 
 /* Label text */
 UI::OpenDialog(`Label(_("Scanning for hosts in the local network...")));
-hosts = sort(SCR::Read(.net.hostnames));
+hosts = sort((list) SCR::Read(.net.hostnames));
 if(hosts == nil) hosts = [];
 UI::CloseDialog();
 
 /* Get the current user name */
-map output = SCR::Execute(.target.bash_output, "echo \"$USER\"");
+map output = (map) SCR::Execute(.target.bash_output, "echo \"$USER\"");
 user = select(splitstring(output["stdout"]:"", "\n"), 0, "");
 
 any ret = nil;
@@ -136,7 +136,7 @@ while(true) {
 	launch = launch + "/" + modul;
 
 	y2milestone("Launching %1", launch);
-	WFM::CallModule(launch, []);
+	WFM::CallFunction(launch, []);
 	UI::SetModulename("remotechooser");
 	continue;
     }

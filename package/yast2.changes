@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Feb 11 11:02:20 CET 2004 - msvec@suse.cz
+
+- adapt remote clients for the new interpreter
+
+-------------------------------------------------------------------
 Tue Feb 10 17:45:16 CET 2004 - arvin@suse.de
 
 - adapted kernel determination to kernel 2.6 names
