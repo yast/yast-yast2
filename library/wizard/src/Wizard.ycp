@@ -980,6 +980,8 @@
 	}
 	else // Qt wizard
 	{
+	    UI::WizardCommand(`RetranslateInternalButtons() );
+	    
 	    if ( UI::WidgetExists(`accept) )
 	    {
 		UI::WizardCommand(`SetBackButtonLabel ( "" ) );
