@@ -1,0 +1,232 @@
+/**
+ * File:	modules/LogView.ycp
+ * Package:	YaST2
+ * Summary:	Displaying a log with additional functionality
+ * Authors:	Jiri Srain <jsrain@suse.cz>
+ *
+ * $Id$
+ *
+ */
+
+{
+
+    module "LogView";
+    textdomain "dns-server";
+
+    import "Popup";
+    import "Label";
+
+
+    /**
+      * Display specified file, list 100 lines
+      * @param file string filename of file with the log
+      */
+    global define void DisplaySimple (string file) ``{
+	Display ($[ "file" : file ]);
+    }
+
+    /**
+      * Display log with filtering with 100 lines
+      * @param file string filename of file with the log
+      * @param grep string regular expression to be grepped in file
+      */
+    global define void DisplayFiltered (string file, string grep) ``{
+	Display ($[ "file" : file, "grep" : grep ]);
+    }
+
+    /**
+      * Main function for displaying logs
+      * @param param map description of parameters, with following keys
+      * <pre>
+      *  - "file" -- string, filename with the log
+      *  - "grep" -- string, regular expression (grep-like) to be grepped
+      *              in the log (for getting relevant  parts of
+      *              /var/log/messages. If empty or not present, whole file
+      *              is used
+      *  - "save" -- boolean, if true, then log saving is possible
+      *  - "actions" -- list, allows to specify additional actions.
+      *                 Each member is a 2-entry list, first entry is a
+      *                 label for the menubutton, the second one is a term
+      *                 that will be evaluated when the entry is selected
+      *  - "help" -- string for a rich text, help to be offered via a popup
+      *              when user clicks the "Help" button. If not present,
+      *              Help button isn't shown
+      *  - "mb_label" -- string, label of the menubutton, if not specified,
+      *                  then "Advanced" is used
+      *  - "max_lines" -- integer, maximum of lines to be displayed. If 0,
+      *                   then display whole file. Default is 100.
+      *  - "log_label" -- header of the LogView widget, if not set, then "Log"
+      *                   is used
+      * </pre>
+      */
+    global define void Display (map param) ``{
+	// logview caption
+	string caption = param["log_label"]:_("&Log");
+	// menubutton
+	string mb_label = param["mb_label"]:_("Ad&vanced");
+	integer max_lines = param["max_lines"]:100;
+	string grep = param["grep"]:"";
+	if (grep != "")
+	    grep = sformat ("| grep --line-buffered %1", grep);
+	string lc_command
+	    = sformat ("cat %1 %2 | wc -l", param["file"]:"", grep);
+	map bash_output = SCR::Execute (.target.bash_output, lc_command);
+	string command = "tail -f -n +0 " + param["file"]:"";
+	string addon = "";
+	if (bash_output["exit"]:1 == 0)
+	{
+	    string lc = bash_output["stdout"]:"";
+	    lc = filterchars (lc, "1234567890");
+	    integer lines_count = tointeger (lc);
+	    lines_count = lines_count - 2 * max_lines; // don't know why without
+			// doubling it discards more lines, out of YaST2
+			// it works
+	    if (max_lines != 0 && lines_count > 0)
+		addon = sformat ("| tail -n +%1", lines_count);
+	}
+	command = sformat ("%1 %2 %3", command, grep, addon);
+	boolean cmdret = SCR::Execute (.background.run_output, command);
+	if (! cmdret)
+	{
+	    // message popup
+	    Popup::Message (_("Error while reading the log occured"));
+	    return;
+	}
+
+	term button_line = `HBox(
+	    `HWeight (1, `ReplacePoint (`id (`rep_left), `HSpacing (0))),
+	    `HStretch (),
+	    `HWeight (1, `PushButton (`id(`close), `opt (`key_F9),
+		Label::CloseButton ())),
+	    `HStretch (),
+	    `HWeight (1, `ReplacePoint (`id (`rep_right), `HSpacing (0)))
+	);
+
+        UI::OpenDialog (`HBox (`HSpacing (1), `VBox (
+            `VSpacing (1),
+            `HSpacing (70),
+            // log view header
+            `LogView (`id (`log), caption, 19, max_lines),
+            `VSpacing (1),
+	    button_line,
+            `VSpacing (1)), `HSpacing (1)));
+
+	if (param["help"]:"" != "")
+	{
+	    UI::ReplaceWidget (`id (`rep_left),
+		`PushButton (`id (`help), Label::HelpButton ()));
+	}
+	list menubutton = [];
+	if (param["save"]:false == true)
+	    // menubutton entry
+	    menubutton = add (menubutton, [`save, _("Save log")]);
+
+	list(list) actions = param["actions"]:[];
+	if (size (actions) > 0)
+	{
+	    integer index = 0;
+	    foreach (`a, actions, ``{
+		menubutton = add (menubutton, [index, a[0]:""]);
+		index = index + 1;
+	    });
+	}
+
+	if (size (menubutton) > 1)
+	{
+	    menubutton = maplist (`m, menubutton, ``(
+		`item (`id (m[0]:""), m[1]:"")));
+	    UI::ReplaceWidget (`id (`rep_right),
+		`MenuButton (`id (`log_menu), mb_label, menubutton));
+	}
+	else if (size (menubutton) == 1)
+	{
+	    UI::ReplaceWidget (`id (`rep_right),
+		`PushButton (`id (menubutton[0,0]:""), menubutton[0,1]:""));
+	}
+
+	sleep (100);
+	integer count = SCR::Read (.background.newlines);
+	list(string) lines = [];
+	if (count > 0)
+	{
+	    lines = SCR::Read (.background.newout);
+	    lines = DeleteOldLines (lines, max_lines);
+	    UI::ChangeWidget (`id (`log), `Value,
+		mergestring (lines, "\n") + "\n");
+	}
+
+        any ret = nil;
+        while (ret != `close && ret != `cancel)
+	{
+	    integer count = SCR::Read (.background.newlines);
+	    if (count > 0)
+	    {
+		list(string) new_lines = SCR::Read (.background.newout);
+		foreach (string l, new_lines, ``{
+		    UI::ChangeWidget (`id (`log), `LastLine, l + "\n");
+		});
+		lines = merge (lines, new_lines);
+		lines = DeleteOldLines (lines, max_lines);
+	    }
+	    sleep (100);
+            ret = UI::PollInput ();
+	    if (ret == `help)
+	    {
+		UI::OpenDialog (`VBox (
+		    `RichText (`id (`help_text), param["help"]:""),
+		    `HBox (
+			`HStretch (),
+			`PushButton (`id (`close), Label::CloseButton ()),
+			`HStretch ()
+		    )
+		));
+		while (ret != `close && ret != `cancel)
+		    ret = UI::UserInput ();
+		ret = nil;
+		UI::CloseDialog ();
+	    }
+	    else if (ret == `save)
+	    {
+		string filename = UI::AskForSaveFileName(
+		    // popup caption
+		    "/tmp", "*.log", _("Save log as..." ));
+		if (filename != nil)
+		{
+		    SCR::Write (.target.string, filename,
+			mergestring (lines, "\n") + "\n");
+		}
+	    }
+	    else if (ret != nil && is (ret, integer))
+	    {
+		eval (actions[ret, 1]:nil);
+	    }
+	}
+	SCR::Execute (.background.kill);
+        UI::CloseDialog ();
+        return;
+    }
+
+    /**
+      * Remove unneeded items from a list
+      * If max_lines is 0, then don't remove anything
+      * @param lines a list of strings representing log lines
+      * @param max_lines integer lines that should be saved
+      * @return a list last max_lines of lines
+      */
+    define list(string) DeleteOldLines
+	(list(string) lines, integer max_lines)
+    ``{
+	if (0 == max_lines)
+	    return lines;
+	integer sl = size (lines);
+	if (sl > max_lines)
+	{
+	    lines = filter (string l, lines, ``{
+		sl = sl -1;
+		return sl < max_lines;
+	    });
+	}
+	return lines;
+    }
+
+}
