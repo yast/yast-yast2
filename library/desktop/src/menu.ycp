@@ -185,49 +185,64 @@ UI::SetFocus(`id(`groups));
 while(true) {
 
     map event = UI::WaitForEvent();
+    any eventid = event["ID"]:nil;
     // y2debug too constly: y2debug("event=%1", event);
 
-    if (event["ID"]:`none == `groups
-	 && event["EventReason"]:"" == "SelectionChanged" )
+    if ( is(eventid, symbol) )
     {
-	string id = (string) UI::QueryWidget(`id(`groups), `CurrentItem);
-	ReplaceModuleList(id);
-	continue;
+
+	if ( eventid == `groups
+	     && event["EventReason"]:"" == "SelectionChanged" )
+	{
+	    string id = (string) UI::QueryWidget(`id(`groups), `CurrentItem);
+	    ReplaceModuleList(id);
+	    continue;
+	}
+	else if (  eventid == `progs
+		  && event["EventReason"]:"" == "Activated" )
+	{
+	    string program = (string) UI::QueryWidget(`id(`progs), `CurrentItem);
+	    Launch(program);
+	}
+	else if ( eventid == `groups
+		  && event["EventReason"]:"" == "Activated" )
+	{
+	    UI::SetFocus ( `id(`progs) );
+	}
+	else if ( eventid == `help )
+	{
+	    ShowNcursesHelp();
+	}
+	else if( eventid == `quit )
+	{
+	    break;
+	}
+	else
+	{
+	    y2warning ( "Event or widget ID not handled: %1", event );
+	}
     }
-    else if ( event["ID"]:`none == `progs
-	      && event["EventReason"]:"" == "Activated" )
+    else if( is(eventid, string) )
     {
-	string program = (string) UI::QueryWidget(`id(`progs), `CurrentItem);
-	Launch(program);
-    }
-    else if ( event["ID"]:`none == `groups
-	      && event["EventReason"]:"" == "Activated" )
-    {
-	UI::SetFocus ( `id(`progs) );
-    }
-    else if ( event["FocusWidgetID"]:`none == `groups
-	      && event["ID"]:"" == "CursorRight" )
-    {
-	UI::SetFocus ( `id(`progs) );
-    }
-    else if ( event["FocusWidgetID"]:`none == `progs
-	      && event["ID"]:"" == "CursorLeft" )
-    {
-	UI::SetFocus ( `id(`groups) );
-    }
-    else if ( event["ID"]:`none == `help )
-    {
-	ShowNcursesHelp();
-    }
-    else if( event["ID"]:`none == `quit )
-    {
-	break;
+	if ( event["FocusWidgetID"]:`none == `groups
+		  && eventid == "CursorRight" )
+	{
+	    UI::SetFocus ( `id(`progs) );
+	}
+	else if ( event["FocusWidgetID"]:`none == `progs
+		  && eventid == "CursorLeft" )
+	{
+	    UI::SetFocus ( `id(`groups) );
+	}
+	else
+	{
+	    y2warning ( "Event or widget ID not handled: %1", event );
+	}
     }
     else
     {
 	y2warning ( "Event or widget ID not handled: %1", event );
     }
-
 }
 
 UI::CloseDialog ();
