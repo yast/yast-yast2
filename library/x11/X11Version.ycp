@@ -22,7 +22,7 @@ textdomain "base";
 
 import "Directory";
 import "Installation";
-include "require.ycp";
+import "Require";
 
 //=======================================
 // System Global Variables
