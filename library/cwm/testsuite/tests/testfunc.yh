@@ -92,7 +92,7 @@
 	return false;
     }
 
-    map popups = $[
+    map<string,map<string,any> > popups = $[
         "a" : $[
             "table" : $[
                 "widget" : `checkbox,
@@ -110,7 +110,7 @@
         ],
     ];
 
-    map widgets = $[
+    map<string,map<string,any> > widgets = $[
         "w1" : $[
             "widget" : `checkbox,
             "opt" : [ `notify, `immediate ],
