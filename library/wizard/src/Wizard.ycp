@@ -4,6 +4,7 @@
  * Summary:	Wizard dialog
  * Authors:	Stefan Hundhammer <sh@suse.de>
  *
+ * $Id$
  * Provides the wizard dialog (common screen for all YaST2 installation
  * modules) and functions to set the contents, to replace and restore
  * special widgets.
@@ -24,7 +25,7 @@
 
     boolean have_fancy_ui_cache = nil;
 
-    
+
     define boolean haveFancyUI()
     {
 	if ( have_fancy_ui_cache == nil )
