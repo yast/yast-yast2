@@ -87,7 +87,7 @@ y2milestone("--%1", Detection("modems"));
  */
 global define boolean MustBeRoot ()
 {
-    map out = SCR::Execute (.target.bash_output ("/usr/bin/id --user"));
+    map out = (map) SCR::Execute (.target.bash_output, "/usr/bin/id --user");
     boolean root = out["stdout"]:"" == "0\n";
     return root || Popup::ContinueCancelHeadline (
 	// popup headline
@@ -95,7 +95,7 @@ global define boolean MustBeRoot ()
 	// message in a continue/cancel popup
 	_("This module needs to be run as root.
 If you continue now, the module may not function properly.
-For example, some settings can be read improperly 
+For example, some settings can be read improperly
 and almost certainly you will not be able to write them.")
 	);
 }
