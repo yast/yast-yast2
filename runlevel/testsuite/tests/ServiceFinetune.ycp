@@ -3,17 +3,20 @@
     import "Runlevel";
 
     map READ = $[];
-    map EXEC = $[];
+    map EXEC = $[
+	"target": $[
+	    "bash": 0,
+	    "bash_output": $["exit": 0, "stdout": "", "stderr" :""],
+	    ],
+	];
 
     READ = $[ "init" : $[ "scripts" : $[
 		"exists" : true,
 	] ] ];
-    EXEC = $[ "target" : $[ "bash" : 0 ]];
     TEST (``(Runlevel::ServiceFinetune ("aaa", ["A", "B", "C"])), [ READ, $[], EXEC ], nil);
 
     READ = $[ "init" : $[ "scripts" : $[
 		"exists" : true,
 	] ] ];
-    EXEC = $[ "target" : $[ "bash" : 0 ]];
     TEST (``(Runlevel::ServiceFinetune ("aaa", [])), [ READ, $[], EXEC ], nil);
 }
