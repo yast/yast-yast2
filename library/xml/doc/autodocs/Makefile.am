@@ -5,7 +5,7 @@
 htmldir = $(docdir)/autodocs
 
 index.html: $(srcdir)/../../src/*.ycp 
-	@ybindir@/ycpdoc -d. $(srcdir)/../../src/*.ycp
+	${YCPDOC} -d. $^
 
 html_DATA = index.html $(wildcard *.html)
 
