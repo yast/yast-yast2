@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Nov 30 10:47:06 CET 2004 - visnov@suse.cz
+
+- added testsuite infrastructure for library/modules
+
+-------------------------------------------------------------------
 Thu Nov 25 09:50:51 CET 2004 - locilka@suse.cz
 
 - added SuSEFirewallServices and PortAliases YCP Modules into
