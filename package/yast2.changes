@@ -2,6 +2,7 @@
 Mon Feb 16 17:06:46 CET 2004 - jsrain@suse.de
 
 - kernel image is now /boot/vmlinux on all PPC subarchs (#34588)
+- 2.9.21
 
 -------------------------------------------------------------------
 Mon Feb 16 11:20:53 CET 2004 - arvin@suse.de
