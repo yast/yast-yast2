@@ -80,15 +80,15 @@ are handled.
 </para></listitem>
 	</itemizedlist></para>
     </chapter>
-&terminology
-&concept
-&advanced
-&widgets
-&table_popup
-&dialog_tree
-&cwm_tab
-&service_start
-&tsig_keys
-&tutor
+&terminology;
+&concept;
+&advanced;
+&widgets;
+&table_popup;
+&dialog_tree;
+&cwm_tab;
+&service_start;
+&tsig_keys;
+&tutor;
 </book>
 
