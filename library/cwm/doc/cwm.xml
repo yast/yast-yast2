@@ -11,6 +11,7 @@
 <!ENTITY dialog_tree SYSTEM "dialog_tree.xml">
 <!ENTITY cwm_tab SYSTEM "cwm_tab.xml">
 <!ENTITY service_start SYSTEM "service_start.xml">
+<!ENTITY tsig_keys SYSTEM "tsig_keys.xml">
 <!ENTITY terminology SYSTEM "terminology.xml">
 <!ENTITY tutor SYSTEM "tutor.xml">
 
@@ -87,6 +88,7 @@ are handled.
 &dialog_tree
 &cwm_tab
 &service_start
+&tsig_keys
 &tutor
 </book>
 
