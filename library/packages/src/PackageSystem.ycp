@@ -58,7 +58,14 @@ global void EnsureTargetInit() {
  * Ensure that Pkg:: calls working with the installation sources work
  */
 global void EnsureSourceInit() {
-    if(source_initialized) return;
+    if(source_initialized) 
+    {
+	// this way, if somebody closed the cache outside of Package
+	// (typically in installation), we will reinitialize
+	// it's cheap if cache is already initialized
+	Pkg::SourceStartCache (true);
+	return;
+    }
 
     PackageCallbacksInit::InitPackageCallbacks ();
 
@@ -273,12 +280,32 @@ packages, YaST may not work properly.
 
 global boolean InstallKernel (list<string> kernel_modules) {
     EnsureSourceInit ();
+    EnsureTargetInit ();
 
-    import "Kernel";
+    list <list> provides = Pkg::PkgQueryProvides ("kernel");
+    y2milestone ("provides: %1", provides);
+
+    list <list> kernels = filter (list l, provides, {
+        return l[1]:`NONE == `BOTH || l[1]:`NONE == l[2]:`NONE;
+    });
+
+    if (size (kernels) != 1)
+        y2error ("not exactly one package provides tag kernel");
+
+    string kernel = kernels[0,0]:"none";
+    string kernel_nongpl = kernel + "-nongpl";
+    
+    list<string> packs = [kernel];
+
+    if (Pkg::IsAvailable (kernel_nongpl))
+    {
+        y2milestone ("adding kernel subpackage %1", kernel_nongpl);
+        packs = add (packs, kernel_nongpl);
+    }
 
     // TODO: for 9.2, we always install all packages, but
     // we could only install those really needed (#44394)
-    return InstallAll ( Kernel::ComputePackages () );
+    return InstallAll ( packs );
 }
 
 /* EOF */
