@@ -13,27 +13,32 @@
 module "PackageAI";
 textdomain "base";
 
-global list<string> Packages = [];
+global list<string> toinstall = [];
+global list<string> toremove = [];
 
 boolean last_op_canceled = false;
 
 include "packages/common.ycp";
 
 global boolean DoInstall(list<string> packages) {
-    Packages = (list<string>) union(Packages, packages);
-    return true;
-}
-
-global boolean DoRemove(list<string> packages) {
-    Packages = filter(string p, Packages, {
+    toinstall = (list<string>) union(toinstall, packages);
+    toremove = filter(string p, toremove, {
 	return !contains(packages, p);
     });
     return true;
 }
 
-global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove) {
-    DoInstall(toinstall);
-    DoRemove(toremove);
+global boolean DoRemove(list<string> packages) {
+    toremove = (list<string>) union(toremove, packages);
+    toinstall = filter(string p, toinstall, {
+	return !contains(packages, p);
+    });
+    return true;
+}
+
+global boolean DoInstallAndRemove(list<string> toinst, list<string> torem) {
+    DoInstall(toinst);
+    DoRemove(torem);
     return true;
 }
 
@@ -42,7 +47,7 @@ global boolean Available(string package) {
 }
 
 global boolean Installed(string package) {
-    return contains(Packages, package);
+    return contains(toinstall, package);
 }
 
 /* EOF */
