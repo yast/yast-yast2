@@ -16,6 +16,10 @@
 module "Service";
 textdomain "base";
 
+/***
+ * Services Manipulation
+ */
+
 /**
  * @struct service
  * One service is described by such map: <pre>

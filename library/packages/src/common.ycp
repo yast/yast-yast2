@@ -81,7 +81,9 @@ boolean PackageDialog(list<string> packages, boolean install) {
     if(size(packages) < 1) return true;
     if(InstalledAll(packages)) return true;
 
+    /* Popup Text */
     string text = _("These packages need to be installed:") + "<p>";
+    /* Popup Text */
     if(install == false) text = _("These packages need to be removed:") + "<p>";
 
     foreach(string p, packages, ``{ text = text + sformat("%1<br>", p); });
