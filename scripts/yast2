@@ -42,7 +42,6 @@ printhelp()
 	echo "	-l, --list	list all available modules"
 	echo "	-g, --geometry	default window size (qt only)"
 	echo "	-s, --style	widget style (qt only)"
-	echo "	-S, --strings	all module parameters are passed as string"
 	echo "	-h, --help	this screen"
 	echo
 	echo "exceptional case for installing packages:"
@@ -94,7 +93,7 @@ while true ; do
 		-g|--geometry) Y2_GEOMETRY="$2"; shift 2; ;;
 		-i|--install) Y2_INSTALL_PACKAGES=true; shift 1;;
 		--) shift ; break ;;
-		*) echo "Internal error!" ; exit 1 ;;
+		*) echo "Unrecognized option $1" ; exit 1 ;;
 	esac
 done
 
