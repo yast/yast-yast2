@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Oct 24 15:55:36 CEST 2003 - ms@suse.de
+
+- moved x11 subdir to installation
+
+-------------------------------------------------------------------
 Fri Oct 17 11:01:59 CEST 2003 - jsrain@suse.de
 
 - Fixed "blinking" of Table/Popup's buttons when table content was

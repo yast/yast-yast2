@@ -2,4 +2,4 @@
 # Makefile.am for yast2/library
 #
 
-SUBDIRS = agents commandline modules runlevel sequencer wizard x11 log cwm types
+SUBDIRS = agents commandline modules runlevel sequencer wizard log cwm types
