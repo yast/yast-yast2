@@ -31,7 +31,7 @@ global path AgentPath = .yast2.desktop;
 /**
  * Optional language for reading translated entries
  */
-global string Language = "";
+string Language = "";
 
 /**
  * Read module and group data from desktop files
@@ -62,6 +62,12 @@ global define void Read(list Values) ``{
 	Groups[group] = filemap;
     });
 
+    /* read language */
+    Language = WFM::GetLanguage();
+    if(regexpmatch(Language, "(.*)_"))
+	Language = regexpsub(Language, "(.*)_", "\\1");
+    y2debug("%1", Language);
+
     /* read modules */
     foreach(string file, files, ``{
 	filemap = $[];
@@ -70,8 +76,13 @@ global define void Read(list Values) ``{
 	list values = SCR::Dir(filepath);
 	if(Values != nil && Values != []) values = Values;
 	foreach(string value, values, ``{
+	    string valuekey = value;
+	    if(value == "Name" && Language != nil && Language != "")
+		value = sformat("Name[%1]", Language);
 	    string ret = (string) SCR::Read(add(filepath, value));
-	    if(ret != nil) filemap[value] = ret;
+	    if((ret == nil || ret == "") && valuekey == "Name")
+		ret = (string) SCR::Read(add(filepath, valuekey));
+	    if(ret != nil) filemap[valuekey] = ret;
 	});
 	string name = regexpsub(file, "^.*/(.*)\.desktop", "\\1");
 	if(name != "" && name != nil) {
@@ -85,7 +96,7 @@ global define void Read(list Values) ``{
 
 /**
  */
-define string Translate(string key) ``{
+global define string Translate(string key) ``{
     if(regexpmatch(key, "_\\(\"(.*)\"\\)") == true) {
         locale ke = regexpsub(key, "_\\(\"(.*)\"\\)", "\\1");
         key = (string) eval(ke);
@@ -123,11 +134,8 @@ global define list ModuleList(string group) ``{
     // Translation and sorting not required:
     // return CreateList(m);
 
-    string key = "Name";
-    if(Language != "" && Language != "") key = sformat("Name[%1]", Language);
-
     return maplist(string name, Map::Keys(m), ``{
-	return `item(`id(name), m[name, key]:(m[name, "Name"]:"???"));
+	return `item(`id(name), m[name, "Name"]:"???");
     });
 }
 
