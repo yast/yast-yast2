@@ -12,7 +12,7 @@
     include "testsuite.ycp";
     include "./tests/include/testsuitedata.ycp";
     
-    import "./../src/TypeRepository.ycp";
+    import "./../../types/src/TypeRepository.ycp";
     import "./../src/CommandLine.ycp";
 
     // test of the resulting maps
