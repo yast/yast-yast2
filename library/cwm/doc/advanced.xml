@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding='ISO-8859-1'?>
+<?$$?>
+<chapter id = "advanced">
+    <title>Advanced stuff</title>
+
+
+
+
+<section><title>Helps</title>
+<para>
+Help is usually related to some widget. There is no reason why not to add help
+as attribute of a widget description, and move it with the widget between
+dialogs. Each widget description map can have a "help" key, that specifies
+the help related to the widget.
+</para>
+<para>
+Then function CWM::MergeHelps (list(map) widgets) will merge the helps
+of the widgets in the same order as the widgets were specified in the argument
+of the CreateWidgets function. In fact it only concatenates the help attributes of
+the widgets. For advanced helps (eg. add some text not related to any widgets)
+programmer must use his own function.
+</para>
+<example><title>Help manipulation</title><screen>
+map widget_descr = $[
+  "CWD_IN_ROOT_PATH" : $[
+    "label" : _("&amp;Current Directory in root's Path"),
+    "widget" : `checkbox,
+    "help" : _("This is help for the widget"),
+  ],
+  .....
+]
+
+list widgets = // see <xref linkend="simple_dialog"/>
+
+string help = CWM::MergeHelps (widgets); // and use this
+            // help for Wizard::SetContentsButtons (...)
+ </screen></example>
+</section>
+
+<section id="validation"><title>Widget validation</title>
+<para>
+Especially in case of more complex widgets, some validation may be important
+to avoid storing any inconsistent settings. Widget validation can be done
+two ways.
+</para>
+<para>
+First means validation function. It can be specified in the widget
+description map. It returns a boolean value, if true, validation is OK,
+false if validation failed. In case of failure it is task of the validation
+function to inform user where the problem is. Before evaluation, the
+arguments specifying the widget key and the event that caused the validation,
+are added. Validation type must be set to `function.
+</para>
+<para>
+Second possibility is to validate widget by type. Supported are validation
+by a regular expression (validation type "regex") and a by list (validation
+type "enum").  This validation is usable eg. for TextEntry and
+ComboBox widgets). Validation type must be set to `regex or `enum,
+validate_typespec must contain a string with regular expression, resp.
+list of valid strings. If validation by type fails and "validate_help" key 
+is defined in the widget description map, then the value of the "validate_help"
+entry in the map is shown to user, otherwise generic error message is shown.
+</para>
+<para>
+If no validation type is defined, validation is always OK.
+</para>
+<example><title>Widget validation</title><screen>
+module "MyModule";
+
+map widget_descr = $[
+  "CWD_IN_ROOT_PATH" : $[
+    "widget" : `checkbox,
+    "label" : _("&amp;Current Directory in root's Path"),
+    "validate_type" : `function,
+    "validate_function" : ``(MyModule::my_validate_widget ()),
+  ],
+  "TEXT_ENTRY" : $[
+    "widget" : `textentry,
+    "label" : _("&amp;TextEntry"),
+    "validate_type" : `regex,
+    "validate_typespec" : "[a-zA-Z]+",
+    "validate_help" : _("Only a-z and A-Z are allowed.
+String cannot be empty");
+  ],
+  "TEXT_ENTRY_2" : $[
+    "widget" : `textentry,
+    "label" : _("Text&amp;Entry 2"),
+    "validate_type" : `enum,
+    "validate_typespec" : ["Word1", "Word2"],
+  ],
+]
+
+global define boolean my_validate_widget (any key, any event) ``{
+    boolean value = UI::QueryWidget (
+        `id ("CWD_IN_ROOT_PATH"),
+        `Value);
+    if (! value)
+        return true;
+    else
+    {
+        if (UI::YesNoPopup (_("You decided insert CWD to root's path.
+Are you sure?")))
+            return true;
+        else
+        {
+            UI::SetFocus ("CWD_IN_ROOT_PATH");
+            return false;
+        }
+    }
+ </screen></example>
+</section>
+
+<section><title>Widget options</title>
+<para>
+In some cases it is useful to specify the option of the widget, eg.
+`opt(`notify) is quite often used. The "opt" key of the widget description
+map can contain the list of options of the widget. If not set, the options
+are empty ( `opt () ).
+</para>
+
+<example><title>Widget options</title><screen>
+module "MyModule";
+
+map widget_descr = $[
+  "CWD_IN_ROOT_PATH" : $[
+    "label" : _("&amp;Current Directory in root's Path"),
+    "widget" : `checkbox,
+    "opt" : [ `notify ],
+  ],
+]
+ </screen></example>
+</section>
+
+
+<section><title>Widget-specific init/store functions</title>
+<para>
+Some (super)widgets (see <xref linkend="radio_buttons"/>)
+can require their own function for
+initializing themselves, or storing their settings. These functions must be set
+in the widget description map. They are specified using key "init" for
+the initialization function, and "store" for the storing functions. The functions
+are defined as terms, that get added a parameter (identifier of the widget),
+and then evaluated. If widget doesn't have any "init" or "store" function
+specified, generic one is used (see <xref linkend="concept"/>).
+Before the evaluation of the "store" term, the arguments specifying the widget key and
+event that caused the storing are added.
+</para>
+
+<example><title>Widget with own init and store functions</title><screen>
+module "MyModule";
+
+map widget_descr = $[
+  "CWD_IN_ROOT_PATH" : $[
+    "label" : _("&amp;Current Directory in root's Path"),
+    "widget" : `checkbox,
+    "init" : ``(MyModule::my_initialize_widget ()),
+    "store" : ``(MyModule::my_store_widget ()),
+  ],
+]
+
+global define void my_initialize_widget (any key) ``{
+    boolean value = MyModule::this_variable;
+    UI::ChangeWidget (`id ("CWD_IN_ROOT_PATH"), `Value, value);
+}
+
+global define void my_store_widget (any key, any event) ``{
+    boolean value = UI::QueryWidget (
+        `id ("CWD_IN_ROOT_PATH"),
+        `Value);
+    MyModule::this_variable = value;
+}
+ </screen></example>
+</section>
+
+<section><title>UI events handling</title>
+<para>
+Especially in case of more complex widgets, it may be useful to handle also
+events that don't switch to other dialog nor should store anything, eg.
+gray/un-gray some widget according to value of a check box. To do this,
+every event, that occurs, must be handled. This handling function can
+be specified in the widget description map. If not defined, no handling
+is done. Note, that the handle event term is evaluated in both of the 
+situations - if the storing is and isn't to be done.
+Before evaluation, the arguments specifying the widget key and the event that
+occurred are added. Return value of handle
+function is described in <xref linkend="retval_sect"/>.
+</para>
+<para>
+It is also possible to specify the list of events to handle by the widget,
+via the "handle_events" key. If it is empty, or not present, then the
+handle function is called for every generated event.
+</para>
+<example><title>Event handling function</title><screen>
+module "MyModule";
+
+map widget_descr = $[
+  "CWD_IN_ROOT_PATH" : $[
+    "label" : _("&amp;Current Directory in root's Path"),
+    "widget" : `checkbox,
+    "help" : _("This is help to the widget"),
+    "handle" : ``(MyModule::my_handle_widget ()),
+  ],
+]
+
+global define symbol my_handle_widget (any key, any event) ``{
+    UI::MessagePopup (_("You checked the checkbox. Restart to
+make the change effective ;-)"));
+    return nil;
+}
+ </screen></example>
+</section>
+
+<section id="retval_sect"><title>Changing the return value</title>
+<para>
+If it is required to quit dialog other way than via the Next,
+Back and Abort buttons, the handle function of a widget
+(eg. push button) must return a symbol value, that can be then passed
+to the wizard sequencer.
+</para>
+<para>
+After every event that triggers exit, except `back, `abort and `cancel,
+the widget validation and status storing will proceed.
+</para>
+<para>
+If the handle function does not want to exit the dialog, it must return
+nil.
+</para>
+<para>
+If a handle function returns a non-nil value, other handle functions won't
+be run (because handle functions are intended for changing the widgets,
+and it doesn't make sense if the dialog will be finished). The handle
+functions are processed in the same order as widgets are specified in
+the argument of CreateWidgets function.
+</para>
+<para>
+The returned value (if not nil) is passed to the store functions.
+</para>
+
+<example><title>Return value of handle function</title><screen>
+module "MyModule";
+
+map widget_descr = $[
+  "PUSH_BUTTON" : $[
+    "label" : _("&amp;Exit dialog different way"),
+    "widget" : `push_button,
+    "handle" : ``(MyModule::my_handle_button ()),
+  ],
+]
+
+global define symbol my_handle_button (any event) ``{
+    if (event == "PUSH_BUTTON")
+	return `leave_dialog_other_way;
+    else
+	return nil; // don't leave the dialog
+                    // because of this widget
+}
+ </screen></example>
+</section>
+
+<section id="repl_widget"><title>Changing whole widget</title>
+<para>
+In some cases no predefined widget can be used. In this case it is useful
+to allow programmer to create his own widget. He can specify a superwidget.
+</para>
+<para>
+The superwidget can be specified in the widget description map via the
+"custom_widget" keyword, "widget" entry must be set to `custom.
+See <xref linkend="repl_widget_example"/>.
+</para>
+<para>
+Note: It may be needed not to specify the superwidget directly, but only
+a function. Because of this the term is evaluated. It doesn't break anything
+if the superwidget is specified directly, and allows the widget to differ
+according to actual system settings. Additionally, if the building of the
+term calls some other functions, that need some time, they aren't called
+when YaST2 component starts, but when it is really needed.
+</para>
+
+<example id="repl_widget_example"><title>Replacing whole widget</title><screen>
+module "MyModule";
+
+map widget_descr = $[
+  "W1" : $[
+    "widget" : `custom,
+    "custom_widget" : `VBox (`PushButton (`id (`w), _("W"))),
+    "init" : ``(MyModule::w_init ()),
+    "store" : ``(MyModule::w_store ()),
+  ],
+  "W2" : $[
+    "widget" : `custom,
+    "custom_widget" : ``(MyModule::getW2 ()),
+    "init" : ``(MyModule::w_init ()),
+    "store" : ``(MyModule::w_store ()),
+  ],
+];
+
+global define term getW2 () ``{
+    return `VBox (`PushButton (`id (`w), _("W")));
+}
+ </screen>
+<para>
+These two widgets (W1 and W2) are identical.
+</para></example>
+</section>
+
+</chapter>

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding='ISO-8859-1'?>
+<?$$?>
+<chapter id = "concept">
+    <title>General concept</title>
+    <para>
+The main goal is to provide a set of simple routines that can be used
+for simple manipulation with widgets, easy moving of widgets between
+dialogs and doing the common dialog stuff. All the routines are contained
+in the CWM module.
+    </para>
+    <para> 
+The routines must be fully reentrant. This means, that no data may be stored
+in the CWM module. Having no data in the CWM module
+allows not to specify any fixed structure that would be required from
+the developer to store the table data. But the calling component must provide
+a set of callbacks that can be used by the CWM module to handle events that
+happen on the dialog.
+    </para>
+    <para>
+Each widget must be in described some way. The structure for widgets
+description is a two-layer-map, where keys of the top layer are the
+widget identifiers, the keys in the bottom layer are the keys of widget
+properties.
+    </para>
+    <example id="simple_widgets">
+<title>Widgets description map</title>
+    <para>
+    <screen>
+map widget_descr = $[
+  "CWD_IN_ROOT_PATH" : $[
+    "label" : _("&amp;Current Directory in root's Path"),
+    "widget" : `checkbox, 
+  ,
+  "CWD_IN_USER_PATH" : $[
+    "label" : _("Curr&amp;ent Directory in Path of Regular Users"),
+    "widget" : `checkbox
+  ],
+]
+    </screen>
+    </para>
+    <para>
+The widgets description map defines two widgets, both are CheckBoxes, one has the key
+"CWD_IN_ROOT_PATH" and label "Current Directory in root's Path", the other one
+has key "CWD_IN_USER_PATH" and label "Current Directory in Path of Regular
+Users".
+    </para>
+    </example>
+    <para>
+This map is then used to create the dialog (in this case with 2 checkboxes).
+This means following steps:
+    <orderedlist>
+<listitem><para>Create the widgets using information stored in the map</para></listitem>
+<listitem><para>Place them to dialog</para></listitem>
+<listitem><para>Create the dialog</para></listitem>
+<listitem><para>Initialize the widgets</para></listitem>
+<listitem><para>Run the event loop, until the return value is `next,
+`back, or `abort</para></listitem>
+<listitem><para>Get current values from widgets, store them</para></listitem>
+    </orderedlist>
+    </para>
+    <para>
+Developer must specify following:
+    <itemizedlist>
+<listitem><para>The widgets that should be used (their keys), how to place them
+into the dialog</para></listitem>
+<listitem><para>How to initialize them, how to validate them, how to store their
+settings</para></listitem>
+<listitem><para>Dialog caption, help, if Back button is to be present,...
+</para></listitem>
+    </itemizedlist>
+    </para>
+    <example id="simple_dialog">
+        <title>Running simple dialog</title>
+        <para><screen>
+module "MyModule";
+
+// include <xref linkend="simple_widgets"/> here
+
+global define symbol runSomeDialog ``{
+    // create list of maps representing wanted widgets
+    list(map) widgets
+        = CWM::CreateWidgets (
+            [ "CWD_IN_ROOT_PATH", "CWD_IN_USER_PATH" ],
+            widget_descr);
+    term contents = `VBox (
+        widgets[0, "widget"]:`VSpacing (0),// "widget" here is
+        widgets[1, "widget"]:`VSpacing (0) // the _real_ widget
+    )
+    Wizard::SetContentsButtons ("Dialog", contents, "Help",
+        "Back", "Next");
+    // here comes additional stuff, eg. renaming the "Abort"
+    // button to "Cancel" // if needed
+
+    map functions = $[
+        "initialize" : ``(MyModule::initialize_widget ()),
+        "store" : ``(MyModule::store_widget ()),
+    ];
+
+    // run the dialog
+    any ret = CWM::Run (widgets, functions);
+
+    return ret;
+}
+
+// function to initialize widgets
+global define void initialize_widget (any key) ``{
+    // let's suppose that the settings are stored in a map
+    // named settings
+    UI::ChangeWidget (`id (key), settings[key]:false);
+}
+
+// function for storing is similar
+global define void store_widget (any key, any event) ``{
+    settings[key] = UI::QueryWidget (`id (`key), `Value);
+}
+        </screen></para>
+        <para>
+Notes:
+<orderedlist>
+<listitem><para>
+The widgets manipulation tool will be implemented as a YCP module.
+   This means, that when specifying the function
+   to initialize or store widgets the module name (in case of
+   <xref linkend="simple_dialog"/> MyModule) must be prefixed.
+</para></listitem>
+<listitem><para>
+initialize_widget and store_widget functions from <xref linkend="simple_dialog"/> 
+   cannot be used for
+   radio button group widget (see <xref linkend="radio_buttons"/>),
+   because it for getting currently selected radio button `CurrentButton
+   must be used instead of `Value.
+</para></listitem>
+<listitem><para>
+Generic function will be available in CWM module for all internally
+   supported widgets, task of the developer will be (typically) just a wrapper.
+</para></listitem>
+</orderedlist>
+        </para>
+    </example>
+
+    <section>
+	<title>Creating widgets from map (step 1)</title>
+	<para>
+For creating widgets from their names function CreateWidgets () should be used.
+It takes as an argument the list of strings (names of the widgets) and the widgets
+description map,
+and returns list of maps (the order of widget names is preserved).
+The maps in the returned list contain appropriate maps from the widgets description
+map, and additionally, some keys used internally by the CWM module are added or modified.
+See <xref linkend="simple_dialog"/>.
+	</para>
+    </section>
+    <section>
+	<title>Creating the dialog contents and the dialog (steps 2, 3)</title>
+	<para>
+Place the widgets to the dialog and create the dialog is task of the developer.
+For getting a widget use the return value of CreateWidgets () function, select
+item with appropriate index and from this map select the "widget" key.
+See <xref linkend="simple_dialog"/>.
+	</para>
+    </section>
+    <section>
+        <title>Running the event loop (step 5)</title>
+	<para>
+For running the dialog function Run is used. Its tasks are to initialize
+the widgets, run while-loop, ask UI::UserInput () for an event, check if the
+event should finish the dialog. If not, then continue (for now, see
+<xref linkend="advanced"/>). Otherwise it will check if the settings are
+to be stored. If yes, then validates the widgets (see <xref linkend="advanced"/>)
+and if everything is OK, then stores the settings of the widgets. Returns the value for
+wizard sequencer.
+	</para>
+	<para>
+This function needs to know:
+<itemizedlist>
+<listitem><para>
+what widgets are present in the dialog
+</para></listitem>
+<listitem><para>
+how to initialize the dialog and how to store settings
+</para></listitem>
+<listitem><para>
+what events should finish the dialog (think about PushButtons in the dialog)
+</para></listitem>
+<listitem><para>
+what events should finish the dialog with storing its settings
+  ( eg. PushButton "Abort" vs. PushButton "Next").
+</para></listitem>
+</itemizedlist>
+	</para>
+	<para>
+Note, that storing settings doesn't mean to save them to some file, but to grab
+them from the dialog and store them in some internal variables
+	</para>
+    </section>
+    <section>
+        <title>Manipulation with widget values (steps 4, 6)</title>
+	<para>
+The way to initialize and store settings of a widget must be specified
+by developer, because the generic engine cannot know anything about it.
+Because of this the function running the event loop must know what handlers
+it should call for initialization of the widgets and storing their state.
+The Run function receives this information as a map. In this map the keys
+are event names
+("init" and "store") and values are terms. Each term gets before evaluation
+additional parameter specifying the widget name, store term gets one more
+parameter specifying the event that caused storing the settings (in typical
+case the value can be ignored).  Return value of the store handler is described
+in Advanced stuff. See <xref linkend="simple_dialog"/>.
+	</para>
+    </section>
+</chapter>

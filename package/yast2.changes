@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Mon Jun 23 17:06:34 CEST 2003 - jsrain@suse.de
+
+- added CWM module for simple manipulation with widgets, including
+  common routines for Table/Popup-style dialogs
+- added LogView module for displaying logs with advanced
+  functionality
+- 2.8.10
+
+-------------------------------------------------------------------
 Fri Jun 20 13:38:28 CEST 2003 - mvidner@suse.cz
 
 - Runlevel editor: call insserv with force

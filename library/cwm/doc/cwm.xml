@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding='ISO-8859-1'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+          "/usr/share/sgml/db41xml/docbookx.dtd"
+[
+<!ENTITY version "2.8.0">
+<!ENTITY dx "DocBook-XML">
+<!ENTITY concept SYSTEM "concept.xml">
+<!ENTITY advanced SYSTEM "advanced.xml">
+<!ENTITY widgets SYSTEM "widgets.xml">
+<!ENTITY table_popup SYSTEM "table_popup.xml">
+<!ENTITY terminology SYSTEM "terminology.xml">
+
+<!ENTITY date "June 2003">
+]>
+
+<book id="cwm">
+  <bookinfo>
+    <title>Common Widget Manipulation Tool</title>
+    <subtitle>Simple manipulation with widgets</subtitle>
+    <author>
+       <firstname>Jiri</firstname>
+       <surname>Srain</surname>
+    </author>
+    <copyright><year>2003</year><holder>SuSE Linux AG</holder></copyright>
+    <legalnotice id="id_legal">
+      <para>This document is meant for YaST2 development only.</para>
+    </legalnotice>
+    <abstract>
+      <para>Simple manipulation with widgets. Version &version; - &date;</para>
+    </abstract>
+  </bookinfo>
+    <chapter id="intro">
+        <title>Introduction</title>
+	<para>
+Currently commonly used technique to create dialogs brings several problems.
+The most important are:
+        <itemizedlist>
+            <listitem><para>Handling of all events is at one place, in one
+function, it is a little "spaghetti code"</para></listitem>
+	    <listitem><para>Moving one widget from one dialog to another one
+brings the need to move also appropriate pieces of code used to set appropriate
+value to the widget and when leaving the dialog store the widget state to some
+variable</para></listitem>
+	    <listitem><para>If one widget should be placed in multiple dialogs,
+then pieces of code related to the widget are duplicated</para></listitem>
+        </itemizedlist>
+	</para>
+	<para>
+Because of this it is useful not to bind the handling routines to a dialog,
+but to a widget.
+	</para>
+	<para>
+If the widgets have separated pieces of code related to it one from each other
+and all from the event loop, the code will be more transparent and easier to
+maintain.
+	</para>
+	<para>
+Also moving of a widget from one dialog to another one will mean minor changes
+to the whole code, without need to check where the events related to the widget
+are handled.
+	</para>
+    </chapter>
+    <chapter><title>TODO</title>
+	<para><itemizedlist>
+<listitem><para>Testsuite</para></listitem>
+<listitem><para>Documentation update:
+<itemizedlist>
+<listitem><para>Examples screenshots</para></listitem>
+<listitem><para>Runnable examples</para></listitem>
+<listitem><para>Polish (better examples, using Popup:: module,...)</para></listitem>
+<listitem><para>Predefined useful routines</para></listitem>
+<listitem><para>Differences between description and real status</para></listitem>
+<listitem><para>Table Up/Down buttons handling</para></listitem>
+</itemizedlist>
+</para></listitem>
+	</itemizedlist></para>
+	<section><title>Before announcement</title>
+	    <para><itemizedlist>
+<listitem><para>Decide module name (CWM,...)</para></listitem>
+	    </itemizedlist></para>
+	</section>
+    </chapter>
+&terminology
+&concept
+&advanced
+&widgets
+&table_popup
+</book>
+
