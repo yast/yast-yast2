@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jun  3 18:28:06 CEST 2003 - sh@suse.de
+
+- Fixed bug #27213: Default sort order in NCurses control center 
+
+-------------------------------------------------------------------
 Thu Apr 24 11:08:10 CEST 2003 - kkaempf@suse.de
 
 - rename 'axp' to 'alpha'
