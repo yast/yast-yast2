@@ -255,6 +255,10 @@ read_runlevels () {
 while true ; do
     IFS=
     read COMMAND || exit
+
+    # delete starting backquote    
+    COMMAND=${COMMAND#\`}
+
     unset IFS
 
     case "$COMMAND" in
