@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun 19 16:47:47 CEST 2003 - mvidner@suse.cz
+
+- Runlevel editor: call insserv with force
+  when writing multiple services (#27370).
+
+-------------------------------------------------------------------
 Wed Jun 18 11:22:41 CEST 2003 - visnov@suse.de
 
 - disabled ipaddress type for command line

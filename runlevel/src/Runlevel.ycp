@@ -135,7 +135,7 @@
      * Call insserv -r and record errors.
      * Does not check if it exists
      * @param name service name
-     * @param force pass "-f" to insserv (workaround for #17608)
+     * @param force pass "-f" to insserv (workaround for #17608, #27370)
      * @return success state
      */
     define boolean serviceDisable (string name, boolean force) ``{
@@ -225,11 +225,15 @@
 	    return false;
 	}
 
+	// Force because of #27370:
+	// RunlevelEd::Write has already solved the dependencies
+	// and calls us only once for each modified service.
+	// In general we cannot do it with dependencies in a single pass.
+	
 	string rls = mergestring (rl, ",");
 	// we must remove it first because insserv start=... adds
 	// runlevels, not replace runlevels!!
-	// Don't force if it's the last thing we do.
-	if (! serviceDisable (name, rls != ""))
+	if (! serviceDisable (name, true))
 	{
 	    return false;
 	}
@@ -237,7 +241,7 @@
 	if (rls != "")
 	{
 	    map ret = SCR::Execute (.target.bash_output,
-				    sformat ("/sbin/insserv %2/%1,start=%3",
+				    sformat ("/sbin/insserv -f %2/%1,start=%3",
 					     name, init_d, rls));
 	    if (0 != ret["exit"]:-1)
 	    {
