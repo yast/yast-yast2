@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Aug 29 11:25:47 CEST 2002 - mvidner@suse.cz
+
+- wizard: prevent temporary (but visible) truncations
+  of dialog captions (#18517).
+
+-------------------------------------------------------------------
 Wed Aug 28 18:29:15 CEST 2002 - mvidner@suse.cz
 
 - mail aliases: fixed line continuation processing (#18487).
