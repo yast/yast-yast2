@@ -23,7 +23,7 @@ map Modules = $[];
 
 /**
  */
-define void DisplaySplash() ``{
+define void DisplaySplash() {
     UI::OpenDialog(`opt(`defaultsize), `VBox(
 	`VStretch (),
 	/* Message shown while loading modules information */
@@ -34,7 +34,7 @@ define void DisplaySplash() ``{
 
 /**
  */
-define void OpenMenu() ``{
+define void OpenMenu() {
     UI::OpenDialog(`opt(`defaultsize), `VBox(
 	`HBox(
 	    `HSpacing(1),
@@ -77,7 +77,7 @@ define void OpenMenu() ``{
 
 /**
  */
-define void Launch(string modul) ``{
+define void Launch(string modul) {
     string function = Modules[modul, "X-SuSE-YaST-Call"]:"";
     list arguments = splitstring(Modules[modul, "X-SuSE-YaST-Argument"]:"", " ");
     y2debug("Calling: %1 (%2)", function, arguments);
@@ -90,7 +90,7 @@ define void Launch(string modul) ``{
 
 /**
  */
-define void ShowNcursesHelp() ``{
+define void ShowNcursesHelp() {
 
     /* NCurses (textmode) Control Center headline */
     string headline = _("Controlling YaST2 ncurses with the Keyboard");
@@ -109,7 +109,7 @@ letter). Use [ALT] and the letter to activate the button.</p>") +
    /* NCurses Control Center help 3/9 */
     _("<p>Press [ESC] to close selection popups (e.g., from
 menu buttons) without choosing anything.</p>") +
-	
+
     /* NCurses Control Center help 4/9 */
     _("<p>2) <i>Substitution of Keystrokes</i><br>
 <p>Because the environment can affect the use of the keyboard,
@@ -158,7 +158,7 @@ list<string> Values = [
     "X-SuSE-YaST-Argument",
     "X-SuSE-YaST-Call",
     "X-SuSE-YaST-Group",
-    // not required: "X-SuSE-YaST-SortKey",
+    "X-SuSE-YaST-SortKey",
 ];
 
 Desktop::Read(Values);
@@ -179,7 +179,7 @@ y2debug("%1", first);
 
 /**
  */
-define void ReplaceModuleList(string group) ``{
+define void ReplaceModuleList(string group) {
     UI::ReplaceWidget(`id (`progs_rep), `SelectionBox( `id (`progs), `opt (`notify, `keyEvents), "", Desktop::ModuleList(group)));
 }
 
