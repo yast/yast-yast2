@@ -2,6 +2,7 @@
 Fri Mar 18 14:17:30 CET 2005 - jsrain@suse.cz
 
 - fixed determining if firewall is enabled (#73819)
+- 2.11.46
 
 -------------------------------------------------------------------
 Wed Mar 16 16:50:03 CET 2005 - visnov@suse.cz
