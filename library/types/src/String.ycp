@@ -117,7 +117,7 @@ global define string CutZeros(string input) ``{
  *"unique":<boolean> - result will not contain any duplicates, first occurance of the string is stored into output (default: false),
  *"interpret_backslash":<boolean> - convert backslash sequence into one character (e.g. "\\n" => "\n") (default: true)
  *"remove_whitespace":<boolean> - remove white spaces around values (default: true),
- * @return list List of strings
+ * @return list<string> List of strings
  */
 global define list<string> ParseOptions(string options, map parameters) ``{
 	list<string> ret = [];
