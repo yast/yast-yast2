@@ -31,7 +31,7 @@
 	{
 	    map ui_info = UI::GetDisplayInfo();
 
-	    have_fancy_ui_cache = UI::HasSpecialWidget(`Wizard )
+	    have_fancy_ui_cache = UI::HasSpecialWidget(`Wizard ) == true
 		&& ui_info[ "Depth" ]:0 >= 15
 		&& ui_info[ "DefaultWidth" ]:0 >= 800
 		&& ui_info[ "DefaultHeight"]:0 >= 600;
@@ -191,7 +191,9 @@
      * @return true, if topmost dialog is a wizard dialog, false otherwise
      **/
     global define boolean IsWizardDialog() {
-	return UI::WidgetExists(`id(`WizardDialog) ) || UI::WidgetExists(`wizard);
+	return
+	    UI::WidgetExists(`id(`WizardDialog) ) == true ||
+	    UI::WidgetExists(`wizard) == true;
     }
 
 
