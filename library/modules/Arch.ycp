@@ -281,6 +281,14 @@ global define void Arch() ``{
     else if (ppc) arch_short = "ppc";
     else if (s390) arch_short = "s390";
     else  arch_short = architecture;
+
+
+    if (alpha)
+    {
+        // get smp for alpha from /etc/install.inf
+        setSMP (SCR::Read (.etc.install_inf.SMP) == "1");
+    }
+
     return;
 
 }
