@@ -1,14 +1,21 @@
+
 /**
  * Module:		common_messages.ycp
  *
  * Authors:             Gabriele Strattner <gs@suse.de>
  *			Stefan Hundhammer <sh@suse.de>
  *
- * Purpose:
+ * $Id$
  *
  * Provides often used messages and button labels.
  *
- * $Id$
+ * See also <a href="../README.popups">README.popups</a>
+ *
+ * NOTE: This file is OBSOLETE and Label.ycp should be used instead.
+ * (For performance reasons: using "include" in multiple files parses
+ * the inclusion each time, whereas "import" needs to parse a file only once.)
+ *
+ * NOTE: remember to keep the both files in sync while they coexist!
  */
 
 {

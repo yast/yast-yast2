@@ -16,7 +16,7 @@
     module "Wizard";
     textdomain "base";
 
-    include "ui/common_messages.ycp";
+    import "Label";
     import "Popup";
     import "Directory";
 
@@ -45,7 +45,7 @@
 
 	// have_fancy_ui = false;
 
-	UI::SetFunctionKeys( UI::DefaultFunctionKeyMap() );
+	UI::SetFunctionKeys( Label::DefaultFunctionKeyMap() );
     };
 
 
@@ -91,11 +91,11 @@
      **/
     global define term BackAbortNextButtonBox() ``{
 	return `HBox(
-		     `HWeight(1, `ReplacePoint(`id(`rep_back ), `PushButton(`id(`back ), `opt (`key_F8), BackButtonLabel()  ) ) ),
+		     `HWeight(1, `ReplacePoint(`id(`rep_back ), `PushButton(`id(`back ), `opt (`key_F8), Label::BackButton()  ) ) ),
 		     `HStretch(),
-		     `ReplacePoint(`id(`rep_abort), `PushButton(`id(`abort), `opt (`key_F9), AbortButtonLabel() ) ),
+		     `ReplacePoint(`id(`rep_abort), `PushButton(`id(`abort), `opt (`key_F9), Label::AbortButton() ) ),
 		     `HStretch(),
-		     `HWeight(1, `ReplacePoint(`id(`rep_next ), `PushButton(`id(`next), `opt (`key_F10, `default), NextButtonLabel()  ) ) )
+		     `HWeight(1, `ReplacePoint(`id(`rep_next ), `PushButton(`id(`next), `opt (`key_F10, `default), Label::NextButton()  ) ) )
 		     );
     };
 
@@ -106,9 +106,9 @@
      **/
     global define term BackNextButtonBox() ``{
 	return `HBox(
-		     `HWeight(1, `ReplacePoint(`id(`rep_back ), `PushButton(`id(`back ), `opt (`key_F8), BackButtonLabel()  ) ) ),
+		     `HWeight(1, `ReplacePoint(`id(`rep_back ), `PushButton(`id(`back ), `opt (`key_F8), Label::BackButton()  ) ) ),
 		     `HStretch(),
-		     `HWeight(1, `ReplacePoint(`id(`rep_next ), `PushButton(`id(`next ), `opt (`key_F10, `default), NextButtonLabel()  ) ) )
+		     `HWeight(1, `ReplacePoint(`id(`rep_next ), `PushButton(`id(`next ), `opt (`key_F10, `default), Label::NextButton()  ) ) )
 		     );
     };
 
@@ -121,9 +121,9 @@
 	return `HBox(
 		     `HWeight(1, `Empty() ),	// Layout trick to make sure the center button is centered
 		     `HStretch(),
-		     `HWeight(1, `PushButton(`id(`cancel ), `opt (`key_F9), CancelButtonLabel()  ) ),
+		     `HWeight(1, `PushButton(`id(`cancel ), `opt (`key_F9), Label::CancelButton()  ) ),
 		     `HStretch(),
-		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10, `default), AcceptButtonLabel()  ) )
+		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10, `default), Label::AcceptButton()  ) )
 		     );
     };
 
@@ -136,9 +136,9 @@
 	return `HBox(
 		     `HWeight(1, `Empty() ),	// Layout trick to make sure the center button is centered
 		     `HStretch(),
-		     `PushButton(`id(`abort ), `opt (`key_F9), AbortButtonLabel() ),
+		     `PushButton(`id(`abort ), `opt (`key_F9), Label::AbortButton() ),
 		     `HStretch(),
-		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10, `default), AcceptButtonLabel()  ) )
+		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10, `default), Label::AcceptButton()  ) )
 		     );
     };
 
@@ -247,7 +247,7 @@
 	    step = step + 1;
 	});
 
-	vbox = add( vbox, `PushButton(`id(`help), `opt(`key_F1), HelpButtonLabel() ) );
+	vbox = add( vbox, `PushButton(`id(`help), `opt(`key_F1), Label::HelpButton() ) );
 
 	return vbox;
     };
@@ -293,7 +293,7 @@
 						    `Image( theme_path + "help_top.png", "" ),
 						    `HBox(
 							  `Top(`Image( theme_path + "help_left.png", "" ) ),
-							  `PushButton(`id(`help), `opt (`key_F1), HelpButtonLabel() ),
+							  `PushButton(`id(`help), `opt (`key_F1), Label::HelpButton() ),
 							  `Top(`Image(`opt(`zeroWidth), theme_path + "help_right.png", "" ) )
 							  )
 						    // `Image( theme_path + "help_bottom.png", "" )
@@ -683,7 +683,7 @@
 	{
 	    UI::ReplaceWidget(`id(`rep_back),
 			      `PushButton(`id(`back), `opt (`key_F8),
-					  BackButtonLabel() )
+					  Label::BackButton() )
 			      );
 	}
     };
@@ -707,7 +707,7 @@
 	{
 	    UI::ReplaceWidget(`id(`rep_next),
 			      `PushButton(`id(`next), `opt (`key_F10, `default),
-					  NextButtonLabel() )
+					  Label::NextButton() )
 			      );
 	}
     };
@@ -731,7 +731,7 @@
 	{
 	    UI::ReplaceWidget(`id(`rep_abort),
 			      `PushButton(`id(`abort), `opt (`key_F9),
-					  AbortButtonLabel() )
+					  Label::AbortButton() )
 			      );
 	}
     };
