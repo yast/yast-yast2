@@ -60,7 +60,7 @@ global define string Summary()
 						    _("Yes") : _("No")));
     // Report configuration - will have normal messages timeout?
     // '%1' will be replaced by number of seconds
-    summary = Summary::AddListItem(summary, sformat(_("Timeout Messages: %1"), timeout_messages));
+    summary = Summary::AddListItem(summary, sformat(_("Time-out Messages: %1"), timeout_messages));
     // Report configuration - will be normal messages logged to file?
     // '%1' will be replaced by translated string "Yes" or "No"
     summary = Summary::AddListItem(summary, sformat(_("Log Messages: %1"), (log_messages) ?
@@ -74,7 +74,7 @@ global define string Summary()
 						    _("Yes") : _("No")));
     // Report configuration - will have warning messages timeout?
     // '%1' will be replaced by number of seconds
-    summary = Summary::AddListItem(summary, sformat(_("Timeout Warnings: %1"), timeout_warnings));
+    summary = Summary::AddListItem(summary, sformat(_("Time-out Warnings: %1"), timeout_warnings));
     // Report configuration - will be warning messages logged to file?
     // '%1' will be replaced by translated string "Yes" or "No"
     summary = Summary::AddListItem(summary, sformat(_("Log Warnings: %1"), (log_warnings) ?
@@ -88,7 +88,7 @@ global define string Summary()
 						    _("Yes") : _("No")));
     // Report configuration - will have error messages timeout?
     // '%1' will be replaced by number of seconds
-    summary = Summary::AddListItem(summary, sformat(_("Timeout Errors: %1"), timeout_errors));
+    summary = Summary::AddListItem(summary, sformat(_("Time-out Errors: %1"), timeout_errors));
     // Report configuration - will be error messages logged to file?
     // '%1' will be replaced by translated string "Yes" or "No"
     summary = Summary::AddListItem(summary, sformat(_("Log Errors: %1"), (log_errors) ?

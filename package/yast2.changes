@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Aug 13 14:20:37 CEST 2002 - arvin@suse.de
+
+- merged proofread texts
+
+-------------------------------------------------------------------
 Mon Aug 12 17:23:44 CEST 2002 - kkaempf@suse.de
 
 - read /etc/install.inf:InstMode correctly for Mode::boot
