@@ -1,5 +1,5 @@
 #
-# Makefile.am for yast2/src
+# Makefile.am for yast2/menu
 #
 
 config_DATA = y2cc.groups
