@@ -1,7 +1,7 @@
 {
 
 include "testsuite.ycp";
-include "wizard/sequencer.ycp";
+include "./../src/sequencer.ycp";
 
 TEST(``(WS_push(nil,4)), [], nil);
 TEST(``(WS_push([],4)), [], nil);
