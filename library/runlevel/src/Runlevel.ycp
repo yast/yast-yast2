@@ -73,7 +73,7 @@
      * @return does the service exist?
      */
     define boolean checkExists (string name) ``{
-	if (!SCR::Read (.init.scripts.exists, name))
+	if (! (boolean)SCR::Read (.init.scripts.exists, name))
 	{
 	    // Error message.
 	    // %1 is a name of an init script in /etc/init.d,
@@ -98,11 +98,11 @@
 	{
 	    return $[];
 	}
-	map detail = lookup (SCR::Read (.init.scripts.runlevel, name), name, $[]);
-	map service = lookup (SCR::Read (.init.scripts.comment, name), name, $[]);
+	map detail = lookup ( (map) SCR::Read (.init.scripts.runlevel, name), name, $[]);
+	map service = lookup ( (map) SCR::Read (.init.scripts.comment, name), name, $[]);
 	return add (
-	    add (service, "start", lookup (detail, "start", [])),
-	    "stop", lookup (detail, "stop", []));
+	    add (service, "start", detail["start"]:[]),
+	    "stop", detail["stop"]:[]);
     }
 
     /**
@@ -116,7 +116,7 @@
 	{
 	    return -1;
 	}
-	return SCR::Execute (.target.bash, sformat ("%2/%1 status", name, init_d), $["TERM":"raw"]);
+	return (integer)SCR::Execute (.target.bash, sformat ("%2/%1 status", name, init_d), $["TERM":"raw"]);
     }
     /**
      * Get service info and finds out whether service is running.
@@ -139,7 +139,7 @@
      * @return success state
      */
     define boolean serviceDisable (string name, boolean force) ``{
-	map ret = SCR::Execute (.target.bash_output,
+	map ret = (map)SCR::Execute (.target.bash_output,
 				sformat ("/sbin/insserv -r%3 %2/%1",
 					 name, init_d, force? "f": ""));
 	if (0 != ret["exit"]:-1)
@@ -189,7 +189,7 @@
 	    }
 	    else
 	    {
-		map ret = SCR::Execute (.target.bash_output,
+		map ret = (map)SCR::Execute (.target.bash_output,
 					sformat ("/sbin/insserv -d %2/%1",
 						 name, init_d));
 		if (0 != ret["exit"]:-1)
@@ -240,7 +240,7 @@
 
 	if (rls != "")
 	{
-	    map ret = SCR::Execute (.target.bash_output,
+	    map ret = (map)SCR::Execute (.target.bash_output,
 				    sformat ("/sbin/insserv -f %2/%1,start=%3",
 					     name, init_d, rls));
 	    if (0 != ret["exit"]:-1)
@@ -274,8 +274,8 @@
 	{
 	    return false;
 	}
-	map detail = lookup (SCR::Read (.init.scripts.runlevel, name), name, $[]);
-	return 0 != size (lookup (detail, "start", []));
+	map detail = lookup ( (map) SCR::Read (.init.scripts.runlevel, name), name, $[]);
+	return 0 != size (detail["start"]:[]);
     }
 
     /**
@@ -285,7 +285,7 @@
      * @return integer exit value
      */
     global define integer RunInitScript (string name, string param) ``{
-	return SCR::Execute (.target.bash,
+	return (integer)SCR::Execute (.target.bash,
 			     sformat ("%2/%1 %3", name, init_d, param),
 			     $[ "TERM" : "raw"]);
     }
@@ -303,7 +303,7 @@
 	// encoding problems - append .UTF-8 to LANG
 	if (lang == nil)
 	{
-	    lang = lookup (SCR::Execute (.target.bash_output, "echo -n $LANG"),
+	    lang = lookup ( (map) SCR::Execute (.target.bash_output, "echo -n $LANG"),
 			   "stdout", "");
 	    list ll = splitstring (lang, ".");
 	    lang = ll[0]:"";
@@ -322,7 +322,7 @@
 	string locale_debug = "";
 	// locale_debug = "; ls /nono 2>&1; /usr/bin/locale; /usr/bin/env";
 
-	return SCR::Execute (.target.bash_output,
+	return (map)SCR::Execute (.target.bash_output,
 			     sformat ("%2/%1 %3 2>&1", name, init_d, param)
 			     + locale_debug,
 			     env);
