@@ -129,25 +129,30 @@ will be emitted into log.
 
 The map describing the command line interface of a module must contain
 "id" entry containing the name of the module. The map can contain
-global help text, a list of actions, a list ofoptions and a list for 
+global help text, a list of actions, a list of options and a list for 
 mapping of options to actions (which optionscan be used for which 
 actions). Each action and option must have its help text.
 
-The action list is a map with the action name as a key. For each
+Actions is a map with the action name as a key. For each
 action, it isnecessary to provide the help text. Optionally, action
 can have defined an example of usage.
+A list of flags can be specified to change the default behavior of
+the parameter checker. It is a list with key "options". Currently known flags:
+- non_strict - for unknown parameters, do not check their validity
+               can be used for passing unknown options into the handler
 
 Example:	"actions"	: $[
 			"list"	: $[
 				"help": "display configuration summary",
-				"example": "lan list configured"
+				"example": "lan list configured",
+				"options": [ "non_strict" ]
 			],
 			"add"	: $[
 				"help": "add a network card" ],
 			...
 		],
 
-The option list is a map with the option name as a key. For each
+Options is a map with the option name as a key. For each
 option, it is necessary to provide a description text in "help" key,
 and a "type" key (for options with arguments only). Optionally, an
 option can contain an example.
