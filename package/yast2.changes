@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 24 08:54:01 CET 2005 - visnov@suse.cz
+
+- reading INCOMPLETE_TRANSLATION_TRESHOLD enabled
+- 2.11.33
+
+-------------------------------------------------------------------
 Wed Feb 23 14:25:44 CET 2005 - lslezak@suse.cz
 
 - command line - use command 'abort' instead of 'quit',
