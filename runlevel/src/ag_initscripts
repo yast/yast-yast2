@@ -177,7 +177,7 @@ get_script_info () {
 	    in_continue = 0;
 	    in_descr = 0;
 	    shortdescription = $0;
-	    gsub (/.*Short-Description:[ \t]*"/, "", shortdescription);
+	    gsub (/.*Short-Description:[ \t]*/, "", shortdescription);
 	    gsub (/"/, "\\\"", shortdescription);
 	    print "     \"shortdescription\": \""shortdescription"\",";
 	}
