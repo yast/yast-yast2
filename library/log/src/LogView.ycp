@@ -224,8 +224,9 @@
 	    }
 	    else if (ret != nil && is (ret, integer))
 	    {
-		eval ((term) (actions[ret, 1]:nil));
-		if (actions[ret, 2]:nil == true)
+		integer iret = (integer)ret;
+		eval ((term) (actions[iret, 1]:nil));
+		if (actions[iret, 2]:nil == true)
 		{
 		    SCR::Execute (.background.kill);
 		    UI::ChangeWidget (`id (`log), `Value, "");
