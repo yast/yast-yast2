@@ -82,6 +82,14 @@
 	"http-alt"	:	8080,
     ];
 
+    // FIXME: Remove ASAP #335566#
+    /* list which should save processor time because of core bug */
+    list <string> port_name_was_searched_already =
+	maplist (string port_name, integer port_number, SERVICE_NAME_TO_PORT, { return  port_name; });
+    /* list which should save processor time because of core bug */
+    list <integer> port_number_was_searched_already =
+	maplist (integer port_number, string port_name, SERVICE_PORT_TO_NAME, { return  port_number; });
+
     /* This variable contains characters allowed in port-names, backslashed for regexpmatch() */
     string allowed_service_regexp = "^[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\*\/\+\._-]*$";
 
@@ -95,6 +103,14 @@
 
     /* Internal function for loading unknown ports into memory and returning them as list[string] */
     string LoadAndReturnPortToName (integer port_number) {
+
+	// FIXME: Remove ASAP #335566#
+	if (contains(port_number_was_searched_already, port_number)) {
+	    y2debug ("Search for all #335566# for more information");
+	    return SERVICE_PORT_TO_NAME[port_number]:"";
+	}
+	port_number_was_searched_already = add (port_number_was_searched_already, port_number);
+
 	string command = "grep \"[ \\t]" + port_number + "\/\" /etc/services | sed \"s/\\([^ \\t]*\\)[ \\t]*.*/\\1/\"";
 	map found = (map) SCR::Execute(.target.bash_output, command);
 	list <string> aliases = [];
@@ -117,6 +133,14 @@
 
     /* Internal function for loading unknown ports into memory and returning them as integer */
     integer LoadAndReturnNameToPort (string port_name) {
+
+	// FIXME: Remove ASAP #335566#
+	if (contains(port_name_was_searched_already, port_name)) {
+	    y2debug ("Search for all #335566# for more information");
+	    return SERVICE_NAME_TO_PORT[port_name]:nil;
+	}
+	port_name_was_searched_already = add (port_name_was_searched_already, port_name);
+
 	if (! regexpmatch(port_name, allowed_service_regexp)) {
 	    y2error("Disallwed port-name '%1'", port_name);
 	    return nil;
