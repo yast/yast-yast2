@@ -50,6 +50,8 @@ global string stage () {
             {
                 _stage = "hardware_probed";
             }
+
+	    arg_no = arg_no + 1;
 	}
     }
     return _stage;
