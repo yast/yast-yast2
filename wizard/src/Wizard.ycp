@@ -57,10 +57,10 @@
 	    global define void SetImageUI( byteblock imagedata ) ``{
 		if (imagedata == nil) {
 		    y2warning ("SetImage(): Invalid image - using fallback" );
-		    ReplaceWidget( `id(`image), `Image(`opt(`zeroWidth), `suseheader, "SuSE") );
+		    ReplaceWidget( `id(`image), `Image(`opt(`zeroWidth, `easterEgg), `suseheader, "SuSE") );
 		}
 		else
-		    ReplaceWidget( `id(`image), `Image(`opt(`zeroWidth), imagedata, "SuSE") );
+		    ReplaceWidget( `id(`image), `Image(`opt(`zeroWidth, `easterEgg), imagedata, "SuSE") );
 	    };
 
 	});	// end UI defines
