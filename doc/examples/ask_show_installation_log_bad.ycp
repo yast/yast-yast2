@@ -1,0 +1,14 @@
+// Bad Popup design: Default button order exchanged
+//
+// DON'T DO THIS!
+{
+    import "Popup";
+    import "Label";
+
+    boolean dont_do_it =
+	Popup::AnyQuestion( Popup::NoHeadline(),
+			    "Show installation log?",
+			    Label::NoButton(),
+			    Label::YesButton(),
+			    `no ); // button role reversed - "Yes" 
+}
