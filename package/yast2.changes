@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jan 25 12:39:26 CET 2005 - locilka@suse.cz
+
+- removed SuSEfirewall2_final init script (bugzilla #50157)
+- added stoping the SuSEfirewall2 services before write operations
+  (bugzilla #50157)
+
+-------------------------------------------------------------------
 Fri Jan 21 10:50:28 CET 2005 - lslezak@suse.cz
 
 - an option in command line mode specification can have
