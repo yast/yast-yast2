@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar  8 15:56:52 CET 2004 - msvec@suse.cz
+
+- Added Wizard::SetDesktopIcon to set the title icon
+- 2.9.35
+
+-------------------------------------------------------------------
 Fri Mar  5 14:31:39 CET 2004 - mvidner@suse.cz
 
 - Added Popup::AnyQuestionRichText.
