@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Feb  3 09:27:50 CET 2004 - visnov@suse.cz
+
+- implemented non-strict checking of command line options
+
+-------------------------------------------------------------------
 Sat Jan 31 21:58:23 CET 2004 - arvin@suse.de
 
 - added function to build a url from tokens
