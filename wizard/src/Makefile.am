@@ -1,5 +1,5 @@
 #
-# Makefile.am for y2l_wizard/src
+# Makefile.am for yast2/wizard/src
 #
 
 yncludedir = @yncludedir@/ui
@@ -13,7 +13,6 @@ module_DATA =			\
 	HTML.ycp
 
 ynclude_DATA =			\
-	wizard_dialog.ycp	\
 	common_popups.ycp	\
 	file_popups.ycp		\
 	common_messages.ycp	\
