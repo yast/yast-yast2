@@ -159,8 +159,21 @@ in the list.</p>");
     global define void TableInit (map descr, any key) ``{
 	previous_selected_item = nil;
 	descr["_cwm_key"] = key;
+	TableRedraw (descr, true);
+    }
+
+    /**
+      * Redraw completely the table
+      * @param descr map description map of the whole table
+      * @param update_buttons boolean true if buttons status (enabled/disabled)
+      *  should be updated according to currently selected item
+      */
+    define void TableRedraw (map descr, boolean update_buttons) ``{
 	list id_list = getIdList (descr);
-	previous_selected_item = id_list[0]:nil;
+	if (previous_selected_item == nil)
+	{
+	    previous_selected_item = id_list[0]:nil;
+	}
 	list(term) entries = maplist (`opt_id, id_list, ``{
 	    string opt_val = "";
 	    string val = "";
@@ -173,7 +186,7 @@ in the list.</p>");
 		opt_val = tableEntryValue (opt_id, opt_descr);
 		opt_changed = tableEntryChanged (opt_id, opt_descr);
 	    }
-	    if (opt_id == previous_selected_item)
+	    if (update_buttons && opt_id == previous_selected_item)
 		updateButtons (descr, opt_descr);
 	    if (descr["_cwm_attrib", "changed_column"]:false)
 	    {
@@ -349,7 +362,7 @@ in the list.</p>");
 		UI::ChangeWidget (`id (`_tp_table), `CurrentItem, opt_id);
 	    }
 	    previous_selected_item = opt_id;
-	    map opt_descr = key2descr (descr, key);
+	    map opt_descr = key2descr (descr, id2key (descr, opt_id));
 	    updateButtons (descr, opt_descr);
 	}
 	else if (event_id == `_tp_up || event_id == `_tp_down)
@@ -360,8 +373,9 @@ in the list.</p>");
 		: `down);
 	    if (nil != opt_id)
 	    {
-		TableInit (descr, key);
+		TableRedraw (descr, false);
 		UI::ChangeWidget (`id (`_tp_table), `CurrentItem, opt_id);
+		map opt_descr = key2descr (descr, id2key (descr, opt_id));
 		updateButtons (descr, opt_descr);
 	    }
 	}
