@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Oct 21 15:45:19 CEST 2002 - arvin@suse.de
+
+- print warning if qt frontend is installed but does not work
+  (bug #20805)
+
+-------------------------------------------------------------------
 Thu Oct 17 13:38:33 CEST 2002 - arvin@suse.de
 
 - fixed arrows in ncurses menu (#19902)
