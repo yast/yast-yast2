@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar 22 17:09:55 CET 2004 - msvec@suse.cz
+
+- support for sort keys in ncurses menu (#36466)
+
+-------------------------------------------------------------------
 Mon Mar 22 14:11:58 CET 2004 - jsrain@suse.cz
 
 - fixed unwanted hiding of helps during progress bar run
