@@ -1,7 +1,13 @@
 -------------------------------------------------------------------
+Mon Jan 31 10:46:33 CET 2005 - locilka@suse.cz
+
+- added samba-server allowing broadcast feature (#50311)
+
+-------------------------------------------------------------------
 Fri Jan 28 09:57:54 CET 2005 - mlazar@suse.cz
 
-- fixed runlevel agent: don't dump error msg if service script isn't readable
+- fixed runlevel agent: don't dump error msg if service script
+  isn't readable
 
 -------------------------------------------------------------------
 Thu Jan 27 13:29:28 CET 2005 - mvidner@suse.cz
