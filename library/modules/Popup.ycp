@@ -30,7 +30,7 @@ boolean feedback_open = false;
  * Internal function that actually creates a popup dialog layout.
  *
  * @param headline	headline to show or Popup::NoHeadline()
- * @param message		message text to show
+ * @param message	message text to show
  * @param button_box	term with one or more buttons
  *
  * @return the layout contents as a term
@@ -79,7 +79,7 @@ define term createPopupLayoutInternal( string headline, string message, term but
  * Internal function that actually creates a popup dialog with additional label.
  *
  * @param headline	headline to show or Popup::NoHeadline()
- * @param message		message text to show
+ * @param message	message text to show
  * @param button_box	term with one or more buttons
  * @param label		second label with id `label which can be used e.g. for time out value displaying
  *
@@ -193,7 +193,7 @@ define term AnyQuestionButtonBox (
  * yes/no, continue/cancel or ok/cancel buttons!
  *
  * @param headline		headline or Popup::NoHeadline()
- * @param message			message string
+ * @param message		message string
  * @param yes_button_message	label on affirmative buttons (on left side)
  * @param no_button_message	label on negating button (on right side)
  * @param focus			`focus_yes (first button) or `focus_no (second button)
@@ -233,7 +233,7 @@ global define boolean AnyQuestion( string headline,
  * @param yes_button_message	label on affirmative buttons (on left side)
  * @param no_button_message	label on negating button (on right side)
  * @param focus			`focus_yes (first button) or `focus_no (second button)
- * @param timeout_seconds	        timeout, if 0, normal behaviour
+ * @param timeout_seconds	timeout, if 0, normal behaviour
  * @return boolean              True if Yes, False if no
  * @see AnyQuestion
  */
