@@ -5,6 +5,8 @@
  * Author:	Stanislav Visnovsky <visnov@suse.cz>
  *
  * $Id$
+ *
+ * testedfiles: CommandLine.ycp Report.ycp
  */
 
 {
@@ -13,7 +15,7 @@
     import "TypeRepository";
     import "CommandLine";
     import "Report";
-    
+
     // disable use of UI
     Report::display_errors = false;
     Report::log_errors = true;

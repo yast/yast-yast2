@@ -5,6 +5,8 @@
  * Author:	Stanislav Visnovsky <visnov@suse.cz>
  *
  * $Id$
+ *
+ * testedfiles: CommandLine.ycp
  */
 
 {
