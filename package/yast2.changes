@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 10 14:03:48 CET 2005 - jsrain@suse.cz
+
+- added new function to compute additional packages (eg. -nongpl)
+  for any base kernel package to Kernel.ycp
+
+-------------------------------------------------------------------
 Fri Jan  7 10:53:19 CET 2005 - locilka@suse.cz
 
 - added new functions into String module
