@@ -69,7 +69,7 @@ void UpdateServiceStatusWidget (map<string,any> widget) {
     }
     else
     {
-        boolean status = 0 == Service::Status (widget["service_name"]:"");
+        boolean status = 0 == Service::Status (widget["service_id"]:"");
 	if (status != last_status)
 	{
 	    UI::ChangeWidget (`id ("_cwm_start_service_now"),
@@ -97,11 +97,11 @@ void UpdateServiceStatusWidget (map<string,any> widget) {
 define void HandleImmediateActions (map<string,any> widget, any event_id) {
     if (event_id == "_cwm_start_service_now")
     {
-	Service::Restart (widget["service_name"]:"");
+	Service::Restart (widget["service_id"]:"");
     }
     else if (event_id == "_cwm_stop_service_now")
     {
-	Service::Stop (widget["service_name"]:"");
+	Service::Stop (widget["service_id"]:"");
     }
     else if (event_id == "_cwm_save_settings_now")
     {
