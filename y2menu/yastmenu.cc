@@ -1,3 +1,4 @@
+
 #include "yastfunc.h"
 #include "yast.h"
 #include "parseyast.h"
