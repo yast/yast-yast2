@@ -1,6 +1,5 @@
 @HEADER-COMMENT@
-
-# neededforbuild  yast2-devel-packages
+# neededforbuild yast2-devel-packages
 
 @HEADER@
 # Need the new file popups
@@ -33,6 +32,11 @@ Summary:	Documentation for Wizard and Sequencer
 @BUILD@
 
 @INSTALL@
+for f in `find $RPM_BUILD_ROOT/usr/share/applications/YaST2/groups/*.desktop` ; do
+    d=${f##*/}
+    %suse_update_desktop_file ${d%.desktop}
+done
+
 mkdir -p "$RPM_BUILD_ROOT"@clientdir@
 mkdir -p "$RPM_BUILD_ROOT"@configdir@
 mkdir -p "$RPM_BUILD_ROOT"@desktopdir@
