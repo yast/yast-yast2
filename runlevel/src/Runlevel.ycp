@@ -9,6 +9,7 @@
  *   Exported functionality
  *
  * Authors:
+ *   Martin Vidner <mvidner@suse.cz>
  *   Petr Blahos <pblahos@suse.cz>
  *
  * $Id$
@@ -268,6 +269,7 @@
      * @return success
      */
     global define boolean Read () ``{
+	// progress caption
 	Progress::Simple (_("Initializing runlevel editor. Please wait."), " ", 7, "");
 	Progress::NextStep ();
 	runlevels= SCR::Read (.init.scripts.runlevel_list);
@@ -554,6 +556,7 @@ Further dependency checking will be disabled."));
      */
     global define void Write () ``{
 	integer prsize = size (services);
+	// progress caption
 	Progress::Simple (_("Saving changes to runlevels."), " ", prsize + 1, "");
 
 	if (default != default_orig)
@@ -563,6 +566,7 @@ Further dependency checking will be disabled."));
 	foreach (`k, `v, services, ``{
 	    if (lookup (v, "dirty", false))
 	    {
+		// progress item, %1 is a service (init script) name
 		Progress::Title (sformat (_("Service %1"), k));
 		// save!
 		string add_comma = "";
@@ -588,6 +592,7 @@ Further dependency checking will be disabled."));
 		SCR::Execute (.target.bash, commandline);
 	    }
 	    else
+		// progress item, %1 is a service (init script) name
 		Progress::Title (sformat (_("Skipping service %1."), k));
 	    Progress::NextStep ();
 	});
@@ -720,18 +725,27 @@ Further dependency checking will be disabled."));
 	``{
 
 	map rl = $[
+	    // summary item: description of a run level
 	    "0" : _("0: System halt"),
+	    // summary item: description of a run level
 	    "1" : _("1: Single user mode"),
+	    // summary item: description of a run level
 	    "2" : _("2: Local multiuser without remote network"),
+	    // summary item: description of a run level
 	    "3" : _("3: Full multiuser with network"),
+	    // summary item: description of a run level
 	    "4" : _("4: User defined"),
+	    // summary item: description of a run level
 	    "5" : _("5: Full multiuser with network and xdm"),
+	    // summary item: description of a run level
 	    "6" : _("6: System reboot"),
 	    ];
 
 	string sum = "";
+	// summary header
 	sum = Summary::AddHeader(sum, _("Current Runlevel"));
 	sum = Summary::AddLine(sum,  rl[default]:"");
+	// summary header
 	sum = Summary::AddHeader(sum, _("Services"));
 
 	if (size(services)>0) {
