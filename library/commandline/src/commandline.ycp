@@ -27,7 +27,8 @@ define boolean fake_false() ``{
 
 global define boolean RunFunction( boolean() funct ) ``{
     Report::ClearAll();
-    boolean ret = funct();
+    boolean() my_funct = funct;
+    boolean ret = my_funct();
     string report = Report::GetMessages(
 	Report::NumWarnings()>0,Report::NumErrors()>0,Report::NumMessages()>0);
     if( size(report) > 0 )
@@ -39,7 +40,8 @@ global define boolean RunMapFunction( boolean(map<string,string>) funct,
     map<string,string> arg )
 ``{
     Report::ClearAll();
-    boolean ret = funct(arg);
+    boolean(map<string,string>) my_funct = funct;
+    boolean ret = my_funct(arg);
     string report = Report::GetMessages(
 	Report::NumWarnings()>0,Report::NumErrors()>0,Report::NumMessages()>0);
     if( size(report) > 0 )
