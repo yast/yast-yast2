@@ -15,6 +15,7 @@ textdomain "base";
 
 import "CWM";
 import "Mode";
+import "ProductFeatures";
 import "Service";
 
 
@@ -51,6 +52,35 @@ void InitAutoStartWidget (map<string,any> widget) {
 	auto_start
 	    ? "_cwm_startup_auto"
 	    : "_cwm_startup_manual");
+}
+
+/**
+ * Enable or disable the firewall details widget according to the status
+ * of "open firewall" checkbox
+ */
+void EnableOrDisableFirewallDetails () {
+    if (! UI::WidgetExists (`id ("_cwm_open_firewall")))
+	return;
+    if (! UI::WidgetExists (`id ("_cwm_firewall_details")))
+	return;
+    boolean enabled = (boolean)
+	UI::QueryWidget (`id ("_cwm_open_firewall"), `Value);
+    if (enabled == nil)
+	enabled = false;
+    UI::ChangeWidget (`id ("_cwm_firewall_details"), `Enabled, enabled);
+}
+
+/**
+ * Initialize the open firewall widget
+ * @param widget a map describing the whole widget
+ */
+void InitAdaptFirewallWidget (map<string,any> widget) {
+    if (! UI::WidgetExists (`id ("_cwm_open_firewall")))
+	return;
+    boolean() get_open_firewall = (boolean())widget["get_open_firewall"]:nil;
+    boolean open_firewall = get_open_firewall ();
+    UI::ChangeWidget (`id ("_cwm_open_firewall"), `Value, open_firewall);
+    EnableOrDisableFirewallDetails ();
 }
 
 /**
@@ -113,6 +143,17 @@ define void HandleImmediateActions (map<string,any> widget, any event_id) {
 }
 
 /**
+ * Display popup with firewall settings details
+ */
+void DisplayFirewallDetailsPopup (map<string,any> widget) {
+
+    void (map<string,any>) common_details_handler = (void(map<string,any>))
+	widget["common_details_handler"]:nil;
+    if (common_details_handler != nil)
+	common_details_handler (widget);
+}
+
+/**
  * Update the widget displaying if LDAP support is active
  * @param widget a map describing the widget
  */
@@ -156,6 +197,7 @@ global define void Init (map<string,any> widget, string key) {
 	// service status - label
 	= widget["service_not_running_label"]:_("Service is not running.");
     InitAutoStartWidget (widget);
+    InitAdaptFirewallWidget (widget);
     UpdateLdapWidget (widget);
     last_status = nil;
     UpdateServiceStatusWidget (widget);
@@ -185,6 +227,24 @@ global define symbol Handle (map<string,any> widget, string key, map event) {
 	UpdateServiceStatusWidget (widget);
 	return nil;
     }
+    if (ret == "_cwm_firewall_details")
+    {
+	symbol() handle_firewall_details
+	    = (symbol())widget["firewall_details_handler"]:nil;
+	if (handle_firewall_details != nil)
+	{
+	    return handle_firewall_details ();
+	}
+	else
+	{
+	    DisplayFirewallDetailsPopup (widget);
+	    return nil;
+	}
+    }
+    if (ret == "_cwm_open_firewall")
+    {
+	 EnableOrDisableFirewallDetails ();
+    }
     return nil;
 }
 
@@ -204,6 +264,15 @@ global define void Store (map<string,any> widget, string key, map event) {
 	void(boolean) set_auto_start
 	    = (void(boolean))widget["set_service_auto_start"]:nil;
 	set_auto_start(auto_start);
+    }
+    // store firewall update
+    if (UI::WidgetExists (`id ("_cwm_open_firewall")))
+    {
+	boolean open_firewall = (boolean)
+	    UI::QueryWidget (`id ("_cwm_open_firewall"), `Value);
+	void(boolean) set_open_firewall
+	    = (void(boolean))widget["set_open_firewall"]:nil;
+	set_open_firewall (open_firewall);
     }
 }
 
@@ -263,6 +332,33 @@ global define string RemoveShortcut (string label) {
  * - "start_manual_button" : string -- label of the radio button to start
  *          the service only manually
  *
+ * Firewall setting support
+ * - "get_open_firewall" : boolean () -- function to return current status
+ *          if the firewall should be opened. If not specified, check box
+ *          will not be shown
+ * - "set_open_firewall" : void (boolean) -- function to set if the
+ *          furewall should be opened. If not specified, check box
+ *          will not be shown
+ * - "open_firewall_checkbox" : string -- label of the check box
+ * - "firewall_details_handler" : symbol () -- function to handle the firewall
+ *          details button. If returns something else than nil, dialog is
+ *          exited with the returned symbol as value for wizard sequencer.
+ *          If not specified, but "common_details_handler" specified,
+ *          the button bevavior will be driven by "common_details_handler.
+ *          If not specified, and "common_details_handler" not specified,
+ *          the button will not be shown.
+ * - "common_details_handler" : void (map<string,any>) -- function to
+ *          run the common popup for firewall, should be always
+ *          CWMFirewallInterfaces::DisplayPopup
+ *          Is not used if "firewall_details_handler", requires
+ *          "get_allowed_interfaces" and "set_allowed_interfaces".
+ * - "get_allowed_interfaces" : list<string>() -- function that returns
+ *          the current list of the opened interfaces for the service
+ * - "set_allowed_interfaces" : void(list<string>) -- function that sets
+ *          the list of interfaces to be opened to the service
+ * - "firewall_details_button" : string -- label of the push button for
+ *          changing firewall details
+ *
  * LDAP support:
  * - "get_use_ldap" : boolean () -- function to return current status
  *          of the LDAP support. If not set, LDAP check-box is not shown.
@@ -303,6 +399,13 @@ global define map<string,any> CreateWidget (map<string,any> settings) {
 	// radio button
 	= settings["start_manual_button"]:_("O&ff -- Start Service Manually");
 
+    string open_firewall_checkbox
+	// check box
+	= settings["open_firewall_checkbox"]:_("Open Port in &Firewall");
+    string firewall_details_button
+	// push button
+	= settings["firewall_details_button"]:_("Firewall &Details");
+
     string use_ldap_checkbox
 	// check box
 	= settings["use_ldap_checkbox"]:_("&LDAP Support Active");
@@ -330,6 +433,28 @@ global define map<string,any> CreateWidget (map<string,any> settings) {
 		`VSpacing ( 1 )
 	    )))
 	),
+	`VSpacing (1)
+    );
+
+    term firewall_settings = `CheckBox (`id ("_cwm_open_firewall"),
+	`opt (`notify),
+	open_firewall_checkbox);
+    boolean display_firewall_details
+	= haskey (settings, "firewall_details_handler")
+	    || (haskey (settings, "common_details_handler")
+		&& haskey (settings, "get_allowed_interfaces")
+		&& haskey (settings, "set_allowed_interfaces"));
+    if (display_firewall_details)
+    {
+	firewall_settings = `Left (`HBox (
+	    firewall_settings,
+	    `HSpacing (2),
+	    `PushButton (`id ("_cwm_firewall_details"),
+		firewall_details_button)
+	));
+    }
+    firewall_settings = `VBox (
+	firewall_settings,
 	`VSpacing (1)
     );
 
@@ -388,8 +513,29 @@ To start the service every time your computer is booted, set
 	    RemoveShortcut (start_manual_button));
     }
 
+    if (! (haskey (settings, "get_open_firewall")
+	&& haskey (settings, "set_open_firewall")))
+    {
+	firewall_settings = `VBox ();
+    }
+    else
+    {
+	help = help + sformat (_("<p><b><big>Firewall Settings</big></b><br>
+To open the firewall to allow access the service from remote computers,
+set <b>%1</b>."),
+	    RemoveShortcut (open_firewall_checkbox));
+	if (display_firewall_details)
+	{
+	    help = help + sformat (_("<br>To tune the firewall settings,
+click <b>%1</b>."),
+		RemoveShortcut (firewall_details_button));
+	}
+	help = help + "</p>";
+    }
+
     if (! (haskey (settings, "get_use_ldap")
-	&& haskey (settings, "set_use_ldap")))
+	&& haskey (settings, "set_use_ldap")
+	&& ProductFeatures::ui_mode != "simple"))
     {
 	ldap_settings = `VBox ();
     }
@@ -427,6 +573,7 @@ service immediatelly, use <b>%1</b>.</p>"),
 
     term widget = `Top (`VBox (
 	booting,
+	firewall_settings,
 	ldap_settings,
 	immediate_actions
     ));
