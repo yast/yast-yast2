@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Feb 19 11:15:17 CET 2004 - visnov@suse.cz
+
+- restore AsciiFile::AssertLineValid behavior as in 9.0 
+
+-------------------------------------------------------------------
 Tue Feb 17 18:12:25 CET 2004 - sh@suse.de
 
 - Use correct kernel image name on S/390
