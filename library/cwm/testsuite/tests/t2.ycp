@@ -22,6 +22,7 @@
 
     include "testsuite.ycp";
     import "CWM";
+    import "TablePopup";
     import "./tests/TestFunc.yh";
     import "Mode";
 
@@ -29,10 +30,10 @@
 
 
     global define map MyCreateTable () ``{
-        map ret = CWM::CreateTableDescr ($[],
+        map ret = TablePopup::CreateTableDescr ($[],
 	    $[
-	    "init" : ``(CWM::TableInit (TestFunc::widgets["table"]:$[])),
-	    "handle" : ``(CWM::TableHandle (TestFunc::widgets["table"]:$[])),
+	    "init" : ``(TablePopup::TableInit (TestFunc::widgets["table"]:$[])),
+	    "handle" : ``(TablePopup::TableHandle (TestFunc::widgets["table"]:$[])),
 	    "ids" : ``(TestFunc::getIdList ()),
 	    "id2key" : ``(TestFunc::id2key ()),
 	    "options" : TestFunc::popups,
@@ -81,9 +82,9 @@
 
     DUMP ("========================================");
     DUMP ("Merge functions");
-    map option = CWM::key2descr (widget_data[0]:$[], "a");
+    map option = TablePopup::key2descr (widget_data[0]:$[], "a");
     DUMP (sformat ("Before: %1", option));
-    option = CWM::updateOptionMap (option, widget_data[0, "fallback"]:$[]);
+    option = TablePopup::updateOptionMap (option, widget_data[0, "fallback"]:$[]);
     DUMP (sformat ("After: %1", option));
 
     DUMP ("=========================================");
@@ -97,6 +98,6 @@
     DUMP ("=========================================");
     DUMP ("Run popup");
 
-    CWM::singleOptionEditPopup (option);
+    TablePopup::singleOptionEditPopup (option);
 
 }

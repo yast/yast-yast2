@@ -3,6 +3,7 @@
 #
 
 module_DATA =			\
-	CWM.ycp
+	CWM.ycp			\
+	TablePopup.ycp
 
 EXTRA_DIST = $(module_DATA)
