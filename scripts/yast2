@@ -139,15 +139,13 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 	exit 1
     fi
 else
-    export QT_HOME_DIR="`eval echo ~$USER/.qt/`"
-    [ "$QT_HOME_DIR" ] || FONT="-fn $Y2_XFONT"
-
+    set_qt_home_dir
     # use ycp menu if the control center is not installed
     if [ $module == "menu" -a -e "$ybindir/y2controlcenter" ] ; then
 	$ybindir/y2controlcenter $FONT "$@"
     else
 	set -- $(for x in "$@"; do echo "(\"$x\")"; done) # surround args by ("...")
-	$ybindir/y2base $module "$@" qt -geometry "$Y2_GEOMETRY" $FONT -kcontrol_id "YaST"
+	$ybindir/y2base $module "$@" qt -geometry "$Y2_GEOMETRY" $FONT
     fi
 fi
 
