@@ -3,8 +3,9 @@
 #
 
 
-# path with most yast2 binaries and scripts
+# some path definitions
 ybindir=/usr/lib/YaST2/bin
+logdir=/var/log/YaST2
 
 
 # font for qt
