@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 16 16:44:03 CEST 2002 - sh@suse.de
+
+- V 2.6.11
+- provide/obsolete yast2-trans-wizard 
+
+-------------------------------------------------------------------
 Fri Jul 12 17:11:52 CEST 2002 - kkaempf@suse.de
 
 - fix sequencer and wizard testsuite
