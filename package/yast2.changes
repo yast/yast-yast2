@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar 03 11:59:24 CET 2003 - arvin@suse.de
+
+- fixed testsuite
+
+-------------------------------------------------------------------
 Fri Feb 28 17:25:39 CET 2003 - ms@suse.de
 
 - use require.ycp for package checks in X11Version.ycp (#24488)
@@ -21,7 +26,7 @@ Tue Feb 25 13:44:23 CET 2003 - kkaempf@suse.de
 -------------------------------------------------------------------
 Mon Feb 24 11:05:02 CET 2003 - jsrain@suse.de
 
-- added `opt (`notify) to Wizard_hw::ConfiguredContent table to 
+- added `opt (`notify) to Wizard_hw::ConfiguredContent table to
   allow double click handling (#24095)
 - 2.7.15
 

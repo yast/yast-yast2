@@ -79,7 +79,7 @@
      * start repair module
      */
     global boolean repair		= false;
-    
+
     /**
      * configuration for auto-installation, only in running system
      */
@@ -246,7 +246,7 @@
 	    autoinst = SCR::Read (.etc.install_inf.AutoYaST) != nil;
 
 	    repair   = SCR::Read (.etc.install_inf.Repair )  != nil;
-	    
+
 	    live_eval = SCR::Read (.etc.install_inf.Demo) == "1";
 
 	    text = SCR::Read (.etc.install_inf.Textmode) == "1";
@@ -260,7 +260,7 @@
 	    if (!manual)
 	    {
 		string tmp = SCR::Read (.target.string, "/proc/cmdline");
-		if (contains (splitstring (tmp, " \n"), "manual"))
+		if (tmp != nil && contains (splitstring (tmp, " \n"), "manual"))
 		{
 		    manual = true;
 		}
