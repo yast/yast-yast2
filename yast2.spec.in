@@ -1,12 +1,14 @@
 @HEADER-COMMENT@
-
-# neededforbuild  yast2-core yast2-core-devel yast2-devtools yast2-testsuite
+# neededforbuild yast2-devel-packages
 
 @HEADER@
+Requires:	yast2-core yast2_ui yast2_theme
+
 Provides:	yast yast2-lib-wizard yast2-lib-sequencer
 Obsoletes:	yast yast2-lib-wizard yast2-lib-sequencer
-Requires:	yast2-core yast2_ui yast2_theme
+
 BuildArchitectures: noarch
+
 Summary:	YaST2 Modules for installation
 
 %description
@@ -29,18 +31,24 @@ Summary:	Documentation for Wizard and Sequencer
 %files
 %defattr(-,root,root)
 
+# basic directory structure
+
+%dir @clientdir@
+%dir @configdir@
+%dir @localedir@
+%dir @moduledir@
+%dir @scrconfdir@
+%dir @ybindir@
+%dir @ydatadir@
+
 # yast2
 
-%dir @moduledir@
-@moduledir@/*
-%dir @scrconfdir@
-@scrconfdir@/*
-%dir @ybindir@
-@ybindir@/*
-%dir @clientdir@
 @clientdir@/*
-%dir @configdir@
 @configdir@/*
+@moduledir@/*
+@scrconfdir@/*
+@ybindir@/*
+
 %doc @docdir@/*.*
 
 /sbin/yast2
@@ -67,8 +75,8 @@ Summary:	Documentation for Wizard and Sequencer
 %dir @yncludedir@/ui
 @yncludedir@/ui/*.ycp
 
+# documentation
 
 %files devel
 %doc @docdir@/sequencer
 %doc @docdir@/wizard
-
