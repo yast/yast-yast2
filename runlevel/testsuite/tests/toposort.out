@@ -1,9 +1,0 @@
-Dump	TopologicalSort
-Dump	[[], []]
-Log	Cyclic subgraph found, remainder has 1 nodes: ["v1"]
-Dump	[[], ["v1"]]
-Dump	[["v1", "v10", "v5", "v7", "v8", "v2", "v9", "v3", "v4", "v6"], []]
-Dump	ReachableSubgraph
-Dump	$["v1":["v2", "v3"], "v2":["v3", "v4"], "v3":["v6"], "v4":["v6"], "v6":[]]
-Dump	ReverseGraph
-Dump	$["v1":[], "v10":[], "v2":["v1"], "v3":["v1", "v2"], "v4":["v2", "v5"], "v5":[], "v6":["v3", "v4", "v7"], "v7":[], "v8":[], "v9":["v8"]]
