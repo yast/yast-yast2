@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan  4 09:41:35 CET 2005 - jsrain@suse.cz
+
+- fixed handling of sysconfig/kernel:MODULES_LOADED_ON_BOOT if
+  changed externally during installation (#46971)
+
+-------------------------------------------------------------------
 Mon Jan  3 10:47:34 CET 2005 - locilka@suse.cz
 
 - Added new implementation of SuSEfirewall2 broadcast configuration

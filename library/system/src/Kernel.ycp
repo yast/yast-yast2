@@ -24,6 +24,14 @@
 
     textdomain "base";
 
+/**
+ * List of changes in /etc/sysconfig/kernel:MODULES_LOADED_ON_BOOT
+ * Needs to be stored as a list of changes due to the fact that some RPMs
+ * change the variable during installation
+ * list member is a map with keys "operation" (value "add" or "detete") and
+ * "name" (name of the module)
+ */
+list<map<string,string> > kernel_modules_to_load = [];
 
     /**
      *  A flag to indicate if a popup informing about the kernel change should
@@ -59,11 +67,6 @@
      * Don't write it directly, @see: AddCmdLine()
      */
     global string cmdLine = "";
-
-    /**
-     * list of modules which shall be probed ASAP after root is mounted
-     */
-    global string kernelModules = "";
 
     /**
      * @return strign  the kernel vga paramter
@@ -331,19 +334,6 @@
 
     }  // ProbeKernel ()
 
-    /**
-     * AddModuleToLoad ()
-     * @param string module name
-     * add the module name to sysconfig variable
-     */
-    global define void AddModuleToLoad (string name)
-    {
-	if (kernelModules == "")
-	    kernelModules = name;
-	else
-	    kernelModules = kernelModules + " " + name;
-    }
-
     /*
      *	Set a custom kernel.
      *	@return void
@@ -354,18 +344,6 @@
 
 	return;
     }
-
-    /**
-     * SaveModuleToLoad ()
-     * save the sysconfig variable to the file
-     */
-    global define void SaveModulesToLoad ()
-    {
-	y2milestone ("Modules to be loader at boot time: %1", kernelModules);
-	SCR::Write (.sysconfig.kernel.MODULES_LOADED_ON_BOOT, kernelModules);
-	SCR::Write (.sysconfig.kernel, nil);
-    }
-
 
     /**
      * Compute kernel package
@@ -435,6 +413,76 @@
 
 	ProbeKernel ();
     }
+
+
+
+// functions related to kernel's modules loaded on boot
+
+/**
+ * AddModuleToLoad ()
+ * @param string module name
+ * add the module name to sysconfig variable
+ */
+global void AddModuleToLoad (string name) {
+    y2milestone ("Adding module to be loaded at boot: %1", name);
+    kernel_modules_to_load = add (kernel_modules_to_load, $[
+	"operation" : "add",
+	"name" : name,
+    ]);
+}
+
+global void RemoveModuleToLoad (string name) {
+    y2milestone ("Removing module to be loaded at boot: %1", name);
+    kernel_modules_to_load = add (kernel_modules_to_load, $[
+	"operation" : "remove",
+	"name" : name,
+    ]);
+}
+
+/**
+ * SaveModuleToLoad ()
+ * save the sysconfig variable to the file
+ * @return boolean true on success
+ */
+global boolean SaveModulesToLoad () {
+    // if nothing changed, just return success
+    if (size (kernel_modules_to_load) == 0)
+	return true;
+
+    // first read current status
+    string modules_to_load_str = (string)
+	SCR::Read (.sysconfig.kernel.MODULES_LOADED_ON_BOOT);
+    if (modules_to_load_str == nil)
+	modules_to_load_str = "";
+    list<string> modules_to_load = splitstring (modules_to_load_str, " ");
+    modules_to_load = filter (string s, modules_to_load, {return s != "";});
+    y2milestone ("Read modules to be loaded at boot: %1", modules_to_load);
+
+    // apply operations on the list
+    foreach (map<string,string> op_desc, kernel_modules_to_load, {
+	string op = op_desc["operation"]:"";
+	string name = op_desc["name"]:"";
+	if (op == "remove")
+	{
+	    modules_to_load = filter (string m, modules_to_load, {
+		return m != name;
+	    });
+	}
+	else if (op == "add")
+	{
+	    if (! contains (modules_to_load, name))
+		modules_to_load = add (modules_to_load, name);
+	}
+    });
+
+    // and sabe the list
+    y2milestone ("Saving modules to be loaded at boot: %1", modules_to_load);
+    modules_to_load_str = mergestring (modules_to_load, " ");
+    SCR::Write (.sysconfig.kernel.MODULES_LOADED_ON_BOOT, modules_to_load_str);
+    return (boolean)SCR::Write (.sysconfig.kernel, nil);
+}
+
+
 
 /* EOF */
 }
