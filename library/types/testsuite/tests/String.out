@@ -56,6 +56,18 @@ Return	1
 Return	1
 Return	0
 Return	0
+Dump	String::Pad
+Return	"  "
+Return	"a "
+Return	"ab"
+Return	"abc"
+Return	"a"
+Return	""
+Return	"a"
+Dump	String::ParseOptions
+Return	["a=3", "b=2"]
+Return	["a=3", "b=2"]
+Return	["a="]
 Dump	String::CutRegexMatch
 Return	abc
 Return	abcdefghi

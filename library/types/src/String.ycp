@@ -149,6 +149,293 @@ global define string CutZeros(string input) ``{
 }
 
 /**
+ * Parse string of values - split string to values, quoting and backslash sequences are supported
+ * @param options Input string
+ * @param parameters Parmeter used at parsing - map with keys:
+ *"separator":<string> - value separator (default: " \t"),
+ *"unique":<boolean> - result will not contain any duplicates, first occurance of the string is stored into output (default: false),
+ *"interpret_backslash":<boolean> - convert backslash sequence into one character (e.g. "\\n" => "\n") (default: true)
+ *"remove_whitespace":<boolean> - remove white spaces around values (default: true),
+ * @return list List of strings
+ */
+global define list ParseOptions(string options, map parameters) ``{
+	list ret = [];
+
+        // parsing options
+	string separator = parameters["separator"]:" \t";
+        boolean unique = parameters["unique"]:false;
+	boolean interpret_backslash = parameters["interpret_backslash"]:true;
+        boolean remove_whitespace = parameters["remove_whitespace"]:true;
+
+	y2debug("Input: string: '%1', parameters: %2", options, parameters);
+        y2debug("Used values: separator: '%1', unique: %2, remove_whitespace: %3",
+	    separator, unique, remove_whitespace);
+
+        if (options == nil)
+	{
+	    return [];
+        }
+
+        // two algorithms are used:
+	// first is much faster, but only usable if string
+        // doesn't contain any double qoute characters
+	// and backslash sequences are not interpreted
+        // second is more general, but of course slower
+
+        if (findfirstof(options, "\"") == nil && interpret_backslash == false)
+	{
+	    // easy case - no qouting, don't interpres backslash sequences => use splitstring
+	    list(string) values = splitstring(options, separator);
+
+	    foreach (string v, values, ``{
+		if (remove_whitespace == true)
+		{
+		    v = String::CutBlanks(v);
+		}
+
+		if (unique == true)
+		{
+		    if (!contains(ret, v)) ret = add(ret, v);
+		}
+		else
+		{
+		    ret = add(ret, v);
+		}
+	    });
+	}
+	else
+	{
+	    // quoting is used or backslash interpretation is enabled
+	    // so it' not possible to split input
+	    // parsing each character is needed - use finite automaton
+
+	    // state
+	    symbol state = `out_of_string;
+	    // position in the input string
+	    integer index = 0;
+	    // parsed value - buffer
+	    string str = "";
+
+	    while(index < size(options))
+	    {
+		string character = substring(options, index, 1);
+
+		y2debug("character: %1 state: %2 index: %3", character, state, index);
+
+		// interpret backslash sequence
+		if (character == "\\" && interpret_backslash == true)
+		{
+		    if (index + 1 < size(options))
+		    {
+			string nextcharacter = substring(options, index + 1, 1);
+			index = index + 1;
+
+			// backslah sequences
+			map backslash_seq = $[
+			    "a"	: "\a",	// alert
+			    "b"	: "\b", // backspace
+			    "e"	: "\e", // escape
+			    "f"	: "\f", // FF
+			    "n"	: "\n", // NL
+			    "r"	: "\r", // CR
+			    "t"	: "\t", // tab
+			    "v"	: "\v", // vertical tab
+			    "\\": "\\", // backslash
+			];
+
+			if (haskey(backslash_seq, nextcharacter) == true)
+			{
+			    character = backslash_seq[nextcharacter]:"DUMMY";
+			}
+			else
+			{
+			    if (nextcharacter != "\"")
+			    {
+				// ignore backslash in invalid backslash sequence
+				character = nextcharacter;
+			    }
+			    else
+			    {
+				// backslash will be removed later,
+				// double quote and escaped double quote have to different yet
+				character = "\\\"";
+			    }
+			}
+
+			y2debug("backslash sequence: '%1'", character);
+		    }
+		    else
+		    {
+			y2warning("Missing character after backslash (\\) at the end of string");
+		    }
+		}
+
+		if (state == `out_of_string)
+		{
+		    // ignore separator or white space at the beginning of the string
+		    if (issubstring(separator, character) == true || (remove_whitespace == true && (character == " " || character == "\t")) )
+		    {
+			index = index + 1;
+			continue;
+		    }
+		    // start of a quoted string
+		    else if (character == "\"")
+		    {
+			state = `in_quoted_string;
+		    }
+		    else
+		    {
+			// start of a string
+			state = `in_string;
+
+			if (character == "\\\"")
+			{
+			    str = "\"";
+			}
+			else
+			{
+			    str = character;
+			}
+		    }
+		}
+
+		// after double quoted string - handle non-separator chars after double quote
+		else if (state == `in_quoted_string_after_dblqt)
+		{
+		    if (issubstring(separator, character) == true)
+		    {
+			if (unique == true)
+			{
+			    if (!contains(ret, str)) ret = add(ret, str);
+			}
+			else
+			{
+			    ret = add(ret, str);
+			}
+
+			str = "";
+			state = `out_of_string;
+		    }
+		    else if (character == "\\\"")
+		    {
+			str = str + "\"";
+		    }
+		    else
+		    {
+			str = str + character;
+		    }
+		}
+		else if (state == `in_quoted_string)
+		{
+		    if (character == "\"")
+		    {
+			// end of quoted string
+			state = `in_quoted_string_after_dblqt;
+		    }
+		    else if (character == "\\\"")
+		    {
+			str = str + "\"";
+		    }
+		    else
+		    {
+			str = str + character;
+		    }
+		}
+		else if (state == `in_string)
+		{
+		    if (issubstring(separator, character) == true)
+		    {
+			state = `out_of_string;
+
+			if (remove_whitespace == true)
+			{
+			    str = String::CutBlanks(str);
+			}
+
+			if (unique == true)
+			{
+			    if (!contains(ret, str)) ret = add(ret, str);
+			}
+			else
+			{
+			    ret = add(ret, str);
+			}
+
+			str = "";
+		    }
+		    else if (character == "\\\"")
+		    {
+			str = str + "\"";
+		    }
+		    else
+		    {
+			str = str + character;
+		    }
+		}
+
+		index = index + 1;
+	    }
+
+	    // error - still in quoted string
+	    if (state == `in_quoted_string)
+	    {
+		y2warning("Missing trainling double quote character(\") in input: '%1'", options);
+
+		if (unique == true)
+		{
+		    if (!contains(ret, str)) ret = add(ret, str);
+		}
+		else
+		{
+		    ret = add(ret, str);
+		}
+	    }
+
+	    // process last string in the buffer
+	    if (state == `in_string)
+	    {
+		if (remove_whitespace)
+		{
+		    str = String::CutBlanks(str);
+		}
+
+		if (unique == true)
+		{
+		    if (!contains(ret, str)) ret = add(ret, str);
+		}
+		else
+		{
+		    ret = add(ret, str);
+		}
+	    }
+	}
+
+
+	y2debug("Parsed values: %1", ret);
+
+	return ret;
+}
+
+/**
+ * Add spaces after the text to make it long enough. If the text is longer that requested,
+ * no changes are made.
+ *
+ * @param text	text to be padded
+ * @param length requested length
+ * @return padded text
+ */
+global define string Pad( string text, integer length ) ``{
+        integer rest = length-size(text);
+        string pad = "";
+        while( rest > 0 ) {
+            pad = pad + " ";
+            rest = rest-1;
+        }
+        return text+pad;
+}
+    
+
+/**
  * Remove first or every match of given regular expression from a string 
  * (e.g. CutRegexMatch( "abcdef12ef34gh000", "[0-9]+", true ) -> "abcdefefgh",
  * CutRegexMatch( "abcdef12ef34gh000", "[0-9]+", false ) -> "abcdefef34gh000")
