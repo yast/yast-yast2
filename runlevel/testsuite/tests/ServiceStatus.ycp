@@ -1,0 +1,13 @@
+
+{
+    include "testsuite.ycp";
+    import "Runlevel";
+
+    map READ = $[];
+    map EXEC = $[];
+
+    READ = $[ "init" : $[ "scripts" : $[ "exists" : true, ] ] ];
+    EXEC = $[ "target" : $[ "bash" : 3 ] ];
+
+    TEST (``(Runlevel::ServiceStatus ("aaa")), [ READ, $[], EXEC ], nil);
+}

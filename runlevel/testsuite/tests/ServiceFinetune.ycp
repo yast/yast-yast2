@@ -1,0 +1,19 @@
+{
+    include "testsuite.ycp";
+    import "Runlevel";
+
+    map READ = $[];
+    map EXEC = $[];
+
+    READ = $[ "init" : $[ "scripts" : $[
+		"exists" : true,
+	] ] ];
+    EXEC = $[ "target" : $[ "bash" : 0 ]];
+    TEST (``(Runlevel::ServiceFinetune ("aaa", ["A", "B", "C"])), [ READ, $[], EXEC ], nil);
+
+    READ = $[ "init" : $[ "scripts" : $[
+		"exists" : true,
+	] ] ];
+    EXEC = $[ "target" : $[ "bash" : 0 ]];
+    TEST (``(Runlevel::ServiceFinetune ("aaa", [])), [ READ, $[], EXEC ], nil);
+}
