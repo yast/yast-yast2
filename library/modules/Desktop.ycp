@@ -34,6 +34,22 @@ global path AgentPath = .yast2.desktop;
 string Language = "";
 
 /**
+ */
+define string ReadLocalizedKey(path keypath, string key) ``{
+
+    string ret = (string) SCR::Read(add(keypath, key));
+
+    if(value != "Name" && value != "GenericName") return ret;
+    if(Language == nil || Language == "") return ret;
+
+    string newkey = sformat("%1[%2]", key, Language);
+    string newret = (string) SCR::Read(add(filepath, newkey));
+
+    if(newret != nil && newret != "") return newret;
+    return ret;
+}
+
+/**
  * Read module and group data from desktop files
  * @param Values list of values to be parsed (empty to read all)
  */
@@ -76,13 +92,8 @@ global define void Read(list Values) ``{
 	list values = SCR::Dir(filepath);
 	if(Values != nil && Values != []) values = Values;
 	foreach(string value, values, ``{
-	    string valuekey = value;
-	    if(value == "Name" && Language != nil && Language != "")
-		value = sformat("Name[%1]", Language);
-	    string ret = (string) SCR::Read(add(filepath, value));
-	    if((ret == nil || ret == "") && valuekey == "Name")
-		ret = (string) SCR::Read(add(filepath, valuekey));
-	    if(ret != nil) filemap[valuekey] = ret;
+	    string ret = ReadLocalizedKey(filepath, value);
+	    if(ret != nil) filemap[value] = ret;
 	});
 	string name = regexpsub(file, "^.*/(.*)\.desktop", "\\1");
 	if(name != "" && name != nil) {
@@ -127,16 +138,16 @@ global define list GroupList() ``{
 /**
  */
 global define list ModuleList(string group) ``{
-    map m = filter(string k, map v, Modules, ``{
-	return contains(Groups[group, "modules"]:[], k);
-    });
-    y2debug("%1", m);
-    // Translation and sorting not required:
-    // return CreateList(m);
+    list mods = Groups[group, "modules"]:[];
+    list l = [];
 
-    return maplist(string name, Map::Keys(m), ``{
-	return `item(`id(name), m[name, "Name"]:"???");
+    foreach(string k, map v, Modules, ``{
+	if(contains(mods, k))
+	    change(l, `item(`id(k), v["Name"]:"???"));
     });
+
+    // y2debug too costly: y2debug("%1", m);
+    return l;
 }
 
 /* EOF */
