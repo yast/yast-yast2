@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Nov 12 17:53:01 CET 2004 - mvidner@suse.cz
+
+- Added NetworkDevices::DeleteAlias (#48191).
+
+-------------------------------------------------------------------
 Fri Nov 12 15:27:24 CET 2004 - locilka@suse.cz
 
 - FileUtils have now GetFileRealType and GetFileType functions

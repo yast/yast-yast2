@@ -830,6 +830,18 @@ define boolean Delete2(string name) {
     return true;
 }
 
+/**
+ * Add the alias to the list of deleted items.
+ * Called when exiting from the aliases-of-device dialog.
+ * #48191
+ */
+global boolean DeleteAlias (string device, string aid) {
+    string alias = sformat ("%1#%2", device, aid);
+    y2milestone("Deleting alias: %1", alias);
+    Deleted[size(Deleted)] = alias;
+    return true;
+}
+
 global define boolean Commit() {
     y2debug("Name=%1", Name);
     y2debug("Current=%1", Current);
