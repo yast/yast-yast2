@@ -1193,8 +1193,8 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 	string current_zone = GetZoneOfInterface(interface);
 
 	DecreaseVerbosity();
-	// removing all appearances of interface in zones
-	while (current_zone != nil) {
+	// removing all appearances of interface in zones, excepting current_zone==new_zone
+	while (current_zone != nil && current_zone != zone) {
 	    // interface is in any zone already, removing it at first
 	    if (current_zone != zone) {
 		RemoveInterfaceFromZone(interface, current_zone);
