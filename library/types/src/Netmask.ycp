@@ -85,9 +85,13 @@ global define string FromBits(integer bits) ``{
 /**
  * Convert IPv4 netmask as string (255.255.240.0) to bits form (20)
  * @param netmask netmask as string
- * @return number of bits in netmask
+ * @return number of bits in netmask; 32 for empty string
  */
 global define integer ToBits(string netmask) ``{
+    if (netmask == "")
+    {
+	return 32;
+    }
     integer bits = 0;
     map m = $[
 	"128":1, "192":2, "224":3, "240":4,

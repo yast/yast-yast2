@@ -68,5 +68,6 @@ while (i >= 0) {
     TEST(``(Netmask::ToBits (Netmask::FromBits (i))), [], nil);
     i = i - 1;
 }
+TEST(``(Netmask::ToBits ("")), [], nil);
 
 }
