@@ -1,0 +1,10 @@
+(nil)
+""
+[
+$["comment":" same as bug 21804
+","value":"42","key":"numeric",] ,
+$["comment":"","value":"true","key":"boolean",] ,
+$["comment":"","value":"numbers","key":"42",] ,
+$["comment":"","value":"booleans","key":"false",] ,
+] 
+""

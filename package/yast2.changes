@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jan 10 12:58:45 CET 2003 - mvidner@suse.de
+
+- mail table agent: Prevent returning strings as integers/booleans (~#21804).
+
+-------------------------------------------------------------------
 Fri Dec 20 15:23:50 CET 2002 - mvidner@suse.de
 
 - file_popups: in qt, use the new widgets
