@@ -1,7 +1,12 @@
 -------------------------------------------------------------------
+Fri Aug 30 11:35:30 CEST 2002 - arvin@suse.de
+
+- moved X11Version.ycp from yast2-installation here
+
+-------------------------------------------------------------------
 Thu Aug 29 15:28:48 CEST 2002 - sh@suse.de
 
-- Adapted wizard colors to new grey style images by wimer@suse.de 
+- Adapted wizard colors to new grey style images by wimer@suse.de
 
 -------------------------------------------------------------------
 Thu Aug 29 11:25:47 CEST 2002 - mvidner@suse.cz

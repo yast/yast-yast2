@@ -1,0 +1,94 @@
+/**************
+FILE          : X11Version.ycp
+***************
+PROJECT       : YaST2
+              :
+AUTHOR        : Marcus Schäfer <ms@suse.de>
+              :
+BELONGS TO    : YaST2
+              : (X11 integration part using SaX2/ISaX)
+              :
+DESCRIPTION   : Provides a function to determine the _used_ XFree-version
+              : in a running system. Provide information about the
+              : package selection status which may told us:
+              : there is no X11 installed
+              :
+              :
+STATUS        : Development
+**************/
+{
+module "X11Version";
+
+//=======================================
+// System Global Variables
+//---------------------------------------
+global string  version  = "";
+
+//=======================================
+// Global Functions
+//---------------------------------------
+//---[ X11Version ]----//
+global define void X11Version() ``{
+	// ...
+	// The module constructor. Sets some proprietary module data defined
+	// for public access This is done only once (and automatically)
+	// when the module is loaded for the first time
+	// ---
+	GetVersion();
+	return;
+}
+
+//---[ GetVersion ]----//
+global define void GetVersion() ``{
+	// ...
+	// Set the global variable version to:
+	// ""  -   No X11 found
+	// "3" -   XFree86 Version 3.x
+	// "4" -   XFree86 Version 4.x
+	// ---
+	// NOTE: This is highly dependent on the X11-infrastructure
+	// and must be accommodated to any changes there.
+	// ---
+	version = "";	// init
+
+	// Take a look into the system....
+	// This delivers nil if the argument is a file (not a link) or if the
+	// link target doesn't exist.
+	//
+	string x_link = SCR::Read( .target.symlink, "/var/X11R6/bin/X" );
+	y2milestone( "Symlink: <%1>", x_link );
+
+	if ( x_link != nil ) {
+		// Should be s.th. like /usr/X11R6/bin/...
+		// if X11 is used in the system
+		if ( issubstring( x_link, "/usr/X11R6/bin" ) ) {
+		// OK, X11 is there. Find out which one.
+		if ( issubstring( x_link, "XFree86" ) )
+		    version = "4";
+		else
+		    version = "3";
+	    }
+	}
+	y2milestone( "xfree_version: <%1>", version );
+	return( version );
+}
+
+global define boolean have_x11 ()
+    ``{
+
+    boolean ret = true;
+
+    list pacs = ["xf86", "yast2-x11"];
+    foreach (`pac, pacs, ``{
+	if (!Pkg::IsProvided (pac))
+	{
+	    y2debug ("%1 is missing", pac);
+	    ret = false;
+	}
+    });
+
+    y2milestone ("have_x11 = %1", ret);
+    return ret;
+}
+
+}
