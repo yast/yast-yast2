@@ -10,11 +10,11 @@
 
 {
 
-    module "CWMTab";
-    textdomain "base";
+module "CWMTab";
+textdomain "base";
 
-    import "CWM";
-    import "Wizard";
+import "CWM";
+import "Wizard";
 
 
 // local constants

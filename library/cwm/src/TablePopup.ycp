@@ -196,7 +196,7 @@
       * @param descr map table description map
       * @param opt_descr map selected option description map
       */
-    global define void updateButtons (map descr, map opt_descr) ``{
+    global define void updateButtons (map<string,any> descr, map<string,any> opt_descr) ``{
 	if (descr["_cwm_attrib", "add_delete_buttons"]:true)
 	{
 	    UI::ChangeWidget (`id (`_tp_delete), `Enabled,
@@ -341,7 +341,7 @@
       *   to contain the option name and more percise option identification
       * @return symbol `_tp_ok or `_tp_cancel
       */
-    global define symbol singleOptionEditPopup (map option)``{
+    global define symbol singleOptionEditPopup (map<string,any> option)``{
 	string opt_key = option["_cwm_key"]:"";
 	any opt_id = option["_cwm_id"]:nil;
 
@@ -439,7 +439,7 @@
       * Disable whole table
       * @param descr map table widget description map
       */
-    global define void DisableTable (map descr) ``{
+    global define void DisableTable (map<string,any> descr) ``{
 	UI::ChangeWidget (`id (`_tp_table), `Enabled, false);
 	UI::ChangeWidget (`id (`_tp_edit), `Enabled, false);
 	if (descr["_cwm_attrib", "add_delete_buttons"]:true)
@@ -469,7 +469,7 @@
 
 	any opt_id = UI::QueryWidget (`id (`_tp_table), `CurrentItem);
 	string opt_key = id2key (descr, opt_id);
-	map option_map = key2descr (descr, opt_key);
+	map<string,any> option_map = key2descr (descr, opt_key);
 	updateButtons (descr, option_map);
     }
 
@@ -478,7 +478,7 @@
       * @param descr map description map of the whole table
       * @param key table widget key
       */
-    global define void TableInit (map<string, any> descr, any key) ``{
+    global define void TableInit (map<string, any> descr, string key) ``{
 	previous_selected_item = nil;
 	descr["_cwm_key"] = key;
 	TableRedraw (descr, true);
@@ -491,7 +491,7 @@
       * @param event_descr map event to handle
       * @return symbol modified event if needed
       */
-    global define symbol TableHandle (map<string, any> descr, any key, map event_descr) ``{
+    global define symbol TableHandle (map<string, any> descr, string key, map event_descr) ``{
 	any event_id = event_descr["ID"]:nil;
 	UI::SetFocus (`id (`_tp_table));
 	if (event_id == `_tp_table)
@@ -649,7 +649,8 @@
 		UI::ChangeWidget (`id (`_tp_table), `CurrentItem, opt_id);
 	    }
 	    previous_selected_item = opt_id;
-	    map opt_descr = key2descr (descr, id2key (descr, opt_id));
+	    map<string,any> opt_descr
+		= key2descr (descr, id2key (descr, opt_id));
 	    updateButtons (descr, opt_descr);
 	}
 	else if (event_id == `_tp_up || event_id == `_tp_down)
@@ -662,7 +663,8 @@
 	    {
 		TableRedraw (descr, false);
 		UI::ChangeWidget (`id (`_tp_table), `CurrentItem, opt_id);
-		map opt_descr = key2descr (descr, id2key (descr, opt_id));
+		map<string,any> opt_descr
+		    = key2descr (descr, id2key (descr, opt_id));
 		updateButtons (descr, opt_descr);
 	    }
 	}
@@ -696,7 +698,7 @@
       *  unioned with the generated map
       * @return map table widget
       */
-    global define map CreateTableDescr (map attrib, map widget_descr) ``{
+    global define map<string,any> CreateTableDescr (map<string,any> attrib, map<string,any> widget_descr) ``{
 	term add_button = attrib["add_delete_buttons"]:true
 	    ? `PushButton (`id (`_tp_add), `opt (`key_F3), Label::AddButton ())
 	    : `HSpacing (0);
@@ -751,7 +753,7 @@ in the list.</p>");
 	    )
 	    : `HSpacing (0);
 
-	map ret = union ($[
+	map<string,any> ret = (map<string,any>)union ($[
             "custom_widget" : (`HBox (`HSpacing (2), `VBox (
 		    `HBox (
 	                `Table (`id (`_tp_table),
