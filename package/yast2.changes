@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jun 18 15:28:07 CEST 2004 - lslezak@suse.cz
+
+- CommandLine: read text or password from console
+
+-------------------------------------------------------------------
 Fri Jun 18 10:16:04 CEST 2004 - jsrain@suse.cz
 
 - added CWM widget for service starting (like the Start-up dialog

@@ -7,6 +7,8 @@ Requires:	yast2-core >= 2.7.1
 Requires:	yast2_ui yast2_theme
 # For Cron Agent, Module
 Requires:       perl-Config-Crontab
+# for ag_tty (/bin/stty)
+Requires:	coreutils
 
 Provides:	yast2-lib-sequencer
 Obsoletes:	yast2-lib-sequencer
