@@ -348,7 +348,7 @@ global define boolean Start(string service) ``{
 
 /**
  * Restart service
- * @param service service to be started
+ * @param service service to be restarted
  * @return true if success
  */
 global define boolean Restart(string service) ``{
@@ -356,6 +356,20 @@ global define boolean Restart(string service) ``{
     integer ret = nil;
     y2milestone("Restarting service %1", service);
     ret = RunInitScript(service, "restart");
+    y2debug("ret=%1", ret);
+    return ret == 0;
+}
+
+/**
+ * Reload service
+ * @param service service to be reloaded
+ * @return true if success
+ */
+global define boolean Reload(string service) ``{
+    if(!checkExists(service)) return false;
+    integer ret = nil;
+    y2milestone("Reloading service %1", service);
+    ret = RunInitScript(service, "reload");
     y2debug("ret=%1", ret);
     return ret == 0;
 }
