@@ -56,6 +56,16 @@
     /* list of known firewall zones */
     list <string> known_firewall_zones = [ "INT", "DMZ", "EXT" ];
 
+    /* map defines zone name for all known firewall zones */
+    map <string, string> zone_names = $[
+	// TRANSLATORS: Firewall zone name - used in combo box or dialog title
+	"EXT" : _("External Zone"),
+	// TRANSLATORS: Firewall zone name - used in combo box or dialog title
+	"INT" : _("Internal Zone"),
+	// TRANSLATORS: Firewall zone name - used in combo box or dialog title
+	"DMZ" : _("Demilitarized Zone"),
+    ];
+
     /* internal zone identification - useful for protect-from-internal */
     string int_zone_shortname = "INT";
 
@@ -774,6 +784,17 @@
     }
 
     /**
+     * Function returns name of the zone identified by zone shortname.
+     *
+     * @param	string short name
+     * @return	string zone name
+     */
+    global define string GetZoneFullName (string zone) {
+	// TRANSLATORS: Firewall zone full-name, used as combo box item or dialog title
+	return zone_names[zone]:_("Unknown Zone");
+    }
+
+    /**
      * Function sets if firewall should be protected from internal zone.
      *
      * @param	boolean set to be protected from internal zone
@@ -1007,8 +1028,9 @@
 
 
     /**
-     * Function determines if all SuSEFirewall scripts are enabled in init scripts /etc/init.d/
-     * or should be enabled (in installation)
+     * Function determines if all SuSEFirewall scripts are enabled in
+     * init scripts /etc/init.d/ now.
+     * For configuration "enabled" status use GetEnableService().
      *
      * @return	boolean if enabled
      */
@@ -1034,8 +1056,8 @@
     }
 
     /**
-     * Function determines if at least one SuSEFirewall script is started,
-     * or should be started (for installation)
+     * Function determines if at least one SuSEFirewall script is started now.
+     * For configuration "started" status use GetStartService().
      *
      * @return	boolean if started
      */
@@ -1960,6 +1982,28 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 	}
 	// no firewall is running or the running firewall is SuSEfirewall2
 	return false;
+    }
+
+    /**
+     * Function returns map of `interfaces in zones`.
+     *
+     * @return	map [zone : [list of interfaces]]
+     */
+    global define map <string, list <string> > GetFirewallInterfacesMap () {
+	map <string, list <string> > firewall_interfaces_now = $[];
+
+	// list of all known interfaces
+	list <string> known_interfaces = GetListOfKnownInterfaces();
+
+	// searching each zone
+	foreach (string zone, GetKnownFirewallZones(), {
+	    // filtering non-existing interfaces
+	    firewall_interfaces_now[zone] = filter (string interface, GetInterfacesInZone(zone), {
+		return contains(known_interfaces, interface);
+	    });
+	});
+
+	return firewall_interfaces_now;
     }
 
     # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
