@@ -170,8 +170,8 @@
 	    }
 	}
 
-	if (UI::WidgetExists (`id (`back)))	UI::ChangeWidget (`id (`back), `Enabled, false);
-	if (UI::WidgetExists (`id (`next)))	UI::ChangeWidget (`id (`next), `Enabled, false);
+	if (UI::WidgetExists (`id (`back)) == true)	UI::ChangeWidget (`id (`back), `Enabled, false);
+	if (UI::WidgetExists (`id (`next)) == true)	UI::ChangeWidget (`id (`next), `Enabled, false);
 
 	if ("" != help_text && nil != help_text && UI::WidgetExists (`id (`HelpText)))
 	{
