@@ -23,7 +23,6 @@
 
 
     symbol button_id = `dummy;
-    boolean ok = false;
 
     do
     {
@@ -31,7 +30,7 @@
 
 	if ( button_id == `yesNo )
 	{
-	    ok = Popup::YesNoHeadline( "Really delete world?",
+	    Popup::YesNoHeadline( "Really delete world?",
 "You in your infinite wisdom have chosen to delete this only world of ours.\n\
 This will mean the end to all of mankind and all life in the only known planet\n\
 known to habitate intelligent or other life in the entire universe.\n\
@@ -43,7 +42,7 @@ Are you absolutely sure you wish to delete this world?");
 	}
 	else if ( button_id == `generic2 )
 	{
-	    ok = Popup::AnyQuestion( "Great Dilemma",
+	    Popup::AnyQuestion( "Great Dilemma",
 "You must now decide how to save the world.\n
 \n
 If make the wrong decision, creatures from outer space may decide\n
@@ -57,7 +56,7 @@ to face this kind of indecision may kill all of mankind?",
 	}
 	else if ( button_id == `generic3 )
 	{
-	    ok = Popup::AnyQuestion3( "Greatest Dilemma of the Millennium",
+	    Popup::AnyQuestion3( "Greatest Dilemma of the Millennium",
 "You must now decide how to save the world.\n
 \n
 If make the wrong decision, creatures from outer space may decide\n
@@ -73,7 +72,7 @@ to face this kind of indecision may kill all of mankind?",
 	}
 	else if ( button_id == `longText )
 	{
-	    ok = Popup::LongText( "Bad News",
+	    Popup::LongText( "Bad News",
 				    `RichText(
 "<p>Due to unforeseen circumstances it is necessary to <b>format your hard disk</b>.</p>
 <p>This may sound bad enough, but we must <b>format your brain</b>, too.</p>
