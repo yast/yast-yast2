@@ -450,6 +450,24 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 			    `item (`id (i[0]:""), i[1]:i[0]:"")
 			)));
 		}
+		else if (widget == `selection_box)
+		{
+		    w["widget"] = `SelectionBox (`id (w["_cwm_key"]:""),
+			opt_term,
+			w["label"]:w["_cwm_key"]:"",
+			maplist (list<string> i, w["items"]:[], ``(
+			    `item (`id (i[0]:""), i[1]:i[0]:"")
+			)));
+		}
+		else if (widget == `multi_selection_box)
+		{
+		    w["widget"] = `MultiSelectionBox (`id (w["_cwm_key"]:""),
+			opt_term,
+			w["label"]:w["_cwm_key"]:"",
+			maplist (list<string> i, w["items"]:[], ``(
+			    `item (`id (i[0]:""), i[1]:i[0]:"")
+			)));
+		}
 		else if (widget == `intfield)
 		{
 		    integer min = w["minimum"]:0;

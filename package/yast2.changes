@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Tue Feb  8 10:48:25 CET 2005 - jsrain@suse.cz
 
-- added richtext widget support to CWM
+- added richtext and (multi)selection box widget support to CWM
 - enable release notes in inst. proposal also for NCurses
 
 -------------------------------------------------------------------
