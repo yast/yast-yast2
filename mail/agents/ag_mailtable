@@ -308,19 +308,19 @@ while ( <STDIN> )
     {
 	if ($path eq ".table")
 	{
-	    ycp::Return (\@table);
+	    ycp::Return (\@table, 1);
 	}
 	elsif ($path eq ".trailing_comment")
 	{
-	    ycp::Return ($trailing_comment);
+	    ycp::Return ($trailing_comment, 1);
 	}
 	elsif ($path eq ".leading_comment")
 	{
-	    ycp::Return ($leading_comment);
+	    ycp::Return ($leading_comment, 1);
 	}
 	elsif ($path eq ".meta.filename")
 	{
-	    ycp::Return ($filename);
+	    ycp::Return ($filename, 1);
 	}
 	else
 	{

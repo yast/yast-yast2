@@ -1,0 +1,5 @@
+# same as bug 21804
+numeric: 42
+boolean: true
+42: numbers
+false: booleans
