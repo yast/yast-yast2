@@ -10,130 +10,659 @@
 
 {
 
-    module "LogView";
-    textdomain "base";
+module "LogView";
+textdomain "base";
 
-    import "Popup";
-    import "Label";
-    import "Report";
+import "CWM";
+import "Popup";
+import "Label";
+import "Report";
+
+// fallback settings variables
+
+/**
+ * default value of maximum displayed lines
+ */
+integer max_lines_default = 100;
 
 
-    define void RunCommand (map<string, any> param, integer max_lines) ``{
-	string command = (string) (param["command"]:nil);
-	if (command == nil)
+// configuration variables
+
+/**
+ * global parameters for the log displaying widget
+ */
+map<string,any> param = $[];
+
+/**
+ * list of all the logs that can be displayed
+ */
+list<map<string,any> > logs = [];
+
+/**
+ * index of currently selected log
+ */
+integer current_index = 0;
+
+/**
+ * list of actions that can be processed on the logs
+ */
+list<list> mb_actions = [];
+
+
+// status variables
+
+/**
+ * current lines of the selected log
+ */
+list<string> lines = [];
+
+
+// local functions
+
+/**
+ * Get the map describing the particular log file from its index
+ * @param index integer index of the log file
+ * @return a map describing the log file
+ */
+define map<string,any> Index2Descr (integer index) {
+    return logs[index]:$[];
+}
+
+/**
+ * Get maximum lines to display for a log
+ * @param log_descr a map describing the log
+ * @return integer maximum log lines to display
+ */
+define integer GetMaxLines (map<string,any> log_descr) {
+    return log_descr["max_lines"]:param["max_lines"]:max_lines_default;
+}
+
+/**
+ * Starts the log reading command via background agent
+ * @param index integer the index of the log file
+ */
+define void InitLogReading (integer index) {
+    SCR::Execute (.background.kill);
+    map<string, any> log_descr = Index2Descr (index);
+    integer max_lines = GetMaxLines (log_descr);
+    string command = (string) (log_descr["command"]:nil);
+    if (command == nil || command == "")
+    {
+	string file = log_descr["file"]:"";
+	if (file == nil || file == "")
 	{
-	    string grep = param["grep"]:"";
-	    if (grep != "")
-		grep = sformat ("| grep --line-buffered %1", grep);
-	    string lc_command
-		= sformat ("cat %1 %2 | wc -l", param["file"]:"", grep);
-	    map bash_output = (map)SCR::Execute (.target.bash_output, lc_command);
-	    command = "tail -f -n +0 " + param["file"]:"";
-	    string addon = "";
-	    if (bash_output["exit"]:1 == 0)
-	    {
-		string lc = bash_output["stdout"]:"";
-		lc = filterchars (lc, "1234567890");
-		integer lines_count = tointeger (lc);
-		lines_count = lines_count - 2 * max_lines;
-			// don't know why without
-			// doubling it discards more lines, out of YaST2
-			// it works
-		if (max_lines != 0 && lines_count > 0)
-		    addon = sformat ("| tail -n +%1", lines_count);
-	    }
-	    command = sformat ("%1 %2 %3", command, grep, addon);
-	}
-	y2milestone ("Calling background agent with command %1", command);
-	boolean cmdret = (boolean)SCR::Execute (.background.run_output, command);
-	if (! cmdret)
-	{
-	    // message popup
+	    // error report
 	    Report::Error (_("Error occurred while reading the log."));
 	    return;
 	}
-
-
-    }
-
-    /**
-      * Remove unneeded items from a list
-      * If max_lines is 0, then don't remove anything
-      * @param lines a list of strings representing log lines
-      * @param max_lines integer lines that should be saved
-      * @return a list last max_lines of lines
-      */
-    define list<string> DeleteOldLines
-	(list<string> lines, integer max_lines)
-    ``{
-	if (0 == max_lines)
-	    return lines;
-	integer sl = size (lines);
-	if (sl > max_lines)
+	string grep = log_descr["grep"]:"";
+	if (grep != "" && grep != nil)
+	    grep = sformat ("| grep --line-buffered %1", grep);
+	string lc_command
+	    = sformat ("cat %1 %2 | wc -l", log_descr["file"]:"", grep);
+	map bash_output = (map)SCR::Execute (.target.bash_output, lc_command);
+	command = "tail -f -n +0 " + log_descr["file"]:"";
+	string addon = "";
+	if (bash_output["exit"]:1 == 0)
 	{
-	    lines = filter (string l, lines, ``{
-		sl = sl -1;
-		return sl < max_lines;
-	    });
+	    string lc = bash_output["stdout"]:"";
+	    lc = filterchars (lc, "1234567890");
+	    integer lines_count = tointeger (lc);
+	    lines_count = lines_count - 2 * max_lines;
+		// don't know why without
+		// doubling it discards more lines, out of YaST2
+		// it works
+	    if (max_lines != 0 && lines_count > 0)
+		addon = sformat ("| tail -n +%1", lines_count);
 	}
+	command = sformat ("%1 %2 %3", command, grep, addon);
+    }
+    y2milestone ("Calling background agent with command %1", command);
+    boolean cmdret = (boolean)SCR::Execute (.background.run_output, command);
+    if (! cmdret)
+    {
+	// error report
+	Report::Error (_("Error occurred while reading the log."));
+	return;
+    }
+}
+
+/**
+ * Kill processes running on the backgrouns
+ * @param key log widget key
+ */
+define void KillBackgroundProcess (string key) {
+    SCR::Execute (.background.kill);
+}
+
+/**
+ * Remove unneeded items from a list
+ * If max_lines is 0, then don't remove anything
+ * @param lines a list of strings representing log lines
+ * @param max_lines integer lines that should be saved
+ * @return a list last max_lines of lines
+ * FIXME probably used in multiple locations!!!
+ * FIXME variables are global, no need to have them as parameters
+ */
+define list<string> DeleteOldLines (list<string> lines, integer max_lines) {
+    if (0 == max_lines)
 	return lines;
+    integer sl = size (lines);
+    if (sl > max_lines)
+    {
+	lines = filter (string l, lines, {
+	    sl = sl -1;
+	    return sl < max_lines;
+	});
+    }
+    return lines;
+}
+
+/**
+ * Fills the log widget with initial data got from the background agent
+ * @param index integer index of the log file
+ */
+define void FillWidgetWithData (integer index) {
+    sleep (100);
+    map<string,any> log = Index2Descr (index);
+    integer max_lines = GetMaxLines (log);
+
+    integer count = (integer)SCR::Read (.background.newlines);
+
+    if (count > 0)
+    {
+	lines = (list<string>) SCR::Read (.background.newout);
+	lines = DeleteOldLines (lines, max_lines);
+	UI::ChangeWidget (`id (`_cwm_log), `Value,
+	    mergestring (lines, "\n") + "\n");
+    }
+}
+
+/**
+ * Get the help for the log in case of multiple logs
+ * @return string part of the log
+ */
+global define string LogSelectionHelp () {
+    // help for the log widget, part 1, alt. 1
+    return _("<p><b><big>Displayed Log</big></b><br>
+Use <b>Log</b> to select the log you want to display. It will be displayed in
+the field below.</p>");
+}
+
+/**
+ * Get the help for the log in case of a single log
+ * @return string part of the log
+ */
+global define string SingleLogHelp () {
+    // help for the log widget, part 1, alt. 2
+    return _("<p><b><big>The Log</big></b><br>
+This screen displays the log.</p>");
+
+}
+
+/**
+ * Get the second part of the help for the log in case of advanced functions
+ *  and save support
+ * @param label tge label of the menu button
+ * @return string part of the log
+ */
+global define string AdvancedSaveHelp (string label) {
+    // help for the log widget, part 2, alt. 1, %1 is a menu button label
+    return sformat (_("<p>
+To process advanced actions or save the log into a file, click <b>%1</b>
+and select the action to process.</p>"), label);
+
+}
+
+/**
+ * Get the second part of the help for the log in case of advanced functions
+ * @param label tge label of the menu button
+ * @return string part of the log
+ */
+global define string AdvancedHelp (string label) {
+    // help for the log widget, part 2, alt. 2, %1 is a menu button label
+    return sformat (_("<p>
+To process advanced actions, click <b>%1</b>
+and select the action to process.</p>"), label);
+
+}
+
+/**
+ * Get the second part of the help for the log in case of save support
+ * @return string part of the log
+ */
+global define string SaveHelp () {
+    // help for the log widget, part 2, alt. 3
+    return _("<p>
+To save the log into a file, click <b>Save Log</b> and select the file
+to save the log to.</p>");
+}
+
+/**
+ * Get the help of the widget
+ * @param logs integer count of displayed logs
+ * @param parameters map parameters of the log to display
+ * @return string help to the widget
+ */
+define string CreateHelp (integer logs,
+    map parameters)
+{
+    string help = parameters["help"]:"";
+    if (help != "" && help != nil)
+	return help;
+
+    string adv_button = parameters["mb_label"]:"";
+    if (adv_button == "" || adv_button == nil)
+    {
+	// menu button
+	adv_button = _("Ad&vanced");
     }
 
-    /**
-      * Main function for displaying logs
-      * @param param map description of parameters, with following keys
-      * <pre>
-      *  - "file" -- string, filename with the log
-      *  - "grep" -- string, regular expression (grep-like) to be grepped
-      *              in the log (for getting relevant  parts of
-      *              /var/log/messages. If empty or not present, whole file
-      *              is used
-      *  - "command" -- allows to specify comand to get the log for cases
-      *                 where grep isn't enough. If used, file and grep entries
-      *                 are ignored
-      *  - "save" -- boolean, if true, then log saving is possible
-      *  - "actions" -- list, allows to specify additional actions.
-      *                 Each member is a 2- or 3-entry list, first entry is a
-      *                 label for the menubutton, the second one is a function
-      *                 that will be called when the entry is selected,
-      *                 the signature of the function must be void(),
-      *			optional 3rd argument, if set to true, forces
-      *			restarting of the log displaying command after the
-      *			action is performed
-      *  - "help" -- string for a rich text, help to be offered via a popup
-      *              when user clicks the "Help" button. If not present,
-      *              Help button isn't shown
-      *  - "mb_label" -- string, label of the menubutton, if not specified,
-      *                  then "Advanced" is used
-      *  - "max_lines" -- integer, maximum of lines to be displayed. If 0,
-      *                   then display whole file. Default is 100.
-      *  - "log_label" -- header of the LogView widget, if not set, then "Log"
-      *                   is used
-      * </pre>
-      */
-    global define void Display (map<string, any> param) ``{
-	// logview caption
-	string caption = param["log_label"]:_("&Log");
+    if (regexpmatch (adv_button, "^.*&.*$"))
+	adv_button = regexpsub (adv_button, "^(.*)&(.*)$", "\\1\\2");
+
+    boolean save = parameters["save"]:false;
+    if (save == nil)
+	save = false;
+
+    list<map<string,any> > actions_lst = parameters["actions"]:[];
+    if (actions_lst == nil)
+	actions_lst = [];
+    integer actions = size (actions_lst);
+
+    if (save)
+	actions = actions + 1;
+
+    if (logs > 1)
+    {
+	help = LogSelectionHelp ();
+    }
+    else if (actions >= 1 || save)
+    {
+	help = SingleLogHelp ();
+    }
+    else
+    {
+	return "";
+    }
+
+    if (actions >= 2)
+    {
+	if (save)
+	{
+	    help = help + AdvancedSaveHelp (adv_button);
+
+	}
+	else
+	{
+	    help = help + AdvancedHelp (adv_button);
+	}
+
+    }
+    else if (save)
+    {
+	help = help + SaveHelp ();
+    }
+
+    return help;
+}
+
+/**
+ * Get the combo box of the available log files
+ * @param log_maps a list of maps describing all the logs
+ * @return term the combo box widget
+ */
+define term GetLogSelectionCombo (list<map<string,any> > log_maps) {
+    term selection_combo = `Empty ();
+    if (size (log_maps) > 0)
+    {
+	integer index = -1;
+	list items = maplist (map m, log_maps, {
+	    index = index + 1;
+	    return `item (`id (index),
+		// combo box entry (only used as fallback in case
+		// of error in the YaST code)
+		m["log_label"]:m["command"]:m["file"]:_("Log"));
+	});
+	selection_combo = `ComboBox (`id (`cwm_log_files),
+	    `opt (`notify, `hstretch),
+	    _("&Log"),
+	    items);
+    }
+    return selection_combo;
+}
+
+/**
+ * Get the widget with the menu button with actions to be processed on the log
+ * @param actions a list of all actions
+ * @param save boolean true if the log should be offered to be saved
+ * @param mb_label label of the menu button, may be empty for default
+ * @return term widget with the menu button
+ */
+define term GetMenuButtonWidget (list<list> actions, boolean save,
+    string mb_label)
+{
+    list<any> menubutton = [];
+    if (save)
+	// menubutton entry
+	menubutton = add (menubutton, [`_cwm_log_save, _("&Save Log")]);
+
+    if (size (actions) > 0)
+    {
+	integer index = 0;
+	foreach (list a, actions, {
+	    menubutton = add (menubutton, [index, a[0]:""]);
+	    index = index + 1;
+	});
+    }
+
+    if (size (menubutton) > 1)
+    {
+	menubutton = filter (any m, menubutton, ``(
+	    is(m,list) && (((list)m)[0]:nil != nil)
+	));
+	menubutton = maplist (any m, menubutton, {
+	    list ml = (list)m;
+	    return `item (`id (ml[0]:nil), ml[1]:"");
+	});
+	if (mb_label == "" || mb_label == nil)
+	{
+	    mb_label = _("Ad&vanced");
+	}
+	return `MenuButton (`id (`_cwm_log_menu), mb_label, menubutton);
+    }
+    else if (size (menubutton) == 1)
+    {
+	return `PushButton (`id (menubutton[0,0]:(any)""), menubutton[0,1]:"");
+    }
+    return `Empty ();
+}
+
+/**
+ * Get the buttons below the box with the log
+ * @param popup boolean true if running in popup (and Close is needed)
+ * @param glob_param a map of global parameters of the log widget
+ * @param log_maps a list of maps describing all the logs
+ * @return term the widget with buttons
+ */
+define term GetButtonsBelowLog (boolean popup, map<string,any> glob_param,
+    list<map<string,any> > log_maps)
+{
+    term left = `Empty ();
+    term center = `Empty ();
+    term right = `Empty ();
+
+    if (popup)
+    {
+	center = `PushButton (`id(`close), `opt (`key_F9),
+	    Label::CloseButton ());
+
+	if (haskey (glob_param, "help") && glob_param["help"]:"" != "")
+	{
+	    left = `PushButton (`id (`help), Label::HelpButton ());
+	}
+    }
+
+    boolean save = glob_param["save"]:false;
+    string mb_label = glob_param["mb_label"]:_("Ad&vanced");
+    list<list> actions = glob_param["actions"]:[];
+    right = GetMenuButtonWidget (actions, save, mb_label);
+
+    return `HBox (
+	`HWeight (1, left),
+	`HStretch (),
+	`HWeight (1, center),
+	`HStretch (),
+	`HWeight (1, right)
+    );
+}
+
+/**
+ * Get the default entry for the combo box with logs
+ * @param log_maps a list of maps describing all the logs
+ * @return integer the index of the default entry in the combo box
+ */
+define integer GetDefaultItemForLogsCombo (list<map<string,any> > log_maps) {
+    integer default_log = 0;
+    if (size (log_maps) > 0)
+    {
+	integer index = -1;
+	foreach (map m, log_maps, {
+	    index = index + 1;
+	    if (haskey (m, "default") && default_log == 0)
+		default_log = index;
+	});
+    }
+    return default_log;
+}
+
+/**
+ * Switch the displayed log
+ * @param index integer index of the log to display
+ */
+define void LogSwitch (integer index) {
+    lines = [];
+    current_index = index;
+
+    map<string, any> log_descr = Index2Descr (index);
+    // logview caption
+    string caption = log_descr["log_label"]:param["log_label"]:_("&Log");
+    integer max_lines = GetMaxLines (log_descr);
+    UI::ReplaceWidget (`_cwm_log_rp,
+	`LogView (`id (`_cwm_log), caption, 15, max_lines));
+
+    InitLogReading (index);
+    FillWidgetWithData (index);
+}
+
+/**
+ * Initialize the displayed log
+ * @param key log widget key
+ * @param key table widget key
+ */
+global define void LogInit (string key) {
+    param = CWM::GetProcessedWidget ();
+    current_index = param["_cwm_default_index"]:0;
+    mb_actions = param["_cwm_button_actions"]:[];
+    logs = param["_cwm_log_files"]:[];
+    if (UI::WidgetExists (`id (`cwm_log_files)))
+	UI::ChangeWidget (`id (`cwm_log_files), `value, current_index);
+    LogSwitch (current_index);
+}
+
+/**
+ * Handle the event on the log view widget
+ * @param key log widget key
+ * @param event map event to handle
+ * @return symbol always nil
+ */
+global define symbol LogHandle (string key, map event) {
+    param = CWM::GetProcessedWidget ();
+    map<string,any> log = Index2Descr (current_index);
+    integer max_lines = GetMaxLines (log);
+    integer count = (integer)SCR::Read (.background.newlines);
+    if (count > 0)
+    {
+	list<string> new_lines = (list<string>)
+	    SCR::Read (.background.newout);
+	foreach (string l, new_lines, {
+	    UI::ChangeWidget (`id (`_cwm_log), `LastLine, l + "\n");
+	});
+	lines = (list<string>) merge (lines, new_lines);
+	lines = DeleteOldLines (lines, max_lines);
+    }
+    any ret = event["ID"]:nil;
+    // save the displayed log to file
+    if (ret == `_cwm_log_save)
+    {
+	string filename = UI::AskForSaveFileName(
+	    // popup caption
+	    "/tmp", "*.log", _("Save Log as..."));
+	if (filename != nil)
+	{
+	    SCR::Write (.target.string, filename,
+		mergestring (lines, "\n") + "\n");
+	}
+    }
+    // other operation specified by user
+    else if (ret != nil && is (ret, integer))
+    {
+	integer iret = (integer)ret;
+	void() func = (void())(mb_actions[iret, 1]:nil);
+	if (func != nil)
+	    func ();
+	if (mb_actions[iret, 2]:nil == true)
+	{
+	    SCR::Execute (.background.kill);
+	    UI::ChangeWidget (`id (`_cwm_log), `Value, "");
+	    InitLogReading (current_index);
+	}
+    }
+    // switch displayed log file
+    else if (ret == `cwm_log_files)
+    {
+	integer index = (integer)
+	    UI::QueryWidget (`id (`cwm_log_files), `Value);
+	LogSwitch (index);
+    }
+    return nil;
+}
+
+/**
+ * Get the map with the log view widget
+ * @param parameters map parameters of the widget to be created, will be
+ *  unioned with the generated map
+ * <pre>
+ *  - "save" -- boolean, if true, then log saving is possible
+ *  - "actions" -- list, allows to specify additional actions.
+ *                 Each member is a 2- or 3-entry list, first entry is a
+ *                 label for the menubutton, the second one is a function
+ *                 that will be called when the entry is selected,
+ *                 the signature of the function must be void(),
+ *			optional 3rd argument, if set to true, forces
+ *			restarting of the log displaying command after the
+ *			action is performed
+ *  - "mb_label" -- string, label of the menubutton, if not specified,
+ *                  then "Advanced" is used
+ *  - "max_lines" -- integer, maximum of lines to be displayed. If 0,
+ *                   then display whole file. Default is 100.
+ *  - "help" -- string for a rich text, help to be offered via a popup
+ *              when user clicks the "Help" button. If not present,
+ *              default help is shown or Help button is hidden.
+ * - "widget_height" -- height of the LogView widget, to be adjusted
+ *                      so that the widget fits into the dialog well.
+ *                      Test it to find the best value, 15 seems to be
+ *                      good value (is default if not specified)
+ * </pre>
+ * @param log_files a list of logs that will be displayed
+ * <pre>
+ *  - "file" -- string, filename with the log
+ *  - "grep" -- string, regular expression (grep-like) to be grepped
+ *              in the log (for getting relevant  parts of
+ *              /var/log/messages. If empty or not present, whole file
+ *              is used
+ *  - "command" -- allows to specify comand to get the log for cases
+ *                 where grep isn't enough. If used, file and grep entries
+ *                 are ignored
+ *  - "log_label" -- header of the LogView widget, if not set, then the file
+ *                   name or the command is used
+ *  - "default" -- define and set to true to make this log be active after
+ *                 widget is displayed. If not defiend for any log, the
+ *                 first log is automatically default. If defined for multiple
+ *                 logs, the first one is active
+ * </pre>
+ * @return map the log widget
+ */
+global define map CreateWidget (map<string,any> parameters,
+    list<map<string,any> > log_files)
+{
+    // logview caption
+    string caption = param["log_label"]:_("&Log");
+    integer max_lines = param["max_lines"]:max_lines_default;
+    integer height = param["widget_height"]:15;
+
+    integer default_index = GetDefaultItemForLogsCombo (log_files);
+    term top_bar = GetLogSelectionCombo (log_files);
+    term bottom_bar = GetButtonsBelowLog (false, parameters, log_files);
+
+    return union (
+	$[
+	    "widget" : `custom,
+	    "custom_widget" : `VBox (
+		top_bar,
+		`ReplacePoint (`id (`_cwm_log_rp),
+		    `LogView (`id (`_cwm_log), caption, height, max_lines)
+		),
+		bottom_bar
+	    ),
+	    "init" : LogInit,
+	    "handle" : LogHandle,
+	    "cleanup" : KillBackgroundProcess,
+	    "ui_timeout" : 1000,
+	    "_cwm_default_index" : default_index,
+	    "_cwm_log_files" : log_files,
+	    "_cwm_button_actions" : [],
+	    "help" : CreateHelp (size (log_files), parameters),
+	],
+	parameters
+    );
+}
+
+
+// old functions for displaying log as a popup
+
+
+/**
+ * Main function for displaying logs
+ * @param parameters map description of parameters, with following keys
+ * <pre>
+ *  - "file" -- string, filename with the log
+ *  - "grep" -- string, regular expression (grep-like) to be grepped
+ *              in the log (for getting relevant  parts of
+ *              /var/log/messages. If empty or not present, whole file
+ *              is used
+ *  - "command" -- allows to specify comand to get the log for cases
+ *                 where grep isn't enough. If used, file and grep entries
+ *                 are ignored
+ *  - "save" -- boolean, if true, then log saving is possible
+ *  - "actions" -- list, allows to specify additional actions.
+ *                 Each member is a 2- or 3-entry list, first entry is a
+ *                 label for the menubutton, the second one is a function
+ *                 that will be called when the entry is selected,
+ *                 the signature of the function must be void(),
+ *			optional 3rd argument, if set to true, forces
+ *			restarting of the log displaying command after the
+ *			action is performed
+ *  - "help" -- string for a rich text, help to be offered via a popup
+ *              when user clicks the "Help" button. If not present,
+ *              Help button isn't shown
+ *  - "mb_label" -- string, label of the menubutton, if not specified,
+ *                  then "Advanced" is used
+ *  - "max_lines" -- integer, maximum of lines to be displayed. If 0,
+ *                   then display whole file. Default is 100.
+ *  - "log_label" -- header of the LogView widget, if not set, then "Log"
+ *                   is used
+ * </pre>
+ */
+global define void Display (map<string, any> parameters) {
+	param = parameters;
+
 	// menubutton
 	string mb_label = param["mb_label"]:_("Ad&vanced");
-	integer max_lines = param["max_lines"]:100;
+	integer max_lines = param["max_lines"]:max_lines_default;
+	string log_label = param["log_label"]:_("&Log");
 
-	RunCommand (param, max_lines);
+	logs = [param];
 
-	term button_line = `HBox(
-	    `HWeight (1, `ReplacePoint (`id (`rep_left), `HSpacing (0))),
-	    `HStretch (),
-	    `HWeight (1, `PushButton (`id(`close), `opt (`key_F9),
-		Label::CloseButton ())),
-	    `HStretch (),
-	    `HWeight (1, `ReplacePoint (`id (`rep_right), `HSpacing (0)))
-	);
+	InitLogReading (0);
+
+	term button_line = GetButtonsBelowLog (true, param, [param]);
 
         UI::OpenDialog (`HBox (`HSpacing (1), `VBox (
             `VSpacing (1),
             `HSpacing (70),
             // log view header
-            `LogView (`id (`log), caption, 19, max_lines),
+            `LogView (`id (`_cwm_log), log_label, 19, max_lines),
             `VSpacing (1),
 	    button_line,
             `VSpacing (1)), `HSpacing (1)));
@@ -143,71 +672,13 @@
 	    UI::ReplaceWidget (`id (`rep_left),
 		`PushButton (`id (`help), Label::HelpButton ()));
 	}
-	list<any> menubutton = [];
-	if (param["save"]:false == true)
-	    // menubutton entry
-	    menubutton = add (menubutton, [`save, _("Save Log")]);
+	mb_actions = param["actions"]:[];
 
-	list<list> actions = param["actions"]:[];
-	if (size (actions) > 0)
-	{
-	    integer index = 0;
-	    foreach (list a, actions, ``{
-		menubutton = add (menubutton, [index, a[0]:""]);
-		index = index + 1;
-	    });
-	}
-
-	if (size (menubutton) > 1)
-	{
-	    menubutton = filter (any m, menubutton, ``(
-		is(m,list) && (((list)m)[0]:nil != nil)
-	    ));
-	    menubutton = maplist (any m, menubutton,
-		         {
-			   if (is (m, list))
-			   {
-			     list ml = (list)m;
-			     return `item (`id (ml[0]:nil), ml[1]:"");
-			   }
-			   else
-			   {
-			     return `item (`id (nil), "");
-			   }
-			 });
-	    UI::ReplaceWidget (`id (`rep_right),
-		`MenuButton (`id (`log_menu), mb_label, menubutton));
-	}
-	else if (size (menubutton) == 1)
-	{
-	    UI::ReplaceWidget (`id (`rep_right),
-		`PushButton (`id (menubutton[0,0]:""), menubutton[0,1]:""));
-	}
-
-	sleep (100);
-	integer count = (integer)SCR::Read (.background.newlines);
-	list<string> lines = [];
-	if (count > 0)
-	{
-	    lines = (list<string>) SCR::Read (.background.newout);
-	    lines = DeleteOldLines (lines, max_lines);
-	    UI::ChangeWidget (`id (`log), `Value,
-		mergestring (lines, "\n") + "\n");
-	}
+	FillWidgetWithData (0);
 
         any ret = nil;
         while (ret != `close && ret != `cancel)
 	{
-	    integer count = (integer)SCR::Read (.background.newlines);
-	    if (count > 0)
-	    {
-		list<string> new_lines = (list<string>)SCR::Read (.background.newout);
-		foreach (string l, new_lines, ``{
-		    UI::ChangeWidget (`id (`log), `LastLine, l + "\n");
-		});
-		lines = (list<string>) merge (lines, new_lines);
-		lines = DeleteOldLines (lines, max_lines);
-	    }
 	    map event = (map)UI::WaitForEvent (1000);
 	    ret = event["ID"]:nil;
 	    if (ret == `help)
@@ -225,51 +696,32 @@
 		ret = nil;
 		UI::CloseDialog ();
 	    }
-	    else if (ret == `save)
+	    else
 	    {
-		string filename = UI::AskForSaveFileName(
-		    // popup caption
-		    "/tmp", "*.log", _("Save Log as..."));
-		if (filename != nil)
-		{
-		    SCR::Write (.target.string, filename,
-			mergestring (lines, "\n") + "\n");
-		}
-	    }
-	    else if (ret != nil && is (ret, integer))
-	    {
-		integer iret = (integer)ret;
-		void() func = (void())(actions[iret, 1]:nil);
-		if (func != nil)
-		    func ();
-		if (actions[iret, 2]:nil == true)
-		{
-		    SCR::Execute (.background.kill);
-		    UI::ChangeWidget (`id (`log), `Value, "");
-		    RunCommand (param, max_lines);
-		}
+		LogHandle ("", event);
 	    }
 	}
 	SCR::Execute (.background.kill);
         UI::CloseDialog ();
         return;
-    }
+}
 
-    /**
-      * Display specified file, list 100 lines
-      * @param file string filename of file with the log
-      */
-    global define void DisplaySimple (string file) ``{
-	Display ($[ "file" : file ]);
-    }
+/**
+ * Display specified file, list 100 lines
+ * @param file string filename of file with the log
+ */
+global define void DisplaySimple (string file) {
+    Display ($[ "file" : file ]);
+}
 
-    /**
-      * Display log with filtering with 100 lines
-      * @param file string filename of file with the log
-      * @param grep string regular expression to be grepped in file
-      */
-    global define void DisplayFiltered (string file, string grep) ``{
-	Display ($[ "file" : file, "grep" : grep ]);
-    }
+/**
+ * Display log with filtering with 100 lines
+ * @param file string filename of file with the log
+ * @param grep string regular expression to be grepped in file
+ */
+global define void DisplayFiltered (string file, string grep) {
+    Display ($[ "file" : file, "grep" : grep ]);
+}
+
 
 }
