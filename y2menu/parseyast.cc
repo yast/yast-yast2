@@ -1,4 +1,5 @@
-
+#include <string>
+#include <vector>
 #include <glob.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -10,6 +11,8 @@
 #include "parseyast.h"
 #include "myintl.h"
 
+using std::string;
+using std::vector;
 
 /*
   Textdomain "base"
@@ -18,31 +21,27 @@
 
 void getmodules ()
 {
+    string mod_name;
+    string namestr;
+    string textdomain;
+    string group;
+    string infostr;
+    string args;
+    int skey = 0;
+    char *tmpstr = 0;
+    size_t tmpstr_len = 0;
+
     glob_t globbuf;
     glob (CONFIGDIR "/*.y2cc", GLOB_NOSORT, 0, &globbuf);
 
     for (unsigned int i = 0; i < globbuf.gl_pathc; i++)
     {
-	char mod_name[MAXSTRLEN] = "";
-	char namestr[MAXSTRLEN] = "";
-	char textdomain[MAXSTRLEN] = "";
-	char group[MAXSTRLEN] = "";
-	char infostr[MAXSTRLEN] = "";
-	char args[MAXSTRLEN] = "";
-	int skey = 0;
-
 	FILE *mod_file;
 
 	mod_file = fopen (globbuf.gl_pathv[i], "r");
 
-	while (!feof (mod_file))
+	while (getline (&tmpstr, &tmpstr_len, mod_file) != -1)
 	{
-	    char tmpstr[MAXSTRLEN + 1];
-
-	    tmpstr[0] = 0;
-	    fgets (tmpstr, MAXSTRLEN, mod_file);
-	    tmpstr[MAXSTRLEN] = 0;
-
 	    if (!strncmp (tmpstr, MOD_STR, MOD_STR_LEN))
 	    {
 		int i;
@@ -54,41 +53,40 @@ void getmodules ()
 			break;
 		    }
 
-		strcpy (mod_name, tmpstr + MOD_STR_LEN);
+		mod_name = string (tmpstr + MOD_STR_LEN, i - MOD_STR_LEN);
 	    }			/* if */
 	    else if (!strncmp (tmpstr, "Name", 4))
-		strcpy (namestr, cut_str (tmpstr));
+		namestr = cut_str (tmpstr);
 	    else if (!strncmp (tmpstr, "Group", 5))
-		strcpy (group, cut_str (tmpstr));
+		group = cut_str (tmpstr);
 	    else if (!strncmp (tmpstr, "Helptext", 8))
-		strcpy (infostr, cut_str (tmpstr));
+		infostr = cut_str (tmpstr);
 	    else if (!strncmp (tmpstr, "Arguments", 9))
-		strcpy (args, cut_str (tmpstr));
+		args = cut_str (tmpstr);
 	    else if (!strncmp (tmpstr, "Textdomain", 10))
-		strcpy (textdomain, cut_str (tmpstr));
+		textdomain = cut_str (tmpstr);
 	    if (!strncmp (tmpstr, "SortKey", 7))
-		skey = atoi (cut_str (tmpstr));
+		skey = atoi (cut_str (tmpstr).c_str ());
 	}			/* while */
 	fclose (mod_file);
 
 	add_module (mod_name, namestr, group, infostr, textdomain, args, skey);
-
     }
+
+    free (tmpstr);
 }
 
 
 void getgroup ()
 {
     FILE *grp_file;
-    char tmpstr[MAXSTRLEN + 1];
+    char *tmpstr = 0;
+    size_t tmpstr_len = 0;
+    grp_data group;
 
     grp_file = fopen (GROUPS_FILE, "r");
-    while (!feof (grp_file))
+    while (getline (&tmpstr, &tmpstr_len, grp_file) != -1)
     {
-	tmpstr[0] = 0;
-
-	fgets (tmpstr, MAXSTRLEN, grp_file);
-	tmpstr[MAXSTRLEN] = 0;
 	if (!strncmp (tmpstr, GROUP_STR, strlen (GROUP_STR)))
 	{
 	    int i;
@@ -100,68 +98,61 @@ void getgroup ()
 		    break;
 		}
 
-	    strcpy (groups[grp_cnt].name, tmpstr + strlen (GROUP_STR));
-	    groups[grp_cnt].mod_cnt = 0;
+	    group.name = string (tmpstr + strlen (GROUP_STR));
 	}
 	else
 	{
 	    if (!strncmp (tmpstr, "Name", 4))
 	    {
 		set_textdomain ("general");
-		strcpy (groups[grp_cnt].textstr, _(cut_str (tmpstr)));
+		group.textstr = string (_(cut_str (tmpstr).c_str ()));
 	    }
 	    else if (!strncmp (tmpstr, "SortKey", 7))
 	    {
-		groups[grp_cnt].skey = atoi (cut_str (tmpstr));
-		grp_cnt++;
+		group.skey = atoi (cut_str (tmpstr).c_str ());
+		groups.push_back (group);
+		modules.push_back (vector<mod_data> ());
 	    }
 	}				/* else */
     }				/* while */
 
     fclose (grp_file);
+    free (tmpstr);
 }
 
 
-char *cut_str (char *str)
+string cut_str (char *str)
 {
-    char tmpstr[MAXSTRLEN + 1] = "";
-    int i;
+    string result = string (str);
 
-    str[strlen (str) - 1] = 0;
+    // Remove newline
+    result.erase (result.size() - 1);
 
-    strcpy (tmpstr, str);
-    for (i = 0; i < strlen (tmpstr); i++)
-	if (tmpstr[i] == '=')
+    for (string::iterator i = result.begin (); i != result.end (); i++)
+	if (*i == '=')
 	{
-	    if (tmpstr[i + 1] == ' ')
-	    {
-		strcpy (str, tmpstr + i + 2);
-		break;
-	    }
-	    else
-	    {
-		strcpy (str, tmpstr + i + 1);
-		break;
-	    }
+	    if (++i != result.end () && *i == ' ')
+	       ++i;
+	    result.erase (result.begin (), i);
+	    break;
 
 	}
 
-    for (i = 0; i < strlen (str); i++)
-	if (str[i] == '\"')
+    for (string::iterator i = result.begin (); i != result.end (); i++)
+	if (*i == '\"')
 	{
-	    strcpy (tmpstr, str + i + 1);
+	    result.erase (result.begin (), ++i);
 	    break;
 	}
 
-    for (i = strlen (tmpstr); i > 0; i--)
-	if (tmpstr[i] == '\"')
+    for (string::reverse_iterator i = result.rbegin (); i != result.rend (); i++)
+	if (*i == '\"')
 	{
-	    tmpstr[i] = 0;
-	    strcpy (str, tmpstr);
+	    result.erase (i.base () - 1, result.end ());
 	    break;
 	}
 
-    return str;
+    return result;
 }
 
 
@@ -172,14 +163,15 @@ char *trans_text (const char *textdomain, char *trans_str)
 }
 
 
-void add_module (char *mod_name, char *namestr, char *group, char *infostr,
-		 char *textdomain, char *args, int skey)
+void add_module (string mod_name, string namestr, string group, string infostr,
+		 string textdomain, string args, int skey)
 {
     int i;
     int group_ok = 0;
+    mod_data module;
 
-    for (i = yast_grp_all ? 1 : 0; i < grp_cnt; i++)
-	if (!strcmp (groups[i].name, group))
+    for (i = yast_grp_all ? 1 : 0; i < groups.size (); i++)
+	if (groups[i].name == group)
 	{
 	    group_ok = 1;
 	    break;
@@ -188,31 +180,29 @@ void add_module (char *mod_name, char *namestr, char *group, char *infostr,
     if (!group_ok)
 	return;
 
-    set_textdomain (textdomain);
+    set_textdomain (textdomain.c_str ());
 
-    strcpy (modules[i][groups[i].mod_cnt].name, mod_name);
-    strcpy (modules[i][groups[i].mod_cnt].textstr, _(namestr));
-    strcpy (modules[i][groups[i].mod_cnt].infostr, _(infostr));
-    strcpy (modules[i][groups[i].mod_cnt].textdomain, textdomain);
-    strcpy (modules[i][groups[i].mod_cnt].args, args);
-    strcpy (modules[i][groups[i].mod_cnt].group, group);
-    modules[i][groups[i].mod_cnt].skey = skey;
+    module.name = mod_name;
+    module.textstr = string (_(namestr.c_str ()));
+    module.infostr = string (_(infostr.c_str ()));
+    module.textdomain = textdomain;
+    module.args = args;
+    module.group = group;
+    module.skey = skey;
+    modules[i].push_back (module);
 
     /* add to group all */
     if (yast_grp_all)
     {
-	strcpy (modules[0][groups[0].mod_cnt].name, mod_name);
-	strcpy (modules[0][groups[0].mod_cnt].textstr, _(namestr));
-	strcpy (modules[0][groups[0].mod_cnt].infostr, _(infostr));
-	strcpy (modules[0][groups[0].mod_cnt].textdomain, textdomain);
-	strcpy (modules[0][groups[0].mod_cnt].args, args);
-	strcpy (modules[0][groups[0].mod_cnt].group, group);
-	modules[0][groups[0].mod_cnt].skey = skey;
-
-	groups[0].mod_cnt++;
+	module.name = mod_name;
+	module.textstr = string (_(namestr.c_str ()));
+	module.infostr = string (_(infostr.c_str ()));
+	module.textdomain = textdomain;
+	module.args = args;
+	module.group = group;
+	module.skey = skey;
+	modules[0].push_back (module);
     }
-
-    groups[i].mod_cnt++;
 }
 
 
@@ -220,6 +210,6 @@ void getbuttons ()
 {
     set_textdomain ("base");
 
-    strcpy (button_help, _("&Help") + 1); // FIXME !!! HELP !!!
-    strcpy (button_cancel, _("&Quit") + 1); // FIXEM !!! HELP !!!
+    button_help = _("&Help") + 1; // FIXME !!! HELP !!!
+    button_cancel = _("&Quit") + 1; // FIXEM !!! HELP !!!
 }

@@ -1,8 +1,13 @@
+#include <vector>
+#include <string>
+#include <locale.h>
 
 #include "yastfunc.h"
 #include "parseyast.h"
 #include "myintl.h"
 
+using std::vector;
+using std::string;
 
 /*
   Textdomain "base"
@@ -17,10 +22,8 @@
 void printhelp ();
 int parseopt (char *option);
 
-grp_data groups[MAXGROUPS];
-mod_data modules[MAXGROUPS][MAXMODULES];
-
-int grp_cnt = 0;
+vector<grp_data> groups;
+vector<vector<mod_data> > modules;
 
 int sort = BYKEY;
 int yast_mod_auto = 1;
@@ -28,9 +31,10 @@ int yast_grp_all = 0;
 int yast_dyn_mod = 0;
 int yast_quit_grp = 1;
 
-char button_help[20];
-char button_cancel[20];
+const char *button_help;
+const char *button_cancel;
 int cmpmod (const void *mod1, const void *mod2);
+static int current_grp;
 int cmpgrp (const void *grp1, const void *grp2);
 
 
@@ -58,34 +62,54 @@ main (int argc, const char *const *argv)
     {
 	set_textdomain ("base");
 
-	strcpy (groups[0].name, "All");
-	strcpy (groups[0].textstr, _("&All") + 1); // FIXME !!! HELP !!!
-	groups[0].skey = 0;
-	groups[0].mod_cnt = 0;
-	grp_cnt = 1;
+	grp_data group;
+	group.name = string ("All");
+	group.textstr = string (_("&All") + 1); // FIXME !!! HELP !!!
+	group.skey = 0;
+	groups.push_back (group);
+	modules.push_back (vector<mod_data> ());
     }
-    else
-	grp_cnt = 0;
 
     getbuttons ();
     getgroup ();
 
-    qsort (groups, grp_cnt, sizeof (grp_data), cmpgrp);
+    int *map = new int[groups.size()];
+    for (grp = 0; grp < groups.size(); grp++)
+	map[grp] = grp;
+    qsort (map, groups.size(), sizeof (int), cmpgrp);
+    vector<grp_data> new_groups;
+    for (grp = 0; grp < groups.size(); grp++)
+	new_groups.push_back(groups[map[grp]]);
+    groups = new_groups;
+    delete[] map;
 
     getmodules ();
-    for (grp = 0; grp < grp_cnt; grp++)
-	qsort (modules[grp], groups[grp].mod_cnt, sizeof (mod_data), cmpmod);
+    for (grp = 0; grp < groups.size(); grp++)
+    {
+	map = new int[modules[grp].size()];
+	for (mod = 0; mod < modules[grp].size(); mod++)
+	    map[mod] = mod;
+	current_grp = grp;
+	qsort (map, modules[grp].size(), sizeof (int), cmpmod);
+	vector<mod_data> new_modules;
+	for (mod = 0; mod < modules[grp].size(); mod++)
+	    new_modules.push_back(modules[grp][map[mod]]);
+	modules[grp] = new_modules;
+	delete[] map;
+    }
 
     if (argc > 1 && !strcmp (argv[1], "--dump"))
     {
 
-	fprintf (stderr, "grp_cnt: %d\n", grp_cnt);
-	for (grp = 0; grp < grp_cnt; grp++)
+	fprintf (stderr, "grp_cnt: %d\n", (int) groups.size());
+	for (grp = 0; grp < groups.size(); grp++)
 	{
-	    fprintf (stderr, "%s mod_cnt:%d  skey:%d\n", groups[grp].textstr,
-		     groups[grp].mod_cnt, groups[grp].skey);
-	    for (mod = 0; mod < groups[grp].mod_cnt; mod++)
-		fprintf (stderr, "  %s skey:%d\n", modules[grp][mod].textstr,
+	    fprintf (stderr, "%s mod_cnt:%d  skey:%d\n",
+		     groups[grp].textstr.c_str(),
+		     (int) modules[grp].size(), groups[grp].skey);
+	    for (mod = 0; mod < modules[grp].size(); mod++)
+		fprintf (stderr, "  %s skey:%d\n",
+			 modules[grp][mod].textstr.c_str(),
 			 modules[grp][mod].skey);
 	}
 
@@ -94,10 +118,10 @@ main (int argc, const char *const *argv)
 
     if (yast_quit_grp)
     {
-	strcpy (groups[grp_cnt].name, button_cancel);
-	strcpy (groups[grp_cnt].textstr, button_cancel);
-	groups[grp_cnt].mod_cnt = 0;
-	grp_cnt++;
+	grp_data group;
+	group.name = string (button_cancel);
+	group.textstr = string (button_cancel);
+	groups.push_back (group);
     }
 
     while (!ret)
@@ -113,15 +137,15 @@ main (int argc, const char *const *argv)
 
 int cmpgrp (const void *grp1, const void *grp2)
 {
-    grp_data *a = (grp_data *) grp1, *b = (grp_data *) grp2;
+    int a = *(int *) grp1, b = *(int *) grp2;
 
     if (sort == BYNAME)
-	return strcmp (a->textstr, b->textstr);
+	return groups[a].textstr.compare (groups[b].textstr);
     if (sort == BYKEY)
     {
-	if (a->skey > b->skey)
+	if (groups[a].skey > groups[b].skey)
 	    return 1;
-	if (a->skey < b->skey)
+	if (groups[a].skey < groups[b].skey)
 	    return -1;
     }
 
@@ -131,16 +155,16 @@ int cmpgrp (const void *grp1, const void *grp2)
 
 int cmpmod (const void *mod1, const void *mod2)
 {
-    mod_data *a = (mod_data *) mod1, *b = (mod_data *) mod2;
+    int a = *(int *) mod1, b = *(int *) mod2;
 
     if (sort == BYNAME)
-	return strcmp (a->textstr, b->textstr);
+	return modules[current_grp][a].textstr.compare (modules[current_grp][b].textstr);
 
     if (sort == BYKEY)
     {
-	if (a->skey > b->skey)
+	if (modules[current_grp][a].skey > modules[current_grp][b].skey)
 	    return 1;
-	if (a->skey < b->skey)
+	if (modules[current_grp][a].skey < modules[current_grp][b].skey)
 	    return -1;
     }
 
@@ -195,6 +219,8 @@ int parseopt (char *option)
 	yast_quit_grp = 0;
 	return 1;
     }
+    if (!strcmp (option, "--dump"))
+	return 1;
     return 0;
 }
 
