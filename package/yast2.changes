@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jul 30 11:37:44 CEST 2004 - jsrain@suse.cz
+
+- adapted CWMServiceStart.ycp functionality for box product
+
+-------------------------------------------------------------------
 Thu Jul 29 09:47:51 CEST 2004 - nashif@suse.de
 
 - New module for interaction with linuxrc(yast.inf and install.inf 
