@@ -161,6 +161,13 @@
      */
     global string io_scheduler = "as";
 
+    /**
+     * Value of FAM_LOCAL_ONLY in /etc/sysconfig/fam
+     * One of "kde", "gnome", "always", "never" (default)
+     * Adds according to the default window manager
+     * No need to save in the system
+     */
+    global string fam_local_only = "never";
 
     /**
      * UI mode
