@@ -574,38 +574,36 @@ You will need to reinstall.");
 
 
 
-	/**
-     *
+    /**
+     * Clear feddback message
+     * @return void
      */
-	global define void ClearFeedback() ``{
-    if ( feedback_open )
-        UI::CloseDialog();
+    global define void ClearFeedback() ``{
+        if ( feedback_open )
+            UI::CloseDialog();
+        feedback_open = false;
+    };
 
-	};
 
-	/**
-     *
+    /**
+     * Show popup with a headline and a message for feedback
+     * @param string headline of Feedback popup
+     * @param string the feedback message
+     * @return void
      */
-	global define void FinishFeedback() ``{
-    feedback_open = false;
-	};
+    global define void ShowFeedback(string headline, string message) ``{
+        if (feedback_open) {
+            UI::CloseDialog();
+        }
+        term button_box =  `Empty();
+        UI::BusyCursor();
+        UI::OpenDialog(
+                `opt(`decorated),
+                createPopupLayoutInternal( headline, message, button_box )
+                );
 
-	/**
-     *
-     */
-	global define void ShowFeedback(string headline, string message) ``{
-	if (feedback_open) {
-		UI::CloseDialog();
-	}
-	term button_box =  `Empty();
-	UI::BusyCursor();
-	UI::OpenDialog(
-		       `opt(`decorated),
-		       createPopupLayoutInternal( headline, message, button_box )
-		       );
-
-	feedback_open = true;
-	};
+        feedback_open = true;
+    };
 
 
     /**
