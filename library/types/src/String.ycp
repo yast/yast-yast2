@@ -107,29 +107,21 @@ global define string FormatSizeFixed(integer bytes)``{
 }
 
 /**
- * Remove blanks at begin and end of input string
- * @param input	string to be stripped
+ * Remove blanks at begin and end of input string.
+ * @param input string to be stripped
  * @return stripped string
- * @example CutBlanks("  any input     ") -> "any input"
+ * @example CutBlanks("  any  input     ") -> "any  input"
  */
 global define string CutBlanks(string input) ``{
 
     if(input == nil || size(input) < 1) return "";
 
-    integer pos = findfirstnotof(input, " \t");
+    integer pos1 = findfirstnotof(input, " \t");
+    if(pos1 == nil) return "";
 
-    if(pos == nil) return "";
-    string output = substring(input, pos);
+    integer pos2 = findlastnotof(input, " \t");
 
-    /* FIXME: use findlastnotof */
-    pos = size(output) - 1;
-    string c = "";
-    do {
-	c = substring(output, pos, 1);
-	pos = pos - 1;
-    } while(c == " " || c == "\t");
-
-    return substring(output, 0, pos+2);
+    return substring(input, pos1, pos2 - pos1 + 1);
 }
 
 /**
@@ -433,14 +425,14 @@ global define string Pad( string text, integer length ) ``{
         }
         return text+pad;
 }
-    
+
 
 /**
- * Remove first or every match of given regular expression from a string 
+ * Remove first or every match of given regular expression from a string
  * (e.g. CutRegexMatch( "abcdef12ef34gh000", "[0-9]+", true ) -> "abcdefefgh",
  * CutRegexMatch( "abcdef12ef34gh000", "[0-9]+", false ) -> "abcdefef34gh000")
  *
- * @param input string that might occur regex 
+ * @param input string that might occur regex
  * @param regex regular expression to search for, must not contain brackets
  * @param glob flag if only first or every occuring match should be removed
  * @return string that has matches removed
@@ -453,7 +445,7 @@ global define string CutRegexMatch(string input, string regex, boolean glob) ``{
 	list p = regexppos( output, regex );
 	do
 	    {
-	    output = substring( output, 0, p[0]:0 ) + 
+	    output = substring( output, 0, p[0]:0 ) +
 	             substring( output, p[0]:0+p[1]:0 );
 	    p = regexppos( output, regex );
 	    }
