@@ -1,5 +1,5 @@
 #
-# Makefile.am for yast2-lib-wizard/doc
+# Makefile.am for yast2/library/wizard/doc
 #
 
 SUBDIRS = autodocs examples
@@ -9,19 +9,3 @@ htmldir = $(docdir)
 
 html_DATA = $(wildcard *.html *.png README*)
 EXTRA_DIST = $(html_DATA)
-
-#common_popups_doc.html	\
-#	AnyQuestion.png		\
-#	ConfirmAbort.png	\
-#	ContinueCancelHeadline.png	\
-#	ContinueCancel.png	\
-#	Error.png	\
-#	LongText.png	\
-#	Message.png	\
-#	ModuleError.png	\
-#	Notify.png	\
-#	TimedMessage.png	\
-#	Warning.png	\
-#	YesNoHeadline.png	\
-#	YesNo.png
-
