@@ -44,7 +44,6 @@ TEST(``(String::CutBlanks(nil)), [], nil);
 TEST(``(String::CutBlanks("")), [], nil);
 TEST(``(String::CutBlanks(" ")), [], nil);
 
-/*
 TEST(``(String::CutBlanks("abc")), [], nil);
 TEST(``(String::CutBlanks(" abc")), [], nil);
 TEST(``(String::CutBlanks("abc ")), [], nil);
@@ -60,6 +59,14 @@ TEST(``(String::CutBlanks("  ab c")), [], nil);
 TEST(``(String::CutBlanks("ab c  ")), [], nil);
 TEST(``(String::CutBlanks("  ab c  ")), [], nil);
 TEST(``(String::CutBlanks("ab  c")), [], nil);
-*/
+
+DUMP("String::CutZeros");
+TEST(``(String::CutZeros(nil)), [], nil);
+TEST(``(String::CutZeros("")), [], nil);
+TEST(``(String::CutZeros("1")), [], nil);
+TEST(``(String::CutZeros("01")), [], nil);
+TEST(``(String::CutZeros("001")), [], nil);
+TEST(``(String::CutZeros("0")), [], nil);
+TEST(``(String::CutZeros("00")), [], nil);
 
 }
