@@ -1,6 +1,6 @@
 /**
  * Module:      Linuxrc
- * File: *	modules/Linuxrc.ycp
+ * File:	modules/Linuxrc.ycp
  * Purpose:	Interaction with linuxrc
  *
  * Author:	Anas Nashif <nashif@suse.de?
@@ -11,10 +11,9 @@
     import "Mode";
 
     /**
-     * WriteYaSTInf()
-     * Write /etc/yast.inf
-     * @param map linuxrc	map of key value pairs for /etc/yast.inf
-     *
+     * Write /etc/yast.inf during installation
+     * @param linuxrc	map of key value pairs for /etc/yast.inf
+     * @return void
      */
     global define void WriteYaSTInf (map<string,string> linuxrc)
     {
@@ -35,10 +34,11 @@
     /*
      * Copy /etc/install.inf into built system so that the
      * second phase of the installation can find it.
+     * @param root mount point of system
+     * @return boolean true on success
      */
     global boolean SaveInstallInf(string root)
     {
-
         if (Mode::initial && !Mode::test )
         {
             SCR::Execute (.target.bash, "/bin/grep -v Sourcemounted /etc/install.inf >" +

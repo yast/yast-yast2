@@ -129,6 +129,7 @@ define term createPopupLayoutInternalWithLabel(string headline, string message, 
 
 /**
  * Indicator for empty headline for popups that can optionally have one
+ *
  * This is really just an alias for the empty string "", but it is
  * slightly better readable.
  *
@@ -198,6 +199,7 @@ define term AnyQuestionButtonBox (
  * @param yes_button_message	label on affirmative buttons (on left side)
  * @param no_button_message	label on negating button (on right side)
  * @param focus			`focus_yes (first button) or `focus_no (second button)
+ * @screenshot screenshots/AnyQuestion.png
  *
  * @return true:  first button has been clicked
  *	 false: second button has been clicked
@@ -233,7 +235,8 @@ global define boolean AnyQuestion( string headline,
  * @param yes_button_message	label on affirmative buttons (on left side)
  * @param no_button_message	label on negating button (on right side)
  * @param focus			`focus_yes (first button) or `focus_no (second button)
- * @param integer		timeout, if 0, normal behaviour
+ * @param timeout_seconds	        timeout, if 0, normal behaviour
+ * @return boolean              True if Yes, False if no
  * @see AnyQuestion
  */
 global define boolean TimedAnyQuestion( string headline,
@@ -273,7 +276,7 @@ global define boolean TimedAnyQuestion( string headline,
 		   );
 
     any which_input = nil;
-    
+
     while (timeout_seconds > 0) {
 	which_input = UI::TimeoutUserInput( 1000 );
 	if (which_input == `timed_ok)
@@ -296,6 +299,7 @@ global define boolean TimedAnyQuestion( string headline,
 /**
  * Dialog which displays the "message" and has a <b>Continue</b>
  * and a <b>Cancel</b> button.
+ *
  * This popup should be used to confirm possibly dangerous actions and if
  * it's useful to display a short headline (without headline
  * Popup::ContinueCancel() can be used).
@@ -303,7 +307,7 @@ global define boolean TimedAnyQuestion( string headline,
  *
  * Returns true if Continue is clicked.
  *
- * <p><img src="../ContinueCancelHeadline.png" /></p>
+ * @screenshot screenshot/ContinueCancelHeadline.png
  *
  * @param  headline short headline or Popup::NoHeadline()
  * @param  message  message string
@@ -333,11 +337,12 @@ global define boolean ContinueCancelHeadline (string headline, string message) {
 /**
  * Dialog which displays the "message" and has a <b>Continue</b>
  * and a <b>Cancel</b> button.
+ *
  * This popup should be used to confirm possibly dangerous actions.
  * The default button is Continue.
  * Returns true if Continue is clicked.
  *
- * <p><img src="../ContinueCancel.png" /></p>
+ * @screenshot screenshots/ContinueCancel.png
  *
  * @param  message  message string
  * @return boolean
@@ -358,6 +363,7 @@ global define boolean ContinueCancel (string message) {
 /**
  * This dialog displays "message" (a question) and has a <b>Yes</b> and
  * a <b>No</b> button.
+ *
  * It should be used for decisions about two about equivalent paths,
  * not for simple confirmation - use "Popup::ContinueCancel()" for those.
  * A short headline can be displayed (without headline you can use Popup::YesNo()).
@@ -366,7 +372,7 @@ global define boolean ContinueCancel (string message) {
  *
  * Returns true if <b>Yes</b> is clicked.
  *
- * <p><img src="../YesNoHeadline.png" /></p>
+ * @screenshot screenshots/YesNoHeadline.png
  *
  * @param  headline	short headline or Popup::NoHeadline()
  * @param  message	message string
@@ -394,12 +400,13 @@ global define boolean YesNoHeadline(string headline, string message) {
 
 /**
  * Display a yes/no question and wait for answer.
+ *
  * Should be used for decisions about two about equivalent paths,
  * not for simple confirmation - use "Popup::ContinueCancel()" for those.
  * The default button is Yes.
  * Returns true if <b>Yes</b> is clicked.
  *
- * <p><img src="../YesNo.png" /></p>
+ * @screenshot screenshots/YesNo.png
  *
  * @param  message	message string
  * @return boolean
@@ -427,7 +434,7 @@ global define boolean YesNo(string message) {
  * i.e. without special parameters for HTML-like text or with
  * `opt(`plainText) for plain ASCII text without HTML tags.
  *
- * <p><img src="../LongText.png" /></p>
+ * @screenshot screenshots/LongText.png
  *
  * @param  headline short headline
  * @param  richtext  text input is `Richtext()
@@ -517,7 +524,7 @@ global define boolean AnyQuestionRichText (string headline,
  * According to the "severity" parameter an appropriate text will be
  * displayed indicating what the user has to expect when he really aborts now.
  *
- * <p><img src="../ConfirmAbort.png" /></p>
+ * @screenshot screenshots/ConfirmAbort.png
  *
  * @param severity		`painless, `incomplete, `unusable
  *
@@ -634,12 +641,12 @@ global define boolean ReallyAbort( boolean have_changes ) {
 /**
  * Show a simple message and wait until user clicked "OK".
  *
- * <p><img src="../Message.png" /></p>
  *
  * @param message		message string
  *
  * @example  Popup::Message("This is an information about ... ." );
  *
+ * @screenshot screenshots/Message.png
  * @see AnyMessage
  * @see Notify
  * @see Warning
@@ -670,7 +677,9 @@ global define void Message(string message) {
 
 
 /**
- * Generic message popup: Show a message with optional headline above and
+ * Generic message popup
+ *
+ * Show a message with optional headline above and
  * wait until user clicked "OK".
  *
  * @param headline	optional headline or Popup::NoHeadline()
@@ -700,7 +709,7 @@ global define void AnyMessage(string headline, string message) {
 
 
 /**
- * Clear feddback message
+ * Clear feedback message
  * @return void
  */
 global define void ClearFeedback() {
@@ -712,8 +721,8 @@ global define void ClearFeedback() {
 
 /**
  * Show popup with a headline and a message for feedback
- * @param string headline of Feedback popup
- * @param string the feedback message
+ * @param headline headline of Feedback popup
+ * @param message the feedback message
  * @return void
  */
 global define void ShowFeedback(string headline, string message) {
@@ -734,12 +743,12 @@ global define void ShowFeedback(string headline, string message) {
 /**
  * Show a warning message and wait until user clicked "OK".
  *
- * <p><img src="../Warning.png" /></p>
  *
  * @param message warning message string
  *
  * @example Popup::Warning("Something is wrong. Please check your configuration." );
  *
+ * @screenshot screenshots/Warning.png
  * @see Message
  * @see Notify
  * @see Error
@@ -755,11 +764,10 @@ global define void Warning(string message) {
 /**
  * Show an error message and wait until user clicked "OK".
  *
- * <p><img src="../Error.png" /></p>
- *
  * @param message	error message string
  *
  * @example  Popup::Error("The configuration was not succesful." );
+ * @screenshot screenshots/Error.png
  *
  * @see Message
  * @see Notify
@@ -776,7 +784,7 @@ global define void Error(string message) {
 /**
  * Show a notification message and wait until user clicked "OK".
  *
- * <p><img src="../Notify.png" /> TODO no more header</p>
+ * @screenshot screenshots/Notify.png
  *
  * @param  message	notify message string
  *
@@ -800,7 +808,7 @@ global define void Notify(string message) {
  * user clicks that, the popup will wait forever (or until "OK" is
  * clicked, of course).
  *
- * <p><img src="../TimedMessage.png" /></p>
+ * @screenshot screenshots/TimedMessage.png
  *
  * @param message		message to display
  * @param timeout_seconds		the timeout in seconds
@@ -852,6 +860,8 @@ global define void TimedMessage(string message, integer timeout_seconds) {
 
 
 /**
+ * Display a message with a timeout
+ *
  * Display a message with a timeout and return when the user clicks "OK", "Cancel"
  * or when the timeout expires ("OK" is assumed then).
  *
@@ -903,7 +913,7 @@ global define boolean TimedOKCancel(string message, integer timeout_seconds) {
 		   );
 
     any which_input = nil;
-    
+ 
     while (timeout_seconds > 0) {
 	which_input = UI::TimeoutUserInput( 1000 );
 	if (which_input == `timed_ok)
@@ -935,9 +945,9 @@ global define boolean TimedOKCancel(string message, integer timeout_seconds) {
  * @param focus			`focus_yes (first button), `focus_no (second button) or
  *				`focus_retry (third button)
  *
- * @return `yes:  first button has been clicked
- *	 `no: second button has been clicked
- *	 `retry: third button has been clicked
+ * @return - `yes:  first button has been clicked
+ *	   - `no: second button has been clicked
+ *	   - `retry: third button has been clicked
  *
  * @see AnyQuestion
  *
@@ -1012,13 +1022,14 @@ global define symbol AnyQuestion3( string headline,
 
 /**
  * Special error popup for YCP modules that don't work.
+
  * The user can choose one of:
- * "back" - go back to the previous module
- * "next" - skip this faulty module and directly go to the next one
- * "again" - try it again (after fixing something in the code, of course)
- * "cancel" - exit program
+ * - "back" - go back to the previous module
+ * - "next" - skip this faulty module and directly go to the next one
+ * - "again" - try it again (after fixing something in the code, of course)
+ * - "cancel" - exit program
  *
- * <p><img src="../ModuleError.png" /></p>
+ * @screenshot screenshots/ModuleError.png
  *
  * @param text	 string
  * @return symbol `back, `again, `cancel, `next
@@ -1055,7 +1066,9 @@ global define symbol ModuleError(string text) {
 
 
 /**
- * Generic message popup: Show a message with optional headline above and
+ * Generic message popup
+ *
+ * Show a message with optional headline above and
  * wait until user clicked "OK".
  *
  * @param headline	optional headline or Popup::NoHeadline()
@@ -1105,7 +1118,7 @@ global define void AnyTimedMessage(string headline, string message, integer time
 /**
  * Show a warning message and wait specified amount of time or until user clicked "OK".
  *
- * <p><img src="../TimedWarninngPopup.png" /></p>
+ * @screenshot screenshots/TimedWarninngPopup.png
  *
  * @param message warning message string
  * @param timeout_seconds time out in seconds
@@ -1123,7 +1136,7 @@ global define void TimedWarning(string message, integer timeout_seconds)
 /**
  * Show an error message and wait specified amount of time or until user clicked "OK".
  *
- * <p><img src="../TimedErrorPopup.png" /></p>
+ * @screenshot screenshots/TimedErrorPopup.png
  *
  * @param message	error message string
  * @param timeout_seconds time out in seconds
@@ -1143,6 +1156,7 @@ global define void TimedError(string message, integer timeout_seconds) {
  *
  * @param headline	headline text
  * @param text	text to show
+ * @param timeout	text to show
  *
  * @example Popup::ShowText ("Boot Messages", "kernel panic");
  */
@@ -1252,6 +1266,7 @@ global define void ShowText (string headline, string text) {
 
 /**
  * Show the contents of an entire file in a popup.
+ *
  * Notice: This is a WFM function, NOT an UI function!
  *
  * @param headline	headline text
