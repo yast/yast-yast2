@@ -236,7 +236,7 @@
 	+ _("But you are trying to install a 32-bit distribution.")
 	+ "\n\n"
 	+ _("You can upgrade either the 32-bit or the 64-bit distribution on your
-	    AMD64 system and run both these flavors at the same time.")
+	    AMD64 system.")
 	+ _("If you intend to upgrade the 64-bit distribution, use the other side
 	    of the medium for booting.");
 
