@@ -156,7 +156,7 @@ define list <term> CreateList(map M) {
     });
     
     keys = filter (any key, keys, {
-	return M[key, "Hidden"]:"no" != "yes";
+	return M[key, "Hidden"]:"false" != "true";
     });
     
     y2debug("keys=%1", keys);
