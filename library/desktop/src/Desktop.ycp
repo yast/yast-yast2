@@ -107,7 +107,7 @@ global define void Read(list<string> Values) {
 	if(Values != nil && Values != []) values = Values;
 	foreach(string value, values, {
 	    string ret = ReadLocalizedKey(filepath, value);
-	    if(ret != nil) filemap[value] = ret;
+	    if(ret != nil && ret != "") filemap[value] = ret;
 	});
 	string name = regexpsub(file, "^.*/(.*)\.desktop", "\\1");
 	if(name != "" && name != nil) {
@@ -158,11 +158,11 @@ global define list <term> ModuleList(string group) {
     list <string> mods = Groups[group, "modules"]:[];
     list <term> l = [];
 
-    /* support sort keys: #36466
+    /* support sort keys: #36466 */
     mods = sort(string x, string y, mods, {
-	return Modules[x, "X-SuSE-YaST-SortKey"]:"" < Modules[y, "X-SuSE-YaST-SortKey"]:"";
+	// y2internal("%1 < %2", Modules[x, "X-SuSE-YaST-SortKey"]:(Modules[x,"Name"]:""), Modules[y, "X-SuSE-YaST-SortKey"]:(Modules[y,"Name"]:""));
+	return Modules[x, "X-SuSE-YaST-SortKey"]:(Modules[x,"Name"]:"") < Modules[y, "X-SuSE-YaST-SortKey"]:(Modules[y,"Name"]:"");
     });
-    */
 
     foreach(string m, mods, {
 	if(haskey(Modules, m))
