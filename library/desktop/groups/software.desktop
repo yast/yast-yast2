@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Categories=Qt;X-SuSE-YaST;
+
+X-KDE-ModuleType=Library
+X-KDE-RootOnly=true
+X-KDE-HasReadOnlyMode=true
+X-KDE-Library=yast2
+
+X-SuSE-YaST-Group=Software
+X-SuSE-YaST-SortKey=10
+
+Icon=software56
+
+Name=Software

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb  3 12:39:35 CET 2004 - msvec@suse.cz
+
+- added yast2 groups .desktop files
+- 2.9.13
+
+-------------------------------------------------------------------
 Tue Feb  3 09:27:50 CET 2004 - visnov@suse.cz
 
 - implemented non-strict checking of command line options
