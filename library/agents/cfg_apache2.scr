@@ -1,0 +1,17 @@
+/**
+ * File:
+ *   cfg_apache2.scr
+ * Summary:
+ *   SCR Agent for reading/writing /etc/sysconfig/apache2
+ *   using the sysconfig-agent
+ * 
+ * $Id$
+ *
+ * Read/Sets the values defined in <tt>/etc/sysconfig/apache2</tt>
+ * in an easy manner.
+ */
+.sysconfig.apache2
+
+`ag_ini(
+  `SysConfigFile("/etc/sysconfig/apache2")
+)
