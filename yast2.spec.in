@@ -65,6 +65,7 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 @moduledir@/*
 @scrconfdir@/*
 @ybindir@/*
+@agentdir@/ag_*
 
 %doc @docdir@/*.*
 %doc @docdir@/pot

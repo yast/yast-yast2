@@ -1,0 +1,11 @@
+(nil)
+""
+[
+$["comment":" comment1
+","value":"destination","key":"alias1",] ,
+$["comment":" comment2
+","value":"foobar","key":"alias2",] ,
+] 
+" trailing
+ comment
+"

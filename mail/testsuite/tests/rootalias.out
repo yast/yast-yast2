@@ -1,0 +1,22 @@
+Dump	sendmail
+Read	.mail.aliases.table [$["comment":"baz", "key":"foo", "value":"bar"], $["comment":"kuk", "key":"root", "value":"leaf"], $["comment":"baz2", "key":"foo2", "value":"bar2"]]
+Return	leaf
+Read	.mail.aliases.table [$["comment":"baz", "key":"foo", "value":"bar"], $["comment":"kuk", "key":"root", "value":"leaf"], $["comment":"baz2", "key":"foo2", "value":"bar2"]]
+Write	.mail.aliases.table [$["comment":"", "key":"root", "value":"ruut"], $["comment":"baz", "key":"foo", "value":"bar"], $["comment":"baz2", "key":"foo2", "value":"bar2"]] true
+Write	.mail.aliases nil true
+Return	true
+Read	.mail.aliases.table [$["comment":"baz", "key":"foo", "value":"bar"], $["comment":"kuk", "key":"root", "value":"leaf"], $["comment":"baz2", "key":"foo2", "value":"bar2"]]
+Write	.mail.aliases.table [$["comment":"baz", "key":"foo", "value":"bar"], $["comment":"baz2", "key":"foo2", "value":"bar2"]] true
+Write	.mail.aliases nil true
+Return	true
+Dump	postfix
+Read	.mail.aliases.table [$["comment":"baz", "key":"foo", "value":"bar"], $["comment":"kuk", "key":"root", "value":"leaf"], $["comment":"baz2", "key":"foo2", "value":"bar2"]]
+Return	leaf
+Read	.mail.aliases.table [$["comment":"baz", "key":"foo", "value":"bar"], $["comment":"kuk", "key":"root", "value":"leaf"], $["comment":"baz2", "key":"foo2", "value":"bar2"]]
+Write	.mail.aliases.table [$["comment":"", "key":"root", "value":"ruut"], $["comment":"baz", "key":"foo", "value":"bar"], $["comment":"baz2", "key":"foo2", "value":"bar2"]] true
+Write	.mail.aliases nil true
+Return	true
+Read	.mail.aliases.table [$["comment":"baz", "key":"foo", "value":"bar"], $["comment":"kuk", "key":"root", "value":"leaf"], $["comment":"baz2", "key":"foo2", "value":"bar2"]]
+Write	.mail.aliases.table [$["comment":"baz", "key":"foo", "value":"bar"], $["comment":"baz2", "key":"foo2", "value":"bar2"]] true
+Write	.mail.aliases nil true
+Return	true
