@@ -1,8 +1,7 @@
 #
-# Makefile.am for y2l_sequencer/doc/images
+# Makefile.am for yast2/sequencer/doc/images
 #
 
-docdir = @DOCDIR@
 htmldir = $(docdir)/images
 
 html_DATA = $(wildcard *.png)

@@ -4,7 +4,7 @@
 
 SUBDIRS = autodocs examples
 
-docdir = @DOCDIR@
+docdir = @docdir@/wizard
 htmldir = $(docdir)
 
 html_DATA = $(wildcard *.html *.png)

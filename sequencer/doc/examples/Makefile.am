@@ -1,8 +1,7 @@
 #
-# Makefile.am for y2l_sequencer/doc/examples
+# Makefile.am for yast2/sequencer/doc/examples
 #
 
-docdir = @DOCDIR@
 htmldir = $(docdir)/examples
 
 html_DATA = $(wildcard *.ycp)

@@ -1,15 +1,21 @@
 @HEADER-COMMENT@
 
-# neededforbuild yast2-devtools  autoconf automake yast2-testsuite yast2-core yast2-core-devel
+# neededforbuild yast2-devtools autoconf automake yast2-testsuite yast2-core yast2-core-devel
 
 @HEADER@
 Provides:	yast
 Obsoletes:	yast
 Requires:	yast2-core yast2_ui
 BuildArchitectures: noarch
-Summary:      YaST2 Modules for installation
+Summary:	YaST2 Modules for installation
 
 %description
+-
+
+@HEADER-DEVEL@
+Summary:	Documentation for Wizard and Sequencer
+
+%description devel
 -
 
 @PREP@
@@ -33,7 +39,7 @@ Summary:      YaST2 Modules for installation
 @scrconfdir@/*
 %dir @ybindir@
 @ybindir@/*
-%doc @docdir@
+%doc @docdir@/*.*
 
 /sbin/yast2
 /sbin/zast2
@@ -59,4 +65,8 @@ Summary:      YaST2 Modules for installation
 %dir @yncludedir@/ui
 @yncludedir@/ui/*.ycp
 
+
+%files devel
+%doc @docdir@/sequencer
+%doc @docdir@/wizard
 

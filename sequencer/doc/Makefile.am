@@ -2,7 +2,7 @@
 
 SUBDIRS = autodocs images examples
 
-htmldir = @docdir@
+htmldir = @docdir@/sequencer
 
 html_DATA = $(wildcard *.html)
 EXTRA_DIST = $(html_DATA)

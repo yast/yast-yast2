@@ -1,0 +1,249 @@
+/**
+ * File:	modules/Arch.ycp
+ * Package:	yast2
+ * Summary:	Architecture, board and bios data
+ * Authors:	Klaus Kaempf <kkaempf@suse.de>
+ *
+ * $Id$
+ */
+
+{
+
+module "Arch";
+
+/* ************************************************************ */
+/* system architecture						*/
+
+/**
+ * General architecture type
+ */
+global string architecture	= SCR::Read(.probe.architecture);
+
+/**
+ * true for all x86 compatible architectures
+ */
+global boolean i386	= (architecture == "i386");
+
+/**
+ * true for all 32bit sparc architectures
+ * @see sparc
+ * @see sparc64
+ */
+global boolean sparc32	= (architecture == "sparc");
+
+/**
+ * true for all 64bit sparc architectures
+ * @see sparc
+ * @see sparc32
+ */
+global boolean sparc64	= (architecture == "sparc64");
+
+/**
+ * true for all sparc architectures (32 or 64 bit)
+ * @see sparc32
+ * @see sparc64
+ */
+global boolean sparc	= (sparc32 || sparc64);
+
+/**
+ * true for all 32bit mips architectures
+ * @see mips
+ * @see mips64
+ */
+global boolean mips32	= (architecture == "mips");
+
+/**
+ * true for all 64bit mips architectures
+ * @see mips
+ * @see mips32
+ */
+global boolean mips64	= (architecture == "mips64");
+
+/**
+ * true for all mips architectures (32 or 64 bit)
+ * @see mips32
+ * @see mips64
+ */
+global boolean mips	= (mips32 || mips64);
+
+/**
+ * true for all 32bit ppc architectures
+ * @see ppc
+ * @see ppc64
+ */
+global boolean ppc32	= (architecture == "ppc");
+
+/**
+ * true for all 64bit ppc architectures
+ * @see ppc
+ * @see ppc32
+ */
+global boolean ppc64	= (architecture == "ppc64");
+
+/**
+ * true for all ppc architectures (32 or 64 bit)
+ * @see ppc32
+ * @see ppc64
+ */
+global boolean ppc	= (ppc32 || ppc64);
+
+/**
+ * true for all alpha architectures
+ */
+global boolean alpha	= (architecture == "axp");
+
+/**
+ * true for all 32bit S/390 architectures
+ * @see s390
+ * @see s390_64
+ */
+global boolean s390_32	= (architecture == "s390_32");
+
+/**
+ * true for all 64bit S/390 architectures
+ * @see s390
+ * @see s390_32
+ */
+global boolean s390_64	= (architecture == "s390_64");
+
+/**
+ * true for all S/390 architectures (32 or 64 bit)
+ * @see s390_32
+ * @see s390_64
+ */
+global boolean s390	= (s390_32 || s390_64);
+
+/**
+ * true for all IA64 (itanium) architectures
+ */
+global boolean ia64	= (architecture == "ia64");
+
+/**
+ * true for all x86-64 (AMD Hammer) architectures
+ */
+global boolean x86_64	= (architecture == "x86_64");
+
+/* ************************************************************ */
+/* general system board types (initialized in constructor)	*/
+
+/**
+ * true for all PPC "MacRISC" boards
+ */
+global boolean board_mac	= false;
+
+/**
+ * true for all "NewWorld" power macs
+ */
+global boolean board_mac_new	= false;
+
+/**
+ * true for all "OldWorld" power macs
+ */
+global boolean board_mac_old	= false;
+
+/**
+ * true for all "NuBus" power macs
+ */
+global boolean board_mac_nubus	= false;
+
+/**
+ * true for all "CHRP" ppc boards
+ */
+global boolean board_chrp	= false;
+
+/**
+ * true for all "iSeries" ppc boards
+ */
+global boolean board_iseries = false;
+
+/**
+ * true for all "PReP" ppc boards
+ */
+global boolean board_prep	= false;
+
+/**
+ * true for all "Windows/Intel" compliant boards (x86 based)
+ */
+global boolean board_wintel	= false;
+
+
+/* ************************************************************ */
+/* BIOS stuff							*/
+
+/**
+ * true if the BIOS supports APM
+ */
+global boolean has_apm		= SCR::Read(.probe.has_apm);
+
+/**
+ * true if the system supports PCMCIA
+ */
+global boolean has_pcmcia	= SCR::Read(.probe.has_pcmcia);
+
+/* ************************************************************ */
+/* SMP stuff							*/
+
+/**
+ * true if running on multiprocessor board. This only reflects the
+ * board, not the actual number of CPUs or the running kernel!
+ */
+global boolean has_smp		= SCR::Read(.probe.has_smp);
+
+/**
+ * Set "Arch::has_smp". Since Alpha doesn't reliably probe smp,
+ * 'has_smp' must be set later with this function.
+ * @param is_smp true if has_smp should be true
+ * @example setSMP(true);
+ */
+global define void setSMP(boolean is_smp) ``{ has_smp = is_smp; }
+
+
+/**
+ * Constructor
+ */
+global define void Arch() ``{
+
+    string board_type = "";
+    string checkgeneration = "";
+    list systemProbe = SCR::Read(.probe.system);
+
+    foreach (`systemEntry, systemProbe, ``{
+	string checksys = lookup (systemEntry, "system", "");
+	checkgeneration = lookup (systemEntry, "generation", "");
+	if (checksys != "")
+	{
+	    board_type = checksys;
+	}
+    });
+
+    if (ppc)
+    {
+	// board properties (depend on CPU)
+	if (board_type == "MacRISC")
+	    board_mac = true;
+	else if (board_type == "CHRP")
+	    board_chrp = true;
+	else if (board_type == "iSeries")
+	    board_iseries = true;
+	else if (board_type == "PReP")
+	    board_prep = true;
+
+       // PowerMacs can be NuBus, OldWorld, NewWorld
+       if (board_mac)
+       {
+	    if (checkgeneration == "NewWorld")
+	       board_mac_new = true;
+	    else if (checkgeneration == "OldWorld")
+	       board_mac_old = true;
+	    else if (checkgeneration == "NuBus")
+	       board_mac_nubus = true;
+       }
+    }
+    else if (i386)
+    {
+	board_wintel = true;
+    }
+}
+
+/* EOF */
+}
