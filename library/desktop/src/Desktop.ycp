@@ -45,21 +45,31 @@ global path AgentPath = .yast2.desktop;
  * Optional language for reading translated entries
  */
 string Language = "";
+string LanguageFull = "";
 
 /**
  */
 define string ReadLocalizedKey(path keypath, string key) {
 
-    string ret = (string) SCR::Read(add(keypath, key));
+    if(key != "Name" && key != "GenericName")
+	return (string) SCR::Read(add(keypath, key));
 
-    if(key != "Name" && key != "GenericName") return ret;
-    if(Language == nil || Language == "") return ret;
+    string ret = "";
+    string newkey = "";
 
-    string newkey = sformat("%1[%2]", key, Language);
-    string newret = (string) SCR::Read(add(keypath, newkey));
+    if(LanguageFull != nil || LanguageFull != "") {
+	newkey = sformat("%1[%2]", key, LanguageFull);
+	ret = (string) SCR::Read(add(keypath, newkey));
+	if(ret != nil && ret != "") return ret;
+    }
 
-    if(newret != nil && newret != "") return newret;
-    return ret;
+    if(Language != nil || Language != "") {
+	newkey = sformat("%1[%2]", key, Language);
+	ret = (string) SCR::Read(add(keypath, newkey));
+	if(ret != nil && ret != "") return ret;
+    }
+
+    return (string) SCR::Read(add(keypath, key));
 }
 
 /**
@@ -77,10 +87,14 @@ global define void Read(list<string> Values) {
     list<string> files = (list<string>) SCR::Dir(ps);
 
     /* read language */
+    LanguageFull = "";
     Language = WFM::GetLanguage();
+    if(regexpmatch(Language, "(.*_[^.]*)\..*"))
+	LanguageFull = regexpsub(Language, "(.*_[^.]*)\..*", "\\1");
     if(regexpmatch(Language, "(.*)_"))
 	Language = regexpsub(Language, "(.*)_", "\\1");
-    y2debug("%1", Language);
+    y2debug("LanguageFull=%1", LanguageFull);
+    y2debug("Language=%1", Language);
 
     /* read groups */
     list<string> groups = (list<string>) SCR::Dir(.yast2.groups.s);
@@ -173,7 +187,8 @@ global define list <term> ModuleList(string group) {
     return l;
 }
 
-
+/**
+ */
 map<string, string> MakeAutostartMap (string exec) {
     return $[
 	"Encoding": "UTF-8",
@@ -183,7 +198,7 @@ map<string, string> MakeAutostartMap (string exec) {
 	"Hidden": "true",
 	"Icon": exec,
 	"Type": "Application",
-	];
+    ];
 }
 
 /**
@@ -199,8 +214,8 @@ global void RunViaDesktop (string exec) {
     });
     string dir = "/var/lib/Desktop";
     SCR::Write (.target.string,
-		sformat ("%1/yast2-run-%2.desktop", dir, exec),
-		content);
+	    sformat ("%1/yast2-run-%2.desktop", dir, exec),
+	    content);
 }
 
 /* EOF */

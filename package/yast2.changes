@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Nov  1 09:34:44 CET 2004 - msvec@suse.cz
+
+- use ll_LL in .desktop files (#47668)
+
+-------------------------------------------------------------------
 Mon Nov  1 08:00:06 CET 2004 - jsrain@suse.cz
 
 - fixed parameters to sformat in Commandline.ycp
