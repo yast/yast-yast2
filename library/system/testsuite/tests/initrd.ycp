@@ -29,7 +29,6 @@
         ],
 	"probe" : $[
 	    "architecture" : "i386",
-	    "has_apm" : true,
 	    "has_pcmcia" : false,
 	    "has_smp" : false,
 	    "system" : nil,

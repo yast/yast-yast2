@@ -19,8 +19,6 @@ string _board_compatible = nil;
 
 string _checkgeneration = "";
 
-boolean _has_apm = nil;
-
 boolean _has_pcmcia = nil;
 
 boolean _is_uml = nil;
@@ -289,14 +287,6 @@ global boolean board_wintel () {
 /* ************************************************************ */
 /* BIOS stuff							*/
 
-/**
- * true if the BIOS supports APM
- */
-global boolean has_apm () {
-    if (_has_apm == nil)
-	_has_apm = (boolean)SCR::Read(.probe.has_apm);
-    return _has_apm;
-}
 /**
  * true if the system supports PCMCIA
  */
