@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jun 27 13:55:21 CEST 2002 - kkaempf@suse.de
+
+- merged yast2-lib-sequencer and yast2-lib-wizard.
+
+-------------------------------------------------------------------
 Tue Jun 11 16:52:39 CEST 2002 - arvin@suse.de
 
 - the yast2 script now handels all arguments as strings when

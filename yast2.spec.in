@@ -5,7 +5,7 @@
 @HEADER@
 Provides:	yast
 Obsoletes:	yast
-
+Requires:	yast2-core yast2_ui
 BuildArchitectures: noarch
 Summary:      YaST2 Modules for installation
 
@@ -22,6 +22,8 @@ Summary:      YaST2 Modules for installation
 
 %files
 %defattr(-,root,root)
+
+# yast2
 
 %dir @moduledir@
 @moduledir@/*
@@ -46,3 +48,15 @@ Summary:      YaST2 Modules for installation
 /sbin/zast
 /sbin/YaST
 /sbin/ZaST
+
+# sequencer
+
+%dir @yncludedir@/wizard
+@yncludedir@/wizard/*.ycp
+
+# wizard
+
+%dir @yncludedir@/ui
+@yncludedir@/ui/*.ycp
+
+
