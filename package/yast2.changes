@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Aug 27 15:10:55 CEST 2004 - arvin@suse.de
+
+- merged proof read messages
+
+-------------------------------------------------------------------
 Fri Aug 27 11:19:51 CEST 2004 - mvidner@suse.cz
 
 - LogView grep: properly quote the regex; it is a basic regex.
@@ -13,7 +18,7 @@ Fri Aug 20 06:27:01 CEST 2004 - nashif@suse.de
 Thu Aug 19 13:14:02 CEST 2004 - visnov@suse.cz
 
 - allow in commandline also GUI handler returning symbols (#43935)
- 
+
 -------------------------------------------------------------------
 Tue Aug 17 11:26:37 CEST 2004 - jsrain@suse.cz
 
@@ -50,7 +55,7 @@ Fri Jul 30 11:37:44 CEST 2004 - jsrain@suse.cz
 -------------------------------------------------------------------
 Thu Jul 29 09:47:51 CEST 2004 - nashif@suse.de
 
-- New module for interaction with linuxrc(yast.inf and install.inf 
+- New module for interaction with linuxrc(yast.inf and install.inf
   handling)
 - Move functions from misc to Linuxrc
 

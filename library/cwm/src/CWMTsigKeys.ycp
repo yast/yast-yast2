@@ -371,7 +371,7 @@ on your disk. Remove it?")))
 	if (gen_ret != 0)
 	{
 	    // error report
-	    Report::Error (_("Creating the TSIG key failed"));
+	    Report::Error (_("Creating the TSIG key failed."));
 	    return nil;
 	}
 	ret = "_cwm_add_key";
@@ -501,24 +501,28 @@ global define void StoreWrapper (string key, map event) {
  */
 global define map<string,any> CreateWidget (map<string,any> settings) {
     // tsig keys management dialog help 1/4
-    string help = _("<p><big><b>TSIG Keys Management</b></big><br>
-Use this dialog to manage the TSIG keys.</p>")
+    string help = _("<p><big><b>TSIG Key Management</b></big><br>
+Use this dialog to manage the TSIG keys.</p>
+")
     +
     // tsig keys management dialog help 2/4
-    _("<p><big><b>Adding an existing TSIG key</b></big><br>
+    _("<p><big><b>Adding an Existing TSIG Key</b></big><br>
 To add an already created TSIG key, select a <b>File Name</b> of the file
-containing the key and click <b>Add</b>.</p>")
+containing the key and click <b>Add</b>.</p>
+")
     +
     // tsig keys management dialog help 3/4
-    _("<p><big><b>Creating a new TSIG key</b></big><br>
-To create a new TSIG key, set the <b>File Name</b> of the file the key will
-be created to and the <b>Key ID</b> to identify the key, and click
-<b>Generate</b>.</p>")
+    _("<p><big><b>Creating a New TSIG Key</b></big><br>
+To create a new TSIG key, set the <b>File Name</b> of the file in which to
+create the key and the <b>Key ID</b> to identify the key then click
+<b>Generate</b>.</p>
+")
     +
     // tsig keys management dialog help 4/4
-    _("<p><big><b>Removing a TSIG key</b></big><br>
+    _("<p><big><b>Removing a TSIG Key</b></big><br>
 To remove a configured TSIG key, select it and click <b>Delete</b>.
-Remember that all keys that are in the same file will be deleted.</p>");
+Remember that all keys in that same file are deleted.</p>
+");
 
     term add_existing = `VSquash (`HBox (
 	// Frame label - adding a created server key

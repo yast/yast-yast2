@@ -354,7 +354,8 @@ To start or stop the service immediately, use
 	// (without quotes)
 	// note: %3 is correct, do not replace with %1!!!
 	help = help + _("<p>To save all changes and restart the
-service immediatelly, use <b>%3</b>.</p>");
+service immediately, use <b>%3</b>.</p>
+");
     }
     return help;
 }
