@@ -1,3 +1,15 @@
+Read	.target.size "/etc/install.inf" nil
+Read	.etc.install_inf.Sourcemounted nil
+Read	.etc.install_inf.AutoYaST nil
+Read	.etc.install_inf.Demo nil
+Read	.etc.install_inf.Textmode nil
+Read	.etc.install_inf.Manual nil
+Read	.etc.install_inf.Console nil
+Read	.etc.install_inf.Braille nil
+Read	.etc.install_inf.VNC nil
+Read	.etc.install_inf.UseSSH nil
+Read	.etc.install_inf.Locale nil
+Read	.etc.install_inf.InstMode nil
 Return	[]
 Return	[$["comment":" I am r00t!", "key":"root", "value":"auser"], $["comment":" blah", "key":"B.User", "value":"buser"], $["comment":" direct", "key":"usenet", "value":"root"], $["comment":"", "key":"A.User", "value":"auser"], $["comment":" direct", "key":"newsadmin", "value":"root"]]
 Return	[$["comment":" Basic system aliases that MUST be present.\n", "key":"postmaster", "value":"root"], $["comment":"", "key":"mailer-daemon", "value":"postmaster"], $["comment":" amavis\n", "key":"virusalert", "value":"root"], $["comment":" General redirections for pseudo accounts in /etc/passwd.\n", "key":"administrator", "value":"root"], $["comment":"", "key":"daemon", "value":"root"], $["comment":"", "key":"nobody", "value":"root"], $["comment":" \"bin\" used to be in /etc/passwd\n", "key":"bin", "value":"root"], $["comment":" Further well-known aliases for dns/news/ftp/mail/fax/web/gnats.\n", "key":"newsadm", "value":"news"], $["comment":"", "key":"newsadmin", "value":"news"], $["comment":"", "key":"usenet", "value":"news"]]

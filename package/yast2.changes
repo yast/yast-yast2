@@ -1,4 +1,43 @@
 -------------------------------------------------------------------
+Thu Oct 17 13:38:33 CEST 2002 - arvin@suse.de
+
+- fixed arrows in ncurses menu (#19902)
+
+-------------------------------------------------------------------
+Fri Oct 11 15:18:14 CEST 2002 - msvec@suse.cz
+
+- fixed translations in the ncurses menu (#20801)
+- 2.6.39
+
+-------------------------------------------------------------------
+Fri Oct 11 11:07:01 CEST 2002 - arvin@suse.de
+
+- added lost password.ycp (bug #20087)
+
+-------------------------------------------------------------------
+Fri Sep 20 14:36:49 CEST 2002 - kkaempf@suse.de
+
+- access content only in initial mode
+- 2.6.37
+
+-------------------------------------------------------------------
+Fri Sep 20 13:13:05 CEST 2002 - kkaempf@suse.de
+
+- read initial language from content file
+- 2.6.36
+
+-------------------------------------------------------------------
+Wed Sep 18 16:01:32 CEST 2002 - arvin@suse.de
+
+- does not provides/obsoletes the old yast
+
+-------------------------------------------------------------------
+Thu Sep 12 12:20:55 CEST 2002 - kkaempf@suse.de
+
+- define IgnoreButtonLabel in WFM and UI
+- 2.6.34
+
+-------------------------------------------------------------------
 Tue Sep 10 16:03:47 CEST 2002 - arvin@suse.de
 
 - added provide/obsolete y2t_menu (bug #19325)
