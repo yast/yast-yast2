@@ -117,6 +117,8 @@ global boolean ValidateBasicType (any value, string type) {
 	return is (value, map);
     if (type == "boolean")
 	return is (value, boolean);
+    if (type == "integer")
+	return is (value, integer);
 
     y2error ("Unknown value type %1", type);
     return true;
