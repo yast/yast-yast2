@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding='ISO-8859-1'?>
 <?$$?>
-<chapter id = "dialot_tree">
+<chapter id = "dialog_tree">
     <title>Dialogs based on the tree on the left (for English)</title>
 <para>
 DialogTree is a set of functions to help using CWM in the dialogs that have
@@ -57,7 +57,7 @@ operations, this means to open a new Wizard screen with the tree on the left,
 runs event loop, and closes the newly open Wizard screen.
     </para>
     <para>
-It takes one map as parameter. It cnotains all the needed information for
+It takes one map as parameter. It contains all the needed information for
 for creating and running the dialog. Return value is a symbol for the wizard
 sequencer.
     </para>
@@ -75,7 +75,7 @@ map&lt;string,map&lt;string,any&gt;&gt;. See <xref linkend="lt_basic"/>,
 line (1) and following for example.
     </para>
     <para>
-For ecery screen description map, the following keys must be defined:
+For every screen description map, the following keys must be defined:
       <itemizedlist>
 	<listitem><para>
 	  <computeroutput>"widget_names" : list&lt;string&gt;</computeroutput>
@@ -105,7 +105,7 @@ are ordered via a list (see below).
   <section>
     <title>Ordering the screens</title>
     <para>
-The screens can be speified in two ways. The easier way is just to provide
+The screens can be specified in two ways. The easier way is just to provide
 a list of the screens.
 This way, all the screens are in the same level.
     </para>
@@ -122,7 +122,7 @@ the callback is used.
       <para>
 To make a flat list of screens in the dialog tree, just specify the key
 <computeroutput>"ids_order"</computeroutput> and give it as value a list
-of strings containing the IDs of all screend. See
+of strings containing the IDs of all screens. See
 <xref linkend="lt_basic"/>, line (2) for example.
       </para>
     </section>
@@ -158,7 +158,7 @@ define list&lt;map&gt; CreateWizardTree () {
     <para>
 To specify the screen that will be shown after the dialog is displayed, use
 the <computeroutput>"initial_screen"</computeroutput> key. Its value is
-a string containg the key of the screen that is wanted to be displayed as
+a string contains the key of the screen that is wanted to be displayed as
 the first. If not specified and order of the screens is specified by the list,
 the first is used. If not specified and the order is specified via a callback,
 the default is undefined.

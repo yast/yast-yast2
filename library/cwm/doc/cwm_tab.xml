@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding='ISO-8859-1'?>
 <?$$?>
 <chapter id = "cwm_tab">
-    <title>Dialogs usign the Tab widget</title>
+    <title>Dialogs using the Tab widget</title>
 <para>
 CWMTab is a widget for CWM that can be used for handling dialogs with
 multiple tabs. Its tasks are following:
@@ -93,7 +93,7 @@ one argument, a map with all attributes. The map has following keys.
       <itemizedlist>
 	<listitem><para>
 	  <computeroutput>"tab_order" : list&lt;string&gt;</computeroutput>
-slecifies the order of the tabs. It is a list of IDs of the tabs.
+specifies the order of the tabs. It is a list of IDs of the tabs.
 For example, see <xref linkend="tab_basic"/>, line (1).
 	</para></listitem>
 	<listitem><para>
@@ -118,7 +118,7 @@ and following for additional information about this stuff.
 	<listitem><para>
 	  <computeroutput>"tab_help" : string</computeroutput>
 contains optional help to the tab. It is displayed always, followed by the
-helps of widgets contained in the scurrently displayed tab.
+helps of widgets contained in the currently displayed tab.
 	</para></listitem>
       </itemizedlist>
     </para>
