@@ -111,7 +111,7 @@
 	}
 
         if( interactive ) {
-	    Print(sformat(_("Use 'help' for a complete list of available commands."), modulecommands["id"]:""));
+	    Print(_("Use 'help' for a complete list of available commands."));
 	} else {
 	    Print(sformat(_("Use 'yast2 %1 help' for a complete list of available commands."), modulecommands["id"]:""));
         }
