@@ -10,6 +10,7 @@ S2='s/,\] $/,\
 
 for CASE in test-mailtable-*.in; do
     CASE=${CASE%.in}
+    echo $CASE
     AGPROG='Mailtable ($["filename": "'$CASE.in'", "continue_escaped_newline": true, "continue_leading_blanks": true, "colon": true,])
 Read (.leading_comment)
 Read (.table)
