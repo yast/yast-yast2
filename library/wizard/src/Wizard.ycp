@@ -462,6 +462,7 @@
 	if ( UI::WizardCommand(`SetBackButtonLabel( back_label ) ) )
 	{
 	    UI::WizardCommand(`SetNextButtonLabel( next_label ) );
+	    Wizard::SetContents( title, contents, help_text, true, true );
 	}
 	else
 	{
