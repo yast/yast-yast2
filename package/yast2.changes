@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Feb 20 11:39:23 CET 2003 - arvin@suse.de
+
+- use title-style capitalization for menu names (bug #23848)
+
+-------------------------------------------------------------------
 Wed Feb 19 10:52:05 CET 2003 - arvin@suse.de
 
 - fixed DoNotAcceptButtonLabel (used during beta notice)
