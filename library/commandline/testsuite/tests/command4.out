@@ -2,4 +2,4 @@ Write	.dev.tty.prompt "YaST2 lan> " true
 Write	.dev.tty.stderr "Unknown option for command 'add': dev" true
 Write	.dev.tty.stderr "Use 'yast2 lan add help' for a complete list of available options." true
 Return	false
-Return	$["command":"quit"]
+Return	$["command":"abort"]

@@ -15,6 +15,11 @@ Write	.dev.tty.stderr "    list    display configuration summary" true
 Write	.dev.tty.stderr "" true
 Write	.dev.tty.stderr "Run 'yast2 lan <command> help' for a list of available options." true
 Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Command 'abort'" true
+Write	.dev.tty.stderr "    Abort interactive mode, don't save the changes" true
+Write	.dev.tty.stderr "\n    Options:" true
+Write	.dev.tty.stderr "        help        Print the help for this command" true
+Write	.dev.tty.stderr "" true
 Write	.dev.tty.stderr "Command 'add'" true
 Write	.dev.tty.stderr "    add a network card" true
 Write	.dev.tty.stderr "\n    Options:" true
@@ -62,10 +67,5 @@ Write	.dev.tty.stderr "        lan list configured" true
 Write	.dev.tty.stderr "" true
 Write	.dev.tty.stderr "Command 'longhelp'" true
 Write	.dev.tty.stderr "    Print a long version of help for this module" true
-Write	.dev.tty.stderr "" true
-Write	.dev.tty.stderr "Command 'quit'" true
-Write	.dev.tty.stderr "    Quit interactive mode without saving the changes" true
-Write	.dev.tty.stderr "\n    Options:" true
-Write	.dev.tty.stderr "        help        Print the help for this command" true
 Write	.dev.tty.stderr "" true
 Return	false
