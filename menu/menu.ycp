@@ -40,12 +40,14 @@
 			     `VSpacing(1.0),
 			     `HBox(`HSpacing(1),
 				   `HWeight( 30, `ReplacePoint( `id(`groups_rep),
-								`SelectionBox(`id (`groups), `opt (`notify, `immediate), "", [])
+								`SelectionBox( `id (`groups),
+									       `opt (`notify, `immediate, `keyEvents),
+									       "", [] )
 								)
 					     ),
 				   `HSpacing(1),
 				   `HWeight( 70, `ReplacePoint( `id(`progs_rep),
-								`SelectionBox(`id (`progs), `opt (`notify), "", [])
+								`SelectionBox(`id (`progs), `opt (`notify, `keyEvents), "", [])
 								)
 					     ),		
 				   `HSpacing(1)
@@ -73,7 +75,9 @@
 		translated = add( translated, `item(`id(rawname), Groups[rawname, "Name"]:"???") );
 		});
 	    
-	    ReplaceWidget (`id (`groups_rep), `SelectionBox(`id (`groups), `opt (`notify, `immediate), "", translated) );
+	    ReplaceWidget (`id (`groups_rep), `SelectionBox(`id (`groups),
+							    `opt(`notify, `immediate, `keyEvents),
+							    "", translated) );
 
 	    return grouplist[0]:"";
 	}
@@ -89,7 +93,7 @@
 	}
 
 	global define DisplayModuleList (list modulelist) ``{
-	    term modulebox = `SelectionBox( `id (`progs), `opt (`notify), "" );
+	    term modulebox = `SelectionBox( `id (`progs), `opt (`notify, `keyEvents), "" );
 	    modulebox = add (modulebox, modulelist);
 	    ReplaceWidget (`id (`progs_rep), modulebox);
 	}
@@ -377,13 +381,13 @@ F10 = OK, Next, Finish, or Accept<br>");
         {
             UI::SetFocus ( `id(`progs) );
         }
-        else if ( event["ID"]:`none == `groups
-                  && event["EventReason"]:"" == "ValueChanged" )
+        else if ( event["FocusWidgetID"]:`none == `groups
+                  && event["ID"]:"" == "CursorRight" )
         {
             UI::SetFocus ( `id(`progs) );
         }
-        else if ( event["ID"]:`none == `progs
-                  && event["EventReason"]:"" == "ValueChanged" )
+        else if ( event["FocusWidgetID"]:`none == `progs
+                  && event["ID"]:"" == "CursorLeft" )
         {
             UI::SetFocus ( `id(`groups) );
         }
