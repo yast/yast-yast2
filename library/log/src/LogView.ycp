@@ -15,23 +15,68 @@
 
     import "Popup";
     import "Label";
+    import "Report";
 
 
-    /**
-      * Display specified file, list 100 lines
-      * @param file string filename of file with the log
-      */
-    global define void DisplaySimple (string file) ``{
-	Display ($[ "file" : file ]);
+    define void RunCommand (map param) ``{
+	string command = param["command"]:nil;
+	if (command == nil)
+	{
+	    string grep = param["grep"]:"";
+	    if (grep != "")
+		grep = sformat ("| grep --line-buffered %1", grep);
+	    string lc_command
+		= sformat ("cat %1 %2 | wc -l", param["file"]:"", grep);
+	    map bash_output = (map)SCR::Execute (.target.bash_output, lc_command);
+	    command = "tail -f -n +0 " + param["file"]:"";
+	    string addon = "";
+	    if (bash_output["exit"]:1 == 0)
+	    {
+		string lc = bash_output["stdout"]:"";
+		lc = filterchars (lc, "1234567890");
+		integer lines_count = tointeger (lc);
+		lines_count = lines_count - 2 * max_lines;
+			// don't know why without
+			// doubling it discards more lines, out of YaST2
+			// it works
+		if (max_lines != 0 && lines_count > 0)
+		    addon = sformat ("| tail -n +%1", lines_count);
+	    }
+	    command = sformat ("%1 %2 %3", command, grep, addon);
+	}
+	y2milestone ("Calling background agent with command %1", command);
+	boolean cmdret = (boolean)SCR::Execute (.background.run_output, command);
+	if (! cmdret)
+	{
+	    // message popup
+	    Report::Error (_("Error occurred while reading the log."));
+	    return;
+	}
+
+
     }
 
     /**
-      * Display log with filtering with 100 lines
-      * @param file string filename of file with the log
-      * @param grep string regular expression to be grepped in file
+      * Remove unneeded items from a list
+      * If max_lines is 0, then don't remove anything
+      * @param lines a list of strings representing log lines
+      * @param max_lines integer lines that should be saved
+      * @return a list last max_lines of lines
       */
-    global define void DisplayFiltered (string file, string grep) ``{
-	Display ($[ "file" : file, "grep" : grep ]);
+    define list<string> DeleteOldLines
+	(list<string> lines, integer max_lines)
+    ``{
+	if (0 == max_lines)
+	    return lines;
+	integer sl = size (lines);
+	if (sl > max_lines)
+	{
+	    lines = filter (string l, lines, ``{
+		sl = sl -1;
+		return sl < max_lines;
+	    });
+	}
+	return lines;
     }
 
     /**
@@ -102,11 +147,11 @@
 	    // menubutton entry
 	    menubutton = add (menubutton, [`save, _("Save Log")]);
 
-	list(list) actions = param["actions"]:[];
+	list actions = param["actions"]:[];
 	if (size (actions) > 0)
 	{
 	    integer index = 0;
-	    foreach (`a, actions, ``{
+	    foreach (list a, actions, ``{
 		menubutton = add (menubutton, [index, a[0]:""]);
 		index = index + 1;
 	    });
@@ -114,7 +159,7 @@
 
 	if (size (menubutton) > 1)
 	{
-	    menubutton = maplist (`m, menubutton, ``(
+	    menubutton = maplist (list m, menubutton, ``(
 		`item (`id (m[0]:""), m[1]:"")));
 	    UI::ReplaceWidget (`id (`rep_right),
 		`MenuButton (`id (`log_menu), mb_label, menubutton));
@@ -126,11 +171,11 @@
 	}
 
 	sleep (100);
-	integer count = SCR::Read (.background.newlines);
-	list(string) lines = [];
+	integer count = (integer)SCR::Read (.background.newlines);
+	list<string> lines = [];
 	if (count > 0)
 	{
-	    lines = SCR::Read (.background.newout);
+	    lines = (list<string>) SCR::Read (.background.newout);
 	    lines = DeleteOldLines (lines, max_lines);
 	    UI::ChangeWidget (`id (`log), `Value,
 		mergestring (lines, "\n") + "\n");
@@ -139,17 +184,17 @@
         any ret = nil;
         while (ret != `close && ret != `cancel)
 	{
-	    integer count = SCR::Read (.background.newlines);
+	    integer count = (integer)SCR::Read (.background.newlines);
 	    if (count > 0)
 	    {
-		list(string) new_lines = SCR::Read (.background.newout);
+		list<string> new_lines = (list<string>)SCR::Read (.background.newout);
 		foreach (string l, new_lines, ``{
 		    UI::ChangeWidget (`id (`log), `LastLine, l + "\n");
 		});
 		lines = merge (lines, new_lines);
 		lines = DeleteOldLines (lines, max_lines);
 	    }
-	    map event = UI::WaitForEvent (1000);
+	    map event = (map)UI::WaitForEvent (1000);
 	    ret = event["ID"]:nil;
 	    if (ret == `help)
 	    {
@@ -194,64 +239,20 @@
     }
 
     /**
-      * Remove unneeded items from a list
-      * If max_lines is 0, then don't remove anything
-      * @param lines a list of strings representing log lines
-      * @param max_lines integer lines that should be saved
-      * @return a list last max_lines of lines
+      * Display specified file, list 100 lines
+      * @param file string filename of file with the log
       */
-    define list(string) DeleteOldLines
-	(list(string) lines, integer max_lines)
-    ``{
-	if (0 == max_lines)
-	    return lines;
-	integer sl = size (lines);
-	if (sl > max_lines)
-	{
-	    lines = filter (string l, lines, ``{
-		sl = sl -1;
-		return sl < max_lines;
-	    });
-	}
-	return lines;
+    global define void DisplaySimple (string file) ``{
+	Display ($[ "file" : file ]);
     }
 
-    define void RunCommand (map param) ``{
-	string command = param["command"]:nil;
-	if (command == nil)
-	{
-	    string grep = param["grep"]:"";
-	    if (grep != "")
-		grep = sformat ("| grep --line-buffered %1", grep);
-	    string lc_command
-		= sformat ("cat %1 %2 | wc -l", param["file"]:"", grep);
-	    map bash_output = SCR::Execute (.target.bash_output, lc_command);
-	    command = "tail -f -n +0 " + param["file"]:"";
-	    string addon = "";
-	    if (bash_output["exit"]:1 == 0)
-	    {
-		string lc = bash_output["stdout"]:"";
-		lc = filterchars (lc, "1234567890");
-		integer lines_count = tointeger (lc);
-		lines_count = lines_count - 2 * max_lines;
-			// don't know why without
-			// doubling it discards more lines, out of YaST2
-			// it works
-		if (max_lines != 0 && lines_count > 0)
-		    addon = sformat ("| tail -n +%1", lines_count);
-	    }
-	    command = sformat ("%1 %2 %3", command, grep, addon);
-	}
-	y2milestone ("Calling background agent with command %1", command);
-	boolean cmdret = SCR::Execute (.background.run_output, command);
-	if (! cmdret)
-	{
-	    // message popup
-	    Report::Error (_("Error occurred while reading the log."));
-	    return;
-	}
-
-
+    /**
+      * Display log with filtering with 100 lines
+      * @param file string filename of file with the log
+      * @param grep string regular expression to be grepped in file
+      */
+    global define void DisplayFiltered (string file, string grep) ``{
+	Display ($[ "file" : file, "grep" : grep ]);
     }
 
 }
