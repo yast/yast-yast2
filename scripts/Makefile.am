@@ -11,10 +11,10 @@ EXTRA_DIST = $(sbin_SCRIPTS) $(ybin_SCRIPTS)
 
 install-data-local:
 	install -d -m 755 $(DESTDIR)$(ybindir)
-	ln -snf $(sbindir)/yast2 $(DESTDIR)$(sbindir)/zast2
-	ln -snf $(sbindir)/yast2 $(DESTDIR)$(sbindir)/YaST2
-	ln -snf $(sbindir)/yast2 $(DESTDIR)$(sbindir)/ZaST2
-	ln -snf $(sbindir)/yast2 $(DESTDIR)$(sbindir)/yast
-	ln -snf $(sbindir)/yast2 $(DESTDIR)$(sbindir)/zast
-	ln -snf $(sbindir)/yast2 $(DESTDIR)$(sbindir)/YaST
-	ln -snf $(sbindir)/yast2 $(DESTDIR)$(sbindir)/ZaST
+	ln -snf yast2 $(DESTDIR)$(sbindir)/zast2
+	ln -snf yast2 $(DESTDIR)$(sbindir)/YaST2
+	ln -snf yast2 $(DESTDIR)$(sbindir)/ZaST2
+	ln -snf yast2 $(DESTDIR)$(sbindir)/yast
+	ln -snf yast2 $(DESTDIR)$(sbindir)/zast
+	ln -snf yast2 $(DESTDIR)$(sbindir)/YaST
+	ln -snf yast2 $(DESTDIR)$(sbindir)/ZaST

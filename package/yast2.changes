@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Aug 22 12:09:46 CEST 2002 - arvin@suse.de
+
+- make links to yast2 relative (bug #18170)
+
+-------------------------------------------------------------------
 Tue Aug 20 19:07:38 CEST 2002 - arvin@suse.de
 
 - added variable Mode::x11_setup_needed and Arch::x11_setup_needed
