@@ -79,7 +79,7 @@
 	}
 	else if ( button_id == `show_text )
 	{
-	    string text = SCR::Read (.target.string, "/var/log/boot.msg");
+	    string text = (string) SCR::Read (.target.string, "/var/log/boot.msg");
 	    Popup::ShowText( "Boot Messages", text );
 	}
     } while ( button_id != `close );
