@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Nov 11 18:09:15 CET 2004 - arvin@suse.de
+
+- always use Directory::logdir
+
+-------------------------------------------------------------------
 Thu Nov 11 16:28:56 CET 2004 - locilka@suse.cz
 
 - Created FileUtils module for getting information about system
@@ -23,7 +28,7 @@ Wed Nov 10 10:45:21 CET 2004 - mvidner@suse.cz
 -------------------------------------------------------------------
 Mon Nov  8 15:07:10 CET 2004 - visnov@suse.cz
 
-- yast2-pkg-bindings added to requires 
+- yast2-pkg-bindings added to requires
 
 -------------------------------------------------------------------
 Mon Nov  8 12:53:46 CET 2004 - jsrain@suse.cz
@@ -37,7 +42,7 @@ Mon Nov  8 12:53:46 CET 2004 - jsrain@suse.cz
 Thu Nov  4 17:56:47 CET 2004 - sh@suse.de
 
 - Added save_y2logs script for easier bug reporting
-- V 2.11.6 
+- V 2.11.6
 
 -------------------------------------------------------------------
 Thu Nov  4 11:00:06 CET 2004 - mvidner@suse.cz
