@@ -192,8 +192,6 @@ define term AnyQuestionButtonBox (
  * NEVER use this generic question popup to simply exchange the order of
  * yes/no, continue/cancel or ok/cancel buttons!
  *
- * <p><img src="../AnyQuestion.png" /></p>
- *
  * @param headline		headline or Popup::NoHeadline()
  * @param message			message string
  * @param yes_button_message	label on affirmative buttons (on left side)
@@ -1118,7 +1116,7 @@ global define void AnyTimedMessage(string headline, string message, integer time
 /**
  * Show a warning message and wait specified amount of time or until user clicked "OK".
  *
- * @screenshot screenshots/TimedWarninngPopup.png
+ * @screenshot screenshots/TimedWarningPopup.png
  *
  * @param message warning message string
  * @param timeout_seconds time out in seconds

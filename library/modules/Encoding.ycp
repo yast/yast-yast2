@@ -2,13 +2,7 @@
  * File:	modules/Encoding.ycp
  * Package:	yast2
  * Summary:	Provide the encoding stuff
- * Author:	Klaus Kaempf <kkaempf@suse.de>
- *
- *<BR>
- * sysconfig /etc/sysconfig/console:<BR>
- *<UL>
- *<LI>	CONSOLE_ENCODING	string	console encoding</LI>
- *</UL>
+ * Authors:	Klaus Kaempf <kkaempf@suse.de>
  *
  * $Id$
  */
@@ -57,25 +51,43 @@ global define string Restore() {
     return console;
 }
 
+/**
+ * Set Encoding Language
+ * @param string new_lang New Language
+ * @return void
+ */
 global void SetEncLang( string new_lang )
     ``{
     lang = new_lang;
     y2milestone( "SetEncLang %1", lang );
     }
 
-global string GetEncLang()
-    ``{
+/**
+ * Get Encoding Language
+ * @return Language
+ */
+global string GetEncLang() 
+{
     string ret = lang;
     y2milestone( "GetEncLang ret %1", ret );
     return( ret );
-    }
+}
 
+/**
+ * Set UTF8 Language
+ * @param string new_utf8 New UTF8 Language
+ * @return void
+ */
 global void SetUtf8Lang( boolean new_utf8 )
-    ``{
+{
     utf8 = new_utf8;
     y2milestone( "SetUtf8Lang %1", utf8 );
-    }
+}
 
+/**
+ * Get UTF8 Language
+ * @return boolean
+ */
 global boolean GetUtf8Lang()
     ``{
     boolean ret = utf8;
@@ -96,6 +108,13 @@ map lang_map = $[ "ja_JP" : "932",
                   "zh_HK" : "950",
                   "ko_KR" : "949" ];
 
+
+
+/**
+ * Get Code Page
+ * @param string enc Encoding
+ * @return string
+ */
 global define string GetCodePage( string enc ) 
     ``{
     string code = enc_map[enc]:"";
