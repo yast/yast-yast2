@@ -51,7 +51,7 @@ void UpdateServiceStatusWidget (map<string,any> widget) {
         UI::ChangeWidget (`id ("_cwm_start_service_now"), `Enabled, false);
         UI::ChangeWidget (`id ("_cwm_stop_service_now"), `Enabled, false);
 	// service status - label
-        UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label ("Unavailable"));
+        UI::ReplaceWidget (`id ("_cwm_service_status_rp"), `Label (_("Unavailable")));
     }
     else
     {
