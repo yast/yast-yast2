@@ -1,0 +1,154 @@
+/**
+ * File:	clients/remotechooser.ycp
+ * Package:	yast2
+ * Summary:	Remote administration client
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+textdomain "base";
+
+include "ui/common_messages.ycp";
+
+string host = "localhost";
+string user = "";
+string modul = "menu";
+string protocol = "ssh";
+
+list hosts = [];
+
+global define symbol ChooseDialog() ``{
+
+	/*
+	`Left(`HSquash(`RadioButtonGroup(`id(`protocol),
+		  `VBox(
+		      `Left(`RadioButton(`id("telnet"), "telnet", true)),
+		      `Left(`RadioButton(`id("rlogin"), "rlogin")),
+		      `Left(`RadioButton(`id("rsh"),    "rsh")),
+		      `Left(`RadioButton(`id("ssh"),    "ssh")),
+		      `Left(`RadioButton(`id("su"),     "su")),
+		      `Left(`RadioButton(`id("sudo"),   "sudo"))))));
+	  */
+
+    term contents = `VBox(`HSpacing(50), `HBox(
+	/* SelectionBox label */
+	`SelectionBox(`id(`hosts), `opt(`notify), _("&Available hosts:"), hosts),
+	`HSpacing(1.0),
+	`VBox(
+	    /* TextEntry label */
+	    `TextEntry(`id(`host), _("&Host:"), host),
+	    /* TextEntry label */
+	    `TextEntry(`id(`user), _("&User name:"), user),
+	    /* TextEntry label */
+	    `TextEntry(`id(`modul), _("&Module to start:"), modul),
+	    /* ComboBox label */
+	    `Left(`ComboBox(`id(`protocol), _("Connection &protocol:"), [
+		`item(`id("ssh"), "ssh", protocol == "ssh"),
+		`item(`id("rsh"), "rsh", protocol == "rsh"),
+		`item(`id("rlogin"), "rlogin", protocol == "rlogin"),
+		`item(`id("telnet"), "telnet", protocol == "telnet"),
+		`item(`id("sudo"), "sudo", protocol == "sudo"),
+		`item(`id("su"), "su", protocol == "su"),
+	    ])),
+	    // `VCenter(ProtocolSelection()),
+	    `VSpacing(1),
+	    `HBox(
+		/* PushButton label */
+		`PushButton(`id(`next), `opt(`default), _("&Launch")),
+		`HStretch(),
+		`PushButton(`id(`cancel), CancelButtonLabel())
+	    )
+	)
+    ));
+
+    UI::OpenDialog(contents);
+
+    any ret = nil;
+    while(true) {
+	ret = UI::UserInput();
+
+	if(ret == `abort || ret == `cancel) {
+	    /* if(ReallyAbort()) break;
+	    else continue; */
+	    break;
+	}
+	else if(ret == `hosts) {
+	    UI::ChangeWidget(`id(`host), `Value, UI::QueryWidget(`id(`hosts),`CurrentItem));
+	    continue;
+	}
+	else if(ret == `back) {
+	    break;
+	}
+	else if(ret == `next) {
+	    /* FIXME check_* */
+	    break;
+	}
+	else {
+	    y2error("Unexpected return code: %1", ret);
+	    continue;
+	}
+    }
+
+    if(ret == `next) {
+
+	protocol = UI::QueryWidget(`id(`protocol), `Value);
+	modul = UI::QueryWidget(`id(`modul), `Value);
+	user = UI::QueryWidget(`id(`user), `Value);
+	host = UI::QueryWidget(`id(`host), `Value);
+
+	if(host == "") host = "localhost";
+	if(modul == "") modul = "menu";
+    }
+
+    UI::CloseDialog ();
+    return ret;
+}
+
+
+y2milestone("----------------------------------------");
+y2milestone("Remote chooser module started");
+
+/* Label text */
+UI::OpenDialog(`Label(_("Scanning for hosts in the local network ...")));
+hosts = sort(SCR::Read(.net.hostnames));
+if(hosts == nil) hosts = [];
+UI::CloseDialog();
+
+/* Get the current user name */
+map output = SCR::Execute(.target.bash_output, "echo \"$USER\"");
+user = select(splitstring(output["stdout"]:"", "\n"), 0, "");
+
+any ret = nil;
+while(true) {
+    ret = ChooseDialog();
+
+    if(ret == `abort || ret == `cancel || ret == `back) {
+	break;
+    }
+    /* Launch it */
+    else if(ret == `next) {
+
+	string launch = protocol + "://" + user;
+	if(protocol != "su" && protocol != "sudo")
+	    launch = launch + "@" + host;
+	launch = launch + "/" + modul;
+
+	y2milestone("Launching %1", launch);
+	WFM::CallModule(launch, []);
+	UI::SetModulename("remotechooser");
+	continue;
+    }
+    else {
+	y2error("Unexpected return code: %1", ret);
+	continue;
+    }
+};
+
+y2milestone("Remote chooser module finished");
+y2milestone("----------------------------------------");
+
+/* EOF */
+}
