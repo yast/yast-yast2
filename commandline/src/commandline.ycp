@@ -112,7 +112,9 @@ global define boolean CommandLineRun( map commandline ) ``{
     	    // there is a handler, execute the action
 	    if( exec != nil ) {
 		exec = add( exec, options );
-		RunFunction( exec );
+		any res = RunFunction( exec );
+		if( is( res, boolean ) && res == false )
+		    CommandLine::Abort();
 	    } 
 	    else 
 	    {

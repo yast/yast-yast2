@@ -616,6 +616,14 @@
     }
 
     /**
+     * Abort the command line handling
+     */
+    global define void Abort() ``{
+	aborted = true;
+	done = true;
+    }
+
+    /**
      *  Are there some commands to be processed?
      *
      *  @return boolean true, if there is no more commands to be processed, either because the user

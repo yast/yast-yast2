@@ -87,7 +87,10 @@ asked for GUI (guihandler is used instead and therefore it must
 do initializing and finishing on its own).
 The handler for an action is specified in the "handler" key of the
 action description map. Each handler must take a single argument
-containing the options entered by the user.
+containing the options entered by the user and return a boolean, true on
+success. If the handler returns "false", the command line event-loop
+will quit (without calling the finish handler). This is useful for
+handling error states.
 
 The CommandLine module is stateful, i.e., it contains a current state
 of command line parsing/interactive console control of a YaST module.
