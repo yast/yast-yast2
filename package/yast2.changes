@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 29 10:10:37 CEST 2004 - mvidner@suse.cz
+
+- Fixed Package::FunctionsAI["DoInstall" and "DoRemove"] (#45463).
+- 2.10.22
+
+-------------------------------------------------------------------
 Mon Sep 27 15:09:44 CEST 2004 - arvin@suse.de
 
 - fixed generation of desktop files
