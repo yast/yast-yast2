@@ -155,24 +155,6 @@ Description: %1"), reason);
 }
 
 /**
- * Question: Delete selected entry?
- * @return string Delete selected entry?
- */
-global define string DeleteSelectedEntry () {
-  /* TRANSLATORS: Popup question */
-  return _("Delete selected entry?");
-}
-
-/**
- * Question: Delete entry '%1'?
- * @return string Delete entry '%1'?
- */
-global define string DeleteThisEntry (string entry) {
-  /* TRANSLATORS: Popup question */
-  return sformat(_("Delete entry '%1'?"), entry);
-}
-
-/**
  * Required text item
  * @return This item is required to be filled in
  */
