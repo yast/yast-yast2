@@ -1,9 +1,10 @@
 -------------------------------------------------------------------
-Fri Jun 20 09:10:48 CEST 2003 - mvidner@suse.cz
+Fri Jun 20 13:38:28 CEST 2003 - mvidner@suse.cz
 
 - Runlevel editor: call insserv with force
   when writing multiple services (#27370).
-- reverted yast2-network from Requires
+- Moved MailAliases out, to be put to yast2-mail-aliases (#18212).
+- Reverted yast2-network from Requires
 - 2.8.9
 
 -------------------------------------------------------------------
