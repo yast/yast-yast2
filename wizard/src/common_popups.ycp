@@ -382,7 +382,7 @@ You will need to reinstall." );
 
       global define void NotifyPopup(string message) ``{
 
-	  AnyMessagePopup( NotifyMsg(), message );
+	  AnyMessagePopup( "", message );
 
       };
 
@@ -405,7 +405,6 @@ You will need to reinstall." );
 	  term button_box =  `PushButton( `id(`ok_msg),
 					  `opt(`default, `key_F10),
 					  OKButtonLabel() );
-	  // ok pushbutton: confirm the dialog
 	  OpenDialog(
 		     `opt(`decorated),
 		     createPopupLayoutInternal( headline, message, button_box )
