@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Sep 21 11:31:00 CEST 2004 - arvin@suse.de
+
+- adapted path for qtrc (bug #44803)
+
+-------------------------------------------------------------------
 Tue Sep 14 16:58:38 CEST 2004 - mvidner@suse.cz
 
 - Ignore /etc/init.d/Makefile (#45198).
@@ -20,7 +25,7 @@ Mon Sep 13 11:25:06 CEST 2004 - jsrain@suse.cz
 Mon Sep  6 12:42:27 CEST 2004 - visnov@suse.cz
 
 - moved ComputeKernelPackages to Kernel.ycp
-- use Kernel::ComputePackages in Package (#44394) 
+- use Kernel::ComputePackages in Package (#44394)
 - 2.10.13
 
 -------------------------------------------------------------------

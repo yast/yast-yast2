@@ -100,7 +100,7 @@ function set_inst_qt_env()
     export XCURSOR_THEME="crystalwhite"
     export QT_HOME_DIR="`eval echo /tmp/.qt/`"
     mkdir -p /tmp/.qt
-    [ -e /opt/kde3/share/config/SuSE/default/qtrc ] && cp /opt/kde3/share/config/SuSE/default/qtrc /tmp/.qt/
+    [ -e /usr/share/desktop-data/qtrc ] && cp /usr/share/desktop-data/qtrc /tmp/.qt/
 }
 
 
