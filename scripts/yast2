@@ -1,28 +1,16 @@
-#!/bin/bash
-#/----------------------------------------------------------------------\
-#|                                                                      |
-#|                      __   __    ____ _____ ____                      |
-#|                      \ \ / /_ _/ ___|_   _|___ \                     |
-#|                       \ V / _` \___ \ | |   __) |                    |
-#|                        | | (_| |___) || |  / __/                     |
-#|                        |_|\__,_|____/ |_| |_____|                    |
-#|                                                                      |
-#|                               core system                            |
-#|                                                        (C) SuSE GmbH |
-#\----------------------------------------------------------------------/
-#
-#   File:       yast2
-#
-#   Authors:	Mathias Kettner <kettner@suse.de>
-#   		Klaus Kaempf <kkaempf@suse.de>
+# File:		/sbin/yast2
+# Module:	yast2
+# Summary:	Main YaST2 start script
+# Authors:	Mathias Kettner <kettner@suse.de>
+#		Klaus Kaempf <kkaempf@suse.de>
 #		Ludwig Nussel <lnussel@suse.de>
-#   Maintainer: Klaus Kaempf <kkaempf@suse.de>
 #
+# $Id$
 #
-#   This script is called, when the user just types in 'yast2'. It starts
-#   the qt user interface in case the DISPLAY variable is set and other-
-#   wise the ncurses. It starts then the module 'menu' which implements
-#   the configuration and administration menu.
+# This script is called, when the user just types in 'yast2'. It starts
+# the qt user interface in case the DISPLAY variable is set and other-
+# wise the ncurses. It starts then the module 'menu' which implements
+# the configuration and administration menu.
 #
 #/-*/
 

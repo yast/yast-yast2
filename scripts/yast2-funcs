@@ -1,7 +1,11 @@
+# File:		/usr/share/YaST2/bin/yast2-funcs
+# Module:	yast2
+# Summary:	Common functions for YaST2 start scripts
+# Authors:	Arvin Schnell <arvin@suse.de>
 #
-# yast2-funcs - common functions for YaST2 start scripts
+# $Id$
 #
-
+#/-*/
 
 # some path definitions
 ybindir=/usr/lib/YaST2/bin
