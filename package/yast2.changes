@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 13 09:02:49 CEST 2004 - locilka@suse.de
+
+- added new Message module
+- 2.10.3
+
+-------------------------------------------------------------------
 Mon Jun 21 13:24:03 CEST 2004 - jsrain@suse.cz
 
 - added CWM widget for TSIG keys management
