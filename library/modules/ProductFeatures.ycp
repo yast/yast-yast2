@@ -161,6 +161,12 @@
      */
     global boolean use_desktop_scheduler = true;
 
+
+    /**
+     * Additional kernel parameters to be set by bootloader
+     */
+    global string additional_kernel_parameters = "";
+
     /**
      * The I/O scheduler selection
      */
