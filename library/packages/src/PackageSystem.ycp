@@ -99,10 +99,9 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
     map<string, string> licenses = Pkg::PkgGetLicensesToConfirm (toinstall);
     if (size (licenses) > 0)
     {
-	list<string> rt_licenses_l = maplist (
-	    string p, string l, licenses,
-	    ``( sformat ("<p><b>%1</b></p>\n%2", p, l) )
-	    );
+	list<string> rt_licenses_l = maplist ( string p, string l, licenses, {
+	    return sformat ("<p><b>%1</b></p>\n%2", p, l);
+	});
 	if (! Popup::AnyQuestionRichText (
 		// popup heading, with rich text widget and Yes/No buttons
 		_("Do you accept this license agreement?",
@@ -113,6 +112,7 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
 		Label::YesButton (), Label::NoButton (),
 		`focus_none))
 	{
+	    y2milestone("License not accepted: %1", toinstall);
 	    last_op_canceled = true;
 	    return false;
 	}
@@ -128,7 +128,7 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
     foreach (string p, toinstall, {
 	if(ok == true)
 	    if(Pkg::PkgInstall(p) != true) {
-		y2error("Package install: %1", p);
+		y2error("Package %1 install failed: %2", p, Pkg::LastError());
 		ok = false;
 	    }
     });
@@ -137,14 +137,14 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
     foreach (string p, toremove, {
 	if(ok == true)
 	    if(Pkg::PkgDelete(p) != true) {
-		y2error("Package delete: %1", p);
+		y2error("Package %1 delete failed: %2", p, Pkg::LastError());
 		ok = false;
 	    }
     });
     if(ok != true) return false;
 
     if(Pkg::PkgSolve (false) != true) {
-	y2error("Package solve failed");
+	y2error("Package solve failed: %1", Pkg::LastError());
 	if (packages_consistent)
 	{
 	    return false;
@@ -155,7 +155,7 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
     list result = Pkg::PkgCommit (0);
     y2debug ("PkgCommit: %1", result);
     if(result[1]:[] != []) {
-	y2error("Package commit: %1", result[1]:[]);
+	y2error("Package commit failed: %1", result[1]:[]);
 	return false;
     }
 
