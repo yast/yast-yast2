@@ -90,7 +90,11 @@ gets to this kind of question quite frequently:
 	[Yes] [No]
 
 
-(Note: This example might be a good candidate for ContinueCancel() - see below)
+Notes:
+(1) This example might be a good candidate for ContinueCancel() - see below
+(2) Never use all-caps text in headlines - this is used here just to show 
+    that this will be displayed in a big bold font
+
 
 If you use headlines, please use them to either
 - classify the type of popup (Error, Warning, ...)
