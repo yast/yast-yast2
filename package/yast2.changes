@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Dec  3 16:45:39 CET 2004 - mvidner@suse.cz
+
+- NetworkDevices: Canonicalize netmask data (#46885).
+
+-------------------------------------------------------------------
 Wed Dec  1 11:37:39 CET 2004 - locilka@suse.cz
 
 - Added handling for 'all' parameter in old firewall functions
