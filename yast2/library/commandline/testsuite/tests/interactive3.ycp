@@ -1,0 +1,28 @@
+/**
+ * File:	interactive3.ycp
+ * Package:	yast2
+ * Summary:	test "quit" in interactive mode
+ * Author:	Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ *
+ * testedfiles: CommandLine.ycp Testsuite.ycp
+ */
+
+{
+
+    include "testsuite.ycp";
+    include "./tests/testsuitedata.yh";
+
+    import "CommandLine";
+
+    TEST(``(CommandLine::Init( cmdline ,["interactive"]) ),[],nil);
+    TEST(``(CommandLine::StartGUI()), [], nil );
+    TEST(``(CommandLine::Done()), [], nil );
+
+    TEST(``(CommandLine::Command() ), [$[ "dev":$[ "tty": "quit" ] ] ],nil);
+    TEST(``(CommandLine::Done()), [], nil );
+    TEST(``(CommandLine::Aborted()), [], nil );
+
+/* EOF */
+}

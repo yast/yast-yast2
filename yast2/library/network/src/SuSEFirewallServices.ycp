@@ -1,0 +1,292 @@
+/**
+ * File:	modules/SuSEFirewallServices.ycp
+ * Package:	Firewall Services, Ports Aliases.
+ * Summary:	Definition of Supported Firewall Services and Port Aliases.
+ * Authors:	Lukas Ocilka <locilka@suse.cz>
+ *
+ * $Id$
+ *
+ * Global Definition of Firewall Services
+ * Defined using TCP, UDP and RPC ports and IP protocols and Broadcast UDP
+ * ports. Results are cached, so repeating requests are answered faster.
+ */
+
+{
+    module "SuSEFirewallServices";
+    textdomain "base";
+
+    /* list of possibly conflict services because of sharing ports, for instance: "nis-server" and "nfs-server" */
+    list <string> possibly_conflict_services = ["nfs-server", "nis-server", "nfs-client", "nis-client"];
+
+    /**
+     *
+     * Format of SERVICES
+     *
+     * "service-id" : $[
+     *		"name"			: _("Service Name"),
+     *		"tcp_ports"		: list <tcp_ports>,
+     *		"udp_ports"		: list <udp_ports>,
+     *		"rpc_ports"		: list <rpc_ports>,
+     *		"ip_protocols"		: list <ip_protocols>,
+     *		"broadcast_ports"	: list <broadcast_ports>,
+     * ],
+     *
+     */
+
+    define map <string, map<string, any> > SERVICES = $[
+	"http" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("HTTP Server"),
+	    "tcp_ports" : [ "http" ],
+	],
+	"https" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("HTTPS Server"),
+	    "tcp_ports" : [ "https" ],
+	],
+	"smtp" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("Mail Server"),
+	    "tcp_ports" : [ "smtp" ],
+	],
+	"pop3" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("POP3 Server"),
+	    "tcp_ports" : [ "pop3" ],
+	],
+	"pop3s" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("POP3S Server"),
+	    "tcp_ports" : [ "pop3s" ],
+	],
+	"imap" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("IMAP Server"),
+	    "tcp_ports" : [ "imap" ],
+	],
+	"imaps" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("IMAPS Server"),
+	    "tcp_ports" : [ "imaps" ],
+	],
+	"samba-server" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("Samba Server"),
+	    "tcp_ports" : [ "netbios-ns", "netbios-dgm", "netbios-ssn", "microsoft-ds" ],
+	    "udp_ports" : [ "netbios-ns" ],
+	    "broadcast_ports" : [ "netbios-ns" ],
+	],
+	"ssh" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("SSH"),
+	    "tcp_ports" : [ "ssh" ],
+	],
+	"rsync" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("Remote synchronization"),
+	    "tcp_ports" : [ "rsync" ],
+	],
+	"dhcp-server" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("DHCP Server"),
+	    "udp_ports" : [ "bootps" ],
+	],
+	"dhcp-client" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("DHCP Client"),
+	    "udp_ports" : [ "bootpc" ],
+	],
+	"dns-server" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("DNS Server"),
+	    "tcp_ports" : [ "domain" ],
+	    "udp_ports" : [ "domain" ],
+	],
+	"nfs-client" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("NFS Client"),
+	    "rpc_ports" : [ "portmap", "status", "nlockmgr" ],
+	],
+	"nfs-server" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("NFS Server"),
+	    "rpc_ports" : [ "portmap", "status", "nlockmgr", "mountd", "nfs", "nfs_acl" ],
+	],
+	// Well, when nis-server is allowed in firewall, nis-client is allowed automatically too.
+	// nis-client's ports are the subset of nis-server ports.
+	"nis-client" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("NIS Client"),
+	    "rpc_ports" : [ "portmap", "ypbind" ],
+	],
+	"nis-server" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("NIS Server"),
+	    "rpc_ports" : [ "portmap", "ypserv", "fypxfrd", "ypbind", "yppasswdd" ],
+	],
+	// Default SUSE installation
+	"vnc" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("Remote Administration"),
+	    "tcp_ports" : [ "5801", "5901" ],
+	],
+	"tftp" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("TFTP Server"),
+	    "udp_ports" : [ "tftp" ],
+	],
+	// Internet Printing Protocol as a Server
+	"ipp-tcp" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("IPP Server"),
+	    "tcp_ports" : [ "ipp" ],
+	],
+	// Internet Printing Protocol as a Client
+	// IPP Client needs to listen for broadcast messages
+	"ipp-udp" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("IPP Client"),
+	    "udp_ports" : [ "ipp" ],
+	    "broadcast_ports" : [ "ipp" ],
+	],
+	"ntp-server" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("NTP Server"),
+	    "udp_ports" : [ "ntp" ],
+	    "broadcast_ports" : [ "ntp" ],
+	],
+	"ldap" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("LDAP Server"),
+	    "tcp_ports" : [ "ldap" ],
+	],
+	"ldaps" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("LDAPS Server"),
+	    "tcp_ports" : [ "ldaps" ],
+	],
+	"ipsec" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("IPsec"),
+	    "udp_ports" : [ "isakmp", "ipsec-msft" ],
+	    "ip_protocols" : [ "esp" ],
+	],
+    ];
+
+    /**
+     * Function returns if the service_id is a known (defined) service
+     *
+     * @param	string service_id
+     * @return	boolean if is known (defined)
+     */
+    global define boolean IsKnownService (string service_id) {
+	if (SERVICES[service_id]:$[] == $[]) {
+	    return false;
+	} else {
+	    return true;
+	}
+    }
+
+    /**
+     * Function returns the map of supported (known) services.
+     *
+     * @return	map [service_id, service_name]
+     */
+    global define map <string, string> GetSupportedServices () {
+	map <string, string> supported_services = $[];
+
+	foreach (string service_id, map <string, any> service_definition, SERVICES, {
+	    supported_services[service_id] =
+		// TRANSLATORS: Name of unknown service. This should never happen, just for cases..., %1 is a requested service id like nis-server
+		(string) service_definition["name"]:sformat(_("Oops, unknown service '%1'"), service_id);
+	});
+
+	return supported_services;
+    }
+
+    /**
+     * Function returns needed TCP ports for service
+     *
+     * @param	string service
+     * @return	list [string] of needed TCP ports
+     */
+    global define list <string> GetNeededTCPPorts (string service) {
+	return SERVICES[service,"tcp_ports"]:[];
+    }
+
+    /**
+     * Function returns needed UDP ports for service
+     *
+     * @param	string service
+     * @return	list [string] of needed UDP ports
+     */
+    global define list <string> GetNeededUDPPorts (string service) {
+	return SERVICES[service,"udp_ports"]:[];
+    }
+
+    /**
+     * Function returns needed RPC ports for service
+     *
+     * @param	string service
+     * @return	list [string] of needed RPC ports
+     */
+    global define list <string> GetNeededRPCPorts (string service) {
+	return SERVICES[service,"rpc_ports"]:[];
+    }
+
+    /**
+     * Function returns needed IP protocols for service
+     *
+     * @param	string service
+     * @return	list [string] of needed IP protocols
+     */
+    global define list <string> GetNeededIPProtocols (string service) {
+	return SERVICES[service,"ip_protocols"]:[];
+    }
+
+    /**
+     * Function returns needed ports allowing broadcast
+     *
+     * @param	string service
+     * @return	list [string] of needed broadcast ports
+     */
+    global define list <string> GetNeededBroadcastPorts (string service) {
+	return SERVICES[service,"broadcast_ports"]:[];
+    }
+
+    /**
+     * Function returns needed ports and protocols for service.
+     * Function cares about if the service is defined or not.
+     *
+     * @param	string service
+     * @return	map [list, string] of needs
+     */    
+    global define map <string, list <string> > GetNeededPortsAndProtocols (string service) {
+	map <string, list <string> > needed = $[];
+
+	if (! IsKnownService(service)) {
+	    y2error("Uknown service '%1'", service);
+	    return nil;
+	}
+
+	needed["tcp_ports"]		= GetNeededTCPPorts(service);
+	needed["udp_ports"]		= GetNeededUDPPorts(service);
+	needed["rpc_ports"]		= GetNeededRPCPorts(service);
+	needed["ip_protocols"]		= GetNeededIPProtocols(service);
+	needed["broadcast_ports"]	= GetNeededBroadcastPorts(service);
+
+	return needed;
+    }
+
+    /**
+     * Function returns list of possibly conflicting services.
+     * Conflicting services are for instance nis-client and nis-server.
+     *
+     * @return	list [string] of conflicting services
+     */
+    global define list <string> GetPossiblyConflictServices () {
+	return possibly_conflict_services;
+    }
+
+/* EOF */
+}

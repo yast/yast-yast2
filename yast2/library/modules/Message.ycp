@@ -1,0 +1,254 @@
+/**
+ * File:	modules/Message.ycp
+ * Package:	yast2
+ * Summary:	Often used messages
+ * Authors:	Lukas Ocilka <locilka@suse.cz>
+ * Copyright:   Copyright 2004, Novell, Inc.  All rights reserved.
+ *
+ * $Id$
+ *
+ * Often used messages, for example error messages
+ */
+
+{
+
+module "Message";
+textdomain "base";
+
+/**
+ * Cannot continue without required packages installed
+ * @return string Cannot continue without required packages installed
+ */
+global define string CannotContinueWithoutPackagesInstalled () {
+  /* TRANSLATORS: Popup message */
+  return _("YaST cannot continue the configuration
+without installing the required packages.");
+}
+
+/**
+ * Cannot start 'service_name' service
+ * @param string service_name
+ * @return string Cannot start 'service_name' service
+ */
+global define string CannotStartService (string service_name) {
+  /* TRANSLATORS: Popup message, %1 is a service name like "smbd" */
+  return sformat(_("Cannot start '%1' service"), service_name);
+}
+
+/**
+ * Cannot restart 'service_name' service
+ * @param string service_name
+ * @return string Cannot restart 'service_name' service
+ */
+global define string CannotRestartService (string service_name) {
+  /* TRANSLATORS: Popup message, %1 is a service name like "smbd" */
+  return sformat(_("Cannot restart '%1' service"), service_name);
+}
+
+/**
+ * Cannot stop 'service_name' service
+ * @param string service_name
+ * @return string Cannot stop 'service_name' service
+ */
+global define string CannotStopService (string service_name) {
+  /* TRANSLATORS: Popup message, %1 is a service name like "smbd" */
+  return sformat(_("Cannot stop '%1' service"), service_name);
+}
+
+/**
+ * Cannot write settings to 'destination'
+ * @param string destination
+ * @return string Cannot write settings to 'destination'
+ */
+global define string CannotWriteSettingsTo (string destination) {
+  /* TRANSLATORS: Popup message, %1 is file or service name like "/tmp/out" or "LDAP" */
+  return sformat(_("Cannot write settings to '%1'"), destination);
+}
+
+/**
+ * Cannot write settings to 'destination'\n\nReason: reason
+ * @param string destination
+ * @param string reason
+ * @return string Cannot write settings to 'destination'\n\nReason: reason
+ */
+global define string CannotWriteSettingsToBecause (string destination, string reason) {
+  /* TRANSLATORS: Popup message, %1 is file or service name like "/tmp/out" or "LDAP", %2 is the reason of error */
+  return sformat(_("Cannot write settings to '%1'.
+
+Reason: %2"), destination, reason);
+}
+
+/**
+ * Error writing file 'file'
+ * @param string file
+ * @return string Error writing file 'file'
+ */
+global define string ErrorWritingFile (string file) {
+  /* TRANSLATORS: Popup message, %1 is a file name like "/tmp/out" */
+  return sformat(_("Error writing file '%1'"), file);
+}
+
+/**
+ * Error writing file 'file'\n\nReason: reason
+ * @param string file
+ * @param string reason
+ * @return string Error writing file 'file'\n\nReason: reason
+ */
+global define string ErrorWritingFileBecause (string file, string reason) {
+  /* TRANSLATORS: Popup message, %1 is a file name like "/tmp/out", %2 is the reason of error */
+  return sformat(_("Error writing file '%1'.
+
+Reason: %2"), file, reason);
+}
+
+/**
+ * Cannot open file 'file'
+ * @param string file
+ * @return string Cannot open file 'file'
+ */
+global define string CannotOpenFile (string file) {
+  /* TRANSLATORS: Popup message, %1 is the name of file like "/tmp/in"  */
+  return sformat(_("Cannot open file '%1'"), file);
+}
+
+/**
+ * Cannot open file 'file'\n\nReason: reason
+ * @param string file
+ * @param string reason
+ * @return string Cannot open file 'file'\n\nReason: reason
+ */
+global define string CannotOpenFileBecause (string file, string reason) {
+  /* TRANSLATORS: Popup message, %1 is the name of file like "/tmp/in", %2 is the reason of error */
+  return sformat(_("Cannot open file '%1'.
+
+Reason: %2"), file, reason);
+}
+
+/**
+ * Finished
+ * @return string Finished
+ */
+global define string Finished () {
+  /* TRANSLATORS: Progress stage text */
+  return _("Finished");
+}
+
+/**
+ * Check the environment
+ * @return string Check the environment
+ */
+global define string CheckEnvironment () {
+  /* TRANSLATORS: Progress stage text */
+  return _("Check the environment");
+}
+
+/**
+ * UnknownError\n\nReason: reason
+ * @param string reason
+ * @return string UnknownError\n\nReason: reason
+ */
+global define string UnknownError (string reason) {
+  /* TRANSLATORS: Popup message, %1 is the description of error */
+  return sformat(_("Unknown Error.
+
+Description: %1"), reason);
+}
+
+/**
+ * Required text item
+ * @return This item is required to be filled in
+ */
+global define string RequiredItem () {
+  /* TRANSLATORS: Popup message */
+  return _("This item is required to be filled in");
+}
+
+/**
+ * Question: Directory does not exist. Create it?
+ * @return string The directory '%1' does not exist.\nCreate it?
+ */
+global define string DirectoryDoesNotExistCreate (string directory) {
+  /* TRANSLATORS: Popup question */
+  return sformat(_("The directory '%1' does not exist.
+Create it?"), directory);
+}
+
+/**
+ * Domain has changed, you have to reboot now for domain
+ * to take effect
+ * @return The domain has changed.\nYou must reboot for the changes to take effect.
+ */
+global define string DomainHasChangedMustReboot () {
+  /* TRANSLATORS: Popup message */
+  return _("The domain has changed.
+You must reboot for the changes to take effect.");
+}
+
+/**
+ * Push Button / CheckBox for not to disturb with this message again
+ * @return string Do Not Show This Message &Again
+ */
+global define string DoNotShowMessageAgain () {
+  /* TRANSLATORS: CheckBox / Button */
+  return _("Do Not Show This Message &Again");
+}
+
+/**
+ * Cannot ajust 'service_name' service
+ * @param string service_name
+ * @return string Cannot adjust 'service_name' service
+ */
+global define string CannotAdjustService (string service_name) {
+  /* TRANSLATORS: Popup message, %1 is a service name like "smbd" */
+  return sformat(_("Cannot adjust '%1' service"), service_name);
+}
+
+/**
+ * When some parameter is missing
+ * @param string parameter
+ * @return string Missing parameter '%1'.
+ */
+global define string MissingParameter (string parameter) {
+  /* TRANSLATORS: Popup message, %1 is a missing-parameter name */
+  return sformat(_("Missing parameter '%1'."), parameter);
+}
+
+/**
+ * When is is not able to create directory
+ * @param string directory
+ * @return string Unable to create directory '%1'.
+ */
+global define string UnableToCreateDirectory (string directory) {
+  /* TRANSLATORS: Popup message, %1 is a directory name */
+  return sformat(_("Cannot create directory '%1'."), directory);
+}
+
+/**
+ * When is is not able to read current settings
+ * @return string Cannot read current settings.
+ */
+global define string CannotReadCurrentSettings () {
+  /* TRANSLATORS: Popup message */
+  return _("Cannot read current settings.");
+}
+
+/**
+ * Running SuSEConfig failed
+ * @return string SuSEconfig script failed.
+ */
+global define string SuSEConfigFailed () {
+  /* TRANSLATORS: Popup message */
+  return _("SuSEconfig script failed.");
+}
+
+/**
+ * Installing packages failed
+ * @return string Failed to install required packages.
+ */
+global define string FailedToInstallPackages () {
+  /* TRANSLATORS: Popup message */
+  return _("Failed to install required packages.");
+}
+
+/* EOF */
+}

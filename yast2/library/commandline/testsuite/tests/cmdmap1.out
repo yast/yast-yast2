@@ -1,0 +1,5 @@
+Log	Command line specification does not define module id
+Log	Command line specification does not define global help for the module
+Return	false
+Return	true
+Return	true

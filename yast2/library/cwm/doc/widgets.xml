@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding='ISO-8859-1'?>
+<chapter id = "widgets">
+    <title>Available widgets</title>
+    <para>
+Note: in all examples additional parameters can be present, see 
+<xref linkend="advanced"/>.
+    </para>
+
+<section><title>Check Box</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `checkbox</para></listitem>
+<listitem><para>"label" : label shown right from the checkbox</para></listitem>
+</itemizedlist></para>
+
+<example><title>Check Box</title><screen>
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "CHECKBOX" : $[
+    "label" : _("&amp;Checkbox"),
+    "widget" : `checkbox,
+  ],
+]
+ </screen></example>
+</section>
+
+<section><title>Combo Box</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `combobox</para></listitem>
+<listitem><para>"label" : label shown above the combobox</para></listitem>
+<listitem><para>"items" : list of two-item-lists of [id, label], each item represents one
+            item of the Combobox. Both id and label must be strings.</para></listitem>
+</itemizedlist></para>
+
+<example><title>Combo Box</title><screen>
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "COMBOBOX" : $[
+    "label" : _("&amp;Combobox"),
+    "widget" : `combobox,
+    "items" : [
+        [ "item1", _("Label1") ],
+        [ "item2", _("Label2") ]
+    ],
+  ],
+  ....
+]
+ </screen></example>
+</section>
+
+<section><title>Text Entry</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `textentry</para></listitem>
+<listitem><para>"label" : label shown above the text entry</para></listitem>
+<listitem><para>"valid_chars" : list of characters that are valid for the text entry,
+                  if missing, all characters are valid</para></listitem>
+</itemizedlist></para>
+
+<example><title>Text Entry</title><screen>
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "TEXTENTRY" : $[
+    "label" : _("&amp;TextEntry"),
+    "widget" : `textentry,
+    "valid_chars" : "0123456789AaBbCcDdEeFfXx",
+        // for hexadecimal numbers
+  ],
+  ....
+]
+ </screen></example>
+</section>
+
+<section><title>Int Field</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `intfield</para></listitem>
+<listitem><para>"label" : label shown above the int field</para></listitem>
+<listitem><para>"minimum" : minimal value of the int field, if not set, then 0 is used</para></listitem>
+<listitem><para>"maximum" : maximal value of the int field, if not set, then 2^31 - 1 is used</para></listitem>
+</itemizedlist></para>
+
+<example><title>Int Field</title><screen>
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "INTFIELD" : $[
+    "label" : _("&amp;Intfield"),
+    "widget" : `intfield,
+    "minimum" : -1,
+    "maximum" : 10,
+  ],
+  ....
+]
+ </screen></example>
+</section>
+
+<section id="radio_buttons"><title>Radio Buttons</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `radio_buttons</para></listitem>
+<listitem><para>"label" : label of the frame around the radio buttons
+</para></listitem>
+<listitem><para>"items" : list of two-item-lists of [id, label], each item
+            represents one radio button. Both id and label must be strings.
+</para></listitem>
+<listitem><para>"orientation" : says if the radio buttons should be oriented
+            horizontally or vertically. Allowed values are `horizontal and
+            `vertical, default is `vertical.
+</para></listitem>
+</itemizedlist></para>
+
+<example><title>Radio Buttons</title><screen>
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "RADIO_BUTTONS" : $[
+    "label" : _("RadioButtonGroup"),
+    "widget" : `radio_buttons,
+    "items" : [
+        [ "item1", _("&amp;Label1") ],
+        [ "item2", _("La&amp;bel2") ],
+    ],
+    "orientation" : `horizontal,
+  ],
+  ....
+]
+ </screen></example>
+</section>
+
+<section><title>Push Button</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `push_button</para></listitem>
+<listitem><para>"label" : push button label</para></listitem>
+</itemizedlist></para>
+
+<example><title>Push Button</title><screen>
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "PUSH_BUTTON" : $[
+    "widget" : `push_button,
+    "label" : _("Push Button"),
+  ],
+  ....
+]
+ </screen></example>
+</section>
+
+<section id="multiline"><title>Multi-Line Edit Box</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `multi_line_edit</para></listitem>
+<listitem><para>"label" : title of the multiline widget</para></listitem>
+</itemizedlist></para>
+
+<example><title>Push Button</title><screen>
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "MULTI_EDIT" : $[
+    "widget" : `multi_line_edit,
+    "label" : _("Text editor"),
+  ],
+  ....
+]
+ </screen></example>
+</section>
+
+<section><title>Custom widget</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `custom</para></listitem>
+<listitem><para>"custom_widget" : term describing the widget</para></listitem>
+</itemizedlist></para>
+
+<example><title>Custom widget</title><screen>
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "PUSH_BUTTON" : $[
+    "widget" : `custom,
+    "custom_widget" : `PushButton (
+                            `id (`push_button),
+                            _("Push Button")),
+  ],
+  ....
+]
+ </screen></example>
+</section>
+
+</chapter>

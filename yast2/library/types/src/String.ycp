@@ -1,0 +1,768 @@
+/**
+ * File:	modules/String.ycp
+ * Package:	yast2
+ * Summary:	String manipulation routines
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+module "String";
+textdomain "base";
+
+/**
+ * Quote a string with 's
+ * @param var unquoted string
+ * @return quoted string
+ * @example quote("a'b") -> "a'\''b"
+ */
+global define string Quote(string var) ``{
+    if(var == nil || var == "") return "";
+    return mergestring(splitstring(var, "'"), "'\\''");
+}
+
+/**
+ * Unquote a string with 's (quoted with quote)
+ * @param var quoted string
+ * @return unquoted string
+ * @see quote
+ */
+global define string UnQuote(string var) ``{
+    if(var == nil || var == "") return "";
+    y2debug("var=%1", var);
+    while(regexpmatch(var, "'\\\\''")) {
+	var = regexpsub(var, "(.*)'\\\\''(.*)", "\\1'\\2");
+	y2debug("var=%1", var);
+    }
+    return var;
+}
+
+/**
+ * Return a pretty description of a byte count
+ * 
+ * Return a pretty description of a byte count with required precision
+ * and using KB, MB or GB as unit as appropriate.
+ *
+ * @param bytes	size (e.g. free diskspace, memory size) in Bytes
+ * @param precision number of fraction digits in output
+ * @param omit_zeroes if true then do not add zeroes
+ *	(usefull for memory size - 128 MB RAM looks better than 128.00 MB RAM)
+ * @return formatted string
+ *
+ * @example FormatSizeWithPrecision(4096, 2, true) -> "4 KB"
+ * @example FormatSizeWithPrecision(4096, 2, false) -> "4.00 KB"
+ */
+global define string FormatSizeWithPrecision(integer bytes, integer precision, boolean omit_zeroes) ``{
+
+    if(bytes == nil) return "";
+
+    string unit = "";
+    list units = [
+	/* KiloByte abbreviated */
+	_("KB"),
+	/* MegaByte abbreviated */
+	_("MB"),
+	/* GigaByte abbreviated */
+	_("GB"),
+	/* TeraByte abbreviated */
+	_("TB"),
+    ];
+    integer index = 0;
+    float whole = tofloat(bytes);
+
+    while((whole > 1024.0 || whole < -1024.0) && index < size(units)) {
+	whole = whole / 1024.0;
+	unit = units[index]:"";
+	index = index + 1;
+    }
+
+    if (precision == nil || precision < 0 || (omit_zeroes == true && (whole - tointeger(whole) == 0.0)))
+    {
+	precision = 0;
+    }
+
+    return tostring(whole, precision) + " " + unit;
+}
+
+/**
+ * Return a pretty description of a byte count
+ *
+ * Return a pretty description of a byte count, with two fraction digits
+ * and using KB, MB or GB as unit as appropriate.
+ *
+ * @param bytes	size (e.g. free diskspace) in Bytes
+ * @return formatted string
+ *
+ * @example FormatSize(23456767890) -> "223.70 MB"
+ */
+global define string FormatSize(integer bytes) ``{
+    return FormatSizeWithPrecision(bytes, 2, false);
+}
+
+/**
+ * Remove blanks at begin and end of input string.
+ * @param input string to be stripped
+ * @return stripped string
+ * @example CutBlanks("  any  input     ") -> "any  input"
+ */
+global define string CutBlanks(string input) ``{
+
+    if(input == nil || size(input) < 1) return "";
+
+    integer pos1 = findfirstnotof(input, " \t");
+    if(pos1 == nil) return "";
+
+    integer pos2 = findlastnotof(input, " \t");
+
+    return substring(input, pos1, pos2 - pos1 + 1);
+}
+
+/**
+ * Remove any leading zeros
+ *
+ * Remove any leading zeros that make tointeger inadvertently
+ * assume an octal number (e.g. "09" -> "9", "0001" -> "1",
+ * but "0" -> "0")
+ *
+ * @param input number that might contain leadig zero
+ * @return string that has leading zeros removed
+ */
+global define string CutZeros(string input) ``{
+    if(input == nil || size(input) < 1) return "";
+    if(!regexpmatch(input, "^0.*")) return input;
+    string output = regexpsub(input, "^0+(.*)$", "\\1");
+    if(size(output) < 1) return "0";
+    return output;
+}
+
+/**
+ * Add spaces after the text to make it long enough
+ *
+ * Add spaces after the text to make it long enough. If the text is longer
+ * than requested, no changes are made.
+ *
+ * @param text text to be padded
+ * @param length requested length
+ * @return padded text
+ */
+global define string Pad(string text, integer length) {
+    if(text == nil) text = "";
+
+    integer rest = length - size(text);
+    string pad = "";
+    while(rest > 0) {
+	pad = pad + " ";
+	rest = rest - 1;
+    }
+
+    return text + pad;
+}
+
+/**
+ * Add zeros before the text to make it long enough. 
+ *
+ * Add zeros before the text to make it long enough. If the text is longer
+ * than requested, no changes are made.
+ *
+ * @param text text to be padded
+ * @param length requested length
+ * @return padded text
+ */
+global define string PadZeros(string text, integer length) {
+    if(text == nil) text = "";
+
+    integer rest = length - size(text);
+    string pad = "";
+    while(rest > 0) {
+	pad = pad + "0";
+	rest = rest - 1;
+    }
+
+    return pad + text;
+}
+
+/**
+ * Parse string of values
+ *
+ * Parse string of values - split string to values, quoting and backslash sequences are supported
+ * @param options Input string
+ * @param parameters Parmeter used at parsing - map with keys:
+ *"separator":<string> - value separator (default: " \t"),
+ *"unique":<boolean> - result will not contain any duplicates, first occurance of the string is stored into output (default: false),
+ *"interpret_backslash":<boolean> - convert backslash sequence into one character (e.g. "\\n" => "\n") (default: true)
+ *"remove_whitespace":<boolean> - remove white spaces around values (default: true),
+ * @return list<string> List of strings
+ */
+global define list<string> ParseOptions(string options, map parameters) ``{
+	list<string> ret = [];
+
+        // parsing options
+	string separator = parameters["separator"]:" \t";
+        boolean unique = parameters["unique"]:false;
+	boolean interpret_backslash = parameters["interpret_backslash"]:true;
+        boolean remove_whitespace = parameters["remove_whitespace"]:true;
+
+	y2debug("Input: string: '%1', parameters: %2", options, parameters);
+        y2debug("Used values: separator: '%1', unique: %2, remove_whitespace: %3",
+	    separator, unique, remove_whitespace);
+
+        if (options == nil)
+	{
+	    return [];
+        }
+
+        // two algorithms are used:
+	// first is much faster, but only usable if string
+        // doesn't contain any double qoute characters
+	// and backslash sequences are not interpreted
+        // second is more general, but of course slower
+
+        if (findfirstof(options, "\"") == nil && interpret_backslash == false)
+	{
+	    // easy case - no qouting, don't interpres backslash sequences => use splitstring
+	    list<string> values = splitstring(options, separator);
+
+	    foreach (string v, values, ``{
+		if (remove_whitespace == true)
+		{
+		    v = CutBlanks(v);
+		}
+
+		if (unique == true)
+		{
+		    if (!contains(ret, v)) ret = add(ret, v);
+		}
+		else
+		{
+		    ret = add(ret, v);
+		}
+	    });
+	}
+	else
+	{
+	    // quoting is used or backslash interpretation is enabled
+	    // so it' not possible to split input
+	    // parsing each character is needed - use finite automaton
+
+	    // state
+	    symbol state = `out_of_string;
+	    // position in the input string
+	    integer index = 0;
+	    // parsed value - buffer
+	    string str = "";
+
+	    while(index < size(options))
+	    {
+		string character = substring(options, index, 1);
+
+		y2debug("character: %1 state: %2 index: %3", character, state, index);
+
+		// interpret backslash sequence
+		if (character == "\\" && interpret_backslash == true)
+		{
+		    if (index + 1 < size(options))
+		    {
+			string nextcharacter = substring(options, index + 1, 1);
+			index = index + 1;
+
+			// backslah sequences
+			map backslash_seq = $[
+			    "a"	: "\a",	// alert
+			    "b"	: "\b", // backspace
+			    "e"	: "\e", // escape
+			    "f"	: "\f", // FF
+			    "n"	: "\n", // NL
+			    "r"	: "\r", // CR
+			    "t"	: "\t", // tab
+			    "v"	: "\v", // vertical tab
+			    "\\": "\\", // backslash
+			];
+
+			if (haskey(backslash_seq, nextcharacter) == true)
+			{
+			    character = backslash_seq[nextcharacter]:"DUMMY";
+			}
+			else
+			{
+			    if (nextcharacter != "\"")
+			    {
+				// ignore backslash in invalid backslash sequence
+				character = nextcharacter;
+			    }
+			    else
+			    {
+				// backslash will be removed later,
+				// double quote and escaped double quote have to different yet
+				character = "\\\"";
+			    }
+			}
+
+			y2debug("backslash sequence: '%1'", character);
+		    }
+		    else
+		    {
+			y2warning("Missing character after backslash (\\) at the end of string");
+		    }
+		}
+
+		if (state == `out_of_string)
+		{
+		    // ignore separator or white space at the beginning of the string
+		    if (issubstring(separator, character) == true || (remove_whitespace == true && (character == " " || character == "\t")) )
+		    {
+			index = index + 1;
+			continue;
+		    }
+		    // start of a quoted string
+		    else if (character == "\"")
+		    {
+			state = `in_quoted_string;
+		    }
+		    else
+		    {
+			// start of a string
+			state = `in_string;
+
+			if (character == "\\\"")
+			{
+			    str = "\"";
+			}
+			else
+			{
+			    str = character;
+			}
+		    }
+		}
+
+		// after double quoted string - handle non-separator chars after double quote
+		else if (state == `in_quoted_string_after_dblqt)
+		{
+		    if (issubstring(separator, character) == true)
+		    {
+			if (unique == true)
+			{
+			    if (!contains(ret, str)) ret = add(ret, str);
+			}
+			else
+			{
+			    ret = add(ret, str);
+			}
+
+			str = "";
+			state = `out_of_string;
+		    }
+		    else if (character == "\\\"")
+		    {
+			str = str + "\"";
+		    }
+		    else
+		    {
+			str = str + character;
+		    }
+		}
+		else if (state == `in_quoted_string)
+		{
+		    if (character == "\"")
+		    {
+			// end of quoted string
+			state = `in_quoted_string_after_dblqt;
+		    }
+		    else if (character == "\\\"")
+		    {
+			str = str + "\"";
+		    }
+		    else
+		    {
+			str = str + character;
+		    }
+		}
+		else if (state == `in_string)
+		{
+		    if (issubstring(separator, character) == true)
+		    {
+			state = `out_of_string;
+
+			if (remove_whitespace == true)
+			{
+			    str = CutBlanks(str);
+			}
+
+			if (unique == true)
+			{
+			    if (!contains(ret, str)) ret = add(ret, str);
+			}
+			else
+			{
+			    ret = add(ret, str);
+			}
+
+			str = "";
+		    }
+		    else if (character == "\\\"")
+		    {
+			str = str + "\"";
+		    }
+		    else
+		    {
+			str = str + character;
+		    }
+		}
+
+		index = index + 1;
+	    }
+
+	    // error - still in quoted string
+	    if (state == `in_quoted_string || state == `in_quoted_string_after_dblqt)
+	    {
+		if (state == `in_quoted_string)
+		{
+		    y2warning("Missing trainling double quote character(\") in input: '%1'", options);
+		}
+
+		if (unique == true)
+		{
+		    if (!contains(ret, str)) ret = add(ret, str);
+		}
+		else
+		{
+		    ret = add(ret, str);
+		}
+	    }
+
+	    // process last string in the buffer
+	    if (state == `in_string)
+	    {
+		if (remove_whitespace)
+		{
+		    str = CutBlanks(str);
+		}
+
+		if (unique == true)
+		{
+		    if (!contains(ret, str)) ret = add(ret, str);
+		}
+		else
+		{
+		    ret = add(ret, str);
+		}
+	    }
+	}
+
+
+	y2debug("Parsed values: %1", ret);
+
+	return ret;
+}
+
+/**
+ * Remove first or every match of given regular expression from a string
+ *
+ * (e.g. CutRegexMatch( "abcdef12ef34gh000", "[0-9]+", true ) -> "abcdefefgh",
+ * CutRegexMatch( "abcdef12ef34gh000", "[0-9]+", false ) -> "abcdefef34gh000")
+ *
+ * @param input string that might occur regex
+ * @param regex regular expression to search for, must not contain brackets
+ * @param glob flag if only first or every occuring match should be removed
+ * @return string that has matches removed
+ */
+global define string CutRegexMatch(string input, string regex, boolean glob) ``{
+    if(input == nil || size(input) < 1) return "";
+    string output = input;
+    if( regexpmatch( output, regex ) )
+	{
+	list p = regexppos( output, regex );
+	do
+	    {
+	    output = substring( output, 0, p[0]:0 ) +
+	             substring( output, p[0]:0+p[1]:0 );
+	    p = regexppos( output, regex );
+	    }
+	while( glob && size(p)>0 );
+	}
+    return output;
+}
+
+/**
+ * Function for escaping (replacing) (HTML|XML...) tags with their
+ * (HTML|XML...) meaning.
+ *
+ * Usable to present text "as is" in RichText.
+ *
+ * @param string	text to escape
+ * @return string	escaped text
+ */
+global define string EscapeTags (string text) ``{
+    text = mergestring(splitstring(text, "&"), "&amp;");
+    text = mergestring(splitstring(text, "<"), "&lt;");
+    text = mergestring(splitstring(text, ">"), "&gt;");
+
+    return text;
+}
+
+/**
+ * Shorthand for select (splitstring (s, separators), 0, "")
+ * Useful now that the above produces a deprecation warning.
+ * @param s string to be split
+ * @param separators characters which delimit components
+ * @return first component or ""
+ */
+global string FirstChunk (string s, string separators) {
+    list <string> l = splitstring (s, separators);
+    return l[0]:"";
+}
+
+// character sets, suitable for ValidChars
+
+string cupper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+string clower = "abcdefghijklmnopqrstuvwxyz";
+string calpha = cupper + clower;
+string cdigit = "0123456789";
+string cxdigit = cdigit + "ABCDEFabcdef";
+string calnum = calpha + cdigit;
+string cpunct = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+string cgraph = calnum + cpunct;
+string cspace = " \f\r\n\t\013";
+string cprint = cspace + cgraph;
+
+/**
+ * @return the 26 uppercase ASCII letters
+ */
+global string CUpper () {
+    return cupper;
+}
+
+/**
+ * @return the 26 lowercase ASCII letters
+ */
+global string CLower () {
+    return clower;
+}
+
+/**
+ * @return the 52 upper and lowercase ASCII letters
+ */
+global string CAlpha () {
+    return calpha;
+}
+
+/**
+ * @return 0123456789
+ */
+global string CDigit () {
+    return cdigit;
+}
+
+/**
+ * @return hexadecimal digits: 0123456789ABCDEFabcdef
+ */
+global string CXdigit () {
+    return cxdigit;
+}
+
+/**
+ * @return the 52 upper and lowercase ASCII letters and digits
+ */
+global string CAlnum () {
+    return calnum;
+}
+
+/**
+ * @return the ASCII printable non-blank non-alphanumeric characters
+ */
+global string CPunct () {
+    return cpunct;
+}
+
+/**
+ * @return printable ASCII charcters except whitespace
+ */
+global string CGraph () {
+    return cgraph;
+}
+
+/**
+ * @return ASCII whitespace
+ */
+global string CSpace () {
+    return cspace;
+}
+
+/**
+ * @return printable ASCII characters including whitespace
+ */
+global string CPrint () {
+    return cprint;
+}
+
+/**
+ * Characters valid in a filename (not pathname).
+ * Naturally "/" is disallowed. Otherwise, the graphical ASCII
+ * characters are allowed.
+ * @return string for ValidChars
+ */
+global string ValidCharsFilename () {
+    return deletechars (CGraph (), "/");
+}
+
+
+    // 64 characters is the base undeline length
+    string base_underline = "----------------------------------------------------------------";
+
+    /* - hidden for documentation -
+     *
+     * Local function for finding longest records in the table.
+     *
+     * @param	list <list <string> > table items
+     * @return	list <integer> longest records by columns
+     */
+    list <integer> FindLongestRecords (list <list <string> > items) {
+	list <integer> longest = [];
+
+	// searching all rows
+	foreach (list <string> row, items, {
+	    // starting with column 0
+	    integer col_counter = 0;
+	    // testing all columns on the row
+	    foreach (string col, row, {
+		integer col_size = size(col);
+		// found longer record for this column
+		if (col_size>longest[col_counter]:-1) longest[col_counter] = col_size;
+		// next column
+		col_counter = col_counter + 1;
+	    });
+	});
+
+	return longest;
+    }
+
+    /* - hidden for documentation -
+     *
+     * Local function creates table row.
+     *
+     * @param	list <string> row items
+     * @param	list <integer> columns lengths
+     * @param	integer record horizontal padding
+     * @return	string padded table row
+     */
+    string CreateTableRow (list <string> row_items, list <integer> cols_lenghts, integer horizontal_padding) {
+	string row = "";
+
+	integer col_counter = 0;
+	integer records_count = size(row_items) - 1;
+
+	foreach (string record, row_items, {
+	    integer padding = cols_lenghts[col_counter]:0;
+	    if (col_counter<records_count) padding = padding + horizontal_padding;
+
+	    row = row + String::Pad(record, padding);
+	    col_counter = col_counter + 1;
+	});
+
+	return row;
+    }
+
+    /* - hidden for documentation -
+     *
+     * Local function returns underline string /length/ long.
+     *
+     * @param	integer length of underline
+     * @return	string /length/ long underline
+     */
+    string CreateUnderline (integer length) {
+	string underline = base_underline;
+	while (size(underline)<length) {
+	    underline = underline + base_underline;
+	}
+	underline = substring(underline, 0, length);
+	 
+	return underline;
+    }
+
+    /* - hidden for documentation -
+     *
+     * Local function for creating header underline for table.
+     * It uses maximal lengths of records defined in cols_lenghts.
+     *
+     * @param	list <integer> maximal lengths of records in columns
+     * @param	integer horizontal padding of records
+     * @return	string table header underline
+     */
+    string CreateTableHeaderUnderline (list <integer> cols_lenghts, integer horizontal_padding) {
+	integer col_counter = 0;
+	// count of added paddings
+	integer records_count = size(cols_lenghts) - 1;
+	// total length of underline
+	integer total_size = 0;
+
+	foreach (integer col_size, cols_lenghts, {
+	    total_size = total_size + col_size;
+	    // adding padding where necessary
+	    if (col_counter<records_count) {
+		total_size = total_size + horizontal_padding;
+	    }
+	    col_counter = col_counter + 1;
+	});
+
+	return CreateUnderline(total_size);
+    }
+
+    /**
+     * Function creates text table without using HTML tags.
+     * (Useful for commandline)
+     * Undefined option uses the default one.
+     *
+     * @param	list <string> header
+     * @param	list <list <string> > items
+     * @param	map <string, string> options
+     * @return	string table
+     *
+     * Header: [ "Id", "Configuration", "Device" ]
+     * Items: [ [ "1", "aaa", "Samsung Calex" ], [ "2", "bbb", "Trivial Trinitron" ] ]
+     * Possible Options: horizontal_padding (for columns), table_left_padding (for table)
+     */
+    global define string TextTable (list<string> header, list <list <string> > items, map <string, any> options) {
+
+	integer current_horizontal_padding	= (integer) options["horizontal_padding"]:2;
+	integer current_table_left_padding	= (integer) options["table_left_padding"]:4;
+
+	list <integer> cols_lenghts = FindLongestRecords(add(items, header));
+
+	// whole table is left-padded
+	string table_left_padding = String::Pad("", current_table_left_padding);
+	// the last row has no newline
+	integer rows_count = size(items);
+	string table = "";
+
+	table = table + table_left_padding
+	    + CreateTableRow(header, cols_lenghts, current_horizontal_padding) + "\n";
+	table = table + table_left_padding
+	    + CreateTableHeaderUnderline(cols_lenghts, current_horizontal_padding) + "\n";
+	integer rows_counter = 1;
+	foreach (list <string> row, items, {
+	    table = table + table_left_padding
+		+ CreateTableRow(row, cols_lenghts, current_horizontal_padding) +
+		(rows_counter<rows_count ? "\n":"");
+	    rows_counter = rows_counter + 1;
+	});
+	return table;
+    }
+
+    /**
+     * Function returns underlined text header without using HTML tags.
+     * (Useful for commandline)
+     *
+     * @param	string header line
+     * @param	integer left padding
+     * @return	string underlined header line
+     */
+    global define string UnderlinedHeader (string header_line, integer left_padding) {
+	
+	return
+	    Pad("", left_padding) + header_line + "\n" +
+	    Pad("", left_padding) + CreateUnderline(size(header_line));
+    }
+
+/* EOF */
+}

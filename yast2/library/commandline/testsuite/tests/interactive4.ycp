@@ -1,0 +1,35 @@
+/**
+ * File:	interactive4.ycp
+ * Package:	yast2
+ * Summary:	test action in interactive mode
+ * Author:	Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ *
+ * testedfiles: CommandLine.ycp Testsuite.ycp
+ */
+
+{
+
+    include "testsuite.ycp";
+    include "./tests/testsuitedata.yh";
+
+    import "CommandLine";
+
+    // startup
+    TEST(``(CommandLine::Init( cmdline ,["interactive"]) ),[],nil);
+    TEST(``(CommandLine::StartGUI()), [], nil );
+    TEST(``(CommandLine::Done()), [], nil );
+
+    // do help
+    TEST(``(CommandLine::Command() ), [$[ "dev":$[ "tty": "add device=eth0" ] ] ],nil);
+    TEST(``(CommandLine::Done()), [], nil );
+    TEST(``(CommandLine::Aborted()), [], nil );
+
+    // quit
+    TEST(``(CommandLine::Command() ), [$[ "dev":$[ "tty": "quit" ] ] ],nil);
+    TEST(``(CommandLine::Done()), [], nil );
+    TEST(``(CommandLine::Aborted()), [], nil );
+
+/* EOF */
+}

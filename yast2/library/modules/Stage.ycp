@@ -1,0 +1,118 @@
+/**
+ * File:	modules/Stage.ycp
+ * Module:	yast2
+ * Summary:	Installation mode
+ * Authors:	Klaus Kaempf <kkaempf@suse.de>
+ *		Jiri Srain <jsrain@suse.cz>
+ *
+ * $Id$
+ *
+ * Provide installation stage information.
+ */
+
+{
+
+module "Stage";
+
+textdomain "base";
+
+/**
+ * Current stage
+ */
+string _stage = nil;
+
+/**
+ * Get the current stage
+ * @return string the current stage
+ */
+global string stage () {
+    if (_stage == nil)
+    {
+	_stage = "normal";
+
+	integer arg_count = size(WFM::Args());
+	integer arg_no = 0;
+	while ( arg_no < arg_count )
+	{
+	    if (WFM::Args(arg_no) == "initial")
+            {
+                _stage = "initial";
+            }
+	    else if (WFM::Args(arg_no) == "continue")
+            {
+                _stage   = "continue";
+            }
+	    else if (WFM::Args(arg_no) == "firstboot")
+	    {
+                _stage = "firstboot";
+	    }
+	    else if (WFM::Args(arg_no) == "reprobe")
+            {
+                _stage = "hardware_probed";
+            }
+
+	    arg_no = arg_no + 1;
+	}
+    }
+    return _stage;
+}
+
+/**
+ * Set the installation stage
+ * @param new_stage string currently processed stage
+ */
+global void Set (string new_stage) {
+    if (! contains (
+	["normal", "initial", "continue", "firstboot", "hardware_probed"],
+	new_stage))
+    {
+	y2error ("Unknows stage %1", new_stage);
+    }
+
+    y2milestone ("setting stage to %1", new_stage);
+    _stage = new_stage;
+}
+
+/**
+ * starting installation in inst-sys system
+ * @return boolean true if installation first stage is running
+ */
+global boolean initial () {
+    return stage () == "initial";
+}
+
+/**
+ * continuing installation in target system
+ * @return boolean true if installation continues on the target system
+ */
+global boolean cont () {
+    return stage () == "continue";
+}
+
+/**
+ * Firstboot stage
+ * @return boolean true if first-boot installation is running
+ */
+global boolean firstboot () {
+    return stage () == "firstboot";
+}
+
+/**
+ * normal, running system
+ * @return boolean true if YaST was started normally
+ */
+global boolean normal () {
+    return stage () == "normal";
+}
+
+/**
+ * This flag indicates that a config module has been called due to
+ * a change in the system hardware that has been detected on boot
+ * time.
+ * @return boolean true if YaST was invoked because new hardware was probed
+ */
+global boolean reprobe () {
+    return stage () == "hardware_probed";
+}
+
+} // EOF

@@ -1,0 +1,18 @@
+/**
+ * File:	XXXXXX
+ * Package:	Configuration of network
+ * Summary:	XXXXXX
+ * Author:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+include "testsuite.ycp";
+import "URL";
+
+TEST(``(URL::Parse("http://name:pass@www.suse.cz:80/path/index.html?question#part")), [], nil);
+
+/* EOF */
+}
