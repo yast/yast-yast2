@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Mar 19 12:00:53 CET 2003 - ms@suse.de
+
+- added textdomain to X11Version.ycp (#25627)
+
+-------------------------------------------------------------------
 Mon Mar 17 17:11:52 CET 2003 - arvin@suse.de
 
 - correctly remove ampersand in button lables in y2menu (bug
