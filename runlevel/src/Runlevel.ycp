@@ -224,14 +224,16 @@
 	{
 	    return false;
 	}
+
+	string rls = mergestring (rl, ",");
 	// we must remove it first because insserv start=... adds
 	// runlevels, not replace runlevels!!
-	if (! serviceDisable (name, false))
+	// Don't force if it's the last thing we do.
+	if (! serviceDisable (name, rls != ""))
 	{
 	    return false;
 	}
 
-	string rls = mergestring (rl, ",");
 	if (rls != "")
 	{
 	    map ret = SCR::Execute (.target.bash_output,

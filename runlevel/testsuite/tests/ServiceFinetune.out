@@ -1,5 +1,5 @@
 Read	.init.scripts.exists "aaa" true
-Execute	.target.bash_output "/sbin/insserv -r /etc/init.d/aaa" $["exit":0, "stderr":"", "stdout":""]
+Execute	.target.bash_output "/sbin/insserv -rf /etc/init.d/aaa" $["exit":0, "stderr":"", "stdout":""]
 Execute	.target.bash_output "/sbin/insserv /etc/init.d/aaa,start=A,B,C" $["exit":0, "stderr":"", "stdout":""]
 Return	true
 Read	.init.scripts.exists "aaa" true
