@@ -1,6 +1,6 @@
 # Makefile.am yast2/library/cwm/src
 
-YCPCFLAGS = -M ../../modules -M ../../wizard/src
+YCPCFLAGS = -M ../../modules -M ../../wizard/src -M ../../runlevel/src
 
 module_DATA =			\
 	CWM.ycp			\
