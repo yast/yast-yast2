@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jul 19 16:50:44 CEST 2002 - mvidner@suse.cz
+
+- Moved aliases handling from yast2-mail (~#11730).
+- 2.6.13
+
+-------------------------------------------------------------------
 Fri Jul 19 12:01:11 CEST 2002 - mvidner@suse.cz
 
 - Added Wizard::{Set,Restore}ScreenShotName ().
