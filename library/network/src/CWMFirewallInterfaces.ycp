@@ -11,7 +11,7 @@
 {
 
 module "CWMFirewallInterfaces";
-textdomain "firewall";
+textdomain "base";
 
 import "CWM";
 import "Label";
