@@ -73,6 +73,11 @@
     global boolean cont			= false;
 
     /**
+     * Reconfig system
+     */
+    global boolean reconfig		= false;
+
+    /**
      * normal, running system
      */
     global boolean normal		= false;
@@ -292,6 +297,12 @@
             {
                 initial	= true;
                 stage = "initial";
+            }
+	    else if (WFM::Args(arg_no) == "reconfig"	    )
+            {
+                reconfig = true;
+                mode = "reconfig";
+                stage    = "normal";
             }
 	    else if (WFM::Args(arg_no) == "continue"	    )
             {

@@ -83,7 +83,7 @@
 
 
     // Only an update, NOT an upgrade
-    global boolean onlyUpdateSelected = false;
+    global boolean onlyUpdateInstalled = false;
 
 
     // How is the software proposal handled? What is it based on?
