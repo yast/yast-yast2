@@ -111,5 +111,34 @@ and it is unlikely that settings can be written.\n");
     return false;
 }
 
+/**
+ * Opens a popup yes/no confirmation.
+ * If users confirms deleting, return true,
+ * else return false
+ *
+ * @return boolean delete selected entry
+ */
+global define boolean DeleteSelected() {
+    return Popup::YesNo(
+	/* Popup question */
+	_("Really delete selected entry?")
+    );
+}
+
+/**
+ * Opens a popup yes/no confirmation.
+ * If users confirms deleting of named entry/file/etc.,
+ * return true, else return false
+ *
+ * @param string file/entry name/etc.
+ * @return boolean delete selected entry
+ */
+global define boolean Delete(string delete) {
+    return Popup::YesNo(
+	/* Popup question, %1 is an item to delete (or filename, etc.) */
+	sformat(_("Really delete '%1'"), delete)
+    );
+}
+
 /* EOF */
 }
