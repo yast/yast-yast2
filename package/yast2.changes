@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Feb 25 18:46:42 CET 2003 - kkaempf@suse.de
+
+- fix mkdir silence option.
+
+-------------------------------------------------------------------
 Tue Feb 25 13:44:23 CET 2003 - kkaempf@suse.de
 
 - suppress warning if /tmp/.qt already exists (#24243)
