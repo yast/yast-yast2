@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar 15 16:04:11 CET 2004 - fehr@suse.de
+
+- add functions SetEncLang() && GetCodePage() to Encoding module
+
+-------------------------------------------------------------------
 Mon Mar 15 14:59:41 CET 2004 - arvin@suse.de
 
 - adapted "yast -l" to desktop files (bug #35019)
