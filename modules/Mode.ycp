@@ -146,6 +146,11 @@
     global boolean vnc			= false;
 
     /**
+     * ssh mode ?
+     */
+    global boolean usessh		= false;
+
+    /**
      * install map containing data for the online update
      */
     global map youInstallMap		= $[];
@@ -229,6 +234,8 @@
 	    braille = SCR::Read (.etc.install_inf.Braille) != nil;
 
 	    vnc = SCR::Read (.etc.install_inf.VNC) == "1";
+
+	    usessh = SCR::Read (.etc.install_inf.UseSSH) == "1";
 
 	    language = SCR::Read (.etc.install_inf.Locale);
 	    if (language == nil) language = "";
