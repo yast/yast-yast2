@@ -1,0 +1,35 @@
+/**
+ * Module:      Linuxrc
+ * File: *	modules/Linuxrc.ycp
+ * Purpose:	Interaction with linuxrc
+ *
+ * Author:	Anas Nashif <nashif@suse.de?
+ * $Id$
+ */
+{
+    module "Linuxrc";
+    import "Mode";
+
+    /**
+     * WriteYaSTInf()
+     * Write /etc/yast.inf
+     * @param map linuxrc	map of key value pairs for /etc/yast.inf
+     *
+     */
+    global define void WriteYaSTInf (map<string,string> linuxrc)
+    {
+	string yast_inf = "";
+	foreach (string ykey, string yvalue, linuxrc,
+	``{
+	    yast_inf = yast_inf + ykey + ": " + yvalue + "\n";
+	});
+	y2milestone ("WriteYaSTInf(%1) = %2", linuxrc, yast_inf);
+
+        if (!Mode::test)
+        {
+	    WFM::Write(.local.string, "/etc/yast.inf", yast_inf);
+        }
+        return;
+    }
+
+}
