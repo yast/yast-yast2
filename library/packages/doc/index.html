@@ -45,6 +45,24 @@ you are in doubts.
 <li>boolean RemoveAll(list<string> packages);
 </ul>
 
+<h3>Package Installation (GUI, custom message)</h3>
+<ul>
+<li>boolean Install(string package, string message);
+<li>boolean InstallAll(list<string> packages, string message);
+<li>boolean InstallAny(list<string> packages, string message);
+<p>
+<li>boolean Remove(string package, string message);
+<li>boolean RemoveAll(list<string> packages, string message);
+</ul>
+
+<h3>Package Installation (GUI, do not install if Mode::config,
+    only in PackageSystem)</h3>
+<ul>
+<li>boolean CheckAndInstallPackages (list<string> packages);
+<li>boolean CheckAndInstallPackagesInteractive (list<string> packages);
+     // with error handling
+</ul>
+
 <h3>Packages Installation (No GUI)</h3>
 <ul>
 <li>boolean DoInstall(list<string> packages);
