@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Mar 16 16:50:03 CET 2005 - visnov@suse.cz
+
+- 2.11.45 
+
+-------------------------------------------------------------------
 Tue Mar 15 13:40:39 CET 2005 - visnov@suse.cz
 
 - added check-all-syntax script for validating all YCP clients 
