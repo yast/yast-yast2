@@ -68,7 +68,7 @@ function set_lang_from_sysconfig()
 {
     if [ -z "$LANG" -a -r /etc/sysconfig/language ] ; then
 	. /etc/sysconfig/language
-	if [ $RC_LANG ] ; then
+	if [ -n "$RC_LANG" ] ; then
             export LANG=$RC_LANG
 	fi
     fi
