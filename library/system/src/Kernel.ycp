@@ -348,6 +348,52 @@
 	SCR::Write (.sysconfig.kernel.MODULES_LOADED_ON_BOOT, kernelModules);
 	SCR::Write (.sysconfig.kernel, nil);
     }
+    
+
+    /**
+     * Compute kernel package
+     * @return string selected kernel
+     */
+    global string ComputePackage () {
+	    string the_kernel = kernel_packages[0]:"";
+	    y2milestone ("Selecting '%1' as kernel package", the_kernel);
+	    while (the_kernel != ""
+		   && !Pkg::IsAvailable (the_kernel))
+	    {
+		the_kernel = fallbacks[the_kernel]:"";
+		y2milestone ("Not available, falling back to '%1'", the_kernel);
+	    }
+
+	    if (the_kernel != "")
+	    {
+                return the_kernel;
+	    }
+	    else
+	    {
+		y2warning ("%1 not available, using kernel-default",
+						kernel_packages);
+                return "kernel-default";
+	    }
+    }
+
+
+    /**
+     * Compute kernel packages
+     * @return list of selected kernel packages
+     */
+    global list <string> ComputePackages () {
+
+	    string kernel = ComputePackage ();
+	    string kernel_nongpl = kernel + "-nongpl";
+
+	    list <string> ret = [ kernel ];
+
+	    if (Pkg::IsAvailable (kernel_nongpl))
+		ret = add (ret, kernel_nongpl);
+
+	    return ret;
+    }
+
 
     /**
      * Constructor
