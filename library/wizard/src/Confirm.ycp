@@ -1,6 +1,6 @@
 /**
  * File:	modules/Confirm.ycp
- * Package:	yqst2
+ * Package:	yast2
  * Summary:	Confirmation routines
  * Author:	Michal Svec <msvec@suse.cz>
  *
@@ -13,8 +13,8 @@ module "Confirm";
 
 textdomain "base";
 
-import "Mode";
 import "Label";
+import "Mode";
 import "Popup";
 
 /**
@@ -84,21 +84,28 @@ y2milestone("--%1", Detection("modems"));
  * If we are running as root, return true.
  * Otherwise ask the user whether we should continue even though things
  * might not work
+ * @return true if running as root
  */
-global define boolean MustBeRoot ()
+global define boolean MustBeRoot()
 {
     map out = (map) SCR::Execute (.target.bash_output, "/usr/bin/id --user");
     boolean root = out["stdout"]:"" == "0\n";
-    return root || Popup::ContinueCancelHeadline (
-	// popup headline
-	_("Root Privileges Needed"),
-	// message in a continue/cancel popup
-	_("This module needs to be run as root.
+    if(root) return true;
+
+    /* Message in a continue/cancel popup */
+    string pop = _("This module needs to be run as root.
 If you continue now, the module may not function properly.
 For example, some settings can be read improperly
 and it is unlikely that settings can be written.
-")
-	);
+");
+
+    /* Popup headline */
+    if(Popup::ContinueCancelHeadline(_("Root Privileges Needed"), pop)) {
+	y2error("NOT running as root!");
+	return true;
+    }
+
+    return false;
 }
 
 /* EOF */
