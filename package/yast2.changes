@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Nov 12 15:27:24 CET 2004 - locilka@suse.cz
+
+- FileUtils have now GetFileRealType and GetFileType functions
+  with output depending on the type of requested file.
+- Increased documentation for FileUtils.
+
+-------------------------------------------------------------------
 Thu Nov 11 18:09:15 CET 2004 - arvin@suse.de
 
 - always use Directory::logdir
