@@ -1,8 +1,10 @@
 #
-# Makefile.am for y2l_sequencer/src
+# Makefile.am for sequencer/src
 #
 
 yncludedir = @yncludedir@/wizard
 
 ynclude_DATA = \
 	sequencer.ycp
+
+EXTRA_DIST = $(ynclude_DATA)
