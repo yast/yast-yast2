@@ -3,6 +3,7 @@ Wed Jun 16 16:16:58 CEST 2004 - jsrain@suse.cz
 
 - added suport for navigation tree and tabs to CWM
 - updated the LogView popup to be able to be used as widget for CWM
+- do not add 'desktop' to kernel command line
 
 -------------------------------------------------------------------
 Wed Jun 16 10:36:53 CEST 2004 - msvec@suse.cz

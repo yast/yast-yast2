@@ -18,7 +18,6 @@
     module "Kernel";
 
     import "Arch";
-    import "ProductFeatures";
     import "Mode";
 
     textdomain "base";
@@ -357,16 +356,14 @@
      */
     global define void Kernel ()
     ``{
-	if (Mode::initial || Mode::cont) {
-	string tmp = (string) SCR::Read (.etc.install_inf.Cmdline);
-	y2milestone ("cmdline from install.inf is: %1", tmp);
-	if (tmp != nil) {
-	    // extract extra boot parameters given in installation
-	    ExtractCmdlineParameters (tmp);
-	}
-
-	if (ProductFeatures::use_desktop_scheduler)
-	    AddCmdLine ("desktop", "");
+	if (Mode::initial || Mode::cont)
+	{
+	    string tmp = (string) SCR::Read (.etc.install_inf.Cmdline);
+	    y2milestone ("cmdline from install.inf is: %1", tmp);
+	    if (tmp != nil) {
+		// extract extra boot parameters given in installation
+		ExtractCmdlineParameters (tmp);
+	    }
 	}
 
 	ProbeKernel ();
