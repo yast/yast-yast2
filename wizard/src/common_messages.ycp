@@ -15,6 +15,10 @@
     textdomain "base";
 
   UI (``{
+      global define string AddButtonLabel() ``{
+	  // this is a button label
+	  return _( "&Add" );
+      }
       global define string CancelButtonLabel() ``{
 	  // this is a button label
 	  return _( "&Cancel" );
@@ -123,6 +127,9 @@
 
   });
 
+  global define string AddButtonLabel() ``{
+      return UI::AddButtonLabel();
+  }
   global define string EditButtonLabel() ``{
       return UI::EditButtonLabel();
   }
