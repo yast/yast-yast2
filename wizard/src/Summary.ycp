@@ -1,20 +1,15 @@
 /**
- * File:
- *  Summary.ycp
- *
- * Modules:
- *  Common ui library
- *
- * Summary:
- *  Support for summaries of the configured devices
- *
- * Authors:
- *  Jan Holesovsky <kendy@suse.cz>, 2001
- *  Stefan Hundhammer <sh@suse.de>, 2001
+ * File:	modules/Summary.ycp
+ * Module:	yast2
+ * Summary:	Support for summaries of the configured devices
+ * Authors:	Jan Holesovsky <kendy@suse.cz>
+ *		Stefan Hundhammer <sh@suse.de>
  *
  * $Id$
  *
- * Create a unified-looking RichText description of the not configured/configured devices.
+ * Create a unified-looking RichText description of the not configured
+ * and configured devices.
+ *
  * This is used in <module_name>_summary.ycp modules.
  */
 
@@ -41,9 +36,11 @@
  */
 
 {
+
     module "Summary";
-    import "Mode";
     textdomain "base";
+
+    import "Mode";
 
     /**
      * Function that creates the whole final product. "Not detected" will be returned
@@ -175,4 +172,5 @@
 	return summary;
     };
 
+/* EOF */
 }

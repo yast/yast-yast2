@@ -1,15 +1,8 @@
 /**
- * File:
- *  Progress.ycp
- *
- * Module:
- *  Common ui library
- *
- * Summary:
- *  Progress bar support.
- *
- * Authors:
- *  Petr Blahos <pblahos@suse.cz>, 2001
+ * File:	modules/Progress.ycp
+ * Module:	yast2
+ * Summary:	Progress bar
+ * Authors:	Petr Blahos <pblahos@suse.cz>
  *
  * $Id$
  *
@@ -38,10 +31,13 @@
  * See also hand made documentation.
  * <a href="../Progress.html">Progress.html</a>
  */
+
 {
+
     module "Progress";
-    import "Wizard";
     textdomain "base";
+
+    import "Wizard";
 
     // Number of stages.
     integer stages = 0;
@@ -372,4 +368,6 @@
 	    return;
 	UI::ChangeWidget (`id (sformat ("super_progress_%1", super_step)), `Value, UI::Glyph (`BulletArrowRight));
     }
+
+/* EOF */
 }

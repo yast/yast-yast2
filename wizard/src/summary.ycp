@@ -44,6 +44,9 @@
 
     textdomain "base";
 
+    y2error("Include \"ui/summary.ycp\" is obsolete!");
+    y2error("Use \"Summary.ycp\" module instead.");
+
     /**
      * Function that creates the whole final product. "Not detected" will be returned
      * if the list is empty.

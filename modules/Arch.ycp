@@ -1,6 +1,6 @@
 /**
  * File:	modules/Arch.ycp
- * Package:	yast2
+ * Module:	yast2
  * Summary:	Architecture, board and bios data
  * Authors:	Klaus Kaempf <kkaempf@suse.de>
  *

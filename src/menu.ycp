@@ -1,10 +1,8 @@
 /**
  * File:	clients/menu.ycp
- * Module:	Main yast2
+ * Module:	yast2
  * Summary:	List of available modules
- *
- * Authors:
- *   Ludwig Nussel <lnussel@suse.de>
+ * Authors:	Ludwig Nussel <lnussel@suse.de>
  *
  * $Id$
  *
@@ -14,7 +12,8 @@
 
 {
 
-    include "ui/common_popups.ycp";
+textdomain "base";
+include "ui/common_popups.ycp";
 
 /*
 	GroupMap =
@@ -35,7 +34,7 @@
 		"YCPFunction" : string,
 		"Icon" : string,
 		"Helptext" : string,
-		"Arguments" : string, 		// seperated by whitespace
+		"Arguments" : string,		// seperated by whitespace
 		"RequiresRoot" : boolean,
 		"Textdomain" : string
 		"SortKey" : string
@@ -370,4 +369,6 @@
     }
 
     UI::CloseDialog ();
+
+/* EOF */
 }
