@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jul 12 17:11:52 CEST 2002 - kkaempf@suse.de
+
+- fix sequencer and wizard testsuite
+- call sequencer testsuite during build
+- 2.6.10
+
+-------------------------------------------------------------------
 Fri Jul 12 10:24:37 CEST 2002 - msvec@suse.cz
 
 - added doc and autodocs

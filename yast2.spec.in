@@ -28,6 +28,8 @@ Summary:	Documentation for Wizard and Sequencer
 
 @BUILD@
 
+(cd sequencer; make check)
+
 @INSTALL@
 mkdir -p "$RPM_BUILD_ROOT"@clientdir@
 mkdir -p "$RPM_BUILD_ROOT"@configdir@
