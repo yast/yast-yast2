@@ -17,7 +17,7 @@
 			 `PushButton(`id(`warn ),	`opt(`hstretch), "&Warning Popup"	),
 			 `PushButton(`id(`err  ),	`opt(`hstretch), "&Error Popup"		),
 			 `PushButton(`id(`timed ),	`opt(`hstretch), "&Timed Message Popup"	),
-			 
+
 			 `PushButton(`id(`yesNo ),	`opt(`hstretch), "&Yes / No Popup" ),
 			 `PushButton(`id(`contCancel ), `opt(`hstretch), "C&ontinue / Cancel Popup" ),
 			 `PushButton(`id(`abort ),  	`opt(`hstretch), "Confirm &Abort Popup (no changes)" ),
@@ -50,7 +50,7 @@
 	}
 	else if ( button_id == `err )
 	{
-	    Popup::Warning( "Cannot delete world -\nthis is the only world we have!" );
+	    Popup::Error( "Cannot delete world -\nthis is the only world we have!" );
 	}
 	else if ( button_id == `timed )
 	{
