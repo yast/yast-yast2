@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Mar  5 14:31:39 CET 2004 - mvidner@suse.cz
+
+- Added Popup::AnyQuestionRichText.
+- {Require,PackageSystem}::DoInstallAndRemove:
+  ask for license acceptance (#35250).
+
+-------------------------------------------------------------------
 Fri Mar  5 12:43:40 CET 2004 - msvec@suse.cz
 
 - make runlevel testsuite use Service

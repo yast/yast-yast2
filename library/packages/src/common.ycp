@@ -13,6 +13,7 @@
 textdomain "base";
 
 import "Label";
+import "Popup";
 import "Wizard";
 
 /* Main module prototypes */
@@ -88,20 +89,13 @@ boolean PackageDialog(list<string> packages, boolean install) {
 
     foreach(string p, packages, { text = text + sformat("%1<br>", p); });
 
-    term contents = `VBox(
-	`HSpacing(40),
-	`RichText(text),
-	`HBox(
-	    `PushButton(`id(`continue), `opt(`default), Label::ContinueButton()),
-	    `PushButton(`id(`cancel), Label::CancelButton())
-	)
-    );
-
-    UI::OpenDialog(contents);
-    any ret = UI::UserInput();
-    UI::CloseDialog();
-
-    if(ret == `continue) {
+    boolean doit = Popup::AnyQuestionRichText (
+	"", text, 40, 10,
+	Label::ContinueButton (), Label::CancelButton (),
+	`focus_yes
+	);
+    if (doit)
+    {
 	last_op_canceled = false;
 	if(install == false) return DoRemove(packages);
 	return DoInstall(packages);
