@@ -1,0 +1,39 @@
+/**
+ * File:	modules/PackageSystem.ycp
+ * Package:	yast2
+ * Summary:	Packages manipulation (system)
+ * Authors:	Martin Vidner <mvidner@suse.cz>
+ *		Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+module "Package";
+textdomain "base";
+
+include "package/common.ycp";
+
+boolean DoInstall(list<string> packages) {
+    return false;
+}
+
+boolean DoRemove(list<string> packages) {
+    return false;
+}
+
+boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove) {
+    return false;
+}
+
+boolean Available(string package) {
+    return false;
+}
+
+boolean Installed(string package) {
+    return false;
+}
+
+/* EOF */
+}

@@ -1,0 +1,41 @@
+/**
+ * File:	modules/PackageAI.ycp
+ * Package:	yast2
+ * Summary:	Packages manipulation (autoinstallation)
+ * Authors:	Martin Vidner <mvidner@suse.cz>
+ *		Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+module "Package";
+textdomain "base";
+
+global list Packages = [];
+
+include "package/common.ycp";
+
+global boolean DoInstall(list<string> packages) {
+    return false;
+}
+
+global boolean DoRemove(list<string> packages) {
+    return false;
+}
+
+global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove) {
+    return false;
+}
+
+global boolean Available(string package) {
+    return false;
+}
+
+global boolean Installed(string package) {
+    return false;
+}
+
+/* EOF */
+}
