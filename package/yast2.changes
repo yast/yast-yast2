@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jul 24 19:28:17 CEST 2002 - jsuchome@suse.cz
+
+- Added runlevel module files. 
+
+-------------------------------------------------------------------
 Fri Jul 19 16:50:44 CEST 2002 - mvidner@suse.cz
 
 - Moved aliases handling from yast2-mail (bug #11730).
