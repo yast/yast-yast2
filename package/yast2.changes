@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jan 26 16:39:19 CET 2005 - mvidner@suse.cz
+
+- Fixed a typo preventing from adding an Altix XP interface (#50044).
+
+-------------------------------------------------------------------
 Tue Jan 25 12:39:26 CET 2005 - locilka@suse.cz
 
 - removed SuSEfirewall2_final init script (bugzilla #50157)
