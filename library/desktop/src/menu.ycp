@@ -169,7 +169,8 @@ list<term> GroupList = Desktop::GroupList();
 UI::ReplaceWidget(`id(`groups_rep), `SelectionBox(`id (`groups), `opt(`notify, `immediate, `keyEvents), "", GroupList));
 y2debug("%1", GroupList);
 
-string first = (string) select((list)select(GroupList[0]:`empty(), 0, []), 0, nil);
+/* GroupList = [`item (`id ("Software"), "Software"), ...] */
+string first = (string) select((term) select(GroupList[0]:`empty(), 0, `empty()), 0, nil);
 y2debug("%1", first);
 
 /**

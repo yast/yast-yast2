@@ -12,7 +12,8 @@
 import "Popup";
 import "Package";
 
-boolean success = true;
+integer success = 0;
+integer failure = 0;
 
 string e = "mtx";
 string n = "blemc";
@@ -26,9 +27,12 @@ define void T(any f, boolean expect) {
     if(r != expect) {
 	Popup::Error(sformat("Failed: %1 = %2 (expected %3)", f, r,expect));
 	y2internal(1, "Failed: %1 = %2 (expected %3)", f, r,expect);
-	success = false;
+	failure = failure + 1;
     }
-    else y2security(1, "Passed: %1", f);
+    else {
+	y2security(1, "Passed: %1", f);
+	success = success + 1;
+    }
 }
 
 /* FIXME: test presence of mtx */
@@ -71,8 +75,6 @@ T(``(Package::DoRemove([n])), false);
 T(``(Package::DoRemove([e])), true);
 T(``(Package::Installed(e)), false);
 
-/* FIXME: report final success */
-
 if(false) {
 
 // T(``(Package::Install(n)), false); // segv: OK
@@ -90,6 +92,9 @@ Package::RemoveAll(el);
 Package::RunSUSEConfig();
 
 }
+
+Popup::AnyMessage("Package Testsuite", sformat("Number of successes: %1
+Number of failures: %2", success, failure));
 
 /* EOF */
 }
