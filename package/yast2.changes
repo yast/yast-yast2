@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Nov 10 17:20:10 CET 2004 - mvidner@suse.cz
+
+- Desktop::RunViaDesktop now accepts arguments (#46828).
+
+-------------------------------------------------------------------
 Wed Nov 10 10:45:21 CET 2004 - mvidner@suse.cz
 
 - Moved NetworkDevices from yast2-network to yast2.
