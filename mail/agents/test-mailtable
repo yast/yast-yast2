@@ -1,0 +1,19 @@
+#! /bin/bash
+# $Id$
+set -o errexit
+
+# kludge: break up the output into lines
+S1='s/\$\[/\
+\$\[/g'
+S2='s/,\] $/,\
+\] /g'
+
+for CASE in test-mailtable-*.in; do
+    CASE=${CASE%.in}
+    AGPROG='Mailtable ($["filename": "'$CASE.in'", "continue_escaped_newline": true, "continue_leading_blanks": true, "colon": true,])
+Read (.leading_comment)
+Read (.table)
+Read (.trailing_comment)'
+    echo "$AGPROG" | ./ag_mailtable | sed -e "$S1" -e "$S2" > $CASE.out.tmp
+    cmp $CASE.out.tmp $CASE.out
+done

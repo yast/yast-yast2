@@ -1,0 +1,38 @@
+/**
+ * $Id$
+ * Summary:
+ *   SCR Agent for reading/writing the user-defined alias table
+ * Authors:
+ *   Martin Vidner <mvidner@suse.cz>
+ * Access:
+ *   read/write
+ * See:
+ *   yast2-config-mail/ag_mailtable.html
+ *
+ * An agent for a unified alias table.
+ *
+ * There are slight differences between MTAs in that Postfix does not
+ * allow to escape a newline character to continue an entry, while
+ * Sendmail does. We solve it by allowing the escape, because that
+ * makes our syntax a larger language than the actual one, not
+ * smaller.
+ *
+ * The file specifies a map, but we represent it as a list to preserve
+ * preceding comments and the order of entries.
+ * list entries are"
+ *  $[ "comment": " foo\n bar\n", "key": "root", "value": "joe, \\root" ]
+ *  that is, comments have the leading '#' stripped but not the newline.
+ *
+ * Example:
+ *   Read (.mail.aliases.table)
+ */
+.mail.aliases
+
+`ag_mailtable (
+  Mailtable ($[
+    "filename": "/etc/aliases",
+    "continue_escaped_newline": true,
+    "continue_leading_blanks": true,
+    "colon": true,
+  ])
+)
