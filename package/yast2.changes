@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Mar 11 18:17:52 CET 2004 - msvec@suse.cz
+
+- proper event ID type handling (#35602)
+
+-------------------------------------------------------------------
 Wed Mar 10 14:05:43 CET 2004 - msvec@suse.cz
 
 - accept nil from some UI calls (should fix the failing testsuites)
