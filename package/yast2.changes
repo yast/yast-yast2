@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar 15 13:40:39 CET 2005 - visnov@suse.cz
+
+- added check-all-syntax script for validating all YCP clients 
+  and modules (#63942)
+
+-------------------------------------------------------------------
 Mon Mar 14 16:36:55 CET 2005 - mvidner@suse.cz
 
 - Don't allow single quotes inside ifcfg-* variables,
