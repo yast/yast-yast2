@@ -35,7 +35,7 @@ global define void InitPackageCallbacks() {
 
     Pkg::CallbackStartDownload ("PackageCallbacks::StartDownload");
     Pkg::CallbackProgressDownload ("PackageCallbacks::ProgressDownload");
-    Pkg::CallbackDoneDownload ("PackageCallbacks::DownDownload");
+    Pkg::CallbackDoneDownload ("PackageCallbacks::DoneDownload");
 
     SetMediaCallbacks ();
 }
