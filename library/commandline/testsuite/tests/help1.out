@@ -8,7 +8,7 @@ Write	.dev.tty.stderr "        ip       [ipaddress]  device address" true
 Write	.dev.tty.stderr "        netmask  [netmask]    network mask" true
 Write	.dev.tty.stderr "        blem                  other argument (without spaces and '1')" true
 Write	.dev.tty.stderr "        atboot   [ yes no ]   turning on the device at boot" true
-Write	.dev.tty.stderr "        help                  print the help for this command" true
-Write	.dev.tty.stderr "        verbose               show progress information" true
+Write	.dev.tty.stderr "        help                  Print the Help for This Command" true
+Write	.dev.tty.stderr "        verbose               Show Progress Information" true
 Write	.dev.tty.stderr "" true
 Return	false
