@@ -23,26 +23,31 @@ import "Summary";
 list<string> errors = [];
 list<string> warnings = [];
 list<string> messages = [];
+list<string> yesno_messages = [];
 
 // display flags
 boolean display_errors = true;
 boolean display_warnings = true;
 boolean display_messages = true;
+boolean display_yesno_messages = true;
 
 // timeouts
 integer timeout_errors = 0;
 integer timeout_warnings = 0;
 integer timeout_messages = 0;
+integer timeout_yesno_messages = 0;
 
 // logging flags
 boolean log_errors = true;
 boolean log_warnings = true;
 boolean log_messages = true;
+boolean log_yesno_messages = true;
 
 
 global map message_settings = $[];
 global map error_settings = $[];
 global map warning_settings = $[];
+global map yesno_message_settings = $[];
 
 
 /**
@@ -94,6 +99,20 @@ global define string Summary() ``{
     summary = Summary::AddListItem(summary, sformat(_("Log Errors: %1"), (log_errors) ?
 						    _("Yes") : _("No")));
     summary = Summary::CloseList(summary);
+    summary = Summary::AddHeader(summary, _("Yes/No Messages (Critical Messages)"));
+    summary = Summary::OpenList(summary);
+    // Report configuration - will be error messages displayed?
+    // '%1' will be replaced by translated string "Yes" or "No"
+    summary = Summary::AddListItem(summary, sformat(_("Display Yes/No Messages: %1"), (display_yesno_messages) ?
+						    _("Yes") : _("No")));
+    // Report configuration - will have error messages timeout?
+    // '%1' will be replaced by number of seconds
+    summary = Summary::AddListItem(summary, sformat(_("Time-out Yes/No Messages: %1"), timeout_yesno_messages));
+    // Report configuration - will be error messages logged to file?
+    // '%1' will be replaced by translated string "Yes" or "No"
+    summary = Summary::AddListItem(summary, sformat(_("Log Yes/No Messages: %1"), (log_yesno_messages) ?
+						    _("Yes") : _("No")));
+    summary = Summary::CloseList(summary);
     return summary;
 }
 
@@ -109,21 +128,25 @@ global define boolean Import(map settings) ``{
     message_settings  = settings["messages"]:$[];
     error_settings = settings["errors"]:$[];
     warning_settings = settings["warnings"]:$[];
+    yesno_message_settings = settings["yesno_messages"]:$[];
 
     // display flags
     display_errors =  error_settings["show"]:true;
     display_warnings = warning_settings["show"]:true;
     display_messages = message_settings["show"]:true;
+    display_yesno_messages = message_settings["show"]:true;
 
     // timeouts
     timeout_errors = error_settings ["timeout"]:0;
     timeout_warnings = warning_settings["timeout"]:0;
     timeout_messages = message_settings["timeout"]:0;
+    timeout_yesno_messages = message_settings["timeout"]:0;
 
     // logging flags
     log_errors = error_settings["log"]:true;
     log_warnings = warning_settings ["log"]:true;
     log_messages = message_settings["log"]:true;
+    log_yesno_messages = message_settings["log"]:true;
 
     return true;
 }
@@ -139,7 +162,15 @@ global define map Export () ``{
 	      "messages": $["log": log_messages, "timeout": timeout_messages, "show": display_messages ],
 	      "errors": $["log": log_errors, "timeout": timeout_errors, "show": display_errors ],
 	      "warnings": $["log": log_warnings, "timeout": timeout_warnings, "show": display_warnings ],
+	      "yesno_messages": $["log": log_yesno_messages, "timeout": timeout_yesno_messages, "show": display_yesno_messages ]
     ]);
+}
+/**
+ * Clear stored yes/no messages
+ * @return void
+ */
+global define void ClearYesNoMessages() ``{
+    yesno_messages = [];
 }
 
 /**
@@ -176,8 +207,16 @@ global define void ClearAll() ``{
     ClearErrors();
     ClearWarnings();
     ClearMessages();
+    ClearYesNoMessages();
 }
 
+/**
+ * Return number of stored yes/no messages
+ * @return integer number of messages
+ */
+global define integer NumYesNoMessages() ``{
+    return size(yesno_messages);
+}
 
 /**
  * Return number of stored messages
@@ -204,6 +243,48 @@ global define integer NumErrors() ``{
     return size(errors);
 }
 
+/**
+ * Store new yes/no message text
+ * @return void
+ */
+global define boolean AnyQuestion( string headline,
+				       string message,
+				       string yes_button_message,
+				       string no_button_message,
+				       symbol focus )	``{
+    boolean ret = false;
+    if (display_yesno_messages)
+    {
+	if (timeout_yesno_messages > 0)
+	{
+            ret = Popup::TimedAnyQuestion(
+                    headline,
+                    message,
+                    yes_button_message,
+                    no_button_message,
+                    focus,
+                    timeout_yesno_messages);
+	}
+	else
+	{
+            ret = Popup::AnyQuestion(
+                    headline,
+                    message,
+                    yes_button_message,
+                    no_button_message,
+                    focus );
+
+	}
+    }
+
+    if (log_yesno_messages)
+    {
+	y2milestone(1, "%1", message);
+    }
+
+    yesno_messages = add(yesno_messages, message);
+    return ret;
+}
 
 /**
  * Store new message text
@@ -329,6 +410,20 @@ global define void DisplayMessages(boolean display, integer timeout) ``{
     return;
 }
 
+/**
+ * Yes/No Message popup dialog can be displayed immediately when a new message  is stored.
+ * This function enables or diables popuping of dialogs.
+ * @param display if true then display message popups immediately
+ * @param timeout dialog is automatically closed after timeout seconds. Value 0 means no time out, dialog will be closed only by user.
+ * @return void
+ */
+
+global define void DisplayYesNoMessages(boolean display, integer timeout) ``{
+    display_yesno_messages = display;
+    timeout_yesno_messages = timeout;
+    return;
+}
+
 
 /**
  * Set warnings logging to .y2log file
@@ -339,6 +434,14 @@ global define void LogWarnings(boolean log) ``{
     log_warnings = log;
 }
 
+/**
+ * Set yes/no messages logging to .y2log file
+ * @param log if log is true then  messages will be logged
+ * @return void
+ */
+global define void LogYesNoMessages(boolean log) ``{
+    log_yesno_messages = log;
+}
 /**
  * Set messages logging to .y2log file
  * @param log if log is true then  messages will be logged
@@ -366,7 +469,7 @@ global define void LogErrors(boolean log) ``{
  * @param m include messages in returned string
  * @return string rich text string
  */
-global define string GetMessages(boolean w, boolean e, boolean m) ``{
+global define string GetMessages(boolean w, boolean e, boolean m , boolean ynm) ``{
     string richtext = "";
 
     if (w)
@@ -408,6 +511,18 @@ global define string GetMessages(boolean w, boolean e, boolean m) ``{
 	richtext = richtext + "</P>";
     }
 
+    if (ynm)
+    {
+	richtext = richtext + "<P><B>" + _("Message:", "Messages:", size(yesno_messages)) + "</B><BR>";
+
+	foreach(string s, yesno_messages, ``{
+		list<string> strs = splitstring(s, "\n");
+		foreach(string line, strs, ``{richtext = richtext + line + "<BR>";});
+	    }
+	);
+
+	richtext = richtext + "</P>";
+    }
     return richtext;
 }
 

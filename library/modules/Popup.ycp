@@ -141,6 +141,48 @@
 	return "";
     }
 
+    /**
+     * Button box for the AnyQuestion Dialog (internal function).
+     *
+     * @param yes_button_message	label on affirmative buttons (on left side)
+     * @param no_button_message	label on negating button (on right side)
+     * @param focus			`focus_yes (first button) or `focus_no (second button)
+     *
+     * @return term button box
+     */
+    define term AnyQuestionButtonBox (
+				       string yes_button_message,
+				       string no_button_message,
+				       symbol focus )	``{
+	term yes_button = `Empty();
+	term no_button = `Empty();
+
+	if ( focus == `focus_no )
+	{
+	    yes_button = `PushButton( `id(`yes),
+				      `opt (`key_F10),
+				      yes_button_message );
+	    no_button  = `PushButton( `id(`no_button),
+				      `opt(`default, `key_F9),
+				      no_button_message );
+	}
+	else
+	{
+	    yes_button = `PushButton( `id(`yes),
+				      `opt(`default, `key_F10),
+				      yes_button_message);
+	    no_button  = `PushButton( `id(`no_button),
+				      `opt (`key_F9),
+				      no_button_message );
+	}
+
+	term button_box =  `HBox(
+				 `HWeight( 1, yes_button),
+				 `HSpacing(2),
+				 `HWeight( 1, no_button )
+				 );
+        return button_box;
+    }
 
     /**
      * Generic question popup with two buttons.
@@ -173,34 +215,7 @@
 				       string no_button_message,
 				       symbol focus )	``{
 
-	term yes_button = `Empty();
-	term no_button = `Empty();
-
-	if ( focus == `focus_no )
-	{
-	    yes_button = `PushButton( `id(`yes),
-				      `opt (`key_F10),
-				      yes_button_message );
-	    no_button  = `PushButton( `id(`no_button),
-				      `opt(`default, `key_F9),
-				      no_button_message );
-	}
-	else
-	{
-	    yes_button = `PushButton( `id(`yes),
-				      `opt(`default, `key_F10),
-				      yes_button_message);
-	    no_button  = `PushButton( `id(`no_button),
-				      `opt (`key_F9),
-				      no_button_message );
-	}
-
-	term button_box =  `HBox(
-				 `HWeight( 1, yes_button),
-				 `HSpacing(2),
-				 `HWeight( 1, no_button )
-				 );
-
+        term button_box = AnyQuestionButtonBox ( yes_button_message, no_button_message, focus);
 	UI::OpenDialog(
 		       `opt(`decorated),
 		       createPopupLayoutInternal( headline, message, button_box )
@@ -212,6 +227,74 @@
 	return ret == `yes;
     };
 
+    /**
+     * Timed question popup with two buttons and time display
+     *
+     * @param headline		headline or Popup::NoHeadline()
+     * @param message			message string
+     * @param yes_button_message	label on affirmative buttons (on left side)
+     * @param no_button_message	label on negating button (on right side)
+     * @param focus			`focus_yes (first button) or `focus_no (second button)
+     * @param integer			timeout, if 0, normal behaviour
+     * @see AnyQuestion
+     */
+    global define boolean TimedAnyQuestion( string headline,
+				       string message,
+				       string yes_button_message,
+				       string no_button_message,
+				       symbol focus ,
+                                       integer timeout_seconds)	``{
+
+        term button_box = AnyQuestionButtonBox ( yes_button_message, no_button_message, focus);
+        term timed =
+            `ReplacePoint(`id(`replace_buttons) ,
+                    `VBox(
+                        `HCenter(
+                            `Label(`id(`remaining_time), "" + timeout_seconds)
+                            ),
+                        `HBox(
+                            // "Stop" button for timeout message: Stop counting down
+                            // (i.e. leave the popup message open without timeout)
+                            `PushButton(`id(`timed_stop), Label::StopButton() ),
+                            `HSpacing(2),
+
+                            // "OK" button for timeout message: Close popup dialog
+                            // (i.e. confirm the message)
+                            `PushButton(`id(`timed_ok),
+                                `opt(`default, `key_F10),
+                                Label::OKButton() )
+                            ),
+                        `VSpacing(0.2)
+                        )
+                    );
+
+
+	UI::OpenDialog(
+		       `opt(`decorated),
+		       createPopupLayoutInternal( headline, message, timed )
+		       );
+
+	sleep (1000);
+	any which_input = `empty;
+	while (timeout_seconds > 0) {
+	    which_input = UI::PollInput();
+	    if (which_input == `timed_ok)
+		break;
+	    if (which_input == `timed_stop)
+            {
+                UI::ReplaceWidget(`id(`replace_buttons), button_box);
+		while (which_input == `timed_stop)
+		    which_input = UI::UserInput();
+		break;
+            }
+	    sleep (1000);
+	    timeout_seconds = timeout_seconds - 1;
+	    UI::ChangeWidget (`id(`remaining_time), `Value, ""+timeout_seconds);
+	}
+	UI::CloseDialog();
+
+	return which_input == `yes;
+    };
 
     /**
      * Dialog which displays the "message" and has a <b>Continue</b>
