@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Mar 31 14:06:43 CEST 2004 - gs@suse.de
+
+- show header of ShowText popup (bug #37171) 
+
+-------------------------------------------------------------------
 Wed Mar 31 12:20:54 CEST 2004 - arvin@suse.de
 
 - added product feature about suboptimal distribution (bug #36823)
