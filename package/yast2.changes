@@ -1,7 +1,9 @@
 -------------------------------------------------------------------
-Tue Feb  3 14:09:58 CET 2004 - msvec@suse.cz
+Fri Feb  6 14:34:35 CET 2004 - msvec@suse.cz
 
 - call %suse_update_desktop_file for the group files
+- use the group .desktop files also in the ncurses menu
+- 2.9.14
 
 -------------------------------------------------------------------
 Tue Feb  3 12:39:35 CET 2004 - msvec@suse.cz
