@@ -25,11 +25,8 @@
 #   the configuration and administration menu.
 #
 #/-*/
-export PATH=/sbin:/usr/sbin:$PATH
 
-# This environment variable will tell child processes they are started from
-# within a YaST2 environment
-export YAST2_RUNNING=$$
+export PATH=/sbin:/usr/sbin:$PATH
 
 # load common script functions
 . /usr/lib/YaST2/bin/yast2-funcs
