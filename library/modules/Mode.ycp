@@ -12,215 +12,216 @@
  */
 
 {
-    module "Mode";
 
-    textdomain "base";
+module "Mode";
 
-    /**
-     * Current mode
-     */
-    global string mode = "installation";
+textdomain "base";
 
-    /**
-     * Current stage
-     */
-    global string stage = "";
+/**
+ * Current mode
+ */
+string _mode = nil;
 
-    /**
-     * we're doing a fresh installation
-     */
-    global boolean installation		= true;
+/**
+ * Current testing mode
+ */
+string _test = nil;
 
-    /**
-     * we're doing an update
-     */
-    global boolean update		= false;
-
-    /**
-     * Firstboot mode
-     */
-    global boolean firstboot	= false;
-
-    /**
-     * /var/adm/mount has installation data mounted
-     */
-    global boolean sourcemounted	= false;
-
-    /**
-     * how we were booted (the type of the installation medium)
-     * /etc/install.inf: InstMode
-     */
-    global string boot			= "cd";
-
-    /**
-     * Just testing.
-     * See installation/Test-Scripts/doit*
-     */
-    global boolean test			= false;
-
-    /**
-     * Dry-run of dialogues. Implies @ref #test .
-     */
-    global boolean demo			= false;
-
-    /**
-     * dump screens to /tmp. Implies @ref #demo .
-     * See installation/Test-Scripts/yast2-screen-shots*
-     */
-    global boolean screen_shot		= false;
-
-    /**
-     * starting installation in inst-sys system
-     */
-    global boolean initial		= false;
-
-    /**
-     * continuing installation in target system
-     */
-    global boolean cont			= false;
-
-    /**
-     * Reconfig system
-     */
-    global boolean reconfig		= false;
-
-    /**
-     * normal, running system
-     */
-    global boolean normal		= false;
-
-    /**
-     * do auto-installation
-     */
-    global boolean autoinst		= false;
-
-    /**
-     * start repair module
-     */
-    global boolean repair		= false;
-
-    /**
-     * configuration for auto-installation, only in running system
-     */
-    global boolean config		= false;
-
-    /**
-     * this is a beta-version
-     */
-    global boolean beta			= false;
-
-    /**
-     * this is for certify labs (uses by Packages.ycp)
-     */
-    global boolean certify		= false;
-
-    /**
-     * no resources/packages for X11
-     */
-    global boolean text_fallback	= false;
-
-    /**
-     * somehow, no X11 was started
-     */
-    global boolean no_x11		= false;	// no x11 or not enough memory for qt
-
-    /**
-     * run X11 configuration after inital boot
-     * this is false in case of:
-     * installation via serial console
-     * installation via ssh
-     * installation via vnc
-     *
-     * Also see Arch::x11_setup_needed ().
-     */
-    global boolean x11_setup_needed	= true;
-
-    /**
-     * This flag indicates that a config module has been called due to
-     * a change in the system hardware that has been detected on boot
-     * time.
-     *
-     * It is set if a parameter "reprobe" is given with a yast2 call as
-     * command line argument.
-     */
-    global boolean reprobe		= false;
-
-    /**
-     * we're running in textmode (-> UI::GetDisplayInfo())
-     */
-    global boolean text			= false;
-
-    /**
-     * we're running in command line interface
-     */
-    global boolean commandline		= false;
-
-    /**
-     * we're running in manual mode (manual installation choosen in linuxrc)
-     */
-    global boolean manual		= false;
-
-    /**
-     * running via serial console
-     */
-    global boolean serial_console	= false;
-
-    /**
-     * braille mode ?
-     */
-    global boolean braille		= false;
-
-    /**
-     * vnc mode ?
-     */
-    global boolean vnc			= false;
-
-    /**
-     * ssh mode ?
-     */
-    global boolean usessh		= false;
-
-    /**
-     * install map containing data for the online update
-     */
-    global map youInstallMap		= $[];
+/**
+ * Current UI mode
+ */
+string _ui = "dialog";
 
 
-    /**
-     * Change Mode
-     * @param string new mode (installation|update|autoinst)
-     * @return void
-     */
-    global void SwitchMode (string new_mode)
+/**
+ * initialize everything from command-line of y2base
+ */
+global void Initialize () {
+    _mode = "normal";
+    _test = "none";
+    integer arg_count = size(WFM::Args());
+    integer arg_no = 0;
+    while ( arg_no < arg_count )
     {
-        y2milestone("Switching to %1 mode", new_mode);
-	if (new_mode == "update")
+	// parsing for main mode
+	if (WFM::Args(arg_no) == "initial"
+	    || WFM::Args(arg_no) == "continue"
+	    || WFM::Args(arg_no) == "firstboot")
         {
-            Mode::mode = "update";
-            Mode::update = true;
-            Mode::installation = false;
-            Mode::autoinst = false;
+	    _mode = "installation";
         }
-        else if (new_mode == "installation")
-        {
-            Mode::mode = "installation";
-            Mode::update = false;
-            Mode::installation = true;
-            Mode::autoinst = false;
-        }
-        else if (new_mode == "autoinst")
-        {
-            Mode::mode = "autoinst";
-            Mode::update = false;
-            Mode::installation = true;
-            Mode::autoinst = true;
-        }
-        else
-        {
-            y2error("Mode %1 not supported", new_mode);
-        }
-        return;
+	// parsing for test mode
+	else if (WFM::Args(arg_no) == "test" || WFM::Args(arg_no) == "demo")
+	{
+	    _test = "test";
+	    y2warning("***** Test mode enabled *****");
+	}
+	else if (WFM::Args(arg_no) == "screenshots"  )
+	{
+	    _test = "screenshot";
+	    y2warning("***** Screen shot mode enabled *****");
+	}
     }
+
+    // only use the /etc/install.inf agent when file is present
+    // and installation is being processed
+    // FIXME remove the part below and let it be set in clients
+    if (_mode == "installation"
+	&& SCR::Read (.target.size, "/etc/install.inf") != -1)
+    {
+	boolean autoinst = SCR::Read (.etc.install_inf.AutoYaST) != nil;
+        if (autoinst)
+        {
+	    _mode="autoinstallation";
+        }
+
+	boolean repair = SCR::Read (.etc.install_inf.Repair ) != nil;
+        if (repair)
+        {
+	    _mode ="repair";
+        }
+    }
+}
+
+// main mode definitions
+
+global string mode () {
+    if (_mode == nil)
+    {
+	Initialize ();
+    }
+
+    return _mode;
+}
+
+global void SetMode (string new_mode) {
+    if (_mode == nil)
+	Initialize ();
+
+    if (! contains (
+	[ "installation", "update", "normal", "repair",
+	    "autoinstallation", "autoinst_config",
+	],
+	new_mode))
+    {
+	y2error ("Unknows mode %1", new_mode);
+    }
+    _mode = new_mode;
+}
+
+// test mode definitions
+
+global string testMode () {
+    if (_test == nil)
+	Initialize ();
+
+    return _test;
+}
+
+global void SetTest (string new_test_mode) {
+    if (_test == nil)
+	Initialize ();
+
+    if (! contains (
+	[ "none", "test", "demo", "screenshot", "testsuite", ],
+	new_test_mode))
+    {
+	y2error ("Unknown test mode %1", new_test_mode);
+    }
+    _test = new_test_mode;
+}
+
+// UI mode definitions
+
+global string ui () {
+    return _ui;
+}
+
+global void SetUI (string new_ui) {
+    if (! contains (
+	[ "commandline", "dialog", "none", ],
+	new_ui))
+    {
+	y2error ("Unknows UI mode %1", new_ui);
+    }
+    _ui = new_ui;
+}
+
+// main mode wrappers
+
+/**
+ * we're doing a fresh installation
+ */
+global boolean installation () {
+    return mode () == "installation";
+}
+
+/**
+ * we're doing an update
+ */
+global boolean update () {
+    return mode () == "update";
+}
+
+/**
+ * normal, running system
+ */
+global boolean normal () {
+    return mode () == "normal";
+}
+
+/**
+ * start repair module
+ */
+global boolean repair () {
+    return mode () == "repair";
+}
+
+/**
+ * do auto-installation
+ */
+global boolean autoinst () {
+    return mode () == "autoinstallation";
+}
+
+/**
+ * configuration for auto-installation, only in running system
+ */
+global boolean config () {
+    return mode () == "autoinst_config";
+}
+
+// test mode wrappers
+
+/**
+ * Just testing.
+ * See installation/Test-Scripts/doit*
+ */
+global boolean test () {
+    return testMode () == "test" || testMode () == "screenshot";
+}
+
+/**
+ * dump screens to /tmp. Implies @ref #demo .
+ * See installation/Test-Scripts/yast2-screen-shots*
+ */
+global boolean screen_shot () {
+    return testMode () == "screenshort";
+}
+
+global boolean testsuite () {
+    return testMode () == "testsuite";
+}
+
+// UI mode wrappers
+
+/**
+ * we're running in command line interface
+ * @return true if command-line is running
+ */
+global boolean commandline () {
+    return ui () == "commandline";
+}
 
 
     // update warning
@@ -262,156 +263,4 @@
 	+ _("If you intend to install the 64-bit distribution, use the other side
 	    of the DVD medium for booting.");
 
-    //---------------------------------------------------------------
-    // constructor
-
-    global define void Mode () ``{
-
-	/*
-	 * test command line arguments for test mode and continue mode
-	 */
-
-	integer arg_count = size(WFM::Args());
-	integer arg_no = 0;
-
-	while ( arg_no < arg_count )
-	{
-	    y2debug("option #%1: %2", arg_no, WFM::Args(arg_no) );
-
-	    if	    (WFM::Args(arg_no) == "test"	   )
-	    {
-		test = true;
-                mode = "test";
-		y2warning("***** Test mode enabled *****");
-	    }
-	    else if (WFM::Args(arg_no) == "demo"	    )
-	    {
-		demo = true;
-                mode = "demo";
-		y2warning("***** Demo mode enabled *****");
-	    }
-	    else if (WFM::Args(arg_no) == "firstboot"	    )
-	    {
-		firstboot = true;
-                mode = "firstboot";
-	    }
-	    else if (WFM::Args(arg_no) == "screenshots"  )
-	    {
-		screen_shot = true;
-                mode = "screen_shot";
-		y2warning("***** Screen shot mode enabled *****");
-	    }
-	    else if (WFM::Args(arg_no) == "initial")
-            {
-                initial	= true;
-                stage = "initial";
-            }
-	    else if (WFM::Args(arg_no) == "reconfig"	    )
-            {
-                reconfig = true;
-                mode = "reconfig";
-                stage    = "normal";
-            }
-	    else if (WFM::Args(arg_no) == "continue"	    )
-            {
-                cont	= true;
-                stage   = "continue";
-            }
-	    else if (WFM::Args(arg_no) == "text_fallback")
-            {
-                text_fallback= true;
-            }
-	    else if (WFM::Args(arg_no) == "no_x11"       )
-            {
-                no_x11	= true;
-            }
-	    else if (WFM::Args(arg_no) == "reprobe"      )
-            {
-                reprobe	= true;
-            }
-	    else
-	    {
-		y2milestone ("skipping unknown option %1", WFM::Args(arg_no) );
-	    }
-
-	    arg_no = arg_no + 1;
-	}
-
-
-	if (!initial
-	    && !cont
-	    && !autoinst
-	    && !config)
-	{
-	    normal = true;
-            stage = "normal";
-	}
-
-	// screen_shot ==> demo
-	if ( screen_shot )
-        {
-            demo = true;
-        }
-
-	// demo ==> test
-	if ( demo )
-        {
-            test = true;
-        }
-
-
-	// only use the /etc/install.inf agent when file is present
-
-	if (SCR::Read (.target.size, "/etc/install.inf") != -1)
-	{
-	    sourcemounted = SCR::Read (.etc.install_inf.Sourcemounted) == "1";
-
-	    autoinst = SCR::Read (.etc.install_inf.AutoYaST) != nil;
-            if (autoinst)
-            {
-                mode="autoinst";
-            }
-
-	    repair   = SCR::Read (.etc.install_inf.Repair )  != nil;
-            if (repair)
-            {
-                mode ="repair";
-            }
-
-	    text = SCR::Read (.etc.install_inf.Textmode) == "1";
-
-	    manual = SCR::Read (.etc.install_inf.Manual) == "1";
-	    // we might be in 'continue' mode (after first time booting into
-	    // installed system). Give the user a chance to enter "manual"
-	    // at kernel command line to be asked for module loading
-	    // because of #24462, network modules are loaded automagically.
-	    // This won't harm for 99.99% but you never know ...
-	    if (!manual)
-	    {
-		string tmp = (string)SCR::Read (.target.string, "/proc/cmdline");
-		if (tmp != nil && contains (splitstring (tmp, " \n"), "manual"))
-		{
-		    manual = true;
-		}
-	    }
-
-	    serial_console = SCR::Read (.etc.install_inf.Console) != nil;
-
-	    braille = SCR::Read (.etc.install_inf.Braille) != nil;
-
-	    vnc = SCR::Read (.etc.install_inf.VNC) == "1";
-
-	    usessh = SCR::Read (.etc.install_inf.UseSSH) == "1";
-
-	    boot = (string)SCR::Read (.etc.install_inf.InstMode);
-	    if (boot == nil) boot = "cd";
-	}
-
-	// disable X11 setup after initial boot
-	if (serial_console || vnc || usessh)
-	{
-	    x11_setup_needed = false;
-	}
-
-    }
-}
+} // EOF
