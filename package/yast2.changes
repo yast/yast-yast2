@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Jan 21 10:50:28 CET 2005 - lslezak@suse.cz
+
+- an option in command line mode specification can have
+  more help texts (depending on command)
+- improved command line mode support test (test also empty map)
+- version 2.11.17
+
+-------------------------------------------------------------------
 Tue Jan 18 14:56:33 CET 2005 - lslezak@suse.cz
 
 - command line - new simple mode (no commands),

@@ -406,7 +406,23 @@
 
 	    if (is (opt, string))
 	    {
-		Print(sformat("        %1  %2  %3", String::Pad((string)opt,longestopt), String::Pad(t, longestarg), op["help"]:""));
+		string helptext = "";
+		any opthelp = op["help"]:nil;
+
+		if (is(opthelp, string))
+		{
+		    helptext = (string)opthelp;
+		}
+		else if (is(opthelp, map<string,string>))
+		{
+		    helptext = ((map<string,string>)opthelp)[action]:"";
+		}
+		else
+		{
+		    y2error("Invalid data type of help text, only 'string' or 'map<string,string>' types are allowed.");
+		}
+
+		Print(sformat("        %1  %2  %3", String::Pad((string)opt,longestopt), String::Pad(t, longestarg), helptext));
 	    }
 	} );
 
@@ -682,7 +698,7 @@
 
 
 	// check whether the command line mode is really supported by the module
-	if (!haskey(cmdlineinfo, "actions"))
+	if (!haskey(cmdlineinfo, "actions") || size(cmdlineinfo["actions"]:$[]) == 0)
 	{
 	    // command line is not supported
 	    CommandLine::Print(String::UnderlinedHeader("YaST2 " + cmdlineinfo["id"]:"", 0));
