@@ -186,7 +186,10 @@
         boolean ret = UI::WizardCommand(`SetDialogHeading( window_title ) );
         if ( ret != nil && ret == true)
         {
-            UI::WizardCommand(`SetHelpText( help_text ) );
+            if ("" != help_text && nil != help_text)
+           {
+               UI::WizardCommand(`SetHelpText( help_text ) );
+           }
             UI::WizardCommand(`EnableNextButton( false ) );
             UI::WizardCommand(`EnableBackButton( false ) );
         }
