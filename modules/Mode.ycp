@@ -31,7 +31,7 @@
 
     /**
      * how we were booted (the type of the installation medium)
-     * /etc/install.inf: Instmode
+     * /etc/install.inf: InstMode
      */
     global string boot			= "cd";
 
@@ -233,7 +233,7 @@
 	    language = SCR::Read (.etc.install_inf.Locale);
 	    if (language == nil) language = "";
 
-	    boot = SCR::Read (.etc.install_inf.Instmode);
+	    boot = SCR::Read (.etc.install_inf.InstMode);
 	    if (boot == nil) boot = "cd";
 	}
 
