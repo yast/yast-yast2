@@ -266,6 +266,9 @@
 		if (! validateWidgets (widgets, event_descr))
 	            ret = nil;
 	    }
+
+	    if (ret == nil)
+		continue;
         }
 	if (save)
 	    saveWidgets (widgets, event_descr);
