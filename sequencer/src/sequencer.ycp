@@ -37,19 +37,19 @@ global define boolean WS_check(map aliases, map sequence) ``{
     list ret = [];
 
     /* check if aliases is not a nil */
-    if(aliases == nil) {
+    if (aliases == nil) {
 	y2error(2, "sequencer check: aliases is nil");
 	return false;
     }
 
     /* check if sequence is not a nil */
-    if(sequence == nil) {
+    if (sequence == nil) {
 	y2error(2, "sequencer check: sequence is nil");
 	return false;
     }
 
     /* check if ws_start is in aliases */
-    if(lookup(aliases,"ws_start",nil) != nil) {
+    if (lookup(aliases,"ws_start",nil) != nil) {
         y2error(2, "sequencer check: ws_start cannot be an alias name");
         ret = add(ret,false);
     }
@@ -57,26 +57,26 @@ global define boolean WS_check(map aliases, map sequence) ``{
 
     /* check aliases map types */
     list ret0 = maplist(`key, `val, aliases, ``{
-        if(!is(key,string)) {
+        if (!is(key,string)) {
             y2error(2, "sequencer check: not a string: %1", key);
             return false;
         }
-        else if(is(val,list)) {
-            if(size(val) < 2) {
+        else if (is(val,list)) {
+            if (size(val) < 2) {
                 y2error(2, "sequencer check: list too small: %1 (%2)", val, key);
                 return false;
             }
-            else if(!is(select(val,0,nil),term)) {
+            else if (!is(select(val,0,nil),term)) {
                 y2error(2, "sequencer check: not a term: %1", select(val,0,nil));
                 return false;
             }
-            else if(!is(select(val,1,nil),boolean)) {
+            else if (!is(select(val,1,nil),boolean)) {
                 y2error(2, "sequencer check: not a boolean: %1", select(val,1,nil));
                 return false;
             }
             else return true;
         }
-        else if(!is(val,term)) {
+        else if (!is(val,term)) {
             y2error(2, "sequencer check: not a term: %1", val);
             return false;
         }
@@ -85,7 +85,7 @@ global define boolean WS_check(map aliases, map sequence) ``{
     ret = flatten([ret,ret0]);
 
     /* check if ws_start is in sequence */
-    if(lookup(sequence,"ws_start",nil) == nil) {
+    if (lookup(sequence,"ws_start",nil) == nil) {
         y2error(2, "sequencer check: ws_start needs to be defined");
         ret = add(ret,false);
     }
@@ -93,41 +93,41 @@ global define boolean WS_check(map aliases, map sequence) ``{
 
     /* check all aliases in sequence */
     ret0 = maplist(`key, `val, sequence, ``{
-        if(key=="ws_start") {
-            if(!is(val,symbol) && lookup(aliases,val,nil) == nil) {
+        if (key=="ws_start") {
+            if (!is(val,symbol) && lookup(aliases,val,nil) == nil) {
                 y2error(2, "sequencer check: alias not found: %1", val);
                 return false;
             }
             else return true;
         }
-        else if(lookup(aliases,key,nil) == nil) {
+        else if (lookup(aliases,key,nil) == nil) {
             y2error(2, "sequencer check: alias not found: %1", key);
             return false;
         }
-        else if(!is(val,map)) {
+        else if (!is(val,map)) {
             y2error(2, "sequencer check: not a map: %1 %2", key, val);
             return false;
         }
         else {
             list ret1 = maplist(`k, `v, val, ``{
-                if(!is(k,symbol)) {
+                if (!is(k,symbol)) {
                     y2error(2, "sequencer check: not a symbol: %1", k);
                     return false;
                 }
-                else if(!is(v,symbol) && lookup(aliases,v,nil) == nil) {
+                else if (!is(v,symbol) && lookup(aliases,v,nil) == nil) {
                     y2error(2, "sequencer check: alias not found: %1", v);
                     return false;
                 }
                 else return true;
             });
-            if(find(`n,ret1,``(n==false)) != nil) return false;
+            if (find(`n,ret1,``(n==false)) != nil) return false;
             return true;
         }
     });
 
     ret = flatten([ret,ret0]);
 
-    if(find(`n,ret,``(n==false)) != nil) return false;
+    if (find(`n,ret,``(n==false)) != nil) return false;
     return true;
 }
 
@@ -150,14 +150,14 @@ global define void WS_error(string error) ``{
  */
 global define term WS_alias(map aliases, string alias) ``{
     any found = lookup(aliases,alias,nil);
-    if(found == nil)
+    if (found == nil)
         return WS_error(sformat("Alias not found: %1",alias));
-    if(is(found,list))
-        if(size(found)>0)
+    if (is(found,list))
+        if (size(found)>0)
             found = select(found,0,nil);
-    if(found == nil)
+    if (found == nil)
 	return WS_error(sformat("Invalid alias: %1",found));
-    if(is(found,term))
+    if (is(found,term))
         return found;
     return WS_error(sformat("Invalid alias: %1",found));
 }
@@ -170,11 +170,11 @@ global define term WS_alias(map aliases, string alias) ``{
  */
 global define boolean WS_special(map aliases, string alias) ``{
     any found = lookup(aliases,alias,nil);
-    if(found == nil)
+    if (found == nil)
         return WS_error(sformat("Alias not found: %1",alias));
     boolean ret = false;
-    if(is(found,list))
-        if(size(found)>1)
+    if (is(found,list))
+        if (size(found)>1)
             ret=select(found,1,nil);
     return ret;
 }
@@ -188,10 +188,10 @@ global define boolean WS_special(map aliases, string alias) ``{
  */
 global define any WS_next(map sequence, string current, symbol ret) ``{
     map found = lookup(sequence,current,nil);
-    if(found == nil) return WS_error(sformat("Current not found: %1",current));
+    if (found == nil) return WS_error(sformat("Current not found: %1",current));
     /* string|symbol next */
     any next = lookup(found,ret,nil);
-    if(next == nil) return WS_error(sformat("Symbol not found: %1",ret));
+    if (next == nil) return WS_error(sformat("Symbol not found: %1",ret));
     return next;
 }
 
@@ -206,11 +206,11 @@ global define symbol WS_run(map aliases, string id) ``{
     term function = nil;
 
     function = WS_alias(aliases, id);
-    if(function == nil)
+    if (function == nil)
         return WS_error(sformat("Bad id: %1",id));
 
     any ret = eval(function);
-    if(!is(ret,symbol))
+    if (!is(ret,symbol))
             return WS_error(sformat("Returned value not symbol: %1",ret));
 
     return ret;
@@ -223,16 +223,16 @@ global define symbol WS_run(map aliases, string id) ``{
  * @return the new stack or nil, if the stack is nil
  */
 global define list WS_push(list stack, any item) ``{
-    if(stack == nil)
+    if (stack == nil)
         return nil;
 
-    if(!contains(stack,item))
+    if (!contains(stack,item))
         return add(stack,item);
 
     boolean found = false;
     list newstack = filter(`v,stack,``{
-        if(found) return false;
-        if(v==item) found=true;
+        if (found) return false;
+        if (v==item) found=true;
         return true;
     });
 
@@ -245,9 +245,9 @@ global define list WS_push(list stack, any item) ``{
  * @return [ new stack, poped value ] or nil if the stack is empty or nil
  */
 global define list WS_pop(list stack) ``{
-    if(stack == nil) return nil;
+    if (stack == nil) return nil;
     integer num = size(stack);
-    if(num<2) return nil;
+    if (num<2) return nil;
     list newstack = remove(stack,num-1);
     any poped = select(stack,num-2,nil);
     return [ newstack, poped ];
@@ -262,17 +262,17 @@ global define list WS_pop(list stack) ``{
 global define symbol WizardSequencer(map aliases, map sequence) ``{
 
     /* Check aliases and sequence correctness */
-    if(WS_check(aliases, sequence) != true)
+    if (WS_check(aliases, sequence) != true)
 	return WS_error("CHECK FAILED");
 
     list stack = [];
     /* string|symbol current */
     any current = lookup(sequence,"ws_start",nil);
-    if(current == nil)
+    if (current == nil)
         return WS_error("Starting dialog not found");
 
-    while(true) {
-        if(is(current,symbol)) {
+    while (true) {
+        if (is(current,symbol)) {
             y2debug("Finished");
             return current;
         }
@@ -281,29 +281,29 @@ global define symbol WizardSequencer(map aliases, map sequence) ``{
         y2debug("stack=%1",stack);
         any ret = WS_run(aliases,current);
 
-        if(ret == nil || !is(ret,symbol))
+        if (ret == nil || !is(ret,symbol))
             return WS_error(sformat("Invalid ret: %1",ret));
 
-        else if(ret == `back) {
+        else if (ret == `back) {
             y2debug("Back");
             list poped = [];
             boolean special = true;
             do {
-                if(size(stack)<2) return `back;
+                if (size(stack)<2) return `back;
                 poped = WS_pop(stack);
                 y2debug("poped=%1",poped);
                 current = select(poped,1,nil);
                 stack = select(poped,0,nil);
                 special = WS_special(aliases,current);
                 y2debug("special=%1",special);
-            } while(special);
+            } while (special);
         }
 
         else {
             y2debug("ret=%1",ret);
             current = WS_next(sequence,current,ret);
             y2debug("current=%1",current);
-            if(current == nil)
+            if (current == nil)
                 return WS_error(sformat("Next not found: %1", current));
         }
     }
