@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 16 11:20:53 CET 2004 - arvin@suse.de
+
+- removed obsolete Mode::hardBoot
+
+-------------------------------------------------------------------
 Thu Feb 12 17:50:24 CET 2004 - lslezak@suse.cz
 
 - CWM: added better `back event handling, correctly displaying
