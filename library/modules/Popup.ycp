@@ -1149,10 +1149,21 @@ global define void TimedError(string message, integer timeout_seconds) {
  */
 global define void ShowText (string headline, string text) {
 
+    term heading = `Empty( );
+
+    if ( size(headline) == 0 )
+    {
+	heading = `VSpacing(0.2);
+    }
+    else
+    {
+	heading = `Heading( headline );
+    }
+
     UI::OpenDialog( `opt(`decorated ),
 		    `VBox(
 			  `HSpacing( 70 ),	// force width
-			  `VSpacing( 0.3 ),
+			  heading,
 			  `VWeight( 1,
 				    `HBox(
 					  `VSpacing( 18 ),	// force height
