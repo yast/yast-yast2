@@ -394,6 +394,7 @@
      * If button_box is 'nil', Wizard::BackAbortNextButtonBox() is used.
      * @param help_space_contents Help space contents
      * @param button_box Buttom Box
+     * @return void
      **/
     global void OpenCustomDialog( term help_space_contents,
 					 term button_box )
@@ -822,7 +823,7 @@
 
     /**
      * Set Desktop Icon
-     * @param string Icon name
+     * @param file Icon name
      * @return boolean true on success
      */
     global boolean SetDesktopIcon( string file )
@@ -841,6 +842,8 @@
 
     /**
      * PRIVATE - Replace the entire Wizard button box with a new one.
+     * @param button_box Button Box term
+     * @return void
      **/
     void ReplaceButtonBox( term button_box )
     {
@@ -1241,7 +1244,7 @@
     /**
      * Add Sub Menu
      * @param Menu Menu data
-     * @param parent Menu Parent
+     * @param parent_id Menu Parent
      * @param title Menu Title
      * @param id Menu ID
      * @return list<map> Updated Menu Data
@@ -1261,7 +1264,7 @@
     /**
      * Add Menu Entry
      * @param Menu Menu data
-     * @param parent Menu Parent
+     * @param parent_id Menu Parent
      * @param title Menu Title
      * @param id Menu ID
      * @return list<map> Updated Menu Data

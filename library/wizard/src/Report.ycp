@@ -344,6 +344,7 @@ global define void Message(string message_string) ``{
 
 /**
  * Store new message text
+ * @param headline_string Headline String
  * @param message_string message text, it can contain new line characters ("\n")
  * @return void
  */

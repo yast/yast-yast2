@@ -5,7 +5,7 @@
  *
  * Summary:	Confirmation routines
  *
- * Author:	Michal Svec <msvec@suse.cz>
+ * Authors:	Michal Svec <msvec@suse.cz>
  *
  * $Id$
  */
@@ -86,7 +86,6 @@ y2milestone("--%1", Detection("modems"));
 
 /**
  * If we are running as root, return true.
- *
  * Otherwise ask the user whether we should continue even though things
  * might not work
  * @return true if running as root
@@ -114,6 +113,7 @@ and it is unlikely that settings can be written.\n");
 
 /**
  * Opens a popup yes/no confirmation.
+
  * If users confirms deleting, return true,
  * else return false
  *
@@ -128,6 +128,7 @@ global define boolean DeleteSelected() {
 
 /**
  * Opens a popup yes/no confirmation.
+
  * If users confirms deleting of named entry/file/etc.,
  * return true, else return false
  *
