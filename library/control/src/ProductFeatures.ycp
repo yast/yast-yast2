@@ -328,8 +328,10 @@
         ReadStrFeature("UI_MODE", "globals/ui_mode", "expert");
         ReadBoolFeature("ENABLE_AUTOLOGIN", "globals/enable_autologin", "yes");
         ReadBoolFeature("EVMS_CONFIG", "partitioning/evms_config", "no");
+        /*
         ReadStrFeature("INCOMPLETE_TRANSLATION_TRESHOLD",
                 "globals/incomplete_translation_treshold", "95");
+                */
 
 	ui_mode = Misc::SysconfigRead(
 		.product.features.UI_MODE, "expert");
