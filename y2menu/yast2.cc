@@ -250,7 +250,7 @@ void fillhelp ()
     vector <string> tmp;
 
     // help text for ncurses control center
-    tmp.push_back (_("Control YaST2 ncurses via Keyboard"));
+    tmp.push_back (_("Control YaST2 ncurses with the Keyboard"));
     tmp.push_back ("");
 
     // help text for ncurses control center
@@ -268,7 +268,7 @@ void fillhelp ()
     tmp.push_back ("");
 
     // help text for ncurses control center
-    tmp.push_back (_("2) Substitution of keystrokes"));
+    tmp.push_back (_("2) Substitution of Keystrokes"));
     // help text for ncurses control center
     tmp.push_back (_("If <TAB> and <SHIFT>+<TAB> or <TAB> and <ALT>+<TAB> do not work,\n"
 		     "move focus forward with <CTRL>+<F> and backward with <CTRL>+<B>.\n"
@@ -280,7 +280,7 @@ void fillhelp ()
     tmp.push_back ("");
 
     // help text for ncurses control center
-    tmp.push_back (_("3) Function keys"));
+    tmp.push_back (_("3) Function Keys"));
     // help text for ncurses control center
     tmp.push_back (_("F-keys provide a quick access to main functions.\n"
 		     "There are many modules with special functions and it is not\n"
