@@ -99,6 +99,7 @@ global define string Summary() ``{
     summary = Summary::AddListItem(summary, sformat(_("Log Errors: %1"), (log_errors) ?
 						    _("Yes") : _("No")));
     summary = Summary::CloseList(summary);
+    /*
     summary = Summary::AddHeader(summary, _("Yes/No Messages (Critical Messages)"));
     summary = Summary::OpenList(summary);
     // Report configuration - will be error messages displayed?
@@ -113,6 +114,7 @@ global define string Summary() ``{
     summary = Summary::AddListItem(summary, sformat(_("Log Yes/No Messages: %1"), (log_yesno_messages) ?
 						    _("Yes") : _("No")));
     summary = Summary::CloseList(summary);
+    */
     return summary;
 }
 
