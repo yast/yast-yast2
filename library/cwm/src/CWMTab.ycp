@@ -163,7 +163,7 @@ global define symbol Handle (map<string,any> widget, string key, map event) {
     list<string> all_tabs = widget["tabs_list"]:[];
     any ret = TabHandle (current_tab_map, event);
     if (ret != nil)
-	return ret;
+	return (symbol) ret;
     ret = event["ID"]:nil;
     if (is (ret, string) && contains (all_tabs, (string)ret))
     {
