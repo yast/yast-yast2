@@ -426,14 +426,16 @@ global define map<string,any> CreateWidget (map<string,any> settings) {
     term booting = `VBox (
 	`Frame (_("Booting"),
 	    `Left (`RadioButtonGroup (`id ("_cwm_service_startup"), `VBox (
+		`VSpacing (0.4),
 		`Left (`RadioButton (`id ("_cwm_startup_auto"),
+		    `opt (`notify),
 		    start_auto_button)),
 		`Left (`RadioButton (`id ("_cwm_startup_manual"),
+		    `opt (`notify),
 		    start_manual_button)),
-		`VSpacing ( 1 )
+		`VSpacing (0.4)
 	    )))
-	),
-	`VSpacing (1)
+	)
     );
 
     term firewall_settings = `CheckBox (`id ("_cwm_open_firewall"),
@@ -454,16 +456,16 @@ global define map<string,any> CreateWidget (map<string,any> settings) {
 	));
     }
     firewall_settings = `VBox (
-	firewall_settings,
-	`VSpacing (1)
+	`VSpacing (1),
+	firewall_settings
     );
 
     // check box
     term ldap_settings = `VBox (
+	`VSpacing (1),
 	`Left (`CheckBox (`id ("_cwm_use_ldap"),
 	    `opt (`notify),
-	    use_ldap_checkbox)),
-	`VSpacing (1)
+	    use_ldap_checkbox))
     );
 
     term save_now_button_term =
@@ -474,6 +476,7 @@ global define map<string,any> CreateWidget (map<string,any> settings) {
 	    : `VBox ();
 
     term immediate_actions = `VBox (
+	`VSpacing (1),
 	// Frame label (stoping starting service)
 	`Frame ( _("Switch On and Off"),
 	    `Left (`HSquash (`VBox (
@@ -491,8 +494,7 @@ global define map<string,any> CreateWidget (map<string,any> settings) {
 		    stop_now_button),
 		save_now_button_term
 	    )))
-	),
-	`VSpacing (1)
+	)
     );
 
     string help = "";
@@ -571,12 +573,12 @@ service immediatelly, use <b>%1</b>.</p>"),
 	}
     }
 
-    term widget = `Top (`VBox (
+    term widget = `VBox (
 	booting,
 	firewall_settings,
 	ldap_settings,
 	immediate_actions
-    ));
+    );
 
     map<string,any> ret = (map<string,any>)union ($[
 	"widget" : `custom,
