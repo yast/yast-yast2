@@ -92,19 +92,28 @@
 	}
 	term bar = `ProgressBar(`id(`pb), progress_title, steps, 0);
 
-	if (UI::WidgetExists (`id (`back)))
-	    UI::ChangeWidget (`id (`back), `Enabled, false);
-	if (UI::WidgetExists (`id (`next)))
-	    UI::ChangeWidget (`id (`next), `Enabled, false);
-	if (UI::WidgetExists (`id (`accept)))
-	    UI::ChangeWidget (`id (`accept), `Enabled, false);
+        if ( UI::WizardCommand(`SetDialogHeading( window_title ) ) )
+        {
+            UI::WizardCommand(`SetHelpText( help_text ) );
+            UI::WizardCommand(`EnableNextButton( false ) );
+            UI::WizardCommand(`EnableBackButton( false ) );
+        }
+        else {
 
-	if ("" != help_text && nil != help_text && UI::WidgetExists (`id (`HelpText)))
-	{
-	    UI::ChangeWidget (`id (`HelpText), `Value, help_text);
-	}
-	UI::ChangeWidget (`id (`title), `Value, window_title);
-	UI::ReplaceWidget (`id (`contents), bar);
+            if (UI::WidgetExists (`id (`back)))
+                UI::ChangeWidget (`id (`back), `Enabled, false);
+            if (UI::WidgetExists (`id (`next)))
+                UI::ChangeWidget (`id (`next), `Enabled, false);
+            if (UI::WidgetExists (`id (`accept)))
+                UI::ChangeWidget (`id (`accept), `Enabled, false);
+
+            if ("" != help_text && nil != help_text && UI::WidgetExists (`id (`HelpText)))
+            {
+                UI::ChangeWidget (`id (`HelpText), `Value, help_text);
+            }
+            UI::ChangeWidget (`id (`title), `Value, window_title);
+        }
+        UI::ReplaceWidget (`id (`contents), bar);
 
     }
     /**
@@ -174,19 +183,27 @@
 		    ));
 	    }
 	}
+        if ( UI::WizardCommand(`SetDialogHeading( window_title ) ) )
+        {
+            UI::WizardCommand(`SetHelpText( help_text ) );
+            UI::WizardCommand(`EnableNextButton( false ) );
+            UI::WizardCommand(`EnableBackButton( false ) );
+        }
+        else {
 
-	if (UI::WidgetExists (`id (`back)) == true)
-	    UI::ChangeWidget (`id (`back), `Enabled, false);
-	if (UI::WidgetExists (`id (`next)) == true)
-	    UI::ChangeWidget (`id (`next), `Enabled, false);
-	if (UI::WidgetExists (`id (`accept)) == true)
-	    UI::ChangeWidget (`id (`accept), `Enabled, false);
+            if (UI::WidgetExists (`id (`back)) == true)
+                UI::ChangeWidget (`id (`back), `Enabled, false);
+            if (UI::WidgetExists (`id (`next)) == true)
+                UI::ChangeWidget (`id (`next), `Enabled, false);
+            if (UI::WidgetExists (`id (`accept)) == true)
+                UI::ChangeWidget (`id (`accept), `Enabled, false);
 
-	if ("" != help_text && nil != help_text && UI::WidgetExists (`id (`HelpText)))
-	{
-	    UI::ChangeWidget (`id (`HelpText), `Value, help_text);
-	}
-	UI::ChangeWidget (`id (`title), `Value, window_title);
+            if ("" != help_text && nil != help_text && UI::WidgetExists (`id (`HelpText)))
+            {
+                UI::ChangeWidget (`id (`HelpText), `Value, help_text);
+            }
+            UI::ChangeWidget (`id (`title), `Value, window_title);
+        }
 	UI::ReplaceWidget (`id (`contents), bar);
     }
 
