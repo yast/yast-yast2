@@ -84,7 +84,7 @@ while true ; do
 		-i|--install) Y2_INSTALL_PACKAGES=true; shift ;;
                 --fullscreen) Y2QT_ARGS="$Y2QT_ARGS --fullscreen"; shift ;;
 		--noborder)   Y2QT_ARGS="$Y2QT_ARGS --noborder"  ; shift ;;
-		--kcontrol)   Y2QT_ARGS="$Y2QT_ARGS --kcontrol_id 'YaST'" ; shift ;;
+		--kcontrol)   Y2QT_ARGS="$Y2QT_ARGS --kcontrol_id YaST" ; shift ;;
 		--) shift ; break ;;
 		*) echo "Unrecognized option $1" ; exit 1 ;;
 
