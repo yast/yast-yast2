@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Nov  1 14:29:34 CET 2004 - visnov@suse.cz
+
+- set product name in wizard when opening a dialog (#46247) 
+
+-------------------------------------------------------------------
 Mon Nov  1 10:32:10 CET 2004 - visnov@suse.cz
 
 - fix processing of command line arguments in Mode and Stage 
