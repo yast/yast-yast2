@@ -3,6 +3,7 @@ Mon Mar 21 13:51:43 CET 2005 - jsrain@suse.cz
 
 - fixed setting bootsplash resolutino if framebuffer modes couldn't
   be detected (#74052)
+- 2.11.47
 
 -------------------------------------------------------------------
 Fri Mar 18 14:17:30 CET 2005 - jsrain@suse.cz
