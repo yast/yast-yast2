@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 10 18:18:00 CET 2003 - arvin@suse.de
+
+- make anti aliased fonts work
+
+-------------------------------------------------------------------
 Thu Feb  6 17:01:26 CET 2003 - sh@suse.de
 
 - New command line options for "yast2" script: --fullscreen --noborder
