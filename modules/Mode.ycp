@@ -12,89 +12,88 @@
  */
 
 {
-
     module "Mode";
 
     /**
      * we're doing a fresh installation
      */
-    global boolean installation = true;
+    global boolean installation		= true;
 
     /**
      * we're doing an update
      */
-    global boolean update	= false;
+    global boolean update		= false;
 
     /**
      * /var/adm/mount has installation data mounted
      */
-    global boolean sourcemounted= false;
+    global boolean sourcemounted	= SCR::Read (.etc.install_inf.Sourcemounted) == "1";
 
     /**
      * how we were booted (the type of the installation medium)
      * /etc/install.inf: Bootmode
      */
-    global string boot		= "cd";
+    global string boot			= "cd";
 
     /**
      * just testing
      */
-    global boolean test		= false;
+    global boolean test			= false;
 
     /**
      * dry-run of dialogues
      */
-    global boolean demo		= false;	// includes test_mode if set
+    global boolean demo			= false;	// includes test_mode if set
 
     /**
      * dump screens to /tmp
      */
-    global boolean screen_shot	= false;	// includes demo_mode if set
+    global boolean screen_shot		= false;	// includes demo_mode if set
 
     /**
      * starting installation in inst-sys system
      */
-    global boolean initial	= false;
+    global boolean initial		= false;
 
     /**
      * continuing installation in target system
      */
-    global boolean cont		= false;
+    global boolean cont			= false;
 
     /**
      * hard or softboot when starting installed system ?
      */
-    global boolean hardBoot	= false;
+    global boolean hardBoot		= false;
 
     /**
      * normal, running system
      */
-    global boolean normal	= false;
+    global boolean normal		= false;
 
     /**
      * do auto-installation
      */
-    global boolean autoinst	= false;
+    global boolean autoinst		= SCR::Read (.etc.install_inf.AutoYaST) != "";
 
     /**
      * configuration for auto-installation, only in running system
      */
-    global boolean config	= false;
+    global boolean config		= false;
 
     /**
      * Preparing live-eval cd installation
      */
-    global boolean live_eval	= false;
+    global boolean live_eval		= SCR::Read (.etc.install_inf.Demo) == "1";
 
     /**
      * this is a beta-version
      */
-    global boolean beta		= false;
+    global boolean beta			= false;
 
     /**
      * this is for certify labs (uses by Packages.ycp)
      */
-    global boolean certify	= false;
+    global boolean certify		= false;
 
     /**
      * no resources/packages for X11
@@ -114,22 +113,17 @@
     /**
      * we're running in textmode (-> UI::GetDisplayInfo())
      */
-    global boolean text		= false;
+    global boolean text			= SCR::Read (.etc.install_inf.Textmode) == "1";
 
     /**
      * we're running in manual mode (manual installation choosen in linuxrc)
      */
-    global boolean manual		= false;
+    global boolean manual		= SCR::Read (.etc.install_inf.Manual) == "1";
 
     /**
      * running via serial console
      */
-    global boolean serial_console	= false;
-
-    /**
-     * Data from /etc/install.inf (linuxrc related)
-     */
-    global map installMap		= $[];
+    global boolean serial_console	= SCR::Read (.etc.install_inf.Console) != "";
 
     /**
      * language set in install.inf
@@ -139,27 +133,17 @@
     /**
      * braille mode ?
      */
-    global boolean braille		= false;
+    global boolean braille		= SCR::Read (.etc.install_inf.Braille) == "1";
 
     /**
      * vnc mode ?
      */
-    global boolean vnc			= false;
+    global boolean vnc			= SCR::Read (.etc.install_inf.VNC) == "1";
 
     /**
      * install map containing data for the online update
      */
     global map youInstallMap		= $[];
-
-    /**
-     * save important data to installmap.ycp
-     */
-    global define void Save ()
-    ``{
-	installMap["updatemode"] = update;
-	installMap["hardBoot"] = hardBoot;
-	SCR::Write (.target.ycp, [Installation::yast2dir + "/installmap.ycp", 0600], installMap);
-    }
 
     //---------------------------------------------------------------
     // constructor
@@ -218,50 +202,16 @@
 	if ( screen_shot )	demo = true;
 
 	// demo ==> test
-	if ( demo )	test = true;
+	if ( demo )		test = true;
 
 
-	// get setup data from linuxrc
-	// check setup/descr/info for CD type
+	// some variables that can't be handled above
 
-	if (initial)
-	{
-	    if ( !test )
-	    {
-		path install_inf = .etc.install_inf;
-		maplist(`var, SCR::Dir(install_inf), ``{
-		    installMap[var] = SCR::Read(add(install_inf,var));
-		});
-	    }
+	language = SCR::Read (.etc.install_inf.Locale);
+	if (language == nil) language = "";
 
-	    SCR::UnmountAgent (.etc.install_inf);
-	    y2milestone("Reading /etc/install.inf: initial installMap: %1", installMap);
-	}
-	else
-	{
-	    installMap = SCR::Read (.target.ycp, ["/var/lib/YaST2/installmap.ycp", $[]]);
-	    y2milestone("Reading /var/lib/YaST2/installmap.ycp: installMap: %1", installMap);
-	    /**
-	     * restore update only during installation/update, leave
-	     * it false in 'normal' mode.
-	     */
-	    if (!Mode::normal)
-	    {
-		update = installMap["updatemode"]:false;
-	    }
-	    hardBoot = installMap["hardBoot"]:false;
-	}
+	boot = SCR::Read (.etc.install_inf.Instmode);
+	if (boot == nil) boot = "cd";
 
-	language	= installMap["Locale"]:"";
-	live_eval	= installMap["Demo"]:"0" == "1";
-	text		= installMap["Textmode"]:"0" == "1";
-	manual		= installMap["Manual"]:"" == "1";
-	serial_console	= installMap["Console"]:"" != "";
-	braille		= installMap["Braille"]:"" != "";
-	vnc		= installMap["VNC"]:"" == "1";
-	boot		= installMap["Instmode"]:"cd";
-	sourcemounted	= installMap["Sourcemounted"]:"" == "1";
-	// the value is a string
-	autoinst	= installMap["AutoYaST"]:"" != "";
     }
 }
