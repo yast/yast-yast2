@@ -33,8 +33,6 @@ Summary:	Documentation for Wizard and Sequencer
 
 %dir @moduledir@
 @moduledir@/*
-%dir @imagedir@
-@imagedir@/*
 %dir @scrconfdir@
 @scrconfdir@/*
 %dir @ybindir@
