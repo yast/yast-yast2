@@ -6,7 +6,7 @@
  * Summary:	Interface manipulation of /etc/sysconfig/SuSEFirewall
  * Authors:	Lukas Ocilka <locilka@suse.cz>
  *
- * $Id$
+ * SuSEFirewall.ycp,v 1.6 2004/12/06 09:33:35 locilka Exp
  *
  * Module for handling SuSEfirewall2.
  */
@@ -43,7 +43,7 @@
 	"FW_LOG_ACCEPT_CRIT"		: "yes",
 	"FW_LOG_DROP_ALL"		: "no",
 	"FW_LOG_DROP_CRIT"		: "yes",
-	"FW_PROTECT_FROM_INTERNAL"	: "no",
+	"FW_PROTECT_FROM_INT"		: "no",
 	"FW_ROUTE"			: "no",
 	"FW_MASQUERADE"			: "no",
 	"FW_ALLOW_FW_TRACEROUTE"	: "yes",
@@ -93,13 +93,16 @@
 	"FW_SERVICES_INT_TCP", "FW_SERVICES_INT_UDP", "FW_SERVICES_INT_RPC", "FW_SERVICES_INT_IP",
 	"FW_SERVICES_DMZ_TCP", "FW_SERVICES_DMZ_UDP", "FW_SERVICES_DMZ_RPC", "FW_SERVICES_DMZ_IP",
 	"FW_SERVICES_EXT_TCP", "FW_SERVICES_EXT_UDP", "FW_SERVICES_EXT_RPC", "FW_SERVICES_EXT_IP",
-	"FW_PROTECT_FROM_INTERNAL",
+	"FW_PROTECT_FROM_INT",
 
 	// global routing, masquerading
 	"FW_ROUTE", "FW_MASQUERADE", "FW_FORWARD_MASQ",
 
 	// broadcast packets
 	"FW_ALLOW_FW_BROADCAST", "FW_IGNORE_FW_BROADCAST",
+
+	// logging
+	"FW_LOG_DROP_CRIT", "FW_LOG_DROP_ALL", "FW_LOG_ACCEPT_CRIT", "FW_LOG_ACCEPT_ALL",
 
 	// IPsec support
 	"FW_IPSEC_TRUST",
@@ -806,9 +809,9 @@
 	SetModified();
 
 	if (set_protect) {
-	    SETTINGS["FW_PROTECT_FROM_INTERNAL"] = "yes";
+	    SETTINGS["FW_PROTECT_FROM_INT"] = "yes";
 	} else {
-	    SETTINGS["FW_PROTECT_FROM_INTERNAL"] = "no";
+	    SETTINGS["FW_PROTECT_FROM_INT"] = "no";
 	}
     }
 
@@ -818,7 +821,7 @@
      * @return	boolean if protected from internal
      */
     global define boolean GetProtectFromInternalZone () {
-	return (SETTINGS["FW_PROTECT_FROM_INTERNAL"]:"no" == "yes");
+	return (SETTINGS["FW_PROTECT_FROM_INT"]:"no" == "yes");
     }
 
     /**
@@ -1338,7 +1341,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 	    }
 	}
 
-	// SuSEFirewall feature FW_PROTECT_FROM_INTERNAL
+	// SuSEFirewall feature FW_PROTECT_FROM_INT
 	// should not be protected and searched zones include also internal (or the zone IS internal, sure)
 	if (! GetProtectFromInternalZone() && contains(zones, int_zone_shortname)) {
 	    y2milestone("Checking for service '%1', in '%2', PROTECT_FROM_INTERNAL='no' => allowed", service, interface);
@@ -1544,7 +1547,7 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 	    return nil;
 	}
 
-	// SuSEFirewall feature FW_PROTECT_FROM_INTERNAL
+	// SuSEFirewall feature FW_PROTECT_FROM_INT
 	// should not be protected and searched zones include also internal (or the zone IS internal, sure)
 	if (zone == int_zone_shortname && ! GetProtectFromInternalZone()) {
 	    y2milestone("Checking for service '%1', in '%2', PROTECT_FROM_INTERNAL='no' => allowed", service, zone);
@@ -1944,18 +1947,13 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 	y2milestone("Forced save and restart");
 	SetModified();
 
+	SetStartService(true);
+
 	if (! Write()) {
 	    return false;
 	}
 	
-	// FIXME: restart?
-
 	return true;
-    }
-
-    global define string Summary () {
-	// FIXME: this is a summary for configuration - last screen
-	return "";
     }
 
     /**
@@ -2019,6 +2017,28 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 
 	// well, actually it returns list of services not-assigned to any well-known service
 	return all_allowed_services;
+    }
+
+    /**
+     * Function sets additional ports/services from taken list. Firstly, all additional services
+     * are removed also with their aliases. Secondly new ports/protocols are added.
+     *
+     * @param	string protocol
+     * @param	string zone
+     * @param	list <string> list of ports/protocols
+     */
+    global define void SetAdditionalServices (string protocol, string zone, list <string> new_list_services) {
+	list <string> old_list_services = toset(GetAdditionalServices(protocol, zone));
+	new_list_services = toset(new_list_services);
+
+	if (new_list_services != old_list_services) {
+	    SetModified();
+
+	    if (size(old_list_services)>0)
+		RemoveAllowedPortsOrServices (old_list_services, protocol, zone, true);
+	    if (size(new_list_services)>0)
+		AddAllowedPortsOrServices    (new_list_services, protocol, zone);
+	}
     }
 
     /**
@@ -2093,7 +2113,7 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
      * @param	string zone
      * @return	list [string] special strings or unknown interfaces
      */
-    global define list<string> GetSpecialInterfacesInZone (string zone) {
+    global define list <string> GetSpecialInterfacesInZone (string zone) {
 	list <string> interfaces_in_zone = splitstring (SETTINGS["FW_DEV_" + zone]:"", " ");
 
 	list <string> known_interfaces_now = GetInterfacesInZone (zone);
@@ -2137,6 +2157,174 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 	list <string> interfaces_in_zone = splitstring (SETTINGS["FW_DEV_" + zone]:"", " ");
 	interfaces_in_zone = toset(add (interfaces_in_zone, interface));
 	SETTINGS["FW_DEV_" + zone] = mergestring(interfaces_in_zone, " ");
+    }
+
+    /**
+     * Function returns actual state of Masquerading support.
+     *
+     * @return	boolean if supported
+     */
+    global define boolean GetMasquerade () {
+	return (SETTINGS["FW_MASQUERADE"]:"no" == "yes" && SETTINGS["FW_ROUTE"]:"no" == "yes");
+    }
+
+    /**
+     * Function sets Masquerade support.
+     *
+     * @param	boolean to support or not to support it
+     */
+    global define void SetMasquerade (boolean enable) {
+	SetModified();
+
+	SETTINGS["FW_MASQUERADE"] = (enable ? "yes" : "no");
+
+	// routing is needed for masquerading, but we can't swithc it off when disabling masquerading
+	if (enable) SETTINGS["FW_ROUTE"] = "yes";
+    }
+
+    // FIXME: description
+    global define list <map <string, string> > GetListOfForwardsIntoMasquerade () {
+	list <map <string, string> > list_of_rules = [];
+
+	foreach (string forward_rule, splitstring(SETTINGS["FW_FORWARD_MASQ"]:"", " "), {
+	    if (forward_rule == "") return;
+
+	    // Format: <source network>,<ip to forward to>,<protocol>,<port>[,redirect port,[destination ip]]
+	    list <string> fw_rul = splitstring(forward_rule,",");
+
+	    // first four parameters has to be defined
+	    if (fw_rul[0]:"" == "" || fw_rul[1]:"" == "" || fw_rul[2]:"" == "" || fw_rul[3]:"" == "")
+		y2warning("Wrong definition of redirect rule: '%1', part of '%2'",
+		    forward_rule, SETTINGS["FW_FORWARD_MASQ"]:""
+		);
+
+	    list_of_rules = add (list_of_rules, $[
+		"source_net" : fw_rul[0]:"",
+		"forward_to" : fw_rul[1]:"",
+		"protocol"   : tolower(fw_rul[2]:""),
+		"req_port"   : tolower(fw_rul[3]:""),
+		// to_port is req_port when undefined
+		"to_port"    : tolower(fw_rul[4]:fw_rul[3]:""),
+		"req_ip"     : tolower(fw_rul[5]:""),
+	    ]);
+	});
+
+	return list_of_rules;
+    }
+
+    // FIXME: description
+    global define void RemoveForwardIntoMasqueradeRule (integer remove_item) {
+	SetModified();
+
+	list <string> forward_rules = [];
+
+	integer row_counter = 0;
+	foreach (string forward_rule, splitstring(SETTINGS["FW_FORWARD_MASQ"]:"", " "), {
+	    if (forward_rule == "") return;
+
+	    if (row_counter != remove_item) {
+		forward_rules = add (forward_rules, forward_rule);
+	    }
+	    
+	    row_counter = row_counter + 1;
+	});
+
+	SETTINGS["FW_FORWARD_MASQ"] = mergestring(forward_rules, " ");
+    }
+
+    // FIXME:: description
+    global define void AddForwardIntoMasqueradeRule (
+	string source_net, string forward_to_ip, string protocol, string req_port,
+	string redirect_to_port, string requested_ip
+    ) {
+	SetModified();
+
+	string masquerade_rules = SETTINGS["FW_FORWARD_MASQ"]:"";
+
+	masquerade_rules = masquerade_rules + (masquerade_rules != "" ? " ":"") +
+	    source_net + "," +
+	    forward_to_ip + "," +
+	    protocol + "," +
+	    req_port;
+
+	if (redirect_to_port != "" || requested_ip != "") {
+	    if (requested_ip != "") {
+		masquerade_rules = masquerade_rules + "," + redirect_to_port + "," + requested_ip;
+	    // port1 -> port2 are same
+	    } else if (redirect_to_port != req_port) {
+		masquerade_rules = masquerade_rules + "," + redirect_to_port;
+	    }
+	}
+
+	SETTINGS["FW_FORWARD_MASQ"] = masquerade_rules;
+    }
+
+    /**
+     * Function returns actual state of logging for rule taken as parameter.
+     *
+     * @param	string rule definition 'ACCEPT' or 'DROP'
+     * @return	string 'ALL', 'CRIT', or 'NONE'
+     */
+    global define string GetLoggingSettings(string rule) {
+	string ret_val = nil;
+
+	if (rule == "ACCEPT") {
+	    if (SETTINGS["FW_LOG_ACCEPT_ALL"]:"no" == "yes") {
+		ret_val = "ALL";
+	    } else if (SETTINGS["FW_LOG_ACCEPT_CRIT"]:"yes" == "yes") {
+		ret_val = "CRIT";
+	    } else {
+		ret_val = "NONE";
+	    }
+	} else if (rule == "DROP") {
+	    if (SETTINGS["FW_LOG_DROP_ALL"]:"no" == "yes") {
+		ret_val = "ALL";
+	    } else if (SETTINGS["FW_LOG_DROP_CRIT"]:"yes" == "yes") {
+		ret_val = "CRIT";
+	    } else {
+		ret_val = "NONE";
+	    }
+	} else {
+	    y2error("Possible rules are only 'ACCEPT' or 'DROP'");
+	}
+
+	return ret_val;
+    }
+
+    /**
+     * Function sets state of logging for rule taken as parameter.
+     *
+     * @param	string rule definition 'ACCEPT' or 'DROP'
+     * @param	string new logging state 'ALL', 'CRIT', or 'NONE'
+     */
+    global define void SetLoggingSettings(string rule, string state) {
+	SetModified();
+
+	if (rule == "ACCEPT") {
+	    if (state == "ALL") {
+		SETTINGS["FW_LOG_ACCEPT_CRIT"] = "yes";
+		SETTINGS["FW_LOG_ACCEPT_ALL"]  = "yes";
+	    } else if (state == "CRIT") {
+		SETTINGS["FW_LOG_ACCEPT_CRIT"] = "yes";
+		SETTINGS["FW_LOG_ACCEPT_ALL"]  = "no";
+	    } else {
+		SETTINGS["FW_LOG_ACCEPT_CRIT"] = "no";
+		SETTINGS["FW_LOG_ACCEPT_ALL"]  = "no";
+	    }
+	} else if (rule == "DROP") {
+	    if (state == "ALL") {
+		SETTINGS["FW_LOG_DROP_CRIT"] = "yes";
+		SETTINGS["FW_LOG_DROP_ALL"]  = "yes";
+	    } else if (state == "CRIT") {
+		SETTINGS["FW_LOG_DROP_CRIT"] = "yes";
+		SETTINGS["FW_LOG_DROP_ALL"]  = "no";
+	    } else {
+		SETTINGS["FW_LOG_DROP_CRIT"] = "no";
+		SETTINGS["FW_LOG_DROP_ALL"]  = "no";
+	    }
+	} else {
+	    y2error("Possible rules are only 'ACCEPT' or 'DROP'");
+	}
     }
 
     # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->

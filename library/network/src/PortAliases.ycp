@@ -85,6 +85,34 @@
     /* This variable contains characters allowed in port-names, backslashed for regexpmatch() */
     string allowed_service_regexp = "^[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\*\/\+\._-]*$";
 
+    /**
+     * Function returns if the port name is allowed port name (or number).
+     *
+     * @return	boolean if allowed
+     */
+    global define boolean IsAllowedPortName(string port_name) {
+	// port is number
+	if (regexpmatch(port_name, "^[0123456789]+$")) {
+	    integer port_number = tointeger(port_name);
+	    // checking range
+	    return (port_number>=0 && port_number<=65535);
+	// port is name
+	} else {
+	    return (regexpmatch(port_name, allowed_service_regexp));
+	}
+    }
+
+    /**
+     * Function returns string describing allowed port name or number.
+     *
+     * @return	string with description
+     */
+    global define string AllowedPortNameOrNumber () {
+	return _("Allowed port name consists of characters 'a-z', 'A-Z', '0-9' and '*+._-'.
+Allowed port number is a number between 0 and 65535 (including them as well).
+No spaces are allowed at all.");
+    }
+
     /* Internal function for preparing string for grep command */
     string QuoteString (string port_name) {
 	port_name = mergestring (splitstring(port_name, "\""), "\\\"");
@@ -117,7 +145,7 @@
 
     /* Internal function for loading unknown ports into memory and returning them as integer */
     integer LoadAndReturnNameToPort (string port_name) {
-	if (! regexpmatch(port_name, allowed_service_regexp)) {
+	if (! IsAllowedPortName(port_name)) {
 	    y2error("Disallwed port-name '%1'", port_name);
 	    return nil;
 	}
@@ -164,8 +192,8 @@
 		    " "
 		)
 	    );
-	// service is a port name
-	} else {
+	// service is a port name, any space isn't allowed
+	} else if (IsAllowedPortName(port)) {
 	    integer found_alias_port = SERVICE_NAME_TO_PORT[port]:LoadAndReturnNameToPort(port);
 	    if (found_alias_port != nil) {
 		service_aliases = add (service_aliases,tostring(found_alias_port));
@@ -179,6 +207,9 @@
 		    )
 		);
 	    }
+	} else {
+	    y2error("Port name '%1' is not allowed", port);
+	    return nil;
 	}
 
 	return toset(service_aliases);
