@@ -582,6 +582,14 @@
      */
     global define boolean Init (map cmdlineinfo, list<any> args) ``{
 
+	boolean cmdline_supported = true;
+
+	// check whether the command line mode is really supported by the module
+	if (!haskey(cmdlineinfo, "actions") || size(cmdlineinfo["actions"]:$[]) == 0)
+	{
+	    cmdline_supported = false;
+	}
+
 	// initialize verbose flag
 	verbose = contains( WFM::Args(), "verbose" );
 
@@ -589,7 +597,10 @@
 	// sanity checks on cmdlineinfo
 	// check for id string , it must exist, and non-empty
 	if( id_string == "" || ! is( id_string, string ) ) {
-	    y2error( "Command line specification does not define module id" );
+	    if (cmdline_supported)
+	    {
+		y2error( "Command line specification does not define module id" );
+	    }
 
 	    // use 'unknown' as id
 	    if( haskey( cmdlineinfo, "id" ) ) {
@@ -606,8 +617,11 @@
 
 	// check for helps, they are required everywhere
 	// global help text
-	if( ! haskey( cmdlineinfo, "help" ) ) {
-	    y2error( "Command line specification does not define global help for the module" );
+	if( ! haskey( cmdlineinfo, "help" )) {
+	    if (cmdline_supported)
+	    {
+		y2error( "Command line specification does not define global help for the module" );
+	    }
 
 	    // it's better to abort now
 	    done = true;
@@ -696,20 +710,23 @@
 	    Mode::SetUI ("commandline");
 	}
 
-
-	// check whether the command line mode is really supported by the module
-	if (!haskey(cmdlineinfo, "actions") || size(cmdlineinfo["actions"]:$[]) == 0)
+	if (!cmdline_supported)
 	{
 	    // command line is not supported
 	    CommandLine::Print(String::UnderlinedHeader("YaST2 " + cmdlineinfo["id"]:"", 0));
 	    CommandLine::Print("");
-	    CommandLine::Print(cmdlineinfo["help"]:"");
-	    CommandLine::Print("");
+
+	    string help = cmdlineinfo["help"]:"";
+	    if (help != nil && help != "")
+	    {
+		CommandLine::Print(cmdlineinfo["help"]:"");
+		CommandLine::Print("");
+	    }
+
 	    CommandLine::Print(nosupport);
 	    CommandLine::Print("");
 	    return false;
 	}
-
 
 	// setup prompt
 	cmdlineprompt = "YaST2 " + cmdlineinfo["id"]:"" + "> ";

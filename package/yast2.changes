@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb 25 13:11:07 CET 2005 - lslezak@suse.cz
+
+- commandline - don't check mandatory keys when the command line
+  mode is "unsupported"
+
+-------------------------------------------------------------------
 Thu Feb 24 12:00:54 CET 2005 - fehr@suse.de
 
 - Add AsciiFile::ReplaceLine
