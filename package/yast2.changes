@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jan 13 13:13:04 CET 2003 - jsrain@suse.de
+
+- added crashes handling module
+
+-------------------------------------------------------------------
 Fri Jan 10 12:58:45 CET 2003 - mvidner@suse.de
 
 - mail table agent: Prevent returning strings as integers/booleans (~#21804).
