@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Aug 16 23:36:18 CEST 2004 - nashif@suse.de
+
+- fixed testsuites (added Testsuite.ycp to testedfiles or modified output
+  according to the change of logging function references) (jsrain)
+- type cast fixes
+- CWM: fixed structure validation
+
+-------------------------------------------------------------------
 Thu Aug 12 23:27:19 CEST 2004 - nashif@suse.de
 
 - Disable Commandline interface during firstboot phase
