@@ -1,6 +1,6 @@
 # Makefile.am for YCP module .../doc/autodocs
 
-htmldir = $(docdir)/autodocs
+htmldir = $(docdir)/wizard/autodocs
 
 html_DATA = index.html $(wildcard *.html)
 CLEANFILES = $(html_DATA)

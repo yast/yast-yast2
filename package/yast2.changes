@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jul 12 10:24:37 CEST 2002 - msvec@suse.cz
+
+- added doc and autodocs
+- new module Directory: contains definitions of all directories
+
+-------------------------------------------------------------------
 Tue Jul  9 11:43:47 CEST 2002 - mvidner@suse.cz
 
 - Provides/Obsoletes fixed for the devel subpackage

@@ -1,0 +1,82 @@
+/**
+ * File:	modules/Directory.ycp
+ * Package:	yast2
+ * Summary:	Definitions of basic directories
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+module "Directory";
+textdomain "base";
+
+string yast2dir = "/usr/share/YaST2";
+string execcompdir = "/usr/lib/YaST2";
+
+/**
+ * Directory for binaries and scripts
+ */
+global string bindir = "/usr/lib/YaST2/bin";
+global string ybindir = bindir;
+
+/**
+ * Directory for log files
+ */
+global string logdir = "/var/log/YaST2";
+
+/**
+ * Directory for variable data
+ */
+global string vardir = "/var/lib/YaST2";
+
+/**
+ * Directory with agents
+ */
+global string agentdir = execcompdir + "/servers_non_y2";
+
+/**
+ * Directory for data
+ */
+global string datadir = yast2dir + "/data";
+global string ydatadir = datadir;
+
+/**
+ * Directory for includes
+ */
+global string includedir = yast2dir + "/include";
+global string yncludedir = includedir;
+
+/**
+ * Directory for images
+ */
+global string imagedir = yast2dir + "/images";
+
+/**
+ * Directory for locales
+ */
+global string localedir = yast2dir + "/locale";
+
+/**
+ * Directory for clients
+ */
+global string clientdir = yast2dir + "/clients";
+
+/**
+ * Directory for modules
+ */
+global string moduledir = yast2dir + "/modules";
+
+/**
+ * Directory for SCR definition files
+ */
+global string scrconfdir = yast2dir + "/scrconf";
+
+/**
+ * Directory for config files
+ */
+global string configdir = yast2dir + "/config";
+
+/* EOF */
+}
