@@ -1,13 +1,18 @@
 -------------------------------------------------------------------
+Mon Nov 17 18:10:50 CET 2003 - arvin@suse.de
+
+- adapted plugindir detection for NPTL
+
+-------------------------------------------------------------------
 Fri Nov 14 11:16:31 CET 2003 - gs@suse.de
 
-- use ncurses file selection widgets 
+- use ncurses file selection widgets
 
 -------------------------------------------------------------------
 Wed Oct 29 13:55:00 CET 2003 - visnov@suse.cz
 
 - fix testsuite
-- 2.9.2 
+- 2.9.2
 
 -------------------------------------------------------------------
 Fri Oct 24 15:55:36 CEST 2003 - ms@suse.de
@@ -35,7 +40,7 @@ Wed Oct  1 10:47:19 CEST 2003 - jsuchome@suse.cz
 -------------------------------------------------------------------
 Wed Sep 17 16:18:48 CEST 2003 - gs@suse.de
 
-- script/yast2: start textmode yast in UTF-8 environment (bug #30512)  
+- script/yast2: start textmode yast in UTF-8 environment (bug #30512)
 - 2.8.31
 
 -------------------------------------------------------------------
