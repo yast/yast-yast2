@@ -1,7 +1,10 @@
 -------------------------------------------------------------------
-Tue Dec 21 14:33:03 CET 2004 - mvidner@suse.cz
+Tue Dec 21 17:13:26 CET 2004 - mvidner@suse.cz
 
+- Added Hostname::Validhost (#22802).
 - Substitute VERSION in Version.ycp also at "make" time (#40492).
+- Support FW_ALLOW_FW_BROADCAST_* (locilka).
+- 2.11.12
 
 -------------------------------------------------------------------
 Tue Dec 21 11:46:19 CET 2004 - jsrain@suse.cz
