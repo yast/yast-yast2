@@ -76,6 +76,7 @@
 	    "ohci-hcd",
             "input",
             "hid",
+            "usbhid",
             "keybdev",
             "mousedev",
             "usb-storage",
