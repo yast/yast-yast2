@@ -250,7 +250,7 @@ void fillhelp ()
     vector <string> tmp;
 
     // help text for ncurses control center
-    tmp.push_back (_("Control YaST2 ncurses via keyboard"));
+    tmp.push_back (_("Control YaST2 ncurses via Keyboard"));
     tmp.push_back ("");
 
     // help text for ncurses control center
@@ -261,9 +261,9 @@ void fillhelp ()
 		     "Select or activate elements with <SPACE> or <ENTER>.\n"
 		     "Some elements use <ARROW> keys.\n"));
     // help text for ncurses control center
-    tmp.push_back (_("Buttons are equipped with shortcut keys like <ALT> and a letter.\n"
-		     "One main problem is that the environment can affect the use of\n"
-		     "the keyboard. So you will find more than one way to\n"
+    tmp.push_back (_("Buttons are equipped with shortcut keys like <ALT> and a\n"
+		     "letter. Because the environment can effect the use of\n"
+		     "the keyboard, you will find more than one way to\n"
 		     "navigate the dialog pages. See the next section."));
     tmp.push_back ("");
 
