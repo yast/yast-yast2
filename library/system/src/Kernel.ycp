@@ -491,6 +491,29 @@ global string GetFinalKernel () {
     return final_kernel;
 }
 
+/**
+ * Compute kernel package for the specified base kernel package
+ * @param base string the base kernel package name (eg. kernel-default)
+ * @param check_avail boolean if true, additional packages are checked for
+ *  for being available on the medias before adding to the list
+ * @return a list of all kernel packages (including the base package) that
+ *  are to be installed together with the base package
+ */
+global list<string> ComputePackagesForBase (string base, boolean check_avail) {
+    string nongpl = base + "-nongpl";
+
+    list<string> additional_packages = [ nongpl ];
+    if (check_avail)
+    {
+	additional_packages = filter (string p, additional_packages, {
+	    return Pkg::IsAvailable (p);
+	});
+    }
+
+    list<string> ret = prepend (additional_packages, base);
+    y2milestone ("Packages for base %1: %2", base, ret);
+    return ret;
+}
 
 /**
  * Compute kernel packages
@@ -498,14 +521,7 @@ global string GetFinalKernel () {
  */
 global list <string> ComputePackages () {
     string kernel = ComputePackage ();
-    string kernel_nongpl = kernel + "-nongpl";
-
-    list <string> ret = [ kernel ];
-
-    if (Pkg::IsAvailable (kernel_nongpl))
-	ret = add (ret, kernel_nongpl);
-
-    return ret;
+    return ComputePackagesForBase (kernel, true);
 }
 
 // functions related to kernel's modules loaded on boot
