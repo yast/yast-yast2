@@ -2,7 +2,7 @@
 
 SUBDIRS = autodocs
 
-htmldir = $(docdir)/cron
+htmldir = $(docdir)/desktop
 
 html_DATA =
 

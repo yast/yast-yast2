@@ -1,6 +1,4 @@
-#
-# Makefile.am for CommandLine docs
-#
+# Makefile.am for YCP module .../doc
 
 SUBDIRS = autodocs
 

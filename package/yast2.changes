@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Mar  4 17:24:56 CET 2004 - msvec@suse.cz
+
+- fixed docu installation dirs
+
+-------------------------------------------------------------------
 Thu Mar  4 16:09:18 CET 2004 - visnov@suse.cz
 
 - added type info (kkaempf, visnov) 

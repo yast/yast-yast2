@@ -86,13 +86,11 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 
 /sbin/*
 
-# sequencer
-
+# wizard
 %dir @yncludedir@/wizard
 @yncludedir@/wizard/*.ycp
 
 # commandline
-
 %dir @yncludedir@/commandline
 @yncludedir@/commandline/*.ycp
 
@@ -101,12 +99,18 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 @yncludedir@/packages/*.ycp
 
 # documentation
-
 %files devel
 %defattr(-,root,root)
 
-%doc @docdir@/sequencer
-%doc @docdir@/wizard
 %doc @docdir@/autodocs
 %doc @docdir@/commandline
+%doc @docdir@/cron
+%doc @docdir@/cwm
+%doc @docdir@/desktop
+%doc @docdir@/log
+%doc @docdir@/packages
+%doc @docdir@/runlevel
+%doc @docdir@/sequencer
+%doc @docdir@/system
 %doc @docdir@/types
+%doc @docdir@/wizard

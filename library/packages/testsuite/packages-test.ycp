@@ -77,8 +77,8 @@ T(``(Package::Installed(e)), false);
 
 if(false) {
 
-// T(``(Package::Install(n)), false); // segv: OK
-// T(``(Package::Install(e)), false);
+T(``(Package::Install(n)), false);
+T(``(Package::Install(e)), false);
 
 Package::InstallAll(el);
 Package::InstallAny(el);
@@ -86,7 +86,7 @@ Package::InstallAny(el);
 Package::Remove(e);
 Package::RemoveAll(el);
 
-// Package::DoInstallAndRemove(toinstall, toremove);
+Package::DoInstallAndRemove([], []);
 
 /* Other */
 Package::RunSUSEConfig();

@@ -1,8 +1,6 @@
-#
-# Makefile.am for automatically generated CommandLine docs
-#
+# Makefile.am for YCP module .../doc/autodocs
 
-htmldir = @docdir@/autodocs
+htmldir = $(docdir)/log/autodocs
 
 html_DATA = index.html $(wildcard *.html)
 CLEANFILES = $(html_DATA)

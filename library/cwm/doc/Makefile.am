@@ -1,8 +1,14 @@
-#
-# Makefile.am for CommandLine docs
-#
+# Makefile.am for YCP module .../doc
 
 SUBDIRS = autodocs
+
+htmldir = $(docdir)/cron
+
+html_DATA = # cwm.html
+
+EXTRA_DIST = $(html_DATA)
+
+# blah?
 
 SOURCES = $(wildcard *.xml)
 
