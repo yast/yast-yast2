@@ -1684,8 +1684,8 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
      * Fills internal variables only.
      */
     global define boolean Read () {
-	// Progress only for normal configuration and command line
-	boolean have_progress = (Mode::normal() || Mode::commandline());
+	// Progress only for normal configuration
+	boolean have_progress = (Mode::normal());
 
 	if (have_progress) {
 	    // TRANSLATORS: Dialog caption
@@ -1783,7 +1783,7 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
      */
     global define boolean WriteConfiguration () {
 	// Progress only for normal configuration and command line
-	boolean have_progress = (Mode::normal() || Mode::commandline());
+	boolean have_progress = (Mode::normal());
 
 	if (have_progress) {
 	    // TRANSLATORS: Dialog caption
