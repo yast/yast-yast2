@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Dec  1 10:56:06 CET 2004 - mvidner@suse.cz
+
+- NetworkDevices: Improved ifcfg name handling,
+  particularly mobile ipv6 (#48696).
+
+-------------------------------------------------------------------
 Tue Nov 30 12:40:31 CET 2004 - locilka@suse.cz
 
 - Moved CWMFirewallInterfaces from yast2-firewall to yast2 rpm 

@@ -27,6 +27,17 @@ list <string> ifcfgs = [
     "ppp2#2",
     "lo#1",
     "eth1#blah",
+    "eth-id-00:07:e9:d5:8e:e8",
+    "eth-id-00:07:e9:d5:8e:e8#foo",
+    "ip6tnl0",
+    "ip6tnl31",
+    "mip6mnha3",
+/*
+    // trying
+    "bogusname",
+    "bogus#foo#bar",
+    "42",
+*/
     ];
 
 foreach (string ifcfg, ifcfgs, {

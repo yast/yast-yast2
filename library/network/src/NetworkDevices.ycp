@@ -130,6 +130,34 @@ map stack = $[];
 // -------------------- components of configuration names --------------------
 
 /**
+ * A single character used to separate alias id
+ */
+string alias_separator = "#";
+
+/**
+ * ifcfg name = type + id + alias_id
+ * If id is numeric, it is not separated from type, otherwise separated by "-"
+ * Id may be empty
+ * Alias_id, if nonempty, is separated by alias_separator
+ */
+string ifcfg_name_regex =
+    "^" +
+    // ip6: #48696
+    "(ip6tnl|mip6mnha|[a-zA-Z]+)" + "-?" +
+    "([^" + alias_separator + "]*)" + alias_separator + "?" +
+    "(.*)" +
+    "$";
+
+string ifcfg_part (string ifcfg, string part) {
+    if (regexpmatch (ifcfg, ifcfg_name_regex) != true)
+    {
+	return "";
+    }
+    string ret = regexpsub (ifcfg, ifcfg_name_regex, "\\" + part);
+    return (ret == nil)? "": ret;
+}
+
+/**
  * Return a device type
  * @param dev device
  * @return device type
@@ -137,14 +165,7 @@ map stack = $[];
  * @example device_type("eth-pcmcia-0") -> "eth-pcmcia"
  */
 global string device_type (string dev) {
-    if(regexpmatch(dev, "^([a-zA-Z]+)-?[^a-zA-Z]*") != true) return "";
-    string ret = regexpsub(dev, "^([a-zA-Z]+)-?[^a-zA-Z]*", "\\1");
-    /* FIXME: devname
-    if(regexpmatch(dev, "^([a-zA-Z-]*[a-zA-Z])[^a-zA-Z]*") != true) return "";
-    string ret = regexpsub(dev, "^([a-zA-Z-]*[a-zA-Z])[^a-zA-Z]*", "\\1");
-    */
-    if(ret == nil) ret = "";
-    return ret;
+    return ifcfg_part (dev, "1");
 }
 
 /**
@@ -155,14 +176,7 @@ global string device_type (string dev) {
  * @example device_num("lo") -> ""
  */
 global string device_num (string dev) {
-    if(regexpmatch(dev, "^[a-zA-Z]+-?([^#]*)") != true) return "";
-    string ret = regexpsub(dev, "^[a-zA-Z]+-?([^#]*)", "\\1");
-    /* FIXME: devname
-    if(regexpmatch(dev, "[a-zA-Z-]*([0-9]+)") != true) return "";
-    string ret = regexpsub(dev, "[a-zA-Z-]*([0-9]+)", "\\1");
-    */
-    if(ret == nil) ret = "";
-    return ret;
+    return ifcfg_part (dev, "2");
 }
 
 /**
@@ -173,12 +187,7 @@ global string device_num (string dev) {
  * @example alias_num("eth1#blah") -> "blah"
  */
 global string alias_num (string dev) {
-    // FIXME: devname
-    // return "";
-    if(regexpmatch(dev, "[a-zA-Z-]*[0-9]*#([a-zA-Z0-9_-]+)") != true) return "";
-    string ret = regexpsub(dev, "[a-zA-Z-]*[0-9]*#([a-zA-Z0-9_-]+)", "\\1");
-    if(ret == nil) ret = "";
-    return ret;
+    return ifcfg_part (dev, "3");
 }
 
 /**

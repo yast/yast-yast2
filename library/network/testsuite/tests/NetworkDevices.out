@@ -33,6 +33,16 @@ Dump	ifcfg-lo#1
 Dump	["lo", "", "1"]
 Dump	ifcfg-eth1#blah
 Dump	["eth", "1", "blah"]
+Dump	ifcfg-eth-id-00:07:e9:d5:8e:e8
+Dump	["eth", "id-00:07:e9:d5:8e:e8", ""]
+Dump	ifcfg-eth-id-00:07:e9:d5:8e:e8#foo
+Dump	["eth", "id-00:07:e9:d5:8e:e8", "foo"]
+Dump	ifcfg-ip6tnl0
+Dump	["ip6tnl", "0", ""]
+Dump	ifcfg-ip6tnl31
+Dump	["ip6tnl", "31", ""]
+Dump	ifcfg-mip6mnha3
+Dump	["mip6mnha", "3", ""]
 Dump	Obsolete:
 Return	eth-pcmcia-0
 Return	tr-pcmcia-1
