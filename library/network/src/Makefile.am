@@ -16,5 +16,6 @@ module_DATA =			\
 
 EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA)
 
-YCPCFLAGS = -M ../../types/src -M ../../modules
+# runlevel: Service, wizard: Report, Progress
+YCPCFLAGS = -M ../../types/src -M ../../modules -M ../../runlevel/src -M ../../wizard/src
 include $(top_srcdir)/Makefile.am.common
