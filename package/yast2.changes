@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sat Mar 12 04:44:45 CET 2005 - nashif@suse.de
+
+- optionally add addon selections using the control file (#72257)
+- 2.11.43
+
+-------------------------------------------------------------------
 Fri Mar 11 15:38:51 CET 2005 - mvidner@suse.cz
 
 - Added NetworkDevices::ConcealSecrets not to log sensitive

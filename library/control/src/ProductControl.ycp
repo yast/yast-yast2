@@ -188,6 +188,10 @@ global define boolean ReadControlFile( string controlfile)
          */
         ProductFeatures::packages = software["packages"]:[];
 
+        // additional addon selections
+        ProductFeatures::addon_selections =
+            software["addon_selections"]:[];
+
         
         ProductFeatures::inform_about_suboptimal_distribution =
          software["inform_about_suboptimal_distribution"]:false;
@@ -790,6 +794,7 @@ global define boolean Init()
         order=prepend(order, custom_control_file);
     }
 
+    y2milestone("Candidates: %1", order );
     foreach(string cf, order,
     {
 	if ((integer)SCR::Read( .target.size, cf )>0
