@@ -1,18 +1,25 @@
 -------------------------------------------------------------------
+Thu Feb 19 15:33:17 CET 2004 - arvin@suse.de
+
+- removed function Kernel::IDERecorders since "ide-scsi" is not
+  used anymore (bug #34694)
+
+-------------------------------------------------------------------
 Thu Feb 19 13:24:44 CET 2004 - mvidner@suse.cz
 
-- changed sort to use "<" instead of "<=" because of the switch to std::sort
+- changed sort to use "<" instead of "<=" because of the switch
+  to std::sort
 
 -------------------------------------------------------------------
 Thu Feb 19 11:15:17 CET 2004 - visnov@suse.cz
 
-- restore AsciiFile::AssertLineValid behavior as in 9.0 
+- restore AsciiFile::AssertLineValid behavior as in 9.0
 
 -------------------------------------------------------------------
 Tue Feb 17 18:12:25 CET 2004 - sh@suse.de
 
 - Use correct kernel image name on S/390
-- 2.9.25 
+- 2.9.25
 
 -------------------------------------------------------------------
 Tue Feb 17 15:37:45 CET 2004 - sh@suse.de
