@@ -183,9 +183,25 @@ label is used.
       <listitem><para><computeroutput>
 "save_now_action"
       </computeroutput>
-is a reference to function without any parameters with with void return type.
+is a reference to function without any parameters with void return type.
 Its task is to save all changes and restart the service.
 It is is missing, the "Save and restart service now" button is not shown.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"start_now_action"
+      </computeroutput>
+is a reference to function, without any parameters with void return type.
+Its task is to restart the service.
+If it is missing, generic function using the
+<computeroutput>"service_id"</computeroutput> parameter is used.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"stop_now_action"
+      </computeroutput>
+is a reference to function, without any parameters with void return type.
+Its task is to stop the service.
+If it is missing, generic function using the
+<computeroutput>"service_id"</computeroutput> parameter is used.
       </para></listitem>
       <listitem><para><computeroutput>
 "save_now_button"

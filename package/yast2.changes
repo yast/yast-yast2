@@ -2,6 +2,8 @@
 Tue Dec 21 11:46:19 CET 2004 - jsrain@suse.cz
 
 - fixed validation of widgets inside CWM Tab widget
+- added possibility to set functions for immediate service
+  start/stop in the CWMServiceStart widget
 
 -------------------------------------------------------------------
 Tue Dec 14 17:17:12 CET 2004 - mvidner@suse.cz
