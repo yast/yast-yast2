@@ -715,7 +715,7 @@
      **/
     global define void ClearTitleIcon()
     {
-	    UI::WizardCommand(`SetDialogIcon( "" ) );
+	UI::WizardCommand(`SetDialogIcon( "" ) );
     }
 
 
