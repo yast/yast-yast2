@@ -26,7 +26,25 @@
     string theme_path = Directory::themedir + "/current/";
     string icon_path  = theme_path;
 
-    boolean have_fancy_ui = false;
+    boolean have_fancy_ui = nil;
+
+    /**
+     * Initialization
+     **/
+    define void Init() ``{
+	map ui_info = UI::GetDisplayInfo();
+
+	have_fancy_ui = ui_info[ "HasImageSupport" ]:false
+	    && ui_info[ "HasLocalImageSupport" ]:false
+	    && ui_info[ "Depth" ]:0 >= 15
+	    && ui_info[ "DefaultWidth" ]:0 >= 800
+	    && ui_info[ "DefaultHeight"]:0 >= 600
+	    && UI::HasSpecialWidget(`ColoredLabel);
+
+	// have_fancy_ui = false;
+
+	UI::SetFunctionKeys( Label::DefaultFunctionKeyMap() );
+    };
 
     /**
      * Change the image at the top of the window (UI context)
@@ -138,6 +156,8 @@
      **/
     global define term HeaderImage( boolean add_bottom_tile ) ``{
 	term image = `Image( `opt(`zeroWidth, `easterEgg), `suseheader, "SuSE");
+	
+	if ( have_fancy_ui == nil ) Init ();
 
 	if ( have_fancy_ui )
 	{
@@ -372,6 +392,7 @@
      * @return term describing the steps
      **/
     global define term EasyInstallationSteps( list<string> step_descriptions, integer current_step ) ``{
+	if ( have_fancy_ui == nil ) Init ();
 	return have_fancy_ui ? fancyEasyInstallationSteps( step_descriptions, current_step )
 	    : simpleEasyInstallationSteps( step_descriptions, current_step );
     };
@@ -397,6 +418,8 @@
      * @return	term describing the dialog.
      **/
     global define term EasyInstallationDialog( term button_box, list<string> steps ) ``{
+
+	if ( have_fancy_ui == nil ) Init ();
 
 	term contents_box = `HBox(
 				  `HSpacing(1),
@@ -856,24 +879,7 @@
 	}
 	UI::SetModulename (screenshot_name);
     }
-
-    /**
-     * Constructor
-     **/
-    global define void Wizard() ``{
-	map ui_info = UI::GetDisplayInfo();
-
-	have_fancy_ui = ui_info[ "HasImageSupport" ]:false
-	    && ui_info[ "HasLocalImageSupport" ]:false
-	    && ui_info[ "Depth" ]:0 >= 15
-	    && ui_info[ "DefaultWidth" ]:0 >= 800
-	    && ui_info[ "DefaultHeight"]:0 >= 600
-	    && UI::HasSpecialWidget(`ColoredLabel);
-
-	// have_fancy_ui = false;
-
-	UI::SetFunctionKeys( Label::DefaultFunctionKeyMap() );
-    };
+    
 
 
 

@@ -38,6 +38,7 @@
     textdomain "base";
 
     import "Wizard";
+    import "Mode";
 
     // Number of stages.
     integer stages = 0;
@@ -75,9 +76,8 @@
      * @param length Number of steps.
      * @param help_text Help text.
      */
-    global define void Simple (string window_title, string progress_title,
-			       integer length, string help_text) ``{
-	if (!visible)
+    global define void Simple (string window_title, string progress_title, integer length, string help_text) ``{
+	if (!visible || Mode::commandline)
 	    return ;
 	stages = 0;
 	steps = length;
@@ -122,10 +122,8 @@
      *             be nil/empty.
      * @param help_text help text
      */
-    global define void New (string window_title, string progress_title,
-			    integer length, list<string> stg, list tits,
-			    string help_text) ``{
-	if (!visible)
+    global define void New (string window_title, string progress_title, integer length, list<string> stg, list tits, string help_text) ``{
+	if (!visible || Mode::commandline)
 	    return ;
 	steps = length;
 	stages = size (stg);
@@ -197,7 +195,7 @@
      * function. Advances progress bar value by 1.
      */
     global define void NextStep () ``{
-	if (!visible || 0 == steps)
+	if (!visible || Mode::commandline || 0 == steps)
 	    return ;
 	current_step = current_step + 1;
 	if (current_step > steps)
@@ -213,7 +211,7 @@
      * that defined in New.
      */
     global define void NextStage () ``{
-	if (!visible)
+	if (!visible || Mode::commandline)
 	    return ;
 	NextStep ();
 
@@ -248,7 +246,7 @@
      * @param st new value
      */
     global define void Step (integer st) ``{
-	if (!visible || 0 == steps)
+	if (!visible || Mode::commandline || 0 == steps)
 	    return ;
 	current_step = st;
 	if (current_step > steps)
@@ -268,7 +266,7 @@
      * @param step New step or -1 if step should not change.
      */
     global define void Stage (integer st, string title, integer step) ``{
-	if (!visible)
+	if (!visible || Mode::commandline)
 	    return ;
 	if (-1 != step)
 	{
@@ -304,7 +302,7 @@
      * @param st new progress bar value
      */
     global define void NextStageStep (integer st) ``{
-	if (!visible)
+	if (!visible || Mode::commandline)
 	    return ;
 	NextStage ();
 	Step (st);
@@ -315,14 +313,14 @@
      * @param t new title. Use ""(empty string) if you want an empty progress bar.
      */
     global define void Title (string t) ``{
-	if (visible)
+	if (visible && ! Mode::commandline)
 	    UI::ChangeWidget(`id( `pb), 0 == steps ? `Value : `Label, t);
     }
     /**
      * Moves progress bar to the end and marks all stages as completed.
      */
     global define void Finish () ``{
-	if (!visible)
+	if (!visible || Mode::commandline)
 	    return ;
 	if (0 != stages)
 	{

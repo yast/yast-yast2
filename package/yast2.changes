@@ -2,6 +2,7 @@
 Thu Mar  4 20:05:13 CET 2004 - visnov@suse.cz
 
 - 2.9.32 
+- late initialization of Wizard and Progress (for command line)
 
 -------------------------------------------------------------------
 Thu Mar  4 17:24:56 CET 2004 - msvec@suse.cz
