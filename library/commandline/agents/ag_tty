@@ -17,6 +17,53 @@ use Encode;
 use I18N::Langinfo qw(langinfo CODESET);
 my $codeset = langinfo(CODESET());
 
+sub ReadString($$) {
+    my ($term,$prompt) = @_;
+
+    # the 1 prevents returning strings as integers/booleans
+    $_ = $term->readline($prompt);
+    if( defined ($_) )
+    {
+	ycp::Return ($_, 1);
+    }
+    else
+    {
+	ycp::Return (undef);
+    }
+}
+
+sub ReadStringNoHistory($$)
+{
+    my ($term,$prompt) = @_;
+    # get current minimun line size for history, disable history
+    my $min_line = $term->MinLine(undef);
+
+    # read input
+    ReadString($term, $prompt);
+
+    # reenable history - set previous state
+    $term->MinLine($min_line);
+}
+
+
+sub ReadStringNoEcho($$)
+{
+    my ($term,$prompt) = @_;
+
+    # disable echo
+    system("/bin/stty -F /dev/tty -echo");
+
+    # read input
+    ReadStringNoHistory($term, $prompt);
+
+    # reenable echo
+    system("/bin/stty -F /dev/tty echo");
+
+    # new line
+    my $OUT = $term->OUT || \*STDOUT;
+    print $OUT "\n";
+}
+
 #
 # MAIN cycle
 #
@@ -34,7 +81,7 @@ ycp::Return (undef);
   my $OUT = $term->OUT || \*STDOUT;
   
  $term->ornaments(0);
- 
+
 while ( <STDIN> )
 {
     my ($command, $path, $argument) = ycp::ParseCommand ($_);
@@ -77,19 +124,19 @@ while ( <STDIN> )
 
     elsif ($command eq "Read")
     {
-
 	if ($path eq ".")
 	{
-	    # the 1 prevents returning strings as integers/booleans
-	    $_ = $term->readline($prompt);
-	    if( defined ($_) )
-	    {
-		ycp::Return ($_, 1);
-	    }
-	    else
-	    {
-		ycp::Return (undef);
-	    }
+	    ReadString($term, $prompt);
+	}
+	elsif ($path eq ".nohistory")
+	{
+	    ReadStringNoHistory($term, $prompt);
+	}
+	elsif ($path eq ".noecho")
+	# read, but don't add the input into history and don't show it
+	# should be used for reading a password
+	{
+	    ReadStringNoEcho($term, $prompt);
 	}
 	else
 	{

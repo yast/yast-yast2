@@ -19,6 +19,8 @@
 
     typedef map<string, map <string, any > > commands_t;
 
+    string cmdlineprompt = "YaST2 > ";
+
     /**
      * Map of commands for every module. ATM the list of commands this module handles internally.
      */
@@ -140,7 +142,7 @@
 	if(!haskey(allcommands["actions"]:$[], command) ) {
 	    Error(sformat(_("Unknown Command: %1"), command));
 
-	    return $[];
+	    return $[ "command" : command ];
 	}
 
 	// build the list of options for the command
@@ -595,7 +597,8 @@
 	}
 
 	// setup prompt
-	SCR::Write( .dev.tty.prompt, "YaST2 "+cmdlineinfo["id"]:""+"> ");
+	cmdlineprompt = "YaST2 " + cmdlineinfo["id"]:"" + "> ";
+	SCR::Write( .dev.tty.prompt, cmdlineprompt);
 
 	// parse args
 	commandcache = Parse( args );
@@ -626,6 +629,56 @@
 	string res = (string)SCR::Read( .dev.tty );
 	if( res == nil ) return nil;
 	return String::ParseOptions(res,$[ "separator":" " ]);
+    }
+
+    /**
+     * Set prompt and read input from command line
+     * @param propmt Set prompt
+     * @param echo If false input is not displayed
+     * @return string Entered string
+     */
+    define string GetInput(string prompt, symbol type) ``{
+	// set the required prompt
+	SCR::Write(.dev.tty.prompt, prompt);
+
+	string res = nil;
+
+	if (type == `nohistory)
+	{
+	    res = (string)SCR::Read(.dev.tty.nohistory);
+	}
+	else if (type == `noecho)
+	{
+	    res = (string)SCR::Read(.dev.tty.noecho);
+	}
+	else
+	{
+	    res = (string)SCR::Read(.dev.tty);
+	}
+
+	// set the default prompt
+	SCR::Write(.dev.tty.prompt, cmdlineprompt);
+
+	return res;
+    }
+
+    /**
+     * Read input from command line
+     * @param prompt Set prompt to this value
+     * @return string Entered string
+     */
+    global define string UserInput(string prompt) ``{
+	return GetInput(prompt, `nohistory);
+    }
+
+    /**
+     * Read input from command line, input is not displayed and not stored in
+     * the command line history. This function should be used for reading a password.
+     * @param prompt Set prompt to this value
+     * @return string Entered string
+     */
+    global define string PasswordInput(string prompt) ``{
+	return GetInput(prompt, `noecho);
     }
 
     /**
