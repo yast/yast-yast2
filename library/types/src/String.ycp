@@ -40,6 +40,22 @@ global define string UnQuote(string var) ``{
 }
 
 /**
+ * Optional formatted text
+ * @return sformat (f, s) if s is neither empty or nil, else ""
+ */
+global string OptFormat (string f, string s) {
+    return (s == "" || s == nil)? "": sformat (f, s);
+}
+
+/**
+ * Optional parenthesized text
+ * @return " (Foo)" if Foo is neither empty or nil, else ""
+ */
+global string OptParens (string s) {
+    return OptFormat (" (%1)", s);
+}
+
+/**
  * Return a pretty description of a byte count
  * 
  * Return a pretty description of a byte count with required precision

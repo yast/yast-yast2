@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb  4 17:44:21 CET 2005 - mvidner@suse.cz
+
+- Added String::OptParens, String::OptFormat.
+- 2.11.23
+
+-------------------------------------------------------------------
 Tue Feb  1 12:56:56 CET 2005 - lslezak@suse.cz
 
 - fixed finish call handling (don't call finish handler (Write)
