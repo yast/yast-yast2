@@ -113,6 +113,9 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
 	    last_op_canceled = true;
 	    return false;
 	}
+	foreach (string p, string l, licenses, {
+	    Pkg::PkgMarkLicenseConfirmed (p);
+	});
 	last_op_canceled = false;
     }
 
