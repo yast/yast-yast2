@@ -63,7 +63,7 @@ listmodules()
 {
 	echo "Available modules:"
 	echo
-	grep -h Y2Module /usr/lib/YaST2/config/*.y2cc |\
+	grep -h Y2Module /usr/share/YaST2/config/*.y2cc |\
 		sed 's/\[.*Y2Module *\(.\+\)\]/\1/' |\
 		sort -u
 }
