@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Feb 10 17:45:16 CET 2004 - arvin@suse.de
+
+- adapted kernel determination to kernel 2.6 names
+
+-------------------------------------------------------------------
 Tue Feb 10 10:33:05 CET 2004 - arvin@suse.de
 
 - finally removed configdir from file list (doesn't help anymore)
