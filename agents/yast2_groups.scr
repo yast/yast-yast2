@@ -1,0 +1,40 @@
+/**
+ * File:	yast2_config.scr
+ * Summary:	Agent for yast2 config (y2cc) files
+ * Author:	Michal Svec <msvec@suse.cz>
+ * Access:	read only
+ *
+ * Example:
+ *   Dir(.yast2.config)
+ *   (["lan", "modem", "isdn", ...])
+ **
+ *   Dir(.yast2.config.lan)
+ *   (["Name", "Group", ...])
+ **
+ *   Read(.yast2.config.lan.Textdomain)
+ *   ("network")
+ *
+ * $Id$
+ */
+.yast2.groups
+
+`ag_ini(
+    IniAgent( "/usr/share/YaST2/config/y2cc.groups",
+	$[
+	    "options"	: [ "read_only" ],
+	    "comments"	: [ "^[ \t]*;.*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],
+	    "sections"	: [
+		$[ "begin" : [
+		    "^[ \t]*\\[[ \t]*Y2Group[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
+		    "[Y2Group %s]",
+		]],
+	    ],
+	    "params" : [
+		$[ "match" : [
+		    "^[ \t]*([^ ]*)[ \t]*=[ \t]*(.*)[ \t]*$",
+		    "%s = %s",
+		]],
+	    ],
+	]
+    )
+)
