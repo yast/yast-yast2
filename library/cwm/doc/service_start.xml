@@ -158,41 +158,16 @@ label is used.
 <section>
   <title>Other stuff</title>
   <para>
-The parameters for Immediate actions are following:
+Other supported parameters are following:
     <itemizedlist>
       <listitem><para><computeroutput>
-"service_id"
-"service_running_label"
-"service_not_running_label"
-"start_now_button"
-"stop_now_button"
-"save_now_action"
-"save_now_button"
+"help"
       </computeroutput>
-      </para></listitem>
-      <listitem><para><computeroutput>
-      </computeroutput>
-      </para></listitem>
-      <listitem><para><computeroutput>
-      </computeroutput>
-      </para></listitem>
-      <listitem><para><computeroutput>
-      </computeroutput>
-      </para></listitem>
-      </para></listitem>
-      <listitem><para><computeroutput>
-      </computeroutput>
-      </para></listitem>
-      <listitem><para><computeroutput>
-      </computeroutput>
-      </para></listitem>
-      <listitem><para><computeroutput>
-      </computeroutput>
+the complete help for the widget. If it is not present, generic help is used
+(button labels are patched into the help texts.
       </para></listitem>
     </itemizedlist>
-
   </para>
 </section>
-
 
 </chapter>
