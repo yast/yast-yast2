@@ -5,9 +5,7 @@ yncludedir = @yncludedir@/ui
 
 module_DATA =			\
 	Confirm.ycp		\
-	Popup.ycp		\
 	NetworkPopup.ycp	\
-	Label.ycp		\
 	Wizard.ycp		\
 	Wizard_hw.ycp		\
 	Progress.ycp		\
