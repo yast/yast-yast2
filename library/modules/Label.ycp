@@ -165,7 +165,7 @@ global define string QuitButton() {
  */
 global define string RetryButton() {
   /* Button label */
-  return _("&Retry");
+  return _("Retr&y");
 }
 
 /**
