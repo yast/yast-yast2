@@ -1364,26 +1364,40 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 	    return false;
 	}
 
-	if (! IsKnownZone(interface)) {
-	    // interface is probably interface-name, checking for respective zone
-	    interface = GetZoneOfInterface(interface);
-	    // interface is not assigned to any zone
-	    if (interface == nil) {
-		// TRANSLATORS: Error message, %1 = interface name (like eth0)
-		Report::Error(sformat(_("Interface '%1' is not assigned to any firewall zone.
+	list <string> zones_affected = [];
+
+	// "all" means for all known zones
+	if (interface == "all") {
+	    zones_affected = GetKnownFirewallZones();
+	// zone or interface name
+	} else {
+	    // is probably an interface name
+	    if (! IsKnownZone(interface)) {
+		// interface is probably interface-name, checking for respective zone
+		interface = GetZoneOfInterface(interface);
+		// interface is not assigned to any zone
+		if (interface == nil) {
+		    // TRANSLATORS: Error message, %1 = interface name (like eth0)
+		    Report::Error(sformat(_("Interface '%1' is not assigned to any firewall zone.
 You will have to run YaST2 Firewall and assign it by hand."), interface)
-		);
-		y2warning("Interface '%1' is not assigned to any firewall zone", interface);
-		return false;
+		    );
+		    y2warning("Interface '%1' is not assigned to any firewall zone", interface);
+		    return false;
+		}
 	    }
+	    zones_affected = [interface];
 	}
 
 	SetModified();
 
 	foreach (string remove_service, PortAliases::GetListOfServiceAliases(service), {
-	    RemoveServiceFromProtocolZone(remove_service, protocol, interface);
+	    foreach (string affected_zone, zones_affected, {
+		RemoveServiceFromProtocolZone(remove_service, protocol, affected_zone);
+	    });
 	});
-	success = AddServiceIntoProtocolZone(service, protocol, interface);
+	foreach (string affected_zone, zones_affected, {
+	    success = AddServiceIntoProtocolZone(service, protocol, affected_zone);
+	});
 
 	return success;
     }
@@ -1405,24 +1419,35 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 	    return false;
 	}
 
-	if (! IsKnownZone(interface)) {
-	    // interface is probably interface-name, checking for respective zone
-	    interface = GetZoneOfInterface(interface);
-	    // interface is not assigned to any zone
-	    if (interface == nil) {
-		// TRANSLATORS: Error message, %1 = interface name (like eth0)
-		Report::Error(sformat(_("Interface '%1' is not assigned to any firewall zone.
+	list <string> zones_affected = [];
+
+	// "all" means for all known zones
+	if (interface == "all") {
+	    zones_affected = GetKnownFirewallZones();
+	// zone or interface name
+	} else {
+	    if (! IsKnownZone(interface)) {
+		// interface is probably interface-name, checking for respective zone
+		interface = GetZoneOfInterface(interface);
+		// interface is not assigned to any zone
+		if (interface == nil) {
+		    // TRANSLATORS: Error message, %1 = interface name (like eth0)
+		    Report::Error(sformat(_("Interface '%1' is not assigned to any firewall zone.
 You will have to run YaST2 Firewall and assign it by hand."), interface)
-		);
-		y2warning("Interface '%1' is not assigned to any firewall zone", interface);
-		return false;
+		    );
+		    y2warning("Interface '%1' is not assigned to any firewall zone", interface);
+		    return false;
+		}
 	    }
+	    zones_affected = [interface];
 	}
 
 	SetModified();
 
 	foreach (string remove_service, PortAliases::GetListOfServiceAliases(service), {
-	    success = RemoveServiceFromProtocolZone(remove_service, protocol, interface);
+	    foreach (string affected_zone, zones_affected, {
+		success = RemoveServiceFromProtocolZone(remove_service, protocol, affected_zone);
+	    });
 	});
 
 	return success;
@@ -1659,6 +1684,7 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 		    }
 		);
 	    }
+	    allowed_conflict_services[zone] = toset(allowed_conflict_services[zone]:[]);
 	});
 
 	y2milestone("Possibly conflicting services found allowed: %1", allowed_conflict_services);
@@ -1711,7 +1737,7 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 	// filling internal values for later checkings
 	CheckAllPossiblyConflictingServices();
 
-	y2milestone("Firewall configuration has been read: %1", SETTINGS);
+	y2milestone("Firewall configuration has been read: %1.", SETTINGS);
 
 	return true;
     }
@@ -1736,7 +1762,7 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 		}
 	    }
 	} else {
-	    y2milestone("Firewall starting wasn't modified, skipping reactivation...");
+	    y2milestone("Firewall starting or configuration wasn't modified, skipping reactivation...");
 	}
 
 	return true;
@@ -1753,8 +1779,8 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
     global define boolean WriteConfiguration () {
 	// only modified configuration is written
 	if (GetModified()) {
-	    y2milestone("Firewall settings were modified, saving configuration");
-	    // the last item must be `nil` to sync changed into disk
+	    y2milestone("Firewall configuration has been changed. Writing: %1.", SETTINGS);
+
 	    if (! WriteSysconfigSuSEFirewall ( GetListOfSuSEFirewallVariables() )) {
 		// TRANSLATORS: a popup error message
 		Report::Error(_("Writing settings failed"));
@@ -1801,11 +1827,6 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
      */
     global define boolean Write () {
 	if (! WriteConfiguration())	return false;
-
-	// only modified configuration is written
-	if (GetModified()) {
-	    y2milestone("Firewall configuration has been written: %1", SETTINGS);
-	}
 
 	if (! ActivateConfiguration())	return false;
 
