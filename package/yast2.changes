@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 31 11:10:12 CEST 2005 - locilka@suse.cz
+
+- Changed firewall proposal texts to be clearly translatable
+  (#73612) 
+
+-------------------------------------------------------------------
 Thu Mar 24 13:07:15 CET 2005 - jsrain@suse.cz
 
 - changed kernel packages for PPC (#72344)
