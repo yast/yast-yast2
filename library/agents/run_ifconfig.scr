@@ -46,46 +46,46 @@
 
 `ag_anyagent(
   `Description (
-	``(Run("/sbin/ifconfig | /bin/sed -e '/.*inet6.*/d'")),
+	(`Run("/sbin/ifconfig | /bin/sed -e '/.*inet6.*/d'")),
 	"\n",
 	true,
-	``(List(
-	    Tuple(
-		`name(String("^\t ")),
-		`value(Tuple(
-		    Whitespace(), `link(String("^\n")), "\n",
-		    Whitespace(), "inet", `inet(
-			Tuple (
-			    Optional (Whitespace ()),
-			    Choice (
+	(`List(
+	    `Tuple(
+		`name(`String("^\t ")),
+		`value(`Tuple(
+		    `Whitespace(), `link(`String("^\n")), "\n",
+		    `Whitespace(), "inet", `inet(
+			`Tuple (
+			    `Optional (`Whitespace ()),
+			    `Choice (
 				[
 				    "addr:",
-				    `addr (Ip4Number ())
+				    `addr (`Ip4Number ())
 				    ],
 				[
 				    "Bcast:",
-				    `bcast (Ip4Number ())
+				    `bcast (`Ip4Number ())
 				    ],
 				[
 				    "P-t-P:",
-				    `ptp (Ip4Number ())
+				    `ptp (`Ip4Number ())
 				    ],
 				[
 				    "Mask:",
-				    `mask (Ip4Number ())
+				    `mask (`Ip4Number ())
 				    ],
 				[
-				    String ("^\n\t "),
-				    Skip()
+				    `String ("^\n\t "),
+				    `Skip()
 				    ]
 				),
-			    Continue (Whitespace ())
+			    `Continue (`Whitespace ())
 			    )
 			), "\n",
-		    Whitespace(), `flags(List(Sequence(Optional(Whitespace()), String("^ \n")), " ")), "\n",
+		    `Whitespace(), `flags(`List(`Sequence(`Optional(`Whitespace()), `String("^ \n")), " ")), "\n",
 		    // the rest is not important
-		    List(
-			Sequence(Whitespace(), String("^\n")),
+		    `List(
+			`Sequence(`Whitespace(), `String("^\n")),
 			"\n"
 			)
 		    ))
