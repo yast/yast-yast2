@@ -142,7 +142,7 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 	if [ $module == "menu" ] ; then
 	    $ybindir/y2base menu ncurses
 	else
-	    set -- "$(for x in "$@"; do echo "(\"$x\")"; done)" # surround args by ("...")
+	    set -- $(for x in "$@"; do echo "(\"$x\")"; done) # surround args by ("...")
 	    $ybindir/y2base "$module" "$@" ncurses
 	fi
 	if [ "$uc_started" ] ; then
@@ -179,7 +179,7 @@ else
 	    fi
 	fi
 
-	set -- "$(for x in "$@"; do echo "(\"$x\")"; done)" # surround args by ("...")
+	set -- $(for x in "$@"; do echo "(\"$x\")"; done) # surround args by ("...")
 	$ybindir/y2base $module "$@" qt -geometry "$Y2_GEOMETRY" $Y2QT_ARGS
     fi
 fi
