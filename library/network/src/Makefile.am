@@ -7,7 +7,11 @@ client_DATA =
 ynclude_DATA =
 
 module_DATA =			\
-	NetworkDevices.ycp
+	NetworkDevices.ycp	\
+	SuSEFirewall2.ycp	\
+	SuSEFirewallServices.ycp	\
+	PortAliases.ycp		\
+	SuSEFirewallProposal.ycp
 
 EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA)
 
