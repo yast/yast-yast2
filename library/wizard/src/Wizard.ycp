@@ -264,6 +264,9 @@
 			   `Wizard(`no_back_button,   	"",
 				   `cancel,		Label::CancelButton(),
 				   `accept,		Label::AcceptButton() ) );
+
+	    // Don't let sloppy calls to Wizard::SetContents() disable this button by accident
+	    UI::WizardCommand(`ProtectNextButton( true ) );
 	}
 	else
 	{
@@ -307,6 +310,9 @@
 				   `no_back_button,   	"",
 				   `cancel,		Label::CancelButton(),
 				   `accept,		Label::AcceptButton() ) );
+	    
+	    // Don't let sloppy calls to Wizard::SetContents() disable this button by accident
+	    UI::WizardCommand(`ProtectNextButton( true ) );
 	}
 	else
 	{
@@ -328,6 +334,9 @@
 				   `no_back_button,   	"",
 				   `abort,		Label::AbortButton(),
 				   `accept,		Label::AcceptButton() ) );
+	    
+	    // Don't let sloppy calls to Wizard::SetContents() disable this button by accident
+	    UI::WizardCommand(`ProtectNextButton( true ) );
 	}
 	else
 	{
