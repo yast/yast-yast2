@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Sep 10 16:03:47 CEST 2002 - arvin@suse.de
+
+- added provide/obsolete y2t_menu (bug #19325)
+
+-------------------------------------------------------------------
 Sat Sep 07 23:00:24 CEST 2002 - arvin@suse.de
 
 - added help text in y2menu
