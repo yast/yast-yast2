@@ -18,6 +18,8 @@ STATUS        : Development
 **************/
 {
 module "X11Version";
+textdomain "x11";
+
 import "Directory";
 include "require.ycp";
 
