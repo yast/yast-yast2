@@ -159,20 +159,9 @@
     global string timezone = "";
 
     /**
-     * needed for desktop product to use shorter timeslices.
-     */
-    global boolean use_desktop_scheduler = true;
-
-
-    /**
      * Additional kernel parameters to be set by bootloader
      */
     global string additional_kernel_parameters = "";
-
-    /**
-     * The I/O scheduler selection
-     */
-    global string io_scheduler = "as";
 
     /**
      * Value of FAM_LOCAL_ONLY in /etc/sysconfig/fam

@@ -211,12 +211,6 @@ global define boolean ReadControlFile( string controlfile)
         
         ProductFeatures::ui_mode = globals["ui_mode"]:"expert";
         
-        ProductFeatures::use_desktop_scheduler =
-            globals["use_desktop_scheduler"]:true;
-        
-        ProductFeatures::io_scheduler =
-            globals["io_scheduler"]:"as";
-        
 	ProductFeatures::fam_local_only =
 	    globals["fam_local_only"]:"never";
         

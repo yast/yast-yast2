@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb  9 15:12:00 CET 2005 - jsrain@suse.cz
+
+- merged variables for kernel parameters in ProductFeatures into
+  one (#50369)
+
+-------------------------------------------------------------------
 Wed Feb  9 12:03:50 CET 2005 - locilka@suse.cz
 
 - Fixed reading SuSEfirewall2 configuration to be done only once
