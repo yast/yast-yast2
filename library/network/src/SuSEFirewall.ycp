@@ -916,7 +916,7 @@
 	    all_ok = Service::Stop(service);
 
 	    if (!all_ok) {
-		y2error("Error starting service: %1", service);
+		y2error("Error stopping service: %1", service);
 		break;
 	    }
 	});
@@ -1754,23 +1754,37 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
      * @return	boolean if successful
      */
     global define boolean ActivateConfiguration () {
-	if (GetModified()) {
-	    if (IsStarted() && !StopServices()) {
-		y2milestone("Stopping firewall services");
-		return false;
-	    }
-
-	    if (SETTINGS["start_firewall"]:false) {
+	// Firewall should start after Write()
+	if (GetStartService()) {
+	    // Not started - start it
+	    if (!IsStarted()) {
 		y2milestone("Starting firewall services");
-		if (! StartServices()) {
-		    return false;
+		return StartServices();
+	    // Started - restart it
+	    } else {
+		// modified - restart it
+		if (GetModified()) {
+		    y2milestone("Stopping firewall services");
+		    StopServices();
+		    y2milestone("Starting firewall services");
+		    return StartServices();
+		// not modified - skip restart
+		} else {
+		    y2milestone("Configuration hasn't modified, skipping restarting services");
 		}
 	    }
+	// Firewall should stop after Write()
 	} else {
-	    y2milestone("Firewall starting or configuration wasn't modified, skipping reactivation...");
+	    // started - stop
+	    if (IsStarted()) {
+		y2milestone("Stopping firewall services");
+		return StopServices();
+	    // stopped - skip stopping
+	    } else {
+		y2milestone("Firewall has been stopped already");
+		return true;
+	    }
 	}
-
-	return true;
     }
 
     /**
