@@ -307,8 +307,8 @@
 		kernel_packages = ["kernel-s390x"];
 	    else
 		kernel_packages = ["kernel-s390"];
-	    
-	    binary = "none";
+
+	    binary   = "image";
 	    switched = true;
 	}
 
