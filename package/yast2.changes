@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Sun Aug 11 21:16:04 CEST 2002 - mvidner@suse.cz
+
+- Runlevel: use full path of service scripts; force removal
+  (#17608 workaround)
+- 2.6.19
+
+-------------------------------------------------------------------
 Fri Aug  9 15:32:54 CEST 2002 - mvidner@suse.cz
 
 - Fixed falling back to ncurses when DISPLAY is set
