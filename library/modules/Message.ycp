@@ -259,5 +259,23 @@ global define string SuSEConfigFailed () {
   return _("SuSEconfig script failed.");
 }
 
+/**
+ * Installing packages failed
+ * @return string Failed to install required packages.
+ */
+global define string FailedToInstallPackages () {
+  /* TRANSLATORS: Popup message */
+  return _("Failed to install required packages.");
+}
+
+/**
+ * &File Name string for PushButton
+ * @return string &File Name
+ */
+global define string FileName () {
+  /* TRANSLATORS: Push Button */
+  return _("&File Name");
+}
+
 /* EOF */
 }
