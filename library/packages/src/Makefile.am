@@ -1,4 +1,4 @@
-# Makefile.am for yast2/library/package/src
+# Makefile.am for yast2/library/packages/src
 
 module_DATA =			\
 	Require.ycp

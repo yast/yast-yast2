@@ -13,7 +13,8 @@
 module "Package";
 textdomain "base";
 
-// import "PackageAI";
+import "Mode";
+import "PackageAI";
 import "PackageSystem";
 
 map FunctionsSystem = $[
@@ -25,11 +26,11 @@ map FunctionsSystem = $[
 ];
 
 map FunctionsAI = $[
-/*
     "DoInstall"	: PackageAI::Install,
     "DoRemove"	: PackageAI::Remove,
-    ...
-*/
+    "DoInstallAndRemove" : PackageAI::DoInstallAndRemove,
+    "Available"	: PackageAI::Available,
+    "Installed"	: PackageAI::Installed,
 ];
 
 map Functions = FunctionsSystem;

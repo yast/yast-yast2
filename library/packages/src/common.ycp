@@ -1,7 +1,7 @@
 /**
  * File:	include/package/common.ycp
  * Package:	yast2
- * Summary:	FIXME
+ * Summary:	Packages manipulation (common routines)
  * Authors:	Martin Vidner <mvidner@suse.cz>
  *		Michal Svec <msvec@suse.cz>
  *
@@ -9,6 +9,13 @@
  */
 
 {
+
+textdomain "base";
+
+import "Label";
+import "Wizard";
+
+/* Main module prototypes */
 
 boolean Available(string package);
 boolean Installed(string package);
@@ -65,15 +72,83 @@ define boolean InstalledAny(list<string> packages) ``{
     return which != nil;
 }
 
-boolean Install(string package);
-boolean InstallAll(list<string> packages);
-boolean InstallAny(list<string> packages);
+/**
+ */
+boolean PackageDialog(list<string> packages, boolean install) {
 
-boolean Remove(string package);
-boolean RemoveAll(list<string> packages);
+    y2debug("Asking for packages: %1", packages);
 
-void RunSUSEConfig();
-boolean LastOperationCanceled();
+    if(size(packages) < 1) return true;
+    if(AllInstalled(packages)) return true;
+
+    string text = _("These packages need to be installed:") + "<p>";
+    if(install == false) text = _("These packages need to be removed:") + "<p>";
+
+    foreach(string p, packages, ``{ text = text + sformat("%1<br>",l); });
+
+    term contents = `VBox(
+	`HSpacing(40),
+	`RichText(text),
+	`HBox(
+	    `PushButton(`id(`continue), `opt(`default), Label::ContinueBotton()),
+	    `PushButton(`id(`cancel), Label::CancelButton())
+	)
+    );
+
+    UI::OpenDialog(contents);
+    any ret = UI::UserInput();
+    UI::CloseDialog();
+
+    if(ret == `continue) {
+	last_op_canceled = false;
+	if(install == false) return DoRemove(packages);
+	return DoInstall(packages);
+    }
+
+    last_op_canceled = true;
+    return false;
+}
+
+global boolean Install(string package) {
+    return PackageDialog([package], true);
+}
+
+global boolean InstallAll(list<string> packages) {
+    return PackageDialog(packages, true);
+}
+
+global boolean InstallAny(list<string> packages);
+// FIXME
+
+
+global boolean Remove(string package) {
+    return PackageDialog([package], false);
+}
+
+global boolean RemoveAll(list<string> packages) {
+    return PackageDialog(packages, false);
+}
+
+/**
+ * Run SUSEconfig, create new wizard dialog before it,
+ * close after it is finished
+ */
+global void RunSUSEconfig() {
+    Wizard::CreateDialog ();
+    // inst_suseconfig returns `auto or `next
+    // (update mode or Args(2) is true) => no error checking
+    WFM::CallFunction("inst_suseconfig", [false, false]);
+    Wizard::CloseDialog ();
+}
+
+/**
+ * Return result of the last operation
+ * Use immediately after calling any Package*:: function
+ * @return true if it was
+ */
+global boolean LastOperationCanceled () {
+    return last_op_canceled;
+}
 
 /* EOF */
 }
