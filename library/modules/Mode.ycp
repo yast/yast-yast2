@@ -53,19 +53,21 @@
     global string boot			= "cd";
 
     /**
-     * just testing
+     * Just testing.
+     * See installation/Test-Scripts/doit*
      */
     global boolean test			= false;
 
     /**
-     * dry-run of dialogues
+     * Dry-run of dialogues. Implies @ref #test .
      */
-    global boolean demo			= false; // includes test_mode if set
+    global boolean demo			= false;
 
     /**
-     * dump screens to /tmp
+     * dump screens to /tmp. Implies @ref #demo .
+     * See installation/Test-Scripts/yast2-screen-shots*
      */
-    global boolean screen_shot		= false; // includes demo_mode if set
+    global boolean screen_shot		= false;
 
     /**
      * starting installation in inst-sys system
