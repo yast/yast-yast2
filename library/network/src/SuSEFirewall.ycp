@@ -1527,7 +1527,13 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 	return service_is_supported;
     }
 
-    global define map <string, map <string, boolean> > GetServices (list<string> services) {
+    /**
+     * Function returns map of supported services all network interfaces.
+     *
+     * @param	list [of services]
+     * @return	map [ service, map [ interface : supported_status ]]
+     */
+    global define map <string, map <string, boolean> > GetServicesInZones (list<string> services) {
 	// list of interfaces for each zone
 	map <string, list <string> > interface_in_zone = $[];
 
@@ -1537,7 +1543,7 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 	    interface_in_zone[zone_used] = add (interface_in_zone[zone_used]:[], interface);
 	});
 
-	// $[ service : $[ network_device : status ]]
+	// $[ service : $[ network_interface : status ]]
 	map <string, map <string, boolean> > services_status = $[];
 
 	// for all services requested
@@ -1556,6 +1562,29 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 	return services_status;
     }
 
+    /**
+     * Function returns map of supported services in all firewall zones.
+     *
+     * @param	list [of services]
+     * @return	map [ service, map [ zone_name : supported_status ]]
+     */
+    global define map <string, map <string, boolean> > GetServices (list<string> services) {
+	// $[ service : $[ firewall_zone : status ]]
+	map <string, map <string, boolean> > services_status = $[];
+
+	// for all services requested
+	foreach (string service, services, {
+	    services_status[service] = $[];
+	    // for all zones in configuration
+	    foreach (string zone, GetKnownFirewallZones(), {
+		services_status[service,zone] = IsServiceSupportedInZone(service, zone);
+	    });
+	});
+
+	return services_status;
+    }
+
+    // FIXME: comment
     global define boolean SetServicesForZones (list<string> services_ids, list<string> firewall_zones, boolean new_status) {
 	// no groups == all groups
 	if (size(firewall_zones)==0) firewall_zones = GetKnownFirewallZones();
@@ -1583,6 +1612,7 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 	});
     }
 
+    // FIXME: comment
     global define boolean SetServices (list<string> services_ids, list<string> interfaces, boolean new_status) {
 	list<string> firewall_zones = GetZonesOfInterfaces(interfaces);
 	if (size(firewall_zones)==0) {
@@ -1865,6 +1895,50 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 
 	// well, actually it returns list of services not-assigned to any well-known service
 	return all_allowed_services;
+    }
+
+    /**
+     * Function returns if any other firewall then SuSEfirewall2 is currently running on the
+     * system. It uses command `iptables` to get information about just active iptables
+     * rules and compares the output with current status of SuSEfirewall2.
+     *
+     * @return	boolean if other firewall is running
+     */
+    global define boolean IsOtherFirewallRunning () {
+	boolean any_firewall_running = true;
+
+	// grep must return at least blank lines, else it returns 'exit 1' instead of 'exit 0'
+	string command = "iptables -L -n | grep -v \"^\\(Chain\\|target\\)\"";
+
+	map iptables = (map) SCR::Execute(.target.bash_output, command);
+	if (iptables["exit"]:0 == 0) {
+	    list <string> iptables_list = splitstring(iptables["stdout"]:"", "\n");
+	    iptables_list = filter (string iptable_rule, iptables_list, {
+		return iptable_rule != "";
+	    });
+
+	    y2milestone("Count of active iptables now: %1", size(iptables_list));
+
+	    // none iptables rules
+	    if (size(iptables_list)>0) {
+		any_firewall_running = true;
+	    // any iptables rules exist
+	    } else {
+		any_firewall_running = false;
+	    }
+	// error running command
+	} else {
+	    y2error("Services Command: %1 (Exit %2) -> %3", command, iptables["exit"]:nil, iptables["stderr"]:nil);
+	    return nil;
+	}
+
+	// any firewall is running but it is not a SuSEfirewall2
+	if (any_firewall_running && !IsStarted()) {
+	    y2warning("Any other firewall is running...");
+	    return true;
+	}
+	// no firewall is running or the running firewall is SuSEfirewall2
+	return false;
     }
 
     # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
