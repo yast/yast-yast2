@@ -101,6 +101,8 @@ TEST( ``(String::ParseOptions(" abc,123  ", param) ), [ $[], $[], $[] ], nil );
 TEST( ``(String::ParseOptions("x,  y  ,  z", param) ), [ $[], $[], $[] ], nil );
 TEST( ``(String::ParseOptions("0,\"1, 2, 3\", 4, 5 ", param) ), [ $[], $[], $[] ], nil );
 TEST( ``(String::ParseOptions(" ,,  ,", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions("\"abc\"", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions("\" abc \"", param) ), [ $[], $[], $[] ], nil );
 
 // multi separator
 param["separator"] = ",;.";

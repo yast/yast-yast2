@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar 23 09:05:39 CET 2004 - lslezak@suse.cz
+
+- fixed parsing quoted string in String::ParseOptions() (#36223)
+- testsuite update
+
+-------------------------------------------------------------------
 Mon Mar 22 17:09:55 CET 2004 - msvec@suse.cz
 
 - support for sort keys in ncurses menu (#36466)
