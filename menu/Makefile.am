@@ -6,4 +6,6 @@ config_DATA = y2cc.groups
 
 client_DATA = menu.ycp
 
-EXTRA_DIST = $(config_DATA) $(client_DATA)
+ynclude_DATA = readconfig.ycp
+
+EXTRA_DIST = $(config_DATA) $(client_DATA) $(ynclude_DATA)

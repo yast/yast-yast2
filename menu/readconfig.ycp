@@ -1,0 +1,28 @@
+/**
+ * File:        readconfig.ycp
+ * Package:     yast2
+ * Summary:     Example how to read yast2 config files
+ * Author:      Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ *
+ * Config files are at .yast2.config SCR path.
+ * Groups list is at .yast2.groups SCR path.
+ */
+{
+
+textdomain "base";
+
+global define string ReadKey(string domain, string key, map allkeys) ``{
+    string key = allkeys[key]:"";
+    domain = textdomain(domain);
+    if(regexpmatch(key, "_\\(\"(.*)\"\\)") == true) {
+        locale ke = regexpsub(key, "_\\(\"(.*)\"\\)", "\\1");
+        key = eval(ke);
+    }
+    textdomain "base";
+    return key;
+}
+
+/* EOF */
+}
