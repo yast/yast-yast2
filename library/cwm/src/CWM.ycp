@@ -107,12 +107,12 @@
 		    || is (value, void(any,string));
 	    else if (key == "handle")
 		success = is (value, symbol(string,map))
-		    || is (value, symbol(any,string,map));
+		    || is (value, void(any,string,map));
 		// FIXME separate checker for table-option popups (they have
 		// additional parameter
 	    else if (key == "store")
 		success = is (value, void(string,map))
-		    || is (value, void(any,string,map));
+		    || is (value, void(any,string));
 	    else if (key == "id2key")
 		success = is (value, string(map,any));
 	    else if (key == "ids")
