@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Aug 28 17:54:01 CEST 2002 - mvidner@suse.cz
+
+- file_popups::PopupDir: fixed the Selected directory heading.
+
+-------------------------------------------------------------------
 Tue Aug 27 20:00:00 CEST 2002 - jsuchome@suse.cz
 
 - provide/obsolete old translation packages
