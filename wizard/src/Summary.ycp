@@ -9,8 +9,6 @@
  *
  * Create a unified-looking RichText description of the not configured
  * and configured devices.
- *
- * This is used in <module_name>_summary.ycp modules.
  */
 
 /**

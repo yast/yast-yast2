@@ -21,6 +21,9 @@
 
     textdomain "base";
 
+    y2error("Include \"ui/common_popups.ycp\" is obsolete!");
+    y2error("Use \"Popup.ycp\" module instead.");
+
   import "Label";
 
 

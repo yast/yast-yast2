@@ -22,6 +22,9 @@
 
     textdomain "base";
 
+    y2error("Include \"ui/common_messages.ycp\" is obsolete!");
+    y2error("Use \"Label.ycp\" module instead.");
+
   UI (``{
       global define string AddButtonLabel() ``{
 	  // this is a button label

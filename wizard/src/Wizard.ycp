@@ -1,16 +1,16 @@
 /**
- * Module:		Wizard.ycp
+ * File:	modules/Wizard.ycp
+ * Package:	yast2
+ * Summary:	Wizard dialog
+ * Authors:	Stefan Hundhammer <sh@suse.de>
  *
- * Authors:		Stefan Hundhammer <sh@suse.de>
- *
- * Purpose:
+ * $Id$
  *
  * Provides the wizard dialog (common screen for all YaST2 installation
  * modules) and functions to set the contents, to replace and restore
  * special widgets.
- *
- * $Id$
  */
+
 {
 
     module "Wizard";
