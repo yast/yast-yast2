@@ -111,8 +111,8 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %dir @yncludedir@/packages
 @yncludedir@/packages/*.ycp
 
-#control
-/var/lib/YaST2/ProductFeatures
+#features
+/etc/YaST2/ProductFeatures
 
 # documentation
 %files devel
