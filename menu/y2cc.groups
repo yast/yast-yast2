@@ -3,33 +3,40 @@
 Name = _("Hardware")
 Icon = hardware.png
 SortKey = 20
+Textdomain = base
 
 [Y2Group Misc]
 Name = _("Misc")
 Icon = misc.png
 SortKey = 99
+Textdomain = base
 
 [Y2Group Net_advanced]
 Name = _("Network/Advanced")
 Icon = network_advanced.png
 SortKey = 40
+Textdomain = base
 
 [Y2Group Network]
 Name = _("Network/Basic")
 Icon = network.png
 SortKey = 30
+Textdomain = base
 
 [Y2Group Security]
 Name = _("Security and Users")
 Icon = security.png
 SortKey = 50
+Textdomain = base
 
 [Y2Group Software]
 Name = _("Software")
 Icon = software.png
 SortKey = 10
+Textdomain = base
 
 [Y2Group System]
 Name = _("System")
 Icon = system.png
 SortKey = 60
+Textdomain = base
