@@ -100,7 +100,7 @@
 
 	    // sformat( _("Loading module %1"), modulename);
 
-	    if (ask_before_loading)
+	    if (ask_before_loading && !Mode::autoinst())
 	    {
 
 		UI::OpenDialog(`opt(`decorated, `centered),
