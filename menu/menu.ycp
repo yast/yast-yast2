@@ -37,6 +37,7 @@
 			       `HBox (
 				     `HWeight (30, `RadioButtonGroup (
 								     `VBox (
+									    // button to show list of all modules
 									   `Left (`RadioButton (`id (`allgroups), `opt (`notify), _("&All"), false)),
 									   `VSpacing (),
 									   `ReplacePoint (`id (`groups), `Empty ()),
@@ -45,19 +46,22 @@
 								   )
 					     ),
 				     `HWeight (70, `VBox (
+							  // heading for list of modules
 							 `ReplacePoint (`id (`modules), `SelectionBox (_("&Modules")))
 							)
 					     )
 				   ),
-				 `HBox (`Label (`id (`statusline), `opt (`outputField, `hstretch), _("Use TAB to switch groups"))),
-				 `HBox (
-				    `HSpacing (5),
-				    `PushButton (`id (`quit), QuitButtonLabel ()),
-				    `HStretch (),
-				    `PushButton (`id (`launch), _("&Launch")),
-				    `HSpacing (5)
-				 )
-			 )
+			       // help text
+			       `HBox (`Label (`id (`statusline), `opt (`outputField, `hstretch), _("Use TAB to switch groups"))),
+			       `HBox (
+				      `HSpacing (5),
+				      `PushButton (`id (`quit), QuitButtonLabel ()),
+				      `HStretch (),
+				      // button to start the selected module
+				      `PushButton (`id (`launch), _("&Launch")),
+				      `HSpacing (5)
+				      )
+			       )
 		     );
 	};
 
@@ -92,6 +96,7 @@
 
 	global define DisplayModuleList (list modulelist)
 	``{
+	    // heading for list of modules
 	    term modulebox = `SelectionBox (`id (`modulebox), `opt (`notify), _("&Modules"));
 	    modulebox = add (modulebox, modulelist);
 	    ReplaceWidget (`id (`modules), modulebox);
@@ -102,6 +107,7 @@
 	    OpenDialog (`opt (`defaultsize),
 		`VBox (
 		    `VStretch (),
+		    // message show while loading modules informations
 		    `Label (_("Loading modules, please wait ...")),
 		    `VStretch ()
 		)
