@@ -224,7 +224,7 @@
     string update_32_64_warning = _("Warning")
 	+ _("You are about to upgrade a 64-bit installation with a 32-bit distribution.")
 	+ "\n\n"
-	+ _("This is not supported, proceed on your own risk.")
+	+ _("This is not supported. Proceed at your own risk.")
 	+ _("If you intend to upgrade to the 64-bit distribution, use the other side
 	    of the DVD medium for booting.");
 
@@ -237,7 +237,7 @@
     string update_64_32_warning = _("Warning")
 	+ _("You are about to upgrade a 32-bit installation with a 64-bit distribution.")
 	+ "\n\n"
-	+ _("This is not supported, proceed on your own risk.")
+	+ _("This is not supported. Proceed at your own risk.")
 	+ _("If you intend to upgrade the 32-bit distribution, use the other side
 	    of the DVD medium for booting.");
 
@@ -247,7 +247,7 @@
 
     string install_32_64_warning = _("Warning")
 	+ _("Your computer is a 64-bit x86-64 system.")
-	+ _("But you are trying to install a 32-bit distribution.")
+	+ _("However, you are trying to install a 32-bit distribution.")
 	+ "\n\n"
 	+ _("You can install either the 32-bit or the 64-bit distribution on your
 	    system.")
