@@ -7,11 +7,9 @@
 #		Klaus Kaempf <kkaempf@suse.de>
 #		Ludwig Nussel <lnussel@suse.de>
 #
-# $Id$
-#
-# This script is called, when the user just types in 'yast2'. It starts
+# This script is called when the user just types 'yast2'. It starts
 # the qt user interface in case the DISPLAY variable is set and other-
-# wise the ncurses. It starts then the module 'menu' which implements
+# wise ncurses. It starts then the module 'menu' which implements
 # the configuration and administration menu.
 
 export PATH=/sbin:/usr/sbin:$PATH
@@ -140,6 +138,16 @@ else
     if [ $module == "menu" -a -e "$ybindir/y2controlcenter" ] ; then
 	$ybindir/y2controlcenter $Y2QT_ARGS $FONT "$@"
     else
+
+	# Special case: "sw_single" needs a lot of screen space - 
+	# always start it in full screen mode.
+	if [ $module == "sw_single" ] ; then
+	    case "$Y2QT_ARGS" in
+		*fullscreen*) ;;
+		*) Y2QT_ARGS="$Y2QT_ARGS --fullscreen" ;;
+	    esac
+	fi
+
 	set -- $(for x in "$@"; do echo "(\"$x\")"; done) # surround args by ("...")
 	$ybindir/y2base $module "$@" qt -geometry "$Y2_GEOMETRY" $Y2QT_ARGS $FONT
     fi
