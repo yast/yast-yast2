@@ -9,6 +9,7 @@ Requires:	yast2_ui yast2_theme
 Requires:       perl-Config-Crontab
 # for ag_tty (/bin/stty)
 Requires:	coreutils
+Requires:	yast2-pkg-bindings
 
 Provides:	yast2-lib-sequencer
 Obsoletes:	yast2-lib-sequencer
