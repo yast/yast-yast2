@@ -230,8 +230,8 @@
 	    boolean opt_changed = false;
 	    string opt_key = id2key (descr, opt_id);
 	    map<string, any> opt_descr = key2descr (descr, opt_key);
-	    string label = opt_descr["table", "label"]:sformat ("%1", opt_key);
 	    opt_descr = updateOptionMap (opt_descr, descr["fallback"]:$[]);
+	    string label = opt_descr["table", "label"]:sformat ("%1", opt_key);
 	    if (haskey (opt_descr["table"]:$[], "label_func"))
 	    {
 		string(any,string) label_func = (string(any,string))
