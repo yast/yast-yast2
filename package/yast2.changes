@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar 29 11:13:30 CEST 2004 - arvin@suse.de
+
+- fixed kernel selection on i386 smp systems (bug #35876)
+
+-------------------------------------------------------------------
 Mon Mar 29 09:19:19 CEST 2004 - jsrain@suse.de
 
 - adapted CWM to updated 'is' builtin
