@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 27 09:19:21 CET 2004 - jsrain@suse.de
+
+- removed hwinfo from neededforbuild
+- fixed testsuite for initrd
+
+-------------------------------------------------------------------
 Mon Jan 26 17:14:59 CET 2004 - jsrain@suse.de
 
 - added hwinfo to neededforbuild
