@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug 27 16:14:09 CEST 2003 - msvec@suse.cz
+
+- new module for confirmation of detection (#26515)
+- 2.8.23
+
+-------------------------------------------------------------------
 Wed Aug 27 16:04:18 CEST 2003 - gs@suse.de
 
 - yast2 script: set language to english only on console if LANG is
