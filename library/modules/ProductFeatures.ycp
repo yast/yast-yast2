@@ -228,14 +228,19 @@
     {
         use_desktop_scheduler = Misc::SysconfigRead(
                 .product.features.USE_DESKTOP_SCHEDULER, "yes" ) == "yes";
+        
 	io_scheduler = Misc::SysconfigRead(
 		.product.features.IO_SCHEDULER, "as");
+        
 	ui_mode = Misc::SysconfigRead(
 		.product.features.UI_MODE, "expert");
+        
         enable_autologin = Misc::SysconfigRead(
                 .product.features.ENABLE_AUTOLOGIN, "yes") == "yes";
+        
         evms_config = Misc::SysconfigRead(
                 .product.features.EVMS_CONFIG, "no") == "yes";
+
         return;
     }
 
@@ -244,7 +249,7 @@
     /**
      * Constructor
      */
-    global define void ProductFeatures () ``{
+    global define void ProductFeatures () {
         if (Mode::normal () && !Stage::initial () && !Stage::cont ())
             Restore();
         return;
