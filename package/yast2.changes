@@ -3,6 +3,7 @@ Mon Sep  6 12:42:27 CEST 2004 - visnov@suse.cz
 
 - moved ComputeKernelPackages to Kernel.ycp
 - use Kernel::ComputePackages in Package (#44394) 
+- 2.10.13
 
 -------------------------------------------------------------------
 Mon Sep  6 11:53:31 CEST 2004 - jsrain@suse.cz
