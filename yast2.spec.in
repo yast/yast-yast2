@@ -75,7 +75,9 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %dir @yncludedir@
 %dir @vardir@
 %dir @schemadir@
+%dir @schemadir@/control
 %dir @schemadir@/control/rnc
+%dir @schemadir@/autoyast
 %dir @schemadir@/autoyast/rnc
 %dir /etc/YaST2
 
