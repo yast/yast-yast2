@@ -98,5 +98,35 @@ global define string Rich2Plain (string richtext) ``{
     return result;
 }
 
+/**
+ * Parse provided text and see if it contains richtext
+ * @param file file path
+ * @param richtext default text
+ * @return term
+ */
+global term DetectRichText(string file, string richtext )
+{
+    string text = "";
+
+    if (SCR::Read(.target.size, file) > 0)
+    {
+        text = (string)SCR::Read(.target.string,  file );
+    }
+    else 
+    {
+        text = richtext;
+    }
+    if (text == "")
+    {
+        text = _("No Text Available");
+    }
+
+    if (regexpmatch(text, "</.*>")) {
+        return (`RichText(`id(`text), text));
+    } else {
+        return (`RichText(`id(`text), `opt(`plainText),  text));
+    }
+}
+
 /* EOF */
 }
