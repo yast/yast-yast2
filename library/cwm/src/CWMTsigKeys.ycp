@@ -531,7 +531,7 @@ Remember that all keys in that same file are deleted.</p>
 		`TextEntry (`id ("_cwm_existing_key_file"),
 		    `opt (`hstretch),
 		    // text entry
-		    _("&File Name"))
+		    Label::FileName ())
 	    )),
 	    `HWeight (2, `HBox (
 		`VBox (
