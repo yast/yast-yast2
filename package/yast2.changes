@@ -1,12 +1,12 @@
 -------------------------------------------------------------------
 Mon Aug 11 15:40:00 CEST 2003 - gs@suse.de
 
-- yast2 script: start y2base menu.ycp ncurses (instead of y2base) 
+- yast2 script: start y2base menu ncurses (instead of y2menu)
 
 -------------------------------------------------------------------
 Fri Aug  8 14:47:14 CEST 2003 - gs@suse.de
 
-- bugfix in file_popups.ycp/PopupDir(dir) (if the argument is an 
+- bugfix in file_popups.ycp/PopupDir(dir) (if the argument is an
   empty string, 'pwd' is the directory)
 - menu.ycp: improved layout and usability
 
