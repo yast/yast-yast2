@@ -274,8 +274,9 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
       * @param widgets list of maps represenging widgets
       * @param event map event that occured
       */
-    global define void saveWidgets (list<map> widgets, map event) ``{
-        foreach (map w, widgets, ``{
+    global define void saveWidgets (list<map<string,any> > widgets, map event) {
+        foreach (map<string,any> w, widgets, ``{
+	    processed_widget = w;
             void(string, map) toEval = (void(string, map)) (w["store"]:nil);
             if (toEval != nil)
             {
@@ -284,8 +285,9 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
         });
     }
 
-    global define void cleanupWidgets (list<map> widgets) {
-        foreach (map w, widgets, ``{
+    global define void cleanupWidgets (list<map<string,any> > widgets) {
+        foreach (map<string,any> w, widgets, ``{
+	    processed_widget = w;
             void(string) toEval = (void(string)) (w["clean_up"]:nil);
             if (toEval != nil)
             {
