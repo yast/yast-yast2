@@ -73,7 +73,10 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 @ydatadir@/y2menu-color
 @yncludedir@/readconfig.ycp
 
+# documentation (not included in devel subpackage)
 %doc @docdir@/*.*
+%doc @docdir@/COPYING
+%doc @docdir@/README
 %doc %{_mandir}/*/*
 
 /sbin/*
@@ -93,3 +96,4 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 %files devel
 %doc @docdir@/sequencer
 %doc @docdir@/wizard
+%doc @docdir@/autodocs
