@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar  3 17:14:44 CET 2003 - jsrain@suse.de
+
+- added scr agent for /etc/sysconfig/hotplug handling (#22580)
+
+-------------------------------------------------------------------
 Mon Mar 03 13:02:47 CET 2003 - arvin@suse.de
 
 - once more merged proofread texts
