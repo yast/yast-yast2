@@ -1,5 +1,5 @@
 Write	.dev.tty.prompt "YaST2 lan> " true
-Write	.dev.tty.stderr "Incorrect value for option 'device', expected 'string', received: " true
+Write	.dev.tty.stderr "Invalid value for option 'device' -- expected 'string', received " true
 Write	.dev.tty.stderr "Use 'yast2 lan add help' for a complete list of available options." true
 Return	false
 Return	$["command":"quit"]
