@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jul 04 13:22:52 CEST 2002 - arvin@suse.de
+
+- move non binary file from /usr/lib/YaST2 to /usr/share/YaST2
+
+-------------------------------------------------------------------
 Mon Jul  1 11:03:51 CEST 2002 - kkaempf@suse.de
 
 - split of images to separate package
