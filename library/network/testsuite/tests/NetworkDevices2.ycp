@@ -79,6 +79,19 @@ TEST(``(NetworkDevices::Write("ippp")), [READ], nil);
 TEST(``(NetworkDevices::Write("trx")), [READ], nil);
 TEST(``(NetworkDevices::Write("atm|tr")), [READ], nil);
 
+map<string,map> exported = nil;
+
+DUMP("NetworkDevices::Export");
+exported = NetworkDevices::Export ("");
+DUMP(sformat("exported=%1", exported));
+
+// Test import canonicalizing
+DUMP("NetworkDevices::Import");
+exported["lo", "", "STARTMODE"] = "boot";
+exported["eth", "6", "IPADDR"] = "1.2.3.4/8";
+NetworkDevices::Import ("", exported);
+DUMP(sformat("all     =%1", NetworkDevices::Devices));
+
 DUMP("NetworkDevices::GetFreeDevices");
 NetworkDevices::Devices=$["eth":$["0":$[]]];
 TEST(``(NetworkDevices::GetFreeDevices("eth", 2)), [], nil);
