@@ -312,7 +312,7 @@ global boolean is_uml () {
 /* SMP stuff							*/
 
 /**
- * Set "Arch::has_smp () () ()". Since Alpha doesn't reliably probe smp,
+ * Set "Arch::has_smp ()". Since Alpha doesn't reliably probe smp,
  * 'has_smp' must be set later with this function.
  * @param is_smp true if has_smp should be true
  * @example setSMP(true);
