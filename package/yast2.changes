@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 21 16:22:21 CET 2005 - nashif@suse.de
+
+- Added incomplete_translation_treshold to product features
+
+-------------------------------------------------------------------
 Fri Feb 18 11:33:32 CET 2005 - visnov@suse.cz
 
 - Don't show desktop files with "Hidden" set to yes in ncurses menu
