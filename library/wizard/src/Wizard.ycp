@@ -396,8 +396,9 @@
      *
      * For backwards compatibility only - don't use this any more in new modules.
      **/
-    global define void CreateDialog() {
-	Wizard::OpenDialog( NextBackDialog() );
+    global define void CreateDialog()
+    {
+	Wizard::OpenNextBackDialog();
     }
 
 
