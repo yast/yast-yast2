@@ -165,6 +165,27 @@ map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
  </screen></example>
 </section>
 
+<section id="richtext"><title>Rich Text Field</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `richtext</para></listitem>
+</itemizedlist></para>
+
+<example><title>Rich Text</title><screen>
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "RICH_TEXT" : $[
+    "widget" : `richtext,
+  ],
+  ....
+]
+ </screen></example>
+<note><para>
+To fill the contents of the rich text, initialization function calling
+<computeroutput>UI::ChangeWidget</computeroutput> must be defined.
+</para></note>
+</section>
+
 <section><title>Custom widget</title>
 <para>
 Parameters:
