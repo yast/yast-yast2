@@ -15,5 +15,5 @@ Read (.leading_comment)
 Read (.table)
 Read (.trailing_comment)'
     echo "$AGPROG" | ./ag_mailtable "$@"| sed -e "$S1" -e "$S2" > $CASE.out.tmp
-    cmp $CASE.out.tmp $CASE.out
+    diff -u $CASE.out $CASE.out.tmp
 done
