@@ -16,7 +16,7 @@ Write	.dev.tty.stderr "" true
 Write	.dev.tty.stderr "Run 'yast2 lan <command> help' for a list of available options." true
 Write	.dev.tty.stderr "" true
 Write	.dev.tty.stderr "Command 'abort'" true
-Write	.dev.tty.stderr "    Abort interactive mode, don't save the changes" true
+Write	.dev.tty.stderr "    Abort interactive mode without saving the changes" true
 Write	.dev.tty.stderr "\n    Options:" true
 Write	.dev.tty.stderr "        help        Print the help for this command" true
 Write	.dev.tty.stderr "" true
