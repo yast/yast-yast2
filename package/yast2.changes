@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Mar 14 16:45:19 CET 2003 - sh@suse.de
+
+- V 2.7.28
+- Moved yast2_kde functionality into yast2 script
+  (Fix for 25230: kcontrol YaST2 module not working) 
+
+-------------------------------------------------------------------
 Wed Mar 12 11:42:02 CET 2003 - sh@suse.de
 
 - Applied Adrian's patch to use the correct ~/.qtrc in yast2-funcs 
