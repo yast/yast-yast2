@@ -356,6 +356,11 @@
 	});
 	left = add (left, `HSpacing (4));
 	right = add (right, `HStretch ());
+
+	// FIXME: ReplaceHelp is no longer available!
+	// FIXME
+	// FIXME
+	// FIXME
 	Wizard::ReplaceHelp (`VBox (
 		    `HBox (
 			`HSpacing (1),
@@ -367,6 +372,10 @@
 		    `VSpacing (0.5)
 		    )
 		);
+	// FIXME
+	// FIXME
+	// FIXME
+	// FIXME
     }
     /**
      * Replaces stages of superior progress by an empty help text.
