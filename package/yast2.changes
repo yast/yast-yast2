@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Mar 10 14:05:43 CET 2004 - msvec@suse.cz
+
+- accept nil from some UI calls (should fix the failing testsuites)
+
+-------------------------------------------------------------------
 Wed Mar 10 09:26:03 CET 2004 - arvin@suse.de
 
 - install kernel-um in uml
