@@ -8,7 +8,8 @@ map<string, any> simple = $[
     "WIRELESS_KEY_1": "secret1",
     "WIRELESS_KEY_2": "secret2",
     "WIRELESS_KEY_3": "secret3",
-    "WIRELESS_KEY_4": "secret4",
+    "WIRELESS_KEY_4": "", // no need to conceal empty ones
+    "WIRELESS_WPA_PSK": "secretpsk",
     "other": "data",
     "_aliases": $[
 	"foo": $[

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar 14 16:08:05 CET 2005 - mvidner@suse.cz
+
+- NetworkDevices::ConcealSecrets: only nonempty; also WIRELESS_WPA_PSK.
+
+-------------------------------------------------------------------
 Sat Mar 12 04:44:45 CET 2005 - nashif@suse.de
 
 - optionally add addon selections using the control file (#72257)
