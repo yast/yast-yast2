@@ -69,4 +69,10 @@ TEST(``(String::CutZeros("001")), [], nil);
 TEST(``(String::CutZeros("0")), [], nil);
 TEST(``(String::CutZeros("00")), [], nil);
 
+DUMP("String::CutRegexMatch");
+TEST(``(String::CutRegexMatch("abc","[0-9]+",true)), [], nil);
+TEST(``(String::CutRegexMatch("abc12def345ghi678900","[0-9]+",true)), [], nil);
+TEST(``(String::CutRegexMatch("abc12def345ghi678900","[0-9]+",false)), [], nil);
+TEST(``(String::CutRegexMatch("abc12def345ghi678900",".*",false)), [], nil);
+
 }

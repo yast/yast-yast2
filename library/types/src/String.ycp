@@ -148,5 +148,32 @@ global define string CutZeros(string input) ``{
     return output;
 }
 
+/**
+ * Remove first or every match of given regular expression from a string 
+ * (e.g. CutRegexMatch( "abcdef12ef34gh000", "[0-9]+", true ) -> "abcdefefgh",
+ * CutRegexMatch( "abcdef12ef34gh000", "[0-9]+", false ) -> "abcdefef34gh000")
+ *
+ * @param input string that might occur regex 
+ * @param regex regular expression to search for, must not contain brackets
+ * @param glob flag if only first or every occuring match should be removed
+ * @return string that has matches removed
+ */
+global define string CutRegexMatch(string input, string regex, boolean glob) ``{
+    if(input == nil || size(input) < 1) return "";
+    string output = input;
+    if( regexpmatch( output, regex ) )
+	{
+	list p = regexppos( output, regex );
+	do
+	    {
+	    output = substring( output, 0, p[0]:0 ) + 
+	             substring( output, p[0]:0+p[1]:0 );
+	    p = regexppos( output, regex );
+	    }
+	while( glob && size(p)>0 );
+	}
+    return output;
+}
+
 /* EOF */
 }

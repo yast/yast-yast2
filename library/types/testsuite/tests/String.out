@@ -56,3 +56,8 @@ Return	1
 Return	1
 Return	0
 Return	0
+Dump	String::CutRegexMatch
+Return	abc
+Return	abcdefghi
+Return	abcdef345ghi678900
+Return	
