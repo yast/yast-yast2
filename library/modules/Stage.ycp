@@ -66,6 +66,8 @@ global void Set (string new_stage) {
     {
 	y2error ("Unknows stage %1", new_stage);
     }
+
+    y2milestone ("setting stage to %1", new_stage);
     _stage = new_stage;
 }
 

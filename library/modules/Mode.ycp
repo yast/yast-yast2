@@ -106,6 +106,8 @@ global void SetMode (string new_mode) {
     {
 	y2error ("Unknows mode %1", new_mode);
     }
+
+    y2milestone ("setting mode to %1", new_mode);
     _mode = new_mode;
 }
 
@@ -207,7 +209,7 @@ global boolean test () {
  * See installation/Test-Scripts/yast2-screen-shots*
  */
 global boolean screen_shot () {
-    return testMode () == "screenshort";
+    return testMode () == "screenshot";
 }
 
 global boolean testsuite () {
