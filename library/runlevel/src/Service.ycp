@@ -252,8 +252,11 @@ global define boolean Finetune (string name, list rl) {
 }
 
 /**
+ * Check if service is enabled
+ *
  * Returns true if any link in /etc/init.d/rc?.d/ exists for this
  * script. If service does not exist, logs an error.
+ *
  * @param name service name
  * @return true if service is set to run in any runlevel
  */
@@ -280,6 +283,8 @@ global define integer RunInitScript (string name, string param) {
 string lang = nil;
 
 /**
+ * Run init script and return output
+ *
  * Run init script and also return its output (stdout and stderr merged).
  * @param name init service name
  * @param param init script argument

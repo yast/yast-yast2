@@ -90,7 +90,8 @@
     map<string, any> commandcache = $[];
 
     /**
-     *  Print a string to /dev/tty in interactive mode, to stderr in non-interactive
+     *  @short Print a String
+     *  @descr Print a string to /dev/tty in interactive mode, to stderr in non-interactive
      *  Suppress printing if there are no commands to be handled (starting GUI)
      *
      *  @param s	the string to be printed
@@ -102,7 +103,8 @@
     }
 
     /**
-     * Print an error message and add the description how to get the help.
+     * @short Print an Error Message
+     * @descr Print an error message and add the description how to get the help.
      * @param message	error message to be printed. Use nil for no message
      */
     global define void Error( string message ) ``{
@@ -118,10 +120,11 @@
     }
 
     /**
-     *  Parse a list of arguments. It checks the validity of the arguments, the type correctness
+     *  @short Parse a list of arguments. 
+     *  @descr It checks the validity of the arguments, the type correctness
      *  and returns the command and its options in a map.
      *  @param arguments	the list of arguments to be parsed
-     *  @return map		containing the command and it's option. In case of
+     *  @return map<string, any>	containing the command and it's option. In case of
      *				error it is an empty map.
      */
     global define map<string, any> Parse (list<any> arguments) ``{
@@ -478,7 +481,8 @@
     }
 
     /**
-     *  Initialize the module, setup the command line syntax and arguments passed on the command line.
+     *  @short Initialize Module
+     *  @descr Initialize the module, setup the command line syntax and arguments passed on the command line.
      *
      *  @param cmdlineinfo		the map describing the module command line
      *  @param args			arguments given by the user on the command line
@@ -622,9 +626,8 @@
     }
 
     /**
-     * Scan a command line from stdin, return it split into a list
-     *
-     * @return list the list of command line parts, nil for end of file
+     * @short Scan a command line from stdin, return it split into a list
+     * @return list<string> the list of command line parts, nil for end of file
      */
     global define list<string> Scan() ``{
 	string res = (string)SCR::Read( .dev.tty );
@@ -634,8 +637,8 @@
 
     /**
      * Set prompt and read input from command line
-     * @param propmt Set prompt
-     * @param echo If false input is not displayed
+     * @param prompt Set prompt
+     * @param type Type
      * @return string Entered string
      */
     define string GetInput(string prompt, symbol type) ``{
@@ -673,7 +676,8 @@
     }
 
     /**
-     * Read input from command line, input is not displayed and not stored in
+     * @short Read input from command line
+     * @descr Read input from command line, input is not displayed and not stored in
      * the command line history. This function should be used for reading a password.
      * @param prompt Set prompt to this value
      * @return string Entered string
@@ -683,7 +687,8 @@
     }
 
     /**
-     *  Get next user-given command. If there is a command available, returns it, otherwise ask
+     *  @short Get next user-given command
+     *  @descr Get next user-given command. If there is a command available, returns it, otherwise ask
      *  the user for a command (in interactive mode). Also processes system commands.
      *
      *  @return map of the new command. If there is no more commands, it returns exit or quit depending
@@ -789,7 +794,8 @@
     }
 
     /**
-     * Check uniqueness of an option. Simply pass the list of user-specified
+     * @short Check uniqueness of an option
+     * @descr Check uniqueness of an option. Simply pass the list of user-specified
      * options and a list of mutually exclusive options. In case of
      * error, Report::Error is used.
      *
@@ -877,7 +883,8 @@ boolean RunMapFunction( boolean(map<string,string>) funct,
 }
 
 /**
- * Function to parse the command line, start a GUI or handle interactive and
+ * @short Parse the Command Line
+ * @descr Function to parse the command line, start a GUI or handle interactive and
  * command line actions as supported by the @ref CommandLine module.
  *
  * @param commandline	a map used in the CommandLine module with information

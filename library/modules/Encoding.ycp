@@ -53,7 +53,7 @@ global define string Restore() {
 
 /**
  * Set Encoding Language
- * @param string new_lang New Language
+ * @param new_lang New Language
  * @return void
  */
 global void SetEncLang( string new_lang )
@@ -75,7 +75,7 @@ global string GetEncLang()
 
 /**
  * Set UTF8 Language
- * @param string new_utf8 New UTF8 Language
+ * @param  new_utf8 New UTF8 Language
  * @return void
  */
 global void SetUtf8Lang( boolean new_utf8 )
@@ -112,7 +112,7 @@ map lang_map = $[ "ja_JP" : "932",
 
 /**
  * Get Code Page
- * @param string enc Encoding
+ * @param enc Encoding
  * @return string
  */
 global define string GetCodePage( string enc ) 

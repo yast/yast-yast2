@@ -59,7 +59,7 @@ global string stage () {
 
 /**
  * Set the installation stage
- * @param stage string currently processed stage
+ * @param new_stage string currently processed stage
  */
 global void Set (string new_stage) {
     if (! contains (
