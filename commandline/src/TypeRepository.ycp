@@ -8,9 +8,9 @@
  */
 
 {
-    module "TypeRepository";
 
-//    include "network/ip.ycp";
+    module "TypeRepository";
+    // include "network/ip.ycp";
 
     /* Map of known types, empty initially */
     map types = $[];
@@ -30,11 +30,11 @@
 	} else {
 	    y2error( "Request to validate unknown type %1", type  );
 	}
-    	return false;
+	return false;
     }
 
     /**
-     * Constructor, defines the known types. 
+     * Constructor, defines the known types.
      */
     global define void TypeRepository() ``{
 	types = $[
@@ -50,7 +50,7 @@
      * @return		true if s is string
      */
     define boolean is_string( any s ) ``{
-    	return is( s, string );
+	return is( s, string );
     }
 
 /************************* generic validators *******************************/
@@ -60,10 +60,10 @@
      *
      *  @param regex	the regular expression to be matched
      *  @param value	the value to be matched
-     *  @return 	true if successful
+     *  @return	true if successful
      */
     global define boolean regex_validator( string regex, string value ) ``{
-    	return regexpmatch( value, regex );
+	return regexpmatch( value, regex );
     }
 
     /**
@@ -71,7 +71,7 @@
      *
      *  @param values	a list of possible values
      *  @param value	the value to be matched
-     *  @return 	true if successful
+     *  @return	true if successful
      */
     global define boolean enum_validator( list values, string value ) ``{
 	return contains( values, value );

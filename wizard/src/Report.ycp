@@ -17,6 +17,7 @@ module "Report";
 textdomain "base";
 
 import "Popup";
+import "Summary";
 
 // stored messages
 list errors = [];
