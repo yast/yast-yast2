@@ -1,0 +1,35 @@
+Dump	========================================
+Dump	==========   Common stuff   ============
+Dump	========================================
+Dump	W1: $["_cwm_key":"w1", "custom_widget":nil, "handle":TestFunc::arg2 ("handle_w1"), "init":TestFunc::arg1 ("init_w1"), "label":"Check&Box", "opt":[`notify, `immediate], "validate_function":TestFunc::true2 ("valid_w1"), "validate_type":`function, "widget":`CheckBox (`id ("w1"), `opt (`notify, `immediate), "Check&Box")]
+Dump	W2: $["_cwm_key":"w2", "custom_widget":nil, "handle":TestFunc::arg2 ("handle_w2"), "label":"Text&Entry", "store":TestFunc::arg2 ("save_w2"), "validate_function":TestFunc::true2 ("valid_w2"), "validate_type":`function, "widget":`TextEntry (`id ("w2"), `opt (), "Text&Entry")]
+Dump	========================================
+Dump	Merge functions
+Dump	Merged W1: $["_cwm_key":"w1", "custom_widget":nil, "handle":TestFunc::arg2 ("handle_w1"), "init":TestFunc::arg1 ("init_w1"), "label":"Check&Box", "opt":[`notify, `immediate], "store":TestFunc::arg2 ("generic_save"), "validate_function":TestFunc::true2 ("valid_w1"), "validate_type":`function, "widget":`CheckBox (`id ("w1"), `opt (`notify, `immediate), "Check&Box")]
+Dump	Merged W2: $["_cwm_key":"w2", "custom_widget":nil, "handle":TestFunc::arg2 ("handle_w2"), "init":TestFunc::arg1 ("generic_init"), "label":"Text&Entry", "store":TestFunc::arg2 ("save_w2"), "validate_function":TestFunc::true2 ("valid_w2"), "validate_type":`function, "widget":`TextEntry (`id ("w2"), `opt (), "Text&Entry")]
+Dump	=========================================
+Dump	Init
+Log	Called arg1 as init_w1 with w1
+Log	Called arg1 as generic_init with w2
+Dump	=========================================
+Dump	Handle
+Dump	- Both will run
+Log	Called arg2 as handle_w1 with w1 `event
+Log	Called arg2 as handle_w2 with w2 `event
+Dump	Returned nil
+Dump	- First causes event loop finish
+Log	Called symbol2 as handle_w1 with w1 `event
+Dump	Returned `symbol
+Dump	=========================================
+Dump	Validate
+Dump	- Run both
+Log	Called true2 as valid_w1 with w1 `event
+Log	Called true2 as valid_w2 with w2 `event
+Dump	Returned true
+Dump	- First fails
+Log	Called false1 as valid_w1 with w1 `event
+Dump	Returned false
+Dump	=========================================
+Dump	Save
+Log	Called arg2 as generic_save with w1 `event
+Log	Called arg2 as save_w2 with w2 `event
