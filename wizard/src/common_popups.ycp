@@ -1,4 +1,4 @@
-/**
+`/**
  * Module:              common_popups.ycp
  *
  * Authors:             Gabriele Strattner <gs@suse.de>
@@ -24,8 +24,7 @@
     y2error("Include \"ui/common_popups.ycp\" is obsolete!");
     y2error("Use \"Popup.ycp\" module instead.");
 
-  import "Label";
-
+    include "ui/common_messages.ycp";
 
   UI( ``{
 
@@ -69,8 +68,8 @@
 
 	  any ret = AnyQuestionPopup( headline,
 				      message,
-				      Label::ContinueButton(),
-				      Label::CancelButton(),
+				      ContinueButtonLabel(),
+				      CancelButtonLabel(),
 				      `focus_yes
 				      );
 
@@ -131,8 +130,8 @@
 
 	  any ret = AnyQuestionPopup( headline,
 				      message,
-				      Label::YesButton(),
-				      Label::NoButton(),
+				      YesButtonLabel(),
+				      NoButtonLabel(),
 				      `focus_yes
 				      );
 
@@ -198,7 +197,7 @@
 				    richtext,	// scrolled text
 				    `PushButton( `id(`ok),
 						 `opt(`default, `key_F10),
-						 Label::OKButton() )
+						 OKButtonLabel() )
 				    )
 			     )
 		      );
@@ -304,8 +303,8 @@ You will need to reinstall." );
 
 	  any ret = AnyQuestionPopup( NoHeadline(),
 				      message,
-				      Label::YesButton(),
-				      Label::NoButton(),
+				      YesButtonLabel(),
+				      NoButtonLabel(),
 				      `focus_no );
 
 	  y2debug("ReallyAbortPopup returned: %1", ret );
@@ -339,7 +338,7 @@ You will need to reinstall." );
 				 `Label(message),
 				 `PushButton(`id(`ok),
 					     `opt(`default, `key_F10),
-					     Label::OKButton()),
+					     OKButtonLabel()),
 				 `VSpacing(0.2)
 				 ),
 			   `HSpacing(1)
@@ -433,7 +432,7 @@ You will need to reinstall." );
 
 	  term button_box =  `PushButton( `id(`ok_msg),
 					  `opt(`default, `key_F10),
-					  Label::OKButton() );
+					  OKButtonLabel() );
 	  OpenDialog(
 		     `opt(`decorated),
 		     createPopupLayoutInternal( headline, message, button_box )
@@ -477,14 +476,14 @@ You will need to reinstall." );
 				 `HBox(
 				       // "Stop" button for timeout message: Stop counting down
 				       // (i.e. leave the popup message open without timeout)
-				       `PushButton(`id(`timed_stop), Label::StopButton() ),
+				       `PushButton(`id(`timed_stop), StopButtonLabel() ),
 				       `HSpacing(2),
 
 				       // "OK" button for timeout message: Close popup dialog
 				       // (i.e. confirm the message)
 				       `PushButton(`id(`timed_ok),
 						   `opt(`default, `key_F10),
-						   Label::OKButton() )
+						   OKButtonLabel() )
 				       ),
 				 `VSpacing(0.2)
 				 )
@@ -542,21 +541,21 @@ You will need to reinstall." );
 				 `HBox(
 				       // "Stop" button for timeout message: Stop counting down
 				       // (i.e. leave the popup message open without timeout)
-				       `PushButton(`id(`timed_stop), Label::StopButton() ),
+				       `PushButton(`id(`timed_stop), StopButtonLabel() ),
 				       `HSpacing(2),
 
 				       // "OK" button for timeout message: Close popup dialog
 				       // (i.e. confirm the action in "message")
 				       `PushButton(`id(`timed_ok),
 						   `opt(`default, `key_F10),
-						   Label::OKButton() ),
+						   OKButtonLabel() ),
 				       `HSpacing(2),
 
 				       // "Cancel" button for timeout message: Close popup dialog
 				       // (i.e. cancel the action in "message")
 				       `PushButton(`id(`timed_cancel),
 						   `opt (`key_F9), 
-						   Label::CancelButton() )
+						   CancelButtonLabel() )
 				       ),
 				 `VSpacing(0.2)
 				 )
@@ -767,13 +766,13 @@ You will need to reinstall." );
 				 `Heading(text),
 				 `HBox(
 				     `PushButton(`id(`back),   `opt (`key_F8), 
-						 Label::BackButton()  ),
+						 BackButtonLabel()  ),
 				     `PushButton(`id(`again),  `opt (`key_F6),
-						 Label::RetryButton() ),
+						 RetryButtonLabel() ),
 				     `PushButton(`id(`cancel), `opt (`key_F9),
-						 Label::QuitButton()  ),
+						 QuitButtonLabel()  ),
 				     `PushButton(`id(`next),   `opt (`key_F10),
-						 Label::NextButton()  )
+						 NextButtonLabel()  )
 				       ),
 				 `VSpacing(0.2)
 				 ),
@@ -907,7 +906,7 @@ You will need to reinstall." );
 
 	  term button_box =  `PushButton( `id(`ok_msg),
 					  `opt(`default, `key_F10),
-					  Label::OKButton() );
+					  OKButtonLabel() );
 	  // ok pushbutton: confirm the dialog
 	  OpenDialog(
 		`opt(`decorated),
@@ -1017,7 +1016,7 @@ You will need to reinstall." );
 				      ),
 			    `VSpacing( 0.3 ),
 			    `PushButton( `opt(`default, `key_F10),
-					 Label::OKButton() ),
+					 OKButtonLabel() ),
 			    `VSpacing( 0.3 )
 			    )
 		      );
