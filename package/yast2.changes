@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Aug 19 13:14:02 CEST 2004 - visnov@suse.cz
+
+- allow in commandline also GUI handler returning symbols (#43935)
+ 
+-------------------------------------------------------------------
 Tue Aug 17 11:26:37 CEST 2004 - jsrain@suse.cz
 
 - fixed function type casting in Table/Popup routines
