@@ -24,17 +24,29 @@
 
     textdomain "base";
 
+
     /**
-     * @return	switched	If the kernel was switches during
-     *				installation (e.g. from k_deftl to k_smp)
-     *				(Determines hard boot vs. warm boot).
-     *
-     *				nonsense: We always do a hard reboot since
-     *				ages during installation. The variables is
-     *				used in sw_single and inst_suseconfig.
-     *				FIXME: That must be cleaned up!
+     *  A flag to indicate if a popup informing about the kernel change should
+     *  be displayed by inst_suseconfig.
      */
-    global boolean switched = false;
+    boolean _inform_about_kernel_change = false;
+
+    /**
+     *  Set inform_about_kernel_change.
+     */
+    global define void set_inform_about_kernel_change (boolean b)
+    {
+	_inform_about_kernel_change = b;
+    }
+
+    /**
+     *  Get inform_about_kernel_change.
+     */
+    global define boolean get_inform_about_kernel_change ()
+    {
+	return _inform_about_kernel_change;
+    }
+
 
     /**
      * @return	binary		determines the name of the kernel binary
@@ -199,14 +211,12 @@
 	{
 	    y2milestone ("ProbeKernel: SMP board");
 	    kernel_packages = ["kernel-smp"];
-	    switched = true;
 	}
 
 	if (Arch::is_uml ())
 	{
 	    y2milestone ("ProbeKernel: UML");
 	    kernel_packages = ["kernel-um"];
-	    switched = true;
 	}
 	else if (Arch::i386 ())
 	{
@@ -227,7 +237,6 @@
 	    {
 		y2milestone ("Kernel switch: mem >= 4GB && PAE");
 		kernel_packages = ["kernel-bigsmp"];
-		switched = true;
 	    }
 	}
 	else if (Arch::alpha ())
@@ -235,13 +244,11 @@
 	    if (!Arch::has_smp () && Linuxrc::serial_console ())
 	    {
 		kernel_packages = ["kernel-serial"];
-		switched = true;
 	    }
 	}
 	else if (Arch::ppc ())
 	{
 	    binary = "vmlinux";
-	    switched = false;
 
 	    if (Arch::board_mac_new () || Arch::board_mac_old ())
 	    {
@@ -301,7 +308,6 @@
 	else if (Arch::ia64 ())
 	{
 	    kernel_packages = ["kernel-default"];
-	    switched = true;
 	}
 	else if (Arch::s390 ())
 	{
@@ -311,7 +317,6 @@
 		kernel_packages = ["kernel-s390"];
 
 	    binary   = "image";
-	    switched = true;
 	}
 
 	y2milestone("ProbeKernel determined: %1", kernel_packages);
