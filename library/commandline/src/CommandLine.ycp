@@ -609,13 +609,15 @@
     }
 
     /**
-     *  Print a string to stdout
+     *  Print a string to /dev/tty in interactive mode, to stderr in non-interactive
+     *  Suppress printing if there are no commands to be handled (starting GUI)
      *
      *  @param s	the string to be printed
      */
     global define void Print(string s) ``{
 	if( nocommands ) return;
-	SCR::Write(.dev.tty, s);
+	if( interactive ) SCR::Write(.dev.tty, s);
+	else SCR::Write(.dev.tty.stderr, s);
     }
 
     /**

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jun 26 13:38:26 CEST 2003 - visnov@suse.de
+
+- print to stderr in non-interactive mode 
+
+-------------------------------------------------------------------
 Wed Jun 25 13:11:47 CEST 2003 - visnov@suse.de
 
 - fixed Perl/encoding problem in commandline agent

@@ -20,6 +20,7 @@ The aim of the module is to provide as automatic interface as
 possible for controlling the module. To support interactive
 sessions, the YaST module needs to provide command-handling loop
 similar to concept of event-handling in GUIs.
+
 If the module does not need to do any special handling of the actions,
 it can use the "commandline" include (a wrapper for CommandLine). The
 include defines a single function "CommandLineRun()", which implements
@@ -244,6 +245,12 @@ passed were not correct, the module should stop processing.
 The CommandLine::Command() will do the user interaction if necessary.
 Also, it will handle all supported"system" commands, like "help",
 "exit" and "quit".
+
+Notes
+=====
+
+In interactive mode, the communication uses /dev/tty. In non-interactive commandline
+mode it prints everything to standard error output.
 
 Example usage in YaST module
 ============================

@@ -1,54 +1,54 @@
 Write	.dev.tty.prompt "YaST2 lan> " true
-Write	.dev.tty "\nConfiguration of network cards\n------------------------------\n" true
-Write	.dev.tty "Configuration of network cards" true
-Write	.dev.tty "Basic syntax:" true
-Write	.dev.tty "    yast2 lan <command> [verbose] [options]" true
-Write	.dev.tty "    yast2 lan help" true
-Write	.dev.tty "    yast2 lan longhelp" true
-Write	.dev.tty "    yast2 lan <command> help" true
-Write	.dev.tty "" true
-Write	.dev.tty "Commands:" true
-Write	.dev.tty "    add     add a network card" true
-Write	.dev.tty "    delete  delete a network card" true
-Write	.dev.tty "    list    display configuration summary" true
-Write	.dev.tty "" true
-Write	.dev.tty "Run 'yast2 lan <command> help' for a list of available options." true
-Write	.dev.tty "" true
-Write	.dev.tty "Command 'add'" true
-Write	.dev.tty "    add a network card" true
-Write	.dev.tty "\n    Options:" true
-Write	.dev.tty "        device   [string]     device ID" true
-Write	.dev.tty "        ip       [ipaddress]  device address" true
-Write	.dev.tty "        netmask  [netmask]    network mask" true
-Write	.dev.tty "        blem                  other argument (without spaces and '1')" true
-Write	.dev.tty "        atboot   [ yes no ]   turning on the device at boot" true
-Write	.dev.tty "        help                  print the help for this command" true
-Write	.dev.tty "        verbose               show progress information" true
-Write	.dev.tty "" true
-Write	.dev.tty "Command 'delete'" true
-Write	.dev.tty "    delete a network card" true
-Write	.dev.tty "\n    Options:" true
-Write	.dev.tty "        device   [string]  device ID" true
-Write	.dev.tty "        help               print the help for this command" true
-Write	.dev.tty "        verbose            show progress information" true
-Write	.dev.tty "" true
-Write	.dev.tty "Command 'help'" true
-Write	.dev.tty "    print the help for this module" true
-Write	.dev.tty "\n    Options:" true
-Write	.dev.tty "        help           print the help for this command" true
-Write	.dev.tty "        verbose        show progress information" true
-Write	.dev.tty "" true
-Write	.dev.tty "Command 'list'" true
-Write	.dev.tty "    display configuration summary" true
-Write	.dev.tty "\n    Options:" true
-Write	.dev.tty "        configured          list only configured cards" true
-Write	.dev.tty "        unconfigured        list only not configured cards" true
-Write	.dev.tty "        help                print the help for this command" true
-Write	.dev.tty "        verbose             show progress information" true
-Write	.dev.tty "\n    Example:" true
-Write	.dev.tty "        lan list configured" true
-Write	.dev.tty "" true
-Write	.dev.tty "Command 'longhelp'" true
-Write	.dev.tty "    print a long version of help for this module" true
-Write	.dev.tty "" true
+Write	.dev.tty.stderr "\nConfiguration of network cards\n------------------------------\n" true
+Write	.dev.tty.stderr "Configuration of network cards" true
+Write	.dev.tty.stderr "Basic syntax:" true
+Write	.dev.tty.stderr "    yast2 lan <command> [verbose] [options]" true
+Write	.dev.tty.stderr "    yast2 lan help" true
+Write	.dev.tty.stderr "    yast2 lan longhelp" true
+Write	.dev.tty.stderr "    yast2 lan <command> help" true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Commands:" true
+Write	.dev.tty.stderr "    add     add a network card" true
+Write	.dev.tty.stderr "    delete  delete a network card" true
+Write	.dev.tty.stderr "    list    display configuration summary" true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Run 'yast2 lan <command> help' for a list of available options." true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Command 'add'" true
+Write	.dev.tty.stderr "    add a network card" true
+Write	.dev.tty.stderr "\n    Options:" true
+Write	.dev.tty.stderr "        device   [string]     device ID" true
+Write	.dev.tty.stderr "        ip       [ipaddress]  device address" true
+Write	.dev.tty.stderr "        netmask  [netmask]    network mask" true
+Write	.dev.tty.stderr "        blem                  other argument (without spaces and '1')" true
+Write	.dev.tty.stderr "        atboot   [ yes no ]   turning on the device at boot" true
+Write	.dev.tty.stderr "        help                  print the help for this command" true
+Write	.dev.tty.stderr "        verbose               show progress information" true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Command 'delete'" true
+Write	.dev.tty.stderr "    delete a network card" true
+Write	.dev.tty.stderr "\n    Options:" true
+Write	.dev.tty.stderr "        device   [string]  device ID" true
+Write	.dev.tty.stderr "        help               print the help for this command" true
+Write	.dev.tty.stderr "        verbose            show progress information" true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Command 'help'" true
+Write	.dev.tty.stderr "    print the help for this module" true
+Write	.dev.tty.stderr "\n    Options:" true
+Write	.dev.tty.stderr "        help           print the help for this command" true
+Write	.dev.tty.stderr "        verbose        show progress information" true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Command 'list'" true
+Write	.dev.tty.stderr "    display configuration summary" true
+Write	.dev.tty.stderr "\n    Options:" true
+Write	.dev.tty.stderr "        configured          list only configured cards" true
+Write	.dev.tty.stderr "        unconfigured        list only not configured cards" true
+Write	.dev.tty.stderr "        help                print the help for this command" true
+Write	.dev.tty.stderr "        verbose             show progress information" true
+Write	.dev.tty.stderr "\n    Example:" true
+Write	.dev.tty.stderr "        lan list configured" true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Command 'longhelp'" true
+Write	.dev.tty.stderr "    print a long version of help for this module" true
+Write	.dev.tty.stderr "" true
 Return	false
