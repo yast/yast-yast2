@@ -24,9 +24,8 @@
  * @obsolete Use Commandline::Run instead
  */
 boolean CommandLineRun( map commandline ) {
-    y2warning ("commandline.ycp include is obsolete, use CommandLine::Run instead");
-
-    return (boolean)CommandLine::Run (commandline);
+    y2error ("commandline.ycp include is obsolete, use CommandLine::Run instead");
+    return (boolean) CommandLine::Run (commandline);
 }
 
 /* EOF */
