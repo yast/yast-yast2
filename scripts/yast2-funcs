@@ -37,6 +37,8 @@ function check_qt()
 	if ! `/usr/bin/ldd "$Y2_QT" | grep --quiet "=> not found"` ; then
 	    return 0		# success
 	fi
+	echo "warning: the qt frontend is installed but does not work"
+	sleep 1
     fi
 
     return 1			# failure
@@ -55,6 +57,8 @@ function check_ncurses()
 	if ! `/usr/bin/ldd "$Y2_NCURSES" | grep --quiet "=> not found"` ; then
 	    return 0		# success
 	fi
+	echo "warning: the ncurses frontend is installed but does not work"
+	sleep 1
     fi
 
     return 1			# failure
