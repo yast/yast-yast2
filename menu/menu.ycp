@@ -195,27 +195,27 @@
 	// help text for ncurses control center continous
 	string help1 = _("<p>1) <b>General</b><br>
 Navigate through the dialog elements with
-<TAB> and <SHIFT> + <TAB> or <TAB> and <ALT> + <TAB>.
-Select or activate elements with <SPACE> or <ENTER>.
+[TAB] and [SHIFT] + [TAB] or [TAB] and [ALT] + [TAB].
+Select or activate elements with [SPACE] or [ENTER].
 Some elements use arrow keys.</p>
 ");
 
 	// help text for ncurses control center continous
-	string help2  = _("<p>Buttons are equipped with shortcut keys like <ALT> and a
+	string help2  = _("<p>Buttons are equipped with shortcut keys like [ALT] and a
 letter. Because the environment can affect the use of
 the keyboard, there is more than one way to
 navigate the dialog pages. See the next section.</p>");
 
 	// help text for ncurses control center continous
 	string help3  = _("<p>2) <b>Substitution of Keystrokes</b><br>
-If <TAB> and <SHIFT> + <TAB> or <TAB> and <ALT> + <TAB> do not work,
-move focus forward with <CTRL> + <F> and backward with <CTRL> + <B>.</p>
+If [TAB] and [SHIFT] + [TAB] or [TAB] and [ALT] + [TAB] do not work,
+move focus forward with [CTRL] + [F] and backward with [CTRL] + [B].</p>
 ");
 
 	// help text for ncurses control center continous
-	string help4  = _("<p>If <ALT> + <letter> does not work,
-try <ESC> + <letter>. Example: <ESC> + <H> for <ALT> + <H>.
-<ESC> + <TAB> is also a substitute for <ALT> + <TAB>.</p>
+	string help4  = _("<p>If [ALT] + [letter] does not work,
+try [ESC] + [letter]. Example: [ESC] + [H] for [ALT] + [H].
+[ESC] + [TAB] is also a substitute for [ALT] + [TAB].</p>
 ");
 
 	// help text for ncurses control center continous
