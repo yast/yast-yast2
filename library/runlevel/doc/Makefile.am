@@ -1,10 +1,8 @@
-#
-# Makefile.am for y2c_runlevel/doc
-#
+# Makefile.am for YCP module .../doc
 
 SUBDIRS = autodocs
 
-htmldir = $(docdir)
+htmldir = $(docdir)/runlevel
 
 html_DATA = runlevel.html
 

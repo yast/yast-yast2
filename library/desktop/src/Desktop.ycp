@@ -75,7 +75,7 @@ global define void Read(list<string> Values) ``{
     string name = nil;
 
     path ps = add(AgentPath, "s");
-    list<string> files = SCR::Dir(ps);
+    list<string> files = (list<string>) SCR::Dir(ps);
 
     /* read language */
     Language = WFM::GetLanguage();
@@ -84,7 +84,7 @@ global define void Read(list<string> Values) ``{
     y2debug("%1", Language);
 
     /* read groups */
-    list<string> groups = SCR::Dir(.yast2.groups.s);
+    list<string> groups = (list<string>) SCR::Dir(.yast2.groups.s);
     y2debug("groups=%1", groups);
     foreach(string group, groups, ``{
 	filemap = $[];
@@ -104,7 +104,7 @@ global define void Read(list<string> Values) ``{
     foreach(string file, files, ``{
 	filemap = $[];
 	filepath = AgentPath + .v + file + ."Desktop Entry";
-	list<string> values = SCR::Dir(filepath);
+	list<string> values = (list<string>) SCR::Dir(filepath);
 	if(Values != nil && Values != []) values = Values;
 	foreach(string value, values, ``{
 	    string ret = ReadLocalizedKey(filepath, value);
