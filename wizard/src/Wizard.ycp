@@ -772,6 +772,52 @@
 	current_stage = stage;
     };
 
+    /* ------------------------------------------------------------ */
+    /*
+     * screenshot functions
+     */
 
+    /**
+     * Currently used screenshot name.
+     * Initially, it must match the UI default, "yast2"
+     */
+    string screenshot_name = "yast2";
+    /**
+     * Screenshot names overriden by nested SetScreenShotName calls
+     */
+    list(string) screenshot_name_stack = [];
+
+    /**
+     * Declare a name for the current dialog to ease making screenshots.
+     * By convention, the name is
+     * {rpm-name-without-yast2}-{sorting-prefix}-{description}
+     * The calls may be nested.
+     * @param s eg. "mail-1-conntype"
+     * @see RestoreScreenShotName
+     */
+    global define void SetScreenShotName (string s) ``{
+	screenshot_name_stack = prepend (screenshot_name_stack, screenshot_name);
+	screenshot_name = s;
+	UI::SetModulename (screenshot_name);
+    }
+
+    /**
+     * Restore the screenshot name.
+     * If it does not match a SetScreenShotName, "yast2" is used
+     * and a y2error logged.
+     */
+    global define void RestoreScreenShotName () ``{
+	screenshot_name = screenshot_name_stack[0]:nil;
+	if (screenshot_name == nil)
+	{
+	    screenshot_name = "yast2";
+	    y2error (1, "No screenshot name to restore!");
+	}
+	else
+	{
+	    screenshot_name_stack = remove (screenshot_name_stack, 0);
+	}
+	UI::SetModulename (screenshot_name);
+    }
 
 }
