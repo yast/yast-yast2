@@ -181,5 +181,15 @@ global define string RequiredItem () {
   return _("This item is required to be filled in");
 }
 
+/**
+ * Question: Directory does not exist. Create it?
+ * @return string The directory '%1' does not exist.\nCreate it?
+ */
+global define string DirectoryDoesNotExistCreate (string directory) {
+  /* TRANSLATORS: Popup question */
+  return sformat(_("The directory '%1' does not exist.
+Create it?"), directory);
+}
+
 /* EOF */
 }
