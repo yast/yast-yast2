@@ -19,5 +19,7 @@
 			 false,		// have back button
 			 true );	// have next button
 
-    Wizard::UserInput(); 
+    Wizard::UserInput();
+    UI::CloseDialog();
 }
+
