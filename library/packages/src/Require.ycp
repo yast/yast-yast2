@@ -18,6 +18,7 @@
 
     import "Label";
     import "Popup";
+    import "PackageAI";
     import "PackageCallbacksInit";
     import "Wizard";	// some modules call us without any dialog open
     import "Mode";
@@ -51,14 +52,6 @@
 
     // --- Public interface, functions to initialize pkg target or source
 
-
-
-    /**
-     * Autoinst Packages
-     */
-    global list<string> AutoinstPackages = [];
-    global list<string> AddModulePackages = [];
-    global list<string> RemoveModulePackages = [];
 
 
     /**
@@ -175,7 +168,7 @@
      * @see FooTarget
      */
     define boolean IsPackageInstalledAI (string package) ``{
-	return contains (AutoinstPackages, package);
+	return PackageAI::Installed(package);
     }
 
     // ---------- AreAllPackagesInstalled* ----------
@@ -199,8 +192,7 @@
      * @return true/false
      */
     define boolean AreAllPackagesInstalledAI (list<string> packages) ``{
-	string which = find(string p, packages, ``{ return ! IsPackageInstalledAI (p); });
-	return which == nil;
+	return PackageAI::InstalledAll(packages);
     }
 
     /**
@@ -271,8 +263,7 @@
      * @return true/false
      */
     define boolean IsAnyPackageInstalledAI (list<string> packages) ``{
-	string which = find(string p, packages, ``{ return IsPackageInstalledAI (p); });
-	return which != nil;
+	return PackageAI::InstalledAny(packages);
     }
 
     /**
@@ -426,9 +417,7 @@
      * @return success?
      */
     define boolean DoInstallAndRemoveAI (list<string> toinstall, list<string> toremove) ``{
-	AddModulePackages = toinstall;
-	RemoveModulePackages = toremove;
-	return true;
+	return PackageAI::DoInstallAndRemove(toinstall, toremove);
     }
 
     /**

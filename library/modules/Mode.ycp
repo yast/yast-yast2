@@ -176,6 +176,42 @@
      */
     global map youInstallMap		= $[];
 
+
+    /**
+     * Change Mode
+     * @param string new mode (installation|update|autoinst)
+     * @return void
+     */
+    global void SwitchMode (string new_mode) {
+        y2milestone("Switching to %1 mode", new_mode)
+        if (new_mode == "update")
+        {
+            Mode::mode = "update";
+            Mode::update = true;
+            Mode::installation = false;
+            Mode::autoinst = false;
+        }
+        else if (new_mode == "installation")
+        {
+            Mode::mode = "installation";
+            Mode::update = false;
+            Mode::installation = true;
+            Mode::autoinst = false;
+        }
+        else if (new_mode == "autoinst")
+        {
+            Mode::mode = "autoinst";
+            Mode::update = false;
+            Mode::installation = true;
+            Mode::autoinst = true;
+        }
+        else
+        {
+            y2error("Mode %1 not supported", new_mode);
+        }
+        return;
+    }
+
     //---------------------------------------------------------------
     // constructor
 

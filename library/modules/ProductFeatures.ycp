@@ -97,7 +97,20 @@
      */
     global boolean enable_autologin = true;
 
+    /**
+     * Language
+     */
+    global string language = "";
 
+    /**
+     * Keyboard
+     */
+    global string keyboard = "";
+
+    /**
+     * Timezone
+     */
+    global string timezone = "";
 
 
 
