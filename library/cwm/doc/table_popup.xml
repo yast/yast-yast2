@@ -184,7 +184,7 @@ map options = $[
 ];
 
 global define string enableServiceSummary (
-    any opt_id, any opt_key)
+    any opt_id, string opt_key)
 ``{
     if (settings["enable_service"]:false)
     {
@@ -197,14 +197,14 @@ global define string enableServiceSummary (
 }
 
 global define void enableServiceInit (
-    any opt_id, any opt_key)
+    any opt_id, string opt_key)
 ``{
     UI::ChangeWidget (`id ("enable_service"), `Value,
         settings["__run_dhcp_server"]:false);
 }
 
 global define void enableServiceSave (
-    any opt_id, any opt_key)
+    any opt_id, string opt_key)
 ``{
     settings["__run_dhcp_server"]
         = UI::QueryWidget (`id ("enable_service"), `Value);
@@ -350,7 +350,7 @@ global define map getTableWidget () ``{
     return ret;
 }
 
-global define any id2key (map descr, any opt_id) ``{
+global define string id2key (map descr, any opt_id) ``{
     return opt_id; // 1:1 translation
 }
  </screen></example>
@@ -375,7 +375,7 @@ global define map getTableWidget () ``{
     return ret;
 }
 
-global define any optMove (any opt_id, aby opt_key, symbol direction) ``{
+global define any optMove (any opt_id, string opt_key, symbol direction) ``{
     // modify internal structure appropriate way here
     return true;
 }
