@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar  4 15:47:00 CET 2004 - msvec@suse.cz
+
+- improved the packages testing client
+- fixed ncurses menu generation (#35186)
+
+-------------------------------------------------------------------
 Tue Mar  2 15:50:16 CET 2004 - msvec@suse.cz
 
 - fixed Package interface
