@@ -103,11 +103,6 @@
     global boolean config		= false;
 
     /**
-     * Preparing live-eval cd installation
-     */
-    global boolean live_eval		= false;
-
-    /**
      * this is a beta-version
      */
     global boolean beta			= false;
@@ -379,12 +374,6 @@
             if (repair)
             {
                 mode ="repair";
-            }
-
-	    live_eval = SCR::Read (.etc.install_inf.Demo) == "1";
-            if (live_eval)
-            {
-                mode ="live_eval";
             }
 
 	    text = SCR::Read (.etc.install_inf.Textmode) == "1";
