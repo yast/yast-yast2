@@ -107,7 +107,7 @@ global define string Summary()
 /**
  * Get all the Report configuration from a map.
  * the map may be empty.
- * @param settings Map with settings (keys: "messages", "errors", "warnings"; values: map - see Set())
+ * @param settings Map with settings (keys: "messages", "errors", "warnings"; values: map
  * @return	success
  */
 global define boolean Import(map settings)``{
