@@ -130,6 +130,23 @@
 
 
     /**
+     * Returns a button box with buttons "Abort", "Apply", "Finish"
+     * @return a widget tree
+     **/
+    global define term AbortApplyFinishButtonBox()
+    {
+	return `HBox(
+		     `PushButton(`id(`abort ), Label::AbortButton() ),
+		     `HStretch(),
+		     // button text
+		     `PushButton(`id(`apply), _("&Apply") ),
+		     `HStretch(),
+		     `PushButton(`id(`finish), Label::FinishButton() )
+		     );
+    }
+
+
+    /**
      * Returns a term describing a generic wizard dialog with a configurable
      * button box.
      *
@@ -182,14 +199,6 @@
     //		return UI::WidgetExists(`id(`next) );
     //	}
 
-
-    /**
-     * Check if the topmost dialog has an "Accept" button
-     * @return true if widget with `id(`accept) is present, false otherwise
-     **/
-    global define boolean HasAcceptButton() {
-	return UI::WidgetExists(`id(`accept) );
-    }
 
 
     /**
@@ -274,6 +283,30 @@
 	{
 	    Wizard::OpenDialog( AcceptDialog() );
 	    UI::SetFocus(`id(`accept) );
+	}
+    }
+
+
+    /**
+     * Open a dialog with "Accept", "Cancel"
+     * and set the keyboard focus to "Accept".
+     **/
+    global define void OpenAbortApplyFinishDialog()
+    {
+
+	if ( have_fancy_ui == nil ) Init();
+
+	if ( have_fancy_ui )
+	{
+	    UI::OpenDialog(`opt(`defaultsize ),
+			   `Wizard(`apply,	_( "&Apply" ),
+				   `abort,	Label::AbortButton(),
+				   `finish,	Label::FinishButton() ) );
+	}
+	else
+	{
+	    Wizard::OpenDialog( GenericDialog( AbortApplyFinishButtonBox() ) );
+	    UI::SetFocus(`id(`finish ) );
 	}
     }
 
@@ -597,18 +630,12 @@
 
 
     /**
-     * Enable the wizard's "Abort" (or "Cancel") button.
+     * Enable the wizard's "Abort" button.
      **/
     global define void EnableAbortButton()
     {
 	if ( ! UI::WizardCommand(`EnableAbortButton( true ) ) )
-	{
-	    if ( UI::WidgetExists(`id(`abort ) ) )
 		UI::ChangeWidget(`id(`abort), `Enabled, true );
-	    else
-		UI::ChangeWidget(`id(`cancel), `Enabled, true );
-	    
-	}
     }
 
 
@@ -618,13 +645,7 @@
     global define void DisableAbortButton()
     {
 	if ( ! UI::WizardCommand(`EnableAbortButton( false ) ) )
-	{
-	    if ( UI::WidgetExists(`id(`abort ) ) )
-		UI::ChangeWidget(`id(`abort), `Enabled, false );
-	    else
-		UI::ChangeWidget(`id(`cancel), `Enabled, false );
-	    
-	}
+	    UI::ChangeWidget(`id(`abort), `Enabled, false );
     }
 
 
@@ -674,6 +695,67 @@
     {
 	if ( ! UI::WizardCommand(`EnableBackButton( true ) ) )
 	    UI::ChangeWidget(`id(`back ), `Enabled, true );
+    }
+
+
+    /**
+     * Disable the wizard's "Cancel" button.
+     **/
+    global define void DisableCancelButton()
+    {
+	if ( ! UI::WizardCommand(`EnableCancelButton( false ) ) )
+	    UI::ChangeWidget(`id(`cancel ), `Enabled, false );
+    }
+
+    /**
+     * Enable the wizard's "Cancel" button.
+     **/
+    global define void EnableCancelButton()
+    {
+	if ( ! UI::WizardCommand(`EnableCancelButton( true ) ) )
+	    UI::ChangeWidget(`id(`cancel ), `Enabled, true );
+    }
+
+
+    /**
+     * Retranslate the wizard buttons.
+     **/
+    global define void RetranslateButtons()
+    {
+	// TO DO for YQWizard
+	// TO DO for YQWizard
+	// TO DO for YQWizard
+	
+	if ( UI::WidgetExists(`id(`WizardDialog ) ) )
+	{
+	    ReplaceButtonBox( UI::WidgetExists(`id(`accept ) ) ?
+			      Wizard::AbortAcceptButtonBox() :
+			      Wizard::BackAbortNextButtonBox() );
+	}
+    }
+
+
+    /**
+     * Set the keyboard focus to the wizard's "Next" (or "Accept") button.
+     **/
+    global define void SetFocusToNextButton()
+    {
+	if ( ! UI::WizardCommand(`SetFocusToNextButton() ) )
+	{
+	    UI::SetFocus( UI::WidgetExists(`id(`next) ) ? `id(`next) : `id(`accept ) );
+	}
+    }
+
+    
+    /**
+     * Set the keyboard focus to the wizard's "Back" (or "Cancel") button.
+     **/
+    global define void SetFocusToBackButton()
+    {
+	if ( ! UI::WizardCommand(`SetFocusToBackButton() ) )
+	{
+	    UI::SetFocus( UI::WidgetExists(`id(`back) ) ? `id(`back) : `id(`cancel ) );
+	}
     }
 
 
