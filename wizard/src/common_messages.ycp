@@ -75,6 +75,10 @@
 	  // this is a button label
 	  return _( "&Accept" );
       }
+      global define string DoNotAcceptButtonLabel() ``{
+	  // this is a button label
+	  return _( "&Do Not Accept" );
+      }
       global define string QuitButtonLabel() ``{
 	  // this is a button label
 	  return _( "&Quit" );
