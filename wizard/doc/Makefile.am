@@ -7,7 +7,7 @@ SUBDIRS = autodocs examples
 docdir = @docdir@/wizard
 htmldir = $(docdir)
 
-html_DATA = $(wildcard *.html *.png)
+html_DATA = $(wildcard *.html *.png README*)
 EXTRA_DIST = $(html_DATA)
 
 #common_popups_doc.html	\

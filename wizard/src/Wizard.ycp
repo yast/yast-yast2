@@ -148,11 +148,11 @@
 	    image =
 		`VBox(
 		      `HBox(
-			    `Image( image_path + "topRow_yastLogo.png", "YaST2" ),
+			    `Image( image_path + "topRow_left.png", "YaST2" ),
 			    `HWeight( 1, // Layout trick: Lower layout priority with weight
 				      `HBox(
-					    `Image(`opt(`tiled, `zeroWidth ), image_path + "topRow_tile.png", "" ),
-					    `Image(`opt(`easterEgg ) , image_path + "topRow_suseLogo.png", "SuSE" )
+					    `Image(`opt(`tiled, `zeroWidth ), image_path + "topRow_centerTile.png", "" ),
+					    `Image(`opt(`easterEgg ) , image_path + "topRow_right.png", "SuSE" )
 					    )
 				      )
 			    )
