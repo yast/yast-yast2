@@ -8,24 +8,27 @@
  */
 
 {
-    global define init() ``{
+
+    import "CommandLine";
+
+    define void init() ``{
 	CommandLine::Print("Initialization");
     }
 
-    global define finish() ``{
+    define void finish() ``{
 	CommandLine::Print("Finish");
     }
 
-    global define GUI() ``{
+    define void GUI() ``{
 	CommandLine::Print("GUI");
     }
 
-	global map cmdline = $[
+	map cmdline = $[
 		"help"	: "Configuration of network cards",
 		"id"	: "lan",
-		"initialize"	: ``(init()),
-		"finish"	: ``(finish()),
-		"guihandler"	: ``(GUI()),
+		"initialize"	: init,
+		"finish"	: finish,
+		"guihandler"	: GUI,
 		"actions"	: $[
 			"list"	: $[
 				"help": "display configuration summary",
