@@ -64,6 +64,14 @@
       */
     global boolean delete_old_packages          = true;
 
+
+    /**
+     *  Should the software proposal inform about the fact that the user wants
+     *  to install e.g. i386 on amd64.
+     */
+    global boolean inform_about_suboptimal_distribution = false;
+
+
     /*********************************************************************
       *   Partitioning
      *********************************************************************/

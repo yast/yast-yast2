@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Mar 31 12:20:54 CEST 2004 - arvin@suse.de
+
+- added product feature about suboptimal distribution (bug #36823)
+
+-------------------------------------------------------------------
 Wed Mar 31 10:32:13 CEST 2004 - jsrain@suse.de
 
 - remove ide-scsi from initrd during update (#37591)
