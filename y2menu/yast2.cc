@@ -24,7 +24,7 @@ void printhelp ();
 int parseopt (char *option);
 
 vector < grp_data > groups;
-vector < vector < mod_data > >modules;
+vector < vector < mod_data > > modules;
 vector < string > helptext;
 int sort = BYKEY;
 int yast_mod_auto = 1;
