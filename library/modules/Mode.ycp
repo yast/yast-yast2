@@ -61,6 +61,8 @@ global void Initialize () {
 	    _test = "screenshot";
 	    y2warning("***** Screen shot mode enabled *****");
 	}
+
+	arg_no = arg_no + 1;
     }
 
     // only use the /etc/install.inf agent when file is present
