@@ -340,28 +340,43 @@
      * @param title title of the progress...
      * @param stages list of stage descriptions
      */
-    global define void OpenSuperior (string title, list<string> stages) ``{
-	term left = `VBox (`VStretch ());
-	term right = `VBox (`VStretch ());
-	integer idx = 0;
-	super_steps = size (stages);
-	super_step = -1;
-	foreach (string i, stages, ``{
-	    string id = sformat ("super_progress_%1", idx);
-	    left = add (left, `Heading (`id (id), "-  "));
-	    right = add (right, `Label (`opt (`hstretch), i));
-	    left = add (left, `VStretch ());
-	    right = add (right, `VStretch ());
-	    idx = idx + 1;
-	});
-	left = add (left, `HSpacing (4));
-	right = add (right, `HStretch ());
+    global define void OpenSuperior (string title, list<string> stages)
+    {
+	if (UI::HasSpecialWidget(`Wizard))
+	{
+	    Wizard::OpenAcceptAbortStepsDialog();
+	    UI::WizardCommand(`AddStepHeading(title));
 
-	// FIXME: ReplaceHelp is no longer available!
-	// FIXME
-	// FIXME
-	// FIXME
-	Wizard::ReplaceHelp (`VBox (
+	    integer idx = 0;
+	    super_steps = size (stages);
+	    super_step = -1;
+	    foreach (string s, stages,
+	    {
+		string id = sformat ("super_progress_%1", idx);
+		UI::WizardCommand (`AddStep (s, id));
+
+	    });
+	    UI::WizardCommand(`UpdateSteps() );
+	}
+	else						// old behaviour
+	{
+	    term left = `VBox (`VStretch ());
+	    term right = `VBox (`VStretch ());
+	    integer idx = 0;
+	    super_steps = size (stages);
+	    super_step = -1;
+	    foreach (string i, stages,
+	    {
+		string id = sformat ("super_progress_%1", idx);
+		left = add (left, `Heading (`id (id), "-  "));
+		right = add (right, `Label (`opt (`hstretch), i));
+		left = add (left, `VStretch ());
+		right = add (right, `VStretch ());
+		idx = idx + 1;
+	    });
+	    left = add (left, `HSpacing (4));
+	    right = add (right, `HStretch ());
+	    Wizard::ReplaceHelp (`VBox (
 		    `HBox (
 			`HSpacing (1),
 			`Frame (
@@ -372,16 +387,20 @@
 		    `VSpacing (0.5)
 		    )
 		);
-	// FIXME
-	// FIXME
-	// FIXME
-	// FIXME
+	}
     }
     /**
      * Replaces stages of superior progress by an empty help text.
      */
     global define void CloseSuperior () ``{
-	Wizard::RestoreHelp ("");
+	if (UI::HasSpecialWidget(`Wizard))
+	{
+	    UI::CloseDialog();
+	}
+	else
+	{
+	    Wizard::RestoreHelp ("");
+	}
 	super_steps = 0;
 	super_step = 0;
     }
@@ -390,11 +409,25 @@
      */
     global define void StepSuperior () ``{
 	if (super_step >= 0 && super_step < super_steps)
-	    UI::ChangeWidget (`id (sformat ("super_progress_%1", super_step)), `Value, UI::Glyph (`CheckMark));
+	{
+	    if (!UI::HasSpecialWidget(`Wizard))
+	    {
+		UI::ChangeWidget (`id (sformat ("super_progress_%1", super_step)), `Value, UI::Glyph (`CheckMark));
+	    }
+	}
 	super_step = super_step + 1;
 	if (super_step >= super_steps)
+	{
 	    return;
-	UI::ChangeWidget (`id (sformat ("super_progress_%1", super_step)), `Value, UI::Glyph (`BulletArrowRight));
+	}
+	if (UI::HasSpecialWidget(`Wizard))
+	{
+	    UI::WizardCommand (`SetCurrentStep (sformat ("super_progress_%1", super_step)));
+	}
+	else
+	{
+	    UI::ChangeWidget (`id (sformat ("super_progress_%1", super_step)), `Value, UI::Glyph (`BulletArrowRight));
+	}
     }
 
 /* EOF */
