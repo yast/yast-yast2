@@ -8,7 +8,7 @@
 [Y2Module remotechooser]
 
 ; name of the entry, shown in y2cc
-Name = _("Remote administration")
+Name = _("Remote Administration")
 
 ; "raw" group name to which this module belongs
 ; see /usr/lib/YaST2/etc/y2controlcentericons.y2cc for valid values
