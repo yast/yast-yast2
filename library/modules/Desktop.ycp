@@ -11,6 +11,7 @@
 
 module "Desktop";
 textdomain "base";
+import "Map";
 
 /**
  * YaST configuration modules
@@ -23,9 +24,14 @@ global map Modules = $[];
 global map Groups = $[];
 
 /**
- * The optional agent path to the desktop files
+ * Optional agent path to the desktop files
  */
 global path AgentPath = .yast2.desktop;
+
+/**
+ * Optional language for reading translated entries
+ */
+global string Language = "";
 
 /**
  * Read module and group data from desktop files
@@ -75,6 +81,54 @@ global define void Read(list Values) ``{
 	}
     });
 
+}
+
+/**
+ */
+define list CreateList(map M) ``{
+    list keys = Map::Keys(M);
+    keys = sort(string x, string y, keys, ``{
+	return M[x, "SortKey"]:"" <= M[y, "SortKey"]:"";
+    });
+    y2debug("keys=%1", keys);
+
+    return maplist(string name, keys, ``{
+	return `item(`id(name), Translate(M[name, "Name"]:"???"));
+    });
+}
+
+/**
+ */
+global define list GroupList() ``{
+    return CreateList(Groups);
+}
+
+/**
+ */
+global define list ModuleList(string group) ``{
+    map m = filter(string k, map v, Modules, ``{
+	return contains(Groups[group, "modules"]:[], k);
+    });
+    y2debug("%1", m);
+    // Translation and sorting not required:
+    // return CreateList(m);
+
+    string key = "Name";
+    if(Language != "" && Language != "") key = sformat("Name[%1]", Language);
+
+    return maplist(string name, Map::Keys(m), ``{
+	return `item(`id(name), m[name, key]:(m[name, "Name"]:"???"));
+    });
+}
+
+/**
+ */
+define string Translate(string key) ``{
+    if(regexpmatch(key, "_\\(\"(.*)\"\\)") == true) {
+        locale ke = regexpsub(key, "_\\(\"(.*)\"\\)", "\\1");
+        key = eval(ke);
+    }
+    return key;
 }
 
 /* EOF */
