@@ -10,7 +10,7 @@
 
 {
 
-module "Package";
+module "PackageAI";
 textdomain "base";
 
 global list<string> Packages = [];
