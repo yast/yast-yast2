@@ -20,7 +20,7 @@
 
 // local variables
 
-    map processed_widget = $[];
+    map<string, any> processed_widget = $[];
 
 // local functions
 
@@ -68,10 +68,10 @@
       * @return boolean true if validation succeeded
       */
     define boolean ValidateValueType (string key, any value, any widget) ``{
-	map types = $[
-	    "handle" : "term",
-	    "init" : "term",
-	    "store" : "term",
+	map<string, string> types = $[
+//	    "handle" : "term",
+//	    "init" : block<void(any)>,
+//	    "store" : "term",
 	    "handle_events" : "list",
 	    "custom_widget" : "term",
 	    "help" : "string",
@@ -84,18 +84,37 @@
 	    "_cwm_attrib" : "map",
 	    "add_items" : "list",
 	    "fallback" : "map",
-	    "ids" : "term",
-	    "option_delete" : "term",
+//	    "ids" : "term",
+//	    "option_delete" : "term",
 	    "options" : "map",
-	    "id2key" : "term",
+//	    "id2key" : "term",
 	    "optional" : "boolean",
-	    "summary" : "term",
-	    "validate_function" : "term",
+//	    "summary" : "term",
+//	    "validate_function" : "term",
 	    "validate_type" : "symbol",
 	];
-	string type = types[key]:nil;
+	string type = (string) (types[key]:nil);
 	boolean success = true;
-	if (type == "term")
+	if (type == nil)
+	{
+	    if (key == "init")
+		success = is (value, block<void(any)>);
+	    else if (key == "handle")
+		success = is (value, block<symbol(any,map)>);
+	    else if (key == "store")
+		success = is (value, block<void(any,map)>);
+	    else if (key == "id2key")
+		success = is (value, block<any(map,any)>);
+	    else if (key == "ids")
+		success = is (value, block<list(map)>);
+	    else if (key == "option_delete")
+		success = is (value, block<boolean(any,any)>);
+	    else if (key == "summary")
+		success = is (value, block<string()>);
+	    else if (key == "validate_function")
+		success = is (value, block<boolean(any,map)>);
+	}
+	else if (type == "term")
 	    success = is (value, term);
 	else if (type == "string")
 	    success = is (value, string);
@@ -168,11 +187,12 @@
 
     /**
       * Add fallback functions to a widget
+      * global only because of testsuites
       * @param widgets a list of widget desctiption maps
       * @param functions map of functions
       * @return a list of modified widget description maps
       */
-    define list<map> mergeFunctions (list<map> widgets, map functions)``{
+    global define list<map> mergeFunctions (list<map> widgets, map functions)``{
 	functions = filter (`k, `v, functions, ``(k != "abort"));
 	return maplist (map w, widgets, ``(
 	    union (functions, w)
@@ -181,36 +201,38 @@
 
     /**
       * Set widgets according to internally stored settings
+      * global only because of testsuites
       * @param widgets list of maps represenging widgets
       */
-    define void initWidgets (list widgets) ``{
-        foreach (map w, widgets, ``{
+    global define void initWidgets (list widgets) ``{
+        foreach (map<string, any> w, widgets, ``{
 	    processed_widget = w;
-	    term toEval = w["init"]:nil;
+	    void(string) toEval = (void(string)) (w["init"]:nil);
 	    if (toEval != nil)
 	    {
-		eval (add (toEval, w["_cwm_key"]:""));
+		toEval (w["_cwm_key"]:"");
 	    }
         });
     }
 
     /**
       * Handle change of widget after event generated
+      * global only because of testsuites
       * @param widgets list of maps represenging widgets
       * @param event_descr map event that occured
       * @return symbol modified action (sometimes may be needed) or nil
       */
-    define symbol handleWidgets (list widgets, map event_descr) ``{
+    global define symbol handleWidgets (list widgets, map event_descr) ``{
         symbol ret = nil;
-        foreach (map w, widgets, ``{
+        foreach (map<string, any> w, widgets, ``{
 	    if (ret == nil)
 	    {
 		processed_widget = w;
-		term t = w["handle"]:nil;
-		list events = w["handle_events"]:[];
-		if (t != nil && (events == [] || contains (events, event_descr["ID"]:nil)))
+		list<any> events = w["handle_events"]:[];
+		symbol (string, map) toEval = (symbol(string, map)) (w["handle"]:nil);
+		if (toEval != nil && (events == [] || contains (events, (any) (event_descr["ID"]:nil))))
 		{
-                    ret = (symbol)(eval (add (add (t, w["_cwm_key"]:""), event_descr)));
+                    ret = toEval (w["_cwm_key"]:"", event_descr);
 		}
 	    }
         });
@@ -219,15 +241,16 @@
 
     /**
       * Save changes of widget after event generated
+      * global only because of testsuites
       * @param widgets list of maps represenging widgets
       * @param event map event that occured
       */
-    define void saveWidgets (list widgets, map event) ``{
-        foreach (map w, widgets, ``{
-            term t = w["store"]:nil;
-            if (t != nil)
+    global define void saveWidgets (list widgets, map event) ``{
+        foreach (map<string, any> w, widgets, ``{
+            void(string, map) toEval = (void(string, map)) (w["store"]:nil);
+            if (toEval != nil)
             {
-                eval (add (add (t, w["_cwm_key"]:""), event));
+		toEval (w["_cwm_key"]:"", event);
             }
         });
     }
@@ -238,7 +261,7 @@
       * Return description map of currently processed widget
       * @return map description map of currently processed widget
       */
-    global define map GetProcessedWidget () ``{
+    global define map<string, any> GetProcessedWidget () ``{
 	return processed_widget;
     }
 
@@ -300,8 +323,8 @@
       * @param widget_descr map widget description map
       * @return map modified widget description map
       */
-    global define map prepareWidget (map widget_descr) ``{
-	map w = widget_descr;
+    global define map<string, any> prepareWidget (map<string, any> widget_descr) ``{
+	map<string, any> w = widget_descr;
 	symbol widget = w["widget"]:`textentry;
 	if (w["widget"]:nil == `custom && w["custom_widget"]:nil != nil)
 	{
@@ -309,7 +332,15 @@
 	}
 	else if (w["widget"]:nil == `func)
 	{
-	    w["widget"] = eval (w["widget_func"]:nil);
+	    term () toEval = (term()) (w["widget_func"]:nil);
+	    if (toEval != nil)
+	    {
+		w["widget"] = toEval ();
+	    }
+	    else
+	    {
+		w["widget"] = `VBox ();
+	    }
 	}
 	else
 	{
@@ -369,22 +400,19 @@
       * Validate single widget
       * @param widget widget description map
       * @param event map event that caused validation
-      * @param args list of arguments to be added to widget validation function
+      * @param key widget key for validation by function
       * @return true if validation succeeded
       */
-    global define boolean validateWidget (map widget, map event, list args) ``{
+    global define boolean validateWidget (map<string, any> widget, map event, string key) ``{
 	processed_widget = widget;
 	boolean failed = false;
 	symbol val_type = (symbol) (widget["validate_type"]:nil);
 	if (val_type == `function)
 	{
-	    term t = (term) (widget["validate_function"]:nil);
-	    if (t != nil)
+	    boolean (string, map) toEval = (boolean(string, map)) (widget["validate_function"]:nil);
+	    if (toEval != nil)
 	    {
-		foreach (any a, args, ``{
-		    t = add (t, a);
-		});
-		return (boolean) (eval (add (t, event)));
+		return toEval (key, event);
 	    }
 	}
 	else if (val_type == `regexp)
@@ -428,9 +456,9 @@
       */
     global define boolean validateWidgets (list widgets, map event) ``{
 	boolean result = true;
-	foreach (map w, widgets, ``{
-	    string widget_key = (string) (w["_cwm_key"]:"");
-	    result = result && validateWidget (w, event, [widget_key]);
+	foreach (map<string, any> w, widgets, ``{
+	    string widget_key = (string)(w["_cwm_key"]:"");
+	    result = result && validateWidget (w, event, widget_key);
 	});
 	return result;
     }
@@ -441,17 +469,17 @@
       * @param source the map containing the widgets
       * @return list of maps representing widgets
       */
-    global define list CreateWidgets (list names, map source) ``{
+    global define list<map<string,any> > CreateWidgets (list names, map source) ``{
 	ValidateMaps (source); // FIXME find better place
-	list ret = maplist (any w, names, ``{
-	    map m = source[w]:$[];
+	list<map<string,any> > ret = maplist (any w, names, ``{
+	    map<string,any> m = source[w]:$[];
 	    // leave add here in order to make a copy of the structure
 	    // eval isn't usable because the map may contain terms, that can't
 	    // be evaluated here
-	    m = add (m, "_cwm_key", w);
+	    m = (map<string,any>)add (m, "_cwm_key", w);
 	    return m;
         });
-	ret = maplist (map w, ret, ``{
+	ret = maplist (map<string, any> w, ret, ``{
 	    return prepareWidget (w);
 	});
 	return ret;
@@ -464,7 +492,7 @@
       * @return string merged helps of the widgets
       */
     global define string MergeHelps (list<map> widgets) ``{
-	list<string> helps = maplist (map w, widgets, ``((string)(w["help"]:nil)));
+	list<string> helps = maplist (map<string, any> w, widgets, ``((string)(w["help"]:nil)));
 	helps = filter (`h, helps, ``(h != nil));
 	return mergestring (helps, "\n");
     }
@@ -483,7 +511,18 @@
 	    return dialog;
 	map m = listmap (map w, widgets, ``{
 	    any widget_key = w["_cwm_key"]:"";
-	    return [widget_key, w];
+	    if (is (widget_key, string))
+	    {
+		return $[(string)widget_key: w];
+	    }
+	    else if (is (widget_key, symbol))
+	    {
+		return $[(symbol)widget_key: w];
+	    }
+	    else if (is (widget_key, integer))
+	    {
+		return $[(integer)widget_key: w];
+	    }
 	});
 	return ProcessTerm (dialog, m);
     }
@@ -495,17 +534,17 @@
       *   with the widgets.
       * @return symbol wizard sequencer symbol
       */
-    global define symbol Run (list widgets, map functions) ``{
+    global define symbol Run (list<map> widgets, map<symbol, any> functions) ``{
 	widgets = mergeFunctions (widgets, functions);
 	initWidgets (widgets);
 	symbol ret = nil;
 	list save_exits = [`next, `ok];
 	boolean save = false;
-	map event_descr = $[];
+	map<string, any> event_descr = $[];
         while (ret != `back && ret != `abort && ! save)
         {
-	    event_descr = (map)UI::WaitForEvent ();
-	    ret = event_descr["ID"]:nil;
+	    event_descr = (map<string, any>) UI::WaitForEvent ();
+	    ret = (symbol) (event_descr["ID"]:nil);
 	    symbol handle_ret = handleWidgets (widgets, event_descr);
 	    if (handle_ret != nil || contains (save_exits, ret))
 	    {
@@ -523,9 +562,12 @@
 	    {
 		if (functions[ret]:nil != nil)
 		{
-		    term to_eval = functions[ret]:nil;
-		    any eval_ret = eval (to_eval);
-		    ret = (boolean)eval_ret ? `abort : nil;
+		    boolean () toEval = (boolean()) (functions[ret]:nil);
+		    if (toEval != nil)
+		    {
+			boolean eval_ret = toEval ();
+			ret = eval_ret ? `abort : nil;
+		    }
 		}
 	    }
 
@@ -565,9 +607,9 @@
       */
     global define symbol ShowAndRun (list widget_names, map widget_descr,
 	term contents, string caption, string back_button, string next_button,
-	map fallback)
+	map<symbol, any> fallback)
     ``{
-	list w = CreateWidgets (widget_names, widget_descr);
+	list<map> w = CreateWidgets (widget_names, widget_descr);
 	string help = MergeHelps (w);
 	contents = PrepareDialog (contents, w);
 	Wizard::SetContentsButtons (caption, contents, help,

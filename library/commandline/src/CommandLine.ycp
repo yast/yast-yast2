@@ -444,10 +444,10 @@
      *  @see Command
      */
     global define boolean Init (map cmdlineinfo, list args) ``{
-
+	any id_string = cmdlineinfo["id"]:nil;
 	// sanity checks on cmdlineinfo
 	// check for id string , it must exist, and non-empty
-	if( cmdlineinfo["id"]:"" == "" || ! is( cmdlineinfo["id"]:nil, string ) ) {
+	if( id_string == "" || ! is( id_string, string ) ) {
 	    y2error( "Command line specification does not define module id" );
 
 	    // use 'unknown' as id
@@ -717,7 +717,7 @@
 	);
 
 	// if it is OK, quickly return
-	if( size( cmds ) == 1 ) return cmds[0]:nil;
+	if( size( cmds ) == 1 ) return (string)(cmds[0]:nil);
 
 	// something is wrong, prepare the error report
 	integer i = 0;
@@ -745,7 +745,7 @@
 	    return nil;
 	}
 
-	return cmds[0]:nil;
+	return (string)(cmds[0]:nil);
     }
 
 /* EOF */

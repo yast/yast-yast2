@@ -18,15 +18,15 @@
 {
     include "testsuite.ycp";
     import "CWM";
-    import "./tests/TestFunc.yh";
+    include "./tests/testfunc.yh";
 
 
     map functions = $[
-	"init" : ``(TestFunc::arg1 ("generic_init")),
-	"store" : ``(TestFunc::arg2 ("generic_save")),
+	"init" : generic_init,
+	"store" : generic_save,
     ];
 
-    list(string) widget_names = [ "w1", "w2" ];
+    list<string> widget_names = [ "w1", "w2" ];
 
     any ret = nil;
 
@@ -34,7 +34,7 @@
     DUMP ("==========   Common stuff   ============");
     DUMP ("========================================");
 
-    list(map) widget_data = CWM::CreateWidgets (widget_names, TestFunc::widgets);
+    list<map> widget_data = CWM::CreateWidgets (widget_names, widgets);
     DUMP (sformat ("W1: %1", widget_data[0]:nil));
     DUMP (sformat ("W2: %1", widget_data[1]:nil));
 
@@ -56,7 +56,7 @@
     ret = CWM::handleWidgets (widget_data, $[ "ID" : `event]);
     DUMP (sformat ("Returned %1", ret));
     DUMP ("- First causes event loop finish");
-    widget_data[0, "handle"] = ``(TestFunc::symbol2 ("handle_w1"));
+    widget_data[0, "handle"] = w1_handle_symbol;
     ret = CWM::handleWidgets (widget_data, $[ "ID" : `event]);
     DUMP (sformat ("Returned %1", ret));
 
@@ -66,7 +66,7 @@
     ret = CWM::validateWidgets (widget_data, $[ "ID" : `event]);
     DUMP (sformat ("Returned %1", ret));
     DUMP ("- First fails");
-    widget_data[0, "validate_function"] = ``(TestFunc::false2 ("valid_w1"));
+    widget_data[0, "validate_function"] = w1_validat_false;
     ret = CWM::validateWidgets (widget_data, $[ "ID" : `event]);
     DUMP (sformat ("Returned %1", ret));
 

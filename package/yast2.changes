@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jan 19 08:52:19 CET 2004 - jsrain@suse.de
+
+- merged the new interpreter branch
+
+-------------------------------------------------------------------
 Mon Dec 15 15:58:45 CET 2003 - jsrain@suse.de
 
 - Moved Label.ycp and Popup.ycp from source/yast2/library/wizard/src
