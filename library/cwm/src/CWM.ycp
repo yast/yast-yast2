@@ -39,7 +39,7 @@
       * @param widgets map of widget name -> widget description map
       * @return term updated term ready to be used as a dialog
       */
-    define term ProcessTerm (term t, map widgets) ``{
+    define term ProcessTerm (term t, map<string,map<string,any> > widgets) ``{
 	integer args = size (t);
 	if (args == 0)
 	    return t;
@@ -64,7 +64,7 @@
 	    }
 	    else if (is (arg, string))
 	    {
-		arg = widgets[arg, "widget"]:`VBox ();
+		arg = widgets[(string)arg, "widget"]:`VBox ();
 	    }
 	    ret = add (ret, arg);
 	    index = index + 1;
@@ -80,7 +80,7 @@
       * @param widget any name of the widget/option
       * @return boolean true if validation succeeded
       */
-    define boolean ValidateValueType (string key, any value, any widget) ``{
+    define boolean ValidateValueType (string key, any value, string widget) {
 	map<string, string> types = $[
 //	    "handle" : "term",
 //	    "init" : block<void(any)>,
@@ -168,7 +168,7 @@
       * @param widget any name of the widget/option
       * @return boolean true if validation succeeded
       */
-    define boolean ValidateValueContents (string key, any value, any widget) ``{
+    define boolean ValidateValueContents (string key, any value, string widget){
 	string error = "";
 	if (key == "label")
 	{
@@ -285,6 +285,11 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
         });
     }
 
+    /**
+     * Cleanup after dialog was finished (independently on what event)
+     * global only because of testsuites
+     * @param widgets list of maps represenging widgets
+     */
     global define void cleanupWidgets (list<map<string,any> > widgets) {
         foreach (map<string,any> w, widgets, ``{
 	    processed_widget = w;
@@ -328,14 +333,11 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
       * @param widgets map widgets description map
       * @return boolean true on success
       */
-    global define boolean ValidateMaps (map widgets) ``{
+    global define boolean ValidateMaps (map<string,map<string,any> > widgets) {
 	boolean ret = true;
-	foreach (any k, any av, widgets, ``{
-	    if (!is (av, map)) continue;
-	    map v = (map)av;
-	    foreach (any kk, any vv, v, ``{
-		if (!is (kk, string)) continue;
-		ret = ValidateValueType ((string)kk, vv, k) && ret;
+	foreach (string k, map<string,any> v, widgets, ``{
+	    foreach (string kk, any vv, v, ``{
+		ret = ValidateValueType (kk, vv, k) && ret;
 	    });
 	    list<string> to_check = [];
 	    if (v["widget"]:nil != `custom)
@@ -352,9 +354,7 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 	});
 	if (! ret)
 	    return false;
-	foreach (any k, any av, widgets, ``{
-	    if (!is (av, map)) continue;
-	    map v = (map)av;
+	foreach (string k, map<string,any> v, widgets, ``{
 	    foreach (any kk, map vv, v["options"]:$[], ``{
 		foreach (string kkk, any vvv, vv["table"]:$[], ``{
 		    ret = ValidateValueType (kkk, vvv, k) && ret;
@@ -526,13 +526,13 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 
     /**
       * Read widgets with listed names
-      * @param names list of strings/symbols names of widgets
-      * @param source the map containing the widgets
+      * @param names a list of strings/symbols names of widgets
+      * @param source a map containing the widgets
       * @return list of maps representing widgets
       */
-    global define list<map<string, any> > CreateWidgets (list names, map source) ``{
+    global define list<map<string, any> > CreateWidgets (list<string> names, map<string,map<string,any> > source) ``{
 	ValidateMaps (source); // FIXME find better place
-	list<map<string,any> > ret = maplist (any w, names, ``{
+	list<map<string,any> > ret = maplist (string w, names, ``{
 	    map<string,any> m = source[w]:$[];
 	    // leave add here in order to make a copy of the structure
 	    // eval isn't usable because the map may contain terms, that can't
@@ -552,7 +552,7 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
       * @param widgets a list of widget description maps
       * @return string merged helps of the widgets
       */
-    global define string MergeHelps (list<map> widgets) ``{
+    global define string MergeHelps (list<map<string,any> > widgets) ``{
 	list<string> helps = maplist (map w, widgets, ``((string)(w["help"]:nil)));
 	helps = filter (string h, helps, ``(h != nil));
 	return mergestring (helps, "\n");
@@ -566,24 +566,13 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
       * @param widgets list of widget description maps
       * @return updated term ready to be used as a dialog
       */
-    global define term PrepareDialog (term dialog, list<map> widgets) ``{
+    global define term PrepareDialog (term dialog, list<map<string,any> > widgets) ``{
 	integer args = size (dialog);
 	if (args == 0)
 	    return dialog;
-	map m = listmap (map w, widgets, ``{
-	    any widget_key = w["_cwm_key"]:"";
-	    if (is (widget_key, string))
-	    {
-		return $[(string)widget_key: w];
-	    }
-	    else if (is (widget_key, symbol))
-	    {
-		return $[(symbol)widget_key: w];
-	    }
-	    else if (is (widget_key, integer))
-	    {
-		return $[(integer)widget_key: w];
-	    }
+	map<string,map<string,any> > m = listmap (map<string,any> w, widgets, {
+	    string widget_key = w["_cwm_key"]:"";
+	    return $[(string)widget_key: w];
 	});
 	return ProcessTerm (dialog, m);
     }
@@ -740,6 +729,31 @@ global define void ReplaceWidgetHelp (string widget, string help) {
     }
 
     /**
+     * Display the dialog and run its event loop
+     * @param settings a map of all settings needed to run the dialog
+     */
+    global define symbol ShowAndRun (map<string,any> settings) {
+	list<string> widget_names = settings["widget_names"]:[];
+	map<string,map<string,any> > widget_descr
+	    = settings["widget_descr"]:$[];
+	term contents = settings["contents"]:`VBox ();
+	string caption = settings["caption"]:"";
+	string back_button = settings["back_button"]:"";
+	string next_button = settings["next_button"]:"";
+	string abort_button = settings["abort_button"]:"";
+	map<any,any> fallback = settings["fallback_functions"]:$[];
+
+	list<map <string, any> > w = CreateWidgets (widget_names, widget_descr);
+	string help = MergeHelps (w);
+	contents = PrepareDialog (contents, w);
+	Wizard::SetContentsButtons (caption, contents, help,
+	    back_button, next_button);
+	Wizard::RestoreBackButton ();
+	Wizard::RestoreAbortButton ();
+	return Run (w, fallback);
+    }
+
+    /**
       * Display the dialog and run its event loop
       * @param widget_names list of names of widgets that will be used in the
       *   dialog
@@ -753,18 +767,19 @@ global define void ReplaceWidgetHelp (string widget, string help) {
       *   with the widgets.
       * @return symbol wizard sequencer symbol
       */
-    global define symbol ShowAndRun (list widget_names, map widget_descr,
+    global define symbol ShowAndRunOrig (list<string> widget_names, map<string,map<string,any> > widget_descr,
 	term contents, string caption, string back_button, string next_button,
 	map<any, any> fallback)
     ``{
-	list<map <string, any> > w = CreateWidgets (widget_names, widget_descr);
-	string help = MergeHelps (w);
-	contents = PrepareDialog (contents, w);
-	Wizard::SetContentsButtons (caption, contents, help,
-	    back_button, next_button);
-	Wizard::RestoreBackButton ();
-	Wizard::RestoreAbortButton ();
-	return Run (w, fallback);
+	return ShowAndRun ($[
+	    "widget_names" : widget_names,
+	    "widget_descr" : widget_descr,
+	    "contents" : contents,
+	    "caption" : caption,
+	    "back_button" : back_button,
+	    "next_button" : next_button,
+	    "fallback_functions" : fallback,
+	]);
     }
 
 }
