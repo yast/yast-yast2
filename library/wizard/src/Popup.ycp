@@ -1019,10 +1019,9 @@ You will need to reinstall.");
 					`HBox(
 					      `VSpacing( 18 ),	// force height
 					      `HSpacing( 0.7 ),
-					      `LogView( `id(`text ),
-							headline,
-							3,	// height
-							0 ),	// number of lines to show
+					      `RichText(`id(`text),
+							`opt(`plainText),
+							text),
 					      `HSpacing( 0.7 )
 					      )
 					),
@@ -1032,9 +1031,6 @@ You will need to reinstall.");
 			      `VSpacing( 0.3 )
 			      )
 			);
-
-	// Fill the LogView with file contents
-	UI::ChangeWidget( `id(`text ), `Value, text );
 
 	UI::UserInput();
 	UI::CloseDialog();
