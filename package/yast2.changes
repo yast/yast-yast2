@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Aug 27 11:19:51 CEST 2004 - mvidner@suse.cz
+
+- LogView grep: properly quote the regex; it is a basic regex.
+
+-------------------------------------------------------------------
 Fri Aug 20 06:27:01 CEST 2004 - nashif@suse.de
 
 - Own schema directory

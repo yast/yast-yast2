@@ -10,7 +10,7 @@
  * added lines as the log grows.
  * <pre>
  * LogView::DisplaySimple ("/var/log/messages");
- * LogView::DisplayFiltered ("/var/log/messages", "(tftp|TFTP)");
+ * LogView::DisplayFiltered ("/var/log/messages", "\\(tftp\\|TFTP\\)");
  * LogView::Display ($[
  *          "file" : "/var/log/messages",
  *          "grep" : "dhcpd",
@@ -114,7 +114,7 @@ define void InitLogReading (integer index) {
 	}
 	string grep = log_descr["grep"]:"";
 	if (grep != "" && grep != nil)
-	    grep = sformat ("| grep --line-buffered %1", grep);
+	    grep = sformat ("| grep --line-buffered '%1'", grep);
 	string lc_command
 	    = sformat ("cat %1 %2 | wc -l", log_descr["file"]:"", grep);
 	map bash_output = (map)SCR::Execute (.target.bash_output, lc_command);
@@ -574,7 +574,7 @@ global define symbol LogHandle (string key, map event) {
  * @param log_files a list of logs that will be displayed
  * <pre>
  *  - "file" -- string, filename with the log
- *  - "grep" -- string, regular expression (grep-like) to be grepped
+ *  - "grep" -- string, basic regular expression to be grepped
  *              in the log (for getting relevant  parts of
  *              /var/log/messages. If empty or not present, whole file
  *              is used
@@ -634,7 +634,7 @@ global define map CreateWidget (map<string,any> parameters,
  * @param parameters map description of parameters, with following keys
  * <pre>
  *  - "file" -- string, filename with the log
- *  - "grep" -- string, regular expression (grep-like) to be grepped
+ *  - "grep" -- string, basic regular expression to be grepped
  *              in the log (for getting relevant  parts of
  *              /var/log/messages. If empty or not present, whole file
  *              is used
@@ -734,7 +734,7 @@ global define void DisplaySimple (string file) {
 /**
  * Display log with filtering with 100 lines
  * @param file string filename of file with the log
- * @param grep string regular expression to be grepped in file
+ * @param grep string basic regular expression to be grepped in file
  */
 global define void DisplayFiltered (string file, string grep) {
     Display ($[ "file" : file, "grep" : grep ]);
