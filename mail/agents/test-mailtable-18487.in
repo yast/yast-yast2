@@ -1,0 +1,16 @@
+# even weirder cases
+# for alowed backslashes:
+
+alias1: foobar \
+# this is not a comment
+
+alias2: quux slurped by alias1? \
+# not a comment \
+this: continues the value
+
+alias3: foo
+  bar
+	baz
+
+alias4: blah
+

@@ -1,0 +1,18 @@
+# leading comment
+# precedes a blank line
+
+# leading whitespace means a continuation line
+alias1: destination1
+  destination2
+	destination3
+# backslash before newline means continuation too
+alias2: foobar \
+baz \
+qux
+# now a combination of the two
+alias3: fred \
+  frog\
+  quak
+# trailing
+# comment
+

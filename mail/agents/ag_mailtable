@@ -32,11 +32,15 @@ my $modified;
 my $filename;
 my $linenum;
 my $line_comment;
+my $line = "";
+my $backslashed_line;
 
 my $separator;
 my $oseparator;
 my $continue_escaped_newline;
 my $continue_leading_blanks;
+
+my $debug = defined($ARGV[0]) && $ARGV[0] eq "-d";
 
 #
 # routine to log and return error
@@ -45,6 +49,10 @@ sub log_error ( $ ) {
     my ($err_msg) = @_;
     y2error ($err_msg);
     return "false";
+}
+
+sub dumpit () {
+    print STDERR "line: '$line' line_comment: '$line_comment'\n";
 }
 
 # create a map entry after it has been composed of split lines
@@ -72,8 +80,9 @@ sub parse_line ($)
 sub parse_file ()
 {
     $linenum = 0;
-    my $line = "";
+    $line = "";
     $line_comment = "";
+    $backslashed_line = "";
     my $leading_comment_allowed = 1;
 
     $leading_comment = "";
@@ -91,11 +100,30 @@ sub parse_file ()
     while (<FILE>)
     {
 	++$linenum;
+	dumpit () if ($debug);
+
+	# Escaped newlines: merge them before any other processing.
+	# Is this one escaped?
+	if ($continue_escaped_newline && /\\\n$/)
+	{
+	    print STDERR "$linenum:continued\n" if ($debug);
+	    chomp; # \n
+	    chop; # \\
+	    $backslashed_line .= "$_ ";
+	    next;
+	}
+	# Was there one already?
+	if ($backslashed_line ne "")
+	{
+	    $_ = $backslashed_line . $_;
+	    $backslashed_line = "";
+	}
+
 
 	# Accept comments
 	if (/^\#(.*)/)
 	{
-#	    print STDERR "$linenum:comment\n";
+	    print STDERR "$linenum:comment\n" if ($debug);
 	    $trailing_comment .= "$1\n";
 	}
 	elsif (/^\n$/)
@@ -114,7 +142,7 @@ sub parse_file ()
 	    {
 		if ($continue_leading_blanks)
 		{
-#		    print STDERR "$linenum:leading blanks\n";
+		    print STDERR "$linenum:leading blanks\n" if ($debug);
 		    $line .= $_;
 		    $line_comment .= $trailing_comment;
 		    $trailing_comment = "";
@@ -126,17 +154,7 @@ sub parse_file ()
 	    }
 	    else
 	    {
-
-		if ($continue_escaped_newline && /^.*\\\n$/)
-		{
-#		    print STDERR "$linenum:continued\n";
-		    $line .= $_;
-		    $line_comment = $trailing_comment;
-		    $trailing_comment = "";
-		}
-		else
-		{
-#		    print STDERR "$linenum:regular\n";
+		    print STDERR "$linenum:regular\n" if ($debug);
 		    # a regular line. process the _previous_ one
 		    # because this one might continue
 
@@ -146,7 +164,6 @@ sub parse_file ()
 		    $line = $_;
 		    $line_comment = $trailing_comment;
 		    $trailing_comment = "";
-		}
 	    }
 	}
     }
@@ -232,7 +249,7 @@ else
 
 parse_file ();
 $modified = 0;
-#print STDERR scalar(@table), " items\n";
+print STDERR scalar(@table), " items\n" if ($debug);
 
 while ( <STDIN> )
 {
