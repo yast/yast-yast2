@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Aug 05 18:13:04 CEST 2002 - arvin@suse.de
+
+- adaption for new /etc/install.inf agent
+
+-------------------------------------------------------------------
 Wed Jul 31 13:49:39 CEST 2002 - mvidner@suse.cz
 
 - Moved private runlevel files back to yast2-runlevel.
@@ -13,7 +18,7 @@ Mon Jul 29 11:51:52 CEST 2002 - msvec@suse.cz
 -------------------------------------------------------------------
 Wed Jul 24 19:28:17 CEST 2002 - jsuchome@suse.cz
 
-- Added runlevel module files. 
+- Added runlevel module files.
 
 -------------------------------------------------------------------
 Fri Jul 19 16:50:44 CEST 2002 - mvidner@suse.cz
