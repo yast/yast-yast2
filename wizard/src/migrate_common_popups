@@ -1,0 +1,36 @@
+#!/usr/bin/perl -p -i.bak
+# mvidner@suse.cz, 2003-05-13
+# $Id$
+#
+# migrate usage of common_popups to Popup::
+#
+# usage: migrate_common_popups *.ycp
+#   performs in-place substitution, leaving *.ycp.bak backups
+
+s:include\s+"ui/common_popups.ycp":import "Popup":g;
+
+s/\bNoHeadline\b/Popup::NoHeadline/g; #!
+s/\bContinueCancelHeadlinePopup\b/Popup::ContinueCancelHeadline/g;
+s/\bContinueCancelPopup\b/Popup::ContinueCancel/g;
+s/\bYesNoHeadlinePopup\b/Popup::YesNoHeadline/g;
+s/\bYesNoPopup\b/Popup::YesNo/g;
+s/\bLongTextPopup\b/Popup::LongText/g;
+s/\bConfirmAbortPopup\b/Popup::ConfirmAbort/g;
+s/\bReallyAbortPopup\b/Popup::ReallyAbort/g;
+s/\bMessagePopup\b/Popup::Message/g;
+s/\bWarningPopup\b/Popup::Warning/g;
+s/\bErrorPopup\b/Popup::Error/g;
+s/\bNotifyPopup\b/Popup::Notify/g;
+s/\bAnyMessagePopup\b/Popup::AnyMessage/g;
+s/\bTimedMessagePopup\b/Popup::TimedMessage/g;
+s/\bTimedOKCancelPopup\b/Popup::TimedOKCancel/g;
+s/\bAnyQuestionPopup\b/Popup::AnyQuestion/g;
+s/\bAnyQuestionPopup3\b/Popup::AnyQuestion3/g; #!
+s/\bModuleError\b/Popup::ModuleError/g; #!
+s/\bAnyTimedMessagePopup\b/Popup::AnyTimedMessage/g;
+s/\bTimedWarningPopup\b/Popup::TimedWarning/g;
+s/\bTimedErrorPopup\b/Popup::TimedError/g;
+s/\bShowFilePopup\b/Popup::ShowFile/g;
+
+# most defines were in UI
+s/UI::Popup::/Popup::/g;
