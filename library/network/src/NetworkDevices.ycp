@@ -17,6 +17,7 @@ module "NetworkDevices";
 
 import "Arch";
 import "Map";
+import "String";
 
 /**
  * Current device identifier
@@ -1076,6 +1077,13 @@ global define void Pop() {
     Current = stack["Current"]:$[];
     operation = (symbol) stack["operation"]:nil;
     stack = $[];
+}
+
+/**
+ * #46803: forbid "/" (filename), maybe also "-" (separator) "_" (escape)
+ */
+global string ValidCharsIfcfg () {
+    return String::ValidCharsFilename ();
 }
 
 /* EOF */

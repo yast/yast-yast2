@@ -596,5 +596,16 @@ global string CPrint () {
     return cprint;
 }
 
+/**
+ * Characters valid in a filename (not pathname).
+ * Naturally "/" is disallowed. Otherwise, the graphical ASCII
+ * characters are allowed.
+ * @return string for ValidChars
+ */
+global string ValidCharsFilename () {
+    return deletechars (CGraph (), "/");
+}
+
+
 /* EOF */
 }
