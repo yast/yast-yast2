@@ -7,7 +7,7 @@
  *
  * Provides the wizard dialog (common screen for all YaST2 installation
  * modules) and functions to set the contents, to replace and restore
- * special widgets.
+ * special widgets.
  *
  * $Id$
  */
