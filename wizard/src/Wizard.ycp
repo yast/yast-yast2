@@ -95,7 +95,7 @@
 		     `HStretch(),
 		     `ReplacePoint(`id(`rep_abort), `PushButton(`id(`abort), `opt (`key_F9), AbortButtonLabel() ) ),
 		     `HStretch(),
-		     `HWeight(1, `ReplacePoint(`id(`rep_next ), `PushButton(`id(`next), `opt (`key_F10), NextButtonLabel()  ) ) )
+		     `HWeight(1, `ReplacePoint(`id(`rep_next ), `PushButton(`id(`next), `opt (`key_F10, `default), NextButtonLabel()  ) ) )
 		     );
     };
 
@@ -108,7 +108,7 @@
 	return `HBox(
 		     `HWeight(1, `ReplacePoint(`id(`rep_back ), `PushButton(`id(`back ), `opt (`key_F8), BackButtonLabel()  ) ) ),
 		     `HStretch(),
-		     `HWeight(1, `ReplacePoint(`id(`rep_next ), `PushButton(`id(`next ), `opt (`key_F10), NextButtonLabel()  ) ) )
+		     `HWeight(1, `ReplacePoint(`id(`rep_next ), `PushButton(`id(`next ), `opt (`key_F10, `default), NextButtonLabel()  ) ) )
 		     );
     };
 
@@ -123,7 +123,7 @@
 		     `HStretch(),
 		     `HWeight(1, `PushButton(`id(`cancel ), `opt (`key_F9), CancelButtonLabel()  ) ),
 		     `HStretch(),
-		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10), AcceptButtonLabel()  ) )
+		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10, `default), AcceptButtonLabel()  ) )
 		     );
     };
 
@@ -138,7 +138,7 @@
 		     `HStretch(),
 		     `PushButton(`id(`abort ), `opt (`key_F9), AbortButtonLabel() ),
 		     `HStretch(),
-		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10), AcceptButtonLabel()  ) )
+		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10, `default), AcceptButtonLabel()  ) )
 		     );
     };
 
@@ -706,7 +706,7 @@
 	if ( UI::WidgetExists(`id(`rep_next ) ) )
 	{
 	    UI::ReplaceWidget(`id(`rep_next),
-			      `PushButton(`id(`next), `opt (`key_F10),
+			      `PushButton(`id(`next), `opt (`key_F10, `default),
 					  NextButtonLabel() )
 			      );
 	}
