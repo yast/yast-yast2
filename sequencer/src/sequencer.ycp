@@ -1,7 +1,7 @@
 /**
  * File:	include/wizard/sequencer.ycp
- * Module:	Wizard sequencer
- * Summary:	The wizard sequencer implementation
+ * Module:	yast2
+ * Summary:	Wizard sequencer
  * Authors:	Michal Svec <msvec@suse.cz>
  *
  * $Id$
