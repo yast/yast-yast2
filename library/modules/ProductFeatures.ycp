@@ -53,6 +53,10 @@
      */
     global string fixed_base_selection		= "";
 
+    /**
+     * List of additional kernel dependent packages to add
+     */
+    global list<string> kernel_packages = [];
 
     /**
      * List of additional packages to add

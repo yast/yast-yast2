@@ -87,6 +87,14 @@
 		"kernel-bigsmp" : "kernel-smp",
 		"kernel-smp": "kernel-default" ];
 
+
+
+    /**
+     * @return the final kernel to be installed after verification and
+     * availability checking
+     */
+    global string final_kernel = "";
+
     //---------------------------------------------------------------
     // local defines
 
@@ -373,12 +381,15 @@
 
 	    if (the_kernel != "")
 	    {
+                final_kernel = the_kernel;
                 return the_kernel;
 	    }
 	    else
 	    {
 		y2warning ("%1 not available, using kernel-default",
 			   kernel_packages);
+
+                final_kernel = "kernel-default";
                 return "kernel-default";
 	    }
     }
