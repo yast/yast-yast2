@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep 14 10:51:01 CEST 2004 - jsrain@suse.cz
+
+- added ProductFeatures::enable_firewall and firewall_ssh_enable
+  to control firewall behavior in the proposal
+
+-------------------------------------------------------------------
 Mon Sep 13 11:25:06 CEST 2004 - jsrain@suse.cz
 
 - fixed reordering of items in Table/Popup's table (#45097)
