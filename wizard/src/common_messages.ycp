@@ -18,119 +18,119 @@
   UI (``{
       global define string AddButtonLabel() ``{
 	  // this is a button label
-	  return _( "&Add" );
+	  return _("&Add");
       }
       global define string CancelButtonLabel() ``{
 	  // this is a button label
-	  return _( "&Cancel" );
+	  return _("&Cancel");
       }
       global define string ContinueButtonLabel() ``{
 	  // this is a button label
-	  return _( "C&ontinue" );
+	  return _("C&ontinue");
       }
       global define string YesButtonLabel() ``{
 	  // this is a button label
-	  return _( "&Yes" );
+	  return _("&Yes");
       }
       global define string NoButtonLabel() ``{
 	  // this is a button label
-	  return _( "&No" );
+	  return _("&No");
       }
       global define string FinishButtonLabel() ``{
 	  // this is a button label
-	  return _( "&Finish" );
+	  return _("&Finish");
       }
        global define string EditButtonLabel() ``{
 	  // this is a button label
-	  return _( "Ed&it" );
+	  return _("Ed&it");
       }
       global define string OKButtonLabel() ``{
 	  // this is a button label
-	  return _( "&OK" );
+	  return _("&OK");
       }
       global define string AbortButtonLabel() ``{
 	  // this is a button label
-	  return _( "Abo&rt" );
+	  return _("Abo&rt");
       }
       global define string IgnoreButtonLabel() ``{
 	  // this is a button label
-	  return _( "&Ignore" );
+	  return _("&Ignore");
       }
       global define string NextButtonLabel() ``{
 	  // this is a button label
-	  return _( "&Next" );
+	  return _("&Next");
       }
       global define string NewButtonLabel() ``{
 	  // this is a button label
-	  return _( "Ne&w" );
+	  return _("Ne&w");
       }
       global define string DeleteButtonLabel() ``{
 	  // this is a button label
-	  return _( "Dele&te" );
+	  return _("Dele&te");
       }
       global define string BackButtonLabel() ``{
 	  // this is a button label
-	  return _( "&Back" );
+	  return _("&Back");
       }
       global define string AcceptButtonLabel() ``{
 	  // this is a button label
-	  return _( "&Accept" );
+	  return _("&Accept");
       }
       global define string DoNotAcceptButtonLabel() ``{
 	  // this is a button label
-	  return _( "&Do Not Accept" );
+	  return _("&Do Not Accept");
       }
       global define string QuitButtonLabel() ``{
 	  // this is a button label
-	  return _( "&Quit" );
+	  return _("&Quit");
       }
       global define string RetryButtonLabel() ``{
 	  // this is a button label
-	  return _( "&Retry" );
+	  return _("&Retry");
       }
       global define string HelpButtonLabel() ``{
 	  // this is a button label
-	  return _( "&Help" );
+	  return _("&Help");
       }
       global define string InstallButtonLabel() ``{
 	  // this is a button label
-	  return _( "&Install" );
+	  return _("&Install");
       }
       global define string DontInstallButtonLabel() ``{
 	  // this is a button label
-	  return _( "&Don't install" );
+	  return _("&Don't install");
       }
       global define string DownloadButtonLabel() ``{
 	  // this is a button label
-	  return _( "&Download" );
+	  return _("&Download");
       }
       global define string SaveButtonLabel() ``{
 	  // this is a button label
-	  return _( "&Save" );
+	  return _("&Save");
       }
       global define string StopButtonLabel() ``{
 	  // this is a button label
-	  return _( "&Stop" );
+	  return _("&Stop");
       }
       global define string CloseButtonLabel() ``{
 	  // this is a button label
-	  return _( "C&lose" );
+	  return _("C&lose");
       }
       global define string NotifyMsg() ``{
 	  // this string is usually used as headline of a popup
-	  return _( "Notify" );
+	  return _("Notify");
       }
       global define string WarningMsg() ``{
 	  // this string is usually used as headline of a popup
-	  return _( "Warning" );
+	  return _("Warning");
       }
       global define string ErrorMsg() ``{
 	  // this string is usually used as headline of a popup
-	  return _( "Error" );
+	  return _("Error");
       }
 
       global define string PleaseWaitMsg() ``{
-	  return _( "Please wait..." );
+	  return _("Please wait...");
       }
 
 

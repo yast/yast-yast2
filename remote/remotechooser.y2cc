@@ -18,7 +18,7 @@ Group = Misc
 Icon = default.png
 
 ; *one* *short* descriptive line for y2cc
-Helptext = _("Administrate remote host")
+Helptext = _("Administer Remote Host")
 
 ; arguments, seperated by space
 Arguments =

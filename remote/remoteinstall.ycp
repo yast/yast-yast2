@@ -26,7 +26,7 @@ y2debug("device=%1", device);
 term contents = `HBox(`HSpacing(1), `VBox(
     `VSpacing(0.2),
     /* ComboBox label */
-    `ComboBox(`id(`device), `opt(`editable), _("Choose the serial &interface you want to use:"), [
+    `ComboBox(`id(`device), `opt(`editable), _("Select the Serial &Interface to Use:"), [
 	`item(`id("/dev/ttyS0"), "/dev/ttyS0", device == "/dev/ttyS0"),
 	`item(`id("/dev/ttyS1"), "/dev/ttyS1", device == "/dev/ttyS1"),
     ]),
