@@ -1,0 +1,56 @@
+/**
+ * File:	modules/Map.ycp
+ * Package:	yast2
+ * Summary:	Map manipulation routines
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+module "Map";
+textdomain "base";
+
+/**
+ * Return all keys from the map
+ * @param m the map
+ * @return a list of all keys from the map
+ */
+global define list Keys(map m) ``{
+    if(m == nil || m == $[]) return [];
+    return maplist(any var, any val, m, ``(var));
+}
+
+/**
+ * Return all values from the map
+ * @param m the map
+ * @return a list of all values from the map
+ */
+global define list Values(map m) ``{
+    if(m == nil || m == $[]) return [];
+    return maplist(any var, any val, m, ``(val));
+}
+
+/**
+ * Switch map keys to lower case
+ * @param m input map
+ * @return map with keys converted to lower case
+ */
+global define map KeysToLower(map m) ``{
+    if(m == nil) return $[];
+    return mapmap(string k, string v, m, ``([tolower(k), v]));
+}
+
+/**
+ * Switch map keys to upper case
+ * @param m input map
+ * @return map with keys converted to lower case
+ */
+global define map KeysToUpper(map m) ``{
+    if(m == nil) return $[];
+    return mapmap(string k, string v, m, ``([toupper(k), v]));
+}
+
+/* EOF */
+}
