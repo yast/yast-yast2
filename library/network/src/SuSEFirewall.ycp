@@ -1141,8 +1141,8 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 	    known_interfaces = add(known_interfaces, $[
 		"id" : interface,
 		"type" : "dialup",
-		// FIXME: Hardware YCP module should provide this information
-		"name" : "FIXME: Device Name",
+		// using function to get name
+		"name" : NetworkDevices::GetValue(interface, "NAME"),
 		"zone" : GetZoneOfInterface(interface),
 	    ]);
 	});
@@ -1150,8 +1150,8 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 	foreach (string interface, non_dialup_interfaces, {
 	    known_interfaces = add(known_interfaces, $[
 		"id" : interface,
-		// FIXME: Hardware YCP module should provide this information
-		"name" : "FIXME: Device Name",
+		// using function to get name
+		"name" : NetworkDevices::GetValue(interface, "NAME"),
 		"zone" : GetZoneOfInterface(interface),
 	    ]);
 	});
@@ -1589,7 +1589,14 @@ Run YaST2 Firewall and assign it by hand.
 	return services_status;
     }
 
-    // FIXME: comment
+    /**
+     * Function sets status for several services in several firewall zones.
+     *
+     * @param	list <string> service ids
+     * @param	list <string> firewall zones (EXT|INT|DMZ...)
+     * @param	boolean new status of services
+     * @return	boolean if successfull
+     */
     global define boolean SetServicesForZones (list<string> services_ids, list<string> firewall_zones, boolean new_status) {
 	// no groups == all groups
 	if (size(firewall_zones)==0) firewall_zones = GetKnownFirewallZones();
@@ -1617,7 +1624,14 @@ Run YaST2 Firewall and assign it by hand.
 	});
     }
 
-    // FIXME: comment
+    /**
+     * Function sets status for several services in several network interfaces.
+     *
+     * @param	list <string> service ids
+     * @param	list <string> network interfaces
+     * @param	boolean new status of services
+     * @return	boolean if successfull
+     */
     global define boolean SetServices (list<string> services_ids, list<string> interfaces, boolean new_status) {
 	list<string> firewall_zones = GetZonesOfInterfaces(interfaces);
 	if (size(firewall_zones)==0) {
@@ -2154,7 +2168,12 @@ Run YaST2 Firewall and assign it by hand.
 	if (enable) SETTINGS["FW_ROUTE"] = "yes";
     }
 
-    // FIXME: description
+    /**
+     * Function returns list of rules of forwarding ports
+     * to masqueraded IPs.
+     *
+     * @return	list [$[ key: value ]]
+     */
     global define list <map <string, string> > GetListOfForwardsIntoMasquerade () {
 	list <map <string, string> > list_of_rules = [];
 
@@ -2184,7 +2203,12 @@ Run YaST2 Firewall and assign it by hand.
 	return list_of_rules;
     }
 
-    // FIXME: description
+    /**
+     * Function removes rule for forwarding into masquerade
+     * from the list of current rules.
+     *
+     * @params	integer item number
+     */
     global define void RemoveForwardIntoMasqueradeRule (integer remove_item) {
 	SetModified();
 
@@ -2204,7 +2228,9 @@ Run YaST2 Firewall and assign it by hand.
 	SETTINGS["FW_FORWARD_MASQ"] = mergestring(forward_rules, " ");
     }
 
-    // FIXME:: description
+    /**
+     * Adds forward into masquerade rule.
+     */
     global define void AddForwardIntoMasqueradeRule (
 	string source_net, string forward_to_ip, string protocol, string req_port,
 	string redirect_to_port, string requested_ip

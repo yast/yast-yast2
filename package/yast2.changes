@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 15 15:55:55 CET 2005 - locilka@suse.cz
+
+- added name of the device for configuring interfaces
+- added missing comments for SuSEFirewall functions
+
+-------------------------------------------------------------------
 Mon Feb 14 11:30:44 CET 2005 - jsrain@suse.cz
 
 - added functions to disable and enable the CWM Firewall Interfaces
