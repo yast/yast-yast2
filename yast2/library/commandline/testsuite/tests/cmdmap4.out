@@ -1,0 +1,6 @@
+Log	Command line specification does not define typespec for option 'noenumpoption'
+Log	Command line specification does not define help for option 'nohelpoption'
+Log	Command line specification does not define typespec for option 'noregexoption'
+Return	false
+Return	true
+Return	true

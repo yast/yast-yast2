@@ -1,0 +1,29 @@
+/**
+ * File:	unique1.ycp
+ * Package:	yast2
+ * Summary:	check uniqueness of an option
+ * Author:	Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ *
+ * testedfiles: CommandLine.ycp Report.ycp Testsuite.ycp
+ */
+
+{
+
+    include "testsuite.ycp";
+    import "TypeRepository";
+    import "CommandLine";
+    import "Report";
+
+    // disable use of UI
+    Report::display_errors = false;
+    Report::log_errors = true;
+
+    // fail: add and delete are mutually exclusive
+    TEST(``(CommandLine::UniqueOption($["add":"", "delete":"" ],["add","delete"]) ),[],nil);
+    // pass
+    TEST(``(CommandLine::UniqueOption($["add":"", "share":"" ],["add","delete"]) ),[],nil);
+
+/* EOF */
+}

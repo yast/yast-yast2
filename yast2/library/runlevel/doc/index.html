@@ -1,0 +1,73 @@
+<html><head>
+<title>Services Manipulation</title>
+</head><body bgcolor=#ffffff>
+<!-- Author: Michal Svec <msvec@suse.cz> -->
+<!-- $Id$ -->
+<a name="top"><p>
+<h1>Services Manipulation</h1>
+<hr>
+
+<p>
+This is a set of basic routines for manipulating services.
+
+<p>
+Authors: Martin Vidner &lt;<a href="mailto:mvidner@suse.czi">mvidner@suse.cz</a>&gt;,
+Michal Svec &lt;<a href="mailto:msvec@suse.czi">msvec@suse.cz</a>&gt;.
+
+<!-- MODULES -->
+<p><u><h2>Modules</h2></u>
+
+The module <b>Service</b> is for manipulating services (/etc/init.d).
+
+<!-- INTRODUCTION -->
+<p><u><h2>Functions</h2></u>
+
+The function names should be self-descriptive, so
+there are no comments here. Feel free to ask if
+you are in doubts.
+
+<h3>Service Manipulation</h3>
+<ul>
+<li>boolean Start(string service);
+<li>boolean Stop(string service);
+<li>boolean Restart(string service);
+<li>boolean Reload(string service);
+<p>
+</ul>
+
+<h3>Service Enabling</h3>
+<ul>
+<li>boolean Enable(string service);
+<li>boolean Disable(string service);
+<p>
+<li>boolean Adjust(string service);
+<li>boolean Finetune(string service);
+</ul>
+
+<h3>Service Information</h3>
+<ul>
+<li>boolean Info(string service);
+<li>boolean FullInfo(string service);
+<p>
+<li>boolean Status(string service);
+<p>
+<li>boolean Enabled(string service);
+</ul>
+
+<h3>Init Script Actions</h3>
+<ul>
+<li>boolean RunInitScript(string service, string param);
+<li>boolean RunInitScriptOutput(string service, string param);
+</ul>
+
+<h3>Error (not available in all cases)</h3>
+<ul>
+<li>string Error();
+</ul>
+
+<p>
+<a href="runlevel.html">Detailed Description, Motivations</a><br>
+<a href="autodocs/Service.html">Auto-Generated Documentation</a>
+
+
+</body></html>

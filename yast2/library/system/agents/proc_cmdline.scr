@@ -1,0 +1,28 @@
+/**
+ * File:	proc_cmdline.scr
+ * Summary:	Agent for reading /proc/cmdline
+ * Author:	Klaus Kaempf <kkaempf@suse.de>
+ * Access:	read-only
+ *
+ * Example:
+ *   Read(.proc.cmdline)
+ *   (["auto", "BOOT_IMAGE=linux", "ro", "root=801", "BOOT_FILE=/boot/vmlinuz"])
+ *
+ * $Id$
+ *
+ * Returns a <b>list</b> of arguments given to the kernal at boottime.
+ * (might have been set by lilo, ...)
+ */
+.proc.cmdline
+
+`ag_anyagent(
+    `Description(
+	(`File("/proc/cmdline")),	// real filename
+	"#\n",				// comment
+	true,				// read-only
+	(`List(
+	    `String("^ \n"),
+	    " "
+	))
+    )
+)

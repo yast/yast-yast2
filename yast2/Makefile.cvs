@@ -1,0 +1,21 @@
+#
+# Makefile.cvs
+#
+
+LIB = $(shell y2tool get-lib)
+
+configure: all
+	./configure --libdir=/usr/$(LIB)
+
+all:
+	y2tool y2autoconf
+	y2tool y2automake
+	autoreconf --force --install
+
+install: configure
+	make
+	make install
+
+reconf: all
+	./config.status --recheck
+	./config.status
