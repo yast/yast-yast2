@@ -27,7 +27,7 @@
     /**
      * /var/adm/mount has installation data mounted
      */
-    global boolean sourcemounted	= SCR::Read (.etc.install_inf.Sourcemounted) == "1";
+    global boolean sourcemounted	= false;
 
     /**
      * how we were booted (the type of the installation medium)
@@ -73,7 +73,7 @@
     /**
      * do auto-installation
      */
-    global boolean autoinst		= SCR::Read (.etc.install_inf.AutoYaST) != "";
+    global boolean autoinst		= false;
 
     /**
      * configuration for auto-installation, only in running system
@@ -83,7 +83,7 @@
     /**
      * Preparing live-eval cd installation
      */
-    global boolean live_eval		= SCR::Read (.etc.install_inf.Demo) == "1";
+    global boolean live_eval		= false;
 
     /**
      * this is a beta-version
@@ -113,17 +113,17 @@
     /**
      * we're running in textmode (-> UI::GetDisplayInfo())
      */
-    global boolean text			= SCR::Read (.etc.install_inf.Textmode) == "1";
+    global boolean text			= false;
 
     /**
      * we're running in manual mode (manual installation choosen in linuxrc)
      */
-    global boolean manual		= SCR::Read (.etc.install_inf.Manual) == "1";
+    global boolean manual		= false;
 
     /**
      * running via serial console
      */
-    global boolean serial_console	= SCR::Read (.etc.install_inf.Console) != "";
+    global boolean serial_console	= false;
 
     /**
      * language set in install.inf
@@ -133,12 +133,12 @@
     /**
      * braille mode ?
      */
-    global boolean braille		= SCR::Read (.etc.install_inf.Braille) == "1";
+    global boolean braille		= false;
 
     /**
      * vnc mode ?
      */
-    global boolean vnc			= SCR::Read (.etc.install_inf.VNC) == "1";
+    global boolean vnc			= false;
 
     /**
      * install map containing data for the online update
@@ -205,13 +205,32 @@
 	if ( demo )		test = true;
 
 
-	// some variables that can't be handled above
+	// only use the /etc/install.inf agent when file is present
 
-	language = SCR::Read (.etc.install_inf.Locale);
-	if (language == nil) language = "";
+	if (SCR::Read (.target.size, "/etc/install.inf") != -1)
+	{
+	    sourcemounted = SCR::Read (.etc.install_inf.Sourcemounted) == "1";
 
-	boot = SCR::Read (.etc.install_inf.Instmode);
-	if (boot == nil) boot = "cd";
+	    autoinst = SCR::Read (.etc.install_inf.AutoYaST) != "";
+
+	    live_eval = SCR::Read (.etc.install_inf.Demo) == "1";
+
+	    text = SCR::Read (.etc.install_inf.Textmode) == "1";
+
+	    manual = SCR::Read (.etc.install_inf.Manual) == "1";
+
+	    serial_console = SCR::Read (.etc.install_inf.Console) != "";
+
+	    braille = SCR::Read (.etc.install_inf.Braille) == "1";
+
+	    vnc = SCR::Read (.etc.install_inf.VNC) == "1";
+
+	    language = SCR::Read (.etc.install_inf.Locale);
+	    if (language == nil) language = "";
+
+	    boot = SCR::Read (.etc.install_inf.Instmode);
+	    if (boot == nil) boot = "cd";
+	}
 
     }
 }
