@@ -1,46 +1,17 @@
 /**
- * File:	clients/menu.ycp
+ * File:	yast2/menu/menu.ycp
  * Module:	yast2
  * Summary:	List of available modules
  * Authors:	Ludwig Nussel <lnussel@suse.de>
- *
- * $Id$
  *
  * Provides a list of available yast2 modules. This module is inteded for use
  * with ncurses, for X the yast2 control center should be used.
  */
 
 {
+    textdomain "base";
+    include "ui/common_popups.ycp";
 
-textdomain "base";
-include "ui/common_popups.ycp";
-
-/*
-	GroupMap =
-	$[ string rawname :
-	    $[
-		"Name" : string,
-		"Icon" : string,
-		"SortKey" : string,
-		"Modules" : list of Module Numbers
-	    ]
-	    ...
-	];
-
-	ModuleMap =
-	$[ integer Number :
-	    $[
-		"Name" : string,
-		"YCPFunction" : string,
-		"Icon" : string,
-		"Helptext" : string,
-		"Arguments" : string,		// seperated by whitespace
-		"RequiresRoot" : boolean,
-		"Textdomain" : string
-		"SortKey" : string
-	    ]
-	]
-*/
     map GroupMap = $[];
     map ModuleMap = $[];
     integer ModuleNumber = 0;
@@ -58,7 +29,7 @@ include "ui/common_popups.ycp";
 
 	global define `OpenMenu ()
 	``{
-	    //  string heading = _("YaST2 System Configuration and Administration");
+	    // heading for "YaST2 Control Center"
 	    string heading = _("YaST2 Control Center");
 	    OpenDialog (`opt (`defaultsize),
 			`VBox (
@@ -121,7 +92,6 @@ include "ui/common_popups.ycp";
 
 	global define DisplayModuleList (list modulelist)
 	``{
-
 	    term modulebox = `SelectionBox (`id (`modulebox), `opt (`notify), _("&Modules"));
 	    modulebox = add (modulebox, modulelist);
 	    ReplaceWidget (`id (`modules), modulebox);
@@ -199,13 +169,11 @@ include "ui/common_popups.ycp";
 
     global define SortModuleNumberList (list modules)
     ``{
-	return
-	    sort (`x, `y, modules,
-	    ``{
-		string first = ModuleMap[x, "Name"]:"";
-		string second = ModuleMap[y, "Name"]:"";
-		return (first <= second);
-	    });
+	return sort (`x, `y, modules, ``{
+	    string first = ModuleMap[x, "Name"]:"";
+	    string second = ModuleMap[y, "Name"]:"";
+	    return (first <= second);
+	});
     }
 
     // returns what do do after userinput:
@@ -306,7 +274,7 @@ include "ui/common_popups.ycp";
 
 		string name = SCR::Read (add (MenuentryPathToThisSection, "Name"));
 		string group = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Group")), "Misc");
-//		string icon = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Icon")), "");
+		// string icon = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Icon")), "");
 		string help = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Helptext")), "");
 		string args = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Arguments")), "");
 		boolean reqroot = SCR::Read (add (MenuentryPathToThisSection, "RequiresRoot"))=="false"?false:true;
@@ -315,10 +283,10 @@ include "ui/common_popups.ycp";
 
 		if (name != nil)
 		{
-		    //FIXME:  workaround
+		    // FIXME: workaround
 		    string dummy = textdomain (textdom);
 		    Module["Name"]	   = Translate (name);
-//		    Module["Icon"]	   = Translate (icon);
+		    // Module["Icon"]	   = Translate (icon);
 		    Module["Helptext"]	   = Translate (help);
 		    Module["Arguments"]    = args;
 		    Module["RequiresRoot"] = reqroot;
@@ -345,8 +313,8 @@ include "ui/common_popups.ycp";
 		    // put Module into the ModuleMap
 		    ModuleMap[ModuleNumber]  = Module;
 
-		    //FIXME:  workaround
-		    string dummy2 = textdomain("base");
+		    // FIXME: workaround
+		    string dummy2 = textdomain ("base");
 		}
 	    }
 	});
@@ -369,6 +337,4 @@ include "ui/common_popups.ycp";
     }
 
     UI::CloseDialog ();
-
-/* EOF */
 }
