@@ -182,22 +182,33 @@ void ParseInstallationKernelCmdline ();
 	    suse_update = true;
 	}
 
+	// vga= shouldn't be used on some architectures
+	if (Arch::ia64 ())
+	{
+	    discardlist = add (discardlist, "vga");
+	}
+
 	foreach (string parameter, cmdlist,
 	{
 	    // split "key=value" to ["key", "value"]
 
 	    list<string> param_value_list = splitstring (parameter, "=");
+	    string key = param_value_list[0]:"";
+	    string value = param_value_list[1]:"";
 
 	    // now only collect keys not in discardlist
 	    if (size (param_value_list) > 0)
 	    {
-		if (param_value_list[0]:"" == "vga")
+		if (!contains (discardlist, key))
 		{
-		    vgaType = param_value_list[1]:"";
-		}
-		else if (!contains (discardlist, param_value_list[0]:""))
-		{
-		    AddCmdLine (param_value_list[0]:"", param_value_list[1]:"");
+		    if (param_value_list[0]:"" == "vga")
+		    {
+			vgaType = value;
+		    }
+		    else
+		    {
+			AddCmdLine (key, value);
+		    }
 		}
 	    }
 	});
