@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sat Aug 31 01:16:44 CEST 2002 - schwab@suse.de
+
+- Don't waste tons of memory in y2menu.
+
+-------------------------------------------------------------------
 Fri Aug 30 11:35:30 CEST 2002 - arvin@suse.de
 
 - moved X11Version.ycp from yast2-installation here

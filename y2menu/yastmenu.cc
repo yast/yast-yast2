@@ -1,3 +1,5 @@
+#include <string>
+using std::string;
 
 #include "yastfunc.h"
 #include "yast.h"
@@ -7,7 +9,7 @@ static int max_mod_width, box_x = 2, box_y, menu_width, tag_x, item_x;
 static int mod_width, mod_tag_x, mod_item_x, max_mod_dsp;
 
 static void
-print_sec_item (WINDOW * win, const char *tag, const char *item,
+print_sec_item (WINDOW * win, string tag, const char *item,
 		int choice, int selected)
 {
   int i;
@@ -22,14 +24,14 @@ print_sec_item (WINDOW * win, const char *tag, const char *item,
 /*    wattrset (win, selected ? tag_key_selected_attr : tag_key_attr);
     waddch (win, tag[0]); */
   wattrset (win, selected ? tag_selected_attr : tag_attr);
-  waddstr (win, tag);
+  waddstr (win, tag.c_str ());
   wmove (win, choice, item_x);
   wattrset (win, selected ? tag_selected_attr : tag_attr);
   waddstr (win, item);
   wnoutrefresh (win);
 }
 static void
-print_mod_item (WINDOW * win, const char *tag, const char *item,
+print_mod_item (WINDOW * win, string tag, const char *item,
 		int choice, int selected)
 {
   int i;
@@ -45,7 +47,7 @@ print_mod_item (WINDOW * win, const char *tag, const char *item,
 /*    wattrset (win, selected ? tag_key_selected_attr : tag_key_attr);
     waddch (win, tag[0]); */
 
-  waddstr (win, tag);
+  waddstr (win, tag.c_str ());
   wmove (win, choice, mod_item_x);
   wattrset (win, selected ? tag_selected_attr : tag_attr);
   waddstr (win, item);
@@ -111,14 +113,12 @@ yast_print_button (WINDOW * win, const char *label, int y, int x,
   wmove (win, y, x + temp + 1);
 }
 
-void yast_title (WINDOW * win, int width, const char *title)
+void yast_title (WINDOW * win, int width, string title)
 {
-  if (!title)
-    return;
   wattrset (win, title_attr);
   wmove (win, 0, 0);
   waddch (win, ' ');
-  waddstr (win, title);
+  waddstr (win, title.c_str ());
   waddch (win, ' ');
 }
 
@@ -140,13 +140,13 @@ void
 yast_mod_menu (WINDOW * dialog, WINDOW * menu, int section, int width,
 	       int height)
 {
-  int i, item_no = groups[section].mod_cnt;
+  int i, item_no = modules[section].size();
   int max_choice = MIN (max_mod_dsp, item_no);
 
   for (i = 0; i < item_no; i++)
    {
-     modules[section][i].textstr[max_mod_width - 2] = 0;
-     mod_tag_x = MAX (mod_tag_x, strlen (modules[section][i].textstr) + 2);
+     modules[section][i].textstr.resize(max_mod_width - 2);
+     mod_tag_x = MAX (mod_tag_x, modules[section][i].textstr.size () + 2);
      mod_item_x = MAX (mod_item_x, 1);
    }
 
@@ -174,17 +174,16 @@ yast_mod_menu (WINDOW * dialog, WINDOW * menu, int section, int width,
   /* register the new window, along with its borders */
 }
 
-void print_mod_info (WINDOW * dialog, char *info)
+void print_mod_info (WINDOW * dialog, string info)
 {
   int i;
-  char tmpstr1[MAXSTRLEN] = "";
-  char tmpstr2[MAXSTRLEN] = "";
+  string tmpstr1, tmpstr2;
 
-  if (strlen (info) > (2 * (COLS - 7)))
-    info[2 * (COLS - 7)] = 0;
-  for (i = strlen (info); i > 0; i--)
-    if (info[i] == '\n')
-      info[i] = ' ';
+  if (info.size () > (2 * (COLS - 7)))
+    info.resize (2 * (COLS - 7));
+  for (string::iterator i = info.begin (); i != info.end (); i++)
+    if (*i == '\n')
+      *i = ' ';
 
   wattrset (dialog, dialog_attr);
   wmove (dialog, INFO_Y, 1);
@@ -193,24 +192,24 @@ void print_mod_info (WINDOW * dialog, char *info)
   wmove (dialog, INFO_Y + 1, 1);
   for (i = 1; i < COLS - 1; i++)
     waddch (dialog, ' ');
-  if (strlen (info) > (COLS - 5))
+  if (info.size () > (COLS - 5))
    {
      for (i = (COLS - 5); i > 0 && info[i] != ' '; i--);
-     strncpy (tmpstr1, info, i);
-     strcpy (tmpstr2, info + i + 1);
+     tmpstr1 = string (info, 0, i);
+     tmpstr2 = string (info, i + 1);
    }
 
-  if (strlen (tmpstr1) > 0)
+  if (tmpstr1.size () > 0)
    {
      wmove (dialog, INFO_Y, 3);
-     waddstr (dialog, tmpstr1);
+     waddstr (dialog, tmpstr1.c_str ());
      wmove (dialog, INFO_Y + 1, 3);
-     waddstr (dialog, tmpstr2);
+     waddstr (dialog, tmpstr2.c_str ());
    }
   else
    {
      wmove (dialog, INFO_Y, 3);
-     waddstr (dialog, info);
+     waddstr (dialog, info.c_str ());
    }
 
 }
@@ -221,11 +220,11 @@ mod_nav (WINDOW * dialog, WINDOW * menu, int section, int box_x, int box_y,
 {
   int menu_height = max_mod_dsp;
 
-  /*MIN (INFO_Y-box_y, groups[section].mod_cnt); */
-  int item_no = groups[section].mod_cnt;
+  /*MIN (INFO_Y-box_y, modules[section].size ()); */
+  int item_no = modules[section].size ();
   int i;
   int cur_x, cur_y;
-  int max_choice = MIN (max_mod_dsp, groups[section].mod_cnt);
+  int max_choice = MIN (max_mod_dsp, modules[section].size ());
   static int choice = 0, scroll = 0;
 
 /* dirty hack to re-init the static variables */
@@ -251,14 +250,14 @@ mod_nav (WINDOW * dialog, WINDOW * menu, int section, int box_x, int box_y,
 
   if (key == '\n')
    {
-     char tmpstr[100];
+     string tmpstr;
 
-     sprintf (tmpstr, "yast %s %s ", modules[section][scroll + choice].name,
-	      modules[section][scroll + choice].args);
+     tmpstr = string ("yast ") + modules[section][scroll + choice].name +
+	      " " + modules[section][scroll + choice].args;
 
      print_mod_info (dialog, "loading module");
      wrefresh (dialog);
-     system (tmpstr);
+     system (tmpstr.c_str ());
      wrefresh (dialog);
      return 2;
    }
@@ -270,7 +269,7 @@ mod_nav (WINDOW * dialog, WINDOW * menu, int section, int box_x, int box_y,
       */
 
 /* forward check */
-  for (i = scroll + choice + 1; i < groups[section].mod_cnt; i++)
+  for (i = scroll + choice + 1; i < modules[section].size (); i++)
     if (toupper (key) == toupper (modules[section][i].textstr[0]))
      {
        int newi = 0;
@@ -280,7 +279,7 @@ mod_nav (WINDOW * dialog, WINDOW * menu, int section, int box_x, int box_y,
 
 	  print_mod_item (menu, modules[section][scroll + choice].textstr,
 			  "", choice, FALSE);
-	  if (scroll + max_choice < groups[section].mod_cnt)
+	  if (scroll + max_choice < modules[section].size ())
 	   {
 	     scrollok (menu, TRUE);
 	     wscrl (menu, 1);
@@ -322,7 +321,7 @@ mod_nav (WINDOW * dialog, WINDOW * menu, int section, int box_x, int box_y,
 	{
 	  print_mod_item (menu, modules[section][scroll + choice].textstr,
 			  "", choice, FALSE);
-	  if (scroll + max_choice < groups[section].mod_cnt)
+	  if (scroll + max_choice < modules[section].size ())
 	   {
 	     scrollok (menu, TRUE);
 	     wscrl (menu, 1);
@@ -501,17 +500,18 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
   int i, x, y, cur_x, cur_y;
   int key = 0;
   static int button = BUTTON_OK, choice = 0, scroll = 0;
-  int max_choice = MIN (MAX_GRP_DSP, grp_cnt);
+  int max_choice = MIN (MAX_GRP_DSP, groups.size ());
   int menu_height = max_choice;
   WINDOW *dialog, *menu, *mod_menu = NULL;
-  int item_no = grp_cnt;
+  int item_no = groups.size ();
   int button_x = 0, button_y = 0;
-  char hostname[MAXSTRLEN] = "", titlestr[MAXSTRLEN];
+  char hostname[BUFSIZ];
+  string titlestr;
 
-  gethostname (hostname, MAXSTRLEN);
-  sprintf (titlestr, "%s%s", YAST_TITLE, hostname);
-  memset (titlestr + strlen (titlestr), ' ', COLS - strlen (titlestr));
-  titlestr[COLS - 2] = 0;
+  hostname[0] = 0;
+  gethostname (hostname, BUFSIZ);
+  titlestr = string (YAST_TITLE) + string (hostname);
+  titlestr.resize (COLS - 2, ' ');
 
   x = 0;
   y = 0;
@@ -548,14 +548,14 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
   menu_width = width - 6;
   for (i = 0; i < item_no; i++)
    {
-     tag_x = MAX (tag_x, strlen (groups[i].textstr) + 2);
-     item_x = MAX (item_x, strlen (groups[i].textstr));
+     tag_x = MAX (tag_x, groups[i].textstr.size () + 2);
+     item_x = MAX (item_x, groups[i].textstr.size ());
    }
 
   menu_width = tag_x + 3;
 /* set mod_height, mod_width */
   mod_height =
-    MIN (INFO_Y - (box_y + choice) - 2, groups[scroll + choice].mod_cnt);;
+    MIN (INFO_Y - (box_y + choice) - 2, modules[scroll + choice].size ());;
   mod_width = COLS - (menu_width + box_x + x + 10);
 
   getyx (dialog, cur_y, cur_x);
@@ -587,16 +587,16 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
 
   max_mod_width = (COLS - 5) - (box_x + menu_width + 2);
   /* auto-open module frame */
-  if (yast_mod_auto && groups[scroll + choice].mod_cnt > 0)
+  if (yast_mod_auto && modules[scroll + choice].size () > 0)
    {
      int max_items =
-       MIN (INFO_Y - (box_y + choice) - 2, groups[scroll + choice].mod_cnt);
+       MIN (INFO_Y - (box_y + choice) - 2, modules[scroll + choice].size ());
      int i, max_len = 0, tmplen = 0;
 
      max_mod_dsp = max_items;
      mod_height = max_mod_dsp;
-     for (i = 0; i < groups[scroll + choice].mod_cnt; i++)
-       if ((tmplen = strlen (modules[scroll + choice][i].textstr)) > max_len)
+     for (i = 0; i < modules[scroll + choice].size (); i++)
+       if ((tmplen = modules[scroll + choice][i].textstr.size ()) > max_len)
 	 mod_width = max_len =
 	   yast_dyn_mod ? MIN (max_mod_width, tmplen + 2) : max_mod_width;
 
@@ -670,11 +670,11 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
 
 		       /* auto-close module frame */
 		       if (yast_mod_auto
-			   && groups[scroll + choice].mod_cnt > 0)
+			   && modules[scroll + choice].size () > 0)
 			{
 			  int max_items = MIN (max_mod_dsp,
-					       groups[scroll +
-						      choice].mod_cnt);
+					       modules[scroll +
+						      choice].size ());
 			  mod_menu_on = 0;
 			  yast_del_box (dialog, box_y + choice,
 					2 + box_x + menu_width,
@@ -691,13 +691,13 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
 		    if (yast_mod_auto)
 		     {
 		       int max_items = MIN (INFO_Y - (box_y + choice) - 2,
-					    groups[scroll + choice].mod_cnt);
+					    modules[scroll + choice].size ());
 		       int i, max_len = 0, tmplen;
 
 		       mod_height = max_mod_dsp = max_items;
-		       for (i = 0; i < groups[scroll + choice].mod_cnt; i++)
+		       for (i = 0; i < modules[scroll + choice].size (); i++)
 			 if ((tmplen =
-			      strlen (modules[scroll + choice][i].textstr)) >
+			      modules[scroll + choice][i].textstr.size ()) >
 			     max_len)
 			   mod_width = max_len =
 			     yast_dyn_mod ? MIN (max_mod_width,
@@ -767,11 +767,11 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
 			  scrollok (menu, FALSE);
 			  /* auto-close module frame  */
 			  if (yast_mod_auto
-			      && groups[scroll + choice].mod_cnt > 0)
+			      && modules[scroll + choice].size () > 0)
 			   {
 			     int max_items = MIN (max_mod_dsp,
-						  groups[scroll +
-							 choice].mod_cnt);
+						  modules[scroll +
+							 choice].size ());
 			     mod_menu_on = 0;
 			     yast_del_box (dialog, box_y + choice,
 					   2 + box_x + menu_width,
@@ -835,10 +835,10 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
 	      print_sec_item (menu, groups[scroll + choice].textstr,
 			      " ", choice, FALSE);
 	      /* auto-close  module frame */
-	      if (yast_mod_auto && groups[scroll + choice].mod_cnt > 0)
+	      if (yast_mod_auto && modules[scroll + choice].size () > 0)
 	       {
 		 int max_items =
-		   MIN (max_mod_dsp, groups[scroll + choice].mod_cnt);
+		   MIN (max_mod_dsp, modules[scroll + choice].size ());
 		 mod_menu_on = 0;
 		 yast_del_box (dialog, box_y + choice,
 			       2 + box_x + menu_width, max_items + 2,
@@ -853,16 +853,16 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
 			      " ", choice, TRUE);
 	      wnoutrefresh (menu);
 	      /* auto-open module frame */
-	      if (yast_mod_auto && groups[scroll + choice].mod_cnt > 0)
+	      if (yast_mod_auto && modules[scroll + choice].size () > 0)
 	       {
 		 int max_items = MIN (INFO_Y - (box_y + choice) - 2,
-				      groups[scroll + choice].mod_cnt);
+				      modules[scroll + choice].size ());
 		 int i, max_len = 0, tmplen;
 
 		 mod_height = max_mod_dsp = max_items;
-		 for (i = 0; i < groups[scroll + choice].mod_cnt; i++)
+		 for (i = 0; i < modules[scroll + choice].size (); i++)
 		   if ((tmplen =
-			strlen (modules[scroll + choice][i].textstr)) >
+			modules[scroll + choice][i].textstr.size ()) >
 		       max_len)
 		     mod_width = max_len =
 		       yast_dyn_mod ? MIN (max_mod_width,
@@ -909,9 +909,8 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
 	   if (mod_menu_on)
 	     yast_draw_frame (dialog, box_y + choice,
 			      2 + box_x + menu_width, MIN (max_mod_dsp,
-							   groups[scroll +
-								  choice].
-							   mod_cnt) + 2,
+							   modules[scroll +
+								  choice].size ()) + 2,
 			      mod_width + 2, menubox_border_attr,
 			      inputbox_attr);
 	   yast_draw_frame (dialog, box_y, box_x, menu_height + 2,
@@ -923,9 +922,8 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
 	   if (mod_menu_on)
 	     yast_draw_frame (dialog, box_y + choice,
 			      2 + box_x + menu_width, MIN (max_mod_dsp,
-							   groups[scroll +
-								  choice].
-							   mod_cnt) + 2,
+							   modules[scroll +
+								  choice].size ()) + 2,
 			      mod_width + 2, menubox_border_attr,
 			      menubox_attr);
 	   yast_draw_frame (dialog, box_y, box_x, menu_height + 2,
@@ -963,9 +961,8 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
 	       if (mod_menu_on)
 		 yast_draw_frame (dialog, box_y + choice,
 				  2 + box_x + menu_width, MIN (max_mod_dsp,
-							       groups[scroll +
-								      choice].
-							       mod_cnt) + 2,
+							       modules[scroll +
+								      choice].size ()) + 2,
 				  mod_width + 2, menubox_border_attr,
 				  inputbox_attr);
 	       yast_draw_frame (dialog, box_y, box_x, menu_height + 2,
@@ -977,9 +974,8 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
 	       if (mod_menu_on)
 		 yast_draw_frame (dialog, box_y + choice,
 				  2 + box_x + menu_width, MIN (max_mod_dsp,
-							       groups[scroll +
-								      choice].
-							       mod_cnt) + 2,
+							       modules[scroll +
+								      choice].size ()) + 2,
 				  mod_width + 2, menubox_border_attr,
 				  menubox_attr);
 	       yast_draw_frame (dialog, box_y, box_x, menu_height + 2,
@@ -999,7 +995,7 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
 	if (mod_menu_on)
 	 {
 	   int max_items = MIN (INFO_Y - (box_y + choice) - 2,
-				groups[scroll + choice].mod_cnt);
+				modules[scroll + choice].size ());
 
 	   mod_height = max_mod_dsp = max_items;
 	   mod_menu_on = 0;
@@ -1032,7 +1028,7 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
 /* buttoncancel */
       case '\n':
 	if (button == BUTTON_CANCEL
-	    || (!strcmp (groups[scroll + choice].textstr, button_cancel)
+	    || (!groups[scroll + choice].textstr.compare (button_cancel)
 		&& button == BUTTON_OK))
 	 {
 	   keep_going = 0;
@@ -1041,18 +1037,18 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
       case KEY_RIGHT:
 	if (button != BUTTON_OK)
 	  break;
-	if (!mod_menu_on && groups[scroll + choice].mod_cnt > 0)
+	if (!mod_menu_on && modules[scroll + choice].size () > 0)
 	 {
 	   int max_items = MIN (INFO_Y - (box_y + choice) - 2,
-				groups[scroll + choice].mod_cnt);
+				modules[scroll + choice].size ());
 	   int i, max_len = 0, tmplen;
 
 	   max_mod_dsp = max_items;
 	   mod_height = max_mod_dsp;
 	   mod_menu_on = 1;
-	   for (i = 0; i < groups[scroll + choice].mod_cnt; i++)
+	   for (i = 0; i < modules[scroll + choice].size (); i++)
 	     if ((tmplen =
-		  strlen (modules[scroll + choice][i].textstr)) > max_len)
+		  modules[scroll + choice][i].textstr.size ()) > max_len)
 	       mod_width = max_len =
 		 yast_dyn_mod ? MIN (max_mod_width,
 				     tmplen + 2) : max_mod_width;
@@ -1101,7 +1097,7 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
 	   if (mod_menu_on)
 	     yast_draw_frame (dialog, box_y + choice, 2 + box_x + menu_width,
 			      MIN (max_mod_dsp,
-				   groups[scroll + choice].mod_cnt) + 2,
+				   modules[scroll + choice].size ()) + 2,
 			      mod_width + 2, menubox_border_attr,
 			      inputbox_attr);
 	   yast_draw_frame (dialog, box_y, box_x, menu_height + 2,
@@ -1113,7 +1109,7 @@ int yast_menu (const char *title, const char *prompt, int height, int width)
 	   if (mod_menu_on)
 	     yast_draw_frame (dialog, box_y + choice, 2 + box_x + menu_width,
 			      MIN (max_mod_dsp,
-				   groups[scroll + choice].mod_cnt) + 2,
+				   modules[scroll + choice].size ()) + 2,
 			      mod_width + 2, menubox_border_attr,
 			      menubox_attr);
 	   yast_draw_frame (dialog, box_y, box_x, menu_height + 2,
@@ -1132,15 +1128,15 @@ void
 yast_grp_menu (WINDOW * dialog, WINDOW * menu, int choice, int width,
 	       int height)
 {
-  int i, item_no = grp_cnt;
-  int max_choice = MIN (MAX_GRP_DSP, grp_cnt);
+  int i, item_no = groups.size ();
+  int max_choice = MIN (MAX_GRP_DSP, groups.size ());
 
   tag_x = 0;
   item_x = 0;
   for (i = 0; i < item_no; i++)
    {
-     tag_x = MAX (tag_x, strlen (groups[i].textstr) + 2);
-     item_x = MAX (item_x, strlen (groups[i].textstr));
+     tag_x = MAX (tag_x, groups[i].textstr.size () + 2);
+     item_x = MAX (item_x, groups[i].textstr.size ());
    }
 
 /*    tag_x = (menu_width - tag_x) / 2; */
