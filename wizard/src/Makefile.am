@@ -2,10 +2,9 @@
 # Makefile.am for y2l_wizard/src
 #
 
-includedir = $(YAST2DIR)/include/ui
-modulesdir = $(YAST2DIR)/modules
+yncludedir = @yncludedir@/ui
 
-modules_HEADERS = \
+module_DATA =			\
 	Wizard.ycp		\
 	Wizard_hw.ycp		\
 	Progress.ycp		\
@@ -13,10 +12,12 @@ modules_HEADERS = \
 	Summary.ycp		\
 	HTML.ycp
 
-include_HEADERS = \
+ynclude_DATA =			\
 	wizard_dialog.ycp	\
 	common_popups.ycp	\
 	file_popups.ycp		\
 	common_messages.ycp	\
 	common_functions.ycp	\
 	summary.ycp
+
+EXTRA_DIST = $(ynclude_DATA) $(module_DATA)

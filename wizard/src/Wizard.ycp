@@ -12,16 +12,17 @@
  * $Id$
  */
 {
+
     module "Wizard";
-    textdomain "wizard";
-    
+    textdomain "base";
+
     include "ui/common_messages.ycp";
     include "ui/common_popups.ycp";
 
     integer current_stage = 0;	// Cache for the current wizard stage (image no.)
     string image_path = "/usr/lib/YaST2/images/";
     boolean have_fancy_ui = false;
-    
+
     /**
      * Constructor
      **/
@@ -163,7 +164,7 @@
 	return image;
     };
 
-    
+
     /**
      * Returns a term describing a generic wizard dialog with a configurable
      * button box.
@@ -182,7 +183,7 @@
 						`Left(`Heading(`id(`title), _("YaST2\nInitializing ..."))),
 
 						`VWeight( 1, // Layout trick: Lower layout priority with weight
-							 `HVCenter( 
+							 `HVCenter(
 								   `ReplacePoint(`id(`contents), `Empty() )
 								   )
 							 ),
@@ -210,7 +211,7 @@
 	    : simpleEasyInstallationSteps( step_descriptions, current_step );
     };
 
-    
+
     /**
      * Simple version of easy installation steps.
      *
@@ -236,7 +237,7 @@
 	return vbox;
     };
 
-    
+
     /**
      * "Fancy" (colorful, complex) version of easy installation steps.
      *
@@ -245,7 +246,7 @@
      * @return term describing the steps
      **/
     define term fancyEasyInstallationSteps( list step_descriptions, integer current_step ) ``{
-	
+
 	return `HSquash(
 			`VBox(
 			      `HBox(
@@ -294,8 +295,8 @@
      * One of the installation steps as "cards" in "fancy" mode for easy installation.
      *
      * @param text		text to display in the card
-     * @param current_step 	number of the current step (from 1)
-     * @param step_no 		number of this step (from 1)
+     * @param current_step	number of the current step (from 1)
+     * @param step_no		number of this step (from 1)
      * @param left_image_name	name of the image to the left  of the card
      * @param right_image_name	name of the image to the right of the card
      * @return term describing the card
@@ -306,7 +307,7 @@
 				      string	left_image_name,
 				      string	right_image_name )
     ``{
-	
+
 	term card = nil;
 
 	if ( step_no == current_step )
@@ -325,7 +326,7 @@
 				     `ColoredLabel(`opt(`hstretch, `vstretch),
 						   text,
 						   `rgb( 0, 0, 0 ),		// black foreground
-						   `rgb( 223, 219, 214 ),	// grey  background 
+						   `rgb( 223, 219, 214 ),	// grey  background
 						   10 )				// margin
 				     ),
 			       `HBox(
@@ -338,7 +339,7 @@
 	}
 	else	// not the current step
 	{
-	    
+
 	    string button_image = current_step > step_no ? "button_done.png" : "button_normal.png";
 
 	    card = `HBox(
@@ -372,7 +373,7 @@
 
 	return card;
     };
-    
+
 
     /**
      * Set the "easy installation" step.
@@ -384,8 +385,8 @@
 	y2milestone( "Installation step #%1", current_step );
 	UI::ReplaceWidget(`id(`rep_installation_steps), EasyInstallationSteps( step_descriptions, current_step ) );
     };
-    
-    
+
+
     /**
      * Returns a term describing an "easy installation" dialog.
      *
@@ -402,7 +403,7 @@
 					`Left(`Heading(`id(`title), _("YaST2\nInitializing ..."))),
 
 					`VWeight(1, // Layout trick: Lower layout priority with weight
-						 `HVCenter( 
+						 `HVCenter(
 							   `ReplacePoint(`id(`contents), `Empty() )
 							   )
 						 ),
@@ -432,7 +433,7 @@
     };
 
 
-    
+
     /**
      * Check if the topmost dialog is a wizard dialog
      * (i.e. has a widget with `id(`WizardDialog) )
@@ -452,7 +453,7 @@
 	return UI::WidgetExists(`id(`next) );
     };
 
-    
+
     /**
      * Check if the topmost dialog has an "Accept" button
      * @return true if widget with `id(`accept) is present, false otherwise
@@ -524,7 +525,7 @@
 
 
     /**
-     * Close a wizard dialog. 
+     * Close a wizard dialog.
      **/
     global define void CloseDialog() ``{
 	if ( IsWizardDialog() )
@@ -553,11 +554,11 @@
 
 	if ( input == `accept )	return `next;
 	if ( input == `cancel )	return `back;
-	
+
 	return input;
     };
 
-    
+
     /**
      * Create and open a typical installation wizard dialog.
      *
@@ -574,19 +575,19 @@
      **/
     global define void SetContents(string title, term contents, string help_text,
 				   boolean has_back, boolean has_next) ``{
-	
-	
+
+
 	if ( UI::WidgetExists(`id(`next ) ) )
 	{
 	    UI::ChangeWidget(`id(`next), `Enabled, has_next);
 	    UI::SetFocus( `id(`next) );
 	}
-	if ( UI::WidgetExists(`id(`back 	) ) )	UI::ChangeWidget(`id(`back), `Enabled, has_back);
+	if ( UI::WidgetExists(`id(`back	) ) )	UI::ChangeWidget(`id(`back), `Enabled, has_back);
 	if ( UI::WidgetExists(`id(`accept	) ) )	UI::SetFocus( `id(`accept ) );
 	if ( UI::WidgetExists(`id(`abort	) ) )	UI::ChangeWidget(`id(`abort),`Enabled, true);
 	if ( UI::WidgetExists(`id(`HelpText	) ) )	UI::ChangeWidget(`id(`HelpText), `Value, help_text);
 	if ( UI::WidgetExists(`id(`title	) ) )	UI::ChangeWidget(`id(`title), `Value, title);
-	    
+
 	UI::ReplaceWidget(`id(`contents), contents);
     };
 
@@ -616,14 +617,14 @@
     global define void SetContentsButtons (string title, term contents, string help_text, string back_label, string next_label) ``{
 	// Set button labels first to avoid geometry problems: SetContents()
 	// calls ReplaceWidget() wich triggers a re-layout.
-	
+
 	if ( UI::WidgetExists(`id(`back ) ) )	UI::ChangeWidget(`id (`back), `Label, back_label);
 	if ( UI::WidgetExists(`id(`next ) ) )	UI::ChangeWidget(`id (`next), `Label, next_label);
 	SetContents( title, contents, help_text, true, true );
     };
 
-	    
-	    
+
+
     /**
      * Replace the wizard help subwindow with a custom widget.
      * Call this BEFORE Wizard::SetContents() to avoid geometry
@@ -667,7 +668,7 @@
 	}
     };
 
-	    
+
     /**
      * Replace the wizard 'next' button with a custom widget.
      *
@@ -713,7 +714,7 @@
 	}
     };
 
-    
+
     /**
      * Replace the entire Wizard button box with a new one.
      *
@@ -743,7 +744,7 @@
     global define void DisableAbortButton() ``{
 	UI::ChangeWidget(`id(`abort), `Enabled, false);
     }
-    
+
 
     /**
      * Set the wizard installation stage, i.e. the indicator of how

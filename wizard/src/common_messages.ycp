@@ -11,7 +11,8 @@
  */
 
 {
-  textdomain "wizard";
+
+    textdomain "base";
 
   UI (``{
       global define string CancelButtonLabel() ``{
@@ -37,7 +38,7 @@
        global define string EditButtonLabel() ``{
 	  // this is a button label
 	  return _( "Ed&it" );
-      }     
+      }
       global define string OKButtonLabel() ``{
 	  // this is a button label
 	  return _( "&OK" );
@@ -57,7 +58,7 @@
       global define string DeleteButtonLabel() ``{
 	  // this is a button label
 	  return _( "Dele&te" );
-      }     
+      }
       global define string BackButtonLabel() ``{
 	  // this is a button label
 	  return _( "&Back" );
@@ -154,7 +155,7 @@
   }
   global define string DeleteButtonLabel() ``{
       return UI::DeleteButtonLabel();
-  }     
+  }
   global define string BackButtonLabel() ``{
       return UI::BackButtonLabel();
   }

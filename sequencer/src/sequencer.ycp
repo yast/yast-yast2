@@ -1,15 +1,8 @@
 /**
- * File:
- *   sequencer.ycp
- *
- * Module:
- *   Wizard sequencer
- *
- * Summary:
- *   The wizard sequencer implementation
- *
- * Authors:
- *   Michal Svec <msvec@suse.cz>
+ * File:	include/wizard/sequencer.ycp
+ * Module:	Wizard sequencer
+ * Summary:	The wizard sequencer implementation
+ * Authors:	Michal Svec <msvec@suse.cz>
  *
  * $Id$
  *
@@ -22,7 +15,7 @@
 
 {
 
-textdomain "sequencer";
+textdomain "base";
 
 /**
  * Test (run) all dialogs in the aliases map

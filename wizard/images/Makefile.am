@@ -8,6 +8,4 @@ image_DATA = 				\
 	topRow_yastLogo.png		\
 	topRow_bottomTile.png
 
-imagedir = $(YAST2DIR)/images
-
 EXTRA_DIST = $(image_DATA)

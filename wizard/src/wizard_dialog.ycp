@@ -14,7 +14,8 @@
 
 
 {
-    textdomain "wizard";
+
+    textdomain "base";
     include "ui/common_messages.ycp";
 
     y2error( "THIS INCLUDE FILE (ui/wizard_dialog.ycp) IS OUTDATED! Use 'import \"Wizard\"' instead!" );

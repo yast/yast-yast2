@@ -21,7 +21,7 @@ module "Report";
 
 include "ui/common_popups.ycp";
 
-textdomain "wizard";
+textdomain "base";
 
 // stored messages
 list errors = [];

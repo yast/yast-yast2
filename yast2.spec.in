@@ -25,6 +25,14 @@ Summary:	Documentation for Wizard and Sequencer
 @BUILD-YCP@
 
 @INSTALL-YCP@
+mkdir -p "$RPM_BUILD_ROOT"@clientdir@
+mkdir -p "$RPM_BUILD_ROOT"@configdir@
+mkdir -p "$RPM_BUILD_ROOT"@imagedir@
+mkdir -p "$RPM_BUILD_ROOT"@localedir@
+mkdir -p "$RPM_BUILD_ROOT"@moduledir@
+mkdir -p "$RPM_BUILD_ROOT"@scrconfdir@
+mkdir -p "$RPM_BUILD_ROOT"@ybindir@
+mkdir -p "$RPM_BUILD_ROOT"@ydatadir@
 
 @CLEAN@
 
@@ -35,6 +43,7 @@ Summary:	Documentation for Wizard and Sequencer
 
 %dir @clientdir@
 %dir @configdir@
+%dir @imagedir@
 %dir @localedir@
 %dir @moduledir@
 %dir @scrconfdir@

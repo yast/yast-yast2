@@ -1,22 +1,19 @@
 /**
- * File:
- *   menu.ycp
- *
- * Module:
- *   yast2 itself
- *
- * Summary:
- *   Provides a list of available yast2 modules. This module is inteded for use
- *   with ncurses, for X the yast2 control center should be used.
+ * File:	clients/menu.ycp
+ * Module:	Main yast2
+ * Summary:	List of available modules
  *
  * Authors:
  *   Ludwig Nussel <lnussel@suse.de>
  *
  * $Id$
  *
+ * Provides a list of available yast2 modules. This module is inteded for use
+ * with ncurses, for X the yast2 control center should be used.
  */
 
 {
+
     include "ui/common_popups.ycp";
 
 /*
@@ -276,7 +273,7 @@
 	return value;
     }
 
-    textdomain "general";
+    textdomain "base";
 
     UI::DisplaySplash ();
 
@@ -350,7 +347,7 @@
 		    ModuleMap[ModuleNumber]  = Module;
 
 		    //FIXME:  workaround
-		    string dummy2 = textdomain ("general");
+		    string dummy2 = textdomain("base");
 		}
 	    }
 	});

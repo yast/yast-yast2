@@ -22,9 +22,8 @@
      * <h3>Common functions for the hardware configuration modules</h3>
      */
 
-     module "Wizard_hw";
-
-     textdomain "wizard";
+    module "Wizard_hw";
+    textdomain "base";
 
     /**
      * Create the content of the screen with the detected devices.

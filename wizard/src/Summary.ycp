@@ -43,7 +43,7 @@
 {
     module "Summary";
     import "Mode";
-    textdomain "wizard";
+    textdomain "base";
 
     /**
      * Function that creates the whole final product. "Not detected" will be returned

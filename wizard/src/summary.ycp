@@ -23,25 +23,26 @@
  *
  * @example  {
  * @example      include "ui/summary.ycp";
- * @example  
+ * @example
  * @example      return summaryDevicesList(
  * @example      [
  * @example          summaryDevice("Cannon BJC-6100", "Configured as lp."),
  * @example          summaryDevice("Epson Stylus Color", summaryNotConfigured())
  * @example      ]);
  * @example  }
- * 
+ *
  * Another example of summary.ycp usage
  *
  * @example  {
  * @example      include "ui/summary.ycp";
- * @example  
+ * @example
  * @example      return summaryDevicesList([]);
  * @example  }
  */
 
 {
-    textdomain "wizard";
+
+    textdomain "base";
 
     /**
      * Function that creates the whole final product. "Not detected" will be returned
@@ -65,7 +66,7 @@
 
 	return text;
     };
-    
+
     /**
      * Function that creates description of one device.
      *
@@ -76,7 +77,7 @@
 	return sformat("<li><font color=blue>%1</font><br>%2</li>",
 		       name, description);
     };
-    
+
     /**
      * Function that creates a 'Not configured.' message.
      */
@@ -84,7 +85,7 @@
 	return UI(_("Not configured yet."));
     };
 
-    
+
     /**
      * Add a RichText section header to an existing summary.
      *

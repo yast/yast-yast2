@@ -1,5 +1,5 @@
 /**
- * Module:             	common_functions.ycp
+ * Module:	common_functions.ycp
  *
  * Authors:             Gabriele Strattner <gs@suse.de>
  *			Stefan Hundhammer <sh@suse.de>
@@ -12,19 +12,20 @@
  */
 
 {
-  textdomain "wizard";
+
+    textdomain "base";
 
   /**
-   * @param bytes	size (e.g. free diskspace ) in Byte 
+   * @param bytes	size (e.g. free diskspace ) in Byte
    *
    * @return string
    *
    * Return a pretty description of a byte count, with two fraction digits
    * and using KB, MB or GB as unit as appropriate.
-   * 
+   *
    * @example size_text ( 234567678 );
    */
-      
+
   global define string size_text (integer bytes) ``{
       float whole = tofloat (bytes) / 1024.0;
       // KiloByte abbreviated
@@ -43,7 +44,7 @@
   };
 
   /**
-   * @param bytes	size (e.g. free diskspace ) in Byte 
+   * @param bytes	size (e.g. free diskspace ) in Byte
    *
    * @return string
    *
@@ -53,17 +54,17 @@
    *
    * @example format_size_text ( 234567678 );
    */
-  
+
   global define string format_size_text (integer bytes)``{
 
       if ( bytes == nil )
 	  return "";
-      
+
       float whole = tofloat (bytes) / 1024.0 / 1024.0;
       string unit = UI(_("MB"));
 
       // nnn.nn  999.99 MB
-      
+
       string size_str = tostring (whole, 2);
       integer num = size(size_str);
       integer anz = 6 - num;
@@ -71,7 +72,7 @@
       if ( anz <= 0 )
       {
 	  return ( size_str + " " + unit + " " );
-      }  
+      }
       else if ( anz == 1 )
       {
 	  return ( " " + size_str + " " + unit+ " " );
@@ -79,20 +80,20 @@
       else
       {
 	  return ( "  " + size_str + " " + unit+ " " );
-      }  
-  }; 
-      
+      }
+  };
+
   /**
-   * @param input	string, usually an user input 
+   * @param input	string, usually an user input
    *
    * @return string
    *
    * Remove blanks at begin and end of input string
    * (blanks between remain untouched).
-   * 
+   *
    * @example CutBlanks ( "  any input     " );
    */
-  
+
   global define string CutBlanks( string input ) ``{
       string  output = input;
       boolean go_on = true;
@@ -119,9 +120,9 @@
 		  go_on = false;
 	      }
 	  }
-      }	  
+      }
       return output;
   };
 
-  
+
 }

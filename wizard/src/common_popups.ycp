@@ -13,7 +13,7 @@
 
 {
 
-  textdomain "wizard";
+    textdomain "base";
 
   include "ui/common_messages.ycp";
 
@@ -320,7 +320,7 @@ You will need to reinstall." );
 		     );
 	  SetFocus(`id(`ok));
 	  UserInput();
-	  
+
           CloseDialog();
       };
 
@@ -368,7 +368,7 @@ You will need to reinstall." );
       /**
        * Show a notification message and wait until user clicked "OK".
        *
-       * @param  message 	notify message string
+       * @param  message	notify message string
        *
        * @example  NotifyPopup("Your printer is ready for use." );
        *
@@ -421,7 +421,7 @@ You will need to reinstall." );
        * user clicks that, the popup will wait forever (or until "OK" is
        * clicked, of course).
        *
-       * @param message 		message to display
+       * @param message		message to display
        * @param timeout_seconds		the timeout in seconds
        *
        * @example TimedMessagePopup("This is a timed message", 2 );
@@ -481,7 +481,7 @@ You will need to reinstall." );
        * user clicks that, the popup will wait forever (or until "OK" or "Cancel" is
        * clicked, of course).
        *
-       * @param message 		message to display
+       * @param message		message to display
        * @param timeout_seconds		the timeout in seconds
        *
        * @return true	--> "OK" or timer expired<br>
@@ -511,7 +511,7 @@ You will need to reinstall." );
 				       // (i.e. confirm the action in "message")
 				       `PushButton(`id(`timed_ok), `opt(`default), OKButtonLabel() ),
 				       `HSpacing(2),
-				       
+
 				       // "Cancel" button for timeout message: Close popup dialog
 				       // (i.e. cancel the action in "message")
 				       `PushButton(`id(`timed_cancel), CancelButtonLabel() )
@@ -694,10 +694,10 @@ You will need to reinstall." );
 				 `VSpacing(0.2),
 				 `Heading(text),
 				 `HBox(
-				       `PushButton(`id(`back), 	 BackButtonLabel()	),
+				       `PushButton(`id(`back),	 BackButtonLabel()	),
 				       `PushButton(`id(`again),	 RetryButtonLabel()	),
-				       `PushButton(`id(`cancel), QuitButtonLabel() 	),
-				       `PushButton(`id(`next), 	 NextButtonLabel()	)
+				       `PushButton(`id(`cancel), QuitButtonLabel()	),
+				       `PushButton(`id(`next),	 NextButtonLabel()	)
 				       ),
 				 `VSpacing(0.2)
 				 ),

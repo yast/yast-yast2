@@ -41,6 +41,7 @@
 {
     module "Progress";
     import "Wizard";
+    textdomain "base";
 
     // Number of stages.
     integer stages = 0;

@@ -20,7 +20,7 @@
 
 {
 
-    textdomain "wizard";
+    textdomain "base";
 
     include "ui/common_messages.ycp";
 
@@ -375,7 +375,7 @@
     }
 
 
-    
+
     /**
      * Popup dialog to choose file or enter a new file name
      * @param dir string with path to start browsing with
@@ -443,7 +443,7 @@
 	    if (current_selected!=nil) {
 		UI::ChangeWidget(`id(`filename), `Value, current_selected);
 	    }
-	    
+
 	    if (ret == `backward)
 	    {
 		history_ptr = history_ptr > 0 ? history_ptr - 1 : history_ptr;

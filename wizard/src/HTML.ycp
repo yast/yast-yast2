@@ -11,8 +11,9 @@
  * Author:		Stefan Hundhammer <sh@suse.de>
  **/
 {
-    module "HTML";
 
+    module "HTML";
+    textdomain "base";
 
     /**
      * Make a HTML paragraph from a text, i.e. embed a text into
@@ -31,7 +32,7 @@
      * [h3]...[/h3]
      *
      * Note: There is only one heading level here since we don't have any more
-     * fonts anyway. 
+     * fonts anyway.
      *
      * @param text plain text or HTML fragment
      * @return HTML code
@@ -68,7 +69,7 @@
 	return "<ul>";
     };
 
-    
+
     /**
      * End a HTML (unsorted) list, i.e. [/ul]
      *
@@ -119,7 +120,7 @@
 	return html;
     };
 
-    
+
     /**
      * Make a HTL (unsorted) colored list from a list of strings, i.e.
      * [ul]
@@ -173,7 +174,7 @@
     global define string Bold( string text ) ``{
 	return "<b>" + text + "</b>";
     };
-    
+
 
     /**
      * Make a forced HTML line break, i.e. [br]
@@ -184,7 +185,7 @@
 	return "<br>";
     };
 
-    
+
     /**
      * Make a number of forced HTML line breaks, i.e. [br]
      *
