@@ -349,5 +349,57 @@ global define map<string, integer> DefaultFunctionKeyMap() {
     return fkeys;
 }
 
+/* LABEL -- MESSAGES FOR ANOTHER WIDGETS */
+
+/* TextEntry */
+
+/**
+ * File Name TextEntry
+ */
+global define string FileName() {
+  /* TextEntry Label */
+  return _("&File Name");
+}
+
+/**
+ * Password TextEntry
+ */
+global define string Password() {
+  /* TextEntry Label */
+  return _("&Password");
+}
+
+/**
+ * Confirm Password TextEntry
+ */
+global define string ConfirmPassword() {
+  /* TextEntry Label */
+  return _("C&onfirm Password");
+}
+
+/**
+ * Port TextEntry
+ */
+global define string Port() {
+  /* TextEntry Label */
+  return _("&Port");
+}
+
+/**
+ * Host Name TextEntry
+ */
+global define string HostName() {
+  /* TextEntry Label */
+  return _("&Host Name");
+}
+
+/**
+ * Options TextEntry
+ */
+global define string Options() {
+  /* TextEntry Label */
+  return _("&Options");
+}
+
 /* EOF */
 }
