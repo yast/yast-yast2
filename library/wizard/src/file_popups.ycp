@@ -115,19 +115,19 @@
 	    return r==nil? "": r;
 	}
 
-	list dirs = getsubdirs (dir);
-	string subdir = dir;
+	string subdir = AdjustDirName( dir );
+	list dirs = getsubdirs (subdir);
+
 	list history = [];
 	integer history_ptr = -1;
-	y2error ("%1", subdir);
+
 	if (size (dirs) == 0)
 	{
 	    y2error ("No permissions for directory: %1, using /", dir);
 	    subdir = "/";
 	    dirs = getsubdirs (subdir);
 	}
-	y2error ("%1", subdir);
-
+	
 	history = add (history, [subdir, dirs]);
 	history_ptr = history_ptr + 1;
 
@@ -289,36 +289,24 @@
 	    return r==nil? "": r;
 	}
 
-	if (size (dir) > 0 && substring (dir, size (dir) - 1, 1) != "/")
-	{
-	    dir = dir + "/";
-	}
-	else if ( dir == "" )
-	{
-	    // get the current directory
-	    map retmap =  SCR::Execute( .target.bash_output, "/bin/pwd", $[] );
-	    
-	    dir = lookup( retmap, "stdout", "" );
-	    dir = substring (dir, 0, size (dir) - 1);	// get rid of newline
-    	    dir = dir + "/";
-	}
+	string subdir = AdjustDirName (dir);
+	list dirs = getsubdirs (subdir);
 
-	list dirs = getsubdirs (dir);
 	list history = [];
 	integer history_ptr = -1;
 
 	if (size (dirs) == 0)
 	{
 	    y2error ("No permissions for directory: %1, using /", dir);
-	    dir = "/";
-	    dirs = getsubdirs (dir);
+	    subdir = "/";
+	    dirs = getsubdirs (subdir);
 	}
 
 	term contents =
 	    `VBox(
 		  `HSpacing(80),
 		  `ReplacePoint (`id(`rephead),
-				 `Heading (`id (`head), sformat (_("Selected directory: %1"), dir))
+				 `Heading (`id (`head), sformat (_("Selected directory: %1"), subdir))
 				 ),
 		  `VSpacing (),
 		  `HBox (
@@ -440,13 +428,11 @@
 	    return r==nil? "": r;
 	}
 
-	string entry_dir = AdjustDirName( dir );
+	string subdir = AdjustDirName( dir );
 	
-	list dirs = getsubdirs (entry_dir);
-	sleep(1000);
+	list dirs = getsubdirs (subdir);
+	sleep(100);
 	
-	string subdir = entry_dir;
-
 	list history = [];
 	integer history_ptr = -1;
 
@@ -496,20 +482,13 @@
 
 
 
-	any ret = nil;
+	map ret_map = $[];
 
 	repeat {
-	    ret = UI::UserInput ();
-	    y2milestone("ret: %1", ret);
+	    ret_map = UI::WaitForEvent ();
+	    y2milestone("ret: %1", ret_map);
 
-	    any current_selected = UI::QueryWidget(`id(`file), `CurrentItem);
-
-	    if (current_selected!=nil)
-	    {
-		UI::ChangeWidget(`id(`filename), `Value, current_selected);
-	    }
-
-	    if (ret == `backward)
+	    if (ret_map["ID"]:`none == `backward)
 	    {
 		history_ptr = history_ptr > 0 ? history_ptr - 1 : history_ptr;
 		dirs   = select (select (history, history_ptr, [subdir, dirs]), 1, []);
@@ -519,8 +498,7 @@
 		UI::ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), _("Dire&ctories"), dirs));
 		UI::ReplaceWidget (`id (`repfile), `SelectionBox (`id (`file), `opt(`notify), _("Fi&les"), getfiles (subdir)));
 	    }
-
-	    if (ret == `forward)
+	    else  if (ret_map["ID"]:`none == `forward)
 	    {
 		history_ptr = history_ptr + 1;
 		dirs   = select (select (history, history_ptr, [subdir, dirs]), 1, []);
@@ -530,8 +508,8 @@
 		UI::ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), _("Directories"), dirs));
 		UI::ReplaceWidget (`id (`repfile), `SelectionBox (`id (`file), `opt(`notify), _("Files"), getfiles (subdir)));
 	    }
-
-	    if (ret == `dir)
+	    else if (ret_map["ID"]:`none == `dir
+		     && ret_map["EventReason"]:"" == "Activated" )
 	    {
 		string old_dir = subdir;
 		subdir  = UI::QueryWidget(`id (`dir), `CurrentItem);		
@@ -572,18 +550,28 @@
 		UI::ReplaceWidget (`id (`repfile), `SelectionBox (`id (`file), `opt(`notify), _("Files"), getfiles (subdir)));
 		UI::SetFocus(`id(`dir));
 	    }
+	    else if (ret_map["ID"]:`none == `file
+		     && ret_map["EventReason"]:"" == "Activated")
+	    {
+		any current_selected = UI::QueryWidget(`id(`file), `CurrentItem);
+		if (current_selected!=nil)
+		{
+		    UI::ChangeWidget(`id(`filename), `Value, current_selected);
+		}
+	    }
 
 	    UI::ChangeWidget (`id (`backward), `Enabled, (history_ptr > 0));
 	    UI::ChangeWidget (`id (`forward), `Enabled, history_ptr < size (history) - 1);
 
-	} until (ret == `ok_button || ret == `cancel_button);
+	} until (ret_map["ID"]:`none == `ok_button || ret_map["ID"]:`none == `cancel_button);
 
 
 	string file = "";
 
-	if (ret == `ok_button)
+	if (ret_map["ID"]:`none == `ok_button)
 	{
 	    file = UI::QueryWidget (`id (`filename), `Value);
+
 	    if ("" == file)
 		file = UI::QueryWidget (`id (`file), `CurrentItem);
 
