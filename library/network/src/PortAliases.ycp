@@ -108,6 +108,7 @@
      * @return	string with description
      */
     global define string AllowedPortNameOrNumber () {
+	// TRANSLATORS: popup informing message, allowed characters for port-names
 	return _("Allowed port name consists of characters 'a-z', 'A-Z', '0-9' and '*+._-'.
 Allowed port number is a number between 0 and 65535 (including them as well).
 No spaces are allowed at all.");
