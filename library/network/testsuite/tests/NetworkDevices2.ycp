@@ -1,0 +1,135 @@
+{
+
+include "testsuite.ycp";
+
+map READ = $[
+    "network" : $[
+	"section" : $[
+	    "arc5"	: nil,
+	    "atm5"	: nil,
+	    "ci5"	: nil,
+	    "ctc5"	: nil,
+	    "dummy5"	: nil,
+	    "escon5"	: nil,
+	    "eth5"	: nil,
+	    "eth6"	: nil,
+	    "eth7"	: nil,
+	    "eth8"	: nil,
+//	    "eth-pcmcia": nil,
+//	    "eth-usb"	: nil,
+	    "fddi5"	: nil,
+	    "hippi5"	: nil,
+	    "hsi5"	: nil,
+	    "ippp5"	: nil,
+	    "iucv5"	: nil,
+	    "lo"	: nil,
+	    "myri5"	: nil,
+	    "ppp5"	: nil,
+	    "tr5"	: nil,
+	    "tr~"	: nil,
+	],
+	"value" : $[
+	    "arc5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "atm5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "ci5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "ctc5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "dummy5"	: $["BOOTPROTO":"static", "IPADDR":"1.2.3.4", "STARTMODE" : "manual"],
+	    "escon5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "eth5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual", /* "IPADDR_x":"1.1.1.1", "NETMASK_x":"0.0.0.0" */],
+	    "eth6"	: $["BOOTPROTO":"static", "IPADDR":"1.2.3.4", "STARTMODE":"manual"],
+	    "eth7"	: $["STARTMODE":"manual"],
+	    "eth8"	: $["IPADDR":"1.2.3.4", "STARTMODE":"manual"],
+//	    "eth-pcmcia": $["BOOTPROTO":"dhcp", "STARTMODE":"hotplug"],
+//	    "eth-usb"	: $["BOOTPROTO":"dhcp", "STARTMODE":"hotplug"],
+	    "fddi5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "hippi5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "hsi5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "ippp5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "iucv5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "lo"	: $["BROADCAST":"127.255.255.255", "IPADDR":"127.0.0.1", "NETMASK":"255.0.0.0", "NETWORK":"127.0.0.0", "STARTMODE":"onboot", /* "IPADDR_1":"7.7.7.7" */],
+	    "myri5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "ppp5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "tr5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	]
+    ],
+    "probe" : $[
+	"system" : [],
+    ],
+    "target" : $[
+	"tmpdir" : "/tmp",
+    ],
+];
+
+TESTSUITE_INIT([READ], nil);
+import "NetworkDevices";
+
+DUMP("NetworkDevices::Read");
+TEST(``(NetworkDevices::Read()), [READ], nil);
+DUMP(sformat("all=%1", NetworkDevices::Devices));
+NetworkDevices::OriginalDevices = nil;
+
+DUMP("NetworkDevices::Write");
+TEST(``(NetworkDevices::Write("")), [READ], nil);
+TEST(``(NetworkDevices::Write("eth")), [READ], nil);
+TEST(``(NetworkDevices::Write("ppp")), [READ], nil);
+TEST(``(NetworkDevices::Write("ippp")), [READ], nil);
+TEST(``(NetworkDevices::Write("trx")), [READ], nil);
+TEST(``(NetworkDevices::Write("atm|tr")), [READ], nil);
+
+DUMP("NetworkDevices::GetFreeDevices");
+NetworkDevices::Devices=$["eth":$["0":$[]]];
+TEST(``(NetworkDevices::GetFreeDevices("eth", 2)), [], nil);
+NetworkDevices::Devices=$["eth":$["1":$[]]];
+TEST(``(NetworkDevices::GetFreeDevices("eth", 2)), [], nil);
+NetworkDevices::Devices=$["eth":$["2":$[]]];
+TEST(``(NetworkDevices::GetFreeDevices("eth", 2)), [], nil);
+NetworkDevices::Devices=$["eth-pcmcia":$["":$[]]];
+TEST(``(NetworkDevices::GetFreeDevices("eth-pcmcia", 2)), [], nil);
+NetworkDevices::Devices=$["eth-pcmcia":$["0":$[]]];
+TEST(``(NetworkDevices::GetFreeDevices("eth-pcmcia", 2)), [], nil);
+NetworkDevices::Devices=$["eth-pcmcia":$["1":$[]]];
+TEST(``(NetworkDevices::GetFreeDevices("eth-pcmcia", 2)), [], nil);
+
+DUMP("NetworkDevices::Locate");
+NetworkDevices::Devices=$[ "eth" : $[ "0" : $[ "BOOTPROTO" : "dhcp" ]]];
+TEST(``(NetworkDevices::Locate("BOOTPROTO", "dhcp")), [], nil);
+NetworkDevices::Devices=$[ "eth" : $[ "0" : $[ "BOOTPROTO" : "" ]]];
+TEST(``(NetworkDevices::Locate("BOOTPROTO", "dhcp")), [], nil);
+NetworkDevices::Devices=$[ "eth" : $[ "0" : $[ "BOOTPROTO" : "static" ]]];
+TEST(``(NetworkDevices::Locate("BOOTPROTO", "dhcp")), [], nil);
+NetworkDevices::Devices=$[ "eth" : $[ "0" : $[ "BOOTPROTO" : "static" ], "1" : $[ "BOOTPROTO" : "dhcp"]]];
+TEST(``(NetworkDevices::Locate("BOOTPROTO", "dhcp")), [], nil);
+NetworkDevices::Devices=$[ "eth" : $[ "0" : $[ "BOOTPROTO" : "static" ]], "tr" : $["1" : $[ "BOOTPROTO" : "dhcp"]]];
+TEST(``(NetworkDevices::Locate("BOOTPROTO", "dhcp")), [], nil);
+
+DUMP("NetworkDevices::UpdateModemSymlink");
+NetworkDevices::Devices=$["arc":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]]];
+TEST(``(NetworkDevices::UpdateModemSymlink()), [], nil);
+NetworkDevices::Devices=$["modem":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]]];
+TEST(``(NetworkDevices::UpdateModemSymlink()), [], nil);
+NetworkDevices::Devices=$["modem":$["5":$["MODEM_DEVICE":"", "STARTMODE":"manual"]]];
+TEST(``(NetworkDevices::UpdateModemSymlink()), [], nil);
+NetworkDevices::Devices=$["modem":$["5":$["MODEM_DEVICE":"/dev/modem", "STARTMODE":"manual"]]];
+TEST(``(NetworkDevices::UpdateModemSymlink()), [], nil);
+NetworkDevices::Devices=$["modem":$["5":$["MODEM_DEVICE":"/dev/ttyS1", "STARTMODE":"manual"]]];
+TEST(``(NetworkDevices::UpdateModemSymlink()), [], nil);
+READ=$["target":$["lstat":$["islink":true], "symlink":"/dev/ttyS1"]];
+TEST(``(NetworkDevices::UpdateModemSymlink()), [READ], nil);
+READ=$["target":$["lstat":$["islink":true], "symlink":"/dev/ttyS2"]];
+TEST(``(NetworkDevices::UpdateModemSymlink()), [READ], nil);
+
+DUMP("NetworkDevices::List");
+NetworkDevices::Devices=$["lo":$["":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]]];
+TEST(``(NetworkDevices::List("modem")), [], nil);
+TEST(``(NetworkDevices::List("netcard")), [], nil);
+TEST(``(NetworkDevices::List("")), [], nil);
+NetworkDevices::Devices=$["lo":$["":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "eth":$["0":$["BOOTPROTO":"DHCP", "STARTMODE":"manual"]]];
+TEST(``(NetworkDevices::List("modem")), [], nil);
+TEST(``(NetworkDevices::List("netcard")), [], nil);
+TEST(``(NetworkDevices::List("")), [], nil);
+NetworkDevices::Devices=$[ "eth" : $[ "0" : $[ "BOOTPROTO" : "static" ]], "tr" : $["1" : $[ "BOOTPROTO" : "dhcp"]]];
+TEST(``(NetworkDevices::List("modem")), [], nil);
+TEST(``(NetworkDevices::List("netcard")), [], nil);
+TEST(``(NetworkDevices::List("")), [], nil);
+
+}
