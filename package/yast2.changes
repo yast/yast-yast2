@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jan 14 11:14:19 CET 2003 - mvidner@suse.de
+
+- Added function key shortcuts to common dialogs (try F1 in curses).
+- Report: added global settings for easier access (nashif).
+- 2.7.2
+
+-------------------------------------------------------------------
 Mon Jan 13 13:13:04 CET 2003 - jsrain@suse.de
 
 - added crashes handling module
