@@ -36,8 +36,8 @@
     Mode::test = true;
 
 
-    define map MyCreateTable () ``{
-        map ret = TablePopup::CreateTableDescr ($[],
+    define map<string,any> MyCreateTable () ``{
+        map<string,any> ret = TablePopup::CreateTableDescr ($[],
 	    $[
 	    "init" : TablePopup::TableInitWrapper,
 	    "handle" : TablePopup::TableHandleWrapper,
