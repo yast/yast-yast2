@@ -1,10 +1,10 @@
 @HEADER-COMMENT@
 
-# neededforbuild  yast2-devtools yast2-testsuite yast2-core yast2-core-devel
+# neededforbuild  yast2-core yast2-core-devel yast2-devtools yast2-testsuite
 
 @HEADER@
-Provides:	yast
-Obsoletes:	yast
+Provides:	yast yast2-lib-wizard yast2-lib-sequencer
+Obsoletes:	yast yast2-lib-wizard yast2-lib-sequencer
 Requires:	yast2-core yast2_ui yast2_theme
 BuildArchitectures: noarch
 Summary:	YaST2 Modules for installation
