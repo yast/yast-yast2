@@ -1,0 +1,42 @@
+/**
+ * File:	network.scr
+ * Summary:	Agent for /etc/sysconfig/network/ifcfg-*
+ * Author:	Michal Svec <msvec@suse.cz>
+ * Access:	read / write
+ * See:		sysconfig.rpm
+ *
+ * General syntax:
+ *     # comment0
+ *     VAR1=val1 # comment1
+ *     VAR2="val 2 #blah" # comment2
+ *     VAR3='val3 x #blah2' # comment3
+ *
+ * $Id$
+ *
+ * <p>Reads/writes <tt>/etc/sysconfig/network/ifcfg-*</tt>. For more details
+ * see its own documentation.</p>
+ */
+.network
+
+`ag_ini(
+    `IniAgent( [ "/etc/sysconfig/network/ifcfg-*" ],
+	$[
+	    /* values at the top level, allow comments after value */
+	    "options"	: [ "global_values", "comments_last" ],
+	    /* empty lines, comments after value and whole-line comments */
+	    "comments"	: [ "^[ \t]*$", "[ \t]*#.*$", "^[ \t]*#.*$" ],
+	    /* matching rules */
+	    "params"	: [
+		/* VAR1="val1 'bal x" */
+		$[ "match" : [ "^[ \t]*([a-zA-Z_][a-zA-Z0-9_]*)=\"([^\"`\\$]*)\"", "%s='%s'" ] ],
+		/* VAR1='val1 xxx" xx' */
+		$[ "match" : [ "^[ \t]*([a-zA-Z_][a-zA-Z0-9_]*)='([^']*)'", "%s='%s'" ] ],
+		/* VAR1=val1 */
+		$[ "match" : [ "^[ \t]*([a-zA-Z_][a-zA-Z0-9_]*)=([^ \t\"$`'\\#]*)", "%s='%s'" ] ],
+	    ],
+	    /* matching rules */
+	    "rewrite"	: [
+		[ "/etc/sysconfig/network/ifcfg-(.*)", "/etc/sysconfig/network/ifcfg-%s" ],
+	    ],
+	]
+))
