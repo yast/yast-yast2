@@ -12,6 +12,11 @@
     include "testsuite.ycp";
     import "TypeRepository";
     import "CommandLine";
+    import "Report";
+    
+    // disable use of UI
+    Report::display_errors = false;
+    Report::log_errors = true;
 
     // fail: add and delete are mutually exclusive
     TEST(``(CommandLine::UniqueOption($["add":"", "delete":"" ],["add","delete"]) ),[],nil);
