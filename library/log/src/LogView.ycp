@@ -48,9 +48,12 @@
       *                 are ignored
       *  - "save" -- boolean, if true, then log saving is possible
       *  - "actions" -- list, allows to specify additional actions.
-      *                 Each member is a 2-entry list, first entry is a
+      *                 Each member is a 2- or 3-entry list, first entry is a
       *                 label for the menubutton, the second one is a term
-      *                 that will be evaluated when the entry is selected
+      *                 that will be evaluated when the entry is selected,
+      *			optional 3rd argument, if set to true, forces
+      *			restarting of the log displaying command after the
+      *			action is performed
       *  - "help" -- string for a rich text, help to be offered via a popup
       *              when user clicks the "Help" button. If not present,
       *              Help button isn't shown
@@ -68,39 +71,8 @@
 	// menubutton
 	string mb_label = param["mb_label"]:_("Ad&vanced");
 	integer max_lines = param["max_lines"]:100;
-	string command = param["command"]:nil;
-	if (command == nil)
-	{
-	    string grep = param["grep"]:"";
-	    if (grep != "")
-		grep = sformat ("| grep --line-buffered %1", grep);
-	    string lc_command
-		= sformat ("cat %1 %2 | wc -l", param["file"]:"", grep);
-	    map bash_output = SCR::Execute (.target.bash_output, lc_command);
-	    command = "tail -f -n +0 " + param["file"]:"";
-	    string addon = "";
-	    if (bash_output["exit"]:1 == 0)
-	    {
-		string lc = bash_output["stdout"]:"";
-		lc = filterchars (lc, "1234567890");
-		integer lines_count = tointeger (lc);
-		lines_count = lines_count - 2 * max_lines;
-			// don't know why without
-			// doubling it discards more lines, out of YaST2
-			// it works
-		if (max_lines != 0 && lines_count > 0)
-		    addon = sformat ("| tail -n +%1", lines_count);
-	    }
-	    command = sformat ("%1 %2 %3", command, grep, addon);
-	}
-	y2milestone ("Calling background agent with command %1", command);
-	boolean cmdret = SCR::Execute (.background.run_output, command);
-	if (! cmdret)
-	{
-	    // message popup
-	    Report::Error (_("Error while reading the log occured"));
-	    return;
-	}
+
+	RunCommand (param);
 
 	term button_line = `HBox(
 	    `HWeight (1, `ReplacePoint (`id (`rep_left), `HSpacing (0))),
@@ -177,8 +149,8 @@
 		lines = merge (lines, new_lines);
 		lines = DeleteOldLines (lines, max_lines);
 	    }
-	    sleep (100);
-            ret = UI::PollInput ();
+	    map event = UI::WaitForEvent (1000);
+	    ret = event["ID"]:nil;
 	    if (ret == `help)
 	    {
 		UI::OpenDialog (`VBox (
@@ -208,6 +180,12 @@
 	    else if (ret != nil && is (ret, integer))
 	    {
 		eval (actions[ret, 1]:nil);
+		if (actions[ret, 2]:nil == true)
+		{
+		    SCR::Execute (.background.kill);
+		    UI::ChangeWidget (`id (`log), `Value, "");
+		    RunCommand (param);
+		}
 	    }
 	}
 	SCR::Execute (.background.kill);
@@ -236,6 +214,44 @@
 	    });
 	}
 	return lines;
+    }
+
+    define void RunCommand (map param) ``{
+	string command = param["command"]:nil;
+	if (command == nil)
+	{
+	    string grep = param["grep"]:"";
+	    if (grep != "")
+		grep = sformat ("| grep --line-buffered %1", grep);
+	    string lc_command
+		= sformat ("cat %1 %2 | wc -l", param["file"]:"", grep);
+	    map bash_output = SCR::Execute (.target.bash_output, lc_command);
+	    command = "tail -f -n +0 " + param["file"]:"";
+	    string addon = "";
+	    if (bash_output["exit"]:1 == 0)
+	    {
+		string lc = bash_output["stdout"]:"";
+		lc = filterchars (lc, "1234567890");
+		integer lines_count = tointeger (lc);
+		lines_count = lines_count - 2 * max_lines;
+			// don't know why without
+			// doubling it discards more lines, out of YaST2
+			// it works
+		if (max_lines != 0 && lines_count > 0)
+		    addon = sformat ("| tail -n +%1", lines_count);
+	    }
+	    command = sformat ("%1 %2 %3", command, grep, addon);
+	}
+	y2milestone ("Calling background agent with command %1", command);
+	boolean cmdret = SCR::Execute (.background.run_output, command);
+	if (! cmdret)
+	{
+	    // message popup
+	    Report::Error (_("Error while reading the log occured"));
+	    return;
+	}
+
+
     }
 
 }
