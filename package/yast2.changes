@@ -1,6 +1,7 @@
 -------------------------------------------------------------------
 Mon Jun 23 17:06:34 CEST 2003 - jsrain@suse.de
 
+- moved YCP libraries to own subdirectory (visnov@suse.cz)
 - added CWM module for simple manipulation with widgets, including
   common routines for Table/Popup-style dialogs
 - added LogView module for displaying logs with advanced
