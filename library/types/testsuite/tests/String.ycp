@@ -71,6 +71,44 @@ TEST(``(String::ParseOptions("a=3	b=2", $[])), [], nil);
 TEST(``(String::ParseOptions("a=3 b=2", $[])), [], nil);
 TEST(``(String::ParseOptions("a=", $[])), [], nil);
 
+map param = $[ "separator" : ",",
+    "unique" : true,
+    "remove_whitespace" : true
+];
+
+// Basic functionality
+TEST( ``(String::ParseOptions(nil, param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions("", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions("    ", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions(" abc , 123, var", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions(" abc,123  ", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions("x,  y  ,  z", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions("0,\"1, 2, 3\", 4, 5 ", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions(" ,,  ,", param) ), [ $[], $[], $[] ], nil );
+
+// multi separator
+param["separator"] = ",;.";
+TEST( ``(String::ParseOptions("ab.sdf;  fwre  sdf", param) ), [ $[], $[], $[] ], nil );
+
+// uniqe / multile test
+TEST( ``(String::ParseOptions(" 1,2,1,1,5 ,", param) ), [ $[], $[], $[] ], nil );
+param["unique"] = false;
+TEST( ``(String::ParseOptions(" 1,2,1,1,5 ,", param) ), [ $[], $[], $[] ], nil );
+
+// use space as separator
+param["separator"] = " ";
+TEST( ``(String::ParseOptions(" \"\\\"\", 2", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions("   a   b zx ,, ,", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions("   123\"56\"78  bzx ", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions("   a \\\\ b ", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions(" \n \\\"  ", param) ), [ $[], $[], $[] ], nil );
+
+// don't remove white space
+param["remove_whitespace"] = false;
+param["separator"] = ",";
+TEST( ``(String::ParseOptions("   a   b zx ,, ,", param) ), [ $[], $[], $[] ], nil );
+
+
 DUMP("String::CutRegexMatch");
 TEST(``(String::CutRegexMatch("abc","[0-9]+",true)), [], nil);
 TEST(``(String::CutRegexMatch("abc12def345ghi678900","[0-9]+",true)), [], nil);

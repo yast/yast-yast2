@@ -57,6 +57,23 @@ Dump	String::ParseOptions
 Return	["a=3", "b=2"]
 Return	["a=3", "b=2"]
 Return	["a="]
+Return	[]
+Return	[]
+Return	[]
+Return	["abc", "123", "var"]
+Return	["abc", "123"]
+Return	["x", "y", "z"]
+Return	["0", "1, 2, 3", "4", "5"]
+Return	[]
+Return	["ab", "sdf", "fwre  sdf"]
+Return	["1", "2", "5"]
+Return	["1", "2", "1", "1", "5"]
+Return	["\",", "2"]
+Return	["a", "b", "zx", ",,", ","]
+Return	["123\"56\"78", "bzx"]
+Return	["a", "\\", "b"]
+Return	["\n", "\""]
+Return	["   a   b zx ", " "]
 Dump	String::CutRegexMatch
 Return	abc
 Return	abcdefghi
