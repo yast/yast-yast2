@@ -51,7 +51,7 @@
 
     /**
      * After a function returns an error, this holds an error message,
-     * including insserv stderr and possibli containing newlines.
+     * including insserv stderr and possibly containing newlines.
      *
      * Set by
      * checkExists: Service[Full]Info, ServiceStatus, ServiceEnabled
@@ -143,7 +143,7 @@
 	    // in appropriate runlevels, eg. at boot time.
 	    // %2 is the stderr output of insserv(8)
 	    error_msg = sformat(_("Unable to disable service %1:\n%2"),
-				name, ret[stderr]:"");
+				name, ret["stderr"]:"");
 	    // the user is two levels up
 	    y2error (2, error_msg);
 	    return false;
@@ -192,7 +192,7 @@
 		    // in appropriate runlevels, eg. at boot time.
 		    // %2 is the stderr output of insserv(8)
 		    error_msg = sformat(_("Unable to enable service %1:\n%2"),
-					name, ret[stderr]:"");
+					name, ret["stderr"]:"");
 		    y2error (1, error_msg);
 		    return false;
 		}
@@ -238,7 +238,7 @@
 		// %2 is the stderr output of insserv(8)
 		// %3 is a comma separated list of runlevels
 		error_msg = sformat(_("Unable to enable service %1 in runlevels %2:\n%3"),
-				    name, rls, ret[stderr]:"");
+				    name, rls, ret["stderr"]:"");
 		y2error (1, error_msg);
 		return false;
 	    }
