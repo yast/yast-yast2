@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 17 07:16:41 CET 2005 - nashif@suse.de
+
+- Added function to reset install.inf data to initiate a reread of
+  the file
+
+-------------------------------------------------------------------
 Tue Feb 15 15:55:55 CET 2005 - locilka@suse.cz
 
 - added name of the device for configuring interfaces
