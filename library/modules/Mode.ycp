@@ -226,7 +226,7 @@
 	+ "\n\n"
 	+ _("This is not supported, proceed on your own risk.")
 	+ _("If you intend to upgrade to the 64-bit distribution, use the other side
-	    of the DVD medium for booting.")
+	    of the DVD medium for booting.");
 
     // update warning
     // the user has selected a 32bit partition on a x86-64 computer for update
