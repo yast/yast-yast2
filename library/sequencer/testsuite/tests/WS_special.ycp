@@ -3,6 +3,10 @@
 include "testsuite.ycp";
 include "./../src/sequencer.ycp";
 
+define any Normal() { return 1; }
+define any SpecialN() { return 1; }
+define any SpecialY() { return 1; }
+
 map Aliases = $[
     "normal"	: ``(Normal()),
     "special_n"	: [ ``(SpecialN()), false ],

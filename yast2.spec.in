@@ -97,6 +97,10 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 %dir @yncludedir@/commandline
 @yncludedir@/commandline/*.ycp
 
+#packags
+%dir @yncludedir@/packages
+@yncludedir@/packages/*.ycp
+
 # documentation
 
 %files devel
