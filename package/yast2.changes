@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Aug 11 15:40:00 CEST 2003 - gs@suse.de
+
+- yast2 script: start y2base menu.ycp ncurses (instead of y2base) 
+
+-------------------------------------------------------------------
 Fri Aug  8 14:47:14 CEST 2003 - gs@suse.de
 
 - bugfix in file_popups.ycp/PopupDir(dir) (if the argument is an 
