@@ -253,7 +253,8 @@ global define boolean Finetune (string name, list rl) ``{
  */
 global define boolean Enabled (string name) ``{
     if(!checkExists (name)) return false;
-    map detail = lookup((map) SCR::Read(.init.scripts.runlevel, name), name, $[]);
+    map<string, any> details = (map<string, any>) SCR::Read (.init.scripts.runlevel, name);
+    map<string, any> detail  = (map<string, any>) details[name]:$[];
     return size(detail["start"]:[]) != 0;
 }
 
@@ -284,8 +285,8 @@ global define map RunInitScriptOutput (string name, string param) ``{
     // encoding problems - append .UTF-8 to LANG
     if (lang == nil)
     {
-	lang = lookup ( (map) SCR::Execute (.target.bash_output, "echo -n $LANG"),
-		       "stdout", "");
+	map<string, any> ex = (map<string, any>) SCR::Execute (.target.bash_output, "echo -n $LANG");
+	lang = ex["stdout"]:"";
 	list ll = splitstring (lang, ".");
 	lang = ll[0]:"";
 	if (lang != "")
