@@ -1,0 +1,5 @@
+*.html
+*.bak
+*~
+Makefile
+Makefile.in
