@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar 29 15:27:24 CEST 2004 - adrian@suse.de
+
+- hide YaST groups desktop files in the desktop world
+
+-------------------------------------------------------------------
 Mon Mar 29 11:13:30 CEST 2004 - arvin@suse.de
 
 - fixed kernel selection on i386 smp systems (bug #35876)
