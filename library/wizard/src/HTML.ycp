@@ -17,8 +17,9 @@
     textdomain "base";
 
     /**
-     * Make a HTML paragraph from a text, i.e. embed a text into
-     * [p]...[/p]
+     * Make a HTML paragraph from a text
+     *
+     * i.e. embed a text into * [p]...[/p]
      *
      * @param text plain text or HTML fragment
      * @return HTML code
@@ -29,8 +30,9 @@
 
 
     /**
-     * Make a HTML heading from a text, i.e. embed a text into
-     * [h3]...[/h3]
+     * Make a HTML heading from a text
+     *
+     * i.e. embed a text into [h3]...[/h3]
      *
      * Note: There is only one heading level here since we don't have any more
      * fonts anyway.
@@ -44,8 +46,9 @@
 
 
     /**
-     * Make a HTML link, i.e.
-     * [a href="..."]...[/a]
+     * Make a HTML link
+     *
+     * For example  [a href="..."]...[/a]
      *
      * You still need to embed that into a paragraph or heading etc.!
      *
@@ -59,7 +62,9 @@
 
 
     /**
-     * Start a HTML (unsorted) list, i.e. [ul]
+     * Start a HTML (unsorted) list
+     *
+     * For example [ul]
      *
      * You might consider using HTML::list() instead which takes a list of
      * items and does all the rest by itself.
@@ -72,7 +77,9 @@
 
 
     /**
-     * End a HTML (unsorted) list, i.e. [/ul]
+     * End a HTML (unsorted) list
+     *
+     * For example [/ul]
      *
      * You might consider using HTML::list() instead which takes a list of
      * items and does all the rest by itself.
@@ -85,8 +92,9 @@
 
 
     /**
-     * Make a HTML list item, i.e. embed a text into
-     * [li][p]...[/p][/li]
+     * Make a HTML list item
+     *
+     * For example  embed a text into [li][p]...[/p][/li]
      *
      * You might consider using HTML::list() instead which takes a list of
      * items and does all the rest by itself.
@@ -100,7 +108,9 @@
 
 
     /**
-     * Make a HTML (unsorted) list from a list of strings, i.e.
+     * Make a HTML (unsorted) list from a list of strings
+     *
+     *
      * [ul]
      *     [li]...[/li]
      *     [li]...[/li]
@@ -124,7 +134,8 @@
 
 
     /**
-     * Make a HTML (unsorted) colored list from a list of strings, i.e.
+     * Make a HTML (unsorted) colored list from a list of strings
+     *
      * [ul]
      *     [li][font color="..."]...[/font][/li]
      *     [li][font color="..."]...[/font][/li]
@@ -150,8 +161,9 @@
 
 
     /**
-     * Colorize a piece of HTML code, i.e. embed it into
-     * [font color="..."]...[/font]
+     * Colorize a piece of HTML code
+     *
+     * i.e. embed it into [font color="..."]...[/font]
      *
      * You still need to embed that into a paragraph or heading etc.!
      *
@@ -165,8 +177,9 @@
 
 
     /**
-     * Make a piece of HTML code bold, i.e. embed it into
-     * [b]...[/b]
+     * Make a piece of HTML code bold
+     *
+     * i.e. embed it into [b]...[/b]
      *
      * You still need to embed that into a paragraph or heading etc.!
      *
@@ -179,7 +192,7 @@
 
 
     /**
-     * Make a forced HTML line break, i.e. [br]
+     * Make a forced HTML line break
      *
      * @return HTML code
      **/
@@ -189,7 +202,7 @@
 
 
     /**
-     * Make a number of forced HTML line breaks, i.e. [br]
+     * Make a number of forced HTML line breaks
      *
      * @param count how many of them
      * @return HTML code

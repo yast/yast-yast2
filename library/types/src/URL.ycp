@@ -34,7 +34,6 @@ global string ValidChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP
  * @param url URL to be parsed
  * @return URL split to tokens
  * @example Parse("http://name:pass@www.suse.cz:80/path/index.html?question#part") ->
- * <pre>
  *     $[
  *         "scheme"  : "http",
  *         "host"    : "www.suse.cz"
@@ -45,7 +44,6 @@ global string ValidChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP
  *         "query"   : "question",
  *         "fragment": "part"
  *     ]
- * </pre>
  */
 global define map Parse(string url) ``{
 

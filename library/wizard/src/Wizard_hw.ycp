@@ -14,6 +14,7 @@ textdomain "base";
 
 /**
  * Create the content of the screen with the detected devices.
+ *
  * It is used in the SetWizardContent() or SetWizardContentButtons() functions.
  *
  * @param frame_label The frame around the detected devices
@@ -54,8 +55,9 @@ global define term DetectedContent(string frame_label, list detected,
 }
 
     /**
-     * Create the contents of screen with configured items. It contains
-     * table and buttons Add, Edit, Delete. User may specify table header
+     * Create the contents of screen with configured items.
+     *
+     * It contains table and buttons Add, Edit, Delete. User may specify table header
      * and content, content that will be placed above table, between table
      * and buttons, below buttons and rights from buttons (usually another
      * button).
@@ -155,8 +157,11 @@ global define term DetectedContent(string frame_label, list detected,
     }
 
     /**
-     * Encloses the content into VBoxes and HBoxes so that its
-     * size is at least <B>xsize</B>&nbsp;x&nbsp;<B>ysize</B>.
+     * Encloses the content into VBoxes and HBoxes
+     *
+     * Enclose so that its
+     * size is at least
+     * <emphasis>xsize</emphasis>&nbsp;x&nbsp;<emphasis>ysize</emphasis>.
      * @param xsize Minimal size of content in the X direction
      * @param ysize Minimal size of content in the Y direction
      * @param content Content of the dialog

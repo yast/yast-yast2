@@ -75,7 +75,9 @@
     }
 
     /**
-     * Give me NFS server name on the local network - display dialog with all local NFS servers
+     * Give me NFS server name on the local network
+     *
+     * display dialog with all local NFS servers
      * @param selected	preselected a value in the list
      * @return		a hostname or nil if "Cancel" was pressed
      */
@@ -105,7 +107,9 @@
     }
 
     /**
-     * Give me one host name on the local network - display dialog with all hosts on the local network
+     * Give me one host name on the local network
+     *
+     * display dialog with all hosts on the local network
      * @param selected	preselect a value in the list
      * @return		a hostname or nil if "Cancel" was pressed
      */
@@ -129,7 +133,9 @@
     }
 
     /**
-     * Give me export path of selected server - display dialog with all exported directories from the selected server
+     * Give me export path of selected server
+     *
+     * display dialog with all exported directories from the selected server
      * @param server	a NFS server name
      * @param selected	preselected a value in the list
      * @return		an export or nil if "Cancel" was pressed

@@ -143,7 +143,9 @@ global define string Summary() ``{
 
 /**
  * Get all the Report configuration from a map.
+ *
  * the map may be empty.
+ *
  * @param settings Map with settings (keys: "messages", "errors", "warnings"; values: map
  * @return	success
  */
@@ -423,7 +425,9 @@ global define void Error(string error_string) ``{
 
 /**
  * Error popup dialog can displayed immediately when new error is stored.
+ *
  * This function enables or diables popuping of dialogs.
+ *
  * @param display if true then display error popups immediately
  * @param timeout dialog is automatically closed after timeout seconds. Value 0 means no time out, dialog will be closed only by user.
  * @return void
@@ -437,7 +441,9 @@ global define void DisplayErrors(boolean display, integer timeout) ``{
 
 /**
  * Warning popup dialog can displayed immediately when new warningr is stored.
+ *
  * This function enables or diables popuping of dialogs.
+ *
  * @param display if true then display warning popups immediately
  * @param timeout dialog is automatically closed after timeout seconds. Value 0 means no time out, dialog will be closed only by user.
  * @return void
@@ -452,7 +458,9 @@ global define void DisplayWarnings(boolean display, integer timeout) ``{
 
 /**
  * Message popup dialog can be displayed immediately when a new message  is stored.
+ *
  * This function enables or diables popuping of dialogs.
+ *
  * @param display if true then display message popups immediately
  * @param timeout dialog is automatically closed after timeout seconds. Value 0 means no time out, dialog will be closed only by user.
  * @return void
@@ -466,7 +474,9 @@ global define void DisplayMessages(boolean display, integer timeout) ``{
 
 /**
  * Yes/No Message popup dialog can be displayed immediately when a new message  is stored.
+ *
  * This function enables or diables popuping of dialogs.
+ *
  * @param display if true then display message popups immediately
  * @param timeout dialog is automatically closed after timeout seconds. Value 0 means no time out, dialog will be closed only by user.
  * @return void
@@ -517,10 +527,13 @@ global define void LogErrors(boolean log) ``{
 
 /**
  * Create rich text string from stored warning, message or error messages.
- * Every new line character "\n" is replaced by string "<BR>".
+ *
+ * Every new line character "\n" is replaced by string "[BR]".
+ *
  * @param w include warnings in returned string
  * @param e include errors in returned string
  * @param m include messages in returned string
+ * @param ynm include Yes/No messages in returned string
  * @return string rich text string
  */
 global define string GetMessages(boolean w, boolean e, boolean m , boolean ynm) ``{

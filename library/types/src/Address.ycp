@@ -22,7 +22,8 @@ global string ValidChars4 = Hostname::ValidChars+IP::ValidChars4;
 global string ValidChars6 = Hostname::ValidChars+IP::ValidChars6;
 
 /**
- * @return a description of a valid address (ip4 or name)
+ * Return a description of a valid address (ip4 or name)
+ * @return description
  */
 global define string Valid4() ``{
     return IP::Valid4() + "\n" + Hostname::ValidFQ();
