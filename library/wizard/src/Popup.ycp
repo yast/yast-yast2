@@ -16,9 +16,11 @@
 
 {
     module "Popup";
+
     textdomain "base";
 
     import "Label";
+    import "Mode";
 
 
     /**
@@ -222,12 +224,31 @@
 
 	string what_will_happen = "";
 
+	// Confirm user request to abort installation
+	string abort_label = _("Really abort the installation?");
+	// Button that will really abort the installation
+	string abort_button = _("&Abort Installation");
+	// Button that will continue with the installation
+	string continue_button = _("&Continue Installation");
+
 	if ( severity == `painless )
 	{
-	    // Warning text for aborting an installation before anything is installed
-	    what_will_happen = _("If you abort the installation now,
+	    if (Mode::repair)
+	    {
+		// Confirm user request to abort System Repair
+		abort_label = _("Really abort YaST System Repair?");
+		// Button that will really abort the repair
+		abort_button = _("Abort System Repair");
+		// Button that will continue with the repair
+		continue_button = _("&Continue System Repair");
+	    }
+	    else
+	    {
+		// Warning text for aborting an installation before anything is installed
+		what_will_happen = _("If you abort the installation now,
 Linux will not be installed.
 Your hard disk will remain untouched.");
+	    }
 	}
 	else if ( severity == `incomplete )
 	{
@@ -250,18 +271,15 @@ You will need to reinstall.");
 	}
 	else
 	{
-	    y2warning( "Unknown symbol for what will happen when aborting - please correct in calling module" );
+	    y2error ("Unknown symbol for ConfirmAbort");
 	}
 
-	string message = _("Really abort the installation?") + "\n\n" + what_will_happen;
+	string message = abort_label + "\n\n" + what_will_happen;
 
-	any ret = AnyQuestion( NoHeadline(),
-			       message,
-			       _("&Abort Installation"),
-			       _("&Continue Installation"),
-			       `focus_no );
+	boolean ret = AnyQuestion (NoHeadline (), message, abort_button,
+			       continue_button, `focus_no);
 
-	y2debug("ConfirmAbort returned: %1", ret );
+	y2debug("ConfirmAbort returned: %1", ret);
 
 	return ret;
     };
