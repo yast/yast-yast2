@@ -1,21 +1,3 @@
-Read	.probe.architecture "i386"
-Read	.probe.has_apm true
-Read	.probe.has_pcmcia false
-Read	.probe.has_smp false
-Read	.probe.system nil
-Read	.target.size "/etc/install.inf" 0
-Read	.etc.install_inf.Sourcemounted 0
-Read	.etc.install_inf.AutoYaST 0
-Read	.etc.install_inf.Repair 0
-Read	.etc.install_inf.Demo 0
-Read	.etc.install_inf.Textmode 0
-Read	.etc.install_inf.Manual 0
-Read	.target.string "/proc/cmdline" ""
-Read	.etc.install_inf.Console 0
-Read	.etc.install_inf.Braille 0
-Read	.etc.install_inf.VNC 0
-Read	.etc.install_inf.UseSSH 0
-Read	.etc.install_inf.InstMode ""
 Read	.target.size "/etc/sysconfig/kernel" 0
 Read	.sysconfig.kernel.INITRD_MODULES "reiserfs lvmmod"
 Return	["reiserfs", "lvmmod"]
