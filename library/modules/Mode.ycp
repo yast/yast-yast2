@@ -137,6 +137,11 @@
     global boolean text			= false;
 
     /**
+     * we're running in command line interface
+     */
+    global boolean commandline		= false;
+
+    /**
      * we're running in manual mode (manual installation choosen in linuxrc)
      */
     global boolean manual		= false;

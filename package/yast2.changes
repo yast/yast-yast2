@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Dec  5 09:41:45 CET 2003 - jsrain@suse.de
+
+- added Mode::commandline variable, setting it an appropriate way
+
+-------------------------------------------------------------------
 Wed Dec  3 18:20:13 CET 2003 - msvec@suse.cz
 
 - use common Makefile.am (needs recent devtools)
