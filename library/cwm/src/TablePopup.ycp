@@ -125,6 +125,24 @@
     }
 
     /**
+      * Get the left column of the table
+      * @param opt_id any option id
+      * @param opt_descr map option description map
+      * @return string text to the table
+      */
+    define string tableEntryKey (any opt_id, map<string, any> opt_descr) ``{
+	string opt_key = opt_descr["_cwm_key"]:"";
+	string label = opt_descr["table", "label"]:sformat ("%1", opt_key);
+	if (haskey (opt_descr["table"]:$[], "label_func"))
+	{
+	    string(any,string) label_func = (string(any,string))
+		opt_descr["table", "label_func"]:nil;
+	    label = label_func (opt_id, opt_key);
+	}
+	return label;
+    }
+
+    /**
       * Get value to the table entry
       * @param opt_id any option id
       * @param opt_descr map option description map
@@ -231,13 +249,7 @@
 	    string opt_key = id2key (descr, opt_id);
 	    map<string, any> opt_descr = key2descr (descr, opt_key);
 	    opt_descr = updateOptionMap (opt_descr, descr["fallback"]:$[]);
-	    string label = opt_descr["table", "label"]:sformat ("%1", opt_key);
-	    if (haskey (opt_descr["table"]:$[], "label_func"))
-	    {
-		string(any,string) label_func = (string(any,string))
-		    opt_descr["table", "label_func"]:nil;
-		label = label_func (opt_id, opt_key);
-	    }
+	    string label = tableEntryKey (opt_id, opt_descr);
 	    if (opt_key != "____sep")
 	    {
 		opt_val = tableEntryValue (opt_id, opt_descr);
@@ -572,6 +584,11 @@
 		    UI::ChangeWidget (`id (`_tp_table),
 			`Item (opt_id, column),
 			tableEntryValue (opt_id, option_map));
+		    // also redraw the key field as it can be changed
+		    column = column - 1;
+		    UI::ChangeWidget (`id (`_tp_table),
+			`Item (opt_id, column),
+			tableEntryKey (opt_id, option_map));
 		    if (descr["_cwm_attrib", "changed_column"]:false)
 		    {
 			 UI::ChangeWidget (`id (`_tp_table),

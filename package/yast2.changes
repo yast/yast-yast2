@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb 20 09:38:13 CET 2004 - jsrain@suse.de
+
+- fixed redrawing of fields in Table/Popup table widget after an
+  option was changed
+
+-------------------------------------------------------------------
 Thu Feb 19 18:04:31 CET 2004 - jsrain@suse.de
 
 - added agent for handling /etc/sysconfig/hardware/hwcfg-*
