@@ -11,11 +11,12 @@
 
     include "testsuite.ycp";
     include "./tests/testsuitedata.yh";
-    
-    import "./../src/CommandLine.ycp";
+
+    import "CommandLine";
 
     // unknown option
     TEST(``(CommandLine::Init( cmdline ,["add", "ip=10.20.a.b"]) ),[],nil);
     TEST(``(CommandLine::Command()), [], nil );
+
 /* EOF */
 }

@@ -20,4 +20,6 @@ ynclude_DATA =			\
 
 EXTRA_DIST = $(ynclude_DATA) $(module_DATA)
 
+YCPCFLAGS = -M ../../modules
+
 include $(top_srcdir)/Makefile.am.common

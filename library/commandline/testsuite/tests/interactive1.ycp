@@ -12,7 +12,7 @@
     include "testsuite.ycp";
     include "./tests/testsuitedata.yh";
 
-    import "./../src/CommandLine.ycp";
+    import "CommandLine";
 
     TEST(``(CommandLine::Init( cmdline ,["interactive"]) ),[],nil);
     TEST(``(CommandLine::StartGUI()), [], nil );

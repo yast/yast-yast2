@@ -39,11 +39,11 @@ define string ReadLocalizedKey(path keypath, string key) ``{
 
     string ret = (string) SCR::Read(add(keypath, key));
 
-    if(value != "Name" && value != "GenericName") return ret;
+    if(key != "Name" && key != "GenericName") return ret;
     if(Language == nil || Language == "") return ret;
 
     string newkey = sformat("%1[%2]", key, Language);
-    string newret = (string) SCR::Read(add(filepath, newkey));
+    string newret = (string) SCR::Read(add(keypath, newkey));
 
     if(newret != nil && newret != "") return newret;
     return ret;

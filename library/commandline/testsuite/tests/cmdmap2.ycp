@@ -10,8 +10,10 @@
 {
 
     include "testsuite.ycp";
-    import "./../../types/src/TypeRepository.ycp";
-    import "./../src/CommandLine.ycp";
+    import "TypeRepository";
+    import "CommandLine";
+
+    textdomain "empty";
 
     // map must define reasonable id
     TEST(``(CommandLine::Init(

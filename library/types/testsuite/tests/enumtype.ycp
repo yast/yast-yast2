@@ -10,7 +10,7 @@
 {
 
     include "testsuite.ycp";
-    import "./../src/TypeRepository.ycp";
+    import "TypeRepository";
 
     TEST(``(TypeRepository::enum_validator( ["a","b","c"], "a" )),[],nil);
     TEST(``(TypeRepository::enum_validator( ["a","b","c"], "x" )),[],nil);

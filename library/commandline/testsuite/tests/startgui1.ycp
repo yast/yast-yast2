@@ -12,12 +12,13 @@
     include "testsuite.ycp";
     include "./tests/testsuitedata.yh";
 
-    import "./../../types/src/TypeRepository.ycp";
-    import "./../src/CommandLine.ycp";
+    import "TypeRepository";
+    import "CommandLine";
 
     // should be successfull
     TEST(``(CommandLine::Init( cmdline ,[]) ),[],nil);
     TEST(``(CommandLine::StartGUI()), [], nil );
     TEST(``(CommandLine::Done()), [], nil );
+
 /* EOF */
 }

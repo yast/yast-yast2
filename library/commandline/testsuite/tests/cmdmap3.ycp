@@ -10,8 +10,8 @@
 {
 
     include "testsuite.ycp";
-    import "./../../types/src/TypeRepository.ycp";
-    import "./../src/CommandLine.ycp";
+    import "TypeRepository";
+    import "CommandLine";
 
     // map must define help for each action
     TEST(``(CommandLine::Init(
