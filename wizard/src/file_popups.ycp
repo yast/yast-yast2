@@ -45,10 +45,15 @@
 
 	subdir2 = subdir + "*";
 	files = splitstring (lookup (SCR (`Execute (.target.bash_output, "/bin/ls -aFd $DIR", $["DIR" : subdir2])), "stdout", ""), "\n");
-	files = filter (`file, files, ``(size (file) > 0 && substring (file, size (file) - 1, 1) == "/"));
+	// show directories and links
+	files = filter (`file, files, ``(size (file) > 0 && (substring (file, size (file) - 1, 1) == "/"
+							     || substring (file, size (file) - 1, 1) == "@") )
+			);
 	files = maplist (`f, files, ``(substring (f, 0, size (f) - 1)));
 	files = maplist (`f, files, ``(substring (f, findlastof (f, "/") + 1) + "/"));
-	files = prepend (files, "../");
+	if ( subdir != "/" )
+	    files = prepend (files, "../");
+	
 	return maplist (`file, files, ``(`item (`id (subdir + file), file)));
     }
 
@@ -148,10 +153,10 @@
 		    )
 		),
 	    `HBox (
-		    `PushButton (`id(`cancel_button), `opt (`key_F9), CancelButtonLabel()),
-		    `HStretch (),
-		    `PushButton (`id(`ok_button), `opt (`key_F10), OKButtonLabel() )
-		)
+		   `PushButton (`id(`ok_button), `opt (`key_F10), OKButtonLabel() ),
+		   `HStretch (),
+		   `PushButton (`id(`cancel_button), `opt (`key_F9), CancelButtonLabel())
+		   )
 	    );
 
 
@@ -232,6 +237,7 @@
 		UI::ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (_("Selected directory: %1"), subdir)));
 		UI::ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), _("Directories"), dirs));
 		UI::ReplaceWidget (`id (`repfile), `SelectionBox (`id (`file), `opt(`notify), _("Files"), getfileswithmask (subdir, masks)));
+		UI::SetFocus(`id(`dir));
 	    }
 
 	    UI::ChangeWidget (`id (`backward), `Enabled, (history_ptr > 0));
@@ -317,7 +323,7 @@
 	history_ptr = history_ptr + 1;
 
 	repeat {
-ret = UI::UserInput ();
+	    ret = UI::UserInput ();
 
 	    if (ret == `backward)
 	    {
@@ -379,8 +385,9 @@ ret = UI::UserInput ();
 
 		UI::ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (_("Selected directory: %1"), subdir)));
 		UI::ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), "", dirs));
-	    }
+		UI::SetFocus( `id(`dir) );
 
+	    }
 	    UI::ChangeWidget (`id (`backward), `Enabled, (history_ptr > 0));
 	    UI::ChangeWidget (`id (`forward), `Enabled, history_ptr < size (history) - 1);
 
@@ -529,6 +536,7 @@ ret = UI::UserInput ();
 		UI::ReplaceWidget (`id(`rephead), `Heading (`id (`head), sformat (_("Selected directory: %1"), subdir)));
 		UI::ReplaceWidget (`id (`repdir), `SelectionBox (`id (`dir), `opt(`notify), _("Directories"), dirs));
 		UI::ReplaceWidget (`id (`repfile), `SelectionBox (`id (`file), `opt(`notify), _("Files"), getfiles (subdir)));
+		UI::SetFocus(`id(`dir));
 	    }
 
 	    UI::ChangeWidget (`id (`backward), `Enabled, (history_ptr > 0));
