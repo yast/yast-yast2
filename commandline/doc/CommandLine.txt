@@ -1,0 +1,262 @@
+Advanced YaST2 command line parsing
+===================================
+($Id$)
+
+Stanislav Visnovsky <visnov@suse.cz>
+
+Michal Svec <msvec@suse.cz> - original proposal
+
+Important features:
+-------------------
+- simple specification in the YaST module
+- automatic help
+- automatic checking of arguments (types, format)
+- interactive session without UI
+
+Basic usage of module CommandLine
+=================================
+
+The aim of the module is to provide as automatic interface as
+possible for controlling the module. To support interactive
+sessions, the YaST module needs to provide command-handling loop
+similar to concept of event-handling in GUIs.
+If the module does not need to do any special handling of the actions,
+it can use the "commandline" include (a wrapper for CommandLine). The
+include defines a single function "CommandLineRun()", which implements
+a standard event-loop and returns true on success. The module just
+needs to specify handlers for actions, user-interface, initialization
+and finishing.
+
+Example:
+
+{
+
+define void deleteHandler( map options ) ``{
+    string dev = options["device"]:"";
+    CommandLine::Print("Deleting: "+dev);
+
+    if(Lan::Delete(dev) && Lan::Commit())
+	CommandLine::Print("Success");
+    else
+	CommandLine::Print("Error");
+}
+
+...
+
+map cmdline = $[
+    "help"	: "Configuration of network cards",
+    "id"	: "lan",
+    "guihandler": ``(LanSequence()),
+    "initialize": ``(Lan::Read()),
+    "finish"	: ``(Lan::Finish()),
+
+    "actions"	: $[
+	"list" : $[
+	    "help"	: "display configuration summary",
+	    "example"	: "lan list configured",
+	    "handler"	: ``(listHandler())
+	],
+	"add" : $[
+	    "help"	: "add a network card",
+	    "handler"	: ``(addHandler())
+	],
+	"delete" : $[
+	    "help"	: "delete a network card",
+	    "handler"	: ``(deleteHandler())
+	]
+    ],
+    ...
+];
+
+import "Lan";
+include "commandline/commandline.ycp";
+
+CommandLineRun(cmdline);
+
+/* EOF */
+}
+
+The UI handler is specified in the "guihandler" key of the command
+line description map. It must take no arguments and return boolean,
+true on success.
+The initialize resp. finish handler is specified by the
+"initialize" resp. "finish" key of the description map. They
+do not take any arguments and must return boolean, true on success.
+The handler for an action is specified in the "handler" key of the
+action description map. Each handler must take a single argument
+containing the options entered by the user.
+
+The CommandLine module is stateful, i.e., it contains a current state
+of command line parsing/interactive console control of a YaST module.
+Therefore, the CommandLineRun() handles the commands as follows:
+1. standard UI start of a module
+	- CommandLine::StartGUI will return true in this case
+
+2. command given as an argument
+	- the inner while loop will be done only once
+
+3. interactive controling of a module
+	- the while loop will be done as long as the user does not enter
+          "exit" or "quit"
+
+Internally handled commands
+===========================
+
+"help"           shows the help text for the command
+"interactive"    starts interactive session without UI
+"<command> help" shows the command-specific help
+"<command> quiet" option to supress the progress messages
+
+These are available in interactive mode only:
+
+"quit"           quits interactive session, sets
+CommandLine::Aborted() flag to true"exit"           exits interactive
+session, sets CommandLine::Aborted() flag to false
+
+Specification of the supported commands in YaST module
+======================================================
+
+Note: If the map does not follow the following rules, an error
+will be emitted into log.
+
+The map describing the command line interface of a module must contain
+"id" entry containing the name of the module. The map can contain
+global help text, a list of actions, a list ofoptions and a list for 
+mapping of options to actions (which optionscan be used for which 
+actions). Each action and option must have its help text.
+
+The action list is a map with the action name as a key. For each
+action, it isnecessary to provide the help text. Optionally, action
+can have defined an example of usage.
+
+Example:	"actions"	: $[
+			"list"	: $[
+				"help": "display configuration summary",
+				"example": "lan list configured"
+			],
+			"add"	: $[
+				"help": "add a network card" ],
+			...
+		],
+
+The option list is a map with the option name as a key. For each
+option, it is necessary to provide a description text in "help" key,
+and a "type" key (for options witharguments only). Optionally, an
+option can contain an example.
+There are two kinds of options: flags and options, which require an
+argument.For flags ommit type key, or specify type as "". A type is a
+string describing the type.basic types supported are string, boolean,
+integer.
+
+Special types:
+"regex" In this case, you need to specify "typespec" key containing
+	the regular expression the argument should be matched against.
+"enum"  In this case, the typespec key must contain a list of possible
+	values as strings
+
+Example:	"options"	: $[
+			"propose" : $[
+				"help": "propose a configuration",
+				"example": "lan add propose",
+				"type": ""
+			],
+			"device": $[
+				"help": "device ID",
+				"type": "string",
+				"example": "lan add device=eth0"
+			],
+			"blem"	: $[
+				"help": "other argument (without spaces)",
+				"type": "regex",
+				"typespec": "^[^ ]+$"
+			],
+			"atboot": $[
+				"help": "should be brought up at boot?",
+				"type": "enum",
+				"typespec": ["yes","no"]
+		}
+
+The actions and options are grouped together using mappings.
+Currently, you can mapan action to a set of options. You can't specify
+required/optional options, all ofthem are optional.
+
+Example:	"mappings"	$[
+			"list"	: [ "configured", "unconfigured" ],
+			"add"	: [ "device", "ip", "netmask", "blem" ],
+			"delete": [ "device" ]
+		]
+
+Advanced API
+============
+
+If you need to write your own event loop, this is a part of the
+CommandLine API useful for this:
+
+boolean StartGUI() - returns true, if the user asked to start up the
+	module GUI
+list Scan() - reads a new command line in interactive mode,
+	splits the arguments into a list
+map Command() - parse (and scan if needed) next command and return its
+	map
+map Parse( list commandline ) - lower-level function to parse the
+	command line, check the validity
+boolean Done() - returns true, if the last command was already
+	returned
+boolean Aborted() - returns true, if the user asked to cancel the
+	changes
+void Error(string) - prints the string and then a message how to
+	obtain the help
+
+Example of an event-loop:
+
+	import "CommandLine";
+
+	if( ! CommandLine::Init( description_of_commands, Args() ) ) return;
+
+	if( CommandLine::StartGUI() ) {
+
+		<do standard GUI module>
+
+		return;
+	}
+
+	while( ! CommandLine::Done() )
+	{
+		map command = CommandLine::Command();
+
+		<handle commands here>
+	}
+
+The CommandLine::Init() returns boolean whether the module has
+something to do. If the user only requested help or the arguments
+passed were not correct, the module should stop processing.
+The CommandLine::Command() will do the user interaction if necessary.
+Also, it will handle all supported"system" commands, like "help",
+"exit" and "quit".
+
+Example usage in YaST module
+============================
+
+For an example without using the event-loop provided by the
+CommandLine module, see lan-simple.ycp.
+
+For an example with the standard event-loop provided by the
+commandline.ycp include, see lan-simpler.ycp.
+
+
+TODO
+====
+1. Special combination of arguments (Exclusive OR, etc),
+optional/required arguments.proposal:
+	"action": [ <list of patterns> ], where each pattern is a map
+		$[ "required" : [ "option1", "option2" ],
+		   "optional" : [ "option3", "option4" ]
+		  ]
+This way, you can have:
+ * exclusive OR of options (the whole combination needs to be
+repeated) * optional/required arguments
+ * any number of possible syntax cases
+
+It would not support:
+ * option with different data types, or possibility to omit its value
+

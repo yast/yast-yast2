@@ -1,0 +1,23 @@
+/**
+ * File:	startgui2.ycp
+ * Package:	yast2
+ * Summary:	test StartGUI() and Done()
+ * Author:	Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+    include "testsuite.ycp";
+    include "./tests/include/testsuitedata.ycp";
+
+    import "./../src/TypeRepository.ycp";
+    import "./../src/CommandLine.ycp";
+
+    // should not be successfull
+    TEST(``(CommandLine::Init( cmdline ,["add"]) ),[],nil);
+    TEST(``(CommandLine::StartGUI()), [], nil );
+    TEST(``(CommandLine::Done()), [], nil );
+/* EOF */
+}

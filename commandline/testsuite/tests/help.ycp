@@ -1,0 +1,21 @@
+/**
+ * File:	help.ycp
+ * Package:	yast2
+ * Summary:	print help test
+ * Author:	Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+    include "testsuite.ycp";
+    include "./tests/include/testsuitedata.ycp";
+    
+    import "./../src/TypeRepository.ycp";
+    import "./../src/CommandLine.ycp";
+
+    // test of the resulting maps
+    TEST(``(CommandLine::Init( cmdline ,["help"]) ),[],nil);
+/* EOF */
+}

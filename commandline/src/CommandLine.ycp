@@ -1,0 +1,987 @@
+/**
+ * File:	modules/CommandLine.ycp
+ * Package:	yast2
+ * Summary:	Command line interface for YaST2 modules
+ * Author:	Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+    module "CommandLine";
+
+    import "TypeRepository.ycp";
+
+    include "ui/common_functions.ycp";
+
+    textdomain "base";
+
+    /**
+     * Map of commands for every module. ATM the list of commands this module handles internally.
+     */
+    map systemcommands = $[
+    	"actions"	: $[
+	    "help"	: $[
+    		"help":_("print the help for this module")
+    	    ],
+	    "longhelp": $[
+		"help":_("print a long version of help for this module")
+    	    ],
+	    "interactive"	: $[
+		"help": _("start interactive shell to control the module")
+	    ],
+	    "exit"	: $[
+		"help": _("exit interactive mode and save the changes")
+	    ],
+	    "quit"	: $[
+		"help": _("quit interactive mode without saving the changes")
+	    ]
+	],
+	"options"	: $[
+	    "help"	: $[
+		"help"	: _("print the help for this command" ),
+	    ],
+	    "quiet"	: $[
+		"help"	: _("do not show progress information" ),
+	    ],
+	],
+	"mappings"	: $[
+	    "help"	: ["help", "quiet"],
+	    "interactive":  ["quiet"]
+	]
+    ];
+
+    /**
+     * Map of commands defined by the YaST2 module.
+     */
+    map modulecommands = $[];
+
+    /**
+     * Merged map of commands - both defined by the YaST2 module and system commands. Used for lookup
+     */
+    map allcommands = systemcommands;
+
+    /**
+     * User want to start the module UI
+     */
+    boolean nocommands = true;
+
+    /**
+     * User asked for interactive session
+     */
+    boolean interactive = false;
+
+    /**
+     * All commands have been processed
+     */
+    boolean done = false;
+
+    /**
+     * User asked for quitting of interactive session, or there was an error
+     */
+    boolean aborted = false;
+
+    /** a cache for already parsed but not processed command */
+    map commandcache = $[];
+    
+    /**
+     *  Initialize the module, setup the command line syntax and arguments passed on the command line.
+     *
+     *  @param cmdlineinfo		the map describing the module command line
+     *  @param args			arguments given by the user on the command line
+     *  @return boolean		true, if there are some commands to be processed
+     *  @see Command
+     */
+    global define boolean Init (map cmdlineinfo, list args) ``{
+    
+	// sanity checks on cmdlineinfo
+	// check for id string , it must exist, and non-empty
+	if( cmdlineinfo["id"]:"" == "" || ! is( cmdlineinfo["id"]:nil, string ) ) {
+	    y2error( "Command line specification does not define module id" );
+
+	    // use 'unknown' as id
+	    if( haskey( cmdlineinfo, "id" ) ) {
+	        cmdlineinfo = remove( cmdlineinfo, "id" );
+	    }
+	
+	    // translators: fallback name for a module at command line
+	    cmdlineinfo = add( cmdlineinfo, "id", _("unknown" ));
+
+	    // it's better to quit now
+	    done = true;
+	    aborted = true;
+	}
+
+	// check for helps, they are required everywhere
+	// global help text
+	if( ! haskey( cmdlineinfo, "help" ) ) {
+	    y2error( "Command line specification does not define global help for the module" );
+
+	    // it's better to quit now
+	    done = true;
+	    aborted = true;
+	}
+
+	// help texts for actions
+	if( haskey( cmdlineinfo, "actions" ) ) {
+	    foreach( string action, map def, cmdlineinfo["actions"]:$[],  ``{
+		if( ! haskey( def, "help" ) ) {
+		    y2error( "Command line specification does not define help for action '%1'", action );
+
+		    // it's better to quit now
+		    done = true;
+		    aborted = true;
+		}
+	    });
+	}
+
+	// help for options
+	if( haskey( cmdlineinfo, "options" ) ) {
+	    foreach( string option, map def, cmdlineinfo["options"]:$[],  ``{
+		if( ! haskey( def, "help" ) ) {
+		    y2error( "Command line specification does not define help for option '%1'", option );
+
+		    // it's better to quit now
+		    done = true;
+		    aborted = true;
+		}
+		// check that regex and enum have defined typespec
+		if( ( def["type"]:"" == "regex" || def["type"]:"" == "enum" ) && ! haskey( def, "typespec" ) ) {
+		    y2error( "Command line specification does not define typespec for option '%1'", option );
+
+		    // it's better to quit now
+		    done = true;
+		    aborted = true;
+		}
+	    });
+	}
+
+	// mappings - check for existing actions and options
+	if( haskey( cmdlineinfo, "mappings" ) ) {
+	    foreach( string mapaction, list def, cmdlineinfo["mappings"]:$[],  ``{
+		// is this action defined?
+    		if( ! haskey( cmdlineinfo["actions"]:$[], mapaction ) ) {
+		    y2error( "Command line specification maps undefined action '%1'", mapaction );
+
+		    // it's better to quit now
+		    done = true;
+		    aborted = true;
+		}
+
+		foreach( string mapopt, def, ``{
+		    // is this option defined?
+		    if( ! haskey( cmdlineinfo["options"]:$[], mapopt ) ) {
+			y2error( "Command line specification maps undefined option '%1' for action '%2'", mapopt, mapaction );
+
+			// it's better to quit now
+			done = true;
+			aborted = true;
+		    }
+		});
+	    });
+	}
+
+	if( done ) return false;
+
+	modulecommands = cmdlineinfo;
+
+	// build allcommands - help and quiet options are added specially
+	allcommands = $[
+	    "actions": union( modulecommands["actions"]:$[], systemcommands["actions"]:$[] ),
+	    "options": union( modulecommands["options"]:$[], systemcommands["options"]:$[] ),
+	    "mappings": union(
+		mapmap( string act, list opts, modulecommands["mappings"]:$[], ``(
+		    [act, union( opts, ["help", "quiet"] )] ) ),
+		systemcommands["mappings"]:$[] )
+	];
+
+	if( size(args) < 1 ) {
+	    nocommands = true;
+	    // start GUI, module has some work to do :-)
+	    return true;
+	} else {
+	    nocommands = false;
+	}
+	
+	// setup prompt
+	SCR::Write( .dev.tty.prompt, "YaST2 "+cmdlineinfo["id"]:""+"> ");
+
+	// parse args
+	commandcache = Parse( args );
+
+	// return true, if there is some work to do:
+	// first, try to interpret system commands
+	if( ProcessSystemCommands(commandcache) ) {
+	    // it was system command, there is work only in interactive mode
+   	    commandcache = $[];
+	    done = ! interactive;
+	    aborted = false;
+	    return interactive;
+	} else {
+	    // we cannot handle this on our own, return true if there is some command to be processed
+	    // i.e, there is no parsing error
+	    done = size( commandcache ) == 0 ;
+	    aborted = done;
+	    return ( ! done );
+	}
+    }
+
+    /**
+     *  Get next user-given command. If there is a command available, returns it, otherwise ask
+     *  the user for a command (in interactiver mode). Also processes system commands.
+     *
+     *  @return map of the new command. If there is no more commands, it returns exit or quit depending
+     *  on the result user asked for.
+     *
+     *  @see Parse
+     */
+    global define map Command () ``{
+    	// if we are done already, return the result
+	if( done ) {
+    	    if( aborted ) return $[ "command" : "quit" ];
+	    else return $[ "command" : "exit" ];
+	}
+
+	// there is a command in the cache
+	if( size(commandcache) != 0 )
+	{
+	    map result = commandcache;
+	    commandcache = $[];
+	    done = !interactive;
+	    return result;
+	} else {
+	    // if in interactive mode, ask user for input
+	    if( interactive ) {
+		// handle all system commands as long as possible
+		do {
+		    list newcommand = [];
+		    do {
+			newcommand = Scan();
+		    } while( size(newcommand) == 0 );
+					
+		    // EOF reached
+		    if( newcommand == nil ) {
+			done = true;
+			return $[ "command" : "exit" ];
+		    }
+		    
+		    commandcache = Parse( newcommand );
+
+		} while( ProcessSystemCommands( commandcache ) && ! done );
+
+		if( done ) {
+		    if( aborted ) return $[ "command" : "quit" ];
+		    else return $[ "command" : "exit" ];
+		}
+
+		// we are not done, return the command asked back to module
+		map result = commandcache;
+		commandcache = $[];
+
+		return result;
+	    } else {
+		// there is no further commands left
+		done = true;
+		return $[ "command" : "exit" ];
+	    }
+	}
+    }
+
+    /**
+     *  Parse a list of arguments. It checks the validity of the arguments, the type correctness
+     *  and returns the command and its options in a map.
+     *  @param arguments	the list of arguments to be parsed
+     *  @return map 		containing the command and it's option. In case of
+     *				error it is an empty map.
+     */
+    global define map Parse (list arguments) ``{
+	list args = arguments;
+	if(size(args) < 1) return $[];
+
+	/* Parse command */
+	string command = args[0]:"";
+	y2debug("command=%1", command);
+	args = remove(args, 0);
+	y2debug("args=%1", args);
+
+	if(command == "") {
+	    y2error( "CommandLine::Parse called with first parameter being empty. Arguments passed: %1", arguments);
+	    return $[];
+	}
+
+	/* Check command */
+	if(!haskey(allcommands["actions"]:$[], command) ) {
+	    Error(sformat(_("Unknown command: %1"), command));
+
+	    return $[];
+	}
+
+	// build the list of options for the command
+	list opts = lookup( allcommands["mappings"]:$[], command, [] );
+	map allopts = allcommands["options"]:$[];
+	map cmdoptions = $[];
+	maplist( string k, opts, ``{
+	    cmdoptions = add( cmdoptions, k, allopts[k]:$[] );
+	} );
+
+	boolean ret = true;
+
+	/* Parse options */
+	map givenoptions = $[];
+	maplist(string os, args, ``{
+	    y2debug("os=%1", os);
+	    list o = regexptokenize(os, "([^=]+)=(.+)");
+	    y2debug("o=%1", o);
+	    if( size(o) == 2 ) givenoptions = add(givenoptions, o[0]:"", o[1]:"");
+	    else if( size(o) == 0 ) {
+		// check, if the last character is "="
+		// FIXME: consider whitespace
+		if( substring( os, size(os)-1 ) == "=" ) {
+		    Print(sformat(_("Option '%1' is missing value."), substring( os, 0, size(os)-1 )) );
+		    if( ! interactive ) aborted = true;
+		    ret = false;
+		    return $[];
+		} else {
+		    givenoptions = add(givenoptions, os, "");
+		}
+	    }
+	});
+
+	if( ret != true ) return $[];
+
+	y2debug("options=%1", givenoptions);
+
+	/* Check options */
+	maplist(string o, string v, givenoptions, ``{
+	    if(ret != true) return;
+	    if( cmdoptions[o]:nil == nil ) {
+		// translators: error message, %1 is a command, %2 is the wrong option given by the user
+		Print(sformat(_("Unknown option for command '%1': %2"), command, o));
+		if( ! interactive ) aborted = true;
+	    	    ret = false;
+		} else {
+		
+		// this option is valid, let's check the type
+
+		string opttype = lookup( cmdoptions[o]:$[], "type", "" );
+
+		if( opttype != "" ) {
+		    // need to check the type
+		    if( opttype == "regex" )  {
+			string opttypespec = lookup( cmdoptions[o]:$[], "typespec", "" );
+			ret = TypeRepository::regex_validator( opttypespec, v );
+			if( ret != true ) {
+			    // translators: error message, %2 is the value given
+			    Print( sformat(_("Incorrect value for option '%1': %2"), o, v ) );
+			    if( ! interactive ) aborted = true;
+			}
+		    } else if( opttype == "enum" ) {
+			ret = TypeRepository::enum_validator ( lookup( cmdoptions[o]:$[], "typespec", [] ), v );
+			if( ret != true ) {
+			    // translators: error message, %2 is the value given
+			    Print( sformat(_("Incorrect value for option '%1': %2"), o, v ) );
+			    if( ! interactive ) aborted = true;
+			}
+		    } else {
+			if( v == "" ) ret = false;
+			else ret = TypeRepository::is_a( v, opttype );
+			
+			if( ret != true ) {
+			    // translators: error message, %2 is expected type, %3 is the value given
+			    Print( sformat(_("Incorrect value for option '%1', expected '%2', received: %3"), o, opttype, v ) );
+			    if( ! interactive ) aborted = true;
+			}
+		    }
+		}
+	    }
+	});
+
+	// wrong, let's print the help message
+	if( ret != true ) {
+    	    if( interactive ) {
+    		Print(sformat(_("Use '%1 %2 help' for a complete list of available options."), modulecommands["id"]:"", command));
+	    } else {
+		Print(sformat(_("Use 'yast2 %1 %2 help' for a complete list of available options."), modulecommands["id"]:"", command));
+    	    }
+	    return $[];
+	}
+
+	return $[
+	    "command"	: command,
+	    "options"	: givenoptions
+	];
+    }
+
+    /**
+     * Handle the system-wide commands, like help etc.
+     *
+     * @param command 	a map of the current command
+     * @return 		true, if the command was handled
+     */
+    define boolean ProcessSystemCommands (map command) ``{
+
+	/* Process command "interactive" */
+	if( command["command"]:"" == "interactive" ) {
+	    interactive = true;
+	    return true;
+	}
+
+	/* Process command "exit" */
+	if( command["command"]:"" == "exit" ) {
+	    done = true;
+	    aborted = false;
+	    return true;
+	}
+
+	/* Process command "abort" */
+	if( command["command"]:"" == "quit" ) {
+	    done = true;
+	    aborted = true;
+	    return true;
+	}
+
+	// handle help for specific command
+	// this needs to be before general help, so "help help" works
+	if( lookup( command["options"]:$[], "help", nil ) != nil ) {
+	    PrintHead();
+	    PrintActionHelp( command["command"]:"" );
+	    return true;
+	}
+
+	if( command["command"]:"" == "help" ) {
+	    PrintHead();
+	    PrintGeneralHelp();
+	    return true;
+	}
+
+	if( command["command"]:"" == "longhelp" ) {
+	    PrintHead();
+	    PrintGeneralHelp();
+	    foreach( string action, map def, allcommands["actions"]:$[], ``{
+		PrintActionHelp( action );
+	    });
+	    return true;
+	    }
+
+	return false;
+    }
+
+    /**
+     * Print a nice heading for this module
+     */
+    define void PrintHead() ``{
+	string head = modulecommands["help"]:"" + "\n";
+	integer i=0; while(i<size(modulecommands["help"]:"")) { head = head + "-"; i=i+1; }
+	head = "\n" + head + "\n";
+
+	Print( head );
+    }
+
+    /**
+     * Print a general help - list of available command.
+     */
+    define void PrintGeneralHelp() ``{
+	// translators: default module description if none is provided by the module itself
+	Print( modulecommands["help"]: _("This is YaST2 module.") );
+	Print(_("Basic syntax:"));
+
+	if( ! interactive ) {
+	    // translators: module command line help, %1 is the module name
+	    Print(sformat(("    yast2 %1 interactive"), modulecommands["id"]:""));
+	    // translators: module command line help, %1 is the module name
+	    // translate <command> and [options] only!
+	    Print(sformat(_("    yast2 %1 <command> [options]"), modulecommands["id"]:""));
+	    // translators: module command line help, %1 is the module name
+	    Print(sformat(("    yast2 %1 help"), modulecommands["id"]:""));
+	    Print(sformat(("    yast2 %1 longhelp"), modulecommands["id"]:""));
+	    // translators: module command line help, %1 is the module name
+	    // translate <command> only!
+	    Print(sformat(_("    yast2 %1 <command> help"), modulecommands["id"]:""));
+	} else {
+	    // translators: module command line help
+	    // translate <command> and [options] only!
+	    Print(_("    <command> [options]"));
+	    // translators: module command line help
+	    // translate <command> only!
+	    Print(_("    <command> help"));
+	    // translators: module command line help
+	    Print("    help");
+	    Print("");
+	    Print("    exit");
+	    Print("    quit");
+	}
+
+	Print("");
+	Print(_("Commands:"));
+	maplist(string cmd, map desc, modulecommands["actions"]:$[], ``{
+	    Print(sformat("    %1 \t%2", cmd, desc["help"]:_("No help available.")));
+	});
+	Print("");
+	// translators: module command line help, %1 is the module name
+	if( ! interactive ) {
+	    Print(sformat(_("Run 'yast2 %1 <command> help' for a list of available options."), modulecommands["id"]:""));
+	    Print("");
+	}
+    }
+
+    /**
+     * Print a help text for a given action.
+     *
+     * @param action the action for which the help should be printed
+     */
+    define void PrintActionHelp (string action) ``{
+	// lookup action in actions
+    	map command = lookup(allcommands["actions"]:$[], action, $[]);
+	string commandhelp = command["help"]:_("No help available");
+	/* Process <command> "help" */
+	// translators: %1 is the command name
+	Print(sformat(_("Command '%1'"), action));
+	Print(sformat("    %1", commandhelp));
+
+	list opts = lookup( allcommands["mappings"]:$[], action, [] );
+
+	// no options, skip the rest
+	if( size(opts) == 0 ) {
+	    Print("");
+	    return;
+	}
+
+	// translators: command line options
+	Print(_("\n    Options:"));
+
+	map allopts = allcommands["options"]:$[];
+
+	foreach( string opt, opts, ``{
+	    map op = allopts[opt]:$[];
+	    string t = op["type"]:"";
+
+	    if ( t != "regex" && t != "enum" && t != "" ) t = "["+t+"]";
+	    else if( t == "enum" ) {
+		t = "\[ ";
+		foreach( string s, op["typespec"]:[], ``{
+		    t = t+ s+" ";
+		});
+		t = t + "\]";
+	    }
+	    else t = "    ";
+
+	    Print(sformat("        %1  \t%2    \t%3", opt, t, op["help"]:""));
+	} );
+
+	if( haskey( command, "example" ) ) {
+	    Print( _("\n    Example:"));
+	    Print( sformat("        %1", command["example"]:"" ) );
+	}
+    	Print("");
+	return false;
+    }
+
+    /**
+     *  Print a string to stdout
+     *
+     *  @param s	the string to be printed
+     */
+    global define void Print(string s) ``{
+	if( nocommands ) return;
+	SCR::Write(.dev.tty, s);
+    }
+
+    /**
+     * Scan a command line from stdin, return it split into a list
+     *
+     * @return list the list of command line parts, nil for end of file
+     */
+    global define list Scan() ``{
+    	string res = SCR::Read( .dev.tty );
+	if( res == nil ) return nil;
+	return ParseString(res,$[ "separator":" " ]);
+    }
+
+    /**
+     *  Should module start UI?
+     *
+     *  @return boolean true, if the user asked for standard UI (no parameter was passed by command line)
+     */
+    global define boolean StartGUI() ``{
+	return nocommands;
+    }
+
+    /**
+     *  User asked for abort (forgetting the changes)
+     *
+     *  @return boolean true, if the user asked abort
+     */
+    global define boolean Aborted() ``{
+	return aborted;
+    }
+
+    /**
+     *  Are there some commands to be processed?
+     *
+     *  @return boolean true, if there is no more commands to be processed, either because the user
+     *  used command line, or the interactive mode was finished
+     */
+    global define boolean Done() ``{
+	return done;
+    }
+	
+
+    /**
+    * @param input	string, usually an user input
+    *
+    * @return string
+    *
+    * Remove blanks at begin and end of input string
+    * (blanks between remain untouched).
+    *
+    * @example CutBlanks ( "  any input     " );
+    */
+
+    global define string CutBlanks( string input ) ``{
+        string  output = input;
+        boolean go_on = true;
+
+        if ( size ( output ) > 0 )
+        {
+	    integer pos = findfirstnotof( output, " \t" );
+
+	    if ( pos != nil )
+	    {
+	        output = substring( output, pos );
+	    }
+	    else
+	    {
+		return "";
+	    }
+
+	    integer last_pos = size ( output ) - 1;
+
+	    while ( go_on )
+	    {
+	        string lastchar = substring( output, last_pos );
+	        if ( lastchar == " " || lastchar == "\t")
+	        {
+		    output = substring( output, 0, last_pos );
+		    last_pos = last_pos-1;
+	        }
+	        else
+	        {
+		    go_on = false;
+	        }
+	    }
+        }
+	return output;
+    };
+
+    /**
+     * Parse string of values - split string to values, quoting and backslash sequences are supported
+     * @param options Input string
+     * @param parameters Parmeter used at parsing - map with keys:
+     *"separator":<string> - value separator (default: " \t"),
+     *"unique":<boolean> - result will not contain any duplicates, first occurance of the string is stored into output (default: false),
+     *"interpret_backslash":<boolean> - convert backslash sequence into one character (e.g. "\\n" => "\n") (default: true)
+     *"remove_whitespace":<boolean> - remove white spaces around values (default: true),
+     * @return list List of strings
+     */
+    global define list ParseString(string options, map parameters) ``{
+	list ret = [];
+
+        // parsing options
+	string separator = parameters["separator"]:" \t";
+        boolean unique = parameters["unique"]:false;
+	boolean interpret_backslash = parameters["interpret_backslash"]:true;
+        boolean remove_whitespace = parameters["remove_whitespace"]:true;
+
+	y2debug("Input: string: '%1', parameters: %2", options, parameters);
+        y2debug("Used values: separator: '%1', unique: %2, remove_whitespace: %3",
+    	    separator, unique, remove_whitespace);
+
+        if (options == nil)
+	{
+	    return [];
+        }
+
+        // two algorithms are used:
+	// first is much faster, but only usable if string
+        // doesn't contain any double qoute characters
+	// and backslash sequences are not interpreted
+        // second is more general, but of course slower
+
+        if (findfirstof(options, "\"") == nil && interpret_backslash == false)
+	{
+	    // easy case - no qouting, don't interpres backslash sequences => use splitstring
+    	    list(string) values = splitstring(options, separator);
+
+	    foreach (string v, values, ``{
+		if (remove_whitespace == true)
+		{
+		    v = CutBlanks(v);
+		}
+
+		if (unique == true)
+		{
+		    if (!contains(ret, v)) ret = add(ret, v);
+		}
+		else
+		{
+		    ret = add(ret, v);
+		}
+	    });
+	}
+	else
+	{
+	    // quoting is used or backslash interpretation is enabled
+    	    // so it' not possible to split input
+	    // parsing each character is needed - use finite automaton
+
+	    // state
+	    symbol state = `out_of_string;
+    	    // position in the input string
+	    integer index = 0;
+	    // parsed value - buffer
+    	    string str = "";
+
+	    while(index < size(options))
+	    {
+		string character = substring(options, index, 1);
+
+		y2debug("character: %1 state: %2 index: %3", character, state, index);
+
+		// interpret backslash sequence
+		if (character == "\\" && interpret_backslash == true)
+		{
+		    if (index + 1 < size(options))
+		    {
+			string nextcharacter = substring(options, index + 1, 1);
+			index = index + 1;
+
+			// backslah sequences
+			map backslash_seq = $[
+			    "a"	: "\a",	// alert
+			    "b"	: "\b", // backspace
+			    "e"	: "\e", // escape
+			    "f"	: "\f", // FF
+			    "n"	: "\n", // NL
+			    "r"	: "\r", // CR
+			    "t"	: "\t", // tab
+			    "v"	: "\v", // vertical tab
+			    "\\": "\\", // backslash
+			];
+
+			if (haskey(backslash_seq, nextcharacter) == true)
+			{
+			    character = backslash_seq[nextcharacter]:"DUMMY";
+			}
+			else
+			{
+			    if (nextcharacter != "\"")
+			    {
+				// ignore backslash in invalid backslash sequence
+				character = nextcharacter;
+			    }
+			    else
+			    {
+				// backslash will be removed later,
+				// double quote and escaped double quote have to different yet
+				character = "\\\"";
+			    }
+			}
+
+			y2debug("backslash sequence: '%1'", character);
+		    }
+		    else
+		    {
+			y2warning("Missing character after backslash (\\) at the end of string");
+		    }
+		}
+
+		if (state == `out_of_string)
+		{
+	    	    // ignore separator or white space at the beginning of the string
+		    if (issubstring(separator, character) == true || (remove_whitespace == true && (character == " " || character == "\t")) )
+		    {
+			index = index + 1;
+			continue;
+		    }
+		    // start of a quoted string
+		    else if (character == "\"")
+		    {
+			state = `in_quoted_string;
+		    }
+		    else
+		    {
+			// start of a string
+			state = `in_string;
+
+			if (character == "\\\"")
+			{
+			    str = "\"";
+			}
+			else
+			{
+			    str = character;
+			}
+		    }
+		}
+	    
+		// after double quoted string - handle non-separator chars after double quote
+		else if (state == `in_quoted_string_after_dblqt)
+		{
+		    if (issubstring(separator, character) == true)
+		    {
+			if (unique == true)
+			{
+			    if (!contains(ret, str)) ret = add(ret, str);
+			}
+			else
+			{
+			    ret = add(ret, str);
+			}
+
+			str = "";
+			state = `out_of_string;
+		    }
+		    else if (character == "\\\"")
+		    {
+			str = str + "\"";
+		    }
+		    else
+		    {
+			str = str + character;
+		    }
+		}
+		else if (state == `in_quoted_string)
+		{
+		    if (character == "\"")
+		    {
+			// end of quoted string
+			state = `in_quoted_string_after_dblqt;
+		    }
+		    else if (character == "\\\"")
+		    {
+			str = str + "\"";
+		    }
+		    else
+		    {
+			str = str + character;
+		    }
+		}
+		else if (state == `in_string)
+		{
+		    if (issubstring(separator, character) == true)
+		    {
+			state = `out_of_string;
+
+			if (remove_whitespace == true)
+			{
+			    str = CutBlanks(str);
+			}
+
+			if (unique == true)
+			{
+			    if (!contains(ret, str)) ret = add(ret, str);
+			}
+			else
+			{
+			    ret = add(ret, str);
+			}
+
+			str = "";
+		    }
+		    else if (character == "\\\"")
+		    {
+			str = str + "\"";
+		    }
+		    else
+		    {
+			str = str + character;
+		    }
+		}
+
+		index = index + 1;
+	    }
+
+	    // error - still in quoted string
+	    if (state == `in_quoted_string)
+	    {
+		y2warning("Missing trainling double quote character(\") in input: '%1'", options);
+
+		if (unique == true)
+		{
+		    if (!contains(ret, str)) ret = add(ret, str);
+		}
+		else
+		{
+		    ret = add(ret, str);
+		}
+	    }
+
+	    // process last string in the buffer
+	    if (state == `in_string)
+	    {
+		if (remove_whitespace)
+		{
+		    str = CutBlanks(str);
+		}
+
+		if (unique == true)
+		{
+		    if (!contains(ret, str)) ret = add(ret, str);
+		}
+		else
+		{
+		    ret = add(ret, str);
+		}
+	    }
+	}
+
+
+	y2debug("Parsed values: %1", ret);
+
+	return ret;
+    }
+
+    /**
+     * Print an error message and add the description how to get the help.
+     * @param message	error message to be printed. Use nil for no message
+     */
+    global define void Error( string message ) ``{
+        if( message != nil ) {
+    	    Print( message );
+	}
+    
+        if( interactive ) {
+    	    Print(sformat(_("Use 'help' for a complete list of available commands."), modulecommands["id"]:""));
+	} else {
+	    Print(sformat(_("Use 'yast2 %1 help' for a complete list of available commands."), modulecommands["id"]:""));
+        }
+    }
+    
+    /**
+     * Convert a richtext string into a formatted plain text.
+     * 
+     * @param richtext  the text to be converted
+     * @return the converted text
+     */
+    global define string Rich2Plain( string richtext ) ``{
+	string result = "";
+	list lparts = splitstring( richtext, "<" );
+	
+	foreach( string lpart, lparts, ``{
+	    integer s = find( lpart, ">" );
+	    string tag = substring( lpart, 0, s );
+	    
+	    // handled tags
+	    if( tag == "br" ) result = result + "\n";
+	    else if( tag == "p" ) result = result + "\n\n";
+	    
+	    // add the text
+	    if( s == -1 ) result = result + lpart;
+	    else result = result + substring( lpart, s+1 );
+	});
+	
+	return result;
+    }
+
+/* EOF */
+}

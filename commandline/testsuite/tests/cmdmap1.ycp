@@ -1,0 +1,22 @@
+/**
+ * File:	cmpmap1.ycp
+ * Package:	yast2
+ * Summary:	sanity validation of the command line map
+ * Author:	Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+    include "testsuite.ycp";
+    import "./../src/TypeRepository.ycp";
+    import "./../src/CommandLine.ycp";
+
+    // map must define id and global help
+    TEST(``(CommandLine::Init($[],[]) ),[],nil);
+    TEST(``(CommandLine::Done()),[],nil);
+    TEST(``(CommandLine::Aborted()),[],nil);
+
+/* EOF */
+}
