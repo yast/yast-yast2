@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Mar 31 10:32:13 CEST 2004 - jsrain@suse.de
+
+- remove ide-scsi from initrd during update (#37591)
+
+-------------------------------------------------------------------
 Tue Mar 30 18:04:43 CEST 2004 - jsrain@suse.de
 
 - fixed map validator of CWM
