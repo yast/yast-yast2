@@ -19,7 +19,7 @@ string protocol = "ssh";
 
 list hosts = [];
 
-global define any ChooseDialog() ``{
+define any ChooseDialog() ``{
 
 	/*
 	`Left(`HSquash(`RadioButtonGroup(`id(`protocol),
