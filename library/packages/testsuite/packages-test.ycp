@@ -93,8 +93,8 @@ Package::RunSUSEConfig();
 
 }
 
-Popup::AnyMessage("Package Testsuite", sformat("Number of successes: %1
-Number of failures: %2", success, failure));
+Popup::AnyMessage("Package Testsuite", sformat("Number of Successes: %1
+Number of Failures: %2", success, failure));
 
 /* EOF */
 }

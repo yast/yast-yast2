@@ -17,6 +17,10 @@ import "Mode";
 import "PackageAI";
 import "PackageSystem";
 
+/***
+ * Packages Manipulation
+ */
+
 map FunctionsSystem = $[
     "DoInstall"	: PackageSystem::DoInstall,
     "DoRemove"	: PackageSystem::DoRemove,

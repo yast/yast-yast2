@@ -4,6 +4,6 @@ SUBDIRS = autodocs
 
 htmldir = $(docdir)/runlevel
 
-html_DATA = runlevel.html
+html_DATA = $(wildcard *.html *.txt)
 
 EXTRA_DIST = $(html_DATA)
