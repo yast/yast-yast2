@@ -44,6 +44,11 @@ boolean log_warnings = true;
 boolean log_messages = true;
 
 
+global map message_settings = $[];
+global map error_settings = $[];
+global map warning_settings = $[];
+
+
 /**
  * Summary of current settings
  * @return Html formatted configuration summary
@@ -97,32 +102,6 @@ global define string Summary()
     return summary;
 }
 
-/**
- * Set module data
- * @param settings map with settings
- * @return void
- */
-global define void Set(map settings) ``{
-    map msg = settings["messages"]:$[];
-    map err = settings["errors"]:$[];
-    map war = settings["warnings"]:$[];
-
- // display flags
-    display_errors = msg["show"]:true;
-    display_warnings = war["show"]:true;
-    display_messages = err["show"]:true;
-
-// timeouts
-    timeout_errors = err["timeout"]:0;
-    timeout_warnings = war["timeout"]:0;
-    timeout_messages = msg["timeout"]:0;
-
-// logging flags
-    log_errors = err["log"]:true;;
-    log_warnings = war["log"]:true;;;
-    log_messages = msg["log"]:true;;
-
-}
 
 
 /**
@@ -132,27 +111,25 @@ global define void Set(map settings) ``{
  * @return	success
  */
 global define boolean Import(map settings)``{
-    if (size (settings) == 0)
-    {
-	//Provide defaults for autoinstallation editing:
-	//Leave empty.
-	return true;
-    }
+    message_settings  = settings["messages"]:$[];
+    error_settings = settings["errors"]:$[];
+    warning_settings = settings["warnings"]:$[];
 
-    boolean missing = false;
-    foreach (`k, ["messages", "errors", "warnings"], ``{
-	if (! haskey (settings, k))
-	{
-	    y2error ("Missing at Import: '%1'.", k);
-	    missing = true;
-	}
-    });
-    if (missing)
-    {
-	return false;
-    }
+    // display flags
+    display_errors =  error_settings["show"]:true;
+    display_warnings = warning_settings["show"]:true;
+    display_messages = message_settings["show"]:true;
 
-    Set(settings);
+    // timeouts
+    timeout_errors = error_settings ["timeout"]:0;
+    timeout_warnings = warning_settings["timeout"]:0;
+    timeout_messages = message_settings["timeout"]:0;
+
+    // logging flags
+    log_errors = error_settings["log"]:true;
+    log_warnings = warning_settings ["log"]:true;
+    log_messages = message_settings["log"]:true;
+
     return true;
 }
 
@@ -162,23 +139,10 @@ global define boolean Import(map settings)``{
  * @return map map with settings
  */
 global define map Export ()``{
-    map msg = $[];
-    map err = $[];
-    map war = $[];
-
-    msg["show"] = display_messages;
-    msg["log"] = log_messages;
-    msg["timeout"] = timeout_messages;
-    err["show"] = display_errors;
-    err["log"] = log_errors;
-    err["timeout"] = timeout_errors;
-    war["show"] = display_warnings;
-    war["log"] = log_warnings;
-    war["timeout"] = timeout_warnings;
     return ($[
-	      "messages": msg,
-	      "errors": err,
-	      "warnings": war
+	      "messages": message_settings,
+	      "errors": error_settings,
+	      "warnings": warning_settings
     ]);
 }
 
