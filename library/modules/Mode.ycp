@@ -15,6 +15,16 @@
     module "Mode";
 
     /**
+     * Current mode
+     */
+    global string mode = "installation";
+
+    /**
+     * Current stage
+     */
+    global string stage = "";
+
+    /**
      * we're doing a fresh installation
      */
     global boolean installation		= true;
@@ -185,23 +195,43 @@
 	    if	    (WFM::Args(arg_no) == "test"	   )
 	    {
 		test = true;
+                mode = "test";
 		y2warning("***** Test mode enabled *****");
 	    }
 	    else if (WFM::Args(arg_no) == "demo"	    )
 	    {
 		demo = true;
+                mode = "demo";
 		y2warning("***** Demo mode enabled *****");
 	    }
 	    else if (WFM::Args(arg_no) == "screenshots"  )
 	    {
 		screen_shot = true;
+                mode = "screen_shot";
 		y2warning("***** Screen shot mode enabled *****");
 	    }
-	    else if (WFM::Args(arg_no) == "initial"	    ) initial	= true;
-	    else if (WFM::Args(arg_no) == "continue"	    ) cont	= true;
-	    else if (WFM::Args(arg_no) == "text_fallback") text_fallback= true;
-	    else if (WFM::Args(arg_no) == "no_x11"       ) no_x11	= true;
-	    else if (WFM::Args(arg_no) == "reprobe"      ) reprobe	= true;
+	    else if (WFM::Args(arg_no) == "initial")
+            {
+                initial	= true;
+                stage = "initial";
+            }
+	    else if (WFM::Args(arg_no) == "continue"	    )
+            {
+                cont	= true;
+                stage   = "continue";
+            }
+	    else if (WFM::Args(arg_no) == "text_fallback")
+            {
+                text_fallback= true;
+            }
+	    else if (WFM::Args(arg_no) == "no_x11"       )
+            {
+                no_x11	= true;
+            }
+	    else if (WFM::Args(arg_no) == "reprobe"      )
+            {
+                reprobe	= true;
+            }
 	    else
 	    {
 		y2milestone ("skipping unknown option %1", WFM::Args(arg_no) );
@@ -217,13 +247,20 @@
 	    && !config)
 	{
 	    normal = true;
+            mode = "normal";
 	}
 
 	// screen_shot ==> demo
-	if ( screen_shot )	demo = true;
+	if ( screen_shot )
+        {
+            demo = true;
+        }
 
 	// demo ==> test
-	if ( demo )		test = true;
+	if ( demo )
+        {
+            test = true;
+        }
 
 
 	// only use the /etc/install.inf agent when file is present
@@ -233,10 +270,22 @@
 	    sourcemounted = SCR::Read (.etc.install_inf.Sourcemounted) == "1";
 
 	    autoinst = SCR::Read (.etc.install_inf.AutoYaST) != nil;
+            if (autoinst)
+            {
+                mode="autoinst";
+            }
 
 	    repair   = SCR::Read (.etc.install_inf.Repair )  != nil;
+            if (repair)
+            {
+                mode ="repair";
+            }
 
 	    live_eval = SCR::Read (.etc.install_inf.Demo) == "1";
+            if (live_eval)
+            {
+                mode ="live_eval";
+            }
 
 	    text = SCR::Read (.etc.install_inf.Textmode) == "1";
 
