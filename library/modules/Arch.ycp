@@ -20,6 +20,11 @@ module "Arch";
 global string architecture	= (string)SCR::Read(.probe.architecture);
 
 /**
+ * General architecture type
+ */
+global string arch_short	= architecture;
+
+/**
  * true for all x86 compatible architectures
  */
 global boolean i386	= (architecture == "i386");
@@ -262,6 +267,14 @@ global define void Arch() ``{
     {
 	x11_setup_needed = false;
     }
+
+    if (sparc) arch_short = "sparc";
+    else if (mips) arch_short = "mips";
+    else if (ppc) arch_short = "ppc";
+    else if (s390) arch_short = "s390";
+    else  arch_short = architecture;
+    return;
+
 }
 
 /* EOF */

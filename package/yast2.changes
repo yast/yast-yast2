@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Feb 27 03:28:39 CET 2004 - nashif@suse.de
+
+- Adapt for new control file based installation
+
+-------------------------------------------------------------------
 Thu Feb 26 12:32:12 CET 2004 - jsrain@suse.de
 
 - preventing modules uhci-hcd, ehci-hcd, ohci-hcd from being put
