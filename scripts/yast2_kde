@@ -1,0 +1,58 @@
+#!/bin/bash
+#/----------------------------------------------------------------------\
+#|                                                                      |
+#|                      __   __    ____ _____ ____                      |
+#|                      \ \ / /_ _/ ___|_   _|___ \                     |
+#|                       \ V / _` \___ \ | |   __) |                    |
+#|                        | | (_| |___) || |  / __/                     |
+#|                        |_|\__,_|____/ |_| |_____|                    |
+#|                                                                      |
+#|                               core system                            |
+#|                                                        (C) SuSE GmbH |
+#\----------------------------------------------------------------------/
+#
+#   File:       yast2_kde
+#
+#   Author:	Klaus Kaempf <kkaempf@suse.de>
+#   Maintainer: Klaus Kaempf <kkaempf@suse.de>
+#
+# This script is just like "yast2" but does _not_ set any
+# geometry hints to the window manager
+#
+#/-*/
+export QT_XFT=0
+
+# load common script functions
+. /usr/lib/YaST2/bin/yast2-funcs
+
+# set lang from sysconfig
+set_lang_from_sysconfig
+
+# allow module as argument, defaults to "menu"
+export module=${1-menu}
+
+# assign default values if unset
+Y2_STYLE=${Y2_STYLE:-platinum}
+
+if [ $# == "2" ] ; then
+  export arg2=($2)
+  export arg3=
+else
+  if [ $# == "3" ] ; then
+    export arg2=($2)
+    export arg3=($3)
+  else
+    export arg3=
+    export arg2=
+  fi
+fi
+
+if [ -z "$DISPLAY" ] ; then
+    $ybindir/y2base $module $arg2 $arg3 ncurses
+else
+    if [ $module == "menu" ] ; then
+	$ybindir/y2controlcenter $arg2 $arg3 -style="$Y2_STYLE" -fn $Y2_XFONT
+    else
+	$ybindir/y2base $module $arg2 $arg3 qt -style="$Y2_STYLE" -fn $Y2_XFONT
+    fi
+fi

@@ -1,0 +1,9 @@
+y2m_inst is part of YaST2
+See the file COPYRIGHT.english for license terms
+
+y2m_inst contains the installation workflow and scripts
+used for a first-time installtion of SuSE Linux.
+Due to historical reasons, the package name is "yast2"
+
+"configure" accepts '--with-testsuite' which enables building
+of testsuite related files

@@ -1,0 +1,48 @@
+@HEADER-COMMENT@
+
+# neededforbuild yast2-devtools  autoconf automake yast2-testsuite yast2-core yast2-core-devel
+
+@HEADER@
+Provides:	yast
+Obsoletes:	yast
+
+BuildArchitectures: noarch
+Summary:      YaST2 Modules for installation
+
+%description
+-
+
+@PREP@
+
+@BUILD-YCP@
+
+@INSTALL-YCP@
+
+@CLEAN@
+
+%files
+%defattr(-,root,root)
+
+%dir @moduledir@
+@moduledir@/*
+%dir @imagedir@
+@imagedir@/*
+%dir @scrconfdir@
+@scrconfdir@/*
+%dir @ybindir@
+@ybindir@/*
+%doc @docdir@
+
+/sbin/yast2
+/sbin/zast2
+/sbin/YaST2
+/sbin/ZaST2
+/sbin/zastì
+/sbin/ZaSTì
+/sbin/yastì
+/sbin/YaSTì
+
+/sbin/yast
+/sbin/zast
+/sbin/YaST
+/sbin/ZaST

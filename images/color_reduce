@@ -1,0 +1,20 @@
+#!/bin/csh
+
+if ( $#argv != 1 ) then
+   echo "Usage: $0 <number of colors>"
+   exit 1
+endif
+
+foreach pic ( s*.png ) 
+   echo "Converting $pic to ppm"
+   pngtopnm <bak/$pic >${pic}.pnm
+end
+
+
+echo "Quantizing"
+ppmquantall $1 *.pnm
+
+foreach pic ( s*.png ) 
+   echo "Converting $pic back to png"
+   pnmtopng <${pic}.pnm >$pic
+end

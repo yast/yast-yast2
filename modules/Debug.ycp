@@ -1,0 +1,57 @@
+/**
+ * File:
+ *   Debug.ycp
+ *
+ * Module:
+ *   Debug.ycp
+ *
+ * Summary:
+ *  Adds additional debug proprties
+ *
+ * Authors:
+ *   Michael Hager <mike@suse.de>
+ *
+ * $Id$
+ *  - supports an debug console
+ *
+ */
+
+{
+    module "Debug";
+
+    import "Mode";
+    import "Installation";
+
+
+
+   /**
+    * @return boolean
+    *
+    * Return if debug_mode is on. This mode is triggert, by Mode::beta
+    * or if the file /usr/lib/YaST2/etc/debug exists
+    *
+    * @example if ( Debug::debug_mode ) ...
+    */
+   
+   global boolean debug_mode = false;
+
+   
+    // The constructor
+
+    global define Debug() ``{
+
+	string	debugfile = "/usr/lib/YaST2/etc/debug";
+	string	debugtext = SCR::Read(.target.string, debugfile);
+
+	if (debugtext != nil || Mode::beta )
+	{
+	    debug_mode = true;
+	}
+	else
+	{
+	    debug_mode = false;
+	}
+    };
+}
+
+

@@ -1,0 +1,187 @@
+/**
+ * File:
+ *   eval.ycp
+ *
+ * Module:
+ *   to Debug.ycp
+ *
+ * Summary:
+ *  Adds additional debug proprties
+ *
+ * Authors:
+ *   Michael Hager <mike@suse.de>
+ *
+ * $Id$
+ *  - supports an debug console
+ *
+ */
+
+{
+  global define DoEval( any value )  ``{ return(eval(value));  };
+
+
+  global string tmpdir = SCR::Read (.target.tmpdir);
+  global string watch1    = "";
+  global string watch2    = "";
+  global string watch_lable1  = "";
+  global string watch_label2  = "";
+  global string dump_path1 = "";
+  global string dump_path2 = "";
+  global string dump_var1  = "";
+  global string dump_var2  = "";
+  global string reload     = "";
+  global string command    = "";
+  
+  
+  global define EvalString( string value )
+  ``{
+      SCR::Write( .target.string, tmpdir + "test.ycp", value);
+      any ret =  WFM::DoEval(SCR::Read( .target.ycp, tmpdir + "test.ycp"));
+
+      if ( ret == nil )
+      {
+	  return( "<nil>" );
+      }
+      {
+	  return( ret );
+      }
+  };
+
+
+   global define DebugConsoleUI()
+   ``{
+     return `VBox (`Label ("Debug Console"),
+		   `HBox (`HWeight (50,
+				    `VBox (`Heading ("Execute YCP command"),
+					   `ComboBox (`id ("command"), `opt (`hstretch, `editable), "Command:  example: { help_text = \"Hallo2\"; }"),
+					   `Right (`PushButton (`id ("exec"), "Execute")),
+					   `Left (`Label ("Output:")), `RichText ( `id ("text"), `opt(`plainText), ""),
+					   `Frame ("Reload Module",
+						   `HBox (`TextEntry (`id ("module"), `opt(`disabled), "Module name:", ""),
+							  `Bottom (`PushButton (`id ("reload_module"), `opt(`disabled), "Reload")))),
+					   `PushButton (`id ("debugger"), `opt(`disabled), "Wait for YCP debugger"))),
+			  `HSpacing (3), `HWeight (50,
+						   `VBox (`HCenter (
+								    `Heading ("Watch")),
+							  `HBox (`HWeight (50,
+									   `TextEntry (`id ("watch1"), "WFM Variable", "")),
+								 `HWeight (50, `Left (`Label ( `id ("watch_label1"), "<empty>                      ")))),
+							  `HBox (`HWeight (50, `TextEntry (`id ("watch2"), "WFM Variable", "")),
+								 `HWeight (50, `Left (`Label (`id ("watch_label2"),"<empty>                         ")))),
+							  `Heading ("Always Dump"),
+							  `HBox (`HWeight (50, `TextEntry (`id ("dump_path1"), "Path (.tmp.file)", "")),
+								 `HWeight (50, `TextEntry (`id ("dump_var1"), "Variable", ""))),
+							  `HBox (`HWeight (50, `TextEntry (`id ("dump_path2"), "Path (.tmp.file)", "")),
+								 `HWeight (50, `TextEntry (`id ("dump_var2"), "Variable", ""))),
+							  `Heading ("Always Reload Module"),
+							  `HBox (`HWeight (50, `TextEntry (`id ("reload"), `opt(`disabled), "Modulename", ""))),
+							  `PushButton (`id ("apply"), "Apply watch, dump, reload") 
+							  )
+						   )),
+		   `HBox (`PushButton (`id ("ok"), "Ok")));
+
+
+   };
+  
+  /**
+   * @param <none> none 
+   *
+   * @return any
+   *
+   * This define calls UI::UserInput() and returns its value, except the User inserts presses
+   * <control><alt><shift>D, then a debug console appears.
+   *
+   * @example symbol ret = UserInputXP();
+   */
+
+  global define UserInputXP( ) ``{
+
+      any main_ret = UI::UserInput();
+
+      y2milestone( "UserInputXP %1  -- %2  %3", main_ret, WFM::DoEval( "(ff)"), WFM::aa );
+
+      if ( main_ret == `debugHotkey && Debug::debug_mode )
+      {
+	  UI:: OpenDialog( `opt(`decorated), DebugConsoleUI() );
+
+	  // set save values and evaluate
+	  UI::ChangeWidget( `id ("reload"),  	`Value, reload );
+	  UI::ChangeWidget( `id ("command"),  	`Value, command );
+	  UI::ChangeWidget( `id ("watch1"),  	`Value, watch1 );
+	  UI::ChangeWidget( `id ("watch2"), 	`Value, watch2 );
+	  UI::ChangeWidget( `id ("dump_path1"), 	`Value, dump_path1);
+	  UI::ChangeWidget( `id ("dump_var1"), 	`Value, dump_var1 );
+	  UI::ChangeWidget( `id ("dump_path2"), 	`Value, dump_path2);
+	  UI::ChangeWidget( `id ("dump_var2"), 	`Value, dump_var2 );
+
+	  if ( command != "" )     UI::ChangeWidget( `id ("command"),    `Value, command);
+	  if ( reload != "" )      UI::ChangeWidget( `id ("reload"),     `Value, reload);
+	  if ( watch1 != "" )      UI::ChangeWidget( `id ("watch1"),     `Value, watch1);
+	  if ( watch2 != "" )      UI::ChangeWidget( `id ("watch2"),     `Value, watch2);
+	  if ( dump_var1 != "" )   UI::ChangeWidget( `id ("dump_var1"),  `Value, dump_var1);
+	  if ( dump_path1 != "" )  UI::ChangeWidget( `id ("dump_path1"), `Value, dump_path1);
+	  if ( dump_var2 != "" )   UI::ChangeWidget( `id ("dump_var2"),  `Value, dump_var2);
+	  if ( dump_path2 != "" )  UI::ChangeWidget( `id ("dump_path2"), `Value, dump_path2);
+
+	  // evaluate and display
+	  if ( watch1 != "" )      UI::ChangeWidget( `id ("watch_label1"),     `Value, sformat( "<%1>", EvalString(watch1)));
+	  if ( watch2 != "" )      UI::ChangeWidget( `id ("watch_label2"),     `Value, sformat( "<%1>", EvalString(watch2)));
+          
+
+	  if ( dump_var1 != "" && dump_path1 != "" )
+	  {
+	      SCR::Write( .dumpto + topath( dump_path1), EvalString(dump_var1) );
+	  }
+
+	  if ( dump_var2 != "" && dump_path2 != "" )
+	  {
+	      SCR::Write( .dumpto + topath( dump_path2), EvalString(dump_var2) );
+	  }
+	  
+	  repeat
+	      {
+		  // `cancel possible 
+		  any ret = UI::UserInput();
+         
+		  // y2milestone( "TTTTTTTTT %1", ret );
+         
+		  if ( ret == "exec" )
+		  {
+		      command = UI::QueryWidget(`id("command"), `Value);
+
+		      UI::ChangeWidget( `id ("text"), `Value, sformat( "Output:\n %1", sformat( "<%1>", EvalString(command))));
+		  }
+
+		  if ( ret == "apply" || ret == "ok" )
+		  {
+		      reload  =               UI::QueryWidget( `id ("reload"),  	`Value);
+		      watch1  =               UI::QueryWidget( `id ("watch1"),  	`Value);
+		      watch2  =               UI::QueryWidget( `id ("watch2"), 	`Value);
+		      dump_path1 =            UI::QueryWidget( `id ("dump_path1"), 	`Value);
+		      dump_var1  =            UI::QueryWidget( `id ("dump_var1"), 	`Value);
+		      dump_path2 =            UI::QueryWidget( `id ("dump_path2"), 	`Value); 
+		      dump_var2  =            UI::QueryWidget( `id ("dump_var2"), 	`Value);
+
+		      if ( watch1 != "" )     UI::ChangeWidget( `id ("watch_label1"), `Value, sformat( "<%1>", EvalString(watch1)));
+		      if ( watch2 != "" )     UI::ChangeWidget( `id ("watch_label2"), `Value, sformat( "<%1>", EvalString(watch2)));
+
+		      if ( dump_var1 != "" && dump_path1 != "" )
+		      {
+			  SCR::Write( .dumpto + topath( dump_path1), EvalString(dump_var1) );
+		      }
+
+		      if ( dump_var2 != "" && dump_path2 != "" )
+		      {
+			  SCR::Write( .dumpto + topath( dump_path2), EvalString(dump_var2) );
+		      }
+		  }
+	 
+	      } until ( ret == "ok" || ret == "cancel" || ret == `cancel );
+
+	  UI::CloseDialog();
+      }
+
+      return ( main_ret );
+  };
+
+}

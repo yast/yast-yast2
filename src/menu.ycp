@@ -1,0 +1,376 @@
+/**
+ * File:
+ *   menu.ycp
+ *
+ * Module:
+ *   yast2 itself
+ *
+ * Summary:
+ *   Provides a list of available yast2 modules. This module is inteded for use
+ *   with ncurses, for X the yast2 control center should be used.
+ *
+ * Authors:
+ *   Ludwig Nussel <lnussel@suse.de>
+ *
+ * $Id$
+ *
+ */
+
+{
+    include "ui/common_popups.ycp";
+
+/*
+	GroupMap =
+	$[ string rawname :
+	    $[
+		"Name" : string,
+		"Icon" : string,
+		"SortKey" : string,
+		"Modules" : list of Module Numbers
+	    ]
+	    ...
+	];
+
+	ModuleMap =
+	$[ integer Number :
+	    $[
+		"Name" : string,
+		"YCPFunction" : string,
+		"Icon" : string,
+		"Helptext" : string,
+		"Arguments" : string, 		// seperated by whitespace
+		"RequiresRoot" : boolean,
+		"Textdomain" : string
+		"SortKey" : string
+	    ]
+	]
+*/
+    map GroupMap = $[];
+    map ModuleMap = $[];
+    integer ModuleNumber = 0;
+
+    // this list is only built once for speed reasons
+    list listofallmodules = [];
+
+    UI::``{
+	// Build a dialog with one menu button.
+	// Wait the user selects a menu entry,
+	// then close the dialog and terminate.
+
+	// Please note it's pretty pointless to create menu entries without an ID -
+	// you'd never know what entry the user selected.
+
+	global define `OpenMenu ()
+	``{
+	    //  string heading = _("YaST2 System Configuration and Administration");
+	    string heading = _("YaST2 Control Center");
+	    OpenDialog (`opt (`defaultsize),
+			`VBox (
+			       `Heading (heading),
+			       `HBox (
+				     `HWeight (30, `RadioButtonGroup (
+								     `VBox (
+									   `Left (`RadioButton (`id (`allgroups), `opt (`notify), _("&All"), false)),
+									   `VSpacing (),
+									   `ReplacePoint (`id (`groups), `Empty ()),
+									   `VStretch ()
+									 )
+								   )
+					     ),
+				     `HWeight (70, `VBox (
+							 `ReplacePoint (`id (`modules), `SelectionBox (_("&Modules")))
+							)
+					     )
+				   ),
+				 `HBox (`Label (`id (`statusline), `opt (`outputField, `hstretch), _("Use TAB to switch groups"))),
+				 `HBox (
+				    `HSpacing (5),
+				    `PushButton (`id (`quit), QuitButtonLabel ()),
+				    `HStretch (),
+				    `PushButton (`id (`launch), _("&Launch")),
+				    `HSpacing (5)
+				 )
+			 )
+		     );
+	};
+
+	global define string CreateGroupButtons (map Groups)
+	``{
+	    term groupwidget = `VBox ();
+	    list grouplist = [];
+	    grouplist = SortGroups (Groups, maplist (`rawname, `group, Groups, ``(rawname)));
+	    string is_first = "";
+	    foreach (`rawname, grouplist,
+	    ``{
+		groupwidget = add (groupwidget,
+					`Left (`RadioButton (`id (rawname), `opt (`notify, `autoShortcut),
+					Groups[rawname, "Name"]:"???", is_first=="")));
+		if (is_first == "") is_first = rawname;
+
+		});
+	    ReplaceWidget (`id (`groups), groupwidget);
+	    return is_first;
+	}
+
+	global define SortGroups (map GroupMap, list GroupList)
+	``{
+	    return
+		sort (`x, `y, GroupList,
+		``{
+		    string first = GroupMap[x, "SortKey"]:"";
+		    string second = GroupMap[y, "SortKey"]:"";
+		    return (first <= second);
+		});
+	}
+
+	global define DisplayModuleList (list modulelist)
+	``{
+
+	    term modulebox = `SelectionBox (`id (`modulebox), `opt (`notify), _("&Modules"));
+	    modulebox = add (modulebox, modulelist);
+	    ReplaceWidget (`id (`modules), modulebox);
+	}
+
+	global define `DisplaySplash ()
+	``{
+	    OpenDialog (`opt (`defaultsize),
+		`VBox (
+		    `VStretch (),
+		    `Label (_("Loading modules, please wait ...")),
+		    `VStretch ()
+		)
+	   );
+	}
+
+    };
+
+    global define Translate (string text)
+    ``{
+	// remove _(" and ")
+	if (regexpmatch (text, ".*_\\(.*\"(.*)\".*\\).*"))
+	{
+	    text = regexpsub (text, ".*_\\(.*\"(.*)\".*\\).*", "\\1");
+	    //Workaround for 7.3 Bug
+	    //text = regexpsub (text, "(.*)\".*\\).*", "\\1");
+	}
+	locale l = text;
+	return mergestring (splitstring (eval (l), "\n"), " ");
+    }
+
+    // strip space
+    global define trim (string text)
+    ``{
+	while (substring (text, 0, 1)==" ")
+	{
+	    text=substring (text, 1);
+	}
+	return text;
+    }
+
+    // iterates through the whole GroupMap and returns a list suitable for the
+    // selectionbox
+    global define BuildSelectionBoxListForAllGroups (map Groups)
+    ``{
+	list modules = [];
+	foreach (`rawname, `group, Groups,
+	``{
+	    modules = union (modules, group["Modules"]:[]);
+	});
+	modules = SortModuleNumberList (modules);
+	return BuildSelectionBoxListForModuleList (modules);
+    }
+
+    // return selectionbox content for one group
+    global define BuildSelectionBoxListForGroup (map Group)
+    ``{
+	list modules = SortModuleNumberList (Group["Modules"]:[]);
+	return BuildSelectionBoxListForModuleList (modules);
+    }
+
+    // accepts a list of module numbers, returns selectionbox content
+    global define BuildSelectionBoxListForModuleList (list Modules)
+    ``{
+	list displaymodules = [];
+	foreach (`modulenr, Modules,
+	``{
+	    map Module = ModuleMap[modulenr]:$[];
+	    string name = Module["Name"]:"??";
+	    term item = `item (`id (modulenr), name);
+	    displaymodules = add (displaymodules, item);
+	});
+	return displaymodules;
+    }
+
+    global define SortModuleNumberList (list modules)
+    ``{
+	return
+	    sort (`x, `y, modules,
+	    ``{
+		string first = ModuleMap[x, "Name"]:"";
+		string second = ModuleMap[y, "Name"]:"";
+		return (first <= second);
+	    });
+    }
+
+    // returns what do do after userinput:
+    // `again: run InputLoop again
+    // `launch: launch
+    define VerifyInput (any id)
+    ``{
+	if (id == `launch)
+	{
+	    integer modulenr = UI::QueryWidget (`id (`modulebox), `CurrentItem);
+	    // nothing selected
+	    if (modulenr == nil) return `again;
+	    map Module = ModuleMap[modulenr]:0;
+	    // module does not exist
+	    if (Module == 0) return `again;
+	    Launch (Module);
+	}
+	else if (id == `quit)
+	{
+	    return `quit;
+	}
+	else if (id == `modulebox)
+	{
+	    // display helptext in stausbar
+	    integer number = UI::QueryWidget (`id (`modulebox), `CurrentItem);
+	    map selectedmodule = ModuleMap[number]:$[];
+	    string text = selectedmodule["Helptext"]:"";
+	    UI::ChangeWidget (`id (`statusline), `Value, text);
+	}
+	else if (id == `allgroups)
+	{
+	    // RadioButton "All" was selected
+	    //UI::DisplayModuleList (BuildSelectionBoxListForAllGroups (GroupMap));
+	    UI::DisplayModuleList (listofallmodules);
+	}
+	else if (is (id, string))
+	{
+	    map group = GroupMap[id]:$[];
+	    if (group != $[])
+	    {
+		UI::DisplayModuleList (BuildSelectionBoxListForGroup (group));
+	    }
+
+	}
+
+	return `again;
+    }
+
+    global define Launch (map Module)
+    ``{
+	string function = Module["YCPFunction"]:"";
+	list arguments = splitstring (Module["Arguments"]:"", " ");
+	if (function != "")
+	{
+	    y2milestone ("CallModule (%1, %2)", function, arguments);
+	    CallModule (function, arguments);
+	}
+    }
+
+    global define DefaultOnNil (any value, any defaultvalue)
+    ``{
+	if (value == nil)
+	    return defaultvalue;
+	return value;
+    }
+
+    textdomain "general";
+
+    UI::DisplaySplash ();
+
+    path menuentrypath = .yast2.menuentry.section;
+
+    // go through all menuentry files as defined in menuentries.scr
+    foreach (`file, SCR::Dir (menuentrypath),
+     ``{
+	// go through all sections (those things enclosed in []) in this file
+	list sections = SCR::Dir (add (menuentrypath, file));
+	foreach (`section, sections,
+	``{
+	    if (find (section, "Y2Group") == 0 && size (section) > 8)
+	    {
+		map group = $[];
+		path MenuentryPathToThisSection = add (add (.yast2.menuentry.value, file), section);
+
+		group["Name"] = Translate (SCR::Read (add (MenuentryPathToThisSection, "Name")));
+		group["Icon"] = Translate (SCR::Read (add (MenuentryPathToThisSection, "Icon")));
+		group["SortKey"] = SCR::Read (add (MenuentryPathToThisSection, "SortKey"));
+
+		string rawgroupname=trim (substring (section, 7));
+		GroupMap[rawgroupname] = group;
+	    }
+	    if (find (section, "Y2Module") == 0 && size (section) > 9)
+	    {
+		map Module = $[];
+		path MenuentryPathToThisSection = add (add (.yast2.menuentry.value, file), section);
+
+		string func = trim (substring (section, 8));
+
+		string name = SCR::Read (add (MenuentryPathToThisSection, "Name"));
+		string group = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Group")), "Misc");
+//		string icon = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Icon")), "");
+		string help = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Helptext")), "");
+		string args = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Arguments")), "");
+		boolean reqroot = SCR::Read (add (MenuentryPathToThisSection, "RequiresRoot"))=="false"?false:true;
+		string textdom = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "Textdomain")), "general");
+		string sortkey = DefaultOnNil (SCR::Read (add (MenuentryPathToThisSection, "SortKey")), "");
+
+		if (name != nil)
+		{
+		    //FIXME:  workaround
+		    string dummy = textdomain (textdom);
+		    Module["Name"]	   = Translate (name);
+//		    Module["Icon"]	   = Translate (icon);
+		    Module["Helptext"]	   = Translate (help);
+		    Module["Arguments"]    = args;
+		    Module["RequiresRoot"] = reqroot;
+		    Module["YCPFunction"]  = func;
+		    Module["SortKey"]	   = sortkey;
+
+		    ModuleNumber = ModuleNumber + 1;
+
+		    // Get Group in GroupMap
+		    map grouptomodify	    = GroupMap[group]:$[];
+
+		    // get geht list of modules for that group
+		    list modulelist	    = grouptomodify["Modules"]:[];
+
+		    // add the current module number
+		    modulelist		    = add (modulelist, ModuleNumber);
+
+		    // put the modulelist back in the group
+		    grouptomodify["Modules"] = modulelist;
+
+		    // put the group back into the groupmap
+		    GroupMap[group]	     = grouptomodify;
+
+		    // put Module into the ModuleMap
+		    ModuleMap[ModuleNumber]  = Module;
+
+		    //FIXME:  workaround
+		    string dummy2 = textdomain ("general");
+		}
+	    }
+	});
+    });
+
+    listofallmodules = BuildSelectionBoxListForAllGroups (GroupMap);
+    UI::CloseDialog ();
+    UI::OpenMenu ();
+
+    string first_group = UI::CreateGroupButtons (GroupMap);
+    VerifyInput (first_group);
+
+    any id = nil;
+
+    id = UI::UserInput ();
+
+    while (id == nil || VerifyInput (id) == `again)
+    {
+	id = UI::UserInput ();
+    }
+
+    UI::CloseDialog ();
+}

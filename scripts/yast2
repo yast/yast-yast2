@@ -1,0 +1,147 @@
+#!/bin/bash
+#/----------------------------------------------------------------------\
+#|                                                                      |
+#|                      __   __    ____ _____ ____                      |
+#|                      \ \ / /_ _/ ___|_   _|___ \                     |
+#|                       \ V / _` \___ \ | |   __) |                    |
+#|                        | | (_| |___) || |  / __/                     |
+#|                        |_|\__,_|____/ |_| |_____|                    |
+#|                                                                      |
+#|                               core system                            |
+#|                                                        (C) SuSE GmbH |
+#\----------------------------------------------------------------------/
+#
+#   File:       yast2
+#
+#   Authors:	Mathias Kettner <kettner@suse.de>
+#   		Klaus Kaempf <kkaempf@suse.de>
+#		Ludwig Nussel <lnussel@suse.de>
+#   Maintainer: Klaus Kaempf <kkaempf@suse.de>
+#
+#
+#   This script is called, when the user just types in 'yast2'. It starts
+#   the qt user interface in case the DISPLAY variable is set and other-
+#   wise the ncurses. It starts then the module 'menu' which implements
+#   the configuration and administration menu.
+#
+#/-*/
+export PATH=/sbin:/usr/sbin:$PATH
+export QT_XFT=0
+
+# This environment variable will tell child processes they are started from
+# within a YaST2 environment
+export YAST2_RUNNING=$$
+
+# load common script functions
+. /usr/lib/YaST2/bin/yast2-funcs
+
+printhelp()
+{
+	echo "Usage: $0 [OPTIONS] [MODULE] [module specific parameters]"
+	echo
+	echo "OPTIONS:"
+	echo "	-l, --list	list all available modules"
+	echo "	-g, --geometry	default window size (qt only)"
+	echo "	-s, --style	widget style (qt only)"
+	echo "	-S, --strings	all module parameters are passed as string"
+	echo "	-h, --help	this screen"
+	echo
+	echo "exceptional case for installing packages:"
+	echo "$0 OPTION <package>"
+	echo
+	echo "OPTION:"
+	echo "	-i, --install	install rpm package"
+	echo
+	echo "<package> can be a single short package name (e.g. gvim)"
+	echo "which will be installed with dependency checking, or the full"
+	echo "path to an rpm package (e.g /tmp/gvim.rpm) which will be"
+	echo "installed without dependency checking"
+	echo
+}
+
+listmodules()
+{
+	echo "Available modules:"
+	echo
+	grep -h Y2Module /usr/lib/YaST2/config/*.y2cc |\
+		sed 's/\[.*Y2Module *\(.\+\)\]/\1/' |\
+		sort -u
+}
+
+# assign default values if unset
+#
+# Note: 800x600 by default is perfectly safe - the Qt UI will not allow windows
+# to become larger than the screen anyway.
+Y2_GEOMETRY=${Y2_GEOMETRY:-800x600}
+Y2_STYLE=${Y2_STYLE:-platinum}
+
+TEMP=`getopt -o hlg:s:Si --long help,list,geometry:,style:,strings,install \
+     -n 'yast2' -- "$@"`
+
+if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
+
+# Note the quotes around `$TEMP': they are essential!
+eval set -- "$TEMP"
+
+while true ; do
+	case "$1" in
+		-h|--help) printhelp; exit 0  ;;
+		-l|--list) listmodules; exit 0  ;;
+		-g|--geometry) Y2_GEOMETRY="$2"; shift 2; ;;
+		-s|--style) Y2_STYLE="$2"; shift 2; ;;
+		-i|--install) Y2_INSTALL_PACKAGES=true; shift 1;;
+		--) shift ; break ;;
+		*) echo "Internal error!" ; exit 1 ;;
+	esac
+done
+
+export Y2_STYLE
+
+if [ "$Y2_INSTALL_PACKAGES" = "true" ]; then
+	export module=sw_single
+else
+	# allow module as argument, defaults to "menu"
+	export module=${1-menu}
+	shift
+fi
+
+case "`basename $0`" in
+	YaST|yast|yast1|zast)
+		unset DISPLAY
+	;;
+esac
+
+if [ "$UID" = 0 ]; then
+    echo $$ > /var/run/yast.pid
+fi
+
+# set lang from sysconfig
+set_lang_from_sysconfig
+
+# use text mode if DISPLAY is not set or no qt plugin installed
+if [ -z "$DISPLAY" -o ! check_qt ] ; then
+    if check_ncurses ; then
+	case "$LANG" in
+	    # if it is known that a language doesn't yet work well with ncurses
+	    # use English instead:
+	    ja*|ko*|zh*) export LANG=en_US ;;
+	esac
+	set -- $(for x in "$@"; do echo "(\"$x\")"; done) # surround args by ("...")
+	$ybindir/y2base $module "$@" ncurses
+    else
+	echo "You need to install yast2-ui-ncurses to use the YaST2 text mode interface"
+	exit 1
+    fi
+else
+    # use ycp menu if the control center is not installed
+    if [ $module == "menu" -a -e "$ybindir/y2controlcenter" ] ; then
+	$ybindir/y2controlcenter -style="$Y2_STYLE" -fn $Y2_XFONT "$@"
+    else
+	set -- $(for x in "$@"; do echo "(\"$x\")"; done) # surround args by ("...")
+	$ybindir/y2base $module "$@" qt -geometry "$Y2_GEOMETRY" -style="$Y2_STYLE" -fn $Y2_XFONT
+    fi
+fi
+
+if [ "$UID" = 0 ]; then
+    rm -f /var/run/yast.pid
+fi

@@ -1,0 +1,24 @@
+#
+# $Id$
+#
+
+.yast2.menuentry
+
+`ag_ini(
+  IniAgent( [ "/usr/lib/YaST2/config/y2controlcentericons.y2cc-groups", "/usr/lib/YaST2/config/*.y2cc" ],
+    $[
+      "options" : [ ],
+      "comments": [ "^[ \t]*;.*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],
+      "sections" : [
+        $[
+        "begin" : [ "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*", "[%s]" ],
+        ],
+      ],
+      "params" : [
+        $[
+        "match" : [ "^[ \t]*([^=]*[^ \t=])[ \t]*=[ \t]*(.*[^ \t]|)[ \t]*$" , "%s=%s"],
+      ],
+    ],
+    ]
+  )
+)

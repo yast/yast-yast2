@@ -1,0 +1,11 @@
+#!/bin/csh
+
+if ( $#argv != 1 ) then
+   echo "Usage: $0 <number of colors>"
+   exit 1
+endif
+
+foreach pic ( stage*.png ) 
+   echo $pic
+   convert -colors $1 bak/$pic $pic
+end
