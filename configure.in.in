@@ -16,5 +16,6 @@ fi
 @YAST2-CHECKS-TESTSUITE@
 
 ## and generate the output
+# also done via makefile
 AC_CONFIG_FILES(./library/modules/Version.ycp)
 @YAST2-OUTPUT@
