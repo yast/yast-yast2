@@ -106,7 +106,12 @@
     global boolean no_x11		= false;	// no x11 or not enough memory for qt
 
     /**
-     * is set when called due to a hardware change
+     * This flag indicates that a config module has been called due to
+     * a change in the system hardware that has been detected on boot
+     * time.
+     *
+     * It is set if a parameter "reprobe" is given with a yast2 call as
+     * command line argument.
      */
     global boolean reprobe		= false;
 
