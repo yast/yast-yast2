@@ -99,6 +99,10 @@
 
     global string software_proposal = "selection";
 
+
+    // Additional addon selections
+    global list addon_selections = [];
+
     /*********************************************************************
       *   Partitioning
      *********************************************************************/

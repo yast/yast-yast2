@@ -19,10 +19,10 @@ EVMS_CONFIG="no"
 #
 # UI mode
 #
-UI_MODE="expert"
+UI_MODE="simple"
 
-## Type:    string(simple,expert)
-## Default: expert
+## Type:    integer(1:100)
+## Default: 95
 #
 # Warn about Incomplete Translations
 #

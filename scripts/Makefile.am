@@ -4,7 +4,7 @@
 
 sbin_SCRIPTS = yast2 save_y2logs
 
-ybin_SCRIPTS = yast2 yast2-funcs
+ybin_SCRIPTS = yast2 yast2-funcs check-all-syntax
 
 EXTRA_DIST = $(sbin_SCRIPTS) $(ybin_SCRIPTS)
 

@@ -4,27 +4,112 @@ Thu Mar 24 13:07:15 CET 2005 - jsrain@suse.cz
 - changed kernel packages for PPC (#72344)
 
 -------------------------------------------------------------------
+Mon Mar 21 16:25:33 CET 2005 - sh@suse.de
+
+- Fixed bug #72799: Help/Steps buttons not translated 
+- V 2.11.48
+
+-------------------------------------------------------------------
 Mon Mar 21 13:51:43 CET 2005 - jsrain@suse.cz
 
 - fixed setting bootsplash resolutino if framebuffer modes couldn't
   be detected (#74052)
+- 2.11.47
 
 -------------------------------------------------------------------
-Fri Mar 18 14:29:17 CET 2005 - jsrain@suse.cz
+Fri Mar 18 14:17:30 CET 2005 - jsrain@suse.cz
 
 - fixed determining if firewall is enabled (#73819)
+- 2.11.46
 
 -------------------------------------------------------------------
-Fri Mar  4 11:01:20 CET 2005 - locilka@suse.cz
+Wed Mar 16 16:50:03 CET 2005 - visnov@suse.cz
+
+- 2.11.45 
+
+-------------------------------------------------------------------
+Tue Mar 15 13:40:39 CET 2005 - visnov@suse.cz
+
+- added check-all-syntax script for validating all YCP clients 
+  and modules (#63942)
+
+-------------------------------------------------------------------
+Mon Mar 14 16:36:55 CET 2005 - mvidner@suse.cz
+
+- Don't allow single quotes inside ifcfg-* variables,
+  especially NAME (#72164).
+- NetworkDevices::ConcealSecrets: only nonempty; also WIRELESS_WPA_PSK.
+- 2.11.44
+
+-------------------------------------------------------------------
+Sat Mar 12 04:44:45 CET 2005 - nashif@suse.de
+
+- optionally add addon selections using the control file (#72257)
+- 2.11.43
+
+-------------------------------------------------------------------
+Fri Mar 11 15:38:51 CET 2005 - mvidner@suse.cz
+
+- Added NetworkDevices::ConcealSecrets not to log sensitive
+  information (#65741).
+- 2.11.42
+
+-------------------------------------------------------------------
+Fri Mar 11 10:45:17 CET 2005 - locilka@suse.cz
+
+- Added new testsuite for SuSEFirewall module
+- Added new testsuite for PortAliases module
+
+-------------------------------------------------------------------
+Wed Mar  9 13:17:46 CET 2005 - locilka@suse.cz
+
+- Adjusting to changed /etc/services
+  "ipsec-msft" has been changed to "ipsec-nat-t"
+- 2.11.41
+
+-------------------------------------------------------------------
+Fri Mar  4 14:09:28 CET 2005 - lslezak@suse.cz
+
+- HWConfig.ycp - /etc/sysconfig/hardware/hwcfg-* file access
+- 2.11.40
+
+-------------------------------------------------------------------
+Fri Mar  4 10:25:56 CET 2005 - locilka@suse.cz
 
 - fixed bug #67335
-  fixed unnecessary warning aborting the unchanged configuration
+  Aborting unchanged SuSEfirewall configuration
+- 2.11.39
+
+-------------------------------------------------------------------
+Thu Mar  3 13:40:45 CET 2005 - jsrain@suse.cz
+
+- prevent Initrd module from automatical reading in Mode::config
+  (#67256)
+
+-------------------------------------------------------------------
+Wed Mar  2 11:22:33 CET 2005 - locilka@suse.cz
+
+- merged proofed texts
+- 2.11.38 
+
+-------------------------------------------------------------------
+Fri Feb 25 15:24:07 CET 2005 - lslezak@suse.cz
+
+- command line - fixed checking of the mandatory keys - don't
+  abort in "unsupported" mode, testsuite updated
+- 2.11.37
 
 -------------------------------------------------------------------
 Fri Feb 25 13:11:07 CET 2005 - lslezak@suse.cz
 
 - commandline - don't check mandatory keys when the command line
-  mode is "unsupported"
+  mode is "unsupported", testsuite updated
+- 2.11.36
+
+-------------------------------------------------------------------
+Fri Feb 25 13:20:17 CET 2005 - visnov@suse.cz
+
+- 2.11.35 
 
 -------------------------------------------------------------------
 Thu Feb 24 12:00:54 CET 2005 - fehr@suse.de
