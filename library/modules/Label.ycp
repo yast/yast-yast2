@@ -92,6 +92,22 @@ global define string RetryButton() ``{
   /* Button label */
   return _("&Retry");
 }
+global define string ReplaceButton() ``{
+  /* Button label */
+  return _("&Replace");
+}
+global define string UpButton() ``{
+  /* Button label */
+  return _("&Up");
+}
+global define string DownButton() ``{
+  /* Button label */
+  return _("Do&wn");
+}
+global define string RefreshButton() ``{
+  /* Button label */
+  return _("&Refresh");
+}
 global define string HelpButton() ``{
   /* Button label */
   return _("&Help");
@@ -124,6 +140,10 @@ global define string CloseButton() ``{
 global define string BrowseButton() ``{
   /* Button label */
   return _("Bro&wse");
+}
+global define string CreateButton() ``{
+  /* Button label */
+  return _("Crea&te");
 }
 
 global define string WarningMsg() ``{
