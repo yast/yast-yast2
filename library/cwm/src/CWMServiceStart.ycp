@@ -40,50 +40,6 @@ boolean last_status = nil;
 // private functions
 
 /**
- * Initialize the service startup settings widget
- * @param widget a map describing the whole widget
- */
-void InitAutoStartWidget (map<string,any> widget) {
-    if (! UI::WidgetExists (`id ("_cwm_service_startup")))
-	return;
-    boolean() get_auto_start = (boolean())widget["get_service_auto_start"]:nil;
-    boolean auto_start = get_auto_start ();
-    UI::ChangeWidget (`id ("_cwm_service_startup"), `CurrentButton,
-	auto_start
-	    ? "_cwm_startup_auto"
-	    : "_cwm_startup_manual");
-}
-
-/**
- * Enable or disable the firewall details widget according to the status
- * of "open firewall" checkbox
- */
-void EnableOrDisableFirewallDetails () {
-    if (! UI::WidgetExists (`id ("_cwm_open_firewall")))
-	return;
-    if (! UI::WidgetExists (`id ("_cwm_firewall_details")))
-	return;
-    boolean enabled = (boolean)
-	UI::QueryWidget (`id ("_cwm_open_firewall"), `Value);
-    if (enabled == nil)
-	enabled = false;
-    UI::ChangeWidget (`id ("_cwm_firewall_details"), `Enabled, enabled);
-}
-
-/**
- * Initialize the open firewall widget
- * @param widget a map describing the whole widget
- */
-void InitAdaptFirewallWidget (map<string,any> widget) {
-    if (! UI::WidgetExists (`id ("_cwm_open_firewall")))
-	return;
-    boolean() get_open_firewall = (boolean())widget["get_open_firewall"]:nil;
-    boolean open_firewall = get_open_firewall ();
-    UI::ChangeWidget (`id ("_cwm_open_firewall"), `Value, open_firewall);
-    EnableOrDisableFirewallDetails ();
-}
-
-/**
  * Update the displayed status of the service
  * @param widget a map describing the widget
  */
@@ -120,40 +76,6 @@ void UpdateServiceStatusWidget (map<string,any> widget) {
 }
 
 /**
- * Handle the immediate start and stop of the service
- * @param widget a map describing the widget
- * param event_id any the ID of the occurred event
- */
-define void HandleImmediateActions (map<string,any> widget, any event_id) {
-    if (event_id == "_cwm_start_service_now")
-    {
-	Service::Restart (widget["service_id"]:"");
-    }
-    else if (event_id == "_cwm_stop_service_now")
-    {
-	Service::Stop (widget["service_id"]:"");
-    }
-    else if (event_id == "_cwm_save_settings_now")
-    {
-	void() func = (void())widget["save_now_action"]:nil;
-	func ();
-    }
-    sleep (500);
-    UpdateServiceStatusWidget (widget);
-}
-
-/**
- * Display popup with firewall settings details
- */
-void DisplayFirewallDetailsPopup (map<string,any> widget) {
-
-    void (map<string,any>) common_details_handler = (void(map<string,any>))
-	widget["common_details_handler"]:nil;
-    if (common_details_handler != nil)
-	common_details_handler (widget);
-}
-
-/**
  * Update the widget displaying if LDAP support is active
  * @param widget a map describing the widget
  */
@@ -184,68 +106,25 @@ define void HandleLdap (map<string,any> widget, any event_id) {
 
 // public functions
 
+// automatic service start-up related functions
+
 /**
  * Init function of the widget
  * @param map widget a widget description map
  * @param key strnig the widget key
  */
-global define void Init (map<string,any> widget, string key) {
-    service_is_running
-	// service status - label
-	= widget["service_running_label"]:_("Service is running.");
-    service_is_stopped
-	// service status - label
-	= widget["service_not_running_label"]:_("Service is not running.");
-    InitAutoStartWidget (widget);
-    InitAdaptFirewallWidget (widget);
-    UpdateLdapWidget (widget);
-    last_status = nil;
-    UpdateServiceStatusWidget (widget);
-}
-
-/**
- * Handle function of the widget
- * @param map widget a widget description map
- * @param key strnig the widget key
- * @param event map event to be handled
- * @return symbol for wizard sequencer or nil
- */
-global define symbol Handle (map<string,any> widget, string key, map event) {
-    any ret = event["ID"]:nil;
-    if (ret == "_cwm_use_ldap")
+global void AutoStartInit (map<string,any> widget, string key) {
+    if (! UI::WidgetExists (`id ("_cwm_service_startup")))
     {
-	HandleLdap (widget, ret);
-	return nil;
+	y2error ("Widget _cwm_service_startup does not exist");
+	return;
     }
-    if (ret == "_cwm_start_service_now" || ret == "_cwm_stop_service_now")
-    {
-	HandleImmediateActions (widget, ret);
-	return nil;
-    }
-    if (ret == `timeout)
-    {
-	UpdateServiceStatusWidget (widget);
-	return nil;
-    }
-    if (ret == "_cwm_firewall_details")
-    {
-	symbol() handle_firewall_details
-	    = (symbol())widget["firewall_details_handler"]:nil;
-	if (handle_firewall_details != nil)
-	{
-	    return handle_firewall_details ();
-	}
-	else
-	{
-	    DisplayFirewallDetailsPopup (widget);
-	    return nil;
-	}
-    }
-    if (ret == "_cwm_open_firewall")
-    {
-	 EnableOrDisableFirewallDetails ();
-    }
-    return nil;
+    boolean() get_auto_start = (boolean())widget["get_service_auto_start"]:nil;
+    boolean auto_start = get_auto_start ();
+    UI::ChangeWidget (`id ("_cwm_service_startup"), `CurrentButton,
+	auto_start
+	    ? "_cwm_startup_auto"
+	    : "_cwm_startup_manual");
 }
 
 /**
@@ -254,45 +133,26 @@ global define symbol Handle (map<string,any> widget, string key, map event) {
  * @param key strnig the widget key
  * @param event map that caused widget data storing
  */
-global define void Store (map<string,any> widget, string key, map event) {
-    // store service startup
-    if (UI::WidgetExists (`id ("_cwm_service_startup")))
+global void AutoStartStore (map<string,any> widget, string key, map event) {
+    if (! UI::WidgetExists (`id ("_cwm_service_startup")))
     {
-	boolean auto_start
-	    = UI::QueryWidget (`id ("_cwm_service_startup"), `CurrentButton)
-		== "_cwm_startup_auto";
-	void(boolean) set_auto_start
-	    = (void(boolean))widget["set_service_auto_start"]:nil;
-	set_auto_start(auto_start);
+	y2error ("Widget _cwm_service_startup does not exist");
+	return;
     }
-    // store firewall update
-    if (UI::WidgetExists (`id ("_cwm_open_firewall")))
-    {
-	boolean open_firewall = (boolean)
-	    UI::QueryWidget (`id ("_cwm_open_firewall"), `Value);
-	void(boolean) set_open_firewall
-	    = (void(boolean))widget["set_open_firewall"]:nil;
-	set_open_firewall (open_firewall);
-    }
+    boolean auto_start
+	= UI::QueryWidget (`id ("_cwm_service_startup"), `CurrentButton)
+	    == "_cwm_startup_auto";
+    void(boolean) set_auto_start
+	= (void(boolean))widget["set_service_auto_start"]:nil;
+    set_auto_start(auto_start);
 }
 
 /**
  * Init function of the widget
  * @param key strnig the widget key
  */
-global define void InitWrapper (string key) {
-    Init (CWM::GetProcessedWidget (), key);
-}
-
-/**
- * Handle function of the widget
- * @param map widget a widget description map
- * @param key strnig the widget key
- * @param event map event to be handled
- * @return symbol for wizard sequencer or nil
- */
-global define symbol HandleWrapper (string key, map event) {
-    return Handle (CWM::GetProcessedWidget (), key, event);
+global void AutoStartInitWrapper (string key) {
+    AutoStartInit (CWM::GetProcessedWidget (), key);
 }
 
 /**
@@ -300,28 +160,43 @@ global define symbol HandleWrapper (string key, map event) {
  * @param key strnig the widget key
  * @param event map that caused widget data storing
  */
-global define void StoreWrapper (string key, map event) {
-    Store (CWM::GetProcessedWidget (), key, event);
+global void AutoStartStoreWrapper (string key, map event) {
+    AutoStartStore (CWM::GetProcessedWidget (), key, event);
 }
 
 /**
- * Remove the shortcut sign (&) from a widget label to be used in help
- * FIXME TODO Put to library of common functions
- * @param label string widget label (usually with the & sign)
- * @return string label with the & removed
+ * Get the template for the help text to the auto start widget
+ * @return string help text template with %1 and %2 placeholders
  */
-global define string RemoveShortcut (string label) {
-    while (regexpmatch (label, "^.*&.*$"))
-	label = regexpsub (label, "^(.*)&(.*)$", "\\1\\2");
-    return label;
+global string AutoStartHelpTemplate () {
+    // help text for service auto start widget
+    // %1 and %2 are button labels
+    // %1 is eg. "On -- Start Service when Booting"
+    // %2 is eg. "Off -- Start Service Manually"
+    // (both without quotes)
+    return _("<p><b><big>Booting</big></b><br>
+To start the service every time your computer is booted, set
+<b>%1</b>. Otherwise set <b>%2</b>.</p>");
 }
 
 /**
- * Get the widget description map
+ * Get the help text to the auto start widget
+ * @return string help text
+ */
+global string AutoStartHelp () {
+    return sformat (AutoStartHelpTemplate (),
+	// part of help text - radio button label, NO SHORTCUT!!!
+	_("On -- Start Service when Booting"),
+	// part of help text - radio button label, NO SHORTCUT!!!
+	_("Off -- Start Service Manually"));
+}
+
+/**
+ * Get the widget description map of the widget for service auto starting
+ * settings
  * @param settings a map of all parameters needed to create the widget properly
  * <pre>
  *
- * Automatical/manual service startup
  * - "get_service_auto_start" : boolean () -- function that returns if the
  *          service is set for automatical start-up
  * - "set_service_auto_start" : void (boolean) -- function that takes as
@@ -331,44 +206,180 @@ global define string RemoveShortcut (string label) {
  *          the service automatically when booting
  * - "start_manual_button" : string -- label of the radio button to start
  *          the service only manually
+ * - "help" : string -- custom help for the widget. If not specified, generic
+ *          help is used
  *
- * Firewall setting support
- * - "get_open_firewall" : boolean () -- function to return current status
- *          if the firewall should be opened. If not specified, check box
- *          will not be shown
- * - "set_open_firewall" : void (boolean) -- function to set if the
- *          furewall should be opened. If not specified, check box
- *          will not be shown
- * - "open_firewall_checkbox" : string -- label of the check box
- * - "firewall_details_handler" : symbol () -- function to handle the firewall
- *          details button. If returns something else than nil, dialog is
- *          exited with the returned symbol as value for wizard sequencer.
- *          If not specified, but "common_details_handler" specified,
- *          the button bevavior will be driven by "common_details_handler.
- *          If not specified, and "common_details_handler" not specified,
- *          the button will not be shown.
- * - "common_details_handler" : void (map<string,any>) -- function to
- *          run the common popup for firewall, should be always
- *          CWMFirewallInterfaces::DisplayPopup
- *          Is not used if "firewall_details_handler", requires
- *          "get_allowed_interfaces" and "set_allowed_interfaces".
- * - "get_allowed_interfaces" : list<string>() -- function that returns
- *          the current list of the opened interfaces for the service
- * - "set_allowed_interfaces" : void(list<string>) -- function that sets
- *          the list of interfaces to be opened to the service
- * - "firewall_details_button" : string -- label of the push button for
- *          changing firewall details
+ * </pre>
+ * Additional settings:
+ * - "help" : string -- help to the whole widget. If not specified, generic help
+ *          is used (button labels are patched correctly)
+ * </pre>
+ * @return map the widget description map
+ */
+global map<string,any> CreateAutoStartWidget (map<string,any> settings) {
+    string help = "";
+    string start_auto_button
+	// radio button
+	= settings["start_auto_button"]:_("O&n -- Start Service when Booting");
+    string start_manual_button
+	// radio button
+	= settings["start_manual_button"]:_("O&ff -- Start Service Manually");
+    if (haskey (settings, "help"))
+    {
+	help = settings["help"]:"";
+    }
+    else
+    {
+	help = AutoStartHelp ();
+    }
+
+    // Frame label (service starting)
+    term booting = `VBox (
+	// frame
+	`Frame (_("Booting"),
+	    `Left (`RadioButtonGroup (`id ("_cwm_service_startup"), `VBox (
+		`VSpacing (0.4),
+		`Left (`RadioButton (`id ("_cwm_startup_auto"),
+		    `opt (`notify),
+		    start_auto_button)),
+		`Left (`RadioButton (`id ("_cwm_startup_manual"),
+		    `opt (`notify),
+		    start_manual_button)),
+		`VSpacing (0.4)
+	    )))
+	)
+    );
+
+    if (! (haskey (settings, "set_service_auto_start")
+	&& haskey (settings, "get_service_auto_start")))
+    {
+	booting = `VBox ();
+	help = "";
+    }
+
+    map<string,any> ret = (map<string,any>)union (settings, $[
+	"widget" : `custom,
+	"custom_widget" : booting,
+	"help" : help,
+	"init" : AutoStartInitWrapper,
+	"store" : AutoStartStoreWrapper,
+    ]);
+
+    return ret;
+}
+
+// service status and immediate actions related functions
+
+/**
+ * Handle the immediate start and stop of the service
+ * @param widget a map describing the widget
+ * @param key strnig the widget key
+ * @param event_id any the ID of the occurred event
+ * @return always nil
+ */
+global symbol StartStopHandle (map<string,any> widget, string key, map event) {
+    any event_id = event["ID"]:nil;
+    if (event_id == "_cwm_start_service_now")
+    {
+	Service::Restart (widget["service_id"]:"");
+	sleep (500);
+    }
+    else if (event_id == "_cwm_stop_service_now")
+    {
+	Service::Stop (widget["service_id"]:"");
+	sleep (500);
+    }
+    else if (event_id == "_cwm_save_settings_now")
+    {
+	void() func = (void())widget["save_now_action"]:nil;
+	func ();
+	sleep (500);
+    }
+    UpdateServiceStatusWidget (widget);
+    return nil;
+}
+
+/**
+ * Init function of the widget
+ * @param map widget a widget description map
+ * @param key strnig the widget key
+ */
+global void StartStopInit (map<string,any> widget, string key) {
+    last_status = nil;
+    service_is_running
+	// service status - label
+	= widget["service_running_label"]:_("Service is running.");
+    service_is_stopped
+	// service status - label
+	= widget["service_not_running_label"]:_("Service is not running.");
+    UpdateServiceStatusWidget (widget);
+}
+
+/**
+ * Handle the immediate start and stop of the service
+ * @param key strnig the widget key
+ * @param event_id any the ID of the occurred event
+ * @return always nil
+ */
+global symbol StartStopHandleWrapper (string key, map event) {
+    return StartStopHandle (CWM::GetProcessedWidget (), key, event);
+}
+
+/**
+ * Init function of the widget
+ * @param key strnig the widget key
+ */
+global void StartStopInitWrapper (string key) {
+    StartStopInit (CWM::GetProcessedWidget (), key);
+}
+
+/**
+ * Get the template for the help text to the start/stop widget
+ * @param restart_displayed shold be true if "Save and restart" is displayed
+ * @return string help text template with %1 and %2 placeholders
+ */
+global string StartStopHelpTemplate (boolean restart_displayed) {
+    // help text for service status displaying and switching  widget 1/2
+    // %1 and %2 are push button labels
+    // %1 is eg. "Start the Service Now"
+    // %2 is eg. "Stop the Service Now"
+    // (both without quotes)
+    string help = _("<p><b><big>Switch On or Off</big></b><br>
+To start or stop the service immediately, use 
+<b>%1</b> or <b>%2</b>.</p>");
+    if (restart_displayed)
+    {
+	// help text for service start widget 2/2, optional
+	// %3 is push button label, eg. "Save Changes and Restart Service Now"
+	// (without quotes)
+	// note: %3 is correct, do not replace with %1!!!
+	help = help + _("<p>To save all changes and restart the
+service immediatelly, use <b>%3</b>.</p>");
+    }
+    return help;
+}
+
+/**
+ * Get the help text to the start/stop widget
+ * @param restart_displayed shold be true if "Save and restart" is displayed
+ * @return string help text
+ */
+global string StartStopHelp (boolean restart_displayed) {
+    return sformat (StartStopHelpTemplate (restart_displayed),
+	// part of help text - push button label, NO SHORTCUT!!!
+	_("Start the Service Now"),
+	// part of help text - push button label, NO SHORTCUT!!!
+	_("Stop the Service Now"),
+	// part of help text - push button label, NO SHORTCUT!!!
+	_("Save Changes and Restart Service Now"));
+}
+
+/**
+ * Get the widget description map for immediate service start/stop
+ * and appropriate actions
+ * @param settings a map of all parameters needed to create the widget properly
+ * <pre>
  *
- * LDAP support:
- * - "get_use_ldap" : boolean () -- function to return current status
- *          of the LDAP support. If not set, LDAP check-box is not shown.
- * - "set_use_ldap" : void (boolean) -- function to set the LDAP usage
- *          and report errors in case of fails. Status will be rechecked
- *          via "get_use_ldap". If not set, LDAP check-box is not shown.
- * - "use_ldap_checkbox" : string -- label of the chcek box to set if LDAP
- *          support is active.
- *
- * Immediate service start/stop:
  * - "service_id" : string -- service identifier for Service:: functions.
  *          If not specified, immediate actions buttons are not displayed.
  * - "save_now_action" : void () -- function that causes saving of all settings
@@ -384,32 +395,13 @@ global define string RemoveShortcut (string label) {
  *          service stop
  * - "save_now_button" : string -- label for the push button for immediate
  *          settings saving and service restarting
- *
- * Additional settings:
- * - "help" : string -- help to the whole widget. If not specified, generic help
+ * - "help" : string -- help to the widget. If not specified, generic help
  *          is used (button labels are patched correctly)
  * </pre>
  * @return map the widget description map
  */
-global define map<string,any> CreateWidget (map<string,any> settings) {
-    string start_auto_button
-	// radio button
-	= settings["start_auto_button"]:_("O&n -- Start Service when Booting");
-    string start_manual_button
-	// radio button
-	= settings["start_manual_button"]:_("O&ff -- Start Service Manually");
-
-    string open_firewall_checkbox
-	// check box
-	= settings["open_firewall_checkbox"]:_("Open Port in &Firewall");
-    string firewall_details_button
-	// push button
-	= settings["firewall_details_button"]:_("Firewall &Details");
-
-    string use_ldap_checkbox
-	// check box
-	= settings["use_ldap_checkbox"]:_("&LDAP Support Active");
-
+global define map<string,any> CreateStartStopWidget (map<string,any> settings) {
+    string help = "";
     string start_now_button
 	// push button for immediate service starting
 	= settings["start_now_button"]:_("&Start the Service Now");
@@ -420,63 +412,25 @@ global define map<string,any> CreateWidget (map<string,any> settings) {
 	= settings["save_now_button"]:
 	// push button for immediate saving of the settings and service starting
 	    _("S&ave Changes and Restart Service Now");
+    boolean display_save_now = haskey (settings, "save_now_action");
 
-
-    // Frame label (service starting)
-    term booting = `VBox (
-	`Frame (_("Booting"),
-	    `Left (`RadioButtonGroup (`id ("_cwm_service_startup"), `VBox (
-		`VSpacing (0.4),
-		`Left (`RadioButton (`id ("_cwm_startup_auto"),
-		    `opt (`notify),
-		    start_auto_button)),
-		`Left (`RadioButton (`id ("_cwm_startup_manual"),
-		    `opt (`notify),
-		    start_manual_button)),
-		`VSpacing (0.4)
-	    )))
-	)
-    );
-
-    term firewall_settings = `CheckBox (`id ("_cwm_open_firewall"),
-	`opt (`notify),
-	open_firewall_checkbox);
-    boolean display_firewall_details
-	= haskey (settings, "firewall_details_handler")
-	    || (haskey (settings, "common_details_handler")
-		&& haskey (settings, "get_allowed_interfaces")
-		&& haskey (settings, "set_allowed_interfaces"));
-    if (display_firewall_details)
+    if (haskey (settings, "help"))
     {
-	firewall_settings = `Left (`HBox (
-	    firewall_settings,
-	    `HSpacing (2),
-	    `PushButton (`id ("_cwm_firewall_details"),
-		firewall_details_button)
-	));
+	help = settings["help"]:"";
     }
-    firewall_settings = `VBox (
-	`VSpacing (1),
-	firewall_settings
-    );
-
-    // check box
-    term ldap_settings = `VBox (
-	`VSpacing (1),
-	`Left (`CheckBox (`id ("_cwm_use_ldap"),
-	    `opt (`notify),
-	    use_ldap_checkbox))
-    );
+    else
+    {
+	help = StartStopHelp (display_save_now);
+    }
 
     term save_now_button_term =
-	haskey (settings, "save_now_action")
+	display_save_now
 	    ? `PushButton (`id ("_cwm_save_settings_now"),
 		`opt (`hstretch),
 		save_now_button)
 	    : `VBox ();
 
     term immediate_actions = `VBox (
-	`VSpacing (1),
 	// Frame label (stoping starting service)
 	`Frame ( _("Switch On and Off"),
 	    `Left (`HSquash (`VBox (
@@ -497,100 +451,155 @@ global define map<string,any> CreateWidget (map<string,any> settings) {
 	)
     );
 
+    if (! haskey (settings, "service_id"))
+    {
+	immediate_actions = `VBox ();
+	help = "";
+    }
+
+    map<string,any> ret = (map<string,any>)union (settings, $[
+	"widget" : `custom,
+	"custom_widget" : immediate_actions,
+	"help" : help,
+	"init" : StartStopInitWrapper,
+	"handle" : StartStopHandleWrapper,
+	"handle_events" : [ `timeout, "_cwm_start_service_now",
+	    "_cwm_stop_service_now", "_cwm_save_settings_now" ],
+    ]);
+
+    if (haskey (settings, "service_id"))
+	ret["ui_timeout"] = 5000;
+    return ret;
+}
+
+// ldap enablement widget
+
+/**
+ * Init function of the widget
+ * @param map widget a widget description map
+ * @param key strnig the widget key
+ */
+global define void LdapInit (map<string,any> widget, string key) {
+    UpdateLdapWidget (widget);
+}
+
+/**
+ * Handle function of the widget
+ * @param map widget a widget description map
+ * @param key strnig the widget key
+ * @param event map event to be handled
+ * @return symbol for wizard sequencer or nil
+ */
+global symbol LdapHandle (map<string,any> widget, string key, map event) {
+    any ret = event["ID"]:nil;
+    if (ret == "_cwm_use_ldap")
+    {
+	HandleLdap (widget, ret);
+	return nil;
+    }
+    return nil;
+}
+
+
+/**
+ * Init function of the widget
+ * @param key strnig the widget key
+ */
+global define void LdapInitWrapper (string key) {
+    LdapInit (CWM::GetProcessedWidget (), key);
+}
+
+/**
+ * Handle function of the widget
+ * @param map widget a widget description map
+ * @param key strnig the widget key
+ * @param event map event to be handled
+ * @return symbol for wizard sequencer or nil
+ */
+global define symbol LdapHandleWrapper (string key, map event) {
+    return LdapHandle (CWM::GetProcessedWidget (), key, event);
+}
+
+/**
+ * Get the template for the help text to the LDAP enablement widget
+ * @return string help text template with %1 and %2 placeholders
+ */
+global string EnableLdapHelpTemplate () {
+    // help text for LDAP enablement widget
+    // %1 is button label, eg. "LDAP Support Active" (without quotes)
+    return _("<p><b><big>LDAP Support</big></b><br>
+To store the settings in LDAP instead of native configuration files,
+set <b>%1</b>.</p>");
+}
+
+/**
+ * Get the help text to the LDAP enablement widget
+ * @return string help text
+ */
+global string EnableLdapHelp () {
+    return sformat (EnableLdapHelpTemplate (),
+	// part of help text - check box label, NO SHORTCUT!!!
+	_("LDAP Support Active"));
+}
+
+/**
+ * Get the widget description map of the LDAP enablement widget
+ * TODO: Find a file to move to
+ * @param settings a map of all parameters needed to create the widget properly
+ * <pre>
+ *
+ * LDAP support:
+ * - "get_use_ldap" : boolean () -- function to return current status
+ *          of the LDAP support. If not set, LDAP check-box is not shown.
+ * - "set_use_ldap" : void (boolean) -- function to set the LDAP usage
+ *          and report errors in case of fails. Status will be rechecked
+ *          via "get_use_ldap". If not set, LDAP check-box is not shown.
+ * - "use_ldap_checkbox" : string -- label of the chcek box to set if LDAP
+ *          support is active.
+ * - "help" : string -- help to the widget. If not specified, generic help
+ *          is used (button labels are patched correctly)
+ * </pre>
+ * @return map the widget description map
+ */
+global map<string,any> CreateLdapWidget (map<string,any> settings) {
     string help = "";
-
-    if (! (haskey (settings, "set_service_auto_start")
-	&& haskey (settings, "get_service_auto_start")))
+    string use_ldap_checkbox
+	// check box
+	= settings["use_ldap_checkbox"]:_("&LDAP Support Active");
+    if (haskey (settings, "help"))
     {
-	booting = `VBox ();
+	help = settings["help"]:"";
     }
     else
     {
-	// help text for service start widget 1/4
-	// %1 and %2 are button labels
-	help = help + sformat (_("<p><b><big>Booting</big></b><br>
-To start the service every time your computer is booted, set
-<b>%1</b>. Otherwise set <b>%2</b>.</p>"),
-	    RemoveShortcut (start_auto_button),
-	    RemoveShortcut (start_manual_button));
+	help = EnableLdapHelp ();
     }
 
-    if (! (haskey (settings, "get_open_firewall")
-	&& haskey (settings, "set_open_firewall")))
-    {
-	firewall_settings = `VBox ();
-    }
-    else
-    {
-	help = help + sformat (_("<p><b><big>Firewall Settings</big></b><br>
-To open the firewall to allow access the service from remote computers,
-set <b>%1</b>."),
-	    RemoveShortcut (open_firewall_checkbox));
-	if (display_firewall_details)
-	{
-	    help = help + sformat (_("<br>To tune the firewall settings,
-click <b>%1</b>."),
-		RemoveShortcut (firewall_details_button));
-	}
-	help = help + "</p>";
-    }
+    // check box
+    term ldap_settings = `VBox (
+	`VSpacing (1),
+	`Left (`CheckBox (`id ("_cwm_use_ldap"),
+	    `opt (`notify),
+	    use_ldap_checkbox))
+    );
 
     if (! (haskey (settings, "get_use_ldap")
 	&& haskey (settings, "set_use_ldap")
 	&& ProductFeatures::ui_mode != "simple"))
     {
 	ldap_settings = `VBox ();
-    }
-    else
-    {
-	// help text for service start widget 2/4, optional
-	// %1 is button label
-	help = help + sformat (_("<p><b><big>LDAP Support</big></b><br>
-To store the settings in LDAP instead of native configuration files,
-set <b>%1</b>.</p>"),
-	    RemoveShortcut (use_ldap_checkbox));
-    }
-    if (! haskey (settings, "service_id"))
-    {
-	immediate_actions = `VBox ();
-    }
-    else
-    {
-	// help text for service start widget 3/4, optional
-	// %1 and %2 are button labels
-	help = help + sformat (_("<p><b><big>Switch On or Off</big></b><br>
-To start or stop the service immediately, use 
-<b>%1</b> or <b>%2</b>.</p>"),
-	    RemoveShortcut (start_now_button),
-	    RemoveShortcut (stop_now_button));
-	if (haskey (settings, "save_now_action"))
-	{
-	// help text for service start widget 4/4, optional
-	// %1 is button label
-	    help = help + sformat (_("<p>To save all changes and restart the
-service immediatelly, use <b>%1</b>.</p>"),
-		RemoveShortcut (save_now_button));
-	}
+	help = "";
     }
 
-    term widget = `VBox (
-	booting,
-	firewall_settings,
-	ldap_settings,
-	immediate_actions
-    );
-
-    map<string,any> ret = (map<string,any>)union ($[
+    map<string,any> ret = (map<string,any>)union (settings, $[
 	"widget" : `custom,
-	"custom_widget" : widget,
+	"custom_widget" : ldap_settings,
 	"help" : help,
-	"init" : InitWrapper,
-	"store" : StoreWrapper,
-	"handle" : HandleWrapper,
-    ], settings);
+	"init" : LdapInitWrapper,
+	"handle" : LdapHandleWrapper,
+	"handle_events" : [ "_cwm_use_ldap" ],
+    ]);
 
-    if (haskey (settings, "service_id"))
-	ret["ui_timeout"] = 5000;
     return ret;
 }
 
