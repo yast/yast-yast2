@@ -87,7 +87,7 @@ while true ; do
 		--) shift ; break ;;
 		*) echo "Unrecognized option $1" ; exit 1 ;;
 
-	        # IMPORTANT: Remember to change that "getopt" call above, too 
+	        # IMPORTANT: Remember to change that "getopt" call above, too
 	        # if you change anything here!
 	esac
 done
@@ -139,13 +139,23 @@ else
 	$ybindir/y2controlcenter $Y2QT_ARGS "$@"
     else
 
-	# Special case: "sw_single" needs a lot of screen space - 
+	# Special case: "sw_single" needs a lot of screen space -
 	# always start it in full screen mode.
-	if [ $module == "sw_single" ] ; then
-	    case "$Y2QT_ARGS" in
-		*fullscreen*) ;;
-		*) Y2QT_ARGS="$Y2QT_ARGS --fullscreen" ;;
-	    esac
+	#
+	# This works well with KDE, but other WMs tend to be too broken for that,
+	# so enable this only for KDE.
+	#
+
+	if [ ${WINDOWMANAGER##*/} == "kde" ]; then
+  	    # ${WINDOWMANAGER##*/} deletes the longest shell wildcard pattern
+	    # matching "*/", leaving only the last path name component.
+
+	    if [ $module == "sw_single" ] ; then
+	        case "$Y2QT_ARGS" in
+	    	*fullscreen*) ;;
+	    	*) Y2QT_ARGS="$Y2QT_ARGS --fullscreen" ;;
+	        esac
+	    fi
 	fi
 
 	set -- $(for x in "$@"; do echo "(\"$x\")"; done) # surround args by ("...")

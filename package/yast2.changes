@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar  7 14:20:31 CET 2003 - sh@suse.de
+
+- Fixed bug #24809: sw_single window outside screen
+  Now only using --fullscreen for sw_single with KDE running 
+
+-------------------------------------------------------------------
 Fri Mar  7 13:39:03 CET 2003 - sh@suse.de
 
 - Fixed bug #24790 - Wrong Qt style in y2cc modules after inst.
