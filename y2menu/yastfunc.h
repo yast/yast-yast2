@@ -115,6 +115,7 @@ extern const char *backtitle;
  * Function prototypes
  */
 void attr_clear (WINDOW * win, int height, int width, chtype attr);
+int yast_help(WINDOW *);
 void yast_clear (void);
 void yast_init ();
 void yast_end ();

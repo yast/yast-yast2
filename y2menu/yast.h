@@ -1,5 +1,8 @@
 
 #ifndef _YAST_h
+#include <string>
+#include <vector>
+
 #define _YAST_h
 
 #define YAST_TITLE "yast @ "
@@ -21,12 +24,13 @@
 #define BUTTON_OK 0
 #define BUTTON_CANCEL 2
 
-#define NAV_INIT -255
-#define NAV_RESET -254
-
+#define NAV_INIT 10000
+#define NAV_RESET 10001 
+#define DEHIGHLIGHT 10002 
+#define HIGHLIGHT 10003
 extern int yast_mod_auto;	/* auto-open for moduleframe */
 extern int yast_grp_all;
 extern int yast_dyn_mod;
 extern int yast_quit_grp;
-
+ extern std::vector<std::string> helptext;
 #endif

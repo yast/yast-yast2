@@ -104,7 +104,6 @@ void getgroup ()
 	{
 	    if (!strncmp (tmpstr, "Name", 4))
 	    {
-		/* FIXME: we should read the Textdomain field */
 		set_textdomain ("base");
 		group.textstr = string (_(cut_str (tmpstr).c_str ()));
 	    }
