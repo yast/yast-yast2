@@ -71,6 +71,7 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 @ybindir@/*
 @agentdir@/ag_*
 @ydatadir@/y2menu-color
+@yncludedir@/readconfig.ycp
 
 %doc @docdir@/*.*
 %doc @docdir@/pot

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jan 24 15:56:26 CET 2003 - mvidner@suse.de
+
+- Added readconfig.ycp to the file list. Fixes autoyast.
+
+-------------------------------------------------------------------
 Fri Jan 17 12:28:21 CET 2003 - mvidner@suse.de
 
 - Reverted sequencer checking: allow superfluous aliases.
