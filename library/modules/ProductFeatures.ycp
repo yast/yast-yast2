@@ -151,13 +151,21 @@
     global string io_scheduler = "as";
 
 
+    /**
+     * UI mode
+     */
+    global string ui_mode = "expert";
+
+
 
     /**
      * Save product features
      */
-    global void Save() {
+    global void Save()
+    {
         SCR::Write(.product.features.USE_DESKTOP_SCHEDULER,
                 (use_desktop_scheduler) ? "yes" : "no" );
+        SCR::Write(.product.features.UI_MODE, ui_mode );
         SCR::Write(.product.features.IO_SCHEDULER,
 		io_scheduler);
         SCR::Write(.product.features.ENABLE_AUTOLOGIN,
@@ -173,11 +181,14 @@
     /**
      * Restore product features in running system
      */
-    global void Restore() {
+    global void Restore()
+    {
         use_desktop_scheduler = Misc::SysconfigRead(
                 .product.features.USE_DESKTOP_SCHEDULER, "yes" ) == "yes";
 	io_scheduler = Misc::SysconfigRead(
 		.product.features.IO_SCHEDULER, "as");
+	ui_mode = Misc::SysconfigRead(
+		.product.features.UI_MODE, "expert");
         enable_autologin = Misc::SysconfigRead(
                 .product.features.ENABLE_AUTOLOGIN, "yes") == "yes";
         evms_config = Misc::SysconfigRead(
