@@ -14,6 +14,8 @@
 {
     module "Mode";
 
+    import "Arch";
+
     /**
      * we're doing a fresh installation
      */
