@@ -23,6 +23,7 @@ Summary:	Main YaST2 package
 @HEADER-DEVEL@
 Provides:	yast2-lib-sequencer-devel
 Obsoletes:	yast2-lib-sequencer-devel
+Requires:	yast2-core-devel
 
 Summary:	Documentation for Wizard and Sequencer
 
