@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb  6 17:01:26 CET 2003 - sh@suse.de
+
+- New command line options for "yast2" script: --fullscreen --noborder
+- Always start "sw_single" in full screen mode
+
+-------------------------------------------------------------------
 Wed Feb 05 17:10:45 CET 2003 - arvin@suse.de
 
 - merged proofread messages
