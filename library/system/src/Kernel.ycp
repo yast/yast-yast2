@@ -25,9 +25,14 @@
     textdomain "base";
 
     /**
-     * @return	switched	if the kernel was switches during
+     * @return	switched	If the kernel was switches during
      *				installation (e.g. from k_deftl to k_smp)
-     *				(Determines hard boot vs. warm boot)
+     *				(Determines hard boot vs. warm boot).
+     *
+     *				nonsense: We always do a hard reboot since
+     *				ages during installation. The variables is
+     *				used in sw_single and inst_suseconfig.
+     *				FIXME: That must be cleaned up!
      */
     global boolean switched = false;
 
@@ -178,12 +183,15 @@
      */
     global define void ProbeKernel ()
     ``{
-	kernel_packages = ["k_deflt"];
-
-	if (Arch::has_smp)
+	if (!Arch::has_smp)
 	{
-	    y2milestone ("Kernel switch: SMP board !");
-	    kernel_packages = ["k_smp"];
+	    y2milestone ("ProbeKernel: non SMP board");
+	    kernel_packages = ["kernel-default"];
+	}
+	else
+	{
+	    y2milestone ("ProbeKernel: SMP board");
+	    kernel_packages = ["kernel-smp"];
 	    switched = true;
 	}
 
@@ -207,57 +215,34 @@
 		    || !contains (cpuflags, "pae"))
 		{
 		    y2milestone ("Kernel switch: SMP, mem <= 4GB or no PAE support !");
-		    kernel_packages = ["k_smp4G"];
+		    kernel_packages = ["kernel-bigsmp"];
 		    switched = true;
 		}
 	    }
 	    else if (memsize > fourGB)				// > 4GB
 	    {
 		y2milestone ("Kernel switch: SMP, mem > 4GB");
-		kernel_packages = ["k_smp"];
+		kernel_packages = ["kernel-smp"];
 		switched = true;
-	    }
-	    else
-	    {
-		// non-smp
-
-		// read cpu specific information (for first cpu only)
-		map cpu = (map) select ((list) SCR::Read (.probe.cpu), 0, $[]);
-		integer cpu_family = cpu["family"]:0;
-
-		if ((cpu["vendor"]:"" == "AuthenticAMD")
-		    && (cpu_family >= 6))
-		{
-		    y2milestone ("Kernel switch: Athlon !");
-		    kernel_packages = ["k_athlon"];
-		    switched = true;
-		}
 	    }
 	}
-	else if (Arch::alpha
-		 && !Arch::has_smp)
+
+	else if (Arch::alpha)
 	{
-	    if (Mode::serial_console)
+	    if (!Arch::has_smp && Mode::serial_console)
 	    {
-		kernel_packages = ["k_serial"];
+		kernel_packages = ["kernel-serial"];
 		switched = true;
 	    }
-
-// I comment this condition cause this is unique occurence of this variable over all sources
-/*	    if (tga_controller_found)
-	    {
-		kernel_packages = ["k_tga"];
-		switched = true;
-	    }*/
 	}
 	else if (Arch::ppc)
 	{
 	    binary = "vmlinux";
 	    switched = false;
-	    if (Arch::board_mac_new
-		|| Arch::board_mac_old)
+
+	    if (Arch::board_mac_new || Arch::board_mac_old)
 	    {
-		kernel_packages = ["k_deflt"];
+		kernel_packages = ["kernel-default"];
 	    }
 
 	    if (Arch::board_mac_nubus)
@@ -277,8 +262,7 @@
 		    chrp_cpu = tolower (chrp_cpu);
 		});
 
-		if (issubstring (chrp_cpu, "power3")
-		    && Arch::ppc32)
+		if (issubstring (chrp_cpu, "power3") && Arch::ppc32)
 		{
 		    kernel_packages = ["kernel-power3"];
 		    binary = "vmlinux-power3";
@@ -290,7 +274,7 @@
 		}
 		else
 		{
-		    kernel_packages = ["k_deflt"];
+		    kernel_packages = ["kernel-default"];
 		}
 	    }
 	    else if (Arch::board_iseries)
@@ -300,44 +284,23 @@
 	    }
 	    else if (Arch::board_prep)
 	    {
-		kernel_packages = ["k_deflt"];
+		kernel_packages = ["kernel-default"];
 		binary = "zImage.prep";
-	    }
-	}
-	else if (Arch::sparc64)
-	{
-	    if (Arch::has_smp)
-	    {
-		kernel_packages = ["k_smp"];
-		switched = true;
-	    }
-	    else
-	    {
-		kernel_packages = ["k_deflt"];
 	    }
 	}
 	else if (Arch::ia64)
 	{
-	    list<map> cpuProbe = (list<map>) SCR::Read (.probe.cpu);
-	    string model = cpuProbe[0,"model"]:"Itanium";
-	    if (issubstring(model, "Itanium 2"))
-	    {
-		if (Arch::has_smp)
-		    kernel_packages = ["k_itanium2-smp"];
-		else
-		    kernel_packages = ["k_itanium2"];
-		switched = true;
-	    }
+	    kernel_packages = ["kernel-default"];
+	    switched = true;
 	}
 	else if (Arch::s390)
 	{
 	    binary = "none";				// not required on S390
-	    kernel_packages = ["k_deflt"];
-	    switched = true;				// force reboot
+	    kernel_packages = ["kernel-default"];
+	    switched = true;
 	}
 
-	y2milestone("Kernel determined: %1", kernel_packages);
-	return;
+	y2milestone("ProbeKernel determined: %1", kernel_packages);
 
     }  // ProbeKernel ()
 
@@ -354,6 +317,8 @@
     /**
      * IDERecorders ()
      * @param	list<string>	list of ide cdrecorders (i.e. ["hdc", "hdd"])
+     *
+     * FIXME, obsolete with kernel 2.6?
      */
     global define void IDERecorders (list<string> idecdrws)
     ``{
@@ -373,8 +338,8 @@
 	    });
 	    y2milestone ("new boot_parameters '%1'", cmdLine);
 
-	    switched = true;	// must do a hard reboot !
-	}
+	    switched = true;    // must do a hard reboot !
+      	}
 	return;
     };
 
