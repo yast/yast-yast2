@@ -10,7 +10,7 @@
 {
 
 textdomain "base";
-include "ui/common_messages.ycp";
+import "Label";
 
 y2milestone("----------------------------------------");
 y2milestone("Remote installation module started");
@@ -35,7 +35,7 @@ term contents = `HBox(`HSpacing(1), `VBox(
 	/* PushButton label */
 	`PushButton(`id(`next), `opt(`default), _("&Launch")),
 	`HStretch(),
-	`PushButton(`id(`cancel), CancelButtonLabel())
+	`PushButton(`id(`cancel), Label::CancelButton())
     )
 ), `HSpacing(1));
 
@@ -69,7 +69,6 @@ if(ret == `next) {
     string modulename = "serial(115200):" + device;
     y2debug("modulename=%1", modulename);
     WFM::CallModule(modulename, []);
-    // WFM::CallModule(modulename, []);
 }
 
 y2milestone("Remote installation module finished");

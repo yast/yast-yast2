@@ -17,6 +17,7 @@ textdomain "base";
 
 import "CommandLine";
 import "Progress";
+import "Report";
 
 global define any RunFunction( term funct ) ``{
     Report::ClearAll();
@@ -34,7 +35,7 @@ global define any RunFunction( term funct ) ``{
  *
  * @param commandline	a map used in the CommandLine module with information
  *                      about the handlers for GUI and commands.
- * @return boolean 	true if the changes should be written, false
+ * @return boolean	true if the changes should be written, false
  *                      if there was an error or no changes to be written (for example "help").
  */
 global define boolean CommandLineRun( map commandline ) ``{
@@ -46,10 +47,10 @@ global define boolean CommandLineRun( map commandline ) ``{
     if(!CommandLine::Init(commandline, WFM::Args())) {
 	return ! CommandLine::Aborted();
     }
-    
+
     boolean ret = true;
     boolean verbose = true;
-    
+
     /* Start GUI */
     if(CommandLine::StartGUI()) {
 	term exec = commandline[ "guihandler" ]: nil;
@@ -63,15 +64,15 @@ global define boolean CommandLineRun( map commandline ) ``{
 	return ret;
     } else {
 	// disable Reports, we handle them on our own
-	Report::Import( $[ 
-	    "messages"	:$[ "show":false ], 
+	Report::Import( $[
+	    "messages"	:$[ "show":false ],
 	    "warnings"	:$[ "show":false ],
 	    "errors"	:$[ "show":false ]
 	]);
-	
-    
+
+
 	/* non-GUI handling */
-	
+
 	verbose = !contains( Args(), "quiet" );
 
 	if( verbose )
@@ -80,7 +81,7 @@ global define boolean CommandLineRun( map commandline ) ``{
 	/* Turn off progress bar if not GUI */
 	Progress::off();
 
-    
+
 	/* Start initialization */
 	if( commandline["initialize"]:nil != nil ) {
 	    boolean ret = RunFunction( commandline["initialize"]:nil );
@@ -92,7 +93,7 @@ global define boolean CommandLineRun( map commandline ) ``{
 
 	if( verbose )
 	    CommandLine::Print( _("Ready") );
-    
+
 	ret = true;
 
 	/* Init variables */
@@ -101,15 +102,15 @@ global define boolean CommandLineRun( map commandline ) ``{
 	map options = $[];
         string exit = "";
         list l = [];
-    
+
 	while(!CommandLine::Done()) {
 	    map m = CommandLine::Command();
             command = m["command"]:"exit";
-    	    options = m["options"]:$[];
-    	
+	    options = m["options"]:$[];
+
 	    term exec = commandline["actions", command, "handler" ]: nil;
-	
-    	    // there is a handler, execute the action
+
+	    // there is a handler, execute the action
 	    if( exec != nil ) {
 		exec = add( exec, options );
 		any res = RunFunction( exec );
@@ -117,8 +118,8 @@ global define boolean CommandLineRun( map commandline ) ``{
 		// if it is not interactive, abort on errors
 		if( !CommandLine::Interactive() && is( res, boolean ) && res == false )
 		    CommandLine::Abort();
-	    } 
-	    else 
+	    }
+	    else
 	    {
 		if( !CommandLine::Done() ) {
 		    y2error("Unknown command '%1' from CommandLine", command );
@@ -126,10 +127,10 @@ global define boolean CommandLineRun( map commandline ) ``{
 		}
 	    }
 	}
-	
+
 	ret = ! CommandLine::Aborted();
     }
-    
+
     if( ret && commandline["finish"]:nil != nil ) {
 	if( verbose )
 	    CommandLine::Print( _("Finishing") );
@@ -146,8 +147,9 @@ global define boolean CommandLineRun( map commandline ) ``{
 
     y2milestone("Commandline interface finished");
     y2milestone("----------------------------------------");
-    
+
     return ret;
 }
 
+/* EOF */
 }

@@ -10,8 +10,7 @@
 {
 
 textdomain "base";
-
-include "ui/common_messages.ycp";
+import "Label";
 
 string host = "localhost";
 string user = "";
@@ -59,7 +58,7 @@ global define symbol ChooseDialog() ``{
 		/* PushButton label */
 		`PushButton(`id(`next), `opt(`default), _("&Launch")),
 		`HStretch(),
-		`PushButton(`id(`cancel), CancelButtonLabel())
+		`PushButton(`id(`cancel), Label::CancelButton())
 	    )
 	)
     ));
