@@ -74,6 +74,7 @@ TEST(``(String::CutZeros("0")), [], nil);
 TEST(``(String::CutZeros("00")), [], nil);
 
 DUMP("String::Pad");
+TEST(``(mergestring(["\"", String::Pad(nil, 2),"\""],"")), [], nil);
 TEST(``(mergestring(["\"", String::Pad("", 2),"\""],"")), [], nil);
 TEST(``(mergestring(["\"", String::Pad("a", 2),"\""],"")), [], nil);
 TEST(``(mergestring(["\"", String::Pad("ab", 2),"\""],"")), [], nil);
@@ -81,6 +82,15 @@ TEST(``(mergestring(["\"", String::Pad("abc", 2),"\""],"")), [], nil);
 TEST(``(mergestring(["\"", String::Pad("a", -1),"\""],"")), [], nil);
 TEST(``(mergestring(["\"", String::Pad("", 0),"\""],"")), [], nil);
 TEST(``(mergestring(["\"", String::Pad("a", 0),"\""],"")), [], nil);
+
+DUMP("String::PadZeros");
+TEST(``(String::PadZeros(nil, 4)), [], nil);
+TEST(``(String::PadZeros("", 4)), [], nil);
+TEST(``(String::PadZeros("1", 4)), [], nil);
+TEST(``(String::PadZeros("12", 4)), [], nil);
+TEST(``(String::PadZeros("123", 4)), [], nil);
+TEST(``(String::PadZeros("1234", 4)), [], nil);
+TEST(``(String::PadZeros("12345", 4)), [], nil);
 
 DUMP("String::ParseOptions");
 TEST(``(String::ParseOptions("a=3	b=2", $[])), [], nil);

@@ -100,18 +100,18 @@ global define string Summary() ``{
 						    _("Yes") : _("No")));
     summary = Summary::CloseList(summary);
     /*
-    summary = Summary::AddHeader(summary, _("Yes/No Messages (Critical Messages)"));
+    summary = Summary::AddHeader(summary, _("Yes or No Messages (Critical Messages)"));
     summary = Summary::OpenList(summary);
     // Report configuration - will be error messages displayed?
     // '%1' will be replaced by translated string "Yes" or "No"
-    summary = Summary::AddListItem(summary, sformat(_("Display Yes/No Messages: %1"), (display_yesno_messages) ?
+    summary = Summary::AddListItem(summary, sformat(_("Display Yes or No Messages: %1"), (display_yesno_messages) ?
 						    _("Yes") : _("No")));
     // Report configuration - will have error messages timeout?
     // '%1' will be replaced by number of seconds
-    summary = Summary::AddListItem(summary, sformat(_("Time-out Yes/No Messages: %1"), timeout_yesno_messages));
+    summary = Summary::AddListItem(summary, sformat(_("Time-out Yes or No Messages: %1"), timeout_yesno_messages));
     // Report configuration - will be error messages logged to file?
     // '%1' will be replaced by translated string "Yes" or "No"
-    summary = Summary::AddListItem(summary, sformat(_("Log Yes/No Messages: %1"), (log_yesno_messages) ?
+    summary = Summary::AddListItem(summary, sformat(_("Log Yes or No Messages: %1"), (log_yesno_messages) ?
 						    _("Yes") : _("No")));
     summary = Summary::CloseList(summary);
     */
@@ -136,19 +136,19 @@ global define boolean Import(map settings) ``{
     display_errors =  error_settings["show"]:true;
     display_warnings = warning_settings["show"]:true;
     display_messages = message_settings["show"]:true;
-    display_yesno_messages = message_settings["show"]:true;
+    display_yesno_messages = yesno_message_settings["show"]:true;
 
     // timeouts
     timeout_errors = error_settings ["timeout"]:0;
     timeout_warnings = warning_settings["timeout"]:0;
     timeout_messages = message_settings["timeout"]:0;
-    timeout_yesno_messages = message_settings["timeout"]:0;
+    timeout_yesno_messages = yesno_message_settings["timeout"]:0;
 
     // logging flags
     log_errors = error_settings["log"]:true;
     log_warnings = warning_settings ["log"]:true;
     log_messages = message_settings["log"]:true;
-    log_yesno_messages = message_settings["log"]:true;
+    log_yesno_messages = yesno_message_settings["log"]:true;
 
     return true;
 }
@@ -314,6 +314,32 @@ global define void Message(string message_string) ``{
     messages = add(messages, message_string);
 }
 
+/**
+ * Store new message text
+ * @param message_string message text, it can contain new line characters ("\n")
+ * @return void
+ */
+global define void ShowText(string headline_string, string message_string) ``{
+    if (display_errors)
+    {
+	if (timeout_errors > 0)
+	{
+	    Popup::ShowTextTimed(headline_string, message_string,
+                    timeout_errors);
+	}
+	else
+	{
+	    Popup::ShowText(headline_string, message_string);
+	}
+    }
+
+    if (log_errors)
+    {
+	y2milestone(1, "%1", message_string);
+    }
+
+    errors = add(errors, message_string);
+}
 
 /**
  * Store new warning text

@@ -1,12 +1,115 @@
 -------------------------------------------------------------------
+Wed Jun 16 10:36:53 CEST 2004 - msvec@suse.cz
+
+- fixed 'yast2 -l' output (#42087)
+- 2.9.75
+
+-------------------------------------------------------------------
+Fri Jun 11 01:01:14 CEST 2004 - nashif@suse.de
+
+- Added software-proposal variable to product features
+
+-------------------------------------------------------------------
+Tue Jun  8 04:35:25 CEST 2004 - nashif@suse.de
+
+- Fixed bug #41696: yast uses elevator=anticipatory instead of
+  elevator=as
+- URL with empty host is valid (i.e. file:///test.xml )
+
+-------------------------------------------------------------------
+Fri May 28 16:48:12 CEST 2004 - sh@suse.de
+
+- Fixed bug #41305: License agreement after abort in NCurses
+
+-------------------------------------------------------------------
+Wed May 26 15:12:17 CEST 2004 - mvidner@suse.cz
+
+- Fixed agent definition for /etc/sysconfig/hardware
+  to handle multiline values (#39350).
+- 2.9.72
+
+-------------------------------------------------------------------
+Tue May 25 18:27:15 CEST 2004 - arvin@suse.de
+
+- install kernel-bigsmp even with a bit less than 4GB of RAM
+  (bug #40729)
+
+-------------------------------------------------------------------
+Tue May 25 13:48:01 CEST 2004 - jsrain@suse.cz
+
+- set the I/O scheduler in ProductFeatures (#41038)
+- 2.9.70
+
+-------------------------------------------------------------------
+Wed May 19 03:30:13 CEST 2004 - nashif@suse.de
+
+- Added a timeout for ShowText popup when called via
+  Report. (Report::ShowText)
+
+-------------------------------------------------------------------
+Mon May 17 10:42:57 CEST 2004 - msvec@suse.cz
+
+- added PadZero general function for padding with zeros
+
+-------------------------------------------------------------------
+Wed May 12 15:30:47 CEST 2004 - msvec@suse.cz
+
+- improved ncurses menu responsiveness (#38363)
+- 2.9.68
+
+-------------------------------------------------------------------
+Wed May  5 16:20:30 CEST 2004 - gs@suse.de
+
+- yast2 start script: check whether the terminal supports UTF-8
+  and adapt language settings (bug #39606)
+- 2.9.67
+
+-------------------------------------------------------------------
+Tue May 04 10:12:45 CEST 2004 - arvin@suse.de
+
+- merged proofread messages
+
+-------------------------------------------------------------------
+Fri Apr 23 15:58:47 CEST 2004 - mvidner@suse.cz
+
+- do not copy network aliases from install.inf
+  to modprobe.conf (#39135)
+- 2.9.65
+
+-------------------------------------------------------------------
+Thu Apr 22 11:09:32 CEST 2004 - arvin@suse.de
+
+- run unicode_{start,stop} only if they are present (bug #35714)
+
+-------------------------------------------------------------------
 Mon Apr 19 13:05:04 CEST 2004 - arvin@suse.de
 
 - merged proofread messages
 
 -------------------------------------------------------------------
+Fri Apr 16 18:11:07 CEST 2004 - nashif@suse.de
+
+- Save runtime product variables
+
+-------------------------------------------------------------------
 Thu Apr  8 13:56:41 CEST 2004 - jsrain@suse.cz
 
 - use the 'desktop' kernel parameter only for desktop products
+
+-------------------------------------------------------------------
+Wed Apr  7 19:25:31 CEST 2004 - nashif@suse.de
+
+- #38596: Also use saved id
+
+-------------------------------------------------------------------
+Wed Apr  7 18:21:39 CEST 2004 - nashif@suse.de
+
+- Workaround for #38596, broken recursion for iterators
+
+-------------------------------------------------------------------
+Tue Apr  6 18:53:56 CEST 2004 - nashif@suse.de
+
+- update/upgrade defaults added to product feature set (#38486)
 
 -------------------------------------------------------------------
 Mon Apr  5 18:00:23 CEST 2004 - nashif@suse.de

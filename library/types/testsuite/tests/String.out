@@ -62,12 +62,21 @@ Return	0
 Return	0
 Dump	String::Pad
 Return	"  "
+Return	"  "
 Return	"a "
 Return	"ab"
 Return	"abc"
 Return	"a"
 Return	""
 Return	"a"
+Dump	String::PadZeros
+Return	0000
+Return	0000
+Return	0001
+Return	0012
+Return	0123
+Return	1234
+Return	12345
 Dump	String::ParseOptions
 Return	["a=3", "b=2"]
 Return	["a=3", "b=2"]

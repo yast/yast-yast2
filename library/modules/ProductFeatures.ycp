@@ -11,6 +11,9 @@
     module "ProductFeatures";
     textdomain "base";
 
+    import "Misc";
+    import "Mode";
+
     /*********************************************************************
       *   Those are variables from the content file, we can override them
       *   in the control file
@@ -78,6 +81,17 @@
     global boolean inform_about_suboptimal_distribution = false;
 
 
+
+    // Only an update, NOT an upgrade
+    global boolean onlyUpdateSelected = false;
+
+
+    // How is the software proposal handled? What is it based on?
+    // Possible values are: desktop|selection
+    // Default is "selection"
+
+    global string software_proposal = "selection";
+
     /*********************************************************************
       *   Partitioning
      *********************************************************************/
@@ -131,6 +145,45 @@
      */
     global boolean use_desktop_scheduler = true;
 
+    /**
+     * The I/O scheduler selection
+     */
+    global string io_scheduler = "as";
+
+
+
+    /**
+     * Save product features
+     */
+    global void Save() {
+        SCR::Write(.product.features.USE_DESKTOP_SCHEDULER,
+                (use_desktop_scheduler) ? "yes" : "no" );
+        SCR::Write(.product.features.IO_SCHEDULER,
+		io_scheduler);
+        SCR::Write(.product.features.ENABLE_AUTOLOGIN,
+                (enable_autologin) ? "yes" : "no" );
+        SCR::Write(.product.features.EVMS_CONFIG,
+                (evms_config) ?  "yes" : "no" );
+        SCR::Write (.product.features, nil );     // flush
+        return;
+
+    }
+
+
+    /**
+     * Restore product features in running system
+     */
+    global void Restore() {
+        use_desktop_scheduler = Misc::SysconfigRead(
+                .product.features.USE_DESKTOP_SCHEDULER, "yes" ) == "yes";
+	io_scheduler = Misc::SysconfigRead(
+		.product.features.IO_SCHEDULER, "as");
+        enable_autologin = Misc::SysconfigRead(
+                .product.features.ENABLE_AUTOLOGIN, "yes") == "yes";
+        evms_config = Misc::SysconfigRead(
+                .product.features.EVMS_CONFIG, "no") == "yes";
+        return;
+    }
 
 
     // -----------------------------------------------
@@ -138,6 +191,8 @@
      * Constructor
      */
     global define void ProductFeatures () ``{
+        if (Mode::normal && !Mode::initial && !Mode::cont)
+            Restore();
         return;
     }
 

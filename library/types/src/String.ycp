@@ -132,6 +132,48 @@ global define string CutZeros(string input) ``{
 }
 
 /**
+ * Add spaces after the text to make it long enough. If the text is longer
+ * than requested, no changes are made.
+ *
+ * @param text text to be padded
+ * @param length requested length
+ * @return padded text
+ */
+global define string Pad(string text, integer length) {
+    if(text == nil) text = "";
+
+    integer rest = length - size(text);
+    string pad = "";
+    while(rest > 0) {
+	pad = pad + " ";
+	rest = rest - 1;
+    }
+
+    return text + pad;
+}
+
+/**
+ * Add zeros before the text to make it long enough. If the text is longer
+ * than requested, no changes are made.
+ *
+ * @param text text to be padded
+ * @param length requested length
+ * @return padded text
+ */
+global define string PadZeros(string text, integer length) {
+    if(text == nil) text = "";
+
+    integer rest = length - size(text);
+    string pad = "";
+    while(rest > 0) {
+	pad = pad + "0";
+	rest = rest - 1;
+    }
+
+    return pad + text;
+}
+
+/**
  * Parse string of values - split string to values, quoting and backslash sequences are supported
  * @param options Input string
  * @param parameters Parmeter used at parsing - map with keys:
@@ -401,25 +443,6 @@ global define list<string> ParseOptions(string options, map parameters) ``{
 
 	return ret;
 }
-
-/**
- * Add spaces after the text to make it long enough. If the text is longer that requested,
- * no changes are made.
- *
- * @param text	text to be padded
- * @param length requested length
- * @return padded text
- */
-global define string Pad( string text, integer length ) ``{
-        integer rest = length-size(text);
-        string pad = "";
-        while( rest > 0 ) {
-            pad = pad + " ";
-            rest = rest-1;
-        }
-        return text+pad;
-}
-
 
 /**
  * Remove first or every match of given regular expression from a string

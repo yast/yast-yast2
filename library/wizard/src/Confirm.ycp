@@ -96,7 +96,8 @@ global define boolean MustBeRoot ()
 	_("This module needs to be run as root.
 If you continue now, the module may not function properly.
 For example, some settings can be read improperly
-and it is unlikely that settings can be written.")
+and it is unlikely that settings can be written.
+")
 	);
 }
 

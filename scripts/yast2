@@ -57,7 +57,7 @@ listmodules()
 	echo "Available modules:"
 	echo
 	grep -h "Exec=/sbin/yast2 " $list | \
-	    sed 's|Exec=/sbin/yast2 \([^ ]\+\) .*|\1|' | \
+	    sed 's|Exec=/sbin/yast2 \([^ ]\+\)\( .*\)\?|\1|' | \
 	    sort -u
     fi
 }
@@ -134,9 +134,23 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 	        ;;
 	    esac
 	    if testutf8 ; [ $? -ne 2 ] ; then
-		unicode_start
+		test -x /bin/unicode_start && /bin/unicode_start
 		uc_started=1
 	    fi
+        else
+	    case "$TERM" in
+		vt*|xterm*|linux|screen*)
+		    # probe terminal and fix lang settings
+		    testutf8
+		    if [ $? -ne 2 ] ; then
+			test -n "$LANG" && LANG=${LANG%.UTF-8}
+			test -n "$LC_CTYPE" && LC_CTYPE=${LC_CTYPE%.UTF-8}
+		    else
+			test -n "$LANG" && LANG=${LANG%%[.@]*}.UTF-8
+			test -n "$LC_CTYPE" && LC_CTYPE=${LC_CTYPE%%[.@]*}.UTF-8
+		    fi
+		;;
+	    esac
 	fi
 	# use menu.ycp
 	if [ $module == "menu" ] ; then
@@ -146,7 +160,7 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 	    $ybindir/y2base "$module" "$@" ncurses
 	fi
 	if [ "$uc_started" ] ; then
-	    unicode_stop
+	    test -x /bin/unicode_stop && /bin/unicode_stop
 	fi
     else
 	echo "You need to install yast2-ncurses to use the YaST2 text mode interface"
