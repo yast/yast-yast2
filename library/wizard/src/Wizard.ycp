@@ -24,10 +24,9 @@
 
     boolean have_fancy_ui = nil;
 
-    /**
-     * Initialization
-     **/
-    define void Init() {
+    
+    global define void Wizard()
+    {
 	map ui_info = UI::GetDisplayInfo();
 
 	have_fancy_ui = UI::HasSpecialWidget(`Wizard )
@@ -236,9 +235,8 @@
      * Open a dialog with buttons "Next", "Back", "Abort"
      * and set the keyboard focus to "Next".
      **/
-    global define void OpenNextBackDialog() {
-	if ( have_fancy_ui == nil ) Init();
-
+    global define void OpenNextBackDialog()
+    {
 	if ( have_fancy_ui )
 	{
 	    UI::OpenDialog(`opt(`defaultsize ),
@@ -259,8 +257,6 @@
      * and set the keyboard focus to "Accept".
      **/
     global define void OpenAcceptDialog() {
-
-	if ( have_fancy_ui == nil ) Init();
 
 	if ( have_fancy_ui )
 	{
@@ -284,8 +280,6 @@
     global define void OpenAbortApplyFinishDialog()
     {
 
-	if ( have_fancy_ui == nil ) Init();
-
 	if ( have_fancy_ui )
 	{
 	    UI::OpenDialog(`opt(`defaultsize ),
@@ -305,7 +299,6 @@
      * Open a dialog with "Accept", "Cancel" that will also accept workflow steps.
      **/
     global define void OpenAcceptStepsDialog() {
-	if ( have_fancy_ui == nil ) Init();
 
 	if ( have_fancy_ui )
 	{
@@ -327,7 +320,6 @@
      * Open a dialog with "Accept", "Cancel" that will also accept workflow steps.
      **/
     global define void OpenAcceptAbortStepsDialog() {
-	if ( have_fancy_ui == nil ) Init();
 
 	if ( have_fancy_ui )
 	{
@@ -348,7 +340,6 @@
      * Open a dialog with "Back", "Next", "Abort" that will also accept workflow steps.
      **/
     global define void OpenNextBackStepsDialog() {
-	if ( have_fancy_ui == nil ) Init();
 
 	if ( have_fancy_ui )
 	{
