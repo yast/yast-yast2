@@ -1,7 +1,9 @@
 /**
+ * Copyright 2004, Novell, Inc.  All rights reserved.
+ *
  * File:	modules/SuSEFirewall.ycp
  * Package:	SuSEFirewall configuration
- * Summary:	Interface manipulation (/etc/sysconfig/SuSEFirewall)
+ * Summary:	Interface manipulation of /etc/sysconfig/SuSEFirewall
  * Authors:	Lukas Ocilka <locilka@suse.cz>
  *
  * $Id$
@@ -22,6 +24,7 @@
     import "PortAliases";
     import "Report";
     import "Message";
+    import "Progress";
 
     # <!-- SuSEFirewall VARIABLES //-->
 
@@ -1188,7 +1191,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 		"id" : interface,
 		"type" : "dialup",
 		// FIXME: Hardware YCP module should provide this information
-		"name" : "Interface Name",
+		"name" : "FIXME: Device Name",
 		"zone" : GetZoneOfInterface(interface),
 	    ]);
 	});
@@ -1197,7 +1200,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 	    known_interfaces = add(known_interfaces, $[
 		"id" : interface,
 		// FIXME: Hardware YCP module should provide this information
-		"name" : "Interface Name",
+		"name" : "FIXME: Device Name",
 		"zone" : GetZoneOfInterface(interface),
 	    ]);
 	});
@@ -1268,8 +1271,8 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
     }
     
     /**
-     * Function returns list of interfaces in requested zone.
-     * Special strings like 'any' or 'auto' are removed from list.
+     * Function returns list of known interfaces in requested zone.
+     * Special strings like 'any' or 'auto' and unknown interfaces are removed from list.
      *
      * @param	string zone
      * @return	list [string] of interfaces
@@ -1277,9 +1280,11 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
     global define list<string> GetInterfacesInZone (string zone) {
 	list <string> interfaces_in_zone = splitstring (SETTINGS["FW_DEV_" + zone]:"", " ");
 
+	list <string> known_interfaces_now = GetListOfKnownInterfaces();
+
 	// filtering special strings
 	interfaces_in_zone = filter(string interface, interfaces_in_zone, ``{
-	    return interface != "" && interface != "any" && interface != "auto";
+	    return interface != "" && contains(known_interfaces_now, interface);
 	});
 	
 	return interfaces_in_zone;
@@ -1740,12 +1745,45 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
      * Fills internal variables only.
      */
     global define boolean Read () {
+	// Progress only for normal configuration and command line
+	boolean have_progress = (Mode::normal() || Mode::commandline());
+
+	if (have_progress) {
+	    // TRANSLATORS: Dialog caption
+	    string read_caption = _("Initializing firewall configuration");
+
+	    Progress::New( read_caption, " ", 3,
+		[
+		    // TRANSLATORS: Progress step
+		    _("Check for network devices"),
+		    // TRANSLATORS: Progress step
+		    _("Read current configuration"),
+		    // TRANSLATORS: Progress step
+		    _("Check possibly conflicting services"),
+		],
+		[
+		    // TRANSLATORS: Progress step
+		    _("Checking for network devices"),
+		    // TRANSLATORS: Progress step
+		    _("Reading current configuration"),
+		    // TRANSLATORS: Progress step
+		    _("Checking possibly conflicting services"),
+		    Message::Finished(),
+		],
+		""
+	    );
+
+	    Progress::NextStage();
+	}
+
 	if (Mode::normal() || Mode::commandline()) {
 	    NetworkDevices::Read();
 	} else if (Mode::installation() || Mode::autoinst()) {
 	    // Allways modified for installation, allways save the final state
 	    SetModified();
 	}
+
+	if (have_progress) Progress::NextStage();
 
 	// get default configuration for installation
 	if (Mode::installation() || Mode::autoinst()) {
@@ -1755,11 +1793,17 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 	    ReadCurrentConfiguration();
 	}
 
+	if (have_progress) Progress::NextStage();
+
 	// checking if any possibly conficting services were turned on in configuration
 	// filling internal values for later checkings
 	CheckAllPossiblyConflictingServices();
 
 	y2milestone("Firewall configuration has been read: %1.", SETTINGS);
+
+	if (have_progress) Progress::NextStage();
+
+	if (have_progress) Progress::Finish();
 
 	return true;
     }
@@ -1799,6 +1843,34 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
      * @return	boolean if successful
      */
     global define boolean WriteConfiguration () {
+	// Progress only for normal configuration and command line
+	boolean have_progress = (Mode::normal() || Mode::commandline());
+
+	if (have_progress) {
+	    // TRANSLATORS: Dialog caption
+	    string write_caption = _("Writing firewall configuration");
+
+	    Progress::New( write_caption, " ", 2,
+		[
+		    // TRANSLATORS: Progress step
+		    _("Write firewall settings"),
+		    // TRANSLATORS: Progress step
+		    _("Adjust firewall service"),
+		],
+		[
+		    // TRANSLATORS: Progress step
+		    _("Writing firewall settings"),
+		    // TRANSLATORS: Progress step
+		    _("Adjusting firewall service"),
+		    // TRANSLATORS: Progress step
+		    Message::Finished(),
+		],
+		""
+	    );
+
+	    Progress::NextStage();
+	}
+
 	// only modified configuration is written
 	if (GetModified()) {
 	    y2milestone("Firewall configuration has been changed. Writing: %1.", SETTINGS);
@@ -1812,6 +1884,9 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 	    y2milestone("Firewall settings weren't modified, skipping...");
 	}
 
+	if (have_progress) Progress::NextStage();
+
+	// Adjusting services
 	if (GetModified()) {
 	    // enabling firewall in /etc/init.d/
 	    if (SETTINGS["enable_firewall"]:false) {
@@ -1829,6 +1904,10 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 	} else {
 	    y2milestone("Firewall enable/disable wasn't modified, skipping...");
 	}
+
+	if (have_progress) Progress::NextStage();
+
+	if (have_progress) Progress::Finish();
 
 	return true;
     }
@@ -1868,6 +1947,8 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 	if (! Write()) {
 	    return false;
 	}
+	
+	// FIXME: restart?
 
 	return true;
     }
@@ -2004,6 +2085,58 @@ You will have to run YaST2 Firewall and assign it by hand."), interface)
 	});
 
 	return firewall_interfaces_now;
+    }
+
+    /**
+     * Function returns list of special strings like 'any' or 'auto' and uknown interfaces.
+     *
+     * @param	string zone
+     * @return	list [string] special strings or unknown interfaces
+     */
+    global define list<string> GetSpecialInterfacesInZone (string zone) {
+	list <string> interfaces_in_zone = splitstring (SETTINGS["FW_DEV_" + zone]:"", " ");
+
+	list <string> known_interfaces_now = GetInterfacesInZone (zone);
+
+	// filtering known interfaces and spaces
+	interfaces_in_zone = filter(string interface, interfaces_in_zone, {
+	    return interface != "" && !contains(known_interfaces_now, interface);
+	});
+	
+	return interfaces_in_zone;
+    }
+
+    /**
+     * Function removes special string from defined zone.
+     *
+     * @param	string interface
+     * @param	string zone
+     */
+    global define void RemoveSpecialInterfaceFromZone (string interface, string zone) {
+	SetModified();
+
+	y2milestone("Removing special string '%1' from '%2' zone.", interface, zone);
+
+	list <string> interfaces_in_zone = splitstring (SETTINGS["FW_DEV_" + zone]:"", " ");
+	interfaces_in_zone = filter (string single_interface, interfaces_in_zone, {
+	    return single_interface != "" && single_interface != interface;
+	});
+	SETTINGS["FW_DEV_" + zone] = mergestring(interfaces_in_zone, " ");
+    }
+
+    /**
+     * Functions adds special string into defined zone.
+     *
+     * @param	string interface
+     * @param	string zone
+     */
+    global define void AddSpecialInterfaceIntoZone (string interface, string zone) {
+	SetModified();
+	
+	y2milestone("Adding special string '%1' into '%2' zone.", interface, zone);
+	list <string> interfaces_in_zone = splitstring (SETTINGS["FW_DEV_" + zone]:"", " ");
+	interfaces_in_zone = toset(add (interfaces_in_zone, interface));
+	SETTINGS["FW_DEV_" + zone] = mergestring(interfaces_in_zone, " ");
     }
 
     # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
