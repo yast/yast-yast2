@@ -22,463 +22,41 @@
 
     map processed_widget = $[];
 
-// functions
+// local functions
 
     /**
-      * Return description map of currently processed widget
-      * @return map description map of currently processed widget
-      */
-    global define map GetProcessedWidget () ``{
-	return processed_widget;
-    }
-
-    /**
-      * Create a term with OK and Cancel buttons placed horizontally
-      * @return the term (HBox)
-      */
-    global define term OkCancelBox () ``{
-	return `HBox (
-	    `HStretch (),
-	    `PushButton (`id (`_tp_ok), `opt (`key_F10, `default),
-		Label::OKButton ()),
-	    `HSpacing (1),
-	    `PushButton (`id (`_tp_cancel), `opt (`key_F9),
-		Label::CancelButton ()),
-	    `HStretch ()
-	);
-    }
-
-    /**
-      * Set widgets according to internally stored settings
-      * @param widgets list of maps represenging widgets
-      */
-    global define void initWidgets (list widgets) ``{
-        foreach (map w, widgets, ``{
-	    processed_widget = w;
-	    term toEval = w["init"]:nil;
-	    if (toEval != nil)
-	    {
-		eval (add (toEval, w["_cwm_key"]:""));
-	    }
-        });
-    }
-
-    /**
-      * Validate dialog contents for allow it to be saved
-      * @param widgets list of widgets to validate
-      * @param event map event that caused validation
-      * @return boolean true if everything is OK, false  if something is wrong
-      */
-    global define boolean validateWidgets (list widgets, map event) ``{
-	boolean result = true;
-	foreach (map w, widgets, ``{
-	    result = result && validateWidget (w, event, [w["_cwm_key"]:""]);
-	});
-	return result;
-    }
-
-    /**
-      * Validate single widget
-      * @param widget widget description map
-      * @param event map event that caused validation
-      * @param args list of arguments to be added to widget validation function
-      * @return true if validation succeeded
-      */
-    global define boolean validateWidget (map widget, map event, list args) ``{
-	processed_widget = widget;
-	boolean failed = false;
-	symbol val_type = widget["validate_type"]:nil;
-	if (val_type == `function)
-	{
-	    term t = widget["validate_function"]:nil;
-	    if (t != nil)
-	    {
-		foreach (`a, args, ``{
-		    t = add (t, a);
-		});
-		return eval (add (t, event));
-	    }
-	}
-	else if (val_type == `regexp)
-	{
-	    string regexp = widget["validate_condition"]:"";
-	    if (! regexpmatch (
-		UI::QueryWidget (`id (`_tp_value), `Value),
-		regexp))
-	    {
-		failed = true;
-	    }
-	}
-	else if (val_type == `list)
-	{
-	    list possible = widget["validate_condition"]:[];
-	    if (! contains (
-		possible,
-		UI::QueryWidget (`id (`_tp_value), `Value)))
-	    {
-		failed = true;
-	    }
-	}
-	if (failed)
-	{
-	    string wname = widget["label"]:widget["_cwm_key"]:"";
-	    wname = deletechars (wname, "&");
-	    Report::Error (sformat (
-		// message popup, %1 is a label of some widget
-		_("The value of %1 is invalid."),
-		wname));
-	    UI::SetFocus (`id (w["_cwm_key"]:""));
-	}
-	return ! failed;
-    }
-
-
-
-    /**
-      * Handle change of widget after event generated
-      * @param widgets list of maps represenging widgets
-      * @param event_descr map event that occured
-      * @return any modified action (sometimes may be needed)
-      */
-    global define any handleWidgets (list widgets, map event_descr) ``{
-        any ret = nil;
-        foreach (map w, widgets, ``{
-	    if (ret == nil)
-	    {
-		processed_widget = w;
-		term t = w["handle"]:nil;
-		list events = w["handle_events"]:[];
-		if (t != nil && (events == [] || contains (events, event_descr["ID"]:nil)))
-		{
-                    ret = eval (add (add (t, w["_cwm_key"]:""), event_descr));
-		}
-	    }
-        });
-        return ret;
-    }
-
-    /**
-      * Save changes of widget after event generated
-      * @param widgets list of maps represenging widgets
-      * @param event map event that occured
-      */
-    global define void saveWidgets (list widgets, map event) ``{
-        foreach (map w, widgets, ``{
-            term t = w["store"]:nil;
-            if (t != nil)
-            {
-                eval (add (add (t, w["_cwm_key"]:""), event));
-            }
-        });
-    }
-
-    /**
-      * Add fallback functions to a widget
-      * @param widgets a list of widget desctiption maps
-      * @param functions map of functions
-      * @return a list of modified widget description maps
-      */
-    global define list(map) mergeFunctions (list(map) widgets, map functions)``{
-	functions = filter (`k, `v, functions, ``(k != "abort"));
-	return maplist (map w, widgets, ``(
-	    union (functions, w)
-	));
-    }
-
-    /**
-      * Display the dialog and run its event loop
-      * @param widget_names list of names of widgets that will be used in the
-      *   dialog
-      * @param widget_descr map description map of all widgets
-      * @param contents term contents of the dialog, identifiers instead of
-      *   widgets
-      * @param caption string dialog caption
-      * @param back_button string label of the back button
-      * @param next_button string label of the next button
-      * @param fallback map initialize/save/handle fallbacks if not specified
-      *   with the widgets.
-      * @return symbol wizard sequencer symbol
-      */
-    global define symbol ShowAndRun (list widget_names, map widget_descr,
-	term contents, string caption, string back_button, string next_button,
-	map fallback)
-    ``{
-	list w = CreateWidgets (widget_names, widget_descr);
-	string help = MergeHelps (w);
-	contents = PrepareDialog (contents, w);
-	Wizard::SetContentsButtons (caption, contents, help,
-	    back_button, next_button);
-	Wizard::RestoreBackButton ();
-	Wizard::RestoreAbortButton ();
-	return Run (w, fallback);
-    }
-
-    /**
-      * Generic function to create dialog and handle it's events
-      * @param widgets list of widget maps
-      * @param functions map initialize/save/handle fallbacks if not specified
-      *   with the widgets.
-      * @return symbol wizard sequencer symbol
-      */
-    global define symbol Run (list widgets, map functions) ``{
-	widgets = mergeFunctions (widgets, functions);
-	initWidgets (widgets);
-	any ret = nil;
-	list save_exits = [`next, `ok];
-	boolean save = false;
-	map event_descr = $[];
-        while (ret != `back && ret != `abort && ! save)
-        {
-	    event_descr = UI::WaitForEvent ();
-	    ret = event_descr["ID"]:nil;
-	    symbol handle_ret = handleWidgets (widgets, event_descr);
-	    if (handle_ret != nil || contains (save_exits, ret))
-	    {
-		save = true;
-		if (handle_ret != nil)
-		{
-		    ret = handle_ret;
-		    event_descr["ID"] = ret;
-		}
-	    }
-
-	    if (ret == `cancel)
-		ret = `abort;
-            if (ret == `abort)
-	    {
-		if (functions[ret]:nil != nil)
-		{
-		    ret = eval (functions[ret]:nil) ? `abort : nil;
-		}
-	    }
-
-	    if (ret == nil)
-		continue;
-
-	    if (save)
-	    {
-		if (! validateWidgets (widgets, event_descr))
-	            ret = nil;
-	    }
-
-	    if (ret == nil)
-	    {
-		save = false;
-		continue;
-	    }
-        }
-	if (save)
-	    saveWidgets (widgets, event_descr);
-        return ret;
-    }
-
-
-    /**
-      * Read widgets with listed names
-      * @param names list of strings/symbols names of widgets
-      * @param source the map containing the widgets
-      * @return list of maps representing widgets
-      */
-    global define list CreateWidgets (list names, map source) ``{
-	ValidateMaps (source); // FIXME find better place
-	list ret = maplist (any w, names, ``{
-	    map m = source[w]:$[];
-	    // leave add here in order to make a copy of the structure
-	    // eval isn't usable because the map may contain terms, that can't
-	    // be evaluated here
-	    m = add (m, "_cwm_key", w);
-	    return m;
-        });
-	ret = maplist (map w, ret, ``{
-	    return prepareWidget (w);
-	});
-	return ret;
-    }
-
-    /**
-      * Prepare the dialog, replace strings in the term with appropriate
-      * widgets
+      * Process term with the dialog, replace strings in the term with
+      * appropriate widgets
       * Processes only `VBox, `HBox, `Left and `Right
-      * @param dialog term dialog containing strings
-      * @param widgets list of widget description maps
-      * @return updated term ready to be used as a dialog
+      * @param t term dialog containing strings
+      * @param widgets map of widget name -> widget description map
+      * @return term updated term ready to be used as a dialog
       */
-    global define term PrepareDialog (term dialog, list widgets) ``{
-	integer args = size (dialog);
+    define term ProcessTerm (term t, map widgets) ``{
+	integer args = size (t);
 	if (args == 0)
-	    return dialog;
-	map m = listmap (map w, widgets, ``(
-	    [w["_cwm_key"]:"", w]
-	));
-	return ProcessTerm (dialog, m);
-    }
-
-
-    /**
-      * Prepare a widget for usage
-      * @param widget_descr map widget description map
-      * @return map modified widget description map
-      */
-    global define map prepareWidget (map widget_descr) ``{
-	map w = widget_descr;
-	symbol widget = w["widget"]:`textentry;
-	if (w["widget"]:nil == `custom && w["custom_widget"]:nil != nil)
+	    return t;
+	term ret = toterm (substring (sformat ("%1", symbolof (t)), 1));
+	integer index = 0;
+	while (index < args)
 	{
-	    w["widget"] = w["custom_widget"]:`VSpacing (0);
+	    any arg = select (t, index, nil);
+	    if (is (arg, term) && arg != nil)
+	    {
+		symbol s = symbolof ((term)arg);
+		if (contains ([ `VBox, `HBox, `Left, `Right], s))
+		{
+		    arg = ProcessTerm ((term)arg, widgets);
+		}
+	    }
+	    else if (is (arg, string))
+	    {
+		arg = widgets[arg, "widget"]:`VBox ();
+	    }
+	    ret = add (ret, arg);
+	    index = index + 1;
 	}
-	else if (w["widget"]:nil == `func)
-	{
-	    w["widget"] = eval (w["widget_func"]:nil);
-	}
-	else
-	{
-		term opt_term = `opt ();
-		foreach (`o, w["opt"]:[], ``{
-		    opt_term = add (opt_term, o);
-		});
-		if (widget == `textentry)
-		{
-		    w["widget"] = `TextEntry (`id (w["_cwm_key"]:""), opt_term,
-			w["label"]:w["_cwm_key"]:"");
-		}
-		else if (widget == `checkbox)
-		{
-		    w["widget"] = `CheckBox (`id (w["_cwm_key"]:""), opt_term,
-			w["label"]:w["_cwm_key"]:"");
-		}
-		else if (widget == `combobox)
-		{
-		    w["widget"] = `ComboBox (`id (w["_cwm_key"]:""), opt_term,
-			w["label"]:w["_cwm_key"]:"",
-			maplist (`i, w["items"]:[], ``(
-			    `item (`id (i[0]:""), i[1]:i[0]:"")
-			)));
-		}
-		else if (widget == `intfield)
-		{
-		    integer min = w["minimum"]:0;
-		    integer max = w["maximum"]:2147483647;
-		    w["widget"] = `IntField (`id (w["_cwm_key"]:""), opt_term,
-			w["label"]:w["_cwm_key"]:"",
-			min, max, min);
-		}
-		else if (widget == `radio_buttons)
-		{
-		    term buttons = `VBox ();
-		    foreach (`i, w["items"]:[], ``{
-			buttons = add (buttons, `Left( `RadioButton (
-			    `id (i[0]:""), opt_term, i[1]:i[0]:"")) );
-		    });
-		    w["widget"] = `Frame (
-			w["label"]:w["_cwm_key"]:"",
-			`RadioButtonGroup (`id (w["_cwm_key"]:""), buttons));
-		}
-		else if (widget == `push_button)
-		{
-		    w["widget"] = `PushButton (`id (w["_cwm_key"]:""),
-			opt_term,
-			w["label"]:w["_cwm_key"]:"");
-		}
-	}
-	w["custom_widget"] = nil; // not needed any more
-	return w;
-    }
-
-
-    /**
-      * Merge helps from the widgets
-      * @param widgets a list of widget description maps
-      * @return string merged helps of the widgets
-      */
-    global define string MergeHelps (list(map) widgets) ``{
-	list helps = maplist (map w, widgets, ``(w["help"]:nil));
-	helps = filter (`h, helps, ``(h != nil));
-	return mergestring (helps, "\n");
-    }
-
-    /**
-      * Validate widget description map, check for maps structure
-      * Also checks option description maps if present
-      * @param widgets map widgets description map
-      * @return boolean true on success
-      */
-    global define boolean ValidateMaps (map widgets) ``{
-	boolean ret = true;
-	foreach (`k, `v, widgets, ``{
-	    foreach (`kk, `vv, v, ``{
-		ret = ValidateValueType (kk, vv, k) && ret;
-	    });
-	    list to_check = [];
-	    if (v["widget"]:nil != `custom)
-		to_check = ["label", "help", "widget"];
-	    foreach (`key, to_check, ``{
-		ret = ValidateValueContents (key, v[key]:nil, k) && ret;
-	    });
-	    if (v["widget"]:nil == `custom)
-		ret = ValidateValueContents ("custom_widget",
-		    v["custom_widget"]:nil, k) && ret;
-	});
-	if (! ret)
-	    return false;
-	foreach (`k, `v, widgets, ``{
-	    foreach (`kk, `vv, v["options"]:$[], ``{
-		foreach (`kkk, `vvv, vv["table"]:$[], ``{
-		    ret = ValidateValueType (kkk, vvv, k) && ret;
-		});
-		foreach (`kkk, `vvv, vv["popup"]:$[], ``{
-		    ret = ValidateValueType (kkk, vvv, k) && ret;
-		});
-	    });
-	});
 	return ret;
-    }
-
-
-// local definitions
-
-
-    /**
-      * Validate value of entry of the widget/option description map
-      * Also checks option description maps if present
-      * @param key string key of the map entry
-      * @param value any value of the map entry
-      * @param widget any name of the widget/option
-      * @return boolean true if validation succeeded
-      */
-    define boolean ValidateValueContents (string key, any value, any widget) ``{
-	string error = "";
-	if (key == "label")
-	{
-	    string s = value;
-	    if (s == nil || size (s) == 0)
-		error = "Empty label";
-	    else if (size (filterchars (s, "&")) != 1)
-		error = "Label has no shortcut or more than 1 shortcuts";
-	}
-	else if (key == "help")
-	{
-	    string s = value;
-	    if (s == nil || size (s) == 0)
-		error = "Empty help";
-	}
-	else if (key == "widget")
-	{
-	    symbol s = value;
-	    if (s == nil)
-		error = "No widget specified";
-	}
-	else if (key == "custom_widget")
-	{
-	    term s = value;
-	    if (s == nil)
-		error = "No custom widget specified";
-	}
-
-	if (error == "")
-	    return true;
-
-	y2error ("Error on key %1 of widget %2: %3", key, widget, error);
-	return false;
     }
 
     /**
@@ -544,42 +122,457 @@
 	return success;
     }
 
+    /**
+      * Validate value of entry of the widget/option description map
+      * Also checks option description maps if present
+      * @param key string key of the map entry
+      * @param value any value of the map entry
+      * @param widget any name of the widget/option
+      * @return boolean true if validation succeeded
+      */
+    define boolean ValidateValueContents (string key, any value, any widget) ``{
+	string error = "";
+	if (key == "label")
+	{
+	    string s = (string)value;
+	    if (s == nil || size (s) == 0)
+		error = "Empty label";
+	    else if (size (filterchars (s, "&")) != 1)
+		error = "Label has no shortcut or more than 1 shortcuts";
+	}
+	else if (key == "help")
+	{
+	    string s = (string)value;
+	    if (s == nil || size (s) == 0)
+		error = "Empty help";
+	}
+	else if (key == "widget")
+	{
+	    symbol s = (symbol)value;
+	    if (s == nil)
+		error = "No widget specified";
+	}
+	else if (key == "custom_widget")
+	{
+	    term s = (term)value;
+	    if (s == nil)
+		error = "No custom widget specified";
+	}
+
+	if (error == "")
+	    return true;
+
+	y2error ("Error on key %1 of widget %2: %3", key, widget, error);
+	return false;
+    }
 
     /**
-      * Process term with the dialog, replace strings in the term with
-      * appropriate widgets
-      * Processes only `VBox, `HBox, `Left and `Right
-      * @param t term dialog containing strings
-      * @param widgets map of widget name -> widget description map
-      * @return term updated term ready to be used as a dialog
+      * Add fallback functions to a widget
+      * @param widgets a list of widget desctiption maps
+      * @param functions map of functions
+      * @return a list of modified widget description maps
       */
-    define term ProcessTerm (term t, map widgets) ``{
-	integer args = size (t);
-	if (args == 0)
-	    return t;
-	term ret = toterm (substring (sformat ("%1", symbolof (t)), 1));
-	integer index = 0;
-	while (index < args)
-	{
-	    any arg = select (t, index, nil);
-	    if (is (arg, term) && arg != nil)
+    define list<map> mergeFunctions (list<map> widgets, map functions)``{
+	functions = filter (`k, `v, functions, ``(k != "abort"));
+	return maplist (map w, widgets, ``(
+	    union (functions, w)
+	));
+    }
+
+    /**
+      * Set widgets according to internally stored settings
+      * @param widgets list of maps represenging widgets
+      */
+    define void initWidgets (list widgets) ``{
+        foreach (map w, widgets, ``{
+	    processed_widget = w;
+	    term toEval = w["init"]:nil;
+	    if (toEval != nil)
 	    {
-		symbol s = symbolof (arg);
-		if (contains ([ `VBox, `HBox, `Left, `Right], s))
+		eval (add (toEval, w["_cwm_key"]:""));
+	    }
+        });
+    }
+
+    /**
+      * Handle change of widget after event generated
+      * @param widgets list of maps represenging widgets
+      * @param event_descr map event that occured
+      * @return symbol modified action (sometimes may be needed) or nil
+      */
+    define symbol handleWidgets (list widgets, map event_descr) ``{
+        symbol ret = nil;
+        foreach (map w, widgets, ``{
+	    if (ret == nil)
+	    {
+		processed_widget = w;
+		term t = w["handle"]:nil;
+		list events = w["handle_events"]:[];
+		if (t != nil && (events == [] || contains (events, event_descr["ID"]:nil)))
 		{
-		    arg = ProcessTerm (arg, widgets);
+                    ret = (symbol)(eval (add (add (t, w["_cwm_key"]:""), event_descr)));
 		}
 	    }
-	    else if (is (arg, string))
-	    {
-		arg = widgets[arg, "widget"]:`VBox ();
-	    }
-	    ret = add (ret, arg);
-	    index = index + 1;
+        });
+        return ret;
+    }
+
+    /**
+      * Save changes of widget after event generated
+      * @param widgets list of maps represenging widgets
+      * @param event map event that occured
+      */
+    define void saveWidgets (list widgets, map event) ``{
+        foreach (map w, widgets, ``{
+            term t = w["store"]:nil;
+            if (t != nil)
+            {
+                eval (add (add (t, w["_cwm_key"]:""), event));
+            }
+        });
+    }
+
+// functions
+
+    /**
+      * Return description map of currently processed widget
+      * @return map description map of currently processed widget
+      */
+    global define map GetProcessedWidget () ``{
+	return processed_widget;
+    }
+
+    /**
+      * Create a term with OK and Cancel buttons placed horizontally
+      * @return the term (HBox)
+      */
+    global define term OkCancelBox () ``{
+	return `HBox (
+	    `HStretch (),
+	    `PushButton (`id (`_tp_ok), `opt (`key_F10, `default),
+		Label::OKButton ()),
+	    `HSpacing (1),
+	    `PushButton (`id (`_tp_cancel), `opt (`key_F9),
+		Label::CancelButton ()),
+	    `HStretch ()
+	);
+    }
+
+    /**
+      * Validate widget description map, check for maps structure
+      * Also checks option description maps if present
+      * @param widgets map widgets description map
+      * @return boolean true on success
+      */
+    global define boolean ValidateMaps (map widgets) ``{
+	boolean ret = true;
+	foreach (any k, map v, widgets, ``{
+	    foreach (string kk, any vv, v, ``{
+		ret = ValidateValueType (kk, vv, k) && ret;
+	    });
+	    list to_check = [];
+	    if (v["widget"]:nil != `custom)
+		to_check = ["label", "help", "widget"];
+	    foreach (string key, to_check, ``{
+		ret = ValidateValueContents (key, v[key]:nil, k) && ret;
+	    });
+	    if (v["widget"]:nil == `custom)
+		ret = ValidateValueContents ("custom_widget",
+		    v["custom_widget"]:nil, k) && ret;
+	});
+	if (! ret)
+	    return false;
+	foreach (any k, map v, widgets, ``{
+	    foreach (any kk, map vv, v["options"]:$[], ``{
+		foreach (string kkk, any vvv, vv["table"]:$[], ``{
+		    ret = ValidateValueType (kkk, vvv, k) && ret;
+		});
+		foreach (string kkk, any vvv, vv["popup"]:$[], ``{
+		    ret = ValidateValueType (kkk, vvv, k) && ret;
+		});
+	    });
+	});
+	return ret;
+    }
+
+    /**
+      * Prepare a widget for usage
+      * @param widget_descr map widget description map
+      * @return map modified widget description map
+      */
+    global define map prepareWidget (map widget_descr) ``{
+	map w = widget_descr;
+	symbol widget = w["widget"]:`textentry;
+	if (w["widget"]:nil == `custom && w["custom_widget"]:nil != nil)
+	{
+	    w["widget"] = w["custom_widget"]:`VSpacing (0);
 	}
+	else if (w["widget"]:nil == `func)
+	{
+	    w["widget"] = eval (w["widget_func"]:nil);
+	}
+	else
+	{
+		term opt_term = `opt ();
+		foreach (any o, w["opt"]:[], ``{
+		    opt_term = add (opt_term, o);
+		});
+		if (widget == `textentry)
+		{
+		    w["widget"] = `TextEntry (`id (w["_cwm_key"]:""), opt_term,
+			w["label"]:w["_cwm_key"]:"");
+		}
+		else if (widget == `checkbox)
+		{
+		    w["widget"] = `CheckBox (`id (w["_cwm_key"]:""), opt_term,
+			w["label"]:w["_cwm_key"]:"");
+		}
+		else if (widget == `combobox)
+		{
+		    w["widget"] = `ComboBox (`id (w["_cwm_key"]:""), opt_term,
+			w["label"]:w["_cwm_key"]:"",
+			maplist (list i, w["items"]:[], ``(
+			    `item (`id (i[0]:""), i[1]:i[0]:"")
+			)));
+		}
+		else if (widget == `intfield)
+		{
+		    integer min = w["minimum"]:0;
+		    integer max = w["maximum"]:2147483647;
+		    w["widget"] = `IntField (`id (w["_cwm_key"]:""), opt_term,
+			w["label"]:w["_cwm_key"]:"",
+			min, max, min);
+		}
+		else if (widget == `radio_buttons)
+		{
+		    term buttons = `VBox ();
+		    foreach (list i, w["items"]:[], ``{
+			buttons = add (buttons, `Left( `RadioButton (
+			    `id (i[0]:""), opt_term, i[1]:i[0]:"")) );
+		    });
+		    w["widget"] = `Frame (
+			w["label"]:w["_cwm_key"]:"",
+			`RadioButtonGroup (`id (w["_cwm_key"]:""), buttons));
+		}
+		else if (widget == `push_button)
+		{
+		    w["widget"] = `PushButton (`id (w["_cwm_key"]:""),
+			opt_term,
+			w["label"]:w["_cwm_key"]:"");
+		}
+	}
+	w["custom_widget"] = nil; // not needed any more
+	return w;
+    }
+
+    /**
+      * Validate single widget
+      * @param widget widget description map
+      * @param event map event that caused validation
+      * @param args list of arguments to be added to widget validation function
+      * @return true if validation succeeded
+      */
+    global define boolean validateWidget (map widget, map event, list args) ``{
+	processed_widget = widget;
+	boolean failed = false;
+	symbol val_type = (symbol) (widget["validate_type"]:nil);
+	if (val_type == `function)
+	{
+	    term t = (term) (widget["validate_function"]:nil);
+	    if (t != nil)
+	    {
+		foreach (any a, args, ``{
+		    t = add (t, a);
+		});
+		return (boolean) (eval (add (t, event)));
+	    }
+	}
+	else if (val_type == `regexp)
+	{
+	    string regexp = (string) (widget["validate_condition"]:"");
+	    if (! regexpmatch (
+		(string) UI::QueryWidget (`id (`_tp_value), `Value),
+		regexp))
+	    {
+		failed = true;
+	    }
+	}
+	else if (val_type == `list)
+	{
+	    list possible = (list) (widget["validate_condition"]:[]);
+	    if (! contains (
+		possible,
+		UI::QueryWidget (`id (`_tp_value), `Value)))
+	    {
+		failed = true;
+	    }
+	}
+	if (failed)
+	{
+	    string wname = widget["label"]:widget["_cwm_key"]:"";
+	    wname = deletechars (wname, "&");
+	    Report::Error (sformat (
+		// message popup, %1 is a label of some widget
+		_("The value of %1 is invalid."),
+		wname));
+	    UI::SetFocus (`id (widget["_cwm_key"]:""));
+	}
+	return ! failed;
+    }
+
+    /**
+      * Validate dialog contents for allow it to be saved
+      * @param widgets list of widgets to validate
+      * @param event map event that caused validation
+      * @return boolean true if everything is OK, false  if something is wrong
+      */
+    global define boolean validateWidgets (list widgets, map event) ``{
+	boolean result = true;
+	foreach (map w, widgets, ``{
+	    string widget_key = (string) (w["_cwm_key"]:"");
+	    result = result && validateWidget (w, event, [widget_key]);
+	});
+	return result;
+    }
+
+    /**
+      * Read widgets with listed names
+      * @param names list of strings/symbols names of widgets
+      * @param source the map containing the widgets
+      * @return list of maps representing widgets
+      */
+    global define list CreateWidgets (list names, map source) ``{
+	ValidateMaps (source); // FIXME find better place
+	list ret = maplist (any w, names, ``{
+	    map m = source[w]:$[];
+	    // leave add here in order to make a copy of the structure
+	    // eval isn't usable because the map may contain terms, that can't
+	    // be evaluated here
+	    m = add (m, "_cwm_key", w);
+	    return m;
+        });
+	ret = maplist (map w, ret, ``{
+	    return prepareWidget (w);
+	});
 	return ret;
     }
 
 
+    /**
+      * Merge helps from the widgets
+      * @param widgets a list of widget description maps
+      * @return string merged helps of the widgets
+      */
+    global define string MergeHelps (list<map> widgets) ``{
+	list<string> helps = maplist (map w, widgets, ``((string)(w["help"]:nil)));
+	helps = filter (`h, helps, ``(h != nil));
+	return mergestring (helps, "\n");
+    }
+
+    /**
+      * Prepare the dialog, replace strings in the term with appropriate
+      * widgets
+      * Processes only `VBox, `HBox, `Left and `Right
+      * @param dialog term dialog containing strings
+      * @param widgets list of widget description maps
+      * @return updated term ready to be used as a dialog
+      */
+    global define term PrepareDialog (term dialog, list widgets) ``{
+	integer args = size (dialog);
+	if (args == 0)
+	    return dialog;
+	map m = listmap (map w, widgets, ``{
+	    any widget_key = w["_cwm_key"]:"";
+	    return [widget_key, w];
+	});
+	return ProcessTerm (dialog, m);
+    }
+
+    /**
+      * Generic function to create dialog and handle it's events
+      * @param widgets list of widget maps
+      * @param functions map initialize/save/handle fallbacks if not specified
+      *   with the widgets.
+      * @return symbol wizard sequencer symbol
+      */
+    global define symbol Run (list widgets, map functions) ``{
+	widgets = mergeFunctions (widgets, functions);
+	initWidgets (widgets);
+	symbol ret = nil;
+	list save_exits = [`next, `ok];
+	boolean save = false;
+	map event_descr = $[];
+        while (ret != `back && ret != `abort && ! save)
+        {
+	    event_descr = (map)UI::WaitForEvent ();
+	    ret = event_descr["ID"]:nil;
+	    symbol handle_ret = handleWidgets (widgets, event_descr);
+	    if (handle_ret != nil || contains (save_exits, ret))
+	    {
+		save = true;
+		if (handle_ret != nil)
+		{
+		    ret = handle_ret;
+		    event_descr["ID"] = ret;
+		}
+	    }
+
+	    if (ret == `cancel)
+		ret = `abort;
+            if (ret == `abort)
+	    {
+		if (functions[ret]:nil != nil)
+		{
+		    ret = (boolean)(eval (functions[ret]:nil)) ? `abort : nil;
+		}
+	    }
+
+	    if (ret == nil)
+		continue;
+
+	    if (save)
+	    {
+		if (! validateWidgets (widgets, event_descr))
+	            ret = nil;
+	    }
+
+	    if (ret == nil)
+	    {
+		save = false;
+		continue;
+	    }
+        }
+	if (save)
+	    saveWidgets (widgets, event_descr);
+        return ret;
+    }
+
+    /**
+      * Display the dialog and run its event loop
+      * @param widget_names list of names of widgets that will be used in the
+      *   dialog
+      * @param widget_descr map description map of all widgets
+      * @param contents term contents of the dialog, identifiers instead of
+      *   widgets
+      * @param caption string dialog caption
+      * @param back_button string label of the back button
+      * @param next_button string label of the next button
+      * @param fallback map initialize/save/handle fallbacks if not specified
+      *   with the widgets.
+      * @return symbol wizard sequencer symbol
+      */
+    global define symbol ShowAndRun (list widget_names, map widget_descr,
+	term contents, string caption, string back_button, string next_button,
+	map fallback)
+    ``{
+	list w = CreateWidgets (widget_names, widget_descr);
+	string help = MergeHelps (w);
+	contents = PrepareDialog (contents, w);
+	Wizard::SetContentsButtons (caption, contents, help,
+	    back_button, next_button);
+	Wizard::RestoreBackButton ();
+	Wizard::RestoreAbortButton ();
+	return Run (w, fallback);
+    }
 
 }
