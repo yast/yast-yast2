@@ -1,23 +1,18 @@
 /**
- * File:
- *	Mode.ycp
- *
- * Module:
- *	Mode
- *
- * Summary:
- *	provide installation mode information
- *	Mostly value from /etc/install.inf
- *	See linuxrc documentation for detailed docs about this.
+ * File:	modules/Mode.ycp
+ * Module:	yast2
+ * Summary:	Installation mode
+ * Authors:	Klaus Kaempf <kkaempf@suse.de>
  *
  * $Id$
  *
- * Author:
- *	Klaus Kaempf <kkaempf@suse.de>
- *
+ * Provide installation mode information.
+ * Mostly values from /etc/install.inf
+ * See linuxrc documentation for detailed docs about this.
  */
 
 {
+
     module "Mode";
 
     /**
@@ -233,8 +228,12 @@
 	{
 	    if ( !test )
 	    {
-		installMap = SCR::Read(.etc.install_inf);
+		path install_inf = .etc.install_inf;
+		maplist(`var, SCR::Dir(install_inf), ``{
+		    installMap[var] = SCR::Read(add(install_inf,var));
+		});
 	    }
+
 	    SCR::UnmountAgent (.etc.install_inf);
 	    y2milestone("Reading /etc/install.inf: initial installMap: %1", installMap);
 	}
@@ -258,7 +257,7 @@
 	text		= installMap["textmode"]:"0" == "1";
 	manual		= installMap["manual"]:"" == "1";
 	serial_console	= installMap["console"]:"" != "";
- 	braille		= installMap["braille"]:"" != "";
+	braille		= installMap["braille"]:"" != "";
 	vnc		= installMap["runvnc"]:"" == "1";
 	boot		= installMap["instmode"]:"cd";
 	sourcemounted	= installMap["sourcemounted"]:"" == "1";
