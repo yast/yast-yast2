@@ -21,7 +21,7 @@ EVMS_CONFIG="no"
 #
 UI_MODE="simple"
 
-## Type:    number
+## Type:    integer(1:100)
 ## Default: 95
 #
 # Warn about Incomplete Translations
