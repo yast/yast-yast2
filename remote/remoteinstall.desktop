@@ -1,0 +1,57 @@
+[Desktop Entry]
+Type=Application
+Categories=Qt;X-SuSE-YaST-Misc;
+
+X-KDE-ModuleType=Library
+X-KDE-RootOnly=true
+X-KDE-HasReadOnlyMode=true
+X-KDE-Library=yast2
+X-KDE-FactoryName=remoteinstall
+
+X-SuSE-YaST-Group=Misc
+X-SuSE-YaST-Argument=
+X-SuSE-YaST-RootOnly=true
+X-SuSE-YaST-AutoInst=
+X-SuSE-YaST-Geometry=
+X-SuSE-YaST-SortKey=
+X-SuSE-YaST-AutoinstResource=
+
+Icon=default
+Exec=/sbin/yast2 remoteinstall 
+
+Name=Remote Installation
+GenericName=Run Installation on Remote Host
+Name[cs]=Vzdálená instalace
+GenericName[cs]=Spustit instalaci na vzdáleném počítači
+Name[de]=Installation von einem entfernten Rechner (remote)
+GenericName[de]=Installation auf entferntem Rechner (remote) ausführen
+Name[es]=Instalación remota
+GenericName[es]=Realizar instalación en el ordenador remoto
+Name[hu]=Távoli telepítés
+GenericName[hu]=Telepítés indítása egy távoli gépen
+Name[it]=Installazione remota
+GenericName[it]=Esegui installazione sull'host remoto
+Name[ko]=원격 설치
+GenericName[ko]=원격 호스트에서 설치실행
+Name[nl]=Remote installatie
+GenericName[nl]=Installatie op de remote host starten
+Name[pt]=Instalação remota
+GenericName[pt]=Executar instalação no host remoto
+Name[sk]=Vzdialená inštalácia
+GenericName[sk]=Spustiť inštaláciu na vzdialenom počítači
+Name[sv]=Fjärrinstallation
+GenericName[sv]=Kör installation på fjärrdator
+Name[bg]=Отдалечено инсталиране
+GenericName[bg]=Стартиране на инсталацията на отдалечената машина
+Name[da]=Fjern installation
+GenericName[da]=Kør Installationen på Fjern-Værten
+Name[el]=Απομακρυσμένη Εγκατάσταση
+GenericName[el]=Εκτέλεση Εγκατάστασης σε Απομακρυσμένο Κόμβο
+Name[fr]=Installation à distance
+GenericName[fr]=Exécuter l'installation sur l'hôte distant
+Name[ja]=リモート・インストール
+GenericName[ja]=リモート・ホストにインストールを実行する
+Name[sl]=Oddaljena namestitev
+GenericName[sl]=Poženi namestitev na oddaljenem gostitelju
+Name[tr]=Uzaktan kurulum
+GenericName[tr]=Uzak makine üzerinde kurulumu çalıştır
