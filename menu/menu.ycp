@@ -190,55 +190,60 @@
 	string help_text = "";
 
 	// help text for ncurses control center
-	string headline = _( "Controlling YaST2 ncurses with the Keyboard" );
+	string headline = _("Controlling YaST2 ncurses with the Keyboard");
 
 	// help text for ncurses control center continous
-	string help1 = _( "<p>1) <b>General</b><br>
+	string help1 = _("<p>1) <b>General</b><br>
 Navigate through the dialog elements with
-<TAB> and <SHIFT>+<TAB> or <TAB> and <ALT>+<TAB>.
+<TAB> and <SHIFT> + <TAB> or <TAB> and <ALT> + <TAB>.
 Select or activate elements with <SPACE> or <ENTER>.
-Some elements use <ARROW> keys.</p>"    );
+Some elements use arrow keys.</p>
+");
 
 	// help text for ncurses control center continous
-	string help2  = _( "<p>Buttons are equipped with shortcut keys like <ALT> and a
+	string help2  = _("<p>Buttons are equipped with shortcut keys like <ALT> and a
 letter. Because the environment can affect the use of
 the keyboard, there is more than one way to
 navigate the dialog pages. See the next section.</p>");
 
 	// help text for ncurses control center continous
-	string help3  = _( "<p>2) <b>Substitution of Keystrokes</b><br>
-If <TAB> and <SHIFT>+<TAB> or <TAB> and <ALT>+<TAB> do not work,
-move focus forward with <CTRL>+'f' and backward with <CTRL>+'b'.</p>" );
+	string help3  = _("<p>2) <b>Substitution of Keystrokes</b><br>
+If <TAB> and <SHIFT> + <TAB> or <TAB> and <ALT> + <TAB> do not work,
+move focus forward with <CTRL> + <F> and backward with <CTRL> + <B>.</p>
+");
 
 	// help text for ncurses control center continous
-	string help4  = _( "<p>If <ALT>+<letter> does not work,
-try <ESC>+<letter>. Example: <ALT>+<H> as <ESC>+<H>.
-<ESC>+<TAB> is also a substitute for <ALT>+<TAB>.</p>" );
+	string help4  = _("<p>If <ALT> + <letter> does not work,
+try <ESC> + <letter>. Example: <ESC> + <H> for <ALT> + <H>.
+<ESC> + <TAB> is also a substitute for <ALT> + <TAB>.</p>
+");
 
 	// help text for ncurses control center continous
-	string help5  = _( "<p>3) <b>Function Keys</b><br>
-F-keys provide a quick access to main functions.
+	string help5  = _("<p>3) <b>Function Keys</b><br>
+F keys provide a quick access to main functions.
 There are many modules with special functions and it is not
-possible to apply the following system to all of them.</p>" );
+possible to apply the following system to all of them.</p>
+");
 
 	// help text for ncurses control center continous
-	string help6 = _( "<p>In some environments, all or some
-F-keys are not availiable.
-There is no solution for this problem yet.</p>" );
+	string help6 = _("<p>In some environments, all or some
+F keys are not availiable.
+There is no solution for this problem yet.</p>
+");
 
 	// help text for ncurses control center continous
-	string help7  = _( "F1  = Help<br>
+	string help7  = _("F1  = Help<br>
 F2  = Info or Description<br>
 F3  = Add<br>
 F4  = Edit or Configure<br>
-F5  = Delete<br>" );
+F5  = Delete<br>");
 	
 	// help text for ncurses control center continous
-	string help8  = _( "F6  = Test<br>
+	string help8  = _("F6  = Test<br>
 F7  = Expert or Advanced<br>
 F8  = Back<br>
 F9  = Abort<br>
-F10 = OK, Next, Finish, or Accept<br>" );
+F10 = OK, Next, Finish, or Accept<br>");
 
 	help_text = help1+help2+help3+help4+help5+help6+help7+help8;
 

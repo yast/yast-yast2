@@ -478,7 +478,7 @@
      */
     define void PrintHead() ``{
 	// translators: command line interface header, %1 is identification of the module
-	string head = sformat(_("YaST Configuration module %1\n"), modulecommands["id"]:"YaST");
+	string head = sformat(_("YaST Configuration Module %1\n"), modulecommands["id"]:"YaST");
 	integer headlen = size(head);
 	integer i=0; while (i<headlen) { head = head + "-"; i=i+1; }
 	head = "\n" + head + "\n";
