@@ -219,8 +219,8 @@
      */
 
     global define boolean ConfirmAbort( symbol severity ) ``{
-	string what_will_happen = "";
 
+	string what_will_happen = "";
 
 	if ( severity == `painless )
 	{
@@ -751,7 +751,7 @@ You will need to reinstall.");
      * @param text	 string
      * @return symbol `back, `again, `cancel, `next
      *
-     * @example Popup::ModuleError( "The module " + symbolof(argterm)) + " does not work." );
+     * @example Popup::ModuleError( "The module " + symbolof(argterm) + " does not work." );
      */
 
     global define symbol ModuleError(string text) ``{
