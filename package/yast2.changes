@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug 27 16:04:18 CEST 2003 - gs@suse.de
+
+- yast2 script: set language to english only on console if LANG is
+  japanese, korean or chinese
+
+-------------------------------------------------------------------
 Tue Aug 19 13:15:38 CEST 2003 - arvin@suse.de
 
 - removed include file common_functions.ycp
