@@ -40,8 +40,12 @@ global define list Values(map m) ``{
  * @return map with keys converted to lower case
  */
 global define map KeysToLower(map m) ``{
+    string newk = nil;
     if(m == nil) return $[];
-    return mapmap(string k, string v, m, ``($[tolower(k): v]));
+    return mapmap(string k, string v, m, ``{
+	newk = tolower(k);
+	return $[newk: v];
+    });
 }
 
 /**
@@ -50,8 +54,12 @@ global define map KeysToLower(map m) ``{
  * @return map with keys converted to lower case
  */
 global define map KeysToUpper(map m) ``{
+    string newk = nil;
     if(m == nil) return $[];
-    return mapmap(string k, string v, m, ``($[toupper(k): v]));
+    return mapmap(string k, string v, m, ``{
+	newk = toupper(k);
+	return $[newk: v];
+    });
 }
 
 /**
