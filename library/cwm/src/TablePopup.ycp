@@ -29,138 +29,188 @@
       */
     any previous_selected_item = nil;
 
-// functions
+// local functions
 
     /**
-      * Get the map with the table widget
-      * @param attrib map table attributes
-      * @param widget_descr map widget description map of the table, will be
-      *  unioned with the generated map
-      * @return map table widget
+      * Get list of IDs of entries of the table
+      * @param descr map table description map
+      * @return list of IDs of the table
       */
-    global define map CreateTableDescr (map attrib, map widget_descr) ``{
-	term add_button = attrib["add_delete_buttons"]:true
-	    ? `PushButton (`id (`_tp_add), `opt (`key_F3), Label::AddButton ())
-	    : `HSpacing (0);
-	term edit_button
-	    = `PushButton (`id (`_tp_edit), `opt (`key_F4), Label::EditButton ());
-	term delete_button = attrib["add_delete_buttons"]:true
-	    ? `PushButton (`id (`_tp_delete), `opt (`key_F5), Label::DeleteButton ())
-	    : `HSpacing (0);
-	term table_header = attrib["changed_column"]:false
-	    ? `header (
-		// table header, shortcut for changed, keep very short
-		_("Ch."),
-		// table header
-		_("Option"),
-		// table header
-		_("Value"))
-	    : `header (
-		// table header
-		_("Option"),
-		// table header
-		_("Value"));
+    define list getIdList (map descr) ``{
+        term toEval = (term)(descr["ids"]:nil);
+        if (toEval != nil)
+        {
+            toEval = add (toEval, ``(descr));
+            return (list)(eval (toEval));
+        }
+	return [];
+    }
 
-	term replace_point = `ReplacePoint (`id (`_tp_table_repl), `HSpacing (0));
-	// help 1/4
-	string help = _("<p><b><big>Editing the Settings</big></b><br>
-To edit the settings, choose the appropriate
-entry of the table then click <b>Edit</b>.</p>");
-	if (attrib["add_delete_buttons"]:true)
-	    // help 2/4, optional
-	    help = help + _("<p>To add a new option, click <b>Add</b>. To remove
-an option, select it and click <b>Delete</b>.</p>");
-
-	if (attrib["changed_column"]:false)
-	    // help 3/4, optional
-	    help = help + _("<P>The<B> Ch.</B> column of the table is meant for
-detecting whether the option was changed.</P>");
-
-	if (attrib["up_down_buttons"]:false)
-	    // help 4/4, optional
-	    help = help + _("<p>To reorder the options, select some option
-and use the <b>Up</b> or <b>Down</b> buttons to move it up or down
-in the list.</p>");
-
-	term up_down = attrib["up_down_buttons"]:false
-	    ? `VBox (
-		`VStretch (),
-		// push button
-		`PushButton (`id (`_tp_up), _("&Up")),
-		// push button
-		`PushButton (`id (`_tp_down), _("&Down")),
-		`VStretch ()
-	    )
-	    : `HSpacing (0);
-
-	map ret = union ($[
-            "custom_widget" : (`HBox (`HSpacing (2), `VBox (
-		    `HBox (
-	                `Table (`id (`_tp_table),
-			    `opt (`immediate, `notify, `keepSorting),
-			    table_header,
-	                 []),
-			up_down
-		    ),
-                    `HBox (
-			add_button,
-			edit_button,
-			delete_button,
-                        `HStretch (),
-			replace_point
-                    )
-                ), `HSpacing (2))),
-	    "_cwm_attrib" : attrib,
-	    "widget" : `custom,
-	    "help" : help,
-	], widget_descr);
-
-	map ret_copy = mapmap (`k, `v, ret, ``(
-	    [k, v]
-	));
-
-	if (! haskey (ret, "init"))
+    /**
+      * Get option key from the option id
+      * @param descr map description of the table
+      * @param opt_id any id of the option
+      * @return any option key
+      */
+    define any id2key (map descr, any opt_id) ``{
+	if (is (opt_id, string) && size ((string)opt_id) >= 7
+	    && substring ((string)opt_id, 0, 7) == "____sep")
 	{
-	    ret["init"] = ``(TablePopup::TableInitWrapper ());
+	    return "____sep";
 	}
-	if (! haskey (ret, "handle"))
+	term toEval = (term)(descr["id2key"]:nil);
+	if (toEval != nil)
+	    return eval (add (add (toEval, ``(descr)), opt_id));
+	else
+	    return opt_id;
+    }
+
+    /**
+      * Get option description map from the key
+      * @param descr map description of the table
+      * @param opt_key any option key
+      * @return map option description map
+      */
+    define map key2descr (map descr, any opt_key) ``{
+	map options = (map)(descr["options"]:$[]);
+	map opt_descr = (map)(options[opt_key]:$[]);
+	// a copy wanted here
+	opt_descr = add (opt_descr, "_cwm_key", opt_key);
+	// a deep copy
+	opt_descr["table"] = add ((map)(opt_descr["table"]:$[]), "_cwm_key", opt_key);
+	opt_descr["popup"] = add ((map)(opt_descr["popup"]:$[]), "_cwm_key", opt_key);
+	if (opt_descr["popup", "label"]:nil == nil)
+	    opt_descr["popup", "label"] = opt_descr["table", "label"]:opt_key;
+	return opt_descr;
+    }
+
+    /**
+      * Update the option description map in order to contain handlers of
+      *  all needed functions
+      * @param opt_descr map option description map
+      * @param fallbacks map of fallback handlers
+      * @return map updated option description map
+      */
+    define map updateOptionMap (map opt_descr, map fallbacks) ``{
+	// ensure that the submaps exist
+	opt_descr["table"] = opt_descr["table"]:$[];
+	opt_descr["popup"] = opt_descr["popup"]:$[];
+	foreach (string k, ["init", "store"], ``{
+	    if (! haskey (opt_descr["popup"]:$[], k) && haskey (fallbacks, k))
+		opt_descr["popup", k] = fallbacks[k]:nil;
+	});
+	if (! haskey (opt_descr["table"]:$[], "summary")
+	    && haskey (fallbacks, "summary"))
 	{
-	    ret["handle"] = ``(TablePopup::TableHandleWrapper ());
+	    opt_descr["table", "summary"] = fallbacks["summary"]:nil;
 	}
-
-	return ret;
+	if (! haskey (opt_descr["table"]:$[], "changed")
+	    && haskey (fallbacks, "changed"))
+	{
+	    opt_descr["table", "changed"] = fallbacks["changed"]:nil;
+	}
+	if (opt_descr["_cwm_key"]:"" == "____sep"
+	    && opt_descr["table", "label"]:"" == "")
+	{
+	    opt_descr["table", "label"] = "--------------------";
+	}
+	return opt_descr;
     }
 
     /**
-      * Wrapper for TableInit using CWM::GetProcessedWidget () for getting
-      * widget description map
-      * @param key any widget key
+      * Get value to the table entry
+      * @param opt_id any option id
+      * @param opt_descr map option description map
+      * @return string text to the table
       */
-    global define void TableInitWrapper (any key) ``{
-	TableInit (CWM::GetProcessedWidget (), key);
+    define string tableEntryValue (any opt_id, map opt_descr) ``{
+	any opt_key = opt_descr["_cwm_key"]:"";
+	term toEval = (term)(opt_descr["table", "summary"]:nil);
+	if (toEval != nil)
+	{
+	    return (string)(eval (add (add (toEval, opt_id), opt_key)));
+	}
+	return "";
     }
 
     /**
-      * Wrapper for TableHandle using CWM::GetProcessedWidget () for getting
-      * widget description map
-      * @param key any widget key
-      * @param event_descr map event description map
-      * @return symbol return value for wizard sequencer or nil
+      * Realize if table entry was changed
+      * @param opt_id any option id
+      * @param opt_descr map option description map
+      * @return boolean true if was changed
       */
-    global define symbol TableHandleWrapper (any key, map event_descr) ``{
-	return TableHandle(CWM::GetProcessedWidget (), key, event_descr);
+    global define boolean tableEntryChanged (any opt_id, map opt_descr) ``{
+	any opt_key = opt_descr["_cwm_key"]:"";
+	term toEval = opt_descr["table", "changed"]:nil;
+	if (toEval != nil)
+	{
+	    return (boolean)(eval (add (add (toEval, opt_id), opt_key)));
+	}
+	return false;
     }
 
     /**
-      * Initialize the displayed table
-      * @param descr map description map of the whole table
-      * @param key table widget key
+      * Delete an item from the table
+      * Just a wrapper for module-specific function
+      * @param opt_id any option id
+      * @param descr map table description map
+      * @return boolean true if was really deleted
       */
-    global define void TableInit (map descr, any key) ``{
-	previous_selected_item = nil;
-	descr["_cwm_key"] = key;
-	TableRedraw (descr, true);
+    global define boolean deleteTableItem (any opt_id, map descr) ``{
+	term toEval = (term)(descr["option_delete"]:nil);
+	if (nil != toEval)
+	{
+	    any opt_key = id2key (descr, opt_id);
+	    return (boolean)(eval (add (add (toEval, opt_id), opt_key)));
+	}
+	return false;
+   }
+
+    /**
+      * Enable or disable the Delete and up/down buttons
+      * @param descr map table description map
+      * @param opt_descr map selected option description map
+      */
+    global define byteblock updateButtons (map descr, map opt_descr) ``{
+	if (descr["_cwm_attrib", "add_delete_buttons"]:true)
+	{
+	    UI::ChangeWidget (`id (`_tp_delete), `Enabled,
+		opt_descr["table", "optional"]:true);
+	}
+	UI::ChangeWidget (`id (`_tp_edit), `Enabled,
+	    ! opt_descr["table", "immutable"]:false);
+	if (descr["_cwm_attrib", "up_down_buttons"]:false)
+	{
+	    UI::ChangeWidget (`id (`_tp_up), `Enabled,
+		opt_descr["table", "ordering"]:true);
+	    UI::ChangeWidget (`id (`_tp_down), `Enabled,
+		opt_descr["table", "ordering"]:true);
+	}
     }
+
+    /**
+      * Move table item up or down
+      * Just a wrapper for module-specific function
+      * @param opt_id any option id
+      * @param descr map table description map
+      * @param dir symbol `up or `down (according to the button user pressed)
+      * @return any new id of selected option, nil if wasn't reordered
+      */
+    define any moveTableItem (any opt_id, map descr, symbol dir) ``{
+	term toEval = descr["option_move"]:nil;
+	if (nil != toEval)
+	{
+	    toEval = add (toEval, opt_id);
+	    toEval = add (toEval, id2key (descr, opt_id));
+	    toEval = add (toEval, dir);
+	    return eval (toEval);
+	}
+	return nil;
+    }
+
+
+
+
 
     /**
       * Redraw completely the table
@@ -168,13 +218,13 @@ in the list.</p>");
       * @param update_buttons boolean true if buttons status (enabled/disabled)
       *  should be updated according to currently selected item
       */
-    define void TableRedraw (map descr, boolean update_buttons) ``{
+    define byteblock TableRedraw (map descr, boolean update_buttons) ``{
 	list id_list = getIdList (descr);
 	if (previous_selected_item == nil)
 	{
 	    previous_selected_item = id_list[0]:nil;
 	}
-	list(term) entries = maplist (`opt_id, id_list, ``{
+	list<term> entries = maplist (any opt_id, id_list, ``{
 	    string opt_val = "";
 	    string val = "";
 	    boolean opt_changed = false;
@@ -204,6 +254,189 @@ in the list.</p>");
 	});
 	UI::ChangeWidget (`id (`_tp_table), `Items, entries);
 	UI::SetFocus (`id (`_tp_table));
+    }
+
+    /**
+      * Displaye popup for option to edit choosing
+      * @param possible a list of strings or items of all possible options
+      *   to provide
+      * @param editable boolean true means that it is possible to add non-listed
+      *   options
+      * @return string option identifies, nil if canceled
+      */
+    global define string askForNewOption (list possible, boolean editable) ``{
+	possible = sort (possible);
+	term widget = `HBox (`HSpacing (1), `VBox (
+	    `VSpacing (1),
+	    `ComboBox (`id (`optname), editable ? `opt (`editable) : `opt (),
+		// combobox header
+		_("&Selected Option"), possible),
+	    `VSpacing (1),
+	    `HBox (
+		    `HStretch (),
+		    `PushButton (`id (`_tp_ok), `opt (`key_F10, `default),
+		    Label::OKButton ()),
+		`HSpacing (1),
+		`PushButton (`id (`_tp_cancel), `opt (`key_F9),
+		    Label::CancelButton ()),
+		`HStretch ()
+	    ),
+	    `VSpacing (1)
+	), `HSpacing (1));
+	UI::OpenDialog (widget);
+	UI::SetFocus (`id (`optname));
+	any ret = nil;
+	string option = nil;
+	while (ret != `_tp_ok && ret != `_tp_cancel)
+	{
+	    ret = UI::UserInput ();
+	    if (ret == `_tp_ok)
+	    {
+		option = (string)(UI::QueryWidget (`id (`optname), `Value));
+	    }
+	}
+	UI::CloseDialog ();
+	if (ret == `_tp_cancel)
+	    return nil;
+	return option;
+    }
+
+    /**
+      * Display and handle the popup for option
+      * @param option map one option description map that is modified in order
+      *   to contain the option name and more percise option identification
+      * @return symbol `_tp_ok or `_tp_cancel
+      */
+    global define symbol singleOptionEditPopup (map option)``{
+	string opt_key = option["_cwm_key"]:"";
+	any opt_id = option["_cwm_id"]:0;
+
+	string label = sformat ("%1", option["table", "label"]:opt_key);
+	term header = `HBox (
+	    // heading / label
+	    `Heading (_("Current Option: ")),
+	    `Label (label),
+	    `HStretch ()
+	);
+	map popup_descr = CWM::prepareWidget (option["popup"]:$[]);
+	term widget = (term)(popup_descr["widget"]:`VBox ());
+	string help = (string)(popup_descr["help"]:"");
+	if (help == nil)
+	{
+	    help = "";
+	}
+	term contents = `HBox (`HSpacing (1), `VBox (
+	    `VSpacing (1),
+	    `Left (header),
+	    `VSpacing (1),
+	    help == "" ? `VSpacing (0)
+		: `Left (`Label (help)),
+	    `VSpacing (help == "" ? 0 : 1),
+	    `Left (`ReplacePoint(`id (`value_rp), widget)),
+	    `VSpacing (1),
+	    `HBox (
+		`HStretch(),
+		`PushButton (`id (`_tp_ok), `opt (`key_F10, `default),
+		    Label::OKButton ()),
+		`HSpacing (1),
+		`PushButton (`id (`_tp_cancel), `opt (`key_F9),
+		    Label::CancelButton ()),
+		`HStretch ()
+	    ),
+	    `VSpacing (1)
+	), `HSpacing (1));
+	UI::OpenDialog (contents);
+	if (popup_descr["init"]:nil != nil)
+	{
+	    term toEval = popup_descr["init"]:nil;
+	    toEval = add (add (toEval, opt_id), opt_key);
+	    eval (toEval);
+	}
+	symbol ret = nil;
+	map event_descr = $[];
+	while (ret != `_tp_ok && ret != `_tp_cancel)
+	{
+	    map event_descr = (map)(UI::WaitForEvent ());
+	    if (Mode::test)
+		event_descr = $[ "ID" : `_tp_ok];
+	    ret = event_descr["ID"]:nil;
+	    if (popup_descr["handle"]:nil != nil)
+	    {
+		term toEval = popup_descr["handle"]:nil;
+		toEval = add (add (toEval, opt_id), opt_key);
+		toEval = add (toEval, event_descr);
+		eval (toEval);
+	    }
+	    if (ret == `_tp_ok)
+	    {
+		if (! CWM::validateWidget (popup_descr, event_descr,
+		    [opt_id, opt_key]))
+		    ret = nil;
+	    }
+	}
+	if (ret == `_tp_ok && popup_descr["store"]:nil != nil)
+	{
+	    term toEval = popup_descr["store"]:nil;
+	    toEval = add (add (toEval, opt_id), opt_key);
+	    eval (toEval);
+	}
+
+	UI::CloseDialog ();
+	return ret;
+    }
+
+
+
+
+// functions
+
+    /**
+      * Disable whole table
+      * @param descr map table widget description map
+      */
+    global define byteblock DisableTable (map descr) ``{
+	UI::ChangeWidget (`id (`_tp_table), `Enabled, false);
+	UI::ChangeWidget (`id (`_tp_edit), `Enabled, false);
+	if (descr["_cwm_attrib", "add_delete_buttons"]:true)
+	{
+	    UI::ChangeWidget (`id (`_tp_delete), `Enabled, false);
+	    UI::ChangeWidget (`id (`_tp_add), `Enabled, false);
+	}
+	if (descr["_cwm_attrib", "up_down_buttons"]:false)
+	{
+	    UI::ChangeWidget (`id (`_tp_up), `Enabled, false);
+	    UI::ChangeWidget (`id (`_tp_down), `Enabled, false);
+	}
+    }
+
+    /**
+      * Enable whole table (except buttons that should be grayed according to
+      * currently selected table row
+      * @param descr map table widget description map
+      */
+    global define byteblock EnableTable (map descr) ``{
+	UI::ChangeWidget (`id (`_tp_table), `Enabled, true);
+	UI::ChangeWidget (`id (`_tp_edit), `Enabled, true);
+	if (descr["_cwm_attrib", "add_delete_buttons"]:true)
+	{
+	    UI::ChangeWidget (`id (`_tp_add), `Enabled, false);
+	}
+
+	any opt_id = UI::QueryWidget (`id (`_tp_table), `CurrentItem);
+	any opt_key = id2key (descr, opt_id);
+	map option_map = key2descr (descr, opt_key);
+	updateButtons (descr, option_map);
+    }
+
+    /**
+      * Initialize the displayed table
+      * @param descr map description map of the whole table
+      * @param key table widget key
+      */
+    global define byteblock TableInit (map descr, any key) ``{
+	previous_selected_item = nil;
+	descr["_cwm_key"] = key;
+	TableRedraw (descr, true);
     }
 
     /**
@@ -282,12 +515,14 @@ in the list.</p>");
 	    {
 		if (is (toEval, symbol))
 		{
-		    return toEval;
+		    symbol ret = (symbol)toEval;
+		    return ret;
 		}
 		else
 		{
-		    symbol ret = eval (
-			add (add (add (toEval, opt_id), opt_key), event_descr));
+		    symbol ret = (symbol)(eval (
+			add (add (add ((term)toEval, opt_id), opt_key),
+			event_descr)));
 		    if (ret != `_tp_normal)
 			return ret;
 		}
@@ -383,347 +618,118 @@ in the list.</p>");
     }
 
     /**
-      * Disable whole table
-      * @param descr map table widget description map
+      * Wrapper for TableInit using CWM::GetProcessedWidget () for getting
+      * widget description map
+      * @param key any widget key
       */
-    global define void DisableTable (map descr) ``{
-	UI::ChangeWidget (`id (`_tp_table), `Enabled, false);
-	UI::ChangeWidget (`id (`_tp_edit), `Enabled, false);
-	if (descr["_cwm_attrib", "add_delete_buttons"]:true)
-	{
-	    UI::ChangeWidget (`id (`_tp_delete), `Enabled, false);
-	    UI::ChangeWidget (`id (`_tp_add), `Enabled, false);
-	}
-	if (descr["_cwm_attrib", "up_down_buttons"]:false)
-	{
-	    UI::ChangeWidget (`id (`_tp_up), `Enabled,
-		opt_descr["table", "ordering"]:true);
-	    UI::ChangeWidget (`id (`_tp_down), `Enabled,
-		opt_descr["table", "ordering"]:true);
-	}
+    global define byteblock TableInitWrapper (any key) ``{
+	TableInit (CWM::GetProcessedWidget (), key);
     }
 
     /**
-      * Enable whole table (except buttons that should be grayed according to
-      * currently selected table row
-      * @param descr map table widget description map
+      * Wrapper for TableHandle using CWM::GetProcessedWidget () for getting
+      * widget description map
+      * @param key any widget key
+      * @param event_descr map event description map
+      * @return symbol return value for wizard sequencer or nil
       */
-    global define void EnableTable (map descr) ``{
-	UI::ChangeWidget (`id (`_tp_table), `Enabled, true);
-	UI::ChangeWidget (`id (`_tp_edit), `Enabled, true);
-	if (descr["_cwm_attrib", "add_delete_buttons"]:true)
-	{
-	    UI::ChangeWidget (`id (`_tp_add), `Enabled, false);
-	}
-
-	any opt_id = UI::QueryWidget (`id (`_tp_table), `CurrentItem);
-	any opt_key = id2key (descr, opt_id);
-	map option_map = key2descr (descr, opt_key);
-	updateButtons (descr, option_map);
+    global define symbol TableHandleWrapper (any key, map event_descr) ``{
+	return TableHandle(CWM::GetProcessedWidget (), key, event_descr);
     }
 
     /**
-      * Enable or disable the Delete and up/down buttons
-      * @param descr map table description map
-      * @param opt_descr map selected option description map
+      * Get the map with the table widget
+      * @param attrib map table attributes
+      * @param widget_descr map widget description map of the table, will be
+      *  unioned with the generated map
+      * @return map table widget
       */
-    global define void updateButtons (map descr, map opt_descr) ``{
-	if (descr["_cwm_attrib", "add_delete_buttons"]:true)
-	{
-	    UI::ChangeWidget (`id (`_tp_delete), `Enabled,
-		opt_descr["table", "optional"]:true);
-	}
-	UI::ChangeWidget (`id (`_tp_edit), `Enabled,
-	    ! opt_descr["table", "immutable"]:false);
-	if (descr["_cwm_attrib", "up_down_buttons"]:false)
-	{
-	    UI::ChangeWidget (`id (`_tp_up), `Enabled,
-		opt_descr["table", "ordering"]:true);
-	    UI::ChangeWidget (`id (`_tp_down), `Enabled,
-		opt_descr["table", "ordering"]:true);
-	}
-    }
+    global define map CreateTableDescr (map attrib, map widget_descr) ``{
+	term add_button = attrib["add_delete_buttons"]:true
+	    ? `PushButton (`id (`_tp_add), `opt (`key_F3), Label::AddButton ())
+	    : `HSpacing (0);
+	term edit_button
+	    = `PushButton (`id (`_tp_edit), `opt (`key_F4), Label::EditButton ());
+	term delete_button = attrib["add_delete_buttons"]:true
+	    ? `PushButton (`id (`_tp_delete), `opt (`key_F5), Label::DeleteButton ())
+	    : `HSpacing (0);
+	term table_header = attrib["changed_column"]:false
+	    ? `header (
+		// table header, shortcut for changed, keep very short
+		_("Ch."),
+		// table header
+		_("Option"),
+		// table header
+		_("Value"))
+	    : `header (
+		// table header
+		_("Option"),
+		// table header
+		_("Value"));
 
-    /**
-      * Get list of IDs of entries of the table
-      * @param descr map table description map
-      * @return list of IDs of the table
-      */
-    global define list getIdList (map descr) ``{
-        term toEval = descr["ids"]:nil;
-        if (toEval != nil)
-        {
-            toEval = add (toEval, ``(descr));
-            return eval (toEval);
-        }
-	return [];
-    }
+	term replace_point = `ReplacePoint (`id (`_tp_table_repl), `HSpacing (0));
+	// help 1/4
+	string help = _("<p><b><big>Editing the Settings</big></b><br>
+To edit the settings, choose the appropriate
+entry of the table then click <b>Edit</b>.</p>");
+	if (attrib["add_delete_buttons"]:true)
+	    // help 2/4, optional
+	    help = help + _("<p>To add a new option, click <b>Add</b>. To remove
+an option, select it and click <b>Delete</b>.</p>");
 
-    /**
-      * Get value to the table entry
-      * @param opt_id any option id
-      * @param opt_descr map option description map
-      * @return string text to the table
-      */
-    global define string tableEntryValue (any opt_id, map opt_descr) ``{
-	any opt_key = opt_descr["_cwm_key"]:"";
-	term toEval = opt_descr["table", "summary"]:nil;
-	if (toEval != nil)
-	{
-	    return eval (add (add (toEval, opt_id), opt_key));
-	}
-	return "";
-    }
+	if (attrib["changed_column"]:false)
+	    // help 3/4, optional
+	    help = help + _("<P>The<B> Ch.</B> column of the table is meant for
+detecting whether the option was changed.</P>");
 
-    /**
-      * Realize if table entry was changed
-      * @param opt_id any option id
-      * @param opt_descr map option description map
-      * @return boolean true if was changed
-      */
-    global define boolean tableEntryChanged (any opt_id, map opt_descr) ``{
-	any opt_key = opt_descr["_cwm_key"]:"";
-	term toEval = opt_descr["table", "changed"]:nil;
-	if (toEval != nil)
-	{
-	    return eval (add (add (toEval, opt_id), opt_key));
-	}
-	return false;
-    }
+	if (attrib["up_down_buttons"]:false)
+	    // help 4/4, optional
+	    help = help + _("<p>To reorder the options, select some option
+and use the <b>Up</b> or <b>Down</b> buttons to move it up or down
+in the list.</p>");
 
-    /**
-      * Delete an item from the table
-      * Just a wrapper for module-specific function
-      * @param opt_id any option id
-      * @param descr map table description map
-      * @return boolean true if was really deleted
-      */
-    global define boolean deleteTableItem (any opt_id, map descr) ``{
-	term toEval = descr["option_delete"]:nil;
-	if (nil != toEval)
-	{
-	    return eval (add (add (toEval, opt_id), id2key (descr, opt_id)));
-	}
-	return false;
-   }
+	term up_down = attrib["up_down_buttons"]:false
+	    ? `VBox (
+		`VStretch (),
+		// push button
+		`PushButton (`id (`_tp_up), _("&Up")),
+		// push button
+		`PushButton (`id (`_tp_down), _("&Down")),
+		`VStretch ()
+	    )
+	    : `HSpacing (0);
 
-    /**
-      * Move table item up or down
-      * Just a wrapper for module-specific function
-      * @param opt_id any option id
-      * @param descr map table description map
-      * @param dir symbol `up or `down (according to the button user pressed)
-      * @return any new id of selected option, nil if wasn't reordered
-      */
-    global define  any moveTableItem (any opt_id, map descr, symbol dir) ``{
-	term toEval = descr["option_move"]:nil;
-	if (nil != toEval)
-	{
-	    toEval = add (toEval, opt_id);
-	    toEval = add (toEval, id2key (descr, opt_id));
-	    toEval = add (toEval, dir);
-	    return eval (toEval);
-	}
-	return nil;
-    }
+	map ret = union ($[
+            "custom_widget" : (`HBox (`HSpacing (2), `VBox (
+		    `HBox (
+	                `Table (`id (`_tp_table),
+			    `opt (`immediate, `notify, `keepSorting),
+			    table_header,
+	                 []),
+			up_down
+		    ),
+                    `HBox (
+			add_button,
+			edit_button,
+			delete_button,
+                        `HStretch (),
+			replace_point
+                    )
+                ), `HSpacing (2))),
+	    "_cwm_attrib" : attrib,
+	    "widget" : `custom,
+	    "help" : help,
+	], widget_descr);
 
-    /**
-      * Update the option description map in order to contain handlers of
-      *  all needed functions
-      * @param opt_descr map option description map
-      * @param fallbacks map of fallback handlers
-      * @return map updated option description map
-      */
-    global define map updateOptionMap (map opt_descr, map fallbacks) ``{
-	// ensure that the submaps exist
-	opt_descr["table"] = opt_descr["table"]:$[];
-	opt_descr["popup"] = opt_descr["popup"]:$[];
-	foreach (string k, ["init", "store"], ``{
-	    if (! haskey (opt_descr["popup"]:$[], k) && haskey (fallbacks, k))
-		opt_descr["popup", k] = fallbacks[k]:nil;
-	});
-	if (! haskey (opt_descr["table"]:$[], "summary")
-	    && haskey (fallbacks, "summary"))
+	if (! haskey (ret, "init"))
 	{
-	    opt_descr["table", "summary"] = fallbacks["summary"]:nil;
+	    ret["init"] = ``(TablePopup::TableInitWrapper ());
 	}
-	if (! haskey (opt_descr["table"]:$[], "changed")
-	    && haskey (fallbacks, "changed"))
+	if (! haskey (ret, "handle"))
 	{
-	    opt_descr["table", "changed"] = fallbacks["changed"]:nil;
-	}
-	if (opt_descr["_cwm_key"]:"" == "____sep"
-	    && opt_descr["table", "label"]:"" == "")
-	{
-	    opt_descr["table", "label"] = "--------------------";
-	}
-	return opt_descr;
-    }
-
-    /**
-      * Get option key from the option id
-      * @param descr map description of the table
-      * @param opt_id any id of the option
-      * @return any option key
-      */
-    global define any id2key (map descr, any opt_id) ``{
-	if (is (opt_id, string) && size (opt_id) >= 7
-	    && substring (opt_id, 0, 7) == "____sep")
-	{
-	    return "____sep";
-	}
-	term toEval = descr["id2key"]:nil;
-	if (toEval != nil)
-	    return eval (add (add (toEval, ``(descr)), opt_id));
-	else
-	    return opt_id;
-    }
-
-    /**
-      * Get option description map from the key
-      * @param descr map description of the table
-      * @param opt_key any option key
-      * @return map option description map
-      */
-    global define map key2descr (map descr, any opt_key) ``{
-	map options = descr["options"]:$[];
-	map opt_descr = options[opt_key]:$[];
-	// a copy wanted here
-	opt_descr = add (opt_descr, "_cwm_key", opt_key);
-	// a deep copy
-	opt_descr["table"] = add (opt_descr["table"]:$[], "_cwm_key", opt_key);
-	opt_descr["popup"] = add (opt_descr["popup"]:$[], "_cwm_key", opt_key);
-	if (opt_descr["popup", "label"]:nil == nil)
-	    opt_descr["popup", "label"] = opt_descr["table", "label"]:opt_key;
-	return opt_descr;
-    }
-
-    /**
-      * Displaye popup for option to edit choosing
-      * @param possible a list of strings or items of all possible options
-      *   to provide
-      * @param editable boolean true means that it is possible to add non-listed
-      *   options
-      * @return string option identifies, nil if canceled
-      */
-    global define string askForNewOption (list possible, boolean editable) ``{
-	possible = sort (possible);
-	term widget = `HBox (`HSpacing (1), `VBox (
-	    `VSpacing (1),
-	    `ComboBox (`id (`optname), editable ? `opt (`editable) : `opt (),
-		// combobox header
-		_("&Selected Option"), possible),
-	    `VSpacing (1),
-	    `HBox (
-		    `HStretch (),
-		    `PushButton (`id (`_tp_ok), `opt (`key_F10, `default),
-		    Label::OKButton ()),
-		`HSpacing (1),
-		`PushButton (`id (`_tp_cancel), `opt (`key_F9),
-		    Label::CancelButton ()),
-		`HStretch ()
-	    ),
-	    `VSpacing (1)
-	), `HSpacing (1));
-	UI::OpenDialog (widget);
-	UI::SetFocus (`id (`optname));
-	any ret = nil;
-	string option = nil;
-	while (ret != `_tp_ok && ret != `_tp_cancel)
-	{
-	    ret = UI::UserInput ();
-	    if (ret == `_tp_ok)
-	    {
-		option = UI::QueryWidget (`id (`optname), `Value);
-	    }
-	}
-	UI::CloseDialog ();
-	if (ret == `_tp_cancel)
-	    return nil;
-	return option;
-    }
-
-    /**
-      * Display and handle the popup for option
-      * @param option map one option description map that is modified in order
-      *   to contain the option name and more percise option identification
-      * @return symbol `_tp_ok or `_tp_cancel
-      */
-    global define symbol singleOptionEditPopup (map option)``{
-	string opt_key = option["_cwm_key"]:"";
-	any opt_id = option["_cwm_id"]:0;
-
-	string label = sformat ("%1", option["table", "label"]:opt_key);
-	term header = `HBox (
-	    // heading / label
-	    `Heading (_("Current Option: ")),
-	    `Label (label),
-	    `HStretch ()
-	);
-	map popup_descr = CWM::prepareWidget (option["popup"]:$[]);
-	term widget = popup_descr["widget"]:$[];
-	string help = popup_descr["help"]:"";
-	if (help == nil)
-	{
-	    help = "";
-	}
-	term contents = `HBox (`HSpacing (1), `VBox (
-	    `VSpacing (1),
-	    `Left (header),
-	    `VSpacing (1),
-	    help == "" ? `VSpacing (0)
-		: `Left (`Label (help)),
-	    `VSpacing (help == "" ? 0 : 1),
-	    `Left (`ReplacePoint(`id (`value_rp), widget)),
-	    `VSpacing (1),
-	    `HBox (
-		`HStretch(),
-		`PushButton (`id (`_tp_ok), `opt (`key_F10, `default),
-		    Label::OKButton ()),
-		`HSpacing (1),
-		`PushButton (`id (`_tp_cancel), `opt (`key_F9),
-		    Label::CancelButton ()),
-		`HStretch ()
-	    ),
-	    `VSpacing (1)
-	), `HSpacing (1));
-	UI::OpenDialog (contents);
-	if (popup_descr["init"]:nil != nil)
-	{
-	    term toEval = popup_descr["init"]:nil;
-	    toEval = add (add (toEval, opt_id), opt_key);
-	    eval (toEval);
-	}
-	any ret = nil;
-	map event_descr = $[];
-	while (ret != `_tp_ok && ret != `_tp_cancel)
-	{
-	    map event_descr = UI::WaitForEvent ();
-	    if (Mode::test)
-		event_descr = $[ "ID" : `_tp_ok];
-	    ret = event_descr["ID"]:nil;
-	    if (popup_descr["handle"]:nil != nil)
-	    {
-		term toEval = popup_descr["handle"]:nil;
-		toEval = add (add (toEval, opt_id), opt_key);
-		toEval = add (toEval, event_descr);
-		eval (toEval);
-	    }
-	    if (ret == `_tp_ok)
-	    {
-		if (! CWM::validateWidget (popup_descr, event_descr,
-		    [opt_id, opt_key]))
-		    ret = nil;
-	    }
-	}
-	if (ret == `_tp_ok && popup_descr["store"]:nil != nil)
-	{
-	    term toEval = popup_descr["store"]:nil;
-	    toEval = add (add (toEval, opt_id), opt_key);
-	    eval (toEval);
+	    ret["handle"] = ``(TablePopup::TableHandleWrapper ());
 	}
 
-	UI::CloseDialog ();
 	return ret;
     }
 
