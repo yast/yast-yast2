@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 29 13:51:00 CEST 2004 - visnov@suse.cz
+
+- always reinitialize target (#45356)
+- 2.10.23
+
+-------------------------------------------------------------------
 Wed Sep 29 10:10:37 CEST 2004 - mvidner@suse.cz
 
 - Fixed Package::FunctionsAI["DoInstall" and "DoRemove"] (#45463).
