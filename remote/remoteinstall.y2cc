@@ -18,7 +18,7 @@ Group = Misc
 Icon = default.png
 
 ; *one* *short* descriptive line for y2cc
-Helptext = _("Run installation on remote host")
+Helptext = _("Run Installation on Remote Host")
 
 ; arguments, seperated by space
 Arguments =

@@ -35,7 +35,7 @@ global define symbol ChooseDialog() ``{
 
     term contents = `VBox(`HSpacing(50), `HBox(
 	/* SelectionBox label */
-	`SelectionBox(`id(`hosts), `opt(`notify), _("&Available hosts:"), hosts),
+	`SelectionBox(`id(`hosts), `opt(`notify), _("&Available Hosts:"), hosts),
 	`HSpacing(1.0),
 	`VBox(
 	    /* TextEntry label */
@@ -43,9 +43,9 @@ global define symbol ChooseDialog() ``{
 	    /* TextEntry label */
 	    `TextEntry(`id(`user), _("&User name:"), user),
 	    /* TextEntry label */
-	    `TextEntry(`id(`modul), _("&Module to start:"), modul),
+	    `TextEntry(`id(`modul), _("&Module to Start:"), modul),
 	    /* ComboBox label */
-	    `Left(`ComboBox(`id(`protocol), _("Connection &protocol:"), [
+	    `Left(`ComboBox(`id(`protocol), _("Connection &Protocol:"), [
 		`item(`id("ssh"), "ssh", protocol == "ssh"),
 		`item(`id("rsh"), "rsh", protocol == "rsh"),
 		`item(`id("rlogin"), "rlogin", protocol == "rlogin"),
@@ -112,7 +112,7 @@ y2milestone("----------------------------------------");
 y2milestone("Remote chooser module started");
 
 /* Label text */
-UI::OpenDialog(`Label(_("Scanning for hosts in the local network ...")));
+UI::OpenDialog(`Label(_("Scanning for hosts in the local network...")));
 hosts = sort(SCR::Read(.net.hostnames));
 if(hosts == nil) hosts = [];
 UI::CloseDialog();
