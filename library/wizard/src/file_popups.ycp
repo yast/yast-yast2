@@ -29,7 +29,9 @@
      */
 
     global define boolean HaveFilePopups () ``{
-	return (lookup (UI::GetDisplayInfo (), "TextMode", true) == false);
+	// return (lookup (UI::GetDisplayInfo (), "TextMode", true) == false);
+
+	return true;	// ncurses file selection widgets are available, too
     }
 
     /**
