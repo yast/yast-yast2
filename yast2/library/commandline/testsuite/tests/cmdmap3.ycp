@@ -1,0 +1,36 @@
+/**
+ * File:	cmpmap3.ycp
+ * Package:	yast2
+ * Summary:	sanity validation of the command line map
+ * Author:	Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ *
+ * testedfiles: CommandLine.ycp Testsuite.ycp
+ */
+
+{
+
+    include "testsuite.ycp";
+    import "TypeRepository";
+    import "CommandLine";
+
+    // map must define help for each action
+    TEST(``(CommandLine::Init(
+	$[
+	    "id": "testsuite",
+	    "actions": $[
+		"okaction" : $[
+		    "help" : "This action should be ok"
+		],
+		"wrongaction" : $[
+		    "key"  : nil
+		]
+	    ]
+	]
+	,[]) ),[],nil);
+    TEST(``(CommandLine::Done()),[],nil);
+    TEST(``(CommandLine::Aborted()),[],nil);
+
+/* EOF */
+}

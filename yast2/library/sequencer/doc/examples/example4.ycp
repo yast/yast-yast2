@@ -1,0 +1,48 @@
+{
+
+import "Sequencer";
+include "./examples.ycp";
+
+define any BeginDialog() { return GUI("Begin",[`back, `next]); }
+define any EndDialog() { return GUI("End",[`back,`finish]); }
+define any ConfigDialog() { return GUI("Config",[`back,`details,`expert,`next]); }
+define any DetailsDialog() { return GUI("Details",[`back,`ok,`details,`next]); }
+define any SuperDetailsDialog() { return GUI("Super details",[`back,`ok,`next]); }
+define any ExpertDialog() { return GUI("Expert",[`back,`next]); }
+define any Expert2Dialog() { return GUI("Expert2",[`back,`ok,`next]); }
+
+map Sequence = $[
+    "ws_start" : "begin",
+    "begin" : $[
+        `next : "config"
+    ],
+    "expert" : $[
+            `next : "expert2"
+    ],
+    "expert2" : $[
+            `next : "end",
+        `ok : "config"
+    ],
+    "config" : $[
+        `next : "end",
+        `details : "details",
+        `expert: "expert"
+    ],
+    "details" : $[
+        `next : "end",
+        `details: "superdetails",
+        `ok : "config"
+    ],
+    "superdetails" : $[
+        `next: "end",
+        `ok: "details"
+    ],
+    "end" : $[
+        `finish : `ws_finish
+    ]
+];
+
+any result = Sequencer::Run(Aliases(),Sequence);
+y2debug("result=%1",result);
+
+}

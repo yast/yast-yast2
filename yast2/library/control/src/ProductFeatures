@@ -1,0 +1,29 @@
+## Path:    System/Yast2
+## Description: Product Features
+## Type:    yesno
+## Default: yes
+#
+# Enable Auto-Login
+#
+ENABLE_AUTOLOGIN="yes"
+
+## Type:    yesno
+## Default: no
+#
+# Enable EVMS config
+#
+EVMS_CONFIG="no"
+
+## Type:    string(simple,expert)
+## Default: expert
+#
+# UI mode
+#
+UI_MODE="expert"
+
+## Type:    string(simple,expert)
+## Default: expert
+#
+# Warn about Incomplete Translations
+#
+INCOMPLETE_TRANSLATION_TRESHOLD="95"

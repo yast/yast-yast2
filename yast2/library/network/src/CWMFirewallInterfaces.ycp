@@ -1,0 +1,785 @@
+/**
+ * File:	modules/CWMFirewallInterfaces.ycp
+ * Package:	Common widget manipulation, firewall interfaces widget
+ * Summary:	Routines for selecting interfaces opened in firewall
+ * Authors:	Jiri Srain <jsrain@suse.cz>
+ *
+ * $Id$
+ *
+ */
+
+{
+
+module "CWMFirewallInterfaces";
+textdomain "base";
+
+import "CWM";
+import "Label";
+import "Mode";
+import "NetworkDevices";
+import "Popup";
+import "SuSEFirewall";
+
+
+// private variables
+
+/**
+ * List of all interfaces relevant for firewall settings
+ */
+list<string> all_interfaces = nil;
+
+/**
+ * List of all items of interfaces to the selection box
+ */
+list interface_items = nil;
+
+/**
+ * List of interfaces that are allowed
+ */
+list<string> allowed_interfaces = nil;
+
+/**
+ * Information if configuration was changed by user
+ */
+boolean configuration_changed = nil;
+
+// private functions
+
+/**
+ * Enable or disable the firewall details widget according to the status
+ * of "open firewall" checkbox
+ */
+void EnableOrDisableFirewallDetails () {
+    if (! UI::WidgetExists (`id ("_cwm_open_firewall")))
+	return;
+    if (! UI::WidgetExists (`id ("_cwm_firewall_details")))
+	return;
+    boolean enabled = (boolean)
+	UI::QueryWidget (`id ("_cwm_open_firewall"), `Value);
+    if (enabled == nil)
+	enabled = false;
+    if (size (all_interfaces) == 0)
+	enabled = false;
+    UI::ChangeWidget (`id ("_cwm_firewall_details"), `Enabled, enabled);
+}
+
+/**
+ * Set the firewall status label
+ * @param status symbol one of `off, `closed, `open_all, `custom
+ */
+void SetFirewallLabel (symbol status) {
+    string label = "";
+    if (status == `off)
+    {
+	// label
+	label = _("Firewall is disabled");
+    }
+    else if (status == `closed)
+    {
+	// label
+	label = _("Firewall port is closed");
+    }
+    else if (status == `open_all)
+    {
+	// label
+	label = _("Firewall port is open on all interfaces");
+    }
+    else if (status == `custom)
+    {
+	// label
+	label = _("Firewall port is open on selected interfaces");
+    }
+    else if (status == `no_ifaces)
+    {
+	// label
+	label = _("No network interfaces are configured");
+    }
+    UI::ReplaceWidget (`id (`_cwm_firewall_status_rp),
+	`Label (label));
+}
+
+/**
+ * Initialize the list of all known interfaces
+ */
+void InitAllInterfacesList () {
+    if (! Mode::config ())
+	NetworkDevices::Read ();
+    all_interfaces = NetworkDevices::List ("");
+    all_interfaces = filter (string i, all_interfaces, {
+	return i != "lo";
+    });
+    if (! Mode::config ())
+    {
+	interface_items = maplist (string i, all_interfaces, {
+	    NetworkDevices::Select (i);
+	    string label = NetworkDevices::Current["BOOTPROTO"]:"";
+	    string ipaddr = NetworkDevices::Current["IPADDR"]:"";
+	    if (tolower (label) == "static" || label == "" || label == nil)
+	    {
+		label = ipaddr;
+	    }
+	    else
+	    {
+		label = toupper (label);
+		if (ipaddr != nil && ipaddr != "")
+		    label = sformat ("%1/%2", label, ipaddr);
+	    }
+	    if (label == nil || label == "")
+	    {
+		label = i;
+	    }
+	    else
+	    {
+		label = sformat ("%1 (%2)", i, label);
+	    }
+	    return `item (`id (i), label);
+	});
+    }
+    else
+    {
+	interface_items = maplist (string i, all_interfaces, {
+	    return `item (`id (i), i);
+	});
+    }
+}
+
+/**
+ * Update the firewall status label according to the current status
+ */
+void UpdateFirewallStatus () {
+    if (all_interfaces == nil)
+	InitAllInterfacesList ();
+    symbol status = `custom;
+    if (! SuSEFirewall::IsStarted())
+	status = `off;
+    else if (size (all_interfaces) == 0)
+	status = `no_ifaces;
+    else if (size (all_interfaces) == size (allowed_interfaces))
+	status = `open_all;
+    else if (size (allowed_interfaces) == 0)
+	status = `closed;
+    SetFirewallLabel (status);
+    boolean open = status == `open_all || status == `custom;
+    UI::ChangeWidget (`id ("_cwm_open_firewall"), `Value, open);
+}
+
+/**
+ * Get the list of all interfaces that will be selected
+ * @param ifaces a list of interfaces selected by the user
+ * @return a list of interfaces that will be opened
+ */
+list<string> Selected2Opened (list<string> ifaces) {
+    list<string> groups = maplist (string i, ifaces, {
+	return SuSEFirewall::GetZoneOfInterface (i);
+    });
+    groups = toset (groups);
+    groups = filter (string g, groups, {
+	return g != nil;
+    });
+    list<list<string> > iface_groups = maplist (string g, groups, {
+	return SuSEFirewall::GetInterfacesInZone (g);
+    });
+    list<string> new_ifaces = toset (flatten (iface_groups));
+    new_ifaces = filter (string i, new_ifaces, {
+	return i != nil;
+    });
+    return toset (new_ifaces);
+}
+
+/**
+ * Display popup with firewall settings details
+ */
+void DisplayFirewallDetailsPopupHandler (map<string,any> widget) {
+
+    void (map<string,any>) common_details_handler = (void(map<string,any>))
+	widget["common_details_handler"]:nil;
+    if (common_details_handler != nil)
+	common_details_handler (widget);
+}
+
+// public functions
+
+// general functions
+
+/**
+ * Initialize the list of allowed interfaces
+ * Changes the internal variables
+ * @param services a list of services
+ */
+global void InitAllowedInterfaces (list<string> services) {
+    map<string,boolean> service_status = $[];
+
+    map<string,map<string,boolean> > ifaces_info
+	= SuSEFirewall::GetServicesInZones (services);
+    foreach (string s, map<string,boolean> status, ifaces_info, {
+	foreach (string iface, boolean en, status, {
+	    service_status[iface] = service_status[iface]:true && en;
+	});
+    });
+    service_status = filter (string iface, boolean en, service_status, {
+	return en;
+    });
+    allowed_interfaces = maplist (string iface, boolean en, service_status, {
+	return iface;
+    });
+
+    configuration_changed = false;
+}
+
+/**
+ * Store the list of allowed interfaces
+ * Users the internal variables
+ * @param services a list of services
+ */
+global void StoreAllowedInterfaces (list<string> services) {
+    // do not save anything if configuration didn't change
+    if (! configuration_changed)
+	return;
+    list<string> forbidden_interfaces = filter (string i, all_interfaces, {
+	return ! contains (allowed_interfaces, i);
+    });
+
+    if (size (forbidden_interfaces) > 0)
+    {
+	SuSEFirewall::SetServices (services, forbidden_interfaces, false);
+    }
+    if (size (allowed_interfaces) > 0)
+    {
+	SuSEFirewall::SetServices (services, allowed_interfaces, true);
+    }
+}
+
+/**
+ * Init function of the widget
+ * @param map widget a widget description map
+ * @param key strnig the widget key
+ */
+global define void InterfacesInit (map<string,any> widget, string key) {
+    // set the list of ifaces
+    if (all_interfaces == nil)
+    {
+	InitAllInterfacesList ();
+    }
+    UI::ReplaceWidget (`id ("_cwm_interface_list_rp"),
+	`MultiSelectionBox (
+	    `id ("_cwm_interface_list"),
+            _("&Network Interfaces with Open Port in Firewall"),
+	    interface_items
+	)
+    );
+    // mark open ifaces as open
+    UI::ChangeWidget (`id ("_cwm_interface_list"),
+	`SelectedItems,
+	allowed_interfaces);
+}
+
+/**
+ * Handle function of the widget
+ * @param map widget a widget description map
+ * @param key strnig the widget key
+ * @param event map event to be handled
+ * @return symbol for wizard sequencer or nil
+ */
+global define symbol InterfacesHandle (map<string,any> widget, string key, map event) {
+    any event_id = event["ID"]:nil;
+    if (event_id == "_cwm_interface_select_all")
+    {
+	UI::ChangeWidget (`id ("_cwm_interface_list"), `SelectedItems,
+	    all_interfaces);
+	return nil;
+    }
+    if (event_id == "_cwm_interface_select_none")
+    {
+	UI::ChangeWidget (`id ("_cwm_interface_list"), `SelectedItems, []);
+	return nil;
+    }
+    return nil;
+}
+
+/**
+ * Store function of the widget
+ * @param map widget a widget description map
+ * @param key strnig the widget key
+ * @param event map that caused widget data storing
+ */
+global define void InterfacesStore (map<string,any> widget, string key, map event) {
+    allowed_interfaces = (list<string>)
+	UI::QueryWidget (`id ("_cwm_interface_list"), `SelectedItems);
+    allowed_interfaces = Selected2Opened (allowed_interfaces);
+    configuration_changed = true;
+}
+
+/**
+ * Validate function of the widget
+ * @param map widget a widget description map
+ * @param key strnig the widget key
+ * @param event map event that caused the validation
+ * @return true if validation succeeded, false otherwise
+ */
+global boolean InterfacesValidate (map<string,any> widget, string key, map event) {
+    list<string> ifaces = (list<string>)
+	UI::QueryWidget (`id ("_cwm_interface_list"), `SelectedItems);
+    ifaces = toset (ifaces);
+    if (size (ifaces) == 0)
+    {
+	if (! Popup::YesNo (_("No interface is selected. Service will not
+be available for other computers.
+
+Continue?")))
+	{
+	    return false;
+	}
+    }
+    list<string> firewall_ifaces = toset (Selected2Opened (ifaces));
+    list<string> added_ifaces = filter (string i, firewall_ifaces, {
+	return ! contains (ifaces, i);
+    });
+    list<string> removed_ifaces = filter (string i, ifaces, {
+	return ! contains (firewall_ifaces, i);
+    });
+    if (size (added_ifaces) > 0)
+    {
+	string ifaces_list = mergestring (added_ifaces, "\n");
+	if (! Popup::YesNo (sformat (
+	    // yes-no popup
+	    _("Because of SuSE Firewall settings, the port
+on the following interfaces will additionally be open:
+%1
+
+Continue?"),
+	    ifaces_list)))
+	{
+	    return false;
+	}
+    }
+    if (size (removed_ifaces) > 0)
+    {
+	string ifaces_list = mergestring (removed_ifaces, "\n");
+	if (! Popup::YesNo (sformat (
+	    // yes-no popup
+	    _("Because of SuSE Firewall settings, the port
+on the following interfaces cannot be opened:
+%1
+
+Continue?"),
+	    ifaces_list)))
+	{
+	    return false;
+	}
+    }
+    return true;
+}
+
+/**
+ * Init function of the widget
+ * @param key strnig the widget key
+ */
+global define void InterfacesInitWrapper (string key) {
+    InterfacesInit (CWM::GetProcessedWidget (), key);
+}
+
+/**
+ * Handle function of the widget
+ * @param key strnig the widget key
+ * @param event map event to be handled
+ * @return symbol for wizard sequencer or nil
+ */
+global define symbol InterfacesHandleWrapper (string key, map event) {
+    return InterfacesHandle (CWM::GetProcessedWidget (), key, event);
+}
+
+/**
+ * Store function of the widget
+ * @param key strnig the widget key
+ * @param event map that caused widget data storing
+ */
+global define void InterfacesStoreWrapper (string key, map event) {
+    InterfacesStore (CWM::GetProcessedWidget (), key, event);
+}
+
+/**
+ * Validate function of the widget
+ * @param key strnig the widget key
+ * @param event map event that caused the validation
+ * @return true if validation succeeded, false otherwise
+ */
+global boolean InterfacesValidateWrapper (string key, map event) {
+    return InterfacesValidate (CWM::GetProcessedWidget (), key, event);
+}
+
+/**
+ * Get the widget description map
+ * @param settings a map of all parameters needed to create the widget properly
+ * <pre>
+ *
+ * Behavior manipulating functions (mandatory)
+ * - "get_allowed_interfaces" : list<string>() -- function that returns
+ *          the list of allowed network interfaces
+ * - "set_allowed_interfaces" : void (list<string>) -- function that sets
+ *          the list of allowed interfaces
+ *
+ * Additional settings:
+ * - "help" : string -- help to the whole widget. If not specified, generic help
+ *          is used (button labels are patched correctly)
+ * </pre>
+ * @return map the widget description map
+ */
+global define map<string,any> CreateInterfacesWidget (map<string,any> settings){
+    term widget = `HBox (
+	`HSpacing (1),
+	`VBox (
+	    `HSpacing (48),
+	    `VSpacing (1),
+	    `ReplacePoint (`id ("_cwm_interface_list_rp"),
+		`MultiSelectionBox (
+		    `id ("_cwm_interface_list"),
+	            _("Network &Interfaces with Open Port in Firewall"),
+		    []
+		)
+	    ),
+	    `VSpacing (1),
+	    `HBox (
+		`HStretch (),
+		`HWeight (1, `PushButton (`id ("_cwm_interface_select_all"),
+		    _("Select &All"))),
+		`HWeight (1, `PushButton (`id ("_cwm_interface_select_none"),
+		    _("Select &None"))),
+		`HStretch ()
+	    ),
+	    `VSpacing (1)
+	),
+	`HSpacing (1)
+    );
+
+    string help = ""; // TODO
+
+    if (haskey (settings, "help"))
+    {
+	help = settings["help"]:"";
+    }
+
+    map<string,any> ret = (map<string,any>)union (settings, $[
+	"widget" : `custom,
+	"custom_widget" : widget,
+	"help" : help,
+	"init" : InterfacesInitWrapper,
+	"store" : InterfacesStoreWrapper,
+	"handle" : InterfacesHandleWrapper,
+	"validate_type" : `function,
+	"validate_function" : InterfacesValidateWrapper,
+    ]);
+
+    return ret;
+}
+
+/**
+ * Display the firewall interfaces selection as a popup
+ * @return symbol return value of the dialog
+ */
+global symbol DisplayDetailsPopup (map<string,any> settings) {
+// FIXME breaks help if run in dialog with Tab!!!!!!
+// settings stack must be created in CWM::Run
+    list<map <string, any> > w = CWM::CreateWidgets (
+	["firewall_ifaces"],
+	$[
+	    "firewall_ifaces" : CreateInterfacesWidget (settings),
+	]
+    );
+    string help = CWM::MergeHelps (w);
+    term contents = `VBox (
+	"firewall_ifaces",
+	`HBox (
+	    `HStretch (),
+	    `PushButton (`id (`ok), Label::OKButton ()),
+	    `PushButton (`id (`cancel), Label::CancelButton ()),
+	    `HStretch ()
+	)
+    );
+    contents = CWM::PrepareDialog (contents, w);
+    UI::OpenDialog (contents);
+    symbol ret = CWM::Run (w, $[]);
+    UI::CloseDialog ();
+    return ret;
+}
+
+
+// firewall openning widget
+
+/**
+ * Initialize the open firewall widget
+ * @param widget a map describing the whole widget
+ */
+global void OpenFirewallInit (map<string,any> widget, string key) {
+    if (! UI::WidgetExists (`id ("_cwm_open_firewall")))
+    {
+	y2error ("Firewall widget doesn't exist");
+	return;
+    }
+    list<string> services = widget["services"]:[];
+    InitAllInterfacesList ();
+    InitAllowedInterfaces (services);
+    boolean open_firewall = size (allowed_interfaces) > 0;
+    boolean firewall_enabled = SuSEFirewall::IsStarted()
+	&& size (all_interfaces) > 0;
+    if (! firewall_enabled)
+    {
+	open_firewall = false;
+	UI::ChangeWidget (`id ("_cwm_open_firewall"), `Enabled, false);
+    }
+    UI::ChangeWidget (`id ("_cwm_open_firewall"), `Value, open_firewall);
+    EnableOrDisableFirewallDetails ();
+    UpdateFirewallStatus ();
+}
+
+/**
+ * Store function of the widget
+ * @param key strnig the widget key
+ * @param event map that caused widget data storing
+ */
+global void OpenFirewallStore (map<string,any> widget, string key, map event) {
+    if (! UI::WidgetExists (`id ("_cwm_open_firewall")))
+    {
+	y2error ("Widget _cwm_open_firewall does not exist");
+	return;
+    }
+    list<string> services = widget["services"]:[];
+    StoreAllowedInterfaces (services);
+}
+
+/**
+ * Handle the immediate start and stop of the service
+ * @param widget a map describing the widget
+ * @param key strnig the widget key
+ * @param event_id any the ID of the occurred event
+ * @return always nil
+ */
+global symbol OpenFirewallHandle (map<string,any> widget, string key, map event) {
+    any event_id = event["ID"]:nil;
+    if (event_id == "_cwm_firewall_details")
+    {
+	symbol() handle_firewall_details
+	    = (symbol())widget["firewall_details_handler"]:nil;
+	symbol ret = nil;
+	if (handle_firewall_details != nil)
+	{
+	    ret = handle_firewall_details ();
+	}
+	else
+	{
+	    map<string,any> w = filter (string k, any v, widget, {
+		return "services" == k;
+	    });
+	    DisplayDetailsPopup (w);
+	}
+	UpdateFirewallStatus ();
+	EnableOrDisableFirewallDetails ();
+	return ret;
+    }
+    if (event_id == "_cwm_open_firewall")
+    {
+	boolean value = (boolean)UI::QueryWidget (
+	    `id ("_cwm_open_firewall"),
+	    `Value);
+	if (value)
+	    allowed_interfaces = all_interfaces;
+	else
+	    allowed_interfaces = [];
+	UpdateFirewallStatus ();
+	EnableOrDisableFirewallDetails ();
+	configuration_changed = true;
+    }
+    return nil;
+}
+
+/**
+ * Init function of the widget
+ * @param key strnig the widget key
+ */
+global void OpenFirewallInitWrapper (string key) {
+    OpenFirewallInit (CWM::GetProcessedWidget (), key);
+}
+
+/**
+ * Store function of the widget
+ * @param key strnig the widget key
+ * @param event map that caused widget data storing
+ */
+global void OpenFirewallStoreWrapper (string key, map event) {
+    OpenFirewallStore (CWM::GetProcessedWidget (), key, event);
+}
+
+/**
+ * Handle the immediate start and stop of the service
+ * @param key strnig the widget key
+ * @param event_id any the ID of the occurred event
+ * @return always nil
+ */
+global symbol OpenFirewallHandleWrapper (string key, map event) {
+    return OpenFirewallHandle (CWM::GetProcessedWidget (), key, event);
+}
+
+/**
+ * Check if the widget was modified
+ * @param key strnig the widget key
+ * @return boolean true if widget was modified
+ */
+global boolean OpenFirewallModified (string key) {
+    return configuration_changed;
+}
+
+/**
+ * Enable the whole firewal widget
+ * @param key strnig the widget key
+ */
+global void EnableOpenFirewallWidget () {
+    if (! UI::WidgetExists (`id ("_cwm_open_firewall")))
+	return;
+    if (! UI::WidgetExists (`id ("_cwm_firewall_details")))
+	return;
+    UI::ChangeWidget (`id ("_cwm_open_firewall"), `Enabled, true);
+    EnableOrDisableFirewallDetails ();
+}
+
+/**
+ * Disable the whole firewal widget
+ * @param key strnig the widget key
+ */
+global void DisableOpenFirewallWidget () {
+    if (! UI::WidgetExists (`id ("_cwm_open_firewall")))
+	return;
+    if (! UI::WidgetExists (`id ("_cwm_firewall_details")))
+	return;
+    UI::ChangeWidget (`id ("_cwm_open_firewall"), `Enabled, false);
+    UI::ChangeWidget (`id ("_cwm_firewall_details"), `Enabled, false);
+}
+
+/**
+ * Get the template for the help text to the firewall opening widget
+ * @param restart_displayed shold be true if "Save and restart" is displayed
+ * @return string help text template with %1 and %2 placeholders
+ */
+global string OpenFirewallHelpTemplate (boolean restart_displayed) {
+    // help text for firewall settings widget 1/3,
+    // %1 is check box label, eg. "Open Port in Firewall" (without quotes)
+    string help = _("<p><b><big>Firewall Settings</big></b><br>
+To open the firewall to allow access to the service from remote computers,
+set <b>%1</b>.<br>");
+    if (restart_displayed)
+    {
+	// help text for firewall port openning widget 2/3, optional
+	// %1 is push button label, eg. "Firewall &Details" (without quotes)
+	// note: %2 is correct, do not replace with %1!!!
+	help = help + _("To select interfaces on which to open the port,
+click <b>%2</b>.<br>");
+    }
+    // help text for firewall settings widget 3/3,
+    help = help + _("This option is available only if the firewall
+is enabled.</p>");
+    return help;
+}
+
+/**
+ * Get the help text to the firewall opening widget
+ * @param restart_displayed shold be true if "Save and restart" is displayed
+ * @return string help text
+ */
+global string OpenFirewallHelp (boolean restart_displayed) {
+    return sformat (OpenFirewallHelpTemplate (restart_displayed),
+	// part of help text - check box label, NO SHORTCUT!!!
+	_("Open Port in Firewall"),
+	// part of help text - push button label, NO SHORTCUT!!!
+	_("Firewall Details"));
+}
+
+/**
+ * Get the widget description map of the firewall enablement widget
+ * @param settings a map of all parameters needed to create the widget properly
+ * <pre>
+ *
+ * - "services" : list<string> -- services identifications for the Firewall.ycp
+ *          module
+ * - "display_details" : boolean -- true if the details button should be
+ *          displayed
+ * - "firewall_details_handler" : symbol () -- function to handle the firewall
+ *          details button. If returns something else than nil, dialog is
+ *          exited with the returned symbol as value for wizard sequencer.
+ *          If not specified, but "display_details" is true, common popup
+ *          is used.
+ * - "open_firewall_checkbox" : string -- label of the check box
+ * - "firewall_details_button" : string -- label of the push button for
+ *          changing firewall details
+ * - "help" : string -- help to the widget. If not specified, generic help
+ *          is used
+ * </pre>
+ * @return map the widget description map
+ */
+global map<string,any> CreateOpenFirewallWidget (map<string,any> settings) {
+    string help = "";
+    string open_firewall_checkbox
+	// check box
+	= settings["open_firewall_checkbox"]:_("Open Port in &Firewall");
+    string firewall_details_button
+	// push button
+	= settings["firewall_details_button"]:_("Firewall &Details");
+    boolean display_firewall_details
+	= haskey (settings, "firewall_details_handler")
+	    || settings["display_details"]:false;
+    if (haskey (settings, "help"))
+    {
+	help = settings["help"]:"";
+    }
+    else
+    {
+	help = OpenFirewallHelp (display_firewall_details);
+    }
+
+    term firewall_settings = `CheckBox (`id ("_cwm_open_firewall"),
+	`opt (`notify),
+	open_firewall_checkbox);
+    if (display_firewall_details)
+    {
+	firewall_settings = `HBox (
+	    firewall_settings,
+	    `HSpacing (2),
+	    `PushButton (`id ("_cwm_firewall_details"),
+		firewall_details_button)
+	);
+    }
+    firewall_settings = `VBox (
+	`Left (firewall_settings),
+	`Left (`ReplacePoint (`id (`_cwm_firewall_status_rp),
+	    `Label (_("Firewall is open")))
+	)
+    );
+
+    if (! haskey (settings, "services"))
+    {
+	firewall_settings = `VBox ();
+	help = "";
+	y2error ("Firewall services not specified");
+    }
+
+    map<string,any> ret = (map<string,any>)union ($[
+	"widget" : `custom,
+	"custom_widget" : firewall_settings,
+	"help" : help,
+	"init" : OpenFirewallInitWrapper,
+	"store" : OpenFirewallStoreWrapper,
+	"handle" : OpenFirewallHandleWrapper,
+	"handle_events" : [ "_cwm_firewall_details", "_cwm_open_firewall" ],
+    ], settings);
+
+    return ret;
+}
+
+/**
+ * Check if settings were modified by the user
+ * @return boolean true if settings were modified
+ */
+global boolean Modified () {
+    return SuSEFirewall::GetModified ();
+}
+
+
+// EOF
+}

@@ -1,0 +1,25 @@
+Write	.dev.tty.prompt "YaST2 lan> " true
+Return	true
+Return	false
+Return	false
+Read	.dev.tty "help"
+Write	.dev.tty "\nYaST Configuration Module lan\n------------------------------\n" true
+Write	.dev.tty "Configuration of network cards\n" true
+Write	.dev.tty "Basic Syntax:" true
+Write	.dev.tty "    <command> [options]" true
+Write	.dev.tty "    <command> help" true
+Write	.dev.tty "    help" true
+Write	.dev.tty "    longhelp" true
+Write	.dev.tty "" true
+Write	.dev.tty "    exit" true
+Write	.dev.tty "    abort" true
+Write	.dev.tty "" true
+Write	.dev.tty "Commands:" true
+Write	.dev.tty "    add     add a network card" true
+Write	.dev.tty "    delete  delete a network card" true
+Write	.dev.tty "    list    display configuration summary" true
+Write	.dev.tty "" true
+Read	.dev.tty "abort"
+Return	$["command":"abort"]
+Return	true
+Return	true

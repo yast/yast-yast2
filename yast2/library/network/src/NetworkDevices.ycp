@@ -1,0 +1,1193 @@
+/**
+ * File:	modules/NetworkDevices.ycp
+ * Package:	Network configuration
+ * Summary:	Interface manipulation (/etc/sysconfig/network/ifcfg-*)
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ *
+ * The new sysconfig naming is interface (eg. eth0) vs. device
+ * (eg. NE2000 card), but historically yast has called them device
+ * vs. module.
+ */
+
+{
+
+module "NetworkDevices";
+
+import "Arch";
+import "Map";
+import "Netmask";
+import "String";
+
+/**
+ * Current device identifier
+ * @example eth0, eth1:blah, lo, ...
+ * Add, Edit and Delete copy the requested device info (via Select)
+ * to Name and Current,
+ * Commit puts it back
+ */
+global string Name = "";
+
+/**
+ * Current device information
+ * @example $["BOOTPROTO":"dhcp", "STARTMODE":"auto"]
+ */
+global map<string,any> Current = $[];
+
+/**
+ * Interface information:
+ * Devices[string type, string id] is a map with the contents of
+ * ifcfg-<i>type</i>-<i>id</i>. Separating type from id is useful because
+ * the type determines the fields of the interface file.
+ * Multiple addresses for an interface are nested maps
+ * [type, id, "_aliases", aid]
+ * @see Read
+ */
+map<string,map> Devices = $[];
+
+/**
+ * Devices information
+ * @see Read
+ */
+map<string,map> OriginalDevices = $[];
+
+/**
+ * Deleted devices
+ */
+list<string> Deleted = [];
+
+/**
+ * True if devices are already read
+ */
+boolean initialized = false;
+
+/**
+ * Which operation is pending?
+ */
+/* global */ symbol operation = nil;
+// FIXME: used in lan/address.ycp (#17346) -> "global"
+
+/**
+ * Predefined network card regular expressions
+ */
+global map<string,string> CardRegex = $[
+    "netcard"	: "arc|bnep|ci|ctc|dummy|escon|eth|fddi|hsi|qeth|lcs|iucv|myri|tr|usb|wlan|xp",
+    "modem"	: "ppp|modem",
+    "isdn"	: "isdn|ippp",
+    "dsl"	: "dsl",
+    /* other: irlan|lo|plip|... */
+];
+
+// define string HotplugRegex(list<string> devs);
+
+/**
+ * Supported hotplug types
+ */
+list<string> HotplugTypes = [ "pcmcia", "usb"/*, "pci" */];
+
+/**
+ * Create a list of hot-pluggable device names for the given devices
+ */
+define string HotplugRegex(list<string> devs) {
+    string ret = "";
+    foreach(string dev, devs, {
+	foreach(string hot, HotplugTypes, {
+	    ret = ret + "|" + dev + "-" + hot + "|" + dev + "-" + hot + "-";
+	});
+    });
+    return ret;
+}
+
+/**
+ * Predefined network device regular expressions
+ */
+global map<string,string> DeviceRegex = $[
+    /* device types */
+    "netcard"	: CardRegex["netcard"]:"" + HotplugRegex(["eth", "tr", "wlan"]) + "|usb-usb|usb-usb-",
+    "modem"	: CardRegex["modem"]:"",
+    "isdn"	: CardRegex["isdn"]:"" + HotplugRegex(["isdn", "ippp"]),
+    "dsl"	: CardRegex["dsl"]:"",
+    /* device groups */
+    "dialup"	: CardRegex["modem"]:"" + "|" + CardRegex["dsl"]:"" + "|" + CardRegex["isdn"]:"",
+];
+
+/**
+ * Types in order from fastest to slowest.
+ * @see FastestRegexps
+ */
+map<integer,string> FastestTypes = $[
+    1 : "dsl",
+    2 : "isdn",
+    3 : "modem",
+    4 : "netcard"
+];
+
+/**
+ * @see Push
+ */
+map stack = $[];
+
+// -------------------- components of configuration names --------------------
+
+/**
+ * A single character used to separate alias id
+ */
+string alias_separator = "#";
+
+/**
+ * ifcfg name = type + id + alias_id
+ * If id is numeric, it is not separated from type, otherwise separated by "-"
+ * Id may be empty
+ * Alias_id, if nonempty, is separated by alias_separator
+ */
+string ifcfg_name_regex =
+    "^" +
+    // ip6: #48696
+    "(ip6tnl|mip6mnha|[a-zA-Z]+)" + "-?" +
+    "([^" + alias_separator + "]*)" + alias_separator + "?" +
+    "(.*)" +
+    "$";
+
+string ifcfg_part (string ifcfg, string part) {
+    if (regexpmatch (ifcfg, ifcfg_name_regex) != true)
+    {
+	return "";
+    }
+    string ret = regexpsub (ifcfg, ifcfg_name_regex, "\\" + part);
+    return (ret == nil)? "": ret;
+}
+
+/**
+ * Return a device type
+ * @param dev device
+ * @return device type
+ * @example device_type("eth1") -> "eth"
+ * @example device_type("eth-pcmcia-0") -> "eth-pcmcia"
+ */
+global string device_type (string dev) {
+    return ifcfg_part (dev, "1");
+}
+
+/**
+ * Return a device number
+ * @param dev device
+ * @return device number
+ * @example device_num("eth1") -> "1"
+ * @example device_num("lo") -> ""
+ */
+global string device_num (string dev) {
+    return ifcfg_part (dev, "2");
+}
+
+/**
+ * Return a device alias number
+ * @param dev device
+ * @return alias number
+ * @example alias_num("eth1#2") -> "2"
+ * @example alias_num("eth1#blah") -> "blah"
+ */
+global string alias_num (string dev) {
+    return ifcfg_part (dev, "3");
+}
+
+/**
+ * Create a device name from its type and number
+ * @param typ device type
+ * @param num device number
+ * @return device name
+ * @example device_name("eth", "1") -> "eth1"
+ * @example device_name("lo", "") -> "lo"
+ */
+global string device_name (string typ, string num) {
+    if(typ == nil || typ == "") {
+	y2error("wrong type: %1", typ);
+	return nil;
+    }
+    if(num == nil /* || num < 0 */) {
+	y2error("wrong number: %1", num);
+	return nil;
+    }
+    /* FIXME: devname
+    if(IsHotplug(typ) && num != "") return sformat("%1-%2", typ, num);
+    return sformat("%1%2", typ, num);
+    */
+    if(regexpmatch(num, "^[0-9]*$"))
+	return sformat("%1%2", typ, num);
+    return sformat("%1-%2", typ, num);
+}
+
+/**
+ * Create a alias name from its type and numbers
+ * @param typ device type
+ * @param num device number
+ * @param anum alias number
+ * @return alias name
+ * @example alias_name("eth", "1", "2") -> "eth1#2"
+ */
+global string alias_name (string typ, string num, string anum) {
+    if(typ == nil || typ == "") {
+	y2error("wrong type: %1", typ);
+	return nil;
+    }
+    if(num == nil /* || num < 0 */) {
+	y2error("wrong number: %1", num);
+	return nil;
+    }
+    if(anum == nil || anum == "") {
+	y2error("wrong alias number: %1", anum);
+	return nil;
+    }
+    return sformat("%1#%2", device_name(typ, num), anum);
+}
+
+/**
+ * Test hotplugability of a device
+ * @param type device type
+ * @return true if hotpluggable
+ */
+global boolean IsHotplug (string type) {
+    if(type == "" || type == nil) return false;
+    if(regexpmatch(type, "(pcmcia|usb|pci)$")) return true;
+    return false;
+}
+
+/**
+ * Return real type of the device (incl. PCMCIA, USB, ...)
+ * @param type basic device type
+ * @param hotplug hot plug type
+ * @return real type
+ * @example RealType("eth", "usb") -> "eth-usb"
+ */
+global string RealType (string type, string hotplug) {
+
+    y2debug("type=%1", type);
+    if(type == "" || type == nil) {
+	y2error("Wrong type: %1", type);
+	return "eth";
+    }
+
+    if(hotplug == "" || hotplug == nil)
+	return type;
+
+    string realtype = type + "-" + hotplug;
+    y2debug("realtype=%1", realtype);
+    return realtype;
+}
+
+// ---------------------------------------------------------------------------
+
+/**
+ * STARTMODE: onboot, on and boot are aliases for auto
+ */
+global map CanonicalizeStartmode (map ifcfg) {
+    map <string, string> canonicalize_startmode = $[
+	"on": "auto",
+	"boot": "auto",
+	"onboot": "auto",
+	];
+    string startmode = ifcfg["STARTMODE"]:"";
+    ifcfg["STARTMODE"] = canonicalize_startmode[startmode]:startmode;
+    return ifcfg;
+}
+
+/**
+ * Canonicalize netmask data (#46885)
+ * Sysconfig allows:
+ * IPADDR=10.0.0.1/8
+ * IPADDR=10.0.0.1 PREFIXLEN=8
+ * IPADDR=10.0.0.1 NETMASK=255.0.0.0
+ * (IPADDR overrides PREFIXLEN, NETMASK used only if prefix length unspecified)
+ * If prefix length and NETMASK are unspecified, 32 is implied.
+ * Canonicalize it to
+ * IPADDR=10.0.0.1 PREFIXLEN= NETMASK=255.0.0.0
+ * @param ifcfg a map containing IPADDR and possibly NETMASK, PREFIXLEN
+ * and possibly other fields
+ * @return the map with IPADDR, NETMASK adjusted; PREFIXLEN ""
+ * others unchanged. If IPADDR is empty, return the original.
+ */
+global map CanonicalizeIP (map ifcfg) {
+    if (ifcfg == nil)
+    {
+	return nil;
+    }
+
+    list<string> ip_and_prefix = splitstring (ifcfg["IPADDR"]:"", "/");
+    string ipaddr = ip_and_prefix[0]:"";
+    if (ipaddr == "")		// DHCP or inconsistent
+    {
+	return ifcfg;
+    }
+    string prefixlen = ip_and_prefix[1]:"";
+    if (prefixlen == "")
+    {
+	prefixlen = ifcfg["PREFIXLEN"]:"";
+    }
+    if (prefixlen == "")
+    {
+	prefixlen = tostring (Netmask::ToBits (ifcfg["NETMASK"]:""));
+    }
+
+    // Now we have ipaddr and prefixlen
+    // Let's compute the rest
+    string netmask = Netmask::FromBits (tointeger (prefixlen));
+    map ret = ifcfg;
+    ret["IPADDR"] = ipaddr;
+    ret["PREFIXLEN"] = "";
+    ret["NETMASK"] = netmask;
+    return ret;
+}
+
+/**
+ * Read devices from files
+ * @return true if sucess
+ */
+global define boolean Read() {
+
+    // initialized = true; // FIXME
+    if(initialized == true) return true;
+
+    Devices = $[];
+
+    /* Variables which could be suffixed and thus duplicated */
+    list Locals = [ "IPADDR", "REMOTE_IPADDR", "NETMASK", "PREFIXLEN",
+	    "BROADCAST", "SCOPE", "LABEL", "IP_OPTIONS" ];
+
+    /* preparation */
+    list<string> allfiles = SCR::Dir(.network.section);
+    if(allfiles == nil) allfiles = [];
+    list<string> devices = filter(string file, allfiles, {
+	return !regexpmatch(file, "[~]");
+    });
+    y2debug("devices=%1", devices);
+
+    /* FIXME: devname
+    devices = filter(string d, devices, {
+	return regexpmatch(d, "[a-z][a-z-]*[0-9]*");
+    });
+    y2debug("devices=%1", devices);
+    */
+
+    /* Read devices */
+    maplist(string d, devices, {
+	string devtype = device_type(d);
+
+	string devnum = "";
+	// if(regexpmatch(d, "[a-z][a-z-]*[0-9]+"))
+	    devnum = sformat("%1", device_num(d));
+	y2debug("devnum=%1", devnum);
+
+	map dev = Devices[devtype]:$[];
+	if(haskey(dev, devnum)) {
+	    y2error("device already present: %1", devnum);
+	    return;
+	}
+
+	string pth = ".network.value.\"" + device_name(devtype, devnum) + "\"";
+	y2debug("pth=%1", pth);
+	list<string> values = SCR::Dir(topath(pth));
+	y2debug("values=%1", values);
+
+	map config = $[];
+	maplist(string val, values, {
+	    string item = (string) SCR::Read(topath(pth + "." + val));
+	    y2debug("item=%1", item);
+	    if(item == nil) return;
+	    /* No underscore '_' -> global */
+	    /* Also temporarily standard globals */
+	    if(find(val, "_") < 0 || contains(Locals, val)) {
+		config[val] = item;
+		return;
+	    }
+	    /* Try to strip _suffix */
+	    string v = substring(val, 0, findlastof(val, "_"));
+	    string s = substring(val, findlastof(val, "_"));
+	    if(size(s) > 1) s = substring(s, 1);
+	    y2milestone("%1:%2:%3", val, v, s);
+	    /* Global */
+	    if(!contains(Locals, v))
+		config[val] = item;
+	    /* Local */
+	    else {
+		map _aliases = config["_aliases"]:$[];
+		map suf = _aliases[s]:$[];
+		suf[v] = item;
+		_aliases[s] = suf;
+		config["_aliases"] = _aliases;
+	    }
+	});
+	y2milestone("config=%1", config);
+
+	// canonicalize, #46885
+	map <string, map> caliases = mapmap (string a, map c, (map<string,map>)config["_aliases"]:$[], {
+	    return $[a: CanonicalizeIP (c)];
+	});
+	if (caliases != $[])	// unconditionally?
+	{
+	    config["_aliases"] = caliases;
+	}
+	config = CanonicalizeIP (config);
+	config = CanonicalizeStartmode (config);
+
+	dev[devnum] = config;
+	Devices[devtype] = dev;
+    });
+    y2debug("Devices=%1", Devices);
+
+    OriginalDevices = Devices;
+    initialized = true;
+    return true;
+}
+
+/**
+ */
+define map<string,map> Filter(map<string,map> devices, string devregex) {
+    if(devices == nil || devregex == nil || devregex == "")
+	return devices;
+
+    string regex = "^(" + DeviceRegex[devregex]:devregex + ")[0-9]*$";
+    y2debug("regex=%1", regex);
+    devices = filter(string file, map devmap, devices, {
+	return regexpmatch(file, regex) == true;
+    });
+    y2debug("devices=%1", devices);
+    return devices;
+}
+
+/**
+ * Used in BuildSummary, BuildOverview
+ */
+global map<string,map> FilterDevices (string devregex) {
+    return Filter (Devices, devregex);
+}
+
+/**
+ */
+define map<string,map> FilterNOT(map<string,map> devices, string devregex) {
+    if(devices == nil || devregex == nil || devregex == "")
+	return $[];
+
+    string regex = "^(" + DeviceRegex[devregex]:devregex + ")[0-9]*$";
+    y2debug("regex=%1", regex);
+    devices = filter(string file, map devmap, devices, {
+	return regexpmatch(file, regex) != true;
+    });
+    y2debug("devices=%1", devices);
+    return devices;
+}
+
+/**
+ * Write devices to files
+ * @param devregex regular expression for the device type
+ * @return true if success
+ * @example NetworkDevice::Write("eth|tr");
+ */
+global define boolean Write(string devregex) {
+
+    y2milestone("Writing configuration");
+    y2debug("Devices=%1", Devices);
+    y2debug("Deleted=%1", Deleted);
+
+    map Devs = Filter(Devices, devregex);
+    map OriginalDevs = Filter(OriginalDevices, devregex);
+    y2milestone("OriginalDevs=%1", OriginalDevs);
+    y2milestone("Devs=%1", Devs);
+
+    /* Check for changes */
+    if(Devs == OriginalDevs) {
+	y2milestone("No changes to %1 devices -> nothing to write", devregex);
+	return true;
+    }
+
+    /* remove deleted devices */
+    y2milestone("Deleted=%1", Deleted);
+    foreach(string d, Deleted, {
+	// if(!haskey(OriginalDevs, d)) return;
+	string anum = alias_num (d);
+	if (anum == "")
+	{
+	    /* delete config file */
+	    path p = add (.network.section, d);
+	    y2debug("deleting: %1", p);
+	    SCR::Write(p, nil);
+	}
+	else
+	{
+	    string typ = device_type (d);
+	    string num = device_num (d);
+	    string dev = device_name (typ, num);
+	    path base = add (.network.value, dev);
+	    // look in OriginalDevs because we need to catch all variables
+	    // of the alias
+	    foreach (string key, any dummy, OriginalDevs[typ, num, "_aliases", anum]:$[], {
+		path p = add (base, key + "_" + anum);
+		y2debug ("deleting: %1", p);
+		SCR::Write (p, nil);
+	    });
+	}
+    });
+
+    /* Devices with chmod=0600 */
+    list<string> chmod = [];
+
+    /* write all devices */
+    maplist(string typ, map<string,map<string,any> > devsmap, (map<string, map<string, map<string, any> > >) Devs, {
+	maplist(string num, map<string,any> devmap, devsmap, {
+	    /* write sysconfig */
+	    string dev = device_name(typ, num);
+	    string p = ".network.value.\"" + dev + "\".";
+
+	    /* write all keys to config */
+	    maplist(string k, (list<string>) Map::Keys(devmap), {
+		/* Write aliases */
+		if(k == "_aliases") {
+		    maplist(string anum, map<string,string> amap, devmap[k]:$[], {
+			// Normally defaulting the label would be done
+			// when creating the map, not here when
+			// writing, but we create it in 2 ways so it's
+			// better here. Actually it does not work because
+			// the edit dialog nukes LABEL :-(
+			boolean seen_label = false;
+
+			maplist(string ak, string av, amap, {
+			    string akk = ak + "_" + anum;
+			    SCR::Write(topath(p + akk), av);
+			    seen_label = seen_label || ak == "LABEL";
+			});
+
+			if (!seen_label)
+			{
+			    SCR::Write(topath(p + ("LABEL_" + anum)), anum);
+			}
+		    });
+		}
+		/* Write regular keys */
+		else
+		    SCR::Write(topath(p + k), devmap[k]:"");
+	    });
+
+	    /* update libhd unique number * /
+	    // FIXME: move it somewhere else: hardware
+	    string unq = devmap["UNIQUE"]:"";
+	    if(unq != "") SCR::Write(.probe.status.configured, unq, `yes);
+	    */
+
+	    /* 0600 if contains encryption key (#24842) */
+	    boolean has_key =
+		devmap["WIRELESS_WPA_PSK"]:"" != "" ||
+		// the unnumbered one should be empty but just in case
+		devmap["WIRELESS_KEY"]:"" != "" ||
+		devmap["WIRELESS_KEY_0"]:"" != "" ||
+		devmap["WIRELESS_KEY_1"]:"" != "" ||
+		devmap["WIRELESS_KEY_2"]:"" != "" ||
+		devmap["WIRELESS_KEY_3"]:"" != "";
+	    string file = "/etc/sysconfig/network/ifcfg-" + dev;
+	    y2debug("Permission change: %1, %2", has_key, file);
+	    if(has_key) {
+		y2debug("CHANGED");
+		chmod = add(chmod, file);
+	    }
+	});
+    });
+
+    /* Finish him */
+    SCR::Write(.network, nil);
+
+    /* CHMOD */
+    y2debug("chmod=%1", chmod);
+    maplist(string file, chmod, {
+	y2debug("changing: %1", file);
+	SCR::Execute(.target.bash, "/bin/chmod 0600 " + file);
+    });
+
+    return true;
+}
+
+/**
+ * Import data
+ * @param settings settings to be imported
+ * @return true on success
+ */
+global define boolean Import(string devregex, map<string,map> devices) {
+    map Devs = FilterNOT(Devices, devregex);
+    y2debug("Devs=%1", Devs);
+
+    devices = mapmap(string typ, map devsmap, devices, {
+	return $[typ: mapmap(string num, map config, (map<string,map>) devsmap, {
+	    config = CanonicalizeIP (config);
+	    config = CanonicalizeStartmode (config);
+	    return $[num: config];
+	})];
+    });
+
+    Devices = (map<string,map>) union(Devs, devices);
+    OriginalDevices = nil;
+    return true;
+}
+
+/**
+ * Export data
+ * @return dumped settings (later acceptable by Import())
+ */
+global define map<string,map> Export(string devregex) {
+    map Devs = Filter(Devices, devregex);
+    y2debug("Devs=%1", Devs);
+    return (map<string,map>) Devs;
+}
+
+/**
+ * Were the devices changed?
+ * @return true if modified
+ */
+global define boolean Modified(string devregex) {
+    map Devs = Filter(Devices, devregex);
+    map OriginalDevs = Filter(OriginalDevices, devregex);
+    y2debug("OriginalDevs=%1", OriginalDevs);
+    y2debug("Devs=%1", Devs);
+    return Devs == OriginalDevs;
+}
+
+global define list<string> GetFreeDevices(string type, integer num) {
+    y2debug("Devices=%1", Devices);
+    y2debug("type,num=%1,%2", type, num);
+    y2debug("Devices[%1]=%2", type, Devices[type]:$[]);
+
+    list curdevs = Map::Keys(Devices[type]:$[]);
+    y2debug("curdevs=%1", curdevs);
+
+    integer i = 0;
+    integer count = 0;
+    list<string> ret = [];
+
+    /* Hotpluggable devices */
+    if(IsHotplug(type) && !contains(curdevs, "")) {
+	y2debug("Added simple hotplug device");
+	count = count + 1;
+	ret = add(ret, "");
+    }
+
+    /* Remaining numbered devices */
+    while(count < num) {
+	string ii = sformat("%1", i);
+	if(!contains(curdevs, ii)) {
+	    ret = add(ret, ii);
+	    count = count + 1;
+	}
+	i = i + 1;
+    }
+
+    y2debug("Free devices=%1", ret);
+    return ret;
+}
+
+/**
+ * Compute free devices
+ * @param type device type
+ * @param num how many free devices return
+ * @return num of free devices
+ * @example GetFreeDevices("eth", 2) -&gt; [ 1, 2 ]
+ */
+global define list GetFreeDevicesOld(string type, integer num) {
+    y2debug("Devices=%1", Devices);
+    y2debug("type,num=%1,%2", type, num);
+    y2debug("Devices[%1]=%2", type, Devices[type]:$[]);
+
+    list curdevs = Map::Keys(Devices[type]:$[]);
+    y2debug("curdevs=%1", curdevs);
+
+    integer i = 0;
+    integer count = 0;
+    list ret = [];
+
+    /* Hotpluggable devices */
+    if(IsHotplug(type) && !contains(curdevs, "")) {
+	y2debug("Added simple hotplug device");
+	count = count + 1;
+	ret = add(ret, "");
+    }
+
+    /* Remaining numbered devices */
+    while(count < num) {
+	string ii = sformat("%1", i);
+	if(!contains(curdevs, ii)) {
+	    ret = add(ret, ii);
+	    count = count + 1;
+	}
+	i = i + 1;
+    }
+
+    y2debug("Free devices=%1", ret);
+    return ret;
+}
+
+/**
+ * Return free device
+ * @param type device type
+ * @return free device
+ * @example GetFreeDevice("eth") -&gt; "1"
+ */
+global define string GetFreeDevice(string type) {
+    y2debug("type=%1", type);
+    list <string> freedevs = GetFreeDevices(type, 1);
+    string ret = (string) freedevs[0]:nil;
+    if(ret == nil) y2error("Free device location error: %1", ret);
+    y2debug("Free device=%1", ret);
+    return ret;
+}
+
+/**
+ * Check presence of the device (alias)
+ * @param dev device identifier
+ * @return true if device is present
+ */
+global define boolean Check(string dev) {
+
+    y2debug("Check(%1)", dev);
+    string typ = device_type(dev);
+    string num = device_num(dev);
+    string anum = alias_num(dev);
+    y2milestone("Check(%1,%2,%3)", typ, num, anum);
+
+    if(!haskey(Devices, typ))
+	return false;
+
+    map devsmap = Devices[typ]:$[];
+    if(!haskey(devsmap, num))
+	return false;
+
+    /* FIXME NI: not needed?
+    Name = dev;
+    Current = (map) eval(devsmap[num]:$[]);
+    */
+
+    if(anum != "") {
+	map devmap = devsmap[num]:$[];
+	map amap = devmap["_aliases"]:$[];
+	if(!haskey(amap, anum))
+	    return false;
+	/* FIXME NI: not needed?
+	Current = (map) eval(amap[anum]:$[]);
+	alias = anum;
+	*/
+    }
+
+    y2debug("Check passed");
+    return true;
+}
+
+/**
+ * Select the given device
+ * @param device to select ("" for new device, default values)
+ * @return true if success
+ */
+global define boolean Select(string name) {
+
+    Name = "";
+    Current = $[];
+
+    y2debug("name=%1", name);
+    if(name != "" && !Check(name)) {
+	y2error("No such device: %1", name);
+	return false;
+    }
+
+    Name = name;
+    // FIXME NI: Current = Devices[device_type(Name), device_num(Name)]:$[];
+    // may be fixed already. or not: #39236
+    string t = device_type(Name);
+    Current = Devices[t, device_num(Name)]:$[];
+    string a = alias_num(Name);
+    if(a != nil && a != "") Current = Current["_aliases", a]:$[];
+
+    if(Current == $[]) {
+	/* Default device map */
+	Current = $[
+	    /* FIXME: remaining items */
+	];
+    }
+
+    y2debug("Name=%1", Name);
+    y2debug("Current=%1", Current);
+
+    return true;
+}
+
+/**
+ * Add a new device
+ * @return true if success
+ */
+global define boolean Add() {
+    operation = nil;
+    if(Select("") != true) return false;
+    operation = `add;
+    return true;
+}
+
+/**
+ * Edit the given device
+ * @param dev device to edit
+ * @return true if success
+ */
+global define boolean Edit(string name) {
+    operation = nil;
+    if(Select(name) != true) return false;
+    operation = `edit;
+    return true;
+}
+
+/**
+ * Delete the given device
+ * @param dev device to delete
+ * @return true if success
+ */
+global define boolean Delete(string name) {
+    operation = nil;
+    if(Select(name) != true) return false;
+    operation = `delete;
+    return true;
+}
+
+/**
+ * Update Devices map
+ * @param dev device identifier
+ * @param newdev new device map
+ * @param check if check if device already exists
+ * @return true if success
+ */
+define boolean Change2(string name, map newdev, boolean check) {
+    y2debug("Change(%1,%2,%3)", name, newdev, check);
+    y2debug("Devices=%1", Devices);
+
+    if(Check(name) && check) {
+	y2error("Device already present: %1", name);
+	return false;
+    }
+
+    string t = device_type(name);
+    string d = device_num(name);
+    string a = alias_num(name);
+    y2debug("ChangeDevice(%1,%2,%3)", t, d, a);
+
+    map devsmap = Devices[t]:$[];
+    map devmap = devsmap[d]:$[];
+    map amap = devmap["_aliases"]:$[];
+
+    if(a != "") {
+	amap[a] = newdev;
+	devmap["_aliases"] = amap;
+    }
+    else
+	devmap = newdev;
+
+    devsmap[d] = devmap;
+    Devices[t] = devsmap;
+
+    y2debug("Devices=%1", Devices);
+    return true;
+}
+
+define boolean Delete2(string name) {
+
+    if(!Check(name)) {
+	y2error("Device not found: %1", name);
+	return false;
+    }
+
+    string t = device_type(name);
+    string d = device_num(name);
+    string a = alias_num(name);
+    map devsmap = Devices[t]:$[];
+
+    if(a != "") {
+	map amap = devsmap[d, "_aliases"]:$[];
+	amap = remove(amap, a);
+	devsmap[d, "_aliases"] = amap;
+    }
+    else
+	devsmap = remove(devsmap, d);
+
+    Devices[t] = devsmap;
+
+    if(haskey(OriginalDevices, t) && haskey(OriginalDevices[t]:$[], d)) {
+	y2milestone("Deleting file: %1", name);
+	Deleted[size(Deleted)] = name;
+    }
+    else {
+	y2milestone("Not deleting file: %1", name);
+	y2debug("OriginalDevices=%1", OriginalDevices);
+	y2debug("a=%1", a);
+    }
+
+    return true;
+}
+
+/**
+ * Add the alias to the list of deleted items.
+ * Called when exiting from the aliases-of-device dialog.
+ * #48191
+ */
+global boolean DeleteAlias (string device, string aid) {
+    string alias = sformat ("%1#%2", device, aid);
+    y2milestone("Deleting alias: %1", alias);
+    Deleted[size(Deleted)] = alias;
+    return true;
+}
+
+global define boolean Commit() {
+    y2debug("Name=%1", Name);
+    y2debug("Current=%1", Current);
+    y2debug("Devices=%1", Devices);
+    y2debug("Deleted=%1", Deleted);
+    y2debug("operation=%1", operation);
+
+    if(operation == `add || operation == `edit) {
+	Change2(Name, Current, operation == `add);
+    }
+    else if(operation == `delete) {
+	Delete2(Name);
+    }
+    else {
+	y2error("Unknown operation: %1 (%2)", operation, Name);
+	return false;
+    }
+
+    y2debug("Devices=%1", Devices);
+    y2debug("Deleted=%1", Deleted);
+
+    Name = "";
+    Current = $[];
+    operation = nil;
+
+    return true;
+}
+
+global define string GetValue(string name, string key) {
+    if(!Select(name)) return nil;
+    return Current[key]:"";
+}
+
+global define boolean SetValue(string name, string key, string value) {
+    if(!Edit(name)) return nil;
+    if(key == nil || key == "" || value == nil) return false;
+    Current[key] = value;
+    return Commit();
+}
+
+/**
+ * Locate devices of the given type and value
+ * @param key device key
+ * @param val device value
+ * @return list of devices with key=val
+ */
+global define list<string> Locate(string key, string val) {
+    list<string> ret = [];
+    maplist(string typ, map devsmap, Devices, {
+	maplist(string num, map devmap, (map<string,map>) devsmap, {
+	    if(devmap[key]:"" == val) ret = add(ret, device_name(typ,num));
+	});
+    });
+
+    return ret;
+}
+
+/**
+ * Locate devices of the given type and value
+ * @param key device key
+ * @param val device value
+ * @return list of devices with key!=val
+ */
+global define list<string> LocateNOT(string key, string val) {
+    list<string> ret = [];
+    maplist(string typ, map devsmap, Devices, {
+	maplist(string num, map devmap, (map<string,map>) devsmap, {
+	    if(devmap[key]:"" != val) ret = add(ret, device_name(typ,num));
+	});
+    });
+
+    return ret;
+}
+
+/**
+ * Check if any device is using the specified provider
+ * @param provider provider identification
+ * @return true if there is any
+ */
+global define boolean LocateProvider(string provider) {
+    list devs = Locate("PROVIDER", provider);
+    return size(devs) > 0;
+}
+
+/**
+ * Update /dev/modem symlink
+ * @return true if success
+ */
+global define boolean UpdateModemSymlink() {
+    boolean ret = false;
+    if(contains(Map::Keys(Devices), "modem")) {
+	list ml = Map::Keys(Devices["modem"]:$[]);
+	string ms = ml[0]:"0";
+	// map mm = Devices["modem"]:$[][ms]:$[];
+	map mm = Devices["modem", ms]:$[];
+	string mdev = mm["MODEM_DEVICE"]:"";
+	if(mdev != "" && mdev != "/dev/modem") {
+	    string curlink = nil;
+	    map m = (map) SCR::Read(.target.lstat, "/dev/modem");
+	    if(m["islink"]:false == true)
+		curlink = (string) SCR::Read(.target.symlink, "/dev/modem");
+	    if(curlink != mdev) {
+		SCR::Execute(.target.symlink, mdev, "/dev/modem");
+		ret = true;
+	    }
+	}
+    }
+    return ret;
+}
+
+/**
+ * Clean the hotplug devices compatibility symlink,
+ * usually ifcfg-eth-pcmcia -> ifcfg-eth-pcmcia-0.
+ * @return true if success
+ */
+global define boolean CleanHotplugSymlink() {
+
+    list<string> types = [ "eth-pcmcia", "eth-usb", "tr-pcmcia", "tr-usb" ];
+    maplist(string t, types, {
+	string link = "/etc/sysconfig/network/ifcfg-" + t;
+	y2debug("link=%1", link);
+	map lstat = (map) SCR::Read(.target.lstat, link);
+	if(lstat["islink"]:false == true) {
+	    string file = (string) SCR::Read(.target.symlink, link);
+	    file = "/etc/sysconfig/network/" + file;
+	    y2debug("file=%1", file);
+	    if(SCR::Read(.target.size, file) > -1) {
+		y2milestone("Cleaning hotplug symlink");
+		y2milestone("Devices[%1]=%2", t, Devices[t]:$[]);
+		Devices[t] = remove(Devices[t]:$[], "");
+		y2milestone("Devices[%1]=%2", t, Devices[t]:$[]);
+	    }
+	}
+    });
+
+    y2debug("Devices=%1", Devices);
+    return true;
+}
+
+/**
+ * Get devices of the given type
+ * @param type devices type ("" for all)
+ * @return list of found devices
+ */
+global define list<string> List(string devregex) {
+
+    list<string> ret = [];
+    if(devregex == "" || devregex == nil) {
+	maplist(string t, map d, Devices, {
+	    maplist(string n, (list<string>) Map::Keys(d), {
+		ret[size(ret)] = device_name(t,n);
+	    });
+	});
+    }
+    else {
+	// it's a regex for type, not the whole name
+	string regex = "^(" + DeviceRegex[devregex]:devregex + ")$";
+	maplist(string t, map d, Devices, {
+	    if(regexpmatch(t, regex)) {
+		maplist(string n, (list<string>) Map::Keys(d), {
+		    ret[size(ret)] = device_name(t,n);
+		});
+	    }
+	});
+	/*
+	map d = Devices[type]:$[];
+	maplist(string n, Map::Keys(d), {ret[size(ret)] = device_name(type,n);});
+	*/
+    }
+
+    y2debug("ret=%1", ret);
+    return ret;
+}
+
+/**
+ * Find the fastest available device
+ */
+global define string Fastest() {
+
+    string ret = "";
+    list<string> devices = List("");
+
+    /* Find the fastest device */
+    foreach(integer num, string type, FastestTypes, {
+	foreach(string dev, devices, {
+	    if(ret == "" && regexpmatch(dev, "^" + DeviceRegex[type]:"" + "[0-9]*$"))
+		ret = dev;
+	});
+    });
+
+    y2milestone("ret=%1", ret);
+    return ret;
+}
+
+global define string FastestType(string name) {
+    string ret = "";
+    maplist(integer num, string type, FastestTypes, {
+	string regex = DeviceRegex[type]:"";
+	if (ret == "" && regexpmatch(name, "^" + regex + "[0-9]*$"))
+	ret = type;
+    });
+    /*
+    maplist(string typ, string regex, DeviceRegex, {
+	if (ret == "" && regexpmatch(name, "^" + regex + "[0-9]*$"))
+	ret = typ;
+    });
+    */
+    return ret;
+}
+
+/**
+ * Check if the given device has any virtual alias.
+ * @param dev device to be checked
+ * @return true if there are some aliases
+ */
+global define boolean HasAliases(string name) {
+
+    if(!Check(name)) {
+	y2error("Device not found: %1", name);
+	return false;
+    }
+
+    string t = device_type(name);
+    string d = device_num(name);
+    string a = alias_num(name);
+
+    return a == "" && Devices[t, d, "_aliases"]:$[] != $[];
+}
+
+/**
+ * DSL needs to save its config while the underlying network card is
+ * being configured.
+ */
+global define void Push() {
+    if(stack != $[]) y2error("Stack not empty: %1", stack);
+    stack["Name"] = Name;
+    stack["Current"] = Current;
+    stack["operation"] = operation;
+    y2milestone("PUSH: %1", stack);
+}
+
+global define void Pop() {
+    y2milestone("POP: %1", stack);
+    Name = stack["Name"]:"";
+    Current = stack["Current"]:$[];
+    operation = (symbol) stack["operation"]:nil;
+    stack = $[];
+}
+
+/**
+ * #46803: forbid "/" (filename), maybe also "-" (separator) "_" (escape)
+ */
+global string ValidCharsIfcfg () {
+    return String::ValidCharsFilename ();
+}
+
+/* EOF */
+}

@@ -1,0 +1,14 @@
+// Example how NOT to use popups:
+//
+// - The headline is redundant
+//
+// - The text is too verbose
+//
+// - The text contains a reference to "YaST2"
+//   (the user shouldn't need to know what that is)
+{
+    import "Popup";
+
+    boolean answer = Popup::YesNoHeadline( "Create Backup?", // superfluous headline
+					   "Should YaST2 create a backup of the configuration files?" );
+}

@@ -1,0 +1,39 @@
+{
+
+import "Sequencer";
+include "./examples.ycp";
+
+define any BeginDialog() { return GUI("Begin",[`back, `next]); }
+define any EndDialog() { return GUI("End",[`back,`finish]); }
+define any ConfigDialog() { return GUI("Config",[`back,`details,`next]); }
+define any DetailsDialog() { return GUI("Details",[`back,`ok,`details,`next]); }
+define any SuperDetailsDialog() { return GUI("Super details",[`back,`ok,`next]); }
+define any Decide() { return GUI("Decide",[`yes,`no]); }
+
+map Sequence = $[
+    "ws_start" : "begin",
+    "begin" : $[
+        `next : "config"
+    ],
+    "config" : $[
+        `next : "end",
+        `details : "details"
+    ],
+    "details" : $[
+        `next : "end",
+        `details: "superdetails",
+        `ok : "config"
+    ],
+    "superdetails" : $[
+        `next: "end",
+        `ok: "details"
+    ],
+    "end" : $[
+        `finish : `ws_finish
+    ]
+];
+
+any result = Sequencer::Run(Aliases(),Sequence);
+y2debug("result=%1",result);
+
+}
