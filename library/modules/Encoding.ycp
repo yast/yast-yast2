@@ -24,6 +24,7 @@ import "Mode";
  * Current (ISO) encoding
  */
 global string console = "ISO-8859-1";
+global string lang = "en_US";
 
 /**
  * Restore data to system
@@ -54,6 +55,48 @@ global define string Restore() {
     y2milestone( "encoding %1", console );
     return console;
 }
+
+global void SetEncLang( string new_lang )
+    ``{
+    lang = new_lang;
+    y2milestone( "SetEncLang %1", lang );
+    }
+
+global define string GetCodePage( string enc ) 
+    ``{
+    string code = "437";
+    if( lang == nil)
+        lang = "";
+
+    if( enc == "iso8859-2" )
+        {
+        code = "852";
+        }
+    else if( enc == "euc-jp" || enc == "sjis" ||
+	     (( enc == "utf8" ) && (substring( lang, 0, 5) == "ja_JP" )))
+        {
+        code = "932";
+        }
+    else if( enc == "gb2312" ||
+	     (( enc == "utf8" ) && (substring( lang, 0, 5) == "zh_CN" )))
+        {
+        code = "936";
+        }
+    else if( enc == "big5" ||
+	     (( enc == "utf8" ) && (substring( lang, 0, 5) == "zh_TW" )) ||
+	     (( enc == "utf8" ) && (substring( lang, 0, 5) == "zh_HK" )))
+        {
+        code = "950";
+        }
+    else if( enc == "euc-kr" ||
+	     (( enc == "utf8" ) && (substring( lang, 0, 5) == "ko_KR" )))
+        {
+        code = "949";
+        }
+    y2milestone( "GetCodePage enc %1 lang %2 ret %3", enc, lang, code );
+    return code;
+    }
+
 
 /**
  * Constructor
