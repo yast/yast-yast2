@@ -84,6 +84,7 @@
             "sr_mod",
 	    "xfs_support",
 	    "xfs_dmapi",
+	    "ide-scsi",
         ];
         // some other modules don't belong to initrd on PPC
         if (Arch::ppc)
