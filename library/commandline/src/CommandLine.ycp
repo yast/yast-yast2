@@ -881,8 +881,9 @@ boolean RunMapFunction( boolean(map<string,string>) funct,
  *
  * @param commandline	a map used in the CommandLine module with information
  *                      about the handlers for GUI and commands.
- * @return boolean	true if the changes should be written, false
- *                      if there was an error or no changes to be written (for example "help").
+ * @return any		false if there was an error or no changes to be written (for example "help").
+ *			true if the changes should be written, or a value returned by the
+ *			handler
  */
 global any Run( map commandline ) {
     /* The main () */
