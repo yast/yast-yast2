@@ -338,7 +338,10 @@
      */
     global define void AddModuleToLoad (string name)
     {
-	kernelModules = kernelModules + " " + name;
+	if (kernelModules == "")
+	    kernelModules = name;
+	else
+	    kernelModules = kernelModules + " " + name;
     }
 
     /*
