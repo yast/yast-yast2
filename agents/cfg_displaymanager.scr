@@ -1,0 +1,17 @@
+/**
+ * File:
+ *   cfg_displaymanager.scr
+ * Summary:
+ *   SCR Agent for reading/writing /etc/sysconfig/displaymanager
+ *   using the sysconfig-agent
+ *
+ * $Id$
+ *
+ * Read/Sets the values defined in <tt>/etc/sysconfig/displaymanager</tt>
+ * in an easy manner.
+ */
+.sysconfig.displaymanager
+
+`ag_ini(
+  SysConfigFile("/etc/sysconfig/displaymanager")
+)

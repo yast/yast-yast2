@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Mar  5 15:25:12 CET 2003 - ms@suse.de
+
+- added scr agent for /etc/sysconfig/displaymanager handling (#24669)
+
+-------------------------------------------------------------------
 Mon Mar  3 17:14:44 CET 2003 - jsrain@suse.de
 
 - added scr agent for /etc/sysconfig/hotplug handling (#22580)
