@@ -10,8 +10,8 @@
 {
 
     include "testsuite.ycp";
-    include "./tests/include/testsuitedata.ycp";
-    
+    include "./tests/testsuitedata.yh";
+
     import "./../../types/src/TypeRepository.ycp";
     import "./../src/CommandLine.ycp";
 
