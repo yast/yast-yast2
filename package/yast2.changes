@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Mar  4 10:25:56 CET 2005 - locilka@suse.cz
+
+- fixed bug #67335
+  Aborting unchanged SuSEfirewall configuration
+- 2.11.39
+
+-------------------------------------------------------------------
 Thu Mar  3 13:40:45 CET 2005 - jsrain@suse.cz
 
 - precent Initrd module from automatical reading in Mode::config
