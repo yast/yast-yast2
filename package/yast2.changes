@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jan 28 09:57:54 CET 2005 - mlazar@suse.cz
+
+- fixed runlevel agent: don't dump error msg if service script isn't readable
+
+-------------------------------------------------------------------
 Thu Jan 27 13:29:28 CET 2005 - mvidner@suse.cz
 
 - NetworkDevices: canonicalize STARTMODE (~#50095), also on Import.

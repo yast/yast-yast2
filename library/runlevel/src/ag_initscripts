@@ -71,7 +71,7 @@ export LC_ALL=C
 INITD="/etc/init.d"
 
 get_script_info () {
-/usr/bin/awk '
+[ -r "$1" ] && /usr/bin/awk '
     BEGIN {
 	    in_comment = 0; in_descr = 0; skip_file = 0; first_time = 1;
 	    header_printed = 0;
