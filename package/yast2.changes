@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jul 29 14:48:06 CEST 2003 - jsrain@suse.de
+
+- passing whole event information from CWM to handlers
+
+-------------------------------------------------------------------
 Wed Jul 23 09:33:04 CEST 2003 - jsrain@suse.de
 
 - updated CWM to use WaitForEvent instead of UserInput, tables of

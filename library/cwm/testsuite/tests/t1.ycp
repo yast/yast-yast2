@@ -53,26 +53,26 @@
     DUMP ("Handle");
 
     DUMP ("- Both will run");
-    ret = CWM::handleWidgets (widget_data, `event);
+    ret = CWM::handleWidgets (widget_data, $[ "ID" : `event]);
     DUMP (sformat ("Returned %1", ret));
     DUMP ("- First causes event loop finish");
     widget_data[0, "handle"] = ``(TestFunc::symbol2 ("handle_w1"));
-    ret = CWM::handleWidgets (widget_data, `event);
+    ret = CWM::handleWidgets (widget_data, $[ "ID" : `event]);
     DUMP (sformat ("Returned %1", ret));
 
     DUMP ("=========================================");
     DUMP ("Validate");
     DUMP ("- Run both");
-    ret = CWM::validateWidgets (widget_data, `event);
+    ret = CWM::validateWidgets (widget_data, $[ "ID" : `event]);
     DUMP (sformat ("Returned %1", ret));
     DUMP ("- First fails");
     widget_data[0, "validate_function"] = ``(TestFunc::false2 ("valid_w1"));
-    ret = CWM::validateWidgets (widget_data, `event);
+    ret = CWM::validateWidgets (widget_data, $[ "ID" : `event]);
     DUMP (sformat ("Returned %1", ret));
 
 
     DUMP ("=========================================");
     DUMP ("Save");
-    CWM::saveWidgets (widget_data, `event);
+    CWM::saveWidgets (widget_data, $[ "ID" : `event]);
 
 }

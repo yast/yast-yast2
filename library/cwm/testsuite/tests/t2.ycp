@@ -68,11 +68,11 @@
     DUMP ("=========================================");
     DUMP ("Handle");
 
-    ret = CWM::handleWidgets (widget_data, `_tp_edit);
+    ret = CWM::handleWidgets (widget_data, $[ "ID" : `_tp_edit]);
     DUMP (sformat ("Returned %1", ret));
     widget_data[0, "options", "a", "table", "handle"]
 	= ``(TestFunc::arg3 ("option_a_handle"));
-    ret = CWM::handleWidgets (widget_data, `_tp_edit);
+    ret = CWM::handleWidgets (widget_data, $[ "ID" : `_tp_edit]);
     DUMP (sformat ("Returned %1", ret));
 
     DUMP ("=========================================");
