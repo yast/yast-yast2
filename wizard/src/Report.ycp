@@ -19,7 +19,7 @@
 
 module "Report";
 
-include "ui/common_popups.ycp";
+import "Popup";
 
 textdomain "base";
 
@@ -236,11 +236,11 @@ global define void Message(string message_string)
     {
 	if (timeout_messages > 0)
 	{
-	    UI::TimedMessagePopup(message_string, timeout_messages);
+	    Popup::TimedMessage(message_string, timeout_messages);
 	}
 	else
 	{
-	    UI::MessagePopup(message_string);
+	    Popup::Message(message_string);
 	}
     }
 
@@ -265,11 +265,11 @@ global define void Warning(string warning_string)
     {
 	if (timeout_warnings > 0)
 	{
-	    UI::TimedWarningPopup(warning_string, timeout_warnings);
+	    Popup::TimedWarning(warning_string, timeout_warnings);
 	}
 	else
 	{
-	    UI::WarningPopup(warning_string);
+	    Popup::Warning(warning_string);
 	}
     }
 
@@ -294,11 +294,11 @@ global define void Error(string error_string)
     {
 	if (timeout_errors > 0)
 	{
-	    UI::TimedErrorPopup(error_string, timeout_errors);
+	    Popup::TimedError(error_string, timeout_errors);
 	}
 	else
 	{
-	    UI::ErrorPopup(error_string);
+	    Popup::Error(error_string);
 	}
     }
 
