@@ -186,6 +186,7 @@
       * @return a list of modified widget description maps
       */
     global define list(map) mergeFunctions (list(map) widgets, map functions)``{
+	functions = filter (`k, `v, functions, ``(k != "abort"));
 	return maplist (map w, widgets, ``(
 	    union (functions, w)
 	));
@@ -214,6 +215,8 @@
 	contents = CWM::PrepareDialog (contents, w);
 	Wizard::SetContentsButtons (caption, contents, help,
 	    back_button, next_button);
+	Wizard::RestoreBackButton ();
+	Wizard::RestoreAbortButton ();
 	return Run (w, fallback);
     }
 
@@ -246,7 +249,9 @@
             if (ret == `abort)
 	    {
 		if (functions[ret]:nil != nil)
-		    ret = eval (functions[ret]:nil);
+		{
+		    ret = eval (functions[ret]:nil) ? `abort : nil;
+		}
 	    }
 
 	    if (ret == nil)

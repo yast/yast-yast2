@@ -66,6 +66,11 @@ specify other table-related functions and attributes.
 All other keys that can be used by handlers can be defined according
 to the needs of the component developer.
 </para></listitem>
+<listitem><para>
+If you don't specify the "init" and "handle" functions, the defaults
+given as an argument in the ShowAndRun or Run function won't be used,
+but instead of them table-widget-specific defaults are used.
+</para></listitem>
 </orderedlist>
 </para>
 </example>

@@ -9,6 +9,7 @@
 <!ENTITY widgets SYSTEM "widgets.xml">
 <!ENTITY table_popup SYSTEM "table_popup.xml">
 <!ENTITY terminology SYSTEM "terminology.xml">
+<!ENTITY tutor SYSTEM "tutor.xml">
 
 <!ENTITY date "June 2003">
 ]>
@@ -74,16 +75,12 @@ are handled.
 </itemizedlist>
 </para></listitem>
 	</itemizedlist></para>
-	<section><title>Before announcement</title>
-	    <para><itemizedlist>
-<listitem><para>Decide module name (CWM,...)</para></listitem>
-	    </itemizedlist></para>
-	</section>
     </chapter>
 &terminology
 &concept
 &advanced
 &widgets
 &table_popup
+&tutor
 </book>
 

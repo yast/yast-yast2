@@ -49,8 +49,7 @@ Users".
 This map is then used to create the dialog (in this case with 2 checkboxes).
 This means following steps:
     <orderedlist>
-<listitem><para>Create the widgets using information stored in the map</para></listitem>
-<listitem><para>Place them to dialog</para></listitem>
+<listitem><para>Place widgets to dialog</para></listitem>
 <listitem><para>Create the dialog</para></listitem>
 <listitem><para>Initialize the widgets</para></listitem>
 <listitem><para>Run the event loop, until the return value is `next,
@@ -77,17 +76,12 @@ module "MyModule";
 // include <xref linkend="simple_widgets"/> here
 
 global define symbol runSomeDialog ``{
-    // create list of maps representing wanted widgets
-    list(map) widgets
-        = CWM::CreateWidgets (
-            [ "CWD_IN_ROOT_PATH", "CWD_IN_USER_PATH" ],
-            widget_descr);
+    // create the basic layout
     term contents = `VBox (
-        widgets[0, "widget"]:`VSpacing (0),// "widget" here is
-        widgets[1, "widget"]:`VSpacing (0) // the _real_ widget
+	"CWD_IN_ROOT_PATH",
+	"CWD_IN_USER_PATH"
     )
-    Wizard::SetContentsButtons ("Dialog", contents, "Help",
-        "Back", "Next");
+
     // here comes additional stuff, eg. renaming the "Abort"
     // button to "Cancel" // if needed
 
@@ -96,8 +90,10 @@ global define symbol runSomeDialog ``{
         "store" : ``(MyModule::store_widget ()),
     ];
 
-    // run the dialog
-    any ret = CWM::Run (widgets, functions);
+    // display and run the dialog
+    any ret = CWM::ShowAndRun ([ "CWD_IN_ROOT_PATH", "CWD_IN_USER_PATH" ],
+        widget_descr, contents, caption, Label::BackButton (),
+        Label::NextButton (), functions);
 
     return ret;
 }
@@ -138,31 +134,43 @@ Generic function will be available in CWM module for all internally
         </para>
     </example>
 
-    <section>
-	<title>Creating widgets from map (step 1)</title>
+    <section><title>Placing widgets to the dialog (step 1)</title>
 	<para>
-For creating widgets from their names function CreateWidgets () should be used.
-It takes as an argument the list of strings (names of the widgets) and the widgets
-description map,
-and returns list of maps (the order of widget names is preserved).
-The maps in the returned list contain appropriate maps from the widgets description
-map, and additionally, some keys used internally by the CWM module are added or modified.
+Placing widgets to dialog means to create the dialog layout the normal way,
+but instead of putting the widget descriptions just putting the identifiers
+of the widgets. See <xref linkend="simple_dialog"/> for example.
+	</para>
+	<para>
+Note, that when processing the term, only VBoxes, HBoxes, Left and Right terms
+are processed into depth. If you need some other container widgets (eg.Frame), see
+<xref linkend="create_control"/>.
+	</para>
+    </section>
+    <section>
+	<title>Creating the dialog (step 2)</title>
+	<para>
+The first task of CWM::ShowAndRun function is to display the dialog, next tasks
+are described in following paragraphs. This function is just a wrapper for
+other global functions, but in most cases this wrapper is well usable. As
+parameters it takes names of widgets (the order is important if helps are used -
+see <xref linkend="widget_help"/>), map describing all of the widgets, term
+describing contents of the dialog, dialog caption, labels of back and next buttons
+and fallback widget handlers.
+	</para>
+	<para>
+The first task of this wrapper is to create the "real" widgets from the widgets
+description map. Then it replaces widget identifiers in the dialog contents
+description with the "real" widgets and merges helps of all widgets into one
+string that can be displayed in the dialog. After it is done, the dialog
+contents is set and event loop is started.
 See <xref linkend="simple_dialog"/>.
 	</para>
     </section>
     <section>
-	<title>Creating the dialog contents and the dialog (steps 2, 3)</title>
+        <title>Running the event loop (step 4)</title>
 	<para>
-Place the widgets to the dialog and create the dialog is task of the developer.
-For getting a widget use the return value of CreateWidgets () function, select
-item with appropriate index and from this map select the "widget" key.
-See <xref linkend="simple_dialog"/>.
-	</para>
-    </section>
-    <section>
-        <title>Running the event loop (step 5)</title>
-	<para>
-For running the dialog function Run is used. Its tasks are to initialize
+Next task of the ShowAndRun function is to run the event loop. The complete
+task means to nitialize
 the widgets, run while-loop, ask UI::UserInput () for an event, check if the
 event should finish the dialog. If not, then continue (for now, see
 <xref linkend="advanced"/>). Otherwise it will check if the settings are
@@ -194,7 +202,7 @@ them from the dialog and store them in some internal variables
 	</para>
     </section>
     <section>
-        <title>Manipulation with widget values (steps 4, 6)</title>
+        <title>Manipulation with widget values (steps 3, 5)</title>
 	<para>
 The way to initialize and store settings of a widget must be specified
 by developer, because the generic engine cannot know anything about it.

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding='ISO-8859-1'?>
+<?$$?>
+<chapter id = "tutor">
+    <title>CWM tutorial</title>
+
+<section><title>How to create simple dialog using CWM</title>
+<para>
+This section describes how to create a simple dialog using CWM.
+</para>
+<section><title>Create structure for holding the data</title>
+<para>
+The easiest is to use a map, where key is name of configuration file entry and value is its value.
+</para>
+
+<screen>
+map settings = $[
+    "option1" : "value1",
+    "option2" : "value2",
+];
+ </screen>
+
+<para>
+Addtionally, this map can be then used as-is for exporting and importing settings.
+</para>
+</section>
+
+<section><title>Create generic initialization and settings storing functions</title>
+
+<para>
+They can (in most cases) look the following way:
+</para>
+
+<screen>
+global define void MyInit (any widget_id) ``{
+    UI::ChangeWidget (`id (widget_id), `Value, settings[widget_id]:"")
+} 
+
+global define void MyStore (any widget_id, any event) ``{
+    settings[widget_id] = UI::QueryWidget (`id (widget_id), `Value);
+}
+ </screen>
+
+<para>
+They don'tdo anything else than to get current value from the map and change the widet appropriate way in case of init handler,
+and query the widget value and store it to the settings map in case of the store handler.
+</para>
+</section>
+
+<section><title>Create the description of the widgets</title>
+<para>
+It is a map with the same keys as the data map has, values are widget description maps.
+</para>
+<screen>
+map widgets = $[
+    "option1" : $[
+        "label" : _("The &amp;first option"),
+        "widget" : `textentry,
+        "help" : _("Some clever help"),
+    ],
+    "option2" : $[
+        "label" : _("The second option"),
+        "widget" : `radio_buttons,
+        "items" : [
+            [ "item1", _("&amp;This is label of the first radio button") ],
+            [ "item2", _("&amp;And the second radio button") ],
+        ],
+        "help" : _("Next clever help"),
+        "init" : ``(MyModule::RadioButtonsInit ()),
+        "store" : ``(MyModule::RadioButtonsStore ()),
+    ],
+];
+ </screen>
+
+<para>
+If you use radio button group, you can't use above mentioned handlers, because it is needed to use `CurrentButton instead of `Value.
+In this case the init and store callbacks must be set if fallback handlers use `Value property.
+</para>
+</section>
+
+<section><title>Create other needed callbacks</title>
+
+<para>
+For radio button group the callback will look following way:
+</para>
+
+<screen>
+global define void RadioButtonsInit (any widget_id) ``{
+    UI::ChangeWidget (`id (widget_id), `CurrentButton, settings[widget_id]:"")
+}
+
+global define void RadioButtonsStore (any widget_id, any event) ``{
+    settings[widget_id] = UI::QueryWidget (`id (widget_id), `CurrentButton);
+}
+ </screen>
+</section>
+
+<section><title>Create and run the dialog</title>
+
+<para>
+It means to create dialog layout and call SHowAndRun with appropriate parameters.
+</para>
+
+<screen>
+term contents = `VBox (
+    "option1",
+    `VSpacing (2),
+    "option2",
+);
+
+map fallback_func = $[
+    "init" : ``(MyModule::MyInit ()),
+    "store" : ``(MyModule::MyStore ()),
+];
+
+return CWM::ShowAndRun (["option1", "option2"], widgets, contents, _("Dialog caption"), Label::BackButton (), Label::NextButton (), fallback_func);
+ </screen>
+</section>
+</section>
+</chapter>
