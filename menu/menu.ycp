@@ -177,7 +177,7 @@
 	if (function != "")
 	{
 	    any ret = WFM::CallModule (function, arguments);
-	    y2milestone ( "WFM::CallModule (%1, %2) returns: %3", function, arguments, ret );
+	    y2debug ( "WFM::CallModule (%1, %2) returns: %3", function, arguments, ret );
 	}
     }
 
@@ -353,7 +353,7 @@ F10 = OK, Next, Finish, or Accept<br>");
     {
         map event = UI::WaitForEvent();
 
-        y2milestone( "Input: %1", event );
+        y2debug( "Input: %1", event );
 
         if ( event["ID"]:`none == `groups
              && event["EventReason"]:"" == "SelectionChanged" )
