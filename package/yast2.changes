@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 29 08:34:41 CEST 2004 - nashif@suse.de
+
+- Defined more variables in ProductFeatures
+- Removed live_eval variable
+
+-------------------------------------------------------------------
 Tue Jul 20 13:48:00 CEST 2004 - jsrain@suse.cz
 
 - enhanced the TSIG keys management widget to do more checks before
