@@ -10,6 +10,7 @@ X-KDE-Library=yast2
 X-SuSE-YaST-Group=Misc
 X-SuSE-YaST-SortKey=99
 
+OnlyShowIn=X-SuSE-YaST;
 Icon=misc56
 
 Name=Misc

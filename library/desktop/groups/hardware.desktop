@@ -10,6 +10,7 @@ X-KDE-Library=yast2
 X-SuSE-YaST-Group=Hardware
 X-SuSE-YaST-SortKey=20
 
+OnlyShowIn=X-SuSE-YaST;
 Icon=hardware56
 
 Name=Hardware
