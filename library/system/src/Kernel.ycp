@@ -222,20 +222,21 @@
 
 	    if (Arch::has_smp)
 	    {
-		// x86, SMP -> must check PAE
-		if ((memsize <= fourGB)
-		    || !contains (cpuflags, "pae"))
+		if (memsize > fourGB && contains (cpuflags, "pae"))
 		{
-		    y2milestone ("Kernel switch: SMP, mem <= 4GB or no PAE support !");
+		    y2milestone ("Kernel switch: SMP && mem > 4GB && PAE");
 		    kernel_packages = ["kernel-bigsmp"];
 		    switched = true;
 		}
 	    }
-	    else if (memsize > fourGB)				// > 4GB
+	    else
 	    {
-		y2milestone ("Kernel switch: SMP, mem > 4GB");
-		kernel_packages = ["kernel-smp"];
-		switched = true;
+		if (memsize > fourGB)
+		{
+		    y2milestone ("Kernel switch: !SMP && mem > 4GB");
+		    kernel_packages = ["kernel-bigsmp"];
+		    switched = true;
+		}
 	    }
 	}
 
