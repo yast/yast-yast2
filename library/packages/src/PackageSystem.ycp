@@ -13,26 +13,156 @@
 module "Package";
 textdomain "base";
 
+/**
+ * Was last operation canceled?
+ *
+ * Used to enhance the exit status to distinguish between package
+ * installation fail and installation canceled by user, as in the second
+ * case doesn't make much sense to display any error
+ * Is set to true when user canceled package installation, from
+ * PackageSystem::* functions
+ */
+boolean last_op_canceled = false;
+
+/**
+ * Has Pkg::TargetInit run?
+ */
+boolean target_initialized = false;
+
+/**
+ * Has Pkg::SourceStartCache run?
+ */
+boolean source_initialized = false;
+
+
 include "package/common.ycp";
 
+
+/**
+ * Ensure that Pkg:: calls work.
+ * This may become superfluous.
+ */
+global void EnsureTargetInit() {
+    import "PackageCallbacks";
+    target_initialized = target_initialized || Pkg::TargetInit ("/", false);
+}
+
+/**
+ * Ensure that Pkg:: calls working with the installation sources work
+ */
+global void EnsureSourceInit() {
+    if(source_initialized) return;
+
+    /* Trigger constructor */
+    import "PackageCallbacks";
+
+    /* Popup when initializing the package manager */
+    UI::OpenDialog(`opt(`decorated ), `Label(_("Reading package information; One moment please...")));
+    list sources = Pkg::SourceStartCache (true);
+    UI::CloseDialog();
+
+    if (size (sources) > 0)
+    {
+	source_initialized = true;
+    }
+    else
+    {
+	import "Popup";
+	/* Error popup, no packages sources found */
+	Popup::Error (_("No package source defined."));
+    }
+}
+
 boolean DoInstall(list<string> packages) {
-    return false;
+    return DoInstallAndRemove(packages, []);
 }
 
 boolean DoRemove(list<string> packages) {
-    return false;
+    return DoInstallAndRemove([], packages);
 }
 
 boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove) {
-    return false;
+    y2debug ("toinstall: %1, toremove: %2", toinstall, toremove);
+    EnsureSourceInit ();
+    EnsureTargetInit ();
+    boolean ok = true;
+
+    foreach (string p, toinstall, ``{
+	if(ok == true)
+	    if(Pkg::PkgInstall(p) != true) {
+		y2error("Package install: %1", p);
+		ok = false;
+	    }
+    });
+    if(ok != true) return false;
+
+    foreach (string p, toremove, ``{
+	if(ok == true)
+	    if(Pkg::PkgDelete(p) != true) {
+		y2error("Package delete: %1", p);
+		ok = false;
+	    }
+    });
+    if(ok != true) return false;
+
+    if(Pkg::PkgSolve () != true) {
+	y2error("Package solve failed");
+	return false;
+    }
+
+    //[int successful, list failed, list remaining, list srcremaining]
+    list result = Pkg::PkgCommit (0);
+    y2debug ("PkgCommit: %1", result);
+    if(result[1]:[] != []) {
+	y2error("Package commit: %1", result[1]:[]);
+	return false;
+    }
+
+    foreach (string remaining, result[2]:[], ``{
+	if(ok == true)
+	    if(contains(toinstall, remaining)) {
+		y2error("Package remain: %1", remaining);
+		ok = false;
+	    }
+    });
+    if(ok != true) return false;
+
+    // Only run SUSEconfig if any packages were installed?
+    // No, deleted packages are not covered by this.
+    // if (true || result[0]:-1 > 0)
+
+    // But omit it during installation, one is run at its end.
+    // #25071
+    import "Mode";
+    if (!Mode::initial && !Mode::cont)
+    {
+	RunSUSEconfig ();
+    }
+
+    return true;
 }
 
+/**
+ * Is a package available?
+ * @return true if yes
+ */
 boolean Available(string package) {
-    return false;
+    EnsureSourceInit();
+    return Pkg::IsAvailable(package);
 }
 
-boolean Installed(string package) {
-    return false;
+/**
+ * Is a package installed?
+ * @return true if yes
+ */
+global boolean Installed(string package) {
+    // This is a most commonly called function and so it's
+    // important that it's fast, especially in the common
+    // case, where all dependencies are satisfied.
+    // Unfortunately, initializing Pkg reads the RPM database...
+    // so we must avoid it.
+    return 0 == SCR::Execute(.target.bash, "rpm -q " + package);
+    // return Pkg::IsProvided (package);
 }
 
 /* EOF */
