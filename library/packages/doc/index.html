@@ -1,0 +1,72 @@
+<html><head>
+<title>Packages Manipulation</title>
+</head><body bgcolor=#ffffff>
+<!-- Author: Michal Svec <msvec@suse.cz> -->
+<!-- $Id$ -->
+<a name="top"><p>
+<h1>Packages Manipulation</h1>
+<hr>
+
+<p>
+This is a set of basic routines for manipulating packages.
+
+<p>
+Authors: Martin Vidner &lt;<a href="mailto:mvidner@suse.czi">mvidner@suse.cz</a>&gt;,
+Michal Svec &lt;<a href="mailto:msvec@suse.czi">msvec@suse.cz</a>&gt;.
+
+<!-- MODULES -->
+<p><u><h2>Modules</h2></u>
+
+The module <b>Package</b> is the default one, it should work on the target
+system (it correctly differentiates between normal and autoinstallaton mode).
+
+<b>PackageSystem</b> is for situations when you need immediate action
+(for example to start the client).
+
+<ul>
+<li>Package
+<li>PackageSystem
+</ul>
+
+<!-- INTRODUCTION -->
+<p><u><h2>Functions</h2></u>
+
+The function names should be self-descriptive, so
+there are no comments here. Feel free to ask if
+you are in doubts.
+
+<h3>Packages installation (GUI, target system)</h3>
+<ul>
+<li>boolean Install(string package);
+<li>boolean InstallAll(list<string> packages);
+<li>boolean InstallAny(list<string> packages);
+<p>
+<li>boolean Remove(string package);
+<li>boolean RemoveAll(list<string> packages);
+</ul>
+
+<h3>Packages installation (target system, no GUI)</h3>
+<ul>
+<li>boolean DoInstall(list<string> packages);
+<li>boolean DoRemove(list<string> packages);
+<li>boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove);
+</ul>
+
+<h3>Testing</h3>
+<ul>
+<li>boolean Available(string package);
+<li>boolean AvailableAll(list<string> packages);
+<li>boolean AvailableAny(list<string> packages);
+<p>
+<li>boolean Installed(string package);
+<li>boolean InstalledAll(list<string> packages);
+<li>boolean InstalledAny(list<string> packages);
+</ul>
+
+<h3>Other</h3>
+<ul>
+<li>void RunSUSEConfig();
+<li>boolean LastOperationCanceled();
+</ul>
+
+</body></html>

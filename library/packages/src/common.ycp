@@ -29,7 +29,7 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
  * @param packages list of packages
  * @return true if yes
  */
-define boolean AvailableAll(list<string> packages) ``{
+global define boolean AvailableAll(list<string> packages) ``{
     string which = find(string p, packages, ``{
 	return ! Available(p);
     });
@@ -41,7 +41,7 @@ define boolean AvailableAll(list<string> packages) ``{
  * @param packages list of packages
  * @return true if yes
  */
-define boolean AvailableAny(list<string> packages) ``{
+global define boolean AvailableAny(list<string> packages) ``{
     string which = find(string p, packages, ``{
 	return Available(p);
     });
@@ -53,7 +53,7 @@ define boolean AvailableAny(list<string> packages) ``{
  * @param packages list of packages
  * @return true if yes
  */
-define boolean InstalledAll(list<string> packages) ``{
+global define boolean InstalledAll(list<string> packages) ``{
     string which = find(string p, packages, ``{
 	return ! Installed(p);
     });
@@ -65,7 +65,7 @@ define boolean InstalledAll(list<string> packages) ``{
  * @param packages list of packages
  * @return true if yes
  */
-define boolean InstalledAny(list<string> packages) ``{
+global define boolean InstalledAny(list<string> packages) ``{
     string which = find(string p, packages, ``{
 	return Installed(p);
     });
@@ -133,7 +133,7 @@ global boolean RemoveAll(list<string> packages) {
  * Run SUSEconfig, create new wizard dialog before it,
  * close after it is finished
  */
-global void RunSUSEconfig() {
+global void RunSUSEConfig() {
     Wizard::CreateDialog ();
     // inst_suseconfig returns `auto or `next
     // (update mode or Args(2) is true) => no error checking

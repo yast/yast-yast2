@@ -18,8 +18,8 @@ import "PackageAI";
 import "PackageSystem";
 
 map FunctionsSystem = $[
-    "DoInstall"	: PackageSystem::Install,
-    "DoRemove"	: PackageSystem::Remove,
+    "DoInstall"	: PackageSystem::DoInstall,
+    "DoRemove"	: PackageSystem::DoRemove,
     "DoInstallAndRemove" : PackageSystem::DoInstallAndRemove,
     "Available"	: PackageSystem::Available,
     "Installed"	: PackageSystem::Installed,

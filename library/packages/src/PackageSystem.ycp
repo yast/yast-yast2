@@ -137,7 +137,7 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
     import "Mode";
     if (!Mode::initial && !Mode::cont)
     {
-	RunSUSEconfig ();
+	RunSUSEConfig ();
     }
 
     return true;
@@ -162,7 +162,7 @@ global boolean Installed(string package) {
     // case, where all dependencies are satisfied.
     // Unfortunately, initializing Pkg reads the RPM database...
     // so we must avoid it.
-    return 0 == SCR::Execute(.target.bash, "rpm -q " + package);
+    return 0 == (integer) SCR::Execute(.target.bash, "rpm -q " + package);
     // return Pkg::IsProvided (package);
 }
 
