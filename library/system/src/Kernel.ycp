@@ -188,7 +188,7 @@
      */
     global define void ProbeKernel ()
     {
-	if (!Arch::has_smp)
+	if (!Arch::has_smp ())
 	{
 	    y2milestone ("ProbeKernel: non SMP board");
 	    kernel_packages = ["kernel-default"];
@@ -200,13 +200,13 @@
 	    switched = true;
 	}
 
-	if (Arch::is_uml)
+	if (Arch::is_uml ())
 	{
 	    y2milestone ("ProbeKernel: UML");
 	    kernel_packages = ["kernel-um"];
 	    switched = true;
 	}
-	else if (Arch::i386)
+	else if (Arch::i386 ())
 	{
 	    // get flags from WFM /proc/cpuinfo (for pae and tsc tests below)
 
@@ -228,25 +228,25 @@
 		switched = true;
 	    }
 	}
-	else if (Arch::alpha)
+	else if (Arch::alpha ())
 	{
-	    if (!Arch::has_smp && Mode::serial_console)
+	    if (!Arch::has_smp () && Mode::serial_console)
 	    {
 		kernel_packages = ["kernel-serial"];
 		switched = true;
 	    }
 	}
-	else if (Arch::ppc)
+	else if (Arch::ppc ())
 	{
 	    binary = "vmlinux";
 	    switched = false;
 
-	    if (Arch::board_mac_new || Arch::board_mac_old)
+	    if (Arch::board_mac_new () || Arch::board_mac_old ())
 	    {
-	        if (Arch::board_compatible == "MacRISC4")
+	        if (Arch::board_compatible () == "MacRISC4")
 		{
 		    // G5 and newer
-		    if (Arch::ppc32)
+		    if (Arch::ppc32 ())
 			kernel_packages = ["kernel-pmac64_32bit"];
 		    else
 			kernel_packages = ["kernel-pmac64"];
@@ -258,12 +258,12 @@
 		}
 	    }
 
-	    if (Arch::board_mac_nubus)
+	    if (Arch::board_mac_nubus ())
 	    {
 		kernel_packages = ["kernel-nubus"];
 	    }
 
-	    if (Arch::board_chrp)
+	    if (Arch::board_chrp ())
 	    {
 	        // why "fixme"?
 		// XXX fixme
@@ -274,11 +274,11 @@
 		    chrp_cpu = tolower (chrp_cpu);
 		});
 
-		if (issubstring (chrp_cpu, "power3") && Arch::ppc32)
+		if (issubstring (chrp_cpu, "power3") && Arch::ppc32 ())
 		{
 		    kernel_packages = ["kernel-power3"];
 		}
-		else if (Arch::ppc64)
+		else if (Arch::ppc64 ())
 		{
 		    kernel_packages = ["kernel-pseries64"];
 		}
@@ -287,23 +287,23 @@
 		    kernel_packages = ["kernel-default"];
 		}
 	    }
-	    else if (Arch::board_iseries)
+	    else if (Arch::board_iseries ())
 	    {
 		kernel_packages = ["kernel-iseries64"];
 	    }
-	    else if (Arch::board_prep)
+	    else if (Arch::board_prep ())
 	    {
 		kernel_packages = ["kernel-default"];
 	    }
 	}
-	else if (Arch::ia64)
+	else if (Arch::ia64 ())
 	{
 	    kernel_packages = ["kernel-default"];
 	    switched = true;
 	}
-	else if (Arch::s390)
+	else if (Arch::s390 ())
 	{
-	    if (Arch::s390_64)
+	    if (Arch::s390_64 ())
 		kernel_packages = ["kernel-s390x"];
 	    else
 		kernel_packages = ["kernel-s390"];

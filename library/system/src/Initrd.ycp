@@ -88,7 +88,7 @@
 	    "ide-scsi",
         ];
         // some other modules don't belong to initrd on PPC
-        if (Arch::ppc)
+        if (Arch::ppc ())
         {
             list ppc_modules_to_skip = [
 		"reiserfs",
@@ -339,7 +339,7 @@
       * @param vga string the vga kernel parameter
       */
     global define void setSplash (string vga) ``{
-	if (! Arch::s390)
+	if (! Arch::s390 ())
 	{
 	    changed = true;
 	    integer mode = tointeger (vga);
