@@ -126,6 +126,11 @@
     global boolean enable_autologin = true;
 
     /**
+     * Runlevel
+     */
+    global string runlevel = "";
+
+    /**
      * Language
      */
     global string language = "";
