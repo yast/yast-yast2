@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # File:		/sbin/yast2
 # Module:	yast2
 # Summary:	Main YaST2 start script
@@ -11,8 +13,6 @@
 # the qt user interface in case the DISPLAY variable is set and other-
 # wise the ncurses. It starts then the module 'menu' which implements
 # the configuration and administration menu.
-#
-#/-*/
 
 export PATH=/sbin:/usr/sbin:$PATH
 
