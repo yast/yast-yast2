@@ -45,7 +45,7 @@ global string ydatadir = datadir;
 /**
  * Directory for schema (RNC,DTD,RNG)
  */
-global string schemadir = datadir + "/schema";
+global string schemadir = yast2dir + "/schema";
 
 /**
  * Directory for includes
