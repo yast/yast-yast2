@@ -57,6 +57,17 @@ while ( <STDIN> )
 	    $prompt = $argument;
 	    ycp::Return( "true" );
 	}
+	elsif ( $path eq ".stderr" )
+	{
+	    # recode from utf8 (broken YaST)
+	    # it sends almost UTF-8 (but encodes some chars as octals), so Perl
+	    # does not like it as UTF-8. Let's force the conversion
+	    my $octets = encode( "iso-8859-1", $argument );
+	    Encode::from_to($octets, "utf-8", $codeset);
+	    
+	    print STDERR  $octets ,"\n";
+	    ycp::Return ( "true" );
+	}
 	else 
 	{
 	    y2error ("Unrecognized path! '$path'");

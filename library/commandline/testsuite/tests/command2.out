@@ -1,4 +1,4 @@
 Write	.dev.tty.prompt "YaST2 lan> " true
-Write	.dev.tty "Option 'device' is missing value." true
+Write	.dev.tty.stderr "Option 'device' is missing value." true
 Return	false
 Return	$["command":"quit"]
