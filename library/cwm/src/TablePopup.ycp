@@ -666,7 +666,7 @@
       * widget description map
       * @param key any widget key
       */
-    global define void TableInitWrapper (any key) ``{
+    global define void TableInitWrapper (string key) ``{
 	TableInit (CWM::GetProcessedWidget (), key);
     }
 
@@ -677,7 +677,7 @@
       * @param event_descr map event description map
       * @return symbol return value for wizard sequencer or nil
       */
-    global define symbol TableHandleWrapper (any key, map event_descr) ``{
+    global define symbol TableHandleWrapper (string key, map event_descr) ``{
 	return TableHandle(CWM::GetProcessedWidget (), key, event_descr);
     }
 

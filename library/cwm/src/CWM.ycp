@@ -103,21 +103,27 @@
 	if (type == nil)
 	{
 	    if (key == "init")
-		success = is (value, block<void(any)>);
+		success = is (value, void(string))
+		    || is (value, void(any,string));
 	    else if (key == "handle")
-		success = is (value, block<symbol(any,map)>);
+		success = is (value, symbol(string,map))
+		    || is (value, symbol(any,string,map));
+		// FIXME separate checker for table-option popups (they have
+		// additional parameter
 	    else if (key == "store")
-		success = is (value, block<void(any,map)>);
+		success = is (value, void(string,map))
+		    || is (value, void(any,string,map));
 	    else if (key == "id2key")
-		success = is (value, block<any(map,any)>);
+		success = is (value, string(map,any));
 	    else if (key == "ids")
-		success = is (value, block<list(map)>);
+		success = is (value, list(map));
 	    else if (key == "option_delete")
-		success = is (value, block<boolean(any,any)>);
+		success = is (value, boolean(any,string));
 	    else if (key == "summary")
-		success = is (value, block<string()>);
+		success = is (value, string(any,string));
 	    else if (key == "validate_function")
-		success = is (value, block<boolean(any,map)>);
+		success = is (value, boolean(string,map))
+		    || is (value, boolean(any,string,map));
 	}
 	else if (type == "term")
 	    success = is (value, term);
