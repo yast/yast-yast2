@@ -138,10 +138,10 @@ when settings of configuration packages are saved. Example of code:<pre>
     }
 
 
-    list subs = ["Network", "Printer", "Sound", "Modem", "TV Card",  ];
+    list&lt;string&gt; subs = ["Network", "Printer", "Sound", "Modem", "TV Card",  ];
     Wizard::CreateDialog ();
     Progress::OpenSuperior ("Saving configuration...", subs);
-    foreach (`i, subs, ``{
+    foreach (string i, subs, ``{
 	Progress::StepSuperior ();
 	SubProgress (i);
     });
