@@ -103,7 +103,7 @@
 	    if (ask_before_loading)
 	    {
 
-		UI::OpenDialog(`opt(`decorated),
+		UI::OpenDialog(`opt(`decorated, `centered),
 			       `HBox (
 				      `HSpacing(1),
 				      `HCenter (
