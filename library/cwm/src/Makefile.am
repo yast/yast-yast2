@@ -6,7 +6,8 @@ module_DATA =			\
 	CWM.ycp			\
 	TablePopup.ycp		\
 	DialogTree.ycp		\
-	CWMTab.ycp
+	CWMTab.ycp		\
+	CWMServiceStart.ycp
 
 EXTRA_DIST = $(module_DATA)
 
