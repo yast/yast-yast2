@@ -1,6 +1,4 @@
-#
 # Makefile.am for yast2/remote
-#
 
 client_DATA =			\
 	password.ycp		\
@@ -16,3 +14,5 @@ desktop_DATA = #		\
 	remoteinstall.desktop
 
 EXTRA_DIST = $(client_DATA) # $(config_DATA) $(desktop_DATA)
+
+include $(top_srcdir)/Makefile.am.common

@@ -1,6 +1,4 @@
-#
-# Makefile.am for CommandLine interface sources
-#
+# Makefile.am for yast2/library/commandline/src/
 
 yncludedir = @yncludedir@/commandline
 
@@ -15,3 +13,5 @@ module_DATA =			\
 	CommandLine.ycp		
 
 EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(config_DATA) $(module_DATA)
+
+include $(top_srcdir)/Makefile.am.common

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Dec  3 18:20:13 CET 2003 - msvec@suse.cz
+
+- use common Makefile.am (needs recent devtools)
+
+-------------------------------------------------------------------
 Mon Nov 24 00:32:55 CET 2003 - ro@suse.de
 
 - remove file conflict with yast2-pam (Autologin.ycp moved there)
