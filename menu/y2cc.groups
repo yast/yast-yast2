@@ -15,14 +15,14 @@ Textdomain = base
 
 [Y2Group Net_advanced]
 ; group name for configuration menu and yast2 control center
-Name = _("Network/Advanced")
+Name = _("Network Services")
 Icon = network_advanced.png
 SortKey = 40
 Textdomain = base
 
 [Y2Group Network]
 ; group name for configuration menu and yast2 control center
-Name = _("Network/Basic")
+Name = _("Network Devices")
 Icon = network.png
 SortKey = 30
 Textdomain = base

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 27 15:48:51 CET 2003 - msvec@suse.de
+
+- network groups: Network Devices and Network Services
+- 2.7.4
+
+-------------------------------------------------------------------
 Fri Jan 24 15:56:26 CET 2003 - mvidner@suse.de
 
 - Added readconfig.ycp to the file list. Fixes autoyast.
