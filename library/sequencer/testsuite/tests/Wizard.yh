@@ -21,8 +21,8 @@ define symbol expert() ``{ y2error("expert"); return `expert; }
 define any click() ``{
     symbol ret = nil;
     integer s = size(clicks);
-    if(cur<s && is(select(clicks,cur,nil),symbol))
-        ret = (symbol) select(clicks,cur,nil);
+    if(cur<s && is(clicks[cur]:nil,symbol))
+        ret = (symbol) clicks[cur]:nil;
     cur = cur + 1;
     string log = sformat("%1",ret);
     if(substring(log, 0, 1) == "`")
