@@ -63,7 +63,7 @@ sub parse_line ($)
     # is this the first line?
     if ($line ne "")
     {
-	if ($line =~ /^(.*?)$separator(.*)\n$/s)
+	if ($line =~ /^(.*?)$separator(.*)$/s)
 	{
 	    push (@table, { "comment" => $line_comment,
 			    "key" => $1,
@@ -99,15 +99,15 @@ sub parse_file ()
 
     while (<FILE>)
     {
+	chomp; # \n
 	++$linenum;
 	dumpit () if ($debug);
 
 	# Escaped newlines: merge them before any other processing.
 	# Is this one escaped?
-	if ($continue_escaped_newline && /\\\n$/)
+	if ($continue_escaped_newline && /\\$/)
 	{
 	    print STDERR "$linenum:continued\n" if ($debug);
-	    chomp; # \n
 	    chop; # \\
 	    $backslashed_line .= "$_ ";
 	    next;
@@ -126,7 +126,7 @@ sub parse_file ()
 	    print STDERR "$linenum:comment\n" if ($debug);
 	    $trailing_comment .= "$1\n";
 	}
-	elsif (/^\n$/)
+	elsif (/^$/)
 	{
 	    if ($leading_comment_allowed)
 	    {
