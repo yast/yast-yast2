@@ -23,6 +23,7 @@
     import "Mode";
     import "Report";
     import "Stage";
+    import "Directory";
 
     textdomain "base";
 
@@ -331,10 +332,10 @@
 	if (splash != "" && splash != nil)
 	    param = sformat ("-s %1", splash);
 	if ( SCR::Execute (.target.bash, sformat ("/sbin/mkinitrd %1 >> \
-/var/log/YaST2/y2logmkinitrd 2>&1", param)) != 0 )
+%2 2>&1", param, Directory::logdir + "/y2logmkinitrd")) != 0 )
 	{
-	    string log = (string) SCR::Read (.target.string,
-		"/var/log/YaST2/y2logmkinitrd");
+	    string log = (string) SCR::Read (.target.string, Directory::logdir +
+					     "/y2logmkinitrd");
 	    // error report
 	    errorWithLogPopup (_("An error occurred during initrd creation."),
 		log);
