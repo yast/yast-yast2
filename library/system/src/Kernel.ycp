@@ -326,35 +326,6 @@
 	kernelModules = kernelModules + " " + name;
     }
 
-    /**
-     * IDERecorders ()
-     * @param	list<string>	list of ide cdrecorders (i.e. ["hdc", "hdd"])
-     *
-     * FIXME, obsolete with kernel 2.6?
-     */
-    global define void IDERecorders (list<string> idecdrws)
-    ``{
-	y2milestone ("IDERecorders(%1)", idecdrws);
-	if (size (idecdrws) > 0)
-	{
-// Don't add to initrd because of #19376
-//	    Initrd::AddModule ("ide-scsi", "");
-	    AddModuleToLoad ("cdrom");
-	    AddModuleToLoad ("ide-cd");
-	    AddModuleToLoad ("ide-scsi");
-	    y2milestone ("old boot_parameters '%1'", cmdLine);
-	    foreach (string dev, idecdrws,
-	    ``{
-		AddCmdLine (dev, "ide-scsi");
-		AddCmdLine (dev + "lun", "0");
-	    });
-	    y2milestone ("new boot_parameters '%1'", cmdLine);
-
-	    switched = true;    // must do a hard reboot !
-      	}
-	return;
-    };
-
     /*
      *	Set a custom kernel.
      *	@return void
