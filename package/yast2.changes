@@ -3,6 +3,8 @@ Tue Oct 26 12:35:59 CEST 2004 - jsrain@suse.cz
 
 - Mode.ycp split to Mode.ycp, Stage.ycp, Linuxrc.ycp and
   Installation.ycp (yast2-installation), clean-up
+- adapted the code to the clean-up
+- 2.11.2
 
 -------------------------------------------------------------------
 Tue Oct 19 13:29:57 CEST 2004 - locilka@suse.de
