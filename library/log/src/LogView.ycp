@@ -6,6 +6,23 @@
  *
  * $Id$
  *
+ * All of these functions watch the log file and display
+ * added lines as the log grows.
+ * <pre>
+ * LogView::DisplaySimple ("/var/log/messages");
+ * LogView::DisplayFiltered ("/var/log/messages", "(tftp|TFTP)");
+ * LogView::Display ($[
+ *          "file" : "/var/log/messages",
+ *          "grep" : "dhcpd",
+ *          "save" : true,
+ *          "actions" : [	// menu buttons
+ *              [ _("Restart DHCP Server"),
+ *                  RestartDhcpDaemon ],
+ *              [ _("Save Settings and Restart DHCP Server"),
+ *                  DhcpServer::Write ],
+ *          ],
+ *      ]);
+ * </pre>
  */
 
 {
