@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jul  2 08:52:29 CEST 2003 - visnov@suse.de
+
+- propagate y2base exit code from yast2 script 
+
+-------------------------------------------------------------------
 Tue Jul  1 10:19:44 CEST 2003 - jsrain@suse.de
 
 - updates of CWM module, added validation of used structures and
