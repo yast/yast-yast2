@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Mar  5 12:43:40 CET 2004 - msvec@suse.cz
+
+- make runlevel testsuite use Service
+- add warnings about usage of obsolete interface
+- 2.9.33
+
+-------------------------------------------------------------------
 Thu Mar  4 20:05:13 CET 2004 - visnov@suse.cz
 
 - 2.9.32 
