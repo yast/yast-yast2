@@ -52,12 +52,12 @@
 
 
 
-	/**
-	 * Autoinst Packages
+    /**
+     * Autoinst Packages
      */
-	global list AutoinstPackages = [];
-    global list AddModulePackages = [];
-    global list RemoveModulePackages = [];
+    global list<string> AutoinstPackages = [];
+    global list<string> AddModulePackages = [];
+    global list<string> RemoveModulePackages = [];
 
 
     /**
