@@ -100,7 +100,7 @@
 
 
     /**
-     * Make a HTL (unsorted) list from a list of strings, i.e.
+     * Make a HTML (unsorted) list from a list of strings, i.e.
      * [ul]
      *     [li]...[/li]
      *     [li]...[/li]
