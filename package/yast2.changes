@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Feb 25 13:44:23 CET 2003 - kkaempf@suse.de
+
+- suppress warning if /tmp/.qt already exists (#24243)
+
+-------------------------------------------------------------------
 Mon Feb 24 11:05:02 CET 2003 - jsrain@suse.de
 
 - added `opt (`notify) to Wizard_hw::ConfiguredContent table to 
