@@ -797,7 +797,7 @@ boolean RunFunction( boolean() funct ) {
     boolean() my_funct = funct;
     boolean ret = my_funct();
     string report = Report::GetMessages(
-	Report::NumWarnings()>0,Report::NumErrors()>0,Report::NumMessages()>0);
+	Report::NumWarnings()>0,Report::NumErrors()>0,Report::NumMessages()>0, Report::NumYesNoMessages()>0);
     if( size(report) > 0 )
     {
 	import "RichText";
@@ -813,7 +813,7 @@ boolean RunMapFunction( boolean(map<string,string>) funct,
     boolean(map<string,string>) my_funct = funct;
     boolean ret = my_funct(arg);
     string report = Report::GetMessages(
-	Report::NumWarnings()>0,Report::NumErrors()>0,Report::NumMessages()>0);
+	Report::NumWarnings()>0,Report::NumErrors()>0,Report::NumMessages()>0, Report::NumYesNoMessages()>0);
     if( size(report) > 0 )
     {
 	import "RichText";
