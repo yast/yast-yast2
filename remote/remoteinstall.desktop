@@ -6,7 +6,7 @@ X-KDE-ModuleType=Library
 X-KDE-RootOnly=true
 X-KDE-HasReadOnlyMode=true
 X-KDE-Library=yast2
-X-KDE-FactoryName=remoteinstall
+X-SuSE-YaST-Call=remoteinstall
 
 X-SuSE-YaST-Group=Misc
 X-SuSE-YaST-Argument=
