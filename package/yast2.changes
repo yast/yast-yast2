@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Feb 10 10:33:05 CET 2004 - arvin@suse.de
+
+- finally removed configdir from file list (doesn't help anymore)
+
+-------------------------------------------------------------------
 Sat Feb 07 20:19:29 CET 2004 - arvin@suse.de
 
 - removed config files (*.y2cc)
