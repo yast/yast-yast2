@@ -135,7 +135,7 @@ global void Restore() {
     InitFeatures (true);
     list<string> available = (list<string>)SCR::Dir (.product.features);
     list<list<string> > to_read = filter (list<string> f, features_to_save, {
-	contains (available, f[0]:"");
+	return contains (available, f[0]:"");
     });
     foreach (list<string> f, to_read, {
 	any val = SCR::Read (.product.features + f[0]:"");
