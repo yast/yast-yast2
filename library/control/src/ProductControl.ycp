@@ -32,16 +32,6 @@ global list<map> workflows = [];
 // all proposals
 global list<map> proposals = [];
 
-// Flexible partitioning map. XML represenation of the the part.info file
-global map partitioning = $[];
-
-// Software configuration
-global map software = $[];
-
-// Global configuration
-global map<string, any> globals = $[];
-
-
 // Location of a custom control file
 global string custom_control_file = "";
 
@@ -120,120 +110,28 @@ global define boolean ReadControlFile( string controlfile)
 
     if (productControl == nil)
         return false;
-    
+
     workflows = productControl["workflows"]:[];
     proposals = productControl["proposals"]:[];
- 
-    // Software
-    software = productControl["software"]:$[];
-    ProductFeatures::SetSection("software", software);
 
-    // Network
-    ProductFeatures::SetSection("network", productControl["network"]:$[]);
-
-    // Globals
-    globals = productControl["globals"]:$[];
-    ProductFeatures::SetSection("globals", globals);
-
-    // Storage
-    partitioning = productControl["partitioning"]:$[];
-    ProductFeatures::SetSection("partitioning", partitioning);
-
-    if (haskey(productControl, "partitioning"))
+    foreach (string section,
+	["software", "globals", "network", "partitioning"],
     {
-        if (size( productControl["partitioning", "partitions"]:[] ) > 0)
-        {
-            
-            ProductFeatures::flexible_partitioning = true;
-            
-            ProductFeatures::FlexiblePartitioning = partitioning;
-        }
-        if (productControl["partitioning", "evms_config"]:false)
-        {
-            ProductFeatures::evms_config = true;
-        }
-    }
-    if (haskey(productControl, "software"))
+	if (haskey (productControl, section))
+	{
+	    ProductFeatures::SetSection (section,
+		(map<string,any>)(productControl[section]:$[]));
+	}
+    });
+
+    // FIXME would be nice if it could be done generic way
+    if (size( productControl["partitioning", "partitions"]:[] ) > 0)
     {
-
-        ProductFeatures::base_selection_choice = software["selection_type"]:`auto;
-
-        if (size(software["base_selection"]:"") > 0 )
-        {
-            ProductFeatures::fixed_base_selection = software["base_selection"]:"Minimal";
-        }
-        // Default is true
-        ProductFeatures::delete_old_packages = software["delete_old_packages"]:true;
-
-        ProductFeatures::onlyUpdateInstalled =
-            software["only_update_installed"]:false;
-
-        // What is the software proposal based on?
-        // Possible values: selection|desktop
-        //
-        ProductFeatures::software_proposal =
-            software["software_proposal"]:"selection";
-
-        ProductFeatures::packages_transmogrify =
-            software["packages_transmogrify"]:"";
- 
-        /*
-         *  Kernel dependent packages, i.e. if xxx is given, xxx-smp will be installed
-         *  in case of an SMP system
-         */
-        ProductFeatures::kernel_packages = software["kernel_packages"]:[];
-
-        /*
-         *  Additional packages which are not in any selection
-         */
-        ProductFeatures::packages = software["packages"]:[];
-
-        // additional addon selections
-        ProductFeatures::addon_selections =
-            software["addon_selections"]:[];
-
-        
-        ProductFeatures::inform_about_suboptimal_distribution =
-         software["inform_about_suboptimal_distribution"]:false;
-    }
-
-
-    if (haskey(productControl, "globals"))
-    {
-
-        ProductFeatures::enable_autologin = globals["enable_autologin"]:true;
-        
-        ProductFeatures::language = globals["language"]:"";
-        
-        ProductFeatures::skip_language_dialog = globals["skip_language_dialog"]:false;
-        
-        ProductFeatures::keyboard = globals["keyboard"]:"";
-        
-        ProductFeatures::runlevel = globals["runlevel"]:"";
-        
-        ProductFeatures::timezone = globals["timezone"]:"";
-        ProductFeatures::incomplete_translation_treshold = globals["incomplete_translation_treshold"]:"95";
-        
-        ProductFeatures::ui_mode = globals["ui_mode"]:"expert";
-        
-	ProductFeatures::fam_local_only =
-	    globals["fam_local_only"]:"never";
-        
-	ProductFeatures::enable_firewall =
-	    globals["enable_firewall"]:true;
-
-	ProductFeatures::firewall_enable_ssh =
-	    globals["firewall_enable_ssh"]:false;
-
-        // Additional kernel parameters, i.e. elevator, desktop
-        ProductFeatures::additional_kernel_parameters =
-            globals["additional_kernel_parameters"]:"";
-    }
-
-    if (haskey(productControl, "network"))
-    {
-	map network = productControl["network"]:$[];
-	ProductFeatures::force_static_ip = network["force_static_ip"]:false;
+	map partitioning = productControl["partitioning"]:$[];
+	ProductFeatures::SetBooleanFeature ("partitioning",
+	    "flexible_partitioning", true);
+	ProductFeatures::SetFeature ("partitioning", "FlexiblePartitioning",
+	    partitioning);
     }
 
     return true;
