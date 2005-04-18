@@ -175,25 +175,25 @@
 	    SuSEFirewall::SetStartService(false);
 	} else {
 	// has any network interface
-	    SuSEFirewall::SetEnableService(ProductFeatures::enable_firewall);
-	    SuSEFirewall::SetStartService(ProductFeatures::enable_firewall);
+	    SuSEFirewall::SetEnableService(ProductFeatures::GetBooleanFeature ("globals", "enable_firewall"));
+	    SuSEFirewall::SetStartService(ProductFeatures::GetBooleanFeature ("globals", "enable_firewall"));
 	}
 
 	// has non-dial-up and dial-up interfaces
 	if (size(non_dup_interfaces)>0 && size(dial_up_interfaces)>0) {
 	    SetInterfacesToZone(non_dup_interfaces, "INT");
 	    SetInterfacesToZone(dial_up_interfaces, "EXT");
-	    if (ProductFeatures::firewall_enable_ssh)
+	    if (ProductFeatures::GetBooleanFeature ("globals", "firewall_enable_ssh"))
 		SuSEFirewall::SetServicesForZones(["ssh"], ["INT","EXT"], true);
 	// has non-dial-up and doesn't have dial-up interfaces
 	} else if (size(non_dup_interfaces)>0 && size(dial_up_interfaces)==0) {
 	    SetInterfacesToZone(non_dup_interfaces, "EXT");
-	    if (ProductFeatures::firewall_enable_ssh)
+	    if (ProductFeatures::GetBooleanFeature ("globals", "firewall_enable_ssh"))
 		SuSEFirewall::SetServicesForZones(["ssh"], ["EXT"], true);
 	// doesn't have non-dial-up and has dial-up interfaces
 	} else if (size(non_dup_interfaces)==0 && size(dial_up_interfaces)>0) {
 	    SetInterfacesToZone(dial_up_interfaces, "EXT");
-	    if (ProductFeatures::firewall_enable_ssh)
+	    if (ProductFeatures::GetBooleanFeature ("globals", "firewall_enable_ssh"))
 		SuSEFirewall::SetServicesForZones(["ssh"], ["EXT"], true);
 	}
 
