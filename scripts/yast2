@@ -35,7 +35,7 @@ printhelp()
 	echo "	--fullscreen    use full screen"
 	echo
 	echo "exceptional case for installing packages:"
-	echo "$0 OPTION <package>"
+	echo "$0 OPTION <package> [<package> [...]]"
 	echo
 	echo "OPTION:"
 	echo "	-i, --install	install rpm package"

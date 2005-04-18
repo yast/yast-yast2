@@ -22,6 +22,11 @@ YaST2 \- universal configuration utility
 .br
 .B yast2 --install
 .I <package>
+.B [
+.I <package>
+.B [
+.I ...
+.B ] ]
 .\"
 .\"
 .SH DESCRIPTION
@@ -63,7 +68,7 @@ Default window size (QT frontend only).
 Print a usage and exit.
 .\"
 .TP
-.B -i, --install <package>
+.B -i, --install <package> [ <package> [ ... ] ]
 Install an RPM package. The
 .B package
 can be a single short package name (e.g. gvim)
