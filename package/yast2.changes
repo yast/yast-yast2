@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Apr 18 15:42:08 CEST 2005 - jsrain@suse.cz
+
+- added testsuite for new ProductFeatures.ycp
+
+-------------------------------------------------------------------
 Mon Apr 18 14:40:43 CEST 2005 - jsrain@suse.cz
 
 - updated manual page and help of yast2 (#70892)
