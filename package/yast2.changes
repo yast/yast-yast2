@@ -1,8 +1,9 @@
 -------------------------------------------------------------------
-Mon Apr 18 10:33:43 CEST 2005 - jsrain@suse.cz
+Mon Apr 18 14:40:43 CEST 2005 - jsrain@suse.cz
 
 - updated manual page and help of yast2 (#70892)
 - changed interface of ProductFeatures.ycp
+- 2.12.2
 
 -------------------------------------------------------------------
 Tue Apr  5 14:45:07 CEST 2005 - visnov@suse.cz
