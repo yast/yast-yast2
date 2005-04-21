@@ -11,7 +11,7 @@ X-SuSE-YaST-Group=Software
 X-SuSE-YaST-SortKey=10
 
 OnlyShowIn=X-SuSE-YaST;
-Icon=software56
+Icon=yast-software
 
 Name=Software
 Name[cs]=Software

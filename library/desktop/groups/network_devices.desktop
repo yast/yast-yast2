@@ -11,7 +11,7 @@ X-SuSE-YaST-Group=Network
 X-SuSE-YaST-SortKey=30
 
 OnlyShowIn=X-SuSE-YaST;
-Icon=network56
+Icon=yast-network_devices
 
 Name=Network Devices
 Name[cs]=Síťová zařízení

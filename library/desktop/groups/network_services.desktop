@@ -11,7 +11,7 @@ X-SuSE-YaST-Group=Net_advanced
 X-SuSE-YaST-SortKey=40
 
 OnlyShowIn=X-SuSE-YaST;
-Icon=network_advanced56
+Icon=yast-network_services
 
 Name=Network Services
 Name[cs]=Síťové služby
