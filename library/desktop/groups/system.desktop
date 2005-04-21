@@ -11,7 +11,7 @@ X-SuSE-YaST-Group=System
 X-SuSE-YaST-SortKey=20
 
 OnlyShowIn=X-SuSE-YaST;
-Icon=system56
+Icon=yast-system
 
 Name=System
 Name[cs]=Systém

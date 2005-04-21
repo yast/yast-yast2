@@ -11,7 +11,7 @@ X-SuSE-YaST-Group=Misc
 X-SuSE-YaST-SortKey=99
 
 OnlyShowIn=X-SuSE-YaST;
-Icon=misc56
+Icon=yast-misc
 
 Name=Misc
 Name[cs]=Různé
