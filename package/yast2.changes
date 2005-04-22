@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Apr 22 13:39:55 CEST 2005 - mvidner@suse.cz
+
+- Do not use "default" as an identifier.
+
+-------------------------------------------------------------------
 Mon Apr 18 15:43:43 CEST 2005 - jsrain@suse.cz
 
 - added testsuite for new ProductFeatures.ycp

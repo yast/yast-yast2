@@ -171,21 +171,21 @@
      * On failure return the the second parameter (default value)
      *
      * @param	sysconfig_path   Sysconfig SCR path.
-     * @param	default          Default value
+     * @param	defaultv         Default value
      *
      * @return  Success --> Result of SCR::Read<br>
      *		Failure --> Default value
      *
      */
 
-    global define string SysconfigRead( path sysconfig_path, string default )
+    global define string SysconfigRead( path sysconfig_path, string defaultv )
     ``{
 	string local_ret = (string)SCR::Read( sysconfig_path );
 
 	if ( local_ret == nil )
 	{
 	    y2error("Failed reading '%1'", sysconfig_path );
-	    return( default );
+	    return( defaultv );
 	}
 	else
 	{

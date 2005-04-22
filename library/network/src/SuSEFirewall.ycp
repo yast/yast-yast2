@@ -823,9 +823,9 @@
 		SETTINGS["FW_IPSEC_TRUST"] = zone;
 	    // unknown zone, changing to default value
 	    } else {
-		string default = GetDefaultValue("FW_IPSEC_TRUST");
-		y2warning("Trust IPsec as '%1' (unknown zone) changed to '%2'", zone, default);
-		SETTINGS["FW_IPSEC_TRUST"] = default;
+		string defaultv = GetDefaultValue("FW_IPSEC_TRUST");
+		y2warning("Trust IPsec as '%1' (unknown zone) changed to '%2'", zone, defaultv);
+		SETTINGS["FW_IPSEC_TRUST"] = defaultv;
 	    }
 	}
     }
@@ -851,9 +851,9 @@
 	    // unknown zone, change to default value
 	    } else {
 		SetModified();
-		string default = GetDefaultValue("FW_IPSEC_TRUST");
-		y2warning("Trust IPsec as '%1' (unknown zone) changed to '%2'", SETTINGS["FW_IPSEC_TRUST"]:"", default);
-		SetTrustIPsecAs(default);
+		string defaultv = GetDefaultValue("FW_IPSEC_TRUST");
+		y2warning("Trust IPsec as '%1' (unknown zone) changed to '%2'", SETTINGS["FW_IPSEC_TRUST"]:"", defaultv);
+		SetTrustIPsecAs(defaultv);
 		return "no";
 	    }
 	}

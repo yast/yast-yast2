@@ -38,9 +38,9 @@
      */
     global define boolean IsDirectory (string target) {
 	map info = (map) SCR::Read(.target.stat, target);
-	boolean default = (info != $[] ? false:nil);
+	boolean defaultv = (info != $[] ? false:nil);
 
-	return (boolean) info["isdir"]:default;
+	return (boolean) info["isdir"]:defaultv;
     }
 
     /**
@@ -52,9 +52,9 @@
      */
     global define boolean IsFile (string target) {
 	map info = (map) SCR::Read(.target.stat, target);
-	boolean default = (info != $[] ? false:nil);
+	boolean defaultv = (info != $[] ? false:nil);
 
-	return (boolean) info["isreg"]:default;
+	return (boolean) info["isreg"]:defaultv;
     }
 
     /**
@@ -66,9 +66,9 @@
      */
     global define boolean IsBlock (string target) {
 	map info = (map) SCR::Read(.target.stat, target);
-	boolean default = (info != $[] ? false:nil);
+	boolean defaultv = (info != $[] ? false:nil);
 
-	return (boolean) info["isblock"]:default;
+	return (boolean) info["isblock"]:defaultv;
     }
 
     /**
@@ -80,9 +80,9 @@
      */
     global define boolean IsFifo (string target) {
 	map info = (map) SCR::Read(.target.stat, target);
-	boolean default = (info != $[] ? false:nil);
+	boolean defaultv = (info != $[] ? false:nil);
 
-	return (boolean) info["isfifo"]:default;
+	return (boolean) info["isfifo"]:defaultv;
     }
 
     /**
@@ -93,9 +93,9 @@
      */
     global define boolean IsLink (string target) {
 	map info = (map) SCR::Read(.target.lstat, target);
-	boolean default = (info != $[] ? false:nil);
+	boolean defaultv = (info != $[] ? false:nil);
 
-	return (boolean) info["islink"]:default;
+	return (boolean) info["islink"]:defaultv;
     }
 
     /**
@@ -107,9 +107,9 @@
      */
     global define boolean IsSocket (string target) {
 	map info = (map) SCR::Read(.target.stat, target);
-	boolean default = (info != $[] ? false:nil);
+	boolean defaultv = (info != $[] ? false:nil);
 
-	return (boolean) info["issock"]:default;
+	return (boolean) info["issock"]:defaultv;
     }
 
     /**
@@ -121,9 +121,9 @@
      */
     global define boolean IsCharacterDevice (string target) {
 	map info = (map) SCR::Read(.target.stat, target);
-	boolean default = (info != $[] ? false:nil);
+	boolean defaultv = (info != $[] ? false:nil);
 
-	return (boolean) info["ischr"]:default;
+	return (boolean) info["ischr"]:defaultv;
     }
 
     /**
