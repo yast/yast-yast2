@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Apr 28 14:04:57 CEST 2005 - jsrain@suse.cz
+
+- if YOU updates any YaST package, restart NCurses control center
+  (#80591)
+
+-------------------------------------------------------------------
 Thu Apr 28 10:08:20 CEST 2005 - jsrain@suse.cz
 
 - updated ProductControl.ycp to privide inst_finish steps

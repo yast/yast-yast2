@@ -84,12 +84,32 @@ define boolean Launch(string modul) {
     y2debug("Calling: %1 (%2)", function, arguments);
 
     if(function != "") {
+	list<string> packages = [];
+	// store the status for comparing after online-update finishes
+	if (function == "online_update")
+	{
+	    // target would be inited anyway
+	    Pkg::TargetInit ("/", false);
+	    packages = Pkg::GetPackages (`installed, false);
+	    packages = sort (filter (string p, packages, {
+		return substring (p, 0, 5) == "yast2";
+	    }));
+	}
 	any ret = WFM::CallFunction (function, arguments);
 	y2debug("WFM::CallFunction (%1, %2) returns: %3", function, arguments, ret);
 	// online_update always returns 0, so the ret value checking
 	//  makes no sense
 	if (function == "online_update"/* && ret != `abort*/)
-	    return true;
+	{
+	    list<string> new_packages = Pkg::GetPackages (`installed, false);
+	    new_packages = sort (filter (string p, new_packages, {
+		return substring (p, 0, 5) == "yast2";
+	    }));
+	    if (new_packages != packages)
+	    {
+		return true;
+	    }
+	}
     }
     return false;
 }
