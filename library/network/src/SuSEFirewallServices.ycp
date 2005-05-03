@@ -90,6 +90,7 @@
 	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
 	    "name"	: _("DHCP Server"),
 	    "udp_ports" : [ "bootps" ],
+	    "broadcast_ports" : [ "bootps" ],
 	],
 	"dhcp-client" : $[
 	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
