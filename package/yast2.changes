@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May  3 16:42:41 CEST 2005 - jsrain@suse.cz
+
+- made the hardcoded fallback list of VGA modes in Initrd.ycp
+  public (via global function)
+
+-------------------------------------------------------------------
 Tue May  3 11:27:04 CEST 2005 - locilka@suse.cz
 
 - Added 'bootps' port allowing broadcast into the DHCP Server

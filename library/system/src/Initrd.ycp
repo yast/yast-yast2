@@ -379,6 +379,16 @@
 	return true;
     }
 
+global list<map> VgaModes () {
+    list<map> all_modes = (list<map>) SCR::Read (.probe.framebuffer);
+    if (all_modes == nil || size (all_modes) == 0)
+    {
+	y2warning ("Probing VGA modes failed, using fallback list");
+	all_modes = known_modes;
+    }
+    return all_modes;
+}
+
     /**
       * Set the -s parameter of mkinitrd
       * @param vga string the vga kernel parameter
@@ -388,12 +398,7 @@
 	{
 	    changed = true;
 	    integer mode = tointeger (vga);
-	    list<map> all_modes = (list<map>) SCR::Read (.probe.framebuffer);
-	    if (all_modes == nil || size (all_modes) == 0)
-	    {
-		y2warning ("Probing VGA modes failed, using fallback list");
-		all_modes = known_modes;
-	    }
+	    list<map> all_modes = VgaModes ();
 	    foreach (map m, all_modes, ``{
 		if (m["mode"]:0 == mode
 		    && m["height"]:0 != 0 && m["width"]:0 != 0)
