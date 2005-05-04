@@ -37,7 +37,7 @@ and finishing.
 </para>
 
 <example>
-
+    <title>Simple CommandLine definition</title>
     <programlisting>
 {
 
@@ -205,6 +205,7 @@ the parameter checker. It is a list with key "options". Currently known flags:
     </variablelist>
 
     <example>
+	<title>Actions map definition</title>
         <programlisting>
 	"actions"	: $[
 			"list"	: $[
@@ -252,6 +253,7 @@ integer.
         </varlistentry>
     </variablelist>
     <example>
+	<title>Options map definition</title>
         <programlisting>
     	"options"	: $[
 			"propose" : $[
@@ -285,6 +287,7 @@ required/optional options, all ofthem are optional.
 </para>
 
 <example>
+    <title>Mappings between actions and their options</title>
     <programlisting>
 	"mappings"	$[
 			"list"	: [ "configured", "unconfigured" ],
