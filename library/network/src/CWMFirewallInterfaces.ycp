@@ -150,7 +150,7 @@ void UpdateFirewallStatus () {
     if (all_interfaces == nil)
 	InitAllInterfacesList ();
     symbol status = `custom;
-    if (! SuSEFirewall::GetStartService())
+    if (! SuSEFirewall::GetEnableService())
 	status = `off;
     else if (size (all_interfaces) == 0)
 	status = `no_ifaces;
@@ -519,7 +519,7 @@ global void OpenFirewallInit (map<string,any> widget, string key) {
     InitAllInterfacesList ();
     InitAllowedInterfaces (services);
     boolean open_firewall = size (allowed_interfaces) > 0;
-    boolean firewall_enabled = SuSEFirewall::GetStartService()
+    boolean firewall_enabled = SuSEFirewall::GetEnableService()
 	&& size (all_interfaces) > 0;
     if (! firewall_enabled)
     {
