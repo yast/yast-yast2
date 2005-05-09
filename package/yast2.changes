@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon May  9 09:51:10 CEST 2005 - locilka@suse.cz
+
+- Adding "Requires: SuSEfirewall2" into the yast2 package instead
+  of the yast2-firewall
+
+-------------------------------------------------------------------
 Tue May  3 16:42:41 CEST 2005 - jsrain@suse.cz
 
 - made the hardcoded fallback list of VGA modes in Initrd.ycp
