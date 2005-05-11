@@ -807,7 +807,7 @@
      **/
     global void SetTitleIcon( string icon_name )
     {
-	string icon = icon_path + "/" + icon_name + ".png";
+	string icon = icon_name == "" ? "" : ( icon_path + "/" + icon_name + ".png" );
 
 	// UI::WizardCommand(`SetVerboseCommands( true ) );
 	UI::WizardCommand(`SetDialogIcon( icon ) );
