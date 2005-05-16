@@ -237,7 +237,7 @@ global define string InstallButton() {
  */
 global define string DontInstallButton() {
   /* Button label */
-  return _("&Don't install");
+  return _("&Do Not Install");
 }
 
 /**
@@ -390,7 +390,7 @@ global define string Port() {
  */
 global define string HostName() {
   /* TextEntry Label */
-  return _("&Host Name");
+  return _("&Hostname");
 }
 
 /**
