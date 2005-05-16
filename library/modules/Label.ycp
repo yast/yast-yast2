@@ -358,7 +358,7 @@ global define map<string, integer> DefaultFunctionKeyMap() {
  */
 global define string FileName() {
   /* TextEntry Label */
-  return _("&File Name");
+  return _("&Filename");
 }
 
 /**
