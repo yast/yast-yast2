@@ -172,6 +172,8 @@ No spaces are allowed.
 	return alias_found;
     }
 
+    list <string> cache_not_allowed_ports = [];
+
     /**
      * Function returns list of aliases (port-names and port-numbers) for
      * requested port-number or port-name. Also the requested name or port is returned.
@@ -210,7 +212,12 @@ No spaces are allowed.
 		);
 	    }
 	} else {
-	    y2error("Port name '%1' is not allowed", port);
+	    if (!contains(cache_not_allowed_ports, port)) {
+		cache_not_allowed_ports = add (cache_not_allowed_ports, port);
+		y2error("Port name '%1' is not allowed", port);
+	    } else {
+		y2debug("Port name '%1' is not allowed", port);
+	    }
 	    return nil;
 	}
 
