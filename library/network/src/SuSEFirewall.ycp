@@ -567,8 +567,10 @@
 	if (check_for_aliases) {
 	    list <string> remove_ports_with_aliases = [];
 	    foreach (string remove_port, remove_ports, {
-		 remove_ports_with_aliases = (list<string>) union (remove_ports_with_aliases,
-		    PortAliases::GetListOfServiceAliases(remove_port)
+		list <string> remove_these_ports = PortAliases::GetListOfServiceAliases(remove_port);
+		if (remove_these_ports == nil) { remove_these_ports = [ "remove_port" ]; }
+		remove_ports_with_aliases = (list<string>) union (remove_ports_with_aliases,
+		    remove_these_ports
 		);
 	    });
 	    remove_ports = remove_ports_with_aliases;
