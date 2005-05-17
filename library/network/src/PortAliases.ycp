@@ -218,7 +218,7 @@ No spaces are allowed.
 	    } else {
 		y2debug("Port name '%1' is not allowed", port);
 	    }
-	    return nil;
+	    return [ port ];
 	}
 
 	return toset(service_aliases);
