@@ -1478,9 +1478,14 @@ Run YaST2 Firewall and assign it.
 	// checking for aliases of ports too, adding aliases into 
 	if (check_for_aliases) {
 	    list <string> allowed_ports_with_aliases = [];
+	    
 	    foreach (string allowed_port, allowed_ports, {
+		list<string> port_aliases = PortAliases::GetListOfServiceAliases(allowed_port);
+		// wrong port definition can cause returning 'nil'
+		if (port_aliases == nil) { port_aliases = []; }
+
 		allowed_ports_with_aliases = (list<string>) union (allowed_ports_with_aliases,
-		    PortAliases::GetListOfServiceAliases(allowed_port)
+		    port_aliases
 		);
 	    });
 	    allowed_ports = allowed_ports_with_aliases;
