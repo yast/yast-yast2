@@ -551,60 +551,75 @@ of the server, it cannot be deleted. The server must stop using it
 in the configuration first.</p>
 ");
 
-    term add_existing = `VSquash (`HBox (
+    term add_existing = `VSquash (
 	// Frame label - adding a created server key
-	`HWeight (9, `Frame (_("Add an Existing TSIG Key"), `HBox (
-	    `HWeight (7, `HBox (
-		`TextEntry (`id ("_cwm_existing_key_file"),
-		    `opt (`hstretch),
-		    // text entry
-		    Label::FileName ())
-	    )),
-	    `HWeight (2, `HBox (
-		`VBox (
-		    `Label (" "),
-		    `PushButton (`id ("_cwm_browse_existing_key_file"),
-			Label::BrowseButton ())
+	`Frame (_("Add an Existing TSIG Key"),
+	    `HBox (
+		`HWeight (9,
+		    `HBox (
+			`HWeight (7,
+			    `HBox (
+				`TextEntry (`id ("_cwm_existing_key_file"), `opt (`hstretch),
+				// text entry
+				Label::FileName ())
+			    )
+			),
+			`HWeight (2,
+			    `HBox (
+				`VBox (
+				    `Label (" "), `PushButton (`id ("_cwm_browse_existing_key_file"),
+				    Label::BrowseButton ())
+				)
+			    )
+			)
+		    )
+		),
+		`HWeight (2,
+		    `Bottom (
+			`VSquash (`PushButton (`id ("_cwm_add_key"), `opt (`hstretch), Label::AddButton ()))
+		    )
 		)
-	    ))
-	))),
-	`HWeight (2, `Bottom (
-	    `VSquash (`PushButton (`id ("_cwm_add_key"),
-		`opt (`hstretch),
-		Label::AddButton ()))
-	))
-    ));
+	    )
+	)
+    );
 
-   term create_new = `VSquash (`HBox (
+    term create_new = `VSquash (
 	// Frame label - creating a new server key
-	`HWeight (9, `Frame (_("Create a New TSIG Key"), `HBox (
-	    `HWeight (7, `HBox (
-		`TextEntry (`id ("_cwm_new_key_id"),
-		    `opt (`hstretch),
-		    // text entry
-		    _("&Key ID")),
-		`TextEntry (`id ("_cwm_new_key_file"),
-		    `opt (`hstretch),
-		    // text entry
-		    _("File &Name"))
-	    )),
-	    `HWeight (2, `HBox (
-		`VBox (
-		    `Label (" "),
-		    `PushButton (`id ("_cwm_browse_new_key_file"),
-			Label::BrowseButton ())
+	`Frame (_("Create a New TSIG Key"),
+	    `HBox (
+		`HWeight (9,
+		    `HBox (
+			`HWeight (7,
+			    `HBox (
+				// text entry
+				`TextEntry (`id ("_cwm_new_key_id"), `opt (`hstretch), _("&Key ID")),
+				// text entry
+				`TextEntry (`id ("_cwm_new_key_file"), `opt (`hstretch), Label::FileName())
+			    )
+			),
+			`HWeight (2,
+			    `HBox (
+				`VBox (
+				    `Label (" "),
+				    `PushButton (`id ("_cwm_browse_new_key_file"), Label::BrowseButton ())
+				)
+			    )
+			)
+		    )
+		),
+		`HWeight (2,
+		    `Bottom (
+			// push button
+			`VSquash (`PushButton ( `id ("_cwm_generate_key"), `opt(`hstretch), _("&Generate")))
+		    )
 		)
-	    ))
-	))),
-	`HWeight (2, `Bottom (
-	    `VSquash (`PushButton (`id ("_cwm_generate_key"),
-		// push button
-		_("&Generate")))
-	))
-    ));
+	    )
+	)
+    );
 
     term current_keys = `VBox (
 	// Table header - in fact label
+	`VSpacing (0.5),
 	`Left (`Label (_("Current TSIG Keys"))),
 	`HBox (
 	    `HWeight (9, `Table (`id ("_cwm_key_listing_table"), `header (
