@@ -277,7 +277,7 @@ global define string CloseButton() {
  */
 global define string BrowseButton() {
   /* Button label */
-  return _("Bro&wse");
+  return _("Bro&wse...");
 }
 
 /**
