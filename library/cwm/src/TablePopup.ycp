@@ -649,7 +649,7 @@ define boolean ValidateTableDescr (string key, map<string,any> descr) {
 			if (contains (present, opt_key))
 			    Report::Error (
 				// error report
-				_("The selected option is already present"));
+				_("The selected option is already present."));
 			else
 			    selected = true;
 		    }
@@ -843,13 +843,13 @@ an option, select it and click <b>Delete</b>.</p>");
 
 	if (attrib["changed_column"]:false)
 	    // help 3/4, optional
-	    help = help + _("<P>The<B> Ch.</B> column of the table is meant for
-detecting whether the option was changed.</P>");
+	    help = help + _("<P>The <B>Ch.</B> column of the table shows 
+whether the option was changed.</P>");
 
 	if (attrib["up_down_buttons"]:false)
 	    // help 4/4, optional
-	    help = help + _("<p>To reorder the options, select some option
-and use the <b>Up</b> or <b>Down</b> buttons to move it up or down
+	    help = help + _("<p>To reorder the options, select an option
+and use <b>Up</b> and <b>Down</b> to move it up or down
 in the list.</p>");
 
 	term up_down = attrib["up_down_buttons"]:false
