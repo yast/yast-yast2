@@ -320,7 +320,7 @@ Stop using it in the configuration first.");
 		UI::SetFocus (`id ("new_key_file"));
                 Report::Error (
 		    // error report
-		    _("Specified file name is an existing directory."));
+		    _("Specified filename is an existing directory."));
 		return nil;
 	    }
 	    // yes-no popup
@@ -531,13 +531,13 @@ Use this dialog to manage the TSIG keys.</p>
     +
     // tsig keys management dialog help 2/4
     _("<p><big><b>Adding an Existing TSIG Key</b></big><br>
-To add an already created TSIG key, select a <b>File Name</b> of the file
+To add an already created TSIG key, select a <b>Filename</b> of the file
 containing the key and click <b>Add</b>.</p>
 ")
     +
     // tsig keys management dialog help 3/4
     _("<p><big><b>Creating a New TSIG Key</b></big><br>
-To create a new TSIG key, set the <b>File Name</b> of the file in which to
+To create a new TSIG key, set the <b>Filename</b> of the file in which to
 create the key and the <b>Key ID</b> to identify the key then click
 <b>Generate</b>.</p>
 ")
@@ -626,7 +626,7 @@ in the configuration first.</p>
                                     // Table header item - DNS key listing
                                     _("Key ID"),
                                     // Table header item - DNS key listing
-                                    _("File Name")
+                                    _("Filename")
                                 ), []
 	    )),
 	   `HWeight (2, `VBox (

@@ -174,7 +174,7 @@ global string AutoStartHelpTemplate () {
     // %1 is eg. "On -- Start Service when Booting"
     // %2 is eg. "Off -- Start Service Manually"
     // (both without quotes)
-    return _("<p><b><big>Booting</big></b><br>
+    return _("<p><b><big>Service Start</big></b><br>
 To start the service every time your computer is booted, set
 <b>%1</b>. Otherwise set <b>%2</b>.</p>");
 }
@@ -186,9 +186,9 @@ To start the service every time your computer is booted, set
 global string AutoStartHelp () {
     return sformat (AutoStartHelpTemplate (),
 	// part of help text - radio button label, NO SHORTCUT!!!
-	_("On -- Start Service when Booting"),
+	_("During Boot"),
 	// part of help text - radio button label, NO SHORTCUT!!!
-	_("Off -- Start Service Manually"));
+	_("Manually"));
 }
 
 /**
@@ -220,10 +220,10 @@ global map<string,any> CreateAutoStartWidget (map<string,any> settings) {
     string help = "";
     string start_auto_button
 	// radio button
-	= settings["start_auto_button"]:_("O&n -- Start Service when Booting");
+	= settings["start_auto_button"]:_("During Boot");
     string start_manual_button
 	// radio button
-	= settings["start_manual_button"]:_("O&ff -- Start Service Manually");
+	= settings["start_manual_button"]:_("Manually");
     if (haskey (settings, "help"))
     {
 	help = settings["help"]:"";
@@ -236,7 +236,7 @@ global map<string,any> CreateAutoStartWidget (map<string,any> settings) {
     // Frame label (service starting)
     term booting = `VBox (
 	// frame
-	`Frame (_("Booting"),
+	`Frame (_("Service Start"),
 	    `Left (`RadioButtonGroup (`id ("_cwm_service_startup"), `VBox (
 		`VSpacing (0.4),
 		`Left (`RadioButton (`id ("_cwm_startup_auto"),
@@ -324,10 +324,10 @@ global void StartStopInit (map<string,any> widget, string key) {
     last_status = nil;
     service_is_running
 	// service status - label
-	= widget["service_running_label"]:_("Service is running.");
+	= widget["service_running_label"]:_("Service is running");
     service_is_stopped
 	// service status - label
-	= widget["service_not_running_label"]:_("Service is not running.");
+	= widget["service_not_running_label"]:_("Service is not running");
     UpdateServiceStatusWidget (widget);
 }
 
