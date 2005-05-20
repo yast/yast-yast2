@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu May 19 11:51:29 CEST 2005 - locilka@suse.cz
+
+- Fixed bug in CWMTsigKeys
+  Key name containing the 't' letter had been ending on that
+  character because of wrong implementation of regexp with '\\t'
+
+-------------------------------------------------------------------
 Mon May  9 09:51:10 CEST 2005 - locilka@suse.cz
 
 - Adding "Requires: SuSEfirewall2" into the yast2 package instead
