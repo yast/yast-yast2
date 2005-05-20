@@ -155,10 +155,10 @@ global define list<string> AnalyzeTSIGKeyFile (string filename) {
     list<string> ret = [];
     list<string> parts = splitstring (contents, "{}");
     foreach (string p, parts, {
-	if (regexpmatch (p, ".*key[ \\t]+[^ \\t}{;]+.* $"))
+	if (regexpmatch (p, ".*key[[:space:]]+[^[:space:]}{;]+\\.* $"))
 	{
 	    ret = add (ret,
-		regexpsub (p, ".*key[ \\t]+([^ \\t}{;]+).* $", "\\1"));
+		regexpsub (p, ".*key[[:space:]]+([^[:space:]}{;]+)\\.* $", "\\1"));
 	}
     });
     y2milestone ("File: %1, Keys: %2", filename, ret);
