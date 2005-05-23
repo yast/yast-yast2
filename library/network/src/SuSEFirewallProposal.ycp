@@ -289,7 +289,7 @@
 	);
 
 	if (firewall_is_enabled) {
-	    output = output + (is_ssh_enabled ?
+	    output = output + "<br>" + (is_ssh_enabled ?
 		// TRANSLATORS: Network proposal informative text "SSH is enabled" with link around
 		//              "enabled" must be surrounded with the "%1" and "%2" strings
 		//              %1 is the start and %2 is the end of the HTML link "<a href...>" and "</a>"
