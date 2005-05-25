@@ -46,7 +46,7 @@ in a single dialog.
                     ],
                     "t3" : $[
                         "header" : "Tab3",
-                        "contents" : `Empty,
+                        "contents" : `Empty (),
                         "widget_names" : [],
                     ],
                 ],
