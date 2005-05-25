@@ -64,7 +64,7 @@ Return	true
 Return	false
 Dump	
 Dump	== Broadcast handling ==
-Return	$["DMZ":[], "EXT":[], "INT":[]]
+Return	$["DMZ":["bootps"], "EXT":["bootps"], "INT":[]]
 Return	nil
 Return	$["DMZ":["5", "3", "1"], "EXT":["22", "33", "44"], "INT":[]]
 Dump	

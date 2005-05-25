@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May 25 14:26:50 CEST 2005 - locilka@suse.cz
+
+- Fixed SuSEFirewall testsuite after adding 'bootps' port to the
+  DHCP Server definition
+
+-------------------------------------------------------------------
 Wed May 25 13:25:04 CEST 2005 - mvidner@suse.cz
 
 - CWM: added a standalone radio button widget
