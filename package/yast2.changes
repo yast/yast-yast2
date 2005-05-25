@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed May 25 13:25:04 CEST 2005 - mvidner@suse.cz
+
+- CWM: added a standalone radio button widget
+
+-------------------------------------------------------------------
 Thu May 19 11:51:29 CEST 2005 - locilka@suse.cz
 
 - Fixed bug in CWMTsigKeys

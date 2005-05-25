@@ -83,6 +83,7 @@ void PopSettings () {
 	    {
 		symbol s = symbolof ((term)arg);
 		if (contains ([ `VBox, `HBox, `Left, `Right, `Frame,
+		    `RadioButtonGroup,
 		    `HWeight, `VWeight], s))
 		{
 		    arg = ProcessTerm ((term)arg, widgets);
@@ -492,6 +493,12 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 			    `RadioButtonGroup (`id (w["_cwm_key"]:""), buttons),
 			`HSpacing (hspacing))
 		    );
+		}
+		else if (widget == `radio_button)
+		{
+		    w["widget"] = `RadioButton (`id (w["_cwm_key"]:""),
+			opt_term,
+			w["label"]:w["_cwm_key"]:"");
 		}
 		else if (widget == `push_button)
 		{

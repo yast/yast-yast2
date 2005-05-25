@@ -155,6 +155,29 @@ map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
  </screen></example>
 </section>
 
+<section><title>Radio Button</title>
+<para>
+This is the elementary radio button, for use in complex layouts where
+radio_buttons is not enough.
+</para>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `radio_button</para></listitem>
+<listitem><para>"label" : label shown to the right of the radio button</para></listitem>
+</itemizedlist></para>
+
+<!-- TODO: a better example, with a term showing the usage, eg dhcp/static -->
+<example><title>Radio Button</title><screen>
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "RADIOBUTTON" : $[
+    "label" : _("&amp;Radio Button"),
+    "widget" : `radio_button,
+  ],
+]
+ </screen></example>
+</section>
+
 <section><title>Push Button</title>
 <para>
 Parameters:
