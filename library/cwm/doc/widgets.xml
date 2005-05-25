@@ -133,9 +133,12 @@ Parameters:
 <listitem><para>"items" : list of two-item-lists of [id, label], each item
             represents one radio button. Both id and label must be strings.
 </para></listitem>
+<listitem><para>"hspacing" : FIXME</para></listitem>
+<listitem><para>"vspacing" : FIXME</para></listitem>
 <listitem><para>"orientation" : says if the radio buttons should be oriented
             horizontally or vertically. Allowed values are `horizontal and
             `vertical, default is `vertical.
+FIXME: NOT IMPLEMENTED
 </para></listitem>
 </itemizedlist></para>
 

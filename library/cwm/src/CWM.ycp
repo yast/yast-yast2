@@ -295,6 +295,7 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
     /**
       * Save changes of widget after event generated
       * global only because of testsuites
+      * CWMTab uses it too
       * @param widgets list of maps represenging widgets
       * @param event map event that occured
       */
