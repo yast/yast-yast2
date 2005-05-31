@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue May 31 10:32:54 CEST 2005 - jsrain@suse.cz
+
+- create initial ProductFeatures file via fillup (#79278)
+
+-------------------------------------------------------------------
 Wed May 25 14:26:50 CEST 2005 - locilka@suse.cz
 
 - Fixed SuSEFirewall testsuite after adding 'bootps' port to the

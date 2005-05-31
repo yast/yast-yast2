@@ -2,6 +2,7 @@
 # neededforbuild curl liby2util openssl perl-XML-Writer pkgconfig popt yast2-core yast2-core-devel yast2-devtools yast2-packagemanager openslp openslp-devel yast2-testsuite tcl dejagnu expect yast2-pkg-bindings update-desktop-files
 
 @HEADER@
+Source1:	yast2.post
 # Need the new file popups
 Requires:	yast2-core >= 2.7.1
 Requires:	yast2_ui yast2_theme
@@ -35,6 +36,9 @@ Summary:	Documentation for Wizard and Sequencer
 -
 
 @PREP@
+cd ..
+mkdir -p scripts
+cp -v %{SOURCE1} scripts
 
 @BUILD@
 
@@ -59,6 +63,8 @@ mkdir -p "$RPM_BUILD_ROOT"@schemadir@/autoyast/rnc
 mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 
 @CLEAN@
+
+%post -f ../scripts/yast2.post
 
 %files
 %defattr(-,root,root)
@@ -113,7 +119,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 @yncludedir@/packages/*.ycp
 
 #features
-/etc/YaST2/ProductFeatures
+/var/adm/fillup-templates/*
 
 # documentation
 %files devel
