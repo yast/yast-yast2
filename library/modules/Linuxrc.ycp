@@ -89,6 +89,8 @@
 
     /**
      * ssh mode ?
+     * if booted with 'vnc=1 usessh=1', keep vnc mode, but start sshd
+     * this has to be checked by the caller, not here
      */
     global boolean usessh () {
 	return InstallInf ("UseSSH") == "1";
