@@ -1,8 +1,9 @@
 -------------------------------------------------------------------
-Mon Jun  6 10:22:03 CEST 2005 - jsrain@suse.cz
+Mon Jun  6 10:24:53 CEST 2005 - jsrain@suse.cz
 
 - keep order of initrd modules from installation system in the
   target system
+- 2.12.5
 
 -------------------------------------------------------------------
 Tue May 31 10:32:54 CEST 2005 - jsrain@suse.cz
