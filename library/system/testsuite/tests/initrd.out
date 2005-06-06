@@ -53,3 +53,13 @@ Write	.sysconfig.kernel.INITRD_MODULES "ne2k lvmmod" true
 Write	.sysconfig.kernel nil true
 Execute	.target.bash "/sbin/mkinitrd  >> /var/log/YaST2/y2logmkinitrd 2>&1" 0
 Return	true
+Dump	Resetting for installation test
+Return	nil
+Return	nil
+Return	nil
+Dump	Testing keeping installation order
+Read	.etc.install_inf.InitrdModules "driver1 driver2 driver3"
+Return	nil
+Return	nil
+Return	nil
+Return	["driver2", "driver3", "ne2k"]

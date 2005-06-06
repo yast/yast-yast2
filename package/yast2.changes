@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun  6 10:22:03 CEST 2005 - jsrain@suse.cz
+
+- keep order of initrd modules from installation system in the
+  target system
+
+-------------------------------------------------------------------
 Tue May 31 10:32:54 CEST 2005 - jsrain@suse.cz
 
 - create initial ProductFeatures file via fillup (#79278)

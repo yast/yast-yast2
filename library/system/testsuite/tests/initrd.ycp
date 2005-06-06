@@ -41,6 +41,7 @@
 	"etc" : $[
 	    "install_inf" : $[
 		"InstMode" : "",
+		"InitrdModules" : "driver1 driver2 driver3",
 	    ],
 	],
     ];
@@ -49,6 +50,7 @@
 
     import "Initrd";
     import "Mode";
+    import "Stage";
 
     TEST(``(Initrd::ListModules ()), [READ, $[], $[]], 0);
     DUMP("Now reseting");
@@ -77,5 +79,13 @@
     TEST(``(Initrd::ListModules ()), [READ, $[], $[]], 0);
     DUMP("Writing");
     TEST(``(Initrd::Write ()), [READ, $[], $[]], 0);
-
+    DUMP("Resetting for installation test");
+    TEST(``(Stage::Set ("initial")), [READ, $[], $[]], 0);
+    TEST(``(Mode::SetMode ("installation")), [READ, $[], $[]], 0);
+    TEST (``(Initrd::Reset ()), [READ, $[], $[]], 0);
+    DUMP ("Testing keeping installation order");
+    TEST(``(Initrd::AddModule ("ne2k", "")), [READ, $[], $[]], 0);
+    TEST(``(Initrd::AddModule ("driver3", "")), [READ, $[], $[]], 0);
+    TEST(``(Initrd::AddModule ("driver2", "")), [READ, $[], $[]], 0);
+    TEST(``(Initrd::ListModules ()), [READ, $[], $[]], 0);
 }
