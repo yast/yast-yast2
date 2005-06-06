@@ -34,6 +34,11 @@
       */
     list<string> modules = [];
     /**
+      * For each of modules - true if should be inserted to initrd, false
+      * otherwise. Used to keep order from first-stage installation
+      */
+    map<string,boolean> modules_to_store = $[];
+    /**
       * List of modules that were in sysconfig file when reading settings
       */
     list<string> read_modules = [];
@@ -152,6 +157,7 @@
 	was_read = false;
 	changed = false;
 	modules = [];
+	modules_to_store = $[];
 	read_modules = [];
 	modules_settings = $[];
     }
@@ -180,7 +186,10 @@
 	    s_modnames = "";
 	modules = splitstring (s_modnames, " ");
 	modules = filter (string m, modules, { return m != "";});
-	foreach (string m, modules, { modules_settings [m] = $[]; });
+	foreach (string m, modules, {
+	    modules_settings [m] = $[];
+	    modules_to_store[m] = true;
+	});
 	read_modules = modules;
 	return true;
     }
@@ -192,7 +201,9 @@
     global define list ListModules () ``{
 	if (! (was_read || Mode::config ()))
 	    Read ();
-	return modules;
+	return filter (string m, modules, {
+	    return modules_to_store[m]:false;
+	});
     }
 
     /**
@@ -201,8 +212,20 @@
       * @param modargs arguments to be passes to module
       */
     global define void AddModule (string modname, string modargs) ``{
-	if (! (was_read || Mode::config ()))
+	if (Stage::initial () && size (modules) == 0)
+	{
+	    string tmp_mods = (string)
+		SCR::Read (.etc.install_inf.InitrdModules);
+	    if (tmp_mods != nil && tmp_mods != "")
+	    {
+		modules = splitstring( tmp_mods, " " );
+	    }
+	    was_read = true;
+	}
+	else if (! (was_read || Mode::config ()))
+	{
 	    Read ();
+	}
 	if ((!contains (ListModules (), modname))
 	    || ((modname == "aic7xxx")
 		&& !contains ( ListModules (), "aic7xxx_old"))
@@ -212,10 +235,19 @@
             if ( ! contains (getModulesToSkip (), modname))
 	    {
 		changed = true;
-		modules = add (modules, modname);
+		if (! contains (modules, modname))
+		{
+		    modules = add (modules, modname);
+		    y2milestone ("Module %1 added to initrd, now contains %2",
+			modname, ListModules ());
+		}
+		else
+		{
+		    y2milestone ("Module %1 from initial list added to initrd, now contains %2",
+			modname, ListModules ());
+		}
+		modules_to_store[modname] = true;
 		modules_settings [modname] = Misc::SplitOptions (modargs, $[]);
-		y2milestone ("Module %1 added to initrd, now contains %2",
-		    modname, ListModules ());
 	    }
 	    else
 	    {
@@ -237,7 +269,9 @@
 	if (! (was_read || Mode::config ()))
 	    Read ();
 	return $[
-	    "list" : modules,
+	    "list" : filter (string m, modules, {
+		return modules_to_store[m]:false;
+	    }),
 	    "settings" : modules_settings,
 	];
     }
@@ -252,6 +286,9 @@
 		     // and not add them to the list
 	modules = settings["list"]:[];
 	modules_settings = settings["settings"]:$[];
+	foreach (string m, modules, {
+	    modules_to_store[m] = true;
+	});
 	was_read = true;
 	changed = true;
     }
