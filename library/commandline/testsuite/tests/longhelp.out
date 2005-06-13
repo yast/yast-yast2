@@ -6,6 +6,7 @@ Write	.dev.tty.stderr "    yast2 lan interactive" true
 Write	.dev.tty.stderr "    yast2 lan <command> [verbose] [options]" true
 Write	.dev.tty.stderr "    yast2 lan help" true
 Write	.dev.tty.stderr "    yast2 lan longhelp" true
+Write	.dev.tty.stderr "    yast2 lan xmlhelp" true
 Write	.dev.tty.stderr "    yast2 lan <command> help" true
 Write	.dev.tty.stderr "" true
 Write	.dev.tty.stderr "Commands:" true
@@ -67,5 +68,12 @@ Write	.dev.tty.stderr "        lan list configured" true
 Write	.dev.tty.stderr "" true
 Write	.dev.tty.stderr "Command 'longhelp'" true
 Write	.dev.tty.stderr "    Print a long version of help for this module" true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Command 'xmlhelp'" true
+Write	.dev.tty.stderr "    Print a long version of help for this module in XML format" true
+Write	.dev.tty.stderr "\n    Options:" true
+Write	.dev.tty.stderr "        help               Print the help for this command" true
+Write	.dev.tty.stderr "        verbose            Show progress information" true
+Write	.dev.tty.stderr "        xmlfile  [string]  Where to store the XML output" true
 Write	.dev.tty.stderr "" true
 Return	false

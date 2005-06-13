@@ -15,6 +15,7 @@
     import "Report";
     import "String";
     import "TypeRepository";
+    import "XML";
 
     textdomain "base";
 
@@ -32,6 +33,9 @@
 			    ],
 			    "longhelp": $[
 				"help":_("Print a long version of help for this module")
+			    ],
+			    "xmlhelp": $[
+				"help":_("Print a long version of help for this module in XML format")
 			    ],
 			    "interactive"	: $[
 				"help": _("Start interactive shell to control the module")
@@ -52,9 +56,15 @@
 				// translators: command line "verbose" option
 				"help"	: _("Show progress information"),
 			    ],
+			    "xmlfile"	: $[
+				// translators: command line "verbose" option
+				"help"	: _("Where to store the XML output"),
+				"type"	: "string"
+			    ],
 			],
 	"mappings"	: $[
 			    "help"	: ["help", "verbose"],
+			    "xmlhelp"	: ["help", "verbose", "xmlfile"],
 			    "interactive":["help", "verbose"],
 			    "exit"	: ["help"],
 			    "abort"	: ["help"],
@@ -93,6 +103,12 @@
      * Verbose mode flag
      */
     boolean verbose = false;
+
+    /**
+     * Remember the command line specification for later use
+     */
+    map cmdlinespec = $[];
+
 
     // string: command line interface is not supported
     string nosupport = _("This YaST2 module does not support the command line interface.");
@@ -476,6 +492,7 @@
 	    // translators: module command line help, %1 is the module name
 	    Print(sformat(("    yast2 %1 help"), modulecommands["id"]:""));
 	    Print(sformat(("    yast2 %1 longhelp"), modulecommands["id"]:""));
+	    Print(sformat(("    yast2 %1 xmlhelp"), modulecommands["id"]:""));
 	    // translators: module command line help, %1 is the module name
 	    // translate <command> only!
 	    Print(sformat(_("    yast2 %1 <command> help"), modulecommands["id"]:""));
@@ -489,6 +506,7 @@
 	    // translators: module command line help
 	    Print("    help");
 	    Print("    longhelp");
+	    Print("    xmlhelp");
 	    Print("");
 	    Print("    exit");
 	    Print("    abort");
@@ -566,7 +584,88 @@
 		PrintActionHelp( action );
 	    });
 	    return true;
+	}
+
+	if( command["command"]:"" == "xmlhelp" ) {
+	    if (haskey(command["options"]:$[], "xmlfile") == false)
+	    {
+		// error message - command line option xmlfile is missing
+		Print(_("Target file name ('xmlfile' option) is missing. Use xmlfile=<target_XML_file> command line option."));
+		return false;
 	    }
+
+	    string xmlfilename = command["options", "xmlfile"]:"";
+
+	    if (xmlfilename == nil || xmlfilename == "")
+	    {
+		// error message - command line option xmlfile is missing
+		Print(_("Target file name ('xmlfile' option) is empty. Use xmlfile=<target_XML_file> command line option."));
+		return false;
+	    }
+
+	    map doc = $[];
+
+//	    TODO: DTD specification
+//	    doc["listEntries"] =
+//		$[
+//		];
+//	    doc["cdataSections"] = [];
+//	    doc["systemID"] = "/usr/share/YaST2/dtd/commandline.dtd";
+//	    doc["nameSpace"] = "http://www.suse.com/1.0/yast2ns";
+//	    doc["typeNamespace"] = "http://www.suse.com/1.0/configns";
+
+	    doc["rootElement"] = "commands";
+	    XML::xmlCreateDoc(`xmlhelp, doc);
+
+	    map exportmap = $[];
+	    list<map> commands = [];
+
+	    map<string,map> actions = cmdlinespec["actions"]:$[];
+	    map<string,list<string> > mappings = cmdlinespec["mappings"]:$[];
+	    map<string,map> options = cmdlinespec["options"]:$[];
+
+	    y2debug("cmdlinespec: %1", cmdlinespec);
+
+	    foreach(string action, map description, actions, {
+		    string help = description["help"]:"";
+
+		    list<map> opts = [];
+
+		    foreach(string option, mappings[action]:[], {
+			    //
+			    map optn = $[
+				"option" : option,
+				"help" : options[option,"help"]:"",
+			    ];
+
+
+			    // add type specification if it's present
+			    if (options[option,"type"]:"" != "")
+			    {
+				optn = add(optn, "type", options[option,"type"]:"");
+			    }
+
+			    // add example if it's present
+			    if (haskey(actions[action]:$[], "example"))
+			    {
+				optn = add(optn, "example", actions[action,"example"]:nil);
+			    }
+
+			    opts = add(opts, optn);
+			}
+		    );
+
+		    commands = add(commands, $["help" : help, "name":action, "options" : opts]);
+		}
+	    );
+
+	    exportmap["commands"] = commands;
+	    exportmap["module"] = cmdlinespec["id"]:"";
+
+	    XML::YCPToXMLFile(`xmlhelp, exportmap, xmlfilename);
+	    y2milestone("exported XML map: %1", exportmap);
+	    return true;
+	}
 
 	return false;
     }
@@ -581,6 +680,10 @@
      *  @see Command
      */
     global define boolean Init (map cmdlineinfo, list<any> args) ``{
+
+	// remember the command line specification
+	// required later by xmlhelp command
+	cmdlinespec = cmdlineinfo;
 
 	boolean cmdline_supported = true;
 
