@@ -6,6 +6,7 @@ Write	.dev.tty.stderr "    yast2 lan interactive" true
 Write	.dev.tty.stderr "    yast2 lan <command> [verbose] [options]" true
 Write	.dev.tty.stderr "    yast2 lan help" true
 Write	.dev.tty.stderr "    yast2 lan longhelp" true
+Write	.dev.tty.stderr "    yast2 lan xmlhelp" true
 Write	.dev.tty.stderr "    yast2 lan <command> help" true
 Write	.dev.tty.stderr "" true
 Write	.dev.tty.stderr "Commands:" true

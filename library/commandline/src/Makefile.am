@@ -13,6 +13,6 @@ module_DATA =			\
 
 EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA)
 
-YCPCFLAGS = -M ../../types/src -M ../../modules -M ../../wizard/src
+YCPCFLAGS = -M ../../types/src -M ../../modules -M ../../wizard/src -M ../../xml/src
 
 include $(top_srcdir)/Makefile.am.common

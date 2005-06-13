@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun 13 17:04:03 CEST 2005 - lslezak@suse.cz
+
+- command line - 'xmlhelp' command (store command line help of
+  a client in XML format) 
+
+-------------------------------------------------------------------
 Mon Jun  6 10:24:53 CEST 2005 - jsrain@suse.cz
 
 - keep order of initrd modules from installation system in the

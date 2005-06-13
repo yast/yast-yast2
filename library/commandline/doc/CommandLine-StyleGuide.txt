@@ -119,6 +119,7 @@ Here is an example how to do it:
 
     import "CommandLine";
 
+    // only guihandler key is mandatory, all others are optional
     map mini = $[
     	// help text
 	"help"      : _("Configuration of XYZ"),
