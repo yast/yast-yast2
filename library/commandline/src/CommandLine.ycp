@@ -645,17 +645,18 @@
 				optn = add(optn, "type", options[option,"type"]:"");
 			    }
 
-			    // add example if it's present
-			    if (haskey(actions[action]:$[], "example"))
-			    {
-				optn = add(optn, "example", actions[action,"example"]:nil);
-			    }
-
 			    opts = add(opts, optn);
 			}
 		    );
 
-		    commands = add(commands, $["help" : help, "name":action, "options" : opts]);
+		    map actiondescr = $["help" : help, "name":action, "options" : opts];
+		    // add example if it's present
+		    if (haskey(actions[action]:$[], "example"))
+		    {
+			actiondescr = add(actiondescr, "example", actions[action,"example"]:nil);
+		    }
+
+		    commands = add(commands, actiondescr);
 		}
 	    );
 
