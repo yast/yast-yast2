@@ -207,6 +207,14 @@ global define void InitWrapper (string key) {
 }
 
 /**
+ * Get the ID of the currently displayed tab
+ * @return string the ID of the currently displayed tab
+ */
+global string CurrentTab () {
+    return current_tab_id;
+}
+
+/**
  * Handle function of the widget
  * @param map widget a widget description map
  * @param key strnig the widget key

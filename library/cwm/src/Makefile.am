@@ -8,7 +8,8 @@ module_DATA =			\
 	DialogTree.ycp		\
 	CWMTab.ycp		\
 	CWMServiceStart.ycp	\
-	CWMTsigKeys.ycp
+	CWMTsigKeys.ycp		\
+	WizardHW.ycp
 
 EXTRA_DIST = $(module_DATA)
 
