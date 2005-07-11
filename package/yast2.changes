@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jul 11 18:20:44 CEST 2005 - sh@suse.de
+
+- Fixed NCurses wizard layout behaviour:
+  Properly propagate content strechability to layout parent
+- V 2.12.9 
+
+-------------------------------------------------------------------
 Fri Jul  8 16:03:01 CEST 2005 - visnov@suse.cz
 
 - adapt build dependencies for blocxx
