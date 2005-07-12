@@ -191,13 +191,25 @@ term CreateActionsButton (list<list> actions) {
     }
     if (sz == 1)
     {
-	return `PushButton (`id (actions[0,0]:""),
+	any id = actions[0,0]:nil;
+	if (id == nil)
+	{
+	    y2error ("Unknown ID for button: %1", actions[0]:nil);
+	    id = "nil";
+	}
+	return `PushButton (`id (id),
 	    GetActionLabel (actions[0]:[]));
     }
     list<term> items = maplist (list i, actions, {
-	return `item (`id (i[0]:""), GetActionLabel (i));
+	any id = i[0]:nil;
+	if (id == nil)
+	{
+	    y2error ("Unknown ID for button: %1", actions[0]:nil);
+	    id = "nil";
+	}
+	return `item (`id (id), GetActionLabel (i));
     });
-    return `MenuButton (`id (`_hw_adv), _("Advanced"), items);
+    return `MenuButton (_("Advanced"), items);
 }
 
 // CWM widget
