@@ -118,8 +118,6 @@ global define boolean ReadControlFile( string controlfile)
     proposals = productControl["proposals"]:[];
     inst_finish = productControl["inst_finish_stages"]:[];
 
-y2error ("IF: %1", inst_finish);
-
     foreach (string section,
 	["software", "globals", "network", "partitioning"],
     {
