@@ -182,7 +182,7 @@ else
 	# so enable this only for KDE.
 	#
 
-	if [ "${WINDOWMANAGER##*/}" == "kde" ] ; then
+	if  echo $WINDOWMANAGER | grep -qi "kde" ; then
 
   	    # ${WINDOWMANAGER##*/} deletes the longest shell wildcard pattern
 	    # matching "*/", leaving only the last path name component.
