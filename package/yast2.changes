@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jul 18 11:42:40 CEST 2005 - sh@suse.de
+
+- Properly check if KDE is running in /sbin/yast so the sw_single
+  module is started full-screen if that works flawlessly (KDE)
+- V 2.12.10 
+
+-------------------------------------------------------------------
 Mon Jul 11 18:20:44 CEST 2005 - sh@suse.de
 
 - Fixed NCurses wizard layout behaviour:
