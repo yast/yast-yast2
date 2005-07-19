@@ -79,6 +79,12 @@ list stack = [];
 
 string first_id = "";
 
+integer current_step = 0;
+
+global integer CurrentStep () {
+    return current_step;
+}
+
 
 /**
  * Set Client Prefix 
@@ -100,6 +106,10 @@ global define boolean checkDisabled (map mod )
         return true;
     }
     return false;
+}
+
+global boolean checkHeading(map mod) {
+    return haskey (mod, "heading");
 }
 
 /**
@@ -413,13 +423,17 @@ global define list<map> getModules(string stage, string mode, symbol which)
  * @param string mode
  * @return string
  */
-global define string getWorkflowLabel(string stage, string mode)
+global string getWorkflowLabel(string stage, string mode, string wz_td)
 {
     list<map> tmp = filter(map wf, workflows, ``(
                 Check(wf["stage"]:"", stage) && Check(wf["mode"]:"", mode )
     ));
     map workflow = tmp[0]:$[];
-    return workflow["label"]:"";
+    string label = workflow["label"]:"";
+    if (haskey (workflow, "textdomain"))
+	return dgettext (workflow["textdomain"]:"", label);
+    else
+	return dgettext (wz_td, label);
 }
 
 
@@ -448,27 +462,34 @@ global define void AddWizardSteps(list<map> stagemode)
     // UI::WizardCommand(`SetVerboseCommands( true ) );
     foreach (map sm , stagemode, ``{
         y2debug( "Adding wizard steps for %1", sm );
-        string slabel = getWorkflowLabel(sm["stage"]:"", sm["mode"]:"");
+        string slabel = getWorkflowLabel(sm["stage"]:"", sm["mode"]:"", wizard_textdomain);
         if ( slabel != "" )
         {
-            UI::WizardCommand(`AddStepHeading( dgettext( wizard_textdomain, slabel ) ) );
+            UI::WizardCommand (`AddStepHeading (wizard_textdomain, slabel));
         }
 
         string last_label = "";
         foreach(map m, getModules(sm["stage"]:"", sm["mode"]:"", `enabled),
                 ``{
             y2debug("Adding wizard step: %1", m );
-            if (m["label"]:"" != "")
+	    if (haskey (m, "heading") && m["label"]:"" != "")
+	    {
+		UI::WizardCommand (`AddStepHeading (
+		    haskey (m, "textdomain")
+			? dgettext (m["textdomain"]:"", m["label"]:"")
+			: dgettext (wizard_textdomain, m["label"]:"")));
+	    }
+            else if (m["label"]:"" != "")
 	    {
                 if (first_id=="")
                 {
                     first_id = m["id"]:"";
                 }
-                UI::WizardCommand(`AddStep( dgettext(
-                                                     wizard_textdomain,
-                                                     m["label"]:"" ),
-                                            m["id"]:"" )
-                                  );
+                UI::WizardCommand(`AddStep (
+		    haskey (m, "textdomain")
+			? dgettext (m["textdomain"]:"", m["label"]:"")
+			: dgettext (wizard_textdomain, m["label"]:""),
+		    m["id"]:"" ));
                 last_label = m["label"]:"";
             } else {
                 if (first_id=="")
@@ -749,14 +770,10 @@ global boolean wasRun(string name)
     return contains(stack, name);
 }
 
-/**
- * Run Workflow
- * 
- */
-global symbol Run()
+global symbol RunFrom (integer from)
 {
     any  former_result = `next;
-    integer m = 0;			// current module
+    current_step = from;			// current module
 
     Wizard::SetFocusToNextButton();
 
@@ -778,15 +795,15 @@ global symbol Run()
     }
 
 
-    while ((m >= 0) && (m < size(modules)))
+    while ((current_step >= 0) && (current_step < size(modules)))
     {
-	map step = modules[m]:$[];
+	map step = modules[current_step]:$[];
 	string  step_name = step["name"]:"";
 	boolean run_in_update_mode = step["update"]:true; // default is true
 	boolean retranslate = step["retranslate"]:false;
         string step_id = step["id"]:"";
 
-        if (m == 0)
+        if (current_step == 0)
         {
             step["enable_back"] = "no";
         }
@@ -803,6 +820,11 @@ global symbol Run()
 	    do_continue = true;
 	}
 
+	if (checkHeading(step))
+	{
+	    do_continue = true;
+	}
+
 	if (!run_in_update_mode && Mode::update ())
 	{
 	    do_continue = true;
@@ -810,14 +832,15 @@ global symbol Run()
 
 	if ( do_continue )
 	{
-	    if      (former_result == `next) m = m + 1;
-	    else                             m = m - 1;
+	    if (former_result == `next)
+		current_step = current_step + 1;
+	    else
+		current_step = current_step - 1;
 	}
 	if ( do_continue ) continue;
 
-
 	term argterm = getClientTerm( step, defaults, former_result);
-	y2debug("Running module: %1 (%2)", argterm, m);
+	y2debug("Running module: %1 (%2)", argterm, current_step);
 		
 	symbol module_name = symbolof( argterm );
 
@@ -840,7 +863,6 @@ global symbol Run()
 	UI::WizardCommand(`SetCurrentStep( step_id ) );
 	CurrentWizardStep = step_id;
 
-	
         // Register what step we are going to run
         if (!Stage::initial())
         {
@@ -852,14 +874,14 @@ global symbol Run()
 
 
         // Remove file if step was run and returned (without a crash);
-	if (m < size(modules) - 1 && !Stage::initial())
+	if (current_step < size(modules) - 1 && !Stage::initial())
         {
             if (!(boolean)SCR::Execute(.target.remove, "/var/lib/YaST2/step"))
                 y2error("Error removing step identifier");
         }
 
 	// Dont call hook scripts after installation is done. (#36831)
-	if (m < size(modules) - 1 && !wasRun(step_name))
+	if (current_step < size(modules) - 1 && !wasRun(step_name))
 	    Hooks::Run (step_name, false );
 	else
 	    y2milestone("Not running hooks at the end of the installation");
@@ -869,7 +891,7 @@ global symbol Run()
 
 	addToStack(step_name);
 
-	if ( retranslate ) 
+	if ( retranslate )
 	{
             y2milestone("retranslate");
 	    retranslateWizardDialog();
@@ -887,15 +909,17 @@ global symbol Run()
 	    if (step["optional"]:false)
 	    {
 		y2milestone("Skipping optional %1", symbolof(argterm) );
-		m = m + 1;
-		continue;         
+		current_step = current_step + 1;
+		continue;
 	    }
 
 	    any r = nil;
 	    r = Popup::ModuleError(sformat("The module %1 does not work.", symbolof(argterm)));
 
-	    if      (r == `next)   m = m + 1;
-	    else if (r == `back)   m = m - 1;
+	    if (r == `next)
+		current_step = current_step + 1;
+	    else if (r == `back)
+		current_step = current_step - 1;
 	    else if (r != `again)
 	    {
 		UI::CloseDialog();
@@ -904,13 +928,13 @@ global symbol Run()
 	    continue;
 	}
 
-	if      (result == `next)
+	if (result == `next)
 	{
-	    m = m + 1;
+	    current_step = current_step + 1;
 	}
 	else if (result == `back)
 	{
-	    m = m - 1;
+	    current_step = current_step - 1;
 	}
 	else if (result == `cancel)
 	{
@@ -928,12 +952,22 @@ global symbol Run()
 	{
 	    continue; // Show same dialog again
 	}
+	else if (result == `restart_yast)
+	{
+	    break;
+	}
+	else if (result == `reboot)
+	{
+	    break;
+	}
 	else if (result == `auto)
 	{
 	    if (former_result != nil)
 	    {
-		if      (former_result == `next) m = m + 1;
-		else if (former_result == `back) m = m - 1;
+		if (former_result == `next)
+		    current_step = current_step + 1;
+		else if (former_result == `back)
+		    current_step = current_step - 1;
 	    }
 	    continue;
 	}
@@ -944,10 +978,19 @@ global symbol Run()
 	return `abort;
     }
     
-    if (m <= -1)	return `back;
-    else		return `next;
+    if (current_step <= -1)
+	return `back;
+    else
+	return `next;
 }
 
+/**
+ * Run Workflow
+ * 
+ */
+global symbol Run () {
+    return RunFrom (0);
+}
 
 /**
  * ProductControl Constructor
