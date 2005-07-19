@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Tue Jul 19 16:47:38 CEST 2005 - jsrain@suse.cz
+
+- fixed installation workflow re-load on switch from installation
+  to update or vice versa
+- added possibility to start the workflow from the middle
+- added possibility for having more stages in the installation
+  wizard navigation bar
+- added support for specifying textdomain for translatable texts
+  for installation wizard
+
+-------------------------------------------------------------------
 Mon Jul 18 11:42:40 CEST 2005 - sh@suse.de
 
 - Properly check if KDE is running in /sbin/yast so the sw_single
