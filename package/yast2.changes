@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul 20 10:35:22 CEST 2005 - jsrain@suse.cz
+
+- added libxml2(-devel) to neededforbuild
+- 2.12.12
+
+-------------------------------------------------------------------
 Tue Jul 19 16:47:38 CEST 2005 - jsrain@suse.cz
 
 - fixed installation workflow re-load on switch from installation
