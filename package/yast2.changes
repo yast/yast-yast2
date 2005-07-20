@@ -3,6 +3,7 @@ Wed Jul 20 14:51:42 CEST 2005 - jsrain@suse.cz
 
 - fixed incorrecr wizard command causing crash at the begin of the
   installation
+- 2.12.13
 
 -------------------------------------------------------------------
 Wed Jul 20 10:35:22 CEST 2005 - jsrain@suse.cz
