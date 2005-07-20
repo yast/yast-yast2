@@ -8,6 +8,7 @@ Tue Jul 19 16:47:38 CEST 2005 - jsrain@suse.cz
   wizard navigation bar
 - added support for specifying textdomain for translatable texts
   for installation wizard
+- 2.12.11
 
 -------------------------------------------------------------------
 Mon Jul 18 11:42:40 CEST 2005 - sh@suse.de
