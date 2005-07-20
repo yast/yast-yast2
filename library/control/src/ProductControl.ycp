@@ -430,6 +430,8 @@ global string getWorkflowLabel(string stage, string mode, string wz_td)
     ));
     map workflow = tmp[0]:$[];
     string label = workflow["label"]:"";
+    if (label == "")
+	return "";
     if (haskey (workflow, "textdomain"))
 	return dgettext (workflow["textdomain"]:"", label);
     else
@@ -465,7 +467,7 @@ global define void AddWizardSteps(list<map> stagemode)
         string slabel = getWorkflowLabel(sm["stage"]:"", sm["mode"]:"", wizard_textdomain);
         if ( slabel != "" )
         {
-            UI::WizardCommand (`AddStepHeading (wizard_textdomain, slabel));
+            UI::WizardCommand (`AddStepHeading (slabel));
         }
 
         string last_label = "";
