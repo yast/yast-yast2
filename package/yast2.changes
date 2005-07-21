@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jul 21 09:53:02 CEST 2005 - jsrain@suse.cz
+
+- don't report void errors in CWM
+
+-------------------------------------------------------------------
 Wed Jul 20 14:51:42 CEST 2005 - jsrain@suse.cz
 
 - fixed incorrecr wizard command causing crash at the begin of the

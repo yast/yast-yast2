@@ -377,7 +377,11 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 		to_check = (list<string>)merge (to_check, ["help"]);
 	    }
 	    foreach (string key, to_check, ``{
-		if (v["widget"]:nil != `radio_buttons || key != "label")
+		if (key != "label" ||
+		    (v["widget"]:nil != `radio_buttons
+			&& v["widget"]:nil != `custom
+			&& v["widget"]:nil != `func)
+		)
 		{
 		    ret = ValidateValueContents (key, v[key]:nil, k) && ret;
 		}
