@@ -179,8 +179,10 @@
 						      `HStretch()
 						      ),
 						`VWeight( 1, // Layout trick: Lower layout priority with weight
-							 `ReplacePoint(`id(`contents), `Empty() )
-							 ),
+							  `HVCenter(`opt(`hvstretch),
+								    `ReplacePoint(`id(`contents), `Empty() )
+								    )
+							  ),
 						`ReplacePoint(`id(`rep_button_box), button_box ),
 						`VSpacing(0.2)
 						)
