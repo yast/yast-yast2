@@ -406,6 +406,14 @@ global string SelectedItem () {
 }
 
 /**
+ * Set the rich text description.
+ * @param descr rich text description
+ */
+global void SetRichDescription (string descr) {
+    UI::ChangeWidget (`id (`_hw_sum), `Value, descr);
+}
+
+/**
  * Set the information about hardware
  * @param items a list of maps, one item per item in the dialog, with keys
  *  "id" : string = the identification of the device,
