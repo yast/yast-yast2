@@ -398,6 +398,14 @@ global void SetSelectedItem (string selected) {
 
 
 /**
+ * Return the id of the currently selected item in the table
+ * @return id of the selected item
+ */
+global string SelectedItem () {
+    return (string) UI::QueryWidget (`id(`_hw_items), `CurrentItem);
+}
+
+/**
  * Set the information about hardware
  * @param items a list of maps, one item per item in the dialog, with keys
  *  "id" : string = the identification of the device,
