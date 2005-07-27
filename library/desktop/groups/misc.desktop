@@ -13,6 +13,6 @@ X-SuSE-YaST-SortKey=99
 OnlyShowIn=X-SuSE-YaST;
 Icon=yast-misc
 
-Name=Misc
+Name=Miscellaneous
 Name[cs]=Různé
 X-KDE-SubstituteUID=true
