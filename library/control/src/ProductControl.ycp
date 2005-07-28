@@ -775,6 +775,7 @@ global boolean wasRun(string name)
 global symbol RunFrom (integer from)
 {
     any  former_result = `next;
+    symbol final_result = nil;
     current_step = from;			// current module
 
     Wizard::SetFocusToNextButton();
@@ -956,10 +957,12 @@ global symbol RunFrom (integer from)
 	}
 	else if (result == `restart_yast)
 	{
+	    final_result = result;
 	    break;
 	}
 	else if (result == `reboot)
 	{
+	    final_result = result;
 	    break;
 	}
 	else if (result == `auto)
@@ -979,7 +982,10 @@ global symbol RunFrom (integer from)
     {
 	return `abort;
     }
-    
+
+    if (final_result != nil)
+	return final_result;
+
     if (current_step <= -1)
 	return `back;
     else
