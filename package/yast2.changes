@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jul 28 15:52:49 CEST 2005 - jsrain@suse.cz
+
+- merged texts from proofreading
+
+-------------------------------------------------------------------
 Thu Jul 28 08:55:08 CEST 2005 - jsrain@suse.cz
 
 - fixed stopping the workflow in the middle to reboot (eg. in case

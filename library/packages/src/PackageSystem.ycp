@@ -73,7 +73,7 @@ global void EnsureSourceInit() {
     PackageCallbacksInit::InitPackageCallbacks ();
 
     /* Popup when initializing the package manager */
-    UI::OpenDialog(`opt(`decorated ), `Label(_("Reading package information; One moment please...")));
+    UI::OpenDialog(`opt(`decorated ), `Label(_("Reading package information...")));
     list sources = Pkg::SourceStartCache (true);
     UI::CloseDialog();
 
