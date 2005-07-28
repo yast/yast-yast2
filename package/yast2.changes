@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 28 08:55:08 CEST 2005 - jsrain@suse.cz
+
+- fixed stopping the workflow in the middle to reboot (eg. in case
+  of kernel update)
+
+-------------------------------------------------------------------
 Thu Jul 21 13:58:55 CEST 2005 - sh@suse.de
 
 - Now using `opt(`hvstretch) in wizard to restore old laoyut
