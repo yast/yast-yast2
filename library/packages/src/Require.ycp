@@ -72,7 +72,7 @@
 	{
 	    PackageCallbacksInit::InitPackageCallbacks();
 	    // popup when initializing the package manager
-	    UI::OpenDialog(`opt(`decorated ),`Label(_("Reading package information; One moment please...")));
+	    UI::OpenDialog(`opt(`decorated ),`Label(_("Reading package information...")));
 	    list sources = Pkg::SourceStartCache (true);
 	    UI::CloseDialog();
 	    if (size (sources) > 0)
