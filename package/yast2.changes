@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Aug  1 15:06:21 CEST 2005 - locilka@suse.cz
+
+- Changing firewall definition for samba-server by the Samba-Howto
+  Allowed ports/functionality is: TCP 135, 139, 445; UDP: 137, 138;
+  Broadcast: 137, 138;
+  Bugzilla #81254
+
+-------------------------------------------------------------------
 Thu Jul 28 15:52:49 CEST 2005 - jsrain@suse.cz
 
 - merged texts from proofreading
