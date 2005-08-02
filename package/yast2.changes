@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug  2 15:54:10 CEST 2005 - lslezak@suse.cz
+
+- format function in WizardHW module
+- 2.12.17
+
+-------------------------------------------------------------------
 Tue Aug  2 14:36:32 CEST 2005 - jsrain@suse.cz
 
 - added support not to allow to go back in the installation

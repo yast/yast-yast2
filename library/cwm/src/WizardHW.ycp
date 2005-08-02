@@ -463,5 +463,49 @@ global map<string,any> UserInput () {
     return ret;
 }
 
+/**
+ * Create rich text description of a device. It can be used for WizardHW::SetContents
+ * function for formatting richtext device descriptions
+ * @param title header - usually device name
+ * @param properties important properties of the device which should be
+ *		displayed in the overview dialog
+ * @return string rich text string
+ */
+global define string CreateRichTextDescription(string title, list<string> properties) {
+    string items = "";
+
+    if (properties != nil && size(properties) > 0)
+    {
+	foreach(string prop, properties, {
+		items = items + "<LI>" + prop + "</LI>";
+	    }
+	);
+    }
+
+    string ret = "";
+
+    if (title != nil && title != "")
+    {
+	ret = "<P><B>" + title + "</B></P>";
+    }
+
+    if (items != "")
+    {
+	ret = ret + "<P><UL>" + items + "</UL></P>";
+    }
+
+    return ret;
+}
+
+
+/**
+ * Get propertly list of an unconfigured device. Should be used together with
+ * device name in CreateRichTextDescription() function.
+ * @return a list of strings 
+ */
+global list<string> UnconfiguredDevice() {
+    return [_("The device is not configured"), _("Press <B>Edit</B> to configure")];
+}
+
 // EOF
 }
