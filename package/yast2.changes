@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug  2 14:36:32 CEST 2005 - jsrain@suse.cz
+
+- added support not to allow to go back in the installation
+  workflow if started from the middle
+
+-------------------------------------------------------------------
 Mon Aug  1 15:06:21 CEST 2005 - locilka@suse.cz
 
 - Changing firewall definition for samba-server by the Samba-Howto
