@@ -772,7 +772,7 @@ global boolean wasRun(string name)
     return contains(stack, name);
 }
 
-global symbol RunFrom (integer from)
+global symbol RunFrom (integer from, boolean allow_back)
 {
     any  former_result = `next;
     symbol final_result = nil;
@@ -797,7 +797,7 @@ global symbol RunFrom (integer from)
 	return `abort;
     }
 
-
+    integer minimum_step = allow_back ? 0 : from;
     while ((current_step >= 0) && (current_step < size(modules)))
     {
 	map step = modules[current_step]:$[];
@@ -806,7 +806,7 @@ global symbol RunFrom (integer from)
 	boolean retranslate = step["retranslate"]:false;
         string step_id = step["id"]:"";
 
-        if (current_step == 0)
+        if (current_step <= minimum_step)
         {
             step["enable_back"] = "no";
         }
@@ -844,7 +844,7 @@ global symbol RunFrom (integer from)
 
 	term argterm = getClientTerm( step, defaults, former_result);
 	y2debug("Running module: %1 (%2)", argterm, current_step);
-		
+
 	symbol module_name = symbolof( argterm );
 
 	y2milestone( "Calling %1", argterm );
@@ -970,7 +970,13 @@ global symbol RunFrom (integer from)
 	    if (former_result != nil)
 	    {
 		if (former_result == `next)
+		{
+		    // if the first client just returns `auto , the back button
+		    // of the next client must be disabled
+		    if (current_step <= minimum_step && ! allow_back)
+			minimum_step = minimum_step + 1;
 		    current_step = current_step + 1;
+		}
 		else if (former_result == `back)
 		    current_step = current_step - 1;
 	    }
@@ -997,7 +1003,7 @@ global symbol RunFrom (integer from)
  * 
  */
 global symbol Run () {
-    return RunFrom (0);
+    return RunFrom (0, false);
 }
 
 /**
