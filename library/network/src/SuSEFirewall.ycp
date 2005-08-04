@@ -1789,8 +1789,9 @@ Run YaST2 Firewall and assign it.
 
 	if (have_progress) Progress::NextStage();
 
-	// get default configuration for installation
-	if (Mode::installation() || Mode::autoinst()) {
+	// get default configuration for autoinstallation
+	// if (Mode::installation() || Mode::autoinst()) {
+	if (Mode::autoinst()) {
 	    ReadDefaultConfiguration();
 	// read current configuration for another cases
 	} else {
