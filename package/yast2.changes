@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Aug  4 16:14:49 CEST 2005 - lslezak@suse.cz
+
+- move sysconfig metadata parsing functions from Sysconfig
+  to String module.
+- 2.12.18
+
+-------------------------------------------------------------------
 Tue Aug  2 15:54:10 CEST 2005 - lslezak@suse.cz
 
 - format function in WizardHW module

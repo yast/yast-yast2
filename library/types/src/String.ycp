@@ -780,5 +780,176 @@ global string ValidCharsFilename () {
 	    Pad("", left_padding) + CreateUnderline(size(header_line));
     }
 
+
+
+//////////////////////////////////////////
+// sysconfig metadata related functions //
+//////////////////////////////////////////
+
+/**
+ * Get metadata lines from input string
+ * @param input Input string - complete comment of a sysconfig variable
+ * @return list<string> Metadata lines in list
+ */
+global define list<string> GetMetaDataLines(string input) ``{
+    if (input == nil || input == "")
+    {
+	return [];
+    }
+
+    list<string> lines = splitstring(input, "\n");
+    return (filter(string line, lines, ``(regexpmatch(line, "^##.*"))));
+}
+
+/**
+ * Get comment without metadata
+ * @param input Input string - complete comment of a sysconfig variable
+ * @return string Comment used as variable description
+ */
+global define string GetCommentLines(string input) ``{
+    if (input == nil || input == "")
+    {
+	return "";
+    }
+
+    list<string> lines = splitstring(input, "\n");
+
+    string ret = "";
+
+    foreach(string line, lines, ``{
+	    string com_line = regexpsub(line, "^#([^#].*)", "\\1");
+
+	    if (com_line == nil)
+	    {
+		// add empty lines
+		if (regexpmatch(line, "^#[ \t]*$") == true)
+		{
+		    ret = ret + "\n";
+		}
+	    }
+	    else
+	    {
+		ret = ret + com_line + "\n";
+	    }
+	}
+    );
+
+    return ret;
+}
+
+/**
+ * Parse metadata from a sysconfig comment
+ * @param comment comment of a sysconfig variable (single line or multiline string)
+ * @return map parsed metadata
+ */
+global define map<string, string> ParseSysconfigComment(string comment) ``{
+    map<string, string> ret = $[];
+
+    // get metadata part of comment
+    list<string> metalines = GetMetaDataLines(comment);
+    list<string> joined_multilines = [];
+    string multiline = "";
+
+    y2debug("metadata: %1", metalines);
+
+    // join multi line metadata lines
+    foreach(string metaline, metalines, ``{
+	    if (substring(metaline, size(metaline) - 1, 1) != "\\")
+	    {
+		if (multiline != "")
+		{
+		    // this not first multiline so remove comment mark
+		    string without_comment = regexpsub(metaline, "^##(.*)", "\\1");
+
+		    if (without_comment != nil)
+		    {
+			metaline = without_comment;
+		    }
+		}
+		joined_multilines = add(joined_multilines, multiline + metaline);
+		multiline = "";
+	    }
+	    else
+	    {
+		string part = substring(metaline, 0, size(metaline) - 1);
+
+		if (multiline != "")
+		{
+		    // this not first multiline so remove comment mark
+		    string without_comment = regexpsub(part, "^##(.*)", "\\1");
+
+		    if (without_comment != nil)
+		    {
+			part = without_comment;
+		    }
+		}
+
+		// add line to the previous lines
+		multiline = multiline + part;
+	    }
+	}
+    );
+
+    y2debug("metadata after multiline joining: %1", joined_multilines);
+
+    // parse each metadata line
+    foreach(string metaline, joined_multilines, ``{
+
+	    /* Ignore lines with ### -- general comments */
+	    if (regexpmatch(metaline, "^###"))
+	    {
+		return;
+	    }
+
+	    string meta = regexpsub(metaline, "^##[ \t]*(.*)", "\\1");
+
+	    // split sting to the tag and value part
+	    integer colon_pos = findfirstof(meta, ":");
+	    string tag = "";
+	    string val = "";
+
+	    if (colon_pos == nil)
+	    {
+		// colon is missing
+		tag = meta;
+	    }
+	    else
+	    {
+		tag = substring(meta, 0, colon_pos);
+
+		if (size(meta) > colon_pos + 1)
+		{
+		    val = substring(meta, colon_pos + 1);
+		}
+	    }
+
+	    // remove whitespaces from parts
+	    tag = CutBlanks(tag);
+	    val = CutBlanks(val);
+
+	    y2debug("tag: %1 val: '%2'", tag, val);
+
+	    // add tag and value to map if they are present in comment
+	    if (tag != "")
+	    {
+		ret = (map<string, string>) add(ret, tag, val);
+	    }
+	    else
+	    {
+		// ignore separator lines
+		if (!regexpmatch(metaline, "^#*$"))
+		{
+		    y2warning("Unknown metadata line: %1", metaline);
+		}
+	    }
+	}
+    );
+
+    y2debug("parsed sysconfig comment: %1", ret);
+
+    return ret;
+}
+
+
 /* EOF */
 }
