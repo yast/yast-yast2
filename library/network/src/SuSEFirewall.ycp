@@ -44,23 +44,22 @@
 
     /* default settings for SuSEFirewall */
     map<string, string> DEFAULT_SETTINGS = $[
-	// All default SuSEFirewall2 setting are disabled to solve the bug #100692
-	// "FW_LOG_ACCEPT_ALL"		: "no",
-	// "FW_LOG_ACCEPT_CRIT"		: "yes",
-	// "FW_LOG_DROP_ALL"		: "no",
-	// "FW_LOG_DROP_CRIT"		: "yes",
-	// "FW_PROTECT_FROM_INT"	: "no",
-	// "FW_ROUTE"			: "no",
-	// "FW_MASQUERADE"		: "no",
-	// "FW_ALLOW_FW_TRACEROUTE"	: "yes",
-	// "FW_ALLOW_PING_FW"		: "yes",
-	// "FW_ALLOW_FW_BROADCAST_EXT"	: "no",
-	// "FW_ALLOW_FW_BROADCAST_INT"	: "no",
-	// "FW_ALLOW_FW_BROADCAST_DMZ"	: "no",
-	// "FW_IGNORE_FW_BROADCAST_EXT"	: "yes",
-	// "FW_IGNORE_FW_BROADCAST_INT"	: "no",
-	// "FW_IGNORE_FW_BROADCAST_DMZ"	: "no",
-	// "FW_IPSEC_TRUST"		: "no",
+	"FW_LOG_ACCEPT_ALL"		: "no",
+	"FW_LOG_ACCEPT_CRIT"		: "yes",
+	"FW_LOG_DROP_ALL"		: "no",
+	"FW_LOG_DROP_CRIT"		: "yes",
+	"FW_PROTECT_FROM_INT"		: "no",
+	"FW_ROUTE"			: "no",
+	"FW_MASQUERADE"			: "no",
+	"FW_ALLOW_FW_TRACEROUTE"	: "yes",
+	"FW_ALLOW_PING_FW"		: "yes",
+	"FW_ALLOW_FW_BROADCAST_EXT"	: "no",
+	"FW_ALLOW_FW_BROADCAST_INT"	: "no",
+	"FW_ALLOW_FW_BROADCAST_DMZ"	: "no",
+	"FW_IGNORE_FW_BROADCAST_EXT"	: "yes",
+	"FW_IGNORE_FW_BROADCAST_INT"	: "no",
+	"FW_IGNORE_FW_BROADCAST_DMZ"	: "no",
+	"FW_IPSEC_TRUST"		: "no",
     ];
 
     /* verbose_level -> if verbosity is more than 0, be verbose, starting in verbose mode */
