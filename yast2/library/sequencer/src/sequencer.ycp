@@ -1,0 +1,24 @@
+/**
+ * File:	include/wizard/sequencer.ycp
+ * Module:	yast2
+ * Summary:	Wizard sequencer
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ *
+ * This include is obsolete and for compatibility only.
+ * Use module Sequencer instead.
+ */
+
+{
+
+import "Sequencer";
+
+define symbol WizardSequencer(map aliases, map sequence) {
+    y2warning("The sequencer include is obsolete");
+    y2warning("Use Sequencer module instead");
+    return Sequencer::Run(aliases, sequence);
+}
+
+/* EOF */
+}

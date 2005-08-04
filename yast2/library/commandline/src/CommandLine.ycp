@@ -1,0 +1,1256 @@
+/**
+ * File:	modules/CommandLine.ycp
+ * Package:	yast2
+ * Summary:	Command line interface for YaST2 modules
+ * Author:	Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+    module "CommandLine";
+
+    import "Mode";
+    import "Stage";
+    import "Report";
+    import "String";
+    import "TypeRepository";
+    import "XML";
+
+    textdomain "base";
+
+    typedef map<string, map <string, any > > commands_t;
+
+    string cmdlineprompt = "YaST2 > ";
+
+    /**
+     * Map of commands for every module. ATM the list of commands this module handles internally.
+     */
+    commands_t systemcommands = (commands_t)$[
+	"actions"	: $[
+			    "help"	: $[
+				"help":_("Print the help for this module")
+			    ],
+			    "longhelp": $[
+				"help":_("Print a long version of help for this module")
+			    ],
+			    "xmlhelp": $[
+				"help":_("Print a long version of help for this module in XML format")
+			    ],
+			    "interactive"	: $[
+				"help": _("Start interactive shell to control the module")
+			    ],
+			    "exit"	: $[
+				"help": _("Exit interactive mode and save the changes")
+			    ],
+			    "abort"	: $[
+				"help": _("Abort interactive mode without saving the changes")
+			    ]
+			],
+	"options"	: $[
+			    "help"	: $[
+				// translators:  command line "help" option 
+				"help"	: _("Print the help for this command"),
+			    ],
+			    "verbose"	: $[
+				// translators: command line "verbose" option
+				"help"	: _("Show progress information"),
+			    ],
+			    "xmlfile"	: $[
+				// translators: command line "verbose" option
+				"help"	: _("Where to store the XML output"),
+				"type"	: "string"
+			    ],
+			],
+	"mappings"	: $[
+			    "help"	: ["help", "verbose"],
+			    "xmlhelp"	: ["help", "verbose", "xmlfile"],
+			    "interactive":["help", "verbose"],
+			    "exit"	: ["help"],
+			    "abort"	: ["help"],
+			]
+    ];
+
+    /**
+     * Map of commands defined by the YaST2 module.
+     */
+    map modulecommands = $[];
+
+    /**
+     * Merged map of commands - both defined by the YaST2 module and system commands. Used for lookup
+     */
+    map allcommands = systemcommands;
+
+    /**
+     * User asked for interactive session
+     */
+    boolean interactive = false;
+
+    /**
+     * All commands have been processed
+     */
+    boolean done = false;
+
+    /**
+     * User asked for quitting of interactive session, or there was an error
+     */
+    boolean aborted = false;
+
+    /** a cache for already parsed but not processed command */
+    map<string, any> commandcache = $[];
+
+    /**
+     * Verbose mode flag
+     */
+    boolean verbose = false;
+
+    /**
+     * Remember the command line specification for later use
+     */
+    map cmdlinespec = $[];
+
+
+    // string: command line interface is not supported
+    string nosupport = _("This YaST2 module does not support the command line interface.");
+
+    /**
+     *  @short Print a String
+     *  @descr Print a string to /dev/tty in interactive mode, to stderr in non-interactive
+     *  Suppress printing if there are no commands to be handled (starting GUI)
+     *
+     *  @param s	the string to be printed
+     */
+    global define void Print(string s) ``{
+	if( ! Mode::commandline () ) return;
+
+	// avoid using of uninitialized value in .dev.tty perl agent
+	if( s == nil )
+	{
+	    y2warning("CommandLine::Print: invalid argument (nil)");
+	    return;
+	}
+
+	if( interactive ) SCR::Write(.dev.tty, s);
+	else SCR::Write(.dev.tty.stderr, s);
+    }
+
+    /**
+     * Same as Print(), but the string is printed only when verbose command
+     * line mode was activated
+     * @param s string to print
+     */
+    global define void PrintVerbose(string s) {
+	if (verbose)
+	{
+	    Print(s);
+	}
+    }
+
+    /**
+     * @short Print an Error Message
+     * @descr Print an error message and add the description how to get the help.
+     * @param message	error message to be printed. Use nil for no message
+     */
+    global define void Error( string message ) ``{
+        if( message != nil ) {
+	    Print( message );
+	}
+
+        if( interactive ) {
+	    Print(_("Use 'help' for a complete list of available commands."));
+	} else {
+	    Print(sformat(_("Use 'yast2 %1 help' for a complete list of available commands."), modulecommands["id"]:""));
+        }
+    }
+
+    /**
+     *  @short Parse a list of arguments. 
+     *  @descr It checks the validity of the arguments, the type correctness
+     *  and returns the command and its options in a map.
+     *  @param arguments	the list of arguments to be parsed
+     *  @return map<string, any>	containing the command and it's option. In case of
+     *				error it is an empty map.
+     */
+    global define map<string, any> Parse (list<any> arguments) ``{
+	list<any> args = arguments;
+	if(size(args) < 1) return $[];
+
+	/* Parse command */
+	string command = args[0]:"";
+	y2debug("command=%1", command);
+	args = remove(args, 0);
+	y2debug("args=%1", args);
+
+	if(command == "") {
+	    y2error( "CommandLine::Parse called with first parameter being empty. Arguments passed: %1", arguments);
+	    return $[];
+	}
+
+	/* Check command */
+	if(!haskey(allcommands["actions"]:$[], command) ) {
+	    Error(sformat(_("Unknown Command: %1"), command));
+
+	    return $[ "command" : command ];
+	}
+
+	// build the list of options for the command
+	list opts = allcommands["mappings", command]:[];
+	map allopts = allcommands["options"]:$[];
+	map cmdoptions = $[];
+	maplist( any k, opts, {
+	    if (is(k, string)) cmdoptions = add( cmdoptions, k, allopts[k]:$[] );
+	} );
+
+	boolean ret = true;
+
+	/* Parse options */
+	map<string, any> givenoptions = $[];
+	maplist(any aos, args, ``{
+	    y2debug("os=%1", aos);
+	    if (!is(aos, string)) continue;
+	    string os = (string)aos;
+	    list<string> o = regexptokenize(os, "([^=]+)=(.+)");
+	    y2debug("o=%1", o);
+	    if( size(o) == 2 ) givenoptions = add(givenoptions, o[0]:"", o[1]:"");
+	    else if( size(o) == 0 ) {
+		// check, if the last character is "="
+		// FIXME: consider whitespace
+		if( substring( os, size(os)-1 ) == "=" ) {
+		    Print(sformat(_("Option '%1' is missing value."), substring( os, 0, size(os)-1 )) );
+		    if( ! interactive ) aborted = true;
+		    ret = false;
+		    return $[];
+		} else {
+		    givenoptions = add(givenoptions, os, "");
+		}
+	    }
+	});
+
+	if( ret != true ) return $[];
+
+	y2debug("options=%1", givenoptions);
+
+	/* Check options */
+	
+	// find out, if the action has a "non-strict" option set
+	boolean non_strict = contains ( allcommands["actions", command, "options"]: [], "non_strict");
+	if (non_strict)
+	{
+	    y2debug ( "Using non-strict check for %1", command );
+	}
+
+
+	// check (and convert data types)
+	maplist(string o, any val, givenoptions, ``{
+	    string v = (string)val;
+	    if(ret != true) return;
+	    if( cmdoptions[o]:nil == nil ) {
+		if( ! non_strict )
+		{
+		    // translators: error message, %1 is a command, %2 is the wrong option given by the user
+		    Print(sformat(_("Unknown option for command '%1': %2"), command, o));
+		    if( ! interactive ) 
+		    {
+			aborted = true;
+		    }
+		    ret = false;
+		}
+	    } else {
+
+		// this option is valid, let's check the type
+
+		string opttype = cmdoptions[o, "type"]:"";
+
+		if( opttype != "" ) {
+		    // need to check the type
+		    if( opttype == "regex" )  {
+			string opttypespec = cmdoptions[o, "typespec"]:"";
+			ret = TypeRepository::regex_validator( opttypespec, v );
+			if( ret != true ) {
+			    // translators: error message, %2 is the value given
+			    Print( sformat(_("Invalid value for option '%1': %2"), o, v ) );
+			    if( ! interactive ) aborted = true;
+			}
+		    } else if( opttype == "enum" ) {
+			ret = TypeRepository::enum_validator ( cmdoptions[o, "typespec"]: [], v );
+			if( ret != true ) {
+			    // translators: error message, %2 is the value given
+			    Print( sformat(_("Invalid value for option '%1': %2"), o, v ) );
+			    if( ! interactive ) aborted = true;
+			}
+		    } else if( opttype == "integer" ) {
+			integer i = tointeger(v);
+			ret = (i != nil);
+			if( ret != true ) {
+			    // translators: error message, %2 is the value given
+			    Print( sformat(_("Invalid value for option '%1': %2"), o, v ) );
+			    if( ! interactive ) aborted = true;
+			}
+			else
+			{
+			    // update value of the option to integer
+			    givenoptions[o] = i;
+			}
+		    } else {
+			if( v == "" ) ret = false;
+			else ret = TypeRepository::is_a( v, opttype );
+
+			if( ret != true ) {
+			    // translators: error message, %2 is expected type, %3 is the value given
+			    Print( sformat(_("Invalid value for option '%1' -- expected '%2', received %3"), o, opttype, v ) );
+			    if( ! interactive ) aborted = true;
+			}
+		    }
+		}
+		else
+		{
+		    // type is missing
+		    if( v != "" )
+		    {
+			y2error("Type specification for option '%1' is missing, cannot assign a value to the option", o);
+			// translators: error message if option has a value, but cannot have one
+			Print( sformat( _("Option '%1' cannot have a value. Given value: %2"), o, v ) );
+			if( ! interactive ) 
+			{
+			    aborted = true;
+			}
+			ret = false;
+		    }
+		}
+	    }
+	});
+
+	// wrong, let's print the help message
+	if( ret != true ) {
+	    if( interactive ) {
+		// translators: error message, how to get command line help for interactive mode
+		// %1 is the module name, %2 is the action name
+		Print(sformat(_("Use '%1 %2 help' for a complete list of available options."), modulecommands["id"]:"", command));
+	    } else {
+		// translators: error message, how to get command line help for non-interactive mode
+		// %1 is the module name, %2 is the action name
+		Print(sformat(_("Use 'yast2 %1 %2 help' for a complete list of available options."), modulecommands["id"]:"", command));
+	    }
+	    return $[];
+	}
+
+	return $[
+	    "command"	: command,
+	    "options"	: givenoptions
+	];
+    }
+
+    /**
+     * Print a nice heading for this module
+     */
+    define void PrintHead() ``{
+	// translators: command line interface header, %1 is identification of the module
+	string head = sformat(_("YaST Configuration Module %1\n"), modulecommands["id"]:"YaST");
+	integer headlen = size(head);
+	integer i=0; while (i<headlen) { head = head + "-"; i=i+1; }
+	head = "\n" + head + "\n";
+
+	Print( head );
+    }
+
+    /**
+     * Print a help text for a given action.
+     *
+     * @param action the action for which the help should be printed
+     */
+    define void PrintActionHelp (string action) ``{
+	// lookup action in actions
+	map command = allcommands["actions", action]:$[];
+	string commandhelp = command["help"]:_("No help available");
+	/* Process <command> "help" */
+	// translators: %1 is the command name
+	Print(sformat(_("Command '%1'"), action));
+	Print(sformat("    %1", commandhelp));
+
+	list opts = allcommands["mappings", action]:[];
+
+	// no options, skip the rest
+	if( size(opts) == 0 ) {
+	    Print("");
+	    return;
+	}
+
+	// translators: command line options
+	Print(_("\n    Options:"));
+
+	map allopts = allcommands["options"]:$[];
+
+	integer longestopt = 0;
+	integer longestarg = 0;
+
+	foreach( any opt, opts, ``{
+	    map op = allopts[opt]:$[];
+	    string t = op["type"]:"";
+
+	    if ( t != "regex" && t != "enum" && t != "" ) t = "["+t+"]";
+	    else if( t == "enum" ) {
+		t = "\[ ";
+		foreach( string s, op["typespec"]:[], ``{
+		    t = t+ s+" ";
+		});
+		t = t + "\]";
+	    }
+
+	    if( size(t) > longestarg ) longestarg = size(t);
+
+	    if( is (opt, string)
+		&& size((string)opt) > longestopt )
+	    {
+		longestopt = size((string)opt);
+	    }
+	} );
+
+
+	foreach( any opt, opts, ``{
+	    map op = allopts[opt]:$[];
+	    string t = op["type"]:"";
+
+	    if ( t != "regex" && t != "enum" && t != "" ) t = "["+t+"]";
+	    else if( t == "enum" ) {
+		t = "\[ ";
+		foreach( string s, op["typespec"]:[], ``{
+		    t = t+ s+" ";
+		});
+		t = t + "\]";
+	    }
+	    else t = "    ";
+
+	    if (is (opt, string))
+	    {
+		string helptext = "";
+		any opthelp = op["help"]:nil;
+
+		if (is(opthelp, string))
+		{
+		    helptext = (string)opthelp;
+		}
+		else if (is(opthelp, map<string,string>))
+		{
+		    helptext = ((map<string,string>)opthelp)[action]:"";
+		}
+		else
+		{
+		    y2error("Invalid data type of help text, only 'string' or 'map<string,string>' types are allowed.");
+		}
+
+		Print(sformat("        %1  %2  %3", String::Pad((string)opt,longestopt), String::Pad(t, longestarg), helptext));
+	    }
+	} );
+
+	if( haskey( command, "example" ) ) {
+	    Print( _("\n    Example:"));
+
+	    any example = command["example"]:nil;
+
+	    if (is(example, string))
+	    {
+		Print(sformat("        %1", example));
+	    }
+	    else if (is(example, list<string>))
+	    {
+		foreach(string e, (list<string>)example, ``{
+			Print(sformat("        %1", e));
+		    }
+		);
+	    }
+	    else
+	    {
+		y2error("Unsupported data type - value: %1", example);
+	    }
+
+	}
+	Print("");
+    }
+
+    /**
+     * Print a general help - list of available command.
+     */
+    define void PrintGeneralHelp() ``{
+	// display custom defined help instead of generic one
+	if (haskey(modulecommands, "customhelp"))
+	{
+	    Print(modulecommands["customhelp"]:"");
+	    return;
+	}
+
+	// translators: default module description if none is provided by the module itself
+	Print( modulecommands["help"]: _("This is a YaST2 module.")+"\n" );
+	Print(_("Basic Syntax:"));
+
+	if( ! interactive ) {
+	    // translators: module command line help, %1 is the module name
+	    Print(sformat(("    yast2 %1 interactive"), modulecommands["id"]:""));
+
+	    // translators: module command line help, %1 is the module name
+	    // translate <command> and [options] only!
+	    Print(sformat(_("    yast2 %1 <command> [verbose] [options]"), modulecommands["id"]:""));
+	    // translators: module command line help, %1 is the module name
+	    Print(sformat(("    yast2 %1 help"), modulecommands["id"]:""));
+	    Print(sformat(("    yast2 %1 longhelp"), modulecommands["id"]:""));
+	    Print(sformat(("    yast2 %1 xmlhelp"), modulecommands["id"]:""));
+	    // translators: module command line help, %1 is the module name
+	    // translate <command> only!
+	    Print(sformat(_("    yast2 %1 <command> help"), modulecommands["id"]:""));
+	} else {
+	    // translators: module command line help
+	    // translate <command> and [options] only!
+	    Print(_("    <command> [options]"));
+	    // translators: module command line help
+	    // translate <command> only!
+	    Print(_("    <command> help"));
+	    // translators: module command line help
+	    Print("    help");
+	    Print("    longhelp");
+	    Print("    xmlhelp");
+	    Print("");
+	    Print("    exit");
+	    Print("    abort");
+	}
+
+	Print("");
+	Print(_("Commands:"));
+
+	integer longest = 0;
+	foreach( string action, map desc, modulecommands["actions"]:$[], ``{
+	    if( size(action) > longest ) longest = size(action);
+	});
+
+	maplist(string cmd, map desc, modulecommands["actions"]:$[], ``{
+	    Print(sformat("    %1  %2", String::Pad(cmd, longest), desc["help"]:_("No help available.")));
+	});
+	Print("");
+	// translators: module command line help, %1 is the module name
+	if( ! interactive ) {
+	    Print(sformat(_("Run 'yast2 %1 <command> help' for a list of available options."), modulecommands["id"]:""));
+	    Print("");
+	}
+    }
+
+    /**
+     * Handle the system-wide commands, like help etc.
+     *
+     * @param command	a map of the current command
+     * @return		true, if the command was handled
+     */
+    define boolean ProcessSystemCommands (map command) ``{
+
+	// handle help for specific command
+	// this needs to be before general help, so "help help" works
+	if( command["options", "help"]: nil != nil ) {
+	    PrintHead();
+	    PrintActionHelp( command["command"]:"" );
+	    return true;
+	}
+
+	/* Process command "interactive" */
+	if( command["command"]:"" == "interactive" ) {
+	    interactive = true;
+	    return true;
+	}
+
+	/* Process command "exit" */
+	if( command["command"]:"" == "exit" ) {
+	    done = true;
+	    aborted = false;
+	    return true;
+	}
+
+	/* Process command "abort" */
+	if( command["command"]:"" == "abort" ) {
+	    done = true;
+	    aborted = true;
+	    return true;
+	}
+
+	if( command["command"]:"" == "help" ) {
+	    // don't print header when custom help is defined
+	    if (!haskey(modulecommands, "customhelp"))
+	    {
+		PrintHead();
+	    }
+	    PrintGeneralHelp();
+	    return true;
+	}
+
+	if( command["command"]:"" == "longhelp" ) {
+	    PrintHead();
+	    PrintGeneralHelp();
+	    foreach( string action, map def, allcommands["actions"]:$[], ``{
+		PrintActionHelp( action );
+	    });
+	    return true;
+	}
+
+	if( command["command"]:"" == "xmlhelp" ) {
+	    if (haskey(command["options"]:$[], "xmlfile") == false)
+	    {
+		// error message - command line option xmlfile is missing
+		Print(_("Target file name ('xmlfile' option) is missing. Use xmlfile=<target_XML_file> command line option."));
+		return false;
+	    }
+
+	    string xmlfilename = command["options", "xmlfile"]:"";
+
+	    if (xmlfilename == nil || xmlfilename == "")
+	    {
+		// error message - command line option xmlfile is missing
+		Print(_("Target file name ('xmlfile' option) is empty. Use xmlfile=<target_XML_file> command line option."));
+		return false;
+	    }
+
+	    map doc = $[];
+
+//	    TODO: DTD specification
+//	    doc["listEntries"] =
+//		$[
+//		];
+//	    doc["cdataSections"] = [];
+//	    doc["systemID"] = "/usr/share/YaST2/dtd/commandline.dtd";
+//	    doc["nameSpace"] = "http://www.suse.com/1.0/yast2ns";
+//	    doc["typeNamespace"] = "http://www.suse.com/1.0/configns";
+
+	    doc["rootElement"] = "commands";
+	    XML::xmlCreateDoc(`xmlhelp, doc);
+
+	    map exportmap = $[];
+	    list<map> commands = [];
+
+	    map<string,map> actions = cmdlinespec["actions"]:$[];
+	    map<string,list<string> > mappings = cmdlinespec["mappings"]:$[];
+	    map<string,map> options = cmdlinespec["options"]:$[];
+
+	    y2debug("cmdlinespec: %1", cmdlinespec);
+
+	    foreach(string action, map description, actions, {
+		    string help = description["help"]:"";
+
+		    list<map> opts = [];
+
+		    foreach(string option, mappings[action]:[], {
+			    //
+			    map optn = $[
+				"option" : option,
+				"help" : options[option,"help"]:"",
+			    ];
+
+
+			    // add type specification if it's present
+			    if (options[option,"type"]:"" != "")
+			    {
+				optn = add(optn, "type", options[option,"type"]:"");
+			    }
+
+			    opts = add(opts, optn);
+			}
+		    );
+
+		    map actiondescr = $["help" : help, "name":action, "options" : opts];
+		    // add example if it's present
+		    if (haskey(actions[action]:$[], "example"))
+		    {
+			actiondescr = add(actiondescr, "example", actions[action,"example"]:nil);
+		    }
+
+		    commands = add(commands, actiondescr);
+		}
+	    );
+
+	    exportmap["commands"] = commands;
+	    exportmap["module"] = cmdlinespec["id"]:"";
+
+	    XML::YCPToXMLFile(`xmlhelp, exportmap, xmlfilename);
+	    y2milestone("exported XML map: %1", exportmap);
+	    return true;
+	}
+
+	return false;
+    }
+
+    /**
+     *  @short Initialize Module
+     *  @descr Initialize the module, setup the command line syntax and arguments passed on the command line.
+     *
+     *  @param cmdlineinfo		the map describing the module command line
+     *  @param args			arguments given by the user on the command line
+     *  @return boolean		true, if there are some commands to be processed
+     *  @see Command
+     */
+    global define boolean Init (map cmdlineinfo, list<any> args) ``{
+
+	// remember the command line specification
+	// required later by xmlhelp command
+	cmdlinespec = cmdlineinfo;
+
+	boolean cmdline_supported = true;
+
+	// check whether the command line mode is really supported by the module
+	if (!haskey(cmdlineinfo, "actions") || size(cmdlineinfo["actions"]:$[]) == 0)
+	{
+	    cmdline_supported = false;
+	}
+
+	// initialize verbose flag
+	verbose = contains( WFM::Args(), "verbose" );
+
+	any id_string = cmdlineinfo["id"]:"";
+	// sanity checks on cmdlineinfo
+	// check for id string , it must exist, and non-empty
+	if( cmdline_supported && (id_string == "" || ! is( id_string, string )) ) {
+	    y2error( "Command line specification does not define module id" );
+
+	    // use 'unknown' as id
+	    if( haskey( cmdlineinfo, "id" ) ) {
+	        cmdlineinfo = remove( cmdlineinfo, "id" );
+	    }
+
+	    // translators: fallback name for a module at command line
+	    cmdlineinfo = add( cmdlineinfo, "id", _("unknown"));
+
+	    // it's better to abort now
+	    done = true;
+	    aborted = true;
+	}
+
+	// check for helps, they are required everywhere
+	// global help text
+	if(cmdline_supported && ! haskey( cmdlineinfo, "help" )) {
+	    y2error( "Command line specification does not define global help for the module" );
+
+	    // it's better to abort now
+	    done = true;
+	    aborted = true;
+	}
+
+	// help texts for actions
+	if( haskey( cmdlineinfo, "actions" ) ) {
+	    foreach( string action, map def, cmdlineinfo["actions"]:$[],  ``{
+		if( ! haskey( def, "help" ) ) {
+		    y2error( "Command line specification does not define help for action '%1'", action );
+
+		    // it's better to abort now
+		    done = true;
+		    aborted = true;
+		}
+	    });
+	}
+
+	// help for options
+	if( haskey( cmdlineinfo, "options" ) ) {
+	    foreach( string option, map def, cmdlineinfo["options"]:$[],  ``{
+		if( ! haskey( def, "help" ) ) {
+		    y2error( "Command line specification does not define help for option '%1'", option );
+
+		    // it's better to abort now
+		    done = true;
+		    aborted = true;
+		}
+		// check that regex and enum have defined typespec
+		if( ( def["type"]:"" == "regex" || def["type"]:"" == "enum" ) && ! haskey( def, "typespec" ) ) {
+		    y2error( "Command line specification does not define typespec for option '%1'", option );
+
+		    // it's better to abort now
+		    done = true;
+		    aborted = true;
+		}
+	    });
+	}
+
+	// mappings - check for existing actions and options
+	if( haskey( cmdlineinfo, "mappings" ) ) {
+	    foreach( string mapaction, list def, cmdlineinfo["mappings"]:$[],  ``{
+		// is this action defined?
+		if( ! haskey( cmdlineinfo["actions"]:$[], mapaction ) ) {
+		    y2error( "Command line specification maps undefined action '%1'", mapaction );
+
+		    // it's better to abort now
+		    done = true;
+		    aborted = true;
+		}
+
+		foreach( any mapopt, def, ``{
+		    if (!is(mapopt, string)) continue;
+		    // is this option defined?
+		    if( ! haskey( cmdlineinfo["options"]:$[], (string)mapopt ) ) {
+			y2error( "Command line specification maps undefined option '%1' for action '%2'", mapopt, mapaction );
+
+			// it's better to abort now
+			done = true;
+			aborted = true;
+		    }
+		});
+	    });
+	}
+
+	if( done ) return false;
+
+	modulecommands = cmdlineinfo;
+
+	// build allcommands - help and verbose options are added specially
+	allcommands = $[
+	    "actions": union( modulecommands["actions"]:$[], systemcommands["actions"]:$[] ),
+	    "options": union( modulecommands["options"]:$[], systemcommands["options"]:$[] ),
+	    "mappings": union(
+		mapmap( string act, list opts, modulecommands["mappings"]:$[], ``(
+		    $[act : union( opts, ["help", "verbose"] )] ) ),
+		systemcommands["mappings"]:$[] )
+	];
+
+	if( size(args) < 1 || Stage::stage () != "normal" || Stage::firstboot () ) {
+	    Mode::SetUI ("dialog");
+	    // start GUI, module has some work to do :-)
+	    return true;
+	} else {
+	    Mode::SetUI ("commandline");
+	}
+
+	if (!cmdline_supported)
+	{
+	    // command line is not supported
+	    CommandLine::Print(String::UnderlinedHeader("YaST2 " + cmdlineinfo["id"]:"", 0));
+	    CommandLine::Print("");
+
+	    string help = cmdlineinfo["help"]:"";
+	    if (help != nil && help != "")
+	    {
+		CommandLine::Print(cmdlineinfo["help"]:"");
+		CommandLine::Print("");
+	    }
+
+	    CommandLine::Print(nosupport);
+	    CommandLine::Print("");
+	    return false;
+	}
+
+	// setup prompt
+	cmdlineprompt = "YaST2 " + cmdlineinfo["id"]:"" + "> ";
+	SCR::Write( .dev.tty.prompt, cmdlineprompt);
+
+	// parse args
+	commandcache = Parse( args );
+
+	// return true, if there is some work to do:
+	// first, try to interpret system commands
+	if( ProcessSystemCommands(commandcache) ) {
+	    // it was system command, there is work only in interactive mode
+	    commandcache = $[];
+	    done = ! interactive;
+	    aborted = false;
+	    return interactive;
+	} else {
+	    // we cannot handle this on our own, return true if there is some command to be processed
+	    // i.e, there is no parsing error
+	    done = size( commandcache ) == 0 ;
+	    aborted = done;
+	    return ( ! done );
+	}
+    }
+
+    /**
+     * @short Scan a command line from stdin, return it split into a list
+     * @return list<string> the list of command line parts, nil for end of file
+     */
+    global define list<string> Scan() ``{
+	string res = (string)SCR::Read( .dev.tty );
+	if( res == nil ) return nil;
+	return String::ParseOptions(res,$[ "separator":" " ]);
+    }
+
+    /**
+     * Set prompt and read input from command line
+     * @param prompt Set prompt
+     * @param type Type
+     * @return string Entered string
+     */
+    define string GetInput(string prompt, symbol type) ``{
+	// set the required prompt
+	SCR::Write(.dev.tty.prompt, prompt);
+
+	string res = nil;
+
+	if (type == `nohistory)
+	{
+	    res = (string)SCR::Read(.dev.tty.nohistory);
+	}
+	else if (type == `noecho)
+	{
+	    res = (string)SCR::Read(.dev.tty.noecho);
+	}
+	else
+	{
+	    res = (string)SCR::Read(.dev.tty);
+	}
+
+	// set the default prompt
+	SCR::Write(.dev.tty.prompt, cmdlineprompt);
+
+	return res;
+    }
+
+    /**
+     * Read input from command line
+     * @param prompt Set prompt to this value
+     * @return string Entered string
+     */
+    global define string UserInput(string prompt) ``{
+	return GetInput(prompt, `nohistory);
+    }
+
+    /**
+     * @short Read input from command line
+     * @descr Read input from command line, input is not displayed and not stored in
+     * the command line history. This function should be used for reading a password.
+     * @param prompt Set prompt to this value
+     * @return string Entered string
+     */
+    global define string PasswordInput(string prompt) ``{
+	return GetInput(prompt, `noecho);
+    }
+
+    /**
+     *  @short Get next user-given command
+     *  @descr Get next user-given command. If there is a command available, returns it, otherwise ask
+     *  the user for a command (in interactive mode). Also processes system commands.
+     *
+     *  @return map of the new command. If there are no more commands, it returns exit or abort depending
+     *  on the result user asked for.
+     *
+     *  @see Parse
+     */
+    global define map Command () ``{
+	// if we are done already, return the result
+	if( done ) {
+	    if( aborted ) return $[ "command" : "abort" ];
+	    else return $[ "command" : "exit" ];
+	}
+
+	// there is a command in the cache
+	if( size(commandcache) != 0 )
+	{
+	    map result = commandcache;
+	    commandcache = $[];
+	    done = !interactive;
+	    return result;
+	} else {
+	    // if in interactive mode, ask user for input
+	    if( interactive ) {
+		// handle all system commands as long as possible
+		do {
+		    list<string> newcommand = [];
+		    do {
+			newcommand = Scan();
+		    } while( size(newcommand) == 0 );
+
+		    // EOF reached
+		    if( newcommand == nil ) {
+			done = true;
+			return $[ "command" : "exit" ];
+		    }
+
+		    commandcache = Parse( newcommand );
+
+		} while( ProcessSystemCommands( commandcache ) && ! done );
+
+		if( done ) {
+		    if( aborted ) return $[ "command" : "abort" ];
+		    else return $[ "command" : "exit" ];
+		}
+
+		// we are not done, return the command asked back to module
+		map result = commandcache;
+		commandcache = $[];
+
+		return result;
+	    } else {
+		// there is no further commands left
+		done = true;
+		return $[ "command" : "exit" ];
+	    }
+	}
+    }
+
+    /**
+     *  Should module start UI?
+     *
+     *  @return boolean true, if the user asked for standard UI (no parameter was passed by command line)
+     */
+    global define boolean StartGUI() ``{
+	return ! Mode::commandline ();
+    }
+
+    /**
+     *  Is module started in interactive command-line mode?
+     *
+     *  @return boolean true, if the user asked for interactive command-line mode
+     */
+    global define boolean Interactive() ``{
+	return interactive;
+    }
+
+    /**
+     *  User asked for abort (forgetting the changes)
+     *
+     *  @return boolean true, if the user asked abort
+     */
+    global define boolean Aborted() ``{
+	return aborted;
+    }
+
+    /**
+     * Abort the command line handling
+     */
+    global define void Abort() ``{
+	aborted = true;
+	done = true;
+    }
+
+    /**
+     *  Are there some commands to be processed?
+     *
+     *  @return boolean true, if there is no more commands to be processed, either because the user
+     *  used command line, or the interactive mode was finished
+     */
+    global define boolean Done() ``{
+	return done;
+    }
+
+    /**
+     * @short Check uniqueness of an option
+     * @descr Check uniqueness of an option. Simply pass the list of user-specified
+     * options and a list of mutually exclusive options. In case of
+     * error, Report::Error is used.
+     *
+     * @param options  options specified by the user on the command line to be checked
+     * @param unique_options	list of mutually exclusive options to check against
+     * @return	nil if there is a problem, otherwise the unique option found
+     */
+    global define string UniqueOption( map<string, string> options, list unique_options ) ``{
+	// sanity check
+	if( size( unique_options ) == 0 ) {
+	    y2error( "Unique test of options required, but the list of the possible options is empty");
+	    return nil;
+	}
+
+	// first do a filtering, then convert to a list of keys
+	list cmds = maplist( string key, string value,
+	    filter( string opt, string value, options, ``( contains( unique_options, opt ) ) ),
+	    ``( key )
+	);
+
+	// if it is OK, quickly return
+	if( size( cmds ) == 1 ) return (string)(cmds[0]:nil);
+
+	// something is wrong, prepare the error report
+	integer i = 0;
+	string opt_list = "";
+	while( i < size( unique_options )-1 ) {
+	    opt_list = opt_list + sformat( "'%1', ", unique_options[i]:nil );
+	    i = i + 1;
+	}
+
+	opt_list = opt_list + sformat( _("or '%1'"), unique_options[i]:nil );
+
+	if( size( cmds ) == 0 ) {
+	    if( size( unique_options ) == 1 ) {
+		Report::Error( sformat( _("Specify the command '%1'."), unique_options[0]:nil ) );
+	    } else {
+		Report::Error( sformat( _("Specify one of the commands: %1."), opt_list ) );
+	    }
+	    return nil;
+	}
+
+	if( size( cmds ) != 1 ) {
+	    // size( unique_options ) == 1 here does not make sense
+
+	    Report::Error( sformat( _("Specify only one of the commands: %1."), opt_list ) );
+	    return nil;
+	}
+
+	return (string)(cmds[0]:nil);
+    }
+
+boolean fake_false() ``{
+    return false;
+}
+
+boolean RunFunction( boolean() funct ) {
+    Report::ClearAll();
+    boolean() my_funct = funct;
+    boolean ret = my_funct();
+    string report = Report::GetMessages(
+	Report::NumWarnings()>0,Report::NumErrors()>0,Report::NumMessages()>0, Report::NumYesNoMessages()>0);
+    if( size(report) > 0 )
+    {
+	import "RichText";
+	CommandLine::Print( RichText::Rich2Plain( report )  );
+    }
+    return ret;
+}
+
+boolean RunMapFunction( boolean(map<string,string>) funct,
+    map<string,string> arg )
+{
+    Report::ClearAll();
+    boolean(map<string,string>) my_funct = funct;
+    boolean ret = my_funct(arg);
+    string report = Report::GetMessages(
+	Report::NumWarnings()>0,Report::NumErrors()>0,Report::NumMessages()>0, Report::NumYesNoMessages()>0);
+    if( size(report) > 0 )
+    {
+	import "RichText";
+	CommandLine::Print( RichText::Rich2Plain( report )  );
+    }
+    return ret;
+}
+
+/**
+ * @short Parse the Command Line
+ * @descr Function to parse the command line, start a GUI or handle interactive and
+ * command line actions as supported by the @ref CommandLine module.
+ *
+ * @param commandline	a map used in the CommandLine module with information
+ *                      about the handlers for GUI and commands.
+ * @return any		false if there was an error or no changes to be written (for example "help").
+ *			true if the changes should be written, or a value returned by the
+ *			handler
+ */
+global any Run( map commandline ) {
+    /* The main () */
+    y2milestone("----------------------------------------");
+    y2milestone("Command line interface started");
+
+    /* Initialize the arguments */
+    if(!CommandLine::Init(commandline, WFM::Args())) {
+	return ! CommandLine::Aborted();
+    }
+
+    boolean ret = true;
+
+    boolean initialized = false;
+    if(commandline["initialize"]:nil == nil) {
+	// no initialization routine
+	// set initialized state to true => call finish handler at the end in command line mode
+	initialized = true;
+    }
+
+    /* Start GUI */
+    if(CommandLine::StartGUI()) {
+	if( !haskey (commandline, "guihandler") ) {
+	    y2error( "Missing GUI handler for %1", commandline["id"]:"<unknown>" );
+	    CommandLine::Error( _("There is no user interface available for this module.") );
+	    return false;
+	}
+
+	if ( is(commandline[ "guihandler" ]:nil, symbol() ) )
+	{
+	    symbol() exec = (symbol())commandline[ "guihandler" ]: nil;
+	    symbol symbol_ret = exec();
+	    y2debug("GUI handler ret=%1", symbol_ret);
+	    return symbol_ret;
+	}
+	else
+	{
+	    boolean() exec = commandline[ "guihandler" ]: fake_false;
+	    ret = exec();
+	    y2debug("GUI handler ret=%1", ret);
+	    return ret;
+	}
+    } else {
+	import "Progress";
+
+	// disable Reports, we handle them on our own
+	Report::Import( $[
+	    "messages"	:$[ "show":false ],
+	    "warnings"	:$[ "show":false ],
+	    "errors"	:$[ "show":false ]
+	]);
+
+
+	/* Turn off progress bar if not GUI */
+	Progress::off();
+
+	CommandLine::PrintVerbose( _("Ready") );
+
+	ret = true;
+
+	/* Init variables */
+	string command = "";
+	list flags = [];
+	map<string,string> options = $[];
+        string exit = "";
+        list l = [];
+
+
+	while(!CommandLine::Done()) {
+	    map m = CommandLine::Command();
+            command = m["command"]:"exit";
+	    options = m["options"]:$[];
+
+	    // start initialization code if it wasn't already used
+	    if (!initialized)
+	    {
+		// check whether command is defined in the map (i.e. it is not predefined command or invalid command)
+		// and start initialization if it's defined
+		if( haskey(commandline["actions"]:$[], command) && commandline["initialize"]:nil != nil ) {
+		    /* non-GUI handling */
+		    CommandLine::PrintVerbose( _("Initializing") );
+		    boolean ret = RunFunction( commandline["initialize"]:fake_false );
+
+		    if( !ret ) {
+			y2milestone( "Module initialization failed" );
+			return false;
+		    }
+		    else
+		    {
+			initialized = true;
+		    }
+		}
+	    }
+
+	    boolean(map<string,string>) exec = (boolean(map<string,string>))
+		commandline["actions", command, "handler"]:nil;
+
+	    // there is a handler, execute the action
+	    if( exec != nil ) {
+		boolean res = RunMapFunction( exec, options );
+
+		// if it is not interactive, abort on errors
+		if( !CommandLine::Interactive() && res == false )
+		    CommandLine::Abort();
+	    }
+	    else
+	    {
+		if( !CommandLine::Done() ) {
+		    y2error("Unknown command '%1' from CommandLine", command );
+		    continue;
+		}
+	    }
+	}
+
+	ret = ! CommandLine::Aborted();
+    }
+
+    if( ret && commandline["finish"]:nil != nil && initialized) {
+	CommandLine::PrintVerbose( _("Finishing") );
+	ret = RunFunction( commandline["finish"]:fake_false );
+	if( !ret ) {
+	    y2milestone( "Module finishing failed" );
+	    return false;
+	}
+	// translators: The command line interface is finished
+	CommandLine::PrintVerbose( _("Done") );
+    } else
+	CommandLine::PrintVerbose( _("Quitting (without changes)") );
+
+    y2milestone("Commandline interface finished");
+    y2milestone("----------------------------------------");
+
+    return ret;
+}
+
+/* EOF */
+}

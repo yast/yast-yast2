@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+# check-all-syntax - check the integrity of YaST sources by
+#    testing syntax of all YCP modules and clients
+#
+# Author: Stanislav Visnovsky <visnov@suse.cz>
+
+for i in /usr/share/YaST2/clients/*.ycp; do 
+  ycpc -qE "$i" || failed="$failed#$i" 
+done
+
+for i in /usr/share/YaST2/modules/*.ycp; do 
+  ycpc -qE "$i" || failed="$failed#$i" 
+done
+
+if [ "$failed" ] ; then
+    echo "##FAILED:#$failed###$error" | tr "#" "\n"
+    exit 1
+else
+    exit 0
+fi

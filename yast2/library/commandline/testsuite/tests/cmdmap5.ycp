@@ -1,0 +1,51 @@
+/**
+ * File:	cmpmap5.ycp
+ * Package:	yast2
+ * Summary:	sanity validation of the command line map
+ * Author:	Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ *
+ * testedfiles: CommandLine.ycp Testsuite.ycp
+ */
+
+{
+
+    include "testsuite.ycp";
+    import "TypeRepository";
+    import "CommandLine";
+
+    // mappings must refer to specified actions
+    // mappings must refer to specified options
+    TEST(``(CommandLine::Init(
+	$[
+	    "id": "testsuite",
+	    "help": "help is there",
+	    "options": $[
+		"okregexoption" : $[
+		    "help": "some help",
+		    "type": "regex",
+		    "typespec": "^[a]+$"
+		]
+	    ],
+	    "actions": $[
+		"okaction": $[
+		    "help": "blabla"
+		],
+		"okaction2": $[
+		    "help": "blabla"
+		],
+	    ],
+	    "mappings": $[
+		"unknownaction": [ "unknownoption" ],
+		"wrongaction" : [ "okregexoption" ],
+		"okaction" : ["wrongoption" ],
+		"okaction2" : ["okregexoption"]
+	    ]
+	]
+	,[]) ),[],nil);
+    TEST(``(CommandLine::Done()),[],nil);
+    TEST(``(CommandLine::Aborted()),[],nil);
+
+/* EOF */
+}

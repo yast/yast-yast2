@@ -1,0 +1,55 @@
+{
+include "testsuite.ycp";
+
+import "NetworkDevices";
+
+map<string, any> simple = $[
+    "WIRELESS_KEY": "secret",
+    "WIRELESS_KEY_1": "secret1",
+    "WIRELESS_KEY_2": "secret2",
+    "WIRELESS_KEY_3": "secret3",
+    "WIRELESS_KEY_4": "", // no need to conceal empty ones
+    "WIRELESS_WPA_PSK": "secretpsk",
+    "other": "data",
+    "_aliases": $[
+	"foo": $[
+	    "WIRELESS_KEY": "not masked, should not be here",
+	    "alias": "data",
+	    ],
+	],
+    ];
+
+DUMP ("ConcealSecrets1:");
+list<map<string, any> > ifcfgs = [
+    // normal cases
+    simple,
+    // error cases
+    nil,
+    $[],
+    ];
+foreach (map<string, any> ifcfg, ifcfgs, {
+    TEST (``(NetworkDevices::ConcealSecrets1 (ifcfg)), [], nil);
+});
+
+DUMP ("ConcealSecrets:");
+list<map> devss = [
+    // normal cases
+    $[
+	"eth": $[
+	    "0": $["other": "data"],
+	    "1": $["other": "data"],
+	    ],
+	"wlan": $[
+	    "id-00:11:22:33:44:55": simple,
+	    "id-aa:bb:cc:dd:ee:ff": simple,
+	    ],
+	],
+    // error cases
+    nil,
+    $[],
+    ];
+foreach (map devs, devss, {
+    TEST (``(NetworkDevices::ConcealSecrets (devs)), [], nil);
+});
+
+}

@@ -1,0 +1,21 @@
+{
+
+include "testsuite.ycp";
+import "Sequencer";
+
+define any Normal() { return 1; }
+define any SpecialN() { return 1; }
+define any SpecialY() { return 1; }
+
+map Aliases = $[
+    "normal"	: ``(Normal()),
+    "special_n"	: [ ``(SpecialN()), false ],
+    "special_y"	: [ ``(SpecialY()), true ]
+];
+
+TEST(``(Sequencer::WS_special(Aliases,"normal")), [], nil);
+TEST(``(Sequencer::WS_special(Aliases,"special_n")), [], nil);
+TEST(``(Sequencer::WS_special(Aliases,"special_y")), [], nil);
+TEST(``(Sequencer::WS_special(Aliases,"missing")), [], nil);
+
+}

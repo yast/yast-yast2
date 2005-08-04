@@ -1,0 +1,32 @@
+/**
+ * File:	include/commandline.ycp
+ * Summary:	Simple command line event and argument handling loop
+ * Authors:	Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ *
+ * A simple OBSOLETE wrapper for handling command line arguments and interactive
+ * controlling of a module.
+ *
+ * Uses CommandLine module.
+ */
+
+{
+
+/**
+ * Function to parse the command line, start a GUI or handle interactive and
+ * command line actions as supported by the @ref CommandLine module.
+ *
+ * @param commandline	a map used in the CommandLine module with information
+ *                      about the handlers for GUI and commands.
+ * @return boolean	true if the changes should be written, false
+ *                      if there was an error or no changes to be written (for example "help").
+ * @obsolete Use Commandline::Run instead
+ */
+boolean CommandLineRun( map commandline ) {
+    y2error ("commandline.ycp include is obsolete, use CommandLine::Run instead");
+    return (boolean) CommandLine::Run (commandline);
+}
+
+/* EOF */
+}

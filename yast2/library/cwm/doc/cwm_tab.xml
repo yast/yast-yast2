@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding='ISO-8859-1'?>
+<chapter id = "cwm_tab">
+    <title>Dialogs using the Tab widget</title>
+<para>
+CWMTab is a widget for CWM that can be used for handling dialogs with
+multiple tabs. Its tasks are following:
+  <itemizedlist>
+    <listitem><para>
+Switch the widgets (that are implemented via CWM) in the tab
+    </para></listitem>
+    <listitem><para>
+Handle different GUIs (supporting or not supporting the Wizard widget)
+    </para></listitem>
+  </itemizedlist>
+</para>
+<para>
+The CWMTab widget is just a widget for CWM. It is limited to one instance
+in a single dialog.
+</para>
+
+<example id="tab_basic">
+  <title>Usage of the LeftTree-based dialog</title>
+    <screen>
+
+        map&lt;string,map&lt;string,any&gt;&gt; widgets = $[
+           "w1" : $[...],
+           "w2" : $[...],
+           "w3" : $[...],
+           "w4" : $[...],
+           "w5" : $[...],
+        ];
+
+        widgets = (map&lt;string,map&lt;string,any&gt;&gt;) union (widgets, $[
+            "tab" : CWMTab::CreateWidget ($[
+(1)             "tab_order" : ["t1", "t2", "t3"],
+(2)             "tabs" : $[
+                    "t1" : $[
+                        "header" : "Tab1",
+                        "contents" : `VBox ("w1", "w2"),
+                        "widget_names" : ["w1", "w2"],
+                    ],
+                    "t2" : $[
+                        "header" : "Tab2",
+                        "contents" : `HBox ("w3", "w4"),
+                        "widget_names" : ["w3", "w4"],
+                    ],
+                    "t3" : $[
+                        "header" : "Tab3",
+                        "contents" : `Empty (),
+                        "widget_names" : [],
+                    ],
+                ],
+(3)             "initial_tab" : "t2",
+(4)             "widget_descr" : $[...],
+(5)             "tab_help" : _("TabWidgetHelp"),
+            ])
+        ]);
+
+        CWM::ShowAndRun (
+            ["w5", "tab"],
+            widgets,
+            `VBox ("w5", "tab"),
+            _("Dialog caption"),
+            Label::BackButton (),
+            Label::NextButton (),
+            $[...]
+        );
+ </screen>
+</example>
+  <section>
+    <title>Running the dialog with tab widget</title>
+    <para>
+Once the CWMTab widget is created, it can be used like any other CWM widget.
+The only difference is that once the tab is switched, the validation of the
+selected (before the switch) tab and store functions of all widgets inside the
+tab is run. To run any such dialog, use CWM::Run or CWM::ShowAndRun.
+    </para>
+  </section>
+  <section>
+    <title>Creating the tab widget</title>
+    <para>
+To create the CMWTab widget, all the widgets that are on any of the tabs
+must be created first (as they are one of the arguments of the
+<computeroutput>CWMTab::CreateWidget</computeroutput> function.
+The way to go is to create map of all other widgets first, then pass it to
+the functions that create the CWMTab widget (or multiple CWMTab widgets), and
+merge these two resulting maps.
+    </para>
+    <para>
+The <computeroutput>CWMTab::CreateWidget</computeroutput> function has
+one argument, a map with all attributes. The map has following keys.
+      <itemizedlist>
+	<listitem><para>
+	  <computeroutput>"tab_order" : list&lt;string&gt;</computeroutput>
+specifies the order of the tabs. It is a list of IDs of the tabs.
+For example, see <xref linkend="tab_basic"/>, line (1).
+	</para></listitem>
+	<listitem><para>
+	  <computeroutput>
+"tabs" : map&lt;string,map&lt;string,any&gt;&gt;
+	  </computeroutput>
+is a map describing the tabs. See below for details.
+	</para></listitem>
+	<listitem><para>
+	  <computeroutput>"initial_tab" : string</computeroutput>
+specifies the initial tab. Contains a string, ID of the initial tab.
+If not specified, the first tab is the default.
+For example, see <xref linkend="tab_basic"/>, line (3).
+	</para></listitem>
+	<listitem><para>
+	  <computeroutput>
+"widget_descr" : map&lt;string,map&lt;string,any&gt;&gt;
+	  </computeroutput>
+is map describing all widgets in all tabs. See <xref linkend="concept"/>
+and following for additional information about this stuff.
+	</para></listitem>
+	<listitem><para>
+	  <computeroutput>"tab_help" : string</computeroutput>
+contains optional help to the tab. It is displayed always, followed by the
+helps of widgets contained in the currently displayed tab.
+	</para></listitem>
+      </itemizedlist>
+    </para>
+  </section>
+  <section>
+    <title>Specifying the tabs</title>
+    <para>
+The tabs are specified as a map, where key is the tab ID and value
+is a map describing the screen. The map must be of type
+map&lt;string,map&lt;string,any&gt;&gt;. See <xref linkend="tab_basic"/>,
+line (2) and following for example.
+    </para>
+    <para>
+For every screen description map, the following keys must be defined:
+      <itemizedlist>
+	<listitem><para>
+	  <computeroutput>"header" : string</computeroutput>
+is the tab header.
+	</para></listitem>
+	<listitem><para>
+	  <computeroutput>"contents" : term</computeroutput>
+contains the term with the contents of the tab. All widget IDs are patched
+before the tab is displayed.
+	</para></listitem>
+	<listitem><para>
+	  <computeroutput>"widget_names" : list&lt;string&gt;</computeroutput>
+contains the list of widget IDs of all widgets in the tab. The widgets
+will be handled in the same order as they are specified (also valid for
+help texts merging).
+	</para></listitem>
+      </itemizedlist>
+    </para>
+  </section>
+</chapter>

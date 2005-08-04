@@ -1,0 +1,17 @@
+/**
+ * File:
+ *   cfg_apache.scr
+ * Summary:
+ *   SCR Agent for reading/writing /etc/sysconfig/apache
+ *   using the sysconfig-agent
+ *
+ * $Id$
+ *
+ * Read/Sets the values defined in <tt>/etc/sysconfig/apache</tt>
+ * in an easy manner.
+ */
+.product.features
+
+`ag_ini(
+  `SysConfigFile("/etc/YaST2/ProductFeatures")
+)

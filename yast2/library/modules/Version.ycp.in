@@ -1,0 +1,26 @@
+/**
+ * File:	modules/Version.ycp
+ * Package:	yast2
+ * Summary:	yast2 package version
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ *
+ * Version.ycp is a <b>
+ *
+ * ** GENERATED FILE **
+ *
+ * </b>, so edit Version.ycp.in instead.
+ */
+
+{
+
+module "Version";
+
+/**
+ * Version of the yast2 package
+ */
+global string yast2 = "@VERSION@";
+
+/* EOF */
+}

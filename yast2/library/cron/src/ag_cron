@@ -1,0 +1,135 @@
+#!/usr/bin/perl
+
+use strict;
+
+package ag_cron;
+use ycp;
+use YaST::SCRAgent;
+use Config::Crontab;
+use diagnostics;
+#use Data::Dumper;
+
+use POSIX qw(tmpnam);
+
+our @ISA = ("YaST::SCRAgent");
+
+y2milestone ("ag_cron started");
+
+sub Write()
+{
+    my $class = shift;
+    my ($path, $file, $options) = @_;
+
+	my $ct = new Config::Crontab;
+
+	my $result = 1;
+
+	foreach my $b (@{$options}) {
+
+		my $block = new Config::Crontab::Block;
+
+		my @comments = @{$b->{'comments'}};
+
+		foreach my $comment (@comments) {
+			$block->last( new Config::Crontab::Comment( -data => $comment ) );
+			$ct->last($block);
+		}
+
+
+		my $hash_ref = $b->{'envs'};
+		if (defined $hash_ref) {
+			while((my $key, my $value) = each( %$hash_ref ) ) {
+				$block->last( new Config::Crontab::Env( -name => $key, -value => $value ) );
+				$ct->last($block);
+			}
+		}
+
+		my @events = @{$b->{'events'}};
+		foreach my $event(@events) {
+			$block->last( new Config::Crontab::Event( 
+						-minute  => $event->{'minute'},
+						-hour    => $event->{'hour'},
+						-special    => $event->{'special'},
+						-command => $event->{'command'} ) );
+			$ct->last($block);
+
+		}
+	}
+
+	$ct->write($file);
+
+	return $result;
+
+}
+
+sub Read ()
+{
+    my $class = shift;
+    my ($path, $file, $options) = @_;
+
+	my $ct = new Config::Crontab;
+	$ct->read( -file => $file );
+
+
+
+	my (@blocks);
+	for my $block ( $ct->blocks ) {
+
+		my (@ycpcomments, @ycpevents);
+		my ( $ycpenv, $ycpblock );
+
+		my @comments = $block->select( -type   => 'comment' );
+		foreach my $comment (@comments) {
+			push(@ycpcomments, $comment->data);
+		}
+
+		my @envs = $block->select( -type   => 'env' );
+		foreach my $env (@envs) {
+			$ycpenv->{$env->name} = $env->value;
+		}
+
+
+		my @events = $block->select( -type   => 'event' );
+		foreach my $event (@events) {
+			my $ycpevent;
+			$ycpevent->{"hour"} = $event->hour;
+			$ycpevent->{"minute"} = $event->minute;
+			$ycpevent->{"dom"} = $event->dom;
+			$ycpevent->{"month"} = $event->month;
+			$ycpevent->{"dow"} = $event->dow;
+			$ycpevent->{"special"} = $event->special;
+			$ycpevent->{"data"} = $event->data;
+			$ycpevent->{"datetime"} = $event->datetime;
+			$ycpevent->{"command"} = $event->command;
+			$ycpevent->{"active"} = $event->active;
+			push(@ycpevents, $ycpevent );
+		}
+		if (defined \@ycpcomments) {
+	    	$ycpblock->{"comments"} = \@ycpcomments; 
+		}
+		if (defined $ycpenv ) {
+	    	$ycpblock->{"envs"} = $ycpenv; 
+		}
+		if (defined \@ycpevents) {
+	    	$ycpblock->{"events"} = \@ycpevents; 
+		}
+
+		push(@blocks, $ycpblock );
+
+	}
+
+
+	return \@blocks;
+	
+}
+
+
+
+
+package main;
+
+ag_cron->Run ();
+
+
+
+#EOF

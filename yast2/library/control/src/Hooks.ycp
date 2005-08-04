@@ -1,0 +1,122 @@
+/**
+ * File:	modules/Hooks.ycp
+ * Package:	yast2
+ * Summary:	Provide debug hooks during installation
+ * Authors:	Klaus Kaempf <kkaempf@suse.de>
+ *
+ * $Id$
+ */
+
+{
+    module "Hooks";
+
+    import "Popup";
+    import "Directory";
+
+    string tmp_dir = (string)WFM::Read(.local.tmpdir, []);
+    string log_dir = Directory::logdir;
+
+    // script types, ycp does not make  sense, it can be added directly
+    // to the workflow.
+    list supported_types = ["sh", "pl"];
+
+    /**
+     * called whenever an inst_*.ycp file is called during
+     * installation.
+     * checks if /tmp/<filename> exists and pops up a "Entry: <filename>"
+     * or "Exit: <filename>" box
+     *
+     * @param string  filename == name of .ycp file
+     * @param string at_entry == true before call of file == false after call of file
+     * @return void
+     */
+
+    global define void Checkpoint (string filename, boolean at_entry)
+    {
+	if (WFM::Read (.local.size, "/tmp/"+filename) >= 0)
+	{
+	    if (at_entry)
+	    {
+		Popup::Message (sformat ("Entry: %1", filename));
+	    }
+	    else
+	    {
+		Popup::Message (sformat ("Exit: %1", filename));
+	    }
+	}
+        return;
+    }
+
+
+    /**
+     * Execute Script
+     * @param string script name
+     * @param string type
+     */
+    void ExecuteScript (string script, string type)
+    {
+
+        y2milestone("Executing script: %1", script);
+        // string message =  sformat(_("Executing user supplied script: %1"), scriptName);
+        string executionString = "";
+        string scriptPath = sformat("%1/%2", tmp_dir, script);
+        if (type == "shell")
+        {
+            executionString = sformat("/bin/sh -x %1 2&> %2/%3.log",
+                    scriptPath, log_dir, script);
+            WFM::Execute (.local.bash, executionString);
+        }
+        else if (type == "perl")
+        {
+            executionString = sformat("/usr/bin/perl %1 2&> %2/%3.log",
+                    scriptPath, log_dir, script);
+            WFM::Execute (.local.bash,executionString);
+        }
+        else
+        {
+            y2error("Unknown interpreter: %1", type);
+        }
+        y2milestone("Script Execution command: %1", executionString );
+    }
+
+    /**
+     * Run Script
+     * @param string  filename == name of .ycp file
+     * @param string at_entry == true before call of file == false after call of file
+     */
+    global define void Run(string filename, boolean at_entry) 
+    {
+        y2debug("Running Hook: %1" , filename);
+        // do not run scripts twice
+        if (at_entry)
+        {
+	    if (WFM::Read (.local.size, sformat("%1/%2_pre.sh", tmp_dir, filename)) > 0)
+            {
+                ExecuteScript(sformat("%1_pre.sh", filename), "shell");
+            }
+            else if (WFM::Read (.local.size, sformat("%1/%2_pre.pl", tmp_dir, filename)) > 0)
+            {
+                ExecuteScript(sformat("%1_pre.pl", filename), "perl");
+            }
+            else
+            {
+                y2debug("Hook not found: %1/%2_pre.{sh,pl}" , tmp_dir, filename);
+            }
+        } else {
+	    if (WFM::Read (.local.size, sformat("%1/%2_post.sh", tmp_dir, filename)) > 0)
+            {
+                ExecuteScript(sformat("%1_post.sh",  filename), "shell");
+            }
+            else if (WFM::Read (.local.size, sformat("%1/%2_post.pl", tmp_dir, filename)) > 0)
+            {
+                ExecuteScript(sformat("%1_post.pl", filename), "perl");
+            }
+            else
+            {
+                y2debug("Hook not found: %1/%2_post.{sh,pl}" , tmp_dir, filename);
+            }
+        }
+        return;
+    }
+
+}

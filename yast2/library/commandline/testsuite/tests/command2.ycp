@@ -1,0 +1,24 @@
+/**
+ * File:	command2.ycp
+ * Package:	yast2
+ * Summary:	test command-line parsing
+ * Author:	Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ *
+ * testedfiles: CommandLine.ycp Testsuite.ycp
+ */
+
+{
+
+    include "testsuite.ycp";
+    include "./tests/testsuitedata.yh";
+
+    import "TypeRepository";
+    import "CommandLine";
+
+    // option without value
+    TEST(``(CommandLine::Init( cmdline ,["add", "device="]) ),[],nil);
+    TEST(``(CommandLine::Command()), [], nil );
+/* EOF */
+}

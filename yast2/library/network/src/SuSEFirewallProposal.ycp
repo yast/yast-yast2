@@ -1,0 +1,325 @@
+/**
+ * File:	modules/SuSEFirewallProposal.ycp
+ * Package:	SuSEFirewall configuration
+ * Summary:	Functional interface for SuSEFirewall installation proposal
+ * Authors:	Lukas Ocilka <locilka@suse.cz>
+ *
+ * $Id$
+ *
+ * ... er ehm?
+ */
+
+{
+    module "SuSEFirewallProposal";
+    textdomain "base";
+
+    import "SuSEFirewall";
+    import "ProductFeatures";
+
+    # <!-- SuSEFirewall LOCAL VARIABLES //-->
+
+    /* proposal was changed by user */
+    boolean proposal_changed_by_user = false;
+
+    /* proposal was initialized yet */
+    boolean proposal_initialized = false;
+
+    /* known interfaces */
+    list <string> known_interfaces = [];
+
+    /* warnings for this "turn" */
+    list <string> warnings_now = [];
+    
+    # <!-- SuSEFirewall LOCAL VARIABLES //-->
+
+    # <!-- SuSEFirewall LOCAL FUNCTIONS //-->
+
+    /**
+     * Local function adds another warning string into warnings for user
+     *
+     * @param	string warning
+     */
+    void AddWarning (string warning) {
+	warnings_now = add (warnings_now, warning);
+    }
+
+    /**
+     * Local function clears all warnings for user from memory
+     */
+    void ClearWarnings () {
+	warnings_now = [];
+    }
+
+    /**
+     * Function returns list of warnings for user
+     *
+     * @return	list [string] of warnings
+     */
+    list <string> GetWarnings () {
+	return warnings_now;
+    }
+
+    /**
+     * Local function sets currently known interfaces.
+     *
+     * @param	list [string] of known interfaces
+     */
+    void SetKnownInterfaces(list <string> interfaces) {
+	known_interfaces = interfaces;
+    }
+
+    /**
+     * Local function returns list [string] of known interfaces.
+     * They must have been set using SetKnownInterfaces(list [string] interfaces)
+     * function.
+     *
+     * @return	list <string> of known interfaces
+     */
+    list <string> GetKnownInterfaces () {
+	return known_interfaces;
+    }
+
+    /**
+     * Function returns if interface is a dial-up type.
+     *
+     * @return	boolean if is dial-up interface
+     */
+    boolean IsDialUpInterface (string interface) {
+	list <map <string, string> > all_interfaces = SuSEFirewall::GetAllKnownInterfaces();
+
+	string interface_type = nil;
+	foreach (map <string, string> one, all_interfaces, {
+	    if (one["id"]:nil != interface) return;
+	    // this is THE interface
+	    interface_type = one["type"]:nil;
+	});
+
+	return (interface_type == "dialup");
+    }
+
+    /**
+     * Local function adds list of interfaces into zone.
+     *
+     * @param	list [string] of interfaces
+     * @param	string zone
+     */
+    void SetInterfacesToZone(list <string> interfaces, string zone) {
+	foreach (string interface, interfaces, {
+	    SuSEFirewall::AddInterfaceIntoZone(interface, zone);
+	});
+    }
+
+    /**
+     * Local function for updating user-changed proposal.
+     */
+    void UpdateProposal () {
+	list <string> last_known_interfaces = GetKnownInterfaces();
+	list <string> currently_known_interfaces = SuSEFirewall::GetListOfKnownInterfaces();
+
+	boolean had_dialup_interfaces = false;
+	foreach (string this_interface, last_known_interfaces, {
+	    if (IsDialUpInterface(this_interface)) {
+		had_dialup_interfaces = true;
+		break;
+	    }
+	});
+
+	foreach (string interface, currently_known_interfaces, {
+	    // already configured
+	    if (contains(last_known_interfaces, interface)) return;
+
+	    // any dial-up interfaces presented and the new one isn't dial-up
+	    if (had_dialup_interfaces && ! IsDialUpInterface(interface)) {
+		AddWarning( sformat(
+		    // TRANSLATORS: Warning in installation proposal, %1 is a device name (eth0, sl0, ...)
+		    _("New network device '%1' found; added as an internal firewall interface"),
+		    interface)
+		);
+		SetInterfacesToZone([interface], "INT");
+	    } else {
+		AddWarning( sformat(
+		    // TRANSLATORS: Warning in installation proposal, %1 is a device name (eth0, sl0, ...)
+		    _("New network device '%1' found; added as an external firewall interface"),
+		    interface)
+		);
+		SetInterfacesToZone([interface], "EXT");
+	    }
+	});
+
+	SetKnownInterfaces(currently_known_interfaces);
+    }
+
+    /**
+     * Local function for proposing firewall configuration.
+     */
+    void ProposeFunctions () {
+	list <map <string, string> > known_interfaces = SuSEFirewall::GetAllKnownInterfaces();
+
+	list <string> dial_up_interfaces = [];
+	list <string> non_dup_interfaces = [];
+	foreach (map<string, string> interface, known_interfaces, {
+	    if (interface["type"]:nil == "dial_up") {
+		dial_up_interfaces = add (dial_up_interfaces, interface["id"]:"");
+	    } else {
+		non_dup_interfaces = add (non_dup_interfaces, interface["id"]:"");
+	    }
+	});
+
+	y2milestone("Proposal based on configuration: Dial-up interfaces: %1, Other: %2",
+	    dial_up_interfaces, non_dup_interfaces
+	);
+
+	// has no network interface
+	if (size(non_dup_interfaces)==0 && size(dial_up_interfaces)==0) {
+	    SuSEFirewall::SetEnableService(false);
+	    SuSEFirewall::SetStartService(false);
+	} else {
+	// has any network interface
+	    SuSEFirewall::SetEnableService(ProductFeatures::GetBooleanFeature ("globals", "enable_firewall"));
+	    SuSEFirewall::SetStartService(ProductFeatures::GetBooleanFeature ("globals", "enable_firewall"));
+	}
+
+	// has non-dial-up and dial-up interfaces
+	if (size(non_dup_interfaces)>0 && size(dial_up_interfaces)>0) {
+	    SetInterfacesToZone(non_dup_interfaces, "INT");
+	    SetInterfacesToZone(dial_up_interfaces, "EXT");
+	    if (ProductFeatures::GetBooleanFeature ("globals", "firewall_enable_ssh"))
+		SuSEFirewall::SetServicesForZones(["ssh"], ["INT","EXT"], true);
+	// has non-dial-up and doesn't have dial-up interfaces
+	} else if (size(non_dup_interfaces)>0 && size(dial_up_interfaces)==0) {
+	    SetInterfacesToZone(non_dup_interfaces, "EXT");
+	    if (ProductFeatures::GetBooleanFeature ("globals", "firewall_enable_ssh"))
+		SuSEFirewall::SetServicesForZones(["ssh"], ["EXT"], true);
+	// doesn't have non-dial-up and has dial-up interfaces
+	} else if (size(non_dup_interfaces)==0 && size(dial_up_interfaces)>0) {
+	    SetInterfacesToZone(dial_up_interfaces, "EXT");
+	    if (ProductFeatures::GetBooleanFeature ("globals", "firewall_enable_ssh"))
+		SuSEFirewall::SetServicesForZones(["ssh"], ["EXT"], true);
+	}
+
+	SetKnownInterfaces(SuSEFirewall::GetListOfKnownInterfaces());
+    }
+    
+    # <!-- SuSEFirewall LOCAL FUNCTIONS //-->
+
+    # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
+
+    /**
+     * Function sets that proposal was changed by user
+     *
+     * @param	boolean if changed by user
+     */
+    global define void SetChangedByUser (boolean changed) {
+	y2milestone("Proposal was changed by user");
+	proposal_changed_by_user = changed;
+    }
+
+    /**
+     * Local function returns if proposal was changed by user
+     *
+     * @return	boolean if proposal was changed by user
+     */
+    global define boolean GetChangedByUser () {
+	return proposal_changed_by_user;
+    }
+
+    /**
+     * Function sets that proposal was initialized
+     *
+     * @param	boolean if initialized
+     */
+    global define void SetProposalInitialized (boolean initialized) {
+	proposal_initialized = initialized;
+    }
+
+    /**
+     * Local function returns if proposal was initialized already
+     *
+     * @return	boolean if proposal was initialized
+     */
+    global define boolean GetProposalInitialized () {
+	return proposal_initialized;
+    }
+
+    /**
+     * Function fills up default configuration into internal values
+     */
+    global define void Reset () {
+	SuSEFirewall::ResetReadFlag();
+	SuSEFirewall::Read();
+    }
+
+    global define void Propose () {
+	// Not changed by user - Propose from scratch
+	if (! GetChangedByUser()) {
+	    y2milestone("Calling firewall configuration proposal");
+	    Reset();
+	    ProposeFunctions();
+	// Changed - don't break user's configuration
+	} else {
+	    y2milestone("Calling firewall configuration update proposal");
+	    UpdateProposal();
+	}
+    }
+
+    global define map<string, string> ProposalSummary () {
+	// output: $[ "output" : "HTML Proposal", "warning" : "HTML Warning" ];
+	string output  = "";
+	string warning = "";
+
+	boolean firewall_is_enabled = (SuSEFirewall::GetEnableService() == true);
+
+	// checking for enabled ssh in EXT zone
+	boolean is_ssh_enabled = false;
+	if (size(SuSEFirewall::GetInterfacesInZone("EXT"))>0
+	    && (SuSEFirewall::IsServiceSupportedInZone ("ssh", "EXT"))
+	) is_ssh_enabled = true;
+
+	output = output + "<ul>\n";
+	output = output + (firewall_is_enabled ?
+	    // TRANSLATORS: Proposal informative text "Firewall is enabled" with link around
+	    //              "enabled" must be surrounded with the "%1" and "%2" strings
+	    //              %1 is the start and %2 is the end of the HTML link "<a href...>" and "</a>"
+	    sformat(_("Firewall is %1enabled%2"), "<a href=\"firewall--disable_firewall_in_proposal\">", "</a>")
+	    :
+	    // TRANSLATORS: Proposal informative text "Firewall is disabled" with link around
+	    //              "disabled" must be surrounded with the "%1" and "%2" strings
+	    //              %1 is the start and %2 is the end of the HTML link "<a href...>" and "</a>"
+	    sformat(_("Firewall is %1disabled%2"), "<a href=\"firewall--enable_firewall_in_proposal\">", "</a>")
+	);
+
+	if (firewall_is_enabled) {
+	    output = output + "<br>" + (is_ssh_enabled ?
+		// TRANSLATORS: Network proposal informative text "SSH is enabled" with link around
+		//              "enabled" must be surrounded with the "%1" and "%2" strings
+		//              %1 is the start and %2 is the end of the HTML link "<a href...>" and "</a>"
+		sformat(_("SSH is %1enabled%2"), "<a href=\"firewall--disable_ssh_in_proposal\">", "</a>")
+		:
+		// TRANSLATORS: Network proposal informative text "SSH is disabled" with link around
+		//              "disabled" must be surrounded with the "%1" and "%2" strings
+		//              %1 is the start and %2 is the end of the HTML link "<a href...>" and "</a>"
+		sformat(_("SSH is %1disabled%2"), "<a href=\"firewall--enable_ssh_in_proposal\">", "</a>")
+	    );
+
+	    list <string> warnings_strings = GetWarnings();
+	    if (size(warnings_strings)>0) {
+		ClearWarnings();
+		foreach (string single_warning, warnings_strings, {
+		    warning = warning + "<li>" + single_warning + "</li>\n";
+		});
+		warning = "<ul>\n" + warning + "</ul>\n";
+	    }
+	}
+
+	output = output + "</ul>\n";
+
+	return $[
+	    "output"		: output,
+	    "warning"		: warning,
+	];
+    }
+
+    # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
+
+/* EOF */
+}

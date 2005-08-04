@@ -1,0 +1,28 @@
+/**
+ * File:        firewall2.scr
+ * Summary:     Agent for reading/writing /etc/sysconfig/SuSEfirewall2
+ * Author:      Ludwig Nussel <lnussel@suse.de>
+ * Access:      read / write
+ *
+ * Example:
+ *   Dir(.sysconfig.SuSEfirewall2)
+ *   (["FW_ROUTE", ...])
+ **
+ *   Read(.sysconfig.network.FW_ROUTE)
+ *   ("yes")
+ **
+ *   Write(.sysconfig.network.FW_ROUTE, "no")
+ *   (true)
+ **
+ *   Don't forget to write nil to sync the settings!
+ *
+ * $Id$
+ *
+ * Read/Sets the values defined in <tt>/etc/sysconfig/SuSEfirewall2</tt>
+ * in an easy manner.
+ */
+.sysconfig.SuSEfirewall2
+
+`ag_ini(
+    `SysConfigFile("/etc/sysconfig/SuSEfirewall2")
+)
