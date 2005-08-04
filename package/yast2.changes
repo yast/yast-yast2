@@ -1,10 +1,4 @@
 -------------------------------------------------------------------
-Thu Aug  4 11:49:14 CEST 2005 - locilka@suse.cz
-
-- Disabling all default settings for SuSEFirewall2, bug #100692
-- 2.12.18
-
--------------------------------------------------------------------
 Tue Aug  2 15:54:10 CEST 2005 - lslezak@suse.cz
 
 - format function in WizardHW module
