@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Aug  5 09:08:24 CEST 2005 - jsrain@suse.cz
+
+- added initialization of source refresh callbacks
+- changed label of the menubutton in the hardware dialog
+
+-------------------------------------------------------------------
 Thu Aug  4 16:14:49 CEST 2005 - lslezak@suse.cz
 
 - move sysconfig metadata parsing functions from Sysconfig
