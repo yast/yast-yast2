@@ -32,6 +32,10 @@ global define void InitPackageCallbacks() {
     Pkg::CallbackStartPackage ("PackageCallbacks::StartPackage");
     Pkg::CallbackProgressPackage ("PackageCallbacks::ProgressPackage");
     Pkg::CallbackDonePackage ("PackageCallbacks::DonePackage");
+    // source refresh callbacks
+    Pkg::CallbackStartSourceRefresh ("PackageCallbacks::StartSourceRefresh");
+    Pkg::CallbackErrorSourceRefresh ("PackageCallbacks::ErrorSourceRefresh");
+    Pkg::CallbackDoneSourceRefresh ("PackageCallbacks::DoneSourceRefresh");
 
     // Pkg::CallbackStartDownload ("PackageCallbacks::StartDownload");
     // Pkg::CallbackProgressDownload ("PackageCallbacks::ProgressDownload");

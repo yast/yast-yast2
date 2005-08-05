@@ -209,7 +209,8 @@ term CreateActionsButton (list<list> actions) {
 	}
 	return `item (`id (id), GetActionLabel (i));
     });
-    return `MenuButton (_("Advanced"), items);
+    // menu button
+    return `MenuButton (_("&Other"), items);
 }
 
 // CWM widget
