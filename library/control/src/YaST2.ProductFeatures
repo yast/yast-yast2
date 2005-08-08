@@ -27,3 +27,12 @@ UI_MODE="simple"
 # Warn about Incomplete Translations
 #
 INCOMPLETE_TRANSLATION_TRESHOLD="95"
+
+## Type:    string
+## Default: http://www.novell.com/linux/
+#
+# Vendor URL
+#
+VENDOR_URL="http://www.novell.com/linux/"
+
+

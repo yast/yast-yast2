@@ -31,7 +31,8 @@ list<list<string> > features_to_save = [
     ["ENABLE_AUTOLOGIN", "globals", "enable_autologin"],
     ["EVMS_CONFIG", "partitioning", "evms_config"],
     ["INCOMPLETE_TRANSLATION_TRESHOLD",
-	"globals", "incomplete_translation_treshold"]
+	"globals", "incomplete_translation_treshold"],
+    ["VENDOR_URL", "globals", "vendor_url"],
 ];
 
 /**
@@ -55,6 +56,7 @@ map<string,map<string,any> > defaults = $[
 	"flags" : [],
 	"run_you" : true,
 	"relnotesurl" : "",
+	"vendor_url" : "",
     ],
     "partitioning" : $[
 	"evms_config" : "no",
