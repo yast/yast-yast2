@@ -1,8 +1,9 @@
 -------------------------------------------------------------------
-Mon Aug  8 11:24:58 CEST 2005 - jsrain@suse.cz
+Mon Aug  8 13:53:45 CEST 2005 - jsrain@suse.cz
 
 - disable "Edit" and "Delete" buttons in hardware dialog if no item
   is present in the list (#102526)
+- store vendor URL in the installed system (#102542)
 
 -------------------------------------------------------------------
 Fri Aug  5 09:08:24 CEST 2005 - jsrain@suse.cz
