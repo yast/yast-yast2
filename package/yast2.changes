@@ -5,6 +5,7 @@ Mon Aug  8 16:35:47 CEST 2005 - jsrain@suse.cz
   is present in the list (#102526)
 - store vendor URL in the installed system (#102542)
 - do not add unneeded modules to initrd (#102588)
+- 2.12.20
 
 -------------------------------------------------------------------
 Fri Aug  5 09:08:24 CEST 2005 - jsrain@suse.cz
