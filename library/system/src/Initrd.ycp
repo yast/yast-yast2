@@ -198,7 +198,7 @@
       * List modules included in initrd
       * @return list of strings with modulenames
       */
-    global define list ListModules () ``{
+    global define list<string> ListModules () ``{
 	if (! (was_read || Mode::config ()))
 	    Read ();
 	return filter (string m, modules, {
@@ -395,7 +395,7 @@
 	// save sysconfig
         SCR::Execute (.target.bash,
 	    "/usr/bin/touch /etc/sysconfig/bootloader");
-	string mods = mergestring (modules, " ");
+	string mods = mergestring (ListModules (), " ");
 	y2milestone ("Writing modules %1", mods);
 	SCR::Write (.sysconfig.kernel.INITRD_MODULES, mods);
 	SCR::Write (.sysconfig.kernel, nil);
