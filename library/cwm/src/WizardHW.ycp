@@ -431,6 +431,11 @@ global void SetContents (list<map<string,any> > items) {
     });
     UI::ChangeWidget (`id (`_hw_items), `Items, term_items);
     StoreCurrentItems (items);
+    boolean enabled = size (items) > 0;
+    UI::ChangeWidget (`id (`edit), `Enabled, enabled);
+    UI::ChangeWidget (`id (`delete), `Enabled, enabled);
+    if (enabled)
+	SetSelectedItem (items[0, "id"]:"");
 }
 
 /**
