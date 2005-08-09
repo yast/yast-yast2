@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug  9 16:10:22 CEST 2005 - mvidner@suse.cz
+
+- Fixed init script parsing with special backslash and whitespace
+  combination (#103013).
+
+-------------------------------------------------------------------
 Tue Aug  9 11:27:06 CEST 2005 - locilka@suse.cz
 
 - Fixing bug #102951
