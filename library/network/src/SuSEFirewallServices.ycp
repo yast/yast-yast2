@@ -172,6 +172,11 @@
 	    "udp_ports" : [ "isakmp", "ipsec-nat-t" ],
 	    "ip_protocols" : [ "esp" ],
 	],
+	"slp-daemon" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("SLP Daemon"),
+	    "udp_ports" : [ "svrloc" ],
+	],
     ];
 
     /**

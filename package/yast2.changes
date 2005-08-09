@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Aug  9 11:27:06 CEST 2005 - locilka@suse.cz
+
+- Fixing bug #102951
+  Adding SLP Daemon to the firewall as a known service
+- 2.12.21
+
+-------------------------------------------------------------------
 Mon Aug  8 16:35:47 CEST 2005 - jsrain@suse.cz
 
 - disable "Edit" and "Delete" buttons in hardware dialog if no item
