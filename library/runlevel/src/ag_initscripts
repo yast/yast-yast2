@@ -111,6 +111,7 @@ get_script_info () {
 	    in_continue = 0;
 	    in_descr = 0;
 	    in_comment = 0;
+	    gsub (/\\/, "\\\\", description);
 	    gsub (/"/, "\\\"", description);
 	    print "     \"description\": \""description"\",";
 	    # we print ] in END rule
@@ -180,6 +181,7 @@ get_script_info () {
 	    in_descr = 0;
 	    shortdescription = $0;
 	    gsub (/.*Short-Description:[ \t]*/, "", shortdescription);
+	    gsub (/\\/, "\\\\", shortdescription);
 	    gsub (/"/, "\\\"", shortdescription);
 	    print "     \"shortdescription\": \""shortdescription"\",";
 	}
@@ -189,7 +191,7 @@ get_script_info () {
 	    description = $3;
 	    for (i = 4; i<= NF; i++) description = description " " $i;
 	}
-    in_continue && in_comment && in_descr && (/^#\ \ / || /^#\t/) {
+    in_continue && in_comment && in_descr && (/^#\ [\t ]/ || /^#\t/) {
 	    in_continue = 0;
 	    $1 = "";
 	    description = description $0;
