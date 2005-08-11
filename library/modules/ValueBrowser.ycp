@@ -20,6 +20,8 @@
 {
     module "ValueBrowser";
 
+    textdomain "base";
+
     /**
      * Helper function that replaces all ocurences of "\n" with "\\n", so items are not multiline :-)
      * @param s string to escape
@@ -135,7 +137,8 @@ block <type>
 	term items = BrowseTreeHelper (variable, "");
 	UI::OpenDialog(`opt(`defaultsize),
 		       `VBox (
-			   `Tree (`opt (`hstretch, `vstretch), "&Variable", [ items ]),
+			   // translators: Tree header
+			   `Tree (`opt (`hstretch, `vstretch), _("&Variable"), [ items ]),
 			   `PushButton ("&OK")
 			   )
 		);

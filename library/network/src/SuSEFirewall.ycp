@@ -6,7 +6,7 @@
  * Summary:	Interface manipulation of /etc/sysconfig/SuSEFirewall
  * Authors:	Lukas Ocilka <locilka@suse.cz>
  *
- * SuSEFirewall.ycp,v 1.6 2004/12/06 09:33:35 locilka Exp
+ * $id$
  *
  * Module for handling SuSEfirewall2.
  */

@@ -16,7 +16,8 @@
  * <h3>Network configuration</h3>
  */
 
-include "commandline/commandline.ycp";
+import "CommandLine";
+
 include "network/lan/wizards.ycp";
 
 /**
