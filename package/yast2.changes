@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Aug 12 10:08:14 CEST 2005 - visnov@suse.cz
+
+- added comments for translators 
+
+-------------------------------------------------------------------
 Tue Aug  9 16:10:22 CEST 2005 - mvidner@suse.cz
 
 - Fixed init script parsing with special backslash and whitespace

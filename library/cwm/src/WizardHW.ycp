@@ -512,7 +512,10 @@ global define string CreateRichTextDescription(string title, list<string> proper
 global list<string> UnconfiguredDevice() {
     // translators: message for hardware configuration without any configured
     // device
-    return [_("The device is not configured"), _("Press <B>Edit</B> to configure")];
+    return [_("The device is not configured")
+    // translators: message for hardware configuration without any configured
+    // device
+    , _("Press <B>Edit</B> to configure")];
 }
 
 // EOF

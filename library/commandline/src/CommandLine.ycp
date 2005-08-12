@@ -29,21 +29,27 @@
     commands_t systemcommands = (commands_t)$[
 	"actions"	: $[
 			    "help"	: $[
+				// translators: help for 'help' option on command line
 				"help":_("Print the help for this module")
 			    ],
 			    "longhelp": $[
+				// translators: help for 'longhelp' option on command line
 				"help":_("Print a long version of help for this module")
 			    ],
 			    "xmlhelp": $[
+				// translators: help for 'xmlhelp' option on command line
 				"help":_("Print a long version of help for this module in XML format")
 			    ],
 			    "interactive"	: $[
+				// translators: help for 'interactive' option on command line
 				"help": _("Start interactive shell to control the module")
 			    ],
 			    "exit"	: $[
+				// translators: help for 'exit' command line interactive mode
 				"help": _("Exit interactive mode and save the changes")
 			    ],
 			    "abort"	: $[
+				// translators: help for 'abort' command line interactive mode
 				"help": _("Abort interactive mode without saving the changes")
 			    ]
 			],
@@ -157,8 +163,10 @@
 	}
 
         if( interactive ) {
+	    // translators: default error message for command line
 	    Print(_("Use 'help' for a complete list of available commands."));
 	} else {
+	    // translators: default error message for command line
 	    Print(sformat(_("Use 'yast2 %1 help' for a complete list of available commands."), modulecommands["id"]:""));
         }
     }
@@ -188,6 +196,7 @@
 
 	/* Check command */
 	if(!haskey(allcommands["actions"]:$[], command) ) {
+	    // translators: error message in command line interface
 	    Error(sformat(_("Unknown Command: %1"), command));
 
 	    return $[ "command" : command ];
@@ -216,6 +225,7 @@
 		// check, if the last character is "="
 		// FIXME: consider whitespace
 		if( substring( os, size(os)-1 ) == "=" ) {
+		    // translators: error message - user did not provide a value for option %1 on the command line
 		    Print(sformat(_("Option '%1' is missing value."), substring( os, 0, size(os)-1 )) );
 		    if( ! interactive ) aborted = true;
 		    ret = false;
@@ -361,6 +371,7 @@
     define void PrintActionHelp (string action) ``{
 	// lookup action in actions
 	map command = allcommands["actions", action]:$[];
+	// translators: the command does not provide any help
 	string commandhelp = command["help"]:_("No help available");
 	/* Process <command> "help" */
 	// translators: %1 is the command name
@@ -443,6 +454,7 @@
 	} );
 
 	if( haskey( command, "example" ) ) {
+	    // translators: example title for command line
 	    Print( _("\n    Example:"));
 
 	    any example = command["example"]:nil;
@@ -480,6 +492,7 @@
 
 	// translators: default module description if none is provided by the module itself
 	Print( modulecommands["help"]: _("This is a YaST2 module.")+"\n" );
+	// translators: short help title for command line
 	Print(_("Basic Syntax:"));
 
 	if( ! interactive ) {
@@ -513,6 +526,7 @@
 	}
 
 	Print("");
+	// translators: command line title: list of available commands
 	Print(_("Commands:"));
 
 	integer longest = 0;
@@ -521,11 +535,12 @@
 	});
 
 	maplist(string cmd, map desc, modulecommands["actions"]:$[], ``{
+	    // translators: error message: module does not provide any help messages
 	    Print(sformat("    %1  %2", String::Pad(cmd, longest), desc["help"]:_("No help available.")));
 	});
 	Print("");
-	// translators: module command line help, %1 is the module name
 	if( ! interactive ) {
+	    // translators: module command line help, %1 is the module name
 	    Print(sformat(_("Run 'yast2 %1 <command> help' for a list of available options."), modulecommands["id"]:""));
 	    Print("");
 	}
@@ -1052,12 +1067,15 @@
 	    i = i + 1;
 	}
 
+	// translators: the last command %1 in a list of unique commands
 	opt_list = opt_list + sformat( _("or '%1'"), unique_options[i]:nil );
 
 	if( size( cmds ) == 0 ) {
 	    if( size( unique_options ) == 1 ) {
+		// translators: error message - missing unique command for command line execution
 		Report::Error( sformat( _("Specify the command '%1'."), unique_options[0]:nil ) );
 	    } else {
+		// translators: error message - missing unique command for command line execution
 		Report::Error( sformat( _("Specify one of the commands: %1."), opt_list ) );
 	    }
 	    return nil;
@@ -1141,6 +1159,7 @@ global any Run( map commandline ) {
     if(CommandLine::StartGUI()) {
 	if( !haskey (commandline, "guihandler") ) {
 	    y2error( "Missing GUI handler for %1", commandline["id"]:"<unknown>" );
+	    // translators: error message - the module does not provide command line interface
 	    CommandLine::Error( _("There is no user interface available for this module.") );
 	    return false;
 	}
@@ -1173,6 +1192,7 @@ global any Run( map commandline ) {
 	/* Turn off progress bar if not GUI */
 	Progress::off();
 
+	// translators: progress message - command line interface ready
 	CommandLine::PrintVerbose( _("Ready") );
 
 	ret = true;
@@ -1235,6 +1255,7 @@ global any Run( map commandline ) {
     }
 
     if( ret && commandline["finish"]:nil != nil && initialized) {
+	// translators: Progress message - the command line interface is about to finish
 	CommandLine::PrintVerbose( _("Finishing") );
 	ret = RunFunction( commandline["finish"]:fake_false );
 	if( !ret ) {
@@ -1244,6 +1265,7 @@ global any Run( map commandline ) {
 	// translators: The command line interface is finished
 	CommandLine::PrintVerbose( _("Done") );
     } else
+	// translators: The command line interface is finished without writing the changes
 	CommandLine::PrintVerbose( _("Quitting (without changes)") );
 
     y2milestone("Commandline interface finished");

@@ -45,6 +45,7 @@
      * @return String with the message.
      */
     global define string NotConfigured() ``{
+	// translators: summary if the module has not been used yet in AutoYaST profile
 	return _("Not configured yet.");
     };
 
@@ -60,6 +61,7 @@
 	if (size(devices) == 0)
 	{
 	    if (!Mode::config ())
+		// translators: summary if no hardware was detected
 		text = sformat("<ul><li>%1</li></ul>", _("Not detected."));
 	    else
 		text = sformat("<ul><li>%1</li></ul>", NotConfigured());

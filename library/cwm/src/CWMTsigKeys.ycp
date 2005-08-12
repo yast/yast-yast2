@@ -278,6 +278,7 @@ global define symbol Handle (map<string,any> widget, string key, map event) {
 		message = _("The selected TSIG key cannot be deleted,
 because it is in use.
 Stop using it in the configuration first.");
+		// popup title
 		Popup::AnyMessage (_("Cannot delete TSIG key."), message);
 		return nil;
 	    }
@@ -618,8 +619,8 @@ in the configuration first.</p>
     );
 
     term current_keys = `VBox (
-	// Table header - in fact label
 	`VSpacing (0.5),
+	// Table header - in fact label
 	`Left (`Label (_("Current TSIG Keys"))),
 	`HBox (
 	    `HWeight (9, `Table (`id ("_cwm_key_listing_table"), `header (

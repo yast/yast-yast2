@@ -263,6 +263,7 @@ global define void InterfacesInit (map<string,any> widget, string key) {
     UI::ReplaceWidget (`id ("_cwm_interface_list_rp"),
 	`MultiSelectionBox (
 	    `id ("_cwm_interface_list"),
+	    // transaltors: selection box title
             _("&Network Interfaces with Open Port in Firewall"),
 	    interface_items
 	)
@@ -322,6 +323,7 @@ global boolean InterfacesValidate (map<string,any> widget, string key, map event
     ifaces = toset (ifaces);
     if (size (ifaces) == 0)
     {
+	// question popup
 	if (! Popup::YesNo (_("No interface is selected. Service will not
 be available for other computers.
 
@@ -433,6 +435,7 @@ global define map<string,any> CreateInterfacesWidget (map<string,any> settings){
 	    `ReplacePoint (`id ("_cwm_interface_list_rp"),
 		`MultiSelectionBox (
 		    `id ("_cwm_interface_list"),
+		    // translators: selection box title
 	            _("Network &Interfaces with Open Port in Firewall"),
 		    []
 		)
@@ -441,8 +444,10 @@ global define map<string,any> CreateInterfacesWidget (map<string,any> settings){
 	    `HBox (
 		`HStretch (),
 		`HWeight (1, `PushButton (`id ("_cwm_interface_select_all"),
+		    // push button to select all network intefaces for firewall
 		    _("Select &All"))),
 		`HWeight (1, `PushButton (`id ("_cwm_interface_select_none"),
+		    // push button to deselect all network intefaces for firewall
 		    _("Select &None"))),
 		`HStretch ()
 	    ),
@@ -748,6 +753,7 @@ global map<string,any> CreateOpenFirewallWidget (map<string,any> settings) {
     firewall_settings = `VBox (
 	`Left (firewall_settings),
 	`Left (`ReplacePoint (`id (`_cwm_firewall_status_rp),
+	    // label text
 	    `Label (_("Firewall is open")))
 	)
     );
