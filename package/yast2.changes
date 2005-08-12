@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Aug 12 13:03:29 CEST 2005 - locilka@suse.cz
+
+- Fixed YaST in console. It had been using LANG set to "POSIX"
+  which was supporsed to be empty or to contain "xx_XX" string
+  (#103007).
+
+-------------------------------------------------------------------
 Fri Aug 12 10:08:14 CEST 2005 - visnov@suse.cz
 
 - added comments for translators 
