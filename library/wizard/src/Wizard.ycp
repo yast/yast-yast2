@@ -175,6 +175,7 @@
 			    `HWeight( 70, `VBox(
 						`VSpacing(0.2),
 						`HBox(
+						      // translators: dialog title to appear before any content is initialized
 						      `Heading(`id(`title), `opt (`hstretch), _("YaST2\nInitializing ...")),
 						      `HStretch()
 						      ),
