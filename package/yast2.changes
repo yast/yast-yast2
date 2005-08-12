@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Aug 12 13:10:37 CEST 2005 - jsrain@suse.cz
+
+- don't prevent xfs and jfx module from being added to initrd on
+  PPC (#104037)
+
+-------------------------------------------------------------------
 Fri Aug 12 13:03:29 CEST 2005 - locilka@suse.cz
 
 - Fixed YaST in console. It had been using LANG set to "POSIX"
