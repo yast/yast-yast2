@@ -4,6 +4,8 @@
  * Summary:	Wizard dialogs for hardware configuration
  * Authors:	Jan Holesovsky <kendy@suse.cz>
  *
+ * @deprecated  This module is deprecated and will be removed soon. Use WizardHW instead.
+ *
  * $Id$
  */
 
