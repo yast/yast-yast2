@@ -197,7 +197,16 @@ void ParseInstallationKernelCmdline ();
 		{
 		    if (param_value_list[0]:"" == "vga")
 		    {
-			vgaType = value;
+			if (regexpmatch (value, "^(0x)?[0-9a-fA-F]+$")
+			    || contains (["normal", "ext", "ask"], value))
+			{
+			    vgaType = value;
+			}
+			else
+			{
+			    y2warning ("Incorrect VGA kernel parameter: %1",
+				value);
+			}
 		    }
 		    else
 		    {

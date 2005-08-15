@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Aug 15 14:47:36 CEST 2005 - jsrain@suse.cz
+
+- check whether VGA kernel parameter is correct (#103150)
+
+-------------------------------------------------------------------
 Fri Aug 12 13:10:37 CEST 2005 - jsrain@suse.cz
 
 - don't prevent xfs and jfx module from being added to initrd on
