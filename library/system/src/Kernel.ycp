@@ -311,6 +311,11 @@ global void SetCmdLine (string new_cmd_line) {
 	    y2milestone ("ProbeKernel: UML");
 	    kernel_packages = ["kernel-um"];
 	}
+	else if (Arch::is_xen ())
+	{
+	    y2milestone ("ProbeKernel: XEN");
+	    kernel_packages = ["kernel-xen"];
+	}
 	else if (Arch::i386 ())
 	{
 	    // get flags from WFM /proc/cpuinfo (for pae and tsc tests below)

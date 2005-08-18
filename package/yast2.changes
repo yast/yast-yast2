@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Aug 18 13:59:50 CEST 2005 - lslezak@suse.cz
+
+- added simple XEN detection (workaround for #100726)
+- select kernel-xen if XEN is detected
+- 2.12.23
+
+-------------------------------------------------------------------
 Thu Aug 18 11:05:25 CEST 2005 - locilka@suse.cz
 
 - Do not Read() NetworkDevices when running CWMFirewallInterfaces

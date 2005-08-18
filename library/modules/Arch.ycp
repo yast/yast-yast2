@@ -25,6 +25,8 @@ boolean _is_uml = nil;
 
 boolean _has_smp = nil;
 
+boolean _is_xen = nil;
+
 /* ************************************************************ */
 /* system architecture						*/
 
@@ -306,6 +308,23 @@ global boolean is_uml () {
     if (_is_uml == nil)
 	_is_uml	= (boolean) SCR::Read(.probe.is_uml);
     return _is_uml;
+}
+/* ************************************************************ */
+/* XEN stuff							*/
+
+/**
+ * true if XEN
+ */
+global boolean is_xen () {
+    if (_is_xen == nil) {
+	// XEN kernel has /proc/xen directory
+	map stat = (map)SCR::Read(.target.stat, "/proc/xen");
+	y2debug("stat /proc/xen: %1", stat);
+
+	_is_xen = (size(stat) > 0);
+    }
+
+    return _is_xen;
 }
 
 /* ************************************************************ */
