@@ -20,6 +20,8 @@ import "NetworkDevices";
 import "Popup";
 import "SuSEFirewall";
 
+// used only for (Mode::installation() || Mode::update())
+import "SuSEFirewallProposal";
 
 // private variables
 
@@ -102,8 +104,11 @@ void SetFirewallLabel (symbol status) {
  * Initialize the list of all known interfaces
  */
 void InitAllInterfacesList () {
-    if (! Mode::config ())
+    // Do not read NetworkDevices when they are already read
+    if (! Mode::config () && ! Mode::installation () && ! Mode::update ()) {
+	y2milestone("Reading NetworkDevices...");
 	NetworkDevices::Read ();
+    }
     all_interfaces = NetworkDevices::List ("");
     all_interfaces = filter (string i, all_interfaces, {
 	return i != "lo";
@@ -238,6 +243,13 @@ global void StoreAllowedInterfaces (list<string> services) {
     list<string> forbidden_interfaces = filter (string i, all_interfaces, {
 	return ! contains (allowed_interfaces, i);
     });
+
+    // If configuring firewall in any type of installation
+    // proposal must be set to 'modified'
+    if (Mode::installation() || Mode::update()) {
+	y2milestone("Firewall proposal modified by user");
+	SuSEFirewallProposal::SetChangedByUser(true);
+    }
 
     if (size (forbidden_interfaces) > 0)
     {

@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Aug 18 11:05:25 CEST 2005 - locilka@suse.cz
+
+- Do not Read() NetworkDevices when running CWMFirewallInterfaces
+  in Installation or Update.
+- Set SuSEFirewallProposal as 'modified' when changing the firewall
+  counfiguration via CWMFirewallInterfaces in Installation or
+  Update (bug #105170).
+
+-------------------------------------------------------------------
 Mon Aug 15 14:47:36 CEST 2005 - jsrain@suse.cz
 
 - check whether VGA kernel parameter is correct (#103150)
