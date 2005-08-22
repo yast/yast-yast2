@@ -259,7 +259,7 @@ while(true) {
 	{
 	    ShowNcursesHelp();
 	}
-	else if( eventid == `quit )
+	else if( eventid == `quit || eventid == `cancel)
 	{
 	    break;
 	}
