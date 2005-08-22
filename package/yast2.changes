@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 22 12:33:42 CEST 2005 - jsuchome@suse.cz
+
+- added check for `cancel to ncurses menu loop (#105507)
+- 2.12.24 
+
+-------------------------------------------------------------------
 Thu Aug 18 13:59:50 CEST 2005 - lslezak@suse.cz
 
 - added simple XEN detection (workaround for #100726)
