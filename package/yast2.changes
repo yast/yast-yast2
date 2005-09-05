@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Sep  5 22:39:56 CEST 2005 - locilka@suse.cz
+
+- fixing default SuSEfirewall2 logging values using the
+  GetDefaultValue() function for undefined and newly also for 
+  empty values  for security reasons (#100692).
+- 2.12.26
+
+-------------------------------------------------------------------
 Mon Sep  5 16:55:12 CEST 2005 - jsrain@suse.cz
 
 - translate proposal tab headers (#114677)
