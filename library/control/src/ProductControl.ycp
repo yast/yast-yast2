@@ -689,8 +689,19 @@ global string getProposalTextDomain() {
 global map getProposalProperties( string stage, string mode, string proptype
 )
 {
-    list<map> proposal = getMatchingProposal(stage, mode, proptype);   
-    return proposal[0]:$[];    
+    list<map> proposals = getMatchingProposal(stage, mode, proptype);
+    map proposal = proposals[0]:$[];
+    if (haskey (proposal, "proposal_tabs"))
+    {
+	string text_domain = productControl["textdomain"]:"control";
+	proposal["proposal_tabs"] = maplist (map tab,
+	    proposal["proposal_tabs"]:[],
+	{
+	    tab["label"] = dgettext (text_domain, tab["label"]:"");
+	    return tab;
+	});
+    }
+    return proposal;
 
 }
 
