@@ -9,7 +9,9 @@ map<string, any> simple = $[
     "WIRELESS_KEY_2": "secret2",
     "WIRELESS_KEY_3": "secret3",
     "WIRELESS_KEY_4": "", // no need to conceal empty ones
+    "WIRELESS_KEY_LENGTH": "128", // not a secret
     "WIRELESS_WPA_PSK": "secretpsk",
+    "WIRELESS_WPA_PASSWORD": "seekrut",
     "other": "data",
     "_aliases": $[
 	"foo": $[
