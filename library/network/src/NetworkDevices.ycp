@@ -338,6 +338,17 @@ global map<string, any> CanonicalizeIP (map<string, any> ifcfg) {
     return ret;
 }
 
+list<string> SensitiveFields = [
+    "WIRELESS_WPA_PASSWORD",
+    "WIRELESS_WPA_PSK",
+    // the unnumbered one should be empty but just in case
+    "WIRELESS_KEY",
+    "WIRELESS_KEY_0",
+    "WIRELESS_KEY_1",
+    "WIRELESS_KEY_2",
+    "WIRELESS_KEY_3",
+    ];
+
 /**
  * Conceal secret information, such as WEP keys, so that the output
  * can be passed to y2log and bugzilla.
@@ -350,10 +361,7 @@ global map ConcealSecrets1 (map<string, any> ifcfg) {
 	return nil;
     }
     map out = mapmap (string k, any v, ifcfg, {
-	// see also Write "Permission change"
-	if ((substring (k, 0, 12) == "WIRELESS_KEY" // also _1 .. _4
-	     || k == "WIRELESS_WPA_PSK")
-	    && v != "")
+	if (contains (SensitiveFields, k) && v != "")
 	{
 	    v = "CONCEALED";
 	}
@@ -647,15 +655,8 @@ global define boolean Write(string devregex) {
 	    */
 
 	    /* 0600 if contains encryption key (#24842) */
-	    // see also ConcealSecrets1, keep in sync
-	    boolean has_key =
-		devmap["WIRELESS_WPA_PSK"]:"" != "" ||
-		// the unnumbered one should be empty but just in case
-		devmap["WIRELESS_KEY"]:"" != "" ||
-		devmap["WIRELESS_KEY_0"]:"" != "" ||
-		devmap["WIRELESS_KEY_1"]:"" != "" ||
-		devmap["WIRELESS_KEY_2"]:"" != "" ||
-		devmap["WIRELESS_KEY_3"]:"" != "";
+	    boolean has_key = find (string k, SensitiveFields,
+				    ``( devmap[k]:"" != "" )) != nil;
 	    string file = "/etc/sysconfig/network/ifcfg-" + dev;
 	    y2debug("Permission change: %1, %2", has_key, file);
 	    if(has_key) {
