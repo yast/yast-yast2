@@ -119,7 +119,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 @yncludedir@/packages/*.ycp
 
 #features
-/var/adm/fillup-templates/*
+@fillupdir@/*
 
 # documentation
 %files devel
