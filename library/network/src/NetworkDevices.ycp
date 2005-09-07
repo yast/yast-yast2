@@ -676,6 +676,10 @@ global define boolean Write(string devregex) {
 	SCR::Execute(.target.bash, "/bin/chmod 0600 " + file);
     });
 
+    // Deleted = [];
+    // OriginalDevices = Devices;
+    // Cannot do it because we have written only part of Devices.
+    // This module should be rewritten to objects.
     return true;
 }
 
@@ -984,7 +988,12 @@ define boolean Delete2(string name) {
 
     Devices[t] = devsmap;
 
-    if(haskey(OriginalDevices, t) && haskey(OriginalDevices[t]:$[], d)) {
+    // Originally this avoided errors in the log when deleting an
+    // interface that was not present at Read (had no ifcfg file).
+    // #115448: OriginalDevices is not updated after Write so
+    // returning to the network proposal and deleting a card would not work.
+    if (true ||
+       haskey(OriginalDevices, t) && haskey(OriginalDevices[t]:$[], d)) {
 	y2milestone("Deleting file: %1", name);
 	Deleted[size(Deleted)] = name;
     }
