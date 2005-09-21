@@ -26,72 +26,10 @@ import "Directory";
 
 boolean feedback_open = false;
 
+// default size of the richtext widget in richtext popups
+integer default_width = 40;
+integer default_height = 10;
 
-/**
- * Internal function that returns a popup dialog layout.
- *
- * @param headline	headline to show or Popup::NoHeadline()
- * @param message	message text to show
- * @param icon_name	icon name (with full path) or Popup::NoIcon()
- * @param button_box	term with one or more buttons
- *
- * @return the layout contents as a term
- */
-define term popupLayoutInternal( string headline, string message, string icon_name, term button_box )
-{
-    term content = `Empty();
-    term icon    = `Empty();
-
-    if ( size( icon_name ) > 0 )
-    {
-	map ui_capabilities = UI::GetDisplayInfo();
-
-	if ( ui_capabilities[ "HasLocalImageSupport" ]:false )
-	{
-	    icon = `Image( icon_name, "" );
-	}
-    }
-
-    if ( size( headline ) > 0 )
-    {
-	content =
-	    `VBox(
-		  `HBox(
-			`VCenter( icon ),
-			`HSpacing(1),
-			`VCenter(`Heading( headline ) ),
-			`HStretch()
-			),
-		  `VSpacing(0.2),
-		  `Left(`Label( message ) )
-		  );
-    }
-    else // no headline
-    {
-	content =
-	    `HBox(
-		  `Top( icon ),
-		  `HSpacing(1),
-		  `VCenter(`Label( message ) )
-		  );
-    }
-
-    term dialog =
-	`HBox(
-	      `HSpacing(1),
-	      `VBox(
-		    `VSpacing(0.2),
-		    `HSquash( content ),
-		    `VStretch(),
-		    `HSquash( button_box ),
-		    `VStretch(),
-		    `VSpacing(0.2)
-		    ),
-	      `HSpacing(1)
-	      );
-
-    return dialog;
-}
 
 
 /**
@@ -105,11 +43,14 @@ define term popupLayoutInternal( string headline, string message, string icon_na
  *
  * @return term the layout contents as a term
  */
-define term popupLayoutInternalWithLabel( string headline,
+define term popupLayoutInternalTypeWithLabel( string headline,
 					  string message,
 					  string icon_name,
 					  term button_box,
-					  string label )
+					  string label,
+					  boolean richtext,
+					  integer width,
+					  integer height )
 {
     term content = `Empty();
     term heading = `VSpacing(0.2);
@@ -125,6 +66,17 @@ define term popupLayoutInternalWithLabel( string headline,
 	}
     }
 
+    term rt = `VWeight(1,
+	`VBox(
+	    `HSpacing(width),
+	    `HBox(
+		`VSpacing(height),
+		`RichText(message)
+	    )
+	)
+    );
+
+
     if ( size( headline ) > 0 )
     {
 	content =
@@ -136,9 +88,9 @@ define term popupLayoutInternalWithLabel( string headline,
 			`HStretch()
 			),
 		  `VSpacing(0.2),
-		  `Left(`Label( message ) ),
+		  richtext ? rt : `Left( `Label( message ) ),
 		  `VSpacing(0.2),
-		  `Label(`id(`label), label )
+		  (label != nil && label != "") ? `Label(`id(`label), label ) : `Empty()
 		  );
     }
     else // no headline
@@ -148,10 +100,10 @@ define term popupLayoutInternalWithLabel( string headline,
 		  `HBox(
 			`Top( icon ),
 			`HSpacing(1),
-			`VCenter(`Label( message ) )
+			richtext ? rt : `VCenter (`Label( message ) )
 			),
 		  `VSpacing(0.2),
-		  `Label(`id(`label), label )
+		  (label != nil && label != "") ? `Label(`id(`label), label ) : `Empty()
 		  );
     }
 
@@ -160,9 +112,9 @@ define term popupLayoutInternalWithLabel( string headline,
 	      `HSpacing(1),
 	      `VBox(
 		    `VSpacing(0.2),
-		    `HSquash( content ),
+		    content,
 		    `VStretch(),
-		    `HSquash( button_box ),
+		    button_box,
 		    `VStretch(),
 		    `VSpacing(0.2)
 		    ),
@@ -170,6 +122,102 @@ define term popupLayoutInternalWithLabel( string headline,
 	      );
 
     return dialog;
+}
+
+/**
+ * Internal function - wrapper for popupLayoutInternalTypeWithLabel call
+ */
+define term popupLayoutInternal( string headline, string message, string icon_name, term button_box ) {
+    return popupLayoutInternalTypeWithLabel(headline, message, icon_name, button_box, nil, false, 0, 0);
+}
+
+/**
+ * Internal function - wrapper for popupLayoutInternalTypeWithLabel call
+ */
+define term popupLayoutInternalRich( string headline, string message, string icon_name, term button_box, integer width, integer height ) {
+    return popupLayoutInternalTypeWithLabel(headline, message, icon_name, button_box, nil, true, width, height);
+}
+
+
+/**
+ * Internal version of AnyTimedMessage
+ *
+ * Show a message with optional headline above and
+ * wait until user clicked "OK" or until a timeout runs out.
+ *
+ * @param headline	optional headline or Popup::NoHeadline()
+ * @param message	the message (maybe multi-line) to display.
+ * @param icon_name	icon name (with full path) or Popup::NoIcon()
+ * @param timeout	After timeout seconds dialog will be automatically closed
+ *
+ * @return void
+ **/
+define void anyTimedMessageTypeInternal(string headline,
+				    string message,
+				    string icon_name,
+				    integer timeout,
+				    boolean richtext,
+				    integer width,
+				    integer height )
+{
+    term button_box = `HBox(
+	`HStretch(),
+	`HWeight(1, `PushButton( `id(`stop), Label::StopButton())),
+	`HSpacing(2),
+	`HWeight(1, `PushButton( `id(`ok_msg), `opt(`default, `key_F10), Label::OKButton())),
+	`HStretch()
+    );
+    UI::OpenDialog(
+		   `opt(`decorated),
+		   popupLayoutInternalTypeWithLabel( headline, message, icon_name,
+						 button_box, sformat("%1", timeout), richtext, width, height )
+		   );
+
+    UI::SetFocus(`id(`ok_msg));
+
+
+    symbol button = nil;
+
+    while ( timeout > 0 && button != `ok_msg)
+    {
+	button = (symbol) UI::TimeoutUserInput( 1000 );
+
+	if (button == `stop)
+	{
+	    while(UI::UserInput() != `ok_msg){};
+	    break;
+	}
+
+	timeout = timeout - 1;
+
+	UI::ChangeWidget(`id(`label), `Value, sformat("%1", timeout ));
+    }
+
+    UI::CloseDialog();
+}
+
+/**
+ * Internal function - wrapper for anyTimedMessageTypeInternal call
+ */
+define void anyTimedMessageInternal(string headline,
+				    string message,
+				    string icon_name,
+				    integer timeout )
+{
+    anyTimedMessageTypeInternal(headline, message, icon_name, timeout, false, 0, 0);
+}
+
+/**
+ * Internal function - wrapper for anyTimedMessageTypeInternal call
+ */
+define void anyTimedRichMessageInternal(string headline,
+				    string message,
+				    string icon_name,
+				    integer timeout,
+				    integer width,
+				    integer height )
+{
+    anyTimedMessageTypeInternal(headline, message, icon_name, timeout, true, width, height);
 }
 
 
@@ -698,39 +746,44 @@ global define boolean ReallyAbort( boolean have_changes )
 }
 
 
+
+
 /**
- * Show a simple message and wait until user clicked "OK".
+ * Generic message popup - internal
  *
+ * Show a message with optional headline above and
+ * wait until user clicked "OK".
  *
- * @param message message string
- *
- * @example  Popup::Message("This is an information about ... ." );
- *
- * @screenshot screenshots/Message.png
- * @see AnyMessage
- * @see Notify
- * @see Warning
- * @see Error
+ * @param headline	optional headline or Popup::NoHeadline()
+ * @param message	the message (maybe multi-line) to display.
  */
-global define void Message(string message)
+define void anyMessageInternalType(string headline, string message, string icon_name, boolean richtext, integer width, integer height )
 {
+    term button_box =  `PushButton( `id(`ok_msg), `opt(`default, `key_F10), Label::OKButton() );
     UI::OpenDialog(
 		   `opt(`decorated),
-		   `HBox(
-			 `HSpacing(1),
-			 `VBox(
-			       `VSpacing(0.2),
-			       `Label(message),
-			       `PushButton(`id(`ok), `opt(`default, `key_F10), Label::OKButton()),
-			       `VSpacing(0.2)
-			       ),
-			 `HSpacing(1)
-			 )
+		   richtext ? popupLayoutInternalRich(headline, message, icon_name, button_box, width, height) :
+			popupLayoutInternal( headline, message, icon_name, button_box )
 		   );
-    UI::SetFocus(`id(`ok));
-    UI::UserInput();
 
+    UI::SetFocus(`id(`ok_msg) );
+
+    UI::UserInput();
     UI::CloseDialog();
+}
+
+/**
+ * Internal function - wrapper for anyMessageInternal call
+ */
+define void anyMessageInternal(string headline, string message, string icon_name ) {
+    anyMessageInternalType(headline, message, icon_name, false, 0, 0);
+}
+
+/**
+ * Internal function - wrapper for anyMessageInternal call
+ */
+define void anyMessageInternalRich(string headline, string message, string icon_name, integer width, integer height) {
+    anyMessageInternalType(headline, message, icon_name, true, width, height);
 }
 
 
@@ -743,12 +796,12 @@ global define void Message(string message)
  * @param headline	optional headline or Popup::NoHeadline()
  * @param message	the message (maybe multi-line) to display.
  */
-define void anyMessageInternal(string headline, string message, string icon_name )
+define void anyRichMessageInternal(string headline, string message, string icon_name, integer width, integer height )
 {
     term button_box =  `PushButton( `id(`ok_msg), `opt(`default, `key_F10), Label::OKButton() );
     UI::OpenDialog(
 		   `opt(`decorated),
-		   popupLayoutInternal( headline, message, icon_name, button_box )
+		   popupLayoutInternalRich( headline, message, icon_name, button_box, width, height )
 		   );
 
     UI::SetFocus(`id(`ok_msg) );
@@ -808,6 +861,80 @@ global define void ShowFeedback(string headline, string message)
     feedback_open = true;
 }
 
+/**
+ * Show a simple message and wait until user clicked "OK".
+ *
+ *
+ * @param message message string
+ *
+ * @example  Popup::Message("This is an information about ... ." );
+ *
+ * @screenshot screenshots/Message.png
+ * @see AnyMessage
+ * @see Notify
+ * @see Warning
+ * @see Error
+ */
+global define void Message(string message)
+{
+    anyMessageInternal(NoHeadline(), message, NoIcon());
+}
+
+/**
+ * Show a long message and wait until user clicked "OK".
+ *
+ * @param message message string (may contain rich text tags)
+ */
+global define void LongMessage(string message)
+{
+    anyMessageInternalRich(NoHeadline(), message, NoIcon(), default_width, default_height);
+}
+
+/**
+ * Show a long message and wait until user clicked "OK". Size of the popup window is adjustable.
+ *
+ * @param message message string (may contain rich text tags)
+ * @param width width of the popup window
+ * @param height height of the popup window
+ */
+global define void LongMessageGeometry(string message, integer width, integer height)
+{
+    anyMessageInternalRich(NoHeadline(), message, NoIcon(), width, height);
+}
+
+/**
+ * Show a message and wait until user clicked "OK" or time is out
+ *
+ * @param message message string
+ * @param timeout_seconds time out in seconds
+ */
+global define void TimedMessage(string message, integer timeout_seconds) {
+    anyTimedMessageInternal(NoHeadline(), message, NoIcon(), timeout_seconds);
+}
+
+/**
+ * Show a long message and wait until user clicked "OK" or time is out.
+ *
+ * @param message message string (may contain rich text tags)
+ * @param timeout_seconds time out in seconds
+ */
+global define void TimedLongMessage(string message, integer timeout_seconds)
+{
+    anyTimedRichMessageInternal(NoHeadline(), message, NoIcon(), timeout_seconds, default_width, default_height);
+}
+
+/**
+ * Show a long message and wait until user clicked "OK" or time is out. Size of the popup window is adjustable.
+ *
+ * @param message message string (may contain rich text tags)
+ * @param timeout_seconds time out in seconds
+ * @param width width of the popup window
+ * @param height height of the popup window
+ */
+global define void TimedLongMessageGeometry(string message, integer timeout_seconds, integer width, integer height)
+{
+    anyTimedRichMessageInternal(NoHeadline(), message, NoIcon(), timeout_seconds, width, height );
+}
 
 /**
  * Show a warning message and wait until user clicked "OK".
@@ -826,6 +953,68 @@ global define void ShowFeedback(string headline, string message)
 global define void Warning(string message)
 {
     anyMessageInternal( Label::WarningMsg(), message, popupIcon( "msg_warning.png" ) );
+}
+
+/**
+ * Show a long warning and wait until user clicked "OK".
+ *
+ * @param message message string (may contain rich text tags)
+ */
+global define void LongWarning(string message)
+{
+    anyMessageInternalRich( Label::WarningMsg(), message, popupIcon( "msg_warning.png" ), default_width, default_height );
+}
+
+/**
+ * Show a long warning and wait until user clicked "OK". Size of the popup window is adjustable
+ *
+ * @param message message string (may contain rich text tags)
+ * @param width width of the popup window
+ * @param height height of the popup window
+ */
+global define void LongWarningGeometry(string message, integer width, integer height)
+{
+    anyMessageInternalRich( Label::WarningMsg(), message, popupIcon( "msg_warning.png" ), width, height );
+}
+
+/**
+ * Show a warning message and wait specified amount of time or until user clicked "OK".
+ *
+ * @screenshot screenshots/TimedWarningPopup.png
+ *
+ * @param message warning message string
+ * @param timeout_seconds time out in seconds
+ *
+ * @return void
+ *
+ * @see Warning
+ */
+global define void TimedWarning(string message, integer timeout_seconds)
+{
+    anyTimedMessageInternal( Label::WarningMsg(), message, popupIcon( "msg_warning.png" ), timeout_seconds );
+}
+
+/**
+ * Show a long warning message and wait until user clicked "OK" or time is out.
+ *
+ * @param message message string (may contain rich text tags)
+ * @param timeout_seconds time out in seconds
+ */
+global define void TimedLongWarning(string message, integer timeout_seconds)
+{
+    anyTimedRichMessageInternal( Label::WarningMsg(), message, popupIcon( "msg_warning.png" ), timeout_seconds, default_width, default_height );
+}
+
+/**
+ * Show a long warning and wait until user clicked "OK" or time is out. Size of the popup window is adjustable.
+ *
+ * @param message message string (may contain rich text tags)
+ * @param timeout_seconds time out in seconds
+ * @param width width of the popup window
+ * @param height height of the popup window
+ */
+global define void TimedLongWarningGeometry(string message, integer timeout_seconds, integer width, integer height) {
+    anyTimedRichMessageInternal( Label::WarningMsg(), message, popupIcon( "msg_warning.png" ), timeout_seconds, width, height );
 }
 
 
@@ -847,6 +1036,70 @@ global define void Error(string message)
     anyMessageInternal( Label::ErrorMsg(), message, popupIcon( "msg_error.png" ) );
 }
 
+/**
+ * Show a long error and wait until user clicked "OK".
+ *
+ * @param message message string (may contain rich text tags)
+ */
+global define void LongError(string message)
+{
+    anyMessageInternalRich( Label::ErrorMsg(), message, popupIcon( "msg_error.png" ), default_width, default_height );
+}
+
+/**
+ * Show a long error message and wait until user clicked "OK". Size of the popup window is adjustable.
+ *
+ * @param message message string (may contain rich text tags)
+ * @param width width of the popup window
+ * @param height height of the popup window
+ */
+global define void LongErrorGeometry(string message, integer width, integer height)
+{
+    anyMessageInternalRich( Label::ErrorMsg(), message, popupIcon( "msg_error.png" ), width, height);
+}
+
+/**
+ * Show an error message and wait specified amount of time or until user clicked "OK".
+ *
+ * @screenshot screenshots/TimedErrorPopup.png
+ *
+ * @param message	error message string
+ * @param timeout_seconds time out in seconds
+ *
+ * @return void
+ *
+ * @see Error
+ */
+global define void TimedError(string message, integer timeout_seconds)
+{
+    anyTimedMessageInternal( Label::ErrorMsg(), message, popupIcon( "msg_error.png" ), timeout_seconds );
+}
+
+/**
+ * Show a long error message and wait until user clicked "OK" or time is out.
+ *
+ * @param message message string (may contain rich text tags)
+ * @param timeout_seconds time out in seconds
+ */
+global define void TimedLongError(string message, integer timeout_seconds)
+{
+    anyTimedRichMessageInternal( Label::ErrorMsg(), message, popupIcon( "msg_error.png" ), timeout_seconds, default_width, default_height );
+}
+
+/**
+ * Show a long error message and wait until user clicked "OK" or time is out. Size of the popup window is adjustable.
+ *
+ * @param message message string (may contain rich text tags)
+ * @param timeout_seconds time out in seconds
+ * @param width width of the popup window
+ * @param height height of the popup window
+ */
+global define void TimedLongErrorGeometry(string message, integer timeout_seconds, integer width, integer height)
+{
+    anyTimedRichMessageInternal( Label::ErrorMsg(), message, popupIcon( "msg_error.png" ), timeout_seconds, width, height );
+}
+
+
 
 /**
  * Show a notification message and wait until user clicked "OK".
@@ -865,54 +1118,61 @@ global define void Notify(string message)
     anyMessageInternal( "", message, popupIcon( "msg_info.png" ) );
 }
 
+/**
+ * Show a long notify message and wait until user clicked "OK".
+ *
+ * @param message message string (may contain rich text tags)
+ */
+global define void LongNotify(string message)
+{
+    anyMessageInternalRich( NoHeadline(), message, popupIcon( "msg_info.png" ), default_width, default_height );
+}
 
 /**
- * Display a message with a timeout and return when the user clicks "OK"
- * or when the timeout expires.
+ * Show a long notify message and wait until user clicked "OK". Size of the popup window is adjustable.
  *
- * There is also a "stop" button that will stop the countdown. If the
- * user clicks that, the popup will wait forever (or until "OK" is
- * clicked, of course).
- *
- * @screenshot screenshots/TimedMessage.png
- *
- * @param message		message to display
- * @param timeout_seconds		the timeout in seconds
- *
- * @example Popup::TimedMessage("This is a timed message", 2 );
+ * @param message message string (may contain rich text tags)
+ * @param width width of the popup window
+ * @param height height of the popup window
  */
-global define void TimedMessage(string message, integer timeout_seconds)
+global define void LongNotifyGeometry(string message, integer width, integer height)
 {
-    term button_box =
-	`HBox(
-	      `HWeight( 1, `PushButton(`id(`timed_stop), Label::StopButton() ) ),
-	      `HSpacing(2),
-	      `HWeight( 1 , `PushButton(`id(`timed_ok), `opt(`default, `key_F10), Label::OKButton() ) )
-	      );
-    
-    UI::OpenDialog(
-		   `opt(`decorated),
-		   popupLayoutInternalWithLabel( NoHeadline(), message,
-						 popupIcon( "msg_info.png" ),
-						 button_box, sformat("%1", timeout_seconds ) )
-		   );
-    UI::SetFocus(`id(`timed_ok) );
+    anyMessageInternalRich( NoHeadline(), message, popupIcon( "msg_info.png" ), width, height);
+}
 
-    while (timeout_seconds > 0)
-    {
-	any which_input = UI::TimeoutUserInput( 1000 );
-	if (which_input == `timed_ok)
-	    break;
-	if (which_input == `timed_stop)
-	{
-	    while (which_input == `timed_stop)
-		which_input = UI::UserInput();
-	    break;
-	}
-	timeout_seconds = timeout_seconds - 1;
-	UI::ChangeWidget (`id(`label), `Value, ""+timeout_seconds);
-    }
-    UI::CloseDialog();
+/**
+ * Show a long notify message and wait until user clicked "OK" or the time is out.
+ *
+ * @param message message string (may contain rich text tags)
+ * @param timeout_seconds time out in seconds
+ */
+global define void TimedNotify(string message, integer timeout_seconds)
+{
+    anyTimedMessageInternal( NoHeadline(), message, popupIcon( "msg_info.png" ), timeout_seconds );
+}
+
+/**
+ * Show a long error message and wait until user clicked "OK" or time is out.
+ *
+ * @param message message string (may contain rich text tags)
+ * @param timeout_seconds time out in seconds
+ */
+global define void TimedLongNotify(string message, integer timeout_seconds)
+{
+    anyTimedRichMessageInternal( NoHeadline(), message, popupIcon( "msg_info.png" ), timeout_seconds, default_width, default_height );
+}
+
+/**
+ * Show a long notify message and wait until user clicked "OK" or time is out. Size of the popup window is adjustable.
+ *
+ * @param message message string (may contain rich text tags)
+ * @param timeout_seconds time out in seconds
+ * @param width width of the popup window
+ * @param height height of the popup window
+ */
+global define void TimedLongNotifyGeometry(string message, integer timeout_seconds, integer width, integer height)
+{
+    anyTimedRichMessageInternal( NoHeadline(), message, popupIcon( "msg_info.png" ), timeout_seconds, width, height );
 }
 
 
@@ -1110,48 +1370,6 @@ global define symbol ModuleError(string text)
 
 
 /**
- * Internal version of AnyTimedMessage
- *
- * Show a message with optional headline above and
- * wait until user clicked "OK" or until a timeout runs out.
- *
- * @param headline	optional headline or Popup::NoHeadline()
- * @param message	the message (maybe multi-line) to display.
- * @param icon_name	icon name (with full path) or Popup::NoIcon()
- * @param timeout	After timeout seconds dialog will be automatically closed
- *
- * @return void
- **/
-define void anyTimedMessageInternal(string headline,
-				    string message,
-				    string icon_name,
-				    integer timeout )
-{
-    term button_box = `PushButton( `id(`ok_msg), `opt(`default, `key_F10), Label::OKButton() );
-    UI::OpenDialog(
-		   `opt(`decorated),
-		   popupLayoutInternalWithLabel( headline, message, icon_name,
-						 button_box, sformat("%1", timeout) )
-		   );
-
-    UI::SetFocus(`id(`ok_msg));
-
-
-    symbol button = nil;
-
-    while ( timeout > 0 && button != `ok_msg)
-    {
-	button = (symbol) UI::TimeoutUserInput( 1000 );
-	timeout = timeout - 1;
-
-	UI::ChangeWidget(`id(`label), `Value, sformat("%1", timeout ));
-    }
-
-    UI::CloseDialog();
-}
-
-
-/**
  * Generic message popup
  *
  * Show a message with optional headline above and
@@ -1169,41 +1387,11 @@ global define void AnyTimedMessage(string headline, string message, integer time
     anyTimedMessageInternal( headline, message, nil, timeout );
 }
 
-
-/**
- * Show a warning message and wait specified amount of time or until user clicked "OK".
- *
- * @screenshot screenshots/TimedWarningPopup.png
- *
- * @param message warning message string
- * @param timeout_seconds time out in seconds
- *
- * @return void
- *
- * @see Warning
- */
-global define void TimedWarning(string message, integer timeout_seconds)
+global define void AnyTimedRichMessage(string headline, string message, integer timeout)
 {
-    anyTimedMessageInternal( Label::WarningMsg(), message, popupIcon( "msg_warning.png" ), timeout_seconds );
+    anyTimedRichMessageInternal( headline, message, nil, timeout, default_width, default_height );
 }
 
-
-/**
- * Show an error message and wait specified amount of time or until user clicked "OK".
- *
- * @screenshot screenshots/TimedErrorPopup.png
- *
- * @param message	error message string
- * @param timeout_seconds time out in seconds
- *
- * @return void
- *
- * @see Error
- */
-global define void TimedError(string message, integer timeout_seconds)
-{
-    anyTimedMessageInternal( Label::ErrorMsg(), message, popupIcon( "msg_error.png" ), timeout_seconds );
-}
 
 
 // it is misaligned because there used to be UI() around it
