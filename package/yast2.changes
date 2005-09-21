@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Sep 21 13:10:38 CEST 2005 - lslezak@suse.cz
+
+- Support for long error and long warning messages
+  (e.g. Report::LongError) (#79161)
+- new popups in Popup:: module (e.g. Popup::TimedLongError)
+- added [Stop] button to all timed popups
+- version 2.13.0
+
+-------------------------------------------------------------------
 Wed Sep  7 16:01:13 CEST 2005 - mvidner@suse.cz
 
 - Fixed deleting an interface after writing and returning

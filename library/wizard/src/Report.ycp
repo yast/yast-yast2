@@ -354,6 +354,32 @@ global define void Message(string message_string) ``{
 }
 
 /**
+ * Store new message text, the text is displayed in a richtext widget - long lines are automatically wrapped
+ * @param message_string message text (it can contain rich text tags)
+ * @return void
+ */
+global define void LongMessage(string message_string) ``{
+    if (display_messages)
+    {
+	if (timeout_messages > 0)
+	{
+	    Popup::TimedLongMessage(message_string, timeout_messages);
+	}
+	else
+	{
+	    Popup::LongMessage(message_string);
+	}
+    }
+
+    if (log_messages)
+    {
+	y2milestone(1, "%1", message_string);
+    }
+
+    messages = add(messages, message_string);
+}
+
+/**
  * Store new message text
  * @param headline_string Headline String
  * @param message_string message text, it can contain new line characters ("\n")
@@ -373,12 +399,12 @@ global define void ShowText(string headline_string, string message_string) ``{
 	}
     }
 
-    if (log_errors)
+    if (log_messages)
     {
 	y2milestone(1, "%1", message_string);
     }
 
-    errors = add(errors, message_string);
+    messages = add(messages, message_string);
 }
 
 /**
@@ -407,6 +433,32 @@ global define void Warning(string warning_string) ``{
     warnings = add(warnings, warning_string);
 }
 
+/**
+ * Store new warning text, the text is displayed in a richtext widget - long lines are automatically wrapped
+ * @param warning_string warning text (it can contain rich text tags)
+ * @return void
+ */
+global define void LongWarning(string warning_string) ``{
+    if (display_warnings)
+    {
+	if (timeout_warnings > 0)
+	{
+	    Popup::TimedLongWarning(warning_string, timeout_warnings);
+	}
+	else
+	{
+	    Popup::LongWarning(warning_string);
+	}
+    }
+
+    if (log_warnings)
+    {
+	y2warning(1, "%1", warning_string);
+    }
+
+    warnings = add(warnings, warning_string);
+}
+
 
 /**
  * Store new error text
@@ -423,6 +475,32 @@ global define void Error(string error_string) ``{
 	else
 	{
 	    Popup::Error(error_string);
+	}
+    }
+
+    if (log_errors)
+    {
+	y2error(1, "%1", error_string);
+    }
+
+    errors = add(errors, error_string);
+}
+
+/**
+ * Store new error text, the text is displayed in a richtext widget - long lines are automatically wrapped
+ * @param error_string error text  (it can contain rich text tags)
+ * @return void
+ */
+global define void LongError(string error_string) ``{
+    if (display_errors)
+    {
+	if (timeout_errors > 0)
+	{
+	    Popup::TimedLongError(error_string, timeout_errors);
+	}
+	else
+	{
+	    Popup::LongError(error_string);
 	}
     }
 
