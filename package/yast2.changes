@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Fri Sep 23 09:43:09 CEST 2005 - locilka@suse.cz
+
+- Adding support for VNC and SSH installations. Firewall proposal
+  enables SSH on non-dial-up interfaces when installing over SSH,
+  enables VNC on non-dial-up interfaces when installing over VNC.
+  Firewall proposal warns when installing over SSH/VNC and SSH/VNC
+  is not enabled. (enahancement #113211)
+- Adding XDMCP (Remote Acces to Display Manager) support
+  (enhancement #118200)
+- Adding FAM (Remote File Alteration Monitor) support
+  (enhancement #118196)
+
+-------------------------------------------------------------------
 Wed Sep 21 13:10:38 CEST 2005 - lslezak@suse.cz
 
 - Support for long error and long warning messages
