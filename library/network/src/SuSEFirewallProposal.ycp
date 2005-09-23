@@ -6,7 +6,7 @@
  *
  * $Id$
  *
- * ... er ehm?
+ * This module provides a functional API for Installation proposal of SuSEfirewall2
  */
 
 {
@@ -338,10 +338,13 @@
 	if (firewall_is_enabled) {
 	    // Any enabled SSH means SSH-is-enabled
 	    boolean is_ssh_enabled = false;
-	    foreach (string zone, SuSEFirewall::GetKnownFirewallZones(), {
-		if (SuSEFirewall::IsServiceSupportedInZone ("ssh", zone))
-		    is_ssh_enabled = true;
-	    });
+	    if (size(known_interfaces)>0) {
+		foreach (string zone, SuSEFirewall::GetZonesOfInterfaces(known_interfaces), {
+		    if (SuSEFirewall::IsServiceSupportedInZone ("ssh", zone))
+			is_ssh_enabled = true;
+		});
+	    }
+	    y2milestone("SSH is " + (is_ssh_enabled ? "":"not ") + "enabled");
 
 	    output = output + "<br>" + (is_ssh_enabled ?
 		// TRANSLATORS: Network proposal informative text "SSH is enabled" with link around
@@ -365,10 +368,13 @@
 	    if (Linuxrc::vnc()) {
 		// Any enabled VNC means VNC-is-enabled
 		boolean is_vnc_enabled = false;
-		foreach (string zone, SuSEFirewall::GetKnownFirewallZones(), {
-		    if (SuSEFirewall::IsServiceSupportedInZone ("vnc", zone))
-			is_vnc_enabled = true;
-		});
+		if (size(known_interfaces)>0) {
+		    foreach (string zone, SuSEFirewall::GetZonesOfInterfaces(known_interfaces), {
+			if (SuSEFirewall::IsServiceSupportedInZone ("vnc", zone))
+			    is_vnc_enabled = true;
+		    });
+		}
+		y2milestone("VNC is " + (is_vnc_enabled ? "":"not ") + "enabled");
 
 		output = output + "<br>" + (is_vnc_enabled ?
 		    // TRANSLATORS: Network proposal informative text "Remote Administration (VNC) is enabled" with link around
