@@ -372,11 +372,27 @@
 	// lookup action in actions
 	map command = allcommands["actions", action]:$[];
 	// translators: the command does not provide any help
-	string commandhelp = command["help"]:_("No help available");
+	any commandhelp = command["help"]:nil;
+	if (commandhelp == nil) {
+	    commandhelp = _("No help available");
+	}
+
 	/* Process <command> "help" */
 	// translators: %1 is the command name
 	Print(sformat(_("Command '%1'"), action));
-	Print(sformat("    %1", commandhelp));
+
+	// print help
+	if (is(commandhelp, string))
+	{
+	    Print(sformat("    %1", commandhelp));
+	}
+	else if (is(commandhelp, list<string>))
+	{
+	    foreach(string e, (list<string>)commandhelp, ``{
+		    Print(sformat("    %1", e));
+		}
+	    );
+	}
 
 	list opts = allcommands["mappings", action]:[];
 

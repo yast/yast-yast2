@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep 23 13:42:46 CEST 2005 - lslezak@suse.cz
+
+- command line - multiline description of a command is possible
+  (help can be string or list of strings)
+
+-------------------------------------------------------------------
 Fri Sep 23 09:43:09 CEST 2005 - locilka@suse.cz
 
 - Adding support for VNC and SSH installations. Firewall proposal
