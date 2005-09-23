@@ -143,6 +143,7 @@ the parameter checker. It is a list with key "options". Currently known flags:
 
 Example:	"actions"	: $[
 			"list"	: $[
+				// help can be single string or list of strings
 				"help": "display configuration summary",
 				"example": "lan list configured",
 				"options": [ "non_strict" ]
@@ -155,7 +156,10 @@ Example:	"actions"	: $[
 Options is a map with the option name as a key. For each
 option, it is necessary to provide a description text in "help" key,
 and a "type" key (for options with arguments only). Optionally, an
-option can contain an example.
+option can contain an example. If the help text is too long to be
+displayed on one line it should be converted into a list of strings.
+Each string from the list is printed on separate line.
+
 There are two kinds of options: flags and options, which require an
 argument.For flags ommit type key, or specify type as "". A type is a
 string describing the type.basic types supported are string, boolean,
