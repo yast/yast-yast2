@@ -180,7 +180,7 @@
 	// See bug #118200 for more information
 	"xdmcp" : $[
 	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("Remote Acces to Display Manager"),
+	    "name"	: _("Remote Access to Display Manager"),
 	    "tcp_ports" : [ "xdmcp" ],
 	    "udp_ports" : [ "xdmcp" ],
 	    "broadcast_ports" : [ "xdmcp" ],
