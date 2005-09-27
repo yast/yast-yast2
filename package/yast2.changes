@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Sep 27 11:02:16 CEST 2005 - jsrain@suse.cz
+
+- do not prevent USB modules from being added to initrd (#66733)
+
+-------------------------------------------------------------------
 Tue Sep 27 09:56:07 CEST 2005 - lslezak@suse.cz
 
 - Popup - display long error "as is" - escape rich text tags,
