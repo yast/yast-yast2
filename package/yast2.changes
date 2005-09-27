@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Sep 27 09:56:07 CEST 2005 - lslezak@suse.cz
+
+- Popup - display long error "as is" - escape rich text tags,
+  format lines; layout fixes
+- version 2.13.2
+
+-------------------------------------------------------------------
 Fri Sep 23 13:42:46 CEST 2005 - lslezak@suse.cz
 
 - command line - multiline description of a command is possible

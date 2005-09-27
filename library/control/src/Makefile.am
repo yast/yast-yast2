@@ -13,6 +13,6 @@ fillup_DATA = YaST2.ProductFeatures
 
 EXTRA_DIST = $(module_DATA) $(fillup_DATA)
 
-YCPCFLAGS = -M ../../modules -M ../../xml/src -M ../../wizard/src
+YCPCFLAGS = -M ../../modules -M ../../xml/src -M ../../wizard/src -M ../../types/src
 
 include $(top_srcdir)/Makefile.am.common
