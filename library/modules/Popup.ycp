@@ -23,11 +23,12 @@ textdomain "base";
 import "Label";
 import "Mode";
 import "Directory";
+import "String";
 
 boolean feedback_open = false;
 
 // default size of the richtext widget in richtext popups
-integer default_width = 40;
+integer default_width = 60;
 integer default_height = 10;
 
 
@@ -71,7 +72,9 @@ define term popupLayoutInternalTypeWithLabel( string headline,
 	    `HSpacing(width),
 	    `HBox(
 		`VSpacing(height),
-		`RichText(message)
+		// display the message in the widget "as is":
+		// escape all tags, replace new lines by <br> tag
+		`RichText(mergestring(splitstring(String::EscapeTags(message), "\n"), "<br>"))
 	    )
 	)
     );
@@ -113,9 +116,9 @@ define term popupLayoutInternalTypeWithLabel( string headline,
 	      `VBox(
 		    `VSpacing(0.2),
 		    content,
-		    `VStretch(),
+		    richtext ? `Empty() : `VStretch(),
 		    button_box,
-		    `VStretch(),
+		    richtext ? `Empty() : `VStretch(),
 		    `VSpacing(0.2)
 		    ),
 	      `HSpacing(1)
