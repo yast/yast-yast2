@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep 29 13:44:59 CEST 2005 - visnov@suse.cz
+
+- require yast2-hardware-detection for probing
+
+-------------------------------------------------------------------
 Tue Sep 27 11:02:16 CEST 2005 - jsrain@suse.cz
 
 - do not prevent USB modules from being added to initrd (#66733)
