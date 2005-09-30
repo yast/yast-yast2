@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep 30 12:53:28 CEST 2005 - mvidner@suse.cz
+
+- Fixed the configuration of ESCON and FICON (#82891).
+- 2.13.3
+
+-------------------------------------------------------------------
 Thu Sep 29 13:44:59 CEST 2005 - visnov@suse.cz
 
 - require yast2-hardware-detection for probing
