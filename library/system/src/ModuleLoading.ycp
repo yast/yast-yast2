@@ -66,6 +66,31 @@
     };
 
     /**
+     * Cache for MarkedAsBroken
+     */
+    list<string> broken_modules = nil;
+
+    /**
+     * Is the module marked as broken in install.inf? (BrokenModules)
+     * #97655
+     * @param mod module
+     * @return broken?
+     */
+    boolean MarkedAsBroken (string mod) {
+	if (broken_modules == nil)
+	{
+	    string bms = (string)SCR::Read (.etc.install_inf.BrokenModules);
+	    if (bms == nil)
+	    {
+		bms = "";
+	    }
+	    broken_modules = splitstring (bms, " ");
+	}
+
+	return contains (broken_modules, mod);
+    }
+
+    /**
      * @param	string modulename
      * @param	string moduleargs
      * @param	string vendorname
@@ -99,6 +124,13 @@
 	    }
 
 	    // sformat( _("Loading module %1"), modulename);
+
+	    // #97655
+	    if (MarkedAsBroken (modulename))
+	    {
+		y2milestone ("In BrokenModules, skipping: %1", modulename);
+		return `dont;
+	    }
 
 	    if (ask_before_loading && !Mode::autoinst())
 	    {
