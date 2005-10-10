@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Oct 10 15:38:30 CEST 2005 - mvidner@suse.cz
+
+- Do not use modules marked with BrokenModules (#97655).
+- 2.13.4
+
+-------------------------------------------------------------------
 Fri Sep 30 12:53:28 CEST 2005 - mvidner@suse.cz
 
 - Fixed the configuration of ESCON and FICON (#82891).
