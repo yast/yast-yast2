@@ -194,4 +194,33 @@
 	}
     }	// SysconfigRead()
 
+    /**
+     * Try to read value from sysconfig file and return the result if successful.
+     * Function reads from arbitrary sysconfig file, for which the agent
+     * doesn't exist: e.g. from different partition like /mnt/etc/sysconfig/file.
+     *
+     * @param	key		Key of the value we want to read from sysconfig file.
+     * @param	defaultv        Default value
+     * @param	location	Full path to target sysconfig file.
+     *
+     * @return  Success --> Result of SCR::Read<br>
+     *		Failure --> Default value
+     *
+     * @example Misc::CustomSysconfigRead ("INSTALLED_LANGUAGES", "", Installation::destdir + "/etc/sysconfig/language");
+     *
+     */
+    global define string CustomSysconfigRead (string key, string defval,string location)
+    {
+	if (location == "")
+	    return defval;
+
+	path custom_path = topath (location);
+        SCR::RegisterAgent (custom_path, `ag_ini(
+	    `SysConfigFile (location)
+	));
+	string ret = SysconfigRead (add (custom_path, key), defval);
+	SCR::UnregisterAgent (custom_path);
+	return ret;
+    }
+
 }

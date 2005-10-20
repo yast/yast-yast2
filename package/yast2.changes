@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct 20 13:14:33 CEST 2005 - jsuchome@suse.cz
+
+- added Misc::CustomSysconfigRead for reading custom sysconfig files
+- 2.13.5
+
+-------------------------------------------------------------------
 Mon Oct 10 15:38:30 CEST 2005 - mvidner@suse.cz
 
 - Do not use modules marked with BrokenModules (#97655).
