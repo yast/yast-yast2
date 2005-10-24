@@ -99,6 +99,14 @@ while ( <STDIN> )
 	    print $OUT  $octets ,"\n";
 	    ycp::Return ( "true" );
 	}
+	elsif ( $path eq ".nocr" )
+	{
+	    my $octets = encode( "iso-8859-1", $argument );
+	    Encode::from_to($octets, "utf-8", $codeset);
+	    
+	    print $OUT  $octets;
+	    ycp::Return ( "true" );
+	}
 	elsif ( $path eq ".prompt" )
 	{
 	    $prompt = $argument;
@@ -113,6 +121,17 @@ while ( <STDIN> )
 	    Encode::from_to($octets, "utf-8", $codeset);
 	    
 	    print STDERR  $octets ,"\n";
+	    ycp::Return ( "true" );
+	}
+	elsif ( $path eq ".stderr_nocr" )
+	{
+	    # recode from utf8 (broken YaST)
+	    # it sends almost UTF-8 (but encodes some chars as octals), so Perl
+	    # does not like it as UTF-8. Let's force the conversion
+	    my $octets = encode( "iso-8859-1", $argument );
+	    Encode::from_to($octets, "utf-8", $codeset);
+	    
+	    print STDERR  $octets;
 	    ycp::Return ( "true" );
 	}
 	else 

@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Fri Oct 21 16:28:01 CEST 2005 - lslezak@suse.cz
+
+- CommandLine:: supports printing texts without trailing
+  newline character (useful for progress messages); added YesNo()
+  functionality for the command line mode
+- Package:: supports installing packages in the command line mode
+  (#91033)
+- 2.13.6
+
+-------------------------------------------------------------------
 Thu Oct 20 13:14:33 CEST 2005 - jsuchome@suse.cz
 
 - added Misc::CustomSysconfigRead for reading custom sysconfig files
