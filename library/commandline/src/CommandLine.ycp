@@ -126,7 +126,7 @@
      *
      *  @param s	the string to be printed
      */
-    global define void Print(string s) ``{
+    define void PrintInternal(string s, boolean newline) ``{
 	if( ! Mode::commandline () ) return;
 
 	// avoid using of uninitialized value in .dev.tty perl agent
@@ -136,8 +136,40 @@
 	    return;
 	}
 
-	if( interactive ) SCR::Write(.dev.tty, s);
-	else SCR::Write(.dev.tty.stderr, s);
+	if( interactive ) {
+	    if (newline)
+		SCR::Write(.dev.tty, s);
+	    else
+		SCR::Write(.dev.tty.nocr, s);
+	}
+	else {
+	    if (newline)
+		SCR::Write(.dev.tty.stderr, s);
+	    else
+		SCR::Write(.dev.tty.stderr_nocr, s);
+	}
+    }
+
+    /**
+     *  @short Print a String
+     *  @descr Print a string to /dev/tty in interactive mode, to stderr in non-interactive
+     *  Suppress printing if there are no commands to be handled (starting GUI)
+     *
+     *  @param s	the string to be printed
+     */
+    global define void Print(string s) ``{
+	return PrintInternal(s, true);
+    }
+
+    /**
+     *  @short Print a String, don't add a trailing newline character
+     *  @descr Print a string to /dev/tty in interactive mode, to stderr in non-interactive
+     *  Suppress printing if there are no commands to be handled (starting GUI)
+     *
+     *  @param s	the string to be printed
+     */
+    global define void PrintNoCR(string s) ``{
+	return PrintInternal(s, false);
     }
 
     /**
@@ -151,6 +183,19 @@
 	    Print(s);
 	}
     }
+
+    /**
+     * Same as PrintNoCR(), but the string is printed only when verbose command
+     * line mode was activated
+     * @param s string to print
+     */
+    global define void PrintVerboseNoCR(string s) {
+	if (verbose)
+	{
+	    PrintNoCR(s);
+	}
+    }
+
 
     /**
      * @short Print an Error Message
@@ -1288,6 +1333,38 @@ global any Run( map commandline ) {
     y2milestone("----------------------------------------");
 
     return ret;
+}
+
+/**
+ * Ask user, commandline equivalent of Popup::YesNo()
+ * @return boolean true if user entered "yes"
+ */
+global define boolean YesNo() {
+    // prompt message displayed in the commandline mode
+    // when user is asked to replay "yes" or "no" (localized)
+    string prompt = _("yes/no?: ");
+
+    string ui = CommandLine::UserInput(prompt);
+
+    // yes - used in the command line mode as input text for yes/no confirmation
+    string yes = _("yes");
+
+    // no - used in the command line mode as input text for yes/no confirmation
+    string no = _("no");
+
+    while (ui != yes && ui != no) {
+	ui = CommandLine::UserInput(prompt);
+    }
+
+    return (ui == yes);
+}
+
+/**
+ * Return verbose flag
+ * boolean verbose flag
+ */
+global define boolean Verbose() {
+    return verbose;
 }
 
 /* EOF */

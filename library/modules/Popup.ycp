@@ -487,7 +487,7 @@ global define boolean ContinueCancel (string message)
  *
  * @param  headline	short headline or Popup::NoHeadline()
  * @param  message	message string
- * @return boolean
+ * @return boolean	true if [Yes] has been pressed
  *
  * @example  Popup::YesNoHeadline ( "Resize Windows Partition?", "... explanation of dangers ..." );
  *
@@ -521,7 +521,7 @@ global define boolean YesNoHeadline(string headline, string message)
  * @screenshot screenshots/YesNo.png
  *
  * @param  message	message string
- * @return boolean
+ * @return boolean	true if [Yes] has been pressed
  *
  * @example  Popup::YesNo ( "Create a backup of the config files?" );
  *

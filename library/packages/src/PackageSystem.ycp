@@ -20,6 +20,7 @@ import "Mode";
 import "PackageCallbacksInit";
 import "Report";
 import "Stage";
+import "CommandLine";
 
 /**
  * Was last operation canceled?
@@ -73,9 +74,20 @@ global void EnsureSourceInit() {
     PackageCallbacksInit::InitPackageCallbacks ();
 
     /* Popup when initializing the package manager */
-    UI::OpenDialog(`opt(`decorated ), `Label(_("Reading package information...")));
+    string message = _("Reading package information...");
+
+    if (Mode::commandline()) {
+	CommandLine::PrintVerbose(message);
+    }
+    else
+    {
+	UI::OpenDialog(`opt(`decorated ), `Label(message));
+    }
     list sources = Pkg::SourceStartCache (true);
-    UI::CloseDialog();
+
+    if (!Mode::commandline()) {
+	UI::CloseDialog();
+    }
 
     if (size (sources) > 0)
     {
@@ -83,9 +95,8 @@ global void EnsureSourceInit() {
     }
     else
     {
-	import "Popup";
-	/* Error popup, no packages sources found */
-	Popup::Error (_("No package source defined."));
+	/* Error message, no packages sources found */
+	Report::Error(_("No package source defined."));
     }
 }
 

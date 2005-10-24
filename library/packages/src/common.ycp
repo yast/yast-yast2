@@ -18,6 +18,8 @@ textdomain "base";
 import "Label";
 import "Popup";
 import "Wizard";
+import "Mode";
+import "CommandLine";
 
 /* Main module prototypes */
 
@@ -76,6 +78,16 @@ global define boolean InstalledAny(list<string> packages) {
     return which != nil;
 }
 
+boolean AskPackages(list<string> packs) {
+    // this is a separator used at merging package list items
+    string pkgs = mergestring(packs, _(", "));
+    // the message is followed by list of required packages
+    string text = _("These packages need to be installed:") + " " + pkgs;
+    CommandLine::Print(text);
+
+    return CommandLine::YesNo();
+}
+
 /**
  * Main package installatio|removal dialog
  * @param packages list of packages
@@ -103,7 +115,7 @@ boolean PackageDialog(list<string> packages, boolean install, string message) {
     if (message != nil)
 	text = sformat (message, mergestring (packs, ", "));
 
-    boolean doit = Popup::AnyQuestionRichText(
+    boolean doit = (Mode::commandline()) ? (CommandLine::Interactive() ? AskPackages(packs) : true ) : Popup::AnyQuestionRichText(
 	"", text, 40, 10,
 	Label::ContinueButton (), Label::CancelButton (),
 	`focus_yes
@@ -187,11 +199,38 @@ global boolean RemoveAll(list<string> packages) {
  * close after it is finished
  */
 global void RunSUSEconfig() {
-    Wizard::CreateDialog ();
-    // inst_suseconfig returns `auto or `next
-    // (update mode or Args(2) is true) => no error checking
-    WFM::CallFunction("inst_suseconfig", [$["enable_back":false, "enable_next":false]]);
-    Wizard::CloseDialog ();
+    if (Mode::commandline())
+    {
+	// in the commandline mode start SuSEconfig in background
+	SCR::Execute(.background.run_output, "/sbin/SuSEconfig");
+
+	list<string> script_out = [];
+	symbol ret = nil;
+
+	// print SuSEconfig output
+	while((boolean)SCR::Read(.background.output_open) || ((integer)SCR::Read(.background.newlines) > 0))
+	{
+	    script_out = (list<string>)SCR::Read(.background.newout);
+
+	    foreach(string line, script_out, {
+		    CommandLine::PrintVerbose(line);
+		}
+	    );
+
+	    while ((integer)SCR::Read(.background.newlines) == 0 && (boolean)SCR::Read(.background.output_open))
+	    {
+		sleep(200);	// small wait
+	    }
+	}
+    }
+    else
+    {
+	Wizard::CreateDialog ();
+	// inst_suseconfig returns `auto or `next
+	// (update mode or Args(2) is true) => no error checking
+	WFM::CallFunction("inst_suseconfig", [$["enable_back":false, "enable_next":false]]);
+	Wizard::CloseDialog ();
+    }
 }
 
 /**
