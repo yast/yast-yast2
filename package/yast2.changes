@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct 27 18:14:24 CEST 2005 - mvidner@suse.cz
+
+- CLI XML help: changed document structure, hopefully for the better.
+- 2.13.7
+
+-------------------------------------------------------------------
 Fri Oct 21 16:28:01 CEST 2005 - lslezak@suse.cz
 
 - CommandLine:: supports printing texts without trailing
