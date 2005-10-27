@@ -10,6 +10,7 @@
 {
     module "CommandLine";
 
+    import "Directory";
     import "Mode";
     import "Stage";
     import "Report";
@@ -63,7 +64,7 @@
 				"help"	: _("Show progress information"),
 			    ],
 			    "xmlfile"	: $[
-				// translators: command line "verbose" option
+				// translators: command line "xmlfile" option
 				"help"	: _("Where to store the XML output"),
 				"type"	: "string"
 			    ],
@@ -682,15 +683,18 @@
 	    map doc = $[];
 
 //	    TODO: DTD specification
-//	    doc["listEntries"] =
-//		$[
-//		];
+	    doc["listEntries"] =
+		$[
+		    "commands": "command",
+		    "options": "option",
+		    "examples": "example",
+		];
 //	    doc["cdataSections"] = [];
-//	    doc["systemID"] = "/usr/share/YaST2/dtd/commandline.dtd";
+	    doc["systemID"] = Directory::schemadir + "/commandline.dtd";
 //	    doc["nameSpace"] = "http://www.suse.com/1.0/yast2ns";
-//	    doc["typeNamespace"] = "http://www.suse.com/1.0/configns";
+	    doc["typeNamespace"] = "http://www.suse.com/1.0/configns";
 
-	    doc["rootElement"] = "commands";
+	    doc["rootElement"] = "commandline";
 	    XML::xmlCreateDoc(`xmlhelp, doc);
 
 	    map exportmap = $[];
@@ -710,7 +714,7 @@
 		    foreach(string option, mappings[action]:[], {
 			    //
 			    map optn = $[
-				"option" : option,
+				"name" : option,
 				"help" : options[option,"help"]:"",
 			    ];
 
@@ -729,7 +733,9 @@
 		    // add example if it's present
 		    if (haskey(actions[action]:$[], "example"))
 		    {
-			actiondescr = add(actiondescr, "example", actions[action,"example"]:nil);
+			any example = actions[action,"example"]:nil;
+			list examples = is (example, list)? (list)example: [example];
+			actiondescr = add(actiondescr, "examples", examples);
 		    }
 
 		    commands = add(commands, actiondescr);
