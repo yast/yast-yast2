@@ -1,27 +1,31 @@
 <?xml version="1.0" encoding='ISO-8859-1'?>
+<?xml-stylesheet href="/usr/share/xml/docbook/stylesheet/css/current/driver.css" type="text/css"?>
 <chapter id = "widgets">
     <title>Available widgets</title>
     <para>
 Note: in all examples additional parameters can be present, see 
 <xref linkend="advanced"/>.
     </para>
+  
+  <section><title>Check Box</title>
 
-<section><title>Check Box</title>
-<para>
-Parameters:
-<itemizedlist>
-<listitem><para>"widget" : must be set as `checkbox</para></listitem>
-<listitem><para>"label" : label shown right from the checkbox</para></listitem>
-</itemizedlist></para>
+<variablelist>
+<varlistentry><term>widget</term>
+<listitem><para>`checkbox</para></listitem>
+</varlistentry>
+<varlistentry><term>label</term>
+<listitem><para>The checkbox label, shown to the right of it</para></listitem>
+</varlistentry>
+</variablelist>
 
-<example><title>Check Box</title><screen>
-map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+<example><title>Check Box</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "CHECKBOX" : $[
     "label" : _("&amp;Checkbox"),
     "widget" : `checkbox,
   ],
-]
- </screen></example>
+]</screen
+></example>
 </section>
 
 <section><title>Combo Box</title>
@@ -34,8 +38,8 @@ Parameters:
             item of the Combobox. Both id and label must be strings.</para></listitem>
 </itemizedlist></para>
 
-<example><title>Combo Box</title><screen>
-map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+<example><title>Combo Box</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "COMBOBOX" : $[
     "label" : _("&amp;Combobox"),
     "widget" : `combobox,
@@ -45,8 +49,8 @@ map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
     ],
   ],
   ....
-]
- </screen></example>
+]</screen
+></example>
 </section>
 
 <section><title>Selection Box</title>
@@ -87,8 +91,8 @@ Parameters:
                   if missing, all characters are valid</para></listitem>
 </itemizedlist></para>
 
-<example><title>Text Entry</title><screen>
-map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+<example><title>Text Entry</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "TEXTENTRY" : $[
     "label" : _("&amp;TextEntry"),
     "widget" : `textentry,
@@ -96,8 +100,8 @@ map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
         // for hexadecimal numbers
   ],
   ....
-]
- </screen></example>
+]</screen
+></example>
 </section>
 
 <section><title>Int Field</title>
@@ -110,8 +114,8 @@ Parameters:
 <listitem><para>"maximum" : maximal value of the int field, if not set, then 2^31 - 1 is used</para></listitem>
 </itemizedlist></para>
 
-<example><title>Int Field</title><screen>
-map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+<example><title>Int Field</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "INTFIELD" : $[
     "label" : _("&amp;Intfield"),
     "widget" : `intfield,
@@ -119,8 +123,8 @@ map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
     "maximum" : 10,
   ],
   ....
-]
- </screen></example>
+]</screen
+></example>
 </section>
 
 <section id="radio_buttons"><title>Radio Buttons</title>
@@ -142,8 +146,8 @@ FIXME: NOT IMPLEMENTED
 </para></listitem>
 </itemizedlist></para>
 
-<example><title>Radio Buttons</title><screen>
-map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+<example><title>Radio Buttons</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "RADIO_BUTTONS" : $[
     "label" : _("RadioButtonGroup"),
     "widget" : `radio_buttons,
@@ -154,8 +158,8 @@ map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
     "orientation" : `horizontal,
   ],
   ....
-]
- </screen></example>
+]</screen
+></example>
 </section>
 
 <section><title>Radio Button</title>
@@ -171,14 +175,14 @@ Parameters:
 </itemizedlist></para>
 
 <!-- TODO: a better example, with a term showing the usage, eg dhcp/static -->
-<example><title>Radio Button</title><screen>
-map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+<example><title>Radio Button</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "RADIOBUTTON" : $[
     "label" : _("&amp;Radio Button"),
     "widget" : `radio_button,
   ],
-]
- </screen></example>
+]</screen
+></example>
 </section>
 
 <section><title>Push Button</title>
@@ -189,15 +193,15 @@ Parameters:
 <listitem><para>"label" : push button label</para></listitem>
 </itemizedlist></para>
 
-<example><title>Push Button</title><screen>
-map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+<example><title>Push Button</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "PUSH_BUTTON" : $[
     "widget" : `push_button,
     "label" : _("Push Button"),
   ],
   ....
-]
- </screen></example>
+]</screen
+></example>
 </section>
 
 <section id="multiline"><title>Multi-Line Edit Box</title>
@@ -208,15 +212,15 @@ Parameters:
 <listitem><para>"label" : title of the multiline widget</para></listitem>
 </itemizedlist></para>
 
-<example><title>Push Button</title><screen>
-map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+<example><title>Push Button</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "MULTI_EDIT" : $[
     "widget" : `multi_line_edit,
     "label" : _("Text editor"),
   ],
   ....
-]
- </screen></example>
+]</screen
+></example>
 </section>
 
 <section id="richtext"><title>Rich Text Field</title>
@@ -226,14 +230,14 @@ Parameters:
 <listitem><para>"widget" : must be set as `richtext</para></listitem>
 </itemizedlist></para>
 
-<example><title>Rich Text</title><screen>
-map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+<example><title>Rich Text</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "RICH_TEXT" : $[
     "widget" : `richtext,
   ],
   ....
-]
- </screen></example>
+]</screen
+></example>
 <note><para>
 To fill the contents of the rich text, initialization function calling
 <computeroutput>UI::ChangeWidget</computeroutput> must be defined.
@@ -248,8 +252,8 @@ Parameters:
 <listitem><para>"custom_widget" : term describing the widget</para></listitem>
 </itemizedlist></para>
 
-<example><title>Custom widget</title><screen>
-map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+<example><title>Custom widget</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
   "PUSH_BUTTON" : $[
     "widget" : `custom,
     "custom_widget" : `PushButton (
@@ -257,8 +261,15 @@ map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
                             _("Push Button")),
   ],
   ....
-]
- </screen></example>
+]</screen
+></example>
 </section>
 
 </chapter>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: xml
+sgml-parent-document:("cwm.xml" "book" "chapter")
+sgml-doctype:"cwm.xml"
+End:
+-->
