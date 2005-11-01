@@ -434,42 +434,38 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 	}
 	else
 	{
+	        term id_term = `id (w["_cwm_key"]:"");
 		term opt_term = `opt ();
 		foreach (any o, w["opt"]:[], ``{
 		    opt_term = add (opt_term, o);
 		});
+		string label = w["label"]:w["_cwm_key"]:"";
+
 		if (widget == `textentry)
 		{
-		    w["widget"] = `TextEntry (`id (w["_cwm_key"]:""), opt_term,
-			w["label"]:w["_cwm_key"]:"");
+		    w["widget"] = `TextEntry (id_term, opt_term, label);
 		}
 		else if (widget == `checkbox)
 		{
-		    w["widget"] = `CheckBox (`id (w["_cwm_key"]:""), opt_term,
-			w["label"]:w["_cwm_key"]:"");
+		    w["widget"] = `CheckBox (id_term, opt_term, label);
 		}
 		else if (widget == `combobox)
 		{
-		    w["widget"] = `ComboBox (`id (w["_cwm_key"]:""), opt_term,
-			w["label"]:w["_cwm_key"]:"",
+		    w["widget"] = `ComboBox (id_term, opt_term, label,
 			maplist (list<string> i, w["items"]:[], ``(
 			    `item (`id (i[0]:""), i[1]:i[0]:"")
 			)));
 		}
 		else if (widget == `selection_box)
 		{
-		    w["widget"] = `SelectionBox (`id (w["_cwm_key"]:""),
-			opt_term,
-			w["label"]:w["_cwm_key"]:"",
+		    w["widget"] = `SelectionBox (id_term, opt_term, label,
 			maplist (list<string> i, w["items"]:[], ``(
 			    `item (`id (i[0]:""), i[1]:i[0]:"")
 			)));
 		}
 		else if (widget == `multi_selection_box)
 		{
-		    w["widget"] = `MultiSelectionBox (`id (w["_cwm_key"]:""),
-			opt_term,
-			w["label"]:w["_cwm_key"]:"",
+		    w["widget"] = `MultiSelectionBox (id_term, opt_term, label,
 			maplist (list<string> i, w["items"]:[], ``(
 			    `item (`id (i[0]:""), i[1]:i[0]:"")
 			)));
@@ -478,8 +474,7 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 		{
 		    integer min = w["minimum"]:0;
 		    integer max = w["maximum"]:2147483647;
-		    w["widget"] = `IntField (`id (w["_cwm_key"]:""), opt_term,
-			w["label"]:w["_cwm_key"]:"",
+		    w["widget"] = `IntField (id_term, opt_term, label,
 			min, max, min);
 		}
 		else if (widget == `radio_buttons)
@@ -493,35 +488,27 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 			buttons = add (buttons, `VSpacing (vspacing));
 		    });
 		    w["widget"] = `Frame (
-			w["label"]:w["_cwm_key"]:"",
+			label,
 			`HBox (`HSpacing (hspacing),
-			    `RadioButtonGroup (`id (w["_cwm_key"]:""), buttons),
+			    `RadioButtonGroup (id_term, buttons),
 			`HSpacing (hspacing))
 		    );
 		}
 		else if (widget == `radio_button)
 		{
-		    w["widget"] = `RadioButton (`id (w["_cwm_key"]:""),
-			opt_term,
-			w["label"]:w["_cwm_key"]:"");
+		    w["widget"] = `RadioButton (id_term, opt_term, label);
 		}
 		else if (widget == `push_button)
 		{
-		    w["widget"] = `PushButton (`id (w["_cwm_key"]:""),
-			opt_term,
-			w["label"]:w["_cwm_key"]:"");
+		    w["widget"] = `PushButton (id_term, opt_term, label);
 		}
 		else if (widget == `multi_line_edit)
 		{
-		    w["widget"] = `MultiLineEdit (`id (w["_cwm_key"]:""),
-			opt_term,
-			w["label"]:w["_cwm_key"]:"");
+		    w["widget"] = `MultiLineEdit (id_term, opt_term, label);
 		}
 		else if (widget == `richtext)
 		{
-		    w["widget"] = `RichText (`id (w["_cwm_key"]:""),
-			opt_term,
-			"");
+		    w["widget"] = `RichText (id_term, opt_term, "");
 		}
 	}
 	w["custom_widget"] = nil; // not needed any more
