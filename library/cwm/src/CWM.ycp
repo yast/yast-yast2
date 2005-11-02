@@ -57,6 +57,18 @@ void PopSettings () {
     current_dialog_widgets = current_dialog["widgets"]:[];
 }
 
+/**
+ * UI containers, layout helpers that contain other widgets.  Used by
+ * functions that recurse through "contents" to decide whether to go
+ * deeper.
+ */
+list<symbol> ContainerWidgets = [
+    `Frame, `RadioButtonGroup,
+    `VBox, `HBox,
+    `Left, `Right, `Top, `Bottom, `HCenter, `VCenter, `HVCenter,
+    `HSquash, `VSquash, `HVSquash, `HWeight, `VWeight,
+    ];
+
     /**
       * Process term with the dialog, replace strings in the term with
       * appropriate widgets
@@ -74,22 +86,20 @@ void PopSettings () {
 	symbol current = symbolof (t);
 	while (index < args)
 	{
-	    any arg = select (t, index, nil);
-	    if (current == `Frame && index == 0)
+	    any arg = t[index]:nil;
+	    if (current == `Frame && index == 0) // no action
 	    {
 		y2debug ("Leaving untouched %1", arg);
 	    }
-	    else if (is (arg, term) && arg != nil)
+	    else if (is (arg, term) && arg != nil) // recurse
 	    {
 		symbol s = symbolof ((term)arg);
-		if (contains ([ `VBox, `HBox, `Left, `Right, `Frame,
-		    `RadioButtonGroup,
-		    `HWeight, `VWeight], s))
+		if (contains (ContainerWidgets, s))
 		{
 		    arg = ProcessTerm ((term)arg, widgets);
 		}
 	    }
-	    else if (is (arg, string))
+	    else if (is (arg, string)) // action
 	    {
 		arg = widgets[(string)arg, "widget"]:`VBox ();
 	    }
@@ -97,6 +107,41 @@ void PopSettings () {
 	    index = index + 1;
 	}
 	return ret;
+    }
+
+    /**
+      * Process term with the dialog, return all strings.
+      * To be used as an argument for widget_names until they are obsoleted.
+      * @param t term dialog containing strings
+      * @return strings found in the term
+      */
+    define list<string> StringsOfTerm (term t) {
+	list<string> rets = [];
+	integer args = size (t);
+	integer index = 0;
+	while (index < args)
+	{
+	    any arg = t[index]:nil;
+	    symbol current = symbolof (t);
+	    if (current == `Frame && index == 0) // no action
+	    {
+		y2debug ("Leaving untouched %1", arg);
+	    }
+	    else if (is (arg, term) && arg != nil) // recurse
+	    {
+		symbol s = symbolof ((term)arg);
+		if (contains (ContainerWidgets, s))
+		{
+		    rets = rets + StringsOfTerm ((term)arg);
+		}
+	    }
+	    else if (is (arg, string)) // action
+	    {
+		rets = add (rets, (string)arg);
+	    }
+	    index = index + 1;
+	}
+	return rets;
     }
 
 /**
@@ -795,10 +840,10 @@ global define void ReplaceWidgetHelp (string widget, string help) {
      * @param settings a map of all settings needed to run the dialog
      */
     global define symbol ShowAndRun (map<string,any> settings) {
-	list<string> widget_names = settings["widget_names"]:[];
 	map<string,map<string,any> > widget_descr
 	    = settings["widget_descr"]:$[];
 	term contents = settings["contents"]:`VBox ();
+	list<string> widget_names = settings["widget_names"]:StringsOfTerm (contents);
 	string caption = settings["caption"]:"";
 	string back_button = settings["back_button"]:Label::BackButton ();
 	string next_button = settings["next_button"]:Label::NextButton ();
