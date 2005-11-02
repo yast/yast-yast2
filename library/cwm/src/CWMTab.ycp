@@ -277,9 +277,11 @@ global define map<string,any> CreateWidget (map settings) {
     tabs = mapmap (string k, map<string,any> v, tabs, {
 	term contents = v["contents"]:`VBox();
 	list<string> widget_names = v["widget_names"]:[];
-
+	// second arg wins
+	map<any, any> fallback = union (settings["fallback_functions"]:$[], v["fallback_functions"]:$[]);
 	list<map <string, any> > w
 	    = CWM::CreateWidgets (widget_names, widget_descr);
+	w = CWM::mergeFunctions (w, fallback);
 	string help = CWM::MergeHelps (w);
 	contents = CWM::PrepareDialog (contents, w);
 
