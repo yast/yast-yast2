@@ -72,7 +72,7 @@
 	"samba-server" : $[
 	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
 	    "name"	: _("Samba Server"),
-	    "tcp_ports" : [ "epmap", "netbios-ssn", "microsoft-ds" ],	// TCP: 135, 139, 445
+	    "tcp_ports" : [ "netbios-ssn", "microsoft-ds" ],		// TCP: 139, 445
 	    "udp_ports" : [ "netbios-ns", "netbios-dgm" ],		// UDP: 137, 138
 	    "broadcast_ports" : [ "netbios-ns", "netbios-dgm" ],	// UDP: 137, 138
 	],
