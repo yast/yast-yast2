@@ -63,6 +63,15 @@ define void TabInit (map<string,any> tab) {
 }
 
 /**
+ * Clean up the widgets in the tab
+ * @param tab a map describing the tab
+ */
+define void TabCleanup (map<string,any> tab) {
+    list<map<string,any> > widgets = tab["widgets"]:[];
+    CWM::cleanupWidgets (widgets);
+}
+
+/**
  * Handle events on the widgets inside the tab
  * @param tab a map describing the tab
  * @param event map event that caused the event handling
@@ -134,6 +143,22 @@ define void MarkCurrentTab () {
     }
 }
 
+/**
+ * Switch to a new tab
+ * @param new_tab_it id of the new tab
+ * @param widget tab set description
+ */
+define void InitNewTab (string new_tab_id, map<string,any> widget) {
+    previous_tab_id = current_tab_id;
+    previous_tab_map = current_tab_map;
+    current_tab_id = new_tab_id;
+    current_tab_map = widget["tabs", current_tab_id]:$[];
+    MarkCurrentTab ();
+    RedrawTab (current_tab_map);
+    RedrawHelp (widget, current_tab_map);
+    TabInit (current_tab_map);
+}
+
 // public functions
 
 /**
@@ -142,14 +167,18 @@ define void MarkCurrentTab () {
  * @param key strnig the widget key
  */
 global define void Init (map<string,any> widget, string key) {
-    current_tab_id = widget["initial_tab"]:"";
-    current_tab_map = widget["tabs", current_tab_id]:$[];
-    previous_tab_id = nil;
-    previous_tab_map = nil;
-    MarkCurrentTab ();
-    RedrawTab (current_tab_map);
-    RedrawHelp (widget, current_tab_map);
-    TabInit (current_tab_map);
+    InitNewTab (widget["initial_tab"]:"", widget);
+}
+
+/**
+ * Clean up function of the widget
+ * @param key the widget key (ignored)
+ */
+global define void CleanUp (string key) {
+    TabCleanup (current_tab_map);
+    // so that next init is not confused
+    current_tab_id = nil;
+    current_tab_map = nil;
 }
 
 /**
@@ -167,24 +196,14 @@ global define symbol Handle (map<string,any> widget, string key, map event) {
     any ret = event["ID"]:nil;
     if (is (ret, string) && contains (all_tabs, (string)ret))
     {
-	map<string,map<string,any> > tab_maps = widget["tabs"]:$[];
-	string new_tab_id = (string) ret;
-	map<string,any> new_tab_map = tab_maps[new_tab_id]:$[];
-
 	if (! TabValidate (current_tab_map, event))
 	{
 	    MarkCurrentTab ();
 	    return nil;
 	}
 	TabStore (current_tab_map, event);
-	previous_tab_id = current_tab_id;
-	previous_tab_map = current_tab_map;
-	current_tab_id = new_tab_id;
-	current_tab_map = new_tab_map;
-	RedrawTab (current_tab_map);
-	RedrawHelp (widget, current_tab_map);
-	MarkCurrentTab ();
-	TabInit (current_tab_map);
+
+	InitNewTab ((string) ret, widget);
     }
     return nil;
 }
@@ -296,6 +315,7 @@ global define map<string,any> CreateWidget (map settings) {
 	"custom_widget" : widget,
 	"init" : InitWrapper,
 	"store" : Store,
+	"clean_up" : CleanUp,
 	"handle" : HandleWrapper,
 	"validate_type": `function,
 	"validate_function": Validate,
