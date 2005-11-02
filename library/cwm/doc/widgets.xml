@@ -7,6 +7,25 @@ Note: in all examples additional parameters can be present, see
 <xref linkend="advanced"/>.
     </para>
   
+  <section><title>Empty Widget</title>
+
+<para>Displays nothing but still can handle events.</para>
+<variablelist>
+<varlistentry><term>widget</term>
+<listitem><para>`empty</para></listitem>
+</varlistentry>
+</variablelist>
+
+<example><title>Empty Widget</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "HANDLER" : $[
+    "widget" : `empty,
+    "handle" : GlobalEventhandler,
+  ],
+]</screen
+></example>
+</section>
+
   <section><title>Check Box</title>
 
 <variablelist>
@@ -88,7 +107,9 @@ Parameters:
 <listitem><para>"widget" : must be set as `textentry</para></listitem>
 <listitem><para>"label" : label shown above the text entry</para></listitem>
 <listitem><para>"valid_chars" : list of characters that are valid for the text entry,
-                  if missing, all characters are valid</para></listitem>
+                  if missing, all characters are valid
+(FIXME not implemented)
+</para></listitem>
 </itemizedlist></para>
 
 <example><title>Text Entry</title><screen
@@ -263,6 +284,228 @@ Parameters:
   ....
 ]</screen
 ></example>
+</section>
+
+<section>
+<title>Widget Description Map Reference</title>
+
+<variablelist>
+
+<varlistentry>
+<term>widget</term>
+<listitem>
+<para>Kind of the widget. See <xref linkend="widgets"/>. ## The term to be
+passed to UI.</para>
+<para>All</para>
+<para>symbol ## Internal.</para>
+<para>FIXME use a different key for the resulting term.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>ui_timeout</term>
+<listitem>
+<para>How long to wait for user input before an idle event is generated (FIXME
+which).</para>
+<para>All</para>
+<para>integer</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>init</term>
+<listitem>
+<para>Function that initializes widgets. The parameter is the id of the
+widget. All widgets are initialized before the event loop.</para>
+<para>All</para>
+<para>void (string)</para>
+<para>See: fallback_functions in ShowAndRun</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>handle</term>
+<listitem>
+<para>Function that handles events. All widgets that have this function defined
+are handled on each event. The parameters are the id of the widget and the
+event map. It should return nil to continue processing or a symbol to be
+returned from the dialog.</para>
+<para>All</para>
+<para>symbol (string, map)</para>
+<para>See: fallback_functions in ShowAndRun</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>handle_events</term>
+<listitem>
+<para>Limits calling of the handle function to a certain list of widget
+ids.</para>
+<para>All</para>
+<para>list &lt;any&gt;</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>store</term>
+<listitem>
+<para>Function that saves the values of widgets. The parameters are the id of the
+widget and a map of the event that caused the dialog to end. All widgets are
+saved after the event loop unless `back or `abort is returned.</para>
+<para>All</para>
+<para>void (string, map)</para>
+<para>See: fallback_functions in ShowAndRun</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>clean_up</term>
+<listitem>
+<para>Function that cleans up widgets. The parameter is the id of the
+widget. All widgets are cleaned up before the dialog ends, after they (would)
+have been saved.</para>
+<para>All</para>
+<para>void (string)</para>
+<para>See: fallback_functions in ShowAndRun</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>custom_widget</term>
+<listitem>
+<para>A UI term ready to be placed to the dialog.</para>
+<para>widget == `custom</para>
+<para>term</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>widget_func</term>
+<listitem>
+<para>A function that returns a UI term ready to be placed to the
+dialog.</para>
+<para>widget == `func</para>
+<para>term ()</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>opt</term>
+<listitem>
+<para>Options to be placed to the `opt term of the widget.</para>
+<para>All except `empty, `custom and `func</para>
+<para>list &lt;any&gt;</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>label</term>
+<listitem>
+<para>Widget label.</para>
+<para>All except `empty, `custom and `func (and why `richtext?)</para>
+<para></para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>items</term>
+<listitem>
+<para>List of items for some widgets, in pairs [id, label].</para>
+<para>`combobox, `selection_box, `multi_selection_box, `radio_buttons</para>
+<para></para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>minimum</term>
+<listitem>
+<para>Minimum value for integer fields.</para>
+<para>`intfield</para>
+<para>integer</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>maximum</term>
+<listitem>
+<para>Maximum value for integer fields.</para>
+<para>`intfield</para>
+<para>integer</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>hspacing</term>
+<listitem>
+<para>Horizontal padding and spacing between the radio buttons.</para>
+<para>`radio_buttons</para>
+<para>integer (FIXME float?, not validated)</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>vspacing</term>
+<listitem>
+<para>Vertical padding and spacing between the radio buttons.</para>
+<para>`radio_buttons</para>
+<para>integer (FIXME float?, not validated)</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>validate_type</term>
+<listitem>
+<para>`function, `regexp` or `list. All widgets that have this defined are
+validated before the dialog would be successfully exited and saved. Actually
+not all, only until the first failure.</para>
+<para>All</para>
+<para>symbol</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>validate_function</term>
+<listitem>
+<para>Function that validates the widget. The parameters are the widget key and
+the map of the event that causes the dialog to exit. If it fails, CWM will pop
+up an error.</para>
+<para>validate_type == `function</para>
+<para>boolean (string, map)</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>validate_condition</term>
+<listitem>
+<para></para>
+<para>validate_type == `regexp or `list</para>
+<para>string or list</para>
+<para>FIXME, does not seem to work because of `_tp_value</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>help</term>
+<listitem>
+<para>Widget help</para>
+<para>All</para>
+<para>string</para>
+</listitem>
+</varlistentry>
+
+<!--
+<varlistentry>
+<term></term>
+<listitem>
+<para></para>
+<para>All</para>
+<para></para>
+</listitem>
+</varlistentry>
+-->
+
+</variablelist>
+
 </section>
 
 </chapter>
