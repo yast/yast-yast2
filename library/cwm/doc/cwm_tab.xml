@@ -119,6 +119,11 @@ and following for additional information about this stuff.
 contains optional help to the tab. It is displayed always, followed by the
 helps of widgets contained in the currently displayed tab.
 	</para></listitem>
+	<listitem><para>
+	  <computeroutput>"fallback_functions" : map&lt;string,any&gt;</computeroutput>
+is a map specifying handler functions common for all widgets the tabs, if
+they are not specified for the individual tabs or widgets.
+	</para></listitem>
       </itemizedlist>
     </para>
   </section>
@@ -147,6 +152,11 @@ before the tab is displayed.
 contains the list of widget IDs of all widgets in the tab. The widgets
 will be handled in the same order as they are specified (also valid for
 help texts merging).
+	</para></listitem>
+	<listitem><para>
+	  <computeroutput>"fallback_functions" : map&lt;string,any&gt;</computeroutput>
+is a map specifying handler functions common for all widgets in this tab, if
+they are not specified for the individual widgets.
 	</para></listitem>
       </itemizedlist>
     </para>
