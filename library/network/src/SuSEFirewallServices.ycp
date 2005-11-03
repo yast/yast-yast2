@@ -191,6 +191,14 @@
 	    "name"	: _("Remote File Alteration Monitor"),
 	    "rpc_ports" : [ "sgi_fam" ],
 	],
+	// requested by thofmann
+	"open-pbs" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("Portable Batch System (PBS)"),
+	    // /etc/services says: The following entries are invalid, but needed
+	    "tcp_ports" : [ "pbs", "pbs_mom", "pbs_resmom", "pbs_sched" ],
+	    "udp_ports" : [ "pbs_resmom" ],
+	],
     ];
 
     /**
