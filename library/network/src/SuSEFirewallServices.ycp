@@ -199,6 +199,11 @@
 	    "tcp_ports" : [ "pbs", "pbs_mom", "pbs_resmom", "pbs_sched" ],
 	    "udp_ports" : [ "pbs_resmom" ],
 	],
+	"mysql-server" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("MySQL Remote Access"),
+	    "tcp_ports"	: [ "mysql" ],
+	],
     ];
 
     /**
