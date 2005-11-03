@@ -3,6 +3,7 @@ Wed Nov  2 10:54:54 CET 2005 - locilka@suse.cz
 
 - Removing TCP port 135 from samba-server firewall definition.
 - Adding "Portable Batch System (PBS)" definition into firewall
+- Adding MySQL definition into firewall, enhancement #131478
 
 -------------------------------------------------------------------
 Thu Oct 27 18:14:24 CEST 2005 - mvidner@suse.cz
