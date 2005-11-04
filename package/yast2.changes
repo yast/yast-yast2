@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Wed Nov  2 18:33:12 CET 2005 - mvidner@suse.cz
+
+- CWM
+ - PrepareDialog recognizes *Squash and alignment widgets.
+ - "widget_names" can be omitted in ShowAndRun.
+ - Added section: Widget Description Map Reference.
+ - Factored out rules to format the docbook documentation.
+- CWMTab
+ - CreateWidget recognizes "fallback_functions" in the main map
+   and the tab maps.
+ - Also call "clean_up" functions for widgets inside the tabs.
+
+-------------------------------------------------------------------
 Wed Nov  2 10:54:54 CET 2005 - locilka@suse.cz
 
 - Removing TCP port 135 from samba-server firewall definition.
