@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov  8 09:28:22 CET 2005 - lslezak@suse.cz
+
+- The reserved characters can be part of URL (#96960),
+  properly handle the escape sequences in parsing/building of URL
+- 2.13.8
+
+-------------------------------------------------------------------
 Wed Nov  2 18:33:12 CET 2005 - mvidner@suse.cz
 
 - CWM
