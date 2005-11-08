@@ -283,7 +283,14 @@ global define string Build (map tokens) ``{
 	if (tokens["path"]:"" != "" && find (tokens["path"]:"", "/") != 0 )
 		url = sformat("%1/%2", url, EscapeString(tokens["path"]:"", transform_map_filename));
 	else if (tokens["path"]:"" != "" && find (tokens["path"]:"", "/") == 0 )
-		url = sformat("%1%2", url, tokens["path"]:"");
+	{
+		if (tokens["scheme"]:"" == "ftp") {
+		    url = sformat("%1/%%2f%2", url, substring(EscapeString(tokens["path"]:"", transform_map_filename), 1));
+		}
+		else {
+		    url = sformat("%1%2", url, EscapeString(tokens["path"]:"", transform_map_filename));
+		}
+	}
 	y2debug("url: %1", url);
 
 	if (tokens["query"]:"" != "" )

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov  8 13:37:34 CET 2005 - lslezak@suse.cz
+
+- add %2f when the begining of FTP URL path starts with /
+- 2.13.9
+
+-------------------------------------------------------------------
 Tue Nov  8 09:28:22 CET 2005 - lslezak@suse.cz
 
 - The reserved characters can be part of URL (#96960),
