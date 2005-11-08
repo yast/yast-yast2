@@ -14,6 +14,7 @@ module "URL";
 textdomain "base";
 
 import "Hostname";
+import "String";
 import "IP";
 
 /**
@@ -28,6 +29,99 @@ import "IP";
  * Valid characters in URL
  */
 global string ValidChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.:_-/%";
+
+
+/**
+ * Transform map used for (un)escaping characters in username/password part of an URL.
+ * It doesn't contain '%' because this character must be used in a particular
+ * order (the first or the last) during processing
+ */
+global map<string, string> transform_map_passwd = $[
+    ";":"%3b",
+    "/":"%2f",
+    "?":"%3f",
+    ":":"%3a",
+    "@":"%40",
+    "&":"%26",
+    "=":"%3d",
+    "+":"%2b",
+    "$":"%24",
+    ",":"%2c",
+    " ":"%20"
+];
+
+/**
+ * Transform map used for (un)escaping characters in file location part of an URL.
+ * It doesn't contain '%' because this character must be used in a particular
+ * order (the first or the last) during processing
+ */
+global map<string, string> transform_map_filename = $[
+    ";":"%3b",
+    "?":"%3f",
+    ":":"%3a",
+    "@":"%40",
+    "&":"%26",
+    "=":"%3d",
+    "+":"%2b",
+    "$":"%24",
+    ",":"%2c",
+    " ":"%20"
+];
+
+/**
+ * Escape reserved characters in string used as a part of URL (e.g. '%' => '%25', '@' => '%40'...)
+ *
+ * @param in input string to escape
+ * @return string escaped string
+ */
+
+global string UnEscapeString(string in, map<string,string> transform) {
+
+    if (in == nil || in == "")
+    {
+	return "";
+    }
+
+    // replace the other reserved characters
+    foreach(string tgt, string src, transform, {
+	    // replace both upper and lower case escape sequences
+	    in = String::Replace(in, tolower(src), tgt);
+	    in = String::Replace(in, toupper(src), tgt);
+	}
+    );
+
+    // replace % at the end
+    in = String::Replace(in, "%25", "%");
+
+    return in;
+}
+
+/**
+ * Escape reserved characters in string used as a part of URL (e.g. '%' => '%25', '@' => '%40'...)
+ *
+ * @param in input string to escape
+ * @return string escaped string
+ */
+
+global string EscapeString(string in, map<string,string> transform) {
+    string ret = "";
+
+    if (in == nil || in == "")
+    {
+	return ret;
+    }
+
+    // replace % at first
+    ret = mergestring(splitstring(in, "%"), "%25");
+
+    // replace the other reserved characters
+    foreach(string src, string tgt, transform, {
+	    ret = mergestring(splitstring(ret, src), tgt);
+	}
+    );
+
+    return ret;
+}
 
 /**
  * Tokenize URL
@@ -69,9 +163,9 @@ global define map Parse(string url) ``{
 
     map tokens = $[];
     tokens["scheme"] = rawtokens[1]:"";
-    tokens["path"] = rawtokens[3]:"";
-    tokens["query"] = rawtokens[5]:"";
-    tokens["fragment"] = rawtokens[7]:"";
+    tokens["path"] = UnEscapeString(rawtokens[3]:"", transform_map_filename);
+    tokens["query"] = UnEscapeString(rawtokens[5]:"", transform_map_passwd);
+    tokens["fragment"] = UnEscapeString(rawtokens[7]:"", transform_map_passwd);
 
     /* Extract username:pass@host:port */
     list userpass = regexptokenize(rawtokens[2]:"", "^" +
@@ -85,8 +179,8 @@ global define map Parse(string url) ``{
     );
     y2debug("userpass=%1", userpass);
 
-    tokens["user"] = userpass[1]:"";
-    tokens["pass"] = userpass[3]:"";
+    tokens["user"] = UnEscapeString(userpass[1]:"", transform_map_passwd);
+    tokens["pass"] = UnEscapeString(userpass[3]:"", transform_map_passwd);
     tokens["port"] = userpass[7]:"";
 
     if(userpass[5]:"" != "")
@@ -161,11 +255,12 @@ global define string Build (map tokens) ``{
 
 	if (tokens["user"]:"" != "")
 	{
-		userpass = tokens["user"]:"";
+		userpass = EscapeString(tokens["user"]:"", transform_map_passwd);
+		y2milestone("Escaped username '%1' => '%2'", tokens["user"]:"", userpass);
 	}
 	if (size(userpass) != 0 && tokens["pass"]:"" != "" )
 	{
-		userpass = sformat("%1:%2", userpass, tokens["pass"]:"" );
+		userpass = sformat("%1:%2", userpass, EscapeString(tokens["pass"]:"", transform_map_passwd) );
 	}
 	if (size(userpass) > 0 )
 		userpass = userpass + "@";
@@ -186,15 +281,15 @@ global define string Build (map tokens) ``{
 	y2debug("url: %1", url);
 
 	if (tokens["path"]:"" != "" && find (tokens["path"]:"", "/") != 0 )
-		url = sformat("%1/%2", url, tokens["path"]:"");
+		url = sformat("%1/%2", url, EscapeString(tokens["path"]:"", transform_map_filename));
 	else if (tokens["path"]:"" != "" && find (tokens["path"]:"", "/") == 0 )
 		url = sformat("%1%2", url, tokens["path"]:"");
 	y2debug("url: %1", url);
 
 	if (tokens["query"]:"" != "" )
-		url = sformat("%1?%2", url, tokens["query"]:"");
+		url = sformat("%1?%2", url, EscapeString(tokens["query"]:"", transform_map_passwd));
 	if (tokens["fragment"]:"" != "" )
-		url = sformat("%1#%2", url, tokens["fragment"]:"");
+		url = sformat("%1#%2", url, EscapeString(tokens["fragment"]:"", transform_map_passwd));
 	y2debug("url: %1", url);
 
 	if (!Check(url)) {

@@ -1,1 +1,19 @@
 Return	$["fragment":"part", "host":"www.suse.cz", "pass":"pass", "path":"/path/index.html", "port":"80", "query":"question", "scheme":"http", "user":"name"]
+Return	
+Return	
+Return	abcd
+Return	abcd%25
+Return	ab%25c%24d
+Return	%20%25%24%20
+Return	_<>{}
+Return	%25
+Return	
+Return	
+Return	abcd
+Return	ab/cd%
+Return	ab@%
+Return	@
+Return	_<>{}
+Return	http://name:pass@www.suse.cz:80/path/index.html?question#part
+Return	http://na%40me:pa%3f%3fss@www.suse.cz:80/path/index.html?question#part
+Return	http://user%40domain:pass@www.suse.cz:80/path/index.html?question#part
