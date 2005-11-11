@@ -319,7 +319,7 @@ global boolean InstallKernel (list<string> kernel_modules) {
 
     list<string> packs = [kernel];
 
-    if (! Pkg::IsInstalled (kernel_nongpl))
+    if (! Pkg::IsProvided (kernel_nongpl))
     {
 	EnsureSourceInit ();
 	if (Pkg::IsAvailable (kernel_nongpl))
