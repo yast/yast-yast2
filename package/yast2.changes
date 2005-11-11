@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov 11 10:05:46 CET 2005 - jsrain@suse.cz
+
+- initialize package source only if needed when installing kernel
+  modules package (#132458)
+
+-------------------------------------------------------------------
 Tue Nov  8 13:37:34 CET 2005 - lslezak@suse.cz
 
 - add %2f when the begining of FTP URL path starts with /
