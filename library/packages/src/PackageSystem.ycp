@@ -302,7 +302,6 @@ global boolean InstallKernel (list<string> kernel_modules) {
 	return true;		// nothing to do
     }
 
-    EnsureSourceInit ();
     EnsureTargetInit ();
 
     list <list> provides = Pkg::PkgQueryProvides ("kernel");
@@ -317,13 +316,17 @@ global boolean InstallKernel (list<string> kernel_modules) {
 
     string kernel = kernels[0,0]:"none";
     string kernel_nongpl = kernel + "-nongpl";
-    
+
     list<string> packs = [kernel];
 
-    if (Pkg::IsAvailable (kernel_nongpl))
+    if (! Pkg::IsInstalled (kernel_nongpl))
     {
-        y2milestone ("adding kernel subpackage %1", kernel_nongpl);
-        packs = add (packs, kernel_nongpl);
+	EnsureSourceInit ();
+	if (Pkg::IsAvailable (kernel_nongpl))
+	{
+	    y2milestone ("adding kernel subpackage %1", kernel_nongpl);
+	    packs = add (packs, kernel_nongpl);
+	}
     }
 
     // TODO: for 9.2, we always install all packages, but
