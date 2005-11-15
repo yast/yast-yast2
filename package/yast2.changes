@@ -1,4 +1,20 @@
 -------------------------------------------------------------------
+Tue Nov 15 18:49:54 CET 2005 - mvidner@suse.cz
+
+- CWM:
+ - added `menu_button
+ - explicitly specifying an empty help produces no errors, like no_help
+ - actually implemented validate_help
+ - added validate_type: `function_no_popup so that the function bodies
+   can be shared and only validate_help needs to differ
+- CWMTab:
+ - widget_names is now optional
+ - generate a fake event when switching to a new tab to allow a handler
+   to enabled/disable widgets before the first real UserInput takes place
+ - prevent double tab initialization at tab set initialization
+- 2.13.10
+    
+-------------------------------------------------------------------
 Fri Nov 11 10:05:46 CET 2005 - jsrain@suse.cz
 
 - initialize package source only if needed when installing kernel

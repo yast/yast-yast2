@@ -115,7 +115,7 @@ list<symbol> ContainerWidgets = [
       * @param t term dialog containing strings
       * @return strings found in the term
       */
-    define list<string> StringsOfTerm (term t) {
+    global define list<string> StringsOfTerm (term t) {
 	list<string> rets = [];
 	integer args = size (t);
 	integer index = 0;
@@ -250,7 +250,7 @@ global boolean ValidateBasicType (any value, string type) {
 	else if (key == "help")
 	{
 	    string s = (string)value;
-	    if (s == nil || size (s) == 0)
+	    if (s == nil)
 		error = "Empty help";
 	}
 	else if (key == "widget")
@@ -547,6 +547,13 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 		{
 		    w["widget"] = `PushButton (id_term, opt_term, label);
 		}
+		else if (widget == `menu_button)
+		{
+		    w["widget"] = `MenuButton (id_term, opt_term, label,
+			maplist (list<string> i, w["items"]:[], ``(
+			    `item (`id (i[0]:""), i[1]:i[0]:"")
+			)));
+		}
 		else if (widget == `multi_line_edit)
 		{
 		    w["widget"] = `MultiLineEdit (id_term, opt_term, label);
@@ -571,12 +578,12 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 	processed_widget = widget;
 	boolean failed = false;
 	symbol val_type = (symbol) (widget["validate_type"]:nil);
-	if (val_type == `function)
+	if (val_type == `function || val_type == `function_no_popup)
 	{
 	    boolean (string, map) toEval = (boolean(string, map)) (widget["validate_function"]:nil);
 	    if (toEval != nil)
 	    {
-		return toEval (key, event);
+		failed = ! toEval (key, event);
 	    }
 	}
 	else if (val_type == `regexp)
@@ -599,15 +606,19 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 		failed = true;
 	    }
 	}
-	if (failed)
+
+	if (failed && val_type != `function)
 	{
-	    string wname = widget["label"]:widget["_cwm_key"]:"";
-	    wname = deletechars (wname, "&");
-	    Report::Error (sformat (
+	    string error = widget["validate_help"]:"";
+	    if (error == "")
+	    {
+		string wname = widget["label"]:widget["_cwm_key"]:"";
+		wname = deletechars (wname, "&");
 		// message popup, %1 is a label of some widget
-		_("The value of %1 is invalid."),
-		wname));
+		error = sformat (_("The value of %1 is invalid."), wname);
+	    }
 	    UI::SetFocus (`id (widget["_cwm_key"]:""));
+	    Report::Error (error);
 	}
 	return ! failed;
     }

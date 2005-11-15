@@ -157,6 +157,9 @@ define void InitNewTab (string new_tab_id, map<string,any> widget) {
     RedrawTab (current_tab_map);
     RedrawHelp (widget, current_tab_map);
     TabInit (current_tab_map);
+    // allow a handler to enabled/disable widgets before the first real
+    // UserInput takes place
+    UI::FakeUserInput ($["ID": "_cwm_tab_wakeup"]);
 }
 
 // public functions
@@ -194,7 +197,10 @@ global define symbol Handle (map<string,any> widget, string key, map event) {
     if (h_ret != nil)
 	return h_ret;
     any ret = event["ID"]:nil;
-    if (is (ret, string) && contains (all_tabs, (string)ret))
+    if (is (ret, string) && contains (all_tabs, (string)ret) &&
+	// At initialization, qt thinks it has switched to the same tab
+	// So prevent unnecessary double initialization
+	ret != current_tab_id)
     {
 	if (! TabValidate (current_tab_map, event))
 	{
@@ -295,7 +301,7 @@ global define map<string,any> CreateWidget (map settings) {
 
     tabs = mapmap (string k, map<string,any> v, tabs, {
 	term contents = v["contents"]:`VBox();
-	list<string> widget_names = v["widget_names"]:[];
+	list<string> widget_names = v["widget_names"]:CWM::StringsOfTerm (contents);
 	// second arg wins
 	map<any, any> fallback = union (settings["fallback_functions"]:$[], v["fallback_functions"]:$[]);
 	list<map <string, any> > w

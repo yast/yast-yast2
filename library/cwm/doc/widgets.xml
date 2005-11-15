@@ -225,6 +225,35 @@ Parameters:
 ></example>
 </section>
 
+<section id="menu_button"><title>Menu Button</title>
+
+<variablelist>
+<varlistentry><term>widget</term>
+<listitem><para>`menu_button</para></listitem>
+</varlistentry>
+<varlistentry><term>label</term>
+<listitem><para>The menu button label</para></listitem>
+</varlistentry>
+<varlistentry><term>items</term>
+<listitem><para>List of string pairs [id, label] for the menu items</para></listitem>
+</varlistentry>
+</variablelist>
+
+<example><title>Menu Button</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "MENUBUTTON" : $[
+    "label" : _("&amp;Advanced"),
+    "widget" : `menu_button,
+    "items" : [
+        [ "FIXIT", _("&amp;Fix Everything") ],
+        [ "CRASH", _("&amp;Crash now") ]
+    ],
+  ],
+  ....
+]</screen
+></example>
+</section>
+
 <section id="multiline"><title>Multi-Line Edit Box</title>
 <para>
 Parameters:
@@ -411,7 +440,8 @@ dialog.</para>
 <term>items</term>
 <listitem>
 <para>List of items for some widgets, in pairs [id, label].</para>
-<para>`combobox, `selection_box, `multi_selection_box, `radio_buttons</para>
+<para>`combobox, `selection_box, `multi_selection_box, `radio_buttons,
+`menu_button</para>
 <para></para>
 </listitem>
 </varlistentry>
@@ -455,7 +485,8 @@ dialog.</para>
 <varlistentry>
 <term>validate_type</term>
 <listitem>
-<para>`function, `regexp` or `list. All widgets that have this defined are
+<para>`function, `function_no_popup, `regexp` or `list.
+All widgets that have this defined are
 validated before the dialog would be successfully exited and saved. Actually
 not all, only until the first failure.</para>
 <para>All</para>
@@ -467,9 +498,10 @@ not all, only until the first failure.</para>
 <term>validate_function</term>
 <listitem>
 <para>Function that validates the widget. The parameters are the widget key and
-the map of the event that causes the dialog to exit. If it fails, CWM will pop
-up an error.</para>
-<para>validate_type == `function</para>
+the map of the event that causes the dialog to exit. In case of validation
+failure, for `function, it should pop up an error by itself , and for
+`function_no_popup, CWM will pop up an error (using validate_help if present).</para>
+<para>validate_type == `function or `function_no_popup</para>
 <para>boolean (string, map)</para>
 </listitem>
 </varlistentry>
@@ -481,6 +513,16 @@ up an error.</para>
 <para>validate_type == `regexp or `list</para>
 <para>string or list</para>
 <para>FIXME, does not seem to work because of `_tp_value</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>validate_help</term>
+<listitem>
+<para></para>
+<para>validate_type != `function</para>
+<para>string</para>
+<para>Contents of error popup shown if a widget fails to validate</para>
 </listitem>
 </varlistentry>
 
