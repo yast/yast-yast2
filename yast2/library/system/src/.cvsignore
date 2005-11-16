@@ -1,0 +1,5 @@
+Makefile
+Makefile.in
+Version.ycp
+*.ybc
+.dep

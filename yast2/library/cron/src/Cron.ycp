@@ -1,0 +1,86 @@
+/**
+ * File:	modules/Cron.ycp
+ * Package:	yast2
+ * Summary:	Read and Write Crontabs
+ * Authors:	Anas Nashif <nashif@suse.de>
+ *
+ * $Id$
+ *
+ */
+
+{
+
+    module "Cron";
+    textdomain "base";
+
+    /**
+     * Read crontab contents
+     * @param string filename
+     * @param map options (not implemented yet)
+     * @return list crontab contents
+     */
+    global define list Read(string filename , map options)
+    {
+        list crontab = (list)SCR::Read(.cron, filename, options);
+        return crontab;
+    }
+
+
+    /**
+     * Write crontab contents
+     * @param string filename
+     * @param list blocks
+     * @return boolean true on success
+     */
+    global define boolean Write(string filename, list blocks)
+    {
+
+        boolean ret = SCR::Write(.cron, filename, blocks);
+        return ret;
+    }
+
+
+    /**
+     * Add a simple cron job with comment and env. variables
+     * @param string comment
+     * @param map with environment variables
+     * @param  command
+     * @param event event time: dom, dow, hour, minute, month, special
+     * @param string file path to write cron to
+     * @return boolean true on success
+     */
+    global define boolean AddSimple(
+            string comment,
+            map envs,
+            string command ,
+            map event,
+            string file
+            )
+    {
+
+        map cron = $[];
+        // Comments first
+        list<string> comments = [];
+        comments = add(comments, comment);
+        cron["comments"] = comments;
+
+        // Variables
+        cron["envs"] = envs;
+
+        // Events
+        list<map> events = [];
+        event["command"] = command;
+
+        events = add(events, event);
+
+        cron["events"] = events;
+
+        list<map> crons = [];
+        crons=add(crons, cron);
+
+        boolean ret = Write(file, crons);
+        return ret;
+    }
+
+    /* EOF */
+}

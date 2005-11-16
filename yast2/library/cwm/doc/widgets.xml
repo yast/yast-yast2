@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding='ISO-8859-1'?>
+<?xml-stylesheet href="/usr/share/xml/docbook/stylesheet/css/current/driver.css" type="text/css"?>
+<chapter id = "widgets">
+    <title>Available widgets</title>
+    <para>
+Note: in all examples additional parameters can be present, see 
+<xref linkend="advanced"/>.
+    </para>
+  
+  <section><title>Empty Widget</title>
+
+<para>Displays nothing but still can handle events.</para>
+<variablelist>
+<varlistentry><term>widget</term>
+<listitem><para>`empty</para></listitem>
+</varlistentry>
+</variablelist>
+
+<example><title>Empty Widget</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "HANDLER" : $[
+    "widget" : `empty,
+    "handle" : GlobalEventhandler,
+  ],
+]</screen
+></example>
+</section>
+
+  <section><title>Check Box</title>
+
+<variablelist>
+<varlistentry><term>widget</term>
+<listitem><para>`checkbox</para></listitem>
+</varlistentry>
+<varlistentry><term>label</term>
+<listitem><para>The checkbox label, shown to the right of it</para></listitem>
+</varlistentry>
+</variablelist>
+
+<example><title>Check Box</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "CHECKBOX" : $[
+    "label" : _("&amp;Checkbox"),
+    "widget" : `checkbox,
+  ],
+]</screen
+></example>
+</section>
+
+<section><title>Combo Box</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `combobox</para></listitem>
+<listitem><para>"label" : label shown above the combobox</para></listitem>
+<listitem><para>"items" : list of two-item-lists of [id, label], each item represents one
+            item of the Combobox. Both id and label must be strings.</para></listitem>
+</itemizedlist></para>
+
+<example><title>Combo Box</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "COMBOBOX" : $[
+    "label" : _("&amp;Combobox"),
+    "widget" : `combobox,
+    "items" : [
+        [ "item1", _("Label1") ],
+        [ "item2", _("Label2") ]
+    ],
+  ],
+  ....
+]</screen
+></example>
+</section>
+
+<section><title>Selection Box</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `selection_box</para></listitem>
+<listitem><para>"label" : label shown above the selection_box</para></listitem>
+<listitem><para>"items" : list of two-item-lists of [id, label], each item represents one
+            item of the selection box. Both id and label must be strings.</para></listitem>
+</itemizedlist></para>
+<para>
+Usage is similar to Combo Box.
+</para>
+</section>
+
+<section><title>MultiSelection Box</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `multi_selection_box</para></listitem>
+<listitem><para>"label" : label shown above the selection box</para></listitem>
+<listitem><para>"items" : list of two-item-lists of [id, label], each item represents one
+            item of the selection box. Both id and label must be strings.</para></listitem>
+</itemizedlist></para>
+<para>
+Usage is similar to Combo Box.
+</para>
+</section>
+
+<section><title>Text Entry</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `textentry</para></listitem>
+<listitem><para>"label" : label shown above the text entry</para></listitem>
+<listitem><para>"valid_chars" : list of characters that are valid for the text entry,
+                  if missing, all characters are valid
+(FIXME not implemented)
+</para></listitem>
+</itemizedlist></para>
+
+<example><title>Text Entry</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "TEXTENTRY" : $[
+    "label" : _("&amp;TextEntry"),
+    "widget" : `textentry,
+    "valid_chars" : "0123456789AaBbCcDdEeFfXx",
+        // for hexadecimal numbers
+  ],
+  ....
+]</screen
+></example>
+</section>
+
+<section><title>Int Field</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `intfield</para></listitem>
+<listitem><para>"label" : label shown above the int field</para></listitem>
+<listitem><para>"minimum" : minimal value of the int field, if not set, then 0 is used</para></listitem>
+<listitem><para>"maximum" : maximal value of the int field, if not set, then 2^31 - 1 is used</para></listitem>
+</itemizedlist></para>
+
+<example><title>Int Field</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "INTFIELD" : $[
+    "label" : _("&amp;Intfield"),
+    "widget" : `intfield,
+    "minimum" : -1,
+    "maximum" : 10,
+  ],
+  ....
+]</screen
+></example>
+</section>
+
+<section id="radio_buttons"><title>Radio Buttons</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `radio_buttons</para></listitem>
+<listitem><para>"label" : label of the frame around the radio buttons
+</para></listitem>
+<listitem><para>"items" : list of two-item-lists of [id, label], each item
+            represents one radio button. Both id and label must be strings.
+</para></listitem>
+<listitem><para>"hspacing" : FIXME</para></listitem>
+<listitem><para>"vspacing" : FIXME</para></listitem>
+<listitem><para>"orientation" : says if the radio buttons should be oriented
+            horizontally or vertically. Allowed values are `horizontal and
+            `vertical, default is `vertical.
+FIXME: NOT IMPLEMENTED
+</para></listitem>
+</itemizedlist></para>
+
+<example><title>Radio Buttons</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "RADIO_BUTTONS" : $[
+    "label" : _("RadioButtonGroup"),
+    "widget" : `radio_buttons,
+    "items" : [
+        [ "item1", _("&amp;Label1") ],
+        [ "item2", _("La&amp;bel2") ],
+    ],
+    "orientation" : `horizontal,
+  ],
+  ....
+]</screen
+></example>
+</section>
+
+<section><title>Radio Button</title>
+<para>
+This is the elementary radio button, for use in complex layouts where
+radio_buttons is not enough.
+</para>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `radio_button</para></listitem>
+<listitem><para>"label" : label shown to the right of the radio button</para></listitem>
+</itemizedlist></para>
+
+<!-- TODO: a better example, with a term showing the usage, eg dhcp/static -->
+<example><title>Radio Button</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "RADIOBUTTON" : $[
+    "label" : _("&amp;Radio Button"),
+    "widget" : `radio_button,
+  ],
+]</screen
+></example>
+</section>
+
+<section><title>Push Button</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `push_button</para></listitem>
+<listitem><para>"label" : push button label</para></listitem>
+</itemizedlist></para>
+
+<example><title>Push Button</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "PUSH_BUTTON" : $[
+    "widget" : `push_button,
+    "label" : _("Push Button"),
+  ],
+  ....
+]</screen
+></example>
+</section>
+
+<section id="menu_button"><title>Menu Button</title>
+
+<variablelist>
+<varlistentry><term>widget</term>
+<listitem><para>`menu_button</para></listitem>
+</varlistentry>
+<varlistentry><term>label</term>
+<listitem><para>The menu button label</para></listitem>
+</varlistentry>
+<varlistentry><term>items</term>
+<listitem><para>List of string pairs [id, label] for the menu items</para></listitem>
+</varlistentry>
+</variablelist>
+
+<example><title>Menu Button</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "MENUBUTTON" : $[
+    "label" : _("&amp;Advanced"),
+    "widget" : `menu_button,
+    "items" : [
+        [ "FIXIT", _("&amp;Fix Everything") ],
+        [ "CRASH", _("&amp;Crash now") ]
+    ],
+  ],
+  ....
+]</screen
+></example>
+</section>
+
+<section id="multiline"><title>Multi-Line Edit Box</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `multi_line_edit</para></listitem>
+<listitem><para>"label" : title of the multiline widget</para></listitem>
+</itemizedlist></para>
+
+<example><title>Push Button</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "MULTI_EDIT" : $[
+    "widget" : `multi_line_edit,
+    "label" : _("Text editor"),
+  ],
+  ....
+]</screen
+></example>
+</section>
+
+<section id="richtext"><title>Rich Text Field</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `richtext</para></listitem>
+</itemizedlist></para>
+
+<example><title>Rich Text</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "RICH_TEXT" : $[
+    "widget" : `richtext,
+  ],
+  ....
+]</screen
+></example>
+<note><para>
+To fill the contents of the rich text, initialization function calling
+<computeroutput>UI::ChangeWidget</computeroutput> must be defined.
+</para></note>
+</section>
+
+<section><title>Custom widget</title>
+<para>
+Parameters:
+<itemizedlist>
+<listitem><para>"widget" : must be set as `custom</para></listitem>
+<listitem><para>"custom_widget" : term describing the widget</para></listitem>
+</itemizedlist></para>
+
+<example><title>Custom widget</title><screen
+>map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "PUSH_BUTTON" : $[
+    "widget" : `custom,
+    "custom_widget" : `PushButton (
+                            `id (`push_button),
+                            _("Push Button")),
+  ],
+  ....
+]</screen
+></example>
+</section>
+
+<section>
+<title>Widget Description Map Reference</title>
+
+<variablelist>
+
+<varlistentry>
+<term>widget</term>
+<listitem>
+<para>Kind of the widget. See <xref linkend="widgets"/>. ## The term to be
+passed to UI.</para>
+<para>All</para>
+<para>symbol ## Internal.</para>
+<para>FIXME use a different key for the resulting term.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>ui_timeout</term>
+<listitem>
+<para>How long to wait for user input before an idle event is generated (FIXME
+which).</para>
+<para>All</para>
+<para>integer</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>init</term>
+<listitem>
+<para>Function that initializes widgets. The parameter is the id of the
+widget. All widgets are initialized before the event loop.</para>
+<para>All</para>
+<para>void (string)</para>
+<para>See: fallback_functions in ShowAndRun</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>handle</term>
+<listitem>
+<para>Function that handles events. All widgets that have this function defined
+are handled on each event. The parameters are the id of the widget and the
+event map. It should return nil to continue processing or a symbol to be
+returned from the dialog.</para>
+<para>All</para>
+<para>symbol (string, map)</para>
+<para>See: fallback_functions in ShowAndRun</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>handle_events</term>
+<listitem>
+<para>Limits calling of the handle function to a certain list of widget
+ids.</para>
+<para>All</para>
+<para>list &lt;any&gt;</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>store</term>
+<listitem>
+<para>Function that saves the values of widgets. The parameters are the id of the
+widget and a map of the event that caused the dialog to end. All widgets are
+saved after the event loop unless `back or `abort is returned.</para>
+<para>All</para>
+<para>void (string, map)</para>
+<para>See: fallback_functions in ShowAndRun</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>clean_up</term>
+<listitem>
+<para>Function that cleans up widgets. The parameter is the id of the
+widget. All widgets are cleaned up before the dialog ends, after they (would)
+have been saved.</para>
+<para>All</para>
+<para>void (string)</para>
+<para>See: fallback_functions in ShowAndRun</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>custom_widget</term>
+<listitem>
+<para>A UI term ready to be placed to the dialog.</para>
+<para>widget == `custom</para>
+<para>term</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>widget_func</term>
+<listitem>
+<para>A function that returns a UI term ready to be placed to the
+dialog.</para>
+<para>widget == `func</para>
+<para>term ()</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>opt</term>
+<listitem>
+<para>Options to be placed to the `opt term of the widget.</para>
+<para>All except `empty, `custom and `func</para>
+<para>list &lt;any&gt;</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>label</term>
+<listitem>
+<para>Widget label.</para>
+<para>All except `empty, `custom and `func (and why `richtext?)</para>
+<para></para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>items</term>
+<listitem>
+<para>List of items for some widgets, in pairs [id, label].</para>
+<para>`combobox, `selection_box, `multi_selection_box, `radio_buttons,
+`menu_button</para>
+<para></para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>minimum</term>
+<listitem>
+<para>Minimum value for integer fields.</para>
+<para>`intfield</para>
+<para>integer</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>maximum</term>
+<listitem>
+<para>Maximum value for integer fields.</para>
+<para>`intfield</para>
+<para>integer</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>hspacing</term>
+<listitem>
+<para>Horizontal padding and spacing between the radio buttons.</para>
+<para>`radio_buttons</para>
+<para>integer (FIXME float?, not validated)</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>vspacing</term>
+<listitem>
+<para>Vertical padding and spacing between the radio buttons.</para>
+<para>`radio_buttons</para>
+<para>integer (FIXME float?, not validated)</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>validate_type</term>
+<listitem>
+<para>`function, `function_no_popup, `regexp` or `list.
+All widgets that have this defined are
+validated before the dialog would be successfully exited and saved. Actually
+not all, only until the first failure.</para>
+<para>All</para>
+<para>symbol</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>validate_function</term>
+<listitem>
+<para>Function that validates the widget. The parameters are the widget key and
+the map of the event that causes the dialog to exit. In case of validation
+failure, for `function, it should pop up an error by itself , and for
+`function_no_popup, CWM will pop up an error (using validate_help if present).</para>
+<para>validate_type == `function or `function_no_popup</para>
+<para>boolean (string, map)</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>validate_condition</term>
+<listitem>
+<para></para>
+<para>validate_type == `regexp or `list</para>
+<para>string or list</para>
+<para>FIXME, does not seem to work because of `_tp_value</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>validate_help</term>
+<listitem>
+<para></para>
+<para>validate_type != `function</para>
+<para>string</para>
+<para>Contents of error popup shown if a widget fails to validate</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>help</term>
+<listitem>
+<para>Widget help</para>
+<para>All</para>
+<para>string</para>
+</listitem>
+</varlistentry>
+
+<!--
+<varlistentry>
+<term></term>
+<listitem>
+<para></para>
+<para>All</para>
+<para></para>
+</listitem>
+</varlistentry>
+-->
+
+</variablelist>
+
+</section>
+
+</chapter>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: xml
+sgml-parent-document:("cwm.xml" "book" "chapter")
+sgml-doctype:"cwm.xml"
+End:
+-->

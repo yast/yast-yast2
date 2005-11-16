@@ -1,0 +1,37 @@
+Dump	=========================================
+Dump	============   Table/Popup   ============
+Dump	=========================================
+Dump	W: $["_cwm_attrib":$[], "_cwm_do_validate":<YCPRef:boolean ValidateTableDescr (string key, map <string, any> descr)>, "_cwm_key":"table", "custom_widget":nil, "fallback":$["init":<YCPRef:void fallback_init (any id, string key)>, "store":<YCPRef:void fallback_store (any id, string key)>, "summary":<YCPRef:string fallback_summary (any opt_id, string opt_key)>], "handle":<YCPRef:global symbol TablePopup::TableHandleWrapper (string key, map event_descr)>, "help":"<p><b><big>Editing the Settings</big></b><br>\nTo edit the settings, choose the appropriate\nentry of the table then click <b>Edit</b>.</p><p>To add a new option, click <b>Add</b>. To remove\nan option, select it and click <b>Delete</b>.</p>", "id2key":<YCPRef:string id2key (map descr, any opt_id)>, "ids":<YCPRef:list getIdList (map descr)>, "init":<YCPRef:global void TablePopup::TableInitWrapper (string key)>, "options":$["a":$["popup":$["handle":<YCPRef:symbol a_handle (any id, string key, map event)>, "widget":`textentry], "table":$["handle":`a_handle, "label":"'a' option label", "summary":<YCPRef:string opt_sum (any opt_id, string opt_key)>, "widget":`checkbox]], "b":$[]], "widget":`HBox (`HSpacing (2), `VBox (`HBox (`Table (`id (`_tp_table), `opt (`immediate, `notify, `keepSorting), `header ("Option", "Value"), []), `HSpacing (0)), `HBox (`PushButton (`id (`_tp_add), `opt (`key_F3), "&Add"), `PushButton (`id (`_tp_edit), `opt (`key_F4), "Ed&it"), `PushButton (`id (`_tp_delete), `opt (`key_F5), "Dele&te"), `HStretch (), `ReplacePoint (`id (`_tp_table_repl), `HSpacing (0)))), `HSpacing (2))]
+Dump	=========================================
+Dump	Init
+Dump	Returning list of ids for table table
+Dump	Translating id a of table to key
+Dump	wanting summary for a:a
+Dump	Translating id b of table to key
+Log	fallback_summary: id b, key b
+Dump	Translating id c of table to key
+Log	fallback_summary: id c, key c
+Dump	=========================================
+Dump	Handle
+Dump	Translating id nil of table to key
+Dump	nil branch, returning a
+Dump	Returned `a_handle
+Dump	Translating id nil of table to key
+Dump	nil branch, returning a
+Log	a_handle: id nil, key a, event $["ID":`_tp_edit]
+Dump	Returned nil
+Dump	=========================================
+Dump	Popups
+Dump	======
+Dump	========================================
+Dump	Merge functions
+Dump	Before: $["_cwm_key":"a", "popup":$["_cwm_key":"a", "handle":<YCPRef:symbol a_handle (any id, string key, map event)>, "label":"'a' option label", "widget":`textentry], "table":$["_cwm_key":"a", "handle":<YCPRef:symbol a_handle (any id, string key, map event)>, "label":"'a' option label", "summary":<YCPRef:string opt_sum (any opt_id, string opt_key)>, "widget":`checkbox]]
+Dump	After: $["_cwm_key":"a", "popup":$["_cwm_key":"a", "handle":<YCPRef:symbol a_handle (any id, string key, map event)>, "init":<YCPRef:void fallback_init (any id, string key)>, "label":"'a' option label", "store":<YCPRef:void fallback_store (any id, string key)>, "widget":`textentry], "table":$["_cwm_key":"a", "handle":<YCPRef:symbol a_handle (any id, string key, map event)>, "label":"'a' option label", "summary":<YCPRef:string opt_sum (any opt_id, string opt_key)>, "widget":`checkbox]]
+Dump	=========================================
+Dump	Prepare widget
+Dump	Prepared: $["_cwm_key":"a", "custom_widget":nil, "handle":<YCPRef:symbol a_handle (any id, string key, map event)>, "init":<YCPRef:void fallback_init (any id, string key)>, "label":"'a' option label", "store":<YCPRef:void fallback_store (any id, string key)>, "widget":`TextEntry (`id ("a"), `opt (), "'a' option label")]
+Dump	=========================================
+Dump	Run popup
+Log	fallback_init: id nil, key a
+Log	a_handle: id nil, key a, event $["ID":`_tp_ok]
+Log	fallback_store: id nil, key a

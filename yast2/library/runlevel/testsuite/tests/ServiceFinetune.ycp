@@ -1,0 +1,22 @@
+{
+    include "testsuite.ycp";
+    import "Service";
+
+    map READ = $[];
+    map EXEC = $[
+	"target": $[
+	    "bash": 0,
+	    "bash_output": $["exit": 0, "stdout": "", "stderr" :""],
+	    ],
+	];
+
+    READ = $[ "init" : $[ "scripts" : $[
+		"exists" : true,
+	] ] ];
+    TEST (``(Service::Finetune ("aaa", ["A", "B", "C"])), [ READ, $[], EXEC ], nil);
+
+    READ = $[ "init" : $[ "scripts" : $[
+		"exists" : true,
+	] ] ];
+    TEST (``(Service::Finetune ("aaa", [])), [ READ, $[], EXEC ], nil);
+}

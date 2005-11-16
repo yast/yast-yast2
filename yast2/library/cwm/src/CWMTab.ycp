@@ -1,0 +1,336 @@
+/**
+ * File:	modules/CWMTab.ycp
+ * Package:	Common widget manipulation
+ * Summary:	Routines for tab widget handling
+ * Authors:	Jiri Srain <jsrain@suse.cz>
+ *
+ * $Id$
+ *
+ */
+
+{
+
+module "CWMTab";
+textdomain "base";
+
+import "CWM";
+import "Wizard";
+
+
+// local constants
+
+/**
+ * Empty tab (just to be used as fallback constant)
+ */
+const term empty_tab = `VBox (`VStretch (), `HStretch ());
+
+/**
+ * Fallback label for a tab if no is defined
+ */
+const string default_tab_header = _("Tab");
+
+// local variables
+
+/**
+ * ID of the currently displayed tab
+ */
+string current_tab_id = nil;
+
+/**
+ * ID of previously selected tab
+ */
+string previous_tab_id = nil;
+
+/**
+ * description map of the currently selected tab
+ */
+map<string,any> current_tab_map = $[];
+
+/**
+ * description map of the currently selected tab
+ */
+map<string,any> previous_tab_map = $[];
+
+// local functions
+
+/**
+ * Initialize the widgets in the tab
+ * @param tab a map describing the tab
+ */
+define void TabInit (map<string,any> tab) {
+    list<map<string,any> > widgets = tab["widgets"]:[];
+    CWM::initWidgets (widgets);
+}
+
+/**
+ * Clean up the widgets in the tab
+ * @param tab a map describing the tab
+ */
+define void TabCleanup (map<string,any> tab) {
+    list<map<string,any> > widgets = tab["widgets"]:[];
+    CWM::cleanupWidgets (widgets);
+}
+
+/**
+ * Handle events on the widgets inside the tab
+ * @param tab a map describing the tab
+ * @param event map event that caused the event handling
+ * @return symbol for wizard sequencer or nil
+ */
+define symbol TabHandle (map<string,any> tab, map event) {
+    list<map<string,any> > widgets = tab["widgets"]:[];
+    return CWM::handleWidgets (widgets, event);
+}
+
+/**
+ * Store settings of all widgets inside the tab
+ * @param tab a map describing the tab
+ * @param event map event that caused the saving process
+ */
+define void TabStore (map<string,any> tab, map event) {
+    list<map<string,any> > widgets = tab["widgets"]:[];
+    return CWM::saveWidgets (widgets, event);
+}
+
+/**
+ * Validate settings of all widgets inside the tab
+ * @param tab a map describing the tab
+ * @param event map event that caused the validation process
+ * @return boolean true if validation succeeded
+ */
+define boolean TabValidate (map<string,any> tab, map event) {
+    list<map<string,any> > widgets = tab["widgets"]:[];
+    return CWM::validateWidgets (widgets, event);
+}
+
+/**
+ * Redraw the whole tab
+ * @param tab a map describing the tab
+ */
+define void RedrawTab (map<string,any> tab) {
+    term contents = tab["contents"]:empty_tab;
+    UI::ReplaceWidget (`_cwm_tab_contents_rp, contents);
+}
+
+/**
+ * Redraw the part of the help related to the tab widget
+ * @param widget a map of the tab widget
+ * @param tab a map describing the tab
+ */
+define void RedrawHelp (map<string,any> widget, map<string,any> tab) {
+    string help = widget["tab_help"]:"" + tab["help"]:"";
+    CWM::ReplaceWidgetHelp (widget["_cwm_key"]:"", help);
+}
+
+/**
+ * Make the currently selected tab be displayed a separate way
+ */
+define void MarkCurrentTab () {
+    if (UI::HasSpecialWidget (`DumbTab))
+    {
+	UI::ChangeWidget (`id (`_cwm_tab), `CurrentItem, current_tab_id);
+    }
+    else
+    {
+	if (previous_tab_id != nil)
+	{
+	    UI::ChangeWidget ( `id (previous_tab_id), `Label,
+		previous_tab_map["header"]:default_tab_header);
+	}
+	UI::ChangeWidget ( `id (current_tab_id), `Label,
+	    UI::Glyph (`BulletArrowRight) + "  "
+		+ current_tab_map["header"]:default_tab_header);
+    }
+}
+
+/**
+ * Switch to a new tab
+ * @param new_tab_it id of the new tab
+ * @param widget tab set description
+ */
+define void InitNewTab (string new_tab_id, map<string,any> widget) {
+    previous_tab_id = current_tab_id;
+    previous_tab_map = current_tab_map;
+    current_tab_id = new_tab_id;
+    current_tab_map = widget["tabs", current_tab_id]:$[];
+    MarkCurrentTab ();
+    RedrawTab (current_tab_map);
+    RedrawHelp (widget, current_tab_map);
+    TabInit (current_tab_map);
+    // allow a handler to enabled/disable widgets before the first real
+    // UserInput takes place
+    UI::FakeUserInput ($["ID": "_cwm_tab_wakeup"]);
+}
+
+// public functions
+
+/**
+ * Init function of the widget
+ * @param map widget a widget description map
+ * @param key strnig the widget key
+ */
+global define void Init (map<string,any> widget, string key) {
+    InitNewTab (widget["initial_tab"]:"", widget);
+}
+
+/**
+ * Clean up function of the widget
+ * @param key the widget key (ignored)
+ */
+global define void CleanUp (string key) {
+    TabCleanup (current_tab_map);
+    // so that next init is not confused
+    current_tab_id = nil;
+    current_tab_map = nil;
+}
+
+/**
+ * Handle function of the widget
+ * @param map widget a widget description map
+ * @param key strnig the widget key
+ * @param event map event to be handled
+ * @return symbol for wizard sequencer or nil
+ */
+global define symbol Handle (map<string,any> widget, string key, map event) {
+    list<string> all_tabs = widget["tabs_list"]:[];
+    symbol h_ret = TabHandle (current_tab_map, event);
+    if (h_ret != nil)
+	return h_ret;
+    any ret = event["ID"]:nil;
+    if (is (ret, string) && contains (all_tabs, (string)ret) &&
+	// At initialization, qt thinks it has switched to the same tab
+	// So prevent unnecessary double initialization
+	ret != current_tab_id)
+    {
+	if (! TabValidate (current_tab_map, event))
+	{
+	    MarkCurrentTab ();
+	    return nil;
+	}
+	TabStore (current_tab_map, event);
+
+	InitNewTab ((string) ret, widget);
+    }
+    return nil;
+}
+
+/**
+ * Store function of the widget
+ * @param key strnig the widget key
+ * @param event map that caused widget data storing
+ */
+global define void Store (string key, map event) {
+    TabStore (current_tab_map, event);
+}
+
+/**
+ * Init function of the widget
+ * @param key strnig the widget key
+ */
+global define void InitWrapper (string key) {
+    Init (CWM::GetProcessedWidget (), key);
+}
+
+/**
+ * Get the ID of the currently displayed tab
+ * @return string the ID of the currently displayed tab
+ */
+global string CurrentTab () {
+    return current_tab_id;
+}
+
+/**
+ * Handle function of the widget
+ * @param map widget a widget description map
+ * @param key strnig the widget key
+ * @param event map event to be handled
+ * @return symbol for wizard sequencer or nil
+ */
+global define symbol HandleWrapper (string key, map event) {
+    return Handle (CWM::GetProcessedWidget (), key, event);
+}
+
+/**
+ * Validate function of the widget
+ * @param key strnig the widget key
+ * @param event map that caused widget data storing
+ */
+global define boolean Validate (string key, map event) {
+    return TabValidate (current_tab_map, event);
+}
+
+/**
+ * Get the widget description map
+ * @param tab_order a list of the IDs of the tabs
+ * @param tabs a map of all tabs (key is tab ID, value is a map describing
+ *  the tab
+ * @param initial_tab string the tab tha will be displayed as the first
+ * @param widget_descr description map of all widgets that are present
+ *  in any of the tabs
+ * @param tab_help strign general help to the tab widget
+ * @return map the widget description map
+ */
+global define map<string,any> CreateWidget (map settings) {
+    list<string> tab_order = settings["tab_order"]:[];
+    map<string,map<string,any> > tabs = settings["tabs"]:$[];
+    string initial_tab = settings["initial_tab"]:"";
+    map<string,map<string,any> > widget_descr = settings["widget_descr"]:$[];
+    string tab_help = settings["tab_help"]:"";
+
+    term widget = nil;
+    term rp = `ReplacePoint (`id (`_cwm_tab_contents_rp), empty_tab);
+
+    // widget
+    if (UI::HasSpecialWidget (`DumbTab))
+    {
+	list<term> panes = maplist (string t, tab_order, {
+	    string label = tabs[t, "header"]:default_tab_header;
+	    return `item (`id (t), label, t == initial_tab);
+	});
+	widget = `DumbTab (`id (`_cwm_tab), panes, rp);
+    }
+    else
+    {
+	term tabbar = `HBox ();
+	foreach (string t, tab_order, {
+	    string label = tabs[t, "header"]:default_tab_header;
+	    tabbar = add (tabbar, `PushButton (`id (t), label));
+	});
+	widget = `VBox (`Left(tabbar), `Frame( "", rp));
+    }
+
+    tabs = mapmap (string k, map<string,any> v, tabs, {
+	term contents = v["contents"]:`VBox();
+	list<string> widget_names = v["widget_names"]:CWM::StringsOfTerm (contents);
+	// second arg wins
+	map<any, any> fallback = union (settings["fallback_functions"]:$[], v["fallback_functions"]:$[]);
+	list<map <string, any> > w
+	    = CWM::CreateWidgets (widget_names, widget_descr);
+	w = CWM::mergeFunctions (w, fallback);
+	string help = CWM::MergeHelps (w);
+	contents = CWM::PrepareDialog (contents, w);
+
+	v["widgets"] = w;
+	v["help"] = help;
+	v["contents"] = contents;
+	return $[k : v];
+    });
+
+    return $[
+	"widget" : `custom,
+	"custom_widget" : widget,
+	"init" : InitWrapper,
+	"store" : Store,
+	"clean_up" : CleanUp,
+	"handle" : HandleWrapper,
+	"validate_type": `function,
+	"validate_function": Validate,
+	"initial_tab" : initial_tab,
+	"tabs" : tabs,
+	"tabs_list" : tab_order,
+	"tab_help" : tab_help,
+    ];
+}
+
+// EOF
+}

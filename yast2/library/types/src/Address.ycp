@@ -1,0 +1,60 @@
+/**
+ * File:	modules/Address.ycp
+ * Package:	yast2
+ * Summary:	Address manipulation routines
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ *
+ * Address is a hostname (either FQ or simple, or IP address)
+ */
+
+{
+
+module "Address";
+textdomain "base";
+
+import "Hostname";
+import "IP";
+
+global string ValidChars = Hostname::ValidChars+IP::ValidChars;
+global string ValidChars4 = Hostname::ValidChars+IP::ValidChars4;
+global string ValidChars6 = Hostname::ValidChars+IP::ValidChars6;
+
+/**
+ * Return a description of a valid address (ip4 or name)
+ * @return description
+ */
+global define string Valid4() ``{
+    return IP::Valid4() + "\n" + Hostname::ValidFQ();
+}
+
+/**
+ * Check syntax of a network address (ip4 or name)
+ * @param address an address
+ * @return true if correct
+ */
+global define boolean Check4(string address) ``{
+    return IP::Check4(address) || Hostname::CheckFQ(address);
+}
+
+/**
+ * Check syntax of a network address (ip6 or name)
+ * @param address an address
+ * @return true if correct
+ */
+global define boolean Check6(string address) ``{
+    return IP::Check6(address) || Hostname::CheckFQ(address);
+}
+
+/**
+ * Check syntax of a network address (IP address or hostname)
+ * @param address an address
+ * @return true if correct
+ */
+global define boolean Check(string address) ``{
+    return Check4(address) || Check6(address);
+}
+
+/* EOF */
+}

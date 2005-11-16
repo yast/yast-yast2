@@ -1,0 +1,30 @@
+// $Id$
+// This shows the call graph of the popup functions,
+// (using the old names of common_popups)
+// Use graphviz.rpm to visualize this graph:
+// "dotty popups.dot" or "dot -Tps -o popups.ps popups.dot"
+digraph Popups {
+  rankdir=LR
+
+  ContinueCancelPopup -> ContinueCancelHeadlinePopup
+  ContinueCancelHeadlinePopup -> AnyQuestionPopup
+  YesNoPopup -> YesNoHeadlinePopup
+  YesNoHeadlinePopup -> AnyQuestionPopup
+  LongTextPopup
+  ConfirmAbortPopup -> AnyQuestionPopup
+  ReallyAbortPopup -> AnyQuestionPopup
+  MessagePopup
+  ErrorPopup -> AnyMessagePopup
+  WarningPopup -> AnyMessagePopup
+  NotifyPopup -> AnyMessagePopup
+  AnyMessagePopup -> createPopupLayoutInternal
+  AnyQuestionPopup -> createPopupLayoutInternal
+  AnyQuestionPopup3 -> createPopupLayoutInternal
+  ModuleError
+  ShowFilePopup
+  AnyTimedMessagePopup -> createPopupLayoutInternalWithLabel
+  TimedWarningPopup -> AnyTimedMessagePopup
+  TimedErrorPopup -> AnyTimedMessagePopup
+  TimedMessagePopup
+  TimedOKCancelPopup
+}

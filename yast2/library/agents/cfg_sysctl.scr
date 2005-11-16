@@ -1,0 +1,26 @@
+/**
+ * File:	cfg_sysctl.scr
+ * Summary:	Agent for reading/writing /etc/sysconfig/sysctl
+ * Author:	Michal Svec <msvec@suse.cz>
+ * Access:	read / write
+ *
+ * Example:
+ *   Dir(.sysconfig.sysctl)
+ *   (["IP_FORWARD", ...])
+ **
+ *   Read(.sysconfig.sysctl.IP_FORWARD)
+ *   ("yes")
+ **
+ *   Write(.sysconfig.sysctl.IP_FORWARD, "no")
+ *   (true)
+ *
+ * $Id$
+ *
+ * Read/Sets the values defined in <tt>/etc/sysconfig/sysctl</tt>
+ * in an easy manner.
+ */
+.sysconfig.sysctl
+
+`ag_ini(
+    `SysConfigFile("/etc/sysconfig/sysctl")
+)

@@ -1,0 +1,189 @@
+/**
+ * File:	modules/Wizard_hw.ycp
+ * Package:	yast2
+ * Summary:	Wizard dialogs for hardware configuration
+ * Authors:	Jan Holesovsky <kendy@suse.cz>
+ *
+ * @deprecated  This module is deprecated and will be removed soon. Use WizardHW instead.
+ *
+ * $Id$
+ */
+
+{
+
+module "Wizard_hw";
+textdomain "base";
+
+/**
+ * Create the content of the screen with the detected devices.
+ *
+ * It is used in the SetWizardContent() or SetWizardContentButtons() functions.
+ *
+ * @param frame_label The frame around the detected devices
+ * @param detected A list of the detected devices for the SelectionBox. Must contain "Other (not detected)" as the last item.
+ * @param has_restart A button for restarting the detection.
+ * @param already_conf A content of the RichText. Describes the already configured devices.
+ * @return Content for the SetWizardContent[Buttons]()
+ */
+global define term DetectedContent(string frame_label, list detected,
+	boolean has_restart, string already_conf) ``{
+
+    return `HBox(
+	`HSpacing(1.5),
+	`VBox(
+	    `VSpacing(0.4),
+	    `Frame(frame_label, `HBox(
+		`HSpacing(0.5),
+		`VBox(
+		    `SelectionBox(`id(`detected_selbox), `opt(`notify),
+			_("A&vailable are:"), detected),
+		    `HBox(
+			(has_restart? `PushButton(`id(`restart_button),
+			      _("Re&start detection")): `HSpacing(0.5)),
+			`HStretch(),
+			`PushButton(`id(`configure_button), `opt (`key_F3), _("&Configure..."))
+		    )
+		),
+		`HSpacing(0.5)
+	    )),
+	    `VSpacing(0.3),
+	    `RichText(`id(`configured_richtext), already_conf),
+	    `Right(`PushButton(`id(`edit_button), `opt (`key_F4), _("C&hange..."))),
+	    `VSpacing(0.4)
+	),
+	`HSpacing(1.5)
+    );
+
+}
+
+    /**
+     * Create the contents of screen with configured items.
+     *
+     * It contains table and buttons Add, Edit, Delete. User may specify table header
+     * and content, content that will be placed above table, between table
+     * and buttons, below buttons and rights from buttons (usually another
+     * button).
+     *
+     * @param table_header Table header as defined in UI.
+     * @param table_contents Table items.
+     * @param above_table Content to place above table. There is no need to
+     *    place caption here, because the dialog has its caption.
+     *    Set it to nil if you do not want to place anything here.
+     * @param below_table Contents to place between table and buttons.
+     *    Set it to nil if you do not want to place anything here.
+     * @param below_buttons Content to place below bottons.
+     *    Set it to nil if you do not want to place anything here.
+     * @param buttons Content to place rights from buttons. Usually
+     *    an additional button, e.g. Set as default.
+     *    Set it to nil if you do not want to place anything here.
+     * @return Content for the SetWizardContent[Buttons]()
+     * <B>UI elements ids:</B><table>
+     * <tr><td>Table</td><td>`table</td></tr>
+     * <tr><td>Button add</td><td>`add_button</td></tr>
+     * <tr><td>Button edit</td><td>`edit_button</td></tr>
+     * <tr><td>Button delete</td><td>`delete_button</td></tr>
+     * </table>
+     */
+    global define term ConfiguredContent ( term table_header,
+				      list table_contents,
+				      term above_table,
+				      term below_table,
+				      term below_buttons,
+				      term buttons)
+    ``{
+	term contents = `VBox ();
+	if (nil != above_table)
+	{
+	    contents = add (contents, above_table);
+	}
+
+	contents = add (contents,
+			`Table (
+			    `id (`table),
+			    `opt (`notify),
+			    table_header,
+			    table_contents));
+	if (nil != below_table)
+	{
+	    contents = add (contents, below_table);
+	}
+
+	term but_box = `HBox (
+	    `opt (`hstretch),
+	    `PushButton (`id (`add_button), `opt (`key_F3), _("A&dd")),
+	    `PushButton (`id (`edit_button),  `opt (`key_F4), _("&Edit")),
+	    `PushButton (`id (`delete_button), `opt (`key_F5), _("De&lete"))
+	);
+
+
+	if (nil != buttons)
+	{
+	    but_box = add ( add ( but_box,
+				  `HStretch ()),
+			    buttons);
+	}
+	contents = add (contents, but_box);
+	if (nil != below_buttons)
+	{
+	    contents = add (contents, below_buttons);
+	}
+	return contents;
+    }
+
+    /**
+     * Encloses the content into VBoxes and HBoxes with the appropriate
+     * spacings around it.
+     * @param content The term we are adding spacing to.
+     * @param left Spacing on the left.
+     * @param right Spacing on the right.
+     * @param top Spacing on the top.
+     * @param bottom Spacing on the bottom.
+     * @return Content with spacings around it.
+     */
+    global define term SpacingAround( term content,
+				 float left, float right,
+				 float top, float bottom )
+    ``{
+	return
+	    `HBox
+	    (
+		`HSpacing ( left ),
+		`VBox
+		(
+		    `VSpacing ( top ),
+		    content,
+		    `VSpacing ( bottom )
+		),
+		`HSpacing ( right )
+	    );
+    }
+
+    /**
+     * Encloses the content into VBoxes and HBoxes
+     *
+     * Enclose so that its
+     * size is at least
+     * <emphasis>xsize</emphasis>&nbsp;x&nbsp;<emphasis>ysize</emphasis>.
+     * @param xsize Minimal size of content in the X direction
+     * @param ysize Minimal size of content in the Y direction
+     * @param content Content of the dialog
+     * @return Contents sized at least <B>xsize</B>&nbsp;x&nbsp;<B>ysize</B>.
+     */
+    global define term SizeAtLeast(term content, float xsize, float ysize)
+    ``{
+	return
+	    `VBox (
+		`VSpacing (0.4),
+		`HSpacing (xsize),
+		`HBox (
+		    `HSpacing (1.6),
+		    `VSpacing (ysize),
+		    content,
+		    `HSpacing (1.6)
+		),
+		`VSpacing (0.4)
+	    );
+    }
+
+/* EOF */
+}

@@ -1,0 +1,12 @@
+{
+
+include "testsuite.ycp";
+import "Address";
+
+DUMP("Address::Check");
+TEST(``(Address::Check(nil)), [], nil);
+TEST(``(Address::Check("")), [], nil);
+TEST(``(Address::Check("1.2.3.4")), [], nil);
+TEST(``(Address::Check("::1")), [], nil);
+
+}

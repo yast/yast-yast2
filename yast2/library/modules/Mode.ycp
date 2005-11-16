@@ -1,0 +1,231 @@
+/**
+ * File:	modules/Mode.ycp
+ * Module:	yast2
+ * Summary:	Installation mode
+ * Authors:	Klaus Kaempf <kkaempf@suse.de>
+ *
+ * $Id$
+ *
+ * Provide installation mode information.
+ * Mostly values from /etc/install.inf
+ * See linuxrc documentation for detailed docs about this.
+ */
+
+{
+
+module "Mode";
+
+textdomain "base";
+
+/**
+ * Current mode
+ */
+string _mode = nil;
+
+/**
+ * Current testing mode
+ */
+string _test = nil;
+
+/**
+ * Current UI mode
+ */
+string _ui = "dialog";
+
+
+/**
+ * initialize everything from command-line of y2base
+ */
+global void Initialize () {
+    _mode = "normal";
+    _test = "none";
+    integer arg_count = size(WFM::Args());
+    integer arg_no = 0;
+    while ( arg_no < arg_count )
+    {
+	// parsing for main mode
+	if (WFM::Args(arg_no) == "initial"
+	    || WFM::Args(arg_no) == "continue"
+	    || WFM::Args(arg_no) == "firstboot")
+        {
+	    _mode = "installation";
+        }
+	// parsing for test mode
+	else if (WFM::Args(arg_no) == "test" || WFM::Args(arg_no) == "demo")
+	{
+	    _test = "test";
+	    y2warning("***** Test mode enabled *****");
+	}
+	else if (WFM::Args(arg_no) == "screenshots"  )
+	{
+	    _test = "screenshot";
+	    y2warning("***** Screen shot mode enabled *****");
+	}
+
+	arg_no = arg_no + 1;
+    }
+
+    // only use the /etc/install.inf agent when file is present
+    // and installation is being processed
+    // FIXME remove the part below and let it be set in clients
+    if (_mode == "installation"
+	&& SCR::Read (.target.size, "/etc/install.inf") != -1)
+    {
+	boolean autoinst = SCR::Read (.etc.install_inf.AutoYaST) != nil;
+        if (autoinst)
+        {
+	    _mode="autoinstallation";
+        }
+
+	boolean repair = SCR::Read (.etc.install_inf.Repair ) != nil;
+        if (repair)
+        {
+	    _mode ="repair";
+        }
+    }
+}
+
+// main mode definitions
+
+global string mode () {
+    if (_mode == nil)
+    {
+	Initialize ();
+    }
+
+    return _mode;
+}
+
+global void SetMode (string new_mode) {
+    if (_mode == nil)
+	Initialize ();
+
+    if (! contains (
+	[ "installation", "update", "normal", "repair",
+	    "autoinstallation", "autoinst_config",
+	],
+	new_mode))
+    {
+	y2error ("Unknows mode %1", new_mode);
+    }
+
+    y2milestone ("setting mode to %1", new_mode);
+    _mode = new_mode;
+}
+
+// test mode definitions
+
+global string testMode () {
+    if (_test == nil)
+	Initialize ();
+
+    return _test;
+}
+
+global void SetTest (string new_test_mode) {
+    if (_test == nil)
+	Initialize ();
+
+    if (! contains (
+	[ "none", "test", "demo", "screenshot", "testsuite", ],
+	new_test_mode))
+    {
+	y2error ("Unknown test mode %1", new_test_mode);
+    }
+    _test = new_test_mode;
+}
+
+// UI mode definitions
+
+global string ui () {
+    return _ui;
+}
+
+global void SetUI (string new_ui) {
+    if (! contains (
+	[ "commandline", "dialog", "none", ],
+	new_ui))
+    {
+	y2error ("Unknows UI mode %1", new_ui);
+    }
+    _ui = new_ui;
+}
+
+// main mode wrappers
+
+/**
+ * we're doing a fresh installation
+ */
+global boolean installation () {
+    return mode () == "installation" || mode () == "autoinstallation";
+}
+
+/**
+ * we're doing an update
+ */
+global boolean update () {
+    return mode () == "update";
+}
+
+/**
+ * normal, running system
+ */
+global boolean normal () {
+    return mode () == "normal";
+}
+
+/**
+ * start repair module
+ */
+global boolean repair () {
+    return mode () == "repair";
+}
+
+/**
+ * do auto-installation
+ */
+global boolean autoinst () {
+    return mode () == "autoinstallation";
+}
+
+/**
+ * configuration for auto-installation, only in running system
+ */
+global boolean config () {
+    return mode () == "autoinst_config";
+}
+
+// test mode wrappers
+
+/**
+ * Just testing.
+ * See installation/Test-Scripts/doit*
+ */
+global boolean test () {
+    return testMode () == "test" || testMode () == "screenshot"
+        || testMode () == "testsuite";
+}
+
+/**
+ * dump screens to /tmp. Implies @ref #demo .
+ * See installation/Test-Scripts/yast2-screen-shots*
+ */
+global boolean screen_shot () {
+    return testMode () == "screenshot";
+}
+
+global boolean testsuite () {
+    return testMode () == "testsuite";
+}
+
+// UI mode wrappers
+
+/**
+ * we're running in command line interface
+ * @return true if command-line is running
+ */
+global boolean commandline () {
+    return ui () == "commandline";
+}
+
+} // EOF

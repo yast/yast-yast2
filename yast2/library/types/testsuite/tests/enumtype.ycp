@@ -1,0 +1,20 @@
+/**
+ * File:	enumtype.ycp
+ * Package:	yast2
+ * Summary:	enumerated type generic validator test
+ * Author:	Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+    include "testsuite.ycp";
+    import "TypeRepository";
+
+    TEST(``(TypeRepository::enum_validator( ["a","b","c"], "a" )),[],nil);
+    TEST(``(TypeRepository::enum_validator( ["a","b","c"], "x" )),[],nil);
+    TEST(``(TypeRepository::enum_validator( [], "ahoj" )),[],nil);
+
+/* EOF */
+}

@@ -1,0 +1,96 @@
+/**
+ * File:
+ *   run_ifconfig.scr
+ * Summary:
+ *   SCR Agent for reading the result from /sbin/ifconfig
+ * Access:
+ *   read-only
+ * Authors:
+ *   Unknown <yast2-hacker@suse.de>
+ * See:
+ *   anyagent
+ *   libscr
+ *   man ifconfig
+ * Example:
+ *   Read(.run.ifconfig)
+ *   ([$["name":"eth0",
+ *       "value":$["flags":["UP", "BROADCAST", "RUNNING", "MULTICAST",
+ *                          " MTU:1500", " Metric:1"],
+ *                 "inet":$["addr":168427678,
+ *                          "bcast":168493055,
+ *                          "mask":4294901760],
+ *                 "link":"Link encap:Ethernet  HWaddr 00:00:1C:B5:A8:5A  "
+ *               ]
+ *     ],
+ *     $["name":"lo",
+ *       "value":$["flags":["UP", "LOOPBACK", "RUNNING",
+ *                          " MTU:3924", " Metric:1"],
+ *                 "inet":$["addr":2130706433,
+ *                          "mask":4278190080],
+ *                 "link":"Link encap:Local Loopback  "]
+ *               ]
+ *   ])
+ *
+ * $Id$
+ *
+ * AnyAgent for reading ip address, broadcast and netmask (as the ip4numbers)
+ * of running network interfaces from ifconfig output
+ *
+ * Returns a <b>list of maps</b>. Each map (list-entry) corresponds
+ * with one network interface.
+ */
+.run.ifconfig
+
+/*
+ */
+
+`ag_anyagent(
+  `Description (
+	(`Run("/sbin/ifconfig | /bin/sed -e '/.*inet6.*/d'")),
+	"\n",
+	true,
+	(`List(
+	    `Tuple(
+		`name(`String("^\t ")),
+		`value(`Tuple(
+		    `Whitespace(), `link(`String("^\n")), "\n",
+		    `Whitespace(), "inet", `inet(
+			`Tuple (
+			    `Optional (`Whitespace ()),
+			    `Choice (
+				[
+				    "addr:",
+				    `addr (`Ip4Number ())
+				    ],
+				[
+				    "Bcast:",
+				    `bcast (`Ip4Number ())
+				    ],
+				[
+				    "P-t-P:",
+				    `ptp (`Ip4Number ())
+				    ],
+				[
+				    "Mask:",
+				    `mask (`Ip4Number ())
+				    ],
+				[
+				    `String ("^\n\t "),
+				    `Skip()
+				    ]
+				),
+			    `Continue (`Whitespace ())
+			    )
+			), "\n",
+		    `Whitespace(), `flags(`List(`Sequence(`Optional(`Whitespace()), `String("^ \n")), " ")), "\n",
+		    // the rest is not important
+		    `List(
+			`Sequence(`Whitespace(), `String("^\n")),
+			"\n"
+			)
+		    ))
+		),
+	    ""
+	    ))
+	)
+)
