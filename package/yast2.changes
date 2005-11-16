@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Nov 16 07:40:38 CET 2005 - lslezak@suse.cz
+
+- Kernel.ycp - some PPC kernel RPMs have been dropped, kernel
+  package selection updated
+- 2.13.11
+
+-------------------------------------------------------------------
 Tue Nov 15 18:49:54 CET 2005 - mvidner@suse.cz
 
 - CWM:
