@@ -361,16 +361,12 @@ global void SetCmdLine (string new_cmd_line) {
 		    kernel_packages = ["kernel-default"];
 		}
 	    }
-
-	    if (Arch::board_mac_nubus ())
+	    else if (Arch::board_mac_nubus ())
 	    {
 		kernel_packages = ["kernel-nubus"];
 	    }
-
-	    if (Arch::board_chrp ())
+	    else if (Arch::board_chrp ())
 	    {
-	        // why "fixme"?
-		// XXX fixme
 		string chrp_cpu = "";
 		list<map> cpuProbe = (list<map>) SCR::Read(.probe.cpu);
 		foreach (map cpuProbe_map, cpuProbe, {
@@ -378,6 +374,7 @@ global void SetCmdLine (string new_cmd_line) {
 		    chrp_cpu = tolower (chrp_cpu);
 		});
 
+		//   booting a 32bit kernel on POWER3
 		if ((issubstring (chrp_cpu, "power3") && Arch::ppc32 ())
 		    || Arch::ppc64 ())
 		{
@@ -395,6 +392,15 @@ global void SetCmdLine (string new_cmd_line) {
 	    else if (Arch::board_prep ())
 	    {
 		kernel_packages = ["kernel-default"];
+	    }
+	    // if hwinfo could not match the board type, use the cpu type.
+	    else if (Arch::ppc32 ())
+	    {
+		kernel_packages = ["kernel-default"];
+	    }
+	    else
+	    {
+		kernel_packages = ["kernel-ppc64"];
 	    }
 	}
 	else if (Arch::ia64 ())
