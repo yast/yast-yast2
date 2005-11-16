@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 16 15:03:58 CET 2005 - jsrain@suse.cz
+
+- read list of modules to clone at the end of installation from
+  control file
+
+-------------------------------------------------------------------
 Wed Nov 16 07:40:38 CET 2005 - lslezak@suse.cz
 
 - Kernel.ycp - some PPC kernel RPMs have been dropped, kernel
