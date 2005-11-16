@@ -35,6 +35,9 @@ global list<map> proposals = [];
 // inst_finish steps
 global list<map<string,any> > inst_finish = [];
 
+// modules to be offered to clone configuration at the end of installation
+global list<string> clone_modules = [];
+
 // Location of a custom control file
 global string custom_control_file = "";
 
@@ -127,6 +130,7 @@ global define boolean ReadControlFile( string controlfile)
     workflows = productControl["workflows"]:[];
     proposals = productControl["proposals"]:[];
     inst_finish = productControl["inst_finish_stages"]:[];
+    clone_modules = productControl["clone_modules"]:[];
 
     foreach (string section,
 	["software", "globals", "network", "partitioning"],
