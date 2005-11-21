@@ -202,7 +202,7 @@ else
 	c=("${b[@]/%/\")}")
 	set -- "${c[@]}"
 
-	$ybindir/y2base $module "$@" qt -geometry "$Y2_GEOMETRY" $Y2QT_ARGS
+	$ybindir/y2base $module "$@" qt "$Y2_GEOMETRY" $Y2QT_ARGS
     fi
 fi
 
