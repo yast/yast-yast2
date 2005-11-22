@@ -6,3 +6,8 @@ Read	.sysconfig.kernel.MODULES_LOADED_ON_BOOT "reiserfs xfs"
 Write	.sysconfig.kernel.MODULES_LOADED_ON_BOOT "xfs ext2" true
 Write	.sysconfig.kernel nil true
 Return	true
+Return	nil
+Return	
+Return	ABC=213 DEF=324
+Return	 ABC=213  DEF=324 
+Return	ABC=213 DEF=324 FTPPASSWORD=********

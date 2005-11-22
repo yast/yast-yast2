@@ -100,6 +100,52 @@ void ParseInstallationKernelCmdline ();
     //---------------------------------------------------------------
     // local defines
 
+/**
+ * Hide passwords in command line option string
+ * @param in input string
+ * @return string outpit string
+ */
+string HidePasswords(string in)
+{
+    string ret = "";
+
+    if (in != nil)
+    {
+	list<string> parts = splitstring(in, " ");
+
+	boolean first = true;
+	foreach(string p, parts, {
+		string cmdopt = p;
+		if (regexpmatch(p, "^INST_PASSWORD="))
+		{
+		    cmdopt = "INST_PASSWORD=******";
+		}
+		else if (regexpmatch(p, "^FTPPASSWORD="))
+		{
+		    cmdopt = "FTPPASSWORD=********";
+		}
+
+		if (first)
+		{
+		    first = false;
+		}
+		else
+		{
+		    ret = ret + " ";
+		}
+
+		ret = ret + cmdopt;
+	    }
+	);
+    }
+    else
+    {
+	ret = nil;
+    }
+
+    return ret;
+}
+
     /**
      * AddCmdLine ()
      * @param	string	name of parameter
@@ -118,7 +164,7 @@ void ParseInstallationKernelCmdline ();
 	{
 	    cmdLine = cmdLine + "=" + arg;
 	}
-	y2milestone ("cmdLine '%1'", cmdLine);
+	y2milestone ("cmdLine '%1'", HidePasswords(cmdLine));
 	return;
     }
 
@@ -227,7 +273,8 @@ void ParseInstallationKernelCmdline () {
     if (! (Stage::initial () || Stage::cont ()))
 	return;
     string tmp = (string) SCR::Read (.etc.install_inf.Cmdline);
-    y2milestone ("cmdline from install.inf is: %1", tmp);
+
+    y2milestone ("cmdline from install.inf is: %1", HidePasswords(tmp));
     if (tmp != nil) {
 	// extract extra boot parameters given in installation
 	ExtractCmdlineParameters (tmp);
