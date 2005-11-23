@@ -1,12 +1,9 @@
 -------------------------------------------------------------------
-Wed Nov 23 12:36:26 CET 2005 - visnov@suse.cz
+Wed Nov 23 13:41:53 CET 2005 - mvidner@suse.cz
 
-- 2.13.12 
-
--------------------------------------------------------------------
-Tue Nov 22 15:50:21 CET 2005 - lslezak@suse.cz
-
-- do not log passwords (#134886)
+- CWM::ProcessTerm now handles all container widgets
+(added `MarginBox, `MinWidth, `MinHeight, `MinSize).
+- 2.13.11
 
 -------------------------------------------------------------------
 Wed Nov 16 15:03:58 CET 2005 - jsrain@suse.cz

@@ -64,7 +64,8 @@ void PopSettings () {
  */
 list<symbol> ContainerWidgets = [
     `Frame, `RadioButtonGroup,
-    `VBox, `HBox,
+    `VBox, `HBox, `MarginBox,
+    `MinWidth, `MinHeight, `MinSize,
     `Left, `Right, `Top, `Bottom, `HCenter, `VCenter, `HVCenter,
     `HSquash, `VSquash, `HVSquash, `HWeight, `VWeight,
     ];
@@ -72,7 +73,6 @@ list<symbol> ContainerWidgets = [
     /**
       * Process term with the dialog, replace strings in the term with
       * appropriate widgets
-      * Processes only `VBox, `HBox, `Left and `Right
       * @param t term dialog containing strings
       * @param widgets map of widget name -> widget description map
       * @return term updated term ready to be used as a dialog
@@ -675,7 +675,6 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
     /**
       * Prepare the dialog, replace strings in the term with appropriate
       * widgets
-      * Processes only `VBox, `HBox, `Left and `Right
       * @param dialog term dialog containing strings
       * @param widgets list of widget description maps
       * @return updated term ready to be used as a dialog
