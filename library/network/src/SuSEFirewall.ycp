@@ -889,7 +889,10 @@
     }
 
     /**
-     * Function which returns if SuSEfirewall should start in Write process
+     * Function which returns whether SuSEfirewall should be enabled in
+     * /etc/init.d/ starting scripts during the Write() process
+     * @see Write()
+     * @see EnableServices()
      *
      * @return	boolean if the firewall should start
      */

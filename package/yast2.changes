@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 24 12:51:20 CET 2005 - locilka@suse.cz
+
+- Fixed the misleading documentation for GetEnableService()
+  function in the SuSEFirewall module, thanks to jsmeix
+
+-------------------------------------------------------------------
 Wed Nov 23 13:41:53 CET 2005 - mvidner@suse.cz
 
 - CWM::ProcessTerm now handles all container widgets
