@@ -29,11 +29,15 @@ import "String";
  */
 global string Name = "";
 
+// value is not just string, can be a map for aliases 
+typedef map<string, any> ifcfg_t;
+typedef map<string, map<string, ifcfg_t> > devices_t;
+
 /**
  * Current device information
  * @example $["BOOTPROTO":"dhcp", "STARTMODE":"auto"]
  */
-global map<string,any> Current = $[];
+global ifcfg_t Current = $[];
 
 /**
  * Interface information:
@@ -44,13 +48,13 @@ global map<string,any> Current = $[];
  * [type, id, "_aliases", aid]
  * @see Read
  */
-map<string,map> Devices = $[];
+devices_t Devices = $[];
 
 /**
  * Devices information
  * @see Read
  */
-map<string,map> OriginalDevices = $[];
+devices_t OriginalDevices = $[];
 
 /**
  * Deleted devices
@@ -430,7 +434,7 @@ global define boolean Read() {
 	    devnum = sformat("%1", device_num(d));
 	y2debug("devnum=%1", devnum);
 
-	map dev = Devices[devtype]:$[];
+	map<string, ifcfg_t> dev = Devices[devtype]:$[];
 	if(haskey(dev, devnum)) {
 	    y2error("device already present: %1", devnum);
 	    return;
@@ -700,7 +704,7 @@ global define boolean Import(string devregex, map<string,map> devices) {
 	})];
     });
 
-    Devices = (map<string,map>) union(Devs, devices);
+    Devices = (devices_t) union(Devs, devices);
     OriginalDevices = nil;
     return true;
 }
@@ -934,7 +938,7 @@ global define boolean Delete(string name) {
  * @param check if check if device already exists
  * @return true if success
  */
-define boolean Change2(string name, map newdev, boolean check) {
+define boolean Change2(string name, ifcfg_t newdev, boolean check) {
     y2debug("Change(%1,%2,%3)", name, newdev, check);
     y2debug("Devices=%1", Devices);
 
@@ -948,8 +952,8 @@ define boolean Change2(string name, map newdev, boolean check) {
     string a = alias_num(name);
     y2debug("ChangeDevice(%1,%2,%3)", t, d, a);
 
-    map devsmap = Devices[t]:$[];
-    map devmap = devsmap[d]:$[];
+    map<string, ifcfg_t> devsmap = Devices[t]:$[];
+    ifcfg_t devmap = devsmap[d]:$[];
     map amap = devmap["_aliases"]:$[];
 
     if(a != "") {
@@ -976,7 +980,7 @@ define boolean Delete2(string name) {
     string t = device_type(name);
     string d = device_num(name);
     string a = alias_num(name);
-    map devsmap = Devices[t]:$[];
+    map<string, ifcfg_t> devsmap = Devices[t]:$[];
 
     if(a != "") {
 	map amap = devsmap[d, "_aliases"]:$[];
