@@ -116,10 +116,9 @@ void InitAllInterfacesList () {
     if (! Mode::config ())
     {
 	interface_items = maplist (string i, all_interfaces, {
-	    NetworkDevices::Select (i);
-	    string label = NetworkDevices::Current["BOOTPROTO"]:"";
-	    string ipaddr = NetworkDevices::Current["IPADDR"]:"";
-	    if (tolower (label) == "static" || label == "" || label == nil)
+	    string label = NetworkDevices::GetValue (i, "BOOTPROTO");
+	    string ipaddr = NetworkDevices::GetValue (i, "IPADDR");
+	    if (label == "static" || label == "" || label == nil)
 	    {
 		label = ipaddr;
 	    }
