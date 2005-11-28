@@ -535,6 +535,16 @@ failure, for `function, it should pop up an error by itself , and for
 </listitem>
 </varlistentry>
 
+<varlistentry>
+<term>no_help</term>
+<listitem>
+<para>If present, no error about missing help will be given. FIXME: use
+help:nil instead</para>
+<para>All</para>
+<para>any</para>
+</listitem>
+</varlistentry>
+
 <!--
 <varlistentry>
 <term></term>
