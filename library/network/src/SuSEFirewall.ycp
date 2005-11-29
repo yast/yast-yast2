@@ -11,8 +11,6 @@
  * Module for handling SuSEfirewall2.
  */
 
-// NOTE: replace "(list<string>) union" with "union" after new core will support it.
-
 {
     module "SuSEFirewall";
     textdomain "base";
@@ -146,6 +144,8 @@
 	return known_firewall_zones;
     }
 
+    global define boolean IsServiceSupportedInZone (string service, string zone);
+
     # <!-- SuSEFirewall GLOBAL FUNCTIONS USED BY LOCAL ONES //-->
 
     # <!-- SuSEFirewall LOCAL FUNCTIONS //-->
@@ -194,7 +194,7 @@
     /**
      * Local function for reading list of sysconfig variables into internal variables.
      *
-     * @param	list [string] of sysconfig variables
+     * @param	list <string> of sysconfig variables
      */
     void ReadSysconfigSuSEFirewall (list<string> variables) {
 	foreach (string variable, variables, {
@@ -208,7 +208,7 @@
     /**
      * Local function for reseting list of sysconfig variables in internal variables.
      *
-     * @param	list [string] of sysconfig variables
+     * @param	list <string> of sysconfig variables
      */
     void ResetSysconfigSuSEFirewall (list<string> variables) {
 	foreach (string variable, variables, {
@@ -222,7 +222,7 @@
      * List of variables is list of keys in SETTINGS map, to sync configuration
      * into the disk, use `nil` as the last list item.
      *
-     * @param	list [string] of sysconfig variables
+     * @param	list <string> of sysconfig variables
      */
     boolean WriteSysconfigSuSEFirewall (list<string> variables) {
 	boolean write_status = true;
@@ -314,7 +314,7 @@
      *
      * @param	string zone
      * @param	string protocol
-     * @return	list [string] of allowed services/ports
+     * @return	list <string> of allowed services/ports
      */
     list <string> GetAllowedServicesForZoneProto (string zone, string protocol) {
 	return splitstring(SETTINGS["FW_SERVICES_" + zone + "_" + protocol]:"", " ");
@@ -323,7 +323,7 @@
     /**
      * Function sets list of services as allowed ports for zone and protocol
      *
-     * @param	list [string] of allowed ports/services
+     * @param	list <string> of allowed ports/services
      * @param	string zone
      * @param	string protocol
      */
@@ -359,7 +359,7 @@
      * If any list for zone is defined but empty, all allowed
      * UDP ports for this zone also accept broadcast packets.
      *
-     * @return	map [zone, list [of allowed ports] ]
+     * @return	map <zone, list <string> > strings are allowed ports or port ranges
      */
     global define map <string, list <string> > GetBroadcastAllowedPorts () {
 
@@ -390,7 +390,7 @@
     /**
      * Function creates allowed-broadcast-ports string from broadcast map and saves it.
      *
-     * @param	map [zone_string, list [of allowed ports] ]
+     * @param	map <zone_string, list <string> > strings are allowed ports or port ranges
      */
     global define void SetBroadcastAllowedPorts (map <string, list <string> > broadcast) {
 	SetModified();
@@ -401,9 +401,101 @@
     }
 
     /**
+     * Function returns where the string parameter is a port range.
+     * Port ranges are defined by the syntax "min_port_number:max_port_number".
+     * Port range means that these maximum and minimum ports define the range
+     * of currency in Firewall. Ports defining the range are included in it.
+     *
+     * @param string to be checked
+     * @return boolean whether the checked string is a port range or not
+     */
+    define boolean IsPortRange (string check_this) {
+	if (regexpmatch(check_this,"^[0123456789]+:[0123456789]+$")) {
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Function returns where the port name or port number is included in the
+     * list of port ranges. Port ranges must be defined as a string with format
+     * "min_port_number:max_port_number".
+     * 
+     * @param string port_number_or_port_name
+     * @param list <string> port_ranges
+     *
+     * @example
+     * PortIsInPortrange ("130",  ["100:150","10:30"]) -> true
+     * PortIsInPortrange ("30",   ["100:150","10:20"]) -> false
+     * PortIsInPortrange ("pop3", ["100:150","10:30"]) -> true
+     * PortIsInPortrange ("http", ["100:150","10:20"]) -> false
+     */
+    define boolean PortIsInPortranges (string port, list <string> port_ranges) {
+	if (size(port_ranges) == 0) return false;
+
+	boolean ret = false;
+
+	integer port_number = PortAliases::GetPortNumber(port);
+	if (port_number != nil) {
+	    foreach (string port_range, port_ranges, {
+		integer min_pr = tointeger(regexpsub(port_range,"^([0123456789]+):.*$", "\\1"));
+		integer max_pr = tointeger(regexpsub(port_range,"^.*:([0123456789]+)$", "\\1"));
+		// is portrange really a port range?
+		if (min_pr != nil && max_pr != nil) {
+		    // checking the rightness of the port range + is the port inside?
+		    if (min_pr <= max_pr && min_pr <= port_number && port_number <= max_pr) {
+			ret = true;
+			break;
+		    }
+		}
+	    });
+	}
+
+	return ret;
+    }
+
+    /**
+     * Function divides list of ports to the map of ports and port ranges.
+     * If with_aliases is 'true' it also returns ports wit their port aliases.
+     * Port ranges are not affected with it.
+     *
+     * @struct Returns $[
+     *    "ports" : [ list of ports ],
+     *    "port_ranges" : [ list of port ranges ],
+     * ]
+     *
+     * @param list <string> unsorted_ports
+     * @param boolean with port aliases
+     * @return <map <string, list <string> > > of divided ports
+     */
+    map <string, list <string> > DividePortsAndPortRanges (list <string> unsorted_ports, boolean with_aliases) {
+	map <string, list <string> > ret = $[];
+
+	foreach (string port, unsorted_ports, {
+	    // port range
+	    if (IsPortRange(port)) {
+		ret["port_ranges"] = add (ret["port_ranges"]:[], port);
+	    // is a normal port
+	    } else {
+		// find also aliases
+		if (with_aliases) {
+		    ret["ports"] = (list<string>) union (
+			ret["ports"]:[], PortAliases::GetListOfServiceAliases(port)
+		    );
+		// only add the port itself
+		} else {
+		    ret["ports"] = add (ret["ports"]:[], port);
+		}
+	    }
+	});
+
+	return ret;
+    }
+
+    /**
      * Function returns if broadcast is allowed for needed ports in zone.
      *
-     * @param	list [string] ports
+     * @param	list <string> ports
      * @param	string zone
      * @return	boolean if is allowed
      */
@@ -415,25 +507,25 @@
 
 	// getting broadcast allowed ports
 	map <string, list <string> > allowed_ports_map = GetBroadcastAllowedPorts();
-	list <string> allowed_ports_list = allowed_ports_map[zone]:nil;
 
-	// checking aliases, when the list consists of any ports
-	if (allowed_ports_list != nil) {
-	    foreach (string listed_allowed_port, allowed_ports_list, {
-		allowed_ports_list = (list<string>) union (
-		    allowed_ports_list, PortAliases::GetListOfServiceAliases(listed_allowed_port)
-		);
-	    });
-	    allowed_ports_list = toset(allowed_ports_list);
-	// nil allowed ports = no allowance
-	} else {
+	// Divide allowed port ranges and aliases (also with their port aliases)
+	map <string, list <string> > allowed_ports_divided = DividePortsAndPortRanges(allowed_ports_map[zone]:[], true);
+
+	// If there are no allowed ports at all
+	if (allowed_ports_divided["ports"]:[] == [] && allowed_ports_divided["port_ranges"]:[] == []) {
 	    return false;
 	}
-	    
+	// clean up the memory a bit
+	allowed_ports_map = nil;
+
 	boolean is_allowed = true;
 	// checking all needed ports;
 	foreach (string needed_port, needed_ports, {
-	    if (! contains(allowed_ports_list, needed_port)) {
+	    // allowed ports don't contain the needed one and also portranges don't
+	    if (
+		!contains (allowed_ports_divided["ports"]:[], needed_port) &&
+		!PortIsInPortranges (needed_port, allowed_ports_divided["port_ranges"]:[])
+	    ) {
 		is_allowed = false;
 		break;
 	    }
@@ -445,7 +537,7 @@
     /**
      * Local function removes list of ports from port allowing broadcast packets in zone.
      *
-     * @param	list [of ports] to be removed
+     * @param	list <of ports> to be removed
      * @param	string zone
      */
     void RemoveAllowedBroadcast (list <string> needed_ports, string zone) {
@@ -471,7 +563,7 @@
     /**
      * Local function adds list of ports to ports accepting broadcast
      *
-     * @param	list [string] of ports
+     * @param	list <string> of ports
      */
     void AddAllowedBroadcast (list <string> needed_ports, string zone) {
 	// changing only if ports are not allowed
@@ -499,27 +591,6 @@
     }
 
     /**
-     * Local function for adding (allowing) single service/port for
-     * defined protocol and zone. Function doesn't take care of port-aliases.
-     *
-     * @param	string service/port
-     * @param	string protocol
-     * @param	string zone
-     * @return	boolean success
-     */
-    boolean AddServiceIntoProtocolZone(string add_service, string protocol, string zone) {
-	SetModified();
-
-	string key = "FW_SERVICES_" + zone + "_" + protocol;
-
-	list <string> allowed = splitstring(SETTINGS[key]:"", " ");
-	allowed = add (allowed, add_service);
-	SETTINGS[key] = mergestring(toset(allowed), " ");
-
-	return true;
-    }
-
-    /**
      * Local function for removing (disallowing) single service/port
      * for defined protocol and zone. Functions doesn't take care of
      * port-aliases.
@@ -544,10 +615,244 @@
     }
 
     /**
+     * Function creates a port range from min and max params. Max must be bigger than min.
+     * If something is wrong, it returns an empty string.
+     */
+    string CreateNewPortRange (integer min_pr, integer max_pr) {
+	if (min_pr == nil || min_pr == 0) {
+	    y2error("Wrong definition of the starting port '%1', it must be between 1 and 65535", min_pr);
+	    return "";
+	} else if (max_pr == nil || max_pr == 0 || max_pr > 65535) {
+	    y2error("Wrong definition of the ending port '%1', it must be between 1 and 65535", max_pr);
+	    return "";
+	}
+
+	// max and min are the same, this is not a port range
+	if (min_pr == max_pr) {
+	    return tostring(min_pr);
+	// right port range
+	} else if (min_pr < max_pr) {
+	    return tostring(min_pr) + ":" + tostring(max_pr);
+	// min is bigger than max
+	} else {
+	    y2error("Starting port '%1' cannot be bigger than ending port '%2'", min_pr, max_pr);
+	    return "";
+	}
+    }
+
+    /**
+     * Function removes port number from all port ranges. Port must be in its numeric
+     * form.
+     *
+     * @see PortAliases::GetPortNumber()
+     * @param integer port_number to be removed
+     * @param list <string> of all current port_ranges
+     * @return list <string> of filtered port_ranges
+     */
+    list <string> RemovePortFromPortRanges (integer port_number, list <string> port_ranges) {
+	// Checking necessarity of filtering and params
+	if (port_ranges == nil || port_ranges == []) return port_ranges;
+	if (port_number == nil || port_number == 0) return port_ranges;
+
+	y2milestone("Removing port %1 from port ranges %2", port_number, port_ranges);
+	
+	list <string> ret = [];
+	// Checking every port range alone
+	foreach (string port_range, port_ranges, {
+	    // Port range might be now only "port"
+	    if (!IsPortRange(port_range)) {
+		// If the port doesn't match the ~port_range...
+		if (tostring(port_number) != port_range)
+		    ret = add (ret, port_range);
+		// If matches, it isn't added (it is filtered)
+	    // Modify the port range when the port is included
+	    } else if (PortIsInPortranges(tostring(port_number), [port_range])) {
+		integer min_pr = tointeger(regexpsub(port_range,"^([0123456789]+):.*$", "\\1"));
+		integer max_pr = tointeger(regexpsub(port_range,"^.*:([0123456789]+)$", "\\1"));
+		
+		// Port matches the min. value of port range
+		if (port_number == min_pr) {
+		    ret = add (ret, CreateNewPortRange(port_number + 1, max_pr));
+		// Port matches the max. value of port range
+		} else if (port_number == max_pr) {
+		    ret = add (ret, CreateNewPortRange(min_pr, port_number - 1));
+		// Port is inside the port range, split it up
+		} else {
+		    ret = add (ret, CreateNewPortRange(port_number + 1, max_pr));
+		    ret = add (ret, CreateNewPortRange(min_pr, port_number - 1));
+		}
+	    // Port isn't in the port range, adding the current port range
+	    } else {
+		ret = add (ret, port_range);
+	    }
+	});
+
+	y2milestone("Result: %1", ret);
+	
+	return ret;
+    }
+
+    /**
+     * Function tries to flatten services into the minimal list.
+     * If ports are already mentioned inside port ranges, they are dropped.
+     *
+     * @param list <string> of services and port ranges
+     * @return list <string> of flattened services and port ranges
+     */
+    list <string> FlattenServices (list <string> old_list) {
+	list <string> new_list = [];
+	list <string> list_of_ports = [];
+	list <string> list_of_ranges = [];
+	// Using port number, we can remove ports mentioned in port ranges
+	map <string, integer> ports_to_port_numbers = $[];
+	// Using this we can remove ports mentioned more than once
+	map <integer, list <string> > port_numbers_to_port_names = $[];
+	
+	foreach (string one_item, old_list, {
+	    // Port range
+	    if (IsPortRange(one_item)) list_of_ranges = add (list_of_ranges, one_item);
+	    // Port number or name
+	    else {
+		integer port_number = PortAliases::GetPortNumber(one_item);
+		// Cannot find port number for this port, it is en error of the configuration
+		if (port_number == nil) {
+		    y2warning("Unknown port %1 but leaving it in the configuration.", one_item);
+		    new_list = add (new_list, one_item);
+		}
+		ports_to_port_numbers[one_item] = port_number;
+		port_numbers_to_port_names[port_number] = add (port_numbers_to_port_names[port_number]:[], one_item);
+	    }
+	});
+	
+	foreach (integer port_number, list <string> port_names, port_numbers_to_port_names, {
+	    // Port is not in any defined port range
+	    if (!PortIsInPortranges(tostring(port_number), list_of_ranges)) {
+		// Port - 1 IS in some port range
+		if (PortIsInPortranges(tostring(port_number - 1), list_of_ranges)) {
+		    // Creating fake port range, to be joined with another one
+		    list_of_ranges = add (list_of_ranges, CreateNewPortRange(port_number - 1, port_number));
+		// Port + 1 IS in some port range
+		} else if (PortIsInPortranges(tostring(port_number + 1), list_of_ranges)) {
+		    // Creating fake port range, to be joined with another one
+		    list_of_ranges = add (list_of_ranges, CreateNewPortRange(port_number, port_number + 1));
+		// Port is not in any port range and also it cannot be joined with any one
+		} else {
+		    // Port names of this port
+		    list <string> used_port_names = port_numbers_to_port_names[port_number]:[];
+		    if (size(used_port_names)>0) {
+			new_list = add (new_list, used_port_names[0]:"");
+		    } else {
+			y2milestone("No port name for port number %1. Adding %1...", port_number);
+			// There are no port names (hmm?), adding port number
+			new_list = add (new_list, tostring(port_number));
+		    }
+		}
+	    // Port is in a port range
+	    } else {
+		y2milestone("Removing port %1 mentioned in port ranges %2", port_number, list_of_ranges);
+	    }
+	});
+
+	list_of_ranges = toset(list_of_ranges);
+	// maximal count of steps
+	integer max_loops = 5000;
+
+	// Joining port ranges together
+	// this is a bit dangerous!
+	y2milestone("Joining list of ranges %1", list_of_ranges);
+	while (true && max_loops>0) {
+	    // if something goes wrong
+	    max_loops = max_loops - 1;
+	    
+	    boolean any_change_during_this_loop = false;
+
+	    list <string> try_all_this_ranges = list_of_ranges;
+	    foreach (string port_range, try_all_this_ranges, {
+		integer min_pr = tointeger(regexpsub(port_range,"^([0123456789]+):.*$", "\\1"));
+		integer max_pr = tointeger(regexpsub(port_range,"^.*:([0123456789]+)$", "\\1"));
+
+		if (min_pr == nil || max_pr == nil || min_pr > max_pr) {
+		    y2error("Not a port range %1", port_range);
+		} else {
+		    foreach (string try_this_pr, try_all_this_ranges, {
+			// Exact match means the same port range
+			if (try_this_pr == port_range) return;
+			integer this_min_pr = tointeger(regexpsub(try_this_pr,"^([0123456789]+):.*$", "\\1"));
+			integer this_max_pr = tointeger(regexpsub(try_this_pr,"^.*:([0123456789]+)$", "\\1"));
+		    
+			// If new port range should be created
+			integer new_min = nil;
+			integer new_max = nil;
+
+			// the second one is inside the first one
+			if (min_pr <= this_min_pr && max_pr >= this_max_pr) {
+			    // take min_pr & max_pr
+			    any_change_during_this_loop = true;
+			    new_min = min_pr;
+			    new_max = max_pr;
+			// the fist one is inside the second one
+			} else if (min_pr >= this_min_pr && max_pr <= this_max_pr) {
+			    // take this_min_pr & this_max_pr
+			    any_change_during_this_loop = true;
+			    new_min = this_min_pr;
+			    new_max = this_max_pr;
+			// the fist one partly covers the second one (by its right side)
+			} else if (min_pr <= this_min_pr && max_pr >= this_min_pr) {
+			    // take min_pr & this_max_pr
+			    any_change_during_this_loop = true;
+			    new_min = min_pr;
+			    new_max = this_max_pr;
+			// the second one partly covers the first one (by its left side)
+			} else if (min_pr >= this_min_pr && max_pr <= this_max_pr) {
+			    // take this_min_pr & max_pr
+			    any_change_during_this_loop = true;
+			    new_min = this_min_pr;
+			    new_max = max_pr;
+			// the first one has the second one just next on the right
+			} else if ((max_pr + 1) == this_min_pr) {
+			    // take min_pr & this_max_pr
+			    any_change_during_this_loop = true;
+			    new_min = min_pr;
+			    new_max = this_max_pr;
+			// the first one has the second one just next on the left side
+			} else if ((min_pr - 1) == this_max_pr) {
+			    // take this_min_pr & max_pr
+			    any_change_during_this_loop = true;
+			    new_min = this_min_pr;
+			    new_max = max_pr;
+			}
+			
+			if (any_change_during_this_loop && new_min != nil && new_max != nil) {
+			    string new_port_range = CreateNewPortRange(new_min, new_max);
+			    y2milestone("Joining %1 and %2 into %3", port_range, try_this_pr, new_port_range);
+			    // Remove old port ranges
+			    list_of_ranges = filter (string filter_pr, list_of_ranges, {
+				return (filter_pr != port_range && filter_pr != try_this_pr);
+			    });
+			    // Create a new one
+			    list_of_ranges = add (list_of_ranges, new_port_range);
+			}
+		    });
+		}
+		
+		// renew list of current port ranges, they have changed
+		if (any_change_during_this_loop) break;
+	    });
+	    
+	    if (!any_change_during_this_loop) break;
+	}
+	y2milestone("Result of joining: %1", list_of_ranges);
+
+	new_list = (list <string>) union (new_list, list_of_ranges);
+
+	return new_list;
+    }
+
+    /**
      * Local function removes ports and their aliases (if check_for_aliases is true), for
      * requested protocol and zone.
      *
-     * @param	list [string] ports to be removed
+     * @param	list <string> ports to be removed
      * @param	string protocol
      * @param	string zone
      * @param	boolean check for port-aliases
@@ -561,14 +866,21 @@
 	SetModified();
 
 	// all allowed ports
-	list <string> allowed_services = GetAllowedServicesForZoneProto (zone, protocol);
+	map <string, list <string> > allowed_services = DividePortsAndPortRanges(
+	    GetAllowedServicesForZoneProto (zone, protocol), false
+	);
 
 	// removing all aliases of ports too, adding aliases into
 	if (check_for_aliases) {
 	    list <string> remove_ports_with_aliases = [];
 	    foreach (string remove_port, remove_ports, {
+		// skip port ranges, they cannot have any port-alias
+		if (IsPortRange(remove_port)) {
+		    remove_ports_with_aliases = add (remove_ports_with_aliases, remove_port);
+		    return;
+		}
 		list <string> remove_these_ports = PortAliases::GetListOfServiceAliases(remove_port);
-		if (remove_these_ports == nil) { remove_these_ports = [ "remove_port" ]; }
+		if (remove_these_ports == nil) { remove_these_ports = [ remove_port ]; }
 		remove_ports_with_aliases = (list<string>) union (remove_ports_with_aliases,
 		    remove_these_ports
 		);
@@ -578,19 +890,50 @@
 	}
 	remove_ports = toset(remove_ports);
 
+	// Remove ports only once (because of port aliases), any => integers and strings
+	list <any> already_removed = [];
+
 	foreach (string remove_port, remove_ports, {
-	    allowed_services = filter (string allowed_port, allowed_services, {
+	    // Removing from normal ports
+	    allowed_services["ports"] = filter (string allowed_port, allowed_services["ports"]:[], {
 		return allowed_port != "" && allowed_port != remove_port;
 	    });
-	});
 
-	SetAllowedServicesForZoneProto (allowed_services, zone, protocol);
+	    // Removing also from port ranges
+	    if (allowed_services["port_ranges"]:[] != []) {
+		// Removing a real port from port ranges
+		if (!IsPortRange(remove_port)) {
+		    integer remove_port_nr = PortAliases::GetPortNumber(remove_port);
+		    // Because of all port aliases
+		    if (!contains(already_removed, remove_port_nr)) {
+			already_removed = add (already_removed, remove_port_nr);
+			allowed_services["port_ranges"] = RemovePortFromPortRanges (
+			    remove_port_nr, allowed_services["port_ranges"]:[]
+			);
+		    }
+		// Removing a port range from port ranges
+		} else {
+		    if (!contains(already_removed, remove_port)) {
+			// Just filtering the exact port range
+			allowed_services["port_ranges"] = filter (string one_port_range, allowed_services["port_ranges"]:[], {
+			    return one_port_range != remove_port;
+			});
+			already_removed = add (already_removed, remove_port);
+		    }
+		}
+	    }
+	});
+	
+	list <string> allowed_services_all = (list <string>) union(allowed_services["ports"]:[], allowed_services["port_ranges"]:[]);
+	allowed_services_all = FlattenServices(allowed_services_all);
+	
+	SetAllowedServicesForZoneProto (allowed_services_all, zone, protocol);
     }
 
     /**
      * Local function allows ports for requested protocol and zone.
      *
-     * @param	list [string] ports to be removed
+     * @param	list <string> ports to be removed
      * @param	string protocol
      * @param	string zone
      */
@@ -606,6 +949,7 @@
 	list <string> allowed_services = GetAllowedServicesForZoneProto (zone, protocol);
 
 	allowed_services = (list<string>) union(allowed_services, add_ports);
+	allowed_services = FlattenServices(allowed_services);
 
 	SetAllowedServicesForZoneProto (allowed_services, zone, protocol);
     }
@@ -665,8 +1009,10 @@
 
 	SetModified();
 
-	// Removing service ports (and also port aliases for TCP and UDP)
-	RemoveServiceSupportFromZone(service,zone);
+	// Removing service ports first (and also port aliases for TCP and UDP)
+	if (IsServiceSupportedInZone(service,zone)) {
+	    RemoveServiceSupportFromZone(service,zone);
+	}
 
 	foreach (string key, service_defined_by, {
 	    list <string> needed_ports = needed[key]:[];
@@ -1063,7 +1409,7 @@
     /**
      * Function for getting exported SuSEFirewall configuration
      *
-     * @return	map [string, any] with configuration
+     * @return	map <string, any> with configuration
      */
     global define map <string, any> Export () {
 	return SETTINGS;
@@ -1072,7 +1418,7 @@
     /**
      * Function for setting SuSEFirewall configuration from input
      *
-     * @param	map [string, any] with configuration
+     * @param	map <string, any> with configuration
      */
     global define void Import (map <string, any> import_settings) {
 	SetModified();
@@ -1143,7 +1489,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
      * Function returns list of maps of known interfaces.
      * [ $[ "id":"modem0", "name":"Askey 815C", "type":"dialup", "zone":"EXT" ], ... ]
      *
-     * @return	list [map [string, string] ]
+     * @return	list <map <string, string> >
      */
     global define list <map <string, string> > GetAllKnownInterfaces () {
 	list <map <string, string> > known_interfaces = [];
@@ -1201,7 +1547,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
     /**
      * Function returns list of all known interfaces.
      *
-     * @return	list [string] of interfaces
+     * @return	list <string> of interfaces
      */
     global define list <string> GetListOfKnownInterfaces () {
 	list <string> interfaces = [];
@@ -1265,7 +1611,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
      * Special strings like 'any' or 'auto' and unknown interfaces are removed from list.
      *
      * @param	string zone
-     * @return	list [string] of interfaces
+     * @return	list <string> of interfaces
      */
     global define list<string> GetInterfacesInZone (string zone) {
 	list <string> interfaces_in_zone = splitstring (SETTINGS["FW_DEV_" + zone]:"", " ");
@@ -1283,7 +1629,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
     /**
      * Function returns all interfaces configured in firewall, already
      *
-     * @return	list [string] of configured interfaces
+     * @return	list <string> of configured interfaces
      */
     global define list<string> GetFirewallInterfaces () {
 	list<string> firewall_configured_devices = [];
@@ -1295,6 +1641,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 	return toset(firewall_configured_devices);
     }
 
+    boolean ArePortsOrServicesAllowed (list <string> needed_ports, string protocol, string zone, boolean check_for_aliases);
 
     /**
      * Function returns if requested service is allowed in respective zone.
@@ -1314,7 +1661,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 	// definition of searched zones
 	list<string> zones = [];
 
-	// "any" for all zones
+	// "any" for all zones, this is ugly
 	if (interface == "any") {
 	    zones = GetKnownFirewallZones();
 	// string interface is the zone name
@@ -1334,34 +1681,18 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 	    y2milestone("Checking for service '%1', in '%2', PROTECT_FROM_INTERNAL='no' => allowed", service, interface);
 	    return true;
 	}
-
-	// all allowed services from all requested zones
-	list <string> allowed_services = [];
+	
+	// Check and return whether the service (port) is supported anywhere
+	boolean ret = false;
 	foreach (string zone, zones, {
-	    allowed_services = (list<string>) union (allowed_services, GetAllowedServicesForZoneProto(zone, protocol));
-	});
-
-	list <string> service_aliases = [];
-	// UDP and TCP protocols can have port-aliases
-	if (protocol != "UDP" || protocol != "TCP") {
-	    // getting all known names for the service/port
-	    service_aliases = PortAliases::GetListOfServiceAliases(service);
-	// other protocols' aliases aren't supported if even they exist
-	} else {
-	    service_aliases = [service];
-	}
-
-	boolean have_service = false;
-
-	// testing for the first appearance of requested service
-	foreach (string service, service_aliases, {
-	    if (contains(allowed_services, service)) {
-		have_service = true;
+	    // This function can also handle port ranges
+	    if (ArePortsOrServicesAllowed([service], protocol, zone, true)) {
+		ret = true;
 		break;
 	    }
 	});
-
-	return have_service;
+	
+	return ret;
     }
 
     /**
@@ -1375,6 +1706,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
      */
     global define boolean AddService (string service, string protocol, string interface) {
 	boolean success = false;
+	y2milestone("Adding service %1, protocol %2 to %3", service, protocol, interface);
 
 	if (! IsSupportedProtocol(protocol)) {
 	    y2error("Unknown protocol: %1", protocol);
@@ -1408,16 +1740,17 @@ Run YaST2 Firewall and assign it.
 
 	SetModified();
 
-	foreach (string remove_service, PortAliases::GetListOfServiceAliases(service), {
-	    foreach (string affected_zone, zones_affected, {
-		RemoveServiceFromProtocolZone(remove_service, protocol, affected_zone);
-	    });
-	});
-	foreach (string affected_zone, zones_affected, {
-	    success = AddServiceIntoProtocolZone(service, protocol, affected_zone);
+	// Adding service support into each mentioned zone
+	foreach (string zone, zones_affected, {
+	    // If there isn't already
+	    if (!ArePortsOrServicesAllowed([service], protocol, zone, true)) {
+		AddAllowedPortsOrServices([service], protocol, zone);
+	    } else {
+		y2milestone("Port %1 has been already allowed in %2", service, zone);
+	    }
 	});
 
-	return success;
+	return true;
     }
 
     /**
@@ -1431,6 +1764,7 @@ Run YaST2 Firewall and assign it.
      */
     global define boolean RemoveService (string service, string protocol, string interface) {
 	boolean success = false;
+	y2milestone("Removing service %1, protocol %2 from %3", service, protocol, interface);
 
 	if (! IsSupportedProtocol(protocol)) {
 	    y2error("Unknown protocol: %1", protocol);
@@ -1463,13 +1797,18 @@ Run YaST2 Firewall and assign it.
 
 	SetModified();
 
-	foreach (string remove_service, PortAliases::GetListOfServiceAliases(service), {
-	    foreach (string affected_zone, zones_affected, {
-		success = RemoveServiceFromProtocolZone(remove_service, protocol, affected_zone);
-	    });
+
+	// Adding service support into each mentioned zone
+	foreach (string zone, zones_affected, {
+	    // if the service is allowed
+	    if (ArePortsOrServicesAllowed([service], protocol, zone, true)) {
+		RemoveAllowedPortsOrServices([service], protocol, zone, true);
+	    } else {
+		y2milestone("Port %1 has been already removed from %2", service, zone);
+	    }
 	});
 
-	return success;
+	return true;
     }
 
     /**
@@ -1478,7 +1817,7 @@ Run YaST2 Firewall and assign it.
      * for TCP and UDP ports.
      * Protocols and Zones aren't checked for existency. It's on you to do it.
      *
-     * @param	list [string] needed (checked) ports for service
+     * @param	list <string> needed (checked) ports for service
      * @param	string protocol TCP, UDP, RPC or IP
      * @param	zone name like EXT
      * @param	boolean check for port-aliases
@@ -1492,28 +1831,21 @@ Run YaST2 Firewall and assign it.
 	    return true;
 	}
 
-	// all allowed ports
-	list <string> allowed_ports = GetAllowedServicesForZoneProto(zone, protocol);
-
-	// checking for aliases of ports too, adding aliases into 
+	map <string, list <string> > allowed_ports = $[];
+	// BTW: only TCP and UDP ports can have aliases and only TCP and UDP ports can have port ranges
 	if (check_for_aliases) {
-	    list <string> allowed_ports_with_aliases = [];
-	    
-	    foreach (string allowed_port, allowed_ports, {
-		list<string> port_aliases = PortAliases::GetListOfServiceAliases(allowed_port);
-		// wrong port definition can cause returning 'nil'
-		if (port_aliases == nil) { port_aliases = []; }
-
-		allowed_ports_with_aliases = (list<string>) union (allowed_ports_with_aliases,
-		    port_aliases
-		);
-	    });
-	    allowed_ports = allowed_ports_with_aliases;
+	    allowed_ports = DividePortsAndPortRanges (
+		GetAllowedServicesForZoneProto (zone, protocol), true
+	    );
+	} else {
+	    allowed_ports["ports"] = GetAllowedServicesForZoneProto (zone, protocol);
 	}
-	allowed_ports = toset(allowed_ports);
 
 	foreach (string needed_port, needed_ports, {
-	    if (! contains(allowed_ports, needed_port)) {
+	    if (
+		!contains(allowed_ports["ports"]:[], needed_port) &&
+		!PortIsInPortranges(needed_port, allowed_ports["port_ranges"]:[])
+	    ) {
 		are_allowed = false;
 		break;
 	    }
@@ -1523,8 +1855,10 @@ Run YaST2 Firewall and assign it.
     }
 
     /**
-     * Function returns if service is supported (allowed) in zone
+     * Function returns if service is supported (allowed) in zone. Service must be defined
+     * in the SuSEFirewallServices.
      *
+     * @see Module SuSEFirewallServices
      * @param	string service id
      * @param	string zone
      * @return	boolean if supported
@@ -1579,8 +1913,9 @@ Run YaST2 Firewall and assign it.
     /**
      * Function returns map of supported services all network interfaces.
      *
-     * @param	list [of services]
-     * @return	map [ service, map [ interface : supported_status ]]
+     * @param	list <string> of services
+     * @return	map <string, map < string : boolean > >
+     * @struct	Returns map $[service, map $[ interface : supported_status ]]
      */
     global define map <string, map <string, boolean> > GetServicesInZones (list<string> services) {
 	// list of interfaces for each zone
@@ -1618,8 +1953,9 @@ Run YaST2 Firewall and assign it.
     /**
      * Function returns map of supported services in all firewall zones.
      *
-     * @param	list [of services]
-     * @return	map [ service, map [ zone_name : supported_status ]]
+     * @param	list <string> of services
+     * @return	map <string, map < string : boolean> >
+     * @struct	Returns map $[service, map $[ zone_name : supported_status]]
      */
     global define map <string, map <string, boolean> > GetServices (list<string> services) {
 	// $[ service : $[ firewall_zone : status ]]
@@ -1662,9 +1998,11 @@ Run YaST2 Firewall and assign it.
 
 		// setting new status
 		if (new_status == true) {
+		    y2milestone("Adding '%1' into '%2' zone", service_id, firewall_zone);
 		    AddServiceSupportIntoZone(service_id, firewall_zone);
 		    HandleConflictService(service_id, firewall_zone, true);
 		} else {
+		    y2milestone("Removing '%1' from '%2' zone", service_id, firewall_zone);
 		    RemoveServiceSupportFromZone(service_id, firewall_zone);
 		    HandleConflictService(service_id, firewall_zone, false);
 		}
@@ -1996,7 +2334,7 @@ Run YaST2 Firewall and assign it.
      * This powerful function returns list of services/ports which are
      * not assigned to any fully-supported known-services.
      *
-     * @return	list [string] of additional (unassigned) services
+     * @return	list <string> of additional (unassigned) services
      */
     global define list <string> GetAdditionalServices (string protocol, string zone) {
 	list <string> additional_services = [];
@@ -2070,10 +2408,28 @@ Run YaST2 Firewall and assign it.
 	if (new_list_services != old_list_services) {
 	    SetModified();
 
-	    if (size(old_list_services)>0)
-		RemoveAllowedPortsOrServices (old_list_services, protocol, zone, true);
-	    if (size(new_list_services)>0)
-		AddAllowedPortsOrServices    (new_list_services, protocol, zone);
+	    list <string> add_services = [];
+	    list <string> remove_services = [];
+
+	    // Add these services
+	    foreach (string service, new_list_services, {
+		if (!contains(old_list_services, service))
+		    add_services = add (add_services, service);
+	    });
+	    // Remove these services
+	    foreach (string service, old_list_services, {
+		if (!contains(new_list_services, service))
+		    remove_services = add (remove_services, service);
+	    });
+
+	    if (size(remove_services)>0) {
+		y2milestone("Removing additional services %1/%2 from zone %3", remove_services, protocol, zone);
+		RemoveAllowedPortsOrServices (remove_services, protocol, zone, true);
+	    }
+	    if (size(add_services)>0) {
+		y2milestone("Adding additional services %1/%2 into zone %3", add_services, protocol, zone);
+		AddAllowedPortsOrServices (add_services, protocol, zone);
+	    }
 	}
     }
 
@@ -2124,7 +2480,8 @@ Run YaST2 Firewall and assign it.
     /**
      * Function returns map of `interfaces in zones`.
      *
-     * @return	map [zone : [list of interfaces]]
+     * @return	map <string, list <string> >
+     * @struct	map [zone : [list of interfaces]]
      */
     global define map <string, list <string> > GetFirewallInterfacesMap () {
 	map <string, list <string> > firewall_interfaces_now = $[];
@@ -2147,7 +2504,7 @@ Run YaST2 Firewall and assign it.
      * Function returns list of special strings like 'any' or 'auto' and uknown interfaces.
      *
      * @param	string zone
-     * @return	list [string] special strings or unknown interfaces
+     * @return	list <string> special strings or unknown interfaces
      */
     global define list <string> GetSpecialInterfacesInZone (string zone) {
 	list <string> interfaces_in_zone = splitstring (SETTINGS["FW_DEV_" + zone]:"", " ");
@@ -2222,7 +2579,8 @@ Run YaST2 Firewall and assign it.
      * Function returns list of rules of forwarding ports
      * to masqueraded IPs.
      *
-     * @return	list [$[ key: value ]]
+     * @retyrn  list <map <string, string> >
+     * @struct	list [$[ key: value ]]
      */
     global define list <map <string, string> > GetListOfForwardsIntoMasquerade () {
 	list <map <string, string> > list_of_rules = [];

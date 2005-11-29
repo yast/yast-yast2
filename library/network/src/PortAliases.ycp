@@ -152,7 +152,7 @@ No spaces are allowed.
 	    return nil;
 	}
 
-	string command = "grep \"^" + QuoteString(port_name) + "[ \\t]\" /etc/services | sed \"s/[^ \\t]*[ \\t]*\\([^\/ \\t]*\\).*/\\1/\"";
+	string command = "grep --perl-regexp \"^" + QuoteString(port_name) + "[ \\t]\" /etc/services | sed \"s/[^ \\t]*[ \\t]*\\([^\/ \\t]*\\).*/\\1/\"";
 	map found = (map) SCR::Execute(.target.bash_output, command);
 	integer alias_found = nil;
 
@@ -238,6 +238,23 @@ No spaces are allowed.
 	}
 	return false;
     }
+
+    /**
+     * Function returns a port number for the port name alias
+     *
+     * @param port_name_or_number
+     * @param port_number or nil when not found
+     */
+    global define integer GetPortNumber (string port_name) {
+	if (!regexpmatch(port_name, "^[0123456789]+$")) {
+	    return tointeger (
+		SERVICE_NAME_TO_PORT[port_name]:LoadAndReturnNameToPort(port_name)
+	    );
+	} else {
+	    return tointeger(port_name);
+	}
+    }
+										    
 
 /* EOF */
 }

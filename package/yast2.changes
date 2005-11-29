@@ -1,4 +1,23 @@
 -------------------------------------------------------------------
+Tue Nov 29 14:41:40 CET 2005 - locilka@suse.cz
+
+- Adding feature #5998 from FaTE: Port ranges
+  Port ranges are supported in the whole configuration of
+  SuSEFirewall2 for TCP, UDP and Broadcast. Port range has a higher
+  priority than a port itsef, which means that adding a port which
+  is already mentioned in some port alias will not add it again. If
+  there is some port range next to the new port it will join it
+  with the port range. Port ranges can be flatten when one is a
+  neighbor of any other or if one covers any other. Removing a port
+  from the port range will split the port range up into two port
+  ranges.
+- Adding port range support into port aliases
+- Changing searching for port alias from grep-regexp to the
+  perl-regexp (because of buggy behaviour with the 'mysql' port).
+- Fixing variable types in documentation of some functions
+- 2.13.13
+
+-------------------------------------------------------------------
 Thu Nov 24 12:51:20 CET 2005 - locilka@suse.cz
 
 - Fixed the misleading documentation for GetEnableService()
