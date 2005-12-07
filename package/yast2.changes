@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Dec  7 10:02:18 CET 2005 - locilka@suse.cz
+
+- Changing firewall summary texts due to the bug/enhancement
+  #119810. A bit misleading text "SSH is enabled" was changed to
+  the "SSH port is open" etc. Also translatios should be now much
+  more clearer.
+
+-------------------------------------------------------------------
 Tue Nov 29 14:41:40 CET 2005 - locilka@suse.cz
 
 - Adding feature #5998 from FaTE: Port ranges
