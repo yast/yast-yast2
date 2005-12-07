@@ -350,18 +350,18 @@
 		// TRANSLATORS: Network proposal informative text "SSH is enabled" with link around
 		//              "enabled" must be surrounded with the "%1" and "%2" strings
 		//              %1 is the start and %2 is the end of the HTML link "<a href...>" and "</a>"
-		sformat(_("SSH is %1enabled%2"), "<a href=\"firewall--disable_ssh_in_proposal\">", "</a>")
+		sformat(_("SSH port is %1open%2"), "<a href=\"firewall--disable_ssh_in_proposal\">", "</a>")
 		:
 		// TRANSLATORS: Network proposal informative text "SSH is disabled" with link around
 		//              "disabled" must be surrounded with the "%1" and "%2" strings
 		//              %1 is the start and %2 is the end of the HTML link "<a href...>" and "</a>"
-		sformat(_("SSH is %1disabled%2"), "<a href=\"firewall--enable_ssh_in_proposal\">", "</a>")
+		sformat(_("SSH port is %1blocked%2"), "<a href=\"firewall--enable_ssh_in_proposal\">", "</a>")
 	    );
 
 	    if (Linuxrc::usessh()) {
 		if (!is_ssh_enabled)
-		    // TRANSLATORS: This is a warning message. Installation over VNC without VNC allowed on firewall
-		    AddWarning(_("You are installing system over the Remote Administration (VNC) but you have not opened the VNC port on the firewall."));
+		    // TRANSLATORS: This is a warning message. Installation over SSH without SSH allowed on firewall
+		    AddWarning(_("You are installing system over the SSH but you have not opened the SSH port on the firewall."));
 	    }
 
 	    // when the firewall is enabled and we are installing the system over VNC
@@ -374,23 +374,23 @@
 			    is_vnc_enabled = true;
 		    });
 		}
-		y2milestone("VNC is " + (is_vnc_enabled ? "":"not ") + "enabled");
+		y2milestone("VNC port is " + (is_vnc_enabled ? "open":"blocked") + " in the firewall");
 
 		output = output + "<br>" + (is_vnc_enabled ?
 		    // TRANSLATORS: Network proposal informative text "Remote Administration (VNC) is enabled" with link around
 		    //              "enabled" must be surrounded with the "%1" and "%2" strings
 		    //              %1 is the start and %2 is the end of the HTML link "<a href...>" and "</a>"
-		    sformat(_("Remote Administration (VNC) is %1enabled%2"), "<a href=\"firewall--disable_vnc_in_proposal\">", "</a>")
+		    sformat(_("Remote Administration (VNC) ports are %1open%2"), "<a href=\"firewall--disable_vnc_in_proposal\">", "</a>")
 		    :
 		    // TRANSLATORS: Network proposal informative text "Remote Administration (VNC) is disabled" with link around
 		    //              "disabled" must be surrounded with the "%1" and "%2" strings
 		    //              %1 is the start and %2 is the end of the HTML link "<a href...>" and "</a>"
-		    sformat(_("Remote Administration (VNC) is %1disabled%2"), "<a href=\"firewall--enable_vnc_in_proposal\">", "</a>")
+		    sformat(_("Remote Administration (VNC) ports are %1blocked%2"), "<a href=\"firewall--enable_vnc_in_proposal\">", "</a>")
 		);
 
 		if (!is_vnc_enabled)
 		    // TRANSLATORS: This is a warning message. Installation over VNC without VNC allowed on firewall
-		    AddWarning(_("You are installing system over the Remote Administration (VNC) but you have not opened the VNC port on the firewall."));
+		    AddWarning(_("You are installing system over the Remote Administration (VNC) but you have not opened the VNC ports on the firewall."));
 	    }
 	    
 	    list <string> warnings_strings = GetWarnings();
