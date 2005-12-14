@@ -79,8 +79,7 @@ global define boolean InstalledAny(list<string> packages) {
 }
 
 boolean AskPackages(list<string> packs) {
-    // this is a separator used at merging package list items
-    string pkgs = mergestring(packs, _(", "));
+    string pkgs = mergestring(packs, ", ");
     // the message is followed by list of required packages
     string text = _("These packages need to be installed:") + " " + pkgs;
     CommandLine::Print(text);
