@@ -6,7 +6,8 @@ MODLIST=($(LC_ALL=C yast -l| grep '^[a-z]' | grep -v "Available"))
 
 _yast2 ()
 {
-        local cur prev len idx mod
+        local cur prevprev prev len idx mod MODOPTS line opt rest
+        MODOPTS=()
 
 	if [[ ${#COMP_WORDS[@]} -gt 4 ]]; then
 		return 0
@@ -28,17 +29,18 @@ _yast2 ()
 	    if [[ -n $prevprev && $prevprev == $mod ]]; then
 		# build option list
 		# prev is a module option
-		MODOPTS=($(LC_ALL=C yast $mod $prev help 2>&1| perl -e '
-use strict;
-while(<>) {
-last if $_ =~ /^\s+Options/;
-}
-while(<>) {
-last if $_ =~ /^\s+$/;
-$_ =~ /^\s+(\w+)\s.*/;
-print "$1\n";
-}
-'))
+                while read line ; do
+                    case "$line" in
+                        Options:*)
+                        while read opt rest ; do
+                            case "$opt" in
+                                "") break 2 ;;
+                                *)  MODOPTS=("${MODOPTS[@]}" "$opt")
+                            esac
+                        done
+                        ;;
+                    esac
+                done < <(LC_ALL=C yast $mod $prev help 2>&1)
 		len=${#cur}
 		idx=0
 		for pval in ${MODOPTS[@]}; do
@@ -52,17 +54,27 @@ print "$1\n";
 	    # previous option is a known yast module?
 	    if [[ $prev == $mod ]]; then
 		# build option list
-		MODOPTS=($(LC_ALL=C yast $mod help 2>&1| perl -e '
-use strict;
-while(<>) {
-last if $_ =~ /^Commands/;
-}
-while(<>) {
-last if $_ =~ /^\s+$/;
-$_ =~ /^\s+(\w+)\s.*/;
-print "$1\n";
-}
-'))
+                while read line ; do
+                    case "$line" in
+                        Basic\ Syntax:*)
+                        while read rest rest opt rest ; do
+                            case "$opt" in
+                                \<*\>) ;;
+                                "") break ;;
+                                *)  MODOPTS=("${MODOPTS[@]}" "$opt")
+                            esac
+                        done
+                        ;;
+                        Commands:*)
+                        while read opt rest ; do
+                            case "$opt" in
+                                "") break 2 ;;
+                                *)  MODOPTS=("${MODOPTS[@]}" "$opt")
+                            esac
+                        done
+                        ;;
+                    esac
+                done < <(LC_ALL=C yast $mod help 2>&1)
 		len=${#cur}
 		idx=0
 		for pval in ${MODOPTS[@]}; do
