@@ -1,8 +1,9 @@
 # yast2 completion
 # A Christmas gift from Carsten Hoeger
 
+YAST=/sbin/yast
 # build a list of know yast modules
-MODLIST=($(LC_ALL=C yast -l| grep '^[a-z]' | grep -v "Available"))
+MODLIST=($(LC_ALL=C $YAST -l| grep '^[a-z]' | grep -v "Available"))
 
 _yast2 ()
 {
@@ -40,7 +41,7 @@ _yast2 ()
                         done
                         ;;
                     esac
-                done < <(LC_ALL=C yast $mod $prev help 2>&1)
+                done < <(LC_ALL=C $YAST $mod $prev help 2>&1)
 		len=${#cur}
 		idx=0
 		for pval in ${MODOPTS[@]}; do
@@ -74,7 +75,7 @@ _yast2 ()
                         done
                         ;;
                     esac
-                done < <(LC_ALL=C yast $mod help 2>&1)
+                done < <(LC_ALL=C $YAST $mod help 2>&1)
 		len=${#cur}
 		idx=0
 		for pval in ${MODOPTS[@]}; do
