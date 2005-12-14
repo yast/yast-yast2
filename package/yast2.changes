@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Dec 14 16:08:39 CET 2005 - mvidner@suse.cz
+
+- Added a bash completion script, thanks to choeger.
+
+-------------------------------------------------------------------
 Wed Dec  7 10:02:18 CET 2005 - locilka@suse.cz
 
 - Changing firewall summary texts due to the bug/enhancement

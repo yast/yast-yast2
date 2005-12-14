@@ -87,7 +87,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %dir @schemadir@/control/rnc
 %dir @schemadir@/autoyast
 %dir @schemadir@/autoyast/rnc
-%dir /etc/YaST2
+%dir @sysconfdir@/YaST2
 
 # yast2
 
@@ -96,6 +96,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 @scrconfdir@/*
 @ybindir@/*
 @agentdir@/ag_*
+@sysconfdir@/bash_completion.d/yast2*.sh
 
 # documentation (not included in devel subpackage)
 %doc %dir @docdir@

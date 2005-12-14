@@ -6,6 +6,9 @@ sbin_SCRIPTS = yast2 save_y2logs
 
 ybin_SCRIPTS = yast2 yast2-funcs check-all-syntax
 
+completiondir = $(sysconfdir)/bash_completion.d
+completion_DATA = yast2-completion.sh
+
 EXTRA_DIST = $(sbin_SCRIPTS) $(ybin_SCRIPTS)
 
 install-data-local:
