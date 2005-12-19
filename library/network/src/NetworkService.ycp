@@ -13,13 +13,19 @@ module "NetworkService";
 
 import "Service";
 
-textdomain "network";
 
+/**
+ * Whether use NetworkManager or ifup
+ * Use IsManaged () instead!
+ */
+global boolean Managed = nil;
 
 /**
  * Whether use NetworkManager or ifup
  */
-global boolean Managed = nil;
+global boolean IsManaged () {
+    return Managed;
+}
 
 /**
  * Whether the network init script was enabled
