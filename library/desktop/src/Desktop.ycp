@@ -89,8 +89,8 @@ global define void Read(list<string> Values) {
     /* read language */
     LanguageFull = "";
     Language = WFM::GetLanguage();
-    if(regexpmatch(Language, "(.*_[^.]*)\..*"))
-	LanguageFull = regexpsub(Language, "(.*_[^.]*)\..*", "\\1");
+    if(regexpmatch(Language, "(.*_[^.]*)\\.?.*")) // matches: ll_TT ll_TT.UTF-8
+	LanguageFull = regexpsub(Language, "(.*_[^.]*)\\.?.*", "\\1");
     if(regexpmatch(Language, "(.*)_"))
 	Language = regexpsub(Language, "(.*)_", "\\1");
     y2debug("LanguageFull=%1", LanguageFull);
