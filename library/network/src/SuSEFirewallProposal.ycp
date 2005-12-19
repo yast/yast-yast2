@@ -14,6 +14,7 @@
     textdomain "base";
 
     import "SuSEFirewall";
+    import "NetworkService";
     import "ProductFeatures";
     import "Linuxrc";
 
@@ -187,7 +188,9 @@
 	);
 
 	// has no network interface
-	if (size(non_dup_interfaces)==0 && size(dial_up_interfaces)==0) {
+	// and NetworkManager is disabled (#139402)
+	if (size(non_dup_interfaces)==0 && size(dial_up_interfaces)==0 &&
+	    !NetworkService::IsManaged ()) {
 	    SuSEFirewall::SetEnableService(false);
 	    SuSEFirewall::SetStartService(false);
 	} else {
