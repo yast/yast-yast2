@@ -1,0 +1,97 @@
+/**
+ * File:	modules/NetworkService.ycp
+ * Package:	Network configuration
+ * Summary:	Init script handling, ifup vs NetworkManager
+ * Authors:	Martin Vidner <mvidner@suse.cz>
+ *
+ * $Id: runtime.ycp 25152 2005-08-22 14:43:44Z mvidner $
+ */
+
+{
+
+module "NetworkService";
+
+import "Service";
+
+textdomain "network";
+
+
+/**
+ * Whether use NetworkManager or ifup
+ */
+global boolean Managed = nil;
+
+/**
+ * Whether the network init script was enabled
+ */
+boolean had_network = nil;
+/**
+ * Whether the networkmanager init script was enabled
+ */
+boolean had_networkmanager = nil;
+
+global void Read () {
+    boolean net = Service::Enabled ("network");
+    boolean nm =  Service::Enabled ("networkmanager");
+    y2milestone ("Enabled: network %1, networkmanager %2", net, nm);
+    Managed = nm;
+}
+
+void Chkconfig (string script, boolean enabled) {
+    // force disabling of network because many scripts want it
+    string cmd = "chkconfig -f " + script + " " + (enabled? "on": "off");
+    y2milestone ("%1", cmd);
+    SCR::Execute (.target.bash, cmd);
+}
+
+/**
+ * Enables and disables the appropriate services.
+ * Remembers the previous status for StartStop to use.
+ */
+global void EnableDisable () {
+    had_network = Service::Enabled ("network");
+    had_networkmanager = Service::Enabled ("networkmanager");
+
+    Chkconfig ("network", !Managed);
+    Chkconfig ("networkmanager", Managed);
+}
+
+boolean RunScript (string script, string action) {
+    if (script == "")
+	 return true;
+    y2milestone("rc%1 %2", script, action);
+    // Workaround for bug #46055:
+    string cmd = sformat ("cd /; /etc/init.d/%1 %2", script, action);
+    return SCR::Execute (.target.bash, cmd) == 0;
+}
+
+/**
+ * Starts and stops the appropriate services.
+ * EnableDisable must have run so that we know what to stop.
+ */
+global void StartStop () {
+    string tostop = "";
+    if (had_network)
+	 tostop = "network";
+    // if we had both, do not stop network
+    if (had_networkmanager)
+	 tostop = "networkmanager";
+    string tostart = Managed? "networkmanager": "network";
+    string toreload = "";
+
+    // here comes the logic
+    if (tostop == tostart)
+    {
+	 if (tostart == "network")
+	     toreload = "network";
+	 tostop = "";
+	 tostart = "";
+    }
+
+    RunScript (tostop, "stop");
+    RunScript (tostart, "start");
+    RunScript (toreload, "reload");
+}
+
+/* EOF */
+}

@@ -8,6 +8,7 @@ ynclude_DATA =
 
 module_DATA =			\
 	NetworkDevices.ycp	\
+	NetworkService.ycp	\
 	SuSEFirewall.ycp	\
 	SuSEFirewallServices.ycp	\
 	PortAliases.ycp		\
