@@ -361,7 +361,7 @@
 	    if (Linuxrc::usessh()) {
 		if (!is_ssh_enabled)
 		    // TRANSLATORS: This is a warning message. Installation over SSH without SSH allowed on firewall
-		    AddWarning(_("You are installing system over the SSH but you have not opened the SSH port on the firewall."));
+		    AddWarning(_("You are installing a system over SSH, but you have not opened the SSH port on the firewall."));
 	    }
 
 	    // when the firewall is enabled and we are installing the system over VNC
@@ -390,7 +390,7 @@
 
 		if (!is_vnc_enabled)
 		    // TRANSLATORS: This is a warning message. Installation over VNC without VNC allowed on firewall
-		    AddWarning(_("You are installing system over the Remote Administration (VNC) but you have not opened the VNC ports on the firewall."));
+		    AddWarning(_("You are installing a system using remote administration (VNC), but you have not opened the VNC ports on the firewall."));
 	    }
 	    
 	    list <string> warnings_strings = GetWarnings();

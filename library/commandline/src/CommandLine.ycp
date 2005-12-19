@@ -1348,7 +1348,7 @@ global any Run( map commandline ) {
 global define boolean YesNo() {
     // prompt message displayed in the commandline mode
     // when user is asked to replay "yes" or "no" (localized)
-    string prompt = _("yes/no?: ");
+    string prompt = _("yes or no?");
 
     string ui = CommandLine::UserInput(prompt);
 
