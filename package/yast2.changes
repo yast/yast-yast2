@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Dec 20 11:13:26 CET 2005 - visnov@suse.cz
+
+- Include bash completion script
+- 2.13.16 
+
+-------------------------------------------------------------------
 Mon Dec 19 17:20:03 CET 2005 - mvidner@suse.cz
 
 - Consider also NetworkManager if there are no ifcfgs during the
