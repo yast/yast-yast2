@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Dec 22 08:46:07 CET 2005 - visnov@suse.cz
+
+- ignore .desktop comments starting with #
+
+-------------------------------------------------------------------
 Tue Dec 20 11:13:26 CET 2005 - visnov@suse.cz
 
 - Include bash completion script
