@@ -19,7 +19,7 @@
     `IniAgent( [ "/usr/share/applications/YaST2/*.desktop" ],
 	$[
 	    "options"	: [ ],
-	    "comments"	: [ "^[ \t]*;.*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],
+	    "comments"	: [ "^[ \t]*[;#].*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],
 	    "sections"	: [
 		$[ "begin" : [
 		    "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
