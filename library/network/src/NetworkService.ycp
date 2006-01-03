@@ -24,6 +24,10 @@ global boolean Managed = nil;
  * Whether use NetworkManager or ifup
  */
 global boolean IsManaged () {
+    if (Managed == nil)
+    {
+	Read ();
+    }
     return Managed;
 }
 
