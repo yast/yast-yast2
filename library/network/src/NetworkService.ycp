@@ -20,6 +20,8 @@ import "Service";
  */
 global boolean Managed = nil;
 
+global void Read ();
+
 /**
  * Whether use NetworkManager or ifup
  */
