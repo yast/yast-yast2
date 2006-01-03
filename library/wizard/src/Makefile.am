@@ -11,12 +11,10 @@ module_DATA =			\
 	Wizard.ycp		\
 	Wizard_hw.ycp		\
 	Progress.ycp		\
-	Report.ycp		\
-	Summary.ycp		\
 	HTML.ycp
 
 EXTRA_DIST = $(module_DATA)
 
-YCPCFLAGS = -M ../../modules -M ../../types/src
+YCPCFLAGS = -M ../../modules -M ../../types/src -M ../../xml/src -M ../../commandline/src
 
 include $(top_srcdir)/Makefile.am.common
