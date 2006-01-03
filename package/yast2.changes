@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jan  3 10:29:58 CET 2006 - mvidner@suse.cz
+
+- Prevented NetworkService::Managed() from returning nil.
+
+-------------------------------------------------------------------
 Thu Dec 22 08:46:07 CET 2005 - visnov@suse.cz
 
 - ignore .desktop comments starting with #
