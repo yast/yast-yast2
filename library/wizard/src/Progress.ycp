@@ -50,6 +50,7 @@
 
     textdomain "base";
 
+    import "CommandLine";
     import "Wizard";
     import "Mode";
 
@@ -166,13 +167,17 @@
      * @param help_text help text
      */
     global define void New (string window_title, string progress_title, integer length, list<string> stg, list tits, string help_text) ``{
-	if (!visible || Mode::commandline ())
+	if (!visible)
 	    return ;
 	steps = length;
 	stages = size (stg);
 	titles = tits;
 	current_step = -1;
 	current_stage = -1;
+	
+	if (Mode::commandline ())
+	    return;
+
 	if (progress_title == "")
 	{
 	    // Reservere space for future progress bar labels. The ProgressBar
@@ -250,9 +255,13 @@
      * function. Advances progress bar value by 1.
      */
     global define void NextStep () ``{
-	if (!visible || Mode::commandline () || 0 == steps)
+	if (!visible || 0 == steps)
 	    return ;
 	current_step = current_step + 1;
+	
+	if (Mode::commandline ())
+	    return ;
+
 	if (current_step > steps)
 	{
 	    y2error ("Progress bar doesn't have so many steps.");
@@ -266,7 +275,7 @@
      * that defined in New.
      */
     global define void NextStage () ``{
-	if (!visible || Mode::commandline ())
+	if (!visible)
 	    return ;
 	NextStep ();
 
@@ -275,15 +284,29 @@
 	    y2error ("Non-existing stage requested.");
 	    return ;
 	}
-	if (current_stage >= 0)
+
+	current_stage = current_stage + 1;
+
+	if ( Mode::commandline ()) 
+	{
+	    if (current_stage < stages)
+	    {
+		if (current_stage < size (titles))
+		{
+		    CommandLine::PrintVerbose(titles[current_stage]:"");
+		}
+	    }
+	    return;
+	}
+	
+	if (current_stage > 0)
 	{
 	    any glyph = UI::Glyph(`CheckMark);
 	    if(glyph != nil)
-		UI::ChangeWidget(`id (sformat ("bar_label_%1", current_stage)), `Value, glyph);
+		UI::ChangeWidget(`id (sformat ("bar_label_%1", current_stage-1)), `Value, glyph);
 	}
 	if (current_stage < stages )
 	{
-	    current_stage = current_stage + 1;
 	    if (current_stage < size (titles))
 	    {
 		UI::ChangeWidget(`id(`pb), 0 == steps ? `Value : `Label, titles[current_stage]:"");
@@ -321,13 +344,13 @@
      * @param step New step or -1 if step should not change.
      */
     global define void Stage (integer st, string title, integer step) ``{
-	if (!visible || Mode::commandline ())
+	if (!visible)
 	    return ;
 	if (-1 != step)
 	{
 	    Step (step);
 	}
-	if (current_stage >= 0)
+	if (!Mode::commandline () && current_stage >= 0)
 	{
 	    UI::ChangeWidget(`id (sformat ("bar_label_%1", current_stage)), `Value, st > current_stage ? UI::Glyph(`CheckMark): "-   ");
 	}
@@ -343,7 +366,15 @@
 	}
 	if (current_stage < size (titles))
 	{
-	    UI::ChangeWidget(`id(`pb), 0 == steps ? `Value : `Label, s);
+	    if (Mode::commandline ())
+	    {
+		CommandLine::PrintVerbose (s);
+		return;
+	    }
+	    else
+	    {
+		UI::ChangeWidget(`id(`pb), 0 == steps ? `Value : `Label, s);
+	    }
 	}
 	if (current_stage < stages)
 	{

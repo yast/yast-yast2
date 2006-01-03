@@ -1246,7 +1246,6 @@ global any Run( map commandline ) {
 	    return ret;
 	}
     } else {
-	import "Progress";
 
 	// disable Reports, we handle them on our own
 	Report::Import( $[
@@ -1254,10 +1253,6 @@ global any Run( map commandline ) {
 	    "warnings"	:$[ "show":false ],
 	    "errors"	:$[ "show":false ]
 	]);
-
-
-	/* Turn off progress bar if not GUI */
-	Progress::off();
 
 	// translators: progress message - command line interface ready
 	CommandLine::PrintVerbose( _("Ready") );
