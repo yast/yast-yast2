@@ -18,6 +18,7 @@
     import "Mode";
     import "Service";
     import "NetworkDevices";
+    import "NetworkService";
     import "SuSEFirewallServices";
     import "PortAliases";
     import "Report";
@@ -30,6 +31,12 @@
      * this should reduce the readings to only ONE
      */
     boolean configuration_has_been_read = false;
+
+    /* String which includes all interfaces not-defined in any zone */
+    global string special_all_interface_string = "any";
+
+    /* Zone which works with the special_all_interface_string string */
+    global string special_all_interface_zone   = "EXT";
 
     /* firewall settings map */
     map<string, any> SETTINGS = $[];
@@ -145,10 +152,40 @@
     }
 
     global define boolean IsServiceSupportedInZone (string service, string zone);
+    global define list <string> GetSpecialInterfacesInZone (string zone);
+    global define void AddSpecialInterfaceIntoZone (string interface, string zone);
 
     # <!-- SuSEFirewall GLOBAL FUNCTIONS USED BY LOCAL ONES //-->
 
     # <!-- SuSEFirewall LOCAL FUNCTIONS //-->
+
+    /**
+     * Function returns whether the feature 'any' network interface is supported in the
+     * firewall configuration. The string 'any' must be in the 'EXT' zone.
+     *
+     * @return boolean is_supported whether the feature is supported or not
+     */
+    global boolean IsAnyNetworkInterfaceSupported () {
+	return contains(GetSpecialInterfacesInZone(special_all_interface_zone), special_all_interface_string);
+    }
+
+    /**
+     * Function returns whether the support for the Network Manager
+     * (support for any interfaces not-mentioned in any configuration)
+     * is included in the configuration.
+     */
+    boolean IsNetworkManagerSupported () {
+	// EXT has to contain string 'any'
+	return IsAnyNetworkInterfaceSupported();
+    }
+    
+    /**
+     * Function adds the support for the Network Manager
+     * (support for any interfaces not-mentioned in any configuration).
+     */
+    void AddNetworkManagerSupport () {
+	AddSpecialInterfaceIntoZone(special_all_interface_string, special_all_interface_zone);
+    }
 
     /**
      * Function return list of variables needed for SuSEFirewall's settings.
@@ -1427,7 +1464,8 @@
     }
 
     /**
-     * Function returns if the interface is in zone
+     * Function returns if the interface is in zone.
+     * Interfaces handled by a Network Manager allways return 'false'.
      *
      * @param	string interface
      * @param	string firewall zone
@@ -1442,6 +1480,7 @@
      * Function returns the firewall zone of interface, nil if no zone includes
      * the interface. Error is reported when interface is found in multiple
      * firewall zones, then the first appearance is returned.
+     * Interfaces handled by a Network Manager allways return 'nil'.
      *
      * @param	string interface
      * @return	string zone
@@ -1487,7 +1526,8 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 
     /**
      * Function returns list of maps of known interfaces.
-     * [ $[ "id":"modem0", "name":"Askey 815C", "type":"dialup", "zone":"EXT" ], ... ]
+     * Interfaces handled by a Network Manager are not returned at all.
+     * @struct [ $[ "id":"modem0", "name":"Askey 815C", "type":"dialup", "zone":"EXT" ], ... ]
      *
      * @return	list <map <string, string> >
      */
@@ -1530,7 +1570,8 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
     }
 
     /**
-     * Function returns list of non-dial-up interfaces
+     * Function returns list of non-dial-up interfaces.
+     * Interfaces handled by a Network Manager are not returned at all.
      *
      * @return list <string> of non-dial-up interface names
      */
@@ -1545,7 +1586,8 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
     }
 
     /**
-     * Function returns list of all known interfaces.
+     * Function returns list of all known interfaces
+     * (if they are not handled by a Network Manager).
      *
      * @return	list <string> of interfaces
      */
@@ -1674,6 +1716,12 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 		zones = add (zones, interface);
 	    }
 	}
+	
+	// Network Manager
+	if (NetworkService::IsManaged()) {
+	    // Adds a zone which only can handle interfaces not-mentioned in configuration
+	    zones = (list <string>) toset (add (zones, special_all_interface_zone));
+	}
 
 	// SuSEFirewall feature FW_PROTECT_FROM_INT
 	// should not be protected and searched zones include also internal (or the zone IS internal, sure)
@@ -1697,7 +1745,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 
     /**
      * Function adds service into selected zone (or zone of interface) for selected protocol.
-     * Function take care about port-aliases, first of all, removes all them.
+     * Function take care about port-aliases, first of all, removes all of them.
      *
      * @param	string service/port
      * @param	string protocol TCP, UDP, RPC, IP
@@ -1718,6 +1766,10 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 	// "all" means for all known zones
 	if (interface == "all") {
 	    zones_affected = GetKnownFirewallZones();
+	    // Network Manager
+	    if (NetworkService::IsManaged()) {
+		zones_affected = (list <string>) toset (add (zones_affected, special_all_interface_zone));
+	    }
 	// zone or interface name
 	} else {
 	    // is probably an interface name
@@ -1776,6 +1828,10 @@ Run YaST2 Firewall and assign it.
 	// "all" means for all known zones
 	if (interface == "all") {
 	    zones_affected = GetKnownFirewallZones();
+	    // Network Manager
+	    if (NetworkService::IsManaged()) {
+		zones_affected = (list <string>) toset (add (zones_affected, special_all_interface_zone));
+	    }
 	// zone or interface name
 	} else {
 	    if (! IsKnownZone(interface)) {
@@ -1825,6 +1881,14 @@ Run YaST2 Firewall and assign it.
      */
     boolean ArePortsOrServicesAllowed (list <string> needed_ports, string protocol, string zone, boolean check_for_aliases) {
 	boolean are_allowed = true;
+
+	// When the network manager is turned on
+	if (NetworkService::IsManaged()) {
+	    // When the defined zone contains the defined special string (EXT/any) by default
+	    if (contains(SuSEFirewall::GetSpecialInterfacesInZone(special_all_interface_zone), special_all_interface_string)) {
+		zone = special_all_interface_zone;
+	    }
+	}
 
 	if (size(needed_ports)<1) {
 	    y2warning("Undefined list of %1 services/ports for service", protocol);
