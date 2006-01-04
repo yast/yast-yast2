@@ -1,0 +1,333 @@
+/**
+ * Module: 		AsciiFile.ycp
+ *
+ * Authors:		Thomas Fehr (fehr@suse.de)
+ *
+ * Purpose: 		Handle reading and modifying of ascii files.
+ *
+ * $Id$
+ */
+{
+module "AsciiFile";
+
+textdomain "base";
+
+string blanks = "                                                             ";
+
+/**
+ * Sets the string how the comment starts
+ *
+ * @param map		file content
+ * @param string	comment delimiter
+ */
+global define void SetComment( map& file, string comment )
+    ``{
+    file["comment"] = comment + ".*";
+    };
+
+/**
+ * Sets the widths of records on one line
+ *
+ * @param map		file content
+ * @param list		of widths
+ */
+global define void SetListWidth( map& file, list widths )
+    ``{
+    file["widths"] = widths;
+    };
+
+/**
+ * Sets the delimiter between the records on one line
+ *
+ * @param map		file content
+ * @param string	delimiter
+ */
+global define void SetDelimiter( map& file, string delim )
+    ``{
+    file["delim"] = delim;
+    };
+
+/**
+ * Private function
+ */
+define string AssertLineValid( map& file, integer line )
+    ``{
+    if( haskey( file["l"]:$[], line ) && file["l",line,"buildline"]:false )
+	{
+	string delim = substring( file["delim"]:" ", 0, 1 );
+	string lstr = "";
+	integer num = 0;
+	foreach( string text, file["l",line,"fields"]:[],
+	    ``{
+	    if( num>0 )
+		lstr = lstr + delim;
+	    lstr = lstr + text;
+	    if( size(text)<file["widths",num]:0 )
+		{
+		lstr = lstr + substring( blanks, 0,
+		                         file["widths",num]:0-size(text) );
+		}
+	    num = num+1;
+	    });
+	file["l",line,"line"] = lstr;
+	file["l",line,"buildline"] = false;
+	
+	return lstr;
+	}
+	return file["l",line,"line"]:"";
+    }
+
+/**
+ * Reads the file from the disk
+ *
+ * @param map		file content
+ * @param string	file name
+ */
+global define void ReadFile( map& file, string pathname )
+    ``{
+    y2milestone( "path=%1", pathname );
+    list<string> lines = [];
+    if( SCR::Read( .target.size, pathname ) > 0 )
+	{
+	string value = (string)SCR::Read( .target.string, pathname );
+	lines = splitstring( value, "\n" );
+	}
+    integer lineno = 1;
+    map lmap = $[];
+    foreach( string line, lines,
+	``{
+	map l = $[];
+	l["line"] = line;
+	if( size(file["comment"]:"")>0 && regexpmatch( line, file["comment"]:"" ) )
+	    {
+	    l["comment"] = true;
+	    }
+	if( !l["comment"]:false && size(file["delim"]:"")>0 )
+	    {
+	    integer pos = 0;
+	    list fields = [];
+	    while( size(line)>0 )
+		{
+		pos = findfirstnotof( line, file["delim"]:"" );
+		if( pos != nil && pos>0 )
+		    {
+		    line = substring( line, pos );
+		    }
+		pos = findfirstof( line, file["delim"]:"" );
+		if( pos != nil && pos>0 )
+		    {
+		    fields = add( fields, substring( line, 0, pos ) );
+		    line = substring( line, pos );
+		    }
+		else
+		    {
+		    fields = add( fields, line );
+		    line = "";
+		    }
+		}
+	    l["fields"] = fields;
+	    }
+	lmap[lineno] = l;
+	lineno = lineno + 1;
+	});
+    if( size(lmap)>0 && size(lmap[lineno-1,"line"]:"")==0 )
+	lmap = remove( lmap, lineno-1 );
+    file["l"] = lmap;
+    };
+
+/**
+ * Returns the list of rows where matches searched string in the defined column
+ *
+ * @param map			file content
+ * @param integer		column (counted from 0 to n)
+ * @param string		searched string
+ * @return list<integer>	matching rows
+ */
+global define list<integer> FindLineField( map file, integer field, string content )
+    ``{
+    list<integer> ret = [];
+    foreach( integer num, map line, file["l"]:$[],
+	``{
+	if( !line["comment"]:false && line["fields",field]:"" == content )
+	    {
+	    ret = add( ret, num );
+	    }
+	});
+    y2milestone( "field %1 content %2 ret %3", field, content, ret );
+    return( ret );
+    }
+
+/**
+ * Returns map of wanted lines
+ *
+ * @param map			file content
+ * @param list<integer>		rows (counted from 1 to n)
+ * @return map<integer, map>	with wanted lines
+ */
+global define map<integer, map>  GetLines( map& file, list<integer> lines )
+    ``{
+    map<integer, map> ret = $[];
+    foreach( integer num, lines,
+	``{
+	if( haskey( file["l"]:$[], num ) )
+	    {
+	    AssertLineValid( file, num );
+	    ret[num] = file["l",num]:$[];
+	    }
+	});
+    y2milestone( "lines %1 ret %2", lines, ret );
+    return( ret );
+    };
+
+/**
+ * Returns map of wanted line
+ *
+ * @param map		file content
+ * @param integer	row number (counted from 1 to n)
+ * @return map		of wanted line
+ */
+global define map GetLine( map& file, integer line )
+    ``{
+    map ret = $[];
+    if( haskey( file["l"]:$[], line ) )
+	{
+	AssertLineValid( file, line );
+	ret = file["l",line]:$[];
+	}
+    y2milestone( "line %1 ret %2", line, ret );
+    return( ret );
+    };
+
+
+/**
+ * Returns count of lines in file
+ *
+ * @param map		file content
+ * @return integer	count of lines
+ */
+global define integer NumLines( map file )
+    ``{
+    return( size(file["l"]:$[]) );
+    }
+
+/**
+ * Changes the record in the file defined by row and column
+ *
+ * @param map		file content
+ * @param integer	row number (counted from 1 to n)
+ * @param integer	column number (counted from 0 to n)
+ */
+global define void ChangeLineField( map& file, integer line, integer field,
+                                    string entry )
+    ``{
+    y2debug( "line %1 field %2 entry %3", line, field, entry );
+    boolean changed = false;
+    if( !haskey( file["l"]:$[], line ))
+	{
+	file["l",line] = $[];
+	file["l",line,"fields"] = [];
+	}
+    if( size(file["l",line,"fields"]:[])<field )
+	{
+	changed = true;
+	integer i = 0;
+	while( i<field )
+	    {
+	    if( size(file["l",line,"fields",i]:"")==0 )
+		file["l",line,"fields",i] = "";
+	    i = i + 1;
+	    }
+	}
+    if( file["l",line,"fields",field]:"" != entry )
+	{
+	file["l",line,"fields",field] = entry;
+	changed = true;
+	}
+    if( changed )
+	{
+	file["l",line,"changed"] = true;
+	file["l",line,"buildline"] = true;
+	}
+    }
+
+/**
+ * Changes a complete line 
+ *
+ * @param map		file content
+ * @param integer	row number (counted from 1 to n)
+ * @param list	        of new entries on the line
+ */
+global define void ReplaceLine( map& file, integer line,
+				list<string> entry )
+    ``{
+    y2debug( "line %1 entry %2", line, entry );
+    boolean changed = false;
+    if( !haskey( file["l"]:$[], line ))
+	{
+	file["l",line] = $[];
+	}
+    file["l",line,"fields"] = entry;
+    file["l",line,"changed"] = true;
+    file["l",line,"buildline"] = true;
+    }
+
+/**
+ * Appends a new line at the bottom
+ *
+ * @param map	file content
+ * @param list	of new entries on one line
+ */
+global define void AppendLine( map& file, list entry )
+    ``{
+    integer line = size(file["l"]:$[]) + 1;
+    y2debug( "new line %1 entry %2", line, entry );
+    file["l",line] = $[];
+    file["l",line,"fields"] = entry;
+    file["l",line,"changed"] = true;
+    file["l",line,"buildline"] = true;
+    }
+
+/**
+ * Removes lines
+ *
+ * @param map		file content
+ * @param list<integer>	lines to remove (counted from 1 to n)
+ */
+global define void RemoveLines( map& file, list<integer> lines )
+    ``{
+    y2debug( "lines %1", lines );
+    foreach( integer num, lines,
+	``{
+	if( haskey( file["l"]:$[], num ))
+	    {
+	    file["l"] = remove( file["l"]:$[], num );
+	    }
+	});
+    }
+
+/**
+ * Writes a content into the file
+ *
+ * @param map		file content
+ * @param string	file name
+ */
+global define void RewriteFile( map& file, string fpath )
+    ``{
+    y2milestone( "path %1", fpath );
+    y2milestone( "out: %1", file );
+    string out = "";
+    foreach( integer num, map entry, file["l"]:$[],
+	``{
+	out = out + AssertLineValid( file, num ) + "\n";
+	});
+    y2milestone ("Out text: %1", out );
+    if( size(out)==0 )
+	{
+	if( SCR::Read( .target.size, fpath ) >= 0 )
+	    SCR::Execute( .target.remove, fpath );
+	}
+    else
+	SCR::Write( .target.string, fpath, out );
+    }
+
+}

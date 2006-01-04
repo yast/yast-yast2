@@ -1,0 +1,629 @@
+<?xml version="1.0" encoding='ISO-8859-1'?>
+<?xml-stylesheet href="/usr/share/xml/docbook/stylesheet/css/current/driver.css" type="text/css"?>
+<chapter id = "table_popup">
+    <title>Table/Popup concept</title>
+<para>
+Table/Popup superwidget is quite complex, that's why it has an extra
+section.
+</para>
+<para>
+The Table/Popup (TP for short) widget exists in order to make
+development of modules using this UI concept easier. It contains required
+widgets and helpful handling functions.
+</para>
+<para>
+The CWM module contains widget for the whole table and most used popups.
+Each option is described by a map specifying the type and behavior of the
+table option.
+</para>
+<para>
+In the following text distinguishing between "option id" and "option key"
+is needed. See <xref linkend="terminology"/>.
+</para>
+<section><title>Basic table attributes</title>
+<para>
+Following text will refer on <xref linkend="tp_basic"/>.
+</para>
+<example id="tp_basic">
+  <title>Usage of the Table/Popup widget - basic case</title><screen>
+       map&lt;string,map&lt;string,any&gt; &gt; options = $[
+           "popup1" : popup1_description_map,
+           "popup2" : popup2_description_map,
+       ];
+
+       define list getTableContents (map&lt;string,any&gt; descr) {
+           return ["a", "b", "c"]; // to display 3 items
+                                   // in the table
+       }
+
+       define map&lt;string,any&gt; getGlobalTableWidget () {
+(1)        map&lt;string,any&gt; ret = CWM::CreateTableDescr (
+               $[
+                   "add_delete_buttons" : true,
+                   "up_down_buttons" : true
+               ],
+               $[
+(2)                "init" : TableInit,
+(3)                "handle" : CWM::TableHandleWrapper,
+(4)                "options" : options,
+(5)                "ids" : getTableContents,
+               ]
+           );
+           return ret;
+       }
+
+ </screen>
+<para>
+Notes:
+<orderedlist>
+<listitem><para>
+Many of the TP related values of the widget description map are used
+only by the predefined functions from the CWM module.
+If you use your own "init" and "handle" functions and they don't use
+the predefined function from the CWM module, you do not need to
+specify other table-related functions and attributes.
+</para></listitem>
+<listitem><para>
+All other keys that can be used by handlers can be defined according
+to the needs of the component developer.
+</para></listitem>
+<listitem><para>
+If you don't specify the "init" and "handle" functions, the defaults
+given as an argument in the ShowAndRun or Run function won't be used,
+but instead of them table-widget-specific defaults are used.
+</para></listitem>
+</orderedlist>
+</para>
+</example>
+
+
+<section id="create_table"><title>Creating the table container (1) </title>
+<para>
+For getting the initial map the function map&lt;string,any&gt; CWM::CreateTableDescr ()
+can be used.
+It takes as a parameters a map specifying the attributes of the table
+and a map specifying additional settings that will be merged to the
+description map (see below).
+Currently supported attributes are:
+<itemizedlist>
+<listitem><para>
+"add_delete_buttons" : boolean - if the Add and Delete buttons are wanted, set to
+                           true. If false, they will not be shown. Default
+                           (if key not present) is true.
+</para></listitem>
+<listitem><para>
+"up_down_buttons" : boolean    - if the Up and Down (reorder) buttons are wanted, set
+                           to true. Otherwise, they will not be shown.
+                           Default (if not present) is false.
+</para></listitem>
+<listitem><para>
+"unique_keys" : boolean - if true, then no key can be present in the table
+more times than once. Otherwise, it must be explicitly forbidden for such 
+options. Default (if not present) is false.
+</para></listitem>
+</itemizedlist>
+</para>
+<para>
+For id of the widgets related to the table see <xref linkend="tp_events"/>.
+</para>
+</section>
+
+<section><title>Setting the initialize and handle functions (2-3)</title>
+<para>
+This is the same as for normal widgets. Set the functions according to your
+needs.
+</para>
+<para>
+There are predefined functions for this stuff. In most cases, they can be used
+as they are, or via a wrapper.
+Typical case is that the initialize function copies the data from the global
+storage to some temporary variable (because of the Back button behavior), and
+then calls the predefined initialization function.
+</para>
+<para>
+CWM::TableInit () function asks for the list of entries that should be displayed
+in the table, and for each of them gets the option label (for the left column)
+and value (for the right column of the table). Then changes the contents of the
+table.
+</para>
+<para>
+CWM::TableHandle () function handles the events on the table. According to the event
+and selected item it asks for a new option to add, displays an option editing popup, 
+calls the delete handler or makes the event loop finish.
+It redraws whole table only if it is needed (reorder, add or delete an item), otherwise
+only changes affected items.
+</para>
+<para>
+Note that CWM::TableInit () and CWM::TableHandle () cannot be specified directly
+in the widget description map as these functions have one additional parameter.
+Use CWM::TableInitWrapper () resp. CWM::TableHandleWrapper () instead.
+</para>
+</section>
+
+<section><title>Transforming option key to option description map (4)</title>
+<para>
+To operate the options, the TP mechanism requires the option description maps
+(see <xref linkend="option_basic"/>). The options description map is stored
+under the "options" key.
+</para>
+</section>
+
+<section><title>The contents of the table (5)</title>
+<para>
+Specify here the contents of the table that will be displayed. Should 
+return the list of option ids. The function has one argument, the table widget
+description map.
+</para>
+</section>
+</section>
+
+<section id="option_basic"><title>Basic table option attributes</title>
+<para>
+Option description map describes the behavior of one single option in the
+table. It describes its widget, user-readable description, user-readable
+value, location of the value and many others.
+</para>
+<para>
+Option description map is separated into 2 parts. One contains keys related
+to the table, the other one contains keys related to the option popup.
+</para>
+<para>
+Note: The smallest possible option description map is empty map. In this
+case widget type is (by default) text entry, and instead of option specific
+handlers (init, store, summary) the table's fallback handlers are used
+as label the option name is used.
+</para>
+<para>
+Following text will refer to <xref linkend="option_basic_ex"/>.
+</para>
+
+<example id="option_basic_ex"><title>Basic option description map</title><screen>
+define string EnableServiceSummary (
+    any opt_id, string opt_key)
+{
+    if (settings["enable_service"]:false)
+    {
+        return _("Yes");
+    }
+    else
+    {
+        return _("No");
+    }
+}
+
+define void EnableServiceInit (
+    any opt_id, string opt_key)
+{
+    UI::ChangeWidget (`id ("enable_service"), `Value,
+        settings["__run_dhcp_server"]:false);
+}
+
+define void EnableServiceStore (
+    any opt_id, string opt_key)
+{
+    settings["__run_dhcp_server"]
+        = UI::QueryWidget (`id ("enable_service"), `Value);
+}
+
+map&lt;string,map&lt;string,any&gt; &gt; options = $[
+    "enable_service" : $[
+	"table" : $[
+(1)         "label" : _("Enable DHCP server at boot time"),
+(2)         "summary" : EnableServiceSummary,
+        ],
+        "popup" : $[
+(3)         "init" : EnableServiceInit,
+(4)         "store" : EnableServiceStore,
+(5)         "widget" : `checkbox,
+        ],
+    ],
+];
+ </screen>
+<para>
+This example describes a simple option, that is represented by a check box in the
+popup, has label "Enable DHCP server at boot time" and own functions to initialize the check
+box after the popup is displayed, store its status before the dialog hides
+after user clicked the OK button, and generate the text for the right
+column of the table.
+</para>
+</example>
+
+<section><title>Option label (1)</title>
+<para>
+Option label specifies the label that will be displayed in the left
+column of the table. Contains a (translated) string. If not present,
+the option name is used instead.
+</para>
+</section>
+
+<section><title>Summary function (2)</title>
+<para>
+Summary function is used to get the (localizable) value for the right
+column of the table. The "summary" key contains a function reference,
+the function has two arguments - option id (any) and option key (string),
+returns the value description for the table (string).
+</para>
+</section>
+
+<section><title>Popup initialization (3)</title>
+<para>
+The initialization function is called immediately after the popup is
+displayed. Its task is to set appropriate value to the displayed widget.
+Has two parameters - option id (any) and option key (string), return value
+is void.
+</para>
+</section>
+
+<section><title>Popup state storing (4)</title>
+<para>
+The state storing function is called before the popup is closed
+via the "OK" button. Its task is to grab the values from the
+popup and store them to appropriate variables.
+Has two parameters - option id (any) and option key (string), return value
+is void.
+</para>
+</section>
+
+<section><title>Widget specification (5)</title>
+<para>
+The widget specification works the same way as for dialog widgets.
+See <xref linkend="widgets"/> for list of possible widgets.
+</para>
+</section>
+</section>
+
+<section><title>Advanced table attributes</title>
+
+<section><title>Fallback handlers</title>
+<para>
+For table entries that have no own handlers, fallback handlers init,
+store, and summary can be defined in the table description map. They are defined in the "fallback"
+submap of the widget description map. Init and store are related to
+popups, summary to table entries. See <xref linkend="option_basic"/>.
+</para>
+<para>
+Note, that because the TP mechanism doesn't know where the data are stored,
+fallback handler or option-specific handler for every option must be defined.
+</para>
+
+<example><title>Fallback handlers definition</title><screen>
+define map&lt;string,any&gt; getTableWidget () {
+    map&lt;string,any&gt; ret = CWM::CreateTableDescr (
+        $[],
+        $[
+            "fallback" : $[
+                "init" : commonPopupInit;
+                "store" : commonPopupSave;
+                "summary" : commonTableEntrySummary;
+            // other options of the widget description map come here
+            ],
+        ]
+    );
+    return ret;
+}
+ </screen></example>
+</section>
+
+<section><title>Deleting entry</title>
+<para>
+For deleting an entry from the table (via the Delete button below it), this
+handler is used. The handler has two parameter - the option id (any) and
+the option key (string).
+If return value is true, then it is assumed, that the entry was really deleted,
+and the table should be redrawn. Otherwise, the table is left as is.
+</para>
+
+<example><title> Deleting entry from table</title><screen>
+define map&lt;string,any&gt; getTableWidget () {
+    map&lt;string,any&gt; ret = CWM::CreateTableDescr (
+        $[],
+        $[
+            "option_delete" :
+                commonTableEntryDelete,
+            // other options of the widget description map come here
+        ]
+    );
+    return ret;
+}
+ </screen></example>
+</section>
+
+<section><title>Items for adding</title>
+<para>
+If the table has the "Add" button, this contains the options to be offered
+in the combo that can be added. The add_unlisted entry can specify if the
+combo box will be editable and any option can be entered (if true), or
+the combobox will not be editable, and the option list is fixed (if false).
+If not present, default is true.
+</para>
+
+<example><title>Entries for adding to the table</title><screen>
+define map&lt;string,any&gt; getTableWidget () {
+    map&lt;string,any&gt; ret = CWM::CreateTableDescr (
+        $[],
+        $[
+            "add_items" : ["a", "b", `item (`id ("c"), "C") ],
+            "add_unlisted" : false,
+            // other options of the widget description map come here
+	]
+    );
+    return ret;
+}
+ </screen>
+<para>
+This will allow to add only these 3 entries.
+</para>
+</example>
+</section>
+
+<section><title>Transforming option id to option key</title>
+<para>
+If you don't use the 1:1 mapping between the option id and option key, set the
+function that will transform the option id to option key. Before evaluation,
+the table description map and the option id will be added to the term . If not
+present, then option key is the same as option id.
+</para>
+
+<example><title>Transforming option id to option key</title><screen>
+define string id2key (map&lt;string,any&gt; descr, any opt_id) {
+    return opt_id; // 1:1 translation
+}
+
+define map&lt;string,any&gt; getTableWidget () {
+    map&lt;string,any&gt; ret = CWM::CreateTableDescr (
+        $[],
+        $[
+            "id2key" : d2key,
+            // other options of the widget description map come here
+        ]
+    );
+    return ret;
+}
+ </screen></example>
+</section>
+
+<section><title>Specifying reordering function</title>
+<para>
+If the order of items makes sense, then it is needed to specify a function
+that changes the order of items in appropriate structures. This function must
+be specified (if Up and Down buttons are to be displayed) via the "option_move"
+key in the table description map as a term.
+Has parameters option id (any), option key (string) and direction (symbol `up
+or `down).
+Must return true if the order was really changed (in order to redraw the table).
+</para>
+    
+<example><title>Specifying reordering function</title><screen>
+global define any optMove (any opt_id, string opt_key, symbol direction) {
+    // modify internal structure appropriate way here
+    return true;
+}
+
+global define map&lt;string,any&gt; getTableWidget () {
+    map&lt;string,any&gt; ret = CWM::CreateTableDescr (
+        $[],
+        $[
+            "option_move" : optMove;
+            // other options of the widget description map come here
+        ]
+    );
+    return ret;
+}
+ </screen></example>
+</section>
+
+
+</section>
+
+<section><title>Advanced table option attributes</title>
+<section><title>Table - related</title>
+<section><title>Optional values</title><para>
+An entry in the table may be mandatory (and not be possible to be deleted),
+or optional (and be possible to be deleted). The "optional" key in the "table"
+submap specifies if the entry is allowed be removed. If not present, default
+is true.
+</para></section>
+<section><title>Ordering</title><para>
+It is possible to allow or forbid to move the option in the table
+up or down. If the "ordering" key in the "table" submap is set to true
+(default), then it is possible to move this option up or down. Otherwise,
+the up and down buttons are grayed if this option is selected.
+If the up and down buttons aren't 
+displayed at all (see <xref linkend="create_table"/>), this option is
+ignored.
+</para></section>
+<section><title>Duplicate keys</title><para>
+In some cases it makes sense to have one key in the table more than
+once. It usually doesn't make too much sense for all keys, but only
+for some. If the "unique_key" of the "table" submap is set to true, the
+key can be present in the map only once. Default if false (if multiple
+occurrences of a key in map aren't disabled at all, see
+<xref linkend="create_table"/>).
+</para></section>
+<section><title>Label as function</title><para>
+If the option label isn't static, a function that creates it can be specified.
+Specify in the "table" submap the key "label_func" and set it as value a
+function that takes as arguments the widget id (any), widget key (string)
+and returns the label to the table (string).
+</para></section>
+<section><title>Option handlers</title><para>
+In some cases the generic behavior (display popup, initialize it, handle
+UI events and store the settings) may be unusable. If the "handle" key in
+the "table" submap is specified, then if the table entry is selected and 
+Edit button clicked, then it is evaluated instead of the usual handling of
+this event.
+</para>
+<para>
+It can be two types. If it is a symbol, then the symbol is immediately returned
+and the event loop finishes.
+</para>
+<para> If it is a function reference, then it is called with parameters
+option id (any), option key (string) and event that occurred (map).
+If returned value is nil, then
+the event loop continues with handler of next widget in the dialog or next
+event. If a symbol is returned, then the event loop is finished, and returned
+value passed to wizard sequencer. If a special symbol `_tp_normal is returned,
+then normal generic handler is run (displays a popup, initializes it, handles
+the events, store the settings via appropriate handlers).
+</para></section>
+</section>
+
+<section><title>Popup related</title>
+<section><title>Help</title><para>
+If it is needed, it is possible to enter some help. The help is displayed
+as a label above the option, and is specified as a string with the
+"help" key in the "popup" submap.
+</para></section>
+
+<section><title>Popup validating</title><para>
+Popup validation works the same way as the validation of normal widget.
+See <xref linkend="validation"/> for details.
+The validation parameters must be defined in the "popup" submap.
+The only difference is in parameters added to the validation function
+before evaluation, parameters option id, option key and action are added
+before evaluation.
+</para></section>
+
+<section><title>UI events handling</title><para>
+To handle the UI events, use the "handle" key in the "popup" submap.
+It must contain a function with parameters option id (any), option key (string)
+and event (map, return value of UI::WaitForEvent).
+It is called every time the
+UI::WaitForEvent returns. If not set, no handling function is run.
+</para></section>
+
+<section><title>Widget attributes</title><para>
+The popup widgets have the same attributes as the dialog widgets. For more
+information see <xref linkend="widgets"/>.
+</para>
+<para>
+The only difference is that if the "label" key is not present in the "popup"
+submap, the "label" key in the "table" submap is used, and if it isn't present,
+then generic label "Value" is used. Remember, that the "label" in the "table"
+submap shouldn't have any keyboard shortcut, but the "label" in the "popup"
+submap should have some.
+</para>
+<para>
+The "custom_widget" entry has the same behavior as for dialog widgets, 
+see <xref linkend="repl_widget"/>.
+</para>
+</section>
+</section>
+</section>
+<section><title>More complex option example</title><example>
+  <title>More complex option</title><screen>
+map popups = $[
+  "loader_type" : $[
+    "table" : $[
+      // label, that will be shown in the table
+      "label" : _("Boot Loader Type"),
+      // will return "GRUB" if grub is selected,
+      // "LILO" if lilo is selected,...
+      "summary" : loaderTypeSummary,
+      // some bootloader must be always selected 
+      "optional" : false,
+      // the order of this entry in global
+      // options doesn't make sense
+      "ordering" : false,
+      // bootloader can't be specified more than once
+      "unique_key" : true,
+      // not needed, nil is default value,
+      // really has a normal popup
+      "handle" : nil,
+    ],
+    "popup" : $[
+      // sets appropriate radio button selected
+      "init" : loaderTypeInit,
+      // queries for the active radio button, stores the result 
+      "store" : loaderTypeSave,
+      // no validation is done, validation always successful
+//    "validate" : not needed
+      // generic widget is used, this option is not needed
+//    "custom_widget" : not needed
+      // simple help for the user
+      "help" : _("Select bootloader you want to use"),
+      // label of the widget in the popup. Will be shown
+      // as the title of the frame holding radio buttons
+      "label" : _("&amp;Boot Loader Type"),
+      // set of radio buttons is shown
+      "widget" : `radio_buttons,
+      // specification of the radio buttons
+      "items" : [ [ "grub", "&amp;GRUB" ], [ "lilo", "&amp;LILO" ]]
+    ]
+  ],
+  ....
+]
+
+ </screen>
+</example></section>
+
+<section><title>Misc</title>
+    <section><title>Separator</title>
+<para>
+If a table separator is wanted (in order to make the table more transparent),
+it should be specified as an option with the key "____sep". Options with this
+key are automatically skipped when selected. You can modify the label of the
+option in order to display the separator the way you want to. It behaves like
+a normal option, with the only difference that it isn't selectable.
+</para>
+    </section>
+</section>
+
+<section id="tp_events"><title>Reserved UI events</title>
+<para> 
+Some UI events (return values of UI::UserInput ()) are used internally
+by the handling mechanism, and can't be used for other widgets.
+</para>
+<para>
+In popups following widget ids are reserved:
+<itemizedlist>
+<listitem><para>
+`_tp_ok         - the OK button
+</para></listitem>
+<listitem><para>
+`_tp_cancel     - the Cancel button
+</para></listitem>
+</itemizedlist>
+</para>
+<para>
+The table widget contains following ids:
+<itemizedlist>
+<listitem><para>
+`_tp_add        - Add button - don't use although it is not present
+</para></listitem>
+<listitem><para>
+`_tp_edit       - Edit button
+</para></listitem>
+<listitem><para>
+`_tp_delete     - Delete button - don't use although it is not present
+</para></listitem>
+<listitem><para>
+`_tp_table      - The table
+</para></listitem>
+<listitem><para>
+`_tp_up         - The Up button
+</para></listitem>
+<listitem><para>
+`_tp_down       - The Down button
+</para></listitem>
+<listitem><para>
+`_tp_table_rp   - The replace point on the right bottom of the table
+superwidget
+</para></listitem>
+</itemizedlist>
+</para>
+<para>
+Additionally, if some popup widget has the "t_no_popup" not nil, return values
+of the evaluation of the term may be also results of the actions on the table
+widget.
+</para>
+</section>
+
+</chapter>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: xml
+sgml-parent-document:("cwm.xml" "book" "chapter")
+sgml-doctype:"cwm.xml"
+End:
+-->

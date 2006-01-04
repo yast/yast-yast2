@@ -1,0 +1,14 @@
+// Bad Popup design: Default button order exchanged
+//
+// DON'T DO THIS!
+{
+    import "Popup";
+    import "Label";
+
+    boolean dont_do_it =
+	Popup::AnyQuestion( Popup::NoHeadline(),
+			    "Format hard disk?",
+			    Label::CancelButton(),
+			    Label::ContinueButton(),
+			    `yes ); // initial focus - "Cancel" in this case
+}

@@ -1,0 +1,101 @@
+<html><head>
+<title>Packages Manipulation</title>
+</head><body bgcolor=#ffffff>
+<!-- Author: Michal Svec <msvec@suse.cz> -->
+<!-- $Id$ -->
+<h1>Packages Manipulation</h1>
+<hr>
+
+<p>
+This is a set of basic routines for manipulating packages.
+</p>
+
+<p>
+Authors: Martin Vidner &lt;<a href="mailto:mvidner@suse.czi">mvidner@suse.cz</a>&gt;,
+Michal Svec &lt;<a href="mailto:msvec@suse.czi">msvec@suse.cz</a>&gt;.
+</p>
+
+<!-- MODULES -->
+<h2>Modules</h2>
+<p>
+The module <b>Package</b> is the default one, it should work on the target
+system (it correctly differentiates between normal and autoinstallaton mode).
+</p>
+
+<p>
+<b>PackageSystem</b> is for situations when you need immediate action
+(for example to start the client).
+</p>
+
+<ul>
+<li>Package
+<li>PackageSystem
+</ul>
+
+<!-- INTRODUCTION -->
+<h2>Functions</h2>
+
+<p>
+The function names should be self-descriptive, so
+there are no comments here. Feel free to ask if
+you are in doubts.
+</p>
+
+<h3>Package Installation (GUI)</h3>
+<ul>
+<li>boolean Install(&lt;string&gt; package);
+<li>boolean InstallAll(list&lt;&lt;string&gt;&gt; packages);
+<li>boolean InstallAny(list<&lt;string&gt;> packages);
+<li>boolean Remove(&lt;string&gt; package);
+<li>boolean RemoveAll(list<&lt;string&gt;> packages);
+</ul>
+
+<h3>Package Installation (GUI, custom message)</h3>
+<ul>
+<li>boolean InstallMsg(&lt;string&gt; package, &lt;string&gt; message);
+<li>boolean InstallAllMsg(list<&lt;string&gt;> packages, &lt;string&gt; message);
+<li>boolean InstallAnyMsg(list<&lt;string&gt;> packages, &lt;string&gt; message);
+<li>boolean RemoveMsg(&lt;string&gt; package, &lt;string&gt; message);
+<li>boolean RemoveAllMsg(list<&lt;string&gt;> packages, &lt;string&gt; message);
+</ul>
+
+<h3>Package Installation (GUI, do not install if Mode::config,
+    only in PackageSystem)</h3>
+<ul>
+<li>boolean CheckAndInstallPackages (list<&lt;string&gt;> packages);
+<li>boolean CheckAndInstallPackagesInteractive (list<&lt;string&gt;> packages);
+     // with error handling
+</ul>
+
+<h3>Packages Installation (No GUI)</h3>
+<ul>
+<li>boolean DoInstall(list<&lt;string&gt;> packages);
+<li>boolean DoRemove(list<&lt;string&gt;> packages);
+<li>boolean DoInstallAndRemove(list<&lt;string&gt;> toinstall, list<&lt;string&gt;> toremove);
+</ul>
+
+<h3>Testing</h3>
+<ul>
+<li>boolean Available(&lt;string&gt; package);
+<li>boolean AvailableAll(list<&lt;string&gt;> packages);
+<li>boolean AvailableAny(list<&lt;string&gt;> packages);
+<li>boolean Installed(&lt;string&gt; package);
+<li>boolean InstalledAll(list<&lt;string&gt;> packages);
+<li>boolean InstalledAny(list<&lt;string&gt;> packages);
+</ul>
+
+<h3>Other</h3>
+<ul>
+<li>void RunSUSEconfig();
+<li>boolean LastOperationCanceled();
+<li>boolean InstallKernel (list<&lt;string&gt;> kernel_modules);
+</ul>
+
+<h3>Errors (not yet available)</h3>
+<ul>
+<li>&lt;string&gt; Error();
+</ul>
+
+<a href="autodocs/index.html">Auto-Generated Documentation</a>
+
+</body></html>

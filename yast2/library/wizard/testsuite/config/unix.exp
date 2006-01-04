@@ -1,0 +1,5 @@
+load_lib "test_init.exp"
+
+proc test_exit {} {}
+proc test_version {} {}
+

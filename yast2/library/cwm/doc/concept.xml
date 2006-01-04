@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding='ISO-8859-1'?>
+<?xml-stylesheet href="/usr/share/xml/docbook/stylesheet/css/current/driver.css" type="text/css"?>
+<chapter id = "concept">
+    <title>General concept</title>
+    <para>
+The main goal is to provide a set of simple routines that can be used
+for simple manipulation with widgets, easy moving of widgets between
+dialogs and doing the common dialog stuff. All the routines are contained
+in the CWM module.
+    </para>
+    <para> 
+The routines must be fully reentrant. This means, that no data may be stored
+in the CWM module. Having no data in the CWM module
+allows not to specify any fixed structure that would be required from
+the developer to store the table data. But the calling component must provide
+a set of callbacks that can be used by the CWM module to handle events that
+happen on the dialog.
+    </para>
+    <para>
+Each widget must be in described some way. The structure for widgets
+description is a two-layer-map, where keys of the top layer are the
+widget identifiers, their type must be string, the keys in the bottom
+layer are the keys of widget properties.
+    </para>
+    <example id="simple_widgets">
+<title>Widgets description map</title>
+    <para>
+    <screen>
+map&lt;string,map&lt;string, any&gt; &gt; widget_descr = $[
+  "CWD_IN_ROOT_PATH" : $[
+    "label" : _("&amp;Current Directory in root's Path"),
+    "widget" : `checkbox, 
+  ,
+  "CWD_IN_USER_PATH" : $[
+    "label" : _("Curr&amp;ent Directory in Path of Regular Users"),
+    "widget" : `checkbox
+  ],
+]
+    </screen>
+    </para>
+    <para>
+The widgets description map defines two widgets, both are CheckBoxes, one has the key
+"CWD_IN_ROOT_PATH" and label "Current Directory in root's Path", the other one
+has key "CWD_IN_USER_PATH" and label "Current Directory in Path of Regular
+Users".
+    </para>
+    </example>
+    <para>
+This map is then used to create the dialog (in this case with 2 checkboxes).
+This means following steps:
+    <orderedlist>
+<listitem><para>Place widgets to dialog</para></listitem>
+<listitem><para>Create the dialog</para></listitem>
+<listitem><para>Initialize the widgets</para></listitem>
+<listitem><para>Run the event loop, until the return value is `next,
+`back, or `abort</para></listitem>
+<listitem><para>Get current values from widgets, store them</para></listitem>
+    </orderedlist>
+    </para>
+    <para>
+Developer must specify following:
+    <itemizedlist>
+<listitem><para>The widgets that should be used (their keys), how to place them
+into the dialog</para></listitem>
+<listitem><para>How to initialize them, how to validate them, how to store their
+settings</para></listitem>
+<listitem><para>Dialog caption, help, what buttons are to be present,...
+</para></listitem>
+    </itemizedlist>
+    </para>
+    <example id="simple_dialog">
+        <title>Running simple dialog</title>
+        <para><screen>
+// include <xref linkend="simple_widgets"/> here
+
+// function to initialize widgets
+global define void InitializeWidget (string key) {
+    // let's suppose that the settings are stored in a map
+    // named settings
+    UI::ChangeWidget (`id (key), settings[key]:false);
+}
+
+// function for storing is similar
+global define void StoreWidget (string key, map event) {
+    settings[key] = UI::QueryWidget (`id (`key), `Value);
+}
+
+define symbol runDialog {
+    // create the basic layout
+    term contents = `VBox (
+	"CWD_IN_ROOT_PATH",
+	"CWD_IN_USER_PATH"
+    )
+
+    map functions = $[
+        "init" : InitializeWidget,
+        "store" : StoreWidget,
+    ];
+
+    list&lt;string&gt; widget_names
+        = [ "CWD_IN_ROOT_PATH", "CWD_IN_USER_PATH" ];
+
+    string caption = _("Dialog Caption");
+
+    // display and run the dialog
+    symbol ret = CWM::ShowAndRun ($[
+        "widget_names" : widget_names,
+        "widget_descr" : widget_descr,
+        "contents" : contents,
+	"caption" : caption,
+        "fallback_functions" : functions
+    ]);
+
+    return ret;
+}
+        </screen></para>
+        <para>
+Notes:
+<orderedlist>
+<listitem><para>
+init and store functions from <xref linkend="simple_dialog"/> 
+   cannot be used for
+   radio button group widget (see <xref linkend="radio_buttons"/>),
+   because it for getting currently selected radio button `CurrentButton
+   must be used instead of `Value.
+</para></listitem>
+<listitem><para>
+   Generic function will be available in CWM module for all internally
+   supported widgets, task of the developer will be (typically) just a wrapper.
+   This is still the future.
+</para></listitem>
+</orderedlist>
+        </para>
+    </example>
+
+    <section><title>Placing widgets to the dialog (step 1)</title>
+	<para>
+Placing widgets to dialog means to create the dialog layout the normal way,
+but instead of putting the widget descriptions just putting the identifiers
+of the widgets. See <xref linkend="simple_dialog"/> for example.
+	</para>
+	<para>
+Note, that when processing the term, only the VBox, HBox, Left, Right,
+Frame, HWeight, and VWeight terms
+are processed into depth. If you need some other container widgets, see
+<xref linkend="create_control"/>.
+	</para>
+    </section>
+    <section>
+	<title>Creating the dialog (step 2)</title>
+	<para>
+The first task of CWM::ShowAndRun function is to display the dialog, next tasks
+are described in following paragraphs. This function is just a wrapper for
+other global functions, but in most cases this wrapper is well usable. As a
+parameter it takes a map containing names of widgets (the order is important
+if helps are used - see <xref linkend="widget_help"/>), map describing all
+of the widgets, term describing contents of the dialog, dialog caption, 
+optionally labels of back, abort and next buttons and functions that are
+used as fallback handlers and for confirming leaving dialog via Abort event.
+	</para>
+	<para>
+The first task of this wrapper is to create the "real" widgets from the widgets
+description map. Then it replaces widget identifiers in the dialog contents
+description with the "real" widgets and merges helps of all widgets into one
+string that can be displayed in the dialog. After it is done, the dialog
+contents is set and event loop is started.
+See <xref linkend="simple_dialog"/>.
+	</para>
+    </section>
+    <section>
+        <title>Running the event loop (step 4)</title>
+	<para>
+Next task of the ShowAndRun function is to run the event loop. The complete
+task means to nitialize
+the widgets, run while-loop, ask UI::WaitForEvent () for an event, check if the
+event should finish the dialog. If not, then continue (for now, see
+<xref linkend="advanced"/>). Otherwise it will check if the settings are
+to be stored. If yes, then validates the widgets (see <xref linkend="advanced"/>)
+and if everything is OK, then stores the settings of the widgets. Returns the value for
+wizard sequencer.
+	</para>
+	<para>
+This function needs to know:
+<itemizedlist>
+<listitem><para>
+what widgets are present in the dialog
+</para></listitem>
+<listitem><para>
+how to initialize the dialog and how to store settings
+</para></listitem>
+</itemizedlist>
+	</para>
+	<para>
+Note, that storing settings doesn't mean to save them to some file, but to grab
+them from the dialog and store them in some internal variables
+	</para>
+    </section>
+    <section>
+        <title>Manipulation with widget values (steps 3, 5)</title>
+	<para>
+The way to initialize and store settings of a widget must be specified
+by developer, because the generic engine cannot know anything about it.
+Because of this the function running the event loop must know what handlers
+it should call for initialization of the widgets and storing their state.
+The Run function receives this information as a map. In this map the keys
+are event names
+("init" and "store") and values are function references.
+The Init function must have as argument the widget key (string),
+the store function must have as arguments the widget key (string) and
+the evenet (map, the structure is the same as returned by UI::WaitForEvent ()).
+The widget key is the key of the processed widget, the event is the
+event that caused saving the settings. In most cases, it can be ignored.
+	</para>
+    </section>
+</chapter>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: xml
+sgml-parent-document:("cwm.xml" "book" "chapter")
+sgml-doctype:"cwm.xml"
+End:
+-->

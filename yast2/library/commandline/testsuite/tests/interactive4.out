@@ -1,0 +1,12 @@
+Write	.dev.tty.prompt "YaST2 lan> " true
+Return	true
+Return	false
+Return	false
+Read	.dev.tty "add device=eth0"
+Return	$["command":"add", "options":$["device":"eth0"]]
+Return	false
+Return	false
+Read	.dev.tty "abort"
+Return	$["command":"abort"]
+Return	true
+Return	true

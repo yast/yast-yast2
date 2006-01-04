@@ -1,0 +1,344 @@
+#!/bin/bash
+
+# File:		ag_initscripts
+# Package:	yast2
+# Summary:	Agent for reading initscripts info
+# Authors:	Martin Vidner <mvidner@suse.cz>
+#		Petr Blahos <pblahos@suse.cz>
+#
+# $Id$
+#
+################################################################
+# Runlevels are single character strings.
+# Except default_runlevel, all paths are read-only.
+# Assuming that the agent is mounted at .init.scripts:
+################################################################
+# .init.scripts.comments
+#    returns a map of services, e.g.:
+#     $[
+#     "inetd" : $[
+#	   "provides" : [ "inetd",],		# apache has apache, httpd
+#          "reqstart" : [ "$network", "$remote_fs", ],
+#          "reqstop" : [ "$network", ],
+#	   "shouldstart" : [ "portmap", "autofs", ],
+#	   "shouldstop" : [ "portmap", ],
+#          "defstart" : [ "3", "5", ],
+#          "defstop" : [ "0", "1", "2", "6", ],
+#	   "defenabled": false,
+#          "description": "Start the inet daemon.",
+#	   "shortdescription": "Inet daemon",
+#     ],
+#     ]
+# .init.scripts.comment
+#   Read (.init.scripts.comment, "script")
+#   reads the same but for a given script, a singleton map
+#
+# Not all of the fields are needed/used by the runlevel editor.
+# TODO: what if some fields are missing?
+################################################################
+# .init.scripts.runlevels
+#   return maps of services and runlevels they run in,
+#   according to the symlinks, e.g.:
+#     $[
+#     "xfs" : $[
+#           "start" : [ "3", "5", ]
+#           "stop"  : [ "1", "2", "6",  ]
+#     ]
+#     ]
+# .init.scripts.runlevel
+#   Read (.init.scripts.runlevel, "script")
+#   reads the same but for a given script, a singleton map
+################################################################
+# .init.scripts.current_runlevel
+#   return string -- current runlevel.
+################################################################
+# .init.scripts.runlevel_list
+#   return list of runlevels
+################################################################
+# .init.scripts.default_runlevel
+#   read/write default runlevel
+################################################################
+# .init.scripts.exists
+#   Read (.init.scripts.exists, "script")
+#   returns true if file /etc/init.d/script exits, false otherwise
+################################################################
+
+export LC_ALL=C
+
+# InitScripts can initialize this to a different value
+#  Useful for .comments
+#  Does not work for .runlevels which wants a fixed number of slashes
+INITD="/etc/init.d"
+
+get_script_info () {
+[ -r "$1" ] && /usr/bin/awk '
+    BEGIN {
+	    in_comment = 0; in_descr = 0; skip_file = 0; first_time = 1;
+	    header_printed = 0;
+	}
+    first_time {
+	    first_time = 0;
+	    if (FILENAME ~ /\.local$/ || FILENAME ~ /\.rpm/ || FILENAME ~ /\.ba/ ||
+		FILENAME ~ /\.old$/ || FILENAME ~ /\.new$/ || FILENAME ~ /\.save$/ ||
+		FILENAME ~ /\.swp$/ || FILENAME ~ /\.core$/ || FILENAME ~ /~$/ ||
+		FILENAME ~ /boot\.klog/ ||
+		FILENAME ~ /^Makefile/ ||
+# why was this here??
+# bug 34775: dont skip boot.hotplug-beta, boot.restore_permissions
+#		FILENAME ~ /\.[^0-9$.#_\-\\*]*[0-9$.#_\-\\*]/
+		0)
+		skipfile = 1;
+	    else {
+		printf "\"%s\" : $[\n", FILENAME ;
+		header_printed = 1;
+	    }
+	}
+    END {
+	if (header_printed)
+		print "],";
+    }
+    skipfile {
+	    nextfile;
+	}
+    { in_continue = 1; }
+    /^### BEGIN INIT INFO/ {
+	    in_continue = 0;
+	    in_descr = 0;
+	    description = "";
+	    in_comment = 1;
+	}
+    in_continue && /^### END INIT INFO/ {
+	    in_continue = 0;
+	    in_descr = 0;
+	    in_comment = 0;
+	    gsub (/\\/, "\\\\", description);
+	    gsub (/"/, "\\\"", description);
+	    print "     \"description\": \""description"\",";
+	    # we print ] in END rule
+	    nextfile;
+	}
+    in_continue && in_comment && $2 == "Default-Start:" {
+	    in_continue = 0;
+	    in_descr = 0;
+	    printf "     \"defstart\" : [ ";
+	    for (i = 3; i<= NF; i++) printf ("\"%s\", ", $i) ;
+	    print "],";
+	}
+    in_continue && in_comment && $2 == "Default-Stop:" {
+	    in_continue = 0;
+	    in_descr = 0;
+	    printf "     \"defstop\" : [ ";
+	    for (i = 3; i<= NF; i++) printf ("\"%s\", ", $i) ;
+	    print "],";
+	}
+    in_continue && in_comment && $2 == "Required-Start:" {
+	    in_continue = 0;
+	    in_descr = 0;
+	    printf "     \"reqstart\" : [ ";
+	    for (i = 3; i<= NF; i++) printf ("\"%s\", ", $i) ;
+	    print "],";
+	}
+    in_continue && in_comment && $2 == "Required-Stop:" {
+	    in_continue = 0;
+	    in_descr = 0;
+	    printf "     \"reqstop\" : [ ";
+	    for (i = 3; i<= NF; i++) printf ("\"%s\", ", $i) ;
+	    print "],";
+	}
+    in_continue && in_comment && ($2 ~ /^(X-SuSE-|X-UnitedLinux-|)Should-Start:$/) {
+	    in_continue = 0;
+	    in_descr = 0;
+	    printf "     \"shouldstart\" : [ ";
+	    for (i = 3; i<= NF; i++) printf ("\"%s\", ", $i) ;
+	    print "],";
+	}
+    in_continue && in_comment && ($2 ~ /^(X-SuSE-|X-UnitedLinux-|)Should-Stop:$/) {
+	    in_continue = 0;
+	    in_descr = 0;
+	    printf "     \"shouldstop\" : [ ";
+	    for (i = 3; i<= NF; i++) printf ("\"%s\", ", $i) ;
+	    print "],";
+	}
+    in_continue && in_comment && $2 == "X-UnitedLinux-Default-Enabled:" {
+	    in_continue = 0;
+	    in_descr = 0;
+	    printf "     \"defenabled\" : ";
+	    if ($3 == "yes" || $3 == "true")
+		printf "true";
+	    else
+		printf "false";
+ 	    print ",";
+	}
+    in_continue && in_comment && $2 == "Provides:" {
+	    in_continue = 0;
+	    in_descr = 0;
+	    printf "     \"provides\" : [ ";
+	    for (i = 3; i<= NF; i++) printf ("\"%s\", ", $i) ;
+	    print "],";
+	}
+    in_continue && in_comment && $2 == "Short-Description:" {
+	    in_continue = 0;
+	    in_descr = 0;
+	    shortdescription = $0;
+	    gsub (/.*Short-Description:[ \t]*/, "", shortdescription);
+	    gsub (/\\/, "\\\\", shortdescription);
+	    gsub (/"/, "\\\"", shortdescription);
+	    print "     \"shortdescription\": \""shortdescription"\",";
+	}
+    in_continue && in_comment && $2 == "Description:" {
+	    in_continue = 0;
+	    in_descr = 1;
+	    description = $3;
+	    for (i = 4; i<= NF; i++) description = description " " $i;
+	}
+    in_continue && in_comment && in_descr && (/^#\ [\t ]/ || /^#\t/) {
+	    in_continue = 0;
+	    $1 = "";
+	    description = description $0;
+	}
+    in_continue && in_comment { in_descr = 0; }
+
+'  $1
+}
+
+process_all_scripts () {
+    cd $INITD
+    for i in * ; do
+	if [ -f $i ] ; then
+	    case "$i" in
+		"reboot" | "halt" | "single" | "README" | "core" | "rc" | "rx" | "skeleton" | "powerfail" | "boot" | "boot.orig" )
+		    ;;
+		*)
+		    get_script_info $i
+	    esac
+	fi
+    done
+}
+
+# Read (.runlevels)
+read_runlevels () {
+    /usr/bin/find $INITD -name "*$1" | /usr/bin/awk -F / '
+    BEGIN { SUBSEP = ":"; }
+    $4 ~ /^rc.\.d$/ && $5 ~ /^[SK][0-9][0-9]/ {
+	script = substr ($5, 4);
+	scripts [script] = 1;
+	if (substr ($5, 1, 1) == "K") {
+	    K [script] = K [script] "\"" substr ($4, 3, 1) "\", ";
+	}
+	else if (substr ($5, 1, 1) == "S") {
+	    S [script] = S [script] "\"" substr ($4, 3, 1) "\", ";
+	}
+    }
+    $4 ~ /^boot.d$/ && $5 ~ /^[SK][0-9][0-9]/ {
+	script = substr ($5, 4);
+	scripts [script] = 1;
+	if (substr ($5, 1, 1) == "K") {
+	    K [script] = K [script] "\"B\", ";
+	}
+	else if (substr ($5, 1, 1) == "S") {
+	    S [script] = S [script] "\"B\", ";
+	}
+    }
+    END {
+	print "$[";
+	for (i in scripts) {
+	    printf "\"%s\" : $[\n", i;
+	    printf "     \"start\" : [ %s ],\n", S [i];
+	    printf "     \"stop\"  : [ %s ],\n", K [i];
+	    print "],"
+	}
+	print "]";
+    }
+    '
+}
+
+while true ; do
+    IFS=
+    read COMMAND || exit
+
+    # delete starting backquote    
+    COMMAND=${COMMAND#\`}
+
+    unset IFS
+
+    case "$COMMAND" in
+	"result ("*)
+	    exit
+	    ;;
+
+	"InitScripts ("*)
+	    INITD=$(echo "$COMMAND" | sed 's/^InitScripts ("\(.*\)")/\1/')
+	    echo nil
+	    ;;
+
+	'Dir (.)')
+	    echo '[ "comments", "comment", "runlevels", "runlevel", "exists", "current_runlevel", "default_runlevel", "runlevel_list" ]'
+	    ;;
+
+	'Read (.comments)')
+	    echo '$['
+	    process_all_scripts
+	    echo ']'
+	    ;;
+
+	"Read (.comment,"*)
+	    rootpart=$(echo "$COMMAND" | sed 's/^Read (.comment, *"\(.*\)")/\1/')
+	    echo '$['
+	    cd $INITD
+	    if [ -f $rootpart ] ; then
+		get_script_info $rootpart
+	    else
+		echo "\"$rootpart\" : \$[ ]"
+	    fi
+	    echo ']'
+	    ;;
+
+	"Read (.runlevel,"*)
+	    rootpart=$(echo "$COMMAND" | sed 's/^Read (.runlevel, *"\(.*\)")/\1/')
+	    read_runlevels $rootpart;
+	    ;;
+
+	'Read (.runlevels)')
+	    read_runlevels "";
+	    ;;
+
+	"Read (.exists,"*)
+	    rootpart=$(echo "$COMMAND" | sed 's/^Read (.exists, *"\(.*\)")/\1/')
+	    if [ -f $INITD/$rootpart ] ; then
+		echo true
+	    else
+		echo false
+	    fi
+	    ;;
+
+	'Read (.current_runlevel)')
+	    /sbin/runlevel | /usr/bin/awk ' { print "\"" $2 "\"" }'
+	    ;;
+
+	'Read (.default_runlevel)')
+	    /bin/grep 'id:.:initdefault:' /etc/inittab | /bin/sed -e s/id:/\"/g -e s/:initdefault:/\"/g
+	    ;;
+
+	'Read (.runlevel_list)')
+	    echo -n "[ \"B\", "
+	    /usr/bin/awk '/^[^#]..*\/etc\/init\.d\/rc / { print "\"" $2 "\"," }' /etc/inittab
+	    echo "]"
+	    ;;
+
+	"Write (.default_runlevel,"*)
+	    rootpart=$(echo "$COMMAND" | sed 's/^Write (.default_runlevel, *"\(.*\)")/\1/')
+	    /usr/bin/sed s/^id:.:initdefault:/id:$rootpart:initdefault:/g /etc/inittab > /etc/inittab.yast2.tmp
+	    if [ $? = 0 ] ; then
+		mv /etc/inittab.yast2.tmp /etc/inittab
+		chmod 0644 /etc/inittab
+		chown root:root /etc/inittab
+		echo "true"
+	    else
+		echo "false"
+	    fi
+	    ;;
+
+	*)
+	    echo nil
+    esac
+done

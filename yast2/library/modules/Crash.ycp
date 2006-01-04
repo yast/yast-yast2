@@ -1,0 +1,152 @@
+/**
+ * File:	modules/Crash.ycp
+ * Package:	YaST2 base package
+ * Summary:	Handling crashes and recovery of other modules
+ * Authors:	Jiri Srain <jsrain@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+module "Crash";
+
+import "Popup";
+
+/**
+ * All operations that failed when were running last time
+ */
+list<string> all_failed = [];
+
+/**
+ * All operations that were the last started when crashed
+ * when running last time
+ */
+list<string> last_failed = [];
+
+/**
+ * Last successfully finished operation
+ */
+string last_done = nil;
+
+/**
+ * List of operations which are active during this YaST2 session
+ */
+list<string> this_run_active = [];
+
+/**
+ * Filename of file storing crash settings
+ */
+global string filename = "/var/lib/YaST2/crash";
+
+
+/**
+ * Read settings from data file to variables
+ */
+global define void Read () ``{
+    if (SCR::Read (.target.size, filename) != -1)
+    {
+	map<string, any> settings = (map<string, any>)SCR::Read (.target.ycp, filename);
+	y2milestone ("Read settings: %1", settings);
+	all_failed = settings["all_failed"]:[];
+	last_failed = settings["last_failed"]:[];
+	last_done = (string) (settings["last_done"]:nil);
+    }
+}
+
+/**
+ * Write data stored in variables to data files
+ */
+global define void Write () ``{
+    map settings = $[
+	"all_failed" : all_failed,
+	"last_failed": last_failed,
+	"last_done"  : last_done,
+    ];
+    SCR::Write (.target.ycp, filename, settings);
+    y2milestone ("Written settings: %1", settings);
+    SCR::Execute (.target.bash, "/bin/sync");
+}
+
+/**
+ * Start operation
+ * @param op string operation to start
+ */
+global define void Run (string op) ``{
+    Read ();
+    if (! contains (all_failed, op))
+	all_failed = add (all_failed, op);
+    if (size (this_run_active) > 0)
+	last_failed = filter (string f, last_failed,
+	    ``(f != this_run_active[0]:nil));
+    this_run_active = prepend (this_run_active, op);
+    if (! contains (last_failed, op))
+	last_failed = add (last_failed, op);
+    Write ();
+}
+
+/**
+ * Finish operation
+ * @param op string operation to finish
+ */
+global define void Finish (string op) ``{
+    Read ();
+    all_failed = filter (string f, all_failed, ``(f != op));
+    this_run_active = filter (string f, this_run_active, ``(f != op));
+    last_failed = filter (string f, last_failed, ``(f != op));
+    if (size (this_run_active) > 0)
+	last_failed = add (last_failed, this_run_active[0]:nil);
+    last_done = op;
+    Write ();
+}
+
+/**
+ * Check whether operation failed
+ * @param op string operation to check
+ * @return boolean true if yes
+ */
+global define boolean Failed (string op) ``{
+    Read ();
+    return contains (all_failed, op);
+}
+
+/**
+ * Check whether operation was last started when failed
+ * @param op string operation to check
+ * @return boolean true if yes
+ */
+global define boolean FailedLast (string op) ``{
+    Read ();
+    return contains (last_failed, op);
+}
+
+/**
+ * Get last finished operation
+ * @return string operation name
+ */
+global define string LastFinished () ``{
+    Read ();
+    return last_done;
+}
+
+/**
+ * Check whether operation was last run in moment of last fail.
+ * Return whether operation shall be run
+ * If not, return true (no reason to think that operation is unsafe),
+ * Otherwise ask user
+ * @param op string operation name
+ * @param question string question to ask when was unsuccessfull last time
+ * @return boolean true if operation shall be started
+ */
+global define boolean AskRun (string op, string question) ``{
+    boolean ret = true;
+    Read ();
+    if (FailedLast (op))
+    {
+	ret = Popup::YesNo (question);
+    }
+    return ret;
+}
+
+/* EOF */
+}

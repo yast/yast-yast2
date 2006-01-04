@@ -1,0 +1,215 @@
+#!/bin/bash
+
+# File:		/sbin/yast2
+# Module:	yast2
+# Summary:	Main YaST2 start script
+# Authors:	Mathias Kettner <kettner@suse.de>
+#		Klaus Kaempf <kkaempf@suse.de>
+#		Ludwig Nussel <lnussel@suse.de>
+#
+# This script is called when the user just types 'yast2'. It starts
+# the qt user interface in case the DISPLAY variable is set and other-
+# wise ncurses. It starts then the module 'menu' which implements
+# the configuration and administration menu.
+
+export PATH=/sbin:/usr/sbin:$PATH
+
+# load common script functions
+. /usr/lib/YaST2/bin/yast2-funcs
+
+# Accumulated arguments for both the Qt UI and y2cc; currently supported:
+# --fullscreen
+# --noborder
+Y2QT_ARGS=""
+
+printhelp()
+{
+	echo "Usage: $0 [OPTIONS] [MODULE] [module specific parameters]"
+	echo
+	echo "OPTIONS:"
+	echo "	-h, --help	this message"
+	echo "	-l, --list	list all available modules"
+	echo "	-g, --geometry	default window size (qt only)"
+	echo "	-s, --style	widget style (qt only)"
+	echo "	--noborder      no window manager border for main window"
+	echo "	--fullscreen    use full screen"
+	echo
+	echo "exceptional case for installing packages:"
+	echo "$0 OPTION <package> [<package> [...]]"
+	echo
+	echo "OPTION:"
+	echo "	-i, --install	install rpm package"
+	echo
+	echo "<package> can be a single short package name (e.g. gvim)"
+	echo "which will be installed with dependency checking, or the full"
+	echo "path to an rpm package (e.g /tmp/gvim.rpm) which will be"
+	echo "installed without dependency checking"
+	echo
+}
+
+listmodules()
+{
+    list=`ls -1 /usr/share/applications/YaST2/*.desktop 2>/dev/null`
+
+    if [ -z "$list" ] ; then
+	echo "No modules installed"
+    else
+	echo "Available modules:"
+	echo
+	grep -h "Exec=/sbin/yast2 " $list | \
+	    sed 's|Exec=/sbin/yast2 \([^ ]\+\)\( .*\)\?|\1|' | \
+	    sort -u
+    fi
+}
+
+TEMP=`getopt -o hlg:s:Si --long help,list,kcontrol,geometry:,style:,strings,install,fullscreen,noborder \
+     -n 'yast2' -- "$@"`
+
+if [ $? != 0 ] ; then echo "Exit." >&2 ; exit 1 ; fi
+
+# Note the quotes around `$TEMP': they are essential!
+eval set -- "$TEMP"
+
+while true ; do
+	case "$1" in
+		-h|--help) printhelp; exit 0 ;;
+		-l|--list) listmodules; exit 0 ;;
+		-g|--geometry) Y2_GEOMETRY="-geometry $2"; shift 2; ;;
+		-i|--install) Y2_INSTALL_PACKAGES=true; shift ;;
+                --fullscreen) Y2QT_ARGS="$Y2QT_ARGS --fullscreen"; shift ;;
+		--noborder)   Y2QT_ARGS="$Y2QT_ARGS --noborder"  ; shift ;;
+		--kcontrol)   Y2QT_ARGS="$Y2QT_ARGS --kcontrol_id YaST" ; shift ;;
+		--) shift ; break ;;
+		*) echo "Unrecognized option $1" ; exit 1 ;;
+
+	        # IMPORTANT: Remember to change that "getopt" call above, too
+	        # if you change anything here!
+	esac
+done
+
+if [ "$Y2_INSTALL_PACKAGES" = "true" ]; then
+	export module=sw_single
+else
+	# allow module as argument, defaults to "menu"
+	export module="${1-menu}"
+	shift
+fi
+
+case "`basename $0`" in
+	YaST|yast|yast1|zast)
+		unset DISPLAY
+	;;
+esac
+
+if [ "$UID" = 0 ]; then
+    echo $$ > /var/run/yast.pid
+fi
+
+# set lang from sysconfig
+set_lang_from_sysconfig
+
+
+# use text mode if DISPLAY is not set or no qt plugin is installed
+if [ -z "$DISPLAY" ] || ! check_qt ; then
+    if check_ncurses ; then
+	TTY=`/usr/bin/tty`
+        # on console, start yast in UTF-8 locale (only on a 'local' console)
+        if [ "$TERM" = "linux" -a \( "$TTY" = /dev/console -o "$TTY" != "${TTY#/dev/tty[0-9]}" \) ] ; then
+	    case "$LANG" in
+		# if it is known that a language doesn't yet work well with ncurses
+		# on console use English instead:
+		ja*|ko*|zh*)
+		    export LANG=en_US.UTF-8
+		    export LC_CTYPE=en_US.UTF-8
+		;;
+		*)
+	            # get rid of encoding and/or modifier
+		    export LANG=${LANG%%[.@]*}.UTF-8
+		    export LC_CTYPE=${LANG%%[.@]*}.UTF-8
+	        ;;
+	    esac
+	    if testutf8 ; [ $? -ne 2 ] ; then
+		test -x /bin/unicode_start && /bin/unicode_start
+		uc_started=1
+	    fi
+        else
+	    case "$TERM" in
+		vt*|xterm*|linux|screen*)
+		    # probe terminal and fix lang settings
+		    testutf8
+		    if [ $? -ne 2 ] ; then
+			test -n "$LANG" && LANG=${LANG%.UTF-8}
+			test -n "$LC_CTYPE" && LC_CTYPE=${LC_CTYPE%.UTF-8}
+		    else
+			test -n "$LANG" && LANG=${LANG%%[.@]*}.UTF-8
+			test -n "$LC_CTYPE" && LC_CTYPE=${LC_CTYPE%%[.@]*}.UTF-8
+		    fi
+		;;
+	    esac
+	fi
+	# use menu.ycp
+	if [ $module == "menu" ] ; then
+	    $ybindir/y2base menu ncurses
+	else
+
+	    # Transform every argument into a ycp string, that is surround all
+	    # args by ("...").  args may contain spaces.
+	    a=("$@")
+	    b=("${a[@]/#/(\"}")
+	    c=("${b[@]/%/\")}")
+	    set -- "${c[@]}"
+
+	    $ybindir/y2base "$module" "$@" ncurses
+	fi
+	if [ "$uc_started" ] ; then
+	    test -x /bin/unicode_stop && /bin/unicode_stop
+	fi
+    else
+	echo "You need to install yast2-ncurses to use the YaST2 text mode interface"
+	exit 1
+    fi
+else
+    set_qt_home_dir
+    # use ycp menu if the control center is not installed
+    if [ $module == "menu" -a -e "$ybindir/y2controlcenter" ] ; then
+	$ybindir/y2controlcenter $Y2QT_ARGS "$@"
+    else
+
+	# Special case: "sw_single" needs a lot of screen space -
+	# always start it in full screen mode.
+	#
+	# This works well with KDE, but other WMs tend to be too broken for that,
+	# so enable this only for KDE.
+	#
+
+	if  echo $WINDOWMANAGER | grep -qi "kde" ; then
+
+  	    # ${WINDOWMANAGER##*/} deletes the longest shell wildcard pattern
+	    # matching "*/", leaving only the last path name component.
+
+	    if [ $module == "sw_single" ] ; then
+	        case "$Y2QT_ARGS" in
+	    	*fullscreen*) ;;
+	    	*) Y2QT_ARGS="$Y2QT_ARGS --fullscreen" ;;
+	        esac
+	    fi
+	fi
+
+	# Transform every argument into a ycp string, that is surround all
+	# args by ("...").  args may contain spaces.
+	a=("$@")
+	b=("${a[@]/#/(\"}")
+	c=("${b[@]/%/\")}")
+	set -- "${c[@]}"
+
+	$ybindir/y2base $module "$@" qt "$Y2_GEOMETRY" $Y2QT_ARGS
+    fi
+fi
+
+exit_code=$?
+
+if [ "$UID" = 0 ]; then
+    rm -f /var/run/yast.pid
+fi
+
+exit $exit_code

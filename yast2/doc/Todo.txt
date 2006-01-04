@@ -1,0 +1,8 @@
+# $Id$
+
+Bugs:
+- Mode module is bloat
+
+Enhancements:
+- document all modules
+- drop Debug.ycp and eval.ycp (useless?)

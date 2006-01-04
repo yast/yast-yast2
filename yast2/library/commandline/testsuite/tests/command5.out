@@ -1,0 +1,5 @@
+Write	.dev.tty.prompt "YaST2 lan> " true
+Write	.dev.tty.stderr "Invalid value for option 'ip' -- expected 'ip', received 10.20.a.b" true
+Write	.dev.tty.stderr "Use 'yast2 lan add help' for a complete list of available options." true
+Return	false
+Return	$["command":"abort"]

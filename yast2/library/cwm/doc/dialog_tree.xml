@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding='ISO-8859-1'?>
+<?xml-stylesheet href="/usr/share/xml/docbook/stylesheet/css/current/driver.css" type="text/css"?>
+<chapter id = "dialog_tree">
+    <title>Dialogs based on the tree on the left (for English)</title>
+<para>
+DialogTree is a set of functions to help using CWM in the dialogs that have
+the Tree widget on the left side. Its tasks are following:
+  <itemizedlist>
+    <listitem><para>
+Switch the dialogs (that are implemented via CWM)
+    </para></listitem>
+    <listitem><para>
+Create the tree widget
+    </para></listitem>
+    <listitem><para>
+Handle different GUIs (supporting or not supporting the Wizard widget)
+    </para></listitem>
+  </itemizedlist>
+</para>
+
+<example id="lt_basic">
+  <title>Usage of the DialogTree-based dialog</title>
+    <screen>
+        import "DialogTree";
+
+        DialogTree::ShowAndRun ($[
+(1)         "screens" : $[
+                "s1" : $[
+		    "caption" : "Module X - Screen 1",
+		    "tree_label" : "Screen1",
+		    "widget_list" : [ "w1", "w2" ],
+		    "contents" : `VBox ("w1", "w2"),
+		],
+                "s2" : $[
+		    ...
+		],
+                "s3" : $[
+		    "caption" : "S3",
+		    ...
+		],
+            ],
+(2)         "ids_order" : ["s1", "s2", "s3"],
+(3)         "initial_screen" : "s2",
+            "widget_descr" : $[...],
+(4)         "back_button" : "",
+            "next_button" : "NextButton",
+            "abort_button" : AbortButton",
+            "functions" : $[...]
+        ]);
+ </screen>
+</example>
+  <section>
+    <title>Running the dialog</title>
+    <para>
+The dialog is started via one function call. This function processes all needed
+operations, this means to open a new Wizard screen with the tree on the left,
+runs event loop, and closes the newly open Wizard screen.
+    </para>
+    <para>
+It takes one map as parameter. It contains all the needed information for
+for creating and running the dialog. Return value is a symbol for the wizard
+sequencer.
+    </para>
+    <para>
+    </para>
+    <para>
+    </para>
+  </section>
+  <section>
+    <title>Specifying the screens</title>
+    <para>
+The screens are specified as a map, where key is the screen name and value
+is a map describing the screen. The map must be of type
+map&lt;string,map&lt;string,any&gt;&gt;. See <xref linkend="lt_basic"/>,
+line (1) and following for example.
+    </para>
+    <para>
+For every screen description map, the following keys must be defined:
+      <itemizedlist>
+	<listitem><para>
+	  <computeroutput>"widget_names" : list&lt;string&gt;</computeroutput>
+contains the list of widget IDs of all widgets in the screen. The widgets
+will be handled in the same order as they are specified (also valid for
+help texts merging).
+	</para></listitem>
+	<listitem><para>
+	    <computeroutput>"contents" : term</computeroutput>
+contains the term with the screen. All widget IDs are patched before the screen
+is displayed.
+	</para></listitem>
+	<listitem><para>
+	    <computeroutput>"caption" : string</computeroutput>
+is the dialog caption. Will be used as the caption of the dialog when the screen
+is shown, and also as caption for the label to the tree widget the 
+<computeroutput>"tree_item_label"</computeroutput> key is missing.
+	</para></listitem>
+	<listitem><para>
+	    <computeroutput>"tree_item_label" : string</computeroutput>
+is the label of the screen in the tree widget. Is used only if the screens
+are ordered via a list (see below).
+	</para></listitem>
+      </itemizedlist>
+    </para>
+  </section>
+  <section>
+    <title>Ordering the screens</title>
+    <para>
+The screens can be specified in two ways. The easier way is just to provide
+a list of the screens.
+This way, all the screens are in the same level.
+    </para>
+    <para>
+The other way is to construct the tree via a callback function. This way, the
+component developer can fully control how the tree is created.
+    </para>
+    <para>
+If both list of screens and tree creator callback are specified, then
+the callback is used.
+    </para>
+    <section>
+      <title>Flat list of screens</title>
+      <para>
+To make a flat list of screens in the dialog tree, just specify the key
+<computeroutput>"ids_order"</computeroutput> and give it as value a list
+of strings containing the IDs of all screens. See
+<xref linkend="lt_basic"/>, line (2) for example.
+      </para>
+    </section>
+    <section>
+      <title>Multi-level tree of screens</title>
+      <para>
+To create a multi-level tree of screens, specify a callback that creates the
+whole tree. To add items to the tree, use
+<computeroutput>Wizard::AddTreeItem</computeroutput>. The
+<computeroutput>"tree_creator"</computeroutput> entry of the map must be a
+reference to a function of type
+<computeroutput>list&lt;map&gt;()</computeroutput>.
+This function creates a list of widgets via the
+<computeroutput>Wizard::AddTreeItem</computeroutput> and returns the output
+of the last call.
+      </para>
+<example>
+  <title>Create the wizard tree function</title>
+  <screen>
+define list&lt;map&gt; CreateWizardTree () {
+    list&lt;map&gt; Tree = [];
+    Tree = Wizard::AddTreeItem (Tree, "",  _("S1_label"), "s1");
+    Tree = Wizard::AddTreeItem (Tree, "",  _("S2_label"), "s2");
+    Tree = Wizard::AddTreeItem (Tree, "",  _("S3_label"), "s3");
+    return Tree;
+}
+ </screen>
+</example>
+    </section>
+  </section>
+  <section>
+    <title>Specifying the initial screen</title>
+    <para>
+To specify the screen that will be shown after the dialog is displayed, use
+the <computeroutput>"initial_screen"</computeroutput> key. Its value is
+a string contains the key of the screen that is wanted to be displayed as
+the first. If not specified and order of the screens is specified by the list,
+the first is used. If not specified and the order is specified via a callback,
+the default is undefined.
+    </para>
+    <para>
+See <xref linkend="lt_basic"/>, line (3) for example.
+    </para>
+  </section>
+  <section>
+    <title>Widgets description map</title>
+    <para>
+To specify the widgets description map, use the
+<computeroutput>"widget_descr"</computeroutput>. See <xref linkend="concept"/>
+and following for additional information about this stuff.
+    </para>
+  </section>
+  <section>
+    <title>Button labels</title>
+    <para>
+To specify labels of the buttons on the bottom of the dialog, use the keys
+<computeroutput>"next_button"</computeroutput>,
+<computeroutput>"back_button"</computeroutput> and
+<computeroutput>"abort_button"</computeroutput>. To hide any particular button,
+just set the value to nil or empty string. In case of NCurses UI (where no
+wizard widget is available), Help button is automatically added.
+See <xref linkend="lt_basic"/>, line (4) and following for example.
+    </para>
+  </section>
+  <section>
+    <title>Fallback functions</title>
+    <para>
+To specify the fallback handlers of the widgets and functions for handling
+abort and back events, use the
+<computeroutput>"functions"</computeroutput>. See <xref linkend="concept"/>
+and following for additional information about this stuff.
+    </para>
+  </section>
+
+</chapter>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: xml
+sgml-parent-document:("cwm.xml" "book" "chapter")
+sgml-doctype:"cwm.xml"
+End:
+-->
