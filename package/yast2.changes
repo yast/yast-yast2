@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jan  4 11:12:18 CET 2006 - visnov@suse.cz
+
+- Dropped Require.ycp, long time obsolete library 
+
+-------------------------------------------------------------------
 Wed Jan  4 10:22:51 CET 2006 - locilka@suse.cz
 
 - Adding Network Manager support into
