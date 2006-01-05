@@ -1318,6 +1318,8 @@
 		break;
 	    }
 	});
+	
+	xxx
 
 	return all_ok;
     }
@@ -1398,7 +1400,7 @@
     global define boolean IsEnabled () {
 	boolean enabled = false;
 
-	if (Mode::normal() || Mode::commandline()) {
+	//if (Mode::normal() || Mode::commandline()) {
 	    foreach (string service, firewall_services, {
 		enabled = Service::Enabled(service);
 		// All services have to be enabled
@@ -1407,7 +1409,7 @@
 		    break;
 		}
 	    });
-	}
+	//}
 
 	if (enabled) {
 	    y2milestone("Firewall init scripts are enabled");
@@ -1425,14 +1427,14 @@
     global define boolean IsStarted () {
 	boolean started = false;
 
-	if (Mode::normal() || Mode::commandline()) {
+	//if (Mode::normal() || Mode::commandline()) {
 	    foreach (string service, firewall_services, {
 		if (Service::Status(service) == 0) {
 		    started = true;
 		    break;
 		}
 	    });
-	}
+	//}
 
 	if (started == true) {
 	    y2milestone("Firewall services are started");
