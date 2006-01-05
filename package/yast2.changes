@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jan  5 10:01:17 CET 2006 - locilka@suse.cz
+
+- Adjusting environment for bugfix #129679
+  Preventing Service::RunInitScript() from stuck by adding a new
+  function Service::RunInitScriptWithTimeOut() using the
+  .background agent
+
+-------------------------------------------------------------------
 Wed Jan  4 11:12:18 CET 2006 - visnov@suse.cz
 
 - Dropped Require.ycp, long time obsolete library 

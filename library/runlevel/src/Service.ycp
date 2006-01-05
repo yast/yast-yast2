@@ -280,6 +280,61 @@ global define integer RunInitScript (string name, string param) {
 	    $[ "TERM" : "raw"]);
 }
 
+
+/* Time out for background agent - init script run */
+integer script_time_out = 60000;
+integer sleep_step = 20;
+
+/**
+ * Run init script with a time-out.
+ * @param name init service name
+ * @param param init script argument
+ * @return integer exit value
+ */
+global define integer RunInitScriptWithTimeOut (string name, string param) {
+    y2milestone("Running service initscript %1 %2", name, param);
+    string command = sformat ("TERM=raw %2/%1 %3", name, init_d, param);
+
+    // default return code
+    integer return_code = nil;
+
+    // starting the process
+    boolean started = (boolean)SCR::Execute(.background.run_output_err, command);
+    if (!started) {
+	y2error("Cannot run '%1'", command);
+	return return_code;
+    }
+    y2debug("Running: %1", command);
+
+    list<string> script_out = [];
+    integer time_spent = 0;
+    boolean cont_loop = true;
+
+    // while continuing is needed and while it is possible
+    while (cont_loop && ((boolean) SCR::Read(.background.output_open))) {
+	if (time_spent >= script_time_out) {
+	    y2error("Command '%1' timed-out after %2 mces", command, time_spent);
+	    cont_loop = false;
+	}
+
+	// sleep a little while
+	time_spent = time_spent + sleep_step;
+	sleep(sleep_step);
+    }
+    y2milestone("Time spent: %1 msec", time_spent);
+    
+    // fetching the return code if not timed-out
+    if (cont_loop) {
+	return_code = (integer) SCR::Read(.background.status);
+    } else {
+        // killing the process if it still runs
+	if ((boolean) SCR::Read(.background.output_open))
+	    SCR::Execute(.background.kill, "");
+    }
+
+    return return_code;
+}
+
 string lang = nil;
 
 /**
