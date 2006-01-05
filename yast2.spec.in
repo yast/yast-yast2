@@ -111,10 +111,6 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %dir @yncludedir@/wizard
 @yncludedir@/wizard/*.ycp
 
-# commandline
-%dir @yncludedir@/commandline
-@yncludedir@/commandline/*.ycp
-
 #packags
 %dir @yncludedir@/packages
 @yncludedir@/packages/*.ycp
