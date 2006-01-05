@@ -729,6 +729,11 @@ global define void ReplaceWidgetHelp (string widget, string help) {
 	PushSettings ();
 	current_dialog_widgets = widgets;
 	initWidgets (widgets);
+
+	// allow a handler to enable/disable widgets before the first real
+	// UserInput takes place
+	UI::FakeUserInput ($["ID": "_cwm_wakeup"]);
+
 	any ret = nil;
 	list save_exits = [`next, `ok];
 	boolean save = false;
