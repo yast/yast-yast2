@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jan  5 15:56:53 CET 2006 - mvidner@suse.cz
+
+- CWM: implemented valid_chars property; added InitNull and StoreNull.
+
+-------------------------------------------------------------------
 Thu Jan  5 10:01:17 CET 2006 - locilka@suse.cz
 
 - Adjusting environment for bugfix #129679

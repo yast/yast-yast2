@@ -108,7 +108,6 @@ Parameters:
 <listitem><para>"label" : label shown above the text entry</para></listitem>
 <listitem><para>"valid_chars" : list of characters that are valid for the text entry,
                   if missing, all characters are valid
-(FIXME not implemented)
 </para></listitem>
 </itemizedlist></para>
 
