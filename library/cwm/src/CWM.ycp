@@ -304,7 +304,15 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
       */
     global define void initWidgets (list<map<string, any> > widgets) ``{
         foreach (map<string, any> w, widgets, ``{
-	    processed_widget = w;
+	    // set initial properties
+	    string valid_chars = (string) w["valid_chars"]:nil;
+	    if (valid_chars != nil)
+	    {
+		UI::ChangeWidget (`id (w["_cwm_key"]:""), `ValidChars, valid_chars);
+	    }
+
+	    // set initial values
+	    processed_widget = w;	    
 	    void(string) toEval = (void(string)) (w["init"]:nil);
 	    if (toEval != nil)
 	    {
@@ -896,6 +904,27 @@ global define void ReplaceWidgetHelp (string widget, string help) {
 	    "next_button" : next_button,
 	    "fallback_functions" : fallback,
 	]);
+    }
+
+// useful handlers
+
+    /**
+     * Do-nothing replacement for a widget initialization function.
+     * Used for push buttons if all the other widgets have a fallback.
+     * @param key id of the widget
+     */
+    global void InitNull (string key) {
+	return;
+    }
+
+    /**
+     * Do-nothing replacement for a widget storing function.
+     * Used for push buttons if all the other widgets have a fallback.
+     * @param key	id of the widget
+     * @param event	the event being handled
+     */
+    global void StoreNull (string key, map event) {
+	return;
     }
 
 }
