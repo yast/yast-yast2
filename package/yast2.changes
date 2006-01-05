@@ -5,6 +5,12 @@ Thu Jan  5 10:01:17 CET 2006 - locilka@suse.cz
   Preventing Service::RunInitScript() from stuck by adding a new
   function Service::RunInitScriptWithTimeOut() using the
   .background agent
+- Fixing bug #139587
+  Firewall Functions IsEnabled() and IsStarted() expected that the
+  firewall is not enabled or started by default in the
+  installation. The [Back] button from the connection test (and
+  changing firewall "enabled" to "disabled") has broken this
+  expectation.
 
 -------------------------------------------------------------------
 Wed Jan  4 11:12:18 CET 2006 - visnov@suse.cz
