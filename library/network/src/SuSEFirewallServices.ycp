@@ -175,7 +175,9 @@
 	"slp-daemon" : $[
 	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
 	    "name"	: _("SLP Daemon"),
+	    "tcp_ports" : [ "svrloc" ],
 	    "udp_ports" : [ "svrloc" ],
+	    "broadcast_ports" : [ "svrloc" ],
 	],
 	// See bug #118200 for more information
 	"xdmcp" : $[
