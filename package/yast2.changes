@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan  6 10:18:56 CET 2006 - locilka@suse.cz
+
+- Tuning SuSEFirewall known Services
+  Adding "TCP: 427" and "Broadcast: 427" to the definition of
+  SLP-daemon by the feature #117 "SLP configuration module"
+
+-------------------------------------------------------------------
 Thu Jan  5 16:57:00 CET 2006 - mvidner@suse.cz
 
 - CWM: implemented valid_chars property; added InitNull and StoreNull.
