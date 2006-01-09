@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jan  9 17:54:49 CET 2006 - locilka@suse.cz
+
+- Teaching SuSEFirewallProposal to work well with Network Manager
+  enabled.
+- 2.13.19
+
+-------------------------------------------------------------------
 Fri Jan  6 10:18:56 CET 2006 - locilka@suse.cz
 
 - Tuning SuSEFirewall known Services
