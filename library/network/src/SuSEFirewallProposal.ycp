@@ -357,8 +357,17 @@
 	if (firewall_is_enabled) {
 	    // Any enabled SSH means SSH-is-enabled
 	    boolean is_ssh_enabled = false;
-	    if (size(known_interfaces)>0) {
-		foreach (string zone, SuSEFirewall::GetZonesOfInterfaces(known_interfaces), {
+	    // Any known interfaces, or Network Manager interfaces
+	    if ((size(known_interfaces)>0) || NetworkService::IsManaged()) {
+		// all known interfaces for testing
+		list <string> used_zones = SuSEFirewall::GetZonesOfInterfaces(known_interfaces);
+
+		// NM is used, add also NM-Zone
+		if (NetworkService::IsManaged() && SuSEFirewall::IsAnyNetworkInterfaceSupported()) {
+		    known_interfaces = add (known_interfaces, SuSEFirewall::special_all_interface_zone);
+		}
+
+		foreach (string zone, used_zones, {
 		    if (SuSEFirewall::IsServiceSupportedInZone ("ssh", zone))
 			is_ssh_enabled = true;
 		});
