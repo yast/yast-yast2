@@ -179,9 +179,6 @@ global define void Init (map<string,any> widget, string key) {
  */
 global define void CleanUp (string key) {
     TabCleanup (current_tab_map);
-    // so that next init is not confused
-    current_tab_id = nil;
-    current_tab_map = nil;
 }
 
 /**
