@@ -122,4 +122,14 @@
 	}
     }
 
+    /**
+     * The error string from the xml parser.
+     * It should be used when the agent did not return content.
+     * A reset happens before a new XML parsing starts.
+     * @return parser error
+     */
+    global define string XMLError() ``{
+        return (string)SCR::Read(.xml.error_message);
+    }
+
 }
