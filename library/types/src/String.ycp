@@ -56,6 +56,22 @@ global string OptParens (string s) {
 }
 
 /**
+ * @param l a list of strings
+ * @return only non-"" items
+ */
+global list<string> NonEmpty (list<string> l) {
+    return filter (string i, l, ``( i != "" ));
+}
+
+/**
+ * @param s \n-terminated items
+ * @return the items as a list, with empty lines removed
+ */
+global list<string> NewlineItems (string s) {
+    return NonEmpty (splitstring (s, "\n"));
+}
+
+/**
  * Return a pretty description of a byte count
  * 
  * Return a pretty description of a byte count with required precision
