@@ -1,10 +1,11 @@
 -------------------------------------------------------------------
-Wed Jan 11 17:14:20 CET 2006 - mvidner@suse.cz
+Wed Jan 11 18:31:17 CET 2006 - mvidner@suse.cz
 
 - CWMTab::CleanUp: do not reset current_tab_id, the caller may want to
   remember it for revisiting the dialog (#134386).
 - Added String::NonEmpty (stringlist) and NewlineItems (string).
 - Added XML::XmlError () (ug).
+- 2.13.22
 
 -------------------------------------------------------------------
 Wed Jan 11 13:47:24 CET 2006 - jsrain@suse.cz
