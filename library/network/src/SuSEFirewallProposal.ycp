@@ -359,12 +359,15 @@
 	    boolean is_ssh_enabled = false;
 	    // Any known interfaces, or Network Manager interfaces
 	    if ((size(known_interfaces)>0) || NetworkService::IsManaged()) {
+		y2milestone("Interfaces: %1, Network Manager is used: %2", known_interfaces, NetworkService::IsManaged());
 		// all known interfaces for testing
 		list <string> used_zones = SuSEFirewall::GetZonesOfInterfaces(known_interfaces);
+		y2milestone("Zones used by firewall: %1", used_zones);
 
 		// NM is used, add also NM-Zone
 		if (NetworkService::IsManaged() && SuSEFirewall::IsAnyNetworkInterfaceSupported()) {
-		    known_interfaces = add (known_interfaces, SuSEFirewall::special_all_interface_zone);
+		    used_zones = add (used_zones, SuSEFirewall::special_all_interface_zone);
+		    y2milestone("NM is used, zone %1 was added into used zones %2", SuSEFirewall::special_all_interface_zone, used_zones);
 		}
 
 		foreach (string zone, used_zones, {

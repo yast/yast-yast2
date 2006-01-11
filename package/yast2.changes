@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Jan 11 11:10:38 CET 2006 - locilka@suse.cz
+
+- Fixing bug #142502
+  Firewall still reported 'closed' SSH port when the Network Manager
+  was used.
+  Added more debugging logs.
+- 2.13.20
+
+-------------------------------------------------------------------
 Mon Jan  9 17:54:49 CET 2006 - locilka@suse.cz
 
 - Teaching SuSEFirewallProposal to work well with Network Manager
