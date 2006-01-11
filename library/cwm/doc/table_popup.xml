@@ -40,6 +40,7 @@ Following text will refer on <xref linkend="tp_basic"/>.
 (1)        map&lt;string,any&gt; ret = CWM::CreateTableDescr (
                $[
                    "add_delete_buttons" : true,
+                   "edit_button" : true,
                    "up_down_buttons" : true
                ],
                $[
@@ -90,6 +91,10 @@ Currently supported attributes are:
 "add_delete_buttons" : boolean - if the Add and Delete buttons are wanted, set to
                            true. If false, they will not be shown. Default
                            (if key not present) is true.
+</para></listitem>
+<listitem><para>
+"edit_button" : boolean - if the Edit button is wanted, set to true.
+			If false, it will not be shown. Default (if key not present) is true.
 </para></listitem>
 <listitem><para>
 "up_down_buttons" : boolean    - if the Up and Down (reorder) buttons are wanted, set

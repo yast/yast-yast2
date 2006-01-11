@@ -53,6 +53,7 @@
 define boolean ValidateTableAttr (map<string,any> attr) {
     map<string,string> types = $[
         "add_delete_buttons" : "boolean",
+        "edit_button" : "boolean",
         "changed_column" : "boolean",
         "up_down_buttons" : "boolean",
 	"unique_keys" : "boolean",
@@ -310,8 +311,11 @@ define boolean ValidateTableDescr (string key, map<string,any> descr) {
 	    UI::ChangeWidget (`id (`_tp_delete), `Enabled,
 		opt_descr["table", "optional"]:true);
 	}
-	UI::ChangeWidget (`id (`_tp_edit), `Enabled,
-	    ! opt_descr["table", "immutable"]:false);
+	if (descr["_cwm_attrib", "edit_button"]:true)
+	{
+	    UI::ChangeWidget (`id (`_tp_edit), `Enabled,
+		! opt_descr["table", "immutable"]:false);
+	}
 	if (descr["_cwm_attrib", "up_down_buttons"]:false)
 	{
 	    UI::ChangeWidget (`id (`_tp_up), `Enabled,
@@ -549,7 +553,10 @@ define boolean ValidateTableDescr (string key, map<string,any> descr) {
       */
     global define void DisableTable (map<string,any> descr) ``{
 	UI::ChangeWidget (`id (`_tp_table), `Enabled, false);
-	UI::ChangeWidget (`id (`_tp_edit), `Enabled, false);
+	if (descr["_cwm_attrib", "edit_button"]:true)
+	{
+	    UI::ChangeWidget (`id (`_tp_edit), `Enabled, false);
+	}
 	if (descr["_cwm_attrib", "add_delete_buttons"]:true)
 	{
 	    UI::ChangeWidget (`id (`_tp_delete), `Enabled, false);
@@ -569,7 +576,10 @@ define boolean ValidateTableDescr (string key, map<string,any> descr) {
       */
     global define void EnableTable (map<string, any> descr) ``{
 	UI::ChangeWidget (`id (`_tp_table), `Enabled, true);
-	UI::ChangeWidget (`id (`_tp_edit), `Enabled, true);
+	if (descr["_cwm_attrib", "edit_button"]:true)
+	{
+	    UI::ChangeWidget (`id (`_tp_edit), `Enabled, true);
+	}
 	if (descr["_cwm_attrib", "add_delete_buttons"]:true)
 	{
 	    UI::ChangeWidget (`id (`_tp_add), `Enabled, false);
@@ -605,7 +615,8 @@ define boolean ValidateTableDescr (string key, map<string,any> descr) {
 	if (event_id == `_tp_table)
 	{
 	    if (event_descr["EventReason"]:"" == "Activated"
-		&& event_descr["EventType"]:"" == "WidgetEvent")
+		&& event_descr["EventType"]:"" == "WidgetEvent"
+		&& UI::WidgetExists (`id (`_tp_edit)))
 	    {
 		event_id = `_tp_edit;
 	    }
@@ -812,8 +823,9 @@ define boolean ValidateTableDescr (string key, map<string,any> descr) {
 	term add_button = attrib["add_delete_buttons"]:true
 	    ? `PushButton (`id (`_tp_add), `opt (`key_F3), Label::AddButton ())
 	    : `HSpacing (0);
-	term edit_button
-	    = `PushButton (`id (`_tp_edit), `opt (`key_F4), Label::EditButton ());
+	term edit_button = attrib["edit_button"]:true
+	    ? `PushButton (`id (`_tp_edit), `opt (`key_F4), Label::EditButton ())
+	    : `HSpacing (0);
 	term delete_button = attrib["add_delete_buttons"]:true
 	    ? `PushButton (`id (`_tp_delete), `opt (`key_F5), Label::DeleteButton ())
 	    : `HSpacing (0);
