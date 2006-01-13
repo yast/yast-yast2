@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jan 13 16:46:36 CET 2006 - jsrain@suse.cz
+
+- hide disabled steps from installation workflow
+
+-------------------------------------------------------------------
 Fri Jan 13 15:20:02 CET 2006 - locilka@suse.cz
 
 - Added missing function Progress::status()

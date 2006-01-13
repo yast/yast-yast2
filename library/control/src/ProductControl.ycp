@@ -407,7 +407,9 @@ global define list<map> getModules(string stage, string mode, symbol which)
     integer id = 1;
     if (which == `enabled)
     {
-        modules = filter(map m, modules, ``(m["enabled"]:true));
+	modules = filter (map m, modules, {
+	    return m["enabled"]:true && ! checkDisabled (m);
+	});
     }
 
     modules = maplist(map m, modules, ``{
