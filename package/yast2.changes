@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 13 15:20:02 CET 2006 - locilka@suse.cz
+
+- Added missing function Progress::status()
+  Returning whether progress 'is' on or 'off'
+
+-------------------------------------------------------------------
 Wed Jan 11 18:31:17 CET 2006 - mvidner@suse.cz
 
 - CWMTab::CleanUp: do not reset current_tab_id, the caller may want to
