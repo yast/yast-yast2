@@ -5,6 +5,9 @@
  * Authors:	Martin Vidner <mvidner@suse.cz>
  *
  * $Id: runtime.ycp 25152 2005-08-22 14:43:44Z mvidner $
+ *
+ * This module used to switch between rcnetwork and rcnetworkmanager.
+ * Now the master switch is /etc/sysconfig/network/config:NETWORKMANAGER
  */
 
 {
@@ -12,60 +15,50 @@
 module "NetworkService";
 
 import "Service";
-
-
-/**
- * Whether use NetworkManager or ifup
- * Use IsManaged () instead!
- */
-global boolean Managed = nil;
+import "NetworkConfig";
 
 global void Read ();
+
+/**
+ * if false, read needs to do work
+ */
+boolean initialized = false;
 
 /**
  * Whether use NetworkManager or ifup
  */
 global boolean IsManaged () {
-    if (Managed == nil)
-    {
-	Read ();
-    }
-    return Managed;
+    Read ();
+    return NetworkConfig::Config["NETWORKMANAGER"]:false;
+
 }
 
 /**
- * Whether the network init script was enabled
+ * @param m whether networkmanager will be used
  */
-boolean had_network = nil;
-/**
- * Whether the networkmanager init script was enabled
- */
-boolean had_networkmanager = nil;
+global void SetManaged (boolean m) {
+    NetworkConfig::Config["NETWORKMANAGER"] = m;
+    initialized = true;
+}
 
+/**
+ * Initialize module data
+ */
 global void Read () {
-    boolean net = Service::Enabled ("network");
-    boolean nm =  Service::Enabled ("networkmanager");
-    y2milestone ("Enabled: network %1, networkmanager %2", net, nm);
-    Managed = nm;
-}
-
-void Chkconfig (string script, boolean enabled) {
-    // force disabling of network because many scripts want it
-    string cmd = "chkconfig -f " + script + " " + (enabled? "on": "off");
-    y2milestone ("%1", cmd);
-    SCR::Execute (.target.bash, cmd);
+    if (!initialized)
+    {
+	NetworkConfig::Read ();
+	boolean nm =  NetworkConfig::Config["NETWORKMANAGER"]:false;
+	y2milestone ("NetworkManager: %1", nm);
+    }
+    initialized = true;
 }
 
 /**
  * Enables and disables the appropriate services.
- * Remembers the previous status for StartStop to use.
  */
 global void EnableDisable () {
-    had_network = Service::Enabled ("network");
-    had_networkmanager = Service::Enabled ("networkmanager");
-
-    Chkconfig ("network", !Managed);
-    Chkconfig ("networkmanager", Managed);
+    Service::Enable ("network");
 }
 
 boolean RunScript (string script, string action) {
@@ -79,30 +72,16 @@ boolean RunScript (string script, string action) {
 
 /**
  * Starts and stops the appropriate services.
- * EnableDisable must have run so that we know what to stop.
  */
 global void StartStop () {
-    string tostop = "";
-    if (had_network)
-	 tostop = "network";
-    // if we had both, do not stop network
-    if (had_networkmanager)
-	 tostop = "networkmanager";
-    string tostart = Managed? "networkmanager": "network";
-    string toreload = "";
-
-    // here comes the logic
-    if (tostop == tostart)
+    if (Service::Status ("network") == 0)
     {
-	 if (tostart == "network")
-	     toreload = "network";
-	 tostop = "";
-	 tostart = "";
+	RunScript ("network", "reload");
     }
-
-    RunScript (tostop, "stop");
-    RunScript (tostart, "start");
-    RunScript (toreload, "reload");
+    else
+    {
+	RunScript ("network", "status");
+    }
 }
 
 /* EOF */
