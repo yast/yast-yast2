@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Sun Jan 15 17:56:00 CET 2006 - mvidner@suse.cz
+
+- NetworkService: use /etc/sysconfig/network/config:NETWORKMANAGER
+  instead of rcnetworkmanager (#135595).
+- 2.13.24
+
+-------------------------------------------------------------------
 Fri Jan 13 16:46:36 CET 2006 - jsrain@suse.cz
 
 - hide disabled steps from installation workflow
