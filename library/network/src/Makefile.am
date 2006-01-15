@@ -7,6 +7,7 @@ client_DATA =
 ynclude_DATA =
 
 module_DATA =			\
+	NetworkConfig.ycp	\
 	NetworkDevices.ycp	\
 	NetworkService.ycp	\
 	SuSEFirewall.ycp	\
