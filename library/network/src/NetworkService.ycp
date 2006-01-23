@@ -80,7 +80,7 @@ global void StartStop () {
     }
     else
     {
-	RunScript ("network", "status");
+	RunScript ("network", "start");
     }
 }
 
