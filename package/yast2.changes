@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jan 23 17:06:18 CET 2006 - mvidner@suse.cz
+
+- Start the network using rcnetwork start, not rcnetwork status.
+  Fixes the internet test (#144829).
+- 2.13.25
+
+-------------------------------------------------------------------
 Sun Jan 15 17:56:00 CET 2006 - mvidner@suse.cz
 
 - NetworkService: use /etc/sysconfig/network/config:NETWORKMANAGER
