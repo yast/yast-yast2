@@ -20,7 +20,6 @@ import "Label";
 import "Mode";
 import "Popup";
 import "Linuxrc";
-import "NetworkService";
 
 /**
  * Confirm hardware detection (only in manual installation)
