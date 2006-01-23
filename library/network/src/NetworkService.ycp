@@ -18,6 +18,8 @@ import "Service";
 import "NetworkConfig";
 import "Popup";
 
+textdomain "base";
+
 global void Read ();
 
 /**
