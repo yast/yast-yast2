@@ -16,6 +16,7 @@ module "NetworkService";
 
 import "Service";
 import "NetworkConfig";
+import "Popup";
 
 global void Read ();
 
