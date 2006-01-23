@@ -57,6 +57,7 @@ map<string,map<string,any> > defaults = $[
 	"run_you" : true,
 	"relnotesurl" : "",
 	"vendor_url" : "",
+	"enable_clone" : false,
     ],
     "partitioning" : $[
 	"evms_config" : "no",
