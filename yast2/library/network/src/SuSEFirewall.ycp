@@ -1,0 +1,2834 @@
+/**
+ * Copyright 2004, Novell, Inc.  All rights reserved.
+ *
+ * File:	modules/SuSEFirewall.ycp
+ * Package:	SuSEFirewall configuration
+ * Summary:	Interface manipulation of /etc/sysconfig/SuSEFirewall
+ * Authors:	Lukas Ocilka <locilka@suse.cz>
+ *
+ * $id$
+ *
+ * Module for handling SuSEfirewall2.
+ */
+
+{
+    module "SuSEFirewall";
+    textdomain "base";
+
+    import "Mode";
+    import "Service";
+    import "NetworkDevices";
+    import "NetworkService";
+    import "SuSEFirewallServices";
+    import "PortAliases";
+    import "Report";
+    import "Message";
+    import "Progress";
+
+    # <!-- SuSEFirewall VARIABLES //-->
+
+    /* configuration hasn't been read for the default
+     * this should reduce the readings to only ONE
+     */
+    boolean configuration_has_been_read = false;
+
+    /* String which includes all interfaces not-defined in any zone */
+    global string special_all_interface_string = "any";
+
+    /* Zone which works with the special_all_interface_string string */
+    global string special_all_interface_zone   = "EXT";
+
+    /* firewall settings map */
+    map<string, any> SETTINGS = $[];
+
+    /* configuration was modified when true */
+    boolean modified = false;
+
+    /* defines if SuSEFirewall is running */
+    boolean is_running = false;
+
+    /* default settings for SuSEFirewall */
+    map<string, string> DEFAULT_SETTINGS = $[
+	"FW_LOG_ACCEPT_ALL"		: "no",
+	"FW_LOG_ACCEPT_CRIT"		: "yes",
+	"FW_LOG_DROP_ALL"		: "no",
+	"FW_LOG_DROP_CRIT"		: "yes",
+	"FW_PROTECT_FROM_INT"		: "no",
+	"FW_ROUTE"			: "no",
+	"FW_MASQUERADE"			: "no",
+	"FW_ALLOW_FW_TRACEROUTE"	: "yes",
+	"FW_ALLOW_PING_FW"		: "yes",
+	"FW_ALLOW_FW_BROADCAST_EXT"	: "no",
+	"FW_ALLOW_FW_BROADCAST_INT"	: "no",
+	"FW_ALLOW_FW_BROADCAST_DMZ"	: "no",
+	"FW_IGNORE_FW_BROADCAST_EXT"	: "yes",
+	"FW_IGNORE_FW_BROADCAST_INT"	: "no",
+	"FW_IGNORE_FW_BROADCAST_DMZ"	: "no",
+	"FW_IPSEC_TRUST"		: "no",
+    ];
+
+    /* verbose_level -> if verbosity is more than 0, be verbose, starting in verbose mode */
+    integer verbose_level = 1;
+
+    /* list of known firewall zones */
+    list <string> known_firewall_zones = [ "INT", "DMZ", "EXT" ];
+
+    /* map defines zone name for all known firewall zones */
+    map <string, string> zone_names = $[
+	// TRANSLATORS: Firewall zone name - used in combo box or dialog title
+	"EXT" : _("External Zone"),
+	// TRANSLATORS: Firewall zone name - used in combo box or dialog title
+	"INT" : _("Internal Zone"),
+	// TRANSLATORS: Firewall zone name - used in combo box or dialog title
+	"DMZ" : _("Demilitarized Zone"),
+    ];
+
+    /* internal zone identification - useful for protect-from-internal */
+    string int_zone_shortname = "INT";
+
+    /* list of protocols supported in firewall, use only upper-cases */
+    list <string> supported_protocols = [ "TCP", "UDP", "RPC", "IP" ];
+
+    /* list of keys in map of definition well-known services */
+    list <string> service_defined_by = ["tcp_ports", "udp_ports", "rpc_ports", "ip_protocols", "broadcast_ports"];
+
+    /* list of services currently allowed, which share ports (for instance RPC services) */
+    map <string, list <string> > allowed_conflict_services = $[];
+
+    /* services needed for well-running firewall */
+    list <string> firewall_services = [ "SuSEfirewall2_init", "SuSEfirewall2_setup" ];
+    list <string> firewall_services_reverse = [ "SuSEfirewall2_setup", "SuSEfirewall2_init" ];
+
+    list <string> SuSEFirewall_variables = [
+	// zones and interfaces
+	"FW_DEV_INT", "FW_DEV_DMZ", "FW_DEV_EXT",
+
+	// services in zones
+	"FW_SERVICES_INT_TCP", "FW_SERVICES_INT_UDP", "FW_SERVICES_INT_RPC", "FW_SERVICES_INT_IP",
+	"FW_SERVICES_DMZ_TCP", "FW_SERVICES_DMZ_UDP", "FW_SERVICES_DMZ_RPC", "FW_SERVICES_DMZ_IP",
+	"FW_SERVICES_EXT_TCP", "FW_SERVICES_EXT_UDP", "FW_SERVICES_EXT_RPC", "FW_SERVICES_EXT_IP",
+	"FW_PROTECT_FROM_INT",
+
+	// global routing, masquerading
+	"FW_ROUTE", "FW_MASQUERADE", "FW_FORWARD_MASQ",
+
+	// broadcast packets
+	"FW_ALLOW_FW_BROADCAST_EXT", "FW_ALLOW_FW_BROADCAST_INT", "FW_ALLOW_FW_BROADCAST_DMZ",
+	"FW_IGNORE_FW_BROADCAST_EXT", "FW_IGNORE_FW_BROADCAST_INT", "FW_IGNORE_FW_BROADCAST_DMZ",
+
+	// logging
+	"FW_LOG_DROP_CRIT", "FW_LOG_DROP_ALL", "FW_LOG_ACCEPT_CRIT", "FW_LOG_ACCEPT_ALL",
+
+	// IPsec support
+	"FW_IPSEC_TRUST",
+    ];
+
+    # <!-- SuSEFirewall VARIABLES //-->
+
+    # <!-- SuSEFirewall GLOBAL FUNCTIONS USED BY LOCAL ONES //-->
+
+    /**
+     * Function sets internal variable, which indicates, that any
+     * "firewall settings were modified", to "true"
+     */
+    global define void SetModified () {
+	modified = true;
+    }
+
+    // Please, do not us this function
+    // Only for firewall installation proposal
+    global define void ResetModified () {
+	y2milestone("Reseting firewall-modified to 'false'");
+	modified = false;
+    }
+
+    /**
+     * Function returns list of known firewall zones (shortnames)
+     *
+     * @return	list <string> of firewall zones
+     */
+    global define list <string> GetKnownFirewallZones () {
+	return known_firewall_zones;
+    }
+
+    global define boolean IsServiceSupportedInZone (string service, string zone);
+    global define list <string> GetSpecialInterfacesInZone (string zone);
+    global define void AddSpecialInterfaceIntoZone (string interface, string zone);
+
+    # <!-- SuSEFirewall GLOBAL FUNCTIONS USED BY LOCAL ONES //-->
+
+    # <!-- SuSEFirewall LOCAL FUNCTIONS //-->
+
+    /**
+     * Function returns whether the feature 'any' network interface is supported in the
+     * firewall configuration. The string 'any' must be in the 'EXT' zone.
+     *
+     * @return boolean is_supported whether the feature is supported or not
+     */
+    global boolean IsAnyNetworkInterfaceSupported () {
+	return contains(GetSpecialInterfacesInZone(special_all_interface_zone), special_all_interface_string);
+    }
+
+    /**
+     * Function returns whether the support for NetworkManager
+     * (support for any interfaces not-mentioned in any configuration)
+     * is included in the configuration.
+     */
+    boolean IsNetworkManagerSupported () {
+	// EXT has to contain string 'any'
+	return IsAnyNetworkInterfaceSupported();
+    }
+    
+    /**
+     * Function adds the support for NetworkManager
+     * (support for any interfaces not-mentioned in any configuration).
+     */
+    void AddNetworkManagerSupport () {
+	AddSpecialInterfaceIntoZone(special_all_interface_string, special_all_interface_zone);
+    }
+
+    /**
+     * Function return list of variables needed for SuSEFirewall's settings.
+     *
+     * @return	list <string> of names of variables
+     */
+    list <string> GetListOfSuSEFirewallVariables () {
+	return SuSEFirewall_variables;
+    }
+
+    /**
+     * Local function for increasing the verbosity level.
+     */
+    void IncreaseVerbosity () {
+	verbose_level = verbose_level + 1;
+    }
+    
+    /**
+     * Local function for decreasing the verbosity level.
+     */
+    void DecreaseVerbosity () {
+	verbose_level = verbose_level - 1;
+    }
+
+    /**
+     * Local function returns if other functions should produce verbose output.
+     * like popups, reporting errors, etc.
+     */
+    boolean IsVerbose () {
+	// verbose level must be above zero to be verbose
+	return (verbose_level > 0);
+    }
+
+    /**
+     * Local function for returning default values (if defined) for sysconfig variables.
+     *
+     * @param	string sysconfig variable
+     */
+    string GetDefaultValue (string variable) {
+	return (string) DEFAULT_SETTINGS[variable]:"";
+    }
+
+    /**
+     * Local function for reading list of sysconfig variables into internal variables.
+     *
+     * @param	list <string> of sysconfig variables
+     */
+    void ReadSysconfigSuSEFirewall (list<string> variables) {
+	foreach (string variable, variables, {
+	    string value = (string) SCR::Read(add(.sysconfig.SuSEfirewall2,variable));
+	    // if variable is undefined, get default value
+	    if (value == nil || value == "") value = GetDefaultValue(variable);
+	    SETTINGS[variable] = value;
+	});
+    }
+
+    /**
+     * Local function for reseting list of sysconfig variables in internal variables.
+     *
+     * @param	list <string> of sysconfig variables
+     */
+    void ResetSysconfigSuSEFirewall (list<string> variables) {
+	foreach (string variable, variables, {
+	    // reseting means getting default variables
+	    SETTINGS[variable] = GetDefaultValue(variable);
+	});
+    }
+
+    /**
+     * Local function for writing the list of internal variables into sysconfig.
+     * List of variables is list of keys in SETTINGS map, to sync configuration
+     * into the disk, use `nil` as the last list item.
+     *
+     * @param	list <string> of sysconfig variables
+     */
+    boolean WriteSysconfigSuSEFirewall (list<string> variables) {
+	boolean write_status = true;
+
+	foreach (string variable, variables, {
+	    write_status = (boolean) SCR::Write(
+		add(.sysconfig.SuSEfirewall2,variable),
+		// if variable is undefined, get default value
+		SETTINGS[variable]:GetDefaultValue(variable)
+	    );
+
+	    if (! write_status) {
+		Report::Error(Message::CannotWriteSettingsTo("/etc/sysconfig/SuSEFirewall"));
+		break;
+	    }
+	});
+
+	write_status = SCR::Write(.sysconfig.SuSEfirewall2, nil);
+	if (! write_status) {
+	    Report::Error(Message::CannotWriteSettingsTo("/etc/sysconfig/SuSEFirewall"));
+	}
+
+	return write_status;
+    }
+
+    /**
+     * Local function returns if protocol is supported by firewall.
+     * Protocol name must be in upper-cases.
+     *
+     * @param	string protocol
+     * @return	boolean if protocol is supported
+     */
+    boolean IsSupportedProtocol (string protocol) {
+	return contains(supported_protocols, protocol);
+    }
+
+    /**
+     * Local function returns if zone (shortname like "EXT") is supported by firewall.
+     * Undefined zones are, for sure, unsupported.
+     *
+     * @param	string zone shortname
+     * @return	boolean if zone is known and supported.
+     */
+    boolean IsKnownZone (string zone) {
+	boolean is_zone = false;
+
+	foreach (string known_zone, GetKnownFirewallZones(), {
+	    if (known_zone == zone) {
+		is_zone = true;
+		break;
+	    }
+	});
+
+	return is_zone;
+    }
+
+    /**
+     * Local function returns configuration string used in configuration for zone.
+     * For instance "ext" for "EXT" zone.
+     *
+     * @param	string zone shortname
+     * @return	string zone configuration string
+     */
+    string GetZoneConfigurationString (string zone) {
+	if (IsKnownZone(zone)) {
+	    // zones in SuSEFirewall configuration are identified by lowercased zone shorters
+	    return tolower(zone);
+	}
+	return nil;
+    }
+
+    /**
+     * Local function returns zone name (shortname) for configuration string.
+     * For instance "EXT" for "ext" zone.
+     *
+     * @param	string zone configuration string
+     * @return	string zone shortname
+     */
+    string GetConfigurationStringZone (string zone_string) {
+	if (IsKnownZone(toupper(zone_string))) {
+	    // zones in SuSEFirewall configuration are identified by lowercased zone shorters
+	    return toupper(zone_string);
+	}
+	return nil;
+    }
+
+    /**
+     * Function returns list of allowed services for zone and protocol
+     *
+     * @param	string zone
+     * @param	string protocol
+     * @return	list <string> of allowed services/ports
+     */
+    list <string> GetAllowedServicesForZoneProto (string zone, string protocol) {
+	return splitstring(SETTINGS["FW_SERVICES_" + zone + "_" + protocol]:"", " ");
+    }
+
+    /**
+     * Function sets list of services as allowed ports for zone and protocol
+     *
+     * @param	list <string> of allowed ports/services
+     * @param	string zone
+     * @param	string protocol
+     */
+    void SetAllowedServicesForZoneProto (list <string> allowed_services, string zone, string protocol) {
+	SetModified();
+
+	SETTINGS["FW_SERVICES_" + zone + "_" + protocol] = mergestring (toset(allowed_services), " ");
+    }
+
+    /**
+     * Local function returns configuration string for broadcast packets.
+     *
+     * @return	string with broadcast configuration
+     */
+    string GetBroadcastConfiguration (string zone) {
+
+	return SETTINGS["FW_ALLOW_FW_BROADCAST_" + zone]:"no";
+    }
+
+    /**
+     * Local function saves configuration string for broadcast packets.
+     *
+     * @param	string with broadcast configuration
+     */
+    void SetBroadcastConfiguration (string zone, string broadcast_configuration) {
+	SetModified();
+
+	SETTINGS["FW_ALLOW_FW_BROADCAST_" + zone] = broadcast_configuration;
+    }
+
+    /**
+     * Local function return map of allowed ports (without aliases).
+     * If any list for zone is defined but empty, all allowed
+     * UDP ports for this zone also accept broadcast packets.
+     *
+     * @return	map <zone, list <string> > strings are allowed ports or port ranges
+     */
+    global define map <string, list <string> > GetBroadcastAllowedPorts () {
+
+	map <string, list <string> > allowed_ports = $[];
+
+	foreach (string zone, GetKnownFirewallZones(), {
+	    string broadcast = GetBroadcastConfiguration(zone);
+	    // no broadcast allowed for this zone
+	    if (broadcast == "no") {
+		allowed_ports[zone] = [];
+	    // all UDP port allowed in zone also allow broadcast
+	    } else if (broadcast == "yes") {
+		allowed_ports[zone] = GetAllowedServicesForZoneProto (zone, "UDP");
+	    // only listed ports allows broadcast
+	    } else {
+		allowed_ports[zone] = splitstring(broadcast, " ");
+		allowed_ports[zone] = filter (string not_space, splitstring(broadcast, " "), {
+		    return not_space != "";
+		});
+	    }
+	});
+
+	y2debug("Allowed Broadcast Ports: %1", allowed_ports);
+
+	return allowed_ports;
+    }
+
+    /**
+     * Function creates allowed-broadcast-ports string from broadcast map and saves it.
+     *
+     * @param	map <zone_string, list <string> > strings are allowed ports or port ranges
+     */
+    global define void SetBroadcastAllowedPorts (map <string, list <string> > broadcast) {
+	SetModified();
+
+	foreach (string zone, GetKnownFirewallZones(), {
+	    SetBroadcastConfiguration(zone, mergestring(broadcast[zone]:[], " "));
+	});
+    }
+
+    /**
+     * Function returns where the string parameter is a port range.
+     * Port ranges are defined by the syntax "min_port_number:max_port_number".
+     * Port range means that these maximum and minimum ports define the range
+     * of currency in Firewall. Ports defining the range are included in it.
+     *
+     * @param string to be checked
+     * @return boolean whether the checked string is a port range or not
+     */
+    define boolean IsPortRange (string check_this) {
+	if (regexpmatch(check_this,"^[0123456789]+:[0123456789]+$")) {
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Function returns where the port name or port number is included in the
+     * list of port ranges. Port ranges must be defined as a string with format
+     * "min_port_number:max_port_number".
+     * 
+     * @param string port_number_or_port_name
+     * @param list <string> port_ranges
+     *
+     * @example
+     * PortIsInPortrange ("130",  ["100:150","10:30"]) -> true
+     * PortIsInPortrange ("30",   ["100:150","10:20"]) -> false
+     * PortIsInPortrange ("pop3", ["100:150","10:30"]) -> true
+     * PortIsInPortrange ("http", ["100:150","10:20"]) -> false
+     */
+    define boolean PortIsInPortranges (string port, list <string> port_ranges) {
+	if (size(port_ranges) == 0) return false;
+
+	boolean ret = false;
+
+	integer port_number = PortAliases::GetPortNumber(port);
+	if (port_number != nil) {
+	    foreach (string port_range, port_ranges, {
+		integer min_pr = tointeger(regexpsub(port_range,"^([0123456789]+):.*$", "\\1"));
+		integer max_pr = tointeger(regexpsub(port_range,"^.*:([0123456789]+)$", "\\1"));
+		// is portrange really a port range?
+		if (min_pr != nil && max_pr != nil) {
+		    // checking the rightness of the port range + is the port inside?
+		    if (min_pr <= max_pr && min_pr <= port_number && port_number <= max_pr) {
+			ret = true;
+			break;
+		    }
+		}
+	    });
+	}
+
+	return ret;
+    }
+
+    /**
+     * Function divides list of ports to the map of ports and port ranges.
+     * If with_aliases is 'true' it also returns ports wit their port aliases.
+     * Port ranges are not affected with it.
+     *
+     * @struct Returns $[
+     *    "ports" : [ list of ports ],
+     *    "port_ranges" : [ list of port ranges ],
+     * ]
+     *
+     * @param list <string> unsorted_ports
+     * @param boolean with port aliases
+     * @return <map <string, list <string> > > of divided ports
+     */
+    map <string, list <string> > DividePortsAndPortRanges (list <string> unsorted_ports, boolean with_aliases) {
+	map <string, list <string> > ret = $[];
+
+	foreach (string port, unsorted_ports, {
+	    // port range
+	    if (IsPortRange(port)) {
+		ret["port_ranges"] = add (ret["port_ranges"]:[], port);
+	    // is a normal port
+	    } else {
+		// find also aliases
+		if (with_aliases) {
+		    ret["ports"] = (list<string>) union (
+			ret["ports"]:[], PortAliases::GetListOfServiceAliases(port)
+		    );
+		// only add the port itself
+		} else {
+		    ret["ports"] = add (ret["ports"]:[], port);
+		}
+	    }
+	});
+
+	return ret;
+    }
+
+    /**
+     * Function returns if broadcast is allowed for needed ports in zone.
+     *
+     * @param	list <string> ports
+     * @param	string zone
+     * @return	boolean if is allowed
+     */
+    boolean IsBroadcastAllowed (list <string> needed_ports, string zone) {
+	if (size(needed_ports)==0) {
+	    y2warning("Unknown service with no needed ports!");
+	    return nil;
+	}
+
+	// getting broadcast allowed ports
+	map <string, list <string> > allowed_ports_map = GetBroadcastAllowedPorts();
+
+	// Divide allowed port ranges and aliases (also with their port aliases)
+	map <string, list <string> > allowed_ports_divided = DividePortsAndPortRanges(allowed_ports_map[zone]:[], true);
+
+	// If there are no allowed ports at all
+	if (allowed_ports_divided["ports"]:[] == [] && allowed_ports_divided["port_ranges"]:[] == []) {
+	    return false;
+	}
+	// clean up the memory a bit
+	allowed_ports_map = nil;
+
+	boolean is_allowed = true;
+	// checking all needed ports;
+	foreach (string needed_port, needed_ports, {
+	    // allowed ports don't contain the needed one and also portranges don't
+	    if (
+		!contains (allowed_ports_divided["ports"]:[], needed_port) &&
+		!PortIsInPortranges (needed_port, allowed_ports_divided["port_ranges"]:[])
+	    ) {
+		is_allowed = false;
+		break;
+	    }
+	});
+
+	return is_allowed;
+    }
+
+    /**
+     * Local function removes list of ports from port allowing broadcast packets in zone.
+     *
+     * @param	list <of ports> to be removed
+     * @param	string zone
+     */
+    void RemoveAllowedBroadcast (list <string> needed_ports, string zone) {
+	SetModified();
+
+	map <string, list <string> > allowed_ports = GetBroadcastAllowedPorts();
+	list <string> list_ports_allowed = allowed_ports[zone]:[];
+
+	// ports to be allowed one by one
+	foreach (string allow_this_port, needed_ports, {
+	    // remove all aliases of ports yet mentioned in zone
+	    list <string> aliases_of_port = PortAliases::GetListOfServiceAliases(allow_this_port);
+	    list_ports_allowed = filter (string just_allowed, list_ports_allowed, {
+	        return (! contains(aliases_of_port, just_allowed));
+	    });
+	});
+	allowed_ports[zone] = list_ports_allowed;
+
+	// save it using function
+	SetBroadcastAllowedPorts(allowed_ports);
+    }
+
+    /**
+     * Local function adds list of ports to ports accepting broadcast
+     *
+     * @param	list <string> of ports
+     */
+    void AddAllowedBroadcast (list <string> needed_ports, string zone) {
+	// changing only if ports are not allowed
+	if (! IsBroadcastAllowed (needed_ports, zone)) {
+	    SetModified();
+
+	    map <string, list <string> > allowed_ports = GetBroadcastAllowedPorts();
+	    list <string> list_ports_allowed = allowed_ports[zone]:[];
+
+	    // ports to be allowed one by one
+	    foreach (string allow_this_port, needed_ports, {
+		// at first: remove all aliases of ports yet mentioned in zone
+		list <string> aliases_of_port = PortAliases::GetListOfServiceAliases(allow_this_port);
+		list_ports_allowed = filter (string just_allowed, list_ports_allowed, {
+		    return (! contains(aliases_of_port, just_allowed));
+		});
+		// at second: add only one
+		list_ports_allowed = add(list_ports_allowed, allow_this_port);
+	    });
+	    allowed_ports[zone] = list_ports_allowed;
+
+	    // save it using function
+	    SetBroadcastAllowedPorts(allowed_ports);
+	}
+    }
+
+    /**
+     * Local function for removing (disallowing) single service/port
+     * for defined protocol and zone. Functions doesn't take care of
+     * port-aliases.
+     *
+     * @param	string service/port
+     * @param	string protocol
+     * @param	string zone
+     * @return	boolean success
+     */
+    boolean RemoveServiceFromProtocolZone(string remove_service, string protocol, string zone) {
+	SetModified();
+
+	string key = "FW_SERVICES_" + zone + "_" + protocol;
+
+	list <string> allowed = splitstring(SETTINGS[key]:"", " ");
+	allowed = filter (string single_service, allowed, {
+	    return single_service != "" && single_service != remove_service;
+	});
+	SETTINGS[key] = mergestring(toset(allowed), " ");
+
+	return true;
+    }
+
+    /**
+     * Function creates a port range from min and max params. Max must be bigger than min.
+     * If something is wrong, it returns an empty string.
+     */
+    string CreateNewPortRange (integer min_pr, integer max_pr) {
+	if (min_pr == nil || min_pr == 0) {
+	    y2error("Wrong definition of the starting port '%1', it must be between 1 and 65535", min_pr);
+	    return "";
+	} else if (max_pr == nil || max_pr == 0 || max_pr > 65535) {
+	    y2error("Wrong definition of the ending port '%1', it must be between 1 and 65535", max_pr);
+	    return "";
+	}
+
+	// max and min are the same, this is not a port range
+	if (min_pr == max_pr) {
+	    return tostring(min_pr);
+	// right port range
+	} else if (min_pr < max_pr) {
+	    return tostring(min_pr) + ":" + tostring(max_pr);
+	// min is bigger than max
+	} else {
+	    y2error("Starting port '%1' cannot be bigger than ending port '%2'", min_pr, max_pr);
+	    return "";
+	}
+    }
+
+    /**
+     * Function removes port number from all port ranges. Port must be in its numeric
+     * form.
+     *
+     * @see PortAliases::GetPortNumber()
+     * @param integer port_number to be removed
+     * @param list <string> of all current port_ranges
+     * @return list <string> of filtered port_ranges
+     */
+    list <string> RemovePortFromPortRanges (integer port_number, list <string> port_ranges) {
+	// Checking necessarity of filtering and params
+	if (port_ranges == nil || port_ranges == []) return port_ranges;
+	if (port_number == nil || port_number == 0) return port_ranges;
+
+	y2milestone("Removing port %1 from port ranges %2", port_number, port_ranges);
+	
+	list <string> ret = [];
+	// Checking every port range alone
+	foreach (string port_range, port_ranges, {
+	    // Port range might be now only "port"
+	    if (!IsPortRange(port_range)) {
+		// If the port doesn't match the ~port_range...
+		if (tostring(port_number) != port_range)
+		    ret = add (ret, port_range);
+		// If matches, it isn't added (it is filtered)
+	    // Modify the port range when the port is included
+	    } else if (PortIsInPortranges(tostring(port_number), [port_range])) {
+		integer min_pr = tointeger(regexpsub(port_range,"^([0123456789]+):.*$", "\\1"));
+		integer max_pr = tointeger(regexpsub(port_range,"^.*:([0123456789]+)$", "\\1"));
+		
+		// Port matches the min. value of port range
+		if (port_number == min_pr) {
+		    ret = add (ret, CreateNewPortRange(port_number + 1, max_pr));
+		// Port matches the max. value of port range
+		} else if (port_number == max_pr) {
+		    ret = add (ret, CreateNewPortRange(min_pr, port_number - 1));
+		// Port is inside the port range, split it up
+		} else {
+		    ret = add (ret, CreateNewPortRange(port_number + 1, max_pr));
+		    ret = add (ret, CreateNewPortRange(min_pr, port_number - 1));
+		}
+	    // Port isn't in the port range, adding the current port range
+	    } else {
+		ret = add (ret, port_range);
+	    }
+	});
+
+	y2milestone("Result: %1", ret);
+	
+	return ret;
+    }
+
+    /**
+     * Function tries to flatten services into the minimal list.
+     * If ports are already mentioned inside port ranges, they are dropped.
+     *
+     * @param list <string> of services and port ranges
+     * @return list <string> of flattened services and port ranges
+     */
+    list <string> FlattenServices (list <string> old_list) {
+	list <string> new_list = [];
+	list <string> list_of_ports = [];
+	list <string> list_of_ranges = [];
+	// Using port number, we can remove ports mentioned in port ranges
+	map <string, integer> ports_to_port_numbers = $[];
+	// Using this we can remove ports mentioned more than once
+	map <integer, list <string> > port_numbers_to_port_names = $[];
+	
+	foreach (string one_item, old_list, {
+	    // Port range
+	    if (IsPortRange(one_item)) list_of_ranges = add (list_of_ranges, one_item);
+	    // Port number or name
+	    else {
+		integer port_number = PortAliases::GetPortNumber(one_item);
+		// Cannot find port number for this port, it is en error of the configuration
+		if (port_number == nil) {
+		    y2warning("Unknown port %1 but leaving it in the configuration.", one_item);
+		    new_list = add (new_list, one_item);
+		}
+		ports_to_port_numbers[one_item] = port_number;
+		port_numbers_to_port_names[port_number] = add (port_numbers_to_port_names[port_number]:[], one_item);
+	    }
+	});
+	
+	foreach (integer port_number, list <string> port_names, port_numbers_to_port_names, {
+	    // Port is not in any defined port range
+	    if (!PortIsInPortranges(tostring(port_number), list_of_ranges)) {
+		// Port - 1 IS in some port range
+		if (PortIsInPortranges(tostring(port_number - 1), list_of_ranges)) {
+		    // Creating fake port range, to be joined with another one
+		    list_of_ranges = add (list_of_ranges, CreateNewPortRange(port_number - 1, port_number));
+		// Port + 1 IS in some port range
+		} else if (PortIsInPortranges(tostring(port_number + 1), list_of_ranges)) {
+		    // Creating fake port range, to be joined with another one
+		    list_of_ranges = add (list_of_ranges, CreateNewPortRange(port_number, port_number + 1));
+		// Port is not in any port range and also it cannot be joined with any one
+		} else {
+		    // Port names of this port
+		    list <string> used_port_names = port_numbers_to_port_names[port_number]:[];
+		    if (size(used_port_names)>0) {
+			new_list = add (new_list, used_port_names[0]:"");
+		    } else {
+			y2milestone("No port name for port number %1. Adding %1...", port_number);
+			// There are no port names (hmm?), adding port number
+			new_list = add (new_list, tostring(port_number));
+		    }
+		}
+	    // Port is in a port range
+	    } else {
+		y2milestone("Removing port %1 mentioned in port ranges %2", port_number, list_of_ranges);
+	    }
+	});
+
+	list_of_ranges = toset(list_of_ranges);
+	// maximal count of steps
+	integer max_loops = 5000;
+
+	// Joining port ranges together
+	// this is a bit dangerous!
+	y2milestone("Joining list of ranges %1", list_of_ranges);
+	while (true && max_loops>0) {
+	    // if something goes wrong
+	    max_loops = max_loops - 1;
+	    
+	    boolean any_change_during_this_loop = false;
+
+	    list <string> try_all_this_ranges = list_of_ranges;
+	    foreach (string port_range, try_all_this_ranges, {
+		integer min_pr = tointeger(regexpsub(port_range,"^([0123456789]+):.*$", "\\1"));
+		integer max_pr = tointeger(regexpsub(port_range,"^.*:([0123456789]+)$", "\\1"));
+
+		if (min_pr == nil || max_pr == nil || min_pr > max_pr) {
+		    y2error("Not a port range %1", port_range);
+		} else {
+		    foreach (string try_this_pr, try_all_this_ranges, {
+			// Exact match means the same port range
+			if (try_this_pr == port_range) return;
+			integer this_min_pr = tointeger(regexpsub(try_this_pr,"^([0123456789]+):.*$", "\\1"));
+			integer this_max_pr = tointeger(regexpsub(try_this_pr,"^.*:([0123456789]+)$", "\\1"));
+		    
+			// If new port range should be created
+			integer new_min = nil;
+			integer new_max = nil;
+
+			// the second one is inside the first one
+			if (min_pr <= this_min_pr && max_pr >= this_max_pr) {
+			    // take min_pr & max_pr
+			    any_change_during_this_loop = true;
+			    new_min = min_pr;
+			    new_max = max_pr;
+			// the fist one is inside the second one
+			} else if (min_pr >= this_min_pr && max_pr <= this_max_pr) {
+			    // take this_min_pr & this_max_pr
+			    any_change_during_this_loop = true;
+			    new_min = this_min_pr;
+			    new_max = this_max_pr;
+			// the fist one partly covers the second one (by its right side)
+			} else if (min_pr <= this_min_pr && max_pr >= this_min_pr) {
+			    // take min_pr & this_max_pr
+			    any_change_during_this_loop = true;
+			    new_min = min_pr;
+			    new_max = this_max_pr;
+			// the second one partly covers the first one (by its left side)
+			} else if (min_pr >= this_min_pr && max_pr <= this_max_pr) {
+			    // take this_min_pr & max_pr
+			    any_change_during_this_loop = true;
+			    new_min = this_min_pr;
+			    new_max = max_pr;
+			// the first one has the second one just next on the right
+			} else if ((max_pr + 1) == this_min_pr) {
+			    // take min_pr & this_max_pr
+			    any_change_during_this_loop = true;
+			    new_min = min_pr;
+			    new_max = this_max_pr;
+			// the first one has the second one just next on the left side
+			} else if ((min_pr - 1) == this_max_pr) {
+			    // take this_min_pr & max_pr
+			    any_change_during_this_loop = true;
+			    new_min = this_min_pr;
+			    new_max = max_pr;
+			}
+			
+			if (any_change_during_this_loop && new_min != nil && new_max != nil) {
+			    string new_port_range = CreateNewPortRange(new_min, new_max);
+			    y2milestone("Joining %1 and %2 into %3", port_range, try_this_pr, new_port_range);
+			    // Remove old port ranges
+			    list_of_ranges = filter (string filter_pr, list_of_ranges, {
+				return (filter_pr != port_range && filter_pr != try_this_pr);
+			    });
+			    // Create a new one
+			    list_of_ranges = add (list_of_ranges, new_port_range);
+			}
+		    });
+		}
+		
+		// renew list of current port ranges, they have changed
+		if (any_change_during_this_loop) break;
+	    });
+	    
+	    if (!any_change_during_this_loop) break;
+	}
+	y2milestone("Result of joining: %1", list_of_ranges);
+
+	new_list = (list <string>) union (new_list, list_of_ranges);
+
+	return new_list;
+    }
+
+    /**
+     * Local function removes ports and their aliases (if check_for_aliases is true), for
+     * requested protocol and zone.
+     *
+     * @param	list <string> ports to be removed
+     * @param	string protocol
+     * @param	string zone
+     * @param	boolean check for port-aliases
+     */
+    void RemoveAllowedPortsOrServices (list <string> remove_ports, string protocol, string zone, boolean check_for_aliases) {
+	if (size(remove_ports)<1) {
+	    y2warning("Undefined list of %1 services/ports for service", protocol);
+	    return;
+	}
+
+	SetModified();
+
+	// all allowed ports
+	map <string, list <string> > allowed_services = DividePortsAndPortRanges(
+	    GetAllowedServicesForZoneProto (zone, protocol), false
+	);
+
+	// removing all aliases of ports too, adding aliases into
+	if (check_for_aliases) {
+	    list <string> remove_ports_with_aliases = [];
+	    foreach (string remove_port, remove_ports, {
+		// skip port ranges, they cannot have any port-alias
+		if (IsPortRange(remove_port)) {
+		    remove_ports_with_aliases = add (remove_ports_with_aliases, remove_port);
+		    return;
+		}
+		list <string> remove_these_ports = PortAliases::GetListOfServiceAliases(remove_port);
+		if (remove_these_ports == nil) { remove_these_ports = [ remove_port ]; }
+		remove_ports_with_aliases = (list<string>) union (remove_ports_with_aliases,
+		    remove_these_ports
+		);
+	    });
+	    remove_ports = remove_ports_with_aliases;
+	    
+	}
+	remove_ports = toset(remove_ports);
+
+	// Remove ports only once (because of port aliases), any => integers and strings
+	list <any> already_removed = [];
+
+	foreach (string remove_port, remove_ports, {
+	    // Removing from normal ports
+	    allowed_services["ports"] = filter (string allowed_port, allowed_services["ports"]:[], {
+		return allowed_port != "" && allowed_port != remove_port;
+	    });
+
+	    // Removing also from port ranges
+	    if (allowed_services["port_ranges"]:[] != []) {
+		// Removing a real port from port ranges
+		if (!IsPortRange(remove_port)) {
+		    integer remove_port_nr = PortAliases::GetPortNumber(remove_port);
+		    // Because of all port aliases
+		    if (!contains(already_removed, remove_port_nr)) {
+			already_removed = add (already_removed, remove_port_nr);
+			allowed_services["port_ranges"] = RemovePortFromPortRanges (
+			    remove_port_nr, allowed_services["port_ranges"]:[]
+			);
+		    }
+		// Removing a port range from port ranges
+		} else {
+		    if (!contains(already_removed, remove_port)) {
+			// Just filtering the exact port range
+			allowed_services["port_ranges"] = filter (string one_port_range, allowed_services["port_ranges"]:[], {
+			    return one_port_range != remove_port;
+			});
+			already_removed = add (already_removed, remove_port);
+		    }
+		}
+	    }
+	});
+	
+	list <string> allowed_services_all = (list <string>) union(allowed_services["ports"]:[], allowed_services["port_ranges"]:[]);
+	allowed_services_all = FlattenServices(allowed_services_all);
+	
+	SetAllowedServicesForZoneProto (allowed_services_all, zone, protocol);
+    }
+
+    /**
+     * Local function allows ports for requested protocol and zone.
+     *
+     * @param	list <string> ports to be removed
+     * @param	string protocol
+     * @param	string zone
+     */
+    void AddAllowedPortsOrServices (list <string> add_ports, string protocol, string zone) {
+	if (size(add_ports)<1) {
+	    y2warning("Undefined list of %1 services/ports for service", protocol);
+	    return;
+	}
+
+	SetModified();
+
+	// all allowed ports
+	list <string> allowed_services = GetAllowedServicesForZoneProto (zone, protocol);
+
+	allowed_services = (list<string>) union(allowed_services, add_ports);
+	allowed_services = FlattenServices(allowed_services);
+
+	SetAllowedServicesForZoneProto (allowed_services, zone, protocol);
+    }
+
+    /**
+     * Local function removes well-known service's support from zone.
+     * Allowed ports are removed with all of their port-aliases.
+     *
+     * @param	string service id
+     * @param	string zone
+     */
+    void RemoveServiceSupportFromZone (string service, string zone) {
+	map <string, list <string> > needed = SuSEFirewallServices::GetNeededPortsAndProtocols(service);
+	// unknown service
+	if (needed == nil) {
+	    y2error("Undefined service '%1'", service);
+	    return nil;
+	}
+
+	SetModified();
+
+	// Removing service ports (and also port aliases for TCP and UDP)
+	foreach (string key, service_defined_by, {
+	    list <string> needed_ports = needed[key]:[];
+	    if (needed_ports == []) return;
+
+	    if (key == "tcp_ports") {
+		RemoveAllowedPortsOrServices(needed_ports, "TCP", zone, true);
+	    } else if (key == "udp_ports") {
+		RemoveAllowedPortsOrServices(needed_ports, "UDP", zone, true);
+	    } else if (key == "rpc_ports") {
+		RemoveAllowedPortsOrServices(needed_ports, "RPC", zone, false);
+	    } else if (key == "ip_protocols") {
+		RemoveAllowedPortsOrServices(needed_ports, "IP", zone, false);
+	    } else if ("broadcast_ports" == key) {
+		RemoveAllowedBroadcast(needed_ports, zone);
+	    } else {
+		y2error("Unknown key '%1'", key);
+	    }
+	});
+    }
+
+    /**
+     * Local function adds well-known service's support into zone. It first of all
+     * removes the current support for service with port-aliases.
+     *
+     * @param	string service id
+     * @param	string zone
+     */
+    void AddServiceSupportIntoZone (string service, string zone) {
+	map <string, list <string> > needed = SuSEFirewallServices::GetNeededPortsAndProtocols(service);
+	// unknown service
+	if (needed == nil) {
+	    y2error("Undefined service '%1'", service);
+	    return nil;
+	}
+
+	SetModified();
+
+	// Removing service ports first (and also port aliases for TCP and UDP)
+	if (IsServiceSupportedInZone(service,zone)) {
+	    RemoveServiceSupportFromZone(service,zone);
+	}
+
+	foreach (string key, service_defined_by, {
+	    list <string> needed_ports = needed[key]:[];
+	    if (needed_ports == []) return;
+
+	    if (key == "tcp_ports") {
+		AddAllowedPortsOrServices(needed_ports, "TCP", zone);
+	    } else if (key == "udp_ports") {
+		AddAllowedPortsOrServices(needed_ports, "UDP", zone);
+	    } else if (key == "rpc_ports") {
+		AddAllowedPortsOrServices(needed_ports, "RPC", zone);
+	    } else if (key == "ip_protocols") {
+		AddAllowedPortsOrServices(needed_ports, "IP", zone);
+	    } else if ("broadcast_ports" == key) {
+		AddAllowedBroadcast(needed_ports, zone);
+	    } else {
+		y2error("Unknown key '%1'", key);
+	    }
+	});
+    }
+
+    /**
+     * Local function returns conflicting services.
+     *
+     * @return	list <string> of services
+     */
+    list <string> GetPossiblyConflictServices () {
+	return SuSEFirewallServices::GetPossiblyConflictServices();
+    }
+
+    /**
+     * Local function for handling conflicting services in memory.
+     * Makes sense for services which share ports like RPC services.
+     *
+     * @param	string service id
+     * @param	boolean enable or disable
+     */
+    void HandleConflictService(string service, string zone, boolean enable) {
+	// only possibly conflict services are handled
+	if (! contains(GetPossiblyConflictServices(), service)) return;
+
+	SetModified();
+
+	if (enable) {
+	    // adding new conflict service into list of allowed services
+	    allowed_conflict_services[zone] = toset(add(allowed_conflict_services[zone]:[], service));
+	} else {
+	    // removing current conflict service from list
+	    allowed_conflict_services[zone] = filter(string filter_service, allowed_conflict_services[zone]:[], {
+		return filter_service != service;
+	    });
+	    // adding all allowed conflict services again
+	    foreach (string conflict_service, allowed_conflict_services[zone]:[], {
+		AddServiceSupportIntoZone (conflict_service, zone);
+	    });
+	}
+    }
+
+    # <!-- SuSEFirewall LOCAL FUNCTIONS //-->
+
+    # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
+
+    /**
+     * Functions returns if any firewall's configuration was modified
+     * or wasn't
+     *
+     * @return	boolean if the configuration was modified
+     */
+    global define boolean GetModified () {
+	return modified;
+    }
+
+    /**
+     * Function resets flag which doesn't allow to read configuration from disk again
+     */
+    global define void ResetReadFlag () {
+	configuration_has_been_read = false;
+    }
+
+    /**
+     * Function returns name of the zone identified by zone shortname.
+     *
+     * @param	string short name
+     * @return	string zone name
+     */
+    global define string GetZoneFullName (string zone) {
+	// TRANSLATORS: Firewall zone full-name, used as combo box item or dialog title
+	return zone_names[zone]:_("Unknown Zone");
+    }
+
+    /**
+     * Function sets if firewall should be protected from internal zone.
+     *
+     * @param	boolean set to be protected from internal zone
+     */
+    global define void SetProtectFromInternalZone (boolean set_protect) {
+	SetModified();
+
+	if (set_protect) {
+	    SETTINGS["FW_PROTECT_FROM_INT"] = "yes";
+	} else {
+	    SETTINGS["FW_PROTECT_FROM_INT"] = "no";
+	}
+    }
+
+    /**
+     * Function returns if firewall is protected from internal zone
+     *
+     * @return	boolean if protected from internal
+     */
+    global define boolean GetProtectFromInternalZone () {
+	return (SETTINGS["FW_PROTECT_FROM_INT"]:"no" == "yes");
+    }
+
+    /**
+     * Function sets if firewall should support routing.
+     *
+     * @param	boolean set to support route or not
+     */
+    global define void SetSupportRoute (boolean set_route) {
+	SetModified();
+
+	if (set_route) {
+	    SETTINGS["FW_ROUTE"] = "yes";
+	} else {
+	    SETTINGS["FW_ROUTE"] = "no";
+	}
+    }
+
+    /**
+     * Function returns if firewall supports routing.
+     *
+     * @return	boolean if route is supported
+     */
+    global define boolean GetSupportRoute () {
+	return (SETTINGS["FW_ROUTE"]:"no" == "yes");
+    }
+
+    /**
+     * Function sets how firewall should trust successfully decrypted IPsec packets.
+     * It should be the zone name (shortname) or 'no' to trust packets the same as
+     * firewall trusts the zone from which IPsec packet came.
+     *
+     * @param	string zone or "no"
+     */
+    global define void SetTrustIPsecAs (string zone) {
+	SetModified();
+
+	// do not trust
+	if (zone == "no") {
+	    SETTINGS["FW_IPSEC_TRUST"] = "no";
+	} else {
+	    // trust IPsec is a known zone
+	    if (IsKnownZone(zone)) {
+		zone = GetZoneConfigurationString(zone);
+		SETTINGS["FW_IPSEC_TRUST"] = zone;
+	    // unknown zone, changing to default value
+	    } else {
+		string defaultv = GetDefaultValue("FW_IPSEC_TRUST");
+		y2warning("Trust IPsec as '%1' (unknown zone) changed to '%2'", zone, defaultv);
+		SETTINGS["FW_IPSEC_TRUST"] = defaultv;
+	    }
+	}
+    }
+
+    /**
+     * Function returns the trust level of IPsec packets.
+     * See SetTrustIPsecAs() for more information.
+     *
+     * @return	string zone or "no"
+     */
+    global define string GetTrustIPsecAs () {
+	// do not trust
+	if (SETTINGS["FW_IPSEC_TRUST"]:nil == "no") {
+	    return "no";
+	// default value for 'yes" ~= "INT"
+	} else if (SETTINGS["FW_IPSEC_TRUST"]:nil == "yes") {
+	    return "INT";
+	} else {
+	    string zone = GetConfigurationStringZone(SETTINGS["FW_IPSEC_TRUST"]:"");
+	    // trust as named zone (if known)
+	    if (IsKnownZone(zone)) {
+		return zone;
+	    // unknown zone, change to default value
+	    } else {
+		SetModified();
+		string defaultv = GetDefaultValue("FW_IPSEC_TRUST");
+		y2warning("Trust IPsec as '%1' (unknown zone) changed to '%2'", SETTINGS["FW_IPSEC_TRUST"]:"", defaultv);
+		SetTrustIPsecAs(defaultv);
+		return "no";
+	    }
+	}
+    }
+
+    /**
+     * Function which returns if SuSEfirewall should start in Write process
+     *
+     * @return	boolean if the firewall should start
+     */
+    global define boolean GetStartService () {
+	return (boolean) SETTINGS["start_firewall"]:false;
+    }
+
+    /**
+     * Function which sets if SuSEfirewall should start in Write process
+     *
+     * @param	boolean start_service at Write() process
+     */
+    global define void SetStartService (boolean start_service) {
+	if (GetStartService() != start_service) {
+	    SetModified();
+
+	    y2milestone("Setting start-firewall to %1", start_service);
+	    SETTINGS["start_firewall"] = start_service;
+	} else {
+	    // without set modified!
+	    y2milestone("start-firewall has been already set to %1", start_service);
+	    SETTINGS["start_firewall"] = start_service;
+	}
+    }
+
+    /**
+     * Function which returns whether SuSEfirewall should be enabled in
+     * /etc/init.d/ starting scripts during the Write() process
+     * @see Write()
+     * @see EnableServices()
+     *
+     * @return	boolean if the firewall should start
+     */
+    global define boolean GetEnableService () {
+	return (boolean) SETTINGS["enable_firewall"]:false;
+    }
+
+    /**
+     * Function which sets if SuSEfirewall should start in Write process
+     *
+     * @param	boolean start_service at Write() process
+     */
+    global define void SetEnableService (boolean enable_service) {
+	if (GetEnableService() != enable_service) {
+	    SetModified();
+	
+	    y2milestone("Setting enable-firewall to %1", enable_service);
+	    SETTINGS["enable_firewall"] = enable_service;
+	} else {
+	    // without set modified
+	    y2milestone("enable-firewall has been already set to %1", enable_service);
+	    SETTINGS["enable_firewall"] = enable_service;
+	}
+    }
+
+    /**
+     * Functions starts services needed for SuSEFirewall
+     *
+     * @return	boolean result
+     */
+    global define boolean StartServices () {
+	boolean all_ok = true;
+
+	foreach (string service, firewall_services, {
+	    y2debug("Starting service: %1", service);
+	    all_ok = Service::Start(service);
+
+	    if (!all_ok) {
+		y2error("Error starting service: %1", service);
+		break;
+	    }
+	});
+	
+	return all_ok;
+    }
+
+    /**
+     * Functions stops services needed for SuSEFirewall
+     *
+     * @return	boolean result
+     */
+    global define boolean StopServices () {
+	boolean all_ok = true;
+
+	foreach (string service, firewall_services_reverse, {
+	    y2debug("Stopping service: %1", service);
+	    all_ok = Service::Stop(service);
+
+	    if (!all_ok) {
+		y2error("Error stopping service: %1", service);
+		break;
+	    }
+	});
+
+	return all_ok;
+    }
+
+    /**
+     * Functions enables services needed for SuSEFirewall in /etc/inet.d/
+     *
+     * @return	boolean result
+     */
+    global define boolean EnableServices () {
+	boolean all_ok = true;
+
+	foreach (string service, firewall_services, {
+	    y2debug("Enabling service: %1", service);
+	    all_ok = Service::Enable(service);
+
+	    if (!all_ok) {
+		// TRANSLATORS: a popup error message
+		Report::Error(sformat(_("Cannot enable service '%1'."), service));
+		break;
+	    }
+	});
+
+	return all_ok;
+    }
+
+    /**
+     * Functions disables services needed for SuSEFirewall in /etc/inet.d/
+     *
+     * @return	boolean result
+     */
+    global define boolean DisableServices () {
+	boolean all_ok = true;
+
+	foreach (string service, firewall_services_reverse, {
+	    y2debug("Disabling service: %1", service);
+	    all_ok = Service::Disable(service);
+
+	    if (!all_ok) {
+		// TRANSLATORS: a popup error message
+		Report::Error(sformat(_("Cannot disable service '%1'."), service));
+		break;
+	    }
+	});
+
+	return all_ok;
+    }
+
+
+    /**
+     * Function determines if all SuSEFirewall scripts are enabled in
+     * init scripts /etc/init.d/ now.
+     * For configuration "enabled" status use GetEnableService().
+     *
+     * @return	boolean if enabled
+     */
+    global define boolean IsEnabled () {
+	boolean enabled = false;
+
+	//if (Mode::normal() || Mode::commandline()) {
+	    foreach (string service, firewall_services, {
+		enabled = Service::Enabled(service);
+		// All services have to be enabled
+		if (!enabled) {
+		    y2milestone("Firewall service %1 is not enabled", service);
+		    break;
+		}
+	    });
+	//}
+
+	if (enabled) {
+	    y2milestone("Firewall init scripts are enabled");
+	}
+
+	return enabled;
+    }
+
+    /**
+     * Function determines if at least one SuSEFirewall script is started now.
+     * For configuration "started" status use GetStartService().
+     *
+     * @return	boolean if started
+     */
+    global define boolean IsStarted () {
+	boolean started = false;
+
+	//if (Mode::normal() || Mode::commandline()) {
+	    foreach (string service, firewall_services, {
+		if (Service::Status(service) == 0) {
+		    started = true;
+		    break;
+		}
+	    });
+	//}
+
+	if (started == true) {
+	    y2milestone("Firewall services are started");
+	} else {
+	    y2milestone("Firewall services are stopped");
+	}
+
+	return started;
+    }
+
+    /**
+     * Function for getting exported SuSEFirewall configuration
+     *
+     * @return	map <string, any> with configuration
+     */
+    global define map <string, any> Export () {
+	return SETTINGS;
+    }
+
+    /**
+     * Function for setting SuSEFirewall configuration from input
+     *
+     * @param	map <string, any> with configuration
+     */
+    global define void Import (map <string, any> import_settings) {
+	SetModified();
+
+	SETTINGS = import_settings;
+    }
+
+    /**
+     * Function returns if the interface is in zone.
+     * Interfaces handled by a NetworkManager allways return 'false'.
+     *
+     * @param	string interface
+     * @param	string firewall zone
+     * @return	boolean is in zone
+     */
+    global define boolean IsInterfaceInZone(string interface, string zone) {
+	list <string> interfaces = splitstring(SETTINGS[ "FW_DEV_" + zone ]:"", " ");
+	return contains(interfaces, interface);
+    }
+
+    /**
+     * Function returns the firewall zone of interface, nil if no zone includes
+     * the interface. Error is reported when interface is found in multiple
+     * firewall zones, then the first appearance is returned.
+     * Interfaces handled by a NetworkManager allways return 'nil'.
+     *
+     * @param	string interface
+     * @return	string zone
+     */
+    global define string GetZoneOfInterface (string interface) {
+	list interface_zone = [];
+
+	foreach (string zone, GetKnownFirewallZones(), {
+	    if (IsInterfaceInZone(interface, zone)) interface_zone = add (interface_zone, zone);
+	});
+
+	if (IsVerbose() && size(interface_zone) > 1) {
+	    // TRANSLATORS: Error message, %1 = interface name (like eth0)
+	    Report::Error(sformat(_("Interface '%1' is included in multiple firewall zones.
+Continuing with configuration can produce errors.
+
+It is recommended to leave the configuration and repair it manually in
+the file '/etc/sysconfig/SuSEFirewall'."), interface));
+	}
+
+	// return the first existence of interface in zones
+	// if it is not presented anywhere, nil is returned
+	return (string) interface_zone[0]:nil;
+    }
+
+    /**
+     * Function returns list of zones of requested interfaces
+     *
+     * @param	list<string> interfaces
+     * @param	list<string> firewall zones
+     */
+    global define list<string> GetZonesOfInterfaces (list<string> interfaces) {
+	list<string> zones = [];
+	string zone = "";
+
+	foreach (string interface, interfaces, {
+	    zone = GetZoneOfInterface(interface);
+	    if (zone != nil) zones = add(zones, zone);
+	});
+	
+	return toset(zones);
+    }
+
+    /**
+     * Function returns list of maps of known interfaces.
+     * Interfaces handled by a NetworkManager are not returned at all.
+     * @struct [ $[ "id":"modem0", "name":"Askey 815C", "type":"dialup", "zone":"EXT" ], ... ]
+     *
+     * @return	list <map <string, string> >
+     */
+    global define list <map <string, string> > GetAllKnownInterfaces () {
+	list <map <string, string> > known_interfaces = [];
+	
+	// All dial-up interfaces
+	list <string> dialup_interfaces = NetworkDevices::List("dialup");
+	dialup_interfaces = filter(string interface, dialup_interfaces, ``{
+	    return interface != "" && !issubstring(interface, "lo") && !issubstring(interface, "sit");
+	});
+
+	// All non-dial-up interfaces
+	list <string> non_dialup_interfaces = NetworkDevices::List("");
+	non_dialup_interfaces = filter(string interface, non_dialup_interfaces, ``{
+	    return interface != "" && !issubstring(interface, "lo") && !issubstring(interface, "sit")
+		&& !contains(dialup_interfaces, interface);
+	});
+
+	foreach (string interface, dialup_interfaces, {
+	    known_interfaces = add(known_interfaces, $[
+		"id" : interface,
+		"type" : "dialup",
+		// using function to get name
+		"name" : NetworkDevices::GetValue(interface, "NAME"),
+		"zone" : GetZoneOfInterface(interface),
+	    ]);
+	});
+
+	foreach (string interface, non_dialup_interfaces, {
+	    known_interfaces = add(known_interfaces, $[
+		"id" : interface,
+		// using function to get name
+		"name" : NetworkDevices::GetValue(interface, "NAME"),
+		"zone" : GetZoneOfInterface(interface),
+	    ]);
+	});
+
+	return known_interfaces;
+    }
+
+    /**
+     * Function returns list of non-dial-up interfaces.
+     * Interfaces handled by a NetworkManager are not returned at all.
+     *
+     * @return list <string> of non-dial-up interface names
+     */
+    global define list <string> GetAllNonDialUpInterfaces () {
+	list <string> non_dial_up_interfaces = [];
+	foreach (map<string, string> interface, SuSEFirewall::GetAllKnownInterfaces(), {
+	    if (interface["type"]:nil != "dial_up")
+		non_dial_up_interfaces = add (non_dial_up_interfaces, interface["id"]:"");
+	});
+	
+	return non_dial_up_interfaces;
+    }
+
+    /**
+     * Function returns list of all known interfaces
+     * (if they are not handled by a NetworkManager).
+     *
+     * @return	list <string> of interfaces
+     */
+    global define list <string> GetListOfKnownInterfaces () {
+	list <string> interfaces = [];
+
+	foreach (map interface_map, GetAllKnownInterfaces(), {
+	    interfaces = add (interfaces, interface_map["id"]:"");
+	});
+
+	return interfaces;
+    }
+
+    /**
+     * Function removes interface from defined zone.
+     *
+     * @param	string interface
+     * @param	string zone
+     */
+    global define void RemoveInterfaceFromZone (string interface, string zone) {
+	SetModified();
+
+	y2milestone("Removing interface '%1' from '%2' zone.", interface, zone);
+
+	list <string> interfaces_in_zone = splitstring (SETTINGS["FW_DEV_" + zone]:"", " ");
+	interfaces_in_zone = filter (string single_interface, interfaces_in_zone, {
+	    return single_interface != "" && single_interface != interface;
+	});
+	SETTINGS["FW_DEV_" + zone] = mergestring(interfaces_in_zone, " ");
+    }
+
+    /**
+     * Functions adds interface into defined zone.
+     * All appearances of interface in other zones are removed.
+     *
+     * @param	string interface
+     * @param	string zone
+     */
+    global define void AddInterfaceIntoZone (string interface, string zone) {
+	SetModified();
+	
+	string current_zone = GetZoneOfInterface(interface);
+
+	DecreaseVerbosity();
+	// removing all appearances of interface in zones, excepting current_zone==new_zone
+	while (current_zone != nil && current_zone != zone) {
+	    // interface is in any zone already, removing it at first
+	    if (current_zone != zone) {
+		RemoveInterfaceFromZone(interface, current_zone);
+	    }
+	    current_zone = GetZoneOfInterface(interface);
+	}
+	IncreaseVerbosity();
+
+	y2milestone("Adding interface '%1' into '%2' zone.", interface, zone);
+	list <string> interfaces_in_zone = splitstring (SETTINGS["FW_DEV_" + zone]:"", " ");
+	interfaces_in_zone = toset(add (interfaces_in_zone, interface));
+	SETTINGS["FW_DEV_" + zone] = mergestring(interfaces_in_zone, " ");
+    }
+    
+    /**
+     * Function returns list of known interfaces in requested zone.
+     * Special strings like 'any' or 'auto' and unknown interfaces are removed from list.
+     *
+     * @param	string zone
+     * @return	list <string> of interfaces
+     */
+    global define list<string> GetInterfacesInZone (string zone) {
+	list <string> interfaces_in_zone = splitstring (SETTINGS["FW_DEV_" + zone]:"", " ");
+
+	list <string> known_interfaces_now = GetListOfKnownInterfaces();
+
+	// filtering special strings
+	interfaces_in_zone = filter(string interface, interfaces_in_zone, ``{
+	    return interface != "" && contains(known_interfaces_now, interface);
+	});
+	
+	return interfaces_in_zone;
+    }
+
+    /**
+     * Function returns all interfaces configured in firewall, already
+     *
+     * @return	list <string> of configured interfaces
+     */
+    global define list<string> GetFirewallInterfaces () {
+	list<string> firewall_configured_devices = [];
+
+	foreach (string zone, GetKnownFirewallZones(), {
+	    firewall_configured_devices = (list<string>) union (firewall_configured_devices, GetInterfacesInZone(zone));
+	});
+
+	return toset(firewall_configured_devices);
+    }
+
+    boolean ArePortsOrServicesAllowed (list <string> needed_ports, string protocol, string zone, boolean check_for_aliases);
+
+    /**
+     * Function returns if requested service is allowed in respective zone.
+     * Function takes care for service's aliases (only for TCP and UDP).
+     *
+     * @param	string service (service name, port name, port alias or port number)
+     * @param	protocol TCP, UDP, RCP or IP
+     * @param	interface name (like modem0), firewall zone (like "EXT") or "any" for all zones.
+     * @return	boolean if service is allowed
+     */
+    global define boolean HaveService(string service, string protocol, string interface) {
+	if (! IsSupportedProtocol(protocol)) {
+	    y2error("Unknown protocol: %1", protocol);
+	    return nil;
+	}
+
+	// definition of searched zones
+	list<string> zones = [];
+
+	// "any" for all zones, this is ugly
+	if (interface == "any") {
+	    zones = GetKnownFirewallZones();
+	// string interface is the zone name
+	} else if (IsKnownZone(interface)) {
+	    zones = add (zones, interface);
+	// interface is the interface name
+	} else {
+	    interface = GetZoneOfInterface(interface);
+	    if (interface != nil) {
+		zones = add (zones, interface);
+	    }
+	}
+	
+	// NetworkManager
+	if (NetworkService::IsManaged()) {
+	    // Adds a zone which only can handle interfaces not-mentioned in configuration
+	    zones = (list <string>) toset (add (zones, special_all_interface_zone));
+	}
+
+	// SuSEFirewall feature FW_PROTECT_FROM_INT
+	// should not be protected and searched zones include also internal (or the zone IS internal, sure)
+	if (! GetProtectFromInternalZone() && contains(zones, int_zone_shortname)) {
+	    y2milestone("Checking for service '%1', in '%2', PROTECT_FROM_INTERNAL='no' => allowed", service, interface);
+	    return true;
+	}
+	
+	// Check and return whether the service (port) is supported anywhere
+	boolean ret = false;
+	foreach (string zone, zones, {
+	    // This function can also handle port ranges
+	    if (ArePortsOrServicesAllowed([service], protocol, zone, true)) {
+		ret = true;
+		break;
+	    }
+	});
+	
+	return ret;
+    }
+
+    /**
+     * Function adds service into selected zone (or zone of interface) for selected protocol.
+     * Function take care about port-aliases, first of all, removes all of them.
+     *
+     * @param	string service/port
+     * @param	string protocol TCP, UDP, RPC, IP
+     * @param	string zone name or interface name
+     * @return	boolean success
+     */
+    global define boolean AddService (string service, string protocol, string interface) {
+	boolean success = false;
+	y2milestone("Adding service %1, protocol %2 to %3", service, protocol, interface);
+
+	if (! IsSupportedProtocol(protocol)) {
+	    y2error("Unknown protocol: %1", protocol);
+	    return false;
+	}
+
+	list <string> zones_affected = [];
+
+	// "all" means for all known zones
+	if (interface == "all") {
+	    zones_affected = GetKnownFirewallZones();
+	    // NetworkManager
+	    if (NetworkService::IsManaged()) {
+		zones_affected = (list <string>) toset (add (zones_affected, special_all_interface_zone));
+	    }
+	// zone or interface name
+	} else {
+	    // is probably an interface name
+	    if (! IsKnownZone(interface)) {
+		// interface is probably interface-name, checking for respective zone
+		interface = GetZoneOfInterface(interface);
+		// interface is not assigned to any zone
+		if (interface == nil) {
+		    // TRANSLATORS: Error message, %1 = interface name (like eth0)
+		    Report::Error(sformat(_("Interface '%1' is not assigned to any firewall zone.
+Run YaST2 Firewall and assign it.
+"), interface)
+		    );
+		    y2warning("Interface '%1' is not assigned to any firewall zone", interface);
+		    return false;
+		}
+	    }
+	    zones_affected = [interface];
+	}
+
+	SetModified();
+
+	// Adding service support into each mentioned zone
+	foreach (string zone, zones_affected, {
+	    // If there isn't already
+	    if (!ArePortsOrServicesAllowed([service], protocol, zone, true)) {
+		AddAllowedPortsOrServices([service], protocol, zone);
+	    } else {
+		y2milestone("Port %1 has been already allowed in %2", service, zone);
+	    }
+	});
+
+	return true;
+    }
+
+    /**
+     * Function removes service from selected zone (or for interface) for selected protocol.
+     * Function take care about port-aliases, removes all of them.
+     *
+     * @param	string service/port
+     * @param	string protocol TCP, UDP, RPC, IP
+     * @param	string zone name or interface name
+     * @return	boolean success
+     */
+    global define boolean RemoveService (string service, string protocol, string interface) {
+	boolean success = false;
+	y2milestone("Removing service %1, protocol %2 from %3", service, protocol, interface);
+
+	if (! IsSupportedProtocol(protocol)) {
+	    y2error("Unknown protocol: %1", protocol);
+	    return false;
+	}
+
+	list <string> zones_affected = [];
+
+	// "all" means for all known zones
+	if (interface == "all") {
+	    zones_affected = GetKnownFirewallZones();
+	    // NetworkManager
+	    if (NetworkService::IsManaged()) {
+		zones_affected = (list <string>) toset (add (zones_affected, special_all_interface_zone));
+	    }
+	// zone or interface name
+	} else {
+	    if (! IsKnownZone(interface)) {
+		// interface is probably interface-name, checking for respective zone
+		interface = GetZoneOfInterface(interface);
+		// interface is not assigned to any zone
+		if (interface == nil) {
+		    // TRANSLATORS: Error message, %1 = interface name (like eth0)
+		    Report::Error(sformat(_("Interface '%1' is not assigned to any firewall zone.
+Run YaST2 Firewall and assign it.
+"), interface)
+		    );
+		    y2warning("Interface '%1' is not assigned to any firewall zone", interface);
+		    return false;
+		}
+	    }
+	    zones_affected = [interface];
+	}
+
+	SetModified();
+
+
+	// Adding service support into each mentioned zone
+	foreach (string zone, zones_affected, {
+	    // if the service is allowed
+	    if (ArePortsOrServicesAllowed([service], protocol, zone, true)) {
+		RemoveAllowedPortsOrServices([service], protocol, zone, true);
+	    } else {
+		y2milestone("Port %1 has been already removed from %2", service, zone);
+	    }
+	});
+
+	return true;
+    }
+
+    /**
+     * Function returns if needed services are all allowed (or not) in the firewall.
+     * Last parameter sets if it also should check for port-aliases, what makes sense
+     * for TCP and UDP ports.
+     * Protocols and Zones aren't checked for existency. It's on you to do it.
+     *
+     * @param	list <string> needed (checked) ports for service
+     * @param	string protocol TCP, UDP, RPC or IP
+     * @param	zone name like EXT
+     * @param	boolean check for port-aliases
+     * @return	boolean if all ports are allowed
+     */
+    boolean ArePortsOrServicesAllowed (list <string> needed_ports, string protocol, string zone, boolean check_for_aliases) {
+	boolean are_allowed = true;
+
+	// When NetworkManager is turned on
+	if (NetworkService::IsManaged()) {
+	    // When the defined zone contains the defined special string (EXT/any) by default
+	    if (contains(SuSEFirewall::GetSpecialInterfacesInZone(special_all_interface_zone), special_all_interface_string)) {
+		zone = special_all_interface_zone;
+	    }
+	}
+
+	if (size(needed_ports)<1) {
+	    y2warning("Undefined list of %1 services/ports for service", protocol);
+	    return true;
+	}
+
+	map <string, list <string> > allowed_ports = $[];
+	// BTW: only TCP and UDP ports can have aliases and only TCP and UDP ports can have port ranges
+	if (check_for_aliases) {
+	    allowed_ports = DividePortsAndPortRanges (
+		GetAllowedServicesForZoneProto (zone, protocol), true
+	    );
+	} else {
+	    allowed_ports["ports"] = GetAllowedServicesForZoneProto (zone, protocol);
+	}
+
+	foreach (string needed_port, needed_ports, {
+	    if (
+		!contains(allowed_ports["ports"]:[], needed_port) &&
+		!PortIsInPortranges(needed_port, allowed_ports["port_ranges"]:[])
+	    ) {
+		are_allowed = false;
+		break;
+	    }
+	});
+
+	return are_allowed;
+    }
+
+    /**
+     * Function returns if service is supported (allowed) in zone. Service must be defined
+     * in the SuSEFirewallServices.
+     *
+     * @see Module SuSEFirewallServices
+     * @param	string service id
+     * @param	string zone
+     * @return	boolean if supported
+     */
+    global define boolean IsServiceSupportedInZone (string service, string zone) {
+	if (! IsKnownZone(zone)) {
+	    return nil;
+	}
+
+	map <string, list <string> > needed = SuSEFirewallServices::GetNeededPortsAndProtocols(service);
+	// unknown service
+	if (needed == nil) {
+	    y2error("Undefined service '%1'", service);
+	    return nil;
+	}
+
+	// SuSEFirewall feature FW_PROTECT_FROM_INT
+	// should not be protected and searched zones include also internal (or the zone IS internal, sure)
+	if (zone == int_zone_shortname && ! GetProtectFromInternalZone()) {
+	    y2milestone("Checking for service '%1', in '%2', PROTECT_FROM_INTERNAL='no' => allowed", service, zone);
+	    return true;
+	}
+
+	// starting with nil value, any false means that the service is not supported
+	boolean service_is_supported = nil;
+	foreach (string key, service_defined_by, {
+	    list <string> needed_ports = needed[key]:[];
+	    if (needed_ports == []) return;
+
+	    if (key == "tcp_ports") {
+		service_is_supported = ArePortsOrServicesAllowed(needed_ports, "TCP", zone, true);
+	    } else if (key == "udp_ports") {
+		service_is_supported = ArePortsOrServicesAllowed(needed_ports, "UDP", zone, true);
+	    } else if (key == "rpc_ports") {
+		service_is_supported = ArePortsOrServicesAllowed(needed_ports, "RPC", zone, false);
+	    } else if (key == "ip_protocols") {
+		service_is_supported = ArePortsOrServicesAllowed(needed_ports, "IP", zone, false);
+	    } else if ("broadcast_ports" == key) {
+		// testing for allowed broadcast ports
+		service_is_supported = IsBroadcastAllowed(needed_ports, zone);
+	    } else {
+		y2error("Unknown key '%1'", key);
+	    }
+
+	    // service is not supported, we don't have to do more tests
+	    if (service_is_supported == false) break;
+	});
+
+	return service_is_supported;
+    }
+
+    /**
+     * Function returns map of supported services all network interfaces.
+     *
+     * @param	list <string> of services
+     * @return	map <string, map < string : boolean > >
+     * @struct	Returns map $[service, map $[ interface : supported_status ]]
+     */
+    global define map <string, map <string, boolean> > GetServicesInZones (list<string> services) {
+	// list of interfaces for each zone
+	map <string, list <string> > interface_in_zone = $[];
+
+	foreach (string interface, GetListOfKnownInterfaces(), {
+	    // zone of interface
+	    string zone_used = GetZoneOfInterface(interface);
+	    // interface can be unassigned
+	    if (zone_used == nil || zone_used == "") {
+		return;
+	    }
+	    interface_in_zone[zone_used] = add (interface_in_zone[zone_used]:[], interface);
+	});
+
+	// $[ service : $[ network_interface : status ]]
+	map <string, map <string, boolean> > services_status = $[];
+
+	// for all services requested
+	foreach (string service, services, {
+	    services_status[service] = $[];
+	    // for all zones in configuration
+	    foreach (string zone, list <string> interfaces, interface_in_zone, {
+		boolean status = IsServiceSupportedInZone(service, zone);
+		// for all interfaces in zone
+		foreach (string interface, interfaces, {
+		    services_status[service, interface] = status;
+		});
+	    });
+	});
+
+	return services_status;
+    }
+
+    /**
+     * Function returns map of supported services in all firewall zones.
+     *
+     * @param	list <string> of services
+     * @return	map <string, map < string : boolean> >
+     * @struct	Returns map $[service, map $[ zone_name : supported_status]]
+     */
+    global define map <string, map <string, boolean> > GetServices (list<string> services) {
+	// $[ service : $[ firewall_zone : status ]]
+	map <string, map <string, boolean> > services_status = $[];
+
+	// for all services requested
+	foreach (string service, services, {
+	    services_status[service] = $[];
+	    // for all zones in configuration
+	    foreach (string zone, GetKnownFirewallZones(), {
+		services_status[service,zone] = IsServiceSupportedInZone(service, zone);
+	    });
+	});
+
+	return services_status;
+    }
+
+    /**
+     * Function sets status for several services in several firewall zones.
+     *
+     * @param	list <string> service ids
+     * @param	list <string> firewall zones (EXT|INT|DMZ...)
+     * @param	boolean new status of services
+     * @return	boolean if successfull
+     */
+    global define boolean SetServicesForZones (list<string> services_ids, list<string> firewall_zones, boolean new_status) {
+	// no groups == all groups
+	if (size(firewall_zones)==0) firewall_zones = GetKnownFirewallZones();
+
+	// setting for each service
+	foreach (string service_id, services_ids, {
+	    foreach (string firewall_zone, firewall_zones, {
+		// zone must be known one
+		if (! IsKnownZone(firewall_zone)) {
+		    y2error("Zone '%1' is unknown firewall zone, skipping...", firewall_zone);
+		    return;
+		}
+
+		SetModified();
+
+		// setting new status
+		if (new_status == true) {
+		    y2milestone("Adding '%1' into '%2' zone", service_id, firewall_zone);
+		    AddServiceSupportIntoZone(service_id, firewall_zone);
+		    HandleConflictService(service_id, firewall_zone, true);
+		} else {
+		    y2milestone("Removing '%1' from '%2' zone", service_id, firewall_zone);
+		    RemoveServiceSupportFromZone(service_id, firewall_zone);
+		    HandleConflictService(service_id, firewall_zone, false);
+		}
+	    });
+	});
+    }
+
+    /**
+     * Function sets status for several services in several network interfaces.
+     *
+     * @param	list <string> service ids
+     * @param	list <string> network interfaces
+     * @param	boolean new status of services
+     * @return	boolean if successfull
+     */
+    global define boolean SetServices (list<string> services_ids, list<string> interfaces, boolean new_status) {
+	list<string> firewall_zones = GetZonesOfInterfaces(interfaces);
+	if (size(firewall_zones)==0) {
+	    y2error("Interfaces '%1' are not in any group if interfaces", interfaces);
+	    return false;
+	}
+
+	SetModified();
+
+	return SetServicesForZones(services_ids, firewall_zones, new_status);
+    }
+
+    /**
+     * Local function check is any of possibly conflicting services was turned on in
+     * the firewall configuration.
+     */
+    void CheckAllPossiblyConflictingServices () {
+	// For all known zones
+	foreach (string zone, GetKnownFirewallZones(), {
+	    // Exception:
+	    // There are no possible conflicts if zone isn't protected
+	    if (zone == "INT" && ! GetProtectFromInternalZone()) return;
+
+	    // For all possible conflicting services
+	    foreach (string service, GetPossiblyConflictServices(), {
+		// Possibly conflicting service is supported (on)
+		if (IsServiceSupportedInZone (service, zone)) {
+		    allowed_conflict_services[zone] = add (allowed_conflict_services[zone]:[], service);
+		}
+	    });
+
+	    // Exception:
+	    // NIS-client's ports are the subset of NIS-server's ports
+	    if (
+		contains(allowed_conflict_services[zone]:[], "nis-server")
+		&&
+		contains(allowed_conflict_services[zone]:[], "nis-client")
+	    ) {
+		// Removing nis-client from allowed services, when both of them found
+		y2warning("Ignoring found nis-client as the subset of nis-server, for zone %1", zone);
+		allowed_conflict_services[zone] = filter (
+		    string service, allowed_conflict_services[zone]:[], {
+			return service != "nis-client";
+		    }
+		);
+	    }
+	    allowed_conflict_services[zone] = toset(allowed_conflict_services[zone]:[]);
+	});
+
+	y2milestone("Possibly conflicting services found allowed: %1", allowed_conflict_services);
+    }
+
+    /**
+     * Local function sets the default configuration and fills internal values.
+     */
+    void ReadDefaultConfiguration () {
+	SETTINGS = $[];
+
+	ResetSysconfigSuSEFirewall ( GetListOfSuSEFirewallVariables() );
+    }
+
+    /**
+     * Local function reads current configuration and fills internal values.
+     */
+    void ReadCurrentConfiguration () {
+	SETTINGS = $[];
+
+	// is firewall enabled in /etc/init.d/ ?
+    	SETTINGS["enable_firewall"] = IsEnabled();
+	// is firewall started now?
+	SETTINGS["start_firewall"]  = IsStarted();
+
+	ReadSysconfigSuSEFirewall ( GetListOfSuSEFirewallVariables() );
+    }
+
+    /**
+     * Function for reading SuSEFirewall configuration.
+     * Fills internal variables only.
+     */
+    global define boolean Read () {
+	if (configuration_has_been_read) {
+	    y2milestone("SuSEfirewall2 configuration has been read already.");
+	    return true;
+	}
+
+	// Progress only for normal configuration
+	boolean have_progress = (Mode::normal());
+
+	if (have_progress) {
+	    // TRANSLATORS: Dialog caption
+	    string read_caption = _("Initializing Firewall Configuration");
+
+	    Progress::New( read_caption, " ", 3,
+		[
+		    // TRANSLATORS: Progress step
+		    _("Check for network devices"),
+		    // TRANSLATORS: Progress step
+		    _("Read current configuration"),
+		    // TRANSLATORS: Progress step
+		    _("Check possibly conflicting services"),
+		],
+		[
+		    // TRANSLATORS: Progress step
+		    _("Checking for network devices..."),
+		    // TRANSLATORS: Progress step
+		    _("Reading current configuration..."),
+		    // TRANSLATORS: Progress step
+		    _("Checking possibly conflicting services..."),
+		    Message::Finished(),
+		],
+		""
+	    );
+
+	    Progress::NextStage();
+	}
+
+	if (Mode::normal() || Mode::commandline()) {
+	    NetworkDevices::Read();
+	} else if (Mode::installation() || Mode::autoinst()) {
+	    // Allways modified for installation, allways save the final state
+	    // fixing bug #67355
+	    // SetModified();
+	}
+
+	if (have_progress) Progress::NextStage();
+
+	// get default configuration for autoinstallation
+	// if (Mode::installation() || Mode::autoinst()) {
+	if (Mode::autoinst()) {
+	    ReadDefaultConfiguration();
+	// read current configuration for another cases
+	} else {
+	    ReadCurrentConfiguration();
+	}
+
+	if (have_progress) Progress::NextStage();
+
+	// checking if any possibly conficting services were turned on in configuration
+	// filling internal values for later checkings
+	CheckAllPossiblyConflictingServices();
+
+	y2milestone("Firewall configuration has been read: %1.", SETTINGS);
+	// to read configuration only once
+	configuration_has_been_read = true;
+
+	if (have_progress) Progress::NextStage();
+
+	if (have_progress) Progress::Finish();
+
+	return true;
+    }
+
+    /**
+     * Function which stops firewall. Then firewall is started immediately when firewall
+     * is wanted to be started: SetStartService(boolean).
+     *
+     * @return	boolean if successful
+     */
+    global define boolean ActivateConfiguration () {
+	// Firewall should start after Write()
+	if (GetStartService()) {
+	    // Not started - start it
+	    if (!IsStarted()) {
+		y2milestone("Starting firewall services");
+		return StartServices();
+	    // Started - restart it
+	    } else {
+		// modified - restart it
+		if (GetModified()) {
+		    y2milestone("Stopping firewall services");
+		    StopServices();
+		    y2milestone("Starting firewall services");
+		    return StartServices();
+		// not modified - skip restart
+		} else {
+		    y2milestone("Configuration hasn't modified, skipping restarting services");
+		}
+	    }
+	// Firewall should stop after Write()
+	} else {
+	    // started - stop
+	    if (IsStarted()) {
+		y2milestone("Stopping firewall services");
+		return StopServices();
+	    // stopped - skip stopping
+	    } else {
+		y2milestone("Firewall has been stopped already");
+		return true;
+	    }
+	}
+    }
+
+    /**
+     * Function writes configuration into /etc/sysconfig/ and enables or disables
+     * firewall in /etc/init.d/ by the setting SetEnableService(boolean).
+     * This is a write-only configuration, firewall is never started only enabled
+     * or disabled.
+     *
+     * @return	boolean if successful
+     */
+    global define boolean WriteConfiguration () {
+	// Progress only for normal configuration and command line
+	boolean have_progress = (Mode::normal());
+
+	if (have_progress) {
+	    // TRANSLATORS: Dialog caption
+	    string write_caption = _("Writing Firewall Configuration");
+
+	    Progress::New( write_caption, " ", 2,
+		[
+		    // TRANSLATORS: Progress step
+		    _("Write firewall settings"),
+		    // TRANSLATORS: Progress step
+		    _("Adjust firewall service"),
+		],
+		[
+		    // TRANSLATORS: Progress step
+		    _("Writing firewall settings..."),
+		    // TRANSLATORS: Progress step
+		    _("Adjusting firewall service..."),
+		    // TRANSLATORS: Progress step
+		    Message::Finished(),
+		],
+		""
+	    );
+
+	    Progress::NextStage();
+	}
+
+	// only modified configuration is written
+	if (GetModified()) {
+	    y2milestone("Firewall configuration has been changed. Writing: %1.", SETTINGS);
+
+	    if (! WriteSysconfigSuSEFirewall ( GetListOfSuSEFirewallVariables() )) {
+		// TRANSLATORS: a popup error message
+		Report::Error(_("Writing settings failed"));
+		return false;
+	    }
+	} else {
+	    y2milestone("Firewall settings weren't modified, skipping...");
+	}
+
+	if (have_progress) Progress::NextStage();
+
+	// Adjusting services
+	if (GetModified()) {
+	    // enabling firewall in /etc/init.d/
+	    if (SETTINGS["enable_firewall"]:false) {
+		y2milestone("Enabling firewall services");
+		if (! EnableServices()) {
+		    return false;
+		}
+	    // disabling firewall in /etc/init.d/    
+	    } else {
+		y2milestone("Disabling firewall services");
+		if (! DisableServices()) {
+		    return false;
+		}
+	    }
+	} else {
+	    y2milestone("Firewall enable/disable wasn't modified, skipping...");
+	}
+
+	if (have_progress) Progress::NextStage();
+
+	if (have_progress) Progress::Finish();
+
+	return true;
+    }
+
+    /**
+     * Helper function for the backward compatibility.
+     * See WriteConfiguration(). Remove from code ASAP.
+     */
+    global define boolean WriteOnly() {
+	return WriteConfiguration();
+    }
+
+    /**
+     * Function for writing and enabling configuration it is an union of
+     * WriteConfiguration() and ActivateConfiguration().
+     *
+     * @return	boolean if succesfull
+     */
+    global define boolean Write () {
+
+	if (! WriteConfiguration())	return false;
+
+	if (! ActivateConfiguration())	return false;
+
+	return true;
+    }
+
+    /**
+     * Function for saving configuration and restarting firewall.
+     * Is is the same as Write() but write is allways forced.
+     *
+     * @return	boolean if successful
+     */
+    global define boolean SaveAndRestartService () {
+	y2milestone("Forced save and restart");
+	SetModified();
+
+	SetStartService(true);
+
+	if (! Write()) {
+	    return false;
+	}
+	
+	return true;
+    }
+
+    /**
+     * This powerful function returns list of services/ports which are
+     * not assigned to any fully-supported known-services.
+     *
+     * @return	list <string> of additional (unassigned) services
+     */
+    global define list <string> GetAdditionalServices (string protocol, string zone) {
+	list <string> additional_services = [];
+
+	if (! IsSupportedProtocol(protocol)) {
+	    y2error("Unknown protocol '%1'", protocol);
+	    return nil;
+	}
+	if (! IsKnownZone(zone)) {
+	    y2error("Unknown zone '%1'", zone);
+	    return nil;
+	}
+
+	// all ports or services allowed in zone for protocol
+	list <string> all_allowed_services = GetAllowedServicesForZoneProto(zone, protocol);
+
+	// all ports or services used by known service
+	list <string> all_used_services = [];
+
+	// trying all possible (known) services
+	foreach (string service_id, string service_name, SuSEFirewallServices::GetSupportedServices(), {
+	    // only when the service is allowed in zone - remove all its needed ports
+	    if (IsServiceSupportedInZone(service_id, zone)) {
+
+		// all needed ports etc for service/protocol, well, I'm not good at function pointers :-<
+		list <string> needed_all = [];
+		if (protocol == "TCP") {
+		    needed_all = SuSEFirewallServices::GetNeededTCPPorts(service_id);
+		} else if (protocol == "UDP") {
+		    needed_all = SuSEFirewallServices::GetNeededUDPPorts(service_id);
+		} else if (protocol == "RPC") {
+		    needed_all = SuSEFirewallServices::GetNeededRPCPorts(service_id);
+		} else if (protocol == "IP") {
+		    needed_all = SuSEFirewallServices::GetNeededIPProtocols(service_id);
+		}
+		foreach (string remove_port, needed_all, {
+		    // all used services and their aliases
+		    all_used_services = (list <string>) union (
+			all_used_services, PortAliases::GetListOfServiceAliases(remove_port)
+		    );
+		});
+
+	    }
+	});
+
+	// some services are used by known defined-services
+	if (size(all_used_services)>0) {
+	    all_used_services = toset (all_used_services);
+	    // removing all used services from all allowed
+	    all_allowed_services = filter (string port, all_allowed_services, {
+		return (! contains(all_used_services, port));
+	    });
+	}
+
+	// well, actually it returns list of services not-assigned to any well-known service
+	return all_allowed_services;
+    }
+
+    /**
+     * Function sets additional ports/services from taken list. Firstly, all additional services
+     * are removed also with their aliases. Secondly new ports/protocols are added.
+     *
+     * @param	string protocol
+     * @param	string zone
+     * @param	list <string> list of ports/protocols
+     */
+    global define void SetAdditionalServices (string protocol, string zone, list <string> new_list_services) {
+	list <string> old_list_services = toset(GetAdditionalServices(protocol, zone));
+	new_list_services = toset(new_list_services);
+
+	if (new_list_services != old_list_services) {
+	    SetModified();
+
+	    list <string> add_services = [];
+	    list <string> remove_services = [];
+
+	    // Add these services
+	    foreach (string service, new_list_services, {
+		if (!contains(old_list_services, service))
+		    add_services = add (add_services, service);
+	    });
+	    // Remove these services
+	    foreach (string service, old_list_services, {
+		if (!contains(new_list_services, service))
+		    remove_services = add (remove_services, service);
+	    });
+
+	    if (size(remove_services)>0) {
+		y2milestone("Removing additional services %1/%2 from zone %3", remove_services, protocol, zone);
+		RemoveAllowedPortsOrServices (remove_services, protocol, zone, true);
+	    }
+	    if (size(add_services)>0) {
+		y2milestone("Adding additional services %1/%2 into zone %3", add_services, protocol, zone);
+		AddAllowedPortsOrServices (add_services, protocol, zone);
+	    }
+	}
+    }
+
+    /**
+     * Function returns if any other firewall then SuSEfirewall2 is currently running on the
+     * system. It uses command `iptables` to get information about just active iptables
+     * rules and compares the output with current status of SuSEfirewall2.
+     *
+     * @return	boolean if other firewall is running
+     */
+    global define boolean IsOtherFirewallRunning () {
+	boolean any_firewall_running = true;
+
+	// grep must return at least blank lines, else it returns 'exit 1' instead of 'exit 0'
+	string command = "iptables -L -n | grep -v \"^\\(Chain\\|target\\)\"";
+
+	map iptables = (map) SCR::Execute(.target.bash_output, command);
+	if (iptables["exit"]:0 == 0) {
+	    list <string> iptables_list = splitstring(iptables["stdout"]:"", "\n");
+	    iptables_list = filter (string iptable_rule, iptables_list, {
+		return iptable_rule != "";
+	    });
+
+	    y2milestone("Count of active iptables now: %1", size(iptables_list));
+
+	    // none iptables rules
+	    if (size(iptables_list)>0) {
+		any_firewall_running = true;
+	    // any iptables rules exist
+	    } else {
+		any_firewall_running = false;
+	    }
+	// error running command
+	} else {
+	    y2error("Services Command: %1 (Exit %2) -> %3", command, iptables["exit"]:nil, iptables["stderr"]:nil);
+	    return nil;
+	}
+
+	// any firewall is running but it is not a SuSEfirewall2
+	if (any_firewall_running && !IsStarted()) {
+	    y2warning("Any other firewall is running...");
+	    return true;
+	}
+	// no firewall is running or the running firewall is SuSEfirewall2
+	return false;
+    }
+
+    /**
+     * Function returns map of `interfaces in zones`.
+     *
+     * @return	map <string, list <string> >
+     * @struct	map [zone : [list of interfaces]]
+     */
+    global define map <string, list <string> > GetFirewallInterfacesMap () {
+	map <string, list <string> > firewall_interfaces_now = $[];
+
+	// list of all known interfaces
+	list <string> known_interfaces = GetListOfKnownInterfaces();
+
+	// searching each zone
+	foreach (string zone, GetKnownFirewallZones(), {
+	    // filtering non-existing interfaces
+	    firewall_interfaces_now[zone] = filter (string interface, GetInterfacesInZone(zone), {
+		return contains(known_interfaces, interface);
+	    });
+	});
+
+	return firewall_interfaces_now;
+    }
+
+    /**
+     * Function returns list of special strings like 'any' or 'auto' and uknown interfaces.
+     *
+     * @param	string zone
+     * @return	list <string> special strings or unknown interfaces
+     */
+    global define list <string> GetSpecialInterfacesInZone (string zone) {
+	list <string> interfaces_in_zone = splitstring (SETTINGS["FW_DEV_" + zone]:"", " ");
+
+	list <string> known_interfaces_now = GetInterfacesInZone (zone);
+
+	// filtering known interfaces and spaces
+	interfaces_in_zone = filter(string interface, interfaces_in_zone, {
+	    return interface != "" && !contains(known_interfaces_now, interface);
+	});
+	
+	return interfaces_in_zone;
+    }
+
+    /**
+     * Function removes special string from defined zone.
+     *
+     * @param	string interface
+     * @param	string zone
+     */
+    global define void RemoveSpecialInterfaceFromZone (string interface, string zone) {
+	SetModified();
+
+	y2milestone("Removing special string '%1' from '%2' zone.", interface, zone);
+
+	list <string> interfaces_in_zone = splitstring (SETTINGS["FW_DEV_" + zone]:"", " ");
+	interfaces_in_zone = filter (string single_interface, interfaces_in_zone, {
+	    return single_interface != "" && single_interface != interface;
+	});
+	SETTINGS["FW_DEV_" + zone] = mergestring(interfaces_in_zone, " ");
+    }
+
+    /**
+     * Functions adds special string into defined zone.
+     *
+     * @param	string interface
+     * @param	string zone
+     */
+    global define void AddSpecialInterfaceIntoZone (string interface, string zone) {
+	SetModified();
+	
+	y2milestone("Adding special string '%1' into '%2' zone.", interface, zone);
+	list <string> interfaces_in_zone = splitstring (SETTINGS["FW_DEV_" + zone]:"", " ");
+	interfaces_in_zone = toset(add (interfaces_in_zone, interface));
+	SETTINGS["FW_DEV_" + zone] = mergestring(interfaces_in_zone, " ");
+    }
+
+    /**
+     * Function returns actual state of Masquerading support.
+     *
+     * @return	boolean if supported
+     */
+    global define boolean GetMasquerade () {
+	return (SETTINGS["FW_MASQUERADE"]:"no" == "yes" && SETTINGS["FW_ROUTE"]:"no" == "yes");
+    }
+
+    /**
+     * Function sets Masquerade support.
+     *
+     * @param	boolean to support or not to support it
+     */
+    global define void SetMasquerade (boolean enable) {
+	SetModified();
+
+	SETTINGS["FW_MASQUERADE"] = (enable ? "yes" : "no");
+
+	// routing is needed for masquerading, but we can't swithc it off when disabling masquerading
+	if (enable) SETTINGS["FW_ROUTE"] = "yes";
+    }
+
+    /**
+     * Function returns list of rules of forwarding ports
+     * to masqueraded IPs.
+     *
+     * @retyrn  list <map <string, string> >
+     * @struct	list [$[ key: value ]]
+     */
+    global define list <map <string, string> > GetListOfForwardsIntoMasquerade () {
+	list <map <string, string> > list_of_rules = [];
+
+	foreach (string forward_rule, splitstring(SETTINGS["FW_FORWARD_MASQ"]:"", " "), {
+	    if (forward_rule == "") return;
+
+	    // Format: <source network>,<ip to forward to>,<protocol>,<port>[,redirect port,[destination ip]]
+	    list <string> fw_rul = splitstring(forward_rule,",");
+
+	    // first four parameters has to be defined
+	    if (fw_rul[0]:"" == "" || fw_rul[1]:"" == "" || fw_rul[2]:"" == "" || fw_rul[3]:"" == "")
+		y2warning("Wrong definition of redirect rule: '%1', part of '%2'",
+		    forward_rule, SETTINGS["FW_FORWARD_MASQ"]:""
+		);
+
+	    list_of_rules = add (list_of_rules, $[
+		"source_net" : fw_rul[0]:"",
+		"forward_to" : fw_rul[1]:"",
+		"protocol"   : tolower(fw_rul[2]:""),
+		"req_port"   : tolower(fw_rul[3]:""),
+		// to_port is req_port when undefined
+		"to_port"    : tolower(fw_rul[4]:fw_rul[3]:""),
+		"req_ip"     : tolower(fw_rul[5]:""),
+	    ]);
+	});
+
+	return list_of_rules;
+    }
+
+    /**
+     * Function removes rule for forwarding into masquerade
+     * from the list of current rules.
+     *
+     * @params	integer item number
+     */
+    global define void RemoveForwardIntoMasqueradeRule (integer remove_item) {
+	SetModified();
+
+	list <string> forward_rules = [];
+
+	integer row_counter = 0;
+	foreach (string forward_rule, splitstring(SETTINGS["FW_FORWARD_MASQ"]:"", " "), {
+	    if (forward_rule == "") return;
+
+	    if (row_counter != remove_item) {
+		forward_rules = add (forward_rules, forward_rule);
+	    }
+	    
+	    row_counter = row_counter + 1;
+	});
+
+	SETTINGS["FW_FORWARD_MASQ"] = mergestring(forward_rules, " ");
+    }
+
+    /**
+     * Adds forward into masquerade rule.
+     */
+    global define void AddForwardIntoMasqueradeRule (
+	string source_net, string forward_to_ip, string protocol, string req_port,
+	string redirect_to_port, string requested_ip
+    ) {
+	SetModified();
+
+	string masquerade_rules = SETTINGS["FW_FORWARD_MASQ"]:"";
+
+	masquerade_rules = masquerade_rules + (masquerade_rules != "" ? " ":"") +
+	    source_net + "," +
+	    forward_to_ip + "," +
+	    protocol + "," +
+	    req_port;
+
+	if (redirect_to_port != "" || requested_ip != "") {
+	    if (requested_ip != "") {
+		masquerade_rules = masquerade_rules + "," + redirect_to_port + "," + requested_ip;
+	    // port1 -> port2 are same
+	    } else if (redirect_to_port != req_port) {
+		masquerade_rules = masquerade_rules + "," + redirect_to_port;
+	    }
+	}
+
+	SETTINGS["FW_FORWARD_MASQ"] = masquerade_rules;
+    }
+
+    /**
+     * Function returns actual state of logging for rule taken as parameter.
+     *
+     * @param	string rule definition 'ACCEPT' or 'DROP'
+     * @return	string 'ALL', 'CRIT', or 'NONE'
+     */
+    global define string GetLoggingSettings(string rule) {
+	string ret_val = nil;
+
+	if (rule == "ACCEPT") {
+	    if (SETTINGS["FW_LOG_ACCEPT_ALL"]:"no" == "yes") {
+		ret_val = "ALL";
+	    } else if (SETTINGS["FW_LOG_ACCEPT_CRIT"]:"yes" == "yes") {
+		ret_val = "CRIT";
+	    } else {
+		ret_val = "NONE";
+	    }
+	} else if (rule == "DROP") {
+	    if (SETTINGS["FW_LOG_DROP_ALL"]:"no" == "yes") {
+		ret_val = "ALL";
+	    } else if (SETTINGS["FW_LOG_DROP_CRIT"]:"yes" == "yes") {
+		ret_val = "CRIT";
+	    } else {
+		ret_val = "NONE";
+	    }
+	} else {
+	    y2error("Possible rules are only 'ACCEPT' or 'DROP'");
+	}
+
+	return ret_val;
+    }
+
+    /**
+     * Function sets state of logging for rule taken as parameter.
+     *
+     * @param	string rule definition 'ACCEPT' or 'DROP'
+     * @param	string new logging state 'ALL', 'CRIT', or 'NONE'
+     */
+    global define void SetLoggingSettings(string rule, string state) {
+	SetModified();
+
+	if (rule == "ACCEPT") {
+	    if (state == "ALL") {
+		SETTINGS["FW_LOG_ACCEPT_CRIT"] = "yes";
+		SETTINGS["FW_LOG_ACCEPT_ALL"]  = "yes";
+	    } else if (state == "CRIT") {
+		SETTINGS["FW_LOG_ACCEPT_CRIT"] = "yes";
+		SETTINGS["FW_LOG_ACCEPT_ALL"]  = "no";
+	    } else {
+		SETTINGS["FW_LOG_ACCEPT_CRIT"] = "no";
+		SETTINGS["FW_LOG_ACCEPT_ALL"]  = "no";
+	    }
+	} else if (rule == "DROP") {
+	    if (state == "ALL") {
+		SETTINGS["FW_LOG_DROP_CRIT"] = "yes";
+		SETTINGS["FW_LOG_DROP_ALL"]  = "yes";
+	    } else if (state == "CRIT") {
+		SETTINGS["FW_LOG_DROP_CRIT"] = "yes";
+		SETTINGS["FW_LOG_DROP_ALL"]  = "no";
+	    } else {
+		SETTINGS["FW_LOG_DROP_CRIT"] = "no";
+		SETTINGS["FW_LOG_DROP_ALL"]  = "no";
+	    }
+	} else {
+	    y2error("Possible rules are only 'ACCEPT' or 'DROP'");
+	}
+    }
+
+    /**
+     * Function returns yes/no - ingoring broadcast for zone
+     *
+     * @param	string zone
+     */
+    global define string GetIgnoreLoggingBroadcast (string zone) {
+	if (! IsKnownZone(zone)) {
+	    y2error("Unknown zone '%1'", zone);
+	    return nil;
+	}
+
+	return SETTINGS["FW_IGNORE_FW_BROADCAST_" + zone]:"no";
+    }
+
+    /**
+     * Function sets yes/no - ingoring broadcast for zone
+     *
+     * @param	string zone
+     * @param	string ignore 'yes' or 'no'
+     */
+    global define void SetIgnoreLoggingBroadcast (string zone, string bcast) {
+	if (! IsKnownZone(zone)) {
+	    y2error("Unknown zone '%1'", zone);
+	    return nil;
+	}
+
+	SetModified();
+
+	SETTINGS["FW_IGNORE_FW_BROADCAST_" + zone] = bcast;
+    }
+
+    # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
+
+/* EOF */
+}

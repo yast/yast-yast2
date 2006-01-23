@@ -1,0 +1,15 @@
+Makefile
+Makefile.in
+*.tex
+*.log
+*.ps
+*.aux
+*.dvi
+*.html
+CATALOG.local
+*.out
+*.pdf
+suse-html.dsl
+suse-print.dsl
+cwm
+*.junk

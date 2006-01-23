@@ -1,0 +1,100 @@
+/**
+ * File:	packages-test.ycp
+ * Package:	yast2
+ * Summary:	Packages manipulation test client
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+import "Popup";
+import "Package";
+
+integer success = 0;
+integer failure = 0;
+
+string e = "mtx";
+string n = "blemc";
+
+list<string> el = [e, "xntp-doc"];
+list<string> nl = [n, "bzum"];
+
+/* testing function */
+define void T(any f, boolean expect) {
+    boolean r = (boolean) eval(f);
+    if(r != expect) {
+	Popup::Error(sformat("Failed: %1 = %2 (expected %3)", f, r,expect));
+	y2internal(1, "Failed: %1 = %2 (expected %3)", f, r,expect);
+	failure = failure + 1;
+    }
+    else {
+	y2security(1, "Passed: %1", f);
+	success = success + 1;
+    }
+}
+
+/* FIXME: test presence of mtx, xntp-doc */
+
+// failtest: T(``(Package::Installed("rpm")), false);
+
+T(``(Package::Available(e)), true);
+T(``(Package::Available(n)), false);
+
+T(``(Package::AvailableAll(el)), true);
+T(``(Package::AvailableAll(nl)), false);
+T(``(Package::AvailableAll(add(el,"bzum"))), false);
+
+T(``(Package::AvailableAny(el)), true);
+T(``(Package::AvailableAny(nl)), false);
+T(``(Package::AvailableAny(add(el,"bzum"))), true);
+
+T(``(Package::Installed("rpm")), true);
+T(``(Package::Installed(e)), false);
+T(``(Package::Installed(n)), false);
+
+T(``(Package::InstalledAll(["rpm","glibc"])), true);
+T(``(Package::InstalledAll(["rpm",e])), false);
+T(``(Package::InstalledAll(["rpm",n])), false);
+T(``(Package::InstalledAll(nl)), false);
+T(``(Package::InstalledAll([])), true);
+
+T(``(Package::InstalledAny(["rpm","glibc"])), true);
+T(``(Package::InstalledAny(["rpm",e])), true);
+T(``(Package::InstalledAny(["rpm",n])), true);
+T(``(Package::InstalledAny(el)), false);
+T(``(Package::InstalledAny(nl)), false);
+T(``(Package::InstalledAny([])), false);
+
+T(``(Package::DoInstall([n])), false);
+T(``(Package::DoInstall([e])), true);
+T(``(Package::Installed(e)), true);
+
+T(``(Package::DoRemove([n])), false);
+T(``(Package::DoRemove([e])), true);
+T(``(Package::Installed(e)), false);
+
+if(false) {
+
+T(``(Package::Install(n)), false);
+T(``(Package::Install(e)), false);
+
+Package::InstallAll(el);
+Package::InstallAny(el);
+
+Package::Remove(e);
+Package::RemoveAll(el);
+
+Package::DoInstallAndRemove([], []);
+
+/* Other */
+Package::RunSUSEconfig();
+
+}
+
+Popup::AnyMessage("Package Testsuite", sformat("Number of Successes: %1
+Number of Failures: %2", success, failure));
+
+/* EOF */
+}

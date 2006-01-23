@@ -1,0 +1,13 @@
+#
+# wizard.exp
+# 'main' file for all wizard tests
+#
+
+# get all files matching tests/*.ycp
+
+set filenames [glob $srcdir/tests/*.ycp]
+
+# foreach file, call wizard-run (from testsuite/lib)
+
+foreach file $filenames { wizard-run $file qt }
+foreach file $filenames { wizard-run $file ncurses }

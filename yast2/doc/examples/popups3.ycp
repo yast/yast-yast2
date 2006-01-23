@@ -1,0 +1,48 @@
+/*
+ * Popups example concerning installation
+ *
+ * Author:	Arvin Schnell <arvin@suse.de>
+ *
+ * $Id$
+ */
+{
+    import "Label";
+    import "Popup";
+    import "Mode";
+
+    UI::OpenDialog (
+		    `VBox (
+			   `PushButton (`id(`painless), `opt(`hstretch), "Confirm Abort (painless)"),
+			   `PushButton (`id(`incomplete), `opt(`hstretch), "Confirm Abort (incomplete)"),
+			   `PushButton (`id(`unusable),	`opt(`hstretch), "Confirm Abort (unusable)"),
+			   `PushButton (`id(`error), `opt(`hstretch), "Module Error"),
+			   `PushButton (`id(`close), Label::CloseButton ())
+			 )
+		   );
+
+    symbol button_id = `dummy;
+
+    do
+    {
+	button_id = (symbol) UI::UserInput ();
+
+	if (button_id == `painless)
+	{
+	    Popup::ConfirmAbort (`painless);
+	}
+	else if (button_id == `incomplete)
+	{
+	    Popup::ConfirmAbort (`incomplete);
+	}
+	else if (button_id == `unusable)
+	{
+	    Popup::ConfirmAbort (`unusable);
+	}
+	else if (button_id == `error)
+	{
+	    Popup::ModuleError ("The module inst_games.ycp does not work.");
+	}
+    } while (button_id != `close);
+
+    UI::CloseDialog ();
+}

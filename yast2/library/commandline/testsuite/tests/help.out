@@ -1,0 +1,19 @@
+Write	.dev.tty.prompt "YaST2 lan> " true
+Write	.dev.tty.stderr "\nYaST Configuration Module lan\n------------------------------\n" true
+Write	.dev.tty.stderr "Configuration of network cards\n" true
+Write	.dev.tty.stderr "Basic Syntax:" true
+Write	.dev.tty.stderr "    yast2 lan interactive" true
+Write	.dev.tty.stderr "    yast2 lan <command> [verbose] [options]" true
+Write	.dev.tty.stderr "    yast2 lan help" true
+Write	.dev.tty.stderr "    yast2 lan longhelp" true
+Write	.dev.tty.stderr "    yast2 lan xmlhelp" true
+Write	.dev.tty.stderr "    yast2 lan <command> help" true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Commands:" true
+Write	.dev.tty.stderr "    add     add a network card" true
+Write	.dev.tty.stderr "    delete  delete a network card" true
+Write	.dev.tty.stderr "    list    display configuration summary" true
+Write	.dev.tty.stderr "" true
+Write	.dev.tty.stderr "Run 'yast2 lan <command> help' for a list of available options." true
+Write	.dev.tty.stderr "" true
+Return	false

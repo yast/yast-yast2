@@ -1,0 +1,179 @@
+#!/usr/bin/perl -w
+#
+# $Id$
+# Author: Martin Vidner <mvidner@suse.cz>
+#         Stanislav Visnovsky <visnov@suse.cz>
+#
+
+# An agent for /dev/tty using Perl readline library
+
+use ycp;
+use strict;
+use Term::ReadLine;
+
+use Encode;
+
+# query the current encoding
+use I18N::Langinfo qw(langinfo CODESET);
+my $codeset = langinfo(CODESET());
+
+sub ReadString($$) {
+    my ($term,$prompt) = @_;
+
+    # the 1 prevents returning strings as integers/booleans
+    $_ = $term->readline($prompt);
+    if( defined ($_) )
+    {
+	ycp::Return ($_, 1);
+    }
+    else
+    {
+	ycp::Return (undef);
+    }
+}
+
+sub ReadStringNoHistory($$)
+{
+    my ($term,$prompt) = @_;
+    # get current minimun line size for history, disable history
+    my $min_line = $term->MinLine(undef);
+
+    # read input
+    ReadString($term, $prompt);
+
+    # reenable history - set previous state
+    $term->MinLine($min_line);
+}
+
+
+sub ReadStringNoEcho($$)
+{
+    my ($term,$prompt) = @_;
+
+    # disable echo
+    system("/bin/stty -F /dev/tty -echo");
+
+    # read input
+    ReadStringNoHistory($term, $prompt);
+
+    # reenable echo
+    system("/bin/stty -F /dev/tty echo");
+
+    # new line
+    my $OUT = $term->OUT || \*STDOUT;
+    print $OUT "\n";
+}
+
+#
+# MAIN cycle
+#
+
+# read the agent arguments
+$_ = <STDIN>;
+
+# no input at all - simply exit
+# exit if ! defined $_;
+# reply to the client (this actually gets eaten by the ScriptingAgent)
+ycp::Return (undef);
+
+  my $term = Term::ReadLine->new( 'Simple Readline interface');
+  my $prompt = "YaST2> ";
+  my $OUT = $term->OUT || \*STDOUT;
+  
+ $term->ornaments(0);
+
+while ( <STDIN> )
+{
+    my ($command, $path, $argument) = ycp::ParseCommand ($_);
+    
+    if ($command eq "Write")
+    {
+	if( $path eq "." )
+	{
+	    # recode from utf8 (broken YaST)
+	    # it sends almost UTF-8 (but encodes some chars as octals), so Perl
+	    # does not like it as UTF-8. Let's force the conversion
+	    my $octets = encode( "iso-8859-1", $argument );
+	    Encode::from_to($octets, "utf-8", $codeset);
+	    
+	    print $OUT  $octets ,"\n";
+	    ycp::Return ( "true" );
+	}
+	elsif ( $path eq ".nocr" )
+	{
+	    my $octets = encode( "iso-8859-1", $argument );
+	    Encode::from_to($octets, "utf-8", $codeset);
+	    
+	    print $OUT  $octets;
+	    ycp::Return ( "true" );
+	}
+	elsif ( $path eq ".prompt" )
+	{
+	    $prompt = $argument;
+	    ycp::Return( "true" );
+	}
+	elsif ( $path eq ".stderr" )
+	{
+	    # recode from utf8 (broken YaST)
+	    # it sends almost UTF-8 (but encodes some chars as octals), so Perl
+	    # does not like it as UTF-8. Let's force the conversion
+	    my $octets = encode( "iso-8859-1", $argument );
+	    Encode::from_to($octets, "utf-8", $codeset);
+	    
+	    print STDERR  $octets ,"\n";
+	    ycp::Return ( "true" );
+	}
+	elsif ( $path eq ".stderr_nocr" )
+	{
+	    # recode from utf8 (broken YaST)
+	    # it sends almost UTF-8 (but encodes some chars as octals), so Perl
+	    # does not like it as UTF-8. Let's force the conversion
+	    my $octets = encode( "iso-8859-1", $argument );
+	    Encode::from_to($octets, "utf-8", $codeset);
+	    
+	    print STDERR  $octets;
+	    ycp::Return ( "true" );
+	}
+	else 
+	{
+	    y2error ("Unrecognized path! '$path'");
+	    ycp::Return (undef);
+	}
+    }
+
+    elsif ($command eq "Read")
+    {
+	if ($path eq ".")
+	{
+	    ReadString($term, $prompt);
+	}
+	elsif ($path eq ".nohistory")
+	{
+	    ReadStringNoHistory($term, $prompt);
+	}
+	elsif ($path eq ".noecho")
+	# read, but don't add the input into history and don't show it
+	# should be used for reading a password
+	{
+	    ReadStringNoEcho($term, $prompt);
+	}
+	else
+	{
+	    y2error ("Unrecognized path! '$path'");
+	    ycp::Return (undef);
+	}
+    }
+
+    elsif ($command eq "result")
+    {
+	exit;
+    }
+
+    # Unknown command
+    else
+    {
+	y2error ("Unknown instruction $command or argument: ", ref ($argument));
+	ycp::Return (undef);
+    }
+    print "\n";
+}

@@ -1,0 +1,32 @@
+{
+// bug 72164
+
+include "testsuite.ycp";
+
+map READ = $[
+    "network" : $[
+	"section" : $[
+	    "eth4"	: nil,
+	],
+	"value" : $[
+	    "eth4"	: $["BOOTPROTO":"dhcp", "NAME": "single quotes aren't good"],
+	]
+    ],
+    "probe" : $[
+	"system" : [],
+    ],
+    "target" : $[
+	"tmpdir" : "/tmp",
+    ],
+];
+
+TESTSUITE_INIT([READ], nil);
+import "NetworkDevices";
+
+DUMP("NetworkDevices::Read");
+TEST(``(NetworkDevices::Read()), [READ], nil);
+NetworkDevices::OriginalDevices = nil;
+
+DUMP("NetworkDevices::Write");
+TEST(``(NetworkDevices::Write("")), [READ], nil);
+}

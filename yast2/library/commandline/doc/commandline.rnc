@@ -1,0 +1,43 @@
+# usage:
+#  yast2 $module xmlhelp xmlfile=$module.help.xml
+#  jing -c commandline.rnc $module.help.xml
+default namespace = ""
+namespace config = "http://www.suse.com/1.0/configns"
+
+start =
+  element commandline {
+    element module { string } &
+    commands
+  }
+
+commands = 
+  element commands {
+    LIST,
+    element command {
+      examples? &
+      help &
+      name &
+      options?
+    }+
+  }
+
+examples =
+  element examples {
+    LIST,
+    element example { text }+
+  }
+
+options =
+  element options {
+    LIST,
+    element option {
+      name &
+      help &
+      element type { string }?
+    }+
+  }
+
+name = element name { string }
+help = element help { text }
+
+LIST = attribute config:type { "list" }

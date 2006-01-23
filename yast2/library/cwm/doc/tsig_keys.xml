@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding='ISO-8859-1'?>
+<?xml-stylesheet href="/usr/share/xml/docbook/stylesheet/css/current/driver.css" type="text/css"?>
+<chapter id = "tsig_keys">
+  <title>TSIG Keys Management</title>
+  <para>
+CWMTsigKeys is a widget for CWM that can be used for management
+of TSIG keys (that are used for DDNS authentication between
+DNS and DHCP servers). It handles all needed functionality.
+  </para>
+  <para>
+Additionally, the module provides functions that can be very useful
+for modules that manipulate TSIG keys.
+  </para>
+  <para>
+To create the service start widget, use the
+<computeroutput>CWMTsigKeys::CreateWidget</computeroutput> function.
+As parameter, it takes a map with settings needed to create the widget
+and handle settings on it, returns a map with the widget for CWM. This map
+can be used the same way as maps for other widgets.
+  </para>
+
+<example id="tsig_keys_basic">
+  <title>Usage of the Tsig Keys Management widget</title>
+<screen>
+        global define void SetKeysInfo (map&lt;string,any&gt;) {...}
+        global define map&lt;string,any&gt; GetKeysInfo () {...}
+
+        map&lt;string,any&gt; widget = CWMTsigKeys::CreateWidget ($[
+            "get_keys_info" : DhcpServer::GetKeysInfo,
+            "set_keys_info" : DhcpServer::SetKeysInfo,
+        ]);
+ </screen>
+</example>
+<section>
+  <title>Reading and storing TSIG Keys</title>
+  <para>
+The parameters for service starting are following:
+    <itemizedlist>
+      <listitem><para><computeroutput>
+"get_keys_info"
+      </computeroutput>
+is reference to a function with no parameter returning a map with following
+keys:
+	<itemizedlist>
+	  <listitem><para><computeroutput>
+"removed_files"
+	  </computeroutput>
+lists of strings, file names of files with TSIG keys that were removed
+during previous runs of the dialog (just copy of the same value that
+passed to "set_keys_info". May be missing.
+	  </para></listitem>
+	  <listitem><para><computeroutput>
+"new_files"
+	  </computeroutput>
+lists of strings, file names of files with TSIG keys that were added
+during previous runs of the dialog (just copy of the same value that
+passed to "set_keys_info". May be missing.
+	  </para></listitem>
+	  <listitem><para><computeroutput>
+"tsig_keys"
+	  </computeroutput>
+is a list of maps of TSIG keys. Each map is of type string->string, with keys
+"key" and "filename" and values key ID resp. file name of the file with the
+key.
+	  </para></listitem>
+	  <listitem><para><computeroutput>
+"key_files"
+	  </computeroutput>
+is an alternative to "tsig_keys". Is used only if "tsig_keys" is missing.
+Contains a list of strings, file names of files with TSIG keys.
+	  </para></listitem>
+	</itemizedlist>
+It is mandatory. "key_files" is used only if "tsig_keys" is missing.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"set_keys_info"
+      </computeroutput>
+is reference to a function with one map parameter containing information
+about TSIG keys and return type viod. The map is of type string->any.
+should be started at boot and return type void. It is mandatory.
+      </para>
+      <para>
+The map contains all keys mentioned in "get_keys_info" odcumentation.
+      </para></listitem>
+    </itemizedlist>
+  </para>
+</section>
+<section>
+  <title>Other stuff</title>
+  <para>
+Other supported parameters are following:
+    <itemizedlist>
+      <listitem><para><computeroutput>
+"list_used_keys"
+      </computeroutput>
+is a reference to a function of type
+<computeroutput>list&lt;string&gt;()</computeroutput>
+returning a list of at the moment used TSIG keys.
+The list is used to prevent used TSIG keys from
+being deleted. If not present, all keys may get deleted.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"help"
+      </computeroutput>
+the complete help for the widget. If it is not present, generic help is used
+(button labels are patched into the help texts.
+      </para></listitem>
+    </itemizedlist>
+  </para>
+</section>
+<section>
+  <title>Notes on the widget</title>
+  <para>
+If "removed_files" or "new_files" is not present in output of "get_keys_info",
+then in "set_keys_info" the value contains keys that were added/removed during
+the one run of the dialog. Otherwise, added/removed keys are added to the
+appropriate variables. The widget takes care that no key is in both of the
+variables.
+  </para>
+  <para>
+If keys are specified via "key_files" and some of the files don't contain
+any key, these files aren't specified in the variable in the
+"set__keys_info". Such files aren't mentioned in "removed_files".
+  </para>
+</section>
+<section>
+  <title>Misc. functions</title>
+  <para>
+The CWMTsigKeys module also offers several functions tightly boud to the
+TSIG keys. Following functions are available:
+    <itemizedlist>
+      <listitem><para><computeroutput>
+list&lt;string&gt; AnalyzeTSIGKeyFile (string filename)
+      </computeroutput>
+Analyzes the file and return list of all TSIG Key IDs found in the file.
+      </para></listitem>
+      <listitem><para><computeroutput>
+list&lt;string&gt; Files2Keys (list&lt;string&gt; filenames)
+      </computeroutput>
+Analyzes all of the files and returns a list of all TSIG key IDs fount in
+the files.
+      </para></listitem>
+      <listitem><para><computeroutput>
+list&lt;map&lt;string,string&gt;&gt; Files2KeyMaps
+(list&lt;string&gt; filenames)
+      </computeroutput>
+Analyzes the files and returns a list of the maps of all TSIG keys found in
+the files. A TSIG Key map (string->string) contains keys "key" and "filename"
+with values Key ID resp. file name of the file.
+      </para></listitem>
+    </itemizedlist>
+  </para>
+</section>
+</chapter>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: xml
+sgml-parent-document:("cwm.xml" "book" "chapter")
+sgml-doctype:"cwm.xml"
+End:
+-->

@@ -1,0 +1,18 @@
+/**
+ * File:
+ *   cfg_hotplug.scr
+ * Summary:
+ *   SCR Agent for reading/writing /etc/sysconfig/hotplug
+ *   using the sysconfig-agent
+ *
+ * $Id$
+ *
+ * Read/Sets the values defined in <tt>/etc/sysconfig/hotplug</tt>
+ * in an easy manner.
+ */
+.sysconfig.hotplug
+
+`ag_ini(
+  `SysConfigFile("/etc/sysconfig/hotplug")
+)
+
