@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Mon Jan 23 17:36:06 CET 2006 - locilka@suse.cz
+
+- Added new function Confirm::NetworkManager() to be called in the
+  Read dialogs of services configuration. User has to confirm 
+  continuing the configuration when NetworkManager is enabled.
+- Merged texts from proofreading.
+- 2.13.26 
+
+-------------------------------------------------------------------
 Mon Jan 23 17:06:18 CET 2006 - mvidner@suse.cz
 
 - Start the network using rcnetwork start, not rcnetwork status.
