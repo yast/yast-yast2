@@ -47,7 +47,7 @@ list<string> allowed_interfaces = nil;
 boolean configuration_changed = nil;
 
 /**
- * Network Manager handles some network interfaces
+ * NetworkManager handles some network interfaces
  */
 boolean nm_managed = nil;
 
@@ -62,7 +62,7 @@ string special_all_nm_interfaces = ">>__this__string__includes__all__NM__interfa
 boolean any_iface_supported = nil;
 
 /**
- * Network Manager interfaces were selected, or are supported by the current configuration
+ * NetworkManager interfaces were selected, or are supported by the current configuration
  */
 boolean nm_ifaces_have_to_be_supported = nil;
 
@@ -84,7 +84,7 @@ void EnableOrDisableFirewallDetails () {
     if (size (all_interfaces) == 0)
 	enabled = false;
 
-    // Network Manager
+    // NetworkManager
     if (contains(all_interfaces, special_all_nm_interfaces) && enabled) {
 	allowed_interfaces = add (allowed_interfaces, special_all_nm_interfaces);
     }
@@ -183,10 +183,10 @@ void InitAllInterfacesList () {
 	if (interface_items == nil) interface_items = [];
 	interface_items = add (interface_items,
 	    // multi selection box item
-	    `item (`id (special_all_nm_interfaces), _("All Network Manager Interfaces"))
+	    `item (`id (special_all_nm_interfaces), _("All NetworkManager Interfaces"))
 	);
 	
-	// handled by the Network Manager and also any-feature is supported
+	// handled by NetworkManager and also any-feature is supported
 	if (any_iface_supported) {
 	    nm_ifaces_have_to_be_supported = true;
 	} else {
@@ -223,7 +223,7 @@ void UpdateFirewallStatus () {
 /**
  * Get the list of all interfaces that will be selected
  * @param ifaces a list of interfaces selected by the user
- * @params nm_ifaces_have_to_be_selected defines whether also Network Manager have to be selected too
+ * @params nm_ifaces_have_to_be_selected defines whether also NetworkManager have to be selected too
  * @return a list of interfaces that will be opened
  */
 list<string> Selected2Opened (list<string> ifaces, boolean nm_ifaces_have_to_be_selected) {
@@ -437,7 +437,7 @@ Continue?")))
 	}
     }
 
-    // Network Manager interfaces have to be supported
+    // NetworkManager interfaces have to be supported
     if (contains(ifaces, special_all_nm_interfaces)) {
 	y2milestone("All Network Interfaces were selected.");
 	if (any_iface_supported) {
@@ -446,7 +446,7 @@ Continue?")))
 	    y2warning("any-feature is NOT supported.");
 	    // yes-no popup
 	    if (! Popup::YesNo ("Because of the SuSE Firewall settings, the port
-for All Network Manager Interfaces cannot be open.
+for All NetworkManager Interfaces cannot be open.
 
 Continue?")) return false;
 	}

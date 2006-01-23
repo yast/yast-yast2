@@ -170,7 +170,7 @@
     }
 
     /**
-     * Function returns whether the support for the Network Manager
+     * Function returns whether the support for NetworkManager
      * (support for any interfaces not-mentioned in any configuration)
      * is included in the configuration.
      */
@@ -180,7 +180,7 @@
     }
     
     /**
-     * Function adds the support for the Network Manager
+     * Function adds the support for NetworkManager
      * (support for any interfaces not-mentioned in any configuration).
      */
     void AddNetworkManagerSupport () {
@@ -1465,7 +1465,7 @@
 
     /**
      * Function returns if the interface is in zone.
-     * Interfaces handled by a Network Manager allways return 'false'.
+     * Interfaces handled by a NetworkManager allways return 'false'.
      *
      * @param	string interface
      * @param	string firewall zone
@@ -1480,7 +1480,7 @@
      * Function returns the firewall zone of interface, nil if no zone includes
      * the interface. Error is reported when interface is found in multiple
      * firewall zones, then the first appearance is returned.
-     * Interfaces handled by a Network Manager allways return 'nil'.
+     * Interfaces handled by a NetworkManager allways return 'nil'.
      *
      * @param	string interface
      * @return	string zone
@@ -1526,7 +1526,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 
     /**
      * Function returns list of maps of known interfaces.
-     * Interfaces handled by a Network Manager are not returned at all.
+     * Interfaces handled by a NetworkManager are not returned at all.
      * @struct [ $[ "id":"modem0", "name":"Askey 815C", "type":"dialup", "zone":"EXT" ], ... ]
      *
      * @return	list <map <string, string> >
@@ -1571,7 +1571,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 
     /**
      * Function returns list of non-dial-up interfaces.
-     * Interfaces handled by a Network Manager are not returned at all.
+     * Interfaces handled by a NetworkManager are not returned at all.
      *
      * @return list <string> of non-dial-up interface names
      */
@@ -1587,7 +1587,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 
     /**
      * Function returns list of all known interfaces
-     * (if they are not handled by a Network Manager).
+     * (if they are not handled by a NetworkManager).
      *
      * @return	list <string> of interfaces
      */
@@ -1717,7 +1717,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 	    }
 	}
 	
-	// Network Manager
+	// NetworkManager
 	if (NetworkService::IsManaged()) {
 	    // Adds a zone which only can handle interfaces not-mentioned in configuration
 	    zones = (list <string>) toset (add (zones, special_all_interface_zone));
@@ -1766,7 +1766,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 	// "all" means for all known zones
 	if (interface == "all") {
 	    zones_affected = GetKnownFirewallZones();
-	    // Network Manager
+	    // NetworkManager
 	    if (NetworkService::IsManaged()) {
 		zones_affected = (list <string>) toset (add (zones_affected, special_all_interface_zone));
 	    }
@@ -1828,7 +1828,7 @@ Run YaST2 Firewall and assign it.
 	// "all" means for all known zones
 	if (interface == "all") {
 	    zones_affected = GetKnownFirewallZones();
-	    // Network Manager
+	    // NetworkManager
 	    if (NetworkService::IsManaged()) {
 		zones_affected = (list <string>) toset (add (zones_affected, special_all_interface_zone));
 	    }
@@ -1882,7 +1882,7 @@ Run YaST2 Firewall and assign it.
     boolean ArePortsOrServicesAllowed (list <string> needed_ports, string protocol, string zone, boolean check_for_aliases) {
 	boolean are_allowed = true;
 
-	// When the network manager is turned on
+	// When NetworkManager is turned on
 	if (NetworkService::IsManaged()) {
 	    // When the defined zone contains the defined special string (EXT/any) by default
 	    if (contains(SuSEFirewall::GetSpecialInterfacesInZone(special_all_interface_zone), special_all_interface_string)) {

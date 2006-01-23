@@ -159,12 +159,12 @@
     global define void OpenServiceOnNonDialUpInterfaces (string service) {
 	list <string> non_dial_up_interfaces = SuSEFirewall::GetAllNonDialUpInterfaces();
 
-	// Network Manager is turned on
+	// NetworkManager is turned on
 	if (NetworkService::IsManaged()) {
 	    string zone = "EXT";
 	    y2milestone("Opening service %1 for %2 zone", service, zone);
 	    SuSEFirewall::SetServicesForZones([service], [zone], true);
-	// Network Manager is turned off and there are some non_dup interfaces
+	// NetworkManager is turned off and there are some non_dup interfaces
 	} else if (size(non_dial_up_interfaces)>0) {
 	    list <string> non_dial_up_interfaces_zones = SuSEFirewall::GetZonesOfInterfaces(non_dial_up_interfaces);
 	    y2milestone("Opening service %1 on interfaces %2 (zones %3)",
@@ -205,7 +205,7 @@
 	    SuSEFirewall::SetStartService(ProductFeatures::GetBooleanFeature ("globals", "enable_firewall"));
 	}
 
-	// Network manager is enabled
+	// NetworkManager is enabled
 	if (NetworkService::IsManaged()) {
 	    string special_all_interface_string = SuSEFirewall::special_all_interface_string;
 	    string zone = SuSEFirewall::special_all_interface_zone;
@@ -213,7 +213,7 @@
 	    if (!contains(SuSEFirewall::GetSpecialInterfacesInZone(zone), special_all_interface_string)) {
 		SuSEFirewall::AddSpecialInterfaceIntoZone(special_all_interface_string, zone);
 	    }
-	// Network manager is disabled
+	// NetworkManager is disabled
 	} else {
 	    // has non-dial-up and also dial-up interfaces
 	    if (size(non_dup_interfaces)>0 && size(dial_up_interfaces)>0) {
@@ -357,9 +357,9 @@
 	if (firewall_is_enabled) {
 	    // Any enabled SSH means SSH-is-enabled
 	    boolean is_ssh_enabled = false;
-	    // Any known interfaces, or Network Manager interfaces
+	    // Any known interfaces, or NetworkManager interfaces
 	    if ((size(known_interfaces)>0) || NetworkService::IsManaged()) {
-		y2milestone("Interfaces: %1, Network Manager is used: %2", known_interfaces, NetworkService::IsManaged());
+		y2milestone("Interfaces: %1, NetworkManager is used: %2", known_interfaces, NetworkService::IsManaged());
 		// all known interfaces for testing
 		list <string> used_zones = SuSEFirewall::GetZonesOfInterfaces(known_interfaces);
 		y2milestone("Zones used by firewall: %1", used_zones);
