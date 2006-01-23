@@ -143,38 +143,5 @@ global define boolean Delete(string delete) {
     );
 }
 
-/*
- * Variable remembers that the question has been asked during this run already.
- * It avoids useless questions over and over again.
- */
-boolean already_asked_for_NetworkManager = false;
-
-/**
- * Opens up a continue/cancel confirmation popup
- * in the case when NetworkManager is enabled.
- * User is informed that continuing the configuration
- * may produce undefined results.
- * If NetworkManager is not used, silently returns true.
- *
- * @return boolean continue
- */
-global define boolean NetworkManager () {
-    if (!already_asked_for_NetworkManager && NetworkService::IsManaged()) {
-	// TRANSLATORS: pop-up question when reading the service configuration
-	boolean cont = Popup::ContinueCancel(_("Your network interfaces are currently controlled by NetworkManager
-but the service to configure might not work well with it.
-
-Really continue?"));
-	y2milestone("Network is controlled by NetworkManager, user decided %1...",
-	    (cont ? "to continue":"not to continue")
-	);
-	already_asked_for_NetworkManager = true;
-	
-	return cont;
-    } else {
-	return true;
-    }
-}
-
 /* EOF */
 }
