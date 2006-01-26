@@ -1,7 +1,7 @@
 @HEADER-COMMENT@
-# neededforbuild curl liby2util openssl perl-XML-Writer pkgconfig popt yast2-core yast2-core-devel yast2-devtools yast2-packagemanager openslp openslp-devel yast2-testsuite tcl dejagnu expect yast2-pkg-bindings update-desktop-files blocxx pcre libxml2 libxml2-devel
 
 @HEADER@
+BuildRequires:	openslp-devel perl-XML-Writer popt-devel update-desktop-files yast2-devtools yast2-pkg-bindings yast2-testsuite
 Source1:	yast2.post
 # Need the new file popups
 Requires:	yast2-core >= 2.7.1
