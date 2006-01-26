@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jan 26 09:36:21 CET 2006 - locilka@suse.cz
+
+- Added new function String::WrapAt() to ease wrapping texts in
+  dialogs and pop-up windows.
+  Useful particulary for translated strings with unknown length.
+
+-------------------------------------------------------------------
 Mon Jan 23 17:36:06 CET 2006 - locilka@suse.cz
 
 - Added new function NetworkService::ConfirmNetworkManager() to be

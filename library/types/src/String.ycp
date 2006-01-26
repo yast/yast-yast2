@@ -1007,5 +1007,77 @@ global string Replace(string s, string source, string target) {
     return s;
 }
 
+/**
+ * Returns text wrapped at defined margin. Very useful for translated strings
+ * used for pop-up windows or dialogs where you can't know the width. It
+ * controls the maximum width of the string so the text should allways fit into
+ * the minimal ncurses window. If you expect some long words, such us URLs or
+ * words with a hyphen inside, you can also set the additional split-characters
+ * to "/-". Then the function can wrap the word also after these characters.
+ * This function description was wrapped using the function String::WrapAt().
+ *
+ * @example String::WrapAt("Some very long text",30,"/-");
+ *
+ * @param string text to be wrapped
+ * @param integer maximum width of the wrapped text
+ * @param string additional split-characters such as "-" or "/"
+ * @return string wrapped string
+ */
+global string WrapAt(string text, integer width, string split_string) {
+    string new_string = "";
+    integer avail = width;  // characters available in this line
+    string lsep = "";  // set to "\n" when at the beginning of a new line
+    string wsep = "";  // set to " " after words, unless at the beginning
+
+    foreach (string word, splitstring(text, " \n"), {
+	while (size(word) > 0) {
+	// decide where to split the current word
+	integer split_at = 0;
+	if (size(word) <= width) {
+	    split_at = size(word);
+	} else {
+	    split_at = findlastof(substring(word, 0, avail - size(wsep)),
+					  " \n" + split_string);
+	    if (split_at != nil) {
+		split_at = split_at + 1;
+	    } else {
+		split_at = findlastof(substring(word, 0, width),
+					      " \n" + split_string);
+		if (split_at != nil) {
+		    split_at = split_at + 1;
+		} else {
+		    split_at = avail - size(wsep);
+		}
+	    }
+	}
+
+	// decide whether it fits into the same line or must go on
+	// a separate line
+	if (size(wsep) + split_at > avail) {
+	    if (size(new_string) > 0)
+		new_string = new_string + "\n";
+	    avail = width;
+	    wsep = "";
+	    lsep = "";
+	}
+
+	// add the next word or partial word
+	new_string = new_string + lsep + wsep +
+		     substring(word, 0, split_at);
+	avail = avail - size(wsep) - split_at;
+	wsep = ""; lsep = "";
+	if (avail == 0) {
+	    avail = width;
+	    lsep = "\n";
+	} else if (split_at == size(word)) {
+	    wsep = " ";
+	}
+	word = substring(word, split_at);
+	}
+    });
+
+    return new_string;
+}
+
 /* EOF */
 }
