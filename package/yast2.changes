@@ -3,6 +3,7 @@ Tue Feb  7 19:33:38 CET 2006 - mvidner@suse.cz
 
 - Use rcnetwork restart insted of rcnetwork start to handle the switch
   between ifup and NetworkManager (#148263).
+- Use BuildRequires, but without openslp-devel, popt-devel.
 - 2.13.27
 
 -------------------------------------------------------------------
