@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb  7 19:33:38 CET 2006 - mvidner@suse.cz
+
+- Use rcnetwork restart insted of rcnetwork start to handle the switch
+  between ifup and NetworkManager (#148263).
+
+-------------------------------------------------------------------
 Thu Jan 26 09:36:21 CET 2006 - locilka@suse.cz
 
 - Added new function String::WrapAt() to ease wrapping texts in

@@ -83,7 +83,12 @@ global void StartStop () {
     }
     else
     {
-	RunScript ("network", "start");
+	// #148263
+	// Because rcnetwork really handles two different things in one script
+	// (ifup and NM), it could happen that "start" would shut down an
+	// interface. Instead, it tells the user to use "restart".
+	// So we do it always, it does not hurt if the net was stopped.
+	RunScript ("network", "restart");
     }
 }
 
