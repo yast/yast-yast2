@@ -477,6 +477,7 @@ global define void AddWizardSteps(list<map> stagemode)
         }
 
         string last_label = "";
+	string last_domain = "";
         foreach(map m, getModules(sm["stage"]:"", sm["mode"]:"", `enabled),
                 ``{
             y2debug("Adding wizard step: %1", m );
@@ -499,6 +500,7 @@ global define void AddWizardSteps(list<map> stagemode)
 			: dgettext (wizard_textdomain, m["label"]:""),
 		    m["id"]:"" ));
                 last_label = m["label"]:"";
+		last_domain = m["textdomain"]:"";
             } else {
                 if (first_id=="")
                 {
@@ -506,11 +508,18 @@ global define void AddWizardSteps(list<map> stagemode)
                 }
 		if (last_label != "")
 		{
-	            UI::WizardCommand(`AddStep( dgettext(
-                                                     wizard_textdomain,
-                                                     last_label ),
-                                            m["id"]:"" )
-                                  );
+		    if (last_domain != "")
+			UI::WizardCommand(`AddStep( dgettext(
+				last_domain,
+				last_label ),
+                            m["id"]:"" )
+			);
+		    else
+			UI::WizardCommand(`AddStep( dgettext(
+				wizard_textdomain,
+				last_label ),
+                            m["id"]:"" )
+			);
 		}
             }
         });
@@ -703,7 +712,8 @@ global map getProposalProperties( string stage, string mode, string proptype
 	proposal["proposal_tabs"] = maplist (map tab,
 	    proposal["proposal_tabs"]:[],
 	{
-	    tab["label"] = dgettext (text_domain, tab["label"]:"");
+	    string domain = tab["textdomain"]:text_domain;
+	    tab["label"] = dgettext (domain, tab["label"]:"");
 	    return tab;
 	});
     }
