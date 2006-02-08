@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb  8 17:33:40 CET 2006 - jsrain@suse.de
+
+- added support for localization of workflows updated from add-on
+  products
+
+-------------------------------------------------------------------
 Tue Feb  7 19:33:38 CET 2006 - mvidner@suse.cz
 
 - Use rcnetwork restart insted of rcnetwork start to handle the switch
