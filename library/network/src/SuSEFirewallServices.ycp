@@ -206,6 +206,11 @@
 	    "name"	: _("MySQL Remote Access"),
 	    "tcp_ports"	: [ "mysql" ],
 	],
+	"iscsi-server" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("iSCSI Target"),
+	    "tcp_ports"	: [ "iscsi-target" ],
+	],
     ];
 
     /**

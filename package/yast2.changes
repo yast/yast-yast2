@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb  9 17:04:13 CET 2006 - locilka@suse.cz
+
+- Added support for the iscsi-target (#149548) into the Firewall
+  services
+
+-------------------------------------------------------------------
 Wed Feb  8 17:33:40 CET 2006 - jsrain@suse.de
 
 - added support for localization of workflows updated from add-on
