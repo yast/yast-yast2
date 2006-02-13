@@ -6,7 +6,7 @@
  * Purpose:	Responsible for getting information from the /etc/SuSE-release
  *              (and similar for other system) file
  *
- * $Id: RootPart.ycp 22842 2005-03-29 14:24:06Z jsrain $
+ * $Id$
  */
 {
 
