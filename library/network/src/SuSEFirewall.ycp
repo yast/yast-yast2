@@ -18,7 +18,7 @@
     import "Mode";
     import "Service";
     import "NetworkDevices";
-    import "NetworkService";
+    //import "NetworkService";
     import "SuSEFirewallServices";
     import "PortAliases";
     import "Report";
@@ -1717,11 +1717,11 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 	    }
 	}
 	
-	// NetworkManager
-	if (NetworkService::IsManaged()) {
-	    // Adds a zone which only can handle interfaces not-mentioned in configuration
-	    zones = (list <string>) toset (add (zones, special_all_interface_zone));
-	}
+	//// NetworkManager
+	//if (NetworkService::IsManaged()) {
+	//    // Adds a zone which only can handle interfaces not-mentioned in configuration
+	//    zones = (list <string>) toset (add (zones, special_all_interface_zone));
+	//}
 
 	// SuSEFirewall feature FW_PROTECT_FROM_INT
 	// should not be protected and searched zones include also internal (or the zone IS internal, sure)
@@ -1766,10 +1766,10 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 	// "all" means for all known zones
 	if (interface == "all") {
 	    zones_affected = GetKnownFirewallZones();
-	    // NetworkManager
-	    if (NetworkService::IsManaged()) {
-		zones_affected = (list <string>) toset (add (zones_affected, special_all_interface_zone));
-	    }
+	    //// NetworkManager
+	    //if (NetworkService::IsManaged()) {
+	    //	zones_affected = (list <string>) toset (add (zones_affected, special_all_interface_zone));
+	    //}
 	// zone or interface name
 	} else {
 	    // is probably an interface name
@@ -1829,9 +1829,9 @@ Run YaST2 Firewall and assign it.
 	if (interface == "all") {
 	    zones_affected = GetKnownFirewallZones();
 	    // NetworkManager
-	    if (NetworkService::IsManaged()) {
-		zones_affected = (list <string>) toset (add (zones_affected, special_all_interface_zone));
-	    }
+	    //if (NetworkService::IsManaged()) {
+	    //	zones_affected = (list <string>) toset (add (zones_affected, special_all_interface_zone));
+	    //}
 	// zone or interface name
 	} else {
 	    if (! IsKnownZone(interface)) {
@@ -1883,12 +1883,12 @@ Run YaST2 Firewall and assign it.
 	boolean are_allowed = true;
 
 	// When NetworkManager is turned on
-	if (NetworkService::IsManaged()) {
+	//if (NetworkService::IsManaged()) {
 	    // When the defined zone contains the defined special string (EXT/any) by default
 	    if (contains(SuSEFirewall::GetSpecialInterfacesInZone(special_all_interface_zone), special_all_interface_string)) {
 		zone = special_all_interface_zone;
 	    }
-	}
+	//}
 
 	if (size(needed_ports)<1) {
 	    y2warning("Undefined list of %1 services/ports for service", protocol);

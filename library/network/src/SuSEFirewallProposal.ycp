@@ -14,7 +14,7 @@
     textdomain "base";
 
     import "SuSEFirewall";
-    import "NetworkService";
+    //import "NetworkService";
     import "ProductFeatures";
     import "Linuxrc";
 
@@ -159,13 +159,14 @@
     global define void OpenServiceOnNonDialUpInterfaces (string service) {
 	list <string> non_dial_up_interfaces = SuSEFirewall::GetAllNonDialUpInterfaces();
 
-	// NetworkManager is turned on
-	if (NetworkService::IsManaged()) {
-	    string zone = "EXT";
-	    y2milestone("Opening service %1 for %2 zone", service, zone);
-	    SuSEFirewall::SetServicesForZones([service], [zone], true);
-	// NetworkManager is turned off and there are some non_dup interfaces
-	} else if (size(non_dial_up_interfaces)>0) {
+	//// NetworkManager is turned on
+	//if (NetworkService::IsManaged()) {
+	//    string zone = "EXT";
+	//    y2milestone("Opening service %1 for %2 zone", service, zone);
+	//    SuSEFirewall::SetServicesForZones([service], [zone], true);
+	//// NetworkManager is turned off and there are some non_dup interfaces
+	//} else if (size(non_dial_up_interfaces)>0) {
+	if (size(non_dial_up_interfaces)>0) {
 	    list <string> non_dial_up_interfaces_zones = SuSEFirewall::GetZonesOfInterfaces(non_dial_up_interfaces);
 	    y2milestone("Opening service %1 on interfaces %2 (zones %3)",
 		service, non_dial_up_interfaces, non_dial_up_interfaces_zones);
@@ -193,28 +194,31 @@
 	    dial_up_interfaces, non_dup_interfaces
 	);
 
-	// has no network interface
-	// and NetworkManager is disabled (#139402)
-	if (size(non_dup_interfaces)==0 && size(dial_up_interfaces)==0 &&
-	    !NetworkService::IsManaged ()) {
-	    SuSEFirewall::SetEnableService(false);
-	    SuSEFirewall::SetStartService(false);
-	} else {
+	//// has no network interface
+	//// and NetworkManager is disabled (#139402)
+	//if (size(non_dup_interfaces)==0 && size(dial_up_interfaces)==0 &&
+	//    !NetworkService::IsManaged ()) {
+	//    SuSEFirewall::SetEnableService(false);
+	//    SuSEFirewall::SetStartService(false);
+	//} else {
+
 	// has any network interface
+	if (size(non_dup_interfaces)==0 || size(dial_up_interfaces)==0) {
 	    SuSEFirewall::SetEnableService(ProductFeatures::GetBooleanFeature ("globals", "enable_firewall"));
 	    SuSEFirewall::SetStartService(ProductFeatures::GetBooleanFeature ("globals", "enable_firewall"));
 	}
 
-	// NetworkManager is enabled
-	if (NetworkService::IsManaged()) {
-	    string special_all_interface_string = SuSEFirewall::special_all_interface_string;
-	    string zone = SuSEFirewall::special_all_interface_zone;
-	    // Adding all interfaces into the $zone zone
-	    if (!contains(SuSEFirewall::GetSpecialInterfacesInZone(zone), special_all_interface_string)) {
-		SuSEFirewall::AddSpecialInterfaceIntoZone(special_all_interface_string, zone);
-	    }
-	// NetworkManager is disabled
-	} else {
+	//// NetworkManager is enabled
+	//if (NetworkService::IsManaged()) {
+	//    string special_all_interface_string = SuSEFirewall::special_all_interface_string;
+	//    string zone = SuSEFirewall::special_all_interface_zone;
+	//    // Adding all interfaces into the $zone zone
+	//    if (!contains(SuSEFirewall::GetSpecialInterfacesInZone(zone), special_all_interface_string)) {
+	//	SuSEFirewall::AddSpecialInterfaceIntoZone(special_all_interface_string, zone);
+	//    }
+	//// NetworkManager is disabled
+	//} else {
+
 	    // has non-dial-up and also dial-up interfaces
 	    if (size(non_dup_interfaces)>0 && size(dial_up_interfaces)>0) {
 		SetInterfacesToZone(non_dup_interfaces, "INT");
@@ -234,7 +238,8 @@
 		if (ProductFeatures::GetBooleanFeature ("globals", "firewall_enable_ssh"))
 		    SuSEFirewall::SetServicesForZones(["ssh"], ["EXT"], true);
 	    }
-	}
+
+	//}
 
 	/*
 	 * Dial-up interfaces are considered to be internal,
@@ -357,18 +362,19 @@
 	if (firewall_is_enabled) {
 	    // Any enabled SSH means SSH-is-enabled
 	    boolean is_ssh_enabled = false;
-	    // Any known interfaces, or NetworkManager interfaces
-	    if ((size(known_interfaces)>0) || NetworkService::IsManaged()) {
-		y2milestone("Interfaces: %1, NetworkManager is used: %2", known_interfaces, NetworkService::IsManaged());
+	    //// Any known interfaces, or NetworkManager interfaces
+	    //if ((size(known_interfaces)>0) || NetworkService::IsManaged())
+	    if (size(known_interfaces)>0) {
+		y2milestone("Interfaces: %1", known_interfaces);
 		// all known interfaces for testing
 		list <string> used_zones = SuSEFirewall::GetZonesOfInterfaces(known_interfaces);
 		y2milestone("Zones used by firewall: %1", used_zones);
 
-		// NM is used, add also NM-Zone
-		if (NetworkService::IsManaged() && SuSEFirewall::IsAnyNetworkInterfaceSupported()) {
-		    used_zones = add (used_zones, SuSEFirewall::special_all_interface_zone);
-		    y2milestone("NM is used, zone %1 was added into used zones %2", SuSEFirewall::special_all_interface_zone, used_zones);
-		}
+		//// NM is used, add also NM-Zone
+		//if (NetworkService::IsManaged() && SuSEFirewall::IsAnyNetworkInterfaceSupported()) {
+		//    used_zones = add (used_zones, SuSEFirewall::special_all_interface_zone);
+		//    y2milestone("NM is used, zone %1 was added into used zones %2", SuSEFirewall::special_all_interface_zone, used_zones);
+		//}
 
 		foreach (string zone, used_zones, {
 		    if (SuSEFirewall::IsServiceSupportedInZone ("ssh", zone))
