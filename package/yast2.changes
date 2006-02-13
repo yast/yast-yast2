@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Feb 13 12:17:02 CET 2006 - locilka@suse.cz
+
+- Killing the .background agent in the
+  Service::RunInitScriptWithTimeOut function to prevent from
+  undefined behavior when calling this function one by one
+  without any sleep (#144891).
+
+-------------------------------------------------------------------
 Mon Feb 13 09:49:13 CET 2006 - locilka@suse.cz
 
 - Removing obsolete support for NetworkManager which have changed
