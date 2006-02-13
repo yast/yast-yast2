@@ -206,7 +206,7 @@ process_all_scripts () {
     for i in * ; do
 	if [ -f $i ] ; then
 	    case "$i" in
-		"reboot" | "halt" | "single" | "README" | "core" | "rc" | "rx" | "skeleton" | "powerfail" | "boot" | "boot.orig" )
+		"reboot" | "halt" | "single" | "README" | "core" | "rc" | "rx" | "skeleton" | "skeleton."* | "powerfail" | "boot" | "boot.orig" )
 		    ;;
 		*)
 		    get_script_info $i
