@@ -315,18 +315,11 @@ global boolean InstallKernel (list<string> kernel_modules) {
         y2error ("not exactly one package provides tag kernel");
 
     string kernel = kernels[0,0]:"none";
-    string kernel_nongpl = kernel + "-nongpl";
-
     list<string> packs = [kernel];
 
-    if (! Pkg::IsProvided (kernel_nongpl))
+    if (! Pkg::IsProvided(kernel))
     {
 	EnsureSourceInit ();
-	if (Pkg::IsAvailable (kernel_nongpl))
-	{
-	    y2milestone ("adding kernel subpackage %1", kernel_nongpl);
-	    packs = add (packs, kernel_nongpl);
-	}
     }
 
     // TODO: for 9.2, we always install all packages, but

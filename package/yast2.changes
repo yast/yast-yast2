@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 13 13:06:25 CET 2006 - lslezak@suse.cz
+
+- don't try to install kernel-*-nongpl packages
+- 2.13.29
+
+-------------------------------------------------------------------
 Mon Feb 13 12:17:02 CET 2006 - locilka@suse.cz
 
 - Killing the .background agent in the
