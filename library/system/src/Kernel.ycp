@@ -555,17 +555,8 @@ global string GetFinalKernel () {
  *  are to be installed together with the base package
  */
 global list<string> ComputePackagesForBase (string base, boolean check_avail) {
-    string nongpl = base + "-nongpl";
-
-    list<string> additional_packages = [ nongpl ];
-    if (check_avail)
-    {
-	additional_packages = filter (string p, additional_packages, {
-	    return Pkg::IsAvailable (p);
-	});
-    }
-
-    list<string> ret = prepend (additional_packages, base);
+    // Note: kernel-*-nongpl packages have been dropped, use base only
+    list<string> ret = [ base ];
     y2milestone ("Packages for base %1: %2", base, ret);
     return ret;
 }
