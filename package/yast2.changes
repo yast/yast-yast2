@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Feb 13 09:49:13 CET 2006 - locilka@suse.cz
+
+- Removing obsolete support for NetworkManager which have changed
+  its behavior again (#149075). Changing firewall, firewall
+  proposal and CWM firewall.
+- 2.13.28 
+
+-------------------------------------------------------------------
 Thu Feb  9 17:04:13 CET 2006 - locilka@suse.cz
 
 - Added support for the iscsi-target (#149548) into the Firewall
