@@ -4,7 +4,7 @@
  * Summary:	Init script handling, ifup vs NetworkManager
  * Authors:	Martin Vidner <mvidner@suse.cz>
  *
- * $Id: runtime.ycp 25152 2005-08-22 14:43:44Z mvidner $
+ * $Id$
  *
  * This module used to switch between rcnetwork and rcnetworkmanager.
  * Now the master switch is /etc/sysconfig/network/config:NETWORKMANAGER

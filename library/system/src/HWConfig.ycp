@@ -11,7 +11,7 @@
  * Summary:
  *	Module for accessing hardware configuration files (/etc/sysconfig/hwcfg-*)
  *
- * $Id:$
+ * $Id$
  */
 {
     module "HWConfig";
