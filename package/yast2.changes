@@ -5,6 +5,8 @@ Mon Feb 13 12:17:02 CET 2006 - locilka@suse.cz
   Service::RunInitScriptWithTimeOut function to prevent from
   undefined behavior when calling this function one by one
   without any sleep (#144891).
+- Ignoring all 'skeleton' and 'skeleton.*' init scripts in the
+  Rulevel editor since they are not a real init scripts.
 
 -------------------------------------------------------------------
 Mon Feb 13 09:49:13 CET 2006 - locilka@suse.cz
