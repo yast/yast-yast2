@@ -326,11 +326,10 @@ global define integer RunInitScriptWithTimeOut (string name, string param) {
     // fetching the return code if not timed-out
     if (cont_loop) {
 	return_code = (integer) SCR::Read(.background.status);
-    } else {
-        // killing the process if it still runs
-	if ((boolean) SCR::Read(.background.output_open))
-	    SCR::Execute(.background.kill, "");
     }
+
+    // killing the process (if it still runs)
+    SCR::Execute(.background.kill, "");
 
     return return_code;
 }
