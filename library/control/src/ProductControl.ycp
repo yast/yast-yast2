@@ -70,6 +70,9 @@ global list<map> last_stage_mode = [];
 // List of module to disable in the current run
 global list<string> DisabledModules = [];
 
+// List of proposals to disable in the current run
+global list<string> DisabledProposals = [];
+
 
 // Log files for hooks
 global list<string> logfiles = [];
@@ -588,8 +591,8 @@ define list<map> getMatchingProposal(
     y2debug("3. arch proposals: %1", arch_proposals );
     
     props = filter(map p, props, ``(
-				    p["archs"]:"" == "all" || !haskey(p, "archs")
-				    )	
+				    p["archs"]:"" == "" || p["archs"]:"" == "all"
+				    )
 		   );
 
 
