@@ -236,7 +236,7 @@ global boolean board_mac () {
  * true for all "NewWorld" power macs
  */
 global boolean board_mac_new () {
-    // board_mac calls board_compatible which intiializes _checkgeneration
+    // board_mac calls board_compatible which initializes _checkgeneration
     return board_mac () && _checkgeneration == "NewWorld";
 }
 
@@ -244,7 +244,7 @@ global boolean board_mac_new () {
  * true for all "OldWorld" power macs
  */
 global boolean board_mac_old () {
-    // board_mac calls board_compatible which intiializes _checkgeneration
+    // board_mac calls board_compatible which initializes _checkgeneration
     return board_mac () && _checkgeneration == "OldWorld";
 }
 
