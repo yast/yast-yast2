@@ -249,14 +249,6 @@ global boolean board_mac_old () {
 }
 
 /**
- * true for all "NuBus" power macs
- */
-global boolean board_mac_nubus () {
-    // board_mac calls board_compatible which intiializes _checkgeneration
-    return board_mac () && _checkgeneration == "NuBus";
-}
-
-/**
  * true for all "CHRP" ppc boards
  */
 global boolean board_chrp () {

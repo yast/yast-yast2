@@ -408,10 +408,6 @@ global void SetCmdLine (string new_cmd_line) {
 		    kernel_packages = ["kernel-default"];
 		}
 	    }
-	    else if (Arch::board_mac_nubus ())
-	    {
-		kernel_packages = ["kernel-nubus"];
-	    }
 	    else if (Arch::board_chrp ())
 	    {
 		string chrp_cpu = "";
