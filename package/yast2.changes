@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Feb 16 19:45:58 CET 2006 - olh@suse.de
+
+- fix two typos in error path in Mode.ycp
+
+-------------------------------------------------------------------
 Tue Feb 14 17:57:57 CET 2006 - jsrain@suse.de
 
 - added possibility to disable individual proposals
