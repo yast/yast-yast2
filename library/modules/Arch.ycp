@@ -21,6 +21,8 @@ string _checkgeneration = "";
 
 boolean _has_pcmcia = nil;
 
+boolean _is_laptop = nil;
+
 boolean _is_uml = nil;
 
 boolean _has_smp = nil;
@@ -283,11 +285,25 @@ global boolean board_wintel () {
 
 /**
  * true if the system supports PCMCIA
+ * But modern notebook computers do not have it. See also #151813#c10
+ * @see is_laptop
  */
 global boolean has_pcmcia () {
     if (_has_pcmcia == nil)
 	_has_pcmcia = (boolean)SCR::Read(.probe.has_pcmcia);
     return _has_pcmcia;
+}
+
+/**
+ * @return if the system is a laptop
+ */
+global boolean is_laptop () {
+    if (_is_laptop == nil) {
+	list<map> system = (list<map>) SCR::Read (.probe.system);
+	string formfactor = system[0, "formfactor"]:"";
+	_is_laptop = formfactor == "laptop";
+    }
+    return _is_laptop;
 }
 
 /* ************************************************************ */

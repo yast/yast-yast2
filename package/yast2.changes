@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb 20 16:08:07 CET 2006 - mvidner@suse.cz
+
+- Added Arch::is_laptop as a better alternative to
+  Arch::has_pcmcia (#151813).
+- 2.13.31
+
+-------------------------------------------------------------------
 Thu Feb 16 19:45:58 CET 2006 - olh@suse.de
 
 - fix two typos in error path in Mode.ycp
