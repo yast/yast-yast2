@@ -71,7 +71,7 @@ export LC_ALL=C
 INITD="/etc/init.d"
 
 get_script_info () {
-[ -r "$1" ] && /usr/bin/awk '
+[ -r "$1" ] && awk '
     BEGIN {
 	    in_comment = 0; in_descr = 0; skip_file = 0; first_time = 1;
 	    header_printed = 0;
@@ -217,7 +217,7 @@ process_all_scripts () {
 
 # Read (.runlevels)
 read_runlevels () {
-    /usr/bin/find $INITD -name "*$1" | /usr/bin/awk -F / '
+    find $INITD -name "*$1" | awk -F / '
     BEGIN { SUBSEP = ":"; }
     $4 ~ /^rc.\.d$/ && $5 ~ /^[SK][0-9][0-9]/ {
 	script = substr ($5, 4);
@@ -312,22 +312,22 @@ while true ; do
 	    ;;
 
 	'Read (.current_runlevel)')
-	    /sbin/runlevel | /usr/bin/awk ' { print "\"" $2 "\"" }'
+	    /sbin/runlevel | awk ' { print "\"" $2 "\"" }'
 	    ;;
 
 	'Read (.default_runlevel)')
-	    /bin/grep 'id:.:initdefault:' /etc/inittab | /bin/sed -e s/id:/\"/g -e s/:initdefault:/\"/g
+	    grep 'id:.:initdefault:' /etc/inittab | sed -e s/id:/\"/g -e s/:initdefault:/\"/g
 	    ;;
 
 	'Read (.runlevel_list)')
 	    echo -n "[ \"B\", "
-	    /usr/bin/awk '/^[^#]..*\/etc\/init\.d\/rc / { print "\"" $2 "\"," }' /etc/inittab
+	    awk '/^[^#]..*\/etc\/init\.d\/rc / { print "\"" $2 "\"," }' /etc/inittab
 	    echo "]"
 	    ;;
 
 	"Write (.default_runlevel,"*)
 	    rootpart=$(echo "$COMMAND" | sed 's/^Write (.default_runlevel, *"\(.*\)")/\1/')
-	    /usr/bin/sed s/^id:.:initdefault:/id:$rootpart:initdefault:/g /etc/inittab > /etc/inittab.yast2.tmp
+	    sed s/^id:.:initdefault:/id:$rootpart:initdefault:/g /etc/inittab > /etc/inittab.yast2.tmp
 	    if [ $? = 0 ] ; then
 		mv /etc/inittab.yast2.tmp /etc/inittab
 		chmod 0644 /etc/inittab
