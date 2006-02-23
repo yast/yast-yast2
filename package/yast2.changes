@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Feb 23 13:10:38 CET 2006 - mvidner@suse.cz
+
+- ag_initscripts: no need to use absolute paths to awk and friends
+  (#152840)
+- 2.13.32
+
+-------------------------------------------------------------------
 Mon Feb 20 16:08:07 CET 2006 - mvidner@suse.cz
 
 - Added Arch::is_laptop as a better alternative to
