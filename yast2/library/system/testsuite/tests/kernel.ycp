@@ -1,0 +1,79 @@
+/**
+ * File:
+ *      initrd.ycp
+ *
+ * Module:
+ *      Bootloader
+ *
+ * Summary:
+ *      testsuite for initrd module
+ *
+ * Authors:
+ *      Jiri Srain <jsrain@suse.cz>
+ *
+ * $Id$
+ *
+ */
+
+// testedfiles: Kernel.ycp Testsuite.ycp
+
+{
+    include "testsuite.ycp";
+
+    // minimal "don't care" SCR data to work with the constructor
+    map READ = $[
+	"sysconfig" : $[
+	    "kernel" : $[
+		"MODULES_LOADED_ON_BOOT" : "reiserfs xfs",
+	    ],
+        ],
+	"probe" : $[
+	    "architecture" : "i386",
+	    "has_pcmcia" : false,
+	    "has_smp" : false,
+	    "system" : nil,
+	    "is_uml" : false,
+	    "memory" : [],
+	],
+	"proc" : $[
+	    "cpuinfo" : $[
+		"value" : $[
+		    "0" : $[
+			"flags" : "",
+		    ],
+		],
+	    ],
+	]
+/*	"target" : $[
+	    "string" : "",
+	    "tmpdir" : "/tmp"
+	],
+	"etc" : $[
+	    "install_inf" : $[
+		"InstMode" : "",
+	    ],
+	],*/
+    ];
+    map WRITE = $[];
+    map EXEC = $[];
+
+    TESTSUITE_INIT ([READ, $[], $[]], 0);
+
+    import "Kernel";
+    import "Mode";
+
+    Mode::SetTest ("testsuite");
+
+    // test behavior of modules loaded on boot
+    DUMP ("----------------------------------------");
+    DUMP ("Testing modules to load on boot behavior");
+    TEST (``(Kernel::AddModuleToLoad ("ext2")), [READ, WRITE, EXEC], 0);
+    TEST (``(Kernel::RemoveModuleToLoad ("reiserfs")), [READ, WRITE, EXEC], 0);
+    TEST (``(Kernel::SaveModulesToLoad ()), [READ, WRITE, EXEC], 0);
+
+    TEST (``(Kernel::HidePasswords(nil)), [READ, WRITE, EXEC], 0);
+    TEST (``(Kernel::HidePasswords("")), [READ, WRITE, EXEC], 0);
+    TEST (``(Kernel::HidePasswords("ABC=213 DEF=324")), [READ, WRITE, EXEC], 0);
+    TEST (``(Kernel::HidePasswords(" ABC=213  DEF=324 ")), [READ, WRITE, EXEC], 0);
+    TEST (``(Kernel::HidePasswords("ABC=213 DEF=324 FTPPASSWORD=pass")), [READ, WRITE, EXEC], 0);
+}

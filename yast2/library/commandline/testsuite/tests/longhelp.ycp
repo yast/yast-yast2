@@ -1,0 +1,24 @@
+/**
+ * File:	longhelp.ycp
+ * Package:	yast2
+ * Summary:	print longhelp test
+ * Author:	Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ *
+ * testedfiles: CommandLine.ycp Testsuite.ycp
+ */
+
+{
+
+    include "testsuite.ycp";
+    include "./tests/testsuitedata.yh";
+
+    import "TypeRepository";
+    import "CommandLine";
+
+    // test of the resulting maps
+    TEST(``(CommandLine::Init( cmdline ,["longhelp"]) ),[],nil);
+
+/* EOF */
+}

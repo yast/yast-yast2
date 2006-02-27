@@ -1,0 +1,15 @@
+Log	sequencer: Starting dialog not found
+Return	nil
+Log	sequencer: Starting dialog not found
+Return	nil
+Log	sequencer: Starting dialog not found
+Return	nil
+Log	sequencer: Starting dialog not found
+Return	nil
+Log	sequencer: Alias not found: 0
+Log	sequencer: Bad id: 0
+Log	sequencer: Invalid ret: nil
+Return	nil
+Log	sequencer: Starting dialog not found
+Return	nil
+Return	`ok

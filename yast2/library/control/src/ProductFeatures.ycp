@@ -1,0 +1,253 @@
+/**
+ * File:	modules/ProductFetures.ycp
+ * Package:	installation
+ * Summary:	Product features
+ * Authors:	Anas Nashif <nashif@suse.de>
+ *              Jiri Srain <jsrain@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+module "ProductFeatures";
+textdomain "base";
+
+import "Misc";
+import "Mode";
+import "Stage";
+
+/**
+ * Map of all features
+ * See defaults map below for sample contents
+ */
+map<string,map<string,any> > features = nil;
+
+/**
+ * Features to be saved in running system
+ * one item per feature, consists of key in file, section and option
+ */
+list<list<string> > features_to_save = [
+    ["UI_MODE", "globals", "ui_mode"],
+    ["ENABLE_AUTOLOGIN", "globals", "enable_autologin"],
+    ["EVMS_CONFIG", "partitioning", "evms_config"],
+    ["INCOMPLETE_TRANSLATION_TRESHOLD",
+	"globals", "incomplete_translation_treshold"],
+    ["VENDOR_URL", "globals", "vendor_url"],
+];
+
+/**
+ * Default values for features
+ * two-level map, section_name -> [ feature -> value ]
+ */
+map<string,map<string,any> > defaults = $[
+    "globals" : $[
+	"incomplete_translation_treshold" : "95",
+	"ui_mode" : "expert",
+	"enable_autologin" : true,
+	"language" : "",
+	"skip_language_dialog" : false,
+	"keyboard" : "",
+	"runlevel" : "",
+	"timezone" : "",
+	"fam_local_only" : "never",
+	"enable_firewall" : true,
+	"firewall_enable_ssh" : false,
+	"additional_kernel_parameters" : "",
+	"flags" : [],
+	"run_you" : true,
+	"relnotesurl" : "",
+	"vendor_url" : "",
+	"enable_clone" : false,
+    ],
+    "partitioning" : $[
+	"evms_config" : "no",
+	"use_flexible_partitioning" : false,
+	"flexible_partitioning" : $[],
+    ],
+    "software" : $[
+	"software_proposal" : "selection",
+	"selection_type" : `auto,
+	"delete_old_packages" : true,
+	"only_update_installed" : false,
+	"packages_transmogrify" : "",
+	"base_selection" : "",
+	"packages" : [],
+	"kernel_packages" : [],
+	"addon_selections" : [],
+	"inform_about_suboptimal_distribution" : false,
+    ],
+    "network" : $[
+	"force_static_ip" : false,
+    ],
+];
+
+// function pre-declarations
+
+global string GetStringFeature (string section, string feature);
+
+
+/**
+ * Initialize default values of features
+ * @param force boolean drop all settings which were set before
+ */
+void InitFeatures (boolean force) {
+    if (! (force || features == nil))
+	return;
+    features = defaults;
+}
+
+/**
+ * Set a feature section
+ * Default values will be used where value not defined
+ * @param section name string the name of the section
+ * @param section_map a map containing data of the section
+ */
+global void SetSection(string section_name, map<string,any> section_map) {
+    InitFeatures (false);
+    y2debug("Setting section: %1", section_name);
+    section_map = (map<string,any>)
+	union (defaults[section_name]:$[], section_map);
+    features[section_name] = section_map;
+}
+
+/**
+ * Get a complete section for evaluation
+ */
+global map<string,any> GetSection(string section_name) {
+    InitFeatures (false);
+    return features[section_name]:$[];
+}
+
+/**
+ * Save product features
+ */
+global void Save() {
+    InitFeatures (false);
+    foreach (list<string> f, features_to_save, {
+	path p = .product.features + f[0]:"";
+	string value = GetStringFeature (f[1]:"", f[2]:"");
+	SCR::Write (p, value);
+    });
+    SCR::Write (.product.features, nil );     // flush
+}
+
+/**
+ * Restore product features in running system
+ */
+global void Restore() {
+    InitFeatures (true);
+    list<string> available = (list<string>)SCR::Dir (.product.features);
+    list<list<string> > to_read = filter (list<string> f, features_to_save, {
+	return contains (available, f[0]:"");
+    });
+    foreach (list<string> f, to_read, {
+	any val = SCR::Read (.product.features + f[0]:"");
+	if (val != nil)
+	{
+	    if (! haskey (features, f[1]:""))
+		features[f[1]:""] = $[];
+	    features[f[1]:"", f[2]:""] = val;
+	}
+    });
+}
+
+/**
+ * Initialize the features structure if needed
+ * Either read from /etc/YaST2/ProductFeatures or set default values
+ */
+global void InitIfNeeded () {
+    if (features != nil)
+	return;
+    if (Stage::normal () || Stage::firstboot())
+	Restore ();
+    else
+	InitFeatures (false);
+}
+
+/**
+ * Get value of a feature
+ * @param section string section of the feature
+ * @param features string feature name
+ * @return any the feature value
+ */
+global any GetFeature (string section, string feature) {
+    InitIfNeeded ();
+    any ret = features[section, feature]:nil;
+    if (ret == nil)
+	ret = "";
+    return ret;
+}
+
+/**
+ * Get value of a feature
+ * @param section string section of the feature
+ * @param features string feature name
+ * @return string the feature value
+ */
+global string GetStringFeature (string section, string feature) {
+    any value = GetFeature (section, feature);
+    if (value == nil)
+	return nil;
+    else if (is (value, string))
+	return (string)value;
+    else if (is (value, boolean))
+	return (boolean)value ? "yes" : "no";
+    else
+	return sformat ("%1", value);
+}
+
+/**
+ * Get value of a feature
+ * @param section string section of the feature
+ * @param features string feature name
+ * @return boolean the feature value
+ */
+global boolean GetBooleanFeature (string section, string feature) {
+    any value = GetFeature (section, feature);
+    if (value == nil)
+	return nil;
+    else if (is (value, boolean))
+	return (boolean)value;
+    else if (is (value, string) && tolower ((string)value) == "yes")
+	return true;
+    else
+	return false;
+
+}
+
+/**
+ * Set value of a feature
+ * @param section string section of the feature
+ * @param features string feature name
+ * @param value any the feature value
+ */
+global void SetFeature (string section, string feature, any value) {
+    InitIfNeeded ();
+    if (! haskey (features, section))
+	features[section] = $[];
+    features[section, feature] = value;
+}
+
+/**
+ * Set value of a feature
+ * @param section string section of the feature
+ * @param features string feature name
+ * @param value string the feature value
+ */
+global void SetStringFeature (string section, string feature, string value) {
+    SetFeature (section, feature, value);
+}
+
+/**
+ * Set value of a feature
+ * @param section string section of the feature
+ * @param features string feature name
+ * @param value boolean the feature value
+ */
+global void SetBooleanFeature (string section, string feature, boolean value) {
+    SetFeature (section, feature, value);
+}
+
+
+/* EOF */
+}

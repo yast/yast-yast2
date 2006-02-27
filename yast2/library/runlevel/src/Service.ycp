@@ -1,0 +1,469 @@
+/**
+ * File:	modules/Service.ycp
+ * Package:	yast2
+ * Summary:	Service manipulation
+ * Authors:	Martin Vidner <mvidner@suse.cz>
+ *		Petr Blahos <pblahos@suse.cz>
+ *		Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ *
+ * Functions for service (init script) handling used by other modules.
+ */
+
+{
+
+module "Service";
+textdomain "base";
+
+/***
+ * Services Manipulation
+ */
+
+/**
+ * @struct service
+ * One service is described by such map: <pre>
+  "servicename" : $[
+    "defstart" : [ "2", "3", "5", ], // Default-Start comment
+    "defstop"  : [ "0", "1", "6", ], // Default-Stop  comment
+
+    "reqstart" : [ "$network", "portmap" ], // Required-Start comment
+    "reqstop"  : [ "$network", "portmap" ], // Required-Stop  comment
+
+    "description" : "text...",       // Description comment
+
+    "start" : [ "3", "5", ], // which runlevels service is really started/stopped in
+    "stop"  : [ "3", "5", ], // read from /etc/init.d/rc?.d/* links
+
+    "started" : 0, // return from rcservice status (integer)
+
+    "dirty" : false, // was the entry changed?
+  ]</pre>
+ */
+
+/**
+ * Script location
+ */
+string init_d = "/etc/init.d";
+
+/**
+ * After a function returns an error, this holds an error message,
+ * including insserv stderr and possibly containing newlines.
+ *
+ * Set by
+ * checkExists: [Full]Info, Status, Enabled, Adjust, Finetune
+ *
+ * Never cleared.
+ */
+string error_msg = "";
+
+/**
+ * Check that a service exists.
+ * If not, set error_msg.
+ * @param name service name without a path, eg. nfsserver
+ * @return Return true if the service exists.
+ */
+define boolean checkExists (string name) {
+    if(name == nil || name == "") {
+	// Error message.
+	// %1 is a name of an init script in /etc/init.d,
+	// eg. nfsserver
+	error_msg = sformat (_("Empty service name: %1."), name);
+	y2error(1, error_msg);
+	return false;
+    }
+    if(! (boolean) SCR::Read(.init.scripts.exists, name)) {
+	// Error message.
+	// %1 is a name of an init script in /etc/init.d,
+	// eg. nfsserver
+	error_msg = sformat (_("Service %1 does not exist."), name);
+	y2error (1, error_msg);
+	return false;
+    }
+    return true;
+}
+
+/**
+ * Get service info without peeking if service runs.
+ * @param name name of the service
+ * @return Service information or empty map ($[])
+ */
+global define map Info (string name) {
+    if(!checkExists (name)) return $[];
+    map read = (map) SCR::Read (.init.scripts.runlevel, name);
+    map detail = read[name]:$[];
+    read = (map) SCR::Read (.init.scripts.comment, name);
+    map service = read[name]:$[];
+    return add (
+	add (service, "start", detail["start"]:[]),
+	"stop", detail["stop"]:[]);
+}
+
+/**
+ * Get service status.
+ *
+ * The status is the output from "service status".
+ * It should conform to LSB. 0 means the service is running.
+ * @param name name of the service
+ * @return init script exit status or -1 if it does not exist
+ */
+global define integer Status (string name) {
+    if(!checkExists (name)) return -1;
+    return (integer) SCR::Execute (.target.bash, sformat ("%2/%1 status", name, init_d), $["TERM":"raw"]);
+}
+
+/**
+ * Get service info and find out whether service is running.
+ * @param name name of the service
+ * @return service map or empty map ($[])
+ */
+global define map FullInfo (string name) {
+    if(!checkExists (name)) return $[];
+    return add (Info (name), "started", Status (name));
+}
+
+/**
+ * Call insserv -r and record errors.
+ * Does not check if it exists
+ * @param name service name
+ * @param force pass "-f" to insserv (workaround for #17608, #27370)
+ * @return success state
+ */
+define boolean serviceDisable (string name, boolean force) {
+    map ret = (map)SCR::Execute (.target.bash_output,
+			    sformat ("/sbin/insserv -r%3 %2/%1",
+				     name, init_d, force? "f": ""));
+    if (0 != ret["exit"]:-1)
+    {
+	// Error message.
+	// %1 is a name of an init script in /etc/init.d,
+	// Disabling means that the service should not start
+	// in appropriate runlevels, eg. at boot time.
+	// %2 is the stderr output of insserv(8)
+	error_msg = sformat(_("Unable to disable service %1:\n%2"),
+			    name, ret["stderr"]:"");
+	// the user is two levels up
+	y2error (2, error_msg);
+	return false;
+    }
+    return true;
+}
+
+/**
+ * Adjust runlevels in which the service runs.
+ * @param name service name
+ * @param action "disable" -- remove links, "enable" -- if there are
+ *    no links, set default, otherwise do nothing, "default" -- set
+ *    defaults.
+ * @return success state
+ */
+global define boolean Adjust (string name, string action) {
+    if (! checkExists (name))
+    {
+	return false;
+    }
+    map service = Info (name);
+    if ("disable" == action)
+    {
+	if (size (service["start"]:[]) != 0)
+	{
+	    return serviceDisable (name, false);
+	}
+	return true;
+    }
+    if (("default" == action) || ("enable" == action))
+    {
+	if ("enable" == action && size (service["start"]:[]) != 0)
+	{
+	    // nothing to do
+	    return true;
+	}
+	else
+	{
+	    map ret = (map)SCR::Execute (.target.bash_output,
+				    sformat ("/sbin/insserv -d %2/%1",
+					     name, init_d));
+	    if (0 != ret["exit"]:-1)
+	    {
+		// Error message.
+		// %1 is a name of an init script in /etc/init.d,
+		// Enabling means that the service should start
+		// in appropriate runlevels, eg. at boot time.
+		// %2 is the stderr output of insserv(8)
+		error_msg = sformat(_("Unable to enable service %1:\n%2"),
+				    name, ret["stderr"]:"");
+		y2error (1, error_msg);
+		return false;
+	    }
+	}
+	return true;
+    }
+    // not translated
+    error_msg = sformat ("Invalid parameter: %1", action);
+    y2internal (1, error_msg);
+    return false;
+}
+
+/**
+ * Set service to run in selected runlevels.
+ * @param name name of service to adjust
+ * @param rl list of runlevels in which service should start
+ * @return success state
+ */
+global define boolean Finetune (string name, list rl) {
+    if (! checkExists (name))
+    {
+	return false;
+    }
+
+    // Force because of #27370:
+    // RunlevelEd::Write has already solved the dependencies
+    // and calls us only once for each modified service.
+    // In general we cannot do it with dependencies in a single pass.
+
+    string rls = mergestring ((list<string>)rl, ",");
+    // we must remove it first because insserv start=... adds
+    // runlevels, not replace runlevels!!
+    if (! serviceDisable (name, true))
+    {
+	return false;
+    }
+
+    if (rls != "")
+    {
+	map ret = (map)SCR::Execute (.target.bash_output,
+				sformat ("/sbin/insserv -f %2/%1,start=%3",
+					 name, init_d, rls));
+	if (0 != ret["exit"]:-1)
+	{
+	    // Error message.
+	    // %1 is a name of an init script in /etc/init.d,
+	    // Enabling means that the service should start
+	    // in appropriate runlevels, eg. at boot time.
+	    // %2 is the stderr output of insserv(8)
+	    // %3 is a comma separated list of runlevels
+	    error_msg = sformat(_("Unable to enable service %1 in runlevels %2:\n%3"),
+				name, rls, ret["stderr"]:"");
+	    y2error (1, error_msg);
+	    return false;
+	}
+    }
+    return true;
+}
+
+/**
+ * Check if service is enabled
+ *
+ * Returns true if any link in /etc/init.d/rc?.d/ exists for this
+ * script. If service does not exist, logs an error.
+ *
+ * @param name service name
+ * @return true if service is set to run in any runlevel
+ */
+global define boolean Enabled (string name) {
+    if(!checkExists (name)) return false;
+    map<string, any> details = (map<string, any>) SCR::Read (.init.scripts.runlevel, name);
+    map<string, any> detail  = (map<string, any>) details[name]:$[];
+    return size(detail["start"]:[]) != 0;
+}
+
+/**
+ * Run init script.
+ * @param name init service name
+ * @param param init script argument
+ * @return integer exit value
+ */
+global define integer RunInitScript (string name, string param) {
+    y2milestone("Running service initscript %1 %2", name, param);
+    return (integer) SCR::Execute (.target.bash,
+	    sformat ("%2/%1 %3", name, init_d, param),
+	    $[ "TERM" : "raw"]);
+}
+
+
+/* Time out for background agent - init script run */
+integer script_time_out = 60000;
+integer sleep_step = 20;
+
+/**
+ * Run init script with a time-out.
+ * @param name init service name
+ * @param param init script argument
+ * @return integer exit value
+ */
+global define integer RunInitScriptWithTimeOut (string name, string param) {
+    y2milestone("Running service initscript %1 %2", name, param);
+    string command = sformat ("TERM=raw %2/%1 %3", name, init_d, param);
+
+    // default return code
+    integer return_code = nil;
+
+    // starting the process
+    boolean started = (boolean)SCR::Execute(.background.run_output_err, command);
+    if (!started) {
+	y2error("Cannot run '%1'", command);
+	return return_code;
+    }
+    y2debug("Running: %1", command);
+
+    list<string> script_out = [];
+    integer time_spent = 0;
+    boolean cont_loop = true;
+
+    // while continuing is needed and while it is possible
+    while (cont_loop && ((boolean) SCR::Read(.background.output_open))) {
+	if (time_spent >= script_time_out) {
+	    y2error("Command '%1' timed-out after %2 mces", command, time_spent);
+	    cont_loop = false;
+	}
+
+	// sleep a little while
+	time_spent = time_spent + sleep_step;
+	sleep(sleep_step);
+    }
+    y2milestone("Time spent: %1 msec", time_spent);
+    
+    // fetching the return code if not timed-out
+    if (cont_loop) {
+	return_code = (integer) SCR::Read(.background.status);
+    }
+
+    // killing the process (if it still runs)
+    SCR::Execute(.background.kill, "");
+
+    return return_code;
+}
+
+string lang = nil;
+
+/**
+ * Run init script and return output
+ *
+ * Run init script and also return its output (stdout and stderr merged).
+ * @param name init service name
+ * @param param init script argument
+ * @return A map of $[ "stdout" : "...", "stderr" : "...", "exit" : int]
+ */
+global define map RunInitScriptOutput (string name, string param) {
+    map env = $["TERM": "raw"];
+
+    // encoding problems - append .UTF-8 to LANG
+    if (lang == nil)
+    {
+	map<string, any> ex = (map<string, any>) SCR::Execute (.target.bash_output, "echo -n $LANG");
+	lang = ex["stdout"]:"";
+	list ll = splitstring (lang, ".");
+	lang = ll[0]:"";
+	if (lang != "")
+	{
+	    lang = lang + ".UTF-8";
+	}
+	y2debug ("LANG: %1", lang);
+    }
+    if (lang != "")
+    {
+	env = add (env, "LANG", lang);
+    }
+
+    // looks like a bug in bash...
+    string locale_debug = "";
+    // locale_debug = "; ls /nono 2>&1; /usr/bin/locale; /usr/bin/env";
+
+    return (map)SCR::Execute (.target.bash_output,
+			 sformat ("%2/%1 %3 2>&1", name, init_d, param)
+			 + locale_debug,
+			 env);
+}
+
+/**
+ * Enable service
+ * @param service service to be enabled
+ * @return true if operation is  successful
+ */
+global define boolean Enable(string service) {
+    if(!checkExists(service)) return false;
+    y2milestone("Enabling service %1", service);
+    return Adjust(service, "enable");
+}
+
+/**
+ * Disable service
+ * @param service service to be disabled
+ * @return true if operation is  successful
+ */
+global define boolean Disable(string service) {
+    if(!checkExists(service)) return false;
+    y2milestone("Disabling service %1", service);
+    return Adjust(service, "disable");
+}
+
+/**
+ * Start service
+ * @param service service to be started
+ * @return true if operation is  successful
+ */
+global define boolean Start(string service) {
+    if(!checkExists(service)) return false;
+    integer ret = nil;
+    y2milestone("Starting service %1", service);
+    ret = RunInitScript(service, "start");
+    y2debug("ret=%1", ret);
+    return ret == 0;
+}
+
+/**
+ * Restart service
+ * @param service service to be restarted
+ * @return true if operation is  successful
+ */
+global define boolean Restart(string service) {
+    if(!checkExists(service)) return false;
+    integer ret = nil;
+    y2milestone("Restarting service %1", service);
+    ret = RunInitScript(service, "restart");
+    y2debug("ret=%1", ret);
+    return ret == 0;
+}
+
+/**
+ * Reload service
+ * @param service service to be reloaded
+ * @return true if operation is  successful
+ */
+global define boolean Reload(string service) {
+    if(!checkExists(service)) return false;
+    integer ret = nil;
+    y2milestone("Reloading service %1", service);
+    ret = RunInitScript(service, "reload");
+    y2debug("ret=%1", ret);
+    return ret == 0;
+}
+
+/**
+ * Stop service
+ * @param service service to be stopped
+ * @return true if operation is  successful
+ */
+global define boolean Stop(string service) {
+    if(!checkExists(service)) return false;
+    integer ret = nil;
+    y2milestone("Stopping service %1", service);
+    ret = RunInitScript(service, "stop");
+    y2debug("ret=%1", ret);
+    return ret == 0;
+}
+
+/**
+ * Error Message
+ *
+ * If a Service function returns an error, this function would return
+ * an error message, including insserv stderr and possibly containing
+ * newlines.
+ * @return error message from the last operation
+ */
+global define string Error() {
+    return error_msg;
+}
+
+/* EOF */
+}

@@ -1,0 +1,91 @@
+/**
+ * File:
+ *      initrd.ycp
+ *
+ * Module:
+ *      Bootloader
+ *
+ * Summary:
+ *      testsuite for initrd module
+ *
+ * Authors:
+ *      Jiri Srain <jsrain@suse.cz>
+ *
+ * $Id$
+ *
+ */
+
+// testedfiles: Initrd.ycp Testsuite.ycp
+
+{
+    include "testsuite.ycp";
+
+    // minimal "don't care" SCR data to work with the constructor
+    map READ = $[
+	"sysconfig" : $[
+	    "kernel" : $[
+		"INITRD_MODULES" : "reiserfs lvmmod",
+	    ],
+        ],
+	"probe" : $[
+	    "architecture" : "i386",
+	    "has_pcmcia" : false,
+	    "has_smp" : false,
+	    "system" : nil,
+	    "is_uml" : false,
+	],
+	"target" : $[
+	    "string" : "",
+	    "tmpdir" : "/tmp"
+	],
+	"etc" : $[
+	    "install_inf" : $[
+		"InstMode" : "",
+		"InitrdModules" : "driver1 driver2 driver3",
+	    ],
+	],
+    ];
+
+    TESTSUITE_INIT ([READ, $[], $[]], 0);
+
+    import "Initrd";
+    import "Mode";
+    import "Stage";
+
+    TEST(``(Initrd::ListModules ()), [READ, $[], $[]], 0);
+    DUMP("Now reseting");
+    TEST(``(Initrd::Reset ()), [READ, $[], $[]], 0);
+    DUMP("Reading again");
+    TEST(``(Initrd::ListModules ()), [READ, $[], $[]], 0);
+    DUMP("Reseting again");
+    TEST(``(Initrd::Reset ()), [READ, $[], $[]], 0);
+    DUMP("Adding ne2k");
+    TEST(``(Initrd::AddModule ("ne2k", "io=0x300, irq=5")),
+	[READ, $[], $[]], 0);
+    TEST(``(Initrd::ListModules ()), [READ, $[], $[]], 0);
+    DUMP("Removing lvmmod");
+    TEST(``(Initrd::RemoveModule ("lvmmod")), [READ, $[], $[]], 0);
+    TEST(``(Initrd::ListModules ()), [READ, $[], $[]], 0);
+    DUMP("Writing");
+    TEST(``(Initrd::Write ()), [READ, $[], $[]], 0);
+    DUMP("Importing with filtered module");
+    TEST(``(Initrd::Import ($["list" : ["ne2k", "xfs_dmapi", "xfs_support", "lvmmod"]])), [READ, $[], $[]], 0);
+    DUMP("Writing");
+    TEST(``(Initrd::Write ()), [READ, $[], $[]], 0);
+    DUMP("Setting Mode::Update");
+    Mode::SetMode ("update");
+    DUMP("Importing with filtered module");
+    TEST(``(Initrd::Import ($["list" : ["ne2k", "xfs_dmapi", "xfs_support", "lvmmod"]])), [READ, $[], $[]], 0);
+    TEST(``(Initrd::ListModules ()), [READ, $[], $[]], 0);
+    DUMP("Writing");
+    TEST(``(Initrd::Write ()), [READ, $[], $[]], 0);
+    DUMP("Resetting for installation test");
+    TEST(``(Stage::Set ("initial")), [READ, $[], $[]], 0);
+    TEST(``(Mode::SetMode ("installation")), [READ, $[], $[]], 0);
+    TEST (``(Initrd::Reset ()), [READ, $[], $[]], 0);
+    DUMP ("Testing keeping installation order");
+    TEST(``(Initrd::AddModule ("ne2k", "")), [READ, $[], $[]], 0);
+    TEST(``(Initrd::AddModule ("driver3", "")), [READ, $[], $[]], 0);
+    TEST(``(Initrd::AddModule ("driver2", "")), [READ, $[], $[]], 0);
+    TEST(``(Initrd::ListModules ()), [READ, $[], $[]], 0);
+}

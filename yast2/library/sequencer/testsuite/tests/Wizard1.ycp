@@ -1,0 +1,7 @@
+{
+
+integer cur = 0;
+list clicks = [ `next, `next, `finish ];
+include "./tests/Wizard.yh";
+
+}

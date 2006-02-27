@@ -1,0 +1,7 @@
+{
+
+integer cur = 0;
+list clicks = [ `back ];
+include "./tests/Wizard.yh";
+
+}

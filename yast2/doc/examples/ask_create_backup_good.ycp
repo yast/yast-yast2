@@ -1,0 +1,10 @@
+// Improved version of ask_create_backup_bad.ycp:
+//
+// Note there is no superfluous headline any more,
+// the text is concise, and there is no more reference
+// to "YaST2" (a user shouldn't need to know what that is)
+{
+    import "Popup";
+
+    boolean answer = Popup::YesNo( "Create a backup of the configuration files?" );
+}

@@ -1,0 +1,660 @@
+/**
+ * File:	modules/Kernel.ycp
+ * Package:	Installation
+ * Summary:	Kernel related functions and data
+ * Authors:	Klaus Kaempf <kkaempf@suse.de>
+ *		Arvin Schnell <arvin@suse.de>
+ *
+ * $Id$
+ *
+ * <ul>
+ * <li>determine kernel rpm</li>
+ * <li>determine flags</li>
+ * <li>determine hard reboot</li>
+ * </ul>
+ */
+
+{
+    module "Kernel";
+
+    import "Arch";
+    import "Mode";
+    import "Linuxrc";
+    import "Stage";
+
+    textdomain "base";
+
+// kernel packages and binary
+
+boolean kernel_probed = false;
+
+/**
+ * the name of the kernel binary below '/boot'.
+ */
+string binary = "vmlinuz";
+
+/**
+ * a list kernels to be installed.
+ */
+list<string> kernel_packages = [];
+
+/**
+ * the final kernel to be installed after verification and
+ * availability checking
+ */
+string final_kernel = "";
+
+// kernel commandline
+
+boolean cmdline_parsed = false;
+
+/**
+ * string the kernel vga paramter
+ */
+string vgaType = "";
+
+/**
+ * if "suse_update" given in cmdline
+ */
+boolean suse_update = false;
+
+/**
+ * string the kernel command line
+ * Don't write it directly, @see: AddCmdLine()
+ */
+string cmdLine = "";
+
+// modules loaded on boot
+
+/**
+ * List of changes in /etc/sysconfig/kernel:MODULES_LOADED_ON_BOOT
+ * Needs to be stored as a list of changes due to the fact that some RPMs
+ * change the variable during installation
+ * list member is a map with keys "operation" (value "add" or "detete") and
+ * "name" (name of the module)
+ */
+list<map<string,string> > kernel_modules_to_load = [];
+
+
+// kernel was reinstalled
+
+/**
+ *  A flag to indicate if a popup informing about the kernel change should
+ *  be displayed by inst_suseconfig.
+ */
+boolean inform_about_kernel_change = false;
+
+// other variables
+
+/**
+ * fallback map for kernel
+ */
+map<string, string> fallbacks = $[
+	"kernel-bigsmp" : "kernel-smp",
+	"kernel-smp": "kernel-default"
+];
+
+void ParseInstallationKernelCmdline ();
+
+
+    //---------------------------------------------------------------
+    // local defines
+
+/**
+ * Hide passwords in command line option string
+ * @param in input string
+ * @return string outpit string
+ */
+string HidePasswords(string in)
+{
+    string ret = "";
+
+    if (in != nil)
+    {
+	list<string> parts = splitstring(in, " ");
+
+	boolean first = true;
+	foreach(string p, parts, {
+		string cmdopt = p;
+		if (regexpmatch(p, "^INST_PASSWORD="))
+		{
+		    cmdopt = "INST_PASSWORD=******";
+		}
+		else if (regexpmatch(p, "^FTPPASSWORD="))
+		{
+		    cmdopt = "FTPPASSWORD=********";
+		}
+
+		if (first)
+		{
+		    first = false;
+		}
+		else
+		{
+		    ret = ret + " ";
+		}
+
+		ret = ret + cmdopt;
+	    }
+	);
+    }
+    else
+    {
+	ret = nil;
+    }
+
+    return ret;
+}
+
+    /**
+     * AddCmdLine ()
+     * @param	string	name of parameter
+     * @param	string	args of parameter
+     *
+     * add "name=args" to kernel boot parameters
+     * add just "name" if args = ""
+     * @see: cmdLine
+     */
+    global define void AddCmdLine (string name, string arg)
+    {
+	if (! cmdline_parsed)
+	    ParseInstallationKernelCmdline ();
+	cmdLine = cmdLine + " " + name;
+	if (arg != "")
+	{
+	    cmdLine = cmdLine + "=" + arg;
+	}
+	y2milestone ("cmdLine '%1'", HidePasswords(cmdLine));
+	return;
+    }
+
+    /**
+     * @param	cmdline	string
+     *
+     * @return	void
+     * Filters out yast2 specific boot parameters and sets
+     * Parameters to the important cmdline parts.
+     */
+    define void ExtractCmdlineParameters (string line)
+    {
+	// discard \n
+	line = deletechars (line, "\n");
+
+	// list of parameters to be discarded (yast internals)
+
+	list discardlist = [
+	];
+
+	list<string> cmdlist = [];
+
+	integer parse_index = 0;
+	boolean in_quotes = false;
+	boolean after_backslash = false;
+	string current_param = "";
+	while (parse_index < size (line))
+	{
+	    string current_char = substring (line, parse_index, 1);
+	    if (current_char == "\"" && ! after_backslash)
+		in_quotes = ! in_quotes;
+	    if (current_char == " " && ! in_quotes)
+	    {
+		cmdlist = add (cmdlist, current_param);
+		current_param = "";
+	    }
+	    else
+		current_param = current_param + current_char;
+	    if (current_char == "\\")
+		after_backslash = true;
+	    else
+		after_backslash = false;
+	    parse_index = parse_index + 1;
+	}
+	cmdlist = add (cmdlist, current_param);
+
+//	this is wrong because of eg. >>o="p a r a m"<<, see bugzilla 26147
+//	list cmdlist = splitstring (line, " ");
+
+	// some systems (pseries) can autodetect the serial console
+	if (contains (cmdlist, "AUTOCONSOLE"))
+	{
+	    discardlist = add (discardlist, "console");
+	    discardlist = add (discardlist, "AUTOCONSOLE");
+	}
+
+	// backdoor to re-enable update on UL/SLES
+	if (contains (cmdlist, "suse_update"))
+	{
+	    discardlist = add (discardlist, "suse_update");
+	    suse_update = true;
+	}
+
+	foreach (string parameter, cmdlist,
+	{
+	    // split "key=value" to ["key", "value"]
+
+	    list<string> param_value_list = splitstring (parameter, "=");
+	    string key = param_value_list[0]:"";
+	    string value = param_value_list[1]:"";
+
+	    // now only collect keys not in discardlist
+	    if (size (param_value_list) > 0)
+	    {
+		if (!contains (discardlist, key))
+		{
+		    if (param_value_list[0]:"" == "vga")
+		    {
+			if (regexpmatch (value, "^(0x)?[0-9a-fA-F]+$")
+			    || contains (["normal", "ext", "ask"], value))
+			{
+			    vgaType = value;
+			}
+			else
+			{
+			    y2warning ("Incorrect VGA kernel parameter: %1",
+				value);
+			}
+		    }
+		    else
+		    {
+			AddCmdLine (key, value);
+		    }
+		}
+	    }
+	});
+
+	return;
+    }
+
+/**
+ * Parse installation kernel commad line got from install.inf
+ */
+void ParseInstallationKernelCmdline () {
+    cmdline_parsed = true;
+    if (! (Stage::initial () || Stage::cont ()))
+	return;
+    string tmp = (string) SCR::Read (.etc.install_inf.Cmdline);
+
+    y2milestone ("cmdline from install.inf is: %1", HidePasswords(tmp));
+    if (tmp != nil) {
+	// extract extra boot parameters given in installation
+	ExtractCmdlineParameters (tmp);
+    }
+}
+
+/**
+ * Get the vga= kernel parameter
+ * @return string the vga= kernel parameter
+ */
+global string GetVgaType () {
+    if (! cmdline_parsed)
+	ParseInstallationKernelCmdline ();
+    return vgaType;
+}
+
+/**
+ * Set the vga= kernel argument
+ * FIXME is heer because of bootloader module, should be removed
+ */
+global void SetVgaType (string new_vga) {
+    if (! cmdline_parsed)
+	ParseInstallationKernelCmdline ();
+    vgaType = new_vga;
+}
+
+/**
+ * Check if suse_update kernel command line argument was passed
+ * @return boolean true if it was
+ */
+global boolean GetSuSEUpdate () {
+    if (! cmdline_parsed)
+	ParseInstallationKernelCmdline ();
+    return suse_update;
+}
+
+/**
+ * Get the kernel command line
+ * @return string the command line
+ */
+global string GetCmdLine () {
+    if (! cmdline_parsed)
+	ParseInstallationKernelCmdline ();
+    return cmdLine;
+}
+
+/**
+ * Set the kernel command line
+ * FIXME is heer because of bootloader module, should be removed
+ */
+global void SetCmdLine (string new_cmd_line) {
+    if (! cmdline_parsed)
+	ParseInstallationKernelCmdline ();
+    cmdLine = new_cmd_line;
+}
+
+
+
+    //---------------------------------------------------------------
+
+    /**
+     * select kernel depending on architecture and system type.
+     *
+     * @return void
+     */
+    global define void ProbeKernel ()
+    {
+	if (!Arch::has_smp ())
+	{
+	    y2milestone ("ProbeKernel: non SMP board");
+	    kernel_packages = ["kernel-default"];
+	}
+	else
+	{
+	    y2milestone ("ProbeKernel: SMP board");
+	    kernel_packages = ["kernel-smp"];
+	}
+
+	if (Arch::is_uml ())
+	{
+	    y2milestone ("ProbeKernel: UML");
+	    kernel_packages = ["kernel-um"];
+	}
+	else if (Arch::is_xen ())
+	{
+	    y2milestone ("ProbeKernel: XEN");
+	    kernel_packages = ["kernel-xen"];
+	}
+	else if (Arch::i386 ())
+	{
+	    // get flags from WFM /proc/cpuinfo (for pae and tsc tests below)
+
+	    string cpuinfo_flags = (string) SCR::Read(.proc.cpuinfo.value."0"."flags");	// check only first processor
+	    list cpuflags = (size(cpuinfo_flags) > 0) ? splitstring(cpuinfo_flags, " ") : [];
+
+	    // check for "roughly" >= 4GB memory (see bug #40729)
+	    list memories = (list) SCR::Read(.probe.memory);
+	    integer memsize = memories[0,"resource","phys_mem",0,"range"]:0;
+	    integer fourGB = 0x0C0000000;
+	    y2milestone ("Physical memory %1", memsize);
+
+	    // for memory > 4GB and PAE support we install kernel-bigsmp,
+	    // regardles of SMP or not.
+	    if (memsize >= fourGB && contains (cpuflags, "pae"))
+	    {
+		y2milestone ("Kernel switch: mem >= 4GB && PAE");
+		kernel_packages = ["kernel-bigsmp"];
+	    }
+	}
+	else if (Arch::alpha ())
+	{
+	    if (!Arch::has_smp () && Linuxrc::serial_console ())
+	    {
+		kernel_packages = ["kernel-serial"];
+	    }
+	}
+	else if (Arch::ppc ())
+	{
+	    binary = "vmlinux";
+
+	    if (Arch::board_mac_new () || Arch::board_mac_old ())
+	    {
+	        if (Arch::board_compatible () == "MacRISC4")
+		{
+		    // G5 and newer
+		    kernel_packages = ["kernel-ppc64"];
+		}
+		else
+		{
+		    // MacRISC, MacRISC2, MacRISC3
+		    kernel_packages = ["kernel-default"];
+		}
+	    }
+	    else if (Arch::board_chrp ())
+	    {
+		string chrp_cpu = "";
+		list<map> cpuProbe = (list<map>) SCR::Read(.probe.cpu);
+		foreach (map cpuProbe_map, cpuProbe, {
+		    chrp_cpu = cpuProbe_map["model"]:"";
+		    chrp_cpu = tolower (chrp_cpu);
+		});
+
+		//   booting a 32bit kernel on POWER3
+		if ((issubstring (chrp_cpu, "power3") && Arch::ppc32 ())
+		    || Arch::ppc64 ())
+		{
+		    kernel_packages = ["kernel-ppc64"];
+		}
+		else
+		{
+		    kernel_packages = ["kernel-default"];
+		}
+	    }
+	    else if (Arch::board_iseries ())
+	    {
+		kernel_packages = ["kernel-iseries64"];
+	    }
+	    else if (Arch::board_prep ())
+	    {
+		kernel_packages = ["kernel-default"];
+	    }
+	    // if hwinfo could not match the board type, use the cpu type.
+	    else if (Arch::ppc32 ())
+	    {
+		kernel_packages = ["kernel-default"];
+	    }
+	    else
+	    {
+		kernel_packages = ["kernel-ppc64"];
+	    }
+	}
+	else if (Arch::ia64 ())
+	{
+	    kernel_packages = ["kernel-default"];
+	}
+	else if (Arch::s390 ())
+	{
+	    if (Arch::s390_64 ())
+		kernel_packages = ["kernel-s390x"];
+	    else
+		kernel_packages = ["kernel-s390"];
+
+	    binary   = "image";
+	}
+
+	kernel_probed = true;
+	y2milestone("ProbeKernel determined: %1", kernel_packages);
+
+    }  // ProbeKernel ()
+
+/*
+ * Set a custom kernel.
+ * @param custom_kernels a list of kernel packages
+ */
+global define void SetPackages (list<string> custom_kernels) {
+    // probe to avoid later probing
+    if (! kernel_probed)
+    {
+	ProbeKernel ();
+    }
+    kernel_packages = custom_kernels;
+}
+
+
+// functinos related to kernel packages
+
+/**
+ * Het the name of kernel binary under /boot
+ * @return string the name of the kernel binary
+ */
+global string GetBinary () {
+    if (! kernel_probed)
+    {
+	ProbeKernel ();
+    }
+    return binary;
+}
+
+/**
+ * Get the list of kernel packages
+ * @return a list of kernel packages
+ */
+global list<string> GetPackages () {
+    if (! kernel_probed)
+    {
+	ProbeKernel ();
+    }
+    return kernel_packages;
+}
+
+/**
+ * Compute kernel package
+ * @return string selected kernel
+ */
+global string ComputePackage () {
+    list<string> packages = GetPackages ();
+    string the_kernel = packages[0]:"";
+    y2milestone ("Selecting '%1' as kernel package", the_kernel);
+    while (the_kernel != ""
+	   && !Pkg::IsAvailable (the_kernel))
+    {
+	the_kernel = fallbacks[the_kernel]:"";
+	y2milestone ("Not available, falling back to '%1'", the_kernel);
+    }
+
+    if (the_kernel != "")
+    {
+	final_kernel = the_kernel;
+    }
+    else
+    {
+	y2warning ("%1 not available, using kernel-default",
+		   kernel_packages);
+
+	final_kernel = "kernel-default";
+    }
+    return final_kernel;
+}
+
+global string GetFinalKernel () {
+    if (final_kernel == nil)
+    {
+	ComputePackage ();
+    }
+    return final_kernel;
+}
+
+/**
+ * Compute kernel package for the specified base kernel package
+ * @param base string the base kernel package name (eg. kernel-default)
+ * @param check_avail boolean if true, additional packages are checked for
+ *  for being available on the medias before adding to the list
+ * @return a list of all kernel packages (including the base package) that
+ *  are to be installed together with the base package
+ */
+global list<string> ComputePackagesForBase (string base, boolean check_avail) {
+    // Note: kernel-*-nongpl packages have been dropped, use base only
+    list<string> ret = [ base ];
+    y2milestone ("Packages for base %1: %2", base, ret);
+    return ret;
+}
+
+/**
+ * Compute kernel packages
+ * @return list of selected kernel packages
+ */
+global list <string> ComputePackages () {
+    string kernel = ComputePackage ();
+    return ComputePackagesForBase (kernel, true);
+}
+
+// functions related to kernel's modules loaded on boot
+
+/**
+ * Add a kernel module to the list of modules to load after boot
+ * @param string module name
+ * add the module name to sysconfig variable
+ */
+global void AddModuleToLoad (string name) {
+    y2milestone ("Adding module to be loaded at boot: %1", name);
+    kernel_modules_to_load = add (kernel_modules_to_load, $[
+	"operation" : "add",
+	"name" : name,
+    ]);
+}
+
+/**
+ * Remove a kernel module from the list of modules to load after boot
+ * @param name string the name of the module
+ */
+global void RemoveModuleToLoad (string name) {
+    y2milestone ("Removing module to be loaded at boot: %1", name);
+    kernel_modules_to_load = add (kernel_modules_to_load, $[
+	"operation" : "remove",
+	"name" : name,
+    ]);
+}
+
+/**
+ * SaveModuleToLoad ()
+ * save the sysconfig variable to the file
+ * @return boolean true on success
+ */
+global boolean SaveModulesToLoad () {
+    // if nothing changed, just return success
+    if (size (kernel_modules_to_load) == 0)
+	return true;
+
+    // first read current status
+    string modules_to_load_str = (string)
+	SCR::Read (.sysconfig.kernel.MODULES_LOADED_ON_BOOT);
+    if (modules_to_load_str == nil)
+	modules_to_load_str = "";
+    list<string> modules_to_load = splitstring (modules_to_load_str, " ");
+    modules_to_load = filter (string s, modules_to_load, {return s != "";});
+    y2milestone ("Read modules to be loaded at boot: %1", modules_to_load);
+
+    // apply operations on the list
+    foreach (map<string,string> op_desc, kernel_modules_to_load, {
+	string op = op_desc["operation"]:"";
+	string name = op_desc["name"]:"";
+	if (op == "remove")
+	{
+	    modules_to_load = filter (string m, modules_to_load, {
+		return m != name;
+	    });
+	}
+	else if (op == "add")
+	{
+	    if (! contains (modules_to_load, name))
+		modules_to_load = add (modules_to_load, name);
+	}
+    });
+
+    // and sabe the list
+    y2milestone ("Saving modules to be loaded at boot: %1", modules_to_load);
+    modules_to_load_str = mergestring (modules_to_load, " ");
+    SCR::Write (.sysconfig.kernel.MODULES_LOADED_ON_BOOT, modules_to_load_str);
+    return (boolean)SCR::Write (.sysconfig.kernel, nil);
+}
+
+// kernel was reinstalled stuff
+
+/**
+ *  Set inform_about_kernel_change.
+ */
+global define void SetInformAboutKernelChange (boolean b)
+{
+    inform_about_kernel_change = b;
+}
+
+/**
+ *  Get inform_about_kernel_change.
+ */
+global define boolean GetInformAboutKernelChange ()
+{
+    return inform_about_kernel_change;
+}
+
+
+
+/* EOF */
+}
