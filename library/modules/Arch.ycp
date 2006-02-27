@@ -27,7 +27,11 @@ boolean _is_uml = nil;
 
 boolean _has_smp = nil;
 
+// Xen domain (dom0 or domU)
 boolean _is_xen = nil;
+
+// Xen dom0
+boolean _is_xen0 = nil;
 
 /* ************************************************************ */
 /* system architecture						*/
@@ -321,7 +325,7 @@ global boolean is_uml () {
 /* XEN stuff							*/
 
 /**
- * true if XEN
+ * true if Xen kernel is running (dom0 or domU)
  */
 global boolean is_xen () {
     if (_is_xen == nil) {
@@ -333,6 +337,28 @@ global boolean is_xen () {
     }
 
     return _is_xen;
+}
+
+/**
+ * true if dom0 Xen kernel is running
+ */
+global boolean is_xen0 () {
+    if (_is_xen0 == nil) {
+	// dom0 Xen kernel has /proc/xen/xsd_port file
+	map stat = (map)SCR::Read(.target.stat, "/proc/xen/xsd_port");
+	y2debug("stat /proc/xen/xsd_port: %1", stat);
+
+	_is_xen0 = (size(stat) > 0);
+    }
+
+    return _is_xen0;
+}
+
+/**
+ * true if domU Xen kernel is running
+ */
+global boolean is_xenU () {
+    return (is_xen() && !is_xen0());
 }
 
 /* ************************************************************ */

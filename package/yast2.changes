@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 27 14:04:10 CET 2006 - lslezak@suse.cz
+
+- Arch::is_xen0() and Arch::is_xenU()
+- 2.13.33
+
+-------------------------------------------------------------------
 Thu Feb 23 13:10:38 CET 2006 - mvidner@suse.cz
 
 - ag_initscripts: no need to use absolute paths to awk and friends
