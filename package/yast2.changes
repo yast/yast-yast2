@@ -3,6 +3,7 @@ Fri Mar 10 23:17:46 CET 2006 - jsrain@suse.de
 
 - store all installation options in /etc/YaST2/Productfeatures
   (#156388)
+- 2.13.35
 
 -------------------------------------------------------------------
 Fri Mar 10 17:12:00 CET 2006 - mvidner@suse.cz
