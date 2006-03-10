@@ -1079,5 +1079,38 @@ global string WrapAt(string text, integer width, string split_string) {
     return new_string;
 }
 
+/**
+ * Make a random base-36 number.
+ * srandom should be called beforehand.
+ * @param len string length
+ * @return random string of 0-9 and a-z
+ */
+global string Random (integer len) {
+    if (len <= 0)
+    {
+	return "";
+    }
+    string digits = cdigit + clower; // uses the character classes from above
+    integer base = size (digits);
+    integer max = 1;
+    integer i = len;
+    while (i > 0)
+    {
+	max = max * base;
+	i = i - 1;
+    }
+    integer rnum = random (max);
+    string ret = "";
+    i = len;
+    while (i > 0)
+    {
+	integer digit = rnum % base;
+	rnum = rnum / base;
+	ret = ret + substring (digits, digit, 1);
+	i = i -1;
+    }
+    return ret;
+}
+
 /* EOF */
 }

@@ -1,8 +1,10 @@
 -------------------------------------------------------------------
-Fri Mar 10 17:06:59 CET 2006 - mvidner@suse.cz
+Fri Mar 10 17:12:00 CET 2006 - mvidner@suse.cz
 
 - Start ncurses UI in non-threaded mode to enable spawning of
   interactive processes (like w3m for suseRegister, #150799).
+- Added String::Random (#157107).
+- 2.13.34
 
 -------------------------------------------------------------------
 Mon Feb 27 14:04:10 CET 2006 - lslezak@suse.cz
