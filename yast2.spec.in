@@ -2,7 +2,6 @@
 
 @HEADER@
 BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-pkg-bindings yast2-testsuite
-Source1:	yast2.post
 # Need the new file popups
 Requires:	yast2-core >= 2.7.1
 Requires:	yast2_ui yast2_theme
@@ -36,9 +35,6 @@ Summary:	Documentation for Wizard and Sequencer
 -
 
 @PREP@
-cd ..
-mkdir -p scripts
-cp -v %{SOURCE1} scripts
 
 @BUILD@
 
@@ -63,8 +59,6 @@ mkdir -p "$RPM_BUILD_ROOT"@schemadir@/autoyast/rnc
 mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 
 @CLEAN@
-
-%post -f ../scripts/yast2.post
 
 %files
 %defattr(-,root,root)
@@ -114,9 +108,6 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 #packags
 %dir @yncludedir@/packages
 @yncludedir@/packages/*.ycp
-
-#features
-@fillupdir@/*
 
 # documentation
 %files devel

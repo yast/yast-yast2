@@ -123,10 +123,18 @@ global map<string,any> GetSection(string section_name) {
  */
 global void Save() {
     InitFeatures (false);
-    foreach (list<string> f, features_to_save, {
-	path p = .product.features + f[0]:"";
-	string value = GetStringFeature (f[1]:"", f[2]:"");
-	SCR::Write (p, value);
+    if (Mode::update()) // in case of update old file has different format
+	SCR::Execute (.target.bash, "test -f /etc/YaST2/ProductFeatures && /bin/rm /etc/YaST2/ProductFeatures");
+    foreach (string group, map<string,any> options, features, {
+	foreach (string key, any value, options, {
+	    if (is (value, map) || is (value, list) || is (value, symbol))
+		y2debug ("Skipping option %1", key);
+	    else
+	    {
+		string strval = GetStringFeature (group, key);
+		SCR::Write (.product.features.value + group + key, strval);
+	    }
+	});
     });
     SCR::Write (.product.features, nil );     // flush
 }
@@ -136,18 +144,13 @@ global void Save() {
  */
 global void Restore() {
     InitFeatures (true);
-    list<string> available = (list<string>)SCR::Dir (.product.features);
-    list<list<string> > to_read = filter (list<string> f, features_to_save, {
-	return contains (available, f[0]:"");
-    });
-    foreach (list<string> f, to_read, {
-	any val = SCR::Read (.product.features + f[0]:"");
-	if (val != nil)
-	{
-	    if (! haskey (features, f[1]:""))
-		features[f[1]:""] = $[];
-	    features[f[1]:"", f[2]:""] = val;
-	}
+    list<string> groups = (list<string>)SCR::Dir (.product.features.section);
+    foreach (string group, groups, {
+	features[group] = features[group]:$[];
+	list<string> values = (list<string>)SCR::Dir (.product.features.value + group);
+	foreach (string v, values, {
+	    features[group, v] = SCR::Read (.product.features.value + group + v);
+	});
     });
 }
 

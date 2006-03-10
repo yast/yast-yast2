@@ -1,17 +1,22 @@
-/**
- * File:
- *   cfg_apache.scr
- * Summary:
- *   SCR Agent for reading/writing /etc/sysconfig/apache
- *   using the sysconfig-agent
- *
- * $Id$
- *
- * Read/Sets the values defined in <tt>/etc/sysconfig/apache</tt>
- * in an easy manner.
- */
+#
+
 .product.features
 
 `ag_ini(
-  `SysConfigFile("/etc/YaST2/ProductFeatures")
+    `IniAgent("/etc/YaST2/ProductFeatures", $[
+	"options" : [ "no_nested_sections" ],
+	"sections" : [
+	    $[
+		"begin" : [ "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*", "[%s]" ],
+	    ],
+	],
+	// we need to exclude ; because of the second matching rule
+	"params" : [
+	    $[
+		"match" : [ "^[ \t]*([_a-zA-Z0-9]+)[ \t]*=[ \t]*\"(.*)\"[ \t]*$" , "\t%s = \"%s\""],
+	    ]
+	]
+    ]
+  )
 )
+
