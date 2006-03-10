@@ -1,8 +1,4 @@
-Dir	.product.features: ["ENABLE_AUTOLOGIN", "EVMS_CONFIG", "INCOMPLETE_TRANSLATION_TRESHOLD", "IO_SCHEDULER", "UI_MODE", "USE_DESKTOP_SCHEDULER"]
-Read	.product.features."UI_MODE" "expert"
-Read	.product.features."ENABLE_AUTOLOGIN" "yes"
-Read	.product.features."EVMS_CONFIG" "0"
-Read	.product.features."INCOMPLETE_TRANSLATION_TRESHOLD" "95"
+Dir	.product.features.section: []
 Return	expert
 Return	yes
 Return	true

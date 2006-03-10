@@ -9,9 +9,7 @@ module_DATA =			\
 	ProductFeatures.ycp	\
 	Hooks.ycp
 
-fillup_DATA = YaST2.ProductFeatures
-
-EXTRA_DIST = $(module_DATA) $(fillup_DATA)
+EXTRA_DIST = $(module_DATA)
 
 YCPCFLAGS = -M ../../modules -M ../../xml/src -M ../../wizard/src -M ../../types/src
 
