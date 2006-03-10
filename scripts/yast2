@@ -147,9 +147,14 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 		;;
 	    esac
 	fi
+
+	# this fixes launching of interactive subprocesses, #150799
+	NCTHREADS=--nothreads
+
 	# use menu.ycp
+	# TODO: this does not need to be a special case. refactor after release
 	if [ $module == "menu" ] ; then
-	    $ybindir/y2base menu ncurses
+	    $ybindir/y2base menu ncurses $NCTHREADS
 	else
 
 	    # Transform every argument into a ycp string, that is surround all
@@ -159,7 +164,7 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 	    c=("${b[@]/%/\")}")
 	    set -- "${c[@]}"
 
-	    $ybindir/y2base "$module" "$@" ncurses
+	    $ybindir/y2base "$module" "$@" ncurses $NCTHREADS
 	fi
 	if [ "$uc_started" ] ; then
 	    test -x /bin/unicode_stop && /bin/unicode_stop
