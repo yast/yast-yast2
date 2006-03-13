@@ -293,9 +293,11 @@ define term AnyQuestionButtonBox (
     }
 
     term button_box =  `HBox(
+			     `HStretch (),
 			     `HWeight( 1, yes_button),
 			     `HSpacing(2),
-			     `HWeight( 1, no_button )
+			     `HWeight( 1, no_button ),
+			     `HStretch ()
 			     );
     return button_box;
 }

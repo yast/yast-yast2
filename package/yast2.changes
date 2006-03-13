@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar 13 14:07:54 CET 2006 - jsuchome@suse.cz
+
+- fixed long buttons (#157420)
+- 2.13.36
+
+-------------------------------------------------------------------
 Fri Mar 10 23:17:46 CET 2006 - jsrain@suse.de
 
 - store all installation options in /etc/YaST2/Productfeatures
