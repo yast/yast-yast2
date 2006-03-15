@@ -452,11 +452,7 @@ global void SetCmdLine (string new_cmd_line) {
 	}
 	else if (Arch::s390 ())
 	{
-	    if (Arch::s390_64 ())
-		kernel_packages = ["kernel-s390x"];
-	    else
-		kernel_packages = ["kernel-s390"];
-
+	    kernel_packages = ["kernel-default"];
 	    binary   = "image";
 	}
 
