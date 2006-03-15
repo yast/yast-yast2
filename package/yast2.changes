@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Mar 15 09:03:47 CET 2006 - locilka@suse.cz
+
+- checking for testutf8 binary before running it in /sbin/yast2
+  starting script (#158001)
+- 2.13.37
+
+-------------------------------------------------------------------
 Mon Mar 13 14:07:54 CET 2006 - jsuchome@suse.cz
 
 - fixed long buttons (#157420)
