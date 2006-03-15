@@ -136,8 +136,11 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 	    case "$TERM" in
 		vt*|xterm*|linux|screen*)
 		    # probe terminal and fix lang settings
-		    testutf8
-		    if [ $? -ne 2 ] ; then
+		    UTF8TESTED=0
+		    # binary /bin/testutf8 is missing at least on s390x, #158001
+		    test -x /bin/testutf8 && UTF8TESTED=1 && /bin/testutf8
+		    
+		    if [ "$UTF8TESTED" == "1" ] && [ $? -ne 2 ] ; then
 			test -n "$LANG" && LANG=${LANG%.UTF-8}
 			test -n "$LC_CTYPE" && LC_CTYPE=${LC_CTYPE%.UTF-8}
 		    else
