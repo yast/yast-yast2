@@ -4,7 +4,7 @@
 
 sbin_SCRIPTS = yast2 save_y2logs
 
-ybin_SCRIPTS = yast2 yast2-funcs check-all-syntax
+ybin_SCRIPTS = yast2-funcs check-all-syntax
 
 completiondir = $(sysconfdir)/bash_completion.d
 completion_DATA = yast2-completion.sh

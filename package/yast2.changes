@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Mar 20 11:17:11 CET 2006 - locilka@suse.cz
+
+- removed yast2 starting script from /usr/lib/YaST2/bin/, leaving
+  it only in /sbin/ (#144237).
+- replacing relative paths in /sbin/yast2 with absolute ones.
+- 2.13.39
+
+-------------------------------------------------------------------
 Wed Mar 15 16:15:35 CET 2006 - jsrain@suse.de
 
 - changed the name of kernel package on S/390 (#157605)

@@ -49,7 +49,7 @@ printhelp()
 
 listmodules()
 {
-    list=`ls -1 /usr/share/applications/YaST2/*.desktop 2>/dev/null`
+    list=`/bin/ls -1 /usr/share/applications/YaST2/*.desktop 2>/dev/null`
 
     if [ -z "$list" ] ; then
 	echo "No modules installed"
@@ -62,7 +62,7 @@ listmodules()
     fi
 }
 
-TEMP=`getopt -o hlg:s:Si --long help,list,kcontrol,geometry:,style:,strings,install,fullscreen,noborder \
+TEMP=`/usr/bin/getopt -o hlg:s:Si --long help,list,kcontrol,geometry:,style:,strings,install,fullscreen,noborder \
      -n 'yast2' -- "$@"`
 
 if [ $? != 0 ] ; then echo "Exit." >&2 ; exit 1 ; fi
@@ -95,7 +95,7 @@ else
 	shift
 fi
 
-case "`basename $0`" in
+case "`/usr/bin/basename $0`" in
 	YaST|yast|yast1|zast)
 		unset DISPLAY
 	;;
@@ -128,8 +128,8 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 		    export LC_CTYPE=${LANG%%[.@]*}.UTF-8
 	        ;;
 	    esac
-	    if testutf8 ; [ $? -ne 2 ] ; then
-		test -x /bin/unicode_start && /bin/unicode_start
+	    if /bin/testutf8 ; [ $? -ne 2 ] ; then
+		/usr/bin/test -x /bin/unicode_start && /bin/unicode_start
 		uc_started=1
 	    fi
         else
@@ -138,14 +138,14 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 		    # probe terminal and fix lang settings
 		    UTF8TESTED=0
 		    # binary /bin/testutf8 is missing at least on s390x, #158001
-		    test -x /bin/testutf8 && UTF8TESTED=1 && /bin/testutf8
+		    /usr/bin/test -x /bin/testutf8 && UTF8TESTED=1 && /bin/testutf8
 		    
 		    if [ "$UTF8TESTED" == "1" ] && [ $? -ne 2 ] ; then
-			test -n "$LANG" && LANG=${LANG%.UTF-8}
-			test -n "$LC_CTYPE" && LC_CTYPE=${LC_CTYPE%.UTF-8}
+			/usr/bin/test -n "$LANG" && LANG=${LANG%.UTF-8}
+			/usr/bin/test -n "$LC_CTYPE" && LC_CTYPE=${LC_CTYPE%.UTF-8}
 		    else
-			test -n "$LANG" && LANG=${LANG%%[.@]*}.UTF-8
-			test -n "$LC_CTYPE" && LC_CTYPE=${LC_CTYPE%%[.@]*}.UTF-8
+			/usr/bin/test -n "$LANG" && LANG=${LANG%%[.@]*}.UTF-8
+			/usr/bin/test -n "$LC_CTYPE" && LC_CTYPE=${LC_CTYPE%%[.@]*}.UTF-8
 		    fi
 		;;
 	    esac
@@ -170,7 +170,7 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 	    $ybindir/y2base "$module" "$@" ncurses $NCTHREADS
 	fi
 	if [ "$uc_started" ] ; then
-	    test -x /bin/unicode_stop && /bin/unicode_stop
+	    /usr/bin/test -x /bin/unicode_stop && /bin/unicode_stop
 	fi
     else
 	echo "You need to install yast2-ncurses to use the YaST2 text mode interface"
