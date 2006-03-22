@@ -3,6 +3,7 @@ Wed Mar 22 13:00:10 CET 2006 - locilka@suse.cz
 
 - better testing of UTF-8 support using the testutf8 binary
   (#158001)
+- 2.13.40
 
 -------------------------------------------------------------------
 Mon Mar 20 11:17:11 CET 2006 - locilka@suse.cz
