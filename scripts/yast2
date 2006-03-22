@@ -139,8 +139,12 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 		    UTF8TESTED=0
 		    # binary /bin/testutf8 is missing at least on s390x, #158001
 		    /usr/bin/test -x /bin/testutf8 && UTF8TESTED=1 && /bin/testutf8
+		    # return code of the /bin/testutf8
+		    # 0=utf-unknown, 1=utf-ok, 2=utf-err
+		    UTF8STATUS=$?
 		    
-		    if [ "$UTF8TESTED" == "1" ] && [ $? -ne 2 ] ; then
+		    # not tested or not working UTF-8 support
+		    if [ "$UTF8TESTED" == "1" ] && [ $UTF8STATUS -ne 2 ] ; then
 			/usr/bin/test -n "$LANG" && LANG=${LANG%.UTF-8}
 			/usr/bin/test -n "$LC_CTYPE" && LC_CTYPE=${LC_CTYPE%.UTF-8}
 		    else
