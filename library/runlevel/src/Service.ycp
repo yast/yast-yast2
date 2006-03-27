@@ -293,7 +293,7 @@ integer sleep_step = 20;
  */
 global define integer RunInitScriptWithTimeOut (string name, string param) {
     y2milestone("Running service initscript %1 %2", name, param);
-    string command = sformat ("TERM=raw %2/%1 %3", name, init_d, param);
+    string command = sformat ("TERM=dumb %2/%1 %3", name, init_d, param);
 
     // default return code
     integer return_code = nil;
