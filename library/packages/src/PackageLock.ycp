@@ -27,7 +27,7 @@ global boolean Check () {
     if (have_lock == nil)
     {
 	// Invoke a cheap call that accesses the zypp lock
-	have_lock = Pkg::LastError () != nil;
+	have_lock = Pkg::Connect () == true; // nil guard
 	if (!have_lock)
 	{
 	    Report::Error (_("Another process is accessing the package database.
