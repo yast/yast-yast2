@@ -4,12 +4,14 @@
 BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-pkg-bindings yast2-testsuite
 # Need the new file popups
 Requires:	yast2-core >= 2.7.1
+# Pkg::Connect
+Requires:	yast2-pkg-bindings >= 2.13.43
 Requires:	yast2_ui yast2_theme
 # For Cron Agent, Module
 Requires:       perl-Config-Crontab
 # for ag_tty (/bin/stty)
 Requires:	coreutils
-Requires:	yast2-pkg-bindings, yast2-xml, yast2-hardware-detection
+Requires:	yast2-xml, yast2-hardware-detection
 Requires:	SuSEfirewall2
 
 Provides:	yast2-lib-sequencer
