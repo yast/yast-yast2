@@ -18,6 +18,7 @@ textdomain "base";
 
 import "Mode";
 import "PackageCallbacksInit";
+import "PackageLock";
 import "Report";
 import "Stage";
 import "CommandLine";
@@ -52,6 +53,7 @@ include "packages/common.ycp";
  * This may become superfluous.
  */
 global void EnsureTargetInit() {
+    PackageLock::Check ();
     PackageCallbacksInit::InitPackageCallbacks ();
     //    target_initialized = target_initialized || Pkg::TargetInit ("/", false);
     // always initizalize target, it should be cheap according to #45356
@@ -62,6 +64,7 @@ global void EnsureTargetInit() {
  * Ensure that Pkg:: calls working with the installation sources work
  */
 global void EnsureSourceInit() {
+    PackageLock::Check ();
     if(source_initialized) 
     {
 	// this way, if somebody closed the cache outside of Package
