@@ -16,24 +16,26 @@ textdomain "base";
 
 import "Report";
 
-boolean checked = false;
+boolean have_lock = nil;
 /**
- * Checks whether the packager (zypp) is locked.
- * If yes, Reports an error.
+ * Tries to acquire the packager (zypp) lock.
+ * Reports an error if another process has the lock already.
  * Will only report once even if called multiple times.
+ * @return true if we can continue
  */
-global void Check () {
-    if (checked)
-	return;
-    checked = true;
-
-    // Invoke a cheap call that accesses the zypp lock
-    if (Pkg::LastError () == nil)
+global boolean Check () {
+    if (have_lock == nil)
     {
-	Report::Error (_("Another process is accessing the package database.
+	// Invoke a cheap call that accesses the zypp lock
+	have_lock = Pkg::LastError () != nil;
+	if (!have_lock)
+	{
+	    Report::Error (_("Another process is accessing the package database.
 Package management will not work!"));
-	// ContinueCancel? What about CLI?
-    }    
+	    // ContinueCancel? What about CLI?
+	}
+    }
+    return have_lock;
 }
 
 
