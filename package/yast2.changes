@@ -1,7 +1,8 @@
 -------------------------------------------------------------------
-Wed Mar 29 10:24:49 CEST 2006 - mvidner@suse.cz
+Wed Mar 29 17:04:09 CEST 2006 - mvidner@suse.cz
 
 - Added PackageLock, a module to handle the big Zypp lock (#160319).
+- 2.13.41
 
 -------------------------------------------------------------------
 Mon Mar 27 10:24:51 CEST 2006 - locilka@suse.cz

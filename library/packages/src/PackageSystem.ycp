@@ -113,6 +113,11 @@ global boolean DoRemove(list<string> packages) {
 
 global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove) {
     y2debug ("toinstall: %1, toremove: %2", toinstall, toremove);
+    if (!PackageLock::Check ())
+    {
+	return false;
+    }
+
     EnsureSourceInit ();
     EnsureTargetInit ();
     boolean ok = true;
