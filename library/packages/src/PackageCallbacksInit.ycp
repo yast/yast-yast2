@@ -41,6 +41,9 @@ global define void InitPackageCallbacks() {
     // Pkg::CallbackProgressDownload ("PackageCallbacks::ProgressDownload");
     // Pkg::CallbackDoneDownload ("PackageCallbacks::DoneDownload");
 
+    // Signature-related callbacks
+    Pkg::CallbackAcceptUnsignedFile ("SignatureCheckCallbacks::AcceptUnsignedFile");
+
     SetMediaCallbacks ();
 }
 

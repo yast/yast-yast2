@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Apr  4 15:31:08 CEST 2006 - locilka@suse.cz
+
+- Added mapping for Pkg::CallbackAcceptUnsignedFile() callback
+  (#162858)
+- 2.13.42
+
+-------------------------------------------------------------------
 Wed Mar 29 17:04:09 CEST 2006 - mvidner@suse.cz
 
 - Added PackageLock, a module to handle the big Zypp lock (#160319).
