@@ -110,7 +110,7 @@
 	"FW_PROTECT_FROM_INT",
 
 	// global routing, masquerading
-	"FW_ROUTE", "FW_MASQUERADE", "FW_FORWARD_MASQ",
+	"FW_ROUTE", "FW_MASQUERADE", "FW_FORWARD_MASQ", "FW_FORWARD_ALWAYS_INOUT_DEV",
 
 	// broadcast packets
 	"FW_ALLOW_FW_BROADCAST_EXT", "FW_ALLOW_FW_BROADCAST_INT", "FW_ALLOW_FW_BROADCAST_DMZ",
@@ -970,7 +970,7 @@
     /**
      * Local function allows ports for requested protocol and zone.
      *
-     * @param	list <string> ports to be removed
+     * @param	list <string> ports to be added
      * @param	string protocol
      * @param	string zone
      */
@@ -1882,14 +1882,6 @@ Run YaST2 Firewall and assign it.
     boolean ArePortsOrServicesAllowed (list <string> needed_ports, string protocol, string zone, boolean check_for_aliases) {
 	boolean are_allowed = true;
 
-	// When NetworkManager is turned on
-	//if (NetworkService::IsManaged()) {
-	    // When the defined zone contains the defined special string (EXT/any) by default
-	    if (contains(SuSEFirewall::GetSpecialInterfacesInZone(special_all_interface_zone), special_all_interface_string)) {
-		zone = special_all_interface_zone;
-	    }
-	//}
-
 	if (size(needed_ports)<1) {
 	    y2warning("Undefined list of %1 services/ports for service", protocol);
 	    return true;
@@ -2162,6 +2154,10 @@ Run YaST2 Firewall and assign it.
      * Fills internal variables only.
      */
     global define boolean Read () {
+	// Don't fill up the logs with tones of Check-logs
+	// Turn on for debugging
+	// NetworkDevices::report_every_check = false;
+
 	if (configuration_has_been_read) {
 	    y2milestone("SuSEfirewall2 configuration has been read already.");
 	    return true;
@@ -2204,6 +2200,7 @@ Run YaST2 Firewall and assign it.
 	    // Allways modified for installation, allways save the final state
 	    // fixing bug #67355
 	    // SetModified();
+	    boolean make_parser_happy = true;
 	}
 
 	if (have_progress) Progress::NextStage();
