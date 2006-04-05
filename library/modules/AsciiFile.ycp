@@ -314,13 +314,13 @@ global define void RemoveLines( map& file, list<integer> lines )
 global define void RewriteFile( map& file, string fpath )
     ``{
     y2milestone( "path %1", fpath );
-    y2milestone( "out: %1", file );
+    y2debug( "out: %1", file );
     string out = "";
     foreach( integer num, map entry, file["l"]:$[],
 	``{
 	out = out + AssertLineValid( file, num ) + "\n";
 	});
-    y2milestone ("Out text: %1", out );
+    y2debug ("Out text: %1", out );
     if( size(out)==0 )
 	{
 	if( SCR::Read( .target.size, fpath ) >= 0 )
