@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Apr  5 11:11:44 CEST 2006 - locilka@suse.cz
+
+- Adding special Xen interface "xenbr0" into the
+  FW_FORWARD_ALWAYS_INOUT_DEV variable in the Network Proposal in
+  case of "kernel-xen" package installed (#154133).
+- 2.13.43
+
+-------------------------------------------------------------------
 Wed Apr  5 10:49:47 CEST 2006 - mvidner@suse.cz
 
 - Added CWM::DisableButtons (jsuchome, #157125).
