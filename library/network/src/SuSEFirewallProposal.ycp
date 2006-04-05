@@ -17,6 +17,7 @@
     //import "NetworkService";
     import "ProductFeatures";
     import "Linuxrc";
+    import "Package";
 
     # <!-- SuSEFirewall LOCAL VARIABLES //-->
 
@@ -175,6 +176,13 @@
     }
 
     /**
+     * Local function returns whether the Xen kernel is installed
+     */
+    boolean IsXenInstalled () {
+	return Package::Installed ("kernel-xen");
+    }
+
+    /**
      * Local function for proposing firewall configuration.
      */
     void ProposeFunctions () {
@@ -256,6 +264,14 @@
 	if (Linuxrc::usessh()) {
 	    y2milestone("This is an installation over SSH, opening SSH on all non-dial-up interfaces...");
 	    OpenServiceOnNonDialUpInterfaces("ssh");
+	}
+
+	/*
+	 * Firewall support for XEN domain0
+	 */
+	if (IsXenInstalled()) {
+	    y2milestone("Adding Xen support into the firewall configuration");
+	    SuSEFirewall::AddXenSupport();
 	}
 
 	SetKnownInterfaces(SuSEFirewall::GetListOfKnownInterfaces());
