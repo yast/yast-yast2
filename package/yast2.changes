@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Apr  5 11:36:03 CEST 2006 - fehr@suse.de
+
+- changed some very verbose debug output in AsciiFile.ycp
+
+-------------------------------------------------------------------
 Wed Apr  5 11:11:44 CEST 2006 - locilka@suse.cz
 
 - Adding special Xen interface "xenbr0" into the
