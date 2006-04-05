@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Apr  5 15:09:52 CEST 2006 - sh@suse.de
+
+- V 2.13.44
+- Fixed bug #116356: save_y2logs saves into a different directory 
+
+-------------------------------------------------------------------
 Wed Apr  5 11:36:03 CEST 2006 - fehr@suse.de
 
 - changed some very verbose debug output in AsciiFile.ycp

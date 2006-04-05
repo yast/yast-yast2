@@ -5,19 +5,54 @@
 #
 # Author: Stefan Hundhammer <sh@suse.de>
 
-if [ $# != 1 ]; then
+usage()
+{
     echo "Usage: $0 <tgz-file-name>"
     echo ""
     echo "Copies the YaST2 logs to a compressed tar archive."
     exit 1
-fi
+}
 
-TARGET=$1
+
+
+case "$1" in
+    -*)
+	usage
+	;;
+
+    *.tgz|*.tar.gz)
+	TARGET="$1"
+	COMPRESSION=--gzip
+	;;
+
+    *.tar.bz2)
+	TARGET="$1"
+	COMPRESSION=--bzip2
+
+	if [ ! -x /usr/bin/bzip2 ]; then
+	    echo "FATAL: /usr/bin/bzip2 not available" >&2
+	    # This might easily happen in the inst-sys
+            exit 3
+	fi
+	;;
+
+    *)
+	echo "FATAL: Uncompressed archives not supported" >&2
+	echo "Use one of: .tgz .tar.gz .tar.bz2"          >&2
+	exit 4
+esac
+
 
 LIST=YaST2
 
-[ -f /var/log/evms-engine.log ] && LIST="$LIST evms-engine.*"
+if [ -f /var/log/evms-engine.log ]; then
+    LIST="$LIST $( cd /var/log/; ls evms-engine.*)"
+fi
 
-cd /var/log && tar czf $TARGET $LIST && exit 0
+echo "Saving y2logs to $TARGET"
+
+tar cf "$TARGET" $COMPRESSION --directory=/var/log $LIST && exit 0
+
+echo "FATAL: Error creating archive $TARGET" >&2
 exit 2
 
