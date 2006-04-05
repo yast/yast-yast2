@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"/usr/share/xml/docbook/schema/dtd/4.2/docbookx.dtd">
+
+<section id="common_popups">
+<title>Common Popup Dialogs</title>
+<para>
+The module "Popup.ycp" contains commonly used popup dialogs for
+general usage. Use those dialogs rather than creating your own custom dialogs
+whenever possible.
+</para>
+<para>
+If you have your own definitions of equivalent popups (which is very likely),
+please remove them as soon as possible and use the popups from
+"Popup.ycp". The new popups usually require fewer parameters - e.g. you
+no longer need to explicitly pass standard button labels like "Yes" or "No"
+etc. as parameters (we had to do that because of technical limitations with the
+translator module, but we found a workaround for that).
+</para>
+
+<section>
+<title>Simple and Expert Version</title>
+<para>
+There are several versions for each type of popup, a simple version with a
+minimum number of parameters and one or more "expert" versions where you can
+pass lots of parameters to fine-tune many details.
+</para>
+<para>
+Use the simplest version one whenever you can. It's normally the version that
+makes most sense for most cases.
+</para>
+<para>
+If you use an "expert" version, try to stick to the default behaviour (i.e. the
+behaviour of the simple version) as closely as possible. Change only parameters
+you really need to change. In particular, only change the default button for
+very good reasons.
+</para>
+<para>
+If there is a specialized simple version, use it whenever you can. For example,
+use <link linkend="Module_Popup_Warning">Popup::Warning</link>
+rather than <link linkend="Module_Popup_AnyMessage">Popup::AnyMessage</link> with the same message if you
+want to display a warning. This way we can make sure all warnings look the same
+and make them easily recognizable as warnings.
+</para>
+
+</section>
+<section>
+<title>
+Headlines, Yes or No?</title>
+<para>
+Sense or nonsense of providing headlines for each popup is a cause for endless
+discussion - we've been through that. Sometimes headlines make sense, sometimes
+they don't.
+</para>
+<para>
+As a general rule of thumb, don't provide a headline that is more or less the
+same as the message itself, i.e. don't
+</para>
+
+<informalexample>
+    <screenshot><graphic fileref="screenshots/ask_create_backup_bad.png"></graphic>
+    </screenshot>
+    <programlisting><xi:include href="examples/ask_create_backup_bad.ycp" parse="text"
+                          xmlns:xi="http://www.w3.org/2001/XInclude"/></programlisting>
+</informalexample>
+<para>this is plainly redundant. This could be done much better like this:</para>
+
+<informalexample>
+    <screenshot><graphic fileref="screenshots/ask_create_backup_good.png"></graphic>
+    </screenshot>
+    <programlisting><xi:include href="examples/ask_create_backup_good.ycp" parse="text"
+                          xmlns:xi="http://www.w3.org/2001/XInclude"/></programlisting>
+</informalexample>
+
+
+<para>i.e. concise question, no lyrics around it, clear, plain and simple.</para>
+<para>
+If you need to provide more background information to the user so he can
+understand what tragedy could befall his machine should he chose either
+alternative, a headline makes perfect sense for the more experienced user who
+gets to this kind of question quite frequently:
+</para>
+<informalexample>
+    <screenshot><graphic fileref="screenshots/ask_resize_windows_partition.png"></graphic>
+    </screenshot>
+    <programlisting><xi:include href="examples/ask_resize_windows_partition.ycp" parse="text"
+                          xmlns:xi="http://www.w3.org/2001/XInclude"/></programlisting>
+</informalexample>
+
+<note>
+<para>This example might be a good candidate for ContinueCancel() - see below</para>
+</note>
+<para>
+If you use headlines, please use them to either
+<itemizedlist>
+<listitem><para>classify the type of popup (Error, Warning, ...)</para></listitem>
+<listitem><para>summarize the question.</para></listitem>
+</itemizedlist>
+Please DON'T use headlines like "Question" etc. - this doesn't have any
+informative value, yet it forces the user to read this useless headline.
+</para>
+<para>
+For all those reasons, most popups come in a generic version where you can pass
+a headline ("Headline" is included in the names of those) and a simple version
+for general usage.
+</para>
+</section>
+<section>
+<title>Predefined Messages</title>
+<para>
+There are predefined messages for commonly used texts for the dialogs. Use them
+when you use the "expert" version of a dialog - don't pass your own messages if
+you can avoid it! Not only makes this life easier for our translators (they
+need to translate stuff like "Cancel" over and over again), it also gives us a
+chance to provide consistent keyboard shortcuts throughout the entire program.
+</para>
+
+<example>
+<para>Use
+
+<programlisting>
+`OpenDialog(
+            ...
+            `HBox(
+:-)               `PushButton( `id(`ok ), `opt(`default), Label::OKButton() ),
+                  `PushButton( `id(`retry ), Label::RetryButton() ),
+                  `PushButton( `id(`cancel), Label::CancelButton() )
+                  )
+           )
+</programlisting>
+and NOT
+<programlisting>
+
+`OpenDialog(
+            ...
+            `HBox(
+:-(               `PushButton( `id(`ok ), `opt(`default), _("&amp;OK") ),
+                  `PushButton( `id(`retry ), "&amp;Retry"  ),
+                  `PushButton( `id(`cancel), "&amp;Cancel" )
+                  )
+           )
+</programlisting>
+
+- even whenever you create your own dialogs.</para>
+</example>
+
+<para>
+The first part of the name always is the message itself literally ("Retry"),
+the suffix indicates the type ("Button") to indicate whether or not it has
+a keyboard shortcut. Currently we have "Label::xxxButton" (with keyboard
+shortcut) and "Label::xxxMsg" (without shortcut).
+</para>
+
+</section>
+<section>
+<title>When to use what Popup</title>
+<section>
+<title>Decision Popups - two buttons, return true or false</title>
+<para>
+For confirmation of possibly dangerous things, use <link linkend="Module_Popup_ContinueCancel">Popup::ContinueCancel</link>.
+</para>
+
+<para>
+Only when there are two really distinct paths of decision use <link linkend="Module_Popup_YesNo">Popup::YesNo</link>.
+- and no, cancelling the entire process doesn't count here - this is no
+equivalent decision.
+</para>
+
+
+<para>
+The positive case ("Yes" or "Continue") is the default. If you don't like that,
+use the generic <link linkend="Module_Popup_AnyQuestion">Popup::AnyQuestion</link> directly and pass `focus_no for the focus
+parameter. </para>
+
+<para>
+Remember: Only do that for very good reasons - i.e. when it's a really
+dangerous decision that typically results in loss of data that can't easily be
+restored. 
+</para>
+
+<itemizedlist>
+<listitem><para>If you need to pass other button labels, think twice. </para></listitem>
+<listitem><para>If you really need this, use <link linkend="Module_Popup_AnyQuestion">Popup::AnyQuestion</link>.</para></listitem>
+</itemizedlist>
+
+<para>
+But NEVER use it so simply change the order of default buttons - 
+i.e. NEVER create dialogs like this:
+</para>
+<informalexample>
+    <screenshot><graphic fileref="screenshots/ask_format_hard_disk_bad.png"></graphic>
+    </screenshot>
+    <programlisting><xi:include href="examples/ask_format_hard_disk_bad.ycp" parse="text"
+                          xmlns:xi="http://www.w3.org/2001/XInclude"/></programlisting>
+</informalexample>
+<informalexample>
+    <screenshot><graphic fileref="screenshots/ask_show_installation_log_bad.png"></graphic>
+    </screenshot>
+    <programlisting><xi:include href="examples/ask_show_installation_log_bad.ycp" parse="text"
+                          xmlns:xi="http://www.w3.org/2001/XInclude"/></programlisting>
+</informalexample>
+
+
+ </section>
+ <section>
+ <title>Info Popups - just an "OK" button</title>
+<para>
+If you can classify a simple message accordingly, use one of</para>
+
+<itemizedlist>
+<listitem><para><link linkend="Module_Popup_Error">Popup::Error</link></para></listitem>
+<listitem><para><link linkend="Module_Popup_Warning">Popup::Warning</link></para></listitem>
+<listitem><para><link linkend="Module_Popup_Notify">Popup::Notify</link></para></listitem>
+</itemizedlist>
+
+<para>
+they all have a headline that indicates the type (Error, Warning, Notify).
+</para>
+<para>
+If you can't classify your message, use <link linkend="Module_Popup_Message">Popup::Message</link>.
+</para>
+
+<para>
+Use <link linkend="Module_Popup_LongText">Popup::LongText</link> to display large amounts of text that might need
+scrolling. </para>
+
+</section>
+</section>
+</section>
+
+

@@ -1,0 +1,5 @@
+Log	Command line specification does not define global help for the module
+Log	Command line specification does not define help for action 'wrongaction'
+Return	false
+Return	true
+Return	true

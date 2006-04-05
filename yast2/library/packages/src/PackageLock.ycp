@@ -1,0 +1,42 @@
+/**
+ * File:	modules/PackageLock.ycp
+ * Package:	yast2
+ * Summary:	Packages manipulation (system)
+ * Authors:	Martin Vidner <mvidner@suse.cz>
+ *
+ * $Id$
+ *
+ * This should be used everywhere before Pkg is first used. #160319
+ */
+
+{
+
+module "PackageLock";
+textdomain "base";
+
+import "Report";
+
+boolean have_lock = nil;
+/**
+ * Tries to acquire the packager (zypp) lock.
+ * Reports an error if another process has the lock already.
+ * Will only report once even if called multiple times.
+ * @return true if we can continue
+ */
+global boolean Check () {
+    if (have_lock == nil)
+    {
+	// Invoke a cheap call that accesses the zypp lock
+	have_lock = Pkg::Connect () == true; // nil guard
+	if (!have_lock)
+	{
+	    Report::Error (_("Another process is accessing the package database.
+Package management will not work!"));
+	    // ContinueCancel? What about CLI?
+	}
+    }
+    return have_lock;
+}
+
+
+}

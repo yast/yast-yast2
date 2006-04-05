@@ -1,0 +1,155 @@
+/**
+ * File:	clients/lan.ycp
+ * Package:	Network configuration
+ * Summary:	Network cards main file
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ *
+ * Main file for network card configuration.
+ * Uses all other files.
+ */
+
+{
+
+/***
+ * <h3>Network configuration</h3>
+ */
+
+import "CommandLine";
+include "network/lan/wizards.ycp";
+
+/**
+ * Command line definition
+ */
+map cmdline = $[
+    "help"	: "Configuration of network cards",
+    "id"	: "lan",
+    "actions"	: $[
+	"list" : $[
+	    "help"	: "display configuration summary",
+	    "example"	: "lan list configured"
+	],
+	"add" : $[
+	    "help"	: "add a network card" ],
+	"delete" : $[
+	    "help"	: "delete a network card" ]
+    ],
+    "options" : $[
+	"propose" : $[
+	    "help"	: "propose a configuration",
+	    "example"	: "lan add propose",
+	    "type"	: ""
+	],
+	"configured" : $[
+	    "help"	: "list only configured cards"
+	],
+	"unconfigured" : $[
+	    "help"	: "list only not configured cards"
+	],
+	"device" : $[
+	    "help"	: "device ID",
+	    "type"	: "string",
+	    "example"	: "lan add device=eth0"
+	],
+	"ip" : $[
+	    "help": "device address",
+	    "type": "ip"
+	],
+	"netmask" : $[
+	    "help": "network mask",
+	    "type": "netmask"
+	],
+    ],
+    "mappings" : $[
+	"list"	: [ "configured", "unconfigured" ],
+	"add"	: [ "device", "ip", "netmask" ],
+	"delete": [ "device" ],
+    ]
+];
+
+
+/* The main () */
+y2milestone("----------------------------------------");
+y2milestone("Lan module started");
+
+/* Initialize the arguments */
+if(!CommandLine::Init(cmdline, Args())) {
+    y2error("Commandline init failed");
+    return false;
+}
+
+/* Start GUI */
+if(CommandLine::StartGUI()) {
+    any ret = nil;
+    ret = LanSequence();
+    y2debug("ret=%1", ret);
+    y2milestone("Lan module finished");
+    y2milestone("----------------------------------------");
+    return ret;
+}
+
+/* Init */
+CommandLine::Print("Initializing");
+import "Lan";
+import "Progress";
+CommandLine::Print("Reading");
+Progress::off();
+Lan::Read();
+
+/* Init variables */
+string command = "";
+list flags = [];
+map options = $[];
+string exit = "";
+list l = [];
+
+while(!CommandLine::Done()) {
+    map m = CommandLine::Command();
+    command = m["command"]:"exit";
+    options = m["options"]:$[];
+
+    /* list */
+    if(command == "list") {
+	CommandLine::Print("\nSummary\n");
+	string summary = sformat("%1\n", Lan::Summary(false));
+	CommandLine::Print(summary);
+    }
+    /* del */
+    else if(command == "delete") {
+	string dev = options["device"]:"";
+	CommandLine::Print("Deleting: "+dev);
+
+	if(Lan::Delete(dev) && Lan::Commit())
+	CommandLine::Print("Success");
+	else
+	CommandLine::Print("Error");
+    }
+    /* add */
+    else if(command == "add") {
+	string dev = options["device"]:"";
+    }
+    else {
+	/* maybe we got "exit" or "quit" */
+	if( !CommandLine::Done() ) {
+	    CommandLine::Print("Unknown command (should not happen)");
+	    continue;
+	}
+    }
+}
+
+if(!CommandLine::Aborted()) {
+    CommandLine::Print("Writing");
+    Lan::Write();
+    CommandLine::Print("Finish");
+}
+else {
+    CommandLine::Print("Quit (without saving)");
+}
+
+/* Finish */
+y2milestone("Lan module finished");
+y2milestone("----------------------------------------");
+
+/* EOF */
+}

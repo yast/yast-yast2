@@ -1,0 +1,51 @@
+/**
+ * File:	XXXXXX
+ * Package:	Configuration of network
+ * Summary:	XXXXXX
+ * Author:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+include "testsuite.ycp";
+import "URL";
+
+TEST(``(URL::Parse("http://name:pass@www.suse.cz:80/path/index.html?question#part")), [], nil);
+
+TEST(``(URL::EscapeString(nil, URL::transform_map_passwd)), [], nil);
+TEST(``(URL::EscapeString("", URL::transform_map_passwd)), [], nil);
+TEST(``(URL::EscapeString("abcd", URL::transform_map_passwd)), [], nil);
+TEST(``(URL::EscapeString("abcd%", URL::transform_map_passwd)), [], nil);
+TEST(``(URL::EscapeString("ab%c$d", URL::transform_map_passwd)), [], nil);
+TEST(``(URL::EscapeString(" %$ ", URL::transform_map_passwd)), [], nil);
+TEST(``(URL::EscapeString("_<>{}", URL::transform_map_passwd)), [], nil);
+TEST(``(URL::EscapeString("%", URL::transform_map_passwd)), [], nil);
+
+TEST(``(URL::UnEscapeString(nil, URL::transform_map_passwd)), [], nil);
+TEST(``(URL::UnEscapeString("", URL::transform_map_passwd)), [], nil);
+TEST(``(URL::UnEscapeString("abcd", URL::transform_map_passwd)), [], nil);
+TEST(``(URL::UnEscapeString("ab%2fcd%25", URL::transform_map_passwd)), [], nil);
+TEST(``(URL::UnEscapeString("ab%40%25", URL::transform_map_passwd)), [], nil);
+TEST(``(URL::UnEscapeString("%40", URL::transform_map_passwd)), [], nil);
+TEST(``(URL::UnEscapeString("_<>{}", URL::transform_map_passwd)), [], nil);
+
+global string test() {
+    // change the password in the URL
+    map m = URL::Parse("http://name:pass@www.suse.cz:80/path/index.html?question#part");
+    m["user"] = "user@domain";
+    return URL::Build(m);
+}
+
+// parse->build must return the orginal value
+TEST(``(URL::Build(URL::Parse("http://name:pass@www.suse.cz:80/path/index.html?question#part"))), [], nil);
+
+// escaped values are built using lower case characters so there might be a change
+TEST(``(URL::Build(URL::Parse("http://na%40me:pa%3F%3fss@www.suse.cz:80/path/index.html?question#part"))), [], nil);
+
+TEST(``(test()), [], nil);
+
+
+/* EOF */
+}

@@ -1,0 +1,440 @@
+/**
+ * File:
+ *      modules/Initrd.ycp
+ *
+ * Module:
+ *      Bootloader installation and configuration
+ *
+ * Summary:
+ *      functions for initial ramdisk setup and creation
+ *
+ * Authors:
+ *      Jiri Srain <jsrain@suse.cz>
+ *
+ * $Id$
+ *
+ */
+{
+    module "Initrd";
+
+    import "Arch";
+    import "Label";
+    import "Misc";
+    import "Mode";
+    import "Report";
+    import "Stage";
+    import "Directory";
+
+    textdomain "base";
+
+// module variables
+
+    /**
+      * List of modules for Initrd
+      */
+    list<string> modules = [];
+    /**
+      * For each of modules - true if should be inserted to initrd, false
+      * otherwise. Used to keep order from first-stage installation
+      */
+    map<string,boolean> modules_to_store = $[];
+    /**
+      * List of modules that were in sysconfig file when reading settings
+      */
+    list<string> read_modules = [];
+    /**
+      * map of settings for modules for being contained in initrd
+      */
+    map<string, any> modules_settings = $[];
+    /**
+      * true if settings were changed and initrd needs to be rebuilt,
+      * false otherwise
+      */
+    global boolean changed = false;
+    /**
+      * true if settings were already read, flase otherwise
+      */
+    boolean was_read = false;
+    /**
+      * parametr for mkinitrd because of splash screen
+      * used for choosing right size of splash
+      */
+    string splash = "";
+    /**
+      * List of modules which should be not added/removed to/from initrd
+      */
+    list<string> modules_to_skip = nil;
+
+    /**
+      * List of fallback vga modes to be used when hwinfo --framebuffer
+      * doesn't return any value
+      */
+    list<map> known_modes = [
+	$["color":8,  "height":200, "mode":816, "width":320],
+	$["color":16, "height":200, "mode":782, "width":320],
+	$["color":24, "height":200, "mode":783, "width":320],
+	$["color":8,  "height":240, "mode":820, "width":320],
+	$["color":16, "height":240, "mode":821, "width":320],
+	$["color":24, "height":240, "mode":822, "width":320],
+	$["color":8,  "height":400, "mode":817, "width":320],
+	$["color":16, "height":400, "mode":818, "width":320],
+	$["color":24, "height":400, "mode":819, "width":320],
+	$["color":8,  "height":400, "mode":768, "width":640],
+	$["color":16, "height":400, "mode":829, "width":640],
+	$["color":24, "height":400, "mode":830, "width":640],
+	$["color":8,  "height":480, "mode":769, "width":640],
+	$["color":16, "height":480, "mode":785, "width":640],
+	$["color":24, "height":480, "mode":786, "width":640],
+	$["color":8,  "height":600, "mode":771, "width":800],
+	$["color":16, "height":600, "mode":788, "width":800],
+	$["color":24, "height":600, "mode":789, "width":800],
+	$["color":8,  "height":768, "mode":773, "width":1024],
+	$["color":16, "height":768, "mode":791, "width":1024],
+	$["color":24, "height":768, "mode":792, "width":1024],
+	$["color":8,  "height":1024, "mode":775, "width":1280],
+	$["color":16, "height":1024, "mode":794, "width":1280],
+	$["color":24, "height":1024, "mode":795, "width":1280],
+	$["color":8,  "height":1200, "mode":837, "width":1600],
+	$["color":16, "height":1200, "mode":838, "width":1600]
+    ];
+
+// module functions
+
+    /**
+     * Get the list of modules which don't belong to initrd
+     * Initialize the list if was not initialized before according to the
+     * architecture
+     * @return a list of modules
+     */
+    global list<string> getModulesToSkip () {
+	if (modules_to_skip == nil)
+	{
+	    // usb and cdrom modules dont belong to initrd,
+	    // they're loaded by hotplug
+	    modules_to_skip = [
+		"input",
+		"hid",
+		"usbhid",
+		"keybdev",
+		"mousedev",
+		"cdrom",
+		"ide-cd",
+		"sr_mod",
+		"xfs_support",
+		"xfs_dmapi",
+		"ide-scsi",
+	    ];
+	    // some other modules don't belong to initrd on PPC
+	    if (Arch::ppc ())
+	    {
+		list ppc_modules_to_skip = [
+		    "reiserfs",
+		    "ext3",
+		    "jbd",
+		];
+		modules_to_skip = (list<string>)
+		    merge (modules_to_skip, ppc_modules_to_skip);
+	    }
+	}
+	return modules_to_skip;
+    }
+
+    /**
+      * reset settings to empty list of modules
+      */
+    global define void Reset () ``{
+	y2milestone ("Reseting initrd settings");
+	was_read = false;
+	changed = false;
+	modules = [];
+	modules_to_store = $[];
+	read_modules = [];
+	modules_settings = $[];
+    }
+
+    /**
+      * read seettings from sysconfig
+      * @return true on success
+      */
+    global define boolean Read () ``{
+	Reset ();
+	was_read = true;
+	if (Stage::initial () && ! Mode::update ()) // nothing to read
+	{
+	    return true;
+	}
+
+	// test for missing files - probably an error - should never occur
+	if (SCR::Read (.target.size, "/etc/sysconfig/kernel") == -1)
+	{
+	    y2error ("sysconfig/kernel not found");
+	    return false;
+	}
+
+	string s_modnames = (string) SCR::Read (.sysconfig.kernel.INITRD_MODULES);
+	if (s_modnames == nil)
+	    s_modnames = "";
+	modules = splitstring (s_modnames, " ");
+	modules = filter (string m, modules, { return m != "";});
+	foreach (string m, modules, {
+	    modules_settings [m] = $[];
+	    modules_to_store[m] = true;
+	});
+	read_modules = modules;
+	return true;
+    }
+
+    /**
+      * List modules included in initrd
+      * @return list of strings with modulenames
+      */
+    global define list<string> ListModules () ``{
+	if (! (was_read || Mode::config ()))
+	    Read ();
+	return filter (string m, modules, {
+	    return modules_to_store[m]:false;
+	});
+    }
+
+    /**
+      * add module to ramdisk
+      * @param modname name of module
+      * @param modargs arguments to be passes to module
+      */
+    global define void AddModule (string modname, string modargs) ``{
+	if (Stage::initial () && size (modules) == 0)
+	{
+	    string tmp_mods = (string)
+		SCR::Read (.etc.install_inf.InitrdModules);
+	    if (tmp_mods != nil && tmp_mods != "")
+	    {
+		modules = splitstring( tmp_mods, " " );
+	    }
+	    was_read = true;
+	}
+	else if (! (was_read || Mode::config ()))
+	{
+	    Read ();
+	}
+	if ((!contains (ListModules (), modname))
+	    || ((modname == "aic7xxx")
+		&& !contains ( ListModules (), "aic7xxx_old"))
+	    || ((modname == "aic7xxx_old")
+		&& !contains ( ListModules (), "aic7xxx")))
+        {
+            if ( ! contains (getModulesToSkip (), modname))
+	    {
+		changed = true;
+		modules_to_store[modname] = true;
+		modules_settings [modname] = Misc::SplitOptions (modargs, $[]);
+		if (! contains (modules, modname))
+		{
+		    modules = add (modules, modname);
+		    y2milestone ("Module %1 added to initrd, now contains %2",
+			modname, ListModules ());
+		}
+		else
+		{
+		    y2milestone ("Module %1 from initial list added to initrd, now contains %2",
+			modname, ListModules ());
+		}
+	    }
+	    else
+	    {
+		y2milestone ("Module %1 is in list of modules not to insert to initrd", modname);
+	    }
+        }
+	else
+	{
+	    y2milestone ("Module %1 already present in initrd", modname);
+	}
+        return;
+    }
+
+    /**
+      * Export settigs to variable
+      * @return map of initrd settings
+      */
+    global define map Export () ``{
+	if (! (was_read || Mode::config ()))
+	    Read ();
+	return $[
+	    "list" : filter (string m, modules, {
+		return modules_to_store[m]:false;
+	    }),
+	    "settings" : modules_settings,
+	];
+    }
+
+    /**
+      * import settings of initrd
+      * @param settings map of initrd settings
+      */
+    global define void Import (map settings) ``{
+	if (! Mode::config ())
+	    Read (); // to set modules that were read
+		     // and not add them to the list
+	modules = settings["list"]:[];
+	modules_settings = settings["settings"]:$[];
+	foreach (string m, modules, {
+	    modules_to_store[m] = true;
+	});
+	was_read = true;
+	changed = true;
+    }
+
+    /**
+      * remove module from list of initrd modules
+      * @param modname string name of module to remove
+      */
+    global define void RemoveModule (string modname) ``{
+	if (! (was_read || Mode::config ()))
+	    Read ();
+	modules = filter (string k, modules, { return k != modname; });
+	modules_settings = filter (string k, any v, modules_settings, { return k != modname; });
+	changed = true;
+    }
+
+    /**
+      * Update read settings to new version of configuration files
+      */
+    global define void Update () ``{
+	// add other required changes here
+	modules = filter (string m, modules,
+	    { return (! contains (getModulesToSkip (), m)); });
+	modules_settings = filter (string k, any v, modules_settings,
+	    { return (! contains (getModulesToSkip (), k)); });
+	changed = true;
+    }
+
+    /**
+      * Display error popup with log
+      * FIXME this is copy-paste from ../routines/popups.ycp
+      * @param header string error header
+      * @param log string logfile contents
+      */
+    global define void errorWithLogPopup (string header, string log) ``{
+	term text = `RichText( `opt(`plainText), log );
+	UI::OpenDialog(`opt ( `decorated ),
+	    `VBox (`HSpacing(75),
+		// heading
+		`Heading(header),
+		text,     // e.g. `Richtext()
+		`PushButton( `id(`ok_help), `opt(`default), Label::OKButton() )
+	    )
+	);
+
+	UI::SetFocus(`id(`ok_help) );
+	any r = UI::UserInput();
+	UI::CloseDialog();
+    }
+
+
+    /**
+      * write settings to sysconfig, rebuild initrd images
+      * @return true on success
+      */
+    global define boolean Write () ``{
+	if (! (was_read || Mode::config ()))
+	    Read ();
+	if (Mode::update ())
+	    Update ();
+	y2milestone ("Initrd::Write called, changed: %1, list: %2", changed,
+	    ListModules ());
+	// check whether it is neccessary to write initrd
+	if ((! changed) && (Mode::normal ()))
+	    return true;
+
+	boolean modules_written = false;
+
+	foreach (string modname, any optmap, modules_settings, ``{
+	    if (!is (optmap, map)) continue;
+	    if (size ((map)optmap) > 0)
+	    {
+		// write options to /etc/modules.conf
+		path p = add (.modules.options, modname);
+		SCR::Write (p, (map)optmap);
+		modules_written = true;
+	    }
+	});
+
+	if (modules_written)
+	{
+	    SCR::Write (.modules, nil);
+	}
+
+	// check modules that could be added during module's run (bug 26717)
+	if (SCR::Read (.target.size, "/etc/sysconfig/kernel") != -1)
+	{
+	    string s_modnames = (string) SCR::Read (.sysconfig.kernel.INITRD_MODULES);
+	    if (s_modnames == nil)
+		s_modnames = "";
+	    list<string> s_modules = splitstring (s_modnames, " ");
+	    s_modules = filter (string m, s_modules, ``(
+		! contains (read_modules, m)));
+	    s_modules = filter (string m, s_modules, ``(
+		! contains (modules, m)));
+	    y2milestone (
+		"Modules %1 were added to initrd not using Initrd module",
+		s_modules);
+	    foreach (string m, s_modules, ``{
+		AddModule (m, "");
+	    });
+	}
+
+	// save sysconfig
+        SCR::Execute (.target.bash,
+	    "/usr/bin/touch /etc/sysconfig/bootloader");
+	string mods = mergestring (ListModules (), " ");
+	y2milestone ("Writing modules %1", mods);
+	SCR::Write (.sysconfig.kernel.INITRD_MODULES, mods);
+	SCR::Write (.sysconfig.kernel, nil);
+	// recreate initrd
+	string param = "";
+	if (splash != "" && splash != nil)
+	    param = sformat ("-s %1", splash);
+	if ( SCR::Execute (.target.bash, sformat ("/sbin/mkinitrd %1 >> \
+%2 2>&1", param, Directory::logdir + "/y2logmkinitrd")) != 0 )
+	{
+	    string log = (string) SCR::Read (.target.string, Directory::logdir +
+					     "/y2logmkinitrd");
+	    // error report
+	    errorWithLogPopup (_("An error occurred during initrd creation."),
+		log);
+	}
+	changed = false;
+	return true;
+    }
+
+global list<map> VgaModes () {
+    list<map> all_modes = (list<map>) SCR::Read (.probe.framebuffer);
+    if (all_modes == nil || size (all_modes) == 0)
+    {
+	y2warning ("Probing VGA modes failed, using fallback list");
+	all_modes = known_modes;
+    }
+    return all_modes;
+}
+
+    /**
+      * Set the -s parameter of mkinitrd
+      * @param vga string the vga kernel parameter
+      */
+    global define void setSplash (string vga) ``{
+	if (! Arch::s390 ())
+	{
+	    changed = true;
+	    integer mode = tointeger (vga);
+	    list<map> all_modes = VgaModes ();
+	    foreach (map m, all_modes, ``{
+		if (m["mode"]:0 == mode
+		    && m["height"]:0 != 0 && m["width"]:0 != 0)
+		{
+		    splash = sformat ("%2x%1", m["height"]:0, m["width"]:0);
+		    y2milestone ("Setting splash resolution to %1", splash);
+		}
+	    });
+	}
+    }
+
+} // end of module

@@ -1,0 +1,26 @@
+/**
+ * File:	modules/Call.ycp
+ * Package:	yast2
+ * Summary:	Workaround for CallFunction problems
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+module "Call";
+
+/**
+ * Workaround function for WFM::CallFunction scope problems (#22486).
+ * Same use as WFM::CallFunction.
+ * @param f function client to be called
+ * @param a function params
+ * @return function result
+ */
+global define any Function(string f, list a) ``{
+    return WFM::CallFunction(f,a);
+}
+
+/* EOF */
+}
