@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Wed Apr  5 15:59:36 CEST 2006 - locilka@suse.cz
+
+- Registered new Pkg:: callbacks
+  - Pkg::CallbackAcceptUnsignedFile
+  - Pkg::CallbackAcceptUnknownGpgKey
+  - Pkg::CallbackImportGpgKey
+  - Pkg::CallbackAcceptVerificationFailed
+  - Pkg::CallbackTrustedKeyAdded
+  - Pkg::CallbackTrustedKeyRemoved
+- 2.13.45
+
+-------------------------------------------------------------------
 Wed Apr  5 15:09:52 CEST 2006 - sh@suse.de
 
 - V 2.13.44
