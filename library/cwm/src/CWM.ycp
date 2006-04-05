@@ -812,6 +812,20 @@ global define void ReplaceWidgetHelp (string widget, string help) {
     }
 
     /**
+     * Disable given bottom buttons of the wizard sequencer
+     * @patam buttons list of buttons to be disabled
+     */
+    global define void DisableButtons (list<string> buttons) {
+	foreach (string button, buttons, {
+	    if (button == "back_button")
+		Wizard::DisableBackButton ();
+	    if (button == "abort_button")
+		Wizard::DisableAbortButton ();
+	    if (button == "next_button")
+		Wizard::DisableNextButton ();
+	});
+    }
+    /**
      * Adjust the labels of the bottom buttons of the wizard sequencer
      * @param next label of the "Next" button
      * @param back string label of the "Back" button
@@ -879,6 +893,7 @@ global define void ReplaceWidgetHelp (string widget, string help) {
 	Wizard::SetContentsButtons (caption, contents, help,
 	    back_button, next_button);
 	AdjustButtons (next_button, back_button, abort_button, nil);
+	DisableButtons (settings["disable_buttons"]:[]);
 	return Run (w, fallback);
     }
 

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Apr  5 10:49:47 CEST 2006 - mvidner@suse.cz
+
+- Added CWM::DisableButtons (jsuchome, #157125).
+
+-------------------------------------------------------------------
 Wed Apr  5 09:44:25 CEST 2006 - locilka@suse.cz
 
 - Fixed wrong handling of special 'any' string in the internal
