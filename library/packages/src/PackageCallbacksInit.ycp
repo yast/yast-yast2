@@ -42,7 +42,12 @@ global define void InitPackageCallbacks() {
     // Pkg::CallbackDoneDownload ("PackageCallbacks::DoneDownload");
 
     // Signature-related callbacks
-    Pkg::CallbackAcceptUnsignedFile ("SignatureCheckCallbacks::AcceptUnsignedFile");
+    Pkg::CallbackAcceptUnsignedFile	  ("SignatureCheckCallbacks::AcceptUnsignedFile");
+    Pkg::CallbackAcceptUnknownGpgKey	  ("SignatureCheckCallbacks::AcceptUnknownGpgKey");
+    Pkg::CallbackImportGpgKey		  ("SignatureCheckCallbacks::ImportGpgKey");
+    Pkg::CallbackAcceptVerificationFailed ("SignatureCheckCallbacks::AcceptVerificationFailed");
+    Pkg::CallbackTrustedKeyAdded	  ("SignatureCheckCallbacks::TrustedKeyAdded");
+    Pkg::CallbackTrustedKeyRemoved	  ("SignatureCheckCallbacks::TrustedKeyRemoved");
 
     SetMediaCallbacks ();
 }
