@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Apr  5 09:44:25 CEST 2006 - locilka@suse.cz
+
+- Fixed wrong handling of special 'any' string in the internal
+  function ArePortsOrServicesAllowed(). This part was forgotten
+  from the first implementation of NetworkManager support (#162512).
+- Adding FW_FORWARD_ALWAYS_INOUT_DEV variable into the Read()
+  function to prepare fix for Xen handling (#154133).
+
+-------------------------------------------------------------------
 Tue Apr  4 15:31:08 CEST 2006 - locilka@suse.cz
 
 - Added mapping for Pkg::CallbackAcceptUnsignedFile() callback
