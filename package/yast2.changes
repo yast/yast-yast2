@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Apr  7 22:40:56 CEST 2006 - jsrain@suse.de
+
+- fixed content file parser (#163702)
+
+-------------------------------------------------------------------
 Wed Apr  5 15:59:36 CEST 2006 - locilka@suse.cz
 
 - Registered new Pkg:: callbacks

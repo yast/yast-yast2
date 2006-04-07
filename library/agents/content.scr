@@ -21,7 +21,7 @@
 	    "options" : [ "read_only", "global_values", "flat" ],
 	    "comments" : [ "^#.*", "^[ \t]*$", ],
 	    "params" : [
-		$[ "match" : [ "^[ \t]*([a-zA-Z0-9_]+)[ \t]*(.*)[ \t]*$", "%s %s" ] ]
+		$[ "match" : [ "^[ \t]*([a-zA-Z0-9_\.]+)[ \t]*(.*)[ \t]*$", "%s %s" ] ]
 	    ]
 	]
     )
