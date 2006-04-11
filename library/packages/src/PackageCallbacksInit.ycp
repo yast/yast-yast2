@@ -48,6 +48,7 @@ global define void InitPackageCallbacks() {
     Pkg::CallbackAcceptVerificationFailed ("SignatureCheckCallbacks::AcceptVerificationFailed");
     Pkg::CallbackTrustedKeyAdded	  ("SignatureCheckCallbacks::TrustedKeyAdded");
     Pkg::CallbackTrustedKeyRemoved	  ("SignatureCheckCallbacks::TrustedKeyRemoved");
+    Pkg::CallbackAcceptFileWithoutChecksum("SignatureCheckCallbacks::AcceptFileWithoutChecksum");
 
     SetMediaCallbacks ();
 }
