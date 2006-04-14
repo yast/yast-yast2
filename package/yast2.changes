@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Apr 14 14:29:17 CEST 2006 - jsuchome@suse.cz
+
+- restart online update if there are some selected patches left to 
+  installation (#165540)
+- 2.13.48
+
+-------------------------------------------------------------------
 Tue Apr 11 10:08:09 CEST 2006 - locilka@suse.cz
 
 - Registering callback Pkg::CallbackAcceptFileWithoutChecksum
