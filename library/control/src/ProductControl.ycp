@@ -866,7 +866,11 @@ global symbol RunFrom (integer from, boolean allow_back)
 	if ( do_continue )
 	{
 	    if (former_result == `next)
+	    {
+		if (current_step <= minimum_step && ! allow_back)
+		    minimum_step = minimum_step + 1;
 		current_step = current_step + 1;
+	    }
 	    else
 		current_step = current_step - 1;
 	}
