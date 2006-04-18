@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr 18 15:13:32 CEST 2006 - jsuchome@suse.cz
+
+- menu.ycp: better check if menu should exit after online-update
+- 2.13.50
+
+-------------------------------------------------------------------
 Fri Apr 14 19:21:11 CEST 2006 - jsrain@suse.de
 
 - fixed handling of disabling back button (#165832)
