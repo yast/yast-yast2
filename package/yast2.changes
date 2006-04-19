@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Apr 19 15:02:44 CEST 2006 - jsuchome@suse.cz
+
+- menu.ycp: check for `restart_menu possible return value (#162966)
+- scripts/yast2: enable restarting curses menu
+- 2.13.51
+
+-------------------------------------------------------------------
 Tue Apr 18 15:13:32 CEST 2006 - jsuchome@suse.cz
 
 - menu.ycp: better check if menu should exit after online-update
