@@ -15,11 +15,15 @@
 textdomain "base";
 
 import "Desktop";
+import "Directory";
+import "FileUtils";
 import "Label";
 import "Popup";
 
 map Groups = $[];
 map Modules = $[];
+
+string restart_file	= Directory::vardir + "/restart_menu";
 
 /**
  */
@@ -87,9 +91,10 @@ define boolean Launch(string modul) {
 
 	any ret = WFM::CallFunction (function, arguments);
 	y2debug("WFM::CallFunction (%1, %2) returns: %3", function, arguments, ret);
-	if (function == "online_update" && ret == -42)
+	if ((function == "online_update" && ret == -42) || ret == `restart_menu)
 	{
 	    y2milestone ("yast needs to be restarted - exiting...");
+	    SCR::Execute (.target.bash, sformat ("touch %1", restart_file));
 	    return true;
 	}
     }
@@ -177,6 +182,13 @@ Modules = Desktop::Modules;
 y2debug("Groups=%1", Groups);
 y2debug("Modules=%1", Modules);
 
+if (FileUtils::Exists (restart_file))
+{
+    SCR::Execute (.target.remove, restart_file);
+}
+
+UI::CloseDialog ();
+
 OpenMenu();
 
 list<term> GroupList = Desktop::GroupList();
@@ -186,7 +198,7 @@ y2debug("GroupList=%1", GroupList);
 
 /* precache groups (#38363) */
 list<string> groups = maplist(term gr, GroupList, ``{
-    return (string) select((term) select(gr, 0, `empty()), 0, nil);
+    return (string) gr[0,0]:nil;
 });
 y2debug("groups=%1", groups);
 
@@ -195,7 +207,7 @@ map<string,list<term> > modules = listmap(string gr, groups, ``{
 });
 y2debug("modules=%1", modules);
 
-string first = select(groups, 0, nil);
+string first = groups[0]:nil;
 y2debug("first=%1", first);
 
 /**

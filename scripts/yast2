@@ -161,7 +161,12 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 	# use menu.ycp
 	# TODO: this does not need to be a special case. refactor after release
 	if [ $module == "menu" ] ; then
-	    $ybindir/y2base menu ncurses $NCTHREADS
+	    while true ; do
+		$ybindir/y2base menu ncurses $NCTHREADS
+		if [ ! -e "/var/lib/YaST2/restart_menu" ] ; then
+		    break
+		fi
+	    done
 	else
 	  while true ; do
 	    # Transform every argument into a ycp string, that is surround all
