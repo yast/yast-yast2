@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Apr 20 22:47:03 CEST 2006 - jsrain@suse.de
+
+- handle installation restart with repeating last step (#167561)
+
+-------------------------------------------------------------------
 Wed Apr 19 15:02:44 CEST 2006 - jsuchome@suse.cz
 
 - menu.ycp: check for `restart_menu possible return value (#162966)
