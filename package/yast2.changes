@@ -2,6 +2,7 @@
 Tue Apr 25 20:38:04 CEST 2006 - jsrain@suse.de
 
 - properly parse FTP URL (#166248, many others)
+- 2.13.54
 
 -------------------------------------------------------------------
 Tue Apr 25 14:24:45 CEST 2006 - visnov@suse.cz
