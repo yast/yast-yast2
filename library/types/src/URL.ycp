@@ -163,7 +163,19 @@ global define map Parse(string url) ``{
 
     map tokens = $[];
     tokens["scheme"] = rawtokens[1]:"";
-    tokens["path"] = UnEscapeString(rawtokens[3]:"", transform_map_filename);
+    string pth = rawtokens[3]:"";
+    if (tokens["scheme"]:"" == "ftp")
+    {
+	if (substring (pth, 0, 4) == "/%2f")
+	{
+	    pth = "/" + substring (pth, 4);
+	}
+	else
+	{
+	    pth = substring (pth, 1);
+	}
+    }
+    tokens["path"] = UnEscapeString(pth, transform_map_filename);
     tokens["query"] = UnEscapeString(rawtokens[5]:"", transform_map_passwd);
     tokens["fragment"] = UnEscapeString(rawtokens[7]:"", transform_map_passwd);
 
