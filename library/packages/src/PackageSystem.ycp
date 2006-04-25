@@ -65,6 +65,7 @@ global void EnsureTargetInit() {
  */
 global void EnsureSourceInit() {
     PackageLock::Check ();
+
     if(source_initialized) 
     {
 	// this way, if somebody closed the cache outside of Package
@@ -86,6 +87,14 @@ global void EnsureSourceInit() {
     {
 	UI::OpenDialog(`opt(`decorated ), `Label(message));
     }
+
+    if(! target_initialized)
+    {
+	// make sure we have the RPM keys imported
+        EnsureTargetInit();
+    }
+
+
     list sources = Pkg::SourceStartCache (true);
 
     if (!Mode::commandline()) {

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr 25 14:24:45 CEST 2006 - visnov@suse.cz
+
+- ensure importing trusted RPM keys before initializing sources (#169121)
+- 2.13.53 
+
+-------------------------------------------------------------------
 Thu Apr 20 22:47:03 CEST 2006 - jsrain@suse.de
 
 - handle installation restart with repeating last step (#167561)
