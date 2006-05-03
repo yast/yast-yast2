@@ -241,21 +241,45 @@ void UpdateFirewallStatus () {
  * @return a list of interfaces that will be opened
  */
 list<string> Selected2Opened (list<string> ifaces, boolean nm_ifaces_have_to_be_selected) {
+    y2milestone("Selected ifaces: %1", ifaces);
     list<string> groups = maplist (string i, ifaces, {
 	return SuSEFirewall::GetZoneOfInterface (i);
     });
 
-    //if (nm_ifaces_have_to_be_selected) {
-    //	groups = add (groups, SuSEFirewall::special_all_interface_zone);
-    //}
+    // string 'any' is in the EXT zone
+    // all interfaces without zone assigned are covered by this case
+    // so, check also the EXT zone
+    if (SuSEFirewall::IsAnyNetworkInterfaceSupported()) {
+    	groups = add (groups, SuSEFirewall::special_all_interface_zone);
+    }
 
     groups = toset (groups);
     groups = filter (string g, groups, {
 	return g != nil;
     });
     list<list<string> > iface_groups = maplist (string g, groups, {
-	return SuSEFirewall::GetInterfacesInZone (g);
+	list <string> ifaces_also_supported_by_any = SuSEFirewall::GetInterfacesInZoneSupportingAnyFeature (g);
+	// If all interfaces in EXT zone are covered by the special 'any' string
+	// and none of these interfaces are selected to be open, we can remove all of them
+	// disable the service in whole EXT zone
+	if (g == SuSEFirewall::special_all_interface_zone) {
+	    list <string> ifaces_left_explicitely = filter(string iface, ifaces_also_supported_by_any, {
+		return contains(ifaces, iface);
+	    });
+	    y2milestone("Ifaces left in zone: %1", ifaces_left_explicitely);
+	    // there are no interfaces left that would be explicitely mentioned in the EXT zone
+	    if (ifaces_left_explicitely == []) {
+		return [];
+	    // Hmm, some interfaces left
+	    } else {
+		return ifaces_also_supported_by_any;
+	    }
+	// Just report all interfaces mentioned in zone
+	} else {
+	    return ifaces_also_supported_by_any;
+	}
     });
+    y2milestone("Ifaces touched: %1", iface_groups);
     list<string> new_ifaces = toset (flatten (iface_groups));
     new_ifaces = filter (string i, new_ifaces, {
 	return i != nil;
@@ -301,9 +325,29 @@ global void InitAllowedInterfaces (list<string> services) {
     service_status = filter (string iface, boolean en, service_status, {
 	return en;
     });
+    y2milestone("Status: %1", service_status);
     allowed_interfaces = maplist (string iface, boolean en, service_status, {
 	return iface;
     });
+    
+    // Checking whether the string 'any' is in the 'EXT' zone
+    // If it is, checking the status of services for this zone
+    // If it is enabled, adding it these interfaces into the list of allowed interfaces
+    //                   and setting this zone to enabled
+    if (SuSEFirewall::IsAnyNetworkInterfaceSupported()) {
+	list <string> interfaces_supported_by_any =
+	    SuSEFirewall::InterfacesSupportedByAnyFeature(SuSEFirewall::special_all_interface_zone);
+	if (size(interfaces_supported_by_any)>0) {
+	    foreach (string service, services, {
+		service_status[SuSEFirewall::special_all_interface_zone] =
+		    SuSEFirewall::IsServiceSupportedInZone(service, SuSEFirewall::special_all_interface_zone)
+		    && service_status[SuSEFirewall::special_all_interface_zone]:true;
+	    });
+	    if (service_status[SuSEFirewall::special_all_interface_zone]:false) {
+		allowed_interfaces = (list <string>) union (allowed_interfaces, interfaces_supported_by_any);
+	    }
+	}
+    }
 
     //if (contains(all_interfaces, special_all_nm_interfaces)) {
     //	boolean special_all_nm_enabled = size(services) > 0;
@@ -346,6 +390,9 @@ global void StoreAllowedInterfaces (list<string> services) {
     //	// to hide the special interface name
     //	allowed_interfaces = filter(string i, allowed_interfaces, { return i != special_all_nm_interfaces; });
     //}
+
+    list <string> interfaces_supported_by_any =
+	SuSEFirewall::InterfacesSupportedByAnyFeature(SuSEFirewall::special_all_interface_zone);
 
     if (size (forbidden_interfaces) > 0)
     {
@@ -474,12 +521,17 @@ Continue?")))
 
     // list<string> firewall_ifaces = toset (Selected2Opened (ifaces, nm_ifaces_have_to_be_supported));
     list<string> firewall_ifaces = toset (Selected2Opened (ifaces, false));
+    y2milestone("firewall_ifaces: %1", firewall_ifaces);
+
     list<string> added_ifaces = filter (string i, firewall_ifaces, {
 	return ! contains (ifaces, i);
     });
+    y2milestone("added_ifaces: %1", added_ifaces);
+
     list<string> removed_ifaces = filter (string i, ifaces, {
 	return ! contains (firewall_ifaces, i);
     });
+    y2milestone("removed_ifaces: %1", removed_ifaces);
 
     //// to hide that special string
     //added_ifaces = filter (string i, added_ifaces, { return i != special_all_nm_interfaces; });

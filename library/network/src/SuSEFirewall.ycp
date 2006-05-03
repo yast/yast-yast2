@@ -1524,6 +1524,37 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 	return toset(zones);
     }
 
+    global define list<string> GetInterfacesInZoneSupportingAnyFeature (string zone);
+
+    /**
+     * Function returns list of zones of requested interfaces.
+     * Special string 'any' in 'EXT' zone is supported.
+     *
+     * @param	list<string> interfaces
+     * @param	list<string> firewall zones
+     */
+    global define list<string> GetZonesOfInterfacesWithAnyFeatureSupported (list<string> interfaces) {
+	list<string> zones = [];
+	string zone = "";
+	
+	// 'any' in 'EXT'
+	list <string> interfaces_covered_by_any =
+	    SuSEFirewall::GetInterfacesInZoneSupportingAnyFeature(special_all_interface_zone);
+
+	foreach (string interface, interfaces, {
+	    // interface is covered by 'any' in 'EXT'
+	    if (contains(interfaces_covered_by_any, interface))
+		zone = special_all_interface_zone;
+	    // interface is explicitely mentioned in some zone
+	    else
+		zone = GetZoneOfInterface(interface);
+
+	    if (zone != nil) zones = add(zones, zone);
+	});
+	
+	return toset(zones);
+    }
+
     /**
      * Function returns list of maps of known interfaces.
      * Interfaces handled by a NetworkManager are not returned at all.
@@ -1681,6 +1712,52 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 	});
 
 	return toset(firewall_configured_devices);
+    }
+
+    /**
+     * Returns list of interfaces not mentioned in any zone and covered by the
+     * special string 'any' in zone 'EXT' if such string exists there and the zone
+     * is EXT.
+     *
+     * @param string zone
+     * @return list <string> of interfaces covered by special string 'any'
+     */
+    global define list<string> InterfacesSupportedByAnyFeature (string zone) {
+	list <string> result = [];
+	
+	if (zone == special_all_interface_zone && IsAnyNetworkInterfaceSupported()) {
+	    list <string> known_interfaces_now  = GetListOfKnownInterfaces();
+	    list <string> configured_interfaces = GetFirewallInterfaces();
+	    foreach (string one_interface, known_interfaces_now, {
+		if (! contains(configured_interfaces, one_interface)) {
+		    y2milestone("Interface '%1' supported by special string '%2' in zone '%3'",
+			one_interface, special_all_interface_string, special_all_interface_zone);
+		    result = add (result, one_interface);
+		}
+	    });
+	}
+	
+	return result;
+    }
+
+    /**
+     * Function returns list of known interfaces in requested zone.
+     * Special string 'any' in EXT zone covers all interfaces without
+     * any zone assignment.
+     *
+     * @param	string zone
+     * @return	list <string> of interfaces
+     */
+    global define list<string> GetInterfacesInZoneSupportingAnyFeature (string zone) {
+	list <string> interfaces_in_zone = GetInterfacesInZone(zone);
+
+	// 'any' in EXT zone, add all interfaces without zone to this one
+	list <string> interfaces_covered_by_any = InterfacesSupportedByAnyFeature(zone);
+	if (size(interfaces_covered_by_any)>0) {
+	    interfaces_in_zone = (list <string>) union (interfaces_in_zone, interfaces_covered_by_any);
+	}
+	
+	return interfaces_in_zone;
     }
 
     boolean ArePortsOrServicesAllowed (list <string> needed_ports, string protocol, string zone, boolean check_for_aliases);
@@ -2075,7 +2152,7 @@ Run YaST2 Firewall and assign it.
      * @return	boolean if successfull
      */
     global define boolean SetServices (list<string> services_ids, list<string> interfaces, boolean new_status) {
-	list<string> firewall_zones = GetZonesOfInterfaces(interfaces);
+	list<string> firewall_zones = GetZonesOfInterfacesWithAnyFeatureSupported(interfaces);
 	if (size(firewall_zones)==0) {
 	    y2error("Interfaces '%1' are not in any group if interfaces", interfaces);
 	    return false;
