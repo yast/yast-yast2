@@ -38,6 +38,9 @@ global list<map<string,any> > inst_finish = [];
 // modules to be offered to clone configuration at the end of installation
 global list<string> clone_modules = [];
 
+// texts which are product specific
+global map<string,string> texts = $[];
+
 // Location of a custom control file
 global string custom_control_file = "";
 
@@ -154,7 +157,12 @@ global define boolean ReadControlFile( string controlfile)
 	ProductFeatures::SetFeature ("partitioning", "FlexiblePartitioning",
 	    partitioning);
     }
-
+    texts = mapmap (string key, map<string,string> text,
+	productControl["texts"]:$[],
+    {
+	string label = text["label"]:"";
+	return $[ key : label ];
+    });
     return true;
 }
 

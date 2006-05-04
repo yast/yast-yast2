@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu May  4 14:15:31 CEST 2006 - jsrain@suse.cz
+
+- read texts from control file (#170881)
+
+-------------------------------------------------------------------
 Wed May  3 17:45:59 CEST 2006 - locilka@suse.cz
 
 - Properly handle special string 'any' in 'EXT' zone in CWM for
