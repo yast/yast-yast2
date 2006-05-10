@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed May 10 16:30:02 CEST 2006 - locilka@suse.cz
+
+- Added more logging into the Service.ycp module (for bug #173418)
+
+-------------------------------------------------------------------
 Thu May  4 14:15:31 CEST 2006 - jsrain@suse.cz
 
 - read texts from control file (#170881)
