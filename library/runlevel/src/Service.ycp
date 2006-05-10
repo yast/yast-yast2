@@ -321,12 +321,13 @@ global define integer RunInitScriptWithTimeOut (string name, string param) {
 	time_spent = time_spent + sleep_step;
 	sleep(sleep_step);
     }
-    y2milestone("Time spent: %1 msec", time_spent);
     
     // fetching the return code if not timed-out
     if (cont_loop) {
 	return_code = (integer) SCR::Read(.background.status);
     }
+
+    y2milestone("Time spent: %1 msecs, retcode: %2", time_spent, return_code);
 
     // killing the process (if it still runs)
     SCR::Execute(.background.kill, "");
