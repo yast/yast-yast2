@@ -80,6 +80,12 @@ global list<string> DisabledProposals = [];
 // Log files for hooks
 global list<string> logfiles = [];
 
+global integer first_step = nil;
+
+global integer restarting_step = nil;
+
+
+
 
 string _client_prefix = "inst_";
 
@@ -1046,11 +1052,45 @@ global symbol RunFrom (integer from, boolean allow_back)
 
 /**
  * Run Workflow
- * 
+ *
  */
 global symbol Run () {
     return RunFrom (0, false);
 }
+
+// Functions to access restart information
+
+/**
+ * List steps which were skipped since last restart of YaST
+ * @return a list of maps describing the steps
+ */
+global list<map> SkippedSteps () {
+    list<map> modules = getModules( Stage::stage (), Mode::mode (), `enabled);
+    if (first_step == nil)
+	return nil;
+    if (first_step >= size (modules))
+	return nil;
+    integer index = 0;
+    list<map> ret = [];
+    while (index < first_step)
+    {
+	ret = add (ret, modules[index]:$[]);
+	index = index + 1;
+    }
+    return ret;
+}
+
+/**
+ * Return step which restarted YaST (or rebooted the system)
+ * @return a map describing the step
+ */
+global map RestartingStep () {
+    if (restarting_step == nil)
+	return nil;
+    list<map> modules = getModules( Stage::stage (), Mode::mode (), `enabled);
+    return modules[restarting_step]:$[];
+}
+
 
 /**
  * ProductControl Constructor
