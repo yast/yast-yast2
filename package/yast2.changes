@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Mon May 15 15:18:56 CEST 2006 - locilka@suse.cz
+
+- Fixed CWMFirewallInterfaces behavior in the basic view for all
+  interfaces at once. When the status of the firewall checkbox is
+  changed, the current configuration is checked and possible errors
+  are reported to user (#158520 c17).
+- 2.13.58
+
+-------------------------------------------------------------------
 Mon May 15 12:58:42 CEST 2006 - jsrain@suse.cz
 
 - provide more information about restart of YaST during

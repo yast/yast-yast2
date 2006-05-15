@@ -570,6 +570,64 @@ Continue?"),
     return true;
 }
 
+list <string> buggy_ifaces = [];
+
+/**
+ * Checks whether it is possible to change the firewall status
+ */
+boolean CheckPossbilityToChangeFirewall (boolean new_status) {
+    // Reset buggy ifaces
+    buggy_ifaces = [];
+
+    // User want's to disable the service in firewall
+    // that works always
+    if (new_status == false)
+	return true;
+
+    // BTW: new_status == true
+
+    // 'any' in 'EXT'
+    // interfaces are mentioned in some zone or they are covered by the special string
+    // enable-on-all or disable-on-all will work
+    if (SuSEFirewall::IsAnyNetworkInterfaceSupported())
+	return true;
+
+    // every network interface must have its zone assigned
+    boolean all_ok = true;
+    list <map <string, string> > all_ifaces = SuSEFirewall::GetAllKnownInterfaces();
+    foreach (map <string, string> one_interface, SuSEFirewall::GetAllKnownInterfaces(), {
+	if (one_interface["zone"]:nil == nil || one_interface["zone"]:"" == "") {
+	    y2warning("Cannot enable service because interface %1 is not mentioned anywhere...", one_interface["id"]:"ID");
+	    buggy_ifaces = add(buggy_ifaces, one_interface["id"]:"interface");
+	    all_ok = false;
+	}
+    });
+    if (all_ok) {
+	return true;
+    } else {
+	string ifaces_list = mergestring (buggy_ifaces, "\n");
+	// yes-no popup
+	if (Popup::YesNo (sformat(_("Because of SuSE Firewall settings, the port
+on the following interfaces cannot be opened:
+%1
+
+Continue?"), ifaces_list))) {
+		// all known ifaces are buggy
+	    if (size(buggy_ifaces) == size(all_ifaces))
+		return false;
+	    else
+		// at least one iface isn't buggy
+		return true;
+	} else {
+	    // cancel
+	    buggy_ifaces = all_interfaces;
+	    return false;
+	}
+    }
+    
+    return false;
+}
+
 /**
  * Init function of the widget
  * @param key strnig the widget key
@@ -762,7 +820,9 @@ global symbol OpenFirewallHandle (map<string,any> widget, string key, map event)
     {
 	symbol() handle_firewall_details
 	    = (symbol())widget["firewall_details_handler"]:nil;
+	y2milestone("FD: %1", handle_firewall_details);
 	symbol ret = nil;
+	y2milestone("RT: %1", ret);
 	if (handle_firewall_details != nil)
 	{
 	    ret = handle_firewall_details ();
@@ -783,10 +843,26 @@ global symbol OpenFirewallHandle (map<string,any> widget, string key, map event)
 	boolean value = (boolean)UI::QueryWidget (
 	    `id ("_cwm_open_firewall"),
 	    `Value);
+	y2milestone("OF: %1", value);
 	if (value)
 	    allowed_interfaces = all_interfaces;
 	else
 	    allowed_interfaces = [];
+
+	buggy_ifaces = [];
+	// Checks whether it's possible to enable or disable the service for all interfaces
+	// opens a popup message when needed
+	if (! CheckPossbilityToChangeFirewall(value)) {
+	    // change the checkbox state back
+	    UI::ChangeWidget(`id ("_cwm_open_firewall"), `Value, !value);
+	}
+	// Filtering out buggy ifaces
+	foreach (string one_iface, buggy_ifaces, {
+	    allowed_interfaces = filter(string one_allowed, allowed_interfaces, {
+		return one_allowed != one_iface;
+	    });
+	});
+
 	UpdateFirewallStatus ();
 	EnableOrDisableFirewallDetails ();
 	configuration_changed = true;
