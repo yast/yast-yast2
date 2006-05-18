@@ -96,7 +96,7 @@ function set_qt_home_dir()
     if [ "$KDESU_USER" ]; then
        user="$KDESU_USER"
     fi
-    temp_QT_HOME_DIR="`eval echo ~$user/.qt/`"
+    temp_QT_HOME_DIR="$( getent passwd $user | cut -d : -f 6)/.qt/"
     if test -r "$temp_QT_HOME_DIR/qtrc"; then
         export QT_HOME_DIR="$temp_QT_HOME_DIR"
     fi
