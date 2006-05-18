@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu May 18 12:28:09 CEST 2006 - locilka@suse.cz
+
+- Fixing exporting the $QT_HOME_DIR according to $user's home
+  directory (#162114).
+- 2.13.59 
+
+-------------------------------------------------------------------
 Mon May 15 15:18:56 CEST 2006 - locilka@suse.cz
 
 - Fixed CWMFirewallInterfaces behavior in the basic view for all
