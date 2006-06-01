@@ -7,6 +7,8 @@ Thu Jun  1 14:49:53 CEST 2006 - locilka@suse.cz
     PackageAI, PackageSystem, Popup, Report, RichText, Sequencer,
     Service, Stage, TypeRepository, URL and Wizard
 - Added some more documentation into the Wizard module
+- Fixing documentation of global modules (for generated docu.)
+- 2.13.60
 
 -------------------------------------------------------------------
 Thu May 18 12:28:09 CEST 2006 - locilka@suse.cz
