@@ -9,13 +9,7 @@
  */
 
 /**
- * @example
- *  map a = $[
- *     "first" : 35,
- *     "second" : [ 1, 2, 3, 4, 5],
- *     "third" : $[ "a" : 15, `b: `VBox () ]
- *    ];
- *  ValueBrowser::Tree (a);
+
  */
 {
     module "ValueBrowser";
@@ -27,7 +21,7 @@
      * @param s string to escape
      * @return string escaped string
      */
-    global define string escapestring (string s) ``{
+    string escapestring (string s) ``{
 	return mergestring (splitstring (s, "\n"), "\\n");
     }
 
@@ -131,6 +125,15 @@ block <type>
 
     /**
      * Shows tree with contents of variable.
+     *
+     * @example
+     *  map a = $[
+     *     "first" : 35,
+     *     "second" : [ 1, 2, 3, 4, 5],
+     *     "third" : $[ "a" : 15, `b: `VBox () ]
+     *    ];
+     *  ValueBrowser::BrowseTree (a);
+     *
      * @param variable variable to show.
      */
     global define void BrowseTree (any variable) ``{
