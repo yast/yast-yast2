@@ -290,8 +290,9 @@ global boolean board_wintel () {
 
 /**
  * true if the system supports PCMCIA
- * But modern notebook computers do not have it. See also #151813#c10
+ * But modern notebook computers do not have it. See also Bugzilla #151813#c10
  * @see is_laptop
+ * @return true if the system supports PCMCIA
  */
 global boolean has_pcmcia () {
     if (_has_pcmcia == nil)
@@ -300,6 +301,8 @@ global boolean has_pcmcia () {
 }
 
 /**
+ * true if the system runs on laptop
+ *
  * @return if the system is a laptop
  */
 global boolean is_laptop () {
@@ -316,6 +319,8 @@ global boolean is_laptop () {
 
 /**
  * true if UML
+ * @deprecated
+ * @return true if the system is UML
  */
 global boolean is_uml () {
     if (_is_uml == nil)
@@ -327,6 +332,7 @@ global boolean is_uml () {
 
 /**
  * true if Xen kernel is running (dom0 or domU)
+ * @return true if the Xen kernel is running
  */
 global boolean is_xen () {
     if (_is_xen == nil) {
@@ -342,6 +348,9 @@ global boolean is_xen () {
 
 /**
  * true if dom0 Xen kernel is running
+ * @see is_xenU
+ * @see is_xen
+ * @return true if the Xen kernel is running in dom0
  */
 global boolean is_xen0 () {
     if (_is_xen0 == nil) {
@@ -357,6 +366,10 @@ global boolean is_xen0 () {
 
 /**
  * true if domU Xen kernel is running
+ *
+ * @see is_xen0
+ * @see is_xen
+ * @return true if the Xen kernel is running in another domain than dom0
  */
 global boolean is_xenU () {
     return (is_xen() && !is_xen0());
@@ -378,6 +391,8 @@ global define void setSMP(boolean is_smp) {
 /**
  * true if running on multiprocessor board. This only reflects the
  * board, not the actual number of CPUs or the running kernel!
+ *
+ * @return true if running on multiprocessor board
  */
 global boolean has_smp () {
     if (_has_smp == nil)
@@ -393,10 +408,11 @@ global boolean has_smp () {
 /**
  * run X11 configuration after inital boot
  * this is false in case of:
- * installation on iSeries
+ * installation on iSeries,
  * installation on S390
  *
- * Also see Installation::x11_setup_needed ().
+ * @returns true when the X11 configuration is needed after inital boot
+ * @see Installation::x11_setup_needed
  */
 global boolean x11_setup_needed	() {
     // disable X11 setup after initial boot
