@@ -3,6 +3,7 @@
  * Package:	yast2
  * Summary:	Generic HTML formatting
  * Authors:	Stefan Hundhammer <sh@suse.de>
+ * Flags:	Stable
  *
  * $Id$
  *

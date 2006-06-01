@@ -3,6 +3,7 @@
  * Package:	yast2
  * Summary:	Map manipulation routines
  * Authors:	Michal Svec <msvec@suse.cz>
+ * Flags:	Stable
  *
  * $Id$
  */

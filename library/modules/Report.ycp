@@ -3,6 +3,7 @@
  * Package:	yast2
  * Summary:	Messages handling
  * Authors:	Ladislav Slezak <lslezak@suse.cz>
+ * Flags:	Stable
  *
  * $Id$
  *

@@ -4,6 +4,7 @@
  * Summary:	Rich text manipulation routines
  * Authors:	Michal Svec <msvec@suse.cz>
  *		Stano Visnovsky <visnov@suse.cz>
+ * Flags:	Stable
  *
  * $Id$
  */

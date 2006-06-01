@@ -3,6 +3,7 @@
  * Module:	yast2
  * Summary:	Wizard Sequencer
  * Authors:	Michal Svec <msvec@suse.cz>
+ * Flags:	Stable
  *
  * $Id$
  *

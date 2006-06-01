@@ -3,6 +3,7 @@
  * Module:	yast2
  * Summary:	IP manipulation routines
  * Authors:	Michal Svec <msvec@suse.cz>
+ * Flags:	Stable
  *
  * $Id$
  */
