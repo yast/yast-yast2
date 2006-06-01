@@ -4,6 +4,7 @@
  * Authors:     Lukas Ocilka <lukas.ocilka@suse.cz>
  * Summary:     Module for getting information about files and directories.
  *		Their types and sizes.
+ * Flags:	Stable
  *
  * $Id$
  */

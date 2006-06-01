@@ -3,6 +3,7 @@
  * Package:	yast2
  * Summary:	Type repository for validation of user-defined types
  * Authors:	Stanislav Visnovsky <visnov@suse.cz>
+ * Flags:	Stable
  *
  * $Id$
  */

@@ -3,6 +3,7 @@
  * Package:	YaST2 base package
  * Summary:	Handling crashes and recovery of other modules
  * Authors:	Jiri Srain <jsrain@suse.cz>
+ * Flags:	Stable
  *
  * $Id$
  */

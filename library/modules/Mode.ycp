@@ -3,6 +3,7 @@
  * Module:	yast2
  * Summary:	Installation mode
  * Authors:	Klaus Kaempf <kkaempf@suse.de>
+ * Flags:	Stable
  *
  * $Id$
  *

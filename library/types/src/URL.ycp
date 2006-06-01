@@ -4,6 +4,7 @@
  * Summary:	Manipulate and Parse URLs
  * Authors:	Michal Svec <msvec@suse.cz>
  *		Anas Nashif <nashif@suse.cz>
+ * Flags:	Stable
  *
  * $Id$
  */

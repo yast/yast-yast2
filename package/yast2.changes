@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Thu Jun  1 14:49:53 CEST 2006 - locilka@suse.cz
+
+- Global API or parts of these modules were marked as Stable:
+    Address, Arch, Confirm, Crash, FileUtils, Hostname, HTML,
+    HWConfig, IP, Label, Map, Message, Mode, Netmask, Package,
+    PackageAI, PackageSystem, Popup, Report, RichText, Sequencer,
+    Service, Stage, TypeRepository, URL and Wizard
+- Added some more documentation into the Wizard module
+
+-------------------------------------------------------------------
 Thu May 18 12:28:09 CEST 2006 - locilka@suse.cz
 
 - Fixing exporting the $QT_HOME_DIR according to $user's home

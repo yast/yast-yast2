@@ -163,6 +163,8 @@
      * @descr Returns a term describing a generic wizard dialog with a configurable
      * button box.
      *
+     * @stable
+     *
      * @param	button_box term that contains a `HBox() with buttons in it
      * @return	term term describing the dialog.
      **/
@@ -211,6 +213,8 @@
     /**
      * Open a popup dialog that displays a help text (rich text format).
      *
+     * @stable
+     *
      * @param help_text the text to display
      **/
     global void ShowHelp( string help_text ) {
@@ -224,6 +228,9 @@
 
     /**
      * Returns a standard wizard dialog with buttons "Next", "Back", "Abort".
+     *
+     * @stable
+     *
      * @return term describing the dialog.
      **/
     global term NextBackDialog() {
@@ -233,6 +240,9 @@
 
     /**
      * Returns a standard wizard dialog with buttons "Cancel", "Accept"
+     *
+     * @stable
+     *
      * @return term describing the dialog.
      **/
     global term AcceptDialog() {
@@ -242,6 +252,9 @@
 
     /**
      * Open any wizard dialog.
+     *
+     * @stable
+     *
      * @param	dialog	a wizard dialog, e.g. Wizard::GenericDialog()
      **/
     global void OpenDialog( term dialog ) {
@@ -394,6 +407,9 @@
      *
      * If help_space_contents is 'nil', the normal help widget will remain.
      * If button_box is 'nil', Wizard::BackAbortNextButtonBox() is used.
+     *
+     * @see CloseDialog
+     *
      * @param help_space_contents Help space contents
      * @param button_box Buttom Box
      * @return void
@@ -431,6 +447,8 @@
 
     /**
      * Close a wizard dialog.
+     *
+     * @stable
      **/
     global void CloseDialog() {
 	if ( IsWizardDialog() )
@@ -488,6 +506,8 @@
      * How the general framework for the installation wizard should
      * look like. This function creates and shows a dialog.
      *
+     * @stable
+     *
      * @param title Dialog Title
      * @param contents The Dialog contents
      * @param help_text Help text
@@ -533,6 +553,8 @@
      * "Back", call ClearContents() prior to any lengthy
      * operation -> the user notices instant response, even though he
      * may in fact still have to wait.
+     *
+     * @stable
      **/
     global void ClearContents() {
 	Wizard::SetContents("", `Empty(), "", false, false);
@@ -543,6 +565,9 @@
      * Set contents and Buttons of wizard dialog
      *
      * Additionally set its title, help_text and buttons labels. Enables both back and next button.
+     *
+     * @params
+     *
      * @param title title of window
      * @param contents contents of dialog
      * @param help_text help text
@@ -624,6 +649,9 @@
 
     /**
      * Set the dialog's "Next" button with a new label and a new ID
+     *
+     * @stable
+     *
      * @param id Button ID
      * @param label Button Label
      **/
@@ -648,6 +676,9 @@
 
     /**
      * Set the dialog's "Back" button with a new label and a new ID
+     *
+     * @stable
+     *
      * @param id Button ID
      * @param label Button Label
      **/
@@ -671,6 +702,9 @@
 
     /**
      * Set the dialog's "Abort" button with a new label and a new ID
+     *
+     * @stable
+     *
      * @param id Button ID
      * @param label Button Label
      **/
@@ -693,6 +727,9 @@
     /**
      * Hide the Wizard's "Next" button.
      * Restore it later with RestoreNextButton():
+     *
+     * @see RestoreNextButton
+     * @stable
      **/
     global void HideNextButton()
     {
@@ -706,6 +743,9 @@
     /**
      * Hide the Wizard's "Back" button.
      * Restore it later with RestoreBackButton():
+     *
+     * @see RestoreBackButton
+     * @stable
      **/
     global void HideBackButton()
     {
@@ -720,6 +760,9 @@
     /**
      * Hide the Wizard's "Abort" button.
      * Restore it later with RestoreAbortButton():
+     *
+     * @see RestoreAbortButton
+     * @stable
      **/
     global void HideAbortButton()
     {
@@ -733,6 +776,9 @@
 
     /**
      * Restore the wizard 'back' button.
+     *
+     * @see HideBackButton
+     * @stable
      **/
     global void RestoreBackButton()
     {
@@ -742,6 +788,9 @@
 
     /**
      * Restore the wizard 'next' button.
+     *
+     * @see HideNextButton
+     * @stable
      **/
     global void RestoreNextButton()
     {
@@ -751,6 +800,9 @@
 
     /**
      * Restore the wizard 'abort' button.
+     *
+     * @see HideAbortButton
+     * @stable
      **/
     global void RestoreAbortButton() {
 	Wizard::SetAbortButton( `abort, Label::AbortButton() );
@@ -762,6 +814,8 @@
      * Replace the wizard 'next' button with a custom widget.
      * THIS FUNCTION IS DEPRECATED!
      *
+     * @deprecated
+     * @see SetNextButton
      * @param contents a term describing the new contents
      **/
     global void ReplaceNextButton(term contents) {
@@ -774,6 +828,9 @@
     /**
      * Replace the wizard 'back' button with a custom widget.
      * THIS FUNCTION IS DEPRECATED!
+     *
+     * @deprecated
+     * @see SetBackButton
      * @param contents a term describing the new contents
      **/
     global void ReplaceBackButton(term contents) {
@@ -787,6 +844,9 @@
     /**
      * Replace the wizard 'abort' button with a custom widget.
      * THIS FUNCTION IS DEPRECATED!
+     *
+     * @see SetAbortButton
+     * @deprecated
      * @param contents a term describing the new contents
      **/
     global void ReplaceAbortButton(term contents) {
@@ -804,7 +864,10 @@
      * Set the wizard 'title' icon to the specified icon from the standard icon
      * directory.
      *
+     * @stable
+     *
      * @param icon_name name (without path) of the new icon
+     * @see ClearTitleIcon
      **/
     global void SetTitleIcon( string icon_name )
     {
@@ -818,6 +881,9 @@
 
     /**
      * Clear the wizard 'title' icon, i.e. replace it with nothing
+     *
+     * @stable
+     * @see SetTitleIcon
      **/
     global void ClearTitleIcon()
     {
@@ -858,6 +924,9 @@
 
     /**
      * Enable the wizard's "Abort" button.
+     *
+     * @see DisableAbortButton
+     * @stable
      **/
     global void EnableAbortButton()
     {
@@ -868,6 +937,9 @@
 
     /**
      * Disable the wizard's "Abort" button.
+     *
+     * @see EnableAbortButton
+     * @stable
      **/
     global void DisableAbortButton()
     {
@@ -878,6 +950,9 @@
 
     /**
      * Disable the wizard's "Next" (or "Accept") button.
+     *
+     * @see EnableNextButton
+     * @stable
      **/
     global void DisableNextButton()
     {
@@ -893,6 +968,9 @@
 
     /**
      * Enable the wizard's "Next" (or "Accept") button.
+     *
+     * @see DisableNextButton
+     * @stable
      **/
     global void EnableNextButton()
     {
@@ -908,6 +986,9 @@
 
     /**
      * Disable the wizard's "Back" button.
+     *
+     * @see EnableBackButton
+     * @stable
      **/
     global void DisableBackButton()
     {
@@ -917,6 +998,9 @@
 
     /**
      * Enable the wizard's "Back" button.
+     *
+     * @see DisableBackButton
+     * @stable
      **/
     global void EnableBackButton()
     {
@@ -927,6 +1011,9 @@
 
     /**
      * Disable the wizard's "Cancel" button.
+     *
+     * @see EnableCancelButton
+     * @stable
      **/
     global void DisableCancelButton()
     {
@@ -936,6 +1023,9 @@
 
     /**
      * Enable the wizard's "Cancel" button.
+     *
+     * @see DisableCancelButton
+     * @stable
      **/
     global void EnableCancelButton()
     {
@@ -1004,6 +1094,8 @@
 
     /**
      * Set the keyboard focus to the wizard's "Next" (or "Accept") button.
+     *
+     * @stable
      **/
     global void SetFocusToNextButton()
     {
@@ -1015,6 +1107,8 @@
 
     /**
      * Set the keyboard focus to the wizard's "Back" (or "Cancel") button.
+     *
+     * @stable
      **/
     global void SetFocusToBackButton()
     {

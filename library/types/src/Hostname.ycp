@@ -3,6 +3,7 @@
  * Package:	yast2
  * Summary:	Hostname manipulation routines
  * Authors:	Michal Svec <msvec@suse.cz>
+ * Flags:	Stable
  *
  * $Id$
  */
@@ -14,6 +15,11 @@ textdomain "base";
 
 import "IP";
 
+/**
+ * i18n characters in domain names are still not allowed
+ *
+ * @unstable
+ */
 global string ValidChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-";
 global string ValidCharsDomain = ValidChars + ".";
 global string ValidCharsFQ = ValidCharsDomain;
