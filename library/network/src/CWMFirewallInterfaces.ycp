@@ -6,25 +6,24 @@
  *
  * $Id$
  *
+ * WARNING: If you want to use this functionality of this module
+ *          you should allways call 'SuSEFirewall::Read()' in the
+ *          Read() function of you module
+ *          and you should call 'SuSEFirewall::Write()' in the
+ *          Write() function.
+ *
+ *	    Functionality of this module only changes the SuSEFirewall
+ *          settings in memory, it never Reads or Writes the settings.
+ *
+ *	    Additionally you may need to call Progress::set(false)
+ *	    before SuSEFirewall::Read() or SuSEFirewall::Write().
  */
 
 {
 module "CWMFirewallInterfaces";
 textdomain "base";
 
-    /*
-     * WARNING: If you want to use this functionality of this module
-     *          you should allways call 'SuSEFirewall::Read()' in the
-     *          Read() function of you module
-     *          and you should call 'SuSEFirewall::Write()' in the
-     *          Write() function.
-     *
-     *		Functionality of this module only changes the SuSEFirewall
-     *          settings in memory, it never Reads or Writes the settings.
-     *
-     *		Additionally you may need to call Progress::set(false)
-     *		before SuSEFirewall::Read() or SuSEFirewall::Write().
-     */
+
 
 import "CWM";
 import "Label";
