@@ -4,13 +4,11 @@
  * Summary:     Useful tool for viewing any variable contents.
  * Authors:     Martin Vidner <mvidner@suse.cz>
  *		Dan Vesely?
+ * Flags:	Unstable
  *
  * $Id$
  */
 
-/**
-
- */
 {
     module "ValueBrowser";
 
@@ -82,7 +80,10 @@ block <type>
 
 
 	/**
-	 * Shows tree with contents of variable. This function does the job. Heavy recursion...
+	 * Creates tree with contents of variable. This function creates the tree items and
+	 * returns them as term. This offers using the generated output in your behavior,
+	 * such as data-structure browser with editor. Heavy recursion...
+	 *
 	 * @param variable variable to show.
 	 * @param indent string that is printed before each output.
 	 */
