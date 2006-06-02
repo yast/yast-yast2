@@ -218,6 +218,7 @@ term CreateActionsButton (list<list> actions) {
 /**
  * Create CWM widtet for the hardware settings
  * NOTE: The Init and Handle callbacks must be defined
+ * @stable
  * @param headers a list of headers of the table
  * @param actions a list of additionaly offered actions, see CreateHWDialog
  *  function for details
@@ -270,6 +271,7 @@ global map<string,any> CreateWidget (
 
 /**
  * Draw the dialog, handle all its events via callbacks
+ * @stable
  * @param settings a map containing all the settings:
  *  $[
  *   "action_callback" : symbol(string,map<string,any>) -- callback to handle
@@ -356,6 +358,7 @@ global symbol RunHWDialog (map settings) {
 /**
  * Create the Hardware Wizard dialog
  * Draw the dialog
+ * @stable
  * @param title string the dialog title
  * @param help string the help for the dialog
  * @param headers a list of the table headers
@@ -391,6 +394,7 @@ global void CreateHWDialog (
 
 /**
  * Set which item is to be selected
+ * @stable
  * @param selected string the item that is should be marked as selected
  */
 global void SetSelectedItem (string selected) {
@@ -400,6 +404,7 @@ global void SetSelectedItem (string selected) {
 
 /**
  * Return the id of the currently selected item in the table
+ * @stable
  * @return id of the selected item
  */
 global string SelectedItem () {
@@ -408,6 +413,7 @@ global string SelectedItem () {
 
 /**
  * Set the rich text description.
+ * @stable
  * @param descr rich text description
  */
 global void SetRichDescription (string descr) {
@@ -416,6 +422,7 @@ global void SetRichDescription (string descr) {
 
 /**
  * Set the information about hardware
+ * @stable
  * @param items a list of maps, one item per item in the dialog, with keys
  *  "id" : string = the identification of the device,
  *  "rich_descr" : string = RichText description of the device
@@ -440,6 +447,7 @@ global void SetContents (list<map<string,any> > items) {
 
 /**
  * Wait for event from the event
+ * @stable
  * @return a map with keys:
  *  "event" : map = event as returned from UI::WaitForEvent (),
  *  "selected" : string = ID of the selected item in the list box
@@ -459,6 +467,7 @@ global map<string,any> WaitForEvent () {
 
 /**
  * Wait for event from the event
+ * @stable
  * @return a map with keys:
  *  "event" : any = event as returned from UI::UserInoput ()
  *  "selected" : string = ID of the selected item in the list box
@@ -472,6 +481,7 @@ global map<string,any> UserInput () {
 /**
  * Create rich text description of a device. It can be used for WizardHW::SetContents
  * function for formatting richtext device descriptions
+ * @stable
  * @param title header - usually device name
  * @param properties important properties of the device which should be
  *		displayed in the overview dialog
@@ -507,6 +517,7 @@ global define string CreateRichTextDescription(string title, list<string> proper
 /**
  * Get propertly list of an unconfigured device. Should be used together with
  * device name in CreateRichTextDescription() function.
+ * @stable
  * @return a list of strings 
  */
 global list<string> UnconfiguredDevice() {

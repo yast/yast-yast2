@@ -99,6 +99,7 @@ void InitFeatures (boolean force) {
 /**
  * Set a feature section
  * Default values will be used where value not defined
+ * @stable
  * @param section name string the name of the section
  * @param section_map a map containing data of the section
  */
@@ -112,6 +113,9 @@ global void SetSection(string section_name, map<string,any> section_map) {
 
 /**
  * Get a complete section for evaluation
+ * @stable
+ * @param section_name string name of the section
+ * @return a map key->value, options in the section
  */
 global map<string,any> GetSection(string section_name) {
     InitFeatures (false);
@@ -120,6 +124,7 @@ global map<string,any> GetSection(string section_name) {
 
 /**
  * Save product features
+ * @stable
  */
 global void Save() {
     InitFeatures (false);
@@ -141,6 +146,7 @@ global void Save() {
 
 /**
  * Restore product features in running system
+ * @stable
  */
 global void Restore() {
     InitFeatures (true);
@@ -156,6 +162,7 @@ global void Restore() {
 
 /**
  * Initialize the features structure if needed
+ * @stable
  * Either read from /etc/YaST2/ProductFeatures or set default values
  */
 global void InitIfNeeded () {
@@ -169,6 +176,7 @@ global void InitIfNeeded () {
 
 /**
  * Get value of a feature
+ * @stable
  * @param section string section of the feature
  * @param features string feature name
  * @return any the feature value
@@ -183,6 +191,7 @@ global any GetFeature (string section, string feature) {
 
 /**
  * Get value of a feature
+ * @stable
  * @param section string section of the feature
  * @param features string feature name
  * @return string the feature value
@@ -201,6 +210,7 @@ global string GetStringFeature (string section, string feature) {
 
 /**
  * Get value of a feature
+ * @stable
  * @param section string section of the feature
  * @param features string feature name
  * @return boolean the feature value
@@ -220,6 +230,7 @@ global boolean GetBooleanFeature (string section, string feature) {
 
 /**
  * Set value of a feature
+ * @stable
  * @param section string section of the feature
  * @param features string feature name
  * @param value any the feature value
@@ -233,6 +244,7 @@ global void SetFeature (string section, string feature, any value) {
 
 /**
  * Set value of a feature
+ * @stable
  * @param section string section of the feature
  * @param features string feature name
  * @param value string the feature value
@@ -243,6 +255,7 @@ global void SetStringFeature (string section, string feature, string value) {
 
 /**
  * Set value of a feature
+ * @stable
  * @param section string section of the feature
  * @param features string feature name
  * @param value boolean the feature value
