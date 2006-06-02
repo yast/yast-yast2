@@ -3,6 +3,7 @@ Fri Jun  2 12:42:04 CEST 2006 - jsrain@suse.cz
 
 - Marked global API of following modules as stable:
     ProductFeatures, WizardHW
+- 2.13.61
 
 -------------------------------------------------------------------
 Thu Jun  1 14:49:53 CEST 2006 - locilka@suse.cz
