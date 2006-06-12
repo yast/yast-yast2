@@ -14,6 +14,9 @@ Requires:	coreutils
 Requires:	yast2-xml, yast2-hardware-detection
 Requires:	SuSEfirewall2
 
+# moved cfg_security.scr
+Conflicts:	yast2-security <= 2.13.2
+
 Provides:	yast2-lib-sequencer
 Obsoletes:	yast2-lib-sequencer
 Provides:	yast2-lib-wizard yast2-lib-wizard-devel yast2-trans-wizard

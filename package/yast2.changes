@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Jun 12 17:16:34 CEST 2006 - mvidner@suse.cz
+
+- Moved cfg_security.scr from yast2-security.rpm to yast2.rpm
+- Do not sit in a networked directory when reconfiguring network
+  (#61055, reapplied lost fix).
+- 2.13.63
+
+-------------------------------------------------------------------
 Mon Jun 12 11:48:12 CEST 2006 - locilka@suse.cz
 
 - Do not register Signature Callbacks in case of AutoInst (#183821)
