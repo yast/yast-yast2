@@ -61,14 +61,17 @@ global void Read () {
  * Enables and disables the appropriate services.
  */
 global void EnableDisable () {
-    Service::Enable ("network");
+    // Workaround for bug #61055:
+    y2milestone("Enabling service %1", "network");
+    string cmd = "cd /; /sbin/insserv -d /etc/init.d/network";
+    SCR::Execute (.target.bash, cmd);
 }
 
 boolean RunScript (string script, string action) {
     if (script == "")
 	 return true;
     y2milestone("rc%1 %2", script, action);
-    // Workaround for bug #46055:
+    // Workaround for bug #61055:
     string cmd = sformat ("cd /; /etc/init.d/%1 %2", script, action);
     return SCR::Execute (.target.bash, cmd) == 0;
 }
