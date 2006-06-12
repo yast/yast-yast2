@@ -14,6 +14,8 @@
 module "PackageCallbacksInit";
 textdomain "base";
 
+import "Mode";
+
 /**
  * Register callbacks for media change
  */
@@ -41,14 +43,18 @@ global define void InitPackageCallbacks() {
     // Pkg::CallbackProgressDownload ("PackageCallbacks::ProgressDownload");
     // Pkg::CallbackDoneDownload ("PackageCallbacks::DoneDownload");
 
-    // Signature-related callbacks
-    Pkg::CallbackAcceptUnsignedFile	  ("SignatureCheckCallbacks::AcceptUnsignedFile");
-    Pkg::CallbackAcceptUnknownGpgKey	  ("SignatureCheckCallbacks::AcceptUnknownGpgKey");
-    Pkg::CallbackImportGpgKey		  ("SignatureCheckCallbacks::ImportGpgKey");
-    Pkg::CallbackAcceptVerificationFailed ("SignatureCheckCallbacks::AcceptVerificationFailed");
-    Pkg::CallbackTrustedKeyAdded	  ("SignatureCheckCallbacks::TrustedKeyAdded");
-    Pkg::CallbackTrustedKeyRemoved	  ("SignatureCheckCallbacks::TrustedKeyRemoved");
-    Pkg::CallbackAcceptFileWithoutChecksum("SignatureCheckCallbacks::AcceptFileWithoutChecksum");
+    // @see bugzilla #183821
+    // Do not register these callbacks in case of AutoInstallation
+    if (Mode::autoinst()) {
+	// Signature-related callbacks
+	Pkg::CallbackAcceptUnsignedFile		("SignatureCheckCallbacks::AcceptUnsignedFile");
+	Pkg::CallbackAcceptUnknownGpgKey	("SignatureCheckCallbacks::AcceptUnknownGpgKey");
+	Pkg::CallbackImportGpgKey		("SignatureCheckCallbacks::ImportGpgKey");
+	Pkg::CallbackAcceptVerificationFailed	("SignatureCheckCallbacks::AcceptVerificationFailed");
+	Pkg::CallbackTrustedKeyAdded		("SignatureCheckCallbacks::TrustedKeyAdded");
+	Pkg::CallbackTrustedKeyRemoved		("SignatureCheckCallbacks::TrustedKeyRemoved");
+	Pkg::CallbackAcceptFileWithoutChecksum	("SignatureCheckCallbacks::AcceptFileWithoutChecksum");
+    }
 
     SetMediaCallbacks ();
 }
