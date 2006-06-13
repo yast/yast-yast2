@@ -70,6 +70,21 @@ global map<string, string> transform_map_filename = $[
 ];
 
 /**
+ * Transform map used for (un)escaping characters in query part of a URL.
+ * It doesn't contain '%' because this character must be used in a particular
+ * order (the first or the last) during processing
+ */
+global map<string, string> transform_map_query = $[
+    ";":"%3b",
+    "?":"%3f",
+    "@":"%40",
+    "+":"%2b",
+    "$":"%24",
+    ",":"%2c",
+    " ":"%20"
+];
+
+/**
  * Escape reserved characters in string used as a part of URL (e.g. '%' => '%25', '@' => '%40'...)
  *
  * @param in input string to escape
@@ -177,7 +192,7 @@ global define map Parse(string url) ``{
 	}
     }
     tokens["path"] = UnEscapeString(pth, transform_map_filename);
-    tokens["query"] = UnEscapeString(rawtokens[5]:"", transform_map_passwd);
+    tokens["query"] = UnEscapeString(rawtokens[5]:"", transform_map_query);
     tokens["fragment"] = UnEscapeString(rawtokens[7]:"", transform_map_passwd);
 
     /* Extract username:pass@host:port */
@@ -307,7 +322,7 @@ global define string Build (map tokens) ``{
 	y2debug("url: %1", url);
 
 	if (tokens["query"]:"" != "" )
-		url = sformat("%1?%2", url, EscapeString(tokens["query"]:"", transform_map_passwd));
+		url = sformat("%1?%2", url, EscapeString(tokens["query"]:"", transform_map_query));
 	if (tokens["fragment"]:"" != "" )
 		url = sformat("%1#%2", url, EscapeString(tokens["fragment"]:"", transform_map_passwd));
 	y2debug("url: %1", url);
