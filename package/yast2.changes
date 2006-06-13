@@ -2,6 +2,7 @@
 Tue Jun 13 13:27:35 CEST 2006 - jsrain@suse.cz
 
 - fixed encoding/decoding query part of URL (#179913)
+- 2.13.64
 
 -------------------------------------------------------------------
 Mon Jun 12 17:16:34 CEST 2006 - mvidner@suse.cz
