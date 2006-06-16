@@ -104,7 +104,8 @@ action description map. Each handler must take a single argument
 containing the options entered by the user and return a boolean, true on
 success. If the handler returns "false", the command line 
 will abort for non-interactive handling. This is useful for
-handling error states. However, a handler must use <link linkend="Module_CommandLine_Abort">CommandLine::Abort</link>() 
+handling error states. However, a handler must use
+CommandLine::Abort()
 to stop event-handling in the interactive mode.
 </para>
 <para>
@@ -155,16 +156,16 @@ Therefore, the CommandLineRun() handles the commands as follows:</para>
     <variablelist>
         <varlistentry>
             <term>quit</term>
-            <listitem>
+            <listitem id="Module_CommandLine_Aborted">
                 <para>quits interactive session, sets
-                <link linkend="Module_CommandLine_Aborted">CommandLine::Aborted</link>() flag to true</para>
+		 CommandLine::Aborted() flag to true</para>
             </listitem>
         </varlistentry>
         <varlistentry>
             <term>exit</term>
-            <listitem>
+            <listitem id="Module_CommandLine_Aborted">
                 <para>exits interactive
-                session, sets <link linkend="Module_CommandLine_Aborted">CommandLine::Aborted</link>() flag to false</para>
+                session, sets CommandLine::Aborted() flag to false</para>
             </listitem>
         </varlistentry>
     </variablelist>
@@ -305,7 +306,7 @@ If you need to write your own event loop, this is a part of the
 CommandLine API useful for this:</para>
     <variablelist>
         <varlistentry>
-            <term>boolean <link linkend="Module_CommandLine_StartGUI">CommandLine::StartGUI</link>()</term>
+            <term id="Module_CommandLine_StartGUI">boolean CommandLine::StartGUI()</term>
             <listitem>
                 <para>
                     returns true, if the user asked to start up the
@@ -314,7 +315,7 @@ CommandLine API useful for this:</para>
             </listitem>
         </varlistentry>
         <varlistentry>
-            <term>list <link linkend="Module_CommandLine_Scan">CommandLine::Scan</link>()</term>
+            <term id="Module_CommandLine_Scan">list CommandLine::Scan()</term>
             <listitem>
                 <para>
                     reads a new command line in interactive mode, splits the arguments into a list
@@ -322,7 +323,7 @@ CommandLine API useful for this:</para>
             </listitem>
         </varlistentry>
         <varlistentry>
-            <term>map <link linkend="Module_CommandLine_Command">CommandLine::Command</link>()</term>
+            <term id="Module_CommandLine_Command">map CommandLine::Command()</term>
             <listitem>
                 <para>
                     parse (and scan if needed) next command and return its map
@@ -330,7 +331,7 @@ CommandLine API useful for this:</para>
             </listitem>
         </varlistentry>
         <varlistentry>
-            <term>map <link linkend="Module_CommandLine_Parse">CommandLine::Parse</link>( list commandline )</term>
+            <term id="Module_CommandLine_Parse">map CommandLine::Parse( list commandline )</term>
             <listitem>
                 <para>
                     lower-level function to parse the command line, check the validity
@@ -338,7 +339,7 @@ CommandLine API useful for this:</para>
             </listitem>
         </varlistentry>
         <varlistentry>
-            <term>boolean <link linkend="Module_CommandLine_Done">CommandLine::Done</link>()</term>
+            <term id="Module_CommandLine_Done">boolean CommandLine::Done()</term>
             <listitem>
                 <para>
                     returns true, if the last command was already returned
@@ -346,7 +347,7 @@ CommandLine API useful for this:</para>
             </listitem>
         </varlistentry>
         <varlistentry>
-            <term>boolean <link linkend="Module_CommandLine_Aborted">CommandLine::Aborted</link>()</term>
+            <term id="Module_CommandLine_Aborted">boolean CommandLine::Aborted()</term>
             <listitem>
                 <para>
                     returns true, if the user asked to cancel the changes
@@ -354,7 +355,7 @@ CommandLine API useful for this:</para>
             </listitem>
         </varlistentry>
         <varlistentry>
-            <term>void <link linkend="Module_CommandLine_Error">CommandLine::Error</link>(string)</term>
+            <term id="Module_CommandLine_Error">void CommandLine::Error(string)</term>
             <listitem>
                 <para>
                     prints the string and then a message how to
@@ -363,7 +364,7 @@ CommandLine API useful for this:</para>
             </listitem>
         </varlistentry>
         <varlistentry>
-            <term>void <link linkend="Module_CommandLine_Print">CommandLine::Print</link>(string)</term>
+            <term id="Module_CommandLine_Print">void CommandLine::Print(string)</term>
             <listitem>
                 <para>
                     prints the string
@@ -371,7 +372,7 @@ CommandLine API useful for this:</para>
             </listitem>
         </varlistentry>
         <varlistentry>
-            <term>void <link linkend="Module_CommandLine_PrintVerbose">CommandLine::PrintVerbose</link>(string)</term>
+            <term id="Module_CommandLine_PrintVerbose">void CommandLine::PrintVerbose(string)</term>
             <listitem>
                 <para>
                     same as CommandLine::Print, but the string is printed only in verbose mode
@@ -408,11 +409,14 @@ CommandLine API useful for this:</para>
     </programlisting>
 </example>
 
-<para>
-The <link linkend="Module_CommandLine_Init">CommandLine::Init</link>() returns boolean whether the module has
+<para id="Module_CommandLine_Init">
+The CommandLine::Init() returns boolean whether the module has
 something to do. If the user only requested help or the arguments
 passed were not correct, the module should stop processing.
-The <link linkend="Module_CommandLine_Command">CommandLine::Command</link>() will do the user interaction if necessary.
+</para>
+
+<para id="Module_CommandLine_Command">
+The CommandLine::Command() will do the user interaction if necessary.
 Also, it will handle all supported"system" commands, like "help",
 "exit" and "quit".
 </para>
