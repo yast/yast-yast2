@@ -28,19 +28,19 @@ autoinstallaton mode.</para>
       <title>Package Installation (GUI)</title>
       <itemizedlist spacing="compact">
         <listitem>
-          <para>boolean <link linkend="Module_Package_Install">Package::Install</link>(&lt;string&gt; package);</para>
+          <para id="Module_Package_Install">boolean Package::Install(&lt;string&gt; package);</para>
         </listitem>
         <listitem>
-          <para>boolean <link linkend="Module_Package_InstallAll">Package::InstallAll</link>(list&lt;string&gt; packages);</para>
+          <para id="Module_Package_InstallAll">boolean Package::InstallAll(list&lt;string&gt; packages);</para>
         </listitem>
         <listitem>
-          <para>boolean <link linkend="Module_Package_InstallAny">Package::InstallAny</link>(list&lt;string&gt; packages);</para>
+          <para id="Module_Package_InstallAny">boolean Package::InstallAny(list&lt;string&gt; packages);</para>
         </listitem>
         <listitem>
-          <para>boolean <link linkend="Module_Package_Remove">Package::Remove</link>(&lt;string&gt; package);</para>
+          <para id="Module_Package_Remove">boolean Package::Remove(&lt;string&gt; package);</para>
         </listitem>
         <listitem>
-          <para>boolean <link linkend="Module_Package_RemoveAll">Package::RemoveAll</link>(list&lt;string&gt;
+          <para id="Module_Package_RemoveAll">boolean Package::RemoveAll(list&lt;string&gt;
 packages);</para>
         </listitem>
       </itemizedlist>
@@ -50,23 +50,23 @@ packages);</para>
       <title>Package Installation (GUI, custom message)</title>
       <itemizedlist spacing="compact">
         <listitem>
-          <para>boolean <link linkend="Module_Package_InstallMsg">Package::InstallMsg</link>(&lt;string&gt; package, &lt;string&gt;
+          <para id="Module_Package_InstallMsg">boolean Package::InstallMsg(&lt;string&gt; package, &lt;string&gt;
 message);</para>
         </listitem>
         <listitem>
-          <para>boolean <link linkend="Module_Package_InstallAllMsg">Package::InstallAllMsg</link>(list&lt;string&gt; packages,
+          <para id="Module_Package_InstallAllMsg">boolean Package::InstallAllMsg(list&lt;string&gt; packages,
 &lt;string&gt; message);</para>
         </listitem>
         <listitem>
-          <para>boolean <link linkend="Module_Package_InstallAnyMsg">Package::InstallAnyMsg</link>(list&lt;string&gt; packages,
+          <para id="Module_Package_InstallAnyMsg">boolean Package::InstallAnyMsg(list&lt;string&gt; packages,
 &lt;string&gt; message);</para>
         </listitem>
         <listitem>
-          <para>boolean <link linkend="Module_Package_RemoveMsg">Package::RemoveMsg</link>(&lt;string&gt; package, &lt;string&gt;
+          <para id="Module_Package_RemoveMsg">boolean Package::RemoveMsg(&lt;string&gt; package, &lt;string&gt;
 message);</para>
         </listitem>
         <listitem>
-          <para>boolean <link linkend="Module_Package_RemoveAllMsg">Package::RemoveAllMsg</link>(list&lt;string&gt; packages,
+          <para id="Module_Package_RemoveAllMsg">boolean Package::RemoveAllMsg(list&lt;string&gt; packages,
 &lt;string&gt; message);</para>
         </listitem>
       </itemizedlist>
@@ -78,11 +78,11 @@ message);</para>
             in PackageSystem)</para></note>
       <itemizedlist spacing="compact">
         <listitem>
-          <para>boolean <link linkend="Module_Package_CheckAndInstallPackages">Package::CheckAndInstallPackages</link> (list&lt;string&gt;
+          <para id="Module_Package_CheckAndInstallPackages">boolean Package::CheckAndInstallPackages (list&lt;string&gt;
 packages);</para>
         </listitem>
         <listitem>
-          <para>boolean <link linkend="Module_Package_CheckAndInstallPackagesInteractive">Package::CheckAndInstallPackagesInteractive</link> (list&lt;string&gt; packages); // with error
+          <para id="Module_Package_CheckAndInstallPackagesInteractive">boolean Package::CheckAndInstallPackagesInteractive (list&lt;string&gt; packages); // with error
 handling</para>
         </listitem>
       </itemizedlist>
@@ -92,14 +92,14 @@ handling</para>
       <title>Packages Installation (No GUI)</title>
       <itemizedlist spacing="compact">
         <listitem>
-          <para>boolean <link linkend="Module_Package_DoInstall">Package::DoInstall</link>(list&lt;string&gt;
+          <para id="Module_Package_DoInstall">boolean Package::DoInstall(list&lt;string&gt;
 packages);</para>
         </listitem>
         <listitem>
-          <para>boolean <link linkend="Module_Package_DoRemove">Package::DoRemove</link>(list&lt;string&gt; packages);</para>
+          <para id="Module_Package_DoRemove">boolean Package::DoRemove(list&lt;string&gt; packages);</para>
         </listitem>
         <listitem>
-          <para>boolean <link linkend="Module_Package_DoInstallAndRemove">Package::DoInstallAndRemove</link>(list&lt;string&gt;
+          <para id="Module_Package_DoInstallAndRemove">boolean Package::DoInstallAndRemove(list&lt;string&gt;
 toinstall, list&lt;string&gt; toremove);</para>
         </listitem>
       </itemizedlist>
@@ -109,25 +109,25 @@ toinstall, list&lt;string&gt; toremove);</para>
       <title>Testing</title>
       <itemizedlist spacing="compact">
         <listitem>
-          <para>boolean <link linkend="Module_Package_Available">Package::Available</link>(&lt;string&gt; package);</para>
+          <para id="Module_Package_Available">boolean Package::Available(&lt;string&gt; package);</para>
         </listitem>
         <listitem>
-          <para>boolean <link linkend="Module_Package_AvailableAll">Package::AvailableAll</link>(list&lt;string&gt;
+          <para id="Module_Package_AvailableAll">boolean Package::AvailableAll(list&lt;string&gt;
 packages);</para>
         </listitem>
         <listitem>
-          <para>boolean <link linkend="Module_Package_AvailableAny">Package::AvailableAny</link>(list&lt;string&gt;
+          <para id="Module_Package_AvailableAny">boolean Package::AvailableAny(list&lt;string&gt;
 packages);</para>
         </listitem>
         <listitem>
-          <para>boolean <link linkend="Module_Package_Installed">Package::Installed</link>(&lt;string&gt; package);</para>
+          <para id="Module_Package_Installed">boolean Package::Installed(&lt;string&gt; package);</para>
         </listitem>
         <listitem>
-          <para>boolean <link linkend="Module_Package_InstalledAll">Package::InstalledAll</link>(list&lt;string&gt;
+          <para id="Module_Package_InstalledAll">boolean Package::InstalledAll(list&lt;string&gt;
 packages);</para>
         </listitem>
         <listitem>
-          <para>boolean <link linkend="Module_Package_InstalledAny">Package::InstalledAny</link>(list&lt;string&gt;
+          <para id="Module_Package_InstalledAny">boolean Package::InstalledAny(list&lt;string&gt;
 packages);</para>
         </listitem>
       </itemizedlist>
@@ -140,10 +140,10 @@ packages);</para>
           <para>void RunSUSEconfig();</para>
         </listitem>
         <listitem>
-          <para>boolean <link linkend="Module_Package_LastOperationCanceled">Package::LastOperationCanceled</link>();</para>
+          <para id="Module_Package_LastOperationCanceled">boolean Package::LastOperationCanceled();</para>
         </listitem>
         <listitem>
-          <para>boolean <link linkend="Module_Package_InstallKernel">Package::InstallKernel</link> (list&lt;lt;string&gt;
+          <para id="Module_Package_InstallKernel">boolean Package::InstallKernel(list&lt;lt;string&gt;
 kernel_modules);</para>
         </listitem>
       </itemizedlist>
