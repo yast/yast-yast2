@@ -113,7 +113,7 @@
   </itemizedlist>
 
   <para>Please DON'T use headlines like <literal>Question</literal> etc.
-   &mdash; that doesn't have any informative value, yet it forces the user
+   - that doesn't have any informative value, yet it forces the user
    to read this useless headline.
   </para>
 
@@ -129,7 +129,7 @@
   <para>
    There are predefined messages for commonly used texts for the dialogs.
    Use them when you use the <emphasis>expert</emphasis> version of a dialog
-   &mdash; don't pass your own messages if you can avoid it! Not only makes
+   - don't pass your own messages if you can avoid it! Not only makes
    this life easier for our translators (they need to translate stuff like
    <literal>Cancel</literal> over and over again), it also gives us a chance
    to provide consistent keyboard shortcuts throughout the entire program.
@@ -184,7 +184,7 @@
     Only when there are two really distinct paths of decision use
     <literal id="Module_Popup_YesNo">Popup::YesNo</literal>.
     <!-- FIXME: what does thin mean? -->
-    And no, cancelling the entire process doesn't count here &mdash;
+    And no, cancelling the entire process doesn't count here -
     this is no equivalent decision.
    </para>
 
@@ -216,7 +216,7 @@
    </itemizedlist>
 
    <para>
-    But NEVER use it so simply change the order of default buttons &mdash;
+    But NEVER use it so simply change the order of default buttons -
     i.e. NEVER create dialogs like this one:
    </para>
 
