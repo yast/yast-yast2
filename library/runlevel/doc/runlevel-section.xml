@@ -71,7 +71,9 @@
 
  <section>
   <title>Specifying Runlevels for Service</title>
-  <para id="Module_Service_Finetune">Service::Finetune (string name, list rl)
+  <para>
+   <literal id="Module_Service_Finetune">Service::Finetune
+   (string name, list rl)</literal>
    sets service to run in list <emphasis>rl</emphasis>.
    <emphasis>rl</emphasis> is list of strings.
   </para>
@@ -93,8 +95,9 @@
  <section>
   <title>Init Script Actions</title>
   <para>
-   <link linkend="Module_Service_RunInitScript">Service::RunInitScript</link>
-   (string name, string param) runs init script <emphasis>name</emphasis>
+   <literal id="Module_Service_RunInitScript">Service::RunInitScript
+   (string name, string param)</literal>
+   runs init script <emphasis>name</emphasis>
    with parameter <emphasis>param</emphasis>. Returns init scripts exit
    value. I do not think it is worth to import module
    <emphasis>Service</emphasis> only because of this one function when you
