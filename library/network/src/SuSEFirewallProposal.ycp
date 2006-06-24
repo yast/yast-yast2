@@ -179,7 +179,13 @@
      * Local function returns whether the Xen kernel is installed
      */
     boolean IsXenInstalled () {
-	return Package::Installed ("kernel-xen");
+	// bug #154133
+	if (Package::Installed ("kernel-xen"))
+	    return true;
+	if (Package::Installed ("kernel-xenpae"))
+	    return true;
+
+	return false;
     }
 
     /**
