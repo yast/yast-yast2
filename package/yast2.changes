@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Sat Jun 24 22:23:08 CEST 2006 - locilka@suse.cz
+
+- Adding special Xen interface "xenbr0" into the
+  FW_FORWARD_ALWAYS_INOUT_DEV variable in the Network Proposal in
+  case of "kernel-xenpae" package installed (#154133) (Similar to
+  change in 2.13.43).
+- 2.13.65
+
+-------------------------------------------------------------------
 Tue Jun 13 13:27:35 CEST 2006 - jsrain@suse.cz
 
 - fixed encoding/decoding query part of URL (#179913)
