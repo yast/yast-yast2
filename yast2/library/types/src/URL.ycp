@@ -1,0 +1,354 @@
+/**
+ * File:	modules/URL.ycp
+ * Package:	yast2
+ * Summary:	Manipulate and Parse URLs
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *		Anas Nashif <nashif@suse.cz>
+ * Flags:	Stable
+ *
+ * $Id$
+ */
+
+{
+
+module "URL";
+textdomain "base";
+
+import "Hostname";
+import "String";
+import "IP";
+
+/**
+ * TODO:
+ * - read URI(3)
+ * - esp. compare the regex mentioned in the URI(3) with ours:
+ *   my($scheme, $authority, $path, $query, $fragment) =
+ *   $uri =~ m|^(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?|;
+ */
+
+/**
+ * Valid characters in URL
+ */
+global string ValidChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.:_-/%";
+
+
+/**
+ * Transform map used for (un)escaping characters in username/password part of an URL.
+ * It doesn't contain '%' because this character must be used in a particular
+ * order (the first or the last) during processing
+ */
+global map<string, string> transform_map_passwd = $[
+    ";":"%3b",
+    "/":"%2f",
+    "?":"%3f",
+    ":":"%3a",
+    "@":"%40",
+    "&":"%26",
+    "=":"%3d",
+    "+":"%2b",
+    "$":"%24",
+    ",":"%2c",
+    " ":"%20"
+];
+
+/**
+ * Transform map used for (un)escaping characters in file location part of an URL.
+ * It doesn't contain '%' because this character must be used in a particular
+ * order (the first or the last) during processing
+ */
+global map<string, string> transform_map_filename = $[
+    ";":"%3b",
+    "?":"%3f",
+    ":":"%3a",
+    "@":"%40",
+    "&":"%26",
+    "=":"%3d",
+    "+":"%2b",
+    "$":"%24",
+    ",":"%2c",
+    " ":"%20"
+];
+
+/**
+ * Transform map used for (un)escaping characters in query part of a URL.
+ * It doesn't contain '%' because this character must be used in a particular
+ * order (the first or the last) during processing
+ */
+global map<string, string> transform_map_query = $[
+    ";":"%3b",
+    "?":"%3f",
+    "@":"%40",
+    "+":"%2b",
+    "$":"%24",
+    ",":"%2c",
+    " ":"%20"
+];
+
+/**
+ * Escape reserved characters in string used as a part of URL (e.g. '%' => '%25', '@' => '%40'...)
+ *
+ * @param in input string to escape
+ * @return string escaped string
+ */
+
+global string UnEscapeString(string in, map<string,string> transform) {
+
+    if (in == nil || in == "")
+    {
+	return "";
+    }
+
+    // replace the other reserved characters
+    foreach(string tgt, string src, transform, {
+	    // replace both upper and lower case escape sequences
+	    in = String::Replace(in, tolower(src), tgt);
+	    in = String::Replace(in, toupper(src), tgt);
+	}
+    );
+
+    // replace % at the end
+    in = String::Replace(in, "%25", "%");
+
+    return in;
+}
+
+/**
+ * Escape reserved characters in string used as a part of URL (e.g. '%' => '%25', '@' => '%40'...)
+ *
+ * @param in input string to escape
+ * @return string escaped string
+ */
+
+global string EscapeString(string in, map<string,string> transform) {
+    string ret = "";
+
+    if (in == nil || in == "")
+    {
+	return ret;
+    }
+
+    // replace % at first
+    ret = mergestring(splitstring(in, "%"), "%25");
+
+    // replace the other reserved characters
+    foreach(string src, string tgt, transform, {
+	    ret = mergestring(splitstring(ret, src), tgt);
+	}
+    );
+
+    return ret;
+}
+
+/**
+ * Tokenize URL
+ * @param url URL to be parsed
+ * @return URL split to tokens
+ * @example Parse("http://name:pass@www.suse.cz:80/path/index.html?question#part") ->
+ *     $[
+ *         "scheme"  : "http",
+ *         "host"    : "www.suse.cz"
+ *         "port"    : "80",
+ *         "path"    : /path/index.html",
+ *         "user"    : "name",
+ *         "pass"    : "pass",
+ *         "query"   : "question",
+ *         "fragment": "part"
+ *     ]
+ */
+global define map Parse(string url) ``{
+
+    y2debug("url=%1", url);
+
+    /* We don't parse empty URLs */
+    if(url == nil || size(url) < 1) return $[];
+
+    /* Extract basic URL parts: scheme://host/path?question#part */
+    list rawtokens = regexptokenize(url, "^" +
+	/* 0,1: http:// */
+	"(([^:/?#]+)://)?" +
+	/* 2: user:pass@www.suse.cz:23 */
+	"([^/?#]*)?" +
+	/* 3: /some/path */
+	"([^?#]*)?" +
+	/* 4,5: ?question */
+	"(\\?([^#]*))?" +
+	/* 6,7: #fragment */
+	"(#(.*))?"
+    );
+    y2debug("rawtokens=%1", rawtokens);
+
+    map tokens = $[];
+    tokens["scheme"] = rawtokens[1]:"";
+    string pth = rawtokens[3]:"";
+    if (tokens["scheme"]:"" == "ftp")
+    {
+	if (substring (pth, 0, 4) == "/%2f")
+	{
+	    pth = "/" + substring (pth, 4);
+	}
+	else
+	{
+	    pth = substring (pth, 1);
+	}
+    }
+    tokens["path"] = UnEscapeString(pth, transform_map_filename);
+    tokens["query"] = UnEscapeString(rawtokens[5]:"", transform_map_query);
+    tokens["fragment"] = UnEscapeString(rawtokens[7]:"", transform_map_passwd);
+
+    /* Extract username:pass@host:port */
+    list userpass = regexptokenize(rawtokens[2]:"", "^" +
+	/* 0,1,2,3: user:pass@ */
+	"(([^@:]+)(:([^@:]+))?@)?" +
+	/* 4,5,6,7: hostname|[xxx] */
+	"(([^:@]+))" +
+	// FIXME "(([^:@]+)|(\\[([^]]+)\\]))" +
+	/* 8,9: port */
+	"(:([^:@]+))?"
+    );
+    y2debug("userpass=%1", userpass);
+
+    tokens["user"] = UnEscapeString(userpass[1]:"", transform_map_passwd);
+    tokens["pass"] = UnEscapeString(userpass[3]:"", transform_map_passwd);
+    tokens["port"] = userpass[7]:"";
+
+    if(userpass[5]:"" != "")
+	tokens["host"] = userpass[5]:"";
+    else
+	tokens["host"] = userpass[7]:"";
+
+    y2debug("tokens=%1", tokens);
+    return tokens;
+}
+
+/**
+ * Check URL
+ * @param url URL to be checked
+ * @return true if correct
+ * @see RFC 2396 (updated by RFC 2732)
+ * @see also perl-URI: URI(3)
+ */
+global define boolean Check(string url) ``{
+    /* We don't allow empty URLs */
+    if(url == nil || size(url) < 1) return false;
+
+    /* We don't allow URLs with spaces */
+    if(find(url, " ") != -1) return false;
+
+    map tokens = Parse(url);
+
+    /* Check "scheme"  : "http" */
+    if(!regexpmatch(tokens["scheme"]:"", "^[a-z]*$"))
+	return false;
+
+    /* Check "host"    : "www.suse.cz" */
+    if((!Hostname::CheckFQ(tokens["host"]:"") && !IP::Check(tokens["host"]:""))
+            && tokens["host"]:"" != "")
+	return false;
+
+    /* Check "path"    : /path/index.html" */
+
+    /* Check "port"    : "80" */
+    if(!regexpmatch(tokens["port"]:"", "^[0-9]*$"))
+	return false;
+
+    /* Check "user"    : "name" */
+
+    /* Check "pass"    : "pass" */
+
+    /* Check "query"   : "question" */
+
+    /* Check "fragment": "part" */
+
+    return true;
+}
+
+
+/**
+ * Build URL from tokens as parsed with Parse
+ * @param map token as returned from Parse
+ * @return string url, empty string if invalid data is used to build the url.
+ * @see RFC 2396 (updated by RFC 2732)
+ * @see also perl-URI: URI(3)
+ */
+global define string Build (map tokens) ``{
+
+	string url = "";
+	string userpass = "";
+
+	if(regexpmatch(tokens["scheme"]:"", "^[a-z]*$"))
+	{
+		url = tokens["scheme"]:"";
+	}
+	y2debug("url: %1", url);
+
+	if (tokens["user"]:"" != "")
+	{
+		userpass = EscapeString(tokens["user"]:"", transform_map_passwd);
+		y2milestone("Escaped username '%1' => '%2'", tokens["user"]:"", userpass);
+	}
+	if (size(userpass) != 0 && tokens["pass"]:"" != "" )
+	{
+		userpass = sformat("%1:%2", userpass, EscapeString(tokens["pass"]:"", transform_map_passwd) );
+	}
+	if (size(userpass) > 0 )
+		userpass = userpass + "@";
+
+	url = sformat("%1://%2", url, userpass);
+	y2debug("url: %1", url);
+
+	if(Hostname::CheckFQ(tokens["host"]:"") || IP::Check(tokens["host"]:""))
+	{
+		url = sformat("%1%2", url, tokens["host"]:"");
+	}
+	y2debug("url: %1", url);
+
+	if (regexpmatch(tokens["port"]:"", "^[0-9]*$") && tokens["port"]:"" != "")
+	{
+		url = sformat("%1:%2", url, tokens["port"]:"");
+	}
+	y2debug("url: %1", url);
+
+	if (tokens["path"]:"" != "" && find (tokens["path"]:"", "/") != 0 )
+		url = sformat("%1/%2", url, EscapeString(tokens["path"]:"", transform_map_filename));
+	else if (tokens["path"]:"" != "" && find (tokens["path"]:"", "/") == 0 )
+	{
+		if (tokens["scheme"]:"" == "ftp") {
+		    url = sformat("%1/%%2f%2", url, substring(EscapeString(tokens["path"]:"", transform_map_filename), 1));
+		}
+		else {
+		    url = sformat("%1%2", url, EscapeString(tokens["path"]:"", transform_map_filename));
+		}
+	}
+	y2debug("url: %1", url);
+
+	if (tokens["query"]:"" != "" )
+		url = sformat("%1?%2", url, EscapeString(tokens["query"]:"", transform_map_query));
+	if (tokens["fragment"]:"" != "" )
+		url = sformat("%1#%2", url, EscapeString(tokens["fragment"]:"", transform_map_passwd));
+	y2debug("url: %1", url);
+
+	if (!Check(url)) {
+		y2error("Invalid URL: %1", url);
+		return "";
+	}
+
+	return url;
+
+}
+
+/*
+y2milestone("%1", Parse("http://a:b@www.suse.cz:33/ahoj/nekde?neco#blah"));
+y2milestone("%1", Parse("ftp://www.suse.cz/ah"));
+y2milestone("%1", Parse("ftp://www.suse.cz:22/ah"));
+y2milestone("%1", Parse("www.suse.cz/ah"));
+
+y2milestone("%1", Check("http://a:b@www.suse.cz:33/ahoj/nekde?neco#blah"));
+y2milestone("%1", Check("ftp://www.suse.cz/ah"));
+y2milestone("%1", Check("ftp://www.suse.cz:22/ah"));
+y2milestone("%1", Check("www.suse.cz/ah"));
+y2milestone("%1", Check("www.suse.cz ah"));
+y2milestone("%1", Check(""));
+y2milestone("%1", Check(nil));
+*/
+
+}

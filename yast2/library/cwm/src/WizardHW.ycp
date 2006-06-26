@@ -1,0 +1,533 @@
+/**
+ * File:	modules/WizardHW
+ * Package:	Base YaST package
+ * Summary:	Routines for generic hardware summary dialog
+ * Authors:	Jiri Srain <jsrain@suse.cz>
+ *
+ * $Id$
+ *
+ */
+
+{
+
+module "WizardHW";
+textdomain "base";
+
+import "CWM";
+import "Label";
+import "Report";
+import "Popup";
+import "Wizard";
+
+
+
+
+
+// local store
+
+/**
+ * List of items in the currently displayed dialog
+ */
+list<map<string,any> > current_items = [];
+
+/**
+ * Map of rich text descriptions for all items
+ * Contained info can be reachable through current_items, this is for
+ * faster access
+ */
+map<string,string> descriptions = $[];
+
+/**
+ * The last handled UI event
+ */
+map last_event = $[];
+
+/**
+ * The return value to be returned by WizardHW::WaitForEvent ()
+ */
+map<string,any> dialog_ret = nil;
+
+// callbacks
+
+/**
+ * Callback
+ * Perform an action (when an event which is not handled internally occurred)
+ */
+symbol(string,map) action_callback = nil;
+
+/**
+ * Callback
+ * Get rich text description of an item.
+ * This can be used to set it dynamically
+ */
+string(string) get_item_descr_callback = nil;
+
+/**
+ * Callback
+ * Set all the items
+ * Should call the SetContents function of this module
+ */
+void() set_items_callback = nil;
+
+/**
+ * Callback
+ * Select the initial item
+ * If not set, the first is selected
+ */
+void() select_initial_item_callback = nil;
+
+// internal functions
+
+/**
+ * Store the event description in internal variable
+ * To be used by WizardHW::WaitForEvent function
+ * @param selected string the ID of the currently selected item
+ * @param event a map of the current item
+ * @return always a non-nil symbol (needed just to finish event loop
+ */
+symbol SimpleStoreReturnValue (string selected, map event) {
+    dialog_ret = $[
+	"event" : event,
+	"selected" : selected,
+    ];
+    return `next; // anything but nil
+}
+
+/**
+ * Set which item is to be selected
+ * @param selected string the item that is should be marked as selected
+ */
+void _SetSelectedItem (string selected) {
+    if (selected != nil)
+    {
+	UI::ChangeWidget (`id (`_hw_items), `CurrentItem, selected);
+	UI::ChangeWidget (`id (`_hw_sum), `Value, descriptions[selected]:"");
+    }
+}
+
+/**
+ * Init function of the widget
+ * Used when using the callback interface
+ * @param key strnig the widget key
+ */
+void Init (string key) {
+    if (set_items_callback != nil)
+	set_items_callback ();
+    else
+	y2warning ("No initialization callback");
+    if (select_initial_item_callback != nil)
+	select_initial_item_callback ();
+    else
+	_SetSelectedItem ((string)(current_items[0, "id"]:nil));
+}
+
+/**
+ * Handle function of the widget
+ * Used when using the callback interface
+ * @param key strnig the widget key
+ * @param key strnig the widget key
+ * @param event map event to be handled
+ * @return symbol for wizard sequencer or nil
+ */
+symbol Handle (string key, map event) {
+    last_event = event;
+    string current = (string)UI::QueryWidget (`id (`_hw_items), `CurrentItem);
+    if (event["ID"]:nil == `_hw_items)
+    {
+	string descr = "";
+	if (get_item_descr_callback == nil)
+	    descr = descriptions[current]:"";
+	else
+	    descr = get_item_descr_callback(current);
+	UI::ChangeWidget (`id (`_hw_sum), `Value, descr);
+	return nil;
+    }
+    if (action_callback == nil)
+    {
+	any ret = event["ID"]:nil;
+	if (is (ret, symbol))
+	    return (symbol)ret;
+	else
+	    return nil;
+    }
+    else
+    {
+	return action_callback (current, event);
+    }
+}
+
+
+// internal functions
+
+void StoreCurrentItems (list<map<string,any> > items) {
+    current_items = items;
+    descriptions = listmap (map<string,any> i, items, {
+	return $[ i["id"]:"" : i["rich_descr"]:"" ];
+    });
+}
+
+/**
+ * Get the description label for the action
+ * @param action a list describing the action
+ * @return string the label of the action
+ */
+string GetActionLabel (list action) {
+    string fallback = "";
+    if (is (action[0]:nil, string))
+	fallback = action[0]:"";
+    return action[1]:fallback;
+}
+
+/**
+ * Create the Push/Menu button for additional actions
+ * @param actions a list of the actions
+ * @return term the widget
+ */
+term CreateActionsButton (list<list> actions) {
+    integer sz = size (actions);
+    if (sz == 0)
+    {
+	return `Empty ();
+    }
+    if (sz == 1)
+    {
+	any id = actions[0,0]:nil;
+	if (id == nil)
+	{
+	    y2error ("Unknown ID for button: %1", actions[0]:nil);
+	    id = "nil";
+	}
+	return `PushButton (`id (id),
+	    GetActionLabel (actions[0]:[]));
+    }
+    list<term> items = maplist (list i, actions, {
+	any id = i[0]:nil;
+	if (id == nil)
+	{
+	    y2error ("Unknown ID for button: %1", actions[0]:nil);
+	    id = "nil";
+	}
+	return `item (`id (id), GetActionLabel (i));
+    });
+    // menu button
+    return `MenuButton (_("&Other"), items);
+}
+
+// CWM widget
+
+/**
+ * Create CWM widtet for the hardware settings
+ * NOTE: The Init and Handle callbacks must be defined
+ * @stable
+ * @param headers a list of headers of the table
+ * @param actions a list of additionaly offered actions, see CreateHWDialog
+ *  function for details
+ * @return a map a widget for CWM
+ */
+global map<string,any> CreateWidget (
+    list<string> headers,
+    list<list> actions
+) {
+
+    term hdr = `header ();
+    foreach (string hi, headers, {
+	hdr = add (hdr, hi);
+    });
+    term item_list = `Table (`id (`_hw_items), `opt (`notify, `immediate), hdr);
+    term buttons = `HBox (
+	`PushButton (`id (`add), Label::AddButton ()),
+	`PushButton (`id (`edit), Label::EditButton ()),
+	`PushButton (`id (`delete), Label::DeleteButton ()),
+	`HStretch (),
+	CreateActionsButton (actions)
+    );
+    term item_summary = `RichText (`id (`_hw_sum), "");
+
+    term contents = `VBox (
+	`VWeight (3, item_list),
+	`VWeight (1, item_summary),
+	buttons
+    );
+
+    list handle_events = [ `_hw_items, `add, `edit, `delete ];
+    list extra_events = maplist (list i, actions, {
+	return i[1]:nil;
+    });
+    extra_events = filter (any i, extra_events, {
+	return i != nil;
+    });
+    handle_events = merge (handle_events, extra_events);
+
+    map<string,any> ret = $[
+	"widget" : `custom,
+	"custom_widget" : contents,
+	"handle_events" : handle_events,
+    ];
+
+    return ret;
+}
+
+// callback iface
+
+/**
+ * Draw the dialog, handle all its events via callbacks
+ * @stable
+ * @param settings a map containing all the settings:
+ *  $[
+ *   "action_callback" : symbol(string,map<string,any>) -- callback to handle
+ *      all events which aren't handled internally, first parameter is
+ *      the ID of the selected item, second is the event. If not set,
+ *      events which are symbols are returned to wizard sequencer
+ *  "set_items_callback" : void() -- callback to set the items to be displayed.
+ *      Should called WizardHW::SetContents instead of direct widgets
+ *      modification, as it stores the settings also internally. This callback
+ *      must be set.
+ *  "set_initial_item_callback" : void() -- callback to set the selected item
+ *      when dialog initialized. Should call the function
+ *      WizardHW::SetSelectedItem instead of manual widget modification.
+ *      If not set, the first item is selected.
+ *  "item_descr_callback" : string(string) -- callback to get rich text
+ *      description of the item if it is intended to be dynamical.
+ *      if not set, static description set via "set_items_callback" is
+ *      used.
+ *  "actions" : list<list> -- a list of actions to be offered
+ *      via additional button next to Add/Edit/Delete button. Each item is
+ *      a two-item-list, where the first item is the event ID and the second
+ *      item is the label of the entry of the menu button. If there is only
+ *      one entry, menu button is replaced by push button. If empty
+ *      (or not specifued), nothing is shown.
+ *  "title" : string -- the dialog title, must be specified
+ *  "help" : string -- the help for the dialog, must be specifed
+ *  "headers" : list<string> --  a list of the table headers, must be specified
+ *  "next_button" : string -- label for the "Next" button. To hide it, set to
+ *      nil. If not specified, "Next" is used.
+ *  "back_button" : string -- label for the "Back" button. To hide it, set to
+ *      nil. If not specified, "Back" is used.
+ *  "abort_button" : string -- label for the "Abort" button. To hide it, set to
+ *      nil. If not specified, "Abort" is used.
+ *  ]
+ * @return symbol for wizard sequencer
+ */
+global symbol RunHWDialog (map settings) {
+    // reinitialize internal variables
+    current_items = [];
+    descriptions = $[];
+    last_event = $[];
+
+    // callbacks
+    action_callback = (symbol(string,map))
+	settings["action_callback"]:nil;
+    get_item_descr_callback = (string(string))
+	settings["item_descr_callback"]:nil;
+    set_items_callback = (void())
+	settings["set_items_callback"]:nil;
+    select_initial_item_callback = (void ())
+	settings["set_initial_item_callback"]:nil;
+
+    // other variables
+    list<list> actions = settings["actions"]:[];
+    list<string> headers = settings["headers"]:[];
+    string title = settings["title"]:"";
+    string help = settings["help"]:"HELP";
+
+    // adapt the widget description map
+    map<string,any> widget = CreateWidget (headers, actions);
+    widget = remove (widget, "handle_events");
+    widget["help"] = help;
+    widget["init"] = Init;
+    widget["handle"] = Handle;
+    map<string,map<string,any> > widget_descr = $[
+	"wizard_hw" : widget,
+    ];
+
+    // now run the dialog via CWM with handler set
+    return CWM::ShowAndRun ($[
+	"widget_descr" : widget_descr,
+	"widget_names" : ["wizard_hw"],
+	"contents" : `VBox ("wizard_hw"),
+	"caption" : title,
+	"abort_button" : settings["abort_button"]:Label::AbortButton (),
+	"back_button" : settings["back_button"]:Label::BackButton (),
+	"next_button" : settings["next_button"]:Label::NextButton (),
+    ]);
+}
+
+
+// simple iface
+
+/**
+ * Create the Hardware Wizard dialog
+ * Draw the dialog
+ * @stable
+ * @param title string the dialog title
+ * @param help string the help for the dialog
+ * @param headers a list of the table headers
+ * @param actions a list of actions to be offered
+ *      via additional button next to Add/Edit/Delete button. Each item is
+ *      a two-item-list, where the first item is the event ID and the second
+ *      item is the label of the entry of the menu button. If there is only
+ *      one entry, menu button is replaced by push button. If empty
+ *      (or not specifued), nothing is shown.
+ *  below the widgets (next to other buttons)
+ */
+global void CreateHWDialog (
+    string title,
+    string help,
+    list<string> headers,
+    list<list> actions
+) {
+    // reinitialize internal variables
+    current_items = [];
+    descriptions = $[];
+    last_event = $[];
+    get_item_descr_callback = nil;
+    action_callback = SimpleStoreReturnValue;
+
+    // now create the dialog
+    map<string,any> widget_descr = CreateWidget (headers, actions);
+    widget_descr["help"] = help; // to suppress error in log
+    list<map<string,any> > w = CWM::CreateWidgets (["wizard_hw"],
+	$[ "wizard_hw" : widget_descr ]);
+    term contents = w[0, "widget"]:`VBox ();
+    Wizard::SetContents (title, contents, help, false, true);
+}
+
+/**
+ * Set which item is to be selected
+ * @stable
+ * @param selected string the item that is should be marked as selected
+ */
+global void SetSelectedItem (string selected) {
+    _SetSelectedItem (selected);
+}
+
+
+/**
+ * Return the id of the currently selected item in the table
+ * @stable
+ * @return id of the selected item
+ */
+global string SelectedItem () {
+    return (string) UI::QueryWidget (`id(`_hw_items), `CurrentItem);
+}
+
+/**
+ * Set the rich text description.
+ * @stable
+ * @param descr rich text description
+ */
+global void SetRichDescription (string descr) {
+    UI::ChangeWidget (`id (`_hw_sum), `Value, descr);
+}
+
+/**
+ * Set the information about hardware
+ * @stable
+ * @param items a list of maps, one item per item in the dialog, with keys
+ *  "id" : string = the identification of the device,
+ *  "rich_descr" : string = RichText description of the device
+ *  "table_descr" : list<string> = fields of the table
+ */
+global void SetContents (list<map<string,any> > items) {
+    list<term> term_items = maplist (map<string,any> i, items, {
+	term t = `item (`id (i["id"]:""));
+	foreach (string l, i["table_descr"]:[], {
+	    t = add (t, l);
+	});
+	return t;
+    });
+    UI::ChangeWidget (`id (`_hw_items), `Items, term_items);
+    StoreCurrentItems (items);
+    boolean enabled = size (items) > 0;
+    UI::ChangeWidget (`id (`edit), `Enabled, enabled);
+    UI::ChangeWidget (`id (`delete), `Enabled, enabled);
+    if (enabled)
+	SetSelectedItem (items[0, "id"]:"");
+}
+
+/**
+ * Wait for event from the event
+ * @stable
+ * @return a map with keys:
+ *  "event" : map = event as returned from UI::WaitForEvent (),
+ *  "selected" : string = ID of the selected item in the list box
+ */
+global map<string,any> WaitForEvent () {
+    map event = nil;
+    while (event == nil)
+    {
+	event = (map)UI::WaitForEvent ();
+	if (Handle ("wizard_hw", event) == nil)
+	{
+	    event = nil;
+	}
+    }
+    return dialog_ret;
+}
+
+/**
+ * Wait for event from the event
+ * @stable
+ * @return a map with keys:
+ *  "event" : any = event as returned from UI::UserInoput ()
+ *  "selected" : string = ID of the selected item in the list box
+ */
+global map<string,any> UserInput () {
+    map<string,any> ret = WaitForEvent ();
+    ret["event"] = ret["event", "ID"]:nil;
+    return ret;
+}
+
+/**
+ * Create rich text description of a device. It can be used for WizardHW::SetContents
+ * function for formatting richtext device descriptions
+ * @stable
+ * @param title header - usually device name
+ * @param properties important properties of the device which should be
+ *		displayed in the overview dialog
+ * @return string rich text string
+ */
+global define string CreateRichTextDescription(string title, list<string> properties) {
+    string items = "";
+
+    if (properties != nil && size(properties) > 0)
+    {
+	foreach(string prop, properties, {
+		items = items + "<LI>" + prop + "</LI>";
+	    }
+	);
+    }
+
+    string ret = "";
+
+    if (title != nil && title != "")
+    {
+	ret = "<P><B>" + title + "</B></P>";
+    }
+
+    if (items != "")
+    {
+	ret = ret + "<P><UL>" + items + "</UL></P>";
+    }
+
+    return ret;
+}
+
+
+/**
+ * Get propertly list of an unconfigured device. Should be used together with
+ * device name in CreateRichTextDescription() function.
+ * @stable
+ * @return a list of strings 
+ */
+global list<string> UnconfiguredDevice() {
+    // translators: message for hardware configuration without any configured
+    // device
+    return [_("The device is not configured")
+    // translators: message for hardware configuration without any configured
+    // device
+    , _("Press <B>Edit</B> to configure")];
+}
+
+// EOF
+}

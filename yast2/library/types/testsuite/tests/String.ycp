@@ -1,0 +1,149 @@
+{
+
+include "testsuite.ycp";
+import "String";
+
+DUMP("String::Quote");
+TEST(``(String::Quote(nil)), [], nil);
+TEST(``(String::Quote("")), [], nil);
+TEST(``(String::Quote("a")), [], nil);
+TEST(``(String::Quote("a'b")), [], nil);
+TEST(``(String::Quote("a'b'c")), [], nil);
+
+DUMP("String::UnQuote");
+TEST(``(String::UnQuote(nil)), [], nil);
+TEST(``(String::UnQuote("")), [], nil);
+TEST(``(String::UnQuote("a")), [], nil);
+TEST(``(String::UnQuote("a'\\''b")), [], nil);
+TEST(``(String::UnQuote("a'\\''b'\\''c")), [], nil);
+
+DUMP("String::FormatSize");
+TEST(``(String::FormatSize(nil)), [], nil);
+TEST(``(String::FormatSize(0)), [], nil);
+TEST(``(String::FormatSize(1)), [], nil);
+TEST(``(String::FormatSize(1025)), [], nil);
+TEST(``(String::FormatSize(1049000)), [], nil);
+TEST(``(String::FormatSize(1074000000)), [], nil);
+TEST(``(String::FormatSize(1100000000000)), [], nil);
+TEST(``(String::FormatSize(1126000000000000)), [], nil);
+
+DUMP("String::FormatSizeWithPrecision");
+TEST(``(String::FormatSizeWithPrecision(nil,nil,nil)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(0, nil, true)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(1, 2, false)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(1025, 3, false)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(1049000, 2, true)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(1074000000, 3, false)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(1100000000000, 2, false)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(1126000000000000, 1, true)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(4096, 2, true)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(4096, 2, false)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(4097, 2, true)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(8589934592, 2, true)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(15, 5, false)), [], nil);
+TEST(``(String::FormatSizeWithPrecision(23456767890, 3, true)), [], nil);
+
+DUMP("String::CutBlanks");
+TEST(``(String::CutBlanks(nil)), [], nil);
+TEST(``(String::CutBlanks("")), [], nil);
+TEST(``(String::CutBlanks(" ")), [], nil);
+
+TEST(``(String::CutBlanks("abc")), [], nil);
+TEST(``(String::CutBlanks(" abc")), [], nil);
+TEST(``(String::CutBlanks("abc ")), [], nil);
+TEST(``(String::CutBlanks(" abc ")), [], nil);
+TEST(``(String::CutBlanks("  abc")), [], nil);
+TEST(``(String::CutBlanks("abc  ")), [], nil);
+
+TEST(``(String::CutBlanks("ab c")), [], nil);
+TEST(``(String::CutBlanks(" ab c")), [], nil);
+TEST(``(String::CutBlanks("ab c ")), [], nil);
+TEST(``(String::CutBlanks(" ab c ")), [], nil);
+TEST(``(String::CutBlanks("  ab c")), [], nil);
+TEST(``(String::CutBlanks("ab c  ")), [], nil);
+TEST(``(String::CutBlanks("  ab c  ")), [], nil);
+TEST(``(String::CutBlanks("ab  c")), [], nil);
+
+DUMP("String::CutZeros");
+TEST(``(String::CutZeros(nil)), [], nil);
+TEST(``(String::CutZeros("")), [], nil);
+TEST(``(String::CutZeros("1")), [], nil);
+TEST(``(String::CutZeros("01")), [], nil);
+TEST(``(String::CutZeros("001")), [], nil);
+TEST(``(String::CutZeros("0")), [], nil);
+TEST(``(String::CutZeros("00")), [], nil);
+
+DUMP("String::Pad");
+TEST(``(mergestring(["\"", String::Pad(nil, 2),"\""],"")), [], nil);
+TEST(``(mergestring(["\"", String::Pad("", 2),"\""],"")), [], nil);
+TEST(``(mergestring(["\"", String::Pad("a", 2),"\""],"")), [], nil);
+TEST(``(mergestring(["\"", String::Pad("ab", 2),"\""],"")), [], nil);
+TEST(``(mergestring(["\"", String::Pad("abc", 2),"\""],"")), [], nil);
+TEST(``(mergestring(["\"", String::Pad("a", -1),"\""],"")), [], nil);
+TEST(``(mergestring(["\"", String::Pad("", 0),"\""],"")), [], nil);
+TEST(``(mergestring(["\"", String::Pad("a", 0),"\""],"")), [], nil);
+
+DUMP("String::PadZeros");
+TEST(``(String::PadZeros(nil, 4)), [], nil);
+TEST(``(String::PadZeros("", 4)), [], nil);
+TEST(``(String::PadZeros("1", 4)), [], nil);
+TEST(``(String::PadZeros("12", 4)), [], nil);
+TEST(``(String::PadZeros("123", 4)), [], nil);
+TEST(``(String::PadZeros("1234", 4)), [], nil);
+TEST(``(String::PadZeros("12345", 4)), [], nil);
+
+DUMP("String::ParseOptions");
+TEST(``(String::ParseOptions("a=3	b=2", $[])), [], nil);
+TEST(``(String::ParseOptions("a=3 b=2", $[])), [], nil);
+TEST(``(String::ParseOptions("a=", $[])), [], nil);
+
+map param = $[ "separator" : ",",
+    "unique" : true,
+    "remove_whitespace" : true
+];
+
+// Basic functionality
+TEST( ``(String::ParseOptions(nil, param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions("", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions("    ", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions(" abc , 123, var", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions(" abc,123  ", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions("x,  y  ,  z", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions("0,\"1, 2, 3\", 4, 5 ", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions(" ,,  ,", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions("\"abc\"", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions("\" abc \"", param) ), [ $[], $[], $[] ], nil );
+
+// multi separator
+param["separator"] = ",;.";
+TEST( ``(String::ParseOptions("ab.sdf;  fwre  sdf", param) ), [ $[], $[], $[] ], nil );
+
+// uniqe / multile test
+TEST( ``(String::ParseOptions(" 1,2,1,1,5 ,", param) ), [ $[], $[], $[] ], nil );
+param["unique"] = false;
+TEST( ``(String::ParseOptions(" 1,2,1,1,5 ,", param) ), [ $[], $[], $[] ], nil );
+
+// use space as separator
+param["separator"] = " ";
+TEST( ``(String::ParseOptions(" \"\\\"\", 2", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions("   a   b zx ,, ,", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions("   123\"56\"78  bzx ", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions("   a \\\\ b ", param) ), [ $[], $[], $[] ], nil );
+TEST( ``(String::ParseOptions(" \n \\\"  ", param) ), [ $[], $[], $[] ], nil );
+
+// don't remove white space
+param["remove_whitespace"] = false;
+param["separator"] = ",";
+TEST( ``(String::ParseOptions("   a   b zx ,, ,", param) ), [ $[], $[], $[] ], nil );
+
+
+DUMP("String::CutRegexMatch");
+TEST(``(String::CutRegexMatch("abc","[0-9]+",true)), [], nil);
+TEST(``(String::CutRegexMatch("abc12def345ghi678900","[0-9]+",true)), [], nil);
+TEST(``(String::CutRegexMatch("abc12def345ghi678900","[0-9]+",false)), [], nil);
+TEST(``(String::CutRegexMatch("abc12def345ghi678900",".*",false)), [], nil);
+
+DUMP("Strings::EscapeTags");
+TEST(``(String::EscapeTags("<font size='2'><b>text & another</b></font>")), [], nil);
+TEST(``(String::EscapeTags("2 > 1")), [], nil);
+}

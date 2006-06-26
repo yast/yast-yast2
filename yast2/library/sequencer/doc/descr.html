@@ -1,0 +1,112 @@
+<html><head>
+<title>Wizard sequencer -- Description</title>
+</head><body bgcolor=#ffffff>
+<!-- Author: Michal Svec <msvec@suse.cz> -->
+<!-- $Id$ -->
+<a name="top"><p>
+<h1>Wizard sequencer -- Description</h1>
+<hr>
+
+<!-- DESCRIPTION -->
+<p><a name="description"><u><h2>Description</h2></u>
+
+Here is a formal description (prototypes) of types and functions used 
+by the Wizard Sequencer.
+
+<p>
+The Sequencer::Run function:
+<table bgcolor=#e0e0e0><tr><td><pre>
+	symbol|void Sequencer::Run(
+		map Aliases,
+		map Sequence
+	);
+</pre></td></tr></table>
+
+It will run the whole sequence, call the dialogs in the particular order.
+<ul>
+<li>The first dialog is a value, defined by a special item <b>"ws_start"</b>.
+<li>The returned symbol is a symbol found in the sequence map instead of alias.
+</ul>
+
+<ul>
+<li>"Aliases" is a map of function aliases
+<li>"Sequence" is a dialogs sequence (workflow)
+</ul>
+
+<p>
+The map of aliases or functions:
+<table bgcolor=#e0e0e0><tr><td><pre>
+	map Aliases = $[
+		&lt;string Alias&gt; : &lt;term Function call&gt;,
+		&lt;string Alias&gt; : [ &lt;term Function call&gt;, true ],
+		&lt;string Alias&gt; : [ &lt;term Function call&gt;, $[...] ],
+		...
+	];
+</pre></td></tr></table>
+
+<ul>
+<li>The first version is for normal functions.
+<li>The second is for special functions (popups, decision functions), they are
+removed from the execution stack.
+<li>The third is for functions with user defined buttons (not ready yet).
+</ul>
+
+<p>
+The sequence or workflow:
+<table bgcolor=#e0e0e0><tr><td><pre>
+	man Sequence = $[
+		&lt;string Alias&gt; : $[
+			&lt;symbol&gt; retval : &lt;string&gt; Alias,
+			&lt;symbol&gt; retval : &lt;symbol&gt; Return,
+			...
+		],
+		...
+	];
+</pre></td></tr></table>
+
+If the target value is a symbol, the WS finishes and returnes that symbol.
+
+<!--
+<table bgcolor=#e0e0e0><tr><td><pre>
+	man Sequence = $[
+		&lt;string Alias&gt;|&lt;term Function call&gt; : $[
+			&lt;symbol&gt; retval : &lt;string&gt; Alias|&lt;term&gt; Function call,
+			&lt;symbol&gt; retval : &lt;string&gt; Alias|&lt;term&gt; Function call,
+			...
+		],
+		...
+	];
+</pre></td></tr></table>
+-->
+
+<p>
+This is an outline of the next-generation WS, it is not implemented yet.
+It should be able of handling buttons and dialogs so, that you are able
+of exchange two dialogs without any change.
+
+<table bgcolor=#e0e0e0><tr><td><pre>
+	YCPString Sequencer::RunNG(
+		map Aliases,
+		map Sequence,
+		map Default,
+		boolean CreateWizard
+	);
+</pre></td></tr></table>
+
+<ul>
+<li>"Default" are default buttons parameters
+<li>"CreateWizard" is true, if the WS should create the basic dialog
+</ul>
+
+<p>
+The default buttons map:
+<table bgcolor=#e0e0e0><tr><td><pre>
+	map Default = $[
+		&lt;symbol&gt; button : &lt;any&gt; value,
+		&lt;symbol&gt; button : &lt;any&gt; value,
+		...
+	];
+</pre></td></tr></table>
+
+
+</body></html>

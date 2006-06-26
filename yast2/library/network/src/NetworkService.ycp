@@ -1,0 +1,132 @@
+/**
+ * File:	modules/NetworkService.ycp
+ * Package:	Network configuration
+ * Summary:	Init script handling, ifup vs NetworkManager
+ * Authors:	Martin Vidner <mvidner@suse.cz>
+ *
+ * $Id$
+ *
+ * This module used to switch between rcnetwork and rcnetworkmanager.
+ * Now the master switch is /etc/sysconfig/network/config:NETWORKMANAGER
+ */
+
+{
+
+module "NetworkService";
+
+import "Service";
+import "NetworkConfig";
+import "Popup";
+
+textdomain "base";
+
+global void Read ();
+
+/**
+ * if false, read needs to do work
+ */
+boolean initialized = false;
+
+/**
+ * Whether use NetworkManager or ifup
+ */
+global boolean IsManaged () {
+    Read ();
+    return NetworkConfig::Config["NETWORKMANAGER"]:false;
+
+}
+
+/**
+ * @param m whether networkmanager will be used
+ */
+global void SetManaged (boolean m) {
+    NetworkConfig::Config["NETWORKMANAGER"] = m;
+    initialized = true;
+}
+
+/**
+ * Initialize module data
+ */
+global void Read () {
+    if (!initialized)
+    {
+	NetworkConfig::Read ();
+	boolean nm =  NetworkConfig::Config["NETWORKMANAGER"]:false;
+	y2milestone ("NetworkManager: %1", nm);
+    }
+    initialized = true;
+}
+
+/**
+ * Enables and disables the appropriate services.
+ */
+global void EnableDisable () {
+    // Workaround for bug #61055:
+    y2milestone("Enabling service %1", "network");
+    string cmd = "cd /; /sbin/insserv -d /etc/init.d/network";
+    SCR::Execute (.target.bash, cmd);
+}
+
+boolean RunScript (string script, string action) {
+    if (script == "")
+	 return true;
+    y2milestone("rc%1 %2", script, action);
+    // Workaround for bug #61055:
+    string cmd = sformat ("cd /; /etc/init.d/%1 %2", script, action);
+    return SCR::Execute (.target.bash, cmd) == 0;
+}
+
+/**
+ * Starts and stops the appropriate services.
+ */
+global void StartStop () {
+    if (Service::Status ("network") == 0)
+    {
+	RunScript ("network", "reload");
+    }
+    else
+    {
+	// #148263
+	// Because rcnetwork really handles two different things in one script
+	// (ifup and NM), it could happen that "start" would shut down an
+	// interface. Instead, it tells the user to use "restart".
+	// So we do it always, it does not hurt if the net was stopped.
+	RunScript ("network", "restart");
+    }
+}
+
+/*
+ * Variable remembers that the question has been asked during this run already.
+ * It avoids useless questions over and over again.
+ */
+boolean already_asked_for_NetworkManager = false;
+
+/**
+ * Opens up a continue/cancel confirmation popup
+ * in the case when NetworkManager is enabled.
+ * User is informed that continuing the configuration
+ * may produce undefined results.
+ * If NetworkManager is not used, silently returns true.
+ *
+ * @return boolean continue
+ */
+global define boolean ConfirmNetworkManager () {
+    if (!already_asked_for_NetworkManager && NetworkService::IsManaged()) {
+	// TRANSLATORS: pop-up question when reading the service configuration
+	boolean cont = Popup::ContinueCancel(_("Your network interfaces are currently controlled by NetworkManager
+but the service to configure might not work well with it.
+
+Really continue?"));
+	y2milestone("Network is controlled by NetworkManager, user decided %1...",
+	    (cont ? "to continue":"not to continue")
+	);
+	already_asked_for_NetworkManager = true;
+	
+	return cont;
+    } else {
+	return true;
+    }
+}
+
+/* EOF */
+}

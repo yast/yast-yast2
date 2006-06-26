@@ -1,0 +1,58 @@
+{
+
+include "testsuite.ycp";
+import "Sequencer";
+
+define any f1() ``{ return "1"; }
+define any f2() ``{ return 2; }
+define any f3() ``{ return `id3; }
+
+define any f4() ``{ return 1; }
+define any f5() ``{ return 1; }
+define any f6() ``{ return 1; }
+define any f7() ``{ return 1; }
+
+map aliases1 = $[
+    `x  : "x",
+    "1" : "1",
+    "2" : [],
+    "3" : [ ``(f1()) ],
+    "4" : [ "4", `x ],
+    "5" : [ ``(f2()), "5" ],
+    "6" : [ ``(f3()), true ],
+    "7" : [ ``(f4()), false ],
+    "8" : ``(f5()),
+    "9" : ``(f6()),
+    "A" : ``(f7())
+];
+
+map sequence1 = $[
+    "ws_start" : "missing",
+    "0" : $[],
+    "8" : [],
+    "9" : $[],
+    "A" : $[
+        "blah" : `back,
+        `next : "huu",
+        `finish: `ok
+    ],
+    `x  : $[],
+    "1" : $[],
+    "2" : $[],
+    "3" : $[],
+    "4" : $[],
+    "5" : $[],
+    "6" : $[],
+];
+
+TEST(``(Sequencer::WS_check($[], $[])), [], nil);
+TEST(``(Sequencer::WS_check(aliases1, sequence1)), [], nil);
+
+TEST(``(Sequencer::WS_check($[], $[ "ws_start" : `ws_finish ] )), [], nil);
+
+list clicks = nil;
+integer cur = -1;
+include "./tests/Wizard.yh";
+TEST(``(Sequencer::WS_check(aliases(), sequence())), [], nil);
+
+}

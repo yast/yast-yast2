@@ -1,0 +1,137 @@
+<html><head><title>Runlevel editor</title></head><body>
+<h1>Runlevel editor library</h1>
+<small>documentation for developers</small>
+<p>
+If you need activate or de-activate services from your yast2 package, use
+module <tt>Service</tt>. It is a replacement for the old client
+<tt>runlevel_adjust</tt> that you should have been using till now. You may
+also use it to obtain information about services. Following functions are
+self-containing. <font color="red">You do not need to run Service::Read
+</font> if you want to use any of them.</p>
+<h2>Enabling/disabling service</h2>
+<p>
+<b><tt>boolean Service::Adjust (string name, string action);</tt></b><br>
+Does some operation with init script. <tt>name</tt> is the name of the init
+script. <tt>action</tt> is one of: <tt>"enable", "disable",
+"default"</tt>.<br>
+<ul>
+<li><tt>"enable"</tt> enables service, which means that if service is not set to
+run in any runlevel, it will set it to run in default runlevels. Otherwise it
+will not touch the service. <b>Use it when you want the service to run</b>,
+because it preserves user-defined state. If user sets service to run in some
+non-default runlevels, this will not destroy her own settings.</li>
+<li><tt>"disable"</tt> disables service, which means that it sets it not to run in
+any runlevel.</li>
+<li><tt>"default"</tt> sets service to run in its default runlevels, which are the
+runlevels listed in init script comment, fiels Default-Start.</li></ul>
+<tt>"enable"</tt> and <tt>"disable"</tt> take no action when init script links
+are OK, but <tt>"default"</tt> runs always insserv.<br>
+<b>example:</b> <tt>Service::Adjust ("cups", "disable");</tt>
+</p>
+<h2>Specifying runlevels for service</h2>
+<p>
+<b><tt>boolean Service::Finetune (string name, list rl);</tt></b><br>
+Sets service to run in list <tt>rl</tt>. <tt>rl</tt> is list of strings. <br>
+<b>example:</b> <tt>Service::Finetune ("cups", [ "5" ]);</tt><br>
+<b>example:</b> <tt>Service::Finetune ("cups", [ "S", "3", "5" ]);</tt>
+</p>
+<h2>Init script actions</h2>
+<p>
+<b><tt>integer RunInitScript (string name, string param);</tt></b><br>
+Runs init script <tt>name</tt> with parameter <tt>param</tt>. Returns init
+scripts exit value. I do not think it is worth to import module
+<tt>Service</tt> only because of this one function when you may simply call
+<tt>SCR::Execute (.target.bash, ...)</tt> with the same result. But if you use
+Service for something else, this function may increase readability of the
+code.<br>
+<b>example:</b> <tt>RunInitScript ("cups", "restart");</tt>
+</p>
+<h2>Service info</h2>
+<p>
+<b><tt>integer Service::Status (string name)<br>
+map Service::Info (string name)<br>
+map Service::FullInfo (string name)</tt></b><br>
+<tt>Service::Status</tt> tells whether service runs. It calls init script status
+and returns exit value.<br> <tt>Service::Info</tt> returns information about
+service. The map contains: <pre>
+$[ "defstart" : [ ... ], // list of strings
+   "defstop"  : [ ... ], // list of default runlevels
+
+   "start"    : [ ... ], // list of strings
+   "stop"     : [ ... ], // list of real runlevels
+
+   "reqstart" : [ ... ], // list of strings
+   "reqstop"  : [ ... ], // prerequisites
+
+   "description": string,// description
+]
+</pre>
+Values "def{start|stop}", "req{start|stop}" and "description" are taken from
+init script comments. "start" and "stop" are taken from links.
+<tt>Service::FullInfo</tt> combines info from <tt>Service::Info</tt> and
+<tt>Service::Status</tt> into one map. It adds key <tt>"started"</tt> with
+integeral value of <tt>script status</tt>. Service is enabled if <tt>"start"</tt> 
+is not empty.
+</p>
+<h2>Is service enabled?</h2>
+<p>
+<b><tt>boolean Service::Enabled (string name)</tt></b><br>
+Returns true if service is set to run in any runlevel. False otherwise.
+</p>
+<h2>Example of usage</h2>
+<p>
+<pre>
+import "Service";
+
+boolean Read () ``{
+	if (0 != Service::RunInitScript ("foo", "restart"))
+	{
+		y2error ("Can not start service");
+		return false;
+	}
+	// ... your code ...
+}
+
+boolean Write () ``{
+	// ... write settings ...
+
+	// set service to correct state
+	if (start_it)
+	{
+		// enable service
+		Service::Adjust ("foo", "enable");
+		// reload changed settings
+		Service::RunInitScript ("foo", "reload");
+	}
+	else
+	{
+		// disable service
+		Service::Adjust ("foo", "disable");
+		// and stop it
+		Service::RunInitScript ("foo", "stop");
+	}
+}
+
+</pre>
+</p>
+<p>
+<h2>What should you know?</h2>
+It has sense to run some services only in case that some other service runs. 
+Now the only case known to me is <tt>portmap</tt> that is needed by
+NFS, NIS and others.
+Runlevel UI cares about this case. But if you use functions like 
+<tt>Service::Adjust</tt>, you must take care about these dependencies yourself.
+If you know about other dependencies, let me know, I will implement them in UI.
+<br>
+Just for your info: Runleve UI warns user who wants to stop service <tt>xdm</tt>.
+If you know about another cases where it is wise idea to warn user, please
+let me know...
+</p>
+</p>
+<h2>Autogenerated documentation</h2>
+<p>
+Can be found <a href="autodocs/Service.html">here</a>.
+</p>
+<hr>
+Petr Blahos <a href="mailto:pblahos@suse.cz">pblahos@suse.cz</a>
+</body></html>

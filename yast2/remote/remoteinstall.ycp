@@ -1,0 +1,78 @@
+/**
+ * File:	clients/remoteinstall.ycp
+ * Package:	yast2
+ * Summary:	Remote installation client
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+textdomain "base";
+import "Label";
+
+y2milestone("----------------------------------------");
+y2milestone("Remote installation module started");
+
+string device = "";
+/* Initialize the serial device */
+device = (string) SCR::Read(.sysconfig.mouse.MOUSEDEVICE);
+if(device == "/dev/ttyS0") device = "/dev/ttyS1";
+else device = "/dev/ttyS0";
+y2debug("device=%1", device);
+
+/* Dialog contents */
+term contents = `HBox(`HSpacing(1), `VBox(
+    `VSpacing(0.2),
+    /* ComboBox label */
+    `ComboBox(`id(`device), `opt(`editable), _("Select the Serial &Interface to Use:"), [
+	`item(`id("/dev/ttyS0"), "/dev/ttyS0", device == "/dev/ttyS0"),
+	`item(`id("/dev/ttyS1"), "/dev/ttyS1", device == "/dev/ttyS1"),
+    ]),
+    `VSpacing(1),
+    `HBox(
+	/* PushButton label */
+	`PushButton(`id(`next), `opt(`default), _("&Launch")),
+	`HStretch(),
+	`PushButton(`id(`cancel), Label::CancelButton())
+    )
+), `HSpacing(1));
+
+UI::OpenDialog(contents);
+UI::SetFocus(`id(`device));
+
+/* Main cycle */
+any ret = nil;
+while(true) {
+    ret = UI::UserInput();
+
+    if(ret == `abort || ret == `cancel || ret == `back) {
+	/* if(ReallyAbort()) break;
+	else continue; */
+	break;
+    }
+    else if(ret == `next) {
+	/* FIXME check_* device!="" and device exists */
+	break;
+    }
+    else {
+	y2error("Unexpected return code: %1", ret);
+	continue;
+    }
+}
+
+device = (string) UI::QueryWidget(`id(`device), `Value);
+UI::CloseDialog();
+
+if(ret == `next) {
+    string modulename = "serial(115200):" + device;
+    y2debug("modulename=%1", modulename);
+    WFM::CallFunction(modulename, []);
+}
+
+y2milestone("Remote installation module finished");
+y2milestone("----------------------------------------");
+
+/* EOF */
+}

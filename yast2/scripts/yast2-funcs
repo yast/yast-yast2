@@ -1,0 +1,123 @@
+# File:		/usr/share/YaST2/bin/yast2-funcs
+# Module:	yast2
+# Summary:	Common functions for YaST2 start scripts
+# Authors:	Arvin Schnell <arvin@suse.de>
+#
+# $Id$
+
+# some path definitions
+ybindir=/usr/lib/YaST2/bin
+logdir=/var/log/YaST2
+
+
+# font for qt
+# obsolete, we should not need it anymore, adrian
+# Y2_XFONT="-gnu-unifont-medium-r-normal--16-160-75-75-p-80-iso10646-1"
+
+
+#
+# check if plugins are in lib or lib64 subdir and sets the variable
+# plugindir accordingly
+#
+function get_plugindir()
+{
+    plugindir=/usr/lib/YaST2/plugin
+    if `ldd $ybindir/y2base | egrep --quiet "/lib64/(.*/)?libc.so"` ; then
+	plugindir=/usr/lib64/YaST2/plugin
+    fi
+}
+
+
+#
+# check if the qt plugin and all necessary libaries are present
+#
+function check_qt()
+{
+    get_plugindir
+    Y2_QT=$plugindir/libpy2qt.so.2
+
+    if [ -e "$Y2_QT" ] ; then
+	if ! `/usr/bin/ldd "$Y2_QT" | grep --quiet "=> not found"` ; then
+	    return 0		# success
+	fi
+	echo "warning: the qt frontend is installed but does not work"
+	sleep 1
+    fi
+
+    return 1			# failure
+}
+
+
+#
+# check if the ncurses plugin and all necessary libaries are present
+#
+function check_ncurses()
+{
+    get_plugindir
+    Y2_NCURSES=$plugindir/libpy2ncurses.so.2
+
+    if [ -e "$Y2_NCURSES" ] ; then
+	if ! `/usr/bin/ldd "$Y2_NCURSES" | grep --quiet "=> not found"` ; then
+	    return 0		# success
+	fi
+	echo "warning: the ncurses frontend is installed but does not work"
+	sleep 1
+    fi
+
+    return 1			# failure
+}
+
+
+#
+# if LANG is empty set LANG to RC_LANG in /etc/sysconfig/language
+#
+function set_lang_from_sysconfig()
+{
+    # if LANG is "POSIX", unset LANG
+    # SL  9.3 had default LANG set to ""
+    # SL 10.0 has default LANG set to "POSIX"
+    if [ "$LANG" == "POSIX" ] ; then
+	LANG=""
+    fi
+
+    # if LANG is not empty and /etc/sysconfig/language exists
+    if [ -z "$LANG" -a -r /etc/sysconfig/language ] ; then
+	. /etc/sysconfig/language
+	if [ -n "$RC_LANG" ] ; then
+            export LANG=$RC_LANG
+	fi
+    fi
+}
+
+
+function set_qt_home_dir()
+{
+    local user="$USER"
+    if [ "$KDESU_USER" ]; then
+       user="$KDESU_USER"
+    fi
+    temp_QT_HOME_DIR="$( getent passwd $user | cut -d : -f 6)/.qt/"
+    if test -r "$temp_QT_HOME_DIR/qtrc"; then
+        export QT_HOME_DIR="$temp_QT_HOME_DIR"
+    fi
+}
+
+
+function set_inst_qt_env()
+{
+    export XCURSOR_THEME="crystalwhite"
+    export QT_HOME_DIR="`eval echo /tmp/.qt/`"
+    mkdir -p /tmp/.qt
+    [ -e /usr/share/desktop-data/qtrc ] && cp /usr/share/desktop-data/qtrc /tmp/.qt/
+}
+
+
+function clr_inst_qt_env()
+{
+    rm -rf /tmp/.qt/
+}
+
+
+### Local Variables: ***
+### mode: shell-script ***
+### End: ***

@@ -1,0 +1,199 @@
+/**
+ * File:        modules/ValueBrowser.ycp
+ * Package:     YaST2 base package
+ * Summary:     Useful tool for viewing any variable contents.
+ * Authors:     Martin Vidner <mvidner@suse.cz>
+ *		Dan Vesely?
+ * Flags:	Unstable
+ *
+ * $Id$
+ */
+
+{
+    module "ValueBrowser";
+
+    textdomain "base";
+
+    /**
+     * Helper function that replaces all ocurences of "\n" with "\\n", so items are not multiline :-)
+     * @param s string to escape
+     * @return string escaped string
+     */
+    string escapestring (string s) ``{
+	return mergestring (splitstring (s, "\n"), "\\n");
+    }
+
+	/**
+	 * Shows tree with contents of variable. This function does the job. Heavy recursion...
+	 * @param variable variable to show.
+	 * @param indent string that is printed before each output.
+	 */
+	define string FormatSimpleType (any variable, string indent) ``{
+	    if (is (variable, void))
+		{
+		    return sformat ("%2%1 (void)", variable, indent);
+		}
+	    else if (is (variable, boolean))
+		{
+		    return sformat("%2%1 (boolean)", variable, indent);
+		}
+	    else if (is (variable, integer))
+		{
+		    return sformat("%2%1, %3 (integer)", variable, indent, tohexstring ((integer) variable));
+		}
+	    else if (is (variable, float))
+		{
+		    return sformat("%2%1 (float)", variable, indent);
+		}
+	    else if (is (variable, string))
+		{
+		    return sformat("%2%1 (string)", escapestring ((string) variable), indent);
+		}
+	    else if (is (variable, locale))
+		{
+		    return sformat("%2%1 (locale)", variable, indent);
+		}
+	    else if (is (variable, byteblock))
+		{
+		    return sformat("%2%1 (byteblock)", variable, indent);
+		}
+	    else if (is (variable, symbol))
+		{
+		    return sformat("%2%1 (symbol)", variable, indent);
+		}
+	    else if (is (variable, path))
+		{
+		    return sformat("%2%1 (path)", variable, indent);
+		}
+/*
+block <type>
+	    else if (is (variable, block))
+		{
+		    return sformat("%2%1 (block)", variable, indent);
+		}
+*/
+	    else
+	        {
+		    return nil;
+		}
+	}
+
+
+	/**
+	 * Creates tree with contents of variable. This function creates the tree items and
+	 * returns them as term. This offers using the generated output in your behavior,
+	 * such as data-structure browser with editor. Heavy recursion...
+	 *
+	 * @param variable variable to show.
+	 * @param indent string that is printed before each output.
+	 */
+	global define term BrowseTreeHelper (any variable, string indent) ``{
+	    string simple = FormatSimpleType (variable, indent);
+	    if (simple != nil)
+		{
+		    return `item (simple);
+		}
+	    else if (is (variable, list))
+		{
+		    list items = [];
+		    foreach (any i, (list) variable, ``{
+			items = add (items, BrowseTreeHelper (i, ""));
+		    });
+		    return `item (sformat ("%1 (list)", indent), items);
+		}
+	    else if (is (variable, map))
+		{
+		    list items = [];
+		    foreach (any k, any v, (map) variable, ``{
+			items = add (items, BrowseTreeHelper (v, sformat ("%1: ", k)));
+		    });
+		    return `item (sformat ("%1 (map)", indent), items);
+		}
+	    else if (is (variable, term))
+		{
+		    term tvariable = (term) variable;
+		    list items = [];
+		    integer len = size (tvariable);
+		    integer i = 0;
+		    while (i<len)
+			{
+			    items = add (items, BrowseTreeHelper (select (tvariable, i, nil), ""));
+			    i = i+1;
+			}
+		    return `item (sformat ("%1%2 (term)", indent, symbolof (tvariable)), items);
+		}
+	}
+
+    /**
+     * Shows tree with contents of variable.
+     *
+     * @example
+     *  map a = $[
+     *     "first" : 35,
+     *     "second" : [ 1, 2, 3, 4, 5],
+     *     "third" : $[ "a" : 15, `b: `VBox () ]
+     *    ];
+     *  ValueBrowser::BrowseTree (a);
+     *
+     * @param variable variable to show.
+     */
+    global define void BrowseTree (any variable) ``{
+	term items = BrowseTreeHelper (variable, "");
+	UI::OpenDialog(`opt(`defaultsize),
+		       `VBox (
+			   // translators: Tree header
+			   `Tree (`opt (`hstretch, `vstretch), _("&Variable"), [ items ]),
+			   `PushButton ("&OK")
+			   )
+		);
+	UI::UserInput ();
+	UI::CloseDialog ();
+    }
+
+    /**
+     * Write contents of variable to log file. This function does the job.
+     * Heavy recursion...
+     * @param variable variable to show.
+     * @param indent string that is printed before each output.
+     */
+    global define void DebugBrowseHelper (any variable, string indent) ``{
+	string simple = FormatSimpleType (variable, indent);
+	if (simple != nil)
+	    {
+		y2debug ("%1", simple);
+	    }
+	else if (is (variable, list))
+	    {
+		foreach (any i, (list) variable, ``{
+		    DebugBrowseHelper (i, indent + "  ");
+		});
+	    }
+	else if (is (variable, map))
+	    {
+		foreach (any k, any v, (map) variable, ``{
+		    y2debug ("%2%1 (map key)", k, indent);
+		    DebugBrowseHelper (v, sformat ("  %1", indent));
+		});
+	    }
+	else if (is (variable, term))
+	    {
+		term tvariable = (term) variable;
+		list items = [];
+		integer len = size (tvariable);
+		integer i = 0;
+		y2debug ("%1%2 (term)", indent, symbolof (tvariable));
+		while (i<len)
+		    {
+			items = add (items, DebugBrowseHelper (select (tvariable, i, nil), ""));
+			i = i+1;
+		    }
+	    }
+    }
+    /**
+     * Write contents of variable to log file.
+     * @param variable variable to show.
+     */
+    global define void DebugBrowse (any variable) ``{
+	DebugBrowseHelper (variable, "");
+    }
+}

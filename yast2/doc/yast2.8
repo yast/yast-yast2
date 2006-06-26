@@ -1,0 +1,110 @@
+.\" Michal Svec <msvec@suse.cz>
+.\"
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.\"
+.TH YAST2 8 "January 2003" "yast2" "System configuration"
+.\"
+.\"
+.SH NAME
+YaST2 \- universal configuration utility
+.\"
+.\"
+.SH SYNOPSIS
+.B yast2 [
+.I options
+.B ] [
+.I module
+.B ] [
+.I module specific options
+.B ]
+.br
+.B yast2 --install
+.I <package>
+.B [
+.I <package>
+.B [
+.I ...
+.B ] ]
+.\"
+.\"
+.SH DESCRIPTION
+.B YaST2
+is used to configure the system. It can configure a common hardware
+(sound cards, printers, keyboards, mice), network connections (network
+cards, ISDN cards, modems, DSL connections), network clients and services
+(NFS, NIS), as well as a general system options (language, partitioning,
+software, bootloader).
+
+.br
+.B YaST2
+comes with two frontends:
+.B QT
+and
+.B ncurses.
+Both frontends are functionally equivalent.
+The correct frontend is selected automatically based on the available
+components and the current environment (the DISPLAY variable).
+
+.br
+Use
+.B yast2
+alone to launch the
+.B YaST2 Control Center
+from which you can select a particular configuration module or use
+.B yast2 <module>
+to launch the module directly.
+.\"
+.\"
+.SH OPTIONS
+.\"
+.TP
+.B -g, --geometry
+Default window size (QT frontend only).
+.\"
+.TP
+.B -h, --help
+Print a usage and exit.
+.\"
+.TP
+.B -i, --install <package> [ <package> [ ... ] ]
+Install an RPM package. The
+.B package
+can be a single short package name (e.g. gvim)
+which will be installed with dependency checking, or the full
+path to an rpm package (e.g /tmp/gvim.rpm) which will be
+installed without dependency checking.
+.\"
+.TP
+.B -l, --list
+List all available modules.
+.\"
+.TP
+.BI --log " " logfile
+Write info to
+.B logfile.
+.\"
+.TP
+.B -s, --style
+Widget style (QT frontend only).
+.\"
+.\"
+.SH FILES
+.B /var/log/YaST2/*
+.\"
+.\"
+\" .SH BUGS
+\" Please report bugs at http://www.suse.de/feedback
+.\"
+.\"
+.SH AUTHOR
+.nf
+Michal Svec <msvec@suse.cz> - manual page
+.fi
+.\"
+.\"
+.SH "SEE ALSO"
+Documentation in /usr/share/doc/packages/yast2*.
+.\"
+.\" EOF

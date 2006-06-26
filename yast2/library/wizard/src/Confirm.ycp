@@ -1,0 +1,148 @@
+/**
+ * File:	modules/Confirm.ycp
+ *
+ * Package:	yast2
+ *
+ * Summary:	Confirmation routines
+ *
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * Flags:	Stable
+ *
+ * $Id$
+ */
+
+{
+
+module "Confirm";
+
+textdomain "base";
+
+import "Label";
+import "Mode";
+import "Popup";
+import "Linuxrc";
+
+/**
+ * Confirm hardware detection (only in manual installation)
+ * @param class hardware class (network cards)
+ * @return true on continue
+ */
+global define boolean Detection(string class) ``{
+
+    if(Linuxrc::manual () != true) return true;
+
+    UI::OpenDialog(`opt(`decorated), `HBox(
+	`HSpacing(1),
+	`HCenter(`HSquash(`VBox(
+	    `HCenter(`HSquash(`VBox(
+		// Popup-Box for manual hardware detection.
+		// If the user selects 'manual installation' when
+		// booting from CD, YaST2 does not load any modules
+		// automatically, but asks the user for confirmation
+		// about every module.
+		// The popup box informs the user about the detected
+		// hardware and suggests a module to load.
+		// The user can confirm the module or change
+		// the suggested load command
+		//
+		// This is the heading of the popup box
+		`Left(`Heading(_("Confirm Hardware Detection"))),
+		`VSpacing(0.5),
+		// This is in information message. Next come the
+		// hardware class name (network cards).
+		`HVCenter(`Label(_("YaST2 will detect the following hardware:"))),
+		`HVCenter(`Heading(class)),
+		`VSpacing(0.5)
+	    ))),
+	    `HSquash(`HBox(
+		`HWeight(1, `PushButton(`id(`continue), `opt(`default),  Label::ContinueButton())),
+		`HSpacing(2),
+		/* PushButton label */
+		`HWeight(1, `PushButton(`id(`skip),  _("&Skip")))
+	    )),
+	    `VSpacing(0.2)
+	))),
+	`HSpacing(1)
+    ));
+
+    UI::SetFocus (`id(`continue));
+
+    any ret = UI::UserInput();
+    UI::CloseDialog();
+
+    if(ret != `continue) {
+	y2milestone("Detection skipped: %1", class);
+	return false;
+    }
+
+    return true;
+}
+
+/*
+y2milestone("--%1", Detection("graphics cards"));
+Linuxrc::manual () = true;
+y2milestone("--%1", Detection("network cards"));
+y2milestone("--%1", Detection("modems"));
+*/
+
+/**
+ * If we are running as root, return true.
+ * Otherwise ask the user whether we should continue even though things
+ * might not work
+ * @return true if running as root
+ */
+global define boolean MustBeRoot()
+{
+    map out = (map) SCR::Execute (.target.bash_output, "/usr/bin/id --user");
+    boolean root = out["stdout"]:"" == "0\n";
+    if(root) return true;
+
+    /* Message in a continue/cancel popup */
+    string pop = _("This module must be run as root.
+If you continue now, the module may not function properly.
+For example, some settings can be read improperly
+and it is unlikely that settings can be written.\n");
+
+    /* Popup headline */
+    if(Popup::ContinueCancelHeadline(_("Root Privileges Needed"), pop)) {
+	y2error("NOT running as root!");
+	return true;
+    }
+
+    return false;
+}
+
+/**
+ * Opens a popup yes/no confirmation.
+
+ * If users confirms deleting, return true,
+ * else return false
+ *
+ * @return boolean delete selected entry
+ */
+global define boolean DeleteSelected() {
+    return Popup::YesNo(
+	/* Popup question */
+	_("Really delete selected entry?")
+    );
+}
+
+/**
+ * Opens a popup yes/no confirmation.
+
+ * If users confirms deleting of named entry/file/etc.,
+ * return true, else return false
+ *
+ * @param string file/entry name/etc.
+ * @return boolean delete selected entry
+ */
+global define boolean Delete(string delete) {
+    return Popup::YesNo(
+	/* Popup question, %1 is an item to delete (or filename, etc.) */
+	sformat(_("Really delete '%1'?"), delete)
+    );
+}
+
+/* EOF */
+}

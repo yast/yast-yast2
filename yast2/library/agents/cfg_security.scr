@@ -1,0 +1,26 @@
+/**
+ * File:	cfg_security.scr
+ * Summary:	Agent for reading/writing /etc/sysconfig/security
+ * Author:	Michal Svec <msvec@suse.cz>
+ * Access:	read / write
+ *
+ * Example:
+ *   Dir(.sysconfig.security)
+ *   (["PERMISSION_SECURITY", ...])
+ **
+ *   Read(.sysconfig.security.PERMISSION_SECURITY)
+ *   ("easy")
+ **
+ *   Write(.sysconfig.security.PERMISSION_SECURITY, "easy")
+ *   (true)
+ *
+ * $Id$
+ *
+ * Read/Sets the values defined in <tt>/etc/sysconfig/security</tt>
+ * in an easy manner.
+ */
+.sysconfig.security
+
+`ag_ini(
+    `SysConfigFile("/etc/sysconfig/security")
+)

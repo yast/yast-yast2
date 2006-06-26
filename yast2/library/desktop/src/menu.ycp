@@ -1,0 +1,291 @@
+/**
+ * File:	clients/menu.ycp
+ * Module:	yast2
+ * Summary:	NCurses Control Center
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ *
+ * Provides a list of available yast2 modules. This module is inteded for use
+ * with ncurses, for X the yast2 control center should be used.
+ */
+
+{
+
+textdomain "base";
+
+import "Desktop";
+import "Directory";
+import "FileUtils";
+import "Label";
+import "Popup";
+
+map Groups = $[];
+map Modules = $[];
+
+string restart_file	= Directory::vardir + "/restart_menu";
+
+/**
+ */
+define void DisplaySplash() {
+    UI::OpenDialog(`opt(`defaultsize), `VBox(
+	`VStretch (),
+	/* Message shown while loading modules information */
+	`Label (_("Loading modules, please wait ...")),
+	`VStretch ()
+    ));
+}
+
+/**
+ */
+define void OpenMenu() {
+    UI::OpenDialog(`opt(`defaultsize), `VBox(
+	`HBox(
+	    `HSpacing(1),
+	    `Frame( "", `VBox(
+		`VSpacing(0.4),
+		`HBox(
+		    `HSpacing(2),
+		    /* Heading for NCurses Control Center */
+		    `HCenter(`Heading( _("YaST2 Control Center")) ),
+		    `HSpacing(2)
+		),
+		`VSpacing(0.4)
+	    )),
+	    `HSpacing(1.5)
+	),
+
+	`VSpacing(1.0),
+	`HBox(
+	    `HSpacing(1),
+	    `HWeight( 30, `ReplacePoint(`id(`groups_rep),
+		    `SelectionBox(`id(`groups), `opt(`notify, `immediate, `keyEvents), "", [])
+	    )),
+	    `HSpacing(1),
+	    `HWeight( 70, `ReplacePoint( `id(`progs_rep),
+		    `SelectionBox(`id(`progs), `opt(`notify, `keyEvents), "", [])
+	    )),
+	`HSpacing(1)
+	),
+
+	`VSpacing(1.0),
+	`HBox(
+	    `HSpacing(2),
+	    `Left(`PushButton(`id(`help), `opt(`key_F1), Label::HelpButton())),
+	    `Right(`PushButton(`id(`quit), `opt(`key_F9), Label::QuitButton())),
+	    `HSpacing(2)
+	),
+	`VSpacing(1)
+    ));
+}
+
+/**
+ * @return boolean true if control center is to be resatrted
+ */
+define boolean Launch(string modul) {
+    string function = Modules[modul, "X-SuSE-YaST-Call"]:"";
+    list arguments = splitstring(Modules[modul, "X-SuSE-YaST-Argument"]:"", " ");
+    y2debug("Calling: %1 (%2)", function, arguments);
+
+    if(function != "") {
+
+	any ret = WFM::CallFunction (function, arguments);
+	y2debug("WFM::CallFunction (%1, %2) returns: %3", function, arguments, ret);
+	if ((function == "online_update" && ret == -42) || ret == `restart_menu)
+	{
+	    y2milestone ("yast needs to be restarted - exiting...");
+	    SCR::Execute (.target.bash, sformat ("touch %1", restart_file));
+	    return true;
+	}
+    }
+    return false;
+}
+
+/**
+ */
+define void ShowNcursesHelp() {
+
+    /* NCurses (textmode) Control Center headline */
+    string headline = _("Controlling YaST2 ncurses with the Keyboard");
+
+    /* NCurses Control Center help 1/ */
+    string help = _("<p>1) <i>General</i><br>
+Navigate through the dialog elements with [TAB] to go to
+the next element and [SHIFT] (or [ALT]) + [TAB] to move backwards.
+Select or activate elements with [SPACE] or [ENTER].
+Some elements use arrow keys (e.g., to scroll in lists).</p>") +
+
+    /* NCurses Control Center help 2/9 */
+    _("<p>Buttons are equipped with shortcut keys (the highlighted
+letter). Use [ALT] and the letter to activate the button.</p>") +
+
+   /* NCurses Control Center help 3/9 */
+    _("<p>Press [ESC] to close selection pop-ups (e.g., from
+menu buttons) without choosing anything.</p>
+") +
+
+    /* NCurses Control Center help 4/9 */
+    _("<p>2) <i>Substitution of Keystrokes</i><br>
+<p>Because the environment can affect the use of the keyboard,
+there is more than one way to navigate the dialog pages.
+If [TAB] and [SHIFT] (or [ALT]) + [TAB] do not work,
+move focus forward with [CTRL] + [F] and backward with [CTRL] + [B].</p>") +
+
+    /* NCurses Control Center help 5/9 */
+    _("<p>If [ALT] + [letter] does not work,
+try [ESC] + [letter]. Example: [ESC] + [H] for [ALT] + [H].
+[ESC] + [TAB] is also a substitute for [ALT] + [TAB].</p>") +
+
+    /* NCurses Control Center help 6/9 */
+    _("<p>3) <i>Function Keys</i><br>
+F keys provide a quick access to main functions.
+Press F1 to get the function key bindings for the current dialog.</p>") +
+
+    /* NCurses Control Center help 7/9 */
+    _("<p>The F keys are usually connected to a certain action:</p>") +
+
+    /* NCurses Control Center help 8/9 */
+    _("F1  = Help<br>
+F2  = Info or Description<br>
+F3  = Add<br>
+F4  = Edit or Configure<br>
+F5  = Delete<br>
+F6  = Test<br>
+F7  = Expert or Advanced<br>
+F8  = Back<br>
+F9  = Abort or Cancel<br>
+F10 = OK, Next, Finish, or Accept<br>") +
+
+    /* NCurses Control Center help 9/9 */
+    _("<p>In some environments, all or some
+F keys are not available.</p>");
+
+    Popup::LongText(headline, `RichText(help), 60, 20);
+
+}
+
+DisplaySplash();
+
+list<string> Values = [
+    "Name",
+    // not required: "GenericName",
+    "X-SuSE-YaST-Argument",
+    "X-SuSE-YaST-Call",
+    "X-SuSE-YaST-Group",
+    "X-SuSE-YaST-SortKey",
+    "Hidden",
+];
+
+Desktop::Read(Values);
+Groups = Desktop::Groups;
+Modules = Desktop::Modules;
+y2debug("Groups=%1", Groups);
+y2debug("Modules=%1", Modules);
+
+if (FileUtils::Exists (restart_file))
+{
+    SCR::Execute (.target.remove, restart_file);
+}
+
+UI::CloseDialog ();
+
+OpenMenu();
+
+list<term> GroupList = Desktop::GroupList();
+/* GroupList = [`item (`id ("Software"), "Software"), ...] */
+UI::ReplaceWidget(`id(`groups_rep), `SelectionBox(`id (`groups), `opt(`notify, `immediate, `keyEvents), "", GroupList));
+y2debug("GroupList=%1", GroupList);
+
+/* precache groups (#38363) */
+list<string> groups = maplist(term gr, GroupList, ``{
+    return (string) gr[0,0]:nil;
+});
+y2debug("groups=%1", groups);
+
+map<string,list<term> > modules = listmap(string gr, groups, ``{
+    return $[ gr : Desktop::ModuleList(gr) ];
+});
+y2debug("modules=%1", modules);
+
+string first = groups[0]:nil;
+y2debug("first=%1", first);
+
+/**
+ */
+define void ReplaceModuleList(string group) {
+    // y2debug too costly: y2debug("group=%1", group);
+    UI::ReplaceWidget(`id (`progs_rep), `SelectionBox( `id (`progs), `opt (`notify, `keyEvents), "", modules[group]:[]));
+}
+
+ReplaceModuleList(first);
+UI::SetFocus(`id(`groups));
+
+while(true) {
+
+    map event = UI::WaitForEvent();
+    any eventid = event["ID"]:nil;
+    // y2debug too constly: y2debug("event=%1", event);
+
+    if ( is(eventid, symbol) )
+    {
+
+	if ( eventid == `groups
+	     && event["EventReason"]:"" == "SelectionChanged" )
+	{
+	    string id = (string) UI::QueryWidget(`id(`groups), `CurrentItem);
+	    // ReplaceModuleList(id);
+	    UI::ReplaceWidget(`id (`progs_rep), `SelectionBox( `id (`progs), `opt (`notify, `keyEvents), "", modules[id]:[]));
+	    continue;
+	}
+	else if (  eventid == `progs
+		  && event["EventReason"]:"" == "Activated" )
+	{
+	    string program = (string) UI::QueryWidget(`id(`progs), `CurrentItem);
+	    if (Launch(program))
+		break;
+	}
+	else if ( eventid == `groups
+		  && event["EventReason"]:"" == "Activated" )
+	{
+	    UI::SetFocus ( `id(`progs) );
+	}
+	else if ( eventid == `help )
+	{
+	    ShowNcursesHelp();
+	}
+	else if( eventid == `quit || eventid == `cancel)
+	{
+	    break;
+	}
+	else
+	{
+	    y2warning ( "Event or widget ID not handled: %1", event );
+	}
+    }
+    else if( is(eventid, string) )
+    {
+	if ( event["FocusWidgetID"]:`none == `groups
+		  && eventid == "CursorRight" )
+	{
+	    UI::SetFocus ( `id(`progs) );
+	}
+	else if ( event["FocusWidgetID"]:`none == `progs
+		  && eventid == "CursorLeft" )
+	{
+	    UI::SetFocus ( `id(`groups) );
+	}
+	else
+	{
+	    y2warning ( "Event or widget ID not handled: %1", event );
+	}
+    }
+    else
+    {
+	y2warning ( "Event or widget ID not handled: %1", event );
+    }
+}
+
+UI::CloseDialog ();
+
+/* EOF */
+}
