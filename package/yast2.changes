@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jul  6 13:59:54 CEST 2006 - schubi@suse.de
+
+- While installation we need an installed yast2-security package
+  >=2.13.4-0.2. Bug 190574  
+- 2.13.64.2
+
+-------------------------------------------------------------------
 Sat Jun 24 22:23:08 CEST 2006 - locilka@suse.cz
 
 - Adding special Xen interface "xenbr0" into the

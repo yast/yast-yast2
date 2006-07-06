@@ -2,6 +2,13 @@
 
 @HEADER@
 BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-pkg-bindings yast2-testsuite
+
+#Need a newer yast2-security package on SL10.1
+#Bug: 190574
+%if %sles_version == 0 && %suse_version >= 1010
+PreReq:         yast2-security >= 2.13.4-0.2
+%endif
+
 # Need the new file popups
 Requires:	yast2-core >= 2.7.1
 # Pkg::Connect
