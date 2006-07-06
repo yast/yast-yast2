@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jul  6 11:56:48 CEST 2006 - schubi@suse.de
+
+- While installation we need an installed yast2-security package
+  >=2.13.4-0.2. Bug 190574 
+- 2.13.55
+
+-------------------------------------------------------------------
 Tue Apr 25 20:38:04 CEST 2006 - jsrain@suse.de
 
 - properly parse FTP URL (#166248, many others)
