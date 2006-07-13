@@ -86,10 +86,17 @@
     global boolean vnc () {
 	return InstallInf ("VNC") == "1";
     }
+    /**
+     * remote X mode ?
+     */
+    global boolean display_ip () {
+	return Linuxrc::InstallInf ("Display_IP") != nil;
+    }
 
     /**
      * ssh mode ?
      * if booted with 'vnc=1 usessh=1', keep vnc mode, but start sshd
+     * if booted with 'display_ip=1.2.3.4 usessh=1', keep remote X mode, but start sshd
      * this has to be checked by the caller, not here
      */
     global boolean usessh () {
