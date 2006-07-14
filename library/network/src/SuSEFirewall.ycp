@@ -27,7 +27,8 @@
 
     # <!-- SuSEFirewall VARIABLES //-->
 
-    /* configuration hasn't been read for the default
+    /**
+     * configuration hasn't been read for the default
      * this should reduce the readings to only ONE
      */
     boolean configuration_has_been_read = false;
@@ -37,6 +38,9 @@
 
     /* Zone which works with the special_all_interface_string string */
     global string special_all_interface_zone   = "EXT";
+
+    /* Maximal number of port number, they are in the interval 1-65535 included */
+    global integer max_port_number = 65535;
 
     /* firewall settings map */
     map<string, any> SETTINGS = $[];
@@ -154,6 +158,34 @@
     global define boolean IsServiceSupportedInZone (string service, string zone);
     global define list <string> GetSpecialInterfacesInZone (string zone);
     global define void AddSpecialInterfaceIntoZone (string interface, string zone);
+    
+
+    /**
+     * Variable for ReportOnlyOnce() function
+     */
+    list <string> report_only_once = [];
+
+    /**
+     * Report the error, warning, message only once.
+     * Stores the error, warning, message in memory.
+     * This is just a helper function that could avoid from filling y2log up with
+     * a lot of the very same messages - 'foreach()' is a very powerful builtin.
+     *
+     * @param string error, warning or message
+     * @return boolean whether the message should be reported or not
+     *
+     * @example
+     *	string error = sformat("Port number %1 is invalid.", port_nr);
+     *	if (ReportOnlyOnce(error)) y2error(error);
+     */
+    boolean ReportOnlyOnce (string what_to_report) {
+	if (contains(report_only_once, what_to_report)) {
+	    return false;
+	} else {
+	    report_only_once = add (report_only_once, what_to_report);
+	    return true;
+	}
+    }
 
     # <!-- SuSEFirewall GLOBAL FUNCTIONS USED BY LOCAL ONES //-->
 
@@ -167,24 +199,6 @@
      */
     global boolean IsAnyNetworkInterfaceSupported () {
 	return contains(GetSpecialInterfacesInZone(special_all_interface_zone), special_all_interface_string);
-    }
-
-    /**
-     * Function returns whether the support for NetworkManager
-     * (support for any interfaces not-mentioned in any configuration)
-     * is included in the configuration.
-     */
-    boolean IsNetworkManagerSupported () {
-	// EXT has to contain string 'any'
-	return IsAnyNetworkInterfaceSupported();
-    }
-    
-    /**
-     * Function adds the support for NetworkManager
-     * (support for any interfaces not-mentioned in any configuration).
-     */
-    void AddNetworkManagerSupport () {
-	AddSpecialInterfaceIntoZone(special_all_interface_string, special_all_interface_zone);
     }
 
     /**
@@ -477,12 +491,31 @@
 	    foreach (string port_range, port_ranges, {
 		integer min_pr = tointeger(regexpsub(port_range,"^([0123456789]+):.*$", "\\1"));
 		integer max_pr = tointeger(regexpsub(port_range,"^.*:([0123456789]+)$", "\\1"));
+
 		// is portrange really a port range?
 		if (min_pr != nil && max_pr != nil) {
+		    // Checking the minimal port number in the port-range
+		    // Skip it if it's wrong
+		    if (min_pr < 1 || min_pr > max_port_number) {
+			string warning = sformat ("Wrong port-range definition %1", port_range);
+			if (ReportOnlyOnce(warning)) y2warning(warning);
+
+			return; // next port range
+		    }
+		    // Checking the maximal port number in the port-range
+		    // Skip it if it's wrong
+		    if (max_pr < 1 || max_pr > max_port_number) {
+			string warning = sformat ("Wrong port-range definition %1", port_range);
+			if (ReportOnlyOnce(warning)) y2warning(warning);
+
+			return; // next port range
+		    }
+		
 		    // checking the rightness of the port range + is the port inside?
 		    if (min_pr <= max_pr && min_pr <= port_number && port_number <= max_pr) {
 			ret = true;
-			break;
+
+			break;  // break the loop, match found
 		    }
 		}
 	    });
@@ -736,7 +769,13 @@
      * @param list <string> of services and port ranges
      * @return list <string> of flattened services and port ranges
      */
-    list <string> FlattenServices (list <string> old_list) {
+    list <string> FlattenServices (list <string> old_list, string protocol) {
+	if (! contains(["TCP", "UDP"], protocol)) {
+	    string message = sformat("Protocol %1 doesn't support port ranges", protocol);
+	    if (ReportOnlyOnce(message)) y2milestone(message);
+	    return old_list;
+	}
+    
 	list <string> new_list = [];
 	list <string> list_of_ports = [];
 	list <string> list_of_ranges = [];
@@ -755,6 +794,8 @@
 		if (port_number == nil) {
 		    y2warning("Unknown port %1 but leaving it in the configuration.", one_item);
 		    new_list = add (new_list, one_item);
+		    // skip the 'nil' port number
+		    return;
 		}
 		ports_to_port_numbers[one_item] = port_number;
 		port_numbers_to_port_names[port_number] = add (port_numbers_to_port_names[port_number]:[], one_item);
@@ -803,19 +844,56 @@
 	    
 	    boolean any_change_during_this_loop = false;
 
-	    list <string> try_all_this_ranges = list_of_ranges;
-	    foreach (string port_range, try_all_this_ranges, {
-		integer min_pr = tointeger(regexpsub(port_range,"^([0123456789]+):.*$", "\\1"));
-		integer max_pr = tointeger(regexpsub(port_range,"^.*:([0123456789]+)$", "\\1"));
-
-		if (min_pr == nil || max_pr == nil || min_pr > max_pr) {
+	    list <string> try_all_these_ranges = list_of_ranges;
+	    foreach (string port_range, try_all_these_ranges, {
+		string min_prs = regexpsub(port_range,"^([0123456789]+):.*$", "\\1");
+		string max_prs = regexpsub(port_range,"^.*:([0123456789]+)$", "\\1");
+		
+		if (min_prs == nil || max_prs == nil) {
 		    y2error("Not a port range %1", port_range);
+		    return;
+		}
+	    
+		integer min_pr = tointeger(min_prs);
+		integer max_pr = tointeger(max_prs);
+
+		// this is not a port range!
+		if (min_pr > max_pr) {
+		    y2error("Wrong port range %1, %2 > %3", port_range, min_pr, max_pr);
+		    return;
+
+		// wrong definition of the port range
+		} else if (min_pr < 1 || max_pr > max_port_number) {
+		    string warning = sformat("Wrong port-range definition %1, cannot join", port_range);
+		    if (ReportOnlyOnce(warning)) y2warning(warning);
+		    return;
+
+		// well-arranged port-range
 		} else {
-		    foreach (string try_this_pr, try_all_this_ranges, {
+		    // try to join it with another port ranges
+		    foreach (string try_this_pr, try_all_these_ranges, {
 			// Exact match means the same port range
 			if (try_this_pr == port_range) return;
-			integer this_min_pr = tointeger(regexpsub(try_this_pr,"^([0123456789]+):.*$", "\\1"));
-			integer this_max_pr = tointeger(regexpsub(try_this_pr,"^.*:([0123456789]+)$", "\\1"));
+			
+			string this_min = regexpsub(try_this_pr,"^([0123456789]+):.*$", "\\1");
+			string this_max = regexpsub(try_this_pr,"^.*:([0123456789]+)$", "\\1");
+			
+			if (this_min == nil || this_max == nil) {
+			    y2error("Wrong port range %1, %2 > %3", port_range, this_min, this_max);
+			    // skip it
+			    return;
+			}
+			
+			integer this_min_pr = tointeger(this_min);
+			integer this_max_pr = tointeger(this_max);
+			
+			// // wrong definition of the port range
+			if (this_min_pr < 1 || this_max_pr > max_port_number) {
+			    string warning = sformat("Wrong port-range definition %1, cannot join", port_range);
+			    if (ReportOnlyOnce(warning)) y2warning(warning);
+			    // skip it
+			    return;
+			}
 		    
 			// If new port range should be created
 			integer new_min = nil;
@@ -962,7 +1040,7 @@
 	});
 	
 	list <string> allowed_services_all = (list <string>) union(allowed_services["ports"]:[], allowed_services["port_ranges"]:[]);
-	allowed_services_all = FlattenServices(allowed_services_all);
+	allowed_services_all = FlattenServices(allowed_services_all, protocol);
 	
 	SetAllowedServicesForZoneProto (allowed_services_all, zone, protocol);
     }
@@ -986,7 +1064,7 @@
 	list <string> allowed_services = GetAllowedServicesForZoneProto (zone, protocol);
 
 	allowed_services = (list<string>) union(allowed_services, add_ports);
-	allowed_services = FlattenServices(allowed_services);
+	allowed_services = FlattenServices(allowed_services, protocol);
 
 	SetAllowedServicesForZoneProto (allowed_services, zone, protocol);
     }
@@ -1465,7 +1543,6 @@
 
     /**
      * Function returns if the interface is in zone.
-     * Interfaces handled by a NetworkManager allways return 'false'.
      *
      * @param	string interface
      * @param	string firewall zone
@@ -1480,7 +1557,6 @@
      * Function returns the firewall zone of interface, nil if no zone includes
      * the interface. Error is reported when interface is found in multiple
      * firewall zones, then the first appearance is returned.
-     * Interfaces handled by a NetworkManager allways return 'nil'.
      *
      * @param	string interface
      * @return	string zone
@@ -1557,7 +1633,6 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 
     /**
      * Function returns list of maps of known interfaces.
-     * Interfaces handled by a NetworkManager are not returned at all.
      * @struct [ $[ "id":"modem0", "name":"Askey 815C", "type":"dialup", "zone":"EXT" ], ... ]
      *
      * @return	list <map <string, string> >
@@ -1602,7 +1677,6 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 
     /**
      * Function returns list of non-dial-up interfaces.
-     * Interfaces handled by a NetworkManager are not returned at all.
      *
      * @return list <string> of non-dial-up interface names
      */
@@ -1617,8 +1691,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
     }
 
     /**
-     * Function returns list of all known interfaces
-     * (if they are not handled by a NetworkManager).
+     * Function returns list of all known interfaces.
      *
      * @return	list <string> of interfaces
      */
@@ -1794,12 +1867,6 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 	    }
 	}
 	
-	//// NetworkManager
-	//if (NetworkService::IsManaged()) {
-	//    // Adds a zone which only can handle interfaces not-mentioned in configuration
-	//    zones = (list <string>) toset (add (zones, special_all_interface_zone));
-	//}
-
 	// SuSEFirewall feature FW_PROTECT_FROM_INT
 	// should not be protected and searched zones include also internal (or the zone IS internal, sure)
 	if (! GetProtectFromInternalZone() && contains(zones, int_zone_shortname)) {
@@ -1843,10 +1910,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 	// "all" means for all known zones
 	if (interface == "all") {
 	    zones_affected = GetKnownFirewallZones();
-	    //// NetworkManager
-	    //if (NetworkService::IsManaged()) {
-	    //	zones_affected = (list <string>) toset (add (zones_affected, special_all_interface_zone));
-	    //}
+
 	// zone or interface name
 	} else {
 	    // is probably an interface name
@@ -1905,10 +1969,7 @@ Run YaST2 Firewall and assign it.
 	// "all" means for all known zones
 	if (interface == "all") {
 	    zones_affected = GetKnownFirewallZones();
-	    // NetworkManager
-	    //if (NetworkService::IsManaged()) {
-	    //	zones_affected = (list <string>) toset (add (zones_affected, special_all_interface_zone));
-	    //}
+
 	// zone or interface name
 	} else {
 	    if (! IsKnownZone(interface)) {
