@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun Jul 16 08:54:55 CEST 2006 - olh@suse.de
+
+- introduce a Linuxrc::display_ip and use it instead of Arch::s390
+- 2.13.67
+
+-------------------------------------------------------------------
 Fri Jul 14 17:09:02 CEST 2006 - locilka@suse.cz
 
 - Added better checking for wrong port-ranges. Invalid ones are
