@@ -1,11 +1,6 @@
 Do not modify this package in trunk without communicating to the maintainer first. SLE10SP1 development is being performed in the SuSE-SLE-10-SP1-Branch branch.
 
 -------------------------------------------------------------------
-Thu Jul 13 17:32:05 CEST 2006 - olh@suse.de
-
-- introduce a Linuxrc::display_ip and use it instead of Arch::s390
-
--------------------------------------------------------------------
 Sat Jun 24 22:23:08 CEST 2006 - locilka@suse.cz
 
 - Adding special Xen interface "xenbr0" into the
