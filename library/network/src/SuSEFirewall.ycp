@@ -771,7 +771,7 @@
      */
     list <string> FlattenServices (list <string> old_list, string protocol) {
 	if (! contains(["TCP", "UDP"], protocol)) {
-	    string message = sformat("Protocol %1 doesn't support port ranges", protocol);
+	    string message = sformat("Protocol %1 doesn't support port ranges, skipping...", protocol);
 	    if (ReportOnlyOnce(message)) y2milestone(message);
 	    return old_list;
 	}
