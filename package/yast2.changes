@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Jul 18 10:24:24 CEST 2006 - locilka@suse.cz
+
+- Fixed proposal to reflect the current status better. Network
+  interfaces might be assigned to the zone with 'any' in 'EXT'.
+  If there are no network interfaces but SSH port is open, proposal
+  informs about it (#154401).
+
+-------------------------------------------------------------------
 Sun Jul 16 08:54:55 CEST 2006 - olh@suse.de
 
 - introduce a Linuxrc::display_ip and use it instead of Arch::s390
