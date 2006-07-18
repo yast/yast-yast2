@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 18 16:02:46 CEST 2006 - jsrain@suse.cz
+
+- fixed handling of translated strings in control file (eg.
+  congratulate string)
+
+-------------------------------------------------------------------
 Tue Jul 18 10:24:24 CEST 2006 - locilka@suse.cz
 
 - Fixed proposal to reflect the current status better. Network
