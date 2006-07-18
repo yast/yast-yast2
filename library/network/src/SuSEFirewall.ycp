@@ -33,13 +33,19 @@
      */
     boolean configuration_has_been_read = false;
 
-    /* String which includes all interfaces not-defined in any zone */
+    /**
+     * String which includes all interfaces not-defined in any zone
+     */
     global string special_all_interface_string = "any";
 
-    /* Zone which works with the special_all_interface_string string */
+    /**
+     * Zone which works with the special_all_interface_string string
+     */
     global string special_all_interface_zone   = "EXT";
 
-    /* Maximal number of port number, they are in the interval 1-65535 included */
+    /**
+     * Maximal number of port number, they are in the interval 1-65535 included
+     */
     global integer max_port_number = 65535;
 
     /* firewall settings map */
