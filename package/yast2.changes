@@ -5,6 +5,8 @@ Tue Jul 18 10:24:24 CEST 2006 - locilka@suse.cz
   interfaces might be assigned to the zone with 'any' in 'EXT'.
   If there are no network interfaces but SSH port is open, proposal
   informs about it (#154401).
+- If there are only dial-up interfaces, SSH port can be also
+  enabled and correctly informs about the current state.
 
 -------------------------------------------------------------------
 Sun Jul 16 08:54:55 CEST 2006 - olh@suse.de

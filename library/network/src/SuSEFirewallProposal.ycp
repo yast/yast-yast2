@@ -152,18 +152,45 @@
     }
 
     /**
-     * Function opens up the service on all non-dial-up network interfaces
+     * Function opens up the service on all non-dial-up network interfaces.
+     * If there are no network interfaces known and the 'any' feature is supported,
+     * function opens the service for the zone supporting that feature. If there
+     * are only dial-up interfaces, function opens the service for them.
      *
      * @param string service such as "ssh" or "vnc"
      */
     global define void OpenServiceOnNonDialUpInterfaces (string service) {
 	list <string> non_dial_up_interfaces = SuSEFirewall::GetAllNonDialUpInterfaces();
+	list <string> dial_up_interfaces     = SuSEFirewall::GetAllDialUpInterfaces();
 
+	// Opening the service for non-dial-up interfaces
 	if (size(non_dial_up_interfaces)>0) {
 	    list <string> non_dial_up_interfaces_zones = SuSEFirewall::GetZonesOfInterfaces(non_dial_up_interfaces);
 	    y2milestone("Opening service %1 on interfaces %2 (zones %3)",
 		service, non_dial_up_interfaces, non_dial_up_interfaces_zones);
 	    SuSEFirewall::SetServicesForZones([service], non_dial_up_interfaces_zones, true);
+
+	// Only dial-up network interfaces, there mustn't be any non-dial-up one
+	} else if (size(dial_up_interfaces) > 0) {
+	    list <string> dial_up_interfaces_zones = SuSEFirewall::GetZonesOfInterfaces(dial_up_interfaces);
+	    y2warning("Opening service %1 on interfaces %2 (zones %3)",
+		service, dial_up_interfaces, dial_up_interfaces_zones);
+	    SuSEFirewall::SetServicesForZones([service], dial_up_interfaces_zones, true);
+
+	// No network interfaces are known
+	} else if (size(known_interfaces) == 0) {
+	    if (
+		SuSEFirewall::IsAnyNetworkInterfaceSupported() &&
+		SuSEFirewall::IsServiceSupportedInZone (service, SuSEFirewall::special_all_interface_zone)
+	    ) {
+		y2warning("WARNING: Opening %1 for the External zone without any known interface!", toupper(service));
+		SuSEFirewall::SetServicesForZones([service], [SuSEFirewall::special_all_interface_zone], true);
+		y2milestone("By now, %1 for %2 zone is %3",
+		    service,
+		    SuSEFirewall::special_all_interface_zone,
+		    SuSEFirewall::IsServiceSupportedInZone (service, SuSEFirewall::special_all_interface_zone)
+		);
+	    }
 	}
     }
 
