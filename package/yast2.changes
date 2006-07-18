@@ -3,6 +3,7 @@ Tue Jul 18 16:02:46 CEST 2006 - jsrain@suse.cz
 
 - fixed handling of translated strings in control file (eg.
   congratulate string)
+- 2.13.68
 
 -------------------------------------------------------------------
 Tue Jul 18 10:24:24 CEST 2006 - locilka@suse.cz
