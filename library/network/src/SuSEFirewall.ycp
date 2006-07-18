@@ -1697,6 +1697,21 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
     }
 
     /**
+     * Function returns list of dial-up interfaces.
+     *
+     * @return list <string> of dial-up interface names
+     */
+    global define list <string> GetAllDialUpInterfaces () {
+	list <string> dial_up_interfaces = [];
+	foreach (map <string, string> interface, SuSEFirewall::GetAllKnownInterfaces(), {
+	    if (interface["type"]:nil == "dial_up")
+		dial_up_interfaces = add (dial_up_interfaces, interface["id"]:"");
+	});
+	
+	return dial_up_interfaces;
+    }
+
+    /**
      * Function returns list of all known interfaces.
      *
      * @return	list <string> of interfaces
