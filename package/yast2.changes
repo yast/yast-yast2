@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Mon Jul 24 09:42:55 CEST 2006 - locilka@suse.cz
+
+- Fixed handling of multiline entries in the SuSEfirewall2
+  sysconfig file. Newline characters were removed when joining
+  multiline entries together. By now, .sysconfig.SuSEfirewall2
+  returns values as it reads them, newlines are replaced with
+  spaces in SuSEFirewall::Read() (#194419).
+
+-------------------------------------------------------------------
 Tue Jul 18 16:02:46 CEST 2006 - jsrain@suse.cz
 
 - fixed handling of translated strings in control file (eg.

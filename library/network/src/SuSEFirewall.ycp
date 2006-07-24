@@ -257,7 +257,12 @@
 	foreach (string variable, variables, {
 	    string value = (string) SCR::Read(add(.sysconfig.SuSEfirewall2,variable));
 	    // if variable is undefined, get default value
-	    if (value == nil || value == "") value = GetDefaultValue(variable);
+	    if (value == nil || value == "")
+		value = GetDefaultValue(variable);
+	    // replace all "\n" with " " in variables
+	    // see bugzilla #194419
+	    if (regexpmatch(value, "\n"))
+		value = mergestring(splitstring(value, "\n"), " ");
 	    SETTINGS[variable] = value;
 	});
     }
