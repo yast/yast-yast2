@@ -1,7 +1,8 @@
 -------------------------------------------------------------------
-Tue Jul 25 11:26:40 CEST 2006 - jsrain@suse.cz
+Tue Jul 25 15:50:15 CEST 2006 - jsrain@suse.cz
 
 - fixed error popup if log of mkinitrd could not be run (#156762)
+- prevent from crash in DialogTree.ycp (#191237)
 
 -------------------------------------------------------------------
 Mon Jul 24 09:42:55 CEST 2006 - locilka@suse.cz
