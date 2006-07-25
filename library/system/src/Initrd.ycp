@@ -314,6 +314,8 @@
       * @param log string logfile contents
       */
     global define void errorWithLogPopup (string header, string log) ``{
+	if (log == nil)
+	    log = "";
 	term text = `RichText( `opt(`plainText), log );
 	UI::OpenDialog(`opt ( `decorated ),
 	    `VBox (`HSpacing(75),

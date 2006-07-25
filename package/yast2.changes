@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jul 25 11:26:40 CEST 2006 - jsrain@suse.cz
+
+- fixed error popup if log of mkinitrd could not be run (#156762)
+
+-------------------------------------------------------------------
 Mon Jul 24 09:42:55 CEST 2006 - locilka@suse.cz
 
 - Fixed handling of multiline entries in the SuSEfirewall2
