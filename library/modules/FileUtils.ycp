@@ -234,7 +234,7 @@
      *
      * @unstable
      */
-    boolean CheckAndCreatePath (string pathvalue) {
+    global define boolean CheckAndCreatePath (string pathvalue) {
         string check_path = pathvalue;
 
         // remove the final slash
