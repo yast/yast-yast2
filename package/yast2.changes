@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul 26 11:40:32 CEST 2006 - locilka@suse.cz
+
+- Added new FileUtils::CheckAndCreatePath function that checks the
+  current system for path existency and offers its creation if it
+  doesn't exist.
+
+-------------------------------------------------------------------
 Tue Jul 25 15:50:15 CEST 2006 - jsrain@suse.cz
 
 - fixed error popup if log of mkinitrd could not be run (#156762)
