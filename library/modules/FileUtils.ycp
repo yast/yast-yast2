@@ -3,7 +3,8 @@
  * Package:     YaST2
  * Authors:     Lukas Ocilka <lukas.ocilka@suse.cz>
  * Summary:     Module for getting information about files and directories.
- *		Their types and sizes.
+ *		Their types and sizes and functions for checking, creating and
+ *		removing them.
  * Flags:	Stable
  *
  * $Id$
@@ -14,6 +15,7 @@
     textdomain "base";
 
     import "SCR";
+    import "Popup";
 
     /**
      * Function which determines if the requested file/directory exists.
@@ -219,4 +221,74 @@
 
 	return (integer) info["gid"]:nil;
     }
+
+
+    /**
+     * Checks whether the path (directory) exists and return a boolean
+     * value whether everything is OK or user accepted the behavior as
+     * despite some errors. If the directory doesn't exist, it offers
+     * to create it (and eventually creates it).
+     *
+     * @param string pathvalue (directory)
+     * @return boolean whether everything was OK or whether user decided to ignore eventual errors
+     *
+     * @unstable
+     */
+    boolean CheckAndCreatePath (string pathvalue) {
+        string check_path = pathvalue;
+
+        // remove the final slash
+        if (regexpmatch(check_path, "/$")) check_path = regexpsub(check_path, "^(.*)/$", "\\1");
+        y2milestone("Checking existency of %1 path", check_path);
+
+        // Directory (path) already exists
+        if (FileUtils::Exists(check_path)) {
+            y2milestone("Path %1 exists", check_path);
+            // Directory (path) is a type 'directory'
+            if (FileUtils::IsDirectory(check_path)) {
+                return true;
+            // Directory (path) is not a valid 'directory'
+            } else {
+                y2warning ("Path %1 is not a directory", check_path);
+                // Continue despite the error?
+                return Popup::ContinueCancel(sformat(
+                    // TRANSLATORS: popup question (with continue / cancel buttons)
+                    // %1 is the filesystem path
+                    _("Although the path %1 exists, it is not a directory.\nWould you like to continue or cancel the operation?"),
+                    pathvalue
+                ));
+            }
+        // Directory (path) doesn't exist, trying to create it if wanted
+        } else {
+    	    y2milestone("Path %1 does not exist", check_path);
+            if (Popup::YesNo(sformat(
+    		// TRANSLATORS: question popup (with yes / no buttons). A user entered non-existent path
+		// for a share, %1 is entered path
+		_("The path %1 does not exist.\nWould you like to create it now?"),
+        	pathvalue
+	    ))) {
+        	// Directory creation successful
+        	if ((boolean) SCR::Execute(.target.mkdir, check_path)) {
+		    y2milestone("Directory %1 successfully created", check_path);
+            	return true;
+        	// Failed to create the directory
+        	} else {
+            	    y2warning("Failed to create directory %1", check_path);
+            	    // Continue despite the error?
+            	    return Popup::ContinueCancel(sformat(
+                	// TRANSLATORS: popup question (with continue / cancel buttons)
+                	// %1 is the name (path) of the directory
+                	_("Failed to create the directory %1.\nWould you like to continue or cancel the current operation?"),
+                	pathvalue
+        	    ));
+        	}
+	    // User doesn't want to create the directory
+    	    } else {
+        	y2warning("User doesn't want to create the directory %1", check_path);
+        	return true;
+    	    }
+	}
+    }
+
+/* EOF */
 }
