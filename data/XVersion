@@ -1,0 +1,3 @@
+X_bindir = "/usr/X11R6/bin"
+X_libdir = "/usr/X11R6/lib"
+X_mandir = "/usr/X11R6/man"
