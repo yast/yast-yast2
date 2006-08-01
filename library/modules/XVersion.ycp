@@ -1,0 +1,96 @@
+/**
+ * File:	modules/XVersion.ycp
+ * Module:	yast2
+ * Summary:	Differences between multiple X versions
+ * Authors:	Jiri Srain <jsrain@suse.cz>
+ *
+ */
+
+{
+
+module "XVersion";
+
+/**
+ * All paths related to X server
+ */
+map<string,string> _paths = nil;;
+
+/**
+ * Initialize the paths
+ */
+void Initialize () {
+    list<string> keys = (list<string>)SCR::Dir (.x_version);
+    if (size (keys) > 0)
+    {
+	_paths = $[];
+	foreach (string k, keys, {
+	    string id = substring (k, 1);
+	    _paths[id] = (string)SCR::Read (add (.x_version, k));
+	});
+	y2internal ("Paths: %1", _paths);
+    }
+}
+
+/**
+ * Provide a path
+ * @param id string path identification to provide
+ * @return string required path, nil if not defined
+ */
+global string Path (string id) {
+    if (_paths == nil)
+	Initialize ();
+    return _paths[id]:nil;
+}
+
+// wrappers below
+
+/**
+ * Provide path to bin directory of X11
+ * @return string path to /usr/X11R6/bin, resp. /usr/bin
+ */
+global string binPath () {
+    return Path ("bindir");
+}
+
+/**
+ * Provide path to lib directory of X11
+ * @return string path to /usr/X11R6/lib, resp. /usr/lib
+ */
+global string libPath () {
+    return Path ("libdir");
+}
+
+/**
+ * Provide path to lib64 directory of X11
+ * @return string path to /usr/X11R6/lib64, resp. /usr/lib64
+ */
+global string lib64Path () {
+    return Path ("lib64dir");
+}
+
+/**
+ * Provide path to man directory of X11
+ * @return string path to /usr/X11R6/man, resp. /usr/man
+ */
+global string manPath () {
+    return Path ("mandir");
+}
+
+/**
+ * Provide path to include directory of X11
+ * @return string path to /usr/X11R6/include, resp. /usr/include
+ */
+global string includePath () {
+    return Path ("includedir");
+}
+
+/**
+ * Provide path to share directory of X11
+ * @return string path to /usr/X11R6/share, resp. /usr/share
+ */
+global string sharePath () {
+    return Path ("sharedir");
+}
+
+/* EOF */
+}

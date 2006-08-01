@@ -1,0 +1,17 @@
+Index: data/XVersion
+===================================================================
+--- data/XVersion	(revision 32055)
++++ data/XVersion	(working copy)
+@@ -1,6 +1,6 @@
+-Xbindir = "/usr/X11R6/bin"
+-Xlibdir = "/usr/X11R6/lib"
+-Xlib64dir = "/usr/X11R6/lib64"
+-Xmandir = "/usr/X11R6/man"
+-Xincludedir = "/usr/X11R6/include"
+-Xsharedir = "/usr/X11R6/share"
++Xbindir = "/usr/bin"
++Xlibdir = "/usr/lib"
++Xlib64dir = "/usr/lib64"
++Xmandir = "/usr/man"
++Xincludedir = "/usr/include"
++Xsharedir = "/usr/share"

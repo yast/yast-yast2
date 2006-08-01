@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Aug  1 16:10:01 CEST 2006 - jsrain@suse.cz
+
+- Added module and data file specifying X11 paths
+
+-------------------------------------------------------------------
 Wed Jul 26 11:40:32 CEST 2006 - locilka@suse.cz
 
 - Added new FileUtils::CheckAndCreatePath function that checks the
