@@ -1,0 +1,16 @@
+#
+
+.x_version
+
+`ag_ini(
+    `IniAgent("/etc/YaST2/XVersion", $[
+	"options" : [ "flat", "global_values" ],
+	"params" : [
+	    $[
+		"match" : [ "^[ \t]*([_a-zA-Z0-9]+)[ \t]*=[ \t]*\"(.*)\"[ \t]*$" , "%s = \"%s\""],
+	    ]
+	]
+    ]
+  )
+)
+
