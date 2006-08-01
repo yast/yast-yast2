@@ -2,7 +2,7 @@
 # Makefile.am for yast2/data
 #
 
-xversiondir = /etc/YaST2
+xversiondir = $(sysconfdir)/YaST2
 
 xversion_DATA =			\
 	XVersion
