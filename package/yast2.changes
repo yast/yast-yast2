@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Aug  2 10:08:50 CEST 2006 - locilka@suse.cz
+
+- Added new module SuSEFirewallExpertRules managing expert ACCEPT
+  rules of SuSEfirewall2.
+- Port-ranges-related functionality in SuSEFirewall module moved
+  to new module PortRanges.
+
+-------------------------------------------------------------------
 Tue Aug  1 16:10:01 CEST 2006 - jsrain@suse.cz
 
 - Added module and data file specifying X11 paths

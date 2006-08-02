@@ -18,12 +18,12 @@
     import "Mode";
     import "Service";
     import "NetworkDevices";
-    //import "NetworkService";
     import "SuSEFirewallServices";
     import "PortAliases";
     import "Report";
     import "Message";
     import "Progress";
+    import "PortRanges";
 
     # <!-- SuSEFirewall VARIABLES //-->
 
@@ -39,14 +39,14 @@
     global string special_all_interface_string = "any";
 
     /**
+     * Maximal number of port number, they are in the interval 1-65535 included
+     */
+    global integer max_port_number = PortRanges::max_port_number;
+
+    /**
      * Zone which works with the special_all_interface_string string
      */
     global string special_all_interface_zone   = "EXT";
-
-    /**
-     * Maximal number of port number, they are in the interval 1-65535 included
-     */
-    global integer max_port_number = 65535;
 
     /* firewall settings map */
     map<string, any> SETTINGS = $[];
@@ -131,6 +131,10 @@
 
 	// IPsec support
 	"FW_IPSEC_TRUST",
+	
+	// Custom rulezz
+	//     net,protocol[,dport][,sport]
+	"FW_SERVICES_ACCEPT_EXT", "FW_SERVICES_ACCEPT_INT", "FW_SERVICES_ACCEPT_DMZ",
     ];
 
     # <!-- SuSEFirewall VARIABLES //-->
@@ -259,10 +263,16 @@
 	    // if variable is undefined, get default value
 	    if (value == nil || value == "")
 		value = GetDefaultValue(variable);
-	    // replace all "\n" with " " in variables
+
 	    // see bugzilla #194419
+
+	    // replace all "\n" with " " in variables
 	    if (regexpmatch(value, "\n"))
 		value = mergestring(splitstring(value, "\n"), " ");
+	    // replace all "\t" with " " in variables
+	    if (regexpmatch(value, "\t"))
+		value = mergestring(splitstring(value, "\t"), " ");
+
 	    SETTINGS[variable] = value;
 	});
     }
@@ -463,117 +473,6 @@
     }
 
     /**
-     * Function returns where the string parameter is a port range.
-     * Port ranges are defined by the syntax "min_port_number:max_port_number".
-     * Port range means that these maximum and minimum ports define the range
-     * of currency in Firewall. Ports defining the range are included in it.
-     *
-     * @param string to be checked
-     * @return boolean whether the checked string is a port range or not
-     */
-    define boolean IsPortRange (string check_this) {
-	if (regexpmatch(check_this,"^[0123456789]+:[0123456789]+$")) {
-	    return true;
-	}
-	return false;
-    }
-
-    /**
-     * Function returns where the port name or port number is included in the
-     * list of port ranges. Port ranges must be defined as a string with format
-     * "min_port_number:max_port_number".
-     * 
-     * @param string port_number_or_port_name
-     * @param list <string> port_ranges
-     *
-     * @example
-     * PortIsInPortrange ("130",  ["100:150","10:30"]) -> true
-     * PortIsInPortrange ("30",   ["100:150","10:20"]) -> false
-     * PortIsInPortrange ("pop3", ["100:150","10:30"]) -> true
-     * PortIsInPortrange ("http", ["100:150","10:20"]) -> false
-     */
-    define boolean PortIsInPortranges (string port, list <string> port_ranges) {
-	if (size(port_ranges) == 0) return false;
-
-	boolean ret = false;
-
-	integer port_number = PortAliases::GetPortNumber(port);
-	if (port_number != nil) {
-	    foreach (string port_range, port_ranges, {
-		integer min_pr = tointeger(regexpsub(port_range,"^([0123456789]+):.*$", "\\1"));
-		integer max_pr = tointeger(regexpsub(port_range,"^.*:([0123456789]+)$", "\\1"));
-
-		// is portrange really a port range?
-		if (min_pr != nil && max_pr != nil) {
-		    // Checking the minimal port number in the port-range
-		    // Skip it if it's wrong
-		    if (min_pr < 1 || min_pr > max_port_number) {
-			string warning = sformat ("Wrong port-range definition %1", port_range);
-			if (ReportOnlyOnce(warning)) y2warning(warning);
-
-			return; // next port range
-		    }
-		    // Checking the maximal port number in the port-range
-		    // Skip it if it's wrong
-		    if (max_pr < 1 || max_pr > max_port_number) {
-			string warning = sformat ("Wrong port-range definition %1", port_range);
-			if (ReportOnlyOnce(warning)) y2warning(warning);
-
-			return; // next port range
-		    }
-		
-		    // checking the rightness of the port range + is the port inside?
-		    if (min_pr <= max_pr && min_pr <= port_number && port_number <= max_pr) {
-			ret = true;
-
-			break;  // break the loop, match found
-		    }
-		}
-	    });
-	}
-
-	return ret;
-    }
-
-    /**
-     * Function divides list of ports to the map of ports and port ranges.
-     * If with_aliases is 'true' it also returns ports wit their port aliases.
-     * Port ranges are not affected with it.
-     *
-     * @struct Returns $[
-     *    "ports" : [ list of ports ],
-     *    "port_ranges" : [ list of port ranges ],
-     * ]
-     *
-     * @param list <string> unsorted_ports
-     * @param boolean with port aliases
-     * @return <map <string, list <string> > > of divided ports
-     */
-    map <string, list <string> > DividePortsAndPortRanges (list <string> unsorted_ports, boolean with_aliases) {
-	map <string, list <string> > ret = $[];
-
-	foreach (string port, unsorted_ports, {
-	    // port range
-	    if (IsPortRange(port)) {
-		ret["port_ranges"] = add (ret["port_ranges"]:[], port);
-	    // is a normal port
-	    } else {
-		// find also aliases
-		if (with_aliases) {
-		    ret["ports"] = (list<string>) union (
-			ret["ports"]:[], PortAliases::GetListOfServiceAliases(port)
-		    );
-		// only add the port itself
-		} else {
-		    ret["ports"] = add (ret["ports"]:[], port);
-		}
-	    }
-	});
-
-	return ret;
-    }
-
-    /**
      * Function returns if broadcast is allowed for needed ports in zone.
      *
      * @param	list <string> ports
@@ -590,7 +489,9 @@
 	map <string, list <string> > allowed_ports_map = GetBroadcastAllowedPorts();
 
 	// Divide allowed port ranges and aliases (also with their port aliases)
-	map <string, list <string> > allowed_ports_divided = DividePortsAndPortRanges(allowed_ports_map[zone]:[], true);
+	map <string, list <string> > allowed_ports_divided = PortRanges::DividePortsAndPortRanges (
+	    allowed_ports_map[zone]:[], true
+	);
 
 	// If there are no allowed ports at all
 	if (allowed_ports_divided["ports"]:[] == [] && allowed_ports_divided["port_ranges"]:[] == []) {
@@ -605,7 +506,7 @@
 	    // allowed ports don't contain the needed one and also portranges don't
 	    if (
 		!contains (allowed_ports_divided["ports"]:[], needed_port) &&
-		!PortIsInPortranges (needed_port, allowed_ports_divided["port_ranges"]:[])
+		!PortRanges::PortIsInPortranges (needed_port, allowed_ports_divided["port_ranges"]:[])
 	    ) {
 		is_allowed = false;
 		break;
@@ -696,285 +597,6 @@
     }
 
     /**
-     * Function creates a port range from min and max params. Max must be bigger than min.
-     * If something is wrong, it returns an empty string.
-     */
-    string CreateNewPortRange (integer min_pr, integer max_pr) {
-	if (min_pr == nil || min_pr == 0) {
-	    y2error("Wrong definition of the starting port '%1', it must be between 1 and 65535", min_pr);
-	    return "";
-	} else if (max_pr == nil || max_pr == 0 || max_pr > 65535) {
-	    y2error("Wrong definition of the ending port '%1', it must be between 1 and 65535", max_pr);
-	    return "";
-	}
-
-	// max and min are the same, this is not a port range
-	if (min_pr == max_pr) {
-	    return tostring(min_pr);
-	// right port range
-	} else if (min_pr < max_pr) {
-	    return tostring(min_pr) + ":" + tostring(max_pr);
-	// min is bigger than max
-	} else {
-	    y2error("Starting port '%1' cannot be bigger than ending port '%2'", min_pr, max_pr);
-	    return "";
-	}
-    }
-
-    /**
-     * Function removes port number from all port ranges. Port must be in its numeric
-     * form.
-     *
-     * @see PortAliases::GetPortNumber()
-     * @param integer port_number to be removed
-     * @param list <string> of all current port_ranges
-     * @return list <string> of filtered port_ranges
-     */
-    list <string> RemovePortFromPortRanges (integer port_number, list <string> port_ranges) {
-	// Checking necessarity of filtering and params
-	if (port_ranges == nil || port_ranges == []) return port_ranges;
-	if (port_number == nil || port_number == 0) return port_ranges;
-
-	y2milestone("Removing port %1 from port ranges %2", port_number, port_ranges);
-	
-	list <string> ret = [];
-	// Checking every port range alone
-	foreach (string port_range, port_ranges, {
-	    // Port range might be now only "port"
-	    if (!IsPortRange(port_range)) {
-		// If the port doesn't match the ~port_range...
-		if (tostring(port_number) != port_range)
-		    ret = add (ret, port_range);
-		// If matches, it isn't added (it is filtered)
-	    // Modify the port range when the port is included
-	    } else if (PortIsInPortranges(tostring(port_number), [port_range])) {
-		integer min_pr = tointeger(regexpsub(port_range,"^([0123456789]+):.*$", "\\1"));
-		integer max_pr = tointeger(regexpsub(port_range,"^.*:([0123456789]+)$", "\\1"));
-		
-		// Port matches the min. value of port range
-		if (port_number == min_pr) {
-		    ret = add (ret, CreateNewPortRange(port_number + 1, max_pr));
-		// Port matches the max. value of port range
-		} else if (port_number == max_pr) {
-		    ret = add (ret, CreateNewPortRange(min_pr, port_number - 1));
-		// Port is inside the port range, split it up
-		} else {
-		    ret = add (ret, CreateNewPortRange(port_number + 1, max_pr));
-		    ret = add (ret, CreateNewPortRange(min_pr, port_number - 1));
-		}
-	    // Port isn't in the port range, adding the current port range
-	    } else {
-		ret = add (ret, port_range);
-	    }
-	});
-
-	y2milestone("Result: %1", ret);
-	
-	return ret;
-    }
-
-    /**
-     * Function tries to flatten services into the minimal list.
-     * If ports are already mentioned inside port ranges, they are dropped.
-     *
-     * @param list <string> of services and port ranges
-     * @return list <string> of flattened services and port ranges
-     */
-    list <string> FlattenServices (list <string> old_list, string protocol) {
-	if (! contains(["TCP", "UDP"], protocol)) {
-	    string message = sformat("Protocol %1 doesn't support port ranges, skipping...", protocol);
-	    if (ReportOnlyOnce(message)) y2milestone(message);
-	    return old_list;
-	}
-    
-	list <string> new_list = [];
-	list <string> list_of_ports = [];
-	list <string> list_of_ranges = [];
-	// Using port number, we can remove ports mentioned in port ranges
-	map <string, integer> ports_to_port_numbers = $[];
-	// Using this we can remove ports mentioned more than once
-	map <integer, list <string> > port_numbers_to_port_names = $[];
-	
-	foreach (string one_item, old_list, {
-	    // Port range
-	    if (IsPortRange(one_item)) list_of_ranges = add (list_of_ranges, one_item);
-	    // Port number or name
-	    else {
-		integer port_number = PortAliases::GetPortNumber(one_item);
-		// Cannot find port number for this port, it is en error of the configuration
-		if (port_number == nil) {
-		    y2warning("Unknown port %1 but leaving it in the configuration.", one_item);
-		    new_list = add (new_list, one_item);
-		    // skip the 'nil' port number
-		    return;
-		}
-		ports_to_port_numbers[one_item] = port_number;
-		port_numbers_to_port_names[port_number] = add (port_numbers_to_port_names[port_number]:[], one_item);
-	    }
-	});
-	
-	foreach (integer port_number, list <string> port_names, port_numbers_to_port_names, {
-	    // Port is not in any defined port range
-	    if (!PortIsInPortranges(tostring(port_number), list_of_ranges)) {
-		// Port - 1 IS in some port range
-		if (PortIsInPortranges(tostring(port_number - 1), list_of_ranges)) {
-		    // Creating fake port range, to be joined with another one
-		    list_of_ranges = add (list_of_ranges, CreateNewPortRange(port_number - 1, port_number));
-		// Port + 1 IS in some port range
-		} else if (PortIsInPortranges(tostring(port_number + 1), list_of_ranges)) {
-		    // Creating fake port range, to be joined with another one
-		    list_of_ranges = add (list_of_ranges, CreateNewPortRange(port_number, port_number + 1));
-		// Port is not in any port range and also it cannot be joined with any one
-		} else {
-		    // Port names of this port
-		    list <string> used_port_names = port_numbers_to_port_names[port_number]:[];
-		    if (size(used_port_names)>0) {
-			new_list = add (new_list, used_port_names[0]:"");
-		    } else {
-			y2milestone("No port name for port number %1. Adding %1...", port_number);
-			// There are no port names (hmm?), adding port number
-			new_list = add (new_list, tostring(port_number));
-		    }
-		}
-	    // Port is in a port range
-	    } else {
-		y2milestone("Removing port %1 mentioned in port ranges %2", port_number, list_of_ranges);
-	    }
-	});
-
-	list_of_ranges = toset(list_of_ranges);
-	// maximal count of steps
-	integer max_loops = 5000;
-
-	// Joining port ranges together
-	// this is a bit dangerous!
-	y2milestone("Joining list of ranges %1", list_of_ranges);
-	while (true && max_loops>0) {
-	    // if something goes wrong
-	    max_loops = max_loops - 1;
-	    
-	    boolean any_change_during_this_loop = false;
-
-	    list <string> try_all_these_ranges = list_of_ranges;
-	    foreach (string port_range, try_all_these_ranges, {
-		string min_prs = regexpsub(port_range,"^([0123456789]+):.*$", "\\1");
-		string max_prs = regexpsub(port_range,"^.*:([0123456789]+)$", "\\1");
-		
-		if (min_prs == nil || max_prs == nil) {
-		    y2error("Not a port range %1", port_range);
-		    return;
-		}
-	    
-		integer min_pr = tointeger(min_prs);
-		integer max_pr = tointeger(max_prs);
-
-		// this is not a port range!
-		if (min_pr > max_pr) {
-		    y2error("Wrong port range %1, %2 > %3", port_range, min_pr, max_pr);
-		    return;
-
-		// wrong definition of the port range
-		} else if (min_pr < 1 || max_pr > max_port_number) {
-		    string warning = sformat("Wrong port-range definition %1, cannot join", port_range);
-		    if (ReportOnlyOnce(warning)) y2warning(warning);
-		    return;
-
-		// well-arranged port-range
-		} else {
-		    // try to join it with another port ranges
-		    foreach (string try_this_pr, try_all_these_ranges, {
-			// Exact match means the same port range
-			if (try_this_pr == port_range) return;
-			
-			string this_min = regexpsub(try_this_pr,"^([0123456789]+):.*$", "\\1");
-			string this_max = regexpsub(try_this_pr,"^.*:([0123456789]+)$", "\\1");
-			
-			if (this_min == nil || this_max == nil) {
-			    y2error("Wrong port range %1, %2 > %3", port_range, this_min, this_max);
-			    // skip it
-			    return;
-			}
-			
-			integer this_min_pr = tointeger(this_min);
-			integer this_max_pr = tointeger(this_max);
-			
-			// // wrong definition of the port range
-			if (this_min_pr < 1 || this_max_pr > max_port_number) {
-			    string warning = sformat("Wrong port-range definition %1, cannot join", port_range);
-			    if (ReportOnlyOnce(warning)) y2warning(warning);
-			    // skip it
-			    return;
-			}
-		    
-			// If new port range should be created
-			integer new_min = nil;
-			integer new_max = nil;
-
-			// the second one is inside the first one
-			if (min_pr <= this_min_pr && max_pr >= this_max_pr) {
-			    // take min_pr & max_pr
-			    any_change_during_this_loop = true;
-			    new_min = min_pr;
-			    new_max = max_pr;
-			// the fist one is inside the second one
-			} else if (min_pr >= this_min_pr && max_pr <= this_max_pr) {
-			    // take this_min_pr & this_max_pr
-			    any_change_during_this_loop = true;
-			    new_min = this_min_pr;
-			    new_max = this_max_pr;
-			// the fist one partly covers the second one (by its right side)
-			} else if (min_pr <= this_min_pr && max_pr >= this_min_pr) {
-			    // take min_pr & this_max_pr
-			    any_change_during_this_loop = true;
-			    new_min = min_pr;
-			    new_max = this_max_pr;
-			// the second one partly covers the first one (by its left side)
-			} else if (min_pr >= this_min_pr && max_pr <= this_max_pr) {
-			    // take this_min_pr & max_pr
-			    any_change_during_this_loop = true;
-			    new_min = this_min_pr;
-			    new_max = max_pr;
-			// the first one has the second one just next on the right
-			} else if ((max_pr + 1) == this_min_pr) {
-			    // take min_pr & this_max_pr
-			    any_change_during_this_loop = true;
-			    new_min = min_pr;
-			    new_max = this_max_pr;
-			// the first one has the second one just next on the left side
-			} else if ((min_pr - 1) == this_max_pr) {
-			    // take this_min_pr & max_pr
-			    any_change_during_this_loop = true;
-			    new_min = this_min_pr;
-			    new_max = max_pr;
-			}
-			
-			if (any_change_during_this_loop && new_min != nil && new_max != nil) {
-			    string new_port_range = CreateNewPortRange(new_min, new_max);
-			    y2milestone("Joining %1 and %2 into %3", port_range, try_this_pr, new_port_range);
-			    // Remove old port ranges
-			    list_of_ranges = filter (string filter_pr, list_of_ranges, {
-				return (filter_pr != port_range && filter_pr != try_this_pr);
-			    });
-			    // Create a new one
-			    list_of_ranges = add (list_of_ranges, new_port_range);
-			}
-		    });
-		}
-		
-		// renew list of current port ranges, they have changed
-		if (any_change_during_this_loop) break;
-	    });
-	    
-	    if (!any_change_during_this_loop) break;
-	}
-	y2milestone("Result of joining: %1", list_of_ranges);
-
-	new_list = (list <string>) union (new_list, list_of_ranges);
-
-	return new_list;
-    }
-
-    /**
      * Local function removes ports and their aliases (if check_for_aliases is true), for
      * requested protocol and zone.
      *
@@ -992,7 +614,7 @@
 	SetModified();
 
 	// all allowed ports
-	map <string, list <string> > allowed_services = DividePortsAndPortRanges(
+	map <string, list <string> > allowed_services = PortRanges::DividePortsAndPortRanges (
 	    GetAllowedServicesForZoneProto (zone, protocol), false
 	);
 
@@ -1001,7 +623,7 @@
 	    list <string> remove_ports_with_aliases = [];
 	    foreach (string remove_port, remove_ports, {
 		// skip port ranges, they cannot have any port-alias
-		if (IsPortRange(remove_port)) {
+		if (PortRanges::IsPortRange (remove_port)) {
 		    remove_ports_with_aliases = add (remove_ports_with_aliases, remove_port);
 		    return;
 		}
@@ -1028,12 +650,12 @@
 	    // Removing also from port ranges
 	    if (allowed_services["port_ranges"]:[] != []) {
 		// Removing a real port from port ranges
-		if (!IsPortRange(remove_port)) {
+		if (! PortRanges::IsPortRange (remove_port)) {
 		    integer remove_port_nr = PortAliases::GetPortNumber(remove_port);
 		    // Because of all port aliases
 		    if (!contains(already_removed, remove_port_nr)) {
 			already_removed = add (already_removed, remove_port_nr);
-			allowed_services["port_ranges"] = RemovePortFromPortRanges (
+			allowed_services["port_ranges"] = PortRanges::RemovePortFromPortRanges (
 			    remove_port_nr, allowed_services["port_ranges"]:[]
 			);
 		    }
@@ -1050,8 +672,11 @@
 	    }
 	});
 	
-	list <string> allowed_services_all = (list <string>) union(allowed_services["ports"]:[], allowed_services["port_ranges"]:[]);
-	allowed_services_all = FlattenServices(allowed_services_all, protocol);
+	list <string> allowed_services_all = (list <string>) union (
+	    allowed_services["ports"]:[],
+	    allowed_services["port_ranges"]:[]
+	);
+	allowed_services_all = PortRanges::FlattenServices (allowed_services_all, protocol);
 	
 	SetAllowedServicesForZoneProto (allowed_services_all, zone, protocol);
     }
@@ -1074,8 +699,8 @@
 	// all allowed ports
 	list <string> allowed_services = GetAllowedServicesForZoneProto (zone, protocol);
 
-	allowed_services = (list<string>) union(allowed_services, add_ports);
-	allowed_services = FlattenServices(allowed_services, protocol);
+	allowed_services = (list<string>) union (allowed_services, add_ports);
+	allowed_services = PortRanges::FlattenServices (allowed_services, protocol);
 
 	SetAllowedServicesForZoneProto (allowed_services, zone, protocol);
     }
@@ -2054,7 +1679,7 @@ Run YaST2 Firewall and assign it.
 	map <string, list <string> > allowed_ports = $[];
 	// BTW: only TCP and UDP ports can have aliases and only TCP and UDP ports can have port ranges
 	if (check_for_aliases) {
-	    allowed_ports = DividePortsAndPortRanges (
+	    allowed_ports = PortRanges::DividePortsAndPortRanges (
 		GetAllowedServicesForZoneProto (zone, protocol), true
 	    );
 	} else {
@@ -2063,8 +1688,8 @@ Run YaST2 Firewall and assign it.
 
 	foreach (string needed_port, needed_ports, {
 	    if (
-		!contains(allowed_ports["ports"]:[], needed_port) &&
-		!PortIsInPortranges(needed_port, allowed_ports["port_ranges"]:[])
+		! contains(allowed_ports["ports"]:[], needed_port) &&
+		! PortRanges::PortIsInPortranges (needed_port, allowed_ports["port_ranges"]:[])
 	    ) {
 		are_allowed = false;
 		break;
@@ -2135,7 +1760,7 @@ Run YaST2 Firewall and assign it.
      *
      * @param	list <string> of services
      * @return	map <string, map < string : boolean > >
-     * @struct	Returns map $[service, map $[ interface : supported_status ]]
+     * @struct	Returns $[service : $[ interface : supported_status ]]
      */
     global define map <string, map <string, boolean> > GetServicesInZones (list<string> services) {
 	// list of interfaces for each zone
@@ -2175,7 +1800,7 @@ Run YaST2 Firewall and assign it.
      *
      * @param	list <string> of services
      * @return	map <string, map < string : boolean> >
-     * @struct	Returns map $[service, map $[ zone_name : supported_status]]
+     * @struct	Returns $[service : $[ zone_name : supported_status]]
      */
     global define map <string, map <string, boolean> > GetServices (list<string> services) {
 	// $[ service : $[ firewall_zone : status ]]
@@ -2706,7 +2331,7 @@ Run YaST2 Firewall and assign it.
      * Function returns map of `interfaces in zones`.
      *
      * @return	map <string, list <string> >
-     * @struct	map [zone : [list of interfaces]]
+     * @struct	map $[zone : [list of interfaces]]
      */
     global define map <string, list <string> > GetFirewallInterfacesMap () {
 	map <string, list <string> > firewall_interfaces_now = $[];
@@ -3004,6 +2629,49 @@ Run YaST2 Firewall and assign it.
 	SETTINGS["FW_FORWARD_ALWAYS_INOUT_DEV"] = mergestring(allways_inout_dev, " ");
 	
 	y2milestone("FW_FORWARD_ALWAYS_INOUT_DEV -> %1", SETTINGS["FW_FORWARD_ALWAYS_INOUT_DEV"]:"");
+    }
+
+    // Firewall Expert Rulezz
+
+    /*\
+     * Returns list of rules describing protocols and ports that are allowed
+     * to be accessed from listed hosts. All is returned as a single string.
+     * Zone needs to be defined.
+     *
+     * @param string zone
+     * @return string with rules
+     */
+    global define string GetAcceptExpertRules (string zone) {
+	zone = toupper(zone);
+
+	// Check for zone
+	if (! contains(GetKnownFirewallZones(), zone)) {
+	    y2error("Unknown firewall zone: %1", zone);
+	    return nil;
+	}
+
+	return SETTINGS["FW_SERVICES_ACCEPT_" + zone]:"";
+    }
+
+    /*\
+     * Sets expert allow rules for zone.
+     *
+     * @param string zone
+     * @param string whitespace-separated expert_rules
+     * @return boolean if successful
+     */
+    global define boolean SetAcceptExpertRules (string zone, string expert_rules) {
+	zone = toupper(zone);
+
+	// Check for zone
+	if (! contains(GetKnownFirewallZones(), zone)) {
+	    y2error("Unknown firewall zone: %1", zone);
+	    return false;
+	}
+	
+	SETTINGS["FW_SERVICES_ACCEPT_" + zone] = expert_rules;
+
+	return true;
     }
 
     # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
