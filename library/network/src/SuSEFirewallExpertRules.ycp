@@ -1,0 +1,302 @@
+/**
+ * Copyright 2004, Novell, Inc.  All rights reserved.
+ *
+ * File:	modules/SuSEFirewallExpertRules.ycp
+ * Package:	SuSEFirewall configuration
+ * Summary:	Interface manipulation of /etc/sysconfig/SuSEFirewall (expert rules)
+ * Authors:	Lukas Ocilka <locilka@suse.cz>
+ * Flags:	Unstable
+ *
+ * $id$
+ *
+ * Module for handling SuSEfirewall2 Expert Rules.
+ */
+
+{
+    module "SuSEFirewallExpertRules";
+    textdomain "base";
+
+    import "SuSEFirewall";
+    import "Netmask";
+    import "IP";
+
+    /***
+     * Firewall Expert Rulezz
+     *
+     * ATTENTION: You have to call SuSEFirewall::Read() to read the configuration
+     * into the memory and call SuSEFirewall::Write() to write the configuration
+     * and restart the firewall service.
+     */
+
+    /**
+     * List of all possible protocols for expert rulezz.
+     * _rpc_ expects RPC service name as the destination port then.
+     */
+    list <string> allowed_expert_protocols = ["udp", "tcp", "icmp", "all", "_rpc_"];
+
+    /**
+     * Returns list of all protocols accepted by the expert rules.
+     */
+    global list <string> GetAllExpertRulesProtocols () {
+	return allowed_expert_protocols;
+    }
+
+    // used to identify the IPv4 in regexp
+    string type_ip4 = "[0123456789]\.[0123456789]\.[0123456789]\.[0123456789]";
+
+    /**
+     * Returns whether the netmask bits are valid.
+     */
+    boolean ValidNetmaskBits (integer netmask_bits) {
+	return (netmask_bits > 1 && netmask_bits <= 32);
+    }
+
+    /**
+     * Function checks the network definition used for firewall expert rules.
+     *
+     * @example
+     * IsValidNetwork("192.168.0.1")               -> true
+     * IsValidNetwork("192.168.0.355")             -> false
+     * IsValidNetwork("192.168.0.0/24")            -> true
+     * IsValidNetwork("192.168.0.1/32")            -> true
+     * IsValidNetwork("192.168.0.1/0")             -> false
+     * IsValidNetwork("192.168.0.0/255.255.0.0")   -> true
+     * IsValidNetwork("192.168.0.0/255.255.333.0") -> false
+     * IsValidNetwork("192.168.0.0/255.255.224.0") -> true
+     * IsValidNetwork("0/0")                       -> true
+     *
+     * @see `man iptables`
+     * @param string network
+     * @return boolean if it is a valid network definition
+     */
+    global boolean IsValidNetwork (string network) {
+	// A.B.C.D (IP)
+	if (regexpmatch(network, "^" + type_ip4 + "$")) {
+	    return IP::Check4(network);
+	}
+
+	// A.B.C.D/1 - A.B.C.D/32 (IP with a numeric netmask)
+	else if (regexpmatch(network, "^" + type_ip4 + "/[01234567890]$")) {
+	    string part_ip   = regexpsub (network, "^(" + type_ip4 + ")/[01234567890]$", "\\1");
+	    string part_bits = regexpsub (network, "^" + type_ip4 + "(/[01234567890])$", "\\1");
+	    
+	    return (IP::Check4(part_ip) && ValidNetmaskBits(tointeger(part_bits)));
+	}
+
+	// 0/0 (all)
+	else if (network == "0/0") {
+	    return true;
+	}
+
+	// A.B.C.D/E.F.G.H (IP with Netmask)
+	else if (regexpmatch(network, "^" + type_ip4 + "/" + type_ip4 + "$")) {
+	    string part_ip      = regexpsub (network, "^(" + type_ip4 + ")/" + type_ip4 + "$", "\\1");
+	    string part_netmask = regexpsub (network, "^" + type_ip4 + "/(" + type_ip4 + ")$", "\\1");
+	    
+	    return (IP::Check4(part_ip) && Netmask::Check4(part_netmask));
+	}
+	
+	// The rest
+	else {
+	    y2warning("Unknown network type: %1", network);
+	    return false;
+	}
+    }
+    
+    /**
+     * Returns string of valid network definition.
+     *
+     * @return string describing the valid network.
+     */
+    global string ValidNetwork () {
+	// TRANSLATORS: description of the valid network definition
+	return _("Valid network definition can contain either the IP
+or IP/Netmask or IP/Netmask_Bits or 0/0 for all networks.
+
+Examples:
+IP: 192.168.0.1
+IP/Netmask: 192.168.0.0/255.255.255.0
+IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32");
+    }
+
+    /**
+     * Adjusts parameters to the acceptable representation
+     */
+    map <string, string> AdjustParameters (map <string, string> params) {
+	if (params["network"]:"" == "") {
+	    y2warning("No network defined, using '0/0' instead!");
+	    params["network"]  = "0/0";
+	}
+	if (params["protocol"]:"" == "") {
+	    y2warning("No protocol defined, using 'all' instead!");
+	    params["protocol"] = "all";
+	}
+	params["protocol"] = tolower(params["protocol"]:"");
+	
+	return params;
+    }
+
+    /**
+     * Returns list of rules (maps) describing protocols and ports that are allowed
+     * to be accessed from listed hosts. "network" and "protocol" are needed arguments,
+     * "dport" and "sport" are optional. Undefined values are returned as empty strings.
+     *
+     * "network" is either an IP, IP/Netmask or IP/Netmask_Bits where the connection
+     * originates; "protocol" defines the transport protocol; "dport" is the destination
+     * port on the current host; "sport" is the source port on the client.
+     *
+     * Port can be port number, port name, port range. Protocol can be 'tcp', 'udp',
+     * 'icmp', 'all' or '_rpc_' (dport is then a RPC service name, e.g., ypbind).
+     *
+     * @see IsValidNetwork()
+     *
+     * @struct This might return, e.g., [
+     *     // All requests from 80.44.11.22 to TCP port 22
+     *	   $[ "network" : "80.44.11.22",   "protocol" : "tcp", "dport" : "22",  "sport" : ""   ],
+     *
+     *     // All requests from network 80.44.11.0/24 to UDP port 53 originating on port 53
+     *	   $[ "network" : "80.44.11.0/24", "protocol" : "udp", "dport" : "53",  "sport" : "53" ],
+     *
+     *     // All requests from network 0/0 (everywhere) to TCP port 443
+     *	   $[ "network" : "0/0",           "protocol" : "tcp", "dport" : "443", "sport" : ""   ],
+     * ]
+     *
+     * @param string zone
+     * @return list <map <string, string> > of rules
+     *
+     * @example
+     * GetListOfAcceptRules("EXT") -> $[]
+     */
+    global list <map <string, string> > GetListOfAcceptRules (string zone) {
+	zone = toupper(zone);
+
+	// Check the zone
+	if (! contains(SuSEFirewall::GetKnownFirewallZones(), zone)) {
+	    y2error("Unknown firewall zone: %1", zone);
+	    return nil;
+	}
+
+	//
+	// FW_SERVICES_ACCEPT_EXT, FW_SERVICES_ACCEPT_INT, FW_SERVICES_ACCEPT_DMZ
+	// Format: space separated list of net,protocol[,dport][,sport]
+	//
+	list <map <string, string> > rules = maplist (
+	    string one_rule,
+	    splitstring(SuSEFirewall::GetAcceptExpertRules(zone), " +"),
+	{
+	    // comma separated
+	    list <string> rule_splitted = splitstring(one_rule, ",");
+	    return $[
+		"network"  : rule_splitted[0]:"",
+		"protocol" : rule_splitted[1]:"",
+		"dport"    : rule_splitted[2]:"",
+		"sport"    : rule_splitted[3]:"",
+	    ];
+	});
+	
+	// filtering out empty rules
+	rules = filter (map <string, string> one_rule, rules, {
+	    return ! (
+		one_rule["network"]:""  == "" &&
+		one_rule["protocol"]:"" == "" &&
+		one_rule["dport"]:""    == "" &&
+		one_rule["sport"]:""    == ""
+	    );
+	});
+	
+	return rules;
+    }
+
+    /**
+     * Adds a new accept-rule. Possible keys for parameters are "network",
+     * "protocol", "dport" and "sport". Needed are "network" and "protocol".
+     *
+     * @param string zone
+     * @param map <string, string> params
+     * @see GetListOfAcceptRules()
+     * @see RemoveAcceptRule()
+     *
+     * @example
+     * AddNewAcceptRule (
+     *     "EXT",
+     *     $["network":"192.168.0.1/255.255.240.0", "protocol":"tcp", "sport":"22"]
+     * ) -> true
+     */
+    global boolean AddNewAcceptRule (string zone, map <string, string> params) {
+	zone = toupper(zone);
+
+	// Check the zone
+	if (! contains(SuSEFirewall::GetKnownFirewallZones(), zone)) {
+	    y2error("Unknown firewall zone: %1", zone);
+	    return nil;
+	}
+	
+	// Get all current rules
+	string current_rules = SuSEFirewall::GetAcceptExpertRules(zone);
+	if (current_rules == nil) {
+	    y2error("Impossible to set new AcceptExpertRule for zone %1", zone);
+	    return false;
+	}
+
+	// Adjusting params
+	params = AdjustParameters(params);
+
+	// Creating new record
+	string new_rule = params["network"]:"" + "," + params["protocol"]:"";
+	if (params["dport"]:"" != "") new_rule = new_rule + "," + params["dport"]:"";
+	if (params["sport"]:"" != "") new_rule = new_rule + "," + params["sport"]:"";
+	if (new_rule == "0/0,all") {
+	    y2warning("Adding rule '%1' that allows everything from all networks!", new_rule);
+	}
+	
+	current_rules = current_rules + (size(current_rules) > 0 ? " ":"") + new_rule;
+	
+	return SuSEFirewall::SetAcceptExpertRules(zone, current_rules);
+    }
+    
+    /**
+     * Removes a single expert firewall rule.
+     *
+     * @param string zone
+     * @param map <string, string> params
+     * @see GetListOfAcceptRules() for possible keys in map
+     * @see AddNewAcceptRule()
+     *
+     * @example
+     * RemoveAcceptRule (
+     *     "EXT",
+     *     $["network":"192.168.0.1/255.255.240.0", "protocol":"tcp", "sport":"22"]
+     * ) -> true
+     */
+    global boolean RemoveAcceptRule (string zone, map <string, string> params) {
+	zone = toupper(zone);
+
+	// Check the zone
+	if (! contains(SuSEFirewall::GetKnownFirewallZones(), zone)) {
+	    y2error("Unknown firewall zone: %1", zone);
+	    return nil;
+	}
+
+	string current_rules = SuSEFirewall::GetAcceptExpertRules(zone);
+	if (current_rules == nil) {
+	    y2error("Impossible remove any AcceptExpertRule for zone %1", zone);
+	    return false;
+	}
+
+	// Creating record to be removed
+	string remove_rule = params["network"]:"" + "," + params["protocol"]:"";
+	if (params["dport"]:"" != "") remove_rule = remove_rule + "," + params["dport"]:"";
+	if (params["sport"]:"" != "") remove_rule = remove_rule + "," + params["sport"]:"";
+
+	// Filtering out the record
+	list <string> current_rules_list = splitstring (current_rules, " ");
+	current_rules_list = filter (string one_rule, current_rules_list, {
+	    return (one_rule != remove_rule && one_rule != "" && one_rule != ",");
+	});
+	current_rules = mergestring (current_rules_list, " ");
+	
+	return SuSEFirewall::SetAcceptExpertRules(zone, current_rules);
+    }
+
+/* EOF */
+}
