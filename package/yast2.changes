@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Aug  2 16:00:12 CEST 2006 - jsrain@suse.cz
+
+- Added more X-version-specific paths
+
+-------------------------------------------------------------------
 Wed Aug  2 10:08:50 CEST 2006 - locilka@suse.cz
 
 - Added new module SuSEFirewallExpertRules managing expert ACCEPT

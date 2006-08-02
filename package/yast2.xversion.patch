@@ -2,7 +2,7 @@ Index: data/XVersion
 ===================================================================
 --- data/XVersion	(revision 32055)
 +++ data/XVersion	(working copy)
-@@ -1,7 +1,7 @@
+@@ -1,8 +1,8 @@
 -Xbindir="/usr/X11R6/bin"
 -Xlibdir="/usr/X11R6/lib"
 -Xlib64dir="/usr/X11R6/lib64"
@@ -10,6 +10,7 @@ Index: data/XVersion
 -Xincludedir="/usr/X11R6/include"
 -Xsharedir="/usr/X11R6/share"
 -Xinfodir="/usr/X11R6/info"
+-Xfontdir="/usr/X11R6/lib/X11/fonts"
 +Xbindir="/usr/bin"
 +Xlibdir="/usr/lib"
 +Xlib64dir="/usr/lib64"
@@ -17,3 +18,4 @@ Index: data/XVersion
 +Xincludedir="/usr/include"
 +Xsharedir="/usr/share"
 +Xinfodir="/usr/info"
++Xfontdir="/usr/share/fonts"
