@@ -27,7 +27,7 @@ void Initialize () {
 	    string id = substring (k, 1);
 	    _paths[id] = (string)SCR::Read (add (.x_version, k));
 	});
-	y2internal ("Paths: %1", _paths);
+	y2milestone ("X11 paths: %1", _paths);
     }
 }
 
@@ -98,6 +98,14 @@ global string sharePath () {
  */
 global string infoPath () {
     return Path ("infodir");
+}
+
+/**
+ * Provide path to font directory of X11
+ * @return string path to /usr/X11R6/font, resp. /usr/font
+ */
+global string fontPath () {
+    return Path ("fontdir");
 }
 
 /* EOF */
