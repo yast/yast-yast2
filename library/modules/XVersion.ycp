@@ -92,5 +92,13 @@ global string sharePath () {
     return Path ("sharedir");
 }
 
+/**
+ * Provide path to info directory of X11
+ * @return string path to /usr/X11R6/info, resp. /usr/info
+ */
+global string infoPath () {
+    return Path ("infodir");
+}
+
 /* EOF */
 }
