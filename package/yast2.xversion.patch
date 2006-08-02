@@ -16,4 +16,4 @@ Index: data/XVersion
 +Xmandir="/usr/man"
 +Xincludedir="/usr/include"
 +Xsharedir="/usr/share"
-+Xinfodir="/usr/X11R6/info"
++Xinfodir="/usr/info"
