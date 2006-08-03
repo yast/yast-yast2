@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Aug  3 14:51:46 CEST 2006 - mvidner@suse.cz
+
+- Start-up speed-up: don't read all desktop files to find our icon.
+  Thanks to Michael Meeks for profiling.
+- 2.13.71
+
+-------------------------------------------------------------------
 Wed Aug  2 16:00:12 CEST 2006 - jsrain@suse.cz
 
 - Added more X-version-specific paths
