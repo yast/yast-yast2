@@ -2,7 +2,7 @@ Index: data/XVersion
 ===================================================================
 --- data/XVersion	(revision 32055)
 +++ data/XVersion	(working copy)
-@@ -1,8 +1,8 @@
+@@ -1,13 +1,13 @@
 -Xbindir="/usr/X11R6/bin"
 -Xlibdir="/usr/X11R6/lib"
 -Xlib64dir="/usr/X11R6/lib64"
@@ -11,6 +11,11 @@ Index: data/XVersion
 -Xsharedir="/usr/X11R6/share"
 -Xinfodir="/usr/X11R6/info"
 -Xfontdir="/usr/X11R6/lib/X11/fonts"
+-Xexecutable="X"
+-Xorgconftempl="/usr/X11R6/lib/X11/xorg.conf"
+-Xstartpath="/var/X11R6/bin"
+-Xdriverpath="/usr/X11R6/lib/modules/drivers"
+-Xdriver64path="/usr/X11R6/lib64/modules/drivers"
 +Xbindir="/usr/bin"
 +Xlibdir="/usr/lib"
 +Xlib64dir="/usr/lib64"
@@ -19,3 +24,8 @@ Index: data/XVersion
 +Xsharedir="/usr/share"
 +Xinfodir="/usr/info"
 +Xfontdir="/usr/share/fonts"
++Xexecutable="Xorg"
++Xorgconftempl="/etc/X11/xorg.conf.template"
++Xstartpath=""
++Xdriverpath="/usr/lib/xorg/modules/drivers"
++Xdriver64path="/usr/lib64/xorg/modules/drivers"
