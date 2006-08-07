@@ -151,5 +151,87 @@ global define string ComputeBroadcast(string ip, string mask) ``{
     return ToString((i | ~m) & 0xffffffff);
 }
 
+// helper list, each bit has its decimal representation
+list <integer> bit_weight_row = [128, 64, 32, 16, 8, 4, 2, 1];
+
+/**
+ * Converts IPv4 into its 32 bit binary representation.
+ *
+ * @param string ipv4
+ * @return string binary
+ *
+ * @see BitsToIPv4()
+ *
+ * @example
+ *     IPv4ToBits("80.25.135.2")    -> "01010000000110011000011100000010"
+ *     IPv4ToBits("172.24.233.211") -> "10101100000110001110100111010011"
+ */
+global string IPv4ToBits (string ipv4) {
+    if (!Check4(ipv4)) {
+        y2error("Not a valid IPv4: %1", ipv4);
+        return nil;
+    }
+    
+    string ret = "";
+    foreach (string ipv4_part, splitstring(ipv4, "."), {
+        integer ipv4_part_i = tointeger(ipv4_part);
+        foreach (integer try_i, bit_weight_row, {
+            if ((ipv4_part_i / try_i) > 0) {
+                ipv4_part_i = ipv4_part_i % try_i;
+                ret = ret + "1";
+            } else {
+                ret = ret + "0";
+            }
+        });
+    });
+    
+    return ret;
+}
+
+/**
+ * Converts 32 bit binary number to its IPv4 repserentation.
+ *
+ * @param string binary
+ * @return string ipv4
+ *
+ * @see IPv4ToBits()
+ *
+ * @example
+ *     BitsToIPv4("10111100000110001110001100000101") -> "188.24.227.5"
+ *     BitsToIPv4("00110101000110001110001001100101") -> "53.24.226.101"
+ */
+global string BitsToIPv4 (string bits) {
+    if (size(bits) != 32) {
+        y2error("Not a valid IPv4 in Bits: %1", bits);
+        return nil;
+    }
+    if (!regexpmatch(bits, "^[01]+$")) {
+        y2error("Not a valid IPv4 in Bits: %1", bits);
+        return nil;
+    }
+
+    string ipv4 = "";
+    integer position = 0;
+    while (position < 32) {
+        integer ip_part = 0;
+        string eight_bits = substring (bits, position, 8);
+
+        integer counter = -1;
+        while (counter < 8) {
+            counter = counter + 1;
+            string one_bit = substring (eight_bits, counter, 1);
+
+            if (one_bit == "1") {
+                ip_part = ip_part + bit_weight_row[counter]:0;
+            }
+        };
+
+        ipv4 = ipv4 + (ipv4 != "" ? ".":"") + tostring(ip_part);
+        position = position + 8;
+    }
+    
+    return ipv4;
+}
+
 /* EOF */
 }
