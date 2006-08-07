@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Aug  7 11:07:31 CEST 2006 - locilka@suse.cz
+
+- Added new IP::IPv4ToBits() and IP::BitsToIPv4() functions.
+
+-------------------------------------------------------------------
 Fri Aug  4 16:21:43 CEST 2006 - jsrain@suse.cz
 
 - added mode X-version-specific paths
