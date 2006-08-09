@@ -21,6 +21,7 @@ import "IP";
 global string ValidChars = Hostname::ValidChars+IP::ValidChars;
 global string ValidChars4 = Hostname::ValidChars+IP::ValidChars4;
 global string ValidChars6 = Hostname::ValidChars+IP::ValidChars6;
+global string ValidCharsMAC = "0123456789abcdefABCDEF:";
 
 /**
  * Return a description of a valid address (ip4 or name)
@@ -55,6 +56,31 @@ global define boolean Check6(string address) ``{
  */
 global define boolean Check(string address) ``{
     return Check4(address) || Check6(address);
+}
+
+/**
+ * Describe a valid MAC address
+ * @return string description of a valid MAC address
+ */
+global define string ValidMAC() ``{
+	//describe valid MAC address
+	return _("A valid MAC address consists of six pairs of hexadecimal
+digits separated by colon.");
+}
+
+/**
+ * Check syntax of MAC address
+ * @param address MAC address
+ * @return true if correct
+ */
+global define boolean CheckMAC(string address) ``{
+	if (address == nil || address == "")
+		return false;
+
+	string regexp = "[0-9a-fA-F]{2,2}";
+     regexp = sformat ("(%1:){5,5}%1", regexp);
+
+	return regexpmatch(address, regexp);
 }
 
 /* EOF */
