@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug  9 15:37:45 CEST 2006 - jsrain@suse.cz
+
+- fixed recognizing pegasos, cell and maple boot requirements (PPC)
+  (#192957)
+
+-------------------------------------------------------------------
 Wed Aug  9 14:19:23 CEST 2006 - kmachalkova@suse.cz
 
 - Added new Address::CheckMAC() and Address::ValidMAC() functions. 
