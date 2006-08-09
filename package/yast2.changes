@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Aug  9 14:19:23 CEST 2006 - kmachalkova@suse.cz
+
+- Added new Address::CheckMAC() and Address::ValidMAC() functions. 
+
+-------------------------------------------------------------------
 Mon Aug  7 11:07:31 CEST 2006 - locilka@suse.cz
 
 - Added new IP::IPv4ToBits() and IP::BitsToIPv4() functions.
