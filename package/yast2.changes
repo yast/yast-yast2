@@ -8,6 +8,7 @@ Wed Aug  9 15:37:45 CEST 2006 - jsrain@suse.cz
 Wed Aug  9 14:19:23 CEST 2006 - kmachalkova@suse.cz
 
 - Added new Address::CheckMAC() and Address::ValidMAC() functions. 
+- 2.13.73
 
 -------------------------------------------------------------------
 Mon Aug  7 11:07:31 CEST 2006 - locilka@suse.cz
