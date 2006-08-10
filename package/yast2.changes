@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Aug 10 15:25:59 CEST 2006 - locilka@suse.cz
+
+- Moved (x)inetd agent from yast2-inetd to yast2
+- 2.13.74
+
+-------------------------------------------------------------------
 Wed Aug  9 15:37:45 CEST 2006 - jsrain@suse.cz
 
 - fixed recognizing pegasos, cell and maple boot requirements (PPC)
