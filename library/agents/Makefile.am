@@ -3,4 +3,4 @@
 
 agent_SCRIPTS = ag_netd
 scrconf_DATA = $(wildcard *.scr)
-EXTRA_DIST = $(scrconf_DATA)
+EXTRA_DIST = $(agent_SCRIPTS) $(scrconf_DATA)
