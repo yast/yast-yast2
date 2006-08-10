@@ -19,6 +19,8 @@ Requires:	SuSEfirewall2
 
 # moved cfg_security.scr
 Conflicts:	yast2-security <= 2.13.2
+# moved ag_netd, cfg_netd.scr, cfg_xinetd.scr
+Conflicts:	yast2-inetd <= 2.13.4
 
 Provides:	yast2-lib-sequencer
 Obsoletes:	yast2-lib-sequencer
