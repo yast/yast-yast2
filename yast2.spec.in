@@ -11,8 +11,8 @@ PreReq:         yast2-security >= 2.13.4-0.2
 
 # Need the new file popups
 Requires:	yast2-core >= 2.7.1
-# Pkg::Connect
-Requires:	yast2-pkg-bindings >= 2.13.43
+# Patch/Delta RPM callbacks
+Requires:	yast2-pkg-bindings >= 2.13.88.1
 Requires:	yast2_ui yast2_theme
 # For Cron Agent, Module
 Requires:       perl-Config-Crontab
