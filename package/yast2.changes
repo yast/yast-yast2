@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Aug 17 16:40:58 CEST 2006 - jsrain@suse.cz
+
+- initialize patch/delta RPM callbacks
+
+-------------------------------------------------------------------
 Thu Aug 10 15:25:59 CEST 2006 - locilka@suse.cz
 
 - Moved (x)inetd agent from yast2-inetd to yast2

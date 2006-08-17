@@ -39,6 +39,22 @@ global define void InitPackageCallbacks() {
     Pkg::CallbackErrorSourceRefresh ("PackageCallbacks::ErrorSourceRefresh");
     Pkg::CallbackDoneSourceRefresh ("PackageCallbacks::DoneSourceRefresh");
 
+    Pkg::CallbackStartDeltaDownload ("PackageCallbacks::StartDeltaProvide");
+    Pkg::CallbackProgressDeltaDownload ("PackageCallbacks::ProgressProvide");
+    Pkg::CallbackProblemDeltaDownload ("PackageCallbacks::ProblemDeltaDownload");
+    Pkg::CallbackFinishDeltaDownload ("PackageCallbacks::FinishPatchDeltaProvide");
+
+    Pkg::CallbackStartDeltaApply ("PackageCallbacks::StartDeltaApply");
+    Pkg::CallbackProgressDeltaApply ("PackageCallbacks::ProgressProvide");
+    Pkg::CallbackProblemDeltaApply ("PackageCallbacks::ProblemDeltaApply");
+    Pkg::CallbackFinishDeltaApply ("PackageCallbacks::FinishPatchDeltaProvide");
+
+    Pkg::CallbackStartPatchDownload ("PackageCallbacks::StartPatchProvide");
+    Pkg::CallbackProgressPatchDownload ("PackageCallbacks::ProgressProvide");
+    Pkg::CallbackProblemPatchDownload ("PackageCallbacks::ProblemPatchDownload");
+    Pkg::CallbackFinishPatchDownload ("PackageCallbacks::FinishPatchDeltaProvide");
+
+
     // Pkg::CallbackStartDownload ("PackageCallbacks::StartDownload");
     // Pkg::CallbackProgressDownload ("PackageCallbacks::ProgressDownload");
     // Pkg::CallbackDoneDownload ("PackageCallbacks::DoneDownload");
