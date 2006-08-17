@@ -45,7 +45,7 @@ global define void InitPackageCallbacks() {
     Pkg::CallbackFinishDeltaDownload ("PackageCallbacks::FinishPatchDeltaProvide");
 
     Pkg::CallbackStartDeltaApply ("PackageCallbacks::StartDeltaApply");
-    Pkg::CallbackProgressDeltaApply ("PackageCallbacks::");
+    Pkg::CallbackProgressDeltaApply ("PackageCallbacks::ProgressProvide");
     Pkg::CallbackProblemDeltaApply ("PackageCallbacks::ProblemDeltaApply");
     Pkg::CallbackFinishDeltaApply ("PackageCallbacks::FinishPatchDeltaProvide");
 
