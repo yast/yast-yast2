@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Aug 22 19:24:18 CEST 2006 - mvidner@suse.cz
+
+- CWM::ShowAndRun: documented disable_buttons.
+
+-------------------------------------------------------------------
 Thu Aug 17 16:40:58 CEST 2006 - jsrain@suse.cz
 
 - initialize patch/delta RPM callbacks
