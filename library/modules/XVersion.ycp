@@ -29,6 +29,10 @@ void Initialize () {
 	});
 	y2milestone ("X11 paths: %1", _paths);
     }
+    else
+    {
+	y2error("Data for XVersion not defined!");
+    }
 }
 
 /**
