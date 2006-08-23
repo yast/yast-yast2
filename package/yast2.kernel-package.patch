@@ -1,6 +1,6 @@
 Index: library/system/src/Kernel.ycp
 ===================================================================
---- library/system/src/Kernel.ycp	(revision 32413)
+--- library/system/src/Kernel.ycp	(revision 32510)
 +++ library/system/src/Kernel.ycp	(working copy)
 @@ -342,16 +342,7 @@
       */
@@ -20,7 +20,18 @@ Index: library/system/src/Kernel.ycp
  
  	if (Arch::is_uml ())
  	{
-@@ -406,48 +397,10 @@
+@@ -395,59 +386,14 @@
+ 		kernel_packages = ["kernel-bigsmp"];
+ 	    }
+ 	}
+-	else if (Arch::alpha ())
+-	{
+-	    if (!Arch::has_smp () && Linuxrc::serial_console ())
+-	    {
+-		kernel_packages = ["kernel-serial"];
+-	    }
+-	}
+ 	else if (Arch::ppc ())
  	{
  	    binary = "vmlinux";
  
