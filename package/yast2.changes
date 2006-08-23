@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug 23 09:59:40 CEST 2006 - jsrain@suse.cz
+
+- kernel-smp package is dropped for 10.2
+- simplified kernel package detection for PPC for 10.2 (#195049)
+
+-------------------------------------------------------------------
 Tue Aug 22 19:24:18 CEST 2006 - mvidner@suse.cz
 
 - CWM::ShowAndRun: documented disable_buttons.
