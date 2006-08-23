@@ -2,7 +2,7 @@ Index: data/XVersion
 ===================================================================
 --- data/XVersion	(revision 32055)
 +++ data/XVersion	(working copy)
-@@ -1,13 +1,13 @@
+@@ -1,14 +1,14 @@
 -Xbindir="/usr/X11R6/bin"
 -Xlibdir="/usr/X11R6/lib"
 -Xlib64dir="/usr/X11R6/lib64"
@@ -16,6 +16,7 @@ Index: data/XVersion
 -Xstartpath="/var/X11R6/bin"
 -Xdriverpath="/usr/X11R6/lib/modules/drivers"
 -Xdriver64path="/usr/X11R6/lib64/modules/drivers"
+-Xvncparam=""
 +Xbindir="/usr/bin"
 +Xlibdir="/usr/lib"
 +Xlib64dir="/usr/lib64"
@@ -29,3 +30,4 @@ Index: data/XVersion
 +Xstartpath=""
 +Xdriverpath="/usr/lib/xorg/modules/drivers"
 +Xdriver64path="/usr/lib64/xorg/modules/drivers"
++Xvncparam="-rfbauth"

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Aug 23 16:27:16 CEST 2006 - jsrain@suse.cz
+
+- added release-specific Xvnc parameters
+
+-------------------------------------------------------------------
 Wed Aug 23 09:59:40 CEST 2006 - jsrain@suse.cz
 
 - kernel-smp package is dropped for 10.2
