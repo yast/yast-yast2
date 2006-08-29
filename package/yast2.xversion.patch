@@ -30,4 +30,4 @@ Index: data/XVersion
 +Xstartpath=""
 +Xdriverpath="/usr/lib/xorg/modules/drivers"
 +Xdriver64path="/usr/lib64/xorg/modules/drivers"
-+Xvncparam="-rfbauth"
++Xvncparam=""
