@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Aug 30 15:23:33 CEST 2006 - locilka@suse.cz
+
+- DnsServerPunycode module moved from yast2-dns-server to yast2
+  as Punycode module.
+- 2.13.78
+
+-------------------------------------------------------------------
 Wed Aug 23 16:27:16 CEST 2006 - jsrain@suse.cz
 
 - added release-specific Xvnc parameters
