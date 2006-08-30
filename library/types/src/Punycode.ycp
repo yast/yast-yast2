@@ -1,0 +1,374 @@
+/**
+ * File:	modules/Punycode.ycp
+ * Package:	Main yast package
+ * Summary:	DNS Punycode Handling
+ * Authors:	Lukas Ocilka <lukas.ocilka@suse.cz>
+ * Tags:	Unstable
+ *
+ * $Id:$
+ *
+ */
+
+{
+
+    module "Punycode";
+    textdomain "base";
+
+    string tmp_dir = nil;
+
+    // string, matching this regexp, is not cached
+    string not_cached_regexp = "^[0123456789\.]*$";
+
+    //
+    // Encoded string in cache has the same index
+    // as its Decoded format in the second list.
+    //
+
+    // list of encoded strings to be cached (Punycode or Unicode)
+    list <string> cache_encoded = [];
+    // list of decoded strings to be cached (Unicode or Punycode)
+    list <string> cache_decoded = [];
+
+    integer current_cache_index = 0;
+
+    // cached amount of data should be controled
+    integer current_cache_size  = 0;
+    integer maximum_cache_size  = 32768;
+
+    /**
+     * Returns the maximum cache size (sum of already converted
+     * strings).
+     *
+     * @return integer maximum_cache_size
+     * @see SetMaximumCacheSize()
+     */
+    global define integer GetMaximumCacheSize () {
+	return maximum_cache_size;
+    }
+    
+    /**
+     * Offers to set the maximum cache size (sum of already
+     * converted strings).
+     *
+     * @param integer new_max_size
+     * @see GetMaximumCacheSize()
+     */
+    global define void SetMaximumCacheSize (integer new_max_size) {
+	if (new_max_size != nil) {
+	    maximum_cache_size = new_max_size;
+	} else {
+	    y2error("Cannot set MaximumCacheSize to nil!");
+	}
+    }
+
+    /**
+     * Adds new cache records for encoded and decoded strings.
+     *
+     * @params string decoded
+     * @params string encoded
+     */
+    define void CreateNewCacheRecord (string decoded, string encoded) {
+	// Erroneous cache record
+	if (decoded == nil || encoded == nil) return;
+
+	// Already cached
+	if (contains(cache_decoded, decoded)) return;
+
+	integer decoded_size = size(decoded);
+	integer encoded_size = size(encoded);
+	
+	// Do not store this record if the cache would exceed maximum
+	if ((current_cache_size + decoded_size + encoded_size) > maximum_cache_size) return;
+
+	current_cache_size = current_cache_size + decoded_size + encoded_size;
+	cache_decoded[current_cache_index] = decoded;
+	cache_encoded[current_cache_index] = encoded;
+	current_cache_index = current_cache_index + 1;
+    }
+
+    /**
+     * Returns string encoded in Punycode if it has been
+     * already cached. Returns nil if not found.
+     *
+     * @param string decoded_string (Unicode)
+     * @return string encoded_string (Punycode)
+     */
+    define string GetEncodedCachedString (string decoded_string) {
+	string ret = nil;
+
+	// numbers and empty strings are not converted
+	if (regexpmatch(decoded_string, not_cached_regexp)) {
+	    return decoded_string;
+	}
+
+	integer counter = -1;
+	// searching through decoded strings to find the index
+	foreach (string cached_string, cache_decoded, {
+	    counter = counter + 1;
+	    if (cached_string == decoded_string) {
+		// returning encoded representation
+		ret = cache_encoded[counter]:nil;
+		break;
+	    }
+	});
+	
+	return ret;
+    }
+
+    /**
+     * Returns string encoded in Punycode if it has been
+     * already cached. Returns nil if not found.
+     *
+     * @param string encoded_string (Punycode)
+     * @return string decoded_string (Unicode)
+     */
+    define string GetDecodedCachedString (string encoded_string) {
+	string ret = nil;
+
+	// numbers and empty strings are not converted
+	if (regexpmatch(encoded_string, not_cached_regexp)) {
+	    return encoded_string;
+	}
+
+	integer counter = -1;
+	// searching through encoded strings to find the index
+	foreach (string cached_string, cache_encoded, {
+	    counter = counter + 1;
+	    if (cached_string == encoded_string) {
+		// returning decoded representation
+		ret = cache_decoded[counter]:nil;
+		break;
+	    }
+	});
+	
+	return ret;
+    }
+
+    /**
+     * Returns the current temporary directory.
+     * Lazy loading for the initialization is used.
+     */
+    define string GetTmpDirectory () {
+	if (tmp_dir == nil) {
+	    tmp_dir = (string) SCR::Read(.target.tmpdir);
+	}
+
+	return tmp_dir;
+    }
+
+    /**
+     * Function takes the list of strings and returns them in the converted
+     * format. Unicode to Punycode or Punycode to Unicode (param to_punycode).
+     * It uses a cache of already-converted strings.
+     */
+    define list <string> ConvertBackAndForth (list <string> strings_in, boolean to_punycode) {
+	// list of returned strings
+	list <string> strings_out = [];
+
+	// Some (or maybe all) strings needn't be cached
+	list <string> not_cached = [];
+
+	// Check the cache for already entered strings
+	integer current_index = -1;
+	map <string, string> test_cached = listmap (string string_in, strings_in, {
+	    string string_out = nil;
+
+	    // Numbers, IPs and empty strings are not converted
+	    if (regexpmatch(string_in, not_cached_regexp)) {
+		string_out = string_in;
+	    } else {
+		if (to_punycode) {
+		    string_out = GetEncodedCachedString(string_in);
+		} else {
+		    string_out = GetDecodedCachedString(string_in);
+		}
+	    }
+
+	    if (string_out == nil) {
+		current_index = current_index + 1;
+		not_cached[current_index] = string_in;
+	    }
+
+	    return $[string_in : string_out];
+	});
+
+	list <string> converted_not_cached = [];
+
+	// There is something not cached, converting them at once
+	if (not_cached != []) {
+	    string tmp_in  = GetTmpDirectory() + "/tmp-idnconv-in.ycp";
+	    string tmp_out = GetTmpDirectory() + "/tmp-idnconv-out.ycp";
+
+	    SCR::Write(.target.ycp, tmp_in, not_cached);
+	    string convert_command = sformat(
+		"/usr/bin/idnconv %1 %2 > %3",
+		(to_punycode ? "":"-reverse"), tmp_in, tmp_out
+	    );
+
+	    if ((integer) SCR::Execute(.target.bash, convert_command) != 0) {
+		y2error("Conversion failed!");
+	    } else {
+		converted_not_cached = (list <string>) SCR::Read(.target.ycp, tmp_out);
+		// Parsing the YCP file failed
+		if (converted_not_cached == nil) {
+		    y2error("Erroneous YCP file: %1", SCR::Read(.target.string, tmp_out));
+		}
+	    }
+	}
+
+	// Listing through the given list and adjusting the return list
+	current_index = -1;
+	integer found_index = -1;
+	foreach (string string_in, strings_in, {
+	    current_index = current_index + 1;
+
+	    // Already cached string
+	    if (test_cached[string_in]:nil != nil) {
+		strings_out[current_index] = test_cached[string_in]:"";
+
+	    // Recently converted strings
+	    } else {
+		found_index = found_index + 1;
+		strings_out[current_index] = converted_not_cached[found_index]:"";
+		
+		// Adding converted strings to cache
+		if (to_punycode) {
+		    CreateNewCacheRecord(string_in, converted_not_cached[found_index]:"");
+		} else {
+		    CreateNewCacheRecord(converted_not_cached[found_index]:"", string_in);
+		}
+	    }
+	});
+	
+	return strings_out;
+    }
+
+    /**
+     * Converts list of UTF-8 strings into their Punycode
+     * ASCII repserentation.
+     *
+     * @param list <string> punycode_strings
+     * @return list <string> encoded_strings
+     */
+    global define list <string> EncodePunycodes (list <string> punycode_strings) {
+	return ConvertBackAndForth(punycode_strings, true);
+    }
+
+    /**
+     * Converts list of Punycode strings into their UTF-8
+     * representation.
+     *
+     * @param list <string> punycode_strings
+     * @return list <string> decoded_strings
+     */
+    global define list <string> DecodePunycodes (list <string> punycode_strings) {
+	return ConvertBackAndForth(punycode_strings, false);
+    }
+
+    /**
+     * Encodes the domain name (relative or FQDN) to the Punycode.
+     *
+     * @param string decoded domain_name
+     * @return string encoded domain_name
+     *
+     * @example
+     *	EncodeDomainName("žížala.jůlinka.go.home")
+     *		-> "xn--ala-qma83eb.xn--jlinka-3mb.go.home"
+     */
+    global define string EncodeDomainName (string decoded_domain_name) {
+	return mergestring(
+	    EncodePunycodes(
+		splitstring(decoded_domain_name, ".")
+	    ),
+	    "."
+	);
+    }
+
+    /**
+     * Decodes the domain name (relative or FQDN) from the Punycode.
+     *
+     * @param string encoded_domain_name
+     * @return string decoded domain_name
+     *
+     * @example
+     *	DecodeDomainName("xn--ala-qma83eb.xn--jlinka-3mb.go.home")
+     *		-> "žížala.jůlinka.go.home"
+     */
+    global define string DecodeDomainName (string encoded_domain_name) {
+	return mergestring(
+	    DecodePunycodes(
+		splitstring(encoded_domain_name, ".")
+	    ),
+	    "."
+	);
+    }
+
+    /**
+     * Decodes the list of domain names to their Unicode representation.
+     * This function is similar to DecodePunycodes but it works with every
+     * string as a domain name (that means every domain name is parsed
+     * by dots and separately evaluated).
+     *
+     * @param list <string> encoded_domain_names
+     * @return list <string> decoded_domain_names
+     *
+     * @example
+     * 	DocodeDomainNames(["mx1.example.org", "xp3.example.org.", "xn--ala-qma83eb.org.example."])
+     *		-> ["mx1.example.org", "xp3.example.org.", "žížala.org.example."]
+     */
+    global define list <string> DocodeDomainNames (list <string> encoded_domain_names) {
+	list <string> decoded_domain_names = [];
+	list <string> strings_to_decode = [];
+
+	// $[0 : [0, 2], 1 : [3, 5]]
+	map <integer, list <integer> > backward_map_of_conversion = $[];
+
+	integer current_domain_index = -1;
+	integer current_domain_item  =  0;
+
+	// parsing all domain names one by one
+	foreach (string one_domain_name, encoded_domain_names, {
+	    current_domain_index = current_domain_index + 1;
+	    integer start = current_domain_item;
+
+	    // parsing the domain name by dots
+	    foreach (string domain_item, splitstring(one_domain_name, "."), {
+		strings_to_decode[current_domain_item] = domain_item;
+		current_domain_item = current_domain_item + 1;
+	    });
+	    // creating backward index
+	    backward_map_of_conversion[current_domain_index] = [start, (current_domain_item-1)];
+	});
+	
+	// Transformating strings to the decoded format
+	strings_to_decode = DecodePunycodes(strings_to_decode);
+	
+	current_domain_index = -1;
+	foreach (string one_encoded, encoded_domain_names, {
+	    current_domain_index = current_domain_index + 1;
+
+	    // Where the current string starts and ends
+	    integer current = backward_map_of_conversion[current_domain_index, 0]:nil;
+	    integer end     = backward_map_of_conversion[current_domain_index, 1]:nil;
+	    
+	    // error?
+	    if (current == nil || end == nil) {
+		y2error("Cannot find start/end for %1 in %2",
+		    one_encoded, backward_map_of_conversion[current_domain_index]:nil
+		); 
+		decoded_domain_names[current_domain_index] = one_encoded;
+	    } else {
+		// create a list of items of the current domain (translated)
+		list <string> decoded_domain = [];
+		while (current <= end) {
+		    decoded_domain = add(decoded_domain, strings_to_decode[current]:"");
+		    current = current + 1;
+		}
+		// create a domain name from these strings
+		decoded_domain_names[current_domain_index] = mergestring(decoded_domain, ".");
+	    }
+	});
+
+	return decoded_domain_names;
+    }
+}
