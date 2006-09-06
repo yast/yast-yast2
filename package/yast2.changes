@@ -3,6 +3,7 @@ Wed Aug 30 16:31:11 CEST 2006 - sh@suse.de
 
 - Added output of "rpm -qa" to save_y2logs
   upon request at all-hands meeting 2006-08-29 
+- 2.13.79
 
 -------------------------------------------------------------------
 Wed Aug 30 15:23:33 CEST 2006 - locilka@suse.cz
