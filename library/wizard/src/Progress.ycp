@@ -20,10 +20,10 @@
  * [============================90%=======================------]
  *
  * </pre>
- * Example of progress bar usage (note that I can not use underscore (not to confuse gettext here...):
+ * Example of progress bar usage (don't forget the translation marks in your code):
  * Progress bar supposes main wizard dialog is created.<pre>
- * Progress::Simple ("Some progress bar", "Progress runs here...", 5, "");
- * Progress::NextStep ();
+ * Progress::Simple ("Some progress bar", "Progress runs here...", 3, "");
+ * Progress::NextStep (); // the 1st one does nothing!
  * Progress::NextStep ();
  * Progress::NextStep ();
  * Progress::NextStep ();</pre>
@@ -63,7 +63,7 @@
     // Current step
     integer current_step = 0;
     // list of stage-titles
-    list titles = [];
+    list<string> titles = [];
 
     // is progress bar used?
     boolean visible = true;
@@ -117,52 +117,27 @@
     }
 
     /**
-     * Create simple progress bar with no stages, only with progress bar.
-     * @param window_title Title of the window.
-     * @param progress_title Title of the progress bar.
-     * @param length Number of steps.
-     * @param help_text Help text.
+     * @param kind `todo, `current or `done
+     * @return UI mark for stages
      */
-    global define void Simple (string window_title, string progress_title, integer length, string help_text) ``{
-	if (!visible || Mode::commandline ())
-	    return ;
-	stages = 0;
-	steps = length;
-	current_stage = -1;
-	current_step = -1;
-	if (progress_title == "")
-	{
-	    // Reservere space for future progress bar labels. The ProgressBar
-	    // widget will suppress the label above the progress bar if the
-	    // initial label string is empty.
-	    progress_title = " ";
-	}
-	term bar = `ProgressBar(`id(`pb), progress_title, steps, 0);
-
-        if ( UI::WizardCommand(`SetDialogHeading( window_title ) ) )
-        {
-            UI::WizardCommand(`SetHelpText( help_text ) );
-            UI::WizardCommand(`EnableNextButton( false ) );
-            UI::WizardCommand(`EnableBackButton( false ) );
-        }
-        else {
-
-            if (UI::WidgetExists (`id (`back)))
-                UI::ChangeWidget (`id (`back), `Enabled, false);
-            if (UI::WidgetExists (`id (`next)))
-                UI::ChangeWidget (`id (`next), `Enabled, false);
-            if (UI::WidgetExists (`id (`accept)))
-                UI::ChangeWidget (`id (`accept), `Enabled, false);
-
-            if ("" != help_text && nil != help_text && UI::WidgetExists (`id (`HelpText)))
-            {
-                UI::ChangeWidget (`id (`HelpText), `Value, help_text);
-            }
-            UI::ChangeWidget (`id (`title), `Value, window_title);
-        }
-        UI::ReplaceWidget (`id (`contents), bar);
-
+    any Mark (symbol kind) {
+	if (kind == `todo)
+	    return "-   ";
+	if (kind == `current)
+	    return UI::Glyph (`BulletArrowRight);
+	if (kind == `done)
+	    return UI::Glyph (`CheckMark);
+	return "?@%!";
     }
+
+    /**
+     * @param i stage number
+     * @return widget `id(...) for the marker
+     */
+    term MarkId (integer i) {
+	return `id (sformat ("mark_stage_%1",i));
+    }
+
     /**
      * New complex progress bar with stages.
      * @param window_title title of the window
@@ -178,7 +153,7 @@
      *             be nil/empty.
      * @param help_text help text
      */
-    global define void New (string window_title, string progress_title, integer length, list<string> stg, list tits, string help_text) ``{
+    global define void New (string window_title, string progress_title, integer length, list<string> stg, list<string> tits, string help_text) ``{
 	if (!visible)
 	    return ;
 	steps = length;
@@ -192,7 +167,7 @@
 
 	if (progress_title == "")
 	{
-	    // Reservere space for future progress bar labels. The ProgressBar
+	    // Reserve space for future progress bar labels. The ProgressBar
 	    // widget will suppress the label above the progress bar if the
 	    // initial label string is empty.
 	    progress_title = " ";
@@ -204,14 +179,13 @@
 	{ // version with stages
 	    bar = `VBox (`VSpacing (1));
 	    integer i = 0;
+	    any label_heading = Mark (`todo);
 	    foreach (string item, stg, ``{
-		string label_label = sformat ("bar_label_%1",i);
-		string label_heading = "-   ";
 		bar = add (bar,
 			  `HBox (
 			      `HSpacing (1),
 			      // check_ycp wants this text to be translatable. I do not know why.
-			      `Heading (`id (label_label), label_heading),
+			      `Heading (MarkId (i), label_heading),
 			      `Label (`opt (`hstretch), item)
 			      )
 		    );
@@ -234,32 +208,49 @@
 		    ));
 	    }
 	}
-        boolean ret = UI::WizardCommand(`SetDialogHeading( window_title ) );
-        if ( ret != nil && ret == true)
+	UI::ReplaceWidget (`id (`contents), bar);
+
+        if (! UI::WizardCommand(`SetDialogHeading( window_title ) ) )
         {
-            if ("" != help_text && nil != help_text)
-           {
-               UI::WizardCommand(`SetHelpText( help_text ) );
-           }
-            UI::WizardCommand(`EnableNextButton( false ) );
-            UI::WizardCommand(`EnableBackButton( false ) );
-        }
-        else {
-
-            if (UI::WidgetExists (`id (`back)) == true)
-                UI::ChangeWidget (`id (`back), `Enabled, false);
-            if (UI::WidgetExists (`id (`next)) == true)
-                UI::ChangeWidget (`id (`next), `Enabled, false);
-            if (UI::WidgetExists (`id (`accept)) == true)
-                UI::ChangeWidget (`id (`accept), `Enabled, false);
-
-            if ("" != help_text && nil != help_text && UI::WidgetExists (`id (`HelpText)))
-            {
-                UI::ChangeWidget (`id (`HelpText), `Value, help_text);
-            }
             UI::ChangeWidget (`id (`title), `Value, window_title);
         }
-	UI::ReplaceWidget (`id (`contents), bar);
+	if ("" != help_text && nil != help_text)
+	{
+	    Wizard::SetHelpText (help_text);
+	}
+	Wizard::DisableBackButton ();
+	Wizard::DisableNextButton ();
+    }
+
+    /**
+     * Create simple progress bar with no stages, only with progress bar.
+     * @param window_title Title of the window.
+     * @param progress_title Title of the progress bar.
+     * @param length Number of steps.
+     * @param help_text Help text.
+     */
+    global define void Simple (string window_title, string progress_title, integer length, string help_text) ``{
+	New (window_title, progress_title, length, [], [], help_text);
+    }
+
+    /**
+     * Uses current_step
+     */
+    void UpdateProgressBar () {
+	if (current_step > steps)
+	{
+	    y2error (-2, "Progress bar has only %1 steps, not %2.", steps, current_step);
+	    return ;
+	}
+	UI::ChangeWidget (`id (`pb), `Value, current_step);
+    }
+
+    /**
+     * the bar is either `ProgressBar or `Label
+     * @param s title
+     */
+    void SetProgressBarTitle (string s) {
+	UI::ChangeWidget (`id (`pb), 0 == steps ? `Value : `Label, s);
     }
 
     /**
@@ -267,19 +258,10 @@
      * function. Advances progress bar value by 1.
      */
     global define void NextStep () ``{
-	if (!visible || 0 == steps)
+	if (!visible || Mode::commandline () || 0 == steps)
 	    return ;
 	current_step = current_step + 1;
-	
-	if (Mode::commandline ())
-	    return ;
-
-	if (current_step > steps)
-	{
-	    y2error ("Progress bar doesn't have so many steps.");
-	    return ;
-	}
-	UI::ChangeWidget (`id (`pb), `Value, current_step);
+	UpdateProgressBar ();
     }
 
     /**
@@ -301,34 +283,25 @@
 
 	if ( Mode::commandline ()) 
 	{
-	    if (current_stage < stages)
+	    if (current_stage < stages && current_stage < size (titles))
 	    {
-		if (current_stage < size (titles))
-		{
-		    CommandLine::PrintVerbose(titles[current_stage]:"");
-		}
+		CommandLine::PrintVerbose(titles[current_stage]:"");
 	    }
 	    return;
 	}
 	
 	if (current_stage > 0)
 	{
-	    any glyph = UI::Glyph(`CheckMark);
-	    if(glyph != nil)
-		UI::ChangeWidget(`id (sformat ("bar_label_%1", current_stage-1)), `Value, glyph);
+	    UI::ChangeWidget (MarkId (current_stage-1), `Value, Mark (`done));
 	}
+	// we may be past the last stage
 	if (current_stage < stages )
 	{
 	    if (current_stage < size (titles))
 	    {
-		UI::ChangeWidget(`id(`pb), 0 == steps ? `Value : `Label, titles[current_stage]:"");
+		SetProgressBarTitle (titles[current_stage]:"");
 	    }
-	    if (current_stage < stages)
-	    {
-		any glyph = UI::Glyph(`BulletArrowRight);
-		if(glyph != nil)
-		    UI::ChangeWidget(`id (sformat ("bar_label_%1", current_stage)), `Value, glyph);
-	    }
+	    UI::ChangeWidget (MarkId (current_stage), `Value, Mark (`current));
 	}
     }
     /**
@@ -339,12 +312,7 @@
 	if (!visible || Mode::commandline () || 0 == steps)
 	    return ;
 	current_step = st;
-	if (current_step > steps)
-	{
-	    y2error ("Progress bar doesn't have so many steps.");
-	    return ;
-	}
-	UI::ChangeWidget (`id (`pb), `Value, current_step);
+	UpdateProgressBar ();
     }
 
     /**
@@ -364,13 +332,14 @@
 	}
 	if (!Mode::commandline () && current_stage >= 0)
 	{
-	    UI::ChangeWidget(`id (sformat ("bar_label_%1", current_stage)), `Value, st > current_stage ? UI::Glyph(`CheckMark): "-   ");
+	    UI::ChangeWidget(MarkId (current_stage), `Value,
+			     Mark (st > current_stage ? `done: `todo));
 	}
 	current_stage = st;
 	string s = "";
 	if (current_stage < size (titles))
 	{
-	    s = (string) (titles[current_stage]:"");
+	    s = titles[current_stage]:"";
 	}
 	if (nil != title)
 	{
@@ -385,12 +354,12 @@
 	    }
 	    else
 	    {
-		UI::ChangeWidget(`id(`pb), 0 == steps ? `Value : `Label, s);
+		SetProgressBarTitle (s);
 	    }
 	}
 	if (current_stage < stages)
 	{
-	    UI::ChangeWidget(`id (sformat ("bar_label_%1", current_stage)), `Value, UI::Glyph(`BulletArrowRight));
+	    UI::ChangeWidget(MarkId (current_stage), `Value, Mark (`current));
 	}
     }
 
@@ -412,7 +381,7 @@
      */
     global define void Title (string t) ``{
 	if (visible && ! Mode::commandline ())
-	    UI::ChangeWidget(`id( `pb), 0 == steps ? `Value : `Label, t);
+	    SetProgressBarTitle (t);
     }
     /**
      * Moves progress bar to the end and marks all stages as completed.
@@ -427,9 +396,10 @@
 	}
 	if (0 != steps)
 	{
-	    UI::ChangeWidget (`id (`pb), `Value, steps);
+	    current_step = steps;
+	    UpdateProgressBar ();
 	}
-	UI::ChangeWidget(`id( `pb), 0 == steps ? `Value : `Label, " ");
+	SetProgressBarTitle (" ");
     }
 
     /**
