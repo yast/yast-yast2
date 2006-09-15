@@ -63,7 +63,7 @@
     // Current step
     integer current_step = 0;
     // list of stage-titles
-    list<string> titles = [];
+    list titles = [];
 
     // is progress bar used?
     boolean visible = true;
@@ -153,7 +153,7 @@
      *             be nil/empty.
      * @param help_text help text
      */
-    global define void New (string window_title, string progress_title, integer length, list<string> stg, list<string> tits, string help_text) ``{
+    global define void New (string window_title, string progress_title, integer length, list<string> stg, list tits, string help_text) ``{
 	if (!visible)
 	    return ;
 	steps = length;

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep 15 10:02:49 CEST 2006 - mvidner@suse.cz
+
+- Refactored Progress.ycp (but reverted the interface change).
+- 2.13.80
+
+-------------------------------------------------------------------
 Wed Aug 30 16:31:11 CEST 2006 - sh@suse.de
 
 - Added output of "rpm -qa" to save_y2logs
