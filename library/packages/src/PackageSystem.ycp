@@ -78,29 +78,13 @@ global void EnsureSourceInit() {
 
     PackageCallbacksInit::InitPackageCallbacks ();
 
-    /* Popup when initializing the package manager */
-    string message = _("Reading package information...");
-
-    if (Mode::commandline()) {
-	CommandLine::PrintVerbose(message);
-    }
-    else
-    {
-	UI::OpenDialog(`opt(`decorated ), `Label(message));
-    }
-
     if(! target_initialized)
     {
 	// make sure we have the RPM keys imported
         EnsureTargetInit();
     }
 
-
     list sources = Pkg::SourceStartCache (true);
-
-    if (!Mode::commandline()) {
-	UI::CloseDialog();
-    }
 
     if (size (sources) > 0)
     {

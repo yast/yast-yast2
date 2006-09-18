@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Sep 18 16:35:26 CEST 2006 - lslezak@suse.cz
+
+- use the new source callbacks (feature #1466),
+  require yast2-pkg-bindigs >= 2.13.95
+- 2.13.81
+
+-------------------------------------------------------------------
 Fri Sep 15 10:02:49 CEST 2006 - mvidner@suse.cz
 
 - Refactored Progress.ycp (but reverted the interface change).

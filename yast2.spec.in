@@ -8,8 +8,8 @@ Patch1: yast2.kernel-package.patch
 BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-pkg-bindings yast2-testsuite
 # Need the new file popups
 Requires:	yast2-core >= 2.7.1
-# Patch/Delta RPM callbacks
-Requires:	yast2-pkg-bindings >= 2.13.92
+# Patch/Delta RPM callbacks, source callbacks
+Requires:	yast2-pkg-bindings >= 2.13.95
 Requires:	yast2_ui yast2_theme
 # For Cron Agent, Module
 Requires:       perl-Config-Crontab
