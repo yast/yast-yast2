@@ -15,7 +15,7 @@ Requires:	yast2_ui yast2_theme
 Requires:       perl-Config-Crontab
 # for ag_tty (/bin/stty)
 Requires:	coreutils
-Requires:	yast2-xml, yast2-hardware-detection
+Requires:	yast2-xml yast2-hardware-detection
 Requires:	SuSEfirewall2
 
 # moved cfg_security.scr
