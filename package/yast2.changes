@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Sep 27 10:55:43 CEST 2006 - jsrain@suse.cz
+
+- removed 10.2 patches (conditinally applied)
+
+-------------------------------------------------------------------
 Mon Sep 18 16:35:26 CEST 2006 - lslezak@suse.cz
 
 - use the new source callbacks (feature #1466),
