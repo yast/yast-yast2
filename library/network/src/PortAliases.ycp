@@ -247,9 +247,14 @@ No spaces are allowed.
      */
     global define integer GetPortNumber (string port_name) {
 	if (!regexpmatch(port_name, "^[0123456789]+$")) {
-	    return tointeger (
-		SERVICE_NAME_TO_PORT[port_name]:LoadAndReturnNameToPort(port_name)
-	    );
+	    any port_number = SERVICE_NAME_TO_PORT[port_name]:LoadAndReturnNameToPort(port_name);
+
+	    // not a known port
+	    if (port_number == nil) {
+		return nil;
+	    } else {
+		return tointeger (port_number);
+	    }
 	} else {
 	    return tointeger(port_name);
 	}

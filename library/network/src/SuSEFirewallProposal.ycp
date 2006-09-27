@@ -14,7 +14,6 @@
     textdomain "base";
 
     import "SuSEFirewall";
-    //import "NetworkService";
     import "ProductFeatures";
     import "Linuxrc";
     import "Package";
@@ -153,25 +152,45 @@
     }
 
     /**
-     * Function opens up the service on all non-dial-up network interfaces
+     * Function opens up the service on all non-dial-up network interfaces.
+     * If there are no network interfaces known and the 'any' feature is supported,
+     * function opens the service for the zone supporting that feature. If there
+     * are only dial-up interfaces, function opens the service for them.
      *
      * @param string service such as "ssh" or "vnc"
      */
     global define void OpenServiceOnNonDialUpInterfaces (string service) {
 	list <string> non_dial_up_interfaces = SuSEFirewall::GetAllNonDialUpInterfaces();
+	list <string> dial_up_interfaces     = SuSEFirewall::GetAllDialUpInterfaces();
 
-	//// NetworkManager is turned on
-	//if (NetworkService::IsManaged()) {
-	//    string zone = "EXT";
-	//    y2milestone("Opening service %1 for %2 zone", service, zone);
-	//    SuSEFirewall::SetServicesForZones([service], [zone], true);
-	//// NetworkManager is turned off and there are some non_dup interfaces
-	//} else if (size(non_dial_up_interfaces)>0) {
+	// Opening the service for non-dial-up interfaces
 	if (size(non_dial_up_interfaces)>0) {
 	    list <string> non_dial_up_interfaces_zones = SuSEFirewall::GetZonesOfInterfaces(non_dial_up_interfaces);
 	    y2milestone("Opening service %1 on interfaces %2 (zones %3)",
 		service, non_dial_up_interfaces, non_dial_up_interfaces_zones);
 	    SuSEFirewall::SetServicesForZones([service], non_dial_up_interfaces_zones, true);
+
+	// Only dial-up network interfaces, there mustn't be any non-dial-up one
+	} else if (size(dial_up_interfaces) > 0) {
+	    list <string> dial_up_interfaces_zones = SuSEFirewall::GetZonesOfInterfaces(dial_up_interfaces);
+	    y2warning("Opening service %1 on interfaces %2 (zones %3)",
+		service, dial_up_interfaces, dial_up_interfaces_zones);
+	    SuSEFirewall::SetServicesForZones([service], dial_up_interfaces_zones, true);
+
+	// No network interfaces are known
+	} else if (size(known_interfaces) == 0) {
+	    if (
+		SuSEFirewall::IsAnyNetworkInterfaceSupported() &&
+		SuSEFirewall::IsServiceSupportedInZone (service, SuSEFirewall::special_all_interface_zone)
+	    ) {
+		y2warning("WARNING: Opening %1 for the External zone without any known interface!", toupper(service));
+		SuSEFirewall::SetServicesForZones([service], [SuSEFirewall::special_all_interface_zone], true);
+		y2milestone("By now, %1 for %2 zone is %3",
+		    service,
+		    SuSEFirewall::special_all_interface_zone,
+		    SuSEFirewall::IsServiceSupportedInZone (service, SuSEFirewall::special_all_interface_zone)
+		);
+	    }
 	}
     }
 
@@ -208,30 +227,11 @@
 	    dial_up_interfaces, non_dup_interfaces
 	);
 
-	//// has no network interface
-	//// and NetworkManager is disabled (#139402)
-	//if (size(non_dup_interfaces)==0 && size(dial_up_interfaces)==0 &&
-	//    !NetworkService::IsManaged ()) {
-	//    SuSEFirewall::SetEnableService(false);
-	//    SuSEFirewall::SetStartService(false);
-	//} else {
-
 	// has any network interface
 	if (size(non_dup_interfaces)==0 || size(dial_up_interfaces)==0) {
 	    SuSEFirewall::SetEnableService(ProductFeatures::GetBooleanFeature ("globals", "enable_firewall"));
 	    SuSEFirewall::SetStartService(ProductFeatures::GetBooleanFeature ("globals", "enable_firewall"));
 	}
-
-	//// NetworkManager is enabled
-	//if (NetworkService::IsManaged()) {
-	//    string special_all_interface_string = SuSEFirewall::special_all_interface_string;
-	//    string zone = SuSEFirewall::special_all_interface_zone;
-	//    // Adding all interfaces into the $zone zone
-	//    if (!contains(SuSEFirewall::GetSpecialInterfacesInZone(zone), special_all_interface_string)) {
-	//	SuSEFirewall::AddSpecialInterfaceIntoZone(special_all_interface_string, zone);
-	//    }
-	//// NetworkManager is disabled
-	//} else {
 
 	    // has non-dial-up and also dial-up interfaces
 	    if (size(non_dup_interfaces)>0 && size(dial_up_interfaces)>0) {
@@ -252,8 +252,6 @@
 		if (ProductFeatures::GetBooleanFeature ("globals", "firewall_enable_ssh"))
 		    SuSEFirewall::SetServicesForZones(["ssh"], ["EXT"], true);
 	    }
-
-	//}
 
 	/*
 	 * Dial-up interfaces are considered to be internal,
@@ -371,51 +369,54 @@
 	output = output + "<ul>\n";
 	output = output + (firewall_is_enabled ?
 	    // TRANSLATORS: Proposal informative text "Firewall is enabled" with link around
-	    //              "enabled" must be surrounded with the "%1" and "%2" strings
-	    //              %1 is the start and %2 is the end of the HTML link "<a href...>" and "</a>"
-	    sformat(_("Firewall is %1enabled%2"), "<a href=\"firewall--disable_firewall_in_proposal\">", "</a>")
+	    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
+	    _("Firewall is <a href=\"firewall--disable_firewall_in_proposal\">enabled</a>")
 	    :
 	    // TRANSLATORS: Proposal informative text "Firewall is disabled" with link around
-	    //              "disabled" must be surrounded with the "%1" and "%2" strings
-	    //              %1 is the start and %2 is the end of the HTML link "<a href...>" and "</a>"
-	    sformat(_("Firewall is %1disabled%2"), "<a href=\"firewall--enable_firewall_in_proposal\">", "</a>")
+	    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
+	    _("Firewall is <a href=\"firewall--enable_firewall_in_proposal\">disabled</a>")
 	);
 
 	if (firewall_is_enabled) {
 	    // Any enabled SSH means SSH-is-enabled
 	    boolean is_ssh_enabled = false;
-	    //// Any known interfaces, or NetworkManager interfaces
-	    //if ((size(known_interfaces)>0) || NetworkService::IsManaged())
+
+	    // Any known interfaces
 	    if (size(known_interfaces)>0) {
 		y2milestone("Interfaces: %1", known_interfaces);
+
 		// all known interfaces for testing
-		list <string> used_zones = SuSEFirewall::GetZonesOfInterfaces(known_interfaces);
+		list <string> used_zones = SuSEFirewall::GetZonesOfInterfacesWithAnyFeatureSupported(known_interfaces);
 		y2milestone("Zones used by firewall: %1", used_zones);
-
-		//// NM is used, add also NM-Zone
-		//if (NetworkService::IsManaged() && SuSEFirewall::IsAnyNetworkInterfaceSupported()) {
-		//    used_zones = add (used_zones, SuSEFirewall::special_all_interface_zone);
-		//    y2milestone("NM is used, zone %1 was added into used zones %2", SuSEFirewall::special_all_interface_zone, used_zones);
-		//}
-
+		
 		foreach (string zone, used_zones, {
-		    if (SuSEFirewall::IsServiceSupportedInZone ("ssh", zone))
+		    if (SuSEFirewall::IsServiceSupportedInZone ("ssh", zone)) {
 			is_ssh_enabled = true;
+		    }
 		});
+
+		output = output + "<br>" + (is_ssh_enabled ?
+		    // TRANSLATORS: Network proposal informative text with link around
+		    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
+		    _("SSH port is <a href=\"firewall--disable_ssh_in_proposal\">open</a>")
+		    :
+		    // TRANSLATORS: Network proposal informative text with link around
+		    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
+		    _("SSH port is <a href=\"firewall--enable_ssh_in_proposal\">blocked</a>")
+		);
+
+	    // No known interfaces, but 'any' is supported
+	    // and ssh is enabled there
+	    } else if (
+		SuSEFirewall::IsAnyNetworkInterfaceSupported() &&
+		SuSEFirewall::IsServiceSupportedInZone ("ssh", SuSEFirewall::special_all_interface_zone)
+	    ) {
+		    is_ssh_enabled = true;
+		    // TRANSLATORS: Network proposal informative text with link around
+		    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
+		    output = output + "<br>" + _("SSH port is <a href=\"firewall--disable_ssh_in_proposal\">open</a>, but there are still no network interfaces configured");
 	    }
 	    y2milestone("SSH is " + (is_ssh_enabled ? "":"not ") + "enabled");
-
-	    output = output + "<br>" + (is_ssh_enabled ?
-		// TRANSLATORS: Network proposal informative text "SSH is enabled" with link around
-		//              "enabled" must be surrounded with the "%1" and "%2" strings
-		//              %1 is the start and %2 is the end of the HTML link "<a href...>" and "</a>"
-		sformat(_("SSH port is %1open%2"), "<a href=\"firewall--disable_ssh_in_proposal\">", "</a>")
-		:
-		// TRANSLATORS: Network proposal informative text "SSH is disabled" with link around
-		//              "disabled" must be surrounded with the "%1" and "%2" strings
-		//              %1 is the start and %2 is the end of the HTML link "<a href...>" and "</a>"
-		sformat(_("SSH port is %1blocked%2"), "<a href=\"firewall--enable_ssh_in_proposal\">", "</a>")
-	    );
 
 	    if (Linuxrc::usessh()) {
 		if (!is_ssh_enabled)
@@ -428,7 +429,7 @@
 		// Any enabled VNC means VNC-is-enabled
 		boolean is_vnc_enabled = false;
 		if (size(known_interfaces)>0) {
-		    foreach (string zone, SuSEFirewall::GetZonesOfInterfaces(known_interfaces), {
+		    foreach (string zone, SuSEFirewall::GetZonesOfInterfacesWithAnyFeatureSupported(known_interfaces), {
 			if (SuSEFirewall::IsServiceSupportedInZone ("vnc", zone))
 			    is_vnc_enabled = true;
 		    });
@@ -437,14 +438,12 @@
 
 		output = output + "<br>" + (is_vnc_enabled ?
 		    // TRANSLATORS: Network proposal informative text "Remote Administration (VNC) is enabled" with link around
-		    //              "enabled" must be surrounded with the "%1" and "%2" strings
-		    //              %1 is the start and %2 is the end of the HTML link "<a href...>" and "</a>"
-		    sformat(_("Remote Administration (VNC) ports are %1open%2"), "<a href=\"firewall--disable_vnc_in_proposal\">", "</a>")
+		    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
+		    _("Remote Administration (VNC) ports are <a href=\"firewall--disable_vnc_in_proposal\">open</a>")
 		    :
 		    // TRANSLATORS: Network proposal informative text "Remote Administration (VNC) is disabled" with link around
-		    //              "disabled" must be surrounded with the "%1" and "%2" strings
-		    //              %1 is the start and %2 is the end of the HTML link "<a href...>" and "</a>"
-		    sformat(_("Remote Administration (VNC) ports are %1blocked%2"), "<a href=\"firewall--enable_vnc_in_proposal\">", "</a>")
+		    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
+		    _("Remote Administration (VNC) ports are <a href=\"firewall--enable_vnc_in_proposal\">blocked</a>")
 		);
 
 		if (!is_vnc_enabled)

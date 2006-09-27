@@ -899,7 +899,31 @@
     global boolean SetDesktopIcon( string file )
     {
 	string filename = sformat("%1/%2.desktop", Directory::desktopdir, file);
-	path filepath = .yast2.desktop.v + filename + ."Desktop Entry".Icon;
+	// Do not use .yast2.desktop.v.$filename, because ini-agent reads
+	// all the desktop files anyway which is wasteful for setting one icon.
+	// The config is adapted from .yast2.desktop.
+	SCR::RegisterAgent (.yast2.desktop1, `ag_ini(
+				`IniAgent( filename,
+	$[
+	    "options"	: [ "read_only" ], // rw works but not needed
+	    "comments"	: [ "^[ \t]*[;#].*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],
+	    "sections"	: [
+		$[ "begin" : [
+		    "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
+		    "[%s]",
+		]],
+	    ],
+	    "params" : [
+		$[ "match" : [
+		    "^[ \t]*([^=]*[^ \t=])[ \t]*=[ \t]*(.*[^ \t]|)[ \t]*$" ,
+		    "%s=%s",
+		]],
+	    ],
+	]
+				    )
+				)
+	    );
+	path filepath = .yast2.desktop1.v."Desktop Entry".Icon;
 	string icon = (string) SCR::Read(filepath);
 	y2debug("icon: %1 (%2)", icon, filepath);
 
@@ -907,6 +931,8 @@
 	    return false;
 
 	SetTitleIcon(icon);
+
+	SCR::UnmountAgent (.yast2.desktop1);
 	return true;
     }
 

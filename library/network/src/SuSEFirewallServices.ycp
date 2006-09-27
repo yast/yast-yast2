@@ -18,6 +18,14 @@
     /* list of possibly conflict services because of sharing ports, for instance: "nis-server" and "nfs-server" */
     list <string> possibly_conflict_services = ["nfs-server", "nis-server", "nfs-client", "nis-client"];
 
+    /***
+     * Names assigned to Port and Protocol numbers can be found
+     * here:
+     *
+     * http://www.iana.org/assignments/protocol-numbers
+     * http://www.iana.org/assignments/port-numbers
+     */
+
     /**
      *
      * Format of SERVICES

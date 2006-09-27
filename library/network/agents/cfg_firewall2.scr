@@ -1,28 +1,45 @@
 /**
- * File:        firewall2.scr
+ * File:        cfg_firewall2.scr
  * Summary:     Agent for reading/writing /etc/sysconfig/SuSEfirewall2
- * Author:      Ludwig Nussel <lnussel@suse.de>
+ * Author:      Lukas Ocilka <lukas.ocilka@suse.cz>
  * Access:      read / write
  *
  * Example:
  *   Dir(.sysconfig.SuSEfirewall2)
  *   (["FW_ROUTE", ...])
  **
- *   Read(.sysconfig.network.FW_ROUTE)
+ *   Read(.sysconfig.SuSEfirewall2.FW_ROUTE)
  *   ("yes")
  **
- *   Write(.sysconfig.network.FW_ROUTE, "no")
+ *   Write(.sysconfig.SuSEfirewall2.FW_ROUTE, "no")
  *   (true)
  **
- *   Don't forget to write nil to sync the settings!
+ *   // Don't forget to write nil to sync the settings!
+ *   Write(.sysconfig.SuSEfirewall2, nil)
  *
  * $Id$
  *
- * Read/Sets the values defined in <tt>/etc/sysconfig/SuSEfirewall2</tt>
+ * Read/Sets the values defined in /etc/sysconfig/SuSEfirewall2
  * in an easy manner.
  */
 .sysconfig.SuSEfirewall2
 
 `ag_ini(
-    `SysConfigFile("/etc/sysconfig/SuSEfirewall2")
+    `IniAgent (
+	"/etc/sysconfig/SuSEfirewall2",
+	$[
+	    // do not join_multiline, "\n" are replaced with " " later
+	    "options" : [ "line_can_continue", "global_values", "comments_last", "flat", ],
+	    "comments": [ "^[ \t]*#.*$", "#.*", "^[ \t]*$", ],
+	    "params" : [
+		$[
+		    "match" : [ "([a-zA-Z0-9_]+)[ \t]*=[ \t]*\"([^\"]*)\"", "%s=\"%s\"" ],
+		    "multiline" : [ "([a-zA-Z0-9_]+)[ \t]*=[ \t]*\"([^\"]*)", "([^\"]*)\"", ],
+		],
+		$[
+		    "match" : [ "([a-zA-Z0-9_]+)[ \t]*=[ \t]*([^\"]*[^ \t\"]|)[ \t]*$", "%s=\"%s\"",],
+		],
+	    ],
+	]
+    )
 )

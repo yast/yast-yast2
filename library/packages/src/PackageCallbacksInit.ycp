@@ -34,14 +34,42 @@ global define void InitPackageCallbacks() {
     Pkg::CallbackStartPackage ("PackageCallbacks::StartPackage");
     Pkg::CallbackProgressPackage ("PackageCallbacks::ProgressPackage");
     Pkg::CallbackDonePackage ("PackageCallbacks::DonePackage");
-    // source refresh callbacks
-    Pkg::CallbackStartSourceRefresh ("PackageCallbacks::StartSourceRefresh");
-    Pkg::CallbackErrorSourceRefresh ("PackageCallbacks::ErrorSourceRefresh");
-    Pkg::CallbackDoneSourceRefresh ("PackageCallbacks::DoneSourceRefresh");
 
-    // Pkg::CallbackStartDownload ("PackageCallbacks::StartDownload");
-    // Pkg::CallbackProgressDownload ("PackageCallbacks::ProgressDownload");
-    // Pkg::CallbackDoneDownload ("PackageCallbacks::DoneDownload");
+    Pkg::CallbackStartDeltaDownload ("PackageCallbacks::StartDeltaProvide");
+    Pkg::CallbackProgressDeltaDownload ("PackageCallbacks::ProgressProvide");
+    Pkg::CallbackProblemDeltaDownload ("PackageCallbacks::ProblemDeltaDownload");
+    Pkg::CallbackFinishDeltaDownload ("PackageCallbacks::FinishPatchDeltaProvide");
+
+    Pkg::CallbackStartDeltaApply ("PackageCallbacks::StartDeltaApply");
+    Pkg::CallbackProgressDeltaApply ("PackageCallbacks::ProgressProvide");
+    Pkg::CallbackProblemDeltaApply ("PackageCallbacks::ProblemDeltaApply");
+    Pkg::CallbackFinishDeltaApply ("PackageCallbacks::FinishPatchDeltaProvide");
+
+    Pkg::CallbackStartPatchDownload ("PackageCallbacks::StartPatchProvide");
+    Pkg::CallbackProgressPatchDownload ("PackageCallbacks::ProgressProvide");
+    Pkg::CallbackProblemPatchDownload ("PackageCallbacks::ProblemPatchDownload");
+    Pkg::CallbackFinishPatchDownload ("PackageCallbacks::FinishPatchDeltaProvide");
+
+    // source create callbacks
+    Pkg::CallbackSourceCreateStart("PackageCallbacks::SourceCreateStart");
+    Pkg::CallbackSourceCreateProgress("PackageCallbacks::SourceCreateProgress");
+    Pkg::CallbackSourceCreateError("PackageCallbacks::SourceCreateError");
+    Pkg::CallbackSourceCreateEnd("PackageCallbacks::SourceCreateEnd");
+
+    // source probing callbacks
+    Pkg::CallbackSourceProbeStart("PackageCallbacks::SourceProbeStart");
+    Pkg::CallbackSourceProbeFailed("PackageCallbacks::SourceProbeFailed");
+    Pkg::CallbackSourceProbeSucceeded("PackageCallbacks::SourceProbeSucceeded");
+    Pkg::CallbackSourceProbeProgress("PackageCallbacks::SourceProbeProgress");
+    Pkg::CallbackSourceProbeError("PackageCallbacks::SourceProbeError");
+    Pkg::CallbackSourceProbeEnd("PackageCallbacks::SourceProbeEnd");
+
+    // source report callbacks
+    Pkg::CallbackSourceReportStart("PackageCallbacks::SourceReportStart");
+    Pkg::CallbackSourceReportProgress("PackageCallbacks::SourceReportProgress");
+    Pkg::CallbackSourceReportError("PackageCallbacks::SourceReportError");
+    Pkg::CallbackSourceReportEnd("PackageCallbacks::SourceReportEnd");
+
 
     // @see bugzilla #183821
     // Do not register these callbacks in case of AutoInstallation

@@ -58,25 +58,10 @@ list<string> allowed_interfaces = nil;
  */
 boolean configuration_changed = nil;
 
-///**
-// * NetworkManager handles some network interfaces
-// */
-//boolean nm_managed = nil;
-
-///**
-// * String used as a fake interface name
-// */
-//string special_all_nm_interfaces = ">>__this__string__includes__all__NM__interfaces__<<";
-
 /**
  * `Any`-feature is supported in the firewall configuration
  */
 boolean any_iface_supported = nil;
-
-///**
-// * NetworkManager interfaces were selected, or are supported by the current configuration
-// */
-//boolean nm_ifaces_have_to_be_supported = nil;
 
 // private functions
 

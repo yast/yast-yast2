@@ -302,19 +302,23 @@ These two widgets (W1 and W2) are identical.
 </para></example>
 </section>
 
-<section id="repl_buttons"><title>Replacing and Hiding Back/Abort/Next buttons</title>
+<section id="repl_buttons"><title>Replacing, Disabling, and Hiding
+the Back/Abort/Next buttons</title>
 <para>
 To specify the labels of the Abort, Back and Next buttons, use the entries
 "abort_button", "back_button", "next_button" in the map that is passed
 to CWM::ShowAndRun as argument. If any of the keys is not specified, then
 the default button label is set. If the label of the button is empty string
 or nil, then the button is not shown.
+If the entry "disable_buttons" is present, it is a list of the buttons that
+should be disabled (in the "foo_button" form).
 </para>
 <example id="repl_button_example"><title>Replacing the wizard buttons</title><screen>
 CWM::ShowAndRun ($[
     "back_button" : nil, // will be hidden
     "next_button" : Label::FinishButton (), // label of the "Next" button
                    // abort button is not specified, will be "Abort" (default)
+    "disable_buttons" : ["abort_button"],
     ....
 ]);
  </screen></example>

@@ -1,4 +1,166 @@
-Do not modify this package in trunk without communicating to the maintainer first. SLE10SP1 development is being performed in the SuSE-SLE-10-SP1-Branch branch.
+-------------------------------------------------------------------
+Mon Sep 18 16:35:26 CEST 2006 - lslezak@suse.cz
+
+- use the new source callbacks (feature #1466),
+  require yast2-pkg-bindigs >= 2.13.95
+- 2.13.81
+
+-------------------------------------------------------------------
+Fri Sep 15 10:02:49 CEST 2006 - mvidner@suse.cz
+
+- Refactored Progress.ycp (but reverted the interface change).
+- 2.13.80
+
+-------------------------------------------------------------------
+Wed Aug 30 16:31:11 CEST 2006 - sh@suse.de
+
+- Added output of "rpm -qa" to save_y2logs
+  upon request at all-hands meeting 2006-08-29 
+- 2.13.79
+
+-------------------------------------------------------------------
+Wed Aug 30 15:23:33 CEST 2006 - locilka@suse.cz
+
+- DnsServerPunycode module moved from yast2-dns-server to yast2
+  as Punycode module.
+- 2.13.78
+
+-------------------------------------------------------------------
+Wed Aug 23 16:27:16 CEST 2006 - jsrain@suse.cz
+
+- added release-specific Xvnc parameters
+- 2.13.77
+
+-------------------------------------------------------------------
+Wed Aug 23 09:59:40 CEST 2006 - jsrain@suse.cz
+
+- kernel-smp package is dropped for 10.2
+- simplified kernel package detection for PPC for 10.2 (#195049)
+- 2.13.76
+
+-------------------------------------------------------------------
+Tue Aug 22 19:24:18 CEST 2006 - mvidner@suse.cz
+
+- CWM::ShowAndRun: documented disable_buttons.
+
+-------------------------------------------------------------------
+Thu Aug 17 16:40:58 CEST 2006 - jsrain@suse.cz
+
+- initialize patch/delta RPM callbacks
+- 2.13.75
+
+-------------------------------------------------------------------
+Thu Aug 10 15:25:59 CEST 2006 - locilka@suse.cz
+
+- Moved (x)inetd agent from yast2-inetd to yast2
+- 2.13.74
+
+-------------------------------------------------------------------
+Wed Aug  9 15:37:45 CEST 2006 - jsrain@suse.cz
+
+- fixed recognizing pegasos, cell and maple boot requirements (PPC)
+  (#192957)
+
+-------------------------------------------------------------------
+Wed Aug  9 14:19:23 CEST 2006 - kmachalkova@suse.cz
+
+- Added new Address::CheckMAC() and Address::ValidMAC() functions. 
+- 2.13.73
+
+-------------------------------------------------------------------
+Mon Aug  7 11:07:31 CEST 2006 - locilka@suse.cz
+
+- Added new IP::IPv4ToBits() and IP::BitsToIPv4() functions.
+
+-------------------------------------------------------------------
+Fri Aug  4 16:21:43 CEST 2006 - jsrain@suse.cz
+
+- added mode X-version-specific paths
+- 2.13.72
+
+-------------------------------------------------------------------
+Thu Aug  3 14:51:46 CEST 2006 - mvidner@suse.cz
+
+- Start-up speed-up: don't read all desktop files to find our icon.
+  Thanks to Michael Meeks for profiling.
+- 2.13.71
+
+-------------------------------------------------------------------
+Wed Aug  2 16:00:12 CEST 2006 - jsrain@suse.cz
+
+- Added more X-version-specific paths
+- 2.13.70
+
+-------------------------------------------------------------------
+Wed Aug  2 10:08:50 CEST 2006 - locilka@suse.cz
+
+- Added new module SuSEFirewallExpertRules managing expert ACCEPT
+  rules of SuSEfirewall2.
+- Port-ranges-related functionality in SuSEFirewall module moved
+  to new module PortRanges.
+
+-------------------------------------------------------------------
+Tue Aug  1 16:10:01 CEST 2006 - jsrain@suse.cz
+
+- Added module and data file specifying X11 paths
+
+-------------------------------------------------------------------
+Wed Jul 26 11:40:32 CEST 2006 - locilka@suse.cz
+
+- Added new FileUtils::CheckAndCreatePath function that checks the
+  current system for path existency and offers its creation if it
+  doesn't exist.
+- 2.13.69
+
+-------------------------------------------------------------------
+Tue Jul 25 15:50:15 CEST 2006 - jsrain@suse.cz
+
+- fixed error popup if log of mkinitrd could not be run (#156762)
+- prevent from crash in DialogTree.ycp (#191237)
+
+-------------------------------------------------------------------
+Mon Jul 24 09:42:55 CEST 2006 - locilka@suse.cz
+
+- Fixed handling of multiline entries in the SuSEfirewall2
+  sysconfig file. Newline characters were removed when joining
+  multiline entries together. By now, .sysconfig.SuSEfirewall2
+  returns values as it reads them, newlines are replaced with
+  spaces in SuSEFirewall::Read() (#194419).
+
+-------------------------------------------------------------------
+Tue Jul 18 16:02:46 CEST 2006 - jsrain@suse.cz
+
+- fixed handling of translated strings in control file (eg.
+  congratulate string)
+- 2.13.68
+
+-------------------------------------------------------------------
+Tue Jul 18 10:24:24 CEST 2006 - locilka@suse.cz
+
+- Fixed proposal to reflect the current status better. Network
+  interfaces might be assigned to the zone with 'any' in 'EXT'.
+  If there are no network interfaces but SSH port is open, proposal
+  informs about it (#154401).
+- If there are only dial-up interfaces, SSH port can be also
+  enabled and correctly informs about the current state.
+
+-------------------------------------------------------------------
+Sun Jul 16 08:54:55 CEST 2006 - olh@suse.de
+
+- introduce a Linuxrc::display_ip and use it instead of Arch::s390
+- 2.13.67
+
+-------------------------------------------------------------------
+Fri Jul 14 17:09:02 CEST 2006 - locilka@suse.cz
+
+- Added better checking for wrong port-ranges. Invalid ones are
+  stored in the configuration but ignored for firewall functions,
+  such as joining port ranges.
+- Joining ranges is possible only for TCP and UDP because other
+  protocols don't support port ranges.
+- Removing notes about NetworkManager from the SuSEFirewall
+  documentation because it isn't needed to mention it there.
+- 2.13.66
 
 -------------------------------------------------------------------
 Sat Jun 24 22:23:08 CEST 2006 - locilka@suse.cz
