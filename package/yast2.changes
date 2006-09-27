@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Sep 27 10:57:21 CEST 2006 - jsrain@suse.cz
+
+- merged 10.2-only patches to SVN repository
+
+-------------------------------------------------------------------
 Mon Sep 18 16:35:26 CEST 2006 - lslezak@suse.cz
 
 - use the new source callbacks (feature #1466),
