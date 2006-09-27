@@ -6,13 +6,15 @@ client_DATA =
 
 ynclude_DATA =
 
-module_DATA =			\
-	NetworkConfig.ycp	\
-	NetworkDevices.ycp	\
-	NetworkService.ycp	\
-	SuSEFirewall.ycp	\
+module_DATA =				\
+	NetworkConfig.ycp		\
+	NetworkDevices.ycp		\
+	NetworkService.ycp		\
+	SuSEFirewall.ycp		\
 	SuSEFirewallServices.ycp	\
-	PortAliases.ycp		\
+	SuSEFirewallExpertRules.ycp	\
+	PortAliases.ycp			\
+	PortRanges.ycp			\
 	SuSEFirewallProposal.ycp	\
 	CWMFirewallInterfaces.ycp
 

@@ -194,6 +194,8 @@ global define symbol Run (map<string,any> settings) {
     string initial_screen = settings["initial_screen"]:"";
     map<any, any> functions = settings["functions"]:$[];
 
+    if (initial_screen == nil)
+	initial_screen = "";
     if (initial_screen == "")
     {
 	foreach (string k, map<string,any> v, screens, {

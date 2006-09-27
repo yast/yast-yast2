@@ -1,21 +1,27 @@
 @HEADER-COMMENT@
 
 @HEADER@
+
+Patch: yast2.xversion.patch
+Patch1: yast2.kernel-package.patch
+
 BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-pkg-bindings yast2-testsuite
 # Need the new file popups
 Requires:	yast2-core >= 2.7.1
-# Pkg::Connect
-Requires:	yast2-pkg-bindings >= 2.13.43
+# Patch/Delta RPM callbacks, source callbacks
+Requires:	yast2-pkg-bindings >= 2.13.95
 Requires:	yast2_ui yast2_theme
 # For Cron Agent, Module
 Requires:       perl-Config-Crontab
 # for ag_tty (/bin/stty)
 Requires:	coreutils
-Requires:	yast2-xml, yast2-hardware-detection
+Requires:	yast2-xml yast2-hardware-detection
 Requires:	SuSEfirewall2
 
 # moved cfg_security.scr
 Conflicts:	yast2-security <= 2.13.2
+# moved ag_netd, cfg_netd.scr, cfg_xinetd.scr
+Conflicts:	yast2-inetd <= 2.13.4
 
 Provides:	yast2-lib-sequencer
 Obsoletes:	yast2-lib-sequencer
@@ -40,6 +46,12 @@ Summary:	Documentation for Wizard and Sequencer
 -
 
 @PREP@
+
+%if 0%{?suse_version} <= 1010
+%else
+%patch0
+%patch1
+%endif
 
 @BUILD@
 
@@ -96,6 +108,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 @ybindir@/*
 @agentdir@/ag_*
 /etc/bash_completion.d/yast2*.sh
+/etc/YaST2/XVersion
 
 # documentation (not included in devel subpackage)
 %doc %dir @docdir@
