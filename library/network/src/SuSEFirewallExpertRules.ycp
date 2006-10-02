@@ -110,13 +110,14 @@
      */
     global string ValidNetwork () {
 	// TRANSLATORS: description of the valid network definition
-	return _("Valid network definition can contain either the IP
-or IP/Netmask or IP/Netmask_Bits or 0/0 for all networks.
+	return _("A valid network definition can contain the IP,
+IP/Netmask, IP/Netmask_Bits, or 0/0 for all networks.
 
 Examples:
 IP: 192.168.0.1
 IP/Netmask: 192.168.0.0/255.255.255.0
-IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32");
+IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32
+");
     }
 
     /**

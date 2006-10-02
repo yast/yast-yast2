@@ -254,7 +254,9 @@
                 return Popup::ContinueCancel(sformat(
                     // TRANSLATORS: popup question (with continue / cancel buttons)
                     // %1 is the filesystem path
-                    _("Although the path %1 exists, it is not a directory.\nWould you like to continue or cancel the operation?"),
+                    _("Although the path %1 exists, it is not a directory.
+Continue or cancel the operation?
+"),
                     pathvalue
                 ));
             }
@@ -264,7 +266,9 @@
             if (Popup::YesNo(sformat(
     		// TRANSLATORS: question popup (with yes / no buttons). A user entered non-existent path
 		// for a share, %1 is entered path
-		_("The path %1 does not exist.\nWould you like to create it now?"),
+		_("The path %1 does not exist.
+Create it now?
+"),
         	pathvalue
 	    ))) {
         	// Directory creation successful
@@ -278,7 +282,9 @@
             	    return Popup::ContinueCancel(sformat(
                 	// TRANSLATORS: popup question (with continue / cancel buttons)
                 	// %1 is the name (path) of the directory
-                	_("Failed to create the directory %1.\nWould you like to continue or cancel the current operation?"),
+                	_("Failed to create the directory %1.
+Continue or cancel the current operation?
+"),
                 	pathvalue
         	    ));
         	}
