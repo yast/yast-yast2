@@ -31,7 +31,8 @@ global boolean Check () {
 	if (!have_lock)
 	{
 	    Report::Error (_("Another process is accessing the package database.
-Package management will not work!"));
+Package management cannot be used now.
+"));
 	    // ContinueCancel? What about CLI?
 	}
     }
