@@ -371,17 +371,16 @@ global void SetCmdLine (string new_cmd_line) {
 
 	    string cpuinfo_flags = (string) SCR::Read(.proc.cpuinfo.value."0"."flags");	// check only first processor
 	    list cpuflags = (size(cpuinfo_flags) > 0) ? splitstring(cpuinfo_flags, " ") : [];
-/*
+
 	    // check for "roughly" >= 4GB memory (see bug #40729)
 	    list memories = (list) SCR::Read(.probe.memory);
 	    integer memsize = memories[0,"resource","phys_mem",0,"range"]:0;
 	    integer fourGB = 0x0C0000000;
 	    y2milestone ("Physical memory %1", memsize);
-*/
+
 	    // for memory > 4GB and PAE support we install kernel-bigsmp,
 	    // regardles of SMP or not.
-// install bigsmp kernel regardless the memory size - fate #159006
-	    if (/*memsize >= fourGB &&*/ contains (cpuflags, "pae"))
+	    if (memsize >= fourGB && contains (cpuflags, "pae"))
 	    {
 		y2milestone ("Kernel switch: mem >= 4GB && PAE");
 		kernel_packages = ["kernel-bigsmp"];
