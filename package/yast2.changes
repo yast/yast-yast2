@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct 10 18:02:17 CEST 2006 - mvidner@suse.cz
+
+- It is now configurable whether to use Qt or GTK GUI,
+  see "man yast2" (F#301083).
+- 2.14.3
+
+-------------------------------------------------------------------
 Tue Oct  3 12:38:46 CEST 2006 - jsrain@suse.cz
 
 - reverted bigsmp kernel usage

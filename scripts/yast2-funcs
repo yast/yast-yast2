@@ -29,42 +29,49 @@ function get_plugindir()
 
 
 #
-# check if the qt plugin and all necessary libaries are present
+# check if a plugin and all necessary libaries are present
 #
-function check_qt()
+function check_plugin()
 {
-    get_plugindir
-    Y2_QT=$plugindir/libpy2qt.so.2
+    local PLUGIN_SO="$1"
+    local DESCR="$2"
 
-    if [ -e "$Y2_QT" ] ; then
-	if ! `/usr/bin/ldd "$Y2_QT" | grep --quiet "=> not found"` ; then
+    get_plugindir
+    PLUGIN_SO=$plugindir/"$PLUGIN_SO"
+
+    if [ -e "$PLUGIN_SO" ] ; then
+	if ! `LC_ALL=C /usr/bin/ldd "$PLUGIN_SO" | grep --quiet "=> not found"` ; then
 	    return 0		# success
 	fi
-	echo "warning: the qt frontend is installed but does not work"
+	echo "warning: $DESCR is installed but does not work" >&2
 	sleep 1
     fi
 
     return 1			# failure
 }
 
+#
+# check if the qt plugin and all necessary libaries are present
+#
+function check_qt()
+{
+    check_plugin libpy2qt.so.2 "the qt frontend"
+}
+
+#
+# check if the ncurses plugin and all necessary libaries are present
+#
+function check_gtk()
+{
+    check_plugin libpy2gtk.so.2 "the gtk frontend"
+}
 
 #
 # check if the ncurses plugin and all necessary libaries are present
 #
 function check_ncurses()
 {
-    get_plugindir
-    Y2_NCURSES=$plugindir/libpy2ncurses.so.2
-
-    if [ -e "$Y2_NCURSES" ] ; then
-	if ! `/usr/bin/ldd "$Y2_NCURSES" | grep --quiet "=> not found"` ; then
-	    return 0		# success
-	fi
-	echo "warning: the ncurses frontend is installed but does not work"
-	sleep 1
-    fi
-
-    return 1			# failure
+    check_plugin libpy2ncurses.so.2 "the ncurses frontend"
 }
 
 
