@@ -91,7 +91,13 @@ Widget style (QT frontend only).
 .\"
 .\"
 .SH FILES
-.B /var/log/YaST2/*
+.TP
+/var/log/YaST2/*
+Logs
+.TP
+$HOME/.yast2/gui, /etc/YaST2/gui
+May contain a single word, "qt", "gtk", or "ncurses" to specify the
+preferred GUI for cases when DISPLAY is available.
 .\"
 .\"
 \" .SH BUGS

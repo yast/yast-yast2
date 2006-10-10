@@ -108,9 +108,40 @@ fi
 # set lang from sysconfig
 set_lang_from_sysconfig
 
+# F#301083
+if [ -f $HOME/.yast2/gui ]; then
+    read WANTED_GUI < $HOME/.yast2/gui
+elif [ -f /etc/YaST2/gui ]; then
+    read WANTED_GUI < /etc/YaST2/gui
+fi
+# Default GUI
+: ${WANTED_GUI:=qt}
+# Fallback GUI
+SELECTED_GUI=ncurses
 
-# use text mode if DISPLAY is not set or no qt plugin is installed
-if [ -z "$DISPLAY" ] || ! check_qt ; then
+# Use text mode if DISPLAY is not set
+# Otherwise, use the preferred GUI, falling back to ncurses.
+# This could be made smarter of course
+if [ -n "$DISPLAY" ]; then
+    if [ "$WANTED_GUI" = "qt" ]; then
+	if check_qt; then
+	    SELECTED_GUI=qt
+	else
+	    echo >&2 "Qt GUI wanted but not found, falling back to ncurses."
+	fi
+    elif [ "$WANTED_GUI" = "gtk" ]; then
+	if check_gtk; then
+	    SELECTED_GUI=gtk
+	else
+	    echo >&2 "GTK GUI wanted but not found, falling back to ncurses."
+	fi
+    elif [ "$WANTED_GUI" != "ncurses" ]; then
+	echo >&2 "Unknown GUI '$WANTED_GUI', falling back to ncurses."
+    fi
+fi
+
+
+if [ "$SELECTED_GUI" = "ncurses" ]; then
     if check_ncurses ; then
 	TTY=`/usr/bin/tty`
         # on console, start yast in UTF-8 locale (only on a 'local' console)
@@ -186,10 +217,11 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 	    /usr/bin/test -x /bin/unicode_stop && /bin/unicode_stop
 	fi
     else
-	echo "You need to install yast2-ncurses to use the YaST2 text mode interface"
+	echo "You need to install yast2-ncurses to use the YaST2 text mode interface" >&2
 	exit 1
     fi
-else
+# quick hack: treat gtk like qt
+elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
     set_qt_home_dir
     # use ycp menu if the control center is not installed
     if [ $module == "menu" -a -e "$ybindir/y2controlcenter" ] ; then
@@ -224,12 +256,14 @@ else
 	c=("${b[@]/%/\")}")
 	set -- "${c[@]}"
 
-	$ybindir/y2base $module "$@" qt "$Y2_GEOMETRY" $Y2QT_ARGS
+	$ybindir/y2base $module "$@" "$SELECTED_GUI" "$Y2_GEOMETRY" $Y2QT_ARGS
 	if [ ! $module == "online_update" -o ! -e "/var/lib/YaST2/selected_patches.ycp" ] ; then
 	    break
 	fi
       done
     fi
+else
+    echo >&2 "Internal error, unhandled '$SELECTED_GUI'"
 fi
 
 exit_code=$?
