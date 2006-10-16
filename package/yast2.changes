@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Oct 16 16:34:58 CEST 2006 - lslezak@suse.cz
+
+- register script callbacks (feature #100233)
+- 2.14.4
+
+-------------------------------------------------------------------
 Mon Oct 16 11:23:48 CEST 2006 - mvidner@suse.cz
 
 - /sbin/yast2: make ldd "not found" messages visible so that there is
