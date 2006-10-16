@@ -24,6 +24,16 @@ global define void SetMediaCallbacks () {
     Pkg::CallbackSourceChange ("PackageCallbacks::SourceChange");
 }
 
+global void SetScriptCallbacks()
+{
+    Pkg::CallbackScriptStart("PackageCallbacks::ScriptStart");
+    Pkg::CallbackScriptStart("PackageCallbacks::ScriptProgress");
+    Pkg::CallbackScriptStart("PackageCallbacks::ScriptProblem");
+    Pkg::CallbackScriptStart("PackageCallbacks::ScriptFinish");
+
+    Pkg::CallbackMessage("PackageCallbacks::Message");
+}
+
 /**
  * Register package manager callbacks
  */
@@ -85,6 +95,8 @@ global define void InitPackageCallbacks() {
     }
 
     SetMediaCallbacks ();
+
+    SetScriptCallbacks();
 }
 
 /* EOF */
