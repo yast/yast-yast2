@@ -40,7 +40,8 @@ function check_plugin()
     PLUGIN_SO=$plugindir/"$PLUGIN_SO"
 
     if [ -e "$PLUGIN_SO" ] ; then
-	if ! `LC_ALL=C /usr/bin/ldd "$PLUGIN_SO" | grep --quiet "=> not found"` ; then
+	# #211392, make reasons for failure visible
+	if ! LC_ALL=C /usr/bin/ldd "$PLUGIN_SO" | grep "=> not found" >&2; then
 	    return 0		# success
 	fi
 	echo "warning: $DESCR is installed but does not work" >&2
