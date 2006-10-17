@@ -9,6 +9,7 @@ ynclude_DATA =
 module_DATA =				\
 	NetworkConfig.ycp		\
 	NetworkDevices.ycp		\
+	NetworkPopup.ycp		\
 	NetworkService.ycp		\
 	SuSEFirewall.ycp		\
 	SuSEFirewallServices.ycp	\
