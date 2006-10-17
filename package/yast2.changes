@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Oct 16 16:34:58 CEST 2006 - lslezak@suse.cz
+
+- register script callbacks (feature #100233)
+- 2.13.83
+
+-------------------------------------------------------------------
 Mon Oct  2 16:18:09 CEST 2006 - jsrain@suse.cz
 
 - merged texts from proofread
