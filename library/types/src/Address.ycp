@@ -64,8 +64,8 @@ global define boolean Check(string address) ``{
  */
 global define string ValidMAC() ``{
 	//describe valid MAC address
-	return _("A valid MAC address consists of six pairs of hexadecimal
-digits separated by colons.");
+	return _("A valid MAC address consists of six pairs 
+of hexadecimal digits separated by colon.");
 }
 
 /**
