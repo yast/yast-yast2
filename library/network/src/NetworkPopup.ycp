@@ -21,6 +21,7 @@
     textdomain "base";
 
     import "Label";
+    import "NetworkDevices";
 
     // cache all found hosts on the local network
     list<string> found_hosts = nil;
@@ -39,15 +40,22 @@
 	string item = nil;
 
 	list Items = maplist(string i, items,  ``{
-		return `item(`id(i), i, i == selected);
+		string device_name = NetworkDevices::GetValue(i, "NAME");
+		if (size(device_name) > 30) {
+		    device_name = substring (device_name, 0, 27) + "...";
+		}
+		// translators: table item, informing that IP address is assigned via DHCP
+		return `item(`id(i),  NetworkDevices::GetDeviceType(i), device_name, (NetworkDevices::GetValue(i, "BOOTPROTO") == "dhcp" ?
+              _("DHCP address"): NetworkDevices::GetValue(i, "IPADDR")), i);
 	    }
 	);
 
 	UI::OpenDialog (
 	    `VBox (
-		`HSpacing (40),
+		`HSpacing (60),
 		`HBox (
-		    `SelectionBox (`id (`items), title, Items),
+		    // translators: table header - details about the network device
+		    `Table(`id(`items), `header(_("Device Type"),_("Device Name"),_("IP Address"),_("Device ID")), Items),
 		    `VSpacing(10)
 		    ),
 		`HBox (
@@ -57,6 +65,7 @@
 				 Label::CancelButton())
 		    )
 		));
+	UI::ChangeWidget(`id(`items), `CurrentItem, selected);
 	UI::SetFocus (`id (`items));
 	symbol ret = nil;
 	do
