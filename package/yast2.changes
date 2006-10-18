@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct 18 15:12:08 CEST 2006 - locilka@suse.cz
+
+- Returning `abort from ProductControl::Run in case of Abort button
+  pressed during the second stage installation (FATE #300422).
+- 2.14.6
+
+-------------------------------------------------------------------
 Wed Oct 18 13:47:50 CEST 2006 - kmachalkova@suse.cz
 
 - NetworkDevices: return device type (e.g. netcard, modem,..) in
