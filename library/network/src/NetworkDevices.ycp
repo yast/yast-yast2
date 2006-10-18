@@ -14,6 +14,7 @@
 {
 
 module "NetworkDevices";
+textdomain "base";
 
 import "Arch";
 import "Map";
@@ -176,6 +177,29 @@ string ifcfg_part (string ifcfg, string part) {
  */
 global string device_type (string dev) {
     return ifcfg_part (dev, "1");
+}
+
+/**
+ * Return device type in human readable form :-)
+ * @param dev device
+ * @return device type 
+ * @example GetDeviceType(eth-bus-pci-0000:01:07.0) -> "network card"
+ * @example GetDeviceType(modem0) -> "modem"
+ */
+global string GetDeviceType(string dev) {
+    if (regexpmatch(dev,"^" + DeviceRegex["netcard"]:"")) {
+	return(_("network card"));
+    }
+    else if (regexpmatch(dev,"^" + DeviceRegex["modem"]:"")) {
+	return(_("modem"));
+    }
+    else if (regexpmatch(dev,"^" + DeviceRegex["isdn"]:"")) {
+	return(_("ISDN"));
+    }
+    else if (regexpmatch(dev,"^" + DeviceRegex["dsl"]:"")) {
+	return(_("DSL"));
+    }
+    else return(_("unknown"));
 }
 
 /**
