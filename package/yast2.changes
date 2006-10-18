@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Wed Oct 18 13:47:50 CEST 2006 - kmachalkova@suse.cz
+
+- NetworkDevices: return device type (e.g. netcard, modem,..) in
+  human readable form
+- NetworkPopup: display more information (besides device id also
+  type, name and IP address)
+- Moved NetworkPopup.ycp from library/wizard to library/network
+- 2.14.5
+
+-------------------------------------------------------------------
 Mon Oct 16 16:34:58 CEST 2006 - lslezak@suse.cz
 
 - register script callbacks (feature #100233)
