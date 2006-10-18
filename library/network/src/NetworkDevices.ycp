@@ -14,6 +14,7 @@
 {
 
 module "NetworkDevices";
+textdomain "base";
 
 import "Arch";
 import "Map";
@@ -187,18 +188,18 @@ global string device_type (string dev) {
  */
 global string GetDeviceType(string dev) {
     if (regexpmatch(dev,"^" + DeviceRegex["netcard"]:"")) {
-	return("network card");
+	return(_("network card"));
     }
     else if (regexpmatch(dev,"^" + DeviceRegex["modem"]:"")) {
-	return("modem");
+	return(_("modem"));
     }
     else if (regexpmatch(dev,"^" + DeviceRegex["isdn"]:"")) {
-	return("ISDN");
+	return(_("ISDN"));
     }
     else if (regexpmatch(dev,"^" + DeviceRegex["dsl"]:"")) {
-	return("DSL");
+	return(_("DSL"));
     }
-    else return("unknown");
+    else return(_("unknown"));
 }
 
 /**

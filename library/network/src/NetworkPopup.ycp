@@ -44,7 +44,7 @@
 		if (size(device_name) > 30) {
 		    device_name = substring (device_name, 0, 27) + "...";
 		}
-
+		// translators: table item, informing that IP address is assigned via DHCP
 		return `item(`id(i),  NetworkDevices::GetDeviceType(i), device_name, (NetworkDevices::GetValue(i, "BOOTPROTO") == "dhcp" ?
               _("DHCP address"): NetworkDevices::GetValue(i, "IPADDR")), i);
 	    }
@@ -54,7 +54,8 @@
 	    `VBox (
 		`HSpacing (60),
 		`HBox (
-		    `Table(`id(`items), `header("Device Type","Device Name","IP Address","Device ID"), Items),
+		    // translators: table header - details about the network device
+		    `Table(`id(`items), `header(_("Device Type"),_("Device Name"),_("IP Address"),_("Device ID")), Items),
 		    `VSpacing(10)
 		    ),
 		`HBox (
