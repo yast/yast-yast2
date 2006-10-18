@@ -1011,6 +1011,11 @@ global symbol RunFrom (integer from, boolean allow_back)
 	}
 	else if (result == `abort)
 	{
+	    // FATE #300422
+	    // handling when user aborts the second stage installation
+	    if (Stage::cont ()) {
+		final_result = result;
+	    }
 	    break;
 	}
 	else if (result == `finish)
