@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Oct 23 17:14:04 CEST 2006 - lslezak@suse.cz
+
+- added .etc.policykit agent (reads/writes
+  /etc/PolicyKit/privilege.d/*.privilege files), used for
+  handling powermanagement permissions (fate #301180, bug #214272)
+- 2.14.7
+
+-------------------------------------------------------------------
 Wed Oct 18 15:12:08 CEST 2006 - locilka@suse.cz
 
 - Returning `abort from ProductControl::Run in case of Abort button
