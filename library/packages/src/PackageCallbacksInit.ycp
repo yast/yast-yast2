@@ -27,9 +27,9 @@ global define void SetMediaCallbacks () {
 global void SetScriptCallbacks()
 {
     Pkg::CallbackScriptStart("PackageCallbacks::ScriptStart");
-    Pkg::CallbackScriptStart("PackageCallbacks::ScriptProgress");
-    Pkg::CallbackScriptStart("PackageCallbacks::ScriptProblem");
-    Pkg::CallbackScriptStart("PackageCallbacks::ScriptFinish");
+    Pkg::CallbackScriptProgress("PackageCallbacks::ScriptProgress");
+    Pkg::CallbackScriptProblem("PackageCallbacks::ScriptProblem");
+    Pkg::CallbackScriptFinish("PackageCallbacks::ScriptFinish");
 
     Pkg::CallbackMessage("PackageCallbacks::Message");
 }

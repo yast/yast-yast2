@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Oct 24 15:50:54 CEST 2006 - lslezak@suse.cz
+
+- fixed script callback registration
+
+-------------------------------------------------------------------
 Wed Oct 18 15:12:08 CEST 2006 - locilka@suse.cz
 
 - Returning `abort from ProductControl::Run in case of Abort button
