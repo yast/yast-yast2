@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Oct 24 15:50:54 CEST 2006 - lslezak@suse.cz
+
+- .etc.policykit agent - added documentation
+- fixed script callback registration
+
+-------------------------------------------------------------------
 Tue Oct 24 09:44:20 CEST 2006 - jsrain@suse.cz
 
 - lazy initialization of list of YaST modules for bash completion

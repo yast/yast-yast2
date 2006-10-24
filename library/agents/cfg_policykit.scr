@@ -1,4 +1,44 @@
-// use the INI-agent for reading/writing
+/**
+ * File:
+ *   cfg_policykit.scr
+ * Summary:
+ *   SCR Agent for reading/writing /etc/PolicyKit/privilege.d/*.privilege files
+ *   using the ini-agent
+ * Access:
+ *   read/write
+ * Authors:
+ *   Ladislav Slezak <lslezak@suse.cz>
+ * Example:
+ *
+ *   Read list of available files
+ *   SCR::Dir(.etc.policykit.section)
+ *
+ *   Read list of sections in a file
+ *   SCR::Dir(.etc.policykit.section."/etc/PolicyKit/privilege.d/hal-power-hibernate.privilege")
+ *   (["Privilege"])
+ *
+ *   Read list of options in a section
+ *   SCR::Dir(.etc.policykit.value."/etc/PolicyKit/privilege.d/hal-power-hibernate.privilege"."Privilege")
+ *   (["RequiredPrivileges", "SufficientPrivileges", "Allow", "Deny", "CanObtain", "CanGrant", "ObtainRequireRoot"])
+ *
+ *   Read an option
+ *   SCR::Read(.etc.policykit.value."/etc/PolicyKit/privilege.d/hal-power-hibernate.privilege"."Privilege"."RequiredPrivileges")
+ *   ("desktop-console")
+ *
+ *
+ *   Write an option
+ *   SCR::Write(.etc.policykit.value."/etc/PolicyKit/privilege.d/hal-power-hibernate.privilege"."Privilege"."RequiredPrivileges", "")
+ *   (true)
+ *
+ *
+ *   Flush the changes
+ *   SCR::Write(.etc.policykit, nil)
+ *
+ *
+ *   Fore more information see the INI-agent documentation
+ *
+ * $Id:$
+ */
 
 .etc.policykit
 
