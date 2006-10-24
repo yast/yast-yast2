@@ -2,13 +2,16 @@
 # A Christmas gift from Carsten Hoeger
 
 YAST=/sbin/yast
-# build a list of know yast modules
-MODLIST=($(LC_ALL=C $YAST -l| grep '^[a-z]' | grep -v "Available"))
+MODLIST=()
 
 _yast2 ()
 {
         local cur prevprev prev len idx mod MODOPTS line opt rest
         MODOPTS=()
+	if test ${#MODLIST[*]} = 0; then
+		# build a list of know yast modules
+		MODLIST=($(LC_ALL=C $YAST -l| grep '^[a-z]' | grep -v "Available"))
+	fi
 
 	if [[ ${#COMP_WORDS[@]} -gt 4 ]]; then
 		return 0

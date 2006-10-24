@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Oct 24 09:44:20 CEST 2006 - jsrain@suse.cz
+
+- lazy initialization of list of YaST modules for bash completion
+  (#212928)
+
+-------------------------------------------------------------------
 Mon Oct 23 17:14:04 CEST 2006 - lslezak@suse.cz
 
 - added .etc.policykit agent (reads/writes
