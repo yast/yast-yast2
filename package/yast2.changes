@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 25 11:13:38 CEST 2006 - locilka@suse.cz
+
+- Writing the client's return value to the log (ProductControl)
+  for easier debugging (#214886).
+
+-------------------------------------------------------------------
 Tue Oct 24 15:50:54 CEST 2006 - lslezak@suse.cz
 
 - .etc.policykit agent - added documentation
