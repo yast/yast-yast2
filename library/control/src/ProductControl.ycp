@@ -1066,16 +1066,17 @@ global symbol RunFrom (integer from, boolean allow_back)
 	final_result = `abort;
     }
 
+    y2milestone ("Former result: %1, Final result: %2", former_result, final_result);
+
     if (final_result != nil) {
-	y2milestone ("Returning: %1", final_result);
-	return final_result;
-    } 
-
-    final_result = `next;
-    if (current_step <= -1)
+	y2milestone ("Final result already set.");
+    } else if (current_step <= -1) {
 	final_result = `back;
+    } else {
+	final_result = `next;
+    }
 
-    y2milestone ("Returning: %1", final_result);    
+    y2milestone ("Current step: %1, Returning: %2", current_step, final_result);    
     return final_result;
 }
 
