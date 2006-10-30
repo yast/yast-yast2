@@ -857,6 +857,7 @@ global symbol RunFrom (integer from, boolean allow_back)
 	y2error("No workflow found: %1", modules );
 	// error report
 	Report::Error(_("No workflow defined for this installation mode."));
+	y2milestone("Returning `abort");
 	return `abort;
     }
 
@@ -941,6 +942,7 @@ global symbol RunFrom (integer from, boolean allow_back)
         }
 
 	symbol result = (symbol) WFM::CallFunction (getClientName(step_name), args);
+	y2milestone ("Calling %1 returned %2", argterm, result);
 
         // Remove file if step was run and returned (without a crash);
 	if (current_step < size(modules) - 1 && !Stage::initial())
@@ -992,6 +994,7 @@ global symbol RunFrom (integer from, boolean allow_back)
 	    else if (r != `again)
 	    {
 		UI::CloseDialog();
+		y2milestone ("Returning nil");
 		return nil;
 	    }
 	    continue;
@@ -1062,16 +1065,22 @@ global symbol RunFrom (integer from, boolean allow_back)
     }
     if (former_result == `abort)
     {
+	y2milestone ("Returning `abort");
 	return `abort;
     }
 
-    if (final_result != nil)
+    if (final_result != nil) {
+	y2milestone ("Returning %1", final_result);
 	return final_result;
+    }
 
-    if (current_step <= -1)
+    if (current_step <= -1) {
+	y2milestone ("Returning `back");
 	return `back;
-    else
+    } else {
+	y2milestone ("Returning `next");
 	return `next;
+    }
 }
 
 /**
