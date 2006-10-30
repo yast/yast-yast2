@@ -1085,7 +1085,9 @@ global symbol RunFrom (integer from, boolean allow_back)
  *
  */
 global symbol Run () {
-    return RunFrom (0, false);
+    symbol ret = RunFrom (0, false);
+    y2milestone ("Run() returning %1", ret);
+    return ret;
 }
 
 // Functions to access restart information
