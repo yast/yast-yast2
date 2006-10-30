@@ -6,6 +6,9 @@ Mon Oct 30 09:34:00 CET 2006 - locilka@suse.cz
   writing the new status of services (bugzilla #215416).
 - More debugging messages in ProductControl module. Logging return
   values.
+- Restarting firewall in SuSEFirewall::ActivateConfiguration() even
+  if the configuration is not changed but there are some RPC
+  services in the configuration (bugzilla #186186).
 
 -------------------------------------------------------------------
 Tue Oct 24 15:50:54 CEST 2006 - lslezak@suse.cz
