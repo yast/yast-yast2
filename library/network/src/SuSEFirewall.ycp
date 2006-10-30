@@ -2015,6 +2015,37 @@ Run YaST2 Firewall and assign it.
 
 	return true;
     }
+    
+    /**
+     * Function returns whether some RPC service is allowed in the configuration.
+     * These services reallocate their ports when restarted. See details in
+     * bugzilla bug #186186.
+     *
+     * @return boolean some_RPC_service_used
+     */
+    boolean AnyRPCServiceInConfiguration () {
+	boolean ret = false;
+
+	foreach (string fw_zone, GetKnownFirewallZones(), {
+	    string fw_rule = sformat("FW_SERVICES_%1_RPC", fw_zone);
+	    string listed_services = SETTINGS[fw_rule]:GetDefaultValue(fw_rule);
+	    // easy case
+	    if (listed_services == nil || listed_services == "") return;
+
+	    // something listed but it still might be empty definition
+	    list <string> services_list = splitstring (listed_services, " \n\t");
+	    services_list = filter (string service, services_list, {
+		return (service != "");
+	    });
+	    if (size (listed_services) > 0) {
+		ret = true;
+		break;
+	    }
+	});
+	
+	y2milestone ("Some RPC service found: %1", ret);
+	return ret;
+    }
 
     /**
      * Function which stops firewall. Then firewall is started immediately when firewall
@@ -2031,8 +2062,12 @@ Run YaST2 Firewall and assign it.
 		return StartServices();
 	    // Started - restart it
 	    } else {
-		// modified - restart it
-		if (GetModified()) {
+		// modified - restart it, or ...
+		// bugzilla #186186
+		// If any RPC service is configured to be allowed, always restart the firewall
+		// Some of these service's ports might have been reallocated (when SuSEFirewall
+		// is used from outside, e.g., yast2-nfs-server)
+		if (GetModified() || AnyRPCServiceInConfiguration()) {
 		    y2milestone("Stopping firewall services");
 		    StopServices();
 		    y2milestone("Starting firewall services");
