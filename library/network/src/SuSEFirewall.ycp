@@ -1025,12 +1025,11 @@
 
 	foreach (string service, firewall_services, {
 	    y2debug("Starting service: %1", service);
-	    all_ok = Service::Start(service);
 
-	    if (!all_ok) {
+	    if (! Service::Start(service)) {
+		all_ok = false;
 		y2error("Error starting service: %1", service);
-		break;
-	    }
+	    } 
 	});
 	
 	return all_ok;
@@ -1046,11 +1045,10 @@
 
 	foreach (string service, firewall_services_reverse, {
 	    y2debug("Stopping service: %1", service);
-	    all_ok = Service::Stop(service);
 
-	    if (!all_ok) {
+	    if (! Service::Stop (service)) {
 		y2error("Error stopping service: %1", service);
-		break;
+		all_ok = false;
 	    }
 	});
 
@@ -1067,12 +1065,11 @@
 
 	foreach (string service, firewall_services, {
 	    y2debug("Enabling service: %1", service);
-	    all_ok = Service::Enable(service);
 
-	    if (!all_ok) {
+	    if (! Service::Enable(service)) {
+		all_ok = true;
 		// TRANSLATORS: a popup error message
-		Report::Error(sformat(_("Cannot enable service '%1'."), service));
-		break;
+		Report::Error (sformat (_("Cannot enable service '%1'."), service));
 	    }
 	});
 
@@ -1089,12 +1086,11 @@
 
 	foreach (string service, firewall_services_reverse, {
 	    y2debug("Disabling service: %1", service);
-	    all_ok = Service::Disable(service);
 
-	    if (!all_ok) {
+	    if (! Service::Disable(service)) {
+		all_ok = false;
 		// TRANSLATORS: a popup error message
-		Report::Error(sformat(_("Cannot disable service '%1'."), service));
-		break;
+		Report::Error (sformat (_("Cannot disable service '%1'."), service));
 	    }
 	});
 
