@@ -7,6 +7,7 @@ Mon Oct 30 09:29:21 CET 2006 - locilka@suse.cz
 - Restarting firewall in SuSEFirewall::ActivateConfiguration() even
   if the configuration is not changed but there are some RPC
   services in the configuration (bugzilla #186186).
+- 2.14.8
 
 -------------------------------------------------------------------
 Wed Oct 25 11:13:38 CEST 2006 - locilka@suse.cz
