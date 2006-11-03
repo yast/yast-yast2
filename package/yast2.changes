@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Nov  3 10:58:21 CET 2006 - mvidner@suse.cz
+
+- Manual page: documented the command line interface (jfriedl).
+
+-------------------------------------------------------------------
 Mon Oct 30 09:29:21 CET 2006 - locilka@suse.cz
 
 - Stopping/Starting and/or Enabling/Disabling all SuSEfirewall2
