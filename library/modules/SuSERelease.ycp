@@ -60,7 +60,7 @@ string ReleaseFileContents (string directory) {
  */
 global string ReleaseInformation (string directory) {
     string contents = ReleaseFileContents (directory);
-    if (contents != "?")
+    if (contents != nil && contents != "?")
     {
 	list lines = splitstring (contents, "\n");
 	return MakeNiceName (lines[0]:"?");
