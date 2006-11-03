@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Nov  3 15:40:35 CET 2006 - locilka@suse.cz
+
+- Fixed handling of missign SuSE-release files (partly #217013).
+
+-------------------------------------------------------------------
 Mon Oct 30 09:34:00 CET 2006 - locilka@suse.cz
 
 - Stopping/Starting and/or Enabling/Disabling all SuSEfirewall2
