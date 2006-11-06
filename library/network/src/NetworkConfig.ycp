@@ -14,6 +14,8 @@
 {
 
 module "NetworkConfig";
+import "String";
+
 
 /**
  * Basic network settings (/etc/sysconfig/network/config)
@@ -60,14 +62,14 @@ define map ReadConfig (path config) {
     maplist(string var, vars, {
 	path varpath = add(config, var);
 	string comment = (string)SCR::Read(add(varpath, "comment"));
-	if(regexpmatch(comment, "^.*## Type:[ \t]*([a-z]*).*$"))
-	    comment = regexpsub(comment, "^.*## Type:[ \t]*([a-z]*).*$", "\\1");
+	if(regexpmatch(comment, "^.*## Type:[ \t]*(" + String::CLower() + "*).*$"))
+	    comment = regexpsub(comment, "^.*## Type:[ \t]*(" + String::CLower() + "*).*$", "\\1");
 
 	string val = (string)SCR::Read(varpath);
 	y2debug("%1[%2]=%3", var, comment, val);
 
 	if(val != nil) {
-	    if(comment == "yesno") {
+	    if(comment == "yesno" || ( val=="yes"||val=="no" )) {
 		ret[var] = ( val == "yes" );
 	    }
 	    else if(comment == "integer") {

@@ -154,7 +154,7 @@ string alias_separator = "#";
 string ifcfg_name_regex =
     "^" +
     // ip6: #48696
-    "(ip6tnl|mip6mnha|[a-zA-Z]+)" + "-?" +
+    "(ip6tnl|mip6mnha|" + String::CAlpha() + "+)" + "-?" +
     "([^" + alias_separator + "]*)" + alias_separator + "?" +
     "(.*)" +
     "$";
