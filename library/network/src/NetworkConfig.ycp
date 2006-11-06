@@ -62,8 +62,8 @@ define map ReadConfig (path config) {
     maplist(string var, vars, {
 	path varpath = add(config, var);
 	string comment = (string)SCR::Read(add(varpath, "comment"));
-	if(regexpmatch(comment, "^.*## Type:[ \t]*(" + String::CLower() + "*).*$"))
-	    comment = regexpsub(comment, "^.*## Type:[ \t]*(" + String::CLower() + "*).*$", "\\1");
+	if(regexpmatch(comment, "^.*## Type:[ \t]*([" + String::CLower() + "]*).*$"))
+	    comment = regexpsub(comment, "^.*## Type:[ \t]*([" + String::CLower() + "]*).*$", "\\1");
 
 	string val = (string)SCR::Read(varpath);
 	y2debug("%1[%2]=%3", var, comment, val);
