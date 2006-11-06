@@ -14,6 +14,8 @@
 {
 
 module "NetworkConfig";
+import "String";
+
 
 /**
  * Basic network settings (/etc/sysconfig/network/config)
@@ -24,6 +26,9 @@ global map Config = $[];
  * DHCP settings (/etc/sysconfig/network/dhcp)
  */
 global map DHCP = $[];
+
+// ipv6 module
+global boolean ipv6=true;
 
 /**
  * Basic network settings
@@ -60,14 +65,14 @@ define map ReadConfig (path config) {
     maplist(string var, vars, {
 	path varpath = add(config, var);
 	string comment = (string)SCR::Read(add(varpath, "comment"));
-	if(regexpmatch(comment, "^.*## Type:[ \t]*([a-z]*).*$"))
-	    comment = regexpsub(comment, "^.*## Type:[ \t]*([a-z]*).*$", "\\1");
+	if(regexpmatch(comment, "^.*## Type:[ \t]*(" + String::CLower() + "*).*$"))
+	    comment = regexpsub(comment, "^.*## Type:[ \t]*(" + String::CLower() + "*).*$", "\\1");
 
 	string val = (string)SCR::Read(varpath);
 	y2debug("%1[%2]=%3", var, comment, val);
 
 	if(val != nil) {
-	    if(comment == "yesno") {
+	    if(comment == "yesno" || ( val=="yes"||val=="no" )) {
 		ret[var] = ( val == "yes" );
 	    }
 	    else if(comment == "integer") {
@@ -131,6 +136,10 @@ global define boolean Modified() {
     return ret;
 }
 
+global define boolean enableIPv6 (){
+ return ipv6;
+}
+
 /**
  * Read all network settings from the SCR
  * @return true on success
@@ -144,7 +153,7 @@ global define boolean Read() {
 
     Orig_Config = (map) eval(Config);
     Orig_DHCP = (map) eval(DHCP);
-
+//    ipv6 = SCR::Execute(.target.bash_output, "grep -v '^#' /etc/modprobe.conf.local|grep -q ipv6")["exit"]:"0";
     initialized = true;
     return true;
 }

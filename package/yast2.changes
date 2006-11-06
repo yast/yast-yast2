@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Nov  6 15:47:33 CET 2006 - mzugec@suse.cz
+
+- #177560 - fixed corrupting sysconfig files after setting locale to et_EE
+- set value to boolean if contains "yes" or "no" in /etc/sysconfig/network/dhcp
+- 2.13.87 
+
+-------------------------------------------------------------------
 Fri Nov  3 15:40:35 CET 2006 - locilka@suse.cz
 
 - Fixed handling of missign SuSE-release files (partly #217013).
