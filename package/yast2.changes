@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov  8 09:44:03 CET 2006 - mvidner@suse.cz
+
+- Resubmitting to fix the build.
+- 2.14.10
+
+-------------------------------------------------------------------
 Mon Nov  6 15:20:34 CET 2006 - mzugec@suse.cz
 
 - #177560 - fixed corrupting sysconfig files after setting locale to et_EE
