@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Nov 13 14:27:39 CET 2006 - locilka@suse.cz
+
+- Calling /sbin/SuSEfirewall2 (start|stop) instead of
+  Service::Start()/Service::Stop() for SuSEfirewall2_(init && setup)
+  (#215416).
+- 2.14.11
+
+-------------------------------------------------------------------
 Wed Nov  8 09:44:03 CET 2006 - mvidner@suse.cz
 
 - Resubmitting to fix the build.
