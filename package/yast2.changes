@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Nov 13 17:26:19 CET 2006 - locilka@suse.cz
+
+- Tuning the previous change not to use .target.tmpdir but using
+  "/var/lib/YaST2" instead.
+- 2.14.12
+
+-------------------------------------------------------------------
 Mon Nov 13 14:27:39 CET 2006 - locilka@suse.cz
 
 - Calling /sbin/SuSEfirewall2 (start|stop) instead of
