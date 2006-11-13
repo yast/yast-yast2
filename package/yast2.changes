@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Nov 13 14:31:12 CET 2006 - locilka@suse.cz
+
+- Calling /sbin/SuSEfirewall2 (start|stop) instead of
+  Service::Start()/Service::Stop() for SuSEfirewall2_(init && setup)
+  (#215416).
+
+-------------------------------------------------------------------
 Mon Nov  6 15:47:33 CET 2006 - mzugec@suse.cz
 
 - #177560 - fixed corrupting sysconfig files after setting locale to et_EE
