@@ -72,3 +72,9 @@ Dump	== Masquerade handling ==
 Return	false
 Return	nil
 Return	true
+Dump	
+Dump	== Service Stop / Start ==
+Return	true
+Return	true
+Return	false
+Return	false

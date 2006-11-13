@@ -195,4 +195,19 @@
     TEST(``(SuSEFirewall::GetMasquerade()), [READ, WRITE, EXECUTE], nil);
     TEST(``(SuSEFirewall::SetMasquerade(true)), [READ, WRITE, EXECUTE], nil);
     TEST(``(SuSEFirewall::GetMasquerade()), [READ, WRITE, EXECUTE], nil);
+
+    map EXECUTE_OK = EXECUTE;
+    if (EXECUTE_OK["target"]:$[] == $[]) EXECUTE_OK["target"] = $[];
+    EXECUTE_OK["target","bash_output"] = $["exit":0, "stdout":"Some warnings about IPv6", "stderr":""];
+
+    map EXECUTE_ERR = EXECUTE;
+    if (EXECUTE_ERR["target"]:$[] == $[]) EXECUTE_ERR["target"] = $[];
+    EXECUTE_ERR["target","bash_output"] = $["exit":35, "stdout":"Some warnings about IPv6", "stderr":"Some errors!"];
+
+    DUMP("");
+    DUMP("== Service Stop / Start ==");
+    TEST(``(SuSEFirewall::StopServices()), [READ, WRITE, EXECUTE_OK], nil);
+    TEST(``(SuSEFirewall::StopServices()), [READ, WRITE, EXECUTE_OK], nil);
+    TEST(``(SuSEFirewall::StartServices()), [READ, WRITE, EXECUTE_ERR], nil);
+    TEST(``(SuSEFirewall::StartServices()), [READ, WRITE, EXECUTE_ERR], nil);
 }
