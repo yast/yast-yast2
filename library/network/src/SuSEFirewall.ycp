@@ -1023,14 +1023,32 @@
     global define boolean StartServices () {
 	boolean all_ok = true;
 
-	foreach (string service, firewall_services, {
-	    y2debug("Starting service: %1", service);
+	// bug #215416
+	// SuSEfirewall2_init doesn't need to be called, only enabled
+	//foreach (string service, firewall_services, {
+	//    y2debug("Starting service: %1", service);
+	//
+	//    if (! Service::Start(service)) {
+	//	all_ok = false;
+	//	y2error("Error starting service: %1", service);
+	//    } 
+	//});
 
-	    if (! Service::Start(service)) {
-		all_ok = false;
-		y2error("Error starting service: %1", service);
-	    } 
-	});
+	string tmpdir_file = (string) SCR::Read(.target.tmpdir);
+	if (tmpdir_file == nil || tmpdir_file == "") tmpdir_file = "/tmp";
+	tmpdir_file = tmpdir_file + "/SuSEfirewall2_YaST_output";
+	string command = sformat(
+	    "/sbin/SuSEfirewall2 start 2>'%1'; cat '%1'; rm -rf '%1'",
+	    tmpdir_file
+	);
+	y2milestone ("Starting firewall...");
+	map cmd = (map) SCR::Execute (.target.bash_output, command);
+	if (cmd["exit"]:nil != 0) {
+	    y2error ("Starting firewall: >%1< returned %2", command, cmd);
+	    all_ok = false;
+	} else {
+	    y2milestone ("Started");
+	}
 	
 	return all_ok;
     }
@@ -1043,14 +1061,32 @@
     global define boolean StopServices () {
 	boolean all_ok = true;
 
-	foreach (string service, firewall_services_reverse, {
-	    y2debug("Stopping service: %1", service);
+	// bug #215416
+	// SuSEfirewall2_init doesn't need to be called, only disabled
+	//foreach (string service, firewall_services_reverse, {
+	//    y2debug("Stopping service: %1", service);
+	//
+	//    if (! Service::Stop (service)) {
+	//	y2error("Error stopping service: %1", service);
+	//	all_ok = false;
+	//    }
+	//});
 
-	    if (! Service::Stop (service)) {
-		y2error("Error stopping service: %1", service);
-		all_ok = false;
-	    }
-	});
+	string tmpdir_file = (string) SCR::Read(.target.tmpdir);
+	if (tmpdir_file == nil || tmpdir_file == "") tmpdir_file = "/tmp";
+	tmpdir_file = tmpdir_file + "/SuSEfirewall2_YaST_output";
+	string command = sformat(
+	    "/sbin/SuSEfirewall2 stop 2>'%1'; cat '%1'; rm -rf '%1'",
+	    tmpdir_file
+	);
+	y2milestone ("Stopping firewall...");
+	map cmd = (map) SCR::Execute (.target.bash_output, command);
+	if (cmd["exit"]:nil != 0) {
+	    y2error ("Stopping firewall: >%1< returned %2", command, cmd);
+	    all_ok = false;
+	} else {
+	    y2milestone ("Stopped");
+	}
 
 	return all_ok;
     }
