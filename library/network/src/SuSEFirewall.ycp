@@ -1034,8 +1034,10 @@
 	//    } 
 	//});
 
-	string tmpdir_file = (string) SCR::Read(.target.tmpdir);
-	if (tmpdir_file == nil || tmpdir_file == "") tmpdir_file = "/tmp";
+	//string tmpdir_file = (string) SCR::Read(.target.tmpdir);
+	//if (tmpdir_file == nil || tmpdir_file == "") tmpdir_file = "/tmp";
+
+	string tmpdir_file = "/var/lib/YaST2";
 	tmpdir_file = tmpdir_file + "/SuSEfirewall2_YaST_output";
 	string command = sformat(
 	    "/sbin/SuSEfirewall2 start 2>'%1'; cat '%1'; rm -rf '%1'",
@@ -1072,8 +1074,10 @@
 	//    }
 	//});
 
-	string tmpdir_file = (string) SCR::Read(.target.tmpdir);
-	if (tmpdir_file == nil || tmpdir_file == "") tmpdir_file = "/tmp";
+	// string tmpdir_file = (string) SCR::Read(.target.tmpdir);
+	// if (tmpdir_file == nil || tmpdir_file == "") tmpdir_file = "/tmp";
+
+	string tmpdir_file = "/var/lib/YaST2";
 	tmpdir_file = tmpdir_file + "/SuSEfirewall2_YaST_output";
 	string command = sformat(
 	    "/sbin/SuSEfirewall2 stop 2>'%1'; cat '%1'; rm -rf '%1'",
