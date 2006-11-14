@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov 14 10:49:53 CET 2006 - kmachalkova@suse.cz
+
+- Better selection of fastest available network device (checking
+  for cable connection and status for NICs) (#214897)
+- 2.13.88 
+
+-------------------------------------------------------------------
 Mon Nov 13 14:31:12 CET 2006 - locilka@suse.cz
 
 - Calling /sbin/SuSEfirewall2 (start|stop) instead of
