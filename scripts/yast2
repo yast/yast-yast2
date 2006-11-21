@@ -39,6 +39,8 @@ printhelp()
 	echo
 	echo "OPTION:"
 	echo "	-i, --install	install rpm package"
+	echo "	    --update 	update rpm package"
+	echo "	    --remove	remove rpm package"
 	echo
 	echo "<package> can be a single short package name (e.g. gvim)"
 	echo "which will be installed with dependency checking, or the full"
@@ -62,7 +64,7 @@ listmodules()
     fi
 }
 
-TEMP=`/usr/bin/getopt -o hlg:s:Si --long help,list,kcontrol,geometry:,style:,strings,install,fullscreen,noborder \
+TEMP=`/usr/bin/getopt -o hlg:s:Si --long help,list,kcontrol,geometry:,style:,strings,install,update,remove,fullscreen,noborder \
      -n 'yast2' -- "$@"`
 
 if [ $? != 0 ] ; then echo "Exit." >&2 ; exit 1 ; fi
@@ -76,6 +78,8 @@ while true ; do
 		-l|--list) listmodules; exit 0 ;;
 		-g|--geometry) Y2_GEOMETRY="-geometry $2"; shift 2; ;;
 		-i|--install) Y2_INSTALL_PACKAGES=true; shift ;;
+		--update) Y2_INSTALL_PACKAGES=true; Y2_INSTALL_ACTION=--update; shift ;;
+		--remove) Y2_INSTALL_PACKAGES=true; Y2_INSTALL_ACTION=--remove; shift ;;
                 --fullscreen) Y2QT_ARGS="$Y2QT_ARGS --fullscreen"; shift ;;
 		--noborder)   Y2QT_ARGS="$Y2QT_ARGS --noborder"  ; shift ;;
 		--kcontrol)   Y2QT_ARGS="$Y2QT_ARGS --kcontrol_id YaST" ; shift ;;
@@ -89,6 +93,9 @@ done
 
 if [ "$Y2_INSTALL_PACKAGES" = "true" ]; then
 	export module=sw_single
+	# #222757
+	# prepend an additional argument if necessary
+	set -- $Y2_INSTALL_ACTION "$@"
 else
 	# allow module as argument, defaults to "menu"
 	export module="${1-menu}"
