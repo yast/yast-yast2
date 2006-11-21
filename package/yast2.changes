@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov 21 11:16:27 CET 2006 - mvidner@suse.cz
+
+- Implemented yast2 --remove and yast2 --update (#222757).
+  (It needs yast2-packager-2.14.8 to work.)
+- 2.14.14
+
+-------------------------------------------------------------------
 Tue Nov 14 10:49:04 CET 2006 - kmachalkova@suse.cz
 
 - Better selection of fastest available network device (checking

@@ -78,6 +78,14 @@ which will be installed with dependency checking, or the full
 path to an rpm package (e.g /tmp/gvim.rpm) which will be
 installed without dependency checking.
 .\"
+.\" #222757
+.TP
+.B --remove <package> [ <package> [ ... ] ]
+Remove an RPM package. The
+.B package
+can be short package names (e.g. gvim)
+which will be removed with dependency checking.
+.\"
 .TP
 .B -l, --list
 List all available modules. To obtain usage info about
