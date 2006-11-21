@@ -93,16 +93,6 @@ Write info to
 Widget style (QT frontend only).
 .\"
 .\"
-.SH FILES
-.TP
-/var/log/YaST2/*
-Logs
-.TP
-$HOME/.yast2/gui, /etc/YaST2/gui
-May contain a single word, "qt", "gtk", or "ncurses" to specify the
-preferred GUI for cases when DISPLAY is available.
-.\"
-.\"
 .SH MODULES WITH COMMAND LINE INTERFACE
 .TP
 This is a list of YaST modules currently supporting command line interface:
@@ -165,6 +155,16 @@ commands of a YaST module, use
 .I module
 .B interactive
 .br
+.\"
+.\"
+.SH FILES
+.TP
+/var/log/YaST2/*
+Logs
+.TP
+$HOME/.yast2/gui, /etc/YaST2/gui
+May contain a single word, "qt", "gtk", or "ncurses" to specify the
+preferred GUI for cases when DISPLAY is available.
 \" .SH BUGS
 \" Please report bugs at http://www.suse.de/feedback
 .\"
