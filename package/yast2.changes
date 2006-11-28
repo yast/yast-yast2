@@ -2,6 +2,7 @@
 Tue Nov 28 09:04:31 CET 2006 - jsrain@suse.cz
 
 - fixed board detection on PPC (#223872)
+- 2.14.15
 
 -------------------------------------------------------------------
 Tue Nov 21 11:16:27 CET 2006 - mvidner@suse.cz
