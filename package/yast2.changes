@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Nov 28 09:04:31 CET 2006 - jsrain@suse.cz
+
+- fixed board detection on PPC (#223872)
+
+-------------------------------------------------------------------
 Tue Nov 14 10:49:53 CET 2006 - kmachalkova@suse.cz
 
 - Better selection of fastest available network device (checking
