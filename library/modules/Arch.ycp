@@ -216,6 +216,7 @@ global string board_compatible () {
 		_board_compatible = checksys;
 	    }
 	});
+	y2milestone("_board_compatible '%1' \n", _board_compatible);
 	if (i386 () || x86_64 ())
 	{
 	    _board_compatible = "wintel";
@@ -223,12 +224,13 @@ global string board_compatible () {
 	// hwinfo expects CHRP/PReP/iSeries/MacRISC* in /proc/cpuinfo
 	// there is no standard for the board identification
 	// Cell and Maple based boards have no CHRP in /proc/cpuinfo
-	if (ppc () && _board_compatible == nil)
+	// Pegasos and Cell do have CHRP in /proc/cpuinfo, but Pegasos2 should no be handled as CHRP
+	if (ppc () && (_board_compatible == nil || _board_compatible == "CHRP"))
 	{
 	    map device_type = (map) SCR::Execute (.target.bash_output,
-		"echo `cat /proc/device-tree/device_type`" , $[]);
+		"echo -n `cat /proc/device-tree/device_type`" , $[]);
 	    map model = (map) SCR::Execute (.target.bash_output,
-		"echo `cat /proc/device-tree/model`" , $[]);
+		"echo -n `cat /proc/device-tree/model`" , $[]);
 	    string board = model["stdout"]:"";
 	    y2milestone("model %1 , device_type %2\n", model, device_type);
 	    // catch remaining IBM boards
@@ -237,18 +239,16 @@ global string board_compatible () {
 	    {
 		_board_compatible = "CHRP";
 	    }
-	    else
-	    {
-		// Maple has its own way of pretenting OF1275 compliance
-		if (board == "Momentum,Maple-D" || board == "Momentum,Maple-L"
+	    // Maple has its own way of pretenting OF1275 compliance
+	    if (board == "Momentum,Maple-D" || board == "Momentum,Maple-L"
 		    || board == "Momentum,Maple")
-		{
-		     _board_compatible = "CHRP";
-		}
-		if (board == "Pegasos2")
-		{
-		     _board_compatible = "Pegasos";
-		}
+	    {
+		_board_compatible = "CHRP";
+	    }
+	    // Pegasos has CHRP in /proc/cpuinfo and 'chrp' in /proc/device-tree/device_type
+	    if (board == "Pegasos2")
+	    {
+		_board_compatible = "Pegasos";
 	    }
 	}
 	// avoid future re-probing if probing failed
