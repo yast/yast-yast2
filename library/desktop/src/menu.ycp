@@ -84,13 +84,15 @@ define void OpenMenu() {
  */
 define boolean Launch(string modul) {
     string function = Modules[modul, "X-SuSE-YaST-Call"]:"";
-    list arguments = splitstring(Modules[modul, "X-SuSE-YaST-Argument"]:"", " ");
-    y2debug("Calling: %1 (%2)", function, arguments);
+    string argument = Modules[modul, "X-SuSE-YaST-Argument"]:"";
+    y2debug("Calling: %1 (%2)", function, argument);
 
     if(function != "") {
 
-	any ret = WFM::CallFunction (function, arguments);
-	y2debug("WFM::CallFunction (%1, %2) returns: %3", function, arguments, ret);
+	string cmd = sformat ("/sbin/yast %1 %2 >&2", function, argument);
+	any ret = UI::RunInTerminal(cmd);
+	y2milestone ("Got %1 from %2", ret, cmd);
+
 	if ((function == "online_update" && ret == -42) || ret == `restart_menu)
 	{
 	    y2milestone ("yast needs to be restarted - exiting...");
