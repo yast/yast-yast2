@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Dec  5 11:20:10 CET 2006 - kmachalkova@suse.cz
+
+- Adapt ncurses menu.ycp for running yast modules as separate 
+  processes (#148683, #221254, #222547)
+- Do not change LANG and LC_CTYPE when stdin does not support
+  utf8 (testutf8 returns 0) (partly #179989)
+- 2.15.0
+
+-------------------------------------------------------------------
 Tue Nov 28 09:04:31 CET 2006 - jsrain@suse.cz
 
 - fixed board detection on PPC (#223872)
