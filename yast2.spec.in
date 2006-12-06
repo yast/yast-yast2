@@ -3,8 +3,8 @@
 @HEADER@
 
 BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-pkg-bindings yast2-testsuite
-# Need the new file popups
-Requires:	yast2-core >= 2.7.1
+# UI::RunInTerminal builtin
+Requires:       yast2-core >= 2.15.1
 # Script callbacks
 Requires:	yast2-pkg-bindings >= 2.13.99
 Requires:	yast2_ui yast2_theme
