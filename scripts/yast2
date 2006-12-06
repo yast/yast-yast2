@@ -128,7 +128,7 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 		    export LC_CTYPE=${LANG%%[.@]*}.UTF-8
 	        ;;
 	    esac
-	    if /bin/testutf8 ; [ $? -ne 2 ] ; then
+	    if /bin/testutf8 ; [ $? -eq 1 ] ; then
 		/usr/bin/test -x /bin/unicode_start && /bin/unicode_start
 		uc_started=1
 	    fi
@@ -139,18 +139,23 @@ if [ -z "$DISPLAY" ] || ! check_qt ; then
 		    UTF8TESTED=0
 		    # binary /bin/testutf8 is missing at least on s390x, #158001
 		    /usr/bin/test -x /bin/testutf8 && UTF8TESTED=1 && /bin/testutf8
-		    # return code of the /bin/testutf8
-		    # 0=utf-unknown, 1=utf-ok, 2=utf-err
+		    # return code of the /bin/testutf8 (more info in bug #179989)
+		    # 0=stdin does not support utf8, 1=not utf8, 2=utf8
+
 		    UTF8STATUS=$?
 		    
-		    # not tested or not working UTF-8 support
-		    if [ "$UTF8TESTED" == "1" ] && [ $UTF8STATUS -ne 2 ] ; then
+		    # the terminal supports utf8, but it's not currently set
+		    # so strip .UTF-8 suffix from locale	
+		    if [ "$UTF8TESTED" == "1" ] && [ $UTF8STATUS -eq 1 ] ; then
 			/usr/bin/test -n "$LANG" && LANG=${LANG%.UTF-8}
 			/usr/bin/test -n "$LC_CTYPE" && LC_CTYPE=${LC_CTYPE%.UTF-8}
-		    else
+		    # the terminal supports utf8 and it is currently set
+		    # so strip any possible suffix from locale and append .UTF-8
+		    elif [ "$UTF8TESTED" == "1" ] && [ $UTF8STATUS -eq 2 ]; then 
 			/usr/bin/test -n "$LANG" && LANG=${LANG%%[.@]*}.UTF-8
 			/usr/bin/test -n "$LC_CTYPE" && LC_CTYPE=${LC_CTYPE%%[.@]*}.UTF-8
 		    fi
+		    #default: do nothing, keep locale untouched
 		;;
 	    esac
 	fi
