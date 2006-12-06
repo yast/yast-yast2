@@ -89,7 +89,7 @@ define boolean Launch(string modul) {
 
     if(function != "") {
 
-	string cmd = sformat ("/sbin/yast %1 %2 >&2", function, argument);
+	string cmd = sformat ("/sbin/yast %1 %2 >&2", function, argument); 
 	any ret = UI::RunInTerminal(cmd);
 	y2milestone ("Got %1 from %2", ret, cmd);
 
