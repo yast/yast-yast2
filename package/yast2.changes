@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Dec  7 15:30:30 CET 2006 - lslezak@suse.cz
+
+- menu.ycp: `restart_menu is not needed anymore (#148683)
+
+-------------------------------------------------------------------
 Tue Dec  5 11:20:10 CET 2006 - kmachalkova@suse.cz
 
 - Adapt ncurses menu.ycp for running yast modules as separate 

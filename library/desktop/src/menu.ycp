@@ -93,7 +93,7 @@ define boolean Launch(string modul) {
 	any ret = UI::RunInTerminal(cmd);
 	y2milestone ("Got %1 from %2", ret, cmd);
 
-	if ((function == "online_update" && ret == -42) || ret == `restart_menu)
+	if (function == "online_update" && ret == -42)
 	{
 	    y2milestone ("yast needs to be restarted - exiting...");
 	    SCR::Execute (.target.bash, sformat ("touch %1", restart_file));
