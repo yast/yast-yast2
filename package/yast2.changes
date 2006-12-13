@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Dec 13 09:11:24 CET 2006 - lslezak@suse.cz
+
+- URL.ycp: fixed url building and checking in Estonian locale
+  (use [[:alpha:]] instead of [a-z] in regexps) (#227256)
+- 2.15.1
+
+-------------------------------------------------------------------
 Thu Dec  7 15:30:30 CET 2006 - lslezak@suse.cz
 
 - menu.ycp: `restart_menu is not needed anymore (#148683)
