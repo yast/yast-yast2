@@ -237,7 +237,7 @@ global define boolean Check(string url) ``{
     map tokens = Parse(url);
 
     /* Check "scheme"  : "http" */
-    if(!regexpmatch(tokens["scheme"]:"", "^[a-z]*$"))
+    if(!regexpmatch(tokens["scheme"]:"", "^[[:alpha:]]*$"))
 	return false;
 
     /* Check "host"    : "www.suse.cz" */
@@ -275,7 +275,7 @@ global define string Build (map tokens) ``{
 	string url = "";
 	string userpass = "";
 
-	if(regexpmatch(tokens["scheme"]:"", "^[a-z]*$"))
+	if(regexpmatch(tokens["scheme"]:"", "^[[:alpha:]]*$"))
 	{
 		url = tokens["scheme"]:"";
 	}
