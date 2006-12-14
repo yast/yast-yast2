@@ -290,6 +290,14 @@ global define string CreateButton() {
 }
 
 /**
+ * Skip Button
+ */
+global define string SkipButton() {
+  /* Button label */
+  return _("&Skip");
+}
+
+/**
  * Warning Message
  */
 global define string WarningMsg() {
