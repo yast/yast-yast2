@@ -1,0 +1,217 @@
+
+{
+
+import "GPG";
+
+module "GPGWidgets";
+
+textdomain "base";
+
+
+string _selected_id_private_key = nil;
+string _selected_id_public_key = nil;
+
+global void SetSelectedPrivateKey(string keyid)
+{
+    _selected_id_private_key = keyid;
+}
+
+global void SetSelectedPublicKey(string keyid)
+{
+    _selected_id_public_key = keyid;
+}
+
+list<term> GPGItems(boolean private_keys)
+{
+    list<term> ret = [];
+    list<map> keys = (private_keys) ? GPG::PrivateKeys() : GPG::PublicKeys();
+
+    foreach(map key, keys,
+	{
+	    string uids = mergestring(key["uid"]:[], ", ");
+
+	    ret = add(ret, `item(`id(key["id"]:""), key["id"]:"", uids, key["fingerprint"]:""));
+	}
+    );
+
+    return ret;
+}
+
+/**
+ * Init function of a widget
+ * @param key string widget key
+ */
+void GpgInitPrivate (string key)
+{
+    y2milestone("GpgInitPrivate: %1", key);
+
+    if (key == "select_private_key")
+    {
+	UI::ChangeWidget(`id(`gpg_priv_table), `Items, GPGItems(true));
+
+	if (_selected_id_private_key != nil)
+	{
+	    UI::ChangeWidget(`id(`gpg_priv_table), `CurrentItem, _selected_id_private_key);
+	}
+    }
+}
+
+/**
+ * Init function of a widget
+ * @param key string widget key
+ */
+void GpgInitPublic (string key)
+{
+    y2milestone("GpgInitPublic: %1", key);
+
+    if (key == "select_public_key")
+    {
+	UI::ChangeWidget(`id(`gpg_public_table), `Items, GPGItems(false));
+
+	if (_selected_id_public_key != nil)
+	{
+	    UI::ChangeWidget(`id(`gpg_public_table), `CurrentItem, _selected_id_public_key);
+	}
+    }
+}
+
+void GpgStorePrivate (string key, map event) {
+    y2internal("GpgStorePrivate: %1, %2", key, event);
+
+    if (key == "select_private_key")
+    {
+	_selected_id_private_key = (string)(UI::QueryWidget(`id(`gpg_priv_table), `CurrentItem));
+	y2milestone("Selected private key: %1", _selected_id_private_key);
+    }
+}
+
+void GpgStorePublic (string key, map event) {
+    y2internal("GpgStorePublic: %1, %2", key, event);
+
+    if (key == "select_public_key")
+    {
+	_selected_id_public_key = (string)(UI::QueryWidget(`id(`gpg_public_table), `CurrentItem));
+	y2milestone("Selected public key: %1", _selected_id_public_key);
+    }
+}
+
+global string SelectedPrivateKey()
+{
+    return _selected_id_private_key;
+}
+
+/**
+ * Get widget description map
+ * @return widget description map
+ */
+map<string,any> PrivateKeySelection()
+{
+    return $[
+	"widget" : `custom,
+	"custom_widget" :
+	    `VBox(
+		`Left(`Label(`id(`gpg_priv_label), _("GPG Private Keys"))),
+		`Table(
+		    `id(`gpg_priv_table),
+		    // table header - GPG key ID
+		    `header(_("Key ID"),
+			// table header - GPG key user ID
+			_("User ID"),
+			// table header - GPG key fingerprint
+			_("Fingerprint")
+		    ),
+		    // fill up the widget in init handler
+		    []
+		)
+	    ),
+	"init" : GpgInitPrivate,
+	"store" : GpgStorePrivate,
+	"help" : _("<p><big><b>GPG Private Key</b></big><br>
+The table contains list of the private GPG keys.</p>")
+    ];
+}
+
+map<string,any> PublicKeySelection()
+{
+    return $[
+	"widget" : `custom,
+	"custom_widget" :
+	    `VBox(
+		`Left(`Label(_("GPG Public Keys"))),
+		`Table(
+		    `id(`gpg_public_table),
+		    // table header - GPG key ID
+		    `header(_("Key ID"),
+			// table header - GPG key user ID
+			_("User ID"),
+			// table header - GPG key fingerprint
+			_("Fingerprint")
+		    ),
+		    // fill up the widget in init handler
+		    []
+		)
+	    ),
+	"init" : GpgInitPublic,
+	"store" : GpgStorePublic,
+	"help" : _("<p><big><b>GPG Public Key</b></big><br>
+The table contains list of the public GPG keys.</p>")
+    ];
+}
+
+symbol GpgNewKey(string key, map event)
+{
+    y2internal("GpgNewKey: %1, %2", key, event);
+
+    if (key == "create_new_key")
+    {
+	GPG::CreateKey();
+
+	// refresh private key widget if it's existing
+	if (UI::WidgetExists(`id(`gpg_priv_table)))
+	{
+	    string current = (string)(UI::QueryWidget(`id(`gpg_priv_table), `CurrentItem));
+	    UI::ChangeWidget(`id(`gpg_priv_table), `Items, GPGItems(true));
+	    UI::ChangeWidget(`id(`gpg_priv_table), `CurrentItem, current);
+	}
+
+	// refresh public key widget if it's existing
+	if (UI::WidgetExists(`id(`gpg_public_table)))
+	{
+	    string current = (string)(UI::QueryWidget(`id(`gpg_public_table), `CurrentItem));
+	    UI::ChangeWidget(`id(`gpg_public_table), `Items, GPGItems(false));
+	    UI::ChangeWidget(`id(`gpg_public_table), `CurrentItem, current);
+	}
+    }
+
+    return nil;
+}
+
+/**
+ * Get widget description map
+ * @return widget description map
+ */
+map<string,any> CreateNewKey()
+{
+    return $[
+	"widget" : `push_button,
+	"label"  : _("&Create a new GPG key..."),
+        "handle_events" : ["create_new_key"],
+        "handle" : GpgNewKey,
+	"help" : _("<p><big><b>Create a new GPG key</b></big><br>
+<tt>gpg --gen-key</tt> is started, see <tt>gpg</tt> manual pager for more information.
+Press Ctrl+C to cancel.
+</p>")
+
+    ];
+}
+
+global map<string,map<string,any> > Widgets()
+{
+    return $[
+	"select_private_key"	: PrivateKeySelection(),
+	"select_public_key"	: PublicKeySelection(),
+	"create_new_key"	: CreateNewKey()
+    ];
+}
+
+}
