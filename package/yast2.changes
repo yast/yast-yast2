@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan  4 15:45:00 CET 2007 - locilka@suse.cz
+
+- Changed y2error() to y2warning() when using default value is
+  Misc::SysconfigRead() (#231744).
+
+-------------------------------------------------------------------
 Thu Dec 21 10:19:00 CET 2006 - lslezak@suse.cz
 
 - added a gpg library - a wrapper for gpg binary (GPG.ycp),
