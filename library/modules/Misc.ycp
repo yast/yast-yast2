@@ -184,7 +184,7 @@
 
 	if ( local_ret == nil )
 	{
-	    y2error("Failed reading '%1'", sysconfig_path );
+	    y2warning("Failed reading '%1', using default value", sysconfig_path );
 	    return( defaultv );
 	}
 	else

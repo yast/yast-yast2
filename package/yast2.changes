@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan  4 15:43:23 CET 2007 - locilka@suse.cz
+
+- Changed y2error() to y2warning() when using default value is
+  Misc::SysconfigRead() (#231744).
+
+-------------------------------------------------------------------
 Wed Dec  6 16:41:52 CET 2006 - kmachalkova@suse.cz
 
 - Adapt ncurses menu.ycp for running yast modules as separate 
