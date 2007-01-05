@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Jan  5 13:20:26 CET 2007 - lslezak@suse.cz
+
+- gpg library: fixed export of a key, export key in ASCII or
+  binary format, added passphrase widget/popup, API documentation,
+  example code
+- 2.15.2
+
+-------------------------------------------------------------------
 Thu Jan  4 15:45:00 CET 2007 - locilka@suse.cz
 
 - Changed y2error() to y2warning() when using default value is

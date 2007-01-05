@@ -3,6 +3,6 @@
 SUBDIRS = autodocs
 
 htmldir = $(docdir)/gpg
+html_DATA = example.ycp
 
-#html_DATA =
-#EXTRA_DIST = $(html_DATA)
+EXTRA_DIST = $(html_DATA)
