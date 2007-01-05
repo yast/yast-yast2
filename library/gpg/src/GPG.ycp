@@ -1,5 +1,14 @@
-
-
+/**
+ * File:	modules/GPG.ycp
+ * Package:	yast2
+ * Summary:	A wrapper for gpg binary
+ * Authors:	Ladislav Slezák <lslezak@suse.cz>
+ *
+ * $Id:$
+ *
+ * This module provides GPG key related functions. It is a wrapper around gpg
+ * binary. It uses caching for reading GPG keys from the keyrings.
+ */
 
 {
 
@@ -11,12 +20,19 @@ module "GPG";
 textdomain "base";
 
 
+// value for --homedir gpg option, empty string means default home directory
 string home = "";
 
-// cache
+// key cache
 list<map> public_keys = nil;
+// key cache
 list<map> private_keys = nil;
 
+/**
+ * (Re)initialize the module, the cache is invalidated if the home directory is changed.
+ * @param home_dir home directory for gpg (location of the keyring)
+ * @param force unconditionaly clear the key caches
+ */
 global void Init(string home_dir, boolean force)
 {
     if (home_dir != home || force)
@@ -29,6 +45,11 @@ global void Init(string home_dir, boolean force)
     home = home_dir;
 }
 
+/**
+ * Build GPG option string
+ * @param options additional gpg options
+ * @return string gpg option string
+ */
 string buildGPGcommand(string options)
 {
     string home_opt = (size(home) > 0) ? sformat("--homedir '%1' ", String::Quote(home)) : "";
@@ -38,6 +59,11 @@ string buildGPGcommand(string options)
     return ret;
 }
 
+/**
+ * Execute gpg with the specified parameters, --homedir is added to the options
+ * @param options additional gpg options
+ * @return map result of the execution
+ */
 map callGPG(string options)
 {
     map ret = $[];
@@ -53,7 +79,10 @@ map callGPG(string options)
     return ret;
 }
 
-
+/**
+ * Map for parsing gpg output. Key is regexp, value is the key returned
+ * in the result of the parsing.
+ */
 map<string,string> parsing_map = $[
     // secret key ID
     "^sec  .*/([^ ]*) " : "id",
@@ -65,6 +94,11 @@ map<string,string> parsing_map = $[
     "^      Key fingerprint = (.*)" : "fingerprint"
 ];
 
+/**
+ * Parse gpg output using the parsing map
+ * @param lines gpg output (splitted into lines)
+ * @return map parsed output
+ */
 map parse_key(list<string> lines)
 {
     map ret = $[];
@@ -102,6 +136,11 @@ map parse_key(list<string> lines)
     return ret;
 }
 
+/**
+ * Parse gpg output
+ * @param input gpg output
+ * @return list<map> parsed keys
+ */
 list<map> parseKeys(string input)
 {
     // note: see /usr/share/doc/packages/gpg/DETAILS for another way
@@ -154,9 +193,13 @@ list<map> parseKeys(string input)
     return ret;
 }
 
-
+/**
+ * Return list of the public keys in the keyring.
+ * @return list<map> public keys: [ $["fingerprint": string key_fingerprint, "id": string key_ID, "uid": list<string> user_ids], ...]
+ */
 global list<map> PublicKeys()
 {
+    // return the cached values if available
     if (public_keys != nil)
     {
 	return public_keys;
@@ -172,8 +215,13 @@ global list<map> PublicKeys()
     return public_keys;
 }
 
+/**
+ * Return list of the private keys in the keyring.
+ * @return list<map> public keys: [ $["fingerprint": string key_fingerprint, "id": string key_ID, "uid": list<string> user_ids], ...]
+ */
 global list<map> PrivateKeys()
 {
+    // return the cached values if available
     if (private_keys != nil)
     {
 	return private_keys;
@@ -189,13 +237,17 @@ global list<map> PrivateKeys()
     return private_keys;
 }
 
+/**
+ * Create a new gpg key. Executes 'gpg --gen-key' in an xterm window (in the QT UI)
+ * or in the terminal window (in the ncurses UI).
+ */
 global void CreateKey()
 {
     string xterm = "/usr/bin/xterm";
     string command = buildGPGcommand("--gen-key");
     boolean text_mode = UI::GetDisplayInfo()["TextMode"]:false;
 
-    y2internal("text_mode: %1", text_mode);
+    y2debug("text_mode: %1", text_mode);
 
     if (!text_mode)
     {
@@ -218,23 +270,107 @@ global void CreateKey()
     Init(home, true);
 }
 
-global boolean SignDetached(string keyid, string file)
+/**
+ * Sign a file. The ASCII armored signature is stored in file with .asc suffix
+ * @param keyid id of the signing key
+ * @param file the file to sign
+ * @param passphrase passphrase to unlock the private key
+ * @param ascii_signature if true ASCII armored signature is created
+ *        (with suffix .asc) otherwise binary signature (with suffix .sig) is created
+ * @return boolean true if the file has been successfuly signed
+ */
+boolean SignFile(string keyid, string file, string passphrase, boolean ascii_signature)
 {
-    map out = callGPG(sformat("--detach-sign -u '%1' -a '%2'", String::Quote(keyid), String::Quote(file)));
+    if (passphrase == nil || keyid == nil || keyid == "" || file == nil || file == "")
+    {
+	y2error("Invalid parameters: keyid: %1, file: %2, passphrase: %3", keyid, file, passphrase);
+	return false;
+    }
+
+    // signature suffix depends on the format
+    string suffix = ascii_signature ? ".asc" : ".sig";
+
+    if ((integer)SCR::Read(.target.size, file + suffix) >= 0)
+    {
+	// remove the existing key
+	SCR::Execute(.target.bash, sformat("rm -f '%1%2'", String::Quote(file), suffix));
+    }
+
+    // save the passphrase to a file
+    string tmpfile = (string)SCR::Read(.target.tmpdir) + "/stdin";
+
+    boolean written = (boolean)SCR::Write(.target.string, tmpfile, passphrase + "\n");
+
+    if (!written)
+    {
+	return false;
+    }
+
+    // use the passphrase
+    map out = callGPG(sformat("--detach-sign -u '%1' --no-tty --command-fd=0 %2 '%3' < '%4'", String::Quote(keyid), (ascii_signature ? "-a" : ""), String::Quote(file), String::Quote(tmpfile)));
 
     return out["exit"]:-1 == 0;
 }
 
-global boolean VerifyFile(string key_file, string file)
+/**
+ * Sign a file. The ASCII armored signature is stored in file with .asc suffix
+ * @param keyid id of the signing key
+ * @param file the file to sign
+ * @param passphrase passphrase to unlock the private key
+ * @return boolean true if the file has been successfuly signed
+ */
+global boolean SignAsciiDetached(string keyid, string file, string passphrase)
 {
-    map out = callGPG(sformat("--verify '%1' '%2'", String::Quote(key_file), String::Quote(file)));
+    return SignFile(keyid, file, passphrase, true);
+}
+
+/**
+ * Sign a file. The binary signature is stored in file with .sig suffix
+ * @param keyid id of the signing key
+ * @param file the file to sign
+ * @param passphrase passphrase to unlock the private key
+ * @return boolean true if the file has been successfuly signed
+ */
+global boolean SignDetached(string keyid, string file, string passphrase)
+{
+    return SignFile(keyid, file, passphrase, false);
+}
+
+/**
+ * Verify a file using a signature file. The key which has been used for signing must be imported in the keyring.
+ * @param sig_file file with the signature
+ * @param file file to verify
+ * @return boolean true if the file has been successfuly verified
+ */
+global boolean VerifyFile(string sig_file, string file)
+{
+    map out = callGPG(sformat("--verify '%1' '%2'", String::Quote(sig_file), String::Quote(file)));
 
     return out["exit"]:-1 == 0;
 }
 
+/**
+ * Export a public gpg key in ACSII armored file.
+ * @param keyid id of the key
+ * @param file the target file
+ * @return boolean true if the file has been successfuly signed
+ */
 global boolean ExportAsciiPublicKey(string keyid, string file)
 {
-    map out = callGPG(sformat("--export -a -u '%1' > '%2'", String::Quote(keyid), String::Quote(file)));
+    map out = callGPG(sformat("-a --export '%1' > '%2'", String::Quote(keyid), String::Quote(file)));
+
+    return out["exit"]:-1 == 0;
+}
+
+/**
+ * Export a public gpg key in binary format.
+ * @param keyid id of the key
+ * @param file the target file
+ * @return boolean true if the file has been successfuly signed
+ */
+global boolean ExportPublicKey(string keyid, string file)
+{
+    map out = callGPG(sformat("--export '%1' > '%2'", String::Quote(keyid), String::Quote(file)));
 
     return out["exit"]:-1 == 0;
 }
