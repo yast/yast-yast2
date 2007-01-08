@@ -229,7 +229,7 @@ else
 	c=("${b[@]/%/\")}")
 	set -- "${c[@]}"
 
-	$ybindir/y2base $module "$@" qt "$Y2_GEOMETRY" $Y2QT_ARGS
+	$ybindir/y2base $module "$@" qt $Y2_GEOMETRY $Y2QT_ARGS
 	if [ ! $module == "online_update" -o ! -e "/var/lib/YaST2/selected_patches.ycp" ] ; then
 	    break
 	fi

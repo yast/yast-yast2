@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan  8 18:11:40 CET 2007 - locilka@suse.cz
+
+- Fixed handling Y2_GEOMETRY="-geometry XxY[+OffsX+OffsY]" and
+  "--geometry XxY[+OffsX+OffsY]" in /sbin/yast2 call (#232568).
+
+-------------------------------------------------------------------
 Fri Jan  5 13:20:26 CET 2007 - lslezak@suse.cz
 
 - gpg library: fixed export of a key, export key in ASCII or
