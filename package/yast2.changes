@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jan  9 11:45:02 CET 2007 - mzugec@suse.cz
+
+- add bond device 
+
+-------------------------------------------------------------------
 Mon Jan  8 18:11:40 CET 2007 - locilka@suse.cz
 
 - Fixed handling Y2_GEOMETRY="-geometry XxY[+OffsX+OffsY]" and
