@@ -49,6 +49,19 @@ function check_qt()
 
 
 #
+# check if the gnome control center is present
+#
+function check_gnome()
+{
+    if [ -e "/opt/gnome/bin/y2controlcenter-gnome" ] ; then
+	return 0                # success
+    fi
+
+    return 1                    # failure
+}
+
+
+#
 # check if the ncurses plugin and all necessary libaries are present
 #
 function check_ncurses()

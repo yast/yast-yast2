@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jan 16 15:04:13 CET 2007 - jsrain@suse.cz
+
+- added support for starting GNOME control center (fate #301082)
+
+-------------------------------------------------------------------
 Tue Jan  9 11:45:02 CET 2007 - mzugec@suse.cz
 
 - add bond device 
