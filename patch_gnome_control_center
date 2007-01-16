@@ -1,0 +1,107 @@
+Index: scripts/yast2
+===================================================================
+--- scripts/yast2	(revision 35388)
++++ scripts/yast2	(working copy)
+@@ -108,9 +108,39 @@
+ # set lang from sysconfig
+ set_lang_from_sysconfig
+ 
++# determine UI capabilities
++if check_qt; then
++    HAVE_QT=yes
++fi
+ 
++if check_gnome; then
++    HAVE_GNOME=yes
++fi
++
++# determine desired UI
++if echo $WINDOWMANAGER | grep -qi "kde"; then
++    WANT_UI="qt"
++elif echo $WINDOWMANAGER | grep -qi "gnome"; then
++    WANT_UI="gnome"
++fi
++
++if [ -z "$DISPLAY" ]; then
++    UI_MODE=text
++elif [ "$WANT_UI" = "qt" -a "$HAVE_QT" = "yes" ]; then
++    UI_MODE=qt
++elif [ "$WANT_UI" = "gnome" -a "$HAVE_GNOME" = "yes" -a \
++       "$Y2QT_ARGS" = "" -a "$module" = "menu" ]; then
++    UI_MODE=gnome
++elif [ "$HAVE_QT" = "yes" ]; then
++    UI_MODE=qt
++elif [ "$HAVE_GNOME" = "yes" ]; then
++    UI_MODE=gnome
++else
++    UI_MODE=text
++fi
++
+ # use text mode if DISPLAY is not set or no qt plugin is installed
+-if [ -z "$DISPLAY" ] || ! check_qt ; then
++if [ "$UI_MODE" = "text" ] ; then
+     if check_ncurses ; then
+ 	TTY=`/usr/bin/tty`
+         # on console, start yast in UTF-8 locale (only on a 'local' console)
+@@ -194,7 +224,7 @@
+ 	echo "You need to install yast2-ncurses to use the YaST2 text mode interface"
+ 	exit 1
+     fi
+-else
++elif [ "$UI_MODE" = "qt" ]; then
+     set_qt_home_dir
+     # use ycp menu if the control center is not installed
+     if [ $module == "menu" -a -e "$ybindir/y2controlcenter" ] ; then
+@@ -235,6 +265,14 @@
+ 	fi
+       done
+     fi
++elif [ "$UI_MODE" = "gnome" ]; then
++    # The GNOME control center does not support command line args. The first
++    # instance launched starts a singleton server, and will never return. Subsequent
++    # invocations will return.
++    /opt/gnome/bin/y2controlcenter-gnome &
++else
++    echo "Internal error: Could not determine UI mode."
++    exit 1
+ fi
+ 
+ exit_code=$?
+Index: scripts/yast2-funcs
+===================================================================
+--- scripts/yast2-funcs	(revision 35388)
++++ scripts/yast2-funcs	(working copy)
+@@ -49,6 +49,19 @@
+ 
+ 
+ #
++# check if the gnome control center is present
++#
++function check_gnome()
++{
++    if [ -e "/opt/gnome/bin/y2controlcenter-gnome" ] ; then
++	return 0                # success
++    fi
++
++    return 1                    # failure
++}
++
++
++#
+ # check if the ncurses plugin and all necessary libaries are present
+ #
+ function check_ncurses()
+Index: package/yast2.changes
+===================================================================
+--- package/yast2.changes	(revision 35388)
++++ package/yast2.changes	(working copy)
+@@ -1,4 +1,9 @@
+ -------------------------------------------------------------------
++Tue Jan 16 15:04:13 CET 2007 - jsrain@suse.cz
++
++- added support for starting GNOME control center (fate #301082)
++
++-------------------------------------------------------------------
+ Tue Jan  9 11:45:02 CET 2007 - mzugec@suse.cz
+ 
+ - add bond device 
