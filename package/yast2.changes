@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jan 18 14:50:18 CET 2007 - kmachalkova@suse.cz
+
+- Avoid displaying empty strings in NetworkPopup (#220813, #223498)
+ 
+-------------------------------------------------------------------
 Tue Jan 16 15:04:13 CET 2007 - jsrain@suse.cz
 
 - added support for starting GNOME control center (fate #301082)
