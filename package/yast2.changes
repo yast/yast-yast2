@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jan 18 15:16:45 CET 2007 - kmachalkova@suse.cz
+
+- Avoid displaying empty strings in NetworkPopup (#220813, #223498) 
+
+-------------------------------------------------------------------
 Tue Jan  9 11:23:04 CET 2007 - mzugec@suse.cz
 
 - add bond device 

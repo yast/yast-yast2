@@ -41,12 +41,23 @@
 
 	list Items = maplist(string i, items,  ``{
 		string device_name = NetworkDevices::GetValue(i, "NAME");
+		if ( (device_name == nil) || (device_name == "") ) {
+		        //TRANSLATORS: Informs that device name is not known
+		        device_name = _("Unknown device");
+	        }
 		if (size(device_name) > 30) {
 		    device_name = substring (device_name, 0, 27) + "...";
 		}
-		// translators: table item, informing that IP address is assigned via DHCP
-		return `item(`id(i),  NetworkDevices::GetDeviceType(i), device_name, (NetworkDevices::GetValue(i, "BOOTPROTO") == "dhcp" ?
-              _("DHCP address"): NetworkDevices::GetValue(i, "IPADDR")), i);
+		string ip_addr = (NetworkDevices::GetValue(i, "BOOTPROTO") == "dhcp" ?
+                    // TRANSLATORS: Informs that the IP address is assigned via DHCP
+	                    _("DHCP address") :
+	                    NetworkDevices::GetValue(i, "IPADDR"));
+
+	        if ( (ip_addr == nil) || (ip_addr == "")) {
+		    // TRANSLATORS: table item, informing that device has no IP address
+	            ip_addr = _("No IP address assigned");
+		}
+		return `item(`id(i),  NetworkDevices::GetDeviceType(i), device_name, ip_addr, i);
 	    }
 	);
 
