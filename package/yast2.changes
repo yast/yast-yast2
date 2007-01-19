@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan 19 10:13:20 CET 2007 - jsuchome@suse.cz
+
+- added new API to Popup: MessageDetails, WarningDetails, ErrorDetails,
+  NotifyDetails (popup with text and Details button for extra info)
+- 2.13.92
+
+-------------------------------------------------------------------
 Thu Jan 18 14:50:18 CET 2007 - kmachalkova@suse.cz
 
 - Avoid displaying empty strings in NetworkPopup (#220813, #223498)

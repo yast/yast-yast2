@@ -752,7 +752,52 @@ global define boolean ReallyAbort( boolean have_changes )
 }
 
 
+/**
+ * Generic message popup with Details button - internal
+ *
+ * Show a message with optional headline above and
+ * wait until user clicked "OK" or "Details". On "Details", show window with detailed information.
+ *
+ * @param headline	optional headline or Popup::NoHeadline()
+ * @param message	the message (maybe multi-line) to display.
+ * @param details	the detailed information text
+ */
+define void anyMessageDetailsInternalType(string headline, string message, string details, string icon_name, boolean richtext, integer width, integer height )
+{
+    term button_box =  `HBox (
+	`PushButton (`id(`ok_msg), `opt (`default, `key_F10), Label::OKButton()),
+	// button label
+	`PushButton (`id(`details), `opt (`key_F6), _("&Details..."))
+    );
+    UI::OpenDialog (
+	`opt(`decorated),
+	richtext ? popupLayoutInternalRich(headline, message, icon_name, button_box, width, height)
+		 : popupLayoutInternal( headline, message, icon_name, button_box )
+    );
 
+    UI::SetFocus(`id(`ok_msg) );
+
+    while (true)
+    {
+	any ret	= UI::UserInput();
+	if (ret	== `details)
+	{
+	    UI::OpenDialog (`opt(`decorated ), `HBox (`VSpacing(default_height),
+		`VBox (
+		    `HSpacing (default_width),
+		    `VSpacing (0.5),
+		    `RichText (details),
+		    `VSpacing (),
+		    `PushButton (`id(`ok), `opt(`default, `key_F10), Label::OKButton())
+		)
+	    ));
+	    UI::UserInput();
+	    UI::CloseDialog();
+	}
+	else break;
+    }
+    UI::CloseDialog();
+}
 
 /**
  * Generic message popup - internal
@@ -790,6 +835,13 @@ define void anyMessageInternal(string headline, string message, string icon_name
  */
 define void anyMessageInternalRich(string headline, string message, string icon_name, integer width, integer height) {
     anyMessageInternalType(headline, message, icon_name, true, width, height);
+}
+
+/**
+ * Internal function - wrapper for anyMessageDetailsInternalType call
+ */
+define void anyMessageDetailsInternal (string headline, string message, string details, string icon_name) {
+    anyMessageDetailsInternalType (headline, message, details, icon_name, false, 0, 0);
 }
 
 
@@ -943,6 +995,19 @@ global define void TimedLongMessageGeometry(string message, integer timeout_seco
 }
 
 /**
+ * Show a message with Details button and wait until user clicked "OK".
+ *
+ * @param message	message string
+ * @param details	detailed information string
+ * @example  Popup::MessageDetails("This is an information about ... .", "This service is intended to...");
+ *
+ * @see Message
+ */
+global define void MessageDetails (string message, string details) {
+    anyMessageDetailsInternal (NoHeadline (), message, details, NoIcon ());
+}
+
+/**
  * Show a warning message and wait until user clicked "OK".
  *
  *
@@ -1023,6 +1088,18 @@ global define void TimedLongWarningGeometry(string message, integer timeout_seco
     anyTimedRichMessageInternal( Label::WarningMsg(), message, popupIcon( "msg_warning.png" ), timeout_seconds, width, height );
 }
 
+/**
+ * Show a warning with Details button and wait until user clicked "OK".
+ *
+ * @param message	warning message string
+ * @param details	detailed information string
+ * @example Popup::WarningDetails("Something is wrong. Please check your configuration.", "possible problem is in..." );
+ *
+ * @see Message
+ */
+global define void WarningDetails (string message, string details) {
+    anyMessageDetailsInternal (Label::WarningMsg(), message, details, popupIcon("msg_warning.png"));
+}
 
 /**
  * Show an error message and wait until user clicked "OK".
@@ -1105,6 +1182,18 @@ global define void TimedLongErrorGeometry(string message, integer timeout_second
     anyTimedRichMessageInternal( Label::ErrorMsg(), message, popupIcon( "msg_error.png" ), timeout_seconds, width, height );
 }
 
+/**
+ * Show an error message with Details button and wait until user clicked "OK".
+ *
+ * @param message	error message string
+ * @param details	detailed information string
+ * @example  Popup::ErrorDetails("The configuration was not succesful.", "Service failed to start");
+ *
+ * @see Message
+ */
+global define void ErrorDetails (string message, string details) {
+    anyMessageDetailsInternal (Label::ErrorMsg(), message, details, popupIcon ("msg_error.png"));
+}
 
 
 /**
@@ -1181,6 +1270,18 @@ global define void TimedLongNotifyGeometry(string message, integer timeout_secon
     anyTimedRichMessageInternal( NoHeadline(), message, popupIcon( "msg_info.png" ), timeout_seconds, width, height );
 }
 
+
+/**
+ * Show a notify message with Details button and wait until user clicked "OK".
+ *
+ * @param message	error message string
+ * @param details	detailed information string
+ *
+ * @see Message
+ */
+global define void NotifyDetails (string message, string details) {
+    anyMessageDetailsInternal (NoHeadline(), message, details, popupIcon ("msg_info.png"));
+}
 
 /**
  * Display a message with a timeout
