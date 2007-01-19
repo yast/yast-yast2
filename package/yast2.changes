@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 19 10:16:05 CET 2007 - jsuchome@suse.cz
+
+- added new API to Popup: MessageDetails, WarningDetails, ErrorDetails,
+  NotifyDetails (popup with text and Details button for extra info)
+
+-------------------------------------------------------------------
 Fri Jan 19 09:09:33 CET 2007 - locilka@suse.cz
 
 - Added two new remarkable functions GetFirewallKernelModules and
