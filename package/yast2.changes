@@ -5,7 +5,6 @@ Fri Jan 19 09:09:33 CET 2007 - locilka@suse.cz
   SetFirewallKernelModules into the SuSEFirewall module. They will
   allow to open FTP service in SuSEfirewall2.
 - Adjusted testsuite on Firewall
-- 2.15.3
 
 -------------------------------------------------------------------
 Thu Jan 18 15:16:45 CET 2007 - kmachalkova@suse.cz
