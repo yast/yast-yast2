@@ -12,7 +12,7 @@ Return	false
 Dump	
 Dump	== Import/Export ==
 Return	nil
-Return	$["FW_ALLOW_FW_BROADCAST_DMZ":"no", "FW_ALLOW_FW_BROADCAST_EXT":"no", "FW_ALLOW_FW_BROADCAST_INT":"no", "FW_DEV_DMZ":"", "FW_DEV_EXT":"eth6 special-string eth8", "FW_DEV_INT":"dsl0", "FW_FORWARD_MASQ":"", "FW_IGNORE_FW_BROADCAST_DMZ":"no", "FW_IGNORE_FW_BROADCAST_EXT":"yes", "FW_IGNORE_FW_BROADCAST_INT":"no", "FW_IPSEC_TRUST":"no", "FW_LOG_ACCEPT_ALL":"no", "FW_LOG_ACCEPT_CRIT":"yes", "FW_LOG_DROP_ALL":"no", "FW_LOG_DROP_CRIT":"yes", "FW_MASQUERADE":"no", "FW_PROTECT_FROM_INT":"no", "FW_ROUTE":"no", "FW_SERVICES_DMZ_IP":"", "FW_SERVICES_DMZ_RPC":"", "FW_SERVICES_DMZ_TCP":"", "FW_SERVICES_DMZ_UDP":"", "FW_SERVICES_EXT_IP":"", "FW_SERVICES_EXT_RPC":"", "FW_SERVICES_EXT_TCP":"", "FW_SERVICES_EXT_UDP":"", "FW_SERVICES_INT_IP":"", "FW_SERVICES_INT_RPC":"", "FW_SERVICES_INT_TCP":"", "FW_SERVICES_INT_UDP":"", "enable_firewall":false, "start_firewall":false]
+Return	$["FW_ALLOW_FW_BROADCAST_DMZ":"no", "FW_ALLOW_FW_BROADCAST_EXT":"no", "FW_ALLOW_FW_BROADCAST_INT":"no", "FW_DEV_DMZ":"", "FW_DEV_EXT":"eth6 special-string eth8", "FW_DEV_INT":"dsl0", "FW_FORWARD_MASQ":"", "FW_IGNORE_FW_BROADCAST_DMZ":"no", "FW_IGNORE_FW_BROADCAST_EXT":"yes", "FW_IGNORE_FW_BROADCAST_INT":"no", "FW_IPSEC_TRUST":"no", "FW_LOAD_MODULES":"\n\n\n", "FW_LOG_ACCEPT_ALL":"no", "FW_LOG_ACCEPT_CRIT":"yes", "FW_LOG_DROP_ALL":"no", "FW_LOG_DROP_CRIT":"yes", "FW_MASQUERADE":"no", "FW_PROTECT_FROM_INT":"no", "FW_ROUTE":"no", "FW_SERVICES_DMZ_IP":"", "FW_SERVICES_DMZ_RPC":"", "FW_SERVICES_DMZ_TCP":"", "FW_SERVICES_DMZ_UDP":"", "FW_SERVICES_EXT_IP":"", "FW_SERVICES_EXT_RPC":"", "FW_SERVICES_EXT_TCP":"", "FW_SERVICES_EXT_UDP":"", "FW_SERVICES_INT_IP":"", "FW_SERVICES_INT_RPC":"", "FW_SERVICES_INT_TCP":"", "FW_SERVICES_INT_UDP":"", "enable_firewall":false, "start_firewall":false]
 Dump	
 Dump	== Firewall behaviour ==
 Return	[$["id":"ippp5", "name":"", "type":"dialup", "zone":nil], $["id":"ppp5", "name":"", "type":"dialup", "zone":nil], $["id":"arc5", "name":"", "zone":nil], $["id":"atm5", "name":"", "zone":nil], $["id":"ci5", "name":"", "zone":nil], $["id":"ctc5", "name":"", "zone":nil], $["id":"dummy5", "name":"", "zone":nil], $["id":"escon5", "name":"", "zone":nil], $["id":"eth5", "name":"", "zone":nil], $["id":"eth6", "name":"", "zone":"EXT"], $["id":"eth7", "name":"", "zone":nil], $["id":"eth8", "name":"", "zone":"EXT"], $["id":"eth9", "name":"", "zone":nil], $["id":"fddi5", "name":"", "zone":nil], $["id":"hippi5", "name":"", "zone":nil], $["id":"hsi5", "name":"", "zone":nil], $["id":"iucv5", "name":"", "zone":nil], $["id":"myri5", "name":"", "zone":nil], $["id":"tr5", "name":"", "zone":nil]]
@@ -78,3 +78,12 @@ Return	true
 Return	true
 Return	false
 Return	false
+Dump	
+Dump	== Additional Kernel Modules ==
+Return	[]
+Return	nil
+Return	["module_a", "module_b", "module_c"]
+Return	nil
+Return	["module_x", "module_y", "module_z"]
+Return	nil
+Return	["module_a", "module_b", "module_c", "module_x", "module_y", "module_z"]

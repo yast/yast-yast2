@@ -15,6 +15,7 @@
 	"FW_IGNORE_FW_BROADCAST_EXT":"yes",
 	"FW_IGNORE_FW_BROADCAST_INT":"no",
 	"FW_IPSEC_TRUST":"no",
+	"FW_LOAD_MODULES":"\n\n\n",
 	"FW_LOG_ACCEPT_ALL":"no",
 	"FW_LOG_ACCEPT_CRIT":"yes",
 	"FW_LOG_DROP_ALL":"no",
@@ -210,4 +211,16 @@
     TEST(``(SuSEFirewall::StopServices()), [READ, WRITE, EXECUTE_OK], nil);
     TEST(``(SuSEFirewall::StartServices()), [READ, WRITE, EXECUTE_ERR], nil);
     TEST(``(SuSEFirewall::StartServices()), [READ, WRITE, EXECUTE_ERR], nil);
+
+    DUMP("");
+    DUMP("== Additional Kernel Modules ==");
+    TEST(``(SuSEFirewall::GetFirewallKernelModules()), [READ, WRITE, EXECUTE], nil);
+    // empty modules, nil modules
+    TEST(``(SuSEFirewall::SetFirewallKernelModules(["module_a", nil, "module_b", "", "module_c", ""])), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetFirewallKernelModules()), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::SetFirewallKernelModules(["module_z", "module_x", "module_y"])), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetFirewallKernelModules()), [READ, WRITE, EXECUTE], nil);
+    // more modules in one entry - separated by space or tab
+    TEST(``(SuSEFirewall::SetFirewallKernelModules(["module_a module_z", "module_y\tmodule_x", "module_b module_c"])), [READ, WRITE, EXECUTE], nil);
+    TEST(``(SuSEFirewall::GetFirewallKernelModules()), [READ, WRITE, EXECUTE], nil);
 }

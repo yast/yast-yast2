@@ -135,6 +135,9 @@
 	// Custom rulezz
 	//     net,protocol[,dport][,sport]
 	"FW_SERVICES_ACCEPT_EXT", "FW_SERVICES_ACCEPT_INT", "FW_SERVICES_ACCEPT_DMZ",
+
+	// Custom kernel modules, e.g., for FTP
+	"FW_LOAD_MODULES",
     ];
 
     # <!-- SuSEFirewall VARIABLES //-->
@@ -2743,6 +2746,57 @@ Run YaST2 Firewall and assign it.
 	SETTINGS["FW_SERVICES_ACCEPT_" + zone] = expert_rules;
 
 	return true;
+    }
+
+    /**
+     * Returns list of additional kernel modules, that are loaded by firewall on startup.
+     * For instance "ip_conntrack_ftp" and "ip_nat_ftp" for FTP service.
+     *
+     * @return list <string> of kernel modules
+     *
+     * @see /etc/sysconfig/SuSEfirewall2 option nr. 32
+     */
+    global define list <string> GetFirewallKernelModules () {
+	list <string> k_modules = splitstring (SETTINGS["FW_LOAD_MODULES"]:"", " \t\n");
+
+	k_modules = filter (string one_module, k_modules, {
+	    return (one_module != "");
+	});
+
+	return toset (k_modules);
+    }
+
+    /**
+     * Sets list of additional kernel modules to be loaded by firewall on startup.
+     *
+     * @param list <string> of kernel modules
+     *
+     * @see /etc/sysconfig/SuSEfirewall2 option nr. 32
+     *
+     * @example SuSEFirewall::SetFirewallKernelModules (["ip_conntrack_ftp","ip_nat_ftp"]);
+     */
+    global define void SetFirewallKernelModules (list <string> k_modules) {
+	k_modules = filter (string one_module, k_modules, {
+	    if (one_module == nil) {
+		y2error ("List of modules %1 contains 'nil'! It will be ignored.", k_modules);
+		return false;
+	    } else if (one_module == "") {
+		y2warning ("List of modules %1 contains an empty string, it will be ignored.", k_modules);
+		return false;
+	    }
+	    
+	    if (regexpmatch (one_module, " ") || regexpmatch (one_module, "\t")) {
+		y2warning (
+		    "Additional module '%1' contains spaces. They will be evaluated as two or more modules later.",
+		    one_module
+		);
+	    }
+	    
+	    return true;
+	});
+
+	SETTINGS["FW_LOAD_MODULES"] = mergestring (k_modules, " ");
+	SetModified();
     }
 
     # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
