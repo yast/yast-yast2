@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 22 17:29:26 CET 2007 - mzugec@suse.cz
+
+- #237353 - use cache to avoid multiple confirmations for the same purpose 
+- 2.13.93
+
+-------------------------------------------------------------------
 Fri Jan 19 10:13:20 CET 2007 - jsuchome@suse.cz
 
 - added new API to Popup: MessageDetails, WarningDetails, ErrorDetails,

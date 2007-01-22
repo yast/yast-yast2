@@ -23,6 +23,9 @@ import "Mode";
 import "Popup";
 import "Linuxrc";
 
+// #TODO bug number
+map <string, boolean> detection_cache = $[];
+
 /**
  * Confirm hardware detection (only in manual installation)
  * @param class hardware class (network cards)
@@ -31,6 +34,12 @@ import "Linuxrc";
 global define boolean Detection(string class) ``{
 
     if(Linuxrc::manual () != true) return true;
+
+    boolean result = detection_cache[class]:nil;
+    if (result != nil) {
+	y2milestone ("Detection cached result: %1 -> %2", class, result);
+	return result;
+    }
 
     UI::OpenDialog(`opt(`decorated), `HBox(
 	`HSpacing(1),
@@ -71,12 +80,14 @@ global define boolean Detection(string class) ``{
     any ret = UI::UserInput();
     UI::CloseDialog();
 
+    result = true;
     if(ret != `continue) {
 	y2milestone("Detection skipped: %1", class);
-	return false;
+	result = false;
     }
 
-    return true;
+    detection_cache[class] = result;
+    return result;
 }
 
 /*
