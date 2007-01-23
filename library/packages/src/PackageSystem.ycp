@@ -224,7 +224,8 @@ global boolean Installed(string package) {
     // case, where all dependencies are satisfied.
     // Unfortunately, initializing Pkg reads the RPM database...
     // so we must avoid it.
-    return 0 == (integer) SCR::Execute(.target.bash, "rpm -q " + package);
+    // added --whatprovides due to bug #76181
+    return 0 == (integer) SCR::Execute(.target.bash, "rpm -q --whatprovides " + package);
     // return Pkg::IsProvided (package);
 }
 

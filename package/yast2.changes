@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jan 23 10:03:01 CET 2007 - jsrain@suse.cz
+
+- use --whatprovides when quering for an installed package (#76181)
+
+-------------------------------------------------------------------
 Mon Jan 22 17:53:17 CET 2007 - mzugec@suse.cz
 
 - 2.15.3
