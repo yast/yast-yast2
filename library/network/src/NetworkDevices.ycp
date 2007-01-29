@@ -1246,7 +1246,7 @@ global define string Fastest() {
 		    cmd = "ethtool " + devname + " | grep \"Link detected: yes\"";
 		    string cmd2 = "ifstatus " + devname + " | grep \"" + devname + " is up\"";
 
-		    if((SCR::Execute(.target.bash, cmd) == 0) && (SCR::Execute(.target.bash, cmd2) == 0)) {
+		    if( (Arch::s390() || SCR::Execute(.target.bash, cmd) == 0) && (SCR::Execute(.target.bash, cmd2) == 0)) {
 			y2milestone("%1 is up and connected", dev);
 			ret = dev;
 		    }

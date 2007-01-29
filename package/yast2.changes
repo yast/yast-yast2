@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 29 15:48:43 CET 2007 - mzugec@suse.de
+
+- #238246 - Internet connection test fails on s390 
+- 2.13.94 
+
+-------------------------------------------------------------------
 Mon Jan 22 17:29:26 CET 2007 - mzugec@suse.cz
 
 - #237353 - use cache to avoid multiple confirmations for the same purpose 
