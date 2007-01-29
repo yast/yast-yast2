@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 29 16:10:53 CET 2007 - mzugec@suse.de
+
+- Internet connection test fails on s390 (#238246)
+- 2.15.4 
+
+-------------------------------------------------------------------
 Tue Jan 23 10:03:01 CET 2007 - jsrain@suse.cz
 
 - use --whatprovides when quering for an installed package (#76181)
