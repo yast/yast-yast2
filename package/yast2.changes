@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb  7 16:15:41 CET 2007 - locilka@suse.cz
+
+- Added support for firewall services defined by packages
+  (FATE #300687).
+
+-------------------------------------------------------------------
 Mon Jan 29 16:10:53 CET 2007 - mzugec@suse.de
 
 - Internet connection test fails on s390 (#238246)

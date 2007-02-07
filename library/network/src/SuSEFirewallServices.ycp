@@ -14,7 +14,11 @@
 {
     module "SuSEFirewallServices";
     textdomain "base";
+    
+    import "FileUtils";
 
+    // FIXME: repair by implementing FATE #300687: Ports for SuSEfirewall added via packages.
+    //        add definition of services to the respective package
     /* list of possibly conflict services because of sharing ports, for instance: "nis-server" and "nfs-server" */
     list <string> possibly_conflict_services = ["nfs-server", "nis-server", "nfs-client", "nis-client"];
 
@@ -41,6 +45,14 @@
      *
      */
 
+    string services_definitions_in = "/usr/share/SuSEfirewall2/services/";
+    
+    list <string> known_services_features = ["TCP", "UDP", "RPC", "IP", "BROADCAST", "NAME", "DESCRIPTION"];
+
+    /**
+     * These definitions will be removed and replaced by definitions in packages.
+     * FATE #300687: Ports for SuSEfirewall added via packages.
+     */
     define map <string, map<string, any> > SERVICES = $[
 	"http" : $[
 	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
@@ -220,6 +232,90 @@
 	    "tcp_ports"	: [ "iscsi-target" ],
 	],
     ];
+
+    map <string, string> service_keys = $[
+	"NAME"        : "name",
+	"DESCRIPTION" : "description",
+	"TCP"         : "tcp_ports",
+	"UDP"         : "udp_ports",
+	"RPC"         : "rpc_ports",
+	"IP"          : "ip_protocols",
+	"BROADCAST"   : "broadcast_ports",
+    ];
+
+    string GetServiceKey (string key) {
+	if (service_keys[key]:nil != nil) {
+	    return service_keys[key]:"";
+	} else {
+	    y2error ("Unknown key '%1'", key);
+	    return "foo";
+	}
+    }
+
+    /**
+     * Returns whether the service ID is defined by package.
+     *
+     * @example
+     *	ServiceDefinedByPackage ("http-server") -> false
+     *	ServiceDefinedByPackage ("service:http-server") -> true
+     */
+    global boolean ServiceDefinedByPackage (string service) {
+	return regexpmatch (service, "^service:.*");
+    }
+
+    /**
+     * Reads definition of services that can be used in FW_CONFIGURATIONS_[EXT|INT|DMZ]
+     * in SuSEfirewall2.
+     */
+    global define boolean ReadServicesDefinedByRPMPackages () {
+	if (! FileUtils::Exists (services_definitions_in) || ! FileUtils::IsDirectory (services_definitions_in)) {
+	    y2error ("Cannot read %1", services_definitions_in);
+	    return false;
+	}
+
+	list <string> all_definitions = (list<string>) SCR::Read (.target.dir, services_definitions_in);
+	// skip the TEMPLATE file
+	all_definitions = filter (string filename, all_definitions, { return filename != "TEMPLATE"; });
+
+	string one_definition = nil;
+	string filefullpath = nil;
+	// for all files in that directory
+	foreach (string filename, all_definitions, {
+	    // "service:abc_server" to distinguis between dynamic definition and the static one
+	    one_definition = "service:" + filename;
+
+	    SERVICES[one_definition] = $[];
+	    filefullpath = services_definitions_in + filename;
+	    if (! SCR::RegisterAgent (.firewall_service_definition, `ag_ini (`SysConfigFile (filefullpath)))) {
+		y2error ("Cannot register agent for %1", filefullpath);
+		return;
+	    }
+	    string definition = nil;
+	    list <string> definition_values = nil;
+	    foreach (string feature, known_services_features, {
+		definition = (string) SCR::Read (add(.firewall_service_definition, feature));
+		if (definition == nil) definition = "";
+
+		// Do not split-by-whitespace name and description
+		if (contains(["NAME", "DESCRIPTION"], feature)) {
+		    SERVICES[one_definition, GetServiceKey(feature)] = definition;
+		} else {
+		    // map of services contains list of entries
+		    definition_values = splitstring (definition, " \t\n");
+		    definition_values = filter (string one_value, definition_values, { return one_value != ""; });
+		    SERVICES[one_definition, GetServiceKey(feature)] = definition_values;
+		}
+		
+	    });
+	    
+	    SCR::UnregisterAgent (.firewall_service_definition);
+
+	    // can be removed later
+	    y2milestone (": '%1' -> %2", filename, SERVICES[one_definition]:$[]);
+	});
+
+	return true;
+    }
 
     /**
      * Function returns if the service_id is a known (defined) service
