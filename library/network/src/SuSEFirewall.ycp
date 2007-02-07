@@ -138,6 +138,10 @@
 
 	// Custom kernel modules, e.g., for FTP
 	"FW_LOAD_MODULES",
+
+	// Services defined in /usr/share/SuSEfirewall2/services/ directory
+	// FATE #300687: Ports for SuSEfirewall added via packages
+	"FW_CONFIGURATIONS_EXT", "FW_CONFIGURATIONS_INT", "FW_CONFIGURATIONS_DMZ",
     ];
 
     # <!-- SuSEFirewall VARIABLES //-->
@@ -709,6 +713,70 @@
     }
 
     /**
+     * Removes service defined by package (FATE #300687) from enabled services.
+     *
+     * @param string service_id
+     * @param string zone
+     *
+     * @example
+     *	RemoveServiceDefinedByPackageFromZone ("service:irc-server", "EXT");
+     */
+    void RemoveServiceDefinedByPackageFromZone (string service, string zone) {
+	if (! IsKnownZone(zone)) {
+	    return nil;
+	}
+
+	if (service == nil) {
+	    y2error ("Service Id can't be nil!");
+	    return nil;
+	} else if (regexpmatch (service, "^service:.*")) {
+	    service = regexpsub (service, "^service:(.*)", "\\1");
+	}
+
+	// services defined by package are listed without "service:" which is here
+	// just to distinguish between dynamic and static definitions
+	list <string> supported_services = splitstring (SETTINGS["FW_CONFIGURATIONS_" + zone]:"", " ");
+	// Removing the service
+	supported_services = filter (string one_service, supported_services, {
+	    return one_service != service;
+	});
+	SETTINGS["FW_CONFIGURATIONS_" + zone] = mergestring (supported_services, " ");
+
+	SetModified();
+    }
+
+    /**
+     * Adds service defined by package (FATE #300687) into list of enabled services.
+     *
+     * @param string service_id
+     * @param string zone
+     *
+     * @example
+     *	AddServiceDefinedByPackageIntoZone ("service:irc-server", "EXT");
+     */
+    void AddServiceDefinedByPackageIntoZone (string service, string zone) {
+	if (! IsKnownZone(zone)) {
+	    return nil;
+	}
+
+	if (service == nil) {
+	    y2error ("Service Id can't be nil!");
+	    return nil;
+	} else if (regexpmatch (service, "^service:.*")) {
+	    service = regexpsub (service, "^service:(.*)", "\\1");
+	}
+
+	// services defined by package are listed without "service:" which is here
+	// just to distinguish between dynamic and static definitions
+	list <string> supported_services = splitstring (SETTINGS["FW_CONFIGURATIONS_" + zone]:"", " ");
+	// Adding the service
+	supported_services = toset (add (supported_services, service));
+	SETTINGS["FW_CONFIGURATIONS_" + zone] = mergestring (supported_services, " ");
+
+	SetModified();
+    }
+
+    /**
      * Local function removes well-known service's support from zone.
      * Allowed ports are removed with all of their port-aliases.
      *
@@ -720,6 +788,14 @@
 	// unknown service
 	if (needed == nil) {
 	    y2error("Undefined service '%1'", service);
+	    return nil;
+	}
+
+	// FATE #300687: Ports for SuSEfirewall added via packages
+	if (SuSEFirewallServices::ServiceDefinedByPackage (service)) {
+	    if (IsServiceSupportedInZone (service,zone))
+		RemoveServiceDefinedByPackageFromZone (service, zone);
+
 	    return nil;
 	}
 
@@ -754,7 +830,7 @@
      * @param	string zone
      */
     void AddServiceSupportIntoZone (string service, string zone) {
-	map <string, list <string> > needed = SuSEFirewallServices::GetNeededPortsAndProtocols(service);
+	map <string, list <string> > needed = SuSEFirewallServices::GetNeededPortsAndProtocols (service);
 	// unknown service
 	if (needed == nil) {
 	    y2error("Undefined service '%1'", service);
@@ -762,6 +838,13 @@
 	}
 
 	SetModified();
+
+	// FATE #300687: Ports for SuSEfirewall added via packages
+	if (SuSEFirewallServices::ServiceDefinedByPackage (service)) {
+	    AddServiceDefinedByPackageIntoZone (service, zone);
+
+	    return nil;
+	}
 
 	// Removing service ports first (and also port aliases for TCP and UDP)
 	if (IsServiceSupportedInZone(service,zone)) {
@@ -1463,7 +1546,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
     }
 
     /**
-     * Function returns all interfaces configured in firewall, already
+     * Function returns all interfaces already configured in firewall.
      *
      * @return	list <string> of configured interfaces
      */
@@ -1528,6 +1611,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
     /**
      * Function returns if requested service is allowed in respective zone.
      * Function takes care for service's aliases (only for TCP and UDP).
+     * Service is defined by set of parameters such as port and protocol.
      *
      * @param	string service (service name, port name, port alias or port number)
      * @param	protocol TCP, UDP, RCP or IP
@@ -1739,6 +1823,28 @@ Run YaST2 Firewall and assign it.
     }
 
     /**
+     * Returns whether a service is mentioned in FW_CONFIGURATIONS_[EXT|INT|DMZ].
+     * These services are defined by random packages.
+     */
+    boolean IsServiceDefinedByPackageSupportedInZone (string service, string zone) {
+	if (! IsKnownZone(zone)) {
+	    return nil;
+	}
+
+	if (service == nil) {
+	    y2error ("Service Id can't be nil!");
+	    return nil;
+	} else if (regexpmatch (service, "^service:.*")) {
+	    service = regexpsub (service, "^service:(.*)", "\\1");
+	}
+
+	// services defined by package are listed without "service:" which is here
+	// just to distinguish between dynamic and static definitions
+	list <string> supported_services = splitstring (SETTINGS["FW_CONFIGURATIONS_" + zone]:"", " ");
+	return contains (supported_services, service);
+    }
+
+    /**
      * Function returns if service is supported (allowed) in zone. Service must be defined
      * in the SuSEFirewallServices.
      *
@@ -1750,6 +1856,12 @@ Run YaST2 Firewall and assign it.
     global define boolean IsServiceSupportedInZone (string service, string zone) {
 	if (! IsKnownZone(zone)) {
 	    return nil;
+	}
+
+	// FATE #300687: Ports for SuSEfirewall added via packages
+	if (SuSEFirewallServices::ServiceDefinedByPackage(service)) {
+	    boolean supported = IsServiceDefinedByPackageSupportedInZone (service, zone);
+	    return supported;
 	}
 
 	map <string, list <string> > needed = SuSEFirewallServices::GetNeededPortsAndProtocols(service);
@@ -1998,7 +2110,7 @@ Run YaST2 Firewall and assign it.
 	    // TRANSLATORS: Dialog caption
 	    string read_caption = _("Initializing Firewall Configuration");
 
-	    Progress::New( read_caption, " ", 3,
+	    Progress::New( read_caption, " ", 4,
 		[
 		    // TRANSLATORS: Progress step
 		    _("Check for network devices"),
@@ -2006,6 +2118,8 @@ Run YaST2 Firewall and assign it.
 		    _("Read current configuration"),
 		    // TRANSLATORS: Progress step
 		    _("Check possibly conflicting services"),
+		    // TRANSLATORS: Progress step
+		    _("Read dynamic definitions of installed services"),
 		],
 		[
 		    // TRANSLATORS: Progress step
@@ -2014,6 +2128,8 @@ Run YaST2 Firewall and assign it.
 		    _("Reading current configuration..."),
 		    // TRANSLATORS: Progress step
 		    _("Checking possibly conflicting services..."),
+		    // TRANSLATORS: Progress step
+		    _("Reading dynamic definitions of installed services..."),
 		    Message::Finished(),
 		],
 		""
@@ -2051,6 +2167,10 @@ Run YaST2 Firewall and assign it.
 	y2milestone("Firewall configuration has been read: %1.", SETTINGS);
 	// to read configuration only once
 	configuration_has_been_read = true;
+
+	if (have_progress) Progress::NextStage();
+
+	SuSEFirewallServices::ReadServicesDefinedByRPMPackages();
 
 	if (have_progress) Progress::NextStage();
 
