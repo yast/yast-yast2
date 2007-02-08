@@ -305,8 +305,12 @@
 		    definition_values = filter (string one_value, definition_values, { return one_value != ""; });
 		    SERVICES[one_definition, GetServiceKey(feature)] = definition_values;
 		}
-		
 	    });
+
+	    if (SERVICES[one_definition, "name"]:"" == "" || SERVICES[one_definition, "name"]:nil == nil) {
+		// TRANSLATORS: "Service: irc-server", used as ComboBox item, Summary item, ...
+		SERVICES[one_definition, "name"] = sformat (_("Service: %1"), filename);
+	    }
 	    
 	    SCR::UnregisterAgent (.firewall_service_definition);
 
