@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Feb  8 11:06:41 CET 2007 - kmachalkova@suse.cz
+
+- Use UI::RunInTerminal in menu.ycp for text-mode only. In all other
+  cases run appropriate module in Qt(Gtk) 
+- 2.15.5
+
+-------------------------------------------------------------------
 Wed Feb  7 16:15:41 CET 2007 - locilka@suse.cz
 
 - Added support for firewall services defined by packages

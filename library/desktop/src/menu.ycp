@@ -87,13 +87,28 @@ define boolean Launch(string modul) {
     string argument = Modules[modul, "X-SuSE-YaST-Argument"]:"";
     y2debug("Calling: %1 (%2)", function, argument);
 
+    map display_info = UI::GetDisplayInfo();
+    boolean textmode = display_info["TextMode"]:false;
+
     if(function != "") {
 
-	string cmd = sformat ("/sbin/yast %1 %2 >&2", function, argument); 
-	any ret = UI::RunInTerminal(cmd);
+	string cmd = ""; 
+	any ret = nil;
+
+	//Use UI::RunInTerminal in text-mode only (#237332)
+	if (textmode) {
+	    cmd = sformat ("/sbin/yast %1 %2 >&2", function, argument);
+	    ret = UI::RunInTerminal(cmd);
+	}
+	//else (we have y2-qt, but no qt control centre) launch qt module 
+	//this should never happen, but ...
+	else {
+	    cmd = sformat ("/sbin/yast2 %1 %2 >&2", function, argument);
+	    ret = SCR::Execute (.target.bash, cmd);
+	}
 	y2milestone ("Got %1 from %2", ret, cmd);
 
-	if (function == "online_update" && ret == -42)
+	if ((function == "online_update" && ret == -42) || ret == `restart_menu)
 	{
 	    y2milestone ("yast needs to be restarted - exiting...");
 	    SCR::Execute (.target.bash, sformat ("touch %1", restart_file));
