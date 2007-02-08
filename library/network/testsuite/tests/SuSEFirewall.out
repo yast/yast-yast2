@@ -57,8 +57,8 @@ Return	nil
 Return	true
 Dump	
 Dump	== Services handling 2 ==
-Return	true
-Return	false
+Return	nil
+Return	nil
 Dump	
 Dump	== Ports handling ==
 Return	false

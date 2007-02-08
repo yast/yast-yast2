@@ -150,7 +150,7 @@
 
     /**
      * Function sets internal variable, which indicates, that any
-     * "firewall settings were modified", to "true"
+     * "firewall settings were modified", to "true".
      */
     global define void SetModified () {
 	modified = true;
@@ -167,6 +167,8 @@
      * Function returns list of known firewall zones (shortnames)
      *
      * @return	list <string> of firewall zones
+     *
+     * @example GetKnownFirewallZones() -> ["DMZ", "EXT", "INT"]
      */
     global define list <string> GetKnownFirewallZones () {
 	return known_firewall_zones;
@@ -437,8 +439,17 @@
      * Local function return map of allowed ports (without aliases).
      * If any list for zone is defined but empty, all allowed
      * UDP ports for this zone also accept broadcast packets.
+     * This function returns only ports that are mentioned in configuration,
+     * it doesn't return ports that are listed in some service (defined by package)
+     * which is enabled.
      *
      * @return	map <zone, list <string> > strings are allowed ports or port ranges
+     *
+     * @struct $[
+     *   "ZONE1" : [ "port1", "port2" ],
+     *   "ZONE2" : [ "port3", "port4" ],
+     *   "ZONE3" : [ ]
+     * ]
      */
     global define map <string, list <string> > GetBroadcastAllowedPorts () {
 
@@ -470,6 +481,7 @@
      * Function creates allowed-broadcast-ports string from broadcast map and saves it.
      *
      * @param	map <zone_string, list <string> > strings are allowed ports or port ranges
+     * @see GetBroadcastAllowedPorts() for an example of data
      */
     global define void SetBroadcastAllowedPorts (map <string, list <string> > broadcast) {
 	SetModified();
@@ -485,6 +497,8 @@
      * @param	list <string> ports
      * @param	string zone
      * @return	boolean if is allowed
+     *
+     * @example IsBroadcastAllowed (["port-xyz", "53"], "EXT") -> true
      */
     boolean IsBroadcastAllowed (list <string> needed_ports, string zone) {
 	if (size(needed_ports)==0) {
@@ -923,17 +937,23 @@
     }
 
     /**
-     * Function resets flag which doesn't allow to read configuration from disk again
+     * Function resets flag which doesn't allow to read configuration from disk again.
+     * So you actually can reread the configuration from disk. Currently, only the first
+     * Read() call reads the configuration from disk.
      */
     global define void ResetReadFlag () {
 	configuration_has_been_read = false;
     }
 
     /**
-     * Function returns name of the zone identified by zone shortname.
+     * Function returns localized name of the zone identified by zone shortname.
      *
      * @param	string short name
      * @return	string zone name
+     *
+     * @example
+     *  LANG=en_US GetZoneFullName ("EXT") -> "External Zone"
+     *  LANG=cs_CZ GetZoneFullName ("EXT") -> "Externí Zóna"
      */
     global define string GetZoneFullName (string zone) {
 	// TRANSLATORS: Firewall zone full-name, used as combo box item or dialog title
@@ -956,7 +976,7 @@
     }
 
     /**
-     * Function returns if firewall is protected from internal zone
+     * Function returns if firewall is protected from internal zone.
      *
      * @return	boolean if protected from internal
      */
@@ -1045,7 +1065,8 @@
     }
 
     /**
-     * Function which returns if SuSEfirewall should start in Write process
+     * Function which returns if SuSEfirewall2 should start in Write process.
+     * In fact it means that SuSEfirewall2 will at the end.
      *
      * @return	boolean if the firewall should start
      */
@@ -1054,9 +1075,10 @@
     }
 
     /**
-     * Function which sets if SuSEfirewall should start in Write process
+     * Function which sets if SuSEfirewall should start in Write process.
      *
      * @param	boolean start_service at Write() process
+     * @see GetStartService()
      */
     global define void SetStartService (boolean start_service) {
 	if (GetStartService() != start_service) {
@@ -1074,6 +1096,7 @@
     /**
      * Function which returns whether SuSEfirewall should be enabled in
      * /etc/init.d/ starting scripts during the Write() process
+     *
      * @see Write()
      * @see EnableServices()
      *
@@ -1111,20 +1134,11 @@
 
 	// bug #215416
 	// SuSEfirewall2_init doesn't need to be called, only enabled
-	//foreach (string service, firewall_services, {
-	//    y2debug("Starting service: %1", service);
-	//
-	//    if (! Service::Start(service)) {
-	//	all_ok = false;
-	//	y2error("Error starting service: %1", service);
-	//    } 
-	//});
 
-	//string tmpdir_file = (string) SCR::Read(.target.tmpdir);
-	//if (tmpdir_file == nil || tmpdir_file == "") tmpdir_file = "/tmp";
-
-	string tmpdir_file = "/var/lib/YaST2";
+	string tmpdir_file = (string) SCR::Read(.target.tmpdir);
+	if (tmpdir_file == nil || tmpdir_file == "") tmpdir_file = "/var/lib/YaST2";
 	tmpdir_file = tmpdir_file + "/SuSEfirewall2_YaST_output";
+
 	string command = sformat(
 	    "/sbin/SuSEfirewall2 start 2>'%1'; cat '%1'; rm -rf '%1'",
 	    tmpdir_file
@@ -1151,20 +1165,11 @@
 
 	// bug #215416
 	// SuSEfirewall2_init doesn't need to be called, only disabled
-	//foreach (string service, firewall_services_reverse, {
-	//    y2debug("Stopping service: %1", service);
-	//
-	//    if (! Service::Stop (service)) {
-	//	y2error("Error stopping service: %1", service);
-	//	all_ok = false;
-	//    }
-	//});
 
-	// string tmpdir_file = (string) SCR::Read(.target.tmpdir);
-	// if (tmpdir_file == nil || tmpdir_file == "") tmpdir_file = "/tmp";
-
-	string tmpdir_file = "/var/lib/YaST2";
+	string tmpdir_file = (string) SCR::Read(.target.tmpdir);
+	if (tmpdir_file == nil || tmpdir_file == "") tmpdir_file = "/var/lib/YaST2";
 	tmpdir_file = tmpdir_file + "/SuSEfirewall2_YaST_output";
+
 	string command = sformat(
 	    "/sbin/SuSEfirewall2 stop 2>'%1'; cat '%1'; rm -rf '%1'",
 	    tmpdir_file
@@ -1305,6 +1310,8 @@
      * @param	string interface
      * @param	string firewall zone
      * @return	boolean is in zone
+     *
+     * @example IsInterfaceInZone ("eth-id-01:11:DA:9C:8A:2F", "INT") -> false
      */
     global define boolean IsInterfaceInZone(string interface, string zone) {
 	list <string> interfaces = splitstring(SETTINGS[ "FW_DEV_" + zone ]:"", " ");
@@ -1318,6 +1325,8 @@
      *
      * @param	string interface
      * @return	string zone
+     *
+     * @example GetZoneOfInterface ("eth-id-01:11:DA:9C:8A:2F") -> "DMZ"
      */
     global define string GetZoneOfInterface (string interface) {
 	list interface_zone = [];
@@ -1344,7 +1353,10 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
      * Function returns list of zones of requested interfaces
      *
      * @param	list<string> interfaces
-     * @param	list<string> firewall zones
+     * @return	list<string> firewall zones
+     *
+     * @example
+     *	GetZonesOfInterfaces (["eth1","eth4"]) -> ["DMZ", "EXT"]
      */
     global define list<string> GetZonesOfInterfaces (list<string> interfaces) {
 	list<string> zones = [];
@@ -1365,7 +1377,10 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
      * Special string 'any' in 'EXT' zone is supported.
      *
      * @param	list<string> interfaces
-     * @param	list<string> firewall zones
+     * @return	list<string> firewall zones
+     *
+     * @example
+     *	GetZonesOfInterfaces (["eth1","eth4"]) -> ["EXT"]
      */
     global define list<string> GetZonesOfInterfacesWithAnyFeatureSupported (list<string> interfaces) {
 	list<string> zones = [];
@@ -1437,6 +1452,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
      * Function returns list of non-dial-up interfaces.
      *
      * @return list <string> of non-dial-up interface names
+     * @example GetAllNonDialUpInterfaces() -> ["eth1", "eth2"]
      */
     global define list <string> GetAllNonDialUpInterfaces () {
 	list <string> non_dial_up_interfaces = [];
@@ -1452,6 +1468,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
      * Function returns list of dial-up interfaces.
      *
      * @return list <string> of dial-up interface names
+     * @example GetAllDialUpInterfaces() -> ["modem0", "dsl5"]
      */
     global define list <string> GetAllDialUpInterfaces () {
 	list <string> dial_up_interfaces = [];
@@ -1467,6 +1484,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
      * Function returns list of all known interfaces.
      *
      * @return	list <string> of interfaces
+     * @example GetListOfKnownInterfaces() -> ["eth1", "eth2", "modem0", "dsl5"]
      */
     global define list <string> GetListOfKnownInterfaces () {
 	list <string> interfaces = [];
@@ -1483,6 +1501,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
      *
      * @param	string interface
      * @param	string zone
+     * @example RemoveInterfaceFromZone ("modem0", "EXT")
      */
     global define void RemoveInterfaceFromZone (string interface, string zone) {
 	SetModified();
@@ -1502,6 +1521,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
      *
      * @param	string interface
      * @param	string zone
+     * @example AddInterfaceIntoZone ("eth5", "DMZ")
      */
     global define void AddInterfaceIntoZone (string interface, string zone) {
 	SetModified();
@@ -1531,6 +1551,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
      *
      * @param	string zone
      * @return	list <string> of interfaces
+     * @example GetInterfacesInZone ("DMZ") -> ["eth4", "eth5"]
      */
     global define list<string> GetInterfacesInZone (string zone) {
 	list <string> interfaces_in_zone = splitstring (SETTINGS["FW_DEV_" + zone]:"", " ");
@@ -1563,10 +1584,11 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
     /**
      * Returns list of interfaces not mentioned in any zone and covered by the
      * special string 'any' in zone 'EXT' if such string exists there and the zone
-     * is EXT.
+     * is EXT. If the feature 'any' is not set, function returns empty list.
      *
      * @param string zone
      * @return list <string> of interfaces covered by special string 'any'
+     * @see IsAnyNetworkInterfaceSupported()
      */
     global define list<string> InterfacesSupportedByAnyFeature (string zone) {
 	list <string> result = [];
@@ -1617,6 +1639,11 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
      * @param	protocol TCP, UDP, RCP or IP
      * @param	interface name (like modem0), firewall zone (like "EXT") or "any" for all zones.
      * @return	boolean if service is allowed
+     *
+     * @example
+     *	HaveService ("ssh", "TCP", "EXT") -> true
+     *	HaveService ("ssh", "TCP", "modem0") -> false
+     *	HaveService ("53", "UDP", "dsl") -> false
      */
     global define boolean HaveService(string service, string protocol, string interface) {
 	if (! IsSupportedProtocol(protocol)) {
@@ -1669,6 +1696,10 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
      * @param	string protocol TCP, UDP, RPC, IP
      * @param	string zone name or interface name
      * @return	boolean success
+     *
+     * @example
+     *	AddService ("ssh", "TCP", "EXT")
+     *	AddService ("ssh", "TCP", "dsl0")
      */
     global define boolean AddService (string service, string protocol, string interface) {
 	boolean success = false;
@@ -1722,12 +1753,17 @@ Run YaST2 Firewall and assign it.
 
     /**
      * Function removes service from selected zone (or for interface) for selected protocol.
-     * Function take care about port-aliases, removes all of them.
+     * Function takes care about port-aliases, removes all of them.
      *
      * @param	string service/port
      * @param	string protocol TCP, UDP, RPC, IP
      * @param	string zone name or interface name
      * @return	boolean success
+     *
+     * @example
+     *	RemoveService ("22", "TCP", "DMZ") -> true
+     *  is the same as
+     *	RemoveService ("ssh", "TCP", "DMZ") -> true
      */
     global define boolean RemoveService (string service, string protocol, string interface) {
 	boolean success = false;
@@ -1788,8 +1824,10 @@ Run YaST2 Firewall and assign it.
      * @param	list <string> needed (checked) ports for service
      * @param	string protocol TCP, UDP, RPC or IP
      * @param	zone name like EXT
-     * @param	boolean check for port-aliases
+     * @param	boolean check for port-aliases (true is a reasonable default)
      * @return	boolean if all ports are allowed
+     * @example
+     *	ArePortsOrServicesAllowed (["53", "54"], "UDP", "INT", true) -> true
      */
     boolean ArePortsOrServicesAllowed (list <string> needed_ports, string protocol, string zone, boolean check_for_aliases) {
 	boolean are_allowed = true;
@@ -1846,22 +1884,25 @@ Run YaST2 Firewall and assign it.
 
     /**
      * Function returns if service is supported (allowed) in zone. Service must be defined
-     * in the SuSEFirewallServices.
+     * in the SuSEFirewallServices. Works transparently also with services defined by packages.
+     * Such service starts with "service:" prefix.
      *
-     * @see Module SuSEFirewallServices
+     * @see YCP Module SuSEFirewallServices
      * @param	string service id
      * @param	string zone
      * @return	boolean if supported
+     *
+     * @example
+     *	// All ports defined by dns-server service in SuSEFirewallServices module
+     *	// are enabled in the respective zone
+     *	IsServiceSupportedInZone ("dns-server", "EXT") -> true
+     *  // irc-server definition exists on the system and the irc-server
+     *  // is mentioned in FW_CONFIGURATIONS_EXT variable of SuSEfirewall2
+     *  IsServiceSupportedInZone ("service:irc-server", "EXT") -> true
      */
     global define boolean IsServiceSupportedInZone (string service, string zone) {
 	if (! IsKnownZone(zone)) {
 	    return nil;
-	}
-
-	// FATE #300687: Ports for SuSEfirewall added via packages
-	if (SuSEFirewallServices::ServiceDefinedByPackage(service)) {
-	    boolean supported = IsServiceDefinedByPackageSupportedInZone (service, zone);
-	    return supported;
 	}
 
 	map <string, list <string> > needed = SuSEFirewallServices::GetNeededPortsAndProtocols(service);
@@ -1876,6 +1917,12 @@ Run YaST2 Firewall and assign it.
 	if (zone == int_zone_shortname && ! GetProtectFromInternalZone()) {
 	    y2milestone("Checking for service '%1', in '%2', PROTECT_FROM_INTERNAL='no' => allowed", service, zone);
 	    return true;
+	}
+
+	// FATE #300687: Ports for SuSEfirewall added via packages
+	if (SuSEFirewallServices::ServiceDefinedByPackage(service)) {
+	    boolean supported = IsServiceDefinedByPackageSupportedInZone (service, zone);
+	    return supported;
 	}
 
 	// starting with nil value, any false means that the service is not supported
@@ -1912,6 +1959,12 @@ Run YaST2 Firewall and assign it.
      * @param	list <string> of services
      * @return	map <string, map < string : boolean > >
      * @struct	Returns $[service : $[ interface : supported_status ]]
+     *
+     * @example
+     *	GetServicesInZones (["service:irc-server"]) -> $["service:irc-server":$["eth1":true]]
+     *  // No such service "something"
+     *	GetServicesInZones (["something"])) -> $["something":$["eth1":nil]]
+     *  GetServicesInZones (["samba-server"]) -> $["samba-server":$["eth1":false]]
      */
     global define map <string, map <string, boolean> > GetServicesInZones (list<string> services) {
 	// list of interfaces for each zone
@@ -1952,6 +2005,14 @@ Run YaST2 Firewall and assign it.
      * @param	list <string> of services
      * @return	map <string, map < string : boolean> >
      * @struct	Returns $[service : $[ zone_name : supported_status]]
+     *
+     * @example
+     *  // Firewall in not protected from internal zone, that's why
+     *  // all services report that they are enabled in INT zone
+     *  GetServices (["samba-server", "service:irc-server"]) -> $[
+     *    "samba-server" : $["DMZ":false, "EXT":false, "INT":true],
+     *    "service:irc-server" : $["DMZ":false, "EXT":true, "INT":true]
+     *  ]
      */
     global define map <string, map <string, boolean> > GetServices (list<string> services) {
 	// $[ service : $[ firewall_zone : status ]]
@@ -1976,6 +2037,13 @@ Run YaST2 Firewall and assign it.
      * @param	list <string> firewall zones (EXT|INT|DMZ...)
      * @param	boolean new status of services
      * @return	boolean if successfull
+     *
+     * @example
+     *	SetServicesForZones (["samba-server", "service:irc-server"], ["DMZ", "EXT"], false);
+     *	SetServicesForZones (["samba-server", "service:irc-server"], ["EXT", "DMZ"], true);
+     *
+     * @see GetServicesInZones()
+     * @see GetServices()
      */
     global define boolean SetServicesForZones (list<string> services_ids, list<string> firewall_zones, boolean new_status) {
 	// no groups == all groups
@@ -2007,12 +2075,19 @@ Run YaST2 Firewall and assign it.
     }
 
     /**
-     * Function sets status for several services in several network interfaces.
+     * Function sets status for several services on several network interfaces.
      *
      * @param	list <string> service ids
      * @param	list <string> network interfaces
      * @param	boolean new status of services
      * @return	boolean if successfull
+     *
+     * @example
+     *  // Disabling services
+     *	SetServices (["samba-server", "service:irc-server"], ["eth1", "modem0"], false)
+     *  // Enabling services
+     *  SetServices (["samba-server", "service:irc-server"], ["eth1", "modem0"], true)
+     * @see SetServicesForZones()
      */
     global define boolean SetServices (list<string> services_ids, list<string> interfaces, boolean new_status) {
 	list<string> firewall_zones = GetZonesOfInterfacesWithAnyFeatureSupported(interfaces);
@@ -2377,8 +2452,13 @@ Run YaST2 Firewall and assign it.
     /**
      * This powerful function returns list of services/ports which are
      * not assigned to any fully-supported known-services.
+     * This function doesn't check for services defined by packages.
+     * They are listed by a different way.
      *
      * @return	list <string> of additional (unassigned) services
+     *
+     * @example
+     *	GetAdditionalServices("TCP", "EXT") -> ["53", "128"]
      */
     global define list <string> GetAdditionalServices (string protocol, string zone) {
 	list <string> additional_services = [];
@@ -2440,10 +2520,16 @@ Run YaST2 Firewall and assign it.
     /**
      * Function sets additional ports/services from taken list. Firstly, all additional services
      * are removed also with their aliases. Secondly new ports/protocols are added.
+     * It uses GetAdditionalServices() function to get the current state and
+     * then it removes what has been removed and adds what has been added.
      *
      * @param	string protocol
      * @param	string zone
      * @param	list <string> list of ports/protocols
+     * @see	GetAdditionalServices()
+     *
+     * @example
+     *	SetAdditionalServices ("TCP", "EXT", ["53", "128"])
      */
     global define void SetAdditionalServices (string protocol, string zone, list <string> new_list_services) {
 	list <string> old_list_services = toset(GetAdditionalServices(protocol, zone));
@@ -2526,6 +2612,9 @@ Run YaST2 Firewall and assign it.
      *
      * @return	map <string, list <string> >
      * @struct	map $[zone : [list of interfaces]]
+     *
+     * @example
+     *	GetFirewallInterfacesMap() -> $["DMZ":[], "EXT":["dsl0"], "INT":["eth1", "eth2"]]
      */
     global define map <string, list <string> > GetFirewallInterfacesMap () {
 	map <string, list <string> > firewall_interfaces_now = $[];
@@ -2549,6 +2638,9 @@ Run YaST2 Firewall and assign it.
      *
      * @param	string zone
      * @return	list <string> special strings or unknown interfaces
+     *
+     * @example
+     *	GetSpecialInterfacesInZone("EXT") -> ["any", "unknown-1", "wrong-3"]
      */
     global define list <string> GetSpecialInterfacesInZone (string zone) {
 	list <string> interfaces_in_zone = splitstring (SETTINGS["FW_DEV_" + zone]:"", " ");
@@ -2623,8 +2715,20 @@ Run YaST2 Firewall and assign it.
      * Function returns list of rules of forwarding ports
      * to masqueraded IPs.
      *
-     * @retyrn  list <map <string, string> >
+     * @return  list <map <string, string> >
      * @struct	list [$[ key: value ]]
+     *
+     * @example
+     *	GetListOfForwardsIntoMasquerade() -> [
+     * $[
+     *   "forward_to":"172.24.233.1",
+     *   "protocol":"tcp",
+     *   "req_ip":"192.168.0.3",
+     *   "req_port":"355",
+     *   "source_net":"192.168.0.0/20",
+     *   "to_port":"533"],
+     *   ...
+     * ]
      */
     global define list <map <string, string> > GetListOfForwardsIntoMasquerade () {
 	list <map <string, string> > list_of_rules = [];
@@ -2657,9 +2761,11 @@ Run YaST2 Firewall and assign it.
 
     /**
      * Function removes rule for forwarding into masquerade
-     * from the list of current rules.
+     * from the list of current rules returned by GetListOfForwardsIntoMasquerade().
      *
      * @params	integer item number
+     *
+     * @see GetListOfForwardsIntoMasquerade()
      */
     global define void RemoveForwardIntoMasqueradeRule (integer remove_item) {
 	SetModified();
@@ -2682,6 +2788,16 @@ Run YaST2 Firewall and assign it.
 
     /**
      * Adds forward into masquerade rule.
+     *
+     * @param string source_net
+     * @param string forward_to_ip
+     * @param string protocol
+     * @param string req_port
+     * @param string redirect_to_port
+     * @param string requested_ip
+     *
+     * @example
+     *	AddForwardIntoMasqueradeRule ("0/0", "192.168.32.1", "TCP", "80", "8080", "10.0.0.1")
      */
     global define void AddForwardIntoMasqueradeRule (
 	string source_net, string forward_to_ip, string protocol, string req_port,
@@ -2714,6 +2830,10 @@ Run YaST2 Firewall and assign it.
      *
      * @param	string rule definition 'ACCEPT' or 'DROP'
      * @return	string 'ALL', 'CRIT', or 'NONE'
+     *
+     * @example
+     *	GetLoggingSettings("ACCEPT") -> "CRIT"
+     *	GetLoggingSettings("DROP") -> "CRIT"
      */
     global define string GetLoggingSettings(string rule) {
 	string ret_val = nil;
@@ -2746,6 +2866,10 @@ Run YaST2 Firewall and assign it.
      *
      * @param	string rule definition 'ACCEPT' or 'DROP'
      * @param	string new logging state 'ALL', 'CRIT', or 'NONE'
+     *
+     * @example
+     *	SetLoggingSettings ("ACCEPT", "ALL")
+     *	SetLoggingSettings ("DROP", "NONE")
      */
     global define void SetLoggingSettings(string rule, string state) {
 	SetModified();
@@ -2781,6 +2905,10 @@ Run YaST2 Firewall and assign it.
      * Function returns yes/no - ingoring broadcast for zone
      *
      * @param	string zone
+     *
+     * @example
+     *	// Does not logg ignored broadcast packets
+     *	GetIgnoreLoggingBroadcast ("EXT") -> "yes"
      */
     global define string GetIgnoreLoggingBroadcast (string zone) {
 	if (! IsKnownZone(zone)) {
@@ -2796,6 +2924,10 @@ Run YaST2 Firewall and assign it.
      *
      * @param	string zone
      * @param	string ignore 'yes' or 'no'
+     *
+     * @example
+     *	// Do not log broadcast packetes from DMZ
+     *	SetIgnoreLoggingBroadcast ("DMZ", "yes")
      */
     global define void SetIgnoreLoggingBroadcast (string zone, string bcast) {
 	if (! IsKnownZone(zone)) {
@@ -2827,7 +2959,7 @@ Run YaST2 Firewall and assign it.
 
     // Firewall Expert Rulezz
 
-    /*\
+    /*
      * Returns list of rules describing protocols and ports that are allowed
      * to be accessed from listed hosts. All is returned as a single string.
      * Zone needs to be defined.
@@ -2847,7 +2979,7 @@ Run YaST2 Firewall and assign it.
 	return SETTINGS["FW_SERVICES_ACCEPT_" + zone]:"";
     }
 
-    /*\
+    /*
      * Sets expert allow rules for zone.
      *
      * @param string zone
@@ -2874,7 +3006,7 @@ Run YaST2 Firewall and assign it.
      *
      * @return list <string> of kernel modules
      *
-     * @see /etc/sysconfig/SuSEfirewall2 option nr. 32
+     * @see /etc/sysconfig/SuSEfirewall2 option nr. 32 (FW_LOAD_MODULES)
      */
     global define list <string> GetFirewallKernelModules () {
 	list <string> k_modules = splitstring (SETTINGS["FW_LOAD_MODULES"]:"", " \t\n");

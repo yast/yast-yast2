@@ -182,9 +182,9 @@
 
     DUMP("");
     DUMP("== Services handling 2 ==");
-    TEST(``(SuSEFirewall::IsServiceSupportedInZone ("service:aaa-bbb", "EXT")), [READ, WRITE, EXECUTE], nil);
-
     // needs a better testsuite for SuSEFirewallServices module
+    // these services are not known
+    TEST(``(SuSEFirewall::IsServiceSupportedInZone ("service:aaa-bbb", "EXT")), [READ, WRITE, EXECUTE], nil);
     TEST(``(SuSEFirewall::IsServiceSupportedInZone ("service:xyz", "EXT")), [READ, WRITE, EXECUTE], nil);
 
     DUMP("");
