@@ -47,7 +47,18 @@
 
     string services_definitions_in = "/usr/share/SuSEfirewall2/services/";
     
-    list <string> known_services_features = ["TCP", "UDP", "RPC", "IP", "BROADCAST", "NAME", "DESCRIPTION"];
+    map <string, string> known_services_features = $[
+	"TCP"         : "tcp_ports",
+	"UDP"         : "udp_ports",
+	"RPC"         : "rpc_ports",
+	"IP"          : "ip_protocols",
+	"BROADCAST"   : "broadcast_ports",
+    ];
+
+    map <string, string> known_metadata = $[
+	"Name"        : "name",
+	"Description" : "description",
+    ];
 
     /**
      * These definitions will be removed and replaced by definitions in packages.
@@ -233,25 +244,6 @@
 	],
     ];
 
-    map <string, string> service_keys = $[
-	"NAME"        : "name",
-	"DESCRIPTION" : "description",
-	"TCP"         : "tcp_ports",
-	"UDP"         : "udp_ports",
-	"RPC"         : "rpc_ports",
-	"IP"          : "ip_protocols",
-	"BROADCAST"   : "broadcast_ports",
-    ];
-
-    string GetServiceKey (string key) {
-	if (service_keys[key]:nil != nil) {
-	    return service_keys[key]:"";
-	} else {
-	    y2error ("Unknown key '%1'", key);
-	    return "foo";
-	}
-    }
-
     /**
      * Returns whether the service ID is defined by package.
      *
@@ -261,6 +253,26 @@
      */
     global boolean ServiceDefinedByPackage (string service) {
 	return regexpmatch (service, "^service:.*");
+    }
+
+    term GetMetadataAgent (string filefullpath) {
+	return
+	    `IniAgent(filefullpath, $[
+		"options" : [ "global_values", "flat", "read_only", "ignore_case_regexps" ],
+		"comments": [
+		    // jail followed by anything but jail (immediately)
+		    "^[ \t]*#[^#].*$",
+		    // jail alone
+		    "^[ \t]*#$",
+		    // (empty space)
+		    "^[ \t]*$",
+		    // sysconfig entries
+		    "^[ \t]*[a-zA-Z0-9_]+.*",
+		],
+		"params" : [
+		    $[ "match" : [ "^##[ \t]*([^:]+):[ \t]*(.*)[ \t]*$", "%s: %s" ] ],
+		],
+	    ]);
     }
 
     /**
@@ -283,39 +295,48 @@
 	foreach (string filename, all_definitions, {
 	    // "service:abc_server" to distinguis between dynamic definition and the static one
 	    one_definition = "service:" + filename;
-
-	    SERVICES[one_definition] = $[];
 	    filefullpath = services_definitions_in + filename;
+	    SERVICES[one_definition] = $[];
+
+	    // Registering sysconfig agent for this file
 	    if (! SCR::RegisterAgent (.firewall_service_definition, `ag_ini (`SysConfigFile (filefullpath)))) {
 		y2error ("Cannot register agent for %1", filefullpath);
 		return;
 	    }
 	    string definition = nil;
 	    list <string> definition_values = nil;
-	    foreach (string feature, known_services_features, {
-		definition = (string) SCR::Read (add(.firewall_service_definition, feature));
+	    foreach (string known_feature, string map_key, known_services_features, {
+		definition = (string) SCR::Read (add(.firewall_service_definition, known_feature));
 		if (definition == nil) definition = "";
 
-		// Do not split-by-whitespace name and description
-		if (contains(["NAME", "DESCRIPTION"], feature)) {
-		    SERVICES[one_definition, GetServiceKey(feature)] = definition;
-		} else {
-		    // map of services contains list of entries
-		    definition_values = splitstring (definition, " \t\n");
-		    definition_values = filter (string one_value, definition_values, { return one_value != ""; });
-		    SERVICES[one_definition, GetServiceKey(feature)] = definition_values;
-		}
+		// map of services contains list of entries
+		definition_values = splitstring (definition, " \t\n");
+		definition_values = filter (string one_value, definition_values, { return one_value != ""; });
+		SERVICES[one_definition, map_key] = definition_values;
 	    });
 
-	    if (SERVICES[one_definition, "name"]:"" == "" || SERVICES[one_definition, "name"]:nil == nil) {
-		// TRANSLATORS: "Service: irc-server", used as ComboBox item, Summary item, ...
-		SERVICES[one_definition, "name"] = sformat (_("Service: %1"), filename);
-	    }
-	    
+	    // Unregistering sysconfig agent for this file
 	    SCR::UnregisterAgent (.firewall_service_definition);
 
+	    // Fallback for presented service
+	    SERVICES[one_definition, "name"] = sformat (_("Service: %1"), filename);
+	    SERVICES[one_definition, "description"] = "";
+
+	    // Registering sysconfig agent for this file (to get metadata)
+	    if (SCR::RegisterAgent (.firewall_service_metadata, `ag_ini (GetMetadataAgent(filefullpath)))) {
+		foreach (string metadata_feature, string metadata_key, known_metadata, {
+		    definition = (string) SCR::Read (add(.firewall_service_metadata, metadata_feature));
+		    if (definition == nil || definition == "") return;
+		    SERVICES[one_definition, metadata_key] = definition;
+		});
+
+		SCR::UnregisterAgent (.firewall_service_metadata);
+	    } else {
+		y2error ("Cannot register agent for %1 (metadata)", filefullpath);
+	    }
+
 	    // can be removed later
-	    y2milestone (": '%1' -> %2", filename, SERVICES[one_definition]:$[]);
+	    y2milestone ("'%1' -> %2", filename, SERVICES[one_definition]:$[]);
 	});
 
 	return true;
@@ -338,7 +359,12 @@
     /**
      * Function returns the map of supported (known) services.
      *
-     * @return	map [service_id, service_name]
+     * @return	map $[service_id : localized_service_name]
+     * @struct
+     *	$[
+     *	  "dns-server" : "DNS Server",
+     *    "vnc" : "Remote Administration",
+     *  ]
      */
     global define map <string, string> GetSupportedServices () {
 	map <string, string> supported_services = $[];
@@ -350,6 +376,21 @@
 	});
 
 	return supported_services;
+    }
+
+    /**
+     * Returns list of service-ids defined by packages.
+     *
+     * @return list <string> service ids
+     */
+    global define list <string> GetListOfServicesAddedByPackage () {
+	list <string> ret = maplist (string service_id, map <string, any> service_definition, SERVICES, {
+	    return service_id;
+	});
+	ret = filter (string service_id, ret, {
+	    return ServiceDefinedByPackage (service_id);
+	});
+	return ret;
     }
 
     /**
