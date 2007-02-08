@@ -4,6 +4,7 @@ Thu Feb  8 16:46:18 CET 2007 - locilka@suse.cz
 - Tuning firewall services defined by packages (FATE #300687).
 - Added a lot of documentation and examples and comments into the
   SuSEFirewall YCP module.
+- 2.15.6
 
 -------------------------------------------------------------------
 Thu Feb  8 11:06:41 CET 2007 - kmachalkova@suse.cz
