@@ -7,6 +7,9 @@
 	"FW_ALLOW_FW_BROADCAST_DMZ":"no",
 	"FW_ALLOW_FW_BROADCAST_EXT":"no",
 	"FW_ALLOW_FW_BROADCAST_INT":"no",
+	"FW_CONFIGURATIONS_DMZ":"aaa-bbb",
+	"FW_CONFIGURATIONS_EXT":"aaa-bbb ab-ab-ab aa-aa-aa bb-bb-bb",
+	"FW_CONFIGURATIONS_INT":"",
 	"FW_DEV_DMZ":"",
 	"FW_DEV_EXT":"eth6 special-string eth8",
 	"FW_DEV_INT":"dsl0",
@@ -172,10 +175,17 @@
     TEST(``(SuSEFirewall::GetIgnoreLoggingBroadcast("DMZ")), [READ, WRITE, EXECUTE], nil);
 
     DUMP("");
-    DUMP("== Services handling ==");
+    DUMP("== Services handling 1 ==");
     TEST(``(SuSEFirewall::IsServiceSupportedInZone ("dhcp-server", "EXT")), [READ, WRITE, EXECUTE], nil);
     TEST(``(SuSEFirewall::SetServicesForZones (["dhcp-server","imaps"], ["EXT","DMZ"], true)), [READ, WRITE, EXECUTE], nil);
     TEST(``(SuSEFirewall::IsServiceSupportedInZone ("dhcp-server", "EXT")), [READ, WRITE, EXECUTE], nil);
+
+    DUMP("");
+    DUMP("== Services handling 2 ==");
+    TEST(``(SuSEFirewall::IsServiceSupportedInZone ("service:aaa-bbb", "EXT")), [READ, WRITE, EXECUTE], nil);
+
+    // needs a better testsuite for SuSEFirewallServices module
+    TEST(``(SuSEFirewall::IsServiceSupportedInZone ("service:xyz", "EXT")), [READ, WRITE, EXECUTE], nil);
 
     DUMP("");
     DUMP("== Ports handling ==");
