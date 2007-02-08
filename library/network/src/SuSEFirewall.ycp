@@ -1135,6 +1135,7 @@
 	// bug #215416
 	// SuSEfirewall2_init doesn't need to be called, only enabled
 
+	if (Mode::testsuite()) return true;
 	string tmpdir_file = (string) SCR::Read(.target.tmpdir);
 	if (tmpdir_file == nil || tmpdir_file == "") tmpdir_file = "/var/lib/YaST2";
 	tmpdir_file = tmpdir_file + "/SuSEfirewall2_YaST_output";
@@ -1166,6 +1167,7 @@
 	// bug #215416
 	// SuSEfirewall2_init doesn't need to be called, only disabled
 
+	if (Mode::testsuite()) return true;
 	string tmpdir_file = (string) SCR::Read(.target.tmpdir);
 	if (tmpdir_file == nil || tmpdir_file == "") tmpdir_file = "/var/lib/YaST2";
 	tmpdir_file = tmpdir_file + "/SuSEfirewall2_YaST_output";
