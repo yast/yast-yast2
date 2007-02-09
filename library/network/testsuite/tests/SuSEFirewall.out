@@ -80,8 +80,8 @@ Dump
 Dump	== Service Stop / Start ==
 Return	true
 Return	true
-Return	false
-Return	false
+Return	true
+Return	true
 Dump	
 Dump	== Additional Kernel Modules ==
 Return	[]
