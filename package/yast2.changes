@@ -3,6 +3,8 @@ Fri Feb  9 14:55:20 CET 2007 - mvidner@suse.cz
 
 - Set Mode::testMode () == "testsuite" automatically when running with
   yast2-testsuite (#243624).
+- Adjusted SuSEFirewall testsuite to match the current
+  Mode::testMode () implementation
 - 2.15.7
 
 -------------------------------------------------------------------
