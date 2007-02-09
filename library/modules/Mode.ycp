@@ -29,6 +29,11 @@ string _mode = nil;
 string _test = nil;
 
 /**
+ * We do one automatic check whether _test should be set to testsuite.
+ */
+boolean test_autochecked = false;
+
+/**
  * Current UI mode
  */
 string _ui = "dialog";
@@ -119,6 +124,13 @@ global void SetMode (string new_mode) {
 global string testMode () {
     if (_test == nil)
 	Initialize ();
+    if (!test_autochecked) {
+	// #243624
+	if (UI::GetDisplayInfo () == nil) {
+	    _test = "testsuite"; // testsuite runs with a dummy ui. 
+	}
+	test_autochecked = true;
+    }
 
     return _test;
 }
