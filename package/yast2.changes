@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb  9 13:09:40 CET 2007 - locilka@suse.cz
+
+- Using SCR::UnregisterAgent() instead of SCR::UnmountAgent in
+  SetDesktopIcon() in Wizard.ycp (#244046).
+
+-------------------------------------------------------------------
 Thu Feb  8 11:03:11 CET 2007 - kmachalkova@suse.cz
 
 - Use UI::RunInTerminal in menu.ycp for text-mode only. In all other
