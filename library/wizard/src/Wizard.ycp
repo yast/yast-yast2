@@ -932,7 +932,7 @@
 
 	SetTitleIcon(icon);
 
-	SCR::UnmountAgent (.yast2.desktop1);
+	SCR::UnregisterAgent (.yast2.desktop1);
 	return true;
     }
 
