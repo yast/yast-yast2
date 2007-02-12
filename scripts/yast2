@@ -64,6 +64,76 @@ listmodules()
     fi
 }
 
+# Probes for default desktop GUI
+probe_desktop_gui()
+{
+    if [ "$DESKTOP_SESSION" = "gnome" ]; then
+	DESKTOP_GUI="gtk"
+    elif echo $WINDOWMANAGER | grep -qi "gnome"; then
+	DESKTOP_GUI="gtk"
+    else
+	DESKTOP_GUI="qt"
+    fi
+}
+
+# Select which control center shell we want to use
+select_control_center()
+{
+    WANTED_SHELL="auto"
+    # check override config file
+    if [ -f $HOME/.yast2/shell ]; then
+	read WANTED_SHELL < $HOME/.yast2/shell
+    elif [ -f /etc/YaST2/shell ]; then
+	read WANTED_SHELL < /etc/YaST2/shell
+    fi
+
+    # 'auto' detects desktop
+    if [ "$WANTED_SHELL" = "auto" ]; then
+	probe_desktop_gui
+	WANTED_SHELL=$DESKTOP_GUI
+    fi
+
+    # select binary
+    y2ccbin=""
+    case "$WANTED_SHELL" in
+	gtk)
+# FIXME: we should install into y2bindir really ...
+	    y2ccbin="/opt/gnome/bin/y2controlcenter-gnome"
+	    ;;
+	*)
+	    y2ccbin="$ybindir/y2controlcenter"
+	    ;;
+    esac
+}
+
+# Select which toolkit we want to use (F#301083)
+select_gui_frontend()
+{
+    if [ "$WANTED_GUI" = "auto" ]; then
+	probe_desktop_gui
+	WANTED_GUI=$DESKTOP_GUI
+    fi
+    
+    if [ "$WANTED_GUI" = "gtk" ]; then
+	if check_gtk; then
+	    SELECTED_GUI=gtk
+	else
+#	    echo >&2 "GTK GUI wanted but not found, falling back to Qt."
+	    WANTED_GUI=qt
+	fi
+    fi
+
+    if [ "$WANTED_GUI" = "qt" ]; then
+	if check_qt; then
+	    SELECTED_GUI=qt
+	else
+	    echo >&2 "Qt GUI wanted but not found, falling back to ncurses."
+	fi
+    elif [ "$SELECTED_GUI" != "gtk" -a "$WANTED_GUI" != "ncurses" ]; then
+	echo >&2 "Unknown GUI '$WANTED_GUI', falling back to ncurses."
+    fi
+}
+
 TEMP=`/usr/bin/getopt -o hlg:s:Si --long help,list,kcontrol,geometry:,style:,strings,install,update,remove,fullscreen,noborder \
      -n 'yast2' -- "$@"`
 
@@ -115,38 +185,26 @@ fi
 # set lang from sysconfig
 set_lang_from_sysconfig
 
-# F#301083
-if [ -f $HOME/.yast2/gui ]; then
-    read WANTED_GUI < $HOME/.yast2/gui
-elif [ -f /etc/YaST2/gui ]; then
-    read WANTED_GUI < /etc/YaST2/gui
+# default defaults
+WANTED_GUI="auto"
+WANTED_SHELL="auto"
+DESKTOP_GUI="qt"
+
+# read system settings
+if [ -f /etc/sysconfig/yast2 ]; then
+    source /etc/sysconfig/yast2
 fi
-# Default GUI
-: ${WANTED_GUI:=qt}
+# read user settings
+if [ -f "$HOME/.yast2/yast2" ]; then
+    source "$HOME/.yast2/yast2"
+fi
+
 # Fallback GUI
 SELECTED_GUI=ncurses
-
-# Use text mode if DISPLAY is not set
-# Otherwise, use the preferred GUI, falling back to ncurses.
-# This could be made smarter of course
+# if we have a DISPLAY, select a preferred GUI
 if [ -n "$DISPLAY" ]; then
-    if [ "$WANTED_GUI" = "qt" ]; then
-	if check_qt; then
-	    SELECTED_GUI=qt
-	else
-	    echo >&2 "Qt GUI wanted but not found, falling back to ncurses."
-	fi
-    elif [ "$WANTED_GUI" = "gtk" ]; then
-	if check_gtk; then
-	    SELECTED_GUI=gtk
-	else
-	    echo >&2 "GTK GUI wanted but not found, falling back to ncurses."
-	fi
-    elif [ "$WANTED_GUI" != "ncurses" ]; then
-	echo >&2 "Unknown GUI '$WANTED_GUI', falling back to ncurses."
-    fi
+    select_gui_frontend
 fi
-
 
 if [ "$SELECTED_GUI" = "ncurses" ]; then
     if check_ncurses ; then
@@ -235,9 +293,16 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 # quick hack: treat gtk like qt
 elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
     set_qt_home_dir
-    # use ycp menu if the control center is not installed
-    if [ $module == "menu" -a -e "$ybindir/y2controlcenter" ] ; then
-	$ybindir/y2controlcenter $Y2QT_ARGS "$@"
+
+    # find which control center shell we want, if there is none we
+    # fall back to the built-in ycp menu
+    y2ccbin=""
+    if [ $module == "menu" ]; then
+	select_control_center
+    fi
+	
+    if [ $module == "menu" -a -e "$y2ccbin" ] ; then
+	$y2ccbin $Y2QT_ARGS "$@"
     else
 	
       while true ; do

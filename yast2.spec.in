@@ -68,6 +68,9 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 
 @CLEAN@
 
+%post
+%{fillup_only -n yast2}
+
 %files
 %defattr(-,root,root)
 
@@ -100,6 +103,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 @agentdir@/ag_*
 /etc/bash_completion.d/yast2*.sh
 /etc/YaST2/XVersion
+/var/adm/fillup-templates/sysconfig.yast2
 
 # documentation (not included in devel subpackage)
 %doc %dir @docdir@

@@ -1,0 +1,22 @@
+# Tweakable settings for the 'yast2' script.
+# to over-ride these settins per-user create a
+# ~/.YaST2/yast2 file.
+
+## Path: System/YaST2
+## Type: list(auto,qt,gtk)
+## Description: Default control center for YaST
+## Default: "auto"
+#     selects the control-center implementation to be used
+#     to render yast widgets
+#     auto: will attempt to detect both desktop & plugin
+#           presence and adapt accordingly
+WANTED_SHELL="auto"
+
+## Type: list(auto,qt,gtk,ncurses)
+## Description: Default UI backend for YaST
+## Default: "auto"
+#     selects the GUI plugin to be used to render yast widgets
+#     auto: will attempt to detect both desktop & plugin
+#           presence and adapt accordingly, falling back to
+#           qt rendering if gtk is not present
+WANTED_GUI="auto"

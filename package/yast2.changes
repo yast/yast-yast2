@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 12 11:00:53 CET 2007 - jsrain@suse.cz
+
+- added control center switching, configurable via sysconfig
+  (fate #301082) (mmeeks)
+
+-------------------------------------------------------------------
 Fri Feb  9 14:55:20 CET 2007 - mvidner@suse.cz
 
 - Set Mode::testMode () == "testsuite" automatically when running with
