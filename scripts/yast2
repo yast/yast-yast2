@@ -79,14 +79,6 @@ probe_desktop_gui()
 # Select which control center shell we want to use
 select_control_center()
 {
-    WANTED_SHELL="auto"
-    # check override config file
-    if [ -f $HOME/.yast2/shell ]; then
-	read WANTED_SHELL < $HOME/.yast2/shell
-    elif [ -f /etc/YaST2/shell ]; then
-	read WANTED_SHELL < /etc/YaST2/shell
-    fi
-
     # 'auto' detects desktop
     if [ "$WANTED_SHELL" = "auto" ]; then
 	probe_desktop_gui
