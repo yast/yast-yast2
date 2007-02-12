@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 12 09:31:15 CET 2007 - lslezak@suse.cz
+
+- register TrustGpgKey() callback handler (#242087, #240771)
+- 2.13.96
+
+-------------------------------------------------------------------
 Fri Feb  9 13:09:40 CET 2007 - locilka@suse.cz
 
 - Using SCR::UnregisterAgent() instead of SCR::UnmountAgent in
