@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 12 13:08:46 CET 2007 - lslezak@suse.cz
+
+- register TrustGpgKey() callback handler (#242087, #240771)
+- 2.15.8
+
+-------------------------------------------------------------------
 Mon Feb 12 11:00:53 CET 2007 - jsrain@suse.cz
 
 - added control center switching, configurable via sysconfig

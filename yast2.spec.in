@@ -5,8 +5,8 @@
 BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-pkg-bindings yast2-testsuite
 # UI::RunInTerminal builtin
 Requires:       yast2-core >= 2.15.1
-# Script callbacks
-Requires:	yast2-pkg-bindings >= 2.13.99
+# Pkg::CallbackAcceptNonTrustedGpgKey() 
+Requires:	yast2-pkg-bindings >= 2.15.7
 Requires:	yast2_ui yast2_theme
 # For Cron Agent, Module
 Requires:       perl-Config-Crontab
