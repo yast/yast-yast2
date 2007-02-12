@@ -4,9 +4,14 @@
 
 xversiondir = $(sysconfdir)/YaST2
 
+fillupdir = /var/adm/fillup-templates
+
 xversion_DATA =			\
 	XVersion
 
-EXTRA_DIST = $(xversion_DATA)
+fillup_DATA =			\
+	sysconfig.yast2
+
+EXTRA_DIST = $(xversion_DATA) $(fillup_DATA)
 
 include $(top_srcdir)/Makefile.am.common
