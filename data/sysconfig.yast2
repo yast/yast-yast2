@@ -1,6 +1,6 @@
 # Tweakable settings for the 'yast2' script.
 # to over-ride these settins per-user create a
-# ~/.YaST2/yast2 file.
+# ~/.yast2/yast2 file.
 
 ## Path: System/YaST2
 ## Type: list(auto,qt,gtk)
