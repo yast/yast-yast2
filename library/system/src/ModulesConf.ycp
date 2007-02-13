@@ -54,9 +54,6 @@
      */
     global define void RunDepmod (boolean force)
     ``{
-	if (Arch::s390 ())
-	    return;
-
 	import "Kernel";
 
 	string kernel_version = (string) SCR::Read (.boot.vmlinuz_version, ["/boot/" + Kernel::GetBinary ()]);

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Feb 13 17:17:43 CET 2007 - mvidner@suse.cz
+
+- ModulesConf::RunDepmod: do it also on s390 (#192120).
+
+-------------------------------------------------------------------
 Mon Feb 12 13:08:46 CET 2007 - lslezak@suse.cz
 
 - register TrustGpgKey() callback handler (#242087, #240771)
