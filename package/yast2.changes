@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 14 16:24:38 CET 2007 - aosthof@suse.de
+
+- Fixed ComputePackage() in library/system/src/Kernel.ycp to be
+  able to check provided kernel packages in installed system
+
+-------------------------------------------------------------------
 Mon Feb 12 09:31:15 CET 2007 - lslezak@suse.cz
 
 - register TrustGpgKey() callback handler (#242087, #240771)
