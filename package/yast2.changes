@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Feb 15 07:31:47 CET 2007 - lslezak@suse.cz
+
+- register ScanDB callbacks (#219953)
+- String.ycp - functions for formatting dowload rate string
+  (required for #168935)
+- 2.15.9
+
+-------------------------------------------------------------------
 Tue Feb 13 17:17:43 CET 2007 - mvidner@suse.cz
 
 - ModulesConf::RunDepmod: do it also on s390 (#192120).

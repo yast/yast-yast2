@@ -34,6 +34,23 @@ global void SetScriptCallbacks()
     Pkg::CallbackMessage("PackageCallbacks::Message");
 }
 
+global void SetScanDBCallbacks ()
+{
+    Pkg::CallbackStartScanDb ("PackageCallbacks::StartScanDb");
+    Pkg::CallbackProgressScanDb ("PackageCallbacks::ProgressScanDb");
+    Pkg::CallbackErrorScanDb ("PackageCallbacks::ErrorScanDb");
+    Pkg::CallbackDoneScanDb ("PackageCallbacks::DoneScanDb");
+}
+
+global void ResetScanDBCallbacks ()
+{
+    Pkg::CallbackStartScanDb ("");
+    Pkg::CallbackProgressScanDb ("");
+    Pkg::CallbackErrorScanDb ("");
+    Pkg::CallbackDoneScanDb ("");
+}
+
+
 /**
  * Register package manager callbacks
  */
@@ -98,6 +115,8 @@ global define void InitPackageCallbacks() {
     SetMediaCallbacks ();
 
     SetScriptCallbacks();
+
+    SetScanDBCallbacks();
 }
 
 /* EOF */
