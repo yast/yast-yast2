@@ -466,11 +466,25 @@ global string ComputePackage () {
     list<string> packages = GetPackages ();
     string the_kernel = packages[0]:"";
     y2milestone ("Selecting '%1' as kernel package", the_kernel);
-    while (the_kernel != ""
-	   && !Pkg::IsAvailable (the_kernel))
+
+    // Check for provided kernel packages in installed system
+    if (Mode::normal ())
     {
-	the_kernel = fallbacks[the_kernel]:"";
-	y2milestone ("Not available, falling back to '%1'", the_kernel);
+        while (the_kernel != "" && !Pkg::IsProvided (the_kernel))
+        {
+            the_kernel = fallbacks[the_kernel]:"";
+            y2milestone ("Not provided, falling back to '%1'", the_kernel);
+        }
+    }
+
+    // Check for available kernel packages during installation (instsys)
+    else
+    {
+        while (the_kernel != "" && !Pkg::IsAvailable (the_kernel))
+        {
+            the_kernel = fallbacks[the_kernel]:"";
+            y2milestone ("Not available, falling back to '%1'", the_kernel);
+        }
     }
 
     if (the_kernel != "")
@@ -488,7 +502,7 @@ global string ComputePackage () {
 }
 
 global string GetFinalKernel () {
-    if (final_kernel == nil)
+    if (final_kernel == "")
     {
 	ComputePackage ();
     }

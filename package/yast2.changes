@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 15 09:24:32 CET 2007 - aosthof@suse.de
+
+- Fixed ComputePackage() in library/system/src/Kernel.ycp to be
+  able to check provided kernel packages in installed system
+
+-------------------------------------------------------------------
 Thu Feb 15 07:31:47 CET 2007 - lslezak@suse.cz
 
 - register ScanDB callbacks (#219953)
