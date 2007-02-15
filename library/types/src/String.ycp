@@ -134,6 +134,47 @@ global define string FormatSize(integer bytes) ``{
 }
 
 /**
+ * Return a pretty description of a download rate
+ *
+ * Return a pretty description of a download rate, with two fraction digits
+ * and using KB/s, MB/s or GB/s as unit as appropriate.
+ *
+ * @param bytes_per_second download rate (in B/s)
+ * @return formatted string
+ *
+ * @example FormatRate(6780) -> ""
+ * @example FormatRate(0) -> ""
+ * @example FormatRate(895321) -> ""
+ */
+global string FormatRate(integer bytes_per_second)
+{
+    // covert a number to download rate string
+    // %1 is string - size in bytes, kB, MB or GB
+    return sformat(_("%1/s"), FormatSize(bytes_per_second));
+}
+
+/**
+ * Add a download rate status to a message.
+ *
+ * Add the current and the average download rate to the message.
+ *
+ * @param text the message
+ * @param avg_bps average download rate (in B/s)
+ * @param curr_bps current download rate (in B/s)
+ *
+ * @return string formatted message
+ */
+global string FormatRateMessage(string text, integer avg_bps, integer curr_bps)
+{
+    // format download rate message
+    // %1 - input message (e.g. "Downloading Package")
+    // %2 - current download rate in B/s, KB/s...
+    // %3 - average download rate since start
+    // example - "Downloading Package - 237.34 KB/s (avg. 243.21 KB/s)"
+    return sformat(_("%1 - %2 (avg. %3)"), text, FormatRate(curr_bps), FormatRate(avg_bps));
+}
+
+/**
  * Remove blanks at begin and end of input string.
  * @param input string to be stripped
  * @return stripped string
