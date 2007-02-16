@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Feb 16 12:50:35 CET 2007 - lslezak@suse.cz
+
+- added String::FormatFilename() and URL::FormatUrl() - functions
+  for removing the middle part of an URL/file name (#221163)
+- 2.15.10
+
+-------------------------------------------------------------------
 Thu Feb 15 09:24:32 CET 2007 - aosthof@suse.de
 
 - Fixed ComputePackage() in library/system/src/Kernel.ycp to be

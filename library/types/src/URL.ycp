@@ -336,6 +336,50 @@ global define string Build (map tokens) ``{
 
 }
 
+/**
+ * Format URL - truncate the middle part of the directory to fit to the requested lenght.
+ *
+ * Elements in the middle of the path specification are replaced by ellipsis (...).
+ * The result migth be longer that requested size if other URL parts are longer than the requested size.
+ * If the requested size is greater than size of the full URL then full URL is returned.
+ * Only path element of the URL is changed the other parts are not modified (e.g. protocol name)
+ *
+ * @example FormatURL("http://download.opensuse.org/very/log/path/which/will/be/truncated/target_file", 45)
+&nbsp;&nbsp;&nbsp;&nbsp;-> "http://download.opensuse.org/.../target_file"
+ * @example FormatURL("http://download.opensuse.org/very/log/path/which/will/be/truncated/target_file", 60)
+&nbsp;&nbsp;&nbsp;&nbsp;-> "http://download.opensuse.org/very/.../be/truncated/target_file"
+ *
+ * @param tokens parsed URL
+ * @see Parse should be used to convert URL string to a map (tokens parameter)
+ * @param len requested maximum lenght of the output string
+ * @return string Truncated URL
+ */
+global string FormatURL(map tokens, integer len)
+{
+    string ret = Build(tokens);
+
+    // full URL is shorter than requested, no truncation needed
+    if (size(ret) <= len)
+    {
+	return ret;
+    }
+
+    // it's too long, some parts must be removed
+    string pth = tokens["path"]:"";
+    tokens["path"] = "";
+
+    string no_path = Build(tokens);
+    // size for the directory part
+    integer dir_size = len - size(no_path);
+
+    // remove the path in the middle
+    string new_path = String::FormatFilename(pth, dir_size);
+
+    // build the url with the new path
+    tokens["path"] = new_path;
+    return Build(tokens);
+}
+
 /*
 y2milestone("%1", Parse("http://a:b@www.suse.cz:33/ahoj/nekde?neco#blah"));
 y2milestone("%1", Parse("ftp://www.suse.cz/ah"));
