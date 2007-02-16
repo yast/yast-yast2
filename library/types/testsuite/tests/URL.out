@@ -17,3 +17,7 @@ Return	_<>{}
 Return	http://name:pass@www.suse.cz:80/path/index.html?question#part
 Return	http://na%40me:pa%3f%3fss@www.suse.cz:80/path/index.html?question#part
 Return	http://user%40domain:pass@www.suse.cz:80/path/index.html?question#part
+Return	http://download.opensuse.org/very/log/path/which/will/be/truncated/target_file
+Return	http://download.opensuse.org/.../target_file
+Return	http://download.opensuse.org/.../target_file
+Return	http://download.opensuse.org/very/.../be/truncated/target_file

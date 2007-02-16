@@ -47,5 +47,16 @@ TEST(``(URL::Build(URL::Parse("http://na%40me:pa%3F%3fss@www.suse.cz:80/path/ind
 TEST(``(test()), [], nil);
 
 
+string long_url = "http://download.opensuse.org/very/log/path/which/will/be/truncated/target_file";
+
+// no truncation needed
+TEST(``(URL::FormatURL(URL::Parse(long_url), 200)), [], nil);
+
+// request too short result
+TEST(``(URL::FormatURL(URL::Parse(long_url), 15)), [], nil);
+
+TEST(``(URL::FormatURL(URL::Parse(long_url), 45)), [], nil);
+TEST(``(URL::FormatURL(URL::Parse(long_url), 65)), [], nil);
+
 /* EOF */
 }
