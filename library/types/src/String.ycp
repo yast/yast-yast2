@@ -1112,5 +1112,73 @@ global string Random (integer len) {
     return ret;
 }
 
+/**
+ * Format file name - truncate the middle part of the directory to fit to the reqested lenght.
+ * Path elements in the middle of the string are replaced by ellipsis (...).
+ * The result migth be longer that requested size if size of the last element
+ * (with ellipsis) is longer than the requested size. If the requested size is greater than
+ * size of the input then the string is not modified. The last part (file name) is never removed.
+ *
+ * @example FormatFilename("/really/very/long/file/name", 15) -> "/.../file/name"
+ * @example FormatFilename("/really/very/long/file/name", 5) -> ".../name"
+ * @example FormatFilename("/really/very/long/file/name", 100) -> "/really/very/long/file/name"
+ *
+ * @param file_path file name
+ * @param len requested maximum lenght of the output
+ * @return string Truncated file name
+ */
+global string FormatFilename(string file_path, integer len)
+{
+    if (size(file_path) <= len)
+    {
+	return file_path;
+    }
+
+    list<string> dir = splitstring(file_path, "/");
+    string file = dir[size(dir) - 1]:"";
+    dir = remove(dir, size(dir) - 1);
+
+    // there is a slash at the end, add the directory name
+    if (file == "")
+    {
+	file = dir[size(dir) - 1]:"" + "/";
+	dir = remove(dir, size(dir) - 1);
+    }
+
+    if (size(mergestring(dir, "/")) <= 3 || size(dir) == 0)
+    {
+	// the path is short, replacing by ... cannot help
+	return file_path;
+    }
+
+    string ret = "";
+
+    do
+    {
+	// put the ellipsis in the middle of the path
+	integer ellipsis = size(dir) / 2;
+
+	// ellipsis - used to replace part of text to make it shorter
+	// example: "/really/very/long/file/name", "/.../file/name")
+	dir[ellipsis] = _("...");
+
+	ret = mergestring(add(dir, file), "/");
+
+	if (size(ret) > len)
+	{
+	    // still too long, remove the ellipsis and start a new iteration
+	    dir = remove(dir, ellipsis);
+	}
+	else
+	{
+	    // the size is OK
+	    break;
+	}
+    }
+    while (size(dir) > 0);
+
+    return ret;
+}
+
 /* EOF */
 }
