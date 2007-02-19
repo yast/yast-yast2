@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 19 14:04:18 CET 2007 - lslezak@suse.cz
+
+- NetworkPopup - fixed NFS browsing (the same problem was
+  in #71064), display scan results in a simple popup
+
+-------------------------------------------------------------------
 Fri Feb 16 12:50:35 CET 2007 - lslezak@suse.cz
 
 - added String::FormatFilename() and URL::FormatUrl() - functions

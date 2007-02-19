@@ -95,6 +95,52 @@
     }
 
     /**
+     * Let the user choose one of a list of items
+     * @param title	selectionbox title
+     * @param items	a list of items
+     * @param selected	preselected a value in the list
+     * @return		one item or nil
+     */
+    define string ChooseItemSimple (string title, list<string> items, string selected) ``{
+	string item = nil;
+
+	list Items = maplist(string i, items,  ``{
+		return `item(`id(i), i, i == selected);
+	    }
+	);
+
+	UI::OpenDialog (
+	    `VBox (
+		`HSpacing (40),
+		`HBox (
+		    `SelectionBox (`id (`items), title, Items),
+		    `VSpacing(10)
+		    ),
+		`HBox (
+		    `PushButton (`id(`ok), `opt(`default, `key_F10),
+				 Label::OKButton()),
+		    `PushButton (`id(`cancel), `opt(`key_F9),
+				 Label::CancelButton())
+		    )
+		));
+	UI::SetFocus (`id (`items));
+	symbol ret = nil;
+	do
+	{
+	    ret = (symbol)UI::UserInput();
+	}
+	while (ret != `cancel && ret != `ok);
+
+	if (ret == `ok)
+	{
+	    item = (string)UI::QueryWidget (`id (`items), `CurrentItem);
+	}
+	UI::CloseDialog();
+
+	return item;
+    }
+
+    /**
      * Give me NFS server name on the local network
      *
      * display dialog with all local NFS servers
@@ -107,7 +153,11 @@
 	{
 	    // label message
 	    UI::OpenDialog(`Label(_("Scanning for hosts on this LAN...")));
-	    found_nfs_servers = (list<string>)SCR::Read(.net.hostnames.rpc, "nfs");
+	    // #71064
+	    // this works also if ICMP broadcasts are ignored
+	    string cmd = "/usr/sbin/rpcinfo -b mountd 1 | cut -d ' ' -f 2 | sort -u";
+	    map out = (map) SCR::Execute (.target.bash_output, cmd);
+	    found_nfs_servers = filter (string s, splitstring (out["stdout"]:"", "\n"), ``( s != ""));
 	    UI::CloseDialog();
 
 	    if (found_nfs_servers == nil)
@@ -122,7 +172,7 @@
 	}
 
 	// selection box label
-	string ret = ChooseItem(_("&NFS Servers"), found_nfs_servers, selected);
+	string ret = ChooseItemSimple(_("&NFS Servers"), found_nfs_servers, selected);
 	return ret;
     }
 
@@ -148,7 +198,7 @@
 	}
 
 	// selection box label
-	string ret = ChooseItem(_("Re&mote Hosts"), found_hosts, selected);
+	string ret = ChooseItemSimple(_("Re&mote Hosts"), found_hosts, selected);
 	return ret;
     }
 
@@ -169,7 +219,7 @@
 	}
 
 	// selection box label
-	string ret = ChooseItem(_("&Exported Directories"), dirs, selected);
+	string ret = ChooseItemSimple(_("&Exported Directories"), dirs, selected);
 	return ret;
     }
 
