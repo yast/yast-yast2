@@ -3,6 +3,7 @@ Mon Feb 19 14:04:18 CET 2007 - lslezak@suse.cz
 
 - NetworkPopup - fixed NFS browsing (the same problem was
   in #71064), display scan results in a simple popup
+- 2.15.11
 
 -------------------------------------------------------------------
 Fri Feb 16 12:50:35 CET 2007 - lslezak@suse.cz
