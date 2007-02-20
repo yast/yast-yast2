@@ -23,6 +23,7 @@
     // ADD THE SERVICE DEFINITION TO THE PACKAGE TO WHICH IT BELONGS.
     // USE /usr/share/SuSEfirewall2/services/TEMPLATE FOR THAT.
     // MORE INFORMATION IN FEATURE #300687: Ports for SuSEfirewall added via packages.
+    // ANOTHER REFERENCE: Bugzilla #246911.
     //
     //
 
