@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Feb 23 11:30:05 CET 2007 - lslezak@suse.cz
+
+- error handling in Package::Available*() - return nil if no
+  installation source is available (#225484)
+- 2.15.12
+
+-------------------------------------------------------------------
 Mon Feb 19 14:04:18 CET 2007 - lslezak@suse.cz
 
 - NetworkPopup - fixed NFS browsing (the same problem was

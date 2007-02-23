@@ -207,10 +207,17 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
 
 /**
  * Is a package available?
- * @return true if yes
+ * @return true if yes (nil = no package source available)
  */
 global boolean Available(string package) {
     EnsureSourceInit();
+
+    if (!source_initialized)
+    {
+	// error no source initialized
+	return nil;
+    }
+
     return Pkg::IsAvailable(package);
 }
 

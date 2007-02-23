@@ -33,24 +33,52 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
 /**
  * Are all of these packages available?
  * @param packages list of packages
- * @return boolean true if yes
+ * @return boolean true if yes (nil = an error occurred)
  */
 global define boolean AvailableAll(list<string> packages) {
+    boolean error = false;
+
     string which = find(string p, packages, {
-	return ! Available(p);
+	boolean avail = Available(p);
+	if (avail == nil)
+	{
+	    error = true;
+	}
+
+	return ! avail;
     });
+
+    if (error)
+    {
+	return nil;
+    }
+
     return which == nil;
 }
 
 /**
  * Is any of these packages available?
  * @param packages list of packages
- * @return boolean true if yes
+ * @return boolean true if yes (nil = an error occurred)
  */
 global define boolean AvailableAny(list<string> packages) {
+    boolean error = false;
+
     string which = find(string p, packages, {
-	return Available(p);
+	boolean avail = Available(p);
+	if (avail == nil)
+	{
+	    error = true;
+	}
+
+	return avail;
     });
+
+    if (error)
+    {
+	return nil;
+    }
+
     return which != nil;
 }
 
