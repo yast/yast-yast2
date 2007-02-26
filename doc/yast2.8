@@ -43,7 +43,7 @@ comes with two frontends:
 .B QT
 and
 .B ncurses.
-Both frontends are functionally equivalent.
+All frontends are functionally equivalent.
 The correct frontend is selected automatically based on the available
 components and the current environment (the DISPLAY variable).
 
@@ -78,7 +78,8 @@ installed without dependency checking.
 .\"
 .TP
 .B -l, --list
-List all available modules.
+List all available modules. To obtain usage info about
+a module, use "yast module help".
 .\"
 .TP
 .BI --log " " logfile
@@ -90,10 +91,72 @@ Write info to
 Widget style (QT frontend only).
 .\"
 .\"
+.SH MODULES WITH COMMAND LINE INTERFACE
+.TP
+This is a list of YaST modules currently supporting command line interface:
+.P
+answering_machine, bootloader, ca_mgm, dhcp-server, dns, dns-server, fax,
+firewall, groups, host, http-server, idedma, inetd, irda, kerberos-client,
+keyboard, lan, language, ldap, mail, mouse, nfs, nfs_server, nis, nis_server,
+ntp-client, power-management, powertweak, printer, profile-manager, proxy,
+remote, routing, runlevel, samba-client, samba-server, security, sound,
+sysconfig, tftp-server, timezone, tv, users
+.\"
+.P
+To obtain a list of basic commands for using a YaST module
+with support for command line interface, use:
+.\"
+.br
+.B yast2
+.I module
+.B help
+.br
+.\"
+.P
+To get more comprehensive information about the commands
+available for a YaST module, use:
+.\"
+.br
+.B yast2
+.I module
+.B longhelp
+.br
+.\"
+.P
+To get information about the commands available for a YaST
+module in a XML formatted file, use:
+.\"
+.br
+.B yast2
+.I module
+.B xmlhelp
+.B xmlfile= \fI<filename>\fP
+.br
+.\"
+.P
+To get information about a specific command of a YaST
+module, use:
+.\"
+.br
+.B yast2
+.I module
+.I command
+.B help
+.br
+.\"
+.P
+To start an interactive console in which you can execute
+commands of a YaST module, use
+.\"
+.br
+.B yast2
+.I module
+.B interactive
+.br
+.\"
+.\"
 .SH FILES
 .B /var/log/YaST2/*
-.\"
-.\"
 \" .SH BUGS
 \" Please report bugs at http://www.suse.de/feedback
 .\"
@@ -101,6 +164,7 @@ Widget style (QT frontend only).
 .SH AUTHOR
 .nf
 Michal Svec <msvec@suse.cz> - manual page
+Jakub Friedl <jfriedl@suse.cz> - manual page
 .fi
 .\"
 .\"

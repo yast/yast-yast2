@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 26 08:56:07 CET 2007 - mvidner@suse.cz
+
+- Documented the command line interface in yast2.8 (jfriedl).
+
+-------------------------------------------------------------------
 Fri Feb 16 12:50:35 CET 2007 - lslezak@suse.cz
 
 - added String::FormatFilename() and URL::FormatUrl() - functions
