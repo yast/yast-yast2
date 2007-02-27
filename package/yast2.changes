@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Feb 27 12:47:36 CET 2007 - locilka@suse.cz
+
+- Added and fixed support for Firewall Custom Rules (FATE #100068,
+  FATE #120042).
+- 2.15.13
+
+-------------------------------------------------------------------
 Fri Feb 23 11:30:05 CET 2007 - lslezak@suse.cz
 
 - error handling in Package::Available*() - return nil if no

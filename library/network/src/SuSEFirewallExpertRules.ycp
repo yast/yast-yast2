@@ -290,13 +290,49 @@ IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32
 	if (params["sport"]:"" != "") remove_rule = remove_rule + "," + params["sport"]:"";
 
 	// Filtering out the record
-	list <string> current_rules_list = splitstring (current_rules, " ");
+	list <string> current_rules_list = splitstring (current_rules, " \n");
 	current_rules_list = filter (string one_rule, current_rules_list, {
 	    return (one_rule != remove_rule && one_rule != "" && one_rule != ",");
 	});
 	current_rules = mergestring (current_rules_list, " ");
 	
 	return SuSEFirewall::SetAcceptExpertRules(zone, current_rules);
+    }
+
+    /**
+     * Deletes Custom Rule defined by the ID of the rule.
+     * The ID is an order of list returned by GetListOfAcceptRules().
+     * ID starts at number 0.
+     * Every time you delete some rule, the list is, of course, regenerated.
+     *
+     * @example
+     * 	DeleteRuleID (0) -> true
+     *
+     * @see GetListOfAcceptRules()
+     */
+    global boolean DeleteRuleID (string zone, integer rule_id) {
+	// Check the zone
+	if (! contains(SuSEFirewall::GetKnownFirewallZones(), zone)) {
+	    y2error("Unknown firewall zone: %1", zone);
+	    return nil;
+	}
+
+	string current_rules = SuSEFirewall::GetAcceptExpertRules(zone);
+	if (current_rules == nil) {
+	    y2error("Impossible remove any AcceptExpertRule for zone %1", zone);
+	    return false;
+	}
+
+	list <string> current_rules_list = splitstring (current_rules, " \n");
+	if (current_rules_list[rule_id]:nil != nil) {
+	    current_rules_list = remove (current_rules_list, rule_id);
+	    current_rules = mergestring (current_rules_list, " ");
+	    SuSEFirewall::SetAcceptExpertRules (zone, current_rules);
+	    return true;
+	} else {
+	    y2error ("Cannot remove %1, such entry does not exist.", rule_id);
+	    return false;
+	}
     }
 
 /* EOF */

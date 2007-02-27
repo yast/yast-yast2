@@ -2998,6 +2998,7 @@ Run YaST2 Firewall and assign it.
 	}
 	
 	SETTINGS["FW_SERVICES_ACCEPT_" + zone] = expert_rules;
+	SetModified();
 
 	return true;
     }
@@ -3051,6 +3052,38 @@ Run YaST2 Firewall and assign it.
 
 	SETTINGS["FW_LOAD_MODULES"] = mergestring (k_modules, " ");
 	SetModified();
+    }
+
+    map <string, string> protocol_translations = $[
+	// protocol name
+	"tcp" : _("TCP"),
+	// protocol name
+	"udp" : _("UDP"),
+	// protocol name
+	"_rpc_" : _("RPC"),
+	// protocol name
+	"ip"  : _("IP"),
+    ];
+
+    /**
+     * Returns translated protocol name. Translation is provided from
+     * SuSEfirewall2 sysconfig format to l10n format.
+     *
+     * @param string string from sysconfig (e.g., _rpc_)
+     * @return string translated string (e.g., RPC)
+     */
+    global string GetProtocolTranslatedName (string protocol) {
+	protocol = tolower (protocol);
+	
+	if (protocol == "") {
+	    return "";
+	} else if (protocol_translations[protocol]:nil == nil) {
+	    y2error ("Unknown protocol: %1", protocol);
+	    // table item, %1 stands for the buggy protocol name
+	    return sformat (_("Unknown protocol (%1)"), protocol);
+	} else {
+	    return protocol_translations[protocol]:"";
+	}
     }
 
     # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
