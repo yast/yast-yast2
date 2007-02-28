@@ -339,7 +339,11 @@
      */
     global define void Propose () {
 	// No proposal when SuSEfirewall2 is not installed
-	if (! SuSEFirewall::SuSEFirewallIsInstalled()) return nil;
+	if (! SuSEFirewall::SuSEFirewallIsInstalled()) {
+	    SuSEFirewall::SetEnableService (false);
+	    SuSEFirewall::SetStartService (false);
+	    return nil;
+	}
 
 	// Not changed by user - Propose from scratch
 	if (! GetChangedByUser()) {

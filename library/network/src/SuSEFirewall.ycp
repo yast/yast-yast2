@@ -927,6 +927,22 @@
 
     # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
 
+    /* Are needed packages (SuSEfirewall2) installed? */
+    boolean needed_packages_installed = false;
+
+    /**
+     * Returns whether all needed packages are installed.
+     *
+     * @return boolean whether SuSEfirewall2 is installed
+     */
+    global boolean SuSEFirewallIsInstalled () {
+	if (! needed_packages_installed) y2milestone ("SuSEfirewall2 is not installed, skipping...");
+	return needed_packages_installed;
+    }
+
+    // Configuration has been read and it's useful
+    boolean fw_service_can_be_configured = false;
+
     /**
      * Functions returns if any firewall's configuration was modified
      * or wasn't
@@ -1082,6 +1098,11 @@
      * @see GetStartService()
      */
     global define void SetStartService (boolean start_service) {
+	if (! SuSEFirewall::SuSEFirewallIsInstalled()) {
+	    y2warning ("Cannot set SetStartService");
+	    return nil;
+	}
+
 	if (GetStartService() != start_service) {
 	    SetModified();
 
@@ -1113,6 +1134,11 @@
      * @param	boolean start_service at Write() process
      */
     global define void SetEnableService (boolean enable_service) {
+	if (! SuSEFirewall::SuSEFirewallIsInstalled()) {
+	    y2warning ("Cannot set SetEnableService");
+	    return nil;
+	}
+
 	if (GetEnableService() != enable_service) {
 	    SetModified();
 	
@@ -2166,22 +2192,6 @@ Run YaST2 Firewall and assign it.
 
 	ReadSysconfigSuSEFirewall ( GetListOfSuSEFirewallVariables() );
     }
-
-    /* Are needed packages (SuSEfirewall2) installed? */
-    boolean needed_packages_installed = false;
-
-    /**
-     * Returns whether all needed packages are installed.
-     *
-     * @return boolean whether SuSEfirewall2 is installed
-     */
-    global boolean SuSEFirewallIsInstalled () {
-	if (! needed_packages_installed) y2milestone ("SuSEfirewall2 is not installed, skipping...");
-	return needed_packages_installed;
-    }
-
-    // Configuration has been read and it's useful
-    boolean fw_service_can_be_configured = false;
 
     /**
      * Function for reading SuSEFirewall configuration.
