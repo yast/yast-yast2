@@ -24,6 +24,7 @@
     import "Message";
     import "Progress";
     import "PortRanges";
+    import "PackageSystem";
 
     # <!-- SuSEFirewall VARIABLES //-->
 
@@ -2166,6 +2167,16 @@ Run YaST2 Firewall and assign it.
 	ReadSysconfigSuSEFirewall ( GetListOfSuSEFirewallVariables() );
     }
 
+    boolean needed_packages_installed = false;
+
+    global boolean SuSEFirewallIsInstalled () {
+	if (! needed_packages_installed) y2milestone ("SuSEfirewall2 is not installed, skipping...");
+	return needed_packages_installed;
+    }
+
+    // Configuration has been read and it's useful
+    boolean fw_service_can_be_configured = false;
+
     /**
      * Function for reading SuSEFirewall configuration.
      * Fills internal variables only.
@@ -2173,12 +2184,35 @@ Run YaST2 Firewall and assign it.
     global define boolean Read () {
 	// Don't fill up the logs with tones of Check-logs
 	// Turn on for debugging
-	// NetworkDevices::report_every_check = false;
+	NetworkDevices::report_every_check = false;
 
+	// Do not read it again and again
+	// to avoid rewriting changes already made
 	if (configuration_has_been_read) {
-	    y2milestone("SuSEfirewall2 configuration has been read already.");
-	    return true;
+	    y2milestone ("SuSEfirewall2 configuration has been read already.");
+	    return fw_service_can_be_configured;
 	}
+
+	// bugzilla #245506
+	if (! PackageSystem::CheckAndInstallPackages(["SuSEfirewall2"])) {
+	    y2warning ("Package not installed, disabling SuSEfirewall2-related functions.");
+	    // do not call it again
+	    configuration_has_been_read = true;
+
+	    // Default settings, services are disabled
+	    SETTINGS = DEFAULT_SETTINGS;
+	    SETTINGS["enable_firewall"] = false;
+	    SETTINGS["start_firewall"]  = false;
+
+	    // Cannot be configured, packages weren't installed
+	    fw_service_can_be_configured = false;
+	    needed_packages_installed = false;
+	    return fw_service_can_be_configured;
+	}
+
+	// Can be configured, packages were installed
+	fw_service_can_be_configured = true;
+	needed_packages_installed = true;
 
 	// Progress only for normal configuration
 	boolean have_progress = (Mode::normal());
@@ -2294,6 +2328,9 @@ Run YaST2 Firewall and assign it.
      * @return	boolean if successful
      */
     global define boolean ActivateConfiguration () {
+	// just disabled
+	if (! SuSEFirewallIsInstalled()) return true;
+
 	// Firewall should start after Write()
 	if (GetStartService()) {
 	    // Not started - start it
@@ -2340,6 +2377,9 @@ Run YaST2 Firewall and assign it.
      * @return	boolean if successful
      */
     global define boolean WriteConfiguration () {
+	// just disabled
+	if (! SuSEFirewallIsInstalled()) return true;
+
 	// Progress only for normal configuration and command line
 	boolean have_progress = (Mode::normal());
 
@@ -2424,6 +2464,9 @@ Run YaST2 Firewall and assign it.
      * @return	boolean if succesfull
      */
     global define boolean Write () {
+
+	// just disabled
+	if (! SuSEFirewallIsInstalled()) return true;
 
 	if (! WriteConfiguration())	return false;
 
