@@ -8,6 +8,8 @@ Wed Feb 28 15:20:00 CET 2007 - locilka@suse.cz
 - Checking for firewall definitions installed during one YaST run.
   This check is forced when something tries to use unknown serrvice
   definition.
+- Disabling possibility to configure firewall in Installation in
+  Network proposal when SuSEfirewall2 package is not installed.
 
 -------------------------------------------------------------------
 Wed Feb 28 11:26:14 CET 2007 - lslezak@suse.cz

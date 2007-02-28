@@ -338,6 +338,9 @@
      * @return void
      */
     global define void Propose () {
+	// No proposal when SuSEfirewall2 is not installed
+	if (! SuSEFirewall::SuSEFirewallIsInstalled()) return nil;
+
 	// Not changed by user - Propose from scratch
 	if (! GetChangedByUser()) {
 	    y2milestone("Calling firewall configuration proposal");
@@ -363,6 +366,19 @@
 	// output: $[ "output" : "HTML Proposal", "warning" : "HTML Warning" ];
 	string output  = "";
 	string warning = "";
+
+	// SuSEfirewall2 package needn't be installed
+	if (! SuSEFirewall::SuSEFirewallIsInstalled()) {
+	    // TRANSLATORS: Proposal informative text
+	    output = "<ul>" + _("SuSEfirewall2 package is not installed, firewall will be disabled.") + "</ul>";
+
+	    return $[
+		"output"		: output,
+		"warning"		: warning,
+	    ];
+	}
+
+	// SuSEfirewall2 is installed...
 
 	boolean firewall_is_enabled = (SuSEFirewall::GetEnableService() == true);
 
