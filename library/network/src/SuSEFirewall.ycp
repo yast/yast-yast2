@@ -2167,8 +2167,14 @@ Run YaST2 Firewall and assign it.
 	ReadSysconfigSuSEFirewall ( GetListOfSuSEFirewallVariables() );
     }
 
+    /* Are needed packages (SuSEfirewall2) installed? */
     boolean needed_packages_installed = false;
 
+    /**
+     * Returns whether all needed packages are installed.
+     *
+     * @return boolean whether SuSEfirewall2 is installed
+     */
     global boolean SuSEFirewallIsInstalled () {
 	if (! needed_packages_installed) y2milestone ("SuSEfirewall2 is not installed, skipping...");
 	return needed_packages_installed;
