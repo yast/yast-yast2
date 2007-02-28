@@ -3,10 +3,11 @@ Wed Feb 28 15:20:00 CET 2007 - locilka@suse.cz
 
 - Making yast2.rpm independent on SuSEfirewall2. The package is
   checked and installed in SuSEFirewall::Read() function. If user
-  decides not to install it, Firewall functionality is disabled
-  (#245506).
+  decides not to install it, Firewall functionality is disabled.
+  Installing the SuSEfirewall2 package is possible only on the
+  running system (#245506).
 - Checking for firewall definitions installed during one YaST run.
-  This check is forced when something tries to use unknown serrvice
+  This check is forced when something tries to use unknown service
   definition.
 - Disabling possibility to configure firewall in Installation in
   Network proposal when SuSEfirewall2 package is not installed.

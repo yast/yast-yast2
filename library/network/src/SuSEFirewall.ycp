@@ -28,6 +28,8 @@
 
     # <!-- SuSEFirewall VARIABLES //-->
 
+    string susefirewall_package = "SuSEfirewall2";
+
     /**
      * configuration hasn't been read for the default
      * this should reduce the readings to only ONE
@@ -2210,7 +2212,19 @@ Run YaST2 Firewall and assign it.
 	}
 
 	// bugzilla #245506
-	if (! PackageSystem::CheckAndInstallPackages(["SuSEfirewall2"])) {
+	boolean package_installed = false;
+
+	// In mode normal, package can be installed on request
+	if (Mode::normal()) {
+	    package_installed = PackageSystem::CheckAndInstallPackages ([susefirewall_package]);
+	    y2milestone ("CheckAndInstallPackages -> %1", package_installed);
+	// In mode install/update network might be down
+	} else {
+	    package_installed = PackageSystem::Installed (susefirewall_package);
+	    y2milestone ("Installed -> %1", package_installed);
+	}
+
+	if (! package_installed) {
 	    y2warning ("Package not installed, disabling SuSEfirewall2-related functions.");
 	    // do not call it again
 	    configuration_has_been_read = true;
