@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Feb 28 11:26:14 CET 2007 - lslezak@suse.cz
+
+- ProductControl::Run() - return `abort also in the firstboot
+  stage (#247552)
+- 2.15.14
+
+-------------------------------------------------------------------
 Tue Feb 27 12:47:36 CET 2007 - locilka@suse.cz
 
 - Added and fixed support for Firewall Custom Rules (FATE #100068,
