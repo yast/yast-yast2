@@ -305,6 +305,13 @@
 	foreach (string filename, all_definitions, {
 	    // "service:abc_server" to distinguis between dynamic definition and the static one
 	    one_definition = "service:" + filename;
+
+	    // Do not read already defined service
+	    // Just read only new definitions
+	    if (SERVICES[one_definition]:$[] != $[]) {
+		return;
+	    }
+
 	    filefullpath = services_definitions_in + filename;
 	    SERVICES[one_definition] = $[];
 
@@ -462,6 +469,13 @@
      */    
     global define map <string, list <string> > GetNeededPortsAndProtocols (string service) {
 	map <string, list <string> > needed = $[];
+
+	// Service defined by package, not known now
+	// Reading new definitions
+	if (ServiceDefinedByPackage (service) && ! IsKnownService (service)) {
+	    y2milestone ("Service %1 is not known, searching for new definitions...", service);
+	    ReadServicesDefinedByRPMPackages ();
+	}
 
 	if (! IsKnownService(service)) {
 	    y2error("Uknown service '%1'", service);
