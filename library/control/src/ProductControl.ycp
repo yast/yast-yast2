@@ -1016,7 +1016,8 @@ global symbol RunFrom (integer from, boolean allow_back)
 	{
 	    // FATE #300422
 	    // handling when user aborts the second stage installation
-	    if (Stage::cont ()) {
+	    // or firstboot (bug #247552)
+	    if (Stage::cont () || Stage::firstboot()) {
 		final_result = result;
 	    }
 	    break;

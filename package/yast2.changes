@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Feb 28 11:26:14 CET 2007 - lslezak@suse.cz
+
+- ProductControl::Run() - return `abort also in the firstboot
+  stage (#247552)
+- 2.13.98
+
+-------------------------------------------------------------------
 Mon Feb 26 08:56:07 CET 2007 - mvidner@suse.cz
 
 - Documented the command line interface in yast2.8 (jfriedl).
