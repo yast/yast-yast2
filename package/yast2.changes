@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar  1 16:43:01 CET 2007 - jsuchome@suse.cz
+
+- Added command line help text describing format of the [string]
+  type options (#248201)
+
+-------------------------------------------------------------------
 Wed Feb 28 15:20:00 CET 2007 - locilka@suse.cz
 
 - Making yast2.rpm independent on SuSEfirewall2. The package is
