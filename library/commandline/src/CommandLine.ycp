@@ -422,7 +422,7 @@
 	if (commandhelp == nil) {
 	    commandhelp = _("No help available");
 	}
-
+	boolean has_string_option	= false;
 	/* Process <command> "help" */
 	// translators: %1 is the command name
 	Print(sformat(_("Command '%1'"), action));
@@ -459,7 +459,8 @@
 	foreach( any opt, opts, ``{
 	    map op = allopts[opt]:$[];
 	    string t = op["type"]:"";
-
+	    if (t == "string")
+		has_string_option	= true;
 	    if ( t != "regex" && t != "enum" && t != "" ) t = "["+t+"]";
 	    else if( t == "enum" ) {
 		t = "\[ ";
@@ -515,6 +516,11 @@
 	    }
 	} );
 
+	if (has_string_option)
+	{
+	    // additional help for using command line
+	    Print(_("\n    Options of the [string] type must be written in the form 'option=value'."));
+	}
 	if( haskey( command, "example" ) ) {
 	    // translators: example title for command line
 	    Print( _("\n    Example:"));
