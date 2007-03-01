@@ -22,6 +22,7 @@ import "Popup";
 
 map Groups = $[];
 map Modules = $[];
+boolean root = false;
 
 string restart_file	= Directory::vardir + "/restart_menu";
 
@@ -39,6 +40,11 @@ define void DisplaySplash() {
 /**
  */
 define void OpenMenu() {
+
+    //check if user is root (#246015)
+    map output = (map) SCR::Execute (.target.bash_output, "/usr/bin/id --user");
+    root = output["stdout"]:"" == "0\n";
+
     UI::OpenDialog(`opt(`defaultsize), `VBox(
 	`HBox(
 	    `HSpacing(1),
@@ -77,6 +83,12 @@ define void OpenMenu() {
 	),
 	`VSpacing(1)
     ));
+
+    //show popup when running as non-root
+    if (!root)
+	Popup::Notify(_("YaST2 Control Center is not running as root.
+You will only see modules which do not require root privileges."));
+
 }
 
 /**
@@ -190,6 +202,7 @@ list<string> Values = [
     "X-SuSE-YaST-Call",
     "X-SuSE-YaST-Group",
     "X-SuSE-YaST-SortKey",
+    "X-SuSE-YaST-RootOnly",
     "Hidden",
 ];
 
@@ -198,6 +211,15 @@ Groups = Desktop::Groups;
 Modules = Desktop::Modules;
 y2debug("Groups=%1", Groups);
 y2debug("Modules=%1", Modules);
+
+list <string> non_root_modules = [];
+
+//create the list of modules available to non-root users
+foreach (string name, map params, (map <string, map>) Modules,{
+    if ( !( params["X-SuSE-YaST-RootOnly"]:"false" == "true" ))
+        non_root_modules = add(non_root_modules,name);
+});
+y2debug("non-root modules: %1", non_root_modules);
 
 if (FileUtils::Exists (restart_file))
 {
@@ -220,8 +242,18 @@ list<string> groups = maplist(term gr, GroupList, ``{
 y2debug("groups=%1", groups);
 
 map<string,list<term> > modules = listmap(string gr, groups, ``{
-    return $[ gr : Desktop::ModuleList(gr) ];
+    list <term> all_modules = Desktop::ModuleList(gr);
+
+    //filter out root-only stuff if the user is not root (#246015)
+    if (!root)
+    {
+	all_modules = filter(term t, all_modules,{
+	   return ( contains(non_root_modules, (string) t[0,0]:"") ); 
+	});
+    }
+    return $[ gr : all_modules ];
 });
+
 y2debug("modules=%1", modules);
 
 string first = groups[0]:nil;
