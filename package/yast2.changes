@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Mar  1 11:09:38 CET 2007 - lslezak@suse.cz
+
+- install Xen paravirtual drivers (xen-kmp-* package) if running in
+  a fully virtualized guest (#241564)
+- 2.13.99
+
+-------------------------------------------------------------------
 Wed Feb 28 11:26:14 CET 2007 - lslezak@suse.cz
 
 - ProductControl::Run() - return `abort also in the firstboot
