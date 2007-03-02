@@ -3,6 +3,9 @@ Fri Mar  2 08:54:41 CET 2007 - lslezak@suse.cz
 
 - install Xen paravirtual drivers (xen-kmp-* package) if running in
   a fully virtualized guest (#241564)
+- register new yast agents when a patch or a package has been
+  installed (#250179)
+- 2.15.15
 
 -------------------------------------------------------------------
 Thu Mar  1 17:58:14 CET 2007 - kmachalkova@suse.cz
