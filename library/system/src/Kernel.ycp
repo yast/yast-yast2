@@ -602,6 +602,7 @@ global string GetFinalKernel () {
 global list<string> ComputePackagesForBase (string base, boolean check_avail) {
     // Note: kernel-*-nongpl packages have been dropped, use base only
     list<string> ret = [ base ];
+
     y2milestone ("Packages for base %1: %2", base, ret);
     return ret;
 }
@@ -612,7 +613,33 @@ global list<string> ComputePackagesForBase (string base, boolean check_avail) {
  */
 global list <string> ComputePackages () {
     string kernel = ComputePackage ();
-    return ComputePackagesForBase (kernel, true);
+
+    list<string> ret = ComputePackagesForBase (kernel, true);
+
+    if (size(kernel_packages) > 1)
+    {
+	// get the extra packages
+	list<string> extra_pkgs = remove(kernel_packages, 0);
+
+	// add available extra packages
+	foreach(string pkg, extra_pkgs,
+	    {
+		if (Pkg::IsAvailable(pkg))
+		{
+		    ret = add(ret, pkg);
+		    y2milestone("Added extra kernel package: %1", pkg);
+		}
+		else
+		{
+		    y2warning("Extra kernel package '%1' is not available", pkg);
+		}
+	    }
+	);
+    }
+
+    y2milestone("Computed kernel packages: %1", ret);
+
+    return ret;
 }
 
 // functions related to kernel's modules loaded on boot
