@@ -113,6 +113,9 @@
     TESTSUITE_INIT([READ, WRITE, EXECUTE], nil);
     import "SuSEFirewall";
 
+    // Configuration must be read!
+    SuSEFirewall::Read();
+
     DUMP("== SuSEfirewall2 service ==");
     TEST(``(SuSEFirewall::GetEnableService()), [READ, WRITE, EXECUTE], nil);
     TEST(``(SuSEFirewall::GetStartService()), [READ, WRITE, EXECUTE], nil);
