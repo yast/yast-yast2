@@ -31,6 +31,7 @@ Write	.dev.tty.stderr "        blem                 other argument (without spac
 Write	.dev.tty.stderr "        atboot   [ yes no ]  turning on the device at boot" true
 Write	.dev.tty.stderr "        help                 Print the help for this command" true
 Write	.dev.tty.stderr "        verbose              Show progress information" true
+Write	.dev.tty.stderr "\n    Options of the [string] type must be written in the form 'option=value'." true
 Write	.dev.tty.stderr "" true
 Write	.dev.tty.stderr "Command 'delete'" true
 Write	.dev.tty.stderr "    delete a network card" true
@@ -38,6 +39,7 @@ Write	.dev.tty.stderr "\n    Options:" true
 Write	.dev.tty.stderr "        device   [string]  device ID" true
 Write	.dev.tty.stderr "        help               Print the help for this command" true
 Write	.dev.tty.stderr "        verbose            Show progress information" true
+Write	.dev.tty.stderr "\n    Options of the [string] type must be written in the form 'option=value'." true
 Write	.dev.tty.stderr "" true
 Write	.dev.tty.stderr "Command 'exit'" true
 Write	.dev.tty.stderr "    Exit interactive mode and save the changes" true
@@ -75,5 +77,6 @@ Write	.dev.tty.stderr "\n    Options:" true
 Write	.dev.tty.stderr "        help               Print the help for this command" true
 Write	.dev.tty.stderr "        verbose            Show progress information" true
 Write	.dev.tty.stderr "        xmlfile  [string]  Where to store the XML output" true
+Write	.dev.tty.stderr "\n    Options of the [string] type must be written in the form 'option=value'." true
 Write	.dev.tty.stderr "" true
 Return	false

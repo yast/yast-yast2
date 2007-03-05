@@ -10,5 +10,6 @@ Write	.dev.tty.stderr "        blem                 other argument (without spac
 Write	.dev.tty.stderr "        atboot   [ yes no ]  turning on the device at boot" true
 Write	.dev.tty.stderr "        help                 Print the help for this command" true
 Write	.dev.tty.stderr "        verbose              Show progress information" true
+Write	.dev.tty.stderr "\n    Options of the [string] type must be written in the form 'option=value'." true
 Write	.dev.tty.stderr "" true
 Return	false
