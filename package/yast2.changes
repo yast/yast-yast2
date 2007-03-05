@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar  5 10:42:34 CET 2007 - jsrain@suse.cz
+
+- fixed testsuite
+- 2.15.16
+
+-------------------------------------------------------------------
 Fri Mar  2 08:54:41 CET 2007 - lslezak@suse.cz
 
 - install Xen paravirtual drivers (xen-kmp-* package) if running in
