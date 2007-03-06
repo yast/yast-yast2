@@ -127,8 +127,10 @@
 	});
 
 	foreach (string interface, currently_known_interfaces, {
-	    // already configured
+	    // already known but not assigned
 	    if (contains(last_known_interfaces, interface)) return;
+	    // already configured in some zone
+	    if (SuSEFirewall::GetZoneOfInterface(interface) != nil) return;
 
 	    // any dial-up interfaces presented and the new one isn't dial-up
 	    if (had_dialup_interfaces && ! IsDialUpInterface(interface)) {
