@@ -22,6 +22,10 @@
      *
      * @return	true if exists
      * @param	string file name
+     *
+     * @example
+     *	FileUtils::Exists ("/tmp") -> true
+     *	FileUtils::Exists ("/tmp/somefile") -> false
      */
     global define boolean Exists (string target) {
 	map info = (map) SCR::Read(.target.stat, target);
@@ -38,6 +42,11 @@
      *
      * @return	true if it is a directory, nil if doesn't exist
      * @param	string file name
+     *
+     * @example
+     *	FileUtils::IsDirectory ("/var") -> true
+     *	FileUtils::IsDirectory ("/var/log/messages") -> false
+     *	FileUtils::IsDirectory ("/does-not-exist") -> nil
      */
     global define boolean IsDirectory (string target) {
 	map info = (map) SCR::Read(.target.stat, target);
@@ -52,6 +61,11 @@
      *
      * @return	true if it is a regular file, nil if doesn't exist
      * @param	string file name
+     *
+     * @example
+     *	FileUtils::IsFile ("/var") -> false
+     *	FileUtils::IsFile ("/var/log/messages") -> true
+     *	FileUtils::IsFile ("/does-not-exist") -> nil
      */
     global define boolean IsFile (string target) {
 	map info = (map) SCR::Read(.target.stat, target);
@@ -66,6 +80,11 @@
      *
      * @return	true if it is a block file, nil if doesn't exist
      * @param	string file name
+     *
+     * @example
+     *	FileUtils::IsBlock ("/var") -> false
+     *	FileUtils::IsBlock ("/dev/sda2") -> true
+     *	FileUtils::IsBlock ("/dev/does-not-exist") -> nil
      */
     global define boolean IsBlock (string target) {
 	map info = (map) SCR::Read(.target.stat, target);
@@ -133,8 +152,13 @@
      * Function returns the real type of requested file/directory.
      * If the file is a link to any object, "link" is returned.
      *
-     * @return	string fle type (directory|regular|block|fifo|link|socket|chr_device), nil if doesn't exist
+     * @return	string file type (directory|regular|block|fifo|link|socket|chr_device), nil if doesn't exist
      * @param	string file name
+     *
+     * @example
+     *	FileUtils::GetFileRealType ("/var") -> "directory"
+     *	FileUtils::GetFileRealType ("/etc/passwd") -> "file"
+     *	FileUtils::GetFileRealType ("/does-not-exist") -> nil
      */
     global define string GetFileRealType (string target) {
 	map info = (map) SCR::Read(.target.lstat, target);
@@ -193,6 +217,10 @@
      *
      * @return	integer file size, -1 if doesn't exist
      * @param	string file name
+     *
+     * @example
+     *	FileUtils::GetSize ("/var/log/YaST2") -> 12348
+     *	FileUtils::GetSize ("/does-not-exist") -> -1
      */
     global define integer GetSize (string target) {
 	return (integer) SCR::Read(.target.size, target);
@@ -203,6 +231,10 @@
      *
      * @return	integer UID, nil if doesn't exist
      * @param	string file name
+     *
+     * @example
+     *	FileUtils::GetOwnerUserID ("/etc/passwd") -> 0
+     *	FileUtils::GetOwnerUserID ("/does-not-exist") -> nil
      */
     global define integer GetOwnerUserID (string target) {
 	map info = (map) SCR::Read(.target.stat, target);
@@ -215,6 +247,10 @@
      *
      * @return	integer GID, nil if doesn't exist
      * @param	string file name
+     *
+     * @example
+     *	FileUtils::GetOwnerGroupID ("/etc/passwd") -> 0
+     *	FileUtils::GetOwnerGroupID ("/does-not-exist") -> nil
      */
     global define integer GetOwnerGroupID (string target) {
 	map info = (map) SCR::Read(.target.stat, target);

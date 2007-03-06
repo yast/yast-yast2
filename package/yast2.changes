@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Mar  6 22:25:24 CET 2007 - locilka@suse.cz
+
+- Adding more documentation into the FileUtils module (examples).
+
+-------------------------------------------------------------------
 Tue Mar  6 13:49:56 CET 2007 - locilka@suse.cz
 
 - When updating the SuSEfirewall2 network interfaces, consider that
