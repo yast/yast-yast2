@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Mar  6 13:49:56 CET 2007 - locilka@suse.cz
+
+- When updating the SuSEfirewall2 network interfaces, consider that
+  interfaces needn't be assigned to zones only by SuSEFirewall but
+  also by network modules. Do not change assignments which have
+  been made already.
+
+-------------------------------------------------------------------
 Mon Mar  5 10:57:48 CET 2007 - locilka@suse.cz
 
 - fixed SuSEFirewall testsuite
