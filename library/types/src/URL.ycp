@@ -312,6 +312,8 @@ global define string Build (map tokens) ``{
 		url = sformat("%1/%2", url, EscapeString(tokens["path"]:"", transform_map_filename));
 	else if (tokens["path"]:"" != "" && find (tokens["path"]:"", "/") == 0 )
 	{
+		while (substring (tokens["path"]:"", 0, 2) == "//")
+		    tokens["path"] = substring (tokens["path"]:"", 1);
 		if (tokens["scheme"]:"" == "ftp") {
 		    url = sformat("%1/%%2f%2", url, substring(EscapeString(tokens["path"]:"", transform_map_filename), 1));
 		}
