@@ -46,6 +46,11 @@ TEST(``(URL::Build(URL::Parse("http://na%40me:pa%3F%3fss@www.suse.cz:80/path/ind
 
 TEST(``(test()), [], nil);
 
+TEST(``(URL::Build($["scheme":"ftp","host":"ftp.example.com","path":"path/to/dir"])), [], nil);
+TEST(``(URL::Build($["scheme":"ftp","host":"ftp.example.com","path":"/path/to/dir"])), [], nil);
+TEST(``(URL::Build($["scheme":"ftp","host":"ftp.example.com","path":"//path/to/dir"])), [], nil);
+TEST(``(URL::Build($["scheme":"ftp","host":"ftp.example.com","path":"///path/to/dir"])), [], nil);
+
 
 string long_url = "http://download.opensuse.org/very/log/path/which/will/be/truncated/target_file";
 

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar  7 13:26:03 CET 2007 - jsrain@suse.cz
+
+- build correctly URL in case of multiple leading slashes in the
+  path (#179623)
+
+-------------------------------------------------------------------
 Tue Mar  6 22:25:24 CET 2007 - locilka@suse.cz
 
 - Adding more documentation into the FileUtils module (examples).
