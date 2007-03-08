@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Mar  8 16:30:09 CET 2007 - jsrain@suse.cz
+
+- added xinetd support to the CWM service start widget
+
+-------------------------------------------------------------------
 Wed Mar  7 13:26:03 CET 2007 - jsrain@suse.cz
 
 - build correctly URL in case of multiple leading slashes in the
