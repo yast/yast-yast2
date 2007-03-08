@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar  8 16:57:17 CET 2007 - locilka@suse.cz
+
+- Module GetInstArgs moved from yast2-installation to yast2, many
+  clients required yast2-installation only because of this module.
+
+-------------------------------------------------------------------
 Thu Mar  8 16:30:09 CET 2007 - jsrain@suse.cz
 
 - added xinetd support to the CWM service start widget

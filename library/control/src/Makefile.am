@@ -7,7 +7,8 @@ productdir = ${sysconfdir}/YaST2
 module_DATA =			\
 	ProductControl.ycp	\
 	ProductFeatures.ycp	\
-	Hooks.ycp
+	Hooks.ycp		\
+	GetInstArgs.ycp
 
 EXTRA_DIST = $(module_DATA)
 

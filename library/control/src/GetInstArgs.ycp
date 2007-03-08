@@ -1,0 +1,139 @@
+/**
+ * File:	modules/GetInstArgs.ycp
+ * Package:	yast2
+ * Summary:	Get client arguments
+ * Authors:	Anas Nashif <nashif@suse.de>
+ *
+ * $Id$
+ */
+
+
+{
+
+    /***
+     * This module should be used in installation YCP scripts
+     * to get information how the client was called and how
+     * should it behave. This module provides a functional
+     * API to the script parametes.
+     *
+     * @example
+     *	inst_language ($["enable_back":false, "enable_next":true, "first_run":"yes"])
+     *	GetInstArgs::enable_next() -> true
+     *	GetInstArgs::enable_back() -> false
+     */
+
+    module "GetInstArgs";
+
+    map args = $[];
+    void Init () {
+        /* Check arguments */
+        args = $[];
+        if(size(WFM::Args()) > 0 && is(WFM::Args(0), map))
+        {
+            args = (map) WFM::Args(0);
+        }
+    }
+
+    /**
+     * Should be the [Next] button enabled?
+     *
+     * @return boolean whether enabled or not
+     */
+    global boolean enable_next() {
+        Init();
+        return args["enable_next"]:false;
+    }
+
+    /**
+     * Should be the [Back] button enabled?
+     *
+     * @return boolean whether enabled or not
+     */
+    global boolean enable_back() {
+        Init();
+        return args["enable_back"]:false;
+    }
+
+    /**
+     * Are we going back from the previous dialog?
+     *
+     * @return boolean whether going_back or not
+     */
+    global boolean going_back() {
+        Init();
+        return args["going_back"]:false;
+    }
+    
+    /**
+     * Returns name of the proposal
+     *
+     * @return string proposal name
+     *
+     * @example
+     *	GetInstArgs::proposal() -> "initial"
+     *	GetInstArgs::proposal() -> "network"
+     *	GetInstArgs::proposal() -> "hardware"
+     */
+    global string proposal() {
+        Init();
+        return args["proposal"]:"";
+    }
+
+    /**
+     * Returns map of client parameters
+     *
+     * @return map of parameters
+     *
+     * @example
+     *	GetInstArgs::argmap() -> $[
+     *		"enable_back" : true,
+     *		"enable_next" : true,
+     *		"going_back"  : true,
+     *		"anything"    : "yes, of course",
+     *	]
+     */
+    global map argmap () {
+        Init();
+        return args;
+    }
+
+    /**
+     * Returns map of client parameters only with keys:
+     * "enable_back", "enable_next", and "proposal"
+     *
+     * @return map of parameters
+     *
+     * @example
+     *	GetInstArgs::ButtonsProposal() -> $[
+     *		"enable_back" : true,
+     *		"enable_next" : true,
+     *		"proposal"  : "initial"
+     *	]
+     */
+    global map ButtonsProposal (boolean back, boolean next, string proposal_name) {
+        map _args = $[];
+        _args["enable_back"] = back;
+        _args["enable_next"] = next;
+        _args["proposal"] = proposal_name;
+        return _args;
+    }
+
+    /**
+     * Returns map of client parameters only with keys:
+     * "enable_back" and "enable_next"
+     *
+     * @return map of parameters
+     *
+     * @example
+     *	GetInstArgs::Buttons() -> $[
+     *		"enable_back" : false,
+     *		"enable_next" : true
+     *	]
+     */
+    global map Buttons (boolean back, boolean next) {
+        map _args = $[];
+        _args["enable_back"] = back;
+        _args["enable_next"] = next;
+        return _args;
+    }
+}
