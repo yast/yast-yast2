@@ -17,6 +17,7 @@ module_DATA =				\
 	PortAliases.ycp			\
 	PortRanges.ycp			\
 	SuSEFirewallProposal.ycp	\
+	SLPAPI.pm			\
 	CWMFirewallInterfaces.ycp
 
 EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA)

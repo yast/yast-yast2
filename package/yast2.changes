@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar  8 18:21:35 CET 2007 - jsuchome@suse.cz
+
+- added SLPAPI.pm, Perl API for SLP agent (#238680)
+- 2.15.17 
+
+-------------------------------------------------------------------
 Thu Mar  8 16:57:17 CET 2007 - locilka@suse.cz
 
 - Module GetInstArgs moved from yast2-installation to yast2, many
