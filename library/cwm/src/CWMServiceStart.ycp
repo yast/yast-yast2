@@ -125,6 +125,16 @@ global void AutoStartInit (map<string,any> widget, string key) {
 	auto_start
 	    ? "_cwm_startup_auto"
 	    : "_cwm_startup_manual");
+    if (haskey (widget, "get_service_start_via_xinetd"))
+    {
+	boolean() start_via_xinetd = (boolean())
+	    widget["get_service_start_via_xinetd"]:nil;
+	if (start_via_xinetd ())
+	{
+	    UI::ChangeWidget (`id ("_cwm_service_startup"), `CurrentButton,
+		"_cwm_startup_xinetd");
+	}
+    }
 }
 
 /**
@@ -145,6 +155,15 @@ global void AutoStartStore (map<string,any> widget, string key, map event) {
     void(boolean) set_auto_start
 	= (void(boolean))widget["set_service_auto_start"]:nil;
     set_auto_start(auto_start);
+    if ((! auto_start) && haskey (widget, "set_service_start_via_xinetd"))
+    {
+	void(boolean) start_via_xinetd = (void(boolean))
+	    widget["set_service_start_via_xinetd"]:nil;
+	start_via_xinetd (
+	    UI::QueryWidget (`id ("_cwm_service_startup"), `CurrentButton)
+	    == "_cwm_startup_xinetd"
+	);
+    }
 }
 
 /**
@@ -180,6 +199,23 @@ To start the service every time your computer is booted, set
 }
 
 /**
+ * Get the template for the help text to the auto start widget
+ * @return string help text template with %1 and %2 placeholders
+ */
+global string AutoStartHelpXinetdTemplate () {
+    // help text for service auto start widget
+    // %1, %2 and %3 are button labels
+    // %1 is eg. "On -- Start Service when Booting"
+    // %2 is eg. "Off -- Start Service Manually"
+    // %3 is eg. "Start Service via xinetd"
+    // (both without quotes)
+    return _("<p><b><big>Service Start</big></b><br>
+To start the service every time your computer is booted, set
+<b>%1</b>. To start the service via the xinetd daemon, set <b>%3</b>.
+Otherwise set <b>%2</b>.</p>");
+}
+
+/**
  * Get the help text to the auto start widget
  * @return string help text
  */
@@ -189,6 +225,20 @@ global string AutoStartHelp () {
 	_("During Boot"),
 	// part of help text - radio button label, NO SHORTCUT!!!
 	_("Manually"));
+}
+
+/**
+ * Get the help text to the auto start widget
+ * @return string help text
+ */
+global string AutoStartXinetdHelp () {
+    return sformat (AutoStartHelpTemplate (),
+	// part of help text - radio button label, NO SHORTCUT!!!
+	_("During Boot"),
+	// part of help text - radio button label, NO SHORTCUT!!!
+	_("Manually"),
+	// part of help text - radio button label, NO SHORTCUT!!!
+	_("Via xinetd"));
 }
 
 /**
@@ -202,8 +252,17 @@ global string AutoStartHelp () {
  * - "set_service_auto_start" : void (boolean) -- function that takes as
  *          an argument boolean value saying if the service is started
  *          automatically during booting
+ * - "get_service_start_via_xinetd" : boolean () -- function that returns if
+ *          the service is to be started via xinetd. At most one of this
+ *          function and "get_service_auto_start" returns true (if started
+ *          via xinetd, not starting automatically
+ * - "set_service_start_via_xinetd" : void (boolean) - function that takes
+ *          as an argument boolean value saying if the service is started
+ *          via xinetd
  * - "start_auto_button" : string -- label of the radio button to start
  *          the service automatically when booting
+ * - "start_xinetd_button" : string -- label of the radio button to start
+ *          the service via xinetd
  * - "start_manual_button" : string -- label of the radio button to start
  *          the service only manually
  * - "help" : string -- custom help for the widget. If not specified, generic
@@ -224,29 +283,42 @@ global map<string,any> CreateAutoStartWidget (map<string,any> settings) {
     string start_manual_button
 	// radio button
 	= settings["start_manual_button"]:_("Manually");
+    string start_xinetd_button
+	// radio button
+	= settings["start_xinetd_button"]:_("Via &xinetd");
+    boolean xinetd_available =
+	haskey (settings, "get_service_start_via_xinetd");
     if (haskey (settings, "help"))
     {
 	help = settings["help"]:"";
     }
     else
     {
-	help = AutoStartHelp ();
+	help = xinetd_available ? AutoStartXinetdHelp () : AutoStartHelp ();
     }
 
+    term items = `VBox (
+	`VSpacing (0.4),
+	`Left (`RadioButton (`id ("_cwm_startup_auto"),
+	    `opt (`notify),
+	    start_auto_button))
+
+    );
+    if (xinetd_available)
+    {
+	items = add (items, `Left (`RadioButton (`id ("_cwm_startup_xinetd"),
+	    `opt (`notify),
+	    start_xinetd_button)));
+    }
+    items = add (items, `Left (`RadioButton (`id ("_cwm_startup_manual"),
+	`opt (`notify),
+	start_manual_button)));
+    items = add (items, `VSpacing (0.4));
     // Frame label (service starting)
     term booting = `VBox (
 	// frame
 	`Frame (_("Service Start"),
-	    `Left (`RadioButtonGroup (`id ("_cwm_service_startup"), `VBox (
-		`VSpacing (0.4),
-		`Left (`RadioButton (`id ("_cwm_startup_auto"),
-		    `opt (`notify),
-		    start_auto_button)),
-		`Left (`RadioButton (`id ("_cwm_startup_manual"),
-		    `opt (`notify),
-		    start_manual_button)),
-		`VSpacing (0.4)
-	    )))
+	    `Left (`RadioButtonGroup (`id ("_cwm_service_startup"), items))
 	)
     );
 
