@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Mar  9 08:57:01 CET 2007 - locilka@suse.cz
+
+- Changing 'xenbr0' in SuSEfirewall2's FW_FORWARD_ALWAYS_INOUT_DEV
+  to 'xenbr+' to match all XEN bridges. XEN bridge name is newly
+  dependant on network interface number (#233934).
+
+-------------------------------------------------------------------
 Thu Mar  8 18:21:35 CET 2007 - jsuchome@suse.cz
 
 - added SLPAPI.pm, Perl API for SLP agent (#238680)
