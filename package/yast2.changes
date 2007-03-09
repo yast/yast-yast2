@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Mar  9 08:52:59 CET 2007 - locilka@suse.cz
+
+- Changing 'xenbr0' in SuSEfirewall2's FW_FORWARD_ALWAYS_INOUT_DEV
+  to 'xenbr+' to match all XEN bridges. XEN bridge name is newly
+  dependant on network interface number (#233934).
+- 2.13.101
+
+-------------------------------------------------------------------
 Fri Mar  2 08:22:28 CET 2007 - lslezak@suse.cz
 
 - don't ignore the extra kernel packages, include them in the

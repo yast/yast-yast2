@@ -2686,12 +2686,16 @@ Run YaST2 Firewall and assign it.
     }
 
     /**
-     * Function adds a special interface into the FW_FORWARD_ALWAYS_INOUT_DEV variable
+     * Function adds a special interface 'xenbr+' into the FW_FORWARD_ALWAYS_INOUT_DEV variable.
      *
      * @see: https://bugzilla.novell.com/show_bug.cgi?id=154133
+     * @see: https://bugzilla.novell.com/show_bug.cgi?id=233934
      */
     global define void AddXenSupport () {
-	string special_xen_interface = "xenbr0";
+	// xenbr+ works for all bridges
+	// bridge number is newly dependant on network card number
+	// eth1 -> xenbr1, eth8 -> xenbr8
+	string special_xen_interface = "xenbr+";
 
 	SetModified();
 
