@@ -4,6 +4,7 @@ Mon Mar 12 08:42:07 CET 2007 - locilka@suse.cz
 - Modules 'Product' and 'Installation' (installation settings) were
   moved from 'yast2-installation' to 'yast2' to minimize
   cross-package dependencies.
+- Adjusted package-conflicts.
 - 2.15.18
 
 -------------------------------------------------------------------
