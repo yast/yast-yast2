@@ -1,0 +1,173 @@
+/**
+ * File:
+ *	Installation.ycp
+ *
+ * Module:
+ *	Installation
+ *
+ * Summary:
+ *	provide installation related information
+ *
+ * Author:
+ *	Klaus Kaempf <kkaempf@suse.de>
+ *	Lukas Ocilka <locilka@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+    module "Installation";
+
+    import "Stage";
+    import "Linuxrc";
+    import "Directory";
+
+    // current scr handle
+    // used in installation.ycp and inst_finish.ycp
+    global integer scr_handle		= 0;
+
+    // Usual mountpoint for the destination.
+    global string destdir		= "/";
+
+    // Usual mountpoint for the destination seen from the (default) SCR.  It's
+    // set to "/" when the SCR is restarted in the target system.
+    global string scr_destdir		= "/";
+
+    // usual mountpoint for the source (i.e. CD)
+
+    global string sourcedir		= "/var/adm/mount";
+
+    global string yast2dir		= "/var/lib/YaST2";
+
+    global string mountlog		= Directory::logdir + "/y2logMount";
+
+    // encoding for the language
+    global string encoding		= "ISO-8859-1";
+
+    // remember if user was informed about text fallback
+    // see general/installation.ycp
+    global boolean shown_text_mode_warning = false;
+
+    // remember that hardware has already been probed
+    global boolean probing_done = false;
+
+    boolean _text_fallback = nil;
+    boolean _no_x11 = nil;
+
+    // --> configuration from installation_worker.ycp
+    global string Installation::file_inst_aborted = Directory::vardir + "/second_stage_aborted";
+    global string Installation::file_inst_failed  = Directory::vardir + "/second_stage_failed";
+    global string Installation::run_yast_at_boot  = Directory::vardir + "/runme_at_boot";
+    global string Installation::current_step      = Directory::vardir + "/step";
+    global string Installation::file_update_mode  = Directory::vardir + "/update_mode";
+    global string Installation::restart_data_file = Directory::vardir + "/continue_installation";
+    global string Installation::reboot_file       = Directory::vardir + "/reboot";
+    global string Installation::restart_file      = Directory::vardir + "/restart_yast";
+    // <-- configuration from installation_worker.ycp
+
+//
+// variables to store data of the installation clients
+//
+
+// inst_license
+
+/**
+ * The license has already been accepted, the respectiev radio button
+ * can be preselected
+ */
+global boolean license_accepted = false;
+
+
+    //---------------------------------------------------------------
+    // constructor
+
+    global define void Installation ()
+    ``{
+
+	// get setup data from linuxrc
+	// check setup/descr/info for CD type
+
+	if (Stage::cont ())
+	{
+	    destdir = "/";
+	    scr_destdir = "/";
+	}
+	else if (Stage::initial ())
+	{
+	    destdir = "/mnt";
+	    scr_destdir = "/mnt";
+	}
+    }
+
+    define void Initialize () {
+        integer arg_count = size(WFM::Args());
+        integer arg_no = 0;
+
+	_text_fallback= false;
+	_no_x11  = false;
+
+        while ( arg_no < arg_count )
+        {
+            y2debug("option #%1: %2", arg_no, WFM::Args(arg_no) );
+
+            if (WFM::Args(arg_no) == "text_fallback")
+            {
+                _text_fallback= true;
+            }
+            else if (WFM::Args(arg_no) == "no_x11"       )
+            {
+                _no_x11  = true;
+            }
+            else
+            {
+                y2milestone ("skipping unknown option %1", WFM::Args(arg_no) );
+            }
+            arg_no = arg_no + 1;
+        }
+    }
+
+    /**
+     * how we were booted (the type of the installation medium)
+     * /etc/install.inf: InstMode
+     */
+    global string boot () {
+        string _boot = Linuxrc::InstallInf("InstMode");
+        if (_boot == nil)
+            _boot = "cd";
+        return _boot;
+    }
+
+    /**
+     * run X11 configuration after inital boot
+     * this is false in case of:
+     * installation via serial console
+     * installation via ssh
+     * installation via vnc
+     *
+     * Also see Arch::x11_setup_needed ().
+     */
+    global boolean x11_setup_needed () {
+	return ! (Linuxrc::serial_console () || Linuxrc::vnc ()
+	    || Linuxrc::usessh ());
+    }
+
+    /**
+     * no resources/packages for X11
+     */
+    global boolean text_fallback () {
+	if (_text_fallback == nil)
+	    Initialize ();
+	return _text_fallback;
+    }
+
+    /**
+     * somehow, no X11 was started
+     * no x11 or not enough memory for qt
+     */
+    global boolean no_x11 () {
+	if (_no_x11 == nil)
+	    Initialize ();
+	return _no_x11;
+    }
+
+}
