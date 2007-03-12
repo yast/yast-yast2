@@ -26,6 +26,10 @@ Obsoletes:	yast2-lib-wizard yast2-lib-wizard-devel yast2-trans-wizard
 Provides:	yast2-trans-menu y2t_menu
 Obsoletes:	yast2-trans-menu y2t_menu
 
+# moved here from another packages
+Provides:	yast2-installation:/usr/share/YaST2/modules/Installation.ycp
+Provides:	yast2-installation:/usr/share/YaST2/modules/Product.ycp
+
 Summary:	Main YaST2 package
 
 %description
