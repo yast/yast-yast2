@@ -652,6 +652,11 @@ global define boolean Write(string devregex) {
 	    string dev = device_name(typ, num);
 	    string p = ".network.value.\"" + dev + "\".";
 
+	if (size(devmap["IPADDR"]:"")>0 && size(devmap["NETMASK"]:"")>0){
+	 devmap["IPADDR"] = sformat("%1/%2", devmap["IPADDR"]:"", Netmask::ToBits(devmap["NETMASK"]:""));
+	 devmap=remove(devmap, "NETMASK");
+	 //TODO : delete NETMASK, UNIQUE from config file
+	}
 	    /* write all keys to config */
 	    maplist(string k, (list<string>) Map::Keys(devmap), {
 		/* Write aliases */
@@ -663,6 +668,12 @@ global define boolean Write(string devregex) {
 			// better here. Actually it does not work because
 			// the edit dialog nukes LABEL :-(
 			boolean seen_label = false;
+
+			if (size(amap["IPADDR"]:"")>0 && size(amap["NETMASK"]:"")>0){
+			 amap["IPADDR"] = sformat("%1/%2", amap["IPADDR"]:"", Netmask::ToBits(amap["NETMASK"]:""));
+			 amap=remove(amap, "NETMASK");
+			 //TODO : delete NETMASK from config file
+			}
 
 			maplist(string ak, string av, amap, {
 			    string akk = ak + "_" + anum;

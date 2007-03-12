@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar 12 11:54:18 CET 2007 - mzugec@suse.cz
+
+- sysconfig/network: use IPADDR/PREFIXLEN as default instead of NETMASK (#231997)
+- 2.15.19 
+
+-------------------------------------------------------------------
 Mon Mar 12 08:42:07 CET 2007 - locilka@suse.cz
 
 - Modules 'Product' and 'Installation' (installation settings) were
