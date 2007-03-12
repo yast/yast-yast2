@@ -9,7 +9,8 @@ module_DATA =			\
 	Package.ycp		\
 	PackageAI.ycp		\
 	PackageSystem.ycp	\
-	PackageCallbacksInit.ycp
+	PackageCallbacksInit.ycp \
+	Product.ycp
 
 ynclude_DATA =			\
 	common.ycp
