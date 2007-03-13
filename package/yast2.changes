@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Mar 13 10:07:05 CET 2007 - jsrain@suse.cz
+
+- added yast2-perl-bindings to Requires (#253514)
+
+-------------------------------------------------------------------
 Mon Mar 12 11:54:18 CET 2007 - mzugec@suse.cz
 
 - sysconfig/network: use IPADDR/PREFIXLEN as default instead of NETMASK (#231997)

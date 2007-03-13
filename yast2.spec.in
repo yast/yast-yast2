@@ -13,6 +13,8 @@ Requires:       perl-Config-Crontab
 # for ag_tty (/bin/stty)
 Requires:	coreutils
 Requires:	yast2-xml yast2-hardware-detection
+# for SLPAPI.pm
+Requires:	yast2-perl-bindings
 
 # moved cfg_security.scr
 Conflicts:	yast2-security <= 2.13.2
