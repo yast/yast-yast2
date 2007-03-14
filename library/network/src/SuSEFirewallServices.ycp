@@ -219,6 +219,12 @@
 	    "name"	: _("iSCSI Target"),
 	    "tcp_ports"	: [ "iscsi-target" ],
 	],
+	"isns-server" : $[
+	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	    "name"	: _("iSNS"),
+	    "tcp_ports"	: [ "isns" ],
+	    "udp_ports"	: [ "isns" ],
+	],
     ];
 
     /**
