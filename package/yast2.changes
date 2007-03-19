@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar 19 16:37:40 CET 2007 - jsrain@suse.cz
+
+- fixed selecting proper dialog in DialogTree in case of widget
+  validation failed (#253488)
+
+-------------------------------------------------------------------
 Tue Mar 13 10:07:05 CET 2007 - jsrain@suse.cz
 
 - added yast2-perl-bindings to Requires (#253514)
