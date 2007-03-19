@@ -34,6 +34,11 @@ list<map<string,any> > current_dialog_widgets = [];
  */
 list<map<string,any> > settings_stack = [];
 
+/**
+ * Handler to be called after validation of a dialog fails
+ */
+void() validation_failed_handler = nil;
+
 // local functions
 
 /**
@@ -643,6 +648,8 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 	    string widget_key = (string)(w["_cwm_key"]:"");
 	    result = result && validateWidget (w, event, widget_key);
 	});
+	if (! result && validation_failed_handler != nil)
+	    validation_failed_handler ();
 	return result;
     }
 
@@ -870,6 +877,14 @@ global define void ReplaceWidgetHelp (string widget, string help) {
 	{
 	    // TODO this situation if it is needed
 	}
+    }
+
+    /**
+     * Set handler to be called after validation of a dialog failed
+     * @param handler a function reference to be caled. If nil, nothing is called
+     */
+    global void SetValidationFailedHandler(void() handler) {
+	validation_failed_handler = handler;
     }
 
     /**

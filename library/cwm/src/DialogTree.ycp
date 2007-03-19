@@ -30,6 +30,17 @@ string selected_screen = nil;
  */
 string previous_screen = nil;
 
+/**
+ * Restore the previously selected dialog after clicking another item not
+ * causing dialog change due to validation failed
+ */
+void RestoreSelectedDialog() {
+    selected_screen = previous_screen;
+    if (UI::WidgetExists(`id(`wizardTree)))
+	UI::ChangeWidget(`id(`wizardTree), `CurrentItem, selected_screen);
+    else
+	UI::WizardCommand(`SelectTreeItem(selected_screen));
+}
 
 // virtual DialogTree widget
 
@@ -213,7 +224,9 @@ global define symbol Run (map<string,any> settings) {
     symbol ret = nil;
     while (ret == nil)
     {
+	CWM::SetValidationFailedHandler (RestoreSelectedDialog);
 	ret = CWM::Run (w, functions);
+	CWM::SetValidationFailedHandler (nil);
 	// switching scrren, dialog was validated and stored
 	if (ret == `_cwm_internal_tree_handle)
 	{
