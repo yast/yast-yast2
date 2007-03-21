@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 21 16:12:54 CET 2007 - locilka@suse.cz
+
+- Using SuSEFirewall::SuSEFirewallIsInstalled also internally in
+  some SuSEFirewall functions.
+
+-------------------------------------------------------------------
 Wed Mar 21 07:50:59 CET 2007 - lslezak@suse.cz
 
 - added hwinfo/classnames.ycp (from yast2-tune) (#253486)

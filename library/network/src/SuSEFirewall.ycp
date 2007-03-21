@@ -930,7 +930,7 @@
     # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
 
     /* Are needed packages (SuSEfirewall2) installed? */
-    boolean needed_packages_installed = false;
+    boolean needed_packages_installed = nil;
 
     /**
      * Returns whether all needed packages are installed.
@@ -938,7 +938,20 @@
      * @return boolean whether SuSEfirewall2 is installed
      */
     global boolean SuSEFirewallIsInstalled () {
-	if (! needed_packages_installed) y2milestone ("SuSEfirewall2 is not installed, skipping...");
+	if (needed_packages_installed == nil) {
+	    // In mode normal, package can be installed on request
+	    if (Mode::normal()) {
+		needed_packages_installed = PackageSystem::CheckAndInstallPackages ([susefirewall_package]);
+		y2milestone ("CheckAndInstallPackages -> %1", needed_packages_installed);
+	    // In mode install/update network might be down
+	    } else {
+		needed_packages_installed = PackageSystem::Installed (susefirewall_package);
+		y2milestone ("Installed -> %1", needed_packages_installed);
+	    }
+	} else if (needed_packages_installed == false) {
+	    y2milestone ("SuSEfirewall2 is not installed, skipping...");
+	}
+
 	return needed_packages_installed;
     }
 
@@ -1160,6 +1173,8 @@
      */
     global define boolean StartServices () {
 	boolean all_ok = true;
+	
+	if (! SuSEFirewallIsInstalled()) return false;
 
 	// bug #215416
 	// SuSEfirewall2_init doesn't need to be called, only enabled
@@ -1192,6 +1207,8 @@
      */
     global define boolean StopServices () {
 	boolean all_ok = true;
+	
+	if (! SuSEFirewallIsInstalled()) return false;
 
 	// bug #215416
 	// SuSEfirewall2_init doesn't need to be called, only disabled
@@ -1224,6 +1241,8 @@
      */
     global define boolean EnableServices () {
 	boolean all_ok = true;
+	
+	if (! SuSEFirewallIsInstalled()) return false;
 
 	foreach (string service, firewall_services, {
 	    y2debug("Enabling service: %1", service);
@@ -1245,6 +1264,8 @@
      */
     global define boolean DisableServices () {
 	boolean all_ok = true;
+	
+	if (! SuSEFirewallIsInstalled()) return false;
 
 	foreach (string service, firewall_services_reverse, {
 	    y2debug("Disabling service: %1", service);
@@ -1269,6 +1290,8 @@
      */
     global define boolean IsEnabled () {
 	boolean enabled = false;
+
+	if (! SuSEFirewallIsInstalled()) return false;
 
 	//if (Mode::normal() || Mode::commandline()) {
 	    foreach (string service, firewall_services, {
@@ -1296,6 +1319,8 @@
      */
     global define boolean IsStarted () {
 	boolean started = false;
+
+	if (! SuSEFirewallIsInstalled()) return false;
 
 	//if (Mode::normal() || Mode::commandline()) {
 	    foreach (string service, firewall_services, {
@@ -2211,20 +2236,7 @@ Run YaST2 Firewall and assign it.
 	    return fw_service_can_be_configured;
 	}
 
-	// bugzilla #245506
-	boolean package_installed = false;
-
-	// In mode normal, package can be installed on request
-	if (Mode::normal()) {
-	    package_installed = PackageSystem::CheckAndInstallPackages ([susefirewall_package]);
-	    y2milestone ("CheckAndInstallPackages -> %1", package_installed);
-	// In mode install/update network might be down
-	} else {
-	    package_installed = PackageSystem::Installed (susefirewall_package);
-	    y2milestone ("Installed -> %1", package_installed);
-	}
-
-	if (! package_installed) {
+	if (! SuSEFirewallIsInstalled()) {
 	    y2warning ("Package not installed, disabling SuSEfirewall2-related functions.");
 	    // do not call it again
 	    configuration_has_been_read = true;
@@ -2236,13 +2248,11 @@ Run YaST2 Firewall and assign it.
 
 	    // Cannot be configured, packages weren't installed
 	    fw_service_can_be_configured = false;
-	    needed_packages_installed = false;
 	    return fw_service_can_be_configured;
 	}
 
 	// Can be configured, packages were installed
 	fw_service_can_be_configured = true;
-	needed_packages_installed = true;
 
 	// Progress only for normal configuration
 	boolean have_progress = (Mode::normal());
