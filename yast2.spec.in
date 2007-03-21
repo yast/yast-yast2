@@ -127,6 +127,10 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %dir @yncludedir@/packages
 @yncludedir@/packages/*.ycp
 
+#system
+%dir @yncludedir@/hwinfo
+@yncludedir@/hwinfo/*.ycp
+
 # documentation
 %files devel
 %defattr(-,root,root)
