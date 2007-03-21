@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 21 07:50:59 CET 2007 - lslezak@suse.cz
+
+- added hwinfo/classnames.ycp (from yast2-tune) (#253486)
+- 2.15.20
+
+-------------------------------------------------------------------
 Mon Mar 19 16:37:40 CET 2007 - jsrain@suse.cz
 
 - fixed selecting proper dialog in DialogTree in case of widget
