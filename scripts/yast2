@@ -21,6 +21,9 @@ export PATH=/sbin:/usr/sbin:$PATH
 # --fullscreen
 # --noborder
 Y2QT_ARGS=""
+# FIXME: we should install into y2bindir really ...
+GNOME_SHELL="/usr/bin/y2controlcenter-gnome"
+KDE_SHELL="$ybindir/y2controlcenter"
 
 printhelp()
 {
@@ -74,6 +77,12 @@ probe_desktop_gui()
     else
 	DESKTOP_GUI="qt"
     fi
+    if [ "$DESKTOP_GUI" = "qt" -a ! -x "$KDE_SHELL" ]; then
+	DESKTOP_GUI="gtk"
+    fi
+    if [ "$DESKTOP_GUI" = "gtk" -a ! -x "$GNOME_SHELL" ]; then
+	DESKTOP_GUI="qt"
+    fi
 }
 
 # Select which control center shell we want to use
@@ -89,11 +98,10 @@ select_control_center()
     y2ccbin=""
     case "$WANTED_SHELL" in
 	gtk)
-# FIXME: we should install into y2bindir really ...
-	    y2ccbin="/opt/gnome/bin/y2controlcenter-gnome"
+	    y2ccbin="$GNOME_SHELL"
 	    ;;
 	*)
-	    y2ccbin="$ybindir/y2controlcenter"
+	    y2ccbin="$KDE_SHELL"
 	    ;;
     esac
 }
