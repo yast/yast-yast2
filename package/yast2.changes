@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 23 11:36:09 CET 2007 - jsrain@suse.cz
+
+- use Qt control center instead of Gtk and vice versa if the preffered
+  one doesn't exist, fixed path to Gtk control center (#255745)
+
+-------------------------------------------------------------------
 Wed Mar 21 16:12:54 CET 2007 - locilka@suse.cz
 
 - Using SuSEFirewall::SuSEFirewallIsInstalled also internally in
