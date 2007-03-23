@@ -499,6 +499,48 @@
 	Wizard::OpenNextBackDialog();
     }
 
+    /**
+     * Set the contents of a wizard dialog and define if to move focus to next button
+     *
+     * How the general framework for the installation wizard should
+     * look like. This function creates and shows a dialog.
+     *
+     * @param title Dialog Title
+     * @param contents The Dialog contents
+     * @param help_text Help text
+     * @param has_back Is the Back button enabled?
+     * @param has_next Is the Next button enabled?
+     * @param set_focus Should the focus be set to Next button?
+     **/
+    global void SetContentsFocus(string title, term contents, string help_text,
+				   boolean has_back, boolean has_next, boolean set_focus) {
+
+	if ( UI::WizardCommand(`SetDialogHeading( title ) ) == true )
+	{
+	    UI::WizardCommand(`SetHelpText( help_text ) );
+	    UI::WizardCommand(`EnableNextButton( has_next ) );
+	    UI::WizardCommand(`EnableBackButton( has_back ) );
+	    if (set_focus)
+		UI::WizardCommand(`SetFocusToNextButton() );
+	}
+	else
+	{
+	    if ( UI::WidgetExists(`id(`next ) ) )
+	    {
+		UI::ChangeWidget(`id(`next), `Enabled, has_next);
+		UI::SetFocus( `id(`next) );
+	    }
+
+	    if ( UI::WidgetExists(`id(`back	) ) )	UI::ChangeWidget(`id(`back), `Enabled, has_back);
+	    if (set_focus)
+		if ( UI::WidgetExists(`id(`accept	) ) )	UI::SetFocus( `id(`accept ) );
+	    if ( UI::WidgetExists(`id(`abort	) ) )	UI::ChangeWidget(`id(`abort),`Enabled, true);
+	    if ( UI::WidgetExists(`id(`HelpText	) ) )	UI::ChangeWidget(`id(`HelpText), `Value, help_text);
+	    if ( UI::WidgetExists(`id(`title	) ) )	UI::ChangeWidget(`id(`title), `Value, title);
+	}
+
+	UI::ReplaceWidget(`id(`contents), contents);
+    }
 
     /**
      * Set the contents of a wizard dialog
@@ -518,33 +560,8 @@
      **/
     global void SetContents(string title, term contents, string help_text,
 				   boolean has_back, boolean has_next) {
-
-	if ( UI::WizardCommand(`SetDialogHeading( title ) ) == true )
-	{
-	    UI::WizardCommand(`SetHelpText( help_text ) );
-	    UI::WizardCommand(`EnableNextButton( has_next ) );
-	    UI::WizardCommand(`EnableBackButton( has_back ) );
-	    UI::WizardCommand(`SetFocusToNextButton() );
-	}
-	else
-	{
-	    if ( UI::WidgetExists(`id(`next ) ) )
-	    {
-		UI::ChangeWidget(`id(`next), `Enabled, has_next);
-		UI::SetFocus( `id(`next) );
-	    }
-
-	    if ( UI::WidgetExists(`id(`back	) ) )	UI::ChangeWidget(`id(`back), `Enabled, has_back);
-	    if ( UI::WidgetExists(`id(`accept	) ) )	UI::SetFocus( `id(`accept ) );
-	    if ( UI::WidgetExists(`id(`abort	) ) )	UI::ChangeWidget(`id(`abort),`Enabled, true);
-	    if ( UI::WidgetExists(`id(`HelpText	) ) )	UI::ChangeWidget(`id(`HelpText), `Value, help_text);
-	    if ( UI::WidgetExists(`id(`title	) ) )	UI::ChangeWidget(`id(`title), `Value, title);
-	}
-
-	UI::ReplaceWidget(`id(`contents), contents);
+	SetContentsFocus (title, contents, help_text, has_back, has_next, true);
     }
-
-
     /**
      * Clear the wizard contents.
      *
