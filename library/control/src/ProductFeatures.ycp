@@ -264,6 +264,23 @@ global void SetBooleanFeature (string section, string feature, boolean value) {
     SetFeature (section, feature, value);
 }
 
+/**
+ * Exports the current set of ProductFeatures
+ *
+ * @return map <string, map <string, any> > features
+ */
+global map <string, map <string, any> > Export () {
+    return features;
+}
+
+/**
+ * Imports product features
+ *
+ * @param map <string, map <string, any> > features
+ */
+global void Import (map <string, map <string, any> > import_settings) {
+    features = import_settings;
+}
 
 /* EOF */
 }

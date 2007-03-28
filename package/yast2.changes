@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Mar 28 15:59:03 CEST 2007 - locilka@suse.cz
+
+- A new YCP module WorkflowManager has been created in order to
+  unifys Add-On and Patterns in their possibility to influence the
+  installation and configuration workflow (FATE #129).
+- 2.15.21
+
+-------------------------------------------------------------------
 Fri Mar 23 12:47:17 CET 2007 - jsrain@suse.cz
 
 - use Qt control center instead of Gtk and vice versa if the preffered
