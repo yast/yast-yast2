@@ -229,7 +229,7 @@
 		// Going through all architercures
                 foreach (string one_arch, archs, {
                     map amw = mw;
-                    amw["defaults", "archs"] = arch;
+                    amw["defaults", "archs"] = one_arch;
                     string stage = amw["stage"]:"";
                     list<string> stages = splitstring (stage, ",");
 
