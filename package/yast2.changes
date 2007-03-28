@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 28 17:09:39 CEST 2007 - locilka@suse.cz
+
+- Some testsuites have been moved from yast2-packager to yast2
+- 2.15.22
+
+-------------------------------------------------------------------
 Wed Mar 28 15:59:03 CEST 2007 - locilka@suse.cz
 
 - A new YCP module WorkflowManager has been created in order to
