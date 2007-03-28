@@ -9,7 +9,8 @@ module_DATA =			\
 	ProductFeatures.ycp	\
 	Hooks.ycp		\
 	GetInstArgs.ycp		\
-	Installation.ycp
+	Installation.ycp	\
+	WorkflowManager.ycp
 
 EXTRA_DIST = $(module_DATA)
 
