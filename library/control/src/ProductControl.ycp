@@ -21,7 +21,7 @@ import "Wizard";
 import "Report";
 import "Hooks";
 import "Popup";
-
+import "FileUtils";
 
 // The complete parsed control file
 global map productControl = $[];
@@ -722,11 +722,10 @@ global string getProposalTextDomain() {
 /**
  * Return proposal Label
  */
-global map getProposalProperties( string stage, string mode, string proptype
-)
-{
-    list<map> proposals = getMatchingProposal(stage, mode, proptype);
-    map proposal = proposals[0]:$[];
+global map getProposalProperties (string stage, string mode, string proptype) {
+    list <map> got_proposals = getMatchingProposal(stage, mode, proptype);
+    map proposal = got_proposals[0]:$[];
+
     if (haskey (proposal, "proposal_tabs"))
     {
 	string text_domain = productControl["textdomain"]:"control";
@@ -738,6 +737,7 @@ global map getProposalProperties( string stage, string mode, string proptype
 	    return tab;
 	});
     }
+
     return proposal;
 
 }
@@ -764,8 +764,7 @@ global string GetTranslatedText (string key) {
  * Initialize Product Control
  * @return boolean True on success
  */
-global define boolean Init()
-{
+global define boolean Init() {
 
     boolean ret = false;
     current_control_file = "";
@@ -777,29 +776,27 @@ global define boolean Init()
 	 packaged_control_file // /usr/share/YaST2/control/control.xml
 	 ];
 
-    if ( custom_control_file != "")
-    {
-        order=prepend(order, custom_control_file);
+    if ( custom_control_file != "") {
+        order=prepend (order, custom_control_file);
     }
 
-    y2milestone("Candidates: %1", order );
-    foreach(string cf, order,
-    {
-	if ((integer)SCR::Read( .target.size, cf )>0
-            && current_control_file == "")
-	{
-	    current_control_file = cf;
+    y2milestone ("Candidates: %1", order);
+    foreach(string control_file, order, {
+	if (FileUtils::Exists (control_file) && current_control_file == "") {
+	    current_control_file = control_file;
+	    break;
 	}
     });
 
-    if (current_control_file == "")
-    {
-        y2error("Control file not found");
+    if (current_control_file == "") {
+        y2error ("No control file found");
+
         return false;
     }
 
-    y2milestone("Reading control file: %1", current_control_file );
-    ReadControlFile( current_control_file );
+    y2milestone ("Reading control file: %1", current_control_file);
+    ReadControlFile (current_control_file);
+
     return (current_control_file != "");
 }
 
@@ -807,21 +804,19 @@ global define boolean Init()
  * Re-translate static part of wizard dialog and other predefined messages
  * after language change
  */
-void retranslateWizardDialog()
-    {
-	y2milestone( "Retranslating messages 1" );
+void retranslateWizardDialog() {
+	y2milestone ("Retranslating messages, redrawing wizard steps");
 
 	// Make sure the labels for default function keys are retranslated, too.
 	// Using Label::DefaultFunctionKeyMap() from Label module.
 	UI::SetFunctionKeys( Label::DefaultFunctionKeyMap() );
 
 	// Activate language changes on static part of wizard dialog
-
 	ProductControl::RetranslateWizardSteps();
 	Wizard::RetranslateButtons();
 	Wizard::SetFocusToNextButton();
         return;
-    }
+}
 
 
 

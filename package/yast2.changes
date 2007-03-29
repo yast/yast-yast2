@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Mar 29 15:45:49 CEST 2007 - locilka@suse.cz
+
+- Added new WorkflowManager testsuite
+- Added some debugging functions into WorkflowManager
+- Changed ProductControl for easier testing
+
+-------------------------------------------------------------------
 Wed Mar 28 17:09:39 CEST 2007 - locilka@suse.cz
 
 - Some testsuites have been moved from yast2-packager to yast2
