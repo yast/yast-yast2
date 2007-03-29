@@ -476,7 +476,7 @@ test -d '%1' || /bin/mkdir -p '%1';
 		if (FileUtils::Exists (used_filename)) {
 		    y2milestone ("Removing cached file '%1': %2",
 			used_filename,
-			(boolean) SCR::Execute (.target.remove, used_filename)
+			SCR::Execute (.target.remove, used_filename)
 		    );
 		}
 	    }
@@ -1026,11 +1026,6 @@ rm -rf *.xml *.ycp",
     	    return false;
 	}
 
-	if (! RedrawWizardSteps ()) {
-    	    y2error ("Redrawing the wizard steps failed");
-    	    return false;
-	}
-
 	if (! UpdateInstFinish (update_file["update", "inst_finish"]:$[])) {
     	    y2error ("Adding inst_finish steps failed");
     	    return false;
@@ -1104,5 +1099,28 @@ rm -rf *.xml *.ycp",
      */
     global boolean HaveAdditionalWorkflows () {
 	return (size (GetAllUsedControlFiles()) >= 0);
+    }
+
+    /**
+     * Returns the current settings used by WorkflowManager.
+     * This function is just for debugging purpose.
+     *
+     * @return map <string, any> of current settings
+     * @struct [
+     *		"workflows" : ...
+     *		"proposals" : ...
+     *		"inst_finish" : ...
+     *		"clone_modules" : ...
+     *		"unmerged_changes" : ...
+     *	];
+     */
+    global map <string, any> DumpCurrentSettings () {
+	return $[
+	    "workflows"		: ProductControl::workflows,
+	    "proposals"		: ProductControl::proposals,
+	    "inst_finish"	: ProductControl::inst_finish,
+	    "clone_modules"	: ProductControl::clone_modules,
+	    "unmerged_changes"	: unmerged_changes,
+	];
     }
 }
