@@ -13,10 +13,10 @@
  * Example:
  *   Read (.proc.meminfo)
  *	-> $[
- *		buffers":26252,
+ *		"buffers":26252,
  *      	"cached":82764,
  *      	"mem":$[
- *			buffers":26882048,
+ *			"buffers":26882048,
  *              	"cached":84750336,
  *              	"free":8835072,
  *              	"shared":0,
