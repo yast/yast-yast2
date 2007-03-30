@@ -1,0 +1,74 @@
+/**
+ * File:
+ *   proc_meminfo.scr
+ * Summary:
+ *   SCR Agent for reading /proc/meminfo
+ * Access:
+ *   read-only
+ * Authors:
+ *   Unknown <yast2-hacker@suse.de>
+ * See:
+ *   anyagent
+ *   libscr
+ * Example:
+ *   Read (.proc.meminfo)
+ *	-> $[
+ *		buffers":26252,
+ *      	"cached":82764,
+ *      	"mem":$[
+ *			buffers":26882048,
+ *              	"cached":84750336,
+ *              	"free":8835072,
+ *              	"shared":0,
+ *              	"total":268005376,
+ *              	"used":259170304
+ *		],
+ *      	"memfree":8628,
+ *      	"memshared":0,
+ *		"memtotal":261724,
+ *      	"swap":$[
+ *			"free":271425536,
+ *               	"total":271425536,
+ *               	"used":0
+ *		]
+ *   	]
+ *
+ * $Id$
+ *
+ * Returns a map. Keys for the map are: "mem", "swap", "memtotal",
+ * "memfree", "memshared", "buffers", "cached", "swaptotal", "swapfree".
+ * Values for all but "mem", "swap" are the respective size in kB. 
+ * The values for "mem" and "swap" are again maps. Their keys are: 
+ * "total", "used", "free", "shared", "buffers", "cached"
+ */
+.proc.meminfo
+
+`ag_anyagent(
+  `Description (
+  (`File("/proc/meminfo")),	// real file name
+  "#\n",			// Comment
+  true,				// read-only
+  (`Tuple (
+      `Choice (
+	["     ", `Sequence (`Whitespace(),"total",`String("^\n"))],
+	["Mem:", `mem(`Tuple (`Whitespace(), `total(`Number()), `Whitespace(), `used(`Number()), `Whitespace(), `free(`Number()), `Whitespace(), `shared(`Number()), `Whitespace(), `buffers(`Number()), `Whitespace(), `cached(`Number())))],
+	["Swap:", `swap(`Tuple (`Whitespace(), `total(`Number()), `Whitespace(), `used(`Number()), `Whitespace(), `free(`Number())))],
+	["MemTotal:", `Sequence (`Whitespace(), `memtotal(`Number()), `String("^\n"))],
+	["MemFree:", `Sequence (`Whitespace(), `memfree(`Number()), `String("^\n"))],
+	["MemShared:", `Sequence (`Whitespace(), `memshared(`Number()), `String("^\n"))],
+	["Buffers:", `Sequence (`Whitespace(), `buffers(`Number()), `String("^\n"))],
+	["Cached:", `Sequence (`Whitespace(), `cached(`Number()), `String("^\n"))],
+	["SwapCached:", `Sequence (`Whitespace(), `swapcached(`Number()), `String("^\n"))],
+	["Active:", `Sequence (`Whitespace(), `active(`Number()), `String("^\n"))],
+	["Inactive:", `Sequence (`Whitespace(), `inactive(`Number()), `String("^\n"))],
+	["HighTotal:", `Sequence (`Whitespace(), `hightotal(`Number()), `String("^\n"))],
+	["HighFree:", `Sequence (`Whitespace(), `highfree(`Number()), `String("^\n"))],
+	["LowTotal:", `Sequence (`Whitespace(), `lowtotal(`Number()), `String("^\n"))],
+	["LowFree:", `Sequence (`Whitespace(), `lowfree(`Number()), `String("^\n"))],
+	["SwapTotal:", `Sequence (`Whitespace(), `swaptotal(`Number()), `String("^\n"))],
+	["SwapFree:", `Sequence (`Whitespace(), `swapfree(`Number()), `String("^\n"))]
+      ),
+      `Continue ("\n")
+  ))
+  )
+)
