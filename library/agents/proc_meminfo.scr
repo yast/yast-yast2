@@ -13,33 +13,27 @@
  * Example:
  *   Read (.proc.meminfo)
  *	-> $[
- *		"buffers":26252,
- *      	"cached":82764,
- *      	"mem":$[
- *			"buffers":26882048,
- *              	"cached":84750336,
- *              	"free":8835072,
- *              	"shared":0,
- *              	"total":268005376,
- *              	"used":259170304
- *		],
- *      	"memfree":8628,
- *      	"memshared":0,
- *		"memtotal":261724,
- *      	"swap":$[
- *			"free":271425536,
- *               	"total":271425536,
- *               	"used":0
- *		]
+ *		"active":804312,
+ *		"buffers":71292,
+ *		"cached":254736,
+ *		"highfree":0,
+ *		"hightotal":0,
+ *		"inactive":140676,
+ *		"lowfree":9960,
+ *		"lowtotal":1028088,
+ *		"memfree":9960,
+ *		"memtotal":1028088,
+ *		"swapcached":30172,
+ *		"swapfree":2037508,
+ *		"swaptotal":2104472
  *   	]
  *
  * $Id$
  *
- * Returns a map. Keys for the map are: "mem", "swap", "memtotal",
- * "memfree", "memshared", "buffers", "cached", "swaptotal", "swapfree".
+ * Returns a map. Keys for the map are: "active", "buffers", "cached",
+ * "highfree", "hightotal", "inactive", "lowfree", "lowtotal", "memfree",
+ * "memtotal", "swapcached", "swapfree", and "swaptotal".
  * Values for all but "mem", "swap" are the respective size in kB. 
- * The values for "mem" and "swap" are again maps. Their keys are: 
- * "total", "used", "free", "shared", "buffers", "cached"
  */
 .proc.meminfo
 
