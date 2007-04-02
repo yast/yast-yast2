@@ -389,15 +389,15 @@
 	boolean firewall_is_enabled = (SuSEFirewall::GetEnableService() == true);
 
 	output = output + "<ul>\n";
-	output = output + (firewall_is_enabled ?
+	output = output + "<li>" + (firewall_is_enabled ?
 	    // TRANSLATORS: Proposal informative text "Firewall is enabled (disable)" with link around
 	    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
-	    _("Firewall is <b>enabled</b> (<a href=\"firewall--disable_firewall_in_proposal\">disable</a>)")
+	    _("Firewall is enabled (<a href=\"firewall--disable_firewall_in_proposal\">disable</a>)")
 	    :
 	    // TRANSLATORS: Proposal informative text "Firewall is disabled (enable)" with link around
 	    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
-	    _("Firewall is <b>disabled</b> (<a href=\"firewall--enable_firewall_in_proposal\">enable</a>)")
-	);
+	    _("Firewall is disabled (<a href=\"firewall--enable_firewall_in_proposal\">enable</a>)")
+	) + "</li>\n";
 
 	if (firewall_is_enabled) {
 	    // Any enabled SSH means SSH-is-enabled
@@ -417,15 +417,15 @@
 		    }
 		});
 
-		output = output + "<br>" + (is_ssh_enabled ?
+		output = output + "<li>" + (is_ssh_enabled ?
 		    // TRANSLATORS: Network proposal informative text with link around
 		    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
-		    _("SSH port is <b>open</b> (<a href=\"firewall--disable_ssh_in_proposal\">close</a>)")
+		    _("SSH port is open (<a href=\"firewall--disable_ssh_in_proposal\">close</a>)")
 		    :
 		    // TRANSLATORS: Network proposal informative text with link around
 		    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
-		    _("SSH port is <b>blocked</b> (<a href=\"firewall--enable_ssh_in_proposal\">open</a>)")
-		);
+		    _("SSH port is blocked (<a href=\"firewall--enable_ssh_in_proposal\">open</a>)")
+		) + "</li>\n";
 
 	    // No known interfaces, but 'any' is supported
 	    // and ssh is enabled there
@@ -436,7 +436,7 @@
 		    is_ssh_enabled = true;
 		    // TRANSLATORS: Network proposal informative text with link around
 		    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
-		    output = output + "<br>" + _("SSH port is <b>open</b> (<a href=\"firewall--disable_ssh_in_proposal\">close</a>), but there are still no network interfaces configured");
+		    output = output + "<li>" + _("SSH port is open (<a href=\"firewall--disable_ssh_in_proposal\">close</a>), but there are still no network interfaces configured") + "</li>";
 	    }
 	    y2milestone("SSH is " + (is_ssh_enabled ? "":"not ") + "enabled");
 
@@ -458,7 +458,7 @@
 		}
 		y2milestone("VNC port is " + (is_vnc_enabled ? "open":"blocked") + " in the firewall");
 
-		output = output + "<br>" + (is_vnc_enabled ?
+		output = output + "<li>" + (is_vnc_enabled ?
 		    // TRANSLATORS: Network proposal informative text "Remote Administration (VNC) is enabled" with link around
 		    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
 		    _("Remote Administration (VNC) ports are open (<a href=\"firewall--disable_vnc_in_proposal\">close</a>)")
@@ -466,7 +466,7 @@
 		    // TRANSLATORS: Network proposal informative text "Remote Administration (VNC) is disabled" with link around
 		    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
 		    _("Remote Administration (VNC) ports are blocked (<a href=\"firewall--enable_vnc_in_proposal\">open</a>)")
-		);
+		) + "</li>\n";
 
 		if (!is_vnc_enabled)
 		    // TRANSLATORS: This is a warning message. Installation over VNC without VNC allowed on firewall
