@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Apr  2 14:15:53 CEST 2007 - jsuchome@suse.cz
+
+- fixed restarting after Patch CD update (#259825)
+- 2.15.23 
+
+-------------------------------------------------------------------
 Mon Apr  2 14:11:12 CEST 2007 - lslezak@suse.cz
 
 - register new callbacks Pkg::CallbackSourceCreateInit/Destroy()
