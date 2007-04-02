@@ -203,7 +203,6 @@ if [ "$UI_MODE" = "text" ] ; then
 		fi
 	    done
 	else
-	  while true ; do
 	    # Transform every argument into a ycp string, that is surround all
 	    # args by ("...").  args may contain spaces.
 	    a=("$@")
@@ -211,6 +210,7 @@ if [ "$UI_MODE" = "text" ] ; then
 	    c=("${b[@]/%/\")}")
 	    set -- "${c[@]}"
 
+	  while true ; do
 	    $ybindir/y2base "$module" "$@" ncurses $NCTHREADS
 	    if [ ! $module == "online_update" -o ! -e "/var/lib/YaST2/selected_patches.ycp" ] ; then
 		break
@@ -231,7 +231,6 @@ elif [ "$UI_MODE" = "qt" ]; then
 	$ybindir/y2controlcenter $Y2QT_ARGS "$@"
     else
 	
-      while true ; do
 	# Special case: "sw_single" needs a lot of screen space -
 	# always start it in full screen mode.
 	#
@@ -259,6 +258,7 @@ elif [ "$UI_MODE" = "qt" ]; then
 	c=("${b[@]/%/\")}")
 	set -- "${c[@]}"
 
+      while true ; do
 	$ybindir/y2base $module "$@" qt $Y2_GEOMETRY $Y2QT_ARGS
 	if [ ! $module == "online_update" -o ! -e "/var/lib/YaST2/selected_patches.ycp" ] ; then
 	    break

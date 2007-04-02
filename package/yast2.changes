@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Apr  2 14:09:10 CEST 2007 - jsuchome@suse.cz
+
+- fixed restarting after Patch CD update (#259825)
+- 2.13.103
+
+-------------------------------------------------------------------
 Wed Mar 14 14:50:05 CET 2007 - locilka@suse.cz
 
 - Added "isns-server" definition into SuSEFirewallServices module
