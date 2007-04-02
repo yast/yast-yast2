@@ -2,7 +2,7 @@
 Mon Apr  2 10:59:49 CEST 2007 - locilka@suse.cz
 
 - Changed Firewall proposal to be unified with other network
-  proposals, e.g., "Firewall is enabled (disable)".
+  proposals, e.g., "Firewall is enabled (disable)" (#259778).
 
 -------------------------------------------------------------------
 Fri Mar 30 08:23:46 CEST 2007 - locilka@suse.cz
