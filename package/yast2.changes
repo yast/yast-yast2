@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Apr  2 14:11:12 CEST 2007 - lslezak@suse.cz
+
+- register new callbacks Pkg::CallbackSourceCreateInit/Destroy()
+  and Pkg::CallbackSourceReportInit/Destroy() (#251726)
+
+-------------------------------------------------------------------
 Mon Apr  2 10:59:49 CEST 2007 - locilka@suse.cz
 
 - Changed Firewall proposal to be unified with other network
