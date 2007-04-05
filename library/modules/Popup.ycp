@@ -786,7 +786,7 @@ define void anyMessageDetailsInternalType(string headline, string message, strin
 		`VBox (
 		    `HSpacing (default_width),
 		    `VSpacing (0.5),
-		    `RichText (details),
+		    `RichText (mergestring(splitstring(String::EscapeTags(details), "\n"), "<br>")),
 		    `VSpacing (),
 		    `PushButton (`id(`ok), `opt(`default, `key_F10), Label::OKButton())
 		)
