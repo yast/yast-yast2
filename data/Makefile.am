@@ -4,8 +4,6 @@
 
 xversiondir = $(sysconfdir)/YaST2
 
-fillupdir = /var/adm/fillup-templates
-
 xversion_DATA =			\
 	XVersion
 
