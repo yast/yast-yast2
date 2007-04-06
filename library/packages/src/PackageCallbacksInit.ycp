@@ -101,6 +101,8 @@ global define void InitPackageCallbacks() {
     Pkg::CallbackSourceReportInit("PackageCallbacks::SourceReportInit");
     Pkg::CallbackSourceReportDestroy("PackageCallbacks::SourceReportDestroy");
 
+    // authentication callback
+    Pkg::CallbackAuthentication("PackageCallbacks::Authentication");
 
     // @see bugzilla #183821
     // Do not register these callbacks in case of AutoInstallation
