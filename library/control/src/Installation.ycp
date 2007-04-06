@@ -54,46 +54,67 @@
     boolean _text_fallback = nil;
     boolean _no_x11 = nil;
 
-    // --> configuration from installation_worker.ycp
-    global string Installation::file_inst_aborted = Directory::vardir + "/second_stage_aborted";
-    global string Installation::file_inst_failed  = Directory::vardir + "/second_stage_failed";
-    global string Installation::run_yast_at_boot  = Directory::vardir + "/runme_at_boot";
-    global string Installation::current_step      = Directory::vardir + "/step";
-    global string Installation::file_update_mode  = Directory::vardir + "/update_mode";
-    global string Installation::restart_data_file = Directory::vardir + "/continue_installation";
-    global string Installation::reboot_file       = Directory::vardir + "/reboot";
-    global string Installation::restart_file      = Directory::vardir + "/restart_yast";
-    // <-- configuration from installation_worker.ycp
 
-//
-// variables to store data of the installation clients
-//
+    // --> configuration from installation.ycp
 
-// inst_license
+    // Second stage installation has been aborted by user
+    global string Installation::file_inst_aborted	= Directory::vardir + "/second_stage_aborted";
 
-/**
- * The license has already been accepted, the respectiev radio button
- * can be preselected
- */
-global boolean license_accepted = false;
+    // Second stage installation has been killed or just somehow failed
+    global string Installation::file_inst_failed	= Directory::vardir + "/second_stage_failed";
+
+    // Installation scripts (YaST) will be started at boot time
+    global string Installation::run_yast_at_boot	= Directory::vardir + "/runme_at_boot";
+
+    // The current installation step (useful for restarting YaST or rebooting)
+    global string Installation::current_step		= Directory::vardir + "/step";
+
+    // Update instead on New Installation
+    global string Installation::file_update_mode	= Directory::vardir + "/update_mode";
+
+    // Second stage installation (Stage::cont())
+    global string Installation::restart_data_file	= Directory::vardir + "/continue_installation";
+
+    // Computer has been rebooted
+    global string Installation::reboot_file		= Directory::vardir + "/reboot";
+
+    // Just restarting YaST (handled by startup scripts)
+    global string Installation::restart_file		= Directory::vardir + "/restart_yast";
+
+    // Network should be started before the installation starts (continues)
+    // bugzilla #258742
+    //
+    // File contains a YCP map with services and their status when Installation was about to reboot
+    // e.g., $[ "network" : true, "portmap" : false, "SuSEfirewall2" : true ]
+    global string Installation::reboot_net_settings	= Directory::vardir + "/reboot_network_settings";
+
+    // <-- configuration from installation.ycp
+
+
+    //
+    // variables to store data of the installation clients
+    //
+
+    // inst_license
+
+    /**
+     * The license has already been accepted, the respectiev radio button
+     * can be preselected
+     */
+    global boolean license_accepted = false;
 
 
     //---------------------------------------------------------------
     // constructor
 
-    global define void Installation ()
-    ``{
-
+    global define void Installation () {
 	// get setup data from linuxrc
 	// check setup/descr/info for CD type
 
-	if (Stage::cont ())
-	{
+	if (Stage::cont ()) {
 	    destdir = "/";
 	    scr_destdir = "/";
-	}
-	else if (Stage::initial ())
-	{
+	} else if (Stage::initial ()) {
 	    destdir = "/mnt";
 	    scr_destdir = "/mnt";
 	}
