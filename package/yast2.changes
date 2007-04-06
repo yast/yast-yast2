@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Apr  6 11:18:10 CEST 2007 - lslezak@suse.cz
+
+- register Pkg::CallbackAuthentication() callback (#190609)
+- 2.15.24
+
+-------------------------------------------------------------------
 Mon Apr  2 14:15:53 CEST 2007 - jsuchome@suse.cz
 
 - fixed restarting after Patch CD update (#259825)
