@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Fri Apr  6 15:34:36 CEST 2007 - locilka@suse.cz
+
+- Adding new Installation::reboot_net_settings that will point to
+  a file storing current nework services settings when rebooting
+  a computer during installation (#258742).
+- Adding comments for Installation::* variables
+- 2.15.25
+
+-------------------------------------------------------------------
 Fri Apr  6 11:18:10 CEST 2007 - lslezak@suse.cz
 
 - register Pkg::CallbackAuthentication() callback (#190609)

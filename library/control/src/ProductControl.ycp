@@ -22,6 +22,7 @@ import "Report";
 import "Hooks";
 import "Popup";
 import "FileUtils";
+import "Installation";
 
 // The complete parsed control file
 global map productControl = $[];
@@ -931,7 +932,7 @@ global symbol RunFrom (integer from, boolean allow_back)
         // Register what step we are going to run
         if (!Stage::initial())
         {
-            if (!SCR::Write (.target.string, "/var/lib/YaST2/step", step_id))
+            if (! (boolean) SCR::Write (.target.string, Installation::current_step, step_id))
                 y2error("Error writing step identifier");
         }
 
@@ -941,7 +942,7 @@ global symbol RunFrom (integer from, boolean allow_back)
         // Remove file if step was run and returned (without a crash);
 	if (current_step < size(modules) - 1 && !Stage::initial())
         {
-            if (!(boolean)SCR::Execute(.target.remove, "/var/lib/YaST2/step"))
+            if (!(boolean)SCR::Execute(.target.remove, Installation::current_step))
                 y2error("Error removing step identifier");
         }
 
