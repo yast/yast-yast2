@@ -375,9 +375,31 @@ global boolean is_xen () {
     if (_is_xen == nil) {
 	// XEN kernel has /proc/xen directory
 	map stat = (map)SCR::Read(.target.stat, "/proc/xen");
-	y2debug("stat /proc/xen: %1", stat);
+	y2milestone("stat /proc/xen: %1", stat);
 
 	_is_xen = (size(stat) > 0);
+
+	if (_is_xen)
+	{
+	    y2milestone("/proc/xen exists");
+
+	    // check also the running kernel
+	    // a FV machine has also /proc/xen, but the kernel is kernel-default
+	    map out = (map)SCR::Execute(.target.bash_output, "uname -r", $[]);
+
+	    string kernel_ver = out["stdout"]:"";
+	    list<string> l = splitstring(kernel_ver, "\n");
+	    kernel_ver = l[0]:"";
+	    y2milestone("Kernel version: %1", kernel_ver);
+
+	    if (!regexpmatch(kernel_ver, "-xen$") && !regexpmatch(kernel_ver, "-xenpae$"))
+	    {
+		// kernel default is running
+		_is_xen = false;
+	    }
+
+	    y2milestone("kernel-xen is running: %1", _is_xen);
+	}
     }
 
     return _is_xen;
@@ -393,7 +415,7 @@ global boolean is_xen0 () {
     if (_is_xen0 == nil) {
 	// dom0 Xen kernel has /proc/xen/xsd_port file
 	map stat = (map)SCR::Read(.target.stat, "/proc/xen/xsd_port");
-	y2debug("stat /proc/xen/xsd_port: %1", stat);
+	y2milestone("stat /proc/xen/xsd_port: %1", stat);
 
 	_is_xen0 = (size(stat) > 0);
     }

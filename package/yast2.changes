@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Apr 11 10:14:42 CEST 2007 - lslezak@suse.cz
+
+- properly detect PV/FV Xen machine (#255217)
+- 2.13.104
+
+-------------------------------------------------------------------
 Mon Apr  2 14:09:10 CEST 2007 - jsuchome@suse.cz
 
 - fixed restarting after Patch CD update (#259825)
