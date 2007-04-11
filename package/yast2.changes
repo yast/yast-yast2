@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Apr 11 10:14:42 CEST 2007 - lslezak@suse.cz
+
+- properly detect PV/FV Xen machine (#255217)
+- 2.15.26
+
+-------------------------------------------------------------------
 Fri Apr  6 15:34:36 CEST 2007 - locilka@suse.cz
 
 - Adding new Installation::reboot_net_settings that will point to
