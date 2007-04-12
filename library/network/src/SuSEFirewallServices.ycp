@@ -593,6 +593,9 @@
 
 	boolean write_ok = true;
 
+	// we can have this service already in memory
+	map <string, list <string> > new_store_definition = store_definition;
+
 	foreach (string ycp_id, list <string> one_def, store_definition, {
 	    string sysconfig_id = ks_features_backward[ycp_id]:nil;
 	    if (sysconfig_id == nil) {
@@ -616,6 +619,9 @@
 		write_ok = false;
 		return;
 	    }
+	    
+	    // new definition of the service
+	    new_store_definition[ycp_id] = one_def;
 	});
 
 	// flush the cache to the disk
@@ -623,6 +629,10 @@
 	    if (! SCR::Write (.firewall_service_definition, nil)) {
 		y2error ("Cannot write to disk!");
 		write_ok = false;
+	    } else {
+		// not only store to disk but also to the memory
+		if (SERVICES[service]:nil == nil) SERVICES[service] = $[];
+		SERVICES[service] = new_store_definition;
 	    }
 	}
 
