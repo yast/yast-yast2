@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Apr 12 14:05:24 CEST 2007 - locilka@suse.cz
+
+- Added new SetNeededPortsAndProtocols() function into
+  SuSEFirewallServices module. It allows to modify services defined
+  by packages described in FATE #300687.
+- 2.15.28
+
+-------------------------------------------------------------------
 Thu Apr 12 13:09:40 CEST 2007 - mvidner@suse.cz
 
 - Detect Efika board type, handle it like Pegasos (#259827).

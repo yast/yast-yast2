@@ -70,6 +70,9 @@
 	"Description" : "description",
     ];
 
+    /* this is how services defined by package are distinguished */
+    string ser_def_by_pkg_string = "service:";
+
     /**
      * These definitions will be removed and replaced by definitions in packages.
      * FATE #300687: Ports for SuSEfirewall added via packages.
@@ -262,7 +265,30 @@
      *	ServiceDefinedByPackage ("service:http-server") -> true
      */
     global boolean ServiceDefinedByPackage (string service) {
-	return regexpmatch (service, "^service:.*");
+	return regexpmatch (service, "^" + ser_def_by_pkg_string + ".*");
+    }
+
+    /**
+     * Creates a file name from service name defined by package.
+     * Service MUST be defined by package, otherwise it returns 'nil'.
+     *
+     * @param string service name (e.g., 'service:abc')
+     * @return string file name (e.g., 'abc')
+     *
+     * @example
+     *	GetFilenameFromServiceDefinedByPackage ("service:abc") -> "abc"
+     *	GetFilenameFromServiceDefinedByPackage ("abc") -> nil
+     */
+    string GetFilenameFromServiceDefinedByPackage (string service) {
+	if (! ServiceDefinedByPackage (service)) {
+	    y2error ("Service %1 is not defined by package", service);
+	    return nil;
+	}
+	
+	string ret = regexpsub (service, "^" + ser_def_by_pkg_string + "(.*)$", "\\1");
+	if (ret == nil) y2error ("Wrong regexpsub definition");
+
+	return ret;
     }
 
     term GetMetadataAgent (string filefullpath) {
@@ -304,7 +330,7 @@
 	// for all files in that directory
 	foreach (string filename, all_definitions, {
 	    // "service:abc_server" to distinguis between dynamic definition and the static one
-	    one_definition = "service:" + filename;
+	    one_definition = ser_def_by_pkg_string + filename;
 
 	    // Do not read already defined service
 	    // Just read only new definitions
@@ -465,7 +491,16 @@
      * Function cares about if the service is defined or not.
      *
      * @param	string service
-     * @return	map [list, string] of needs
+     * @return	map <string, list <string> > of needed ports and protocols
+     *
+     * @example
+     *	GetNeededPortsAndProtocols ("service:aaa") -> $[
+     *		"tcp_ports"       : [ "122", "ftp-data" ],
+     *		"udp_ports"       : [ "427" ],
+     *		"rpc_ports"       : [ "portmap", "ypbind" ],
+     *		"ip_protocols"    : [],
+     *		"broadcast_ports" : [ "427" ],
+     *	];
      */    
     global define map <string, list <string> > GetNeededPortsAndProtocols (string service) {
 	map <string, list <string> > needed = $[];
@@ -492,10 +527,117 @@
     }
 
     /**
+     * Immediately writes the configuration of service defined by package to the
+     * service definition file. Service must be defined by package, this function
+     * doesn't work for hard-coded services (SuSEFirewallServices).
+     *
+     * @param string service ID (e.g., "service:ssh")
+     * @param map <string, list <string> > of full service definition
+     * @returns boolean if successful (nil in case of developer's mistake)
+     *
+     * @see IsKnownService()
+     * @see ServiceDefinedByPackage()
+     *
+     * @example
+     *	SetNeededPortsAndProtocols (
+     *		"service:something",
+     *		$[
+     *			"tcp_ports"       : [ "22", "ftp-data", "400:420" ],
+     *			"udp_ports"       : [ ],
+     *			"rpc_ports"       : [ "portmap", "ypbind" ],
+     *			"ip_protocols"    : [ "esp" ],
+     *			"broadcast_ports" : [ ],
+     *		]
+     *	);
+     */
+    global boolean SetNeededPortsAndProtocols (string service, map <string, list <string> > store_definition) {
+	if (! ServiceDefinedByPackage (service)) {
+	    y2error ("Service %1 is not defined by package", service);
+	    return nil;
+	}
+
+	// fallback
+	if (! IsKnownService (service)) {
+	    ReadServicesDefinedByRPMPackages ();
+	}
+	
+	if (! IsKnownService (service)) {
+	    y2error ("Service %1 is unknown", service);
+	    return nil;
+	}
+
+	// create the filename from service name
+	string filename = GetFilenameFromServiceDefinedByPackage (service);
+	if (filename == nil || filename == "") {
+	    y2error ("Can't operate with fileaname '%1' created from '%2'", filename, service);
+	    return false;
+	}
+
+	// full path to the filename
+	string filefullpath = sformat ("%1/%2", services_definitions_in, filename);
+	if (! FileUtils::Exists (filefullpath)) {
+	    y2error ("File '%1' doesn't exist", filefullpath);
+	    return false;
+	}
+
+	// Registering sysconfig agent for that file
+	if (! SCR::RegisterAgent (.firewall_service_definition, `ag_ini (`SysConfigFile (filefullpath)))) {
+	    y2error ("Cannot register agent for %1", filefullpath);
+	    return false;
+	}
+
+	map <string, string> ks_features_backward =
+	    mapmap (string sysconfig_id, string ycp_id, known_services_features, {
+		return $[ ycp_id : sysconfig_id ];
+	    });
+
+	boolean write_ok = true;
+
+	foreach (string ycp_id, list <string> one_def, store_definition, {
+	    string sysconfig_id = ks_features_backward[ycp_id]:nil;
+	    if (sysconfig_id == nil) {
+		y2error ("Unknown key '%1'", ycp_id);
+		write_ok = false;
+		return;
+	    }
+	    one_def = filter (string one_def_item, one_def, {
+		// filter out strange and wrong definitions
+		return (one_def_item != nil && one_def_item != "" && ! regexpmatch (one_def_item, "^ *$"));
+	    });
+	    
+	    if (! SCR::Write (
+		add (.firewall_service_definition, sysconfig_id),
+		mergestring (one_def, " ")
+	    )) {
+		y2error ("Cannot write %1 to %2",
+		    mergestring (one_def, " "),
+		    add (.firewall_service_definition, sysconfig_id)
+		);
+		write_ok = false;
+		return;
+	    }
+	});
+
+	// flush the cache to the disk
+	if (write_ok) {
+	    if (! SCR::Write (.firewall_service_definition, nil)) {
+		y2error ("Cannot write to disk!");
+		write_ok = false;
+	    }
+	}
+
+	// Unregistering sysconfig agent for that file
+	SCR::UnregisterAgent (.firewall_service_definition);
+
+	y2milestone ("Call SetNeededPortsAndProtocols(%1, ...) result is %2", service, write_ok);
+	return write_ok;
+    }
+
+    /**
      * Function returns list of possibly conflicting services.
      * Conflicting services are for instance nis-client and nis-server.
      *
-     * @return	list [string] of conflicting services
+     * @return	list <string> of conflicting services
      */
     global define list <string> GetPossiblyConflictServices () {
 	return possibly_conflict_services;
