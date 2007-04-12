@@ -225,6 +225,7 @@ global string board_compatible () {
 	// there is no standard for the board identification
 	// Cell and Maple based boards have no CHRP in /proc/cpuinfo
 	// Pegasos and Cell do have CHRP in /proc/cpuinfo, but Pegasos2 should no be handled as CHRP
+	// Efika is handled like Pegasos for the time being
 	if (ppc () && (_board_compatible == nil || _board_compatible == "CHRP"))
 	{
 	    map device_type = (map) SCR::Execute (.target.bash_output,
@@ -247,6 +248,11 @@ global string board_compatible () {
 	    }
 	    // Pegasos has CHRP in /proc/cpuinfo and 'chrp' in /proc/device-tree/device_type
 	    if (board == "Pegasos2")
+	    {
+		_board_compatible = "Pegasos";
+	    }
+	    // Efika has CHRP in /proc/cpuinfo and 'efika' in /proc/device-tree/device_type
+	    if (board == "efika")
 	    {
 		_board_compatible = "Pegasos";
 	    }
@@ -308,7 +314,7 @@ global boolean board_prep () {
 }
 
 /**
- * true for all "Pegasos" ppc boards
+ * true for all "Pegasos" and "Efika" ppc boards
  */
 global boolean board_pegasos () {
     return ppc () && board_compatible () == "Pegasos";

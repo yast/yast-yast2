@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Apr 12 12:44:19 CEST 2007 - mvidner@suse.cz
+
+- Detect Efika board type, handle it like Pegasos (#259827).
+- 2.15.27
+
+-------------------------------------------------------------------
 Wed Apr 11 10:14:42 CEST 2007 - lslezak@suse.cz
 
 - properly detect PV/FV Xen machine (#255217)
