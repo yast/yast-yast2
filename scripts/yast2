@@ -17,6 +17,19 @@ export PATH=/sbin:/usr/sbin:$PATH
 # load common script functions
 . /usr/lib/YaST2/bin/yast2-funcs
 
+# #211392
+# if we are in X and do not have _input_ from terminal,
+# make it output to xmessage
+redirect()
+{
+    XMESSAGE=`type -p xmessage`
+    if $REDIRECT && [ -n "$DISPLAY" -a ! -t 0 -a -n "$XMESSAGE" ]; then
+	exec &> >($XMESSAGE -buttons OK:0 -default OK -center -file -)
+    fi
+}
+# redirect the output if necessary
+redirect
+
 # Accumulated arguments for both the Qt UI and y2cc; currently supported:
 # --fullscreen
 # --noborder
