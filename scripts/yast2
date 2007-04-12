@@ -264,6 +264,7 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 	if [ $module == "menu" ] ; then
 	    while true ; do
 		$ybindir/y2base menu ncurses $NCTHREADS
+		exit_code=$?
 		if [ ! -e "/var/lib/YaST2/restart_menu" ] ; then
 		    break
 		fi
@@ -278,6 +279,7 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 
 	  while true ; do
 	    $ybindir/y2base "$module" "$@" ncurses $NCTHREADS
+	    exit_code=$?
 	    if [ ! $module == "online_update" -o ! -e "/var/lib/YaST2/selected_patches.ycp" ] ; then
 		break
 	    fi
@@ -303,6 +305,7 @@ elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
 	
     if [ $module == "menu" -a -e "$y2ccbin" ] ; then
 	$y2ccbin $Y2QT_ARGS "$@"
+	exit_code=$?
     else
 	
 	# Special case: "sw_single" needs a lot of screen space -
@@ -334,6 +337,8 @@ elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
 
       while true ; do
 	$ybindir/y2base $module "$@" "$SELECTED_GUI" $Y2_GEOMETRY $Y2QT_ARGS
+	exit_code=$?
+
 	if [ ! $module == "online_update" -o ! -e "/var/lib/YaST2/selected_patches.ycp" ] ; then
 	    break
 	fi
@@ -342,8 +347,6 @@ elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
 else
     echo >&2 "Internal error, unhandled '$SELECTED_GUI'"
 fi
-
-exit_code=$?
 
 if [ "$UID" = 0 ]; then
     rm -f /var/run/yast.pid

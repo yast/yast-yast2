@@ -1,7 +1,9 @@
 -------------------------------------------------------------------
-Thu Apr 12 12:44:19 CEST 2007 - mvidner@suse.cz
+Thu Apr 12 12:59:02 CEST 2007 - mvidner@suse.cz
 
 - Detect Efika board type, handle it like Pegasos (#259827).
+- Fixed /sbin/yast2 to pass on the return value of y2base and of the
+  control center (#263412).
 - 2.15.27
 
 -------------------------------------------------------------------
