@@ -56,6 +56,9 @@
      */
 
     string services_definitions_in = "/etc/sysconfig/SuSEfirewall2.d/services/";
+
+    // firewall needs restarting
+    boolean sfws_modified = false;
     
     map <string, string> known_services_features = $[
 	"TCP"         : "tcp_ports",
@@ -477,6 +480,29 @@
     }
 
     /**
+     * Sets that configuration was modified
+     */
+    global void SetModified () {
+	sfws_modified = true;
+    }
+
+    /**
+     * Sets that configuration was not modified
+     */
+    global void ResetModified () {
+	sfws_modified = false;
+    }
+
+    /**
+     * Returns whether configuration was modified
+     *
+     * @return boolean modified
+     */
+    global boolean GetModified () {
+	return sfws_modified;
+    }
+
+    /**
      * Function returns needed ports allowing broadcast
      *
      * @param	string service
@@ -633,6 +659,7 @@
 		// not only store to disk but also to the memory
 		if (SERVICES[service]:nil == nil) SERVICES[service] = $[];
 		SERVICES[service] = new_store_definition;
+		SetModified();
 	    }
 	}
 

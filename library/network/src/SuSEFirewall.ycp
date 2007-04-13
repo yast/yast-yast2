@@ -959,13 +959,14 @@
     boolean fw_service_can_be_configured = false;
 
     /**
-     * Functions returns if any firewall's configuration was modified
-     * or wasn't
+     * Functions returns whether any firewall's configuration was modified.
      *
      * @return	boolean if the configuration was modified
      */
     global define boolean GetModified () {
-	return modified;
+	// Changed SuSEFirewall or
+	// Changed SuSEFirewallServices (needs resatrting as well)
+	return (modified || SuSEFirewallServices::GetModified());
     }
 
     /**
