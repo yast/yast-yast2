@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Apr 13 16:36:09 CEST 2007 - locilka@suse.cz
+
+- Added 'modified' flag into SuSEFirewallServices module. This
+  makes SuSEFirewall module to restart SuSEfirewall2 in case of
+  changed only SuSEFirewallServices settings.
+
+-------------------------------------------------------------------
 Thu Apr 12 14:05:24 CEST 2007 - locilka@suse.cz
 
 - Added new SetNeededPortsAndProtocols() function into
