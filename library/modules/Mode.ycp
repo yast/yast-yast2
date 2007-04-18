@@ -93,6 +93,10 @@ global void Initialize () {
 
 // main mode definitions
 
+/**
+ * Returns the current mode name. It's one of
+ * "installation", "normal", "update", "repair", "autoinstallation", "autoinst_config"
+ */
 global string mode () {
     if (_mode == nil)
     {
@@ -150,6 +154,10 @@ global void SetTest (string new_test_mode) {
 
 // UI mode definitions
 
+/**
+ * Returns the current UI mode.
+ * It's one of "commandline", "dialog", "none"
+ */
 global string ui () {
     return _ui;
 }
@@ -195,7 +203,7 @@ global boolean repair () {
 }
 
 /**
- * do auto-installation
+ * doing auto-installation
  */
 global boolean autoinst () {
     return mode () == "autoinstallation";
@@ -227,6 +235,9 @@ global boolean screen_shot () {
     return testMode () == "screenshot";
 }
 
+/**
+ * Returns whether running in testsuite.
+ */
 global boolean testsuite () {
     return testMode () == "testsuite";
 }
