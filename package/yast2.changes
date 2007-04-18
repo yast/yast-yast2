@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Apr 18 08:33:37 CEST 2007 - locilka@suse.cz
+
+- FileUtils::CheckAndCreatePatch function has been fixed not to
+  turn "/" into empty string (#203363).
+
+-------------------------------------------------------------------
 Fri Apr 13 16:36:09 CEST 2007 - locilka@suse.cz
 
 - Added 'modified' flag into SuSEFirewallServices module. This

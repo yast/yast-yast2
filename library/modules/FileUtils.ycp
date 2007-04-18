@@ -274,7 +274,10 @@
         string check_path = pathvalue;
 
         // remove the final slash
-        if (regexpmatch(check_path, "/$")) check_path = regexpsub(check_path, "^(.*)/$", "\\1");
+	// but never the last one "/"
+	// bugzilla #203363
+        if (regexpmatch (check_path, "/$") && check_path != "/")
+	    check_path = regexpsub (check_path, "^(.*)/$", "\\1");
         y2milestone("Checking existency of %1 path", check_path);
 
         // Directory (path) already exists
