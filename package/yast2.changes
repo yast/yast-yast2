@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Apr 19 16:30:05 CEST 2007 - mzugec@suse.cz
+
+- added GetIP(device) function to get first+additional addresses (#264393)
+- 2.15.30 
+
+-------------------------------------------------------------------
 Thu Apr 19 11:09:13 CEST 2007 - jsrain@suse.cz
 
 - fixed path to GNOME control center (#245970)
