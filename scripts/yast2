@@ -34,8 +34,7 @@ redirect
 # --fullscreen
 # --noborder
 Y2QT_ARGS=""
-# FIXME: we should install into y2bindir really ...
-GNOME_SHELL="/usr/bin/y2controlcenter-gnome"
+GNOME_SHELL="$ybindir/y2controlcenter-gnome"
 KDE_SHELL="$ybindir/y2controlcenter"
 
 printhelp()

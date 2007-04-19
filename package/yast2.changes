@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Apr 19 11:09:13 CEST 2007 - jsrain@suse.cz
+
+- fixed path to GNOME control center (#245970)
+
+-------------------------------------------------------------------
 Wed Apr 18 08:33:37 CEST 2007 - locilka@suse.cz
 
 - FileUtils::CheckAndCreatePatch function has been fixed not to
