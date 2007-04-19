@@ -1103,6 +1103,22 @@ global define boolean SetValue(string name, string key, string value) {
 }
 
 /**
+ * get IP addres + additional IP addresses
+ * @param identifier for network interface
+ * @return list of IP addresses of selected interface
+ */
+
+global list<string> GetIP(string device){
+ Select(device);
+ list<string> ips = [ GetValue(device, "IPADDR") ];
+ foreach(string key, map<string, any> value, (map<string, map<string, any> >)Current["_aliases"]:$[], {
+  ips = add(ips, value["IPADDR"]:"");
+ });
+ return ips;
+}
+
+
+/**
  * Locate devices of the given type and value
  * @param key device key
  * @param val device value
