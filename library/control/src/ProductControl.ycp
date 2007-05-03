@@ -980,7 +980,25 @@ global symbol RunFrom (integer from, boolean allow_back)
 	    }
 
 	    any r = nil;
-	    r = Popup::ModuleError(sformat("The module %1 does not work.", symbolof(argterm)));
+	    r = Popup::ModuleError (
+		sformat (
+		    // TRANSLATORS: an error message
+		    // this should not happen, but life is cruel...
+		    // %1 - (failed) module name
+		    // %2 - logfile, possibly with errors
+		    // %3 - link to our bugzilla
+		    // %4 - directory where YaST logs are stored
+		    "Calling the YaST module %1 has failed.
+More information can be found near the end of the '%2' file.
+
+This is worth reporting a bug at %3.
+Please, attach also all YaST logs stored in the '%4' directory.",
+		    symbolof (argterm),
+		    "/var/log/YaST2/y2log",
+		    "http://bugzilla.novell.com/",
+		    "/var/log/YaST2/"
+		)
+	    );
 
 	    if (r == `next)
 		current_step = current_step + 1;
