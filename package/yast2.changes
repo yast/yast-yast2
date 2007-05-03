@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May  3 14:20:41 CEST 2007 - locilka@suse.cz
+
+- Present more information to the user when calling a YaST client
+  fails (#267886).
+
+-------------------------------------------------------------------
 Thu Apr 19 16:30:05 CEST 2007 - mzugec@suse.cz
 
 - added GetIP(device) function to get first+additional addresses (#264393)
