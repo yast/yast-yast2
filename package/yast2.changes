@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May  3 14:44:05 CEST 2007 - varkoly@suse.de
+
+- Add neuw modul file MailAlias.ycp (269867 - build cycle between yast2-users and yast2-mail) 
+- 2.15.31 
+
+-------------------------------------------------------------------
 Thu May  3 14:20:41 CEST 2007 - locilka@suse.cz
 
 - Present more information to the user when calling a YaST client
