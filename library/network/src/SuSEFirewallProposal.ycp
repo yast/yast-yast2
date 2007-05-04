@@ -159,7 +159,7 @@
      * function opens the service for the zone supporting that feature. If there
      * are only dial-up interfaces, function opens the service for them.
      *
-     * @param string service such as "ssh" or "vnc"
+     * @param string service such as "service:sshd" or "service:xorg-x11-Xvnc"
      */
     global define void OpenServiceOnNonDialUpInterfaces (string service) {
 	list <string> non_dial_up_interfaces = SuSEFirewall::GetAllNonDialUpInterfaces();
@@ -240,19 +240,19 @@
 		SetInterfacesToZone(non_dup_interfaces, "INT");
 		SetInterfacesToZone(dial_up_interfaces, "EXT");
 		if (ProductFeatures::GetBooleanFeature ("globals", "firewall_enable_ssh"))
-		    SuSEFirewall::SetServicesForZones(["ssh"], ["INT","EXT"], true);
+		    SuSEFirewall::SetServicesForZones(["service:sshd"], ["INT","EXT"], true);
 
 	    // has non-dial-up and doesn't have dial-up interfaces
 	    } else if (size(non_dup_interfaces)>0 && size(dial_up_interfaces)==0) {
 		SetInterfacesToZone(non_dup_interfaces, "EXT");
 		if (ProductFeatures::GetBooleanFeature ("globals", "firewall_enable_ssh"))
-		    SuSEFirewall::SetServicesForZones(["ssh"], ["EXT"], true);
+		    SuSEFirewall::SetServicesForZones(["service:sshd"], ["EXT"], true);
 
 	    // doesn't have non-dial-up and has dial-up interfaces
 	    } else if (size(non_dup_interfaces)==0 && size(dial_up_interfaces)>0) {
 		SetInterfacesToZone(dial_up_interfaces, "EXT");
 		if (ProductFeatures::GetBooleanFeature ("globals", "firewall_enable_ssh"))
-		    SuSEFirewall::SetServicesForZones(["ssh"], ["EXT"], true);
+		    SuSEFirewall::SetServicesForZones(["service:sshd"], ["EXT"], true);
 	    }
 
 	/*
@@ -265,11 +265,11 @@
 	 */
 	if (Linuxrc::vnc()) {
 	    y2milestone("This is an installation over VNC, opening VNC on all non-dial-up interfaces...");
-	    OpenServiceOnNonDialUpInterfaces("vnc");
+	    OpenServiceOnNonDialUpInterfaces("service:xorg-x11-Xvnc");
 	}
 	if (Linuxrc::usessh()) {
 	    y2milestone("This is an installation over SSH, opening SSH on all non-dial-up interfaces...");
-	    OpenServiceOnNonDialUpInterfaces("ssh");
+	    OpenServiceOnNonDialUpInterfaces("service:sshd");
 	}
 
 	/*
@@ -412,7 +412,7 @@
 		y2milestone("Zones used by firewall: %1", used_zones);
 		
 		foreach (string zone, used_zones, {
-		    if (SuSEFirewall::IsServiceSupportedInZone ("ssh", zone)) {
+		    if (SuSEFirewall::IsServiceSupportedInZone ("service:sshd", zone)) {
 			is_ssh_enabled = true;
 		    }
 		});
@@ -431,7 +431,7 @@
 	    // and ssh is enabled there
 	    } else if (
 		SuSEFirewall::IsAnyNetworkInterfaceSupported() &&
-		SuSEFirewall::IsServiceSupportedInZone ("ssh", SuSEFirewall::special_all_interface_zone)
+		SuSEFirewall::IsServiceSupportedInZone ("service:sshd", SuSEFirewall::special_all_interface_zone)
 	    ) {
 		    is_ssh_enabled = true;
 		    // TRANSLATORS: Network proposal informative text with link around
@@ -452,7 +452,7 @@
 		boolean is_vnc_enabled = false;
 		if (size(known_interfaces)>0) {
 		    foreach (string zone, SuSEFirewall::GetZonesOfInterfacesWithAnyFeatureSupported(known_interfaces), {
-			if (SuSEFirewall::IsServiceSupportedInZone ("vnc", zone))
+			if (SuSEFirewall::IsServiceSupportedInZone ("service:xorg-x11-Xvnc", zone))
 			    is_vnc_enabled = true;
 		    });
 		}

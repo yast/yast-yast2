@@ -1,0 +1,163 @@
+{
+  /**
+   * This file contains only translations for
+   * FATE #300687: Ports for SuSEfirewall added via packages
+   *
+   * Translations are grabbed when 'make pot' is called.
+   */
+
+  textdomain "firewall-services";
+
+  string tmpstring = nil;
+
+  // TRANSLATORS: Name of Service (rpm: avahi), can be used as check box, item in multiple selection box...
+  tmpstring = _("Zeroconf/Bonjour Multicast DNS");
+
+  // TRANSLATORS: Description of a Service (rpm: avahi), used as a common label or an item in table
+  tmpstring = _("Zeroconf/Bonjour Multicast DNS (mDNS) ports for Service Discovery (DNS-SD)");
+
+  // TRANSLATORS: Description of a Service (rpm: bacula-dir), used as a common label or an item in table
+  tmpstring = _("Bacula Director ");
+
+  // TRANSLATORS: Description of a Service (rpm: bacula-fd), used as a common label or an item in table
+  tmpstring = _("Bacula File Daemon ");
+
+  // TRANSLATORS: Description of a Service (rpm: bacula-sd), used as a common label or an item in table
+  tmpstring = _("Bacula Storage Daemon ");
+
+  // TRANSLATORS: Name of Service (rpm: bind), can be used as check box, item in multiple selection box...
+  tmpstring = _("bind DNS server");
+
+  // TRANSLATORS: Description of a Service (rpm: bind), used as a common label or an item in table
+  tmpstring = _("Open ports for the bind DNS server");
+
+  // TRANSLATORS: Name of Service (rpm: cups), can be used as check box, item in multiple selection box...
+  tmpstring = _("cups");
+
+  // TRANSLATORS: Description of a Service (rpm: cups), used as a common label or an item in table
+  tmpstring = _("Firewall Configuration file for printing service CUPS");
+
+  // TRANSLATORS: Name of Service (rpm: cyrus-imapd), can be used as check box, item in multiple selection box...
+  tmpstring = _("cyrus-imapd Server");
+
+  // TRANSLATORS: Description of a Service (rpm: cyrus-imapd), used as a common label or an item in table
+  tmpstring = _("Opens ports for the cyrus-imapd Server.");
+
+  // TRANSLATORS: Name of Service (rpm: dhcp-server), can be used as check box, item in multiple selection box...
+  tmpstring = _("DHCP Server");
+
+  // TRANSLATORS: Description of a Service (rpm: dhcp-server), used as a common label or an item in table
+  tmpstring = _("Opens ports for ISC DHCP Server.");
+
+  // TRANSLATORS: Name of Service (rpm: dnsmasq-dhcp), can be used as check box, item in multiple selection box...
+  tmpstring = _("dnsmasq");
+
+  // TRANSLATORS: Description of a Service (rpm: dnsmasq-dhcp), used as a common label or an item in table
+  tmpstring = _("Open ports for the dnsmasq DNS/DHCP server");
+
+  // TRANSLATORS: Name of Service (rpm: dnsmasq-dns), can be used as check box, item in multiple selection box...
+  tmpstring = _("dnsmasq");
+
+  // TRANSLATORS: Description of a Service (rpm: dnsmasq-dns), used as a common label or an item in table
+  tmpstring = _("Open ports for the dnsmasq DNS/DHCP server");
+
+  // TRANSLATORS: Name of Service (rpm: iceccd), can be used as check box, item in multiple selection box...
+  tmpstring = _("template service");
+
+  // TRANSLATORS: Description of a Service (rpm: iceccd), used as a common label or an item in table
+  tmpstring = _("opens ports for foo in order to allow bar");
+
+  // TRANSLATORS: Name of Service (rpm: icecream-scheduler), can be used as check box, item in multiple selection box...
+  tmpstring = _("template service");
+
+  // TRANSLATORS: Description of a Service (rpm: icecream-scheduler), used as a common label or an item in table
+  tmpstring = _("opens ports for foo in order to allow bar");
+
+  // TRANSLATORS: Name of Service (rpm: iscsitarget), can be used as check box, item in multiple selection box...
+  tmpstring = _("iSCSI Target Daemon");
+
+  // TRANSLATORS: Description of a Service (rpm: iscsitarget), used as a common label or an item in table
+  tmpstring = _("Opens ports for iSCSI Target Daemon with broadcast allowed.");
+
+  // TRANSLATORS: Name of Service (rpm: isns), can be used as check box, item in multiple selection box...
+  tmpstring = _("iSNS Daemon");
+
+  // TRANSLATORS: Description of a Service (rpm: isns), used as a common label or an item in table
+  tmpstring = _("Opens ports for iSNS daemon with broadcast allowed.");
+
+  // TRANSLATORS: Name of Service (rpm: kadmind), can be used as check box, item in multiple selection box...
+  tmpstring = _("Kerberos Admin Server");
+
+  // TRANSLATORS: Description of a Service (rpm: kadmind), used as a common label or an item in table
+  tmpstring = _("Open ports for kadmind Server");
+
+  // TRANSLATORS: Name of Service (rpm: kdc), can be used as check box, item in multiple selection box...
+  tmpstring = _("Key Distribution Center");
+
+  // TRANSLATORS: Description of a Service (rpm: kdc), used as a common label or an item in table
+  tmpstring = _("Open ports for the Key Distribution Center");
+
+  // TRANSLATORS: Name of Service (rpm: mysql), can be used as check box, item in multiple selection box...
+  tmpstring = _("MySQL server");
+
+  // TRANSLATORS: Description of a Service (rpm: mysql), used as a common label or an item in table
+  tmpstring = _("opens ports for MySQL in order to allow other hosts connect to it");
+
+  // TRANSLATORS: Name of Service (rpm: openldap), can be used as check box, item in multiple selection box...
+  tmpstring = _("OpenLDAP Server");
+
+  // TRANSLATORS: Description of a Service (rpm: openldap), used as a common label or an item in table
+  tmpstring = _("Opens ports for the OpenLDAP Server (slapd).");
+
+  // TRANSLATORS: Name of Service (rpm: pure-ftpd), can be used as check box, item in multiple selection box...
+  tmpstring = _("pureftpd");
+
+  // TRANSLATORS: Description of a Service (rpm: pure-ftpd), used as a common label or an item in table
+  tmpstring = _("Opens ports for pureftpd with broadcast allowed.");
+
+  // TRANSLATORS: Description of a Service (rpm: sendmail), used as a common label or an item in table
+  tmpstring = _("Firewall Configuration file for postfix");
+
+  // TRANSLATORS: Name of Service (rpm: sshd), can be used as check box, item in multiple selection box...
+  tmpstring = _("Secure Shell Server");
+
+  // TRANSLATORS: Description of a Service (rpm: sshd), used as a common label or an item in table
+  tmpstring = _("Open ports for for Secure Shell Server");
+
+  // TRANSLATORS: Name of Service (rpm: svnserve), can be used as check box, item in multiple selection box...
+  tmpstring = _("svnserve");
+
+  // TRANSLATORS: Description of a Service (rpm: svnserve), used as a common label or an item in table
+  tmpstring = _("Open ports for svnserve");
+
+  // TRANSLATORS: Name of Service (rpm: talkd), can be used as check box, item in multiple selection box...
+  tmpstring = _("Talk Server");
+
+  // TRANSLATORS: Description of a Service (rpm: talkd), used as a common label or an item in table
+  tmpstring = _("Open ports for Talk Server");
+
+  // TRANSLATORS: Name of Service (rpm: vsftpd), can be used as check box, item in multiple selection box...
+  tmpstring = _("vsftpd Server");
+
+  // TRANSLATORS: Description of a Service (rpm: vsftpd), used as a common label or an item in table
+  tmpstring = _("Opens ports for vsftpd Server.");
+
+  // TRANSLATORS: Name of Service (rpm: xorg-x11-Xvnc), can be used as check box, item in multiple selection box...
+  tmpstring = _("VNC Server");
+
+  // TRANSLATORS: Description of a Service (rpm: xorg-x11-Xvnc), used as a common label or an item in table
+  tmpstring = _("Opens ports for VNC Server");
+
+  // TRANSLATORS: Name of Service (rpm: ypbind), can be used as check box, item in multiple selection box...
+  tmpstring = _("NIS Client");
+
+  // TRANSLATORS: Description of a Service (rpm: ypbind), used as a common label or an item in table
+  tmpstring = _("The ypbind daemon binds NIS clients to an NIS domain");
+
+  // TRANSLATORS: Name of Service (rpm: ypserv), can be used as check box, item in multiple selection box...
+  tmpstring = _("NIS Server");
+
+  // TRANSLATORS: Description of a Service (rpm: ypserv), used as a common label or an item in table
+  tmpstring = _("Configuration for a NIS master/slave server");
+
+}
