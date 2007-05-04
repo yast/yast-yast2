@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Fri May  4 15:28:26 CEST 2007 - locilka@suse.cz
+
+- Added new refresh-srv-def-by-pkgs-trans.sh script that creates
+  a YCP file containing translations for services defined by
+  packages (FATE #30068).
+- Added yast2-services-translations.ycp file with translations,
+  textdomain is "firewall-services".
+- Changed SuSEFirewallProposal to use new definition of services
+  instead the old one from SuSEFirewallServices.
+- 2.15.32
+
+-------------------------------------------------------------------
 Thu May  3 14:44:05 CEST 2007 - varkoly@suse.de
 
 - Add neuw modul file MailAlias.ycp (269867 - build cycle between yast2-users and yast2-mail) 

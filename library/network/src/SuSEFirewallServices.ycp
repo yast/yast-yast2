@@ -14,7 +14,7 @@
 {
     module "SuSEFirewallServices";
     textdomain "base";
-    
+
     import "FileUtils";
 
     //
@@ -56,6 +56,9 @@
      */
 
     string services_definitions_in = "/etc/sysconfig/SuSEfirewall2.d/services/";
+
+    // please, check it with configuration in refresh-srv-def-by-pkgs-trans.sh script
+    string fw_services_textdomain = "firewall-services";
 
     // firewall needs restarting
     boolean sfws_modified = false;
@@ -373,7 +376,8 @@
 		foreach (string metadata_feature, string metadata_key, known_metadata, {
 		    definition = (string) SCR::Read (add(.firewall_service_metadata, metadata_feature));
 		    if (definition == nil || definition == "") return;
-		    SERVICES[one_definition, metadata_key] = definition;
+		    // call gettext to translate the metadata
+		    SERVICES[one_definition, metadata_key] = dgettext (fw_services_textdomain, definition);
 		});
 
 		SCR::UnregisterAgent (.firewall_service_metadata);
@@ -381,8 +385,7 @@
 		y2error ("Cannot register agent for %1 (metadata)", filefullpath);
 	    }
 
-	    // can be removed later
-	    y2milestone ("'%1' -> %2", filename, SERVICES[one_definition]:$[]);
+	    y2debug ("'%1' -> %2", filename, SERVICES[one_definition]:$[]);
 	});
 
 	return true;
