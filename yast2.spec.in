@@ -2,7 +2,7 @@
 
 @HEADER@
 
-BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-pkg-bindings yast2-testsuite
+BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-pkg-bindings yast2-testsuite yast2-perl-bindings
 # SCR::RegisterNewAgents()
 Requires:       yast2-core >= 2.15.4
 # Pkg::CallbackAuthentication()
