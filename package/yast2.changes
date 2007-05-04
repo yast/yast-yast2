@@ -8,12 +8,15 @@ Fri May  4 15:28:26 CEST 2007 - locilka@suse.cz
   textdomain is "firewall-services".
 - Changed SuSEFirewallProposal to use new definition of services
   instead the old one from SuSEFirewallServices.
+- Fixed BuildRequires (yast2-perl-bindings) after moving
+  Mail-related perl modules to yast2 package.
 - 2.15.32
 
 -------------------------------------------------------------------
 Thu May  3 14:44:05 CEST 2007 - varkoly@suse.de
 
-- Add neuw modul file MailAlias.ycp (269867 - build cycle between yast2-users and yast2-mail) 
+- Add new module file MailAlias.ycp (269867 - build cycle between
+  yast2-users and yast2-mail)
 - 2.15.31 
 
 -------------------------------------------------------------------
