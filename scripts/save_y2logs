@@ -4,6 +4,7 @@
 #		to attach it to a Bugzilla bug report
 #
 # Author: Stefan Hundhammer <sh@suse.de>
+# $Id$
 
 usage()
 {
@@ -50,7 +51,10 @@ if [ -f /var/log/evms-engine.log ]; then
 fi
 
 RPM_LIST="rpm-qa"
-rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}\t\t\t(%{VENDOR})\t%{DISTRIBUTION}\n' | sort >/var/log/$RPM_LIST
+# #270321, there is no rpmdb in inst-sys
+if [ -f /var/lib/rpm/Packages ]; then
+    rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}\t\t\t(%{VENDOR})\t%{DISTRIBUTION}\n' | sort >/var/log/$RPM_LIST
+fi
 
 if [ -f /var/log/$RPM_LIST ]; then
     LIST="$LIST $RPM_LIST"
