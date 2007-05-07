@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon May  7 14:47:41 CEST 2007 - mvidner@suse.cz
+
+- save_y2logs: do not query the RPM database if there is none, as
+  in the inst-sys (#270321).
+
+-------------------------------------------------------------------
 Fri May  4 15:28:26 CEST 2007 - locilka@suse.cz
 
 - Added new refresh-srv-def-by-pkgs-trans.sh script that creates
