@@ -97,7 +97,7 @@ global define string FormatSizeWithPrecision(integer bytes, integer precision, b
     string unit = "";
     list units = [
 	/* KiloByte abbreviated */
-	_("KB"),
+	_("kB"),
 	/* MegaByte abbreviated */
 	_("MB"),
 	/* GigaByte abbreviated */

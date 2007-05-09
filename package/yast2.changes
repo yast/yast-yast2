@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed May  9 13:47:10 CEST 2007 - lslezak@suse.cz
+
+- fixed units - use "kB" instead of "KB" in strings (#270935)
+
+-------------------------------------------------------------------
 Mon May  7 14:47:41 CEST 2007 - mvidner@suse.cz
 
 - save_y2logs: do not query the RPM database if there is none, as
