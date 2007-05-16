@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed May 16 11:52:52 CEST 2007 - locilka@suse.cz
+
+- Added checking for allowed "ssh" TCP port into
+  SuSEFirewallProposal module additionaly to "service:sshd"
+  (related to #274761).
+
+-------------------------------------------------------------------
 Wed May  9 13:47:10 CEST 2007 - lslezak@suse.cz
 
 - fixed units - use "kB" instead of "KB" in strings (#270935)

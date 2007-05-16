@@ -412,7 +412,11 @@
 		y2milestone("Zones used by firewall: %1", used_zones);
 		
 		foreach (string zone, used_zones, {
-		    if (SuSEFirewall::IsServiceSupportedInZone ("service:sshd", zone)) {
+		    if (
+			SuSEFirewall::IsServiceSupportedInZone ("service:sshd", zone)
+			||
+			SuSEFirewall::HaveService("ssh", "TCP", zone)
+		    ) {
 			is_ssh_enabled = true;
 		    }
 		});
