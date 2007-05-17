@@ -14,7 +14,7 @@ Dump	String::FormatSize
 Return	
 Return	0.00 
 Return	1.00 
-Return	1.00 KB
+Return	1.00 kB
 Return	1.00 MB
 Return	1.00 GB
 Return	1.00 TB
@@ -23,14 +23,14 @@ Dump	String::FormatSizeWithPrecision
 Return	
 Return	0 
 Return	1.00 
-Return	1.001 KB
+Return	1.001 kB
 Return	1.00 MB
 Return	1.000 GB
 Return	1.00 TB
 Return	1024.1 TB
-Return	4 KB
-Return	4.00 KB
-Return	4.00 KB
+Return	4 kB
+Return	4.00 kB
+Return	4.00 kB
 Return	8 GB
 Return	15.00000 
 Return	21.846 GB
