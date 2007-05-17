@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May 17 17:57:17 CEST 2007 - lslezak@suse.cz
+
+- Fixed testsuite for String.ycp
+- 2.15.33
+
+-------------------------------------------------------------------
 Thu May 17 17:08:57 CEST 2007 - kmachalkova@suse.cz
 
 - Do not request link state of network devices from ethtool (ask
