@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May 17 17:08:57 CEST 2007 - kmachalkova@suse.cz
+
+- Do not request link state of network devices from ethtool (ask
+  sysfs instead) so that yast2 does not require ethtool (#256382) 
+
+-------------------------------------------------------------------
 Wed May 16 11:52:52 CEST 2007 - locilka@suse.cz
 
 - Added checking for allowed "ssh" TCP port into

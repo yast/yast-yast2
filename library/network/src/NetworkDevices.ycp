@@ -18,6 +18,7 @@ textdomain "base";
 
 import "Arch";
 import "Map";
+import "Mode";
 import "Netmask";
 import "String";
 
@@ -283,6 +284,42 @@ global boolean IsHotplug (string type) {
     if(type == "" || type == nil) return false;
     if(regexpmatch(type, "(pcmcia|usb|pci)$")) return true;
     return false;
+}
+
+/**
+ * Return matching inteface for this hardware ID (uses getcfg-interface)
+ * @param dev unique device string
+ * return interface name
+ * @example MatchInterface("eth-id-00:01:DE:AD:BE:EF") -> "eth0"
+ */
+global string MatchInterface(string dev) {
+    string cmd = "getcfg-interface " + dev;
+    map dn =(map) SCR::Execute(.target.bash_output, cmd);
+    string devname = deletechars(dn["stdout"]:"", "\n");
+
+    return devname;
+}
+
+/**
+ * Test whether device is connected (Link:up)
+ * The info is taken from sysfs
+ * @param dev unique device string
+ * @return true if connected
+ */
+global boolean IsConnected(string dev) {
+    if (!Mode::testsuite()) {
+        string iface = MatchInterface(dev);
+        string cmd = "cat /sys/class/net/" + iface + "/carrier";
+
+        map ret = (map) SCR::Execute(.target.bash_output, cmd);
+	y2milestone("Sysfs returned %1", ret); 
+
+        return ( deletechars( ret["stdout"]:"", "\n") == "1" ? true : false );
+    }
+    else
+        //Assume all devices are connected in testsuite mode
+	return true;
+
 }
 
 /**
@@ -1263,31 +1300,11 @@ global define string Fastest() {
     /* Find the fastest device */
     foreach(integer num, string type, FastestTypes, {
 	foreach(string dev, devices, {
-	    if(ret == "" && regexpmatch(dev, "^" + DeviceRegex[type]:"" + "[0-9]*$")) {
-		//do some checking (whether the card is up and has cable connected)
-		if(type == "netcard") {
-		    string cmd = "getcfg-interface " + dev;
-		    map dn =(map) SCR::Execute(.target.bash_output, cmd);
-		    string devname = deletechars(dn["stdout"]:"", "\n");
-
-		    cmd = "ethtool " + devname + " | grep \"Link detected: yes\"";
-		    string cmd2 = "ifstatus " + devname + " | grep \"" + devname + " is up\"";
-
-                    if( (Arch::s390() || SCR::Execute(.target.bash, cmd) == 0) && (SCR::Execute(.target.bash, cmd2) == 0)) {
-			y2milestone("%1 is up and connected", dev);
-			ret = dev;
-		    }
-		    else y2milestone("%1 is down or disconnected", dev);
-		}
-		else ret = dev;
-	    }
+	    if(ret == "" && regexpmatch(dev, "^" + DeviceRegex[type]:"" + "[0-9]*$")
+	      && IsConnected(dev)) 
+		ret = dev;
 	});
     });
-
-    if (ret == "") {
-	y2milestone("No suitable device found, falling back to the first device on the detected list");
-	ret = devices[0]:"";
-    }
 
     y2milestone("ret=%1", ret);
     return ret;
