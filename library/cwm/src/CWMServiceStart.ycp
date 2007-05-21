@@ -679,8 +679,7 @@ global map<string,any> CreateLdapWidget (map<string,any> settings) {
     );
 
     if (! (haskey (settings, "get_use_ldap")
-	&& haskey (settings, "set_use_ldap")
-	&& ProductFeatures::GetFeature ("globals", "ui_mode") != "simple"))
+	&& haskey (settings, "set_use_ldap")))
     {
 	ldap_settings = `VBox ();
 	help = "";
