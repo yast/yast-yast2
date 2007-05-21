@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon May 21 16:04:31 CEST 2007 - kmachalkova@suse.cz
+
+- Do not show empty xmessage window if nothing is printed to stderr
+  after yast module has exited (mvidner's patch for #265263) 
+
+-------------------------------------------------------------------
 Mon May 21 13:39:58 CEST 2007 - jsrain@suse.cz
 
 - fixed chrp board detection (PPC) (#273606)
