@@ -17,14 +17,26 @@ export PATH=/sbin:/usr/sbin:$PATH
 # load common script functions
 . /usr/lib/YaST2/bin/yast2-funcs
 
+# redirect to $@ if the input is not empty, #265263
+redir_nonempty()
+{
+    local IFS='' L
+    read L || return
+    exec &> >("$@")
+    echo "$L"
+    cat
+}
+
 # #211392
 # if we are in X and do not have _input_ from terminal,
 # make it output to xmessage
 redirect()
 {
-    XMESSAGE=`type -p xmessage`
-    if $REDIRECT && [ -n "$DISPLAY" -a ! -t 0 -a -n "$XMESSAGE" ]; then
-	exec &> >($XMESSAGE -buttons OK:0 -default OK -center -file -)
+    if [ -n "$DISPLAY" -a ! -t 0 ]; then
+        XMESSAGE=`type -p xmessage`
+	if [ -n "$XMESSAGE" ]; then
+	    exec &> >(redir_nonempty $XMESSAGE -buttons OK:0 -default OK -center -file -)
+	fi
     fi
 }
 # redirect the output if necessary
