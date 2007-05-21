@@ -1,7 +1,9 @@
 -------------------------------------------------------------------
-Mon May 21 10:45:35 CEST 2007 - jsrain@suse.cz
+Mon May 21 13:39:58 CEST 2007 - jsrain@suse.cz
 
 - fixed chrp board detection (PPC) (#273606)
+- do not check UI mode when enabling the 'Use LDAP' widget in
+  service dialog (#274649)
 
 -------------------------------------------------------------------
 Thu May 17 17:57:17 CEST 2007 - lslezak@suse.cz
