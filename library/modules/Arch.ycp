@@ -235,8 +235,7 @@ global string board_compatible () {
 	    string board = model["stdout"]:"";
 	    y2milestone("model %1 , device_type %2\n", model, device_type);
 	    // catch remaining IBM boards
-	    if (device_type["stdout"]:"" == "chrp"
-		|| device_type["stdout"]:"" == "chrp-cbea")
+	    if (issubstring (device_type["stdout"]:"", "chrp"))
 	    {
 		_board_compatible = "CHRP";
 	    }
