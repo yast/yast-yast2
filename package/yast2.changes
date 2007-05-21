@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon May 21 10:45:35 CEST 2007 - jsrain@suse.cz
+
+- fixed chrp board detection (PPC) (#273606)
+
+-------------------------------------------------------------------
 Thu May 17 17:57:17 CEST 2007 - lslezak@suse.cz
 
 - Fixed testsuite for String.ycp
