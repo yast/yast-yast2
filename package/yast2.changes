@@ -3,6 +3,7 @@ Fri May 25 10:59:56 CEST 2007 - jsrain@suse.cz
 
 - fixed spec file (removed duplicate .desktop files translations)
 - removed translations from .desktop-files (#271209)
+- 2.15.34
 
 -------------------------------------------------------------------
 Mon May 21 16:04:31 CEST 2007 - kmachalkova@suse.cz
