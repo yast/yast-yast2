@@ -14,5 +14,4 @@ OnlyShowIn=X-SuSE-YaST;
 Icon=yast-security
 
 Name=Security and Users
-Name[cs]=Bezpečnost a uživatelé
 X-KDE-SubstituteUID=true

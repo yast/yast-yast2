@@ -14,5 +14,4 @@ OnlyShowIn=X-SuSE-YaST;
 Icon=yast-hardware
 
 Name=Hardware
-Name[cs]=Hardware
 X-KDE-SubstituteUID=true

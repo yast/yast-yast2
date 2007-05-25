@@ -14,5 +14,4 @@ OnlyShowIn=X-SuSE-YaST;
 Icon=yast-network_services
 
 Name=Network Services
-Name[cs]=Síťové služby
 X-KDE-SubstituteUID=true
