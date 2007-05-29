@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue May 29 15:53:15 CEST 2007 - lslezak@suse.cz
+
+- updated metadata in the sysconfig file (#278612)
+
+-------------------------------------------------------------------
 Fri May 25 10:59:56 CEST 2007 - jsrain@suse.cz
 
 - fixed spec file (removed duplicate .desktop files translations)
