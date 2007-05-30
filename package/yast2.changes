@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed May 30 13:48:27 CEST 2007 - sh@suse.de
+
+- Fixed bug #278790: save_y2logs complains about missing RPM DB
+	
+-------------------------------------------------------------------
 Tue May 29 15:53:15 CEST 2007 - lslezak@suse.cz
 
 - updated metadata in the sysconfig file (#278612)
