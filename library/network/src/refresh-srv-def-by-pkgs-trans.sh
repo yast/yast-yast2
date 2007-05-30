@@ -103,7 +103,9 @@ for FILENAME in `ls -1 | grep -v $Y2_NEWYCPFILE`; do
     # ... ## Name:
     TAG_NAME=`grep -i ".*##[\t ]*Name:[\t ]*" $FILENAME | sed 's/^.*##[\t ]*[Nn][Aa][Mm][Ee]:[\t ]//' | sed 's/"/\\"/'`
     if [ "$TAG_NAME" == "" ]; then
-	echo "Something is wrong with file "$FILENAME", no 'Name:' tag found!"
+	echo "Something is wrong with file '"$FILENAME"', no 'Name:' tag found!"
+    elif [ "$TAG_NAME" == "template service" ]; then
+	echo "'Name:' not adjusted correctly in the '"$FILENAME"' file!"
     else
 	echo "  // TRANSLATORS: Name of Service (rpm: "$FILENAME"), can be used as check box, item in multiple selection box..." >> $Y2_NEWYCPFILE
 	echo "  tmpstring = _(\""$TAG_NAME"\");" >> $Y2_NEWYCPFILE
@@ -113,7 +115,9 @@ for FILENAME in `ls -1 | grep -v $Y2_NEWYCPFILE`; do
     # ... ## Description:
     TAG_DESCRIPTION=`grep -i ".*##[\t ]*Description:[\t ]*" $FILENAME | sed 's/^.*##[\t ]*[Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn]:[\t ]//' | sed 's/"/\\"/'`
     if [ "$TAG_DESCRIPTION" == "" ]; then
-	echo "Something is wrong with file "$FILENAME", no 'Description:' tag found!"
+	echo "Something is wrong with file '"$FILENAME"', no 'Description:' tag found!"
+    elif [ "$TAG_DESCRIPTION" == "opens ports for foo in order to allow bar" ]; then
+	echo "'Description:' not adjusted correctly in the '"$FILENAME"' file!"
     else
 	echo "  // TRANSLATORS: Description of a Service (rpm: "$FILENAME"), used as a common label or an item in table" >> $Y2_NEWYCPFILE
 	echo "  tmpstring = _(\""$TAG_DESCRIPTION"\");" >> $Y2_NEWYCPFILE

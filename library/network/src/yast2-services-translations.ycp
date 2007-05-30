@@ -61,18 +61,6 @@
   // TRANSLATORS: Description of a Service (rpm: dnsmasq-dns), used as a common label or an item in table
   tmpstring = _("Open ports for the dnsmasq DNS/DHCP server");
 
-  // TRANSLATORS: Name of Service (rpm: iceccd), can be used as check box, item in multiple selection box...
-  tmpstring = _("template service");
-
-  // TRANSLATORS: Description of a Service (rpm: iceccd), used as a common label or an item in table
-  tmpstring = _("opens ports for foo in order to allow bar");
-
-  // TRANSLATORS: Name of Service (rpm: icecream-scheduler), can be used as check box, item in multiple selection box...
-  tmpstring = _("template service");
-
-  // TRANSLATORS: Description of a Service (rpm: icecream-scheduler), used as a common label or an item in table
-  tmpstring = _("opens ports for foo in order to allow bar");
-
   // TRANSLATORS: Name of Service (rpm: iscsitarget), can be used as check box, item in multiple selection box...
   tmpstring = _("iSCSI Target Daemon");
 
