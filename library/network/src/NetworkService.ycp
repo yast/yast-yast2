@@ -128,5 +128,19 @@ Really continue?"));
     }
 }
 
+
+global boolean isNetworkRunning(){
+ map output = (map)SCR::Execute(.target.bash_output,
+                "([ $(ip addr|grep -v '127.0.0.1'|grep -c inet) != '0' ] && echo 'network') || echo 'no net'");
+ if (issubstring(output["stdout"]:"", "network")) {
+  y2milestone ("Network is running ...");
+  return true;
+ } else {
+	 y2milestone("Network is not running ...");
+	 return false;
+        }
+
+}
+
 /* EOF */
 }
