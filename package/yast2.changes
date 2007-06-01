@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jun  1 09:51:24 CEST 2007 - mzugec@suse.cz
+
+- add function NetworkService::isNetworkRunning()
+- NetworkStorage moved here from yast2-network
+- 2.15.35 
+
+-------------------------------------------------------------------
 Wed May 30 13:48:27 CEST 2007 - sh@suse.de
 
 - Fixed bug #278790: save_y2logs complains about missing RPM DB

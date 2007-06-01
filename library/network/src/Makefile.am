@@ -11,6 +11,7 @@ module_DATA =				\
 	NetworkDevices.ycp		\
 	NetworkPopup.ycp		\
 	NetworkService.ycp		\
+	NetworkStorage.ycp		\
 	SuSEFirewall.ycp		\
 	SuSEFirewallServices.ycp	\
 	SuSEFirewallExpertRules.ycp	\
