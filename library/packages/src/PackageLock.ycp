@@ -14,9 +14,11 @@
 module "PackageLock";
 textdomain "base";
 
-import "Report";
+import "Popup";
+import "Label";
 
 boolean have_lock = nil;
+
 /**
  * Tries to acquire the packager (zypp) lock.
  * Reports an error if another process has the lock already.
@@ -24,18 +26,40 @@ boolean have_lock = nil;
  * @return true if we can continue
  */
 global boolean Check () {
-    if (have_lock == nil)
-    {
+    // we already have a lock
+    if (have_lock != nil) return have_lock;
+
+    // just to allow 'Retry', see more in bug #280383
+    boolean try_again = true;
+
+    // while not having a lock and user wants to try again
+    while (try_again) {
 	// Invoke a cheap call that accesses the zypp lock
 	have_lock = Pkg::Connect () == true; // nil guard
-	if (!have_lock)
-	{
-	    Report::Error (_("Another process is accessing the package database.
+	if (have_lock == true) break;
+
+	if (have_lock != true) {
+	    try_again = (Popup::AnyQuestion (
+		// TRANSLATORS: a popup headline
+		_("Accessing the Package Management Failed"),
+		// TRANSLATORS: an error message with question
+		_("Another process is accessing the package database.
 Package management cannot be used now.
-"));
-	    // ContinueCancel? What about CLI?
+
+Would you like to continue without having access
+to the package management or retry to access it?
+"),
+		Label::ContinueButton(),
+		Label::RetryButton(),
+		// 'Continue' instead of 'Retry'
+		`focus_yes
+	    ) == false);
 	}
+
+	if (try_again) y2milestone ("User decided to retry...");
     }
+
+    y2milestone ("PackageLock::Check result: %1", have_lock);
     return have_lock;
 }
 

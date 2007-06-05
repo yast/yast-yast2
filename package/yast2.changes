@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun  5 21:22:50 CEST 2007 - locilka@suse.cz
+
+- Extended PackageLock::Check function to allow to 'Retry' getting
+  the package management lock (#280383).
+
+-------------------------------------------------------------------
 Fri Jun  1 09:51:24 CEST 2007 - mzugec@suse.cz
 
 - add function NetworkService::isNetworkRunning()
