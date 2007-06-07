@@ -322,6 +322,32 @@ global boolean InstallKernel (list<string> kernel_modules) {
 	return true;		// nothing to do
     }
 
+    // check whether tag "kernel" is provided
+    // do not initialize the package manager if it's not necessary
+    string rpm_command = "/bin/rpm -q --whatprovides kernel";
+    y2milestone("Starting RPM query: %1", rpm_command);
+    map output = (map)SCR::Execute(.target.bash_output, rpm_command);
+    y2debug("result of the query: %1", output);
+
+    if (output["exit"]:-1 == 0)
+    {
+	list<string> packages = splitstring(output["stdout"]:"", "\n");
+	packages = filter(string pkg, packages, {return pkg != "";});
+	y2milestone("Packages providing tag 'kernel': %1", packages);
+
+	if (size(packages) > 0)
+	{
+	    return true;
+	}
+
+	y2milestone("Huh? Kernel is not installed??");
+    }
+    else
+    {
+	y2warning("RPM query failed, quering the package manager...");
+    }
+
+
     EnsureTargetInit ();
 
     list <list> provides = Pkg::PkgQueryProvides ("kernel");
