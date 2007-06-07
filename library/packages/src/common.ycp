@@ -106,10 +106,11 @@ global define boolean InstalledAny(list<string> packages) {
     return which != nil;
 }
 
-boolean AskPackages(list<string> packs) {
+boolean AskPackages(list<string> packs, boolean install) {
     string pkgs = mergestring(packs, ", ");
     // the message is followed by list of required packages
-    string text = _("These packages need to be installed:") + " " + pkgs;
+    string text = (install ? _("These packages need to be installed:") : _("These packages need to be removed:"))
+	+ " " + pkgs;
     CommandLine::Print(text);
 
     return CommandLine::YesNo();
@@ -142,7 +143,7 @@ boolean PackageDialog(list<string> packages, boolean install, string message) {
     if (message != nil)
 	text = sformat (message, mergestring (packs, ", "));
 
-    boolean doit = (Mode::commandline()) ? (CommandLine::Interactive() ? AskPackages(packs) : true ) : Popup::AnyQuestionRichText(
+    boolean doit = (Mode::commandline()) ? (CommandLine::Interactive() ? AskPackages(packs, install) : true ) : Popup::AnyQuestionRichText(
 	"", text, 40, 10,
 	Label::ContinueButton (), Label::CancelButton (),
 	`focus_yes
