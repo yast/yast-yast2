@@ -123,9 +123,27 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
     if (size (licenses) > 0)
     {
 	list<string> rt_licenses_l = maplist ( string p, string l, licenses, {
-	    return sformat ("<p><b>%1</b></p>\n%2", p, l);
+	    return Mode::commandline()
+		? sformat ("%1\n%2", p, l)
+		: sformat ("<p><b>%1</b></p>\n%2", p, l);
 	});
-	if (! Popup::AnyQuestionRichText (
+
+	boolean accepted = false;
+
+	if (Mode::commandline())
+	{
+	    // print the licenses
+	    CommandLine::Print(mergestring (rt_licenses_l, "\n"));
+	    // print the question
+	    CommandLine::Print(_("Do you accept this license agreement?",
+		"Do you accept these license agreements?",
+		size (licenses)));
+
+	    accepted = !CommandLine::YesNo();
+	}
+	else
+	{
+	    accepted = !Popup::AnyQuestionRichText (
 		// popup heading, with rich text widget and Yes/No buttons
 		_("Do you accept this license agreement?",
 		  "Do you accept these license agreements?",
@@ -133,19 +151,26 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
 		mergestring (rt_licenses_l, "\n"),
 		70, 20,
 		Label::YesButton (), Label::NoButton (),
-		`focus_none))
+		`focus_none);
+	}
+
+	y2milestone("Licenses accepted: %1", accepted);
+
+	if (!accepted)
 	{
 	    y2milestone("License not accepted: %1", toinstall);
 	    last_op_canceled = true;
 	    return false;
 	}
+
+	// mark licenses as confirmed
 	foreach (string p, string l, licenses, {
 	    Pkg::PkgMarkLicenseConfirmed (p);
 	});
 	last_op_canceled = false;
     }
 
-    // check if the database os consistent before packages were added
+    // check if the database is consistent before packages are added
     boolean packages_consistent = Pkg::PkgSolveCheckTargetOnly();
 
     foreach (string p, toinstall, {
