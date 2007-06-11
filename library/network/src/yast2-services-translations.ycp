@@ -97,6 +97,12 @@
   // TRANSLATORS: Description of a Service (rpm: openldap), used as a common label or an item in table
   tmpstring = _("Opens ports for the OpenLDAP Server (slapd).");
 
+  // TRANSLATORS: Name of Service (rpm: postgresql), can be used as check box, item in multiple selection box...
+  tmpstring = _("PostgreSQL Server");
+
+  // TRANSLATORS: Description of a Service (rpm: postgresql), used as a common label or an item in table
+  tmpstring = _("Opens TCP port 5432 to allow remote connections to the PostgreSQL server.");
+
   // TRANSLATORS: Name of Service (rpm: pure-ftpd), can be used as check box, item in multiple selection box...
   tmpstring = _("pureftpd");
 
