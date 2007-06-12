@@ -21,7 +21,7 @@ Return	true
 Dump	Hostname::CheckDomain
 Return	false
 Return	false
-Return	false
+Return	true
 Return	false
 Return	false
 Return	false

@@ -73,6 +73,10 @@ global define boolean Check(string host) ``{
  */
 global define boolean CheckDomain(string domain) ``{
     if (domain == nil || domain == "") return false;
+    // if "domain" contains "." character as last character remove it before validation (but it's valid)
+    if (size(domain)>1){
+     if (substring(domain, size(domain)-1, 1)==".") domain = substring(domain, 0, size(domain)-1);
+    }
     list <string> l = splitstring(domain, ".");
     if (contains (maplist(string h, l, ``(Check(h))), false)) return false;
     return !regexpmatch (domain, "\\.[[:digit:]][^.]*$");
