@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jun 12 18:05:51 CEST 2007 - mzugec@suse.cz
+
+- fixed CheckDomain function - allow "." character at the end 
+of domain name (suse.cz.)
+- 2.15.36 
+
+-------------------------------------------------------------------
 Thu Jun  7 10:14:06 CEST 2007 - lslezak@suse.cz
 
 - speed up PackageSystem::InstallKernel() - call rpm directly
