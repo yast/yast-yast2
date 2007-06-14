@@ -21,3 +21,13 @@ WANTED_SHELL="auto"
 #       presence and adapt accordingly, falling back to
 #       qt rendering if gtk is not present
 WANTED_GUI="auto"
+
+## Type: string(linux,xterm,rxvt,mono,braille)
+## Default: ""
+# Color theme for YaST ncurses UI
+# xterm: blue-white-red
+# linux: blue-white-yellow
+# rxvt: black-yellow-red
+# mono: white-black
+# braille: for visually impaired
+Y2NCURSES_COLOR_THEME=""

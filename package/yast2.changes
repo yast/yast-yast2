@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jun 14 15:57:58 CEST 2007 - kmachalkova@suse.cz
+
+- Enable setting color theme of ncurses UI (Y2NCURSES_COLOR_THEME
+  variable added to sysconfig, exported by /sbin/yast2 if defined)
+  (FaTE #301893)) 
+
+-------------------------------------------------------------------
 Tue Jun 12 18:05:51 CEST 2007 - mzugec@suse.cz
 
 - fixed CheckDomain function - allow "." character at the end 

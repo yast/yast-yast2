@@ -283,6 +283,11 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 	# this fixes launching of interactive subprocesses, #150799
 	NCTHREADS=--nothreads
 
+	# set color theme, if defined
+	if [ ! -z "$Y2NCURSES_COLOR_THEME" ]; then
+	    export Y2NCURSES_COLOR_THEME="$Y2NCURSES_COLOR_THEME" 
+	fi
+
 	# use menu.ycp
 	# TODO: this does not need to be a special case. refactor after release
 	if [ $module == "menu" ] ; then
