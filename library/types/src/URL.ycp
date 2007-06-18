@@ -186,7 +186,7 @@ global define map Parse(string url) ``{
 	{
 	    pth = "/" + substring (pth, 4);
 	}
-	else
+	else if (pth != "")
 	{
 	    pth = substring (pth, 1);
 	}

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jun 18 17:13:55 CEST 2007 - jsrain@suse.cz
+
+- check patch lenght before calling substring (#283146)
+
+-------------------------------------------------------------------
 Thu Jun 14 15:57:58 CEST 2007 - kmachalkova@suse.cz
 
 - Enable setting color theme of ncurses UI (Y2NCURSES_COLOR_THEME
