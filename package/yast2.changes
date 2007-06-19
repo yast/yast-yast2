@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jun 19 08:28:57 CEST 2007 - locilka@suse.cz
+
+- Allowing to go back in the installation workflow even if the
+  workflow has changed. The condition must be explicitly set in
+  the control file.
+
+-------------------------------------------------------------------
 Mon Jun 18 17:13:55 CEST 2007 - jsrain@suse.cz
 
 - check patch lenght before calling substring (#283146)
