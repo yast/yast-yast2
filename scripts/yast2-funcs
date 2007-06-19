@@ -81,12 +81,12 @@ function check_ncurses()
 #
 function set_lang_from_sysconfig()
 {
-    # if LANG is "POSIX", unset LANG
-    # SL  9.3 had default LANG set to ""
-    # SL 10.0 has default LANG set to "POSIX"
-    if [ "$LANG" == "POSIX" ] ; then
-	LANG=""
-    fi
+    # respect user's choice and never unset LANG
+    # /sbin/yast script takes care that .UTF-8 suffix
+    # will not be appended to POSIX and C locale (#285178)
+    #if [ "$LANG" == "POSIX" ] ; then
+    #	LANG=""
+    #fi
 
     # if LANG is not empty and /etc/sysconfig/language exists
     if [ -z "$LANG" -a -r /etc/sysconfig/language ] ; then
