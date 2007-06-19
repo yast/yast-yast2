@@ -865,10 +865,14 @@ global symbol RunFrom (integer from, boolean allow_back)
 	boolean retranslate = step["retranslate"]:false;
         string step_id = step["id"]:"";
 
-        if (current_step <= minimum_step)
-        {
-            step["enable_back"] = "no";
-        }
+	// Don't mark back button disabled when back button status
+	// is forced in the control file
+	if (step["enable_back"]:nil == nil) {
+	    if (current_step <= minimum_step) {
+        	step["enable_back"] = "no";
+		y2milestone ("Disabling back: %1 %2 %3", current_step, minimum_step, step["enable_back"]:nil);
+	    }
+	}
 
 	boolean   do_continue           = false;
 
