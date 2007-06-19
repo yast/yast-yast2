@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Jun 19 13:02:27 CEST 2007 - kmachalkova@suse.cz
+
+- Respect user's choice and never unset LANG (yast2-funcs)
+- Do not append .UTF-8 suffix to POSIX and C locale (/sbin/yast2)
+  (#285178) 
+- 2.15.37
+
+-------------------------------------------------------------------
 Tue Jun 19 08:28:57 CEST 2007 - locilka@suse.cz
 
 - Allowing to go back in the installation workflow even if the
