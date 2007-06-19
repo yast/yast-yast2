@@ -273,7 +273,7 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 		    # so strip any possible suffix from locale and append .UTF-8
 		    elif [ "$UTF8TESTED" == "1" ] && [ $UTF8STATUS -eq 2 ]; then
 			#do not append .UTF-8 suffix to POSIX and C locale (#285178)
-			if [ "$LANG" != "POSIX" ] || [ $LANG != "C" ]; then
+			if [ "$LANG" != "POSIX" ] && [ $LANG != "C" ]; then
 			    /usr/bin/test -n "$LANG" && LANG=${LANG%%[.@]*}.UTF-8
 			    /usr/bin/test -n "$LC_CTYPE" && LC_CTYPE=${LC_CTYPE%%[.@]*}.UTF-8
 			fi
