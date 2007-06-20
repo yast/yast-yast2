@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 20 11:56:36 CEST 2007 - locilka@suse.cz
+
+- Extending Installation module to provide persistent information
+  in Instalaltion Mode dialog.
+
+-------------------------------------------------------------------
 Tue Jun 19 13:02:27 CEST 2007 - kmachalkova@suse.cz
 
 - Respect user's choice and never unset LANG (yast2-funcs)

@@ -90,6 +90,10 @@
 
     // <-- configuration from installation.ycp
 
+    // Initial settings for variables used in Installation Mode dialog
+    // These settings needs to be persistent during the installation
+    global boolean add_on_selected = false;
+    global boolean productsources_selected = false;
 
     //
     // variables to store data of the installation clients
