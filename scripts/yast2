@@ -244,8 +244,12 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 		;;
 		*)
 	            # get rid of encoding and/or modifier
-		    export LANG=${LANG%%[.@]*}.UTF-8
-		    export LC_CTYPE=${LANG%%[.@]*}.UTF-8
+		    # but not for POSIX and C locale 
+		    # (POSIX.UTF-8 doesn't make sense)
+		    if [ "$LANG" != "POSIX" ] && [ $LANG != "C" ]; then
+		        export LANG=${LANG%%[.@]*}.UTF-8
+		    fi
+		    export LC_CTYPE=${LC_CTYPE%%[.@]*}.UTF-8
 	        ;;
 	    esac
 	    if /bin/testutf8 ; [ $? -eq 1 ] ; then
@@ -275,8 +279,8 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 			#do not append .UTF-8 suffix to POSIX and C locale (#285178)
 			if [ "$LANG" != "POSIX" ] && [ $LANG != "C" ]; then
 			    /usr/bin/test -n "$LANG" && LANG=${LANG%%[.@]*}.UTF-8
-			    /usr/bin/test -n "$LC_CTYPE" && LC_CTYPE=${LC_CTYPE%%[.@]*}.UTF-8
 			fi
+			/usr/bin/test -n "$LC_CTYPE" && LC_CTYPE=${LC_CTYPE%%[.@]*}.UTF-8
 		    fi
 		    #default: do nothing, keep locale untouched
 		;;
