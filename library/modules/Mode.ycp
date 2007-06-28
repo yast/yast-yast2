@@ -113,6 +113,7 @@ global void SetMode (string new_mode) {
     if (! contains (
 	[ "installation", "update", "normal", "repair",
 	    "autoinstallation", "autoinst_config",
+	    "live_installation"
 	],
 	new_mode))
     {
@@ -178,7 +179,15 @@ global void SetUI (string new_ui) {
  * we're doing a fresh installation
  */
 global boolean installation () {
-    return mode () == "installation" || mode () == "autoinstallation";
+    return mode () == "installation" || mode () == "autoinstallation"
+	|| mode () == "live_installation";
+}
+
+/**
+ * we're doing a fresh installation from live CD/DVD
+ */
+global boolean live_installation () {
+    return mode () == "live_installation";
 }
 
 /**

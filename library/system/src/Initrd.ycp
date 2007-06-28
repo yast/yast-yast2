@@ -61,6 +61,10 @@
       */
     string splash = "";
     /**
+      * Additional parameters for mkinitrd
+      */
+    string additional_parameters = "";
+    /**
       * List of modules which should be not added/removed to/from initrd
       */
     list<string> modules_to_skip = nil;
@@ -395,8 +399,9 @@
 	string param = "";
 	if (splash != "" && splash != nil)
 	    param = sformat ("-s %1", splash);
-	if ( SCR::Execute (.target.bash, sformat ("/sbin/mkinitrd %1 >> \
-%2 2>&1", param, Directory::logdir + "/y2logmkinitrd")) != 0 )
+	if ( SCR::Execute (.target.bash, sformat ("/sbin/mkinitrd %1 %2 >> \
+%3 2>&1", param, additional_parameters,
+Directory::logdir + "/y2logmkinitrd")) != 0 )
 	{
 	    string log = (string) SCR::Read (.target.string, Directory::logdir +
 					     "/y2logmkinitrd");
@@ -438,5 +443,21 @@ global list<map> VgaModes () {
 	    });
 	}
     }
+
+/**
+ * Get additional parameters for mkinitrd
+ * @return string additional mkinitrd parameters
+ */
+global string AdditionalParameters () {
+    return additional_parameters;
+}
+
+/**
+ * Set additional parameters for mkinitrd
+ * @param params string additional mkinitrd parameters
+ */
+global void SetAdditionalParameters (string params) {
+    additional_parameters = params;
+}
 
 } // end of module
