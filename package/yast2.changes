@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun 28 21:33:42 CEST 2007 - jsrain@suse.cz
+
+- added mode for live CD installation
+- several updates for live CD installation
+
+-------------------------------------------------------------------
 Wed Jun 20 11:56:36 CEST 2007 - locilka@suse.cz
 
 - Extending Installation module to provide persistent information

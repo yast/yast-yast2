@@ -72,6 +72,9 @@
     // Update instead on New Installation
     global string Installation::file_update_mode	= Directory::vardir + "/update_mode";
 
+    // Live installation instead on standard Installation
+    global string Installation::file_live_install_mode	= Directory::vardir + "/live_install_mode";
+
     // Second stage installation (Stage::cont())
     global string Installation::restart_data_file	= Directory::vardir + "/continue_installation";
 
