@@ -244,8 +244,17 @@ IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32
 
 	// Creating new record
 	string new_rule = params["network"]:"" + "," + params["protocol"]:"";
-	if (params["dport"]:"" != "") new_rule = new_rule + "," + params["dport"]:"";
-	if (params["sport"]:"" != "") new_rule = new_rule + "," + params["sport"]:"";
+
+	// either 'dport' or 'sport'
+	if (params["dport"]:"" != "" || params["sport"]:"" != "") {
+	    // 'dport' can be empty even if 'sport' is set
+	    new_rule = new_rule + "," + params["dport"]:"";
+
+	    if (params["sport"]:"" != "") {
+		new_rule = new_rule + "," + params["sport"]:"";
+	    }
+	}
+
 	if (new_rule == "0/0,all") {
 	    y2warning("Adding rule '%1' that allows everything from all networks!", new_rule);
 	}
