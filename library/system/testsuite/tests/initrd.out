@@ -25,7 +25,7 @@ Read	.sysconfig.kernel.INITRD_MODULES "reiserfs lvmmod"
 Execute	.target.bash "/usr/bin/touch /etc/sysconfig/bootloader" 0
 Write	.sysconfig.kernel.INITRD_MODULES "reiserfs ne2k" true
 Write	.sysconfig.kernel nil true
-Execute	.target.bash "/sbin/mkinitrd  >> /var/log/YaST2/y2logmkinitrd 2>&1" 0
+Execute	.target.bash "/sbin/mkinitrd   >> /var/log/YaST2/y2logmkinitrd 2>&1" 0
 Return	true
 Dump	Importing with filtered module
 Read	.target.size "/etc/sysconfig/kernel" 0
@@ -37,7 +37,7 @@ Read	.sysconfig.kernel.INITRD_MODULES "reiserfs lvmmod"
 Execute	.target.bash "/usr/bin/touch /etc/sysconfig/bootloader" 0
 Write	.sysconfig.kernel.INITRD_MODULES "ne2k xfs_dmapi xfs_support lvmmod" true
 Write	.sysconfig.kernel nil true
-Execute	.target.bash "/sbin/mkinitrd  >> /var/log/YaST2/y2logmkinitrd 2>&1" 0
+Execute	.target.bash "/sbin/mkinitrd   >> /var/log/YaST2/y2logmkinitrd 2>&1" 0
 Return	true
 Dump	Setting Mode::Update
 Dump	Importing with filtered module
@@ -51,7 +51,7 @@ Read	.sysconfig.kernel.INITRD_MODULES "reiserfs lvmmod"
 Execute	.target.bash "/usr/bin/touch /etc/sysconfig/bootloader" 0
 Write	.sysconfig.kernel.INITRD_MODULES "ne2k lvmmod" true
 Write	.sysconfig.kernel nil true
-Execute	.target.bash "/sbin/mkinitrd  >> /var/log/YaST2/y2logmkinitrd 2>&1" 0
+Execute	.target.bash "/sbin/mkinitrd   >> /var/log/YaST2/y2logmkinitrd 2>&1" 0
 Return	true
 Dump	Resetting for installation test
 Return	nil
