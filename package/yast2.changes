@@ -3,6 +3,7 @@ Mon Jul  2 15:16:20 CEST 2007 - locilka@suse.cz
 
 - Fixed adding of firewall custom rules in case of empty
   destination port but source port set (#284998).
+- 2.15.38
 
 -------------------------------------------------------------------
 Thu Jun 28 21:33:42 CEST 2007 - jsrain@suse.cz
