@@ -313,7 +313,7 @@ global define integer RunInitScriptWithTimeOut (string name, string param) {
     boolean cont_loop = true;
 
     // while continuing is needed and while it is possible
-    while (cont_loop && ((boolean) SCR::Read(.background.output_open))) {
+    while (cont_loop && ((boolean) SCR::Read(.background.output_open) || (boolean) SCR::Read(.background.output_open_err))) {
 	if (time_spent >= script_time_out) {
 	    y2error("Command '%1' timed-out after %2 mces", command, time_spent);
 	    cont_loop = false;
