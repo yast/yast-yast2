@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 12 15:01:28 CEST 2007 - jsrain@suse.cz
+
+- disabled rpmlint checks for .desktop files in order to build
+- 2.15.39
+
+-------------------------------------------------------------------
 Wed Jul  4 11:47:40 CEST 2007 - locilka@suse.cz
 
 - Fixed initrd testsuite
