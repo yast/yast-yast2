@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jul 12 14:37:44 CEST 2007 - jsrain@suse.cz
+
+- disabled rpmlint checks for .desktop files in order to build
+
+-------------------------------------------------------------------
 Wed Jun 20 11:56:36 CEST 2007 - locilka@suse.cz
 
 - Extending Installation module to provide persistent information
