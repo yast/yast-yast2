@@ -101,6 +101,10 @@ global define void InitPackageCallbacks() {
     Pkg::CallbackSourceReportInit("PackageCallbacks::SourceReportInit");
     Pkg::CallbackSourceReportDestroy("PackageCallbacks::SourceReportDestroy");
 
+    Pkg::CallbackProgressReportStart("PackageCallbacks::ProgressStart");
+    Pkg::CallbackProgressReportProgress("PackageCallbacks::ProgressProgress");
+    Pkg::CallbackProgressReportEnd("PackageCallbacks::ProgressEnd");
+
     // authentication callback
     Pkg::CallbackAuthentication("PackageCallbacks::Authentication");
 

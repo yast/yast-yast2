@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul 18 16:56:45 CEST 2007 - lslezak@suse.cz
+
+- PackageCallbacksInit.ycp - register ProgressReport callbacks
+- 2.15.40
+
+-------------------------------------------------------------------
 Thu Jul 12 15:01:28 CEST 2007 - jsrain@suse.cz
 
 - disabled rpmlint checks for .desktop files in order to build
