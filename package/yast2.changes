@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun Jul 22 10:02:08 CEST 2007 - mzugec@suse.de
+
+- don't use getcfg in IsConnected function
+- 2.15.41 
+
+-------------------------------------------------------------------
 Wed Jul 18 16:56:45 CEST 2007 - lslezak@suse.cz
 
 - PackageCallbacksInit.ycp - register ProgressReport callbacks
