@@ -292,6 +292,7 @@ global boolean IsHotplug (string type) {
  * return interface name
  * @example MatchInterface("eth-id-00:01:DE:AD:BE:EF") -> "eth0"
  */
+/*
 global string MatchInterface(string dev) {
     string cmd = "getcfg-interface " + dev;
     map dn =(map) SCR::Execute(.target.bash_output, cmd);
@@ -299,7 +300,7 @@ global string MatchInterface(string dev) {
 
     return devname;
 }
-
+*/
 /**
  * Test whether device is connected (Link:up)
  * The info is taken from sysfs
@@ -308,8 +309,8 @@ global string MatchInterface(string dev) {
  */
 global boolean IsConnected(string dev) {
     if (!Mode::testsuite()) {
-        string iface = MatchInterface(dev);
-        string cmd = "cat /sys/class/net/" + iface + "/carrier";
+//        string iface = MatchInterface(dev);
+        string cmd = "cat /sys/class/net/" + dev + "/carrier";
 
         map ret = (map) SCR::Execute(.target.bash_output, cmd);
 	y2milestone("Sysfs returned %1", ret); 
