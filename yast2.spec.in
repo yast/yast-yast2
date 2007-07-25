@@ -38,14 +38,16 @@ Summary:	Main YaST2 package
 %description
 -
 
+%package devel-doc
 @HEADER-DEVEL@
 Provides:	yast2-lib-sequencer-devel
 Obsoletes:	yast2-lib-sequencer-devel
+Obsoletes:	yast2-devel
 Requires:	yast2-core-devel
 
 Summary:	Documentation for Wizard and Sequencer
 
-%description devel
+%description devel-doc
 -
 
 @PREP@
@@ -131,7 +133,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 @yncludedir@/hwinfo/*.ycp
 
 # documentation
-%files devel
+%files devel-doc
 %defattr(-,root,root)
 
 %doc @docdir@/autodocs

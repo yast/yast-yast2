@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul 25 14:46:56 CEST 2007 - locilka@suse.cz
+
+- Renamed yast2-devel to yast2-devel-doc (FATE #302461).
+- 2.15.42
+
+-------------------------------------------------------------------
 Sun Jul 22 10:02:08 CEST 2007 - mzugec@suse.de
 
 - don't use getcfg in IsConnected function
