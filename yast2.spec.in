@@ -39,7 +39,8 @@ Summary:	Main YaST2 package
 -
 
 %package devel-doc
-@HEADER-DEVEL@
+Requires:       yast2 = %version
+Group:          Development/Libraries
 Provides:	yast2-lib-sequencer-devel
 Obsoletes:	yast2-lib-sequencer-devel
 Obsoletes:	yast2-devel
