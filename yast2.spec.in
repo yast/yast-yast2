@@ -44,6 +44,7 @@ Group:          Development/Libraries
 Provides:	yast2-lib-sequencer-devel
 Obsoletes:	yast2-lib-sequencer-devel
 Obsoletes:	yast2-devel
+Provides:	yast2-devel
 Requires:	yast2-core-devel
 
 Summary:	Documentation for Wizard and Sequencer
