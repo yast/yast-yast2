@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jul 30 13:08:04 CEST 2007 - jsrain@suse.cz
+
+- install bigsmp kernel regardless the memory size (Fate #159006)
+
+-------------------------------------------------------------------
 Thu Jul 26 10:07:51 CEST 2007 - jsrain@suse.cz
 
 - added Provides: yast2-devel to yast2-devel-doc
