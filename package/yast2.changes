@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Aug  2 14:54:01 CEST 2007 - lslezak@suse.cz
+
+- register download callbacks (#292629)
+- 2.15.45
+
+-------------------------------------------------------------------
 Mon Jul 30 13:08:04 CEST 2007 - jsrain@suse.cz
 
 - install bigsmp kernel regardless the memory size (Fate #159006)
