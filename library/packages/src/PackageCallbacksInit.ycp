@@ -50,6 +50,24 @@ global void ResetScanDBCallbacks ()
     Pkg::CallbackDoneScanDb ("");
 }
 
+global void SetDownloadCallbacks ()
+{
+    Pkg::CallbackInitDownload ("PackageCallbacks::InitDownload");
+    Pkg::CallbackStartDownload ("PackageCallbacks::StartDownload");
+    Pkg::CallbackProgressDownload ("PackageCallbacks::ProgressDownload");
+    Pkg::CallbackDoneDownload ("PackageCallbacks::DoneDownload");
+    Pkg::CallbackDestDownload ("PackageCallbacks::DestDownload");
+}
+
+global void ResetDownloadCallbacks ()
+{
+    Pkg::CallbackInitDownload ("");
+    Pkg::CallbackStartDownload ("");
+    Pkg::CallbackProgressDownload ("");
+    Pkg::CallbackDoneDownload ("");
+    Pkg::CallbackDestDownload ("");
+}
+
 
 /**
  * Register package manager callbacks
@@ -127,6 +145,8 @@ global define void InitPackageCallbacks() {
     SetScriptCallbacks();
 
     SetScanDBCallbacks();
+
+    SetDownloadCallbacks();
 }
 
 /* EOF */
