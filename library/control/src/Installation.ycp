@@ -96,7 +96,9 @@
     // Initial settings for variables used in Installation Mode dialog
     // These settings needs to be persistent during the installation
     global boolean add_on_selected = false;
-    global boolean productsources_selected = false;
+    // Preselected by default
+    // bugzilla #299207
+    global boolean productsources_selected = true;
 
     //
     // variables to store data of the installation clients

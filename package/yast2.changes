@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Aug 10 13:56:42 CEST 2007 - locilka@suse.cz
+
+- Preselect "Add Online Repositories Before Installation" check-box
+  in the "Installation Mode" dialog (#299207).
+- 2.15.47
+
+-------------------------------------------------------------------
 Fri Aug 10 12:28:27 CEST 2007 - jsrain@suse.cz
 
 - conflict older versions of packages which files were moved here
