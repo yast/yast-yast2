@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Aug 10 11:10:34 CEST 2007 - locilka@suse.cz
+
+- Updated firewall-related texts for services defined by packages.
+
+-------------------------------------------------------------------
 Thu Aug  2 14:54:01 CEST 2007 - lslezak@suse.cz
 
 - register download callbacks (#292629)
