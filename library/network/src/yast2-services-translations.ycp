@@ -85,6 +85,12 @@
   // TRANSLATORS: Description of a Service (rpm: kdc), used as a common label or an item in table
   tmpstring = _("Open ports for the Key Distribution Center");
 
+  // TRANSLATORS: Name of Service (rpm: lighttpd), can be used as check box, item in multiple selection box...
+  tmpstring = _("lighttpd");
+
+  // TRANSLATORS: Description of a Service (rpm: lighttpd), used as a common label or an item in table
+  tmpstring = _("Open ports for lighttpd including the HTTPS port.");
+
   // TRANSLATORS: Name of Service (rpm: mysql), can be used as check box, item in multiple selection box...
   tmpstring = _("MySQL server");
 
@@ -116,7 +122,7 @@
   tmpstring = _("Secure Shell Server");
 
   // TRANSLATORS: Description of a Service (rpm: sshd), used as a common label or an item in table
-  tmpstring = _("Open ports for for Secure Shell Server");
+  tmpstring = _("Open ports for Secure Shell Server");
 
   // TRANSLATORS: Name of Service (rpm: svnserve), can be used as check box, item in multiple selection box...
   tmpstring = _("svnserve");
@@ -129,6 +135,24 @@
 
   // TRANSLATORS: Description of a Service (rpm: talkd), used as a common label or an item in table
   tmpstring = _("Open ports for Talk Server");
+
+  // TRANSLATORS: Name of Service (rpm: tetrinet-server), can be used as check box, item in multiple selection box...
+  tmpstring = _("Tetrinet Server");
+
+  // TRANSLATORS: Description of a Service (rpm: tetrinet-server), used as a common label or an item in table
+  tmpstring = _("Opens ports in firewall to make possible to connect clients to your server. ");
+
+  // TRANSLATORS: Name of Service (rpm: vnc-httpd), can be used as check box, item in multiple selection box...
+  tmpstring = _("VNC mini-HTTP server");
+
+  // TRANSLATORS: Description of a Service (rpm: vnc-httpd), used as a common label or an item in table
+  tmpstring = _("Opens the VNC HTTP ports so that browsers can connect.");
+
+  // TRANSLATORS: Name of Service (rpm: vnc-server), can be used as check box, item in multiple selection box...
+  tmpstring = _("VNC");
+
+  // TRANSLATORS: Description of a Service (rpm: vnc-server), used as a common label or an item in table
+  tmpstring = _("Opens VNC server ports so that viewers can connect.");
 
   // TRANSLATORS: Name of Service (rpm: vsftpd), can be used as check box, item in multiple selection box...
   tmpstring = _("vsftpd Server");
