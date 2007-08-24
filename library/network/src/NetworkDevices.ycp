@@ -83,7 +83,7 @@ boolean initialized = false;
  * Predefined network card regular expressions
  */
 global map<string,string> CardRegex = $[
-    "netcard"	: "arc|bnep|ci|ctc|dummy|bond|escon|eth|fddi|ficon|hsi|qeth|lcs|iucv|myri|tr|usb|wlan|xp",
+    "netcard"	: "arc|ath|bnep|ci|ctc|dummy|bond|escon|eth|fddi|ficon|hsi|qeth|lcs|iucv|myri|tr|usb|wlan|xp",
     "modem"	: "ppp|modem",
     "isdn"	: "isdn|ippp",
     "dsl"	: "dsl",
@@ -115,7 +115,7 @@ define string HotplugRegex(list<string> devs) {
  */
 global map<string,string> DeviceRegex = $[
     /* device types */
-    "netcard"	: CardRegex["netcard"]:"" + HotplugRegex(["eth", "tr", "wlan"]) + "|usb-usb|usb-usb-",
+    "netcard"	: CardRegex["netcard"]:"" + HotplugRegex(["ath", "eth", "tr", "wlan"]) + "|usb-usb|usb-usb-",
     "modem"	: CardRegex["modem"]:"",
     "isdn"	: CardRegex["isdn"]:"" + HotplugRegex(["isdn", "ippp"]),
     "dsl"	: CardRegex["dsl"]:"",
