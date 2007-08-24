@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Aug 24 13:21:57 CEST 2007 - mzugec@suse.cz
+
+- add "ath" into "netcard" macro in NetworkDevices (#288450)
+- 2.15.48 
+
+-------------------------------------------------------------------
 Fri Aug 10 13:56:42 CEST 2007 - locilka@suse.cz
 
 - Preselect "Add Online Repositories Before Installation" check-box
