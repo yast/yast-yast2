@@ -22,7 +22,7 @@ Conflicts:	yast2-security <= 2.13.2
 # moved ag_netd, cfg_netd.scr, cfg_xinetd.scr
 Conflicts:	yast2-inetd <= 2.13.4
 Conflicts:	yast2-tune < 2.15.6
-Conflicts:	yast2-mail-aliases
+Obsoletes:	yast2-mail-aliases <= 2.14.0
 Conflicts:	yast2-storage < 2.15.20
 Conflicts:	yast2-network < 2.15.58
 Conflicts:	yast2-installation < 2.15.41
