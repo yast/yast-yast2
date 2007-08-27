@@ -8,7 +8,7 @@
 
 usage()
 {
-    echo "Usage: $0 <tgz-file-name>"
+    echo "Usage: $0 <tgz-file-name>|<bzip2-file-name>"
     echo ""
     echo "Copies the YaST2 logs to a compressed tar archive."
     exit 1
