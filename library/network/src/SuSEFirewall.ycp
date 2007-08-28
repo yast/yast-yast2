@@ -1472,15 +1472,37 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
 	
 	// All dial-up interfaces
 	list <string> dialup_interfaces = NetworkDevices::List("dialup");
-	dialup_interfaces = filter(string interface, dialup_interfaces, ``{
-	    return interface != "" && !issubstring(interface, "lo") && !issubstring(interface, "sit");
+	if (dialup_interfaces == nil) dialup_interfaces = [];
+
+	// bugzilla #303858 - wrong values from NetworkDevices
+	dialup_interfaces = filter (string one_iface, dialup_interfaces, {
+	    if (one_iface == nil || one_iface == "") {
+		y2error ("Wrong interface definition '%1'", one_iface);
+		return false;
+	    }
+	    return true;
+	});
+
+	dialup_interfaces = filter (string interface, dialup_interfaces, ``{
+	    return interface != "" && !issubstring (interface, "lo") && !issubstring (interface, "sit");
 	});
 
 	// All non-dial-up interfaces
 	list <string> non_dialup_interfaces = NetworkDevices::List("");
-	non_dialup_interfaces = filter(string interface, non_dialup_interfaces, ``{
-	    return interface != "" && !issubstring(interface, "lo") && !issubstring(interface, "sit")
-		&& !contains(dialup_interfaces, interface);
+	if (non_dialup_interfaces == nil) non_dialup_interfaces = [];
+
+	// bugzilla #303858 - wrong values from NetworkDevices
+	non_dialup_interfaces = filter (string one_iface, non_dialup_interfaces, {
+	    if (one_iface == nil || one_iface == "") {
+		y2error ("Wrong interface definition '%1'", one_iface);
+		return false;
+	    }
+	    return true;
+	});
+
+	non_dialup_interfaces = filter (string interface, non_dialup_interfaces, ``{
+	    return interface != "" && !issubstring (interface, "lo") && !issubstring (interface, "sit")
+		&& !contains (dialup_interfaces, interface);
 	});
 
 	foreach (string interface, dialup_interfaces, {
