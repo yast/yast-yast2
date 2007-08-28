@@ -484,7 +484,6 @@ global define boolean Read() {
 	return !regexpmatch(file, "[~]");
     });
     y2debug("devices=%1", devices);
-
     /* FIXME: devname
     devices = filter(string d, devices, {
 	return regexpmatch(d, "[a-z][a-z-]*[0-9]*");
@@ -1285,8 +1284,12 @@ global define list<string> List(string devregex) {
 	maplist(string n, Map::Keys(d), {ret[size(ret)] = device_name(type,n);});
 	*/
     }
-
-    y2debug("ret=%1", ret);
+    ret = filter(string row, ret, {
+		if (row!=nil) return true;
+		y2error("Filtering out : %1", row);
+		return false;
+	});
+    y2milestone("List( %1 ) = %2", devregex, ret);
     return ret;
 }
 

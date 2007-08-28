@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Aug 28 15:54:17 CEST 2007 - mzugec@suse.cz
+
+- add filter and log for output of NetworkDevices::List() (#303858) 
+
+-------------------------------------------------------------------
 Tue Aug 28 12:12:49 CEST 2007 - locilka@suse.cz
 
 - Fixed SuSEFirewall to better handle erroneous data from
