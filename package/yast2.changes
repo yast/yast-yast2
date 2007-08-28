@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug 28 12:12:49 CEST 2007 - locilka@suse.cz
+
+- Fixed SuSEFirewall to better handle erroneous data from
+  NetworkDevices module (#303858).
+
+-------------------------------------------------------------------
 Mon Aug 27 11:59:50 CEST 2007 - sh@suse.de
 
 - Fixed bug #304776: save_y2logs usage message
