@@ -90,8 +90,7 @@ boolean inform_about_kernel_change = false;
  * fallback map for kernel
  */
 map<string, string> fallbacks = $[
-	"kernel-bigsmp" : "kernel-smp",
-	"kernel-smp": "kernel-default"
+	"kernel-bigsmp" : "kernel-default"
 ];
 
 void ParseInstallationKernelCmdline ();
