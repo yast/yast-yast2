@@ -57,7 +57,6 @@ printhelp()
 	echo "	-h, --help	this message"
 	echo "	-l, --list	list all available modules"
 	echo "	-g, --geometry	default window size (qt only)"
-	echo "	-s, --style	widget style (qt only)"
 	echo "	--noborder      no window manager border for main window"
 	echo "	--fullscreen    use full screen"
 	echo
