@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Aug 30 11:25:02 CEST 2007 - jsrain@suse.cz
+
+- removed the -s/--style option from manpage and help (#300362)
+
+-------------------------------------------------------------------
 Thu Aug 30 10:51:17 CEST 2007 - jsrain@suse.cz
 
 - updated list of fallback kernels (no longer kernel-smp) (#304646)
