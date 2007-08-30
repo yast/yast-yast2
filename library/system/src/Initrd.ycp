@@ -139,6 +139,13 @@
 		modules_to_skip = (list<string>)
 		    merge (modules_to_skip, ppc_modules_to_skip);
 	    }
+	    // bug 298726 - these modules fail in initrd
+	    list<string> controller_modules_to_skip = [
+		"aic94xx",
+		"qla2xxx",
+	    ];
+	    modules_to_skip = (list<string>)
+		merge (modules_to_skip, controller_modules_to_skip);
 	}
 	return modules_to_skip;
     }
