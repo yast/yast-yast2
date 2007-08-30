@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Aug 30 10:51:17 CEST 2007 - jsrain@suse.cz
+
+- updated list of fallback kernels (no longer kernel-smp) (#304646)
+
+-------------------------------------------------------------------
 Thu Aug 30 10:23:29 CEST 2007 - jsrain@suse.cz
 
 - updated list of modules not to add to initrd (#298726)
