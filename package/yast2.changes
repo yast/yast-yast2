@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Aug 31 10:34:10 CEST 2007 - locilka@suse.cz
+
+- Fixing evaluation of unreadable cpuflags in Kernel.ycp (#303842).
+- 2.15.51
+
+-------------------------------------------------------------------
 Thu Aug 30 11:25:02 CEST 2007 - jsrain@suse.cz
 
 - removed the -s/--style option from manpage and help (#300362)

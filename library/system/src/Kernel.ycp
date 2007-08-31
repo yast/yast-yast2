@@ -373,7 +373,15 @@ global void SetCmdLine (string new_cmd_line) {
 	    // get flags from WFM /proc/cpuinfo (for pae and tsc tests below)
 
 	    string cpuinfo_flags = (string) SCR::Read(.proc.cpuinfo.value."0"."flags");	// check only first processor
-	    list cpuflags = (size(cpuinfo_flags) > 0) ? splitstring(cpuinfo_flags, " ") : [];
+	    list cpuflags = [];
+
+	    // bugzilla #303842
+	    if (cpuflags != nil) {
+		cpuflags = (size(cpuinfo_flags) > 0) ? splitstring(cpuinfo_flags, " ") : [];
+	    } else {
+		y2error ("Cannot read cpuflags");
+		y2milestone ("Mounted: %1", SCR::Execute (.target.bash_output, "mount -l"));
+	    }
 /*
 	    // check for "roughly" >= 4GB memory (see bug #40729)
 	    list memories = (list) SCR::Read(.probe.memory);
