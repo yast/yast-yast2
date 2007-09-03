@@ -36,8 +36,8 @@ my $line_comment;
 my $line = "";
 my $backslashed_line;
 
-my $separator;
-my $oseparator;
+my $separator = $colon ? qr/:\s+/ : qr/\s+/;
+my $oseparator = $colon ? ":\t" : "\t";
 
 my $debug = defined($ARGV[0]) && $ARGV[0] eq "-d";
 
@@ -182,7 +182,7 @@ sub parse_file ()
 sub write_comment ($)
 {
     my $comment = shift;
-    foreach my $line (split /\n/, $comment)
+    foreach my $line (split /\n/, $comment || "")
     {
 	print FILE "\#$line\n";
     }
@@ -220,9 +220,6 @@ sub write_file ()
 
 sub Read ()
 {
-    $separator = $colon ? qr/:\s+/ : qr/\s+/;
-    $oseparator = $colon ? ":\t" : "\t";
-
     parse_file ();
     $modified = 0;
 

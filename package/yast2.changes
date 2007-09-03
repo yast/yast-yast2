@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Sep  3 14:25:19 CEST 2007 - mvidner@suse.cz
+
+- Mail via AutoYaST: do not omit the colon separator in /etc/aliases;
+  fixed warnings about undefined variables (#304190).
+- 2.15.54
+
+-------------------------------------------------------------------
 Mon Sep  3 13:08:17 CEST 2007 - lslezak@suse.cz
 
 - added fallback for "kernel-iseries64" - use "kernel-ppc64",
