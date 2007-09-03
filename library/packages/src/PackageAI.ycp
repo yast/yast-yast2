@@ -73,6 +73,24 @@ global boolean Installed(string package) {
     return contains(toinstall, package);
 }
 
+/**
+ * Is a package installed? Checks only the package name in contrast to Installed() function.
+ * @return true if yes
+ */
+global boolean PackageInstalled(string package) {
+    return Installed(package);
+}
+
+/**
+ * Is a package available? Checks only package name, not list of provides.
+ * @return true if yes
+ */
+global boolean PackageAvailable(string package)
+{
+    return Available(package);
+}
+
+
 global boolean InstallKernel (list<string> kernel_modules) {
     // TODO: for 9.2, we always install all packages, but
     // we could only install those really needed (#44394)

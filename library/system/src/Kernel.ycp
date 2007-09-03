@@ -90,7 +90,9 @@ boolean inform_about_kernel_change = false;
  * fallback map for kernel
  */
 map<string, string> fallbacks = $[
-	"kernel-bigsmp" : "kernel-default"
+	"kernel-bigsmp" : "kernel-default",
+	// fallback for PPC (#302246)
+	"kernel-iseries64" : "kernel-ppc64"
 ];
 
 void ParseInstallationKernelCmdline ();
@@ -394,7 +396,7 @@ global void SetCmdLine (string new_cmd_line) {
 // install bigsmp kernel regardless the memory size - fate #159006
 	    if (/*memsize >= fourGB &&*/ contains (cpuflags, "pae"))
 	    {
-		y2milestone ("Kernel switch: mem >= 4GB && PAE");
+		y2milestone ("Kernel switch: PAE detected");
 		kernel_packages = ["kernel-bigsmp"];
 
 		// add PV drivers
@@ -504,9 +506,9 @@ global string ComputePackage () {
     y2milestone ("Selecting '%1' as kernel package", the_kernel);
 
     // Check for provided kernel packages in installed system
-    if (Mode::normal ())
+    if (Mode::normal () || Mode::repair())
     {
-        while (the_kernel != "" && !Pkg::IsProvided (the_kernel))
+        while (the_kernel != "" && !Pkg::PkgInstalled(the_kernel))
         {
             the_kernel = fallbacks[the_kernel]:"";
             y2milestone ("Not provided, falling back to '%1'", the_kernel);
@@ -516,7 +518,7 @@ global string ComputePackage () {
     // Check for available kernel packages during installation (instsys)
     else
     {
-        while (the_kernel != "" && !Pkg::IsAvailable (the_kernel))
+        while (the_kernel != "" && !Pkg::PkgAvailable(the_kernel))
         {
             the_kernel = fallbacks[the_kernel]:"";
             y2milestone ("Not available, falling back to '%1'", the_kernel);

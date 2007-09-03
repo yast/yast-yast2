@@ -257,7 +257,7 @@ global boolean Available(string package) {
 }
 
 /**
- * Is a package installed?
+ * Is a package provided in the system? Is there any installed package providing 'package'?
  * @return true if yes
  */
 global boolean Installed(string package) {
@@ -269,6 +269,35 @@ global boolean Installed(string package) {
     // added --whatprovides due to bug #76181
     return 0 == (integer) SCR::Execute(.target.bash, "rpm -q --whatprovides " + package);
     // return Pkg::IsProvided (package);
+}
+
+/**
+ * Is a package installed? Checks only the package name in contrast to Installed() function.
+ * @return true if yes
+ */
+global boolean PackageInstalled(string package) {
+    // This is commonly called function and so it's
+    // important that it's fast, especially in the common
+    // case, where all dependencies are satisfied.
+    // Unfortunately, initializing Pkg reads the RPM database...
+    // so we must avoid it.
+    return 0 == (integer) SCR::Execute(.target.bash, "rpm -q " + package);
+}
+
+/**
+ * Is a package available? Checks only package name, not list of provides.
+ * @return true if yes (nil = no package source available)
+ */
+global boolean PackageAvailable(string package) {
+    EnsureSourceInit();
+
+    if (!source_initialized)
+    {
+	// error no source initialized
+	return nil;
+    }
+
+    return Pkg::PkgAvailable(package);
 }
 
 /**

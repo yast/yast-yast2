@@ -1,4 +1,18 @@
 -------------------------------------------------------------------
+Mon Sep  3 13:08:17 CEST 2007 - lslezak@suse.cz
+
+- added fallback for "kernel-iseries64" - use "kernel-ppc64",
+  when it's not available (#302246)
+- properly check whether a kernel package is available (use package
+  name instead of 'provides' capability), fixed check in 'repair'
+  mode (#302246, #299683)
+- added Package::PackageAvailable() and Package::PackageInstaled()
+  functions to check whether a package is available or installed
+  (they check package name in contrast to Package::IsAvailable()
+  and Package::IsInstalled() which check 'provides' capability)
+- 2.15.53
+
+-------------------------------------------------------------------
 Mon Sep  3 08:24:32 CEST 2007 - mvidner@suse.cz
 
 - Use xmessage only if y2base fails. Don't use it for harmless
