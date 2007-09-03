@@ -208,7 +208,7 @@ sub write_file ()
 
     if (-f $filename)
     {
-	rename $filename, "$filename.YaST2.save" or return log_error ("Creating backup: $!");
+	rename $filename, "$filename.YaST2save" or return log_error ("Creating backup: $!");
     }
     rename "$filename.YaST2.new", $filename or return log_error ("Moving temp file: $!");
 
