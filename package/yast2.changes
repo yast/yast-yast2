@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Sep  3 08:24:32 CEST 2007 - mvidner@suse.cz
+
+- Use xmessage only if y2base fails. Don't use it for harmless
+  warnings (#265263#c59).
+- 2.15.52
+
+-------------------------------------------------------------------
 Fri Aug 31 10:34:10 CEST 2007 - locilka@suse.cz
 
 - Fixing evaluation of unreadable cpuflags in Kernel.ycp (#303842).
