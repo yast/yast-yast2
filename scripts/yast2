@@ -325,8 +325,9 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 	    /usr/bin/test -x /bin/unicode_stop && /bin/unicode_stop
 	fi
     else
-	echo "You need to install yast2-ncurses to use the YaST2 text mode interface" >&2
-	exit 1
+	rpm -V yast2-core yast2-ncurses yast2-qt yast2-gtk >&2
+	echo "Something is wrong with the YaST user interface." >&2
+	exit_code=1
     fi
 # quick hack: treat gtk like qt
 elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
