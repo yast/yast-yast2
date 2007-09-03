@@ -32,6 +32,8 @@ map FunctionsSystem = $[
     "Available"	: PackageSystem::Available,
     "Installed"	: PackageSystem::Installed,
     "InstallKernel" : PackageSystem::InstallKernel,
+    "PackageInstalled" : PackageSystem::PackageInstalled,
+    "PackageAvailable" : PackageSystem::PackageAvailable,
 ];
 
 map FunctionsAI = $[
@@ -41,6 +43,8 @@ map FunctionsAI = $[
     "Available"	: PackageAI::Available,
     "Installed"	: PackageAI::Installed,
     "InstallKernel" : PackageAI::InstallKernel,
+    "PackageInstalled" : PackageAI::PackageInstalled,
+    "PackageAvailable" : PackageAI::PackageAvailable,
 ];
 
 map Functions = Mode::config () ? FunctionsAI : FunctionsSystem;
@@ -87,6 +91,16 @@ global boolean Available(string package) {
 
 global boolean Installed(string package) {
     boolean (string) function = (boolean (string)) (Functions["Installed"]:nil);
+    return function(package);
+}
+
+global boolean PackageAvailable(string package) {
+    boolean (string) function = (boolean (string)) (Functions["PackageAvailable"]:nil);
+    return function(package);
+}
+
+global boolean PackageInstalled(string package) {
+    boolean (string) function = (boolean (string)) (Functions["PackageInstalled"]:nil);
     return function(package);
 }
 
