@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Sep  5 12:48:58 CEST 2007 - jsrain@suse.cz
+
+- handle missing /usr/bin/id properly (#307375)
+
+-------------------------------------------------------------------
 Mon Sep  3 14:25:19 CEST 2007 - mvidner@suse.cz
 
 - Mail via AutoYaST: do not omit the colon separator in /etc/aliases;
