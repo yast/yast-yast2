@@ -22,6 +22,7 @@ import "Label";
 import "Mode";
 import "Popup";
 import "Linuxrc";
+import "Stage";
 
 // #TODO bug number
 map <string, boolean> detection_cache = $[];
@@ -105,6 +106,13 @@ y2milestone("--%1", Detection("modems"));
  */
 global define boolean MustBeRoot()
 {
+    if ((integer)SCR::Read (.target.size, "/usr/bin/id") <= 0)
+    {
+	if (! Stage::initial ())
+	    y2warning ("/usr/bin/id not existing, supposing to be root");
+	return true;
+    }
+
     map out = (map) SCR::Execute (.target.bash_output, "/usr/bin/id --user");
     boolean root = out["stdout"]:"" == "0\n";
     if(root) return true;
