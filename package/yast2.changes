@@ -2,6 +2,7 @@
 Wed Sep  5 12:48:58 CEST 2007 - jsrain@suse.cz
 
 - handle missing /usr/bin/id properly (#307375)
+- 2.15.55
 
 -------------------------------------------------------------------
 Mon Sep  3 14:25:19 CEST 2007 - mvidner@suse.cz
