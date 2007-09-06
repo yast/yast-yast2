@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep  6 14:30:06 CEST 2007 - tgoettlicher@suse.de
+
+- fixed mouse cursor for links (#304679)
+- 2.15.56
+
+-------------------------------------------------------------------
 Wed Sep  5 12:48:58 CEST 2007 - jsrain@suse.cz
 
 - handle missing /usr/bin/id properly (#307375)
