@@ -21,7 +21,8 @@
 	    "options" : [ "read_only", "global_values", "flat" ],
 	    "comments" : [ "^#.*", "^[ \t]*$", ],
 	    "params" : [
-		$[ "match" : [ "^[ \t]*([a-zA-Z0-9_\.]+)[ \t]*(.*)[ \t]*$", "%s %s" ] ]
+		// Bugzilla #305495 comments #8 and #9
+		$[ "match" : [ "^[ \t]*([^ \t]+)[ \t]*(.*)[ \t]*$", "%s %s" ] ]
 	    ]
 	]
     )

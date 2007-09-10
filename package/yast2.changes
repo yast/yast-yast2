@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Sep 10 11:41:49 CEST 2007 - locilka@suse.cz
+
+- Fixed agent for /content file to currectly identify the key and
+  the value (#305495).
+- 2.15.57
+
+-------------------------------------------------------------------
 Thu Sep  6 14:30:06 CEST 2007 - tgoettlicher@suse.de
 
 - fixed mouse cursor for links (#304679)
