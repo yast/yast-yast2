@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Mon Sep 10 11:41:49 CEST 2007 - locilka@suse.cz
 
-- Fixed agent for /content file to currectly identify the key and
+- Fixed agent for /content file to correctly identify the key and
   the value (#305495).
 - 2.15.57
 
