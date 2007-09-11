@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Sep 11 10:23:08 CEST 2007 - varkoly@suse.de
+
+- Fixed Provides list (#309420) 
+
+-------------------------------------------------------------------
 Mon Sep 10 11:41:49 CEST 2007 - locilka@suse.cz
 
 - Fixed agent for /content file to correctly identify the key and
