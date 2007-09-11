@@ -37,6 +37,7 @@ Obsoletes:	yast2-trans-menu y2t_menu
 # moved here from another packages
 Provides:	yast2-installation:/usr/share/YaST2/modules/Installation.ycp
 Provides:	yast2-installation:/usr/share/YaST2/modules/Product.ycp
+Provides:       yast2-mail-aliases
 
 Summary:	Main YaST2 package
 
