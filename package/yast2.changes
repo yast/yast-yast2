@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 26 18:06:50 CEST 2007 - kmachalkova@suse.cz
+
+- Text-mode control center: do not show groups containing no modules
+  to the user (#309452)  
+
+-------------------------------------------------------------------
 Wed Sep 12 11:24:50 CEST 2007 - jsrain@suse.cz
 
 - reverted Fate #159006 (always using bigsmp kernel if PAE detected)
