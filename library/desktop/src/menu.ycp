@@ -231,9 +231,6 @@ UI::CloseDialog ();
 OpenMenu();
 
 list<term> GroupList = Desktop::GroupList();
-/* GroupList = [`item (`id ("Software"), "Software"), ...] */
-UI::ReplaceWidget(`id(`groups_rep), `SelectionBox(`id (`groups), `opt(`notify, `immediate, `keyEvents), "", GroupList));
-y2debug("GroupList=%1", GroupList);
 
 /* precache groups (#38363) */
 list<string> groups = maplist(term gr, GroupList, ``{
@@ -253,11 +250,24 @@ map<string,list<term> > modules = listmap(string gr, groups, ``{
     }
     return $[ gr : all_modules ];
 });
-
 y2debug("modules=%1", modules);
+
 
 string first = groups[0]:nil;
 y2debug("first=%1", first);
+
+//do not show groups containing no modules to the user (#309452)
+GroupList = maplist (term t, GroupList,{
+    string group = (string) t[0,0]:"";
+
+    if ( modules[group]:nil != [] ) {
+	return t;
+    }
+});
+
+/* GroupList = [`item (`id ("Software"), "Software"), ...] */
+UI::ReplaceWidget(`id(`groups_rep), `SelectionBox(`id (`groups), `opt(`notify, `immediate, `keyEvents), "", GroupList));
+y2debug("GroupList=%1", GroupList);
 
 /**
  */
