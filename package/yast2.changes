@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct  3 09:39:45 CEST 2007 - mvidner@suse.cz
+
+- Do not try to package COPYRIGHT.english, it is gone from
+  devtools (#299144).
+- 2.16.0
+
+-------------------------------------------------------------------
 Wed Sep 26 18:06:50 CEST 2007 - kmachalkova@suse.cz
 
 - Text-mode control center: do not show groups containing no modules
