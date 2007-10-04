@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct  4 16:29:01 CEST 2007 - jsrain@suse.cz
+
+- install bigsmp kernel regardless the memory size (Fate #159006)
+- 2.16.1
+
+-------------------------------------------------------------------
 Wed Oct  3 09:39:45 CEST 2007 - mvidner@suse.cz
 
 - Do not try to package COPYRIGHT.english, it is gone from
