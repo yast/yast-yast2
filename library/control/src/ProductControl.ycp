@@ -39,9 +39,6 @@ global list<map<string,any> > inst_finish = [];
 // modules to be offered to clone configuration at the end of installation
 global list<string> clone_modules = [];
 
-// texts which are product specific
-map<string,map<string, string> > texts = $[];
-
 // Location of a custom control file
 global string custom_control_file = "";
 
@@ -146,7 +143,7 @@ global define boolean ReadControlFile( string controlfile)
     clone_modules = productControl["clone_modules"]:[];
 
     foreach (string section,
-	["software", "globals", "network", "partitioning"],
+	["software", "globals", "network", "partitioning", "texts"],
     {
 	if (haskey (productControl, section))
 	{
@@ -164,16 +161,7 @@ global define boolean ReadControlFile( string controlfile)
 	ProductFeatures::SetFeature ("partitioning", "FlexiblePartitioning",
 	    partitioning);
     }
-    string textdom = productControl["textdomain"]:"control";
-    texts = mapmap (string key, map<string,string> text,
-	productControl["texts"]:$[],
-    {
-	string label = text["label"]:"";
-	return $[ key : $[
-	    "label" : label,
-	    "textdomain" : textdom,
-	] ];
-    });
+
     return true;
 }
 
@@ -744,14 +732,16 @@ global map getProposalProperties (string stage, string mode, string proptype) {
 }
 
 global string GetTranslatedText (string key) {
-    map<string,string> text = texts[key]:$[];
+    map <string, any> controlfile_texts = ProductFeatures::GetSection ("texts");
+    map <string,string> text = (map <string,string>) controlfile_texts[key]:$[];
+
     string label = text["label"]:"";
     if (label == "")
     {
 	y2error ("The requested label %1 does not exist", key);
 	return "";
     }
-    string domain = text["textdomain"]:"";
+    string domain = text["textdomain"]:productControl["textdomain"]:"control";
     if (domain == "")
     {
 	y2error ("The text domain for label %1 not set", key);

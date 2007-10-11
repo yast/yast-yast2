@@ -957,17 +957,48 @@ rm -rf *.xml *.ycp",
      * @return boolean true on success
      */
     boolean UpdateProductInfo (map update_file) {
+	// merging all 'map <string, any>' type
 	foreach (string section, ["globals", "software", "partitioning", "network"], {
 	    map <string, any> sect = ProductFeatures::GetSection (section);
     	    map <string, any> addon = update_file[section]:$[];
-    	    sect = (map<string,any>)union (sect, addon);
+    	    sect = (map <string,any>) union (sect, addon);
 
     	    ProductFeatures::SetSection (section, sect);
 	});
 
+	// merging 'clone_modules'
 	list <string> addon_clone = update_file["clone_modules"]:[];
-
 	ProductControl::clone_modules = (list <string>) merge (ProductControl::clone_modules, addon_clone);
+
+	// merging texts
+
+	/**
+	 * @struct $[
+	 *   "congratulate" : $[
+	 *     "label" : "some text",
+	 *   ],
+	 *   "congratulate2" : $[
+	 *     "label" : "some other text",
+	 *     "textdomain" : "control-2", // (optionally)
+	 *   ],
+	 * ];
+	 */
+	map <string, any> controlfile_texts = ProductFeatures::GetSection ("texts");
+	map <string, map <string, string> > update_file_texts = update_file["texts"]:$[];
+	string update_file_textdomain = update_file["textdomain"]:"";
+
+	// if textdomain is different to the base one
+	// we have to put it into the map
+	if (update_file_textdomain != nil && update_file_textdomain != "") {
+	    update_file_texts = mapmap (string text_ident, map <string, string> text_def, update_file_texts, {
+		text_def["textdomain"] = update_file_textdomain;
+
+		return $[ text_ident : text_def ];
+	    });
+	}
+
+	controlfile_texts = (map <string, any>) union (controlfile_texts, update_file_texts);
+	ProductFeatures::SetSection ("texts", controlfile_texts);
 
 	return true;
     }
@@ -1007,7 +1038,7 @@ rm -rf *.xml *.ycp",
 	    name,
 	    update_file["textdomain"]:"control"
 	)) {
-    	    y2error ("Failed to udpate installation workflow");
+    	    y2error ("Failed to update installation workflow");
     	    return false;
 	}
 
@@ -1044,13 +1075,17 @@ rm -rf *.xml *.ycp",
     string GenerateWorkflowIdent (string workflow_filename) {
 	string file_md5sum = FileUtils::MD5sum (workflow_filename);
 
-	if (file_md5sum == nil || file_md5sum == "")
+	if (file_md5sum == nil || file_md5sum == "") {
+	    y2error ("MD5 sum of file %1 is %2", workflow_filename, file_md5sum);
 	    return nil;
+	}
 
 	integer file_size = FileUtils::GetSize (workflow_filename);
 
-	if (file_size < 0)
+	if (file_size < 0) {
+	    y2error ("File size %1 is %2", workflow_filename, file_size);
 	    return nil;
+	}
 
 	return sformat ("%1-%2", file_md5sum, file_size);
     }
@@ -1080,8 +1115,10 @@ rm -rf *.xml *.ycp",
 	    if (workflow_ident != nil && contains (already_merged_workflows, workflow_ident)) {
 		y2milestone ("The very same workflow has been already merged, skipping...");
 		return;
-	    } else {
+	    } else if (workflow_ident != nil) {
 		already_merged_workflows = add (already_merged_workflows, workflow_ident);
+	    } else {
+		y2error ("Workflow ident is: %1", workflow_ident);
 	    }
 
 	    if (! IntegrateWorkflow (one_workflow)) {

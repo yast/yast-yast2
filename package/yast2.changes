@@ -5,6 +5,7 @@ Thu Oct 11 11:52:23 CEST 2007 - locilka@suse.cz
 - Merging every single workflow only once, skipping duplicate
   additional workflows even if provided by a different file name
   (#332436).
+- Merging control-file texts in WorkflowManager as well (#271608).
 
 -------------------------------------------------------------------
 Thu Oct  4 16:29:01 CEST 2007 - jsrain@suse.cz
