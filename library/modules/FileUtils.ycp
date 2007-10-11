@@ -357,8 +357,6 @@ Continue or cancel the current operation?
 	    return nil;
 	}
 
-	string ret = "";
-
 	string cmd = sformat ("md5sum '%1'", String::Quote (target));
 	map cmd_out = (map) SCR::Execute (.target.bash_output, cmd);
 
@@ -375,6 +373,8 @@ Continue or cancel the current operation?
 	    y2warning ("Strange md5out: '%1'", filemd5);
 	    return nil;
 	}
+
+	return filemd5;
     }
 
 /* EOF */
