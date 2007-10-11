@@ -2,6 +2,9 @@
 Thu Oct 11 11:52:23 CEST 2007 - locilka@suse.cz
 
 - New function FileUtils::MD5sum.
+- Merging every single workflow only once, skipping duplicate
+  additional workflows even if provided by a different file name
+  (#332436).
 
 -------------------------------------------------------------------
 Thu Oct  4 16:29:01 CEST 2007 - jsrain@suse.cz
