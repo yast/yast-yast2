@@ -1035,6 +1035,27 @@ rm -rf *.xml *.ycp",
     }
 
     /**
+     * Returns file unique identification in format ${file_MD5sum}-${file_size}
+     * Returns 'nil' if file doesn't exist, it is not a 'file', etc.
+     *
+     * @param string file
+     * @return string file_ident
+     */
+    string GenerateWorkflowIdent (string workflow_filename) {
+	string file_md5sum = FileUtils::MD5sum (workflow_filename);
+
+	if (file_md5sum == nil || file_md5sum == "")
+	    return nil;
+
+	integer file_size = FileUtils::GetSize (workflow_filename);
+
+	if (file_size < 0)
+	    return nil;
+
+	return sformat ("%1-%2", file_md5sum, file_size);
+    }
+
+    /**
      * Function uses the Base Workflow as the initial one and merges all
      * added workflow into that workflow.
      *
@@ -1049,7 +1070,20 @@ rm -rf *.xml *.ycp",
 
 	boolean ret = true;
 
+	list <string> already_merged_workflows = [];
+
 	foreach (string one_workflow, used_workflows, {
+	    // make sure that every workflow is merged only once
+	    // bugzilla #332436
+	    string workflow_ident = GenerateWorkflowIdent (one_workflow);
+	    
+	    if (workflow_ident != nil && contains (already_merged_workflows, workflow_ident)) {
+		y2milestone ("The very same workflow has been already merged, skipping...");
+		return;
+	    } else {
+		already_merged_workflows = add (already_merged_workflows, workflow_ident);
+	    }
+
 	    if (! IntegrateWorkflow (one_workflow)) {
 		y2error ("Merging '%1' failed!", one_workflow);
 		Report::Error (_("An internal error occured when integrating additional workflow."));
