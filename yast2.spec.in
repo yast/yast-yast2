@@ -12,6 +12,7 @@ Requires:	yast2_ui yast2_theme
 # For Cron Agent, Module
 Requires:       perl-Config-Crontab
 # for ag_tty (/bin/stty)
+# for /usr/bin/md5sum
 Requires:	coreutils
 Requires:	yast2-xml yast2-hardware-detection
 # for SLPAPI.pm

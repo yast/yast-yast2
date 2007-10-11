@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Oct 11 11:52:23 CEST 2007 - locilka@suse.cz
+
+- New function FileUtils::MD5sum.
+
+-------------------------------------------------------------------
 Thu Oct  4 16:29:01 CEST 2007 - jsrain@suse.cz
 
 - install bigsmp kernel regardless the memory size (Fate #159006)
