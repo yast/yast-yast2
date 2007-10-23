@@ -14,6 +14,8 @@ Return	true
 Return	["/tmp/additional-control-files/12:__AddOnProduct-ControlFile__.xml"]
 Dump	
 Dump	Removing the first Add-On product
+Log	MD5 sum of file /tmp/additional-control-files/12:__AddOnProduct-ControlFile__.xml is nil
+Log	Workflow ident is: nil
 Return	true
 Dump	
 Dump	Current Settings
