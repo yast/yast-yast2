@@ -90,7 +90,7 @@ boolean inform_about_kernel_change = false;
  * fallback map for kernel
  */
 map<string, string> fallbacks = $[
-	"kernel-bigsmp" : "kernel-default",
+	"kernel-pae" : "kernel-default",
 	// fallback for PPC (#302246)
 	"kernel-iseries64" : "kernel-ppc64"
 ];
@@ -391,18 +391,18 @@ global void SetCmdLine (string new_cmd_line) {
 	    integer fourGB = 0x0C0000000;
 	    y2milestone ("Physical memory %1", memsize);
 */
-	    // for memory > 4GB and PAE support we install kernel-bigsmp,
+	    // for memory > 4GB and PAE support we install kernel-pae,
 	    // only check PAE CPU
 	    if (/*memsize >= fourGB &&*/ contains (cpuflags, "pae"))
 	    {
 		y2milestone ("Kernel switch: PAE detected");
-		kernel_packages = ["kernel-bigsmp"];
+		kernel_packages = ["kernel-pae"];
 
 		// add PV drivers
 		if (xen)
 		{
-		    y2milestone("Adding Xen PV drivers: xen-kmp-bigsmp");
-		    kernel_packages = add(kernel_packages, "xen-kmp-bigsmp");
+		    y2milestone("Adding Xen PV drivers: xen-kmp-pae");
+		    kernel_packages = add(kernel_packages, "xen-kmp-pae");
 		}
 	    }
 	    else
