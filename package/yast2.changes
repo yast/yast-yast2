@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct 25 11:50:28 CEST 2007 - locilka@suse.cz
+
+- Evaluate also textdomain of a merged control file when searching
+  for translated text (#271608).
+
+-------------------------------------------------------------------
 Wed Apr 11 10:14:42 CEST 2007 - lslezak@suse.cz
 
 - properly detect PV/FV Xen machine (#255217)

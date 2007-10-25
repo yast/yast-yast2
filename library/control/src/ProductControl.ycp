@@ -743,14 +743,16 @@ global map getProposalProperties( string stage, string mode, string proptype
 }
 
 global string GetTranslatedText (string key) {
-    map<string,string> text = texts[key]:$[];
+    map <string, any> controlfile_texts = ProductFeatures::GetSection ("texts");
+    map <string,string> text = (map <string,string>) controlfile_texts[key]:$[];
+
     string label = text["label"]:"";
     if (label == "")
     {
 	y2error ("The requested label %1 does not exist", key);
 	return "";
     }
-    string domain = text["textdomain"]:"";
+    string domain = text["textdomain"]:productControl["textdomain"]:"control";
     if (domain == "")
     {
 	y2error ("The text domain for label %1 not set", key);
