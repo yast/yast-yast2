@@ -89,7 +89,13 @@
   tmpstring = _("lighttpd");
 
   // TRANSLATORS: Description of a Service (rpm: lighttpd), used as a common label or an item in table
-  tmpstring = _("Open ports for lighttpd including the HTTPS port.");
+  tmpstring = _("Open the http port for lighttpd.");
+
+  // TRANSLATORS: Name of Service (rpm: lighttpd-ssl), can be used as check box, item in multiple selection box...
+  tmpstring = _("lighttpd");
+
+  // TRANSLATORS: Description of a Service (rpm: lighttpd-ssl), used as a common label or an item in table
+  tmpstring = _("Open the https port for lighttpd.");
 
   // TRANSLATORS: Name of Service (rpm: mysql), can be used as check box, item in multiple selection box...
   tmpstring = _("MySQL server");
@@ -117,6 +123,12 @@
 
   // TRANSLATORS: Description of a Service (rpm: sendmail), used as a common label or an item in table
   tmpstring = _("Firewall Configuration file for postfix");
+
+  // TRANSLATORS: Name of Service (rpm: squid), can be used as check box, item in multiple selection box...
+  tmpstring = _("Squid Service");
+
+  // TRANSLATORS: Description of a Service (rpm: squid), used as a common label or an item in table
+  tmpstring = _("Opens ports for Squid");
 
   // TRANSLATORS: Name of Service (rpm: sshd), can be used as check box, item in multiple selection box...
   tmpstring = _("Secure Shell Server");

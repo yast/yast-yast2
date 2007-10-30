@@ -1,6 +1,7 @@
 # Makefile.am for yast2/library/modules
 
-module_DATA = HWConfig.ycp Initrd.ycp Kernel.ycp ModuleLoading.ycp ModulesConf.ycp
+#module_DATA = HWConfig.ycp Initrd.ycp Kernel.ycp ModuleLoading.ycp ModulesConf.ycp Hotplug.ycp HwStatus.ycp
+module_DATA = $(wildcard [A-Z]*.ycp)
 
 yncludedir = @yncludedir@/hwinfo
 ynclude_DATA = classnames.ycp
