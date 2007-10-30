@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct 30 17:24:06 CET 2007 - locilka@suse.cz
+
+- Modules Hotplug and HwStatus moved here from yast2-installation
+  to remove yast2-storage dependency on yast2-installation.
+- Adjusted RPM dependencies.
+
+-------------------------------------------------------------------
 Tue Oct 23 08:10:22 CEST 2007 - jsrain@suse.cz
 
 - kernel-bigsmp renamed to kernel-pae

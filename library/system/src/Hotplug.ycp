@@ -1,0 +1,191 @@
+/**
+ * File:
+ *	Hotplug.ycp
+ *
+ * Module:
+ *	Hotplug
+ *
+ * Summary:
+ *	provide hotplug (USB, FireWire, PCMCIA) functions
+ *
+ * $Id$
+ *
+ * Authors:
+ *	Klaus Kaempf <kkaempf@suse.de>
+ *	Arvin Schnell <arvin@suse.de>
+ */
+
+{
+    module "Hotplug";
+
+    import "Arch";
+    import "ModuleLoading";
+    import "HwStatus";
+    import "Linuxrc";
+
+    import "Mode";
+
+    /**
+     * if a usb controller was found and initialized
+     */
+    global boolean haveUSB = false;
+
+    /**
+     * if a firewire controller was found and initialized
+     */
+    global boolean haveFireWire = false;
+
+    // start a controller (by loading its module)
+    // return true if successfull
+    // return false if failed
+
+    define boolean startController (map controller)
+    ``{
+	// check module information
+	// skip controller if no module info available
+
+	list<map> module_drivers = controller["drivers"]:[];
+
+	if (size (module_drivers) == 0)
+	    return true;
+
+	// loop through all drivers checking if one is already active
+
+	boolean already_active = false;
+	foreach (map modulemap, module_drivers,
+	``{
+	    if (modulemap["active"]:true)
+	    {
+		already_active = true;
+	    }
+	});
+
+	// save unique key for HwStatus::Set()
+	string unique_key = controller["unique_key"]:"";
+
+	if (already_active)
+	{
+	    HwStatus::Set (unique_key, `yes);
+	    return true;
+	}
+
+	boolean stop_loading = false;
+	boolean one_module_failed = false;
+
+	// loop through all drivers defined for this controller
+	// break after first successful load
+	//   no need to check "active", already done before !
+
+	foreach (map modulemap, module_drivers,
+	``{
+	    y2milestone ("modulemap: %1", modulemap);
+	    boolean module_modprobe = modulemap["modprobe"]:false;
+
+	    boolean all_modules_loaded = true;
+
+	    if (!stop_loading)
+	    {
+		foreach (list module_entry, modulemap["modules"]:[],
+		``{
+		    string module_name = module_entry[0]:"";
+		    string module_args = module_entry[1]:"";
+
+		    symbol load_result = `ok;
+		    if (Linuxrc::manual ())
+		    {
+			list vendor_device = ModuleLoading::prepareVendorDeviceInfo (controller);
+			load_result = ModuleLoading::Load (module_name, module_args,
+						     vendor_device[0]:"",
+						     vendor_device[1]:"",
+						     true,
+						     module_modprobe);
+		    }
+		    else
+		    {
+			load_result = ModuleLoading::Load (module_name, module_args,
+						     "", "",
+						     false, module_modprobe);
+		    }
+		    if (load_result == `fail)
+		    {
+			all_modules_loaded = false;
+		    }
+		    else if (load_result == `dont)
+		    {
+			all_modules_loaded = true;
+		    }
+
+		    // break out of module load loop if one module failed
+
+		    if (!all_modules_loaded)
+		    {
+			one_module_failed = true;
+		    }
+
+		}); // foreach module of current driver info
+
+	    } // stop_loading
+
+	    // break out of driver load loop if all modules of
+	    //   the current driver loaded successfully
+
+	    if (all_modules_loaded)
+	    {
+		stop_loading = true;
+	    }
+
+	});  // foreach driver
+
+	HwStatus::Set (unique_key, one_module_failed?`no:`yes);
+
+	return (!one_module_failed);
+    }
+
+
+    /**
+     * @param	none
+     *
+     * @returns	void
+     * probe for usb type, load appropriate modules, and mount
+     * usbfs to /proc/bus/usb
+     */
+
+    global define void StartUSB () {
+	list<map> usb_controllers = (list<map>) SCR::Read(.probe.usbctrl);
+
+	foreach (map controller, usb_controllers,
+	``{
+	    boolean start_result = startController (controller);
+	    if (start_result)
+		haveUSB = true;
+	});
+
+	y2milestone ("haveUSB = %1", haveUSB);
+    }
+
+    /**
+     * @param	none
+     *
+     * @returns	void
+     * probe for firewire type, load appropriate modules, and mount
+     * usbfs to /proc/bus/usb
+     */
+
+    global define void StartFireWire ()
+    ``{
+	if (Arch::sparc ())	// why this and why here ???
+	    return;
+
+	list<map> firewire_controllers = (list<map>) SCR::Read (.probe.ieee1394ctrl);
+
+	foreach (map controller, firewire_controllers,
+	``{
+	    boolean start_result = startController (controller);
+	    if (start_result)
+		haveFireWire = true;
+	});
+
+	y2milestone ("haveFireWire = %1", haveFireWire);
+    }
+
+}

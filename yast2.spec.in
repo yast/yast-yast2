@@ -26,7 +26,8 @@ Conflicts:	yast2-tune < 2.15.6
 Obsoletes:	yast2-mail-aliases <= 2.14.0
 Conflicts:	yast2-storage < 2.15.20
 Conflicts:	yast2-network < 2.15.58
-Conflicts:	yast2-installation < 2.15.41
+# Hotplug and HwStatus modules
+Conflicts:	yast2-installation < 2.16.2
 
 Provides:	yast2-lib-sequencer
 Obsoletes:	yast2-lib-sequencer
@@ -38,6 +39,8 @@ Obsoletes:	yast2-trans-menu y2t_menu
 # moved here from another packages
 Provides:	yast2-installation:/usr/share/YaST2/modules/Installation.ycp
 Provides:	yast2-installation:/usr/share/YaST2/modules/Product.ycp
+Provides:	yast2-installation:/usr/share/YaST2/modules/Hotplug.ycp
+Provides:	yast2-installation:/usr/share/YaST2/modules/HwStatus.ycp
 Provides:       yast2-mail-aliases
 
 Summary:	Main YaST2 package
