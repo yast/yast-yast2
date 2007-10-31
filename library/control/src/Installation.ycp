@@ -112,6 +112,34 @@
      */
     global boolean license_accepted = false;
 
+    // These maps are used by several YaST modules.
+
+    /**
+     * Version of the targetsystem (currently installed one).
+     *
+     * @struct $[
+     *   "name" : (string) "openSUSE",
+     *   "version" : (string) "10.1",
+     *   "nameandversion" : (string) "openSUSE 10.1",
+     *   "major" : (integer) 10,
+     *   "minor" : (integer) 1,
+     * ]
+     */
+    global map <string, any> installedVersion = $[];
+    
+    /**
+     * Version of system to update to (will be installed, or is
+     * just being installed).
+     *
+     * @struct $[
+     *   "name" : (string) "openSUSE",
+     *   "version" : (string) "11.0",
+     *   "nameandversion" : (string) "openSUSE 11.0",
+     *   "major" : (integer) 11,
+     *   "minor" : (integer) 0,
+     * ]
+     */
+    global map <string, any> updateVersion = $[];
 
     //---------------------------------------------------------------
     // constructor
