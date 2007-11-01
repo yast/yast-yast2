@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Nov  1 16:44:07 CET 2007 - locilka@suse.cz
+
+- Update/backup-related variables were moved from  Update::* to
+  Installation::update_* to remove RPM dependencies.
+- 2.16.5
+
+-------------------------------------------------------------------
 Wed Oct 31 13:19:42 CET 2007 - locilka@suse.cz
 
 - installedVersion and updateVersion moved from 'Update' to

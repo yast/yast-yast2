@@ -141,6 +141,16 @@
      */
     global map <string, any> updateVersion = $[];
 
+    // Global variables moved here to break dependencies
+    // on yast2-update
+    global boolean update_backup_modified = true;
+
+    global boolean update_backup_sysconfig = true;
+
+    global boolean update_remove_old_backups = false;
+
+    global string update_backup_path = "/var/adm/backup";
+
     //---------------------------------------------------------------
     // constructor
 
