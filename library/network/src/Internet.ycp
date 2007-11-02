@@ -53,7 +53,7 @@ global boolean capi_isdn = false;
 /**
  * Reset values.
  */
-define void Reset() {
+global void Reset() {
     device = "";
     type = "";
     logfile = "";
@@ -63,31 +63,6 @@ define void Reset() {
     askpassword = nil;
     capi_adsl = false;
     capi_isdn = false;
-}
-
-/**
- *  Set device from argument as default network device 
- */
-global define void SetDevice(string dev){
-    device=dev;
-    NetworkDevices::Select(device);
-    type = NetworkDevices::FastestType(device);
-   provider = NetworkDevices::Current["PROVIDER"]:"";
-    if (provider != "") {
-        import "Provider";
-        Provider::Read();
-        Provider::Select(provider);
-        demand = Provider::Current["DEMAND"]:"no" == "yes";
-        password = Provider::Current["PASSWORD"]:"";
-        askpassword = Provider::Current["ASKPASSWORD"]:"no" == "yes";
-        capi_adsl = Provider::Current["PPPMODE"]:"pppoe" == "capi-adsl";
-        capi_isdn = Provider::Current["PPPMODE"]:"ippp" == "capi-isdn";
-    }
-
-    /* Set logfile */
-    if (type == "dsl" || type == "modem" || (type == "isdn" && capi_isdn))
-        logfile = "/var/log/smpppd/ifcfg-" + device + ".log";
-
 }
 
 /**
@@ -106,30 +81,6 @@ global define list<string> GetDevices () {
 	devices = filter (string i, devices, ``( i != "lo" && i != "sit0" ));
     }
     return devices;
-}
-
-/**
- * Find the fastest connection to the Internet
- * @return true if a "good" connection was found
- */
-global define boolean FindFastest() {
-
-    Reset();
-
-    NetworkDevices::Read();
-    device = NetworkDevices::Fastest();
-    if ((string)SCR::Read(.sysconfig.network.config.NETWORKMANAGER)=="yes" && device == "")
-    {
-	device = GetDevices ()[0]:"";
-    }
-
-    y2milestone("fastest=%1", device);
-
-    /* No fallback since there are devices that must not be tested (e.g. lo) */
-    if(device == "") return false;
-
-    SetDevice(device);
-    return true;
 }
 
 /**
