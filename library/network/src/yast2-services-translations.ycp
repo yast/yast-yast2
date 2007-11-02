@@ -10,6 +10,18 @@
 
   string tmpstring = nil;
 
+  // TRANSLATORS: Name of Service (rpm: apache2), can be used as check box, item in multiple selection box...
+  tmpstring = _("Apache 2");
+
+  // TRANSLATORS: Description of a Service (rpm: apache2), used as a common label or an item in table
+  tmpstring = _("Opens ports for Apache Web Server.");
+
+  // TRANSLATORS: Name of Service (rpm: apache2-ssl), can be used as check box, item in multiple selection box...
+  tmpstring = _("Apache 2");
+
+  // TRANSLATORS: Description of a Service (rpm: apache2-ssl), used as a common label or an item in table
+  tmpstring = _("Opens ports for Apache Web Server.");
+
   // TRANSLATORS: Name of Service (rpm: avahi), can be used as check box, item in multiple selection box...
   tmpstring = _("Zeroconf/Bonjour Multicast DNS");
 
@@ -30,6 +42,18 @@
 
   // TRANSLATORS: Description of a Service (rpm: bind), used as a common label or an item in table
   tmpstring = _("Open ports for the bind DNS server");
+
+  // TRANSLATORS: Name of Service (rpm: courier-imap), can be used as check box, item in multiple selection box...
+  tmpstring = _("courier-imapd");
+
+  // TRANSLATORS: Description of a Service (rpm: courier-imap), used as a common label or an item in table
+  tmpstring = _("Opens ports for courier-imapd.");
+
+  // TRANSLATORS: Name of Service (rpm: courier-imap-ssl), can be used as check box, item in multiple selection box...
+  tmpstring = _("courier-imapd");
+
+  // TRANSLATORS: Description of a Service (rpm: courier-imap-ssl), used as a common label or an item in table
+  tmpstring = _("Opens ports for courier-imapd.");
 
   // TRANSLATORS: Name of Service (rpm: cups), can be used as check box, item in multiple selection box...
   tmpstring = _("cups");
@@ -103,11 +127,20 @@
   // TRANSLATORS: Description of a Service (rpm: mysql), used as a common label or an item in table
   tmpstring = _("opens ports for MySQL in order to allow other hosts connect to it");
 
+  // TRANSLATORS: Name of Service (rpm: nut), can be used as check box, item in multiple selection box...
+  tmpstring = _("Network UPS Tools");
+
+  // TRANSLATORS: Description of a Service (rpm: nut), used as a common label or an item in table
+  tmpstring = _("Opens ports for remote UPS signalling for Network UPS Tools.");
+
   // TRANSLATORS: Name of Service (rpm: openldap), can be used as check box, item in multiple selection box...
   tmpstring = _("OpenLDAP Server");
 
   // TRANSLATORS: Description of a Service (rpm: openldap), used as a common label or an item in table
   tmpstring = _("Opens ports for the OpenLDAP Server (slapd).");
+
+  // TRANSLATORS: Description of a Service (rpm: postfix), used as a common label or an item in table
+  tmpstring = _("Firewall Configuration file for postfix");
 
   // TRANSLATORS: Name of Service (rpm: postgresql), can be used as check box, item in multiple selection box...
   tmpstring = _("PostgreSQL Server");
@@ -172,11 +205,11 @@
   // TRANSLATORS: Description of a Service (rpm: vsftpd), used as a common label or an item in table
   tmpstring = _("Opens ports for vsftpd Server.");
 
-  // TRANSLATORS: Name of Service (rpm: xorg-x11-Xvnc), can be used as check box, item in multiple selection box...
-  tmpstring = _("VNC Server");
+  // TRANSLATORS: Name of Service (rpm: xntp), can be used as check box, item in multiple selection box...
+  tmpstring = _("xntp Server");
 
-  // TRANSLATORS: Description of a Service (rpm: xorg-x11-Xvnc), used as a common label or an item in table
-  tmpstring = _("Opens ports for VNC Server");
+  // TRANSLATORS: Description of a Service (rpm: xntp), used as a common label or an item in table
+  tmpstring = _("Opens ports for xntp.");
 
   // TRANSLATORS: Name of Service (rpm: ypbind), can be used as check box, item in multiple selection box...
   tmpstring = _("NIS Client");

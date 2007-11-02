@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Fri Nov  2 14:27:14 CET 2007 - locilka@suse.cz
+
+- YCP module Internet moved from yast2-network to yast2 to remove
+  RPM dependencies.
+- Adjusted RPM dependencies.
+- Added some more texts for firewall services defined by packages.
+- 2.16.6
+
+-------------------------------------------------------------------
 Thu Nov  1 16:44:07 CET 2007 - locilka@suse.cz
 
 - Update/backup-related variables were moved from  Update::* to

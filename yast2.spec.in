@@ -13,7 +13,7 @@ Requires:	yast2_ui yast2_theme
 Requires:       perl-Config-Crontab
 # for ag_tty (/bin/stty)
 # for /usr/bin/md5sum
-Requires:	coreutils
+Requires:	coreutils sysconfig
 Requires:	yast2-xml yast2-hardware-detection
 # for SLPAPI.pm
 Requires:	yast2-perl-bindings
@@ -25,7 +25,7 @@ Conflicts:	yast2-inetd <= 2.13.4
 Conflicts:	yast2-tune < 2.15.6
 Obsoletes:	yast2-mail-aliases <= 2.14.0
 Conflicts:	yast2-storage < 2.15.20
-Conflicts:	yast2-network < 2.15.58
+Conflicts:	yast2-network < 2.16.6
 # Hotplug and HwStatus modules
 Conflicts:	yast2-installation < 2.16.2
 Conflicts:	yast2-update < 2.16.1
