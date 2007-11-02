@@ -6,20 +6,7 @@ client_DATA =
 
 ynclude_DATA =
 
-module_DATA =				\
-	NetworkConfig.ycp		\
-	NetworkDevices.ycp		\
-	NetworkPopup.ycp		\
-	NetworkService.ycp		\
-	NetworkStorage.ycp		\
-	SuSEFirewall.ycp		\
-	SuSEFirewallServices.ycp	\
-	SuSEFirewallExpertRules.ycp	\
-	PortAliases.ycp			\
-	PortRanges.ycp			\
-	SuSEFirewallProposal.ycp	\
-	SLPAPI.pm			\
-	CWMFirewallInterfaces.ycp
+module_DATA = $(wildcard *.ycp *.pm)
 
 EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA)
 
