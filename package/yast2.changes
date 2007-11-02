@@ -5,6 +5,8 @@ Fri Nov  2 14:27:14 CET 2007 - locilka@suse.cz
   RPM dependencies.
 - Adjusted RPM dependencies.
 - Added some more texts for firewall services defined by packages.
+- Some functions from Internet were moved to newly created
+  InternetDevices because of dependency on Provirer module.
 - 2.16.6
 
 -------------------------------------------------------------------
