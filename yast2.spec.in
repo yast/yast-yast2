@@ -42,6 +42,7 @@ Provides:	yast2-installation:/usr/share/YaST2/modules/Installation.ycp
 Provides:	yast2-installation:/usr/share/YaST2/modules/Product.ycp
 Provides:	yast2-installation:/usr/share/YaST2/modules/Hotplug.ycp
 Provides:	yast2-installation:/usr/share/YaST2/modules/HwStatus.ycp
+Provides:	yast2-network:/usr/share/YaST2/modules/Internet.ycp
 Provides:       yast2-mail-aliases
 
 Summary:	Main YaST2 package
