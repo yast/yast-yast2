@@ -32,4 +32,4 @@ sub FindSrvs {
     return SLP->FindSrvs ($pcServiceType, $pcScopeList);
 }
 
-42
+1;
