@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Nov  5 11:19:38 CET 2007 - locilka@suse.cz
+
+- Dirinstall-related global data added to Installation YCP module.
+
+-------------------------------------------------------------------
 Fri Nov  2 14:27:14 CET 2007 - locilka@suse.cz
 
 - YCP module Internet moved from yast2-network to yast2 to remove
