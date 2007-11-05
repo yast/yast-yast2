@@ -29,6 +29,8 @@ Conflicts:	yast2-network < 2.16.6
 # Hotplug and HwStatus modules
 Conflicts:	yast2-installation < 2.16.2
 Conflicts:	yast2-update < 2.16.1
+# Installation::dirinstall_target
+Conflicts:	yast2-packager < 2.16.4
 
 Provides:	yast2-lib-sequencer
 Obsoletes:	yast2-lib-sequencer

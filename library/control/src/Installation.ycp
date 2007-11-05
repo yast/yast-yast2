@@ -151,6 +151,12 @@
 
     global string update_backup_path = "/var/adm/backup";
 
+    // dirinstall-related
+
+    global boolean dirinstall_installing_into_dir = false;
+
+    global string dirinstall_target = "/var/tmp/dirinstall";
+
     //---------------------------------------------------------------
     // constructor
 
