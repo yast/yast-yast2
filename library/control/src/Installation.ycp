@@ -157,6 +157,8 @@
 
     global string dirinstall_target = "/var/tmp/dirinstall";
 
+    global integer dirinstall_target_time = 0;
+
     //---------------------------------------------------------------
     // constructor
 
