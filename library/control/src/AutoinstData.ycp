@@ -1,0 +1,53 @@
+/**
+ * File:	modules/AutoinstData.ycp
+ * Package:	Autoyast
+ * Summary:	Data storage for Autoinstallation
+ * Authors:	Anas Nashif <nashif@suse.de>
+ *		Uwe Gansert <ug@suse.de>
+ *		Lukas Ocilka <locilka@suse.cz>
+ *
+ * $Id:$
+ */
+
+{
+    module "AutoinstData";
+
+    /* Moved here from AutoinstGeneral.ycp */
+
+    //
+    // Keyboard
+    //
+    //global map keyboard = $[];
+
+    //
+    // Language
+    //
+    //global string language = "";
+
+    //
+    // Mouse, if not autoprobed
+    //
+    global map  mouse = $[];
+
+    //
+    // Clock Settings
+    //
+    //global map Clock = $[];
+
+
+    /* Moved here from AutoinstSoftware.ycp */
+
+    // Packages that should be installed in continue mode
+    global list<string> post_packages = [];
+
+    /* Moved here from AutoinstStorage.ycp */
+
+    // Show warning for /boot cyl <1024
+    global boolean BootCylWarning = true;
+
+    // Show warning for /boot on raid
+    global boolean BootRaidWarning = true;
+
+    // Show warning for /boot on lvm
+    global boolean BootLVMWarning = true;
+}

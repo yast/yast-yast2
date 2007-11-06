@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Nov  6 18:22:47 CET 2007 - locilka@suse.cz
+
+- Added new YCP module AutoinstData (which holds all data shared
+  between Autoinstallation and other YaST modules) to break cyclic
+  dependencies.
+- 2.16.8
+
+-------------------------------------------------------------------
 Mon Nov  5 11:19:38 CET 2007 - locilka@suse.cz
 
 - Dirinstall-related global data added to Installation YCP module.
