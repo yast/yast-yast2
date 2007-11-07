@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov  7 20:59:53 CET 2007 - mzugec@suse.cz
+
+- added new function ListDevicesExcept(string)
+- 2.16.9 
+
+-------------------------------------------------------------------
 Tue Nov  6 18:22:47 CET 2007 - locilka@suse.cz
 
 - Added new YCP module AutoinstData (which holds all data shared
