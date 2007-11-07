@@ -1376,5 +1376,15 @@ global string ValidCharsIfcfg () {
     return String::ValidCharsFilename ();
 }
 
+/**
+ * list of all devices except given one by parameter dev
+ * also loopback is ommited
+ */
+
+global list<string> ListDevicesExcept(string dev){
+ list<string> devices = filter(string s, LocateNOT("DEVICE", dev), {return s!="lo";});
+ return devices;
+}
+
 /* EOF */
 }
