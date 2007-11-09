@@ -2,7 +2,7 @@
 # Makefile.am for y2c_network/doc
 #
 
-# SUBDIRS = autodocs examples screenshots
+SUBDIRS = autodocs examples screenshots
 
 htmldir = $(docdir)
 
