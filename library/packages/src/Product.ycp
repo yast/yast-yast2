@@ -112,7 +112,7 @@ global list<map<string,any> > FindBaseProducts() {
      */
     global define void Product () ``{
 
-	if (Stage::initial ())
+	if (Stage::initial () && ! Mode::live_installation ())
 	{
 	    // it should use the same mechanism as running system. But it would
 	    // mean to initialize package manager from constructor, which is
