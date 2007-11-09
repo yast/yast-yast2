@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Nov  9 10:22:30 CET 2007 - jsrain@suse.cz
+
+- added manpage for yast (#336004)
+
+-------------------------------------------------------------------
 Wed Nov  7 20:59:53 CET 2007 - mzugec@suse.cz
 
 - added new function ListDevicesExcept(string)
