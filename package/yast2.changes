@@ -4,6 +4,8 @@ Fri Nov  9 12:23:00 CET 2007 - jsrain@suse.cz
 - added manpage for yast (#336004)
 - initialize product name during live installation properly
   (#297609)
+- changed labels of software confirmation popup to Install/Cancel,
+  resp. Uninstall/Cancel (#215195)
 
 -------------------------------------------------------------------
 Wed Nov  7 20:59:53 CET 2007 - mzugec@suse.cz

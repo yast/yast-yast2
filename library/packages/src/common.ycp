@@ -145,7 +145,10 @@ boolean PackageDialog(list<string> packages, boolean install, string message) {
 
     boolean doit = (Mode::commandline()) ? (CommandLine::Interactive() ? AskPackages(packs, install) : true ) : Popup::AnyQuestionRichText(
 	"", text, 40, 10,
-	Label::ContinueButton (), Label::CancelButton (),
+// labels changed for bug #215195
+//	Label::ContinueButton (), Label::CancelButton (),
+// push button label
+	install ? Label::InstallButton () : _("&Uninstall"), Label::CancelButton (),
 	`focus_yes
     );
 
