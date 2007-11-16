@@ -3,6 +3,7 @@ Fri Nov 16 11:03:43 CET 2007 - locilka@suse.cz
 
 - SCR agent for any_XML has been moved from yast2-packager-2.16.5
   to yast2-2.16.11 (#332187).
+- Adjusted RPM dependencies.
 - 2.16.11
 
 -------------------------------------------------------------------

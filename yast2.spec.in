@@ -17,6 +17,8 @@ Requires:	coreutils sysconfig
 Requires:	yast2-xml yast2-hardware-detection
 # for SLPAPI.pm
 Requires:	yast2-perl-bindings
+# for ag_anyxml
+Requires:	perl-XML-Bare
 
 # moved cfg_security.scr
 Conflicts:	yast2-security <= 2.13.2
@@ -29,7 +31,8 @@ Conflicts:	yast2-network < 2.16.6
 # Hotplug and HwStatus modules
 Conflicts:	yast2-installation < 2.16.2
 Conflicts:	yast2-update < 2.16.1
-Conflicts:	yast2-packager < 2.16.4
+# ag_anyxml moved to yast2 from yast2-packager
+Conflicts:	yast2-packager < 2.16.5
 Conflicts:	yast2-mouse < 2.16.0
 Conflicts:	autoyast2-installation < 2.16.2
 
@@ -46,6 +49,7 @@ Provides:	yast2-installation:/usr/share/YaST2/modules/Product.ycp
 Provides:	yast2-installation:/usr/share/YaST2/modules/Hotplug.ycp
 Provides:	yast2-installation:/usr/share/YaST2/modules/HwStatus.ycp
 Provides:	yast2-network:/usr/share/YaST2/modules/Internet.ycp
+Provides:	yast2-packager:/usr/lib/YaST2/servers_non_y2/ag_anyxml
 Provides:       yast2-mail-aliases
 
 Summary:	Main YaST2 package
