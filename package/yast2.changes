@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Nov 16 11:03:43 CET 2007 - locilka@suse.cz
+
+- SCR agent for any_XML has been moved from yast2-packager-2.16.5
+  to yast2-2.16.11 (#332187).
+- 2.16.11
+
+-------------------------------------------------------------------
 Fri Nov  9 12:23:00 CET 2007 - jsrain@suse.cz
 
 - added manpage for yast (#336004)
