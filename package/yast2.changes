@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Nov 19 17:58:09 CET 2007 - kmachalkova@suse.cz
+
+- Initialize locale variables (UTF-8 or not) properly to prevent
+  displaying garbled characters in console (#335246) (thanks, mfabian
+  and werner)
+
+-------------------------------------------------------------------
 Fri Nov 16 11:03:43 CET 2007 - locilka@suse.cz
 
 - SCR agent for any_XML has been moved from yast2-packager-2.16.5
