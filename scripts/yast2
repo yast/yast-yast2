@@ -232,55 +232,99 @@ fi
 
 if [ "$SELECTED_GUI" = "ncurses" ]; then
     if check_ncurses ; then
-	TTY=`/usr/bin/tty`
+	TTY=$(/usr/bin/tty)
+	TTY=${TTY#/dev/}
+	case "$TTY" in
+	    tty[0-9]|tty[0-9][0-9])
+	        TTY=console
+		;;
+	esac
+	UC_STARTED=no
+	UTF8STATUS=0
+	UTF8TESTED=no
+	if test -x /bin/testutf8 ; then
+            # binary /bin/testutf8 is missing at least on s390x, #158001
+	    # return code of the /bin/testutf8 (more info in bug #179989)
+	    # 0=stdin does not support utf8, 1=not utf8, 2=utf8
+	    /bin/testutf8
+            UTF8STATUS=$?
+	    UTF8TESTED=yes
+	fi
         # on console, start yast in UTF-8 locale (only on a 'local' console)
-        if [ "$TERM" = "linux" -a \( "$TTY" = /dev/console -o "$TTY" != "${TTY#/dev/tty[0-9]}" \) ] ; then
+        if test "$TERM" = "linux" -a "$TTY" = "console" ; then
 	    case "$LANG" in
 		# if it is known that a language doesn't yet work well with ncurses
 		# on console use English instead:
 		ja*|ko*|zh*)
 		    export LANG=en_US.UTF-8
 		    export LC_CTYPE=en_US.UTF-8
+		    export LC_ALL=en_US.UTF-8 # just to make sure.
 		;;
 		*)
-	            # get rid of encoding and/or modifier
-		    # but not for POSIX and C locale 
-		    # (POSIX.UTF-8 doesn't make sense)
-		    if [ "$LANG" != "POSIX" ] && [ $LANG != "C" ]; then
-		        export LANG=${LANG%%[.@]*}.UTF-8
-		    fi
-		    export LC_CTYPE=${LC_CTYPE%%[.@]*}.UTF-8
+	            # get rid of encoding and/or modifier from all the
+		    # locale environment variables and add .UTF-8.
+		    # But leave those which are empty or set to POSIX or C alone,
+		    # POSIX.UTF-8, C.UTF-8, or .UTF-8 doesn't make sense (bug #285178).
+                    for lc in LANG LC_CTYPE LC_NUMERIC LC_TIME	\
+	                      LC_COLLATE LC_MONETARY LC_MESSAGES	\
+	                      LC_PAPER LC_NAME LC_ADDRESS 		\
+	                      LC_TELEPHONE LC_MEASUREMENT		\
+	                      LC_IDENTIFICATION LC_ALL
+                    do
+                        eval val="\$$lc"
+		        if [ -n "$val" -a "$val" != "POSIX" -a "$val" != "C" ] ; then
+		            eval $lc=\${val%%[.@]*}.UTF-8
+			    eval export $lc
+		        fi
+		    done
+
 	        ;;
 	    esac
-	    if /bin/testutf8 ; [ $? -eq 1 ] ; then
-		/usr/bin/test -x /bin/unicode_start && /bin/unicode_start
-		uc_started=1
+	    if [ $UTF8TESTED = "yes" -a $UTF8STATUS -ne 2 -a -x /bin/unicode_start ] ; then
+		/bin/unicode_start
+		UC_STARTED=yes
 	    fi
         else
 	    case "$TERM" in
-		vt*|xterm*|linux|screen*)
-		    # probe terminal and fix lang settings
-		    UTF8TESTED=0
-		    # binary /bin/testutf8 is missing at least on s390x, #158001
-		    /usr/bin/test -x /bin/testutf8 && UTF8TESTED=1 && /bin/testutf8
-		    # return code of the /bin/testutf8 (more info in bug #179989)
-		    # 0=stdin does not support utf8, 1=not utf8, 2=utf8
+		rxvt*|vt*|xterm*|linux|screen*)
+		    # fix locale settings if they are not suitable for the
+		    # terminal setting (UTF-8 or not)
+		    # But should we really do this here? Isn't it user error
+		    # if the locale settings are not suitable for the terminal
+		    # used?
 
-		    UTF8STATUS=$?
-		    
-		    # the terminal supports utf8, but it's not currently set
-		    # so strip .UTF-8 suffix from locale	
-		    if [ "$UTF8TESTED" == "1" ] && [ $UTF8STATUS -eq 1 ] ; then
-			/usr/bin/test -n "$LANG" && LANG=${LANG%.UTF-8}
-			/usr/bin/test -n "$LC_CTYPE" && LC_CTYPE=${LC_CTYPE%.UTF-8}
-		    # the terminal supports utf8 and it is currently set
-		    # so strip any possible suffix from locale and append .UTF-8
-		    elif [ "$UTF8TESTED" == "1" ] && [ $UTF8STATUS -eq 2 ]; then
-			#do not append .UTF-8 suffix to POSIX and C locale (#285178)
-			if [ "$LANG" != "POSIX" ] && [ $LANG != "C" ]; then
-			    /usr/bin/test -n "$LANG" && LANG=${LANG%%[.@]*}.UTF-8
-			fi
-			/usr/bin/test -n "$LC_CTYPE" && LC_CTYPE=${LC_CTYPE%%[.@]*}.UTF-8
+  		    # the terminal is not in UTF-8 mode, strip .UTF-8 suffix
+		    # from the locale variables:
+		    if [ "$UTF8TESTED" == "yes" -a $UTF8STATUS -eq 1 ] ; then
+                        for lc in LANG LC_CTYPE LC_NUMERIC LC_TIME	\
+    	                      LC_COLLATE LC_MONETARY LC_MESSAGES	\
+    	                      LC_PAPER LC_NAME LC_ADDRESS 		\
+    	                      LC_TELEPHONE LC_MEASUREMENT		\
+    	                      LC_IDENTIFICATION LC_ALL
+                        do
+                            eval val="\$$lc"
+    		            if [ -n "$val" ] ; then
+    		                eval $lc=\${val%%.UTF-8}
+    			        eval export $lc
+    		            fi
+			done
+		    # the terminal is in UTF-8 mode so strip any possible suffix from
+		    # the locale variables and append .UTF-8.
+		    # But leave those which are empty or set to POSIX or C alone,
+		    # POSIX.UTF-8, C.UTF-8, or .UTF-8 doesn't make sense (bug #285178).
+		    elif [ "$UTF8TESTED" == "yes" -a $UTF8STATUS -eq 2 ] ; then
+                        for lc in LANG LC_CTYPE LC_NUMERIC LC_TIME	\
+    	                      LC_COLLATE LC_MONETARY LC_MESSAGES	\
+    	                      LC_PAPER LC_NAME LC_ADDRESS 		\
+    	                      LC_TELEPHONE LC_MEASUREMENT		\
+    	                      LC_IDENTIFICATION LC_ALL
+                        do
+                            eval val="\$$lc"
+    		            if [ -n "$val" -a "$val" != "POSIX" -a "$val" != "C" ] ; then
+    		                eval $lc=\${val%%[.@]*}.UTF-8
+    			        eval export $lc
+			    fi
+			done
 		    fi
 		    #default: do nothing, keep locale untouched
 		;;
@@ -321,8 +365,9 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 	    fi
 	  done
 	fi
-	if [ "$uc_started" ] ; then
-	    /usr/bin/test -x /bin/unicode_stop && /bin/unicode_stop
+	if [ "$UC_STARTED" = "yes" -a -x /bin/unicode_stop ] ; then
+	    /bin/unicode_stop
+	    UC_STARTED=no
 	fi
     else
 	rpm -V yast2-core yast2-ncurses yast2-qt yast2-gtk >&2
