@@ -196,5 +196,35 @@ global define void SetDemand(boolean demand) {
     SCR::Write(.sysconfig.network.providers, nil);
 }
 
+/**
+ * DANGEROUS function. Searches for all standard PID files of dhcpcd,
+ * then kills all dhcpcds running (first SIGHUP, then SIGKILL).
+ * Works via WFM (only for local dhcpcd).
+ */
+global boolean ShutdownAllLocalDHCPClients () {
+    string pid_directory = "/var/run/";
+
+    list <string> dhcp_pidfiles = (list <string>) WFM::Read (.local.dir, pid_directory);
+    // only dhcpcd files
+    dhcp_pidfiles = filter (string one_pidfile, dhcp_pidfiles, {
+	return (regexpmatch (one_pidfile, "dhcpcd-.*\.pid"));
+    });
+
+    y2milestone ("DHCPCD uses these file under %1 directory: %2", pid_directory, dhcp_pidfiles);
+
+    if (size (dhcp_pidfiles) == 0) return true;
+
+    foreach (string one_pidfile, dhcp_pidfiles, {
+	string process_ID = (string) WFM::Read (.local.string, sformat ("%1%2", pid_directory, one_pidfile));
+	y2milestone ("Killing process ID: %1", process_ID);
+
+	// Calls a correct kill command for SIGHUP and waits
+	// Then a confirmation SIGKILL is called (should be ignored because process has hopefully already ended)
+	WFM::Execute (.local.bash, sformat ("(kill -1 %1 && sleep 1); kill -9 %1 2>/dev/null;", process_ID));
+    });
+
+    return true;
+}
+
 /* EOF */
 }

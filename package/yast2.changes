@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov 20 10:50:24 CET 2007 - locilka@suse.cz
+
+- Added new Internet::ShutdownAllLocalDHCPClients function
+  for killing dhcpcd (#308577).
+
+-------------------------------------------------------------------
 Mon Nov 19 17:58:09 CET 2007 - kmachalkova@suse.cz
 
 - Initialize locale variables (UTF-8 or not) properly to prevent
