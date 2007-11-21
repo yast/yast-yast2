@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Nov 21 15:36:03 CET 2007 - mzugec@suse.cz
+
+- title-style capitalization of GetDeviceType() (#223873)
+
+-------------------------------------------------------------------
 Tue Nov 20 10:50:24 CET 2007 - locilka@suse.cz
 
 - Added new Internet::ShutdownAllLocalDHCPClients function
