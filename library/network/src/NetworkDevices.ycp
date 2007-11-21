@@ -184,15 +184,15 @@ global string device_type (string dev) {
  * Return device type in human readable form :-)
  * @param dev device
  * @return device type 
- * @example GetDeviceType(eth-bus-pci-0000:01:07.0) -> "network card"
- * @example GetDeviceType(modem0) -> "modem"
+ * @example GetDeviceType(eth-bus-pci-0000:01:07.0) -> "Network Card"
+ * @example GetDeviceType(modem0) -> "Modem"
  */
 global string GetDeviceType(string dev) {
     if (regexpmatch(dev,"^" + DeviceRegex["netcard"]:"")) {
-	return(_("network card"));
+	return(_("Network Card"));
     }
     else if (regexpmatch(dev,"^" + DeviceRegex["modem"]:"")) {
-	return(_("modem"));
+	return(_("Modem"));
     }
     else if (regexpmatch(dev,"^" + DeviceRegex["isdn"]:"")) {
 	return(_("ISDN"));
@@ -200,7 +200,7 @@ global string GetDeviceType(string dev) {
     else if (regexpmatch(dev,"^" + DeviceRegex["dsl"]:"")) {
 	return(_("DSL"));
     }
-    else return(_("unknown"));
+    else return(_("Unknown"));
 }
 
 /**
