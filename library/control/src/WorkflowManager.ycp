@@ -79,7 +79,8 @@
      * Returns list of additional inst_finish steps requested by
      * additional workflows.
      *
-     * @param string which type of finish ("before_chroot", "after_chroot" or "before_umount")
+     * @param string which_steps (type) of finish ("before_chroot", "after_chroot" or "before_umount")
+     * @return list <string> steps to be called ...see which_steps parameter
      */
     global list <string> GetAdditionalFinishSteps (string which_steps) {
 	if (which_steps == "before_chroot") {
@@ -300,6 +301,9 @@
 
     string control_files_dir = "additional-control-files";
 
+    /**
+     * Returns the current (default) directory where workflows are stored in.
+     */
     string GetWorkflowDirectory () {
 	return sformat ("%1/%2", Directory::tmpdir, control_files_dir);
     }
@@ -310,6 +314,7 @@
      *
      * @param integer src_id with source ID
      * @param string ident with pattern name (or another unique identification), empty for Add-Ons
+     * @return string path to a control file based on src_id and ident params
      */
     string GenerateAdditionalControlFilePath (integer src_id, string ident) {
 	// special handling for Add-Ons (they have no special ident)
@@ -366,6 +371,7 @@ test -d '%1' || /bin/mkdir -p '%1';
      * @param type `addon or `pattern
      * @param src_id with Source ID
      * @param string name with unique identification
+     * @return string path to already cached workflow file, control file is downloaded if not yet chached
      */
     string GetCachedWorkflowFilename (symbol type, integer src_id, string name) {
 	if (type == `addon) {
@@ -1134,6 +1140,8 @@ rm -rf *.xml *.ycp",
     /**
      * Returns whether some additional control files were added or removed
      * from the last time MergeWorkflows() was called.
+     *
+     * @return boolen see description
      */
     global boolean SomeWorkflowsWereChanged () {
 	return unmerged_changes;
