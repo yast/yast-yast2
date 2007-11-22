@@ -85,10 +85,15 @@ global map<string, string> transform_map_query = $[
 ];
 
 /**
- * Escape reserved characters in string used as a part of URL (e.g. '%' => '%25', '@' => '%40'...)
+ * Escape reserved characters in string used as a part of URL (e.g. '%25' => '%', '%40' => '@'...)
  *
  * @param in input string to escape
- * @return string escaped string
+ * @param transformation map
+ * @return string unescaped string
+ *
+ * @example
+ *	URL::UnEscapeString ("http%3a%2f%2fsome.nice.url%2f%3awith%3a%2f%24p#ci%26l%2fch%40rs%2f", URL::transform_map_passwd)
+ *		-> http://some.nice.url/:with:/$p#ci&l/ch@rs/
  */
 
 global string UnEscapeString(string in, map<string,string> transform) {
@@ -116,7 +121,12 @@ global string UnEscapeString(string in, map<string,string> transform) {
  * Escape reserved characters in string used as a part of URL (e.g. '%' => '%25', '@' => '%40'...)
  *
  * @param in input string to escape
+ * @param transformation map
  * @return string escaped string
+ *
+ * @example
+ *	URL::EscapeString ("http://some.nice.url/:with:/$p#ci&l/ch@rs/", URL::transform_map_passwd)
+ *		-> http%3a%2f%2fsome.nice.url%2f%3awith%3a%2f%24p#ci%26l%2fch%40rs%2f
  */
 
 global string EscapeString(string in, map<string,string> transform) {
