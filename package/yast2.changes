@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov 23 16:21:28 CET 2007 - mzugec@suse.cz
+
+- fixed URL module for "smb" type
+- 2.16.12 
+
+-------------------------------------------------------------------
 Thu Nov 22 17:45:45 CET 2007 - locilka@suse.cz
 
 - Fixed URL.ycp documentation, added some examples.

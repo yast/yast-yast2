@@ -186,7 +186,6 @@ global define map Parse(string url) ``{
 	"(#(.*))?"
     );
     y2debug("rawtokens=%1", rawtokens);
-
     map tokens = $[];
     tokens["scheme"] = rawtokens[1]:"";
     string pth = rawtokens[3]:"";
@@ -226,6 +225,16 @@ global define map Parse(string url) ``{
     else
 	tokens["host"] = userpass[7]:"";
 
+    // some exceptions for samba scheme (there is optional extra option "domain")
+    if (tokens["scheme"]:""=="samba" || tokens["scheme"]:""=="smb"){
+     list<string> tmp_list = filter(string row, splitstring(tokens["path"]:"", "/"), {return (size(row)>0);});
+     if (size(tmp_list)>1){
+      tokens["domain"] = tokens["host"]:"";
+      tokens["host"] = tmp_list[0]:"";
+      tokens["path"] = tmp_list[1]:"";
+     }
+	else tokens["path"] = deletechars(tokens["path"]:"", "/");
+    }
     y2debug("tokens=%1", tokens);
     return tokens;
 }
@@ -281,16 +290,15 @@ global define boolean Check(string url) ``{
  * @see also perl-URI: URI(3)
  */
 global define string Build (map tokens) ``{
-
 	string url = "";
 	string userpass = "";
 
 	if(regexpmatch(tokens["scheme"]:"", "^[[:alpha:]]*$"))
 	{
-		url = tokens["scheme"]:"";
+	 if (tokens["scheme"]:"" == "samba") url="smb";
+		else url = tokens["scheme"]:"";
 	}
 	y2debug("url: %1", url);
-
 	if (tokens["user"]:"" != "")
 	{
 		userpass = EscapeString(tokens["user"]:"", transform_map_passwd);
@@ -300,11 +308,14 @@ global define string Build (map tokens) ``{
 	{
 		userpass = sformat("%1:%2", userpass, EscapeString(tokens["pass"]:"", transform_map_passwd) );
 	}
-	if (size(userpass) > 0 )
-		userpass = userpass + "@";
+	if (size(userpass) > 0 ) userpass = userpass + "@";
 
 	url = sformat("%1://%2", url, userpass);
 	y2debug("url: %1", url);
+
+	if (tokens["scheme"]:"" == "samba" && size(tokens["domain"]:"")>0 ){
+	 url = sformat("%1%2/", url, tokens["domain"]:"");
+	}
 
 	if(Hostname::CheckFQ(tokens["host"]:"") || IP::Check(tokens["host"]:""))
 	{
