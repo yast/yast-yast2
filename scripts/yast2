@@ -39,6 +39,8 @@ redirect()
     fi
 }
 
+exit_code=0
+
 exit_trap()
 {
     # handily, exit_code is set to $? of y2base.
@@ -54,6 +56,7 @@ redirect
 # Accumulated arguments for both the Qt UI and y2cc; currently supported:
 # --fullscreen
 # --noborder
+# well also for gtk and ncurses
 Y2QT_ARGS=""
 GNOME_SHELL="$ybindir/y2controlcenter-gnome"
 KDE_SHELL="$ybindir/y2controlcenter"
@@ -347,37 +350,17 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 	fi
 
 	# this fixes launching of interactive subprocesses, #150799
-	NCTHREADS=--nothreads
+	Y2QT_ARGS="$Y2QT_ARGS --nothreads"
 
 	# set color theme, if defined
 	if [ ! -z "$Y2NCURSES_COLOR_THEME" ]; then
 	    export Y2NCURSES_COLOR_THEME="$Y2NCURSES_COLOR_THEME" 
 	fi
 
-	# use menu.ycp
-	# TODO: this does not need to be a special case. refactor after release
-	if [ $module == "menu" ] ; then
-	    while true ; do
-		$ybindir/y2base menu ncurses $NCTHREADS
-		exit_code=$?
-		if [ ! -e "/var/lib/YaST2/restart_menu" ] ; then
-		    break
-		fi
-	    done
-	else
-
-	  while true ; do
-	    $ybindir/y2base "$module" "$@" ncurses $NCTHREADS
-	    exit_code=$?
-	    if [ ! $module == "online_update" -o ! -e "/var/lib/YaST2/selected_patches.ycp" ] ; then
-		break
-	    fi
-	  done
-	fi
     else
 	rpm -V yast2-core yast2-ncurses yast2-qt yast2-gtk >&2
 	echo "Something is wrong with the YaST user interface." >&2
-	exit_code=1
+	exit_code=1		# also skips y2base later
     fi
 # quick hack: treat gtk like qt
 elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
@@ -389,12 +372,7 @@ elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
     if [ $module == "menu" ]; then
 	select_control_center
     fi
-	
-    if [ $module == "menu" -a -e "$y2ccbin" ] ; then
-	$y2ccbin $Y2QT_ARGS "$@"
-	exit_code=$?
-    else
-	
+
 	# Special case: "sw_single" needs a lot of screen space -
 	# always start it in full screen mode.
 	#
@@ -414,18 +392,31 @@ elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
 	        esac
 	    fi
 	fi
-
-      while true ; do
-	$ybindir/y2base $module "$@" "$SELECTED_GUI" $Y2_GEOMETRY $Y2QT_ARGS
-	exit_code=$?
-
-	if [ ! $module == "online_update" -o ! -e "/var/lib/YaST2/selected_patches.ycp" ] ; then
-	    break
-	fi
-      done
-    fi
 else
     echo >&2 "Internal error, unhandled '$SELECTED_GUI'"
+fi
+
+
+# do it!
+# $@ are args for ycp
+if [ $module == "menu" -a -f "$y2ccbin" ] ; then
+    $y2ccbin $Y2QT_ARGS "$@"
+    exit_code=$?
+else
+    # loop while necessary
+    case "$module" in
+	menu) REDO_FILE=/var/lib/YaST2/restart_menu ;;
+	online_update) REDO_FILE=/var/lib/YaST2/selected_patches.ycp ;;
+	*) ;;
+    esac
+    #  break out on errors, #343258
+    while [ $exit_code = 0 ]; do
+	$ybindir/y2base $module "$@" "$SELECTED_GUI" $Y2_GEOMETRY $Y2QT_ARGS
+	exit_code=$?
+	if [ -z "$REDO_FILE" -o ! -f "$REDO_FILE" ]; then
+	    break
+	fi
+    done
 fi
 
 # cleanup
