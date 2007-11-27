@@ -1077,7 +1077,7 @@
     /**
      * Show a "Release Notes" button with the specified label and ID if there is a "steps" panel
      **/
-    global void ShowReleaseNotesButton( string label, any id )
+    global void ShowReleaseNotesButton( string label, string id )
     {
 	if ( UI::WizardCommand(`ShowReleaseNotesButton( label, id ) ) == false )
 	{
