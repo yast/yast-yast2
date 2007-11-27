@@ -204,6 +204,13 @@ else
 	shift
 fi
 
+# Transform every argument into a ycp string, that is surround all
+# args by ("...").  args may contain spaces.
+a=("$@")
+b=("${a[@]/#/(\"}")
+c=("${b[@]/%/\")}")
+set -- "${c[@]}"
+
 case "`/usr/bin/basename $0`" in
 	YaST|yast|yast1|zast)
 		unset DISPLAY
@@ -358,12 +365,6 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 		fi
 	    done
 	else
-	    # Transform every argument into a ycp string, that is surround all
-	    # args by ("...").  args may contain spaces.
-	    a=("$@")
-	    b=("${a[@]/#/(\"}")
-	    c=("${b[@]/%/\")}")
-	    set -- "${c[@]}"
 
 	  while true ; do
 	    $ybindir/y2base "$module" "$@" ncurses $NCTHREADS
@@ -372,10 +373,6 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 		break
 	    fi
 	  done
-	fi
-	if [ "$UC_STARTED" = "yes" -a -x /bin/unicode_stop ] ; then
-	    /bin/unicode_stop
-	    UC_STARTED=no
 	fi
     else
 	rpm -V yast2-core yast2-ncurses yast2-qt yast2-gtk >&2
@@ -418,13 +415,6 @@ elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
 	    fi
 	fi
 
-	# Transform every argument into a ycp string, that is surround all
-	# args by ("...").  args may contain spaces.
-	a=("$@")
-	b=("${a[@]/#/(\"}")
-	c=("${b[@]/%/\")}")
-	set -- "${c[@]}"
-
       while true ; do
 	$ybindir/y2base $module "$@" "$SELECTED_GUI" $Y2_GEOMETRY $Y2QT_ARGS
 	exit_code=$?
@@ -436,6 +426,11 @@ elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
     fi
 else
     echo >&2 "Internal error, unhandled '$SELECTED_GUI'"
+fi
+
+# cleanup
+if [ "$UC_STARTED" = "yes" -a -x /bin/unicode_stop ] ; then
+    /bin/unicode_stop
 fi
 
 if [ "$UID" = 0 ]; then
