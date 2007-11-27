@@ -890,9 +890,7 @@
     {
 	string icon = icon_name == "" ? "" : ( icon_path + "/" + icon_name + ".png" );
 
-	// UI::WizardCommand(`SetVerboseCommands( true ) );
 	UI::WizardCommand(`SetDialogIcon( icon ) );
-	// UI::WizardCommand(`SetVerboseCommands( false ) );
     }
 
 
