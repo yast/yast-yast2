@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Nov 27 13:47:41 CET 2007 - mvidner@suse.cz
+
+- /sbni/yast2: Factored out the y2base loop. Exit it on failure (#343258).
+
+-------------------------------------------------------------------
 Fri Nov 23 16:21:28 CET 2007 - mzugec@suse.cz
 
 - fixed URL module for "smb" type
