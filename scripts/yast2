@@ -14,8 +14,16 @@
 
 export PATH=/sbin:/usr/sbin:$PATH
 
+# allow for a different prefix
+mydir=${0%/[YyZz]a[Ss][Tt]*}
+if [ -z "$mydir" -o "$mydir" = "/sbin" ]; then 
+    YAST_PREFIX=/usr
+else
+    YAST_PREFIX=${mydir%/sbin}
+fi
+
 # load common script functions
-. /usr/lib/YaST2/bin/yast2-funcs
+. $YAST_PREFIX/lib/YaST2/bin/yast2-funcs
 
 
 # #211392, #265263
@@ -78,7 +86,7 @@ printhelp()
 
 listmodules()
 {
-    list=`/bin/ls -1 /usr/share/applications/YaST2/*.desktop 2>/dev/null`
+    list=`/bin/ls -1 $YAST_PREFIX/share/applications/YaST2/*.desktop 2>/dev/null`
 
     if [ -z "$list" ] ; then
 	echo "No modules installed"
