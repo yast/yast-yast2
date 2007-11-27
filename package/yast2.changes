@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov 27 19:13:03 CET 2007 - sh@suse.de
+
+- Require yast2-core >= 2.16.10 in .spec 
+- 2.16.14
+
+-------------------------------------------------------------------
 Tue Nov 27 16:48:57 CET 2007 - mvidner@suse.cz
 
 - Wizard::ShowReleaseNotesButton id is string, not any.
