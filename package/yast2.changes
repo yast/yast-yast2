@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov 27 16:48:57 CET 2007 - mvidner@suse.cz
+
+- Wizard::ShowReleaseNotesButton id is string, not any.
+- 2.16.13
+
+-------------------------------------------------------------------
 Tue Nov 27 13:47:41 CET 2007 - mvidner@suse.cz
 
 - /sbin/yast2: Factored out the y2base loop. Exit it on failure (#343258).
