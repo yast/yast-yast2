@@ -78,7 +78,8 @@ global define boolean Detection(string class) ``{
 
     UI::SetFocus (`id(`continue));
 
-    any ret = UI::UserInput();
+    // for autoinstallation popup has timeout 10 seconds (#192181)
+    any ret = Mode::autoinst() ? UI::TimeoutUserInput(10*1000) : UI::UserInput();
     UI::CloseDialog();
 
     result = true;

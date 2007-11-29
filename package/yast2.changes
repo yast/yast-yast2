@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 29 13:19:11 CET 2007 - mzugec@suse.cz
+
+- for AY Confirm::Detection popup has timeout 10 seconds (#192181)
+- 2.16.15 
+
+-------------------------------------------------------------------
 Tue Nov 27 19:13:03 CET 2007 - sh@suse.de
 
 - Require yast2-core >= 2.16.10 in .spec 
