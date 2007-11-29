@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Nov 29 15:35:40 CET 2007 - locilka@suse.cz
+
+- Progress module has been extended to show icons for stages.
+  Function NewProgressIcons() just extends the New() function
+  with list of images to be shown.
+
+-------------------------------------------------------------------
 Thu Nov 29 13:19:11 CET 2007 - mzugec@suse.cz
 
 - for AY Confirm::Detection popup has timeout 10 seconds (#192181)
