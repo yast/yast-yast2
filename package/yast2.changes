@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 29 13:10:33 CET 2007 - mzugec@suse.cz
+
+- for AY Confirm::Detection popup has timeout 10 seconds (#192181)
+- 2.13.105 
+
+-------------------------------------------------------------------
 Thu Oct 25 11:50:28 CEST 2007 - locilka@suse.cz
 
 - Evaluate also textdomain of a merged control file when searching
