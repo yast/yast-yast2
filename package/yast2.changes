@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov 30 13:53:24 CET 2007 - mzugec@suse.cz
+
+- added function NetworkService::isNetworkRunning()
+- 2.13.106
+
+-------------------------------------------------------------------
 Thu Nov 29 13:10:33 CET 2007 - mzugec@suse.cz
 
 - for AY Confirm::Detection popup has timeout 10 seconds (#192181)
