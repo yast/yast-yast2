@@ -143,8 +143,8 @@
 	return `id (sformat ("mark_stage_%1",i));
     }
 
-    term IconId (integer i) {
-	return `id (sformat ("mark_icon_%1",i));
+    string IconId (integer i) {
+	return sformat ("mark_icon_%1",i);
     }
 
     string FallbackIconInvisible () {
@@ -169,14 +169,12 @@
 	    one_icon = one_icon + ".png";
 	}
 
-	// absolute
-	if (regexpmatch (one_icon, "^/")) {
-	    // do nothing
-	// relative
-	} else if (regexpmatch (one_icon, "/")) {
+	// relative path (to Directory::icondir)
+	if (regexpmatch (one_icon, "/") && ! regexpmatch (one_icon, "^/")) {
 	    one_icon = Directory::icondir + one_icon;
 	// hopefully you know what you do
-	} else {
+	// just image name
+	} else if (! regexpmatch (one_icon, "/")) {
 	    one_icon = Directory::icondir + "32x32/apps/" + one_icon;
 	}
 
@@ -200,7 +198,7 @@
 	while (i < number_of_stages) {
 	    i = i + 1;
 	    one_icon = NormalizeIconPath (global_invisible_icons_definition[i]:nil, false);
-	    ret = add (ret, `ReplacePoint (IconId (i), `Image (one_icon, "[_]")));
+	    ret = add (ret, `ReplacePoint (`id (IconId (i)), `Image (one_icon, "[_]")));
 	    ret = add (ret, `HSpacing (2));
 	}
 
@@ -316,22 +314,22 @@
      * @param list <list <string> > icons_definition
      *
      * @struct icons_definition = $[
-     *   [ // first 'invisible'
-     *     "/path/to/icon-gryscale.png",
-     *     nil, // fallback icon will be used
-     *   ],
-     *   [ // then 'visible'
+     *   [ // first 'visible'
      *     "/path/to/icon-highlighted.png"
      *     "/path/to/another-icon-highlighted.png",
      *   ]
+     *   [ // then 'invisible'
+     *     "/path/to/icon-gryscale.png",
+     *     nil, // fallback icon will be used
+     *   ],
      * ]
      *
      * @see Function Progress::New()
      */
     global define void NewProgressIcons (string window_title, string progress_title,
 	integer length, list<string> stg, list tits, string help_textmap, list <list <string> > icons_definition) {
-	global_invisible_icons_definition = icons_definition[0]:[];
-	global_visible_icons_definition   = icons_definition[1]:[];
+	global_visible_icons_definition   = icons_definition[0]:[];
+	global_invisible_icons_definition = icons_definition[1]:[];
 
 	use_icons_in_progress = true;
 	New (window_title, progress_title, length, stg, tits, help_textmap);
@@ -349,6 +347,33 @@
 	New (window_title, progress_title, length, [], [], help_text);
     }
 
+    integer last_highlighted_icon = -1;
+
+    /**
+     * Highlights a progress icon (changes the dimmed one
+     * into a normal one).
+     *
+     * @param integer current step ID
+     */
+    void HighlightProgressIcon (integer step_id) {
+	if (has_icon_progress_bar) {
+	    if (last_highlighted_icon == nil) last_highlighted_icon = -1;
+
+	    // some steps might have been skipped, change all (not changed yet)
+	    // icons one by one
+	    while (last_highlighted_icon < step_id) {
+		last_highlighted_icon = last_highlighted_icon + 1;
+
+		string icon_id = IconId (last_highlighted_icon);
+
+		if (UI::WidgetExists (`id (icon_id))) {
+		    string one_icon = NormalizeIconPath (global_visible_icons_definition[current_step]:nil, true);
+		    UI::ReplaceWidget (`id (icon_id), `Image (one_icon, "[x]"));
+		}
+	    }
+	}
+    }
+
     /**
      * Uses current_step
      */
@@ -359,11 +384,7 @@
 	    return ;
 	}
 
-	if (has_icon_progress_bar)
-	{
-	    string one_icon = NormalizeIconPath (global_visible_icons_definition[current_step]:nil, true);
-	    UI::ReplaceWidget (IconId (current_step), `Image (one_icon, "[x]"));
-	}
+	HighlightProgressIcon (current_step);
 
 	UI::ChangeWidget (`id (`pb), `Value, current_step);
     }
