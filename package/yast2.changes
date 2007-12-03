@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Mon Dec  3 16:43:50 CET 2007 - locilka@suse.cz
+
+- yast2.rpm always depends on the $current version of yast2-core.
+- Updated Progress with icons to rather use Image-Dimm support
+  if available.
+- Added new Icon YCP module to provide basic acces to icon files.
+- Popup::ConfirmAbort now uses Icons.
+- 2.16.16
+
+-------------------------------------------------------------------
 Mon Dec  3 14:24:02 CET 2007 - ug@suse.de
 
 - XMLToYCPString added to convert an XML string to

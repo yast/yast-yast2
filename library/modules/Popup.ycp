@@ -25,6 +25,7 @@ import "Label";
 import "Mode";
 import "Directory";
 import "String";
+import "Icon";
 
 boolean feedback_open = false;
 
@@ -656,6 +657,8 @@ global define boolean ConfirmAbort( symbol severity )
     string abort_button = _("&Abort Installation");
     // Button that will continue with the installation
     string continue_button = _("&Continue Installation");
+    // Dialog icon
+    string icon_name = "warning";
 
     if ( severity == `painless )
     {
@@ -675,6 +678,7 @@ global define boolean ConfirmAbort( symbol severity )
 Linux will not be installed.
 Your hard disk will remain untouched.");
 	}
+	// icon_name = "info";
     }
     else if ( severity == `incomplete )
     {
@@ -702,8 +706,16 @@ You will need to reinstall.");
 
     string message = abort_label + "\n\n" + what_will_happen;
 
-    boolean ret = AnyQuestion (NoHeadline (), message, abort_button,
-			   continue_button, `focus_no);
+    term button_box = AnyQuestionButtonBox (abort_button, continue_button, `focus_no);
+    UI::OpenDialog (
+	`opt (`decorated),
+	popupLayoutInternal (NoHeadline(), message, Icon::IconPath (icon_name), button_box)
+    );
+
+    any user_ret = UI::UserInput();
+    UI::CloseDialog();
+
+    boolean ret = (user_ret == `yes);
 
     y2debug("ConfirmAbort returned: %1", ret);
 
