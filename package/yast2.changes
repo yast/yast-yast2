@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Dec  3 14:24:02 CET 2007 - ug@suse.de
+
+- XMLToYCPString added to convert an XML string to
+  YCP data
+
+-------------------------------------------------------------------
 Thu Nov 29 15:35:40 CET 2007 - locilka@suse.cz
 
 - Progress module has been extended to show icons for stages.

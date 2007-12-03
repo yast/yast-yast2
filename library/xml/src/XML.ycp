@@ -123,6 +123,25 @@
     }
 
     /**
+     * Read XML string into YCP
+     * @param XML string to read
+     * @return Map with YCP data
+     */
+    global define map<string, any> XMLToYCPString( string xmlString) ``{
+	if (size(xmlString) > 0)
+	{
+	    map<string, any> out = (map<string, any>) SCR::Read(.xml.string, xmlString);
+	    y2debug("XML Agent output: %1", out);
+	    return out;
+	}
+	else
+	{
+	    y2warning("can't convert empty XML string");
+	    return $[];
+	}
+    }
+
+    /**
      * The error string from the xml parser.
      * It should be used when the agent did not return content.
      * A reset happens before a new XML parsing starts.
