@@ -70,8 +70,15 @@
      *   "margin_right" : 5, // HSpacing on the right
      * ]
      *
-     * @example Icon::Image ("warning", $["id":`my_warning, "label":_("My Warning")])
-     *   -> 
+     * @example
+     *  Icon::Image ("warning", $["id":`my_warning, "label":_("My Warning")])
+     *    -> `Image (`id (`my_warning), "/usr/share/YaST2/theme/current/icons/32x32/apps/msg_warning.png", "My Warning")
+     *  Icon::Image ("info", $["margin_left":1, "margin_right":2])
+     *    -> `HBox (
+     *      `HSpacing (1),
+     *      `Image (`id ("icon_id_info"), "/usr/share/YaST2/theme/current/icons/32x32/apps/msg_info.png", "info"),
+     *      `HSpacing (2)
+     *    )
      */
     global term Image (string icon_type, map <string, any> options) {
 	LazyInit();
@@ -79,7 +86,9 @@
 	if (! has_image_support)
 	    return `Empty();
 
-	any icon_id = options["id"]:sformat ("icon_id_%1", icon_type);
+	any icon_id = options["id"]:nil;
+	if (icon_id == nil) icon_id = sformat ("icon_id_%1", icon_type);
+
 	string icon_label = options["label"]:icon_type;
 
 	term ret = nil;
