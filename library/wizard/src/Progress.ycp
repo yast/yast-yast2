@@ -77,6 +77,10 @@
 
     map display_info = UI::GetDisplayInfo();
     boolean can_display_images = (display_info["HasImageSupport"]:false == true);
+    // native UI support to dimm images
+    // `opt (`disabled) for `Image ()
+    // boolean has_dimm_image_support = (display_info["HasDimmImageSupport"]:false == true);
+    boolean has_dimm_image_support = (display_info["HasImageSupport"]:false == true);
 
     /**
      * Sets progress bar state:
@@ -197,8 +201,15 @@
 
 	while (i < number_of_stages) {
 	    i = i + 1;
-	    one_icon = NormalizeIconPath (global_invisible_icons_definition[i]:nil, false);
-	    ret = add (ret, `ReplacePoint (`id (IconId (i)), `Image (one_icon, "[_]")));
+	    
+
+	    if (has_dimm_image_support) {
+		one_icon = NormalizeIconPath (global_visible_icons_definition[i]:nil, false);
+		ret = add (ret, `Image (`id (IconId (i)), `opt (`disabled), one_icon, "[X]"));
+	    } else {
+		one_icon = NormalizeIconPath (global_invisible_icons_definition[i]:nil, false);
+		ret = add (ret, `ReplacePoint (`id (IconId (i)), `Image (one_icon, "[_]")));
+	    }
 	    ret = add (ret, `HSpacing (2));
 	}
 
@@ -367,8 +378,12 @@
 		string icon_id = IconId (last_highlighted_icon);
 
 		if (UI::WidgetExists (`id (icon_id))) {
-		    string one_icon = NormalizeIconPath (global_visible_icons_definition[current_step]:nil, true);
-		    UI::ReplaceWidget (`id (icon_id), `Image (one_icon, "[x]"));
+		    if (has_dimm_image_support) {
+			UI::ChangeWidget (`id (icon_id), `Enabled, true);
+		    } else {
+			string one_icon = NormalizeIconPath (global_visible_icons_definition[current_step]:nil, true);
+			UI::ReplaceWidget (`id (icon_id), `Image (one_icon, "[x]"));
+		    }
 		}
 	    }
 	}
