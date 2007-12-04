@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Mon Dec  3 16:43:50 CET 2007 - locilka@suse.cz
 
-- yast2.rpm always depends on the $current version of yast2-core.
+- Adjusted RPM dependencies: mod_UI in yast2-core.
 - Updated Progress with icons to rather use Image-Dimm support
   if available.
 - Added new Icon YCP module to provide basic acces to icon files.
