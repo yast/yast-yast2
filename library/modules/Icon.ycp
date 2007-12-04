@@ -125,5 +125,32 @@
 	return Image (icon_type, $[]);
     }
 
+    /**
+     * Returns UI term `Image() widget with a warning-icon.
+     *
+     * @return term warning icon
+     */
+    global term Warning () {
+	return Image ("warning", $[]);
+    }
+
+    /**
+     * Returns UI term `Image() widget with an error-icon.
+     *
+     * @return term error-icon
+     */
+    global term Error () {
+	return Image ("error", $[]);
+    }
+
+    /**
+     * Returns UI term `Image() widget with an info-icon.
+     *
+     * @return term info icon
+     */
+    global term Info () {
+	return Image ("info", $[]);
+    }
+
 /* EOF */
 }
