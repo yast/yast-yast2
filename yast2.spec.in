@@ -5,9 +5,8 @@ Source1:	yast2-rpmlintrc
 
 BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-pkg-bindings yast2-testsuite yast2-perl-bindings
 
-# With each yast2-core rebuild, change the 'Requires'
-# Suggested by Coolo
-Requires:       yast2-core >= %(echo `rpm -q --queryformat '%{VERSION}' yast2-core`)
+# Mod_UI
+Requires:       yast2-core >= 2.16.6
 
 # Pkg::PkgAvailable() and Pkg::PkgInstalled()
 Requires:	yast2-pkg-bindings >= 2.15.47
