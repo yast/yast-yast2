@@ -55,6 +55,7 @@ redirect
 
 # Accumulated arguments for both the Qt UI and y2cc; currently supported:
 # --fullscreen
+# --noborder
 # well also for gtk and ncurses
 Y2QT_ARGS=""
 GNOME_SHELL="$ybindir/y2controlcenter-gnome"
@@ -68,6 +69,7 @@ printhelp()
 	echo "	-h, --help	this message"
 	echo "	-l, --list	list all available modules"
 	echo "	-g, --geometry	default window size (qt only)"
+	echo "	--noborder      no window manager border for main window"
 	echo "	--fullscreen    use full screen"
 	echo
 	echo "exceptional case for installing packages:"
@@ -167,7 +169,7 @@ select_gui_frontend()
     fi
 }
 
-TEMP=`/usr/bin/getopt -o hlg:s:Si --long help,list,kcontrol,geometry:,style:,strings,install,update,remove,fullscreen \
+TEMP=`/usr/bin/getopt -o hlg:s:Si --long help,list,kcontrol,geometry:,style:,strings,install,update,remove,fullscreen,noborder \
      -n 'yast2' -- "$@"`
 
 if [ $? != 0 ] ; then echo "Exit." >&2 ; exit 1 ; fi
@@ -184,6 +186,7 @@ while true ; do
 		--update) Y2_INSTALL_PACKAGES=true; Y2_INSTALL_ACTION=--update; shift ;;
 		--remove) Y2_INSTALL_PACKAGES=true; Y2_INSTALL_ACTION=--remove; shift ;;
                 --fullscreen) Y2QT_ARGS="$Y2QT_ARGS --fullscreen"; shift ;;
+		--noborder)   Y2QT_ARGS="$Y2QT_ARGS --noborder"  ; shift ;;
 		--kcontrol)   Y2QT_ARGS="$Y2QT_ARGS --kcontrol_id YaST" ; shift ;;
 		--) shift ; break ;;
 		*) echo "Unrecognized option $1" ; exit 1 ;;
