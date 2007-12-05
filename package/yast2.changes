@@ -368,15 +368,15 @@ Thu Jun 28 21:33:42 CEST 2007 - jsrain@suse.cz
 - several updates for live CD installation
 
 -------------------------------------------------------------------
+Thu Jun 21 17:35:48 CEST 2007 - adrian@suse.de
+
+- fix changelog entry order
+
+-------------------------------------------------------------------
 Wed Jun 20 11:56:36 CEST 2007 - locilka@suse.cz
 
 - Extending Installation module to provide persistent information
   in Instalaltion Mode dialog.
-
--------------------------------------------------------------------
-Thu Jun 21 17:35:48 CEST 2007 - adrian@suse.de
-
-- fix changelog entry order
 
 -------------------------------------------------------------------
 Tue Jun 19 13:02:27 CEST 2007 - kmachalkova@suse.cz
