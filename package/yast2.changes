@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Dec  5 17:32:22 CET 2007 - sh@suse.de
+
+- Dropped obsolete --noborder option for /sbin/yast2 
+
+-------------------------------------------------------------------
 Mon Dec  3 16:43:50 CET 2007 - locilka@suse.cz
 
 - Adjusted RPM dependencies: mod_UI in yast2-core.
