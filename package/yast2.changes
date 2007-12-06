@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Dec  6 17:36:11 CET 2007 - mzugec@suse.cz
+
+- added vlan into device types list
+
+-------------------------------------------------------------------
 Wed Dec  5 17:32:22 CET 2007 - sh@suse.de
 
 - Dropped obsolete --noborder option for /sbin/yast2 
