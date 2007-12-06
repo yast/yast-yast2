@@ -42,6 +42,8 @@
      * @see Icon::Image() for details
      */
     global string IconPath (string icon_type) {
+	LazyInit ();
+
 	string icon_path = nil;
 
 	if (icons_map[icon_type]:nil != nil) {
@@ -81,8 +83,6 @@
      *    )
      */
     global term Image (string icon_type, map <string, any> options) {
-	LazyInit();
-
 	if (! has_image_support)
 	    return `Empty();
 
