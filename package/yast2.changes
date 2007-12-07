@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Dec  7 13:22:17 CET 2007 - jsuchome@suse.cz
+
+- country.ycp and country_long.ycp moved here from yast2-country
+  to remove a dependency on yast2-country by some packages
+
+-------------------------------------------------------------------
 Fri Dec  7 11:18:01 CET 2007 - jsrain@suse.cz
 
 - fixed validation of CWM tab widget (#346751)
