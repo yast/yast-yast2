@@ -41,6 +41,27 @@
  * Progress::NextStageStep (90);
  * Progress::Finish ();</pre>
  *
+ * It is possible to add a detailed subprogress above the main progress bar:
+ *
+ * <pre>
+ * // create a standard progress
+ * Progress::New(...);
+ *
+ * // add a subprogress with 42 steps
+ * Progress::SubprogressType(`progress, 42);
+ * Progress::SubprogressTitle("Subprogress label");
+ *
+ * // set the subprogress value
+ * Progress::SubprogressValue(12);
+ * Progress::SubprogressValue(24);
+ *
+ * // remove the subprogress (it's only for the current task/stage)
+ * Progress::SubprogressType(`none, nil);
+ *
+ * // next stage
+ * Progress::NextStage();
+ * </pre>
+ *
  * See also hand made documentation.
  * <a href="../Progress.html">Progress.html</a>
  */
@@ -274,6 +295,7 @@
 		bar = add (bar, `VBox (
 		    `VStretch (),
 		    progress_icons,
+		    `ReplacePoint(`id(`subprogress_replace_point), `Empty()),
 		    `ProgressBar (`id (`pb), progress_title, length, 0),
 		    `VSpacing (2)
 		    ));
@@ -282,6 +304,7 @@
 	    {  // stages only
 		bar = add (bar, `VBox (
 		    `VStretch (),
+		    `ReplacePoint(`id(`subprogress_replace_point), `Empty()),
 		    `Label (`id (`pb), `opt (`hstretch), progress_title),
 		    `VSpacing (2)
 		    ));
@@ -299,6 +322,166 @@
 	}
 	Wizard::DisableBackButton ();
 	Wizard::DisableNextButton ();
+    }
+
+    // definition of the animated progress icon
+    string _tick_movie = "/usr/share/YaST2/theme/current/animations/ticks-loop3.gif";
+    integer _tick_movie_x = 7;
+    integer _tick_movie_y = 1;
+
+    // fallback for text based UI
+    list<string> tick_labels = [ "/", "-", "\\", "|" ];
+    integer current_tick = 0;
+    integer tick_time = 0;
+
+    /**
+     * Returns next tick character from the sequence
+     * @return string Next tick character from sequence "/", "-", "\", "|"
+     */
+    string NextTick()
+    {
+	current_tick = current_tick + 1;
+	if (current_tick >= size(tick_labels))
+	{
+	    current_tick = 0;
+	}
+
+	return tick_labels[current_tick]:"/";
+    }
+
+    /**
+     * Create (or remove) a new subprogress above the progress bar, can be use for detailed progress of the current task
+     * @param type type of the subprogress widget, can be `progress (standard progress),
+     * `tick (tick progress) or `none (no subprogress, intended for removing the progress bar from the dialog)
+     * @param max_value maximum value for `progress type, for the other types it is not relevant (use any integer value or nil)
+     */
+    global void SubprogressType(symbol type, integer max_value)
+    {
+	if (!visible || Mode::commandline())
+	{
+	    return;
+	}
+
+	y2debug("SubprogressType: type: %1, max_value: %2", type, max_value);
+
+	term widget = `Empty();
+
+	if (type == `progress)
+	{
+	    widget = `ProgressBar (`id (`subprogress_progress), " ", max_value, 0);
+	}
+	else if (type == `tick)
+	{
+	    if ( UI::GetDisplayInfo()["HasAnimationSupport"]:false )
+	    {
+		widget = `VBox(
+		    `Label(`id(`subprogress_title), `opt(`hstretch), ""),
+		    `HCenter(`MinSize( _tick_movie_x, _tick_movie_y, `ReplacePoint(`id(`rp_progress), `Image(`id (`subprogress_tick), `opt(`animated), _tick_movie, "progress_widget" ))))
+		);
+	    }
+	    else
+	    {
+		string label = NextTick();
+		widget = `VBox(
+		    `Label(`id(`subprogress_title), `opt(`hstretch), ""),
+		    `HCenter(`Label(`id(`subprogress_tick), label))
+		);
+	    }
+
+	    tick_time = 0;
+	}
+	else if (type == `none)
+	{
+	    widget = `Empty();
+	}
+	else
+	{
+	    y2error("Unknown subprogress type: %1", type);
+	}
+
+	y2debug("widget: %1", widget);
+	UI::ReplaceWidget(`id(`subprogress_replace_point), widget);
+
+	// recalc is not needed in ncurses (?)
+	if (!UI::GetDisplayInfo()["TextMode"]:false)
+	{
+	    UI::RecalcLayout();
+	}
+    }
+
+    /**
+     * Set value of the subprogress
+     * @param value Current value of the subprogress, if a tick subprogress is running the value is ignored and the next tick is displayed
+     */
+    global void SubprogressValue(integer value)
+    {
+	if (!visible || Mode::commandline())
+	{
+	    return;
+	}
+
+	// normal progress
+	if (UI::WidgetExists(`id(`subprogress_progress)))
+	{
+	    UI::ChangeWidget (`id(`subprogress_progress), `Value, value);
+	}
+	// tick progress
+	else if (UI::WidgetExists(`id(`subprogress_tick)))
+	{
+	    if ( UI::GetDisplayInfo()["HasAnimationSupport"]:false )
+	    {
+		// restart the animation
+		term widget = `Image(`id (`subprogress_tick), `opt(`animated), _tick_movie, "progress_widget");
+
+		// restart the animation only when at least 3 seconds elapsed,
+		// don't restart it too often
+		integer tm = time();
+		y2debug("Time elapsed since the last tick callback: %1", tm - tick_time);
+		if (tm - tick_time > 3)
+		{
+		    UI::ReplaceWidget (`id(`rp_progress), widget);
+		    UI::RecalcLayout();
+		    tick_time = tm;
+		}
+		else
+		{
+		    y2debug("Ignoring the tick callback");
+		}
+	    }
+	    else
+	    {
+		UI::ChangeWidget (`id(`subprogress_tick), `Value, NextTick());
+	    }
+	}
+	else
+	{
+	    y2warning("No subprogress is defined, cannot set the value!");
+	}
+    }
+
+    /**
+     * Set the label of the subprogress
+     * @param title New label for the subprogress
+     */
+    global void SubprogressTitle(string title)
+    {
+	if (!visible || Mode::commandline())
+	{
+	    return;
+	}
+
+	if (UI::WidgetExists(`id(`subprogress_progress)))
+	{
+	    UI::ChangeWidget (`id(`subprogress_progress), `Label, title);
+	}
+	else if (UI::WidgetExists(`id(`subprogress_tick)))
+	{
+	    UI::ChangeWidget (`id(`subprogress_title), `Value, title);
+	}
+	else
+	{
+	    y2warning("No subprogress is defined, cannot set the label!");
+	}
     }
 
     /**
@@ -527,6 +710,7 @@
 	if (visible && ! Mode::commandline ())
 	    SetProgressBarTitle (t);
     }
+
     /**
      * Moves progress bar to the end and marks all stages as completed.
      */

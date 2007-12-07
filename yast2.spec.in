@@ -8,8 +8,8 @@ BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-pkg-bin
 # Mod_UI
 Requires:       yast2-core >= 2.16.6
 
-# Pkg::PkgAvailable() and Pkg::PkgInstalled()
-Requires:	yast2-pkg-bindings >= 2.15.47
+# Pkg::CallbackProcess*() functions
+Requires:	yast2-pkg-bindings >= 2.16.5
 Requires:	yast2_ui yast2_theme
 # For Cron Agent, Module
 Requires:       perl-Config-Crontab
