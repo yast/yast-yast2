@@ -73,6 +73,12 @@ global void ResetDownloadCallbacks ()
  * Register package manager callbacks
  */
 global define void InitPackageCallbacks() {
+    // register process callbacks (total progress)
+    Pkg::CallbackProcessStart("PackageCallbacks::ProcessStart");
+    Pkg::CallbackProcessProgress("PackageCallbacks::ProcessProgress");
+    Pkg::CallbackProcessNextStage("PackageCallbacks::ProcessNextStage");
+    Pkg::CallbackProcessDone("PackageCallbacks::ProcessDone");
+
     Pkg::CallbackStartProvide ("PackageCallbacks::StartProvide");
     Pkg::CallbackProgressProvide ("PackageCallbacks::ProgressProvide");
     Pkg::CallbackDoneProvide ("PackageCallbacks::DoneProvide");

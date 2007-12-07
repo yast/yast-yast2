@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Dec  7 13:34:11 CET 2007 - lslezak@suse.cz
+
+- Progress:: - added support for subprogress
+  (see Progress::Subprogress*() functions)
+- InitPackageCallbacks() - register Process* callbacks
+- 2.16.17
+
+-------------------------------------------------------------------
 Fri Dec  7 13:22:17 CET 2007 - jsuchome@suse.cz
 
 - country.ycp and country_long.ycp moved here from yast2-country
