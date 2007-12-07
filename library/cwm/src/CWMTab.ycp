@@ -326,6 +326,7 @@ global define map<string,any> CreateWidget (map settings) {
 	"tabs" : tabs,
 	"tabs_list" : tab_order,
 	"tab_help" : tab_help,
+	"no_help" : true,
     ];
 }
 
