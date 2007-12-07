@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Dec  7 11:18:01 CET 2007 - jsrain@suse.cz
+
+- fixed validation of CWM tab widget (#346751)
+
+-------------------------------------------------------------------
 Thu Dec  6 17:36:11 CET 2007 - mzugec@suse.cz
 
 - added vlan into device types list
