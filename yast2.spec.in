@@ -125,6 +125,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 
 # yast2
 
+@ydatadir@/*.ycp
 @clientdir@/*
 @moduledir@/*
 @scrconfdir@/*
