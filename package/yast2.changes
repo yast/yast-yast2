@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sat Dec  8 13:45:24 CET 2007 - mzugec@suse.cz
+
+- added vlan into device types list 
+
+-------------------------------------------------------------------
 Fri Nov 30 13:53:24 CET 2007 - mzugec@suse.cz
 
 - added function NetworkService::isNetworkRunning()
