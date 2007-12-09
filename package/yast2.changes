@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sun Dec  9 16:00:17 CET 2007 - mzugec@suse.cz
+
+- added br (bridge) into device types list 
+
+-------------------------------------------------------------------
 Sat Dec  8 13:45:24 CET 2007 - mzugec@suse.cz
 
 - added vlan into device types list 
