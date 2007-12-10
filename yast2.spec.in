@@ -3,7 +3,9 @@
 @HEADER@
 Source1:	yast2-rpmlintrc
 
-BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-pkg-bindings yast2-testsuite yast2-perl-bindings
+BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-testsuite yast2-perl-bindings
+# Needed already in build time
+BuildRequires:	yast2-pkg-bindings >= 2.16.5
 
 # Mod_UI
 Requires:       yast2-core >= 2.16.6
