@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Dec 10 12:31:44 CET 2007 - locilka@suse.cz
+
+- Adjusted RPM dependencies: Conflicts yast2-country < 2.16.3
+  because of moving some files from that package here.
+
+-------------------------------------------------------------------
 Fri Dec  7 13:34:11 CET 2007 - lslezak@suse.cz
 
 - Progress:: - added support for subprogress

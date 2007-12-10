@@ -50,7 +50,7 @@
 	    icon_path = icon_32x32_path + icons_map[icon_type]:"";
 	} else {
 	    icon_path = icon_32x32_path + icon_type + ".png";
-	    y2milestone ("Image '%1' is not defined, using '%2'", icon_type, icon_path);
+	    y2debug ("Image '%1' is not defined, using '%2'", icon_type, icon_path);
 	}
 
 	return icon_path;

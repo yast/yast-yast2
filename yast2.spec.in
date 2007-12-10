@@ -37,6 +37,8 @@ Conflicts:	yast2-update < 2.16.1
 Conflicts:	yast2-packager < 2.16.5
 Conflicts:	yast2-mouse < 2.16.0
 Conflicts:	autoyast2-installation < 2.16.2
+# country_long.ycp and country.ycp moved to yast2
+Conflicts:	yast2-country < 2.16.3
 
 Provides:	yast2-lib-sequencer
 Obsoletes:	yast2-lib-sequencer
