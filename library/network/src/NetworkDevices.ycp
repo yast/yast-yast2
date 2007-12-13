@@ -563,6 +563,16 @@ global define boolean Read() {
 }
 
 /**
+ * re-read all settings again from system
+ * for creating new proposal from scratch (#170558)
+ */
+global boolean CleanCacheRead(){
+ initialized = false;
+ return Read();
+}
+
+
+/**
  */
 define map<string,map> Filter(map<string,map> devices, string devregex) {
     if(devices == nil || devregex == nil || devregex == "")
@@ -784,6 +794,129 @@ global define boolean Import(string devregex, map<string,map> devices) {
     Devices = (devices_t) union(Devs, devices);
     OriginalDevices = nil;
     return true;
+}
+
+/**
+ * Return supported network device types (for type netcard)
+ * for this hardware
+ */
+global list<string> GetDeviceTypes(){
+ list<string> dev_types = ["eth", "tr", "vlan", "br"];
+ if(Arch::s390 ()) dev_types = (list<string>) merge(dev_types, [ "hsi", "ctc", "escon", "ficon", "iucv", "qeth", "lcs"]);
+	else dev_types = (list<string>) merge(dev_types, [ "arc", "bnep", "dummy", "fddi", "myri", "usb", "wlan", "bond" ]);
+ if(Arch::ia64 ()) dev_types = add(dev_types, "xp");
+
+ foreach(string device,dev_types, {
+ if (!contains(splitstring(DeviceRegex["netcard"]:"", "|"), device)) y2error("%1 is not contained in DeviceRegex[\"netcard\"]", device);
+ });
+
+ return dev_types;
+}
+
+/**
+ * Return textual device type
+ * @param type device type
+ * @param type description type 
+ * @return textual form of device type
+ * @example GetDevTypeDescription("eth", false) -> "Ethernet"
+ * @example GetDevTypeDescription("eth", true)  -> "Ethernet Network Card"
+ */
+global string GetDevTypeDescription(string type, boolean longdescr){
+
+    if(issubstring(type, "#"))
+	/* Device type label */
+	// This is what used to be Virtual Interface (eth0:1).
+	// In our data model, additional addresses for an interface
+	// are represented as its sub-interfaces.
+	// And also we frequently confuse "device" and "interface"
+	// :-(
+	return _("Additional Address");
+
+    map device_types = $[
+	/* Device type label */
+	"arc"	: [ _("ARCnet"),  _("ARCnet Network Card") ],
+	/* Device type label */
+	"atm"	: [ _("ATM"), _("Asynchronous Transfer Mode (ATM)") ],
+	/* Device type label */
+	"bnep"	: [ _("Bluetooth"), _("Bluetooth Connection") ],
+	/* Device type label */
+	"bond"	: [ _("Bond"), _("Bond Network") ],
+	/* Device type label */
+	"ci"	: [ _("CLAW"), _("Common Link Access for Workstation (CLAW)") ],
+	/* Device type label */
+	"contr"	: [ _("ISDN"), _("ISDN Card") ],
+	/* Device type label */
+	"ctc"	: [ _("CTC"), _("Channel to Channel Interface (CTC)") ],
+	/* Device type label */
+	"dsl"	: [ _("DSL"), _("DSL Connection") ],
+	/* Device type label */
+	"dummy"	: [ _("Dummy"), _("Dummy Network Device") ],
+	/* Device type label */
+	"escon"	: [ _("ESCON"), _("Enterprise System Connector (ESCON)") ],
+	/* Device type label */
+	"eth"	: [ _("Ethernet"), _("Ethernet Network Card") ],
+	/* Device type label */
+	"fddi"	: [ _("FDDI"), _("FDDI Network Card") ],
+	/* Device type label */
+	"ficon"	: [ _("FICON"), _("Fiberchannel System Connector (FICON)") ],
+	/* Device type label */
+	"hippi"	: [ _("HIPPI"), _("HIgh Performance Parallel Interface (HIPPI)") ],
+	/* Device type label */
+	"hsi"	: [ _("Hipersockets"), _("Hipersockets Interface (HSI)") ],
+	/* Device type label */
+	"ippp"	: [ _("ISDN"), _("ISDN Connection") ],
+	/* Device type label */
+	"irlan"	: [ _("IrDA"), _("Infrared Network Device") ],
+	/* Device type label */
+	"irda"	: [ _("IrDA"), _("Infrared Device") ],
+	/* Device type label */
+	"isdn"	: [ _("ISDN"), _("ISDN Connection") ],
+	/* Device type label */
+	"iucv"	: [ _("IUCV"), _("Inter User Communication Vehicle (IUCV)") ],
+	/* Device type label */
+	"lcs"	: [ _("OSA LCS"), _("OSA LCS Network Card") ],
+	/* Device type label */
+	"lo"	: [ _("Loopback"), _("Loopback Device") ],
+	/* Device type label */
+	"modem"	: [ _("Modem"), _("Modem") ],
+	/* Device type label */
+	"myri"	: [ _("Myrinet"), _("Myrinet Network Card") ],
+	/* Device type label */
+	"net"	: [ _("ISDN"), _("ISDN Connection") ],
+	/* Device type label */
+	"plip"	: [ _("Parallel Line"), _("Parallel Line Connection") ],
+	/* Device type label */
+	"ppp"	: [ _("Modem"), _("Modem") ],
+	/* Device type label */
+	"qeth"	: [ _("QETH"), _("OSA-Express or QDIO Device (QETH)") ],
+	/* Device type label */
+	"sit"	: [ _("IPv6-in-IPv4"), _("IPv6-in-IPv4 Encapsulation Device") ],
+	/* Device type label */
+	"slip"	: [ _("Serial Line"), _("Serial Line Connection") ],
+	/* Device type label */
+	"tr"	: [ _("Token Ring"), _("Token Ring Network Card") ],
+	/* Device type label */
+	"usb"	: [ _("USB"), _("USB Network Device") ],
+	/* Device type label */
+	"vmnet"	: [ _("VMWare"), _("VMWare Network Device") ],
+	/* Device type label */
+	"wlan"	: [ _("Wireless"), _("Wireless Network Card") ],
+	/* Device type label */
+	"xp"	: [ _("XPNET"), _("XP Network") ],
+	/* Device type label */
+	"vlan"	: [ _("VLAN"), _("Virtual LAN") ],
+	/* Device type label */
+	"br"	: [ _("Network Bridge"), _("Network Bridge") ],
+    ];
+
+    if(haskey(device_types, type)) return device_types[type, (longdescr==true) ? 1 : 0]:"";
+
+    string type1 = String::FirstChunk (type, "-");
+    if(haskey(device_types, type1))
+	return device_types[type1, (longdescr==true) ? 1 : 0]:"";
+
+    y2error("Unknown type: %1", type);
+    return type;
 }
 
 /**

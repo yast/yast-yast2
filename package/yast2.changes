@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Thu Dec 13 17:47:39 CET 2007 - mzugec@suse.de
+
+- NetworkDevices::CleanCacheRead() to reset and re-read 
+.sysconfig.network.ifcfg* because of network proposal (#170558)
+- NetworkDevices::GetDeviceTypes() - list of netcard devices for 
+this architecture
+- NetworkDevices::GetDevTypeDescription() moved from network module
+(routines/summary device_types, routines/complex device_names)
+- 2.16.18 
+
+-------------------------------------------------------------------
 Mon Dec 10 12:31:44 CET 2007 - locilka@suse.cz
 
 - Adjusted RPM dependencies:
