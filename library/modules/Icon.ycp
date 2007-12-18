@@ -83,6 +83,8 @@
      *    )
      */
     global term Image (string icon_type, map <string, any> options) {
+	LazyInit ();
+
 	if (! has_image_support)
 	    return `Empty();
 
