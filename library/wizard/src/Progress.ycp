@@ -99,6 +99,9 @@
     map display_info = UI::GetDisplayInfo();
     boolean can_display_images = (display_info["HasImageSupport"]:false == true);
 
+    // remember the last max. value of the subprogress bar
+    integer last_subprogress_max = 0;
+
     /**
      * Sets progress bar state:
      * on = normal operation, off = All Progress:: calls return immediatelly.
@@ -350,6 +353,80 @@
     }
 
     /**
+     * Get current subprogress type
+     * @return symbol Current type of the subprogress widget - can be `progress, `tick or `none
+     */
+    global symbol CurrentSubprogressType()
+    {
+	symbol ret = `none;
+
+	// is there the subprogress progress widget?
+	if (UI::WidgetExists(`subprogress_progress))
+	{
+	    ret = `progress;
+	}
+	// or is there the tick subprogress widget?
+	else if (UI::WidgetExists(`subprogress_tick))
+	{
+	    ret = `tick;
+	}
+
+	return ret;
+    }
+
+    /**
+     * Set value of the subprogress
+     * @param value Current value of the subprogress, if a tick subprogress is running the value is ignored and the next tick is displayed
+     */
+    global void SubprogressValue(integer value)
+    {
+	if (!visible || Mode::commandline())
+	{
+	    return;
+	}
+
+	symbol current_type = CurrentSubprogressType();
+
+	// normal progress
+	if (current_type == `progress)
+	{
+	    UI::ChangeWidget (`id(`subprogress_progress), `Value, value);
+	}
+	// tick progress
+	else if (current_type == `tick)
+	{
+	    if ( UI::GetDisplayInfo()["HasAnimationSupport"]:false )
+	    {
+		// restart the animation
+		term widget = `Image(`id (`subprogress_tick), `opt(`animated), _tick_movie, "progress_widget");
+
+		// restart the animation only when at least 4 seconds elapsed,
+		// don't restart it too often
+		integer tm = time();
+		y2debug("Time elapsed since the last tick callback: %1", tm - tick_time);
+		if (tm - tick_time > 4)
+		{
+		    UI::ReplaceWidget (`id(`rp_progress), widget);
+		    UI::RecalcLayout();
+		    tick_time = tm;
+		}
+		else
+		{
+		    y2debug("Ignoring the tick callback");
+		}
+	    }
+	    else
+	    {
+		UI::ChangeWidget (`id(`subprogress_tick), `Value, NextTick());
+	    }
+	}
+	else
+	{
+	    y2warning("No subprogress is defined, cannot set the value!");
+	}
+    }
+
+    /**
      * Create (or remove) a new subprogress above the progress bar, can be use for detailed progress of the current task
      * @param type type of the subprogress widget, can be `progress (standard progress),
      * `tick (tick progress) or `none (no subprogress, intended for removing the progress bar from the dialog)
@@ -363,6 +440,26 @@
 	}
 
 	y2debug("SubprogressType: type: %1, max_value: %2", type, max_value);
+
+	if (type == CurrentSubprogressType())
+	{
+
+	    if (type == `progress)
+	    {
+		// just reset the current value of the progress bar if the requested progress is the same
+		if (max_value == last_subprogress_max)
+		{
+		    y2milestone("Resetting the subprogressbar...");
+		    SubprogressValue(0);
+		    return;
+		}
+	    }
+	    else
+	    {
+		y2milestone("Subprogress initialization skipped");
+		return;
+	    }
+	}
 
 	term widget = `Empty();
 
@@ -388,7 +485,7 @@
 		);
 	    }
 
-	    tick_time = 0;
+	    tick_time = time();
 	}
 	else if (type == `none)
 	{
@@ -407,56 +504,9 @@
 	{
 	    UI::RecalcLayout();
 	}
-    }
 
-    /**
-     * Set value of the subprogress
-     * @param value Current value of the subprogress, if a tick subprogress is running the value is ignored and the next tick is displayed
-     */
-    global void SubprogressValue(integer value)
-    {
-	if (!visible || Mode::commandline())
-	{
-	    return;
-	}
-
-	// normal progress
-	if (UI::WidgetExists(`id(`subprogress_progress)))
-	{
-	    UI::ChangeWidget (`id(`subprogress_progress), `Value, value);
-	}
-	// tick progress
-	else if (UI::WidgetExists(`id(`subprogress_tick)))
-	{
-	    if ( UI::GetDisplayInfo()["HasAnimationSupport"]:false )
-	    {
-		// restart the animation
-		term widget = `Image(`id (`subprogress_tick), `opt(`animated), _tick_movie, "progress_widget");
-
-		// restart the animation only when at least 3 seconds elapsed,
-		// don't restart it too often
-		integer tm = time();
-		y2debug("Time elapsed since the last tick callback: %1", tm - tick_time);
-		if (tm - tick_time > 3)
-		{
-		    UI::ReplaceWidget (`id(`rp_progress), widget);
-		    UI::RecalcLayout();
-		    tick_time = tm;
-		}
-		else
-		{
-		    y2debug("Ignoring the tick callback");
-		}
-	    }
-	    else
-	    {
-		UI::ChangeWidget (`id(`subprogress_tick), `Value, NextTick());
-	    }
-	}
-	else
-	{
-	    y2warning("No subprogress is defined, cannot set the value!");
-	}
+	// remember the max. value
+	last_subprogress_max = max_value;
     }
 
     /**
@@ -470,11 +520,13 @@
 	    return;
 	}
 
-	if (UI::WidgetExists(`id(`subprogress_progress)))
+	symbol current_type = CurrentSubprogressType();
+
+	if (current_type == `progress)
 	{
 	    UI::ChangeWidget (`id(`subprogress_progress), `Label, title);
 	}
-	else if (UI::WidgetExists(`id(`subprogress_tick)))
+	else if (current_type == `tick)
 	{
 	    UI::ChangeWidget (`id(`subprogress_title), `Value, title);
 	}
