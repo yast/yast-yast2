@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan  4 10:47:10 CET 2008 - lslezak@suse.cz
+
+- Progress:: do not replace the subprocess widget, try to reuse the
+  existing widget if possible (avoids screen flickering) (#350584)
+- 2.16.19
+
+-------------------------------------------------------------------
 Thu Dec 13 17:47:39 CET 2007 - mzugec@suse.de
 
 - NetworkDevices::CleanCacheRead() to reset and re-read 
