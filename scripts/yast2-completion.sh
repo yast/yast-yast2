@@ -26,6 +26,15 @@ _yast2 ()
                 return 0
         fi
 
+	# do not use module names to complete when enetering a package name
+	# zypper should handle package completion
+	# see bug #341706
+	if [ "$prev" = "-i" -o "$prevprev" = "-i" -o "$prev" = "--install" -o "$prevprev" = "--install" \
+	  -o "$prev" = "--remove" -o "$prevprev" = "--remove" \
+	  -o "$prev" = "--update" -o "$prevprev" = "--update" ]; then
+		exit 0;
+	fi
+
 	# iterate through all yast modules
 	for mod in ${MODLIST[@]}; do
 	    # if argument before last argument is a yast module, 

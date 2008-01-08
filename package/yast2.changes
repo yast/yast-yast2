@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan  8 13:06:46 CET 2008 - jsrain@suse.cz
+
+- disable tab-completion after -i, --install, --remove and
+  -- update (#341706)
+
+-------------------------------------------------------------------
 Tue Jan  8 11:40:54 CET 2008 - kmachalkova@suse.cz
 
 - Fixed crash when running text-mode menu as non-root user (new
