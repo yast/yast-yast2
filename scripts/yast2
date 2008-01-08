@@ -68,6 +68,9 @@ printhelp()
 	echo "OPTIONS:"
 	echo "	-h, --help	this message"
 	echo "	-l, --list	list all available modules"
+	echo "	--qt            use the QT graphical user interface"
+	echo "	--gtk           use the GTK graphical user interface"
+	echo "	--ncurses       use the NCURSES text-mode user interface"
 	echo "	-g, --geometry	default window size (qt only)"
 	echo "	--noborder      no window manager border for main window"
 	echo "	--fullscreen    use full screen"
@@ -169,7 +172,7 @@ select_gui_frontend()
     fi
 }
 
-TEMP=`/usr/bin/getopt -o hlg:s:Si --long help,list,kcontrol,geometry:,style:,strings,install,update,remove,fullscreen,noborder \
+TEMP=`/usr/bin/getopt -o hlg:s:Si --long help,list,kcontrol,geometry:,style:,strings,install,update,remove,fullscreen,noborder,qt,gtk,ncurses \
      -n 'yast2' -- "$@"`
 
 if [ $? != 0 ] ; then echo "Exit." >&2 ; exit 1 ; fi
@@ -188,6 +191,9 @@ while true ; do
                 --fullscreen) Y2QT_ARGS="$Y2QT_ARGS --fullscreen"; shift ;;
 		--noborder)   Y2QT_ARGS="$Y2QT_ARGS --noborder"  ; shift ;;
 		--kcontrol)   Y2QT_ARGS="$Y2QT_ARGS --kcontrol_id YaST" ; shift ;;
+		--qt)  CMDLINE_UI="qt"  ; shift ;;
+		--gtk)  CMDLINE_UI="gtk"  ; shift ;;
+		--ncurses)  unset DISPLAY ; shift ;;
 		--) shift ; break ;;
 		*) echo "Unrecognized option $1" ; exit 1 ;;
 
@@ -216,7 +222,9 @@ set -- "${c[@]}"
 
 case "`/usr/bin/basename $0`" in
 	YaST|yast|yast1|zast)
-		unset DISPLAY
+		if [ -z "$CMDLINE_UI" ]; then
+			unset DISPLAY;
+		fi
 	;;
 esac
 
@@ -239,6 +247,11 @@ fi
 # read user settings
 if [ -f "$HOME/.yast2/yast2" ]; then
     source "$HOME/.yast2/yast2"
+fi
+
+if [ ! -z "$CMDLINE_UI" ]; then
+    WANTED_GUI="$CMDLINE_UI"
+    WANTED_SHELL="$CMDLINE_UI"
 fi
 
 # Fallback GUI
