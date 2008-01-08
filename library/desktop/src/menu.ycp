@@ -257,12 +257,10 @@ string first = groups[0]:nil;
 y2debug("first=%1", first);
 
 //do not show groups containing no modules to the user (#309452)
-GroupList = maplist (term t, GroupList,{
+GroupList = filter (term t, GroupList,{
     string group = (string) t[0,0]:"";
 
-    if ( modules[group]:nil != [] ) {
-	return t;
-    }
+    return ( modules[group]:nil != [] );
 });
 
 /* GroupList = [`item (`id ("Software"), "Software"), ...] */
