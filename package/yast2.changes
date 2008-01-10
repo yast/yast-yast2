@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Fri Dec 14 17:20:27 CET 2007 - mzugec@suse.cz
+Tue Jan  8 17:20:27 CET 2007 - mzugec@suse.cz
 
 - added NetworkInterfaces module (NetworkDevices will be deprecated)
 - 2.16.20 
