@@ -5,7 +5,6 @@ Fri Dec 14 17:20:27 CET 2007 - mzugec@suse.cz
 - 2.16.20 
 
 -------------------------------------------------------------------
-=======
 Tue Jan  8 13:06:46 CET 2008 - jsrain@suse.cz
 
 - disable tab-completion after -i, --install, --remove and
