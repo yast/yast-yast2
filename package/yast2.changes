@@ -11,15 +11,15 @@ Tue Jan  8 13:06:46 CET 2008 - jsrain@suse.cz
   -- update (#341706)
 
 -------------------------------------------------------------------
+Tue Jan  8 10:42:05 CET 2008 - jsrain@suse.cz
+
+- offer possibility to define UI via cmdline parameter (#348817)
+
+-------------------------------------------------------------------
 Tue Jan  8 11:40:54 CET 2008 - kmachalkova@suse.cz
 
 - Fixed crash when running text-mode menu as non-root user (new
   libyui throws an exception if SelectionBox entry is nil)
-
--------------------------------------------------------------------
-Tue Jan  8 10:42:05 CET 2008 - jsrain@suse.cz
-
-- offer possibility to define UI via cmdline parameter (#348817)
 
 -------------------------------------------------------------------
 Fri Jan  4 10:47:10 CET 2008 - lslezak@suse.cz
