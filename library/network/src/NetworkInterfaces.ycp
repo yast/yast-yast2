@@ -713,7 +713,6 @@ global define boolean Write(string devregex) {
     maplist(string typ, map<string,map<string,any> > devsmap, (map<string, map<string, map<string, any> > >) Devs, {
 	maplist(string config, map<string,any> devmap, devsmap, {
 	    /* write sysconfig */
-//	    string dev = device_name(typ, num);
 	    string p = ".network.value.\"" + config + "\".";
 
 	if (size(devmap["IPADDR"]:"")>0 && size(devmap["NETMASK"]:"")>0){
@@ -1309,8 +1308,8 @@ global list<string> GetIP(string device){
 global define list<string> Locate(string key, string val) {
     list<string> ret = [];
     maplist(string typ, map devsmap, Devices, {
-	maplist(string num, map devmap, (map<string,map>) devsmap, {
-	    if(devmap[key]:"" == val) ret = add(ret, device_name(typ,num));
+	maplist(string device, map devmap, (map<string,map>) devsmap, {
+	    if(devmap[key]:"" == val) ret = add(ret, device);
 	});
     });
 
@@ -1326,8 +1325,8 @@ global define list<string> Locate(string key, string val) {
 global define list<string> LocateNOT(string key, string val) {
     list<string> ret = [];
     maplist(string typ, map devsmap, Devices, {
-	maplist(string num, map devmap, (map<string,map>) devsmap, {
-	    if(devmap[key]:"" != val) ret = add(ret, device_name(typ,num));
+	maplist(string device, map devmap, (map<string,map>) devsmap, {
+	    if(devmap[key]:"" != val) ret = add(ret, device);
 	});
     });
 
@@ -1409,8 +1408,8 @@ global define list<string> List(string devregex) {
     list<string> ret = [];
     if(devregex == "" || devregex == nil) {
 	maplist(string t, map d, Devices, {
-	    maplist(string n, (list<string>) Map::Keys(d), {
-		ret[size(ret)] = device_name(t,n);
+	    maplist(string device, (list<string>) Map::Keys(d), {
+		ret[size(ret)] = device;
 	    });
 	});
     }
@@ -1419,15 +1418,11 @@ global define list<string> List(string devregex) {
 	string regex = "^(" + DeviceRegex[devregex]:devregex + ")$";
 	maplist(string t, map d, Devices, {
 	    if(regexpmatch(t, regex)) {
-		maplist(string n, (list<string>) Map::Keys(d), {
-		    ret[size(ret)] = device_name(t,n);
+		maplist(string device, (list<string>) Map::Keys(d), {
+		    ret[size(ret)] = device;
 		});
 	    }
 	});
-	/*
-	map d = Devices[type]:$[];
-	maplist(string n, Map::Keys(d), {ret[size(ret)] = device_name(type,n);});
-	*/
     }
     ret = filter(string row, ret, {
 		if (row!=nil) return true;

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jan 11 14:11:16 CET 2008 - mzugec@suse.de
+
+- remove ocurrences of deprecated NetworkInterfaces::device_name 
+
+-------------------------------------------------------------------
 Tue Jan  8 17:20:27 CET 2007 - mzugec@suse.cz
 
 - added NetworkInterfaces module (NetworkDevices will be deprecated)
