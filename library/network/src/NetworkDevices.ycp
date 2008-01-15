@@ -188,10 +188,10 @@ global string device_type (string dev) {
  */
 global string GetDeviceType(string dev) {
     if (regexpmatch(dev,"^" + DeviceRegex["netcard"]:"")) {
-	return(_("network card"));
+	return(_("Network card"));
     }
     else if (regexpmatch(dev,"^" + DeviceRegex["modem"]:"")) {
-	return(_("modem"));
+	return(_("Modem"));
     }
     else if (regexpmatch(dev,"^" + DeviceRegex["isdn"]:"")) {
 	return(_("ISDN"));
