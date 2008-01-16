@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jan 16 16:08:50 CET 2008 - mvidner@suse.cz
+
+- nfs-client: do not truncate /etc/fstab starting at lines with
+  leading or trailing whitespace (#351648).
+- 2.13.104.1
+
+-------------------------------------------------------------------
 Wed Apr 11 10:14:42 CEST 2007 - lslezak@suse.cz
 
 - properly detect PV/FV Xen machine (#255217)

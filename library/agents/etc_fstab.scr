@@ -49,6 +49,7 @@
       false,			// read-only
       (`List (
 	`Tuple (
+	  `Omit(`Whitespace()), // #351648
 	  `spec (`String("^\t ")),
 	  `Separator ("\t "),
 	  `file (`String("^\t ")),
@@ -59,7 +60,8 @@
 	  `Optional(`Whitespace()),
 	  `Optional(`freq (`Number())),
 	  `Optional(`Whitespace()),
-	  `Optional(`passno (`Number()))
+	  `Optional(`passno (`Number())),
+	  `Omit(`Whitespace())
 	),
 	"\n"
       ))
