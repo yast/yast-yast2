@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jan 17 13:15:45 CET 2008 - lslezak@suse.cz
+
+- use `BusyIndicator widget for `tick subprogress in Progress::
+  (#351933)
+- register AcceptWrongDigest AcceptUnknownDigest callbacks
+- 2.16.21
+
+-------------------------------------------------------------------
 Fri Jan 11 14:11:16 CET 2008 - mzugec@suse.de
 
 - remove ocurrences of deprecated NetworkInterfaces::device_name 

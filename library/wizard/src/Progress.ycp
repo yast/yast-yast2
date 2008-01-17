@@ -327,31 +327,6 @@
 	Wizard::DisableNextButton ();
     }
 
-    // definition of the animated progress icon
-    string _tick_movie = "/usr/share/YaST2/theme/current/animations/ticks-loop3.gif";
-    integer _tick_movie_x = 7;
-    integer _tick_movie_y = 1;
-
-    // fallback for text based UI
-    list<string> tick_labels = [ "/", "-", "\\", "|" ];
-    integer current_tick = 0;
-    integer tick_time = 0;
-
-    /**
-     * Returns next tick character from the sequence
-     * @return string Next tick character from sequence "/", "-", "\", "|"
-     */
-    string NextTick()
-    {
-	current_tick = current_tick + 1;
-	if (current_tick >= size(tick_labels))
-	{
-	    current_tick = 0;
-	}
-
-	return tick_labels[current_tick]:"/";
-    }
-
     /**
      * Get current subprogress type
      * @return symbol Current type of the subprogress widget - can be `progress, `tick or `none
@@ -359,6 +334,11 @@
     global symbol CurrentSubprogressType()
     {
 	symbol ret = `none;
+
+	if (!visible || Mode::commandline())
+	{
+	    return ret;
+	}
 
 	// is there the subprogress progress widget?
 	if (UI::WidgetExists(`subprogress_progress))
@@ -395,30 +375,7 @@
 	// tick progress
 	else if (current_type == `tick)
 	{
-	    if ( UI::GetDisplayInfo()["HasAnimationSupport"]:false )
-	    {
-		// restart the animation
-		term widget = `Image(`id (`subprogress_tick), `opt(`animated), _tick_movie, "progress_widget");
-
-		// restart the animation only when at least 4 seconds elapsed,
-		// don't restart it too often
-		integer tm = time();
-		y2debug("Time elapsed since the last tick callback: %1", tm - tick_time);
-		if (tm - tick_time > 4)
-		{
-		    UI::ReplaceWidget (`id(`rp_progress), widget);
-		    UI::RecalcLayout();
-		    tick_time = tm;
-		}
-		else
-		{
-		    y2debug("Ignoring the tick callback");
-		}
-	    }
-	    else
-	    {
-		UI::ChangeWidget (`id(`subprogress_tick), `Value, NextTick());
-	    }
+	    UI::ChangeWidget(`id(`subprogress_tick), `Alive, true);
 	}
 	else
 	{
@@ -443,7 +400,6 @@
 
 	if (type == CurrentSubprogressType())
 	{
-
 	    if (type == `progress)
 	    {
 		// just reset the current value of the progress bar if the requested progress is the same
@@ -453,6 +409,11 @@
 		    SubprogressValue(0);
 		    return;
 		}
+	    }
+	    else if (type == `tick)
+	    {
+		// just restart the animation
+		UI::ChangeWidget(`id(`subprogress_tick), `Alive, true);
 	    }
 	    else
 	    {
@@ -469,23 +430,7 @@
 	}
 	else if (type == `tick)
 	{
-	    if ( UI::GetDisplayInfo()["HasAnimationSupport"]:false )
-	    {
-		widget = `VBox(
-		    `Label(`id(`subprogress_title), `opt(`hstretch), ""),
-		    `HCenter(`MinSize( _tick_movie_x, _tick_movie_y, `ReplacePoint(`id(`rp_progress), `Image(`id (`subprogress_tick), `opt(`animated), _tick_movie, "progress_widget" ))))
-		);
-	    }
-	    else
-	    {
-		string label = NextTick();
-		widget = `VBox(
-		    `Label(`id(`subprogress_title), `opt(`hstretch), ""),
-		    `HCenter(`Label(`id(`subprogress_tick), label))
-		);
-	    }
-
-	    tick_time = time();
+	    widget = `BusyIndicator(`id(`subprogress_tick), " ", 3000);
 	}
 	else if (type == `none)
 	{
@@ -498,12 +443,6 @@
 
 	y2debug("widget: %1", widget);
 	UI::ReplaceWidget(`id(`subprogress_replace_point), widget);
-
-	// recalc is not needed in ncurses (?)
-	if (!UI::GetDisplayInfo()["TextMode"]:false)
-	{
-	    UI::RecalcLayout();
-	}
 
 	// remember the max. value
 	last_subprogress_max = max_value;
@@ -528,7 +467,7 @@
 	}
 	else if (current_type == `tick)
 	{
-	    UI::ChangeWidget (`id(`subprogress_title), `Value, title);
+	    UI::ChangeWidget (`id(`subprogress_tick), `Label, title);
 	}
 	else
 	{
