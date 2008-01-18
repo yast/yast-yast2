@@ -363,7 +363,9 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 	fi
 
 	# this fixes launching of interactive subprocesses, #150799
-	Y2QT_ARGS="$Y2QT_ARGS --nothreads"
+	#Y2QT_ARGS="$Y2QT_ARGS --nothreads"
+        #uncomment the above line if anything in TUI breaks ;-) 
+        #threads are welcomed back in ncurses frontend (F#301899)
 
 	# set color theme, if defined
 	if [ ! -z "$Y2NCURSES_COLOR_THEME" ]; then

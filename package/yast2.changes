@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jan 18 18:04:57 CET 2008 - kmachalkova@suse.cz
+
+- Re-enabled threading in ncurses UI (bug #164999, FaTE #301899)  
+
+-------------------------------------------------------------------
 Thu Jan 17 13:15:45 CET 2008 - lslezak@suse.cz
 
 - use `BusyIndicator widget for `tick subprogress in Progress::
