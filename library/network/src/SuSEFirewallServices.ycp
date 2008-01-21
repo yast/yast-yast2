@@ -126,27 +126,27 @@
 	    "udp_ports" : [ "netbios-ns", "netbios-dgm" ],		// UDP: 137, 138
 	    "broadcast_ports" : [ "netbios-ns", "netbios-dgm" ],	// UDP: 137, 138
 	],
-	"ssh" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("SSH"),
-	    "tcp_ports" : [ "ssh" ],
-	],
+//	"ssh" : $[
+//	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+//	    "name"	: _("SSH"),
+//	    "tcp_ports" : [ "ssh" ],
+//	],
 	"rsync" : $[
 	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
 	    "name"	: _("Remote Synchronization"),
 	    "tcp_ports" : [ "rsync" ],
 	],
-	"dhcp-server" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("DHCP Server"),
-	    "udp_ports" : [ "bootps" ],
-	    "broadcast_ports" : [ "bootps" ],
-	],
-	"dhcp-client" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("DHCP Client"),
-	    "udp_ports" : [ "bootpc" ],
-	],
+//	"dhcp-server" : $[
+//	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+//	    "name"	: _("DHCP Server"),
+//	    "udp_ports" : [ "bootps" ],
+//	    "broadcast_ports" : [ "bootps" ],
+//	],
+//	"dhcp-client" : $[
+//	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+//	    "name"	: _("DHCP Client"),
+//	    "udp_ports" : [ "bootpc" ],
+//	],
 	"dns-server" : $[
 	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
 	    "name"	: _("DNS Server"),
@@ -163,13 +163,11 @@
 	    "name"	: _("NFS Server"),
 	    "rpc_ports" : [ "portmap", "status", "nlockmgr", "mountd", "nfs", "nfs_acl" ],
 	],
-	// Well, when nis-server is allowed in firewall, nis-client is allowed automatically too.
-	// nis-client's ports are the subset of nis-server ports.
-	"nis-client" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("NIS Client"),
-	    "rpc_ports" : [ "portmap", "ypbind" ],
-	],
+//	"nis-client" : $[
+//	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+//	    "name"	: _("NIS Client"),
+//	    "rpc_ports" : [ "portmap", "ypbind" ],
+//	],
 	"nis-server" : $[
 	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
 	    "name"	: _("NIS Server"),
@@ -285,7 +283,7 @@
      *	GetFilenameFromServiceDefinedByPackage ("service:abc") -> "abc"
      *	GetFilenameFromServiceDefinedByPackage ("abc") -> nil
      */
-    string GetFilenameFromServiceDefinedByPackage (string service) {
+    global string GetFilenameFromServiceDefinedByPackage (string service) {
 	if (! ServiceDefinedByPackage (service)) {
 	    y2error ("Service %1 is not defined by package", service);
 	    return nil;
