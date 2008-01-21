@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 21 14:49:30 CET 2008 - locilka@suse.cz
+
+- Disabled HTTP and HTTPS services in list of hard-coded
+  SuSEfirewall2 services (replaced with services defined by pkgs).
+
+-------------------------------------------------------------------
 Fri Jan 18 18:04:57 CET 2008 - kmachalkova@suse.cz
 
 - Re-enabled threading in ncurses UI (bug #164999, FaTE #301899)  

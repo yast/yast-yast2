@@ -84,16 +84,16 @@
      * FATE #300687: Ports for SuSEfirewall added via packages.
      */
     define map <string, map<string, any> > SERVICES = $[
-	"http" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("HTTP Server"),
-	    "tcp_ports" : [ "http" ],
-	],
-	"https" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("HTTPS Server"),
-	    "tcp_ports" : [ "https" ],
-	],
+	//"http" : $[
+	//    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	//    "name"	: _("HTTP Server"),
+	//    "tcp_ports" : [ "http" ],
+	//],
+	//"https" : $[
+	//    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
+	//    "name"	: _("HTTPS Server"),
+	//    "tcp_ports" : [ "https" ],
+	//],
 	"smtp" : $[
 	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
 	    "name"	: _("Mail Server"),
