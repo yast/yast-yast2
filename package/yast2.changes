@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Jan 22 13:25:44 CET 2008 - lslezak@suse.cz
+
+- Progress::New() can be called recursively - a nested progress
+  can run inside the main progress (part of bug #352007)
+- added wizard/doc/examples/progress_*.ycp examples how to use
+  this feature
+
+-------------------------------------------------------------------
 Mon Jan 21 14:49:30 CET 2008 - locilka@suse.cz
 
 - Disabled HTTP and HTTPS services in list of hard-coded

@@ -1,0 +1,30 @@
+{
+
+// call progress_client1 and progress_client2
+// progress_client2 call is partly hidden - the detailed progress of progress_client2 is hidden from UI
+
+import "Progress";
+import "Wizard";
+
+integer wait = 200;
+
+Wizard::CreateDialog();
+
+// crate a progress with 10 steps
+Progress::New("Progress Example (display a nested progress)", "", 2, ["Calling ./progress_client1.ycp", "Calling ./progress_client2.ycp"] , [], "");
+
+Progress::NextStage();
+WFM::CallFunction ("./progress_client1.ycp", ["noinit"]);
+
+Progress::NextStage();
+
+boolean p = Progress::set(false);
+WFM::CallFunction ("./progress_client2.ycp", ["noinit"]);
+Progress::set(p);
+
+sleep(wait);
+Progress::Finish();
+
+sleep(wait);
+Wizard::CloseDialog();
+}
