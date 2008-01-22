@@ -5,6 +5,7 @@ Tue Jan 22 13:25:44 CET 2008 - lslezak@suse.cz
   can run inside the main progress (part of bug #352007)
 - added wizard/doc/examples/progress_*.ycp examples how to use
   this feature
+- 2.16.22
 
 -------------------------------------------------------------------
 Mon Jan 21 14:49:30 CET 2008 - locilka@suse.cz
