@@ -51,12 +51,7 @@ Return	yes
 Return	no
 Return	yes
 Dump	
-Dump	== Services handling 1 ==
-Return	false
-Return	nil
-Return	true
-Dump	
-Dump	== Services handling 2 ==
+Dump	== Services handling ==
 Return	nil
 Return	nil
 Dump	
@@ -68,7 +63,7 @@ Return	true
 Return	false
 Dump	
 Dump	== Broadcast handling ==
-Return	$["DMZ":["bootps"], "EXT":["bootps"], "INT":[]]
+Return	$["DMZ":[], "EXT":[], "INT":[]]
 Return	nil
 Return	$["DMZ":["5", "3", "1"], "EXT":["22", "33", "44"], "INT":[]]
 Dump	

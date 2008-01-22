@@ -14,6 +14,7 @@ Mon Jan 21 14:49:30 CET 2008 - locilka@suse.cz
 - Disabled also SSH, DHCP server/client, NIS client.
 - Function GetFilenameFromServiceDefinedByPackage has been made
   global.
+- Fixed SuSEFirewall testsuite and possibly conflicting services.
 
 -------------------------------------------------------------------
 Fri Jan 18 18:04:57 CET 2008 - kmachalkova@suse.cz

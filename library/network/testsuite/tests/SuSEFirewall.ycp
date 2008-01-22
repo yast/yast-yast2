@@ -178,13 +178,7 @@
     TEST(``(SuSEFirewall::GetIgnoreLoggingBroadcast("DMZ")), [READ, WRITE, EXECUTE], nil);
 
     DUMP("");
-    DUMP("== Services handling 1 ==");
-    TEST(``(SuSEFirewall::IsServiceSupportedInZone ("dhcp-server", "EXT")), [READ, WRITE, EXECUTE], nil);
-    TEST(``(SuSEFirewall::SetServicesForZones (["dhcp-server","imaps"], ["EXT","DMZ"], true)), [READ, WRITE, EXECUTE], nil);
-    TEST(``(SuSEFirewall::IsServiceSupportedInZone ("dhcp-server", "EXT")), [READ, WRITE, EXECUTE], nil);
-
-    DUMP("");
-    DUMP("== Services handling 2 ==");
+    DUMP("== Services handling ==");
     // needs a better testsuite for SuSEFirewallServices module
     // these services are not known
     TEST(``(SuSEFirewall::IsServiceSupportedInZone ("service:aaa-bbb", "EXT")), [READ, WRITE, EXECUTE], nil);
