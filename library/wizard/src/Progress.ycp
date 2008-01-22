@@ -77,6 +77,13 @@
     import "Directory";
     import "FileUtils";
 
+    /********************************************************************
+    // !!! IMPORTANT !!!
+    // If you add here a new variable which is valid only for the current
+    // progress do not forget to add it to PushState() and PopState()
+    // functions which are are used for nested progresses!
+    ********************************************************************/
+
     // Number of stages.
     integer stages = 0;
     // Number of steps
@@ -101,6 +108,113 @@
 
     // remember the last max. value of the subprogress bar
     integer last_subprogress_max = 0;
+
+    integer progress_running = 0;
+
+    // remember cumulated number of steps for nested progresses
+    integer progress_max = 0;
+    integer progress_val = 0;
+
+    global boolean IsRunning()
+    {
+	return progress_running > 0;
+    }
+
+    // forward declaration
+    global symbol CurrentSubprogressType();
+
+    // stack with the running progresses
+    // the top of the stack is the end of the list
+    list<map> progress_stack = [];
+
+    // push the current progress into the stack
+    void PushState()
+    {
+	symbol current_subprogress = CurrentSubprogressType();
+	map state = $[
+	    // global variable
+	    "stages" : stages,
+	    "steps" : steps,
+	    "current_step" : current_step,
+	    "current_stage" : current_stage,
+	    "titles" : titles,
+	    "last_subprogress_max" : last_subprogress_max,
+	    "visible" : visible,
+	    // state of the widgets
+	    "subprogress_type" : current_subprogress,
+	    "progress_label" : (string)UI::QueryWidget(`id(`pb), `Label),
+	    "progress_value" : (integer)UI::QueryWidget(`id(`pb), `Value),
+	    "progress_max" : progress_max,
+	    "progress_val" : progress_val
+	];
+
+	if (current_subprogress == `progress)
+	{
+	    state["subprogress_label"] = (string)UI::QueryWidget(`id(`subprogress_progress), `Label);
+	    state["subprogress_value"] = (string)UI::QueryWidget(`id(`subprogress_progress), `Value);
+	}
+	else if (current_subprogress == `tick)
+	{
+	    state["subprogress_label"] = (string)UI::QueryWidget(`id(`subprogress_tick), `Label);
+	    state["subprogress_value"] = (string)UI::QueryWidget(`id(`subprogress_tick), `Value);
+	}
+
+	y2milestone("Current state: %1", state);
+
+	progress_stack = add(progress_stack, state);
+    }
+
+    // forward declarations
+    global void SubprogressTitle(string title);
+    global void SubprogressValue(integer value);
+    global void SubprogressType(symbol type, integer max_value);
+
+    // pop the progress state from the stack and set it
+    void PopState()
+    {
+	// pop the config
+	map state = progress_stack[size(progress_stack) - 1]:$[];
+	progress_stack = remove(progress_stack, size(progress_stack) - 1);
+
+	y2milestone("setting up the previous state: %1", state);
+
+	// refresh the variables
+	stages = state["stages"]:0;
+	steps = state["steps"]:0;
+	current_step = state["current_step"]:0;
+	current_stage = state["current_stage"]:0;
+	titles = state["titles"]:[];
+	last_subprogress_max = state["last_subprogress_max"]:0;
+	progress_max = state["progress_max"]:0;
+	progress_val = state["progress_val"]:0;
+
+	// refresh the progress widget, add one step for the embedded progress
+	UI::ReplaceWidget(`id(`progress_replace_point),
+	    `ProgressBar(`id(`pb), state["progress_label"]:"",
+		steps, state["progress_value"]:0 + 1));
+
+	symbol type = state["subprogress_type"]:`none;
+	SubprogressType(type, last_subprogress_max);
+
+	if (type == `progress || type == `tick)
+	{
+	    SubprogressTitle(state["subprogress_label"]:"");
+	    SubprogressValue(state["subprogress_value"]:0);
+	}
+    }
+
+    // return size of the progress stack
+    integer StackSize()
+    {
+	return size(progress_stack);
+    }
+
+    // return the value on the top of the stack
+    // the stack is not changed
+    map TopState()
+    {
+	return progress_stack[size(progress_stack) - 1]:$[];
+    }
 
     /**
      * Sets progress bar state:
@@ -248,14 +362,30 @@
     global define void New (string window_title, string progress_title, integer length, list<string> stg, list tits, string help_text) ``{
 	if (!visible)
 	    return ;
+
+	y2milestone("Progress::New(%1, %2, %3)", window_title, length, stg);
+
+	// a progress is already running, remember the current status
+	if (IsRunning())
+	{
+	    PushState();
+	}
+
+	integer orig_current_step = current_step;
+
 	steps = length;
 	stages = size (stg);
 	titles = tits;
 	current_step = -1;
 	current_stage = -1;
-	
+
 	if (Mode::commandline ())
 	    return;
+
+	if (length < size(stg))
+	{
+	    y2warning("Number of stages (%1) is greater than number of steps (%2)", size(stg), length);
+	}
 
 	if (progress_title == "")
 	{
@@ -264,6 +394,37 @@
 	    // initial label string is empty.
 	    progress_title = " ";
 	}
+
+	// do not replace the UI, there is a progress already running
+	if (IsRunning())
+	{
+	    progress_max = progress_max * steps;
+
+	    if (StackSize() == 1)
+	    {
+		progress_val = orig_current_step * steps;
+	    }
+	    else
+	    {
+		map prev_state = TopState();
+		integer prev_progress_val = prev_state["progress_val"]:0;
+
+		progress_val = prev_progress_val * steps;
+	    }
+
+	    // set the maximum value of the progress bar
+	    UI::ReplaceWidget(`id(`progress_replace_point), `ProgressBar(`id(`pb), progress_title, progress_max, progress_val));
+	    y2debug("New progress: %1/%2", progress_val, progress_max);
+
+	    // increase the reference counter
+	    progress_running = progress_running + 1;
+	    return;
+	}
+	else
+	{
+	    progress_max = steps;
+	}
+
 	term bar = `VBox( // progressbar only
 	    `ProgressBar(`id(`pb),progress_title,length,0)
 	    );
@@ -299,7 +460,7 @@
 		    `VStretch (),
 		    progress_icons,
 		    `ReplacePoint(`id(`subprogress_replace_point), `Empty()),
-		    `ProgressBar (`id (`pb), progress_title, length, 0),
+		    `ReplacePoint(`id(`progress_replace_point), `ProgressBar(`id (`pb), progress_title, length, 0)),
 		    `VSpacing (2)
 		    ));
 	    }
@@ -308,11 +469,12 @@
 		bar = add (bar, `VBox (
 		    `VStretch (),
 		    `ReplacePoint(`id(`subprogress_replace_point), `Empty()),
-		    `Label (`id (`pb), `opt (`hstretch), progress_title),
+		    `ReplacePoint(`id(`progress_replace_point), `Label (`id (`pb), `opt (`hstretch), progress_title)),
 		    `VSpacing (2)
 		    ));
 	    }
 	}
+
 	UI::ReplaceWidget (`id (`contents), bar);
 
         if (! UI::WizardCommand(`SetDialogHeading( window_title ) ) )
@@ -325,6 +487,8 @@
 	}
 	Wizard::DisableBackButton ();
 	Wizard::DisableNextButton ();
+
+	progress_running = progress_running + 1;
     }
 
     /**
@@ -558,9 +722,26 @@
 	    return ;
 	}
 
-	HighlightProgressIcon (current_step);
+	integer progress_value = current_step;
 
-	UI::ChangeWidget (`id (`pb), `Value, current_step);
+	// do not change icons in a nested progress
+	if (StackSize() == 0)
+	{
+	    HighlightProgressIcon (current_step);
+	}
+	else
+	{
+	    // recalculate the progress bar value according to the parent progress
+	    map prev_state = TopState();
+	    integer prev_step = prev_state["current_step"]:0;
+
+	    progress_value = (prev_step * steps) + (current_step > 0 ? current_step : 0);
+	}
+
+	y2debug("New progress value: %1, current_step: %2/%3 (%4%%)", progress_value, current_step, steps,
+	    100.0 * progress_value / progress_max);
+
+	UI::ChangeWidget (`id (`pb), `Value, progress_value);
     }
 
     /**
@@ -599,6 +780,13 @@
 
 	current_stage = current_stage + 1;
 
+	// do not update the UI in a nested progress
+	if (StackSize() > 0)
+	{
+	    return;
+	}
+
+
 	if ( Mode::commandline ()) 
 	{
 	    if (current_stage < stages && current_stage < size (titles))
@@ -629,7 +817,11 @@
     global define void Step (integer st) ``{
 	if (!visible || Mode::commandline () || 0 == steps)
 	    return ;
+
+	if (st < 0 || st > steps) return;
+
 	current_step = st;
+
 	UpdateProgressBar ();
     }
 
@@ -644,15 +836,26 @@
     global define void Stage (integer st, string title, integer step) ``{
 	if (!visible)
 	    return ;
+
 	if (-1 != step)
 	{
 	    Step (step);
 	}
+
+	// another progress is running
+	// do not change the current stage, calculate the target step
+	if (StackSize() > 0)
+	{
+	    UpdateProgressBar();
+	    return;
+	}
+
 	if (!Mode::commandline () && current_stage >= 0)
 	{
 	    UI::ChangeWidget(MarkId (current_stage), `Value,
 			     Mark (st > current_stage ? `done: `todo));
 	}
+
 	current_stage = st;
 	string s = "";
 	if (current_stage < size (titles))
@@ -708,6 +911,17 @@
     global define void Finish () ``{
 	if (!visible || Mode::commandline ())
 	    return ;
+
+	// decrease the reference counter
+	progress_running = progress_running - 1;
+
+	// set the previous state
+	if (StackSize() > 0)
+	{
+	    PopState();
+	    return;
+	}
+
 	if (0 != stages)
 	{
 	    while (current_stage < stages)
@@ -718,6 +932,7 @@
 	    current_step = steps;
 	    UpdateProgressBar ();
 	}
+
 	SetProgressBarTitle (" ");
     }
 
