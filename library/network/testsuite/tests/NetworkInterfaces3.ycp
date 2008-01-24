@@ -1,7 +1,7 @@
 {
 include "testsuite.ycp";
 
-import "NetworkDevices";
+import "NetworkInterfaces";
 
 map<string, any> simple = $[
     "WIRELESS_KEY": "secret",
@@ -30,7 +30,7 @@ list<map<string, any> > ifcfgs = [
     $[],
     ];
 foreach (map<string, any> ifcfg, ifcfgs, {
-    TEST (``(NetworkDevices::ConcealSecrets1 (ifcfg)), [], nil);
+    TEST (``(NetworkInterfaces::ConcealSecrets1 (ifcfg)), [], nil);
 });
 
 DUMP ("ConcealSecrets:");
@@ -51,7 +51,7 @@ list<map> devss = [
     $[],
     ];
 foreach (map devs, devss, {
-    TEST (``(NetworkDevices::ConcealSecrets (devs)), [], nil);
+    TEST (``(NetworkInterfaces::ConcealSecrets (devs)), [], nil);
 });
 
 }

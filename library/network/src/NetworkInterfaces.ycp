@@ -504,7 +504,7 @@ global define boolean Read() {
 
     /* Read devices */
     maplist(string d, devices, {
-	string devtype = device_type(d);
+	string devtype = GetType(d);
 
 //	string devnum = "";
 	// if(regexpmatch(d, "[a-z][a-z-]*[0-9]+"))

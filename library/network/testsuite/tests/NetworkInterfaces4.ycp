@@ -21,12 +21,12 @@ map READ = $[
 ];
 
 TESTSUITE_INIT([READ], nil);
-import "NetworkDevices";
+import "NetworkInterfaces";
 
-DUMP("NetworkDevices::Read");
-TEST(``(NetworkDevices::Read()), [READ], nil);
-NetworkDevices::OriginalDevices = nil;
+DUMP("NetworkInterfaces::Read");
+TEST(``(NetworkInterfaces::Read()), [READ], nil);
+NetworkInterfaces::OriginalDevices = nil;
 
-DUMP("NetworkDevices::Write");
-TEST(``(NetworkDevices::Write("")), [READ], nil);
+DUMP("NetworkInterfaces::Write");
+TEST(``(NetworkInterfaces::Write("")), [READ], nil);
 }

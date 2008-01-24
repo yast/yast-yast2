@@ -6,7 +6,7 @@ map READ = $[
 ];
 
 TESTSUITE_INIT([READ], nil);
-import "NetworkDevices";
+import "NetworkInterfaces";
 
 DUMP ("Combined:");
 list <string> ifcfgs = [
@@ -41,27 +41,20 @@ list <string> ifcfgs = [
     ];
 
 foreach (string ifcfg, ifcfgs, {
-    DUMP (sformat ("ifcfg-%1", ifcfg));
-    string t = NetworkDevices::device_type (ifcfg);
-    string i = NetworkDevices::device_num (ifcfg);
-    string ai = NetworkDevices::alias_num (ifcfg);
-    DUMP (sformat ("%1", [t, i, ai]));
-    string reassembled = (ai == "")?
-	NetworkDevices::device_name (t, i) :
-	NetworkDevices::alias_name (t, i, ai);
-    if (ifcfg != reassembled)
-    {
-	DUMP (sformat (" Reassembled: %1", reassembled));
-    }
+    string t = NetworkInterfaces::GetType(ifcfg);
+    DUMP (sformat ("ifcfg-%1, type: %2", ifcfg, t));
+//    string i = NetworkDevices::device_num (ifcfg);
+//    string ai = NetworkDevices::alias_num (ifcfg);
 });
 
+/*
 DUMP ("Obsolete:");
 TEST(``(NetworkDevices::device_name("eth-pcmcia-","0")), [], nil);
 TEST(``(NetworkDevices::device_name("tr-pcmcia-","1")), [], nil);
 
 TEST(``(NetworkDevices::alias_name("eth-pcmcia-","0","1")), [], nil);
 TEST(``(NetworkDevices::alias_name("tr-pcmcia-","1","1")), [], nil);
-
+*/
 DUMP ("CanonicalizeIP:");
 list<map<string, any> > addresses = [
     // normal cases
@@ -77,7 +70,7 @@ list<map<string, any> > addresses = [
     $["IPADDR": "10.0.0.1", "other": "data"],
     ];
 foreach (map<string, any> address, addresses, {
-    TEST (``(NetworkDevices::CanonicalizeIP (address)), [], nil);
+    TEST (``(NetworkInterfaces::CanonicalizeIP (address)), [], nil);
 });
 
 }
