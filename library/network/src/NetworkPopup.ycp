@@ -21,7 +21,7 @@
     textdomain "base";
 
     import "Label";
-    import "NetworkDevices";
+    import "NetworkInterfaces";
 
     // cache all found hosts on the local network
     list<string> found_hosts = nil;
@@ -40,7 +40,7 @@
 	string item = nil;
 
 	list Items = maplist(string i, items,  ``{
-		string device_name = NetworkDevices::GetValue(i, "NAME");
+		string device_name = NetworkInterfaces::GetValue(i, "NAME");
 		if ( (device_name == nil) || (device_name == "") ) {
 		        //TRANSLATORS: Informs that device name is not known
 		        device_name = _("Unknown device");
@@ -48,16 +48,16 @@
 		if (size(device_name) > 30) {
 		    device_name = substring (device_name, 0, 27) + "...";
 		}
-		string ip_addr = (NetworkDevices::GetValue(i, "BOOTPROTO") == "dhcp" ?
+		string ip_addr = (NetworkInterfaces::GetValue(i, "BOOTPROTO") == "dhcp" ?
                     // TRANSLATORS: Informs that the IP address is assigned via DHCP
 	                    _("DHCP address") :
-	                    NetworkDevices::GetValue(i, "IPADDR"));
+	                    NetworkInterfaces::GetValue(i, "IPADDR"));
 
 	        if ( (ip_addr == nil) || (ip_addr == "")) {
 		    // TRANSLATORS: table item, informing that device has no IP address
 	            ip_addr = _("No IP address assigned");
 		}
-		return `item(`id(i),  NetworkDevices::GetDeviceType(i), device_name, ip_addr, i);
+		return `item(`id(i),  NetworkInterfaces::GetDeviceType(i), device_name, ip_addr, i);
 	    }
 	);
 

@@ -1,0 +1,32 @@
+Dump	Combined:
+Dump	ifcfg-eth0, type: eth
+Dump	ifcfg-eth1, type: eth
+Dump	ifcfg-eth-pcmcia-0, type: eth
+Dump	ifcfg-eth-usb-1, type: eth
+Dump	ifcfg-tr-pcmcia-1, type: tr
+Dump	ifcfg-ippp2, type: ippp
+Dump	ifcfg-ppp2, type: ppp
+Dump	ifcfg-lo, type: lo
+Dump	ifcfg-eth0#1, type: eth
+Dump	ifcfg-eth1#20, type: eth
+Dump	ifcfg-eth-pcmcia-0#3, type: eth
+Dump	ifcfg-eth-usb-1#0, type: eth
+Dump	ifcfg-tr-pcmcia-2#432, type: tr
+Dump	ifcfg-ippp2#2, type: ippp
+Dump	ifcfg-ppp2#2, type: ppp
+Dump	ifcfg-lo#1, type: lo
+Dump	ifcfg-eth1#blah, type: eth
+Dump	ifcfg-eth-id-00:07:e9:d5:8e:e8, type: eth
+Dump	ifcfg-eth-id-00:07:e9:d5:8e:e8#foo, type: eth
+Dump	ifcfg-ip6tnl0, type: ip6tnl
+Dump	ifcfg-ip6tnl31, type: ip6tnl
+Dump	ifcfg-mip6mnha3, type: mip6mnha
+Dump	CanonicalizeIP:
+Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "other":"data"]
+Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "other":"data"]
+Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "other":"data"]
+Return	$["BOOTPROTO":"dhcp"]
+Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "other":"data"]
+Return	nil
+Return	$[]
+Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.255.255.255", "PREFIXLEN":"", "other":"data"]

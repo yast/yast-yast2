@@ -28,7 +28,7 @@ textdomain "base";
 import "CWM";
 import "Label";
 import "Mode";
-import "NetworkDevices";
+import "NetworkInterfaces";
 //import "NetworkService";
 import "Popup";
 import "SuSEFirewall";
@@ -128,20 +128,20 @@ void SetFirewallLabel (symbol status) {
  * Initialize the list of all known interfaces
  */
 void InitAllInterfacesList () {
-    // Do not read NetworkDevices when they are already read
+    // Do not read NetworkInterfaces when they are already read
     if (! Mode::config () && ! Mode::installation () && ! Mode::update ()) {
-	y2milestone("Reading NetworkDevices...");
-	NetworkDevices::Read ();
+	y2milestone("Reading NetworkInterfaces...");
+	NetworkInterfaces::Read ();
     }
-    all_interfaces = NetworkDevices::List ("");
+    all_interfaces = NetworkInterfaces::List ("");
     all_interfaces = filter (string i, all_interfaces, {
 	return i != "lo";
     });
     if (! Mode::config ())
     {
 	interface_items = maplist (string i, all_interfaces, {
-	    string label = NetworkDevices::GetValue (i, "BOOTPROTO");
-	    string ipaddr = NetworkDevices::GetValue (i, "IPADDR");
+	    string label = NetworkInterfaces::GetValue (i, "BOOTPROTO");
+	    string ipaddr = NetworkInterfaces::GetValue (i, "IPADDR");
 	    if (label == "static" || label == "" || label == nil)
 	    {
 		label = ipaddr;

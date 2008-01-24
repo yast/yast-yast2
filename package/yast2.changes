@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 24 15:16:44 CET 2008 - mzugec@suse.cz
+
+- replace deprecated NetworkDevices by NetworkInterfaces
+- 2.16.23
+
+-------------------------------------------------------------------
 Thu Jan 24 10:09:37 CET 2008 - lslezak@suse.cz
 
 - Fixed testing UI::WidgetExists() call result (it can return nil,

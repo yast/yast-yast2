@@ -1,0 +1,153 @@
+{
+
+include "testsuite.ycp";
+
+map READ = $[
+    "network" : $[
+	"section" : $[
+	    "arc5"	: nil,
+	    "atm5"	: nil,
+	    "ci5"	: nil,
+	    "ctc5"	: nil,
+	    "dummy5"	: nil,
+	    "escon5"	: nil,
+	    "eth5"	: nil,
+	    "eth6"	: nil,
+	    "eth7"	: nil,
+	    "eth8"	: nil,
+	    "eth9"	: nil,
+//	    "eth-pcmcia": nil,
+//	    "eth-usb"	: nil,
+	    "mynet0"	: nil,
+	    "fddi5"	: nil,
+	    "hippi5"	: nil,
+	    "hsi5"	: nil,
+	    "ippp5"	: nil,
+	    "iucv5"	: nil,
+	    "lo"	: nil,
+	    "myri5"	: nil,
+	    "ppp5"	: nil,
+	    "tr5"	: nil,
+	    "tr~"	: nil,
+	],
+	"value" : $[
+	    "arc5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "atm5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "ci5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "ctc5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "dummy5"	: $["BOOTPROTO":"static", "IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "STARTMODE" : "manual"],
+	    "escon5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "eth5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual", /* "IPADDR_x":"1.1.1.1", "NETMASK_x":"0.0.0.0" */],
+	    // 32 bit prefix
+	    "eth6"	: $["BOOTPROTO":"static", "IPADDR":"1.2.3.4", "STARTMODE":"manual"],
+	    "eth7"	: $["STARTMODE":"manual"],
+	    "eth8"	: $["IPADDR":"1.2.3.4/8", "STARTMODE":"manual"],
+	    "eth9"	: $["IPADDR":"1.2.3.4", "PREFIXLEN":"8", "STARTMODE":"manual"],
+//	    "eth-pcmcia": $["BOOTPROTO":"dhcp", "STARTMODE":"hotplug"],
+//	    "eth-usb"	: $["BOOTPROTO":"dhcp", "STARTMODE":"hotplug"],
+	    "mynet0"	: $["BOOTPROTO":"dhcp", "STARTMODE":"auto", "INTERFACETYPE":"eth"],
+	    "fddi5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "hippi5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "hsi5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "ippp5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "iucv5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "lo"	: $["BROADCAST":"127.255.255.255", "IPADDR":"127.0.0.1", "NETMASK":"255.0.0.0", "NETWORK":"127.0.0.0", "STARTMODE":"onboot", /* "IPADDR_1":"7.7.7.7" */],
+	    "myri5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "ppp5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "tr5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	]
+    ],
+    "probe" : $[
+	"system" : [],
+    ],
+    "target" : $[
+	"tmpdir" : "/tmp",
+    ],
+];
+
+TESTSUITE_INIT([READ], nil);
+import "NetworkInterfaces";
+
+DUMP("NetworkInterfaces::Read");
+TEST(``(NetworkInterfaces::Read()), [READ], nil);
+DUMP(sformat("all=%1", NetworkInterfaces::Devices));
+NetworkInterfaces::OriginalDevices = nil;
+
+DUMP("NetworkInterfaces::Write");
+TEST(``(NetworkInterfaces::Write("")), [READ], nil);
+TEST(``(NetworkInterfaces::Write("eth")), [READ], nil);
+TEST(``(NetworkInterfaces::Write("ppp")), [READ], nil);
+TEST(``(NetworkInterfaces::Write("ippp")), [READ], nil);
+TEST(``(NetworkInterfaces::Write("trx")), [READ], nil);
+TEST(``(NetworkInterfaces::Write("atm|tr")), [READ], nil);
+
+map<string,map> exported = nil;
+
+DUMP("NetworkInterfaces::Export");
+exported = NetworkInterfaces::Export ("");
+DUMP(sformat("exported=%1", exported));
+
+// Test import canonicalizing
+DUMP("NetworkInterfaces::Import");
+exported["lo", "lo", "STARTMODE"] = "boot";
+exported["eth", "eth6", "IPADDR"] = "1.2.3.4/8";
+NetworkInterfaces::Import ("", exported);
+DUMP(sformat("all     =%1", NetworkInterfaces::Devices));
+
+DUMP("NetworkInterfaces::GetFreeDevices");
+NetworkInterfaces::Devices=$["eth":$["0":$[]]];
+TEST(``(NetworkInterfaces::GetFreeDevices("eth", 2)), [], nil);
+NetworkInterfaces::Devices=$["eth":$["1":$[]]];
+TEST(``(NetworkInterfaces::GetFreeDevices("eth", 2)), [], nil);
+NetworkInterfaces::Devices=$["eth":$["2":$[]]];
+TEST(``(NetworkInterfaces::GetFreeDevices("eth", 2)), [], nil);
+NetworkInterfaces::Devices=$["eth-pcmcia":$["":$[]]];
+TEST(``(NetworkInterfaces::GetFreeDevices("eth-pcmcia", 2)), [], nil);
+NetworkInterfaces::Devices=$["eth-pcmcia":$["0":$[]]];
+TEST(``(NetworkInterfaces::GetFreeDevices("eth-pcmcia", 2)), [], nil);
+NetworkInterfaces::Devices=$["eth-pcmcia":$["1":$[]]];
+TEST(``(NetworkInterfaces::GetFreeDevices("eth-pcmcia", 2)), [], nil);
+
+DUMP("NetworkInterfaces::Locate");
+NetworkInterfaces::Devices=$[ "eth" : $[ "eth0" : $[ "BOOTPROTO" : "dhcp" ]]];
+TEST(``(NetworkInterfaces::Locate("BOOTPROTO", "dhcp")), [], nil);
+NetworkInterfaces::Devices=$[ "eth" : $[ "eth0" : $[ "BOOTPROTO" : "" ]]];
+TEST(``(NetworkInterfaces::Locate("BOOTPROTO", "dhcp")), [], nil);
+NetworkInterfaces::Devices=$[ "eth" : $[ "eth0" : $[ "BOOTPROTO" : "static" ]]];
+TEST(``(NetworkInterfaces::Locate("BOOTPROTO", "dhcp")), [], nil);
+NetworkInterfaces::Devices=$[ "eth" : $[ "eth0" : $[ "BOOTPROTO" : "static" ], "eth1" : $[ "BOOTPROTO" : "dhcp"]]];
+TEST(``(NetworkInterfaces::Locate("BOOTPROTO", "dhcp")), [], nil);
+NetworkInterfaces::Devices=$[ "eth" : $[ "eth0" : $[ "BOOTPROTO" : "static" ]], "tr" : $["tr1" : $[ "BOOTPROTO" : "dhcp"]]];
+TEST(``(NetworkInterfaces::Locate("BOOTPROTO", "dhcp")), [], nil);
+
+DUMP("NetworkInterfaces::UpdateModemSymlink");
+NetworkInterfaces::Devices=$["arc":$["arc5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]]];
+TEST(``(NetworkInterfaces::UpdateModemSymlink()), [], nil);
+NetworkInterfaces::Devices=$["modem":$["modemc5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]]];
+TEST(``(NetworkInterfaces::UpdateModemSymlink()), [], nil);
+NetworkInterfaces::Devices=$["modem":$["modem5":$["MODEM_DEVICE":"", "STARTMODE":"manual"]]];
+TEST(``(NetworkInterfaces::UpdateModemSymlink()), [], nil);
+NetworkInterfaces::Devices=$["modem":$["modem5":$["MODEM_DEVICE":"/dev/modem", "STARTMODE":"manual"]]];
+TEST(``(NetworkInterfaces::UpdateModemSymlink()), [], nil);
+NetworkInterfaces::Devices=$["modem":$["modem5":$["MODEM_DEVICE":"/dev/ttyS1", "STARTMODE":"manual"]]];
+TEST(``(NetworkInterfaces::UpdateModemSymlink()), [], nil);
+READ=$["target":$["lstat":$["islink":true], "symlink":"/dev/ttyS1"]];
+TEST(``(NetworkInterfaces::UpdateModemSymlink()), [READ], nil);
+READ=$["target":$["lstat":$["islink":true], "symlink":"/dev/ttyS2"]];
+TEST(``(NetworkInterfaces::UpdateModemSymlink()), [READ], nil);
+
+DUMP("NetworkInterfaces::List");
+NetworkInterfaces::Devices=$["lo":$["lo":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]]];
+TEST(``(NetworkInterfaces::List("modem")), [], nil);
+TEST(``(NetworkInterfaces::List("netcard")), [], nil);
+TEST(``(NetworkInterfaces::List("")), [], nil);
+NetworkInterfaces::Devices=$["lo":$["lo":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "eth":$["eth0":$["BOOTPROTO":"DHCP", "STARTMODE":"manual"]]];
+TEST(``(NetworkInterfaces::List("modem")), [], nil);
+TEST(``(NetworkInterfaces::List("netcard")), [], nil);
+TEST(``(NetworkInterfaces::List("")), [], nil);
+NetworkInterfaces::Devices=$[ "eth" : $[ "eth0" : $[ "BOOTPROTO" : "static" ]], "tr" : $["tr1" : $[ "BOOTPROTO" : "dhcp"]]];
+TEST(``(NetworkInterfaces::List("modem")), [], nil);
+TEST(``(NetworkInterfaces::List("netcard")), [], nil);
+TEST(``(NetworkInterfaces::List("")), [], nil);
+
+}
