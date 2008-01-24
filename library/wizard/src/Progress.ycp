@@ -188,10 +188,13 @@
 	progress_max = state["progress_max"]:0;
 	progress_val = state["progress_val"]:0;
 
+	integer pb_value = state["progress_value"]:0;
+	pb_value = (pb_value == nil) ? 0 : pb_value + 1;
+
 	// refresh the progress widget, add one step for the embedded progress
 	UI::ReplaceWidget(`id(`progress_replace_point),
-	    `ProgressBar(`id(`pb), state["progress_label"]:"",
-		steps, state["progress_value"]:0 + 1));
+	    `ProgressBar(`id(`pb), state["progress_label"]:"", steps, pb_value)
+	);
 
 	symbol type = state["subprogress_type"]:`none;
 	SubprogressType(type, last_subprogress_max);
@@ -505,12 +508,12 @@
 	}
 
 	// is there the subprogress progress widget?
-	if (UI::WidgetExists(`subprogress_progress))
+	if (UI::WidgetExists(`subprogress_progress) == true)
 	{
 	    ret = `progress;
 	}
 	// or is there the tick subprogress widget?
-	else if (UI::WidgetExists(`subprogress_tick))
+	else if (UI::WidgetExists(`subprogress_tick) == true)
 	{
 	    ret = `tick;
 	}
@@ -705,7 +708,7 @@
 
 		string icon_id = IconId (last_highlighted_icon);
 
-		if (UI::WidgetExists (`id (icon_id))) {
+		if (UI::WidgetExists (`id (icon_id)) == true) {
 		    UI::ChangeWidget (`id (icon_id), `Enabled, true);
 		}
 	    }

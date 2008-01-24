@@ -7,6 +7,9 @@ BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-testsui
 # Needed already in build time
 BuildRequires:	yast2-pkg-bindings >= 2.16.5
 
+# pre-requires for filling the sysconfig template (sysconfig.yast2)
+PreReq:		%fillup_prereq
+
 # Mod_UI
 Requires:       yast2-core >= 2.16.6
 
