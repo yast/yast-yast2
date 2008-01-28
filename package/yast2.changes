@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 28 16:28:34 CET 2008 - locilka@suse.cz
+
+- Adjusted SCR agent for SuSEfirewall2 sysconfig file. Values can
+  use also single quotes, not only double-quotes (bnc#327565).
+
+-------------------------------------------------------------------
 Sun Jan 27 21:22:06 CET 2008 - coolo@suse.de
 
 - fixing changelog
