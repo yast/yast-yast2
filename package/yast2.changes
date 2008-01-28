@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 28 13:14:13 CET 2008 - locilka@suse.cz
+
+- Removing useless Wizard() calls in ProductControl to minimize the
+  Wizard redrawing.
+
+-------------------------------------------------------------------
 Mon Jan 28 13:00:19 CET 2008 - aschnell@suse.de
 
 - support Qt and Gtk frontend in startup scripts
