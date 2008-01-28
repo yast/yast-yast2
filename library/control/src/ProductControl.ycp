@@ -536,7 +536,6 @@ global define void AddWizardSteps(list<map> stagemode)
     });
 
     UI::WizardCommand(`SetCurrentStep( first_id ) );
-    return;
 }
 
 
@@ -551,8 +550,9 @@ global define void UpdateWizardSteps(list<map> stagemode)
 
     UI::WizardCommand(`DeleteSteps());
     AddWizardSteps( stagemode );
-    UI::WizardCommand(`UpdateSteps());
-    UI::WizardCommand(`SetCurrentStep( CurrentWizardStep ) );
+    // AddWizardSteps sets the current step itself (which also updates the Wizard)
+    // UI::WizardCommand(`SetCurrentStep( CurrentWizardStep ) );
+    // UI::WizardCommand(`UpdateSteps());
     return;
 }
 
