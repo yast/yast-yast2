@@ -12,11 +12,6 @@ ybindir=$YAST_PREFIX/lib/YaST2/bin
 logdir=/var/log/YaST2
 
 
-# font for qt
-# obsolete, we should not need it anymore, adrian
-# Y2_XFONT="-gnu-unifont-medium-r-normal--16-160-75-75-p-80-iso10646-1"
-
-
 #
 # check if plugins are in lib or lib64 subdir and sets the variable
 # plugindir accordingly
@@ -54,7 +49,7 @@ function check_plugin()
 }
 
 #
-# check if the qt plugin and all necessary libaries are present
+# check if the qt plugin and all necessary libraries are present
 #
 function check_qt()
 {
@@ -62,7 +57,7 @@ function check_qt()
 }
 
 #
-# check if the ncurses plugin and all necessary libaries are present
+# check if the gtk plugin and all necessary libraries are present
 #
 function check_gtk()
 {
@@ -70,7 +65,7 @@ function check_gtk()
 }
 
 #
-# check if the ncurses plugin and all necessary libaries are present
+# check if the ncurses plugin and all necessary libraries are present
 #
 function check_ncurses()
 {
@@ -94,7 +89,7 @@ function set_lang_from_sysconfig()
     if [ -z "$LANG" -a -r /etc/sysconfig/language ] ; then
 	. /etc/sysconfig/language
 	if [ -n "$RC_LANG" ] ; then
-            export LANG=$RC_LANG
+	    export LANG=$RC_LANG
 	fi
     fi
 }
@@ -104,7 +99,7 @@ function set_qt_home_dir()
 {
     local user="$USER"
     if [ "$KDESU_USER" ]; then
-       user="$KDESU_USER"
+	user="$KDESU_USER"
     fi
     temp_QT_HOME_DIR="$( getent passwd $user | cut -d : -f 6)/.qt/"
     if test -r "$temp_QT_HOME_DIR/qtrc"; then
@@ -116,7 +111,7 @@ function set_qt_home_dir()
 function set_inst_qt_env()
 {
     export XCURSOR_THEME="DMZ"
-    export QT_HOME_DIR="`eval echo /tmp/.qt/`"
+    export QT_HOME_DIR="/tmp/.qt/"
     mkdir -p /tmp/.qt
     [ -e /usr/share/desktop-data/qtrc ] && cp /usr/share/desktop-data/qtrc /tmp/.qt/
 }
@@ -125,6 +120,18 @@ function set_inst_qt_env()
 function clr_inst_qt_env()
 {
     rm -rf /tmp/.qt/
+}
+
+
+function set_inst_gtk_env()
+{
+    export XCURSOR_THEME="DMZ"
+}
+
+
+function clr_inst_gtk_env()
+{
+    :
 }
 
 
