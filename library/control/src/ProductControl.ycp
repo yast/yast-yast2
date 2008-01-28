@@ -535,25 +535,30 @@ global define void AddWizardSteps(list<map> stagemode)
         });
     });
 
-    UI::WizardCommand(`SetCurrentStep( first_id ) );
+    UI::WizardCommand(`SetCurrentStep( CurrentWizardStep ) );
 }
 
-
-
+/* Forces UpdateWizardSteps to redraw steps even if nothing seem to be changed */
+boolean force_UpdateWizardSteps = false;
 
 /**
  * Update Steps
  */
 global define void UpdateWizardSteps(list<map> stagemode)
 {
+    if (force_UpdateWizardSteps == true) {
+	y2milestone ("UpdateWizardSteps forced");
+	force_UpdateWizardSteps = false;
+    } else if (last_stage_mode == stagemode) {
+	y2milestone ("No changes in Wizard steps");
+	return;
+    }
+
     last_stage_mode = stagemode;
 
     UI::WizardCommand(`DeleteSteps());
+    // Also redraws the wizard and sets the current step
     AddWizardSteps( stagemode );
-    // AddWizardSteps sets the current step itself (which also updates the Wizard)
-    // UI::WizardCommand(`SetCurrentStep( CurrentWizardStep ) );
-    // UI::WizardCommand(`UpdateSteps());
-    return;
 }
 
 
@@ -565,6 +570,7 @@ global define void RetranslateWizardSteps()
     if ( size( last_stage_mode ) > 0 )
     {
 	y2debug( "Retranslating wizard steps" );
+	force_UpdateWizardSteps = true;
 	UpdateWizardSteps( last_stage_mode );
     }
 }

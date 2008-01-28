@@ -999,10 +999,13 @@
     {
 	if ( UI::WizardCommand(`EnableNextButton( false ) ) == false )
 	{
-	    if ( UI::WidgetExists(`id(`next ) ) )
-		UI::ChangeWidget(`id(`next), `Enabled, false );
-	    else
-		UI::ChangeWidget(`id(`accept), `Enabled, false );
+	    if (UI::WidgetExists (`id (`next))) {
+		UI::ChangeWidget(`id (`next), `Enabled, false);
+	    } else if (UI::WidgetExists (`id (`accept))) {
+		UI::ChangeWidget(`id (`accept), `Enabled, false);
+	    } else {
+		y2error (-1, "Neither `next nor `accept widgets exist");
+	    }
 	}
     }
 
