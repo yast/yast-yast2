@@ -6,6 +6,7 @@
 # Authors:	Mathias Kettner <kettner@suse.de>
 #		Klaus Kaempf <kkaempf@suse.de>
 #		Ludwig Nussel <lnussel@suse.de>
+#		Arvin Schnell <aschnell@suse.de>
 #
 # This script is called when the user just types 'yast2'. It starts
 # the qt user interface in case the DISPLAY variable is set and other-
@@ -16,7 +17,7 @@ export PATH=/sbin:/usr/sbin:$PATH
 
 # allow for a different prefix
 mydir=${0%/[YyZz]a[Ss][Tt]*}
-if [ -z "$mydir" -o "$mydir" = "/sbin" ]; then 
+if [ -z "$mydir" -o "$mydir" = "/sbin" ]; then
     YAST_PREFIX=/usr
 else
     YAST_PREFIX=${mydir%/sbin}
@@ -57,7 +58,7 @@ redirect
 # --fullscreen
 # --noborder
 # well also for gtk and ncurses
-Y2QT_ARGS=""
+Y2UI_ARGS=""
 GNOME_SHELL="$ybindir/y2controlcenter-gnome"
 KDE_SHELL="$ybindir/y2controlcenter"
 
@@ -151,7 +152,7 @@ select_gui_frontend()
 	probe_desktop_gui
 	WANTED_GUI=$DESKTOP_GUI
     fi
-    
+
     if [ "$WANTED_GUI" = "gtk" ]; then
 	if check_gtk; then
 	    SELECTED_GUI=gtk
@@ -188,9 +189,9 @@ while true ; do
 		-i|--install) Y2_INSTALL_PACKAGES=true; shift ;;
 		--update) Y2_INSTALL_PACKAGES=true; Y2_INSTALL_ACTION=--update; shift ;;
 		--remove) Y2_INSTALL_PACKAGES=true; Y2_INSTALL_ACTION=--remove; shift ;;
-                --fullscreen) Y2QT_ARGS="$Y2QT_ARGS --fullscreen"; shift ;;
-		--noborder)   Y2QT_ARGS="$Y2QT_ARGS --noborder"  ; shift ;;
-		--kcontrol)   Y2QT_ARGS="$Y2QT_ARGS --kcontrol_id YaST" ; shift ;;
+                --fullscreen) Y2UI_ARGS="$Y2UI_ARGS --fullscreen"; shift ;;
+		--noborder)   Y2UI_ARGS="$Y2UI_ARGS --noborder"  ; shift ;;
+		--kcontrol)   Y2UI_ARGS="$Y2UI_ARGS --kcontrol_id YaST" ; shift ;;
 		--qt)  CMDLINE_UI="qt"  ; shift ;;
 		--gtk)  CMDLINE_UI="gtk"  ; shift ;;
 		--ncurses)  unset DISPLAY ; shift ;;
@@ -363,13 +364,13 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 	fi
 
 	# this fixes launching of interactive subprocesses, #150799
-	#Y2QT_ARGS="$Y2QT_ARGS --nothreads"
-        #uncomment the above line if anything in TUI breaks ;-) 
+	#Y2UI_ARGS="$Y2UI_ARGS --nothreads"
+        #uncomment the above line if anything in TUI breaks ;-)
         #threads are welcomed back in ncurses frontend (F#301899)
 
 	# set color theme, if defined
 	if [ ! -z "$Y2NCURSES_COLOR_THEME" ]; then
-	    export Y2NCURSES_COLOR_THEME="$Y2NCURSES_COLOR_THEME" 
+	    export Y2NCURSES_COLOR_THEME="$Y2NCURSES_COLOR_THEME"
 	fi
 
     else
@@ -379,7 +380,10 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
     fi
 # quick hack: treat gtk like qt
 elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
-    set_qt_home_dir
+
+    if [ "$SELECTED_GUI" = "qt" ]; then
+	set_qt_home_dir
+    fi
 
     # find which control center shell we want, if there is none we
     # fall back to the built-in ycp menu
@@ -401,9 +405,9 @@ elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
 	    # matching "*/", leaving only the last path name component.
 
 	    if [ $module == "sw_single" ] ; then
-	        case "$Y2QT_ARGS" in
+	        case "$Y2UI_ARGS" in
 	    	*fullscreen*) ;;
-	    	*) Y2QT_ARGS="$Y2QT_ARGS --fullscreen" ;;
+	    	*) Y2UI_ARGS="$Y2UI_ARGS --fullscreen" ;;
 	        esac
 	    fi
 	fi
@@ -415,7 +419,7 @@ fi
 # do it!
 # $@ are args for ycp
 if [ $module == "menu" -a -f "$y2ccbin" ] ; then
-    $y2ccbin $Y2QT_ARGS "$@"
+    $y2ccbin $Y2UI_ARGS "$@"
     exit_code=$?
 else
     # loop while necessary
@@ -426,7 +430,7 @@ else
     esac
     #  break out on errors, #343258
     while [ $exit_code = 0 ]; do
-	$ybindir/y2base $module "$@" "$SELECTED_GUI" $Y2_GEOMETRY $Y2QT_ARGS
+	$ybindir/y2base $module "$@" "$SELECTED_GUI" $Y2_GEOMETRY $Y2UI_ARGS
 	exit_code=$?
 	if [ -z "$REDO_FILE" -o ! -f "$REDO_FILE" ]; then
 	    break

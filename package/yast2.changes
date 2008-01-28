@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 28 13:00:19 CET 2008 - aschnell@suse.de
+
+- support Qt and Gtk frontend in startup scripts
+- 2.16.24
+
+-------------------------------------------------------------------
 Mon Jan 28 16:28:34 CET 2008 - locilka@suse.cz
 
 - Adjusted SCR agent for SuSEfirewall2 sysconfig file. Values can
@@ -46,7 +52,7 @@ Mon Jan 21 14:49:30 CET 2008 - locilka@suse.cz
 -------------------------------------------------------------------
 Fri Jan 18 18:04:57 CET 2008 - kmachalkova@suse.cz
 
-- Re-enabled threading in ncurses UI (bug #164999, FaTE #301899)  
+- Re-enabled threading in ncurses UI (bug #164999, FaTE #301899)
 
 -------------------------------------------------------------------
 Thu Jan 17 13:15:45 CET 2008 - lslezak@suse.cz
@@ -59,13 +65,13 @@ Thu Jan 17 13:15:45 CET 2008 - lslezak@suse.cz
 -------------------------------------------------------------------
 Fri Jan 11 14:11:16 CET 2008 - mzugec@suse.de
 
-- remove ocurrences of deprecated NetworkInterfaces::device_name 
+- remove ocurrences of deprecated NetworkInterfaces::device_name
 
 -------------------------------------------------------------------
 Tue Jan  8 17:20:27 CET 2008 - mzugec@suse.cz
 
 - added NetworkInterfaces module (NetworkDevices will be deprecated)
-- 2.16.20 
+- 2.16.20
 
 -------------------------------------------------------------------
 Tue Jan  8 13:06:46 CET 2008 - jsrain@suse.cz
@@ -94,13 +100,13 @@ Fri Jan  4 10:47:10 CET 2008 - lslezak@suse.cz
 -------------------------------------------------------------------
 Thu Dec 13 17:47:39 CET 2007 - mzugec@suse.de
 
-- NetworkDevices::CleanCacheRead() to reset and re-read 
+- NetworkDevices::CleanCacheRead() to reset and re-read
 .sysconfig.network.ifcfg* because of network proposal (#170558)
-- NetworkDevices::GetDeviceTypes() - list of netcard devices for 
+- NetworkDevices::GetDeviceTypes() - list of netcard devices for
 this architecture
 - NetworkDevices::GetDevTypeDescription() moved from network module
 (routines/summary device_types, routines/complex device_names)
-- 2.16.18 
+- 2.16.18
 
 -------------------------------------------------------------------
 Mon Dec 10 12:31:44 CET 2007 - locilka@suse.cz
@@ -137,7 +143,7 @@ Thu Dec  6 17:36:11 CET 2007 - mzugec@suse.cz
 -------------------------------------------------------------------
 Wed Dec  5 17:32:22 CET 2007 - sh@suse.de
 
-- Dropped obsolete --noborder option for /sbin/yast2 
+- Dropped obsolete --noborder option for /sbin/yast2
 
 -------------------------------------------------------------------
 Mon Dec  3 16:43:50 CET 2007 - locilka@suse.cz
@@ -166,12 +172,12 @@ Thu Nov 29 15:35:40 CET 2007 - locilka@suse.cz
 Thu Nov 29 13:19:11 CET 2007 - mzugec@suse.cz
 
 - for AY Confirm::Detection popup has timeout 10 seconds (#192181)
-- 2.16.15 
+- 2.16.15
 
 -------------------------------------------------------------------
 Tue Nov 27 19:13:03 CET 2007 - sh@suse.de
 
-- Require yast2-core >= 2.16.10 in .spec 
+- Require yast2-core >= 2.16.10 in .spec
 - 2.16.14
 
 -------------------------------------------------------------------
@@ -189,7 +195,7 @@ Tue Nov 27 13:47:41 CET 2007 - mvidner@suse.cz
 Fri Nov 23 16:21:28 CET 2007 - mzugec@suse.cz
 
 - fixed URL module for "smb" type
-- 2.16.12 
+- 2.16.12
 
 -------------------------------------------------------------------
 Thu Nov 22 17:45:45 CET 2007 - locilka@suse.cz
@@ -236,7 +242,7 @@ Fri Nov  9 12:23:00 CET 2007 - jsrain@suse.cz
 Wed Nov  7 20:59:53 CET 2007 - mzugec@suse.cz
 
 - added new function ListDevicesExcept(string)
-- 2.16.9 
+- 2.16.9
 
 -------------------------------------------------------------------
 Tue Nov  6 18:22:47 CET 2007 - locilka@suse.cz
@@ -318,7 +324,7 @@ Wed Oct  3 09:39:45 CEST 2007 - mvidner@suse.cz
 Wed Sep 26 18:06:50 CEST 2007 - kmachalkova@suse.cz
 
 - Text-mode control center: do not show groups containing no modules
-  to the user (#309452)  
+  to the user (#309452)
 
 -------------------------------------------------------------------
 Wed Sep 12 11:24:50 CEST 2007 - jsrain@suse.cz
@@ -330,7 +336,7 @@ Wed Sep 12 11:24:50 CEST 2007 - jsrain@suse.cz
 -------------------------------------------------------------------
 Tue Sep 11 10:23:08 CEST 2007 - varkoly@suse.de
 
-- Fixed Provides list (#309420) 
+- Fixed Provides list (#309420)
 
 -------------------------------------------------------------------
 Mon Sep 10 11:41:49 CEST 2007 - locilka@suse.cz
@@ -405,7 +411,7 @@ Thu Aug 30 10:23:29 CEST 2007 - jsrain@suse.cz
 -------------------------------------------------------------------
 Tue Aug 28 15:54:17 CEST 2007 - mzugec@suse.cz
 
-- add filter and log for output of NetworkDevices::List() (#303858) 
+- add filter and log for output of NetworkDevices::List() (#303858)
 
 -------------------------------------------------------------------
 Tue Aug 28 12:12:49 CEST 2007 - locilka@suse.cz
@@ -422,7 +428,7 @@ Mon Aug 27 11:59:50 CEST 2007 - sh@suse.de
 Fri Aug 24 13:21:57 CEST 2007 - mzugec@suse.cz
 
 - add "ath" into "netcard" macro in NetworkDevices (#288450)
-- 2.15.48 
+- 2.15.48
 
 -------------------------------------------------------------------
 Sun Aug 12 12:13:36 CEST 2007 - coolo@suse.de
@@ -476,7 +482,7 @@ Wed Jul 25 14:46:56 CEST 2007 - locilka@suse.cz
 Sun Jul 22 10:02:08 CEST 2007 - mzugec@suse.de
 
 - don't use getcfg in IsConnected function
-- 2.15.41 
+- 2.15.41
 
 -------------------------------------------------------------------
 Wed Jul 18 16:56:45 CEST 2007 - lslezak@suse.cz
@@ -524,7 +530,7 @@ Tue Jun 19 13:02:27 CEST 2007 - kmachalkova@suse.cz
 
 - Respect user's choice and never unset LANG (yast2-funcs)
 - Do not append .UTF-8 suffix to POSIX and C locale (/sbin/yast2)
-  (#285178) 
+  (#285178)
 - 2.15.37
 
 -------------------------------------------------------------------
@@ -544,14 +550,14 @@ Thu Jun 14 15:57:58 CEST 2007 - kmachalkova@suse.cz
 
 - Enable setting color theme of ncurses UI (Y2NCURSES_COLOR_THEME
   variable added to sysconfig, exported by /sbin/yast2 if defined)
-  (FaTE #301893)) 
+  (FaTE #301893))
 
 -------------------------------------------------------------------
 Tue Jun 12 18:05:51 CEST 2007 - mzugec@suse.cz
 
-- fixed CheckDomain function - allow "." character at the end 
+- fixed CheckDomain function - allow "." character at the end
 of domain name (suse.cz.)
-- 2.15.36 
+- 2.15.36
 
 -------------------------------------------------------------------
 Thu Jun  7 10:14:06 CEST 2007 - lslezak@suse.cz
@@ -572,13 +578,13 @@ Fri Jun  1 09:51:24 CEST 2007 - mzugec@suse.cz
 
 - add function NetworkService::isNetworkRunning()
 - NetworkStorage moved here from yast2-network
-- 2.15.35 
+- 2.15.35
 
 -------------------------------------------------------------------
 Wed May 30 13:48:27 CEST 2007 - sh@suse.de
 
 - Fixed bug #278790: save_y2logs complains about missing RPM DB
-	
+
 -------------------------------------------------------------------
 Tue May 29 15:53:15 CEST 2007 - lslezak@suse.cz
 
@@ -595,7 +601,7 @@ Fri May 25 10:59:56 CEST 2007 - jsrain@suse.cz
 Mon May 21 16:04:31 CEST 2007 - kmachalkova@suse.cz
 
 - Do not show empty xmessage window if nothing is printed to stderr
-  after yast module has exited (mvidner's patch for #265263) 
+  after yast module has exited (mvidner's patch for #265263)
 
 -------------------------------------------------------------------
 Mon May 21 13:39:58 CEST 2007 - jsrain@suse.cz
@@ -614,7 +620,7 @@ Thu May 17 17:57:17 CEST 2007 - lslezak@suse.cz
 Thu May 17 17:08:57 CEST 2007 - kmachalkova@suse.cz
 
 - Do not request link state of network devices from ethtool (ask
-  sysfs instead) so that yast2 does not require ethtool (#256382) 
+  sysfs instead) so that yast2 does not require ethtool (#256382)
 
 -------------------------------------------------------------------
 Wed May 16 11:52:52 CEST 2007 - locilka@suse.cz
@@ -653,7 +659,7 @@ Thu May  3 14:44:05 CEST 2007 - varkoly@suse.de
 
 - Add new module file MailAlias.ycp (269867 - build cycle between
   yast2-users and yast2-mail)
-- 2.15.31 
+- 2.15.31
 
 -------------------------------------------------------------------
 Thu May  3 14:20:41 CEST 2007 - locilka@suse.cz
@@ -665,7 +671,7 @@ Thu May  3 14:20:41 CEST 2007 - locilka@suse.cz
 Thu Apr 19 16:30:05 CEST 2007 - mzugec@suse.cz
 
 - added GetIP(device) function to get first+additional addresses (#264393)
-- 2.15.30 
+- 2.15.30
 
 -------------------------------------------------------------------
 Thu Apr 19 11:09:13 CEST 2007 - jsrain@suse.cz
@@ -729,7 +735,7 @@ Fri Apr  6 11:18:10 CEST 2007 - lslezak@suse.cz
 Mon Apr  2 14:15:53 CEST 2007 - jsuchome@suse.cz
 
 - fixed restarting after Patch CD update (#259825)
-- 2.15.23 
+- 2.15.23
 
 -------------------------------------------------------------------
 Mon Apr  2 14:11:12 CEST 2007 - lslezak@suse.cz
@@ -803,7 +809,7 @@ Tue Mar 13 10:07:05 CET 2007 - jsrain@suse.cz
 Mon Mar 12 11:54:18 CET 2007 - mzugec@suse.cz
 
 - sysconfig/network: use IPADDR/PREFIXLEN as default instead of NETMASK (#231997)
-- 2.15.19 
+- 2.15.19
 
 -------------------------------------------------------------------
 Mon Mar 12 08:42:07 CET 2007 - locilka@suse.cz
@@ -825,7 +831,7 @@ Fri Mar  9 08:57:01 CET 2007 - locilka@suse.cz
 Thu Mar  8 18:21:35 CET 2007 - jsuchome@suse.cz
 
 - added SLPAPI.pm, Perl API for SLP agent (#238680)
-- 2.15.17 
+- 2.15.17
 
 -------------------------------------------------------------------
 Thu Mar  8 16:57:17 CET 2007 - locilka@suse.cz
@@ -882,7 +888,7 @@ Fri Mar  2 08:54:41 CET 2007 - lslezak@suse.cz
 Thu Mar  1 17:58:14 CET 2007 - kmachalkova@suse.cz
 
 - Added checking for root user into ncurses menu. If the user is not
-  root, show notify popup and list only the modules that do not need 
+  root, show notify popup and list only the modules that do not need
   root privileges (#246015)
 
 -------------------------------------------------------------------
@@ -1003,7 +1009,7 @@ Thu Feb  8 16:46:18 CET 2007 - locilka@suse.cz
 Thu Feb  8 11:06:41 CET 2007 - kmachalkova@suse.cz
 
 - Use UI::RunInTerminal in menu.ycp for text-mode only. In all other
-  cases run appropriate module in Qt(Gtk) 
+  cases run appropriate module in Qt(Gtk)
 - 2.15.5
 
 -------------------------------------------------------------------
@@ -1017,7 +1023,7 @@ Wed Feb  7 16:15:41 CET 2007 - locilka@suse.cz
 Mon Jan 29 16:10:53 CET 2007 - mzugec@suse.de
 
 - Internet connection test fails on s390 (#238246)
-- 2.15.4 
+- 2.15.4
 
 -------------------------------------------------------------------
 Tue Jan 23 10:03:01 CET 2007 - jsrain@suse.cz
@@ -1028,7 +1034,7 @@ Tue Jan 23 10:03:01 CET 2007 - jsrain@suse.cz
 Mon Jan 22 17:53:17 CET 2007 - mzugec@suse.cz
 
 - 2.15.3
-- #237353 - use cache to avoid multiple confirmations for the same purpose 
+- #237353 - use cache to avoid multiple confirmations for the same purpose
 
 -------------------------------------------------------------------
 Fri Jan 19 10:16:05 CET 2007 - jsuchome@suse.cz
@@ -1047,12 +1053,12 @@ Fri Jan 19 09:09:33 CET 2007 - locilka@suse.cz
 -------------------------------------------------------------------
 Thu Jan 18 15:16:45 CET 2007 - kmachalkova@suse.cz
 
-- Avoid displaying empty strings in NetworkPopup (#220813, #223498) 
+- Avoid displaying empty strings in NetworkPopup (#220813, #223498)
 
 -------------------------------------------------------------------
 Tue Jan  9 11:23:04 CET 2007 - mzugec@suse.cz
 
-- add bond device 
+- add bond device
 
 -------------------------------------------------------------------
 Mon Jan  8 18:09:00 CET 2007 - locilka@suse.cz
@@ -1100,7 +1106,7 @@ Thu Dec  7 15:30:30 CET 2006 - lslezak@suse.cz
 -------------------------------------------------------------------
 Tue Dec  5 11:20:10 CET 2006 - kmachalkova@suse.cz
 
-- Adapt ncurses menu.ycp for running yast modules as separate 
+- Adapt ncurses menu.ycp for running yast modules as separate
   processes (#148683, #221254, #222547)
 - Do not change LANG and LC_CTYPE when stdin does not support
   utf8 (testutf8 returns 0) (partly #179989)
@@ -1124,7 +1130,7 @@ Tue Nov 14 10:49:04 CET 2006 - kmachalkova@suse.cz
 
 - Better selection of fastest available network device (checking
   for cable connection and status for NICs) (#214897)
-- 2.14.13 
+- 2.14.13
 
 -------------------------------------------------------------------
 Mon Nov 13 17:26:19 CET 2006 - locilka@suse.cz
@@ -1153,7 +1159,7 @@ Mon Nov  6 15:20:34 CET 2006 - mzugec@suse.cz
 
 - #177560 - fixed corrupting sysconfig files after setting locale to et_EE
 - set value to boolean if contains "yes" or "no"
-- 2.14.9 
+- 2.14.9
 
 -------------------------------------------------------------------
 Fri Nov  3 15:37:06 CET 2006 - locilka@suse.cz
@@ -1275,7 +1281,7 @@ Fri Sep 15 10:02:49 CEST 2006 - mvidner@suse.cz
 Wed Aug 30 16:31:11 CEST 2006 - sh@suse.de
 
 - Added output of "rpm -qa" to save_y2logs
-  upon request at all-hands meeting 2006-08-29 
+  upon request at all-hands meeting 2006-08-29
 - 2.13.79
 
 -------------------------------------------------------------------
@@ -1324,7 +1330,7 @@ Wed Aug  9 15:37:45 CEST 2006 - jsrain@suse.cz
 -------------------------------------------------------------------
 Wed Aug  9 14:19:23 CEST 2006 - kmachalkova@suse.cz
 
-- Added new Address::CheckMAC() and Address::ValidMAC() functions. 
+- Added new Address::CheckMAC() and Address::ValidMAC() functions.
 - 2.13.73
 
 -------------------------------------------------------------------
@@ -1475,7 +1481,7 @@ Thu May 18 12:28:09 CEST 2006 - locilka@suse.cz
 
 - Fixing exporting the $QT_HOME_DIR according to $user's home
   directory (#162114).
-- 2.13.59 
+- 2.13.59
 
 -------------------------------------------------------------------
 Mon May 15 15:18:56 CEST 2006 - locilka@suse.cz
@@ -1528,7 +1534,7 @@ Tue Apr 25 20:38:04 CEST 2006 - jsrain@suse.de
 Tue Apr 25 14:24:45 CEST 2006 - visnov@suse.cz
 
 - ensure importing trusted RPM keys before initializing sources (#169121)
-- 2.13.53 
+- 2.13.53
 
 -------------------------------------------------------------------
 Thu Apr 20 22:47:03 CEST 2006 - jsrain@suse.de
@@ -1558,7 +1564,7 @@ Fri Apr 14 19:21:11 CEST 2006 - jsrain@suse.de
 -------------------------------------------------------------------
 Fri Apr 14 14:29:17 CEST 2006 - jsuchome@suse.cz
 
-- restart online update if there are some selected patches left to 
+- restart online update if there are some selected patches left to
   installation (#165540)
 - 2.13.48
 
@@ -1590,7 +1596,7 @@ Wed Apr  5 15:59:36 CEST 2006 - locilka@suse.cz
 Wed Apr  5 15:09:52 CEST 2006 - sh@suse.de
 
 - V 2.13.44
-- Fixed bug #116356: save_y2logs saves into a different directory 
+- Fixed bug #116356: save_y2logs saves into a different directory
 
 -------------------------------------------------------------------
 Wed Apr  5 11:36:03 CEST 2006 - fehr@suse.de
@@ -1744,7 +1750,7 @@ Mon Feb 13 09:49:13 CET 2006 - locilka@suse.cz
 - Removing obsolete support for NetworkManager which have changed
   its behavior again (#149075). Changing firewall, firewall
   proposal and CWM firewall.
-- 2.13.28 
+- 2.13.28
 
 -------------------------------------------------------------------
 Thu Feb  9 17:04:13 CET 2006 - locilka@suse.cz
@@ -1781,7 +1787,7 @@ Mon Jan 23 17:36:06 CET 2006 - locilka@suse.cz
   confirm continuing the configuration when NetworkManager is
   enabled.
 - Merged texts from proofreading.
-- 2.13.26 
+- 2.13.26
 
 -------------------------------------------------------------------
 Mon Jan 23 17:06:18 CET 2006 - mvidner@suse.cz
@@ -1873,7 +1879,7 @@ Thu Jan  5 10:01:17 CET 2006 - locilka@suse.cz
 -------------------------------------------------------------------
 Wed Jan  4 11:12:18 CET 2006 - visnov@suse.cz
 
-- Dropped Require.ycp, long time obsolete library 
+- Dropped Require.ycp, long time obsolete library
 - Dropped commandline.ycp obsolete wrapper
 
 -------------------------------------------------------------------
@@ -1904,7 +1910,7 @@ Thu Dec 22 08:46:07 CET 2005 - visnov@suse.cz
 Tue Dec 20 11:13:26 CET 2005 - visnov@suse.cz
 
 - Include bash completion script
-- 2.13.16 
+- 2.13.16
 
 -------------------------------------------------------------------
 Mon Dec 19 17:20:03 CET 2005 - mvidner@suse.cz
@@ -1917,7 +1923,7 @@ Mon Dec 19 17:20:03 CET 2005 - mvidner@suse.cz
 Mon Dec 19 15:34:37 CET 2005 - jsuchome@suse.cz
 
 - merged texts from proofreading
-- 2.13.14 
+- 2.13.14
 
 -------------------------------------------------------------------
 Wed Dec 14 16:08:39 CET 2005 - mvidner@suse.cz
@@ -2001,7 +2007,7 @@ Tue Nov 15 18:49:54 CET 2005 - mvidner@suse.cz
    to enabled/disable widgets before the first real UserInput takes place
  - prevent double tab initialization at tab set initialization
 - 2.13.10
-    
+
 -------------------------------------------------------------------
 Fri Nov 11 10:05:46 CET 2005 - jsrain@suse.cz
 
@@ -2133,7 +2139,7 @@ Wed Sep  7 16:01:13 CEST 2005 - mvidner@suse.cz
 Mon Sep  5 22:39:56 CEST 2005 - locilka@suse.cz
 
 - fixing default SuSEfirewall2 logging values using the
-  GetDefaultValue() function for undefined and newly also for 
+  GetDefaultValue() function for undefined and newly also for
   empty values  for security reasons (#100692).
 - 2.12.26
 
@@ -2147,7 +2153,7 @@ Mon Sep  5 16:55:12 CEST 2005 - jsrain@suse.cz
 Mon Aug 22 12:33:42 CEST 2005 - jsuchome@suse.cz
 
 - added check for `cancel to ncurses menu loop (#105507)
-- 2.12.24 
+- 2.12.24
 
 -------------------------------------------------------------------
 Thu Aug 18 13:59:50 CEST 2005 - lslezak@suse.cz
@@ -2187,7 +2193,7 @@ Fri Aug 12 13:03:29 CEST 2005 - locilka@suse.cz
 -------------------------------------------------------------------
 Fri Aug 12 10:08:14 CEST 2005 - visnov@suse.cz
 
-- added comments for translators 
+- added comments for translators
 
 -------------------------------------------------------------------
 Tue Aug  9 16:10:22 CEST 2005 - mvidner@suse.cz
@@ -2263,7 +2269,7 @@ Thu Jul 21 13:58:55 CEST 2005 - sh@suse.de
 
 - Now using `opt(`hvstretch) in wizard to restore old laoyut
   behaviour: center content by default
-- V 2.12.14 
+- V 2.12.14
 
 -------------------------------------------------------------------
 Thu Jul 21 09:53:02 CEST 2005 - jsrain@suse.cz
@@ -2300,20 +2306,20 @@ Mon Jul 18 11:42:40 CEST 2005 - sh@suse.de
 
 - Properly check if KDE is running in /sbin/yast so the sw_single
   module is started full-screen if that works flawlessly (KDE)
-- V 2.12.10 
+- V 2.12.10
 
 -------------------------------------------------------------------
 Mon Jul 11 18:20:44 CEST 2005 - sh@suse.de
 
 - Fixed NCurses wizard layout behaviour:
   Properly propagate content strechability to layout parent
-- V 2.12.9 
+- V 2.12.9
 
 -------------------------------------------------------------------
 Fri Jul  8 16:03:01 CEST 2005 - visnov@suse.cz
 
 - adapt build dependencies for blocxx
-- 2.12.8 
+- 2.12.8
 
 -------------------------------------------------------------------
 Fri Jul  1 12:48:43 CEST 2005 - jsrain@suse.cz
@@ -2332,7 +2338,7 @@ Tue Jun 14 16:05:05 CEST 2005 - lslezak@suse.cz
 Mon Jun 13 17:04:03 CEST 2005 - lslezak@suse.cz
 
 - command line - 'xmlhelp' command (store command line help of
-  a client in XML format) 
+  a client in XML format)
 
 -------------------------------------------------------------------
 Mon Jun  6 10:24:53 CEST 2005 - jsrain@suse.cz
@@ -2416,7 +2422,7 @@ Mon Apr 18 14:40:43 CEST 2005 - jsrain@suse.cz
 Tue Apr  5 14:45:07 CEST 2005 - visnov@suse.cz
 
 - fix NFB
-- 2.12.1 
+- 2.12.1
 
 -------------------------------------------------------------------
 Mon Apr  4 10:27:58 CEST 2005 - jsrain@suse.cz
@@ -2433,7 +2439,7 @@ Thu Mar 31 13:05:13 CEST 2005 - jsrain@suse.cz
 Thu Mar 31 11:10:12 CEST 2005 - locilka@suse.cz
 
 - Changed firewall proposal texts to be clearly translatable
-  (#73612) 
+  (#73612)
 
 -------------------------------------------------------------------
 Thu Mar 24 13:07:15 CET 2005 - jsrain@suse.cz
@@ -2443,7 +2449,7 @@ Thu Mar 24 13:07:15 CET 2005 - jsrain@suse.cz
 -------------------------------------------------------------------
 Mon Mar 21 16:25:33 CET 2005 - sh@suse.de
 
-- Fixed bug #72799: Help/Steps buttons not translated 
+- Fixed bug #72799: Help/Steps buttons not translated
 - V 2.11.48
 
 -------------------------------------------------------------------
@@ -2462,12 +2468,12 @@ Fri Mar 18 14:17:30 CET 2005 - jsrain@suse.cz
 -------------------------------------------------------------------
 Wed Mar 16 16:50:03 CET 2005 - visnov@suse.cz
 
-- 2.11.45 
+- 2.11.45
 
 -------------------------------------------------------------------
 Tue Mar 15 13:40:39 CET 2005 - visnov@suse.cz
 
-- added check-all-syntax script for validating all YCP clients 
+- added check-all-syntax script for validating all YCP clients
   and modules (#63942)
 
 -------------------------------------------------------------------
@@ -2527,7 +2533,7 @@ Thu Mar  3 13:40:45 CET 2005 - jsrain@suse.cz
 Wed Mar  2 11:22:33 CET 2005 - locilka@suse.cz
 
 - merged proofed texts
-- 2.11.38 
+- 2.11.38
 
 -------------------------------------------------------------------
 Fri Feb 25 15:24:07 CET 2005 - lslezak@suse.cz
@@ -2539,7 +2545,7 @@ Fri Feb 25 15:24:07 CET 2005 - lslezak@suse.cz
 -------------------------------------------------------------------
 Fri Feb 25 13:20:17 CET 2005 - visnov@suse.cz
 
-- 2.11.35 
+- 2.11.35
 
 -------------------------------------------------------------------
 Fri Feb 25 13:11:07 CET 2005 - lslezak@suse.cz
@@ -2629,7 +2635,7 @@ Wed Feb  9 12:03:50 CET 2005 - locilka@suse.cz
 Tue Feb  8 17:03:02 CET 2005 - sh@suse.de
 
 - Added icons to standard popups
-- V 2.11.26 
+- V 2.11.26
 
 -------------------------------------------------------------------
 Tue Feb  8 16:09:19 CET 2005 - nashif@suse.de
@@ -2650,7 +2656,7 @@ Tue Feb  8 10:48:25 CET 2005 - jsrain@suse.cz
 -------------------------------------------------------------------
 Tue Feb  8 10:10:52 CET 2005 - jsuchome@suse.cz
 
-- merged texts from proofreading 
+- merged texts from proofreading
 - 2.11.25
 
 -------------------------------------------------------------------
@@ -2682,7 +2688,7 @@ Tue Feb  1 12:56:56 CET 2005 - lslezak@suse.cz
 Mon Jan 31 17:47:43 CET 2005 - sh@suse.de
 
 - Added Show|HideReleaseNotesButton() to Wizard::
-- V 2.11.21 
+- V 2.11.21
 
 -------------------------------------------------------------------
 Mon Jan 31 10:46:33 CET 2005 - locilka@suse.cz
@@ -2826,7 +2832,7 @@ Wed Dec  1 10:56:06 CET 2004 - mvidner@suse.cz
 -------------------------------------------------------------------
 Tue Nov 30 12:40:31 CET 2004 - locilka@suse.cz
 
-- Moved CWMFirewallInterfaces from yast2-firewall to yast2 rpm 
+- Moved CWMFirewallInterfaces from yast2-firewall to yast2 rpm
 
 -------------------------------------------------------------------
 Tue Nov 30 10:47:06 CET 2004 - visnov@suse.cz
