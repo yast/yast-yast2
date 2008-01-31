@@ -20,7 +20,7 @@ global map settings = $[
  </screen>
 
 <para>
-Addtionally, this map can be then used as-is for exporting and importing settings.
+Additionally, this map can then be used as-is for exporting and importing settings.
 </para>
 </section>
 
@@ -34,7 +34,7 @@ They can (in most cases) look the following way:
 global define void MyInit (string widget_id) ``{
     UI::ChangeWidget (`id (widget_id), `Value,
         settings[widget_id]:"");
-} 
+}
 
 global define void MyStore (string widget_id, map event) ``{
     settings[widget_id] = UI::QueryWidget (`id (widget_id),
@@ -43,7 +43,7 @@ global define void MyStore (string widget_id, map event) ``{
  </screen>
 
 <para>
-They don'tdo anything else than to get current value from the map and change the widet appropriate way in case of init handler,
+They don't do anything else than to get current value from the map and change the widget appropriate way in case of init handler,
 and query the widget value and store it to the settings map in case of the store handler.
 </para>
 </section>
