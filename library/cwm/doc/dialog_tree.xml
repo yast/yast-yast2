@@ -44,7 +44,7 @@ Handle different GUIs (supporting or not supporting the Wizard widget)
             "widget_descr" : $[...],
 (4)         "back_button" : "",
             "next_button" : "NextButton",
-            "abort_button" : AbortButton",
+            "abort_button" : "AbortButton",
             "functions" : $[...]
         ]);
  </screen>
@@ -58,7 +58,7 @@ runs event loop, and closes the newly open Wizard screen.
     </para>
     <para>
 It takes one map as parameter. It contains all the needed information for
-for creating and running the dialog. Return value is a symbol for the wizard
+creating and running the dialog. Return value is a symbol for the wizard
 sequencer.
     </para>
     <para>
@@ -91,7 +91,7 @@ is displayed.
 	<listitem><para>
 	    <computeroutput>"caption" : string</computeroutput>
 is the dialog caption. Will be used as the caption of the dialog when the screen
-is shown, and also as caption for the label to the tree widget the 
+is shown, and also as caption for the label to the tree widget the
 <computeroutput>"tree_item_label"</computeroutput> key is missing.
 	</para></listitem>
 	<listitem><para>
