@@ -197,6 +197,10 @@ global boolean update () {
     return mode () == "update";
 }
 
+global boolean Depeche () {
+    return true;
+}
+
 /**
  * normal, running system
  */

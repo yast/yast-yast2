@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Feb  1 13:00:18 CET 2008 - locilka@suse.cz
+
+- Added new functions into the URL module: MakeMapFromParams and
+  MakeParamsFromMap.
+- Fixed deprecated find() calls in URL module.
+- 2.16.25
+
+-------------------------------------------------------------------
 Mon Jan 28 13:14:13 CET 2008 - locilka@suse.cz
 
 - Removing useless Wizard() calls in ProductControl to minimize the
