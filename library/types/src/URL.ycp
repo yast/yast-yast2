@@ -251,7 +251,7 @@ global define boolean Check(string url) ``{
     if(url == nil || size(url) < 1) return false;
 
     /* We don't allow URLs with spaces */
-    if(find(url, " ") != -1) return false;
+    if(search(url, " ") != nil) return false;
 
     map tokens = Parse(url);
 
@@ -329,9 +329,11 @@ global define string Build (map tokens) ``{
 	}
 	y2debug("url: %1", url);
 
-	if (tokens["path"]:"" != "" && find (tokens["path"]:"", "/") != 0 )
+	// path is not empty and doesn't start with "/"
+	if (tokens["path"]:"" != "" && ! regexpmatch (tokens["path"]:"", "^/"))
 		url = sformat("%1/%2", url, EscapeString(tokens["path"]:"", transform_map_filename));
-	else if (tokens["path"]:"" != "" && find (tokens["path"]:"", "/") == 0 )
+	// patch is not empty and starts with "/"
+	else if (tokens["path"]:"" != "" && regexpmatch (tokens["path"]:"", "^/"))
 	{
 		while (substring (tokens["path"]:"", 0, 2) == "//")
 		    tokens["path"] = substring (tokens["path"]:"", 1);
@@ -417,5 +419,94 @@ y2milestone("%1", Check("www.suse.cz ah"));
 y2milestone("%1", Check(""));
 y2milestone("%1", Check(nil));
 */
+
+/**
+ * Reads list of HTTP params and returns them as map.
+ * (Useful also for cd:/, dvd:/, nfs:/ ... params)
+ * Neither keys nor values are HTML-unescaped, see UnEscapeString().
+ *
+ * @params string params
+ * @return map <string, string> params
+ *
+ * @example
+ *      MakeMapFromParams ("device=sda3&login=aaa&password=bbb") -> $[
+ *              "device"   : "sda3",
+ *              "login"    : "aaa",
+ *              "password" : "bbb"
+ *      ]
+ */
+global map <string, string> MakeMapFromParams (string params) {
+    // Error
+    if (params == nil) {
+	y2error ("Erroneous (nil) params!");
+	return nil;
+    // Empty
+    } else if (params == "") {
+	return $[];
+    }
+
+    list <string> params_list = splitstring (params, "&");
+
+    params_list = filter (string one_param, params_list, {
+        return (one_param != "" && one_param != nil);
+    });
+
+    map <string, string> ret = $[];
+    integer eq_pos = nil;
+    string opt = "";
+    string val = "";
+
+    foreach (string one_param, params_list, {
+        eq_pos = search (one_param, "=");
+
+        if (eq_pos == nil) {
+            ret[one_param] = "";
+        } else {
+            opt = substring (one_param, 0, eq_pos);
+            val = substring (one_param, (eq_pos + 1));
+
+            ret[opt] = val;
+        }
+    });
+
+    return ret;
+}
+
+/**
+ * Returns string made of HTTP params. It's a reverse function to MakeMapFromParams().
+ * Neither keys nor values are HTML-escaped, use EscapeString() if needed.
+ *
+ * @param map <string, string>
+ *
+ * @see MakeMapFromParams
+ *
+ * @example
+ *   MakeMapFromParams ($[
+ *     "param1" : "a",
+ *     "param2" : "b",
+ *     "param3" : "c",
+ *   ]) -> "param1=a&param2=b&param3=c"
+ */
+global string MakeParamsFromMap (map <string, string> params_map) {
+    // ["key1=value1", "key2=value2", ...] -> "key1=value1&key2=value2"
+    return mergestring (
+	// ["key" : "value", ...] -> ["key=value", ...]
+	maplist (string key, string value, params_map, {
+	    if (value == nil) {
+		y2warning ("Empty value for key %1", key);
+		value = "";
+	    }
+
+	    if (key == nil || key == "") {
+		y2error ("Empty key (will be skipped)");
+		return "";
+	    }
+
+	    // "key=value"
+	    return sformat ("%1=%2", key, value);
+	}),
+	"&"
+    );
+}
 
 }
