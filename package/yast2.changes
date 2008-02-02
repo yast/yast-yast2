@@ -7,6 +7,12 @@ Fri Feb  1 13:00:18 CET 2008 - locilka@suse.cz
 - 2.16.25
 
 -------------------------------------------------------------------
+Mon Jan 28 16:28:34 CET 2008 - locilka@suse.cz
+
+- Adjusted SCR agent for SuSEfirewall2 sysconfig file. Values can
+  use also single quotes, not only double-quotes (bnc#327565).
+
+-------------------------------------------------------------------
 Mon Jan 28 13:14:13 CET 2008 - locilka@suse.cz
 
 - Removing useless Wizard() calls in ProductControl to minimize the
@@ -17,12 +23,6 @@ Mon Jan 28 13:00:19 CET 2008 - aschnell@suse.de
 
 - support Qt and Gtk frontend in startup scripts
 - 2.16.24
-
--------------------------------------------------------------------
-Mon Jan 28 16:28:34 CET 2008 - locilka@suse.cz
-
-- Adjusted SCR agent for SuSEfirewall2 sysconfig file. Values can
-  use also single quotes, not only double-quotes (bnc#327565).
 
 -------------------------------------------------------------------
 Sun Jan 27 21:22:06 CET 2008 - coolo@suse.de
@@ -5220,6 +5220,11 @@ Wed Mar 13 18:23:06 MET 2002 - tom@suse.de
   running system.
 
 -------------------------------------------------------------------
+Wed Mar 13 11:48:58 EST 2002 - nashif@suse.de
+
+- Don't probe hardware in Mode::config
+
+-------------------------------------------------------------------
 Wed Mar 13 15:41:26 CET 2002 - fehr@suse.de
 
 - prevent upward rounding in combination of
@@ -5230,11 +5235,6 @@ Wed Mar 13 13:22:57 MET 2002 - tom@suse.de
 
 - (#14446) Now also restoring hwclock-param from sysconfig
   and setting timezone again in continue mode.
-
--------------------------------------------------------------------
-Wed Mar 13 11:48:58 EST 2002 - nashif@suse.de
-
-- Don't probe hardware in Mode::config
 
 -------------------------------------------------------------------
 Wed Mar 13 10:15:41 CET 2002 - kkaempf@suse.de
@@ -6262,15 +6262,15 @@ Tue Jan 22 15:21:53 CET 2002 - schubi@suse.de
 - Saving user package selections
 
 -------------------------------------------------------------------
-Mon Jan 21 12:28:29 CET 2002 - schubi@suse.de
-
-- bufixes in installing packages after reboot
-
--------------------------------------------------------------------
 Mon Jan 21 12:12:27 EST 2002 - nashif@suse.de
 
 - Skip confirmation(inst_doit)  in autoinst mode
   if requested in control file
+
+-------------------------------------------------------------------
+Mon Jan 21 12:28:29 CET 2002 - schubi@suse.de
+
+- bufixes in installing packages after reboot
 
 -------------------------------------------------------------------
 Fri Jan 18 16:14:05 CET 2002 - kkaempf@suse.de
