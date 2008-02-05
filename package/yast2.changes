@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Feb  5 10:36:52 CET 2008 - kmachalkova@suse.cz
+
+- Progress.ycp: Use the presence of progress bar widget to determine
+  whether some progress is running (querying progress counter is not 
+  enough, previous modules might have failed to reset it correctly)
+
+-------------------------------------------------------------------
 Fri Feb  1 13:00:18 CET 2008 - locilka@suse.cz
 
 - Added new functions into the URL module: MakeMapFromParams and
