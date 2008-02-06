@@ -939,6 +939,11 @@ global symbol RunFrom (integer from, boolean allow_back)
 	symbol result = (symbol) WFM::CallFunction (getClientName(step_name), args);
 	y2milestone ("Calling %1 returned %2", argterm, result);
 
+	// Clients can break the installation/workflow
+	Wizard::RestoreNextButton();
+	Wizard::RestoreAbortButton();
+	Wizard::RestoreBackButton();
+
         // Remove file if step was run and returned (without a crash);
 	if (current_step < size(modules) - 1 && !Stage::initial())
         {

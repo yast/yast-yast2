@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb  6 16:51:28 CET 2008 - locilka@suse.cz
+
+- Restoring buttons in ProductControl after every single client
+  call to prevent from breaking the installation workflow.
+
+-------------------------------------------------------------------
 Tue Feb  5 10:36:52 CET 2008 - kmachalkova@suse.cz
 
 - Progress.ycp: Use the presence of progress bar widget to determine
