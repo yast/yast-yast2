@@ -439,6 +439,8 @@
 	    return false;
 	}
 
+	LazyInit();
+
 	// Umounting
 	if (haskey (extensions_mounted_as, extension) && extensions_mounted_as[extension]:"" != "") {
 	    string cmd_tmp_file = sformat ("%1/IEI_cmd_tmp_file", Directory::tmpdir);
@@ -493,6 +495,8 @@
      * @return boolean whether successfull (almost always false)
      */
     global boolean DisintegrateAllExtensions () {
+	LazyInit();
+
 	boolean ret = true;
 	list <string> foreach_loop = integrated_extensions;
 
