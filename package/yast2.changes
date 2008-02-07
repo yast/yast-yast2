@@ -1,7 +1,9 @@
 -------------------------------------------------------------------
 Thu Feb  7 15:50:24 CET 2008 - locilka@suse.cz
 
-- Module InstExtensionImage moved here from installation
+- Module InstExtensionImage moved here from installation.
+- Added possibility to disintegrate extensions integrated by
+  InstExtensionImage module.
 - 2.16.26
 
 -------------------------------------------------------------------
