@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb  7 15:50:24 CET 2008 - locilka@suse.cz
+
+- Module InstExtensionImage moved here from installation
+- 2.16.26
+
+-------------------------------------------------------------------
 Wed Feb  6 16:51:28 CET 2008 - locilka@suse.cz
 
 - Restoring buttons in ProductControl after every single client
