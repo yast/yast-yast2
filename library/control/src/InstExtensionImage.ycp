@@ -378,7 +378,7 @@
 	//	  sha1sum is not part of the inst-sys yet
 
 	// Creating subdir for extension to be mounted
-	string extension_mount = sformat ("%1%2/", base_mounts, extension_file_localname);
+	string extension_mount = sformat ("%1%2", base_mounts, extension_file_localname);
 	cmd_run = (map) WFM::Execute (.local.bash_output,
 	    sformat ("/bin/mkdir -p '%1'", String::Quote (extension_mount))
 	);
@@ -450,7 +450,7 @@
 	    //    cleanup all references to the filesystem as soon as it is not busy anymore.
 	    // -d In case the unmounted device was a loop device, also free this loop device.
 	    string cmd = sformat (
-		"echo > '%1'; /bin/umount -f -l -d '%2' 1>>%2 2>>%2",
+		"echo > '%1'; /bin/umount -f -l -d '%2' 1>>%1 2>>%1",
 		String::Quote (cmd_tmp_file), String::Quote (mounted_as)
 	    );
 	    y2milestone ("Umounting %1", mounted_as);
