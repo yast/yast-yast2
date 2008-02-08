@@ -445,8 +445,12 @@
 	if (haskey (extensions_mounted_as, extension) && extensions_mounted_as[extension]:"" != "") {
 	    string cmd_tmp_file = sformat ("%1/IEI_cmd_tmp_file", Directory::tmpdir);
 	    string mounted_as = extensions_mounted_as[extension]:"";
+	    // -f Force unmount (in case of an unreachable NFS system).
+	    // -l Lazy unmount. Detach the filesystem from the filesystem hierarchy now, and
+	    //    cleanup all references to the filesystem as soon as it is not busy anymore.
+	    // -d In case the unmounted device was a loop device, also free this loop device.
 	    string cmd = sformat (
-		"echo > '%1'; /bin/umount -f '%2' 1>>%2 2>>%2",
+		"echo > '%1'; /bin/umount -f -l -d '%2' 1>>%2 2>>%2",
 		String::Quote (cmd_tmp_file), String::Quote (mounted_as)
 	    );
 	    y2milestone ("Umounting %1", mounted_as);
