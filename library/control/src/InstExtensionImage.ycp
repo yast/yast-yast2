@@ -441,6 +441,8 @@
 
 	LazyInit();
 
+	boolean ret = true;
+
 	// Umounting
 	if (haskey (extensions_mounted_as, extension) && extensions_mounted_as[extension]:"" != "") {
 	    string cmd_tmp_file = sformat ("%1/IEI_cmd_tmp_file", Directory::tmpdir);
@@ -449,8 +451,9 @@
 	    // -l Lazy unmount. Detach the filesystem from the filesystem hierarchy now, and
 	    //    cleanup all references to the filesystem as soon as it is not busy anymore.
 	    // -d In case the unmounted device was a loop device, also free this loop device.
+	    // -r In case unmounting fails, try to remount read-only.
 	    string cmd = sformat (
-		"echo > '%1'; /bin/umount -f -l -d '%2' 1>>%1 2>>%1",
+		"echo > '%1'; /bin/umount -f -l -d -r '%2' 1>>%1 2>>%1",
 		String::Quote (cmd_tmp_file), String::Quote (mounted_as)
 	    );
 	    y2milestone ("Umounting %1", mounted_as);
@@ -461,7 +464,7 @@
 		    "Cannot umount extension '%1' (%2):\n%3",
 		    cmd, cmd_run["exit"]:-1, (string) WFM::Read (.local.string, cmd_tmp_file)
 		);
-		return false;
+		ret = false;
 	    } else {
 		// not mounted anymore
 		extensions_mounted_as = remove (extensions_mounted_as, extension);
@@ -472,6 +475,7 @@
 	}
 
 	// Removing the file
+	// Even if umouting fails, remove the file if possible
 	if (haskey (extension_downloaded_as, extension) && extension_downloaded_as[extension]:"" != "") {
 	    string downloaded_as = extension_downloaded_as[extension]:"";
 	    y2milestone ("Removing %1", downloaded_as);
@@ -479,9 +483,9 @@
 
 	    if (cmd_run["exit"]:-1 != 0) {
 		y2warning ("Cannot remove extension %1", downloaded_as);
-		return false;
+		ret = false;
 	    } else {
-		// not mounted anymore
+		// not stored anymore
 		extension_downloaded_as = remove (extension_downloaded_as, extension);
 		y2milestone ("Removed: %2", extension);
 	    }
@@ -489,7 +493,7 @@
 	    y2warning ("Extension '%1' not downloaded", extension);
 	}
 
-	return true;
+	return ret;
     }
 
     /**
