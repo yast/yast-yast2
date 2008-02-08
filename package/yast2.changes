@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb  8 10:40:25 CET 2008 - locilka@suse.cz
+
+- Umounts performed by InstExtensionImage use -f -l -d (force,
+  lazy, free the used loop device as well).
+
+-------------------------------------------------------------------
 Thu Feb  7 15:50:24 CET 2008 - locilka@suse.cz
 
 - Module InstExtensionImage moved here from installation.
