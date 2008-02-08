@@ -479,15 +479,15 @@
 	if (haskey (extension_downloaded_as, extension) && extension_downloaded_as[extension]:"" != "") {
 	    string downloaded_as = extension_downloaded_as[extension]:"";
 	    y2milestone ("Removing %1", downloaded_as);
-	    map cmd_run = (map) WFM::Execute (.local.remove, downloaded_as);
+	    boolean cmd_ret = (boolean) WFM::Execute (.local.remove, downloaded_as);
 
-	    if (cmd_run["exit"]:-1 != 0) {
+	    if (cmd_ret != true) {
 		y2warning ("Cannot remove extension %1", downloaded_as);
 		ret = false;
 	    } else {
 		// not stored anymore
 		extension_downloaded_as = remove (extension_downloaded_as, extension);
-		y2milestone ("Removed: %2", extension);
+		y2milestone ("Removed: %1", extension);
 	    }
 	} else {
 	    y2warning ("Extension '%1' not downloaded", extension);
