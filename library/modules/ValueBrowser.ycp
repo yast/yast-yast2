@@ -14,6 +14,8 @@
 
     textdomain "base";
 
+    import "Label";
+
     /**
      * Helper function that replaces all ocurences of "\n" with "\\n", so items are not multiline :-)
      * @param s string to escape
@@ -143,7 +145,7 @@ block <type>
 		       `VBox (
 			   // translators: Tree header
 			   `Tree (`opt (`hstretch, `vstretch), _("&Variable"), [ items ]),
-			   `PushButton ("&OK")
+			   `PushButton (Label::OKButton())
 			   )
 		);
 	UI::UserInput ();
