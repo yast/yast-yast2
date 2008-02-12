@@ -137,7 +137,6 @@ while(true) {
 
 	y2milestone("Launching %1", launch);
 	WFM::CallFunction(launch, []);
-	UI::SetModulename("remotechooser");
 	continue;
     }
     else {

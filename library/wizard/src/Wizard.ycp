@@ -1197,7 +1197,6 @@
     global void SetScreenShotName (string s) {
 	screenshot_name_stack = prepend (screenshot_name_stack, screenshot_name);
 	screenshot_name = s;
-	UI::SetModulename (screenshot_name);
     }
 
     /**
@@ -1217,7 +1216,6 @@
 	{
 	    screenshot_name_stack = remove (screenshot_name_stack, 0);
 	}
-	UI::SetModulename (screenshot_name);
     }
 
     /* ------------------------------------------------------------ */
