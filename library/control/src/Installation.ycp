@@ -84,6 +84,9 @@
     // Just restarting YaST (handled by startup scripts)
     global string Installation::restart_file		= Directory::vardir + "/restart_yast";
 
+    // Running YaST in upgrade mode (initiated from running system)
+    global string Installation::run_update_file		= Directory::vardir + "/run_system_update";
+
     // Network should be started before the installation starts (continues)
     // bugzilla #258742
     //
