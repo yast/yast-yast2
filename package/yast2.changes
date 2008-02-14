@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 14 11:59:42 CET 2008 - mzugec@suse.de
+
+- added Confirm::RunningNetwork() for bnc#360571
+- 2.16.27 
+
+-------------------------------------------------------------------
 Wed Feb 13 12:15:22 CET 2008 - jsrain@suse.cz
 
 - Defined filename of file to force update instead of installation
