@@ -162,6 +162,19 @@
 
     global integer dirinstall_target_time = 0;
 
+    // image-based installation
+
+    /**
+     * Installation is performed form image(s)
+     */
+    global boolean image_installation = false;
+
+    /**
+     * Installation is performed only from image(s), no additional
+     * RPM (de)installation
+     */
+    global boolean image_only = false;
+
     //---------------------------------------------------------------
     // constructor
 
