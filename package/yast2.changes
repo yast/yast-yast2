@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb 15 13:53:34 CET 2008 - jsrain@suse.cz
+
+- added variables to define whether installing from RPM packages
+  or images
+
+-------------------------------------------------------------------
 Thu Feb 14 11:59:42 CET 2008 - mzugec@suse.de
 
 - added Confirm::RunningNetwork() for bnc#360571
