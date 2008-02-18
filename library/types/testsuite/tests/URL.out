@@ -21,6 +21,7 @@ Return	ftp://ftp.example.com/path/to/dir
 Return	ftp://ftp.example.com/%2fpath/to/dir
 Return	ftp://ftp.example.com/%2fpath/to/dir
 Return	ftp://ftp.example.com/%2fpath/to/dir
+Return	dir:///
 Return	http://download.opensuse.org/very/log/path/which/will/be/truncated/target_file
 Return	http://download.opensuse.org/.../target_file
 Return	http://download.opensuse.org/.../target_file
