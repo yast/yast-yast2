@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 18 14:13:07 CET 2008 - lslezak@suse.cz
+
+- URL::Parse() - parse "dir:///" correctly
+
+-------------------------------------------------------------------
 Fri Feb 15 13:53:34 CET 2008 - jsrain@suse.cz
 
 - added variables to define whether installing from RPM packages

@@ -175,7 +175,7 @@ global define map Parse(string url) ``{
     /* Extract basic URL parts: scheme://host/path?question#part */
     list rawtokens = regexptokenize(url, "^" +
 	/* 0,1: http:// */
-	"(([^:/?#]+):[/]*)?" +
+	"(([^:/?#]+):[/]{0,2})?" +
 	/* 2: user:pass@www.suse.cz:23 */
 	"([^/?#]*)?" +
 	/* 3: /some/path */

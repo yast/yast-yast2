@@ -51,6 +51,7 @@ TEST(``(URL::Build($["scheme":"ftp","host":"ftp.example.com","path":"/path/to/di
 TEST(``(URL::Build($["scheme":"ftp","host":"ftp.example.com","path":"//path/to/dir"])), [], nil);
 TEST(``(URL::Build($["scheme":"ftp","host":"ftp.example.com","path":"///path/to/dir"])), [], nil);
 
+TEST(``(URL::Build(URL::Parse("dir:///"))), [], nil);
 
 string long_url = "http://download.opensuse.org/very/log/path/which/will/be/truncated/target_file";
 
