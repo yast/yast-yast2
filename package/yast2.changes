@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb  4 18:07:47 CET 2008 - mzugec@suse.de
+
+- Confirm::RunningNetwork() moved to
+  NetworkService::NetworkRunningPopup()
+
+-------------------------------------------------------------------
 Mon Feb 18 20:51:30 CET 2008 - coolo@suse.de
 
 - fix build

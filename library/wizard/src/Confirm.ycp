@@ -23,7 +23,6 @@ import "Mode";
 import "Popup";
 import "Linuxrc";
 import "Stage";
-import "NetworkService";
 
 // #TODO bug number
 map <string, boolean> detection_cache = $[];
@@ -133,28 +132,6 @@ and it is unlikely that settings can be written.\n");
 
     return false;
 }
-
-/**
- * If there is network running, return true.
- * Otherwise show error popup depending on Mode and return false
- * @return true if network running
- */
-global define boolean RunningNetwork()
-{
- if (NetworkService::isNetworkRunning()) return true;
-	else {
-	 string error_text = _("No running network detected!");
-	 if (Mode::installation()) error_text = sformat("%1\n%2", error_text, _("Restart installation and configure network in Linuxrc."));
-		else error_text = sformat("%1\n%2", error_text,
-_("Configure network with YaST or NetworkManager-plugin
-and start this module again."));
-	 Popup::Error(error_text);
-	 y2error("Network not runing!");
-	 return false;
-	}
-}
-
-
 
 /**
  * Opens a popup yes/no confirmation.
