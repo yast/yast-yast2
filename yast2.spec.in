@@ -12,6 +12,7 @@ PreReq:		%fillup_prereq
 
 # Mod_UI
 Requires:       yast2-core >= 2.16.6
+Requires:       yast2-ycp-ui-bindings >= 2.16.37
 
 # Pkg::CallbackProcess*() functions
 Requires:	yast2-pkg-bindings >= 2.16.5
