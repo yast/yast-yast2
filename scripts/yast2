@@ -392,25 +392,6 @@ elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
 	select_control_center
     fi
 
-	# Special case: "sw_single" needs a lot of screen space -
-	# always start it in full screen mode.
-	#
-	# This works well with KDE, but other WMs tend to be too broken for that,
-	# so enable this only for KDE.
-	#
-
-	if  echo $WINDOWMANAGER | grep -qi "kde" ; then
-
-  	    # ${WINDOWMANAGER##*/} deletes the longest shell wildcard pattern
-	    # matching "*/", leaving only the last path name component.
-
-	    if [ $module == "sw_single" ] ; then
-	        case "$Y2UI_ARGS" in
-	    	*fullscreen*) ;;
-	    	*) Y2UI_ARGS="$Y2UI_ARGS --fullscreen" ;;
-	        esac
-	    fi
-	fi
 else
     echo >&2 "Internal error, unhandled '$SELECTED_GUI'"
 fi
