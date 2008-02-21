@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Feb 21 18:09:33 CET 2008 - sh@suse.de
+
+- Added new UI packages to Requires/BuildRequires in .spec file
+- No more fullscreen for sw_single (coolo's wish)
+- V 2.16.29 
+
+-------------------------------------------------------------------
 Mon Feb  4 18:07:47 CET 2008 - mzugec@suse.de
 
 - Confirm::RunningNetwork() moved to
