@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Feb 22 15:34:10 CET 2008 - jsuchome@suse.cz
+
+- added ProductControl::EnableModule, ProductControl::DisabledModule
+
+-------------------------------------------------------------------
 Thu Feb 21 18:09:33 CET 2008 - sh@suse.de
 
 - Added new UI packages to Requires/BuildRequires in .spec file
