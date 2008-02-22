@@ -108,6 +108,26 @@ global define void setClientPrefix(string prefix)  {
 }
 
 /**
+ * Enable given disabled module
+ * @return current list of disabled modules
+ */
+global list<string> EnableModule (string modname) {
+
+    DisabledModules = filter (string mod, DisabledModules, ``(mod != modname));
+    return DisabledModules;
+}
+
+/**
+ * DIsable given module from installation workflow
+ * @return current list of disabled modules
+ */
+global list<string> DisableModule (string modname) {
+
+    DisabledModules	= (list<string>) union (DisabledModules, [modname]);
+    return DisabledModules;
+}
+
+/**
  * Check if a module is disabled
  * @param map module map
  * @return boolean
