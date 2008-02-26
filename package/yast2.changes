@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 18 17:10:17 CET 2008 - mzugec@suse.de
+
+- NetworkService::NetworkRunningPopup() changed to confirmation
+
+-------------------------------------------------------------------
 Fri Feb 22 15:34:10 CET 2008 - jsuchome@suse.cz
 
 - added ProductControl::EnableModule, ProductControl::DisabledModule

@@ -131,9 +131,10 @@ Really continue?"));
 
 
 global boolean isNetworkRunning(){
- map output = (map)SCR::Execute(.target.bash_output,
-                "([ $(ip addr|grep -v '127.0.0.1'|grep -c inet) != '0' ] && echo 'network') || echo 'no net'");
- if (issubstring(output["stdout"]:"", "network")) {
+ integer net = (integer)SCR::Execute(.target.bash,
+                "ip addr|grep -v '127.0.0.1\\|inet6'|grep -c inet");
+y2internal("output %1", net);
+ if (net==0) {
   y2milestone ("Network is running ...");
   return true;
  } else {
@@ -151,14 +152,17 @@ global boolean isNetworkRunning(){
  */
 global define boolean RunningNetworkPopup()
 {
+y2internal("RunningNetworkPopup %1", isNetworkRunning());
  if (isNetworkRunning()) return true;
 	else {
-	 string error_text = _("No running network detected!");
-	 if (Mode::installation()) error_text = sformat("%1\n%2", error_text, _("Restart installation and configure network in Linuxrc."));
-		else error_text = sformat("%1\n%2", error_text,
-_("Configure network with YaST or NetworkManager-plugin
-and start this module again."));
-	 Popup::Error(error_text);
+	 string error_text = sformat("%1\n%2 %3", _("No running network detected!"),
+Mode::installation() ?
+	_("Restart installation and configure network in Linuxrc") :
+	_("Configure network with YaST or NetworkManager-plugin
+and start this module again"),
+
+_("or continue without network."));
+	 Popup::ContinueCancel(error_text);
 	 y2error("Network not runing!");
 	 return false;
 	}
