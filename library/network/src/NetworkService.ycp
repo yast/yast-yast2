@@ -133,7 +133,6 @@ Really continue?"));
 global boolean isNetworkRunning(){
  integer net = (integer)SCR::Execute(.target.bash,
                 "ip addr|grep -v '127.0.0.1\\|inet6'|grep -c inet");
-y2internal("output %1", net);
  if (net==0) {
   y2milestone ("Network is running ...");
   return true;
