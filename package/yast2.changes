@@ -1,9 +1,4 @@
 -------------------------------------------------------------------
-Mon Feb 18 17:10:17 CET 2008 - mzugec@suse.de
-
-- NetworkService::NetworkRunningPopup() changed to confirmation
-
--------------------------------------------------------------------
 Fri Feb 22 15:34:10 CET 2008 - jsuchome@suse.cz
 
 - added ProductControl::EnableModule, ProductControl::DisabledModule
@@ -14,6 +9,11 @@ Thu Feb 21 18:09:33 CET 2008 - sh@suse.de
 - Added new UI packages to Requires/BuildRequires in .spec file
 - No more fullscreen for sw_single (coolo's wish)
 - V 2.16.29 
+
+-------------------------------------------------------------------
+Mon Feb 18 17:10:17 CET 2008 - mzugec@suse.de
+
+- NetworkService::NetworkRunningPopup() changed to confirmation
 
 -------------------------------------------------------------------
 Mon Feb  4 18:07:47 CET 2008 - mzugec@suse.de
