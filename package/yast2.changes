@@ -11,21 +11,15 @@ Thu Feb 21 18:09:33 CET 2008 - sh@suse.de
 - V 2.16.29 
 
 -------------------------------------------------------------------
-Mon Feb 18 17:10:17 CET 2008 - mzugec@suse.de
-
-- NetworkService::NetworkRunningPopup() changed to confirmation
-
--------------------------------------------------------------------
-Mon Feb  4 18:07:47 CET 2008 - mzugec@suse.de
-
-- Confirm::RunningNetwork() moved to
-  NetworkService::NetworkRunningPopup()
-
--------------------------------------------------------------------
 Mon Feb 18 20:51:30 CET 2008 - coolo@suse.de
 
 - fix build
 - 2.16.28
+
+-------------------------------------------------------------------
+Mon Feb 18 17:10:17 CET 2008 - mzugec@suse.de
+
+- NetworkService::NetworkRunningPopup() changed to confirmation
 
 -------------------------------------------------------------------
 Mon Feb 18 14:13:07 CET 2008 - lslezak@suse.cz
@@ -75,6 +69,12 @@ Tue Feb  5 10:36:52 CET 2008 - kmachalkova@suse.cz
 - Progress.ycp: Use the presence of progress bar widget to determine
   whether some progress is running (querying progress counter is not 
   enough, previous modules might have failed to reset it correctly)
+
+-------------------------------------------------------------------
+Mon Feb  4 18:07:47 CET 2008 - mzugec@suse.de
+
+- Confirm::RunningNetwork() moved to
+  NetworkService::NetworkRunningPopup()
 
 -------------------------------------------------------------------
 Fri Feb  1 13:00:18 CET 2008 - locilka@suse.cz
