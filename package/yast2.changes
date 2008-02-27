@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 27 14:38:42 CET 2008 - coolo@suse.de
+
+- new version
+- V 2.16.30
+
+-------------------------------------------------------------------
 Fri Feb 22 15:34:10 CET 2008 - jsuchome@suse.cz
 
 - added ProductControl::EnableModule, ProductControl::DisabledModule
