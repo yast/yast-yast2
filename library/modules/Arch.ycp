@@ -276,7 +276,7 @@ global boolean board_mac () {
 }
 
 /**
- * true for all "NewWorld" power macs
+ * true for all "NewWorld" powermacs
  */
 global boolean board_mac_new () {
     // board_mac calls board_compatible which initializes _checkgeneration
