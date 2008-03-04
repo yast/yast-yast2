@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar  4 13:53:43 CET 2008 - locilka@suse.cz
+
+- Replacing obsolete ag_background with new ag_process in Service
+  YCP module.
+
+-------------------------------------------------------------------
 Wed Feb 27 14:38:42 CET 2008 - coolo@suse.de
 
 - new version

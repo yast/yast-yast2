@@ -301,9 +301,9 @@ global define integer RunInitScriptWithTimeOut (string name, string param) {
     integer return_code = nil;
 
     // starting the process
-    boolean started = (boolean)SCR::Execute(.background.run_output_err, command);
-    if (!started) {
-	y2error("Cannot run '%1'", command);
+    integer process_pid = (integer) SCR::Execute(.process.start_shell, command);
+    if (process_pid == nil || process_pid <= 0) {
+	y2error("Cannot run '%1' -> %2", command, process_pid);
 	return return_code;
     }
     y2debug("Running: %1", command);
@@ -313,7 +313,7 @@ global define integer RunInitScriptWithTimeOut (string name, string param) {
     boolean cont_loop = true;
 
     // while continuing is needed and while it is possible
-    while (cont_loop && ((boolean) SCR::Read(.background.output_open) || (boolean) SCR::Read(.background.output_open_err))) {
+    while (cont_loop && ((boolean) SCR::Read (.process.running, process_pid))) {
 	if (time_spent >= script_time_out) {
 	    y2error("Command '%1' timed-out after %2 mces", command, time_spent);
 	    cont_loop = false;
@@ -326,13 +326,15 @@ global define integer RunInitScriptWithTimeOut (string name, string param) {
     
     // fetching the return code if not timed-out
     if (cont_loop) {
-	return_code = (integer) SCR::Read(.background.status);
+	return_code = (integer) SCR::Read(.process.status, process_pid);
     }
 
     y2milestone("Time spent: %1 msecs, retcode: %2", time_spent, return_code);
 
     // killing the process (if it still runs)
-    SCR::Execute(.background.kill, "");
+    if ((boolean) SCR::Read (.process.running, process_pid)) {
+	SCR::Execute(.process.kill, process_pid);
+    }
 
     return return_code;
 }
