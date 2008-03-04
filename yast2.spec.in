@@ -10,8 +10,9 @@ BuildRequires:	yast2-pkg-bindings >= 2.16.5
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
 PreReq:		%fillup_prereq
 
+# ag_process
+Requires:       yast2-core >= 2.16.37
 # Mod_UI
-Requires:       yast2-core >= 2.16.6
 Requires:       yast2-ycp-ui-bindings >= 2.16.37
 
 # Pkg::CallbackProcess*() functions
