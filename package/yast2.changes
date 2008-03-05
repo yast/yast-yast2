@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Mar  5 15:37:35 CET 2008 - locilka@suse.cz
+
+- Do not try to change the Wizard widget if no such widget exists
+  (ncurses) reuse the Back button instead (bnc #367213).
+- 2.16.31
+
+-------------------------------------------------------------------
 Tue Mar  4 13:53:43 CET 2008 - locilka@suse.cz
 
 - Replacing obsolete ag_background with new ag_process in Service

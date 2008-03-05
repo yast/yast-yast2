@@ -1078,12 +1078,31 @@
     }
 
     /**
+     * Returns whether the `Wizard widget is available.
+     *
+     * @see bnc #367213.
+     * @return boolean available
+     */
+    boolean HasWidgetWizard () {
+	if (! UI::HasSpecialWidget(`Wizard)) {
+	    y2milestone ("no Wizard available");
+	    return false;
+	}
+
+	return true;
+    }
+
+    /**
      * Show a "Release Notes" button with the specified label and ID if there is a "steps" panel
      **/
     global void ShowReleaseNotesButton( string label, string id )
     {
-	if ( UI::WizardCommand(`ShowReleaseNotesButton( label, id ) ) == false )
-	{
+	// has wizard? continue
+	//   otherwise reuse the back button
+	// show-releasenotes-button failed? continue
+	//   reuse the back button
+	if ((HasWidgetWizard() == false) || (UI::WizardCommand (`ShowReleaseNotesButton (label, id)) == false)) {
+	    // Reuse Back button
 	    if (UI::WidgetExists (`id (`back_rep))) {
 		UI::ReplaceWidget (`id (`back_rep), `PushButton (`id (id), label));
 	    } else {
@@ -1098,9 +1117,14 @@
      **/
     global void HideReleaseNotesButton()
     {
-	if ( UI::WizardCommand(`HideReleaseNotesButton() ) == false )
-	{
-	    UI::ReplaceWidget (`id (`back_rep), `Empty ());
+	// has wizard? continue
+	//    otherwise reuse the back button
+	// hide-releasenotes-button failed? continue
+	//   reuse the back button
+	if ((HasWidgetWizard() == false) || (UI::WizardCommand (`HideReleaseNotesButton()) == false)) {
+	    if (UI::WidgetExists (`id (`back_rep))) {
+		UI::ReplaceWidget (`id (`back_rep), `Empty ());
+	    }
 	}
     }
 
