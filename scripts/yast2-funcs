@@ -111,6 +111,7 @@ function set_qt_home_dir()
 function set_inst_qt_env()
 {
     export XCURSOR_THEME="DMZ"
+    export Y2STYLE="installation.qss"
     export QT_HOME_DIR="/tmp/.qt/"
     mkdir -p /tmp/.qt
     [ -e /usr/share/desktop-data/qtrc ] && cp /usr/share/desktop-data/qtrc /tmp/.qt/
