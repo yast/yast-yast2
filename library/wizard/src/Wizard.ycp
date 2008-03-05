@@ -1106,7 +1106,7 @@
 	    if (UI::WidgetExists (`id (`back_rep))) {
 		UI::ReplaceWidget (`id (`back_rep), `PushButton (`id (id), label));
 	    } else {
-		y2error ("Widget `back_rep does not exist");
+		y2warning ("Widget `back_rep does not exist");
 	    }
 	}
     }
