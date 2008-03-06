@@ -118,12 +118,25 @@ global list<string> EnableModule (string modname) {
 }
 
 /**
- * DIsable given module from installation workflow
+ * Disable given module from installation workflow
  * @return current list of disabled modules
  */
 global list<string> DisableModule (string modname) {
+    if (modname == nil || modname == "") {
+	y2error ("Module to disable is '%1'", modname);
+    } else {
+	DisabledModules	= (list<string>) union (DisabledModules, [modname]);
+    }
 
-    DisabledModules	= (list<string>) union (DisabledModules, [modname]);
+    return DisabledModules;
+}
+
+/**
+ * Returns list of modules disabled in workflow
+ *
+ * @return list <string> DisabledModules
+ */
+global list <string> GetDisabledModules () {
     return DisabledModules;
 }
 
@@ -134,6 +147,11 @@ global list<string> DisableModule (string modname) {
  */
 global define boolean checkDisabled (map mod ) 
 {
+    if (mod == nil) {
+	y2error ("Unknown module %1", mod);
+	return nil;
+    }
+
     if (contains(DisabledModules, mod["name"]:""))
     {
         return true;
