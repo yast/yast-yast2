@@ -1,0 +1,167 @@
+/**
+ * File:	modules/FileChanges.ycp
+ * Module:	yast2
+ * Summary:	Detect if a configuratil file was changed
+ * Authors:	Jiri Srain <jsrain@suse.cz>
+ *
+ * Support routines for detecting changes of configuration files being done
+ * externally (not by YaST) to prevent the changes from being lost because
+ * of YaST not handling the configuration files correctly (eg. removing
+ * comments in some cases, changing order of options,...)
+ *
+ * Warns user if such change is detected.
+ *
+ * Usage:
+ * Before reading the configuration file:
+ *   call boolean CheckFiles (list<string>) with all files. If any of them
+ *   is detected to be changed, YaST asks a popup for you.
+ *   alternatively use boolean FileChanged (string) for each file (does not
+ *   ask any question, immediatelly returns status of the file
+ *
+ * After writing the configuraiton file:
+ *   call void StoreFileCheckSum (string) for each file to store recent
+ *   checksum. YaST will use this checksum next time checking.
+ *
+ */
+
+{
+
+module "FileChanges";
+
+textdomain "base";
+
+import "Mode";
+import "Popup";
+
+string data_file = "/var/lib/YaST2/file_checksums.ycp";
+
+map<string,string> file_checksums = $[];
+
+/**
+ * Read the data file containing file checksums
+ */
+void ReadSettings () {
+    if ((integer)SCR::Read (.target.size, data_file) <= 0)
+    {
+	file_checksums = $[];
+	return;
+    }
+    file_checksums = (map<string,string>)SCR::Read (.target.ycp, data_file);
+    if (file_checksums == nil)
+	file_checksums = $[];
+}
+
+/**
+ * Write the data file containing checksums
+ */
+void WriteSettings () {
+    SCR::Write (.target.ycp, data_file, file_checksums);
+}
+
+/**
+ * Compute the checksum of a file
+ * @param file string the file to compute checksum of
+ * @return string the checksum
+ */
+string ComputeFileChecksum (string file) {
+    string cmd = sformat ("/usr/bin/md5sum %1", file);
+    map out = (map)SCR::Execute (.target.bash_output, cmd);
+    // note: it also contains file name, but since it is only to be compared
+    // it does not matter
+    string sum = out["stdout"]:"";
+    return sum;
+}
+
+/**
+ * Check if file was modified compared to the one distributed
+ * with the RPM package
+ * @param file string the file to check
+ * @return boolean true of was changed
+ */
+boolean FileChangedFromPackage (string file) {
+    string cmd = sformat ("/bin/rpm -qf %1", file);
+    map out = (map)SCR::Execute (.target.bash_output, cmd);
+    string package = out["stdout"]:"";
+    y2milestone ("Package owning %1: %2", file, package);
+    if (package == "")
+	return false;
+    // FIXME: /bin/xx finds also /usr/bin/xx
+    cmd = sformat ("rpm -V %1 |grep %2", package, file);
+    out = (map)SCR::Execute (.target.bash_output, cmd);
+    string changes = out["stdout"]:"";
+    y2milestone ("File possibly changed: %1", changes);
+    list<string> lines = splitstring (changes, "\n");
+    boolean changed = false;
+    foreach (string line, lines, {
+	if (regexpmatch (line, "^S"))
+	    changed = true;
+	if (regexpmatch (line, "^..5"))
+	    changed = true;
+	if (regexpmatch (line, "^.......T"))
+	    changed = true;
+    });
+    return changed;
+}
+
+/**
+ * Check if a file was modified externally (without YaST)
+ * @param file string boolean the file to check
+ * @return boolean true if was changed externally
+ */
+global boolean FileChanged (string file) {
+    // when generating AutoYaST configuration, they are not written back
+    if (Mode::config ())
+	return false;
+    ReadSettings ();
+    boolean ret = false;
+    if (haskey (file_checksums, file))
+    {
+	y2milestone ("Comparing file %1 to stored checksum", file);
+	string sum = ComputeFileChecksum (file);
+	ret = ! (sum == file_checksums[file]:"");
+    }
+    else
+    {
+	y2milestone ("Comparing file %1 to RPM database", file);
+	ret = FileChangedFromPackage (file);
+    }
+    y2milestone ("File differs: %1", ret);
+    return ret;
+}
+
+/**
+ * Store checksum of a file to the store
+ * @param file string filename to compute and store
+ */
+global void StoreFileCheckSum (string file) {
+    ReadSettings ();
+    string sum = ComputeFileChecksum (file);
+    file_checksums[file] = sum;
+    WriteSettings ();
+}
+
+/**
+ * Check files if any of them were changed
+ * Issue a question whether to continue if some were chaned
+ * @param files a list of files to check
+ * @return boolean true if either none was changed or user agreed
+ *  to continue
+ */
+global boolean CheckFiles (list<string> files) {
+    files = filter (string f, files, { return FileChanged (f); });
+    if (size (files) > 0)
+    {
+	// Continue/Cancel question, %1 is a file name
+	string msg = _("File %1 has been changed manually.
+YaST might lose some of the changes");
+	if (size (files) > 1)
+	    // Continue/Cancel question, %1 is a coma separated list of file names
+	    msg = _("Files %1 have been changed manually.
+YaST might lose some of the changes");
+	msg = sformat (msg, mergestring (files, ", "));
+	return Popup::ContinueCancel (msg);
+    }
+    return true;
+}
+
+}
