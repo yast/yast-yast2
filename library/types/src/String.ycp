@@ -162,7 +162,7 @@ global string FormatRate(integer bytes_per_second)
  *
  * Add the current and the average download rate to the message.
  *
- * @param text the message
+ * @param text the message with %1 placeholder for the download rate string
  * @param avg_bps average download rate (in B/s)
  * @param curr_bps current download rate (in B/s)
  *
@@ -170,12 +170,26 @@ global string FormatRate(integer bytes_per_second)
  */
 global string FormatRateMessage(string text, integer avg_bps, integer curr_bps)
 {
-    // format download rate message
-    // %1 - input message (e.g. "Downloading Package")
-    // %2 - current download rate in B/s, KB/s...
-    // %3 - average download rate since start
-    // example - "Downloading Package - 237.34 KB/s (avg. 243.21 KB/s)"
-    return sformat(_("%1 - %2 (avg. %3)"), text, FormatRate(curr_bps), FormatRate(avg_bps));
+    string rate = "";
+
+    if (curr_bps > 0)
+    {
+	rate = FormatRate(curr_bps);
+
+	if (avg_bps > 0)
+	{
+	    // format download rate message: %1 = the current download rate (e.g. "242.6kB/s")
+	    // %2 is the average download rate (e.g. "228.3kB/s")
+	    // to translators: keep translation of "on average" as short as possible
+	    rate = sformat(_("%1 (on average %2)"), rate, String::FormatRate(avg_bps));
+	}
+    }
+
+    // add download rate to the downloading message
+    // %1 is URL, %2 is formatted download rate, e.g. "242.6kB/s (avg. 228.3kB/s)"
+    // in ncurses UI the strings are exchanged (%1 is the rate, %2 is URL)
+    // due to limited space on the screen
+    return sformat(text, rate);
 }
 
 /**

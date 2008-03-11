@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar 11 13:00:07 CET 2008 - lslezak@suse.cz
+
+- improved String::FormatRateMessage() (needed for #168935)
+- 2.16.34
+
+-------------------------------------------------------------------
 Wed Mar  5 17:37:15 CET 2008 - lslezak@suse.cz
 
 - register Refresh callbacks (required for FATE #30962, bnc #231745)
