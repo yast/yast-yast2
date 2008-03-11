@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Mar 11 16:14:30 CET 2008 - jsrain@suse.cz
+
+- added infrastructure to detect configuration files changed not
+  by YaST and warn users about such changes possibly getting lost
+  (fate #303374)
+
+-------------------------------------------------------------------
 Tue Mar 11 13:00:07 CET 2008 - lslezak@suse.cz
 
 - improved String::FormatRateMessage() (needed for #168935)
