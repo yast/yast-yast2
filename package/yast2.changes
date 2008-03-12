@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Mar 12 17:17:29 CET 2008 - locilka@suse.cz
+
+- Fixed ProductControl to evaluate `accept and `ok as if it was
+  `next (bnc #369846).
+- 2.13.108
+
+-------------------------------------------------------------------
 Tue Jan 15 10:52:47 CET 2008 - jsrain@suse.cz
 
 - merged texts from proofread

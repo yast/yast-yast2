@@ -722,11 +722,11 @@ global string getProposalTextDomain() {
 /**
  * Return proposal Label
  */
-global map getProposalProperties( string stage, string mode, string proptype
-)
+global map getProposalProperties( string stage, string mode, string proptype)
 {
-    list<map> proposals = getMatchingProposal(stage, mode, proptype);
-    map proposal = proposals[0]:$[];
+    list <map> matching_proposals = getMatchingProposal (stage, mode, proptype);
+    map proposal = matching_proposals[0]:$[];
+
     if (haskey (proposal, "proposal_tabs"))
     {
 	string text_domain = productControl["textdomain"]:"control";
@@ -738,8 +738,8 @@ global map getProposalProperties( string stage, string mode, string proptype
 	    return tab;
 	});
     }
-    return proposal;
 
+    return proposal;
 }
 
 global string GetTranslatedText (string key) {
@@ -945,6 +945,12 @@ global symbol RunFrom (integer from, boolean allow_back)
 
 	symbol result = (symbol) WFM::CallFunction (getClientName(step_name), args);
 	y2milestone ("Calling %1 returned %2", argterm, result);
+
+	// bnc #369846
+	if (result == `accept || result == `ok) {
+	    y2milestone ("Evaluating %1 as it was `next", result);
+	    result = `next;
+	}
 
         // Remove file if step was run and returned (without a crash);
 	if (current_step < size(modules) - 1 && !Stage::initial())
