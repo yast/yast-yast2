@@ -977,6 +977,12 @@ global symbol RunFrom (integer from, boolean allow_back)
 	symbol result = (symbol) WFM::CallFunction (getClientName(step_name), args);
 	y2milestone ("Calling %1 returned %2", argterm, result);
 
+	// bnc #369846
+	if (result == `accept || result == `ok) {
+	    y2milestone ("Evaluating %1 as it was `next", result);
+	    result = `next;
+	}
+
 	// Clients can break the installation/workflow
 	Wizard::RestoreNextButton();
 	Wizard::RestoreAbortButton();

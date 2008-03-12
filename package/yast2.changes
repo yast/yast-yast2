@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 12 17:16:20 CET 2008 - locilka@suse.cz
+
+- Adjusted ProductControl to evaluate `accept and `ok as if it was
+  `next (bnc #369846).
+
+-------------------------------------------------------------------
 Tue Mar 11 16:14:30 CET 2008 - jsrain@suse.cz
 
 - added infrastructure to detect configuration files changed not
