@@ -15,7 +15,7 @@ Tue Mar 11 16:14:30 CET 2008 - jsrain@suse.cz
 -------------------------------------------------------------------
 Tue Mar 11 13:00:07 CET 2008 - lslezak@suse.cz
 
-- improved String::FormatRateMessage() (needed for #168935)
+- improved String::FormatRateMessage() (needed for bnc #168935)
 - 2.16.34
 
 -------------------------------------------------------------------
