@@ -85,6 +85,30 @@
   // TRANSLATORS: Description of a Service (rpm: dnsmasq-dns), used as a common label or an item in table
   tmpstring = _("Open ports for the dnsmasq DNS/DHCP server");
 
+  // TRANSLATORS: Name of Service (rpm: finger-server), can be used as check box, item in multiple selection box...
+  tmpstring = _("Finger Server");
+
+  // TRANSLATORS: Description of a Service (rpm: finger-server), used as a common label or an item in table
+  tmpstring = _("Opens ports for Finger Server.");
+
+  // TRANSLATORS: Name of Service (rpm: iceccd), can be used as check box, item in multiple selection box...
+  tmpstring = _("icecream daemon");
+
+  // TRANSLATORS: Description of a Service (rpm: iceccd), used as a common label or an item in table
+  tmpstring = _("opens socket for the icecream compilation daemon");
+
+  // TRANSLATORS: Name of Service (rpm: icecream-scheduler), can be used as check box, item in multiple selection box...
+  tmpstring = _("icecream scheduler");
+
+  // TRANSLATORS: Description of a Service (rpm: icecream-scheduler), used as a common label or an item in table
+  tmpstring = _("opens ports for the Icecream scheduler");
+
+  // TRANSLATORS: Name of Service (rpm: imap), can be used as check box, item in multiple selection box...
+  tmpstring = _("imap Server");
+
+  // TRANSLATORS: Description of a Service (rpm: imap), used as a common label or an item in table
+  tmpstring = _("Opens ports for imap Server.");
+
   // TRANSLATORS: Name of Service (rpm: iscsitarget), can be used as check box, item in multiple selection box...
   tmpstring = _("iSCSI Target Daemon");
 
@@ -126,6 +150,12 @@
 
   // TRANSLATORS: Description of a Service (rpm: mysql), used as a common label or an item in table
   tmpstring = _("opens ports for MySQL in order to allow other hosts connect to it");
+
+  // TRANSLATORS: Description of a Service (rpm: nfs-client), used as a common label or an item in table
+  tmpstring = _("Firewall Configuraion for nfs client. opens ports for foo in order to allow bar");
+
+  // TRANSLATORS: Description of a Service (rpm: nfs-kernel-server), used as a common label or an item in table
+  tmpstring = _("Firewall Configuraion for nfs kernel server. opens ports for foo in order to allow bar");
 
   // TRANSLATORS: Name of Service (rpm: nut), can be used as check box, item in multiple selection box...
   tmpstring = _("Network UPS Tools");
@@ -181,6 +211,12 @@
   // TRANSLATORS: Description of a Service (rpm: talkd), used as a common label or an item in table
   tmpstring = _("Open ports for Talk Server");
 
+  // TRANSLATORS: Name of Service (rpm: telnet-server), can be used as check box, item in multiple selection box...
+  tmpstring = _("telnet-server Server");
+
+  // TRANSLATORS: Description of a Service (rpm: telnet-server), used as a common label or an item in table
+  tmpstring = _("Opens ports for telnet-server Server.");
+
   // TRANSLATORS: Name of Service (rpm: tetrinet-server), can be used as check box, item in multiple selection box...
   tmpstring = _("Tetrinet Server");
 
@@ -204,12 +240,6 @@
 
   // TRANSLATORS: Description of a Service (rpm: vsftpd), used as a common label or an item in table
   tmpstring = _("Opens ports for vsftpd Server.");
-
-  // TRANSLATORS: Name of Service (rpm: xntp), can be used as check box, item in multiple selection box...
-  tmpstring = _("xntp Server");
-
-  // TRANSLATORS: Description of a Service (rpm: xntp), used as a common label or an item in table
-  tmpstring = _("Opens ports for xntp.");
 
   // TRANSLATORS: Name of Service (rpm: ypbind), can be used as check box, item in multiple selection box...
   tmpstring = _("NIS Client");
