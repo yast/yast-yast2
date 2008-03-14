@@ -6,6 +6,7 @@ Fri Mar 14 12:26:39 CET 2008 - locilka@suse.cz
 - DisabledModules and DisabledProposals were made local and acces
   to them is available via functional API only. Both for
   (fate #303396).
+- 2.16.36
 
 -------------------------------------------------------------------
 Fri Mar 14 11:29:13 CET 2008 - jsrain@suse.cz
