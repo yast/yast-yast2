@@ -3,6 +3,9 @@
  * Package:	installation
  * Summary:	Product Control routines
  * Authors:	Anas Nashif <nashif@suse.de>
+ *		Stanislav Visnovsky <visnov@suse.cz>
+ *		Jiri Srain <jsrain@suse.cz>
+ *		Lukas Ocilka <locilka@suse.cz>
  *
  * $Id$
  */
@@ -472,7 +475,7 @@ global list<string> RequiredFiles (string stage, string mode)
 /**
  * Get Workflow
  * @param stage Stage
- * @param mode Mdoe
+ * @param mode Mode
  * @return map Workflow map
  */
 global define map getCompleteWorkflow(string stage, string mode)
@@ -521,6 +524,37 @@ global define list<map> getModules(string stage, string mode, symbol which)
 
     y2debug("Log files: %1", logfiles);
     return modules;
+}
+
+/**
+ * Returns whether is is required to run YaST in the defined
+ * stage and mode
+ *
+ * @param string stage
+ * @param string mode
+ * @return boolean if needed
+ */
+global boolean RunRequired (string stage, string mode) {
+    list <map> modules = getModules (stage, mode, `enabled);
+
+    if (modules == nil) {
+	y2error ("Undefined %1/%2", stage, mode);
+	return nil;
+    }
+
+    modules = filter (map one_module, modules, {
+	// modules
+	if (one_module["name"]:"" != nil && one_module["name"]:"" != "") {
+	    return true;
+	// proposals
+	} else if (one_module["proposal"]:"" != nil && one_module["proposal"]:"" != "") {
+	    return true;
+	}
+	// the rest
+	return false;
+    });
+
+    return (size (modules) > 0);
 }
 
 /**
