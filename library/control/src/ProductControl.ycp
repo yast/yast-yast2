@@ -68,12 +68,18 @@ global string CurrentWizardStep = "";
 global list<map> last_stage_mode = [];
 
 
+// -->
+
+// Currently only local variables, they have their own API
+
 // List of module to disable in the current run
-global list<string> DisabledModules = [];
+list<string> DisabledModules = [];
 
 // List of proposals to disable in the current run
-global list<string> DisabledProposals = [];
+list<string> DisabledProposals = [];
 
+
+// <--
 
 // Log files for hooks
 global list<string> logfiles = [];
@@ -114,11 +120,12 @@ global define void setClientPrefix(string prefix)  {
 global list<string> EnableModule (string modname) {
 
     DisabledModules = filter (string mod, DisabledModules, ``(mod != modname));
+
     return DisabledModules;
 }
 
 /**
- * Disable given module from installation workflow
+ * Disable given module in installation workflow
  * @return current list of disabled modules
  */
 global list<string> DisableModule (string modname) {
@@ -141,6 +148,43 @@ global list <string> GetDisabledModules () {
 }
 
 /**
+ * Enable given disabled proposal
+ * @return current list of disabled proposals
+ */
+global list<string> EnableProposal (string enable_proposal) {
+
+    DisabledProposals = filter (string one_proposal, DisabledProposals, {
+	return (one_proposal != enable_proposal);
+    });
+
+    return DisabledProposals;
+}
+
+/**
+ * Disable given proposal in installation workflow
+ * @return current list of disabled proposals
+ */
+global list<string> DisableProposal (string disable_proposal) {
+
+    if (disable_proposal == nil || disable_proposal == "") {
+	y2error ("Module to disable is '%1'", disable_proposal);
+    } else {
+	DisabledProposals = (list<string>) union (DisabledProposals, [disable_proposal]);
+    }
+
+    return DisabledProposals;
+}
+
+/**
+ * Returns list of proposals disabled in workflow
+ *
+ * @return list <string> DisabledProposals
+ */
+global list <string> GetDisabledProposals () {
+    return DisabledProposals;
+}
+
+/**
  * Check if a module is disabled
  * @param map module map
  * @return boolean
@@ -152,10 +196,18 @@ global define boolean checkDisabled (map mod )
 	return nil;
     }
 
-    if (contains(DisabledModules, mod["name"]:""))
-    {
-        return true;
+    // Proposal
+    if (mod["proposal"]:"" != nil && mod["proposal"]:"" != "") {
+	if (contains (DisabledProposals, mod["proposal"]:"")) {
+	    return true;
+	}
+    // Normal step
+    } else if (mod["name"]:"" != nil && mod["name"]:"" != "") {
+	if (contains (DisabledModules, mod["name"]:"")) {
+	    return true;
+	}
     }
+
     return false;
 }
 
@@ -492,7 +544,50 @@ global string getWorkflowLabel(string stage, string mode, string wz_td)
 	return dgettext (wz_td, label);
 }
 
+list <string> localDisabledProposals = [];
+list <string> localDisabledModules = [];
 
+global void DisableAllModulesAndProposals (string mode, string stage) {
+    // stores modules and proposals disabled before
+    // this 'general' disabling
+    localDisabledProposals = DisabledProposals;
+    localDisabledModules = DisabledModules;
+
+    foreach (map m, getModules (stage, mode, `all), {
+        if (m["proposal"]:"" != nil && m["proposal"]:"" != "") {
+            y2milestone ("Disabling proposal: %1", m);
+            DisabledProposals = (list <string>) union (DisabledProposals, [m["proposal"]:""]);
+        } else if (m["name"]:"" != nil && m["name"]:"" != "") {
+            y2milestone ("Disabling module: %1", m);
+            DisabledModules = (list <string>) union (DisabledModules, [m["name"]:""]);
+        }
+    });
+}
+
+global void UnDisableAllModulesAndProposals (string mode, string stage) {
+    y2milestone ("Un-Disabling modules and proposals");
+
+    // Note: This might be done by a simple reverting with 'X = localX'
+    //       but some of these modules don't need to be in a defined mode and stage
+
+    foreach (map m, getModules (stage, mode, `all), {
+	// A proposal
+	// Enable it only if it was enabled before
+	if (m["proposal"]:"" != nil && m["proposal"]:"" != "" && ! contains (localDisabledProposals, m["proposal"]:"")) {
+	    y2milestone ("Enabling proposal: %1", m);
+	    DisabledProposals = filter (string one_proposal, DisabledProposals, {
+		return (m["proposal"]:"" != one_proposal);
+	    });
+	// A module
+	// Enable it only if it was enabled before
+	} else if (m["name"]:"" != nil && m["name"]:"" != "" && ! contains (localDisabledModules, m["name"]:"")) {
+	    y2milestone ("Enabling module: %1", m);
+	    DisabledModules = filter (string one_module, DisabledModules, {
+		return (m["name"]:"" != one_module);
+	    });
+	}
+    });
+}
 
 /**
  * Add Wizard Steps
@@ -514,30 +609,48 @@ global define void AddWizardSteps(list<map> stagemode)
     string wizard_textdomain = (string) productControl["textdomain"]:"control";
     y2debug( "Using textdomain '%1' for wizard steps", wizard_textdomain );
 
+    y2milestone ("-----------------------------------------------------------");
+
     string first_id = "";
     // UI::WizardCommand(`SetVerboseCommands( true ) );
-    foreach (map sm , stagemode, ``{
+    foreach (map sm , stagemode, {
         y2debug( "Adding wizard steps for %1", sm );
+	// only for debugging
+	y2milestone ("Adding wizard steps for %1", sm);
+
         string slabel = getWorkflowLabel(sm["stage"]:"", sm["mode"]:"", wizard_textdomain);
-        if ( slabel != "" )
-        {
+        if (slabel != "") {
             UI::WizardCommand (`AddStepHeading (slabel));
         }
 
+	// just to check whether there are some steps to display
+	list <map> enabled_modules = getModules (sm["stage"]:"", sm["mode"]:"", `enabled);
+	enabled_modules = filter (map m, enabled_modules, {
+	    return (m["heading"]:"" == "");
+	});
+	if (size (enabled_modules) == 0) {
+	    y2milestone ("There are no (more) steps for %1, section will be disabled", sm);
+	    return;
+	}
+
         string last_label = "";
 	string last_domain = "";
-        foreach(map m, getModules(sm["stage"]:"", sm["mode"]:"", `enabled),
-                ``{
+        foreach (map m, getModules (sm["stage"]:"", sm["mode"]:"", `enabled), {
+	    // only for debugging
+	    y2milestone ("Adding step: %1", m);
+
             y2debug("Adding wizard step: %1", m );
-	    if (haskey (m, "heading") && m["label"]:"" != "")
-	    {
+
+	    // Heading
+	    if (haskey (m, "heading") && m["label"]:"" != "") {
 		UI::WizardCommand (`AddStepHeading (
 		    haskey (m, "textdomain")
 			? dgettext (m["textdomain"]:"", m["label"]:"")
-			: dgettext (wizard_textdomain, m["label"]:"")));
-	    }
-            else if (m["label"]:"" != "")
-	    {
+			: dgettext (wizard_textdomain, m["label"]:"")
+		));
+
+	    // Label
+            } else if (m["label"]:"" != "") {
                 if (first_id=="")
                 {
                     first_id = m["id"]:"";
@@ -546,38 +659,77 @@ global define void AddWizardSteps(list<map> stagemode)
 		    haskey (m, "textdomain")
 			? dgettext (m["textdomain"]:"", m["label"]:"")
 			: dgettext (wizard_textdomain, m["label"]:""),
-		    m["id"]:"" ));
+		    m["id"]:""
+		));
                 last_label = m["label"]:"";
 		last_domain = m["textdomain"]:"";
+
+	    // The rest
             } else {
-                if (first_id=="")
-                {
+                if (first_id=="") {
                     first_id = m["id"]:"";
                 }
-		if (last_label != "")
-		{
-		    if (last_domain != "")
+		if (last_label != "") {
+		    if (last_domain != "") {
 			UI::WizardCommand(`AddStep( dgettext(
 				last_domain,
 				last_label ),
                             m["id"]:"" )
 			);
-		    else
+		    } else {
 			UI::WizardCommand(`AddStep( dgettext(
 				wizard_textdomain,
 				last_label ),
                             m["id"]:"" )
 			);
+		    }
 		}
             }
         });
     });
+
+    y2milestone ("-----------------------------------------------------------");
 
     UI::WizardCommand(`SetCurrentStep( CurrentWizardStep ) );
 }
 
 /* Forces UpdateWizardSteps to redraw steps even if nothing seem to be changed */
 boolean force_UpdateWizardSteps = false;
+
+// -->
+// Installation without second stage
+// "Automatic Configuration"
+
+// FIXME: read the default value from control file
+boolean use_automatic_configuration = true;
+
+/**
+ * Adjust the automatic configuration to be either enabled or disabled.
+ * Enabling it means that second stage will be disabled.
+ *
+ * @param boolean enabled
+ */
+global void SetUseAutomaticConfiguration (boolean set_param) {
+    if (set_param == nil) {
+	y2error ("Automatic configuration can be either enabled or disabled, not nil!");
+	return;
+    }
+
+    use_automatic_configuration = set_param;
+}
+
+/**
+ * Returns whether automatic configuration will be enabled.
+ *
+ * @return boolean if enabled
+ */
+global boolean GetUseAutomaticConfiguration () {
+    return use_automatic_configuration;
+}
+
+// <--
+
+list <string> lastDisabledModules = DisabledModules;
 
 /**
  * Update Steps
@@ -587,12 +739,15 @@ global define void UpdateWizardSteps(list<map> stagemode)
     if (force_UpdateWizardSteps == true) {
 	y2milestone ("UpdateWizardSteps forced");
 	force_UpdateWizardSteps = false;
+    } else if (DisabledModules != lastDisabledModules) {
+	y2milestone ("Disabled modules were changed");
     } else if (last_stage_mode == stagemode) {
 	y2milestone ("No changes in Wizard steps");
 	return;
     }
 
     last_stage_mode = stagemode;
+    lastDisabledModules = DisabledModules;
 
     UI::WizardCommand(`DeleteSteps());
     // Also redraws the wizard and sets the current step
