@@ -547,11 +547,23 @@ global string getWorkflowLabel(string stage, string mode, string wz_td)
 list <string> localDisabledProposals = [];
 list <string> localDisabledModules = [];
 
+list <map> already_disabled_workflows = [];
+
 global void DisableAllModulesAndProposals (string mode, string stage) {
+    map this_workflow = $["mode":mode, "stage":stage];
+
+    if (contains (already_disabled_workflows, this_workflow)) {
+	y2milestone ("Workflow %1 already disabled", this_workflow);
+	return;
+    }
+
     // stores modules and proposals disabled before
     // this 'general' disabling
     localDisabledProposals = DisabledProposals;
     localDisabledModules = DisabledModules;
+
+    y2milestone ("localDisabledProposals: %1", localDisabledProposals);
+    y2milestone ("localDisabledModules: %1", localDisabledModules);
 
     foreach (map m, getModules (stage, mode, `all), {
         if (m["proposal"]:"" != nil && m["proposal"]:"" != "") {
@@ -562,10 +574,17 @@ global void DisableAllModulesAndProposals (string mode, string stage) {
             DisabledModules = (list <string>) union (DisabledModules, [m["name"]:""]);
         }
     });
+
+    already_disabled_workflows = (list <map>) union (already_disabled_workflows, [this_workflow]);
 }
 
 global void UnDisableAllModulesAndProposals (string mode, string stage) {
-    y2milestone ("Un-Disabling modules and proposals");
+    map this_workflow = $["mode":mode, "stage":stage];
+
+    y2milestone ("Un-Disabling workflow %1", this_workflow);
+    already_disabled_workflows = filter (map one_workflow, already_disabled_workflows, {
+	return (one_workflow != this_workflow);
+    });
 
     // Note: This might be done by a simple reverting with 'X = localX'
     //       but some of these modules don't need to be in a defined mode and stage
@@ -609,8 +628,6 @@ global define void AddWizardSteps(list<map> stagemode)
     string wizard_textdomain = (string) productControl["textdomain"]:"control";
     y2debug( "Using textdomain '%1' for wizard steps", wizard_textdomain );
 
-    y2milestone ("-----------------------------------------------------------");
-
     string first_id = "";
     // UI::WizardCommand(`SetVerboseCommands( true ) );
     foreach (map sm , stagemode, {
@@ -637,8 +654,6 @@ global define void AddWizardSteps(list<map> stagemode)
 	string last_domain = "";
         foreach (map m, getModules (sm["stage"]:"", sm["mode"]:"", `enabled), {
 	    // only for debugging
-	    y2milestone ("Adding step: %1", m);
-
             y2debug("Adding wizard step: %1", m );
 
 	    // Heading
@@ -687,8 +702,6 @@ global define void AddWizardSteps(list<map> stagemode)
             }
         });
     });
-
-    y2milestone ("-----------------------------------------------------------");
 
     UI::WizardCommand(`SetCurrentStep( CurrentWizardStep ) );
 }
