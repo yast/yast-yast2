@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar 14 11:29:13 CET 2008 - jsrain@suse.cz
+
+- fixed textdomain
+
+-------------------------------------------------------------------
 Wed Mar 12 17:16:20 CET 2008 - locilka@suse.cz
 
 - Adjusted ProductControl to evaluate `accept and `ok as if it was
