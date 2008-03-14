@@ -5,7 +5,7 @@
 
 {
 
-textdomain "country";
+textdomain "base";
 
 return $[
     "af_ZA" : _("South Africa"),
