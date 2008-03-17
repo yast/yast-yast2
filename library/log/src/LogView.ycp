@@ -640,7 +640,7 @@ global define map CreateWidget (map<string,any> parameters,
  *              in the log (for getting relevant  parts of
  *              /var/log/messages. If empty or not present, whole file
  *              is used
- *  - "command" -- allows to specify comand to get the log for cases
+ *  - "command" -- allows to specify command to get the log for cases
  *                 where grep isn't enough. If used, file and grep entries
  *                 are ignored
  *  - "save" -- boolean, if true, then log saving is possible
