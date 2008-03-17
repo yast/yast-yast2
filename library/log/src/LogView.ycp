@@ -23,6 +23,8 @@
  *          ],
  *      ]);
  * </pre>
+ *
+ * TODO: Use LogViewCore.ycp
  */
 
 {

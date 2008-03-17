@@ -1,7 +1,8 @@
 # Makefile.am for yast2/library/log/src
 
 module_DATA =			\
-	LogView.ycp
+	LogView.ycp		\
+	LogViewCore.ycp
 
 EXTRA_DIST = $(module_DATA)
 

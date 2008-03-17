@@ -1,0 +1,146 @@
+/**
+ * File:	modules/LogViewCore.ycp
+ * Package:	YaST2
+ * Summary:	Displaying a log
+ * Authors:	Jiri Srain <jsrain@suse.cz>
+ *		Arvin Schnell <aschnell@suse.de>
+ *
+ * $Id: LogViewCore.ycp 45503 2008-03-17 09:46:23Z aschnell $
+ */
+{
+    module "LogViewCore.ycp";
+
+    textdomain "base";
+
+
+    import "Report";
+
+
+    /**
+     * default value of maximum displayed lines
+     */
+    integer max_lines_default = 100;
+
+
+    /**
+     * lines of the selected log
+     */
+    list<string> lines = [];
+
+
+    /**
+     * data describing log: file, grep, command, max_lines etc.
+     */
+    map<string, any> data = $[];
+
+
+    /**
+     * id of background process
+     */
+    integer id = 0;
+
+
+    /**
+     * Remove unneeded items from a list of lines
+     * If max_lines is 0, then don't remove anything
+     */
+    void DeleteOldLines()
+    {
+	integer max_lines = data["max_lines"]:max_lines_default;
+
+	if (max_lines == 0)
+	    return;
+
+	integer sl = size (lines);
+	if (sl > max_lines)
+	{
+	    lines = filter (string l, lines, {
+		    sl = sl - 1;
+		    return sl < max_lines;
+	    });
+	}
+    }
+
+
+    /**
+     * Starts the log reading command via process agent
+     */
+    global void Start(map<string, any> d)
+    {
+	data = d;
+
+	integer max_lines = data["max_lines"]:max_lines_default;
+
+	string command = (string) data["command"]:nil;
+	if (command == nil || command == "")
+	{
+	    string file = data["file"]:"";
+	    if (file == nil || file == "")
+	    {
+		// error report
+		Report::Error (_("Error occurred while reading the log."));
+		return;
+	    }
+	    string grep = data["grep"]:"";
+	    if (grep != "" && grep != nil)
+		grep = sformat ("| grep --line-buffered '%1'", grep);
+	    string lc_command = sformat ("cat %1 %2 | wc -l", data["file"]:"", grep);
+	    map bash_output = (map)SCR::Execute (.target.bash_output, lc_command);
+	    command = "tail -f -n +0 " + data["file"]:"";
+	    string addon = "";
+	    if (bash_output["exit"]:1 == 0)
+	    {
+		string lc = bash_output["stdout"]:"";
+		lc = filterchars (lc, "1234567890");
+		integer lines_count = tointeger (lc);
+		lines_count = lines_count - 2 * max_lines;
+		// don't know why without
+		// doubling it discards more lines, out of YaST2
+		// it works
+		if (max_lines != 0 && lines_count > 0)
+		    addon = sformat ("| tail -n +%1", lines_count);
+	    }
+	    command = sformat ("%1 %2 %3", command, grep, addon);
+	}
+
+	y2milestone ("Calling background process with command %1", command);
+	id = (integer) SCR::Execute (.process.start_shell, command);
+
+	sleep (100);
+
+	while(true)
+	{
+	    string line = (string) SCR::Read(.process.read_line, id);
+	    if (line == nil)
+		break;
+
+	    lines = add(lines, line);
+	}
+
+	DeleteOldLines();
+
+	UI::ChangeWidget(`id(data["widget"]:nil), `Value, mergestring (lines, "\n") + "\n");
+    }
+
+
+    global void Update()
+    {
+	while(true)
+	{
+	    string line = (string) SCR::Read(.process.read_line, id);
+	    if (line == nil)
+		break;
+
+	    lines = add(lines, line);
+	    UI::ChangeWidget(`id(data["widget"]:nil), `LastLine, line + "\n");
+	}
+
+	DeleteOldLines();
+    }
+
+
+    global void Stop()
+    {
+	SCR::Execute(.process.kill, id);
+    }
+}
