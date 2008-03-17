@@ -1,0 +1,30 @@
+{
+    import "LogViewCore";
+
+    string file = "/var/log/messages";
+
+    UI::OpenDialog(`VBox(
+		       `Left(`Heading("Log")),
+		       `LogView(`id(`log), sformat("Content of %1:", file), 10, 100),
+		       `PushButton(`id(`close), "Close")
+		       ));
+
+    LogViewCore::Start($[ "widget" : `log, "file" : file]);
+
+    while (true)
+    {
+	map event = UI::WaitForEvent(250);
+	any widget = event["ID"]:nil;
+
+	if (widget == `timeout)
+	{
+	    LogViewCore::Update();
+	} 
+	else if (widget == `close)
+	{
+	    break;
+	}
+    }
+
+    LogViewCore::Stop();
+}
