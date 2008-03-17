@@ -63,7 +63,9 @@
 
 
     /**
-     * Starts the log reading command via process agent
+     * Starts the log reading command via process agent.
+     *
+     * The LogView widget must exist when calling this function.
      */
     global void Start(map<string, any> d)
     {
