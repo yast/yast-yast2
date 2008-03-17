@@ -485,6 +485,20 @@
 
 
     /**
+     * Substitute for UI::WaitForEvent
+     */
+    global map WaitForEvent(integer timeout_millisec) 
+    {
+	map input = UI::WaitForEvent(timeout_millisec);
+
+	if (input["ID"]:nil == `accept) input["ID"] = `next;
+	if (input["ID"]:nil == `cancel) input["ID"] = `back;
+
+	return input;
+    }
+
+
+    /**
      * Create and open a typical installation wizard dialog.
      *
      * For backwards compatibility only - don't use this any more in new modules.
