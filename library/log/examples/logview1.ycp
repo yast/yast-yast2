@@ -1,0 +1,7 @@
+{
+    import "LogView";
+
+    string file = "/var/log/messages";
+
+    LogView::DisplaySimple(file);
+}
