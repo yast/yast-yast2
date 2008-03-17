@@ -22,3 +22,4 @@ Exec=/sbin/yast2 remotechooser
 Name=Remote Administration
 GenericName=Administer Remote Host
 X-KDE-SubstituteUID=true
+StartupNotify=true

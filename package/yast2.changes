@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar 17 12:43:32 CET 2008 - jsrain@suse.cz
+
+- added 'StartupNotify=true' to the desktop file (bnc #304964)
+
+-------------------------------------------------------------------
 Fri Mar 14 12:26:39 CET 2008 - locilka@suse.cz
 
 - Several changes in ProductControl modules for automatic
