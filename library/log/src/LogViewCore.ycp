@@ -83,12 +83,13 @@
 		Report::Error (_("Error occurred while reading the log."));
 		return;
 	    }
+
 	    string grep = data["grep"]:"";
 	    if (grep != "" && grep != nil)
 		grep = sformat ("| grep --line-buffered '%1'", grep);
-	    string lc_command = sformat ("cat %1 %2 | wc -l", data["file"]:"", grep);
-	    map bash_output = (map)SCR::Execute (.target.bash_output, lc_command);
-	    command = "tail -f -n +0 " + data["file"]:"";
+	    string lc_command = sformat ("cat '%1' %2 | wc -l", data["file"]:"", grep);
+	    map bash_output = (map) SCR::Execute (.target.bash_output, lc_command);
+	    command = sformat("tail -f -n +0 '%1'", data["file"]:"");
 	    string addon = "";
 	    if (bash_output["exit"]:1 == 0)
 	    {
