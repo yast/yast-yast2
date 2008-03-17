@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Mar 17 14:50:16 CET 2008 - aschnell@suse.de
+
+- added LogViewCore.ycp
+- added WaitForEvent to Wizard.ycp
+- 2.16.37
+
+-------------------------------------------------------------------
 Mon Mar 17 12:43:32 CET 2008 - jsrain@suse.cz
 
 - added 'StartupNotify=true' to the desktop file (bnc #304964)
