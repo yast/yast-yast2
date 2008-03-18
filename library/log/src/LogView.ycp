@@ -24,7 +24,7 @@
  *      ]);
  * </pre>
  *
- * TODO: Use LogViewCore.ycp
+ * TODO: Use LogViewCore.ycp (but it has less functionality)
  */
 
 {
