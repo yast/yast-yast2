@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Mar 18 13:22:01 CET 2008 - locilka@suse.cz
+
+- Changed the default value for use-automatic-configuration in
+  ProductControl module, now it's false (Also because of AutoYaST).
+- Better logging.
+- 2.16.38
+
+-------------------------------------------------------------------
 Mon Mar 17 14:50:16 CET 2008 - aschnell@suse.de
 
 - added LogViewCore.ycp
