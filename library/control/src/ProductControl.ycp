@@ -615,6 +615,12 @@ global void DisableAllModulesAndProposals (string mode, string stage) {
 global void UnDisableAllModulesAndProposals (string mode, string stage) {
     map this_workflow = $["mode":mode, "stage":stage];
 
+    // Such mode/stage not disabled
+    if (! contains (already_disabled_workflows, this_workflow)) {
+	y2milestone ("Not yet disabled, not un-disabling: %1", this_workflow);
+	return;
+    }
+
     y2milestone ("Un-Disabling workflow %1", this_workflow);
     already_disabled_workflows = filter (map one_workflow, already_disabled_workflows, {
 	return (one_workflow != this_workflow);
@@ -747,8 +753,26 @@ boolean force_UpdateWizardSteps = false;
 // Installation without second stage
 // "Automatic Configuration"
 
-// FIXME: read the default value from control file
-boolean use_automatic_configuration = true;
+boolean use_automatic_configuration = nil;
+
+/**
+ * Inits the default value for use_automatic_configuration
+ */
+void InitAutomaticConfiguration () {
+    if (use_automatic_configuration != nil)
+	return;
+
+    // AytoYaST default - not to use Automatic configuration at all
+    if (Mode::autoinst() || Mode::config()) {
+	use_automatic_configuration = false;
+    // The rest is on user
+    // FIXME: read the default value from control file
+    } else {
+	use_automatic_configuration = false;
+    }
+
+    y2milestone ("Default 'UseAutomaticConfiguration': %1", use_automatic_configuration);
+}
 
 /**
  * Adjust the automatic configuration to be either enabled or disabled.
@@ -763,6 +787,8 @@ global void SetUseAutomaticConfiguration (boolean set_param) {
     }
 
     use_automatic_configuration = set_param;
+
+    y2milestone ("UseAutomaticConfiguration has been set to: %1", use_automatic_configuration);
 }
 
 /**
@@ -771,6 +797,9 @@ global void SetUseAutomaticConfiguration (boolean set_param) {
  * @return boolean if enabled
  */
 global boolean GetUseAutomaticConfiguration () {
+    // lazy loading
+    InitAutomaticConfiguration();
+
     return use_automatic_configuration;
 }
 
