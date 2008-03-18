@@ -23,7 +23,7 @@
 
 
     /**
-     * lines of the selected log
+     * lines of the log
      */
     list<string> lines = [];
 
@@ -70,6 +70,7 @@
     global void Start(map<string, any> d)
     {
 	data = d;
+	lines = [];
 
 	integer max_lines = data["max_lines"]:max_lines_default;
 
@@ -145,5 +146,11 @@
     global void Stop()
     {
 	SCR::Execute(.process.kill, id);
+    }
+
+
+    global list<string> GetLines()
+    {
+	return lines;
     }
 }
