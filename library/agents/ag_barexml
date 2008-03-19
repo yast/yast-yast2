@@ -1,9 +1,11 @@
 #!/usr/bin/perl -w
 
 #
-# Name:		ag_xmlrepos
+# Name:		ag_barexml
 # Authors:	Lukas Ocilka <locilka@suse.cz>
-# Summary:	Agent for parsing any XML files
+# Summary:	Agent for parsing any XML files using XML::Bare.
+#		Please, make sure it fits your needs before using it.
+#		XML::Bare is a bit buggy when handling comments.
 #
 
 use strict;

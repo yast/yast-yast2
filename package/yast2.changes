@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 19 17:22:30 CET 2008 - locilka@suse.cz
+
+- anyxml agent renamed to barexml
+- 2.16.39
+
+-------------------------------------------------------------------
 Wed Mar 19 15:36:55 CET 2008 - jsrain@suse.cz
 
 - fixed efika detection (bnc #369045)
