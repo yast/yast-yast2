@@ -554,6 +554,9 @@ global boolean RunRequired (string stage, string mode) {
 	return false;
     });
 
+    // for debugging purposes
+    y2milestone ("Enabled: (%1) %2", size (modules), modules);
+
     return (size (modules) > 0);
 }
 
