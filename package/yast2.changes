@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Mar 19 15:36:55 CET 2008 - jsrain@suse.cz
+
+- fixed efika detection (bnc #369045)
+
+-------------------------------------------------------------------
 Tue Mar 18 13:22:01 CET 2008 - locilka@suse.cz
 
 - Changed the default value for use-automatic-configuration in

@@ -246,12 +246,14 @@ global string board_compatible () {
 		_board_compatible = "CHRP";
 	    }
 	    // Pegasos has CHRP in /proc/cpuinfo and 'chrp' in /proc/device-tree/device_type
-	    if (board == "Pegasos2")
+	    if (board == "Pegasos2"
+		|| issubstring (tolower (device_type["stdout"]:""), "pegasos2"))
 	    {
 		_board_compatible = "Pegasos";
 	    }
 	    // Efika has CHRP in /proc/cpuinfo and 'efika' in /proc/device-tree/device_type
-	    if (board == "efika")
+	    if (issubstring (tolower (board), "efika")
+		|| issubstring (tolower (device_type["stdout"]:""), "efika"))
 	    {
 		_board_compatible = "Pegasos";
 	    }
