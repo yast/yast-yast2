@@ -13,8 +13,7 @@
 
     while (true)
     {
-	map event = UI::WaitForEvent(250);
-	any widget = event["ID"]:nil;
+	any widget = UI::TimeoutUserInput(250);
 
 	if (widget == `timeout)
 	{
