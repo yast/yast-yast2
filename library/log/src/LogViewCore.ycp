@@ -12,6 +12,8 @@
 
     textdomain "base";
 
+    import "Report";
+
 
     /**
      * default value of maximum displayed lines
@@ -37,8 +39,26 @@
     integer id = 0;
 
 
+    /**
+     * flag indicating if background process is (or should be) running
+     */
+    boolean is_running = false;
+
+
     list<string> GetNewLines()
     {
+	if (!is_running)
+	{
+	    return [];
+	}
+
+	if (!(boolean) SCR::Read(.process.running, id))
+	{
+	    is_running = false;
+	    Report::Error(_("Error occurred while reading the log."));
+	    return [];
+	}
+
 	list<string> new_lines = [];
 
 	while(true)
@@ -90,6 +110,7 @@
 	list<string> args = [ "--retry", "-n", sformat("%1", data["max_lines"]:max_lines_default),
 			      "-f", data["file"]:"" ];
 	id = (integer) SCR::Execute (.process.start, "/usr/bin/tail", $[ "args" : args ]);
+	is_running = true;
 	y2debug("started tail with args %1", args);
 
 	sleep(100);
@@ -104,8 +125,6 @@
 
     global void Update()
     {
-	// TODO: check status of process and report error depending on exit code
-
 	list<string> new_lines = GetNewLines();
 	if (size(new_lines) > 0)
 	{
