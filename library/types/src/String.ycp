@@ -618,70 +618,70 @@ string cspace = " \f\r\n\t\013";
 string cprint = cspace + cgraph;
 
 /**
- * @return the 26 uppercase ASCII letters
+ * The 26 uppercase ASCII letters
  */
 global string CUpper () {
     return cupper;
 }
 
 /**
- * @return the 26 lowercase ASCII letters
+ * The 26 lowercase ASCII letters
  */
 global string CLower () {
     return clower;
 }
 
 /**
- * @return the 52 upper and lowercase ASCII letters
+ * The 52 upper and lowercase ASCII letters
  */
 global string CAlpha () {
     return calpha;
 }
 
 /**
- * @return 0123456789
+ * Digits: 0123456789
  */
 global string CDigit () {
     return cdigit;
 }
 
 /**
- * @return hexadecimal digits: 0123456789ABCDEFabcdef
+ * Hexadecimal digits: 0123456789ABCDEFabcdef
  */
 global string CXdigit () {
     return cxdigit;
 }
 
 /**
- * @return the 52 upper and lowercase ASCII letters and digits
+ * The 62 upper and lowercase ASCII letters and digits
  */
 global string CAlnum () {
     return calnum;
 }
 
 /**
- * @return the ASCII printable non-blank non-alphanumeric characters
+ * The ASCII printable non-blank non-alphanumeric characters
  */
 global string CPunct () {
     return cpunct;
 }
 
 /**
- * @return printable ASCII charcters except whitespace
+ * Printable ASCII charcters except whitespace, 33-126
  */
 global string CGraph () {
     return cgraph;
 }
 
 /**
- * @return ASCII whitespace
+ * ASCII whitespace: SPACE CR LF HT VT FF
  */
 global string CSpace () {
     return cspace;
 }
 
 /**
- * @return printable ASCII characters including whitespace
+ * Printable ASCII characters including whitespace
  */
 global string CPrint () {
     return cprint;
