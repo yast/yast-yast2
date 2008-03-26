@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Mar 26 16:19:46 CET 2008 - jsuchome@suse.cz
+
+- added new anyxml agent, now using perl-XML-Simple library
+  (bnc #366867)
+- 2.16.40
+
+-------------------------------------------------------------------
 Wed Mar 19 17:22:30 CET 2008 - locilka@suse.cz
 
 - anyxml agent renamed to barexml (bnc #366867)
