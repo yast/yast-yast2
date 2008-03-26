@@ -1,0 +1,133 @@
+#!/usr/bin/perl -w
+
+#
+# Name:		ag_anyxml
+# Authors:	Jiri Suchomel <jsuchome@suse.cz>
+# Summary:	Agent for reading and writing simple XML files using
+#		XML::Simple. Write is supported, but see the limitations
+#		at XML-Simple page (e.g. order of elements is lost in the
+#		maps)
+#
+# Example of usage:
+#
+# map config	= (map)SCR::Read (.anyxml, file);
+#
+# Alternative way of reading is using the map as an argument. This way it is
+# possible to specify non-default read options in the "args" submap:
+#
+# map config	= (map)SCR::Read (.anyxml, $[
+#	"file"  : "/tmp/in.xml",
+#	"args"	: $[
+#		"ForceArray"	: 0,
+#		"KeepRoot"	: 1
+#	]
+# ]);
+#
+# Writing with the default options:
+#
+# SCR::Write (.anyxml, $[
+#	"file"  : "/tmp/config.xml",
+#	"xml"   : config,
+# ]);
+#
+# Non-default write options could be used by passing extra submap with
+# "args" key in the write map:
+#
+# SCR::Write (.anyxml, $[ "file": "c.xml", "xml" : conf, "args: $[
+#	"XMLDecl"	: <?xml version="123456789"?>,
+#	"RootName"	: "test"
+# ]);
+#
+# See http://search.cpan.org/dist/XML-Simple/lib/XML/Simple.pm
+# for the description of the arguments.
+
+
+use strict;
+use lib "/usr/lib/YaST2/agents_non_y2";
+use ycp;
+use XML::Simple;
+
+while (<STDIN>) {
+    my ($command, $path, $arg) = ycp::ParseCommand ($_);
+
+    if ($command eq "Read") {
+
+	my $file	= $arg;
+
+	# Default read arguments
+	my %in_args	= (
+	    ForceContent	=> 1,
+	    ForceArray		=> 1,
+	    KeepRoot		=> 1,
+	    KeyAttr		=> [],
+	);
+	if (ref ($arg) eq "HASH") {
+	    $file	= $arg->{"file"};
+	    if (defined $arg->{"args"} && ref ($arg->{"args"}) eq "HASH") {
+		%in_args	= %{$arg->{"args"}};
+	    }
+	}
+	if (! defined $file || $file eq "") {
+	    y2error ("No file defined!");
+	    ycp::Return (undef);
+	    next;
+	} elsif (! -e $file) {
+	    y2error ("File ".$file." doesn't exist!");
+	    ycp::Return (undef);
+	    next;
+	}
+
+	my $xml = new XML::Simple (%in_args);
+	my $root = $xml->XMLin ($file);
+	undef $xml;
+
+	ycp::Return ($root);
+    } elsif ($command eq "Write") {
+	if (ref ($arg) ne "HASH") {
+	    y2error ("argument must be a hash");
+	    ycp::Return ("false");
+	    next;
+	}
+	my $file	= $arg->{"file"};
+	if (! defined $file || $file eq "") {
+	    y2error ("No file defined!");
+	    ycp::Return ("false");
+	    next;
+	}
+	my $content	= $arg->{"xml"};
+	if (! defined $content || ref ($content) ne "HASH") {
+	    y2error ("XML content not defined or not a hash");
+	    ycp::Return ("false");
+	    next;
+	}
+
+	my $o = open my $fh, "> $file";
+	if (!defined $o) {
+	    y2error ("$file cannot be opened for writing!");
+	    ycp::Return ("false");
+	    next;
+	}
+
+	# Default write arguments
+	my %out_args	= (
+	    ForceContent	=> 1,
+	    ForceArray		=> 1,
+	    KeepRoot		=> 1,
+	    KeyAttr		=> [],
+	    XMLDecl		=> '<?xml version="1.0"?>'
+	);
+	if (defined $arg->{"args"} && ref ($arg->{"args"}) eq "HASH") {
+	    %out_args	= %{$arg->{"args"}};
+	}
+	my $xml = new XML::Simple (%out_args);
+	$xml->XMLout ($content, OutputFile => $fh);
+	close $fh;
+	undef $xml;
+	ycp::Return ("true");
+    } elsif ($command eq "result") {
+	exit 0;
+    } else {
+	my $return_value = sprintf( "Unknown instruction %s", $command);
+	ycp::Return ($return_value);
+    }
+}
