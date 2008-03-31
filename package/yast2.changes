@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar 31 15:55:25 CEST 2008 - mvidner@suse.cz
+
+- Don't document a feature that is unclear and was never there
+  (bnc#373187).
+
+-------------------------------------------------------------------
 Wed Mar 26 16:19:46 CET 2008 - jsuchome@suse.cz
 
 - added new anyxml agent, now using perl-XML-Simple library
