@@ -79,7 +79,7 @@ global list<string> NewlineItems (string s) {
  * Return a pretty description of a byte count
  *
  * Return a pretty description of a byte count with required precision
- * and using KB, MB or GB as unit as appropriate.
+ * and using kB, MB, GB or TB as unit as appropriate.
  *
  * @param bytes	size (e.g. free diskspace, memory size) in Bytes
  * @param precision number of fraction digits in output
@@ -87,8 +87,9 @@ global list<string> NewlineItems (string s) {
  *	(usefull for memory size - 128 MB RAM looks better than 128.00 MB RAM)
  * @return formatted string
  *
- * @example FormatSizeWithPrecision(4096, 2, true) -> "4 KB"
- * @example FormatSizeWithPrecision(4096, 2, false) -> "4.00 KB"
+ * @example FormatSizeWithPrecision(4096, 2, true) -> "4 kB"
+ * @example FormatSizeWithPrecision(4096, 2, false) -> "4.00 kB"
+ * @example FormatSizeWithPrecision(1024*1024, 2, true) -> "1 MB"
  */
 global define string FormatSizeWithPrecision(integer bytes, integer precision, boolean omit_zeroes) ``{
 
@@ -108,7 +109,7 @@ global define string FormatSizeWithPrecision(integer bytes, integer precision, b
     integer index = 0;
     float whole = tofloat(bytes);
 
-    while((whole > 1024.0 || whole < -1024.0) && index < size(units)) {
+    while((whole >= 1024.0 || whole <= -1024.0) && index < size(units)) {
 	whole = whole / 1024.0;
 	unit = units[index]:"";
 	index = index + 1;
