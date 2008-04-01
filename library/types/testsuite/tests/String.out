@@ -24,7 +24,9 @@ Return
 Return	0 
 Return	1.00 
 Return	1.001 kB
+Return	1 MB
 Return	1.00 MB
+Return	1 GB
 Return	1.000 GB
 Return	1.00 TB
 Return	1024.1 TB
