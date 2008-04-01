@@ -101,7 +101,7 @@
   tmpstring = _("icecream scheduler");
 
   // TRANSLATORS: Description of a Service (rpm: icecream-scheduler), used as a common label or an item in table
-  tmpstring = _("opens ports for the Icecream scheduler");
+  tmpstring = _("opens ports for the icecream scheduler");
 
   // TRANSLATORS: Name of Service (rpm: imap), can be used as check box, item in multiple selection box...
   tmpstring = _("imap Server");
@@ -152,10 +152,10 @@
   tmpstring = _("opens ports for MySQL in order to allow other hosts connect to it");
 
   // TRANSLATORS: Description of a Service (rpm: nfs-client), used as a common label or an item in table
-  tmpstring = _("Firewall Configuraion for nfs client. opens ports for foo in order to allow bar");
+  tmpstring = _("Firewall Configuraion for nfs client. Opens ports for foo in order to allow bar");
 
   // TRANSLATORS: Description of a Service (rpm: nfs-kernel-server), used as a common label or an item in table
-  tmpstring = _("Firewall Configuraion for nfs kernel server. opens ports for foo in order to allow bar");
+  tmpstring = _("Firewall configuraion for nfs kernel server. Opens ports for foo in order to allow bar");
 
   // TRANSLATORS: Name of Service (rpm: nut), can be used as check box, item in multiple selection box...
   tmpstring = _("Network UPS Tools");
