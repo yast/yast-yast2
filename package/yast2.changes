@@ -3,6 +3,8 @@ Tue Apr 01 20:49:22 CEST 2008 - aschnell@suse.de
 
 - let String::FormatSizeWithPrecision return "1 MB" instead of
   "1024 kB" and alike
+- fixed String::FormatSizeWithPrecision to return a unit for small
+  values
 
 -------------------------------------------------------------------
 Tue Apr  1 09:46:44 CEST 2008 - jsrain@suse.cz

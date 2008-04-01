@@ -79,7 +79,7 @@ global list<string> NewlineItems (string s) {
  * Return a pretty description of a byte count
  *
  * Return a pretty description of a byte count with required precision
- * and using kB, MB, GB or TB as unit as appropriate.
+ * and using B, kB, MB, GB or TB as unit as appropriate.
  *
  * @param bytes	size (e.g. free diskspace, memory size) in Bytes
  * @param precision number of fraction digits in output
@@ -87,6 +87,7 @@ global list<string> NewlineItems (string s) {
  *	(usefull for memory size - 128 MB RAM looks better than 128.00 MB RAM)
  * @return formatted string
  *
+ * @example FormatSizeWithPrecision(128, 2, true) -> "128 B"
  * @example FormatSizeWithPrecision(4096, 2, true) -> "4 kB"
  * @example FormatSizeWithPrecision(4096, 2, false) -> "4.00 kB"
  * @example FormatSizeWithPrecision(1024*1024, 2, true) -> "1 MB"
@@ -95,8 +96,9 @@ global define string FormatSizeWithPrecision(integer bytes, integer precision, b
 
     if(bytes == nil) return "";
 
-    string unit = "";
-    list units = [
+    const list units = [
+	/* Byte abbreviated */
+	_("B"),
 	/* KiloByte abbreviated */
 	_("kB"),
 	/* MegaByte abbreviated */
@@ -106,12 +108,12 @@ global define string FormatSizeWithPrecision(integer bytes, integer precision, b
 	/* TeraByte abbreviated */
 	_("TB"),
     ];
+
     integer index = 0;
     float whole = tofloat(bytes);
 
-    while((whole >= 1024.0 || whole <= -1024.0) && index < size(units)) {
+    while((whole >= 1024.0 || whole <= -1024.0) && index + 1 < size(units)) {
 	whole = whole / 1024.0;
-	unit = units[index]:"";
 	index = index + 1;
     }
 
@@ -120,14 +122,14 @@ global define string FormatSizeWithPrecision(integer bytes, integer precision, b
 	precision = 0;
     }
 
-    return tostring(whole, precision) + " " + unit;
+    return tostring(whole, precision) + " " + units[index]:"";
 }
 
 /**
  * Return a pretty description of a byte count
  *
  * Return a pretty description of a byte count, with two fraction digits
- * and using KB, MB or GB as unit as appropriate.
+ * and using B, kB, MB, GB or TB as unit as appropriate.
  *
  * @param bytes	size (e.g. free diskspace) in Bytes
  * @return formatted string
@@ -142,7 +144,7 @@ global define string FormatSize(integer bytes) ``{
  * Return a pretty description of a download rate
  *
  * Return a pretty description of a download rate, with two fraction digits
- * and using KB/s, MB/s or GB/s as unit as appropriate.
+ * and using B/s, kB/s, MB/s, GB/s or TB/s as unit as appropriate.
  *
  * @param bytes_per_second download rate (in B/s)
  * @return formatted string
@@ -154,7 +156,7 @@ global define string FormatSize(integer bytes) ``{
 global string FormatRate(integer bytes_per_second)
 {
     // covert a number to download rate string
-    // %1 is string - size in bytes, kB, MB or GB
+    // %1 is string - size in bytes, B, kB, MB, GB or TB
     return sformat(_("%1/s"), FormatSize(bytes_per_second));
 }
 
