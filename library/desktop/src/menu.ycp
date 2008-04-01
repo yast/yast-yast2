@@ -87,7 +87,7 @@ define void OpenMenu() {
     //show popup when running as non-root
     if (!root)
 	Popup::Notify(_("YaST2 Control Center is not running as root.
-You will only see modules which do not require root privileges."));
+You can only see modules that do not require root privileges."));
 
 }
 
