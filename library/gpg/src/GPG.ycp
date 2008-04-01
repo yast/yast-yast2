@@ -254,7 +254,7 @@ global void CreateKey()
 	if (SCR::Read(.target.size, xterm) < 0)
 	{
 	    // TODO FIXME
-	    Report::Error(_("Xterm is missing, install xterm package"));
+	    Report::Error(_("Xterm is missing, install xterm package."));
 	}
 
 	// in Qt start GPG in a xterm window

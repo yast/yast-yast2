@@ -157,7 +157,7 @@ y2internal("RunningNetworkPopup %1", isNetworkRunning());
 	 string error_text = sformat("%1\n%2 %3", _("No running network detected!"),
 Mode::installation() ?
 	_("Restart installation and configure network in Linuxrc") :
-	_("Configure network with YaST or NetworkManager-plugin
+	_("Configure network with YaST or Network Manager plug-in
 and start this module again"),
 
 _("or continue without network."));
