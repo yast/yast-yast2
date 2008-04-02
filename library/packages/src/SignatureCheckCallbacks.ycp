@@ -8,7 +8,7 @@
  */
 
 {
-    textdomain "packager";
+    textdomain "base";
     
     module "SignatureCheckCallbacks";
 

@@ -7,7 +7,7 @@
  */
 {
     module "DontShowAgain";
-    textdomain "packager";
+    textdomain "base";
 
     import "Directory";
     import "FileUtils";
