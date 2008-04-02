@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Apr  2 16:21:09 CEST 2008 - locilka@suse.cz
+
+- SCR Agent for managing /etc/ssh/sshd_config has been moved here
+  from yast2-sshd.
+- Adjusted RPM dependencies.
+- 2.16.41
+
+-------------------------------------------------------------------
 Tue Apr 01 20:49:22 CEST 2008 - aschnell@suse.de
 
 - let String::FormatSizeWithPrecision return "1 MB" instead of
