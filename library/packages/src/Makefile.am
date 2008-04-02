@@ -9,7 +9,10 @@ module_DATA =			\
 	Package.ycp		\
 	PackageAI.ycp		\
 	PackageSystem.ycp	\
-	PackageCallbacksInit.ycp \
+	PackageCallbacks.ycp	\
+	PackageCallbacksInit.ycp	\
+	SignatureCheckCallbacks.ycp	\
+	SignatureCheckDialogs.ycp	\
 	Product.ycp
 
 ynclude_DATA =			\
