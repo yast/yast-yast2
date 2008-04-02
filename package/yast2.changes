@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Apr  2 16:31:13 CEST 2008 - lslezak@suse.cz
+
+- moved package callbacks implementation from yast2-packager
+  to yast2 (to break cyclic dependency) (fate#302296)
+- 2.16.42
+
+-------------------------------------------------------------------
 Wed Apr  2 16:21:09 CEST 2008 - locilka@suse.cz
 
 - SCR Agent for managing /etc/ssh/sshd_config has been moved here

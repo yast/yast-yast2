@@ -14,151 +14,25 @@
 module "PackageCallbacksInit";
 textdomain "base";
 
-import "Mode";
-
-/**
- * Register callbacks for media change
- */
-global define void SetMediaCallbacks () {
-    Pkg::CallbackMediaChange ("PackageCallbacks::MediaChange");
-    Pkg::CallbackSourceChange ("PackageCallbacks::SourceChange");
-}
-
-global void SetScriptCallbacks()
-{
-    Pkg::CallbackScriptStart("PackageCallbacks::ScriptStart");
-    Pkg::CallbackScriptProgress("PackageCallbacks::ScriptProgress");
-    Pkg::CallbackScriptProblem("PackageCallbacks::ScriptProblem");
-    Pkg::CallbackScriptFinish("PackageCallbacks::ScriptFinish");
-
-    Pkg::CallbackMessage("PackageCallbacks::Message");
-}
-
-global void SetScanDBCallbacks ()
-{
-    Pkg::CallbackStartScanDb ("PackageCallbacks::StartScanDb");
-    Pkg::CallbackProgressScanDb ("PackageCallbacks::ProgressScanDb");
-    Pkg::CallbackErrorScanDb ("PackageCallbacks::ErrorScanDb");
-    Pkg::CallbackDoneScanDb ("PackageCallbacks::DoneScanDb");
-}
-
-global void ResetScanDBCallbacks ()
-{
-    Pkg::CallbackStartScanDb ("");
-    Pkg::CallbackProgressScanDb ("");
-    Pkg::CallbackErrorScanDb ("");
-    Pkg::CallbackDoneScanDb ("");
-}
-
-global void SetDownloadCallbacks ()
-{
-    Pkg::CallbackInitDownload ("PackageCallbacks::InitDownload");
-    Pkg::CallbackStartDownload ("PackageCallbacks::StartDownload");
-    Pkg::CallbackProgressDownload ("PackageCallbacks::ProgressDownload");
-    Pkg::CallbackDoneDownload ("PackageCallbacks::DoneDownload");
-    Pkg::CallbackDestDownload ("PackageCallbacks::DestDownload");
-    Pkg::CallbackStartRefresh("PackageCallbacks::RefreshStarted");
-    Pkg::CallbackDoneRefresh("PackageCallbacks::RefreshDone");
-}
-
-global void ResetDownloadCallbacks ()
-{
-    Pkg::CallbackInitDownload ("");
-    Pkg::CallbackStartDownload ("");
-    Pkg::CallbackProgressDownload ("");
-    Pkg::CallbackDoneDownload ("");
-    Pkg::CallbackDestDownload ("");
-    Pkg::CallbackStartRefresh("");
-    Pkg::CallbackDoneRefresh("");
-}
-
+import "PackageCallbacks";
 
 /**
  * Register package manager callbacks
  */
-global define void InitPackageCallbacks() {
-    // register process callbacks (total progress)
-    Pkg::CallbackProcessStart("PackageCallbacks::ProcessStart");
-    Pkg::CallbackProcessProgress("PackageCallbacks::ProcessProgress");
-    Pkg::CallbackProcessNextStage("PackageCallbacks::ProcessNextStage");
-    Pkg::CallbackProcessDone("PackageCallbacks::ProcessDone");
+global void InitPackageCallbacks()
+{
+    y2warning(-1, "PackageCallbacksInit::InitPackageCallbacks() is obsoleted, use PackageCallbacks::InitPackageCallbacks() instead");
+    PackageCallbacks::InitPackageCallbacks();
+}
 
-    Pkg::CallbackStartProvide ("PackageCallbacks::StartProvide");
-    Pkg::CallbackProgressProvide ("PackageCallbacks::ProgressProvide");
-    Pkg::CallbackDoneProvide ("PackageCallbacks::DoneProvide");
-    Pkg::CallbackStartPackage ("PackageCallbacks::StartPackage");
-    Pkg::CallbackProgressPackage ("PackageCallbacks::ProgressPackage");
-    Pkg::CallbackDonePackage ("PackageCallbacks::DonePackage");
+global void SetMediaCallbacks()
+{
+    PackageCallbacks::SetMediaCallbacks();
+}
 
-    Pkg::CallbackStartDeltaDownload ("PackageCallbacks::StartDeltaProvide");
-    Pkg::CallbackProgressDeltaDownload ("PackageCallbacks::ProgressProvide");
-    Pkg::CallbackProblemDeltaDownload ("PackageCallbacks::ProblemDeltaDownload");
-    Pkg::CallbackFinishDeltaDownload ("PackageCallbacks::FinishPatchDeltaProvide");
-
-    Pkg::CallbackStartDeltaApply ("PackageCallbacks::StartDeltaApply");
-    Pkg::CallbackProgressDeltaApply ("PackageCallbacks::ProgressProvide");
-    Pkg::CallbackProblemDeltaApply ("PackageCallbacks::ProblemDeltaApply");
-    Pkg::CallbackFinishDeltaApply ("PackageCallbacks::FinishPatchDeltaProvide");
-
-    Pkg::CallbackStartPatchDownload ("PackageCallbacks::StartPatchProvide");
-    Pkg::CallbackProgressPatchDownload ("PackageCallbacks::ProgressProvide");
-    Pkg::CallbackProblemPatchDownload ("PackageCallbacks::ProblemPatchDownload");
-    Pkg::CallbackFinishPatchDownload ("PackageCallbacks::FinishPatchDeltaProvide");
-
-    // source create callbacks
-    Pkg::CallbackSourceCreateStart("PackageCallbacks::SourceCreateStart");
-    Pkg::CallbackSourceCreateProgress("PackageCallbacks::SourceCreateProgress");
-    Pkg::CallbackSourceCreateError("PackageCallbacks::SourceCreateError");
-    Pkg::CallbackSourceCreateEnd("PackageCallbacks::SourceCreateEnd");
-    Pkg::CallbackSourceCreateInit("PackageCallbacks::SourceCreateInit");
-    Pkg::CallbackSourceCreateDestroy("PackageCallbacks::SourceCreateDestroy");
-
-    // source probing callbacks
-    Pkg::CallbackSourceProbeStart("PackageCallbacks::SourceProbeStart");
-    Pkg::CallbackSourceProbeFailed("PackageCallbacks::SourceProbeFailed");
-    Pkg::CallbackSourceProbeSucceeded("PackageCallbacks::SourceProbeSucceeded");
-    Pkg::CallbackSourceProbeProgress("PackageCallbacks::SourceProbeProgress");
-    Pkg::CallbackSourceProbeError("PackageCallbacks::SourceProbeError");
-    Pkg::CallbackSourceProbeEnd("PackageCallbacks::SourceProbeEnd");
-
-    // source report callbacks
-    Pkg::CallbackSourceReportStart("PackageCallbacks::SourceReportStart");
-    Pkg::CallbackSourceReportProgress("PackageCallbacks::SourceReportProgress");
-    Pkg::CallbackSourceReportError("PackageCallbacks::SourceReportError");
-    Pkg::CallbackSourceReportEnd("PackageCallbacks::SourceReportEnd");
-    Pkg::CallbackSourceReportInit("PackageCallbacks::SourceReportInit");
-    Pkg::CallbackSourceReportDestroy("PackageCallbacks::SourceReportDestroy");
-
-    Pkg::CallbackProgressReportStart("PackageCallbacks::ProgressStart");
-    Pkg::CallbackProgressReportProgress("PackageCallbacks::ProgressProgress");
-    Pkg::CallbackProgressReportEnd("PackageCallbacks::ProgressEnd");
-
-    // authentication callback
-    Pkg::CallbackAuthentication("PackageCallbacks::Authentication");
-
-    // @see bugzilla #183821
-    // Do not register these callbacks in case of AutoInstallation
-    if (Mode::autoinst() != true) {
-	// Signature-related callbacks
-	Pkg::CallbackAcceptUnsignedFile		("SignatureCheckCallbacks::AcceptUnsignedFile");
-	Pkg::CallbackAcceptUnknownGpgKey	("SignatureCheckCallbacks::AcceptUnknownGpgKey");
-	Pkg::CallbackImportGpgKey		("SignatureCheckCallbacks::ImportGpgKey");
-	Pkg::CallbackAcceptNonTrustedGpgKey	("SignatureCheckCallbacks::TrustGpgKey");
-	Pkg::CallbackAcceptVerificationFailed	("SignatureCheckCallbacks::AcceptVerificationFailed");
-	Pkg::CallbackTrustedKeyAdded		("SignatureCheckCallbacks::TrustedKeyAdded");
-	Pkg::CallbackTrustedKeyRemoved		("SignatureCheckCallbacks::TrustedKeyRemoved");
-	Pkg::CallbackAcceptFileWithoutChecksum	("SignatureCheckCallbacks::AcceptFileWithoutChecksum");
-	Pkg::CallbackAcceptWrongDigest		("SignatureCheckCallbacks::AcceptWrongDigest");
-	Pkg::CallbackAcceptUnknownDigest	("SignatureCheckCallbacks::AcceptUnknownDigest");
-    }
-
-    SetMediaCallbacks ();
-
-    SetScriptCallbacks();
-
-    SetScanDBCallbacks();
-
-    SetDownloadCallbacks();
+global void PackageCallbacksInit()
+{
+    y2warning(-1, "PackageCallbacksInit module is obsoleted, use PackageCallbacks instead");
 }
 
 /* EOF */
