@@ -14,7 +14,7 @@
 {
     module "PackageCallbacks";
 
-    textdomain "packager";
+    textdomain "base";
 
     import "Installation";
     import "Directory";
