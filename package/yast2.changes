@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Apr  2 11:28:56 CEST 2008 - locilka@suse.cz
+
+- Changing Xen helper string in FW_FORWARD_ALWAYS_INOUT_DEV from
+  'xenbr+' to 'eth+' (bnc #375482).
+- 2.13.109
+
+-------------------------------------------------------------------
 Wed Mar 12 17:17:29 CET 2008 - locilka@suse.cz
 
 - Fixed ProductControl to evaluate `accept and `ok as if it was

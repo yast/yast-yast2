@@ -2695,7 +2695,7 @@ Run YaST2 Firewall and assign it.
 	// xenbr+ works for all bridges
 	// bridge number is newly dependant on network card number
 	// eth1 -> xenbr1, eth8 -> xenbr8
-	string special_xen_interface = "xenbr+";
+	string special_xen_interface = "eth+";
 
 	SetModified();
 
