@@ -39,6 +39,7 @@ Conflicts:	yast2-tune < 2.15.6
 Obsoletes:	yast2-mail-aliases <= 2.14.0
 Conflicts:	yast2-storage < 2.16.4
 Conflicts:	yast2-network < 2.16.6
+Conflicts:	yast2-sshd < 2.16.1
 
 # InstExtensionImage module moved here from installation
 Conflicts:	yast2-installation < 2.16.18
