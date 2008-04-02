@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sat Mar 29 00:46:55 CET 2008 - mzugec@suse.de
+
+- added type "password" into CWM
+- 2.16.43 
+
+-------------------------------------------------------------------
 Wed Apr  2 16:31:13 CEST 2008 - lslezak@suse.cz
 
 - moved package callbacks implementation from yast2-packager
