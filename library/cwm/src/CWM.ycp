@@ -503,6 +503,10 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 		{
 		    w["widget"] = `TextEntry (id_term, opt_term, label);
 		}
+		else if (widget == `password)
+		{
+		    w["widget"] = `Password (id_term, opt_term, label);
+		}
 		else if (widget == `checkbox)
 		{
 		    w["widget"] = `CheckBox (id_term, opt_term, label);
