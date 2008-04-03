@@ -57,6 +57,8 @@
      **/
     global term BackAbortNextButtonBox() {
 	return `HBox(
+		     `HWeight(1, `ReplacePoint(`id(`rep_help ), `PushButton(`id(`help ), `opt (`key_F1,`helpButton), Label::HelpButton()  ) ) ),
+		     `HStretch(),
 		     `HWeight(1, `ReplacePoint(`id(`rep_back ), `PushButton(`id(`back ), `opt (`key_F8), Label::BackButton()  ) ) ),
 		     `HStretch(),
 		     `ReplacePoint(`id(`rep_abort), `PushButton(`id(`abort), `opt (`key_F9), Label::AbortButton() ) ),
@@ -73,6 +75,8 @@
     global term BackAbortInstallationNextButtonBox()
     {
 	return `HBox(
+		     `HWeight(1, `ReplacePoint(`id(`rep_help ), `PushButton(`id(`help ), `opt (`key_F1, `helpButton), Label::HelpButton()  ) ) ),
+		     `HStretch(),
 		     `HWeight(1, `ReplacePoint(`id(`rep_back ), `PushButton(`id(`back ), `opt (`key_F8), Label::BackButton()  ) ) ),
 		     `HStretch(),
 		     `ReplacePoint(`id(`rep_abort), `PushButton(`id(`abort), `opt (`key_F9), Label::AbortInstallationButton() ) ),
@@ -172,9 +176,11 @@
 	return `VBox( `id(`WizardDialog),
                       `ReplacePoint( `id(`topmenu ), `Empty() ),
 		      `HBox(
-			    `HWeight( 30, `ReplacePoint( `id(`helpSpace), `RichText(`id(`HelpText), ""))),
 			    `HSpacing(1),
-			    `HWeight( 70, `VBox(
+		//	    `HWeight( 30, `ReplacePoint( `id(`helpSpace), `RichText(`id(`HelpText), ""))),
+		//	    `HSpacing(1),
+		//	    `HWeight( 70, `VBox(
+			    `VBox(
 						`VSpacing(0.2),
 						`HBox(
 						      // translators: dialog title to appear before any content is initialized
@@ -185,14 +191,13 @@
 							  `HVCenter(`opt(`hvstretch),
 								    `ReplacePoint(`id(`contents), `Empty() )
 								    )
-							  ),
-						`ReplacePoint(`id(`rep_button_box), button_box ),
-						`VSpacing(0.2)
-						)
-				      ),
+							  )
+			    ),
 			    `HSpacing(1)
-			    )
-		      );
+			),
+		      `ReplacePoint(`id(`rep_button_box), button_box ),
+		      `VSpacing(0.2)
+	       );
     }
 
 
@@ -567,7 +572,8 @@
 	    if (set_focus)
 		if ( UI::WidgetExists(`id(`accept	) ) )	UI::SetFocus( `id(`accept ) );
 	    if ( UI::WidgetExists(`id(`abort	) ) )	UI::ChangeWidget(`id(`abort),`Enabled, true);
-	    if ( UI::WidgetExists(`id(`HelpText	) ) )	UI::ChangeWidget(`id(`HelpText), `Value, help_text);
+	    //if ( UI::WidgetExists(`id(`HelpText	) ) )	UI::ChangeWidget(`id(`HelpText), `Value, help_text);
+	    UI::ChangeWidget(`id(`WizardDialog), `HelpText, help_text);
 	    if ( UI::WidgetExists(`id(`title	) ) )	UI::ChangeWidget(`id(`title), `Value, title);
 	}
 
@@ -645,7 +651,7 @@
 	    if ( UI::WidgetExists(`id(`next ) ) )	UI::ChangeWidget(`id (`next), `Label, next_label);
 	    Wizard::SetContents( title, contents, help_text, true, true );
 	}
-
+	UI::ChangeWidget(`id(`WizardDialog), `HelpText, help_text);
 	UI::CheckShortcuts ();
     }
 
@@ -680,8 +686,9 @@
     {
 	if ( UI::WizardCommand(`SetHelpText( help_text ) ) == false )
 	{
-	    if ( UI::WidgetExists( `id(`helpSpace ) ) )
-		UI::ReplaceWidget(`id(`helpSpace), `RichText(`id(`HelpText), help_text ) );
+	    //if ( UI::WidgetExists( `id(`helpSpace ) ) )
+	//	UI::ReplaceWidget(`id(`helpSpace), `RichText(`id(`HelpText), help_text ) );
+	    UI::ChangeWidget(`id(`WizardDialog), `HelpText, help_text);
 	}
     }
 
