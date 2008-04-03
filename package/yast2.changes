@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Apr  3 07:53:51 CEST 2008 - lslezak@suse.cz
+
+- fixed build (missing in -M option in Makefile.am)
+- 2.16.44
+
+-------------------------------------------------------------------
 Wed Apr  2 22:10:10 CET 2008 - mzugec@suse.de
 
 - added type "password" into CWM
