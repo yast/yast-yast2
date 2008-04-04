@@ -34,6 +34,11 @@
         }
     }
 
+    /**
+     * Is the automatic configuraton just in progress?
+     *
+     * @return boolean if running the automatic configuration
+     */
     global boolean automatic_configuration () {
 	Init();
 	return args["AutomaticConfiguration"]:false;
