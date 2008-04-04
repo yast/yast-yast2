@@ -3053,8 +3053,10 @@ Run YaST2 Firewall and assign it.
      *
      * @see: https://bugzilla.novell.com/show_bug.cgi?id=154133
      * @see: https://bugzilla.novell.com/show_bug.cgi?id=233934
+     * @see: https://bugzilla.novell.com/show_bug.cgi?id=375482
      */
     global define void AddXenSupport () {
+    /*
 	// xenbr+ works for all bridges
 	// bridge number is newly dependant on network card number
 	// eth1 -> xenbr1, eth8 -> xenbr8
@@ -3067,6 +3069,8 @@ Run YaST2 Firewall and assign it.
 	SETTINGS["FW_FORWARD_ALWAYS_INOUT_DEV"] = mergestring(allways_inout_dev, " ");
 	
 	y2milestone("FW_FORWARD_ALWAYS_INOUT_DEV -> %1", SETTINGS["FW_FORWARD_ALWAYS_INOUT_DEV"]:"");
+    */
+	y2milestone ("The whole functionality is currently handled by SuSEfirewall2 itself");
     }
 
     // Firewall Expert Rulezz
