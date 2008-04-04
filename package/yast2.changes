@@ -5,6 +5,9 @@ Fri Apr  4 15:16:13 CEST 2008 - locilka@suse.cz
   of the automatic configuration process.
 - InstExtensionImage changed to use new 'extend' command
   (bnc #376870).
+- Function AddXenSupport doesn't change FW_FORWARD_ALWAYS_INOUT_DEV
+  anymore. The whole functionality is handled by SuSEfirewall2
+  itself (bnc #375482).
 - 2.16.46
 
 -------------------------------------------------------------------
