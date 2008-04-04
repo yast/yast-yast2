@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Apr  4 14:54:19 CEST 2008 - jsrain@suse.cz
+
+- avoid calling PackageCallbacksInit::InitPackageCallbacks () to
+  prevent testsuites of other packages from failing
+
+-------------------------------------------------------------------
 Thu Apr  3 07:53:51 CEST 2008 - lslezak@suse.cz
 
 - fixed build (missing in -M option in Makefile.am)
