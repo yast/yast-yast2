@@ -3,6 +3,8 @@ Fri Apr  4 15:16:13 CEST 2008 - locilka@suse.cz
 
 - Added GetInstArgs::automatic_configuration for easier handling
   of the automatic configuration process.
+- InstExtensionImage changed to use new 'extend' command
+  (bnc #376870).
 - 2.16.46
 
 -------------------------------------------------------------------

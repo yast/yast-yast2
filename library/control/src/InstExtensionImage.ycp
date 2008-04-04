@@ -294,6 +294,37 @@
     // $["extension_name" : "downloaded_to_file", ...]
     map <string, string> extension_downloaded_as = $[];
 
+    global boolean DownloadAndIntegrateExtension (string extension) {
+	if (!Stage::initial()) {
+	    y2error ("This module should be used in Stage::initial only!");
+	}
+
+	if (extension == nil || extension == "") {
+	    y2error ("Such extension name can't work: %1", extension);
+	    return false;
+	}
+
+	if (contains (integrated_extensions, extension)) {
+	    y2milestone ("Extension %1 has already been integrated", extension);
+	    return true;
+	}
+
+	// See BNC #376870
+	string cmd = sformat ("extend '%1'", String::Quote (extension));
+	y2milestone ("Calling: %1", cmd);
+	map cmd_out = (map) WFM::Execute (.local.bash_output, cmd);
+	y2milestone ("Returned: %1", cmd_out);
+
+	if (cmd_out["exit"]:-1 != 0) {
+	    y2error ("'extend' failed!");
+	    return false;
+	}
+
+	integrated_extensions = add (integrated_extensions, extension);
+
+	return true;
+    }
+
     /**
      * Downloads extension archive (file system image) and integrates
      * it to the current system. Extension name (param) is relative to the
@@ -319,7 +350,7 @@
      * @param string extension name
      * @return boolean if successful
      */
-    global boolean DownloadAndIntegrateExtension (string extension) {
+    global boolean OldDownloadAndIntegrateExtension (string extension) {
 	if (!Stage::initial()) {
 	    y2error ("This module should be used in Stage::initial only!");
 	}
@@ -419,6 +450,11 @@
 	return true;
     }
 
+    global boolean DesintegrateExtension (string extension) {
+	y2warning ("Function is empty, see BNC #376870");
+	return true;
+    }
+
     /**
      * Reverse function to DownloadAndIntegrateExtension(). The only difference is
      * that it doesn't upload the image from where it has been downloaded.
@@ -429,7 +465,7 @@
      * @param string extension name
      * @return boolean if successful
      */
-    global boolean DesintegrateExtension (string extension) {
+    global boolean OldDesintegrateExtension (string extension) {
 	if (!Stage::initial()) {
 	    y2error ("This module should be used in Stage::initial only!");
 	}
@@ -496,13 +532,18 @@
 	return ret;
     }
 
+    global boolean DisintegrateAllExtensions () {
+	y2warning ("Function is empty, see BNC #376870");
+	return true;
+    }
+
     /**
      * Tries to disintegrate (umount, remove) all already used extensions.
      * Nevertheless extensions already in use cannot be disintegrated.
      *
      * @return boolean whether successfull (almost always false)
      */
-    global boolean DisintegrateAllExtensions () {
+    global boolean OldDisintegrateAllExtensions () {
 	LazyInit();
 
 	boolean ret = true;
