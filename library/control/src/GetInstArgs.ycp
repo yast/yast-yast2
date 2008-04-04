@@ -34,6 +34,11 @@
         }
     }
 
+    global boolean automatic_configuration () {
+	Init();
+	return args["AutomaticConfiguration"]:false;
+    }
+
     /**
      * Should be the [Next] button enabled?
      *
@@ -63,7 +68,7 @@
         Init();
         return args["going_back"]:false;
     }
-    
+
     /**
      * Returns name of the proposal
      *
