@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Apr  4 15:16:13 CEST 2008 - locilka@suse.cz
+
+- Added GetInstArgs::automatic_configuration for easier handling
+  of the automatic configuration process.
+
+-------------------------------------------------------------------
 Fri Apr  4 14:54:19 CEST 2008 - jsrain@suse.cz
 
 - avoid calling PackageCallbacksInit::InitPackageCallbacks () to
