@@ -4,7 +4,7 @@ Fri Apr  4 17:43:21 CEST 2008 - locilka@suse.cz
 - Function AddXenSupport doesn't change FW_FORWARD_ALWAYS_INOUT_DEV
   anymore. The whole functionality is handled by SuSEfirewall2
   itself (bnc #375482).
-- 2.16.110
+- 2.13.110
 
 -------------------------------------------------------------------
 Wed Apr  2 11:28:56 CEST 2008 - locilka@suse.cz
