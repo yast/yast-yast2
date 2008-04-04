@@ -18,7 +18,7 @@ module "PackageSystem";
 textdomain "base";
 
 import "Mode";
-import "PackageCallbacksInit";
+import "PackageCallbacks";
 import "PackageLock";
 import "Report";
 import "Stage";
@@ -55,7 +55,7 @@ include "packages/common.ycp";
  */
 global void EnsureTargetInit() {
     PackageLock::Check ();
-    PackageCallbacksInit::InitPackageCallbacks ();
+    PackageCallbacks::InitPackageCallbacks ();
     //    target_initialized = target_initialized || Pkg::TargetInit ("/", false);
     // always initizalize target, it should be cheap according to #45356
     Pkg::TargetInitialize ("/");
@@ -76,7 +76,7 @@ global void EnsureSourceInit() {
 	return;
     }
 
-    PackageCallbacksInit::InitPackageCallbacks ();
+    PackageCallbacks::InitPackageCallbacks ();
 
     if(! target_initialized)
     {
