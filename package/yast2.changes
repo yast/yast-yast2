@@ -196,16 +196,16 @@ Fri Jan  5 13:20:26 CET 2007 - lslezak@suse.cz
 - 2.13.90
 
 -------------------------------------------------------------------
-Thu Dec 21 10:19:00 CET 2006 - lslezak@suse.cz
-
-- added a gpg library - a wrapper for gpg binary (GPG.ycp),
-  CWM widgets (GPGWidgets.ycp)  (initial version)
-
--------------------------------------------------------------------
 Thu Jan  4 15:43:23 CET 2007 - locilka@suse.cz
 
 - Changed y2error() to y2warning() when using default value is
   Misc::SysconfigRead() (#231744).
+
+-------------------------------------------------------------------
+Thu Dec 21 10:19:00 CET 2006 - lslezak@suse.cz
+
+- added a gpg library - a wrapper for gpg binary (GPG.ycp),
+  CWM widgets (GPGWidgets.ycp)  (initial version)
 
 -------------------------------------------------------------------
 Wed Dec  6 16:41:52 CET 2006 - kmachalkova@suse.cz
@@ -1578,16 +1578,16 @@ Fri Feb 25 15:24:07 CET 2005 - lslezak@suse.cz
 - 2.11.37
 
 -------------------------------------------------------------------
+Fri Feb 25 13:20:17 CET 2005 - visnov@suse.cz
+
+- 2.11.35 
+
+-------------------------------------------------------------------
 Fri Feb 25 13:11:07 CET 2005 - lslezak@suse.cz
 
 - commandline - don't check mandatory keys when the command line
   mode is "unsupported", testsuite updated
 - 2.11.36
-
--------------------------------------------------------------------
-Fri Feb 25 13:20:17 CET 2005 - visnov@suse.cz
-
-- 2.11.35 
 
 -------------------------------------------------------------------
 Thu Feb 24 12:00:54 CET 2005 - fehr@suse.de
@@ -4447,16 +4447,16 @@ Tue Mar  5 16:30:51 MET 2002 - tom@suse.de
 - (#14457) Now date/time is redisplayed on any change in the UI.
 
 -------------------------------------------------------------------
+Tue Mar  5 14:38:01 CET 2002 - schubi@suse.de
+
+- Bugfix while changing update-upgrade-status #14473
+
+-------------------------------------------------------------------
 Tue Mar  5 14:23:14 CET 2002 - lnussel@suse.de
 
 - filter out "\n" in helptexts (#14337)
 - create the list of all modules only once when the splashscreen is displayed
   and recycle this list later when the "All" button is selected (#14472)
-
--------------------------------------------------------------------
-Tue Mar  5 14:38:01 CET 2002 - schubi@suse.de
-
-- Bugfix while changing update-upgrade-status #14473
 
 -------------------------------------------------------------------
 Tue Mar  5 12:42:31 MET 2002 - tom@suse.de
@@ -4582,13 +4582,6 @@ Fri Mar  1 13:42:25 CET 2002 - sh@suse.de
   "No" in final installation confirmation (inst_doit)
 
 -------------------------------------------------------------------
-Wed Feb 27 17:31:07 CET 2002 - kkaempf@suse.de
-
-- Allow splitted dirs (.../CD1, .../CD2, ...) for all network
-  installs (#14009).
-- Sort partitions combo box in bootloader dialogue (#14124).
-
--------------------------------------------------------------------
 Fri Mar  1 09:30:25 CET 2002 - kkaempf@suse.de
 
 - Fixed YaST2.firstboot to handle pcmcia network correctly (#13993).
@@ -4644,6 +4637,13 @@ Wed Feb 27 17:33:07 MET 2002 - tom@suse.de
 
 - (#13906) Invented a new function TimedOKCancelPopup() in
   common_popups.ycp. Using this function during X11-configuration.
+
+-------------------------------------------------------------------
+Wed Feb 27 17:31:07 CET 2002 - kkaempf@suse.de
+
+- Allow splitted dirs (.../CD1, .../CD2, ...) for all network
+  installs (#14009).
+- Sort partitions combo box in bootloader dialogue (#14124).
 
 -------------------------------------------------------------------
 Wed Feb 27 17:27:51 CET 2002 - gs@suse.de
@@ -4740,15 +4740,16 @@ Tue Feb 26 15:48:31 CET 2002 - fehr@suse.de
 - fix typo ia86 -> ia64 in do_propocal.ycp
 
 -------------------------------------------------------------------
-Tue Feb 26 15:31:39 CET 2002 - kkaempf@suse.de
-
-- Fix vnc password setting.
-
--------------------------------------------------------------------
 Tue Feb 26 15:43:29 CET 2002 - gs@suse.de
 
 - software installation: show the package version in the
   description popup (bug #13750)
+
+-------------------------------------------------------------------
+Tue Feb 26 15:36:43 CET 2002 - schubi@suse.de
+
+- initialize package agent correctly for update #13838
+  ( grep and locate has not been updated )
 
 -------------------------------------------------------------------
 Tue Feb 26 15:35:42 CET 2002 - sh@suse.de
@@ -4757,10 +4758,9 @@ Tue Feb 26 15:35:42 CET 2002 - sh@suse.de
   and no Linux partitions were found
 
 -------------------------------------------------------------------
-Tue Feb 26 15:36:43 CET 2002 - schubi@suse.de
+Tue Feb 26 15:31:39 CET 2002 - kkaempf@suse.de
 
-- initialize package agent correctly for update #13838
-  ( grep and locate has not been updated )
+- Fix vnc password setting.
 
 -------------------------------------------------------------------
 Tue Feb 26 14:11:46 CET 2002 - kkaempf@suse.de
@@ -4917,16 +4917,16 @@ Tue Feb 19 15:36:24 CET 2002 - fehr@suse.de
 - fix missing "/data<n>" mount point in installed system (#13406)
 
 -------------------------------------------------------------------
-Tue Feb 19 13:46:17 CET 2002 - kkaempf@suse.de
-
-- save 'configured' status of devices detected during installation
-  in order to get hw-probing at boot time correct.
-
--------------------------------------------------------------------
 Tue Feb 19 13:46:34 CET 2002 - fehr@suse.de
 
 - fix bug with windows resizing in old installation path
   (inst_target_selection.ycp, inst_target_part.ycp) (#13559)
+
+-------------------------------------------------------------------
+Tue Feb 19 13:46:17 CET 2002 - kkaempf@suse.de
+
+- save 'configured' status of devices detected during installation
+  in order to get hw-probing at boot time correct.
 
 -------------------------------------------------------------------
 Tue Feb 19 09:14:30 CET 2002 - kkaempf@suse.de
@@ -5619,11 +5619,6 @@ Sat Sep 22 01:08:40 CEST 2001 - mike@suse.de
           properly
 
 -------------------------------------------------------------------
-Fri Sep 21 14:59:31 CEST 2001 - mike@suse.de
-
-- lvm_config now works in ncurses
-
--------------------------------------------------------------------
 Fri Sep 21 18:55:07 CEST 2001 - sh@suse.de
 
 - Fixed bug #10303: Must press 'back' twice in 'choose part. to boot'
@@ -5652,6 +5647,11 @@ Fri Sep 21 16:01:09 CEST 2001 - lnussel@suse.de
 - change fstab entry for first occurence of a device, instead of
   creating a new one
 - do not create directories for swap partitions
+
+-------------------------------------------------------------------
+Fri Sep 21 14:59:31 CEST 2001 - mike@suse.de
+
+- lvm_config now works in ncurses
 
 -------------------------------------------------------------------
 Fri Sep 21 13:36:39 CEST 2001 - gs@suse.de
@@ -5715,16 +5715,16 @@ Thu Sep 20 17:45:30 CEST 2001 - lnussel@suse.de
 - do not create symlink for mountpoint if it would point to itself
 
 -------------------------------------------------------------------
-Thu Sep 20 15:21:01 CEST 2001 - mike@suse.de
-
-- bug 11063: YaST2 trys to change fsids of pdisk-label partitions, and
-  popups therefore irritating popups
-
--------------------------------------------------------------------
 Thu Sep 20 15:55:27 CEST 2001 - lnussel@suse.de
 
 - fstab entries for mount flags, passno etc are no longer changed
   for existing entries
+
+-------------------------------------------------------------------
+Thu Sep 20 15:21:01 CEST 2001 - mike@suse.de
+
+- bug 11063: YaST2 trys to change fsids of pdisk-label partitions, and
+  popups therefore irritating popups
 
 -------------------------------------------------------------------
 Thu Sep 20 15:08:24 CEST 2001 - fehr@suse.de
@@ -5858,14 +5858,14 @@ Tue Sep 18 16:17:10 CEST 2001 - mike@suse.de
 - pdisk: size of partition for inst_doit fixed
 
 -------------------------------------------------------------------
-Tue Sep 18 15:14:33 CEST 2001 - lnussel@suse.de
-
-- workaround for '&'-character not displayed in ncurses menu
-
--------------------------------------------------------------------
 Tue Sep 18 15:37:35 CEST 2001 - fehr@suse.de
 
 - shut down LVM VGs and umount /etc/lvmtab.d in inst_finish.ycp
+
+-------------------------------------------------------------------
+Tue Sep 18 15:14:33 CEST 2001 - lnussel@suse.de
+
+- workaround for '&'-character not displayed in ncurses menu
 
 -------------------------------------------------------------------
 Tue Sep 18 11:58:18 CEST 2001 - lnussel@suse.de
@@ -5927,18 +5927,18 @@ Fri Sep 14 19:29:31 MEST 2001 - tom@suse.de
 - Bugfix #9986: Reduced suggestion refresh to 75 Hz.
 
 -------------------------------------------------------------------
-Fri Sep 14 18:39:10 CEST 2001 - kkaempf@suse.de
-
-- fix inst_environment for standalone mode (#10413).
-- respect user choice to NOT install a module (#10665).
-
--------------------------------------------------------------------
 Fri Sep 14 18:53:28 CEST 2001 - mike@suse.de
 
 - bug 10200: check the proposal for failures
   make a boot partition if possible
   bug 10347: set whole_diskflag
   bug 10044: set a message when proposal is discarded
+
+-------------------------------------------------------------------
+Fri Sep 14 18:39:10 CEST 2001 - kkaempf@suse.de
+
+- fix inst_environment for standalone mode (#10413).
+- respect user choice to NOT install a module (#10665).
 
 -------------------------------------------------------------------
 Fri Sep 14 16:24:31 MEST 2001 - tom@suse.de
@@ -6878,16 +6878,16 @@ Thu May 10 20:10:22 CEST 2001 - mike@suse.de
 - fix for LVM configuration at runtime
 
 -------------------------------------------------------------------
-Thu May 10 18:41:56 CEST 2001 - kkaempf@suse.de
-
-- dont write /boot/message any more (#8062)
-
--------------------------------------------------------------------
 Thu May 10 18:42:39 CEST 2001 - sh@suse.de
 
 - Fixed bug #7388: unnecessary OK-buttons
   (confirmation for writing LILO, confirmation for reboot)
   only one popup that contains both messages
+
+-------------------------------------------------------------------
+Thu May 10 18:41:56 CEST 2001 - kkaempf@suse.de
+
+- dont write /boot/message any more (#8062)
 
 -------------------------------------------------------------------
 Thu May 10 18:02:33 CEST 2001 - fehr@suse.de
@@ -7054,17 +7054,17 @@ Tue May  8 12:16:33 CEST 2001 - snwint@suse.de
 - mk_boot_floppy completely rewritten to use lilo instead of syslinux
 
 -------------------------------------------------------------------
+Tue May  8 10:56:51 CEST 2001 - schwab@suse.de
+
+- Fix typo targeroot -> targetroot.
+
+-------------------------------------------------------------------
 Tue May  8 10:25:01 CEST 2001 - jbuch@suse.de
 
 - added define to change fsid from 5 to 15
   only for new extended partitions
   added DisplayMessage if a fat file system is greater than 2 GB
 - showing progress bars again #7774
-
--------------------------------------------------------------------
-Tue May  8 10:56:51 CEST 2001 - schwab@suse.de
-
-- Fix typo targeroot -> targetroot.
 
 -------------------------------------------------------------------
 Tue May  8 09:28:29 CEST 2001 - kkaempf@suse.de
@@ -8693,15 +8693,15 @@ Wed Dec 13 18:41:14 CET 2000 - mike@suse.de
 - yast2 now starts y2controlcenter
 
 -------------------------------------------------------------------
+Wed Dec 13 17:27:47 MET 2000 - schubi@suse.de
+
+- rpm-rebuild added
+
+-------------------------------------------------------------------
 Wed Dec 13 15:44:05 CET 2000 - kkaempf@suse.de
 
 - automatically use free space on disk only if it's enough
   for a default installation (w/o office)
-
--------------------------------------------------------------------
-Wed Dec 13 17:27:47 MET 2000 - schubi@suse.de
-
-- rpm-rebuild added
 
 -------------------------------------------------------------------
 Wed Dec 13 12:25:55 CET 2000 - kkaempf@suse.de
@@ -8913,6 +8913,12 @@ Mon Oct 23 10:16:49 CEST 2000 - kkaempf@suse.de
   version 2.0.71
 
 -------------------------------------------------------------------
+Thu Oct 19 09:28:59 CEST 2000 - mike@suse.de
+
+- s390 fixes
+  version 2.0.77
+
+-------------------------------------------------------------------
 Wed Oct 18 14:57:13 CEST 2000 - choeger@suse.de
 
 - added product cd detection
@@ -8934,12 +8940,6 @@ Fri Oct 13 17:42:05 CEST 2000 - kkaempf@suse.de
 - also recognize /dev/cciss/... as raid device
   same in mk_lilo_conf
   version 2.0.69
-
--------------------------------------------------------------------
-Thu Oct 19 09:28:59 CEST 2000 - mike@suse.de
-
-- s390 fixes
-  version 2.0.77
 
 -------------------------------------------------------------------
 Thu Oct  5 08:59:07 CEST 2000 - mike@suse.de
