@@ -3,8 +3,8 @@
 @HEADER@
 
 BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-pkg-bindings yast2-testsuite
-# UI::RunInTerminal builtin
-Requires:	yast2-core >= 2.13.32
+# any-agent .etc.fstab: Omit
+Requires:	yast2-core >= 2.13.43
 # Pkg::CallbackAcceptNonTrustedGpgKey()
 Requires:	yast2-pkg-bindings >= 2.13.111
 Requires:	yast2_ui yast2_theme
