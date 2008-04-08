@@ -356,19 +356,8 @@ global void SetCmdLine (string new_cmd_line) {
 	}
 	else if (Arch::is_xen ())
 	{
-	    y2milestone ("ProbeKernel: XEN");
-
-	    // use xenpae kernel package if xenpae kernel is currently running
-	    boolean xenpae = false;
-
-	    map output = (map)SCR::Execute(.target.bash_output, "uname -r");
-	    if (output["exit"]:-1 == 0 && issubstring(output["stdout"]:"", "xenpae"))
-	    {
-		xenpae = true;
-		y2milestone("Running Xen PAE kernel detected");
-	    }
-
-	    kernel_packages = (xenpae) ? ["kernel-xenpae"] : ["kernel-xen"];
+	    // kernel-xen contains PAE kernel (since oS11.0)
+	    kernel_packages = ["kernel-xen"];
 	}
 	else if (Arch::i386 ())
 	{

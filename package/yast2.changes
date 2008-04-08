@@ -3,6 +3,8 @@ Tue Apr  8 12:14:52 CEST 2008 - lslezak@suse.cz
 
 - call Pkg::TargetInit() in PackageSystem::EnsureTargetInit()
   to load installed packages
+- only PAE version of kernel-xen is shipped (kernel-xenpae is now
+  kernel-xen)
 
 -------------------------------------------------------------------
 Fri Apr  4 15:16:13 CEST 2008 - locilka@suse.cz
