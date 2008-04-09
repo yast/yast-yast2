@@ -150,6 +150,9 @@
 	"FW_CONFIGURATIONS_EXT", "FW_CONFIGURATIONS_INT", "FW_CONFIGURATIONS_DMZ",
     ];
 
+    // FATE #300970: Firewall support for SMB browsing
+    string broadcast_related_module = "nf_conntrack_netbios_ns";
+
     # <!-- SuSEFirewall VARIABLES //-->
 
     # <!-- SuSEFirewall GLOBAL FUNCTIONS USED BY LOCAL ONES //-->
@@ -2515,6 +2518,8 @@ Run YaST2 Firewall and assign it.
 	return true;
     }
 
+    void CheckKernelModules ();
+
     /**
      * Helper function for the backward compatibility.
      * See WriteConfiguration(). Remove from code ASAP.
@@ -2530,6 +2535,7 @@ Run YaST2 Firewall and assign it.
      * @return	boolean if succesfull
      */
     global define boolean Write () {
+	CheckKernelModules();
 
 	// just disabled
 	if (! SuSEFirewallIsInstalled()) return true;
@@ -3225,6 +3231,29 @@ Run YaST2 Firewall and assign it.
 	SetModified();
 
 	SETTINGS["FW_SERVICES_ACCEPT_RELATED_" + zone] = mergestring (ruleset, "\n");
+    }
+
+    void CheckKernelModules () {
+	boolean needs_additional_module = false;
+
+	foreach (string one_zone, GetKnownFirewallZones(), {
+	    if (size (GetServicesAcceptRelated (one_zone)) >= 0) {
+		y2milestone ("Some ServicesAcceptRelated are defined");
+		needs_additional_module = true;
+		break;
+	    }
+	});
+
+	if (needs_additional_module) {
+	    list <string> k_modules = splitstring (SETTINGS["FW_LOAD_MODULES"]:"", " ");
+
+	    if (! contains (k_modules, broadcast_related_module)) {
+		y2warning ("FW_LOAD_MODULES doesn't contain %1, adding", broadcast_related_module);
+		k_modules = add (k_modules, broadcast_related_module);
+		SETTINGS["FW_LOAD_MODULES"] = mergestring (k_modules, " ");
+		SetModified();
+	    }
+	}
     }
 
     # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->

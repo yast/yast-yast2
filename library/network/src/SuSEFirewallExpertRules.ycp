@@ -42,7 +42,7 @@
     }
 
     // used to identify the IPv4 in regexp
-    string type_ip4 = "[0123456789]\.[0123456789]\.[0123456789]\.[0123456789]";
+    string type_ip4 = "[0123456789]+\.[0123456789]+\.[0123456789]+\.[0123456789]+";
 
     /**
      * Returns whether the netmask bits are valid.
@@ -76,9 +76,9 @@
 	}
 
 	// A.B.C.D/1 - A.B.C.D/32 (IP with a numeric netmask)
-	else if (regexpmatch(network, "^" + type_ip4 + "/[01234567890]$")) {
-	    string part_ip   = regexpsub (network, "^(" + type_ip4 + ")/[01234567890]$", "\\1");
-	    string part_bits = regexpsub (network, "^" + type_ip4 + "(/[01234567890])$", "\\1");
+	else if (regexpmatch(network, "^" + type_ip4 + "/[01234567890]+$")) {
+	    string part_ip   = regexpsub (network, "^(" + type_ip4 + ")/[01234567890]+$", "\\1");
+	    string part_bits = regexpsub (network, "^" + type_ip4 + "(/[01234567890])+$", "\\1");
 	    
 	    return (IP::Check4(part_ip) && ValidNetmaskBits(tointeger(part_bits)));
 	}
