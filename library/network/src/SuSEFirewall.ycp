@@ -3222,6 +3222,8 @@ Run YaST2 Firewall and assign it.
 	    return (one_rule != nil);
 	});
 
+	SetModified();
+
 	SETTINGS["FW_SERVICES_ACCEPT_RELATED_" + zone] = mergestring (ruleset, "\n");
     }
 
