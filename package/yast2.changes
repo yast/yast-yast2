@@ -3,6 +3,7 @@ Wed Apr  9 14:57:17 CEST 2008 - jsrain@suse.cz
 
 - use only one 'tail' command in LogView if not using grep to
   filter a log in order to avoid buffering (bnc #371983)
+- 2.16.47
 
 -------------------------------------------------------------------
 Wed Apr  9 10:33:04 CEST 2008 - locilka@suse.cz
