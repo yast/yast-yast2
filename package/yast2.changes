@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Apr  9 10:33:04 CEST 2008 - locilka@suse.cz
+
+- Added support for Samba Broadcast Reply (FATE #300970).
+- Updated Firewall Services translations.
+- Renamed SuSEfirewall2 SCR agent to help to make SCR lazy.
+
+-------------------------------------------------------------------
 Tue Apr  8 12:14:52 CEST 2008 - lslezak@suse.cz
 
 - call Pkg::TargetInit() in PackageSystem::EnsureTargetInit()
