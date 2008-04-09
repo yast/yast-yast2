@@ -98,13 +98,23 @@
      */
     global boolean IsValidPortRange (string port_range) {
 	// not a port range
-	if (! IsPortRange(port_range)) return false;
-    
+	if (! IsPortRange(port_range)) {
+	    string warning = sformat ("Not a port-range %1", port_range);
+	    if (ReportOnlyOnce(warning)) y2milestone(warning);
+
+	    return false;
+	}
+
 	integer min_pr = tointeger(regexpsub(port_range,"^([0123456789]+):.*$", "\\1"));
 	integer max_pr = tointeger(regexpsub(port_range,"^.*:([0123456789]+)$", "\\1"));
 	
 	// couldn't extract two integers
-	if (min_pr == nil && max_pr == nil) return false;
+	if (min_pr == nil && max_pr == nil) {
+	    string warning = sformat ("Wrong port-range: '%1':'%2'", min_pr, max_pr);
+	    if (ReportOnlyOnce(warning)) y2warning(warning);
+
+	    return false;
+	}
 	
 	// Checking the minimal port number in the port-range
 	// wrong range
