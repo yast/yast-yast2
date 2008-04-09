@@ -75,6 +75,11 @@ list<list> mb_actions = [];
  */
 list<string> lines = [];
 
+/**
+ * ID of process for the process agent
+ */
+integer process_id = nil;
+
 
 // local functions
 
@@ -97,11 +102,13 @@ define integer GetMaxLines (map<string,any> log_descr) {
 }
 
 /**
- * Starts the log reading command via background agent
+ * Starts the log reading command via process agent
  * @param index integer the index of the log file
  */
 define void InitLogReading (integer index) {
-    SCR::Execute (.background.kill);
+    if (process_id != nil)
+	SCR::Execute (.process.kill, process_id);
+    process_id = nil;
     map<string, any> log_descr = Index2Descr (index);
     integer max_lines = GetMaxLines (log_descr);
     string command = (string) (log_descr["command"]:nil);
@@ -116,29 +123,38 @@ define void InitLogReading (integer index) {
 	}
 	string grep = log_descr["grep"]:"";
 	if (grep != "" && grep != nil)
-	    grep = sformat ("| grep --line-buffered '%1'", grep);
+	    grep = sformat ("| grep '%1'", grep);
 	string lc_command
 	    = sformat ("cat %1 %2 | wc -l", log_descr["file"]:"", grep);
 	map bash_output = (map)SCR::Execute (.target.bash_output, lc_command);
-	command = "tail -f -n +0 " + log_descr["file"]:"";
+	command = "tail -n +0 -f " + log_descr["file"]:"";
 	string addon = "";
+	integer lines_count = 0;
 	if (bash_output["exit"]:1 == 0)
 	{
 	    string lc = bash_output["stdout"]:"";
 	    lc = filterchars (lc, "1234567890");
-	    integer lines_count = tointeger (lc);
+	    lines_count = tointeger (lc);
 	    lines_count = lines_count - 2 * max_lines;
 		// don't know why without
 		// doubling it discards more lines, out of YaST2
 		// it works
+	    if (lines_count < 0)
+		lines_count = 0;
 	    if (max_lines != 0 && lines_count > 0)
 		addon = sformat ("| tail -n +%1", lines_count);
 	}
-	command = sformat ("%1 %2 %3", command, grep, addon);
+	if (grep != "" && grep != nil)
+	    command = sformat ("%1 %2 %3", command, grep, addon);
+	else if (addon != "")
+	    command = sformat ("/usr/bin/tail -n +%2 -f %1", log_descr["file"]:"", lines_count);
+	else
+	    command = sformat ("/usr/bin/tail -n +0 -f %1", log_descr["file"]:"");
     }
-    y2milestone ("Calling background agent with command %1", command);
-    boolean cmdret = (boolean)SCR::Execute (.background.run_output, command);
-    if (! cmdret)
+    y2milestone ("Calling process agent with command %1", command);
+
+    process_id = (integer)SCR::Execute (.process.start_shell, command);
+    if (process_id == nil)
     {
 	// error report
 	Report::Error (_("Error occurred while reading the log."));
@@ -151,7 +167,9 @@ define void InitLogReading (integer index) {
  * @param key log widget key
  */
 define void KillBackgroundProcess (string key) {
-    SCR::Execute (.background.kill);
+    if (process_id != nil)
+	SCR::Execute (.process.kill, process_id);
+    process_id = nil;
 }
 
 /**
@@ -178,7 +196,7 @@ define list<string> DeleteOldLines (list<string> lines, integer max_lines) {
 }
 
 /**
- * Fills the log widget with initial data got from the background agent
+ * Fills the log widget with initial data got from the process agent
  * @param index integer index of the log file
  */
 define void FillWidgetWithData (integer index) {
@@ -186,11 +204,18 @@ define void FillWidgetWithData (integer index) {
     map<string,any> log = Index2Descr (index);
     integer max_lines = GetMaxLines (log);
 
-    integer count = (integer)SCR::Read (.background.newlines);
+    integer count = 0;
+    lines = [];
+    string line = (string)SCR::Read (.process.read_line, process_id);
+    while (line != nil)
+    {
+	count = count + 1;
+	lines = add (lines, line);
+	line = (string)SCR::Read (.process.read_line, process_id);
+    }
 
     if (count > 0)
     {
-	lines = (list<string>) SCR::Read (.background.newout);
 	lines = DeleteOldLines (lines, max_lines);
 	UI::ChangeWidget (`id (`_cwm_log), `Value,
 	    mergestring (lines, "\n") + "\n");
@@ -501,11 +526,17 @@ global define symbol LogHandle (string key, map event) {
     param = CWM::GetProcessedWidget ();
     map<string,any> log = Index2Descr (current_index);
     integer max_lines = GetMaxLines (log);
-    integer count = (integer)SCR::Read (.background.newlines);
+    list<string> new_lines = [];
+    integer count = 0;
+    string line = (string)SCR::Read (.process.read_line, process_id);
+    while (line != nil)
+    {
+	count = count + 1;
+	new_lines = add (new_lines, line);
+	line = (string)SCR::Read (.process.read_line, process_id);
+    }
     if (count > 0)
     {
-	list<string> new_lines = (list<string>)
-	    SCR::Read (.background.newout);
 	foreach (string l, new_lines, {
 	    UI::ChangeWidget (`id (`_cwm_log), `LastLine, l + "\n");
 	});
@@ -534,7 +565,7 @@ global define symbol LogHandle (string key, map event) {
 	    func ();
 	if (mb_actions[iret, 2]:nil == true)
 	{
-	    SCR::Execute (.background.kill);
+	    KillBackgroundProcess (nil);
 	    UI::ChangeWidget (`id (`_cwm_log), `Value, "");
 	    InitLogReading (current_index);
 	}
@@ -722,7 +753,9 @@ global define void Display (map<string, any> parameters) {
 		LogHandle ("", event);
 	    }
 	}
-	SCR::Execute (.background.kill);
+	if (process_id != nil)
+	    SCR::Execute (.process.kill, process_id);
+	process_id = nil;
         UI::CloseDialog ();
         return;
 }
