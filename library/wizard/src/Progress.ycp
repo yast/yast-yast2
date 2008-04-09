@@ -103,9 +103,6 @@
     integer super_step = 0;
     list super_stages = [];
 
-    map display_info = UI::GetDisplayInfo();
-    boolean can_display_images = (display_info["HasImageSupport"]:false == true);
-
     // remember the last max. value of the subprogress bar
     integer last_subprogress_max = 0;
 
@@ -331,6 +328,9 @@
     }
 
     define term GenerateIdleIcons (integer number_of_stages) {
+        map display_info = UI::GetDisplayInfo();
+        boolean can_display_images = (display_info["HasImageSupport"]:false == true);
+
 	if (! can_display_images) return `Empty();
 
 	term ret = `HBox (`HSpacing (2));
