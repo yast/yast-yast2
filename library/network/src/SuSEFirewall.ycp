@@ -3203,6 +3203,28 @@ Run YaST2 Firewall and assign it.
 	}
     }
 
+    global list <string> GetServicesAcceptRelated (string zone) {
+	if (! IsKnownZone (zone)) {
+	    y2error ("Uknown zone '%1'", zone);
+	    return [];
+	}
+
+	return splitstring (SETTINGS["FW_SERVICES_ACCEPT_RELATED_" + zone]:"", " \t\n");
+    }
+
+    global void SetServicesAcceptRelated (string zone, list <string> ruleset) {
+	if (! IsKnownZone (zone)) {
+	    y2error ("Uknown zone '%1'", zone);
+	    return;
+	}
+
+	ruleset = filter (string one_rule, ruleset, {
+	    return (one_rule != nil);
+	});
+
+	SETTINGS["FW_SERVICES_ACCEPT_RELATED_" + zone] = mergestring (ruleset, "\n");
+    }
+
     # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
 
 /* EOF */
