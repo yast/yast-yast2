@@ -38,7 +38,9 @@ boolean _is_xen0 = nil;
 /* system architecture						*/
 
 /**
- * General architecture type
+ * Returns full architecture type (one of i386, sparc, sparc64, mips, mips64, ppc, ppc64, alpha, s390_32, s390_64, ia64, x86_64)
+ *
+ * @return string architecture
  */
 global string architecture () {
     if (_architecture == nil)
@@ -183,7 +185,9 @@ global boolean x86_64 () {
 }
 
 /**
- * General architecture type
+ * Returns general architecture type (one of sparc, mips, ppc, s390, i386, alpha, ia64, x86_64)
+ *
+ * @return string arch_short
  */
 global string arch_short () {
     if (sparc ())
