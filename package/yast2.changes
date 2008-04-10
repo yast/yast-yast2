@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Apr 10 13:55:25 CEST 2008 - kmachalkova@suse.cz
+
+- Hostname.ycp: new functions for retrieving current FQDN, hostname
+  and domain name (for FaTE #302863) 
+- 2.16.48
+
+-------------------------------------------------------------------
 Thu Apr 10 10:09:20 CEST 2008 - kmachalkova@suse.cz
 
 - Progress.ycp: use UI::GetDisplay info only when it is really 
