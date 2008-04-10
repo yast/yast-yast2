@@ -28,7 +28,7 @@
 
 
     /**
-     * data describing log: widget, file, max_lines etc.
+     * data describing log: file, max_lines etc.
      */
     map<string, any> data = $[];
 
@@ -36,7 +36,7 @@
     /**
      * id of background process
      */
-    integer id = 0;
+    integer id = nil;
 
 
     /**
@@ -103,7 +103,7 @@
      * Note: This function has less functionality than InitLogReading in LogView.ycp.
      * The extra functionality was removed here since it was broken (bnc #371983).
      */
-    global void Start(map<string, any> d)
+    global void Start(term widget, map<string, any> d)
     {
 	data = d;
 
@@ -118,12 +118,12 @@
 	lines = GetNewLines();
 	DeleteOldLines();
 
-	UI::ChangeWidget(`id(data["widget"]:nil), `Value, mergestring(
+	UI::ChangeWidget(widget, `Value, mergestring(
 			     maplist(string line, lines, { return line + "\n"; } ), ""));
     }
 
 
-    global void Update()
+    global void Update(term widget)
     {
 	list<string> new_lines = GetNewLines();
 	if (size(new_lines) > 0)
@@ -131,7 +131,7 @@
 	    lines = (list<string>) merge(lines, new_lines);
 	    DeleteOldLines();
 
-	    UI::ChangeWidget(`id(data["widget"]:nil), `LastLine, mergestring(
+	    UI::ChangeWidget(widget, `LastLine, mergestring(
 				 maplist(string line, new_lines, { return line + "\n"; } ), ""));
 	}
     }
