@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Apr 10 10:09:20 CEST 2008 - kmachalkova@suse.cz
+
+- Progress.ycp: use UI::GetDisplay info only when it is really 
+  needed, not on global level (it instantiates UI and makes CLI
+  deaf-dumb in ncurses which set terminal echo to off) (bnc #374259)
+
+-------------------------------------------------------------------
 Wed Apr  9 14:57:17 CEST 2008 - jsrain@suse.cz
 
 - use only one 'tail' command in LogView if not using grep to
