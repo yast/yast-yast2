@@ -14,6 +14,7 @@ module "Hostname";
 textdomain "base";
 
 import "IP";
+import "String";
 
 /**
  * i18n characters in domain names are still not allowed
@@ -132,5 +133,59 @@ global define string MergeFQ(string hostname, string domain) {
     return hostname + "." + domain;
 }
 
+/**
+ * Retrieve currently set fully qualified hostname
+ * (uses hostname --fqdn)
+ * @return FQ hostname
+ */
+global define string CurrentFQ() {
+    string fqhostname = "";
+
+    map hostname_data = (map) SCR::Execute(.target.bash_output, "hostname --fqdn");
+    if (hostname_data == nil || hostname_data["exit"]:-1 != 0 )
+	y2error("Failed to retrieve current FQ hostname");
+    else
+    {
+       fqhostname = String::FirstChunk( hostname_data["stdout"]:"", "\n");
+    }
+
+    y2debug("Current FQDN: %1", fqhostname); 
+    return fqhostname;
+}
+
+/**
+ * Retrieve currently set (short) hostname
+ * @return hostname
+ */
+global define string CurrentHostname() {
+    string hostname = "";
+    string fqhostname = CurrentFQ();
+
+    list <string> data = SplitFQ( fqhostname);
+
+    if ( data != [] )
+	hostname = data[0]:"";
+
+    y2debug("Current hostname: %1", hostname); 
+    return hostname;
+}
+
+/**
+ * Retrieve currently set domain name
+ * @return hostname
+ */
+global define string CurrentDomain() {
+    string domain = "";
+    string fqhostname = CurrentFQ();
+
+    list <string> data = SplitFQ( fqhostname);
+
+    if ( data != [] && ( size( data ) > 1 ) )
+	domain = data[1]:"";
+
+    y2debug("Current domainname: %1", domain); 
+    return domain;
+
+}
 /* EOF */
 }
