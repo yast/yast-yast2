@@ -172,7 +172,7 @@ global define string CurrentHostname() {
 
 /**
  * Retrieve currently set domain name
- * @return hostname
+ * @return domain
  */
 global define string CurrentDomain() {
     string domain = "";
