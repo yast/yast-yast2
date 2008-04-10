@@ -28,7 +28,7 @@
 
 
     /**
-     * data describing log: file, max_lines etc.
+     * data describing log: file, command and max_lines
      */
     map<string, any> data = $[];
 
@@ -107,13 +107,24 @@
     {
 	data = d;
 
-	integer max_lines = data["max_lines"]:max_lines_default;
-	string file = data["file"]:"";
+	string command = data["command"]:"";
 
-	list<string> args = [ "--retry", "-n", tostring(max_lines), "-f", file ];
-	id = (integer) SCR::Execute (.process.start, "/usr/bin/tail", $[ "args" : args ]);
-	is_running = true;
-	y2debug("started tail with args %1", args);
+	if (command != "")
+	{
+	    id = (integer) SCR::Execute (.process.start_shell, command);
+	    is_running = true;
+	    y2debug("started command %1", command);
+	}
+	else
+	{
+	    integer max_lines = data["max_lines"]:max_lines_default;
+	    string file = data["file"]:"";
+
+	    list<string> args = [ "--retry", "-n", tostring(max_lines), "-f", file ];
+	    id = (integer) SCR::Execute (.process.start, "/usr/bin/tail", $[ "args" : args ]);
+	    is_running = true;
+	    y2debug("started tail with args %1", args);
+	}
 
 	sleep(100);
 
