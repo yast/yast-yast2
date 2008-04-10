@@ -107,8 +107,10 @@
     {
 	data = d;
 
-	list<string> args = [ "--retry", "-n", sformat("%1", data["max_lines"]:max_lines_default),
-			      "-f", data["file"]:"" ];
+	integer max_lines = data["max_lines"]:max_lines_default;
+	string file = data["file"]:"";
+
+	list<string> args = [ "--retry", "-n", tostring(max_lines_default), "-f", file ];
 	id = (integer) SCR::Execute (.process.start, "/usr/bin/tail", $[ "args" : args ]);
 	is_running = true;
 	y2debug("started tail with args %1", args);
