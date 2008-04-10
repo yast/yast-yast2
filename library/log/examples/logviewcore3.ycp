@@ -1,15 +1,15 @@
 {
     import "LogViewCore";
 
-    string file = "/var/log/messages";
+    string command = "/usr/bin/tail -n 25 -f '/var/log/messages'";
 
     UI::OpenDialog(`VBox(
 		       `Left(`Heading("Log")),
-		       `LogView(`id(`log), sformat("Content of %1:", file), 10, 100),
+		       `LogView(`id(`log), sformat("Output of %1:", command), 10, 100),
 		       `PushButton(`id(`close), "Close")
 		       ));
 
-    LogViewCore::Start(`id(`log), $[ "file" : file ]);
+    LogViewCore::Start(`id(`log), $[ "command" : command ]);
 
     while (true)
     {
