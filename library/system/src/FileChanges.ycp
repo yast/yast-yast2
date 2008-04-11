@@ -79,14 +79,14 @@ string ComputeFileChecksum (string file) {
  * @return boolean true of was changed
  */
 boolean FileChangedFromPackage (string file) {
-    string cmd = sformat ("/bin/rpm -qf %1", file);
+    // queryformat: no trailing newline!
+    string cmd = sformat ("/bin/rpm -qf %1 --qf %%{NAME}-%%{VERSION}-%%{RELEASE}", file);
     map out = (map)SCR::Execute (.target.bash_output, cmd);
     string package = out["stdout"]:"";
     y2milestone ("Package owning %1: %2", file, package);
     if (package == "")
 	return false;
-    // FIXME: /bin/xx finds also /usr/bin/xx
-    cmd = sformat ("rpm -V %1 |grep %2", package, file);
+    cmd = sformat ("rpm -V %1 |grep ' %2$'", package, file);
     out = (map)SCR::Execute (.target.bash_output, cmd);
     string changes = out["stdout"]:"";
     y2milestone ("File possibly changed: %1", changes);
