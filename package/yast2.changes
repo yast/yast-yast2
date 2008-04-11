@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Apr 11 18:38:02 CEST 2008 - locilka@suse.cz
+
+- New Wizard::OpenOKDialog() (FATE #120373).
+
+-------------------------------------------------------------------
 Fri Apr 11 10:50:20 CEST 2008 - mvidner@suse.cz
 
 - FileChanges::FileChangedFromPackage: fixed to actually consider the

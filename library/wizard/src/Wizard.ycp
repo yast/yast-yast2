@@ -113,6 +113,19 @@
 		     );
     }
 
+    /**
+     * Returns a button box with buttons "Cancel", "OK"
+     * @return a widget tree
+     **/
+    global term CancelOKButtonBox() {
+	return `HBox(
+		     `HWeight(1, `Empty() ),	// Layout trick to make sure the center button is centered
+		     `HStretch(),
+		     `HWeight(1, `PushButton(`id(`cancel ), `opt (`key_F9), Label::CancelButton()  ) ),
+		     `HStretch(),
+		     `HWeight(1, `PushButton(`id(`ok ), `opt (`key_F10, `default), Label::OKButton()  ) )
+		     );
+    }
 
     /**
      * Returns a button box with buttons "Abort", "Accept"
@@ -254,6 +267,16 @@
 	return GenericDialog( CancelAcceptButtonBox() );
     }
 
+    /**
+     * Returns a standard wizard dialog with buttons "Cancel", "OK"
+     *
+     * @stable
+     *
+     * @return term describing the dialog.
+     **/
+    global term OKDialog() {
+	return GenericDialog( CancelOKButtonBox() );
+    }
 
     /**
      * Open any wizard dialog.
@@ -308,6 +331,29 @@
 	{
 	    Wizard::OpenDialog( AcceptDialog() );
 	    UI::SetFocus(`id(`accept) );
+	}
+    }
+
+    /**
+     * Open a dialog with "OK", "Cancel"
+     * and set the keyboard focus to "OK".
+     **/
+    global void OpenOKDialog()
+    {
+	if ( haveFancyUI() )
+	{
+	    UI::OpenDialog(`opt(`defaultsize ),
+			   `Wizard(`no_back_button,   	"",
+				   `cancel,		Label::CancelButton(),
+				   `ok,			Label::OKButton() ) );
+
+	    // Don't let sloppy calls to Wizard::SetContents() disable this button by accident
+	    UI::WizardCommand(`ProtectNextButton( true ) );
+	}
+	else
+	{
+	    Wizard::OpenDialog( OKDialog() );
+	    UI::SetFocus(`id(`ok) );
 	}
     }
 
