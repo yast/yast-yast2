@@ -102,13 +102,17 @@
     /**
      * Starts the log reading command via process agent.
      *
-     * The LogView widget must exist when calling this function.
-     *
-     * Note: This function has less functionality than InitLogReading in LogView.ycp.
-     * The extra functionality was removed here since it was broken (bnc #371983).
+     * The LogView widget must exist when calling this function. The `MaxLines
+     * parameter of the widget will be set.
      */
     global void Start(term widget, map<string, any> d)
     {
+	if (id != nil) 
+	{
+	    SCR::Execute(.process.release, id);
+	    id = nil;
+	}
+
 	data = d;
 
 	string file = data["file"]:"";
@@ -158,6 +162,7 @@
 	lines = GetNewLines();
 	DeleteOldLines();
 
+	UI::ChangeWidget(widget, `MaxLines, max_lines);
 	UI::ChangeWidget(widget, `Value, mergestring(
 			     maplist(string line, lines, { return line + "\n"; } ), ""));
     }
@@ -165,21 +170,28 @@
 
     global void Update(term widget)
     {
-	list<string> new_lines = GetNewLines();
-	if (size(new_lines) > 0)
+	if (id != nil)
 	{
-	    lines = (list<string>) merge(lines, new_lines);
-	    DeleteOldLines();
-
-	    UI::ChangeWidget(widget, `LastLine, mergestring(
-				 maplist(string line, new_lines, { return line + "\n"; } ), ""));
+	    list<string> new_lines = GetNewLines();
+	    if (size(new_lines) > 0)
+	    {
+		lines = (list<string>) merge(lines, new_lines);
+		DeleteOldLines();
+		
+		UI::ChangeWidget(widget, `LastLine, mergestring(
+				     maplist(string line, new_lines, { return line + "\n"; } ), ""));
+	    }
 	}
     }
 
 
     global void Stop()
     {
-	SCR::Execute(.process.release, id);
+	if (id != nil) 
+	{
+	    SCR::Execute(.process.release, id);
+	    id = nil;
+	}
     }
 
 
