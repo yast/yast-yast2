@@ -88,14 +88,8 @@
 	if (max_lines == 0)
 	    return;
 
-	integer sl = size(lines);
-	if (sl > max_lines)
-	{
-	    lines = filter(string l, lines, {
-		sl = sl - 1;
-		return sl < max_lines;
-	    });
-	}
+	if (size(lines) - max_lines - 1 > 0)
+	    lines = sublist(lines, size(lines) - max_lines - 1);
     }
 
 
