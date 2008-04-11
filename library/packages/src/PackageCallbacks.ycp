@@ -1953,6 +1953,8 @@ might be missing or out of date.")),
 
 	    return !download_aborted;
 	}
+
+	return true;
     }
 
 
