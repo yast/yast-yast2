@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Apr 11 10:50:20 CEST 2008 - mvidner@suse.cz
+
+- FileChanges::FileChangedFromPackage: fixed to actually consider the
+  file parameter
+
+-------------------------------------------------------------------
 Thu Apr 10 13:55:25 CEST 2008 - kmachalkova@suse.cz
 
 - Hostname.ycp: new functions for retrieving current FQDN, hostname
