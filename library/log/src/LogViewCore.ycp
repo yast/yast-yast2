@@ -28,7 +28,11 @@
 
 
     /**
-     * data describing log: file, command and max_lines
+     * data describing log:
+     *   file:       filename to read from
+     *   grep:       grep file with expression
+     *   command:    command to run (use instead of file and grep)
+     *   max_lines:  max lines to keep (0 -> infinite)
      */
     map<string, any> data = $[];
 
@@ -107,24 +111,47 @@
     {
 	data = d;
 
+	string file = data["file"]:"";
+	string grep = data["grep"]:"";
 	string command = data["command"]:"";
+	integer max_lines = data["max_lines"]:max_lines_default;
 
-	if (command != "")
+	if (command == "")
 	{
-	    id = (integer) SCR::Execute (.process.start_shell, command);
-	    is_running = true;
-	    y2debug("started command %1", command);
-	}
-	else
-	{
-	    integer max_lines = data["max_lines"]:max_lines_default;
-	    string file = data["file"]:"";
+	    if (grep == "")
+	    {
+		command = sformat("tail -n %1 -f '%2'", max_lines, file);
+	    }
+	    else
+	    {
+		command = sformat("tail -n +0 -f '%1' | grep --line-buffered '%2'", file, grep);
 
-	    list<string> args = [ "--retry", "-n", tostring(max_lines), "-f", file ];
-	    id = (integer) SCR::Execute (.process.start, "/usr/bin/tail", $[ "args" : args ]);
-	    is_running = true;
-	    y2debug("started tail with args %1", args);
+		if (max_lines != 0)
+		{
+		    string lc_command = sformat ("cat '%1' | grep '%2' | wc -l", file, grep);
+		    map bash_output = (map) SCR::Execute (.target.bash_output, lc_command);
+		    if (bash_output["exit"]:1 == 0)
+		    {
+			string lc = filterchars (bash_output["stdout"]:"", "1234567890");
+			integer lines_count = tointeger (lc);
+
+			// don't know why without doubling it discards more lines,
+			// out of YaST2 it works
+			lines_count = lines_count - 2 * max_lines;
+			if (lines_count < 0)
+			    lines_count = 0;
+
+			if (lines_count > 0)
+			    command = command + sformat(" | tail -n +%1", lines_count);
+		    }
+		}
+	    }
 	}
+
+	y2milestone ("Calling process agent with command %1", command);
+
+	id = (integer) SCR::Execute (.process.start_shell, command, $[ "tty" : true ]);
+	is_running = true;
 
 	sleep(100);
 

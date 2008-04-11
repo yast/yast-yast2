@@ -1,0 +1,30 @@
+{
+    import "LogViewCore";
+
+    string file = "/var/log/messages";
+    string grep = "conf";
+
+    UI::OpenDialog(`VBox(
+		       `Left(`Heading("Log")),
+		       `LogView(`id(`log), sformat("Content of %1 grepped with %2:", file, grep), 10, 100),
+		       `PushButton(`id(`close), "Close")
+		       ));
+
+    LogViewCore::Start(`id(`log), $[ "file" : file, "grep" : grep ]);
+
+    while (true)
+    {
+	any widget = UI::TimeoutUserInput(250);
+
+	if (widget == `timeout)
+	{
+	    LogViewCore::Update(`id(`log));
+	}
+	else if (widget == `close)
+	{
+	    break;
+	}
+    }
+
+    LogViewCore::Stop();
+}
