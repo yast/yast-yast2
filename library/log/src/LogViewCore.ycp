@@ -101,7 +101,7 @@
      */
     global void Start(term widget, map<string, any> d)
     {
-	if (id != nil) 
+	if (id != nil)
 	{
 	    SCR::Execute(.process.release, id);
 	    id = nil;
@@ -171,7 +171,7 @@
 	    {
 		lines = (list<string>) merge(lines, new_lines);
 		DeleteOldLines();
-		
+
 		UI::ChangeWidget(widget, `LastLine, mergestring(
 				     maplist(string line, new_lines, { return line + "\n"; } ), ""));
 	    }
@@ -181,7 +181,7 @@
 
     global void Stop()
     {
-	if (id != nil) 
+	if (id != nil)
 	{
 	    SCR::Execute(.process.release, id);
 	    id = nil;
