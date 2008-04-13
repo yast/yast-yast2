@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun Apr 13 14:42:01 CEST 2008 - aschnell@suse.de
+
+- refactoring and fixing LogView.ycp (bnc #371983)
+- 2.16.49
+
+-------------------------------------------------------------------
 Fri Apr 11 18:38:02 CEST 2008 - locilka@suse.cz
 
 - New Wizard::OpenOKDialog() (FATE #120373).
@@ -13,13 +19,13 @@ Fri Apr 11 10:50:20 CEST 2008 - mvidner@suse.cz
 Thu Apr 10 13:55:25 CEST 2008 - kmachalkova@suse.cz
 
 - Hostname.ycp: new functions for retrieving current FQDN, hostname
-  and domain name (for FaTE #302863) 
+  and domain name (for FaTE #302863)
 - 2.16.48
 
 -------------------------------------------------------------------
 Thu Apr 10 10:09:20 CEST 2008 - kmachalkova@suse.cz
 
-- Progress.ycp: use UI::GetDisplay info only when it is really 
+- Progress.ycp: use UI::GetDisplay info only when it is really
   needed, not on global level (it instantiates UI and makes CLI
   deaf-dumb in ncurses which set terminal echo to off) (bnc #374259)
 
@@ -74,7 +80,7 @@ Thu Apr  3 07:53:51 CEST 2008 - lslezak@suse.cz
 Wed Apr  2 22:10:10 CET 2008 - mzugec@suse.de
 
 - added type "password" into CWM
-- 2.16.43 
+- 2.16.43
 
 -------------------------------------------------------------------
 Wed Apr  2 16:31:13 CEST 2008 - lslezak@suse.cz

@@ -23,8 +23,6 @@
  *          ],
  *      ]);
  * </pre>
- *
- * TODO: Use LogViewCore.ycp (but it has less functionality)
  */
 
 {
@@ -36,14 +34,9 @@ import "CWM";
 import "Popup";
 import "Label";
 import "Report";
+import "LogViewCore";
 
 // fallback settings variables
-
-/**
- * default value of maximum displayed lines
- */
-integer max_lines_default = 100;
-
 
 // configuration variables
 
@@ -68,19 +61,6 @@ integer current_index = 0;
 list<list> mb_actions = [];
 
 
-// status variables
-
-/**
- * current lines of the selected log
- */
-list<string> lines = [];
-
-/**
- * ID of process for the process agent
- */
-integer process_id = nil;
-
-
 // local functions
 
 /**
@@ -93,73 +73,12 @@ define map<string,any> Index2Descr (integer index) {
 }
 
 /**
- * Get maximum lines to display for a log
- * @param log_descr a map describing the log
- * @return integer maximum log lines to display
- */
-define integer GetMaxLines (map<string,any> log_descr) {
-    return log_descr["max_lines"]:param["max_lines"]:max_lines_default;
-}
-
-/**
  * Starts the log reading command via process agent
  * @param index integer the index of the log file
  */
 define void InitLogReading (integer index) {
-    if (process_id != nil)
-	SCR::Execute (.process.kill, process_id);
-    process_id = nil;
     map<string, any> log_descr = Index2Descr (index);
-    integer max_lines = GetMaxLines (log_descr);
-    string command = (string) (log_descr["command"]:nil);
-    if (command == nil || command == "")
-    {
-	string file = log_descr["file"]:"";
-	if (file == nil || file == "")
-	{
-	    // error report
-	    Report::Error (_("Error occurred while reading the log."));
-	    return;
-	}
-	string grep = log_descr["grep"]:"";
-	if (grep != "" && grep != nil)
-	    grep = sformat ("| grep '%1'", grep);
-	string lc_command
-	    = sformat ("cat %1 %2 | wc -l", log_descr["file"]:"", grep);
-	map bash_output = (map)SCR::Execute (.target.bash_output, lc_command);
-	command = "tail -n +0 -f " + log_descr["file"]:"";
-	string addon = "";
-	integer lines_count = 0;
-	if (bash_output["exit"]:1 == 0)
-	{
-	    string lc = bash_output["stdout"]:"";
-	    lc = filterchars (lc, "1234567890");
-	    lines_count = tointeger (lc);
-	    lines_count = lines_count - 2 * max_lines;
-		// don't know why without
-		// doubling it discards more lines, out of YaST2
-		// it works
-	    if (lines_count < 0)
-		lines_count = 0;
-	    if (max_lines != 0 && lines_count > 0)
-		addon = sformat ("| tail -n +%1", lines_count);
-	}
-	if (grep != "" && grep != nil)
-	    command = sformat ("%1 %2 %3", command, grep, addon);
-	else if (addon != "")
-	    command = sformat ("/usr/bin/tail -n +%2 -f %1", log_descr["file"]:"", lines_count);
-	else
-	    command = sformat ("/usr/bin/tail -n +0 -f %1", log_descr["file"]:"");
-    }
-    y2milestone ("Calling process agent with command %1", command);
-
-    process_id = (integer)SCR::Execute (.process.start_shell, command);
-    if (process_id == nil)
-    {
-	// error report
-	Report::Error (_("Error occurred while reading the log."));
-	return;
-    }
+    LogViewCore::Start(`id(`_cwm_log), log_descr);
 }
 
 /**
@@ -167,59 +86,7 @@ define void InitLogReading (integer index) {
  * @param key log widget key
  */
 define void KillBackgroundProcess (string key) {
-    if (process_id != nil)
-	SCR::Execute (.process.kill, process_id);
-    process_id = nil;
-}
-
-/**
- * Remove unneeded items from a list
- * If max_lines is 0, then don't remove anything
- * @param lines a list of strings representing log lines
- * @param max_lines integer lines that should be saved
- * @return a list last max_lines of lines
- * FIXME probably used in multiple locations!!!
- * FIXME variables are global, no need to have them as parameters
- */
-define list<string> DeleteOldLines (list<string> lines, integer max_lines) {
-    if (0 == max_lines)
-	return lines;
-    integer sl = size (lines);
-    if (sl > max_lines)
-    {
-	lines = filter (string l, lines, {
-	    sl = sl -1;
-	    return sl < max_lines;
-	});
-    }
-    return lines;
-}
-
-/**
- * Fills the log widget with initial data got from the process agent
- * @param index integer index of the log file
- */
-define void FillWidgetWithData (integer index) {
-    sleep (100);
-    map<string,any> log = Index2Descr (index);
-    integer max_lines = GetMaxLines (log);
-
-    integer count = 0;
-    lines = [];
-    string line = (string)SCR::Read (.process.read_line, process_id);
-    while (line != nil)
-    {
-	count = count + 1;
-	lines = add (lines, line);
-	line = (string)SCR::Read (.process.read_line, process_id);
-    }
-
-    if (count > 0)
-    {
-	lines = DeleteOldLines (lines, max_lines);
-	UI::ChangeWidget (`id (`_cwm_log), `Value,
-	    mergestring (lines, "\n") + "\n");
-    }
+    LogViewCore::Stop();
 }
 
 /**
@@ -487,18 +354,16 @@ define integer GetDefaultItemForLogsCombo (list<map<string,any> > log_maps) {
  * @param index integer index of the log to display
  */
 define void LogSwitch (integer index) {
-    lines = [];
     current_index = index;
 
     map<string, any> log_descr = Index2Descr (index);
     // logview caption
     string caption = log_descr["log_label"]:param["log_label"]:_("&Log");
-    integer max_lines = GetMaxLines (log_descr);
+
     UI::ReplaceWidget (`_cwm_log_rp,
-	`LogView (`id (`_cwm_log), caption, 15, max_lines));
+	`LogView (`id (`_cwm_log), caption, 15, 0));
 
     InitLogReading (index);
-    FillWidgetWithData (index);
 }
 
 /**
@@ -524,25 +389,7 @@ global define void LogInit (string key) {
  */
 global define symbol LogHandle (string key, map event) {
     param = CWM::GetProcessedWidget ();
-    map<string,any> log = Index2Descr (current_index);
-    integer max_lines = GetMaxLines (log);
-    list<string> new_lines = [];
-    integer count = 0;
-    string line = (string)SCR::Read (.process.read_line, process_id);
-    while (line != nil)
-    {
-	count = count + 1;
-	new_lines = add (new_lines, line);
-	line = (string)SCR::Read (.process.read_line, process_id);
-    }
-    if (count > 0)
-    {
-	foreach (string l, new_lines, {
-	    UI::ChangeWidget (`id (`_cwm_log), `LastLine, l + "\n");
-	});
-	lines = (list<string>) merge (lines, new_lines);
-	lines = DeleteOldLines (lines, max_lines);
-    }
+    LogViewCore::Update(`id(`_cwm_log));
     any ret = event["ID"]:nil;
     // save the displayed log to file
     if (ret == `_cwm_log_save)
@@ -553,7 +400,7 @@ global define symbol LogHandle (string key, map event) {
 	if (filename != nil)
 	{
 	    SCR::Write (.target.string, filename,
-		mergestring (lines, "\n") + "\n");
+			mergestring (LogViewCore::GetLines(), "\n") + "\n");
 	}
     }
     // other operation specified by user
@@ -630,7 +477,6 @@ global define map CreateWidget (map<string,any> parameters,
 {
     // logview caption
     string caption = param["log_label"]:_("&Log");
-    integer max_lines = param["max_lines"]:max_lines_default;
     integer height = param["widget_height"]:15;
 
     integer default_index = GetDefaultItemForLogsCombo (log_files);
@@ -643,7 +489,7 @@ global define map CreateWidget (map<string,any> parameters,
 	    "custom_widget" : `VBox (
 		top_bar,
 		`ReplacePoint (`id (`_cwm_log_rp),
-		    `LogView (`id (`_cwm_log), caption, height, max_lines)
+		    `LogView (`id (`_cwm_log), caption, height, 0)
 		),
 		bottom_bar
 	    ),
@@ -701,12 +547,9 @@ global define void Display (map<string, any> parameters) {
 
 	// menubutton
 	string mb_label = param["mb_label"]:_("Ad&vanced");
-	integer max_lines = param["max_lines"]:max_lines_default;
 	string log_label = param["log_label"]:_("&Log");
 
 	logs = [param];
-
-	InitLogReading (0);
 
 	term button_line = GetButtonsBelowLog (true, param, [param]);
 
@@ -714,7 +557,7 @@ global define void Display (map<string, any> parameters) {
             `VSpacing (1),
             `HSpacing (70),
             // log view header
-            `LogView (`id (`_cwm_log), log_label, 19, max_lines),
+            `LogView (`id (`_cwm_log), log_label, 19, 0),
             `VSpacing (1),
 	    button_line,
             `VSpacing (1)), `HSpacing (1)));
@@ -726,7 +569,7 @@ global define void Display (map<string, any> parameters) {
 	}
 	mb_actions = param["actions"]:[];
 
-	FillWidgetWithData (0);
+	InitLogReading (0);
 
         any ret = nil;
         while (ret != `close && ret != `cancel)
@@ -753,9 +596,7 @@ global define void Display (map<string, any> parameters) {
 		LogHandle ("", event);
 	    }
 	}
-	if (process_id != nil)
-	    SCR::Execute (.process.kill, process_id);
-	process_id = nil;
+	LogViewCore::Stop();
         UI::CloseDialog ();
         return;
 }
