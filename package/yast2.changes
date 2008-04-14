@@ -9,7 +9,7 @@ Mon Apr 14 14:16:55 CEST 2008 - lslezak@suse.cz
 
 - Products.ycp - the target and the sources must be initialized
   and the solver must be run to obtain the list of installed
-  products (#368104)
+  products (bnc #368104)
 
 -------------------------------------------------------------------
 Mon Apr 14 11:44:17 CEST 2008 - locilka@suse.cz
