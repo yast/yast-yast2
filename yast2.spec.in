@@ -13,7 +13,7 @@ PreReq:		%fillup_prereq
 # ag_process, sublist
 Requires:       yast2-core >= 2.16.46
 # Mod_UI
-Requires:       yast2-ycp-ui-bindings >= 2.16.37
+Requires:       yast2-ycp-ui-bindings >= 2.16.44
 
 # changed callback registration
 Requires:	yast2-pkg-bindings >= 2.16.23

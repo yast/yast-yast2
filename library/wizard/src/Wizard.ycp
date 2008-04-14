@@ -186,7 +186,7 @@
      * @return	term term describing the dialog.
      **/
     global term GenericDialog( term button_box ) {
-	return `VBox( `id(`WizardDialog),
+	return `VBox( `id(`WizardDialog ),
                       `ReplacePoint( `id(`topmenu ), `Empty() ),
 		      `HBox(
 			    `HSpacing(1),
@@ -286,7 +286,7 @@
      * @param	dialog	a wizard dialog, e.g. Wizard::GenericDialog()
      **/
     global void OpenDialog( term dialog ) {
-	UI::OpenDialog( `opt(`defaultsize), dialog );
+	UI::OpenDialog( `opt(`wizardDialog ), dialog );
     }
 
 
@@ -298,7 +298,7 @@
     {
 	if ( haveFancyUI() )
 	{
-	    UI::OpenDialog(`opt(`defaultsize ),
+	    UI::OpenDialog(`opt(`wizardDialog ),
 			   `Wizard(`back,  Label::BackButton(),
 				   `abort, Label::AbortButton(),
 				   `next,  Label::NextButton() ) );
@@ -319,7 +319,7 @@
     {
 	if ( haveFancyUI() )
 	{
-	    UI::OpenDialog(`opt(`defaultsize ),
+	    UI::OpenDialog(`opt(`wizardDialog ),
 			   `Wizard(`no_back_button,   	"",
 				   `cancel,		Label::CancelButton(),
 				   `accept,		Label::AcceptButton() ) );
@@ -342,7 +342,7 @@
     {
 	if ( haveFancyUI() )
 	{
-	    UI::OpenDialog(`opt(`defaultsize ),
+	    UI::OpenDialog(`opt(`wizardDialog ),
 			   `Wizard(`no_back_button,   	"",
 				   `cancel,		Label::CancelButton(),
 				   `ok,			Label::OKButton() ) );
@@ -366,7 +366,7 @@
     {
 	if ( haveFancyUI() )
 	{
-	    UI::OpenDialog(`opt(`defaultsize ),
+	    UI::OpenDialog(`opt(`wizardDialog ),
 			   `Wizard(`apply,	_( "&Apply" ),
 				   `abort,	Label::AbortButton(),
 				   `finish,	Label::FinishButton() ) );
@@ -386,7 +386,7 @@
     {
 	if ( haveFancyUI() )
 	{
-	    UI::OpenDialog(`opt(`defaultsize ),
+	    UI::OpenDialog(`opt(`wizardDialog ),
 			   `Wizard(`opt(`stepsEnabled),
 				   `no_back_button,	"",
 				   `cancel,		Label::CancelButton(),
@@ -410,7 +410,7 @@
     {
 	if ( haveFancyUI() )
 	{
-	    UI::OpenDialog(`opt(`defaultsize ),
+	    UI::OpenDialog(`opt(`wizardDialog ),
 			   `Wizard(`opt(`stepsEnabled),
 				   `no_back_button,   	"",
 				   `abort,		Label::AbortButton(),
@@ -433,7 +433,7 @@
     {
 	if ( haveFancyUI() )
 	{
-	    UI::OpenDialog(`opt(`defaultsize ),
+	    UI::OpenDialog(`opt(`wizardDialog ),
 			   `Wizard(`opt(`stepsEnabled),
 				   `back,  Label::BackButton(),
 				   `abort, Label::AbortButton(),
@@ -471,7 +471,7 @@
 	if ( button_box == nil )
 	    button_box = BackAbortNextButtonBox();
 
-	UI::OpenDialog(`opt(`defaultsize),
+	UI::OpenDialog(`opt(`wizardDialog ),
 		       GenericDialog( button_box ) );
 
 	if ( help_space_contents != nil )
@@ -1340,7 +1340,7 @@
     {
         if ( haveFancyUI() )
         {
-            UI::OpenDialog(`opt(`defaultsize ),
+            UI::OpenDialog(`opt(`wizardDialog ),
                     `Wizard(`opt(`treeEnabled),
                         `back, Label::BackButton(),
                         `abort, Label::AbortButton(),
