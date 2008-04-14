@@ -79,6 +79,13 @@ global list<map<string,any> > FindBaseProducts() {
 	return [];
     }
 
+    // the target at the sources must be initialized
+    PackageSystem::EnsureTargetInit();
+    PackageSystem::EnsureSourceInit();
+
+    // installed products are computed by the solver
+    Pkg::PkgSolve(true);
+
     y2milestone ("Looking for base products");
     list<map<string,any> > products = (list<map<string,any> >)
 	Pkg::TargetProducts ();
