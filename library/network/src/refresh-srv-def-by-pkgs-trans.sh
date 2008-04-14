@@ -72,10 +72,20 @@ echo "Using temporary directory: "$TMPDIR
 echo
 cd $TMPDIR
 
+ls -1 $TMPDIR/$SUSEFWFILES > $TMPDIR/last
+
 # installs these files into a temporary directory
 for ONEPACKAGE in $AFFECTED; do
     echo "Package: "$ONEPACKAGE
     rpm2cpio $RPMDIRECTORY/*/$ONEPACKAGE.rpm | cpio -idm --no-absolute-filenames "./$SUSEFWFILES" "$SUSEFWFILES" 2> /dev/null
+    ls -1 $TMPDIR/$SUSEFWFILES > $TMPDIR/now
+
+    for CPIOEDFILE in `diff -u $TMPDIR/last $TMPDIR/now | grep "^\+[^\+]" | sed 's/\+//'`; do
+	echo "	File: ${CPIOEDFILE}"
+	echo "${CPIOEDFILE}_:_$ONEPACKAGE" >> $TMPDIR/FileBelongsTo
+    done
+
+    mv $TMPDIR/now $TMPDIR/last
 done
 echo
 
@@ -100,6 +110,8 @@ echo "{
 for FILENAME in `ls -1 | grep -v $Y2_NEWYCPFILE`; do
     #echo "Transforming file: "$FILENAME
 
+    RPMNAME=`grep "${FILENAME}_:_" $TMPDIR/FileBelongsTo | sed s'/.*_:_//'`
+
     # ... ## Name:
     TAG_NAME=`grep -i ".*##[\t ]*Name:[\t ]*" $FILENAME | sed 's/^.*##[\t ]*[Nn][Aa][Mm][Ee]:[\t ]//' | sed 's/"/\\"/'`
     if [ "$TAG_NAME" == "" ]; then
@@ -107,7 +119,7 @@ for FILENAME in `ls -1 | grep -v $Y2_NEWYCPFILE`; do
     elif [ "$TAG_NAME" == "template service" ]; then
 	echo "'Name:' not adjusted correctly in the '"$FILENAME"' file!"
     else
-	echo "  // TRANSLATORS: Name of Service (rpm: "$FILENAME"), can be used as check box, item in multiple selection box..." >> $Y2_NEWYCPFILE
+	echo "  // TRANSLATORS: Name of Service (File name: "$FILENAME", RPM: "$RPMNAME"), can be used as check box, item in multiple selection box..." >> $Y2_NEWYCPFILE
 	echo "  tmpstring = _(\""$TAG_NAME"\");" >> $Y2_NEWYCPFILE
 	echo >> $Y2_NEWYCPFILE
     fi
