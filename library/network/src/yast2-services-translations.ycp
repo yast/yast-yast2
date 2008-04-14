@@ -151,11 +151,17 @@
   // TRANSLATORS: Description of a Service (rpm: mysql), used as a common label or an item in table
   tmpstring = _("opens ports for MySQL in order to allow other hosts connect to it");
 
+  // TRANSLATORS: Name of Service (rpm: nfs-client), can be used as check box, item in multiple selection box...
+  tmpstring = _("NFS Client");
+
   // TRANSLATORS: Description of a Service (rpm: nfs-client), used as a common label or an item in table
-  tmpstring = _("Firewall Configuraion for nfs client. opens ports for foo in order to allow bar");
+  tmpstring = _("Firewall Configuration for nfs client. opens ports for NFS client in order to allow to connect to a NFS server");
+
+  // TRANSLATORS: Name of Service (rpm: nfs-kernel-server), can be used as check box, item in multiple selection box...
+  tmpstring = _("NFS Server Service");
 
   // TRANSLATORS: Description of a Service (rpm: nfs-kernel-server), used as a common label or an item in table
-  tmpstring = _("Firewall Configuraion for nfs kernel server. opens ports for foo in order to allow bar");
+  tmpstring = _("Firewall Configuration for nfs kernel server. opens ports for NFS in order to allow other hosts connect to it");
 
   // TRANSLATORS: Name of Service (rpm: ntp), can be used as check box, item in multiple selection box...
   tmpstring = _("xntp Server");
@@ -218,10 +224,10 @@
   tmpstring = _("Open ports for Talk Server");
 
   // TRANSLATORS: Name of Service (rpm: telnet-server), can be used as check box, item in multiple selection box...
-  tmpstring = _("telnet-server Server");
+  tmpstring = _("Telnet Server");
 
   // TRANSLATORS: Description of a Service (rpm: telnet-server), used as a common label or an item in table
-  tmpstring = _("Opens ports for telnet-server Server.");
+  tmpstring = _("Opens ports for Telnet Server.");
 
   // TRANSLATORS: Name of Service (rpm: tetrinet-server), can be used as check box, item in multiple selection box...
   tmpstring = _("Tetrinet Server");
