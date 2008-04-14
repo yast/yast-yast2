@@ -131,7 +131,7 @@ for FILENAME in `ls -1 | grep -v $Y2_NEWYCPFILE`; do
     elif [ "$TAG_DESCRIPTION" == "opens ports for foo in order to allow bar" ]; then
 	echo "'Description:' not adjusted correctly in the '"$FILENAME"' file!"
     else
-	echo "  // TRANSLATORS: Description of a Service (rpm: "$FILENAME"), used as a common label or an item in table" >> $Y2_NEWYCPFILE
+	echo "  // TRANSLATORS: Description of a Service (File name: "$FILENAME", RPM: "$RPMNAME"), used as a common label or an item in table" >> $Y2_NEWYCPFILE
 	echo "  tmpstring = _(\""$TAG_DESCRIPTION"\");" >> $Y2_NEWYCPFILE
 	echo >> $Y2_NEWYCPFILE
     fi
