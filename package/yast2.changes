@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Apr 14 11:44:17 CEST 2008 - locilka@suse.cz
+
+- Enhanced firewall-services translations script to generate a bit
+  more usefule output for translators.
+
+-------------------------------------------------------------------
 Mon Apr 14 08:49:05 CEST 2008 - jsrain@suse.cz
 
 - regenerated yast2-services-translations (bnc #373969)
