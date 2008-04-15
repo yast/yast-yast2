@@ -2828,6 +2828,247 @@ global void InitPackageCallbacks() {
 //	constructor and callback init
 //=============================================================================
 
+void DummyProcessStart(string param1, list<string> param2, string param3) {y2debug("Empty ProcessStart callback");}
+
+boolean DummyBooleanInteger(integer param1) {y2debug("Empty generic boolean(integer)->true callback"); return true;}
+
+void DummyVoid() {y2debug("Empty generic void() callback");}
+
+global void SetDummyProcessCallbacks()
+{
+    Pkg::CallbackProcessStart(DummyProcessStart);
+    Pkg::CallbackProcessProgress(DummyBooleanInteger);
+    Pkg::CallbackProcessNextStage(DummyVoid);
+    Pkg::CallbackProcessDone(DummyVoid);
+}
+
+
+void DummyStartProvide(string param1, integer param2, boolean param3) {y2debug("Empty StartProvide callback");}
+
+string DummyDoneProvide (integer error, string reason, string name) {y2debug("Empty DoneProvide callback, returning 'I'");return "I";}
+
+void DummyStartPackage (string name, string summary, integer installsize, boolean is_delete) {y2debug("Empty StartPackage callback");}
+
+string DummyDonePackage (integer error, string reason) {y2debug("Empty DonePackage callback, returning 'I'");return "I";}
+
+global void SetDummyProvideCallbacks()
+{
+    Pkg::CallbackStartProvide(DummyStartProvide);
+    Pkg::CallbackProgressProvide(DummyBooleanInteger);
+    Pkg::CallbackDoneProvide(DummyDoneProvide);
+    Pkg::CallbackStartPackage(DummyStartPackage);
+    Pkg::CallbackProgressPackage(DummyBooleanInteger);
+    Pkg::CallbackDonePackage(DummyDonePackage);
+}
+
+void DummyVoidString(string param1) {y2debug("Empty generic void(string) callback");}
+
+void DummyVoidInteger(integer param1) {y2debug("Empty generic void(integer) callback");}
+
+void DummyVoidIntegerString(integer param1, string param2) {y2debug("Empty generic void(integer, string) callback");}
+
+void DummyVoidStringInteger(string param1, integer param2) {y2debug("Empty generic void(string, integer) callback");}
+
+global void SetDummyPatchCallbacks()
+{
+    Pkg::CallbackStartDeltaDownload (DummyVoidStringInteger);
+    Pkg::CallbackProgressDeltaDownload (DummyBooleanInteger);
+    Pkg::CallbackProblemDeltaDownload (DummyVoidString);
+    Pkg::CallbackFinishDeltaDownload (DummyVoid);
+
+    Pkg::CallbackStartDeltaApply (DummyVoidString);
+    Pkg::CallbackProgressDeltaApply (DummyVoidInteger);
+    Pkg::CallbackProblemDeltaApply (DummyVoidString);
+    Pkg::CallbackFinishDeltaApply (DummyVoid);
+
+    Pkg::CallbackStartPatchDownload (DummyVoidStringInteger);
+    Pkg::CallbackProgressPatchDownload (DummyBooleanInteger);
+    Pkg::CallbackProblemPatchDownload (DummyVoidString);
+    Pkg::CallbackFinishPatchDownload (DummyVoid);
+}
+
+symbol DummySourceCreateError(string url, symbol error, string description) {y2debug("Empty SourceCreateError callback, returning `ABORT"); return `ABORT;}
+
+void DummySourceCreateEnd(string url, symbol error, string description) {y2debug("Empty SourceCreateEnd callback");}
+
+global void SetDummySourceCreateCallbacks()
+{
+    Pkg::CallbackSourceCreateStart(DummyVoidString);
+    Pkg::CallbackSourceCreateProgress(DummyBooleanInteger);
+    Pkg::CallbackSourceCreateError(DummySourceCreateError);
+    Pkg::CallbackSourceCreateEnd(DummySourceCreateEnd);
+    Pkg::CallbackSourceCreateInit(DummyVoid);
+    Pkg::CallbackSourceCreateDestroy(DummyVoid);
+}
+
+void DummySourceReportStart(integer source_id, string url, string task) {y2debug("Empty SourceReportStart callback");}
+symbol DummySourceReportError(integer source_id, string url, symbol error, string description) {y2debug("Empty SourceReportError callback, returning `ABORT"); return `ABORT;}
+void DummySourceReportEnd(integer src_id, string url, string task, symbol error, string description) {y2debug("Empty SourceReportEnd callback");}
+
+global void SetDummySourceReportCallbacks()
+{
+    // source report callbacks
+    Pkg::CallbackSourceReportStart(DummySourceReportStart);
+    Pkg::CallbackSourceReportProgress(DummyBooleanInteger);
+    Pkg::CallbackSourceReportError(DummySourceReportError);
+    Pkg::CallbackSourceReportEnd(DummySourceReportEnd);
+    Pkg::CallbackSourceReportInit(DummyVoid);
+    Pkg::CallbackSourceReportDestroy(DummyVoid);
+}
+
+void DummyProgressStart(integer id, string task, boolean in_percent, boolean is_alive, integer min, integer max, integer val_raw, integer val_percent) {y2debug("Empty ProgressStart callback");}
+boolean DummyProgressProgress(integer id, integer val_raw, integer val_percent) {y2debug("Empty ProgressProgress callback, returning true"); return true;}
+
+global void SetDummyProgressReportCallbacks()
+{
+    Pkg::CallbackProgressReportStart(DummyProgressStart);
+    Pkg::CallbackProgressReportProgress(DummyProgressProgress);
+    Pkg::CallbackProgressReportEnd(DummyVoidInteger);
+}
+
+void DummyScriptStart(string patch_name, string patch_version, string patch_arch, string script_path, boolean installation) {y2debug("Empty ScriptStart callback");}
+boolean DummyScriptProgress (boolean ping, string output) {y2debug("Empty ScriptProgress callback, returning true"); return true;}
+void DummyMessage(string patch_name, string patch_version, string patch_arch, string message) {y2debug("Empty Message callback");}
+
+global void SetDummyScriptCallbacks()
+{
+    Pkg::CallbackScriptStart(DummyScriptStart);
+    Pkg::CallbackScriptProgress(DummyScriptProgress);
+    Pkg::CallbackScriptProblem(DummyVoidString);
+    Pkg::CallbackScriptFinish(DummyVoid);
+
+    Pkg::CallbackMessage(DummyMessage);
+}
+
+global void SetDummyScanDBCallbacks()
+{
+    Pkg::CallbackStartScanDb (DummyVoid);
+    Pkg::CallbackProgressScanDb (DummyBooleanInteger);
+    Pkg::CallbackErrorScanDb (DummyVoidIntegerString);
+    Pkg::CallbackDoneScanDb (DummyVoidIntegerString);
+}
+
+void DummyStartDownload (string url, string localfile) {y2debug("Empty StartDownload callback");}
+boolean DummyProgressDownload (integer percent, integer bps_avg, integer bps_current) {y2debug("Empty ProgressDownload callback, returning true");return true;}
+void DummyDoneDownload (integer error_value, string error_text) {y2debug("Empty DoneDownload callback");}
+
+global void SetDummyDownloadCallbacks ()
+{
+    Pkg::CallbackInitDownload (DummyVoidString);
+    Pkg::CallbackStartDownload (DummyStartDownload);
+    Pkg::CallbackProgressDownload (DummyProgressDownload);
+    Pkg::CallbackDoneDownload (DummyDoneDownload);
+    Pkg::CallbackDestDownload (DummyVoid);
+    Pkg::CallbackStartRefresh(DummyVoid);
+    Pkg::CallbackDoneRefresh(DummyVoid);
+}
+
+
+global void RegisterEmptyProgressCallbacks()
+{
+    SetDummyProcessCallbacks();
+
+    SetDummyProvideCallbacks();
+
+    SetDummyPatchCallbacks();
+
+    SetDummySourceCreateCallbacks();
+
+    SetDummySourceReportCallbacks();
+
+    SetDummyProgressReportCallbacks();
+
+    SetDummyScriptCallbacks();
+
+    SetDummyScanDBCallbacks();
+
+    SetDummyDownloadCallbacks();
+}
+
+global void RestoreProcessCallbacks()
+{
+    Pkg::CallbackProcessStart(nil);
+    Pkg::CallbackProcessProgress(nil);
+    Pkg::CallbackProcessNextStage(nil);
+    Pkg::CallbackProcessDone(nil);
+}
+
+global void RestoreProvideCallbacks()
+{
+    Pkg::CallbackStartProvide(nil);
+    Pkg::CallbackProgressProvide(nil);
+    Pkg::CallbackDoneProvide(nil);
+    Pkg::CallbackStartPackage(nil);
+    Pkg::CallbackProgressPackage(nil);
+    Pkg::CallbackDonePackage(nil);
+}
+
+global void RestorePatchCallbacks()
+{
+    Pkg::CallbackStartDeltaDownload(nil);
+    Pkg::CallbackProgressDeltaDownload(nil);
+    Pkg::CallbackProblemDeltaDownload(nil);
+    Pkg::CallbackFinishDeltaDownload(nil);
+
+    Pkg::CallbackStartDeltaApply(nil);
+    Pkg::CallbackProgressDeltaApply(nil);
+    Pkg::CallbackProblemDeltaApply(nil);
+    Pkg::CallbackFinishDeltaApply(nil);
+
+    Pkg::CallbackStartPatchDownload(nil);
+    Pkg::CallbackProgressPatchDownload(nil);
+    Pkg::CallbackProblemPatchDownload(nil);
+    Pkg::CallbackFinishPatchDownload(nil);
+}
+
+global void RestoreSourceCreateCallbacks()
+{
+    Pkg::CallbackSourceCreateStart(nil);
+    Pkg::CallbackSourceCreateProgress(nil);
+    Pkg::CallbackSourceCreateError(nil);
+    Pkg::CallbackSourceCreateEnd(nil);
+    Pkg::CallbackSourceCreateInit(nil);
+    Pkg::CallbackSourceCreateDestroy(nil);
+}
+
+global void RestoreSourceReportCallbacks()
+{
+    Pkg::CallbackSourceReportStart(nil);
+    Pkg::CallbackSourceReportProgress(nil);
+    Pkg::CallbackSourceReportError(nil);
+    Pkg::CallbackSourceReportEnd(nil);
+    Pkg::CallbackSourceReportInit(nil);
+    Pkg::CallbackSourceReportDestroy(nil);
+}
+
+global void RestoreProgressReportCallbacks()
+{
+    Pkg::CallbackProgressReportStart(nil);
+    Pkg::CallbackProgressReportProgress(nil);
+    Pkg::CallbackProgressReportEnd(nil);
+}
+
+
+global void RestorePreviousProgressCallbacks()
+{
+    RestoreProcessCallbacks();
+
+    RestoreProvideCallbacks();
+
+    RestorePatchCallbacks();
+
+    RestoreSourceCreateCallbacks();
+
+    RestoreSourceReportCallbacks();
+
+    RestoreProgressReportCallbacks();
+
+    ClearScriptCallbacks();
+
+    ResetScanDBCallbacks();
+
+    ResetDownloadCallbacks();
+}
 
     /**
      * constructor
