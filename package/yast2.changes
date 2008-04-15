@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Apr 15 11:13:04 CEST 2008 - lslezak@suse.cz
+
+- PackageCallbacks.ycp - added RegisterEmptyProgressCallbacks() and
+  RestorePreviousProgressCallbacks() functions for disabling and
+  restoring progress callbacks (bnc#377919)
+- 2.16.52
+
+-------------------------------------------------------------------
 Mon Apr 14 16:42:44 CEST 2008 - sh@suse.de
 
 - Open wizard dialogs with `opt(`wizardDialog) in Wizard.ycp
