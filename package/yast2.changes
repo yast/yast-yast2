@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Apr 16 13:30:31 CEST 2008 - kmachalkova@suse.cz
+
+- Wizard.ycp: Generic tree dialog introduced - left help panel 
+  might be removed, but menu tree must stay (FaTE #303291 related) 
+
+-------------------------------------------------------------------
 Tue Apr 15 11:13:04 CEST 2008 - lslezak@suse.cz
 
 - PackageCallbacks.ycp - added RegisterEmptyProgressCallbacks() and
