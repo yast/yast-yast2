@@ -173,7 +173,6 @@
 		     );
     }
 
-
     /**
      * @short Create a Generic Dialog
      *
@@ -186,13 +185,10 @@
      * @return	term term describing the dialog.
      **/
     global term GenericDialog( term button_box ) {
-	return `VBox( `id(`WizardDialog ),
+	return `VBox( `id(`WizardDialog),
                       `ReplacePoint( `id(`topmenu ), `Empty() ),
 		      `HBox(
 			    `HSpacing(1),
-		//	    `HWeight( 30, `ReplacePoint( `id(`helpSpace), `RichText(`id(`HelpText), ""))),
-		//	    `HSpacing(1),
-		//	    `HWeight( 70, `VBox(
 			    `VBox(
 						`VSpacing(0.2),
 						`HBox(
@@ -213,6 +209,46 @@
 	       );
     }
 
+
+    /**
+     * @short Create a Generic Tree Dialog 
+     *
+     * @descr Returns a term describing a wizard dialog with left menu tree,
+     * right contents and a configurable button box.
+     *
+     *
+     * @stable
+     *
+     * @param	button_box term that contains a `HBox() with buttons in it
+     * @return	term term describing the dialog.
+     **/
+
+    global term GenericTreeDialog( term button_box ) {
+	return `VBox( `id(`WizardDialog),
+                      `ReplacePoint( `id(`topmenu ), `Empty() ),
+		      `HBox(
+			    `HSpacing(1),
+			    `HWeight( 30, `ReplacePoint( `id(`helpSpace), `Empty()/*`RichText(`id(`HelpText), "")*/)),
+			    `HSpacing(1),
+			    `HWeight( 70, `VBox(
+						`VSpacing(0.2),
+						`HBox(
+						      // translators: dialog title to appear before any content is initialized
+						      `Heading(`id(`title), `opt (`hstretch), _("YaST2\nInitializing ...")),
+						      `HStretch()
+						      ),
+						`VWeight( 1, // Layout trick: Lower layout priority with weight
+							  `HVCenter(`opt(`hvstretch),
+								    `ReplacePoint(`id(`contents), `Empty() )
+								    )
+							  )
+			    )),
+			    `HSpacing(1)
+			),
+		      `ReplacePoint(`id(`rep_button_box), button_box ),
+		      `VSpacing(0.2)
+	       );
+    }
 
 
     /**
@@ -286,7 +322,7 @@
      * @param	dialog	a wizard dialog, e.g. Wizard::GenericDialog()
      **/
     global void OpenDialog( term dialog ) {
-	UI::OpenDialog( `opt(`wizardDialog ), dialog );
+	UI::OpenDialog( `opt(`wizardDialog), dialog );
     }
 
 
@@ -471,7 +507,7 @@
 	if ( button_box == nil )
 	    button_box = BackAbortNextButtonBox();
 
-	UI::OpenDialog(`opt(`wizardDialog ),
+	UI::OpenDialog(`opt(`wizardDialog),
 		       GenericDialog( button_box ) );
 
 	if ( help_space_contents != nil )
@@ -1350,7 +1386,7 @@
         }
         else
         {
-	    Wizard::OpenDialog( NextBackDialog() );
+	    Wizard::OpenDialog( GenericTreeDialog( BackAbortNextButtonBox() ) );
 	    UI::SetFocus(`id(`next) );
         }
     }
