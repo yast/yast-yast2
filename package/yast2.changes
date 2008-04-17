@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Apr 17 20:31:39 CEST 2008 - locilka@suse.cz
+
+- Using `InputFiled instead of obsolete `TextEntry (in CWM).
+
+-------------------------------------------------------------------
 Wed Apr 16 13:30:31 CEST 2008 - kmachalkova@suse.cz
 
 - Wizard.ycp: Generic tree dialog introduced - left help panel 

@@ -560,7 +560,7 @@ in the configuration first.</p>
 		    `HBox (
 			`HWeight (7,
 			    `HBox (
-				`TextEntry (`id ("_cwm_existing_key_file"), `opt (`hstretch),
+				`InputField (`id ("_cwm_existing_key_file"), `opt (`hstretch),
 				// text entry
 				Label::FileName ())
 			    )
@@ -593,9 +593,9 @@ in the configuration first.</p>
 			`HWeight (7,
 			    `HBox (
 				// text entry
-				`TextEntry (`id ("_cwm_new_key_id"), `opt (`hstretch), _("&Key ID")),
+				`InputField (`id ("_cwm_new_key_id"), `opt (`hstretch), _("&Key ID")),
 				// text entry
-				`TextEntry (`id ("_cwm_new_key_file"), `opt (`hstretch), Label::FileName())
+				`InputField (`id ("_cwm_new_key_file"), `opt (`hstretch), Label::FileName())
 			    )
 			),
 			`HWeight (2,
