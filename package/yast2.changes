@@ -2,6 +2,7 @@
 Thu Apr 17 20:31:39 CEST 2008 - locilka@suse.cz
 
 - Using `InputFiled instead of obsolete `TextEntry (in CWM).
+- Adjusted CWM testsuite.
 - 2.16.53
 
 -------------------------------------------------------------------
