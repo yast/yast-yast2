@@ -502,6 +502,10 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 
 		if (widget == `inputfield || widget == `textentry)
 		{
+		    // backward compatibility
+		    if (! contains (argsof (opt_term), `hstretch)) {
+			opt_term = add (opt_term, `hstretch);
+		    }
 		    w["widget"] = `InputField (id_term, opt_term, label);
 		}
 		else if (widget == `password)
