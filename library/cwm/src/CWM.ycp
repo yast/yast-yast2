@@ -469,7 +469,8 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
       */
     global define map<string, any> prepareWidget (map<string, any> widget_descr) ``{
 	map<string, any> w = widget_descr;
-	symbol widget = w["widget"]:`textentry;
+	symbol widget = w["widget"]:`inputfield;
+
 	if (w["widget"]:nil == `empty)
 	{
 	    w["widget"] = `VBox ();
@@ -499,9 +500,9 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
 		});
 		string label = w["label"]:w["_cwm_key"]:"";
 
-		if (widget == `textentry)
+		if (widget == `inputfield || widget == `textentry)
 		{
-		    w["widget"] = `TextEntry (id_term, opt_term, label);
+		    w["widget"] = `InputField (id_term, opt_term, label);
 		}
 		else if (widget == `password)
 		{
