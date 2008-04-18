@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Apr 18 15:29:46 CEST 2008 - lslezak@suse.cz
+
+- Kernel.ycp - check XEN detection result for nil, nil means XEN
+  was not found
+
+-------------------------------------------------------------------
 Thu Apr 17 20:31:39 CEST 2008 - locilka@suse.cz
 
 - Using `InputFiled instead of obsolete `TextEntry (in CWM).

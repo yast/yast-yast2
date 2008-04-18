@@ -347,6 +347,12 @@ global void SetCmdLine (string new_cmd_line) {
 
 	// add Xen paravirtualized drivers to a full virtualized host
 	boolean xen = (boolean)SCR::Read(.probe.is_xen);
+	if (xen == nil)
+	{
+	    y2warning("XEN detection failed, assuming XEN is NOT running");
+	    xen = false;
+	}
+
 	y2milestone("Detected XEN: %1", xen);
 
 	if (Arch::is_uml ())
