@@ -29,7 +29,7 @@ Dump	Before: $["_cwm_key":"a", "popup":$["_cwm_key":"a", "handle":<YCPRef:symbol
 Dump	After: $["_cwm_key":"a", "popup":$["_cwm_key":"a", "handle":<YCPRef:symbol a_handle (any id, string key, map event)>, "init":<YCPRef:void fallback_init (any id, string key)>, "label":"'a' option label", "store":<YCPRef:void fallback_store (any id, string key)>, "widget":`textentry], "table":$["_cwm_key":"a", "handle":<YCPRef:symbol a_handle (any id, string key, map event)>, "label":"'a' option label", "summary":<YCPRef:string opt_sum (any opt_id, string opt_key)>, "widget":`checkbox]]
 Dump	=========================================
 Dump	Prepare widget
-Dump	Prepared: $["_cwm_key":"a", "custom_widget":nil, "handle":<YCPRef:symbol a_handle (any id, string key, map event)>, "init":<YCPRef:void fallback_init (any id, string key)>, "label":"'a' option label", "store":<YCPRef:void fallback_store (any id, string key)>, "widget":`TextEntry (`id ("a"), `opt (), "'a' option label")]
+Dump	Prepared: $["_cwm_key":"a", "custom_widget":nil, "handle":<YCPRef:symbol a_handle (any id, string key, map event)>, "init":<YCPRef:void fallback_init (any id, string key)>, "label":"'a' option label", "store":<YCPRef:void fallback_store (any id, string key)>, "widget":`InputField (`id ("a"), `opt (`hstretch), "'a' option label")]
 Dump	=========================================
 Dump	Run popup
 Log	fallback_init: id nil, key a

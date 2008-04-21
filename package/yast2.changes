@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Apr 21 12:20:01 CEST 2008 - jsrain@suse.cz
+
+- fixed CWM testsuite
+
+-------------------------------------------------------------------
 Fri Apr 18 15:29:46 CEST 2008 - lslezak@suse.cz
 
 - Kernel.ycp - check XEN detection result for nil, nil means XEN
