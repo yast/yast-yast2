@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr 22 15:15:59 CEST 2008 - jsrain@suse.cz
+
+- rename MODLIST variable to YAST_MODLIST to prevent conflicts
+  with zypper (#382097)
+
+-------------------------------------------------------------------
 Mon Apr 21 12:20:01 CEST 2008 - jsrain@suse.cz
 
 - fixed CWM testsuite
