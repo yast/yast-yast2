@@ -2,15 +2,15 @@
 # A Christmas gift from Carsten Hoeger
 
 YAST=/sbin/yast
-MODLIST=()
+YAST_MODLIST=()
 
 _yast2 ()
 {
         local cur prevprev prev len idx mod MODOPTS line opt rest
         MODOPTS=()
-	if test ${#MODLIST[*]} = 0; then
+	if test ${#YAST_MODLIST[*]} = 0; then
 		# build a list of know yast modules
-		MODLIST=($(LC_ALL=C $YAST -l| grep '^[a-z]' | grep -v "Available"))
+		YAST_MODLIST=($(LC_ALL=C $YAST -l| grep '^[a-z]' | grep -v "Available"))
 	fi
 
 	if [[ ${#COMP_WORDS[@]} -gt 4 ]]; then
@@ -36,7 +36,7 @@ _yast2 ()
 	fi
 
 	# iterate through all yast modules
-	for mod in ${MODLIST[@]}; do
+	for mod in ${YAST_MODLIST[@]}; do
 	    # if argument before last argument is a yast module, 
 	    # check it's available options
 	    if [[ -n $prevprev && $prevprev == $mod ]]; then
@@ -102,7 +102,7 @@ _yast2 ()
 
         len=${#cur}
         idx=0
-        for pval in ${MODLIST[@]}; do
+        for pval in ${YAST_MODLIST[@]}; do
                 if [[ "$cur" == "${pval:0:$len}" ]]; then
                         COMPREPLY[$idx]=$pval
                         idx=$[$idx+1]
