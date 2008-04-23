@@ -3,6 +3,7 @@ Wed Apr 23 14:59:43 CEST 2008 - locilka@suse.cz
 
 - Fixing CWMFirewallInterfaces to appropriately handle interfaces
   in unprotected internal zone (bnc #382686).
+- 2.16.56
 
 -------------------------------------------------------------------
 Wed Apr 23 13:27:18 CEST 2008 - mvidner@suse.cz
