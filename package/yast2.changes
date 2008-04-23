@@ -23,7 +23,7 @@ Wed Apr 23 11:50:23 CEST 2008 - lslezak@suse.cz
 Tue Apr 22 15:15:59 CEST 2008 - jsrain@suse.cz
 
 - rename MODLIST variable to YAST_MODLIST to prevent conflicts
-  with zypper (#382097)
+  with zypper (bnc #382097)
 
 -------------------------------------------------------------------
 Mon Apr 21 12:20:01 CEST 2008 - jsrain@suse.cz
