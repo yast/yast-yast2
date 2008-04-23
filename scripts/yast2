@@ -17,7 +17,7 @@ export PATH=/sbin:/usr/sbin:$PATH
 
 # allow for a different prefix
 mydir=${0%/[YyZz]a[Ss][Tt]*}
-if [ -z "$mydir" -o "$mydir" = "/sbin" ]; then
+if [[ -z "$mydir" || "$mydir" =~ /sbin/* ]]; then
     YAST_PREFIX=/usr
 else
     YAST_PREFIX=${mydir%/sbin}

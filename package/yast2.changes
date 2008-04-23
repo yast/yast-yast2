@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Apr 23 13:27:18 CEST 2008 - mvidner@suse.cz
+
+- Make the yast2 script work even with trailing slashes in $PATH
+  (bnc#382216).
+
+-------------------------------------------------------------------
 Wed Apr 23 11:50:23 CEST 2008 - lslezak@suse.cz
 
 - PackageSystem.ycp - do not initialize the package callbacks,
