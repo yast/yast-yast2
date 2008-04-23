@@ -32,6 +32,7 @@ import "NetworkInterfaces";
 //import "NetworkService";
 import "Popup";
 import "SuSEFirewall";
+import "Report";
 
 // used only for (Mode::installation() || Mode::update())
 import "SuSEFirewallProposal";
@@ -332,6 +333,16 @@ global void InitAllowedInterfaces (list<string> services) {
 	}
     }
 
+    // Check the INT zone, it's not protected by default
+    // See bnc #382686
+    list <string> internal_interfaces = SuSEFirewall::GetInterfacesInZone ("INT");
+    if (size (internal_interfaces) > 0 && SuSEFirewall::GetProtectFromInternalZone() == false) {
+	y2milestone ("Unprotected internal interfaces: %1", internal_interfaces);
+	allowed_interfaces = (list <string>) union (allowed_interfaces, internal_interfaces);
+    } else {
+	y2milestone ("Internal zone is protected or there are no interfaces in it");
+    }
+
     //if (contains(all_interfaces, special_all_nm_interfaces)) {
     //	boolean special_all_nm_enabled = size(services) > 0;
     //	foreach (string sr, services, {
@@ -470,14 +481,43 @@ global boolean InterfacesValidate (map<string,any> widget, string key, map event
 	UI::QueryWidget (`id ("_cwm_interface_list"), `SelectedItems);
     ifaces = toset (ifaces);
     y2milestone("Selected ifaces: %1", ifaces);
-    if (size (ifaces) == 0)
-    {
+
+    // Check the INT zone, it's not protected by default
+    // See bnc #382686
+    list <string> internal_interfaces = SuSEFirewall::GetInterfacesInZone ("INT");
+
+    if (size (internal_interfaces) > 0 && SuSEFirewall::GetProtectFromInternalZone() == false) {
+	list <string> int_not_selected = [];
+	foreach (string one_internal, internal_interfaces, {
+	    if (! contains (ifaces, one_internal)) {
+		int_not_selected = add (int_not_selected, one_internal);
+	    }
+	});
+
+	if (size (int_not_selected) > 0) {
+	    y2warning ("Unprotected internal interfaces not selected: %1", int_not_selected);
+
+	    Report::Message (
+		sformat (
+		    _("These network interfaces assigned to internal network cannot be unselected:
+%1"),
+		    mergestring (int_not_selected, "\n")
+		)
+	    );
+
+	    ifaces = (list <string>) union (ifaces, int_not_selected);
+	    y2milestone ("Selected interfaces: %1", ifaces);
+	    UI::ChangeWidget (`id ("_cwm_interface_list"), `SelectedItems, ifaces);
+	    return false;
+	}
+    }
+
+    if (size (ifaces) == 0) {
 	// question popup
 	if (! Popup::YesNo (_("No interface is selected. Service will not
 be available for other computers.
 
-Continue?")))
-	{
+Continue?"))) {
 	    return false;
 	}
     }
