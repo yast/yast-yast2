@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Apr 23 11:50:23 CEST 2008 - lslezak@suse.cz
+
+- PackageSystem.ycp - do not initialize the package callbacks,
+  they are already initialized in PackageCallbacks constructor
+- Product.ycp - do not initialize the package manager, read the
+  installed product from /etc/SuSE-relase file instead (bnc#380652)
+- 2.16.55
+
+-------------------------------------------------------------------
 Tue Apr 22 15:15:59 CEST 2008 - jsrain@suse.cz
 
 - rename MODLIST variable to YAST_MODLIST to prevent conflicts

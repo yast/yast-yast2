@@ -13,8 +13,7 @@
 
     import "Mode";
     import "Stage";
-    import "PackageLock";
-    import "PackageSystem";
+    import "SuSERelease";
 
     /**
      * General product name and version
@@ -73,46 +72,6 @@
      */
     global string shortlabel	= "";
 
-global list<map<string,any> > FindBaseProducts() {
-    // bugzilla #238556
-    if (! PackageLock::Check()) {
-	y2error ("Locked!");
-	return [];
-    }
-
-    // the target at the sources must be initialized
-    PackageSystem::EnsureTargetInit();
-    PackageSystem::EnsureSourceInit();
-
-    // installed products are computed by the solver
-    Pkg::PkgSolve(true);
-
-    y2milestone ("Looking for base products");
-    list<map<string,any> > products = (list<map<string,any> >)
-	Pkg::TargetProducts ();
-
-    y2milestone ("All found products: %1", products);
-    products = filter (map<string,any> p, products, {
-	// bug 165314, relnotes_url needn't be defined (or empty string)
-	if (p["relnotes_url"]:"" != "") {
-	    string rn_url = (string) p["relnotes_url"]:"";
-	    relnotesurl_all = add (relnotesurl_all, rn_url);
-	    // bug 180581, relnotes should be identified by name
-	    product_of_relnotes[rn_url] = p["display_name"]:"";
-	}
-	return p["category"]:"" == "base";
-    });
-
-    y2milestone ("Found base products: %1", products);
-    if (size (products) == 0)
-	y2error ("No base product found");
-    else if (size (products) > 1)
-	y2warning ("More than one base product found");
-    return products;
-}
-
-
-
 
     // -----------------------------------------------
     /**
@@ -162,37 +121,9 @@ global list<map<string,any> > FindBaseProducts() {
 	}
 	else if (!Mode::config ())
 	{
-	    // bugzilla #238556
-	    if (! PackageLock::Check()) {
-		y2error ("Locked!");
-		return;
-	    }
-	    Pkg::TargetInitialize ("/");
-//	    list all_products = Pkg::TargetProducts();		// get all products
-
-//	    map last_product = all_products[0]:$[];		// get last installed product
-
-//	    name		= last_product["name"]:"";
-//	    version		= last_product["version"]:"";
-//	    vendor		= last_product["vendor"]:"";
-// TODO	    distproduct		= last_product["distproduct"]:"";
-// TODO	    distversion		= last_product["distversion"]:"";
-// TODO	    baseproduct		= last_product["baseproduct"]:"";
-// TODO	    if (baseproduct == "") baseproduct = name;
-// TODO	    baseversion		= last_product["baseversion"]:"";
-
-//	    relnotesurl		= last_product["relnotesurl"]:"";
-
-//	    flags		= splitstring (last_product["flags"]:"", " ");
-
-	    list<map<string,any> > base_products = FindBaseProducts();
-	    map<string,any> base_product = base_products[0]:$[];// there should be only one - hopefuly
-	    name = base_product["display_name"]:base_product["summary"]:base_product["name"]:"";
-	    short_name = base_product["short_name"]:name;
-	    version = base_product["version"]:"";
-	    vendor = base_product["vendor"]:"";
-	    relnotesurl = base_product["relnotes_url"]:"";
-	    flags = base_product["flags"]:[];
+	    name = SuSERelease::ReleaseName();
+	    short_name = name;
+	    version = SuSERelease::ReleaseVersion();
 	}
 
 	if(distproduct == nil) distproduct = "";
