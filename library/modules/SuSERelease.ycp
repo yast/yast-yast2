@@ -78,7 +78,6 @@ global string ReleaseInformation (string directory) {
  * @return string the release information
  */
 global string ReleaseName () {
-{
     if (Stage::initial ())
     {
 	return (string)SCR::Read (.content.PRODUCT);
@@ -108,6 +107,40 @@ global string ReleaseName () {
     }
 }
 
+/**
+ * Get information about the release
+ * Is limited for the currently running product
+ * @param directory containing the installed system (/ in installed system)
+ * @return string the release information
+ */
+global string ReleaseVersion()
+{
+    if (Stage::initial ())
+    {
+	return (string)SCR::Read (.content.VERSION);
+    }
+
+    string contents = ReleaseFileContents ("/");
+    string version = "";
+
+    if (contents != "?")
+    {
+	list<string> lines = splitstring (contents, "\n");
+	lines = filter (string l, lines, {return l != "";});
+
+	list<string> components = splitstring (lines[0]:"", " ");
+
+	foreach(string c, components,
+	    {
+		if (version == "" && regexpmatch (c, "^[0-9\\.]+$"))
+		{
+		    version = c;
+		}
+	    }
+	);
+    }
+
+    return version;
 }
 
 

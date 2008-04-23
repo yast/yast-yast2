@@ -55,7 +55,6 @@ include "packages/common.ycp";
  */
 global void EnsureTargetInit() {
     PackageLock::Check ();
-    PackageCallbacks::InitPackageCallbacks ();
     // always initizalize target, it should be cheap according to #45356
     target_initialized = Pkg::TargetInit ("/", false);
 }
@@ -74,8 +73,6 @@ global void EnsureSourceInit() {
 	Pkg::SourceStartCache (true);
 	return;
     }
-
-    PackageCallbacks::InitPackageCallbacks ();
 
     if(! target_initialized)
     {
