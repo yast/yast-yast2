@@ -1,0 +1,15 @@
+/**
+ * File:	anyxml.scr
+ *
+ * Summary:	Agent for reading any XML files.
+ *
+ * Authors:	Jiri Suchomel <jsuchome@suse.cz>
+ *
+ * Example:	SCR::Read (.anyxml, "/root/some_file.xml")
+ *
+ * $Id:$
+ */
+
+.anyxml
+
+`ag_anyxml ()
