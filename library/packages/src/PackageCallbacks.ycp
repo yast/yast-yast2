@@ -61,8 +61,15 @@
     boolean autorefreshing = false;
     boolean autorefreshing_aborted = false;
 
-    boolean textmode = UI::GetDisplayInfo()["TextMode"]:false;
-    integer display_width = UI::GetDisplayInfo()["Width"]:0;
+    boolean textmode()
+    {
+	return UI::GetDisplayInfo()["TextMode"]:false;
+    }
+
+    integer display_width()
+    {
+	return UI::GetDisplayInfo()["Width"]:0;
+    }
 
     /* Location of the persistent storage */
     const string conf_file = Directory::vardir + "/package_callbacks.conf";
@@ -1130,7 +1137,7 @@ void OpenSourcePopup()
 void SetHeaderSourcePopup(string text)
 {
     // Qt UI uses bold font, the string must be shortened even more
-    integer ui_adjustment = textmode ? 0 : 5;
+    integer ui_adjustment = textmode() ? 0 : 5;
 
     if (size(text) > max_size - ui_adjustment)
     {
@@ -1144,7 +1151,7 @@ void SetHeaderSourcePopup(string text)
 void SetLabelSourcePopup(string text)
 {
     // Qt uses proportional font, the string might be longer
-    integer ui_adjustment = textmode ? 0 : 6;
+    integer ui_adjustment = textmode() ? 0 : 6;
 
     if (size(text) > max_size + ui_adjustment)
     {
@@ -1897,12 +1904,12 @@ might be missing or out of date.")),
 	    if (bps_current > 0)
 	    {
 		// do not show the average download rate if the space is limited
-		if (textmode && display_width < 100)
+		if (textmode() && display_width() < 100)
 		{
 		    bps_avg = -1;
 		}
 
-		string format = textmode ? ("%1 - " + download_file) : (download_file + " - %1");
+		string format = textmode() ? ("%1 - " + download_file) : (download_file + " - %1");
 
 		// progress bar label, %1 is URL with optional download rate
 		msg_rate = sformat(_("Downloading: %1"), String::FormatRateMessage(format, bps_avg, bps_current));
