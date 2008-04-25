@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Apr 25 11:18:24 CEST 2008 - lslezak@suse.cz
+
+- do not use UI:: call while importing PackageCallbaks module
+  (initializes UI even in command line mode) (bnc#374259)
+- 2.16.58
+
+-------------------------------------------------------------------
 Thu Apr 24 09:55:15 CEST 2008 - jsuchome@suse.cz
 
 - added missing anyxml.scr
