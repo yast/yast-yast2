@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Apr 28 15:35:47 CEST 2008 - lslezak@suse.cz
+
+- Abort completete autorefresh when [Abort] is pressed after
+  a download problem (bnc #382377)
+- 2.16.59
+
+-------------------------------------------------------------------
 Fri Apr 25 11:18:24 CEST 2008 - lslezak@suse.cz
 
 - do not use UI:: call while importing PackageCallbaks module
