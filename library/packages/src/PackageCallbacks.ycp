@@ -1015,7 +1015,16 @@ Check whether the server is accessible."), wanted_label);
 	}
 
 	if (r == `cancel)
+	{
+	    // abort during autorefresh should abort complete autorefresh, not only the failed repo
+	    if (autorefreshing)
+	    {
+		autorefreshing_aborted = true;
+		Pkg::SkipRefresh();
+	    }
+
 	    return "C";
+	}
 	if (r == `ignore)
 	    return "I";
 	if (r == `skip)
