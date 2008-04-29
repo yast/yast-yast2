@@ -41,6 +41,9 @@ Conflicts:	yast2-storage < 2.16.4
 Conflicts:	yast2-network < 2.16.6
 Conflicts:	yast2-sshd < 2.16.1
 
+# moved ag_content agent 
+Conflicts:	yast2-instserver <= 2.16.3
+
 # InstExtensionImage module moved here from installation
 Conflicts:	yast2-installation < 2.16.18
 

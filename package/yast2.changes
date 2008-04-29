@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Apr 29 15:26:54 CEST 2008 - lslezak@suse.cz
+
+- moved ag_content agent (.content_file path) from yast2-instserver
+  package here so it can be shared by yast2-instserver and
+  yast2-product-creator (bnc#339126)
+- 2.16.60
+
+-------------------------------------------------------------------
 Mon Apr 28 15:35:47 CEST 2008 - lslezak@suse.cz
 
 - Abort completete autorefresh when [Abort] is pressed after

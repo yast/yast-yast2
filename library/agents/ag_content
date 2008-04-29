@@ -1,0 +1,55 @@
+#!/usr/bin/perl
+
+use strict;
+
+package ag_content;
+use ycp;
+use YaST::SCRAgent;
+use diagnostics;
+
+use Getopt::Long;
+use POSIX qw(tmpnam);
+use IO::File;
+
+our @ISA = ("YaST::SCRAgent");
+
+y2milestone ("ag_content started");
+
+# read the agent arguments
+#$_ = <STDIN>;
+# no input at all - simply exit
+#exit if ! defined $_;
+
+
+sub Read ()
+{
+    my $class = shift;
+    my ($path, $content_file) = @_;
+
+    my %content;
+    my $fh;
+    if (defined($content_file)) {
+        $fh = IO::File->new("< $content_file")
+            or return %content;
+
+        while(<$fh>)
+        {
+            m/^(\S*)\s(.*)/;
+            $content{$1} = $2;
+        }
+        close $fh;
+    }
+
+    return( \%content );
+}
+
+
+
+
+package main;
+
+ag_content->Run ();
+
+
+
+#EOF

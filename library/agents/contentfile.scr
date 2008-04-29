@@ -1,0 +1,20 @@
+/**
+ * File:
+ *   contentfile.scr
+ * Summary:
+ *   SCR Agent for parsing content file
+ * Access:
+ *   read
+ * Authors:
+ *   Unknown <yast2-hacker@suse.de>
+ * See:
+ *   libscr
+ * Example:
+ *   map contentmap = (map)SCR::Read(.content_file, path_to_content_file);
+ *
+ * $Id$
+ *
+ */
+.content_file
+
+`ag_content ()

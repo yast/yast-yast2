@@ -2,6 +2,7 @@
 # $Id$
 
 agent_SCRIPTS =		\
+	ag_content	\
 	ag_netd		\
 	ag_anyxml	\
 	ag_barexml
