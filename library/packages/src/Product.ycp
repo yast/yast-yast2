@@ -121,9 +121,9 @@
 	}
 	else if (!Mode::config ())
 	{
-	    name = SuSERelease::ReleaseName();
-	    short_name = name;
+	    short_name = SuSERelease::ReleaseName();
 	    version = SuSERelease::ReleaseVersion();
+	    name = short_name + " " + version;
 	}
 
 	if(distproduct == nil) distproduct = "";

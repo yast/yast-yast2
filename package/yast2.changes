@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Apr 30 12:02:38 CEST 2008 - lslezak@suse.cz
+
+- Product.ycp - properly set 'name' and 'short_name' (bnc#368104)
+
+-------------------------------------------------------------------
 Tue Apr 29 15:26:54 CEST 2008 - lslezak@suse.cz
 
 - moved ag_content agent (.content_file path) from yast2-instserver
