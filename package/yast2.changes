@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri May  2 14:07:24 CEST 2008 - lslezak@suse.cz
+
+- Mode::test(), PakageCallbacks - do not call UI:: functions in
+  command line mode (do not initialize UI) (another fix for
+  bnc#374259)
+- 2.16.61
+
+-------------------------------------------------------------------
 Wed Apr 30 12:02:38 CEST 2008 - lslezak@suse.cz
 
 - Product.ycp - properly set 'name' and 'short_name' (bnc#368104)
