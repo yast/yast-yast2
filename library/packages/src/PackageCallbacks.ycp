@@ -63,12 +63,12 @@
 
     boolean textmode()
     {
-	return UI::GetDisplayInfo()["TextMode"]:false;
+	return Mode::commandline() ? true : UI::GetDisplayInfo()["TextMode"]:false;
     }
 
     integer display_width()
     {
-	return UI::GetDisplayInfo()["Width"]:0;
+	return Mode::commandline() ? 0 : UI::GetDisplayInfo()["Width"]:0;
     }
 
     /* Location of the persistent storage */
@@ -2579,6 +2579,8 @@ global void ProcessStart(string task, list<string> stages, string help)
    y2milestone("Process: Start: task: %1, stages: %2, help: %3", task, stages, help);
    y2milestone("Progress: status: %1, isrunning: %2", Progress::status(), Progress::IsRunning());
 
+    if (Mode::commandline()) return;
+
    boolean opened = false;
 
     if (Progress::status())
@@ -2609,6 +2611,9 @@ global void ProcessStart(string task, list<string> stages, string help)
 global boolean ProcessProgress(integer percent)
 {
     y2debug("Process: %1%%", percent);
+
+    if (Mode::commandline()) return true;
+
     Progress::Step(percent);
 
     return true;
@@ -2620,6 +2625,9 @@ global boolean ProcessProgress(integer percent)
 global void ProcessNextStage()
 {
     y2milestone("Setting stage: %1", last_stage);
+
+    if (Mode::commandline()) return;
+
     Progress::Stage(last_stage, "", -1);
 
     last_stage = last_stage + 1;
@@ -2631,6 +2639,7 @@ global void ProcessNextStage()
 global void ProcessDone()
 {
     y2milestone("Process: Finished");
+    if (Mode::commandline()) return;
 
     integer idx = size(opened_wizard) - 1;
 

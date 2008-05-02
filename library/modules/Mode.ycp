@@ -124,14 +124,21 @@ global void SetMode (string new_mode) {
     _mode = new_mode;
 }
 
+global boolean commandline();
+
 // test mode definitions
 
 global string testMode () {
     if (_test == nil)
 	Initialize ();
     if (!test_autochecked) {
-	// #243624
-	if (UI::GetDisplayInfo () == nil) {
+
+	// do not call GetDisplayInfo in command line mode (bnc#374259)
+	if (commandline())
+	{
+	    _test = "none";
+	}
+	else if (UI::GetDisplayInfo () == nil) {
 	    _test = "testsuite"; // testsuite runs with a dummy ui. 
 	}
 	test_autochecked = true;

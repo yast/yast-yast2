@@ -371,11 +371,6 @@
 
 	y2milestone("Progress::New(%1, %2, %3)", window_title, length, stg);
 
-	// a progress is already running, remember the current status
-	if (IsRunning())
-	{
-	    PushState();
-	}
 
 	integer orig_current_step = current_step;
 
@@ -387,6 +382,12 @@
 
 	if (Mode::commandline ())
 	    return;
+
+	// a progress is already running, remember the current status
+	if (IsRunning())
+	{
+	    PushState();
+	}
 
 	if (length < size(stg))
 	{
