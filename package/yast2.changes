@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon May  5 14:52:54 CEST 2008 - mvidner@suse.cz
+
+- Pass client arguments as literal strings, not YCP values.
+  It broke for "/tmp/windomain\theuser-tmpdir" (bnc#382883).
+
+-------------------------------------------------------------------
 Fri May  2 14:07:24 CEST 2008 - lslezak@suse.cz
 
 - Mode::test(), PakageCallbacks - do not call UI:: functions in

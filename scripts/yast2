@@ -214,12 +214,13 @@ else
 	shift
 fi
 
-# Transform every argument into a ycp string, that is surround all
-# args by ("...").  args may contain spaces.
+# Pass the arguments to WFM::Args():
+# Surround all args by (...).  args may contain spaces.
+# Use -S to avoid YCP escaping (bnc#382883)
 a=("$@")
-b=("${a[@]/#/(\"}")
-c=("${b[@]/%/\")}")
-set -- "${c[@]}"
+b=("${a[@]/#/(}")
+c=("${b[@]/%/)}")
+set -- -S "${c[@]}"
 
 case "`/usr/bin/basename $0`" in
 	YaST|yast|yast1|zast)
