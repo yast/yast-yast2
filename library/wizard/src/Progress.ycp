@@ -151,12 +151,11 @@
 	if (current_subprogress == `progress)
 	{
 	    state["subprogress_label"] = (string)UI::QueryWidget(`id(`subprogress_progress), `Label);
-	    state["subprogress_value"] = (string)UI::QueryWidget(`id(`subprogress_progress), `Value);
+	    state["subprogress_value"] = (integer)UI::QueryWidget(`id(`subprogress_progress), `Value);
 	}
 	else if (current_subprogress == `tick)
 	{
 	    state["subprogress_label"] = (string)UI::QueryWidget(`id(`subprogress_tick), `Label);
-	    state["subprogress_value"] = (string)UI::QueryWidget(`id(`subprogress_tick), `Value);
 	}
 
 	y2milestone("Current state: %1", state);
