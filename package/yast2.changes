@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May  7 09:52:21 CEST 2008 - lslezak@suse.cz
+
+- Progress:: store the current values correctly when a nested
+  progress is started
+
+-------------------------------------------------------------------
 Mon May  5 14:52:54 CEST 2008 - mvidner@suse.cz
 
 - Pass client arguments as literal strings, not YCP values.
