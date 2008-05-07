@@ -619,6 +619,37 @@
     }
 
     /**
+     * Replace the wizard help subwindow with a custom widget.
+     *
+     * @deprecated
+     * @param contents Replace Help with contents
+     **/
+    global void ReplaceHelp(term contents) {
+	if ( UI::WidgetExists( `id(`helpSpace ) ) )
+	{
+	    y2warning( "Wizard::ReplaceHelp() is deprecated!" );
+	    UI::ReplaceWidget(`id(`helpSpace), contents);
+	}
+	else
+	{
+	    y2error( "Wizard::ReplaceHelp() is not supported by the new Qt wizard!" );
+	}
+    }
+
+    /**
+     * Set a new help text.
+     * @param help_text Help text
+     * @example Wizard::SetHelpText("This is a help Text");
+     **/
+    global void SetHelpText(string help_text)
+    {
+	if ( UI::WizardCommand(`SetHelpText( help_text ) ) == false )
+	{
+	    UI::ChangeWidget(`id(`WizardDialog), `HelpText, help_text);
+	}
+    }
+
+    /**
      * Set the contents of a wizard dialog and define if to move focus to next button
      *
      * How the general framework for the installation wizard should
@@ -636,7 +667,6 @@
 
 	if ( UI::WizardCommand(`SetDialogHeading( title ) ) == true )
 	{
-	    UI::WizardCommand(`SetHelpText( help_text ) );
 	    UI::WizardCommand(`EnableNextButton( has_next ) );
 	    UI::WizardCommand(`EnableBackButton( has_back ) );
 	    if (set_focus)
@@ -654,11 +684,10 @@
 	    if (set_focus)
 		if ( UI::WidgetExists(`id(`accept	) ) )	UI::SetFocus( `id(`accept ) );
 	    if ( UI::WidgetExists(`id(`abort	) ) )	UI::ChangeWidget(`id(`abort),`Enabled, true);
-	    //if ( UI::WidgetExists(`id(`HelpText	) ) )	UI::ChangeWidget(`id(`HelpText), `Value, help_text);
-	    UI::ChangeWidget(`id(`WizardDialog), `HelpText, help_text);
 	    if ( UI::WidgetExists(`id(`title	) ) )	UI::ChangeWidget(`id(`title), `Value, title);
 	}
 
+	SetHelpText( help_text);
 	UI::ReplaceWidget(`id(`contents), contents);
     }
 
@@ -733,48 +762,14 @@
 	    if ( UI::WidgetExists(`id(`next ) ) )	UI::ChangeWidget(`id (`next), `Label, next_label);
 	    Wizard::SetContents( title, contents, help_text, true, true );
 	}
-	UI::ChangeWidget(`id(`WizardDialog), `HelpText, help_text);
+
+	SetHelpText( help_text );
 	UI::CheckShortcuts ();
     }
 
 
 
-    /**
-     * Replace the wizard help subwindow with a custom widget.
-     *
-     * @deprecated
-     * @param contents Replace Help with contents
-     **/
-    global void ReplaceHelp(term contents) {
-	if ( UI::WidgetExists( `id(`helpSpace ) ) )
-	{
-	    y2warning( "Wizard::ReplaceHelp() is deprecated!" );
-	    UI::ReplaceWidget(`id(`helpSpace), contents);
-	}
-	else
-	{
-	    y2error( "Wizard::ReplaceHelp() is not supported by the new Qt wizard!" );
-	}
-    }
-
-
-
-    /**
-     * Set a new help text.
-     * @param help_text Help text
-     * @example Wizard::SetHelpText("This is a help Text");
-     **/
-    global void SetHelpText(string help_text)
-    {
-	if ( UI::WizardCommand(`SetHelpText( help_text ) ) == false )
-	{
-	    //if ( UI::WidgetExists( `id(`helpSpace ) ) )
-	//	UI::ReplaceWidget(`id(`helpSpace), `RichText(`id(`HelpText), help_text ) );
-	    UI::ChangeWidget(`id(`WizardDialog), `HelpText, help_text);
-	}
-    }
-
-
+    
     /**
      * Restore the wizard help subwindow.
      * @param help_text Help text
