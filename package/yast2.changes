@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri May 09 12:19:58 CEST 2008 - aschnell@suse.de
+
+- Fixed keyboard on PPC during installation (bnc #387567)
+- 2.16.64
+
+-------------------------------------------------------------------
 Fri May  9 10:03:05 CEST 2008 - locilka@suse.cz
 
 - Fixed TSIG key generation (bnc #387099).
@@ -109,8 +115,8 @@ Thu Apr 17 20:31:39 CEST 2008 - locilka@suse.cz
 -------------------------------------------------------------------
 Wed Apr 16 13:30:31 CEST 2008 - kmachalkova@suse.cz
 
-- Wizard.ycp: Generic tree dialog introduced - left help panel 
-  might be removed, but menu tree must stay (FaTE #303291 related) 
+- Wizard.ycp: Generic tree dialog introduced - left help panel
+  might be removed, but menu tree must stay (FaTE #303291 related)
 
 -------------------------------------------------------------------
 Tue Apr 15 11:13:04 CEST 2008 - lslezak@suse.cz
@@ -124,7 +130,7 @@ Tue Apr 15 11:13:04 CEST 2008 - lslezak@suse.cz
 Mon Apr 14 16:42:44 CEST 2008 - sh@suse.de
 
 - Open wizard dialogs with `opt(`wizardDialog) in Wizard.ycp
-- V 2.16.51 
+- V 2.16.51
 
 -------------------------------------------------------------------
 Mon Apr 14 14:16:55 CEST 2008 - lslezak@suse.cz
