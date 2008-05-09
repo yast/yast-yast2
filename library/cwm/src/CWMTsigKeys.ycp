@@ -174,7 +174,7 @@ global define void DeleteTSIGKeyFromDisk (string main) {
     y2milestone ("Removing file %1, found keys: %2", main, keys);
     foreach (string k, keys, {
 	SCR::Execute (.target.bash, sformat (
-	    "rm -f /etc/named.d/K%1\\.* ",
+	    "rm -rf /etc/named.d/K%1\\.* ",
 	    tolower (k)));
     });
     SCR::Execute (.target.remove, main);
@@ -312,13 +312,19 @@ Stop using it in the configuration first.");
     }
     else if (ret == "_cwm_generate_key")
     {
+	if (! UI::WidgetExists (`id ("_cwm_new_key_file"))) {
+	    y2error ("No such UI widget: %1", "_cwm_new_key_file");
+	    return nil;
+	}
+
 	string key = (string)UI::QueryWidget (`id ("_cwm_new_key_id"), `Value);
 	map stat = (map)SCR::Read (.target.stat, new_filename);
+
 	if (size (stat) != 0)
 	{
 	    if (stat["isdir"]:false)
 	    {
-		UI::SetFocus (`id ("new_key_file"));
+		UI::SetFocus (`id ("_cwm_new_key_file"));
                 Report::Error (
 		    // error report
 		    _("Specified filename is an existing directory."));
@@ -337,7 +343,7 @@ Stop using it in the configuration first.");
 	}
 	if (key == nil || key == "")
 	{
-	    UI::SetFocus (`id ("new_key_name"));
+	    UI::SetFocus (`id ("_cwm_new_key_id"));
 	    // error report
 	    Popup::Error (_("The TSIG key ID was not specified."));
 	    return nil;
@@ -368,7 +374,7 @@ Remove it?")))
 on your disk. Remove it?")))
 	    {
 		SCR::Execute (.target.bash, sformat (
-		    "rm -f `ls /etc/named.d/K%1\\.*`",
+		    "rm -rf `ls /etc/named.d/K%1\\.*`",
 		    tolower (key)));
 		list<string> files = (list<string>)SCR::Read (
 		    .target.dir,
