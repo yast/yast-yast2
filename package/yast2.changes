@@ -2,6 +2,7 @@
 Fri May  9 10:03:05 CEST 2008 - locilka@suse.cz
 
 - Fixed TSIG key generation (bnc #387099).
+- 2.16.63
 
 -------------------------------------------------------------------
 Wed May  7 09:52:21 CEST 2008 - lslezak@suse.cz
