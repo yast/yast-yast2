@@ -387,7 +387,7 @@ global define void LongMessage(string message_string) ``{
  * @return void
  */
 global define void ShowText(string headline_string, string message_string) ``{
-    if (log_messages)
+    if (log_errors)
     {
 	y2milestone(1, "%1", message_string);
     }
