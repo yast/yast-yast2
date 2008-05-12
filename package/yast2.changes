@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon May 12 13:42:11 CEST 2008 - mvidner@suse.cz
+
+- Report::{Long,}{Message,Warning,Error}: log the text before popping
+  up a dialog so that eager bug reporters have the last message in the
+  log (bnc#381594#c15). 
+
+-------------------------------------------------------------------
 Fri May 09 12:19:58 CEST 2008 - aschnell@suse.de
 
 - Fixed keyboard on PPC during installation (bnc #387567)
