@@ -294,6 +294,11 @@ global define boolean AnyQuestion( string headline,
 				       string yes_button_message,
 				       string no_button_message,
 				       symbol focus )	``{
+    if (log_yesno_messages)
+    {
+	y2milestone(1, "%1", message);
+    }
+
     boolean ret = false;
     if (display_yesno_messages)
     {
@@ -319,11 +324,6 @@ global define boolean AnyQuestion( string headline,
 	}
     }
 
-    if (log_yesno_messages)
-    {
-	y2milestone(1, "%1", message);
-    }
-
     yesno_messages = add(yesno_messages, message);
     return ret;
 }
@@ -334,6 +334,11 @@ global define boolean AnyQuestion( string headline,
  * @return void
  */
 global define void Message(string message_string) ``{
+    if (log_messages)
+    {
+	y2milestone(1, "%1", message_string);
+    }
+
     if (display_messages)
     {
 	if (timeout_messages > 0)
@@ -346,11 +351,6 @@ global define void Message(string message_string) ``{
 	}
     }
 
-    if (log_messages)
-    {
-	y2milestone(1, "%1", message_string);
-    }
-
     messages = add(messages, message_string);
 }
 
@@ -360,6 +360,11 @@ global define void Message(string message_string) ``{
  * @return void
  */
 global define void LongMessage(string message_string) ``{
+    if (log_messages)
+    {
+	y2milestone(1, "%1", message_string);
+    }
+
     if (display_messages)
     {
 	if (timeout_messages > 0)
@@ -372,11 +377,6 @@ global define void LongMessage(string message_string) ``{
 	}
     }
 
-    if (log_messages)
-    {
-	y2milestone(1, "%1", message_string);
-    }
-
     messages = add(messages, message_string);
 }
 
@@ -387,6 +387,11 @@ global define void LongMessage(string message_string) ``{
  * @return void
  */
 global define void ShowText(string headline_string, string message_string) ``{
+    if (log_messages)
+    {
+	y2milestone(1, "%1", message_string);
+    }
+
     if (display_errors)
     {
 	if (timeout_errors > 0)
@@ -400,11 +405,6 @@ global define void ShowText(string headline_string, string message_string) ``{
 	}
     }
 
-    if (log_messages)
-    {
-	y2milestone(1, "%1", message_string);
-    }
-
     messages = add(messages, message_string);
 }
 
@@ -414,6 +414,11 @@ global define void ShowText(string headline_string, string message_string) ``{
  * @return void
  */
 global define void Warning(string warning_string) ``{
+    if (log_warnings)
+    {
+	y2warning(1, "%1", warning_string);
+    }
+
     if (display_warnings)
     {
 	if (timeout_warnings > 0)
@@ -426,11 +431,6 @@ global define void Warning(string warning_string) ``{
 	}
     }
 
-    if (log_warnings)
-    {
-	y2warning(1, "%1", warning_string);
-    }
-
     warnings = add(warnings, warning_string);
 }
 
@@ -440,6 +440,11 @@ global define void Warning(string warning_string) ``{
  * @return void
  */
 global define void LongWarning(string warning_string) ``{
+    if (log_warnings)
+    {
+	y2warning(1, "%1", warning_string);
+    }
+
     if (display_warnings)
     {
 	if (timeout_warnings > 0)
@@ -452,11 +457,6 @@ global define void LongWarning(string warning_string) ``{
 	}
     }
 
-    if (log_warnings)
-    {
-	y2warning(1, "%1", warning_string);
-    }
-
     warnings = add(warnings, warning_string);
 }
 
@@ -467,6 +467,11 @@ global define void LongWarning(string warning_string) ``{
  * @return void
  */
 global define void Error(string error_string) ``{
+    if (log_errors)
+    {
+	y2error(1, "%1", error_string);
+    }
+
     if (display_errors)
     {
 	if (timeout_errors > 0)
@@ -479,11 +484,6 @@ global define void Error(string error_string) ``{
 	}
     }
 
-    if (log_errors)
-    {
-	y2error(1, "%1", error_string);
-    }
-
     errors = add(errors, error_string);
 }
 
@@ -493,6 +493,11 @@ global define void Error(string error_string) ``{
  * @return void
  */
 global define void LongError(string error_string) ``{
+    if (log_errors)
+    {
+	y2error(1, "%1", error_string);
+    }
+
     if (display_errors)
     {
 	if (timeout_errors > 0)
@@ -503,11 +508,6 @@ global define void LongError(string error_string) ``{
 	{
 	    Popup::LongError(error_string);
 	}
-    }
-
-    if (log_errors)
-    {
-	y2error(1, "%1", error_string);
     }
 
     errors = add(errors, error_string);
