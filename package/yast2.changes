@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue May 13 12:41:55 CEST 2008 - lslezak@suse.cz
+
+- PackageSystem::EnsureSourceInit() - do not display "No package
+  source defined" when installing from liveCD (bnc#389688)
+- 2.16.65
+
+-------------------------------------------------------------------
 Mon May 12 13:42:11 CEST 2008 - mvidner@suse.cz
 
 - Report::{Long,}{Message,Warning,Error}: log the text before popping
