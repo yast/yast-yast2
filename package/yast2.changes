@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May 13 13:49:40 CEST 2008 - mzugec@suse.cz
+
+- isDiskOnNetwork::NetworkStorage added test for nfs (bnc#384420)
+- 2.16.66 
+
+-------------------------------------------------------------------
 Tue May 13 12:41:55 CEST 2008 - lslezak@suse.cz
 
 - PackageSystem::EnsureSourceInit() - do not display "No package

@@ -26,17 +26,22 @@ global string getDevice(string mount_point){
  * @return root dev over network
  */
 global boolean isDiskOnNetwork(string device){
- boolean ret=false;
+ boolean network_based=false;
+ // test for iSCSI
  foreach(map<string, any> disk, (list<map<string, any> >)SCR::Read(.probe.disk), {
   y2milestone("%1", disk["dev_name"]:"");
-y2internal("%1", device);
+  y2internal("%1", device);
   if (disk["dev_name"]:""==device){
    foreach(string row, disk["dev_names"]:[], {
-    if (issubstring(row, "iscsi")) ret=true;
+    if (issubstring(row, "iscsi")) network_based=true;
    });
   }
  });
- return ret;
+ // test for nfs
+ if (!network_based) {
+  if (SCR::Execute(.target.bash, sformat("grep nfs /proc/mounts |cut -d' ' -f 2|grep -q %1", device))!=0) network_based=true;
+ }
+ return network_based;
 }
 
 
