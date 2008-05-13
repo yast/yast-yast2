@@ -86,7 +86,8 @@ global void EnsureSourceInit() {
     {
 	source_initialized = true;
     }
-    else
+    // ignore the problem when installing from LiveCD - all sources are disabled
+    else if (!Mode::live_installation())
     {
 	/* Error message, no packages sources found */
 	Report::Error(_("No package source defined."));
