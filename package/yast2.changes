@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed May 14 09:47:19 CEST 2008 - jsrain@suse.cz
+
+- propagate the yast2 --gtk and --qt switches from control center
+  to running individual modules (bnc #389714)
+- 2.16.67
+
+-------------------------------------------------------------------
 Tue May 13 13:49:40 CEST 2008 - mzugec@suse.cz
 
 - isDiskOnNetwork::NetworkStorage added test for nfs (bnc#384420)

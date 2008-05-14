@@ -192,8 +192,8 @@ while true ; do
                 --fullscreen) Y2UI_ARGS="$Y2UI_ARGS --fullscreen"; shift ;;
 		--noborder)   Y2UI_ARGS="$Y2UI_ARGS --noborder"  ; shift ;;
 		--kcontrol)   Y2UI_ARGS="$Y2UI_ARGS --kcontrol_id YaST" ; shift ;;
-		--qt)  CMDLINE_UI="qt"  ; shift ;;
-		--gtk)  CMDLINE_UI="gtk"  ; shift ;;
+		--qt)  export CMDLINE_UI="qt"  ; shift ;;
+		--gtk)  export CMDLINE_UI="gtk"  ; shift ;;
 		--ncurses)  unset DISPLAY ; shift ;;
 		--) shift ; break ;;
 		*) echo "Unrecognized option $1" ; exit 1 ;;
