@@ -1,10 +1,7 @@
 /**
  * File:	Wizard.ycp
  * Package:	yast2
- * Summary:	Wizard dialog
- * Authors:	Stefan Hundhammer <sh@suse.de>
- *
- * $Id$
+ * Author:	Stefan Hundhammer <sh@suse.de>
  *
  * Provides the wizard dialog (common screen for all YaST2 installation
  * modules) and functions to set the contents, to replace and restore
@@ -21,8 +18,9 @@
     import "SuSERelease";
 
     // keep trailing "/" !!
-    string theme_path = Directory::themedir + "/current";
-    string icon_path  = theme_path + "/icons/22x22/apps";
+    string theme_path   = Directory::themedir + "/current";
+    string icon_path    = theme_path + "/icons/22x22/apps";
+    string default_icon = icon_path  + "/yast.png";
 
     boolean have_fancy_ui_cache = nil;
 
@@ -356,6 +354,8 @@
 			   `Wizard(`back,  Label::BackButton(),
 				   `abort, Label::AbortButton(),
 				   `next,  Label::NextButton() ) );
+	    
+	    UI::WizardCommand(`SetDialogIcon( default_icon ) );
 	}
 	else
 	{
@@ -380,6 +380,7 @@
 
 	    // Don't let sloppy calls to Wizard::SetContents() disable this button by accident
 	    UI::WizardCommand(`ProtectNextButton( true ) );
+	    UI::WizardCommand(`SetDialogIcon( default_icon ) );
 	}
 	else
 	{
@@ -404,6 +405,7 @@
 
 	    // Don't let sloppy calls to Wizard::SetContents() disable this button by accident
 	    UI::WizardCommand(`ProtectNextButton( true ) );
+	    UI::WizardCommand(`SetDialogIcon( default_icon ) );
 	}
 	else
 	{
@@ -425,6 +427,8 @@
 			   `Wizard(`apply,	_( "&Apply" ),
 				   `abort,	Label::AbortButton(),
 				   `finish,	Label::FinishButton() ) );
+	    
+	    UI::WizardCommand(`SetDialogIcon( default_icon ) );
 	}
 	else
 	{
@@ -449,6 +453,7 @@
 
 	    // Don't let sloppy calls to Wizard::SetContents() disable this button by accident
 	    UI::WizardCommand(`ProtectNextButton( true ) );
+	    UI::WizardCommand(`SetDialogIcon( default_icon ) );
 	}
 	else
 	{
@@ -472,6 +477,7 @@
  
 	    // Don't let sloppy calls to Wizard::SetContents() disable this button by accident
 	    UI::WizardCommand(`ProtectNextButton( true ) );
+	    UI::WizardCommand(`SetDialogIcon( default_icon ) );
 	}
 	else
 	{
@@ -492,6 +498,8 @@
 				   `back,  Label::BackButton(),
 				   `abort, Label::AbortButton(),
 				   `next,  Label::NextButton() ) );
+	    
+	    UI::WizardCommand(`SetDialogIcon( default_icon ) );
 	}
 	else
 	{
@@ -1424,12 +1432,14 @@
         if ( haveFancyUI() )
         {
             UI::OpenDialog(`opt(`wizardDialog ),
-                    `Wizard(`opt(`treeEnabled),
-                        `back, Label::BackButton(),
-                        `abort, Label::AbortButton(),
-                        `next, Label::NextButton()
-                        )
-                    );
+			   `Wizard(`opt(`treeEnabled),
+				   `back, Label::BackButton(),
+				   `abort, Label::AbortButton(),
+				   `next, Label::NextButton()
+				   )
+			   );
+	    
+	    UI::WizardCommand(`SetDialogIcon( default_icon ) );
         }
         else
         {
