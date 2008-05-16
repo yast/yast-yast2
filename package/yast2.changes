@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri May 16 16:40:22 CEST 2008 - jsrain@suse.cz
+
+- added categories Settings and System into desktop file
+  (bnc #382778)
+
+-------------------------------------------------------------------
 Fri May 16 16:27:19 CEST 2008 - sh@suse.de
 
 - Fixed bnc #374704: Missing wizard icons
