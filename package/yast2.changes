@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue May 20 13:51:55 CEST 2008 - locilka@suse.cz
+
+- Updated SuSEfirewall2 service-translations (generated from PDB).
+
+-------------------------------------------------------------------
 Fri May 16 16:40:22 CEST 2008 - jsrain@suse.cz
 
 - added categories Settings and System into desktop file

@@ -169,10 +169,10 @@
   // TRANSLATORS: Description of a Service (File name: ntp, RPM: ntp), used as a common label or an item in table
   tmpstring = _("Opens ports for xntp.");
 
-  // TRANSLATORS: Name of Service (File name: nut, RPM: nut), can be used as check box, item in multiple selection box...
+  // TRANSLATORS: Name of Service (File name: nut, RPM: nut-classic), can be used as check box, item in multiple selection box...
   tmpstring = _("Network UPS Tools");
 
-  // TRANSLATORS: Description of a Service (File name: nut, RPM: nut), used as a common label or an item in table
+  // TRANSLATORS: Description of a Service (File name: nut, RPM: nut-classic), used as a common label or an item in table
   tmpstring = _("Opens ports for remote UPS signalling for Network UPS Tools.");
 
   // TRANSLATORS: Name of Service (File name: openldap, RPM: openldap2), can be used as check box, item in multiple selection box...
