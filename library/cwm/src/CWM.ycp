@@ -876,8 +876,6 @@ global define void ReplaceWidgetHelp (string widget, string help) {
 
 	    if (back != "")
 		Wizard::SetBackButton (`back, back);
-	    else if (help != "")
-		Wizard::SetBackButton (`help, help);
 	    else
 		Wizard::HideBackButton ();
 	}
