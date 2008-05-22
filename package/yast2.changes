@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu May 22 15:53:55 CEST 2008 - lslezak@suse.cz
+
+- Added Product::ReadProducts() to explicitly read products from
+  the package manager (bnc#390738)
+- 2.16.70
+
+-------------------------------------------------------------------
 Thu May 22 10:56:19 CEST 2008 - mzugec@suse.cz
 
 - test if disk is network based in NetworkStorage (bnc#384420)
