@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May 22 10:56:19 CEST 2008 - mzugec@suse.cz
+
+- test if disk is network based in NetworkStorage (bnc#384420)
+- 2.16.69 
+
+-------------------------------------------------------------------
 Tue May 20 13:51:55 CEST 2008 - locilka@suse.cz
 
 - Updated SuSEfirewall2 service-translations (generated from PDB).

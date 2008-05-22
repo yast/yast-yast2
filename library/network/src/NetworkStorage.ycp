@@ -37,9 +37,13 @@ global boolean isDiskOnNetwork(string device){
    });
   }
  });
- // test for nfs
+ // test for nfs (bnc#384420)
  if (!network_based) {
-  if (SCR::Execute(.target.bash, sformat("grep nfs /proc/mounts |cut -d' ' -f 2|grep -q %1", device))!=0) network_based=true;
+  string space="[[:space:]]";
+  if (SCR::Execute(.target.bash, sformat("grep '%1%2%3*nfs%4' /proc/mounts ", space, device, space, space))==0){
+   y2milestone("device %1 is network based : %2", device, network_based);
+   network_based=true;
+  }
  }
  return network_based;
 }
