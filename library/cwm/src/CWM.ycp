@@ -851,6 +851,8 @@ global define void ReplaceWidgetHelp (string widget, string help) {
     global define void AdjustButtons (string next, string back, string abort,
 	string help)
     {
+// FIXME: there is no point in the help parameter, since we cannot hide the Help
+// button anyway, get rid of it, it's not used at all
 	if (UI::HasSpecialWidget (`Wizard))
 	    help = "";
 	if (help == nil)
@@ -861,29 +863,20 @@ global define void ReplaceWidgetHelp (string widget, string help) {
 	    back = "";
 	if (abort == nil)
 	    abort = "";
-	if (back == "" || help == "")
-	// back or help is missing, great!
-	{
-	    if (next != "")
+	if (next != "")
 		Wizard::SetNextButton (`next, next);
-	    else
+	else
 		Wizard::HideNextButton ();
 
-	    if (abort != "")
+	if (abort != "")
 		Wizard::SetAbortButton (`abort, abort);
-	    else
+	else
 		Wizard::HideAbortButton ();
 
-	    if (back != "")
+	if (back != "")
 		Wizard::SetBackButton (`back, back);
-	    else
-		Wizard::HideBackButton ();
-	}
 	else
-	// both back and help are present, problem!
-	{
-	    // TODO this situation if it is needed
-	}
+		Wizard::HideBackButton ();
     }
 
     /**
