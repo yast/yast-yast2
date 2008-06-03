@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun  3 16:49:06 CEST 2008 - locilka@suse.cz
+
+- Always calling NetworkInterfaces::Read in SuSEFirewall::Read
+  (bnc #396646)
+
+-------------------------------------------------------------------
 Fri May 23 12:23:25 CEST 2008 - jsrain@suse.cz
 
 - adjusted button handling in CWM (bnc#392983)

@@ -2318,9 +2318,10 @@ Run YaST2 Firewall and assign it.
 	    Progress::NextStage();
 	}
 
-	if (Mode::normal() || Mode::commandline()) {
-	    NetworkInterfaces::Read();
-	} else if (Mode::installation() || Mode::autoinst()) {
+	// Always call NI::Read, bnc #396646
+	NetworkInterfaces::Read();
+
+	if (Mode::installation() || Mode::autoinst()) {
 	    // Allways modified for installation, allways save the final state
 	    // fixing bug #67355
 	    // SetModified();
