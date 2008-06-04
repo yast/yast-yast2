@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jun  4 16:32:13 CEST 2008 - lslezak@suse.cz
+
+- added PackageLock::Connect() - similar to PackageLock::Check()
+  but [Abort] is always displayed and [Continue] is optional
+  (bnc#293356)
+
+-------------------------------------------------------------------
 Tue Jun  3 16:49:06 CEST 2008 - locilka@suse.cz
 
 - Always calling NetworkInterfaces::Read in SuSEFirewall::Read
