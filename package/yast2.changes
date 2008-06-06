@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun  6 12:50:02 CEST 2008 - locilka@suse.cz
+
+- Fixed Progress stages layout, stage-mark has a reseved space now
+  (bnc #395752).
+
+-------------------------------------------------------------------
 Wed Jun  4 16:32:13 CEST 2008 - lslezak@suse.cz
 
 - added PackageLock::Connect() - similar to PackageLock::Check()
