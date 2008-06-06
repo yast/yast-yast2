@@ -267,7 +267,7 @@
      */
     any Mark (symbol kind) {
 	if (kind == `todo)
-	    return "-   ";
+	    return "-";
 	if (kind == `current)
 	    return UI::Glyph (`BulletArrowRight);
 	if (kind == `done)
@@ -368,17 +368,6 @@
 	if (!visible)
 	    return ;
 
-	y2milestone("Progress::New(%1, %2, %3)", window_title, length, stg);
-
-
-	integer orig_current_step = current_step;
-
-	steps = length;
-	stages = size (stg);
-	titles = tits;
-	current_step = -1;
-	current_stage = -1;
-
 	if (Mode::commandline ())
 	    return;
 
@@ -387,6 +376,16 @@
 	{
 	    PushState();
 	}
+
+	y2milestone("Progress::New(%1, %2, %3)", window_title, length, stg);
+
+	integer orig_current_step = current_step;
+
+	steps = length;
+	stages = size (stg);
+	titles = tits;
+	current_step = -1;
+	current_stage = -1;
 
 	if (length < size(stg))
 	{
@@ -439,17 +438,26 @@
 	    bar = `VBox (`VSpacing (1));
 	    integer i = 0;
 	    any label_heading = Mark (`todo);
+
+	    term items = `VBox ();
 	    foreach (string item, stg, ``{
-		bar = add (bar,
-			  `HBox (
-			      `HSpacing (1),
-			      // check_ycp wants this text to be translatable. I do not know why.
-			      `Heading (MarkId (i), label_heading),
-			      `Label (`opt (`hstretch), item)
-			      )
+		items = add (items,
+			`HBox (
+			    `HSpacing (1),
+			    // check_ycp wants this text to be translatable. I do not know why.
+			    // HSquash + MinWidth(4) reserves a defined space for 'mark' plus 'emtpy space'
+			    // see bnc #395752
+			    `HSquash (`MinWidth (4, `Heading (MarkId (i), label_heading))),
+			    `Label (item),
+			    `HStretch()
+			)
 		    );
 		i = i+1;
 	    });
+	    bar = add (bar, `Left (`HBox (
+		`HSquash (items)
+	    )));
+
 	    if (0 != steps)
 	    {  // stages and progress
 		term progress_icons = `Empty ();
