@@ -253,6 +253,23 @@ global boolean Available(string package) {
     return Pkg::IsAvailable(package);
 }
 
+boolean _rpm_query_binary_initialized = false;
+string _rpm_query_binary = "rpm";
+
+void InitRPMQueryBinary () {
+    if (_rpm_query_binary_initialized) return;
+
+    // rpmqpack is a way faster
+    if (SCR::Read (.target.size, "/usr/bin/rpmqpack") > -1) {
+	_rpm_query_binary = "/usr/bin/rpmqpack ";
+    // than rpm itself
+    } else if (SCR::Read (.target.size, "/bin/rpm") > -1) {
+	_rpm_query_binary = "/bin/rpm -q ";
+    }
+
+    _rpm_query_binary_initialized = true;
+}
+
 /**
  * Is a package provided in the system? Is there any installed package providing 'package'?
  * @return true if yes
@@ -273,12 +290,12 @@ global boolean Installed(string package) {
  * @return true if yes
  */
 global boolean PackageInstalled(string package) {
+    InitRPMQueryBinary();
+
     // This is commonly called function and so it's
     // important that it's fast, especially in the common
     // case, where all dependencies are satisfied.
-    // Unfortunately, initializing Pkg reads the RPM database...
-    // so we must avoid it.
-    return 0 == (integer) SCR::Execute(.target.bash, "rpm -q " + package);
+    return 0 == (integer) SCR::Execute (.target.bash, _rpm_query_binary + package);
 }
 
 /**
