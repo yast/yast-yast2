@@ -14,9 +14,13 @@
 module "NetworkStorage";
 
 global string getDevice(string mount_point){
- map out = (map)SCR::Execute(.target.bash_output, sformat("grep ' %1 ' /proc/mounts|grep -v rootfs|cut -d' ' -f1|tr -d '\n'", mount_point));
- string device=deletechars(out["stdout"]:"", "1234567890");
- y2internal("%1", device);
+ map out = (map)SCR::Execute(.target.bash_output, sformat("grep ' %1 ' /proc/mounts|grep -v rootfs|tr -d '\n'", mount_point));
+ list<string> rows =  splitstring(out["stdout"]:"", " ");
+ y2internal("rows %1", rows);
+ string device="";
+ if (rows[2]:""=="nfs") device="nfs";
+	else device=rows[0]:"";
+ y2internal("device %1", device);
  return device;
 }
 
@@ -26,6 +30,7 @@ global string getDevice(string mount_point){
  * @return root dev over network
  */
 global boolean isDiskOnNetwork(string device){
+ if (device=="nfs") return true;
  boolean network_based=false;
  // test for iSCSI
  foreach(map<string, any> disk, (list<map<string, any> >)SCR::Read(.probe.disk), {
