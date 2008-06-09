@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun  9 16:52:24 CEST 2008 - mzugec@suse.cz
+
+- DnsServerApi.pm moved from dns-server (bnc#392606)
+- 2.16.73 
+
+-------------------------------------------------------------------
 Fri Jun  6 17:27:09 CEST 2008 - mzugec@suse.cz
 
 - installation onto nfs - STARTMODE='nfsroot' (bnc#397410)
