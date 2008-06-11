@@ -84,6 +84,7 @@
      * FATE #300687: Ports for SuSEfirewall added via packages.
      */
     define map <string, map<string, any> > SERVICES = $[
+/*
 	//"http" : $[
 	//    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
 	//    "name"	: _("HTTP Server"),
@@ -259,6 +260,7 @@
 	    "name"	: _("iSCSI Target"),
 	    "tcp_ports"	: [ "iscsi-target" ],
 	],
+*/
     ];
 
     /**
