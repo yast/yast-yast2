@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 11 12:01:02 CEST 2008 - locilka@suse.cz
+
+- All SUSEFirewallServices were dropped, since now we only support
+  services defined by packages.
+
+-------------------------------------------------------------------
 Mon Jun  9 16:52:24 CEST 2008 - mzugec@suse.cz
 
 - DnsServerApi.pm moved from dns-server (bnc#392606)
