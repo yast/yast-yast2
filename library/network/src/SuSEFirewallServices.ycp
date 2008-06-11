@@ -80,188 +80,161 @@
     string ser_def_by_pkg_string = "service:";
 
     /**
-     * These definitions will be removed and replaced by definitions in packages.
-     * FATE #300687: Ports for SuSEfirewall added via packages.
+     * Services definitions for conversion to the new ones.
      */
-    define map <string, map<string, any> > SERVICES = $[
-/*
-	//"http" : $[
-	//    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	//    "name"	: _("HTTP Server"),
-	//    "tcp_ports" : [ "http" ],
-	//],
-	//"https" : $[
-	//    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	//    "name"	: _("HTTPS Server"),
-	//    "tcp_ports" : [ "https" ],
-	//],
+    define map <string, map<string, any> > OLD_SERVICES = $[
+	"http" : $[
+	    "tcp_ports" : [ "http" ],
+	    "convert_to" : [ "apache2", "lighttpd" ],
+	],
+	"https" : $[
+	    "tcp_ports" : [ "https" ],
+	    "convert_to" : [ "apache2-ssl" ],
+	],
 	"smtp" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("Mail Server"),
 	    "tcp_ports" : [ "smtp" ],
+	    "convert_to" : [],
 	],
 	"pop3" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("POP3 Server"),
 	    "tcp_ports" : [ "pop3" ],
+	    "convert_to" : [],
 	],
 	"pop3s" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("POP3S Server"),
 	    "tcp_ports" : [ "pop3s" ],
+	    "convert_to" : [],
 	],
 	"imap" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("IMAP Server"),
 	    "tcp_ports" : [ "imap" ],
+	    "convert_to" : [ "courier-imapd" ],
 	],
 	"imaps" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("IMAPS Server"),
 	    "tcp_ports" : [ "imaps" ],
+	    "convert_to" : [ "courier-imap-ssl" ],
 	],
 	"samba-server" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("Samba Server"),
 	    "tcp_ports" : [ "netbios-ssn", "microsoft-ds" ],		// TCP: 139, 445
 	    "udp_ports" : [ "netbios-ns", "netbios-dgm" ],		// UDP: 137, 138
 	    "broadcast_ports" : [ "netbios-ns", "netbios-dgm" ],	// UDP: 137, 138
+	    "convert_to" : [],
 	],
-//	"ssh" : $[
-//	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-//	    "name"	: _("SSH"),
-//	    "tcp_ports" : [ "ssh" ],
-//	],
+	"ssh" : $[
+	    "tcp_ports" : [ "ssh" ],
+	    "convert_to" : [ "sshd" ],
+	],
 	"rsync" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("Remote Synchronization"),
 	    "tcp_ports" : [ "rsync" ],
+	    "convert_to" : [],
 	],
-//	"dhcp-server" : $[
-//	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-//	    "name"	: _("DHCP Server"),
-//	    "udp_ports" : [ "bootps" ],
-//	    "broadcast_ports" : [ "bootps" ],
-//	],
-//	"dhcp-client" : $[
-//	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-//	    "name"	: _("DHCP Client"),
-//	    "udp_ports" : [ "bootpc" ],
-//	],
+	"dhcp-server" : $[
+	    "udp_ports" : [ "bootps" ],
+	    "broadcast_ports" : [ "bootps" ],
+	    "convert_to" : [ "dhcp-server" ],
+	],
+	"dhcp-client" : $[
+	    "udp_ports" : [ "bootpc" ],
+	    "convert_to" : [],
+	],
 	"dns-server" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("DNS Server"),
 	    "tcp_ports" : [ "domain" ],
 	    "udp_ports" : [ "domain" ],
+	    "convert_to" : [ "bind" ],
 	],
 	"nfs-client" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("NFS Client"),
 	    "rpc_ports" : [ "portmap", "status", "nlockmgr" ],
+	    "convert_to" : [ "nfs-client" ],
 	],
 	"nfs-server" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("NFS Server"),
 	    "rpc_ports" : [ "portmap", "status", "nlockmgr", "mountd", "nfs", "nfs_acl" ],
+	    "convert_to" : [],
 	],
-//	"nis-client" : $[
-//	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-//	    "name"	: _("NIS Client"),
-//	    "rpc_ports" : [ "portmap", "ypbind" ],
-//	],
+	"nis-client" : $[
+	    "rpc_ports" : [ "portmap", "ypbind" ],
+	    "convert_to" : [ "ypserv" ],
+	],
 	"nis-server" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("NIS Server"),
 	    "rpc_ports" : [ "portmap", "ypserv", "fypxfrd", "ypbind", "yppasswdd" ],
+	    "convert_to" : [],
 	],
 	// Default SUSE installation
 	"vnc" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("Remote Administration"),
 	    "tcp_ports" : [ "5801", "5901" ],
+	    "convert_to" : [],
 	],
 	"tftp" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("TFTP Server"),
 	    "udp_ports" : [ "tftp" ],
+	    "convert_to" : [],
 	],
 	// Internet Printing Protocol as a Server
 	"ipp-tcp" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("IPP Server"),
 	    "tcp_ports" : [ "ipp" ],
+	    "convert_to" : [],
 	],
 	// Internet Printing Protocol as a Client
 	// IPP Client needs to listen for broadcast messages
 	"ipp-udp" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("IPP Client"),
 	    "udp_ports" : [ "ipp" ],
 	    "broadcast_ports" : [ "ipp" ],
+	    "convert_to" : [],
 	],
 	"ntp-server" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("NTP Server"),
 	    "udp_ports" : [ "ntp" ],
 	    "broadcast_ports" : [ "ntp" ],
+	    "convert_to" : [ "ntp" ],
 	],
 	"ldap" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("LDAP Server"),
 	    "tcp_ports" : [ "ldap" ],
+	    "convert_to" : [ "openldap" ],
 	],
 	"ldaps" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("LDAPS Server"),
 	    "tcp_ports" : [ "ldaps" ],
+	    "convert_to" : [],
 	],
 	"ipsec" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("IPsec"),
 	    "udp_ports" : [ "isakmp", "ipsec-nat-t" ],
 	    "ip_protocols" : [ "esp" ],
+	    "convert_to" : [],
 	],
 	"slp-daemon" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("SLP Daemon"),
 	    "tcp_ports" : [ "svrloc" ],
 	    "udp_ports" : [ "svrloc" ],
 	    "broadcast_ports" : [ "svrloc" ],
+	    "convert_to" : [],
 	],
 	// See bug #118200 for more information
 	"xdmcp" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("Remote Access to Display Manager"),
 	    "tcp_ports" : [ "xdmcp" ],
 	    "udp_ports" : [ "xdmcp" ],
 	    "broadcast_ports" : [ "xdmcp" ],
+	    "convert_to" : [],
 	],
 	// See bug #118196 for more information
 	"fam" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("Remote File Alteration Monitor"),
 	    "rpc_ports" : [ "sgi_fam" ],
+	    "convert_to" : [],
 	],
 	// requested by thofmann
 	"open-pbs" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("Portable Batch System (PBS)"),
 	    // /etc/services says: The following entries are invalid, but needed
 	    "tcp_ports" : [ "pbs", "pbs_mom", "pbs_resmom", "pbs_sched" ],
 	    "udp_ports" : [ "pbs_resmom" ],
+	    "convert_to" : [],
 	],
 	"mysql-server" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("MySQL Remote Access"),
 	    "tcp_ports"	: [ "mysql" ],
+	    "convert_to" : [ "mysql" ],
 	],
 	"iscsi-server" : $[
-	    // TRANSLATORS: Name of Service, can be used as check box, item in multiple selection box...
-	    "name"	: _("iSCSI Target"),
 	    "tcp_ports"	: [ "iscsi-target" ],
+	    "convert_to" : [ "iscsitarget" ],
 	],
-*/
     ];
+
+    /**
+     * Definitions were moved to OLD_SERVICES for conversion
+     * and replaced by definitions in packages.
+     * FATE #300687: Ports for SuSEfirewall added via packages.
+     */
+    define map <string, map<string, any> > SERVICES = $[];
 
     /**
      * Returns whether the service ID is defined by package.
