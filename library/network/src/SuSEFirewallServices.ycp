@@ -89,7 +89,7 @@
 	],
 	"https" : $[
 	    "tcp_ports" : [ "https" ],
-	    "convert_to" : [ "apache2-ssl" ],
+	    "convert_to" : [ "apache2-ssl", "lighttpd-ssl" ],
 	],
 	"smtp" : $[
 	    "tcp_ports" : [ "smtp" ],
