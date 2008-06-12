@@ -1,6 +1,6 @@
 #
 # SLPAPI.pm
-# wrapper for SPL.ycp functions, included in yast2-slp package
+# wrapper for SLP.ycp functions, included in yast2-slp package
 #
 
 package SLPAPI;
