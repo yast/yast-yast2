@@ -153,6 +153,41 @@
 	SetKnownInterfaces(currently_known_interfaces);
     }
 
+    boolean ServiceEnabled (string service, list <string> zones) {
+	if (service == nil || service == "") {
+	    y2error ("Ups, service: %1?", service);
+	    return false;
+	}
+
+	if (zones == nil || zones == []) {
+	    y2error ("Ups, zones: %1?", zones);
+	    return false;
+	}
+
+	boolean serenabled = true;
+
+	map <string, map <string, boolean> > serstat = SuSEFirewall::GetServices ([service]);
+	foreach (string one_zone, zones, {
+	    if (serstat[service, one_zone]:nil == false) {
+		y2milestone ("Service %1 is not enabled in %2", service, one_zone);
+		serenabled = false;
+		break;
+	    }
+	});
+
+	return serenabled;
+    }
+
+    void EnableFallbackPorts (list <string> fallback_ports, list <string> zones) {
+	y2warning ("Enabling fallback ports: %1 in zones: %2", fallback_ports, zones);
+
+	foreach (string one_zone, zones, {
+	    foreach (string one_port, fallback_ports, {
+		SuSEFirewall::AddService (one_port, "TCP", one_zone);
+	    });
+	});
+    }
+
     /**
      * Function opens up the service on all non-dial-up network interfaces.
      * If there are no network interfaces known and the 'any' feature is supported,
@@ -161,7 +196,7 @@
      *
      * @param string service such as "service:sshd" or "service:xorg-x11-Xvnc"
      */
-    global define void OpenServiceOnNonDialUpInterfaces (string service) {
+    global define void OpenServiceOnNonDialUpInterfaces (string service, list <string> fallback_ports) {
 	list <string> non_dial_up_interfaces = SuSEFirewall::GetAllNonDialUpInterfaces();
 	list <string> dial_up_interfaces     = SuSEFirewall::GetAllDialUpInterfaces();
 
@@ -172,12 +207,18 @@
 		service, non_dial_up_interfaces, non_dial_up_interfaces_zones);
 	    SuSEFirewall::SetServicesForZones([service], non_dial_up_interfaces_zones, true);
 
+	    if (! ServiceEnabled (service, non_dial_up_interfaces_zones))
+		EnableFallbackPorts (fallback_ports, non_dial_up_interfaces_zones);
+
 	// Only dial-up network interfaces, there mustn't be any non-dial-up one
 	} else if (size(dial_up_interfaces) > 0) {
 	    list <string> dial_up_interfaces_zones = SuSEFirewall::GetZonesOfInterfaces(dial_up_interfaces);
 	    y2warning("Opening service %1 on interfaces %2 (zones %3)",
 		service, dial_up_interfaces, dial_up_interfaces_zones);
 	    SuSEFirewall::SetServicesForZones([service], dial_up_interfaces_zones, true);
+
+	    if (! ServiceEnabled (service, dial_up_interfaces))
+		EnableFallbackPorts (fallback_ports, dial_up_interfaces);
 
 	// No network interfaces are known
 	} else if (size(known_interfaces) == 0) {
@@ -265,11 +306,15 @@
 	 */
 	if (Linuxrc::vnc()) {
 	    y2milestone("This is an installation over VNC, opening VNC on all non-dial-up interfaces...");
-	    OpenServiceOnNonDialUpInterfaces("service:xorg-x11-Xvnc");
+	    // Try the service first, then ports
+	    // bnc #398855
+	    OpenServiceOnNonDialUpInterfaces ("service:xorg-x11-Xvnc", ["5801", "5901"]);
 	}
 	if (Linuxrc::usessh()) {
 	    y2milestone("This is an installation over SSH, opening SSH on all non-dial-up interfaces...");
-	    OpenServiceOnNonDialUpInterfaces("service:sshd");
+	    // Try the service first, then ports
+	    // bnc #398855
+	    OpenServiceOnNonDialUpInterfaces ("service:sshd", ["ssh"]);
 	}
 
 	/*
