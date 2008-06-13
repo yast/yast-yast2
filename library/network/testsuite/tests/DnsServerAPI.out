@@ -1,0 +1,49 @@
+Dump	==========================================================
+Return	3600
+Return	93603
+Return	878460
+Dump	==========================================================
+Return	1H
+Return	93603S
+Return	14641M
+Dump	==========================================================
+Execute	.target.bash "/etc/init.d/named status" 0
+Execute	.target.bash "/etc/init.d/named stop" 0
+Execute	.target.bash "/etc/init.d/named restart" 0
+Execute	.dns.named_conf_convert "/etc/named.conf" 0
+Execute	.target.bash_output "stat --format='rights: %a, blocks: %b, size: %s, owner: %u:%g changed: %Z, modifyied: %Y' /etc/named.conf" $["exit":1, "stderr":"", "stdout":""]
+Read	.sysconfig.named.NAMED_RUN_CHROOTED nil
+Read	.sysconfig.network.config.MODIFY_NAMED_CONF_DYNAMICALLY "yes"
+Read	.sysconfig.network.config.MODIFY_RESOLV_CONF_DYNAMICALLY "yes"
+Dir	.dns.named.section: ["options", "zone \"localhost\" in"]
+Dir	.dns.named.value.options: ["directory", "notify"]
+Read	.dns.named.value.options.directory ["\"/var/lib/named\""]
+Read	.dns.named.value.options.notify ["no"]
+Dir	.dns.named.section: ["options", "zone \"localhost\" in"]
+Read	.dns.named.value.acl []
+Read	.sysconfig.named.NAMED_CONF_INCLUDE_FILES nil
+Read	.dns.named.value."zone \"localhost\" in".type ["master"]
+Read	.dns.named.value."zone \"localhost\" in".file ["\"localhost.zone\""]
+Read	.dns.zone "/var/lib/named/localhost.zone" $["TTL":"1W", "records":[$["key":"", "type":"NS", "value":"@"], $["key":"", "type":"A", "value":"127.0.0.1"], $["key":"localhost2", "type":"A", "value":"127.0.0.2"]], "soa":$["expiry":"6W", "mail":"root", "minimum":"1W", "refresh":"2D", "retry":"4H", "serial":42, "server":"@", "zone":"@"]]
+Dir	.dns.named.value."zone \"localhost\" in": ["file", "type"]
+Read	.dns.named.value."zone \"localhost\" in"."file" ["\"localhost.zone\""]
+Read	.dns.named.value."zone \"localhost\" in"."type" ["master"]
+Return	true
+Dump	==========================================================
+Execute	.target.bash_output "/bin/hostname --fqdn" $["exit":1, "stderr":"", "stdout":""]
+Return	true
+Execute	.target.bash_output "/bin/hostname --fqdn" $["exit":1, "stderr":"", "stdout":""]
+Return	true
+Return	false
+Return	true
+Return	["192.168.0.1", "192.168.0.2"]
+Dump	==========================================================
+Execute	.target.bash_output "/bin/hostname --fqdn" $["exit":1, "stderr":"", "stdout":""]
+Return	true
+Return	false
+Return	true
+Return	["192.168.22.1", "192.168.33.2"]
+Dump	==========================================================
+Return	nil
+Return	40.30.20.10.in-addr.arpa.
+Dump	==========================================================
