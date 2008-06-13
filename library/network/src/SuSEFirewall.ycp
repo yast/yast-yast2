@@ -816,7 +816,7 @@
 
 	// FATE #300687: Ports for SuSEfirewall added via packages
 	if (SuSEFirewallServices::ServiceDefinedByPackage (service)) {
-	    if (IsServiceSupportedInZone (service,zone))
+	    if (IsServiceSupportedInZone (service,zone) == true)
 		RemoveServiceDefinedByPackageFromZone (service, zone);
 
 	    return nil;
@@ -870,7 +870,7 @@
 	}
 
 	// Removing service ports first (and also port aliases for TCP and UDP)
-	if (IsServiceSupportedInZone(service,zone)) {
+	if (IsServiceSupportedInZone(service,zone) == true) {
 	    RemoveServiceSupportFromZone(service,zone);
 	}
 
@@ -2200,7 +2200,7 @@ Run YaST2 Firewall and assign it.
 	    // For all possible conflicting services
 	    foreach (string service, GetPossiblyConflictServices(), {
 		// Possibly conflicting service is supported (on)
-		if (IsServiceSupportedInZone (service, zone)) {
+		if (IsServiceSupportedInZone (service, zone) == true) {
 		    allowed_conflict_services[zone] = add (allowed_conflict_services[zone]:[], service);
 		}
 	    });
@@ -2599,7 +2599,7 @@ Run YaST2 Firewall and assign it.
 	// trying all possible (known) services
 	foreach (string service_id, string service_name, SuSEFirewallServices::GetSupportedServices(), {
 	    // only when the service is allowed in zone - remove all its needed ports
-	    if (IsServiceSupportedInZone(service_id, zone)) {
+	    if (IsServiceSupportedInZone(service_id, zone) == true) {
 
 		// all needed ports etc for service/protocol, well, I'm not good at function pointers :-<
 		list <string> needed_all = [];
