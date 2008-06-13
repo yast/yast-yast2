@@ -1,0 +1,29 @@
+/**
+ * File:	modules/Integer.ycp
+ * Package:	yast2
+ * Summary:	Integer routines
+ * Authors:	Arvin Schnell <aschnell@suse.de>
+ *
+ * $Id: Integer.ycp 45945 2008-04-01 19:41:01Z aschnell $
+ */
+
+{
+    module "Integer";
+    textdomain "base";
+
+
+    /**
+     * Generate a list<integer> with the integers from 0 to n-1.
+     */
+    global list<integer> Range(integer n)
+    {
+	list<integer> ret = [];
+	integer i = 0;
+	while (i < n)
+	{
+	    ret = add(ret, i);
+	    i = i + 1;
+	}
+	return ret;
+    }
+}
