@@ -455,7 +455,7 @@ sub TimeToSeconds {
     my $class        = shift;
     my $originaltime = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     my $time      = $originaltime;
     my $totaltime = 0;
@@ -501,7 +501,7 @@ sub SecondsToHighestTimeUnit {
     my $class   = shift;
     my $seconds = shift || 0;
 
-    return 0 if !Init();
+    return undef if !Init();
 
     if ($seconds <= 0) {
 	return $seconds;
@@ -672,7 +672,7 @@ sub StopDnsService {
     my $self = shift;
     my $config_options = shift;
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return DnsServer->StopDnsService ();
 }
@@ -682,7 +682,7 @@ sub StartDnsService {
     my $self = shift;
     my $config_options = shift;
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return DnsServer->StartDnsService ();
 }
@@ -692,7 +692,7 @@ sub GetDnsServiceStatus {
     my $self = shift;
     my $config_options = shift;
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return DnsServer->GetDnsServiceStatus ();
 }
@@ -712,7 +712,7 @@ BEGIN{$TYPEINFO{Read} = ["function", "boolean"]};
 sub Read {
     my $class = shift;
    
-    return 0 if !Init();
+    return undef if !Init();
 
     my $progress_orig = Progress->set (0);
     my $ret = DnsServer->Read ();
@@ -737,7 +737,7 @@ BEGIN{$TYPEINFO{Write} = ["function", "boolean"]};
 sub Write {
     my $class = shift;
     
-    return 0 if !Init();
+    return undef if !Init();
 
     my $progress_orig = Progress->set (0);
     my $ret = DnsServer->Write ();
@@ -761,7 +761,7 @@ BEGIN{$TYPEINFO{GetForwarders} = ["function", ["list", "string"]]};
 sub GetForwarders {
     my $class = shift;
 
-    return 0 if !Init();
+    return undef if !Init();
 
     my $options = DnsServer->GetGlobalOptions();
     my $forwarders = '';
@@ -793,7 +793,7 @@ sub AddForwarder {
     my $class = shift;
     my $new_one = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return 0 if (!$class->CheckIPv4($new_one));
 
@@ -836,7 +836,7 @@ sub RemoveForwarder {
     my $class = shift;
     my $remove_this = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     my $forwarders = $class->GetForwarders();
     if (grep { /^$remove_this$/ } @{$forwarders}) {
@@ -880,7 +880,7 @@ BEGIN{$TYPEINFO{IsLoggingSupported} = ["function", "boolean"]};
 sub IsLoggingSupported {
     my $class = shift;
     
-    return 0 if !Init();
+    return undef if !Init();
 
     my $logging = DnsServer->GetLoggingOptions();
     # only one channel is supported
@@ -929,7 +929,7 @@ BEGIN{$TYPEINFO{GetLoggingChannel} = ["function", ["map", "string", "string"]]};
 sub GetLoggingChannel {
     my $class = shift;
     
-    return 0 if !Init();
+    return undef if !Init();
 
     my $logging_ret = {
 	'destination' => '',
@@ -997,7 +997,7 @@ sub SetLoggingChannel {
     my $class = shift;
     my $channel = shift || {};
 
-    return 0 if !Init();
+    return undef if !Init();
 
 #   $channel_params = {
 #	'destination' => '', (file|syslog)
@@ -1092,7 +1092,7 @@ BEGIN{$TYPEINFO{GetLoggingCategories} = ["function", ["list", "string"]]};
 sub GetLoggingCategories {
     my $class = shift;
 
-    return 0 if !Init();
+    return undef if !Init();
 
     my @used_categories;
     my $logging = DnsServer->GetLoggingOptions();
@@ -1128,7 +1128,7 @@ sub SetLoggingCategories {
     my $class = shift;
     my $categories = shift;
 
-    return 0 if !Init();
+    return undef if !Init();
 
     my $logging_channel = '';
     # we need the destination to be set for each category
@@ -1171,13 +1171,15 @@ BEGIN{$TYPEINFO{GetNamedOptions} = ["function", ["list", ["map", "string", "stri
 sub GetNamedOptions {
     my $class = shift;
     
-    return 0 if !Init();
+    return undef if !Init();
 
     return DnsServer->GetGlobalOptions();;
 }
 
 BEGIN{$TYPEINFO{GetKnownNamedOptions} = ["function", ["map", "string", ["map", "string", "string"]]]};
 sub GetKnownNamedOptions {
+    return undef if !Init();
+
     return $OPTIONS;
 }
 
@@ -1231,7 +1233,7 @@ BEGIN{$TYPEINFO{GetACLs} = ["function", ["map", "string", ["map", "string", "str
 sub GetACLs {
     my $class = shift;
 
-    return 0 if !Init();
+    return undef if !Init();
 
     my $return_acls = {
 	'any'       => { 'default' => 'yes' },
@@ -1279,7 +1281,7 @@ BEGIN{$TYPEINFO{GetZones} = ["function", ["map", "string", ["map", "string", "st
 sub GetZones {
     my $class = shift;
 
-    return 0 if !Init();
+    return undef if !Init();
 
     my $zones_return = {};
     my $zones = DnsServer->FetchZones();
@@ -1312,7 +1314,7 @@ sub GetZoneMasterServers {
     my $class = shift;
     my $zone  = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return 0 if (!$class->CheckZone($zone));
 
@@ -1356,7 +1358,7 @@ sub SetZoneMasterServers {
     my $zone    = shift || '';
     my $masters = shift;
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return 0 if (!$class->CheckZone($zone));
     return 0 if (!$class->CheckIPv4s($masters));
@@ -1419,7 +1421,7 @@ sub AddZone {
     my $type    = shift || '';
     my $options = shift || {};
 
-    return 0 if !Init();
+    return undef if !Init();
 
     # zone name must be defined
     if (!$zone) {
@@ -1488,7 +1490,7 @@ sub RemoveZone {
     my $class = shift;
     my $zone = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return 0 if (!$class->CheckZone($zone));
 
@@ -1523,7 +1525,7 @@ sub GetZoneTransportACLs {
     my $class = shift;
     my $zone  = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return 0 if (!$class->CheckZone($zone));
     
@@ -1597,7 +1599,7 @@ sub AddZoneTransportACL {
     my $zone  = shift || '';
     my $acl   = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return 0 if (!$class->CheckZone($zone));
     return 0 if (!$class->CheckTransportACL($acl));
@@ -1624,7 +1626,7 @@ sub RemoveZoneTransportACL {
     my $zone  = shift || '';
     my $acl   = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return if (!$class->CheckZone($zone));
     return 0 if (!$class->CheckTransportACL($acl));
@@ -1680,7 +1682,7 @@ sub GetZoneNameServers {
     my $class = shift;
     my $zone  = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return 0 if (!$class->CheckZone($zone));
 
@@ -1716,7 +1718,7 @@ sub GetZoneMailServers {
     my $class = shift;
     my $zone  = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return 0 if (!$class->CheckZone($zone));
 
@@ -1763,7 +1765,7 @@ sub GetZoneRRs {
     my $class = shift;
     my $zone  = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return 0 if (!$class->CheckZone($zone));
 
@@ -1816,7 +1818,7 @@ sub AddZoneRR {
     my $key   = lc(shift) || '';
     my $value = lc(shift) || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return 0 if (!$class->CheckZone($zone));
     return 0 if (!$class->ZoneIsMaster($zone));
@@ -1904,7 +1906,7 @@ sub RemoveZoneRR {
 
     my $zone  = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     # lowering all values, types are allways uppercased
     my $type  = uc(shift) || '';
@@ -2053,7 +2055,7 @@ sub AddZoneNameServer {
     my $zone   = shift || '';
     my $server = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     # zone checking is done in AddZoneRR() function
 
@@ -2081,7 +2083,7 @@ sub RemoveZoneNameServer {
     my $zone   = shift || '';
     my $server = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     # zone checking is done in RemoveZoneRR() function
 
@@ -2110,7 +2112,7 @@ sub AddZoneMailServer {
     my $server = shift || '';
     my $prio   = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     # zone checking is done in AddZoneRR() function
 
@@ -2139,7 +2141,7 @@ sub RemoveZoneMailServer {
     my $server = shift || '';
     my $prio   = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     # zone checking is done in RemoveZoneRR() function
 
@@ -2166,7 +2168,7 @@ sub GetZoneSOA {
     my $class = shift;
     my $zone  = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return {} if (!$class->CheckZone($zone));
     return {} if (!$class->ZoneIsMaster($zone));
@@ -2219,7 +2221,7 @@ sub SetZoneSOA {
     my $zone  = shift || '';
     my $SOA   = shift || {};
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return 0 if (!$class->CheckZone($zone));
     return 0 if (!$class->ZoneIsMaster($zone));
@@ -2271,7 +2273,7 @@ sub GetReverseZoneNameForIP {
     my $class = shift;
     my $ip    = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return undef if (!$class->CheckIPv4($ip));
 
@@ -2316,7 +2318,7 @@ sub GetReverseIPforIPv4 {
     my $class = shift;
     my $ipv4  = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return undef if (!$class->CheckIPv4($ipv4));
 
@@ -2349,7 +2351,7 @@ sub AddHost {
     my $key   = shift || '';
     my $value = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     if (!$value) {
 	# TRANSLATORS: Popup error message
@@ -2399,7 +2401,7 @@ sub RemoveHost {
     my $key   = shift || '';
     my $value = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     if (!$value) {
 	# TRANSLATORS: Popup error message
@@ -2445,7 +2447,7 @@ sub GetZoneHosts {
     my $class      = shift;
     my $zone_only  = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     my $zones = $class->GetZones();
 
@@ -2504,7 +2506,7 @@ sub GetZoneForwarders {
     my $class = shift;
     my $zone  = shift || '';
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return undef if (!$class->CheckZone($zone));
 
@@ -2539,7 +2541,7 @@ sub SetZoneForwarders {
     my $zone       = shift || '';
     my $forwarders = shift;
 
-    return 0 if !Init();
+    return undef if !Init();
 
     return 0 if (!$class->CheckZone($zone));
     return 0 if (!$class->CheckIPv4s($forwarders));
@@ -2576,7 +2578,7 @@ BEGIN{$TYPEINFO{IsServiceConfigurableExternally} = ["function", "boolean"]};
 sub IsServiceConfigurableExternally {
     my $class = shift;
 
-    return 0 if !Init();
+    return undef if !Init();
 
     my $service_enabled   = Service->Enabled         ("named");
     my $service_status    = Service->Status          ("named");
