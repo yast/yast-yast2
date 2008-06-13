@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jun 13 15:02:15 CEST 2008 - locilka@suse.cz
+
+- Opening fallback ports in case of SSH and / or VNC installation
+  when firewall services (defined by packages) are not installed
+  (bnc #398855).
+
+-------------------------------------------------------------------
 Wed Jun 11 12:01:02 CEST 2008 - locilka@suse.cz
 
 - All SUSEFirewallServices were dropped, since now we only support
