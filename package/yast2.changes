@@ -5,6 +5,7 @@ Fri Jun 13 15:02:15 CEST 2008 - locilka@suse.cz
   when firewall services (defined by packages) are not installed
   (bnc #398855).
 - DnsServerAPI testsuites moved here from yast2-dns-server.
+- Adjusted RPM dependencies (Conflicts: yast2-dns-server < 2.17.0).
 
 -------------------------------------------------------------------
 Wed Jun 11 12:01:02 CEST 2008 - locilka@suse.cz
