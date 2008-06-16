@@ -1022,7 +1022,7 @@ global map<string,any> CreateOpenFirewallWidget (map<string,any> settings) {
 	= settings["open_firewall_checkbox"]:_("Open Port in &Firewall");
     string firewall_details_button
 	// push button
-	= settings["firewall_details_button"]:_("Firewall &Details");
+	= settings["firewall_details_button"]:_("Firewall &Details...");
     boolean display_firewall_details
 	= haskey (settings, "firewall_details_handler")
 	    || settings["display_details"]:false;
