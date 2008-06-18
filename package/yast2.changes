@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jun 18 10:19:41 CEST 2008 - mzugec@suse.de
+
+- use PREFIXLEN in NetworkInterfaces
+- fixed testsuites (added IPv6 tests)
+- 2.17.1 
+
+-------------------------------------------------------------------
 Mon Jun 16 12:42:24 CEST 2008 - locilka@suse.cz
 
 - Added "ellipsis" to the "Firewall Details" generic button

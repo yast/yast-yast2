@@ -415,7 +415,7 @@ global map<string, any> CanonicalizeIP (map<string, any> ifcfg) {
     string netmask = Netmask::FromBits (tointeger (prefixlen));
     map<string, any> ret = ifcfg;
     ret["IPADDR"] = ipaddr;
-    ret["PREFIXLEN"] = "";
+    ret["PREFIXLEN"] = prefixlen;
     ret["NETMASK"] = netmask;
     return ret;
 }
@@ -715,11 +715,20 @@ global define boolean Write(string devregex) {
 	    /* write sysconfig */
 	    string p = ".network.value.\"" + config + "\".";
 
+
 	if (size(devmap["IPADDR"]:"")>0 && size(devmap["NETMASK"]:"")>0){
 	 devmap["IPADDR"] = sformat("%1/%2", devmap["IPADDR"]:"", Netmask::ToBits(devmap["NETMASK"]:""));
 	 devmap=remove(devmap, "NETMASK");
-	 //TODO : delete NETMASK, UNIQUE from config file
+	 //TODO : delete NETMASK from config file
+	} else {
+	 if (size(devmap["IPADDR"]:"")>0 && size(devmap["PREFIXLEN"]:"")>0){
+	  devmap["IPADDR"] = sformat("%1/%2", devmap["IPADDR"]:"", devmap["PREFIXLEN"]:"");
+	  devmap=remove(devmap, "PREFIXLEN");
+	 //TODO : delete PREFIXLEN from config file
+	 }
 	}
+
+
 	    /* write all keys to config */
 	    maplist(string k, (list<string>) Map::Keys(devmap), {
 		/* Write aliases */
@@ -737,6 +746,7 @@ global define boolean Write(string devregex) {
 			 amap=remove(amap, "NETMASK");
 			 //TODO : delete NETMASK from config file
 			}
+
 
 			maplist(string ak, string av, amap, {
 			    string akk = ak + "_" + anum;

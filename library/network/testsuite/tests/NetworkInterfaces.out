@@ -22,11 +22,13 @@ Dump	ifcfg-ip6tnl0, type: ip6tnl
 Dump	ifcfg-ip6tnl31, type: ip6tnl
 Dump	ifcfg-mip6mnha3, type: mip6mnha
 Dump	CanonicalizeIP:
-Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "other":"data"]
-Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "other":"data"]
-Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "other":"data"]
+Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"8", "other":"data"]
+Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"8", "other":"data"]
+Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"8", "other":"data"]
 Return	$["BOOTPROTO":"dhcp"]
-Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "other":"data"]
+Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"8", "other":"data"]
 Return	nil
 Return	$[]
-Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.255.255.255", "PREFIXLEN":"", "other":"data"]
+Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.255.255.255", "PREFIXLEN":"32", "other":"data"]
+Return	$["IPADDR":"2001:15c0:668e::5", "NETMASK":"", "PREFIXLEN":"48"]
+Return	$["IPADDR":"2001:15c0:668e::5", "NETMASK":"", "PREFIXLEN":"48"]
