@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 18 12:42:14 CEST 2008 - mzugec@suse.de
+
+- moved DnsServerAPI testsuites to yast2-dns-server
+- 2.17.2 
+
+-------------------------------------------------------------------
 Wed Jun 18 10:19:41 CEST 2008 - mzugec@suse.de
 
 - use PREFIXLEN in NetworkInterfaces
