@@ -15,3 +15,7 @@ Return	false
 Return	false
 Return	true
 Return	false
+Dump	Integer::Sum
+Return	0
+Return	1
+Return	5

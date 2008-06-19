@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Thu Jun 19 11:05:22 CEST 2008 - aschnell@suse.de
 
-- added Integer::RangeFrom and Integer::IsPowerOfTwo
+- added Integer::RangeFrom, Integer::IsPowerOfTwo and Integer::Sum
 - 2.17.3
 
 -------------------------------------------------------------------
