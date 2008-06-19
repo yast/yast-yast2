@@ -25,4 +25,9 @@ TEST(``(Integer::IsPowerOfTwo(1024*1024*1024*1024-1)), [], nil);
 TEST(``(Integer::IsPowerOfTwo(1024*1024*1024*1024)), [], nil);
 TEST(``(Integer::IsPowerOfTwo(1024*1024*1024*1024+1)), [], nil);
 
+DUMP("Integer::Sum");
+TEST(``(Integer::Sum([])), [], nil);
+TEST(``(Integer::Sum([ 1 ])), [], nil);
+TEST(``(Integer::Sum([ 2, 3 ])), [], nil);
+
 }
