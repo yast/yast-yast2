@@ -1,0 +1,17 @@
+Dump	Integer::Range
+Return	[]
+Return	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+Dump	Integer::RangeFrom
+Return	[5, 6, 7, 8, 9]
+Dump	Integer::IsPowerOfTwo
+Return	false
+Return	true
+Return	true
+Return	false
+Return	true
+Return	false
+Return	true
+Return	false
+Return	false
+Return	true
+Return	false

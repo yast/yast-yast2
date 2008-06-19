@@ -13,17 +13,42 @@
 
 
     /**
-     * Generate a list<integer> with the integers from 0 to n-1.
+     * Generate a list<integer> with the integers from 0 to stop - 1.
      */
-    global list<integer> Range(integer n)
+    global list<integer> Range(integer stop)
     {
 	list<integer> ret = [];
 	integer i = 0;
-	while (i < n)
+	while (i < stop)
 	{
 	    ret = add(ret, i);
 	    i = i + 1;
 	}
 	return ret;
+    }
+
+
+    /**
+     * Generate a list<integer> with the integers from start to stop - 1.
+     */
+    global list<integer> RangeFrom(integer start, integer stop)
+    {
+	list<integer> ret = [];
+	integer i = start;
+	while (i < stop)
+	{
+	    ret = add(ret, i);
+	    i = i + 1;
+	}
+	return ret;
+    }
+
+
+    /**
+     * Checks whether i is a power of two. That is 1, 2, 4, 8, ... .
+     */
+    global boolean IsPowerOfTwo(integer i)
+    { 
+	return i > 0 && (i & (i - 1)) == 0;
     }
 }
