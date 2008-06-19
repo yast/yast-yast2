@@ -1,0 +1,28 @@
+{
+
+include "testsuite.ycp";
+import "Integer";
+
+DUMP("Integer::Range");
+TEST(``(Integer::Range(0)), [], nil);
+TEST(``(Integer::Range(10)), [], nil);
+
+DUMP("Integer::RangeFrom");
+TEST(``(Integer::RangeFrom(5, 10)), [], nil);
+
+DUMP("Integer::IsPowerOfTwo");
+TEST(``(Integer::IsPowerOfTwo(0)), [], nil);
+TEST(``(Integer::IsPowerOfTwo(1)), [], nil);
+TEST(``(Integer::IsPowerOfTwo(2)), [], nil);
+TEST(``(Integer::IsPowerOfTwo(3)), [], nil);
+TEST(``(Integer::IsPowerOfTwo(4)), [], nil);
+
+TEST(``(Integer::IsPowerOfTwo(1024-1)), [], nil);
+TEST(``(Integer::IsPowerOfTwo(1024)), [], nil);
+TEST(``(Integer::IsPowerOfTwo(1024+1)), [], nil);
+
+TEST(``(Integer::IsPowerOfTwo(1024*1024*1024*1024-1)), [], nil);
+TEST(``(Integer::IsPowerOfTwo(1024*1024*1024*1024)), [], nil);
+TEST(``(Integer::IsPowerOfTwo(1024*1024*1024*1024+1)), [], nil);
+
+}

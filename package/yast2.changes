@@ -1,15 +1,21 @@
 -------------------------------------------------------------------
+Thu Jun 19 11:05:22 CEST 2008 - aschnell@suse.de
+
+- added Integer::RangeFrom and Integer::IsPowerOfTwo
+- 2.17.3
+
+-------------------------------------------------------------------
 Wed Jun 18 12:42:14 CEST 2008 - mzugec@suse.de
 
 - moved DnsServerAPI testsuites to yast2-dns-server
-- 2.17.2 
+- 2.17.2
 
 -------------------------------------------------------------------
 Wed Jun 18 10:19:41 CEST 2008 - mzugec@suse.de
 
 - use PREFIXLEN in NetworkInterfaces
 - fixed testsuites (added IPv6 tests)
-- 2.17.1 
+- 2.17.1
 
 -------------------------------------------------------------------
 Mon Jun 16 12:42:24 CEST 2008 - locilka@suse.cz
@@ -86,7 +92,7 @@ Thu May 22 15:53:55 CEST 2008 - lslezak@suse.cz
 Thu May 22 10:56:19 CEST 2008 - mzugec@suse.cz
 
 - test if disk is network based in NetworkStorage (bnc#384420)
-- 2.16.69 
+- 2.16.69
 
 -------------------------------------------------------------------
 Tue May 20 13:51:55 CEST 2008 - locilka@suse.cz
@@ -104,7 +110,7 @@ Fri May 16 16:27:19 CEST 2008 - sh@suse.de
 
 - Fixed bnc #374704: Missing wizard icons
   Now providing a default icon until the YCP app sets one
-- V 2.16.68 
+- V 2.16.68
 
 -------------------------------------------------------------------
 Wed May 14 09:47:19 CEST 2008 - jsrain@suse.cz
@@ -117,7 +123,7 @@ Wed May 14 09:47:19 CEST 2008 - jsrain@suse.cz
 Tue May 13 13:49:40 CEST 2008 - mzugec@suse.cz
 
 - isDiskOnNetwork::NetworkStorage added test for nfs (bnc#384420)
-- 2.16.66 
+- 2.16.66
 
 -------------------------------------------------------------------
 Tue May 13 12:41:55 CEST 2008 - lslezak@suse.cz
@@ -131,7 +137,7 @@ Mon May 12 13:42:11 CEST 2008 - mvidner@suse.cz
 
 - Report::{Long,}{Message,Warning,Error}: log the text before popping
   up a dialog so that eager bug reporters have the last message in the
-  log (bnc#381594#c15). 
+  log (bnc#381594#c15).
 
 -------------------------------------------------------------------
 Fri May 09 12:19:58 CEST 2008 - aschnell@suse.de
