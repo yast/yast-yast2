@@ -3210,6 +3210,19 @@ Run YaST2 Firewall and assign it.
 	}
     }
 
+    /**
+     * Returns list of FW_SERVICES_ACCEPT_RELATED_*: Services to allow that are
+     * considered RELATED by the connection tracking engine, e.g., SLP browsing
+     * reply or Samba browsing reply.
+     *
+     * @param string zone
+     * @return list <string> list of definitions
+     *
+     * @example
+     * GetServicesAcceptRelated ("EXT") -> ["0/0,udp,427", "0/0,udp,137"]
+     *
+     * @see SetServicesAcceptRelated()
+     */
     global list <string> GetServicesAcceptRelated (string zone) {
 	if (! IsKnownZone (zone)) {
 	    y2error ("Uknown zone '%1'", zone);
@@ -3219,6 +3232,19 @@ Run YaST2 Firewall and assign it.
 	return splitstring (SETTINGS["FW_SERVICES_ACCEPT_RELATED_" + zone]:"", " \t\n");
     }
 
+    /**
+     * Functions sets FW_SERVICES_ACCEPT_RELATED_*: Services to allow that are
+     * considered RELATED by the connection tracking engine, e.g., SLP browsing
+     * reply or Samba browsing reply.
+     *
+     * @param string zone
+     * @param list <string> list of rules
+     *
+     * @example
+     * SetServicesAcceptRelated ("EXT", ["0/0,udp,427", "0/0,udp,137"])
+     *
+     * @see GetServicesAcceptRelated()
+     */
     global void SetServicesAcceptRelated (string zone, list <string> ruleset) {
 	if (! IsKnownZone (zone)) {
 	    y2error ("Uknown zone '%1'", zone);
@@ -3234,6 +3260,10 @@ Run YaST2 Firewall and assign it.
 	SETTINGS["FW_SERVICES_ACCEPT_RELATED_" + zone] = mergestring (ruleset, "\n");
     }
 
+    /**
+     * Checks whether any Accept-Related rules have been defined.
+     * If true, required kernel modules are added.
+     */
     void CheckKernelModules () {
 	boolean needs_additional_module = false;
 
