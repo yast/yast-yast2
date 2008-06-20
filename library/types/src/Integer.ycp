@@ -58,8 +58,6 @@
      */
     global integer Sum(list<integer> values)
     {
-	integer sum = 0;
-	foreach(integer value, values, { sum = sum + value; });
-	return sum;
+	return list::reduce(integer x, integer y, 0, values, { return x + y; });
     }
 }
