@@ -1656,11 +1656,11 @@ global void SourceReportDestroy()
 	return patch_full_name;
     }
 
-    global void ScriptStart(string patch_name, string patch_version, string patch_arch, string script_path, boolean installation)
+    global void ScriptStart(string patch_name, string patch_version, string patch_arch, string script_path)
     {
 	string patch_full_name = FormatPatchName(patch_name, patch_version, patch_arch);
 
-	y2milestone("ScriptStart callback: patch: %1, script: %2, installation: %3", patch_full_name, script_path, installation);
+	y2milestone("ScriptStart callback: patch: %1, script: %2", patch_full_name, script_path);
 
 	if (Mode::commandline())
 	{
@@ -1669,37 +1669,40 @@ global void SourceReportDestroy()
 	else
 	{
 	    term progressbox = `VBox(
-		`HSpacing(40),
+		`HSpacing(60),
 		// popup heading
 		`Heading(_("Running Script")),
-		`Left(
-		    `HBox
-		    (
-			// label, script name follows
-			`Left(`Label(`opt(`boldFont), _("Script: "))),
-			`Left(`Label(script_path))
-		    ),
+		`VBox(
 		    (patch_full_name != "") ?
 			`HBox
 			(
 			    // label, patch name follows
-			    `Left(`Label(`opt(`boldFont), _("Patch: "))),
-			    `Left(`Label(patch_full_name))
+			    `Label(`opt(`boldFont), _("Patch: ")),
+			    `Label(patch_full_name),
+			    `HStretch()
 			)
 			:
-			`Empty()
+			`Empty(),
+		    `HBox
+		    (
+			// label, script name follows
+			`Label(`opt(`boldFont), _("Script: ")),
+			`Label(script_path),
+			`HStretch()
+		    )
 		),
 
 		// label
-		`LogView(`id(`log), _("Output of the Script")),
-
-		`PushButton(`id(`abort), Label::AbortButton())
+		`LogView(`id(`log), _("Output of the Script"), 10, 0),
+		`PushButton(`id(`abort), `opt(`default, `key_F9), Label::AbortButton())
 	    );
 
 	    if (_script_popup)
 		UI::CloseDialog ();
 
 	    UI::OpenDialog(progressbox);
+	    UI::SetFocus(`id(`abort) );
+
 	    _script_popup = true;
 	}
     }
@@ -1729,10 +1732,43 @@ global void SourceReportDestroy()
 	return true;
     }
 
-    global void ScriptProblem(string description)
+    global string ScriptProblem(string description)
     {
 	y2warning("ScriptProblem: %1", description);
-	Popup::Error(description);
+
+	symbol ui = Popup::AnyQuestion3("",
+				   description,
+				   Label::RetryButton(), /*yes_button_message*/
+				   Label::AbortButton(), /* no_button_message*/
+				   Label::IgnoreButton(), /*retry_button_message*/
+				   `retry /*symbol focus*/ );
+
+	y2internal("Problem result: %1", ui);
+
+	// Abort is the default
+	string ret = "A";
+
+	if (ui == `retry)
+	{
+	    // ignore
+	    ret = "I";
+	}
+	else if (ui == `yes)
+	{
+	    // retry
+	    ret = "R";
+	}
+	else if (ui == `no)
+	{
+	    // abort
+	    ret = "A";
+	}
+	else
+	{
+	    y2warning("Unknown result: %1, aborting", ui);
+	}
+
+	return ret;
     }
 
     global void ScriptFinish()
@@ -1745,7 +1781,7 @@ global void SourceReportDestroy()
 	}
     }
 
-    global void Message(string patch_name, string patch_version, string patch_arch, string message)
+    global boolean Message(string patch_name, string patch_version, string patch_arch, string message)
     {
 	string patch_full_name = FormatPatchName(patch_name, patch_version, patch_arch);
 	y2milestone("Message (%1): %2", patch_full_name, message);
@@ -1756,7 +1792,10 @@ global void SourceReportDestroy()
 	    patch_full_name = sformat(_("Patch: %1\n\n"), patch_full_name);
 	}
 
-	Popup::LongMessage(patch_full_name + message);
+	boolean ret = Popup::ContinueCancel(patch_full_name + message);
+	y2milestone("User input: %1", ret);
+
+	return ret;
     }
 
     global symbol AskAbortRefresh()
@@ -2857,6 +2896,8 @@ void DummyProcessStart(string param1, list<string> param2, string param3) {y2deb
 
 boolean DummyBooleanInteger(integer param1) {y2debug("Empty generic boolean(integer)->true callback"); return true;}
 
+string DummyStringString(string param1) {y2debug("Empty generic string(string)->\"\" callback"); return "";}
+
 void DummyVoid() {y2debug("Empty generic void() callback");}
 
 global void SetDummyProcessCallbacks()
@@ -2951,15 +2992,15 @@ global void SetDummyProgressReportCallbacks()
     Pkg::CallbackProgressReportEnd(DummyVoidInteger);
 }
 
-void DummyScriptStart(string patch_name, string patch_version, string patch_arch, string script_path, boolean installation) {y2debug("Empty ScriptStart callback");}
+void DummyScriptStart(string patch_name, string patch_version, string patch_arch, string script_path) {y2debug("Empty ScriptStart callback");}
 boolean DummyScriptProgress (boolean ping, string output) {y2debug("Empty ScriptProgress callback, returning true"); return true;}
-void DummyMessage(string patch_name, string patch_version, string patch_arch, string message) {y2debug("Empty Message callback");}
+boolean DummyMessage(string patch_name, string patch_version, string patch_arch, string message) {y2debug("Empty Message callback"); return true; /* continue */}
 
 global void SetDummyScriptCallbacks()
 {
     Pkg::CallbackScriptStart(DummyScriptStart);
     Pkg::CallbackScriptProgress(DummyScriptProgress);
-    Pkg::CallbackScriptProblem(DummyVoidString);
+    Pkg::CallbackScriptProblem(DummyStringString);
     Pkg::CallbackScriptFinish(DummyVoid);
 
     Pkg::CallbackMessage(DummyMessage);
