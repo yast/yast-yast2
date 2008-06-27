@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jun 27 10:53:23 CEST 2008 - lslezak@suse.cz
+
+- adapted to the new patch messages and patch scripts callbacks
+  (bnc#401220)
+- 2.17.4
+
+-------------------------------------------------------------------
 Thu Jun 19 11:05:22 CEST 2008 - aschnell@suse.de
 
 - added Integer::RangeFrom, Integer::IsPowerOfTwo and Integer::Sum
