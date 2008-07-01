@@ -130,9 +130,10 @@ Really continue?"));
 }
 
 
+// test for IPv4
 global boolean isNetworkRunning(){
  integer net = (integer)SCR::Execute(.target.bash,
-                "ip addr|grep -v '127.0.0.1\\|inet6'|grep -c inet");
+                "ip addr|grep -v '127.0.0\\|inet6'|grep -c inet");
  if (net==0) {
   y2milestone ("Network is running ...");
   return true;
@@ -140,9 +141,19 @@ global boolean isNetworkRunning(){
 	 y2milestone("Network is not running ...");
 	 return false;
         }
-
 }
-
+// test for IPv6
+global boolean isNetworkv6Running(){
+ integer net = (integer)SCR::Execute(.target.bash,
+                "ip addr|grep -v 'inet6 ::1\\|inet6 fe80'|grep -c inet6");
+ if (net==0) {
+  y2milestone ("Network is running ...");
+  return true;
+ } else {
+	 y2milestone("Network is not running ...");
+	 return false;
+        }
+}
 
 /**
  * If there is network running, return true.
