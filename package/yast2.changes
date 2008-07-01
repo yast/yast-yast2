@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jul  1 17:43:02 CEST 2008 - mzugec@suse.de
+
+- new function is NetworkService::Networkv6Running()
+- rewrite IP/PREFIXLEN for aliases in NetworkInterfaces
+- 2.17.5 
+
+-------------------------------------------------------------------
 Fri Jun 27 10:53:23 CEST 2008 - lslezak@suse.cz
 
 - adapted to the new patch messages and patch scripts callbacks
