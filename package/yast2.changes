@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sun Jul  6 22:18:42 CEST 2008 - mzugec@suse.de
+
+- possibility to disable FileChanges popup (bnc#383718)
+
+-------------------------------------------------------------------
 Tue Jul  1 17:43:02 CEST 2008 - mzugec@suse.de
 
 - new function is NetworkService::Networkv6Running()

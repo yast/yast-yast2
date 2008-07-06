@@ -32,6 +32,8 @@ textdomain "base";
 
 import "Mode";
 import "Popup";
+import "Directory";
+import "Label";
 
 string data_file = "/var/lib/YaST2/file_checksums.ycp";
 
@@ -159,7 +161,29 @@ YaST might lose some of the changes");
 	    msg = _("Files %1 have been changed manually.
 YaST might lose some of the changes");
 	msg = sformat (msg, mergestring (files, ", "));
-	return Popup::ContinueCancel (msg);
+	string popup_file = "/filechecks_non_verbose";
+	if ($[] == SCR::Read (.target.stat, Directory::vardir + popup_file))
+	 {
+	  term content = `VBox(
+		`Label(msg),
+		`Left(`CheckBox(`id(`disable), _("Do not show this message anymore"))),
+		`HBox(`PushButton(`id(`ok), Label::ContinueButton()),
+			`PushButton(`id(`cancel), Label::CancelButton()))
+	    );
+	  UI::OpenDialog(content);
+	  UI::SetFocus(`ok);
+	  any ret=UI::UserInput();
+	  y2milestone("ret = %1", ret);
+	  if (ret==`ok && (boolean)UI::QueryWidget(`disable, `Value)){
+	   y2milestone("Disabled checksum popups");
+	   SCR::Write ( .target.string, Directory::vardir + popup_file, "");
+	   }
+	  UI::CloseDialog();
+	  if (ret==`ok)return true;
+		else return false;
+	 }
+//			return Popup::ContinueCancel (msg);
+		else return true;
     }
     return true;
 }
