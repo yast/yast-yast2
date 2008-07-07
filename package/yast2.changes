@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jul  7 17:05:37 CEST 2008 - locilka@suse.cz
+
+- Dropped deprecated functions from Wizard module:
+  ReplaceNextButton, ReplaceBackButton, ReplaceAbortButton.
+- Added more documentation (examples).
+
+-------------------------------------------------------------------
 Sun Jul  6 22:18:42 CEST 2008 - mzugec@suse.de
 
 - possibility to disable FileChanges popup (bnc#383718)
