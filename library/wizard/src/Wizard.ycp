@@ -201,7 +201,7 @@
 				  `VSpacing(0.2),
 				  `HBox(
 					// translators: dialog title to appear before any content is initialized
-					`Heading(`id(`title), `opt (`hstretch), _("YaST2\nInitializing ...")),
+					`Heading(`id(`title), `opt (`hstretch), _("Initializing ...")),
 					`HStretch()
 					),
 				  `VWeight( 1, // Layout trick: Lower layout priority with weight
@@ -603,6 +603,8 @@
      * Substitute for UI::TimeoutUserInput
      *
      * Analogical to Wizard::UserInput.
+     *
+     * @param integer timeout_millisec
      **/
     global any TimeoutUserInput( integer timeout_millisec ) 
     {
@@ -990,66 +992,16 @@
 
 
     /**
-     * Replace the wizard 'next' button with a custom widget.
-     * THIS FUNCTION IS DEPRECATED!
-     *
-     * @deprecated
-     * @see SetNextButton
-     * @param contents a term describing the new contents
-     **/
-    global void ReplaceNextButton( term contents )
-    {
-	if ( UI::WidgetExists(`id(`rep_next ) ) )
-	    UI::ReplaceWidget(`id(`rep_next), contents);
-
-	y2warning( "Wizard::ReplaceNextButton() is deprecated!" );
-    }
-
-    
-    /**
-     * Replace the wizard 'back' button with a custom widget.
-     * THIS FUNCTION IS DEPRECATED!
-     *
-     * @deprecated
-     * @see SetBackButton
-     * @param contents a term describing the new contents
-     **/
-    global void ReplaceBackButton( term contents )
-    {
-	if ( UI::WidgetExists(`id(`rep_back ) ) )
-	    UI::ReplaceWidget(`id(`rep_back), contents);
-
-	y2warning( "Wizard::ReplaceBackButton() is deprecated!" );
-    }
-
-
-    /**
-     * Replace the wizard 'abort' button with a custom widget.
-     * THIS FUNCTION IS DEPRECATED!
-     *
-     * @see SetAbortButton
-     * @deprecated
-     * @param contents a term describing the new contents
-     **/
-    global void ReplaceAbortButton(term contents)
-    {
-	if ( UI::WidgetExists(`id(`rep_abort ) ) )
-	    UI::ReplaceWidget(`id(`rep_abort), contents);
-
-	y2warning( "Wizard::ReplaceAbortButton() is deprecated!" );
-    }
-
-
-    /**
-     * Set the wizard 'title' icon
-     *
-     * Set the wizard 'title' icon to the specified icon from the standard icon
+     * Sets the wizard 'title' icon to the specified icon from the standard icon
      * directory.
      *
      * @stable
      *
      * @param icon_name name (without path) of the new icon
      * @see ClearTitleIcon
+     *
+     * @example
+     *	SetTitleIcon ("yast-dns-server");
      **/
     global void SetTitleIcon( string icon_name )
     {
@@ -1072,10 +1024,19 @@
 
 
     /**
-     * Set the icon specified in a .desktop file
+     * Sets the icon specified in a .desktop file got as parameter.
+     * Desktop file is placed in a special directory (/usr/share/applications/YaST2).
+     * Parameter file is realative to that directory without ".desktop" suffix.
+     * Warning: There are no desktop files in inst-sys. Use "SetTitleIcon" instead.
      *
      * @param file Icon name
      * @return boolean true on success
+     *
+     * @example
+     *	// Opens /usr/share/applications/YaST2/lan.desktop
+     *	// Reads "Icon" entry from there
+     *	// Sets the icon.
+     *	SetDesktopIcon ("lan")
      */
     global boolean SetDesktopIcon( string file )
     {
