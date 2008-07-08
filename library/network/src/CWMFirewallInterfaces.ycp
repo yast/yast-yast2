@@ -307,7 +307,7 @@ global void InitAllowedInterfaces (list<string> services) {
 	});
     });
     service_status = filter (string iface, boolean en, service_status, {
-	return en;
+	return (en == true);
     });
     y2milestone("Status: %1", service_status);
     allowed_interfaces = maplist (string iface, boolean en, service_status, {
