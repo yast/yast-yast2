@@ -26,7 +26,7 @@
     import "PortRanges";
     import "PackageSystem";
 
-    # <!-- SuSEFirewall VARIABLES //-->
+    // <!-- SuSEFirewall VARIABLES //-->
 
     string susefirewall_package = "SuSEfirewall2";
 
@@ -153,9 +153,9 @@
     // FATE #300970: Firewall support for SMB browsing
     string broadcast_related_module = "nf_conntrack_netbios_ns";
 
-    # <!-- SuSEFirewall VARIABLES //-->
+    // <!-- SuSEFirewall VARIABLES //-->
 
-    # <!-- SuSEFirewall GLOBAL FUNCTIONS USED BY LOCAL ONES //-->
+    // <!-- SuSEFirewall GLOBAL FUNCTIONS USED BY LOCAL ONES //-->
 
     /**
      * Function sets internal variable, which indicates, that any
@@ -215,9 +215,9 @@
 	}
     }
 
-    # <!-- SuSEFirewall GLOBAL FUNCTIONS USED BY LOCAL ONES //-->
+    // <!-- SuSEFirewall GLOBAL FUNCTIONS USED BY LOCAL ONES //-->
 
-    # <!-- SuSEFirewall LOCAL FUNCTIONS //-->
+    // <!-- SuSEFirewall LOCAL FUNCTIONS //-->
 
     /**
      * Function returns whether the feature 'any' network interface is supported in the
@@ -931,9 +931,35 @@
 	}
     }
 
-    # <!-- SuSEFirewall LOCAL FUNCTIONS //-->
+    // <!-- SuSEFirewall LOCAL FUNCTIONS //-->
 
-    # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
+    // <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
+
+    // bnc #388773
+    // By default needed packages are just checked, not installed
+    boolean check_and_install_package = false;
+
+    /**
+     * By default SuSEfirewall2 packages are just checked whether they are installed.
+     * With this function, you can change the behavior to also offer installing
+     * the packages.
+     *
+     * @param boolean new_status, 'true' if packages should be offered for installation
+     */
+    global void SetInstallPackagesIfMissing (boolean new_status) {
+	if (new_status == nil) {
+	    y2error ("Wrong value: %1", new_status);
+	    return;
+	}
+
+	check_and_install_package = new_status;
+
+	if (check_and_install_package) {
+	    y2milestone ("SuSEfirewall2 packages will installed if missing");
+	} else {
+	    y2milestone ("SuSEfirewall2 packages will not be installed even if missing");
+	}
+    }
 
     /* Are needed packages (SuSEfirewall2) installed? */
     boolean needed_packages_installed = nil;
@@ -946,7 +972,8 @@
     global boolean SuSEFirewallIsInstalled () {
 	if (needed_packages_installed == nil) {
 	    // In mode normal, package can be installed on request
-	    if (Mode::normal()) {
+	    // if required by the module
+	    if (check_and_install_package && Mode::normal()) {
 		needed_packages_installed = PackageSystem::CheckAndInstallPackages ([susefirewall_package]);
 		y2milestone ("CheckAndInstallPackages -> %1", needed_packages_installed);
 	    // In mode install/update network might be down
@@ -3287,7 +3314,7 @@ Run YaST2 Firewall and assign it.
 	}
     }
 
-    # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
+    // <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
 
 /* EOF */
 }
