@@ -96,7 +96,11 @@ void EnableOrDisableFirewallDetails () {
  */
 void SetFirewallLabel (symbol status) {
     string label = "";
-    if (status == `off)
+    if (status == `not_installed) {
+	// label
+	label = _("Firewall package is not installed");
+    }
+    else if (status == `off)
     {
 	// label
 	label = _("Firewall is disabled");
@@ -203,7 +207,9 @@ void UpdateFirewallStatus () {
 	InitAllInterfacesList ();
     symbol status = `custom;
 
-    if (! SuSEFirewall::GetEnableService())
+    if (! SuSEFirewall::SuSEFirewallIsInstalled())
+	status = `not_installed;
+    else if (! SuSEFirewall::GetEnableService())
 	status = `off;
     else if (size (all_interfaces) == 0)
 	status = `no_ifaces;

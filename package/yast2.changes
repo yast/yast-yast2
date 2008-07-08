@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Jul  8 11:28:39 CEST 2008 - locilka@suse.cz
+
+- By default, firewall packages are just checked whether they are
+  installed. CWM Firewall Interfaces does not offer to install them
+  (bnc #388773).
+- 2.17.6
+
+-------------------------------------------------------------------
 Mon Jul  7 17:05:37 CEST 2008 - locilka@suse.cz
 
 - Dropped deprecated functions from Wizard module:
