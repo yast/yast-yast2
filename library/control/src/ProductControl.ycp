@@ -761,7 +761,7 @@ boolean use_automatic_configuration = nil;
 /**
  * Inits the default value for use_automatic_configuration
  */
-void InitAutomaticConfiguration () {
+global void InitAutomaticConfiguration () {
     if (use_automatic_configuration != nil)
 	return;
 
