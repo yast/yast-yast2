@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul  9 15:22:52 CEST 2008 - locilka@suse.cz
+
+- Making ProductControl::InitAutomaticConfiguration public to make
+  it possible to call it directly from first stage installation
+  worker (bnc #404122).
+
+-------------------------------------------------------------------
 Tue Jul  8 11:28:39 CEST 2008 - locilka@suse.cz
 
 - By default, firewall packages are just checked whether they are
