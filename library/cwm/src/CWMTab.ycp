@@ -237,6 +237,13 @@ global string CurrentTab () {
 }
 
 /**
+ * A hook to handle Alt-Ctrl-Shift-D
+ */
+void handleDebug () {
+    y2debug ("Handling a debugging event");
+}
+
+/**
  * Handle function of the widget
  * @param map widget a widget description map
  * @param key strnig the widget key
@@ -244,6 +251,9 @@ global string CurrentTab () {
  * @return symbol for wizard sequencer or nil
  */
 global define symbol HandleWrapper (string key, map event) {
+    if (event["EventType"]:"" == "DebugEvent") {
+	handleDebug ();
+    }
     return Handle (CWM::GetProcessedWidget (), key, event);
 }
 

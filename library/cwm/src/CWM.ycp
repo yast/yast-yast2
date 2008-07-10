@@ -733,6 +733,13 @@ global define void ReplaceWidgetHelp (string widget, string help) {
     Wizard::RestoreHelp (help);
 }
 
+/**
+ * A hook to handle Alt-Ctrl-Shift-D
+ */
+void handleDebug () {
+    y2debug ("Handling a debugging event");
+}
+
     /**
       * Generic function to create dialog and handle it's events
       * @param widgets list of widget maps
@@ -766,6 +773,9 @@ global define void ReplaceWidgetHelp (string widget, string help) {
 		event_descr = (map<string, any>) UI::WaitForEvent ();
 	    }
 	    ret = (event_descr["ID"]:nil);
+	    if (event_descr["EventType"]:"" == "DebugEvent") {
+		handleDebug ();
+	    }
 	    symbol handle_ret = handleWidgets (widgets, event_descr);
 	    if (handle_ret != nil
 		|| (is (ret, symbol) && contains (save_exits, ret)))
