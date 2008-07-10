@@ -29,7 +29,7 @@ const term empty_tab = `VBox (`VStretch (), `HStretch ());
  */
 const string default_tab_header = _("Tab");
 
-// local variables
+// local variables - remember to add them to Push+Pop
 
 /**
  * ID of the currently displayed tab
@@ -50,6 +50,36 @@ map<string,any> current_tab_map = $[];
  * description map of the currently selected tab
  */
 map<string,any> previous_tab_map = $[];
+
+/**
+ * this one is expressly excluded from Push+Pop
+ */
+string last_tab_id = nil;
+
+/**
+ * nesting stack, needed because of bnc#406138
+ */
+list<map<string, any> > stack = [];
+
+void Push() {
+    map<string, any> tos = $[
+	"cti": current_tab_id,
+	"pti": previous_tab_id,
+	"ctm": current_tab_map,
+	"ptm": previous_tab_map,
+    ];
+    stack = prepend (stack, tos);
+}
+
+void Pop() {
+    map<string, any> tos = stack[0]:$[];
+    current_tab_id = tos["cti"]:"";
+    previous_tab_id = tos["pti"]:"";
+    current_tab_map = tos["ctm"]:$[];
+    previous_tab_map = tos["ptm"]:$[];
+    stack[0] = nil;
+    stack = filter (map<string, any> m, stack, ``( m != nil));
+}
 
 // local functions
 
@@ -170,6 +200,7 @@ define void InitNewTab (string new_tab_id, map<string,any> widget) {
  * @param key strnig the widget key
  */
 global define void Init (map<string,any> widget, string key) {
+    Push();
     InitNewTab (widget["initial_tab"]:"", widget);
 }
 
@@ -179,6 +210,8 @@ global define void Init (map<string,any> widget, string key) {
  */
 global define void CleanUp (string key) {
     TabCleanup (current_tab_map);
+    last_tab_id = current_tab_id;
+    Pop();
 }
 
 /**
@@ -234,6 +267,15 @@ global define void InitWrapper (string key) {
  */
 global string CurrentTab () {
     return current_tab_id;
+}
+
+/**
+ * Get the ID of the last displayed tab (after CWM::Run is done).
+ * It is needed because of bnc#134386.
+ * @return string the ID of the last displayed tab
+ */
+global string LastTab () {
+    return last_tab_id;
 }
 
 /**
