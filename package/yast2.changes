@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 10 19:02:22 CEST 2008 - mvidner@suse.cz
+
+- CWMTab: Added a nesting stack (bnc#406138); added LastTab() so
+  that some modules continue to work (bnc#134386).
+
+-------------------------------------------------------------------
 Wed Jul  9 15:22:52 CEST 2008 - locilka@suse.cz
 
 - Making ProductControl::InitAutomaticConfiguration public to make
