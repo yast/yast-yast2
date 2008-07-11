@@ -63,7 +63,7 @@ define term popupLayoutInternalTypeWithLabel( string headline,
     {
 	map ui_capabilities = UI::GetDisplayInfo();
 
-	if ( ui_capabilities[ "HasLocalImageSupport" ]:false )
+	if ( ui_capabilities[ "HasImageSupport" ]:false )
 	{
 	    icon = `Image( icon_name, "" );
 	}
@@ -225,17 +225,6 @@ define void anyTimedRichMessageInternal(string headline,
     anyTimedMessageTypeInternal(headline, message, icon_name, timeout, true, width, height);
 }
 
-
-/**
- * Returns the full icon path for a icon with the specified base name.
- * "warning.png" -> "/usr/lib/YaST2/theme/icons/32x32/apps/warning.png"
- **/
-define string popupIcon( string icon_base_name )
-{
-    return Directory::icondir + "32x32/apps/" + icon_base_name;
-}
-
-
 /**
  * Indicator for empty headline for popups that can optionally have one
  *
@@ -337,7 +326,7 @@ global define boolean AnyQuestion( string headline,
     term button_box = AnyQuestionButtonBox ( yes_button_message, no_button_message, focus);
     UI::OpenDialog( 
 		   `opt(`decorated),
-		   popupLayoutInternal( headline, message, NoIcon(), button_box )
+		   popupLayoutInternal( headline, message, Icon::IconPath ("question"), button_box )
 		   );
 
     any ret = UI::UserInput();
@@ -385,7 +374,7 @@ global define boolean TimedAnyQuestion( string headline,
 
     UI::OpenDialog(
 		   `opt(`decorated),
-		   popupLayoutInternal( headline, message, NoIcon(), timed )
+		   popupLayoutInternal( headline, message, Icon::IconPath ("question"), timed )
 		   );
 
     any which_input = nil;
@@ -893,7 +882,7 @@ define void anyRichMessageInternal(string headline, string message, string icon_
  */
 global define void AnyMessage(string headline, string message)
 {
-    anyMessageInternal( headline, message, NoIcon() );
+    anyMessageInternal( headline, message, Icon::IconPath ("info") );
 }
     
 
@@ -925,7 +914,7 @@ global define void ShowFeedback(string headline, string message)
     UI::BusyCursor();
     UI::OpenDialog(
 		   `opt(`decorated),
-		   popupLayoutInternal( headline, message, NoIcon(), button_box )
+		   popupLayoutInternal( headline, message, Icon::IconPath ("warning"), button_box )
 		   );
 
     feedback_open = true;
@@ -947,7 +936,7 @@ global define void ShowFeedback(string headline, string message)
  */
 global define void Message(string message)
 {
-    anyMessageInternal(NoHeadline(), message, NoIcon());
+    anyMessageInternal(NoHeadline(), message, Icon::IconPath ("info"));
 }
 
 /**
@@ -957,7 +946,7 @@ global define void Message(string message)
  */
 global define void LongMessage(string message)
 {
-    anyMessageInternalRich(NoHeadline(), message, NoIcon(), default_width, default_height);
+    anyMessageInternalRich(NoHeadline(), message, Icon::IconPath ("info"), default_width, default_height);
 }
 
 /**
@@ -969,7 +958,7 @@ global define void LongMessage(string message)
  */
 global define void LongMessageGeometry(string message, integer width, integer height)
 {
-    anyMessageInternalRich(NoHeadline(), message, NoIcon(), width, height);
+    anyMessageInternalRich(NoHeadline(), message, Icon::IconPath ("info"), width, height);
 }
 
 /**
@@ -979,7 +968,7 @@ global define void LongMessageGeometry(string message, integer width, integer he
  * @param timeout_seconds time out in seconds
  */
 global define void TimedMessage(string message, integer timeout_seconds) {
-    anyTimedMessageInternal(NoHeadline(), message, NoIcon(), timeout_seconds);
+    anyTimedMessageInternal(NoHeadline(), message, Icon::IconPath ("info"), timeout_seconds);
 }
 
 /**
@@ -990,7 +979,7 @@ global define void TimedMessage(string message, integer timeout_seconds) {
  */
 global define void TimedLongMessage(string message, integer timeout_seconds)
 {
-    anyTimedRichMessageInternal(NoHeadline(), message, NoIcon(), timeout_seconds, default_width, default_height);
+    anyTimedRichMessageInternal(NoHeadline(), message, Icon::IconPath ("info"), timeout_seconds, default_width, default_height);
 }
 
 /**
@@ -1003,7 +992,7 @@ global define void TimedLongMessage(string message, integer timeout_seconds)
  */
 global define void TimedLongMessageGeometry(string message, integer timeout_seconds, integer width, integer height)
 {
-    anyTimedRichMessageInternal(NoHeadline(), message, NoIcon(), timeout_seconds, width, height );
+    anyTimedRichMessageInternal(NoHeadline(), message, Icon::IconPath ("info"), timeout_seconds, width, height );
 }
 
 /**
@@ -1016,7 +1005,7 @@ global define void TimedLongMessageGeometry(string message, integer timeout_seco
  * @see Message
  */
 global define void MessageDetails (string message, string details) {
-    anyMessageDetailsInternal (NoHeadline (), message, details, NoIcon ());
+    anyMessageDetailsInternal (NoHeadline (), message, details, Icon::IconPath ("info"));
 }
 
 /**
@@ -1035,7 +1024,7 @@ global define void MessageDetails (string message, string details) {
  */
 global define void Warning(string message)
 {
-    anyMessageInternal( Label::WarningMsg(), message, popupIcon( "msg_warning.png" ) );
+    anyMessageInternal( Label::WarningMsg(), message, Icon::IconPath ("warning") );
 }
 
 /**
@@ -1045,7 +1034,7 @@ global define void Warning(string message)
  */
 global define void LongWarning(string message)
 {
-    anyMessageInternalRich( Label::WarningMsg(), message, popupIcon( "msg_warning.png" ), default_width, default_height );
+    anyMessageInternalRich( Label::WarningMsg(), message, Icon::IconPath ("warning"), default_width, default_height );
 }
 
 /**
@@ -1057,7 +1046,7 @@ global define void LongWarning(string message)
  */
 global define void LongWarningGeometry(string message, integer width, integer height)
 {
-    anyMessageInternalRich( Label::WarningMsg(), message, popupIcon( "msg_warning.png" ), width, height );
+    anyMessageInternalRich( Label::WarningMsg(), message, Icon::IconPath ("warning"), width, height );
 }
 
 /**
@@ -1074,7 +1063,7 @@ global define void LongWarningGeometry(string message, integer width, integer he
  */
 global define void TimedWarning(string message, integer timeout_seconds)
 {
-    anyTimedMessageInternal( Label::WarningMsg(), message, popupIcon( "msg_warning.png" ), timeout_seconds );
+    anyTimedMessageInternal( Label::WarningMsg(), message, Icon::IconPath ("warning"), timeout_seconds );
 }
 
 /**
@@ -1085,7 +1074,7 @@ global define void TimedWarning(string message, integer timeout_seconds)
  */
 global define void TimedLongWarning(string message, integer timeout_seconds)
 {
-    anyTimedRichMessageInternal( Label::WarningMsg(), message, popupIcon( "msg_warning.png" ), timeout_seconds, default_width, default_height );
+    anyTimedRichMessageInternal( Label::WarningMsg(), message, Icon::IconPath ("warning"), timeout_seconds, default_width, default_height );
 }
 
 /**
@@ -1097,7 +1086,7 @@ global define void TimedLongWarning(string message, integer timeout_seconds)
  * @param height height of the popup window
  */
 global define void TimedLongWarningGeometry(string message, integer timeout_seconds, integer width, integer height) {
-    anyTimedRichMessageInternal( Label::WarningMsg(), message, popupIcon( "msg_warning.png" ), timeout_seconds, width, height );
+    anyTimedRichMessageInternal( Label::WarningMsg(), message, Icon::IconPath ("warning"), timeout_seconds, width, height );
 }
 
 /**
@@ -1110,7 +1099,7 @@ global define void TimedLongWarningGeometry(string message, integer timeout_seco
  * @see Message
  */
 global define void WarningDetails (string message, string details) {
-    anyMessageDetailsInternal (Label::WarningMsg(), message, details, popupIcon("msg_warning.png"));
+    anyMessageDetailsInternal (Label::WarningMsg(), message, details, Icon::IconPath ("warning"));
 }
 
 /**
@@ -1128,7 +1117,7 @@ global define void WarningDetails (string message, string details) {
  */
 global define void Error(string message)
 {
-    anyMessageInternal( Label::ErrorMsg(), message, popupIcon( "msg_error.png" ) );
+    anyMessageInternal( Label::ErrorMsg(), message, Icon::IconPath ("error") );
 }
 
 /**
@@ -1138,7 +1127,7 @@ global define void Error(string message)
  */
 global define void LongError(string message)
 {
-    anyMessageInternalRich( Label::ErrorMsg(), message, popupIcon( "msg_error.png" ), default_width, default_height );
+    anyMessageInternalRich( Label::ErrorMsg(), message, Icon::IconPath ("error"), default_width, default_height );
 }
 
 /**
@@ -1150,7 +1139,7 @@ global define void LongError(string message)
  */
 global define void LongErrorGeometry(string message, integer width, integer height)
 {
-    anyMessageInternalRich( Label::ErrorMsg(), message, popupIcon( "msg_error.png" ), width, height);
+    anyMessageInternalRich( Label::ErrorMsg(), message, Icon::IconPath ("error"), width, height);
 }
 
 /**
@@ -1167,7 +1156,7 @@ global define void LongErrorGeometry(string message, integer width, integer heig
  */
 global define void TimedError(string message, integer timeout_seconds)
 {
-    anyTimedMessageInternal( Label::ErrorMsg(), message, popupIcon( "msg_error.png" ), timeout_seconds );
+    anyTimedMessageInternal( Label::ErrorMsg(), message, Icon::IconPath ("error"), timeout_seconds );
 }
 
 /**
@@ -1178,7 +1167,7 @@ global define void TimedError(string message, integer timeout_seconds)
  */
 global define void TimedLongError(string message, integer timeout_seconds)
 {
-    anyTimedRichMessageInternal( Label::ErrorMsg(), message, popupIcon( "msg_error.png" ), timeout_seconds, default_width, default_height );
+    anyTimedRichMessageInternal( Label::ErrorMsg(), message, Icon::IconPath ("error"), timeout_seconds, default_width, default_height );
 }
 
 /**
@@ -1191,7 +1180,7 @@ global define void TimedLongError(string message, integer timeout_seconds)
  */
 global define void TimedLongErrorGeometry(string message, integer timeout_seconds, integer width, integer height)
 {
-    anyTimedRichMessageInternal( Label::ErrorMsg(), message, popupIcon( "msg_error.png" ), timeout_seconds, width, height );
+    anyTimedRichMessageInternal( Label::ErrorMsg(), message, Icon::IconPath ("error"), timeout_seconds, width, height );
 }
 
 /**
@@ -1204,7 +1193,7 @@ global define void TimedLongErrorGeometry(string message, integer timeout_second
  * @see Message
  */
 global define void ErrorDetails (string message, string details) {
-    anyMessageDetailsInternal (Label::ErrorMsg(), message, details, popupIcon ("msg_error.png"));
+    anyMessageDetailsInternal (Label::ErrorMsg(), message, details, Icon::IconPath ("error"));
 }
 
 
@@ -1222,7 +1211,7 @@ global define void ErrorDetails (string message, string details) {
  */
 global define void Notify(string message)
 {
-    anyMessageInternal( "", message, popupIcon( "msg_info.png" ) );
+    anyMessageInternal( "", message, Icon::IconPath ("info") );
 }
 
 /**
@@ -1232,7 +1221,7 @@ global define void Notify(string message)
  */
 global define void LongNotify(string message)
 {
-    anyMessageInternalRich( NoHeadline(), message, popupIcon( "msg_info.png" ), default_width, default_height );
+    anyMessageInternalRich( NoHeadline(), message, Icon::IconPath ("info"), default_width, default_height );
 }
 
 /**
@@ -1244,7 +1233,7 @@ global define void LongNotify(string message)
  */
 global define void LongNotifyGeometry(string message, integer width, integer height)
 {
-    anyMessageInternalRich( NoHeadline(), message, popupIcon( "msg_info.png" ), width, height);
+    anyMessageInternalRich( NoHeadline(), message, Icon::IconPath ("info"), width, height);
 }
 
 /**
@@ -1255,7 +1244,7 @@ global define void LongNotifyGeometry(string message, integer width, integer hei
  */
 global define void TimedNotify(string message, integer timeout_seconds)
 {
-    anyTimedMessageInternal( NoHeadline(), message, popupIcon( "msg_info.png" ), timeout_seconds );
+    anyTimedMessageInternal( NoHeadline(), message, Icon::IconPath ("info"), timeout_seconds );
 }
 
 /**
@@ -1266,7 +1255,7 @@ global define void TimedNotify(string message, integer timeout_seconds)
  */
 global define void TimedLongNotify(string message, integer timeout_seconds)
 {
-    anyTimedRichMessageInternal( NoHeadline(), message, popupIcon( "msg_info.png" ), timeout_seconds, default_width, default_height );
+    anyTimedRichMessageInternal( NoHeadline(), message, Icon::IconPath ("info"), timeout_seconds, default_width, default_height );
 }
 
 /**
@@ -1279,7 +1268,7 @@ global define void TimedLongNotify(string message, integer timeout_seconds)
  */
 global define void TimedLongNotifyGeometry(string message, integer timeout_seconds, integer width, integer height)
 {
-    anyTimedRichMessageInternal( NoHeadline(), message, popupIcon( "msg_info.png" ), timeout_seconds, width, height );
+    anyTimedRichMessageInternal( NoHeadline(), message, Icon::IconPath ("info"), timeout_seconds, width, height );
 }
 
 
@@ -1292,7 +1281,7 @@ global define void TimedLongNotifyGeometry(string message, integer timeout_secon
  * @see Message
  */
 global define void NotifyDetails (string message, string details) {
-    anyMessageDetailsInternal (NoHeadline(), message, details, popupIcon ("msg_info.png"));
+    anyMessageDetailsInternal (NoHeadline(), message, details, Icon::IconPath ("info"));
 }
 
 /**
@@ -1436,7 +1425,7 @@ global define symbol AnyQuestion3( string headline,
 
     UI::OpenDialog(
 		   `opt(`decorated),
-		   popupLayoutInternal( headline, message, NoIcon(), button_box )
+		   popupLayoutInternal( headline, message, Icon::IconPath ("question"), button_box )
 		   );
 
     symbol ret = (symbol)UI::UserInput();

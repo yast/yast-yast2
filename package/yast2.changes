@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jul 11 11:11:11 CEST 2008 - locilka@suse.cz
+
+- Unified icons in Popup library using Icon library.
+- Extended Icon library with 'question' icon.
+
+-------------------------------------------------------------------
 Thu Jul 10 19:02:22 CEST 2008 - mvidner@suse.cz
 
 - CWMTab: Added a nesting stack (bnc#406138); added LastTab() so

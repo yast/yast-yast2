@@ -31,6 +31,7 @@
 	    "warning" : "msg_warning.png",
 	    "info" : "msg_info.png",
 	    "error" : "msg_error.png",
+	    "question" : "msg_question.png",
 	];
     }
 
@@ -40,6 +41,9 @@
      * @param string icon_type
      *
      * @see Icon::Image() for details
+     *
+     * @example
+     *	Icon::IconPath ("warning") -> 
      */
     global string IconPath (string icon_type) {
 	LazyInit ();
