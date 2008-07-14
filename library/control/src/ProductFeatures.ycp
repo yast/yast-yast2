@@ -23,19 +23,6 @@ import "Stage";
 map<string,map<string,any> > features = nil;
 
 /**
- * Features to be saved in running system
- * one item per feature, consists of key in file, section and option
- */
-list<list<string> > features_to_save = [
-    ["UI_MODE", "globals", "ui_mode"],
-    ["ENABLE_AUTOLOGIN", "globals", "enable_autologin"],
-    ["EVMS_CONFIG", "partitioning", "evms_config"],
-    ["INCOMPLETE_TRANSLATION_TRESHOLD",
-	"globals", "incomplete_translation_treshold"],
-    ["VENDOR_URL", "globals", "vendor_url"],
-];
-
-/**
  * Default values for features
  * two-level map, section_name -> [ feature -> value ]
  */
