@@ -45,6 +45,8 @@ map<string,map<string,any> > defaults = $[
 	"relnotesurl" : "",
 	"vendor_url" : "",
 	"enable_clone" : false,
+	// FATE #304865
+	"base_product_license_directory" : "/etc/YaST2/licenses/base/",
     ],
     "partitioning" : $[
 	"evms_config" : "no",
