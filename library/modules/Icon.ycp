@@ -43,7 +43,7 @@
      * @see Icon::Image() for details
      *
      * @example
-     *	Icon::IconPath ("warning") -> 
+     *	Icon::IconPath ("warning") -> "/usr/share/YaST2/theme/current/icons/32x32/apps/msg_warning.png"
      */
     global string IconPath (string icon_type) {
 	LazyInit ();
