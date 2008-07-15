@@ -238,6 +238,10 @@
 
     /**
      * Returns whether the service ID is defined by package.
+     * Returns 'false' if it isn't.
+     *
+     * @param	string service
+     * @return	boolean whether service is defined by package
      *
      * @example
      *	ServiceDefinedByPackage ("http-server") -> false
@@ -270,6 +274,12 @@
 	return ret;
     }
 
+    /**
+     * Returns SCR Agent definition.
+     *
+     * @return term with agent definition
+     * @param string full filename path (to read by this agent)
+     */
     term GetMetadataAgent (string filefullpath) {
 	return
 	    `IniAgent(filefullpath, $[
@@ -293,6 +303,8 @@
     /**
      * Reads definition of services that can be used in FW_CONFIGURATIONS_[EXT|INT|DMZ]
      * in SuSEfirewall2.
+     *
+     * @return boolean if successful
      */
     global define boolean ReadServicesDefinedByRPMPackages () {
 	if (! FileUtils::Exists (services_definitions_in) || ! FileUtils::IsDirectory (services_definitions_in)) {
@@ -381,8 +393,10 @@
     /**
      * Function returns the map of supported (known) services.
      *
-     * @return	map $[service_id : localized_service_name]
+     * @return map <string, string>
+     *
      * @struct
+     *	$[ service_id : localized_service_name ]
      *	$[
      *	  "dns-server" : "DNS Server",
      *    "vnc" : "Remote Administration",
@@ -419,7 +433,7 @@
      * Function returns needed TCP ports for service
      *
      * @param	string service
-     * @return	list [string] of needed TCP ports
+     * @return	list <string> of needed TCP ports
      */
     global define list <string> GetNeededTCPPorts (string service) {
 	return SERVICES[service,"tcp_ports"]:[];
@@ -429,7 +443,7 @@
      * Function returns needed UDP ports for service
      *
      * @param	string service
-     * @return	list [string] of needed UDP ports
+     * @return	list <string> of needed UDP ports
      */
     global define list <string> GetNeededUDPPorts (string service) {
 	return SERVICES[service,"udp_ports"]:[];
@@ -439,7 +453,7 @@
      * Function returns needed RPC ports for service
      *
      * @param	string service
-     * @return	list [string] of needed RPC ports
+     * @return	list <string> of needed RPC ports
      */
     global define list <string> GetNeededRPCPorts (string service) {
 	return SERVICES[service,"rpc_ports"]:[];
@@ -449,7 +463,7 @@
      * Function returns needed IP protocols for service
      *
      * @param	string service
-     * @return	list [string] of needed IP protocols
+     * @return	list <string> of needed IP protocols
      */
     global define list <string> GetNeededIPProtocols (string service) {
 	return SERVICES[service,"ip_protocols"]:[];
@@ -482,7 +496,7 @@
      * Function returns needed ports allowing broadcast
      *
      * @param	string service
-     * @return	list [string] of needed broadcast ports
+     * @return	list <string> of needed broadcast ports
      */
     global define list <string> GetNeededBroadcastPorts (string service) {
 	return SERVICES[service,"broadcast_ports"]:[];
