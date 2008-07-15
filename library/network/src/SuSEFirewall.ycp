@@ -166,8 +166,8 @@
     }
 
     /**
-     * Do not us this function.
-     * Only for firewall installation proposal
+     * Do not use this function.
+     * Only for firewall installation proposal.
      */
     global define void ResetModified () {
 	y2milestone("Reseting firewall-modified to 'false'");
