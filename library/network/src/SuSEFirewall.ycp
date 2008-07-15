@@ -165,8 +165,10 @@
 	modified = true;
     }
 
-    // Please, do not us this function
-    // Only for firewall installation proposal
+    /**
+     * Do not us this function.
+     * Only for firewall installation proposal
+     */
     global define void ResetModified () {
 	y2milestone("Reseting firewall-modified to 'false'");
 	modified = false;
@@ -255,6 +257,8 @@
     /**
      * Local function returns if other functions should produce verbose output.
      * like popups, reporting errors, etc.
+     *
+     * @return	boolean is_verbose
      */
     boolean IsVerbose () {
 	// verbose level must be above zero to be verbose
@@ -265,6 +269,7 @@
      * Local function for returning default values (if defined) for sysconfig variables.
      *
      * @param	string sysconfig variable
+     * @return	string default value
      */
     string GetDefaultValue (string variable) {
 	return (string) DEFAULT_SETTINGS[variable]:"";
@@ -313,6 +318,7 @@
      * into the disk, use `nil` as the last list item.
      *
      * @param	list <string> of sysconfig variables
+     * @return	boolean if successful
      */
     boolean WriteSysconfigSuSEFirewall (list<string> variables) {
 	boolean write_status = true;
@@ -452,7 +458,7 @@
      * it doesn't return ports that are listed in some service (defined by package)
      * which is enabled.
      *
-     * @return	map <zone, list <string> > strings are allowed ports or port ranges
+     * @return	map <string, list <string> > strings are allowed ports or port ranges
      *
      * @struct $[
      *   "ZONE1" : [ "port1", "port2" ],
@@ -1499,6 +1505,7 @@ the file '/etc/sysconfig/SuSEFirewall'."), interface));
      * @struct [ $[ "id":"modem0", "name":"Askey 815C", "type":"dialup", "zone":"EXT" ], ... ]
      *
      * @return	list <map <string, string> >
+     * @return list <map <string, string> > of all interfaces
      */
     global define list <map <string, string> > GetAllKnownInterfaces () {
 	list <map <string, string> > known_interfaces = [];
@@ -1975,6 +1982,13 @@ Run YaST2 Firewall and assign it.
     /**
      * Returns whether a service is mentioned in FW_CONFIGURATIONS_[EXT|INT|DMZ].
      * These services are defined by random packages.
+     *
+     * @return boolean if service is supported in zone
+     * @param string service, e.g., "service:sshd"
+     * @param string zone, e.g., "EXT"
+     *
+     * @example
+     *	IsServiceDefinedByPackageSupportedInZone ("service:sshd", "EXT") -> true
      */
     boolean IsServiceDefinedByPackageSupportedInZone (string service, string zone) {
 	if (! IsKnownZone(zone)) {
@@ -2069,7 +2083,8 @@ Run YaST2 Firewall and assign it.
      * Function returns map of supported services all network interfaces.
      *
      * @param	list <string> of services
-     * @return	map <string, map < string : boolean > >
+     * @return	map <string, map < string, boolean > >
+     *
      * @struct	Returns $[service : $[ interface : supported_status ]]
      *
      * @example
@@ -2115,7 +2130,8 @@ Run YaST2 Firewall and assign it.
      * Function returns map of supported services in all firewall zones.
      *
      * @param	list <string> of services
-     * @return	map <string, map < string : boolean> >
+     * @return	map <string, map < string, boolean> >
+     *
      * @struct	Returns $[service : $[ zone_name : supported_status]]
      *
      * @example
@@ -2279,6 +2295,8 @@ Run YaST2 Firewall and assign it.
     /**
      * Function for reading SuSEFirewall configuration.
      * Fills internal variables only.
+     *
+     * @return boolean if successful
      */
     global define boolean Read () {
 	// Don't fill up the logs with tones of Check-logs
@@ -2551,6 +2569,8 @@ Run YaST2 Firewall and assign it.
     /**
      * Helper function for the backward compatibility.
      * See WriteConfiguration(). Remove from code ASAP.
+     *
+     * @return boolean if succesful
      */
     global define boolean WriteOnly() {
 	return WriteConfiguration();
@@ -2755,7 +2775,8 @@ Run YaST2 Firewall and assign it.
     /**
      * Function returns map of `interfaces in zones`.
      *
-     * @return	map <string, list <string> >
+     * @return	map <string, list <string> > interface in zones
+     *
      * @struct	map $[zone : [list of interfaces]]
      *
      * @example
@@ -2860,7 +2881,8 @@ Run YaST2 Firewall and assign it.
      * Function returns list of rules of forwarding ports
      * to masqueraded IPs.
      *
-     * @return  list <map <string, string> >
+     * @return  list <map <string, string> > list of rules
+     *
      * @struct	list [$[ key: value ]]
      *
      * @example
@@ -3050,6 +3072,7 @@ Run YaST2 Firewall and assign it.
      * Function returns yes/no - ingoring broadcast for zone
      *
      * @param	string zone
+     * @return	string "yes" or "no"
      *
      * @example
      *	// Does not logg ignored broadcast packets
@@ -3112,7 +3135,7 @@ Run YaST2 Firewall and assign it.
 
     // Firewall Expert Rulezz
 
-    /*
+    /**
      * Returns list of rules describing protocols and ports that are allowed
      * to be accessed from listed hosts. All is returned as a single string.
      * Zone needs to be defined.
@@ -3132,7 +3155,7 @@ Run YaST2 Firewall and assign it.
 	return SETTINGS["FW_SERVICES_ACCEPT_" + zone]:"";
     }
 
-    /*
+    /**
      * Sets expert allow rules for zone.
      *
      * @param string zone
