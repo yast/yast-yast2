@@ -3,8 +3,7 @@ Tue Jul 15 13:37:09 CEST 2008 - locilka@suse.cz
 
 - Fixed Linuxrc::SaveInstallInf function to really copy the
   /etc/install.inf at the end of the installation.
-- Fixed ycpdoc warnings for SuSEFirewall (added/fixed docu.)
-- Fixed SuSEFirewallExpertRules docu.
+- Fixed ycpdoc warnings for SuSEFirewall*.ycp (added/fixed docu.)
 
 -------------------------------------------------------------------
 Fri Jul 11 11:11:11 CEST 2008 - locilka@suse.cz
