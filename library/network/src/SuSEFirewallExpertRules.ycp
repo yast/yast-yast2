@@ -36,6 +36,9 @@
 
     /**
      * Returns list of all protocols accepted by the expert rules.
+     *
+     * @return	list <string> of protocols
+     * @see list <string> allowed_expert_protocols
      */
     global list <string> GetAllExpertRulesProtocols () {
 	return allowed_expert_protocols;
@@ -46,6 +49,8 @@
 
     /**
      * Returns whether the netmask bits are valid.
+     *
+     * @return boolean whether valid
      */
     boolean ValidNetmaskBits (integer netmask_bits) {
 	return (netmask_bits > 1 && netmask_bits <= 32);
@@ -122,6 +127,9 @@ IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32
 
     /**
      * Adjusts parameters to the acceptable representation
+     *
+     * @param	map <string, string> params
+     * @return	map <string, string> modified params
      */
     map <string, string> AdjustParameters (map <string, string> params) {
 	if (params["network"]:"" == "") {
@@ -214,6 +222,8 @@ IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32
      *
      * @param string zone
      * @param map <string, string> params
+     * @return boolean if successful
+     *
      * @see GetListOfAcceptRules()
      * @see RemoveAcceptRule()
      *
@@ -269,6 +279,8 @@ IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32
      *
      * @param string zone
      * @param map <string, string> params
+     * @return if successful
+     *
      * @see GetListOfAcceptRules() for possible keys in map
      * @see AddNewAcceptRule()
      *
@@ -313,6 +325,10 @@ IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32
      * The ID is an order of list returned by GetListOfAcceptRules().
      * ID starts at number 0.
      * Every time you delete some rule, the list is, of course, regenerated.
+     *
+     * @param string zone
+     * @param integer rule_id
+     * @return boolean if successful
      *
      * @example
      * 	DeleteRuleID (0) -> true
