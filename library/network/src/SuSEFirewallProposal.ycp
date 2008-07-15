@@ -55,7 +55,7 @@
     /**
      * Function returns list of warnings for user
      *
-     * @return	list [string] of warnings
+     * @return	list <string> of warnings
      */
     list <string> GetWarnings () {
 	return warnings_now;
@@ -64,7 +64,7 @@
     /**
      * Local function sets currently known interfaces.
      *
-     * @param	list [string] of known interfaces
+     * @param	list <string> of known interfaces
      */
     void SetKnownInterfaces(list <string> interfaces) {
 	known_interfaces = interfaces;
@@ -153,6 +153,13 @@
 	SetKnownInterfaces(currently_known_interfaces);
     }
 
+    /**
+     * Returns whether service is enabled in zones.
+     *
+     * @param string service
+     * @param list <string> zones
+     * @return boolean if enabled
+     */
     boolean ServiceEnabled (string service, list <string> zones) {
 	if (service == nil || service == "") {
 	    y2error ("Ups, service: %1?", service);
@@ -178,6 +185,12 @@
 	return serenabled;
     }
 
+    /**
+     * Enables ports in zones.
+     *
+     * @param list <string> fallback_ports
+     * @param list <string> zones
+     */
     void EnableFallbackPorts (list <string> fallback_ports, list <string> zones) {
 	y2warning ("Enabling fallback ports: %1 in zones: %2", fallback_ports, zones);
 
@@ -239,6 +252,8 @@
 
     /**
      * Local function returns whether the Xen kernel is installed
+     *
+     * @return boolean whether xen-capable kernel is installed.
      */
     boolean IsXenInstalled () {
 	// bug #154133
