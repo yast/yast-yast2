@@ -27,11 +27,6 @@
     //
     //
 
-    // FIXME: repair by implementing FATE #300687: Ports for SuSEfirewall added via packages.
-    //        add definition of services to the respective package
-    /* list of possibly conflict services because of sharing ports, for instance: "nis-server" and "nfs-server" */
-    list <string> possibly_conflict_services = ["nfs-server", "nis-server", "nfs-client"];
-
     /***
      * Names assigned to Port and Protocol numbers can be found
      * here:
@@ -663,11 +658,12 @@
     /**
      * Function returns list of possibly conflicting services.
      * Conflicting services are for instance nis-client and nis-server.
+     * DEPRECATED - we currently don't have such services - services are defined by packages.
      *
      * @return	list <string> of conflicting services
      */
     global define list <string> GetPossiblyConflictServices () {
-	return possibly_conflict_services;
+	return [];
     }
 
 /* EOF */

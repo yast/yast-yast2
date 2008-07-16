@@ -6,7 +6,7 @@
  * Summary:	Interface manipulation of /etc/sysconfig/SuSEFirewall
  * Authors:	Lukas Ocilka <locilka@suse.cz>
  *
- * $id$
+ * $Id$
  *
  * Module for handling SuSEfirewall2.
  */
@@ -898,43 +898,6 @@
 		y2error("Unknown key '%1'", key);
 	    }
 	});
-    }
-
-    /**
-     * Local function returns conflicting services.
-     *
-     * @return	list <string> of services
-     */
-    list <string> GetPossiblyConflictServices () {
-	return SuSEFirewallServices::GetPossiblyConflictServices();
-    }
-
-    /**
-     * Local function for handling conflicting services in memory.
-     * Makes sense for services which share ports like RPC services.
-     *
-     * @param	string service id
-     * @param	boolean enable or disable
-     */
-    void HandleConflictService(string service, string zone, boolean enable) {
-	// only possibly conflict services are handled
-	if (! contains(GetPossiblyConflictServices(), service)) return;
-
-	SetModified();
-
-	if (enable) {
-	    // adding new conflict service into list of allowed services
-	    allowed_conflict_services[zone] = toset(add(allowed_conflict_services[zone]:[], service));
-	} else {
-	    // removing current conflict service from list
-	    allowed_conflict_services[zone] = filter(string filter_service, allowed_conflict_services[zone]:[], {
-		return filter_service != service;
-	    });
-	    // adding all allowed conflict services again
-	    foreach (string conflict_service, allowed_conflict_services[zone]:[], {
-		AddServiceSupportIntoZone (conflict_service, zone);
-	    });
-	}
     }
 
     // <!-- SuSEFirewall LOCAL FUNCTIONS //-->
@@ -2192,11 +2155,9 @@ Run YaST2 Firewall and assign it.
 		if (new_status == true) {
 		    y2milestone("Adding '%1' into '%2' zone", service_id, firewall_zone);
 		    AddServiceSupportIntoZone(service_id, firewall_zone);
-		    HandleConflictService(service_id, firewall_zone, true);
 		} else {
 		    y2milestone("Removing '%1' from '%2' zone", service_id, firewall_zone);
 		    RemoveServiceSupportFromZone(service_id, firewall_zone);
-		    HandleConflictService(service_id, firewall_zone, false);
 		}
 	    });
 	});
@@ -2227,46 +2188,6 @@ Run YaST2 Firewall and assign it.
 	SetModified();
 
 	return SetServicesForZones(services_ids, firewall_zones, new_status);
-    }
-
-    /**
-     * Local function check is any of possibly conflicting services was turned on in
-     * the firewall configuration.
-     */
-    void CheckAllPossiblyConflictingServices () {
-	// For all known zones
-	foreach (string zone, GetKnownFirewallZones(), {
-	    // Exception:
-	    // There are no possible conflicts if zone isn't protected
-	    if (zone == "INT" && ! GetProtectFromInternalZone()) return;
-
-	    // For all possible conflicting services
-	    foreach (string service, GetPossiblyConflictServices(), {
-		// Possibly conflicting service is supported (on)
-		if (IsServiceSupportedInZone (service, zone) == true) {
-		    allowed_conflict_services[zone] = add (allowed_conflict_services[zone]:[], service);
-		}
-	    });
-
-	    // Exception:
-	    // NIS-client's ports are the subset of NIS-server's ports
-	    if (
-		contains(allowed_conflict_services[zone]:[], "nis-server")
-		&&
-		contains(allowed_conflict_services[zone]:[], "nis-client")
-	    ) {
-		// Removing nis-client from allowed services, when both of them found
-		y2warning("Ignoring found nis-client as the subset of nis-server, for zone %1", zone);
-		allowed_conflict_services[zone] = filter (
-		    string service, allowed_conflict_services[zone]:[], {
-			return service != "nis-client";
-		    }
-		);
-	    }
-	    allowed_conflict_services[zone] = toset(allowed_conflict_services[zone]:[]);
-	});
-
-	y2milestone("Possibly conflicting services found allowed: %1", allowed_conflict_services);
     }
 
     /**
@@ -2388,7 +2309,8 @@ Run YaST2 Firewall and assign it.
 
 	// checking if any possibly conficting services were turned on in configuration
 	// filling internal values for later checkings
-	CheckAllPossiblyConflictingServices();
+	// CheckAllPossiblyConflictingServices();
+	// -- Function has been turned off as we don't support services defined by YaST itself anymore --
 
 	y2milestone("Firewall configuration has been read: %1.", SETTINGS);
 	// to read configuration only once

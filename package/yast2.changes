@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul 16 18:41:13 CEST 2008 - locilka@suse.cz
+
+- Support for conflicting services has been dropped from
+  SuSEFirewall* modules (replaced by services defined by packages).
+
+-------------------------------------------------------------------
 Tue Jul 15 13:37:09 CEST 2008 - locilka@suse.cz
 
 - Fixed Linuxrc::SaveInstallInf function to really copy the
