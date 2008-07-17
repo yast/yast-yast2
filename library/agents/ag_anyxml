@@ -81,7 +81,8 @@ while (<STDIN>) {
 	my $root = $xml->XMLin ($file);
 	undef $xml;
 
-	ycp::Return ($root);
+	ycp::Return ($root, 1); # pass everything as string (bnc#409491)
+
     } elsif ($command eq "Write") {
 	if (ref ($arg) ne "HASH") {
 	    y2error ("argument must be a hash");
