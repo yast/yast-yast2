@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jul 17 12:25:25 CEST 2008 - jsuchome@suse.cz
+
+- ag_anyxml: return every value as string (bnc#409491) 
+
+-------------------------------------------------------------------
 Wed Jul 16 18:41:13 CEST 2008 - locilka@suse.cz
 
 - Support for conflicting services has been dropped from
