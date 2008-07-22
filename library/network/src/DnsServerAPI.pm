@@ -2331,6 +2331,79 @@ sub GetReverseIPforIPv4 {
 }
 
 =item *
+C<$reverseip = GetFullIPv6($ipv6);>
+
+Returns full-length ip IPv6.
+
+EXAMPLE:
+
+  my $reverseip = GetFullIPv6('3ffe:ffff::1');
+  -> '3ffe:ffff:0000:0000:0000:0000:0000:0001'
+  my $reverseip = GetFullIPv6('3ffe:ffff::210:a4ff:fe01:1');
+  -> '3ffe:ffff:0000:0000:0210:a4ff:fe01:0001'
+  my $reverseip = GetFullIPv6('3ffe:ffff::');
+  -> '3ffe:ffff:0000:0000:0000:0000:0000:0000'
+  my $reverseip = GetFullIPv6('::25');
+  -> '0000:0000:0000:0000:0000:0000:0000:0025'
+
+=cut
+
+BEGIN{$TYPEINFO{GetFullIPv6} = ["function","string","string"]};
+sub GetFullIPv6 {
+    my $class = shift;
+    my $ipv6  = shift || '';
+
+    return undef if !Init();
+
+    return undef if (!IP->Check6($ipv6));
+
+    # :: means undefined amount of "0000"
+    if ($ipv6 =~ /::/) {
+	# before ::
+	my $part_before = $ipv6;
+	$part_before =~ s/(.*)::.*/$1/;
+
+	# after ::
+	my $part_after = $ipv6;
+	$part_after =~ s/.*::(.*)/$1/;
+
+	my @part_before_full = ();
+	my @part_after_full = ();
+
+	# parts before ::
+	foreach my $part (split /:/, $part_before) {
+	    push @part_before_full, $part;
+	}
+
+	# parts after ::
+	foreach my $part (split /:/, $part_after) {
+	    push @part_after_full, $part;
+	}
+
+	# how many "0000" means the ::
+	my $zeros = 8 - (scalar (@part_before_full) + scalar (@part_after_full));
+	# string of zeros
+	$zeros = "0000:"x${zeros};
+	$zeros =~ s/:$//;
+
+	# create like-an-IPv6 string
+	$ipv6 = join (":", @part_before_full);
+	$ipv6 .= (scalar (@part_before_full) > 0 ? ":":"");
+	$ipv6 .= $zeros;
+	$ipv6 .= (scalar (@part_after_full) > 0 ? ":":"");
+	$ipv6 .= join (":", @part_after_full);
+    }
+
+    my @ret = ();
+
+    foreach my $part (split /:/, $ipv6) {
+	push @ret, sprintf ("%04s", $part);
+    }
+
+    return join (":", @ret);
+}
+
+=item *
 C<$reverseip = GetReverseIPforIPv6($ipv6);>
 
 Returns reverse ip for IPv6.
@@ -2355,41 +2428,16 @@ sub GetReverseIPforIPv6 {
 
     return undef if (!IP->Check6($ipv6));
 
-    my $reverseip = 'ip6.arpa.';
+    # get full-length IPv6
+    $ipv6 = $class->GetFullIPv6 ($ipv6);
+    # colons are ignored for reverse IP
+    $ipv6 =~ s/://g;
 
-    if ($ipv6 =~ /::/) {
-	my $part_before = $ipv6;
-	$part_before =~ s/(.*)::.*/$1/;
-
-	my $part_after = $ipv6;
-	$part_after =~ s/.*::(.*)/$1/;
-
-	my @part_before_full = ();
-	my @part_after_full = ();
-
-	foreach my $part (split /:/, $part_before) {
-	    $part = sprintf ("%04s", $part);
-	    push @part_before_full, $part;
-	}
-
-	foreach my $part (split /:/, $part_after) {
-	    $part = sprintf ("%04s", $part);
-	    push @part_after_full, $part;
-	}
-
-	my $zeros = 32 - 4 * (scalar (@part_before_full) + scalar (@part_after_full));
-	$zeros = "0"x${zeros};
-
-	$ipv6 = join ("", @part_before_full);
-	$ipv6 .= $zeros;
-	$ipv6 .= join ("", @part_after_full);
-    }
-
-    foreach my $part (split /:/, $ipv6) {
-	foreach my $letter (split //, $part) {
-	    $reverseip = $letter.'.'.$reverseip;
-	}
-    }
+    # all letters one by one
+    # in reverse order
+    # join with a dot
+    # reverse IPv6 suffix at the end
+    my $reverseip = join ('.', reverse (split (//, $ipv6))).'.ip6.arpa.';
 
     return $reverseip;
 }
