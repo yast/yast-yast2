@@ -2320,11 +2320,75 @@ sub GetReverseIPforIPv4 {
 
     return undef if !Init();
 
-    return undef if (!$class->CheckIPv4($ipv4));
+    return undef if (!IP->Check($ipv4));
 
     my $reverseip = 'in-addr.arpa.';
     foreach my $part (split(/\./, $ipv4)) {
 	$reverseip = $part.'.'.$reverseip;
+    }
+
+    return $reverseip;
+}
+
+=item *
+C<$reverseip = GetReverseIPforIPv6($ipv6);>
+
+Returns reverse ip for IPv6.
+
+EXAMPLE:
+
+  my $reverseip = GetReverseIPforIPv6('3ffe:ffff::1');
+  -> '1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.f.f.f.f.e.f.f.3.ip6.arpa.'
+  my $reverseip = GetReverseIPforIPv6('3ffe:ffff::210:a4ff:fe01:1');
+  -> '1.0.0.0.1.0.e.f.f.f.4.a.0.1.2.0.0.0.0.0.0.0.0.0.f.f.f.f.e.f.f.3.ip6.arpa.'
+  my $reverseip = GetReverseIPforIPv6('3ffe:ffff::');
+  -> '0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.f.f.f.f.e.f.f.3.ip6.arpa.'
+
+=cut
+
+BEGIN{$TYPEINFO{GetReverseIPforIPv6} = ["function","string","string"]};
+sub GetReverseIPforIPv6 {
+    my $class = shift;
+    my $ipv6  = shift || '';
+
+    return undef if !Init();
+
+    return undef if (!IP->Check6($ipv6));
+
+    my $reverseip = 'ip6.arpa.';
+
+    if ($ipv6 =~ /::/) {
+	my $part_before = $ipv6;
+	$part_before =~ s/(.*)::.*/$1/;
+
+	my $part_after = $ipv6;
+	$part_after =~ s/.*::(.*)/$1/;
+
+	my @part_before_full = ();
+	my @part_after_full = ();
+
+	foreach my $part (split /:/, $part_before) {
+	    $part = sprintf ("%04s", $part);
+	    push @part_before_full, $part;
+	}
+
+	foreach my $part (split /:/, $part_after) {
+	    $part = sprintf ("%04s", $part);
+	    push @part_after_full, $part;
+	}
+
+	my $zeros = 32 - 4 * (scalar (@part_before_full) + scalar (@part_after_full));
+	$zeros = "0"x${zeros};
+
+	$ipv6 = join ("", @part_before_full);
+	$ipv6 .= $zeros;
+	$ipv6 .= join ("", @part_after_full);
+    }
+
+    foreach my $part (split /:/, $ipv6) {
+	foreach my $letter (split //, $part) {
+	    $reverseip = $letter.'.'.$reverseip;
+	}
     }
 
     return $reverseip;
