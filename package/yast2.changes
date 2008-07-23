@@ -2,6 +2,7 @@
 Tue Jul 22 20:12:41 CEST 2008 - locilka@suse.cz
 
 - Added new DnsServerAPI::GetReverseIPforIPv6 function.
+- 2.17.8
 
 -------------------------------------------------------------------
 Thu Jul 17 12:25:25 CEST 2008 - jsuchome@suse.cz
