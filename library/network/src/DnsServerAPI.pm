@@ -406,6 +406,7 @@ sub CheckResourceRecord {
 	return 0 if (!$class->CheckHostameInZone($record->{'key'},$record->{'zone'}));
 	return 0 if (!$class->CheckHostname($record->{'value'}));
 	return 1;
+    # FIXME: IPv6
     } elsif ($record->{'type'} eq 'PTR') {
 	return 0 if (!$class->CheckReverseIPv4($record->{'key'}));
 	return 0 if (!$class->CheckHostameInZone($record->{'key'},$record->{'zone'}));
@@ -434,6 +435,7 @@ Use the format 'priority server-name'.
 	    return 0;
 	}
     }
+    # FIXME: TXT and SRV records
 
     y2warning("Undefined record type '".$record->{'type'}."'");
     return 1;
@@ -2318,8 +2320,6 @@ sub GetReverseIPforIPv4 {
     my $class = shift;
     my $ipv4  = shift || '';
 
-    return undef if !Init();
-
     return undef if (!IP->Check($ipv4));
 
     my $reverseip = 'in-addr.arpa.';
@@ -2352,8 +2352,6 @@ BEGIN{$TYPEINFO{GetFullIPv6} = ["function","string","string"]};
 sub GetFullIPv6 {
     my $class = shift;
     my $ipv6  = shift || '';
-
-    return undef if !Init();
 
     return undef if (!IP->Check6($ipv6));
 
@@ -2424,8 +2422,6 @@ sub GetReverseIPforIPv6 {
     my $class = shift;
     my $ipv6  = shift || '';
 
-    return undef if !Init();
-
     return undef if (!IP->Check6($ipv6));
 
     # get full-length IPv6
@@ -2440,6 +2436,71 @@ sub GetReverseIPforIPv6 {
     my $reverseip = join ('.', reverse (split (//, $ipv6))).'.ip6.arpa.';
 
     return $reverseip;
+}
+
+=item *
+C<$reverseip = GetCompressedIPv6($ipv6);>
+
+Returns compressed IPv6.
+
+EXAMPLE:
+
+  my $compressed = GetCompressedIPv6('3ffe:ffff:0000:0000:0000:0000:0000:0001');
+  -> '3ffe:ffff::1'
+  my $compressed = GetCompressedIPv6('3ffe:ffff:0000:0000:0210:a4ff:fe01:0001');
+  -> '3ffe:ffff::210:a4ff:fe01:1'
+  my $compressed = GetCompressedIPv6('3ffe:ffff:0000:0000:0000:0000:0000:0000');
+  -> '3ffe:ffff::'
+  my $compressed = GetCompressedIPv6('0000:0025:0000:0000:0000:0000:0000:0000');
+  -> '0:25::'
+  my $compressed = GetCompressedIPv6('0000:0000:0000:0025:0000:0025:0000:0000');
+  -> '::25:0:25:0:0'
+
+=cut
+
+BEGIN{$TYPEINFO{GetCompressedIPv6} = ["function","string","string"]};
+sub GetCompressedIPv6 {
+    my $class = shift;
+    my $ipv6  = shift || '';
+
+    return undef if (!IP->Check6($ipv6));
+
+    my @ipv6parts = split (/:/, $ipv6);
+    foreach my $part (@ipv6parts) {
+	$part =~ s/^0+//;
+	$part = '0' if ($part eq '');
+    }
+
+    $ipv6 = join (':', @ipv6parts);
+
+    # both at the begin end and at the end
+    if ($ipv6 =~ /^0:0:/ && $ipv6 =~ /:0:0$/) {
+	my $at_begin = $ipv6;
+	my $at_end = $ipv6;
+
+	# zeros at the begin / at the end
+	$at_begin =~ s/^(0(:0)+:).*/$1/;
+	$at_end =~ s/.*(:(0:)+0)$/$1/;
+
+	# there are more at the begin
+	if (length ($at_begin) > length ($at_end)) {
+	    $ipv6 =~ s/^0:(0:)+/::/;
+	# otherwise
+	} else {
+	    $ipv6 =~ s/(:0)+:0$/::/;
+	}
+    # at the begin
+    } elsif ($ipv6 =~ /^0:(0:)+/) {
+	$ipv6 =~ s/^0:(0:)+/::/;
+    # at the end
+    } elsif ($ipv6 =~ /(:0)+:0$/) {
+	$ipv6 =~ s/(:0)+:0$/::/;
+    # somewhere in the middle
+    } else {
+	$ipv6 =~ s/:(0:){2,}/::/;
+    }
+
+    return $ipv6;
 }
 
 =item *
