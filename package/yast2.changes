@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jul 25 16:00:44 CEST 2008 - mzugec@suse.cz
+
+- support for tunnel devices in NetworkInterfaces (FaTE#302184)
+- 2.17.9
+
+-------------------------------------------------------------------
 Tue Jul 22 20:12:41 CEST 2008 - locilka@suse.cz
 
 - Added new DnsServerAPI::GetReverseIPforIPv6 function.

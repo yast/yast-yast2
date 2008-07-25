@@ -83,7 +83,7 @@ boolean initialized = false;
  * Predefined network card regular expressions
  */
 global map<string,string> CardRegex = $[
-    "netcard"	: "arc|ath|bnep|ci|ctc|dummy|bond|escon|eth|fddi|ficon|hsi|qeth|lcs|iucv|myri|tr|usb|wlan|xp|vlan|br",
+    "netcard"	: "arc|ath|bnep|ci|ctc|dummy|bond|escon|eth|fddi|ficon|hsi|qeth|lcs|iucv|myri|tr|usb|wlan|xp|vlan|br|tun|tap",
     "modem"	: "ppp|modem",
     "isdn"	: "isdn|ippp",
     "dsl"	: "dsl",
@@ -185,6 +185,7 @@ global string GetType(string dev) {
  foreach(string dev_type,map confs, Devices, {
   if (haskey(confs, dev)){
    string int_type = confs[dev, "INTERFACETYPE"]:"";
+   if (size(confs[dev, "TUNNEL"]:"")>0) int_type = confs[dev, "TUNNEL"]:"";
    if(size(int_type)>0) type = int_type;
   }
  });
@@ -831,7 +832,7 @@ global define boolean Import(string devregex, map<string,map> devices) {
  * for this hardware
  */
 global list<string> GetDeviceTypes(){
- list<string> dev_types = ["eth", "tr", "vlan", "br"];
+ list<string> dev_types = ["eth", "tr", "vlan", "br", "tun", "tap"];
  if(Arch::s390 ()) dev_types = (list<string>) merge(dev_types, [ "hsi", "ctc", "escon", "ficon", "iucv", "qeth", "lcs"]);
 	else dev_types = (list<string>) merge(dev_types, [ "arc", "bnep", "dummy", "fddi", "myri", "usb", "wlan", "bond" ]);
  if(Arch::ia64 ()) dev_types = add(dev_types, "xp");
@@ -934,7 +935,11 @@ global string GetDevTypeDescription(string type, boolean longdescr){
 	/* Device type label */
 	"vlan"	: [ _("VLAN"), _("Virtual LAN") ],
 	/* Device type label */
-	"br"	: [ _("Network Bridge"), _("Network Bridge") ],
+	"br"	: [ _("Bridge"), _("Network Bridge") ],
+	/* Device type label */
+	"tun"	: [ _("TUN"), _("Network TUNnel") ],
+	/* Device type label */
+	"tap"	: [ _("TAP"), _("Network TAP") ],
     ];
 
     if(haskey(device_types, type)) return device_types[type, (longdescr==true) ? 1 : 0]:"";
