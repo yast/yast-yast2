@@ -525,6 +525,7 @@
 
 	if (! IsKnownService(service)) {
 	    y2error("Uknown service '%1'", service);
+	    y2milestone("Known services: %1", SERVICES);
 	    return nil;
 	}
 
