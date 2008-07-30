@@ -43,11 +43,9 @@ global boolean Check () {
 	    try_again = (Popup::AnyQuestion (
 		// TRANSLATORS: a popup headline
 		_("Accessing the Package Management Failed"),
+		Pkg::LastError() + "\n\n" +
 		// TRANSLATORS: an error message with question
-		_("Another process is accessing the package database.
-Package management cannot be used now.
-
-Would you like to continue without having access
+		_("Would you like to continue without having access
 to the package management or retry to access it?
 "),
 		Label::ContinueButton(),
@@ -89,11 +87,8 @@ global map<string,any> Connect(boolean show_continue_button)
 		symbol ret = Popup::AnyQuestion3(
 		    // TRANSLATORS: a popup headline
 		    _("Accessing the Package Management Failed"),
+		    Pkg::LastError() + "\n\n" +
 		    // TRANSLATORS: an error message with question
-		    _("Another process is accessing the package database.
-Package management cannot be used now.
-")
-		    + "\n" +
 		    _("Would you like to retry to access it,
 continue without having access to the package management
 or abort?
@@ -118,11 +113,8 @@ or abort?
 		boolean ret = Popup::AnyQuestion(
 		    // TRANSLATORS: a popup headline
 		    _("Accessing the Package Management Failed"),
+		    Pkg::LastError() + "\n\n" +
 		    // TRANSLATORS: an error message with question
-		    _("Another process is accessing the package database.
-Package management cannot be used now.
-")
-		    + "\n" +
 _("Would you like to abort or retry to access it?
 "),
 		    Label::RetryButton(),

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul 30 11:53:35 CEST 2008 - lslezak@suse.cz
+
+- PackageLock::Connect() - display more details about owner of the
+  zypp lock (bnc#280537)
+
+-------------------------------------------------------------------
 Fri Jul 25 16:00:44 CEST 2008 - mzugec@suse.cz
 
 - support for tunnel devices in NetworkInterfaces (FaTE#302184)
