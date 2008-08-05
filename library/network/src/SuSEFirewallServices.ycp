@@ -388,7 +388,7 @@
     /**
      * Function returns the map of supported (known) services.
      *
-     * @return map <string, string>
+     * @return map <string, string> supported services
      *
      * @struct
      *	$[ service_id : localized_service_name ]
