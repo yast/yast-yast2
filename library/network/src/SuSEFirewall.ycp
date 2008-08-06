@@ -25,6 +25,8 @@
     import "Progress";
     import "PortRanges";
     import "PackageSystem";
+    import "FileUtils";
+    import "Directory";
 
     // <!-- SuSEFirewall VARIABLES //-->
 
@@ -2213,6 +2215,15 @@ Run YaST2 Firewall and assign it.
 	ReadSysconfigSuSEFirewall ( GetListOfSuSEFirewallVariables() );
     }
 
+    // old internal services definitions are converted to new services defined by packages
+    // but only once
+    string converted_to_services_dbp_file = Directory::vardir + "/yast2-firewall-already-converted-to-sdbp";
+
+    // services have been already converted
+    boolean already_converted = false;
+
+    global void ConvertToServicesDefinedByPackages();
+
     /**
      * Function for reading SuSEFirewall configuration.
      * Fills internal variables only.
@@ -2321,6 +2332,10 @@ Run YaST2 Firewall and assign it.
 	SuSEFirewallServices::ReadServicesDefinedByRPMPackages();
 
 	if (have_progress) Progress::NextStage();
+
+	// bnc #399217
+	// Converting built-in service definitions to services defined by packages
+	ConvertToServicesDefinedByPackages();
 
 	if (have_progress) Progress::Finish();
 
@@ -2481,6 +2496,13 @@ Run YaST2 Firewall and assign it.
 
 	if (have_progress) Progress::NextStage();
 
+	if (already_converted && ! FileUtils::Exists (converted_to_services_dbp_file)) {
+	    y2milestone ("Writing %1: %2",
+		converted_to_services_dbp_file,
+		SCR::Write (.target.string, converted_to_services_dbp_file, "")
+	    );
+	}
+
 	if (have_progress) Progress::Finish();
 
 	return true;
@@ -2570,7 +2592,7 @@ Run YaST2 Firewall and assign it.
 	    // only when the service is allowed in zone - remove all its needed ports
 	    if (IsServiceSupportedInZone(service_id, zone) == true) {
 
-		// all needed ports etc for service/protocol, well, I'm not good at function pointers :-<
+		// all needed ports etc for service/protocol
 		list <string> needed_all = [];
 		if (protocol == "TCP") {
 		    needed_all = SuSEFirewallServices::GetNeededTCPPorts(service_id);
@@ -3257,6 +3279,124 @@ Run YaST2 Firewall and assign it.
 		SetModified();
 	    }
 	}
+    }
+
+    /**
+     * Removes old-service definitions before they are added as services defined
+     * by packages.
+     */
+    void RemoveOldAllowedServiceFromZone (map <string, any> old_service_def, string zone) {
+	y2milestone ("Removing: %1 from zone %2", old_service_def, zone);
+
+	if (old_service_def["tcp_ports"]:[] != []) {
+	    foreach (string one_service, old_service_def["tcp_ports"]:[], {
+		RemoveService (one_service, "TCP", zone);
+	    });
+	}
+
+	if (old_service_def["udp_ports"]:[] != []) {
+	    foreach (string one_service, old_service_def["udp_ports"]:[], {
+		RemoveService (one_service, "UDP", zone);
+	    });
+	}
+
+	if (old_service_def["rpc_ports"]:[] != []) {
+	    foreach (string one_service, old_service_def["rpc_ports"]:[], {
+		RemoveService (one_service, "RPC", zone);
+	    });
+	}
+
+	if (old_service_def["ip_protocols"]:[] != []) {
+	    foreach (string one_service, old_service_def["ip_protocols"]:[], {
+		RemoveService (one_service, "IP", zone);
+	    });
+	}
+
+	if (old_service_def["broadcast_ports"]:[] != []) {
+	    map <string, list <string> > broadcast = GetBroadcastAllowedPorts();
+
+	    broadcast[zone] = filter (string one_port, broadcast[zone]:[], {
+		return (! contains (old_service_def["broadcast_ports"]:[], one_port));
+	    });
+
+	    SetBroadcastAllowedPorts (broadcast);
+	}
+    }
+
+    /**
+     * Converts old built-in service definitions to services defined by packages.
+     *
+     * @see #bnc 399217
+     */
+    global void ConvertToServicesDefinedByPackages () {
+        if (already_converted) {
+            return;
+        }
+
+        if (FileUtils::Exists (converted_to_services_dbp_file)) {
+	    y2milestone ("Configuration has been already converted");
+            already_converted = true;
+            return;
+        }
+
+	// $[ zone : $[ protocol : [ list of ports ] ] ]
+	map <string, map <string, list <string> > > current_conf = $[];
+
+        foreach (string zone, GetKnownFirewallZones (), {
+	    current_conf[zone] = $[];
+
+	    foreach (string protocol, supported_protocols, {
+		current_conf[zone, protocol] = GetAllowedServicesForZoneProto (zone, protocol);
+		current_conf[zone, "broadcast"] = splitstring (GetBroadcastConfiguration (zone), " \n");
+	    });
+        });
+
+	y2milestone ("Current conf: %1", current_conf);
+
+	foreach (string zone, GetKnownFirewallZones (), {
+	    foreach (string old_service_id, map <string, any> old_service_def, SuSEFirewallServices::OLD_SERVICES, {
+		y2milestone ("Checking %1 in %2 zone", old_service_id, zone);
+
+		if (old_service_def["tcp_ports"]:[] != [] && ArePortsOrServicesAllowed (old_service_def["tcp_ports"]:[], "TCP", zone, true) != true)
+		    return;
+
+		if (old_service_def["udp_ports"]:[] != [] && ArePortsOrServicesAllowed (old_service_def["udp_ports"]:[], "UDP", zone, true) != true)
+		    return;
+
+		if (old_service_def["rpc_ports"]:[] != [] && ArePortsOrServicesAllowed (old_service_def["rpc_ports"]:[], "RPC", zone, false) != true)
+		    return;
+
+		if (old_service_def["ip_protocols"]:[] != [] && ArePortsOrServicesAllowed (old_service_def["ip_protocols"]:[], "IP", zone, false) != true)
+		    return;
+
+		if (old_service_def["broadcast_ports"]:[] != [] && IsBroadcastAllowed (old_service_def["broadcast_ports"]:[], zone) != true)
+		    return;
+
+		if (old_service_def["convert_to"]:[] == []) {
+		    y2milestone ("Service %1 supported, but it doesn't have any replacement", old_service_id);
+		    return;
+		}
+
+		boolean replaced = false;
+
+		foreach (string replacement, old_service_def["convert_to"]:[], {
+		    if (SuSEFirewallServices::IsKnownService (replacement)) {
+			y2milestone ("Old service %1 matches %2", old_service_id, replacement);
+			RemoveOldAllowedServiceFromZone (old_service_def, zone);
+			SetServicesForZones ([replacement], [zone], true);
+			replaced = true;
+			break;
+		    }
+		});
+
+		if (! replaced) {
+		    y2warning ("Old service %1 matches %2 but none are installed", old_service_id, old_service_def["convert_to"]:[]);
+		}
+	    });
+	});
+
+	y2milestone ("Converting done");
+	already_converted = true;
     }
 
     // <!-- SuSEFirewall GLOBAL FUNCTIONS //-->

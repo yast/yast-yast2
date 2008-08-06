@@ -77,14 +77,14 @@
     /**
      * Services definitions for conversion to the new ones.
      */
-    define map <string, map<string, any> > OLD_SERVICES = $[
+    global define map <string, map<string, any> > OLD_SERVICES = $[
 	"http" : $[
 	    "tcp_ports" : [ "http" ],
-	    "convert_to" : [ "apache2", "lighttpd" ],
+	    "convert_to" : [ "service:apache2", "service:lighttpd" ],
 	],
 	"https" : $[
 	    "tcp_ports" : [ "https" ],
-	    "convert_to" : [ "apache2-ssl", "lighttpd-ssl" ],
+	    "convert_to" : [ "service:apache2-ssl", "service:lighttpd-ssl" ],
 	],
 	"smtp" : $[
 	    "tcp_ports" : [ "smtp" ],
@@ -100,11 +100,11 @@
 	],
 	"imap" : $[
 	    "tcp_ports" : [ "imap" ],
-	    "convert_to" : [ "courier-imapd" ],
+	    "convert_to" : [ "service:courier-imapd" ],
 	],
 	"imaps" : $[
 	    "tcp_ports" : [ "imaps" ],
-	    "convert_to" : [ "courier-imap-ssl" ],
+	    "convert_to" : [ "service:courier-imap-ssl" ],
 	],
 	"samba-server" : $[
 	    "tcp_ports" : [ "netbios-ssn", "microsoft-ds" ],		// TCP: 139, 445
@@ -114,7 +114,7 @@
 	],
 	"ssh" : $[
 	    "tcp_ports" : [ "ssh" ],
-	    "convert_to" : [ "sshd" ],
+	    "convert_to" : [ "service:sshd" ],
 	],
 	"rsync" : $[
 	    "tcp_ports" : [ "rsync" ],
@@ -123,7 +123,7 @@
 	"dhcp-server" : $[
 	    "udp_ports" : [ "bootps" ],
 	    "broadcast_ports" : [ "bootps" ],
-	    "convert_to" : [ "dhcp-server" ],
+	    "convert_to" : [ "service:dhcp-server" ],
 	],
 	"dhcp-client" : $[
 	    "udp_ports" : [ "bootpc" ],
@@ -132,11 +132,11 @@
 	"dns-server" : $[
 	    "tcp_ports" : [ "domain" ],
 	    "udp_ports" : [ "domain" ],
-	    "convert_to" : [ "bind" ],
+	    "convert_to" : [ "service:bind" ],
 	],
 	"nfs-client" : $[
 	    "rpc_ports" : [ "portmap", "status", "nlockmgr" ],
-	    "convert_to" : [ "nfs-client" ],
+	    "convert_to" : [ "service:nfs-client" ],
 	],
 	"nfs-server" : $[
 	    "rpc_ports" : [ "portmap", "status", "nlockmgr", "mountd", "nfs", "nfs_acl" ],
@@ -144,7 +144,7 @@
 	],
 	"nis-client" : $[
 	    "rpc_ports" : [ "portmap", "ypbind" ],
-	    "convert_to" : [ "ypserv" ],
+	    "convert_to" : [ "service:ypserv" ],
 	],
 	"nis-server" : $[
 	    "rpc_ports" : [ "portmap", "ypserv", "fypxfrd", "ypbind", "yppasswdd" ],
@@ -174,11 +174,11 @@
 	"ntp-server" : $[
 	    "udp_ports" : [ "ntp" ],
 	    "broadcast_ports" : [ "ntp" ],
-	    "convert_to" : [ "ntp" ],
+	    "convert_to" : [ "service:ntp" ],
 	],
 	"ldap" : $[
 	    "tcp_ports" : [ "ldap" ],
-	    "convert_to" : [ "openldap" ],
+	    "convert_to" : [ "service:openldap" ],
 	],
 	"ldaps" : $[
 	    "tcp_ports" : [ "ldaps" ],
@@ -216,11 +216,11 @@
 	],
 	"mysql-server" : $[
 	    "tcp_ports"	: [ "mysql" ],
-	    "convert_to" : [ "mysql" ],
+	    "convert_to" : [ "service:mysql" ],
 	],
 	"iscsi-server" : $[
 	    "tcp_ports"	: [ "iscsi-target" ],
-	    "convert_to" : [ "iscsitarget" ],
+	    "convert_to" : [ "service:iscsitarget" ],
 	],
     ];
 
