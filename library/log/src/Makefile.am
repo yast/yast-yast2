@@ -1,6 +1,7 @@
 # Makefile.am for yast2/library/log/src
 
 module_DATA =			\
+	ALog.ycp		\
 	LogView.ycp		\
 	LogViewCore.ycp
 

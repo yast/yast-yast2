@@ -1,0 +1,83 @@
+/**
+ * File:        modules/ALog.ycp
+ * Package:     YaST2
+ * Summary:     Admin's Log, producing a summary of what YaST did to the system
+ * Authors:     Martin Vidner <mvidner@suse.cz>
+ *
+ * $Id$
+ * FATE#303700
+ * TODO stability tag.
+ *
+ * <pre>
+ * ALog::Item("/etc/ntp.conf: added 'server ntp.example.org'");
+ * ALog::Item("enabled /etd/init.d/ntp");
+ * ALog::Item("started /etd/init.d/ntp");
+ *
+ * ALog::CommitPopup();
+ *   ALog::Note("set up ntp from local server");
+ * </pre>
+ */
+
+{
+module "ALog";
+textdomain "base";
+
+import "Label";
+
+void doLog(string type, string msg) {
+    // TODO make a separate log, this is just a prototype
+    y2internal("{%1} %2", type, msg);
+}
+
+/**
+ * Log a change to the system from the system point of view.
+ * msg should include the file being changed, and what changes are made
+ * (TODO: with all detail? or summary?)
+ * Example "/etc/ntp.conf: added 'server ntp.example.org'"
+ * @param msg message
+ */
+global void Item(string msg) {
+    doLog ("item", msg);
+}
+
+/**
+ * Log a change to the system from the human point of view.
+ * (It will appear slightly differently in the log)
+ * Example "get proper time from the corporate time server
+ *         as requested in ticket bofh#327"
+ * @param msg message
+ */
+global void Note(string msg) {
+    doLog ("note", msg);
+}
+
+string uiInput(string label) {
+    // TODO more lines?
+    term d = `VBox(
+	`InputField (`id (`val), label, ""),
+	`PushButton (`id (`ok), `opt (`default, `key_F10), Label::OKButton ())
+	);
+    UI::OpenDialog (d);
+    any ui = nil;
+    do {
+	ui = UI::UserInput ();
+    } while (ui != `ok || ui != `cancel);
+
+    string val = nil;
+    if (ui == `ok) {
+	val = (string) UI::QueryWidget (`id (`val), `Value);
+    }
+    return val;
+}
+
+/**
+ * Prompt the user for a message to describe the changes
+ * that she did using YaST, logs it using @ref Note
+ */
+global void CommitPopup() {
+    string i = uiInput(_("Enter a log message to describe the changes that you did"));
+    string msg = (i == nil)? "*empty log message*": i;
+    Note(msg);
+}
+
+}
