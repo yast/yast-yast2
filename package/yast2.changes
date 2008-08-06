@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug  6 10:34:07 CEST 2008 - locilka@suse.cz
+
+- Converting old built-in allowed services configuration in
+  firewall to services defined by packages (bnc #399217).
+
+-------------------------------------------------------------------
 Wed Jul 30 11:53:35 CEST 2008 - lslezak@suse.cz
 
 - PackageLock::Connect() - display more details about owner of the
