@@ -25,6 +25,7 @@
     // MORE INFORMATION IN FEATURE #300687: Ports for SuSEfirewall added via packages.
     // ANOTHER REFERENCE: Bugzilla #246911.
     //
+    // See also http://en.opensuse.org/SuSEfirewall2/Service_Definitions_Added_via_Packages
     //
 
     /***
