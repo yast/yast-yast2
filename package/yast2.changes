@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug  6 14:23:14 CEST 2008 - tgoettlicher@suse.de
+
+- Fixed bnc #413516: HideBackButton() always hides back button
+  in wizard
+
+-------------------------------------------------------------------
 Wed Aug  6 10:34:07 CEST 2008 - locilka@suse.cz
 
 - Converting old built-in allowed services configuration in
