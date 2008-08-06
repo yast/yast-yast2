@@ -785,47 +785,6 @@
 	Wizard::SetContents("", `Empty(), "", false, false);
     }
 
-
-    /**
-     * Set contents and Buttons of wizard dialog
-     *
-     * Additionally set its title, help_text and buttons labels. Enables both back and next button.
-     *
-     * @params
-     *
-     * @param title title of window
-     * @param contents contents of dialog
-     * @param help_text help text
-     * @param back_label label of back button
-     * @param next_label label of next button
-     **/
-    global void SetContentsButtons( string title,
-				    term   contents,
-				    string help_text,
-				    string back_label,
-				    string next_label )
-    {
-	UI::PostponeShortcutCheck ();
-
-	if ( UI::WizardCommand(`SetBackButtonLabel( back_label ) ) == true )
-	{
-	    UI::WizardCommand(`SetNextButtonLabel( next_label ) );
-	    Wizard::SetContents( title, contents, help_text, true, true );
-	}
-	else
-	{
-	    // Set button labels first to avoid geometry problems: SetContents()
-	    // calls ReplaceWidget() wich triggers a re-layout.
-
-	    if ( UI::WidgetExists(`id(`back ) ) )	UI::ChangeWidget(`id (`back), `Label, back_label);
-	    if ( UI::WidgetExists(`id(`next ) ) )	UI::ChangeWidget(`id (`next), `Label, next_label);
-	    Wizard::SetContents( title, contents, help_text, true, true );
-	}
-	SetHelpText( help_text );
-	UI::CheckShortcuts ();
-    }
-
-
     /**
      * Set the dialog's "Next" button with a new label and a new ID
      *
@@ -988,6 +947,53 @@
     global void RestoreAbortButton()
     {
 	Wizard::SetAbortButton( `abort, Label::AbortButton() );
+    }
+
+
+
+    /**
+     * Set contents and Buttons of wizard dialog
+     *
+     * Additionally set its title, help_text and buttons labels. Enables both back and next button.
+     *
+     * @params
+     *
+     * @param title title of window
+     * @param contents contents of dialog
+     * @param help_text help text
+     * @param back_label label of back button
+     * @param next_label label of next button
+     **/
+    global void SetContentsButtons( string title,
+				    term   contents,
+				    string help_text,
+				    string back_label,
+				    string next_label )
+    {
+
+
+	UI::PostponeShortcutCheck ();
+
+	Wizard::RestoreBackButton();
+	Wizard::RestoreNextButton();
+	
+	if ( UI::WizardCommand(`SetBackButtonLabel( back_label ) ) == true )
+	{
+	    UI::WizardCommand(`SetNextButtonLabel( next_label ) );
+	    Wizard::SetContents( title, contents, help_text, true, true );
+	}
+	else
+	{
+	    // Set button labels first to avoid geometry problems: SetContents()
+	    // calls ReplaceWidget() wich triggers a re-layout.
+
+	    if ( UI::WidgetExists(`id(`back ) ) )	UI::ChangeWidget(`id (`back), `Label, back_label);
+	    if ( UI::WidgetExists(`id(`next ) ) )	UI::ChangeWidget(`id (`next), `Label, next_label);
+	    Wizard::SetContents( title, contents, help_text, true, true );
+	}
+	SetHelpText( help_text );
+	UI::CheckShortcuts ();
+
     }
 
 
