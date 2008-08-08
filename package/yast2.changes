@@ -1,8 +1,13 @@
 -------------------------------------------------------------------
+Fri Aug  8 13:19:03 CEST 2008 - locilka@suse.cz
+
+- Fixed the latest Progress patch to pass the testsuite.
+- 2.17.10
+
+-------------------------------------------------------------------
 Fri Aug  8 10:28:38 CEST 2008 - jsuchome@suse.cz
 
 - anyxml agent documentation added to anyxml.scr (bnc#405291) 
-- 2.17.10
 
 -------------------------------------------------------------------
 Wed Aug  6 14:23:14 CEST 2008 - tgoettlicher@suse.de

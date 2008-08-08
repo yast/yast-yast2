@@ -490,7 +490,7 @@
 	}
 
 	// patch from Michal Srb https://bugzilla.novell.com/show_bug.cgi?id=406890#c7
-	if (UI::WidgetExists (`id (`contents))) UI::ReplaceWidget (`id (`contents), bar);
+	if (! Mode::test() && UI::WidgetExists (`id (`contents))) UI::ReplaceWidget (`id (`contents), bar);
 
         if (! UI::WizardCommand(`SetDialogHeading( window_title ) ) )
         {
