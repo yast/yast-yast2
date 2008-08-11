@@ -91,8 +91,11 @@
      * @return	boolean if allowed
      */
     global define boolean IsAllowedPortName(string port_name) {
+	if (port_name == nil) {
+	    y2error ("Invalid port name: %1", port_name);
+	    return false;
 	// port is number
-	if (regexpmatch(port_name, "^[0123456789]+$")) {
+	} else if (regexpmatch(port_name, "^[0123456789]+$")) {
 	    integer port_number = tointeger(port_name);
 	    // checking range
 	    return (port_number>=0 && port_number<=65535);
@@ -189,13 +192,17 @@ No spaces are allowed.
 	if (regexpmatch(port, "^[0123456789]+$")) {
 	    port_number = tointeger(port);
 
-	    service_aliases = (list<string>) union (
-		service_aliases,
-		splitstring (
-		    SERVICE_PORT_TO_NAME[port_number]:LoadAndReturnPortToName(port_number),
-		    " "
-		)
-	    );
+	    string sport_name = SERVICE_PORT_TO_NAME[port_number]:LoadAndReturnPortToName(port_number);
+
+	    if (sport_name != nil) {
+		service_aliases = (list<string>) union (
+		    service_aliases,
+		    splitstring (
+			sport_name,
+			" "
+		    )
+		);
+	    }
 	// service is a port name, any space isn't allowed
 	} else if (IsAllowedPortName(port)) {
 	    integer found_alias_port = SERVICE_NAME_TO_PORT[port]:LoadAndReturnNameToPort(port);
