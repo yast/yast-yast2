@@ -161,12 +161,21 @@ global define string CurrentHostname() {
     string hostname = "";
     string fqhostname = CurrentFQ();
 
-    list <string> data = SplitFQ( fqhostname);
+    //current FQDN is IP address - it happens, esp. in inst-sys :)
+    //so let's not cut it into pieces (#415109)
+    if ( IP::Check( fqhostname ) )
+    {
+	hostname = fqhostname;
+    }
+    else
+    {
+        list <string> data = SplitFQ( fqhostname);
 
-    if ( data != [] )
-	hostname = data[0]:"";
+        if ( data != [] )
+	    hostname = data[0]:"";
 
-    y2debug("Current hostname: %1", hostname); 
+        y2debug("Current hostname: %1", hostname); 
+    }
     return hostname;
 }
 
@@ -178,10 +187,15 @@ global define string CurrentDomain() {
     string domain = "";
     string fqhostname = CurrentFQ();
 
-    list <string> data = SplitFQ( fqhostname);
+    //the same as above, if FQDN is IP address
+    //let's claim domainname as empty (#415109)
+    if ( !IP::Check ( fqhostname ) )
+    {
+        list <string> data = SplitFQ( fqhostname);
 
-    if ( data != [] && ( size( data ) > 1 ) )
-	domain = data[1]:"";
+        if ( data != [] && ( size( data ) > 1 ) )
+	    domain = data[1]:"";
+    }
 
     y2debug("Current domainname: %1", domain); 
     return domain;
