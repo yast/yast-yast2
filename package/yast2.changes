@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Aug 11 13:54:29 CEST 2008 - kmachalkova@suse.cz
+
+- Hostname::Current.*: Do not split FQDN into pieces if it is of the 
+  form of IP address (bnc#415108)
+- CWMFirewallInterfaces: widget-exists check added
+- 2.17.11
+
+-------------------------------------------------------------------
 Mon Aug 11 12:42:18 CEST 2008 - locilka@suse.cz
 
 - Fixing PortAliases to easier recover from faulty data.
