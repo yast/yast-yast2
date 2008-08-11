@@ -962,6 +962,17 @@ global void DisableOpenFirewallWidget () {
 }
 
 /**
+ * Check whether the whole firewall widget ( open port checkbox 
+ * and fw details button) exists
+ * @return boolean true if both widgets exist
+ */
+global boolean OpenFirewallWidgetExists() {
+
+    return ( UI::WidgetExists (`id ("_cwm_open_firewall")) &&
+	     UI::WidgetExists (`id ("_cwm_firewall_details")) );
+
+}
+/**
  * Get the template for the help text to the firewall opening widget
  * @param restart_displayed shold be true if "Save and restart" is displayed
  * @return string help text template with %1 and %2 placeholders
