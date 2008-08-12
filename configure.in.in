@@ -18,7 +18,20 @@ fi
 @YAST2-CHECKS-YCP@
 @YAST2-CHECKS-TESTSUITE@
 
+AC_MSG_CHECKING([for ifcfg location])
+# fallback, default on openSUSE
+IFCFG_DIR=/etc/sysconfig/network
+for TRY in /etc/sysconfig/network-scripts; do
+    if test -d $TRY; then
+        IFCFG_DIR=$TRY
+	break
+    fi
+done
+AC_SUBST([IFCFG_DIR])
+AC_MSG_RESULT([$IFCFG_DIR])
+
 ## and generate the output
 # also done via makefile
-AC_CONFIG_FILES(./library/modules/Version.ycp)
+AC_CONFIG_FILES(library/modules/Version.ycp
+library/network/agents/network.scr)
 @YAST2-OUTPUT@
