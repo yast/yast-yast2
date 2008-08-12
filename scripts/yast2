@@ -222,7 +222,7 @@ b=("${a[@]/#/(}")
 c=("${b[@]/%/)}")
 set -- -S "${c[@]}"
 
-case "`/usr/bin/basename $0`" in
+case "`basename $0`" in
 	YaST|yast|yast1|zast)
 		if [ -z "$CMDLINE_UI" ]; then
 			unset DISPLAY;
