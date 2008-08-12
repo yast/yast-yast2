@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Aug 12 17:44:57 CEST 2008 - mvidner@suse.cz
+
+- /sbin/yast, network.scr: Fedora portability, thanks to Oracle.
+- Added Distro, a module to distinguish between distributions,
+  to facilitate porting YaST.
+
+-------------------------------------------------------------------
 Mon Aug 11 13:54:29 CEST 2008 - kmachalkova@suse.cz
 
 - Hostname::Current.*: Do not split FQDN into pieces if it is of the 
