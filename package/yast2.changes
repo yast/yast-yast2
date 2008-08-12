@@ -9,7 +9,7 @@ Mon Aug 11 13:54:29 CEST 2008 - kmachalkova@suse.cz
 -------------------------------------------------------------------
 Mon Aug 11 12:42:18 CEST 2008 - locilka@suse.cz
 
-- Fixing PortAliases to easier recover from faulty data.
+- Fixing PortAliases to recover from faulty data.
 
 -------------------------------------------------------------------
 Fri Aug  8 13:19:03 CEST 2008 - locilka@suse.cz
