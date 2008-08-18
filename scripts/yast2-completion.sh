@@ -32,7 +32,7 @@ _yast2 ()
 	if [ "$prev" = "-i" -o "$prevprev" = "-i" -o "$prev" = "--install" -o "$prevprev" = "--install" \
 	  -o "$prev" = "--remove" -o "$prevprev" = "--remove" \
 	  -o "$prev" = "--update" -o "$prevprev" = "--update" ]; then
-		exit 0;
+		return 0;
 	fi
 
 	# iterate through all yast modules

@@ -48,7 +48,7 @@ package DnsServerAPI;
 
 use strict;
 use YaPI;
-textdomain("dns-server");
+textdomain("base");
 
 use YaST::YCP qw( sformat y2milestone y2error y2warning );
 YaST::YCP::Import ("DnsServer");
