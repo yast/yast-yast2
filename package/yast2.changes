@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 18 13:05:54 CEST 2008 - jsrain@suse.cz
+
+- fixed bash completion (bnc #417755)
+- 2.17.12
+
+-------------------------------------------------------------------
 Tue Aug 12 17:44:57 CEST 2008 - mvidner@suse.cz
 
 - /sbin/yast, network.scr: Fedora portability, thanks to Oracle.
