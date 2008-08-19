@@ -40,6 +40,18 @@ redirect()
     fi
 }
 
+# $1: file with error message
+display_error_file()
+{
+    if [ -x /usr/bin/zenity ]; then
+	/usr/bin/zenity  --title="Error" --text-info --filename="$1"
+    elif [ -x /usr/bin/kdialog ]; then
+	/usr/bin/kdialog --title "Error" --textbox "$1"
+    else
+	xmessage -buttons OK:0 -default OK -center -file "$1"
+    fi
+}
+
 exit_code=0
 
 exit_trap()
@@ -47,7 +59,7 @@ exit_trap()
     # handily, exit_code is set to $? of y2base.
     # If there was an error and there is anything to display, pop up.
     if [ $exit_code != 0 -a -s $ERRLOG ]; then
-	xmessage -buttons OK:0 -default OK -center -file $ERRLOG
+	display_error_file $ERRLOG
     fi
     rm -f $ERRLOG
 }

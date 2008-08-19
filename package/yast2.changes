@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug 19 15:55:31 CEST 2008 - mvidner@suse.cz
+
+- Use zenity or kdialog instead of xmessage if available, for
+  accessibility (bnc#418032, bnc#343903).
+
+-------------------------------------------------------------------
 Mon Aug 18 13:05:54 CEST 2008 - jsrain@suse.cz
 
 - fixed bash completion (bnc #417755)
