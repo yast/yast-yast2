@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Aug 20 12:46:23 CEST 2008 - ug@suse.de
+
+- fixed the Linuxrc::SaveInstallInf function to copy the 
+  install.inf
+- 2.17.13
+
+-------------------------------------------------------------------
 Tue Aug 19 15:55:31 CEST 2008 - mvidner@suse.cz
 
 - Use zenity or kdialog instead of xmessage if available, for
