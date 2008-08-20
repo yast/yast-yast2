@@ -148,8 +148,8 @@
 	    if (root != nil && root != "" && root != "/") {
 		if (WFM::Read (.local.size, inst_if_file) != -1) {
 		    y2milestone ("Copying %1 to %2", inst_if_file, root);
-        	    WFM::Execute (.target.bash, sformat (
-        		"grep -v '^Sourcemounted' '%1' > %1/%2; chmod 0600 %1", inst_if_file, root
+        	    WFM::Execute (.local.bash, sformat (
+        		"grep -v '^Sourcemounted' '%1' > %2/%1; chmod 0600 %1", inst_if_file, root
         	    ));
 		} else {
 		    y2error ("Can't SaveInstallInf, file %1 doesn't exist", inst_if_file);
