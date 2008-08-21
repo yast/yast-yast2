@@ -167,6 +167,11 @@
 
     boolean FullScreen()
     {
+	if (Mode::commandline())
+	{
+	    return false;
+	}
+
 	boolean ret = UI::WidgetExists(`progress_replace_point);
 	y2debug("Running in fullscreen mode: %1", ret);
 	return ret;
@@ -2042,7 +2047,7 @@ might be missing or out of date.")),
     {
 	y2milestone("Autorefreshing repositories...");
 
-	if (UI::WidgetExists(`id(`abort)))
+	if (!Mode::commandline() && UI::WidgetExists(`id(`abort)))
 	{
 	    UI::ChangeWidget(`id(`abort), `Label, _("Skip Autorefresh"));
 	}
@@ -2053,7 +2058,7 @@ might be missing or out of date.")),
 
     global void RefreshDone()
     {
-	if (UI::WidgetExists(`id(`abort)))
+	if (!Mode::commandline() && UI::WidgetExists(`id(`abort)))
 	{
 	    UI::ChangeWidget(`id(`abort), `Label, Label::AbortButton());
 	}
