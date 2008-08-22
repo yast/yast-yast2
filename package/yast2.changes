@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Aug 22 10:18:51 CEST 2008 - jsrain@suse.cz
+
+- remove 'usbhid' from blacklisted modules for initrd (bnc #398420)
+
+-------------------------------------------------------------------
 Wed Aug 20 12:46:23 CEST 2008 - ug@suse.de
 
 - fixed the Linuxrc::SaveInstallInf function to copy the 
