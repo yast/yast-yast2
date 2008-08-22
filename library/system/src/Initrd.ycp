@@ -118,7 +118,6 @@
 	    modules_to_skip = [
 		"input",
 		"hid",
-		"usbhid",
 		"keybdev",
 		"mousedev",
 		"cdrom",
