@@ -40,6 +40,9 @@
     // Packages that should be installed in continue mode
     global list<string> post_packages = [];
 
+    // Patterns that should be installed in continue mode
+    global list<string> post_patterns = [];
+
     /* Moved here from AutoinstStorage.ycp */
 
     // Show warning for /boot cyl <1024
