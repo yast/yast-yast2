@@ -1,0 +1,475 @@
+/* ------------------------------------------------------------------------------
+ * Copyright (c) 2008 Novell, Inc. All Rights Reserved.
+ *
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of version 2 of the GNU General Public License as published by the
+ * Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, contact Novell, Inc.
+ *
+ * To contact Novell about this file by physical or electronic mail, you may find
+ * current contact information at www.novell.com.
+ * ------------------------------------------------------------------------------
+ */
+
+/**
+ * File:	modules/ConfigHistory.ycp
+ * Package:	Maintain history of configuration files
+ * Summary:	ConfigHistory settings, input and output functions
+ * Authors:	Jiri Srain <jsrain@suse.cz>
+ *
+ * $Id: ConfigHistory.ycp 41350 2007-10-10 16:59:00Z dfiser $
+ *
+ * Routines for tracking configuration files in a subversion repository
+ *
+ * Use:
+ * - at your module start, call ConfigHistory::Init(); which will initialize
+ *   the repo if needed and also commits any uncommitted changes
+ * - at the module finish, call ConfigHistory::CommitChanges("module name");
+ *   which will commit the changes made to SVN with appropriate comment
+ *   mentioning the module name in the log
+ * - to ensure all configuration files are in SVN after initialization, call
+ *   ConfigHistory::InitFiles(["file1", "file2"]) immediatelly after calling
+ *   Init(); which will ensure the changes made are tracked during the first
+ *   run as well
+ *
+ * See also /etc/sysconfig/yast2, variables STORE_CONFIG_IN_SUBVERSION and
+ * SUBVERSION_ADD_DIRS_RECURSIVE
+ */
+
+{
+
+module "ConfigHistory";
+textdomain "config-history";
+
+/**
+ * Location of SVN repo
+ */
+string history_location = "/var/lib/YaST2/config-history";
+
+/**
+ * Location of timestamp for detecting changed files out of version control
+ */
+string changes_timestamp = "/var/lib/YaST2/config-history-timestamp";
+
+/**
+ * Directories to put under version control
+ */
+list<string> log_directories = [ "/etc" ];
+
+/**
+ * Is the SVN history active?
+ */
+boolean use_svn = nil;
+
+/**
+ * Always have whole subtree in SVN, not only files changed by YaST
+ */
+boolean store_whole_subtree = nil;
+
+/**
+ * Count of nested transactions (module calling another module)
+ */
+integer nested_transactions = 0;
+
+/**
+ * If true, force commit at the end of initialization/finalization
+ */
+boolean commit_needed = false;
+
+/**
+ * Is the SVN history in use?
+ * @return boolean true to log to SVN
+ */
+boolean UseSvn() {
+    if (use_svn == nil) {
+	use_svn = (string)SCR::Read (.sysconfig.yast2.STORE_CONFIG_IN_SUBVERSION) == "yes";
+	y2milestone ("Using SVN for configuration files: %1", use_svn);
+    }
+    return use_svn;
+}
+
+boolean Recursive() {
+    if (store_whole_subtree == nil) {
+	store_whole_subtree = (string)SCR::Read (.sysconfig.yast2.SUBVERSION_ADD_DIRS_RECURSIVE) == "yes";
+	y2milestone ("Automatically store whole subtree: %1", store_whole_subtree);
+    }
+    return store_whole_subtree;
+}
+
+/**
+ * Initialize a SVN repository for config files in /var/lib/YaST2
+ * @return boolean true on success, false otherwise
+ */
+boolean InitSvnRepository() {
+    y2milestone ("Initializing repo at %1", history_location);
+    map out = (map)SCR::Execute (.target.bash_output,
+	sformat ("svnadmin create %1", history_location));
+    if (out["exit"]:-1 != 0) {
+	y2error ("Failed to initialize SVN repository: %1", out["stderr"]:"");
+	return false;
+    }
+    out = (map)SCR::Execute (.target.bash_output,
+	sformat ("chown -R root:root %1; chmod -R g= %1; chmod -R o= %1", history_location));
+    if (out["exit"]:-1 != 0) {
+	y2error ("Failed to set svn repo permissions: %1", out["stderr"]:"");
+	return false;
+    }
+    y2milestone ("Repo initialized");
+    return true;
+}
+
+/**
+ * Check the presence of SVN repo for storing changes
+ * @return boolean true if repo exists
+ */
+boolean CheckSvnRepository() {
+    y2milestone ("Checking repo presence");
+    map out = (map)SCR::Execute (.target.bash_output,
+	sformat ("test -d %1", history_location));
+    boolean ret = (out["exit"]:-1 == 0);
+    y2milestone ("Repo found: %1", ret);
+    return ret;
+}
+
+/**
+ * Check whether repo has been deployed to the filesystem
+ * @return boolean true if yes (/.svn exists), false otherwise
+ */
+boolean CheckRepoLinked() {
+    y2milestone ("Checking whether repo is linked to root directory");
+    map out = (map)SCR::Execute (.target.bash_output,
+	sformat ("test -d %1", "/.svn"));
+    boolean ret = (out["exit"]:-1 == 0);
+    y2milestone ("Repo linked: %1", ret);
+    return ret;
+}
+
+/**
+ * Initialize predefined directories for SVN
+ * @param recursive boolean true to add whole directories incl. subtree,
+ *        false to add directory itself only
+ * @return boolean true on success, false on failure
+ */
+boolean InitDirectories(boolean recursive) {
+    y2milestone ("Linking system with the repository; recursive: %1", recursive);
+    map out = (map)SCR::Execute (.target.bash_output,
+	sformat ("svn co file://%1 /", history_location));
+    if (out["exit"]:-1 != 0)
+    {
+	y2error ("svn check out to root failed: %1", out["stderr"]:"");
+	return false;
+    }
+    boolean success = true;
+    foreach (string dir, log_directories, {
+	y2milestone ("Initializing directory %1", dir);
+	string params = recursive ? "" : "-N";
+	out = (map)SCR::Execute (.target.bash_output,
+	    sformat ("cd / ; svn add %2 %1", dir, params));
+	if (out["exit"]:-1 != 0)
+	{
+	    success = false;
+	    y2error ("Failed to add directory %1: %2", dir, out["stderr"]:"");
+	}
+    });
+    if (! success)
+	return false;
+    out = (map)SCR::Execute (.target.bash_output,
+	"cd / ; svn ci -m 'Initial check-in'");
+    if (out["exit"]:-1 != 0)
+    {
+	y2error ("Initial check-in to repo failed: %1", out["stderr"]:"");
+	return false;
+    }
+    y2milestone ("Initial check-in succeeded");
+    return true;
+}
+
+/**
+ * Check for files in version control which had been changed but not committed
+ * @return boolean true on success
+ */
+boolean CheckUncommitedChanges() {
+    boolean success = true;
+    foreach (string dir, log_directories, {
+	y2milestone ("Checking for uncommitted changes in %1", dir);
+	map out = (map)SCR::Execute (.target.bash_output, sformat (
+	    "cd %1; svn st |grep '^M'", dir));
+	if (out["exit"]:-1 == 1 && ! commit_needed)
+	{
+	    y2milestone ("No uncommitted change detected");
+	}
+	else
+	{
+	    out = (map)SCR::Execute (.target.bash_output, sformat (
+		"cd %1; svn ci -m 'Commit remaining changes before running YaST'",
+		dir));
+	    if (out["exit"]:-1 != 0)
+	    {
+		success = false;
+		y2error ("Failed to commit changes in %1: %2", dir, out["stderr"]:"");
+	    }
+	}
+    });
+    y2milestone ("Commit successful: %1", success);
+    return success;
+}
+
+/**
+ * Create a timestamp to find changed files which are not under version control
+ * @return boolean true on success
+ */
+boolean CreateTimeStamp() {
+    y2milestone ("Creating timestamp to detect changes");
+    map out = (map)SCR::Execute (.target.bash_output, sformat ("touch %1", changes_timestamp));
+    boolean ret = out["exit"]:-1 == 0;
+    y2milestone ("Success: %1", ret);
+    return ret;
+}
+
+/**
+ * Check for changed files which are not under verison control (e.g. new created files)
+ * Schedule them for next commit
+ * @return boolean true on success, false on failure
+ */
+boolean CheckChangedFilesOutOfVersionControl() {
+    boolean success = true;
+    foreach (string dir, log_directories, {
+	y2milestone ("Checking for new files in %1", dir);
+	map out = (map)SCR::Execute (.target.bash_output, sformat (
+	    "find %1 -newer %2 -type f |grep -v '/\\.'", dir, changes_timestamp));
+	if (out["exit"]:-1 == 1)
+	{
+	    y2milestone ("No changes found");
+	    return;
+	}
+	string param = out["stdout"]:"";
+	list<string> files = splitstring (param, "\n");
+	files = filter (string f, files, { return f != ""; });
+	files = filter (string f, files, {
+	    return 0 == (integer)SCR::Execute (.target.bash, sformat (
+		"svn st %1 | grep '^?'", f));
+	});
+	commit_needed = commit_needed || (size (files) > 0);
+	if (size (files) > 0) {
+	    param = mergestring (files, " ");
+	    out = (map)SCR::Execute (.target.bash_output, sformat (
+		"cd %1; svn add --parents %2", dir, param));
+	    if (out["exit"]:-1 != 0)
+	    {
+		success = false;
+		y2error ("Failed to add changes: %1", out["stderr"]:"");
+	    }
+	}
+    });
+    SCR::Execute (.target.bash_output, sformat ("rm %1", changes_timestamp));
+    return success;
+}
+
+/**
+ * Find all files which are not under version control
+ * Schedule such files for next commit
+ * @return boolean true on success, false otherwise
+ */
+boolean CheckAllFilesOutOfVersionControl() {
+    boolean success = true;
+    y2milestone ("Adding all files out of version control");
+    foreach (string dir, log_directories, {
+	map out = (map)SCR::Execute (.target.bash_output, sformat (
+	    "cd %1; svn add `svn st |grep '^?'|cut -d ' ' -f 7`", dir));
+	if (out["exit"]:-1 != 0)
+	{
+	    y2error ("Failed to add files in %1: %2", dir, out["stderr"]:"");
+	    success = false;
+	}
+    });
+    commit_needed = true; // TODO check if really necessary
+    y2milestone ("Finished successfuly: %1", success);
+    return success;
+}
+
+/**
+ * Check for files which had been deleted, but are still in SVN
+ * Schedule such files for deletion with next commit
+ * @return boolean true on success, false otherwise
+ */
+boolean RemoveDeletedFiles() {
+    boolean success = true;
+    y2milestone ("Checking for removed files");
+    foreach (string dir, log_directories, {
+	map out = (map)SCR::Execute (.target.bash_output, sformat (
+	    "cd %1; svn st |grep '^!'|cut -d ' ' -f 7", dir));
+	if (out["exit"]:-1 != 0)
+	{
+	    y2error ("Failed to check for deleted files in %1: %2", dir, out["stderr"]:"");
+	    success = false;
+	    return;
+	}
+	string filelist = out["stdout"]:"";
+	list<string> files = splitstring (filelist, " ");
+	files = filter (string f, files, { return f != ""; });
+	if (size (files) == 0)
+	    return;
+	filelist = mergestring (files, " ");
+	out = (map)SCR::Execute (.target.bash_output, sformat (
+	    "cd %1; svn rm %2", dir, filelist));
+	if (out["exit"]:-1 != 0)
+	{
+	    y2error ("Failed to remove files in %1: %2", dir, out["stderr"]:"");
+	    success = false;
+	}
+    });
+    commit_needed = true; // TODO check if really necessary
+    y2milestone ("Finished successfuly: %1", success);
+    return success;
+}
+
+/**
+ * Do commit to subversion
+ * @return boolean tru eon success
+ */
+boolean DoCommit(string mod) {
+    y2milestone ("Committing changes");
+    string arg = mergestring (log_directories, " ");
+    y2debug ("Directories to commit: %1", arg);
+    string log = sformat ("Changes by YaST module %1", mod);
+    map out = (map)SCR::Execute (.target.bash_output, sformat (
+	"cd / ; svn ci -m '%1' %2", log, arg));
+    boolean ret = out["exit"]:-1 == 0;
+    y2milestone ("Success: %1", ret);
+    return ret;
+}
+
+/**
+ * Update check-out from SVN to avoid commit conflicts
+ * @return boolean true on success
+ */
+boolean UpdateCheckout() {
+    boolean success = true;
+    foreach (string dir, log_directories, {
+	y2milestone ("Updating configuration files in %1", dir);
+        map out = (map)SCR::Execute (.target.bash_output, sformat (
+            "cd %1; svn up", dir));
+        if (out["exit"]:-1 != 0)
+        {
+            y2error ("Failed to update %1 from SVN: %2", dir, out["stderr"]:"");
+            success = false;
+        }
+    });
+    return success;
+}
+
+/**
+ * Initialize before module is started
+ * Do not call CommitChanges unless Init returns true!
+ * @return boolean true on success, false on failure
+ */
+global boolean Init() {
+    if (! UseSvn())
+	return true;
+    if (nested_transactions > 0)
+    {
+	nested_transactions = nested_transactions + 1;
+	y2milestone ("Skiping SVN initialization, translaction already in progress");
+	return true;
+    }
+    //ensure the repo exists
+    if (! CheckSvnRepository ()) {
+	if (! InitSvnRepository())
+	    return false;
+    }
+    if (! CheckRepoLinked()) {
+	if (! InitDirectories(Recursive()))
+	    return false;
+    }
+    if (Recursive()) {
+	CheckAllFilesOutOfVersionControl();
+    }
+    RemoveDeletedFiles();
+    if (! UpdateCheckout()) {
+	return false;
+    }
+    if (! CheckUncommitedChanges())
+	return false;
+    if (! CreateTimeStamp())
+	return false;
+    nested_transactions = nested_transactions + 1;
+    return true;
+}
+
+/**
+ * Commit changes done by YaST into the SVN repo
+ * @param module_name string name of YaST module which does commit
+ *        used only in the commit log
+ * @return boolean true on success, false on failure
+ */
+global boolean CommitChanges(string module_name) {
+    if (! UseSvn())
+	return true;
+    nested_transactions = nested_transactions - 1;
+    if (nested_transactions > 0)
+    {
+	y2milestone ("Skipping commit, all nested transaction not yet finished");
+	return true;
+    }
+    boolean success = true;
+    if (Recursive())
+	success = CheckAllFilesOutOfVersionControl();
+    else
+	success = CheckChangedFilesOutOfVersionControl();
+    success = RemoveDeletedFiles() && success;
+    if (! UpdateCheckout()) {
+	success = false;
+    }
+    success = DoCommit(module_name) && success;
+    return true;
+}
+
+/**
+ * Initialize specified files for version control; useful when
+ * not having whole directory under version control, but only
+ * relevant files
+ * @param files a list of files to add to repo (resp. ensure they are in)
+ * @return boolean true on success, false otherwise
+ */
+global boolean InitFiles(list<string> files) {
+    if (size (files) == 0)
+	return true;
+    if (! UseSvn())
+	return true;
+    if (Recursive())
+	return true;
+    if (nested_transactions == 0)
+    {
+	y2error ("InitFiles called before prior initialization");
+	return false;
+    }
+    string filelist = mergestring (files, " ");
+    map out = (map)SCR::Execute (.target.bash_output, sformat (
+	"svn add %1", filelist));
+    if (out["exit"]:-1 != 0) {
+	y2error ("Failed to schedule files %1 for addition: %2", filelist, out["stderr"]:"");
+	return false;
+    }
+    boolean success = true;
+    foreach (string dir, log_directories, {
+	out = (map)SCR::Execute (.target.bash_output, sformat (
+	    "cd %1; svn ci -m 'Initial check-in of files to be changed'", dir));
+	if (out["exit"]:-1 != 0)
+	{
+	    y2error ("Failed to commit changes to %1: %2", dir, out["exit"]:"");
+	    success = false;
+	}
+    });
+    return success;
+}
+
+
+/* EOF */
+}
