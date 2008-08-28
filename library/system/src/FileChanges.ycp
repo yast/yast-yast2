@@ -167,8 +167,10 @@ YaST might lose some of the changes");
 	  term content = `VBox(
 		`Label(msg),
 		`Left(`CheckBox(`id(`disable), _("Do not show this message anymore"))),
-		`HBox(`PushButton(`id(`ok), Label::ContinueButton()),
-			`PushButton(`id(`cancel), Label::CancelButton()))
+		`ButtonBox (
+		    `PushButton(`id(`ok), `opt (`okButton), Label::ContinueButton()),
+		    `PushButton(`id(`cancel), `opt (`cancelButton), Label::CancelButton())
+		)
 	    );
 	  UI::OpenDialog(content);
 	  UI::SetFocus(`ok);

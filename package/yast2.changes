@@ -2,8 +2,9 @@
 Thu Aug 28 11:55:05 CEST 2008 - locilka@suse.cz
 
 - Adapted Popup, Confirm, CWM, ALog, GPGWidgets, NetworkPopup,
-  PackageCallbacks, SignatureCheckDialogs libraries to use new
-  YButtonBox widget (FATE #303446).
+  PackageCallbacks, SignatureCheckDialogs, FileChanges, Initrd,
+  ModuleLoading libraries to use new YButtonBox widget
+  (FATE #303446).
 - Adjusted RPM dependencies.
 
 -------------------------------------------------------------------
