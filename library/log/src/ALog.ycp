@@ -55,8 +55,10 @@ string uiInput(string label) {
     // TODO more lines?
     term d = `VBox(
 	`InputField (`id (`val), label, ""),
-	`PushButton (`id (`ok), `opt (`default, `key_F10), Label::OKButton ())
-	);
+	`ButtonBox (
+	    `PushButton (`id (`ok), `opt (`default, `key_F10, `okButton), Label::OKButton ())
+	)
+    );
     UI::OpenDialog (d);
     any ui = nil;
     do {

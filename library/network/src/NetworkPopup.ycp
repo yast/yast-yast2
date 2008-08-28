@@ -69,11 +69,9 @@
 		    `Table(`id(`items), `header(_("Device Type"),_("Device Name"),_("IP Address"),_("Device ID")), Items),
 		    `VSpacing(10)
 		    ),
-		`HBox (
-		    `PushButton (`id(`ok), `opt(`default, `key_F10),
-				 Label::OKButton()),
-		    `PushButton (`id(`cancel), `opt(`key_F9),
-				 Label::CancelButton())
+		`ButtonBox (
+		    `PushButton (`id(`ok), `opt(`default, `key_F10, `okButton), Label::OKButton()),
+		    `PushButton (`id(`cancel), `opt(`key_F9, `cancelButton), Label::CancelButton())
 		    )
 		));
 	UI::ChangeWidget(`id(`items), `CurrentItem, selected);
@@ -116,11 +114,9 @@
 		    `SelectionBox (`id (`items), title, Items),
 		    `VSpacing(10)
 		    ),
-		`HBox (
-		    `PushButton (`id(`ok), `opt(`default, `key_F10),
-				 Label::OKButton()),
-		    `PushButton (`id(`cancel), `opt(`key_F9),
-				 Label::CancelButton())
+		`ButtonBox (
+		    `PushButton (`id(`ok), `opt(`default, `key_F10, `okButton), Label::OKButton()),
+		    `PushButton (`id(`cancel), `opt(`key_F9, `cancelButton), Label::CancelButton())
 		    )
 		));
 	UI::SetFocus (`id (`items));
