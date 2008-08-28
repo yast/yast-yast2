@@ -168,14 +168,11 @@
 											 `Left(`TextEntry(`id(`mod_name), _("&Driver/Module to load"), modulename+" "+moduleargs))
 											 )
 										   )
-									  ),
-								`HSquash(
-									 `HBox(
-									       `HWeight( 1, `PushButton(`id(`ok_msg), `opt(`default), Label::OKButton())),
-									       `HSpacing(2),
-									       `HWeight( 1, `PushButton(`id(`cancel_msg), Label::CancelButton()))
-									       )
-									 ),
+								),
+								`ButtonBox (
+									`PushButton (`id (`ok_msg), `opt (`default, `okButton, `key_F10), Label::OKButton()),
+									`PushButton (`id (`cancel_msg), `opt (`cancelButton, `key_F9), Label::CancelButton())
+								),
 								`VSpacing(0.2)
 								)
 							 )

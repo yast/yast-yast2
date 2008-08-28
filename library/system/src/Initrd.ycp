@@ -332,7 +332,9 @@
 		// heading
 		`Heading(header),
 		text,     // e.g. `Richtext()
-		`PushButton( `id(`ok_help), `opt(`default), Label::OKButton() )
+		`ButtonBox (
+		    `PushButton( `id(`ok_help), `opt(`default, `okButton), Label::OKButton())
+		)
 	    )
 	);
 
