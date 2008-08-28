@@ -65,12 +65,11 @@ global define boolean Detection(string class) ``{
 		`HVCenter(`Heading(class)),
 		`VSpacing(0.5)
 	    ))),
-	    `HSquash(`HBox(
-		`HWeight(1, `PushButton(`id(`continue), `opt(`default),  Label::ContinueButton())),
-		`HSpacing(2),
+	    `ButtonBox (
+		`HWeight (1, `PushButton (`id(`continue), `opt(`default, `okButton),  Label::ContinueButton())),
 		/* PushButton label */
-		`HWeight(1, `PushButton(`id(`skip),  _("&Skip")))
-	    )),
+		`HWeight (1, `PushButton (`id(`skip, `cancelButton),  _("&Skip")))
+	    ),
 	    `VSpacing(0.2)
 	))),
 	`HSpacing(1)
