@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Aug 28 11:55:05 CEST 2008 - locilka@suse.cz
+
+- Adapted Popup and Confirm libraries to use new YButtonBox widget
+  (FATE #303446).
+- Adjusted RPM dependencies.
+- 2.17.15
+
+-------------------------------------------------------------------
 Wed Aug 27 10:03:54 CEST 2008 - jsrain@suse.cz
 
 - added configuration files changes tracking in SNV as preview
