@@ -318,10 +318,9 @@ term AskPassphraseTerm()
 	    `Heading(_("Enter Passphrase")),
 	    "ask_passphrase",
 	    `VSpacing(0.5),
-	    `HBox(
-		`PushButton(`id(`ok), `opt(`default), Label::OKButton()),
-		`HSpacing(1),
-		`PushButton(`id(`cancel), Label::CancelButton())
+	    `ButtonBox (
+		`PushButton (`id (`ok), `opt (`default, `okButton, `key_F10), Label::OKButton()),
+		`PushButton (`id (`cancel), `opt (`cancelButton, `key_F9), Label::CancelButton())
 	    )
 	)
     );

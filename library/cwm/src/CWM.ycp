@@ -399,14 +399,9 @@ define integer GetLowestTimeout (list<map<string, any> > widgets) {
       * @return the term (HBox)
       */
     global define term OkCancelBox () ``{
-	return `HBox (
-	    `HStretch (),
-	    `PushButton (`id (`_tp_ok), `opt (`key_F10, `default),
-		Label::OKButton ()),
-	    `HSpacing (1),
-	    `PushButton (`id (`_tp_cancel), `opt (`key_F9),
-		Label::CancelButton ()),
-	    `HStretch ()
+	return `ButtonBox (
+	    `PushButton (`id (`_tp_ok), `opt (`key_F10, `default, `okButton), Label::OKButton ()),
+	    `PushButton (`id (`_tp_cancel), `opt (`key_F9, `cancelButton), Label::CancelButton ())
 	);
     }
 

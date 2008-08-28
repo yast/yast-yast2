@@ -75,11 +75,9 @@ define void OpenMenu() {
 	),
 
 	`VSpacing(1.0),
-	`HBox(
-	    `HSpacing(2),
-	    `Left(`PushButton(`id(`help), `opt(`key_F1), Label::HelpButton())),
-	    `Right(`PushButton(`id(`quit), `opt(`key_F9), Label::QuitButton())),
-	    `HSpacing(2)
+	`ButtonBox (
+	    `PushButton(`id(`help), `opt(`key_F1, `helpButton), Label::HelpButton()),
+	    `PushButton(`id(`quit), `opt(`key_F9, `cancelButton), Label::QuitButton())
 	),
 	`VSpacing(1)
     ));

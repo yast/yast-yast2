@@ -778,11 +778,9 @@ global symbol DisplayDetailsPopup (map<string,any> settings) {
     string help = CWM::MergeHelps (w);
     term contents = `VBox (
 	"firewall_ifaces",
-	`HBox (
-	    `HStretch (),
-	    `PushButton (`id (`ok), Label::OKButton ()),
-	    `PushButton (`id (`cancel), Label::CancelButton ()),
-	    `HStretch ()
+	`ButtonBox (
+	    `PushButton (`id (`ok), `opt (`okButton, `key_F10), Label::OKButton ()),
+	    `PushButton (`id (`cancel), `opt (`cancelButton, `key_F9), Label::CancelButton ())
 	)
     );
     contents = CWM::PrepareDialog (contents, w);
