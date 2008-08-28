@@ -156,10 +156,8 @@
 		)
 	    )),
 	    `ProgressBar(`id(`progress), "", 100, 0 ),
-	    `HBox (
-		`HStretch (),
-		`PushButton (`id (`abort), Label::AbortButton ()),
-		`HStretch ()
+	    `ButtonBox (
+		`PushButton (`id (`abort), `opt (`key_F9, `cancelButton), Label::AbortButton ())
 	    )
 	);
 	return progressbox;
@@ -367,9 +365,11 @@
 		return "I";
 	    }
 
-	    term button_box = `HBox (`PushButton (`id(`abort), Label::AbortButton()));
-	    button_box = add (button_box, `PushButton(`id(`retry), Label::RetryButton()));
-	    button_box = add (button_box, `PushButton(`id(`ignore), Label::SkipButton()));
+	    term button_box = `ButtonBox (
+		`PushButton (`id(`abort), `opt (`cancelButton, `key_F9), Label::AbortButton()),
+		`PushButton (`id(`retry), `opt (`customButton), Label::RetryButton()),
+		`PushButton (`id(`ignore), `opt (`okButton), Label::SkipButton())
+	    );
 
 	    if ( showLongInfo )
 	    {
@@ -579,9 +579,11 @@
 		}
 	    }
 	    else {
-		term button_box = `HBox (`PushButton (`id(`abort), Label::AbortButton()),
-					 `PushButton(`id(`retry), Label::RetryButton()),
-					 `PushButton(`id(`ignore), Label::IgnoreButton()));
+		term button_box = `ButtonBox (
+		    `PushButton (`id(`abort), `opt (`cancelButton), Label::AbortButton()),
+		    `PushButton (`id(`retry), `opt (`commonButton), Label::RetryButton()),
+		    `PushButton (`id(`ignore), `opt (`okButton), Label::IgnoreButton())
+		);
 
 		if ( showLongInfo )
 		{
@@ -790,18 +792,18 @@ Check whether the server is accessible."), wanted_label);
 	// --------------------------------------
 	// build up button box
 
-	term button_box = `HBox (`PushButton (`id(`retry), `opt(`default), Label::RetryButton()));
+	term button_box = `ButtonBox (`PushButton (`id(`retry), `opt(`default, `commonButton), Label::RetryButton()));
 
 	if (current == -1)			// wrong media id, offer "Ignore"
 	{
-	    button_box = add (button_box, `PushButton(`id(`ignore), Label::IgnoreButton()));
+	    button_box = add (button_box, `PushButton(`id(`ignore), `opt (`okButton), Label::IgnoreButton()));
 	}
 
-	button_box = add (button_box, `PushButton (`id(`cancel), Label::AbortButton()));
+	button_box = add (button_box, `PushButton (`id(`cancel), `opt (`cancelButton), Label::AbortButton()));
 
 	// push button label during media change popup, user can skip
 	// this media (CD) so no packages from this media will be installed
-	button_box = add (button_box, `PushButton (`id(`skip), _("&Skip")));
+	button_box = add (button_box, `PushButton (`id(`skip), `opt(`commonButton), _("&Skip")));
 
 	if (offer_eject_button)
 	{
@@ -1307,9 +1309,9 @@ global symbol SourceCreateError (string url, symbol error, string description) {
     UI::OpenDialog (`VBox (
 	`Label (message),
 	`RichText(detail),
-	`HBox (
-	    `PushButton (`id (`RETRY), Label::RetryButton()),
-	    `PushButton (`id (`ABORT), Label::AbortButton())
+	`ButtonBox (
+	    `PushButton (`id (`RETRY), `opt (`okButton), Label::RetryButton()),
+	    `PushButton (`id (`ABORT), `opt (`cancelButton), Label::AbortButton())
 	)
     ));
     symbol ret = (symbol)UI::UserInput ();
@@ -1423,9 +1425,9 @@ global symbol SourceProbeError(string url, symbol error, string description) {
     UI::OpenDialog (`VBox (
 	`Label (message),
 	`RichText(detail),
-	`HBox (
-	    `PushButton (`id (`RETRY), Label::RetryButton()),
-	    `PushButton (`id (`ABORT), Label::AbortButton())
+	`ButtonBox (
+	    `PushButton (`id (`RETRY), `opt (`okButton), Label::RetryButton()),
+	    `PushButton (`id (`ABORT), `opt (`cancelButton), Label::AbortButton())
 	)
     ));
     symbol ret = (symbol)UI::UserInput ();
@@ -1517,8 +1519,8 @@ global symbol SourceReportError(integer source_id, string url, symbol error, str
 	`Label (message),
 	`RichText(detail),
 	`HBox (
-	    `PushButton (`id (`RETRY), Label::RetryButton()),
-	    `PushButton (`id (`ABORT), Label::AbortButton())
+	    `PushButton (`id (`RETRY), `opt (`okButton), Label::RetryButton()),
+	    `PushButton (`id (`ABORT), `opt (`cancelButton), Label::AbortButton())
 	)
     ));
     symbol ret = (symbol)UI::UserInput ();
@@ -1699,7 +1701,9 @@ global void SourceReportDestroy()
 
 		// label
 		`LogView(`id(`log), _("Output of the Script"), 10, 0),
-		`PushButton(`id(`abort), `opt(`default, `key_F9), Label::AbortButton())
+		`ButtonBox (
+		    `PushButton(`id(`abort), `opt(`default, `key_F9, `cancelButton), Label::AbortButton())
+		)
 	    );
 
 	    if (_script_popup)
@@ -1814,10 +1818,9 @@ Continue with refreshing?
 
 Note: If the refresh is skipped some packages
 might be missing or out of date.")),
-		`HBox(
-			`PushButton(`id(`continue), `opt(`default), Label::ContinueButton()),
-			`HSpacing(2),
-			`PushButton(`id(`skip), _("Skip Refresh"))
+		`ButtonBox (
+			`PushButton (`id(`continue), `opt (`default, `okButton), Label::ContinueButton()),
+			`PushButton (`id(`skip), `opt (`commonButton), _("Skip Refresh"))
 		    )
 		)
 	    )
@@ -1874,10 +1877,8 @@ might be missing or out of date.")),
 						    `HSpacing(1)
 						    ),
 					      `VSpacing(0.5),
-					      `HBox (
-						`HStretch (),
-						`PushButton (`id (`abort), Label::AbortButton ()),
-						`HStretch ()
+					      `ButtonBox (
+						`PushButton (`id (`abort), `opt (`cancelButton), Label::AbortButton ())
 					      ),
 					      `VSpacing(0.5)
 					      )
@@ -2322,11 +2323,11 @@ global string ErrorScanDb(integer error, string description)
 
     boolean show_details = false;
 
-    term button_box = `HBox
+    term button_box = `ButtonBox
     (
-	`PushButton (`id(`abort), Label::AbortButton()),
-	`PushButton(`id(`retry), Label::RetryButton()),
-	`PushButton(`id(`ignore), Label::IgnoreButton())
+	`PushButton (`id (`abort), `opt (`cancelButton), Label::AbortButton()),
+	`PushButton (`id (`retry), `opt (`commonButton), Label::RetryButton()),
+	`PushButton (`id (`ignore), `opt (`okButton), Label::IgnoreButton())
     );
 
     UI::OpenDialog( `opt(`decorated),  LayoutPopup (message, button_box, 1, false) );
@@ -2433,10 +2434,9 @@ global map<string,any> Authentication(string url, string msg, string username, s
 	    `HSpacing(1)
 	),
 	`VSpacing(0.5),
-	`HBox(
-	    `PushButton (`id(`cont), `opt(`default), Label::ContinueButton()),
-	    `HSpacing(1),
-	    `PushButton(`id(`cancel), Label::CancelButton())
+	`ButtonBox (
+	    `PushButton (`id(`cont), `opt (`default, `okButton), Label::ContinueButton()),
+	    `PushButton(`id(`cancel), `opt (`cancelButton), Label::CancelButton())
 	),
 	`VSpacing(0.5)
     );
@@ -2522,7 +2522,9 @@ global void ProgressStart(integer id, string task, boolean in_percent, boolean i
 			(in_percent) ? `ProgressBar (`id (`progress_widget), task, 100, val_percent)
 			    : `BusyIndicator(`id(`progress_widget), task, 3000),
 			`VSpacing(0.2),
-			`PushButton (`id (`abort), Label::AbortButton ()),
+			`ButtonBox (
+			    `PushButton (`id (`abort), `opt (`cancelButton), Label::AbortButton ())
+			),
 			`VSpacing(0.5)
 		    ),
 		    `HSpacing(1)
