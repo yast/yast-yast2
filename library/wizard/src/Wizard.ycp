@@ -169,13 +169,11 @@
      **/
     global term AbortApplyFinishButtonBox()
     {
-	return `HBox(
-		     `PushButton(`id(`abort ), Label::AbortButton() ),
-		     `HStretch(),
+	return `ButtonBox (
+		     `PushButton (`id (`abort, `cancelButton, `key_F9), Label::AbortButton()),
 		     // button text
-		     `PushButton(`id(`apply), _("&Apply") ),
-		     `HStretch(),
-		     `PushButton(`id(`finish), Label::FinishButton() )
+		     `PushButton (`id (`apply, `applyButton), _("&Apply")),
+		     `PushButton (`id (`finish, `okButton, `key_F10), Label::FinishButton())
 		     );
     }
 
