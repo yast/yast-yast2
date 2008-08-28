@@ -181,6 +181,9 @@
   // TRANSLATORS: Description of a Service (File name: openldap, RPM: openldap2), used as a common label or an item in table
   tmpstring = _("Opens ports for the OpenLDAP Server (slapd).");
 
+  // TRANSLATORS: Name of Service (File name: postfix, RPM: postfix), can be used as check box, item in multiple selection box...
+  tmpstring = _("SMTP with Postfix");
+
   // TRANSLATORS: Description of a Service (File name: postfix, RPM: postfix), used as a common label or an item in table
   tmpstring = _("Firewall Configuration file for postfix");
 
@@ -195,6 +198,9 @@
 
   // TRANSLATORS: Description of a Service (File name: pure-ftpd, RPM: pure-ftpd), used as a common label or an item in table
   tmpstring = _("Opens ports for pureftpd with broadcast allowed.");
+
+  // TRANSLATORS: Name of Service (File name: sendmail, RPM: sendmail), can be used as check box, item in multiple selection box...
+  tmpstring = _("SMTP with sendmail");
 
   // TRANSLATORS: Description of a Service (File name: sendmail, RPM: sendmail), used as a common label or an item in table
   tmpstring = _("Firewall Configuration file for postfix");
