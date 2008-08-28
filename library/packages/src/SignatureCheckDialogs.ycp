@@ -271,18 +271,17 @@
      * @return term with buttons
      */
     term YesNoButtons (symbol default_button) {
-	term yes_button = `PushButton(`id(`yes), Label::YesButton());
-	term no_button  = `PushButton(`id(`no), Label::NoButton());
+	term yes_button = `PushButton(`id(`yes), `opt (`okButton, `key_F10), Label::YesButton());
+	term no_button  = `PushButton(`id(`no), `opt (`cancelButton, `key_F9), Label::NoButton());
 
 	if (default_button == `yes) {
-	    yes_button = `PushButton(`id(`yes), `opt(`default), Label::YesButton());
+	    yes_button = `PushButton(`id(`yes), `opt(`default, `okButton, `key_F10), Label::YesButton());
 	} else {
-	    no_button  = `PushButton(`id(`no), `opt(`default), Label::NoButton());
+	    no_button  = `PushButton(`id(`no), `opt(`default, `cancelButton, `key_F9), Label::NoButton());
 	}
 	
-	return `HBox (
+	return `ButtonBox (
 	    yes_button,
-	    `HSpacing(2),
 	    no_button
 	);
     }
@@ -654,9 +653,8 @@ to skip it.")
 		`MarginBox(0.5, 0.5, `Label(description_text)),
 		`HBox (
 		    // push button
-		    `PushButton(`id(`trust), _("&Trust and Import the Key")),
-		    `HSpacing(1),
-		    `PushButton(`id(`skip), Label::SkipButton())
+		    `PushButton(`id(`trust), `opt(`okButton, `key_F10), _("&Trust and Import the Key")),
+		    `PushButton(`id(`skip), `opt (`cancelButton, `key_F9), Label::SkipButton())
 		)
 	    )
 	);
@@ -757,15 +755,11 @@ the key really belongs to that owner before importing it."),
 			    ),
 			// dialog buttons
 			`Bottom(
-			    `HBox (
+			    `ButtonBox (
 				// push button
-				`PushButton(`id(`import), _("&Import")),
-				`HSpacing(1),
+				`PushButton (`id (`import), `opt (`okButton, `key_F10), _("&Import")),
 				// push button
-				//`PushButton(`id(`details), _("&Details...")),
-				//`HSpacing(1),
-				// push button
-				`PushButton(`id(`dont_import), _("Do &Not Import"))
+				`PushButton (`id (`dont_import), `opt (`cancelButton, `key_F9), _("Do &Not Import"))
 			    )
 			)
 		    )
@@ -863,15 +857,11 @@ the key really belongs to that owner before importing it."),
 			    ),
 			// dialog buttons
 			`Bottom(
-			    `HBox (
+			    `ButtonBox (
 				// push button
-				`PushButton(`id(`import), _("&Import")),
-				`HSpacing(1),
+				`PushButton(`id(`import), `opt (`key_F10, `okButton), _("&Import")),
 				// push button
-				//`PushButton(`id(`details), _("&Details...")),
-				//`HSpacing(1),
-				// push button
-				`PushButton(`id(`dont_import), _("Do &Not Import"))
+				`PushButton(`id(`dont_import), `opt (`key_F9, `cancelButton), _("Do &Not Import"))
 			    )
 			)
 		    )
