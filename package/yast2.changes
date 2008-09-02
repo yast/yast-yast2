@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Sep  2 11:18:36 CEST 2008 - locilka@suse.cz
+
+- Extended control file handling to accept 'execute' module
+  parameter to be called instead of 'name'/inst_'name'
+  (BNC #401319).
+
+-------------------------------------------------------------------
 Thu Aug 28 11:55:05 CEST 2008 - locilka@suse.cz
 
 - Adapted Popup, Confirm, CWM, ALog, GPGWidgets, NetworkPopup,
