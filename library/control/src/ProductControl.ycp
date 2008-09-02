@@ -312,28 +312,41 @@ global define boolean checkArch(map mod , map def)
     return false;
 };
 
-
-string getClientName(string name ) {
+/**
+ * Returns name of the script to call. If 'execute' is defined,
+ * the client name is taken from there. Then, if a custom control
+ * file is defined, client name is defined as 'name'. Then, inst_'name'
+ * or just 'name' is returned if it does not match the 'inst_' regexp.
+ *
+ * @param string name
+ * @param string execute
+ * @see custom_control_file
+ */
+string getClientName (string name, string execute) {
 
     if (Mode::test()) 
     {
         return "inst_test_workflow";
     }
-    // All client start with "inst_".
-    string client = "";
-    if ( custom_control_file != "")
-    {
-        return name;
+
+    // BNC #401319
+    // 'execute; is defined and thus returned
+    if (execute != "" && execute != "") {
+	y2milestone ("Step name '%1' executes '%2'", name, execute);
+	return execute;
     }
-    else
-    {
-        if (issubstring(name, _client_prefix)) {
+
+    // Defined custom control file
+    if (custom_control_file != "") {
+        return name;
+
+    // All standard clients start with "inst_"
+    } else {
+        if (issubstring (name, _client_prefix)) {
             return name;	    
 	} else {
-            client = _client_prefix + name;
-	    return client;
+            return _client_prefix + name;
 	}
-	
     }
 }
 
@@ -345,7 +358,7 @@ string getClientName(string name ) {
  */
 global define term getClientTerm (map step, map def, any former_result)
 {    
-    string client =  getClientName(step["name"]:"dummy");
+    string client =  getClientName (step["name"]:"dummy", step["execute"]:"");
     term result = toterm(client);
     map<string,any> arguments = $[];
     
@@ -1129,9 +1142,12 @@ global symbol RunFrom (integer from, boolean allow_back)
     {
 	map step = modules[current_step]:$[];
 	string  step_name = step["name"]:"";
+	// BNC #401319
+	// if "execute" is defined, it's called without modifications
+	string  step_execute = step["execute"]:"";
+	string  step_id = step["id"]:"";
 	boolean run_in_update_mode = step["update"]:true; // default is true
 	boolean retranslate = step["retranslate"]:false;
-        string step_id = step["id"]:"";
 
 	// Don't mark back button disabled when back button status
 	// is forced in the control file
@@ -1208,7 +1224,7 @@ global symbol RunFrom (integer from, boolean allow_back)
                 y2error("Error writing step identifier");
         }
 
-	symbol result = (symbol) WFM::CallFunction (getClientName(step_name), args);
+	symbol result = (symbol) WFM::CallFunction (getClientName (step_name, step_execute), args);
 	y2milestone ("Calling %1 returned %2", argterm, result);
 
 	// bnc #369846
