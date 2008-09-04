@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep  4 17:48:02 CEST 2008 - locilka@suse.cz
+
+- Adding question icon for ModuleLoading::Load (bnc #421002).
+
+-------------------------------------------------------------------
 Thu Sep  4 14:31:14 CEST 2008 - locilka@suse.cz
 
 - Fixing Popup YCP module to workaround a UI Syntax Error while
