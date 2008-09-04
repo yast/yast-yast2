@@ -17,6 +17,16 @@
 
 {
 
+//////////////////////////////////////////////////////////////////
+//
+// General module rules:
+//
+//   * Always check that opening a dialig succeeded.
+//   * Don't close a dialog if opening wasn't successful.
+//   * Don't wait for user input opening wasn't successful.
+//
+//////////////////////////////////////////////////////////////////
+
 module "Popup";
 
 textdomain "base";
@@ -166,18 +176,19 @@ define void anyTimedMessageTypeInternal(string headline,
 				    integer height )
 {
     term button_box = `ButtonBox (
-	`PushButton (`id (`stop), `opt (`customButton), Label::StopButton()),
+	// FIXME: BNC #422612, Use `opt(`noSanityCheck) later
+	`PushButton (`id (`stop), `opt (`cancelButton), Label::StopButton()),
 	`PushButton (`id (`ok_msg), `opt (`default, `okButton), Label::OKButton())
     );
 
-    UI::OpenDialog(
+    boolean success = (boolean) UI::OpenDialog(
 		   `opt(`decorated),
 		   popupLayoutInternalTypeWithLabel( headline, message, icon_name,
 						 button_box, sformat("%1", timeout), richtext, width, height )
 		   );
 
-    UI::SetFocus(`id(`ok_msg));
-
+    if (success)
+	UI::SetFocus(`id(`ok_msg));
 
     symbol button = nil;
 
@@ -193,10 +204,12 @@ define void anyTimedMessageTypeInternal(string headline,
 
 	timeout = timeout - 1;
 
-	UI::ChangeWidget(`id(`label), `Value, sformat("%1", timeout ));
+	if (success)
+	    UI::ChangeWidget(`id(`label), `Value, sformat("%1", timeout ));
     }
 
-    UI::CloseDialog();
+    if (success)
+	UI::CloseDialog();
 }
 
 /**
@@ -311,13 +324,16 @@ global define boolean AnyQuestion( string headline,
 				   symbol focus )
 {
     term button_box = AnyQuestionButtonBox ( yes_button_message, no_button_message, focus);
-    UI::OpenDialog( 
+    boolean success = (boolean) UI::OpenDialog( 
 		   `opt(`decorated),
 		   popupLayoutInternal( headline, message, Icon::IconPath ("question"), button_box )
 		   );
 
-    any ret = UI::UserInput();
-    UI::CloseDialog();
+    any ret = nil;
+    if (success) {
+	UI::UserInput();
+	UI::CloseDialog();
+    }
 
     return ret == `yes;
 }
@@ -350,7 +366,8 @@ global define boolean TimedAnyQuestion( string headline,
 				     `Label(`id(`remaining_time), "" + timeout_seconds)
 				     ),
 			    `ButtonBox (
-				  `PushButton (`id (`timed_stop), `opt (`customButton), Label::StopButton()),
+				  // FIXME: BNC #422612, Use `opt(`noSanityCheck) later
+				  `PushButton (`id (`timed_stop), `opt (`cancelButton), Label::StopButton()),
 				  `PushButton (`id (`timed_ok), `opt (`default, `key_F10, `okButton), Label::OKButton())
 				  ),
 			    `VSpacing(0.2)
@@ -358,7 +375,7 @@ global define boolean TimedAnyQuestion( string headline,
 		      );
 
 
-    UI::OpenDialog(
+    boolean success = (boolean) UI::OpenDialog(
 		   `opt(`decorated),
 		   popupLayoutInternal( headline, message, Icon::IconPath ("question"), timed )
 		   );
@@ -367,6 +384,7 @@ global define boolean TimedAnyQuestion( string headline,
 
     while (timeout_seconds > 0) {
 	which_input = UI::TimeoutUserInput( 1000 );
+
 	if (which_input == `timed_ok)
 	    break;
 	if (which_input == `timed_stop)
@@ -377,9 +395,10 @@ global define boolean TimedAnyQuestion( string headline,
 	    break;
 	}
 	timeout_seconds = timeout_seconds - 1;
-	UI::ChangeWidget (`id(`remaining_time), `Value, ""+timeout_seconds);
+	if (success) UI::ChangeWidget (`id(`remaining_time), `Value, ""+timeout_seconds);
     }
-    UI::CloseDialog();
+
+    if (success) UI::CloseDialog();
 
     return which_input == `yes;
 }
@@ -537,7 +556,7 @@ global define boolean YesNo(string message)
 global define void LongText( string headline, term richtext,
 			     integer hdim, integer vdim )
 {
-    UI::OpenDialog (
+    boolean success = (boolean) UI::OpenDialog (
 	`opt (`decorated),
 	`HBox (
 	    `VSpacing(vdim),
@@ -553,10 +572,11 @@ global define void LongText( string headline, term richtext,
 	)
     );
 
-    UI::SetFocus(`id(`ok ) );
-
-    UI::UserInput();
-    UI::CloseDialog();
+    if (success) {
+	UI::SetFocus(`id(`ok ) );
+	UI::UserInput();
+	UI::CloseDialog();
+    }
 }
 
 
@@ -611,9 +631,14 @@ global define boolean AnyQuestionRichText (string headline,
 	    )
 	);
 
-    UI::OpenDialog (`opt (`decorated), d);
-    any ui = UI::UserInput ();
-    UI::CloseDialog ();
+    boolean success = (boolean) UI::OpenDialog (`opt (`decorated), d);
+    any ui = nil;
+
+    if (success) {
+	ui = UI::UserInput ();
+	UI::CloseDialog ();
+    }
+
     return ui == `ok;
 }
 
@@ -692,13 +717,16 @@ You will need to reinstall.");
     string message = abort_label + "\n\n" + what_will_happen;
 
     term button_box = AnyQuestionButtonBox (abort_button, continue_button, `focus_no);
-    UI::OpenDialog (
+    boolean success = (boolean) UI::OpenDialog (
 	`opt (`decorated),
 	popupLayoutInternal (NoHeadline(), message, Icon::IconPath (icon_name), button_box)
     );
 
-    any user_ret = UI::UserInput();
-    UI::CloseDialog();
+    any user_ret = nil;
+    if (success) {
+	UI::UserInput();
+	UI::CloseDialog();
+    }
 
     boolean ret = (user_ret == `yes);
 
@@ -763,11 +791,12 @@ define void anyMessageDetailsInternalType(string headline, string message, strin
 {
     term button_box =  `ButtonBox (
 	`PushButton (`id(`ok_msg), `opt (`default, `okButton), Label::OKButton()),
+	// FIXME: BNC #422612, Use `opt(`noSanityCheck) later
 	// button label
-	`PushButton (`id(`details), `opt (`key_F6, `customButton), _("&Details..."))
+	`PushButton (`id(`details), `opt (`key_F6, `cancel), _("&Details..."))
     );
 
-    UI::OpenDialog (
+    boolean success = (boolean) UI::OpenDialog (
 	`opt(`decorated),
 	richtext ? popupLayoutInternalRich(headline, message, icon_name, button_box, width, height)
 		 : popupLayoutInternal( headline, message, icon_name, button_box )
@@ -780,7 +809,7 @@ define void anyMessageDetailsInternalType(string headline, string message, strin
 	any ret	= UI::UserInput();
 	if (ret	== `details)
 	{
-	    UI::OpenDialog (`opt(`decorated ), `HBox (`VSpacing(default_height),
+	    boolean success2 = (boolean) UI::OpenDialog (`opt(`decorated ), `HBox (`VSpacing(default_height),
 		`VBox (
 		    `HSpacing (default_width),
 		    `VSpacing (0.5),
@@ -791,12 +820,14 @@ define void anyMessageDetailsInternalType(string headline, string message, strin
 		    )
 		)
 	    ));
-	    UI::UserInput();
-	    UI::CloseDialog();
+	    if (success2) {
+		UI::UserInput();
+		UI::CloseDialog();
+	    }
 	}
 	else break;
     }
-    UI::CloseDialog();
+    if (success) UI::CloseDialog();
 }
 
 /**
@@ -814,16 +845,17 @@ define void anyMessageInternalType(string headline, string message, string icon_
 	`PushButton (`id (`ok_msg), `opt (`default, `key_F10, `okButton), Label::OKButton())
     );
 
-    UI::OpenDialog(
+    boolean success = (boolean) UI::OpenDialog(
 		   `opt(`decorated),
 		   richtext ? popupLayoutInternalRich(headline, message, icon_name, button_box, width, height) :
 			popupLayoutInternal( headline, message, icon_name, button_box )
 		   );
 
-    UI::SetFocus(`id(`ok_msg) );
-
-    UI::UserInput();
-    UI::CloseDialog();
+    if (success) {
+	UI::SetFocus(`id(`ok_msg) );
+	UI::UserInput();
+	UI::CloseDialog();
+    }
 }
 
 /**
@@ -863,15 +895,16 @@ define void anyRichMessageInternal(string headline, string message, string icon_
 	`PushButton (`id(`ok_msg), `opt (`default, `key_F10), Label::OKButton())
     );
 
-    UI::OpenDialog(
+    boolean success = (boolean) UI::OpenDialog(
 		   `opt(`decorated),
 		   popupLayoutInternalRich( headline, message, icon_name, button_box, width, height )
 		   );
 
-    UI::SetFocus(`id(`ok_msg) );
-
-    UI::UserInput();
-    UI::CloseDialog();
+    if (success) {
+	UI::SetFocus(`id(`ok_msg) );
+	UI::UserInput();
+	UI::CloseDialog();
+    }
 }
 
 
@@ -1309,7 +1342,7 @@ global define void NotifyDetails (string message, string details) {
  */
 global define boolean TimedOKCancel(string message, integer timeout_seconds)
 {
-    UI::OpenDialog(
+    boolean success = (boolean) UI::OpenDialog(
 		   `opt(`decorated),
 		   `HBox(
 			 `HSpacing(1),
@@ -1345,7 +1378,7 @@ global define boolean TimedOKCancel(string message, integer timeout_seconds)
 	timeout_seconds = timeout_seconds - 1;
 	UI::ChangeWidget (`id(`remaining_time), `Value, ""+timeout_seconds);
     }
-    UI::CloseDialog();
+    if (success) UI::CloseDialog();
 
     return which_input != `timed_cancel;
 }
@@ -1406,13 +1439,17 @@ global define symbol AnyQuestion3( string headline,
 			     retry_button
 			     );
 
-    UI::OpenDialog(
+    boolean success = (boolean) UI::OpenDialog(
 		   `opt(`decorated),
 		   popupLayoutInternal( headline, message, Icon::IconPath ("question"), button_box )
 		   );
 
-    symbol ret = (symbol)UI::UserInput();
-    UI::CloseDialog();
+    symbol ret = nil;
+
+    if (success) {
+	ret = (symbol) UI::UserInput();
+	UI::CloseDialog();
+    }
 
     return ret;
 }
@@ -1436,7 +1473,7 @@ global define symbol AnyQuestion3( string headline,
  */
 global define symbol ModuleError(string text)
 {
-    UI::OpenDialog(
+    boolean success = (boolean) UI::OpenDialog(
 		   `opt(`decorated, `warncolor),
 		   `HBox(
 			 `HSpacing(1),
@@ -1454,8 +1491,13 @@ global define symbol ModuleError(string text)
 			 `HSpacing(1)
 			 )
 		   );
-    symbol ret = (symbol)UI::UserInput();
-    UI::CloseDialog();
+    symbol ret = nil;
+
+    if (success) {
+	ret = (symbol) UI::UserInput();
+	UI::CloseDialog();
+    }
+
     return ret;
 }
 
@@ -1510,7 +1552,7 @@ global define void ShowTextTimed (string headline, string text,
 	heading = `Heading( headline );
     }
 
-    UI::OpenDialog( `opt(`decorated ),
+    boolean success = (boolean) UI::OpenDialog( `opt(`decorated ),
 		    `VBox(
 			  `HSpacing( 70 ),	// force width
 			  heading,
@@ -1542,7 +1584,7 @@ global define void ShowTextTimed (string headline, string text,
 	UI::ChangeWidget(`id(`label), `Value, sformat("%1", timeout ));
     }
 
-    UI::CloseDialog();
+    if (success) UI::CloseDialog();
 }
 
 
@@ -1567,7 +1609,7 @@ global define void ShowText (string headline, string text)
 	heading = `Heading( headline );
     }
 
-    UI::OpenDialog( `opt(`decorated ),
+    boolean success = (boolean) UI::OpenDialog( `opt(`decorated ),
 		    `VBox(
 			  `HSpacing( 70 ),	// force width
 			  heading,
@@ -1587,8 +1629,10 @@ global define void ShowText (string headline, string text)
 			)
 		    );
 
-    UI::UserInput();
-    UI::CloseDialog();
+    if (success) {
+	UI::UserInput();
+	UI::CloseDialog();
+    }
 }
 
 /**
