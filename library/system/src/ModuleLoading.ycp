@@ -14,8 +14,8 @@
     textdomain "base";
 
     import "Mode";
-//    import "Initrd";
     import "Label";
+    import "Icon";
 
     string vendor_name = "";
     string device_name = "";
@@ -155,7 +155,12 @@
 											 // the suggested load command
 											 //
 											 // This is the heading of the popup box
-											 `Left(`Heading(_("Confirm driver activation"))),
+											 `HBox (
+											    // bnc #421002
+											    Icon::Simple ("question"),
+											    `Heading(_("Confirm driver activation")),
+											    `HStretch()
+											 ),
 											 `VSpacing(0.2),
 											 // This is in information message. Next come the
 											 // vendor and device information strings as stored
