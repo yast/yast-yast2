@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep  4 10:37:53 CEST 2008 - locilka@suse.cz
+
+- One more `ButtonBox in SignatureCheckDialogs (bnc #392171).
+
+-------------------------------------------------------------------
 Tue Sep  2 11:18:36 CEST 2008 - locilka@suse.cz
 
 - Extended control file handling to accept 'execute' module

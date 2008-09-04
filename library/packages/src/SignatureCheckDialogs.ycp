@@ -651,7 +651,7 @@ to skip it.")
 		    `HStretch()
 		),
 		`MarginBox(0.5, 0.5, `Label(description_text)),
-		`HBox (
+		`ButtonBox (
 		    // push button
 		    `PushButton(`id(`trust), `opt(`okButton, `key_F10), _("&Trust and Import the Key")),
 		    `PushButton(`id(`skip), `opt (`cancelButton, `key_F9), Label::SkipButton())
