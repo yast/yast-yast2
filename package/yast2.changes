@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Sep  4 14:31:14 CEST 2008 - locilka@suse.cz
+
+- Fixing Popup YCP module to workaround a UI Syntax Error while
+  using ButtonBox widget (bnc #422612).
+- Checking UI::OpenDialog return value and closing the dialog only
+  if successful (bnc #422612).
+- 2.17.17
+
+-------------------------------------------------------------------
 Thu Sep  4 12:26:33 CEST 2008 - jsuchome@suse.cz
 
 - InstExtensionImage.ycp: added function for unloading image;
