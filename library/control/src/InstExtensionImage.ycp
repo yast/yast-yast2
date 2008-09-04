@@ -23,7 +23,7 @@
     import "URL";
     import "String";
     import "Directory";
-    import "FileUtils";
+    import "Popup";
     import "Stage";
 
     /***
@@ -294,160 +294,102 @@
     // $["extension_name" : "downloaded_to_file", ...]
     map <string, string> extension_downloaded_as = $[];
 
-    global boolean DownloadAndIntegrateExtension (string extension) {
+    /**
+     * Load a rpm package from the media into the inst-sys
+     * @param package	The path to package to be loaded (by default,
+     * the package is expected in the /boot/<arch>/ directory of the media
+     * @param message	The message to be shown in the progress popup
+     */
+    global boolean LoadExtension (string package, string message) {
+
 	if (!Stage::initial()) {
 	    y2error ("This module should be used in Stage::initial only!");
 	}
 
-	if (extension == nil || extension == "") {
-	    y2error ("Such extension name can't work: %1", extension);
+	if (package == nil || package == "") {
+	    y2error ("Such package name can't work: %1", package);
 	    return false;
 	}
 
-	if (contains (integrated_extensions, extension)) {
-	    y2milestone ("Extension %1 has already been integrated", extension);
+	if (contains (integrated_extensions, package)) {
+	    y2milestone ("Package %1 has already been integrated", package);
 	    return true;
 	}
 
+	if (message != "" && message != nil)
+	    Popup::ShowFeedback ("", message);
+
 	// See BNC #376870
-	string cmd = sformat ("extend '%1'", String::Quote (extension));
+	string cmd = sformat ("extend '%1'", String::Quote (package));
 	y2milestone ("Calling: %1", cmd);
 	map cmd_out = (map) WFM::Execute (.local.bash_output, cmd);
 	y2milestone ("Returned: %1", cmd_out);
 
+	boolean ret	= true;
 	if (cmd_out["exit"]:-1 != 0) {
 	    y2error ("'extend' failed!");
-	    return false;
+	    ret		= false;
+	}
+	else
+	{
+	    integrated_extensions = add (integrated_extensions, package);
 	}
 
-	integrated_extensions = add (integrated_extensions, extension);
+	if (message != "" && message != nil)
+	    Popup::ClearFeedback ();
 
-	return true;
+	return ret;
     }
 
     /**
-     * Downloads extension archive (file system image) and integrates
-     * it to the current system. Extension name (param) is relative to the
-     * 'InstsysURL' defined in '/etc/install.inf', but no "../" are processed/merged.
-     * See the example.
-     *
-     * Attention: This modue is 'silent', it doesn't open up any progress dialog
-     * when downloading the image. Keep in mind that downloading might take some time
-     * and that user should be informed by a busy pop-up.
-     *
-     * @example
-     *   // Let's assume that:
-     *   // InstsysURL: http://example.org/SUSE/boot/ppc/root
-     *   //
-     *   UI::OpenDialog (`Label (_("Downloading ABC extension...")));
-     *   DownloadAndIntegrateExtension ("some_dir/filename.squashfs");
-     *   UI::CloseDialog();
-     *   //
-     *   // Downloads and integrates
-     *   // http://example.org/SUSE/boot/ppc/some_dir/filename.squashfs
-     *   
-     *
-     * @param string extension name
-     * @return boolean if successful
+     * Remove given package from the inst-sys
+     * @param package	The path to package to be unloaded (by default,
+     * the package is expected in the /boot/<arch>/ directory of the media
+     * @param message	The message to be shown in the progress popup
      */
-    global boolean OldDownloadAndIntegrateExtension (string extension) {
+    global boolean UnLoadExtension (string package, string message) {
+
 	if (!Stage::initial()) {
 	    y2error ("This module should be used in Stage::initial only!");
 	}
 
-	if (extension == nil || extension == "") {
-	    y2error ("Such extension name can't work: %1", extension);
+	if (package == nil || package == "") {
+	    y2error ("Such package name can't work: %1", package);
 	    return false;
 	}
 
-	// Every single GLOBAL function has to use LazyInit!
-	LazyInit();
-
-	// download from
-	// extension='aaa' -> http://inst_base_url/aaa/?base_url_params
-	string extension_url = sformat ("%1%2?%3", base_url, extension, base_url_params);
-
-	// All "/" in relative extension name are replaced with "_._"
-	string extension_file_localname = extension;
-	if (regexpmatch (extension_file_localname, "/")) {
-	    extension_file_localname = mergestring (splitstring (extension_file_localname, "/"), "_._");
-	}
-
-	// download to extension='aaa' -> /tmp/YaST.SomeMoreLetters/special/dir/aaa
-	string extension_localfile = sformat ("%1%2", base_tmpdir, extension_file_localname);
-
-	if (contains (already_downloaded_files, extension_url)) {
-	    y2milestone ("File %1 has already been downloaded", extension_url);
+	if (!contains (integrated_extensions, package)) {
+	    y2milestone ("Package %1 wasn't integrated", package);
 	    return true;
 	}
 
-	string wget_logging_file = sformat ("%1/wget_logging_file", Directory::tmpdir);
+	if (message != "" && message != nil)
+	    Popup::ShowFeedback ("", message);
 
-	// Downloading the extension
-	string cmd = sformat (
-	    "echo -n > '%3'; /lbin/wget -v '%1' '%2' 1>>'%3' 2>>'%3'",
-	    String::Quote (extension_url),
-	    String::Quote (extension_localfile),
-	    String::Quote (wget_logging_file)
-	);
-	map cmd_run = (map) WFM::Execute (.local.bash_output, cmd);
-	y2milestone (
-	    "Downloading extension image:\n--- downloading ---\n%1--- downloading ---",
-	    (string) WFM::Read (.local.string, wget_logging_file)
-	);
+	string cmd = sformat ("extend -r '%1'", String::Quote (package));
+	y2milestone ("Calling: %1", cmd);
+	map cmd_out = (map) WFM::Execute (.local.bash_output, cmd);
+	y2milestone ("Returned: %1", cmd_out);
 
-	if (cmd_run["exit"]:-1 != 0 || ! FileUtils::Exists (extension_localfile)) {
-	    y2error ("Cannot download extension '%1': %2", cmd, cmd_run);
-	    return false;
-	} else {
-	    already_downloaded_files = add (already_downloaded_files, extension_url);
-	    extension_downloaded_as[extension] = extension_localfile;
-	    y2milestone ("Downloaded: %1 -> %2 (size: %3)", extension_url, extension_localfile, FileUtils::GetSize (extension_localfile));
+	boolean ret	= true;
+	if (cmd_out["exit"]:-1 != 0) {
+	    y2error ("'extend' failed!");
+	    ret		= false;
+	}
+	else
+	{
+	    integrated_extensions = filter (string p, integrated_extensions,
+		``(p != package));
 	}
 
-	// FIXME: Check SHA1sum against /content file
-	//	  sha1sum is not part of the inst-sys yet
+	if (message != "" && message != nil)
+	    Popup::ClearFeedback ();
 
-	// Creating subdir for extension to be mounted
-	string extension_mount = sformat ("%1%2", base_mounts, extension_file_localname);
-	cmd_run = (map) WFM::Execute (.local.bash_output,
-	    sformat ("/bin/mkdir -p '%1'", String::Quote (extension_mount))
-	);
+	return ret;
+    }
 
-	if (cmd_run["exit"]:-1 != 0) {
-	    y2error ("Cannot create mounts directory: %1: %2", base_mounts, cmd_run);
-	    return false;
-	}
-
-	// Mounting the extension
-	cmd = sformat ("/bin/mount -o loop,ro '%1' '%2'", String::Quote (extension_localfile), String::Quote (extension_mount));
-	cmd_run = (map) WFM::Execute (.local.bash_output, cmd);
-
-	if (cmd_run["exit"]:-1 != 0) {
-	    y2error ("Cannot mount extension '%1': %2", cmd, cmd_run);
-	    return false;
-	} else {
-	    // can be umouted later
-	    extensions_mounted_as[extension] = extension_mount;
-	    y2milestone ("Mounted: %1 -> %2", extension_localfile, extension_mount);
-	}
-
-	// Link items in the mounted directory to inst-sys
-	string where_to_lndir = "/";
-	cmd = sformat ("/lbin/lndir '%1' '%2'", String::Quote (extension_mount), String::Quote (where_to_lndir));
-	cmd_run = (map) WFM::Execute (.local.bash_output, cmd);
-
-	if (cmd_run["exit"]:-1 != 0) {
-	    y2error ("Cannot >lndir '%1': %2", cmd, cmd_run);
-	    return false;
-	} else {
-	    y2milestone ("Lndir successful: %1 to %2", extension_mount, where_to_lndir);
-	}
-
-	// finally, extension has been integrated
-	integrated_extensions = add (integrated_extensions, extension);
-
-	return true;
+    global boolean DownloadAndIntegrateExtension (string extension) {
+	return LoadExtension (extension, "");
     }
 
     global boolean DesintegrateExtension (string extension) {
@@ -455,115 +397,10 @@
 	return true;
     }
 
-    /**
-     * Reverse function to DownloadAndIntegrateExtension(). The only difference is
-     * that it doesn't upload the image from where it has been downloaded.
-     * It just umounts the image and removes it.
-     *
-     * @see DownloadAndIntegrateExtension()
-     *
-     * @param string extension name
-     * @return boolean if successful
-     */
-    global boolean OldDesintegrateExtension (string extension) {
-	if (!Stage::initial()) {
-	    y2error ("This module should be used in Stage::initial only!");
-	}
-
-	if (extension == nil || extension == "") {
-	    y2error ("Such extension name can't work: %1", extension);
-	    return false;
-	}
-
-	LazyInit();
-
-	boolean ret = true;
-
-	// Umounting
-	if (haskey (extensions_mounted_as, extension) && extensions_mounted_as[extension]:"" != "") {
-	    string cmd_tmp_file = sformat ("%1/IEI_cmd_tmp_file", Directory::tmpdir);
-	    string mounted_as = extensions_mounted_as[extension]:"";
-	    // -f Force unmount (in case of an unreachable NFS system).
-	    // -l Lazy unmount. Detach the filesystem from the filesystem hierarchy now, and
-	    //    cleanup all references to the filesystem as soon as it is not busy anymore.
-	    // -d In case the unmounted device was a loop device, also free this loop device.
-	    // -r In case unmounting fails, try to remount read-only.
-	    string cmd = sformat (
-		"echo > '%1'; /bin/umount -f -l -d -r '%2' 1>>%1 2>>%1",
-		String::Quote (cmd_tmp_file), String::Quote (mounted_as)
-	    );
-	    y2milestone ("Umounting %1", mounted_as);
-	    map cmd_run = (map) WFM::Execute (.local.bash_output, cmd);
-
-	    if (cmd_run["exit"]:-1 != 0) {
-		y2warning (
-		    "Cannot umount extension '%1' (%2):\n%3",
-		    cmd, cmd_run["exit"]:-1, (string) WFM::Read (.local.string, cmd_tmp_file)
-		);
-		ret = false;
-	    } else {
-		// not mounted anymore
-		extensions_mounted_as = remove (extensions_mounted_as, extension);
-		y2milestone ("Umounted: %2", extension);
-	    }
-	} else {
-	    y2warning ("Extension '%1' not mounted", extension);
-	}
-
-	// Removing the file
-	// Even if umouting fails, remove the file if possible
-	if (haskey (extension_downloaded_as, extension) && extension_downloaded_as[extension]:"" != "") {
-	    string downloaded_as = extension_downloaded_as[extension]:"";
-	    y2milestone ("Removing %1", downloaded_as);
-	    boolean cmd_ret = (boolean) WFM::Execute (.local.remove, downloaded_as);
-
-	    if (cmd_ret != true) {
-		y2warning ("Cannot remove extension %1", downloaded_as);
-		ret = false;
-	    } else {
-		// not stored anymore
-		extension_downloaded_as = remove (extension_downloaded_as, extension);
-		y2milestone ("Removed: %1", extension);
-	    }
-	} else {
-	    y2warning ("Extension '%1' not downloaded", extension);
-	}
-
-	return ret;
-    }
-
     global boolean DisintegrateAllExtensions () {
 	y2warning ("Function is empty, see BNC #376870");
 	return true;
     }
 
-    /**
-     * Tries to disintegrate (umount, remove) all already used extensions.
-     * Nevertheless extensions already in use cannot be disintegrated.
-     *
-     * @return boolean whether successfull (almost always false)
-     */
-    global boolean OldDisintegrateAllExtensions () {
-	LazyInit();
-
-	boolean ret = true;
-	list <string> foreach_loop = integrated_extensions;
-
-	y2milestone ("Disintegrating all extensions...");
-	foreach (string one_extension, foreach_loop, {
-	    y2milestone ("Disintegrating extension: %1", one_extension);
-
-	    if (DesintegrateExtension (one_extension)) {
-		integrated_extensions = filter (string one_filter, integrated_extensions, { return one_filter != one_extension; });
-
-		y2milestone ("Extension %1 has been disintegrated", one_extension);
-	    } else {
-		ret = false;
-		y2error ("Disintegration of %1 has failed", one_extension);
-	    }
-	});
-
-	return ret;
-    }
 /* EOF */
 }

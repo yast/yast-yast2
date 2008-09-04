@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep  4 12:26:33 CEST 2008 - jsuchome@suse.cz
+
+- InstExtensionImage.ycp: added function for unloading image;
+  LoadExtension and UnLoadExtension have argument for progress text
+
+-------------------------------------------------------------------
 Thu Sep  4 10:37:53 CEST 2008 - locilka@suse.cz
 
 - One more `ButtonBox in SignatureCheckDialogs (bnc #392171).
