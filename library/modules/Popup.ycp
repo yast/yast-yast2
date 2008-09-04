@@ -187,7 +187,7 @@ define void anyTimedMessageTypeInternal(string headline,
 						 button_box, sformat("%1", timeout), richtext, width, height )
 		   );
 
-    if (success)
+    if (success == true)
 	UI::SetFocus(`id(`ok_msg));
 
     symbol button = nil;
@@ -204,11 +204,11 @@ define void anyTimedMessageTypeInternal(string headline,
 
 	timeout = timeout - 1;
 
-	if (success)
+	if (success == true)
 	    UI::ChangeWidget(`id(`label), `Value, sformat("%1", timeout ));
     }
 
-    if (success)
+    if (success == true)
 	UI::CloseDialog();
 }
 
@@ -330,7 +330,7 @@ global define boolean AnyQuestion( string headline,
 		   );
 
     any ret = nil;
-    if (success) {
+    if (success == true) {
 	UI::UserInput();
 	UI::CloseDialog();
     }
@@ -395,10 +395,10 @@ global define boolean TimedAnyQuestion( string headline,
 	    break;
 	}
 	timeout_seconds = timeout_seconds - 1;
-	if (success) UI::ChangeWidget (`id(`remaining_time), `Value, ""+timeout_seconds);
+	if (success == true) UI::ChangeWidget (`id(`remaining_time), `Value, ""+timeout_seconds);
     }
 
-    if (success) UI::CloseDialog();
+    if (success == true) UI::CloseDialog();
 
     return which_input == `yes;
 }
@@ -572,7 +572,7 @@ global define void LongText( string headline, term richtext,
 	)
     );
 
-    if (success) {
+    if (success == true) {
 	UI::SetFocus(`id(`ok ) );
 	UI::UserInput();
 	UI::CloseDialog();
@@ -634,7 +634,7 @@ global define boolean AnyQuestionRichText (string headline,
     boolean success = (boolean) UI::OpenDialog (`opt (`decorated), d);
     any ui = nil;
 
-    if (success) {
+    if (success == true) {
 	ui = UI::UserInput ();
 	UI::CloseDialog ();
     }
@@ -723,7 +723,7 @@ You will need to reinstall.");
     );
 
     any user_ret = nil;
-    if (success) {
+    if (success == true) {
 	UI::UserInput();
 	UI::CloseDialog();
     }
@@ -820,14 +820,14 @@ define void anyMessageDetailsInternalType(string headline, string message, strin
 		    )
 		)
 	    ));
-	    if (success2) {
+	    if (success2 == true) {
 		UI::UserInput();
 		UI::CloseDialog();
 	    }
 	}
 	else break;
     }
-    if (success) UI::CloseDialog();
+    if (success == true) UI::CloseDialog();
 }
 
 /**
@@ -851,7 +851,7 @@ define void anyMessageInternalType(string headline, string message, string icon_
 			popupLayoutInternal( headline, message, icon_name, button_box )
 		   );
 
-    if (success) {
+    if (success == true) {
 	UI::SetFocus(`id(`ok_msg) );
 	UI::UserInput();
 	UI::CloseDialog();
@@ -900,7 +900,7 @@ define void anyRichMessageInternal(string headline, string message, string icon_
 		   popupLayoutInternalRich( headline, message, icon_name, button_box, width, height )
 		   );
 
-    if (success) {
+    if (success == true) {
 	UI::SetFocus(`id(`ok_msg) );
 	UI::UserInput();
 	UI::CloseDialog();
@@ -1378,7 +1378,7 @@ global define boolean TimedOKCancel(string message, integer timeout_seconds)
 	timeout_seconds = timeout_seconds - 1;
 	UI::ChangeWidget (`id(`remaining_time), `Value, ""+timeout_seconds);
     }
-    if (success) UI::CloseDialog();
+    if (success == true) UI::CloseDialog();
 
     return which_input != `timed_cancel;
 }
@@ -1446,7 +1446,7 @@ global define symbol AnyQuestion3( string headline,
 
     symbol ret = nil;
 
-    if (success) {
+    if (success == true) {
 	ret = (symbol) UI::UserInput();
 	UI::CloseDialog();
     }
@@ -1493,7 +1493,7 @@ global define symbol ModuleError(string text)
 		   );
     symbol ret = nil;
 
-    if (success) {
+    if (success == true) {
 	ret = (symbol) UI::UserInput();
 	UI::CloseDialog();
     }
@@ -1584,7 +1584,7 @@ global define void ShowTextTimed (string headline, string text,
 	UI::ChangeWidget(`id(`label), `Value, sformat("%1", timeout ));
     }
 
-    if (success) UI::CloseDialog();
+    if (success == true) UI::CloseDialog();
 }
 
 
@@ -1629,7 +1629,7 @@ global define void ShowText (string headline, string text)
 			)
 		    );
 
-    if (success) {
+    if (success == true) {
 	UI::UserInput();
 	UI::CloseDialog();
     }
