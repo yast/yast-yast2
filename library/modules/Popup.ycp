@@ -724,7 +724,7 @@ You will need to reinstall.");
 
     any user_ret = nil;
     if (success == true) {
-	UI::UserInput();
+	user_ret = UI::UserInput();
 	UI::CloseDialog();
     }
 
