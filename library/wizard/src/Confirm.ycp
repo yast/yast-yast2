@@ -68,7 +68,7 @@ global define boolean Detection(string class) ``{
 	    `ButtonBox (
 		`HWeight (1, `PushButton (`id(`continue), `opt(`default, `okButton),  Label::ContinueButton())),
 		/* PushButton label */
-		`HWeight (1, `PushButton (`id(`skip, `cancelButton),  _("&Skip")))
+		`HWeight (1, `PushButton (`id (`skip), `opt (`cancelButton),  _("&Skip")))
 	    ),
 	    `VSpacing(0.2)
 	))),
