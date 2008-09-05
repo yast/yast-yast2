@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Sep  5 14:23:55 CEST 2008 - mzugec@suse.cz
+
+- added support for InfiniBand network devices (fate#304870), 
+  (fate#304115)
+- 2.17.18 
+
+-------------------------------------------------------------------
 Thu Sep  4 17:48:02 CEST 2008 - locilka@suse.cz
 
 - Adding question icon for ModuleLoading::Load (bnc #421002).
