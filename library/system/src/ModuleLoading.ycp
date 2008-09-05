@@ -169,10 +169,16 @@
 											 `Left(`Label(vendorname)),
 											 `Left(`Label(devicename)),
 											 `VSpacing(0.1),
-											 // Caption for Textentry with module information
-											 `Left(`TextEntry(`id(`mod_name), _("&Driver/Module to load"), modulename+" "+moduleargs))
+											 `Left (
+											    // Caption for Textentry with module information
+											    `InputField (
+												`id(`mod_name),
+												`opt(`hstretch),
+												_("&Driver/Module to load"),
+												modulename+" "+moduleargs)
 											 )
 										   )
+									    )
 								),
 								`ButtonBox (
 									`PushButton (`id (`ok_msg), `opt (`default, `okButton, `key_F10), Label::OKButton()),
