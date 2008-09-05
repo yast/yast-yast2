@@ -337,14 +337,14 @@ Continue or cancel the current operation?
     }
 
     /**
-     * Function return the md5 of the file.
+     * Function return the MD5 sum of the file.
      *
-     * @return	integer GID, nil if doesn't exist
+     * @return	string MD5 sum of the file, nil if doesn't exist
      * @param	string file name
      *
      * @example
-     *	FileUtils::GetOwnerGroupID ("/etc/passwd") -> 0
-     *	FileUtils::GetOwnerGroupID ("/does-not-exist") -> nil
+     *	FileUtils::MD5sum ("/etc/passwd") -> "74855f6ac9bf728fccec4792d1dba828"
+     *	FileUtils::MD5sum ("/does-not-exist") -> nil
      */
     global string MD5sum (string target) {
 	if (! Exists(target)) {
