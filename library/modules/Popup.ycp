@@ -331,7 +331,7 @@ global define boolean AnyQuestion( string headline,
 
     any ret = nil;
     if (success == true) {
-	UI::UserInput();
+	ret = UI::UserInput();
 	UI::CloseDialog();
     }
 
@@ -769,7 +769,7 @@ global define boolean ReallyAbort( boolean have_changes )
 			   message,
 			   Label::YesButton(),
 			   Label::NoButton(),
-			   `focus_no );
+			   focus );
 
     y2debug("ReallyAbort returned: %1", ret );
 
