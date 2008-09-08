@@ -663,7 +663,6 @@ boolean ShellSafeWrite (path p, string s) {
  * @example NetworkDevice::Write("eth|tr");
  */
 global define boolean Write(string devregex) {
-y2internal("Devices %1", Devices);
     y2milestone("Writing configuration");
     y2debug("Devices=%1", Devices);
     y2debug("Deleted=%1", Deleted);

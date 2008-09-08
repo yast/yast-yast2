@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Sep  8 10:02:12 CEST 2008 - mzugec@suse.cz
+
+- fix for testsuite 
+
+-------------------------------------------------------------------
 Fri Sep  5 14:23:55 CEST 2008 - mzugec@suse.cz
 
 - added support for InfiniBand network devices (fate#304870), 
