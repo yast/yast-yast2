@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep  9 10:24:41 CEST 2008 - locilka@suse.cz
+
+- Module 'Slides' moved here from packager.
+- 2.17.19
+
+-------------------------------------------------------------------
 Mon Sep  8 10:02:12 CEST 2008 - mzugec@suse.cz
 
 - fix for testsuite 

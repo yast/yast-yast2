@@ -49,8 +49,8 @@ Conflicts:	yast2-instserver <= 2.16.3
 Conflicts:	yast2-installation < 2.16.18
 
 Conflicts:	yast2-update < 2.16.1
-# ag_anyxml moved to yast2 from yast2-packager
-Conflicts:	yast2-packager < 2.16.5
+# Modules 'Slides' moved from yast2-packager to yast2
+Conflicts:	yast2-packager < 2.17.12
 Conflicts:	yast2-mouse < 2.16.0
 Conflicts:	autoyast2-installation < 2.16.2
 # country_long.ycp and country.ycp moved to yast2
