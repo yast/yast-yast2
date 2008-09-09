@@ -980,8 +980,11 @@ global define list<string> GetFreeDevices(string type, integer num) {
     y2debug("type,num=%1,%2", type, num);
     y2debug("Devices[%1]=%2", type, Devices[type]:$[]);
 
-    list curdevs = Map::Keys(Devices[type]:$[]);
-    y2debug("curdevs=%1", curdevs);
+     list curdevs = [];
+     foreach(string dev, (list<string>)Map::Keys(Devices[type]:$[]), {
+      if(issubstring(dev, type)) dev=device_num(dev);
+      curdevs=add(curdevs, dev);
+     });
 
     integer i = 0;
     integer count = 0;

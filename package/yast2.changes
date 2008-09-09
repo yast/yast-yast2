@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep  9 15:26:12 CEST 2008 - mzugec@suse.de
+
+- fixed NetworkInterfaces::FreeDevice() function
+- 2.17.20 
+
+-------------------------------------------------------------------
 Tue Sep  9 10:24:41 CEST 2008 - locilka@suse.cz
 
 - Modules 'Slides' and 'SlideShow' moved here from packager.
