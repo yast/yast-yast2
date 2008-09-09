@@ -64,6 +64,14 @@
  * - new_percent is the progress inside of the current stage, the library will 
  * recompute this to get a global progress percents.
  * - if new_label is nil, label is not updated.
+ *
+ * SlideShow dialogs
+ * =================
+ * // SlideShow language must be set before opening the dialog
+ * SlideShow::SetLanguage( Language::language );
+ * SlideShow::OpenDialog ();
+ * ... <update stages, progress ...> ...
+ * SlideShow::CloseDialog ();
  * 
  * More functionality
  * ==================
