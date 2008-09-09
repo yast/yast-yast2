@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Sep  9 15:38:57 CEST 2008 - locilka@suse.cz
+
+- .barexml SCR agent dropped (bnc #424263).
+
+-------------------------------------------------------------------
 Tue Sep  9 15:26:12 CEST 2008 - mzugec@suse.de
 
 - fixed NetworkInterfaces::FreeDevice() function

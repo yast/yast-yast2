@@ -27,8 +27,6 @@ Requires:	coreutils sysconfig
 Requires:	yast2-xml yast2-hardware-detection
 # for SLPAPI.pm
 Requires:	yast2-perl-bindings
-# for ag_barexml
-Requires:	perl-XML-Bare
 # for ag_anyxml
 Requires:	perl-XML-Simple
 
