@@ -49,7 +49,7 @@ Conflicts:	yast2-instserver <= 2.16.3
 Conflicts:	yast2-installation < 2.16.18
 
 Conflicts:	yast2-update < 2.16.1
-# Modules 'Slides' moved from yast2-packager to yast2
+# Modules 'Slides' and 'SlideShow' moved from yast2-packager to yast2
 Conflicts:	yast2-packager < 2.17.12
 Conflicts:	yast2-mouse < 2.16.0
 Conflicts:	autoyast2-installation < 2.16.2

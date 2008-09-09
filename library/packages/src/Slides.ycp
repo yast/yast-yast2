@@ -10,7 +10,7 @@
 {
     module "Slides";
 
-    textdomain "packager";
+    textdomain "base";
 
     import "FileUtils";
     import "Installation";

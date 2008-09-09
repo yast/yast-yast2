@@ -1,0 +1,975 @@
+/**
+ * Module:		SlideShow.ycp
+ *
+ * Purpose:		Slide show during installation
+ *
+ * Author:		Stefan Hundhammer <sh@suse.de>
+ *			Stanislav Visnovsky <visnov@suse.cz>
+ *
+ * $Id$
+ *
+ * Usage:
+ * This is a generic module for handling global progress bar with optional slideshow/release notes etc.
+ *
+ * Global progress
+ * ===============
+ * The basic idea is that the progress consists of "stages" - during a new install, 
+ * there are 3: disk preparation, image deployment and package installation.
+ * 
+ * Before the first client using the unified progress, the stages need to be set 
+ * up, e.g. :
+ * 
+ * list< map<string,any> > stages = [
+ *     $[
+ *     "name" : "disk",
+ *     "description": _("Preparing disks..."),
+ *     "value" : Mode::update() ? 0 : 120, // 2 minutes, who needs more? ;-)
+ *     "units" : `sec,
+ *     ],
+ *     $[
+ *     "name" : "images",
+ *     "description": _("Deploying Images..."),
+ *     "value" : ImageInstallation::TotalSize() / 1024, // kilobytes
+ *     "units" : `kb,
+ *     ],
+ *     $[
+ *     "name" : "packages",
+ *     "description": _("Installing Packages..."),
+ *     // here, we do a hack, because until images are deployed, we cannot 
+ * determine how many
+ *     // packages will be really installed additionally
+ *     "value" : (PackageSlideShow::total_size_to_install - 
+ * ImageInstallation::TotalSize()) / 1024 , // kilobytes
+ *     "units" : `kb,
+ *     ],
+ *   ];
+ * 
+ *   SlideShow::Setup( stages );
+ * 
+ * The function will calculate the partitioning of the unified progress based on 
+ * estimate of a needed time. A stage can provide the estimate of time or an 
+ * amount of data to be transferred (the constants used are based on assumption 
+ * of 15 min install time and that the data are downloaded and written to disk). 
+ * The logic is no rocket science as the only goal for a progress bar is to have 
+ * it move somewhat regularly. Also, the function resets timers and other
+ * progress status information, including which parts are shown. See \ref SlideShow::Reset.
+ * 
+ * A client using the new unified progress will do basically 2 things:
+ * 
+ * 1) calls SlideShow::MoveToStage( stage-id ) 
+ * - this will move the global progress to a proper position for start of the 
+ * stage and updates also the label ("description" entry in the map)
+ * 
+ * 2) calls regularly SlideShow::StageProgress( new_percent, new_label )
+ * - new_percent is the progress inside of the current stage, the library will 
+ * recompute this to get a global progress percents.
+ * - if new_label is nil, label is not updated.
+ * 
+ * More functionality
+ * ==================
+ * The SlideShow dialog contains the following functionality:
+ * - global progress (see above)
+ * - subprogress for the current action (e.g. download a package, format 
+ * disk, ...)
+ * - installation log
+ * - slide show support
+ * - optional package table
+ * - release notes viewer
+ */
+{
+    module "SlideShow";
+
+    textdomain "base";
+
+    import "Installation";
+    import "Label";
+    import "Language";
+    import "Stage";
+    import "String";
+    import "Wizard";
+    import "FileUtils";
+    import "Mode";
+    import "Popup";
+    import "Slides";
+
+    global integer	total_time_elapsed	= 0;
+    global integer	start_time		= -1;
+    global integer	initial_recalc_delay	= 60;	// const - seconds before initially calculating remaining times
+    global integer	recalc_interval		= 30;	// const - seconds between "remaining time" recalculations
+    global integer	next_recalc_time	= time();
+
+    global integer	current_slide_no	= 0;
+    global integer	slide_start_time	= 0;
+    global integer	slide_min_interval	= 30;	// const - minimum seconds between slide changes
+    global integer	slide_max_interval	= 3*60; // const - maximum seconds between slide changes
+    global integer	slide_interval		= slide_min_interval;
+    global string	language		= Language::language;
+    global boolean	widgets_created		= false;
+    global boolean	user_switched_to_details = false;
+    global boolean	opened_own_wizard	= false;
+    global string	inst_log		= "";
+    global boolean	debug			= false;
+
+    boolean 		user_abort 		= false;
+    
+    // we need to remember the values for tab switching
+    string		total_progress_label	= _("Installing...");
+    string		sub_progress_label	= _("Installing...");
+    integer		total_progress_value	= 0;
+    integer		sub_progress_value	=0;
+    list<term>		table_items		= [];
+    
+    boolean		_show_table		= false;
+
+    // properties of the current UI
+    global boolean textmode = UI::GetDisplayInfo()["TextMode"]:false;
+    global integer display_width = UI::GetDisplayInfo()["Width"]:0;
+
+    global string relnotes = nil;
+    
+    global void ChangeSlideIfNecessary();	// forward declaration
+
+    /**
+     * Set the flag that user requested abort of the installation
+     * @param abort  new state of the abort requested flag (true = abort requested)
+     */
+    global void SetUserAbort(boolean abort)
+    {
+	user_abort = abort;
+    }
+
+    /**
+     * Get the status of the flag that user requested abort of the installation
+     * @return boolean   state of the abort requested flag (true = abort requested)
+     */
+    global boolean GetUserAbort()
+    {
+	return user_abort;
+    }
+
+    /**
+     * Start the internal (global) timer.
+     **/
+    global void StartTimer()
+    {
+	start_time = time();
+    }
+
+
+    /**
+     * Reset the internal (global) timer.
+     **/
+    global void ResetTimer()
+    {
+	start_time = time();
+    }
+
+
+    /**
+     * Stop the internal (global) timer and account elapsed time.
+     **/
+    global void StopTimer()
+    {
+	if ( start_time < 0 )
+	{
+	    y2error( "StopTimer(): No timer running." );
+	    return;
+	}
+
+	integer elapsed = time() - start_time;
+	start_time	= -1;
+	total_time_elapsed = total_time_elapsed + elapsed;
+	y2debug("StopTimer(): Elapsed this time: %1 sec; total: %2 sec (%3:%4)",
+		 elapsed, total_time_elapsed,
+		 total_time_elapsed / 60,	// min
+		 total_time_elapsed % 60 );	// sec
+    }
+
+    /**
+     * Check if currently the "Details" page is shown
+     * @return true if showing details, false otherwise
+     **/
+    global boolean ShowingDetails()
+    {
+	return widgets_created && UI::WidgetExists(`detailsPage );
+    }
+
+
+    /**
+     * Check if currently the "Slide Show" page is shown
+     * @return true if showing details, false otherwise
+     **/
+    global boolean ShowingSlide()
+    {
+	return widgets_created && UI::WidgetExists(`slideShowPage );
+    }
+
+    /**
+     * Check if currently the "Release Notes" page is shown
+     * @return true if showing details, false otherwise
+     **/
+    global boolean ShowingRelNotes()
+    {
+	return widgets_created && UI::WidgetExists(`relNotesPage);
+    }
+
+    /**
+     * Restart the subprogress of the slideshow. This means the
+     * label will be set to \param text, value to 0.
+     * @param text	new label for the subprogress
+     */
+    global void SubProgressStart(string text)
+    {
+	if ( UI::WidgetExists(`progressCurrentPackage ) )
+	{
+	    UI::ChangeWidget(`progressCurrentPackage, `Value, 0);
+	    UI::ChangeWidget(`progressCurrentPackage, `Label, text);
+	}
+	
+	sub_progress_label = text;
+    }
+    
+    /**
+     * Update status of subprogress of the slideshow. The new value will be set
+     * to \param value, if the \text is not nil, the label will be updated 
+     * to this text as well. Otherwise label will not change.
+     * @param value	new value for the subprogress
+     * @param text	new label for the subprogress
+     */
+    global void SubProgress(integer value, string text)
+    {
+	if( UI::WidgetExists( `progressCurrentPackage ) )
+	{
+	    UI::ChangeWidget(`progressCurrentPackage, `Value, value );
+	    if( text != nil )
+		UI::ChangeWidget(`progressCurrentPackage, `Label, text );
+	}
+	
+	sub_progress_value = value;
+	if (text != nil)
+	    sub_progress_label = text;
+    }
+    
+    /**
+     * Restart the global progress of the slideshow. This means the
+     * label will be set to \param text, value to 0.
+     * @param text	new label for the global progress
+     */
+    global void GlobalProgressStart(string text)
+    {
+	total_progress_label = text;
+	if ( UI::WidgetExists(`progressTotal ) )
+	{
+	    UI::ChangeWidget(`progressTotal, `Value, 0);
+	    UI::ChangeWidget(`progressTotal, `Label, text );
+	}
+	
+	total_progress_label = text;
+	total_progress_value = 0;
+    }
+    
+    /**
+     * Update status of global progress of the slideshow. The new value will be set
+     * to \param value, if the \text is not nil, the label will be updated 
+     * to this text as well. Otherwise label will not change.
+     * @param value	new value for the global progress
+     * @param text	new label for the global progress
+     */
+    void UpdateGlobalProgress(integer value, string new_text)
+    {
+	if( new_text != nil)
+	    	total_progress_label = new_text;
+	total_progress_value = value;
+
+	if ( UI::WidgetExists(`progressTotal ) )
+	{
+	    UI::ChangeWidget(`progressTotal, `Value, value);
+	    if( new_text != nil )
+		UI::ChangeWidget(`progressTotal, `Label, new_text );
+	}
+	else
+	    y2milestone( "progressTotal widget missing" );
+	    
+	// update slide
+	if( ShowingSlide() )
+	{
+	    ChangeSlideIfNecessary();
+	}
+    }
+
+    map<string, map<string,any> > _stages = $[];	// list of the configured stages
+    map<string, any> _current_stage = nil;		// current stage
+
+    /**
+     * Return the description for the current stage.
+     * @return string	localized string description
+     */
+    global string CurrentStageDescription()
+    {
+	return _current_stage["description"]:_("Installing...");
+    }
+    
+    /**
+     * Move the global progress to the beginning of the given stage.
+     * @param stage_name	id of the stage to move to
+     */
+    global void MoveToStage( string stage_name )
+    {
+	if( ! haskey( _stages, stage_name ) )
+	{
+	    y2error( "Unknown progress stage \"%1\"", stage_name );
+	    return;
+	}
+	
+	_current_stage = _stages[stage_name]:nil;
+	
+	y2milestone( "Moving to stage %1 (%2)", stage_name, _stages[stage_name, "start"]:0 );
+	// translators: default global progress bar label
+	UpdateGlobalProgress( _stages[stage_name, "start"]:0, _current_stage["description"]:_("Installing...") );
+    }
+
+    /**
+     * Update the global progress according to the progress in the current stage.  
+     * The new value will be set to the per cent of the current stage according to  \param value, 
+     * if the \text is not nil, the label will be updated 
+     * to this text as well. Otherwise label will not change.
+     * @param value	new value for the stage progress
+     * @param text	new label for the global progress
+     */    
+    global void StageProgress( integer value, string text )
+    {
+	UpdateGlobalProgress( _current_stage["start"]:0 + (value * _current_stage["size"]:1 / 100), text );
+    }
+
+    /**
+     * Return the current global progress label.
+     * @return string	current label
+     */
+    global void SetGlobalProgressLabel( string text )
+    {
+	total_progress_label = text;
+	if ( UI::WidgetExists(`progressTotal ) )
+	{
+	    UI::ChangeWidget(`progressTotal, `Label, text);
+	}
+    }
+
+    /**
+     * Append message to the installation log.
+     * @param msg	message to be added, without trailing eoln
+     */
+    global void AppendMessageToInstLog (string msg)
+    {
+	string log_line = "\n" + msg;
+	inst_log = inst_log + log_line;
+
+	if ( ShowingDetails() )
+	{
+	    if ( UI::WidgetExists( `instLog ) )
+		UI::ChangeWidget(`instLog, `LastLine, log_line );
+	}
+    }
+
+
+
+    /**
+     * Check if the dialog is currently set up so the user could switch to the slide page.
+     **/
+    global boolean HaveSlideWidget()
+    {
+	return UI::WidgetExists(`dumbTab);
+    }
+
+
+    /**
+     * Check if the slide show is available. This must be called before trying
+     * to access any slides; some late initialization is done here.
+     **/
+    global void CheckForSlides()
+    {
+        Slides::CheckBasePath();
+
+	if ( Stage::initial () || Stage::cont () )
+	{
+	    if ( Slides::HaveSlideSupport() )
+	    {
+		y2milestone( "Display OK for slide show, loading" );
+		Slides::LoadSlides( language );
+	    }
+	    else
+	    {
+		y2warning( "Disabling slide show - insufficient display capabilities" );
+	    }
+	}
+    }
+
+
+    /**
+     * Set the slide show text.
+     * @param text
+     **/
+    void SetSlideText( string text )
+    {
+	if ( UI::WidgetExists(`slideText ) )
+	{
+	    UI::ChangeWidget(`slideText, `Value, text );
+	}
+    }
+
+
+    /**
+     * Set the curent language. Must be called once during initialization.
+     **/
+    global void SetLanguage( string new_language )
+    {
+	language = new_language;
+    }
+
+
+    /**
+     * Create one single item for the CD statistics table
+     **/
+    global term TableItem( string id, string col1, string col2, string col3, string col4 )
+    {
+	return `item(`id( id ), col1, col2, col3, col4 );
+    }
+
+
+    /**
+     * Load a slide image + text.
+     * @param slide_no number of slide to load
+     **/
+    void LoadSlide( integer slide_no )
+    {
+	if ( slide_no > size( Slides::slides ) )
+	{
+	    slide_no = 0;
+	}
+
+	current_slide_no = slide_no;
+
+	string slide_name = Slides::slides[slide_no]:"";
+	slide_start_time = time();
+
+        SetSlideText( Slides::LoadSlideFile( slide_name ) );
+    }
+
+
+    /**
+     * Check if the current slide needs to be changed and do that if
+     * necessary.
+     **/
+    global void ChangeSlideIfNecessary()
+    {
+	if ( current_slide_no + 1 < size( Slides::slides )
+	    && time() > slide_start_time + slide_interval )
+	{
+	    y2debug( "Loading slide #%1", current_slide_no + 2 );
+	    LoadSlide( current_slide_no + 1 );
+	}
+    }
+
+    /**
+     * Add widgets for progress bar etc. around a slide show page
+     * @param page_id		ID to use for this page (for checking with UI::WidgetExists() )
+     * @param page_contents	The inner widgets (the page contents)
+     * @return			A term describing the widgets
+     **/
+    term AddProgressWidgets( symbol page_id, term page_contents )
+    {
+	term widgets =
+	    `HBox(`id( page_id ),
+		`HSpacing( 1 ),
+		`VBox(
+		    `VWeight( 1, // lower layout priority
+			page_contents ),
+			// Progress bar for overall progress of software package installation
+			`ProgressBar(`id(`progressTotal ), total_progress_label, 100, total_progress_value)
+			// intentionally omitting `Label(`nextMedia) -
+			// too much flicker upon update (UI::RecalcLayout() ) on NCurses
+		),
+		`HSpacing( 0.5 )
+	    );
+
+	y2debug( "widget term: \n%1", widgets );
+	return widgets;
+    }
+
+
+    /**
+     * Construct widgets describing a page with the real slide show
+     * (the RichText / HTML page)
+     *
+     * @return	A term describing the widgets
+     **/
+    term SlidePageWidgets()
+    {
+	term widgets =
+	    AddProgressWidgets( `slideShowPage,
+				`RichText(`id(`slideText), "" )
+				);
+	y2debug( "widget term: \n%1", widgets );
+	return widgets;
+    }
+
+    term DetailsTableWidget()
+    {
+	return `VWeight( 1,
+						`Table( `id(`cdStatisticsTable), `opt(`keepSorting),
+							`header(
+								// Table headings for CD statistics during installation
+								_("Media"),
+								// Table headings for CD statistics during installation
+								`Right( _("Size") ),
+								// Table headings for CD statistics during installation
+								`Right( _("Packages") ),
+								// Table headings for CD statistics during installation
+								`Right(  _("Time") )
+								),
+							table_items
+							)
+						);
+    }
+
+    /**
+     * Construct widgets for the "details" page
+     *
+     * @return	A term describing the widgets
+     **/
+    term DetailsPageWidgets()
+    {
+	term widgets =
+	    AddProgressWidgets( `detailsPage,
+				`VBox( _show_table ? DetailsTableWidget() : `Empty(),
+				      `VWeight( 1,
+						`LogView(`id(`instLog ),  _("Actions performed:"), 6, 0 )
+						),
+				      `ProgressBar(`id(`progressCurrentPackage), sub_progress_label, 100, sub_progress_value )
+				      )
+				);
+
+	y2debug( "widget term: \n%1", widgets );
+	return widgets;
+    }
+
+    /**
+     * Construct widgets for the "release notes" page
+     *
+     * @return	A term describing the widgets
+     **/
+    term RelNotesPageWidgets() {
+	term widgets = AddProgressWidgets (`relNotesPage,
+		`RichText (relnotes)
+	);
+	y2debug( "widget term: \n%1", widgets );
+	return widgets;
+    }
+
+
+    /**
+     * Switch from the 'details' view to the 'slide show' view.
+     **/
+    global void SwitchToSlideView()
+    {
+	if ( ShowingSlide() )
+	    return;
+
+	if ( UI::WidgetExists(`tabContents ) )
+	{
+	    UI::ChangeWidget(`dumbTab, `CurrentItem, `showSlide );
+	    UI::ReplaceWidget(`tabContents, SlidePageWidgets() );
+	    // UpdateTotalProgress(false);		// FIXME: this breaks other stages!
+	}
+    }
+
+    /**
+     * Rebuild the details page.
+     */
+    void RebuildDetailsView()
+    {
+	if ( UI::WidgetExists(`tabContents ) )
+	{
+	    UI::ChangeWidget(`dumbTab, `CurrentItem, `showDetails );
+	    UI::ReplaceWidget(`tabContents, DetailsPageWidgets() );
+	    y2milestone( "Contents set to details" );
+	}
+
+	if ( UI::WidgetExists( `instLog ) && inst_log != "" )
+	    UI::ChangeWidget(`instLog, `Value, inst_log );
+    } 
+
+    /**
+     * Switch from the 'slide show' view to the 'details' view.
+     **/
+    global void SwitchToDetailsView()
+    {
+	if ( ShowingDetails() )
+	{
+	    y2milestone( "Already showing details" );
+	    return;
+	}
+	RebuildDetailsView();
+    }
+
+    /**
+     * Switch to the 'release notes' view.
+     **/
+    global void SwitchToReleaseNotesView()
+    {
+	if ( ShowingRelNotes() )
+	    return;
+
+	if ( UI::WidgetExists(`tabContents ) )
+	{
+	    UI::ChangeWidget(`dumbTab, `CurrentItem, `showRelNotes );
+	    UI::ReplaceWidget(`tabContents, RelNotesPageWidgets() );
+	    // UpdateTotalProgress(false);
+	}
+    }
+
+
+    /**
+     * Help text for the dialog
+     */
+    string HelpText()
+    {
+	// Help text while software packages are being installed (displayed only in rare cases)
+	string help_text = _("<p>Please wait while packages are being installed.</p>");
+
+	return help_text;
+    }
+
+
+    /**
+     * Rebuild the dialog. Useful if slides become available post-creating the dialog.
+     */
+    global void RebuildDialog()
+    {
+	term contents = `Empty();
+
+	if ( UI::HasSpecialWidget(`DumbTab) && Slides::HaveSlideSupport()
+	    && Slides::HaveSlides() )
+	{
+	    list tabs = [
+                                // tab
+                              `item(`id(`showSlide   ), _("Slide Sho&w") ),
+                                // tab
+                              `item(`id(`showDetails ), _("&Details")      )
+			];
+	    if (relnotes != nil && relnotes != "")
+				// tab
+		tabs = add (tabs, `item (`id (`showRelNotes), _("Release &Notes")));
+
+	    contents =
+		`DumbTab(`id(`dumbTab ), tabs,
+			  `VBox(
+				`VSpacing( 0.4 ),
+				`VWeight( 1,	// lower layout priority
+					  `HBox(
+						`HSpacing( 1 ),
+						`ReplacePoint(`id(`tabContents), SlidePageWidgets() ),
+						`HSpacing( 0.5 )
+						)
+					  ),
+				`VSpacing( 0.4 )
+				)
+			  );
+
+	}
+	else
+	{
+	    contents = DetailsPageWidgets();
+	}
+
+	y2milestone( "SlideShow contents: %1", contents);
+	
+	Wizard::SetContents(
+			    // Dialog heading while software packages are being installed
+			    _("Perform Installation"),
+			    contents,
+			    HelpText(),
+			    false, false );	// has_back, has_next
+
+	widgets_created = true;
+
+	if ( ! Slides::HaveSlides() && ShowingSlide() )
+	    SwitchToDetailsView();
+    }
+
+
+
+    /**
+     * Open the slide show base dialog with empty work area (placeholder for
+     * the image) and CD statistics.
+     **/
+    void OpenSlideShowBaseDialog()
+    {
+	if ( ! Wizard::IsWizardDialog() ) // If there is no Wizard dialog open already, open one
+	{
+	    Wizard::OpenNextBackDialog();
+	    opened_own_wizard = true;
+	}
+
+	UI::WizardCommand(`ProtectNextButton( false ) );
+	Wizard::RestoreBackButton();
+	Wizard::RestoreAbortButton();
+	Wizard::EnableAbortButton();
+	Wizard::RestoreNextButton();
+
+	Wizard::SetContents(
+			    // Dialog heading while software packages are being installed
+			    _("Package Installation"),
+			    `Empty(),		// Wait until InitPkgData() is called from outside
+			    HelpText(),
+			    false, false );	// has_back, has_next
+
+	RebuildDialog();
+	Wizard::SetTitleIcon("yast-sw_single");
+
+	// reset abort status
+	SetUserAbort(false);
+    }
+
+
+    /**
+     * Initialize generic data to default values
+     */
+    global void Reset()
+    {
+	current_slide_no	= 0;
+	slide_start_time	= 0;
+        total_time_elapsed	= 0;
+	start_time		= -1;
+	next_recalc_time	= -1;
+    }
+    
+
+
+    /**
+     * Process (slide show) input (button press).
+     **/
+    global void HandleInput( any button )
+    {
+	if ( button == `showDetails && ! ShowingDetails() )
+	{
+	    y2milestone( "User asks to switch to details" );
+	    user_switched_to_details = true ;
+	    SwitchToDetailsView();
+	}
+	else if ( button == `showSlide && ! ShowingSlide() )
+	{
+	    if ( Slides::HaveSlides() )
+	    {
+		user_switched_to_details = false;
+		SwitchToSlideView();
+		LoadSlide( current_slide_no );
+	    }
+	    else
+	    {
+		UI::ChangeWidget(`dumbTab, `CurrentItem, `showDetails );
+	    }
+	}
+	else if ( button == `showRelNotes && ! ShowingRelNotes() )
+	{
+	    user_switched_to_details = false;
+	    SwitchToReleaseNotesView();
+	}
+	else if ( button == `debugHotkey )
+	{
+	    debug = ! debug;
+	    y2milestone( "Debug mode: %1", debug );
+	}
+	// note: `abort is handled in SlideShowCallbacks::HandleInput()
+    }
+
+
+    /**
+     * Check for user button presses and handle them. Generic handling to be used in the 
+     * progress handlers.
+     **/
+    global void GenericHandleInput()
+    {
+	// any button = SlideShow::debug ? UI::PollInput() : UI::TimeoutUserInput( 10 );
+	any button = UI::PollInput();
+
+	// in case of cancel ask user if he really wants to quit installation
+	if ( button == `abort || button == `cancel )
+	{
+	    if ( Mode::normal () )
+	    {
+		SlideShow::SetUserAbort(Popup::AnyQuestion( Popup::NoHeadline(),
+						// popup yes-no
+						 _("Do you really want\nto quit the installation?"),
+						 Label::YesButton(),
+						 Label::NoButton(),
+						 `focus_no ));
+	    }
+	    else if ( Stage::initial () )
+	    {
+		SlideShow::SetUserAbort(Popup::ConfirmAbort( `unusable ));
+	    }
+	    else	// Mode::update (), Stage::cont ()
+	    {
+		SlideShow::SetUserAbort(Popup::ConfirmAbort( `incomplete ));
+	    }
+
+	    if (SlideShow::GetUserAbort())
+	    {
+		SlideShow::AppendMessageToInstLog (_("Aborted"));
+	    }
+	}
+	else
+	{
+	    SlideShow::HandleInput( button );
+	}
+    }
+
+    /**
+     * Open the slide show dialog.
+     **/
+    global void OpenDialog()
+    {
+	// call SlideShowCallbacks::InstallSlideShowCallbacks()
+	WFM::call("wrapper_slideshow_callbacks", ["InstallSlideShowCallbacks"]);
+
+	// check for slides first, otherwise dialogs will be built without them
+	CheckForSlides();
+
+	OpenSlideShowBaseDialog();
+
+	if ( Slides::HaveSlides() )
+	    LoadSlide(0);
+	else
+	    SwitchToDetailsView();
+    }
+
+
+    /**
+     * Close the slide show dialog.
+     **/
+    global void CloseDialog()
+    {
+	if ( opened_own_wizard )
+	    Wizard::CloseDialog();
+
+	// call SlideShowCallbacks::RemoveSlideShowCallbacks()
+	WFM::call("wrapper_slideshow_callbacks", ["RemoveSlideShowCallbacks"]);
+    }
+
+    global void ShowTable()
+    {
+	if ( ShowingDetails() && ! _show_table )
+	{
+    	    _show_table = true;
+	    RebuildDetailsView();
+	}
+    	_show_table = true;
+    }
+    
+    global void HideTable()
+    {
+	if ( ShowingDetails() && _show_table )
+	{
+	    _show_table = false;
+	    RebuildDetailsView();
+	}
+	_show_table = false;
+    }
+
+    global void UpdateTable( list<term> items )
+    {
+	table_items = items;
+	if( ShowingDetails() && _show_table )
+	{
+	    UI::ChangeWidget( `id(`cdStatisticsTable), `Items, items );
+	}
+    }
+        
+    /**
+     *  Prepare the stages for the global progressbar. Will compute the total estimate of time and
+     *  partition the global 100% to given stages based on their estimates. Can compute out of
+     *  time and size to download.
+     *
+     *  The stages description list example:
+     *  [
+     *      $[
+     *		"name" : "disk",
+     *		"description" : "Prepare disk...",
+     *		"value" : 85,		// disk speed can be guessed by the storage, thus passing time
+     *		"units" : `sec
+     *	     ],
+     *      $[
+     *		"name" : "images";
+     *		"description" : "Deploying images...",
+     *		"value" : 204800,	// amount of kb to be downloaded/installed
+     *		"units" : `kb
+     *	     ],
+     *  ]
+     */
+    global void Setup( list< map<string,any> > stages )
+    {
+	// initiliaze the generic counters
+	Reset();
+	
+	// gather total amount of time need
+	integer total_time = 0;
+	
+	foreach( map<string,any> stage, stages, {
+	    if( stage["units"]:`sec == `sec )
+	    {
+		total_time = total_time + stage["value"]:0;
+	    }
+	    else // assume kilobytes
+	    {
+		// assume 15 minutes for installation of openSUSE 11.0, giving 3495 as the constant for kb/s
+		total_time = total_time + (stage["value"]:0 / 3495);
+	    } 
+	});
+	
+	y2milestone( "Total estimated time: %1", total_time );
+	
+	integer start = 0;	// value where the current stage starts
+	
+	_stages = $[];		// prepare a new stages description
+	
+	// distribute the total time to stages as per cents
+	foreach( map<string,any> stage, stages, {
+	    if( stage["units"]:`sec == `sec )
+	    {
+		stage["size"] = stage["value"]:0 * 100 / total_time;
+		stage["start"] = start;
+		
+		start = start + stage["size"]:0;
+	    }
+	    else // assume kilobytes
+	    {
+		// assume 15 minutes for installation of openSUSE 11.0, giving 3495 as the constant
+		stage["size"] = ( stage["value"]:0 * 100 ) / 3495 / total_time;
+		stage["start"] = start;
+		if( stage["size"]:0 + start > 100 ) 
+		    stage["size"] = 100 - start;
+		
+		start = start + stage["size"]:0;
+	    } 
+
+	    _stages[ stage["name"]:"" ] = stage;
+	    
+	    // setup first stage
+	    if( _current_stage == nil )
+		_current_stage = stage;
+	});
+	
+	y2milestone( "Global progress bar: %1", _stages );
+    }
+
+    /**
+     * Returns the current setup defined by Setup().
+     *
+     * @return map <string, map <string,any> > stages
+     * @see Setup()
+     * @struct $[ stage_name : $[ stage_setup ], ... ]
+     */
+    global map <string, map <string,any> > GetSetup () {
+	return _stages;
+    }
+}
