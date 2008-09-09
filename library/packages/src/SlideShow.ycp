@@ -83,7 +83,6 @@
 
     import "Installation";
     import "Label";
-    import "Language";
     import "Stage";
     import "String";
     import "Wizard";
@@ -103,7 +102,7 @@
     global integer	slide_min_interval	= 30;	// const - minimum seconds between slide changes
     global integer	slide_max_interval	= 3*60; // const - maximum seconds between slide changes
     global integer	slide_interval		= slide_min_interval;
-    global string	language		= Language::language;
+    global string	language		= "en";
     global boolean	widgets_created		= false;
     global boolean	user_switched_to_details = false;
     global boolean	opened_own_wizard	= false;
