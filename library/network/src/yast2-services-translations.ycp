@@ -28,14 +28,23 @@
   // TRANSLATORS: Description of a Service (File name: avahi, RPM: avahi), used as a common label or an item in table
   tmpstring = _("Zeroconf/Bonjour Multicast DNS (mDNS) ports for Service Discovery (DNS-SD)");
 
+  // TRANSLATORS: Name of Service (File name: bacula-dir, RPM: bacula-server), can be used as check box, item in multiple selection box...
+  tmpstring = _("Bacula Director");
+
   // TRANSLATORS: Description of a Service (File name: bacula-dir, RPM: bacula-server), used as a common label or an item in table
-  tmpstring = _("Bacula Director ");
+  tmpstring = _("Bacula network backup system director daemon");
+
+  // TRANSLATORS: Name of Service (File name: bacula-fd, RPM: bacula), can be used as check box, item in multiple selection box...
+  tmpstring = _("Bacula File Daemon");
 
   // TRANSLATORS: Description of a Service (File name: bacula-fd, RPM: bacula), used as a common label or an item in table
-  tmpstring = _("Bacula File Daemon ");
+  tmpstring = _("Bacula network backup system file daemon");
+
+  // TRANSLATORS: Name of Service (File name: bacula-sd, RPM: bacula-server), can be used as check box, item in multiple selection box...
+  tmpstring = _("Bacula Storage Daemon");
 
   // TRANSLATORS: Description of a Service (File name: bacula-sd, RPM: bacula-server), used as a common label or an item in table
-  tmpstring = _("Bacula Storage Daemon ");
+  tmpstring = _("Bacula network backup system storage daemon");
 
   // TRANSLATORS: Name of Service (File name: bind, RPM: bind ypbind), can be used as check box, item in multiple selection box...
   tmpstring = _("bind DNS server");
