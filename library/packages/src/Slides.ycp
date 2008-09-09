@@ -1,0 +1,205 @@
+/**
+ * Module:		Slides.ycp
+ *
+ * Purpose:		Module to access slides from installation repository
+ *
+ * Author:		Stefan Hundhammer <sh@suse.de>
+ *                      Stanislav Visnovsky <visnov@suse.cz>
+ *
+ */
+{
+    module "Slides";
+
+    textdomain "packager";
+
+    import "FileUtils";
+    import "Installation";
+
+    // list of currently known slides, in the order they should be shown
+    global list<string> slides			= [];
+    // base path to look for slides
+    global string	slide_base_path		= Installation::sourcedir + "/suse/setup/slide";
+    // path to look for texts of slides
+    global string	slide_txt_path		= "";
+    // path to look for images of slides
+    global string	slide_pic_path		= "";
+    // if no other language is configured, use this fallback
+    global string	fallback_lang		= "en";
+
+
+
+    /**
+     * Get a list of available slides (images) for the slide show.
+     * @param lang language of slides to load
+     * @return list slides
+     **/
+    list<string> GetSlideList( string lang )
+    {
+	list<string> slide_list = nil;
+
+	string txt_path = sformat( "%1/txt/%2", slide_base_path, lang );
+	if (FileUtils::Exists (txt_path)) {
+	    slide_list = (list<string>) SCR::Read (.target.dir, txt_path );
+	}
+
+	if ( slide_list == nil )
+	{
+	    y2error( "Directory %1 does not exist", txt_path );
+	    if ( size( lang ) > 2 )
+	    {
+		lang = substring( lang, 0, 2 );
+		txt_path = sformat( "%1/txt/%2", slide_base_path, lang );
+
+		if (FileUtils::Exists (txt_path)) {
+		    slide_list = (list<string>) SCR::Read (.target.dir, txt_path );
+		}
+	    }
+	}
+
+	if ( slide_list == nil )
+	{
+	    y2milestone( "Slideshow directory %1 does not exist", txt_path );
+	}
+	else
+	{
+	    y2milestone ("Using slides from '%1' (%2 slides)", txt_path, size (slide_list));
+
+	    slide_list = sort( filter( string filename, slide_list, ``{
+		// Check for valid extensions - ignore editor save files and other leftover stuff
+		return regexpmatch( filename, ".*\.(rtf|RTF|html|HTML|htm|HTM)$" );
+	    } ) );
+
+	    y2debug( "GetSlideList(): Slides at %1: %2", txt_path, slide_list );
+	}
+
+	if ( slide_list != nil && size( slide_list ) > 0 )	// Slide texts found
+	{
+	    slide_txt_path	= txt_path;
+	    slide_pic_path	= slide_base_path + "/pic";
+
+	    y2milestone ("Using TXT: %1, PIC: %2", slide_txt_path, slide_pic_path);
+	}
+	else							// No slide texts found
+	{
+	    y2debug( "No slides found at %1", txt_path );
+
+	    // function calls itself!
+	    if ( lang != fallback_lang )
+	    {
+		y2debug( "Trying to load slides from fallback: %1", fallback_lang );
+		slide_list = GetSlideList( fallback_lang );
+	    }
+	}
+
+	return slide_list;
+    }
+
+
+    /**
+     * Check if showing slides is supported.
+     *
+     * Not to be confused with HaveSlides() which checks if there are slides available.
+     * @return boolean if the current UI is capable of showing slides
+     **/
+    global boolean HaveSlideSupport()
+    {
+	map disp = UI::GetDisplayInfo();
+
+	if (disp != nil		// This shouldn't happen, but who knows?
+	    && disp["HasImageSupport"]:false
+	    && disp["DefaultWidth"]:-1	>= 800
+	    && disp["DefaultHeight"]:-1 >= 600
+	    && disp["Depth"]:-1		>= 8  )
+	{
+	    return true;
+	}
+	else
+	{
+	    return false;
+	}
+    }
+
+
+    /**
+     * Check if slides are available.
+     *
+     * Not to be confused with HaveSlideSupport() which checks
+     * if slides could be displayed if there are any.
+     * @return boolean if the loaded list of slides contains any slides
+     **/
+    global boolean HaveSlides()
+    {
+	return size( slides ) > 0;
+    }
+
+    /**
+     * Load one slide from files complete with image and textual description.
+     * Also adapt img links
+     * @param slide_name name of the slide
+     * @return true if OK, false if error
+     **/
+    global string LoadSlideFile( string slide_name )
+    {
+        string text_file_name = sformat ("%1/%2", slide_txt_path, slide_name );
+        // returns empty string if not found
+	string text = (string) SCR::Read( .target.string, [text_file_name, ""] );
+
+	//
+	// Fix <img src> tags: Replace image path with current slide_pic_path
+	//
+	while (true)
+	{
+		string replaced = regexpsub( text, "(.*)&imagedir;(.*)",
+					     sformat("\\1%1\\2", slide_pic_path ) );
+		if ( replaced == nil ) break;
+		text = replaced;
+	}
+
+	return text;
+    }
+
+
+    /**
+     * Set the slide show directory
+     */
+    global void SetSlideDir( string dir )
+    {
+	slide_base_path = dir;
+
+	map tmp = (map) WFM::Read (.local.stat, slide_base_path);
+
+	if ( ! tmp["isdir"]:false )
+	{
+	    y2error( "Using default path instead of %1", tmp );
+	    slide_base_path = "/var/adm/YaST/InstSrcManager/tmp/CurrentMedia/suse/setup/slide";
+	}
+
+	y2milestone( "SetSlideDir: %1", slide_base_path );
+    }
+
+    /**
+     * Load slides for the given language and store them in the internal variables.
+     * @param language requested language of the slides
+     */
+    global void LoadSlides( string language )
+    {
+        slides = GetSlideList( language );
+    }
+
+    /**
+     * Check, if the base path set up for slides is valid (it exists and contains slides)
+     * @return boolean true, if it is possible to load the slides
+     */
+    global boolean CheckBasePath()
+    {
+	map tmp = (map) WFM::Read(.local.stat, slide_base_path);
+	if (! tmp["isdir"]:false)
+	{
+	    y2error( "Using default path instead of %1", slide_base_path );
+	    slide_base_path = "/var/adm/YaST/InstSrcManager/tmp/CurrentMedia/suse/setup/slide";
+
+	    return false;
+	}
+        return true;
+    }
+}
