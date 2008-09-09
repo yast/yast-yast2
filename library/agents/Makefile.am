@@ -4,7 +4,6 @@
 agent_SCRIPTS =		\
 	ag_content	\
 	ag_netd		\
-	ag_anyxml	\
-	ag_barexml
+	ag_anyxml
 scrconf_DATA = $(wildcard *.scr)
 EXTRA_DIST = $(agent_SCRIPTS) $(scrconf_DATA)
