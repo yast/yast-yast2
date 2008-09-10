@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Sep 10 14:47:48 CEST 2008 - aschnell@suse.de
+
+- allow whitespace at line-end in /etc/fstab (see bnc #401521)
+
+-------------------------------------------------------------------
 Wed Sep 10 07:24:35 CEST 2008 - lslezak@suse.cz
 
 - fixed UI definition in MediaChange callback (incorrectly defined

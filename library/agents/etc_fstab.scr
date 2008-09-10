@@ -59,7 +59,8 @@
 	  `Optional(`Whitespace()),
 	  `Optional(`freq (`Number())),
 	  `Optional(`Whitespace()),
-	  `Optional(`passno (`Number()))
+	  `Optional(`passno (`Number())),
+	  `Optional(`Whitespace())
 	),
 	"\n"
       ))
