@@ -581,7 +581,7 @@
 	    else {
 		term button_box = `ButtonBox (
 		    `PushButton (`id(`abort), `opt (`cancelButton), Label::AbortButton()),
-		    `PushButton (`id(`retry), `opt (`commonButton), Label::RetryButton()),
+		    `PushButton (`id(`retry), `opt (`customButton), Label::RetryButton()),
 		    `PushButton (`id(`ignore), `opt (`okButton), Label::IgnoreButton())
 		);
 
@@ -792,18 +792,18 @@ Check whether the server is accessible."), wanted_label);
 	// --------------------------------------
 	// build up button box
 
-	term button_box = `ButtonBox (`PushButton (`id(`retry), `opt(`default, `commonButton), Label::RetryButton()));
+	term button_box = `ButtonBox (`PushButton (`id(`retry), `opt(`default, `okButton), Label::RetryButton()));
 
 	if (current == -1)			// wrong media id, offer "Ignore"
 	{
-	    button_box = add (button_box, `PushButton(`id(`ignore), `opt (`okButton), Label::IgnoreButton()));
+	    button_box = add (button_box, `PushButton(`id(`ignore), `opt (`customButton), Label::IgnoreButton()));
 	}
 
 	button_box = add (button_box, `PushButton (`id(`cancel), `opt (`cancelButton), Label::AbortButton()));
 
 	// push button label during media change popup, user can skip
 	// this media (CD) so no packages from this media will be installed
-	button_box = add (button_box, `PushButton (`id(`skip), `opt(`commonButton), _("&Skip")));
+	button_box = add (button_box, `PushButton (`id(`skip), `opt(`customButton), _("&Skip")));
 
 	if (offer_eject_button)
 	{
@@ -817,14 +817,17 @@ Check whether the server is accessible."), wanted_label);
 	    list<term> cds = detected_cd_devices;
 
 	    // display a menu button if there are more CD devices
-	    term eject_button =
-		(size(cds) > 1) ?
-		    // menu button label - used for more then one device
-		    `MenuButton(_("&Eject"), cds)
-		    // push button label - in the media change popup, user can eject the CD/DVD
-		    : `PushButton (`id(`eject), _("&Eject"));
+	    if (size(cds) > 1)
+	    {
+		// menu button label - used for more then one device
+		button_box = `HBox(button_box, `MenuButton(_("&Eject"), cds));
+	    }
+	    else
+	    {
+		// push button label - in the media change popup, user can eject the CD/DVD
+		button_box = add(button_box, `PushButton (`id(`eject), `opt(`customButton), _("&Eject")));
+	    }
 
-	    button_box = add(button_box, eject_button);
 
 	    boolean auto_eject = (boolean)GetConfig("automatic_eject");
 	    if (auto_eject == nil)
@@ -907,6 +910,8 @@ Check whether the server is accessible."), wanted_label);
 
 	    return "S";
 	}
+
+	y2internal("Opening Dialog: %1", LayoutPopup (message, button_box, 10, true));
 
 	if ( showLongInfo )
 	{
@@ -1820,7 +1825,7 @@ Note: If the refresh is skipped some packages
 might be missing or out of date.")),
 		`ButtonBox (
 			`PushButton (`id(`continue), `opt (`default, `okButton), Label::ContinueButton()),
-			`PushButton (`id(`skip), `opt (`commonButton), _("Skip Refresh"))
+			`PushButton (`id(`skip), `opt (`customButton), _("Skip Refresh"))
 		    )
 		)
 	    )
@@ -2326,7 +2331,7 @@ global string ErrorScanDb(integer error, string description)
     term button_box = `ButtonBox
     (
 	`PushButton (`id (`abort), `opt (`cancelButton), Label::AbortButton()),
-	`PushButton (`id (`retry), `opt (`commonButton), Label::RetryButton()),
+	`PushButton (`id (`retry), `opt (`customButton), Label::RetryButton()),
 	`PushButton (`id (`ignore), `opt (`okButton), Label::IgnoreButton())
     );
 
