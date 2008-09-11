@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep 11 07:55:19 CEST 2008 - jsrain@suse.cz
+
+- merged texts from proofread
+
+-------------------------------------------------------------------
 Wed Sep 10 14:47:48 CEST 2008 - aschnell@suse.de
 
 - allow whitespace at line-end in /etc/fstab (see bnc #401521)

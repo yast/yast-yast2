@@ -89,8 +89,8 @@ global map<string,any> Connect(boolean show_continue_button)
 		    _("Accessing the Package Management Failed"),
 		    Pkg::LastError() + "\n\n" +
 		    // TRANSLATORS: an error message with question
-		    _("Would you like to retry to access it,
-continue without having access to the package management
+		    _("Would you like to retry accessing the package manager,
+continue without having access to package management,
 or abort?
 "),
 		    Label::RetryButton(),
@@ -115,8 +115,7 @@ or abort?
 		    _("Accessing the Package Management Failed"),
 		    Pkg::LastError() + "\n\n" +
 		    // TRANSLATORS: an error message with question
-_("Would you like to abort or retry to access it?
-"),
+_("Would you like to abort or try again?\n"),
 		    Label::RetryButton(),
 		    Label::AbortButton(),
 		    // default is 'Retry'
