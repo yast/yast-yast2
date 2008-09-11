@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep 11 15:35:45 CEST 2008 - jsrain@suse.cz
+
+- require yast2-branding instead of yast2-theme (fate #301794)
+- 2.17.22
+
+-------------------------------------------------------------------
 Thu Sep 11 07:55:19 CEST 2008 - jsrain@suse.cz
 
 - merged texts from proofread
