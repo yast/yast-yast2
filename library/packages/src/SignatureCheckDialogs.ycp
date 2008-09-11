@@ -710,8 +710,8 @@ packages created by the owner of key <tt>%1</tt> show this warning.</p>"), key["
 
 	    // warning label - the key to import is expired
 	    // %1 is current date (formatted according to the current locale)
-	    exp_str = "\n" + sformat(_("WARNING: The key is expired!
-Current date: %1"), current_date);
+	    exp_str = "\n" + sformat(_("WARNING: The key has expired!
+Expiry date: %1"), current_date);
 	}
 
 	// popup message, %1 stands for GPG key complete multiline description, %2 for key location (URL or ...)
