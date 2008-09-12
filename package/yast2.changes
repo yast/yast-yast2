@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Sep 12 15:50:25 CEST 2008 - lslezak@suse.cz
+
+- display a warning when a package installation or download error
+  is ignored, suggest verification of the system (fate#303527)
+- 2.17.23
+
+-------------------------------------------------------------------
 Thu Sep 11 15:35:45 CEST 2008 - jsrain@suse.cz
 
 - require yast2-branding instead of yast2-theme (fate #301794)
