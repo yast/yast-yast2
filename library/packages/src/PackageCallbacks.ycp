@@ -429,7 +429,18 @@
 	    if (r == `retry)
 		return "R";
 	    if (r == `ignore)
+	    {
+		// don't show the warning when a refresh fails
+		if (!autorefreshing)
+		{
+		    // TODO: add "Don't show again" checkbox
+		    // a warning popup displayed after pressing [Ignore] after a download error
+		    Popup::Warning(_("Ignoring a download failure may result in a broken system.
+The system should be later verified by running the Software Management module."));
+		}
+
 		return "I";
+	    }
 
 	    y2error("Unknown user input: %1", r);
 	}
@@ -617,6 +628,14 @@
 		y2milestone ("DonePackage %1", r);
 
 		UI::CloseDialog();
+
+		if (r == `ignore)
+		{
+		    // TODO: add "Don't show again" checkbox
+		    // a warning popup displayed after pressing [Ignore] after a package installation error
+		    Popup::Warning(_("Ignoring a package failure may result in a broken system.
+The system should be later verified by running the Software Management module."));
+		}
 
 		if (r == `abort)
 		    return "C";
