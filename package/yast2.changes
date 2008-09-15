@@ -3,6 +3,8 @@ Mon Sep 15 12:36:02 CEST 2008 - locilka@suse.cz
 
 - Ignoring backslashes at ends of lines in SuSEfirewall
   configuration file (bnc #426000).
+- Using one-record-perl-line style in SuSEfirewall for some
+  variables to keep them human-readable (bnc #426000).
 
 -------------------------------------------------------------------
 Fri Sep 12 15:50:25 CEST 2008 - lslezak@suse.cz

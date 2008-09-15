@@ -152,12 +152,25 @@
 	"FW_CONFIGURATIONS_EXT", "FW_CONFIGURATIONS_INT", "FW_CONFIGURATIONS_DMZ",
     ];
 
+    list <string> one_line_per_record = ["FW_FORWARD_MASQ", "FW_SERVICES_ACCEPT_EXT", "FW_SERVICES_ACCEPT_INT", "FW_SERVICES_ACCEPT_DMZ"];
+
     // FATE #300970: Firewall support for SMB browsing
     string broadcast_related_module = "nf_conntrack_netbios_ns";
 
     // <!-- SuSEFirewall VARIABLES //-->
 
     // <!-- SuSEFirewall GLOBAL FUNCTIONS USED BY LOCAL ONES //-->
+
+    /**
+     * Returns whether records in variable should be written one record on one line.
+     * @return boolean if wolpr
+     */
+    boolean WriteOneRecordPerLine (string key_name) {
+	if (key_name == nil && key_name == "")
+	    return true;
+
+	return (contains (one_line_per_record, key_name));
+    }
 
     /**
      * Function sets internal variable, which indicates, that any
@@ -334,12 +347,19 @@
      */
     boolean WriteSysconfigSuSEFirewall (list<string> variables) {
 	boolean write_status = true;
+	string value = "";
 
 	foreach (string variable, variables, {
+	    // if variable is undefined, get default value
+	    value = SETTINGS[variable]:GetDefaultValue(variable);
+
+	    if (WriteOneRecordPerLine (variable)) {
+		value = mergestring (splitstring (value, " "), "\n");
+	    }
+
 	    write_status = (boolean) SCR::Write(
 		add(.sysconfig.SuSEfirewall2,variable),
-		// if variable is undefined, get default value
-		SETTINGS[variable]:GetDefaultValue(variable)
+		value
 	    );
 
 	    if (! write_status) {
