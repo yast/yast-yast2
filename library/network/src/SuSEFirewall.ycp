@@ -353,7 +353,7 @@
 	    // if variable is undefined, get default value
 	    value = SETTINGS[variable]:GetDefaultValue(variable);
 
-	    if (WriteOneRecordPerLine (variable)) {
+	    if (WriteOneRecordPerLine (variable) == true) {
 		value = mergestring (splitstring (value, " "), "\n");
 	    }
 
