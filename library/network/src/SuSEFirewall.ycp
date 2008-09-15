@@ -289,11 +289,21 @@
 	    if (value == nil || value == "")
 		value = GetDefaultValue(variable);
 
-	    // see bugzilla #194419
+	    // BNC #426000
+	    // backslash at the end
+	    if (regexpmatch (value, "[ \t]*\\\\[ \t]*\n")) {
+		list <string> rules = splitstring (value, "\\ \t\n");
+		rules = filter (string one_rule, rules, {
+		    return (one_rule != nil && one_rule != "");
+		});
+		value = mergestring (rules, " ");
+	    }
 
+	    // BNC #194419
 	    // replace all "\n" with " " in variables
 	    if (regexpmatch(value, "\n"))
 		value = mergestring(splitstring(value, "\n"), " ");
+
 	    // replace all "\t" with " " in variables
 	    if (regexpmatch(value, "\t"))
 		value = mergestring(splitstring(value, "\t"), " ");
