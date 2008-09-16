@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep 16 08:46:18 CEST 2008 - locilka@suse.cz
+
+- Fixed ncurses menu (bnc #426507).
+- 2.17.24
+
+-------------------------------------------------------------------
 Mon Sep 15 12:36:02 CEST 2008 - locilka@suse.cz
 
 - Ignoring backslashes at ends of lines in SuSEfirewall
