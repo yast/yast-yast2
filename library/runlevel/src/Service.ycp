@@ -470,5 +470,51 @@ global define string Error() {
     return error_msg;
 }
 
+/**
+ * Get list of enabled services in a runlevel
+ * @param runlevel requested runlevel number (0-6, -1 = Single)
+ * @return list<string> enabled services
+ */
+global list<string> EnabledServices(integer runlevel)
+{
+    if (runlevel < -1 || runlevel > 6)
+    {
+	y2error("ERROR: Invalid runlevel: %1", runlevel);
+	return nil;
+    }
+
+    // convert the integer to a string (-1 = S)
+    string runlevel_str = (runlevel == -1) ? "S" : sformat("%1", runlevel);
+
+    list<string> ret = [];
+
+    string command = sformat("ls -1 /etc/init.d/rc%1.d/", runlevel_str);
+    y2milestone("Executing: %1", command);
+
+    map out = (map)SCR::Execute(.target.bash_output, command);
+    y2debug("Result: %1", out);
+
+    if (out["exit"]:-1 != 0)
+    {
+	y2error("ERROR: %1", out);
+	return nil;
+    }
+
+    foreach(string s, splitstring(out["stdout"]:"", "\n"),
+	{
+	    string service = regexpsub(s, "^S[0-9]+([^0-9]*)", "\\1");
+
+	    if (service != nil)
+	    {
+		ret = add(ret, service);
+	    }
+	}
+    );
+
+    y2milestone("Enabled services in runlevel %1: %2", runlevel, ret);
+
+    return ret;
+}
+
 /* EOF */
 }

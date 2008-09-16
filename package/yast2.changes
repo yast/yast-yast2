@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Sep 16 17:22:42 CEST 2008 - lslezak@suse.cz
+
+- added Service::EnabledServices() and .sysconfig.cron agent
+  (access to /etc/sysconfig/cron file) (bnc#425864)
+- 2.17.25
+
+-------------------------------------------------------------------
 Tue Sep 16 08:46:18 CEST 2008 - locilka@suse.cz
 
 - Fixed ncurses menu (bnc #426507).

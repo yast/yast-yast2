@@ -1,0 +1,17 @@
+/**
+ * File:
+ *   cfg_cron.scr
+ * Summary:
+ *   SCR Agent for reading/writing /etc/sysconfig/cron
+ *   using the sysconfig-agent
+ *
+ * $Id: cfg_displaymanager.scr 12455 2003-10-22 12:24:49Z visnov $
+ *
+ * Read/Sets the values defined in <tt>/etc/sysconfig/cron</tt>
+ * in an easy manner.
+ */
+.sysconfig.cron
+
+`ag_ini(
+  `SysConfigFile("/etc/sysconfig/cron")
+)
