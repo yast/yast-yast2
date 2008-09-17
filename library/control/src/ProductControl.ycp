@@ -42,6 +42,11 @@ global list<map<string,any> > inst_finish = [];
 // modules to be offered to clone configuration at the end of installation
 global list<string> clone_modules = [];
 
+// additional workflow parameters
+// workflow doesn't only match mode and stage but also these params
+// bnc #427002
+map <string, any> _additional_workflow_params = $[];
+
 // Location of a custom control file
 global string custom_control_file = "";
 
@@ -281,8 +286,6 @@ boolean Check(string allowed, string current)
     }
 }
 
-
-
 /**
  * Check if valid architecture
  * @param map module data
@@ -390,6 +393,54 @@ global define term getClientTerm (map step, map def, any former_result)
 
 }
 
+/**
+ * Checks all params set by SetAdditionalWorkflowParams() whether they match the
+ * workfow got as parameter.
+ *
+ * @param map check_workflow
+ * @see SetAdditionalWorkflowParams()
+ */
+boolean CheckAdditionalParams (map & check_workflow) {
+    if (_additional_workflow_params == nil || _additional_workflow_params == $[]) {
+	return true;
+    }
+
+    boolean ret = true;
+
+    foreach (string key_to_check, any value_to_check, _additional_workflow_params, {
+	// exception
+	// If 'add_on_mode' key is not set in the workflow at all
+	// it is considered to be matching that parameter
+	if (key_to_check == "add_on_mode" && ! haskey (check_workflow, key_to_check)) {
+	    y2debug ("No 'add_on_mode' defined, matching %1", value_to_check);
+	} else if (check_workflow[key_to_check]:nil != value_to_check) {
+	    ret = false;
+	    break;
+	}
+    });
+
+    return ret;
+}
+
+/**
+ * Returns workflow matching the selected stage and mode and additiona parameters
+ * if set by SetAdditionalWorkflowParams()
+ *
+ * @param string stage
+ * @param string mode
+ * @return map workflow
+ */
+map FindMatchingWorkflow (string stage, string mode) {
+    y2debug ("workflows: %1", workflows);
+
+    list<map> tmp = filter(map wf, workflows, ``(
+	Check (wf["stage"]:"", stage) && Check (wf["mode"]:"", mode) && CheckAdditionalParams (wf)
+    ));
+
+    y2debug ("Workflow: %1", tmp[0]:$[]);
+
+    return tmp[0]:$[];
+}
 
 /**
  * Get workflow defaults
@@ -399,10 +450,7 @@ global define term getClientTerm (map step, map def, any former_result)
  */
 global define map getModeDefaults(string stage, string mode)
 {
-    list<map> tmp = filter(map wf, workflows, ``(
-                Check(wf["stage"]:"", stage) && Check(wf["mode"]:"", mode )
-    ));
-    map workflow = tmp[0]:$[];
+    map workflow = FindMatchingWorkflow (stage, mode);
     return workflow["defaults"]:$[];
 }
 
@@ -448,10 +496,7 @@ global list<string> RequiredFiles (string stage, string mode)
     // Files needed during installation.
     list<string> needed_client_files = [];
 
-    list<map> tmp = filter(map wf, workflows, ``(
-                Check(wf["stage"]:"", stage) && Check(wf["mode"]:"", mode )
-    ));
-    map workflow = tmp[0]:$[];
+    map workflow = FindMatchingWorkflow (stage, mode);
 
     list<map> modules = workflow["modules"]:[];
     integer id = 1;
@@ -493,12 +538,9 @@ global list<string> RequiredFiles (string stage, string mode)
  */
 global define map getCompleteWorkflow(string stage, string mode)
 {
-    list<map> tmp = filter(map wf, workflows, ``(
-                Check(wf["stage"]:"", stage) && Check(wf["mode"]:"", mode )
-    ));
-    map workflow = tmp[0]:$[];
-    return workflow;
+    return FindMatchingWorkflow (stage, mode);
 }
+
 
 
 /**
@@ -508,17 +550,12 @@ global define map getCompleteWorkflow(string stage, string mode)
  * @param boolean all enabled and disabled or enabled only
  * @return list<map> modules
  */
-global define list<map> getModules(string stage, string mode, symbol which)
+global define list <map> getModules (string stage, string mode, symbol which)
 {
-    y2debug("workflows: %1", workflows );
-    list<map> tmp = filter(map wf, workflows, ``(
-                Check(wf["stage"]:"", stage) && Check(wf["mode"]:"", mode )
-    ));
-    map workflow = tmp[0]:$[];
+    map workflow = FindMatchingWorkflow (stage, mode);
 
-    y2debug("Workflow: %1", workflow );
     list<map> modules = workflow["modules"]:[];
-    y2debug("modules: %1", modules );
+    y2debug ("modules: %1", modules );
 
     integer id = 1;
     if (which == `enabled)
@@ -581,10 +618,8 @@ global boolean RunRequired (string stage, string mode) {
  */
 global string getWorkflowLabel(string stage, string mode, string wz_td)
 {
-    list<map> tmp = filter(map wf, workflows, ``(
-                Check(wf["stage"]:"", stage) && Check(wf["mode"]:"", mode )
-    ));
-    map workflow = tmp[0]:$[];
+    map workflow = FindMatchingWorkflow (stage, mode);
+
     string label = workflow["label"]:"";
     if (label == "")
 	return "";
@@ -1459,6 +1494,27 @@ global define void ProductControl()
 	y2error("control file missing");
     }
     return;
+}
+
+/**
+ * Sets additional params for selecting the workflow
+ *
+ * @param map <string, any> params
+ * @example SetAdditionalWorkflowParams ($["add_on_mode":"update"]);
+ * @example SetAdditionalWorkflowParams ($["add_on_mode":"installation"]);
+ */
+global define void SetAdditionalWorkflowParams (map <string, any> params) {
+    y2milestone ("Adjusting new additional workflow params: %1", params);
+
+    _additional_workflow_params = params;
+}
+
+/**
+ * Resets all additional params for selecting the workflow
+ * @see SetAdditionalWorkflowParams()
+ */
+global define void ResetAdditionalWorkflowParams () {
+    _additional_workflow_params = $[];
 }
 
 // EOF
