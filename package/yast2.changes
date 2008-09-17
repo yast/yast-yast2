@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Sep 17 15:57:00 CEST 2008 - lslezak@suse.cz
+
+- PackageCallbacks.ycp - fixed `ButtonBox definition (bnc#426965)
+
+-------------------------------------------------------------------
 Wed Sep 17 14:07:08 CEST 2008 - lslezak@suse.cz
 
 - Progress.ycp - check whether widget `progress_replace_point
