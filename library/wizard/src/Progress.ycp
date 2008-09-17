@@ -117,7 +117,7 @@
 	//Check if any progress bar exists. If it does not, we're not running
 	//(querying progress counter is not enough, a module ran previously
 	//might have failed to reset the counter properly)
-	return ( (progress_running > 0) && (UI::WidgetExists(`pb) == true) );
+	return ( (progress_running > 0) && (UI::WidgetExists(`progress_replace_point) == true) );
     }
 
     // forward declaration

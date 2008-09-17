@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 17 14:07:08 CEST 2008 - lslezak@suse.cz
+
+- Progress.ycp - check whether widget `progress_replace_point
+  exists (bnc#412453)
+
+-------------------------------------------------------------------
 Tue Sep 16 17:22:42 CEST 2008 - lslezak@suse.cz
 
 - added Service::EnabledServices() and .sysconfig.cron agent
