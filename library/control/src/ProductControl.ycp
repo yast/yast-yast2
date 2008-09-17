@@ -1287,15 +1287,21 @@ global symbol RunFrom (integer from, boolean allow_back)
 		    // %2 - logfile, possibly with errors
 		    // %3 - link to our bugzilla
 		    // %4 - directory where YaST logs are stored
+		    // %5 - link to the Yast Bug Reporting HOWTO Web page
 		    "Calling the YaST module %1 has failed.
 More information can be found near the end of the '%2' file.
 
 This is worth reporting a bug at %3.
-Please, attach also all YaST logs stored in the '%4' directory.",
+Please, attach also all YaST logs stored in the '%4' directory.
+See %5 for more information about YaST logs.",
 		    symbolof (argterm),
 		    "/var/log/YaST2/y2log",
 		    "http://bugzilla.novell.com/",
-		    "/var/log/YaST2/"
+		    "/var/log/YaST2/",
+		    // link to the Yast Bug Reporting HOWTO
+		    // for translators: use the localized page for your language if it exists,
+		    // check the combo box "In other laguages" on top of the page
+		    _("http://en.opensuse.org/Bugs/YaST")
 		)
 	    );
 
