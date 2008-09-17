@@ -1138,6 +1138,12 @@ global symbol RunFrom (integer from, boolean allow_back)
     }
 
     integer minimum_step = allow_back ? 0 : from;
+
+    if (minimum_step < from) {
+	y2warning ("Minimum step set to: %1 even if running from %2, fixing", minimum_step, from);
+	minimum_step = from;
+    }
+
     while ((current_step >= 0) && (current_step < size(modules)))
     {
 	map step = modules[current_step]:$[];
@@ -1149,10 +1155,11 @@ global symbol RunFrom (integer from, boolean allow_back)
 	boolean run_in_update_mode = step["update"]:true; // default is true
 	boolean retranslate = step["retranslate"]:false;
 
-	// Don't mark back button disabled when back button status
-	// is forced in the control file
-	if (step["enable_back"]:nil == nil) {
-	    if (current_step <= minimum_step) {
+	// The very first dialog has back button disabled
+	if (current_step <= minimum_step) {
+	    // Don't mark back button disabled when back button status
+	    // is forced in the control file
+	    if (! haskey (step, "enable_back")) {
         	step["enable_back"] = "no";
 		y2milestone ("Disabling back: %1 %2 %3", current_step, minimum_step, step["enable_back"]:nil);
 	    }
@@ -1331,12 +1338,9 @@ See %5 for more information about YaST logs.",
 	}
 	else if (result == `abort)
 	{
-	    // FATE #300422
-	    // handling when user aborts the second stage installation
-	    // or firstboot (bug #247552)
-	    if (Stage::cont () || Stage::firstboot()) {
-		final_result = result;
-	    }
+	    // handling when user aborts the workflow (FATE #300422, bnc #406401, bnc #247552)
+	    final_result = result;
+
 	    break;
 	}
 	else if (result == `finish)
@@ -1368,7 +1372,7 @@ See %5 for more information about YaST logs.",
 	    {
 		if (former_result == `next)
 		{
-		    // if the first client just returns `auto , the back button
+		    // if the first client just returns `auto, the back button
 		    // of the next client must be disabled
 		    if (current_step <= minimum_step && ! allow_back)
 			minimum_step = minimum_step + 1;
