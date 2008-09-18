@@ -84,8 +84,18 @@ global list<map<string,any> > FindBaseProducts() {
     y2milestone ("Looking for base products");
     list<map<string,any> > products = (list<map<string,any> >)
 	Pkg::TargetProducts ();
+    y2milestone("All found products: %1", products);
 
-    y2internal("All found products: %1", products);
+    // read the baseproduct (symlink to an installed product)
+    map base_product = (map)SCR::Read(.anyxml, $[
+	    "file" : "/etc/products.d/baseproduct",
+	    "args"  : $[
+		"ForceArray" : 0,
+	    ]
+	]
+    );
+    y2milestone("Product from /etc/products.d/baseproduct: %1", base_product);
+
     products = filter (map<string,any> p, products, {
 	// bug 165314, relnotes_url needn't be defined (or empty string)
 	if (p["relnotes_url"]:"" != "") {
@@ -94,7 +104,14 @@ global list<map<string,any> > FindBaseProducts() {
 	    // bug 180581, relnotes should be identified by name
 	    product_of_relnotes[rn_url] = p["display_name"]:"";
 	}
-	return p["category"]:"" == "base";
+
+	// is it the base product from /etc/products.d/baseproduct?
+	return (p["display_name"]:"" == base_product["summary"]:""
+	    && p["name"]:"" == base_product["distribution"]:""
+	    && p["vendor"]:"" == base_product["vendor"]:""
+	    && p["version"]:"" == base_product["version"]:""
+	    && p["relnotes_url"]:"" == base_product["urls", "url", "content"]:""
+	);
     });
 
     y2milestone ("Found base products: %1", products);
@@ -110,7 +127,7 @@ global list<map<string,any> > FindBaseProducts() {
  */
 global void ReadProducts()
 {
-    y2internal("ReadProducts");
+    y2milestone("Product::ReadProducts() started");
     if (!Mode::config())
     {
 	// bugzilla #238556
@@ -120,13 +137,14 @@ global void ReadProducts()
 	}
 
 	PackageSystem::EnsureTargetInit();
-	PackageSystem::EnsureSourceInit();
+	PackageSystem::EnsureSourceInit();	// TODO: is it still needed?
 
 	// run the solver to compute the installed products
-	Pkg::PkgSolve(true);
+	Pkg::PkgSolve(true);			// TODO: is it still needed?
 
 	list<map<string,any> > base_products = FindBaseProducts();
 	map<string,any> base_product = base_products[0]:$[];// there should be only one - hopefuly
+
 	name = base_product["display_name"]:base_product["summary"]:base_product["name"]:"";
 	short_name = base_product["short_name"]:name;
 	version = base_product["version"]:"";

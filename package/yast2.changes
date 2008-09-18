@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Sep 18 12:44:25 CEST 2008 - lslezak@suse.cz
+
+- fixed base product detection (use /etc/products.d/baseproduct
+  symlink) (bnc#413444)
+- 2.17.27
+
+-------------------------------------------------------------------
 Wed Sep 17 18:51:08 CEST 2008 - locilka@suse.cz
 
 - Handling new 'add_on_mode' key in product control file
