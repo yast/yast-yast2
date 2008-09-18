@@ -272,7 +272,7 @@
   tmpstring = _("xdmcp");
 
   // TRANSLATORS: Description of a Service (File name: xdmcp, RPM: xorg-x11), used as a common label or an item in table
-  tmpstring = _("allow other hosts to access your display manager via XDMCP");
+  tmpstring = _("Allow other hosts to access your display manager via XDMCP");
 
   // TRANSLATORS: Name of Service (File name: xorg-x11-server, RPM: xorg-x11-Xvnc), can be used as check box, item in multiple selection box...
   tmpstring = _("VNC Server");
