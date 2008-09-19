@@ -79,7 +79,7 @@ define boolean checkExists (string name) {
 	// %1 is a name of an init script in /etc/init.d,
 	// eg. nfsserver
 	error_msg = sformat (_("Service %1 does not exist."), name);
-	y2error (1, error_msg);
+	y2milestone (1, error_msg);
 	return false;
     }
     return true;
@@ -343,7 +343,8 @@ string lang = nil;
 
 /**
  * Run init script and return output
- *
+ */
+/**
  * Run init script and also return its output (stdout and stderr merged).
  * @param name init service name
  * @param param init script argument
@@ -514,6 +515,27 @@ global list<string> EnabledServices(integer runlevel)
     y2milestone("Enabled services in runlevel %1: %2", runlevel, ret);
 
     return ret;
+}
+
+/**
+ * Return the first of the list of services which is available
+ * (has init script)
+ * @param list<string> list of service names
+ * @return string the first found service
+ */
+global string Find( list <string> services )
+{
+    string found_service = "";
+
+    foreach ( string service, services, {
+	if ( checkExists( service ) )
+	{
+	   found_service = service;
+	   break;
+	}
+    });
+
+    return found_service;
 }
 
 /* EOF */
