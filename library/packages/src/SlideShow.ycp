@@ -129,8 +129,8 @@
     boolean		_show_table		= false;
 
     // properties of the current UI
-    global boolean textmode = UI::GetDisplayInfo()["TextMode"]:false;
-    global integer display_width = UI::GetDisplayInfo()["Width"]:0;
+    global boolean textmode = false;
+    global integer display_width = 80;
 
     global string relnotes = nil;
     
@@ -748,6 +748,9 @@
         total_time_elapsed	= 0;
 	start_time		= -1;
 	next_recalc_time	= -1;
+
+	textmode = UI::GetDisplayInfo()["TextMode"]:false;
+	display_width = UI::GetDisplayInfo()["Width"]:0;
     }
     
 
