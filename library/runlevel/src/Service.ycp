@@ -162,6 +162,7 @@ define boolean serviceDisable (string name, boolean force) {
 global define boolean Adjust (string name, string action) {
     if (! checkExists (name))
     {
+	y2error( "Service %1 does not exist.", name);
 	return false;
     }
     map service = Info (name);
