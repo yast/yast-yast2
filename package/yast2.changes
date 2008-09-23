@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Sep 23 11:37:32 CEST 2008 - locilka@suse.cz
+
+- Fixed Popup::ErrorDetails (bnc #429068).
+
+-------------------------------------------------------------------
 Tue Sep 23 10:17:23 CEST 2008 - kmachalkova@suse.cz
 
 - Added Service::Find function - return the first of the list of 
