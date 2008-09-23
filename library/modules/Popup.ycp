@@ -793,7 +793,7 @@ define void anyMessageDetailsInternalType(string headline, string message, strin
 	`PushButton (`id(`ok_msg), `opt (`default, `okButton), Label::OKButton()),
 	// FIXME: BNC #422612, Use `opt(`noSanityCheck) later
 	// button label
-	`PushButton (`id(`details), `opt (`key_F6, `cancel), _("&Details..."))
+	`PushButton (`id(`details), `opt (`cancelButton), _("&Details..."))
     );
 
     boolean success = (boolean) UI::OpenDialog (
