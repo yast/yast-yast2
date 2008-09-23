@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Sep 23 10:17:23 CEST 2008 - kmachalkova@suse.cz
+
+- Added Service::Find function - return the first of the list of 
+  services which is available (has init script)
+  (needed for bnc#423026)
+
+-------------------------------------------------------------------
 Mon Sep 22 12:58:46 CEST 2008 - visnov@suse.cz
 
 - don't initialize UI in SlideShow.ycp if not necessary (bnc#427345)
