@@ -9,7 +9,6 @@ module_DATA =			\
 	CWMTab.ycp		\
 	CWMServiceStart.ycp	\
 	CWMTsigKeys.ycp		\
-	#CWMAaProfile.ycp	\
 	WizardHW.ycp
 
 EXTRA_DIST = $(module_DATA)
