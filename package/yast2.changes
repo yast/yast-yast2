@@ -2,6 +2,7 @@
 Tue Sep 23 11:37:32 CEST 2008 - locilka@suse.cz
 
 - Fixed Popup::ErrorDetails (bnc #429068).
+- 2.17.29
 
 -------------------------------------------------------------------
 Tue Sep 23 10:17:23 CEST 2008 - kmachalkova@suse.cz
