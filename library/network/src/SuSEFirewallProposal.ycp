@@ -17,6 +17,7 @@
     import "ProductFeatures";
     import "Linuxrc";
     import "Package";
+    import "SuSEFirewallServices";
 
     # <!-- SuSEFirewall LOCAL VARIABLES //-->
 
@@ -31,7 +32,14 @@
 
     /* warnings for this "turn" */
     list <string> warnings_now = [];
-    
+
+    list <string> vnc_fallback_ports = ["5801", "5901"];
+
+    // bnc #427708, yet another name of service
+    string vnc_service = "service:xorg-x11-server";
+
+    string ssh_service = "service:sshd";
+
     # <!-- SuSEFirewall LOCAL VARIABLES //-->
 
     # <!-- SuSEFirewall LOCAL FUNCTIONS //-->
@@ -188,7 +196,7 @@
     /**
      * Enables ports in zones.
      *
-     * @param list <string> fallback_ports
+     * @param list <string> fallback TCP ports
      * @param list <string> zones
      */
     void EnableFallbackPorts (list <string> fallback_ports, list <string> zones) {
@@ -207,7 +215,7 @@
      * function opens the service for the zone supporting that feature. If there
      * are only dial-up interfaces, function opens the service for them.
      *
-     * @param string service such as "service:sshd" or "service:xorg-x11-Xvnc"
+     * @param string service such as "service:koo" or "serice:boo"
      */
     global define void OpenServiceOnNonDialUpInterfaces (string service, list <string> fallback_ports) {
 	list <string> non_dial_up_interfaces = SuSEFirewall::GetAllNonDialUpInterfaces();
@@ -216,36 +224,45 @@
 	// Opening the service for non-dial-up interfaces
 	if (size(non_dial_up_interfaces)>0) {
 	    list <string> non_dial_up_interfaces_zones = SuSEFirewall::GetZonesOfInterfaces(non_dial_up_interfaces);
-	    y2milestone("Opening service %1 on interfaces %2 (zones %3)",
-		service, non_dial_up_interfaces, non_dial_up_interfaces_zones);
-	    SuSEFirewall::SetServicesForZones([service], non_dial_up_interfaces_zones, true);
 
-	    if (! ServiceEnabled (service, non_dial_up_interfaces_zones))
+	    if (SuSEFirewallServices::IsKnownService (service)) {
+		y2milestone("Opening service %1 on interfaces %2 (zones %3)",
+		    service, non_dial_up_interfaces, non_dial_up_interfaces_zones);
+		SuSEFirewall::SetServicesForZones([service], non_dial_up_interfaces_zones, true);
+	    }
+
+	    if (SuSEFirewallServices::IsKnownService (service) != true || ServiceEnabled (service, non_dial_up_interfaces_zones) != true) {
 		EnableFallbackPorts (fallback_ports, non_dial_up_interfaces_zones);
+	    }
 
 	// Only dial-up network interfaces, there mustn't be any non-dial-up one
 	} else if (size(dial_up_interfaces) > 0) {
 	    list <string> dial_up_interfaces_zones = SuSEFirewall::GetZonesOfInterfaces(dial_up_interfaces);
-	    y2warning("Opening service %1 on interfaces %2 (zones %3)",
-		service, dial_up_interfaces, dial_up_interfaces_zones);
-	    SuSEFirewall::SetServicesForZones([service], dial_up_interfaces_zones, true);
 
-	    if (! ServiceEnabled (service, dial_up_interfaces))
+	    if (SuSEFirewallServices::IsKnownService (service)) {
+		y2warning("Opening service %1 on interfaces %2 (zones %3)",
+		    service, dial_up_interfaces, dial_up_interfaces_zones);
+		SuSEFirewall::SetServicesForZones([service], dial_up_interfaces_zones, true);
+	    }
+
+	    if (SuSEFirewallServices::IsKnownService (service) != true || ServiceEnabled (service, dial_up_interfaces) != true) {
 		EnableFallbackPorts (fallback_ports, dial_up_interfaces);
+	    }
 
 	// No network interfaces are known
 	} else if (size(known_interfaces) == 0) {
-	    if (
-		SuSEFirewall::IsAnyNetworkInterfaceSupported() &&
-		SuSEFirewall::IsServiceSupportedInZone (service, SuSEFirewall::special_all_interface_zone)
-	    ) {
-		y2warning("WARNING: Opening %1 for the External zone without any known interface!", toupper(service));
-		SuSEFirewall::SetServicesForZones([service], [SuSEFirewall::special_all_interface_zone], true);
-		y2milestone("By now, %1 for %2 zone is %3",
-		    service,
-		    SuSEFirewall::special_all_interface_zone,
-		    SuSEFirewall::IsServiceSupportedInZone (service, SuSEFirewall::special_all_interface_zone)
-		);
+	    if (SuSEFirewall::IsAnyNetworkInterfaceSupported() == true) {
+		if (SuSEFirewallServices::IsKnownService (service) == true) {
+		    y2warning("WARNING: Opening %1 for the External zone without any known interface!", toupper(service));
+		    SuSEFirewall::SetServicesForZones([service], [SuSEFirewall::special_all_interface_zone], true);
+		    y2milestone("By now, %1 for %2 zone is %3",
+			service,
+			SuSEFirewall::special_all_interface_zone,
+			SuSEFirewall::IsServiceSupportedInZone (service, SuSEFirewall::special_all_interface_zone)
+		    );
+		} else {
+		    EnableFallbackPorts (fallback_ports, [SuSEFirewall::special_all_interface_zone]);
+		}
 	    }
 	}
     }
@@ -296,19 +313,19 @@
 		SetInterfacesToZone(non_dup_interfaces, "INT");
 		SetInterfacesToZone(dial_up_interfaces, "EXT");
 		if (ProductFeatures::GetBooleanFeature ("globals", "firewall_enable_ssh"))
-		    SuSEFirewall::SetServicesForZones(["service:sshd"], ["INT","EXT"], true);
+		    SuSEFirewall::SetServicesForZones([ssh_service], ["INT","EXT"], true);
 
 	    // has non-dial-up and doesn't have dial-up interfaces
 	    } else if (size(non_dup_interfaces)>0 && size(dial_up_interfaces)==0) {
 		SetInterfacesToZone(non_dup_interfaces, "EXT");
 		if (ProductFeatures::GetBooleanFeature ("globals", "firewall_enable_ssh"))
-		    SuSEFirewall::SetServicesForZones(["service:sshd"], ["EXT"], true);
+		    SuSEFirewall::SetServicesForZones([ssh_service], ["EXT"], true);
 
 	    // doesn't have non-dial-up and has dial-up interfaces
 	    } else if (size(non_dup_interfaces)==0 && size(dial_up_interfaces)>0) {
 		SetInterfacesToZone(dial_up_interfaces, "EXT");
 		if (ProductFeatures::GetBooleanFeature ("globals", "firewall_enable_ssh"))
-		    SuSEFirewall::SetServicesForZones(["service:sshd"], ["EXT"], true);
+		    SuSEFirewall::SetServicesForZones([ssh_service], ["EXT"], true);
 	    }
 
 	/*
@@ -323,13 +340,13 @@
 	    y2milestone("This is an installation over VNC, opening VNC on all non-dial-up interfaces...");
 	    // Try the service first, then ports
 	    // bnc #398855
-	    OpenServiceOnNonDialUpInterfaces ("service:xorg-x11-Xvnc", ["5801", "5901"]);
+	    OpenServiceOnNonDialUpInterfaces (vnc_service, vnc_fallback_ports);
 	}
 	if (Linuxrc::usessh()) {
 	    y2milestone("This is an installation over SSH, opening SSH on all non-dial-up interfaces...");
 	    // Try the service first, then ports
 	    // bnc #398855
-	    OpenServiceOnNonDialUpInterfaces ("service:sshd", ["ssh"]);
+	    OpenServiceOnNonDialUpInterfaces (ssh_service, ["ssh"]);
 	}
 
 	/*
@@ -473,7 +490,7 @@
 		
 		foreach (string zone, used_zones, {
 		    if (
-			SuSEFirewall::IsServiceSupportedInZone ("service:sshd", zone)
+			SuSEFirewall::IsServiceSupportedInZone (ssh_service, zone)
 			||
 			SuSEFirewall::HaveService("ssh", "TCP", zone)
 		    ) {
@@ -495,7 +512,7 @@
 	    // and ssh is enabled there
 	    } else if (
 		SuSEFirewall::IsAnyNetworkInterfaceSupported() &&
-		SuSEFirewall::IsServiceSupportedInZone ("service:sshd", SuSEFirewall::special_all_interface_zone)
+		SuSEFirewall::IsServiceSupportedInZone (ssh_service, SuSEFirewall::special_all_interface_zone)
 	    ) {
 		    is_ssh_enabled = true;
 		    // TRANSLATORS: Network proposal informative text with link around
@@ -516,8 +533,19 @@
 		boolean is_vnc_enabled = false;
 		if (size(known_interfaces)>0) {
 		    foreach (string zone, SuSEFirewall::GetZonesOfInterfacesWithAnyFeatureSupported(known_interfaces), {
-			if (SuSEFirewall::IsServiceSupportedInZone ("service:xorg-x11-Xvnc", zone))
+			if (SuSEFirewall::IsServiceSupportedInZone (vnc_service, zone) == true) {
 			    is_vnc_enabled = true;
+			// checking also fallback ports
+			} else {
+			    boolean set_vnc_enabled_to = true;
+			    foreach (string one_port, vnc_fallback_ports, {
+				if (SuSEFirewall::HaveService (one_port, "TCP", zone) != true) {
+				    set_vnc_enabled_to = false;
+				    break;
+				}
+				if (set_vnc_enabled_to == true) is_vnc_enabled = true;
+			    });
+			}
 		    });
 		}
 		y2milestone("VNC port is " + (is_vnc_enabled ? "open":"blocked") + " in the firewall");
