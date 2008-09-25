@@ -33,7 +33,7 @@
     // (+DontShowAgain functionality) -- for one run in memory
     //
     /* function for CallbackAcceptUnsignedFile() */
-    global boolean AcceptUnsignedFile (string filename) {
+    global boolean AcceptUnsignedFile (string filename, integer repo_id) {
 	// Check signatures at all?
 	if (SignatureCheckDialogs::CheckSignaturesInYaST() == false)
 	    return default_return_unchecked;
@@ -42,7 +42,7 @@
     
 	// Show the popup?
 	if (SignatureCheckDialogs::GetShowThisPopup(dont_show_dialog_ident, filename)) {
-	    return SignatureCheckDialogs::UseUnsignedItem(`file, filename, dont_show_dialog_ident);
+	    return SignatureCheckDialogs::UseUnsignedItem(`file, filename, dont_show_dialog_ident, repo_id);
 	// Return the default value entered by user
 	} else {
 	    return SignatureCheckDialogs::GetDefaultDialogReturn(dont_show_dialog_ident, filename);
@@ -131,7 +131,7 @@
     //
     // (+DontShowAgain functionality) -- for one run in memory
     //
-    /* function for CallbackAcceptUnknownGpgKey() */
+    /* function for CallbackAcceptUnknownGpgKey() 
     global boolean AcceptUnknownGpgKey (string filename, string keyid) {
 	// Check signatures at all?
 	if (SignatureCheckDialogs::CheckSignaturesInYaST() == false)
@@ -148,6 +148,7 @@
 	    return SignatureCheckDialogs::GetDefaultDialogReturn(dont_show_dialog_ident, filename);
 	}
     }
+    */
     
     // Name of the callback handler function. Required callback prototype is
     // boolean(map<string,any> key). The callback
@@ -175,14 +176,13 @@
     // zypp: askUserToImportKey
     //
     /* function for CallbackImportGpgKey() */
-    global boolean ImportGpgKey (map<string,any> key)
+    global boolean ImportGpgKey (map<string,any> key, integer repo_id)
     {
 	// Check signatures at all?
 	if (SignatureCheckDialogs::CheckSignaturesInYaST() == false)
 	    return default_return_unchecked;
 
-	// There are no details from the callback, maybe in the future
-	return SignatureCheckDialogs::ImportGPGKeyIntoTrustedDialog(key);
+	return SignatureCheckDialogs::ImportGPGKeyIntoTrustedDialog(key, repo_id);
     }
     
     // Name of the callback handler function. Required callback prototype is
@@ -193,13 +193,13 @@
     // zypp: askUserToAcceptVerificationFailed
     //
     /* function for CallbackAcceptVerificationFailed() */
-    global boolean AcceptVerificationFailed (string filename, map<string,any> key)
+    global boolean AcceptVerificationFailed (string filename, map<string,any> key, integer repo_id)
     {
 	// Check signatures at all?
 	if (SignatureCheckDialogs::CheckSignaturesInYaST() == false)
 	    return default_return_unchecked;
 
-	return SignatureCheckDialogs::UseCorruptedItem(`file, filename, key);
+	return SignatureCheckDialogs::UseCorruptedItem(`file, filename, key, repo_id);
     }
 
     /* ============================ < Callbacks for Repositories > ============================ */
