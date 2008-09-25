@@ -84,17 +84,8 @@ global list<map<string,any> > FindBaseProducts() {
     y2milestone ("Looking for base products");
     list<map<string,any> > products = (list<map<string,any> >)
 	Pkg::TargetProducts ();
-    y2milestone("All found products: %1", products);
 
-    // read the baseproduct (symlink to an installed product)
-    map base_product = (map)SCR::Read(.anyxml, $[
-	    "file" : "/etc/products.d/baseproduct",
-	    "args"  : $[
-		"ForceArray" : 0,
-	    ]
-	]
-    );
-    y2milestone("Product from /etc/products.d/baseproduct: %1", base_product);
+    y2milestone("All found products: %1", products);
 
     products = filter (map<string,any> p, products, {
 	// bug 165314, relnotes_url needn't be defined (or empty string)
@@ -104,14 +95,7 @@ global list<map<string,any> > FindBaseProducts() {
 	    // bug 180581, relnotes should be identified by name
 	    product_of_relnotes[rn_url] = p["display_name"]:"";
 	}
-
-	// is it the base product from /etc/products.d/baseproduct?
-	return (p["display_name"]:"" == base_product["summary"]:""
-	    && p["name"]:"" == base_product["distribution"]:""
-	    && p["vendor"]:"" == base_product["vendor"]:""
-	    && p["version"]:"" == base_product["version"]:""
-	    && p["relnotes_url"]:"" == base_product["urls", "url", "content"]:""
-	);
+	return p["category"]:"" == "base";
     });
 
     y2milestone ("Found base products: %1", products);
