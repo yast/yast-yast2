@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep 25 15:03:02 CEST 2008 - lslezak@suse.cz
+
+- reverted back the base product detection, fixed in pkg-bindings
+  (bnc#413444)
+
+-------------------------------------------------------------------
 Thu Sep 25 13:30:01 CEST 2008 - locilka@suse.cz
 
 - Fixed VNC handling in Firewall Proposal (bnc #427708).
