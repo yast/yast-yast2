@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep 25 17:20:38 CEST 2008 - jdsn@suse.de
+
+- added new control center group: support (fate#303458)
+- 2.17.31
+
+-------------------------------------------------------------------
 Thu Sep 25 15:03:02 CEST 2008 - lslezak@suse.cz
 
 - reverted back the base product detection, fixed in pkg-bindings
