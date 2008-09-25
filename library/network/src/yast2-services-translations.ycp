@@ -164,7 +164,7 @@
   tmpstring = _("NFS Client");
 
   // TRANSLATORS: Description of a Service (File name: nfs-client, RPM: nfs-client), used as a common label or an item in table
-  tmpstring = _("Firewall Configuration for nfs client. opens ports for NFS client in order to allow to connect to a NFS server");
+  tmpstring = _("Firewall Configuration for NFS client. Opens ports for NFS client to allow connection to an NFS server.");
 
   // TRANSLATORS: Name of Service (File name: nfs-kernel-server, RPM: nfs-kernel-server), can be used as check box, item in multiple selection box...
   tmpstring = _("NFS Server Service");
