@@ -3,6 +3,9 @@ Thu Sep 25 15:03:02 CEST 2008 - lslezak@suse.cz
 
 - reverted back the base product detection, fixed in pkg-bindings
   (bnc#413444)
+- display the affected repository while importing a GPG key,
+  updated GPG callbacks (bnc#370223)
+- 2.17.30
 
 -------------------------------------------------------------------
 Thu Sep 25 13:30:01 CEST 2008 - locilka@suse.cz

@@ -355,22 +355,33 @@
      * @param string dont_show_dialog_ident for the identification in magic "don't show" functions
      * @return boolean use or don't use ('true' if 'yes')
      */
-    global boolean UseUnsignedItem (symbol item_type, string item_name, string dont_show_dialog_ident) {
+    global boolean UseUnsignedItem (symbol item_type, string item_name, string dont_show_dialog_ident, integer repository) {
+	y2milestone("UseUnsignedItem: type: %1, name: %2, dontshowid: %3, repo: %4", item_type, item_name, dont_show_dialog_ident, repository);
+
+	map repo = Pkg::SourceGeneralData(repository);
+
 	string description_text = sformat((item_type == `package ?
 	    // popup question, %1 stands for the package name
-	    _("The package %1 is not digitally signed. This means that the origin
+	    // %2 is a repository name
+	    // %3 is URL of the repository
+	    _("The package %1 from repository %1
+%2
+is not digitally signed. This means that the origin
 and integrity of the package cannot be verified. Installing the package
 may put the integrity of your system at risk.
 
 Install it anyway?")
 	    :
 	    // popup question, %1 stands for the filename
-	    _("The file %1
+	    // %2 is a repository name
+	    // %3 is URL of the repository
+	    _("The file %1 from repository %2
+%3
 is not digitally signed. This means that the origin and integrity of the file
 cannot be verified. Using the file may put the integrity of your system at risk.
 
 Use it anyway?")
-	), item_name);
+	), item_name, repo["name"]:_("Unknown"), repo["url"]:_("Unknown"));
 
 	UI::OpenDialog(
 	    `opt(`decorated),
@@ -421,8 +432,8 @@ the integrity of your system at risk.
 Install it anyway?")
 	    :
 	    // popup question, %1 stands for the filename
-	    _("No checksum for file %1
-was found in the repository. This means that the file is part of the signed repository,
+	    _("No checksum for file %1 was found the repository.
+This means that the file is part of the signed repository,
 but the list of checksums in this repository does not mention this file. Using the file
 may put the integrity of your system at risk.
 
@@ -480,11 +491,15 @@ Use it anyway?")
      * @param map key Used key
      * @return boolean use or don't use ('true' if 'yes')
      */
-    global boolean UseCorruptedItem (symbol item_type, string item_name, map<string,any> key)
+    global boolean UseCorruptedItem (symbol item_type, string item_name, map<string,any> key, integer repository)
     {
+	map repo = Pkg::SourceGeneralData(repository);
+
 	string description_text = sformat((item_type == `package ?
 	    // popup question, %1 stands for the package name, %2 for the complete description of the GnuPG key (multiline)
-	    _("Package %1 is signed with the following GnuPG key, but the integrity check failed: %2
+	    _("Package %1 from repository %2
+%3
+is signed with the following GnuPG key, but the integrity check failed: %4
 
 This means that the package has been changed by accident or by an attacker
 since the repository creator signed it. Installing it is a big risk
@@ -493,8 +508,9 @@ for the integrity and security of your system.
 Install it anyway?")
 	    :
 	    // popup question, %1 stands for the filename, %2 for the complete description of the GnuPG key (multiline)
-	    _("File %1
-is signed with the following GnuPG key, but the integrity check failed: %2
+	    _("File %1 from repository %2
+%3
+is signed with the following GnuPG key, but the integrity check failed: %4
 
 This means that the file has been changed by accident or by an attacker
 since the repository creator signed it. Using it is a big risk
@@ -503,6 +519,8 @@ for the integrity and security of your system.
 Use it anyway?")
 	    ),
 	    item_name,
+	    repo["name"]:_("Unknown"),
+	    repo["url"]:_("Unknown"),
 	    "\n\n" + GPGKeyAsString(key)
 	);
 
@@ -798,13 +816,8 @@ the key really belongs to that owner before importing it."),
      * @param string fingerprint
      * @return boolean whether zypp should import the key into the keyring of trusted keys
      */
-    global boolean ImportGPGKeyIntoTrustedDialog (map<string,any> key)
+    global boolean ImportGPGKeyIntoTrustedDialog (map<string,any> key, integer repository)
     {
-	// bugzilla #282254
-	if (key["id"]:"" != "" && key["id"]:"" != nil && contains (list_of_trusted_keys, key["id"]:"")) {
-	    y2milestone ("Key '%1' is trusted, importing...", key["id"]:"");
-	    return true;
-	}
 
 	// additional Richtext (HTML) warning text (kind of help), 1/2
 	string warning_text = _("<p>The owner of the key may distribute updates,
@@ -818,13 +831,20 @@ to have a certain amount of control over the software on your system.</p>") +
 is not signed by a trusted (imported) key. If you do not import the key,
 packages created by the owner of key <tt>%1</tt> show this warning.</p>"), key["id"]:"");
 
+	map repo = Pkg::SourceGeneralData(repository);
+
 	// popup message, %1 stands for string "GPG key ID\nfingerprint", %2 for key name
-	string dialog_text = sformat(_("The following GnuPG key has been found: %1
+	string dialog_text = sformat(_("The following GnuPG key has been found in repository %1 
+%2:
+
+%3
 
 You can choose to import it into your keyring of trusted
 public keys, meaning that you trust the owner of the key.
 You should be sure that you can trust the owner and that
 the key really belongs to that owner before importing it."),
+	    repo["name"]:_("Unknown"),
+	    repo["url"]:_("Unknown"),
 	    "\n" +
 	    GPGKeyAsString(key)
 	);
