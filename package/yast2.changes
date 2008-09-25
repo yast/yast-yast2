@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep 25 13:30:01 CEST 2008 - locilka@suse.cz
+
+- Fixed VNC handling in Firewall Proposal (bnc #427708).
+
+-------------------------------------------------------------------
 Tue Sep 23 11:37:32 CEST 2008 - locilka@suse.cz
 
 - Fixed Popup::ErrorDetails (bnc #429068).
