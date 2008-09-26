@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Sep 26 12:15:53 CEST 2008 - locilka@suse.cz
+
+- Disabling firewall functions in Stage::initial (bnc #429861).
+
+-------------------------------------------------------------------
 Fri Sep 26 10:24:15 CEST 2008 - lslezak@suse.cz
 
 - SlideShow.ycp - fixed division by zero when the installed

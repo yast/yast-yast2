@@ -29,10 +29,10 @@ import "CWM";
 import "Label";
 import "Mode";
 import "NetworkInterfaces";
-//import "NetworkService";
 import "Popup";
 import "SuSEFirewall";
 import "Report";
+import "Stage";
 
 // used only for (Mode::installation() || Mode::update())
 import "SuSEFirewallProposal";
@@ -92,13 +92,19 @@ void EnableOrDisableFirewallDetails () {
 
 /**
  * Set the firewall status label
- * @param status symbol one of `off, `closed, `open_all, `custom
+ * @param status symbol one of `off, `closed, `open_all, `custom, `not_installed
  */
 void SetFirewallLabel (symbol status) {
     string label = "";
     if (status == `not_installed) {
-	// label
-	label = _("Firewall package is not installed");
+	// bnc #429861
+	if (Stage::initial()) {
+	    // label
+	    label = _("Firewall cannot be adjusted during first stage installation");
+	} else {
+	    // label
+	    label = _("Firewall package is not installed");
+	}
     }
     else if (status == `off)
     {
@@ -207,7 +213,8 @@ void UpdateFirewallStatus () {
 	InitAllInterfacesList ();
     symbol status = `custom;
 
-    if (! SuSEFirewall::SuSEFirewallIsInstalled())
+    // bnc #429861
+    if (Stage::initial() || ! SuSEFirewall::SuSEFirewallIsInstalled())
 	status = `not_installed;
     else if (! SuSEFirewall::GetEnableService())
 	status = `off;
