@@ -27,6 +27,7 @@
     import "PackageSystem";
     import "FileUtils";
     import "Directory";
+    import "Stage";
 
     // <!-- SuSEFirewall VARIABLES //-->
 
@@ -2255,6 +2256,23 @@ Run YaST2 Firewall and assign it.
     global void ConvertToServicesDefinedByPackages();
 
     /**
+     * Fills the configuration with default settings,
+     * adjusts internal variables that firewall cannot be configured.
+     */
+    void FillUpEmptyConfig () {
+	// do not call it again
+	configuration_has_been_read = true;
+
+	// Default settings, services are disabled
+	SETTINGS = DEFAULT_SETTINGS;
+	SETTINGS["enable_firewall"] = false;
+	SETTINGS["start_firewall"]  = false;
+
+	// Cannot be configured, packages weren't installed
+	fw_service_can_be_configured = false;
+    }
+
+    /**
      * Function for reading SuSEFirewall configuration.
      * Fills internal variables only.
      *
@@ -2272,19 +2290,17 @@ Run YaST2 Firewall and assign it.
 	    return fw_service_can_be_configured;
 	}
 
+	// bnc #429861
+	if (Stage::initial()) {
+	    y2warning ("Stage::initial -> firewall can't be configured.");
+	    FillUpEmptyConfig();
+	    return false;
+	}
+
 	if (! SuSEFirewallIsInstalled()) {
 	    y2warning ("Package not installed, disabling SuSEfirewall2-related functions.");
-	    // do not call it again
-	    configuration_has_been_read = true;
-
-	    // Default settings, services are disabled
-	    SETTINGS = DEFAULT_SETTINGS;
-	    SETTINGS["enable_firewall"] = false;
-	    SETTINGS["start_firewall"]  = false;
-
-	    // Cannot be configured, packages weren't installed
-	    fw_service_can_be_configured = false;
-	    return fw_service_can_be_configured;
+	    FillUpEmptyConfig();
+	    return false;
 	}
 
 	// Can be configured, packages were installed
