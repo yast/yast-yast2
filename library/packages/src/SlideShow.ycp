@@ -935,6 +935,12 @@
 		total_time = total_time + (stage["value"]:0 / 3495);
 	    } 
 	});
+
+	// avoid division by zero, set at least 1 second
+	if (total_time == 0)
+	{
+	    total_time = 1;
+	}
 	
 	y2milestone( "Total estimated time: %1", total_time );
 	

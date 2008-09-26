@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep 26 10:24:15 CEST 2008 - lslezak@suse.cz
+
+- SlideShow.ycp - fixed division by zero when the installed
+  packages are very small (bnc#429933)
+
+-------------------------------------------------------------------
 Thu Sep 25 17:20:38 CEST 2008 - jdsn@suse.de
 
 - added new control center group: support (fate#303458)
