@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Sep 29 10:38:07 CEST 2008 - locilka@suse.cz
+
+- Added possibility to restart YaST from any module by checking for
+  /var/lib/YaST2/restart_yast (FATE #304118).
+- 2.17.33
+
+-------------------------------------------------------------------
 Fri Sep 26 12:15:53 CEST 2008 - locilka@suse.cz
 
 - Disabling firewall functions in Stage::initial (bnc #429861).
