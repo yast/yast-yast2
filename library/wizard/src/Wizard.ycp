@@ -996,6 +996,20 @@
 
 
     /**
+     * Sets the dialog title shown in the window manager's title bar.
+     *
+     * @param titleText title of the dialog
+     *
+     * @example
+     *	SetDialogTitle ("DNS Server Configuration");
+     **/
+    global void SetDialogTitle( string titleText )
+    {
+	UI::WizardCommand(`SetDialogTitle( titleText ) );
+    }
+
+
+    /**
      * Sets the wizard 'title' icon to the specified icon from the standard icon
      * directory.
      *
@@ -1025,6 +1039,85 @@
     {
 	UI::WizardCommand(`SetDialogIcon( "" ) );
     }
+
+ 
+
+    /**
+     * Sets the window title according to the name specified in a .desktop file got as parameter.
+     * Desktop file is placed in a special directory (/usr/share/applications/YaST2).
+     * Parameter file is realative to that directory without ".desktop" suffix.
+     *
+     * @param file desktop file
+     * @return boolean true on success
+     *
+     * @example
+     *	// Opens /usr/share/applications/YaST2/lan.desktop
+     *	// Reads (localized) "name" entry from there
+     *	// Sets the window title.
+     *	SetDesktopTitle ("lan")
+     */
+    global boolean SetDesktopTitle( string file )
+    {
+ 	path filepath = .yast2.desktop1.v."Desktop Entry";
+        string name = "";
+	string localizedkey = "";
+	string Language = "";
+	string LanguageFull = "";
+	string filename = sformat("%1/%2.desktop", Directory::desktopdir, file);
+	// Do not use .yast2.desktop.v.$filename, because ini-agent reads
+	// all the desktop files anyway which is wasteful for setting one icon.
+	// The config is adapted from .yast2.desktop.
+	SCR::RegisterAgent (.yast2.desktop1, `ag_ini(
+				`IniAgent( filename,
+	$[
+	    "options"	: [ "read_only" ], // rw works but not needed
+	    "comments"	: [ "^[ \t]*[;#].*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],
+	    "sections"	: [
+		$[ "begin" : [
+		    "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
+		    "[%s]",
+		]],
+	    ],
+	    "params" : [
+		$[ "match" : [
+		    "^[ \t]*([^=]*[^ \t=])[ \t]*=[ \t]*(.*[^ \t]|)[ \t]*$" ,
+		    "%s=%s",
+		]],
+	    ],
+	]
+	)));
+
+
+	/* read language */
+	LanguageFull = "";
+	Language = UI::GetLanguage(true);
+	if(regexpmatch(Language, "(.*_[^.]*)\\.?.*")) // matches: ll_TT ll_TT.UTF-8
+        LanguageFull = regexpsub(Language, "(.*_[^.]*)\\.?.*", "\\1");
+	if(regexpmatch(Language, "(.*)_"))
+		Language = regexpsub(Language, "(.*)_", "\\1");
+	y2debug("LanguageFull=%1", LanguageFull);
+	y2debug("Language=%1", Language);
+
+	/* get localized Name value from desktop file */
+	if( LanguageFull != nil || LanguageFull != "" )
+	{
+	    localizedkey = sformat("%1[%2]", "Name", LanguageFull);
+	    name = (string) SCR::Read(add(filepath, localizedkey));
+	}
+	if( ( name == nil || name == "" ) && ( Language != nil || Language != "" ))
+	{
+            localizedkey = sformat("%1[%2]", "Name", Language);
+            name = (string) SCR::Read(add(filepath, localizedkey));
+	}
+	if( name == nil || name == "" )
+            name = (string) SCR::Read(add(filepath, "Name"));
+
+	y2debug("Set dialog title: %1", name);
+    	SetDialogTitle( name );
+	return ( name != nil && name != "");
+    }
+
+
 
 
     /**
@@ -1079,10 +1172,11 @@
 	SetTitleIcon(icon);
 
 	SCR::UnregisterAgent (.yast2.desktop1);
+
 	return true;
     }
 
-    
+
     /**
      * PRIVATE - Replace the entire Wizard button box with a new one.
      * @param button_box Button Box term

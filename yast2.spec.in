@@ -14,7 +14,7 @@ PreReq:		%fillup_prereq
 Requires:       yast2-core >= 2.17.1
 # Mod_UI
 # new YButtonBox widget (fate #303446)
-Requires:       yast2-ycp-ui-bindings >= 2.17.3
+Requires:       yast2-ycp-ui-bindings >= 2.17.8
 
 # changed GPG callbacks
 Requires:	yast2-pkg-bindings >= 2.17.13
