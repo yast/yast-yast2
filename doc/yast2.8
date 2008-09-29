@@ -179,6 +179,24 @@ Configures the preferred GUI.
 \" Please report bugs at http://www.suse.de/feedback
 .\"
 .\"
+.SH "EXIT STATUS"
+.TP
+.if !'po4a'hide' .B 0
+Successful program execution.
+.TP
+.if !'po4a'hide' .B 1
+Too few arguments.
+.TP
+.if !'po4a'hide' .B 5
+Error in arguments.
+.TP
+.if !'po4a'hide' .B 16
+Generic module error.
+.TP
+.if !'po4a'hide' .B > 16
+Module specific error codes.
+.\"
+.\"
 .SH AUTHOR
 .nf
 Michal Svec <msvec@suse.cz> - manual page
