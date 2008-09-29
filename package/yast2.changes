@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Sep 29 16:52:39 CEST 2008 - visnov@suse.cz
+
+- updated man page with exit codes
+
+-------------------------------------------------------------------
 Fri Sep 29 14:55:50 CEST 2008 - tgoettlicher@suse.de
 
 - Fixed bnc #418443: Yast modules windows have no title 
