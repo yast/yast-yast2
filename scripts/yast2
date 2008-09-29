@@ -416,11 +416,15 @@ if [ $module == "menu" -a -f "$y2ccbin" ] ; then
     $y2ccbin $Y2UI_ARGS "$@"
     exit_code=$?
 else
-    # loop while necessary
+    # In case YaST has to be restarted, create this file
+    # and exit. Script that creates the file should also
+    # remove it itself.
     case "$module" in
+	# special cases
 	menu) REDO_FILE=/var/lib/YaST2/restart_menu ;;
 	online_update) REDO_FILE=/var/lib/YaST2/selected_patches.ycp ;;
-	*) ;;
+	# all other cases when YaST has to be restarted
+	*) REDO_FILE=/var/lib/YaST2/restart_yast ;;
     esac
     #  break out on errors, #343258
     while [ $exit_code = 0 ]; do
