@@ -2,6 +2,8 @@
 Mon Sep 29 16:52:39 CEST 2008 - visnov@suse.cz
 
 - updated man page with exit codes
+- save also zypp history in save_y2logs
+- 2.17.35
 
 -------------------------------------------------------------------
 Fri Sep 29 14:55:50 CEST 2008 - tgoettlicher@suse.de
