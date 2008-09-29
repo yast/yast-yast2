@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep 26 16:05:50 CEST 2008 - tgoettlicher@suse.de
+
+- Fixed bnc #418443: Yast modules windows have no title 
+- 2.17.34
+
+-------------------------------------------------------------------
 Mon Sep 29 10:38:07 CEST 2008 - locilka@suse.cz
 
 - Added possibility to restart YaST from any module by checking for
