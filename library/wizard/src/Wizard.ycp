@@ -1065,7 +1065,7 @@
 	string LanguageFull = "";
 	string filename = sformat("%1/%2.desktop", Directory::desktopdir, file);
 	// Do not use .yast2.desktop.v.$filename, because ini-agent reads
-	// all the desktop files anyway which is wasteful for setting one icon.
+	// all the desktop files anyway which is wasteful for setting one title.
 	// The config is adapted from .yast2.desktop.
 	SCR::RegisterAgent (.yast2.desktop1, `ag_ini(
 				`IniAgent( filename,
@@ -1114,6 +1114,9 @@
 
 	y2debug("Set dialog title: %1", name);
     	SetDialogTitle( name );
+
+	SCR::UnregisterAgent (.yast2.desktop1);
+
 	return ( name != nil && name != "");
     }
 

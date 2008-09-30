@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Sep 30 15:27:45 CEST 2008 - tgoettlicher@suse.de
+
+- Fixed forgotten unregister from agent
+
+-------------------------------------------------------------------
 Mon Sep 29 16:52:39 CEST 2008 - visnov@suse.cz
 
 - updated man page with exit codes
