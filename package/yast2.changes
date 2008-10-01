@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Oct  1 17:07:00 CEST 2008 - visnov@suse.cz
+
+- Show old action logs when rebuilding slideshow dialog (bnc #431261)
+
+-------------------------------------------------------------------
 Tue Sep 30 15:27:45 CEST 2008 - tgoettlicher@suse.de
 
 - Fixed forgotten unregister from agent

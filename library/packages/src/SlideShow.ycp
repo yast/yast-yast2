@@ -685,6 +685,7 @@
 	}
 	else
 	{
+	    // no tabs
 	    contents = DetailsPageWidgets();
 	}
 
@@ -698,6 +699,10 @@
 			    false, false );	// has_back, has_next
 
 	widgets_created = true;
+
+	// if no tabs, update the log
+	if( ShowingDetails() )
+	    RebuildDetailsView();
 
 	if ( ! Slides::HaveSlides() && ShowingSlide() )
 	    SwitchToDetailsView();
