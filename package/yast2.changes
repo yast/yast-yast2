@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct  2 11:31:35 CEST 2008 - kmachalkova@suse.cz
+
+- Hostname.ycp: Improved FQDN lookup - read /etc/HOSTNAME and use 
+  'linux.site' if all else fails (bnc#429792) 
+
+-------------------------------------------------------------------
 Wed Oct  1 17:07:00 CEST 2008 - visnov@suse.cz
 
 - Show old action logs when rebuilding slideshow dialog (bnc #431261)
