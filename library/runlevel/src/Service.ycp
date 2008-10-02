@@ -520,7 +520,7 @@ global list<string> EnabledServices(integer runlevel)
 
 /**
  * Return the first of the list of services which is available
- * (has init script)
+ * (has init script) or "" if none is.
  * @param list<string> list of service names
  * @return string the first found service
  */
