@@ -3,6 +3,6 @@
     import "Service";
 
     TEST (``(Service::RunInitScript ("aaa", "start")), [$[], $[], $[
-	    "target" : $[ "bash" : 0 ]
+	    "target" : $[ "bash" : 0, "bash_output" : $["exit":0] ]
 	    ]], nil);
 }

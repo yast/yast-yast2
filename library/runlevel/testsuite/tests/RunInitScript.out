@@ -1,2 +1,2 @@
-Execute	.target.bash "/etc/init.d/aaa start" $["TERM":"raw"] 0
+Execute	.target.bash_output "/etc/init.d/aaa start" $["TERM":"raw"] $["exit":0]
 Return	0

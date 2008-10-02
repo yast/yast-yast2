@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Oct  2 14:31:38 CEST 2008 - mzugec@suse.de
+
+- Service  - log output in case of error 
+
+-------------------------------------------------------------------
 Thu Oct  2 11:31:35 CEST 2008 - kmachalkova@suse.cz
 
 - Hostname.ycp: Improved FQDN lookup - read /etc/HOSTNAME and use 

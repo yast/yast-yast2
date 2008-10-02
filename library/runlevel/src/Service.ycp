@@ -278,9 +278,13 @@ global define boolean Enabled (string name) {
  */
 global define integer RunInitScript (string name, string param) {
     y2milestone("Running service initscript %1 %2", name, param);
-    return (integer) SCR::Execute (.target.bash,
-	    sformat ("%2/%1 %3", name, init_d, param),
-	    $[ "TERM" : "raw"]);
+    string command = sformat ("%2/%1 %3", name, init_d, param);
+    map<string, any> output=(map<string, any>)SCR::Execute (.target.bash_output,
+	    command, $[ "TERM" : "raw"]);
+
+    if (output["exit"]:-1!=0)
+	y2error("Error while running initscript %1 :\n%2", command, output);
+ return output["exit"]:-1;
 }
 
 
