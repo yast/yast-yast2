@@ -41,7 +41,7 @@
 
     module "PackagesProposal";
 
-    textdomain "packager";
+    textdomain "base";
 
     /**
      * @struct $[
