@@ -6,7 +6,7 @@ client_DATA =
 
 ynclude_DATA =
 
-module_DATA = $(wildcard [A-Z]*.ycp [A-Z]*.pm)
+module_DATA = $(wildcard [[:upper:]]*.ycp [[:upper:]]*.pm)
 
 EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA)
 
