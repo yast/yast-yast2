@@ -1,0 +1,230 @@
+/**
+ * File:	PackagesProposal.ycp
+ * Package:	Packages installation
+ * Summary:	API for selecting or de-selecting packages for installation
+ * Authors:	Lukas Ocilka <locilka@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+    /***
+     *
+     * This module provides API for packages that want software
+     * proposal to select some packages for installation.
+     *
+     * // No packages selected initially
+     * y2internal ("Packages to install: %1", PackagesProposal::GetAllResolvables (`package));
+     *
+     * // Adding packages for ID_1
+     * PackagesProposal::AddResolvables ("ID_1", `package, ["aa", "bb", "cc"]);
+     * y2internal ("Packages to install: %1", PackagesProposal::GetAllResolvables (`package));
+     *
+     * // Adding packages for ID_2
+     * // 'cc' is shared with ID_1
+     * PackagesProposal::AddResolvables ("ID_2", `package, ["cc", "dd", "ee"]);
+     * y2internal ("Packages to install: %1", PackagesProposal::GetAllResolvables (`package));
+     *
+     * // Get all packages required by ID_1
+     * list <string> required_packages = PackagesProposal::GetResolvables ("ID_1", `package);
+     * y2internal ("Packages required by ID_1: %1", required_packages);
+     *
+     * // Removing all packages required by ID_1
+     * PackagesProposal::RemoveResolvables ("ID_1", `package, required_packages);
+     * y2internal ("Packages to install: %1", PackagesProposal::GetAllResolvables (`package));
+     *
+     * // Removing some packages required by ID_2
+     * PackagesProposal::RemoveResolvables ("ID_2", `package, ["cc", "dd"]);
+     * y2internal ("Packages to install: %1", PackagesProposal::GetAllResolvables (`package));
+     *
+     */
+
+    module "PackagesProposal";
+
+    textdomain "packager";
+
+    /**
+     * @struct $[
+     *     "unique_ID" : $[
+     *         `package : [ "list", "of", "packages", "to", "install" ],
+     *         `pattern : [ "list", "of", "patterns", "to", "install" ],
+     *     ]
+     * ]
+     */
+    map <string, map <symbol, list <string> > > resolvables_to_install = $[];
+
+    /**
+     * List of currently supported types of resolvables
+     */
+    list <symbol> supported_resolvables = [`package];
+
+    boolean IsSupportedResolvableType (symbol type) {
+	if (type == nil) {
+	    y2error ("Wrong type: %1", type);
+	    return false;
+	}
+
+	return contains (supported_resolvables, type);
+    }
+
+    /**
+     * Adds list of packages to pool that is then used by software proposal
+     * to propose a selection of resolvables to install.
+     *
+     * @param string unique_ID
+     * @param symbol resolvable type
+     * @param list <string> of resolvables to add for installation
+     * @return boolean whether successful
+     *
+     * @example
+     *  AddResolvables ("y2_kdump", `package, ["yast2-kdump", "kdump"]) -> true
+     *  // `not_supported is definitely not a supported resolvable
+     *  AddResolvables ("test", `not_supported, ["bash"]) -> false
+     *
+     * @see supported_resolvables
+     * @see RemoveResolvables()
+     */
+    global boolean AddResolvables (string unique_ID, symbol type, list <string> resolvables) {
+	if (unique_ID == nil || unique_ID == "") {
+	    y2error ("Unique ID cannot be: %1", unique_ID);
+	    return false;
+	}
+
+	if (! IsSupportedResolvableType (type)) {
+	    y2error ("Not a supported type: %1, supported are only: %2", type, supported_resolvables);
+	    return false;
+	}
+
+	if (! haskey (resolvables_to_install, unique_ID)) {
+	    y2debug ("Creating '%1' key in resolvables_to_install", unique_ID);
+	    resolvables_to_install[unique_ID] = $[];
+	}
+
+	if (! haskey (resolvables_to_install[unique_ID]:$[], type)) {
+	    y2debug ("Creating '%1' key in resolvables_to_install[%2]", type, unique_ID);
+	    resolvables_to_install[unique_ID, type] = [];
+	}
+
+	y2milestone ("Adding resolvables %1 type %2 for %3", resolvables, type, unique_ID);
+	resolvables_to_install[unique_ID, type] =
+	    (list <string>) union (resolvables_to_install[unique_ID, type]:[], resolvables);
+
+	return true;
+    }
+
+    /**
+     * Removes list of packages from pool that is then used by software proposal
+     * to propose a selection of resolvables to install.
+     *
+     * @param string unique_ID
+     * @param symbol resolvable type
+     * @param list <string> of resolvables to remove from list selected for installation
+     * @return boolean whether successful
+     *
+     * @example
+     *  RemoveResolvables ("y2_kdump", `package, ["kdump"]) -> true
+     *
+     * @see supported_resolvables
+     * @see AddResolvables()
+     */
+    global boolean RemoveResolvables (string unique_ID, symbol type, list <string> resolvables) {
+	if (unique_ID == nil || unique_ID == "") {
+	    y2error ("Unique ID cannot be: %1", unique_ID);
+	    return false;
+	}
+
+	if (! IsSupportedResolvableType (type)) {
+	    y2error ("Not a supported type: %1, supported are only: %2", type, supported_resolvables);
+	    return false;
+	}
+
+	if (! haskey (resolvables_to_install, unique_ID)) {
+	    y2debug ("Creating '%1' key in resolvables_to_install", unique_ID);
+	    resolvables_to_install[unique_ID] = $[];
+	}
+
+	if (! haskey (resolvables_to_install[unique_ID]:$[], type)) {
+	    y2debug ("Creating '%1' key in resolvables_to_install[%2]", type, unique_ID);
+	    resolvables_to_install[unique_ID, type] = [];
+	}
+
+	y2milestone ("Removing resolvables %1 type %2 for %3", resolvables, type, unique_ID);
+	resolvables_to_install[unique_ID, type] = filter (string one_resolvable, resolvables_to_install[unique_ID, type]:[], {
+	    return ! contains (resolvables, one_resolvable);
+	});
+	y2milestone ("Resolvables left: %1", resolvables_to_install[unique_ID, type]:[]);
+
+	return true;
+    }
+
+    /**
+     * Returns all resolvables selected for installation.
+     *
+     * @param string unique_ID
+     * @param symbol resolvable type
+     * @return list <string> of resolvables
+     *
+     * @example
+     *   GetResolvables ("y2_kdump", `package) -> ["yast2-kdump", "kdump"]
+     */
+    global list <string> GetResolvables (string unique_ID, symbol type) {
+	if (unique_ID == nil || unique_ID == "") {
+	    y2error ("Unique ID cannot be: %1", unique_ID);
+	    return nil;
+	}
+
+	if (! IsSupportedResolvableType (type)) {
+	    y2error ("Not a supported type: %1, supported are only: %2", type, supported_resolvables);
+	    return nil;
+	}
+
+	return resolvables_to_install[unique_ID, type]:[];
+    }
+
+    /**
+     * Returns list of selected resolvables of a given type
+     *
+     * @param symbol resolvable type
+     * @return list <string> list of resolvables
+     *
+     * @example
+     *   GetAllResolvables (`package) -> ["list", "of", "packages"]
+     *   // not a supported resolvable type
+     *   GetAllResolvables (`unknown) -> nil
+     *
+     * @see supported_resolvables
+     */
+    global list <string> GetAllResolvables (symbol type) {
+	if (! IsSupportedResolvableType (type)) {
+	    y2error ("Not a supported type: %1, supported are only: %2", type, supported_resolvables);
+	    return nil;
+	}
+
+	list <string> ret = [];
+
+	foreach (string unique_ID, map <symbol, list <string> > resolvables, resolvables_to_install, {
+	    if (haskey (resolvables, type)) {
+		ret = (list <string>) union (ret, resolvables[type]:[]);
+	    }
+	});
+
+	return ret;
+    }
+
+    /**
+     * Return whether a unique ID is already in use.
+     *
+     * @param string unique_ID to check
+     * @return boolean whether the ID is not in use yet
+     */
+    global boolean IsUniqueID (string unique_ID) {
+	if (unique_ID == nil || unique_ID == "") {
+	    y2error ("Unique ID cannot be: %1", unique_ID);
+	    return nil;
+	}
+
+	return ! haskey (resolvables_to_install, unique_ID);
+    }
+
+/* EOF */
+}
