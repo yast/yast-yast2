@@ -4,7 +4,8 @@ yncludedir = @yncludedir@/packages
 
 YCPCFLAGS = -M ../../modules/ -M ../../wizard/src -M ../../system/src/ -M ../../types/src -M ../../commandline/src -M ../../xml/src -M ../../control/src
 
-module_DATA = $(wildcard [A-Z]*.ycp [A-Z]*.pm)
+#module_DATA = $(wildcard -I [A-Z]*.ycp)
+module_DATA = $(shell ls -I [A-Z]*.ycp | xargs)
 
 ynclude_DATA =			\
 	common.ycp
