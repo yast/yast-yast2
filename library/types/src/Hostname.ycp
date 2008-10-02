@@ -143,7 +143,16 @@ global define string CurrentFQ() {
 
     map hostname_data = (map) SCR::Execute(.target.bash_output, "hostname --fqdn");
     if (hostname_data == nil || hostname_data["exit"]:-1 != 0 )
-	y2error("Failed to retrieve current FQ hostname");
+    {
+	fqhostname = (string) SCR::Read(.target.string, "/etc/HOSTNAME");
+
+	if ( fqhostname == "" || fqhostname == nil )
+	{
+	    //last resort (#429792)
+	    fqhostname = "linux.site";
+	}
+	y2warning("Using fallback hostname %1", fqhostname);
+    }
     else
     {
        fqhostname = String::FirstChunk( hostname_data["stdout"]:"", "\n");
