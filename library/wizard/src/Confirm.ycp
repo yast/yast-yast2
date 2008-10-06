@@ -34,7 +34,7 @@ map <string, boolean> detection_cache = $[];
  * @param icon_name name of the icon. If nil, generic hardware icon will be used
  * @return true on continue
  */
-global define boolean Detection(string class, string icon_name) ``{
+global boolean Detection(string class, string icon_name) {
 
     if(Linuxrc::manual () != true) return true;
 
@@ -111,7 +111,7 @@ y2milestone("--%1", Detection("modems"));
  * might not work
  * @return true if running as root
  */
-global define boolean MustBeRoot()
+global boolean MustBeRoot()
 {
     if ((integer)SCR::Read (.target.size, "/usr/bin/id") <= 0)
     {
@@ -147,7 +147,7 @@ and it is unlikely that settings can be written.\n");
  *
  * @return boolean delete selected entry
  */
-global define boolean DeleteSelected() {
+global boolean DeleteSelected() {
     return Popup::YesNo(
 	/* Popup question */
 	_("Really delete selected entry?")
@@ -163,7 +163,7 @@ global define boolean DeleteSelected() {
  * @param string file/entry name/etc.
  * @return boolean delete selected entry
  */
-global define boolean Delete(string delete) {
+global boolean Delete(string delete) {
     return Popup::YesNo(
 	/* Popup question, %1 is an item to delete (or filename, etc.) */
 	sformat(_("Really delete '%1'?"), delete)
