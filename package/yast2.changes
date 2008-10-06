@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Oct  6 13:23:09 CEST 2008 - visnov@suse.cz
+
+- Added icon to hardware detection confirmation (bnc #431276)
+
+-------------------------------------------------------------------
 Fri Oct  3 00:26:13 CEST 2008 - locilka@suse.cz
 
 - Fixed Makefiles by using [[:upper:]]*.ycp where needed.

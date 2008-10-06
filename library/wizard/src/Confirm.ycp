@@ -18,6 +18,7 @@ module "Confirm";
 
 textdomain "base";
 
+import "Icon";
 import "Label";
 import "Mode";
 import "Popup";
@@ -30,11 +31,17 @@ map <string, boolean> detection_cache = $[];
 /**
  * Confirm hardware detection (only in manual installation)
  * @param class hardware class (network cards)
+ * @param icon_name name of the icon. If nil, generic hardware icon will be used
  * @return true on continue
  */
-global define boolean Detection(string class) ``{
+global define boolean Detection(string class, string icon_name) ``{
 
     if(Linuxrc::manual () != true) return true;
+
+    if( icon_name == nil ) 
+	icon_name = "yast-hardware";
+
+    term icon    = Icon::Image ( icon_name, $[] );
 
     boolean result = detection_cache[class]:nil;
     if (result != nil) {
@@ -62,7 +69,7 @@ global define boolean Detection(string class) ``{
 		// This is in information message. Next come the
 		// hardware class name (network cards).
 		`HVCenter(`Label(_("YaST2 will detect the following hardware:"))),
-		`HVCenter(`Heading(class)),
+		`HVCenter(`HBox(icon, `HSpacing(0.5), `Heading(class))),
 		`VSpacing(0.5)
 	    ))),
 	    `ButtonBox (
