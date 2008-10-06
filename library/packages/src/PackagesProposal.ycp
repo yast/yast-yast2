@@ -54,9 +54,33 @@
     map <string, map <symbol, list <string> > > resolvables_to_install = $[];
 
     /**
+     * Resets all resolvables to install. Use carefully.
+     */
+    global void ResetAll () {
+	if (resolvables_to_install != $[]) {
+	    y2warning ("Reseting all PackagesProposal items");
+	} else {
+	    y2milestone ("Reseting all PackagesProposal items");
+	}
+
+	resolvables_to_install = $[];
+    }
+
+    /**
      * List of currently supported types of resolvables
      */
-    list <symbol> supported_resolvables = [`package];
+    list <symbol> supported_resolvables = [`package, `pattern];
+
+    /**
+     * Returns list of resolvables currently supported by this module.
+     *
+     * @example GetSupportedResolvables() -> [`package, `pattern, ... ]
+     *
+     * @return list <symbol> of resolvables
+     */
+    global list <symbol> GetSupportedResolvables () {
+	return supported_resolvables;
+    }
 
     boolean IsSupportedResolvableType (symbol type) {
 	if (type == nil) {
@@ -189,6 +213,7 @@
      *
      * @example
      *   GetAllResolvables (`package) -> ["list", "of", "packages"]
+     *   GetAllResolvables (`pattern) -> ["list", "of", "patterns"]
      *   // not a supported resolvable type
      *   GetAllResolvables (`unknown) -> nil
      *
@@ -205,6 +230,41 @@
 	foreach (string unique_ID, map <symbol, list <string> > resolvables, resolvables_to_install, {
 	    if (haskey (resolvables, type)) {
 		ret = (list <string>) union (ret, resolvables[type]:[]);
+	    }
+	});
+
+	return ret;
+    }
+
+    /**
+     * Returns all selected resolvables for all supported types
+     *
+     * @return map <symbol, list <string> > map of resolvables
+     * @struct $[
+     *   `resolvable_type : [ "list", "of", "resolvables" ],
+     *   `another_type    : [ "list", "of", "resolvables" ],
+     * ]
+     *
+     * @example
+     * // No resolvables selected
+     * GetAllResolvablesForAllTypes() -> $[]
+     * // Only patterns selected
+     * GetAllResolvablesForAllTypes() -> $[`pattern : ["some", "patterns"]]
+     * // Also packages selected
+     * GetAllResolvablesForAllTypes() -> $[
+     *   `pattern : ["some", "patterns"],
+     *   `package : ["some", "packages"],
+     * ]
+     */
+    global map <symbol, list <string> > GetAllResolvablesForAllTypes () {
+	map <symbol, list <string> > ret = $[];
+	list <string> resolvables = [];
+
+	foreach (symbol one_type, GetSupportedResolvables(), {
+	    resolvables = GetAllResolvables (one_type);
+
+	    if (resolvables != nil && resolvables != []) {
+		ret[one_type] = resolvables;
 	    }
 	});
 
