@@ -1069,6 +1069,11 @@ global string GetTranslatedText (string key) {
 
     string label = text["label"]:"";
 
+    // an empty string doesn't need to be translated
+    if (label == "") {
+	return "";
+    }
+
     string domain = text["textdomain"]:productControl["textdomain"]:"control";
     if (domain == "")
     {
