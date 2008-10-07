@@ -1061,18 +1061,21 @@ global string GetTranslatedText (string key) {
     map <string, any> controlfile_texts = ProductFeatures::GetSection ("texts");
     map <string,string> text = (map <string,string>) controlfile_texts[key]:$[];
 
-    string label = text["label"]:"";
-    if (label == "")
+    if (! haskey (text, "label"))
     {
-	y2error ("The requested label %1 does not exist", key);
+	y2error ("The requested label %1 does not exist in %2", key, text);
 	return "";
     }
+
+    string label = text["label"]:"";
+
     string domain = text["textdomain"]:productControl["textdomain"]:"control";
     if (domain == "")
     {
-	y2error ("The text domain for label %1 not set", key);
+	y2warning ("The text domain for label %1 not set", key);
 	return label;
     }
+
     return dgettext (domain, label);
 }
 
