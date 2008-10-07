@@ -273,7 +273,7 @@
 
 	foreach (string unique_ID, map <symbol, list <string> > resolvables, resolvables_to_install, {
 	    if (haskey (resolvables, type)) {
-		ret = (list <string>) union (ret, resolvables[type]:[]);
+		ret = sort ((list <string>) union (ret, resolvables[type]:[]));
 	    }
 	});
 
