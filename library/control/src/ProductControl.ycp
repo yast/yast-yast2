@@ -1059,13 +1059,13 @@ global map getProposalProperties (string stage, string mode, string proptype) {
 
 global string GetTranslatedText (string key) {
     map <string, any> controlfile_texts = ProductFeatures::GetSection ("texts");
-    map <string,string> text = (map <string,string>) controlfile_texts[key]:$[];
 
-    if (! haskey (text, "label"))
-    {
-	y2error ("The requested label %1 does not exist in %2", key, text);
+    if (! haskey (controlfile_texts, key)) {
+	y2error ("No such text %1", key);
 	return "";
     }
+
+    map <string,string> text = (map <string,string>) controlfile_texts[key]:$[];
 
     string label = text["label"]:"";
 
