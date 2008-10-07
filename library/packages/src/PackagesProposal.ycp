@@ -11,28 +11,32 @@
     /***
      *
      * This module provides API for packages that want software
-     * proposal to select some packages for installation.
+     * proposal to select some resolvables for installation.
+     * Clients of this module identify themselves by their own
+     * unique ID, thus one client doesn't change other clients
+     * requirements.
      *
+     * @example
      * // No packages selected initially
      * y2internal ("Packages to install: %1", PackagesProposal::GetAllResolvables (`package));
-     *
+     * 
      * // Adding packages for ID_1
      * PackagesProposal::AddResolvables ("ID_1", `package, ["aa", "bb", "cc"]);
      * y2internal ("Packages to install: %1", PackagesProposal::GetAllResolvables (`package));
-     *
+     * 
      * // Adding packages for ID_2
      * // 'cc' is shared with ID_1
      * PackagesProposal::AddResolvables ("ID_2", `package, ["cc", "dd", "ee"]);
      * y2internal ("Packages to install: %1", PackagesProposal::GetAllResolvables (`package));
-     *
+     * 
      * // Get all packages required by ID_1
      * list <string> required_packages = PackagesProposal::GetResolvables ("ID_1", `package);
      * y2internal ("Packages required by ID_1: %1", required_packages);
-     *
+     * 
      * // Removing all packages required by ID_1
      * PackagesProposal::RemoveResolvables ("ID_1", `package, required_packages);
      * y2internal ("Packages to install: %1", PackagesProposal::GetAllResolvables (`package));
-     *
+     * 
      * // Removing some packages required by ID_2
      * PackagesProposal::RemoveResolvables ("ID_2", `package, ["cc", "dd"]);
      * y2internal ("Packages to install: %1", PackagesProposal::GetAllResolvables (`package));
@@ -92,7 +96,47 @@
     }
 
     /**
-     * Adds list of packages to pool that is then used by software proposal
+     * Checks the currently created data structure and creates
+     * missing keys if needed.
+     *
+     * @param string unique_ID
+     * @param symbol type
+     */
+    void CreateEmptyStructureIfMissing (string unique_ID, symbol type) {
+	if (! haskey (resolvables_to_install, unique_ID)) {
+	    y2debug ("Creating '%1' key in resolvables_to_install", unique_ID);
+	    resolvables_to_install[unique_ID] = $[];
+	}
+
+	if (! haskey (resolvables_to_install[unique_ID]:$[], type)) {
+	    y2debug ("Creating '%1' key in resolvables_to_install[%2]", type, unique_ID);
+	    resolvables_to_install[unique_ID, type] = [];
+	}
+    }
+
+    /**
+     * Checks parameters for global functions
+     *
+     * @param string unique_ID
+     * @param symbol type
+     * @return boolean if parameters are correct
+     */
+    boolean CheckParams (string unique_ID, symbol type) {
+	if (unique_ID == nil || unique_ID == "") {
+	    y2error ("Unique ID cannot be: %1", unique_ID);
+	    return false;
+	}
+
+	if (! IsSupportedResolvableType (type)) {
+	    y2error ("Not a supported type: %1, supported are only: %2", type, supported_resolvables);
+	    return false;
+	}
+
+	return true;
+    }
+
+    /**
+     * Adds list of resolvables to pool that is then used by software proposal
      * to propose a selection of resolvables to install.
      *
      * @param string unique_ID
@@ -109,29 +153,46 @@
      * @see RemoveResolvables()
      */
     global boolean AddResolvables (string unique_ID, symbol type, list <string> resolvables) {
-	if (unique_ID == nil || unique_ID == "") {
-	    y2error ("Unique ID cannot be: %1", unique_ID);
+	if (! CheckParams (unique_ID, type))
 	    return false;
-	}
 
-	if (! IsSupportedResolvableType (type)) {
-	    y2error ("Not a supported type: %1, supported are only: %2", type, supported_resolvables);
-	    return false;
-	}
+	CreateEmptyStructureIfMissing (unique_ID, type);
 
-	if (! haskey (resolvables_to_install, unique_ID)) {
-	    y2debug ("Creating '%1' key in resolvables_to_install", unique_ID);
-	    resolvables_to_install[unique_ID] = $[];
-	}
-
-	if (! haskey (resolvables_to_install[unique_ID]:$[], type)) {
-	    y2debug ("Creating '%1' key in resolvables_to_install[%2]", type, unique_ID);
-	    resolvables_to_install[unique_ID, type] = [];
+	if (resolvables == nil) {
+	    y2warning ("Changing resolvables %1 to empty list", resolvables);
+	    resolvables = [];
 	}
 
 	y2milestone ("Adding resolvables %1 type %2 for %3", resolvables, type, unique_ID);
 	resolvables_to_install[unique_ID, type] =
 	    (list <string>) union (resolvables_to_install[unique_ID, type]:[], resolvables);
+
+	return true;
+    }
+
+    /**
+     * Replaces the current resolvables with new ones. Similar to AddResolvables()
+     * but it replaces the list of resolvables instead of adding them to the pool.
+     * It always replaces only the part that is identified by the unique_ID.
+     *
+     * @param string unique_ID
+     * @param symbol resolvable type
+     * @param list <string> of resolvables to add for installation
+     * @return boolean whether successful
+     */
+    global boolean SetResolvables (string unique_ID, symbol type, list <string> resolvables) {
+	if (! CheckParams (unique_ID, type))
+	    return false;
+
+	CreateEmptyStructureIfMissing (unique_ID, type);
+
+	if (resolvables == nil) {
+	    y2warning ("Changing resolvables %1 to empty list", resolvables);
+	    resolvables = [];
+	}
+
+	y2milestone ("Adjusting resolvables %1 type %2 for %3", resolvables, type, unique_ID);
+	resolvables_to_install[unique_ID, type] = resolvables;
 
 	return true;
     }
@@ -152,24 +213,14 @@
      * @see AddResolvables()
      */
     global boolean RemoveResolvables (string unique_ID, symbol type, list <string> resolvables) {
-	if (unique_ID == nil || unique_ID == "") {
-	    y2error ("Unique ID cannot be: %1", unique_ID);
+	if (! CheckParams (unique_ID, type))
 	    return false;
-	}
 
-	if (! IsSupportedResolvableType (type)) {
-	    y2error ("Not a supported type: %1, supported are only: %2", type, supported_resolvables);
-	    return false;
-	}
+	CreateEmptyStructureIfMissing (unique_ID, type);
 
-	if (! haskey (resolvables_to_install, unique_ID)) {
-	    y2debug ("Creating '%1' key in resolvables_to_install", unique_ID);
-	    resolvables_to_install[unique_ID] = $[];
-	}
-
-	if (! haskey (resolvables_to_install[unique_ID]:$[], type)) {
-	    y2debug ("Creating '%1' key in resolvables_to_install[%2]", type, unique_ID);
-	    resolvables_to_install[unique_ID, type] = [];
+	if (resolvables == nil) {
+	    y2warning ("Changing resolvables %1 to empty list", resolvables);
+	    resolvables = [];
 	}
 
 	y2milestone ("Removing resolvables %1 type %2 for %3", resolvables, type, unique_ID);
@@ -192,15 +243,8 @@
      *   GetResolvables ("y2_kdump", `package) -> ["yast2-kdump", "kdump"]
      */
     global list <string> GetResolvables (string unique_ID, symbol type) {
-	if (unique_ID == nil || unique_ID == "") {
-	    y2error ("Unique ID cannot be: %1", unique_ID);
+	if (! CheckParams (unique_ID, type))
 	    return nil;
-	}
-
-	if (! IsSupportedResolvableType (type)) {
-	    y2error ("Not a supported type: %1, supported are only: %2", type, supported_resolvables);
-	    return nil;
-	}
 
 	return resolvables_to_install[unique_ID, type]:[];
     }
