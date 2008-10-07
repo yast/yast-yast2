@@ -364,8 +364,8 @@
 	    // popup question, %1 stands for the package name
 	    // %2 is a repository name
 	    // %3 is URL of the repository
-	    _("The package %1 from repository %1
-%2
+	    _("The package %1 from repository %2
+%3
 is not digitally signed. This means that the origin
 and integrity of the package cannot be verified. Installing the package
 may put the integrity of your system at risk.
