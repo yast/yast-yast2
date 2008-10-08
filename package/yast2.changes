@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct  8 09:33:20 CEST 2008 - lslezak@suse.cz
+
+- display "Skip Autorefresh" button instead of "Abort" when an
+  error occurs during autorefresh (bnc#427017)
+
+-------------------------------------------------------------------
 Tue Oct  7 17:48:31 CEST 2008 - lslezak@suse.cz
 
 - fixed reference markers (%1) in a popup message (bnc#432518)

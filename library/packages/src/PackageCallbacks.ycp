@@ -818,7 +818,10 @@ Check whether the server is accessible."), wanted_label);
 	    button_box = add (button_box, `PushButton(`id(`ignore), `opt (`customButton), Label::IgnoreButton()));
 	}
 
-	button_box = add (button_box, `PushButton (`id(`cancel), `opt (`cancelButton), Label::AbortButton()));
+	if (autorefreshing)
+	button_box = add (button_box, `PushButton (`id(`cancel), `opt (`cancelButton), autorefreshing ?
+	    _("Skip Autorefresh") : Label::AbortButton())
+	);
 
 	// push button label during media change popup, user can skip
 	// this media (CD) so no packages from this media will be installed
@@ -2074,6 +2077,7 @@ might be missing or out of date.")),
 
 	if (!Mode::commandline() && UI::WidgetExists(`id(`abort)))
 	{
+	    // push button label
 	    UI::ChangeWidget(`id(`abort), `Label, _("Skip Autorefresh"));
 	}
 
