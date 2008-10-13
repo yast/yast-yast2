@@ -95,31 +95,36 @@ define term popupLayoutInternalTypeWithLabel( string headline,
     if ( size( headline ) > 0 )
     {
 	content =
-	    `VBox(
-		  `HBox(
-			`VCenter( icon ),
-			`HSpacing(1),
-			`VCenter(`Heading( headline ) ),
-			`HStretch()
-			),
-		  `VSpacing(0.2),
-		  richtext ? rt : `Left( `Label( message ) ),
-		  `VSpacing(0.2),
-		  (label != nil && label != "") ? `Label(`id(`label), label ) : `Empty()
-		  );
+	`VBox (
+	    `VSpacing (0.4),
+	    `HBox (
+		`Top (icon),
+		`HSpacing (1),
+		`VBox (
+		    `Left (`Heading (headline)),
+		    `VSpacing (0.2),
+		    richtext ? rt : `Left( `Label( message ) ),
+		    `VSpacing (0.2),
+		    (label != nil && label != "") ? `Label (`id (`label), label) : `Empty()
+		)
+	    )
+	);
     }
     else // no headline
     {
 	content =
-	    `VBox(
-		  `HBox(
-			`Top( icon ),
-			`HSpacing(1),
-			richtext ? rt : `VCenter (`Label( message ) )
-			),
-		  `VSpacing(0.2),
-		  (label != nil && label != "") ? `Label(`id(`label), label ) : `Empty()
-		  );
+	`VBox (
+	    `VSpacing(0.4),
+	    `HBox(
+		`Top (icon),
+		`HSpacing (1),
+		`VBox (
+		    richtext ? rt : `VCenter (`Label( message ) ),
+		    `VSpacing(0.2),
+		    (label != nil && label != "") ? `Label(`id(`label), label ) : `Empty()
+		)
+	    )
+	);
     }
 
     term dialog =
