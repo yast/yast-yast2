@@ -818,7 +818,6 @@ Check whether the server is accessible."), wanted_label);
 	    button_box = add (button_box, `PushButton(`id(`ignore), `opt (`customButton), Label::IgnoreButton()));
 	}
 
-	if (autorefreshing)
 	button_box = add (button_box, `PushButton (`id(`cancel), `opt (`cancelButton), autorefreshing ?
 	    _("Skip Autorefresh") : Label::AbortButton())
 	);
