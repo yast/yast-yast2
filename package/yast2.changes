@@ -2,6 +2,7 @@
 Mon Oct 13 12:53:12 CEST 2008 - lslezak@suse.cz
 
 - fixed syntax error in media change callback (bnc#434721)
+- 2.17.39
 
 -------------------------------------------------------------------
 Mon Oct 13 10:37:58 CEST 2008 - locilka@suse.cz
