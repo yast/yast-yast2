@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Oct 13 10:37:58 CEST 2008 - locilka@suse.cz
+
+- Used Ricardo's patch for Popup dialog layout (bnc #433183).
+
+-------------------------------------------------------------------
 Wed Oct  8 09:33:20 CEST 2008 - lslezak@suse.cz
 
 - display "Skip Autorefresh" button instead of "Abort" when an
