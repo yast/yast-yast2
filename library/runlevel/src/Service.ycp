@@ -232,13 +232,20 @@ global define boolean Finetune (string name, list rl) {
 	return false;
     }
 
-    if (rls != "")
-    {
-	map ret = (map)SCR::Execute (.target.bash_output,
-				sformat ("/sbin/insserv -f %2/%1,start=%3",
-					 name, init_d, rls));
-	if (0 != ret["exit"]:-1)
-	{
+    // bnc #435182
+    string command = (rls == "" ?
+	// removing completely
+	sformat ("/sbin/insserv -f -r %2/%1", name, init_d)
+	:
+	// removing completely, finetuning only those we want
+	sformat ("/sbin/insserv -f -r %2/%1; /sbin/insserv -f %2/%1,start=%3", name, init_d, rls)
+    );
+
+    y2milestone ("Calling %1", command);
+
+    map ret = (map)SCR::Execute (.target.bash_output, command);
+
+    if (0 != ret["exit"]:-1) {
 	    // Error message.
 	    // %1 is a name of an init script in /etc/init.d,
 	    // Enabling means that the service should start
@@ -249,8 +256,8 @@ global define boolean Finetune (string name, list rl) {
 				name, rls, ret["stderr"]:"");
 	    y2error (1, error_msg);
 	    return false;
-	}
     }
+
     return true;
 }
 
