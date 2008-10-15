@@ -336,9 +336,6 @@ global define boolean AnyQuestion( string headline,
 
     any ret = nil;
 
-    if ( focus != nil )
-	UI::SetFocus(focus);
-    
     if (success == true) {
 	ret = UI::UserInput();
 	UI::CloseDialog();
