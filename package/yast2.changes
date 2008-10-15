@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Oct 15 14:59:02 CEST 2008 - locilka@suse.cz
+
+- Removing SetFocus from Popup::AnyQuestion (bnc #435399).
+
+-------------------------------------------------------------------
 Mon Oct 13 12:53:12 CEST 2008 - lslezak@suse.cz
 
 - fixed syntax error in media change callback (bnc#434721)
