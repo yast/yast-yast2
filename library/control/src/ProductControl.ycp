@@ -707,6 +707,8 @@ global void UnDisableAllModulesAndProposals (string mode, string stage) {
  */
 global define void AddWizardSteps(list<map> stagemode)
 {
+    boolean debug_workflow = ProductFeatures::GetBooleanFeature ("globals", "debug_workflow");
+
     last_stage_mode = stagemode;
 
     // UI::WizardCommand() can safely be called even if the respective UI
@@ -747,26 +749,33 @@ global define void AddWizardSteps(list<map> stagemode)
 	    // only for debugging
             y2debug("Adding wizard step: %1", m );
 
+	    string heading = "";
+	    string label = "";
+	    string id = "";
+
 	    // Heading
 	    if (haskey (m, "heading") && m["label"]:"" != "") {
-		UI::WizardCommand (`AddStepHeading (
-		    haskey (m, "textdomain")
-			? dgettext (m["textdomain"]:"", m["label"]:"")
-			: dgettext (wizard_textdomain, m["label"]:"")
-		));
+		heading = (
+		    haskey (m, "textdomain") ?
+			dgettext (m["textdomain"]:"", m["label"]:"")
+			:
+			dgettext (wizard_textdomain, m["label"]:"")
+		);
 
 	    // Label
             } else if (m["label"]:"" != "") {
-                if (first_id=="")
-                {
+                if (first_id=="") {
                     first_id = m["id"]:"";
                 }
-                UI::WizardCommand(`AddStep (
-		    haskey (m, "textdomain")
-			? dgettext (m["textdomain"]:"", m["label"]:"")
-			: dgettext (wizard_textdomain, m["label"]:""),
-		    m["id"]:""
-		));
+
+		label = (
+		    haskey (m, "textdomain") ?
+			dgettext (m["textdomain"]:"", m["label"]:"")
+			:
+			dgettext (wizard_textdomain, m["label"]:"")
+		);
+
+		id = m["id"]:"";
                 last_label = m["label"]:"";
 		last_domain = m["textdomain"]:"";
 
@@ -775,22 +784,28 @@ global define void AddWizardSteps(list<map> stagemode)
                 if (first_id=="") {
                     first_id = m["id"]:"";
                 }
+
 		if (last_label != "") {
 		    if (last_domain != "") {
-			UI::WizardCommand(`AddStep( dgettext(
-				last_domain,
-				last_label ),
-                            m["id"]:"" )
-			);
+			label = dgettext (last_domain, last_label);
+			id = m["id"]:"";
 		    } else {
-			UI::WizardCommand(`AddStep( dgettext(
-				wizard_textdomain,
-				last_label ),
-                            m["id"]:"" )
-			);
+			label = dgettext (wizard_textdomain, last_label);
 		    }
+		    id = m["id"]:"";
 		}
             }
+
+	    if (heading != nil && heading != "") {
+		UI::WizardCommand (`AddStepHeading (heading));
+	    }
+
+	    if (label != nil && label != "") {
+		if (debug_workflow == true) {
+		    label = label + sformat (" [%1]", m["name"]:"");    
+		}
+		UI::WizardCommand (`AddStep (label, id));
+	    }
         });
     });
 
