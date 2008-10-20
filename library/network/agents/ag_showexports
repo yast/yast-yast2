@@ -1,0 +1,117 @@
+#!/bin/bash
+
+# File:		ag_showexports
+# Package:	NFS client
+# Summary:	Agent for reading the exported directories of a NFS server
+# Authors:	Martin Vidner
+#
+# $Id$
+#
+# Read (., "homes.example.com")
+#  [ "/data/home" ]
+
+# showmount is in nfs-client.rpm
+
+if [ x$1 = x-d ]; then
+    set -x
+else
+    exec 2>/dev/null
+fi
+
+# We want to parse English output
+export LC_ALL=C
+
+OUTFILE=`mktemp -q /tmp/ag_showexports.$$.XXXXXX`
+if [ $? -ne 0 ]; then
+    # TODO y2log
+    echo "$0: Can't create temp file, exiting..." >&2
+    exit 1
+fi
+trap "rm $OUTFILE" EXIT TERM
+
+# this function is duplicated in ag_showexports and ag_hostnames
+# after $1 seconds, kill $2 and all its children
+# return $2's exit status
+function kill_after() {
+    local TIMEOUT=$1
+    local LONG_PID=$2
+
+    {
+	sleep $TIMEOUT
+	LONG_CHILDREN_PIDS=`ps --ppid $LONG_PID --no-headers -o pid`
+	kill $LONG_PID $LONG_CHILDREN_PIDS
+    } &
+    SLEEP_PID=$!
+
+    # now wait until the long command finishes or is killed
+    wait $LONG_PID
+    local RET=$?
+    # if it did not exit because of a signal,
+    # then the killer is useless and we will kill him instead
+    if [ $RET -lt 128 ]; then
+	kill $SLEEP_PID
+    fi
+    return $RET
+}
+
+# this function encapsulates a command that may take a long time
+# so that it can be killed after a timeout
+function showexports_long() {
+    local HOST="$1"
+    local SM=/usr/sbin/showmount
+    # showmounts passes whatever the server says,
+    # but it can say different things :( #91184
+    # unfsd:
+    # /space\040dir  <anon clnt>
+    # /back\134slash <anon clnt>
+    # knfsd:
+    # /space dir  *
+    # /back\slash *
+    if test -x "$SM"; then
+	#sed: strip authorized hosts, double \ before nondigit, make a ycp item
+	"$SM" --no-headers --exports "$HOST" | \
+	    sed \
+	    -e 's/<anon clnt>$/<anon_clnt>/' \
+	    -e 's/[[:space:]]*[^[:space:]]*$//' \
+	    -e 's/\\\([^[:digit:]]\)/\\\\\1/' \
+	    -e 's/\(.*\)/"\1",/'
+    else
+	echo '"Install nfs-client.rpm"'
+    fi
+}
+
+# showexports host
+# echoes the output
+function showexports() {
+    local HOST="$1"
+
+    # in parallel run:
+    # 1) the command that may take a long time
+    # 2) a shell that will kill (1) after a delay
+    showexports_long "$HOST" >"$OUTFILE" &
+    kill_after 5 $!
+
+    echo "["
+    cat "$OUTFILE"
+    echo "]"
+}
+
+while true ; do
+    IFS=
+    read COMMAND || exit
+    unset IFS
+
+    case "$COMMAND" in
+	'`result ('*)
+	    exit
+	    ;;
+	'`Read (.,'*)
+	    HOST=$(echo "$COMMAND" | sed 's/^`Read (., *"\(.*\)")/\1/')
+	    showexports "$HOST"
+	    ;;
+	*)
+	    echo nil
+    esac
+done
+
+# EOF
