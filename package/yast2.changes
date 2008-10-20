@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Oct 20 12:33:54 CEST 2008 - kmachalkova@suse.cz
+
+- bash ag_showexports moved from yast2-nfs-client package here 
+  (bnc#257910) 
+
+-------------------------------------------------------------------
 Thu Oct 16 15:15:02 CEST 2008 - locilka@suse.cz
 
 - Enhancing ProductControl to show internal steps names if debug
