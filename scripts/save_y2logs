@@ -4,7 +4,6 @@
 #		to attach it to a Bugzilla bug report
 #
 # Author: Stefan Hundhammer <sh@suse.de>
-# $Id$
 
 usage()
 {
