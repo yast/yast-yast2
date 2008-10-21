@@ -53,6 +53,10 @@ if [ -f /var/log/zypp/history ]; then
     LIST="$LIST $( cd /var/log/; ls zypp/history*)"
 fi
 
+if [ -f /etc/install.inf ]; then
+    LIST="$LIST /etc/install.inf"
+fi
+
 RPM_LIST="rpm-qa"
 if [ -f /var/lib/rpm/Packages ]; then
     rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}\t\t\t(%{VENDOR})\t%{DISTRIBUTION}\n' 2>/dev/null | sort >/var/log/$RPM_LIST
