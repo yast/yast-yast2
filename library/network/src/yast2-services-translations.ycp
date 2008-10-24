@@ -110,7 +110,7 @@
   tmpstring = _("icecream scheduler");
 
   // TRANSLATORS: Description of a Service (File name: icecream-scheduler, RPM: icecream), used as a common label or an item in table
-  tmpstring = _("opens ports for the Icecream scheduler");
+  tmpstring = _("Opens ports for the icecream scheduler");
 
   // TRANSLATORS: Name of Service (File name: imap, RPM: courier-imap imap-lib), can be used as check box, item in multiple selection box...
   tmpstring = _("imap Server");
@@ -170,7 +170,7 @@
   tmpstring = _("NFS Server Service");
 
   // TRANSLATORS: Description of a Service (File name: nfs-kernel-server, RPM: nfs-kernel-server), used as a common label or an item in table
-  tmpstring = _("Firewall Configuration for nfs kernel server. opens ports for NFS in order to allow other hosts connect to it");
+  tmpstring = _("Firewall Configuration for NFS kernel server. Opens ports for NFS to allow other hosts to connect.");
 
   // TRANSLATORS: Name of Service (File name: ntp, RPM: ntp), can be used as check box, item in multiple selection box...
   tmpstring = _("xntp Server");
@@ -212,7 +212,7 @@
   tmpstring = _("SMTP with sendmail");
 
   // TRANSLATORS: Description of a Service (File name: sendmail, RPM: sendmail), used as a common label or an item in table
-  tmpstring = _("Firewall Configuration file for postfix");
+  tmpstring = _("Firewall Configuration file for sendmail");
 
   // TRANSLATORS: Name of Service (File name: squid, RPM: yast2-squid), can be used as check box, item in multiple selection box...
   tmpstring = _("Squid Service");
