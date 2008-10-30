@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Oct 30 16:44:23 CET 2008 - lslezak@suse.cz
+
+- added .sysconfig.services agent for reading/writing
+  /etc/sysconfig/services file (bnc#440243)
+- 2.17.42
+
+-------------------------------------------------------------------
 Mon Oct 27 13:00:20 CET 2008 - visnov@suse.cz
 
 - SlideShow: check stage progress against overflow 
