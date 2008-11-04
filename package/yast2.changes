@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov  4 16:02:34 CET 2008 - mzugec@suse.cz
+
+- UI::TimeoutUserInput() instead of UI::UserInput() for Hardware 
+  Detection (bnc#429562)
+- 2.17.43 
+
+-------------------------------------------------------------------
 Thu Oct 30 16:44:23 CET 2008 - lslezak@suse.cz
 
 - added .sysconfig.services agent for reading/writing

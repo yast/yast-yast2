@@ -85,7 +85,9 @@ global boolean Detection(string class, string icon_name) {
     UI::SetFocus (`id(`continue));
 
     // for autoinstallation popup has timeout 10 seconds (#192181)
-    any ret = Mode::autoinst() ? UI::TimeoutUserInput(10*1000) : UI::UserInput();
+    // timeout for every case (bnc#429562)
+    any ret = UI::TimeoutUserInput(10*1000);
+//    any ret = Mode::autoinst() ? UI::TimeoutUserInput(10*1000) : UI::UserInput();
     UI::CloseDialog();
 
     result = true;
