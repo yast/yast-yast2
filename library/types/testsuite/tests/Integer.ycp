@@ -30,4 +30,14 @@ TEST(``(Integer::Sum([])), [], nil);
 TEST(``(Integer::Sum([ 1 ])), [], nil);
 TEST(``(Integer::Sum([ 2, 3 ])), [], nil);
 
+DUMP("Integer::Min");
+TEST(``(Integer::Min([1])), [], nil);
+TEST(``(Integer::Min([1, 2])), [], nil);
+TEST(``(Integer::Min([2, 1])), [], nil);
+
+DUMP("Integer::Max");
+TEST(``(Integer::Max([1])), [], nil);
+TEST(``(Integer::Max([1, 2])), [], nil);
+TEST(``(Integer::Max([2, 1])), [], nil);
+
 }

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 05 14:25:37 CET 2008 - aschnell@suse.de
+
+- added Integer::Min and Integer::Max (needed for bnc #429908)
+- 2.17.44
+
+-------------------------------------------------------------------
 Tue Nov  4 16:02:34 CET 2008 - mzugec@suse.cz
 
 - UI::TimeoutUserInput() instead of UI::UserInput() for Hardware 

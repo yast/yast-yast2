@@ -19,3 +19,11 @@ Dump	Integer::Sum
 Return	0
 Return	1
 Return	5
+Dump	Integer::Min
+Return	1
+Return	1
+Return	1
+Dump	Integer::Max
+Return	1
+Return	2
+Return	2
