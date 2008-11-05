@@ -27,3 +27,9 @@ Dump	Integer::Max
 Return	1
 Return	2
 Return	2
+Dump	Integer::Clamp
+Return	2
+Return	2
+Return	3
+Return	4
+Return	4

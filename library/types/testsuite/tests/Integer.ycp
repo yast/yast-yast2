@@ -40,4 +40,11 @@ TEST(``(Integer::Max([1])), [], nil);
 TEST(``(Integer::Max([1, 2])), [], nil);
 TEST(``(Integer::Max([2, 1])), [], nil);
 
+DUMP("Integer::Clamp");
+TEST(``(Integer::Clamp(1, 2, 4)), [], nil);
+TEST(``(Integer::Clamp(2, 2, 4)), [], nil);
+TEST(``(Integer::Clamp(3, 2, 4)), [], nil);
+TEST(``(Integer::Clamp(4, 2, 4)), [], nil);
+TEST(``(Integer::Clamp(5, 2, 4)), [], nil);
+
 }
