@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 05 19:14:39 CET 2008 - aschnell@suse.de
+
+- added Integer::Clamp (also used for #429908)
+- 2.17.45
+
+-------------------------------------------------------------------
 Wed Nov 05 14:25:37 CET 2008 - aschnell@suse.de
 
 - added Integer::Min and Integer::Max (needed for bnc #429908)

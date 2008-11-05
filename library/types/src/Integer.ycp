@@ -82,4 +82,15 @@
     {
 	return list::reduce(integer x, integer y, values, { return x > y ? x : y; });
     }
+
+
+    /**
+     * Clamps the integer i.
+     */
+    global integer Clamp(integer i, integer min, integer max)
+    {
+	if (i < min) return min;
+	if (i > max) return max;
+	return i;
+    }
 }
