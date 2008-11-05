@@ -60,4 +60,26 @@
     {
 	return list::reduce(integer x, integer y, 0, values, { return x + y; });
     }
+
+
+    /**
+     * Returns the smallest integer in values.
+     *
+     * Behaviour is undefined for empty values.
+     */
+    global integer Min(list<integer> values)
+    {
+	return list::reduce(integer x, integer y, values, { return x < y ? x : y; });
+    }
+
+
+    /**
+     * Returns the highest integer in values.
+     *
+     * Behaviour is undefined for empty values.
+     */
+    global integer Max(list<integer> values)
+    {
+	return list::reduce(integer x, integer y, values, { return x > y ? x : y; });
+    }
 }
