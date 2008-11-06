@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov  6 18:45:38 CET 2008 - jdsn@suse.de
+
+- disable x11 setup on Itanium/ia64 (bnc#439612) 
+- 2.17.46
+
+-------------------------------------------------------------------
 Wed Nov 05 19:14:39 CET 2008 - aschnell@suse.de
 
 - added Integer::Clamp (also used for #429908)
