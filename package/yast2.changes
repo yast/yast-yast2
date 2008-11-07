@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Nov  7 12:40:08 CET 2008 - lslezak@suse.cz
+
+- added URL::HidePassword() and URL::HidePasswordToken() functions
+  (bnc#441944)
+- 2.17.47
+
+-------------------------------------------------------------------
 Thu Nov  6 18:45:38 CET 2008 - jdsn@suse.de
 
 - disable x11 setup on Itanium/ia64 (bnc#439612) 
