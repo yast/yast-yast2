@@ -11,13 +11,13 @@
   string tmpstring = nil;
 
   // TRANSLATORS: Name of Service (File name: apache2, RPM: apache2), can be used as check box, item in multiple selection box...
-  tmpstring = _("Apache 2");
+  tmpstring = _("HTTP Server");
 
   // TRANSLATORS: Description of a Service (File name: apache2, RPM: apache2), used as a common label or an item in table
   tmpstring = _("Opens ports for Apache Web Server.");
 
   // TRANSLATORS: Name of Service (File name: apache2-ssl, RPM: apache2), can be used as check box, item in multiple selection box...
-  tmpstring = _("Apache 2");
+  tmpstring = _("HTTPS Server");
 
   // TRANSLATORS: Description of a Service (File name: apache2-ssl, RPM: apache2), used as a common label or an item in table
   tmpstring = _("Opens ports for Apache Web Server.");
