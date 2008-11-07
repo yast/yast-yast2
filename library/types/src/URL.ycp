@@ -509,4 +509,37 @@ global string MakeParamsFromMap (map <string, string> params_map) {
     );
 }
 
+/**
+ * Hide password in an URL - replaces the password in the URL by 'PASSWORD' string.
+ * If there is no password in the URL the original URL is returned.
+ * It should be used when an URL is logged to y2log or when it is displayed to user.
+ * @param url original URL
+ * @return string new URL with 'PASSWORD' password or unmodified URL if there is no password
+ */
+global string HidePassword(string url) {
+    // Url::Build(Url::Parse) transforms the URL too much, see #247249#c41
+    // replace ://user:password@ by ://user:PASSWORD@
+    string subd = regexpsub (url, "(.*)(://[^/:]*):[^/@]*@(.*)", "\\1\\2:PASSWORD@\\3");
+    return subd == nil? url: subd;
+}
+
+/**
+ * Hide password token in parsed URL (by URL::Parse()) - the password is replaced by 'PASSWORD' string.
+ * Similar to HidePassword() but uses a parsed URL as the input.
+ * @param tokens input
+ * @return map map with replaced password
+ */
+global map HidePasswordToken(map tokens)
+{
+    map ret = tokens;
+
+    // hide the password if it's there
+    if (haskey(ret, "pass") && size(ret["pass"]:"") > 0)
+    {
+	ret["pass"] = "PASSWORD";
+    }
+
+    return ret;
+}
+
 }
