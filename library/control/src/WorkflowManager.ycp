@@ -385,7 +385,7 @@ test -d '%1' || /bin/mkdir -p '%1';
 	    } else {
 		y2milestone ("File %1 not cached", disk_filename);
 		// using a file from source
-		string use_filename = Pkg::SourceProvideOptionalFile (src_id, 1, "/installation.xml");
+		string use_filename = Pkg::SourceProvideDigestedFile (src_id, 1, "/installation.xml", true);
 
 		// File exists
 		if (use_filename != nil) {
