@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 12 18:28:46 CET 2008 - jdsn@suse.de
+
+- revert change to disable x11 setup on Itanium(ia64) (bnc#439612)
+- 2.17.49
+
+-------------------------------------------------------------------
 Fri Nov  7 17:37:50 CET 2008 - locilka@suse.cz
 
 - Checking downloaded files signatures (WorkflowManager)
