@@ -487,9 +487,7 @@ global boolean has_smp () {
  */
 global boolean x11_setup_needed	() {
     // disable X11 setup after initial boot
-
-    // disable x11 setup as well for ia64/Itanium (bnc#439612)
-    if (board_iseries () || s390 () || mips () || ia64 ())
+    if (board_iseries () || s390 () || mips ())
     {
 	return false;
     }
