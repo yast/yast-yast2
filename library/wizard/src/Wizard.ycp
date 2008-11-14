@@ -108,7 +108,8 @@
 	return `HBox(
 		     `HWeight(1, `Empty() ),	// Layout trick to make sure the center button is centered
 		     `HStretch(),
-		     `HWeight(1, `PushButton(`id(`cancel ), `opt (`key_F9), Label::CancelButton()  ) ),
+		     `HWeight(1, `ReplacePoint(`id(`rep_abort), // Make sure HideAbortButton() works (bnc #444176)
+					       `PushButton(`id(`cancel ), `opt (`key_F9), Label::CancelButton()  ) ) ),
 		     `HStretch(),
 		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10, `default), Label::AcceptButton()  ) )
 		     );
@@ -124,7 +125,8 @@
 	return `HBox(
 		     `HWeight(1, `Empty() ),	// Layout trick to make sure the center button is centered
 		     `HStretch(),
-		     `HWeight(1, `PushButton(`id(`cancel ), `opt (`key_F9), Label::CancelButton()  ) ),
+		     `HWeight(1, `ReplacePoint(`id(`rep_abort), // Make sure HideAbortButton() works (bnc #444176)
+					       `PushButton(`id(`cancel ), `opt (`key_F9), Label::CancelButton()  ) ) ),
 		     `HStretch(),
 		     `HWeight(1, `PushButton(`id(`ok ), `opt (`key_F10, `default), Label::OKButton()  ) )
 		     );
@@ -140,7 +142,8 @@
 	return `HBox(
 		     `HWeight(1, `ReplacePoint (`id (`back_rep), `Empty())),	// Layout trick to make sure the center button is centered
 		     `HStretch(),
-		     `PushButton(`id(`abort ), `opt (`key_F9), Label::AbortButton() ),
+		     `HWeight(1, `ReplacePoint(`id(`rep_abort), // Make sure HideAbortButton() works (bnc #444176)
+					       `PushButton(`id(`abort ), `opt (`key_F9), Label::AbortButton() ) ) ),
 		     `HStretch(),
 		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10, `default), Label::AcceptButton()  ) )
 		     );

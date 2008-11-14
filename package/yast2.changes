@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Nov 14 16:26:33 CET 2008 - sh@suse.de
+
+- Consistent behaviour for Wizard::HideAbortButton() (bnc #444176)
+  Still broken usability-wise, but now broken in a consistent way
+- V 2.17.50 
+
+-------------------------------------------------------------------
 Wed Nov 12 18:28:46 CET 2008 - jdsn@suse.de
 
 - revert change to disable x11 setup on Itanium(ia64) (bnc#439612)
