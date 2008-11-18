@@ -554,9 +554,12 @@ Use it anyway?")
      * @param string key_id
      * @param string fingerprint
      * @param string dont_show_dialog_ident for the identification in magic "don't show" functions
+     * @param integer repoid Id of the repository from the item was downloaded
      * @return boolean true if 'yes, use file'
      */
-    global boolean ItemSignedWithUnknownSignature (symbol item_type, string item_name, string key_id, string dont_show_dialog_ident) {
+    global boolean ItemSignedWithUnknownSignature (symbol item_type, string item_name, string key_id, string dont_show_dialog_ident, integer repoid) {
+
+	string repo_url = Pkg::SourceGeneralData(repoid)["url"]:"";
 	string description_text = sformat((item_type == `package ?
 	    // popup question, %1 stands for the package name, %2 for the complex multiline description of the GnuPG key
 	    _("The package %1 is digitally signed
@@ -578,7 +581,8 @@ of your system at risk.
 
 Use it anyway?")
 	    ),
-	    item_name,
+	    // TODO use something like "%1 from %2" and make it translatable
+	    repo_url != "" ? sformat("%1 (%2)", item_name, repo_url) : item_name,
 	    "\n" +
 		// Part of the GnuPG key description in popup, %1 is a GnuPG key ID
 		sformat(_("ID: %1"), key_id)

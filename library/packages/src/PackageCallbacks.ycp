@@ -2902,7 +2902,7 @@ global void InitPackageCallbacks() {
     if (Mode::autoinst() != true) {
 	// Signature-related callbacks
 	Pkg::CallbackAcceptUnsignedFile		(SignatureCheckCallbacks::AcceptUnsignedFile);
-// obsoleted	Pkg::CallbackAcceptUnknownGpgKey	(SignatureCheckCallbacks::AcceptUnknownGpgKey);
+	Pkg::CallbackAcceptUnknownGpgKey	(SignatureCheckCallbacks::AcceptUnknownGpgKey);
 	Pkg::CallbackImportGpgKey		(SignatureCheckCallbacks::ImportGpgKey);
 	Pkg::CallbackAcceptNonTrustedGpgKey	(SignatureCheckCallbacks::TrustGpgKey);
 	Pkg::CallbackAcceptVerificationFailed	(SignatureCheckCallbacks::AcceptVerificationFailed);
