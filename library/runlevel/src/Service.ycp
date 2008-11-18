@@ -216,6 +216,7 @@ global define boolean Adjust (string name, string action) {
 global define boolean Finetune (string name, list rl) {
     if (! checkExists (name))
     {
+	y2error ("Unknown service: %1", name);
 	return false;
     }
 
@@ -229,6 +230,7 @@ global define boolean Finetune (string name, list rl) {
     // runlevels, not replace runlevels!!
     if (! serviceDisable (name, true))
     {
+	y2error ("Cannot disable %1", name);
 	return false;
     }
 
@@ -252,6 +254,8 @@ global define boolean Finetune (string name, list rl) {
 	    y2error (1, error_msg);
 	    return false;
 	}
+    } else {
+	y2milestone ("No runlevels to start %1 in", name);
     }
 
     return true;
