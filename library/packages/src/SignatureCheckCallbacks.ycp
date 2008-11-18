@@ -131,8 +131,8 @@
     //
     // (+DontShowAgain functionality) -- for one run in memory
     //
-    /* function for CallbackAcceptUnknownGpgKey() 
-    global boolean AcceptUnknownGpgKey (string filename, string keyid) {
+    // function for CallbackAcceptUnknownGpgKey()
+    global boolean AcceptUnknownGpgKey (string filename, string keyid, integer repoid) {
 	// Check signatures at all?
 	if (SignatureCheckDialogs::CheckSignaturesInYaST() == false)
 	    return default_return_unchecked;
@@ -142,14 +142,13 @@
 	// Show the popup?
 	if (SignatureCheckDialogs::GetShowThisPopup(dont_show_dialog_ident, filename)) {
 	    // Unknown keyname == "Unknown Key"
-	    return SignatureCheckDialogs::ItemSignedWithUnknownSignature(`file, filename, keyid, dont_show_dialog_ident);
+	    return SignatureCheckDialogs::ItemSignedWithUnknownSignature(`file, filename, keyid, dont_show_dialog_ident, repoid);
 	// Return the default value entered by user
 	} else {
 	    return SignatureCheckDialogs::GetDefaultDialogReturn(dont_show_dialog_ident, filename);
 	}
     }
-    */
-    
+
     // Name of the callback handler function. Required callback prototype is
     // boolean(map<string,any> key). The callback
     // function should ask user whether the key is trusted, returned true value
