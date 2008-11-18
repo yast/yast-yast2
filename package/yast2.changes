@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov 18 19:10:22 CET 2008 - lslezak@suse.cz
+
+- select kernel-maxcpus on x86_64 when there are more than 128
+  processors (bnc#444658)
+
+-------------------------------------------------------------------
 Fri Nov 14 16:26:33 CET 2008 - sh@suse.de
 
 - Consistent behaviour for Wizard::HideAbortButton() (bnc #444176)
