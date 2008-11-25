@@ -412,16 +412,6 @@ global void SetCmdLine (string new_cmd_line) {
 	}
 	else if (Arch::x86_64())
 	{
-	    integer proc_num = size((list)SCR::Read(.probe.cpu));
-
-	    y2milestone("Detected %1 processors", proc_num);
-
-	    if (proc_num > 128)
-	    {
-		y2milestone ("Kernel switch: More than 128 processors detected, using kernel-maxcpus package");
-		kernel_packages = ["kernel-maxcpus"];
-	    }
-
 	    if (xen)
 	    {
 		y2milestone("Adding Xen PV drivers: xen-kmp-default");

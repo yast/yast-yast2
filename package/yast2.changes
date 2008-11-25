@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov 25 12:38:23 CET 2008 - lslezak@suse.cz
+
+- reverted back the kernel-maxcpus change (bnc#444658)
+- 2.17.52
+
+-------------------------------------------------------------------
 Tue Nov 18 19:10:22 CET 2008 - lslezak@suse.cz
 
 - select kernel-maxcpus on x86_64 when there are more than 128
