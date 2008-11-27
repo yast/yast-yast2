@@ -438,6 +438,7 @@
     global void SetLanguage( string new_language )
     {
 	language = new_language;
+	y2milestone ("New SlideShow language: %1", language);
     }
 
 
