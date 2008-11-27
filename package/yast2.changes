@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 27 17:15:15 CET 2008 - locilka@suse.cz
+
+- Fixed counting the current overall SlideShow progress status
+  (bnc #449792).
+
+-------------------------------------------------------------------
 Tue Nov 25 12:38:23 CET 2008 - lslezak@suse.cz
 
 - reverted back the kernel-maxcpus change (bnc#444658)
