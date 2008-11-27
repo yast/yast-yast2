@@ -338,18 +338,19 @@
     /**
      * Update the global progress according to the progress in the current stage.  
      * The new value will be set to the per cent of the current stage according to  \param value.The
-     * value must be lower that the maximum value declared in the map passed to SlideShow::Setup.
+     * value must be lower that 100 (or it's corrected to 100).
      * If the \text is not nil, the label will be updated 
      * to this text as well. Otherwise label will not change.
-     * @param value	new value for the stage progress
+     *
+     * @param value	new value for the stage progress in per cents
      * @param text	new label for the global progress
      */    
     global void StageProgress( integer value, string text )
     {
-	if( value > _current_stage["value"]:0 )
+	if( value > 100 )
 	{
-	    y2error( "Stage progress value larger than expected: %1 vs. %2", value, _current_stage["value"]:nil );
-	    value = _current_stage["value"]:0;
+	    y2error( "Stage progress value larger than expected: %1", value );
+	    value = 100;
 	}
 
 	UpdateGlobalProgress( _current_stage["start"]:0 + (value * _current_stage["size"]:1 / 100), text );
