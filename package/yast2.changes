@@ -3,7 +3,7 @@ Fri Nov 28 16:55:00 CET 2008 - locilka@suse.cz
 
 - Fixed the ag_netd agent to reset the STDOUT handler to :raw just
   for itself, otherwise UTF-8 chars read from disk are broken
-  (bnc #438481).
+  (bnc #447487).
 - 2.17.53
 
 -------------------------------------------------------------------
