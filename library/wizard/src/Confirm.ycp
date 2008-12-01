@@ -24,6 +24,7 @@ import "Mode";
 import "Popup";
 import "Linuxrc";
 import "Stage";
+import "Arch";
 
 // #TODO bug number
 map <string, boolean> detection_cache = $[];
@@ -37,6 +38,7 @@ map <string, boolean> detection_cache = $[];
 global boolean Detection(string class, string icon_name) {
 
     if(Linuxrc::manual () != true) return true;
+    if(Arch::s390()) return true;
 
     if( icon_name == nil ) 
 	icon_name = "yast-hardware";

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Dec  1 11:44:18 CET 2008 - mzugec@suse.cz
+
+- Confirm::Detection() - exception for s390 (bnc#429562) 
+
+-------------------------------------------------------------------
 Fri Nov 28 16:55:00 CET 2008 - locilka@suse.cz
 
 - Fixed the ag_netd agent to reset the STDOUT handler to :raw just
