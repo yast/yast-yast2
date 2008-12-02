@@ -17,12 +17,12 @@ import "FileUtils";
 
 global string getDevice(string mount_point){
  map out = (map)SCR::Execute(.target.bash_output, sformat("grep ' %1 ' /proc/mounts|grep -v rootfs|tr -d '\n'", mount_point));
+ y2milestone("mountpoint found %1", out);
  list<string> rows =  splitstring(out["stdout"]:"", " ");
- y2internal("rows %1", rows);
  string device="";
  if (rows[2]:""=="nfs") device="nfs";
 	else device=rows[0]:"";
- y2internal("device %1", device);
+ y2milestone("%1 is on device: %2", mount_point, device);
  return device;
 }
 
@@ -34,6 +34,10 @@ global string getDevice(string mount_point){
 global boolean isDiskOnNetwork(string device){
  y2milestone("begin isDiskOnNetwork(%1) function", device);
  if (device=="nfs") return true;
+ if (size(device)==0) {
+	y2error("Empty parameter for isDiskOnNetwork() function");
+	return false;
+	}
  boolean network_based=false;
 
  // test for LVM
@@ -41,9 +45,9 @@ global boolean isDiskOnNetwork(string device){
   y2warning("LVM detected!");
   string group_name = splitstring(splitstring(device, "/")[3]:"", "-")[0]:"";
   y2milestone("LVM group name %1", group_name);
-  map<string, any> command = (map<string, any>)SCR::Execute(.target.bash_output, sformat("pvscan 2>/dev/null|grep %1", group_name));
+  map<string, any> command = (map<string, any>)SCR::Execute(.target.bash_output, sformat("pvs 2>/dev/null|grep %1", group_name));
   foreach(string row, filter(string s, splitstring(command["stdout"]:"", "\n"), { return (size(s)>0);}), {
-   string lvm_device = filter(string s, splitstring(row, " "), { return (size(s)>0);})[1]:"";
+   string lvm_device = filter(string s, splitstring(row, " "), { return (size(s)>0);})[0]:"";
    y2milestone("LVM physical device: %1", lvm_device);
    if (isDiskOnNetwork(lvm_device)) network_based=true;
   });
