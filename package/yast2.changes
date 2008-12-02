@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Dec  2 14:05:30 CET 2008 - mzugec@suse.cz
+
+- improved rootfs on network-based disk detection (bnc#445004)
+- 2.17.54 
+
+-------------------------------------------------------------------
 Mon Dec  1 11:44:18 CET 2008 - mzugec@suse.cz
 
 - Confirm::Detection() - exception for s390 (bnc#429562) 
