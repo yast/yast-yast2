@@ -13,6 +13,8 @@
 
 module "NetworkStorage";
 
+import "FileUtils";
+
 global string getDevice(string mount_point){
  map out = (map)SCR::Execute(.target.bash_output, sformat("grep ' %1 ' /proc/mounts|grep -v rootfs|tr -d '\n'", mount_point));
  list<string> rows =  splitstring(out["stdout"]:"", " ");
@@ -30,19 +32,53 @@ global string getDevice(string mount_point){
  * @return root dev over network
  */
 global boolean isDiskOnNetwork(string device){
+ y2milestone("begin isDiskOnNetwork(%1) function", device);
  if (device=="nfs") return true;
  boolean network_based=false;
- // test for iSCSI
- foreach(map<string, any> disk, (list<map<string, any> >)SCR::Read(.probe.disk), {
-  y2milestone("%1", disk["dev_name"]:"");
-  y2internal("%1", device);
-  if (disk["dev_name"]:""==device){
-   foreach(string row, disk["dev_names"]:[], {
-    if (issubstring(row, "iscsi")) network_based=true;
-   });
+
+ // test for LVM
+ if (!network_based && issubstring(device, "/dev/mapper/")) {
+  y2warning("LVM detected!");
+  string group_name = splitstring(splitstring(device, "/")[3]:"", "-")[0]:"";
+  y2milestone("LVM group name %1", group_name);
+  map<string, any> command = (map<string, any>)SCR::Execute(.target.bash_output, sformat("pvscan 2>/dev/null|grep %1", group_name));
+  foreach(string row, filter(string s, splitstring(command["stdout"]:"", "\n"), { return (size(s)>0);}), {
+   string lvm_device = filter(string s, splitstring(row, " "), { return (size(s)>0);})[1]:"";
+   y2milestone("LVM physical device: %1", lvm_device);
+   if (isDiskOnNetwork(lvm_device)) network_based=true;
+  });
+ }
+
+ // test for RAID
+ if (!network_based && issubstring(device, "/dev/md")){
+  y2warning("RAID detected!");
+  string raid = splitstring(device, "/")[2]:"";
+  y2milestone("RAID %1 detected", raid);
+  map<string, any> command = (map<string, any>)SCR::Execute(.target.bash_output, sformat("cat /proc/mdstat |grep %1|tr -d '\\n'", raid));
+  list<string> raid_devices = sublist(splitstring(command["stdout"]:"", " "), 4);
+  foreach(string dev, raid_devices, {
+   if (!issubstring(dev, "/dev/")) dev = sformat("/dev/%1", dev);
+   string raid_device = substring(dev, 0, findfirstof(dev, "["));
+   if (isDiskOnNetwork(raid_device)) network_based=true;
+   }
+  );
+ }
+
+ //test for iSCSI
+ if (!network_based){
+  if (issubstring(device, "/dev/")){
+   device = splitstring(device, "/")[2]:"";
   }
- });
- // test for nfs (bnc#384420)
+  string sys=sformat("/sys/class/block/%1", device);
+  if (FileUtils::Exists(sys)){
+   if ((integer)SCR::Execute(.target.bash, sformat("ls -la %1 | grep -q session", sys))==0){
+    y2warning("iSCSI detected!");
+    network_based=true;
+   }
+  }
+ }
+
+// test for nfs (bnc#384420)
  if (!network_based) {
   string space="[[:space:]]";
   if (SCR::Execute(.target.bash, sformat("grep '%1%2%3*nfs%4' /proc/mounts ", space, device, space, space))==0){
