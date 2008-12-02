@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Dec  2 15:18:00 CET 2008 - mzugec@suse.cz
+
+- NetworkStorage:: for LVM detection use pvs instead of pvscan 
+
+-------------------------------------------------------------------
 Tue Dec  2 14:05:30 CET 2008 - mzugec@suse.cz
 
 - improved rootfs on network-based disk detection (bnc#445004)
