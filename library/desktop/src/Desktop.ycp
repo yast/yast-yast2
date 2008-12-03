@@ -49,14 +49,17 @@ string LanguageFull = "";
 
 /**
  */
-define string ReadLocalizedKey(path keypath, string key) {
+define string ReadLocalizedKey(string fname, path keypath, string key) {
 
     if(key != "Name" && key != "GenericName")
 	return (string) SCR::Read(add(keypath, key));
 
     string ret = "";
     string newkey = "";
+    string fallback = (string) SCR::Read(add(keypath, key));
 
+    //check if there are any translation in .desktop file
+    //that is - Name[$lang_code] 
     if(LanguageFull != nil || LanguageFull != "") {
 	newkey = sformat("%1[%2]", key, LanguageFull);
 	ret = (string) SCR::Read(add(keypath, newkey));
@@ -69,7 +72,17 @@ define string ReadLocalizedKey(path keypath, string key) {
 	if(ret != nil && ret != "") return ret;
     }
 
-    return (string) SCR::Read(add(keypath, key));
+    //no translations in .desktop, check desktop_translations.mo then
+    string msgid = sformat("%1(%2): %3", key, fname, fallback );
+    ret = dgettext( "desktop_translations", msgid );
+
+    //probably untranslated - return english name
+    if(ret == msgid)
+    {
+	return fallback;
+    }
+
+    return ret;
 }
 
 /**
@@ -77,6 +90,14 @@ define string ReadLocalizedKey(path keypath, string key) {
  * @param Values list of values to be parsed (empty to read all)
  */
 global define void Read(list<string> Values) {
+
+    string ExtractDesktopFilename( string fullpath )
+    {
+	list <string> path_components = splitstring(fullpath, "/");
+	string filename = path_components[ size( path_components) - 1]:"";
+
+	return filename;
+    }
 
     /* read modules */
     map filemap = $[];
@@ -102,11 +123,12 @@ global define void Read(list<string> Values) {
     foreach(string group, groups, {
 	filemap = $[];
 	filepath = .yast2.groups.v + group + "Desktop Entry";
+	string filename = ExtractDesktopFilename( group );
 
 	filemap["Icon"] = SCR::Read(filepath + "Icon");
 	filemap["SortKey"] = SCR::Read(filepath + "X-SuSE-YaST-SortKey");
 	filemap["Hidden"] = SCR::Read(filepath + "Hidden");
-	filemap["Name"] = ReadLocalizedKey(filepath, "Name");
+	filemap["Name"] = ReadLocalizedKey(filename, filepath, "Name");
 	filemap["modules"] = [];
 
 	string name = (string) SCR::Read(filepath + "X-SuSE-YaST-Group");
@@ -119,9 +141,11 @@ global define void Read(list<string> Values) {
 	filemap = $[];
 	filepath = AgentPath + .v + file + ."Desktop Entry";
 	list<string> values = (list<string>) SCR::Dir(filepath);
+	string filename = ExtractDesktopFilename( file );
+
 	if(Values != nil && Values != []) values = Values;
 	foreach(string value, values, {
-	    string ret = ReadLocalizedKey(filepath, value);
+	    string ret = ReadLocalizedKey(filename, filepath, value);
 	    if(ret != nil && ret != "") filemap[value] = ret;
 	});
 	string name = regexpsub(file, "^.*/(.*)\.desktop", "\\1");
