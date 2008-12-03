@@ -57,6 +57,14 @@ if [ -f /etc/install.inf ]; then
     LIST="$LIST /etc/install.inf"
 fi
 
+if [ -f /etc/X11/xorg.conf ]; then
+    LIST="$LIST /etc/X11/xorg.conf"
+fi
+
+if [ -f /var/log/Xorg.0.log ]; then
+    LIST="$LIST /var/log/Xorg.0.log"
+fi
+
 RPM_LIST="rpm-qa"
 if [ -f /var/lib/rpm/Packages ]; then
     rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}\t\t\t(%{VENDOR})\t%{DISTRIBUTION}\n' 2>/dev/null | sort >/var/log/$RPM_LIST
