@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Dec  3 15:55:44 CET 2008 - kmachalkova@suse.cz
+
+- Take translations of group and module names in ncurses CC from
+  system-wide desktop_translations.mo - they are not part of YaST
+  .desktop files anymore (bnc#450494) 
+
+-------------------------------------------------------------------
 Wed Dec 03 14:39:30 CET 2008 - aschnell@suse.de
 
 - save xorg conf and log in save_y2logs
