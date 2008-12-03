@@ -188,7 +188,8 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
     });
     if(ok != true) return false;
 
-    if(Pkg::PkgSolve (false) != true) {
+    // do not install recommended packages for already installed packages (bnc#445476)
+    if(Pkg::Solve($["ignoreAlreadyRecommended":true]) != true) {
 	y2error("Package solve failed: %1", Pkg::LastError());
 	if (packages_consistent)
 	{

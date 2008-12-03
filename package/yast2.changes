@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Dec  3 10:28:01 CET 2008 - lslezak@suse.cz
+
+- PackageSystem::DoInstallAndRemove() - do not install recommended
+  packages for already installed packages (bnc#445476)
+- 2.17.55
+
+-------------------------------------------------------------------
 Tue Dec  2 15:18:00 CET 2008 - mzugec@suse.cz
 
 - NetworkStorage:: for LVM detection use pvs instead of pvscan 
