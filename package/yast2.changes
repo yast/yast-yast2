@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Dec 03 14:39:30 CET 2008 - aschnell@suse.de
+
+- save xorg conf and log in save_y2logs
+- 2.17.56
+
+-------------------------------------------------------------------
 Wed Dec  3 10:28:01 CET 2008 - lslezak@suse.cz
 
 - PackageSystem::DoInstallAndRemove() - do not install recommended
