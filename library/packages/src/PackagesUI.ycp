@@ -231,7 +231,7 @@ To reject the license of the package, click <b>I Disagree</b></p>.");
 
 	UI::OpenDialog(`opt(`defaultsize),
 			// Note: size(`opt()) = 0 !!
-			  size(widget_options) > 1 ?
+			  size(widget_options) >= 1 ?
 			    `PackageSelector(`id(`packages), widget_options, "")
 			    : `PackageSelector(`id(`packages), "")
 			  );
