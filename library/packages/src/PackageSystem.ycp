@@ -188,8 +188,15 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
     });
     if(ok != true) return false;
 
+    // remember the current flags
+    map<string,any> solver_flags = Pkg::GetSolverFlags();
     // do not install recommended packages for already installed packages (bnc#445476)
-    if(Pkg::Solve($["ignoreAlreadyRecommended":true]) != true) {
+    Pkg::SetSolverFlags($["ignoreAlreadyRecommended":true]);
+    boolean solved = Pkg::PkgSolve(false);
+    // restore the original flags
+    Pkg::SetSolverFlags(solver_flags);
+
+    if(solved != true) {
 	y2error("Package solve failed: %1", Pkg::LastError());
 	if (packages_consistent)
 	{
