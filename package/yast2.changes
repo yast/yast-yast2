@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Dec  8 12:33:02 CET 2008 - jsuchome@suse.cz
+
+- menu.ycp: do not wait for integer return value of YOU (bnc#457167)
+- 2.17.59
+
+-------------------------------------------------------------------
 Fri Dec  5 15:32:57 CET 2008 - lslezak@suse.cz
 
 - PackagesUI.ycp - properly pass the mode parameter to the packager

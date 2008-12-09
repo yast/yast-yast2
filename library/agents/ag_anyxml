@@ -33,7 +33,7 @@
 # Non-default write options could be used by passing extra submap with
 # "args" key in the write map:
 #
-# SCR::Write (.anyxml, $[ "file": "c.xml", "xml" : conf, "args: $[
+# SCR::Write (.anyxml, $[ "file": "c.xml", "xml" : conf, "args": $[
 #	"XMLDecl"	: <?xml version="123456789"?>,
 #	"RootName"	: "test"
 # ]);
