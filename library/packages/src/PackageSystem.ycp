@@ -169,6 +169,10 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
 
     // check if the database is consistent before packages are added
     boolean packages_consistent = Pkg::PkgSolveCheckTargetOnly();
+    // reset the solver - disable the fixsystem solver mode (bnc#439373)
+    Pkg::SetSolverFlags($["reset":true]);
+    // reset the preselected transactions
+    Pkg::PkgApplReset();
 
     foreach (string p, toinstall, {
 	if(ok == true)
