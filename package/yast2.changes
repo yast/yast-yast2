@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Dec 15 13:20:41 CET 2008 - lslezak@suse.cz
+
+- PackageSystem::DoInstallAndRemove() - reset the fixsystem solver
+  flag and do not install extra (unrelated) packages (bnc#439373)
+- 2.17.60
+
+-------------------------------------------------------------------
 Mon Dec  8 12:33:02 CET 2008 - jsuchome@suse.cz
 
 - menu.ycp: do not wait for integer return value of YOU (bnc#457167)
