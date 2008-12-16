@@ -375,7 +375,7 @@
      */
     global void AppendMessageToInstLog (string msg)
     {
-	string log_line = "\n" + msg;
+	string log_line = msg + "\n";
 	inst_log = inst_log + log_line;
 
 	if ( ShowingDetails() )
