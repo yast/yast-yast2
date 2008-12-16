@@ -68,7 +68,7 @@
 	list<string> to_install = Pkg::GetPackages (`selected, true);
 	map<string,string> licenses = Pkg::PkgGetLicensesToConfirm (to_install);
 
-	y2milestone("Licenses to confirm: %1", licenses);
+	y2debug("Licenses to confirm: %1", licenses);
 
 	map display_info = UI::GetDisplayInfo();
 	integer size_x = tointeger(display_info["Width"]:800);
