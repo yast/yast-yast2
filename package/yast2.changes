@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Dec 17 14:35:22 CET 2008 - lslezak@suse.cz
+
+- PackageSystem::DoInstallAndRemove() - check the system and offer
+  to fix it when there are inconsistencies, do not commit the
+  changes if there are unresolved dependencies (bnc#439373)
+
+-------------------------------------------------------------------
 Wed Dec 17 14:16:19 CET 2008 - locilka@suse.cz
 
 - Escaping parameters when calling /usr/bin/genDDNSkey

@@ -102,7 +102,31 @@ global boolean DoRemove(list<string> packages) {
     return DoInstallAndRemove([], packages);
 }
 
-global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove) {
+boolean SelectPackages(list<string> toinstall, list<string> toremove)
+{
+    boolean ok = true;
+
+    foreach (string p, toinstall, {
+	if(ok == true)
+	    if(Pkg::PkgInstall(p) != true) {
+		y2error("Package %1 install failed: %2", p, Pkg::LastError());
+		ok = false;
+	    }
+    });
+    if(ok != true) return false;
+
+    foreach (string p, toremove, {
+	if(ok == true)
+	    if(Pkg::PkgDelete(p) != true) {
+		y2error("Package %1 delete failed: %2", p, Pkg::LastError());
+		ok = false;
+	    }
+    });
+
+    return ok;
+}
+
+boolean DoInstallAndRemoveInt(list<string> toinstall, list<string> toremove) {
     y2debug ("toinstall: %1, toremove: %2", toinstall, toremove);
     if (!PackageLock::Check ())
     {
@@ -115,6 +139,8 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
 
     import "Label";
     import "Popup";
+    import "PackagesUI";
+
     // licenses: #35250
     map<string, string> licenses = Pkg::PkgGetLicensesToConfirm (toinstall);
     if (size (licenses) > 0)
@@ -167,45 +193,121 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
 	last_op_canceled = false;
     }
 
+
     // check if the database is consistent before packages are added
     boolean packages_consistent = Pkg::PkgSolveCheckTargetOnly();
-    // reset the solver - disable the fixsystem solver mode (bnc#439373)
-    Pkg::SetSolverFlags($["reset":true]);
-    // reset the preselected transactions
-    Pkg::PkgApplReset();
+    boolean transact = Pkg::IsAnyResolvable(`any, `to_install) || Pkg::IsAnyResolvable(`any, `to_remove);
 
-    foreach (string p, toinstall, {
-	if(ok == true)
-	    if(Pkg::PkgInstall(p) != true) {
-		y2error("Package %1 install failed: %2", p, Pkg::LastError());
-		ok = false;
+    y2internal("Target solved: %1, something to transact: %2", packages_consistent, transact);
+
+    if (!SelectPackages(toinstall, toremove))
+    {
+	return false;
+    }
+
+    boolean packager_displayed = false;
+
+    // display an error message and advice to manually fix the system
+    if (!packages_consistent || transact)
+    {
+	y2warning("The current system is not consistent");
+
+	string message = _("The current system is not consistent,
+some packages have unresolved dependencies.");
+
+	if (!packages_consistent)
+	{
+	    message = message + "\n\n" + _("Automatic resolving failed, manual dependency resolving is needed.");
+	}
+
+	if (transact)
+	{
+	    message = message + "\n\n" + _("Yast has automatically added or removed some packages,
+check the changes scheduled to fix the system
+in the package manager.");
+	}
+
+
+	message = message + "\n\n" + _("Start the package manager and fix the problems
+or skip fixing and install the already confirmed packages only?");
+
+	symbol fixsystem = Popup::AnyQuestion3(Label::WarningMsg(), message, Label::ContinueButton(),
+	    Label::SkipButton(), Label::AbortButton(), `focus_yes);
+
+	y2milestone("Fixsystem answer: %1", fixsystem);
+
+	// the 3rd button ("Abort" label in this case)
+	if (fixsystem == `retry)
+	{
+	    y2milestone("Aborting package installation");
+	    // do not install anything, abort
+	    return false;
+	}
+	else if (fixsystem == `yes)
+	{
+	    // disable repomanagement during installation
+	    boolean repomgmt = !Mode::installation();
+	    // start the package selector
+	    symbol ret = PackagesUI::RunPackageSelector($[ "enable_repo_mgr" : repomgmt, "mode" : `summaryMode ]);
+
+	    y2internal("Package selector returned: %1", ret);
+
+	    // do not install anything
+	    if (ret == `cancel || ret == `close)
+	    {
+		y2milestone("Aborting package installation");
+		return false;
 	    }
-    });
-    if(ok != true) return false;
 
-    foreach (string p, toremove, {
-	if(ok == true)
-	    if(Pkg::PkgDelete(p) != true) {
-		y2error("Package %1 delete failed: %2", p, Pkg::LastError());
-		ok = false;
+	    packager_displayed = true;
+	}
+	// `no = do not fix the system, install the required packages only
+	// and ignore the inconsistencies
+	else if (fixsystem == `no)
+	{
+	    y2milestone("Resetting the preselected packages");
+	    // reset the solver - disable the fixsystem solver mode (bnc#439373)
+	    Pkg::SetSolverFlags($["reset":true]);
+	    // reset the preselected transactions to fix the problems
+	    Pkg::PkgApplReset();
+
+	    // reselect the packages again after the reset
+	    if (!SelectPackages(toinstall, toremove))
+	    {
+		return false;
 	    }
-    });
-    if(ok != true) return false;
+	}
+	else
+	{
+	    y2internal("Unknown result %1, aborting", fixsystem);
+	    return false;
+	}
+    }
 
-    // remember the current flags
-    map<string,any> solver_flags = Pkg::GetSolverFlags();
-    // do not install recommended packages for already installed packages (bnc#445476)
-    Pkg::SetSolverFlags($["ignoreAlreadyRecommended":true]);
     boolean solved = Pkg::PkgSolve(false);
-    // restore the original flags
-    Pkg::SetSolverFlags(solver_flags);
 
-    if(solved != true) {
+    if(solved != true)
+    {
 	y2error("Package solve failed: %1", Pkg::LastError());
-	if (packages_consistent)
+
+	// error message, after pressing [OK] the package manager is displayed
+	Report::Error(_("There are unresolved dependencies which need
+to be solved manually in the package manager."));
+
+	// disable repomanagement during installation
+	boolean repomgmt = !Mode::installation();
+	// start the package selector
+	symbol ret = PackagesUI::RunPackageSelector($[ "enable_repo_mgr" : repomgmt, "mode" : `summaryMode ]);
+
+	y2internal("Package selector returned: %1", ret);
+
+	// do not fix the system
+	if (ret == `cancel || ret == `close)
 	{
 	    return false;
 	}
+
+	packager_displayed = true;
     }
 
     // is a package or a patch selected for installation?
@@ -246,8 +348,33 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
 	SCR::RegisterNewAgents();
     }
 
+    // check if the required packages have been installed
+    // (user could deselect or uninstall them in the packager widget)
+    if (packager_displayed && !InstalledAll(toinstall))
+    {
+	y2error("Required packages have not been installed");
+	return false;
+    }
+
     return true;
 }
+
+global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
+{
+    // remember the current solver flags
+    map<string,any> solver_flags = Pkg::GetSolverFlags();
+
+    // do not install recommended packages for already installed packages (bnc#445476)
+    Pkg::SetSolverFlags($["ignoreAlreadyRecommended":true]);
+
+    boolean ret = DoInstallAndRemoveInt(toinstall, toremove);
+
+    // restore the original flags
+    Pkg::SetSolverFlags(solver_flags);
+
+    return ret;
+}
+
 
 /**
  * Is a package available?
