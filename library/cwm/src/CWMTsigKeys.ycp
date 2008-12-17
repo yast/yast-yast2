@@ -17,6 +17,7 @@ import "CWM";
 import "Label";
 import "Report";
 import "Popup";
+import "String";
 
 // pre-declarations
 
@@ -392,8 +393,8 @@ on your disk. Remove it?")))
 	SCR::Execute (.target.bash,
 	    "test -d /etc/named.d || mkdir /etc/named.d");
 	string gen_command = sformat (
-	    "/usr/bin/genDDNSkey --force  -f %1 -n %2 -d /etc/named.d",
-	    new_filename, key);
+	    "/usr/bin/genDDNSkey --force  -f '%1' -n '%2' -d /etc/named.d",
+	    String::Quote (new_filename), String::Quote (key));
 	y2milestone ("Running %1", gen_command);
 	integer gen_ret = (integer)SCR::Execute (.target.bash, gen_command);
 	if (gen_ret != 0)

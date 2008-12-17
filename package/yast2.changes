@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Dec 17 14:16:19 CET 2008 - locilka@suse.cz
+
+- Escaping parameters when calling /usr/bin/genDDNSkey
+  (bnc #459739)
+
+-------------------------------------------------------------------
 Mon Dec 15 13:20:41 CET 2008 - lslezak@suse.cz
 
 - PackageSystem::DoInstallAndRemove() - reset the fixsystem solver
