@@ -8,9 +8,6 @@ use ycp;
 use strict;
 use File::Basename;
 
-# Utf8 conversion defined in ycp.pm
-binmode STDOUT, ':raw';
-
 my $debug = defined ($ARGV[0]) && $ARGV[0] =~ "^-.*d";
 
 sub DEBUG
