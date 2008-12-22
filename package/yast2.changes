@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Dec 22 13:02:28 CET 2008 - lslezak@suse.cz
+
+- PackageCallbacks.ycp - do not log a password in URL (bnc#460978)
+
+-------------------------------------------------------------------
 Wed Dec 17 14:35:22 CET 2008 - lslezak@suse.cz
 
 - PackageSystem::DoInstallAndRemove() - check the system and offer
