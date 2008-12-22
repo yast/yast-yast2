@@ -723,7 +723,7 @@ void CheckAndSaveAutoEject()
 	}
 
 	y2milestone ("MediaChange error: err'%1', url'%2', prd'%3', cur'%4'/'%5', wan'%6'/'%7', devs: %8, curr_dev: %9",
-	    error_code + ":" + error, url, product, current, current_label, wanted, wanted_label, devices, current_device);
+	    error_code + ":" + error, URL::HidePassword(url), product, current, current_label, wanted, wanted_label, devices, current_device);
 
 	map url_tokens = URL::Parse (url);
 	string url_scheme = url_tokens["scheme"]:"";
@@ -932,7 +932,7 @@ Check whether the server is accessible."), wanted_label);
 	    return "S";
 	}
 
-	y2internal("Opening Dialog: %1", LayoutPopup (message, button_box, 10, true));
+	y2debug("Opening Dialog: %1", LayoutPopup (message, button_box, 10, true));
 
 	if ( showLongInfo )
 	{
@@ -1092,7 +1092,7 @@ Check whether the server is accessible."), wanted_label);
 
 	if (r == `url)
 	{
-	    y2milestone("Redirecting to: %1", url);
+	    y2milestone("Redirecting to: %1", URL::HidePassword(url));
 	    return url;
 	}
 
@@ -1153,7 +1153,7 @@ string ProcessMessage(string msg, integer max_len)
 
     if (ret != msg)
     {
-	y2milestone("URL conversion: '%1' converted to '%2'", msg, ret);
+	y2milestone("URL conversion: '%1' converted to '%2'", URL::HidePassword(msg), URL::HidePassword(ret));
     }
 
     return ret;
@@ -1290,7 +1290,7 @@ global boolean SourceCreateProgress(integer percent) {
 }
 
 global symbol SourceCreateError (string url, symbol error, string description) {
-    y2milestone ("Source create: error: url: %1, error: %2, description: %3", url, error, description);
+    y2milestone ("Source create: error: url: %1, error: %2, description: %3", URL::HidePassword(url), error, description);
 
     // error message - a label followed by a richtext with details
     string message = _("Error occurred while creating the repository.");
@@ -1311,7 +1311,7 @@ global symbol SourceCreateError (string url, symbol error, string description) {
     if (Mode::commandline())
     {
 	CommandLine::Print(message);
-	CommandLine::Print(url);
+	CommandLine::Print(URL::HidePassword(url));
 	CommandLine::Print(description);
 
 	// ask user in the interactive mode
@@ -1352,17 +1352,17 @@ global void SourceCreateEnd(string url, symbol error, string description)
     // set 100% progress
     SourcePopupSetProgress(100);
 
-    y2milestone ("Source create end: error: url: %1, error: %2, description: %3", url, error, description);
+    y2milestone ("Source create end: error: url: %1, error: %2, description: %3", URL::HidePassword(url), error, description);
 }
 
 
 
 global void SourceProbeStart(string url)
 {
-    y2milestone ("SourceProbeStart: %1", url);
+    y2milestone ("SourceProbeStart: %1", URL::HidePassword(url));
 
     // popup label (%1 is repository URL)
-    string msg = sformat(_("Probing Repository %1"), url);
+    string msg = sformat(_("Probing Repository %1"), URL::HidePassword(url));
 
     if (Mode::commandline()) {
 	CommandLine::Print(msg);
@@ -1371,7 +1371,7 @@ global void SourceProbeStart(string url)
     {
 	OpenSourcePopup();
 
-	string msg = sformat(_("Probing Repository %1"), url);
+	string msg = sformat(_("Probing Repository %1"), URL::HidePassword(url));
 
 	if (_source_open == 1)
 	{
@@ -1387,12 +1387,12 @@ global void SourceProbeStart(string url)
 
 global void SourceProbeFailed(string url, string type)
 {
-    y2milestone("Repository %1 is not %2 repository", url, type);
+    y2milestone("Repository %1 is not %2 repository", URL::HidePassword(url), type);
 }
 
 global void SourceProbeSucceeded(string url, string type)
 {
-    y2milestone("Repository %1 is type %2", url, type);
+    y2milestone("Repository %1 is type %2", URL::HidePassword(url), type);
 }
 
 
@@ -1403,7 +1403,7 @@ global boolean SourceProbeProgress(string url, integer value)
 
 global symbol SourceProbeError(string url, symbol error, string description) {
 
-    y2milestone ("Source probe: error: url: %1, error: %2, description: %3", url, error, description);
+    y2milestone ("Source probe: error: url: %1, error: %2, description: %3", URL::HidePassword(url), error, description);
 
     // error message - a label followed by a richtext with details
     string message = _("Error occurred while probing the repository.");
@@ -1427,7 +1427,7 @@ global symbol SourceProbeError(string url, symbol error, string description) {
     if (Mode::commandline())
     {
 	CommandLine::Print(message);
-	CommandLine::Print(url);
+	CommandLine::Print(URL::HidePassword(url));
 	CommandLine::Print(description);
 
 	// ask user in the interactive mode
@@ -1466,13 +1466,13 @@ global void SourceProbeEnd(string url, symbol error, string description) {
     CloseSourcePopup();
     CloseSourcePopup();
 
-    y2milestone ("Source probe end: error: url: %1, error: %2, description: %3", url, error, description);
+    y2milestone ("Source probe end: error: url: %1, error: %2, description: %3", URL::HidePassword(url), error, description);
 }
 
 
 global void SourceReportStart(integer source_id, string url, string task)
 {
-    y2milestone("Source report start: src: %1, URL: %2, task: %3", source_id, url, task);
+    y2milestone("Source report start: src: %1, URL: %2, task: %3", source_id, URL::HidePassword(url), task);
 
     if (Mode::commandline()) {
 	CommandLine::Print(task);
@@ -1502,7 +1502,7 @@ global boolean SourceReportProgress(integer value)
 
 
 global symbol SourceReportError(integer source_id, string url, symbol error, string description) {
-    y2milestone ("Source report: error: id: %1, url: %2, error: %3, description: %4", source_id, url, error, description);
+    y2milestone ("Source report: error: id: %1, url: %2, error: %3, description: %4", source_id, URL::HidePassword(url), error, description);
 
     // error message - a label followed by a richtext with details
     string message = sformat(_("Repository %1"), url);
@@ -1558,7 +1558,7 @@ global symbol SourceReportError(integer source_id, string url, symbol error, str
 
 global void SourceReportEnd(integer src_id, string url, string task, symbol error, string description)
 {
-    y2milestone ("Source report end: src: %1, url: %2, task: %3, error: %4, description: %5", src_id, url, task, error, description);
+    y2milestone ("Source report end: src: %1, url: %2, task: %3, error: %4, description: %5", src_id, URL::HidePassword(url), task, error, description);
 
     // set 100% progress
     SourcePopupSetProgress(100);
@@ -1778,7 +1778,7 @@ global void SourceReportDestroy()
 				   Label::IgnoreButton(), /*retry_button_message*/
 				   `retry /*symbol focus*/ );
 
-	y2internal("Problem result: %1", ui);
+	y2milestone("Problem result: %1", ui);
 
 	// Abort is the default
 	string ret = "A";
@@ -1927,13 +1927,13 @@ might be missing or out of date.")),
 
     global void StartDownload (string url, string localfile)
     {
-	y2milestone("Downloading %1 to %2", url, localfile);
+	y2milestone("Downloading %1 to %2", URL::HidePassword(url), localfile);
 
 	// heading of popup
 	string heading = _("Downloading");
 
 	// reformat the URL
-	string url_report = URL::FormatURL(URL::Parse(url), max_size);
+	string url_report = URL::FormatURL(URL::Parse(URL::HidePassword(url)), max_size);
 	// remember the URL
 	download_file = url_report;
 
