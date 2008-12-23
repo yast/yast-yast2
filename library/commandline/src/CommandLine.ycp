@@ -713,7 +713,22 @@
 	    y2debug("cmdlinespec: %1", cmdlinespec);
 
 	    foreach(string action, map description, actions, {
-		    string help = description["help"]:"";
+		    string help = "";
+
+		    // help text might be a simple string or a multiline text (list<string>)
+		    any help_value = description["help"]:nil;
+		    if (is(help_value, string))
+		    {
+			help = (string)help_value;
+		    }
+		    else if (is(help_value, list<string>))
+		    {
+			help = mergestring((list<string>)help_value, "\n");
+		    }
+		    else
+		    {
+			y2error("Unsupported data type for 'help' key: %1, use 'string' or 'list<string>' type!", help_value);
+		    }
 
 		    list<map> opts = [];
 
