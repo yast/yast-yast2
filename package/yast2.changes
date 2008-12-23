@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Dec 23 08:38:26 CET 2008 - lslezak@suse.cz
+
+- CommandLine.ycp - fixed handling of multiline help texts in
+  'xmlhelp' command (bnc#430848)
+
+-------------------------------------------------------------------
 Mon Dec 22 13:02:28 CET 2008 - lslezak@suse.cz
 
 - PackageCallbacks.ycp - do not log a password in URL (bnc#460978)
