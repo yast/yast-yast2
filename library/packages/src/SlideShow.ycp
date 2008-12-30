@@ -535,8 +535,8 @@
 							`header(
 								// Table headings for CD statistics during installation
 								_("Media"),
-								// Table headings for CD statistics during installation
-								`Right( _("Size") ),
+								// Table headings for CD statistics during installation - keep as short as possible!
+								`Right( _("Installed Size") ),
 								// Table headings for CD statistics during installation
 								`Right( _("Packages") ),
 								// Table headings for CD statistics during installation

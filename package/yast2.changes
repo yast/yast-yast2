@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Dec 30 14:37:45 CET 2008 - lslezak@suse.cz
+
+- use "Installed Size" label in the summary table during package
+  installation (bnc#355326)
+
+-------------------------------------------------------------------
 Tue Dec 23 08:38:26 CET 2008 - lslezak@suse.cz
 
 - CommandLine.ycp - fixed handling of multiline help texts in
