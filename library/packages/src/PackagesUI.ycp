@@ -184,7 +184,12 @@ To reject the license of the package, click <b>I Disagree</b></p>.");
      *	    // default: false (disabled)
      *	  "display_support_status" : boolean // display the support status summary dialog,
      *	    // default: depends on the Product Feature "software", "display_support_status"
-     *	  "mode" : symbol // package selector mode, no default value
+     *	  "mode" : symbol // package selector mode, no default value, supported values:
+     *		`youMode (online update mode),
+     *		`updateMode (update mode),
+     *		`searchMode (search filter view),
+     *		`summaryMode (installation summary filter view),
+     *		`repoMode (repositories filter view
      * ]
      *
      * @return symbol Returns `accept or `cancel .
