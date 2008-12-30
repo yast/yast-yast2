@@ -650,7 +650,8 @@
     string HelpText()
     {
 	// Help text while software packages are being installed (displayed only in rare cases)
-	string help_text = _("<p>Please wait while packages are being installed.</p>");
+	string help_text = _("<p>Please wait while packages are being installed.</p>")
+	+ _("<P><B>Aborting Installation</B>Package installation can be abored using the <B>Abort</B> button. However, the system then can be in a inconsistent or unusable state or it may not boot if a basic system component is not installed.</P>");
 
 	return help_text;
     }
