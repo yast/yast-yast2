@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jan  5 14:18:09 CET 2009 - lslezak@suse.cz
+
+- 2.17.61
+
+-------------------------------------------------------------------
 Tue Dec 23 08:38:26 CET 2008 - lslezak@suse.cz
 
 - CommandLine.ycp - fixed handling of multiline help texts in
