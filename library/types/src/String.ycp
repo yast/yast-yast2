@@ -1242,5 +1242,18 @@ global string FormatFilename(string file_path, integer len)
     return ret;
 }
 
+/**
+ * Remove a shortcut from a label, so that it can be inserted into help
+ * to avoid risk of different translation of the label
+ * @param label string a label possibly including a shortcut
+ * @return string the label without the shortcut mark
+ */
+global string RemoveShortcut (string label) {
+    string ret = label;
+    if (regexpmatch (label, "^(.*[^&])?(&&)*&[[:alnum:]].*$"))
+	ret = regexpsub (label, "^((.*[^&])?(&&)*)&([[:alnum:]].*)$", "\\1\\4");
+    return ret;
+}
+
 /* EOF */
 }
