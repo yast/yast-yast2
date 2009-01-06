@@ -110,3 +110,16 @@ Return
 Dump	Strings::EscapeTags
 Return	&lt;font size='2'&gt;&lt;b&gt;text &amp; another&lt;/b&gt;&lt;/font&gt;
 Return	2 &gt; 1
+Dump	Strings::RemoveShortcut
+Return	Hello
+Return	Hello
+Return	He&&llo
+Return	He&&llo
+Return	He&&&&llo
+Return	He&&&&llo
+Return	Hello
+Return	&&Hello
+Return	&&Hello
+Return	&&&&Hello
+Return	&&&&Hello
+Return	&&Hello

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan  6 12:12:09 CET 2009 - jsrain@suse.cz
+
+- added String::RemoveShortcut to allow using widget labels in help
+  texts to ensure translations are in sync (bnc #307220)
+
+-------------------------------------------------------------------
 Tue Dec 30 14:37:45 CET 2008 - lslezak@suse.cz
 
 - use "Installed Size" label in the summary table during package
