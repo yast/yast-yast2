@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 19 17:38:12 CET 2009 - lslezak@suse.cz
+
+- URL.ycp - fixed parsing and building IPv6 URLs, testsuite update
+  (bnc#465820)
+
+-------------------------------------------------------------------
 Tue Jan  6 12:12:09 CET 2009 - jsrain@suse.cz
 
 - added String::RemoveShortcut to allow using widget labels in help
