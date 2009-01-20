@@ -21,6 +21,11 @@ Return	ftp://ftp.example.com/path/to/dir
 Return	ftp://ftp.example.com/%2fpath/to/dir
 Return	ftp://ftp.example.com/%2fpath/to/dir
 Return	ftp://ftp.example.com/%2fpath/to/dir
+Return	ftp://[2001:de8:0:f123::1]/%2fpath/to/dir
+Return	http://[2001:de8:0:f123::1]:8080/path/to/dir
+Return	$["fragment":"", "host":"2001:de8:0:f123::1", "pass":"", "path":"/path/to/dir", "port":"", "query":"", "scheme":"http", "user":""]
+Return	$["fragment":"", "host":"2001:de8:0:f123::1", "pass":"password", "path":"/path/to/dir", "port":"8080", "query":"", "scheme":"http", "user":"user"]
+Return	http://user:password@[2001:de8:0:f123::1]:8080/path/to/dir
 Return	dir:///
 Return	http://download.opensuse.org/very/log/path/which/will/be/truncated/target_file
 Return	http://download.opensuse.org/.../target_file

@@ -225,6 +225,21 @@ global define map Parse(string url) ``{
     else
 	tokens["host"] = userpass[7]:"";
 
+    string hostport6 = substring(rawtokens[2]:"", size(userpass[0]:""));
+    y2debug("hostport6: %1", hostport6);
+
+    // check if there is an IPv6 address
+    string host6 = regexpsub(hostport6, "^\\[(.*)\\]", "\\1");
+
+    if (host6 != nil && host6 != "")
+    {
+	y2milestone("IPv6 host detected: %1", host6);
+	tokens["host"] = host6;
+	string port6 = regexpsub(hostport6, "^\\[.*\\]:(.*)", "\\1");
+	y2debug("port: %1", port6);
+	tokens["port"] = (port6 != nil) ? port6 : "";
+    }
+
     // some exceptions for samba scheme (there is optional extra option "domain")
     if (tokens["scheme"]:""=="samba" || tokens["scheme"]:""=="smb"){
      list<string> tmp_list = filter(string row, splitstring(tokens["path"]:"", "/"), {return (size(row)>0);});
@@ -254,6 +269,8 @@ global define boolean Check(string url) ``{
     if(search(url, " ") != nil) return false;
 
     map tokens = Parse(url);
+
+    y2debug("tokens: %1", tokens);
 
     /* Check "scheme"  : "http" */
     if(!regexpmatch(tokens["scheme"]:"", "^[[:alpha:]]*$"))
@@ -319,7 +336,10 @@ global define string Build (map tokens) ``{
 
 	if(Hostname::CheckFQ(tokens["host"]:"") || IP::Check(tokens["host"]:""))
 	{
-		url = sformat("%1%2", url, tokens["host"]:"");
+	    // enclose an IPv6 address in square brackets
+	    url = (IP::Check6(tokens["host"]:"")) ?
+		sformat("%1[%2]", url, tokens["host"]:"") :
+		sformat("%1%2", url, tokens["host"]:"");
 	}
 	y2debug("url: %1", url);
 
