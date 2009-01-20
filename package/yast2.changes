@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jan 19 17:38:12 CET 2009 - lslezak@suse.cz
+
+- URL.ycp - fixed parsing and building IPv6 URLs, testsuite update
+  (bnc#465820)
+- 2.17.62
+
+-------------------------------------------------------------------
 Mon Jan  5 14:18:09 CET 2009 - lslezak@suse.cz
 
 - 2.17.61
