@@ -17,6 +17,47 @@
 
     import "Label";
     import "Wizard";
+    import "HTML";
+    import "String";
+    import "Popup";
+
+    map<string, any> package_summary = $[];
+
+    global map<string, any> GetPackageSummary()
+    {
+	return package_summary;
+    }
+
+    global void SetPackageSummary(map<string, any> summary)
+    {
+	if (summary == nil)
+	{
+	    y2error("Cannot set nil package summary!");
+	    return;
+	}
+
+	y2debug("Setting package summary: %1", summary);
+	package_summary = summary;
+    }
+
+    global void ResetPackageSummary()
+    {
+	y2debug("Resetting package summary");
+	package_summary = $[];
+    }
+
+    global void SetPackageSummaryItem(string name, any value)
+    {
+	if (name == nil || name == "")
+	{
+	    y2error("Invalid item name: '%1'", name);
+	    return;
+	}
+
+	y2debug("Package summary '%1': %2", name, value);
+
+	package_summary[name] = value;
+    }
 
 
     //
@@ -339,6 +380,241 @@ To reject the license of the package, click <b>I Disagree</b></p>.");
 
 	y2milestone("Pattern selector returned %1", result);
 	return result;
+    }
+
+    string FormatPackageList(list<string> pkgs, string link)
+    {
+	string ret = "";
+
+	if (size(pkgs) > 8)
+	{
+	    list<string> head = sublist(pkgs, 0, 8);
+	    ret = sformat("%1... %2", mergestring(head, ", "), HTML::Link(_("(more)"), link));
+	}
+	else
+	{
+	    ret = mergestring(pkgs, ", ");
+	}
+
+	return ret;
+    }
+
+    global string InstallationSummary(map<string,any> summary)
+    {
+	string ret = "";
+
+	if (haskey(summary, "success"))
+	{
+	    ret = HTML::Para(HTML::Heading(summary["success"]:true ? _("Installation Successfully Finished")
+	    : _("Package Installation Failed")));
+	}
+
+	if (haskey(summary, "error"))
+	{
+	    ret = ret + HTML::List([sformat(_("Error Message: %1"), HTML::Colorize(summary["error"]:"", "red"))]);
+	}
+
+	list<string> items = [];
+
+	integer failed_packs = size(summary["failed"]:[]);
+	if (failed_packs > 0)
+	{
+	    items = add(items, HTML::Colorize(sformat(_("Failed Packages: %1"), failed_packs), "red")
+		+ "<BR>" + FormatPackageList(lsort((list<string>)summary["failed"]:[]), "failed_packages"));
+	}
+
+	if (summary["installed"]:0 > 0)
+	{
+	    items = add(items, sformat(_("Installed Packages: %1"), summary["installed"]:0)
+		+ "<BR>" + FormatPackageList(lsort((list<string>)summary["installed_list"]:[]), "installed_packages"));
+	}
+
+	if (summary["updated"]:0 > 0)
+	{
+	    items = add(items, sformat(_("Updated Packages: %1"), summary["updated"]:0)
+		+ "<BR>" + FormatPackageList(lsort((list<string>)summary["updated_list"]:[]), "updated_packages"));
+	}
+
+	if (summary["removed"]:0 > 0)
+	{
+	    items = add(items, sformat(_("Removed Packages: %1"), summary["removed"]:0)
+		+ "<BR>" + FormatPackageList(lsort((list<string>)summary["removed_list"]:[]), "removed_packages"));
+	}
+
+	if (size(summary["remaining"]:[]) > 0)
+	{
+	    items = add(items, sformat(_("Not Installed Packages: %1"), size(summary["remaining"]:[]))
+		+ "<BR>" + FormatPackageList(lsort((list<string>)summary["remaining"]:[]), "remaining_packages"));
+	}
+
+	if (size(items) > 0)
+	{
+	    ret = ret + HTML::Para(
+		HTML::Heading(_("Packages"))
+		+ HTML::List(items)
+	    );
+	}
+
+	// reset the items list
+	items = [];
+
+	if (summary["time_seconds"]:0 > 0)
+	{
+	    items = add(items, sformat(_("Elapsed Time: %1"), String::FormatTime(summary["time_seconds"]:0)));
+	}
+
+	if (summary["installed_bytes"]:0 > 0)
+	{
+	    items = add(items, sformat(_("Total Installed Size: %1"),
+		String::FormatSize(summary["installed_bytes"]:0)));
+	}
+
+	if (summary["downloaded_bytes"]:0 > 0)
+	{
+	    items = add(items, sformat(_("Total Downloaded Size: %1"),
+		String::FormatSize(summary["downloaded_bytes"]:0)));
+	}
+
+	if (size(items) > 0)
+	{
+	    ret = ret + HTML::Para(
+		HTML::Heading(_("Statistics"))
+		+ HTML::List(items)
+	    );
+	}
+
+	items = [];
+
+	if (haskey(summary, "install_log") && size(summary["install_log"]:"") > 0)
+	{
+	    items = add(items, HTML::Link(_("Installation log"), "install_log"));
+	}
+
+	if (haskey(summary, "postinstall_log"))
+	{
+	    items = add(items, HTML::Link(_("Post-Installation log (SUSEconfig)"), "postinstall_log"));
+	}
+
+	if (size(items) > 0)
+	{
+	    ret = ret + HTML::Para(
+		HTML::Heading(_("Details"))
+		+ HTML::List(items)
+	    );
+	}
+
+	y2milestone("Installation summary: %1", ret);
+
+	return ret;
+    }
+
+    void ShowDetailsString(string heading, string text)
+    {
+	Popup::LongText(heading, `RichText(`opt(`plainText), text), 70, 20);
+    }
+
+    void ShowDetailsList(string heading, list<string> pkgs)
+    {
+	ShowDetailsString(heading, mergestring(lsort(pkgs), "\n"));
+    }
+
+
+    global symbol ShowInstallationSummaryMap(map<string,any> summary)
+    {
+	string summary_str = InstallationSummary(summary);
+
+	if (summary_str == nil || summary_str == "")
+	{
+	    y2warning("No summary, skipping summary dialog");
+	    return `next;
+	}
+
+	boolean wizard_opened = false;
+
+	// open a new wizard dialog if needed
+	if (!Wizard::IsWizardDialog())
+	{
+	    Wizard::OpenNextBackDialog();
+	    wizard_opened = true;
+	}
+
+	term dialog = `RichText(`id(`rtext), summary_str);
+
+	string help_text = _("<P><BIG><B>Installation Summary</B></BIG><BR>Here is a summary of installed packages.</P>");
+
+	Wizard::SetNextButton(`next, Label::FinishButton());
+
+	Wizard::SetContents(_("Installation Summary"),
+	    dialog, help_text, true /*has_back*/, true /*has_next*/);
+
+	any result = nil;
+
+	do
+	{
+	    result = UI::UserInput();
+	    y2milestone("input: %1", result);
+
+	    // handle detail requests (clicking a link in the summary)
+	    if (is(result, string))
+	    {
+		// display installation log
+		if (result == "install_log")
+		{
+		    ShowDetailsString(_("Installation log"), summary["install_log"]:"");
+		}
+		// display post-installation log (suseconfig)
+		else if (result == "postinstall_log")
+		{
+		    ShowDetailsString(_("Post-Installation log (SUSEconfig)"), summary["postinstall_log"]:"");
+		}
+		else if (result == "installed_packages")
+		{
+		    ShowDetailsList(_("Installed Packages"), summary["installed_list"]:[]);
+		}
+		else if (result == "updated_packages")
+		{
+		    ShowDetailsList(_("Updated Packages"), summary["updated_list"]:[]);
+		}
+		else if (result == "removed_packages")
+		{
+		    ShowDetailsList(_("Removed Packages"), summary["removed_list"]:[]);
+		}
+		else if (result == "remaining_packages")
+		{
+		    ShowDetailsList(_("Remaining Packages"), summary["remaining"]:[]);
+		}
+		else
+		{
+		    y2error("Unknown input: %1", result);
+		}
+	    }
+	    else if (is(result, symbol))
+	    {
+		// close by WM
+		if (result == `cancel)
+		{
+		    result = `abort;
+		}
+	    }
+	}
+	while(is(result, string) || !contains([`next, `abort, `back], (symbol)result));
+
+	y2milestone("Installation Summary result: %1", result);
+
+	Wizard::RestoreNextButton();
+
+	if (wizard_opened)
+	{
+	    // close the opened window
+	    Wizard::CloseDialog();
+	}
+
+	return (symbol)result;
+    }
+
+    global symbol ShowInstallationSummary()
+    {
+	return ShowInstallationSummaryMap(package_summary);
     }
 
 }
