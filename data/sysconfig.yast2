@@ -52,3 +52,13 @@ STORE_CONFIG_IN_SUBVERSION="no"
 # This option is experimental and not all YaST modules do support
 # configuration tracking via subversion
 SUBVERSION_ADD_DIRS_RECURSIVE="no"
+
+## Type: list(close,restart,summary)
+## Default: "close"
+# Set the default behavior of the package manager when package installation has finished.
+# Possible actions are:
+#   close - just finish the package manager
+#   restart - go back to the package manager, install/remove more packages
+#   summary - display an installation summary dialog, there user can decide whether to finish or restart
+# The summary dialog is always displayed when an installation error has occured.
+PKGMGR_ACTION_AT_EXIT="close"

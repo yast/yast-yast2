@@ -1846,7 +1846,8 @@ Note: If the refresh is skipped some packages
 might be missing or out of date.")),
 		`ButtonBox (
 			`PushButton (`id(`continue), `opt (`default, `okButton), Label::ContinueButton()),
-			`PushButton (`id(`skip), `opt (`cancelButton), _("Skip Refresh"))
+			// push button label
+			`PushButton (`id(`skip), `opt (`cancelButton), _("&Skip Refresh"))
 		    )
 		)
 	    )

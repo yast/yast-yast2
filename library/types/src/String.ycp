@@ -196,6 +196,42 @@ global string FormatRateMessage(string text, integer avg_bps, integer curr_bps)
 }
 
 /**
+ * Format an integer number as (at least) two digits; use leading zeroes if
+ * necessary.
+ * @param x input
+ * @return string number as two-digit string
+ **/
+string FormatTwoDigits( integer x )
+{
+    return x < 10 && x >= 0 ?
+	sformat( "0%1", x ) :
+	sformat(  "%1", x );
+}
+
+
+/**
+ * Format an integer seconds value with min:sec or hours:min:sec
+ * @param seconds time (in seconds)
+ * @return string formatted string (empty for negative values)
+ **/
+global string FormatTime( integer seconds )
+{
+    if ( seconds < 0 )
+	return "";
+
+    if ( seconds < 3600 )	// Less than one hour
+    {
+	return sformat( "%1:%2", FormatTwoDigits( seconds / 60 ), FormatTwoDigits( seconds % 60 ) );
+    }
+    else	// More than one hour - we don't hope this will ever happen, but who knows?
+    {
+	integer hours = seconds / 3600;
+	seconds = seconds % 3600;
+	return sformat( "%1:%2:%3", hours, FormatTwoDigits( seconds / 60 ), FormatTwoDigits( seconds % 60 ) );
+    }
+}
+
+/**
  * Remove blanks at begin and end of input string.
  * @param input string to be stripped
  * @return stripped string

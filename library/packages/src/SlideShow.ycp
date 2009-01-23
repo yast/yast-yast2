@@ -89,12 +89,9 @@
 
     textdomain "base";
 
-    import "Installation";
     import "Label";
     import "Stage";
-    import "String";
     import "Wizard";
-    import "FileUtils";
     import "Mode";
     import "Popup";
     import "Slides";
