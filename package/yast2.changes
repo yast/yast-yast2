@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 26 13:08:55 CET 2009 - locilka@suse.cz
+
+- Fixing ProductControl to avoid leaving a workflow by with the
+  `back result - reruns the very first dialog (bnc #468677).
+
+-------------------------------------------------------------------
 Thu Jan 22 18:41:41 CET 2009 - lslezak@suse.cz
 
 - added String::FormatTime() for formatting time in seconds to
