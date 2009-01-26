@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 26 14:09:34 CET 2009 - mzugec@suse.cz
+
+- new Wizard::OpenCancelOKDialog() function
+- 2.18.2 
+
+-------------------------------------------------------------------
 Mon Jan 26 13:08:55 CET 2009 - locilka@suse.cz
 
 - Fixing ProductControl to avoid leaving a workflow by with the
