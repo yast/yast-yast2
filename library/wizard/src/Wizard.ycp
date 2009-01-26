@@ -365,7 +365,6 @@
 	}
     }
 
-
     /**
      * Open a dialog with "Accept", "Cancel"
      * and set the keyboard focus to "Accept".
@@ -896,6 +895,30 @@
 		UI::ReplaceWidget(`id(`rep_back), `Empty() );
 	}
     }
+
+    /**
+     * Overview Dialog 
+     * http://en.opensuse.org/YaST/Style_Guide#Single_Configuration.2FOverview.2FEdit_Dialog
+     * dialog with Cancel and OK buttons (cancel has function as abort)
+     **/
+    global void OpenCancelOKDialog()
+    {
+	if ( haveFancyUI() )
+	{
+	    UI::OpenDialog(`opt(`wizardDialog ),
+			   `Wizard(`back,  Label::BackButton(),
+				   `abort, Label::CancelButton(),
+				   `next,  Label::OKButton() ) );
+	    HideBackButton();
+	    UI::WizardCommand(`SetDialogIcon( default_icon ) );
+	}
+	else
+	{
+	    Wizard::OpenDialog( NextBackDialog() );
+	    UI::SetFocus(`id(`next) );
+	}
+    }
+
 
 
     /**
