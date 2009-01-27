@@ -12,13 +12,13 @@
  *	read
  *
  * Example:
- *	Read(.backup.free_space, "/tmp")
+ *	Read(.system.freespace, "/tmp")
  *	(3752236)
  *
- *	Read(.backup.free_space, "/abcd1")
+ *	Read(.system.freespace, "/abcd1")
  *	(-1) // Directory does not exist or is not a directory
  *
- *	Read(.backup.free_space, "/abcd2")
+ *	Read(.system.freespace, "/abcd2")
  *	(-1) // Cannot find '/bin/df' binary
  *
  * Description:
@@ -30,7 +30,7 @@
  * $Id$
  *
  */
-.backup.free_space
+.system.freespace
 
 `ag_free_space ()
 
