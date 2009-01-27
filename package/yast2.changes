@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jan 27 17:36:15 CET 2009 - locilka@suse.cz
+
+- Added ag_freespace - SCR agent for checking free space in
+  directories (mounted partitions) (bnc #460477).
+- 2.18.4
+
+-------------------------------------------------------------------
 Tue Jan 27 16:35:14 CET 2009 - aschnell@suse.de
 
 - added String::StartsWith() function
