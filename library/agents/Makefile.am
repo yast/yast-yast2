@@ -5,7 +5,7 @@ agent_SCRIPTS =		\
 	ag_content	\
 	ag_netd		\
 	ag_anyxml	\
-	ag_free_space
+	ag_freespace
 
 scrconf_DATA = $(wildcard *.scr)
 
