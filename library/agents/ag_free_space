@@ -3,8 +3,8 @@
 use ycp;
 use File::Temp;
 
-# Returns free space in the directory
-# @example: SCR::Read(.backup.free_space, "/tmp")
+# Returns free space in a directory
+# @example: SCR::Read(.system.freespace, "/tmp") -> 'size in bytes' or '-1'
 
 while ( <STDIN> ) {
     my ($command, $path, $directory) = ycp::ParseCommand ($_);
@@ -48,7 +48,7 @@ while ( <STDIN> ) {
 		ycp::Return $out[3];
 		next;
 	    } else {
-		y2error ('Cannot determine the free space - Unknown error');
+		y2error ('Cannot determine the free space in "'.$directory.'" - Unknown error: '.$command);
 		ycp::Return -1;
 		next;
 	    }
