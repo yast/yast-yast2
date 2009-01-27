@@ -1,0 +1,67 @@
+#!/usr/bin/perl -w
+
+use ycp;
+use File::Temp;
+
+# Returns free space in the directory
+# @example: SCR::Read(.backup.free_space, "/tmp")
+
+while ( <STDIN> ) {
+    my ($command, $path, $directory) = ycp::ParseCommand ($_);
+
+    if ($command eq 'Read') {
+	if ($path eq '.' && defined $directory) {
+	    if (!$directory) {
+		y2error ('Directory must be defined');
+		ycp::Return -1;
+		next;
+	    }
+	    if (! -e $directory) {
+		y2error ('Directory '.$directory.' does not exist');
+		ycp::Return -1;
+		next;
+	    }
+	    if (! -d $directory) {
+		y2error ('Object '.$directory.' is not a directory');
+		ycp::Return -1;
+		next;
+	    }
+
+	    my $command = '/bin/df';
+	    if (!-x $command) {
+		y2error('Cannot execute '.$command.' command');
+		ycp::Return -1;
+		next;
+	    }
+
+	    # esacping quoting
+	    $directory =~ s/\"/\\\"/g;
+	    # -P, --portability: Use the POSIX output format
+	    $command = `$command -P "$directory"`;
+	    # first line of out is the header
+	    my @out = split(/\n/, $command);
+	    if (defined $out[1]) {
+	       @out = split(/ +/, $out[1]);
+	    }
+	    
+	    if (defined $out[3]) {
+		ycp::Return $out[3];
+		next;
+	    } else {
+		y2error ('Cannot determine the free space - Unknown error');
+		ycp::Return -1;
+		next;
+	    }
+	} else {
+	    y2error ('Wrong arguments');
+	    ycp::Return -1;
+	    next;
+	}
+    } elsif ($command eq 'result') {
+	exit 0;
+    } else {
+        y2error ('Wrong path or arguments');
+        ycp::Return -1;
+	next;
+    }
+}

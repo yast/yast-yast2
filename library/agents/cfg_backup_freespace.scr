@@ -1,0 +1,36 @@
+/**
+ * File:
+ *	cfg_freespace.scr
+ *
+ * Summary:
+ *	Agent for getting the free space in the directory (in 1K blocks)
+ *
+ * Author:
+ *	Lukas Ocilka <locilka@suse.cz>
+ *
+ * Access:
+ *	read
+ *
+ * Example:
+ *	Read(.backup.free_space, "/tmp")
+ *	(3752236)
+ *
+ *	Read(.backup.free_space, "/abcd1")
+ *	(-1) // Directory does not exist or is not a directory
+ *
+ *	Read(.backup.free_space, "/abcd2")
+ *	(-1) // Cannot find '/bin/df' binary
+ *
+ * Description:
+ * 	Agent calls command '/bin/df $directory' and returns the available space
+ * 	in 1K blocks. -1 is returned in case of any error, such as 'Directory does
+ * 	not exist', 'Object is not a directory', '/bin/df does not exist on the
+ * 	system' or 'Directory not defined'. Every error should appear in the y2log.
+ *
+ * $Id$
+ *
+ */
+.backup.free_space
+
+`ag_free_space ()
+
