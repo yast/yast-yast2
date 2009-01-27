@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 27 16:35:14 CET 2009 - aschnell@suse.de
+
+- added String::StartsWith() function
+- 2.18.3
+
+-------------------------------------------------------------------
 Mon Jan 26 14:09:34 CET 2009 - mzugec@suse.cz
 
 - new Wizard::OpenCancelOKDialog() function

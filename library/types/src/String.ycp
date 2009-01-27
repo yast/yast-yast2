@@ -1291,5 +1291,13 @@ global string RemoveShortcut (string label) {
     return ret;
 }
 
+/**
+ * Checks whether string str starts with test.
+ */
+global boolean StartsWith(string str, string test)
+{
+    return search(str, test) == 0;
+}
+
 /* EOF */
 }

@@ -149,6 +149,12 @@ DUMP("Strings::EscapeTags");
 TEST(``(String::EscapeTags("<font size='2'><b>text & another</b></font>")), [], nil);
 TEST(``(String::EscapeTags("2 > 1")), [], nil);
 
+DUMP("String::StartsWith");
+TEST(``(String::StartsWith("hello", "hello")), [], nil);
+TEST(``(String::StartsWith("hello world", "hello")), [], nil);
+TEST(``(String::StartsWith("hello hello", "hello")), [], nil);
+TEST(``(String::StartsWith("hello", "hello world")), [], nil);
+
 DUMP("Strings::RemoveShortcut");
 TEST(``(String::RemoveShortcut("Hello")), [], nil);
 TEST(``(String::RemoveShortcut("He&llo")), [], nil);
