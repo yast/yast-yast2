@@ -152,9 +152,6 @@
 		    {
 			ui = nil;
 
-			// TODO FIXME: due to the textfreeze "base" cannot be used now, fix it after the GM is out!
-			textdomain "packager";
-
 			// help text
 			string help = _("<p><b><big>License Confirmation</big></b><br>
 The package in the headline of the dialog requires an explicit confirmation
@@ -163,9 +160,6 @@ If you reject the license of the package, the package will not be installed.
 <br>
 To accept the license of the package, click <b>I Agree</b>.
 To reject the license of the package, click <b>I Disagree</b></p>.");
-
-			// TODO FIXME: remove this
-			textdomain "base";
 
 			UI::OpenDialog (`HBox (
 			    `VSpacing (18),
@@ -309,9 +303,6 @@ To reject the license of the package, click <b>I Disagree</b></p>.");
 	    return RunPackageSelector($[]);	// Fallback: detailed selection
 	}
 
-	// TODO FIXME: due to the textfreeze "base" cannot be used now, fix it after the GM is out!
-	textdomain "packager";
-
 	// Help text for software patterns / selections dialog
 	string help_text
 	    = _("<p>
@@ -352,9 +343,6 @@ To reject the license of the package, click <b>I Disagree</b></p>.");
 			    help_text,
 			    false,	// has_back
 			    true );	// has_next
-
-	// TODO FIXME: remove this
-	textdomain "base";
 
 	Wizard::SetDesktopIcon( "sw_single" );
 
