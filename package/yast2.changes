@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jan 28 11:55:29 CET 2009 - lslezak@suse.cz
+
+- PackagesUI - removed textdomain switches
+
+-------------------------------------------------------------------
 Tue Jan 27 17:36:15 CET 2009 - locilka@suse.cz
 
 - Added ag_freespace - SCR agent for checking free space in
