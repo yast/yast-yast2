@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 30 11:14:42 CET 2009 - jsrain@suse.cz
+
+- fixed bash completion (bnc #470544)
+- 2.17.64
+
+-------------------------------------------------------------------
 Mon Jan 26 13:08:55 CET 2009 - locilka@suse.cz
 
 - Fixing ProductControl to avoid leaving a workflow by with the
