@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jan 30 11:14:42 CET 2009 - jsrain@suse.cz
+
+- fixed bash completion (bnc #470544)
+
+-------------------------------------------------------------------
 Wed Jan 28 11:55:29 CET 2009 - lslezak@suse.cz
 
 - PackagesUI - removed textdomain switches
