@@ -18,7 +18,7 @@ _yast2 ()
 	fi
         cur=${COMP_WORDS[COMP_CWORD]}
         prev=${COMP_WORDS[COMP_CWORD-1]}
-	if [[ ${#COMP_WORDS[@]} -ge 3 ]]; then
+	if [[ ${#COMP_WORDS[@]} -ge 3 && $COMP_CWORD -ge 2 ]]; then
 	    prevprev=${COMP_WORDS[COMP_CWORD-2]}
 	fi
         if [[ $cur == '-' ]]; then
