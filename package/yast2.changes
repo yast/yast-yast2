@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb  3 09:27:34 CET 2009 - mvidner@suse.cz
+
+- Fixed prefix detection if called "bash -x yast2" (bnc#458385 c12).
+- 2.17.65
+
+-------------------------------------------------------------------
 Fri Jan 30 11:14:42 CET 2009 - jsrain@suse.cz
 
 - fixed bash completion (bnc #470544)

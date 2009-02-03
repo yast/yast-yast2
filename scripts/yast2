@@ -16,8 +16,11 @@
 export PATH=/sbin:/usr/sbin:$PATH
 
 # allow for a different prefix
-mydir=${0%/[YyZz]a[Ss][Tt]*}
-if [[ -z "$mydir" || "$mydir" =~ ^/sbin/* ]]; then
+# strip the basename off $0, which can be: (bnc#382216, bnc#458385)
+# /sbin/yast2, /sbin/yast, yast2 (sh -x yast2 ...), /sbin//yast2 (PATH=/sbin/:...)
+shopt -s extglob
+mydir=${0%%*(/)[YyZz]a[Ss][Tt]?(2)}
+if [[ -z "$mydir" || "$mydir" = /sbin ]]; then
     YAST_PREFIX=/usr
 else
     YAST_PREFIX=${mydir%/sbin}
