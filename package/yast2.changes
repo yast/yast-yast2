@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 04 17:02:01 CET 2009 - aschnell@suse.de
+
+- avoid broken pipe in scripts (bnc #467891)
+- 2.18.5
+
+-------------------------------------------------------------------
 Tue Feb  3 09:27:34 CET 2009 - mvidner@suse.cz
 
 - Fixed prefix detection if called "bash -x yast2" (bnc#458385 c12).
