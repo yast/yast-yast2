@@ -19,7 +19,7 @@ logdir=/var/log/YaST2
 function get_plugindir()
 {
     plugindir=$YAST_PREFIX/lib/YaST2/plugin
-    if `ldd $ybindir/y2base | egrep --quiet "/lib64/(.*/)?libc.so"` ; then
+    if `ldd $ybindir/y2base | egrep "/lib64/(.*/)?libc.so" > /dev/null` ; then
 	plugindir=$YAST_PREFIX/lib64/YaST2/plugin
     fi
 }
