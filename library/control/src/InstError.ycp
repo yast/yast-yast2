@@ -80,7 +80,7 @@
      * @param string details (displayed as a plain text, can contain multiple lines)
      */
     global void ShowErrorPopUp (string heading, string error_text, string details) {
-	boolean success = (boolean) UI::OpenDialog (`VBox (
+	boolean success = (boolean) UI::OpenDialog (`opt(`decorated, `warncolor), `VBox (
 	    `Left (`HBox (
 		`HSquash (`MarginBox (0.5, 0.2, Icon::Error())),
 		`Heading (heading)
@@ -119,8 +119,8 @@ See %3 for more information about YaST logs."),
 	    ),
 	    `ButtonBox (
 		// FIXME: BNC #422612, Use `opt(`noSanityCheck) later
-		`PushButton (`id(`save_y2logs), `opt(`cancelButton), _("&Save YaST Logs...")),
-		`PushButton (`id(`ok), Label::OKButton())
+		`PushButton (`id (`save_y2logs), `opt(`cancelButton), _("&Save YaST Logs...")),
+		`PushButton (`id (`ok), `opt (`key_F10), Label::OKButton())
 	    )
 	));
 
