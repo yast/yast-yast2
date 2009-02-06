@@ -1,0 +1,164 @@
+/**
+ * File:	modules/InstError.ycp
+ * Package:	Installation
+ * Summary:	Module for reporting installation errors
+ * Authors:	Lukas Ocilka <locilka@suse.cz>
+ *
+ * $Id:$
+ *
+ * This module provides unified interface for reporting
+ * installation errors.
+ */
+
+{
+    textdomain "installation";
+    module "InstError";
+
+    import "Icon";
+    import "Label";
+    import "String";
+    import "Report";
+
+    boolean SaveLogs () {
+	map cmd = (map) WFM::Execute (.local.bash_output, "echo ${HOME}");
+	string homedir = "/";
+
+	if (cmd["exit"]:-1 == 0) {
+	    homedir = splitstring (cmd["stdout"]:"/", "\n")[0]:"/";
+	    if (homedir == "") homedir = "/";
+	} else {
+	    y2warning ("Unable to find out home dir: %1, using %2", cmd, homedir);
+	}
+	homedir = sformat ("%1/y2logs.tgz", homedir);
+
+	string savelogsto = (string) UI::AskForSaveFileName (
+	    homedir,
+	    "*.tgz *.tar.gz *.tar.bz2",
+	    _("Save y2logs to...")
+	);
+
+	if (savelogsto == nil)
+	    return nil;
+
+	// Busy message, %1 is replaced with a filename
+	UI::OpenDialog (`Label (sformat (_("Saving YaST logs to %1..."), savelogsto)));
+	y2milestone ("Saving YaST logs to: %1", savelogsto);
+
+	cmd = (map) WFM::Execute (.local.bash_output, sformat ("save_y2logs '%1'", String::Quote (savelogsto)));
+	boolean dialog_ret = nil;
+
+	if (cmd["exit"]:-1 != 0) {
+	    y2error ("Unable to save logs to %1", savelogsto);
+
+	    Report::Error (sformat (
+		// Error message, %1 is replaced with a filename
+		// %2 with am error reason (there is a newline between %1 and %2)
+		_("Unable to save YaST logs to %1
+%2"),
+		savelogsto,
+		cmd["stderr"]:""
+	    ));
+
+	    dialog_ret = false;
+	} else {
+	    y2milestone ("Logs have been saved to: %1", savelogsto);
+	    dialog_ret = true;
+	}
+
+	UI::CloseDialog();
+
+	return dialog_ret;
+    }
+
+    /**
+     * Function opens a pop-up error message (defined by the parameters).
+     * Reports where to report a bug and which logs to attach.
+     * It additionally offers to save logs directly from the dialog.
+     *
+     * @param string heading
+     * @param string error_text
+     * @param string details (displayed as a plain text, can contain multiple lines)
+     */
+    global void ShowErrorPopUp (string heading, string error_text, string details) {
+	boolean success = (boolean) UI::OpenDialog (`VBox (
+	    `Left (`HBox (
+		`HSquash (`MarginBox (0.5, 0.2, Icon::Error())),
+		`Heading (heading)
+	    )),
+	    `MarginBox (
+		1, 0.5, `VBox (
+		    `Left (`Label (error_text)),
+		    //`VSpacing (1),
+		    `Left (details == nil ?
+			`Label (sformat (
+			    // TRANSLATORS: part of an error message
+			    // // %1 - logfile, possibly with errors
+			    _("More information can be found near the end of the '%1' file."),
+			    "/var/log/YaST2/y2log"
+			))
+			:
+			`MinSize (80, 10, `RichText (`opt(`plainText, `hstretch), details))
+		    ),
+		    //`VSpacing (1),
+		    `Left (`Label (sformat (
+			// TRANSLATORS: part of an error message
+			// %1 - link to our bugzilla
+			// %2 - directory where YaST logs are stored
+			// %3 - link to the Yast Bug Reporting HOWTO Web page
+			_("This is worth reporting a bug at %1.
+Please, attach also all YaST logs stored in the '%2' directory.
+See %3 for more information about YaST logs."),
+			"http://bugzilla.novell.com/",
+			"/var/log/YaST2/",
+			// link to the Yast Bug Reporting HOWTO
+			// for translators: use the localized page for your language if it exists,
+			// check the combo box "In other laguages" on top of the page
+			_("http://en.opensuse.org/Bugs/YaST")
+		    )))
+		)
+	    ),
+	    `ButtonBox (
+		// FIXME: BNC #422612, Use `opt(`noSanityCheck) later
+		`PushButton (`id(`save_y2logs), `opt(`cancelButton), _("&Save YaST Logs...")),
+		`PushButton (`id(`ok), Label::OKButton())
+	    )
+	));
+
+	if (success != true) {
+	    y2error ("Cannot open a dialog: %1/%2/%3", heading, error_text, details);
+	    return;
+	}
+
+	any uret = nil;
+
+	while (true) {
+	    uret = UI::UserInput();
+
+	    if (uret == `save_y2logs) {
+		SaveLogs();
+	    } else {
+		break;
+	    }
+	}
+
+	UI::CloseDialog();
+    }
+
+    /**
+     * Function is similar to ShowErrorPopUp but the error details are grabbed automatically
+     * from YaST logs.
+     *
+     * @param string error_text (e.g., "Client inst_abc returned invalid data.")
+     */
+    global void ShowErrorPopupWithLogs (string error_text) {
+	map cmd = (map) WFM::Execute (.local.bash_output, "tail -n 200 /var/log/YaST2/y2log | grep ' <\\(3\\|5\\)> '");
+
+	ShowErrorPopUp (
+	    _("Installation Error"),
+	    error_text,
+	    (cmd["exit"]:-1 == 0 && cmd["stdout"]:"" != "" ? cmd["stdout"]:"" : nil)
+	);
+    }
+
+/* EOF */
+}
