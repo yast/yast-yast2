@@ -43,8 +43,8 @@ Conflicts:	yast2-sshd < 2.16.1
 # moved ag_content agent 
 Conflicts:	yast2-instserver <= 2.16.3
 
-# InstExtensionImage module moved here from installation
-Conflicts:	yast2-installation < 2.16.18
+# InstError
+Conflicts:	yast2-installation < 2.18.5
 
 Conflicts:	yast2-update < 2.16.1
 # Modules 'Slides' and 'SlideShow' moved from yast2-packager to yast2

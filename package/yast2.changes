@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb  6 10:40:17 CET 2009 - locilka@suse.cz
+
+- InstError module moved here from yast2-installation-2.18.5
+- 2.18.6
+
+-------------------------------------------------------------------
 Wed Feb 04 17:02:01 CET 2009 - aschnell@suse.de
 
 - avoid broken pipe in scripts (bnc #467891)
