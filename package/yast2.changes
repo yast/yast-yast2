@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Feb  6 12:27:50 CET 2009 - ug@suse.de
+
+- read X-SuSE-DocTeamID from desktop files
+
+-------------------------------------------------------------------
 Fri Feb  6 10:40:17 CET 2009 - locilka@suse.cz
 
 - InstError module moved here from yast2-installation-2.18.5

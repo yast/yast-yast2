@@ -130,6 +130,7 @@ global define void Read(list<string> Values) {
 	filemap["Hidden"] = SCR::Read(filepath + "Hidden");
 	filemap["Name"] = ReadLocalizedKey(filename, filepath, "Name");
 	filemap["modules"] = [];
+        filemap["X-SuSE-DocTeamID"] = SCR::Read(filepath + "X-SuSE-DocTeamID");
 
 	string name = (string) SCR::Read(filepath + "X-SuSE-YaST-Group");
 	Groups[name] = filemap;
