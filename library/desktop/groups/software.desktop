@@ -15,3 +15,6 @@ Icon=yast-software
 
 Name=Software
 X-KDE-SubstituteUID=true
+
+Exec=yast2
+

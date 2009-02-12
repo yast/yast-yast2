@@ -15,3 +15,5 @@ Icon=yast-system
 
 Name=System
 X-KDE-SubstituteUID=true
+
+Exec=yast2
