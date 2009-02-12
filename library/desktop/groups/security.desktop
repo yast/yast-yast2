@@ -14,4 +14,8 @@ OnlyShowIn=X-SuSE-YaST;
 Icon=yast-security
 
 Name=Security and Users
+
 X-KDE-SubstituteUID=true
+
+Exec=yast2
+

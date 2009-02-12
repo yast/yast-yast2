@@ -15,3 +15,5 @@ Icon=yast-hardware
 
 Name=Hardware
 X-KDE-SubstituteUID=true
+
+Exec=yast2
