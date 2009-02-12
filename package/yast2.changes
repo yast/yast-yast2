@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 12 12:52:47 CET 2009 - coolo@suse.de
+
+- add dummy Exec line to the group desktop files to shutup kbuildsycoca
+- 2.18.8
+
+-------------------------------------------------------------------
 Fri Feb  6 12:27:50 CET 2009 - ug@suse.de
 
 - read X-SuSE-DocTeamID from desktop files
