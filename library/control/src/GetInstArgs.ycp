@@ -28,10 +28,16 @@
     void Init () {
         /* Check arguments */
         args = $[];
-        if(size(WFM::Args()) > 0 && is(WFM::Args(0), map))
-        {
-            args = (map) WFM::Args(0);
+        integer i=0;
+	// assign to args first available map (in 2nd stage, first argument is string - bnc#475169)
+        while(i<size(WFM::Args())){
+            if(is(WFM::Args(i), map)){
+	        args=(map)WFM::Args(i);
+	        break;
+            }
+            i=i+1;
         }
+        y2milestone("args=%1", args);
     }
 
     /**
