@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 16 10:45:05 CET 2009 - mzugec@suse.cz
+
+- assign to GetInstArgs.args first map, not first argument (bnc#475169)
+- 2.18.9 
+
+-------------------------------------------------------------------
 Thu Feb 12 12:52:47 CET 2009 - coolo@suse.de
 
 - add dummy Exec line to the group desktop files to shutup kbuildsycoca
