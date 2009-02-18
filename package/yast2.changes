@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 18 18:05:49 CET 2009 - mzugec@suse.cz
+
+- NetworkInterfaces.GetDeviceTypes-added bond for s390 (bnc#476490) 
+- 2.18.10
+
+-------------------------------------------------------------------
 Wed Feb 18 15:37:29 CET 2009 - jsrain@suse.cz
 
 - use PAE kernel only if there is >3GB of RAM or NX flag is present
