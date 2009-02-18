@@ -831,9 +831,9 @@ global define boolean Import(string devregex, map<string,map> devices) {
  * for this hardware
  */
 global list<string> GetDeviceTypes(){
- list<string> dev_types = ["eth", "tr", "vlan", "br", "tun", "tap", "ib"];
+ list<string> dev_types = ["eth", "tr", "vlan", "br", "tun", "tap", "ib", "bond"];
  if(Arch::s390 ()) dev_types = (list<string>) merge(dev_types, [ "hsi", "ctc", "escon", "ficon", "iucv", "qeth", "lcs"]);
-	else dev_types = (list<string>) merge(dev_types, [ "arc", "bnep", "dummy", "fddi", "myri", "usb", "wlan", "bond" ]);
+	else dev_types = (list<string>) merge(dev_types, [ "arc", "bnep", "dummy", "fddi", "myri", "usb", "wlan" ]);
  if(Arch::ia64 ()) dev_types = add(dev_types, "xp");
 
  foreach(string device,dev_types, {
