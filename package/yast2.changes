@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 18 15:37:29 CET 2009 - jsrain@suse.cz
+
+- use PAE kernel only if there is >3GB of RAM or NX flag is present
+  (bnc#467328)
+
+-------------------------------------------------------------------
 Mon Feb 16 10:45:05 CET 2009 - mzugec@suse.cz
 
 - assign to GetInstArgs.args first map, not first argument (bnc#475169)
