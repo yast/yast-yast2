@@ -1384,8 +1384,14 @@ See %5 for more information about YaST logs.",
 
 	// BNC #468677
 	// The very first dialog must not exit with `back
-	if (result == `back && current_step == 0) {
+	// or `auto
+	if (
+	    current_step == 0
+	    &&
+	    (result == `back || (result == `auto && former_result == `back))
+	) {
 	    y2warning ("Returned %1, Current step %2 (%3). The current step will be called again...", result, current_step, step_name);
+	    former_result = `next;
 	    result = `again;
 	}
 

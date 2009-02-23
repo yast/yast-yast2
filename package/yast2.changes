@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb 23 12:41:52 CET 2009 - locilka@suse.cz
+
+- Fixing ProductControl to avoid leaving a workflow with the `auto
+  result - reruns the very first dialog (bnc #468677).
+- 2.17.68
+
+-------------------------------------------------------------------
 Wed Feb 18 17:38:10 CET 2009 - mzugec@suse.cz
 
 - NetworkInterfaces.GetDeviceTypes-added bond for s390 (bnc#476490)
