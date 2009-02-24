@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Feb 24 14:34:50 CET 2009 - locilka@suse.cz
+
+- Added support for `rebot_same_step return value (bnc #475650).
+
+-------------------------------------------------------------------
 Mon Feb 23 12:43:46 CET 2009 - locilka@suse.cz
 
 - Fixing ProductControl to avoid leaving a workflow with the `auto
