@@ -29,7 +29,8 @@
         /* Check arguments */
         args = $[];
         integer i=0;
-	// assign to args first available map (in 2nd stage, first argument is string - bnc#475169)
+	// assign to args first available map
+	// (in proposals, first argument is string - bnc#475169)
         while(i<size(WFM::Args())){
             if(is(WFM::Args(i), map)){
 	        args=(map)WFM::Args(i);
