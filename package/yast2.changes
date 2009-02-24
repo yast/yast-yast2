@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Feb 24 18:24:42 CET 2009 - mzugec@suse.cz
+
+- - NetworkInterfaces - possible to not use LABEL for aliases
+(bnc#471253)
+- 2.18.12 
+
+-------------------------------------------------------------------
 Tue Feb 24 14:34:50 CET 2009 - locilka@suse.cz
 
 - Added support for `reboot_same_step return value (bnc #475650).

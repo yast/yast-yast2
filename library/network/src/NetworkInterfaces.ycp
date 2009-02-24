@@ -698,7 +698,7 @@ global define boolean Write(string devregex) {
 	    path base = add (.network.value, dev);
 	    // look in OriginalDevs because we need to catch all variables
 	    // of the alias
-	    foreach (string key, any dummy, OriginalDevs[typ, num, "_aliases", anum]:$[], {
+	    foreach (string key, any dummy, OriginalDevs[typ, dev, "_aliases", anum]:$[], {
 		path p = add (base, key + "_" + anum);
 		y2debug ("deleting: %1", p);
 		SCR::Write (p, nil);
@@ -739,7 +739,7 @@ global define boolean Write(string devregex) {
 			// writing, but we create it in 2 ways so it's
 			// better here. Actually it does not work because
 			// the edit dialog nukes LABEL :-(
-			boolean seen_label = false;
+//			boolean seen_label = false;
 		if (size(amap["IPADDR"]:"")>0 && size(amap["NETMASK"]:"")>0){
 		 amap["IPADDR"] = sformat("%1/%2", amap["IPADDR"]:"", Netmask::ToBits(amap["NETMASK"]:""));
 		 amap=remove(amap, "NETMASK");
@@ -755,13 +755,14 @@ global define boolean Write(string devregex) {
 			maplist(string ak, string av, amap, {
 			    string akk = ak + "_" + anum;
 			    ShellSafeWrite (topath (p + akk), av);
-			    seen_label = seen_label || ak == "LABEL";
+//			    seen_label = seen_label || ak == "LABEL";
 			});
-
+/*
 			if (!seen_label)
 			{
 			    ShellSafeWrite (topath (p + ("LABEL_" + anum)), anum);
 			}
+*/
 		    });
 		}
 		/* Write regular keys */
