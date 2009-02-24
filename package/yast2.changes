@@ -2,6 +2,7 @@
 Tue Feb 24 14:34:50 CET 2009 - locilka@suse.cz
 
 - Added support for `rebot_same_step return value (bnc #475650).
+- 2.18.11
 
 -------------------------------------------------------------------
 Mon Feb 23 12:43:46 CET 2009 - locilka@suse.cz
