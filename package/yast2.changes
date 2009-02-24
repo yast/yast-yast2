@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Tue Feb 24 14:34:50 CET 2009 - locilka@suse.cz
 
-- Added support for `rebot_same_step return value (bnc #475650).
+- Added support for `reboot_same_step return value (bnc #475650).
 - 2.18.11
 
 -------------------------------------------------------------------
