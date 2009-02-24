@@ -1422,8 +1422,8 @@ See %5 for more information about YaST logs.",
 	{
 	    continue; // Show same dialog again
 	}
-	// BNC #475650: Adding `rebot_same_step
-	else if (result == `restart_yast || result == `restart_same_step || result == `reboot || result == `rebot_same_step)
+	// BNC #475650: Adding `reboot_same_step
+	else if (result == `restart_yast || result == `restart_same_step || result == `reboot || result == `reboot_same_step)
 	{
 	    final_result = result;
 	    break;
