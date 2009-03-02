@@ -662,18 +662,19 @@ global define boolean Write(string devregex) {
 			// writing, but we create it in 2 ways so it's
 			// better here. Actually it does not work because
 			// the edit dialog nukes LABEL :-(
-			boolean seen_label = false;
+//			boolean seen_label = false;
 
 			maplist(string ak, string av, amap, {
 			    string akk = ak + "_" + anum;
 			    ShellSafeWrite (topath (p + akk), av);
-			    seen_label = seen_label || ak == "LABEL";
+//			    seen_label = seen_label || ak == "LABEL";
 			});
-
+/*
 			if (!seen_label)
 			{
 			    ShellSafeWrite (topath (p + ("LABEL_" + anum)), anum);
 			}
+*/
 		    });
 		}
 		/* Write regular keys */

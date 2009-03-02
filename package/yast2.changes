@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Mar  2 13:48:12 CET 2009 - mzugec@suse.de
+
+- NetworkInterfaces - possible to not use LABEL for aliases 
+(bnc#471253)
+- 2.13.112 
+
+-------------------------------------------------------------------
 Mon Apr  7 13:25:48 CEST 2008 - mvidner@suse.cz
 
 - nfs-client: do not truncate /etc/fstab starting at lines with
