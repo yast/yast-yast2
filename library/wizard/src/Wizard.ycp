@@ -622,7 +622,23 @@
      *
      * Analog to Wizard::UserInput.
      **/
-    global map WaitForEvent( integer timeout_millisec ) 
+    global map WaitForEvent()
+    {
+	map input = UI::WaitForEvent();
+
+	if (input["ID"]:nil == `accept) input["ID"] = `next;
+	if (input["ID"]:nil == `cancel) input["ID"] = `back;
+
+	return input;
+    } 
+
+
+    /**
+     * Substitute for UI::WaitForEvent with timeout
+     *
+     * Analog to Wizard::UserInput.
+     **/
+    global map TimeoutWaitForEvent( integer timeout_millisec )
     {
 	map input = UI::WaitForEvent( timeout_millisec );
 
