@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Mar  5 09:23:43 CET 2009 - jsuchome@suse.cz
+
+- GPG.ycp: --batch option is needed for hiding password popup
+
+-------------------------------------------------------------------
 Tue Feb 24 18:24:42 CET 2009 - mzugec@suse.cz
 
 - - NetworkInterfaces - possible to not use LABEL for aliases
