@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar  6 09:03:14 CET 2009 - jsrain@suse.cz
+
+- fixed textdomain
+
+-------------------------------------------------------------------
 Thu Mar  5 09:23:43 CET 2009 - jsuchome@suse.cz
 
 - GPG.ycp: --batch option is needed for hiding password popup

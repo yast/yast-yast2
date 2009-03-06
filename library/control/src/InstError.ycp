@@ -11,7 +11,7 @@
  */
 
 {
-    textdomain "installation";
+    textdomain "base";
     module "InstError";
 
     import "Icon";
