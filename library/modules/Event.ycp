@@ -1,0 +1,59 @@
+/**
+ * File:        Event.ycp
+ * Package:     yast2
+ * Summary:     UI Event Helpers
+ * Authors:     Arvin Schnell <aschnell@suse.de>
+ */
+{
+    module "Event";
+
+
+    /**
+     * Checks that the EventType is WidgetEvent and the EventReason is
+     * Activated.
+     *
+     * Returns id or nil.
+     */
+    global symbol IsWidgetActivated(map event)
+    {
+	if (event["EventType"]:"Unknown" != "WidgetEvent")
+	    return nil;
+
+	if (event["EventReason"]:"Unknown" != "Activated")
+	    return nil;
+
+	return event["ID"]:(symbol)(nil);
+    }
+
+
+    /**
+     * Checks that the EventType is WidgetEvent and the EventReason is
+     * SelectionChanged.
+     *
+     * Returns id or nil.
+     */
+    global symbol IsWidgetSelectionChanged(map event)
+    {
+	if (event["EventType"]:"Unknown" != "WidgetEvent")
+	    return nil;
+
+	if (event["EventReason"]:"Unknown" != "SelectionChanged")
+	    return nil;
+
+	return event["ID"]:(symbol)(nil);
+    }
+
+
+    /**
+     * Checks that the EventType is MenuEvent.
+     *
+     * return id or nil.
+     */
+    global symbol IsMenu(map event)
+    {
+	if (event["EventType"]:"Unknown" != "MenuEvent")
+	    return nil;
+
+	return event["ID"]:(symbol)(nil);
+    }
+}

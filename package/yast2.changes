@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 06 12:15:09 CET 2009 - aschnell@suse.de
+
+- added Event.ycp to easy use of UI events
+- 2.18.13
+
+-------------------------------------------------------------------
 Fri Mar  6 09:03:14 CET 2009 - jsrain@suse.cz
 
 - fixed textdomain
