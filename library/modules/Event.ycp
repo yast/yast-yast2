@@ -45,6 +45,24 @@
 
 
     /**
+     * Checks that the EventType is WidgetEvent and the EventReason is
+     * ContextMenuActivated.
+     *
+     * Returns id or nil.
+     */
+    global symbol IsWidgetContextMenuActivated(map event)
+    {
+	if (event["EventType"]:"Unknown" != "WidgetEvent")
+	    return nil;
+
+	if (event["EventReason"]:"Unknown" != "ContextMenuActivated")
+	    return nil;
+
+	return event["ID"]:(symbol)(nil);
+    }
+
+
+    /**
      * Checks that the EventType is MenuEvent.
      *
      * return id or nil.
