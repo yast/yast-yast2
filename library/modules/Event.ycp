@@ -74,4 +74,18 @@
 
 	return event["ID"]:(symbol)(nil);
     }
+
+
+    /**
+     * Checks that the EventType is CancelEvent.
+     *
+     * return id or nil.
+     */
+    global symbol IsCancel(map event)
+    {
+	if (event["EventType"]:"Unknown" != "CancelEvent")
+	    return nil;
+
+	return event["ID"]:(symbol)(nil);
+    }
 }
