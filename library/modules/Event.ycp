@@ -46,6 +46,25 @@
 
     /**
      * Checks that the EventType is WidgetEvent and the EventReason is
+     * Activated or SelectionChanged.
+     *
+     * Returns id or nil.
+     */
+    global symbol IsWidgetActivatedOrSelectionChanged(map event)
+    {
+	if (event["EventType"]:"Unknown" != "WidgetEvent")
+	    return nil;
+
+	if ((event["EventReason"]:"Unknown" != "Activated") &&
+	    (event["EventReason"]:"Unknown" != "SelectionChanged"))
+	    return nil;
+
+	return event["ID"]:(symbol)(nil);
+    }
+
+
+    /**
+     * Checks that the EventType is WidgetEvent and the EventReason is
      * ContextMenuActivated.
      *
      * Returns id or nil.
