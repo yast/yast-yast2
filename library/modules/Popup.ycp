@@ -1542,7 +1542,7 @@ global define void AnyTimedRichMessage(string headline, string message, integer 
  * @param text	text to show
  * @param timeout	text to show
  *
- * @example Popup::ShowText ("Boot Messages", "kernel panic");
+ * @example Popup::ShowText ("Boot Messages", "kernel panic", 10);
  */
 global define void ShowTextTimed (string headline, string text,
 				  integer timeout)

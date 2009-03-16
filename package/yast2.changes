@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar 16 10:03:31 CET 2009 - ug@suse.de
+
+- docu for Popup::ShowTextTimed fixed
+
+-------------------------------------------------------------------
 Fri Mar 06 12:15:09 CET 2009 - aschnell@suse.de
 
 - added Event.ycp to easy use of UI events
