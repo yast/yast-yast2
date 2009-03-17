@@ -12,6 +12,8 @@
 
     module "Misc";
 
+    import "Mode";
+
 
     /*
      * Message after finishing installation and before the system
@@ -220,6 +222,124 @@
 	));
 	string ret = SysconfigRead (add (custom_path, key), defval);
 	SCR::UnregisterAgent (custom_path);
+	return ret;
+    }
+
+
+    /**
+     * Runs a bash command with timeout.
+     * @struct Returns map $[
+     *     "exit" : int_return_code,
+     *     "stdout"  : [ "script", "stdout", "lines" ],
+     *     "stderr"  : [ "script", "stderr", "lines" ],
+     * ]
+     *
+     * @param run_command what to run
+     * @param log_command what to log (passwords masked)
+     * @param script_time_out in sec.
+     * @return map with out, err and ret_code
+     */
+    global map RunCommandWithTimeout (string run_command, string log_command, integer script_time_out) {
+	y2milestone("Running command \"%1\" in background...", log_command);
+
+	integer processID = (integer)SCR::Execute(.process.start_shell, run_command);
+
+	if (processID == 0) {
+	    y2error("Cannot run '%1'", run_command);
+	    return nil;
+	}
+	
+	list<string> script_out = [];
+	list<string> script_err = [];
+	integer time_spent = 0;
+	integer return_code = nil;
+	boolean timed_out = false;
+	integer sleep_step = 200; // ms
+	script_time_out = script_time_out * 1000;
+	
+	// while continuing is needed and while it is possible
+	while (! timed_out) {
+	    boolean running = (boolean) SCR::Read(.process.running, processID);
+	    // debugging #165821
+	    if (time_spent % 100000 == 0) {
+		y2milestone ("running: %1", running);
+		string flag = "/tmp/SourceManagerTimeout";
+		if (SCR::Read (.target.size, flag) != -1) {
+		    y2milestone ("Emergency exit");
+		    SCR::Execute (.target.remove, flag);
+		    break;
+		}
+	    }
+
+	    if (! running) {
+		break;
+	    }
+
+	    // at last, enable aborting the sync
+	    if (Mode::commandline ()) {
+		sleep (sleep_step);
+	    }
+	    else {
+		any ui = UI::TimeoutUserInput (sleep_step);
+		if (ui == `abort) {
+		    y2milestone ("aborted");
+		    timed_out = true;
+		    break;
+		}
+	    }
+
+	    // time-out
+	    if (time_spent >= script_time_out) {
+		y2error("Command timed out after %1 msec", time_spent);
+		timed_out = true;
+	    }
+	    
+	    time_spent = time_spent + sleep_step;
+	}
+	y2milestone("Time spent: %1 msec", time_spent);
+
+	// fetching the return code if not timed-out
+	if (! timed_out) {
+	    y2milestone ("getting output");
+	    script_out  = splitstring((string)SCR::Read(.process.read, processID), "\n");
+	    y2milestone ("getting errors");
+	    script_err  = splitstring((string)SCR::Read(.process.read_stderr, processID), "\n");
+	    y2milestone ("getting status");
+	    return_code = (integer) SCR::Read(.process.status, processID);
+	}
+	y2milestone ("killing");
+	SCR::Execute(.process.kill, processID);
+
+	// release the process from the agent
+	SCR::Execute(.process.release, processID);
+
+	map command_ret = $[
+	    "exit"   : return_code,
+	    "stdout" : script_out,
+	    "stderr" : script_err,
+	];
+	if (timed_out)
+	    command_ret["timed_out"]	= time_spent;
+	return command_ret;
+    }
+
+    /**
+     * Run
+     * - with a timeout
+     * - on dumb terminal to disable colors etc
+     * - using 'exit $?' because of buggy behavior '.background vs. ZMD' (FIXME still needed???)
+     * @param command a command
+     * @param log_command a command to log
+     * @param seconds timeout
+     * @return map with out, err and ret_code
+     */
+    global map RunDumbTimeout (string command, string log_command, integer seconds) {
+	string dumb_format = "export TERM=dumb; %1; exit $?";
+	string dumb_command = sformat (dumb_format, command);
+	string dumb_log_command = sformat (dumb_format, log_command);
+	// explicit export in case TERM was not in the environment
+	map ret = RunCommandWithTimeout (dumb_command, dumb_log_command, seconds);
+	if (ret == nil) ret = $[];
 	return ret;
     }
 
