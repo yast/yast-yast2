@@ -1,7 +1,8 @@
 -------------------------------------------------------------------
-Tue Mar 17 12:30:47 CET 2009 - jsrain@suse.cz
+Tue Mar 17 12:42:56 CET 2009 - jsrain@suse.cz
 
 - fixed typo (bnc #483915)
+- report when GTK UI is wanted but not installed (bnc #472448)
 
 -------------------------------------------------------------------
 Mon Mar 16 10:03:31 CET 2009 - ug@suse.de
