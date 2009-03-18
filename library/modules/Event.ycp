@@ -46,6 +46,24 @@
 
     /**
      * Checks that the EventType is WidgetEvent and the EventReason is
+     * ValueChanged.
+     *
+     * Returns id or nil.
+     */
+    global symbol IsWidgetValueChanged(map event)
+    {
+	if (event["EventType"]:"Unknown" != "WidgetEvent")
+	    return nil;
+
+	if (event["EventReason"]:"Unknown" != "ValueChanged")
+	    return nil;
+
+	return event["ID"]:(symbol)(nil);
+    }
+
+
+    /**
+     * Checks that the EventType is WidgetEvent and the EventReason is
      * Activated or SelectionChanged.
      *
      * Returns id or nil.
