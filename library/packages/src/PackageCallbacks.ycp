@@ -2454,10 +2454,10 @@ global map<string,any> Authentication(string url, string msg, string username, s
 	    `HSpacing(1),
 	    `VBox(
 		// textentry label
-		`TextEntry(`id(`username), _("&User Name"), username),
+		`InputField(`id(`username), `opt(`hstretch), _("&User Name"), username),
 		`VSpacing(0.1),
 		// textentry label
-		`Password(`id(`password), _("&Password"), password)
+		`Password(`id(`password), `opt(`hstretch), _("&Password"), password)
 	    ),
 	    `HSpacing(1)
 	),
