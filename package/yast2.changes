@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Mar 25 16:41:53 CET 2009 - lslezak@suse.cz
+
+- Fixed layout of the authentication popup
+
+-------------------------------------------------------------------
 Tue Mar 17 20:05:45 CET 2009 - lslezak@suse.cz
 
 - moved functions RunCommandWithTimeout() and RunDumbTimeout()
