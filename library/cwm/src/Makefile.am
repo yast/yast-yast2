@@ -7,6 +7,7 @@ module_DATA =			\
 	TablePopup.ycp		\
 	DialogTree.ycp		\
 	CWMTab.ycp		\
+	CWMTable.ycp		\
 	CWMServiceStart.ycp	\
 	CWMTsigKeys.ycp		\
 	WizardHW.ycp
