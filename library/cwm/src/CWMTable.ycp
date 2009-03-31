@@ -1,0 +1,372 @@
+/**
+ * File:	modules/CWMTable.ycp
+ * Package:	Table dialogs backend
+ * Summary:	Routines for Unified Table widget
+ * Authors:	Josef Reidinger <jreidinger@suse.cz>
+ *
+ * $Id: CWMTable.ycp
+ *
+ */
+
+{
+
+    module "CWMTable";
+    textdomain "base";
+
+    import "CWM";
+    import "Label";
+    import "Mode";
+    import "Report";
+
+
+// local functions
+
+/**
+ * Validate table options specifyign attributesA
+ * @param attr a map of table attributes
+ * @return boolean true if validation succeeded
+ */
+boolean ValidateTableAttr (map<string,any> attr) {
+    map<string,string> types = $[
+        "add_delete_buttons" : "boolean",
+        "edit_button" : "boolean",
+        "up_down_buttons" : "boolean",
+        "custom_button" : "boolean",
+        "custom_button_name" : "string",
+        "custom_handle" :"symbol(string,map)",
+        "header" : "term",
+        "add" : "symbol(string,map)",
+        "edit" : "symbol(string,map)",
+        "delete" : "symbol(string,map)",
+        "updown" : "symbol(string,map,boolean)",
+    ];
+    boolean ret = true;
+    foreach (string k, any v, attr, {
+	string type = (string)types[k]:nil;
+	if (type == nil)
+	{
+	    y2error ("Unknown attribute %1", k);
+	    ret = false;
+	}
+	else
+	{
+	    ret = CWM::ValidateBasicType (v, type) && ret;
+	}
+    });
+    return ret;
+}
+
+
+/**
+ * Validate type of entry of the option description map
+ * Also checks option description maps if present
+ * @param key string key of the map entry
+ * @param value any value of the map entry
+ * @param widget any name of the widget/option
+ * @param popup boolean true if is option of a popup
+ * @return boolean true if validation succeeded
+ */
+boolean ValidateValueType (string key, any value, string widget) {
+    boolean success = true;
+    if (key == "help")
+	success = is (value, string);
+
+    if (! success)
+	y2error ("Wrong type of option %1 in description map of %2",
+	    key, widget);
+
+    return success;
+}
+
+/**
+ * Validate the table description
+ * @param descr a map containing the table description
+ * @return boolean true if validation succeeded
+ */
+boolean ValidateTableDescr (string key, map<string,any> descr) {
+    boolean ret = true;
+    foreach (string k, any v, descr, {
+	ret = ValidateValueType (k, v, key) && ret;
+    });
+    return ret;
+}
+
+string getItemId(term ter){
+      list<any> args = (list<any>)argsof(ter);
+      args = filter(any t, args, {
+          if (is(t,term) && (symbolof((term)t)==`id))
+            return true;
+          return false;
+        });
+      list<term>targs = (list<term>)args;
+      if (size(targs)==1){
+        return ((list<string>)argsof(targs[0]:nil))[0]:nil;
+      }
+      return nil;
+    }
+
+    /**
+      * Enable or disable the Delete and up/down buttons
+      * @param descr map table description map
+      * @param opt_descr map selected option description map
+      */
+    void updateButtons (map<string,any> descr ) {
+        y2milestone("update buttons");
+        string id = (string)UI::QueryWidget (`id(`_tw_table), `CurrentItem);
+        list<term> item_list = (list<term>)UI::QueryWidget (`id(`_tw_table), `Items);
+        integer index = -1;
+        integer counter = 0;
+        integer max = item_list == nil ? 0 : size(item_list)-1;
+        foreach(term t, item_list, {
+          if (getItemId(t)==id)
+            index = counter;
+          counter=counter+1;
+        });
+	if (descr["_cwm_attrib", "up_down_buttons"]:false)
+	{
+            if (max < 1 || index==-1){
+              y2milestone("short list");
+              UI::ChangeWidget (`id (`_tw_up), `Enabled,false);
+              UI::ChangeWidget (`id (`_tw_down), `Enabled,false);
+            } else {
+              if ( index ==0){
+                y2milestone("first item");
+	        UI::ChangeWidget (`id (`_tw_up), `Enabled, false);
+                UI::ChangeWidget (`id (`_tw_down), `Enabled, true);
+              } else if ( index == max){
+                y2milestone("last item");
+	        UI::ChangeWidget (`id (`_tw_up), `Enabled, true);
+                UI::ChangeWidget (`id (`_tw_down), `Enabled, false);
+              } else {
+	        UI::ChangeWidget (`id (`_tw_up), `Enabled, true);
+                UI::ChangeWidget (`id (`_tw_down), `Enabled, true);
+              }
+            }
+	} else {
+          UI::ChangeWidget (`id (`_tw_up), `Enabled,false);
+          UI::ChangeWidget (`id (`_tw_down), `Enabled,false);
+        }
+    }
+
+// functions
+
+
+    /**
+      * Initialize the displayed table
+      * @param descr map description map of the whole table
+      * @param key table widget key
+      */
+    global define void TableInit (map<string, any> descr, string key) ``{
+	descr["_cwm_key"] = key;
+    }
+
+    /**
+      * Handle the event that happened on the table
+      * @param descr map description of the table
+      * @param key table widget key
+      * @param event_descr map event to handle
+      * @return symbol modified event if needed
+      */
+    symbol TableHandle (map<string, any> descr, string key, map event_descr) {
+	any event_id = event_descr["ID"]:nil;
+        map<string,any> attrib =  descr["_cwm_attrib"]:$[];
+        symbol ret = nil;
+	if (event_id == `_tw_table)
+	{
+	    if (event_descr["EventReason"]:"" == "Activated"
+		&& event_descr["EventType"]:"" == "WidgetEvent"
+		&& UI::WidgetExists (`id (`_tw_edit)))
+	    {
+		event_id = `_tw_edit;
+	    }
+	}
+        if (event_id == `_tw_edit)
+        {
+          symbol(string,map) edit_handle = (symbol(string,map))attrib["edit"]:nil;
+          if (edit_handle != nil){
+            ret = edit_handle(key,event_descr);
+          }
+        } else if (event_id == `_tw_add)
+        {
+          symbol(string,map) add_handle = (symbol(string,map))attrib["add"]:nil;
+          if (add_handle != nil){
+            ret = add_handle(key,event_descr);
+          }
+        }
+	else if (event_id == `_tw_delete)
+	{
+          symbol(string,map) delete_handle = (symbol(string,map))attrib["delete"]:nil;
+          if (delete_handle != nil){
+            ret = delete_handle(key,event_descr);
+          }
+	}
+	else if (event_id == `_tw_custom)
+	{
+          symbol(string,map) custom_handle = (symbol(string,map))attrib["custom_handle"]:nil;
+          if (custom_handle != nil){
+            ret = custom_handle(key,event_descr);
+          }
+	}
+	else if (event_id == `_tw_up || event_id == `_tw_down)
+	{
+          boolean up = event_id==`_tw_up;
+          string id = (string)UI::QueryWidget (`id(`_tw_table), `CurrentItem);
+          list<term> item_list = (list<term>)UI::QueryWidget (`id(`_tw_table), `Items);
+          integer index = -1;
+          integer counter = 0;
+          foreach(term t, item_list, {
+            if (getItemId(t)==id)
+              index = counter;
+            counter=counter+1;
+          });
+          symbol(string,map,boolean,integer) updown_handle = (symbol(string,map,boolean,integer))attrib["updown"]:nil;
+          if (updown_handle != nil &&
+            !(index==0 && up) &&
+            !(index==size(item_list)-1 && !up)){
+            ret = updown_handle(key,event_descr,up,index);
+            if (ret == nil){
+              UI::ChangeWidget(`id(`_tw_table), `CurrentItem, id);
+            }
+          }
+	}
+	updateButtons (descr);
+	return ret;
+    }
+
+    /**
+      * Disable whole table
+      * @param descr map table widget description map
+      */
+    global define void DisableTable (map<string,any> descr) ``{
+	UI::ChangeWidget (`id (`_tw_table), `Enabled, false);
+	if (descr["_cwm_attrib", "edit_button"]:true)
+	{
+	    UI::ChangeWidget (`id (`_tw_edit), `Enabled, false);
+	}
+	if (descr["_cwm_attrib", "add_delete_buttons"]:true)
+	{
+	    UI::ChangeWidget (`id (`_tw_delete), `Enabled, false);
+	    UI::ChangeWidget (`id (`_tw_add), `Enabled, false);
+	}
+	if (descr["_cwm_attrib", "up_down_buttons"]:false)
+	{
+	    UI::ChangeWidget (`id (`_tw_up), `Enabled, false);
+	    UI::ChangeWidget (`id (`_tw_down), `Enabled, false);
+	}
+	if (descr["_cwm_attrib", "custom_button"]:false)
+	{
+	    UI::ChangeWidget (`id (`_tw_custom), `Enabled, false);
+	}
+    }
+
+    /**
+      * Enable whole table (except buttons that should be grayed according to
+      * currently selected table row
+      * @param descr map table widget description map
+      */
+    global define void EnableTable (map<string, any> descr) ``{
+	UI::ChangeWidget (`id (`_tw_table), `Enabled, true);
+	if (descr["_cwm_attrib", "edit_button"]:true)
+	{
+	    UI::ChangeWidget (`id (`_tw_edit), `Enabled, true);
+	}
+	if (descr["_cwm_attrib", "add_delete_buttons"]:true)
+	{
+	    UI::ChangeWidget (`id (`_tw_add), `Enabled, true);
+	}
+	if (descr["_cwm_attrib", "custom_button"]:false)
+	{
+	    UI::ChangeWidget (`id (`_tw_custom), `Enabled, true);
+	}
+	TableHandle(descr,"",$[]);
+    }
+    /**
+      * Wrapper for TableInit using CWM::GetProcessedWidget () for getting
+      * widget description map
+      * @param key any widget key
+      */
+    global define void TableInitWrapper (string key) ``{
+	TableInit (CWM::GetProcessedWidget (), key);
+    }
+
+    /**
+      * Wrapper for TableHandle using CWM::GetProcessedWidget () for getting
+      * widget description map
+      * @param key any widget key
+      * @param event_descr map event description map
+      * @return symbol return value for wizard sequencer or nil
+      */
+    global define symbol TableHandleWrapper (string key, map event_descr) ``{
+	return TableHandle(CWM::GetProcessedWidget (), key, event_descr);
+    }
+
+    /**
+      * Get the map with the table widget
+      * @param attrib map table attributes
+      * @param widget_descr map widget description map of the table, will be
+      *  unioned with the generated map
+      * @return map table widget
+      */
+    global define map<string,any> CreateTableDescr (map<string,any> attrib, map<string,any> widget_descr) ``{
+	ValidateTableAttr (attrib);
+	term add_button = attrib["add_delete_buttons"]:true
+	    ? `PushButton (`id (`_tw_add), `opt (`key_F3,`notify), Label::AddButton ())
+	    : `HSpacing (0);
+	term edit_button = attrib["edit_button"]:true
+	    ? `PushButton (`id (`_tw_edit), `opt (`key_F4,`notify), Label::EditButton ())
+	    : `HSpacing (0);
+	term delete_button = attrib["add_delete_buttons"]:true
+	    ? `PushButton (`id (`_tw_delete), `opt (`key_F5,`notify), Label::DeleteButton ())
+	    : `HSpacing (0);
+	term table_header = (term)attrib["header"]:nil;
+
+	term custom_button = attrib["custom_button"]:false
+	    ? `PushButton (`id (`_tw_custom), `opt (`notify), attrib["custom_button_name"]:"Custom button")
+	    : `HSpacing (0);
+
+	term up_down = attrib["up_down_buttons"]:false
+	    ? `VBox (
+		`VStretch (),
+		// push button
+		`PushButton (`id (`_tw_up), `opt(`notify,`immediate), _("&Up")),
+		// push button
+		`PushButton (`id (`_tw_down), `opt(`notify,`immediate), _("&Down")),
+		`VStretch ()
+	    )
+	    : `HSpacing (0);
+
+	map<string,any> ret = (map<string,any>)union ($[
+            "custom_widget" : (`HBox (`HSpacing (2), `VBox (
+		    `HBox (
+	                `Table (`id (`_tw_table),
+			    `opt (`immediate, `notify,`keepSorting),
+			    table_header,
+	                 []),
+			up_down
+		    ),
+                    `HBox (
+			add_button,
+			edit_button,
+			delete_button,
+                        `HStretch (),
+			custom_button
+                    )
+                ), `HSpacing (2))),
+	    "_cwm_attrib" : attrib,
+	    "widget" : `custom,
+	    "_cwm_do_validate" : ValidateTableDescr,
+	], widget_descr);
+
+	if (! haskey (ret, "init"))
+	{
+	    ret["init"] = CWMTable::TableInitWrapper;
+	}
+	if (! haskey (ret, "handle"))
+	{
+	    ret["handle"] = CWMTable::TableHandleWrapper;
+	}
+
+	return ret;
+    }
+
+}
