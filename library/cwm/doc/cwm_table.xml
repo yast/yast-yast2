@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet href="/usr/share/xml/docbook/stylesheet/css/current/driver.css" type="text/css"?>
+<chapter id="cwr_table">
+  <title>CWM Table concept</title>
+
+  <para> Table widget and manupulation with data in this widget need same
+  behavior across whole YaST. </para>
+
+  <para> The CWM Table widget exists in order to make development of modules
+  using this UI concept consistent. It contains few most used buttons and few
+  automatic manipulation features. </para>
+
+  <para>
+  The CWM Table widget allows Add/delete buttons, Edit button,
+  Up/down reorder buttons and custom button, which developer set to what they need.
+  Automatic edit action after double-click on table collumn. After reorder is still
+  selected same item, even if is moved. Reordering handlers is called only if cell really 
+  can move in choosed direction. Whole table Enable/Disable and automatic enable/disable
+  reordering button on collums which doesn't allow move in that direction.
+  </para>
+
+
+  <section>
+    <title>Simple example for CWM Table</title>
+
+    <para> This example show basic features of CWM table and also basic how
+    to use. </para>
+
+    <example id="tw_basic">
+      <title>Usage of the CWM Table widget - basic case</title>
+
+      <screen> 
+{
+      import "CWM";
+      import "CWMTable";
+      import "Popup";
+      import "Wizard";
+
+      list&lt;string&gt; items = [];
+      integer counter =0;
+
+      void redraw_table(list&lt;string&gt; values){
+        list&lt;term&gt; table_items = maplist(string s, values, {
+          return `item(`id(s),s);
+        });
+        UI::ChangeWidget(`id(`_tw_table),`Items, table_items);
+      }
+
+      symbol add_handle(string key, map event){
+        counter = counter +1;
+        items = add(items,sformat("item %1",counter));
+        redraw_table(items);
+        return nil;
+      }
+
+      symbol edit_handle(string key, map event){
+          Popup::Warning("edit");
+        return nil;
+      }
+
+      symbol delete_handle(string key, map event){
+          Popup::Warning("delete");
+        return nil;
+      }
+
+      symbol updown_handle(string key, map event, boolean up, integer index){
+        integer second = up ? (index-1):(index+1);
+        y2milestone("updown with up %1 and index %2 and second %3",up,index,second);
+        string value = items[second]:"";
+        items[second] = items[index]:"";
+        items[index] = value;
+        redraw_table(items);
+        return nil;
+      }
+
+      symbol custom_handle(string key, map event){
+          Popup::Warning("Custom button");
+        return nil;
+      }
+
+      map&lt;string,any&gt; table = CWMTable::CreateTableDescr(
+        $[
+          "add_delete_buttons" : true,
+          "edit_button" : true,
+          "up_down_buttons" : true,
+          "custom_button" : true,
+          "custom_button_name" : "Additional button",
+          "custom_handle" : custom_handle,
+          "header" : `header("id"),
+          "edit":edit_handle,
+          "delete":delete_handle,
+          "add" : add_handle,
+          "updown" : updown_handle,
+        ],
+        $[
+          "help" : "",
+        ]
+      );
+
+      Wizard::CreateDialog();
+      symbol ret = CWM::ShowAndRun($[
+        "widget_names" : ["table"],
+        "widget_descr" : $[ "table" : table],
+        "contents" : `VBox("table"),
+        "caption" : "test"
+      ]);
+}
+
+      </screen>
+    </example>
+
+    <section id="create_cwr_table">
+      <title>Creating the table container </title>
+
+      <para> For getting the initial map the function map&lt;string,any&gt;
+      CWMTable::CreateTableDescr () can be used. It takes as a parameters a map
+      specifying the attributes of the table and a map specifying additional
+      settings that will be merged to the description map (see below).
+      Currently supported attributes are: <itemizedlist>
+          <listitem id="add_delete_buttons">
+            <para> "add_delete_buttons" : boolean - if the Add and Delete
+            buttons are wanted, set to true. If false, they will not be shown.
+            Default (if key not present) is true. </para>
+          </listitem>
+
+          <listitem id="edit_button">
+            <para> "edit_button" : boolean - if the Edit button is wanted, set
+            to true. If false, it will not be shown. Default (if key not
+            present) is true. </para>
+          </listitem>
+
+          <listitem id="up_down_buttons">
+            <para> "up_down_buttons" : boolean - if the Up and Down (reorder)
+            buttons are wanted, set to true. Otherwise, they will not be
+            shown. Default (if not present) is false. </para>
+          </listitem>
+
+          <listitem id="custom_button">
+            <para> "custom_button" : boolean - if the Custom button
+            are wanted, set to true. Otherwise, they will not be shown.
+             Default (if not present) is false. </para>
+          </listitem>
+
+          <listitem id="custom_button_name">
+            <para> "custom_button_name" : string - label for the Custom button.
+            Default (if not present) is "Custom button". </para>
+          </listitem>
+
+          <listitem id="custom_handle">
+            <para> "custom_handle" : symbol(string,map) - handler for the Custom button.
+            Default (if not present) is empty handler (do nothing). </para>
+          </listitem>
+
+          <listitem id="add">
+            <para> "add" : symbol(string,map) - handler for the Add button.
+            Default (if not present) is empty handler (do nothing). </para>
+          </listitem>
+
+          <listitem id="delete">
+            <para> "delete" : symbol(string,map) - handler for the Delete button.
+            Default (if not present) is empty handler (do nothing). </para>
+          </listitem>
+
+          <listitem id="edit">
+            <para> "edit" : symbol(string,map) - handler for the Edit button.
+            Default (if not present) is empty handler (do nothing). </para>
+          </listitem>
+
+          <listitem id="updown">
+            <para> "updown" : symbol(string,map, boolean, integer) - handler for the Updown button.
+            Extra parameters is boolean if button is Up button and index of selected table collumn.
+            Default (if not present) is empty handler (do nothing). </para>
+          </listitem>
+
+          <listitem id="header">
+            <para> "header" : term - header term for table. It is mandatory key for CWM Table.
+            Default (if not present) is nil and fail of widget. </para>
+          </listitem>
+        </itemizedlist> </para>
+
+      <para> For id of the widgets related to the table see <xref
+      linkend="tw_events" />. </para>
+    </section>
+
+    <section>
+      <title>Setting the widget map </title>
+
+      <para> This is the same as for normal widgets. Set the keys
+      according to your needs. Only doesn't overwrite handle function,
+      as it make all handling stuff</para>
+
+    </section>
+
+  </section>
+
+  <section id="tw_events">
+    <title>Reserved UI events</title>
+
+    <para> Some UI events (return values of UI::UserInput ()) are used
+    internally by the handling mechanism, and can't be used for other widgets.
+    </para>
+
+    <para> The table widget contains following ids: <itemizedlist>
+        <listitem>
+          <para> `_tw_add - Add button - don't use although it is not present
+          </para>
+        </listitem>
+
+        <listitem>
+          <para> `_tw_edit - Edit button </para>
+        </listitem>
+
+        <listitem>
+          <para> `_tw_delete - Delete button - don't use although it is not
+          present </para>
+        </listitem>
+
+        <listitem>
+          <para> `_tw_table - The table </para>
+        </listitem>
+
+        <listitem>
+          <para> `_tw_up - The Up button </para>
+        </listitem>
+
+        <listitem>
+          <para> `_tw_down - The Down button </para>
+        </listitem>
+
+        <listitem>
+          <para> `_tw_custom - The Custom button </para>
+        </listitem>
+      </itemizedlist> </para>
+
+  </section>
+</chapter>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: xml
+sgml-parent-document:("cwm.xml" "book" "chapter")
+sgml-doctype:"cwm.xml"
+End:
+-->

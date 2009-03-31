@@ -8,6 +8,7 @@
 <!ENTITY concept SYSTEM "concept.xml">
 <!ENTITY advanced SYSTEM "advanced.xml">
 <!ENTITY widgets SYSTEM "widgets.xml">
+<!ENTITY cwm_table SYSTEM "cwm_table.xml">
 <!ENTITY table_popup SYSTEM "table_popup.xml">
 <!ENTITY dialog_tree SYSTEM "dialog_tree.xml">
 <!ENTITY cwm_tab SYSTEM "cwm_tab.xml">
@@ -16,7 +17,7 @@
 <!ENTITY terminology SYSTEM "terminology.xml">
 <!ENTITY tutor SYSTEM "tutor.xml">
 
-<!ENTITY date "June 2003">
+<!ENTITY date "March 2009">
 ]>
 
 <book id="cwm">
@@ -85,6 +86,7 @@ are handled.
 &concept;
 &advanced;
 &widgets;
+&cwm_table;
 &table_popup;
 &dialog_tree;
 &cwm_tab;
