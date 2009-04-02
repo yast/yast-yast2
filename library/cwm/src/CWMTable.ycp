@@ -35,10 +35,10 @@ boolean ValidateTableAttr (map<string,any> attr) {
         "custom_button_name" : "string",
         "custom_handle" :"symbol(string,map)",
         "header" : "term",
-        "add" : "symbol(string,map)",
-        "edit" : "symbol(string,map)",
-        "delete" : "symbol(string,map)",
-        "updown" : "symbol(string,map,boolean)",
+        "add" : "symbol(string,map,integer)",
+        "edit" : "symbol(string,map,integer)",
+        "delete" : "symbol(string,map,integer)",
+        "updown" : "symbol(string,map,boolean,integer)",
     ];
     boolean ret = true;
     foreach (string k, any v, attr, {
@@ -171,6 +171,15 @@ string getItemId(term ter){
 	any event_id = event_descr["ID"]:nil;
         map<string,any> attrib =  descr["_cwm_attrib"]:$[];
         symbol ret = nil;
+        string id = (string)UI::QueryWidget (`id(`_tw_table), `CurrentItem);
+        list<term> item_list = (list<term>)UI::QueryWidget (`id(`_tw_table), `Items);
+        integer index = -1;
+        integer counter = 0;
+        foreach(term t, item_list, {
+          if (getItemId(t)==id)
+            index = counter;
+          counter=counter+1;
+        });
 	if (event_id == `_tw_table)
 	{
 	    if (event_descr["EventReason"]:"" == "Activated"
@@ -182,43 +191,34 @@ string getItemId(term ter){
 	}
         if (event_id == `_tw_edit)
         {
-          symbol(string,map) edit_handle = (symbol(string,map))attrib["edit"]:nil;
+          symbol(string,map,integer) edit_handle = (symbol(string,map,integer))attrib["edit"]:nil;
           if (edit_handle != nil){
-            ret = edit_handle(key,event_descr);
+            ret = edit_handle(key,event_descr,index);
           }
         } else if (event_id == `_tw_add)
         {
-          symbol(string,map) add_handle = (symbol(string,map))attrib["add"]:nil;
+          symbol(string,map,integer) add_handle = (symbol(string,map,integer))attrib["add"]:nil;
           if (add_handle != nil){
-            ret = add_handle(key,event_descr);
+            ret = add_handle(key,event_descr,index);
           }
         }
 	else if (event_id == `_tw_delete)
 	{
-          symbol(string,map) delete_handle = (symbol(string,map))attrib["delete"]:nil;
+          symbol(string,map,integer) delete_handle = (symbol(string,map,integer))attrib["delete"]:nil;
           if (delete_handle != nil){
-            ret = delete_handle(key,event_descr);
+            ret = delete_handle(key,event_descr,index);
           }
 	}
 	else if (event_id == `_tw_custom)
 	{
-          symbol(string,map) custom_handle = (symbol(string,map))attrib["custom_handle"]:nil;
+          symbol(string,map,integer) custom_handle = (symbol(string,map,integer))attrib["custom_handle"]:nil;
           if (custom_handle != nil){
-            ret = custom_handle(key,event_descr);
+            ret = custom_handle(key,event_descr,index);
           }
 	}
 	else if (event_id == `_tw_up || event_id == `_tw_down)
 	{
           boolean up = event_id==`_tw_up;
-          string id = (string)UI::QueryWidget (`id(`_tw_table), `CurrentItem);
-          list<term> item_list = (list<term>)UI::QueryWidget (`id(`_tw_table), `Items);
-          integer index = -1;
-          integer counter = 0;
-          foreach(term t, item_list, {
-            if (getItemId(t)==id)
-              index = counter;
-            counter=counter+1;
-          });
           symbol(string,map,boolean,integer) updown_handle = (symbol(string,map,boolean,integer))attrib["updown"]:nil;
           if (updown_handle != nil &&
             !(index==0 && up) &&
