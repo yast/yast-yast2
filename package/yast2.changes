@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Apr  3 13:26:58 CEST 2009 - lslezak@suse.cz
+
+- Do not display "No package source" popup, just log a warning
+  (bnc#485587)
+
+-------------------------------------------------------------------
 Fri Apr  3 12:29:54 CEST 2009 - jsrain@suse.cz
 
 - save_y2logs additionally collects /var/log/zypper.log and
