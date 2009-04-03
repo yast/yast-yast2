@@ -86,11 +86,10 @@ global void EnsureSourceInit() {
     {
 	source_initialized = true;
     }
-    // ignore the problem when installing from LiveCD - all sources are disabled
-    else if (!Mode::live_installation())
+    else
     {
-	/* Error message, no packages sources found */
-	Report::Error(_("No package source defined."));
+	// all repositories are disabled or no repository defined
+	y2warning("No package repository available");
     }
 }
 
