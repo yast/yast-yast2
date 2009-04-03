@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Apr  3 12:29:54 CEST 2009 - jsrain@suse.cz
+
+- save_y2logs additionally collects /var/log/zypper.log and
+  /var/log/pk_backend_zypp
+
+-------------------------------------------------------------------
 Wed Mar 25 16:41:53 CET 2009 - lslezak@suse.cz
 
 - Fixed layout of the authentication popup

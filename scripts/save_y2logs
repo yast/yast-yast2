@@ -65,6 +65,14 @@ if [ -f /var/log/Xorg.0.log ]; then
     LIST="$LIST /var/log/Xorg.0.log"
 fi
 
+if [ -f /var/log/zypper.log ]; then
+    LIST="$LIST /var/log/zypper.log"
+fi
+
+if [ -f /var/log/pk_backend_zypp ]; then
+    LIST="$LIST /var/log/pk_backend_zypp"
+fi
+
 RPM_LIST="rpm-qa"
 if [ -f /var/lib/rpm/Packages ]; then
     rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}\t\t\t(%{VENDOR})\t%{DISTRIBUTION}\n' 2>/dev/null | sort >/var/log/$RPM_LIST
