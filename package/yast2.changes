@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Apr  8 11:27:13 CEST 2009 - lslezak@suse.cz
+
+- PackageCallbacks.ycp - don't read non existing y2logRPM file
+  (bnc#456446)
+
+-------------------------------------------------------------------
 Tue Apr  7 15:31:35 CEST 2009 - jreidinger@suse.cz
 
 - Add to CWM widget for unified table CWMTable
