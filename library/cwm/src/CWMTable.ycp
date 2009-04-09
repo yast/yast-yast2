@@ -328,9 +328,9 @@ string getItemId(term ter){
 	    ? `VBox (
 		`VStretch (),
 		// push button
-		`PushButton (`id (`_tw_up), `opt(`notify,`immediate), _("&Up")),
+		`PushButton (`id (`_tw_up), `opt(`notify), _("&Up")),
 		// push button
-		`PushButton (`id (`_tw_down), `opt(`notify,`immediate), _("&Down")),
+		`PushButton (`id (`_tw_down), `opt(`notify), _("&Down")),
 		`VStretch ()
 	    )
 	    : `HSpacing (0);
