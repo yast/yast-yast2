@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Apr  9 10:04:19 CEST 2009 - lslezak@suse.cz
+
+- PackageSystem.ycp - check nil result of Pkg::PkgCommit() call
+  which indicates an error (bnc#157551)
+- 2.13.113
+
+-------------------------------------------------------------------
 Mon Mar  2 13:48:12 CET 2009 - mzugec@suse.de
 
 - NetworkInterfaces - possible to not use LABEL for aliases 
