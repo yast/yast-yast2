@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Apr 20 16:11:35 CEST 2009 - jsrain@suse.cz
+
+- at start-up, check that /sys, /proc and /dev are not empty and
+  prevent YaST from start if they are (bnc#450643)
+
+-------------------------------------------------------------------
 Thu Apr  9 10:04:19 CEST 2009 - lslezak@suse.cz
 
 - PackageSystem.ycp - check nil result of Pkg::PkgCommit() call
