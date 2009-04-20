@@ -30,6 +30,16 @@ fi
 . $YAST_PREFIX/lib/YaST2/bin/yast2-funcs
 
 
+# check that system directories are non-empty - bnc #450643
+mount_ok=1;
+test -z `ls /proc |head -n1` && echo "The /proc filesystem is not mounted." && mount_ok=0;
+test -z `ls /sys |head -n1` && echo "The /sys filesystem is not mounted." && mount_ok=0;
+test -z `ls /dev |head -n1` && echo "The /dev filesystem is not mounted." && mount_ok=0;
+if test $mount_ok -eq 0 ; then
+    echo "If you are running in a chroot environment, bind-mount missing filesystems.";
+    exit 1;
+fi
+
 # #211392, #265263
 # if we are in X and do not have _input_ from terminal,
 # save the output and display it via xmessage in case of error.
