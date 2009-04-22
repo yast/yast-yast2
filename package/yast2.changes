@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Apr 22 16:47:14 CEST 2009 - lslezak@suse.cz
+
+- register new callbacks Pkg::CallbackSourceCreateInit/Destroy()
+  and Pkg::CallbackSourceReportInit/Destroy() (#251726)
+- 2.13.114
+
+-------------------------------------------------------------------
 Thu Apr  9 10:04:19 CEST 2009 - lslezak@suse.cz
 
 - PackageSystem.ycp - check nil result of Pkg::PkgCommit() call

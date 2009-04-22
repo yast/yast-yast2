@@ -65,6 +65,8 @@ global define void InitPackageCallbacks() {
     Pkg::CallbackSourceCreateProgress("PackageCallbacks::SourceCreateProgress");
     Pkg::CallbackSourceCreateError("PackageCallbacks::SourceCreateError");
     Pkg::CallbackSourceCreateEnd("PackageCallbacks::SourceCreateEnd");
+    Pkg::CallbackSourceCreateInit("PackageCallbacks::SourceCreateInit");
+    Pkg::CallbackSourceCreateDestroy("PackageCallbacks::SourceCreateDestroy");
 
     // source probing callbacks
     Pkg::CallbackSourceProbeStart("PackageCallbacks::SourceProbeStart");
@@ -79,6 +81,8 @@ global define void InitPackageCallbacks() {
     Pkg::CallbackSourceReportProgress("PackageCallbacks::SourceReportProgress");
     Pkg::CallbackSourceReportError("PackageCallbacks::SourceReportError");
     Pkg::CallbackSourceReportEnd("PackageCallbacks::SourceReportEnd");
+    Pkg::CallbackSourceReportInit("PackageCallbacks::SourceReportInit");
+    Pkg::CallbackSourceReportDestroy("PackageCallbacks::SourceReportDestroy");
 
 
     // @see bugzilla #183821
