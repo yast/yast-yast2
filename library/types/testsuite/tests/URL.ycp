@@ -50,6 +50,10 @@ TEST(``(URL::Build($["scheme":"ftp","host":"ftp.example.com","path":"path/to/dir
 TEST(``(URL::Build($["scheme":"ftp","host":"ftp.example.com","path":"/path/to/dir"])), [], nil);
 TEST(``(URL::Build($["scheme":"ftp","host":"ftp.example.com","path":"//path/to/dir"])), [], nil);
 TEST(``(URL::Build($["scheme":"ftp","host":"ftp.example.com","path":"///path/to/dir"])), [], nil);
+TEST(``(URL::Build($["scheme":"ftp","host":"ftp.example.com","path":"///path/to/dir", "query" : "param1=val1&param2=val2" ])), [], nil);
+
+// bnc #446395 - non-ASCII chars in path must be escaped
+TEST(``(URL::Build($["scheme":"dir", "path":"/path/to/ěščřžýáíé/dir"])), [], nil);
 
 // IPv6 tests
 TEST(``(URL::Build($["scheme":"ftp","host":"2001:de8:0:f123::1","path":"///path/to/dir"])), [], nil);

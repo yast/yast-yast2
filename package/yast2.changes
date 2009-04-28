@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr 28 15:18:49 CEST 2009 - lslezak@suse.cz
+
+- URL.ycp - escape also non-ASCII characters in URL, added
+  URLRecode.pm module (bnc#446395)
+
+-------------------------------------------------------------------
 Mon Apr 20 16:11:35 CEST 2009 - jsrain@suse.cz
 
 - at start-up, check that /sys, /proc and /dev are not empty and

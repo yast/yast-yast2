@@ -21,6 +21,8 @@ Return	ftp://ftp.example.com/path/to/dir
 Return	ftp://ftp.example.com/%2fpath/to/dir
 Return	ftp://ftp.example.com/%2fpath/to/dir
 Return	ftp://ftp.example.com/%2fpath/to/dir
+Return	ftp://ftp.example.com/%2fpath/to/dir?param1=val1&param2=val2
+Return	dir:///path/to/%c4%9b%c5%a1%c4%8d%c5%99%c5%be%c3%bd%c3%a1%c3%ad%c3%a9/dir
 Return	ftp://[2001:de8:0:f123::1]/%2fpath/to/dir
 Return	http://[2001:de8:0:f123::1]:8080/path/to/dir
 Return	$["fragment":"", "host":"2001:de8:0:f123::1", "pass":"", "path":"/path/to/dir", "port":"", "query":"", "scheme":"http", "user":""]
