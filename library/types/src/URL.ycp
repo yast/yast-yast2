@@ -150,6 +150,9 @@ global string EscapeString(string in, map<string,string> transform) {
     return ret;
 }
 
+global map <string, string> MakeMapFromParams (string params);
+global string MakeParamsFromMap (map <string, string> params_map);
+
 /**
  * Tokenize URL
  * @param url URL to be parsed
@@ -242,14 +245,19 @@ global define map Parse(string url) ``{
     }
 
     // some exceptions for samba scheme (there is optional extra option "domain")
-    if (tokens["scheme"]:""=="samba" || tokens["scheme"]:""=="smb"){
-     list<string> tmp_list = filter(string row, splitstring(tokens["path"]:"", "/"), {return (size(row)>0);});
-     if (size(tmp_list)>1){
-      tokens["domain"] = tokens["host"]:"";
-      tokens["host"] = tmp_list[0]:"";
-      tokens["path"] = tmp_list[1]:"";
-     }
-	else tokens["path"] = deletechars(tokens["path"]:"", "/");
+    if (tokens["scheme"]:""=="samba" || tokens["scheme"]:""=="smb")
+    {
+	// Note: CUPS uses different URL syntax for Samba printers:
+	//     smb://username:password@workgroup/server/printer
+	// Fortunately yast2-printer does not use URL.ycp, so we can safely support libzypp syntax only:
+	//     smb://username:passwd@servername/share/path/on/the/share?workgroup=mygroup
+
+	map<string,string> options = MakeMapFromParams(tokens["query"]:"");
+
+	if (haskey(options, "workgroup"))
+	{
+	    tokens["domain"] = options["workgroup"]:"";
+	}
     }
     y2debug("tokens=%1", tokens);
     return tokens;
@@ -333,10 +341,6 @@ global define string Build (map tokens) ``{
 	url = sformat("%1://%2", url, userpass);
 	y2debug("url: %1", url);
 
-	if (tokens["scheme"]:"" == "smb" && size(tokens["domain"]:"")>0 ){
-	 url = sformat("%1%2/", url, tokens["domain"]:"");
-	}
-
 	if(Hostname::CheckFQ(tokens["host"]:"") || IP::Check(tokens["host"]:""))
 	{
 	    // enclose an IPv6 address in square brackets
@@ -369,8 +373,19 @@ global define string Build (map tokens) ``{
 	}
 	y2debug("url: %1", url);
 
+
+	map<string,string> query_map = MakeMapFromParams(tokens["query"]:"");
+
+	if (tokens["scheme"]:"" == "smb" && size(tokens["domain"]:"")>0 && query_map["workgroup"]:"" != tokens["domain"]:"")
+	{
+	    query_map["workgroup"] = tokens["domain"]:"";
+
+	    tokens["query"] = MakeParamsFromMap(query_map);
+	}
+
 	if (tokens["query"]:"" != "" )
 		url = sformat("%1?%2", url, URLRecode::EscapeQuery(tokens["query"]:""));
+
 	if (tokens["fragment"]:"" != "" )
 		url = sformat("%1#%2", url, URLRecode::EscapePassword(tokens["fragment"]:""));
 	y2debug("url: %1", url);
