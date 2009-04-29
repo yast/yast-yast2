@@ -1,0 +1,7 @@
+Return	nil
+Return	
+Return	/%40%23%24%25%5e%26/dir/%c4%8d%c3%bd%c4%9b%c5%a1%c4%8d%c3%bd%c3%a1/file
+Return	true
+Return	%20!%40%23%24%25%5e%26*()/%3f%2b%3d
+Return	%20!%40%23%24%25^%26*()%2f%3f%2b%3d
+Return	%20!%40%23%24%25^&*()/%3f%2b=
