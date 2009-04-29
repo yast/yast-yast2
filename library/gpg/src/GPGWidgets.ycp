@@ -4,7 +4,7 @@
  * Summary:	UI widgets and functions related to GPG
  * Authors:	Ladislav Slezák <lslezak@suse.cz>
  *
- * $Id:$
+ * $Id$
  *
  * This module provides UI related functions to GPG.
  */

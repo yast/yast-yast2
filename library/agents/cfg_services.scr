@@ -14,7 +14,7 @@
  *   Write(.sysconfig.services.DISABLE_RESTART_ON_UPDATE, "yes")
  *   (true)
  *
- * $Id:$
+ * $Id$
  *
  * Read/Sets the values defined in <tt>/etc/sysconfig/services</tt>
  */

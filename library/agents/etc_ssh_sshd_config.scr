@@ -18,7 +18,7 @@
  *   Write(.etc.ssh.sshd_config.Compression, "no")
  *   (true)
  *
- * $Id:$
+ * $Id$
  *
  * For more information about possible keys and values
  * consult with the sshd_config man pages `man sshd_config`.

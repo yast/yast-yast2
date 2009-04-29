@@ -4,7 +4,7 @@
  * Summary:	Module for reporting installation errors
  * Authors:	Lukas Ocilka <locilka@suse.cz>
  *
- * $Id:$
+ * $Id$
  *
  * This module provides unified interface for reporting
  * installation errors.

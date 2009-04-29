@@ -2,7 +2,7 @@
 #
 # Author: Ladislav Slezák <lslezak@novell.com>
 #
-# $Id:$
+# $Id$
 #
 # URLRecode.pm
 #
