@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Apr 29 09:15:49 CEST 2009 - lslezak@suse.cz
+
+- media change popup - display also the URL in the short summary
+  (bnc#439069)
+- 2.18.15
+
+-------------------------------------------------------------------
 Tue Apr 28 15:18:49 CEST 2009 - lslezak@suse.cz
 
 - URL.ycp - escape also non-ASCII characters in URL, added
