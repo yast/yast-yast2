@@ -4,7 +4,7 @@
  * Summary:	A wrapper for gpg binary
  * Authors:	Ladislav Slezák <lslezak@suse.cz>
  *
- * $Id:$
+ * $Id$
  *
  * This module provides GPG key related functions. It is a wrapper around gpg
  * binary. It uses caching for reading GPG keys from the keyrings.

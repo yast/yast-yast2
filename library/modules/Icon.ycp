@@ -5,7 +5,7 @@
  * Summary:     Transparent access to Icons
  * Flags:	Stable
  *
- * $Id:$
+ * $Id$
  */
 {
     module "Icon";

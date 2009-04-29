@@ -5,7 +5,7 @@
  *		images for the inst-sys
  * Authors:	Lukas Ocilka <locilka@suse.cz>
  *
- * $Id:$
+ * $Id$
  *
  * This module provides functions that download inst-sys extension images
  * (localization, fonts, ...) and merge them to the current int-sys.
