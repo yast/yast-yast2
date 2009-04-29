@@ -797,17 +797,19 @@ the YaST control center and refresh the repository.</p>\n");
 	// with network repository it doesn't make sense to ask for disk
 	if (url_scheme == "dir")
 	{
-	    // report error while accessing local directory with product (%1 == "SuSE Linux ...")
+	    // report error while accessing local directory with product (%1 = URL, %2 = "SuSE Linux ...")
 	    message = sformat (_("Cannot access installation media
-%1.
-Check whether the directory is accessible."), wanted_label);
+%1
+%2.
+Check whether the directory is accessible."), URL::HidePassword(url), wanted_label);
 	}
 	else if (url_scheme != "cd" && url_scheme != "dvd")
 	{
-	    // report error while accessing network media of product (%1 == "SuSE Linux ...")
+	    // report error while accessing network media of product (%1 = URL, %2 = "SuSE Linux ...")
 	    message = sformat (_("Cannot access installation media 
-%1.
-Check whether the server is accessible."), wanted_label);
+%1
+%2.
+Check whether the server is accessible."), URL::HidePassword(url), wanted_label);
 	}
 
 	// currently unused
