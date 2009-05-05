@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue May  5 14:18:28 CEST 2009 - jsrain@suse.cz
+ 
+- remove all passwords from install.inf in save_y2log (bnc#500130)
+
+-------------------------------------------------------------------
 Wed Apr 29 09:15:49 CEST 2009 - lslezak@suse.cz
 
 - media change popup - display also the URL in the short summary
