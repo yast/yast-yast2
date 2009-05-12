@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May 12 19:04:12 CEST 2009 - mzugec@suse.de
+
+- support for IPv6/PREFIXLEN (fate#303811)
+- 2.13.115 
+
+-------------------------------------------------------------------
 Wed Apr 22 16:47:14 CEST 2009 - lslezak@suse.cz
 
 - register new callbacks Pkg::CallbackSourceCreateInit/Destroy()

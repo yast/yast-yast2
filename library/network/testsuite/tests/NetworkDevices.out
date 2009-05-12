@@ -49,11 +49,13 @@ Return	tr-pcmcia-1
 Return	eth-pcmcia-0#1
 Return	tr-pcmcia-1#1
 Dump	CanonicalizeIP:
-Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "other":"data"]
-Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "other":"data"]
-Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "other":"data"]
+Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"8", "other":"data"]
+Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"8", "other":"data"]
+Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"8", "other":"data"]
 Return	$["BOOTPROTO":"dhcp"]
-Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "other":"data"]
+Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"8", "other":"data"]
 Return	nil
 Return	$[]
-Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.255.255.255", "PREFIXLEN":"", "other":"data"]
+Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.255.255.255", "PREFIXLEN":"32", "other":"data"]
+Return	$["IPADDR":"2001:15c0:668e::5", "NETMASK":"", "PREFIXLEN":"48"]
+Return	$["IPADDR":"2001:15c0:668e::5", "NETMASK":"", "PREFIXLEN":"48"]

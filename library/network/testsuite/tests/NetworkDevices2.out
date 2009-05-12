@@ -67,7 +67,7 @@ Dir	.network.value."tr5": ["BOOTPROTO", "STARTMODE"]
 Read	.network.value."tr5".BOOTPROTO "dhcp"
 Read	.network.value."tr5".STARTMODE "manual"
 Return	true
-Dump	all=$["arc":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "atm":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ci":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ctc":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "dummy":$["5":$["BOOTPROTO":"static", "IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "STARTMODE":"manual"]], "escon":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "eth":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"], "6":$["BOOTPROTO":"static", "IPADDR":"1.2.3.4", "NETMASK":"255.255.255.255", "PREFIXLEN":"", "STARTMODE":"manual"], "7":$["STARTMODE":"manual"], "8":$["IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "STARTMODE":"manual"], "9":$["IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "STARTMODE":"manual"]], "fddi":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "hippi":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "hsi":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ippp":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "iucv":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "lo":$["":$["BROADCAST":"127.255.255.255", "IPADDR":"127.0.0.1", "NETMASK":"255.0.0.0", "NETWORK":"127.0.0.0", "PREFIXLEN":"", "STARTMODE":"auto"]], "myri":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ppp":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "tr":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]]]
+Dump	all=$["arc":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "atm":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ci":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ctc":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "dummy":$["5":$["BOOTPROTO":"static", "IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"8", "STARTMODE":"manual"]], "escon":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "eth":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"], "6":$["BOOTPROTO":"static", "IPADDR":"1.2.3.4", "NETMASK":"255.255.255.255", "PREFIXLEN":"32", "STARTMODE":"manual"], "7":$["STARTMODE":"manual"], "8":$["IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"8", "STARTMODE":"manual"], "9":$["IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"8", "STARTMODE":"manual"]], "fddi":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "hippi":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "hsi":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ippp":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "iucv":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "lo":$["":$["BROADCAST":"127.255.255.255", "IPADDR":"127.0.0.1", "NETMASK":"255.0.0.0", "NETWORK":"127.0.0.0", "PREFIXLEN":"8", "STARTMODE":"auto"]], "myri":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ppp":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "tr":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]]]
 Dump	NetworkDevices::Write
 Write	.network.value."arc5".BOOTPROTO "dhcp" true
 Write	.network.value."arc5".STARTMODE "manual" true
@@ -78,27 +78,23 @@ Write	.network.value."ci5".STARTMODE "manual" true
 Write	.network.value."ctc5".BOOTPROTO "dhcp" true
 Write	.network.value."ctc5".STARTMODE "manual" true
 Write	.network.value."dummy5".BOOTPROTO "static" true
-Write	.network.value."dummy5".IPADDR "1.2.3.4" true
-Write	.network.value."dummy5".NETMASK "255.0.0.0" true
-Write	.network.value."dummy5".PREFIXLEN "" true
+Write	.network.value."dummy5".IPADDR "1.2.3.4/8" true
+Write	.network.value."dummy5".PREFIXLEN "8" true
 Write	.network.value."dummy5".STARTMODE "manual" true
 Write	.network.value."escon5".BOOTPROTO "dhcp" true
 Write	.network.value."escon5".STARTMODE "manual" true
 Write	.network.value."eth5".BOOTPROTO "dhcp" true
 Write	.network.value."eth5".STARTMODE "manual" true
 Write	.network.value."eth6".BOOTPROTO "static" true
-Write	.network.value."eth6".IPADDR "1.2.3.4" true
-Write	.network.value."eth6".NETMASK "255.255.255.255" true
-Write	.network.value."eth6".PREFIXLEN "" true
+Write	.network.value."eth6".IPADDR "1.2.3.4/32" true
+Write	.network.value."eth6".PREFIXLEN "32" true
 Write	.network.value."eth6".STARTMODE "manual" true
 Write	.network.value."eth7".STARTMODE "manual" true
-Write	.network.value."eth8".IPADDR "1.2.3.4" true
-Write	.network.value."eth8".NETMASK "255.0.0.0" true
-Write	.network.value."eth8".PREFIXLEN "" true
+Write	.network.value."eth8".IPADDR "1.2.3.4/8" true
+Write	.network.value."eth8".PREFIXLEN "8" true
 Write	.network.value."eth8".STARTMODE "manual" true
-Write	.network.value."eth9".IPADDR "1.2.3.4" true
-Write	.network.value."eth9".NETMASK "255.0.0.0" true
-Write	.network.value."eth9".PREFIXLEN "" true
+Write	.network.value."eth9".IPADDR "1.2.3.4/8" true
+Write	.network.value."eth9".PREFIXLEN "8" true
 Write	.network.value."eth9".STARTMODE "manual" true
 Write	.network.value."fddi5".BOOTPROTO "dhcp" true
 Write	.network.value."fddi5".STARTMODE "manual" true
@@ -111,10 +107,9 @@ Write	.network.value."ippp5".STARTMODE "manual" true
 Write	.network.value."iucv5".BOOTPROTO "dhcp" true
 Write	.network.value."iucv5".STARTMODE "manual" true
 Write	.network.value."lo".BROADCAST "127.255.255.255" true
-Write	.network.value."lo".IPADDR "127.0.0.1" true
-Write	.network.value."lo".NETMASK "255.0.0.0" true
+Write	.network.value."lo".IPADDR "127.0.0.1/8" true
 Write	.network.value."lo".NETWORK "127.0.0.0" true
-Write	.network.value."lo".PREFIXLEN "" true
+Write	.network.value."lo".PREFIXLEN "8" true
 Write	.network.value."lo".STARTMODE "auto" true
 Write	.network.value."myri5".BOOTPROTO "dhcp" true
 Write	.network.value."myri5".STARTMODE "manual" true
@@ -127,18 +122,15 @@ Return	true
 Write	.network.value."eth5".BOOTPROTO "dhcp" true
 Write	.network.value."eth5".STARTMODE "manual" true
 Write	.network.value."eth6".BOOTPROTO "static" true
-Write	.network.value."eth6".IPADDR "1.2.3.4" true
-Write	.network.value."eth6".NETMASK "255.255.255.255" true
-Write	.network.value."eth6".PREFIXLEN "" true
+Write	.network.value."eth6".IPADDR "1.2.3.4/32" true
+Write	.network.value."eth6".PREFIXLEN "32" true
 Write	.network.value."eth6".STARTMODE "manual" true
 Write	.network.value."eth7".STARTMODE "manual" true
-Write	.network.value."eth8".IPADDR "1.2.3.4" true
-Write	.network.value."eth8".NETMASK "255.0.0.0" true
-Write	.network.value."eth8".PREFIXLEN "" true
+Write	.network.value."eth8".IPADDR "1.2.3.4/8" true
+Write	.network.value."eth8".PREFIXLEN "8" true
 Write	.network.value."eth8".STARTMODE "manual" true
-Write	.network.value."eth9".IPADDR "1.2.3.4" true
-Write	.network.value."eth9".NETMASK "255.0.0.0" true
-Write	.network.value."eth9".PREFIXLEN "" true
+Write	.network.value."eth9".IPADDR "1.2.3.4/8" true
+Write	.network.value."eth9".PREFIXLEN "8" true
 Write	.network.value."eth9".STARTMODE "manual" true
 Write	.network nil true
 Return	true
@@ -159,9 +151,9 @@ Write	.network.value."tr5".STARTMODE "manual" true
 Write	.network nil true
 Return	true
 Dump	NetworkDevices::Export
-Dump	exported=$["arc":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "atm":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ci":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ctc":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "dummy":$["5":$["BOOTPROTO":"static", "IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "STARTMODE":"manual"]], "escon":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "eth":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"], "6":$["BOOTPROTO":"static", "IPADDR":"1.2.3.4", "NETMASK":"255.255.255.255", "PREFIXLEN":"", "STARTMODE":"manual"], "7":$["STARTMODE":"manual"], "8":$["IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "STARTMODE":"manual"], "9":$["IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "STARTMODE":"manual"]], "fddi":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "hippi":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "hsi":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ippp":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "iucv":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "lo":$["":$["BROADCAST":"127.255.255.255", "IPADDR":"127.0.0.1", "NETMASK":"255.0.0.0", "NETWORK":"127.0.0.0", "PREFIXLEN":"", "STARTMODE":"auto"]], "myri":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ppp":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "tr":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]]]
+Dump	exported=$["arc":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "atm":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ci":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ctc":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "dummy":$["5":$["BOOTPROTO":"static", "IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"8", "STARTMODE":"manual"]], "escon":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "eth":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"], "6":$["BOOTPROTO":"static", "IPADDR":"1.2.3.4", "NETMASK":"255.255.255.255", "PREFIXLEN":"32", "STARTMODE":"manual"], "7":$["STARTMODE":"manual"], "8":$["IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"8", "STARTMODE":"manual"], "9":$["IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"8", "STARTMODE":"manual"]], "fddi":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "hippi":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "hsi":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ippp":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "iucv":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "lo":$["":$["BROADCAST":"127.255.255.255", "IPADDR":"127.0.0.1", "NETMASK":"255.0.0.0", "NETWORK":"127.0.0.0", "PREFIXLEN":"8", "STARTMODE":"auto"]], "myri":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ppp":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "tr":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]]]
 Dump	NetworkDevices::Import
-Dump	all     =$["arc":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "atm":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ci":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ctc":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "dummy":$["5":$["BOOTPROTO":"static", "IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "STARTMODE":"manual"]], "escon":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "eth":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"], "6":$["BOOTPROTO":"static", "IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "STARTMODE":"manual"], "7":$["STARTMODE":"manual"], "8":$["IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "STARTMODE":"manual"], "9":$["IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"", "STARTMODE":"manual"]], "fddi":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "hippi":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "hsi":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ippp":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "iucv":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "lo":$["":$["BROADCAST":"127.255.255.255", "IPADDR":"127.0.0.1", "NETMASK":"255.0.0.0", "NETWORK":"127.0.0.0", "PREFIXLEN":"", "STARTMODE":"auto"]], "myri":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ppp":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "tr":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]]]
+Dump	all     =$["arc":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "atm":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ci":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ctc":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "dummy":$["5":$["BOOTPROTO":"static", "IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"8", "STARTMODE":"manual"]], "escon":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "eth":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"], "6":$["BOOTPROTO":"static", "IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"8", "STARTMODE":"manual"], "7":$["STARTMODE":"manual"], "8":$["IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"8", "STARTMODE":"manual"], "9":$["IPADDR":"1.2.3.4", "NETMASK":"255.0.0.0", "PREFIXLEN":"8", "STARTMODE":"manual"]], "fddi":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "hippi":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "hsi":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ippp":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "iucv":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "lo":$["":$["BROADCAST":"127.255.255.255", "IPADDR":"127.0.0.1", "NETMASK":"255.0.0.0", "NETWORK":"127.0.0.0", "PREFIXLEN":"8", "STARTMODE":"auto"]], "myri":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "ppp":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]], "tr":$["5":$["BOOTPROTO":"dhcp", "STARTMODE":"manual"]]]
 Dump	NetworkDevices::GetFreeDevices
 Return	["1", "2"]
 Return	["0", "2"]

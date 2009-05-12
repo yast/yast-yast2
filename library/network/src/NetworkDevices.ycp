@@ -366,7 +366,7 @@ global map<string, any> CanonicalizeIP (map<string, any> ifcfg) {
     string netmask = Netmask::FromBits (tointeger (prefixlen));
     map<string, any> ret = ifcfg;
     ret["IPADDR"] = ipaddr;
-    ret["PREFIXLEN"] = "";
+    ret["PREFIXLEN"] = prefixlen;
     ret["NETMASK"] = netmask;
     return ret;
 }
@@ -652,6 +652,19 @@ global define boolean Write(string devregex) {
 	    string dev = device_name(typ, num);
 	    string p = ".network.value.\"" + dev + "\".";
 
+        if (size(devmap["IPADDR"]:"")>0 && size(devmap["NETMASK"]:"")>0){
+         devmap["IPADDR"] = sformat("%1/%2", devmap["IPADDR"]:"", Netmask::ToBits(devmap["NETMASK"]:""));
+         devmap=remove(devmap, "NETMASK");
+         //TODO : delete NETMASK from config file
+        } else {
+         if (size(devmap["IPADDR"]:"")>0 && size(devmap["PREFIXLEN"]:"")>0){
+          devmap["IPADDR"] = sformat("%1/%2", devmap["IPADDR"]:"", devmap["PREFIXLEN"]:"");
+          devmap=remove(devmap, "PREFIXLEN");
+         //TODO : delete PREFIXLEN from config file
+         }
+        }
+
+
 	    /* write all keys to config */
 	    maplist(string k, (list<string>) Map::Keys(devmap), {
 		/* Write aliases */
@@ -663,6 +676,7 @@ global define boolean Write(string devregex) {
 			// better here. Actually it does not work because
 			// the edit dialog nukes LABEL :-(
 //			boolean seen_label = false;
+
 
 			maplist(string ak, string av, amap, {
 			    string akk = ak + "_" + anum;
