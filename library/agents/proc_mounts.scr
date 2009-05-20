@@ -1,0 +1,61 @@
+/**
+ * File:
+ *   proc_cmdline.scr
+ * Summary:
+ *   SCR Agent for reading /proc/mounts
+ * Access:
+ *   read-only
+ * Authors:
+ *   Unknown <yast2-hacker@suse.de>
+ * See:
+ *   anyagent
+ *   libscr
+ *   man mount
+ * Example:
+ *   Read(.proc.mounts)
+ *   ([$["file":"/", 
+ *       "freq":0, 
+ *       "mntops":"rw", 
+ *       "passno":0, 
+ *       "spec":"/dev/root", 
+ *       "vfstype":"reiserfs"], 
+ *     $["file":"/proc", 
+ *       "freq":0, 
+ *       "mntops":"rw", 
+ *       "passno":0, 
+ *       "spec":"proc", 
+ *       "vfstype":"proc"], 
+ *     ...
+ *    ])
+ * 
+ * $Id$
+ *
+ * Returns a <b>list of maps</b>. Each map (list-entry) corresponds to i
+ * one mount.
+ * Keys for the maps are: "spec", "file", "vfstype", "mntops", "freq", "passno"
+ */
+.proc.mounts
+
+`ag_anyagent(
+  `Description (
+	(`File("/proc/mounts")),     // real file name
+	"#\n",                    // Comment
+	false,                    // read-only
+	(`List (
+	    `Tuple (
+		`spec (`String("^\t ")),
+		`Separator ("\t "),
+		`file (`String("^\t ")),
+		`Separator ("\t "),
+		`vfstype (`String("^\t ")),
+		`Separator ("\t "),
+		`mntops (`String("^ \t\n")),
+		`Optional(`Whitespace()),
+		`Optional(`freq (`Number())),
+		`Optional(`Whitespace()),
+		`Optional(`passno (`Number()))
+		),
+	    "\n"
+	    ))
+	)
+)
