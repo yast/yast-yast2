@@ -83,6 +83,9 @@ get_script_info () {
 		FILENAME ~ /\.swp$/ || FILENAME ~ /\.core$/ || FILENAME ~ /~$/ ||
 		FILENAME ~ /boot\.klog/ ||
 		FILENAME ~ /^Makefile/ ||
+# Fedora
+		FILENAME == /functions/ ||
+		FILENAME == /killall/ ||
 # why was this here??
 # bug 34775: dont skip boot.hotplug-beta, boot.restore_permissions
 #		FILENAME ~ /\.[^0-9$.#_\-\\*]*[0-9$.#_\-\\*]/

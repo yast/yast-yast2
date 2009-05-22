@@ -42,18 +42,18 @@ _yast2 ()
 	    if [[ -n $prevprev && $prevprev == $mod ]]; then
 		# build option list
 		# prev is a module option
-                while read line ; do
+                MODOPTS=(`LC_ALL=C $YAST $mod $prev help 2>&1 | while read line ; do
                     case "$line" in
                         Options:*)
                         while read opt rest ; do
                             case "$opt" in
                                 "") break 2 ;;
-                                *)  MODOPTS=("${MODOPTS[@]}" "$opt")
+                                *)  echo "$opt"
                             esac
                         done
                         ;;
                     esac
-                done < <(LC_ALL=C $YAST $mod $prev help 2>&1)
+                done `)
 		len=${#cur}
 		idx=0
 		for pval in ${MODOPTS[@]}; do
@@ -67,14 +67,14 @@ _yast2 ()
 	    # previous option is a known yast module?
 	    if [[ $prev == $mod ]]; then
 		# build option list
-                while read line ; do
+                MODOPTS=(` LC_ALL=C $YAST $mod help 2>&1 | while read line ; do
                     case "$line" in
                         Basic\ Syntax:*)
                         while read rest rest opt rest ; do
                             case "$opt" in
                                 \<*\>) ;;
                                 "") break ;;
-                                *)  MODOPTS=("${MODOPTS[@]}" "$opt")
+                                *)  echo "$opt"
                             esac
                         done
                         ;;
@@ -82,12 +82,12 @@ _yast2 ()
                         while read opt rest ; do
                             case "$opt" in
                                 "") break 2 ;;
-                                *)  MODOPTS=("${MODOPTS[@]}" "$opt")
+                                *)  echo "$opt"
                             esac
                         done
                         ;;
                     esac
-                done < <(LC_ALL=C $YAST $mod help 2>&1)
+                done `)
 		len=${#cur}
 		idx=0
 		for pval in ${MODOPTS[@]}; do
