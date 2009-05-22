@@ -401,6 +401,8 @@ void InitRPMQueryBinary () {
     if (SCR::Read (.target.size, "/usr/bin/rpmqpack") > -1) {
 	_rpm_query_binary = "/usr/bin/rpmqpack ";
     // than rpm itself
+    } else if (SCR::Read (.target.size, "/usr/bin/dpkg") > -1) {
+	_rpm_query_binary = "/usr/bin/dpkg -s ";
     } else if (SCR::Read (.target.size, "/bin/rpm") > -1) {
 	_rpm_query_binary = "/bin/rpm -q ";
     }
@@ -419,7 +421,7 @@ global boolean Installed(string package) {
     // Unfortunately, initializing Pkg reads the RPM database...
     // so we must avoid it.
     // added --whatprovides due to bug #76181
-    return 0 == (integer) SCR::Execute(.target.bash, "rpm -q --whatprovides " + package);
+    return 0 == (integer) SCR::Execute(.target.bash, "~/bin/rpm -q " + package);
     // return Pkg::IsProvided (package);
 }
 
