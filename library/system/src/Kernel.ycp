@@ -222,6 +222,15 @@ string HidePasswords(string in)
 	    discardlist = add (discardlist, "AUTOCONSOLE");
 	}
 
+	// add special key filtering for s390
+	// bnc#462276 Extraneous parameters in /etc/zipl.conf from the installer
+	if (Arch::s390())
+	{
+	    discardlist = add (discardlist, "User");
+	    discardlist = add (discardlist, "init");
+	    discardlist = add (discardlist, "ramdisk_size");
+	}
+
 	// backdoor to re-enable update on UL/SLES
 	if (contains (cmdlist, "suse_update"))
 	{
