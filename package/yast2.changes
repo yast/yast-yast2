@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue May 26 19:02:36 CEST 2009 - juhliarik@suse.cz
+
+- added fix for problem with parsing command line (bnc#462276) 
+
+-------------------------------------------------------------------
 Fri May 22 10:47:43 CEST 2009 - mvidner@suse.cz
 
 - yast2-completion.sh: removed <(process substitution) so that it
