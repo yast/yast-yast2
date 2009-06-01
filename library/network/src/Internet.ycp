@@ -32,6 +32,14 @@ global boolean suse_register = true;
 global boolean do_you = false;
 
 /**
+ * Flag to remember status of internet test:
+ * nil   - skipped
+ * true  - passed
+ * false - failed
+ */
+global boolean test = false;
+
+/**
  * cache for GetDevices
  */
 list<string> devices = nil;
