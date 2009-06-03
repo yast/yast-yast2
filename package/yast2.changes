@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jun  3 12:25:28 CEST 2009 - jsrain@suse.cz
+
+- prefer Gtk front-end when running xfce (bnc#509121)
+
+-------------------------------------------------------------------
 Mon Jun  1 11:52:53 CEST 2009 - mzugec@suse.cz
 
 - new variable Internet::test to store status of test (bnc#506721)
