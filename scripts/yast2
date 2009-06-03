@@ -134,9 +134,10 @@ listmodules()
 # Probes for default desktop GUI
 probe_desktop_gui()
 {
-    if [ "$DESKTOP_SESSION" = "gnome" ]; then
+    if [ "$DESKTOP_SESSION" = "gnome" -o \
+         "$DESKTOP_SESSION" = "xfce" ]; then
 	DESKTOP_GUI="gtk"
-    elif echo $WINDOWMANAGER | grep -qi "gnome"; then
+    elif echo $WINDOWMANAGER | grep -qi "\(gnome\|xfce\)"; then
 	DESKTOP_GUI="gtk"
     else
 	DESKTOP_GUI="qt"
