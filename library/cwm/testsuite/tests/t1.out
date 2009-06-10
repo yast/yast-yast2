@@ -1,0 +1,37 @@
+Dump	========================================
+Dump	==========   Common stuff   ============
+Dump	========================================
+Log	Error on key help of widget w1: Empty help
+Log	Error on key help of widget w2: Empty help
+Dump	W1: $["_cwm_key":"w1", "custom_widget":nil, "handle":<YCPRef:symbol w1_handle (string key, map event)>, "init":<YCPRef:void w1_init (string key)>, "label":"Check&Box", "opt":[`notify, `immediate], "validate_function":<YCPRef:boolean w1_validate (string key, map event)>, "validate_type":`function, "widget":`CheckBox (`id ("w1"), `opt (`notify, `immediate), "Check&Box")]
+Dump	W2: $["_cwm_key":"w2", "custom_widget":nil, "handle":<YCPRef:symbol w2_handle (string key, map event)>, "label":"Text&Entry", "store":<YCPRef:void w2_store (string key, map event)>, "validate_function":<YCPRef:boolean w2_validate (string key, map event)>, "validate_type":`function, "widget":`InputField (`id ("w2"), `opt (`hstretch), "Text&Entry")]
+Dump	========================================
+Dump	Merge functions
+Dump	Merged W1: $["_cwm_key":"w1", "custom_widget":nil, "handle":<YCPRef:symbol w1_handle (string key, map event)>, "init":<YCPRef:void w1_init (string key)>, "label":"Check&Box", "opt":[`notify, `immediate], "store":<YCPRef:void generic_save (string key, map event)>, "validate_function":<YCPRef:boolean w1_validate (string key, map event)>, "validate_type":`function, "widget":`CheckBox (`id ("w1"), `opt (`notify, `immediate), "Check&Box")]
+Dump	Merged W2: $["_cwm_key":"w2", "custom_widget":nil, "handle":<YCPRef:symbol w2_handle (string key, map event)>, "init":<YCPRef:void generic_init (string key)>, "label":"Text&Entry", "store":<YCPRef:void w2_store (string key, map event)>, "validate_function":<YCPRef:boolean w2_validate (string key, map event)>, "validate_type":`function, "widget":`InputField (`id ("w2"), `opt (`hstretch), "Text&Entry")]
+Dump	=========================================
+Dump	Init
+Log	w1_init: Initing w1
+Log	generic_init: Initing w2
+Dump	=========================================
+Dump	Handle
+Dump	- Both will run
+Log	w1_handle: Handling w1, event $["ID":`event]
+Log	w2_handle: Handling w2, event $["ID":`event]
+Dump	Returned nil
+Dump	- First causes event loop finish
+Log	w1_handle_symbol: Handling w1, event $["ID":`event]
+Dump	Returned `symbol
+Dump	=========================================
+Dump	Validate
+Dump	- Run both
+Log	w1_validate: Validating w1, event $["ID":`event]
+Log	w2_validate: Validating w2, event $["ID":`event]
+Dump	Returned true
+Dump	- First fails
+Log	w1_validate_false: Validating w1, event $["ID":`event]
+Dump	Returned false
+Dump	=========================================
+Dump	Save
+Log	generic_save: Saving w1, event $["ID":`event]
+Log	w2_store: Saving w2, event $["ID":`event]

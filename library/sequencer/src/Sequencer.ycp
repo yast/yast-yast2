@@ -1,0 +1,337 @@
+/**
+ * File:	modules/Sequencer.ycp
+ * Module:	yast2
+ * Summary:	Wizard Sequencer
+ * Authors:	Michal Svec <msvec@suse.cz>
+ * Flags:	Stable
+ *
+ * $Id$
+ *
+ * This is an implementation of the wizard sequencer, the tool for
+ * processing workflows of dialogs.
+ * <br>
+ * All errors are reported to y2log, so if anything is unfunctional
+ * look to the y2log.
+ */
+
+{
+
+module "Sequencer";
+textdomain "base";
+
+boolean docheck = true;
+
+/**
+ * Test (run) all dialogs in the aliases map
+ * @param aliases the map of aliases
+ * @return returned values of tested dialogs
+ * @see WS documentation for the format of aliases map
+ */
+define list WS_testall(map aliases) {
+    return maplist(any id, any func, aliases, { return eval(func); });
+}
+
+/**
+ * Check correct types in maps and alias presence for sequence.
+ * @param aliases the map of aliases
+ * @param sequence the sequence of dialogs
+ * @return check passed?
+ */
+define boolean WS_check(map aliases, map sequence) {
+    list<boolean> ret = [];
+
+    /* check if aliases is not a nil */
+    if (aliases == nil) {
+	y2error(2, "sequencer check: aliases is nil");
+	return false;
+    }
+
+    /* check if sequence is not a nil */
+    if (sequence == nil) {
+	y2error(2, "sequencer check: sequence is nil");
+	return false;
+    }
+
+    /* check if ws_start is in aliases */
+    if (aliases["ws_start"]:nil != nil) {
+        y2error(2, "sequencer check: ws_start cannot be an alias name");
+        ret = add(ret, false);
+    }
+    else ret = add(ret, true);
+
+    /* check aliases map types */
+    list<boolean> ret0 = maplist(any key, any val, aliases, {
+        if (!is(key, string)) {
+            y2error(2, "sequencer check: not a string: %1", key);
+            return false;
+        }
+        else if (is(val, list)) {
+            if(size((list) val) < 2) {
+                y2error(2, "sequencer check: list too small: %1 (%2)", val, key);
+                return false;
+            }
+/* FIXME: use function pointers
+            else if (!is(select((list) val, 0, nil), term)) {
+                y2error(2, "sequencer check: not a term: %1", select((list) val, 0, nil));
+                return false;
+            }
+*/
+            else if (!is(select((list) val, 1, nil), boolean)) {
+                y2error(2, "sequencer check: not a boolean: %1", select((list) val, 1, nil));
+                return false;
+            }
+            else return true;
+        }
+/* FIXME: use function pointers
+        else if (!is(val, term)) {
+            y2error(2, "sequencer check: not a term: %1", val);
+            return false;
+        }
+*/
+	else return true;
+    });
+    ret = flatten([ret, ret0]);
+
+    /* check if ws_start is in sequence */
+    if (sequence["ws_start"]:nil == nil) {
+        y2error(2, "sequencer check: ws_start needs to be defined");
+        ret = add(ret, false);
+    }
+    else ret = add(ret, true);
+
+    /* check all aliases in sequence */
+    ret0 = maplist(any key, any val, sequence, {
+        if (key=="ws_start") {
+            if (!is(val, symbol) && aliases[val]:nil == nil) {
+                y2error(2, "sequencer check: alias not found: %1", val);
+                return false;
+            }
+            else return true;
+        }
+        else if (aliases[key]:nil == nil) {
+            y2error(2, "sequencer check: alias not found: %1", key);
+            return false;
+        }
+        else if (!is(val, map)) {
+            y2error(2, "sequencer check: not a map: %1 %2", key, val);
+            return false;
+        }
+        else {
+            list<boolean> ret1 = maplist(any k, any v, (map) val, {
+                if (!is(k, symbol)) {
+                    y2error(2, "sequencer check: not a symbol: %1", k);
+                    return false;
+                }
+                else if (!is(v, symbol) && aliases[v]:nil == nil) {
+                    y2error(2, "sequencer check: alias not found: %1", v);
+                    return false;
+                }
+                else return true;
+            });
+            if (find(boolean n, ret1, { return n == false; }) != nil) return false;
+            return true;
+        }
+    });
+    ret = flatten([ret, ret0]);
+
+    /* check that all aliases are used */
+    ret0 = maplist(any key, any val, aliases, {
+        if (!haskey(sequence, key)) {
+            y2warning(2, "sequencer check: alias not used: %1", key);
+            // return false;
+        }
+	return true;
+    });
+    ret = flatten([ret, ret0]);
+
+    if (find(boolean n, ret, { return n == false; }) != nil) return false;
+    return true;
+}
+
+/**
+ * Report error and return nil
+ * @param error the error message text
+ * @return always nil
+ * @see bug #6474
+ */
+define any WS_error(string error) {
+    y2error(1, "sequencer: %1", error);
+    return nil;
+}
+
+/**
+ * Find an aliases in the aliases map
+ * @param aliases map of aliases
+ * @param alias given alias
+ * @return term belonging to the given alias or nil, if error
+ */
+define any WS_alias(map aliases, string alias) {
+    any found = aliases[alias]:nil;
+    if (found == nil)
+        return WS_error(sformat("Alias not found: %1", alias));
+    if (is(found, list)) {
+        if (size((list) found) <= 0)
+	    return WS_error(sformat("Invalid alias: %1", found));
+	found = select((list) found, 0, nil);
+    }
+    if (found == nil)
+	return WS_error(sformat("Invalid alias: %1", found));
+/* FIXME: use function pointers
+    if (is(found, term)) */
+        return found;
+    return WS_error(sformat("Invalid alias: %1", found));
+}
+
+/**
+ * Decide if an alias is special
+ * @param aliases map of aliases
+ * @param alias given alias
+ * @return true if the given alias is special or nil, if not found
+ */
+define boolean WS_special(map aliases, string alias) {
+    any found = aliases[alias]:nil;
+    if (found == nil)
+        return (boolean) WS_error(sformat("Alias not found: %1", alias));
+    boolean ret = false;
+    if (is(found, list))
+        if (size((list) found) > 1)
+            ret = (boolean) select((list) found, 1, nil);
+    return ret;
+}
+
+/**
+ * Find a next item in the sequence
+ * @param sequence sequence of dialogs
+ * @param current current dialog
+ * @param ret returned value (determines the next dialog)
+ * @return next dialog (symbol), WS action (string) or nil, if error (current or next not found)
+ */
+define any WS_next(map sequence, string current, symbol ret) {
+    map found = (map)(sequence[current]:nil);
+    if (found == nil) return WS_error(sformat("Current not found: %1", current));
+    /* string|symbol next */
+    any next = found[ret]:nil;
+    if (next == nil) return WS_error(sformat("Symbol not found: %1", ret));
+    return next;
+}
+
+/**
+ * Run a function from the aliases map
+ * @param aliases map of aliases
+ * @param id function to run
+ * @return returned value from function or nil, if function is nil or returned something else than symbol
+ */
+define symbol WS_run(map aliases, string id) {
+    y2debug("Running: %1", id);
+    any function = nil;
+
+    function = WS_alias(aliases, id);
+    if (function == nil)
+        return (symbol) WS_error(sformat("Bad id: %1", id));
+
+    any ret = eval(function);
+
+    if (!is(ret, symbol))
+	return (symbol) WS_error(sformat("Returned value not symbol: %1", ret));
+
+    return (symbol) ret;
+}
+
+/**
+ * Push one item to the stack
+ * @param stack stack of previously run dialogs
+ * @param item item to be pushed
+ * @return the new stack or nil, if the stack is nil
+ */
+define list WS_push(list stack, any item) {
+    if (stack == nil)
+        return nil;
+
+    if (!contains(stack, item))
+        return add(stack, item);
+
+    boolean found = false;
+    list newstack = filter(any v, stack, {
+        if (found) return false;
+        if (v == item) found=true;
+        return true;
+    });
+
+    return newstack;
+}
+
+/**
+ * Pop one item from the stack (remove an item and return the stack top item)
+ * @param stack stack of previously run dialogsk
+ * @return [ new stack, poped value ] or nil if the stack is empty or nil
+ */
+define list WS_pop(list stack) {
+    if (stack == nil) return nil;
+    integer num = size(stack);
+    if (num < 2) return nil;
+    list newstack = remove(stack, num-1);
+    any poped = select(stack, num-2, nil);
+    return [ newstack, poped ];
+}
+
+/**
+ * The Wizard Sequencer
+ * @param aliases the map of aliases
+ * @param sequence the sequence of dialogs
+ * @return final symbol or nil, if error (see the y2log)
+ */
+global define symbol Run(map aliases, map sequence) {
+
+    /* Check aliases and sequence correctness */
+    if (docheck && WS_check(aliases, sequence) != true)
+	return (symbol) WS_error("CHECK FAILED");
+
+    list stack = [];
+    /* string|symbol current */
+    any current = sequence["ws_start"]:nil;
+    if (current == nil)
+	return (symbol) WS_error("Starting dialog not found");
+
+    while (true) {
+	if (is(current, symbol)) {
+	    y2debug("Finished");
+	    return (symbol) current;
+	}
+
+	stack = WS_push(stack, current);
+	y2debug("stack=%1", stack);
+	any ret = WS_run(aliases, (string) current);
+
+	if (ret == nil || !is(ret, symbol))
+	    return (symbol) WS_error(sformat("Invalid ret: %1", ret));
+
+	else if (ret == `back) {
+	    y2debug("Back");
+	    list poped = [];
+	    boolean special = true;
+	    do {
+		if (size(stack)<2) return `back;
+		poped = WS_pop(stack);
+		y2debug("poped=%1", poped);
+		current = select(poped, 1, nil);
+		stack = (list) select(poped, 0, nil);
+		special = WS_special(aliases, (string) current);
+		y2debug("special=%1", special);
+	    } while (special);
+	}
+
+	else {
+	    y2debug("ret=%1", ret);
+	    current = WS_next(sequence, (string) current, (symbol) ret);
+	    y2debug("current=%1", current);
+	    if (current == nil)
+		return (symbol) WS_error(sformat("Next not found: %1", current));
+	}
+    }
+
+    /* Not reached */
+    return nil;
+}
+
+/* EOF */
+}

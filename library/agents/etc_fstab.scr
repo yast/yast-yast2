@@ -1,0 +1,68 @@
+/**
+ * File:
+ *   etc_fstab.scr
+ * Summary:
+ *   SCR Agent for reading/writing /etc/fstab
+ * Access:
+ *   read/write
+ * Authors:
+ *   Unknown <yast2-hacker@suse.de>
+ * See:
+ *   anyagent
+ *   libscr
+ *   man fstab
+ *   man mount
+ * Example:
+ *   Original /etc/fstab:
+ *     /dev/sda2       swap    swap    defaults 0 2
+ *     /dev/sda3       /       ext2    defaults 1 1
+ *     proc            /proc   proc    defaults 0 0
+ *     ...
+ **
+ *   Read(.etc.fstab)
+ *   ([$["file":"swap", "freq":0, "mntops":"defaults", "passno":2,
+ *       "spec":"/dev/sda2", "vfstype":"swap"],
+ *     $["file":"/", "freq":1, "mntops":"defaults", "passno":1,
+ *       "spec":"/dev/sda3", "vfstype":"ext2"],
+ *     $["file":"/proc", "freq":0, "mntops":"defaults", "passno":0,
+ *       "spec":"proc", "vfstype":"proc"],
+ *     ...
+ *   ])
+ **
+ *   Write(.etc.fstab, ([$["file":"/", "freq":1, "mntops":"defaults",
+ *                       "passno":1, "spec":"/dev/sda3",
+ *                       "vfstype":"ext2"]]))
+ *   (0)
+ *
+ * $Id$
+ *
+ * Returns/Takes a <b>list of maps</b>. Each map (list-entry) corresponds
+ * with one file system.
+ * Keys for the maps are: "spec", "file", "vfstype", "mntops", "freq", "passno"
+ */
+.etc.fstab
+
+`ag_anyagent(
+  `Description (
+      (`File("/etc/fstab")),	// real file name
+      "#\n",			// Comment
+      false,			// read-only
+      (`List (
+	`Tuple (
+	  `spec (`String("^\t ")),
+	  `Separator ("\t "),
+	  `file (`String("^\t ")),
+	  `Separator ("\t "),
+	  `vfstype (`String("^\t ")),
+	  `Separator ("\t "),
+	  `mntops (`String("^ \t\n")),
+	  `Optional(`Whitespace()),
+	  `Optional(`freq (`Number())),
+	  `Optional(`Whitespace()),
+	  `Optional(`passno (`Number())),
+	  `Optional(`Whitespace())
+	),
+	"\n"
+      ))
+    )
+)

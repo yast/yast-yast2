@@ -1,0 +1,29 @@
+{
+    import "LogViewCore";
+
+    string command = "/usr/bin/tail -n 25 -f '/var/log/messages'";
+
+    UI::OpenDialog(`VBox(
+		       `Left(`Heading("Log")),
+		       `LogView(`id(`log), sformat("Output of %1:", command), 10, 100),
+		       `PushButton(`id(`close), "Close")
+		       ));
+
+    LogViewCore::Start(`id(`log), $[ "command" : command ]);
+
+    while (true)
+    {
+	any widget = UI::TimeoutUserInput(250);
+
+	if (widget == `timeout)
+	{
+	    LogViewCore::Update(`id(`log));
+	}
+	else if (widget == `close)
+	{
+	    break;
+	}
+    }
+
+    LogViewCore::Stop();
+}

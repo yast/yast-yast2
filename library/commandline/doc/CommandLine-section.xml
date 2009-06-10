@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "/usr/share/xml/docbook/schema/dtd/4.2/docbookx.dtd">
+
+
+<!-- $Id$ -->
+<section id="Commandline-library">
+<title>Advanced YaST2 command line parsing</title>
+<!-- 
+Authors:
+Stanislav Visnovsky <visnov@suse.cz>
+Michal Svec <msvec@suse.cz> - original proposal
+-->
+
+<section>
+    <title>Important features</title>
+    <itemizedlist>
+        <listitem><para>simple specification in the YaST module</para></listitem>
+        <listitem><para>automatic help</para></listitem>
+        <listitem><para>automatic checking of arguments (types, format)</para></listitem>
+        <listitem><para>interactive session without UI</para></listitem>
+    </itemizedlist>
+</section>
+<section>
+    <title>Basic usage of module CommandLine</title>
+    <para>
+The aim of the module is to provide as automatic interface as
+possible for controlling the module. To support interactive
+sessions, the YaST module needs to provide command-handling loop
+similar to concept of event-handling in GUIs.</para>
+<para>
+If the module does not need to do any special handling of the actions,
+it can use the "commandline" include (a wrapper for CommandLine). The
+include defines a single function "CommandLineRun()", which implements
+a standard event-loop and returns true on success. The module just
+needs to specify handlers for actions, user-interface, initialization
+and finishing.
+</para>
+
+<example>
+    <title>Simple CommandLine definition</title>
+    <programlisting>
+{
+
+define void deleteHandler( map options ) ``{
+    string dev = options["device"]:"";
+    <link linkend="Module_CommandLine_Print">CommandLine::Print</link>("Deleting: "+dev);
+
+    if(Lan::Delete(dev) &amp;&amp; Lan::Commit())
+	<link linkend="Module_CommandLine_Print">CommandLine::Print</link>("Success");
+    else
+	<link linkend="Module_CommandLine_Print">CommandLine::Print</link>("Error");
+}
+
+...
+
+map cmdline = $[
+    "help"	: "Configuration of network cards",
+    "id"	: "lan",
+    "guihandler": ``(LanSequence()),
+    "initialize": ``(Lan::Read()),
+    "finish"	: ``(Lan::Finish()),
+
+    "actions"	: $[
+	"list" : $[
+	    "help"	: "display configuration summary",
+	    "example"	: "lan list configured",
+	    "handler"	: ``(listHandler())
+	],
+	"add" : $[
+	    "help"	: "add a network card",
+	    "handler"	: ``(addHandler())
+	],
+	"delete" : $[
+	    "help"	: "delete a network card",
+	    "handler"	: ``(deleteHandler())
+	]
+    ],
+    ...
+];
+
+import "Lan";
+include "commandline/commandline.ycp";
+
+CommandLineRun(cmdline);
+
+/* EOF */
+}
+    </programlisting>
+
+</example>
+<para>
+The UI handler is specified in the "guihandler" key of the command
+line description map. It must take no arguments and return boolean,
+true on success.</para>
+<para>
+The initialize resp. finish handler is specified by the
+"initialize" resp. "finish" key of the description map. They
+do not take any arguments and must return boolean, true on success. Notice 
+that "initialize" and "finish" handlers are not used if a user
+asked for GUI (guihandler is used instead and therefore it must
+do initializing and finishing on its own).
+The handler for an action is specified in the "handler" key of the
+action description map. Each handler must take a single argument
+containing the options entered by the user and return a boolean, true on
+success. If the handler returns "false", the command line 
+will abort for non-interactive handling. This is useful for
+handling error states. However, a handler must use
+CommandLine::Abort()
+to stop event-handling in the interactive mode.
+</para>
+<para>
+
+The CommandLine module is stateful, i.e., it contains a current state
+of command line parsing/interactive console control of a YaST module.
+Therefore, the CommandLineRun() handles the commands as follows:</para>
+<orderedlist>
+    <listitem><para>standard UI start of a module - <link linkend="Module_CommandLine_StartGUI">CommandLine::StartGUI</link> will return true in this case</para></listitem>
+    <listitem><para>command given as an argument - the inner while loop will be done only once</para></listitem>
+    <listitem><para>interactive controling of a module - the while loop will be done as long as the user does not enter
+            "exit" or "quit"</para></listitem>
+</orderedlist>
+
+</section>
+<section>
+    <title>Internally handled commands</title>
+
+    <variablelist>
+        <varlistentry>
+            <term>help</term>
+            <listitem>
+                <para>shows the help text for the command</para>
+            </listitem>
+        </varlistentry>
+        <varlistentry>
+            <term>interactive</term>
+            <listitem>
+                <para>starts interactive session without UI</para>
+            </listitem>
+        </varlistentry>
+        <varlistentry>
+            <term>&lt;command&gt; help</term>
+            <listitem>
+                <para> shows the command-specific help</para>
+            </listitem>
+        </varlistentry>
+        <varlistentry>
+            <term>&lt;command&gt; quiet</term>
+            <listitem>
+                <para>option to supress the progress messages</para>
+            </listitem>
+        </varlistentry>
+    </variablelist>
+
+<para>These are available in interactive mode only:</para>
+
+    <variablelist>
+        <varlistentry>
+            <term>quit</term>
+            <listitem id="Module_CommandLine_Aborted">
+                <para>quits interactive session, sets
+		 CommandLine::Aborted() flag to true</para>
+            </listitem>
+        </varlistentry>
+        <varlistentry>
+            <term>exit</term>
+            <listitem id="Module_CommandLine_Aborted">
+                <para>exits interactive
+                session, sets CommandLine::Aborted() flag to false</para>
+            </listitem>
+        </varlistentry>
+    </variablelist>
+</section>
+
+<section>
+    <title>Specification of the supported commands in YaST module</title>
+
+    <note><para>
+If the map does not follow the following rules, an error
+will be emitted into log.</para></note>
+
+<para>
+The map describing the command line interface of a module must contain
+"id" entry containing the name of the module. The map can contain
+global help text, a list of actions, a list of options and a list for 
+mapping of options to actions (which optionscan be used for which 
+actions). Each action and option must have its help text.
+</para>
+<para>
+Actions is a map with the action name as a key. For each
+action, it isnecessary to provide the help text. Optionally, action
+can have defined an example of usage.
+</para>
+<para>
+A list of flags can be specified to change the default behavior of
+the parameter checker. It is a list with key "options". Currently known flags:
+</para>
+
+    <variablelist>
+        <varlistentry>
+            <term>non_strict</term>
+            <listitem>
+                <para>for unknown parameters, do not check their validity
+                               can be used for passing unknown options into the handler</para>
+            </listitem>
+        </varlistentry>
+    </variablelist>
+
+    <example>
+	<title>Actions map definition</title>
+        <programlisting>
+	"actions"	: $[
+			"list"	: $[
+				"help": "display configuration summary",
+				"example": "lan list configured",
+				"options": [ "non_strict" ]
+			],
+			"add"	: $[
+				"help": "add a network card" ],
+			...
+                        ],
+        </programlisting>
+    </example>
+        <para>
+
+Options is a map with the option name as a key. For each
+option, it is necessary to provide a description text in "help" key,
+and a "type" key (for options with arguments only). Optionally, an
+option can contain an example.
+</para>
+<para>
+There are two kinds of options: flags and options, which require an
+argument.For flags ommit type key, or specify type as "". A type is a
+string describing the type.basic types supported are string, boolean,
+integer.
+</para>
+
+    <variablelist>
+        <title>Special types:</title>
+        <varlistentry>
+            <term>regex</term>
+            <listitem>
+                <para>In this case, you need to specify "typespec" key containing
+                        the regular expression the argument should be matched against.</para>
+            </listitem>
+        </varlistentry>
+        <varlistentry>
+            <term>enum</term>
+            <listitem>
+                <para>
+                    In this case, the typespec key must contain a list of possible
+                            values as strings
+                </para>
+            </listitem>
+        </varlistentry>
+    </variablelist>
+    <example>
+	<title>Options map definition</title>
+        <programlisting>
+    	"options"	: $[
+			"propose" : $[
+				"help": "propose a configuration",
+				"example": "lan add propose",
+				"type": ""
+			],
+			"device": $[
+				"help": "device ID",
+				"type": "string",
+				"example": "lan add device=eth0"
+			],
+			"blem"	: $[
+				"help": "other argument (without spaces)",
+				"type": "regex",
+				"typespec": "^[^ ]+$"
+			],
+			"atboot": $[
+				"help": "should be brought up at boot?",
+				"type": "enum",
+				"typespec": ["yes","no"]
+                                }
+
+                            </programlisting>
+                        </example>
+
+                        <para>
+The actions and options are grouped together using mappings.
+Currently, you can mapan action to a set of options. You can't specify
+required/optional options, all ofthem are optional.
+</para>
+
+<example>
+    <title>Mappings between actions and their options</title>
+    <programlisting>
+	"mappings"	$[
+			"list"	: [ "configured", "unconfigured" ],
+			"add"	: [ "device", "ip", "netmask", "blem" ],
+			"delete": [ "device" ]
+                        ]
+
+        </programlisting>
+    </example>
+
+</section>
+<section><title>Advanced API</title>
+    <para>
+If you need to write your own event loop, this is a part of the
+CommandLine API useful for this:</para>
+    <variablelist>
+        <varlistentry>
+            <term id="Module_CommandLine_StartGUI">boolean CommandLine::StartGUI()</term>
+            <listitem>
+                <para>
+                    returns true, if the user asked to start up the
+                            module GUI
+                </para>
+            </listitem>
+        </varlistentry>
+        <varlistentry>
+            <term id="Module_CommandLine_Scan">list CommandLine::Scan()</term>
+            <listitem>
+                <para>
+                    reads a new command line in interactive mode, splits the arguments into a list
+                </para>
+            </listitem>
+        </varlistentry>
+        <varlistentry>
+            <term id="Module_CommandLine_Command">map CommandLine::Command()</term>
+            <listitem>
+                <para>
+                    parse (and scan if needed) next command and return its map
+                </para>
+            </listitem>
+        </varlistentry>
+        <varlistentry>
+            <term id="Module_CommandLine_Parse">map CommandLine::Parse( list commandline )</term>
+            <listitem>
+                <para>
+                    lower-level function to parse the command line, check the validity
+                </para>
+            </listitem>
+        </varlistentry>
+        <varlistentry>
+            <term id="Module_CommandLine_Done">boolean CommandLine::Done()</term>
+            <listitem>
+                <para>
+                    returns true, if the last command was already returned
+                </para>
+            </listitem>
+        </varlistentry>
+        <varlistentry>
+            <term id="Module_CommandLine_Aborted">boolean CommandLine::Aborted()</term>
+            <listitem>
+                <para>
+                    returns true, if the user asked to cancel the changes
+                </para>
+            </listitem>
+        </varlistentry>
+        <varlistentry>
+            <term id="Module_CommandLine_Error">void CommandLine::Error(string)</term>
+            <listitem>
+                <para>
+                    prints the string and then a message how to
+                            obtain the help
+                </para>
+            </listitem>
+        </varlistentry>
+        <varlistentry>
+            <term id="Module_CommandLine_Print">void CommandLine::Print(string)</term>
+            <listitem>
+                <para>
+                    prints the string
+                </para>
+            </listitem>
+        </varlistentry>
+        <varlistentry>
+            <term id="Module_CommandLine_PrintVerbose">void CommandLine::PrintVerbose(string)</term>
+            <listitem>
+                <para>
+                    same as CommandLine::Print, but the string is printed only in verbose mode
+                </para>
+            </listitem>
+        </varlistentry>
+    </variablelist>
+
+
+    <example><title>Example of an event-loop</title>
+        <programlisting>
+
+	import "CommandLine";
+
+	if( ! <link linkend="Module_CommandLine_Init">CommandLine::Init</link>( description_of_commands, Args() ) ) return;
+
+	if( <link linkend="Module_CommandLine_StartGUI">CommandLine::StartGUI</link>() ) {
+
+		&lt;do standard GUI module&gt;
+
+		return;
+	}
+	
+	&lt;initialize call&gt;
+
+	while( ! <link linkend="Module_CommandLine_Done">CommandLine::Done</link>() )
+	{
+		map command = <link linkend="Module_CommandLine_Command">CommandLine::Command</link>();
+
+		&lt;handle commands here&gt;
+	}
+	
+	&lt;finish call&gt;
+    </programlisting>
+</example>
+
+<para id="Module_CommandLine_Init">
+The CommandLine::Init() returns boolean whether the module has
+something to do. If the user only requested help or the arguments
+passed were not correct, the module should stop processing.
+</para>
+
+<para id="Module_CommandLine_Command">
+The CommandLine::Command() will do the user interaction if necessary.
+Also, it will handle all supported"system" commands, like "help",
+"exit" and "quit".
+</para>
+
+<note>
+    <para>
+In interactive mode, the communication uses /dev/tty. In non-interactive commandline
+mode it prints everything to standard error output.</para>
+</note>
+</section>
+<section>
+    <title>Example usage in YaST module</title>
+    
+    <para>For an example without using the event-loop provided by the
+        CommandLine module, see <filename>lan-simple.ycp</filename>.</para>
+<informalexample>
+    <programlisting><xi:include href="lan-simple.ycp" parse="text"
+                          xmlns:xi="http://www.w3.org/2001/XInclude"/></programlisting>
+</informalexample>
+
+    <para> For an example with the standard event-loop provided by the
+        commandline.ycp include, see <filename>lan-simpler.ycp</filename>.</para>
+<informalexample>
+    <programlisting><xi:include href="lan-simpler.ycp" parse="text"
+                          xmlns:xi="http://www.w3.org/2001/XInclude"/></programlisting>
+</informalexample>
+</section>
+
+
+
+</section>

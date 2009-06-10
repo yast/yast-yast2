@@ -1,0 +1,169 @@
+/**
+ * Module:      Linuxrc
+ * File:	modules/Linuxrc.ycp
+ * Purpose:	Interaction with linuxrc
+ *
+ * Author:	Anas Nashif <nashif@suse.de?
+ * $Id$
+ */
+{
+    module "Linuxrc";
+    import "Mode";
+    import "Stage";
+
+    map<string,string> install_inf = nil;
+
+    boolean _manual = nil;
+
+
+// routines for reading data from /etc/install.inf
+
+    void ReadInstallInf () {
+	install_inf = $[];
+	// don't read anything if the file doesn't exist
+	if (SCR::Read (.target.size, "/etc/install.inf") == -1)
+	{
+	    y2error ("Reading install.inf, but file doesn't exist!!!");
+	    return;
+	}
+	list<string> entries = (list<string>)SCR::Dir (.etc.install_inf);
+	if (entries == nil)
+	{
+	    y2error ("install.inf is empty");
+	    return;
+	}
+	foreach (string e, entries, {
+	    string val = (string)SCR::Read (add (.etc.install_inf, e));
+	    install_inf[e] = val;
+	});
+    }
+
+    global void ResetInstallInf () {
+        install_inf = nil;
+        return;
+    }
+
+    global string InstallInf (string key) {
+	if (install_inf == nil)
+	    ReadInstallInf ();
+	return install_inf[key]:nil;
+    }
+
+    // installation mode wrappers
+
+    global boolean manual () {
+	if (_manual != nil)
+	    return _manual;
+	_manual = InstallInf ("Manual") == "1";
+	if (! _manual)
+	{
+	    string tmp = (string)SCR::Read (.target.string, "/proc/cmdline");
+	    if (tmp != nil && contains (splitstring (tmp, " \n"), "manual"))
+	    {
+		_manual = true;
+	    }
+	}
+	return _manual;
+    }
+
+    /**
+     * running via serial console
+     */
+    global boolean serial_console () {
+	 return InstallInf ("Console") != nil;
+    }
+
+    /**
+     * braille mode ?
+     */
+    global boolean braille () {
+	return InstallInf ("Braille") != nil;
+    }
+
+    /**
+     * vnc mode ?
+     */
+    global boolean vnc () {
+	return InstallInf ("VNC") == "1";
+    }
+    /**
+     * remote X mode ?
+     */
+    global boolean display_ip () {
+	return Linuxrc::InstallInf ("Display_IP") != nil;
+    }
+
+    /**
+     * ssh mode ?
+     * if booted with 'vnc=1 usessh=1', keep vnc mode, but start sshd
+     * if booted with 'display_ip=1.2.3.4 usessh=1', keep remote X mode, but start sshd
+     * this has to be checked by the caller, not here
+     */
+    global boolean usessh () {
+	return InstallInf ("UseSSH") == "1";
+    }
+
+    /**
+     * we're running in textmode (-> UI::GetDisplayInfo())
+     */
+    global boolean text () {
+	return InstallInf ("Textmode") == "1";
+    }
+
+// end of install.inf reading routines
+
+    /**
+     * Write /etc/yast.inf during installation
+     * @param linuxrc	map of key value pairs for /etc/yast.inf
+     * @return void
+     */
+    global define void WriteYaSTInf (map<string,string> linuxrc)
+    {
+	string yast_inf = "";
+	foreach (string ykey, string yvalue, linuxrc,
+	``{
+	    yast_inf = yast_inf + ykey + ": " + yvalue + "\n";
+	});
+	y2milestone ("WriteYaSTInf(%1) = %2", linuxrc, yast_inf);
+
+        if (!Mode::test ())
+        {
+	    WFM::Write(.local.string, "/etc/yast.inf", yast_inf);
+        }
+        return;
+    }
+
+    /*
+     * Copy /etc/install.inf into built system so that the
+     * second phase of the installation can find it.
+     * @param root mount point of system
+     * @return boolean true on success
+     */
+    global boolean SaveInstallInf (string root)
+    {
+        if (Stage::initial () && !Mode::test () )
+        {
+	    string inst_if_file = "/etc/install.inf";
+
+	    if (root != nil && root != "" && root != "/") {
+		if (WFM::Read (.local.size, inst_if_file) != -1) {
+		    y2milestone ("Copying %1 to %2", inst_if_file, root);
+        	    WFM::Execute (.local.bash, sformat (
+        		"grep -v '^Sourcemounted' '%1' > %2/%1; chmod 0600 %1", inst_if_file, root
+        	    ));
+		} else {
+		    y2error ("Can't SaveInstallInf, file %1 doesn't exist", inst_if_file);
+		}
+            } else {
+        	y2error ("Can't SaveInstallInf, root is %1", root);
+            }
+
+            // just for debug so we can see the original install.inf later
+            SCR::Execute (.target.bash, "/bin/cp /etc/install.inf " +
+                    root + "/var/lib/YaST2/install.inf");
+            SCR::Execute (.target.bash, "/bin/chmod 0600 " +
+                    root + "/var/lib/YaST2/install.inf");
+        }
+        return true;
+    }
+}

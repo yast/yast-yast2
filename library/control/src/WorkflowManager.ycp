@@ -1,0 +1,1205 @@
+/**
+ * File:	modules/WorkflowManager.ycp
+ * Package:	yast2
+ * Summary:	Provides API for configuring workflows
+ * Authors:	Lukas Ocilka <locilka@suse.cz>
+ *
+ * Provides API for managing and configuring installation and
+ * configuration workflow.
+ *
+ * Module was created as a solution for
+ * FATE #129: Framework for pattern based Installation/Deployment
+ *
+ * Module unifies Add-Ons and Patterns modifying the workflow.
+ *
+ * $Id: $
+ */
+
+{
+    module "WorkflowManager";
+    
+    textdomain "base";
+
+    import "ProductControl";
+    import "ProductFeatures";
+
+    import "Label";
+    import "Wizard";
+    import "Directory";
+    import "FileUtils";
+    import "Stage";
+    import "String";
+    import "XML";
+    import "Report";
+
+//
+//    This API uses some new terms that need to be explained:
+//
+//    * Workflow Store
+//      - Kind of database of installation or configuration workflows
+//
+//    * Base Workflow
+//      - The initial workflow defined by the base product
+//      - In case of running system, this will be probably empty
+//
+//    * Additional Workflow
+//      - Any workflow defined by Add-On or Pattern in installation
+//        or Pattern in running system
+//
+//    * Final Workflow
+//      - Workflow that contains the base workflow modified by all
+//        additional workflows
+//
+
+    /* Base Workflow Store */
+    list <map> wkf_initial_workflows = [];
+    list <map> wkf_initial_proposals = [];
+    list <map<string,any> > wkf_initial_inst_finish = [];
+    list <string> wkf_initial_clone_modules = [];
+
+    map <string, map <string, any> > wkf_initial_product_features = $[];
+
+    /**
+     * Additional inst_finish settings defined by additional control files.
+     * They are always empty at the begining.
+     */
+    global list <string> additional_finish_steps_before_chroot = [];
+    global list <string> additional_finish_steps_after_chroot  = [];
+    global list <string> additional_finish_steps_before_umount = [];
+
+    boolean base_workflow_stored = false;
+
+    /* Contains all currently workflows added to the Workflow Store */
+    list <string> used_workflows = [];
+
+    /* Some workflow changes need merging */
+    boolean unmerged_changes = false;
+
+    /**
+     * Returns list of additional inst_finish steps requested by
+     * additional workflows.
+     *
+     * @param string which_steps (type) of finish ("before_chroot", "after_chroot" or "before_umount")
+     * @return list <string> steps to be called ...see which_steps parameter
+     */
+    global list <string> GetAdditionalFinishSteps (string which_steps) {
+	if (which_steps == "before_chroot") {
+	    return additional_finish_steps_before_chroot;
+	} else if (which_steps == "after_chroot") {
+	    return additional_finish_steps_after_chroot;
+	} else if (which_steps == "before_umount") {
+	    return additional_finish_steps_before_umount;
+	} else {
+	    y2error ("Unknown FinishSteps type: %1", which_steps);
+	    return nil;
+	}
+    }
+
+    /**
+     * Stores the current ProductControl settings as the initial settings.
+     * These settings are: workflows, proposals, inst_finish, and clone_modules.
+     *
+     * @param boolean force storing even if it was already stored, in most cases, it should be 'false'
+     */
+    global void SetBaseWorkflow (boolean force) {
+	if (base_workflow_stored && !force) {
+	    y2milestone ("Base Workflow has been already set");
+	    return;
+	}
+
+	wkf_initial_product_features = ProductFeatures::Export();
+
+	wkf_initial_workflows     = ProductControl::workflows;
+	wkf_initial_proposals     = ProductControl::proposals;
+	wkf_initial_inst_finish   = ProductControl::inst_finish;
+	wkf_initial_clone_modules = ProductControl::clone_modules;
+
+	additional_finish_steps_before_chroot = [];
+	additional_finish_steps_after_chroot  = [];
+	additional_finish_steps_before_umount = [];
+
+	base_workflow_stored = true;
+    }
+
+    /**
+     * Have system proposals already been prepared for merging?
+     */
+    boolean system_proposals_prepared = false;
+
+    /**
+     * Have system workflows already been prepared for merging?
+     */
+    boolean system_workflows_prepared = false;
+
+    /**
+     * Check all proposals, split those ones which have multiple modes or
+     * architectures or stages into multiple proposals.
+     *
+     * @param list <map> current proposals
+     * @return list <map> updated proposals
+     *
+     * @struct
+     *	Input: [
+     *		$["label":"Example", "name":"example","proposal_modules":["one","two"],"stage":"initial,firstboot"]
+     *	]
+     *	Output: [
+     *		$["label":"Example", "name":"example","proposal_modules":["one","two"],"stage":"initial"]
+     *		$["label":"Example", "name":"example","proposal_modules":["one","two"],"stage":"firstboot"]
+     *	]
+     */
+    global list <map> PrepareProposals (list <map> proposals) {
+	list <map> new_proposals = [];
+
+	// Going through all proposals
+	foreach (map one_proposal, proposals, {
+    	    string mode = one_proposal["mode"]:"";
+    	    list<string> modes = splitstring (mode, ",");
+
+    	    if (size(modes) == 0) modes = [""];
+
+	    // Going through all modes in proposal
+    	    foreach (string one_mode, modes, {
+        	map mp = one_proposal;
+        	mp["mode"] = one_mode;
+        	string arch = one_proposal["archs"]:"";
+        	list<string> archs = splitstring (arch, ",");
+
+        	if (size(archs) == 0) archs = [""];
+
+		// Going through all architectures
+        	foreach (string one_arch, archs, {
+            	    map amp = mp;
+            	    amp["archs"] = one_arch;
+            	    string stage = amp["stage"]:"";
+            	    list<string> stages = splitstring (stage, ",");
+
+            	    if (size (stages) == 0) stages = [""];
+
+		    // Going through all stages
+            	    foreach (string one_stage, stages, {
+                	map single_proposal = amp;
+                	single_proposal["stage"] = one_stage;
+
+                	new_proposals = add (new_proposals, single_proposal);
+            	    });
+        	});
+    	    });
+	});
+
+	return new_proposals;
+    }
+
+    /**
+     * Check all proposals, split those ones which have multiple modes or
+     * architectures or stages into multiple proposals.
+     * Works with base product proposals.
+     */
+    global void PrepareSystemProposals () {
+        if (system_proposals_prepared) return;
+
+        ProductControl::proposals = PrepareProposals(ProductControl::proposals);
+        system_proposals_prepared = true;
+    }
+
+    /**
+     * Check all workflows, split those ones which have multiple modes or
+     * architectures or stages into multiple workflows
+     * @param list <map> workflows
+     * @return list <map> updated workflows
+     */
+    global list <map> PrepareWorkflows (list <map> workflows) {
+        list <map> new_workflows = [];
+
+	// Going through all workflows
+        foreach (map one_workflow, workflows, {
+            string mode = one_workflow["mode"]:"";
+            list <string> modes = splitstring (mode, ",");
+
+            if (size(modes) == 0) modes = [""];
+
+	    // Going through all modes
+            foreach (string one_mode, modes, {
+                map mw = one_workflow;
+                mw["mode"] = one_mode;
+                mw["defaults"] = mw["defaults"]:$[];
+                string arch = mw["defaults", "archs"]:"";
+                list<string> archs = splitstring (arch, ",");
+
+                if (size(archs) == 0) archs = [""];
+
+		// Going through all architercures
+                foreach (string one_arch, archs, {
+                    map amw = mw;
+                    amw["defaults", "archs"] = one_arch;
+                    string stage = amw["stage"]:"";
+                    list<string> stages = splitstring (stage, ",");
+
+                    if (size (stages) == 0) stages = [""];
+
+		    // Going through all stages
+                    foreach (string one_stage, stages, {
+                        map single_workflow = amw;
+                        single_workflow["stage"] = one_stage;
+
+                        new_workflows = add (new_workflows, single_workflow);
+                    });
+                });
+            });
+        });
+
+        return new_workflows;
+    }
+
+    /**
+     * Check all workflows, split those ones which have multiple modes or
+     * architectures or stages into multiple worlflows.
+     * Works with base product workflows.
+     */
+    global void PrepareSystemWorkflows() {
+        if (system_workflows_prepared) return;
+
+        ProductControl::workflows = PrepareWorkflows(ProductControl::workflows);
+        system_workflows_prepared = true;
+    }
+
+    /**
+     * Fills the workflow with initial settings to start merging from scratch.
+     * Used workflows mustn't be cleared automatically, merging would fail!
+     */
+    void FillUpInitialWorkflowSettings () {
+	if (! base_workflow_stored)
+	    y2error ("Base Workflow has never been stored, you should have called SetBaseWorkflow() before!");
+
+	ProductFeatures::Import (wkf_initial_product_features);
+
+	ProductControl::workflows     = wkf_initial_workflows;
+	ProductControl::proposals     = wkf_initial_proposals;
+	ProductControl::inst_finish   = wkf_initial_inst_finish;
+	ProductControl::clone_modules = wkf_initial_clone_modules;
+
+	additional_finish_steps_before_chroot = [];
+	additional_finish_steps_after_chroot  = [];
+	additional_finish_steps_before_umount = [];
+
+	// reset internal variable to force the Prepare... function
+	system_proposals_prepared = false;
+	PrepareSystemProposals();
+
+	// reset internal variable to force the Prepare... function
+	system_workflows_prepared = false;
+	PrepareSystemWorkflows();
+    }
+
+    /**
+     * Resets the Workflow (and proposals) to use the base workflow. It must be stored.
+     * Clears also all additional workflows.
+     */
+    global void ResetWorkflow () {
+	FillUpInitialWorkflowSettings ();
+	used_workflows = [];
+    }
+
+    string control_files_dir = "additional-control-files";
+
+    /**
+     * Returns the current (default) directory where workflows are stored in.
+     */
+    string GetWorkflowDirectory () {
+	return sformat ("%1/%2", Directory::tmpdir, control_files_dir);
+    }
+
+    /**
+     * Creates path to a control file from parameters. For add-on products,
+     * the 'ident' parameter is empty.
+     *
+     * @param integer src_id with source ID
+     * @param string ident with pattern name (or another unique identification), empty for Add-Ons
+     * @return string path to a control file based on src_id and ident params
+     */
+    string GenerateAdditionalControlFilePath (integer src_id, string ident) {
+	// special handling for Add-Ons (they have no special ident)
+	if (ident == "")
+	    ident = "__AddOnProduct-ControlFile__";
+
+	return sformat ("%1/%2:%3.xml", GetWorkflowDirectory(), src_id, ident);
+    }
+
+    /**
+     * Stores the workflow file to a cache
+     *
+     * @param string file_from filename
+     * @param string file_to filename
+     * @return string final filename
+     */
+    string StoreWorkflowFile (string file_from, string file_to) {
+	if (file_from == nil || file_from == "" || file_to == nil || file_to == "") {
+	    y2error ("Cannot copy '%1' to '%2'", file_from, file_to);
+	    return nil;
+	}
+
+	// Return nil if cannot copy
+	string file_location = nil;
+
+	y2milestone ("Copying workflow from '%1' to '%2'", file_from, file_to);
+	map cmd = (map) SCR::Execute (.target.bash_output, sformat ("
+test -d '%1' || /bin/mkdir -p '%1';
+/bin/cp -v '%2' '%3';
+",
+	    GetWorkflowDirectory(), String::Quote (file_from), String::Quote (file_to)
+	));
+
+	// successfully copied
+	if (cmd["exit"]:-1 == 0) {
+	    file_location = file_to;
+	} else {
+	    y2error ("Error occurred while copying control file: %1", cmd);
+	    
+	    // Not in installation, try to skip the error
+	    if (! Stage::initial() && FileUtils::Exists (file_from)) {
+		y2milestone ("Using fallback file %1", file_from);
+		file_location = file_from;
+	    }
+	}
+
+	return file_location;
+    }
+
+    /**
+     * Returns requested control filename. Parameter 'name' is ignored
+     * for Add-Ons.
+     *
+     * @param type `addon or `pattern
+     * @param src_id with Source ID
+     * @param string name with unique identification
+     * @return string path to already cached workflow file, control file is downloaded if not yet chached
+     */
+    string GetCachedWorkflowFilename (symbol type, integer src_id, string name) {
+	if (type == `addon) {
+	    string disk_filename = GenerateAdditionalControlFilePath (src_id, "");
+
+	    // A cached copy exists
+	    if (FileUtils::Exists (disk_filename)) {
+		y2milestone ("Using cached file %1", disk_filename);
+		return disk_filename;
+	    // Trying to get the file from source
+	    } else {
+		y2milestone ("File %1 not cached", disk_filename);
+		// using a file from source
+		string use_filename = Pkg::SourceProvideDigestedFile (src_id, 1, "/installation.xml", true);
+
+		// File exists
+		if (use_filename != nil) {
+		    return StoreWorkflowFile (use_filename, disk_filename);
+		// No such file
+		} else {
+		    return nil;
+		}
+	    }
+
+	// New workflow types can be added here
+	} else {
+	    y2error ("Unknown workflow type: %1", type);
+	    return nil;
+	}
+    }
+
+    /**
+     * Stores new workflow (if such workflow exists) into the Worflow Store.
+     *
+     * @param symbol type `addon or `pattern
+     * @param intger src_id with source ID
+     * @param name with unique identification name of the object
+     *        ("" for `addon, pattern name for `pattern)
+     * @return boolean whether successful (true also in case of no workflow file)
+     *
+     * @example
+     *	AddWorkflow (`addon, 4, "");
+     */
+    global boolean AddWorkflow (symbol type, integer src_id, string name) {
+	y2milestone ("Adding Workflow:  Type %1, ID %2, Name %3", type, src_id, name);
+	if (! contains ([`addon, `pattern], type)) {
+	    y2error ("Unknown workflow type: %1", type);
+	    return false;
+	}
+
+	// new xml filename
+	string used_filename = nil;
+
+	if (type == `addon) {
+	    used_filename = GetCachedWorkflowFilename (`addon, src_id, "");
+	} else if (type == `pattern) {
+	    y2error ("Not implemented yet");
+	    return false;
+	}
+
+	if (used_filename != nil && used_filename != "") {
+	    unmerged_changes = true;
+
+	    used_workflows = add (used_workflows, used_filename);
+	}
+
+	return true;
+    }
+
+    /**
+     * Removes workflow (if such workflow exists) from the Worflow Store.
+     * Alose removes the cached file but in the installation.
+     *
+     * @param symbol type `addon or `pattern
+     * @param intger src_id with source ID
+     * @param name with unique identification name of the object
+     *
+     * @return boolean whether successful (true also in case of no workflow file)
+     *
+     * @example
+     *	RemoveWorkflow (`addon, 4, "");
+     */
+    global boolean RemoveWorkflow (symbol type, integer src_id, string name) {
+	y2milestone ("Removing Workflow:  Type %1, ID %2, Name %3", type, src_id, name);
+	if (! contains ([`addon, `pattern], type)) {
+	    y2error ("Unknown workflow type: %1", type);
+	    return false;
+	}
+
+	// cached xml file
+	string used_filename = nil;
+
+	if (type == `addon) {
+	    used_filename = GenerateAdditionalControlFilePath (src_id, "");
+	} else {
+	    y2error ("Not implemented yet");
+	    return false;
+	}
+
+	if (used_filename != nil && used_filename != "") {
+	    unmerged_changes = true;
+
+	    used_workflows = filter (string one_workflow, used_workflows, {
+		return one_workflow != used_filename;
+	    });
+
+	    if (! Stage::initial()) {
+		if (FileUtils::Exists (used_filename)) {
+		    y2milestone ("Removing cached file '%1': %2",
+			used_filename,
+			SCR::Execute (.target.remove, used_filename)
+		    );
+		}
+	    }
+	}
+
+	return true;
+    }
+
+    /**
+     * Removes all xml and ycp files from directory where 
+     */
+    global void CleanWorkflowsDirectory () {
+	string directory = GetWorkflowDirectory ();
+	y2milestone ("Removing all xml and ycp files from '%1' directory", directory);
+
+	if (FileUtils::Exists (directory)) {
+	    // doesn't add RPM dependency on tar
+	    map cmd = (map) SCR::Execute (.target.bash_ouptut, "
+cd '%1';
+test -x /bin/tar && /bin/tar -zcf workflows_backup.tgz *.xml *.ycp;
+rm -rf *.xml *.ycp",
+	    String::Quote (directory));
+
+	    if (cmd["exit"]:-1 != 0) {
+		y2error ("Removing failed: %1", cmd);
+	    }
+	}
+    }
+
+    /**
+     * Replace a module in a proposal with a set of other modules
+     *
+     * @param proposal a map describing the proposal
+     * @param old string the old item to be replaced
+     * @param new a list of items to be put into instead of the old one
+     * @return a map with the updated proposal
+     */
+    map ReplaceProposalModule (map proposal, string old, list<string> new) {
+	boolean found = false;
+
+	list <list> modules = maplist (any m, proposal["proposal_modules"]:[], {
+	    if ((is (m, string) && (string) m == old) || is (m, map) && ((map)m)["name"]:"" == old) {
+		found = true;
+
+		if (is (m, map)) {
+		    return maplist (string it, new, {
+			return union ((map)m, $[ "name" : it ]);
+		    });
+		} else {
+		    return new;
+		}
+	    } else {
+		return [m];
+	    }
+	});
+
+	if (! found)
+	    y2internal ("Replace/Remove proposal item %1 not found", old);
+
+	proposal["proposal_modules"] = flatten(modules);
+
+	if (haskey (proposal, "proposal_tabs")) {
+	    proposal["proposal_tabs"] = maplist (map tab, proposal["proposal_tabs"]:[], {
+		list <list <string> > modules = maplist (string m, tab["proposal_modules"]:[], {
+		    if (m == old)
+			return new;
+		    else
+			return [m];
+		});
+
+		tab["proposal_modules"] = flatten (modules);
+
+		return tab;
+	    });
+	}
+
+	return proposal;
+    }
+
+
+    /**
+     * Merge add-on proposal to a base proposal
+     *
+     * @param map base with the current product proposal
+     * @param additional_control with additional control file settings
+     * @param prod_name a name of the add-on product
+     * @return map merged proposals
+     */
+    map MergeProposal (map base, map additional_control, string prod_name, string domain) {
+        // Additional proposal settings - Replacing items
+        map <string, list <string> > replaces = listmap (map one_addon, additional_control["replace_modules"]:[], {
+	    string old = one_addon["replace"]:"";
+	    list<string> new = one_addon["modules"]:[];
+
+	    return $[ old : new ];
+	});
+
+	if (size (replaces) > 0) {
+	    foreach (string old, list <string> new, replaces, {
+		base = ReplaceProposalModule (base, old, new);
+	    });
+	}
+
+	// Additional proposal settings - Removing settings
+	list <string> removes = additional_control["remove_modules"]:[];
+
+	if (size (removes) > 0) {
+    	    foreach (string r, removes, {
+		base = ReplaceProposalModule (base, r, []);
+	    });
+	}
+
+	// Additional proposal settings - - Appending settings
+	list <string> appends = additional_control["append_modules"]:[];
+
+	if (size (appends) > 0) {
+	    boolean as_map = false;
+	    list <any> append2 = appends;
+
+	    if (is (base["proposal_modules", 0]:nil, map)) {
+		append2 = maplist (string m, appends, {
+		    return $[ "name" : m, "presentation_order" : 9999 ];
+		});
+	    }
+
+	    base["proposal_modules"] = merge (base["proposal_modules"]:[], append2);
+
+	    if (haskey (base, "proposal_tabs")) {
+		map new_tab = $[
+		    "label" : prod_name,
+		    "proposal_modules" : appends,
+		    "textdomain" : domain,
+		];
+		base["proposal_tabs"] = add (base["proposal_tabs"]:[], new_tab);
+	    }
+	}
+
+	if (additional_control["enable_skip"]:"yes" == "no")
+	    base["enable_skip"] = "no";
+
+	return base;
+    }
+
+    /**
+     * Update system proposals according to proposal update metadata
+     *
+     * @param proposals a list of update proposals
+     * @param prod_name string the product name (used in case of tabs)
+     * @param domain string the text domain (for translations)
+     * @return boolean true on success
+     */
+    boolean UpdateProposals (list<map> proposals, string prod_name, string domain) {
+	foreach (map proposal, proposals, {
+	    string name  = proposal["name"]:"";
+	    string stage = proposal["stage"]:"";
+	    string mode  = proposal["mode"]:"";
+	    string arch  = proposal["archs"]:"";
+
+	    boolean found = false;
+	    list<map> new_proposals = [];
+	    map arch_all_prop = $[];
+
+	    foreach (map p, ProductControl::proposals, {
+		if (p["stage"]:"" != stage || p["mode"]:"" != mode || p["name"]:"" != name) {
+		    new_proposals = add (new_proposals, p);
+		    continue;
+		}
+
+		if (p["archs"]:"" == arch || arch == "" || arch == "all") {
+		    p = MergeProposal (p, proposal, prod_name, domain);
+		    found = true;
+		} else if (p["archs"]:"" == "" || p["archs"]:"" == "all") {
+		    arch_all_prop = p;
+		}
+
+		new_proposals = add (new_proposals, p);
+	    });
+
+	    if (! found) {
+		if (arch_all_prop != $[]) {
+		    arch_all_prop["archs"] = arch;
+		    proposal = MergeProposal (arch_all_prop, proposal,
+			prod_name, domain);
+		// completly new proposal
+		} else {
+		    proposal["textdomain"] = domain;
+		}
+
+		new_proposals = add (new_proposals, proposal);
+	    }
+
+	    ProductControl::proposals = new_proposals;
+	});
+
+	return true;
+    }
+
+    /**
+     * Replace a module in a workflow with a set of other modules
+     *
+     * @param workflow a map describing the workflow
+     * @param old string the old item to be replaced
+     * @param new a list of items to be put into instead of the old one
+     * @param domain string a text domain
+     * @param keep boolean true to keep original one (and just insert before)
+     * @return a map with the updated workflow
+     */
+    map ReplaceWorkflowModule (map workflow, string old, list<map> new, string domain, boolean keep) {
+	boolean found = false;
+
+	list <list <map> > modules = maplist (map m, workflow["modules"]:[], {
+	    if (m["name"]:"" == old) {
+		list<map> new_list = maplist (map n, new, {
+		    n["textdomain"] = domain;
+		    return n;
+		});
+
+		found = true;
+
+		if (keep) new_list = add (new_list, m);
+
+		return new_list;
+	    } else {
+		return [m];
+	    }
+	});
+
+	if (! found) y2internal ("Insert/Replace/Remove workflow module %1 not found", old);
+
+	workflow["modules"] = flatten(modules);
+
+	return workflow;
+    }
+
+
+    /**
+     * Merge add-on workflow to a base workflow
+     *
+     * @param base map the base product workflow
+     * @param addon map the workflow of the addon product
+     * @param prod_name a name of the add-on product
+     * @return map merged workflows
+     */
+    map MergeWorkflow (map base, map addon, string prod_name, string domain) {
+	// Merging - removing steps, settings
+	list <string> removes = addon["remove_modules"]:[];
+
+	if (size (removes) > 0) {
+	    y2milestone ("Remove: %1", removes);
+    	    foreach (string r, removes, {
+		base = ReplaceWorkflowModule (base, r, [], domain, false);
+	    });
+	}
+
+	// Merging - replacing steps, settings
+	map <string,list<map> > replaces = listmap(map a, addon["replace_modules"]:[], {
+	    string old = a["replace"]:"";
+	    list<map> new = a["modules"]:[];
+
+	    return $[ old : new ];
+	});
+
+	if (size (replaces) > 0) {
+	    y2milestone ("Replace: %1", replaces);
+	    foreach (string old, list<map> new, replaces, {
+		base = ReplaceWorkflowModule (base, old, new, domain, false);
+	    });
+	}
+
+	// Merging - inserting steps, settings
+	map <string, list <map> > inserts = listmap (map i, addon["insert_modules"]:[], {
+	    string before = i["before"]:"";
+	    list <map> new = i["modules"]:[];
+
+	    return $[ before : new ];
+	});
+
+	if (size (inserts) > 0) {
+	    y2milestone ("Insert: %1", inserts);
+	    foreach (string old, list <map> new, inserts, {
+		base = ReplaceWorkflowModule (base, old, new, domain, true);
+	    });
+	}
+
+	// Merging - appending steps, settings
+	list <map> appends = addon["append_modules"]:[];
+
+	if (size (appends) > 0) {
+	    y2milestone ("Append: %1", appends);
+	    foreach (map new, appends, {
+		new["textdomain"] = domain;
+		base["modules"] = add (base["modules"]:[], new);
+	    });
+	}
+
+	return base;
+    }
+
+    /**
+     * Update system workflows according to workflow update metadata
+     *
+     * @param workflows a list of update workflows
+     * @param prod_name string the product name (used in case of tabs)
+     * @param domain string the text domain (for translations)
+     * @return boolean true on success
+     */
+    boolean UpdateWorkflows (list <map> workflows, string prod_name, string domain) {
+	foreach (map workflow, workflows, {
+	    string stage = workflow["stage"]:"";
+	    string mode = workflow["mode"]:"";
+	    string arch = workflow["archs"]:"";
+
+	    boolean found = false;
+	    list<map> new_workflows = [];
+	    map arch_all_wf = $[];
+
+	    foreach (map w, ProductControl::workflows, {
+		if (w["stage"]:"" != stage || w["mode"]:"" != mode) {
+		    new_workflows = add (new_workflows, w);
+		    continue;
+		}
+
+		if (w["defaults", "archs"]:"" == arch || arch == "" || arch == "all") {
+		    w = MergeWorkflow (w, workflow, prod_name, domain);
+		    found = true;
+		} else if (w["defaults", "archs"]:"" == "" || w["default", "archs"]:"" == "all") {
+		    arch_all_wf = w;
+		}
+
+		new_workflows = add (new_workflows, w);
+	    });
+
+	    if (! found) {
+		if (arch_all_wf != $[]) {
+		    arch_all_wf["defaults", "archs"] = arch;
+		    workflow = MergeWorkflow (arch_all_wf, workflow, prod_name, domain);
+		// completly new workflow
+		} else {
+		    workflow["textdomain"] = domain;
+
+		    workflow["modules"] = maplist (map mod, workflow["modules"]:[], {
+			mod["textdomain"] = domain;
+			return mod;
+		    });
+		}
+
+		new_workflows = add (new_workflows, workflow);
+	    }
+
+	    ProductControl::workflows = new_workflows;
+	});
+
+	return true;
+    }
+
+    /**
+     * Add specified steps to inst_finish.
+     * Just modifies internal variables, inst_finish grabs them itself
+     *
+     * @param additional_steps a map specifying the steps to be added
+     * @return boolean true on success
+     */
+    boolean UpdateInstFinish (map <string, list <string> > additional_steps) {
+	list<string> before_chroot = additional_steps["before_chroot"]:[];
+	list<string> after_chroot  = additional_steps["after_chroot"]:[];
+	list<string> before_umount = additional_steps["before_umount"]:[];
+
+	additional_finish_steps_before_chroot = (list <string>)
+	    merge (additional_finish_steps_before_chroot, before_chroot);
+
+	additional_finish_steps_after_chroot  = (list <string>)
+	    merge (additional_finish_steps_after_chroot, after_chroot);
+
+	additional_finish_steps_before_umount = (list <string>)
+	    merge (additional_finish_steps_before_umount, before_umount);
+
+	return true;
+    }
+
+    /**
+     * Adapts the current workflow according to specified XML file content
+     *
+     * @param update_file a map containing the additional product control file
+     * @param name string the name of the additional product
+     * @param domain string the text domain for the additional control file
+     *
+     * @return boolean true on success
+     */
+    boolean UpdateInstallation (map update_file, string name, string domain) {
+	WorkflowManager::PrepareSystemProposals();
+	WorkflowManager::PrepareSystemWorkflows();
+
+	list <map> proposals = update_file["proposals"]:[];
+	proposals = WorkflowManager::PrepareProposals (proposals);
+	UpdateProposals (proposals, name, domain);
+
+	list <map> workflows = update_file["workflows"]:[];
+	workflows = WorkflowManager::PrepareWorkflows (workflows);
+	UpdateWorkflows (workflows, name, domain);
+
+	return true;
+    }
+
+    /**
+     * Add new defined proposal to the list of system proposals
+     *
+     * @param proposals a list of proposals to be added
+     * @return boolean true on success
+     */
+    boolean AddNewProposals (list <map> proposals) {
+	list<string> forbidden = maplist (map p, ProductControl::proposals, {
+	    return p["name"]:"";
+	});
+
+	forbidden = toset (forbidden);
+
+	foreach (map proposal, proposals, {
+	    if (! contains (forbidden, proposal["name"]:"")) {
+		y2milestone ("Adding new proposal %1", proposal["name"]:"");
+		ProductControl::proposals = add (ProductControl::proposals, proposal);
+	    } else {
+		y2warning ("Proposal '%1' already exists, not adding", proposal["name"]:"");
+	    }
+	});
+
+	return true;
+    }
+
+
+    /**
+     * Replace workflows for 2nd stage of installation
+     *
+     * @param workflows a list of the workflows
+     * @return boolean true on success
+     */
+    boolean Replaceworkflows (list <map> workflows) {
+	workflows = WorkflowManager::PrepareWorkflows (workflows);
+
+	// This function doesn't update the current workflow but replaces it.
+	// That's why it is not allowed for the first stage of the installation.
+	workflows = filter (map workflow, workflows, {
+    	    if (workflow["stage"]:"" == "initial") {
+        	y2error ("Attempting to replace 1st stage workflow. This is not possible");
+		y2milestone ("Workflow: %1", workflow);
+        	return false;
+    	    }
+
+    	    return true;
+	});
+
+	map <string, map <string, boolean> > sm = $[];
+
+	foreach (map workflow, workflows, {
+    	    sm[workflow["stage"]:""] = sm[workflow["stage"]:""]:$[];
+    	    sm[workflow["stage"]:"", workflow["mode"]:""] = true;
+
+    	    return [workflow["stage"]:"", workflow["mode"]:""];
+	});
+
+	y2milestone ("Existing replace workflows: %1", sm);
+	y2milestone ("Workflows before filtering: %1", size (ProductControl::workflows));
+
+	ProductControl::workflows = filter (map w, ProductControl::workflows, {
+    	    return ! sm[w["stage"]:"", w["mode"]:""]:false;
+	});
+
+	y2milestone ("Workflows after filtering: %1", size (ProductControl::workflows));
+	ProductControl::workflows = (list <map>) merge (ProductControl::workflows, workflows);
+
+	return true;
+    }
+
+    /**
+     * Update product options such as global settings, software, partitioning
+     * or network.
+     *
+     * @param update_file a map containing update control file
+     * @return boolean true on success
+     */
+    boolean UpdateProductInfo (map update_file) {
+	// merging all 'map <string, any>' type
+	foreach (string section, ["globals", "software", "partitioning", "network"], {
+	    map <string, any> sect = ProductFeatures::GetSection (section);
+    	    map <string, any> addon = update_file[section]:$[];
+    	    sect = (map <string,any>) union (sect, addon);
+
+    	    ProductFeatures::SetSection (section, sect);
+	});
+
+	// merging 'clone_modules'
+	list <string> addon_clone = update_file["clone_modules"]:[];
+	ProductControl::clone_modules = (list <string>) merge (ProductControl::clone_modules, addon_clone);
+
+	// merging texts
+
+	/**
+	 * @struct $[
+	 *   "congratulate" : $[
+	 *     "label" : "some text",
+	 *   ],
+	 *   "congratulate2" : $[
+	 *     "label" : "some other text",
+	 *     "textdomain" : "control-2", // (optionally)
+	 *   ],
+	 * ];
+	 */
+	map <string, any> controlfile_texts = ProductFeatures::GetSection ("texts");
+	map <string, map <string, string> > update_file_texts = update_file["texts"]:$[];
+	string update_file_textdomain = update_file["textdomain"]:"";
+
+	// if textdomain is different to the base one
+	// we have to put it into the map
+	if (update_file_textdomain != nil && update_file_textdomain != "") {
+	    update_file_texts = mapmap (string text_ident, map <string, string> text_def, update_file_texts, {
+		text_def["textdomain"] = update_file_textdomain;
+
+		return $[ text_ident : text_def ];
+	    });
+	}
+
+	controlfile_texts = (map <string, any>) union (controlfile_texts, update_file_texts);
+	ProductFeatures::SetSection ("texts", controlfile_texts);
+
+	return true;
+    }
+
+    /**
+     * Redraws workflow steps. Function must be called when steps (or help for steps)
+     * are active. It doesn't work in case of active another dialog.
+     */
+    global boolean RedrawWizardSteps () {
+	y2milestone ("Retranslating messages, redrawing wizard steps");
+
+	// Make sure the labels for default function keys are retranslated, too.
+	// Using Label::DefaultFunctionKeyMap() from Label module.
+	UI::SetFunctionKeys (Label::DefaultFunctionKeyMap());
+
+	// Activate language changes on static part of wizard dialog
+	ProductControl::RetranslateWizardSteps();
+	Wizard::RetranslateButtons();
+	Wizard::SetFocusToNextButton();
+
+	return true;
+    }
+
+    /**
+     * Integrate the changes in the workflow
+     * @param filename string filename of the control file (local filename)
+     * @return boolean true on success
+     */
+    boolean IntegrateWorkflow (string filename) {
+	y2milestone ("IntegrateWorkflow %1", filename);
+
+	map update_file = XML::XMLToYCPFile (filename);
+	string name = update_file["display_name"]:"";
+
+	if (! UpdateInstallation (
+	    update_file["update"]:$[],
+	    name,
+	    update_file["textdomain"]:"control"
+	)) {
+    	    y2error ("Failed to update installation workflow");
+    	    return false;
+	}
+
+	if (! UpdateProductInfo (update_file)) {
+    	    y2error ("Failed to set product options");
+    	    return false;
+	}
+
+	if (! AddNewProposals (update_file["proposals"]:[])) {
+    	    y2error ("Failed to add new proposals");
+    	    return false;
+	}
+
+	if (! Replaceworkflows (update_file["workflows"]:[])) {
+    	    y2error ("Failed to replace workflows");
+    	    return false;
+	}
+
+	if (! UpdateInstFinish (update_file["update", "inst_finish"]:$[])) {
+    	    y2error ("Adding inst_finish steps failed");
+    	    return false;
+	}
+
+	return true;
+    }
+
+    /**
+     * Returns file unique identification in format ${file_MD5sum}-${file_size}
+     * Returns 'nil' if file doesn't exist, it is not a 'file', etc.
+     *
+     * @param string file
+     * @return string file_ident
+     */
+    string GenerateWorkflowIdent (string workflow_filename) {
+	string file_md5sum = FileUtils::MD5sum (workflow_filename);
+
+	if (file_md5sum == nil || file_md5sum == "") {
+	    y2error ("MD5 sum of file %1 is %2", workflow_filename, file_md5sum);
+	    return nil;
+	}
+
+	integer file_size = FileUtils::GetSize (workflow_filename);
+
+	if (file_size < 0) {
+	    y2error ("File size %1 is %2", workflow_filename, file_size);
+	    return nil;
+	}
+
+	return sformat ("%1-%2", file_md5sum, file_size);
+    }
+
+    /**
+     * Function uses the Base Workflow as the initial one and merges all
+     * added workflow into that workflow.
+     *
+     * @return boolean if successful
+     */
+    global boolean MergeWorkflows () {
+	y2milestone ("Merging additional control files from scratch...");
+	unmerged_changes = false;
+
+	// Init the Base Workflow settings
+	FillUpInitialWorkflowSettings();
+
+	boolean ret = true;
+
+	list <string> already_merged_workflows = [];
+
+	foreach (string one_workflow, used_workflows, {
+	    // make sure that every workflow is merged only once
+	    // bugzilla #332436
+	    string workflow_ident = GenerateWorkflowIdent (one_workflow);
+	    
+	    if (workflow_ident != nil && contains (already_merged_workflows, workflow_ident)) {
+		y2milestone ("The very same workflow has been already merged, skipping...");
+		return;
+	    } else if (workflow_ident != nil) {
+		already_merged_workflows = add (already_merged_workflows, workflow_ident);
+	    } else {
+		y2error ("Workflow ident is: %1", workflow_ident);
+	    }
+
+	    if (! IntegrateWorkflow (one_workflow)) {
+		y2error ("Merging '%1' failed!", one_workflow);
+		Report::Error (_("An internal error occured when integrating additional workflow."));
+		ret = false;
+	    }
+	});
+
+	return ret;
+    }
+
+    /**
+     * Returns whether some additional control files were added or removed
+     * from the last time MergeWorkflows() was called.
+     *
+     * @return boolen see description
+     */
+    global boolean SomeWorkflowsWereChanged () {
+	return unmerged_changes;
+    }
+
+    /**
+     * Returns list of control-file names currently used
+     *
+     * @return list <string> files
+     */
+    global list <string> GetAllUsedControlFiles () {
+	return used_workflows;
+    }
+
+    /**
+     * Sets list of control-file names to be used.
+     * ATTENTION: this is dangerous and should be used in rare cases only!
+     *
+     * @see GetAllUsedControlFiles()
+     * @param list <string> new workflows (XML files in absolute-path format)
+     * @example
+     *	SetAllUsedControlFiles (["/tmp/new_addon_control.xml", "/root/special_addon.xml"]);
+     */
+    global void SetAllUsedControlFiles (list <string> new_list) {
+	y2milestone ("New list of additional workflows: %1", new_list);
+	unmerged_changes = true;
+	used_workflows = new_list;
+    }
+
+    /**
+     * Returns whether some additional control files are currently in use.
+     *
+     * @return boolean some additional control files are in use.
+     */
+    global boolean HaveAdditionalWorkflows () {
+	return (size (GetAllUsedControlFiles()) >= 0);
+    }
+
+    /**
+     * Returns the current settings used by WorkflowManager.
+     * This function is just for debugging purpose.
+     *
+     * @return map <string, any> of current settings
+     * @struct [
+     *		"workflows" : ...
+     *		"proposals" : ...
+     *		"inst_finish" : ...
+     *		"clone_modules" : ...
+     *		"unmerged_changes" : ...
+     *	];
+     */
+    global map <string, any> DumpCurrentSettings () {
+	return $[
+	    "workflows"		: ProductControl::workflows,
+	    "proposals"		: ProductControl::proposals,
+	    "inst_finish"	: ProductControl::inst_finish,
+	    "clone_modules"	: ProductControl::clone_modules,
+	    "unmerged_changes"	: unmerged_changes,
+	];
+    }
+}

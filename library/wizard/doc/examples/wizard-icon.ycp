@@ -1,0 +1,25 @@
+/*
+ * Wizard dialog example with icon
+ *
+ * Author: Stefan Hundhammer <sh@suse.de>
+ *
+ * $Id$
+ */
+{
+    import "Wizard";
+
+
+    Wizard::CreateDialog();
+
+    term   contents  = `Label( "Wizard contents" );
+    string headline  = "Trivial Wizard Example";
+    string help_text = "<p>Help text</p>";
+
+    Wizard::SetContents( headline, contents, help_text,
+			 false,		// have back button
+			 true );	// have next button
+
+    Wizard::SetTitleIcon( "button_active.png" );
+
+    Wizard::UserInput(); 
+}

@@ -1,0 +1,79 @@
+{
+
+include "testsuite.ycp";
+
+map READ = $[
+];
+
+TESTSUITE_INIT([READ], nil);
+import "NetworkInterfaces";
+
+DUMP ("Combined:");
+list <string> ifcfgs = [
+    "eth0",
+    "eth1",
+    "eth-pcmcia-0",
+    "eth-usb-1",
+    "tr-pcmcia-1",
+    "ippp2",
+    "ppp2",
+    "lo",
+    "eth0#1",
+    "eth1#20",
+    "eth-pcmcia-0#3",
+    "eth-usb-1#0",
+    "tr-pcmcia-2#432",
+    "ippp2#2",
+    "ppp2#2",
+    "lo#1",
+    "eth1#blah",
+    "eth-id-00:07:e9:d5:8e:e8",
+    "eth-id-00:07:e9:d5:8e:e8#foo",
+    "ip6tnl0",
+    "ip6tnl31",
+    "mip6mnha3",
+/*
+    // trying
+    "bogusname",
+    "bogus#foo#bar",
+    "42",
+*/
+    ];
+
+foreach (string ifcfg, ifcfgs, {
+    string t = NetworkInterfaces::GetType(ifcfg);
+    DUMP (sformat ("ifcfg-%1, type: %2", ifcfg, t));
+//    string i = NetworkDevices::device_num (ifcfg);
+//    string ai = NetworkDevices::alias_num (ifcfg);
+});
+
+/*
+DUMP ("Obsolete:");
+TEST(``(NetworkDevices::device_name("eth-pcmcia-","0")), [], nil);
+TEST(``(NetworkDevices::device_name("tr-pcmcia-","1")), [], nil);
+
+TEST(``(NetworkDevices::alias_name("eth-pcmcia-","0","1")), [], nil);
+TEST(``(NetworkDevices::alias_name("tr-pcmcia-","1","1")), [], nil);
+*/
+DUMP ("CanonicalizeIP:");
+list<map<string, any> > addresses = [
+    // normal cases
+    $["IPADDR": "10.0.0.1/8", "other": "data"],
+    $["IPADDR": "10.0.0.1", "PREFIXLEN": "8", "other": "data"],
+    $["IPADDR": "10.0.0.1", "NETMASK": "255.0.0.0", "other": "data"],
+    $["BOOTPROTO": "dhcp"],
+    // conflicting cases
+    $["IPADDR": "10.0.0.1/8", "PREFIXLEN": "16", "NETMASK": "255.255.255.0", "other": "data"],
+    // error cases
+    nil,
+    $[],
+    $["IPADDR": "10.0.0.1", "other": "data"],
+    // IPv6
+    $["IPADDR": "2001:15c0:668e::5", "PREFIXLEN":"48"],
+    $["IPADDR": "2001:15c0:668e::5/48", "PREFIXLEN":""]
+    ];
+foreach (map<string, any> address, addresses, {
+    TEST (``(NetworkInterfaces::CanonicalizeIP (address)), [], nil);
+});
+
+}

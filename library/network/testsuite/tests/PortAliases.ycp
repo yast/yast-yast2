@@ -1,0 +1,53 @@
+{
+
+    include "testsuite.ycp";
+    // testedfiles: PortAliases
+
+    map READ = $[
+    ];
+    
+    map WRITE = $[
+    ];
+    
+    map EXECUTE = $[
+	"target" : $[
+	    "bash_output" : $[
+		"exit" : 0,
+		"stdout" : "texar
+texar",
+		"stderr" : "",
+	    ],
+	],
+    ];
+
+    TESTSUITE_INIT([READ, WRITE, EXECUTE], nil);
+    import "PortAliases";
+
+    DUMP("== Allowed Port Aliases ==");
+    TEST(``(PortAliases::IsAllowedPortName("xyz-abc-def")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(PortAliases::IsAllowedPortName("a*a/b+b.c_c-d")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(PortAliases::IsAllowedPortName("!port")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(PortAliases::IsAllowedPortName("1")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(PortAliases::IsAllowedPortName("65535")), [READ, WRITE, EXECUTE], nil);
+    TEST(``(PortAliases::IsAllowedPortName("65536")), [READ, WRITE, EXECUTE], nil);
+
+    DUMP("");
+    DUMP("== Service Aliases Included ==");
+    foreach (string port, ["22", "ssh", "25", "smtp", "53", "domain", "67", "bootps", "68", "bootpc", "69", "tftp",
+	    "80", "http", "www", "www-http", "110", "pop3", "111", "sunrpc", "123", "ntp", "137", "netbios-ns", "138",
+	    "139", "netbios-dgm", "143", "netbios-ssn", "389", "ldap", "443", "https", "445", "microsoft-ds",
+	    "500", "isakmp", "631", "ipp", "636", "ldaps", "873", "rsync", "993", "imaps", "995", "pop3s",
+	    "3128", "ndl-aas", "4500", "ipsec-nat-t", "8080", "http-alt"], {
+        TEST(``(PortAliases::GetListOfServiceAliases(
+	    port
+	)), [READ, WRITE, EXECUTE], nil);
+    });
+
+    DUMP("");
+    DUMP("== Service Aliases External ==");
+    TEST(``(PortAliases::GetListOfServiceAliases("333")), [READ, WRITE, EXECUTE], nil);
+
+    DUMP("");
+    DUMP("== Port Name ==");
+    TEST(``(PortAliases::IsKnownPortName("www")), [READ, WRITE, EXECUTE], nil);
+}

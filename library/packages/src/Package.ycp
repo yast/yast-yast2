@@ -1,0 +1,113 @@
+/**
+ * File:	modules/Package.ycp
+ * Package:	yast2
+ * Summary:	Packages manipulation
+ * Authors:	Martin Vidner <mvidner@suse.cz>
+ *		Michal Svec <msvec@suse.cz>
+ * Flags:	Stable
+ *
+ * $Id$
+ *
+ * The documentation is maintained at
+ * <a href="../index.html">.../docs/index.html</a>.
+ */
+
+{
+
+module "Package";
+textdomain "base";
+
+import "Mode";
+import "PackageAI";
+import "PackageSystem";
+
+/***
+ * Packages Manipulation
+ */
+
+map FunctionsSystem = $[
+    "DoInstall"	: PackageSystem::DoInstall,
+    "DoRemove"	: PackageSystem::DoRemove,
+    "DoInstallAndRemove" : PackageSystem::DoInstallAndRemove,
+    "Available"	: PackageSystem::Available,
+    "Installed"	: PackageSystem::Installed,
+    "InstallKernel" : PackageSystem::InstallKernel,
+    "PackageInstalled" : PackageSystem::PackageInstalled,
+    "PackageAvailable" : PackageSystem::PackageAvailable,
+];
+
+map FunctionsAI = $[
+    "DoInstall"	: PackageAI::DoInstall,
+    "DoRemove"	: PackageAI::DoRemove,
+    "DoInstallAndRemove" : PackageAI::DoInstallAndRemove,
+    "Available"	: PackageAI::Available,
+    "Installed"	: PackageAI::Installed,
+    "InstallKernel" : PackageAI::InstallKernel,
+    "PackageInstalled" : PackageAI::PackageInstalled,
+    "PackageAvailable" : PackageAI::PackageAvailable,
+];
+
+map Functions = Mode::config () ? FunctionsAI : FunctionsSystem;
+
+boolean last_op_canceled = false;
+
+include "packages/common.ycp";
+
+/**
+ * Install list of packages
+ * @param packages list of packages to be installed
+ * @return True on success
+ */
+global boolean DoInstall(list<string> packages) {
+    boolean (list<string>) function = (boolean (list<string>)) (Functions["DoInstall"]:nil);
+    return function(packages);
+}
+
+/**
+ * Remove list of packages
+ * @param packages list of packages to be removed
+ * @return True on success
+ */
+global boolean DoRemove(list<string> packages) {
+    boolean (list<string>) function = (boolean (list<string>)) (Functions["DoRemove"]:nil);
+    return function(packages);
+}
+
+/**
+ * Install and Remove list of packages in one go
+ * @param toinstall list of packages to be installed
+ * @param toremove list of packages to be removed
+ * @return True on success
+ */
+global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove) {
+    boolean (list<string>, list<string>) function = (boolean (list<string>, list<string>)) (Functions["DoInstallAndRemove"]:nil);
+    return function(toinstall, toremove);
+}
+
+global boolean Available(string package) {
+    boolean (string) function = (boolean (string)) (Functions["Available"]:nil);
+    return function(package);
+}
+
+global boolean Installed(string package) {
+    boolean (string) function = (boolean (string)) (Functions["Installed"]:nil);
+    return function(package);
+}
+
+global boolean PackageAvailable(string package) {
+    boolean (string) function = (boolean (string)) (Functions["PackageAvailable"]:nil);
+    return function(package);
+}
+
+global boolean PackageInstalled(string package) {
+    boolean (string) function = (boolean (string)) (Functions["PackageInstalled"]:nil);
+    return function(package);
+}
+
+global boolean InstallKernel (list<string> kernel_modules) {
+    boolean (list<string>) function = (boolean (list<string>)) (Functions["InstallKernel"]:nil);
+    return function(kernel_modules);
+}
+
+/* EOF */
+}

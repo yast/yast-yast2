@@ -1,0 +1,154 @@
+/**
+ * File:	modules/XML.ycp
+ * Package:	XML
+ * Summary:	XML routines
+ * Authors:	Anas Nashif <nashif@suse.de>
+ *
+ * $Id$
+ */
+
+{
+
+    module "XML";
+
+    // Sections in XML file that should be treated as CDATA when saving
+    global list cdataSections = [];
+
+    // How to call a list entry in the XML output
+    global map listEntries = $[];
+
+    // The system ID, or the DTD URI
+    global string systemID = "";
+
+    // root element of the XML file
+    global string rootElement = "";
+
+    // Global Namespace xmlns=...
+    global string nameSpace = "http://www.suse.com/1.0/yast2ns";
+
+    // Type name space xmlns:config for YCP data (http://www.suse.com/1.0/configns)
+    global string typeNamespace = "http://www.suse.com/1.0/configns";
+
+    global map docs = $[];
+
+
+
+    /**
+     * define a new doc type with custom settings, if not defined, global settings will
+     * be used.
+	 * @param symbol Document type identifier
+	 * @param map  Document type Settings
+     * @return void
+     */
+    global define void xmlCreateDoc(symbol doc, map docSettings)
+	``{
+	map current_settings = $[
+				 "cdataSections":docSettings["cdataSections"]:cdataSections,
+				 "systemID":docSettings["systemID"]:systemID,
+				 "rootElement":docSettings["rootElement"]:rootElement,
+				 "listEntries": docSettings["listEntries"]:listEntries
+	];
+	if (docSettings["typeNamespace"]:""!= "")
+	{
+	    current_settings["typeNamespace"] = docSettings["typeNamespace"]:"";
+	}
+
+	if (docSettings["nameSpace"]:""!= "")
+	{
+	    current_settings["nameSpace"] = docSettings["nameSpace"]:"";
+	}
+	docs[doc] = current_settings;
+	return;
+    }
+
+    /**
+	 * YCPToXMLFile()
+	 * Write YCP data into formated XML file
+	 * @param symbol Document type identifier
+     * @param contents  a map with YCP data
+     * @param outputPath the path of the XML file
+     * @return boolean true on sucess
+     */
+    global define boolean YCPToXMLFile(symbol docType, map contents, string outputPath) ``{
+	if (!haskey(docs, docType))
+	{
+	    y2error("doc type %1 undecalred...", docType);
+	    return false;
+	}
+	map docSettings = docs[docType]:$[];
+	docSettings["fileName"] = outputPath;
+	y2debug("Write(.xml, %1, %2)", docSettings, contents);
+	boolean ret = (boolean) SCR::Execute(.xml, docSettings, contents);
+	return ret;
+    }
+
+
+
+    /** Write YCP data into formated XML string
+	 *  @param symbol Document type identifier
+     *  @param contents  a map with YCP data
+     *  @return string String with XML data
+     */
+    global define string YCPToXMLString(symbol docType, map contents) ``{
+	if (!haskey(docs, docType))
+	    return nil;
+
+	map docSettings = docs[docType]:$[];
+	docSettings["fileName"] = "dummy";
+	any ret = SCR::Execute(.xml.string, docSettings, contents);
+        if (is(ret, string))
+	    return (string)ret;
+        else
+            return "";
+    }
+
+    /**
+     * Read XML file into YCP
+     * @param xmlFile XML file name to read
+     * @return Map with YCP data
+     */
+    global define map<string, any> XMLToYCPFile( string xmlFile) ``{
+	if (SCR::Read(.target.size, xmlFile) > 0)
+	{
+	    y2milestone("Reading %1", xmlFile);
+	    map<string, any> out = (map<string, any>) SCR::Read(.xml, xmlFile);
+	    y2debug("XML Agent output: %1", out);
+	    return out;
+	}
+	else
+	{
+	    y2warning("XML file %1 (%2) not found", xmlFile, SCR::Read(.target.size, xmlFile));
+	    return $[];
+	}
+    }
+
+    /**
+     * Read XML string into YCP
+     * @param XML string to read
+     * @return Map with YCP data
+     */
+    global define map<string, any> XMLToYCPString( string xmlString) ``{
+	if (size(xmlString) > 0)
+	{
+	    map<string, any> out = (map<string, any>) SCR::Read(.xml.string, xmlString);
+	    y2debug("XML Agent output: %1", out);
+	    return out;
+	}
+	else
+	{
+	    y2warning("can't convert empty XML string");
+	    return $[];
+	}
+    }
+
+    /**
+     * The error string from the xml parser.
+     * It should be used when the agent did not return content.
+     * A reset happens before a new XML parsing starts.
+     * @return parser error
+     */
+    global define string XMLError() ``{
+        return (string)SCR::Read(.xml.error_message);
+    }
+
+}

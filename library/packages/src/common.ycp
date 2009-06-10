@@ -1,0 +1,277 @@
+/**
+ * File:	include/package/common.ycp
+ * Package:	yast2
+ * Summary:	Packages manipulation (common routines)
+ * Authors:	Martin Vidner <mvidner@suse.cz>
+ *		Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ *
+ * The documentation is maintained at
+ * <a href="../index.html">.../docs/index.html</a>.
+ */
+
+{
+
+textdomain "base";
+
+import "Label";
+import "Popup";
+import "Wizard";
+import "Mode";
+import "CommandLine";
+
+/* Main module prototypes */
+
+global boolean Available(string package);
+global boolean Installed(string package);
+
+global boolean DoInstall(list<string> packages);
+global boolean DoRemove(list<string> packages);
+global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove);
+
+/**
+ * Are all of these packages available?
+ * @param packages list of packages
+ * @return boolean true if yes (nil = an error occurred)
+ */
+global define boolean AvailableAll(list<string> packages) {
+    boolean error = false;
+
+    string which = find(string p, packages, {
+	boolean avail = Available(p);
+	if (avail == nil)
+	{
+	    error = true;
+	}
+
+	return ! avail;
+    });
+
+    if (error)
+    {
+	return nil;
+    }
+
+    return which == nil;
+}
+
+/**
+ * Is any of these packages available?
+ * @param packages list of packages
+ * @return boolean true if yes (nil = an error occurred)
+ */
+global define boolean AvailableAny(list<string> packages) {
+    boolean error = false;
+
+    string which = find(string p, packages, {
+	boolean avail = Available(p);
+	if (avail == nil)
+	{
+	    error = true;
+	}
+
+	return avail;
+    });
+
+    if (error)
+    {
+	return nil;
+    }
+
+    return which != nil;
+}
+
+/**
+ * Are all of these packages installed?
+ * @param packages list of packages
+ * @return boolean true if yes
+ */
+global define boolean InstalledAll(list<string> packages) {
+    string which = find(string p, packages, {
+	return ! Installed(p);
+    });
+    return which == nil;
+}
+
+/**
+ * Is any of these packages installed?
+ * @param packages list of packages
+ * @return boolean true if yes
+ */
+global define boolean InstalledAny(list<string> packages) {
+    string which = find(string p, packages, {
+	return Installed(p);
+    });
+    return which != nil;
+}
+
+boolean AskPackages(list<string> packs, boolean install) {
+    string pkgs = mergestring(packs, ", ");
+    // the message is followed by list of required packages
+    string text = (install ? _("These packages need to be installed:") : _("These packages need to be removed:"))
+	+ " " + pkgs;
+    CommandLine::Print(text);
+
+    return CommandLine::YesNo();
+}
+
+/**
+ * Main package installatio|removal dialog
+ * @param packages list of packages
+ * @param install true if install, false if remove
+ * @param message optional installation|removal text (nil -> standard will be used)
+ * @return true on success
+ */
+boolean PackageDialog(list<string> packages, boolean install, string message) {
+
+    y2debug("Asking for packages: %1", packages);
+    list<string> packs = filter(string package, packages, {
+	return (install ? !Installed(package) : Installed(package));
+    });
+    y2debug("Remaining packages: %1", packs);
+
+    if(size(packs) < 1) return true;
+
+    /* Popup Text */
+    string text = _("These packages need to be installed:") + "<p>";
+    /* Popup Text */
+    if(install == false) text = _("These packages need to be removed:") + "<p>";
+
+    foreach(string p, packs, { text = text + sformat("%1<br>", p); });
+
+    if (message != nil)
+	text = sformat (message, mergestring (packs, ", "));
+
+    boolean doit = (Mode::commandline()) ? (CommandLine::Interactive() ? AskPackages(packs, install) : true ) : Popup::AnyQuestionRichText(
+	"", text, 40, 10,
+// labels changed for bug #215195
+//	Label::ContinueButton (), Label::CancelButton (),
+// push button label
+	install ? Label::InstallButton () : _("&Uninstall"), Label::CancelButton (),
+	`focus_yes
+    );
+
+    if (doit)
+    {
+	last_op_canceled = false;
+	if(install == false) return DoRemove(packs);
+	return DoInstall(packs);
+    }
+
+    last_op_canceled = true;
+    return false;
+}
+
+/**
+ * Install a package with a custom text message
+ * @param package to be installed
+ * @param message custom text message
+ * @return True on success
+ */
+global boolean InstallMsg(string package, string message) {
+    return PackageDialog([package], true, message);
+}
+
+/**
+ * Install list of packages with a custom text message
+ * @param packages The list packages to be installed
+ * @param message custom text message
+ * @return True on success
+ */
+global boolean InstallAllMsg(list<string> packages, string message) {
+    return PackageDialog(packages, true, message);
+}
+
+global boolean InstallAnyMsg(list<string> packages, string message);
+// FIXME
+
+/**
+ * Remove a package with a custom text message
+ * @param package  package to be removed
+ * @param message custom text message
+ * @return True on success
+ */
+global boolean RemoveMsg(string package, string message) {
+    return PackageDialog([package], false, message);
+}
+
+/**
+ * Remove a list of packages with a custom text message
+ * @param packages The list of packages to be removed
+ * @param message custom text message
+ * @return True on success
+ */
+global boolean RemoveAllMsg(list<string> packages, string message) {
+    return PackageDialog(packages, false, message);
+}
+
+global boolean Install(string package) {
+    return InstallMsg(package, nil);
+}
+
+global boolean InstallAll(list<string> packages) {
+    return InstallAllMsg(packages, nil);
+}
+
+global boolean InstallAny(list<string> packages);
+// FIXME
+
+global boolean Remove(string package) {
+    return RemoveMsg(package, nil);
+}
+
+global boolean RemoveAll(list<string> packages) {
+    return RemoveAllMsg(packages, nil);
+}
+
+/**
+ * Run SUSEconfig, create new wizard dialog before it,
+ * close after it is finished
+ */
+global void RunSUSEconfig() {
+    if (Mode::commandline())
+    {
+	// in the commandline mode start SuSEconfig in background
+	SCR::Execute(.background.run_output, "/sbin/SuSEconfig");
+
+	list<string> script_out = [];
+	symbol ret = nil;
+
+	// print SuSEconfig output
+	while((boolean)SCR::Read(.background.output_open) || ((integer)SCR::Read(.background.newlines) > 0))
+	{
+	    script_out = (list<string>)SCR::Read(.background.newout);
+
+	    foreach(string line, script_out, {
+		    CommandLine::PrintVerbose(line);
+		}
+	    );
+
+	    while ((integer)SCR::Read(.background.newlines) == 0 && (boolean)SCR::Read(.background.output_open))
+	    {
+		sleep(200);	// small wait
+	    }
+	}
+    }
+    else
+    {
+	Wizard::CreateDialog ();
+	// inst_suseconfig returns `auto or `next
+	// (update mode or Args(2) is true) => no error checking
+	WFM::CallFunction("inst_suseconfig", [$["enable_back":false, "enable_next":false]]);
+	Wizard::CloseDialog ();
+    }
+}
+
+/**
+ * Return result of the last operation
+ * Use immediately after calling any Package*:: function
+ * @return true if it last operation was canceled
+ */
+global boolean LastOperationCanceled() {
+    return last_op_canceled;
+}
+
+/* EOF */
+}

@@ -1,0 +1,456 @@
+/**
+ * File:	modules/PackageSystem.ycp
+ * Package:	yast2
+ * Summary:	Packages manipulation (system)
+ * Authors:	Martin Vidner <mvidner@suse.cz>
+ *		Michal Svec <msvec@suse.cz>
+ * Flags:	Stable
+ *
+ * $Id$
+ *
+ * The documentation is maintained at
+ * <a href="../index.html">.../docs/index.html</a>.
+ */
+
+{
+
+module "PackageSystem";
+textdomain "base";
+
+import "Mode";
+import "PackageCallbacks";
+import "PackageLock";
+import "Report";
+import "Stage";
+import "CommandLine";
+
+/**
+ * Was last operation canceled?
+ *
+ * Used to enhance the exit status to distinguish between package
+ * installation fail and installation canceled by user, as in the second
+ * case doesn't make much sense to display any error
+ * Is set to true when user canceled package installation, from
+ * PackageSystem::* functions
+ */
+boolean last_op_canceled = false;
+
+/**
+ * Has Pkg::TargetInit run?
+ */
+boolean target_initialized = false;
+
+/**
+ * Has Pkg::SourceStartCache run?
+ */
+boolean source_initialized = false;
+
+
+include "packages/common.ycp";
+
+
+/**
+ * Ensure that Pkg:: calls work.
+ * This may become superfluous.
+ */
+global void EnsureTargetInit() {
+    PackageLock::Check ();
+    // always initizalize target, it should be cheap according to #45356
+    target_initialized = Pkg::TargetInit ("/", false);
+}
+
+/**
+ * Ensure that Pkg:: calls working with the installation sources work
+ */
+global void EnsureSourceInit() {
+    PackageLock::Check ();
+
+    if(source_initialized) 
+    {
+	// this way, if somebody closed the cache outside of Package
+	// (typically in installation), we will reinitialize
+	// it's cheap if cache is already initialized
+	Pkg::SourceStartCache (true);
+	return;
+    }
+
+    if(! target_initialized)
+    {
+	// make sure we have the RPM keys imported
+        EnsureTargetInit();
+    }
+
+    list sources = Pkg::SourceStartCache (true);
+
+    if (size (sources) > 0)
+    {
+	source_initialized = true;
+    }
+    else
+    {
+	// all repositories are disabled or no repository defined
+	y2warning("No package repository available");
+    }
+}
+
+global boolean DoInstall(list<string> packages) {
+    return DoInstallAndRemove(packages, []);
+}
+
+global boolean DoRemove(list<string> packages) {
+    return DoInstallAndRemove([], packages);
+}
+
+global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove) {
+    y2debug ("toinstall: %1, toremove: %2", toinstall, toremove);
+    if (!PackageLock::Check ())
+    {
+	return false;
+    }
+
+    EnsureSourceInit ();
+    EnsureTargetInit ();
+    boolean ok = true;
+
+    import "Label";
+    import "Popup";
+    // licenses: #35250
+    map<string, string> licenses = Pkg::PkgGetLicensesToConfirm (toinstall);
+    if (size (licenses) > 0)
+    {
+	list<string> rt_licenses_l = maplist ( string p, string l, licenses, {
+	    return Mode::commandline()
+		? sformat ("%1\n%2", p, l)
+		: sformat ("<p><b>%1</b></p>\n%2", p, l);
+	});
+
+	boolean accepted = false;
+
+	if (Mode::commandline())
+	{
+	    // print the licenses
+	    CommandLine::Print(mergestring (rt_licenses_l, "\n"));
+	    // print the question
+	    CommandLine::Print(_("Do you accept this license agreement?",
+		"Do you accept these license agreements?",
+		size (licenses)));
+
+	    accepted = !CommandLine::YesNo();
+	}
+	else
+	{
+	    accepted = !Popup::AnyQuestionRichText (
+		// popup heading, with rich text widget and Yes/No buttons
+		_("Do you accept this license agreement?",
+		  "Do you accept these license agreements?",
+		  size (licenses)),
+		mergestring (rt_licenses_l, "\n"),
+		70, 20,
+		Label::YesButton (), Label::NoButton (),
+		`focus_none);
+	}
+
+	y2milestone("Licenses accepted: %1", accepted);
+
+	if (!accepted)
+	{
+	    y2milestone("License not accepted: %1", toinstall);
+	    last_op_canceled = true;
+	    return false;
+	}
+
+	// mark licenses as confirmed
+	foreach (string p, string l, licenses, {
+	    Pkg::PkgMarkLicenseConfirmed (p);
+	});
+	last_op_canceled = false;
+    }
+
+    // check if the database is consistent before packages are added
+    boolean packages_consistent = Pkg::PkgSolveCheckTargetOnly();
+    // reset the solver - disable the fixsystem solver mode (bnc#439373)
+    Pkg::SetSolverFlags($["reset":true]);
+    // reset the preselected transactions
+    Pkg::PkgApplReset();
+
+    foreach (string p, toinstall, {
+	if(ok == true)
+	    if(Pkg::PkgInstall(p) != true) {
+		y2error("Package %1 install failed: %2", p, Pkg::LastError());
+		ok = false;
+	    }
+    });
+    if(ok != true) return false;
+
+    foreach (string p, toremove, {
+	if(ok == true)
+	    if(Pkg::PkgDelete(p) != true) {
+		y2error("Package %1 delete failed: %2", p, Pkg::LastError());
+		ok = false;
+	    }
+    });
+    if(ok != true) return false;
+
+    // remember the current flags
+    map<string,any> solver_flags = Pkg::GetSolverFlags();
+    // do not install recommended packages for already installed packages (bnc#445476)
+    Pkg::SetSolverFlags($["ignoreAlreadyRecommended":true]);
+    boolean solved = Pkg::PkgSolve(false);
+    // restore the original flags
+    Pkg::SetSolverFlags(solver_flags);
+
+    if(solved != true) {
+	y2error("Package solve failed: %1", Pkg::LastError());
+	if (packages_consistent)
+	{
+	    return false;
+	}
+    }
+
+    // is a package or a patch selected for installation?
+    boolean any_to_install = Pkg::IsAnyResolvable(`package, `to_install) || Pkg::IsAnyResolvable(`patch, `to_install);
+
+    //[int successful, list failed, list remaining, list srcremaining]
+    list result = Pkg::PkgCommit (0);
+    y2debug ("PkgCommit: %1", result);
+    if(result == nil || result[1]:[] != []) {
+	y2error("Package commit failed: %1", result[1]:[]);
+	return false;
+    }
+
+    foreach (string remaining, (list<string>) (result[2]:[]), {
+	if(ok == true)
+	    if(contains(toinstall, remaining)) {
+		y2error("Package remain: %1", remaining);
+		ok = false;
+	    }
+    });
+    if(ok != true) return false;
+
+    // Only run SUSEconfig if any packages were installed?
+    // No, deleted packages are not covered by this.
+    // if (true || result[0]:-1 > 0)
+
+    // But omit it during installation, one is run at its end.
+    // #25071
+    if (!Stage::initial () && !Stage::cont ())
+    {
+	RunSUSEconfig ();
+    }
+
+    // a package or a patch was installed, may be that there is a new yast agent
+    if (any_to_install)
+    {
+	// register the new agents
+	SCR::RegisterNewAgents();
+    }
+
+    return true;
+}
+
+/**
+ * Is a package available?
+ * @return true if yes (nil = no package source available)
+ */
+global boolean Available(string package) {
+    EnsureSourceInit();
+
+    if (!source_initialized)
+    {
+	// error no source initialized
+	return nil;
+    }
+
+    return Pkg::IsAvailable(package);
+}
+
+boolean _rpm_query_binary_initialized = false;
+string _rpm_query_binary = "rpm";
+
+void InitRPMQueryBinary () {
+    if (_rpm_query_binary_initialized) return;
+
+    // rpmqpack is a way faster
+    if (SCR::Read (.target.size, "/usr/bin/rpmqpack") > -1) {
+	_rpm_query_binary = "/usr/bin/rpmqpack ";
+    // than rpm itself
+    } else if (SCR::Read (.target.size, "/bin/rpm") > -1) {
+	_rpm_query_binary = "/bin/rpm -q ";
+    }
+
+    _rpm_query_binary_initialized = true;
+}
+
+/**
+ * Is a package provided in the system? Is there any installed package providing 'package'?
+ * @return true if yes
+ */
+global boolean Installed(string package) {
+    // This is a most commonly called function and so it's
+    // important that it's fast, especially in the common
+    // case, where all dependencies are satisfied.
+    // Unfortunately, initializing Pkg reads the RPM database...
+    // so we must avoid it.
+    // added --whatprovides due to bug #76181
+    return 0 == (integer) SCR::Execute(.target.bash, "rpm -q --whatprovides " + package);
+    // return Pkg::IsProvided (package);
+}
+
+/**
+ * Is a package installed? Checks only the package name in contrast to Installed() function.
+ * @return true if yes
+ */
+global boolean PackageInstalled(string package) {
+    InitRPMQueryBinary();
+
+    // This is commonly called function and so it's
+    // important that it's fast, especially in the common
+    // case, where all dependencies are satisfied.
+    return 0 == (integer) SCR::Execute (.target.bash, _rpm_query_binary + package);
+}
+
+/**
+ * Is a package available? Checks only package name, not list of provides.
+ * @return true if yes (nil = no package source available)
+ */
+global boolean PackageAvailable(string package) {
+    EnsureSourceInit();
+
+    if (!source_initialized)
+    {
+	// error no source initialized
+	return nil;
+    }
+
+    return Pkg::PkgAvailable(package);
+}
+
+/**
+ * @short Check if packages are installed
+ * @descr Install them if they are not and user approves installation
+ *
+ * @param a list of packages to check (and install)
+ * @return boolean true if installation succeeded or packages were installed,
+ * false otherwise
+ */
+global boolean CheckAndInstallPackages (list<string> packages) {
+    if (Mode::config ())
+	return true;
+    if (InstalledAll (packages))
+	return true;
+    return InstallAll (packages);
+}
+
+/**
+ * @short Check if packages are installed
+ *
+ * @descr Install them if they are not and user approves installation
+ * If installation fails (or wasn't allowed), ask user if he wants to continue
+ *
+ * @param packages a list of packages to check (and install)
+ * @return boolean true if installation succeeded, packages were installed
+ * before or user decided to continue, false otherwise
+ */
+global boolean CheckAndInstallPackagesInteractive (list<string> packages) {
+    boolean success = CheckAndInstallPackages (packages);
+    if (! success)
+    {
+	if (! LastOperationCanceled ())
+	{
+	    if (Mode::commandline ())
+	    {
+		// error report
+		Report::Error (_("Installing required packages failed."));
+	    }
+	    else
+	    {
+		success = Popup::ContinueCancel (
+		    // continue/cancel popup
+		    _("Installing required packages failed. If you continue
+without installing required packages,
+YaST may not work properly.
+"));
+	    }
+	}
+	else
+	{
+	    if (Mode::commandline ())
+	    {
+		Report::Error (
+		    // error report
+		    _("Cannot continue without installing required packages."));
+	    }
+	    else
+	    {
+		success = Popup::ContinueCancel (
+		    // continue/cancel popup
+		    _("If you continue without installing required 
+packages, YaST may not work properly.
+"));
+	    }
+	}
+    }
+    return success;
+}
+
+global boolean InstallKernel (list<string> kernel_modules) {
+    // this function may be responsible for the horrible startup time
+    y2milestone ("want: %1", kernel_modules);
+    if (kernel_modules == [])
+    {
+	return true;		// nothing to do
+    }
+
+    // check whether tag "kernel" is provided
+    // do not initialize the package manager if it's not necessary
+    string rpm_command = "/bin/rpm -q --whatprovides kernel";
+    y2milestone("Starting RPM query: %1", rpm_command);
+    map output = (map)SCR::Execute(.target.bash_output, rpm_command);
+    y2debug("result of the query: %1", output);
+
+    if (output["exit"]:-1 == 0)
+    {
+	list<string> packages = splitstring(output["stdout"]:"", "\n");
+	packages = filter(string pkg, packages, {return pkg != "";});
+	y2milestone("Packages providing tag 'kernel': %1", packages);
+
+	if (size(packages) > 0)
+	{
+	    return true;
+	}
+
+	y2milestone("Huh? Kernel is not installed??");
+    }
+    else
+    {
+	y2warning("RPM query failed, quering the package manager...");
+    }
+
+
+    EnsureTargetInit ();
+
+    list <list> provides = Pkg::PkgQueryProvides ("kernel");
+    y2milestone ("provides: %1", provides);
+
+    list <list> kernels = filter (list l, provides, {
+        return l[1]:`NONE == `BOTH || l[1]:`NONE == l[2]:`NONE;
+    });
+
+    if (size (kernels) != 1)
+        y2error ("not exactly one package provides tag kernel");
+
+    string kernel = kernels[0,0]:"none";
+    list<string> packs = [kernel];
+
+    if (! Pkg::IsProvided(kernel))
+    {
+	EnsureSourceInit ();
+    }
+
+    // TODO: for 9.2, we always install all packages, but
+    // we could only install those really needed (#44394)
+    return InstallAll ( packs );
+}
+
+/* EOF */
+}

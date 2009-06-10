@@ -1,0 +1,3190 @@
+/**
+ * Module:		PackageCallbacks.ycp
+ *
+ * Authors:		Gabriele Strattner <gs@suse.de>
+ *			Klaus Kaempf <kkaempf@suse.de>
+ *			Arvin Schnell <arvin@suse.de>
+ *
+ * Purpose:		provides the default Callbacks for Pkg::
+ *
+ * $Id$
+ *
+ */
+
+{
+    module "PackageCallbacks";
+
+    textdomain "base";
+
+    import "Installation";
+    import "Directory";
+    import "Label";
+    import "Mode";
+    import "Popup";
+    import "URL";
+    import "CommandLine";
+    import "String";
+    import "Report";
+    import "Icon";
+    import "Wizard";
+    import "Progress";
+    import "FileUtils";
+    import "SignatureCheckCallbacks";
+
+    global boolean _provide_popup = false;
+    global boolean _source_popup = false;
+    global boolean _package_popup = false;
+    global boolean _script_popup = false;
+    global boolean _scan_popup = false;
+    global string _package_name = "";
+    global integer _package_size = 0;
+    global boolean _deleting_package = false;
+
+    global integer _current_source = 1;
+
+    // make showLongInfo module-global so it gets remembered (cf. #14018)
+    boolean showLongInfo = false;
+
+
+    // used to en-/disable StartPackage, ProgressPackage and DonePackage
+    boolean enable_asterix_package = true;
+
+    boolean provide_aborted = false;
+    boolean source_aborted = false;
+
+    string back_string = "\b\b\b\b\b\b\b\b\b\b";
+    string clear_string = back_string + "          " + back_string;
+
+    // max. length of the text in the repository popup window
+    integer max_size = 60;
+
+    boolean autorefreshing = false;
+    boolean autorefreshing_aborted = false;
+
+    boolean textmode()
+    {
+	return Mode::commandline() ? true : UI::GetDisplayInfo()["TextMode"]:false;
+    }
+
+    integer display_width()
+    {
+	return Mode::commandline() ? 0 : UI::GetDisplayInfo()["Width"]:0;
+    }
+
+    /* Location of the persistent storage */
+    const string conf_file = Directory::vardir + "/package_callbacks.conf";
+    map config = nil;
+
+    // auto ejecting is in progress
+    boolean doing_eject = false;
+
+    // seconds for automatic retry after a timeout
+    const integer retry_timeout = 30;
+    // number of automatic retries
+    const integer retry_attempts = 3;
+
+    // current values for retry functionality
+    string retry_url = "";
+    integer current_retry_timeout = retry_timeout;
+    integer current_retry_attempt = retry_attempts;
+
+    // functions related to the persistent storage
+    void LoadConfig()
+    {
+	if (FileUtils::Exists(conf_file) && FileUtils::IsFile(conf_file))
+	{
+	    y2milestone("Reading config file %1", conf_file);
+	    map read_conf = (map) SCR::Read(.target.ycp, conf_file);
+
+	    config = (read_conf != nil) ? read_conf : $[];
+	    y2milestone("Current config: %1", config);
+	}
+	else
+	{
+	    y2milestone("No configuration found (file %1 is missing)", conf_file);
+	}
+
+	if (config == nil)
+	{
+	    config = $[];
+	}
+    }
+
+    any GetConfig(string key)
+    {
+	if (config == nil)
+	{
+	    LoadConfig();
+	}
+
+	return config[key]:nil;
+    }
+
+    void SetConfig(string key, any value)
+    {
+	if (config == nil)
+	{
+	    LoadConfig();
+	}
+
+	y2milestone("Config: setting %1 to %2", key, value);
+	config[key] = value;
+    }
+
+    boolean SaveConfig()
+    {
+	y2milestone("Saving the current config to %1", conf_file);
+	return (boolean)SCR::Write(.target.ycp, conf_file, config);
+    }
+
+    //--------------------------------------------------------------------------
+    // defaults
+
+    term ProgressBox (string heading, string name, string sz) {
+	term progressbox = `VBox(
+	    `HSpacing(40),
+	    // popup heading
+	    `Heading (heading),
+	    `Left (`HBox (
+		`VBox (
+		    `Left (`Label (`opt (`boldFont), _("Package: "))),
+		    `Left (`Label (`opt (`boldFont), _("Size: ")))
+		),
+		`VBox (
+		    `Left (`Label (name)),
+		    `Left (`Label (sz))
+		)
+	    )),
+	    `ProgressBar(`id(`progress), "", 100, 0 ),
+	    `ButtonBox (
+		`PushButton (`id (`abort), `opt (`key_F9, `cancelButton), Label::AbortButton ())
+	    )
+	);
+	return progressbox;
+    }
+
+    boolean FullScreen()
+    {
+	if (Mode::commandline())
+	{
+	    return false;
+	}
+
+	boolean ret = UI::WidgetExists(`progress_replace_point);
+	y2debug("Running in fullscreen mode: %1", ret);
+	return ret;
+    }
+
+    /** at start of file providal
+     *
+     */
+    global void StartProvide (string name, integer archivesize, boolean remote)
+    {
+	y2milestone("StartProvide: name: %1, remote: %2", name, remote);
+	if (remote)
+	{
+	    string sz = String::FormatSizeWithPrecision (archivesize, 2, false);
+	    if (Mode::commandline()) {
+		CommandLine::PrintVerbose(sformat(_("Downloading package %1 (%2)..."), name, sz));
+	    }
+	    else {
+		if (_provide_popup)
+		{
+		    UI::CloseDialog();
+		}
+
+		if (FullScreen())
+		{
+		    Progress::SubprogressType(`progress, 100);
+		    Progress::SubprogressTitle(sformat(_("Downloading package %1 (%2)..."), name, sz));
+		}
+		else
+		{
+		    // popup heading
+		    term providebox = ProgressBox (_("Downloading Package"), name, sz);
+		    UI::OpenDialog(providebox);
+		    _provide_popup = true;
+		}
+	    }
+	}
+    }
+
+
+
+    /** during file providal
+     *
+     */
+    global boolean ProgressProvide (integer percent)
+    {
+	y2milestone("ProgressProvide: %1", percent);
+	if (_provide_popup)
+	{
+	    UI::ChangeWidget(`id(`progress), `Value, percent);
+	    provide_aborted = UI::PollInput () == `abort;
+	    return ! provide_aborted;
+	}
+	else if (Mode::commandline()) {
+	    // there is no popup window, but command line mode is set
+	    CommandLine::PrintVerboseNoCR(clear_string + sformat("%1%%", percent));
+	}
+	return true;
+    }
+
+    // redirect ProgressDeltaApply callback (a different signature is required)
+    global void ProgressDeltaApply(integer percent)
+    {
+	ProgressProvide(percent);
+    }
+
+
+    // creates layout for ChangeMediumPopup
+    global term LayoutPopup ( string message, term button_box,
+				integer vertical_size, boolean info_on )
+    {
+	term dialog_layout =  `VBox(
+				    `HSpacing(50),	// enforce width
+				    `VSpacing(0.1),
+				    `HBox (
+					// maybe more icon types could be used
+					// "info, "warning", "error"
+					Icon::Image ("warning", $["margin_right":2]),
+					`Left(`Label( message))
+				    ),
+				    `VSpacing(0.1),
+				    `Left(`CheckBox(`id(`show), `opt(`notify),
+						    // check box
+						    _("Show &details"), info_on )),
+				    `VSpacing(0.4),
+				    `HBox(`VSpacing(vertical_size),
+					  `HSpacing(0.1),
+					  `ReplacePoint(`id(`info), `Empty()),
+					  `HSpacing(0.1)
+					  ),
+				    `HBox(`HSpacing(0.1),
+					  button_box,
+					  `HSpacing(0.1)
+					  ),
+				    `VSpacing(0.2)
+				    );
+	return dialog_layout;
+    }
+
+    global boolean ShowLogInfo (string message, term buttonbox)
+    {
+	if (UI::QueryWidget(`id(`show), `Value ) == true)
+	{
+	    UI::CloseDialog();
+	    UI::OpenDialog( `opt(`decorated), LayoutPopup (message, buttonbox, 10, true) );
+	    return true;
+	}
+	else
+	{
+	    UI::CloseDialog();
+	    UI::OpenDialog( `opt(`decorated),  LayoutPopup (message, buttonbox, 2, false) );
+	    UI::ReplaceWidget(`id(`info), `Empty() );
+	}
+	return false;
+    }
+
+
+    /** during file providal
+     *
+     // return "I" for ignore
+     // return "R" for retry
+     // return "C" for abort
+     */
+    global string DoneProvide (integer error, string reason, string name)
+    {
+	y2milestone("DoneProvide: %1", error);
+	if (_provide_popup)
+	{
+	    UI::CloseDialog();
+	    _provide_popup = false;
+	}
+
+	if (Mode::commandline())
+	{
+	    // remove the progress
+	    CommandLine::PrintVerboseNoCR(clear_string);
+	}
+
+	if (provide_aborted)
+	{
+	    provide_aborted = false;
+	    return "C";
+	}
+
+	if (error != 0)
+	{
+	    // this is for error code 1 ("NOT_FOUND"), %1 is name of a package
+	    string message = sformat (_("Package %1 was not found on the medium."), name);
+
+	    // "IO"
+	    if (error == 2)
+	    {
+		// error message, %1 is a package name
+		message = sformat(_("Package %1 could not be downloaded (input/output error)."), name);
+	    }
+	    // "INVALID"
+	    else if (error == 3)
+	    {
+		// error message, %1 is a package name
+		message = sformat(_("Package %1 is broken, integrity check has failed."), name);
+	    }
+
+
+	    if (Mode::commandline()) {
+		CommandLine::Print(message);
+
+		// ask user in the interactive mode
+		if (CommandLine::Interactive())
+		{
+		    CommandLine::Print("");
+
+		    // command line mode - ask user whether installation of the failed package should be retried
+		    CommandLine::Print(_("Retry installation of the package?"));
+
+		    if (CommandLine::YesNo())
+		    {
+			// return Retry
+			return "R";
+		    }
+
+		    // command line mode - ask user whether the installation should be aborted
+		    CommandLine::Print(_("Abort the installation?"));
+		    if (CommandLine::YesNo())
+		    {
+			// return Abort
+			return "C";
+		    }
+
+		    // otherwise return Ignore (default)
+		    return "I";
+		}
+
+		return "I";
+	    }
+
+	    term button_box = `ButtonBox (
+		`PushButton (`id(`abort), `opt (`cancelButton, `key_F9), Label::AbortButton()),
+		`PushButton (`id(`retry), `opt (`customButton), Label::RetryButton()),
+		`PushButton (`id(`ignore), `opt (`okButton), Label::SkipButton())
+	    );
+
+	    if ( showLongInfo )
+	    {
+		UI::OpenDialog( `opt(`decorated), LayoutPopup (message, button_box, 10, true) );
+		UI::ReplaceWidget(`id(`info), `RichText (`opt(`plainText), sformat (_("Error: %1:"), error) + reason) );
+	    }
+	    else
+	    {
+		UI::OpenDialog( `opt(`decorated),  LayoutPopup (message, button_box, 2, false) );
+		UI::ReplaceWidget(`id(`info), `Empty() );
+	    }
+
+	    any r = nil;
+
+	    repeat
+		{
+		    r = UI::UserInput();
+		    if ( r == `show )
+		    {
+			showLongInfo = ShowLogInfo (message, button_box);
+			if (showLongInfo)
+			{
+			    string error_symbol = "ERROR";
+
+			    if (error == 1)
+			    {
+				error_symbol = "NOT_FOUND";
+			    }
+			    else if (error == 2)
+			    {
+				error_symbol = "IO";
+			    }
+			    else if (error == 3)
+			    {
+				error_symbol = "INVALID";
+			    }
+
+			    UI::ReplaceWidget(`id(`info),
+					      `RichText (`opt(`plainText),
+							// error message, %1 is code of the error,
+							// detail string is appended to the end
+							 sformat (_("Error: %1:"), error_symbol) + reason) );
+			}
+			else
+			{
+			    UI::ReplaceWidget(`id(`info), `Empty() );
+			}
+		    }
+		} until (r == `abort || r == `retry || r == `ignore);
+
+	    y2milestone ("DoneProvide %1", r);
+
+	    UI::CloseDialog();
+
+	    if (r == `abort)
+		return "C";
+	    if (r == `retry)
+		return "R";
+	    if (r == `ignore)
+	    {
+		// don't show the warning when a refresh fails
+		if (!autorefreshing)
+		{
+		    // TODO: add "Don't show again" checkbox
+		    // a warning popup displayed after pressing [Ignore] after a download error
+		    Popup::Warning(_("Ignoring a download failure may result in a broken system.
+The system should be later verified by running the Software Management module."));
+		}
+
+		return "I";
+	    }
+
+	    y2error("Unknown user input: %1", r);
+	}
+
+	return "I";
+    }
+
+
+    /**
+     *  Enable or disable StartPackage, ProgressPackage and DonePackage
+     *  callbacks, but only the progress bar and not the final error
+     *  message.  Returns old value.
+     */
+    global boolean EnableAsterixPackage (boolean f)
+    {
+	boolean ret = enable_asterix_package;
+	enable_asterix_package = f;
+	return ret;
+    }
+
+
+    /**
+     *  At start of package install.
+     */
+    global void StartPackage (string name, string summary, integer
+					installsize, boolean is_delete)
+    {
+	if (!enable_asterix_package)
+	    return;
+
+	list<string> parsed_path = splitstring(name, "/");
+
+	if (size(parsed_path) > 0)
+	{
+	    _package_name = parsed_path[size(parsed_path) - 1]:"";
+	}
+	else
+	{
+	    _package_name = name;
+	}
+
+	_package_size = installsize;
+	_deleting_package = is_delete;
+	string sz = String::FormatSizeWithPrecision (installsize, 2, false);
+
+	if (Mode::commandline()) {
+	    CommandLine::PrintVerbose(sformat(
+		is_delete
+		    ? _("Uninstalling package %1 (%2)...")
+		    : _("Installing package %1 (%2)..."),
+		 _package_name, sz));
+	}
+	else {
+	    term packagebox = ProgressBox (is_delete
+		? _("Uninstalling Package")
+		: _("Installing Package"),
+		_package_name, sz);
+
+	    UI::OpenDialog( `opt(`decorated), packagebox );
+	    _package_popup = true;
+	}
+    }
+
+
+    /**
+     *  During package install.
+     */
+    global boolean ProgressPackage (integer percent)
+    {
+	if (_package_popup)
+	{
+	    UI::ChangeWidget (`id(`progress), `Value, percent);
+	    return UI::PollInput () != `abort;
+	}
+	else if (Mode::commandline()) {
+	    CommandLine::PrintVerboseNoCR(clear_string + sformat("%1%%", percent));
+	    if (percent == 100)
+	    {
+		// sleep for a wile
+		sleep(200);
+		// remove the progress
+		CommandLine::PrintVerboseNoCR(clear_string);
+	    }
+	}
+
+	return true;
+    }
+
+
+    /**
+     *  After package install.
+     *
+     *  return "I" for ignore
+     *  return "R" for retry
+     *  return "C" for abort (not implemented !)
+     */
+    global string DonePackage (integer error, string reason)
+    {
+	if (_package_popup)
+	    UI::CloseDialog();
+	_package_popup = false;
+
+	if (error != 0)
+	{
+	    y2milestone("DonePackage(error: %1, reason: '%2')", error, reason);
+
+	    string message = sformat ( _deleting_package ? 
+		// error popup during package installation, %1 is the name of the package
+		_("Removal of package %1 failed.")
+		// error popup during package installation, %1 is the name of the package
+		: _("Installation of package %1 failed.")
+	      , _package_name);
+
+	    if (Mode::commandline()) {
+		CommandLine::Print(message);
+		CommandLine::Print(reason);
+
+		// ask user in the interactive mode
+		if (CommandLine::Interactive())
+		{
+		    CommandLine::Print("");
+
+		    // command line mode - ask user whether installation of the failed package should be retried
+		    CommandLine::Print(_("Retry installation of the package?"));
+
+		    if (CommandLine::YesNo())
+		    {
+			// return Retry
+			return "R";
+		    }
+
+		    // command line mode - ask user whether the installation should be aborted
+		    CommandLine::Print(_("Abort the installation?"));
+		    if (CommandLine::YesNo())
+		    {
+			// return Abort
+			return "C";
+		    }
+
+		    // otherwise return Ignore (default)
+		    return "I";
+		}
+	    }
+	    else {
+		term button_box = `ButtonBox (
+		    `PushButton (`id(`abort), `opt (`cancelButton), Label::AbortButton()),
+		    `PushButton (`id(`retry), `opt (`customButton), Label::RetryButton()),
+		    `PushButton (`id(`ignore), `opt (`okButton), Label::IgnoreButton())
+		);
+
+		if ( showLongInfo )
+		{
+		    UI::OpenDialog( `opt(`decorated), LayoutPopup (message, button_box, 10, true) );
+		    UI::ReplaceWidget(`id(`info), `RichText (`opt(`plainText), reason) );
+		}
+		else
+		{
+		    UI::OpenDialog( `opt(`decorated),  LayoutPopup (message, button_box, 2, false) );
+		    UI::ReplaceWidget(`id(`info), `Empty() );
+		}
+
+		any r = nil;
+
+		repeat {
+		    r = UI::UserInput();
+		    if ( r == `show )
+		    {
+			showLongInfo = ShowLogInfo (message, button_box);
+			if (showLongInfo)
+			{
+			    UI::ReplaceWidget(`id(`info), `RichText (`opt(`plainText), reason) );
+			}
+			else
+			{
+			    UI::ReplaceWidget(`id(`info), `Empty() );
+			}
+		    }
+		} until (r == `abort || r == `retry || r == `ignore);
+
+		y2milestone ("DonePackage %1", r);
+
+		UI::CloseDialog();
+
+		if (r == `ignore)
+		{
+		    // TODO: add "Don't show again" checkbox
+		    // a warning popup displayed after pressing [Ignore] after a package installation error
+		    Popup::Warning(_("Ignoring a package failure may result in a broken system.
+The system should be later verified by running the Software Management module."));
+		}
+
+		if (r == `abort)
+		    return "C";
+		if (r == `retry)
+		    return "R";
+	    }
+
+	    // default: ignore
+	}
+	else
+	{
+	    // no error, there is additional info (rpm output), see bnc#456446
+	    y2milestone("Additional RPM otput: %1", reason);
+
+	    if (Mode::commandline())
+	    {
+		CommandLine::Print(reason);
+	    }
+	}
+
+	return "I";
+    }
+
+
+//=============================================================================
+//	MEDIA CHANGE
+//=============================================================================
+
+list<term> detected_cd_devices = [];
+
+global define list<term> CDdevices(string preferred) {
+    list<map> cds = (list<map>)SCR::Read(.probe.cdrom);
+    list<term> ret = [];
+
+    if (cds != nil)
+    {
+	foreach(map cd, cds, {
+		string dev = cd["dev_name"]:"";
+		string model = cd["model"]:"";
+		boolean deflt = (preferred == dev);
+
+		if (dev != nil && dev != "" && model != nil)
+		{
+		    ret = add(ret, `item(`id(dev), (deflt ? "➤ " : "") + model + sformat(" (%1)", dev)));
+		}
+	    }
+	);
+    }
+
+    y2milestone("Detected CD devices: %1", ret);
+
+    return ret;
+}
+
+// check and save the autoeject configuration if needed
+void CheckAndSaveAutoEject()
+{
+    boolean autoeject = (boolean)UI::QueryWidget(`id(`auto_eject), `Value);
+
+    boolean current = (boolean)GetConfig("automatic_eject");
+    if (current == nil)
+    {
+	current = false;
+    }
+
+    if (autoeject != current)
+    {
+	SetConfig("automatic_eject", autoeject);
+	SaveConfig();
+    }
+}
+
+    //-------------------------------------------------------------------------
+    //
+    // media change callback
+    //
+    // if current == -1, show "Ignore"
+    //
+    // return "" for ok, retry
+    // return "E" for eject media
+    // return "I" for ignore bad media
+    // return "S" for skip this media
+    // return "C" for cancel (not implemented !)
+    // return url to change media URL
+
+    global string MediaChange (string error_code, string error, string url, string product,
+				      integer current, string current_label,
+				      integer wanted, string wanted_label,
+				      boolean double_sided, list<string> devices, integer current_device)
+    {
+	if (autorefreshing && autorefreshing_aborted)
+	{
+	    y2milestone("Refresh aborted");
+	    return "C";
+	}
+
+	y2milestone ("MediaChange error: err'%1', url'%2', prd'%3', cur'%4'/'%5', wan'%6'/'%7', devs: %8, curr_dev: %9",
+	    error_code + ":" + error, URL::HidePassword(url), product, current, current_label, wanted, wanted_label, devices, current_device);
+
+	map url_tokens = URL::Parse (url);
+	string url_scheme = url_tokens["scheme"]:"";
+	url_scheme = tolower (url_scheme);
+
+	// true if it makes sense to offer an eject button (for cd/dvd only ...)
+	boolean offer_eject_button = url_scheme == "cd" || url_scheme == "dvd";
+
+	// do automatic eject
+	if (offer_eject_button && (boolean)GetConfig("automatic_eject") == true)
+	{
+	    if (!doing_eject)
+	    {
+		y2milestone("Automatically ejecting the medium...");
+		doing_eject = true;
+		return "E";
+	    }
+	}
+
+	if (issubstring (error, "ERROR(InstSrc:E_bad_id)"))
+	{
+	    error =
+	    // error report
+_("<p>The repository at the specified URL now provides a different media ID.
+If the URL is correct, this indicates that the repository content has changed. To 
+continue using this repository, start <b>Installation Repositories</b> from 
+the YaST control center and refresh the repository.</p>\n");
+	}
+
+	if (wanted_label == "")
+	{
+	    // use only product name for network repository
+	    // there is no medium 1, 2, ...
+	    if (double_sided)
+	    {
+		// media is double sided, we want the user to insert the 'Side A' of the media
+		// the complete string will be "<product> <media> <number>, <side>"
+		// e.g. "'SuSE Linux 9.0' DVD 1, Side A"
+		string side = _("Side A");
+		if ((wanted & 1) == 0)
+		{
+		    // media is double sided, we want the user to insert the 'Side B' of the media
+		    side = _("Side B");
+		}
+		wanted = (wanted + 1) >> 1;
+		wanted_label = (url_scheme == "cd" || url_scheme == "dvd") ?
+		    // label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
+		    // %3 side (e.g. "Side A")
+		    sformat("%1 (Disc %2, %3)", product, wanted, side)
+		    // label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
+		    // %3 side (e.g. "Side A")
+		    : sformat("%1 (Medium %2, %3)", product, wanted, side);
+	    }
+	    else
+	    {
+		wanted_label = (tolower(url_scheme) == "cd" || tolower(url_scheme) == "dvd") ?
+		    // label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
+		    sformat(_("%1 (Disc %2)"), product, wanted)
+		    // label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
+		    : sformat(_("%1 (Medium %2)"), product, wanted);
+	    }
+	}
+
+	// prompt to insert product (%1 == "SuSE Linux version 9.2 CD 2")
+	string message = sformat (_("Insert\n'%1'"), wanted_label);
+	// with network repository it doesn't make sense to ask for disk
+	if (url_scheme == "dir")
+	{
+	    // report error while accessing local directory with product (%1 == "SuSE Linux ...")
+	    message = sformat (_("Cannot access installation media
+%1.
+Check whether the directory is accessible."), wanted_label);
+	}
+	else if (url_scheme != "cd" && url_scheme != "dvd")
+	{
+	    // report error while accessing network media of product (%1 == "SuSE Linux ...")
+	    message = sformat (_("Cannot access installation media 
+%1.
+Check whether the server is accessible."), wanted_label);
+	}
+
+	// currently unused
+	string media_prompt = _("The correct repository medium could not be mounted.");
+
+	// --------------------------------------
+	// build up button box
+
+	term button_box = `ButtonBox (`PushButton (`id(`retry), `opt(`default, `okButton), Label::RetryButton()));
+
+	if (current == -1)			// wrong media id, offer "Ignore"
+	{
+	    button_box = add (button_box, `PushButton(`id(`ignore), `opt (`customButton), Label::IgnoreButton()));
+	}
+
+	button_box = add (button_box, `PushButton (`id(`cancel), `opt (`cancelButton), autorefreshing ?
+	    _("Skip Autorefresh") : Label::AbortButton())
+	);
+
+	// push button label during media change popup, user can skip
+	// this media (CD) so no packages from this media will be installed
+	button_box = add (button_box, `PushButton (`id(`skip), `opt(`customButton), _("&Skip")));
+
+	if (offer_eject_button)
+	{
+	    if (!doing_eject)
+	    {
+		detected_cd_devices = CDdevices(devices[current_device]:"");
+	    }
+
+	    // detect the CD/DVD devices if the ejecting is not in progress,
+	    // the CD detection closes the ejected tray!
+	    list<term> cds = detected_cd_devices;
+
+	    // display a menu button if there are more CD devices
+	    if (size(cds) > 1)
+	    {
+		// menu button label - used for more then one device
+		button_box = `HBox(button_box, `MenuButton(_("&Eject"), cds));
+	    }
+	    else
+	    {
+		// push button label - in the media change popup, user can eject the CD/DVD
+		button_box = add(button_box, `PushButton (`id(`eject), `opt(`customButton), _("&Eject")));
+	    }
+
+
+	    boolean auto_eject = (boolean)GetConfig("automatic_eject");
+	    if (auto_eject == nil)
+	    {
+		auto_eject = false;
+	    }
+
+	    button_box = `VBox(
+		`Left(`CheckBox(`id(`auto_eject), _("A&utomatically Eject CD or DVD Medium"), auto_eject)),
+		button_box
+	    );
+	}
+
+	doing_eject = false;
+
+	// Autoretry code
+	boolean doing_auto_retry = false;
+
+	if (error_code == "IO_SOFT")
+	{
+	    // this a different file, reset the retry counter
+	    if (retry_url != url)
+	    {
+		retry_url = url;
+		current_retry_attempt = retry_attempts;
+	    }
+
+	    // is the maximum retry count reached?
+	    if (current_retry_attempt > 0)
+	    {
+		// reset the counter
+		current_retry_timeout = retry_timeout;
+		button_box = `VBox(
+		    `Left(`Label(`id(`auto_retry), sformat(_("Automatically Retry After %1 Seconds"), current_retry_timeout))),
+		    button_box
+		);
+
+		doing_auto_retry = true;
+	    }
+	}
+
+	y2milestone("Autoretry: %1", doing_auto_retry);
+
+	if (doing_auto_retry)
+	{
+	    y2milestone("Autoretry attempt: %1", current_retry_attempt);
+	}
+
+	if (Mode::commandline())
+	{
+	    CommandLine::Print(message);
+	    CommandLine::Print(error);
+
+	    // ask user in the interactive mode
+	    if (CommandLine::Interactive())
+	    {
+		CommandLine::Print("");
+
+		// command line mode - ask user whether installation of the failed package should be retried
+		CommandLine::Print(_("Retry the installation?"));
+
+		if (CommandLine::YesNo())
+		{
+		    // return Retry
+		    return "";
+		}
+
+		// command line mode - ask user whether the installation should be aborted
+		CommandLine::Print(_("Skip the medium?"));
+		if (CommandLine::YesNo())
+		{
+		    // return Skip
+		    return "S";
+		}
+
+		// otherwise ignore the medium
+		CommandLine::Print(_("Ignoring the bad medium..."));
+		return "I";
+	    }
+
+	    return "S";
+	}
+
+	y2debug("Opening Dialog: %1", LayoutPopup (message, button_box, 10, true));
+
+	if ( showLongInfo )
+	{
+	    UI::OpenDialog( `opt(`decorated), LayoutPopup (message, button_box, 10, true) );
+	    /* TextEntry label */
+	    UI::ReplaceWidget(`id(`info), `VBox (`InputField(`id(`url), `opt(`hstretch), _("&URL")), `RichText(`opt(`plainText), error)) );
+	    UI::ChangeWidget(`id(`url), `Value, url);
+	}
+	else
+	{
+	    UI::OpenDialog( `opt(`decorated), LayoutPopup (message, button_box, 2, false) );
+	    UI::ReplaceWidget(`id(`info), `Empty() );
+	}
+
+	// notification
+	UI::Beep();
+
+	any r = nil;
+
+	string eject_device = "";
+
+	repeat {
+
+	    if (doing_auto_retry)
+	    {
+		r = UI::TimeoutUserInput(1000);
+	    }
+	    else
+	    {
+		r = UI::UserInput();
+	    }
+
+	    // timout in autoretry mode?
+	    if ( doing_auto_retry)
+	    {
+		if (r == `timeout)
+		{
+		    // decrease timeout counter
+		    current_retry_timeout  = current_retry_timeout - 1;
+
+		    if (current_retry_timeout == 0)
+		    {
+			y2milestone("The time is out, doing automatic retry...");
+			// do the retry
+			r = `retry;
+
+			// decrease attempt counter
+			current_retry_attempt = current_retry_attempt - 1;
+		    }
+		    else
+		    {
+			// popup string - refresh the displayed counter
+			UI::ChangeWidget(`id(`auto_retry), `Label, sformat(_("Automatically Retry After %1 Seconds"), current_retry_timeout));
+		    }
+		}
+		else
+		{
+		    // user has pressed a button, reset the retry counter in the next timeout
+		    y2milestone("User input: %1, resetting autoretry url", r);
+		    retry_url = "";
+		}
+	    }
+
+	    if ( r == `show )
+	    {
+		showLongInfo = ShowLogInfo (message, button_box);
+		if (showLongInfo)
+		{
+		    /* TextEntry label */
+		    UI::ReplaceWidget(`id(`info), `VBox (`TextEntry (`id(`url), _("&URL")), `RichText(`opt(`plainText), error)) );
+		    UI::ChangeWidget(`id(`url), `Value, url);
+		}
+		else
+		{
+		    UI::ReplaceWidget(`id(`info), `Empty() );
+		}
+	    }
+	    else if (r == `retry || r == `url)
+	    {
+		if (showLongInfo)	// id(`url) must exist
+		{
+		    string newurl = (string) UI::QueryWidget(`id(`url), `Value);
+		    if (newurl != url)
+		    {
+			url = newurl;
+			r = `url;
+		    }
+		}
+	    }
+	    else if (is(r, string) && regexpmatch((string)r, "^/dev/"))
+	    {
+		y2milestone("Eject request for %1", r);
+		eject_device = (string)r;
+		r = `eject;
+	    }
+	} until (r == `cancel || r == `retry || r == `eject || r == `skip || r == `ignore || r == `url);
+
+	// remember the state of autoeject option
+	if (offer_eject_button)
+	{
+	    // check and save the autoeject configuration if needed
+	    CheckAndSaveAutoEject();
+	}
+
+	y2milestone ("MediaChange %1", r);
+
+	UI::CloseDialog();
+
+	if (_provide_popup)
+	{
+	    UI::CloseDialog();
+	    _provide_popup = false;
+	}
+
+	if (r == `cancel)
+	{
+	    // abort during autorefresh should abort complete autorefresh, not only the failed repo
+	    if (autorefreshing)
+	    {
+		autorefreshing_aborted = true;
+		Pkg::SkipRefresh();
+	    }
+
+	    return "C";
+	}
+	if (r == `ignore)
+	    return "I";
+	if (r == `skip)
+	    return "S";
+	if (r == `eject)
+	{
+	    doing_eject = true;
+
+	    if (eject_device == "")
+	    {
+		return "E";
+	    }
+	    else
+	    {
+		// get the index in the list
+		integer dindex = -1;
+
+		string found = find(string d, devices, {dindex = dindex + 1; return d == eject_device;});
+
+		if (found != nil)
+		{
+		    y2milestone("Device %1 has index %2", eject_device, dindex);
+		    return "E" + tostring(dindex);
+		}
+		else
+		{
+		    y2warning("Device %1 not found in the list, using default", eject_device);
+		    return "E";
+		}
+	    }
+	}
+
+	if (r == `url)
+	{
+	    y2milestone("Redirecting to: %1", URL::HidePassword(url));
+	    return url;
+	}
+
+	return "";
+    }
+
+
+    /**
+     * dummy repository change callback, see SlideShowCallbacks for the real one
+     */
+    global void SourceChange (integer source, integer medianr)
+    {
+	y2milestone ("SourceChange (%1, %2)", source, medianr);
+	_current_source = source;
+    }
+
+// reference couter to the open popup window
+integer _source_open = 0;
+
+
+string ProcessMessage(string msg, integer max_len)
+{
+
+    list<string> words = splitstring(msg, " ");
+
+    y2debug("words: %1", words);
+
+    words = maplist(string w, words,
+	{
+	    map parsed = URL::Parse(w);
+	    integer req_size = max_len - (size(msg) - size(w));
+
+	    // is it a valid URL?
+	    if (contains(["ftp", "http", "nfs", "file", "dir", "iso", "smb", "disk"], parsed["scheme"]:""))
+	    {
+		// reformat the URL
+		w = URL::FormatURL(parsed, max_len);
+	    }
+	    // is it a file name?
+	    else
+	    {
+		if (substring(w, 0, 1) == "/")
+		{
+		    list<string> parts = splitstring(w, "/");
+
+		    if (size(parts) >= 3)
+		    {
+			w = String::FormatFilename(w, req_size);
+		    }
+		}
+	    }
+
+	    return w;
+	}
+    );
+
+    string ret = mergestring(words, " ");
+
+    if (ret != msg)
+    {
+	y2milestone("URL conversion: '%1' converted to '%2'", URL::HidePassword(msg), URL::HidePassword(ret));
+    }
+
+    return ret;
+}
+
+void OpenSourcePopup()
+{
+    if (_source_open == 0)
+    {
+	UI::OpenDialog(
+	    `VBox(
+		`HSpacing(max_size),
+		`Heading(`id(`label_source_popup), `opt(`hstretch), " "),
+		`ProgressBar (`id (`progress), " ", 100, 0)
+	    )
+	);
+    }
+
+    _source_open = _source_open + 1;
+    y2milestone("OpenSourcePopup: _source_open: %1", _source_open);
+}
+
+void SetHeaderSourcePopup(string text)
+{
+    // Qt UI uses bold font, the string must be shortened even more
+    integer ui_adjustment = textmode() ? 0 : 5;
+
+    if (size(text) > max_size - ui_adjustment)
+    {
+	text = ProcessMessage(text, max_size - ui_adjustment);
+    }
+
+    UI::ChangeWidget(`label_source_popup, `Value, text);
+    y2milestone("SourcePopup: new header: %1", text);
+}
+
+void SetLabelSourcePopup(string text)
+{
+    // Qt uses proportional font, the string might be longer
+    integer ui_adjustment = textmode() ? 0 : 6;
+
+    if (size(text) > max_size + ui_adjustment)
+    {
+	text = ProcessMessage(text, max_size + ui_adjustment);
+    }
+
+    // refresh the label in the popup
+    UI::ChangeWidget(`progress, `Label, text);
+    y2milestone("SourcePopup: new label: %1", text);
+}
+
+// is the top level window source popup?
+boolean IsSourcePopup()
+{
+    return UI::WidgetExists(`id(`progress)) &&
+      UI::WidgetExists(`id(`label_source_popup));
+}
+
+boolean SourcePopupSetProgress(integer value)
+{
+    if (_source_open > 0 && IsSourcePopup())
+    {
+	UI::ChangeWidget (`id (`progress), `Value, value);
+	any input = UI::PollInput ();
+	if (input == `abort)
+	    return false;
+    }
+    return true;
+}
+
+void CloseSourcePopup()
+{
+    if (!IsSourcePopup())
+    {
+	y2error("The toplevel dialog is not a repository popup dialog!");
+	return;
+    }
+
+    _source_open = _source_open - 1;
+
+    if (_source_open == 0)
+    {
+	y2milestone("Closing repository progress popup");
+	UI::CloseDialog();
+    }
+    y2milestone("CloseSourcePopup: _source_open: %1", _source_open);
+}
+
+
+global void SourceCreateInit()
+{
+    y2milestone ("SourceCreateInit");
+
+    OpenSourcePopup();
+}
+
+global void SourceCreateDestroy()
+{
+    y2milestone ("SourceCreateDestroy");
+
+    CloseSourcePopup();
+}
+
+global void SourceCreateStart(string url)
+{
+    y2milestone ("SourceCreateStart: %1", url);
+
+    // popup label (%1 is repository URL)
+    string msg = sformat(_("Creating Repository %1"), url);
+
+    if (Mode::commandline()) {
+	CommandLine::Print(msg);
+    }
+    else
+    {
+	y2milestone("_source_open: %1", _source_open);
+
+	if (_source_open == 1)
+	{
+	    SetHeaderSourcePopup(msg);
+	}
+	else
+	{
+	    SetLabelSourcePopup(msg);
+	}
+    }
+}
+
+global boolean SourceCreateProgress(integer percent) {
+    boolean ret = SourcePopupSetProgress(percent);
+    y2milestone("SourceCreateProgress(%1) = %2", percent, ret);
+
+    return ret;
+}
+
+global symbol SourceCreateError (string url, symbol error, string description) {
+    y2milestone ("Source create: error: url: %1, error: %2, description: %3", URL::HidePassword(url), error, description);
+
+    // error message - a label followed by a richtext with details
+    string message = _("Error occurred while creating the repository.");
+
+    if (error == `NOT_FOUND)
+	// error message - a label followed by a richtext with details
+	message = _("Unable to retrieve the remote repository description.");
+    else if (error == `IO)
+	// error message - a label followed by a richtext with details
+	message = _("An error occurred while retrieving the new metadata.");
+    else if (error == `INVALID)
+	// error message - a label followed by a richtext with details
+	message = _("The repository is not valid.");
+    else if (error == `REJECTED)
+	// error message - a label followed by a richtext with details
+	message = _("The repository metadata is invalid.");
+
+    if (Mode::commandline())
+    {
+	CommandLine::Print(message);
+	CommandLine::Print(URL::HidePassword(url));
+	CommandLine::Print(description);
+
+	// ask user in the interactive mode
+	if (CommandLine::Interactive())
+	{
+	    CommandLine::Print("");
+
+	    // command line mode - ask user whether the repository refreshment should be retried
+	    CommandLine::Print(_("Retry?"));
+
+	    if (CommandLine::YesNo())
+	    {
+		// return Retry
+		return `RETRY;
+	    }
+	}
+
+	return `ABORT;
+    }
+    string detail = sformat ("%1<br>%2", url, description);
+    UI::OpenDialog (`VBox (
+	`Label (message),
+	`RichText(detail),
+	`ButtonBox (
+	    `PushButton (`id (`RETRY), `opt (`okButton), Label::RetryButton()),
+	    `PushButton (`id (`ABORT), `opt (`cancelButton), Label::AbortButton())
+	)
+    ));
+    symbol ret = (symbol)UI::UserInput ();
+    UI::CloseDialog ();
+    y2milestone ("Source create error: Returning %1", ret);
+
+    return ret;
+}
+
+global void SourceCreateEnd(string url, symbol error, string description)
+{
+    // set 100% progress
+    SourcePopupSetProgress(100);
+
+    y2milestone ("Source create end: error: url: %1, error: %2, description: %3", URL::HidePassword(url), error, description);
+}
+
+
+
+global void SourceProbeStart(string url)
+{
+    y2milestone ("SourceProbeStart: %1", URL::HidePassword(url));
+
+    // popup label (%1 is repository URL)
+    string msg = sformat(_("Probing Repository %1"), URL::HidePassword(url));
+
+    if (Mode::commandline()) {
+	CommandLine::Print(msg);
+    }
+    else
+    {
+	OpenSourcePopup();
+
+	string msg = sformat(_("Probing Repository %1"), URL::HidePassword(url));
+
+	if (_source_open == 1)
+	{
+	    SetHeaderSourcePopup(msg);
+	}
+	else
+	{
+	    SetLabelSourcePopup(msg);
+	}
+    }
+}
+
+
+global void SourceProbeFailed(string url, string type)
+{
+    y2milestone("Repository %1 is not %2 repository", URL::HidePassword(url), type);
+}
+
+global void SourceProbeSucceeded(string url, string type)
+{
+    y2milestone("Repository %1 is type %2", URL::HidePassword(url), type);
+}
+
+
+global boolean SourceProbeProgress(string url, integer value)
+{
+    return SourcePopupSetProgress(value);
+}
+
+global symbol SourceProbeError(string url, symbol error, string description) {
+
+    y2milestone ("Source probe: error: url: %1, error: %2, description: %3", URL::HidePassword(url), error, description);
+
+    // error message - a label followed by a richtext with details
+    string message = _("Error occurred while probing the repository.");
+
+    if (error == `NOT_FOUND)
+	// error message - a label followed by a richtext with details
+	message = _("Unable to retrieve the remote repository description.");
+    else if (error == `IO)
+	// error message - a label followed by a richtext with details
+	message = _("An error occurred while retrieving the new metadata.");
+    else if (error == `INVALID)
+	// error message - a label followed by a richtext with details
+	message = _("The repository is not valid.");
+    else if (error == `NO_ERROR)
+	// error message - a label followed by a richtext with details
+	message = _("Repository probing details.");
+    else if (error == `REJECTED)
+	// error message - a label followed by a richtext with details
+	message = _("Repository metadata is invalid.");
+
+    if (Mode::commandline())
+    {
+	CommandLine::Print(message);
+	CommandLine::Print(URL::HidePassword(url));
+	CommandLine::Print(description);
+
+	// ask user in the interactive mode
+	if (CommandLine::Interactive())
+	{
+	    CommandLine::Print("");
+
+	    // command line mode - ask user whether the repository refreshment should be retried
+	    CommandLine::Print(_("Retry?"));
+
+	    if (CommandLine::YesNo())
+	    {
+		// return Retry
+		return `RETRY;
+	    }
+	}
+
+	return `ABORT;
+    }
+    string detail = sformat ("%1<br>%2", url, description);
+    UI::OpenDialog (`VBox (
+	`Label (message),
+	`RichText(detail),
+	`ButtonBox (
+	    `PushButton (`id (`RETRY), `opt (`okButton), Label::RetryButton()),
+	    `PushButton (`id (`ABORT), `opt (`cancelButton), Label::AbortButton())
+	)
+    ));
+    symbol ret = (symbol)UI::UserInput ();
+    UI::CloseDialog ();
+    y2milestone ("Source probe error: Returning %1", ret);
+    return ret;
+}
+
+global void SourceProbeEnd(string url, symbol error, string description) {
+    CloseSourcePopup();
+    CloseSourcePopup();
+
+    y2milestone ("Source probe end: error: url: %1, error: %2, description: %3", URL::HidePassword(url), error, description);
+}
+
+
+global void SourceReportStart(integer source_id, string url, string task)
+{
+    y2milestone("Source report start: src: %1, URL: %2, task: %3", source_id, URL::HidePassword(url), task);
+
+    if (Mode::commandline()) {
+	CommandLine::Print(task);
+    }
+    else
+    {
+	y2milestone("_source_open: %1", _source_open);
+
+	if (_source_open == 1)
+	{
+	    SetHeaderSourcePopup(task);
+	}
+	else
+	{
+	    SetLabelSourcePopup(task);
+	}
+    }
+}
+
+global boolean SourceReportProgress(integer value)
+{
+    boolean ret = SourcePopupSetProgress(value);
+    y2debug("SourceReportProgress(%1) = %2", value, ret);
+
+    return ret;
+}
+
+
+global symbol SourceReportError(integer source_id, string url, symbol error, string description) {
+    y2milestone ("Source report: error: id: %1, url: %2, error: %3, description: %4", source_id, URL::HidePassword(url), error, description);
+
+    // error message - a label followed by a richtext with details
+    string message = sformat(_("Repository %1"), url);
+
+    if (error == `NOT_FOUND)
+	// error message - a label followed by a richtext with details
+	message = _("Unable to retrieve the remote repository description.");
+    else if (error == `IO)
+	// error message - a label followed by a richtext with details
+	message = _("An error occurred while retrieving the new metadata.");
+    else if (error == `INVALID)
+	// error message - a label followed by a richtext with details
+	message = _("The repository is not valid.");
+
+    if (Mode::commandline())
+    {
+	CommandLine::Print(message);
+	CommandLine::Print(url);
+	CommandLine::Print(description);
+
+	// ask user in the interactive mode
+	if (CommandLine::Interactive())
+	{
+	    CommandLine::Print("");
+
+	    // command line mode - ask user whether the repository refreshment should be retried
+	    CommandLine::Print(_("Retry?"));
+
+	    if (CommandLine::YesNo())
+	    {
+		// return Retry
+		return `RETRY;
+	    }
+	}
+
+	return `ABORT;
+    }
+    string detail = sformat ("%1<br>%2", url, description);
+    UI::OpenDialog (`VBox (
+	`Label (message),
+	`RichText(detail),
+	`HBox (
+	    `PushButton (`id (`RETRY), `opt (`okButton), Label::RetryButton()),
+	    `PushButton (`id (`ABORT), `opt (`cancelButton), Label::AbortButton())
+	)
+    ));
+    symbol ret = (symbol)UI::UserInput ();
+    UI::CloseDialog ();
+    y2milestone ("Source report error: Returning %1", ret);
+
+    return ret;
+}
+
+global void SourceReportEnd(integer src_id, string url, string task, symbol error, string description)
+{
+    y2milestone ("Source report end: src: %1, url: %2, task: %3, error: %4, description: %5", src_id, URL::HidePassword(url), task, error, description);
+
+    // set 100% progress
+    SourcePopupSetProgress(100);
+}
+
+global void SourceReportInit()
+{
+    y2milestone("Source report init");
+    OpenSourcePopup();
+}
+
+global void SourceReportDestroy()
+{
+    y2milestone("Source report destroy");
+    CloseSourcePopup();
+}
+
+    /** at start of delta providal
+     *
+     */
+    global void StartDeltaProvide (string name, integer archivesize)
+    {
+	string sz = String::FormatSizeWithPrecision (archivesize, 2, false);
+	if (Mode::commandline())
+	{
+	    CommandLine::PrintVerbose(sformat(_("Downloading delta RPM package %1 (%2)..."), name, sz));
+	}
+	else {
+	    if (_provide_popup)
+		UI::CloseDialog ();
+	    // popup heading
+	    term providebox = ProgressBox (_("Downloading Delta RPM package"), name, sz);
+	    UI::OpenDialog(providebox);
+	    _provide_popup = true;
+	}
+    }
+
+    /** at start of delta application
+     *
+     */
+    global void StartDeltaApply (string name)
+    {
+	if (Mode::commandline())
+	{
+	    CommandLine::PrintVerbose(sformat(_("Applying delta RPM package %1..."), name));
+	}
+	else {
+	  // popup heading
+	  term progressbox = `VBox(
+	    `HSpacing(40),
+	    // popup heading
+	    `Heading (_("Applying delta RPM package")),
+	    `Left (`HBox (
+		`Left (`Label (`opt (`boldFont), _("Package: "))),
+		`Left (`Label (name))
+	    )),
+	    `ProgressBar(`id(`progress), "", 100, 0 )
+	  );
+	  if (_provide_popup)
+		UI::CloseDialog ();
+	  UI::OpenDialog(progressbox);
+	  _provide_popup = true;
+	}
+    }
+
+    /** at start of patch providal
+     *
+     */
+    global void StartPatchProvide (string name, integer archivesize)
+    {
+	string sz = String::FormatSizeWithPrecision (archivesize, 2, false);
+	if (Mode::commandline())
+	{
+	    CommandLine::PrintVerbose(sformat(_("Downloading patch RPM package %1 (%2)..."), name, sz));
+	}
+	else {
+	    if (_provide_popup)
+		UI::CloseDialog ();
+	    // popup heading
+	    term providebox = ProgressBox (_("Downloading Patch RPM Package"), name, sz);
+	    UI::OpenDialog(providebox);
+	    _provide_popup = true;
+	}
+    }
+
+    global void FinishPatchDeltaProvide () {
+	if (_provide_popup)
+	{
+	    UI::CloseDialog ();
+	    _provide_popup = false;
+	}
+    }
+
+    global void ProblemDeltaDownload (string descr) {
+	FinishPatchDeltaProvide (); // close popup
+	Report::ShowText (_("Failed to download delta RPM"), descr);
+    }
+
+    global void ProblemDeltaApply (string descr) {
+	FinishPatchDeltaProvide (); // close popup
+	Report::ShowText (_("Failed to apply delta RPM"), descr);
+    }
+
+    global void ProblemPatchDownload (string descr) {
+	FinishPatchDeltaProvide (); // close popup
+	Report::ShowText (_("Failed to download patch RPM"), descr);
+    }
+
+
+    global string FormatPatchName(string patch_name, string patch_version, string patch_arch)
+    {
+	string patch_full_name = (patch_name != nil && patch_name != "") ? patch_name : "";
+
+	if (patch_full_name != "")
+	{
+	    if (patch_version != nil && patch_version != "")
+	    {
+		patch_full_name = patch_full_name + "-" + patch_version;
+	    }
+
+	    if (patch_arch != nil && patch_arch != "")
+	    {
+		patch_full_name = patch_full_name + "." + patch_arch;
+	    }
+
+	}
+
+	return patch_full_name;
+    }
+
+    global void ScriptStart(string patch_name, string patch_version, string patch_arch, string script_path)
+    {
+	string patch_full_name = FormatPatchName(patch_name, patch_version, patch_arch);
+
+	y2milestone("ScriptStart callback: patch: %1, script: %2", patch_full_name, script_path);
+
+	if (Mode::commandline())
+	{
+	    CommandLine::PrintVerbose(sformat(_("Starting script %1 (patch %2)..."), script_path, patch_full_name));
+	}
+	else
+	{
+	    term progressbox = `VBox(
+		`HSpacing(60),
+		// popup heading
+		`Heading(_("Running Script")),
+		`VBox(
+		    (patch_full_name != "") ?
+			`HBox
+			(
+			    // label, patch name follows
+			    `Label(`opt(`boldFont), _("Patch: ")),
+			    `Label(patch_full_name),
+			    `HStretch()
+			)
+			:
+			`Empty(),
+		    `HBox
+		    (
+			// label, script name follows
+			`Label(`opt(`boldFont), _("Script: ")),
+			`Label(script_path),
+			`HStretch()
+		    )
+		),
+
+		// label
+		`LogView(`id(`log), _("Output of the Script"), 10, 0),
+		`ButtonBox (
+		    `PushButton(`id(`abort), `opt(`default, `key_F9, `cancelButton), Label::AbortButton())
+		)
+	    );
+
+	    if (_script_popup)
+		UI::CloseDialog ();
+
+	    UI::OpenDialog(progressbox);
+	    UI::SetFocus(`id(`abort) );
+
+	    _script_popup = true;
+	}
+    }
+
+    global boolean ScriptProgress (boolean ping, string output)
+    {
+	y2milestone("ScriptProgress: ping:%1, output: %2", ping, output);
+
+	if (_script_popup)
+	{
+	    if (ping)
+	    {
+		// TODO: refresh progress indicator
+		y2debug ("-ping-");
+	    }
+
+	    if (output != nil && output != "")
+	    {
+		// add the output to the log widget
+		UI::ChangeWidget(`id(`log), `Value, output);
+	    }
+
+	    any input = UI::PollInput ();
+	    if (input == `abort || input == `close)
+		return false;
+	}
+	return true;
+    }
+
+    global string ScriptProblem(string description)
+    {
+	y2warning("ScriptProblem: %1", description);
+
+	symbol ui = Popup::AnyQuestion3("",
+				   description,
+				   Label::RetryButton(), /*yes_button_message*/
+				   Label::AbortButton(), /* no_button_message*/
+				   Label::IgnoreButton(), /*retry_button_message*/
+				   `retry /*symbol focus*/ );
+
+	y2milestone("Problem result: %1", ui);
+
+	// Abort is the default
+	string ret = "A";
+
+	if (ui == `retry)
+	{
+	    // ignore
+	    ret = "I";
+	}
+	else if (ui == `yes)
+	{
+	    // retry
+	    ret = "R";
+	}
+	else if (ui == `no)
+	{
+	    // abort
+	    ret = "A";
+	}
+	else
+	{
+	    y2warning("Unknown result: %1, aborting", ui);
+	}
+
+	return ret;
+    }
+
+    global void ScriptFinish()
+    {
+	y2milestone("ScriptFinish");
+
+	if (_script_popup)
+	{
+	    UI::CloseDialog();
+	}
+    }
+
+    global boolean Message(string patch_name, string patch_version, string patch_arch, string message)
+    {
+	string patch_full_name = FormatPatchName(patch_name, patch_version, patch_arch);
+	y2milestone("Message (%1): %2", patch_full_name, message);
+
+	if (patch_full_name != "")
+	{
+	    // label, %1 is patch name with version and architecture
+	    patch_full_name = sformat(_("Patch: %1\n\n"), patch_full_name);
+	}
+
+	boolean ret = Popup::ContinueCancel(patch_full_name + message);
+	y2milestone("User input: %1", ret);
+
+	return ret;
+    }
+
+    global symbol AskAbortRefresh()
+    {
+	UI::OpenDialog(
+	    `MarginBox(1, 0.5,
+		`VBox(
+		// a popup question with "Continue", "Skip" and "Abort" buttons
+		`Label(_("The repositories are being refreshed.
+Continue with refreshing?
+
+Note: If the refresh is skipped some packages
+might be missing or out of date.")),
+		`ButtonBox (
+			`PushButton (`id(`continue), `opt (`default, `okButton), Label::ContinueButton()),
+			`PushButton (`id(`skip), `opt (`cancelButton), _("Skip Refresh"))
+		    )
+		)
+	    )
+	);
+
+	UI::SetFocus(`id(`continue));
+
+	symbol ui = (symbol) UI::UserInput();
+
+	UI::CloseDialog();
+
+	if (ui == `close)
+	{
+	    ui = `continue;
+	}
+
+	y2milestone("User request: %1", ui);
+
+	return ui;
+    }
+
+    global boolean IsDownloadProgressPopup()
+    {
+	return (!Mode::commandline()) &&
+	    UI::WidgetExists(`id(`download_progress_popup_window)) &&
+	    UI::WidgetExists(`id(`progress));
+    }
+
+    global void CloseDownloadProgressPopup()
+    {
+	if (IsDownloadProgressPopup())
+	{
+	    UI::CloseDialog();
+	}
+    }
+
+    global void InitDownload(string task)
+    {
+	if (!Mode::commandline())
+	{
+	    if (!FullScreen() && !IsDownloadProgressPopup())
+	    {
+		// heading of popup
+		string heading = _("Downloading");
+
+		UI::OpenDialog (`opt(`decorated),
+				`VBox (`Heading (`id(`download_progress_popup_window), heading) ,
+				       `VBox (
+					      `HSpacing(60),
+					      `HBox(
+						    `HSpacing(1),
+						    `ProgressBar (`id(`progress),
+								  task, 100),
+						    `HSpacing(1)
+						    ),
+					      `VSpacing(0.5),
+					      `ButtonBox (
+						`PushButton (`id (`abort), `opt (`cancelButton), Label::AbortButton ())
+					      ),
+					      `VSpacing(0.5)
+					      )
+				       )
+				);
+		UI::ChangeWidget (`id(`progress), `Value, 0);
+	    }
+	}
+    }
+
+    global void DestDownload()
+    {
+	if (!FullScreen())
+	{
+	    CloseDownloadProgressPopup();
+	}
+    }
+
+    string download_file = "";
+
+    global void StartDownload (string url, string localfile)
+    {
+	y2milestone("Downloading %1 to %2", URL::HidePassword(url), localfile);
+
+	// heading of popup
+	string heading = _("Downloading");
+
+	// reformat the URL
+	string url_report = URL::FormatURL(URL::Parse(URL::HidePassword(url)), max_size);
+	// remember the URL
+	download_file = url_report;
+
+	// message in a progress popup
+	string message = sformat (_("Downloading: %1"), url_report);
+
+	if (Mode::commandline()) {
+	    CommandLine::PrintVerbose(message);
+	}
+	else
+	{
+	    if (IsDownloadProgressPopup())
+	    {
+		// change the label
+		UI::ChangeWidget(`id(`progress), `Label, message);
+		UI::ChangeWidget (`id(`progress), `Value, 0);
+	    }
+	    else if (FullScreen())
+	    {
+		Progress::SubprogressType(`progress, 100);
+		Progress::SubprogressTitle(message);
+	    }
+	}
+    }
+
+    global boolean ProgressDownload (integer percent, integer bps_avg, integer bps_current)
+    {
+	if (autorefreshing && autorefreshing_aborted)
+	{
+	    y2milestone("Refresh aborted");
+	    return false;
+	}
+
+	if (Mode::commandline()) {
+	    CommandLine::PrintVerboseNoCR(clear_string + sformat("%1%%", percent));
+	    if (percent == 100)
+	    {
+		// sleep for a wile
+		sleep(200);
+		// remove the progress
+		CommandLine::PrintVerboseNoCR(clear_string);
+		// print newline when reached 100%
+	    }
+	}
+	else {
+	    string msg_rate = "";
+
+	    if (bps_current > 0)
+	    {
+		// do not show the average download rate if the space is limited
+		if (textmode() && display_width() < 100)
+		{
+		    bps_avg = -1;
+		}
+
+		string format = textmode() ? ("%1 - " + download_file) : (download_file + " - %1");
+
+		// progress bar label, %1 is URL with optional download rate
+		msg_rate = sformat(_("Downloading: %1"), String::FormatRateMessage(format, bps_avg, bps_current));
+	    }
+
+	    if (FullScreen())
+	    {
+		Progress::SubprogressValue(percent);
+
+		if (size(msg_rate) > 0)
+		{
+		    Progress::SubprogressTitle(msg_rate);
+		}
+	    }
+	    else
+	    {
+		UI::ChangeWidget (`id(`progress), `Value, percent);
+
+		if (size(msg_rate) > 0)
+		{
+		    UI::ChangeWidget (`id(`progress), `Label, msg_rate);
+		}
+	    }
+
+	    boolean download_aborted = UI::PollInput () == `abort;
+
+	    if (download_aborted && autorefreshing)
+	    {
+		// display "Continue", "Skip Refresh" dialog
+		symbol answer = AskAbortRefresh();
+
+		if (answer == `continue)
+		{
+		    download_aborted = false;
+		}
+		else if (answer == `skip)
+		{
+		    download_aborted = true;
+		    autorefreshing_aborted = true;
+
+		    Pkg::SkipRefresh();
+		}
+		else
+		{
+		    y2error("Unknown input value: %1", answer);
+		}
+	    }
+
+	    return !download_aborted;
+	}
+
+	return true;
+    }
+
+
+    global void DoneDownload (integer error_value, string error_text)
+    {
+	if (error_value != 0)
+	{
+	    if (autorefreshing && autorefreshing_aborted)
+	    {
+		y2milestone("Refresh aborted");
+	    }
+	    else
+	    {
+		if (Mode::commandline()) {
+		    //error message, %1 is the cause for the error
+		    CommandLine::Print(sformat (_("Download failed:
+    %1"), error_text));
+		}
+		else
+		{
+		    // error message, %1 is the cause for the error
+		    Popup::Error (sformat (_("Download failed:
+    %1"), error_text));
+		}
+	    }
+	}
+    }
+
+    global void RefreshStarted()
+    {
+	y2milestone("Autorefreshing repositories...");
+
+	if (!Mode::commandline() && UI::WidgetExists(`id(`abort)))
+	{
+	    // push button label
+	    UI::ChangeWidget(`id(`abort), `Label, _("Skip Autorefresh"));
+	}
+
+	autorefreshing = true;
+	autorefreshing_aborted = false;
+    }
+
+    global void RefreshDone()
+    {
+	if (!Mode::commandline() && UI::WidgetExists(`id(`abort)))
+	{
+	    UI::ChangeWidget(`id(`abort), `Label, Label::AbortButton());
+	}
+
+	y2milestone("Autorefresh done");
+	autorefreshing = false;
+	autorefreshing_aborted = false;
+    }
+
+    global void ClearDownloadCallbacks ()
+    {
+	Pkg::CallbackInitDownload (nil);
+	Pkg::CallbackStartDownload (nil);
+	Pkg::CallbackProgressDownload (nil);
+	Pkg::CallbackDoneDownload (nil);
+	Pkg::CallbackDestDownload (nil);
+	Pkg::CallbackStartRefresh(nil);
+	Pkg::CallbackDoneRefresh(nil);
+    }
+
+
+    global void StartRebuildDB ()
+    {
+	// heading of popup
+	string heading = _("Checking Package Database");
+
+	// message in a progress popup
+	string message = _("Rebuilding package database. This process can take some time.");
+
+	// progress bar label
+	string progress_label = _("Status");
+
+	UI::OpenDialog (`opt(`decorated),
+			`VBox (`Heading (heading) ,
+			       `VBox (
+				      `Label(message),
+				      `HSpacing(60),
+				      `HBox(
+					    `HSpacing(2),
+					    `ProgressBar (`id(`progress),
+							  "", 100),
+					    `HSpacing(2)
+					    ),
+				      `VSpacing(1)
+				      )
+			       )
+			);
+
+	UI::ChangeWidget (`id(`progress), `Value, 0);
+    }
+
+
+    global void ProgressRebuildDB (integer percent)
+    {
+	UI::ChangeWidget (`id(`progress), `Value, percent);
+    }
+
+
+    global void StopRebuildDB (integer error_value, string error_text)
+    {
+	if (error_value != 0)
+	{
+	    // error message, %1 is the cause for the error
+	    Popup::Error (sformat (_("Rebuilding of package database failed:
+%1"), error_text));
+	}
+
+	UI::CloseDialog ();
+    }
+
+
+    global void NotifyRebuildDB ()
+    {
+	// FIXME: not used anymore
+    }
+
+
+    global void SetRebuildDBCallbacks ()
+    {
+	Pkg::CallbackStartRebuildDb (PackageCallbacks::StartRebuildDB);
+	Pkg::CallbackProgressRebuildDb (PackageCallbacks::ProgressRebuildDB);
+	Pkg::CallbackStopRebuildDb (PackageCallbacks::StopRebuildDB);
+	Pkg::CallbackNotifyRebuildDb (PackageCallbacks::NotifyRebuildDB);
+    }
+
+
+
+    global void StartConvertDB (string unused1)
+    {
+	// heading of popup
+	string heading = _("Checking Package Database");
+
+	// message in a progress popup
+	string message = _("Converting package database. This process can take some time.");
+
+	UI::OpenDialog (`opt(`decorated),
+			`VBox (`Heading (heading) ,
+			       `VBox (
+				      `Label(message),
+				      `HSpacing(60),
+				      `HBox(
+					    `HSpacing(2),
+					    `ProgressBar (`id(`progress),
+							  _("Status"), 100),
+					    `HSpacing(2)
+					    ),
+				      `VSpacing(1)
+				      )
+			       )
+			);
+
+	UI::ChangeWidget (`id(`progress), `Value, 0);
+    }
+
+
+    global void ProgressConvertDB (integer percent, string file)
+    {
+	UI::ChangeWidget (`id(`progress), `Value, percent);
+    }
+
+
+    global void StopConvertDB (integer error_value, string error_text)
+    {
+	if (error_value != 0)
+	{
+	    // error message, %1 is the cause for the error
+	    Popup::Error (sformat (_("Conversion of package database failed:
+%1"), error_text));
+	}
+
+	UI::CloseDialog ();
+    }
+
+
+    global void NotifyConvertDB()
+    {
+	// FIXME not used anymore
+    }
+
+
+    global void SetConvertDBCallbacks ()
+    {
+	Pkg::CallbackStartConvertDb (PackageCallbacks::StartConvertDB);
+	Pkg::CallbackProgressConvertDb (PackageCallbacks::ProgressConvertDB);
+	Pkg::CallbackStopConvertDb (PackageCallbacks::StopConvertDB);
+	Pkg::CallbackNotifyConvertDb (PackageCallbacks::NotifyConvertDB);
+    }
+
+
+
+/**
+ * Callback for start RPM DB scan event
+ */
+global void StartScanDb()
+{
+    y2milestone("Scanning RPM DB...");
+
+    if (Mode::commandline()) {
+	// progress message (command line mode)
+	CommandLine::PrintVerbose(_("Reading RPM database..."));
+    }
+    else
+    {
+	if (!FullScreen())
+	{
+	    UI::OpenDialog(
+		`VBox(
+		    `HSpacing(60),
+		    // popup heading
+		    `Heading(`id(`label_scanDB_popup), `opt(`hstretch), _("Reading Installed Packages")),
+		    `HBox(
+			// progress bar label
+			`ProgressBar (`id (`progress), _("Scanning RPM database..."), 100, 0),
+			`HSpacing(1)
+    /* TODO: allow Abort
+			,
+			`VBox(
+			    `Label(""),
+			    `PushButton(`id(`abort), Label::AbortButton())
+			)
+    */
+		    )
+		)
+	    );
+
+	    _scan_popup = true;
+	}
+	else
+	{
+	    Progress::Title(_("Scanning RPM database..."));
+	}
+    }
+}
+
+/**
+ * Callback for RPM DB scan progress
+ */
+global boolean ProgressScanDb(integer value)
+{
+    if (Mode::commandline())
+    {
+	CommandLine::PrintVerboseNoCR(clear_string + sformat("%1%%", value));
+    }
+    else
+    {
+	if (_scan_popup && UI::WidgetExists(`id(`label_scanDB_popup)))
+	{
+	    UI::ChangeWidget(`id(`progress), `Value, value);
+	    boolean cont = UI::PollInput () != `abort;
+
+	    if (!cont)
+	    {
+		y2warning("Scan DB aborted");
+	    }
+
+	    return cont;
+	}
+	else if (FullScreen())
+	{
+	    Progress::Step(value);
+	}
+    }
+
+    // continue
+    return true;
+}
+
+/**
+ * Callback for error handling during RPM DB scan
+ */
+global string ErrorScanDb(integer error, string description)
+{
+    y2error("ErrorScanDb callback: error: %1, description: %2", error, description);
+
+    // error message, could not read RPM database
+    string message = _("Initialization of the target failed.");
+
+    if (Mode::commandline())
+    {
+	CommandLine::Print(message);
+	CommandLine::Print(description);
+
+	// ask user in the interactive mode
+	if (CommandLine::Interactive())
+	{
+	    CommandLine::Print("");
+
+	    // command line mode - ask user whether target initializatin can be restarted
+	    CommandLine::Print(_("Retry?"));
+
+	    if (CommandLine::YesNo())
+	    {
+		// return Retry
+		return "R";
+	    }
+	}
+
+	// return Cancel
+	return "C";
+    }
+
+    boolean show_details = false;
+
+    term button_box = `ButtonBox
+    (
+	`PushButton (`id (`abort), `opt (`cancelButton), Label::AbortButton()),
+	`PushButton (`id (`retry), `opt (`customButton), Label::RetryButton()),
+	`PushButton (`id (`ignore), `opt (`okButton), Label::IgnoreButton())
+    );
+
+    UI::OpenDialog( `opt(`decorated),  LayoutPopup (message, button_box, 1, false) );
+
+    any r = nil;
+
+    repeat
+    {
+	r = UI::UserInput();
+	if ( r == `show )
+	{
+	    show_details = ShowLogInfo (message, button_box);
+	    if (show_details)
+	    {
+		string error_symbol = "UNKNOWN";
+
+		if (error == 0)
+		{
+		    error_symbol = "NO_ERROR";
+		}
+		else if (error == 1)
+		{
+		    error_symbol = "FAILED";
+		}
+
+		UI::ReplaceWidget(`id(`info),
+				  `RichText (`opt(`plainText),
+					    // error message, %1 is code of the error,
+					    // detail string is appended to the end
+					     sformat (_("Error: %1:"), error_symbol) + description) );
+	    }
+	    else
+	    {
+		UI::ReplaceWidget(`id(`info), `Empty() );
+	    }
+	}
+    } until (r == `abort || r == `retry || r == `ignore);
+
+    y2milestone ("ErrorScanDb: user input: %1", r);
+
+    UI::CloseDialog();
+
+    if (r == `abort)
+	return "C";
+    if (r == `retry)
+	return "R";
+    if (r == `ignore)
+	return "I";
+
+    y2error("Unknown user input: %1", r);
+
+    return "C";
+}
+
+/**
+ * Callback for finish RPM DB scan event
+ */
+global void DoneScanDb(integer error, string description)
+{
+    y2milestone("RPM DB scan finished: error: %1, reason: '%2'", error, description);
+
+    if (Mode::commandline()) {
+	// status message (command line mode)
+	CommandLine::PrintVerbose(_("RPM database read"));
+    }
+    else
+    {
+	if (_scan_popup && UI::WidgetExists(`id(`label_scanDB_popup)))
+	{
+	    UI::CloseDialog();
+	    _scan_popup = false;
+	}
+	else if (!FullScreen())
+	{
+	    y2error("The toplevel dialog is not a scan DB popup!");
+	}
+    }
+}
+
+
+global map<string,any> Authentication(string url, string msg, string username, string password)
+{
+    term popup = `VBox(
+	`HSpacing(50),	// enforce width
+	`VSpacing(0.1),
+	// heading in a popup window
+	`Heading(_("User Authentication")),
+	`VSpacing(0.1),
+	`HBox(
+	    `HSpacing(0.1),
+	    `RichText(`opt(`plainText), sformat(_("URL: %1\n\n%2"), url, msg)),
+	    `HSpacing(0.1)
+	),
+	`VSpacing(0.1),
+	`HBox(
+	    `HSpacing(1),
+	    `VBox(
+		// textentry label
+		`TextEntry(`id(`username), _("&User Name"), username),
+		`VSpacing(0.1),
+		// textentry label
+		`Password(`id(`password), _("&Password"), password)
+	    ),
+	    `HSpacing(1)
+	),
+	`VSpacing(0.5),
+	`ButtonBox (
+	    `PushButton (`id(`cont), `opt (`default, `okButton), Label::ContinueButton()),
+	    `PushButton(`id(`cancel), `opt (`cancelButton), Label::CancelButton())
+	),
+	`VSpacing(0.5)
+    );
+
+    UI::OpenDialog(`opt(`decorated), popup);
+
+    symbol ui = (symbol)UI::UserInput();
+
+    username = (string)UI::QueryWidget(`id(`username), `Value);
+    password = (string)UI::QueryWidget(`id(`password), `Value);
+
+    UI::CloseDialog();
+
+    return $[ "username" : username, "password" : password, "continue" : ui == `cont ];
+}
+
+// TODO: use the ID in the prgress popup callbacks,
+// then callbacks may be nested...
+
+list<string> tick_labels = [ "/", "-", "\\", "|" ];
+boolean tick_progress = false;
+boolean val_progress = false;
+integer current_tick = 0;
+string progress_task = "";
+
+void NextTick()
+{
+    current_tick = current_tick + 1;
+    if (current_tick >= size(tick_labels))
+    {
+	current_tick = 0;
+    }
+}
+
+// is the top level progress popup?
+boolean IsProgressPopup()
+{
+    return UI::WidgetExists(`id(`progress_widget)) &&
+      UI::WidgetExists(`id(`callback_progress_popup));
+}
+
+// ProgressStart/End events may be nested, remember the types of progresses 
+list<map> progress_stack = [];
+
+global void ProgressStart(integer id, string task, boolean in_percent, boolean is_alive, integer min, integer max, integer val_raw, integer val_percent)
+{
+    y2milestone ("ProgressStart: %1", id);
+
+    tick_progress = is_alive;
+    val_progress = (!in_percent && !is_alive);
+    current_tick = 0;
+    progress_task = task;
+
+    if (Mode::commandline())
+    {
+	CommandLine::Print(task);
+    }
+    else
+    {
+	symbol subprogress_type = (tick_progress) ? `tick : `progress;
+	progress_stack = add(progress_stack, $[ "type" : subprogress_type, "task" : task ]);
+
+	if (IsProgressPopup() && size(progress_stack) <= 1)
+	{
+	    // huh, the popup is already there?
+	    y2warning("Progress popup already opened...");
+	    UI::CloseDialog();
+	}
+
+	if (FullScreen())
+	{
+	    Progress::SubprogressType(subprogress_type, 100);
+	    Progress::SubprogressTitle(task);
+	}
+	else
+	{
+	    UI::OpenDialog(
+		`HBox(
+		    `HSpacing(1),
+		    `VBox(
+			`VSpacing(0.5),
+			`HSpacing(`id(`callback_progress_popup), max_size),
+			(in_percent) ? `ProgressBar (`id (`progress_widget), task, 100, val_percent)
+			    : `BusyIndicator(`id(`progress_widget), task, 3000),
+			`VSpacing(0.2),
+			`ButtonBox (
+			    `PushButton (`id (`abort), `opt (`cancelButton), Label::AbortButton ())
+			),
+			`VSpacing(0.5)
+		    ),
+		    `HSpacing(1)
+		)
+	    );
+	}
+    }
+}
+
+global void ProgressEnd(integer id)
+{
+    y2milestone("ProgressFinish: %1", id);
+
+    // remove the last element from the progress stack
+    progress_stack = remove(progress_stack, size(progress_stack) - 1);
+
+    if (!Mode::commandline() && IsProgressPopup())
+    {
+	if (size(progress_stack) == 0)
+	{
+	    UI::CloseDialog();
+	}
+    }
+    else if (FullScreen())
+    {
+	if (size(progress_stack) > 0)
+	{
+	    symbol progress_type = progress_stack[size(progress_stack) - 1, "type"]:`none;
+	    string task = progress_stack[size(progress_stack) - 1, "task"]:"";
+
+	    Progress::SubprogressType(progress_type, 100);
+	    Progress::SubprogressTitle(task);
+	}
+    }
+}
+
+global boolean ProgressProgress(integer id, integer val_raw, integer val_percent)
+{
+    y2debug("ProgressProgress: %1, %2%% ", id, val_percent);
+
+    if (Mode::commandline())
+    {
+	if (tick_progress)
+	{
+	    string tick_label = tick_labels[current_tick]:"/";
+	    CommandLine::PrintVerboseNoCR(clear_string + tick_label);
+	    NextTick();
+	}
+	else
+	{
+	    CommandLine::PrintVerboseNoCR(clear_string + sformat("%1%%", val_percent));
+	}
+    }
+    else
+    {
+	if (IsProgressPopup())
+	{
+	    if (tick_progress || val_progress)
+            {
+		UI::ChangeWidget(`id(`progress_widget), `Alive, true);
+	    }
+	    else
+	    {
+		UI::ChangeWidget (`id(`progress_widget), `Value, val_percent);
+	    }
+
+	    // aborted ?
+	    any input = UI::PollInput ();
+	    if (input == `abort)
+	    {
+		y2warning("Callback %1 has been aborted at %2%% (raw: %3)", id, val_percent, val_raw);
+		return false;
+	    }
+	}
+	else if (FullScreen())
+	{
+	    // fullscreen callbacks
+	    Progress::SubprogressValue(val_percent);
+	}
+    }
+
+    return true;
+}
+
+
+integer last_stage = 0;
+
+list<boolean> opened_wizard = [];
+
+/**
+ * Hanler for ProcessStart callback - handle start of a package manager process
+ * @param task Decription of the task
+ * @param stages Descriptions of the stages
+ * @param help Help text describing the process
+ */
+global void ProcessStart(string task, list<string> stages, string help)
+{
+   y2milestone("Process: Start: task: %1, stages: %2, help: %3", task, stages, help);
+   y2milestone("Progress: status: %1, isrunning: %2", Progress::status(), Progress::IsRunning());
+
+    if (Mode::commandline()) return;
+
+   boolean opened = false;
+
+    if (Progress::status())
+    {
+	if (!Progress::IsRunning())
+	{
+	    y2milestone("Opening Wizard window...");
+	    Wizard::CreateDialog();
+	    Wizard::SetDesktopIcon("sw_single");
+
+	    opened = true;
+	}
+
+	// set 100% as max value
+	Progress::New(task, "", 100, stages, [], help);
+	Progress::Title(task);
+	last_stage = 0;
+    }
+
+    opened_wizard = add(opened_wizard, opened);
+    y2milestone("Wizard stack: %1", opened_wizard);
+}
+
+/**
+ * Hander for ProcessProgress callback - report total progress
+ * @param percent Total progress in percent
+ */
+global boolean ProcessProgress(integer percent)
+{
+    y2debug("Process: %1%%", percent);
+
+    if (Mode::commandline()) return true;
+
+    Progress::Step(percent);
+
+    return true;
+}
+
+/**
+ * Hander for ProcessNextStage callback - the current stage has been finished
+ */
+global void ProcessNextStage()
+{
+    y2milestone("Setting stage: %1", last_stage);
+
+    if (Mode::commandline()) return;
+
+    Progress::Stage(last_stage, "", -1);
+
+    last_stage = last_stage + 1;
+}
+
+/**
+ * Hander for ProcessDone callback - the process has been finished
+ */
+global void ProcessDone()
+{
+    y2milestone("Process: Finished");
+    if (Mode::commandline()) return;
+
+    integer idx = size(opened_wizard) - 1;
+
+    boolean close = opened_wizard[idx]:false;
+    opened_wizard = remove(opened_wizard, idx);
+
+    y2milestone("Close Wizard window: %1, new stack: %2", close, opened_wizard);
+
+    // set 100%
+    Progress::Finish();
+
+    if (close)
+    {
+	y2milestone("Closing Wizard window...");
+	Wizard::CloseDialog();
+    }
+}
+
+/**
+ * Register callbacks for media change
+ */
+global define void SetMediaCallbacks () {
+    Pkg::CallbackMediaChange (PackageCallbacks::MediaChange);
+    Pkg::CallbackSourceChange (PackageCallbacks::SourceChange);
+}
+
+
+global void ClearScriptCallbacks()
+{
+    Pkg::CallbackScriptStart(nil);
+    Pkg::CallbackScriptProgress(nil);
+    Pkg::CallbackScriptProblem(nil);
+    Pkg::CallbackScriptFinish(nil);
+
+    Pkg::CallbackMessage(nil);
+}
+
+global void SetScriptCallbacks()
+{
+    Pkg::CallbackScriptStart(PackageCallbacks::ScriptStart);
+    Pkg::CallbackScriptProgress(PackageCallbacks::ScriptProgress);
+    Pkg::CallbackScriptProblem(PackageCallbacks::ScriptProblem);
+    Pkg::CallbackScriptFinish(PackageCallbacks::ScriptFinish);
+
+    Pkg::CallbackMessage(PackageCallbacks::Message);
+}
+
+global void SetScanDBCallbacks ()
+{
+    Pkg::CallbackStartScanDb (PackageCallbacks::StartScanDb);
+    Pkg::CallbackProgressScanDb (PackageCallbacks::ProgressScanDb);
+    Pkg::CallbackErrorScanDb (PackageCallbacks::ErrorScanDb);
+    Pkg::CallbackDoneScanDb (PackageCallbacks::DoneScanDb);
+}
+
+global void ResetScanDBCallbacks ()
+{
+    Pkg::CallbackStartScanDb (nil);
+    Pkg::CallbackProgressScanDb (nil);
+    Pkg::CallbackErrorScanDb (nil);
+    Pkg::CallbackDoneScanDb (nil);
+}
+
+global void SetDownloadCallbacks ()
+{
+    Pkg::CallbackInitDownload (PackageCallbacks::InitDownload);
+    Pkg::CallbackStartDownload (PackageCallbacks::StartDownload);
+    Pkg::CallbackProgressDownload (PackageCallbacks::ProgressDownload);
+    Pkg::CallbackDoneDownload (PackageCallbacks::DoneDownload);
+    Pkg::CallbackDestDownload (PackageCallbacks::DestDownload);
+    Pkg::CallbackStartRefresh(PackageCallbacks::RefreshStarted);
+    Pkg::CallbackDoneRefresh(PackageCallbacks::RefreshDone);
+}
+
+global void ResetDownloadCallbacks ()
+{
+    Pkg::CallbackInitDownload (nil);
+    Pkg::CallbackStartDownload (nil);
+    Pkg::CallbackProgressDownload (nil);
+    Pkg::CallbackDoneDownload (nil);
+    Pkg::CallbackDestDownload (nil);
+    Pkg::CallbackStartRefresh(nil);
+    Pkg::CallbackDoneRefresh(nil);
+}
+
+global void SetSourceCreateCallbacks()
+{
+    // source create callbacks
+    Pkg::CallbackSourceCreateStart(PackageCallbacks::SourceCreateStart);
+    Pkg::CallbackSourceCreateProgress(PackageCallbacks::SourceCreateProgress);
+    Pkg::CallbackSourceCreateError(PackageCallbacks::SourceCreateError);
+    Pkg::CallbackSourceCreateEnd(PackageCallbacks::SourceCreateEnd);
+    Pkg::CallbackSourceCreateInit(PackageCallbacks::SourceCreateInit);
+    Pkg::CallbackSourceCreateDestroy(PackageCallbacks::SourceCreateDestroy);
+}
+
+global void SetSourceProbeCallbacks()
+{
+    // source probing callbacks
+    Pkg::CallbackSourceProbeStart(PackageCallbacks::SourceProbeStart);
+    Pkg::CallbackSourceProbeFailed(PackageCallbacks::SourceProbeFailed);
+    Pkg::CallbackSourceProbeSucceeded(PackageCallbacks::SourceProbeSucceeded);
+    Pkg::CallbackSourceProbeProgress(PackageCallbacks::SourceProbeProgress);
+    Pkg::CallbackSourceProbeError(PackageCallbacks::SourceProbeError);
+    Pkg::CallbackSourceProbeEnd(PackageCallbacks::SourceProbeEnd);
+}
+
+global void SetProcessCallbacks()
+{
+    // register process callbacks (total progress)
+    Pkg::CallbackProcessStart(PackageCallbacks::ProcessStart);
+    Pkg::CallbackProcessProgress(PackageCallbacks::ProcessProgress);
+    Pkg::CallbackProcessNextStage(PackageCallbacks::ProcessNextStage);
+    Pkg::CallbackProcessDone(PackageCallbacks::ProcessDone);
+}
+
+global void SetProvideCallbacks()
+{
+    Pkg::CallbackStartProvide (PackageCallbacks::StartProvide);
+    Pkg::CallbackProgressProvide (PackageCallbacks::ProgressProvide);
+    Pkg::CallbackDoneProvide (PackageCallbacks::DoneProvide);
+    Pkg::CallbackStartPackage (PackageCallbacks::StartPackage);
+    Pkg::CallbackProgressPackage (PackageCallbacks::ProgressPackage);
+    Pkg::CallbackDonePackage (PackageCallbacks::DonePackage);
+}
+
+global void SetPatchCallbacks()
+{
+    Pkg::CallbackStartDeltaDownload (PackageCallbacks::StartDeltaProvide);
+    Pkg::CallbackProgressDeltaDownload (PackageCallbacks::ProgressProvide);
+    Pkg::CallbackProblemDeltaDownload (PackageCallbacks::ProblemDeltaDownload);
+    Pkg::CallbackFinishDeltaDownload (PackageCallbacks::FinishPatchDeltaProvide);
+
+    Pkg::CallbackStartDeltaApply (PackageCallbacks::StartDeltaApply);
+    Pkg::CallbackProgressDeltaApply (PackageCallbacks::ProgressDeltaApply);
+    Pkg::CallbackProblemDeltaApply (PackageCallbacks::ProblemDeltaApply);
+    Pkg::CallbackFinishDeltaApply (PackageCallbacks::FinishPatchDeltaProvide);
+
+    Pkg::CallbackStartPatchDownload (PackageCallbacks::StartPatchProvide);
+    Pkg::CallbackProgressPatchDownload (PackageCallbacks::ProgressProvide);
+    Pkg::CallbackProblemPatchDownload (PackageCallbacks::ProblemPatchDownload);
+    Pkg::CallbackFinishPatchDownload (PackageCallbacks::FinishPatchDeltaProvide);
+}
+
+global void SetSourceReportCallbacks()
+{
+    // source report callbacks
+    Pkg::CallbackSourceReportStart(PackageCallbacks::SourceReportStart);
+    Pkg::CallbackSourceReportProgress(PackageCallbacks::SourceReportProgress);
+    Pkg::CallbackSourceReportError(PackageCallbacks::SourceReportError);
+    Pkg::CallbackSourceReportEnd(PackageCallbacks::SourceReportEnd);
+    Pkg::CallbackSourceReportInit(PackageCallbacks::SourceReportInit);
+    Pkg::CallbackSourceReportDestroy(PackageCallbacks::SourceReportDestroy);
+}
+
+global void SetProgressReportCallbacks()
+{
+    Pkg::CallbackProgressReportStart(PackageCallbacks::ProgressStart);
+    Pkg::CallbackProgressReportProgress(PackageCallbacks::ProgressProgress);
+    Pkg::CallbackProgressReportEnd(PackageCallbacks::ProgressEnd);
+}
+
+/**
+ * Register package manager callbacks
+ */
+global void InitPackageCallbacks() {
+
+    SetProcessCallbacks();
+
+    SetProvideCallbacks();
+
+    SetPatchCallbacks();
+
+    SetSourceCreateCallbacks();
+
+    SetSourceProbeCallbacks();
+
+    SetSourceReportCallbacks();
+
+    SetProgressReportCallbacks();
+
+    // authentication callback
+    Pkg::CallbackAuthentication(PackageCallbacks::Authentication);
+
+    // @see bugzilla #183821
+    // Do not register these callbacks in case of AutoInstallation
+    if (Mode::autoinst() != true) {
+	// Signature-related callbacks
+	Pkg::CallbackAcceptUnsignedFile		(SignatureCheckCallbacks::AcceptUnsignedFile);
+	Pkg::CallbackAcceptUnknownGpgKey	(SignatureCheckCallbacks::AcceptUnknownGpgKey);
+	Pkg::CallbackImportGpgKey		(SignatureCheckCallbacks::ImportGpgKey);
+	Pkg::CallbackAcceptNonTrustedGpgKey	(SignatureCheckCallbacks::TrustGpgKey);
+	Pkg::CallbackAcceptVerificationFailed	(SignatureCheckCallbacks::AcceptVerificationFailed);
+	Pkg::CallbackTrustedKeyAdded		(SignatureCheckCallbacks::TrustedKeyAdded);
+	Pkg::CallbackTrustedKeyRemoved		(SignatureCheckCallbacks::TrustedKeyRemoved);
+	Pkg::CallbackAcceptFileWithoutChecksum	(SignatureCheckCallbacks::AcceptFileWithoutChecksum);
+	Pkg::CallbackAcceptWrongDigest		(SignatureCheckCallbacks::AcceptWrongDigest);
+	Pkg::CallbackAcceptUnknownDigest	(SignatureCheckCallbacks::AcceptUnknownDigest);
+    }
+
+    SetMediaCallbacks ();
+
+    SetScriptCallbacks();
+
+    SetScanDBCallbacks();
+
+    SetDownloadCallbacks();
+}
+
+//=============================================================================
+//	constructor and callback init
+//=============================================================================
+
+void DummyProcessStart(string param1, list<string> param2, string param3) {y2debug("Empty ProcessStart callback");}
+
+boolean DummyBooleanInteger(integer param1) {y2debug("Empty generic boolean(integer)->true callback"); return true;}
+
+string DummyStringString(string param1) {y2debug("Empty generic string(string)->\"\" callback"); return "";}
+
+void DummyVoid() {y2debug("Empty generic void() callback");}
+
+global void SetDummyProcessCallbacks()
+{
+    Pkg::CallbackProcessStart(DummyProcessStart);
+    Pkg::CallbackProcessProgress(DummyBooleanInteger);
+    Pkg::CallbackProcessNextStage(DummyVoid);
+    Pkg::CallbackProcessDone(DummyVoid);
+}
+
+
+void DummyStartProvide(string param1, integer param2, boolean param3) {y2debug("Empty StartProvide callback");}
+
+string DummyDoneProvide (integer error, string reason, string name) {y2debug("Empty DoneProvide callback, returning 'I'");return "I";}
+
+void DummyStartPackage (string name, string summary, integer installsize, boolean is_delete) {y2debug("Empty StartPackage callback");}
+
+string DummyDonePackage (integer error, string reason) {y2debug("Empty DonePackage callback, returning 'I'");return "I";}
+
+global void SetDummyProvideCallbacks()
+{
+    Pkg::CallbackStartProvide(DummyStartProvide);
+    Pkg::CallbackProgressProvide(DummyBooleanInteger);
+    Pkg::CallbackDoneProvide(DummyDoneProvide);
+    Pkg::CallbackStartPackage(DummyStartPackage);
+    Pkg::CallbackProgressPackage(DummyBooleanInteger);
+    Pkg::CallbackDonePackage(DummyDonePackage);
+}
+
+void DummyVoidString(string param1) {y2debug("Empty generic void(string) callback");}
+
+void DummyVoidInteger(integer param1) {y2debug("Empty generic void(integer) callback");}
+
+void DummyVoidIntegerString(integer param1, string param2) {y2debug("Empty generic void(integer, string) callback");}
+
+void DummyVoidStringInteger(string param1, integer param2) {y2debug("Empty generic void(string, integer) callback");}
+
+global void SetDummyPatchCallbacks()
+{
+    Pkg::CallbackStartDeltaDownload (DummyVoidStringInteger);
+    Pkg::CallbackProgressDeltaDownload (DummyBooleanInteger);
+    Pkg::CallbackProblemDeltaDownload (DummyVoidString);
+    Pkg::CallbackFinishDeltaDownload (DummyVoid);
+
+    Pkg::CallbackStartDeltaApply (DummyVoidString);
+    Pkg::CallbackProgressDeltaApply (DummyVoidInteger);
+    Pkg::CallbackProblemDeltaApply (DummyVoidString);
+    Pkg::CallbackFinishDeltaApply (DummyVoid);
+
+    Pkg::CallbackStartPatchDownload (DummyVoidStringInteger);
+    Pkg::CallbackProgressPatchDownload (DummyBooleanInteger);
+    Pkg::CallbackProblemPatchDownload (DummyVoidString);
+    Pkg::CallbackFinishPatchDownload (DummyVoid);
+}
+
+symbol DummySourceCreateError(string url, symbol error, string description) {y2debug("Empty SourceCreateError callback, returning `ABORT"); return `ABORT;}
+
+void DummySourceCreateEnd(string url, symbol error, string description) {y2debug("Empty SourceCreateEnd callback");}
+
+global void SetDummySourceCreateCallbacks()
+{
+    Pkg::CallbackSourceCreateStart(DummyVoidString);
+    Pkg::CallbackSourceCreateProgress(DummyBooleanInteger);
+    Pkg::CallbackSourceCreateError(DummySourceCreateError);
+    Pkg::CallbackSourceCreateEnd(DummySourceCreateEnd);
+    Pkg::CallbackSourceCreateInit(DummyVoid);
+    Pkg::CallbackSourceCreateDestroy(DummyVoid);
+}
+
+void DummySourceReportStart(integer source_id, string url, string task) {y2debug("Empty SourceReportStart callback");}
+symbol DummySourceReportError(integer source_id, string url, symbol error, string description) {y2debug("Empty SourceReportError callback, returning `ABORT"); return `ABORT;}
+void DummySourceReportEnd(integer src_id, string url, string task, symbol error, string description) {y2debug("Empty SourceReportEnd callback");}
+
+global void SetDummySourceReportCallbacks()
+{
+    // source report callbacks
+    Pkg::CallbackSourceReportStart(DummySourceReportStart);
+    Pkg::CallbackSourceReportProgress(DummyBooleanInteger);
+    Pkg::CallbackSourceReportError(DummySourceReportError);
+    Pkg::CallbackSourceReportEnd(DummySourceReportEnd);
+    Pkg::CallbackSourceReportInit(DummyVoid);
+    Pkg::CallbackSourceReportDestroy(DummyVoid);
+}
+
+void DummyProgressStart(integer id, string task, boolean in_percent, boolean is_alive, integer min, integer max, integer val_raw, integer val_percent) {y2debug("Empty ProgressStart callback");}
+boolean DummyProgressProgress(integer id, integer val_raw, integer val_percent) {y2debug("Empty ProgressProgress callback, returning true"); return true;}
+
+global void SetDummyProgressReportCallbacks()
+{
+    Pkg::CallbackProgressReportStart(DummyProgressStart);
+    Pkg::CallbackProgressReportProgress(DummyProgressProgress);
+    Pkg::CallbackProgressReportEnd(DummyVoidInteger);
+}
+
+void DummyScriptStart(string patch_name, string patch_version, string patch_arch, string script_path) {y2debug("Empty ScriptStart callback");}
+boolean DummyScriptProgress (boolean ping, string output) {y2debug("Empty ScriptProgress callback, returning true"); return true;}
+boolean DummyMessage(string patch_name, string patch_version, string patch_arch, string message) {y2debug("Empty Message callback"); return true; /* continue */}
+
+global void SetDummyScriptCallbacks()
+{
+    Pkg::CallbackScriptStart(DummyScriptStart);
+    Pkg::CallbackScriptProgress(DummyScriptProgress);
+    Pkg::CallbackScriptProblem(DummyStringString);
+    Pkg::CallbackScriptFinish(DummyVoid);
+
+    Pkg::CallbackMessage(DummyMessage);
+}
+
+global void SetDummyScanDBCallbacks()
+{
+    Pkg::CallbackStartScanDb (DummyVoid);
+    Pkg::CallbackProgressScanDb (DummyBooleanInteger);
+    Pkg::CallbackErrorScanDb (DummyVoidIntegerString);
+    Pkg::CallbackDoneScanDb (DummyVoidIntegerString);
+}
+
+void DummyStartDownload (string url, string localfile) {y2debug("Empty StartDownload callback");}
+boolean DummyProgressDownload (integer percent, integer bps_avg, integer bps_current) {y2debug("Empty ProgressDownload callback, returning true");return true;}
+void DummyDoneDownload (integer error_value, string error_text) {y2debug("Empty DoneDownload callback");}
+
+global void SetDummyDownloadCallbacks ()
+{
+    Pkg::CallbackInitDownload (DummyVoidString);
+    Pkg::CallbackStartDownload (DummyStartDownload);
+    Pkg::CallbackProgressDownload (DummyProgressDownload);
+    Pkg::CallbackDoneDownload (DummyDoneDownload);
+    Pkg::CallbackDestDownload (DummyVoid);
+    Pkg::CallbackStartRefresh(DummyVoid);
+    Pkg::CallbackDoneRefresh(DummyVoid);
+}
+
+
+global void RegisterEmptyProgressCallbacks()
+{
+    SetDummyProcessCallbacks();
+
+    SetDummyProvideCallbacks();
+
+    SetDummyPatchCallbacks();
+
+    SetDummySourceCreateCallbacks();
+
+    SetDummySourceReportCallbacks();
+
+    SetDummyProgressReportCallbacks();
+
+    SetDummyScriptCallbacks();
+
+    SetDummyScanDBCallbacks();
+
+    SetDummyDownloadCallbacks();
+}
+
+global void RestoreProcessCallbacks()
+{
+    Pkg::CallbackProcessStart(nil);
+    Pkg::CallbackProcessProgress(nil);
+    Pkg::CallbackProcessNextStage(nil);
+    Pkg::CallbackProcessDone(nil);
+}
+
+global void RestoreProvideCallbacks()
+{
+    Pkg::CallbackStartProvide(nil);
+    Pkg::CallbackProgressProvide(nil);
+    Pkg::CallbackDoneProvide(nil);
+    Pkg::CallbackStartPackage(nil);
+    Pkg::CallbackProgressPackage(nil);
+    Pkg::CallbackDonePackage(nil);
+}
+
+global void RestorePatchCallbacks()
+{
+    Pkg::CallbackStartDeltaDownload(nil);
+    Pkg::CallbackProgressDeltaDownload(nil);
+    Pkg::CallbackProblemDeltaDownload(nil);
+    Pkg::CallbackFinishDeltaDownload(nil);
+
+    Pkg::CallbackStartDeltaApply(nil);
+    Pkg::CallbackProgressDeltaApply(nil);
+    Pkg::CallbackProblemDeltaApply(nil);
+    Pkg::CallbackFinishDeltaApply(nil);
+
+    Pkg::CallbackStartPatchDownload(nil);
+    Pkg::CallbackProgressPatchDownload(nil);
+    Pkg::CallbackProblemPatchDownload(nil);
+    Pkg::CallbackFinishPatchDownload(nil);
+}
+
+global void RestoreSourceCreateCallbacks()
+{
+    Pkg::CallbackSourceCreateStart(nil);
+    Pkg::CallbackSourceCreateProgress(nil);
+    Pkg::CallbackSourceCreateError(nil);
+    Pkg::CallbackSourceCreateEnd(nil);
+    Pkg::CallbackSourceCreateInit(nil);
+    Pkg::CallbackSourceCreateDestroy(nil);
+}
+
+global void RestoreSourceReportCallbacks()
+{
+    Pkg::CallbackSourceReportStart(nil);
+    Pkg::CallbackSourceReportProgress(nil);
+    Pkg::CallbackSourceReportError(nil);
+    Pkg::CallbackSourceReportEnd(nil);
+    Pkg::CallbackSourceReportInit(nil);
+    Pkg::CallbackSourceReportDestroy(nil);
+}
+
+global void RestoreProgressReportCallbacks()
+{
+    Pkg::CallbackProgressReportStart(nil);
+    Pkg::CallbackProgressReportProgress(nil);
+    Pkg::CallbackProgressReportEnd(nil);
+}
+
+
+global void RestorePreviousProgressCallbacks()
+{
+    RestoreProcessCallbacks();
+
+    RestoreProvideCallbacks();
+
+    RestorePatchCallbacks();
+
+    RestoreSourceCreateCallbacks();
+
+    RestoreSourceReportCallbacks();
+
+    RestoreProgressReportCallbacks();
+
+    ClearScriptCallbacks();
+
+    ResetScanDBCallbacks();
+
+    ResetDownloadCallbacks();
+}
+
+    /**
+     * constructor
+     */
+
+    global void PackageCallbacks()
+    {
+	y2milestone ( "PackageCallbacks constructor" );
+	InitPackageCallbacks();
+    }
+
+
+// EOF
+}

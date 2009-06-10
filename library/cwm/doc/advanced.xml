@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding='ISO-8859-1'?>
+<?xml-stylesheet href="/usr/share/xml/docbook/stylesheet/css/current/driver.css" type="text/css"?>
+<chapter id = "advanced">
+    <title>Advanced stuff</title>
+<section id="widget_help"><title>Helps</title>
+<para>
+Help is usually related to a widget. There is no reason not to add help
+as attribute of a widget description, and move it with the widget between
+dialogs. Each widget description map can have a "help" key, that specifies
+the help related to the widget.
+</para>
+<example><title>Help manipulation</title><screen>
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "CWD_IN_ROOT_PATH" : $[
+    "label" : _("&amp;Current Directory in root's Path"),
+    "widget" : `checkbox,
+    "help" : _("This is help for the widget"),
+  ],
+  .....
+]
+
+list&lt;string&gt; widget_names = // see <xref linkend="simple_dialog"/>
+ </screen></example>
+  <para>
+If you need to add a help that is not bound to any widget, see
+<xref linkend="create_control"/>
+  </para>
+  <para>
+If you don't want to add help to a widget and want to avoid errors in the
+log, add a key <computeroutput>"no_help"</computeroutput> with any value
+to the widget instead.
+<example><title>Widget without help</title><screen>
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "CWD_IN_ROOT_PATH" : $[
+    "label" : _("&amp;Current Directory in root's Path"),
+    "widget" : `checkbox,
+    "no_help" : true,
+  ],
+  .....
+]
+ </screen></example>
+  </para>
+</section>
+
+<section id="validation"><title>Widget validation</title>
+<para>
+Especially in case of more complex widgets, some validation may be important
+to avoid storing any inconsistent settings. Widget validation can be done
+two ways.
+</para>
+<para>
+First means validation function. It can be specified in the widget
+description map. It returns a boolean value, if true, validation is OK,
+false if validation failed. In case of failure it is task of the validation
+function to inform user where the problem is. The validation function has as
+argument the widget key and the event that caused the validation.
+Validation type must be set to `function.
+</para>
+<para>
+Second possibility is to validate widget by type. Supported are validation
+by a regular expression (validation type "regex") and a by list (validation
+type "enum").  This validation is usable eg. for TextEntry and
+ComboBox widgets). Validation type must be set to `regex or `enum,
+validate_typespec must contain a string with regular expression, resp.
+list of valid strings. If validation by type fails and "validate_help" key 
+is defined in the widget description map, then the value of the "validate_help"
+entry in the map is shown to user, otherwise generic error message is shown.
+</para>
+<para>
+If no validation type is defined, validation is always OK.
+</para>
+<example><title>Widget validation</title><screen>
+define boolean MyValidateWidget (string key, map event) {
+    boolean value = UI::QueryWidget (
+        `id (key),
+        `Value);
+    if (! value)
+        return true;
+    else
+    {
+        if (UI::YesNoPopup (_("You decided insert CWD to root's path.
+Are you sure?")))
+            return true;
+        else
+        {
+            UI::SetFocus (key);
+            return false;
+        }
+    }
+}
+
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "CWD_IN_ROOT_PATH" : $[
+    "widget" : `checkbox,
+    "label" : _("&amp;Current Directory in root's Path"),
+    "validate_type" : `function,
+    "validate_function" : MyValidateWidget,
+  ],
+  "TEXT_ENTRY" : $[
+    "widget" : `textentry,
+    "label" : _("&amp;TextEntry"),
+    "validate_type" : `regex,
+    "validate_typespec" : "[a-zA-Z]+",
+    "validate_help" : _("Only a-z and A-Z are allowed.
+String cannot be empty");
+  ],
+  "TEXT_ENTRY_2" : $[
+    "widget" : `textentry,
+    "label" : _("Text&amp;Entry 2"),
+    "validate_type" : `enum,
+    "validate_typespec" : ["Word1", "Word2"],
+  ],
+]
+ </screen></example>
+</section>
+
+<section><title>Widget options</title>
+<para>
+In some cases it is useful to specify the option of the widget, eg.
+`opt(`notify) is quite often used. The "opt" key of the widget description
+map can contain the list of options of the widget. If not set, the options
+are empty ( `opt () ).
+</para>
+
+<example><title>Widget options</title><screen>
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "CWD_IN_ROOT_PATH" : $[
+    "label" : _("&amp;Current Directory in root's Path"),
+    "widget" : `checkbox,
+    "opt" : [ `notify , `immediate],
+  ],
+]
+ </screen></example>
+</section>
+
+
+<section><title>Widget-specific init/store functions</title>
+<para>
+Some (super)widgets (see <xref linkend="radio_buttons"/>)
+can require their own function for
+initializing themselves, or storing their settings. These functions must be set
+in the widget description map. They are specified using key "init" for
+the initialization function, and "store" for the storing functions. The
+functions are defined as function refernces. The init function must have
+as an argument the widget key (string), the store function must have
+two arguments - widget key (string) and event that caused storing the settings
+(map). If widget doesn't have any "init" or "store" function
+specified, generic one is used (see <xref linkend="concept"/>).
+</para>
+
+<example><title>Widget with own init and store functions</title><screen>
+define void MyInitializeWidget (string key) {
+    boolean value = this_global_variable;
+    UI::ChangeWidget (`id (key), `Value, value);
+}
+
+define void MyStoreWidget (string key, map event) {
+    boolean value = UI::QueryWidget (
+        `id (key),
+        `Value);
+    this_global_variable = value;
+}
+
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "CWD_IN_ROOT_PATH" : $[
+    "label" : _("&amp;Current Directory in root's Path"),
+    "widget" : `checkbox,
+    "init" : MyInitializeWidget,
+    "store" : MyStoreWidget,
+  ],
+]
+ </screen></example>
+</section>
+
+<section><title>UI events handling</title>
+<para>
+Especially in case of more complex widgets, it may be useful to handle also
+events that don't switch to other dialog nor should store anything, eg.
+gray/un-gray some widget according to value of a check box. To do this,
+every event, that occurs, must be handled. This handling function can
+be specified in the widget description map. If not defined, no handling
+is done. Note, that the handle event function is run in both of the 
+situations - if the storing is and isn't to be done.
+The handling function must have two parameters the widget key (string) and
+the event that is handler (map).
+Return value of handle
+function is described in <xref linkend="retval_sect"/>.
+</para>
+<para>
+It is also possible to specify the list of events to handle by the widget,
+via the "handle_events" key. If it is empty, or not present, then the
+handle function is called for every generated event.
+</para>
+<example><title>Event handling function</title><screen>
+define symbol MyHandleWidget (string key, map event) {
+    UI::MessagePopup (_("You checked the checkbox. Restart to
+make the change effective ;-)"));
+    return nil;
+}
+
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "CWD_IN_ROOT_PATH" : $[
+    "label" : _("&amp;Current Directory in root's Path"),
+    "widget" : `checkbox,
+    "help" : _("This is help to the widget"),
+    "handle" : MyHandleWidget,
+  ],
+]
+ </screen></example>
+</section>
+
+<section id="retval_sect"><title>Changing the return value</title>
+<para>
+If it is required to quit dialog other way than via the Next,
+Back and Abort buttons, the handle function of a widget
+(eg. push button) must return a symbol value, that can be then passed
+to the wizard sequencer.
+</para>
+<para>
+After every event that triggers exit, except `back, `abort and `cancel,
+the widget validation and status storing will proceed.
+</para>
+<para>
+If the handle function does not want to exit the dialog, it must return
+nil.
+</para>
+<para>
+If a handle function returns a non-nil value, other handle functions won't
+be run (because handle functions are intended for changing the widgets,
+and it doesn't make sense if the dialog will be finished). The handle
+functions are processed in the same order as widgets are specified in
+the argument of CreateWidgets function.
+</para>
+<para>
+The returned value (if not nil) is passed to the store functions as the "ID"
+member of the event map.
+</para>
+
+<example><title>Return value of handle function</title><screen>
+define symbol MyHandleButton (map event) {
+    if (event["ID"]:nil == "PUSH_BUTTON")
+	return `leave_dialog_other_way;
+    else
+	return nil; // don't leave the dialog
+                    // because of this widget
+}
+
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "PUSH_BUTTON" : $[
+    "label" : _("&amp;Exit dialog different way"),
+    "widget" : `push_button,
+    "handle" : MyHandleButton ()),
+  ],
+]
+ </screen></example>
+</section>
+
+<section id="repl_widget"><title>Changing whole widget</title>
+<para>
+In some cases no predefined widget can be used. In this case it is useful
+to allow programmer to create his own widget. He can specify a superwidget.
+</para>
+<para>
+The superwidget can be specified in the widget description map via the
+"custom_widget" keyword, "widget" entry must be set to `custom.
+See <xref linkend="repl_widget_example"/>.
+</para>
+<para>
+In some cases it may be needed to create the widget "on-thefly". It is also
+possible via specifying a function that is run every time a dialog with
+the widget is started. In this case the "widget" entry must be specified
+as `func and "widget_func" entry must contain a reference of a function
+that returns the term to be displayed.
+Also note that if the building of the widget creating function calls
+other functions, that need some time, they aren't called
+when YaST2 component starts, but when it is really needed (but every time
+the widget is displayed).
+</para>
+
+<example id="repl_widget_example"><title>Replacing whole widget</title><screen>
+define term getW2 () {
+    return `VBox (`PushButton (`id (`w), _("W")));
+}
+
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "W1" : $[
+    "widget" : `custom,
+    "custom_widget" : `VBox (`PushButton (`id (`w), _("W"))),
+    "init" : WInit,
+    "store" : WStore,
+  ],
+  "W2" : $[
+    "widget" : `custom,
+    "custom_widget" : getW2,
+    "init" : WInit,
+    "store" : WStore,
+  ],
+];
+ </screen>
+<para>
+These two widgets (W1 and W2) are identical.
+</para></example>
+</section>
+
+<section id="repl_buttons"><title>Replacing, Disabling, and Hiding
+the Back/Abort/Next buttons</title>
+<para>
+To specify the labels of the Abort, Back and Next buttons, use the entries
+"abort_button", "back_button", "next_button" in the map that is passed
+to CWM::ShowAndRun as argument. If any of the keys is not specified, then
+the default button label is set. If the label of the button is empty string
+or nil, then the button is not shown.
+If the entry "disable_buttons" is present, it is a list of the buttons that
+should be disabled (in the "foo_button" form).
+</para>
+<example id="repl_button_example"><title>Replacing the wizard buttons</title><screen>
+CWM::ShowAndRun ($[
+    "back_button" : nil, // will be hidden
+    "next_button" : Label::FinishButton (), // label of the "Next" button
+                   // abort button is not specified, will be "Abort" (default)
+    "disable_buttons" : ["abort_button"],
+    ....
+]);
+ </screen></example>
+</section>
+
+<section><title>Generating UI event after specified timeout</title>
+<para>
+The new UI built-ins allow to emit an event after a specified timeout.
+Getting an event after specified timeout can be useful in order to
+update eg. s status label.
+</para>
+<para>
+To define the timeout, specify the "ui_timeout" entry in the widget description
+map with integer value in seconds specifying the timeout. Note that if there
+are multiple widgets in a dialog with UI timeout set, the lowest timeout is
+used (which means that the timeout event can be generated more often than
+specified).
+</para>
+<example id="ui_timeout_ex"><title>UI Timeout</title><screen>
+define symbol EventHandle (string key, map event) {
+    if (event["ID"] == `timeout)
+    {
+        string status = GetStatus ();
+        UI::ChangeWidget (`id (key), `Value, status);
+    }
+    return nil;
+}
+
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "status" : $[
+    "widget" : `text_entry,
+    "label" : _("Status"),
+    "ui_timeout" : 1, // each 1 second
+    "handle" : EventHandle,
+  ],
+]
+ </screen>
+</example>
+</section>
+
+<section><title>Empty widget</title>
+<para>
+Empty widget is just a `VBox () without any contents. It may be usable for
+handling some events but without displaying anything in the dialog.
+</para>
+<para>
+The only needed attribute to specify is the "widget" entry in the map that
+must have the value `empty. 
+</para>
+<example id="empty_widget_ex"><title>Empty Widget</title><screen>
+define symbol EventHandle (string key, map event) {
+    // to something interesting here
+    return nil;
+}
+
+map&lt;string,map&lt;string,any&gt; &gt; widget_descr = $[
+  "status" : $[
+    "widget" : `empty,
+    "handle" : EventHandle,
+  ],
+]
+ </screen>
+</example>
+</section>
+
+<section id="create_control">
+    <title>More control over the dialog creation</title>
+    <para>
+In some cases it may not be sufficient to use the standard dialog layout
+creation. You may eg. need to add some additional help text. The same
+dalog as in <xref linkend="simple_dialog"/> is created in 
+<xref linkend="simple_dial_adv"/>.
+   </para>
+
+<example id="simple_dial_adv"><title>More control on dialog creation</title><screen>
+// include <xref linkend="simple_widgets"/> here
+
+define symbol runSomeDialog {
+    // create list of maps representing wanted widgets
+    list&lt;map&lt;string,any&gt; &gt; widgets
+        = CWM::CreateWidgets (
+            [ "CWD_IN_ROOT_PATH", "CWD_IN_USER_PATH" ],
+            widget_descr);
+
+    term contents = `VBox (
+        "CWD_IN_ROOT_PATH",
+        "CWD_IN_USER_PATH"
+    );
+    contents = CWM::PrepareDialog (contents, w);
+    string help = CWM::MergeHelps (widgets);
+
+    Wizard::SetContentsButtons ("Dialog", contents, help,
+        "Back", "Next");
+    // here comes additional stuff, eg. renaming the "Abort"
+    // button to "Cancel" if needed
+
+    map functions = $[
+        "initialize" : InitializeWidget,
+        "store" : StoreWidget,
+    ];
+
+    // run the dialog
+    symbol ret = CWM::Run (widgets, functions);
+
+    return ret;
+</screen></example>
+    <para>
+The first step is to process the relevant widgets from the widgets description map
+in order to create the "real" widgets. The second task is to create the dialog term.
+Instead of using widget names and calling CWM::PrepareDialog function, you may
+use the preprocessed widget. In this case you should write
+    </para><screen>
+    term contents = `VBox (
+        "widgets[0. "widget"]:`VBox (),
+        "widgets[1. "widget"]:`VBox (),
+    )
+</screen><para>
+Note that the "widget" entry in preprocessed widget contains the real term.
+</para>
+<para>
+Then function CWM::MergeHelps (list&lt;map&lt;string,any&gt; &gt; widgets) will merge the helps
+of the widgets in the same order as the widgets were specified in the argument
+of the CreateWidgets function. In fact it only concatenates the help attributes
+of the widgets.
+For advanced helps (eg. add some text not related to any widgets)
+programmer must use his own function.
+    </para>
+    <para>
+    Then you can create the dialog (including setting the help and buttons). Additionally,
+you can do any tasks you need (eg. remove the Back button, change the label of the Abort
+button). Fallback handlers are to be set the same way as when use the ShowAndRun wrapper.
+The last step is to start the event loop via the Run function.
+    </para>
+</section>
+
+
+</chapter>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: xml
+sgml-parent-document:("cwm.xml" "book" "chapter")
+sgml-doctype:"cwm.xml"
+End:
+-->

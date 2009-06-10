@@ -1,0 +1,12 @@
+Dump	NetworkInterfaces::Read
+Dir	.network.section: ["eth4"]
+Dir	.network.value."eth4": ["BOOTPROTO", "NAME"]
+Read	.network.value."eth4".BOOTPROTO "dhcp"
+Read	.network.value."eth4".NAME "single quotes aren't good"
+Return	true
+Dump	NetworkInterfaces::Write
+Write	.network.value."eth4".BOOTPROTO "dhcp" true
+Write	.network.value."eth4".NAME "single quotes arent good" true
+Write	.network.value."eth4".STARTMODE "" true
+Write	.network nil true
+Return	true

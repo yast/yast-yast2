@@ -1,0 +1,84 @@
+<html><head>
+<title>Wizard sequencer -- Details</title>
+</head><body bgcolor=#ffffff>
+<!-- Author: Michal Svec <msvec@suse.cz> -->
+<!-- $Id$ -->
+<a name="top"><p>
+<h1>Wizard sequencer -- Details</h1>
+<hr>
+
+<!-- DETAILS -->
+<p><a name="details"><u><h2>Details</h2></u>
+
+As there were many problems with interface and workflow design,
+we would like to outline a possibility of siplifying this task.
+
+<h3>Popups</h3>
+
+Thirst thought is to include all dialogs into the Sequence. For
+example the Popups. With the current design it is quite easy and
+it would unify the overall workflow design.
+
+<h3>Buttons</h3>
+
+Because one of the often changes to the already done workflows
+was some rearragement of dialogs in different order, we want to
+simplify this task a most. Ideally, if one wants to exchange two
+dialogs, he only have to exchange to rows in a map.
+
+But, this demand force us to somehow handle some parts of interface,
+I mean the bottom buttons. Usually, there will be [Back] and [Next].
+But, for example the last dialog can have [Finish]. And if we
+want to transparently exchange two dialogs, we must handle also
+these situations.
+
+<h3>Wizard library</h3>
+
+The Wizard Sequencer is planned to use the Wizard Library a lot.
+As it will setup and drive some parts of interface, the unified
+approach is needed.
+
+The idea is that the Wizard Sequencer will setup some parts of the
+interface and the module the rest (disjunctive) at the best (and
+the most usual) case.
+
+<h3>Processing</h3>
+
+The process will be simple, the developer has to define the dialogs,
+which use the global variable as medium for information exchange and
+which return some symbol. And at last, just call the WS.
+
+The Wizard Sequencer just calls the dialogs depending on the previous
+return state. The [Back] way is handled automaticaly, there is no need
+to define it in the workflow.
+
+<!--
+<h3>Return value</h3>
+
+The return value of Wizard Sequencer is the returned value of the last
+dialog.
+-->
+<h3>Limits</h3>
+
+To satisfy all these requirements, we must accept some (in our eyes
+wise and useful) limits.
+
+First limit or feature is that the workflow will be driven be the
+return values. It is straightforward as this is almost same, how
+some wizards are done now. This imply another (implementation)
+feature -- the data during the sequence will be held in the global
+variable. This is also a common implementation of the current
+wizards.
+
+Another limit is the flow control. We assume that as the user goes
+forward through the flow, the same way he goes backward. This is
+also an evident presumption, the other case would anyway confuse
+the user a lot. See this <a href="examples.html#branch">example</a>
+for details.
+
+And the last limit is are cycles. If the user goes through
+the cycle...
+
+<p><b>FIXME:</b> finish this section
+
+</body></html>

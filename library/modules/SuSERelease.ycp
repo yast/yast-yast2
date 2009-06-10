@@ -1,0 +1,147 @@
+/**
+ * Module:	SuSERelease.ycp
+ *
+ * Authors:	Jiri Srain <jsrain@suse.de>
+ *
+ * Purpose:	Responsible for getting information from the /etc/SuSE-release
+ *              (and similar for other system) file
+ *
+ * $Id$
+ */
+{
+
+module "SuSERelease";
+
+textdomain "base";
+
+import "Stage";
+
+
+/**
+ * Make a nice name for a system out of the long name
+ * @param longname string the long product name
+ * @return string nice product name (to be displayed)
+ */
+string MakeNiceName (string longname) {
+    integer p1 = find (longname, "(");
+    if (p1 == -1) return longname;
+    while (p1 > 1 && substring (longname, p1 - 1, 1) == " ")
+	p1 = p1 - 1;
+    return substring (longname, 0, p1);
+}
+
+/**
+ * Find and get the contents of the release file
+ * @param directory containing the installed system (/ in installed system)
+ * @return string contents of the release file
+ */
+string ReleaseFileContents (string directory) {
+    string ret = "?";
+    foreach (string filename, [
+	"/etc/SuSE-release", "/etc/UnitedLinux-release", "/etc/redhat-release"],
+    {
+	string contents = (string)
+	    SCR::Read (.target.string, [directory + filename, "?"]);
+	if (contents != "?")
+	{
+	    y2milestone ("File with release information: %1", filename);
+	    ret = contents;
+	    break;
+	}
+    });
+    return ret;
+}
+
+/**
+ * Get information about the release for displaying in the selection list
+ *  of found systems
+ * @param directory containing the installed system (/ in installed system)
+ * @return string the release information
+ */
+global string ReleaseInformation (string directory) {
+    string contents = ReleaseFileContents (directory);
+    if (contents != nil && contents != "?")
+    {
+	list lines = splitstring (contents, "\n");
+	return MakeNiceName (lines[0]:"?");
+    }
+    else
+    {
+	return "?";
+    }
+}
+
+/**
+ * Get information about the release for using in the help text
+ * Is limited for the currently running product
+ * @param directory containing the installed system (/ in installed system)
+ * @return string the release information
+ */
+global string ReleaseName () {
+    if (Stage::initial ())
+    {
+	return (string)SCR::Read (.content.PRODUCT);
+    }
+    string contents = ReleaseFileContents ("/");
+    if (contents != "?")
+    {
+	list<string> lines = splitstring (contents, "\n");
+	lines = filter (string l, lines, {return l != "";});
+	list<string> components = splitstring (lines[0]:"", " ");
+	boolean after_version = false;
+	components = maplist (string c, components, {
+	    if (regexpmatch (c, "^[0-9\\.]+$"))
+		after_version = true;
+	    if (after_version)
+		c = nil;
+	    return c;
+	});
+	components = filter (string c, components, {
+	    return c != nil;
+	});
+	return mergestring (components, " ");
+    }
+    else
+    {
+	return "SUSE LINUX";
+    }
+}
+
+/**
+ * Get information about the release
+ * Is limited for the currently running product
+ * @param directory containing the installed system (/ in installed system)
+ * @return string the release information
+ */
+global string ReleaseVersion()
+{
+    if (Stage::initial ())
+    {
+	return (string)SCR::Read (.content.VERSION);
+    }
+
+    string contents = ReleaseFileContents ("/");
+    string version = "";
+
+    if (contents != "?")
+    {
+	list<string> lines = splitstring (contents, "\n");
+	lines = filter (string l, lines, {return l != "";});
+
+	list<string> components = splitstring (lines[0]:"", " ");
+
+	foreach(string c, components,
+	    {
+		if (version == "" && regexpmatch (c, "^[0-9\\.]+$"))
+		{
+		    version = c;
+		}
+	    }
+	);
+    }
+
+    return version;
+}
+
+
+} // EOF

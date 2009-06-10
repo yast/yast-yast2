@@ -1,0 +1,237 @@
+/**
+ * File:	modules/IP.ycp
+ * Module:	yast2
+ * Summary:	IP manipulation routines
+ * Authors:	Michal Svec <msvec@suse.cz>
+ * Flags:	Stable
+ *
+ * $Id$
+ */
+
+{
+
+module "IP";
+textdomain "base";
+
+global string ValidChars = "0123456789abcdefABCDEF.:";
+global string ValidChars4 = "0123456789.";
+global string ValidChars6 = "0123456789abcdefABCDEF:";
+
+/**
+ * Describe a valid IPv4 address
+ * @return string describtion a valid IPv4 address
+ */
+global define string Valid4() ``{
+    //Translators: dot: "."
+    return _("A valid IP address consists of four integers
+in the range 0-255 separated by dots.");
+}
+
+/**
+ * Check syntax of IPv4 address
+ * @param ip IPv4 address
+ * @return true if correct
+ */
+global define boolean Check4(string ip) ``{
+    if(ip == nil || ip == "") return false;
+    string num = "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])";
+    string ipv4 = "^" + num + "(\\." + num + "){3}$";
+    return regexpmatch(ip, ipv4);
+}
+
+/*
+ * Check syntax of IPv4 address (maybe better)
+ * @param ip IPv4 address
+ * @return true if correct
+ */
+/*
+global defin boolean Check4_new(string ip) ``{
+    if(ip == nil || ip == "") return false;
+    string num0 = "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[1-9])";
+    string num1 = "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])";
+    string ipv4 = "^" + num0 + "(\\." + num1 + "){3}$";
+    return regexpmatch(ip, ipv4);
+}
+*/
+
+/**
+ * Check syntax of IPv6 address
+ * @param ip IPv6 address
+ * @return true if correct
+ */
+global define boolean Check6(string ip) ``{
+    if(ip == nil || ip == "") return false;
+
+    //string num = "([1-9a-fA-F][0-9a-fA-F]*|0)";
+    string num = "([0-9a-fA-F]{1,4})";
+
+    /* 1:2:3:4:5:6:7:8 */
+    if(regexpmatch(ip, "^" + num + "(:" + num + "){7}$")) return true;
+    /* ::3:4:5:6:7:8 */
+    if(regexpmatch(ip, "^:(:" + num + "){1,6}$")) return true;
+    /* 1:2:3:4:5:6:: */
+    if(regexpmatch(ip, "^(" + num + ":){1,6}:$")) return true;
+    /* :: only once */
+    if(regexpmatch(ip, "::.*::")) return false;
+    /* : max 7x */
+    if(regexpmatch(ip, "^([^:]*:){8,}")) return false;
+    /* 1:2:3::5:6:7:8 */
+    /* 1:2:3:4:5:6::8 */
+    if(regexpmatch(ip, "^(" + num + ":){1,6}(:" + num + "){1,6}$")) return true;
+
+    return false;
+}
+
+/**
+ * Check syntax of IP address
+ * @param ip IP address
+ * @return true if correct
+ */
+global define boolean Check(string ip) ``{
+    return Check4(ip) || Check6(ip);
+}
+
+
+/**
+ * Convert IPv4 address from string to integer
+ * @param ip IPv4 address
+ * @return ip address as integer
+ */
+global define integer ToInteger(string ip) ``{
+    /* FIXME: Check4, also to Compute* */
+    list l = maplist(string e, splitstring(ip, "."), ``(tointeger(e)));
+    return l[3]:0 + (l[2]:0<<8) + (l[1]:0<<16) + (l[0]:0<<24);
+}
+
+/**
+ * Convert IPv4 address from integer to string
+ * @param ip IPv4 address
+ * @return ip address as string
+ */
+global define string ToString(integer ip) ``{
+    list l = maplist(integer b, [0x1000000, 0x10000, 0x100, 0x1], ``((ip / b) & 0xff));
+    return sformat("%1.%2.%3.%4", l[0]:0, l[1]:0, l[2]:0, l[3]:0);
+}
+
+/**
+ * Converts IPv4 address from string to hex format
+ * @param ip IPv4 address as string in "ipv4" format
+ * @return string representing IP in Hex
+ * @example IP::ToHex("192.168.1.1") -> "0xC0A80101"
+ * @example IP::ToHex("10.10.0.1") -> "0x0A0A0001"
+ */
+global define string ToHex(string ip) ``{
+    string tmp = "00000000" + substring(toupper(tohexstring(ToInteger(ip))), 2);
+    return substring(tmp, size(tmp) - 8);
+}
+
+/**
+ * Compute IPv4 network address from ip4 address and network mask.
+ * @param ip IPv4 address
+ * @param mask netmask
+ * @return computed subnet
+ */
+global define string ComputeNetwork(string ip, string mask) ``{
+    integer i = ToInteger(ip);
+    integer m = ToInteger(mask);
+    return ToString((i & m) & 0xffffffff);
+}
+
+/**
+ * Compute IPv4 broadcast address from ip4 address and network mask.
+ *
+ * The broadcast address is the highest address of network address range.
+ * @param ip IPv4 address
+ * @param mask netmask
+ * @return computed broadcast
+ */
+global define string ComputeBroadcast(string ip, string mask) ``{
+    integer i = ToInteger(ip);
+    integer m = ToInteger(mask);
+    return ToString((i | ~m) & 0xffffffff);
+}
+
+// helper list, each bit has its decimal representation
+list <integer> bit_weight_row = [128, 64, 32, 16, 8, 4, 2, 1];
+
+/**
+ * Converts IPv4 into its 32 bit binary representation.
+ *
+ * @param string ipv4
+ * @return string binary
+ *
+ * @see BitsToIPv4()
+ *
+ * @example
+ *     IPv4ToBits("80.25.135.2")    -> "01010000000110011000011100000010"
+ *     IPv4ToBits("172.24.233.211") -> "10101100000110001110100111010011"
+ */
+global string IPv4ToBits (string ipv4) {
+    if (!Check4(ipv4)) {
+        y2error("Not a valid IPv4: %1", ipv4);
+        return nil;
+    }
+    
+    string ret = "";
+    foreach (string ipv4_part, splitstring(ipv4, "."), {
+        integer ipv4_part_i = tointeger(ipv4_part);
+        foreach (integer try_i, bit_weight_row, {
+            if ((ipv4_part_i / try_i) > 0) {
+                ipv4_part_i = ipv4_part_i % try_i;
+                ret = ret + "1";
+            } else {
+                ret = ret + "0";
+            }
+        });
+    });
+    
+    return ret;
+}
+
+/**
+ * Converts 32 bit binary number to its IPv4 repserentation.
+ *
+ * @param string binary
+ * @return string ipv4
+ *
+ * @see IPv4ToBits()
+ *
+ * @example
+ *     BitsToIPv4("10111100000110001110001100000101") -> "188.24.227.5"
+ *     BitsToIPv4("00110101000110001110001001100101") -> "53.24.226.101"
+ */
+global string BitsToIPv4 (string bits) {
+    if (size(bits) != 32) {
+        y2error("Not a valid IPv4 in Bits: %1", bits);
+        return nil;
+    }
+    if (!regexpmatch(bits, "^[01]+$")) {
+        y2error("Not a valid IPv4 in Bits: %1", bits);
+        return nil;
+    }
+
+    string ipv4 = "";
+    integer position = 0;
+    while (position < 32) {
+        integer ip_part = 0;
+        string eight_bits = substring (bits, position, 8);
+
+        integer counter = -1;
+        while (counter < 8) {
+            counter = counter + 1;
+            string one_bit = substring (eight_bits, counter, 1);
+
+            if (one_bit == "1") {
+                ip_part = ip_part + bit_weight_row[counter]:0;
+            }
+        };
+
+        ipv4 = ipv4 + (ipv4 != "" ? ".":"") + tostring(ip_part);
+        position = position + 8;
+    }
+    
+    return ipv4;
+}
+
+/* EOF */
+}

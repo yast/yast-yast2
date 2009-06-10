@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"/usr/share/xml/docbook/schema/dtd/4.2/docbookx.dtd">
+<section id="library_packages">
+  <title>Packages Manipulation</title>
+  <para>This is a set of basic routines for manipulating packages.</para>
+  <section>
+    <title>Modules</title>
+    <para>The module <emphasis role="b">Package</emphasis> is the module for
+        handling package installation , it works on
+the target system and correctly differentiates between normal and
+autoinstallaton mode.</para>
+    <para><emphasis role="b">PackageSystem</emphasis> is for situations when you need immediate action (for example to start the client).</para>
+    <itemizedlist spacing="compact">
+      <listitem>
+        <para>Package</para>
+      </listitem>
+      <listitem>
+        <para>PackageSystem</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+  <section>
+    <title>Functions</title>
+    <para>The function names should be self-descriptive, so there are no
+        comments here. Feel free to ask if you are in doubts. (FIXME)</para>
+    <section>
+      <title>Package Installation (GUI)</title>
+      <itemizedlist spacing="compact">
+        <listitem>
+          <para id="Module_Package_Install">boolean Package::Install(&lt;string&gt; package);</para>
+        </listitem>
+        <listitem>
+          <para id="Module_Package_InstallAll">boolean Package::InstallAll(list&lt;string&gt; packages);</para>
+        </listitem>
+        <listitem>
+          <para id="Module_Package_InstallAny">boolean Package::InstallAny(list&lt;string&gt; packages);</para>
+        </listitem>
+        <listitem>
+          <para id="Module_Package_Remove">boolean Package::Remove(&lt;string&gt; package);</para>
+        </listitem>
+        <listitem>
+          <para id="Module_Package_RemoveAll">boolean Package::RemoveAll(list&lt;string&gt;
+packages);</para>
+        </listitem>
+      </itemizedlist>
+      <para/>
+    </section>
+    <section>
+      <title>Package Installation (GUI, custom message)</title>
+      <itemizedlist spacing="compact">
+        <listitem>
+          <para id="Module_Package_InstallMsg">boolean Package::InstallMsg(&lt;string&gt; package, &lt;string&gt;
+message);</para>
+        </listitem>
+        <listitem>
+          <para id="Module_Package_InstallAllMsg">boolean Package::InstallAllMsg(list&lt;string&gt; packages,
+&lt;string&gt; message);</para>
+        </listitem>
+        <listitem>
+          <para id="Module_Package_InstallAnyMsg">boolean Package::InstallAnyMsg(list&lt;string&gt; packages,
+&lt;string&gt; message);</para>
+        </listitem>
+        <listitem>
+          <para id="Module_Package_RemoveMsg">boolean Package::RemoveMsg(&lt;string&gt; package, &lt;string&gt;
+message);</para>
+        </listitem>
+        <listitem>
+          <para id="Module_Package_RemoveAllMsg">boolean Package::RemoveAllMsg(list&lt;string&gt; packages,
+&lt;string&gt; message);</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+    <section>
+        <title>Conditional Package Installation</title>
+        <note>
+        <para>GUI based, do not install if Mode::config is defined, only
+            in PackageSystem)</para></note>
+      <itemizedlist spacing="compact">
+        <listitem>
+          <para id="Module_Package_CheckAndInstallPackages">boolean Package::CheckAndInstallPackages (list&lt;string&gt;
+packages);</para>
+        </listitem>
+        <listitem>
+          <para id="Module_Package_CheckAndInstallPackagesInteractive">boolean Package::CheckAndInstallPackagesInteractive (list&lt;string&gt; packages); // with error
+handling</para>
+        </listitem>
+      </itemizedlist>
+      <para/>
+    </section>
+    <section>
+      <title>Packages Installation (No GUI)</title>
+      <itemizedlist spacing="compact">
+        <listitem>
+          <para id="Module_Package_DoInstall">boolean Package::DoInstall(list&lt;string&gt;
+packages);</para>
+        </listitem>
+        <listitem>
+          <para id="Module_Package_DoRemove">boolean Package::DoRemove(list&lt;string&gt; packages);</para>
+        </listitem>
+        <listitem>
+          <para id="Module_Package_DoInstallAndRemove">boolean Package::DoInstallAndRemove(list&lt;string&gt;
+toinstall, list&lt;string&gt; toremove);</para>
+        </listitem>
+      </itemizedlist>
+      <para/>
+    </section>
+    <section>
+      <title>Testing</title>
+      <itemizedlist spacing="compact">
+        <listitem>
+          <para id="Module_Package_Available">boolean Package::Available(&lt;string&gt; package);</para>
+        </listitem>
+        <listitem>
+          <para id="Module_Package_AvailableAll">boolean Package::AvailableAll(list&lt;string&gt;
+packages);</para>
+        </listitem>
+        <listitem>
+          <para id="Module_Package_AvailableAny">boolean Package::AvailableAny(list&lt;string&gt;
+packages);</para>
+        </listitem>
+        <listitem>
+          <para id="Module_Package_Installed">boolean Package::Installed(&lt;string&gt; package);</para>
+        </listitem>
+        <listitem>
+          <para id="Module_Package_InstalledAll">boolean Package::InstalledAll(list&lt;string&gt;
+packages);</para>
+        </listitem>
+        <listitem>
+          <para id="Module_Package_InstalledAny">boolean Package::InstalledAny(list&lt;string&gt;
+packages);</para>
+        </listitem>
+      </itemizedlist>
+      <para/>
+    </section>
+    <section>
+      <title>Other</title>
+      <itemizedlist spacing="compact">
+        <listitem>
+          <para>void RunSUSEconfig();</para>
+        </listitem>
+        <listitem>
+          <para id="Module_Package_LastOperationCanceled">boolean Package::LastOperationCanceled();</para>
+        </listitem>
+        <listitem>
+          <para id="Module_Package_InstallKernel">boolean Package::InstallKernel(list&lt;lt;string&gt;
+kernel_modules);</para>
+        </listitem>
+      </itemizedlist>
+      <para/>
+    </section>
+  </section>
+</section>

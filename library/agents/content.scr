@@ -1,0 +1,29 @@
+/**
+ * File:	content.scr
+ * Summary:	Agent for reading/writing /content
+ * Access:	read only
+ * Author:	Klaus Kaempf <kkaempf@suse.de>
+ *
+ * Example:
+ *   Dir(.content)
+ *   (["PRODUCT", "VERSION", ...])
+ **
+ *   Read(.content.PRODUCT)
+ *   ("8.1")
+ *
+ * $Id$
+ */
+.content
+
+`ag_ini(
+    `IniAgent( "/content",
+	$[
+	    "options" : [ "read_only", "global_values", "flat" ],
+	    "comments" : [ "^#.*", "^[ \t]*$", ],
+	    "params" : [
+		// Bugzilla #305495 comments #8 and #9
+		$[ "match" : [ "^[ \t]*([^ \t]+)[ \t]*(.*)[ \t]*$", "%s %s" ] ]
+	    ]
+	]
+    )
+)

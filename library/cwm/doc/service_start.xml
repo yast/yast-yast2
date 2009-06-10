@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding='ISO-8859-1'?>
+<?xml-stylesheet href="/usr/share/xml/docbook/stylesheet/css/current/driver.css" type="text/css"?>
+<chapter id = "service_start">
+  <title>Advanced Service Starting Widgets</title>
+  <para>
+CWMServiceStart is a set of widgets for CWM that can be used for setting
+service start-on-boot and immediately start/stop a service.
+It handles all the needed stuff via specified callback functions
+and via the Service module.
+  </para>
+<section>
+  <title>Service start on boot</title>
+  <para>
+To create a widget for setting if service should be started on boot,
+use the CWMServiceStart::CreateAutoStartWidget () function. This function
+has one argument (a map from string to any).
+  </para>
+<example id="service_auto_start">
+  <title>Usage of the Service Start-on-Boot widget</title>
+<screen>
+boolean GetStartService () {...}
+boolean SetStartService (boolean start) {...}
+
+map&lt;string,any&gt; widget = CWMServiceStart::CreateAutoStartWidget ($[
+    "get_service_auto_start" : DhcpServer::GetStartService,
+    "set_service_auto_start" : DhcpServer::SetStartService,
+    "start_auto_button" : _("Start DHCP Server when &amp;Booting"),
+    "start_manual_button" : _("Start DHCP Server &amp;Manually"),
+    "help" : _("Help to the widget..."),
+]);
+ </screen>
+</example>
+  <para>
+The parameters for service starting are following:
+    <itemizedlist>
+      <listitem><para><computeroutput>
+"get_service_auto_start"
+      </computeroutput>
+is reference to a function with no parameter returning boolean value that says
+if the service is started. It is mandatory.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"set_service_auto_start"
+      </computeroutput>
+is reference to a function with one boolean parameter saying if the service
+should be started at boot and return type void. It is mandatory.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"get_service_start_via_xinetd"
+      </computeroutput>
+is reference to a function with no parameter returning boolean value that says
+if the service is started via xinetd. It is optional, if not present, the xinetd
+part of the widget is not shown
+      </para></listitem>
+      <listitem><para><computeroutput>
+"set_service_start_via_xinetd"
+      </computeroutput>
+is a reference to a function with one boolean parameter saying if the service
+should be started via xinetd and return type void. It is optional. If it is
+setting the value to true, "set_service_auto_start" is set to false.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"start_auto_button"
+      </computeroutput>
+contains the label of the "Start on boot" radio button. If not present,
+generic label is used.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"start_manual_button"
+      </computeroutput>
+contains the label of the "Start only manually" radio button. If not present,
+generic label is used.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"start_xinetd_button"
+      </computeroutput>
+contains the label of the "Start via xinetd" radio button. If not present,
+generic label is used. Used only if "get_service_start_via_xinetd"
+is defined.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"help"
+      </computeroutput>
+contains the help to the widget. If not present, generic help is used.
+Note that if you change the labels of the buttons, you must specify the help.
+You can use CWMServiceStart::AutoStartHelpTemplate () and sformat to change
+only the button labels.
+      </para></listitem>
+    </itemizedlist>
+  </para>
+</section>
+<section>
+  <title>LDAP support</title>
+<para>
+To create a widget for enabling or disabling the LDAP support,
+use the CWMServiceStart::CreateLdapWidget () function. This function
+has one argument (a map from string to any).
+</para>
+<example id="service_start_ldap">
+  <title>Usage of the LDAP enablement widget</title>
+<screen>
+global define void SetUseLdap (boolean use_ldap) {...}
+global define boolean GetUseLdap () {...}
+
+map&lt;string,any&gt; widget = CWMServiceStart::CreateWidget ($[
+    "get_use_ldap" : GetUseLdap,
+    "set_use_ldap" : SetUseLdap,
+    "use_ldap_checkbox" : _("Read DHCP Settings from &amp;LDAP"),
+    "help" : _("Help to the widget..."),
+]);
+ </screen>
+</example>
+  <para>
+The parameters for LDAP support are following:
+    <itemizedlist>
+      <listitem><para><computeroutput>
+"get_use_ldap"
+      </computeroutput>
+is reference to a function with no parameter returning boolean value that says 
+if LDAP support is enabled. If it is missing, LDAP check-box is not shown.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"set_use_ldap"
+      </computeroutput>
+is reference to a function with one boolean parameter saying if the LDAP support
+should be active and return type void. If it is missing, LDAP check-box is not
+shown.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"use_ldap_checkbox"
+      </computeroutput>
+contains the label of the "Use LDAP" check-box. If not present, generic label
+is used.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"help"
+      </computeroutput>
+contains the help to the widget. If not present, generic help is used.
+Note that if you change the label of the check box, you must specify the help.
+You can use CWMServiceStart::EnableLdapHelpTemplate () and sformat to change
+only the check box label.
+      </para></listitem>
+    </itemizedlist>
+  </para>
+</section>
+<section>
+  <title>Immediate actions</title>
+  <para>
+To create a widget for displaying service status and immediate starting
+or stopping the service,
+use the CWMServiceStart::CreateStartStopWidget () function. This function
+has one argument (a map from string to any).
+  </para>
+<example id="service_start_basic">
+  <title>Usage of the Immediate Actions Widget</title>
+<screen>
+define void SaveAndRestart () {...}
+
+map&lt;string,any&gt; widget = CWMServiceStart::CreateStartStopWidget ($[
+    "service_id" : "dhcpd",
+    "service_running_label" : _("DHCP Server is running"),
+    "service_not_running_label" : _("DHCP Server is not running"),
+    "start_now_button" : _("&amp;Start DHCP Server Now"),
+    "stop_now_button" : _("S&amp;top DHCP Server Now"),
+    "save_now_action" : SaveAndRestart,
+    "save_now_button" : _("Save and Restart DHCP Server &amp;Now"),
+    "help" : _("Help to the widget..."),
+]);
+ </screen>
+</example>
+  <para>
+The parameters for Immediate actions are following:
+    <itemizedlist>
+      <listitem><para><computeroutput>
+"service_id"
+      </computeroutput>
+is the service name to be passed as argument for functions of the Service
+module. If it is missing, the service status and immediate actions buttons
+are not shown.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"service_running_label"
+      </computeroutput>
+label to be displayed if the service is running. If it is missing, generic
+label is used.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"service_not_running_label"
+      </computeroutput>
+label to be displayed if the service is not running. If it is missing, generic
+label is used.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"start_now_button"
+      </computeroutput>
+label of the "Start service now" button. If it is missing, generic
+label is used.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"stop_now_button"
+      </computeroutput>
+label of the "Stop service now" button. If it is missing, generic
+label is used.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"save_now_action"
+      </computeroutput>
+is a reference to function without any parameters with void return type.
+Its task is to save all changes and restart the service.
+It is is missing, the "Save and restart service now" button is not shown.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"start_now_action"
+      </computeroutput>
+is a reference to function, without any parameters with void return type.
+Its task is to restart the service.
+If it is missing, generic function using the
+<computeroutput>"service_id"</computeroutput> parameter is used.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"stop_now_action"
+      </computeroutput>
+is a reference to function, without any parameters with void return type.
+Its task is to stop the service.
+If it is missing, generic function using the
+<computeroutput>"service_id"</computeroutput> parameter is used.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"save_now_button"
+      </computeroutput>
+label of the "Save and restart service now" button. If it is missing, generic
+label is used.
+      </para></listitem>
+      <listitem><para><computeroutput>
+"help"
+      </computeroutput>
+contains the help to the widget. If not present, generic help is used.
+Note that if you change the labels of the buttons, you must specify the help.
+You can use CWMServiceStart::StartStopHelpTemplate () and sformat to change
+only the button labels.
+      </para></listitem>
+    </itemizedlist>
+  </para>
+</section>
+</chapter>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: xml
+sgml-parent-document:("cwm.xml" "book" "chapter")
+sgml-doctype:"cwm.xml"
+End:
+-->

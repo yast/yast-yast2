@@ -1,0 +1,50 @@
+{
+
+include "testsuite.ycp";
+import "Integer";
+
+DUMP("Integer::Range");
+TEST(``(Integer::Range(0)), [], nil);
+TEST(``(Integer::Range(10)), [], nil);
+
+DUMP("Integer::RangeFrom");
+TEST(``(Integer::RangeFrom(5, 10)), [], nil);
+
+DUMP("Integer::IsPowerOfTwo");
+TEST(``(Integer::IsPowerOfTwo(0)), [], nil);
+TEST(``(Integer::IsPowerOfTwo(1)), [], nil);
+TEST(``(Integer::IsPowerOfTwo(2)), [], nil);
+TEST(``(Integer::IsPowerOfTwo(3)), [], nil);
+TEST(``(Integer::IsPowerOfTwo(4)), [], nil);
+
+TEST(``(Integer::IsPowerOfTwo(1024-1)), [], nil);
+TEST(``(Integer::IsPowerOfTwo(1024)), [], nil);
+TEST(``(Integer::IsPowerOfTwo(1024+1)), [], nil);
+
+TEST(``(Integer::IsPowerOfTwo(1024*1024*1024*1024-1)), [], nil);
+TEST(``(Integer::IsPowerOfTwo(1024*1024*1024*1024)), [], nil);
+TEST(``(Integer::IsPowerOfTwo(1024*1024*1024*1024+1)), [], nil);
+
+DUMP("Integer::Sum");
+TEST(``(Integer::Sum([])), [], nil);
+TEST(``(Integer::Sum([ 1 ])), [], nil);
+TEST(``(Integer::Sum([ 2, 3 ])), [], nil);
+
+DUMP("Integer::Min");
+TEST(``(Integer::Min([1])), [], nil);
+TEST(``(Integer::Min([1, 2])), [], nil);
+TEST(``(Integer::Min([2, 1])), [], nil);
+
+DUMP("Integer::Max");
+TEST(``(Integer::Max([1])), [], nil);
+TEST(``(Integer::Max([1, 2])), [], nil);
+TEST(``(Integer::Max([2, 1])), [], nil);
+
+DUMP("Integer::Clamp");
+TEST(``(Integer::Clamp(1, 2, 4)), [], nil);
+TEST(``(Integer::Clamp(2, 2, 4)), [], nil);
+TEST(``(Integer::Clamp(3, 2, 4)), [], nil);
+TEST(``(Integer::Clamp(4, 2, 4)), [], nil);
+TEST(``(Integer::Clamp(5, 2, 4)), [], nil);
+
+}

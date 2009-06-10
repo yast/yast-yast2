@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+ "/usr/share/xml/docbook/schema/dtd/4.2/docbookx.dtd">
+
+<section id="Runlevel-Section">
+ <title>Runlevel Editor Library</title>
+
+ <para>If you need to activate or de-activate services in YaST, use module
+  <emphasis>Service</emphasis>. It is a replacement for the old client
+  <emphasis>runlevel_adjust</emphasis> that you should have been using before
+  You may also use it to obtain information about services. Following
+  functions are self-containing.
+ </para>
+
+ <note>
+  <para>
+   You do not need to run <literal
+   id="Module_Service_Read">Service::Read</literal> if you want to use any
+   of them.
+  </para>
+ </note>
+
+ <section>
+  <title>Enabling/Disabling Service</title>
+  <para>
+   <literal id="Module_Service_Adjust">Service::Adjust (string name,
+   string action)</literal> does some operation with init script.
+   <emphasis>name</emphasis> is the name of the init script.
+   <emphasis>action</emphasis> is one of:
+  </para>
+
+  <itemizedlist>
+   <listitem>
+    <para>
+     <emphasis>"enable"</emphasis></para><para> enables service, which means
+     that if service is not set to run in any runlevel, it will set it to run
+     in default runlevels. Otherwise it will not touch the service. Use it
+     when you want the service to run, because it preserves user-defined
+     state. If user sets service to run in some non-default runlevels, this
+     will not destroy her own settings.
+    </para>
+   </listitem>
+
+   <listitem>
+    <para>
+     <emphasis>"disable"</emphasis></para><para> disables service, which
+     means that it sets it not to run in any runlevel.
+    </para>
+   </listitem>
+
+   <listitem>
+    <para>
+     <emphasis>"default"</emphasis></para><para> sets service to run in its
+     default runlevels, which are the runlevels listed in init script comment,
+     fiels Default-Start.
+    </para>
+   </listitem>
+  </itemizedlist>
+
+  <para>
+   <emphasis>"enable"</emphasis> and <emphasis>"disable"</emphasis> take
+   no action when init script links are OK, but <emphasis>"default"</emphasis>
+   always runs <command>insserv</command>.
+  </para>
+
+  <informalexample>
+    <para><link linkend="Module_Service_Adjust">Service::Adjust</link> ("cups",
+     "disable");</para>
+  </informalexample>
+ </section>
+
+ <section>
+  <title>Specifying Runlevels for Service</title>
+  <para>
+   <literal id="Module_Service_Finetune">Service::Finetune
+   (string name, list rl)</literal>
+   sets service to run in list <emphasis>rl</emphasis>.
+   <emphasis>rl</emphasis> is list of strings.
+  </para>
+
+  <informalexample>
+   <para>
+    <link linkend="Module_Service_Finetune">Service::Finetune</link>
+    ("cups", [ "5" ]);</para>
+  </informalexample>
+
+  <informalexample>
+   <para>
+    <link linkend="Module_Service_Finetune">Service::Finetune</link>
+    ("cups", [ "S", "3", "5" ]);
+   </para>
+  </informalexample>
+ </section>
+
+ <section>
+  <title>Init Script Actions</title>
+  <para>
+   <literal id="Module_Service_RunInitScript">Service::RunInitScript
+   (string name, string param)</literal>
+   runs init script <emphasis>name</emphasis>
+   with parameter <emphasis>param</emphasis>. Returns init scripts exit
+   value. I do not think it is worth to import module
+   <emphasis>Service</emphasis> only because of this one function when you
+   may simply call <emphasis>SCR::Execute (.target.bash, ...)</emphasis>
+   with the same result. But if you use Service for something else, this
+   function may increase readability of the code.
+  </para>
+
+  <informalexample>
+   <para>
+    <link linkend="Module_Service_RunInitScript">Service::RunInitScript</link>
+    ("cups", "restart");
+   </para>
+  </informalexample>
+ </section>
+
+ <section>
+  <title>Service Info</title>
+  <para>
+   <literal id="Module_Service_Status">Service::Status (string name)</literal>,
+   <literal id="Module_Service_Info">Service::Info (string name) </literal> and
+   <literal id="Module_Service_FullInfo">Service::FullInfo
+   (string name)</literal>
+  </para>
+
+  <para>
+   <link linkend="Module_Service_Status">Service::Status</link> tells whether
+   service runs. It calls init script status and returns exit value.
+  </para>
+
+  <para>
+   <link linkend="Module_Service_Info">Service::Info</link> returns
+   information about service. The map contains:
+  </para>
+
+  <programlisting>$[ "defstart" : [ ... ], // list of strings
+   "defstop"  : [ ... ], // list of default runlevels
+
+   "start"    : [ ... ], // list of strings
+   "stop"     : [ ... ], // list of real runlevels
+
+   "reqstart" : [ ... ], // list of strings
+   "reqstop"  : [ ... ], // prerequisites
+
+   "description": string,// description
+]</programlisting>
+
+  <para>
+   Values "def{start|stop}", "req{start|stop}" and "description" are taken
+   from init script comments. "start" and "stop" are taken from links.
+   <link linkend="Module_Service_FullInfo">Service::FullInfo</link> combines
+   info from <link linkend="Module_Service_Info">Service::Info</link> and
+   <link linkend="Module_Service_Status">Service::Status</link> into one map.
+   It adds key <emphasis>"started"</emphasis> with integeral value of
+   <emphasis>script status</emphasis>. Service is enabled if
+   <emphasis>"start"</emphasis> is not empty.
+  </para>
+ </section>
+
+ <section>
+  <title>Is Service Enabled?</title>
+  <para>
+   <literal id="Module_Service_Enabled">Service::Enabled
+   (string name)</literal> returns true if service is set to run in any
+   runlevel. False otherwise.
+  </para>
+ </section>
+
+ <section>
+  <title>Example of Usage</title>
+  <programlisting>import "Service";
+
+boolean Read () {
+        if (0 != <link linkend="Module_Service_RunInitScript">Service::RunInitScript</link> ("foo", "restart"))
+        {
+                y2error ("Can not start service");
+                return false;
+        }
+        // ... your code ...
+}
+
+boolean Write () {
+        // ... write settings ...
+
+        // set service to correct state
+        if (start_it)
+        {
+                // enable service
+                <link linkend="Module_Service_Adjust">Service::Adjust</link> ("foo", "enable");
+                // reload changed settings
+                <link linkend="Module_Service_RunInitScript">Service::RunInitScript</link> ("foo", "reload");
+        }
+        else
+        {
+                // disable service
+                <link linkend="Module_Service_Adjust">Service::Adjust</link> ("foo", "disable");
+                // and stop it
+                <link linkend="Module_Service_RunInitScript">Service::RunInitScript</link> ("foo", "stop");
+        }
+}</programlisting>
+ </section>
+
+ <section>
+  <title>What Should You Know?</title>
+  <para>
+   It has sense to run some services only in case that some other service
+   runs. Now the only case known to me is <emphasis>portmap</emphasis>
+   that is needed by NFS, NIS and others. Runlevel UI cares about this
+   case. But if you use functions like <link
+   linkend="Module_Service_Adjust">Service::Adjust</link>, you must take
+   care about these dependencies yourself. If you know about other
+   dependencies, let me know, I will implement them in UI.
+  </para>
+
+  <para>
+   Just for your info: Runleve UI warns user who wants to stop service
+   <emphasis>xdm</emphasis>. If you know about another cases where it is wise
+   idea to warn user, please let us know... 
+  </para>
+ </section>
+</section>

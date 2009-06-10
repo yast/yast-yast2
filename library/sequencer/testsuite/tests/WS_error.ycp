@@ -1,0 +1,8 @@
+{
+
+include "testsuite.ycp";
+import "Sequencer";
+
+TEST(``(Sequencer::WS_error("testsuite message")), [], nil);
+
+}

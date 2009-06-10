@@ -1,0 +1,196 @@
+/**
+ * File:	modules/LogViewCore.ycp
+ * Package:	YaST2
+ * Summary:	Displaying a log
+ * Authors:	Jiri Srain <jsrain@suse.cz>
+ *		Arvin Schnell <aschnell@suse.de>
+ *
+ * $Id: LogViewCore.ycp 45503 2008-03-17 09:46:23Z aschnell $
+ */
+{
+    module "LogViewCore.ycp";
+
+    textdomain "base";
+
+    import "Report";
+
+
+    /**
+     * default value of maximum displayed lines
+     */
+    integer max_lines_default = 100;
+
+
+    /**
+     * lines of the log
+     */
+    list<string> lines = [];
+
+
+    /**
+     * data describing log:
+     *   file:       filename to read from
+     *   grep:       grep file with expression
+     *   command:    command to run (use instead of file and grep)
+     *   max_lines:  max lines to keep (0 -> infinite)
+     */
+    map<string, any> data = $[];
+
+
+    /**
+     * id of background process
+     */
+    integer id = nil;
+
+
+    /**
+     * flag indicating if background process is (or should be) running
+     */
+    boolean is_running = false;
+
+
+    list<string> GetNewLines()
+    {
+	if (!is_running)
+	{
+	    return [];
+	}
+
+	if (!(boolean) SCR::Read(.process.running, id))
+	{
+	    is_running = false;
+	    Report::Error(_("Error occurred while reading the log."));
+	    return [];
+	}
+
+	list<string> new_lines = [];
+
+	while(true)
+	{
+	    string line = (string) SCR::Read(.process.read_line, id);
+	    if (line == nil)
+		break;
+
+	    new_lines = add(new_lines, line);
+	}
+
+	return new_lines;
+    }
+
+
+    /**
+     * Remove unneeded items from a list of lines
+     * If max_lines is 0, then don't remove anything
+     */
+    void DeleteOldLines()
+    {
+	integer max_lines = data["max_lines"]:max_lines_default;
+	if (max_lines == 0)
+	    return;
+
+	if (size(lines) - max_lines - 1 > 0)
+	    lines = sublist(lines, size(lines) - max_lines - 1);
+    }
+
+
+    /**
+     * Starts the log reading command via process agent.
+     *
+     * The LogView widget must exist when calling this function. The `MaxLines
+     * parameter of the widget will be set.
+     */
+    global void Start(term widget, map<string, any> d)
+    {
+	if (id != nil)
+	{
+	    SCR::Execute(.process.release, id);
+	    id = nil;
+	}
+
+	data = d;
+
+	string file = data["file"]:"";
+	string grep = data["grep"]:"";
+	string command = data["command"]:"";
+	integer max_lines = data["max_lines"]:max_lines_default;
+
+	if (command == "")
+	{
+	    if (grep == "")
+	    {
+		command = sformat("tail -n %1 -f '%2'", max_lines, file);
+	    }
+	    else
+	    {
+		command = sformat("tail -n +0 -f '%1' | grep --line-buffered '%2'", file, grep);
+
+		if (max_lines != 0)
+		{
+		    string lc_command = sformat ("cat '%1' | grep '%2' | wc -l", file, grep);
+		    map bash_output = (map) SCR::Execute (.target.bash_output, lc_command);
+		    if (bash_output["exit"]:1 == 0)
+		    {
+			string lc = filterchars (bash_output["stdout"]:"", "1234567890");
+			integer lines_count = tointeger (lc);
+
+			// don't know why without doubling it discards more lines,
+			// out of YaST2 it works
+			lines_count = lines_count - 2 * max_lines;
+			if (lines_count < 0)
+			    lines_count = 0;
+
+			if (lines_count > 0)
+			    command = command + sformat(" | tail -n +%1", lines_count);
+		    }
+		}
+	    }
+	}
+
+	y2milestone ("Calling process agent with command %1", command);
+
+	id = (integer) SCR::Execute (.process.start_shell, command, $[ "tty" : true ]);
+	is_running = true;
+
+	sleep(100);
+
+	lines = GetNewLines();
+	DeleteOldLines();
+
+	UI::ChangeWidget(widget, `MaxLines, max_lines);
+	UI::ChangeWidget(widget, `Value, mergestring(
+			     maplist(string line, lines, { return line + "\n"; } ), ""));
+    }
+
+
+    global void Update(term widget)
+    {
+	if (id != nil)
+	{
+	    list<string> new_lines = GetNewLines();
+	    if (size(new_lines) > 0)
+	    {
+		lines = (list<string>) merge(lines, new_lines);
+		DeleteOldLines();
+
+		UI::ChangeWidget(widget, `LastLine, mergestring(
+				     maplist(string line, new_lines, { return line + "\n"; } ), ""));
+	    }
+	}
+    }
+
+
+    global void Stop()
+    {
+	if (id != nil)
+	{
+	    SCR::Execute(.process.release, id);
+	    id = nil;
+	}
+    }
+
+
+    global list<string> GetLines()
+    {
+	return lines;
+    }
+}

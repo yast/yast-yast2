@@ -1,0 +1,272 @@
+/**
+ * File:	modules/PortAliases.ycp
+ * Package:	Ports Aliases.
+ * Summary:	Definition of Port Aliases.
+ * Authors:	Lukas Ocilka <locilka@suse.cz>
+ *
+ * $Id$
+ *
+ * Global Definition of Port Aliases for services taken from /etc/services.
+ * /etc/services are defined by IANA http://www.iana.org/assignments/port-numbers.
+ * This module provides full listing of port aliases (supporting also multiple
+ * aliases like "http", "www" and "www-http" for port 80). 
+ * Results are cached, so repeated requests are answered faster.
+ */
+
+{
+    module "PortAliases";
+    textdomain "base";
+
+    import "SCR";
+
+    /* an internal service aliases map for port-numbers pointing to port-names,
+	aliases are separated by space */
+    define map <integer, string> SERVICE_PORT_TO_NAME = $[
+	22	:	"ssh",
+	25	:	"smtp",
+	53	:	"domain",
+	67	:	"bootps",
+	68	:	"bootpc",
+	69	:	"tftp",
+	80	:	"http www www-http",
+	110	:	"pop3",
+	111	:	"sunrpc",
+	123	:	"ntp",
+	137	:	"netbios-ns",
+	138	:	"netbios-dgm",
+	139	:	"netbios-ssn",
+	143	:	"imap",
+	389	:	"ldap",
+	443	:	"https",
+	445	:	"microsoft-ds",
+	500	:	"isakmp",
+	631	:	"ipp",
+	636	:	"ldaps",
+	873	:	"rsync",
+	993	:	"imaps",
+	995	:	"pop3s",
+	3128	:	"ndl-aas",
+	4500	:	"ipsec-nat-t",
+	8080	:	"http-alt",
+    ];
+
+    /* an internal service aliases map for port-names pointing to port-numbers */
+    define map <string, integer> SERVICE_NAME_TO_PORT = $[
+	"ssh"		:	22,
+	"smtp"		:	25,
+	"domain"	:	53,
+	"bootps"	:	67,
+	"bootpc"	:	68,
+	"tftp"		:	69,
+	"http"		:	80,
+	"www"		:	80,
+	"www-http"	:	80,
+	"pop3"		:	110,
+	"sunrpc"	:	111,
+	"ntp"		:	123,
+	"netbios-ns"	:	137,
+	"netbios-dgm"	:	138,
+	"netbios-ssn"	:	139,
+	"imap"		:	143,
+	"ldap"		:	389,
+	"https"		:	443,
+	"microsoft-ds"	:	445,
+	"isakmp"	:	500,
+	"ipp"		:	631,
+	"ldaps"		:	636,
+	"rsync"		:	873,
+	"imaps"		:	993,
+	"pop3s"		:	995,
+	"ndl-aas"	:	3128,
+	"ipsec-nat-t"	:	4500,
+	"http-alt"	:	8080,
+    ];
+
+    /* This variable contains characters allowed in port-names, backslashed for regexpmatch() */
+    string allowed_service_regexp = "^[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\*\/\+\._-]*$";
+
+    /**
+     * Function returns if the port name is allowed port name (or number).
+     *
+     * @return	boolean if allowed
+     */
+    global define boolean IsAllowedPortName(string port_name) {
+	if (port_name == nil) {
+	    y2error ("Invalid port name: %1", port_name);
+	    return false;
+	// port is number
+	} else if (regexpmatch(port_name, "^[0123456789]+$")) {
+	    integer port_number = tointeger(port_name);
+	    // checking range
+	    return (port_number>=0 && port_number<=65535);
+	// port is name
+	} else {
+	    return (regexpmatch(port_name, allowed_service_regexp));
+	}
+    }
+
+    /**
+     * Function returns string describing allowed port name or number.
+     *
+     * @return	string with description
+     */
+    global define string AllowedPortNameOrNumber () {
+	// TRANSLATORS: popup informing message, allowed characters for port-names
+	return _("A port name may consist of the characters 'a-z', 'A-Z', '0-9', and '*+._-'.
+A port number may be a number from 0 to 65535.
+No spaces are allowed.
+");
+    }
+
+    /* Internal function for preparing string for grep command */
+    string QuoteString (string port_name) {
+	port_name = mergestring (splitstring(port_name, "\""), "\\\"");
+	port_name = mergestring (splitstring(port_name, "*"), "\\*");
+	port_name = mergestring (splitstring(port_name, "."), "\\.");
+	return port_name;
+    }
+
+    /* Internal function for loading unknown ports into memory and returning them as list[string] */
+    string LoadAndReturnPortToName (integer port_number) {
+	string command = "grep \"^[^#].*[ \\t]" + port_number + "\/\" /etc/services | sed \"s/\\([^ \\t]*\\)[ \\t]*.*/\\1/\"";
+	map found = (map) SCR::Execute(.target.bash_output, command);
+	list <string> aliases = [];
+
+	if (found["exit"]:0 == 0) {
+	    foreach (string alias, splitstring(found["stdout"]:"", "\n"), {
+		if (alias == "") return;
+		aliases = add(aliases, alias);
+	    });
+	} else {
+	    y2error("Services Command: %1 -> %2", command, found["stderr"]:"");
+	    return nil;
+	}
+
+	// store results for later requests
+	SERVICE_PORT_TO_NAME[port_number] = mergestring(toset(aliases), " ");
+
+	return SERVICE_PORT_TO_NAME[port_number]:"";
+    }
+
+    /* Internal function for loading unknown ports into memory and returning them as integer */
+    integer LoadAndReturnNameToPort (string port_name) {
+	if (! IsAllowedPortName(port_name)) {
+	    y2error("Disallwed port-name '%1'", port_name);
+	    return nil;
+	}
+
+	string command = "grep --perl-regexp \"^" + QuoteString(port_name) + "[ \\t]\" /etc/services | sed \"s/[^ \\t]*[ \\t]*\\([^\/ \\t]*\\).*/\\1/\"";
+	map found = (map) SCR::Execute(.target.bash_output, command);
+	integer alias_found = nil;
+
+	if (found["exit"]:0 == 0) {
+	    foreach (string alias, splitstring(found["stdout"]:"", "\n"), {
+		if (alias == "") return;
+		alias_found = tointeger(alias);
+	    });
+	} else {
+	    y2error("Services Command: %1 -> %2", command, found["stderr"]:"");
+	    return nil;
+	}
+
+	// store results for later requests
+	SERVICE_NAME_TO_PORT[port_name] = alias_found;
+
+	return alias_found;
+    }
+
+    list <string> cache_not_allowed_ports = [];
+
+    /**
+     * Function returns list of aliases (port-names and port-numbers) for
+     * requested port-number or port-name. Also the requested name or port is returned.
+     *
+     * @param	string port-number or port-name
+     * @return	list [string] of aliases
+     */
+    global define list <string> GetListOfServiceAliases (string port) {
+	list <string> service_aliases = [ port ];
+	integer port_number = nil;
+
+	// service is a port number
+	if (regexpmatch(port, "^[0123456789]+$")) {
+	    port_number = tointeger(port);
+
+	    string sport_name = SERVICE_PORT_TO_NAME[port_number]:LoadAndReturnPortToName(port_number);
+
+	    if (sport_name != nil) {
+		service_aliases = (list<string>) union (
+		    service_aliases,
+		    splitstring (
+			sport_name,
+			" "
+		    )
+		);
+	    }
+	// service is a port name, any space isn't allowed
+	} else if (IsAllowedPortName(port)) {
+	    integer found_alias_port = SERVICE_NAME_TO_PORT[port]:LoadAndReturnNameToPort(port);
+	    if (found_alias_port != nil) {
+		service_aliases = add (service_aliases,tostring(found_alias_port));
+
+		// search for another port-name aliases when port-number found
+		service_aliases = (list<string>) union (
+		    service_aliases,
+		    splitstring (
+			SERVICE_PORT_TO_NAME[found_alias_port]:LoadAndReturnPortToName(found_alias_port),
+			" "
+		    )
+		);
+	    }
+	} else {
+	    if (!contains(cache_not_allowed_ports, port)) {
+		cache_not_allowed_ports = add (cache_not_allowed_ports, port);
+		y2error("Port name '%1' is not allowed", port);
+	    } else {
+		y2debug("Port name '%1' is not allowed", port);
+	    }
+	    return [ port ];
+	}
+
+	return toset(service_aliases);
+    }
+
+    /**
+     * Function returns if the requested port-name is known port.
+     * Known port have an IANA alias.
+     *
+     * @param	string port-name
+     * @return	boolean if is known
+     */
+    global define boolean IsKnownPortName (string port_name) {
+	// function returns the requested port and aliases if exists
+	if (size(GetListOfServiceAliases(port_name))>1) {
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Function returns a port number for the port name alias
+     *
+     * @param port_name_or_number
+     * @param port_number or nil when not found
+     */
+    global define integer GetPortNumber (string port_name) {
+	if (!regexpmatch(port_name, "^[0123456789]+$")) {
+	    any port_number = SERVICE_NAME_TO_PORT[port_name]:LoadAndReturnNameToPort(port_name);
+
+	    // not a known port
+	    if (port_number == nil) {
+		return nil;
+	    } else {
+		return tointeger (port_number);
+	    }
+	} else {
+	    return tointeger(port_name);
+	}
+    }
+										    
+
+/* EOF */
+}

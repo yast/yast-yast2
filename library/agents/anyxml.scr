@@ -1,0 +1,68 @@
+/**
+ * File:	anyxml.scr
+ *
+ * Summary:	Agent for reading and writing simple XML files.
+
+ * Description: Agent is using Perl XML::Simple library.
+ *		Write access is supported, but check the limitations
+ *		at XML-Simple page (e.g. order of elements is lost in the
+ *		maps)
+ *
+ * Authors:	Jiri Suchomel <jsuchome@suse.cz>
+ *
+ * See:		http://search.cpan.org/dist/XML-Simple/lib/XML/Simple.pm
+ *
+ * Example:
+ *
+ * Read a file /tmp/in.xml into YCP map:
+ *
+ * map config	= (map)SCR::Read (.anyxml, "/tmp/in.xml")
+ *
+ * Using the agent this way, these default options of XML::Simple library
+ * will be used for reading:
+ *
+ *	ForceContent	=> 1
+ *	ForceArray	=> 1
+ *	KeepRoot	=> 1,
+ *	KeyAttr		=> [],
+ *
+ * Find the description of these arguments in the XML::Simple documentaion.
+ * For example, ForceArray set to 1 "forces nested elements to be represented
+ * as arrays even when there is only one".
+ *
+ * Alternative way of reading is using the argument map. This way it is
+ * possible to specify non-default read options in the "args" submap:
+ *
+ * map config	= (map)SCR::Read (.anyxml, $[
+ *	"file"  : "/tmp/in.xml",
+ *	"args"	: $[
+ *		"ForceArray"	: 0,
+ *		"KeepRoot"	: 1
+ *	]
+ * ])
+ *
+ * Example:
+ *
+ * Writing with the default options:
+ *
+ * Write (.anyxml, $[
+ *	"file"  : "/tmp/config.xml",
+ *	"xml"   : config,
+ * ])
+ *
+ * Non-default write options could be used by passing extra submap with
+ * "args" key in the write map:
+ *
+ * Write (.anyxml, $[
+ *	"file"	: "c.xml",
+ *	"xml"	: config,
+ *	"args	: $[
+ *		"XMLDecl"	: <?xml version="123456789"?>,
+ *		"RootName"	: "test"
+ *	]
+ * ]);
+ */
+
+.anyxml
+
+`ag_anyxml ()

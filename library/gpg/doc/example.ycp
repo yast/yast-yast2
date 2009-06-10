@@ -1,0 +1,46 @@
+/**
+ * This is an example file for GPG.ycp and GPGWidgets.ycp modules.
+ */
+
+{
+
+import "GPG";
+import "GPGWidgets";
+import "CWM";
+
+y2milestone("PrivateKeys: %1", GPG::PrivateKeys());
+y2milestone("PublicKeys: %1", GPG::PublicKeys());
+
+list<map<string,any> > w = CWM::CreateWidgets (["select_private_key", "create_new_key"], GPGWidgets::Widgets ());
+
+// create a popup window from the widgets
+term contents = `HBox(
+    `VSpacing(15),
+    `VBox (
+	`HSpacing (70),
+	// label
+	`Heading("Select the Private Key"),
+	"select_private_key",
+	"create_new_key",
+	`VSpacing(1),
+	`PushButton(`id(`ok), "OK")
+    )
+);
+
+contents = CWM::PrepareDialog (contents, w);
+
+UI::OpenDialog (contents);
+symbol ret = CWM::Run (w, $[]);
+y2milestone ("Ret: %1", ret);
+UI::CloseDialog ();
+
+string selected_key = GPGWidgets::SelectedPrivateKey();
+
+y2milestone("SelectedPrivateKey: %1", selected_key);
+
+if (selected_key != nil && selected_key != "")
+{
+    GPGWidgets::AskPassphrasePopup(GPGWidgets::SelectedPrivateKey());
+}
+
+}

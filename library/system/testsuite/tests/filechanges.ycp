@@ -1,0 +1,73 @@
+/**
+ * File:
+ *      filechanges.ycp
+ *
+ * Module:
+ *      Base
+ *
+ * Summary:
+ *      testsuite for filechanges module
+ *
+ * Authors:
+ *      Jiri Srain <jsrain@suse.cz>
+ *
+ * $Id: kernel.ycp 26253 2005-11-22 14:59:29Z lslezak $
+ *
+ */
+
+// testedfiles: Kernel.ycp Testsuite.ycp
+
+{
+    include "testsuite.ycp";
+
+    // minimal "don't care" SCR data to work with the constructor
+    map READ = $[
+	"target" : $[
+	    "string" : "",
+	    "tmpdir" : "/tmp",
+	    "size" : 5,
+	    "ycp" : $[
+	    ],
+	],
+    ];
+    map WRITE = $[];
+    list EXECL = [ $[
+	"target" : $[
+	    "bash_output" : $[
+		"exit" : "0",
+		"stdout" : "ntp.rpm",
+	    ],
+	],
+    ],
+    $[
+	"target" : $[
+	    "bash_output" : $[
+		"exit" : "0",
+		"stdout" : "S.?....T    /etc/ntp.conf
+..?.....  c /var/lib/ntp/etc/ntp.conf.iburst",
+	    ],
+	],
+    ],
+    ];
+
+    TESTSUITE_INIT ([READ, $[], $[]], 0);
+
+    import "FileChanges";
+    import "Mode";
+
+    Mode::SetTest ("testsuite");
+    TEST (``(FileChanges::FileChanged ("/etc/ntp.conf")), [READ, WRITE, EXECL], nil);
+    READ["target", "ycp", "/etc/ntp.conf"] = "incorrect checksum";
+    map EXEC = $[
+	"target" : $[
+	    "bash_output" : $[
+		"exit" : "0",
+		"stdout" : "f210720e1362615ac0ecc544b35abb73  /etc/ntp.conf",
+	    ],
+	],
+    ];
+
+    TEST (``(FileChanges::FileChanged ("/etc/ntp.conf")), [READ, WRITE, EXEC], nil);
+    READ["target", "ycp", "/etc/ntp.conf"] = "f210720e1362615ac0ecc544b35abb73  /etc/ntp.conf";
+    TEST (``(FileChanges::FileChanged ("/etc/ntp.conf")), [READ, WRITE, EXEC], nil);
+}

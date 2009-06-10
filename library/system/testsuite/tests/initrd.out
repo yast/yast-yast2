@@ -1,0 +1,65 @@
+Read	.target.size "/etc/sysconfig/kernel" 0
+Read	.sysconfig.kernel.INITRD_MODULES "reiserfs lvmmod"
+Return	["reiserfs", "lvmmod"]
+Dump	Now reseting
+Return	nil
+Dump	Reading again
+Read	.target.size "/etc/sysconfig/kernel" 0
+Read	.sysconfig.kernel.INITRD_MODULES "reiserfs lvmmod"
+Return	["reiserfs", "lvmmod"]
+Dump	Reseting again
+Return	nil
+Dump	Adding ne2k
+Read	.target.size "/etc/sysconfig/kernel" 0
+Read	.sysconfig.kernel.INITRD_MODULES "reiserfs lvmmod"
+Return	nil
+Return	["reiserfs", "lvmmod", "ne2k"]
+Dump	Removing lvmmod
+Return	nil
+Return	["reiserfs", "ne2k"]
+Dump	Writing
+Write	.modules.options."ne2k" $["io":"0x300,", "irq":"5"] true
+Write	.modules nil true
+Read	.target.size "/etc/sysconfig/kernel" 0
+Read	.sysconfig.kernel.INITRD_MODULES "reiserfs lvmmod"
+Execute	.target.bash "/usr/bin/touch /etc/sysconfig/bootloader" 0
+Write	.sysconfig.kernel.INITRD_MODULES "reiserfs ne2k" true
+Write	.sysconfig.kernel nil true
+Execute	.target.bash "/sbin/mkinitrd   >> /var/log/YaST2/y2logmkinitrd 2>&1" 0
+Return	true
+Dump	Importing with filtered module
+Read	.target.size "/etc/sysconfig/kernel" 0
+Read	.sysconfig.kernel.INITRD_MODULES "reiserfs lvmmod"
+Return	nil
+Dump	Writing
+Read	.target.size "/etc/sysconfig/kernel" 0
+Read	.sysconfig.kernel.INITRD_MODULES "reiserfs lvmmod"
+Execute	.target.bash "/usr/bin/touch /etc/sysconfig/bootloader" 0
+Write	.sysconfig.kernel.INITRD_MODULES "ne2k xfs_dmapi xfs_support lvmmod" true
+Write	.sysconfig.kernel nil true
+Execute	.target.bash "/sbin/mkinitrd   >> /var/log/YaST2/y2logmkinitrd 2>&1" 0
+Return	true
+Dump	Setting Mode::Update
+Dump	Importing with filtered module
+Read	.target.size "/etc/sysconfig/kernel" 0
+Read	.sysconfig.kernel.INITRD_MODULES "reiserfs lvmmod"
+Return	nil
+Return	["ne2k", "xfs_dmapi", "xfs_support", "lvmmod"]
+Dump	Writing
+Read	.target.size "/etc/sysconfig/kernel" 0
+Read	.sysconfig.kernel.INITRD_MODULES "reiserfs lvmmod"
+Execute	.target.bash "/usr/bin/touch /etc/sysconfig/bootloader" 0
+Write	.sysconfig.kernel.INITRD_MODULES "ne2k lvmmod" true
+Write	.sysconfig.kernel nil true
+Execute	.target.bash "/sbin/mkinitrd   >> /var/log/YaST2/y2logmkinitrd 2>&1" 0
+Return	true
+Dump	Resetting for installation test
+Return	nil
+Return	nil
+Return	nil
+Dump	Testing keeping installation order
+Read	.etc.install_inf.InitrdModules "driver1 driver2 driver3"
+Return	nil
+Return	nil
+Return	nil
+Return	["driver2", "driver3", "ne2k"]

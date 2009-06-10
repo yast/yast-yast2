@@ -1,0 +1,380 @@
+/**
+ * File:	modules/GPGWidgets.ycp
+ * Package:	yast2
+ * Summary:	UI widgets and functions related to GPG
+ * Authors:	Ladislav Slezák <lslezak@suse.cz>
+ *
+ * $Id:$
+ *
+ * This module provides UI related functions to GPG.
+ */
+{
+
+import "Mode";
+import "GPG";
+import "Label";
+import "CWM";
+import "CommandLine";
+
+module "GPGWidgets";
+
+textdomain "base";
+
+// the selected private key in the private key table
+string _selected_id_private_key = nil;
+// the selected public key in the public key table
+string _selected_id_public_key = nil;
+
+/**
+ * Set selected private key in the private key table widget.
+ * @param keyid ID of the selected key
+ */
+global void SetSelectedPrivateKey(string keyid)
+{
+    _selected_id_private_key = keyid;
+}
+
+/**
+ * Set selected public key in the public key table widget.
+ * @param keyid ID of the selected key
+ */
+global void SetSelectedPublicKey(string keyid)
+{
+    _selected_id_public_key = keyid;
+}
+
+/**
+ * Get list of table items for CWM widget.
+ * @param private_keys if true use private keys, otherwise use public keys
+ * @return list<term> list of items
+ */
+list<term> GPGItems(boolean private_keys)
+{
+    list<term> ret = [];
+    list<map> keys = (private_keys) ? GPG::PrivateKeys() : GPG::PublicKeys();
+
+    foreach(map key, keys,
+	{
+	    string uids = mergestring(key["uid"]:[], ", ");
+
+	    ret = add(ret, `item(`id(key["id"]:""), key["id"]:"", uids, key["fingerprint"]:""));
+	}
+    );
+
+    return ret;
+}
+
+/**
+ * Init function of a widget - initialize the private table widget
+ * @param key string widget key
+ */
+void GpgInitPrivate (string key)
+{
+    y2milestone("GpgInitPrivate: %1", key);
+
+    if (key == "select_private_key")
+    {
+	UI::ChangeWidget(`id(`gpg_priv_table), `Items, GPGItems(true));
+
+	if (_selected_id_private_key != nil)
+	{
+	    UI::ChangeWidget(`id(`gpg_priv_table), `CurrentItem, _selected_id_private_key);
+	}
+    }
+}
+
+/**
+ * Init function of a widget - initialize the public table widget
+ * @param key string widget key
+ */
+void GpgInitPublic (string key)
+{
+    y2milestone("GpgInitPublic: %1", key);
+
+    if (key == "select_public_key")
+    {
+	UI::ChangeWidget(`id(`gpg_public_table), `Items, GPGItems(false));
+
+	if (_selected_id_public_key != nil)
+	{
+	    UI::ChangeWidget(`id(`gpg_public_table), `CurrentItem, _selected_id_public_key);
+	}
+    }
+}
+
+/**
+ * Store the selected private key
+ * @param key widget ID
+ * @param event event
+ */
+void GpgStorePrivate (string key, map event) {
+    y2debug("GpgStorePrivate: %1, %2", key, event);
+
+    if (key == "select_private_key")
+    {
+	_selected_id_private_key = (string)(UI::QueryWidget(`id(`gpg_priv_table), `CurrentItem));
+	y2milestone("Selected private key: %1", _selected_id_private_key);
+    }
+}
+
+/**
+ * Store the selected public key
+ * @param key widget ID
+ * @param event event
+ */
+void GpgStorePublic (string key, map event) {
+    y2debug("GpgStorePublic: %1, %2", key, event);
+
+    if (key == "select_public_key")
+    {
+	_selected_id_public_key = (string)(UI::QueryWidget(`id(`gpg_public_table), `CurrentItem));
+	y2milestone("Selected public key: %1", _selected_id_public_key);
+    }
+}
+
+/**
+ * Return the selected private key in the private table widget
+ * @return string key ID
+ */
+global string SelectedPrivateKey()
+{
+    return _selected_id_private_key;
+}
+
+/**
+ * Get widget description map
+ * @return widget description map
+ */
+map<string,any> PrivateKeySelection()
+{
+    return $[
+	"widget" : `custom,
+	"custom_widget" :
+	    `VBox(
+		`Left(`Label(`id(`gpg_priv_label), _("GPG Private Keys"))),
+		`Table(
+		    `id(`gpg_priv_table),
+		    // table header - GPG key ID
+		    `header(_("Key ID"),
+			// table header - GPG key user ID
+			_("User ID"),
+			// table header - GPG key fingerprint
+			_("Fingerprint")
+		    ),
+		    // fill up the widget in init handler
+		    []
+		)
+	    ),
+	"init" : GpgInitPrivate,
+	"store" : GpgStorePrivate,
+	"help" : _("<p><big><b>GPG Private Key</b></big><br>
+The table contains list of the private GPG keys.</p>")
+    ];
+}
+
+/**
+ * Get widget description map
+ * @return widget description map
+ */
+map<string,any> PublicKeySelection()
+{
+    return $[
+	"widget" : `custom,
+	"custom_widget" :
+	    `VBox(
+		`Left(`Label(_("GPG Public Keys"))),
+		`Table(
+		    `id(`gpg_public_table),
+		    // table header - GPG key ID
+		    `header(_("Key ID"),
+			// table header - GPG key user ID
+			_("User ID"),
+			// table header - GPG key fingerprint
+			_("Fingerprint")
+		    ),
+		    // fill up the widget in init handler
+		    []
+		)
+	    ),
+	"init" : GpgInitPublic,
+	"store" : GpgStorePublic,
+	"help" : _("<p><big><b>GPG Public Key</b></big><br>
+The table contains list of the public GPG keys.</p>")
+    ];
+}
+
+/**
+ * Refresh the widgets after creating a new gpg key
+ * @param key widget ID
+ * @param event event
+ */
+symbol GpgNewKey(string key, map event)
+{
+    y2debug("GpgNewKey: %1, %2", key, event);
+
+    if (key == "create_new_key")
+    {
+	GPG::CreateKey();
+
+	// refresh private key widget if it's existing
+	if (UI::WidgetExists(`id(`gpg_priv_table)))
+	{
+	    string current = (string)(UI::QueryWidget(`id(`gpg_priv_table), `CurrentItem));
+	    UI::ChangeWidget(`id(`gpg_priv_table), `Items, GPGItems(true));
+	    UI::ChangeWidget(`id(`gpg_priv_table), `CurrentItem, current);
+	}
+
+	// refresh public key widget if it's existing
+	if (UI::WidgetExists(`id(`gpg_public_table)))
+	{
+	    string current = (string)(UI::QueryWidget(`id(`gpg_public_table), `CurrentItem));
+	    UI::ChangeWidget(`id(`gpg_public_table), `Items, GPGItems(false));
+	    UI::ChangeWidget(`id(`gpg_public_table), `CurrentItem, current);
+	}
+    }
+
+    return nil;
+}
+
+/**
+ * Get widget description map
+ * @return widget description map
+ */
+map<string,any> CreateNewKey()
+{
+    return $[
+	"widget" : `push_button,
+	"label"  : _("&Create a new GPG key..."),
+        "handle_events" : ["create_new_key"],
+        "handle" : GpgNewKey,
+	"help" : _("<p><big><b>Create a new GPG key</b></big><br>
+<tt>gpg --gen-key</tt> is started, see <tt>gpg</tt> manual pager for more information.
+Press Ctrl+C to cancel.
+</p>")
+
+    ];
+}
+
+/**
+ * Passphrase entered in the passphrase widget
+ */
+string passphrase = "";
+
+/**
+ * Store the passphrase from the widget
+ * @param key widget ID
+ * @param event event
+ */
+void PassphraseStore(string key, map event)
+{
+    y2debug("PassphraseStore: %1, %2", key, event);
+
+    if (event["WidgetID"]:`_none == `ok)
+    {
+	passphrase = (string)UI::QueryWidget(`id(`passphrase), `Value);
+    }
+}
+
+/**
+ * Get the enterd passphrase.
+ * @return passphrase
+ */
+global string Passphrase()
+{
+    return passphrase;
+}
+
+/**
+ * Return definition of the passphrase CWM widget.
+ * @param key key ID displayed in the label
+ * @return map<string, map<string,any> > widget definition
+ */
+global map<string, map<string,any> > AskPassphraseWidget(string key)
+{
+    return $[
+	"ask_passphrase" : $[
+	    "widget" : `custom,
+	    "custom_widget" : `VBox (
+		// text entry
+		`Password(`id(`passphrase), sformat(_("&Passphrase for GPG Key %1"), key))
+	    ),
+	    "store" : PassphraseStore,
+	    // help text
+	    "help" : _("<p><big><b>Passphrase</b></big><br>
+Enter passphrase to unlock the GPG key.")
+	]
+    ];
+}
+
+/**
+ * Create a popup window term with the passphrase widget.
+ * @return term definition of the popup
+ */
+term AskPassphraseTerm()
+{
+    return `MarginBox(`leftMargin(1), `rightMargin(1), `topMargin(0.2), `bottomMargin(0.5),
+	`VBox(
+	    `HSpacing (50),
+	    `Heading(_("Enter Passphrase")),
+	    "ask_passphrase",
+	    `VSpacing(0.5),
+	    `ButtonBox (
+		`PushButton (`id (`ok), `opt (`default, `okButton, `key_F10), Label::OKButton()),
+		`PushButton (`id (`cancel), `opt (`cancelButton, `key_F9), Label::CancelButton())
+	    )
+	)
+    );
+};
+
+/**
+ * Ask user to enter the passphrase for the selected gpg key.
+ * A a popup window is displayed.
+ * @param key key ID of the gpg key
+ * @return string the entered passphrase or nil if the popup has been closed by [Cancel] button
+ */
+global string AskPassphrasePopup(string key)
+{
+    passphrase = nil;
+
+    if (Mode::commandline())
+    {
+	if (CommandLine::Interactive())
+	{
+	    // ask for the passphrase in the commandline (interactive) mode
+	    return CommandLine::PasswordInput(sformat(_("Enter Passphrase to Unlock GPG Key %1: "), key));
+	}
+	else
+	{
+	    // no input possible
+	    return nil;
+	}
+    }
+
+    // run the dialog
+    list<map<string,any> > w = CWM::CreateWidgets(["ask_passphrase"], AskPassphraseWidget(key));
+
+    term contents = AskPassphraseTerm();
+    contents = CWM::PrepareDialog(contents, w);
+
+    UI::OpenDialog (contents);
+    UI::SetFocus(`id(`passphrase));
+    symbol ret = CWM::Run (w, $[]);
+    UI::CloseDialog ();
+
+    return passphrase;
+}
+
+/**
+ * Return a map with CWM widgets definition. The map contains definitions of all static CWM widgets.
+ * @return map<string,map<string,any> > CWM widgets
+ */
+global map<string,map<string,any> > Widgets()
+{
+    return $[
+	"select_private_key"	: PrivateKeySelection(),
+	"select_public_key"	: PublicKeySelection(),
+	"create_new_key"	: CreateNewKey()
+    ];
+}
+
+}

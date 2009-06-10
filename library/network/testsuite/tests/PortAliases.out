@@ -1,0 +1,68 @@
+Dump	== Allowed Port Aliases ==
+Return	true
+Return	true
+Return	false
+Return	true
+Return	true
+Return	false
+Dump	
+Dump	== Service Aliases Included ==
+Return	["22", "ssh"]
+Return	["22", "ssh"]
+Return	["25", "smtp"]
+Return	["25", "smtp"]
+Return	["53", "domain"]
+Return	["53", "domain"]
+Return	["67", "bootps"]
+Return	["67", "bootps"]
+Return	["68", "bootpc"]
+Return	["68", "bootpc"]
+Return	["69", "tftp"]
+Return	["69", "tftp"]
+Return	["80", "http", "www", "www-http"]
+Return	["80", "http", "www", "www-http"]
+Return	["80", "http", "www", "www-http"]
+Return	["80", "http", "www", "www-http"]
+Return	["110", "pop3"]
+Return	["110", "pop3"]
+Return	["111", "sunrpc"]
+Return	["111", "sunrpc"]
+Return	["123", "ntp"]
+Return	["123", "ntp"]
+Return	["137", "netbios-ns"]
+Return	["137", "netbios-ns"]
+Return	["138", "netbios-dgm"]
+Return	["139", "netbios-ssn"]
+Return	["138", "netbios-dgm"]
+Return	["143", "imap"]
+Return	["139", "netbios-ssn"]
+Return	["389", "ldap"]
+Return	["389", "ldap"]
+Return	["443", "https"]
+Return	["443", "https"]
+Return	["445", "microsoft-ds"]
+Return	["445", "microsoft-ds"]
+Return	["500", "isakmp"]
+Return	["500", "isakmp"]
+Return	["631", "ipp"]
+Return	["631", "ipp"]
+Return	["636", "ldaps"]
+Return	["636", "ldaps"]
+Return	["873", "rsync"]
+Return	["873", "rsync"]
+Return	["993", "imaps"]
+Return	["993", "imaps"]
+Return	["995", "pop3s"]
+Return	["995", "pop3s"]
+Return	["3128", "ndl-aas"]
+Return	["3128", "ndl-aas"]
+Return	["4500", "ipsec-nat-t"]
+Return	["4500", "ipsec-nat-t"]
+Return	["8080", "http-alt"]
+Return	["8080", "http-alt"]
+Dump	
+Dump	== Service Aliases External ==
+Return	["333", "texar"]
+Dump	
+Dump	== Port Name ==
+Return	true

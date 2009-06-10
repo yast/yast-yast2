@@ -1,0 +1,406 @@
+/**
+ * File:	modules/InstExtensionImage.ycp
+ * Package:	Base
+ * Summary:	Functionality for downloading and merging extending
+ *		images for the inst-sys
+ * Authors:	Lukas Ocilka <locilka@suse.cz>
+ *
+ * $Id:$
+ *
+ * This module provides functions that download inst-sys extension images
+ * (localization, fonts, ...) and merge them to the current int-sys.
+ * This enables inst-sys to be modular even for already running YaST.
+ * See FATE #302955: 'Split translations out of installation system'.
+ * This module is strictly installation-only!
+ */
+
+{
+
+    textdomain "base";
+    module "InstExtensionImage";
+
+    import "Linuxrc";
+    import "URL";
+    import "String";
+    import "Directory";
+    import "Popup";
+    import "Stage";
+
+    /***
+     *
+     * Paths where to download inst-sys extension images are taken
+     * from '/etc/install.inf'. An extension image contains the
+     * directory structure and files as it was in inst-sys but
+     * it is a squashfs image of it.
+     *
+     * Inst-sys URL might be absolute or 'relative' to repo URL,
+     * but only if instsys=... parameter wasn't explicitely defined.
+     *
+     *   When instsys=... parameter _is not_ used:
+     *     * RepoURL: cd:/?device=sr0
+     *     * InstsysURL: boot/<arch>/root
+     *       (<arch> is for instance "i386", "x86_64", "ppc")
+     *     or
+     *     * RepoURL: nfs://server/repo/url/?device=eth0
+     *     * InstsysURL: boot/<arch>/root
+     *
+     *   When instsys=... parameter _is_ used:
+     *     * RepoURL: nfs://server/repo/url/
+     *     * InstsysURL: http://server/inst-sys/url/
+     *     or
+     *     * RepoURL: cd:/?device=sr0
+     *     * InstsysURL: nfs://server/inst-sys/url/?device=eth0
+     *
+     * Files to download are in the same level (directory) with
+     * inst-sys:
+     *
+     *   * RepoURL: cd:/?device=sr0
+     *   * InstsysURL: boot/<arch>/root
+     *   -> cd:/boot/<arch>/$extension_file
+     *
+     *   * RepoURL: nfs://server/repo/url/?device=eth0
+     *   * InstsysURL: http://server/inst-sys/url/?device=eth0
+     *   -> http://server/inst-sys/$extension_file?device=eth0
+     *
+     * These files are always squashfs images that need to be:
+     *
+     *   * Downloaded: /lbin/wget -v $url $local_filename_path
+     *   * Downloaded file needs to be checked against a SHA1
+     *     hash defined in /content file
+     *   * Mounted (-o loop) to a directory.
+     *   * Directory needs to be merged into inst-sys by using
+     *     `/lbin/lndir <image_mountpoint> /`
+     *
+     * This module remembers downloading a file so it does not
+     * download any file twice.
+     *
+     * Additional comments on the "Installation Workflow":
+     *
+     *   * When Linuxrc starts loading an initial translation
+     *     might already been selected. Linuxrc will download
+     *     and merge the pre-selected translation itself.
+     *   * Then Linuxrc starts YaST. YaST initializes itself
+     *     including translations and displays the language
+     *     dialog translated.
+     *   * After a different language is selected, YaST downloads
+     *     a localization inst-sys extension and merges it.
+     *   * Then a different locale is selected and YaST redraws
+     *     reruns the current YCP client.
+     */
+
+    // nfs://.../, cd:/, http://.../any/
+    // always ends with a slash "/"
+    string base_url = "";
+
+    // if there are any params $url?param1=xx&param2=...
+    // always only params
+    string base_url_params = "";
+
+    // Directory used for storing images
+    string base_tmpdir = sformat ("%1/%2/", Directory::tmpdir, "instsys_extensions");
+    // Directory used for mounting images
+    string base_mounts = sformat ("%1/%2/", Directory::tmpdir, "instsys_extmounts");
+
+    boolean initialized = false;
+
+    boolean IsURLRelative (string url) {
+	if (url == nil)
+	    return nil;
+
+	// "http://..." -> not-relative
+	// "cd:/" -> not relative
+	// "boot/i386/root -> relative
+	return ! regexpmatch (url, "^[[:alpha:]]+:/");
+    }
+
+    /**
+     * Merges two different URLs, repspectively their parameters
+     * to one string with parameters. See the example.
+     *
+     * @param string base URL with params
+     * @param string URL with modifications (added or changed params)
+     * @return string merged params
+     *
+     * @example
+     *   MergeURLsParams (
+     *     "http://server.net/dir/?param1=x&param2=y",
+     *     "http://server.net/dir/?param2=z&param3=a",
+     *   // param2 from the first URL has been replaced by tho one from the second URL
+     *   ) -> "param1=x&param2=z&param3=a"
+     */
+    string MergeURLsParams (string base_url, string url_with_modifs) {
+	if (base_url == nil || url_with_modifs == nil) {
+	    y2error ("Wrong params: %1 or %2", base_url, url_with_modifs);
+	    return nil;
+	}
+
+	// base URL params
+	integer base_params_pos = search (base_url, "?");
+	string base_params = "";
+
+	if (base_params_pos != nil && base_params_pos >= 0) {
+	    base_params = substring (base_url, (base_params_pos + 1));
+	}
+
+	// URL params with modifications
+	integer modif_params_pos = search (url_with_modifs, "?");
+	string modif_params = "";
+
+	if (modif_params_pos != nil && modif_params_pos >= 0) {
+	    modif_params = substring (url_with_modifs, (modif_params_pos + 1));
+	}
+
+	// Nothing to merge
+	if (base_params == "")
+	    return modif_params;
+	if (modif_params == "")
+	    return base_params;
+
+	map <string, string> base_params_map  = URL::MakeMapFromParams (base_params);
+	map <string, string> modif_params_map  = URL::MakeMapFromParams (modif_params);
+	map <string, string> final_params_map = (map <string, string>) union (base_params_map, modif_params_map);
+
+	return URL::MakeParamsFromMap (final_params_map);
+    }
+
+    /**
+     * Removes the last url item.
+     *
+     * @example
+     *   CutLastDirOrFile ("http://server/some/dir/") -> "http://server/some/"
+     *   CutLastDirOrFile ("http://server/some/dir")  -> "http://server/some/"
+     */
+    string CutLastDirOrFile (string url) {
+	if (url == nil || url == "" || url == "/" || ! regexpmatch (url, "/")) {
+	    y2error (-1, "Wrong URL: %1", url);
+	    return "";
+	}
+
+	// final "/" is needed for regexp
+	if (! regexpmatch (url, "/$")) {
+	    url = url + "/";
+	}
+
+	return regexpsub (url, "^(.*)/[^/]+/$", "\\1/");
+    }
+
+    /**
+     * Merges two URLs into one and removes parameters from both.
+     * If the second URL is strictly relative, e.g., "boot/i386/root",
+     * it is merged with the first one, otherwise the second one is
+     * returned (with params cut).
+     *
+     * @param string base URL
+     * @param string modif URL (relative or absolute)
+     * @return string merged URL
+     *
+     * @example
+     *   MergeURLs (
+     *     "nfs://server.name/11-repo/?device=eth0&xxx=zzz",
+     *     "boot/i386/root?device=eth1&aaa=bbb"
+     *   ) -> "nfs://server.name/11-repo/boot/i386/"
+     *   MergeURLs (
+     *     "nfs://server.name/11-repo/?device=eth0&xxx=zzz",
+     *     "nfs://server2.net/boot/i386/root?device=eth1&aaa=bbb"
+     *   ) -> "nfs://server2.net/boot/i386/"
+     */
+    string MergeURLs (string url_base, string url_with_modifs) {
+	if (url_base == nil || url_with_modifs == nil) {
+	    y2error ("Wrong URLs: %1 or %2", url_base, url_with_modifs);
+	    return nil;
+	}
+
+	// relative (to base URL) or absolute URL
+	integer url_with_modifs_pos = search (url_with_modifs, "?");
+	string url_with_modifs_onlyurl = url_with_modifs;
+
+	if (url_with_modifs_pos != nil && url_with_modifs_pos >= 0) {
+	    url_with_modifs_onlyurl = substring (url_with_modifs, 0, url_with_modifs_pos);
+	}
+
+	// Modif URL is not relative, not using the base URL at all
+	if (! IsURLRelative (url_with_modifs_onlyurl)) {
+	    return CutLastDirOrFile (url_with_modifs_onlyurl);
+	}
+
+	// base URL
+	integer url_base_pos = search (url_base, "?");
+	string url_base_onlyurl = url_base;
+
+	if (url_base_pos != nil && url_base_pos >= 0) {
+	    url_base_onlyurl = substring (url_base, 0, url_base_pos);
+	}
+
+	if (! regexpmatch (url_base_onlyurl, "/$")) {
+	    url_base_onlyurl = url_base_onlyurl + "/";
+	}
+
+	return CutLastDirOrFile (url_base_onlyurl + url_with_modifs_onlyurl);
+    }
+
+    /**
+     * Every global function should call LazyInit in the beginning.
+     */
+    void LazyInit () {
+	// already initialized
+	if (initialized)
+	    return;
+
+	y2milestone ("Initializing...");
+	initialized = true;
+
+	// base repo URL
+	string repo_url = Linuxrc::InstallInf ("RepoURL");
+	// inst-sys URL
+	string inst_sys_url = Linuxrc::InstallInf ("InstsysURL");
+
+	// non-relative inst-sys, repo is not taken into account
+	if (! IsURLRelative (inst_sys_url)) {
+	    repo_url = "";
+	}
+
+	// final base URL (last file/dir already removed)
+	base_url = MergeURLs (repo_url, inst_sys_url);
+	y2milestone ("Base URL: %1", base_url);
+
+	// final params
+	base_url_params = MergeURLsParams (repo_url, inst_sys_url);
+	y2milestone ("Base URL params: %1", base_url_params);
+
+	map run = (map) WFM::Execute (.local.bash_output,
+	    sformat ("/bin/mkdir -p '%1'", String::Quote (base_tmpdir))
+	);
+	if (run["exit"]:-1 != 0) {
+	    y2error ("Cannot create temporary directory: %1: %2", base_tmpdir, run);
+	}
+
+	run = (map) WFM::Execute (.local.bash_output,
+	    sformat ("/bin/mkdir -p '%1'", String::Quote (base_mounts))
+	);
+	if (run["exit"]:-1 != 0) {
+	    y2error ("Cannot create mounts directory: %1: %2", base_mounts, run);
+	}
+    }
+
+    // Already downloaded (and mounted and merged) files
+    list <string> already_downloaded_files = [];
+
+    // All integrated extensions
+    list <string> integrated_extensions = [];
+
+    // $["extension_name" : "mounted_as_directory", ...]
+    map <string, string> extensions_mounted_as = $[];
+
+    // $["extension_name" : "downloaded_to_file", ...]
+    map <string, string> extension_downloaded_as = $[];
+
+    /**
+     * Load a rpm package from the media into the inst-sys
+     * @param package	The path to package to be loaded (by default,
+     * the package is expected in the /boot/<arch>/ directory of the media
+     * @param message	The message to be shown in the progress popup
+     */
+    global boolean LoadExtension (string package, string message) {
+
+	if (!Stage::initial()) {
+	    y2error ("This module should be used in Stage::initial only!");
+	}
+
+	if (package == nil || package == "") {
+	    y2error ("Such package name can't work: %1", package);
+	    return false;
+	}
+
+	if (contains (integrated_extensions, package)) {
+	    y2milestone ("Package %1 has already been integrated", package);
+	    return true;
+	}
+
+	if (message != "" && message != nil)
+	    Popup::ShowFeedback ("", message);
+
+	// See BNC #376870
+	string cmd = sformat ("extend '%1'", String::Quote (package));
+	y2milestone ("Calling: %1", cmd);
+	map cmd_out = (map) WFM::Execute (.local.bash_output, cmd);
+	y2milestone ("Returned: %1", cmd_out);
+
+	boolean ret	= true;
+	if (cmd_out["exit"]:-1 != 0) {
+	    y2error ("'extend' failed!");
+	    ret		= false;
+	}
+	else
+	{
+	    integrated_extensions = add (integrated_extensions, package);
+	}
+
+	if (message != "" && message != nil)
+	    Popup::ClearFeedback ();
+
+	return ret;
+    }
+
+    /**
+     * Remove given package from the inst-sys
+     * @param package	The path to package to be unloaded (by default,
+     * the package is expected in the /boot/<arch>/ directory of the media
+     * @param message	The message to be shown in the progress popup
+     */
+    global boolean UnLoadExtension (string package, string message) {
+
+	if (!Stage::initial()) {
+	    y2error ("This module should be used in Stage::initial only!");
+	}
+
+	if (package == nil || package == "") {
+	    y2error ("Such package name can't work: %1", package);
+	    return false;
+	}
+
+	if (!contains (integrated_extensions, package)) {
+	    y2milestone ("Package %1 wasn't integrated", package);
+	    return true;
+	}
+
+	if (message != "" && message != nil)
+	    Popup::ShowFeedback ("", message);
+
+	string cmd = sformat ("extend -r '%1'", String::Quote (package));
+	y2milestone ("Calling: %1", cmd);
+	map cmd_out = (map) WFM::Execute (.local.bash_output, cmd);
+	y2milestone ("Returned: %1", cmd_out);
+
+	boolean ret	= true;
+	if (cmd_out["exit"]:-1 != 0) {
+	    y2error ("'extend' failed!");
+	    ret		= false;
+	}
+	else
+	{
+	    integrated_extensions = filter (string p, integrated_extensions,
+		``(p != package));
+	}
+
+	if (message != "" && message != nil)
+	    Popup::ClearFeedback ();
+
+	return ret;
+    }
+
+    global boolean DownloadAndIntegrateExtension (string extension) {
+	return LoadExtension (extension, "");
+    }
+
+    global boolean DesintegrateExtension (string extension) {
+	y2warning ("Function is empty, see BNC #376870");
+	return true;
+    }
+
+    global boolean DisintegrateAllExtensions () {
+	y2warning ("Function is empty, see BNC #376870");
+	return true;
+    }
+
+/* EOF */
+}

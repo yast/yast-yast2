@@ -1,0 +1,18 @@
+{
+    import "LogView";
+
+    void Jump()
+    {
+	UI::OpenDialog(`opt(`decorated),
+		       `VBox(`MarginBox(2, 2, `PushButton("Close"))));
+	UI::UserInput();
+	UI::CloseDialog();
+    }
+
+    LogView::Display ($[
+	"file" : "/var/log/messages",
+	"grep" : "conf",
+	"save" : true,
+	"actions" : [ [ "Jump", Jump ] ]
+    ]);
+}

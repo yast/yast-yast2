@@ -1,0 +1,211 @@
+/**
+ * File:	modules/Product.ycp
+ * Package:	yast2
+ * Summary:	Product data
+ * Authors:	Klaus Kaempf <kkaempf@suse.de>
+ *		Lukas Ocilka <locilka@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+    module "Product";
+
+    import "Mode";
+    import "Stage";
+    import "SuSERelease";
+    import "PackageLock";
+    import "PackageSystem";
+
+    /**
+     * General product name and version
+     */
+    global string name		= "";			// "SuSE Linux 8.1"
+    global string short_name	= "";			// "SuSE Linux"
+    global string version	= "";			// "8.1"
+    global string vendor	= "";			// "SuSE Linux AG"
+
+    /**
+     * Distribution: Personal, Professional, etc.
+     */
+    global string dist		= "";
+    global string distproduct	= "";			// "SuSE-Linux-Professional-INT-i386"
+    global string distversion	= "";			// "8.1-0"
+
+    /**
+     * base product
+     */
+    global string baseproduct	= "";			// "UnitedLinux"
+    global string baseversion	= "";			// "1.0"
+
+    /**
+     * url of release notes (downloaded during internet test)
+     */
+    global string relnotesurl	= "";
+    
+    /**
+     * list of all urls of release notes (downloaded during internet test)
+     * bugzilla #160563
+     */
+    global list <string> relnotesurl_all = [];
+
+    /**
+     * map relnotes url to product name
+     */
+    global map <string, string> product_of_relnotes = $[];
+
+    /**
+     *  Run YOU during the Internet connection test.
+     */
+    global boolean run_you	= true;
+
+    /**
+     * list of flags from content file
+     */
+    global list flags		= [];
+
+    /**
+     * list of patterns from content file
+     */
+    global list<string> patterns	= [];
+
+    /**
+     * Short label for bootloader entry
+     */
+    global string shortlabel	= "";
+
+global list<map<string,any> > FindBaseProducts() {
+    // bugzilla #238556
+    if (! PackageLock::Check()) {
+	y2error ("Locked!");
+	return [];
+    }
+
+    y2milestone ("Looking for base products");
+    list<map<string,any> > products = (list<map<string,any> >)
+	Pkg::TargetProducts ();
+
+    y2milestone("All found products: %1", products);
+
+    products = filter (map<string,any> p, products, {
+	// bug 165314, relnotes_url needn't be defined (or empty string)
+	if (p["relnotes_url"]:"" != "") {
+	    string rn_url = (string) p["relnotes_url"]:"";
+	    relnotesurl_all = add (relnotesurl_all, rn_url);
+	    // bug 180581, relnotes should be identified by name
+	    product_of_relnotes[rn_url] = p["display_name"]:"";
+	}
+	return p["category"]:"" == "base";
+    });
+
+    y2milestone ("Found base products: %1", products);
+    if (size (products) == 0)
+	y2error ("No base product found");
+    else if (size (products) > 1)
+	y2warning ("More than one base product found");
+    return products;
+}
+
+/**
+ * Read the products from the package manager
+ */
+global void ReadProducts()
+{
+    y2milestone("Product::ReadProducts() started");
+    if (!Mode::config())
+    {
+	// bugzilla #238556
+	if (! PackageLock::Check()) {
+	    y2error ("Locked!");
+	    return;
+	}
+
+	PackageSystem::EnsureTargetInit();
+	PackageSystem::EnsureSourceInit();	// TODO: is it still needed?
+
+	// run the solver to compute the installed products
+	Pkg::PkgSolve(true);			// TODO: is it still needed?
+
+	list<map<string,any> > base_products = FindBaseProducts();
+	map<string,any> base_product = base_products[0]:$[];// there should be only one - hopefuly
+
+	name = base_product["display_name"]:base_product["summary"]:base_product["name"]:"";
+	short_name = base_product["short_name"]:name;
+	version = base_product["version"]:"";
+	vendor = base_product["vendor"]:"";
+	relnotesurl = base_product["relnotes_url"]:"";
+	flags = base_product["flags"]:[];
+    }
+}
+
+
+    // -----------------------------------------------
+    /**
+     * Constructor
+     */
+    global define void Product () ``{
+
+	if (Stage::initial () && ! Mode::live_installation ())
+	{
+	    // it should use the same mechanism as running system. But it would
+	    // mean to initialize package manager from constructor, which is
+	    // not reasonable
+	    name		= (string) SCR::Read(.content.LABEL);
+	    short_name		= (string) SCR::Read(.content.SHORTLABEL);
+	    if (short_name == nil)
+		short_name = name;
+	    version		= (string) SCR::Read(.content.VERSION);
+	    vendor		= (string) SCR::Read(.content.VENDOR);
+
+	    distproduct		= (string) SCR::Read(.content.DISTPRODUCT);
+	    distversion		= (string) SCR::Read(.content.DISTVERSION);
+
+	    baseproduct		= (string) SCR::Read(.content.BASEPRODUCT);
+	    if (baseproduct == "") baseproduct = name;
+	    baseversion		= (string) SCR::Read(.content.BASEVERSION);
+
+	    relnotesurl		= (string) SCR::Read(.content.RELNOTESURL);
+	    shortlabel		= (string) SCR::Read(.content.SHORTLABEL);
+
+	    any tmp1 = SCR::Read (.content.FLAGS);
+	    if (tmp1 != nil)
+		flags		= splitstring ((string) tmp1, " ");
+	    tmp1 = SCR::Read (.content.PATTERNS);
+	    if (tmp1 != nil)
+		patterns	= splitstring ((string) tmp1, " ");
+
+	    // bugzilla #252122, since openSUSE 10.3
+	    // deprecated:
+	    // 		content.PATTERNS: abc cba bac
+	    // should re replaced with (and/or)
+	    // 		content.REQUIRES: pattern:abc pattern:cba pattern:bac
+	    //		content.RECOMMENDS: pattern:abc pattern:cba pattern:bac
+	    if (patterns != []) {
+		y2warning ("Product content file contains deprecated PATTERNS tag, use REQUIRES and/or RECOMMENDS instead");
+		y2milestone("PATTERNS: %1", patterns );
+	    }
+	}
+	else if (!Mode::config ())
+	{
+	    short_name = SuSERelease::ReleaseName();
+	    version = SuSERelease::ReleaseVersion();
+	    name = short_name + " " + version;
+	}
+
+	if(distproduct == nil) distproduct = "";
+	dist		= splitstring(distproduct, "-")[2]:"";
+
+	run_you		= ! contains (flags, "no_you");
+
+	// set the product name for UI
+        import "Wizard";
+
+	y2milestone ("Product name: '%1'", name);
+
+	if (name != nil && name != "") {
+	    Wizard::SetProductName (name);
+	}
+    }
+
+/* EOF */
+}

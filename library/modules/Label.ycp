@@ -1,0 +1,414 @@
+/**
+ * File:	modules/Label.ycp
+ * Package:	yast2
+ * Summary:	Often used messages and button labels
+ * Authors:	Gabriele Strattner <gs@suse.de>
+ *		Stefan Hundhammer <sh@suse.de>
+ *		Arvin Schnell <arvin@suse.de>
+ * Flags:	Stable
+ *
+ * $Id$
+ *
+ * See also <a href="../README.popups">README.popups</a>
+ */
+
+{
+
+module "Label";
+textdomain "base";
+
+/**
+ * Add Button
+ */
+global define string AddButton() {
+  /* Button label */
+  return _("&Add");
+}
+
+/**
+ * Cancel Button
+ */
+global define string CancelButton() {
+  /* Button label */
+  return _("&Cancel");
+}
+
+/**
+ * Continue Button
+ */
+global define string ContinueButton() {
+  /* Button label */
+  return _("C&ontinue");
+}
+
+/**
+ * Yes Button
+ */
+global define string YesButton() {
+  /* Button label */
+  return _("&Yes");
+}
+
+/**
+ * No Button
+ */
+global define string NoButton() {
+  /* Button label */
+  return _("&No");
+}
+
+/**
+ * Finish Button
+ */
+global define string FinishButton() {
+  /* Button label */
+  return _("&Finish");
+}
+
+/**
+ * Edit Button
+ */
+global define string EditButton() {
+  /* Button label */
+  return _("Ed&it");
+}
+
+/**
+ * OK Button
+ */
+global define string OKButton() {
+  /* Button label */
+  return _("&OK");
+}
+
+/**
+ * Abort Button
+ */
+global define string AbortButton() {
+    /* Button label */
+    return _("Abo&rt");
+}
+
+/**
+ * Abort Installation Button
+ */
+global define string AbortInstallationButton () {
+    /* Button label */
+    return _("Abo&rt Installation");
+}
+
+/**
+ * Ignore Button
+ */
+global define string IgnoreButton() {
+  /* Button label */
+  return _("&Ignore");
+}
+
+/**
+ * Next Button
+ */
+global define string NextButton() {
+  /* Button label */
+  return _("&Next");
+}
+
+/**
+ * New Button
+ */
+global define string NewButton() {
+  /* Button label */
+  return _("Ne&w");
+}
+
+/**
+ * Delete Button
+ */
+global define string DeleteButton() {
+  /* Button label */
+  return _("Dele&te");
+}
+
+/**
+ * Back Button
+ */
+global define string BackButton() {
+  /* Button label */
+  return _("&Back");
+}
+
+/**
+ * Accept Button
+ */
+global define string AcceptButton() {
+  /* Button label */
+  return _("&Accept");
+}
+
+/**
+ * Do Not Accept Button
+ */
+global define string DoNotAcceptButton() {
+  /* Button label */
+  return _("&Do Not Accept");
+}
+
+/**
+ * Quit Button
+ */
+global define string QuitButton() {
+  /* Button label */
+  return _("&Quit");
+}
+
+/**
+ * Retry Button
+ */
+global define string RetryButton() {
+  /* Button label */
+  return _("Retr&y");
+}
+
+/**
+ * Replace Button
+ */
+global define string ReplaceButton() {
+  /* Button label */
+  return _("&Replace");
+}
+
+/**
+ * Up Button
+ */
+global define string UpButton() {
+  /* Button label */
+  return _("&Up");
+}
+
+/**
+ * Down Button
+ */
+global define string DownButton() {
+  /* Button label */
+  return _("Do&wn");
+}
+
+/**
+ * Select Button
+ */
+global define string SelectButton() {
+  /* Button label */
+  return _("Sele&ct");
+}
+
+/**
+ * Remove Button
+ */
+global define string RemoveButton() {
+  /* Button label */
+  return _("Remo&ve");
+}
+
+/**
+ * Refresh Button
+ */
+global define string RefreshButton() {
+  /* Button label */
+  return _("&Refresh");
+}
+
+/**
+ * Help Button
+ */
+global define string HelpButton() {
+  /* Button label */
+  return _("&Help");
+}
+
+/**
+ * Install Button
+ */
+global define string InstallButton() {
+  /* Button label */
+  return _("&Install");
+}
+
+/**
+ * Don't Install Button
+ */
+global define string DontInstallButton() {
+  /* Button label */
+  return _("&Do Not Install");
+}
+
+/**
+ * Download Button
+ */
+global define string DownloadButton() {
+  /* Button label */
+  return _("&Download");
+}
+
+/**
+ * Save Button
+ */
+global define string SaveButton() {
+  /* Button label */
+  return _("&Save");
+}
+
+/**
+ * Stop Button
+ */
+global define string StopButton() {
+  /* Button label */
+  return _("&Stop");
+}
+
+/**
+ * Close Button
+ */
+global define string CloseButton() {
+  /* Button label */
+  return _("C&lose");
+}
+
+/**
+ * Browse Button
+ */
+global define string BrowseButton() {
+  /* Button label */
+  return _("Bro&wse...");
+}
+
+/**
+ * Create Button
+ */
+global define string CreateButton() {
+  /* Button label */
+  return _("Crea&te");
+}
+
+/**
+ * Skip Button
+ */
+global define string SkipButton() {
+  /* Button label */
+  return _("&Skip");
+}
+
+/**
+ * Warning Message
+ */
+global define string WarningMsg() {
+  // this string is usually used as headline of a popup
+  return _("Warning");
+}
+
+/**
+ * Error Message
+ */
+global define string ErrorMsg() {
+  // this string is usually used as headline of a popup
+  return _("Error");
+}
+
+/**
+ * Please wait Message
+ */
+global define string PleaseWaitMsg() {
+  // this string is usually used as headline of a popup
+  return _("Please wait...");
+}
+
+/**
+ * Default function key map
+ */
+global define map<string, integer> DefaultFunctionKeyMap() {
+    map<string, integer> fkeys = $[];
+
+    // A map only accepts constants as keys, so we have to add() each
+    // item. It will always be a term since it has to go through the
+    // translator.
+
+    fkeys = add( fkeys, HelpButton()		, 1 );
+    fkeys = add( fkeys, AddButton()		, 3 );
+    fkeys = add( fkeys, EditButton()		, 4 );
+    fkeys = add( fkeys, DeleteButton()		, 5 );
+    fkeys = add( fkeys, BackButton()		, 8 );
+
+    // Negative Answers: [F9]
+    fkeys = add( fkeys, CancelButton()		, 9 );
+    fkeys = add( fkeys, NoButton()		, 9 );
+    fkeys = add( fkeys, DoNotAcceptButton()	, 9 );
+    fkeys = add( fkeys, DontInstallButton()	, 9 );
+    fkeys = add( fkeys, QuitButton()		, 9 );
+
+    // Positive Answers: [F10]
+    fkeys = add( fkeys, OKButton()		, 10 );
+    fkeys = add( fkeys, AcceptButton()		, 10 );
+    fkeys = add( fkeys, YesButton()		, 10 );
+    fkeys = add( fkeys, CloseButton()		, 10 );
+    fkeys = add( fkeys, ContinueButton()	, 10 );
+    fkeys = add( fkeys, FinishButton()		, 10 );
+    fkeys = add( fkeys, InstallButton()		, 10 );
+    fkeys = add( fkeys, NextButton()		, 10 );
+    fkeys = add( fkeys, SaveButton()		, 10 );
+
+    return fkeys;
+}
+
+/* LABEL -- MESSAGES FOR ANOTHER WIDGETS */
+
+/* TextEntry */
+
+/**
+ * File Name TextEntry
+ */
+global define string FileName() {
+  /* TextEntry Label */
+  return _("&Filename");
+}
+
+/**
+ * Password TextEntry
+ */
+global define string Password() {
+  /* TextEntry Label */
+  return _("&Password");
+}
+
+/**
+ * Confirm Password TextEntry
+ */
+global define string ConfirmPassword() {
+  /* TextEntry Label */
+  return _("C&onfirm Password");
+}
+
+/**
+ * Port TextEntry
+ */
+global define string Port() {
+  /* TextEntry Label */
+  return _("&Port");
+}
+
+/**
+ * Host Name TextEntry
+ */
+global define string HostName() {
+  /* TextEntry Label */
+  return _("&Hostname");
+}
+
+/**
+ * Options TextEntry
+ */
+global define string Options() {
+  /* TextEntry Label */
+  return _("&Options");
+}
+
+/* EOF */
+}

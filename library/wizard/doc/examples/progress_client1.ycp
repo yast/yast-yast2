@@ -1,0 +1,30 @@
+{
+
+// an example client which uses Progress::
+
+import "Progress";
+import "Wizard";
+
+integer wait = 1000;
+
+if (WFM::Args() != [ "noinit" ]) Wizard::CreateDialog();
+
+// crate a progress with 3 stages
+Progress::New("Progress Example 1", "", 3, ["Stage 1", "Stage 2", "Stage 3"] , [], "");
+
+sleep(wait);
+Progress::NextStage();
+
+sleep(wait);
+Progress::NextStage();
+
+sleep(wait);
+Progress::NextStage();
+
+sleep(wait);
+Progress::Finish();
+
+sleep(wait);
+
+if (WFM::Args() != [ "noinit" ]) Wizard::CloseDialog();
+}

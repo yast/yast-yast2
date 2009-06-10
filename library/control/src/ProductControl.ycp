@@ -1,0 +1,1557 @@
+/**
+ * File:	modules/ProductControl.ycp
+ * Package:	installation
+ * Summary:	Product Control routines
+ * Authors:	Anas Nashif <nashif@suse.de>
+ *		Stanislav Visnovsky <visnov@suse.cz>
+ *		Jiri Srain <jsrain@suse.cz>
+ *		Lukas Ocilka <locilka@suse.cz>
+ *
+ * $Id$
+ */
+{
+textdomain "base";
+module "ProductControl";
+
+import "XML";
+import "ProductFeatures";
+import "Mode";
+import "Arch";
+import "Stage";
+import "Directory";
+import "Label";
+import "Wizard";
+import "Report";
+import "Hooks";
+import "Popup";
+import "FileUtils";
+import "Installation";
+
+// The complete parsed control file
+global map productControl = $[];
+
+// all workflows
+global list<map> workflows = [];
+
+// all proposals
+global list<map> proposals = [];
+
+// inst_finish steps
+global list<map<string,any> > inst_finish = [];
+
+// modules to be offered to clone configuration at the end of installation
+global list<string> clone_modules = [];
+
+// additional workflow parameters
+// workflow doesn't only match mode and stage but also these params
+// bnc #427002
+map <string, any> _additional_workflow_params = $[];
+
+// Location of a custom control file
+global string custom_control_file = "";
+
+// Control file in service packs
+global string y2update_control_file = "/y2update/control.xml";
+
+// The custom control file location, usually copied from
+// the root of the CD to the installation directory by linuxrc
+global string default_control_file = "/control.xml";
+
+// The file above get saved into the installed system for later
+// processing
+global string saved_control_file = Directory::etcdir + "/control.xml";
+
+// The packaged file which contains all default worklfows
+global string packaged_control_file = "/usr/share/YaST2/control/control.xml";
+
+// The control file we are using for this session.
+global string current_control_file = "";
+
+
+// Current Wizard Step
+global string CurrentWizardStep = "";
+
+
+// Last recently used stage_mode for RetranslateWizardSteps
+global list<map> last_stage_mode = [];
+
+
+// -->
+
+// Currently only local variables, they have their own API
+
+// List of module to disable in the current run
+list<string> DisabledModules = [];
+
+// List of proposals to disable in the current run
+list<string> DisabledProposals = [];
+
+
+// <--
+
+// Log files for hooks
+global list<string> logfiles = [];
+
+global integer first_step = nil;
+
+global integer restarting_step = nil;
+
+
+
+
+string _client_prefix = "inst_";
+
+list stack = [];
+
+
+string first_id = "";
+
+integer current_step = 0;
+
+global integer CurrentStep () {
+    return current_step;
+}
+
+
+/**
+ * Set Client Prefix 
+ */
+global define void setClientPrefix(string prefix)  {
+    _client_prefix = prefix;
+    return;
+}
+
+/**
+ * Enable given disabled module
+ * @return current list of disabled modules
+ */
+global list<string> EnableModule (string modname) {
+
+    DisabledModules = filter (string mod, DisabledModules, ``(mod != modname));
+
+    return DisabledModules;
+}
+
+/**
+ * Disable given module in installation workflow
+ * @return current list of disabled modules
+ */
+global list<string> DisableModule (string modname) {
+    if (modname == nil || modname == "") {
+	y2error ("Module to disable is '%1'", modname);
+    } else {
+	DisabledModules	= (list<string>) union (DisabledModules, [modname]);
+    }
+
+    return DisabledModules;
+}
+
+/**
+ * Returns list of modules disabled in workflow
+ *
+ * @return list <string> DisabledModules
+ */
+global list <string> GetDisabledModules () {
+    return DisabledModules;
+}
+
+/**
+ * Enable given disabled proposal
+ * @return current list of disabled proposals
+ */
+global list<string> EnableProposal (string enable_proposal) {
+
+    DisabledProposals = filter (string one_proposal, DisabledProposals, {
+	return (one_proposal != enable_proposal);
+    });
+
+    return DisabledProposals;
+}
+
+/**
+ * Disable given proposal in installation workflow
+ * @return current list of disabled proposals
+ */
+global list<string> DisableProposal (string disable_proposal) {
+
+    if (disable_proposal == nil || disable_proposal == "") {
+	y2error ("Module to disable is '%1'", disable_proposal);
+    } else {
+	DisabledProposals = (list<string>) union (DisabledProposals, [disable_proposal]);
+    }
+
+    return DisabledProposals;
+}
+
+/**
+ * Returns list of proposals disabled in workflow
+ *
+ * @return list <string> DisabledProposals
+ */
+global list <string> GetDisabledProposals () {
+    return DisabledProposals;
+}
+
+/**
+ * Check if a module is disabled
+ * @param map module map
+ * @return boolean
+ */
+global define boolean checkDisabled (map mod ) 
+{
+    if (mod == nil) {
+	y2error ("Unknown module %1", mod);
+	return nil;
+    }
+
+    // Proposal
+    if (mod["proposal"]:"" != nil && mod["proposal"]:"" != "") {
+	if (contains (DisabledProposals, mod["proposal"]:"")) {
+	    return true;
+	}
+    // Normal step
+    } else if (mod["name"]:"" != nil && mod["name"]:"" != "") {
+	if (contains (DisabledModules, mod["name"]:"")) {
+	    return true;
+	}
+    }
+
+    return false;
+}
+
+global boolean checkHeading(map mod) {
+    return haskey (mod, "heading");
+}
+
+/**
+  * Read XML Control File
+  * @param string control file
+  * @return boolean
+  */
+global define boolean ReadControlFile( string controlfile) 
+{
+    productControl = XML::XMLToYCPFile(controlfile);
+
+    if (productControl == nil)
+        return false;
+
+    workflows = productControl["workflows"]:[];
+    proposals = productControl["proposals"]:[];
+    inst_finish = productControl["inst_finish_stages"]:[];
+    clone_modules = productControl["clone_modules"]:[];
+
+    foreach (string section,
+	["software", "globals", "network", "partitioning", "texts"],
+    {
+	if (haskey (productControl, section))
+	{
+	    ProductFeatures::SetSection (section,
+		(map<string,any>)(productControl[section]:$[]));
+	}
+    });
+
+    // FIXME would be nice if it could be done generic way
+    if (size( productControl["partitioning", "partitions"]:[] ) > 0)
+    {
+	map partitioning = productControl["partitioning"]:$[];
+	ProductFeatures::SetBooleanFeature ("partitioning",
+	    "flexible_partitioning", true);
+	ProductFeatures::SetFeature ("partitioning", "FlexiblePartitioning",
+	    partitioning);
+    }
+
+    return true;
+}
+
+
+
+boolean Check(string allowed, string current)
+{
+    // create allowed list
+    list<string> allowedlist = filter(string s,
+            splitstring(deletechars(allowed, " "), ","), ``(s!=""));
+    y2debug("allowedlist: %1", allowedlist );
+    y2debug("current: %1", current );
+    if (size(allowedlist) == 0 )
+    {
+        return true;
+    }
+    else if (contains(allowedlist, current ))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+/**
+ * Check if valid architecture
+ * @param map module data
+ * @param map default data
+ * @return boolean true if arch match
+ */
+global define boolean checkArch(map mod , map def)
+{
+    y2milestone("mod: %1", mod);
+    string archs = mod["archs"]:"";
+    if (archs == "")
+    {
+        archs=def["archs"]:"all";
+    }
+
+    if (archs == "all") {
+        return true;
+    }
+
+    y2milestone("short arch desc: %1", Arch::arch_short () );
+    y2milestone("supported archs: %1", archs );
+    if (issubstring(archs,Arch::arch_short ()))
+    {
+        return true;
+    }
+
+    return false;
+};
+
+/**
+ * Returns name of the script to call. If 'execute' is defined,
+ * the client name is taken from there. Then, if a custom control
+ * file is defined, client name is defined as 'name'. Then, inst_'name'
+ * or just 'name' is returned if it does not match the 'inst_' regexp.
+ *
+ * @param string name
+ * @param string execute
+ * @see custom_control_file
+ */
+string getClientName (string name, string execute) {
+
+    if (Mode::test()) 
+    {
+        return "inst_test_workflow";
+    }
+
+    // BNC #401319
+    // 'execute; is defined and thus returned
+    if (execute != "" && execute != "") {
+	y2milestone ("Step name '%1' executes '%2'", name, execute);
+	return execute;
+    }
+
+    // Defined custom control file
+    if (custom_control_file != "") {
+        return name;
+
+    // All standard clients start with "inst_"
+    } else {
+        if (issubstring (name, _client_prefix)) {
+            return name;	    
+	} else {
+            return _client_prefix + name;
+	}
+    }
+}
+
+/**
+ * Return term to be used to run module with CallFunction
+ * @param map module data
+ * @param map default data
+ * @return term module data with params
+ */
+global define term getClientTerm (map step, map def, any former_result)
+{    
+    string client =  getClientName (step["name"]:"dummy", step["execute"]:"");
+    term result = toterm(client);
+    map<string,any> arguments = $[];
+    
+    foreach(string button, ["enable_back", "enable_next"], ``{
+	
+            string default_setting = def[button]:"yes";            
+	    arguments[button] = step[button]:default_setting == "yes";           
+            });
+
+    if (haskey(step,"proposal"))
+    {
+	arguments["proposal"] = step["proposal"]:"";
+    }
+    map<string, any> other_args = step["arguments"]:$[];
+    
+    if (size(other_args) > 0 )
+        arguments = (map<string, any>)union(arguments, other_args );
+
+    if (is(former_result,symbol) && former_result == `back)
+        arguments["going_back"] = true;
+
+    if (Mode::test())
+    {
+        arguments["step_name"] = step["name"]:"";
+        arguments["step_id"] = step["id"]:"";
+    }
+    result = add(result, arguments);
+    return result;
+
+}
+
+/**
+ * Checks all params set by SetAdditionalWorkflowParams() whether they match the
+ * workfow got as parameter.
+ *
+ * @param map check_workflow
+ * @see SetAdditionalWorkflowParams()
+ */
+boolean CheckAdditionalParams (map & check_workflow) {
+    if (_additional_workflow_params == nil || _additional_workflow_params == $[]) {
+	return true;
+    }
+
+    boolean ret = true;
+
+    foreach (string key_to_check, any value_to_check, _additional_workflow_params, {
+	// exception
+	// If 'add_on_mode' key is not set in the workflow at all
+	// it is considered to be matching that parameter
+	if (key_to_check == "add_on_mode" && ! haskey (check_workflow, key_to_check)) {
+	    y2debug ("No 'add_on_mode' defined, matching %1", value_to_check);
+	} else if (check_workflow[key_to_check]:nil != value_to_check) {
+	    ret = false;
+	    break;
+	}
+    });
+
+    return ret;
+}
+
+/**
+ * Returns workflow matching the selected stage and mode and additiona parameters
+ * if set by SetAdditionalWorkflowParams()
+ *
+ * @param string stage
+ * @param string mode
+ * @return map workflow
+ */
+map FindMatchingWorkflow (string stage, string mode) {
+    y2debug ("workflows: %1", workflows);
+
+    list<map> tmp = filter(map wf, workflows, ``(
+	Check (wf["stage"]:"", stage) && Check (wf["mode"]:"", mode) && CheckAdditionalParams (wf)
+    ));
+
+    y2debug ("Workflow: %1", tmp[0]:$[]);
+
+    return tmp[0]:$[];
+}
+
+/**
+ * Get workflow defaults
+ * @param string stage
+ * @param string mode
+ * @return map defaults
+ */
+global define map getModeDefaults(string stage, string mode)
+{
+    map workflow = FindMatchingWorkflow (stage, mode);
+    return workflow["defaults"]:$[];
+}
+
+/**
+ * Prepare Workflow Scripts
+ * @param m Workflow module map
+ * @return void
+ */
+void PrepareScripts(map m)
+{
+    string tmp_dir = (string)WFM::Read(.local.tmpdir, []);
+    if (haskey(m,"prescript"))
+    {
+        string interpreter = m["prescript", "interpreter"]:"shell";
+        string source = m["prescript", "source"]:"";
+        string type = (interpreter == "shell") ? "sh" : "pl";
+        string f = sformat("%1/%2_pre.%3", tmp_dir, m["name"]:"", type);
+        WFM::Write(.local.string,f , source);
+        logfiles = add(logfiles, sformat("%1.log", sformat("%1_pre.%2",
+                        m["name"]:"", type)));
+    }
+    if (haskey(m,"postscript"))
+    {
+        string interpreter = m["postscript", "interpreter"]:"shell";
+        string source = m["postscript", "source"]:"";
+        string type = (interpreter == "shell") ? "sh" : "pl";
+        string f = sformat("%1/%2_post.%3", tmp_dir, m["name"]:"", type);
+        WFM::Write(.local.string, f, source);
+        logfiles = add(logfiles, sformat("%1.log", sformat("%1_post.%2",
+                         m["name"]:"", type)));
+    }
+    return;
+}
+
+
+
+/**
+ * Get list of required files for the workflow.
+ * @return list<string> Required files list.
+ */
+global list<string> RequiredFiles (string stage, string mode) 
+{
+    // Files needed during installation.
+    list<string> needed_client_files = [];
+
+    map workflow = FindMatchingWorkflow (stage, mode);
+
+    list<map> modules = workflow["modules"]:[];
+    integer id = 1;
+    modules = filter(map m, modules, ``(m["enabled"]:true));
+
+    foreach(map m, modules,
+    {
+	string client = "";
+	if (Stage::firstboot ())
+	{
+	    client = m["name"]:"dummy";
+	}
+	else
+	{
+	    if (issubstring(m["name"]:"dummy", "inst_"))
+	    {
+		client = m["name"]:"dummy";
+	    }
+	    else
+	    {
+		client = "inst_" + m["name"]:"dummy";
+	    }
+	}
+	client = Directory::clientdir + "/" + client + ".ycp";
+	needed_client_files = add(needed_client_files, client);
+    });
+    
+    needed_client_files=toset(needed_client_files);
+    return needed_client_files;
+}
+
+
+
+/**
+ * Get Workflow
+ * @param stage Stage
+ * @param mode Mode
+ * @return map Workflow map
+ */
+global define map getCompleteWorkflow(string stage, string mode)
+{
+    return FindMatchingWorkflow (stage, mode);
+}
+
+
+
+/**
+ * Get modules of current Workflow
+ * @param string stage
+ * @param string mode
+ * @param boolean all enabled and disabled or enabled only
+ * @return list<map> modules
+ */
+global define list <map> getModules (string stage, string mode, symbol which)
+{
+    map workflow = FindMatchingWorkflow (stage, mode);
+
+    list<map> modules = workflow["modules"]:[];
+    y2debug ("modules: %1", modules );
+
+    integer id = 1;
+    if (which == `enabled)
+    {
+	modules = filter (map m, modules, {
+	    return m["enabled"]:true && ! checkDisabled (m);
+	});
+    }
+
+    modules = maplist(map m, modules, ``{
+            m["id"] = sformat("%1_%2", stage, id);
+            PrepareScripts(m);
+            id = id + 1;
+            return (m);
+            });
+
+    y2debug("Log files: %1", logfiles);
+    return modules;
+}
+
+/**
+ * Returns whether is is required to run YaST in the defined
+ * stage and mode
+ *
+ * @param string stage
+ * @param string mode
+ * @return boolean if needed
+ */
+global boolean RunRequired (string stage, string mode) {
+    list <map> modules = getModules (stage, mode, `enabled);
+
+    if (modules == nil) {
+	y2error ("Undefined %1/%2", stage, mode);
+	return nil;
+    }
+
+    modules = filter (map one_module, modules, {
+	// modules
+	if (one_module["name"]:"" != nil && one_module["name"]:"" != "") {
+	    return true;
+	// proposals
+	} else if (one_module["proposal"]:"" != nil && one_module["proposal"]:"" != "") {
+	    return true;
+	}
+	// the rest
+	return false;
+    });
+
+    // for debugging purposes
+    y2milestone ("Enabled: (%1) %2", size (modules), modules);
+
+    return (size (modules) > 0);
+}
+
+/**
+ * Get Workflow Label
+ * @param string stage
+ * @param string mode
+ * @return string
+ */
+global string getWorkflowLabel(string stage, string mode, string wz_td)
+{
+    map workflow = FindMatchingWorkflow (stage, mode);
+
+    string label = workflow["label"]:"";
+    if (label == "")
+	return "";
+    if (haskey (workflow, "textdomain"))
+	return dgettext (workflow["textdomain"]:"", label);
+    else
+	return dgettext (wz_td, label);
+}
+
+list <string> localDisabledProposals = [];
+list <string> localDisabledModules = [];
+
+list <map> already_disabled_workflows = [];
+
+global void DisableAllModulesAndProposals (string mode, string stage) {
+    map this_workflow = $["mode":mode, "stage":stage];
+
+    if (contains (already_disabled_workflows, this_workflow)) {
+	y2milestone ("Workflow %1 already disabled", this_workflow);
+	return;
+    }
+
+    // stores modules and proposals disabled before
+    // this 'general' disabling
+    localDisabledProposals = DisabledProposals;
+    localDisabledModules = DisabledModules;
+
+    y2milestone ("localDisabledProposals: %1", localDisabledProposals);
+    y2milestone ("localDisabledModules: %1", localDisabledModules);
+
+    foreach (map m, getModules (stage, mode, `all), {
+        if (m["proposal"]:"" != nil && m["proposal"]:"" != "") {
+            y2milestone ("Disabling proposal: %1", m);
+            DisabledProposals = (list <string>) union (DisabledProposals, [m["proposal"]:""]);
+        } else if (m["name"]:"" != nil && m["name"]:"" != "") {
+            y2milestone ("Disabling module: %1", m);
+            DisabledModules = (list <string>) union (DisabledModules, [m["name"]:""]);
+        }
+    });
+
+    already_disabled_workflows = (list <map>) union (already_disabled_workflows, [this_workflow]);
+}
+
+global void UnDisableAllModulesAndProposals (string mode, string stage) {
+    map this_workflow = $["mode":mode, "stage":stage];
+
+    // Such mode/stage not disabled
+    if (! contains (already_disabled_workflows, this_workflow)) {
+	y2milestone ("Not yet disabled, not un-disabling: %1", this_workflow);
+	return;
+    }
+
+    y2milestone ("Un-Disabling workflow %1", this_workflow);
+    already_disabled_workflows = filter (map one_workflow, already_disabled_workflows, {
+	return (one_workflow != this_workflow);
+    });
+
+    // Note: This might be done by a simple reverting with 'X = localX'
+    //       but some of these modules don't need to be in a defined mode and stage
+
+    foreach (map m, getModules (stage, mode, `all), {
+	// A proposal
+	// Enable it only if it was enabled before
+	if (m["proposal"]:"" != nil && m["proposal"]:"" != "" && ! contains (localDisabledProposals, m["proposal"]:"")) {
+	    y2milestone ("Enabling proposal: %1", m);
+	    DisabledProposals = filter (string one_proposal, DisabledProposals, {
+		return (m["proposal"]:"" != one_proposal);
+	    });
+	// A module
+	// Enable it only if it was enabled before
+	} else if (m["name"]:"" != nil && m["name"]:"" != "" && ! contains (localDisabledModules, m["name"]:"")) {
+	    y2milestone ("Enabling module: %1", m);
+	    DisabledModules = filter (string one_module, DisabledModules, {
+		return (m["name"]:"" != one_module);
+	    });
+	}
+    });
+}
+
+/**
+ * Add Wizard Steps
+ * @param list<map> stagemode A List of maps containing info about complete
+ *                  installation workflow.
+ * @return void
+ */
+global define void AddWizardSteps(list<map> stagemode)
+{
+    boolean debug_workflow = ProductFeatures::GetBooleanFeature ("globals", "debug_workflow");
+
+    last_stage_mode = stagemode;
+
+    // UI::WizardCommand() can safely be called even if the respective UI
+    // doesn't support the wizard widget, but for optimization it makes sense
+    // to do expensive operations only when it is available.
+
+    // if ( ! UI::HasSpecialWidget(`Wizard ) )
+    // return;
+
+    string wizard_textdomain = (string) productControl["textdomain"]:"control";
+    y2debug( "Using textdomain '%1' for wizard steps", wizard_textdomain );
+
+    string first_id = "";
+    // UI::WizardCommand(`SetVerboseCommands( true ) );
+    foreach (map sm , stagemode, {
+        y2debug( "Adding wizard steps for %1", sm );
+	// only for debugging
+	y2milestone ("Adding wizard steps for %1", sm);
+
+        string slabel = getWorkflowLabel(sm["stage"]:"", sm["mode"]:"", wizard_textdomain);
+        if (slabel != "") {
+            UI::WizardCommand (`AddStepHeading (slabel));
+        }
+
+	// just to check whether there are some steps to display
+	list <map> enabled_modules = getModules (sm["stage"]:"", sm["mode"]:"", `enabled);
+	enabled_modules = filter (map m, enabled_modules, {
+	    return (m["heading"]:"" == "");
+	});
+	if (size (enabled_modules) == 0) {
+	    y2milestone ("There are no (more) steps for %1, section will be disabled", sm);
+	    return;
+	}
+
+        string last_label = "";
+	string last_domain = "";
+        foreach (map m, getModules (sm["stage"]:"", sm["mode"]:"", `enabled), {
+	    // only for debugging
+            y2debug("Adding wizard step: %1", m );
+
+	    string heading = "";
+	    string label = "";
+	    string id = "";
+
+	    // Heading
+	    if (haskey (m, "heading") && m["label"]:"" != "") {
+		heading = (
+		    haskey (m, "textdomain") ?
+			dgettext (m["textdomain"]:"", m["label"]:"")
+			:
+			dgettext (wizard_textdomain, m["label"]:"")
+		);
+
+	    // Label
+            } else if (m["label"]:"" != "") {
+                if (first_id=="") {
+                    first_id = m["id"]:"";
+                }
+
+		label = (
+		    haskey (m, "textdomain") ?
+			dgettext (m["textdomain"]:"", m["label"]:"")
+			:
+			dgettext (wizard_textdomain, m["label"]:"")
+		);
+
+		id = m["id"]:"";
+                last_label = m["label"]:"";
+		last_domain = m["textdomain"]:"";
+
+	    // The rest
+            } else {
+                if (first_id=="") {
+                    first_id = m["id"]:"";
+                }
+
+		if (last_label != "") {
+		    if (last_domain != "") {
+			label = dgettext (last_domain, last_label);
+			id = m["id"]:"";
+		    } else {
+			label = dgettext (wizard_textdomain, last_label);
+		    }
+		    id = m["id"]:"";
+		}
+            }
+
+	    if (heading != nil && heading != "") {
+		UI::WizardCommand (`AddStepHeading (heading));
+	    }
+
+	    if (label != nil && label != "") {
+		if (debug_workflow == true) {
+		    label = label + sformat (" [%1]", m["name"]:"");    
+		}
+		UI::WizardCommand (`AddStep (label, id));
+	    }
+        });
+    });
+
+    UI::WizardCommand(`SetCurrentStep( CurrentWizardStep ) );
+}
+
+/* Forces UpdateWizardSteps to redraw steps even if nothing seem to be changed */
+boolean force_UpdateWizardSteps = false;
+
+// -->
+// Installation without second stage
+// "Automatic Configuration"
+
+boolean use_automatic_configuration = nil;
+
+/**
+ * Inits the default value for use_automatic_configuration
+ */
+global void InitAutomaticConfiguration () {
+    if (use_automatic_configuration != nil)
+	return;
+
+    // AytoYaST default - not to use Automatic configuration at all
+    if (Mode::autoinst() || Mode::config()) {
+	use_automatic_configuration = false;
+    // The rest is on user
+    // FIXME: read the default value from control file
+    } else {
+	use_automatic_configuration = false;
+    }
+
+    y2milestone ("Default 'UseAutomaticConfiguration': %1", use_automatic_configuration);
+}
+
+/**
+ * Adjust the automatic configuration to be either enabled or disabled.
+ * Enabling it means that second stage will be disabled.
+ *
+ * @param boolean enabled
+ */
+global void SetUseAutomaticConfiguration (boolean set_param) {
+    if (set_param == nil) {
+	y2error ("Automatic configuration can be either enabled or disabled, not nil!");
+	return;
+    }
+
+    use_automatic_configuration = set_param;
+
+    y2milestone ("UseAutomaticConfiguration has been set to: %1", use_automatic_configuration);
+}
+
+/**
+ * Returns whether automatic configuration will be enabled.
+ *
+ * @return boolean if enabled
+ */
+global boolean GetUseAutomaticConfiguration () {
+    // lazy loading
+    InitAutomaticConfiguration();
+
+    return use_automatic_configuration;
+}
+
+// <--
+
+list <string> lastDisabledModules = DisabledModules;
+
+/**
+ * Update Steps
+ */
+global define void UpdateWizardSteps(list<map> stagemode)
+{
+    if (force_UpdateWizardSteps == true) {
+	y2milestone ("UpdateWizardSteps forced");
+	force_UpdateWizardSteps = false;
+    } else if (DisabledModules != lastDisabledModules) {
+	y2milestone ("Disabled modules were changed");
+    } else if (last_stage_mode == stagemode) {
+	y2milestone ("No changes in Wizard steps");
+	return;
+    }
+
+    last_stage_mode = stagemode;
+    lastDisabledModules = DisabledModules;
+
+    UI::WizardCommand(`DeleteSteps());
+    // Also redraws the wizard and sets the current step
+    AddWizardSteps( stagemode );
+}
+
+
+/**
+ * Retranslate Wizard Steps
+ */
+global define void RetranslateWizardSteps()
+{
+    if ( size( last_stage_mode ) > 0 )
+    {
+	y2debug( "Retranslating wizard steps" );
+	force_UpdateWizardSteps = true;
+	UpdateWizardSteps( last_stage_mode );
+    }
+}
+
+
+define list<map> getMatchingProposal(
+        string stage,
+        string mode,
+        string proptype)
+{
+    y2milestone("Stage: %1 Mode: %2, Type: %3", stage, mode, proptype);
+    
+    // First we search for proposals for current stage if there are
+    // any. 
+    list<map> props = filter(map p, proposals, ``(Check(p["stage"]:"", stage)));
+    y2debug("1. proposals: %1", props);
+
+    // Then we check for mode: installation or update
+    props = filter(map p, props, ``(
+                    Check(p["mode"]:"", mode)));
+
+    y2debug("2. proposals: %1", props);
+
+    // Now we check for architecture
+    y2debug("Architecture: %1, Proposals: %2", Arch::architecture (), props );
+    
+    list<map> arch_proposals = filter(map p, props, ``(
+                p["name"]:"" == proptype &&
+                issubstring(p["archs"]:"dummy", Arch::arch_short () )));
+
+    y2debug("3. arch proposals: %1", arch_proposals );
+    
+    props = filter(map p, props, ``(
+				    p["archs"]:"" == "" || p["archs"]:"" == "all"
+				    )
+		   );
+
+    y2debug("4. other proposals: %1", props );
+    // If architecture specific proposals are available, we continue with those
+    // and check for proposal type, else we continue with pre arch proposal
+    // list
+    if (size(arch_proposals) > 0 )
+    {
+        props = filter(map p, arch_proposals, ``(
+                     p["name"]:"" == proptype ));
+	y2debug ("5. arch proposals: %1", props);
+    }
+    else
+    {
+        props = filter(map p, props, ``(
+                     p["name"]:"" == proptype ));
+	y2debug ("5. other proposals: %1", props);
+    }
+
+    if (size(props)> 1 )
+    {
+        y2error("Something Wrong happened, more than one proposal after filter:
+                %1", props);
+    }
+
+    // old style proposal
+    y2milestone ("Proposal modules: %1",props[0, "proposal_modules"]:nil );
+    return props;
+}
+
+
+
+/**
+ * Get modules of current Workflow
+ * @param string stage
+ * @param string mode
+ * @return list<string> modules
+ */
+global define list < list > getProposals(string stage, string mode, string proptype) {
+
+    list<map> props = getMatchingProposal(stage, mode, proptype);
+    
+    list< list > final_proposals = maplist(any p, props[0, "proposal_modules"]:[], ``{
+	    
+	    string proposal_name = "";
+	    integer order_value = 50;
+	    if ( is (p, string) )
+	    {
+		proposal_name = (string)p;
+	    }
+	    else
+	    {
+		map<string,string> pm = (map<string,string>)p;
+		proposal_name = pm["name"]:"";
+		string proposal_order = pm["presentation_order"]:"50";
+		
+		order_value = tointeger (proposal_order);
+		if (order_value == nil)
+		{
+		    y2error ("Unable to use '%1' as proposal order, using %2 instead"
+			, proposal_order, 50);
+		    order_value = 50;
+		}
+	    }
+
+	    // All proposal file names end with _proposal
+            if (!issubstring(proposal_name, "_proposal"))
+                return( [proposal_name + "_proposal", order_value ] );
+            else
+                return( [proposal_name, order_value] );
+
+    });
+
+  
+    y2debug("final proposals: %1", final_proposals );
+    return final_proposals;
+}
+
+
+/**
+ * Get Proposal list that can not be changed by the user.
+ * @return list<string> list of locked proposals
+ */
+global list<string> getLockedProposals (string stage,string mode,string proptype) {
+
+    list<map> props = getMatchingProposal(stage, mode, proptype);
+    list<string> locked_proposals = maplist(string p, props[0, "locked_modules"]:[], ``{
+	if (!issubstring(p, "_proposal"))
+	return(p + "_proposal");
+	else
+	return(p);
+
+    });
+    return locked_proposals;
+}
+
+/**
+ * Return text domain
+ */
+global string getProposalTextDomain() {
+    string current_proposal_textdomain = (string)
+	productControl["textdomain"]:"control";
+
+    y2debug( "Using textdomain '%1' for proposals", current_proposal_textdomain);
+    return current_proposal_textdomain;
+}
+
+
+/**
+ * Return proposal Label
+ */
+global map getProposalProperties (string stage, string mode, string proptype) {
+    list <map> got_proposals = getMatchingProposal(stage, mode, proptype);
+    map proposal = got_proposals[0]:$[];
+
+    if (haskey (proposal, "proposal_tabs"))
+    {
+	string text_domain = productControl["textdomain"]:"control";
+	proposal["proposal_tabs"] = maplist (map tab,
+	    proposal["proposal_tabs"]:[],
+	{
+	    string domain = tab["textdomain"]:text_domain;
+	    tab["label"] = dgettext (domain, tab["label"]:"");
+	    return tab;
+	});
+    }
+
+    return proposal;
+
+}
+
+global string GetTranslatedText (string key) {
+    map <string, any> controlfile_texts = ProductFeatures::GetSection ("texts");
+
+    if (! haskey (controlfile_texts, key)) {
+	y2error ("No such text %1", key);
+	return "";
+    }
+
+    map <string,string> text = (map <string,string>) controlfile_texts[key]:$[];
+
+    string label = text["label"]:"";
+
+    // an empty string doesn't need to be translated
+    if (label == "") {
+	return "";
+    }
+
+    string domain = text["textdomain"]:productControl["textdomain"]:"control";
+    if (domain == "")
+    {
+	y2warning ("The text domain for label %1 not set", key);
+	return label;
+    }
+
+    return dgettext (domain, label);
+}
+
+
+/**
+ * Initialize Product Control
+ * @return boolean True on success
+ */
+global define boolean Init() {
+
+    boolean ret = false;
+    current_control_file = "";
+    list<string> order =
+        [
+	 y2update_control_file,  // /y2update/control.xml
+	 default_control_file,  // /control.xml
+	 saved_control_file, // /etc/YaST2/control.xml
+	 packaged_control_file // /usr/share/YaST2/control/control.xml
+	 ];
+
+    if ( custom_control_file != "") {
+        order=prepend (order, custom_control_file);
+    }
+
+    y2milestone ("Candidates: %1", order);
+    foreach(string control_file, order, {
+	if (FileUtils::Exists (control_file) && current_control_file == "") {
+	    current_control_file = control_file;
+	    break;
+	}
+    });
+
+    if (current_control_file == "") {
+        y2error ("No control file found");
+
+        return false;
+    }
+
+    y2milestone ("Reading control file: %1", current_control_file);
+    ReadControlFile (current_control_file);
+
+    return (current_control_file != "");
+}
+
+/**
+ * Re-translate static part of wizard dialog and other predefined messages
+ * after language change
+ */
+void retranslateWizardDialog() {
+	y2milestone ("Retranslating messages, redrawing wizard steps");
+
+	// Make sure the labels for default function keys are retranslated, too.
+	// Using Label::DefaultFunctionKeyMap() from Label module.
+	UI::SetFunctionKeys( Label::DefaultFunctionKeyMap() );
+
+	// Activate language changes on static part of wizard dialog
+	ProductControl::RetranslateWizardSteps();
+	Wizard::RetranslateButtons();
+	Wizard::SetFocusToNextButton();
+        return;
+}
+
+
+
+void addToStack(string name) {
+    stack=add(stack, name);
+    return;
+}
+
+global boolean wasRun(string name)
+{
+    return contains(stack, name);
+}
+
+global symbol RunFrom (integer from, boolean allow_back)
+{
+    any  former_result = `next;
+    symbol final_result = nil;
+    current_step = from;			// current module
+
+    Wizard::SetFocusToNextButton();
+
+    y2debug("Starting Workflow with  \"%1\" \"%2\"",  Stage::stage (), Mode::mode ());
+    
+    list<map> modules = 
+	getModules( Stage::stage (), Mode::mode (), `enabled);
+
+    map defaults = getModeDefaults(Stage::stage (), Mode::mode ());
+
+    y2debug("modules: %1", modules);
+
+    if (size(modules) == 0 )
+    {
+	y2error("No workflow found: %1", modules );
+	// error report
+	Report::Error(_("No workflow defined for this installation mode."));
+	return `abort;
+    }
+
+    integer minimum_step = allow_back ? 0 : from;
+
+    if (minimum_step < from) {
+	y2warning ("Minimum step set to: %1 even if running from %2, fixing", minimum_step, from);
+	minimum_step = from;
+    }
+
+    while ((current_step >= 0) && (current_step < size(modules)))
+    {
+	map step = modules[current_step]:$[];
+	string  step_name = step["name"]:"";
+	// BNC #401319
+	// if "execute" is defined, it's called without modifications
+	string  step_execute = step["execute"]:"";
+	string  step_id = step["id"]:"";
+	boolean run_in_update_mode = step["update"]:true; // default is true
+	boolean retranslate = step["retranslate"]:false;
+
+	// The very first dialog has back button disabled
+	if (current_step <= minimum_step) {
+	    // Don't mark back button disabled when back button status
+	    // is forced in the control file
+	    if (! haskey (step, "enable_back")) {
+        	step["enable_back"] = "no";
+		y2milestone ("Disabling back: %1 %2 %3", current_step, minimum_step, step["enable_back"]:nil);
+	    }
+	}
+
+	boolean   do_continue           = false;
+
+	if (!checkArch(step, defaults))
+	{
+	    do_continue = true;
+	}
+
+	if (checkDisabled(step))
+	{
+	    do_continue = true;
+	}
+
+	if (checkHeading(step))
+	{
+	    do_continue = true;
+	}
+
+	if (!run_in_update_mode && Mode::update ())
+	{
+	    do_continue = true;
+	}
+
+	if ( do_continue )
+	{
+	    if (former_result == `next)
+	    {
+		if (current_step <= minimum_step && ! allow_back)
+		    minimum_step = minimum_step + 1;
+		current_step = current_step + 1;
+	    }
+	    else
+		current_step = current_step - 1;
+	}
+	if ( do_continue ) continue;
+
+	term argterm = getClientTerm( step, defaults, former_result);
+	y2debug("Running module: %1 (%2)", argterm, current_step);
+
+	symbol module_name = symbolof( argterm );
+
+	y2milestone( "Calling %1", argterm );
+
+        if (!wasRun(step_name)) {
+            Hooks::Checkpoint (sformat("%1", module_name), true);
+            Hooks::Run (step_name, true);
+        }
+
+	list args = [];
+	integer i = 0;
+	while (i < size(argterm)) 
+	{
+	    any def = nil;
+	    args[i] = argterm[i]:def;
+	    i = i + 1;
+	}
+
+	UI::WizardCommand(`SetCurrentStep( step_id ) );
+	CurrentWizardStep = step_id;
+
+        // Register what step we are going to run
+        if (!Stage::initial())
+        {
+            if (! (boolean) SCR::Write (.target.string, Installation::current_step, step_id))
+                y2error("Error writing step identifier");
+        }
+
+	symbol result = (symbol) WFM::CallFunction (getClientName (step_name, step_execute), args);
+	y2milestone ("Calling %1 returned %2", argterm, result);
+
+	// bnc #369846
+	if (result == `accept || result == `ok) {
+	    y2milestone ("Evaluating %1 as it was `next", result);
+	    result = `next;
+	}
+
+	// Clients can break the installation/workflow
+	Wizard::RestoreNextButton();
+	Wizard::RestoreAbortButton();
+	Wizard::RestoreBackButton();
+
+        // Remove file if step was run and returned (without a crash);
+	if (current_step < size(modules) - 1 && !Stage::initial())
+        {
+            if (!(boolean)SCR::Execute(.target.remove, Installation::current_step))
+                y2error("Error removing step identifier");
+        }
+
+	// Dont call hook scripts after installation is done. (#36831)
+	if (current_step < size(modules) - 1 && !wasRun(step_name))
+	    Hooks::Run (step_name, false );
+	else
+	    y2milestone("Not running hooks at the end of the installation");
+
+	// This should be safe (#36831)
+	Hooks::Checkpoint ( step_name, false);          // exit hook
+
+	addToStack(step_name);
+
+	if ( retranslate )
+	{
+            y2milestone("retranslate");
+	    retranslateWizardDialog();
+	    retranslate = false;
+	}
+
+	// If the module return nil, something basic went wrong.
+	// We show a stub dialog instead.
+	if (result == nil)
+	{
+	    /**
+	     * If workflow module is marked as optional, skip if it returns nil,
+	     * For example, if it is not installed.
+	     */
+	    if (step["optional"]:false)
+	    {
+		y2milestone("Skipping optional %1", symbolof(argterm) );
+		current_step = current_step + 1;
+		continue;
+	    }
+
+	    any r = nil;
+	    r = Popup::ModuleError (
+		sformat (
+		    // TRANSLATORS: an error message
+		    // this should not happen, but life is cruel...
+		    // %1 - (failed) module name
+		    // %2 - logfile, possibly with errors
+		    // %3 - link to our bugzilla
+		    // %4 - directory where YaST logs are stored
+		    // %5 - link to the Yast Bug Reporting HOWTO Web page
+		    "Calling the YaST module %1 has failed.
+More information can be found near the end of the '%2' file.
+
+This is worth reporting a bug at %3.
+Please, attach also all YaST logs stored in the '%4' directory.
+See %5 for more information about YaST logs.",
+		    symbolof (argterm),
+		    "/var/log/YaST2/y2log",
+		    "http://bugzilla.novell.com/",
+		    "/var/log/YaST2/",
+		    // link to the Yast Bug Reporting HOWTO
+		    // for translators: use the localized page for your language if it exists,
+		    // check the combo box "In other laguages" on top of the page
+		    _("http://en.opensuse.org/Bugs/YaST")
+		)
+	    );
+
+	    if (r == `next)
+		current_step = current_step + 1;
+	    else if (r == `back)
+		current_step = current_step - 1;
+	    else if (r != `again)
+	    {
+		UI::CloseDialog();
+		return nil;
+	    }
+	    continue;
+	}
+
+	// BNC #468677
+	// The very first dialog must not exit with `back
+	// or `auto
+	if (
+	    current_step == 0
+	    &&
+	    (result == `back || (result == `auto && former_result == `back))
+	) {
+	    y2warning ("Returned %1, Current step %2 (%3). The current step will be called again...", result, current_step, step_name);
+	    former_result = `next;
+	    result = `again;
+	}
+
+	if (result == `next)
+	{
+	    current_step = current_step + 1;
+	}
+	else if (result == `back)
+	{
+	    current_step = current_step - 1;
+	}
+	else if (result == `cancel)
+	{
+	    break;
+	}
+	else if (result == `abort)
+	{
+	    // handling when user aborts the workflow (FATE #300422, bnc #406401, bnc #247552)
+	    final_result = result;
+
+	    break;
+	}
+	else if (result == `finish)
+	{
+	    break;
+	}
+	else if (result == `again)
+	{
+	    continue; // Show same dialog again
+	}
+	else if (result == `restart_yast)
+	{
+	    final_result = result;
+	    break;
+	}
+	else if (result == `restart_same_step)
+	{
+	    final_result = result;
+	    break;
+	}
+	else if (result == `reboot)
+	{
+	    final_result = result;
+	    break;
+	}
+	else if (result == `auto)
+	{
+	    if (former_result != nil)
+	    {
+		if (former_result == `next)
+		{
+		    // if the first client just returns `auto, the back button
+		    // of the next client must be disabled
+		    if (current_step <= minimum_step && ! allow_back)
+			minimum_step = minimum_step + 1;
+		    current_step = current_step + 1;
+		}
+		else if (former_result == `back)
+		    current_step = current_step - 1;
+	    }
+	    continue;
+	}
+	former_result = result;
+    }
+    if (former_result == `abort)
+    {
+	final_result = `abort;
+    }
+
+    y2milestone ("Former result: %1, Final result: %2", former_result, final_result);
+
+    if (final_result != nil) {
+	y2milestone ("Final result already set.");
+    } else if (current_step <= -1) {
+	final_result = `back;
+    } else {
+	final_result = `next;
+    }
+
+    y2milestone ("Current step: %1, Returning: %2", current_step, final_result);    
+    return final_result;
+}
+
+/**
+ * Run Workflow
+ *
+ */
+global symbol Run () {
+    symbol ret = RunFrom (0, false);
+    y2milestone ("Run() returning %1", ret);
+    return ret;
+}
+
+// Functions to access restart information
+
+/**
+ * List steps which were skipped since last restart of YaST
+ * @return a list of maps describing the steps
+ */
+global list<map> SkippedSteps () {
+    list<map> modules = getModules( Stage::stage (), Mode::mode (), `enabled);
+    if (first_step == nil)
+	return nil;
+    if (first_step >= size (modules))
+	return nil;
+    integer index = 0;
+    list<map> ret = [];
+    while (index < first_step)
+    {
+	ret = add (ret, modules[index]:$[]);
+	index = index + 1;
+    }
+    return ret;
+}
+
+/**
+ * Return step which restarted YaST (or rebooted the system)
+ * @return a map describing the step
+ */
+global map RestartingStep () {
+    if (restarting_step == nil)
+	return nil;
+    list<map> modules = getModules( Stage::stage (), Mode::mode (), `enabled);
+    return modules[restarting_step]:$[];
+}
+
+
+/**
+ * ProductControl Constructor
+ * @return void
+ */
+global define void ProductControl()
+{
+    if (!Init())
+    {
+	y2error("control file missing");
+    }
+    return;
+}
+
+/**
+ * Sets additional params for selecting the workflow
+ *
+ * @param map <string, any> params
+ * @example SetAdditionalWorkflowParams ($["add_on_mode":"update"]);
+ * @example SetAdditionalWorkflowParams ($["add_on_mode":"installation"]);
+ */
+global define void SetAdditionalWorkflowParams (map <string, any> params) {
+    y2milestone ("Adjusting new additional workflow params: %1", params);
+
+    _additional_workflow_params = params;
+}
+
+/**
+ * Resets all additional params for selecting the workflow
+ * @see SetAdditionalWorkflowParams()
+ */
+global define void ResetAdditionalWorkflowParams () {
+    _additional_workflow_params = $[];
+}
+
+// EOF
+}

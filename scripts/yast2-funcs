@@ -1,0 +1,141 @@
+# File:		/usr/share/YaST2/bin/yast2-funcs
+# Module:	yast2
+# Summary:	Common functions for YaST2 start scripts
+# Authors:	Arvin Schnell <arvin@suse.de>
+#
+# $Id$
+
+# allow for a different prefix
+: ${YAST_PREFIX=/usr}
+# some path definitions
+ybindir=$YAST_PREFIX/lib/YaST2/bin
+logdir=/var/log/YaST2
+
+
+#
+# check if plugins are in lib or lib64 subdir and sets the variable
+# plugindir accordingly
+#
+function get_plugindir()
+{
+    plugindir=$YAST_PREFIX/lib/YaST2/plugin
+    if `ldd $ybindir/y2base | egrep "/lib64/(.*/)?libc.so" > /dev/null` ; then
+	plugindir=$YAST_PREFIX/lib64/YaST2/plugin
+    fi
+}
+
+
+#
+# check if a plugin and all necessary libaries are present
+#
+function check_plugin()
+{
+    local PLUGIN_SO="$1"
+    local DESCR="$2"
+
+    get_plugindir
+    PLUGIN_SO=$plugindir/"$PLUGIN_SO"
+
+    if [ -e "$PLUGIN_SO" ] ; then
+	# #211392, make reasons for failure visible
+	if ! LC_ALL=C /usr/bin/ldd "$PLUGIN_SO" | grep "=> not found" >&2; then
+	    return 0		# success
+	fi
+	echo "warning: $DESCR is installed but does not work" >&2
+	sleep 1
+    fi
+
+    return 1			# failure
+}
+
+#
+# check if the qt plugin and all necessary libraries are present
+#
+function check_qt()
+{
+    check_plugin libpy2qt.so.2 "the qt frontend"
+}
+
+#
+# check if the gtk plugin and all necessary libraries are present
+#
+function check_gtk()
+{
+    check_plugin libpy2gtk.so.2 "the gtk frontend"
+}
+
+#
+# check if the ncurses plugin and all necessary libraries are present
+#
+function check_ncurses()
+{
+    check_plugin libpy2ncurses.so.2 "the ncurses frontend"
+}
+
+
+#
+# if LANG is empty set LANG to RC_LANG in /etc/sysconfig/language
+#
+function set_lang_from_sysconfig()
+{
+    # respect user's choice and never unset LANG
+    # /sbin/yast script takes care that .UTF-8 suffix
+    # will not be appended to POSIX and C locale (#285178)
+    #if [ "$LANG" == "POSIX" ] ; then
+    #	LANG=""
+    #fi
+
+    # if LANG is not empty and /etc/sysconfig/language exists
+    if [ -z "$LANG" -a -r /etc/sysconfig/language ] ; then
+	. /etc/sysconfig/language
+	if [ -n "$RC_LANG" ] ; then
+	    export LANG=$RC_LANG
+	fi
+    fi
+}
+
+
+function set_qt_home_dir()
+{
+    local user="$USER"
+    if [ "$KDESU_USER" ]; then
+	user="$KDESU_USER"
+    fi
+    temp_QT_HOME_DIR="$( getent passwd $user | cut -d : -f 6)/.qt/"
+    if test -r "$temp_QT_HOME_DIR/qtrc"; then
+        export QT_HOME_DIR="$temp_QT_HOME_DIR"
+    fi
+}
+
+
+function set_inst_qt_env()
+{
+    export XCURSOR_THEME="DMZ"
+    export Y2STYLE="installation.qss"
+    export QT_HOME_DIR="/tmp/.qt/"
+    mkdir -p /tmp/.qt
+    [ -e /usr/share/desktop-data/qtrc ] && cp /usr/share/desktop-data/qtrc /tmp/.qt/
+}
+
+
+function clr_inst_qt_env()
+{
+    rm -rf /tmp/.qt/
+}
+
+
+function set_inst_gtk_env()
+{
+    export XCURSOR_THEME="DMZ"
+}
+
+
+function clr_inst_gtk_env()
+{
+    :
+}
+
+
+### Local Variables: ***
+### mode: shell-script ***
+### End: ***

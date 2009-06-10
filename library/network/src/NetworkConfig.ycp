@@ -1,0 +1,202 @@
+/**
+ * File:	modules/NetworkConfig.ycp
+ * Package:	Network configuration
+ * Summary:	Network configuration data
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ *
+ * Representation of the configuration of network cards.
+ * Input and output routines.
+ * A simple container for /etc/sysconfig/network/{config,dhcp}
+ */
+
+{
+
+module "NetworkConfig";
+import "String";
+
+
+/**
+ * Basic network settings (/etc/sysconfig/network/config)
+ */
+global map Config = $[];
+
+/**
+ * DHCP settings (/etc/sysconfig/network/dhcp)
+ */
+global map DHCP = $[];
+
+/**
+ * Basic network settings
+ */
+map Orig_Config = nil;
+
+/**
+ * DHCP settings
+ */
+map Orig_DHCP = nil;
+
+/*--------------*/
+/* PRIVATE DATA */
+
+/**
+ * True if data are already read
+ */
+boolean initialized = false;
+
+/**
+ * Read sysconfig file.
+ * Uses metadata to distinguish between booleans, integers, and strings
+ * @param config sysconfig file SCR path
+ * @return sysconfig file contents
+ */
+define map ReadConfig (path config) {
+
+    y2debug("config=%1", config);
+    if(config == nil) return $[];
+    map ret = $[];
+
+    list<string> vars = SCR::Dir(config);
+    if(vars == nil) vars = [];
+    maplist(string var, vars, {
+	path varpath = add(config, var);
+	string comment = (string)SCR::Read(add(varpath, "comment"));
+	if(regexpmatch(comment, "^.*## Type:[ \t]*([" + String::CLower() + "]*).*$"))
+	    comment = regexpsub(comment, "^.*## Type:[ \t]*([" + String::CLower() + "]*).*$", "\\1");
+
+	string val = (string)SCR::Read(varpath);
+	y2debug("%1[%2]=%3", var, comment, val);
+
+	if(val != nil) {
+	    if(comment == "yesno" || ( val=="yes"||val=="no" )) {
+		ret[var] = ( val == "yes" );
+	    }
+	    else if(comment == "integer") {
+		if(val != "") ret[var] = tointeger(val);
+	    }
+	    else
+		ret[var] = val;
+	}
+    });
+    if(ret == nil) ret = $[];
+    y2debug("ret=%1", ret);
+    return ret;
+}
+
+/**
+ * Write sysconfig file
+ * @param config sysconfig file SCR path
+ * @param data sysconfig file contents
+ * @return true if success
+ */
+define boolean WriteConfig (path config, map data) {
+
+    y2debug("config=%1", config);
+    y2debug("data=%1", data);
+
+    if(config == nil || data == nil) return false;
+
+    list<string> vars = SCR::Dir(config);
+    if(vars == nil) vars = [];
+
+    boolean changed = false;
+    maplist(string var, any val, (map<string,any>) data, {
+	string oldval = (string) SCR::Read(add(config, var));
+
+	string newval = "";
+	if(is(val, boolean)) newval = ((boolean)val) ? "yes" : "no";
+	else newval = sformat("%1", val);
+
+	if(oldval == nil || oldval != newval) {
+	    SCR::Write(add(config, var), newval);
+	    changed = true;
+	}
+    });
+    if(changed == true)
+	SCR::Write(config, nil);
+
+    y2debug("changed=%1", changed);
+    return true;
+}
+
+/*------------------*/
+/* GLOBAL FUNCTIONS */
+
+/**
+ * Data was modified?
+ * @return true if modified
+ */
+global define boolean Modified() {
+    boolean ret = (DHCP != Orig_DHCP || Config != Orig_Config);
+    y2debug("ret=%1", ret);
+    return ret;
+}
+
+/**
+ * Read all network settings from the SCR
+ * @return true on success
+ */
+global define boolean Read() {
+
+    if(initialized == true) return true;
+
+    Config = ReadConfig(.sysconfig.network.config);
+    DHCP = ReadConfig(.sysconfig.network.dhcp);
+
+    Orig_Config = (map) eval(Config);
+    Orig_DHCP = (map) eval(DHCP);
+
+    initialized = true;
+    return true;
+}
+
+/**
+ * Update the SCR according to network settings
+ * @return true on success
+ */
+global define boolean Write() {
+
+    y2milestone("Writing configuration");
+    if(!Modified()) {
+	y2milestone("No changes to NetworkConfig -> nothing to write");
+	return true;
+    }
+
+    WriteConfig(.sysconfig.network.dhcp, DHCP);
+    WriteConfig(.sysconfig.network.config, Config);
+
+    return true;
+}
+
+/**
+ * Import data
+ * @param settings settings to be imported
+ * @return true on success
+ */
+global define boolean Import(map settings) {
+
+    Config = (map) eval(settings["config"]:$[]);
+    DHCP = (map) eval(settings["dhcp"]:$[]);
+
+    Orig_Config = nil;
+    Orig_DHCP = nil;
+
+    return true;
+}
+
+/**
+ * Export data
+ * @return dumped settings (later acceptable by Import())
+ */
+global define map Export() {
+
+    return (map) eval($[
+	"config"	: Config,
+	"dhcp"		: DHCP,
+    ]);
+
+}
+
+/* EOF */
+}

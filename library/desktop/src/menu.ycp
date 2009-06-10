@@ -1,0 +1,352 @@
+/**
+ * File:	clients/menu.ycp
+ * Module:	yast2
+ * Summary:	NCurses Control Center
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ *
+ * Provides a list of available yast2 modules. This module is inteded for use
+ * with ncurses, for X the yast2 control center should be used.
+ */
+
+{
+
+textdomain "base";
+
+import "Desktop";
+import "Directory";
+import "FileUtils";
+import "Label";
+import "Popup";
+
+map Groups = $[];
+map Modules = $[];
+boolean root = false;
+
+string restart_file	= Directory::vardir + "/restart_menu";
+// file existing if yast2-online-update wants to be restarted
+string restart_you	= Directory::vardir + "/selected_patches.ycp";
+
+/**
+ */
+define void DisplaySplash() {
+    UI::OpenDialog(`opt(`defaultsize), `VBox(
+	`VStretch (),
+	/* Message shown while loading modules information */
+	`Label (_("Loading modules, please wait ...")),
+	`VStretch ()
+    ));
+}
+
+/**
+ */
+define void OpenMenu() {
+
+    //check if user is root (#246015)
+    map output = (map) SCR::Execute (.target.bash_output, "/usr/bin/id --user");
+    root = output["stdout"]:"" == "0\n";
+
+    UI::OpenDialog(`opt(`defaultsize), `VBox(
+	`HBox(
+	    `HSpacing(1),
+	    `Frame( "", `VBox(
+		`VSpacing(0.4),
+		`HBox(
+		    `HSpacing(2),
+		    /* Heading for NCurses Control Center */
+		    `HCenter(`Heading( _("YaST2 Control Center")) ),
+		    `HSpacing(2)
+		),
+		`VSpacing(0.4)
+	    )),
+	    `HSpacing(1.5)
+	),
+
+	`VSpacing(1.0),
+	`HBox(
+	    `HSpacing(1),
+	    `HWeight( 30, `ReplacePoint(`id(`groups_rep),
+		    `SelectionBox(`id(`groups), `opt(`notify, `immediate, `keyEvents), "", [])
+	    )),
+	    `HSpacing(1),
+	    `HWeight( 70, `ReplacePoint( `id(`progs_rep),
+		    `SelectionBox(`id(`progs), `opt(`notify, `keyEvents), "", [])
+	    )),
+	`HSpacing(1)
+	),
+
+	`VSpacing(1.0),
+	`HBox (
+	    `HSpacing (1),
+	    `PushButton(`id(`help), `opt(`key_F1, `helpButton), Label::HelpButton()),
+	    `HStretch(),
+	    `PushButton(`id(`quit), `opt(`key_F9, `cancelButton), Label::QuitButton()),
+	    `HSpacing (1)
+	),
+	`VSpacing(1)
+    ));
+
+    //show popup when running as non-root
+    if (!root)
+	Popup::Notify(_("YaST2 Control Center is not running as root.
+You can only see modules that do not require root privileges."));
+
+}
+
+/**
+ * @return boolean true if control center is to be resatrted
+ */
+define boolean Launch(string modul) {
+    string function = Modules[modul, "X-SuSE-YaST-Call"]:"";
+    string argument = Modules[modul, "X-SuSE-YaST-Argument"]:"";
+    y2debug("Calling: %1 (%2)", function, argument);
+
+    map display_info = UI::GetDisplayInfo();
+    boolean textmode = display_info["TextMode"]:false;
+
+    if(function != "") {
+
+	string cmd = ""; 
+	any ret = nil;
+
+	//Use UI::RunInTerminal in text-mode only (#237332)
+	if (textmode) {
+	    cmd = sformat ("/sbin/yast %1 %2 >&2", function, argument);
+	    ret = UI::RunInTerminal(cmd);
+	}
+	//else (we have y2-qt, but no qt control centre) launch qt module 
+	//this should never happen, but ...
+	else {
+	    cmd = sformat ("/sbin/yast2 %1 %2 >&2", function, argument);
+	    ret = SCR::Execute (.target.bash, cmd);
+	}
+	y2milestone ("Got %1 from %2", ret, cmd);
+
+	if (function == "online_update" && ret != `cancel && ret != `abort &&
+	    FileUtils::Exists (restart_you))
+	{
+	    y2milestone ("yast needs to be restarted - exiting...");
+	    SCR::Execute (.target.bash, sformat ("touch %1", restart_file));
+	    return true;
+	}
+    }
+    return false;
+}
+
+/**
+ */
+define void ShowNcursesHelp() {
+
+    /* NCurses (textmode) Control Center headline */
+    string headline = _("Controlling YaST2 ncurses with the Keyboard");
+
+    /* NCurses Control Center help 1/ */
+    string help = _("<p>1) <i>General</i><br>
+Navigate through the dialog elements with [TAB] to go to
+the next element and [SHIFT] (or [ALT]) + [TAB] to move backwards.
+Select or activate elements with [SPACE] or [ENTER].
+Some elements use arrow keys (e.g., to scroll in lists).</p>") +
+
+    /* NCurses Control Center help 2/9 */
+    _("<p>Buttons are equipped with shortcut keys (the highlighted
+letter). Use [ALT] and the letter to activate the button.</p>") +
+
+   /* NCurses Control Center help 3/9 */
+    _("<p>Press [ESC] to close selection pop-ups (e.g., from
+menu buttons) without choosing anything.</p>
+") +
+
+    /* NCurses Control Center help 4/9 */
+    _("<p>2) <i>Substitution of Keystrokes</i><br>
+<p>Because the environment can affect the use of the keyboard,
+there is more than one way to navigate the dialog pages.
+If [TAB] and [SHIFT] (or [ALT]) + [TAB] do not work,
+move focus forward with [CTRL] + [F] and backward with [CTRL] + [B].</p>") +
+
+    /* NCurses Control Center help 5/9 */
+    _("<p>If [ALT] + [letter] does not work,
+try [ESC] + [letter]. Example: [ESC] + [H] for [ALT] + [H].
+[ESC] + [TAB] is also a substitute for [ALT] + [TAB].</p>") +
+
+    /* NCurses Control Center help 6/9 */
+    _("<p>3) <i>Function Keys</i><br>
+F keys provide a quick access to main functions.
+Press F1 to get the function key bindings for the current dialog.</p>") +
+
+    /* NCurses Control Center help 7/9 */
+    _("<p>The F keys are usually connected to a certain action:</p>") +
+
+    /* NCurses Control Center help 8/9 */
+    _("F1  = Help<br>
+F2  = Info or Description<br>
+F3  = Add<br>
+F4  = Edit or Configure<br>
+F5  = Delete<br>
+F6  = Test<br>
+F7  = Expert or Advanced<br>
+F8  = Back<br>
+F9  = Abort or Cancel<br>
+F10 = OK, Next, Finish, or Accept<br>") +
+
+    /* NCurses Control Center help 9/9 */
+    _("<p>In some environments, all or some
+F keys are not available.</p>");
+
+    Popup::LongText(headline, `RichText(help), 60, 20);
+
+}
+
+DisplaySplash();
+
+list<string> Values = [
+    "Name",
+    // not required: "GenericName",
+    "X-SuSE-YaST-Argument",
+    "X-SuSE-YaST-Call",
+    "X-SuSE-YaST-Group",
+    "X-SuSE-YaST-SortKey",
+    "X-SuSE-YaST-RootOnly",
+    "Hidden",
+];
+
+Desktop::Read(Values);
+Groups = Desktop::Groups;
+Modules = Desktop::Modules;
+y2debug("Groups=%1", Groups);
+y2debug("Modules=%1", Modules);
+
+list <string> non_root_modules = [];
+
+//create the list of modules available to non-root users
+foreach (string name, map params, (map <string, map>) Modules,{
+    if ( !( params["X-SuSE-YaST-RootOnly"]:"false" == "true" ))
+        non_root_modules = add(non_root_modules,name);
+});
+y2debug("non-root modules: %1", non_root_modules);
+
+if (FileUtils::Exists (restart_file))
+{
+    SCR::Execute (.target.remove, restart_file);
+}
+
+UI::CloseDialog ();
+
+OpenMenu();
+
+list<term> GroupList = Desktop::GroupList();
+
+/* precache groups (#38363) */
+list<string> groups = maplist(term gr, GroupList, ``{
+    return (string) gr[0,0]:nil;
+});
+y2debug("groups=%1", groups);
+
+map<string,list<term> > modules = listmap(string gr, groups, ``{
+    list <term> all_modules = Desktop::ModuleList(gr);
+
+    //filter out root-only stuff if the user is not root (#246015)
+    if (!root)
+    {
+	all_modules = filter(term t, all_modules,{
+	   return ( contains(non_root_modules, (string) t[0,0]:"") ); 
+	});
+    }
+    return $[ gr : all_modules ];
+});
+y2debug("modules=%1", modules);
+
+
+string first = groups[0]:nil;
+y2debug("first=%1", first);
+
+//do not show groups containing no modules to the user (#309452)
+GroupList = filter (term t, GroupList,{
+    string group = (string) t[0,0]:"";
+
+    return ( modules[group]:nil != [] );
+});
+
+/* GroupList = [`item (`id ("Software"), "Software"), ...] */
+UI::ReplaceWidget(`id(`groups_rep), `SelectionBox(`id (`groups), `opt(`notify, `immediate, `keyEvents), "", GroupList));
+y2debug("GroupList=%1", GroupList);
+
+/**
+ */
+define void ReplaceModuleList(string group) {
+    // y2debug too costly: y2debug("group=%1", group);
+    UI::ReplaceWidget(`id (`progs_rep), `SelectionBox( `id (`progs), `opt (`notify, `keyEvents), "", modules[group]:[]));
+}
+
+ReplaceModuleList(first);
+UI::SetFocus(`id(`groups));
+
+while(true) {
+
+    map event = UI::WaitForEvent();
+    any eventid = event["ID"]:nil;
+    // y2debug too constly: y2debug("event=%1", event);
+
+    if ( is(eventid, symbol) )
+    {
+
+	if ( eventid == `groups
+	     && event["EventReason"]:"" == "SelectionChanged" )
+	{
+	    string id = (string) UI::QueryWidget(`id(`groups), `CurrentItem);
+	    // ReplaceModuleList(id);
+	    UI::ReplaceWidget(`id (`progs_rep), `SelectionBox( `id (`progs), `opt (`notify, `keyEvents), "", modules[id]:[]));
+	    continue;
+	}
+	else if (  eventid == `progs
+		  && event["EventReason"]:"" == "Activated" )
+	{
+	    string program = (string) UI::QueryWidget(`id(`progs), `CurrentItem);
+	    if (Launch(program))
+		break;
+	}
+	else if ( eventid == `groups
+		  && event["EventReason"]:"" == "Activated" )
+	{
+	    UI::SetFocus ( `id(`progs) );
+	}
+	else if ( eventid == `help )
+	{
+	    ShowNcursesHelp();
+	}
+	else if( eventid == `quit || eventid == `cancel)
+	{
+	    break;
+	}
+	else
+	{
+	    y2warning ( "Event or widget ID not handled: %1", event );
+	}
+    }
+    else if( is(eventid, string) )
+    {
+	if ( event["FocusWidgetID"]:`none == `groups
+		  && eventid == "CursorRight" )
+	{
+	    UI::SetFocus ( `id(`progs) );
+	}
+	else if ( event["FocusWidgetID"]:`none == `progs
+		  && eventid == "CursorLeft" )
+	{
+	    UI::SetFocus ( `id(`groups) );
+	}
+	else
+	{
+	    y2warning ( "Event or widget ID not handled: %1", event );
+	}
+    }
+    else
+    {
+	y2warning ( "Event or widget ID not handled: %1", event );
+    }
+}
+
+UI::CloseDialog ();
+
+/* EOF */
+}

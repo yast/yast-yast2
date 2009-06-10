@@ -1,0 +1,1051 @@
+/**
+ * File:	modules/Progress.ycp
+ * Module:	Progress
+ * Summary:	Progress bar
+ * Authors:	Petr Blahos <pblahos@suse.cz>
+ *
+ * $Id$
+ *
+ * Functions for progress bar.<br>
+ * <pre>
+ * Dialog Title
+ *
+ * [x] Stage 1
+ * [x] Stage 2
+ *  => Stage 3
+ *  -  Stage 4
+ *  -  Stage 5
+ *
+ * Progress Title
+ * [============================90%=======================------]
+ *
+ * </pre>
+ * Example of progress bar usage (don't forget the translation marks in your code):
+ * Progress bar supposes main wizard dialog is created.<pre>
+ * Progress::Simple ("Some progress bar", "Progress runs here...", 3, "");
+ * Progress::NextStep (); // the 1st one does nothing!
+ * Progress::NextStep ();
+ * Progress::NextStep ();
+ * Progress::NextStep ();</pre>
+ *
+ * Another example:<pre>
+ * Progress::New ("Complex progress bar", " ", 100, [
+ *      "Stage1", "Stage2", "Stage3",
+ *      ], [
+ *      "Stage 1 ...", "Stage 2 ...", "Stage 3 ...", "Finished",
+ *      ], "Help text");
+ * Progress::NextStage ();
+ * Progress::NextStageStep (20);
+ * Progress::Stage (0, "I am back", 2);
+ * Progress::Title ("Still in stage 0");
+ * Progress::NextStageStep (90);
+ * Progress::Finish ();</pre>
+ *
+ * It is possible to add a detailed subprogress above the main progress bar:
+ *
+ * <pre>
+ * // create a standard progress
+ * Progress::New(...);
+ *
+ * // add a subprogress with 42 steps
+ * Progress::SubprogressType(`progress, 42);
+ * Progress::SubprogressTitle("Subprogress label");
+ *
+ * // set the subprogress value
+ * Progress::SubprogressValue(12);
+ * Progress::SubprogressValue(24);
+ *
+ * // remove the subprogress (it's only for the current task/stage)
+ * Progress::SubprogressType(`none, nil);
+ *
+ * // next stage
+ * Progress::NextStage();
+ * </pre>
+ *
+ * See also hand made documentation.
+ * <a href="../Progress.html">Progress.html</a>
+ */
+
+{
+    module "Progress";
+
+    textdomain "base";
+
+    import "CommandLine";
+    import "Wizard";
+    import "Mode";
+    import "Directory";
+    import "FileUtils";
+
+    /********************************************************************
+    // !!! IMPORTANT !!!
+    // If you add here a new variable which is valid only for the current
+    // progress do not forget to add it to PushState() and PopState()
+    // functions which are are used for nested progresses!
+    ********************************************************************/
+
+    // Number of stages.
+    integer stages = 0;
+    // Number of steps
+    integer steps = 0;
+    // Current stage
+    integer current_stage = 0;
+    // Current step
+    integer current_step = 0;
+    // list of stage-titles
+    list titles = [];
+
+    // is progress bar used?
+    boolean visible = true;
+
+    // superior progress (stages) bar
+    integer super_steps = 0;
+    integer super_step = 0;
+    list super_stages = [];
+
+    // remember the last max. value of the subprogress bar
+    integer last_subprogress_max = 0;
+
+    integer progress_running = 0;
+
+    // remember cumulated number of steps for nested progresses
+    integer progress_max = 0;
+    integer progress_val = 0;
+
+    global boolean IsRunning()
+    {
+	//Check if any progress bar exists. If it does not, we're not running
+	//(querying progress counter is not enough, a module ran previously
+	//might have failed to reset the counter properly)
+	return ( (progress_running > 0) && (UI::WidgetExists(`progress_replace_point) == true) );
+    }
+
+    // forward declaration
+    global symbol CurrentSubprogressType();
+
+    // stack with the running progresses
+    // the top of the stack is the end of the list
+    list<map> progress_stack = [];
+
+    // push the current progress into the stack
+    void PushState()
+    {
+	symbol current_subprogress = CurrentSubprogressType();
+	map state = $[
+	    // global variable
+	    "stages" : stages,
+	    "steps" : steps,
+	    "current_step" : current_step,
+	    "current_stage" : current_stage,
+	    "titles" : titles,
+	    "last_subprogress_max" : last_subprogress_max,
+	    "visible" : visible,
+	    // state of the widgets
+	    "subprogress_type" : current_subprogress,
+	    "progress_label" : (string)UI::QueryWidget(`id(`pb), `Label),
+	    "progress_value" : (integer)UI::QueryWidget(`id(`pb), `Value),
+	    "progress_max" : progress_max,
+	    "progress_val" : progress_val
+	];
+
+	if (current_subprogress == `progress)
+	{
+	    state["subprogress_label"] = (string)UI::QueryWidget(`id(`subprogress_progress), `Label);
+	    state["subprogress_value"] = (integer)UI::QueryWidget(`id(`subprogress_progress), `Value);
+	}
+	else if (current_subprogress == `tick)
+	{
+	    state["subprogress_label"] = (string)UI::QueryWidget(`id(`subprogress_tick), `Label);
+	}
+
+	y2milestone("Current state: %1", state);
+
+	progress_stack = add(progress_stack, state);
+    }
+
+    // forward declarations
+    global void SubprogressTitle(string title);
+    global void SubprogressValue(integer value);
+    global void SubprogressType(symbol type, integer max_value);
+
+    // pop the progress state from the stack and set it
+    void PopState()
+    {
+	// pop the config
+	map state = progress_stack[size(progress_stack) - 1]:$[];
+	progress_stack = remove(progress_stack, size(progress_stack) - 1);
+
+	y2milestone("setting up the previous state: %1", state);
+
+	// refresh the variables
+	stages = state["stages"]:0;
+	steps = state["steps"]:0;
+	current_step = state["current_step"]:0;
+	current_stage = state["current_stage"]:0;
+	titles = state["titles"]:[];
+	last_subprogress_max = state["last_subprogress_max"]:0;
+	progress_max = state["progress_max"]:0;
+	progress_val = state["progress_val"]:0;
+
+	integer pb_value = state["progress_value"]:0;
+	pb_value = (pb_value == nil) ? 0 : pb_value + 1;
+
+	// refresh the progress widget, add one step for the embedded progress
+	UI::ReplaceWidget(`id(`progress_replace_point),
+	    `ProgressBar(`id(`pb), state["progress_label"]:"", steps, pb_value)
+	);
+
+	symbol type = state["subprogress_type"]:`none;
+	SubprogressType(type, last_subprogress_max);
+
+	if (type == `progress || type == `tick)
+	{
+	    SubprogressTitle(state["subprogress_label"]:"");
+	    SubprogressValue(state["subprogress_value"]:0);
+	}
+    }
+
+    // return size of the progress stack
+    integer StackSize()
+    {
+	return size(progress_stack);
+    }
+
+    // return the value on the top of the stack
+    // the stack is not changed
+    map TopState()
+    {
+	return progress_stack[size(progress_stack) - 1]:$[];
+    }
+
+    /**
+     * Sets progress bar state:
+     * on = normal operation, off = All Progress:: calls return immediatelly.
+     * @param state on or off
+     * @return previous state
+     */
+    global define boolean set (boolean state) {
+	boolean prev = visible;
+	visible = state;
+	return prev;
+    }
+
+    /**
+     * Returns currently selected visibility status of all UI-modifying Progress:: functions.
+     *
+     * @return boolean whether the progress bar is used
+     * @see Progress::set
+     * @see Progress::off
+     * @see Progress::on
+     */
+    global define boolean status () {
+	return visible;
+    }
+
+    /**
+     * Turns progress bar off. All Progress:: calls return immediatelly.
+     * @deprecated set
+     */
+    global define void off () {
+	// no "deprecated" warning
+	// because it is ok to use this function in testsuites
+	visible = false;
+    }
+
+    /**
+     * Turns progress bar on after calling Progress::off.
+     * @deprecated set
+     */
+    global define void on () {
+	y2warning (-1, "Deprecated function. Use Progress::set instead");
+	visible = true;
+    }
+
+    /**
+     * @param kind `todo, `current or `done
+     * @return UI mark for stages
+     */
+    any Mark (symbol kind) {
+	if (kind == `todo)
+	    return "-";
+	if (kind == `current)
+	    return UI::Glyph (`BulletArrowRight);
+	if (kind == `done)
+	    return UI::Glyph (`CheckMark);
+	return "?@%!";
+    }
+
+    /**
+     * @param i stage number
+     * @return widget `id(...) for the marker
+     */
+    term MarkId (integer i) {
+	return `id (sformat ("mark_stage_%1",i));
+    }
+
+    string IconId (integer i) {
+	return sformat ("mark_icon_%1",i);
+    }
+
+    string FallbackIconInvisible () {
+	return Directory::icondir + "32x32/apps/yast-sudo.png";
+    }
+
+    string FallbackIconVisible () {
+	return Directory::icondir + "32x32/apps/yast-scripts.png";
+    }
+
+    list <string> global_invisible_icons_definition = [];
+    list <string> global_visible_icons_definition   = [];
+
+    boolean use_icons_in_progress = false;
+    boolean has_icon_progress_bar = false;
+
+    string NormalizeIconPath (string one_icon, boolean visible) {
+	if (one_icon == nil || one_icon == "")
+	    one_icon = (visible == true ? FallbackIconVisible() : FallbackIconInvisible());
+
+	if (! regexpmatch (one_icon, "\.[pP][nN][gG]$") && ! regexpmatch (one_icon, "\.[jJ][pP][gG]$")) {
+	    one_icon = one_icon + ".png";
+	}
+
+	// relative path (to Directory::icondir)
+	if (regexpmatch (one_icon, "/") && ! regexpmatch (one_icon, "^/")) {
+	    one_icon = Directory::icondir + one_icon;
+	// hopefully you know what you do
+	// just image name
+	} else if (! regexpmatch (one_icon, "/")) {
+	    one_icon = Directory::icondir + "32x32/apps/" + one_icon;
+	}
+
+	if (! FileUtils::Exists (one_icon)) {
+	    y2error ("Image %1 doesn't exist, using fallback", one_icon);
+	    one_icon = (visible == true ? FallbackIconVisible() : FallbackIconInvisible());
+	}
+
+	return one_icon;
+    }
+
+    define term GenerateIdleIcons (integer number_of_stages) {
+        map display_info = UI::GetDisplayInfo();
+        boolean can_display_images = (display_info["HasImageSupport"]:false == true);
+
+	if (! can_display_images) return `Empty();
+
+	term ret = `HBox (`HSpacing (2));
+	integer i = -1;
+	string one_icon = "";
+
+	number_of_stages = number_of_stages - 1;
+
+	while (i < number_of_stages) {
+	    i = i + 1;
+	    
+	    one_icon = NormalizeIconPath (global_visible_icons_definition[i]:nil, false);
+	    ret = add (ret, `Image (`id (IconId (i)), `opt (`disabled), one_icon, "[X]"));
+	    ret = add (ret, `HSpacing (2));
+	}
+
+	return ret;
+    }
+
+    /**
+     * New complex progress bar with stages.
+     * @param window_title title of the window
+     * @param progress_title title of the progress bar. Pass at least " "
+     *                       (one space) if you want some progress bar title.
+     * @param length number of steps. If 0, no progress bar is created,
+     *               there are only stages and bottom title. THIS IS NOT
+     *               NUMBER OF STAGES!
+     * @param stg list of strings - stage names. If it is nil, then there
+     *            are no stages.
+     * @param tits Titles corresponding to stages. When stage changes,
+     *             progress bar title changes to one of these titles. May
+     *             be nil/empty.
+     * @param help_text help text
+     */
+    global define void New (string window_title, string progress_title, integer length, list<string> stg, list tits, string help_text) ``{
+	if (!visible)
+	    return ;
+
+	if (Mode::commandline ())
+	    return;
+
+	// a progress is already running, remember the current status
+	if (IsRunning())
+	{
+	    PushState();
+	}
+
+	y2milestone("Progress::New(%1, %2, %3)", window_title, length, stg);
+
+	integer orig_current_step = current_step;
+
+	steps = length;
+	stages = size (stg);
+	titles = tits;
+	current_step = -1;
+	current_stage = -1;
+
+	if (length < size(stg))
+	{
+	    y2warning("Number of stages (%1) is greater than number of steps (%2)", size(stg), length);
+	}
+
+	if (progress_title == "")
+	{
+	    // Reserve space for future progress bar labels. The ProgressBar
+	    // widget will suppress the label above the progress bar if the
+	    // initial label string is empty.
+	    progress_title = " ";
+	}
+
+	// do not replace the UI, there is a progress already running
+	if (IsRunning())
+	{
+	    progress_max = progress_max * steps;
+
+	    if (StackSize() == 1)
+	    {
+		progress_val = orig_current_step * steps;
+	    }
+	    else
+	    {
+		map prev_state = TopState();
+		integer prev_progress_val = prev_state["progress_val"]:0;
+
+		progress_val = prev_progress_val * steps;
+	    }
+
+	    // set the maximum value of the progress bar
+	    UI::ReplaceWidget(`id(`progress_replace_point), `ProgressBar(`id(`pb), progress_title, progress_max, progress_val));
+	    y2debug("New progress: %1/%2", progress_val, progress_max);
+
+	    // increase the reference counter
+	    progress_running = progress_running + 1;
+	    return;
+	}
+	else
+	{
+	    progress_max = steps;
+	}
+
+	term bar = `VBox( // progressbar only
+	    `ProgressBar(`id(`pb),progress_title,length,0)
+	    );
+	if (0 != stages)
+	{ // version with stages
+	    bar = `VBox (`VSpacing (1));
+	    integer i = 0;
+	    any label_heading = Mark (`todo);
+
+	    term items = `VBox ();
+	    foreach (string item, stg, ``{
+		items = add (items,
+			`HBox (
+			    `HSpacing (1),
+			    // check_ycp wants this text to be translatable. I do not know why.
+			    // HSquash + MinWidth(4) reserves a defined space for 'mark' plus 'emtpy space'
+			    // see bnc #395752
+			    `HSquash (`MinWidth (4, `Heading (MarkId (i), label_heading))),
+			    `Label (item),
+			    `HStretch()
+			)
+		    );
+		i = i+1;
+	    });
+	    bar = add (bar, `Left (`HBox (
+		`HSquash (items)
+	    )));
+
+	    if (0 != steps)
+	    {  // stages and progress
+		term progress_icons = `Empty ();
+		if (use_icons_in_progress == true) {
+		    y2milestone ("Using icons in progress");
+		    progress_icons = GenerateIdleIcons (length);
+		    has_icon_progress_bar = true;
+		} else {
+		    y2milestone ("No progress icons defined");
+		    has_icon_progress_bar = false;
+		}
+
+		bar = add (bar, `VBox (
+		    `VStretch (),
+		    progress_icons,
+		    `ReplacePoint(`id(`subprogress_replace_point), `Empty()),
+		    `ReplacePoint(`id(`progress_replace_point), `ProgressBar(`id (`pb), progress_title, length, 0)),
+		    `VSpacing (2)
+		    ));
+	    }
+	    else
+	    {  // stages only
+		bar = add (bar, `VBox (
+		    `VStretch (),
+		    `ReplacePoint(`id(`subprogress_replace_point), `Empty()),
+		    `ReplacePoint(`id(`progress_replace_point), `Label (`id (`pb), `opt (`hstretch), progress_title)),
+		    `VSpacing (2)
+		    ));
+	    }
+	}
+
+	// patch from Michal Srb https://bugzilla.novell.com/show_bug.cgi?id=406890#c7
+	if (! Mode::test() && UI::WidgetExists (`id (`contents))) UI::ReplaceWidget (`id (`contents), bar);
+
+        if (! UI::WizardCommand(`SetDialogHeading( window_title ) ) )
+        {
+            UI::ChangeWidget (`id (`title), `Value, window_title);
+        }
+	if ("" != help_text && nil != help_text)
+	{
+	    Wizard::SetHelpText (help_text);
+	}
+	Wizard::DisableBackButton ();
+	Wizard::DisableNextButton ();
+
+	progress_running = progress_running + 1;
+    }
+
+    /**
+     * Get current subprogress type
+     * @return symbol Current type of the subprogress widget - can be `progress, `tick or `none
+     */
+    global symbol CurrentSubprogressType()
+    {
+	symbol ret = `none;
+
+	if (!visible || Mode::commandline())
+	{
+	    return ret;
+	}
+
+	// is there the subprogress progress widget?
+	if (UI::WidgetExists(`subprogress_progress) == true)
+	{
+	    ret = `progress;
+	}
+	// or is there the tick subprogress widget?
+	else if (UI::WidgetExists(`subprogress_tick) == true)
+	{
+	    ret = `tick;
+	}
+
+	return ret;
+    }
+
+    /**
+     * Set value of the subprogress
+     * @param value Current value of the subprogress, if a tick subprogress is running the value is ignored and the next tick is displayed
+     */
+    global void SubprogressValue(integer value)
+    {
+	if (!visible || Mode::commandline())
+	{
+	    return;
+	}
+
+	symbol current_type = CurrentSubprogressType();
+
+	// normal progress
+	if (current_type == `progress)
+	{
+	    UI::ChangeWidget (`id(`subprogress_progress), `Value, value);
+	}
+	// tick progress
+	else if (current_type == `tick)
+	{
+	    UI::ChangeWidget(`id(`subprogress_tick), `Alive, true);
+	}
+	else
+	{
+	    y2warning("No subprogress is defined, cannot set the value!");
+	}
+    }
+
+    /**
+     * Create (or remove) a new subprogress above the progress bar, can be use for detailed progress of the current task
+     * @param type type of the subprogress widget, can be `progress (standard progress),
+     * `tick (tick progress) or `none (no subprogress, intended for removing the progress bar from the dialog)
+     * @param max_value maximum value for `progress type, for the other types it is not relevant (use any integer value or nil)
+     */
+    global void SubprogressType(symbol type, integer max_value)
+    {
+	if (!visible || Mode::commandline())
+	{
+	    return;
+	}
+
+	y2debug("SubprogressType: type: %1, max_value: %2", type, max_value);
+
+	if (type == CurrentSubprogressType())
+	{
+	    if (type == `progress)
+	    {
+		// just reset the current value of the progress bar if the requested progress is the same
+		if (max_value == last_subprogress_max)
+		{
+		    y2milestone("Resetting the subprogressbar...");
+		    SubprogressValue(0);
+		    return;
+		}
+	    }
+	    else if (type == `tick)
+	    {
+		// just restart the animation
+		UI::ChangeWidget(`id(`subprogress_tick), `Alive, true);
+	    }
+	    else
+	    {
+		y2milestone("Subprogress initialization skipped");
+		return;
+	    }
+	}
+
+	term widget = `Empty();
+
+	if (type == `progress)
+	{
+	    widget = `ProgressBar (`id (`subprogress_progress), " ", max_value, 0);
+	}
+	else if (type == `tick)
+	{
+	    widget = `BusyIndicator(`id(`subprogress_tick), " ", 3000);
+	}
+	else if (type == `none)
+	{
+	    widget = `Empty();
+	}
+	else
+	{
+	    y2error("Unknown subprogress type: %1", type);
+	}
+
+	y2debug("widget: %1", widget);
+	UI::ReplaceWidget(`id(`subprogress_replace_point), widget);
+
+	// remember the max. value
+	last_subprogress_max = max_value;
+    }
+
+    /**
+     * Set the label of the subprogress
+     * @param title New label for the subprogress
+     */
+    global void SubprogressTitle(string title)
+    {
+	if (!visible || Mode::commandline())
+	{
+	    return;
+	}
+
+	symbol current_type = CurrentSubprogressType();
+
+	if (current_type == `progress)
+	{
+	    UI::ChangeWidget (`id(`subprogress_progress), `Label, title);
+	}
+	else if (current_type == `tick)
+	{
+	    UI::ChangeWidget (`id(`subprogress_tick), `Label, title);
+	}
+	else
+	{
+	    y2warning("No subprogress is defined, cannot set the label!");
+	}
+    }
+
+    /**
+     * Function adds icon-support to progress dialog.
+     * Parameters are the same as for Progress::New() function with one parameter added.
+     *
+     * @param string window_title
+     * @param string progress_title
+     * @param integer length
+     * @param list<string> stg
+     * @param list tits
+     * @param string help_textmap
+     *
+     * @param list <list <string> > icons_definition
+     *
+     * @struct icons_definition = $[
+     *   [ // first 'visible'
+     *     "/path/to/icon-highlighted.png"
+     *     "/path/to/another-icon-highlighted.png",
+     *   ]
+     *   [ // then 'invisible'
+     *     "/path/to/icon-gryscale.png",
+     *     nil, // fallback icon will be used
+     *   ],
+     * ]
+     *
+     * @see Function Progress::New()
+     */
+    global define void NewProgressIcons (string window_title, string progress_title,
+	integer length, list<string> stg, list tits, string help_textmap, list <list <string> > icons_definition) {
+	global_visible_icons_definition   = icons_definition[0]:[];
+	global_invisible_icons_definition = icons_definition[1]:[];
+
+	use_icons_in_progress = true;
+	New (window_title, progress_title, length, stg, tits, help_textmap);
+	use_icons_in_progress = false;
+    }
+
+    /**
+     * Create simple progress bar with no stages, only with progress bar.
+     * @param window_title Title of the window.
+     * @param progress_title Title of the progress bar.
+     * @param length Number of steps.
+     * @param help_text Help text.
+     */
+    global define void Simple (string window_title, string progress_title, integer length, string help_text) ``{
+	New (window_title, progress_title, length, [], [], help_text);
+    }
+
+    integer last_highlighted_icon = -1;
+
+    /**
+     * Highlights a progress icon (changes the dimmed one
+     * into a normal one).
+     *
+     * @param integer current step ID
+     */
+    void HighlightProgressIcon (integer step_id) {
+	if (has_icon_progress_bar) {
+	    if (last_highlighted_icon == nil) last_highlighted_icon = -1;
+
+	    // some steps might have been skipped, change all (not changed yet)
+	    // icons one by one
+	    while (last_highlighted_icon < step_id) {
+		last_highlighted_icon = last_highlighted_icon + 1;
+
+		string icon_id = IconId (last_highlighted_icon);
+
+		if (UI::WidgetExists (`id (icon_id)) == true) {
+		    UI::ChangeWidget (`id (icon_id), `Enabled, true);
+		}
+	    }
+	}
+    }
+
+    /**
+     * Uses current_step
+     */
+    void UpdateProgressBar () {
+	if (current_step > steps)
+	{
+	    y2error (-2, "Progress bar has only %1 steps, not %2.", steps, current_step);
+	    return ;
+	}
+
+	integer progress_value = current_step;
+
+	// do not change icons in a nested progress
+	if (StackSize() == 0)
+	{
+	    HighlightProgressIcon (current_step);
+	}
+	else
+	{
+	    // recalculate the progress bar value according to the parent progress
+	    map prev_state = TopState();
+	    integer prev_step = prev_state["current_step"]:0;
+
+	    progress_value = (prev_step * steps) + (current_step > 0 ? current_step : 0);
+	}
+
+	y2debug("New progress value: %1, current_step: %2/%3 (%4%%)", progress_value, current_step, steps,
+	    100.0 * progress_value / progress_max);
+
+	UI::ChangeWidget (`id (`pb), `Value, progress_value);
+    }
+
+    /**
+     * the bar is either `ProgressBar or `Label
+     * @param s title
+     */
+    void SetProgressBarTitle (string s) {
+	UI::ChangeWidget (`id (`pb), 0 == steps ? `Value : `Label, s);
+    }
+
+    /**
+     * Some people say it is the best operating system ever. But now to the
+     * function. Advances progress bar value by 1.
+     */
+    global define void NextStep () ``{
+	if (!visible || Mode::commandline () || 0 == steps)
+	    return ;
+	current_step = current_step + 1;
+	UpdateProgressBar ();
+    }
+
+    /**
+     * Advance stage, advance step by 1 and set progress bar caption to
+     * that defined in New.
+     */
+    global define void NextStage () ``{
+	if (!visible)
+	    return ;
+	NextStep ();
+
+	if (0 == stages || current_stage > stages)
+	{
+	    y2error ("Non-existing stage requested.");
+	    return ;
+	}
+
+	current_stage = current_stage + 1;
+
+	// do not update the UI in a nested progress
+	if (StackSize() > 0)
+	{
+	    return;
+	}
+
+
+	if ( Mode::commandline ()) 
+	{
+	    if (current_stage < stages && current_stage < size (titles))
+	    {
+		CommandLine::PrintVerbose(titles[current_stage]:"");
+	    }
+	    return;
+	}
+	
+	if (current_stage > 0)
+	{
+	    UI::ChangeWidget (MarkId (current_stage-1), `Value, Mark (`done));
+	}
+	// we may be past the last stage
+	if (current_stage < stages )
+	{
+	    if (current_stage < size (titles))
+	    {
+		SetProgressBarTitle (titles[current_stage]:"");
+	    }
+	    UI::ChangeWidget (MarkId (current_stage), `Value, Mark (`current));
+	}
+    }
+    /**
+     * Changes progress bar value to st.
+     * @param st new value
+     */
+    global define void Step (integer st) ``{
+	if (!visible || Mode::commandline () || 0 == steps)
+	    return ;
+
+	if (st < 0 || st > steps) return;
+
+	current_step = st;
+
+	UpdateProgressBar ();
+    }
+
+    /**
+     * Go to stage st, change progress bar title to title and set progress
+     * bar step to step.
+     * @param st New stage.
+     * @param title New title for progress bar. If nil, title specified in
+     *              New is used.
+     * @param step New step or -1 if step should not change.
+     */
+    global define void Stage (integer st, string title, integer step) ``{
+	if (!visible)
+	    return ;
+
+	if (-1 != step)
+	{
+	    Step (step);
+	}
+
+	// another progress is running
+	// do not change the current stage, calculate the target step
+	if (StackSize() > 0)
+	{
+	    UpdateProgressBar();
+	    return;
+	}
+
+	if (!Mode::commandline () && current_stage >= 0)
+	{
+	    UI::ChangeWidget(MarkId (current_stage), `Value,
+			     Mark (st > current_stage ? `done: `todo));
+	}
+
+	current_stage = st;
+	string s = "";
+	if (current_stage < size (titles))
+	{
+	    s = titles[current_stage]:"";
+	}
+	if (nil != title)
+	{
+	    s = title;
+	}
+	if (current_stage < size (titles))
+	{
+	    if (Mode::commandline ())
+	    {
+		CommandLine::PrintVerbose (s);
+		return;
+	    }
+	    else
+	    {
+		SetProgressBarTitle (s);
+	    }
+	}
+	if (current_stage < stages)
+	{
+	    UI::ChangeWidget(MarkId (current_stage), `Value, Mark (`current));
+	}
+    }
+
+
+    /**
+     * Jumps to the next stage and sets step to st.
+     * @param st new progress bar value
+     */
+    global define void NextStageStep (integer st) ``{
+	if (!visible || Mode::commandline ())
+	    return ;
+	NextStage ();
+	Step (st);
+    }
+
+    /**
+     * Change progress bar title.
+     * @param t new title. Use ""(empty string) if you want an empty progress bar.
+     */
+    global define void Title (string t) ``{
+	if (visible && ! Mode::commandline ())
+	    SetProgressBarTitle (t);
+    }
+
+    /**
+     * Moves progress bar to the end and marks all stages as completed.
+     */
+    global define void Finish () ``{
+	if (!visible || Mode::commandline ())
+	    return ;
+
+	// decrease the reference counter
+	progress_running = progress_running - 1;
+
+	// set the previous state
+	if (StackSize() > 0)
+	{
+	    PopState();
+	    return;
+	}
+
+	if (0 != stages)
+	{
+	    while (current_stage < stages)
+		NextStage ();
+	}
+	if (0 != steps)
+	{
+	    current_step = steps;
+	    UpdateProgressBar ();
+	}
+
+	SetProgressBarTitle (" ");
+    }
+
+    /**
+     * Creates a higher-level progress bar made of stages. Currently it is
+     * placed instead of help text.
+     * @param title title of the progress...
+     * @param stages list of stage descriptions
+     */
+    global define void OpenSuperior (string title, list<string> stages)
+    {
+	if (UI::HasSpecialWidget(`Wizard))
+	{
+	    Wizard::OpenAcceptAbortStepsDialog();
+	    UI::WizardCommand(`AddStepHeading(title));
+
+	    integer idx = 0;
+	    super_steps = size (stages);
+	    super_step = -1;
+	    foreach (string s, stages,
+	    {
+		string id = sformat ("super_progress_%1", idx);
+		UI::WizardCommand (`AddStep (s, id));
+
+	    });
+	    UI::WizardCommand(`UpdateSteps() );
+	}
+	else						// old behaviour
+	{
+	    term left = `VBox (`VStretch ());
+	    term right = `VBox (`VStretch ());
+	    integer idx = 0;
+	    super_steps = size (stages);
+	    super_step = -1;
+	    foreach (string i, stages,
+	    {
+		string id = sformat ("super_progress_%1", idx);
+		left = add (left, `Heading (`id (id), "-  "));
+		right = add (right, `Label (`opt (`hstretch), i));
+		left = add (left, `VStretch ());
+		right = add (right, `VStretch ());
+		idx = idx + 1;
+	    });
+	    left = add (left, `HSpacing (4));
+	    right = add (right, `HStretch ());
+	    Wizard::ReplaceHelp (`VBox (
+		    `HBox (
+			`HSpacing (1),
+			`Frame (
+			    title,
+			    `HBox (`HSpacing (1), left, right)
+			    )
+			),
+		    `VSpacing (0.5)
+		    )
+		);
+	}
+    }
+    /**
+     * Replaces stages of superior progress by an empty help text.
+     */
+    global define void CloseSuperior () ``{
+	if (UI::HasSpecialWidget(`Wizard))
+	{
+	    UI::CloseDialog();
+	}
+	else
+	{
+	    Wizard::RestoreHelp ("");
+	}
+	super_steps = 0;
+	super_step = 0;
+    }
+    /**
+     * Make one step in a superior progress bar.
+     */
+    global define void StepSuperior () ``{
+	if (super_step >= 0 && super_step < super_steps)
+	{
+	    if (!UI::HasSpecialWidget(`Wizard))
+	    {
+		UI::ChangeWidget (`id (sformat ("super_progress_%1", super_step)), `Value, UI::Glyph (`CheckMark));
+	    }
+	}
+	super_step = super_step + 1;
+	if (super_step >= super_steps)
+	{
+	    return;
+	}
+	if (UI::HasSpecialWidget(`Wizard))
+	{
+	    UI::WizardCommand (`SetCurrentStep (sformat ("super_progress_%1", super_step)));
+	}
+	else
+	{
+	    UI::ChangeWidget (`id (sformat ("super_progress_%1", super_step)), `Value, UI::Glyph (`BulletArrowRight));
+	}
+    }
+
+/* EOF */
+}

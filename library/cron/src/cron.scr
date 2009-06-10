@@ -1,0 +1,20 @@
+/**
+ * File:
+ *   cron.scr
+ * Summary:
+ *   SCR Agent for reading cron files
+ * Access:
+ *   read/write
+ * Authors:
+ *   Anas Nashif <nashif@suse.de>
+ * See:
+ *   libscr
+ * Example:
+ *   Read(.cron,$[..])
+ *
+ * $Id$
+ *
+ */
+.cron
+
+`ag_cron ()

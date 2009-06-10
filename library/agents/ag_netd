@@ -1,0 +1,809 @@
+#!/usr/bin/perl -w
+#
+# $Id$
+# Author: Martin Vidner <mvidner@suse.cz>
+#
+
+use ycp;
+use strict;
+use File::Basename;
+
+# Utf8 conversion defined in ycp.pm
+binmode STDOUT, ':raw';
+
+my $debug = defined ($ARGV[0]) && $ARGV[0] =~ "^-.*d";
+
+sub DEBUG
+{
+    print STDERR @_ if $debug;
+}
+DEBUG "DEBUG\n";
+
+# Testsuite hack:
+# Automake invokes dejagnu with an absolute srcdir :(
+# This will replace the current directory in file names by "./"
+# Turn it off by -n
+my $strip = ! (defined ($ARGV[0]) && $ARGV[0] =~ "^-.*n");
+my $pwd;
+if ($strip)
+{
+    DEBUG "STRIP\n";
+    # must use symlinks like make does
+    # pwd alone calls /bin/pwd, we want the bash builtin
+    $pwd = `bash -c pwd -L`;
+    chomp $pwd;
+    DEBUG "PWD: '$pwd'\n";
+}
+sub strip_pwd ($)
+{
+    DEBUG "STRIP0: $_[0]\n";
+    $_[0] =~ s{^$pwd/}{./}o if $strip;
+    DEBUG "STRIP1: $_[0]\n";
+    return $_[0];
+}
+
+my @services;
+# where new services are added
+my $dir_with_includes = "";
+my $base_file = "";
+# used for a warning about unsupported options
+my $message = "";
+
+package ycp;
+sub to_bool ($)
+{
+    my $b = shift;
+    return $b? \ "true" : \ "false";
+}
+
+
+package linefile;
+# a handle, a name and line number
+use IO::File;
+
+sub new ($$)
+{
+    my $class = shift;
+    my ($name, $mode) = @_;
+    my $f = { "name" => $name,
+	      "lineno" => 0,
+	      "fh" => new IO::File ($name, $mode) };
+    return bless ($f, $class);
+}
+
+
+package netd;
+# base of inetd and xinetd
+use ycp;
+
+# makes a hash (keyed by file names) of hashes (keyed by line numbers)
+# of changed services
+# exception: line -1 is a _list_ of new services
+sub get_changed (@)
+{
+    my %ch = ();
+    foreach my $s (@_)
+    {
+	next if (!$s->{changed});
+	if (defined ($s->{iid}) && $s->{iid} =~ m/(\d+):(.*)/)
+	{
+	    my ($line, $file) = ($1, $2);
+	    $ch{$file}->{$line} = $s;
+	}
+	else
+	{
+	    y2debug "new $s->{service}";
+	    # Bug 26999: if we have encountered an "includedir",
+	    # create the new services there. The file name is
+	    # the "script" or "service" field.
+	    my $fname = filename_for_new_service ($s);
+	    push (@{$ch{$fname}->{-1}}, $s);
+	}
+    }
+    return %ch;
+}
+
+sub filename_for_new_service ($)
+{
+    my $s = shift;
+    if ($dir_with_includes)
+    {
+	my $script = $s->{script} || $s->{service};
+	return $dir_with_includes ."/".$script;
+    }
+    else
+    {
+	# no includes, use the main file
+	return $base_file;
+    }
+}
+
+sub parse_file ($)
+{
+    my $class = shift;
+    ::DEBUG ("$class\n");
+    my $filename = ::strip_pwd (shift);
+
+    use Errno qw(ENOENT);
+
+    my $file = new linefile ($filename, "r");
+    if (! $file->{fh})
+    {
+#	return 1 if ($! == ENOENT); # ok if it is not there
+	y2error ("$file->{name}: $!");
+	return 0;
+    }
+
+    while (1)
+    {
+	my $service = $class->parse_service ($file);
+	last if !defined ($service);
+	if ($service->{is_defaults})
+	{
+	    if ($service->{enabled} || $service->{disabled})
+	    {
+		# TODO rework, must be translated!
+		$message = "Enabling and disabling services\n"
+		    . "in the \"defaults\" section is ignored.";
+	    }
+	}
+	else
+	{
+	    push (@services, $service);
+	}
+#	::DEBUG ("tick\n");
+    }
+
+    $file->{fh}->close;
+    return 1;
+}
+
+sub include_dir ($)
+{
+    my $class = shift;
+    ::DEBUG ("$class\n");
+    my $dirname = shift;
+    $dir_with_includes = $dirname; # for creating new services
+    use IO::Dir;
+    my $dir = new IO::Dir ($dirname);
+    my @files;
+    if (defined $dir)
+    {
+	while (defined ($_ = $dir->read ()))
+	{
+	    push (@files, $_) unless m/\./ || m/~$/;
+	}
+	$dir->close ();
+    }
+    else
+    {
+	y2error "Cannot include dir '$dirname'";
+    }
+
+    foreach (sort @files)
+    {
+	$class->parse_file ("$dirname/$_");
+    }
+}
+
+sub write_file ()
+{
+    use IO::File;
+    my $class = shift;
+
+    my $ret = 1;
+    my %changed_services = get_changed (@services);
+    while (my ($filename, $lines) = each %changed_services)
+    {
+	# TODO guard against changed files
+	my $ofilename = "$filename.tmp";
+	# if we are creating a new file, $if->{fh} will be undef,
+	# which is taken care of below
+	my $if = new linefile ($filename, "r");
+	my $OF = new IO::File (">$ofilename");
+	if (! $OF)
+	{
+	    y2error ("Opening '$ofilename' for writing: $!");
+	    $ret = 0;
+	    next;		# continue with the next file
+	}
+
+	my @new_services = defined ($lines->{-1}) ? @{$lines->{-1}} : ();
+	delete $lines->{-1};
+
+	# copy the file, replacing services at specified lines by
+	# changed ones
+	my @linenos = sort keys %{$lines};
+	y2debug "@linenos";
+
+	# Be careful here not to read the line that starts the changed service
+	# because then we would have to "unget" it in both implementations
+	# of parse_service.
+	# Therefore we don't use the traditional "while(<>) {...}" loop.
+	# Loop rewritten to fix missing consecutive modified services (#24379).
+	$if->{lineno} = 0;
+	while (1)
+	{
+	    # now $lineno is the line number of the contents of $_
+	    # and $_ or its replacement has been output
+
+	    if (defined ($linenos[0]) && $if->{lineno}+1 == $linenos[0])
+	    {
+		# got there
+		my $service = $lines->{shift @linenos};
+		# this writes the new data,
+		# "replace" copies the unknown data
+		$class->write_service ($OF, $service)
+		    unless $service->{deleted};
+		$class->parse_service ($if); #discard the old data
+	    }
+	    else
+	    {
+		# read a line, allowing for a non-existent file
+		if ($if->{fh})
+		{
+		    $_ = $if->{fh}->getline;
+		}
+		else
+		{
+		    $_ = undef;
+		}
+
+		if (!defined $_)
+		{
+		    # On eof, the branch with parse_service will not be taken
+		    # because that would mean we think there are services
+		    # past eof. Even in that case, parse_service will simply
+		    # return and @linenos will be exhausted and we get here.
+		    last;
+		}
+		++$if->{lineno};
+		y2debug ($if->{name}, $if->{lineno}, "copy");
+
+		print $OF $_;
+	    }
+	}
+
+	# can we add new services?
+	foreach my $service (@new_services)
+	{
+	    y2debug "NEW $service->{service}";
+	    $class->write_service ($OF, $service)
+		unless $service->{deleted};
+	}
+
+	rename ($ofilename, $filename);
+    }
+    return $ret;
+}
+
+sub services_by_package ()
+{
+    my $class = shift;
+
+    open (OUT, ">/dev/fd/3");
+    foreach my $s (@services)
+    {
+	# Get the program name - used to see whether a service is installed.
+	# Assumedly multiple packages providing the same service will differ
+	# in the program name.
+	my $program = $s->{server};
+	if ($program =~ m:/tcpd$:)
+	{
+	    my @args = split (/\s+/, $s->{server_args});
+	    $program = shift (@args);
+	}
+	$program =~ s:^.*/::;
+
+	# originally used TABs as delimiters,
+	# but awk then misses an empty protocol
+	print OUT "$s->{service},$s->{protocol},$program\n";
+    }
+    close (OUT);
+}
+
+
+package inetd;
+@inetd::ISA = qw(netd);
+use ycp;
+
+# parses the next service, returns it or undef on EOF
+# does not attempt to read the next service!
+sub parse_service ($)
+{
+    my $class = shift;
+    ::DEBUG ("$class\n");
+    y2debug ("parse_service");
+
+    my $file = shift;
+
+    my $service = undef;
+    my $comment = "";
+    my $reclineno = 0; # line at which a record (including comment) starts
+    while (defined ($_ = $file->{fh}->getline))
+    {
+	++$file->{lineno};
+	y2debug ($file->{name}, $file->{lineno}, "parse");
+
+	chomp;
+	next if /^$/;
+	$reclineno ||= $file->{lineno};
+
+	# Try parsing also commented out lines
+	my $enabled = 1;
+	# TODO
+	# spaces before #
+
+	if (s/^#//)
+	{
+	    $enabled = 0;
+	}
+	# leave $c intact for comment
+	my $c = $_;
+	s/^\s+//;
+
+	# TODO test a truncated line
+	my @fields = split (/\s+/);
+	my ($service_ver, $socket_type, $protocol, $wait_max, $user_group,
+	    $server, @server_args) = @fields;
+	if (!defined ($server) ||
+	    $socket_type !~ /dgram|stream|raw|rdm|seqpacket/)
+	{
+	    if (!$enabled)
+	    {
+		# tried to parse a disabled service, did not work out
+		$comment .= "$c\n";
+	    }
+	    else
+	    {
+		# TODO error? it is a damaged entry
+	    }
+	    next;
+	}
+	# the second variable of these pairs can be undef
+	my ($service_name, $rpc_version) = split (/\//, $service_ver);
+	$rpc_version ||= "";
+	my ($wait, $nmax) = split (/\./, $wait_max);
+	# "" is wrong, but the ycp code works around it
+	# convert to numbers
+	my $max = $nmax? \$nmax : "";
+	my ($user, $group) = split (/[.:]/, $user_group);
+	$group ||= "";
+
+	# convert to booleans
+	$enabled = ycp::to_bool ($enabled);
+	$wait = ycp::to_bool ($wait eq "wait");
+
+	$service =
+	{
+	 "iid" => "$reclineno:$file->{name}",
+	 "script" => File::Basename::basename ($file->{name}),
+
+	 "enabled" => $enabled,
+	 "comment" => $comment,
+	 "service" => $service_name,
+	 "rpc_version" => $rpc_version,
+	 "socket_type" => $socket_type,
+	 "protocol" => $protocol,
+	 "wait" => $wait,
+	 "max" => $max,
+	 "user" => $user,
+	 "group" => $group,
+	 "server" => $server,
+	 "server_args" => join (" ", @server_args),
+	};
+	last;
+    }
+    return $service;
+}
+
+sub write_service ($$)
+{
+    my $class = shift;
+    ::DEBUG ("$class\n");
+    y2debug ("write_service");
+
+    my $f = shift;
+    my $s = shift;
+
+    foreach (split (/\n/, $s->{comment}))
+    {
+	print $f "#$_\n";
+    }
+
+    if (! $s->{enabled})
+    {
+	print $f "# ";
+    }
+
+    print $f $s->{service};
+    print $f "/". $s->{rpc_version} if $s->{rpc_version};
+    print $f " ";
+
+    print $f $s->{socket_type}. " ";
+    print $f $s->{protocol}. " ";
+
+    print $f ($s->{wait}? "wait":"nowait");
+    print $f ".". $s->{max} if $s->{max};
+    print $f " ";
+
+    print $f $s->{user};
+    print $f ".". $s->{group} if $s->{group};
+    print $f " ";
+
+    print $f $s->{server};
+    print $f " ". $s->{server_args} if $s->{server_args};
+    print $f "\n";
+}
+
+
+package xinetd;
+@xinetd::ISA = qw(netd);
+use ycp;
+
+sub parse_service ($)
+{
+    my $class = shift;
+    ::DEBUG ("$class\n");
+    y2debug ("parse_service");
+
+    my $file = shift;
+    my $service = undef;
+    my $comment = "";
+    my $comment_inside = ""; # usually commented out attributes
+    my $reclineno = 0; # line at which a record (including comment) starts
+    my $state = "init"; # "brace", "inside"
+    my $in_defaults = 0;
+    my $unparsed = "";
+    while ($file && $file->{fh} && defined ($_ = $file->{fh}->getline))
+    {
+	++$file->{lineno};
+	y2debug ($file->{name}, $file->{lineno}, "parse");
+
+	chomp;
+	next if /^\s*$/;
+	$reclineno ||= $file->{lineno};
+
+	if (s/^\s*#//)
+	{
+	    if ($state eq "inside")
+	    {
+		$comment_inside .= "$_\n";
+	    }
+	    else
+	    {
+		$comment .= "$_\n";
+	    }
+	}
+	else
+	{
+	    if ($state eq "init")
+	    {
+		if (/^\s*include\s+(\S+)/)
+		{
+		    $class->parse_file ($1);
+		    $reclineno = 0;
+		}
+		elsif (/^\s*includedir\s+(\S+)/)
+		{
+		    $class->include_dir ($1);
+		    # Bug 24270:
+		    # the include directive must not belong
+		    # to the following service
+		    $reclineno = 0;
+		}
+		elsif (/^\s*service\s+(\S+)/)
+		{
+		    $service =
+		    {
+		     "service" => $1,
+		     "iid" => "$reclineno:$file->{name}",
+		     "script" => File::Basename::basename ($file->{name}),
+		     # default values:
+		     "enabled" => ycp::to_bool (1),
+		     "rpc_version" => "",
+		     "socket_type" => "MISSING", # mandatory
+		     "protocol" => "",
+		     "wait" => ycp::to_bool (0), # mandatory
+		     "user" => "",
+		     "group" => "",
+		     "server" => "",
+		     "server_args" => "",
+		    };
+		    $state = "brace";
+		    $in_defaults = 0;
+		}
+		elsif (/^\s*defaults\s*$/)
+		{
+		    $service =
+		    {
+		     "is_defaults" => 1,
+		    };
+		    $state = "brace";
+		    $in_defaults = 1;
+		}
+		else
+		{
+		    y2error ("Expecting \"service\" at ".
+			     "$file->{name}:$file->{lineno}");
+		}
+	    }
+	    elsif ($state eq "brace")
+	    {
+		if (/^\s*\{\s*$/)
+		{
+		    $state = "inside";
+		}
+		else
+		{
+		    y2error ("An opening brace ({) should follow a ".
+			     "\"service $service->{service}\" line. Seen $_.");
+		    # continue.
+		}
+	    }
+	    elsif ($state eq "inside")
+	    {
+		if (/^\s*\}\s*$/)
+		{
+		    # wrap up
+		    $service->{comment} = $comment;
+		    $service->{comment_inside} = $comment_inside;
+		    $service->{unparsed} = $unparsed;
+		    last;
+		}
+		elsif (m{^\s*(\S+)\s*=\s*(.*?)\s*$})
+		{
+		    my ($attribute, $value) = ($1, $2);
+		    if ($in_defaults)
+		    {
+			if ($attribute =~ m{enabled|disabled})
+			{
+			    $service->{$attribute} .= "$value ";
+			}
+			else
+			{
+			    $unparsed .= "$_\n";
+			}
+		    }
+		    else
+		    {
+			# "disable" != "disabled"
+			if ($attribute eq "disable")
+			{
+			    $service->{enabled} = ycp::to_bool($value eq "no");
+			}
+			elsif ($attribute =~ m{rpc_version|
+					socket_type|
+					protocol|
+					wait| # bool
+					user|
+					group|
+					server|
+					server_args
+				       }x)
+			{
+			    if ($attribute eq "wait")
+			    {
+				$value = ycp::to_bool ($value eq "yes");
+			    }
+			    $service->{$attribute} = $value;
+			}
+			else
+			{
+			    $unparsed .= "$_\n";
+			}
+		    }
+		}
+		else
+		{
+		    $unparsed .= "$_\n";
+		}
+	    }
+	    else
+	    {
+		y2internal ("Unknown state $state.");
+		$state = "inside"; # recover from the error
+	    }
+	}
+    }
+    return $service;
+}
+
+sub write_item ($$$;$)
+{
+    my ($f, $s, $attribute, $value) = @_;
+    $value ||= $s->{$attribute};
+    # there's #define FIELD_WIDTH 15 in itox.c
+    printf $f "\t%-15s = %s\n", $attribute, $value;
+}
+
+sub write_opt_item ($$$)
+{
+    my ($f, $s, $attribute) = @_;
+    write_item ($f, $s, $attribute) if $s->{$attribute};
+}
+
+sub write_service ($$)
+{
+    my $class = shift;
+    ::DEBUG ("$class\n");
+    y2debug ("write_service");
+
+    my $f = shift;
+    my $s = shift;
+
+    foreach (split (/\n/, $s->{comment} || ""))
+    {
+	print $f "#$_\n";
+    }
+
+    print $f "service $s->{service}\n";
+    print $f "{\n";
+
+    foreach (split (/\n/, $s->{comment_inside} || ""))
+    {
+	print $f "#$_\n";
+    }
+
+    if (! $s->{enabled})
+    {
+	write_item $f, $s, "disable", "yes";
+    }
+    if ($s->{rpc_version})
+    {
+	$s->{type} ||= ""; # prevent undef
+	$s->{type} .= " RPC" if ($s->{type} !~ /RPC/);
+	write_item $f, $s, "rpc_version";
+    }
+    write_item     $f, $s, "socket_type";
+    write_opt_item $f, $s, "protocol";
+    write_item     $f, $s, "wait", ($s->{wait}? "yes":"no");
+
+    write_opt_item $f, $s, "user";
+    write_opt_item $f, $s, "group";
+    write_opt_item $f, $s, "server";
+    write_opt_item $f, $s, "server_args";
+
+    write_opt_item $f, $s, "type";
+    print $f $s->{unparsed} || "";
+    print $f "}\n";
+}
+
+
+package main;
+#
+# MAIN cycle
+#
+
+my $netd;
+# if reading fails, defaulting to no services
+@services = ();
+
+while ( <STDIN> )
+{
+    chomp;
+    y2debug ("Got: ", $_);
+    if (/^nil$/)
+    {
+	print "nil\n";
+	next;
+    }
+
+    my ($command, @arguments) = ycp::ParseTerm ($_);
+    if ($command =~ "Netd|Inetd|Xinetd")
+    {
+	# reply to the client (this actually gets eaten by the ScriptingAgent)
+	ycp::Return (undef);
+	print "\n";
+	$netd = ($command eq "Xinetd")? "xinetd": "inetd";
+	my $fn = shift @arguments || "/etc/$netd.conf";
+
+	$base_file = strip_pwd ($fn);
+
+	# parsing is done before Read (.services)
+	# so that we can re-read the config if a new package is installed
+	next;
+    }
+    # else it should be a regular command
+    my $path = "";
+    my $pathref = shift @arguments;
+    if (defined $pathref)
+    {
+	if (ref($pathref) eq "SCALAR" && $$pathref =~ /^\./)
+	{
+	    $path = $$pathref;
+	}
+	# 'result (nil)' is a standard command
+	elsif ($command ne "result")
+	{
+	    y2error ("The first argument is not a path. ('$pathref')");
+	}
+    }
+    my $argument = shift @arguments;
+    y2warning ("Superfluous command arguments ignored") if (@arguments > 0);
+
+
+    if ($command eq "Dir")
+    {
+	if ($path eq ".")
+	{
+	    ycp::Return (["message", "services"]);
+	}
+	elsif ($path eq ".services")
+	{
+	    my @snames = map { $_->{service} } @services;
+	    ycp::Return ([ sort @snames ], 1);
+	}
+	else
+	{
+	    ycp::Return ([]);
+	}
+    }
+
+    elsif ($command eq "Write")
+    {
+	my $result = 1;
+	if ($path eq ".services" && ref ($argument) eq "ARRAY")
+	{
+	    @services = @{$argument};
+	    $result = $netd->write_file ();
+	}
+	else
+	{
+	    y2error ("Wrong path $path or argument: ", ref ($argument));
+	    $result = 0;
+	}
+	ycp::Return (ycp::to_bool ($result));
+    }
+
+    elsif ($command eq "Read")
+    {
+	if ($path eq ".services")
+	{
+	    # must clear before re-reading
+	    # but not in parse_file, that would break includedir
+	    @services = ();
+	    $netd->parse_file ($base_file);
+	    ycp::Return (\@services, 1);
+	}
+	elsif ($path eq ".message")
+	{
+	    ycp::Return ($message, 1);
+	    $message = "";
+	}
+	else
+	{
+	    y2error ("Unrecognized path! '$path'");
+	    ycp::Return (undef);
+	}
+    }
+
+    # A special hack - write known services/protocols to fd3
+    # Used for gathering a list of all available services by package
+    elsif ($command eq "Execute")
+    {
+	if ($path eq ".sbp")
+	{
+	    $netd->services_by_package ();
+	    ycp::Return ("true");
+	}
+	else
+	{
+	    y2error ("Unrecognized path! '$path'");
+	    ycp::Return (undef);
+	}
+    }
+
+    elsif ($command eq "result")
+    {
+	exit;
+    }
+
+    # Unknown command
+    else
+    {
+	y2error ("Unknown instruction $command or argument: ", ref ($argument));
+	ycp::Return (undef);
+    }
+    print "\n";
+}

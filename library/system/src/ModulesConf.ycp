@@ -1,0 +1,126 @@
+/**
+ * File:
+ *	ModulesConf.ycp
+ *
+ * Module:
+ *	ModulesConf
+ *
+ * Authors:
+ *	Klaus Kaempf (kkaempf@suse.de)
+ *
+ * Summary:
+ *	All modules.conf related functions are here
+ *
+ * $Id$
+ */
+{
+    module "ModulesConf";
+
+    import "Arch";
+    import "Misc";
+    import "Mode";
+
+    textdomain "base";
+
+    map<string, map> modules = $[];
+
+    /**
+     * ModuleArgs
+     * save arguments for a kernel module
+     * @param name	string, name of kernel module
+     * @param arg	string, arguments ("opt1=val1 opt2=val2 ...")
+     */
+    global define void ModuleArgs (string name, string arg)
+    ``{
+	if (name == "")
+	    return;
+
+	map moduledata = modules[name]:$[];
+	if (arg != "")
+	{
+	    moduledata["options"] = arg;
+	}
+	modules[name] = moduledata;
+
+	return;
+    }
+
+
+    /**
+     * RunDepmod
+     * runs /sbin/depmod
+     * !! call only when SCR runs on target !!
+     * @param force	boolean, force depmod run (option "-a" instead of "-A")
+     */
+    global define void RunDepmod (boolean force)
+    ``{
+	import "Kernel";
+
+	string kernel_version = (string) SCR::Read (.boot.vmlinuz_version, ["/boot/" + Kernel::GetBinary ()]);
+
+	y2milestone ("running /sbin/depmod");
+
+	if (size (kernel_version) > 0)
+	{
+	    SCR::Execute (.target.bash, "unset MODPATH; /sbin/depmod " + (force ? "-a" : "-A") +
+			  " -F /boot/System.map-" + kernel_version + " " + kernel_version);
+	}
+	else
+	{
+	    SCR::Execute (.target.bash, "unset MODPATH; /sbin/depmod " + (force ? "-a" : "-A") +
+			  " -F /boot/System.map-`uname -r` `uname -r`");
+	}
+    }
+
+
+    /**
+     * Save
+     * save module names and arguments to /etc/modules.conf
+     * @param force	boolean, force depmod run even if /etc/modules.conf is unchanged
+     * !! call only when SCR runs on target !!
+     */
+    global define void Save (boolean force)
+    ``{
+	// make module names to one long string
+	// start with modules from linuxrc
+
+	// write module options to modules.conf, mk_initrd handles the rest
+
+	boolean modules_conf_changed = false;
+
+	foreach (string mname, map mdata, modules,
+	``{
+	    string options = mdata["options"]:"";
+
+	    if (options != "")
+	    {
+		// we have options, pass them to modules.conf
+
+		map current_options = (map) SCR::Read (add (.modules.options, mname));
+
+		map new_options = Misc::SplitOptions (options, current_options);
+
+		SCR::Write (add (.modules.options, mname), new_options);
+		modules_conf_changed = true;
+	    }
+	});
+
+	// Network module handling removed (#39135)
+	// #24836, Alias needs special treatment because of multiple cards
+
+	// if needed, re-write /etc/modules.conf and run /sbin/depmod
+
+	if (modules_conf_changed)
+	{
+	    SCR::Write (.modules, nil);
+	}
+
+	if (modules_conf_changed || force)
+	{
+	    if (!Mode::test ())
+	    {
+		RunDepmod (true);
+	    }
+	}
+    }
+}

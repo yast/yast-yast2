@@ -1,0 +1,451 @@
+#!/bin/bash
+
+# File:		/sbin/yast2
+# Module:	yast2
+# Summary:	Main YaST2 start script
+# Authors:	Mathias Kettner <kettner@suse.de>
+#		Klaus Kaempf <kkaempf@suse.de>
+#		Ludwig Nussel <lnussel@suse.de>
+#		Arvin Schnell <aschnell@suse.de>
+#
+# This script is called when the user just types 'yast2'. It starts
+# the qt user interface in case the DISPLAY variable is set and other-
+# wise ncurses. It starts then the module 'menu' which implements
+# the configuration and administration menu.
+
+export PATH=/sbin:/usr/sbin:$PATH
+
+# allow for a different prefix
+# strip the basename off $0, which can be: (bnc#382216, bnc#458385)
+# /sbin/yast2, /sbin/yast, yast2 (sh -x yast2 ...), /sbin//yast2 (PATH=/sbin/:...)
+shopt -s extglob
+mydir=${0%%*(/)[YyZz]a[Ss][Tt]?(2)}
+if [[ -z "$mydir" || "$mydir" = /sbin ]]; then
+    YAST_PREFIX=/usr
+else
+    YAST_PREFIX=${mydir%/sbin}
+fi
+
+# load common script functions
+. $YAST_PREFIX/lib/YaST2/bin/yast2-funcs
+
+
+# #211392, #265263
+# if we are in X and do not have _input_ from terminal,
+# save the output and display it via xmessage in case of error.
+# TODO: also use bug-buddy or the kde thing... (#265263#c48)
+redirect()
+{
+    if [ -n "$DISPLAY" -a ! -t 0 ]; then
+	ERRLOG=`mktemp -t yast2-err-XXXXXX`
+	trap exit_trap EXIT
+	exec &> $ERRLOG
+    fi
+}
+
+# $1: file with error message
+display_error_file()
+{
+    if [ -x /usr/bin/zenity ]; then
+	/usr/bin/zenity  --title="Error" --text-info --filename="$1"
+    elif [ -x /usr/bin/kdialog ]; then
+	/usr/bin/kdialog --title "Error" --textbox "$1"
+    else
+	xmessage -buttons OK:0 -default OK -center -file "$1"
+    fi
+}
+
+exit_code=0
+
+exit_trap()
+{
+    # handily, exit_code is set to $? of y2base.
+    # If there was an error and there is anything to display, pop up.
+    if [ $exit_code != 0 -a -s $ERRLOG ]; then
+	display_error_file $ERRLOG
+    fi
+    rm -f $ERRLOG
+}
+# redirect the output if necessary
+redirect
+
+# Accumulated arguments for both the Qt UI and y2cc; currently supported:
+# --fullscreen
+# --noborder
+# well also for gtk and ncurses
+Y2UI_ARGS=""
+GNOME_SHELL="$ybindir/y2controlcenter-gnome"
+KDE_SHELL="$ybindir/y2controlcenter"
+
+printhelp()
+{
+	echo "Usage: $0 [OPTIONS] [MODULE] [module specific parameters]"
+	echo
+	echo "OPTIONS:"
+	echo "	-h, --help	this message"
+	echo "	-l, --list	list all available modules"
+	echo "	--qt            use the QT graphical user interface"
+	echo "	--gtk           use the GTK graphical user interface"
+	echo "	--ncurses       use the NCURSES text-mode user interface"
+	echo "	-g, --geometry	default window size (qt only)"
+	echo "	--noborder      no window manager border for main window"
+	echo "	--fullscreen    use full screen"
+	echo
+	echo "exceptional case for installing packages:"
+	echo "$0 OPTION <package> [<package> [...]]"
+	echo
+	echo "OPTION:"
+	echo "	-i, --install	install rpm package"
+	echo "	    --update 	update rpm package"
+	echo "	    --remove	remove rpm package"
+	echo
+	echo "<package> can be a single short package name (e.g. gvim)"
+	echo "which will be installed with dependency checking, or the full"
+	echo "path to an rpm package (e.g /tmp/gvim.rpm) which will be"
+	echo "installed without dependency checking"
+	echo
+}
+
+listmodules()
+{
+    list=`/bin/ls -1 $YAST_PREFIX/share/applications/YaST2/*.desktop 2>/dev/null`
+
+    if [ -z "$list" ] ; then
+	echo "No modules installed"
+    else
+	echo "Available modules:"
+	echo
+	grep -h "Exec=/sbin/yast2 " $list | \
+	    sed 's|Exec=/sbin/yast2 \([^ ]\+\)\( .*\)\?|\1|' | \
+	    sort -u
+    fi
+}
+
+# Probes for default desktop GUI
+probe_desktop_gui()
+{
+    if [ "$DESKTOP_SESSION" = "gnome" ]; then
+	DESKTOP_GUI="gtk"
+    elif echo $WINDOWMANAGER | grep -qi "gnome"; then
+	DESKTOP_GUI="gtk"
+    else
+	DESKTOP_GUI="qt"
+    fi
+    if [ "$DESKTOP_GUI" = "qt" -a ! -x "$KDE_SHELL" ]; then
+	DESKTOP_GUI="gtk"
+    fi
+    if [ "$DESKTOP_GUI" = "gtk" -a ! -x "$GNOME_SHELL" ]; then
+	DESKTOP_GUI="qt"
+    fi
+}
+
+# Select which control center shell we want to use
+select_control_center()
+{
+    # 'auto' detects desktop
+    if [ "$WANTED_SHELL" = "auto" ]; then
+	probe_desktop_gui
+	WANTED_SHELL=$DESKTOP_GUI
+    fi
+
+    # select binary
+    y2ccbin=""
+    case "$WANTED_SHELL" in
+	gtk)
+	    y2ccbin="$GNOME_SHELL"
+	    ;;
+	*)
+	    y2ccbin="$KDE_SHELL"
+	    ;;
+    esac
+}
+
+# Select which toolkit we want to use (F#301083)
+select_gui_frontend()
+{
+    if [ "$WANTED_GUI" = "auto" ]; then
+	probe_desktop_gui
+	WANTED_GUI=$DESKTOP_GUI
+    fi
+
+    if [ "$WANTED_GUI" = "gtk" ]; then
+	if check_gtk; then
+	    SELECTED_GUI=gtk
+	else
+#	    echo >&2 "GTK GUI wanted but not found, falling back to Qt."
+	    WANTED_GUI=qt
+	fi
+    fi
+
+    if [ "$WANTED_GUI" = "qt" ]; then
+	if check_qt; then
+	    SELECTED_GUI=qt
+	else
+	    echo >&2 "Qt GUI wanted but not found, falling back to ncurses."
+	fi
+    elif [ "$SELECTED_GUI" != "gtk" -a "$WANTED_GUI" != "ncurses" ]; then
+	echo >&2 "Unknown GUI '$WANTED_GUI', falling back to ncurses."
+    fi
+}
+
+TEMP=`/usr/bin/getopt -o hlg:s:Si --long help,list,kcontrol,geometry:,style:,strings,install,update,remove,fullscreen,noborder,qt,gtk,ncurses \
+     -n 'yast2' -- "$@"`
+
+if [ $? != 0 ] ; then echo "Exit." >&2 ; exit 1 ; fi
+
+# Note the quotes around `$TEMP': they are essential!
+eval set -- "$TEMP"
+
+while true ; do
+	case "$1" in
+		-h|--help) printhelp; exit 0 ;;
+		-l|--list) listmodules; exit 0 ;;
+		-g|--geometry) Y2_GEOMETRY="-geometry $2"; shift 2; ;;
+		-i|--install) Y2_INSTALL_PACKAGES=true; shift ;;
+		--update) Y2_INSTALL_PACKAGES=true; Y2_INSTALL_ACTION=--update; shift ;;
+		--remove) Y2_INSTALL_PACKAGES=true; Y2_INSTALL_ACTION=--remove; shift ;;
+                --fullscreen) Y2UI_ARGS="$Y2UI_ARGS --fullscreen"; shift ;;
+		--noborder)   Y2UI_ARGS="$Y2UI_ARGS --noborder"  ; shift ;;
+		--kcontrol)   Y2UI_ARGS="$Y2UI_ARGS --kcontrol_id YaST" ; shift ;;
+		--qt)  export CMDLINE_UI="qt"  ; shift ;;
+		--gtk)  export CMDLINE_UI="gtk"  ; shift ;;
+		--ncurses)  unset DISPLAY ; shift ;;
+		--) shift ; break ;;
+		*) echo "Unrecognized option $1" ; exit 1 ;;
+
+	        # IMPORTANT: Remember to change that "getopt" call above, too
+	        # if you change anything here!
+	esac
+done
+
+if [ "$Y2_INSTALL_PACKAGES" = "true" ]; then
+	export module=sw_single
+	# #222757
+	# prepend an additional argument if necessary
+	set -- $Y2_INSTALL_ACTION "$@"
+else
+	# allow module as argument, defaults to "menu"
+	export module="${1-menu}"
+	shift
+fi
+
+# Pass the arguments to WFM::Args():
+# Surround all args by (...).  args may contain spaces.
+# Use -S to avoid YCP escaping (bnc#382883)
+a=("$@")
+b=("${a[@]/#/(}")
+c=("${b[@]/%/)}")
+set -- -S "${c[@]}"
+
+case "`basename $0`" in
+	YaST|yast|yast1|zast)
+		if [ -z "$CMDLINE_UI" ]; then
+			unset DISPLAY;
+		fi
+	;;
+esac
+
+if [ "$UID" = 0 ]; then
+    echo $$ > /var/run/yast.pid
+fi
+
+# set lang from sysconfig
+set_lang_from_sysconfig
+
+# default defaults
+WANTED_GUI="auto"
+WANTED_SHELL="auto"
+DESKTOP_GUI="qt"
+
+# read system settings
+if [ -f /etc/sysconfig/yast2 ]; then
+    source /etc/sysconfig/yast2
+fi
+# read user settings
+if [ -f "$HOME/.yast2/yast2" ]; then
+    source "$HOME/.yast2/yast2"
+fi
+
+if [ ! -z "$CMDLINE_UI" ]; then
+    WANTED_GUI="$CMDLINE_UI"
+    WANTED_SHELL="$CMDLINE_UI"
+fi
+
+# Fallback GUI
+SELECTED_GUI=ncurses
+# if we have a DISPLAY, select a preferred GUI
+if [ -n "$DISPLAY" ]; then
+    select_gui_frontend
+fi
+
+if [ "$SELECTED_GUI" = "ncurses" ]; then
+    if check_ncurses ; then
+	TTY=$(/usr/bin/tty)
+	TTY=${TTY#/dev/}
+	case "$TTY" in
+	    tty[0-9]|tty[0-9][0-9])
+	        TTY=console
+		;;
+	esac
+	UC_STARTED=no
+	UTF8STATUS=0
+	UTF8TESTED=no
+	if test -x /bin/testutf8 ; then
+            # binary /bin/testutf8 is missing at least on s390x, #158001
+	    # return code of the /bin/testutf8 (more info in bug #179989)
+	    # 0=stdin does not support utf8, 1=not utf8, 2=utf8
+	    /bin/testutf8
+            UTF8STATUS=$?
+	    UTF8TESTED=yes
+	fi
+        # on console, start yast in UTF-8 locale (only on a 'local' console)
+        if test "$TERM" = "linux" -a "$TTY" = "console" ; then
+	    case "$LANG" in
+		# if it is known that a language doesn't yet work well with ncurses
+		# on console use English instead:
+		ja*|ko*|zh*)
+		    export LANG=en_US.UTF-8
+		    export LC_CTYPE=en_US.UTF-8
+		    export LC_ALL=en_US.UTF-8 # just to make sure.
+		;;
+		*)
+	            # get rid of encoding and/or modifier from all the
+		    # locale environment variables and add .UTF-8.
+		    # But leave those which are empty or set to POSIX or C alone,
+		    # POSIX.UTF-8, C.UTF-8, or .UTF-8 doesn't make sense (bug #285178).
+                    for lc in LANG LC_CTYPE LC_NUMERIC LC_TIME	\
+	                      LC_COLLATE LC_MONETARY LC_MESSAGES	\
+	                      LC_PAPER LC_NAME LC_ADDRESS 		\
+	                      LC_TELEPHONE LC_MEASUREMENT		\
+	                      LC_IDENTIFICATION LC_ALL
+                    do
+                        eval val="\$$lc"
+		        if [ -n "$val" -a "$val" != "POSIX" -a "$val" != "C" ] ; then
+		            eval $lc=\${val%%[.@]*}.UTF-8
+			    eval export $lc
+		        fi
+		    done
+
+	        ;;
+	    esac
+	    if [ $UTF8TESTED = "yes" -a $UTF8STATUS -ne 2 -a -x /bin/unicode_start ] ; then
+		/bin/unicode_start
+		UC_STARTED=yes
+	    fi
+        else
+	    case "$TERM" in
+		rxvt*|vt*|xterm*|linux|screen*)
+		    # fix locale settings if they are not suitable for the
+		    # terminal setting (UTF-8 or not)
+		    # But should we really do this here? Isn't it user error
+		    # if the locale settings are not suitable for the terminal
+		    # used?
+
+  		    # the terminal is not in UTF-8 mode, strip .UTF-8 suffix
+		    # from the locale variables:
+		    if [ "$UTF8TESTED" == "yes" -a $UTF8STATUS -eq 1 ] ; then
+                        for lc in LANG LC_CTYPE LC_NUMERIC LC_TIME	\
+    	                      LC_COLLATE LC_MONETARY LC_MESSAGES	\
+    	                      LC_PAPER LC_NAME LC_ADDRESS 		\
+    	                      LC_TELEPHONE LC_MEASUREMENT		\
+    	                      LC_IDENTIFICATION LC_ALL
+                        do
+                            eval val="\$$lc"
+    		            if [ -n "$val" ] ; then
+    		                eval $lc=\${val%%.UTF-8}
+    			        eval export $lc
+    		            fi
+			done
+		    # the terminal is in UTF-8 mode so strip any possible suffix from
+		    # the locale variables and append .UTF-8.
+		    # But leave those which are empty or set to POSIX or C alone,
+		    # POSIX.UTF-8, C.UTF-8, or .UTF-8 doesn't make sense (bug #285178).
+		    elif [ "$UTF8TESTED" == "yes" -a $UTF8STATUS -eq 2 ] ; then
+                        for lc in LANG LC_CTYPE LC_NUMERIC LC_TIME	\
+    	                      LC_COLLATE LC_MONETARY LC_MESSAGES	\
+    	                      LC_PAPER LC_NAME LC_ADDRESS 		\
+    	                      LC_TELEPHONE LC_MEASUREMENT		\
+    	                      LC_IDENTIFICATION LC_ALL
+                        do
+                            eval val="\$$lc"
+    		            if [ -n "$val" -a "$val" != "POSIX" -a "$val" != "C" ] ; then
+    		                eval $lc=\${val%%[.@]*}.UTF-8
+    			        eval export $lc
+			    fi
+			done
+		    fi
+		    #default: do nothing, keep locale untouched
+		;;
+	    esac
+	fi
+
+	# this fixes launching of interactive subprocesses, #150799
+	#Y2UI_ARGS="$Y2UI_ARGS --nothreads"
+        #uncomment the above line if anything in TUI breaks ;-)
+        #threads are welcomed back in ncurses frontend (F#301899)
+
+	# set color theme, if defined
+	if [ ! -z "$Y2NCURSES_COLOR_THEME" ]; then
+	    export Y2NCURSES_COLOR_THEME="$Y2NCURSES_COLOR_THEME"
+	fi
+
+    else
+	rpm -V yast2-core yast2-ncurses yast2-qt yast2-gtk >&2
+	echo "Something is wrong with the YaST user interface." >&2
+	exit_code=1		# also skips y2base later
+    fi
+# quick hack: treat gtk like qt
+elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
+
+    if [ "$SELECTED_GUI" = "qt" ]; then
+	set_qt_home_dir
+    fi
+
+    # find which control center shell we want, if there is none we
+    # fall back to the built-in ycp menu
+    y2ccbin=""
+    if [ $module == "menu" ]; then
+	select_control_center
+    fi
+
+else
+    echo >&2 "Internal error, unhandled '$SELECTED_GUI'"
+fi
+
+
+# do it!
+# $@ are args for ycp
+if [ $module == "menu" -a -f "$y2ccbin" ] ; then
+    $y2ccbin $Y2UI_ARGS "$@"
+    exit_code=$?
+else
+    # In case YaST has to be restarted, create this file
+    # and exit. Script that creates the file should also
+    # remove it itself.
+    case "$module" in
+	# special cases
+	menu) REDO_FILE=/var/lib/YaST2/restart_menu ;;
+	online_update) REDO_FILE=/var/lib/YaST2/selected_patches.ycp ;;
+	# all other cases when YaST has to be restarted
+	*) REDO_FILE=/var/lib/YaST2/restart_yast ;;
+    esac
+    #  break out on errors, #343258
+    while [ $exit_code = 0 ]; do
+	$ybindir/y2base $module "$@" "$SELECTED_GUI" $Y2_GEOMETRY $Y2UI_ARGS
+	exit_code=$?
+	if [ -z "$REDO_FILE" -o ! -f "$REDO_FILE" ]; then
+	    break
+	fi
+    done
+fi
+
+# cleanup
+if [ "$UC_STARTED" = "yes" -a -x /bin/unicode_stop ] ; then
+    /bin/unicode_stop
+fi
+
+if [ "$UID" = 0 ]; then
+    rm -f /var/run/yast.pid
+fi
+
+exit $exit_code

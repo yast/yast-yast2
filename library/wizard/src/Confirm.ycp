@@ -1,0 +1,178 @@
+/**
+ * File:	modules/Confirm.ycp
+ *
+ * Package:	yast2
+ *
+ * Summary:	Confirmation routines
+ *
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * Flags:	Stable
+ *
+ * $Id$
+ */
+
+{
+
+module "Confirm";
+
+textdomain "base";
+
+import "Icon";
+import "Label";
+import "Mode";
+import "Popup";
+import "Linuxrc";
+import "Stage";
+import "Arch";
+
+// #TODO bug number
+map <string, boolean> detection_cache = $[];
+
+/**
+ * Confirm hardware detection (only in manual installation)
+ * @param class hardware class (network cards)
+ * @param icon_name name of the icon. If nil, generic hardware icon will be used
+ * @return true on continue
+ */
+global boolean Detection(string class, string icon_name) {
+
+    if(Linuxrc::manual () != true) return true;
+    if(Arch::s390()) return true;
+
+    if( icon_name == nil ) 
+	icon_name = "yast-hardware";
+
+    term icon    = Icon::Image ( icon_name, $[] );
+
+    boolean result = detection_cache[class]:nil;
+    if (result != nil) {
+	y2milestone ("Detection cached result: %1 -> %2", class, result);
+	return result;
+    }
+
+    UI::OpenDialog(`opt(`decorated), `HBox(
+	`HSpacing(1),
+	`HCenter(`HSquash(`VBox(
+	    `HCenter(`HSquash(`VBox(
+		// Popup-Box for manual hardware detection.
+		// If the user selects 'manual installation' when
+		// booting from CD, YaST2 does not load any modules
+		// automatically, but asks the user for confirmation
+		// about every module.
+		// The popup box informs the user about the detected
+		// hardware and suggests a module to load.
+		// The user can confirm the module or change
+		// the suggested load command
+		//
+		// This is the heading of the popup box
+		`Left(`Heading(_("Confirm Hardware Detection"))),
+		`VSpacing(0.5),
+		// This is in information message. Next come the
+		// hardware class name (network cards).
+		`HVCenter(`Label(_("YaST2 will detect the following hardware:"))),
+		`HVCenter(`HBox(icon, `HSpacing(0.5), `Heading(class))),
+		`VSpacing(0.5)
+	    ))),
+	    `ButtonBox (
+		`HWeight (1, `PushButton (`id(`continue), `opt(`default, `okButton),  Label::ContinueButton())),
+		/* PushButton label */
+		`HWeight (1, `PushButton (`id (`skip), `opt (`cancelButton),  _("&Skip")))
+	    ),
+	    `VSpacing(0.2)
+	))),
+	`HSpacing(1)
+    ));
+
+    UI::SetFocus (`id(`continue));
+
+    // for autoinstallation popup has timeout 10 seconds (#192181)
+    // timeout for every case (bnc#429562)
+    any ret = UI::TimeoutUserInput(10*1000);
+//    any ret = Mode::autoinst() ? UI::TimeoutUserInput(10*1000) : UI::UserInput();
+    UI::CloseDialog();
+
+    result = true;
+    if(ret != `continue) {
+	y2milestone("Detection skipped: %1", class);
+	result = false;
+    }
+
+    detection_cache[class] = result;
+    return result;
+}
+
+/*
+y2milestone("--%1", Detection("graphics cards"));
+Linuxrc::manual () = true;
+y2milestone("--%1", Detection("network cards"));
+y2milestone("--%1", Detection("modems"));
+*/
+
+/**
+ * If we are running as root, return true.
+ * Otherwise ask the user whether we should continue even though things
+ * might not work
+ * @return true if running as root
+ */
+global boolean MustBeRoot()
+{
+    if ((integer)SCR::Read (.target.size, "/usr/bin/id") <= 0)
+    {
+	if (! Stage::initial ())
+	    y2warning ("/usr/bin/id not existing, supposing to be root");
+	return true;
+    }
+
+    map out = (map) SCR::Execute (.target.bash_output, "/usr/bin/id --user");
+    boolean root = out["stdout"]:"" == "0\n";
+    if(root) return true;
+
+    /* Message in a continue/cancel popup */
+    string pop = _("This module must be run as root.
+If you continue now, the module may not function properly.
+For example, some settings can be read improperly
+and it is unlikely that settings can be written.\n");
+
+    /* Popup headline */
+    if(Popup::ContinueCancelHeadline(_("Root Privileges Needed"), pop)) {
+	y2error("NOT running as root!");
+	return true;
+    }
+
+    return false;
+}
+
+/**
+ * Opens a popup yes/no confirmation.
+
+ * If users confirms deleting, return true,
+ * else return false
+ *
+ * @return boolean delete selected entry
+ */
+global boolean DeleteSelected() {
+    return Popup::YesNo(
+	/* Popup question */
+	_("Really delete selected entry?")
+    );
+}
+
+/**
+ * Opens a popup yes/no confirmation.
+
+ * If users confirms deleting of named entry/file/etc.,
+ * return true, else return false
+ *
+ * @param string file/entry name/etc.
+ * @return boolean delete selected entry
+ */
+global boolean Delete(string delete) {
+    return Popup::YesNo(
+	/* Popup question, %1 is an item to delete (or filename, etc.) */
+	sformat(_("Really delete '%1'?"), delete)
+    );
+}
+
+/* EOF */
+}

@@ -1,0 +1,54 @@
+# Tweakable settings for the 'yast2' script.
+# to over-ride these settins per-user create a
+# ~/.yast2/yast2 file.
+
+## Path: System/Yast2/GUI
+## Description: Default UI for YaST
+## Type: list(auto,qt,gtk)
+## Default: "auto"
+# Default control center for YaST
+# selects the control-center implementation to be used
+# to render yast widgets
+# auto: will attempt to detect both desktop & plugin
+#       presence and adapt accordingly
+WANTED_SHELL="auto"
+
+## Type: list(auto,qt,gtk,ncurses)
+## Default: "auto"
+# Default UI backend for YaST
+# selects the GUI plugin to be used to render yast widgets
+# auto: will attempt to detect both desktop & plugin
+#       presence and adapt accordingly, falling back to
+#       qt rendering if gtk is not present
+WANTED_GUI="auto"
+
+## Type: string(linux,xterm,rxvt,mono,braille)
+## Default: ""
+# Color theme for YaST ncurses UI
+# xterm: blue-white-red
+# linux: blue-white-yellow
+# rxvt: black-yellow-red
+# mono: white-black
+# braille: for visually impaired
+Y2NCURSES_COLOR_THEME=""
+
+## Type: list(yes,no)
+## Default: "no"
+# Enable tracking of configuraiton changes in subversion repository
+# This is EXPERIMENTAL and not all YaST modules do support it.
+# Use at your own risk
+STORE_CONFIG_IN_SUBVERSION="no"
+
+## Type: list(yes,no)
+## Default: "no"
+# Track all changes in all files in configuration directory
+# If set to "no", YaST adds to the repository only files it changes
+# itself and the first change of a particular configuration file
+# gets lost (it can only be manually compared to the one in
+# configuration file).
+# If set to "yes", all files in the configuration directory
+# are tracked in the subversion repository. This has big impact
+# on start-up and finish times of YaST modules
+# This option is experimental and not all YaST modules do support
+# configuration tracking via subversion
+SUBVERSION_ADD_DIRS_RECURSIVE="no"

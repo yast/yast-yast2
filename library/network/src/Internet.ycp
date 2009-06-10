@@ -1,0 +1,229 @@
+/**
+ * File:	modules/Internet.ycp
+ * Package:	Network configuration
+ * Summary:	Internet connection and YOU during the installation
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *		Arvin Schnell <arvin@suse.de>
+ *
+ * $Id$
+ */
+
+{
+
+module "Internet";
+
+import "Map";
+import "NetworkService";
+import "Service";
+
+/**
+ * Flag to remember if user wants to run internet test
+ */
+global boolean do_test = true;
+
+/**
+ * Flag to remember if user wants to run suse register
+ */
+global boolean suse_register = true;
+
+/**
+ * Flag to remember if you should be started
+ */
+global boolean do_you = false;
+
+/**
+ * cache for GetDevices
+ */
+list<string> devices = nil;
+
+/**
+ * Values for selected connection.
+ */
+global string device = "";
+global string type = "";
+global string logfile = "";
+global string provider = "";
+global string password = "";
+global boolean demand = false;
+global boolean askpassword = nil;
+global boolean capi_adsl = false;
+global boolean capi_isdn = false;
+
+/**
+ * Reset values.
+ */
+global void Reset() {
+    device = "";
+    type = "";
+    logfile = "";
+    provider = "";
+    password = "";
+    demand = false;
+    askpassword = nil;
+    capi_adsl = false;
+    capi_isdn = false;
+}
+
+/**
+ * Used if NetworkInterfaces cannot find anything (usually because NM runs)
+ * Calls ip
+ * @return eg. ["eth0", "eth1"]
+ */
+global define list<string> GetDevices () {
+    if (devices == nil)
+    {
+	string command = "ip -oneline link list | sed -e 's/^[0-9]*: \\([^:]*\\).*/\\1/' | grep -v 'lo\\|sit0'";
+	map out = (map) SCR::Execute (.target.bash_output, command);
+	devices = filter (string i,
+			  splitstring (out["stdout"]:"", "\n"),
+			  ``( i != "" ));
+	devices = filter (string i, devices, ``( i != "lo" && i != "sit0" ));
+    }
+    return devices;
+}
+
+/**
+ * Start the fastest interface
+ * @param log file for the commands output
+ * @return true if successful started
+ */
+global define boolean Start(string log) {
+
+    if ((type == "dsl" && capi_adsl) || (type == "isdn")) {
+	integer status = Service::Status ("isdn");
+	y2milestone ("We need ISDN service, status: %1", status);
+	if (status != 0) {
+	    if (! Service::Start ("isdn")) {
+		y2error ("start failed");
+		return false;
+	    }
+	}
+    }
+
+    string cmd = "/sbin/ifup " + device;
+    if (NetworkService::IsManaged ())
+    {
+	string d_nm =  "org.freedesktop.NetworkManager";
+	string s_nm = "/org/freedesktop/NetworkManager";
+	// dbus-send [options] object interface.method arguments...
+	cmd = sformat ("dbus-send --system --dest=%1 %2 %1.setActiveDevice objpath:'%2/Devices/%3'", d_nm, s_nm, device);
+    }
+
+    if (log != "")
+	cmd = cmd + "> " + log + " 2>&1";
+
+    any ret = nil;
+    if(askpassword == true)
+    {
+	ret = SCR::Execute (.target.bash_input, cmd, password);
+    }
+    else
+    {
+	ret = SCR::Execute(.target.bash, cmd);
+    }
+    if (ret != 0) {
+	y2error("%1", NetworkService::IsManaged ()?
+		"NM.setActiveDevice failed":
+		"ifup failed");
+	return false;
+    }
+
+    if(type == "isdn" && !capi_isdn) {
+	if(SCR::Execute(.target.bash, "/sbin/isdnctrl dial " + device) != 0) {
+	    y2error("isdnctrl failed");
+	    return false;
+	}
+    }
+
+    return true;
+}
+
+/**
+ * Stop the fastest interface
+ * @param log file for the commands output
+ * @return true if successful stopped
+ */
+global define boolean Stop(string log) {
+    // should also work for NM
+    string cmd = "/sbin/ifdown " + device;
+    if(log != "") cmd = cmd + "> " + log + " 2>&1";
+    integer ret = (integer) SCR::Execute(.target.bash, cmd);
+    return ret == 0;
+}
+
+/**
+ * Status of the fastest interface
+ * @return true if interface is up (which is not equal to connected)
+ */
+global define boolean Status() {
+    integer ret = (integer) SCR::Execute(.target.bash, "/sbin/ifstatus " + device);
+    y2milestone ("ifstatus %1: %2", device, ret);
+    return ret == 0 || ret == 10;
+}
+
+/**
+ * Test if the interface is connected
+ * @return true if connected
+ */
+global define boolean Connected() {
+
+    if(type == "dsl" || type == "modem" || (type == "isdn" && capi_isdn)) {
+	string tmp1 = (string) SCR::Read(.target.string, "/var/lib/smpppd/ifcfg-" + device + ".info");
+	list tmp2 = splitstring(tmp1, "\n");
+	return contains(tmp2, "status: connected");
+    }
+
+    if(type == "isdn" && !capi_isdn) {
+	return SCR::Execute(.target.bash, "/usr/bin/grep -q pppd /etc/resolv.conf") == 0;
+    }
+
+    // NM: we have to wait until the interface comes up (or fails)
+    // - dbus message filter
+    // - grep ip addr list $device
+    return SCR::Execute(.target.bash, "ip -oneline addr list | grep 'scope global' >&2") == 0;
+}
+
+/**
+ * Set dial-on-demand
+ * @param demand true if dial-on-demand should be set
+ */
+global define void SetDemand(boolean demand) {
+    path pp = .sysconfig.network.providers.v;
+    pp = add(pp, provider);
+    pp = add(pp, "DEMAND");
+    SCR::Write(pp, (demand == true) ? "yes" : "no");
+    SCR::Write(.sysconfig.network.providers, nil);
+}
+
+/**
+ * DANGEROUS function. Searches for all standard PID files of dhcpcd,
+ * then kills all dhcpcds running (first SIGHUP, then SIGKILL).
+ * Works via WFM (only for local dhcpcd).
+ */
+global boolean ShutdownAllLocalDHCPClients () {
+    string pid_directory = "/var/run/";
+
+    list <string> dhcp_pidfiles = (list <string>) WFM::Read (.local.dir, pid_directory);
+    // only dhcpcd files
+    dhcp_pidfiles = filter (string one_pidfile, dhcp_pidfiles, {
+	return (regexpmatch (one_pidfile, "dhcpcd-.*\.pid"));
+    });
+
+    y2milestone ("DHCPCD uses these file under %1 directory: %2", pid_directory, dhcp_pidfiles);
+
+    if (size (dhcp_pidfiles) == 0) return true;
+
+    foreach (string one_pidfile, dhcp_pidfiles, {
+	string process_ID = (string) WFM::Read (.local.string, sformat ("%1%2", pid_directory, one_pidfile));
+	y2milestone ("Killing process ID: %1", process_ID);
+
+	// Calls a correct kill command for SIGHUP and waits
+	// Then a confirmation SIGKILL is called (should be ignored because process has hopefully already ended)
+	WFM::Execute (.local.bash, sformat ("(kill -1 %1 && sleep 1); kill -9 %1 2>/dev/null;", process_ID));
+    });
+
+    return true;
+}
+
+/* EOF */
+}

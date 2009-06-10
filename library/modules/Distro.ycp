@@ -1,0 +1,70 @@
+/**
+ * File:	modules/Distro.ycp
+ * Module:	yast2
+ * Summary:	Distinguish between distributions that can run YaST
+ * Authors:	Martin Vidner <mvidner@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+module "Distro";
+
+textdomain "base";
+
+/**
+ * Cache
+ */
+string _distro = nil;
+
+
+/**
+ * Is it SUSE based? openSUSE, SLES, SLED, ...
+ */
+global boolean suse () {
+    if (_distro == nil)
+    {
+	if (SCR::Read (.target.size, "/etc/SuSE-release") != -1)
+	{
+	    _distro = "suse";
+	    y2milestone ("Found SUSE");
+	}
+    }
+
+    return _distro == "suse";
+}
+
+/**
+ * Is it Fedora based? RHEL, Oracle, ...
+ */
+global boolean fedora () {
+    if (_distro == nil)
+    {
+	if (SCR::Read (.target.size, "/etc/fedora-release") != -1)
+	{
+	    _distro = "fedora";
+	    y2milestone ("Found Fedora");
+	}
+    }
+
+    return _distro == "fedora";
+}
+
+/**
+ * Is it Debian based? Ubuntu, ...
+ */
+global boolean debian () {
+    if (_distro == nil)
+    {
+	if (SCR::Execute (.target.bash, "grep DISTRIB_ID=Ubuntu /etc/lsb-release") == 0)
+	{
+	    _distro = "debian";
+	    y2milestone ("Found Debian/Ubuntu");
+	}
+    }
+
+    return _distro == "debian";
+}
+
+} // EOF

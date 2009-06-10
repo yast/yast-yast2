@@ -1,0 +1,12 @@
+The wizard sequencer test cases
+-------------------------------
+0:	general
+
+1:	n,n,f
+2:	n,d,n,f
+3:	n,d,d,n,f
+4:	n,e,n,n,f
+
+5:	b
+6:	n,b,b
+7:	n,n,b,b,b

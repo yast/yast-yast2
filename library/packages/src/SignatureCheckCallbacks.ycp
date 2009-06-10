@@ -1,0 +1,227 @@
+/**
+ * Module:		SignatureCheckCallbacks.ycp
+ * Authors:		Lukas Ocilka <locilka@suse.cz>
+ *
+ * Callbacks for handling signatures.
+ *
+ * $Id: SignatureCheckCallbacks.ycp 28363 2006-02-24 12:27:15Z locilka $
+ */
+
+{
+    textdomain "base";
+    
+    module "SignatureCheckCallbacks";
+
+    import "SignatureCheckDialogs";
+
+
+    /**
+     * Default return when signatures shouldn't be checked
+     * @see SignatureCheckDialogs::CheckSignaturesInYaST()
+     */
+    const boolean default_return_unchecked = true;
+
+    /* ============================ < Callbacks for Repositories > ============================ */
+
+    // Name of the callback handler function. Required callback prototype is
+    // boolean(string filename). The callback function should ask user whether the
+    // unsigned file can be accepted, returned true value means to accept the
+    // file.
+    //
+    // zypp: askUserToAcceptUnsignedFile
+    //
+    // (+DontShowAgain functionality) -- for one run in memory
+    //
+    /* function for CallbackAcceptUnsignedFile() */
+    global boolean AcceptUnsignedFile (string filename, integer repo_id) {
+	// Check signatures at all?
+	if (SignatureCheckDialogs::CheckSignaturesInYaST() == false)
+	    return default_return_unchecked;
+
+	string dont_show_dialog_ident = "-AcceptUnsignedFile-";
+    
+	// Show the popup?
+	if (SignatureCheckDialogs::GetShowThisPopup(dont_show_dialog_ident, filename)) {
+	    return SignatureCheckDialogs::UseUnsignedItem(`file, filename, dont_show_dialog_ident, repo_id);
+	// Return the default value entered by user
+	} else {
+	    return SignatureCheckDialogs::GetDefaultDialogReturn(dont_show_dialog_ident, filename);
+	}
+    }
+    
+
+    // Name of the callback handler function. Required callback prototype is
+    // boolean(string filename) The callback function should ask user whether
+    // the unsigned file can be accepted, returned true value means to accept the file.
+    //
+    // zypp: askUserToAcceptNoDigest
+    //
+    // (+DontShowAgain functionality) -- for one run in memory
+    //
+    /* function for CallbackAcceptFileWithoutChecksum() */
+    global boolean AcceptFileWithoutChecksum (string filename) {
+	// Check signatures at all?
+	if (SignatureCheckDialogs::CheckSignaturesInYaST() == false)
+	    return default_return_unchecked;
+
+	string dont_show_dialog_ident = "-AcceptFileWithoutChecksum-";
+	
+	// Show the popup?
+	if (SignatureCheckDialogs::GetShowThisPopup(dont_show_dialog_ident, filename)) {
+	    return SignatureCheckDialogs::UseItemWithNoChecksum(`file, filename, dont_show_dialog_ident);
+	// Return the default value entered by user
+	} else {
+	    return SignatureCheckDialogs::GetDefaultDialogReturn(dont_show_dialog_ident, filename);
+	}
+    }
+
+
+/**
+ * Callback handler function. Required callback prototype is <code>boolean(string filename, string requested_digest, string found_digest)</code>. The callback function should ask user whether the wrong digest can be accepted, returned true value means to accept the file.
+ * @return boolean
+ */
+    // zypp: askUserToAcceptWrongDigest
+    global boolean AcceptWrongDigest(string filename, string requested_digest, string found_digest)
+    {
+	// Check signatures at all?
+	if (SignatureCheckDialogs::CheckSignaturesInYaST() == false)
+	    return default_return_unchecked;
+
+	const string dont_show_dialog_ident = "-AcceptWrongDigest-";
+
+	// Show the popup?
+	if (SignatureCheckDialogs::GetShowThisPopup(dont_show_dialog_ident, filename)) {
+	    return SignatureCheckDialogs::UseFileWithWrongDigest(filename, requested_digest, found_digest, dont_show_dialog_ident);
+	} else {
+	    // Return the default value entered by user
+	    return SignatureCheckDialogs::GetDefaultDialogReturn(dont_show_dialog_ident, filename);
+	}
+    }
+
+/**
+ * Callback handler function. Required callback prototype is <code>boolean(string filename, string name)</code>. The callback function should ask user whether the uknown digest can be accepted, returned true value means to accept the digest.
+ * @return boolean
+ */
+
+    // zypp: askUserToAccepUnknownDigest
+    global boolean AcceptUnknownDigest(string filename, string digest)
+    {
+	// Check signatures at all?
+	if (SignatureCheckDialogs::CheckSignaturesInYaST() == false)
+	    return default_return_unchecked;
+
+	const string dont_show_dialog_ident = "-AcceptUnknownDigest-";
+
+	// Show the popup?
+	if (SignatureCheckDialogs::GetShowThisPopup(dont_show_dialog_ident, filename)) {
+	    return SignatureCheckDialogs::UseFileWithUnknownDigest(filename, digest, dont_show_dialog_ident);
+	} else {
+	    // Return the default value entered by user
+	    return SignatureCheckDialogs::GetDefaultDialogReturn(dont_show_dialog_ident, filename);
+	}
+    }
+
+
+    // Name of the callback handler function. Required callback prototype is
+    // boolean(string filename, string keyid, string keyname). The callback
+    // function should ask user whether the unknown key can be accepted, returned
+    // true value means to accept the file.
+    //
+    // zypp: askUserToAcceptUnknownKey
+    //
+    // (+DontShowAgain functionality) -- for one run in memory
+    //
+    // function for CallbackAcceptUnknownGpgKey()
+    global boolean AcceptUnknownGpgKey (string filename, string keyid, integer repoid) {
+	// Check signatures at all?
+	if (SignatureCheckDialogs::CheckSignaturesInYaST() == false)
+	    return default_return_unchecked;
+
+	string dont_show_dialog_ident = "-AcceptUnknownGpgKey-";
+
+	// Show the popup?
+	if (SignatureCheckDialogs::GetShowThisPopup(dont_show_dialog_ident, filename)) {
+	    // Unknown keyname == "Unknown Key"
+	    return SignatureCheckDialogs::ItemSignedWithUnknownSignature(`file, filename, keyid, dont_show_dialog_ident, repoid);
+	// Return the default value entered by user
+	} else {
+	    return SignatureCheckDialogs::GetDefaultDialogReturn(dont_show_dialog_ident, filename);
+	}
+    }
+
+    // Name of the callback handler function. Required callback prototype is
+    // boolean(map<string,any> key). The callback
+    // function should ask user whether the key is trusted, returned true value
+    // means the key is trusted.
+    //
+    // zypp: askUserToTrustKey
+    //
+    /* function for CallbackTrustGpgKey() */
+    global boolean TrustGpgKey (map<string,any> key)
+    {
+	// Check signatures at all?
+	if (SignatureCheckDialogs::CheckSignaturesInYaST() == false)
+	    return default_return_unchecked;
+
+	// There are no details from the callback, maybe in the future
+	return SignatureCheckDialogs::ImportGPGKeyDialog(key) == `import;
+    }
+
+    // Name of the callback handler function. Required callback prototype is
+    // boolean(map<string,any> key). The callback
+    // function should ask user whether the key is trusted, returned true value
+    // means the key is trusted.
+    //
+    // zypp: askUserToImportKey
+    //
+    /* function for CallbackImportGpgKey() */
+    global boolean ImportGpgKey (map<string,any> key, integer repo_id)
+    {
+	// Check signatures at all?
+	if (SignatureCheckDialogs::CheckSignaturesInYaST() == false)
+	    return default_return_unchecked;
+
+	return SignatureCheckDialogs::ImportGPGKeyIntoTrustedDialog(key, repo_id);
+    }
+    
+    // Name of the callback handler function. Required callback prototype is
+    // boolean(string filename, map<string,any> key). The callback
+    // function should ask user whether the unsigned file can be accepted,
+    // returned true value means to accept the file.
+    //
+    // zypp: askUserToAcceptVerificationFailed
+    //
+    /* function for CallbackAcceptVerificationFailed() */
+    global boolean AcceptVerificationFailed (string filename, map<string,any> key, integer repo_id)
+    {
+	// Check signatures at all?
+	if (SignatureCheckDialogs::CheckSignaturesInYaST() == false)
+	    return default_return_unchecked;
+
+	return SignatureCheckDialogs::UseCorruptedItem(`file, filename, key, repo_id);
+    }
+
+    /* ============================ < Callbacks for Repositories > ============================ */
+    
+    // Name of the callback handler function. Required callback prototype is void
+    // (string keyid, string keyname). The callback function should inform user
+    // that a trusted key has been added.
+    //
+    /* function for CallbackTrustedKeyAdded() */
+    global void TrustedKeyAdded (map<string,any> key)
+    {
+	y2milestone("Trusted key has been added: %1 / %2 (%3)", key["id"]:"", key["fingerprint"]:"", key["name"]:"");
+	return nil;
+    }
+    
+    // Name of the callback handler function. Required callback prototype is void
+    // (string keyid, string keyname). The callback function should inform user
+    // that a trusted key has been removed.
+    //
+    /* function for CallbackTrustedKeyRemoved() */
+    global void TrustedKeyRemoved (map<string,any> key)
+    {
+	y2milestone("Trusted key has been removed: %1 / %2 (%3)", key["id"]:"", key["fingerprint"]:"", key["name"]:"");
+	return nil;
+    }
+}

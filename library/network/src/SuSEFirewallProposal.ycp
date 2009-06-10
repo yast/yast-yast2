@@ -1,0 +1,589 @@
+/**
+ * File:	modules/SuSEFirewallProposal.ycp
+ * Package:	SuSEFirewall configuration
+ * Summary:	Functional interface for SuSEFirewall installation proposal
+ * Authors:	Lukas Ocilka <locilka@suse.cz>
+ *
+ * $Id$
+ *
+ * This module provides a functional API for Installation proposal of SuSEfirewall2
+ */
+
+{
+    module "SuSEFirewallProposal";
+    textdomain "base";
+
+    import "SuSEFirewall";
+    import "ProductFeatures";
+    import "Linuxrc";
+    import "Package";
+    import "SuSEFirewallServices";
+
+    # <!-- SuSEFirewall LOCAL VARIABLES //-->
+
+    /* proposal was changed by user */
+    boolean proposal_changed_by_user = false;
+
+    /* proposal was initialized yet */
+    boolean proposal_initialized = false;
+
+    /* known interfaces */
+    list <string> known_interfaces = [];
+
+    /* warnings for this "turn" */
+    list <string> warnings_now = [];
+
+    list <string> vnc_fallback_ports = ["5801", "5901"];
+
+    // bnc #427708, yet another name of service
+    string vnc_service = "service:xorg-x11-server";
+
+    string ssh_service = "service:sshd";
+
+    # <!-- SuSEFirewall LOCAL VARIABLES //-->
+
+    # <!-- SuSEFirewall LOCAL FUNCTIONS //-->
+
+    /**
+     * Local function adds another warning string into warnings for user
+     *
+     * @param	string warning
+     */
+    void AddWarning (string warning) {
+	warnings_now = add (warnings_now, warning);
+    }
+
+    /**
+     * Local function clears all warnings for user from memory
+     */
+    void ClearWarnings () {
+	warnings_now = [];
+    }
+
+    /**
+     * Function returns list of warnings for user
+     *
+     * @return	list <string> of warnings
+     */
+    list <string> GetWarnings () {
+	return warnings_now;
+    }
+
+    /**
+     * Local function sets currently known interfaces.
+     *
+     * @param	list <string> of known interfaces
+     */
+    void SetKnownInterfaces(list <string> interfaces) {
+	known_interfaces = interfaces;
+    }
+
+    /**
+     * Local function returns list [string] of known interfaces.
+     * They must have been set using SetKnownInterfaces(list [string] interfaces)
+     * function.
+     *
+     * @return	list <string> of known interfaces
+     */
+    list <string> GetKnownInterfaces () {
+	return known_interfaces;
+    }
+
+    /**
+     * Function returns if interface is a dial-up type.
+     *
+     * @return	boolean if is dial-up interface
+     */
+    boolean IsDialUpInterface (string interface) {
+	list <map <string, string> > all_interfaces = SuSEFirewall::GetAllKnownInterfaces();
+
+	string interface_type = nil;
+	foreach (map <string, string> one, all_interfaces, {
+	    if (one["id"]:nil != interface) return;
+	    // this is THE interface
+	    interface_type = one["type"]:nil;
+	});
+
+	return (interface_type == "dialup");
+    }
+
+    /**
+     * Local function adds list of interfaces into zone.
+     *
+     * @param	list [string] of interfaces
+     * @param	string zone
+     */
+    void SetInterfacesToZone(list <string> interfaces, string zone) {
+	foreach (string interface, interfaces, {
+	    SuSEFirewall::AddInterfaceIntoZone(interface, zone);
+	});
+    }
+
+    /**
+     * Local function for updating user-changed proposal.
+     */
+    void UpdateProposal () {
+	list <string> last_known_interfaces = GetKnownInterfaces();
+	list <string> currently_known_interfaces = SuSEFirewall::GetListOfKnownInterfaces();
+
+	boolean had_dialup_interfaces = false;
+	foreach (string this_interface, last_known_interfaces, {
+	    if (IsDialUpInterface(this_interface)) {
+		had_dialup_interfaces = true;
+		break;
+	    }
+	});
+
+	foreach (string interface, currently_known_interfaces, {
+	    // already known but not assigned
+	    if (contains(last_known_interfaces, interface)) return;
+	    // already configured in some zone
+	    if (SuSEFirewall::GetZoneOfInterface(interface) != nil) return;
+
+	    // any dial-up interfaces presented and the new one isn't dial-up
+	    if (had_dialup_interfaces && ! IsDialUpInterface(interface)) {
+		AddWarning( sformat(
+		    // TRANSLATORS: Warning in installation proposal, %1 is a device name (eth0, sl0, ...)
+		    _("New network device '%1' found; added as an internal firewall interface"),
+		    interface)
+		);
+		SetInterfacesToZone([interface], "INT");
+	    } else {
+		AddWarning( sformat(
+		    // TRANSLATORS: Warning in installation proposal, %1 is a device name (eth0, sl0, ...)
+		    _("New network device '%1' found; added as an external firewall interface"),
+		    interface)
+		);
+		SetInterfacesToZone([interface], "EXT");
+	    }
+	});
+
+	SetKnownInterfaces(currently_known_interfaces);
+    }
+
+    /**
+     * Returns whether service is enabled in zones.
+     *
+     * @param string service
+     * @param list <string> zones
+     * @return boolean if enabled
+     */
+    boolean ServiceEnabled (string service, list <string> zones) {
+	if (service == nil || service == "") {
+	    y2error ("Ups, service: %1?", service);
+	    return false;
+	}
+
+	if (zones == nil || zones == []) {
+	    y2error ("Ups, zones: %1?", zones);
+	    return false;
+	}
+
+	boolean serenabled = true;
+
+	map <string, map <string, boolean> > serstat = SuSEFirewall::GetServices ([service]);
+	foreach (string one_zone, zones, {
+	    if (serstat[service, one_zone]:nil == false) {
+		y2milestone ("Service %1 is not enabled in %2", service, one_zone);
+		serenabled = false;
+		break;
+	    }
+	});
+
+	return serenabled;
+    }
+
+    /**
+     * Enables ports in zones.
+     *
+     * @param list <string> fallback TCP ports
+     * @param list <string> zones
+     */
+    void EnableFallbackPorts (list <string> fallback_ports, list <string> zones) {
+	y2warning ("Enabling fallback ports: %1 in zones: %2", fallback_ports, zones);
+
+	foreach (string one_zone, zones, {
+	    foreach (string one_port, fallback_ports, {
+		SuSEFirewall::AddService (one_port, "TCP", one_zone);
+	    });
+	});
+    }
+
+    /**
+     * Function opens up the service on all non-dial-up network interfaces.
+     * If there are no network interfaces known and the 'any' feature is supported,
+     * function opens the service for the zone supporting that feature. If there
+     * are only dial-up interfaces, function opens the service for them.
+     *
+     * @param string service such as "service:koo" or "serice:boo"
+     */
+    global define void OpenServiceOnNonDialUpInterfaces (string service, list <string> fallback_ports) {
+	list <string> non_dial_up_interfaces = SuSEFirewall::GetAllNonDialUpInterfaces();
+	list <string> dial_up_interfaces     = SuSEFirewall::GetAllDialUpInterfaces();
+
+	// Opening the service for non-dial-up interfaces
+	if (size(non_dial_up_interfaces)>0) {
+	    list <string> non_dial_up_interfaces_zones = SuSEFirewall::GetZonesOfInterfaces(non_dial_up_interfaces);
+
+	    if (SuSEFirewallServices::IsKnownService (service)) {
+		y2milestone("Opening service %1 on interfaces %2 (zones %3)",
+		    service, non_dial_up_interfaces, non_dial_up_interfaces_zones);
+		SuSEFirewall::SetServicesForZones([service], non_dial_up_interfaces_zones, true);
+	    }
+
+	    if (SuSEFirewallServices::IsKnownService (service) != true || ServiceEnabled (service, non_dial_up_interfaces_zones) != true) {
+		EnableFallbackPorts (fallback_ports, non_dial_up_interfaces_zones);
+	    }
+
+	// Only dial-up network interfaces, there mustn't be any non-dial-up one
+	} else if (size(dial_up_interfaces) > 0) {
+	    list <string> dial_up_interfaces_zones = SuSEFirewall::GetZonesOfInterfaces(dial_up_interfaces);
+
+	    if (SuSEFirewallServices::IsKnownService (service)) {
+		y2warning("Opening service %1 on interfaces %2 (zones %3)",
+		    service, dial_up_interfaces, dial_up_interfaces_zones);
+		SuSEFirewall::SetServicesForZones([service], dial_up_interfaces_zones, true);
+	    }
+
+	    if (SuSEFirewallServices::IsKnownService (service) != true || ServiceEnabled (service, dial_up_interfaces) != true) {
+		EnableFallbackPorts (fallback_ports, dial_up_interfaces);
+	    }
+
+	// No network interfaces are known
+	} else if (size(known_interfaces) == 0) {
+	    if (SuSEFirewall::IsAnyNetworkInterfaceSupported() == true) {
+		if (SuSEFirewallServices::IsKnownService (service) == true) {
+		    y2warning("WARNING: Opening %1 for the External zone without any known interface!", toupper(service));
+		    SuSEFirewall::SetServicesForZones([service], [SuSEFirewall::special_all_interface_zone], true);
+		    y2milestone("By now, %1 for %2 zone is %3",
+			service,
+			SuSEFirewall::special_all_interface_zone,
+			SuSEFirewall::IsServiceSupportedInZone (service, SuSEFirewall::special_all_interface_zone)
+		    );
+		} else {
+		    EnableFallbackPorts (fallback_ports, [SuSEFirewall::special_all_interface_zone]);
+		}
+	    }
+	}
+    }
+
+    /**
+     * Local function returns whether the Xen kernel is installed
+     *
+     * @return boolean whether xen-capable kernel is installed.
+     */
+    boolean IsXenInstalled () {
+	// bug #154133
+	if (Package::Installed ("kernel-xen"))
+	    return true;
+	if (Package::Installed ("kernel-xenpae"))
+	    return true;
+
+	return false;
+    }
+
+    /**
+     * Local function for proposing firewall configuration.
+     */
+    void ProposeFunctions () {
+	list <map <string, string> > known_interfaces = SuSEFirewall::GetAllKnownInterfaces();
+
+	list <string> dial_up_interfaces = [];
+	list <string> non_dup_interfaces = [];
+	foreach (map<string, string> interface, known_interfaces, {
+	    if (interface["type"]:nil == "dial_up") {
+		dial_up_interfaces = add (dial_up_interfaces, interface["id"]:"");
+	    } else {
+		non_dup_interfaces = add (non_dup_interfaces, interface["id"]:"");
+	    }
+	});
+
+	y2milestone("Proposal based on configuration: Dial-up interfaces: %1, Other: %2",
+	    dial_up_interfaces, non_dup_interfaces
+	);
+
+	// has any network interface
+	if (size(non_dup_interfaces)==0 || size(dial_up_interfaces)==0) {
+	    SuSEFirewall::SetEnableService(ProductFeatures::GetBooleanFeature ("globals", "enable_firewall"));
+	    SuSEFirewall::SetStartService(ProductFeatures::GetBooleanFeature ("globals", "enable_firewall"));
+	}
+
+	    // has non-dial-up and also dial-up interfaces
+	    if (size(non_dup_interfaces)>0 && size(dial_up_interfaces)>0) {
+		SetInterfacesToZone(non_dup_interfaces, "INT");
+		SetInterfacesToZone(dial_up_interfaces, "EXT");
+		if (ProductFeatures::GetBooleanFeature ("globals", "firewall_enable_ssh"))
+		    SuSEFirewall::SetServicesForZones([ssh_service], ["INT","EXT"], true);
+
+	    // has non-dial-up and doesn't have dial-up interfaces
+	    } else if (size(non_dup_interfaces)>0 && size(dial_up_interfaces)==0) {
+		SetInterfacesToZone(non_dup_interfaces, "EXT");
+		if (ProductFeatures::GetBooleanFeature ("globals", "firewall_enable_ssh"))
+		    SuSEFirewall::SetServicesForZones([ssh_service], ["EXT"], true);
+
+	    // doesn't have non-dial-up and has dial-up interfaces
+	    } else if (size(non_dup_interfaces)==0 && size(dial_up_interfaces)>0) {
+		SetInterfacesToZone(dial_up_interfaces, "EXT");
+		if (ProductFeatures::GetBooleanFeature ("globals", "firewall_enable_ssh"))
+		    SuSEFirewall::SetServicesForZones([ssh_service], ["EXT"], true);
+	    }
+
+	/*
+	 * Dial-up interfaces are considered to be internal,
+	 * Non-dial-up are considered to be external.
+	 * If there are only Non-dial-up interfaces, they are all considered as external.
+	 *
+	 * VNC Installation proposes to open VNC Access up on the Non-dial-up interfaces only.
+	 * SSH Installation is the same case...
+	 */
+	if (Linuxrc::vnc()) {
+	    y2milestone("This is an installation over VNC, opening VNC on all non-dial-up interfaces...");
+	    // Try the service first, then ports
+	    // bnc #398855
+	    OpenServiceOnNonDialUpInterfaces (vnc_service, vnc_fallback_ports);
+	}
+	if (Linuxrc::usessh()) {
+	    y2milestone("This is an installation over SSH, opening SSH on all non-dial-up interfaces...");
+	    // Try the service first, then ports
+	    // bnc #398855
+	    OpenServiceOnNonDialUpInterfaces (ssh_service, ["ssh"]);
+	}
+
+	/*
+	 * Firewall support for XEN domain0
+	 */
+	if (IsXenInstalled()) {
+	    y2milestone("Adding Xen support into the firewall configuration");
+	    SuSEFirewall::AddXenSupport();
+	}
+
+	SetKnownInterfaces(SuSEFirewall::GetListOfKnownInterfaces());
+    }
+    
+    # <!-- SuSEFirewall LOCAL FUNCTIONS //-->
+
+    # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
+
+    /**
+     * Function sets that proposal was changed by user
+     *
+     * @param	boolean if changed by user
+     */
+    global define void SetChangedByUser (boolean changed) {
+	y2milestone("Proposal was changed by user");
+	proposal_changed_by_user = changed;
+    }
+
+    /**
+     * Local function returns if proposal was changed by user
+     *
+     * @return	boolean if proposal was changed by user
+     */
+    global define boolean GetChangedByUser () {
+	return proposal_changed_by_user;
+    }
+
+    /**
+     * Function sets that proposal was initialized
+     *
+     * @param	boolean if initialized
+     */
+    global define void SetProposalInitialized (boolean initialized) {
+	proposal_initialized = initialized;
+    }
+
+    /**
+     * Local function returns if proposal was initialized already
+     *
+     * @return	boolean if proposal was initialized
+     */
+    global define boolean GetProposalInitialized () {
+	return proposal_initialized;
+    }
+
+    /**
+     * Function fills up default configuration into internal values
+     *
+     * @return void
+     */
+    global define void Reset () {
+	SuSEFirewall::ResetReadFlag();
+	SuSEFirewall::Read();
+    }
+
+    /**
+     * Function proposes the SuSEfirewall2 configuration
+     *
+     * @return void
+     */
+    global define void Propose () {
+	// No proposal when SuSEfirewall2 is not installed
+	if (! SuSEFirewall::SuSEFirewallIsInstalled()) {
+	    SuSEFirewall::SetEnableService (false);
+	    SuSEFirewall::SetStartService (false);
+	    return nil;
+	}
+
+	// Not changed by user - Propose from scratch
+	if (! GetChangedByUser()) {
+	    y2milestone("Calling firewall configuration proposal");
+	    Reset();
+	    ProposeFunctions();
+	// Changed - don't break user's configuration
+	} else {
+	    y2milestone("Calling firewall configuration update proposal");
+	    UpdateProposal();
+	}
+    }
+
+    /**
+     * Function returns the proposal summary
+     *
+     * @return map<string, string> proposal
+     * @struct map $[
+     *	"output" : "HTML Proposal Summary",
+     *	"warning" : "HTML Warning Summary",
+     * ]
+     */
+    global define map<string, string> ProposalSummary () {
+	// output: $[ "output" : "HTML Proposal", "warning" : "HTML Warning" ];
+	string output  = "";
+	string warning = "";
+
+	// SuSEfirewall2 package needn't be installed
+	if (! SuSEFirewall::SuSEFirewallIsInstalled()) {
+	    // TRANSLATORS: Proposal informative text
+	    output = "<ul>" + _("SuSEfirewall2 package is not installed, firewall will be disabled.") + "</ul>";
+
+	    return $[
+		"output"		: output,
+		"warning"		: warning,
+	    ];
+	}
+
+	// SuSEfirewall2 is installed...
+
+	boolean firewall_is_enabled = (SuSEFirewall::GetEnableService() == true);
+
+	output = output + "<ul>\n";
+	output = output + "<li>" + (firewall_is_enabled ?
+	    // TRANSLATORS: Proposal informative text "Firewall is enabled (disable)" with link around
+	    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
+	    _("Firewall is enabled (<a href=\"firewall--disable_firewall_in_proposal\">disable</a>)")
+	    :
+	    // TRANSLATORS: Proposal informative text "Firewall is disabled (enable)" with link around
+	    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
+	    _("Firewall is disabled (<a href=\"firewall--enable_firewall_in_proposal\">enable</a>)")
+	) + "</li>\n";
+
+	if (firewall_is_enabled) {
+	    // Any enabled SSH means SSH-is-enabled
+	    boolean is_ssh_enabled = false;
+
+	    // Any known interfaces
+	    if (size(known_interfaces)>0) {
+		y2milestone("Interfaces: %1", known_interfaces);
+
+		// all known interfaces for testing
+		list <string> used_zones = SuSEFirewall::GetZonesOfInterfacesWithAnyFeatureSupported(known_interfaces);
+		y2milestone("Zones used by firewall: %1", used_zones);
+		
+		foreach (string zone, used_zones, {
+		    if (
+			SuSEFirewall::IsServiceSupportedInZone (ssh_service, zone)
+			||
+			SuSEFirewall::HaveService("ssh", "TCP", zone)
+		    ) {
+			is_ssh_enabled = true;
+		    }
+		});
+
+		output = output + "<li>" + (is_ssh_enabled ?
+		    // TRANSLATORS: Network proposal informative text with link around
+		    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
+		    _("SSH port is open (<a href=\"firewall--disable_ssh_in_proposal\">close</a>)")
+		    :
+		    // TRANSLATORS: Network proposal informative text with link around
+		    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
+		    _("SSH port is blocked (<a href=\"firewall--enable_ssh_in_proposal\">open</a>)")
+		) + "</li>\n";
+
+	    // No known interfaces, but 'any' is supported
+	    // and ssh is enabled there
+	    } else if (
+		SuSEFirewall::IsAnyNetworkInterfaceSupported() &&
+		SuSEFirewall::IsServiceSupportedInZone (ssh_service, SuSEFirewall::special_all_interface_zone)
+	    ) {
+		    is_ssh_enabled = true;
+		    // TRANSLATORS: Network proposal informative text with link around
+		    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
+		    output = output + "<li>" + _("SSH port is open (<a href=\"firewall--disable_ssh_in_proposal\">close</a>), but there are still no network interfaces configured") + "</li>";
+	    }
+	    y2milestone("SSH is " + (is_ssh_enabled ? "":"not ") + "enabled");
+
+	    if (Linuxrc::usessh()) {
+		if (!is_ssh_enabled)
+		    // TRANSLATORS: This is a warning message. Installation over SSH without SSH allowed on firewall
+		    AddWarning(_("You are installing a system over SSH, but you have not opened the SSH port on the firewall."));
+	    }
+
+	    // when the firewall is enabled and we are installing the system over VNC
+	    if (Linuxrc::vnc()) {
+		// Any enabled VNC means VNC-is-enabled
+		boolean is_vnc_enabled = false;
+		if (size(known_interfaces)>0) {
+		    foreach (string zone, SuSEFirewall::GetZonesOfInterfacesWithAnyFeatureSupported(known_interfaces), {
+			if (SuSEFirewall::IsServiceSupportedInZone (vnc_service, zone) == true) {
+			    is_vnc_enabled = true;
+			// checking also fallback ports
+			} else {
+			    boolean set_vnc_enabled_to = true;
+			    foreach (string one_port, vnc_fallback_ports, {
+				if (SuSEFirewall::HaveService (one_port, "TCP", zone) != true) {
+				    set_vnc_enabled_to = false;
+				    break;
+				}
+				if (set_vnc_enabled_to == true) is_vnc_enabled = true;
+			    });
+			}
+		    });
+		}
+		y2milestone("VNC port is " + (is_vnc_enabled ? "open":"blocked") + " in the firewall");
+
+		output = output + "<li>" + (is_vnc_enabled ?
+		    // TRANSLATORS: Network proposal informative text "Remote Administration (VNC) is enabled" with link around
+		    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
+		    _("Remote Administration (VNC) ports are open (<a href=\"firewall--disable_vnc_in_proposal\">close</a>)")
+		    :
+		    // TRANSLATORS: Network proposal informative text "Remote Administration (VNC) is disabled" with link around
+		    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
+		    _("Remote Administration (VNC) ports are blocked (<a href=\"firewall--enable_vnc_in_proposal\">open</a>)")
+		) + "</li>\n";
+
+		if (!is_vnc_enabled)
+		    // TRANSLATORS: This is a warning message. Installation over VNC without VNC allowed on firewall
+		    AddWarning(_("You are installing a system using remote administration (VNC), but you have not opened the VNC ports on the firewall."));
+	    }
+	    
+	    list <string> warnings_strings = GetWarnings();
+	    if (size(warnings_strings)>0) {
+		ClearWarnings();
+		foreach (string single_warning, warnings_strings, {
+		    warning = warning + "<li>" + single_warning + "</li>\n";
+		});
+		warning = "<ul>\n" + warning + "</ul>\n";
+	    }
+	}
+
+	output = output + "</ul>\n";
+
+	return $[
+	    "output"		: output,
+	    "warning"		: warning,
+	];
+    }
+
+    # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
+
+/* EOF */
+}

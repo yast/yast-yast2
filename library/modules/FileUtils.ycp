@@ -1,0 +1,381 @@
+/**
+ * File:        modules/FileUtils.ycp
+ * Package:     YaST2
+ * Authors:     Lukas Ocilka <lukas.ocilka@suse.cz>
+ * Summary:     Module for getting information about files and directories.
+ *		Their types and sizes and functions for checking, creating and
+ *		removing them.
+ * Flags:	Stable
+ *
+ * $Id$
+ */
+{
+    module "FileUtils";
+    
+    textdomain "base";
+
+    import "SCR";
+    import "Popup";
+    import "String";
+
+    /**
+     * Function which determines if the requested file/directory exists.
+     *
+     * @return	true if exists
+     * @param	string file name
+     *
+     * @example
+     *	FileUtils::Exists ("/tmp") -> true
+     *	FileUtils::Exists ("/tmp/somefile") -> false
+     */
+    global define boolean Exists (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+
+	if (info != $[]) {
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Function which determines if the requested file/directory is a directory
+     * or it is a link to a directory.
+     *
+     * @return	true if it is a directory, nil if doesn't exist
+     * @param	string file name
+     *
+     * @example
+     *	FileUtils::IsDirectory ("/var") -> true
+     *	FileUtils::IsDirectory ("/var/log/messages") -> false
+     *	FileUtils::IsDirectory ("/does-not-exist") -> nil
+     */
+    global define boolean IsDirectory (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+	boolean defaultv = (info != $[] ? false:nil);
+
+	return (boolean) info["isdir"]:defaultv;
+    }
+
+    /**
+     * Function which determines if the requested file/directory is a regular file
+     * or it is a link to a regular file.
+     *
+     * @return	true if it is a regular file, nil if doesn't exist
+     * @param	string file name
+     *
+     * @example
+     *	FileUtils::IsFile ("/var") -> false
+     *	FileUtils::IsFile ("/var/log/messages") -> true
+     *	FileUtils::IsFile ("/does-not-exist") -> nil
+     */
+    global define boolean IsFile (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+	boolean defaultv = (info != $[] ? false:nil);
+
+	return (boolean) info["isreg"]:defaultv;
+    }
+
+    /**
+     * Function which determines if the requested file/directory is a block file (device)
+     * or link to a block device.
+     *
+     * @return	true if it is a block file, nil if doesn't exist
+     * @param	string file name
+     *
+     * @example
+     *	FileUtils::IsBlock ("/var") -> false
+     *	FileUtils::IsBlock ("/dev/sda2") -> true
+     *	FileUtils::IsBlock ("/dev/does-not-exist") -> nil
+     */
+    global define boolean IsBlock (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+	boolean defaultv = (info != $[] ? false:nil);
+
+	return (boolean) info["isblock"]:defaultv;
+    }
+
+    /**
+     * Function which determines if the requested file/directory is a fifo
+     * or link to a fifo.
+     *
+     * @return	true if it is a fifo, nil if doesn't exist
+     * @param	string file name
+     */
+    global define boolean IsFifo (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+	boolean defaultv = (info != $[] ? false:nil);
+
+	return (boolean) info["isfifo"]:defaultv;
+    }
+
+    /**
+     * Function which determines if the requested file/directory is a link.
+     *
+     * @return	true if it is a link, nil if doesn't exist
+     * @param	string file name
+     */
+    global define boolean IsLink (string target) {
+	map info = (map) SCR::Read(.target.lstat, target);
+	boolean defaultv = (info != $[] ? false:nil);
+
+	return (boolean) info["islink"]:defaultv;
+    }
+
+    /**
+     * Function which determines if the requested file/directory is a socket
+     * or link to a socket.
+     *
+     * @return	true if it is a socket, nil if doesn't exist
+     * @param	string file name
+     */
+    global define boolean IsSocket (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+	boolean defaultv = (info != $[] ? false:nil);
+
+	return (boolean) info["issock"]:defaultv;
+    }
+
+    /**
+     * Function which determines if the requested file/directory is
+     * a character device or link to a character device.
+     *
+     * @return	true if it is a charcater device, nil if doesn't exist
+     * @param	string file name
+     */
+    global define boolean IsCharacterDevice (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+	boolean defaultv = (info != $[] ? false:nil);
+
+	return (boolean) info["ischr"]:defaultv;
+    }
+
+    /**
+     * Function returns the real type of requested file/directory.
+     * If the file is a link to any object, "link" is returned.
+     *
+     * @return	string file type (directory|regular|block|fifo|link|socket|chr_device), nil if doesn't exist
+     * @param	string file name
+     *
+     * @example
+     *	FileUtils::GetFileRealType ("/var") -> "directory"
+     *	FileUtils::GetFileRealType ("/etc/passwd") -> "file"
+     *	FileUtils::GetFileRealType ("/does-not-exist") -> nil
+     */
+    global define string GetFileRealType (string target) {
+	map info = (map) SCR::Read(.target.lstat, target);
+
+	if (info["islink"]:false == true) {
+	    return "link";
+	} else if (info["isdir"]:false == true) {
+	    return "directory";
+	} else if (info["isreg"]:false == true) {
+	    return "regular";
+	} else if (info["isblock"]:false == true) {
+	    return "block";
+	} else if (info["isfifo"]:false == true) {
+	    return "fifo";
+	} else if (info["issock"]:false == true) {
+	    return "socket";
+	} else if (info["ischr"]:false == true) {
+	    return "chr_device";
+	} else {
+	    return nil;
+	}
+    }
+
+    /**
+     * Function returns the type of requested file/directory.
+     * If the file is a link to any object, the object's type is returned.
+     *
+     * @return	string fle type (directory|regular|block|fifo|link|socket|chr_device), nil if doesn't exist
+     * @param	string file name
+     */
+    global define string GetFileType (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+
+	
+	if (info["isdir"]:false == true) {
+	    return "directory";
+	} else if (info["isreg"]:false == true) {
+	    return "regular";
+	} else if (info["isblock"]:false == true) {
+	    return "block";
+	} else if (info["isfifo"]:false == true) {
+	    return "fifo";
+	} else if (info["issock"]:false == true) {
+	    return "socket";
+	} else if (info["islink"]:false == true) {
+	    return "link";
+	} else if (info["ischr"]:false == true) {
+	    return "chr_device";
+	} else {
+	    return nil;
+	}
+    }
+
+    /**
+     * Function which returns the size of requested file/directory.
+     *
+     * @return	integer file size, -1 if doesn't exist
+     * @param	string file name
+     *
+     * @example
+     *	FileUtils::GetSize ("/var/log/YaST2") -> 12348
+     *	FileUtils::GetSize ("/does-not-exist") -> -1
+     */
+    global define integer GetSize (string target) {
+	return (integer) SCR::Read(.target.size, target);
+    }
+
+    /**
+     * Function which determines the owner's user ID of requested file/directory.
+     *
+     * @return	integer UID, nil if doesn't exist
+     * @param	string file name
+     *
+     * @example
+     *	FileUtils::GetOwnerUserID ("/etc/passwd") -> 0
+     *	FileUtils::GetOwnerUserID ("/does-not-exist") -> nil
+     */
+    global define integer GetOwnerUserID (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+
+	return (integer) info["uid"]:nil;
+    }
+
+    /**
+     * Function which determines the owner's group ID of requested file/directory.
+     *
+     * @return	integer GID, nil if doesn't exist
+     * @param	string file name
+     *
+     * @example
+     *	FileUtils::GetOwnerGroupID ("/etc/passwd") -> 0
+     *	FileUtils::GetOwnerGroupID ("/does-not-exist") -> nil
+     */
+    global define integer GetOwnerGroupID (string target) {
+	map info = (map) SCR::Read(.target.stat, target);
+
+	return (integer) info["gid"]:nil;
+    }
+
+
+    /**
+     * Checks whether the path (directory) exists and return a boolean
+     * value whether everything is OK or user accepted the behavior as
+     * despite some errors. If the directory doesn't exist, it offers
+     * to create it (and eventually creates it).
+     *
+     * @param string pathvalue (directory)
+     * @return boolean whether everything was OK or whether user decided to ignore eventual errors
+     *
+     * @unstable
+     */
+    global define boolean CheckAndCreatePath (string pathvalue) {
+        string check_path = pathvalue;
+
+        // remove the final slash
+	// but never the last one "/"
+	// bugzilla #203363
+        if (regexpmatch (check_path, "/$") && check_path != "/")
+	    check_path = regexpsub (check_path, "^(.*)/$", "\\1");
+        y2milestone("Checking existency of %1 path", check_path);
+
+        // Directory (path) already exists
+        if (FileUtils::Exists(check_path)) {
+            y2milestone("Path %1 exists", check_path);
+            // Directory (path) is a type 'directory'
+            if (FileUtils::IsDirectory(check_path)) {
+                return true;
+            // Directory (path) is not a valid 'directory'
+            } else {
+                y2warning ("Path %1 is not a directory", check_path);
+                // Continue despite the error?
+                return Popup::ContinueCancel(sformat(
+                    // TRANSLATORS: popup question (with continue / cancel buttons)
+                    // %1 is the filesystem path
+                    _("Although the path %1 exists, it is not a directory.
+Continue or cancel the operation?
+"),
+                    pathvalue
+                ));
+            }
+        // Directory (path) doesn't exist, trying to create it if wanted
+        } else {
+    	    y2milestone("Path %1 does not exist", check_path);
+            if (Popup::YesNo(sformat(
+    		// TRANSLATORS: question popup (with yes / no buttons). A user entered non-existent path
+		// for a share, %1 is entered path
+		_("The path %1 does not exist.
+Create it now?
+"),
+        	pathvalue
+	    ))) {
+        	// Directory creation successful
+        	if ((boolean) SCR::Execute(.target.mkdir, check_path)) {
+		    y2milestone("Directory %1 successfully created", check_path);
+            	return true;
+        	// Failed to create the directory
+        	} else {
+            	    y2warning("Failed to create directory %1", check_path);
+            	    // Continue despite the error?
+            	    return Popup::ContinueCancel(sformat(
+                	// TRANSLATORS: popup question (with continue / cancel buttons)
+                	// %1 is the name (path) of the directory
+                	_("Failed to create the directory %1.
+Continue or cancel the current operation?
+"),
+                	pathvalue
+        	    ));
+        	}
+	    // User doesn't want to create the directory
+    	    } else {
+        	y2warning("User doesn't want to create the directory %1", check_path);
+        	return true;
+    	    }
+	}
+    }
+
+    /**
+     * Function return the MD5 sum of the file.
+     *
+     * @return	string MD5 sum of the file, nil if doesn't exist
+     * @param	string file name
+     *
+     * @example
+     *	FileUtils::MD5sum ("/etc/passwd") -> "74855f6ac9bf728fccec4792d1dba828"
+     *	FileUtils::MD5sum ("/does-not-exist") -> nil
+     */
+    global string MD5sum (string target) {
+	if (! Exists(target)) {
+	    y2error ("File %1 doesn't exist", target);
+	    return nil;
+	}
+
+	if (! IsFile(target)) {
+	    y2error ("Not a file %1", target);
+	    return nil;
+	}
+
+	string cmd = sformat ("md5sum '%1'", String::Quote (target));
+	map cmd_out = (map) SCR::Execute (.target.bash_output, cmd);
+
+	if (cmd_out["exit"]:-1 != 0) {
+	    y2error ("Command >%1< returned %2", cmd, cmd_out);
+	    return nil;
+	}
+
+	string filemd5 = cmd_out["stdout"]:"";
+	if (regexpmatch (filemd5, "[^ \t]+[ \t]+.*$")) {
+	    // Format: '19ea7ea41de37314f71c6849ddd259d5 /the/file'
+	    filemd5 = regexpsub (filemd5, "^([^ \t]+)[ \t]+.*$", "\\1");
+	} else {
+	    y2warning ("Strange md5out: '%1'", filemd5);
+	    return nil;
+	}
+
+	return filemd5;
+    }
+
+/* EOF */
+}

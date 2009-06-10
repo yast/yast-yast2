@@ -1,0 +1,339 @@
+/**
+ * Module:		PackagesUI.ycp
+ *
+ * Authors:		Gabriele Strattner (gs@suse.de)
+ *			Ladislav Slezák <lslezak@novell.com>
+ *
+ * Purpose:		Provides common dialogs related to
+ *			the package management.
+ *
+ * $Id$
+ */
+
+{
+
+    module "PackagesUI";
+    textdomain "base";
+
+    import "Label";
+    import "Wizard";
+
+
+    //
+    // Popup displays helptext
+    //
+    global define any DisplayHelpMsg( string headline, term helptext, symbol color, integer vdim ) ``{
+
+	term dia_opt = `opt ( `decorated );
+
+	if ( color == `warncolor )
+	{
+	    dia_opt =  `opt ( `decorated, `warncolor );
+	}
+	else if ( color == `infocolor )
+	{
+	    dia_opt =  `opt ( `decorated, `infocolor );
+	}
+
+	term header = `Empty();
+	if ( headline != "" )
+	    header = `Left(`Heading( headline ));
+
+	UI::OpenDialog( dia_opt,
+		    `HBox( `VSpacing(vdim),
+			   `VBox (`HSpacing(50),
+				  header,
+				  `VSpacing(0.2),
+				  helptext,	// e.g. `Richtext()
+				  `PushButton( `id(`ok_help), `opt(`default), Label::OKButton() )
+				  )
+			   )
+		    );
+
+	UI::SetFocus(`id(`ok_help) );
+
+	any r = UI::UserInput();
+	UI::CloseDialog();
+	return r;
+    }
+
+    /**
+     * Display unconfirmed licenses of the selected packages.
+     * @return boolean true when all licenses were accepted (or there was no license to confirm)
+     */
+    global define boolean ConfirmLicenses ()
+    {
+	boolean ret = true;
+
+	list<string> to_install = Pkg::GetPackages (`selected, true);
+	map<string,string> licenses = Pkg::PkgGetLicensesToConfirm (to_install);
+
+	y2milestone("Licenses to confirm: %1", size(licenses));
+	y2debug("Licenses to confirm: %1", licenses);
+
+	map display_info = UI::GetDisplayInfo();
+	integer size_x = tointeger(display_info["Width"]:800);
+        integer size_y = tointeger(display_info["Height"]:600);
+        if (size_x >= 800 && size_y >= 600) {
+                size_x = 80;
+               size_y = 20;
+        } else {
+                size_x = 54;
+                size_y = 15;
+        }
+
+	foreach (string package,  string license, licenses, {
+		term popup = `VBox (
+		    `HSpacing (size_x),
+		    // dialog heading, %1 is package name
+		    `Heading (sformat (_("Confirm Package License: %1"),
+			package)),
+		    `HBox (
+			`VSpacing (size_y),
+			`RichText (`id (`lic), license)
+		    ),
+		    `VSpacing(1),
+		    `HBox (
+			`PushButton (`id (`help), Label::HelpButton ()),
+			`HStretch (),
+			// push button
+			`PushButton (`id (`accept), _("I &Agree")),
+			// push button
+			`PushButton (`id (`deny), _("I &Disagree"))
+		    )
+		);
+		UI::OpenDialog (popup);
+		symbol ui = nil;
+		while (ui == nil)
+		{
+		    ui = (symbol)UI::UserInput ();
+		    if (ui == `help)
+		    {
+			ui = nil;
+
+			// TODO FIXME: due to the textfreeze "base" cannot be used now, fix it after the GM is out!
+			textdomain "packager";
+
+			// help text
+			string help = _("<p><b><big>License Confirmation</big></b><br>
+The package in the headline of the dialog requires an explicit confirmation
+of acceptance of its license.
+If you reject the license of the package, the package will not be installed.
+<br>
+To accept the license of the package, click <b>I Agree</b>.
+To reject the license of the package, click <b>I Disagree</b></p>.");
+
+			// TODO FIXME: remove this
+			textdomain "base";
+
+			UI::OpenDialog (`HBox (
+			    `VSpacing (18),
+			    `VBox (
+				`HSpacing (70),
+				`RichText (help),
+				`HBox (
+				    `HStretch (),
+				    // push button
+				    `PushButton (`id (`close), Label::CloseButton ()),
+				    `HStretch ()
+				)
+			    )
+			));
+			UI::UserInput ();
+			UI::CloseDialog ();
+		    }
+		}
+		UI::CloseDialog ();
+
+		y2milestone("License of package %1 accepted: %2", package, ui == `accept);
+
+		if (ui != `accept)
+		{
+		    Pkg::PkgTaboo (package);
+		    ret = false;
+		}
+		else
+		{
+		    Pkg::PkgMarkLicenseConfirmed (package);
+		}
+	});
+
+	return ret;
+    }
+
+    /**
+     * Run helper function, reads the display_support_status feature from the control file
+     * @return boolean the read value
+     */
+    boolean ReadSupportStatus()
+    {
+	// Load the control file
+	import "ProductControl";
+	import "ProductFeatures";
+
+	boolean ret = ProductFeatures::GetBooleanFeature("software", "display_support_status");
+	y2milestone("Feature display_support_status: %1", ret);
+	return ret;
+    }
+
+    /**
+     * Start the detailed package selection.
+     * @param options options passed to the widget. All options are optional,
+     * if an option is missing or is nil the default value will be used. All options:
+     * $[ "enable_repo_mgr" : boolean // display the repository management menu,
+     *	    // default: false (disabled)
+     *	  "display_support_status" : boolean // display the support status summary dialog,
+     *	    // default: depends on the Product Feature "software", "display_support_status"
+     *	  "mode" : symbol // package selector mode, no default value
+     * ]
+     *
+     * @return symbol Returns `accept or `cancel .
+     */
+    global symbol RunPackageSelector(map<string,any> options)
+    {
+	y2milestone("Called RunPackageSelector(%1)", options);
+
+	boolean enable_repo_mgr = (boolean)options["enable_repo_mgr"]:nil;
+	boolean display_support_status = (boolean)options["display_support_status"]:nil;
+	symbol mode = (symbol)options["mode"]:nil;
+
+	// set the defaults if the option is missing or nil
+	if (display_support_status == nil)
+	{
+	    display_support_status = ReadSupportStatus();
+	}
+
+	if (enable_repo_mgr == nil)
+	{
+	    // disable repository management by default
+	    enable_repo_mgr = false;
+	}
+
+	y2milestone("Running package selection, mode: %1, options: display repo management: %2, display support status: %3", mode, enable_repo_mgr, display_support_status);
+
+	term widget_options = `opt();
+
+	if (mode != nil)
+	{
+	    widget_options = add(widget_options, mode);
+	}
+
+	if (enable_repo_mgr != nil && enable_repo_mgr)
+	{
+	    widget_options = add(widget_options, `repoMgr);
+	}
+
+	if (display_support_status != nil && display_support_status)
+	{
+	    widget_options = add(widget_options, `confirmUnsupported);
+	}
+
+	y2milestone("Options for the package selector widget: %1", widget_options);
+
+	UI::OpenDialog(`opt(`defaultsize),
+			// Note: size(`opt()) = 0 !!
+			  size(widget_options) >= 1 ?
+			    `PackageSelector(`id(`packages), widget_options, "")
+			    : `PackageSelector(`id(`packages), "")
+			  );
+
+	symbol result = (symbol) UI::RunPkgSelection(`id(`packages ) );
+
+	UI::CloseDialog();
+	y2milestone("Package selector returned %1", result);
+
+	return result;
+    }
+
+
+    /**
+     * Start the pattern selection dialog. If the UI does not support the
+     * PatternSelector, start the detailed selection with "patterns" as the
+     * initial view.
+     * @return symbol Return `accept or `cancel
+     *
+     **/
+    global symbol RunPatternSelector()
+    {
+	y2milestone("Running pattern selection dialog");
+
+	if ( ! UI::HasSpecialWidget(`PatternSelector ) ||
+	     UI::WizardCommand(`Ping() ) != true	 )
+	{
+	    return RunPackageSelector($[]);	// Fallback: detailed selection
+	}
+
+	// TODO FIXME: due to the textfreeze "base" cannot be used now, fix it after the GM is out!
+	textdomain "packager";
+
+	// Help text for software patterns / selections dialog
+	string help_text
+	    = _("<p>
+		 This dialog allows you to define this system's tasks and what software to install.
+		 Available tasks and software for this system are shown by category in the left
+		 column.  To view a description for an item, select it in the list.
+		 </p>")
+	    + _("<p>
+		 Change the status of an item by clicking its status icon
+		 or right-click any icon for a context menu.
+		 With the context menu, you can also change the status of all items.
+		 </p>")
+	    + _("<p>
+		 <b>Details</b> opens the detailed software package selection
+		 where you can view and select individual software packages.
+		 </p>")
+	    + _("<p>
+		 The disk usage display in the lower right corner shows the remaining disk space
+		 after all requested changes will have been performed.
+		 Hard disk partitions that are full or nearly full can degrade
+		 system performance and in some cases even cause serious problems.
+		 The system needs some available disk space to run properly.
+		 </p>");
+
+	// bugzilla #298056
+	// [ Back ] [ Cancel ] [ Accept ] buttons with [ Back ] disabled
+	Wizard::OpenNextBackDialog();
+	Wizard::SetBackButton  (`back,   Label::BackButton());
+	Wizard::SetAbortButton (`cancel, Label::CancelButton());
+	Wizard::SetNextButton  (`accept, Label::OKButton());
+	Wizard::DisableBackButton();
+
+	Wizard::SetContents(
+			    // Dialog title
+			    // Hint for German translation: "Softwareauswahl und Einsatzzweck des Systems"
+			    _("Software Selection and System Tasks"),
+			    `PatternSelector(`id(`patterns ) ),
+			    help_text,
+			    false,	// has_back
+			    true );	// has_next
+
+	// TODO FIXME: remove this
+	textdomain "base";
+
+	Wizard::SetDesktopIcon( "sw_single" );
+
+	symbol result = nil;
+
+	repeat
+	{
+	    result = (symbol) UI::RunPkgSelection(`id(`patterns ) );
+	    y2milestone( "Pattern selector returned %1", result );
+
+	    if ( result == `details )
+	    {
+		result = RunPackageSelector($[]);
+
+		if ( result == `cancel )
+                    // don't get all the way out - the user might just have
+                    // been scared of the gory details.
+		    result = nil;
+	    }
+	} until ( result == `cancel || result == `accept );
+
+	Wizard::CloseDialog();
+
+	y2milestone("Pattern selector returned %1", result);
+	return result;
+    }
+
+}

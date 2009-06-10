@@ -1,0 +1,35 @@
+# -*- makefile -*- Automake include file
+# $Id$
+# Rules to format a docbook document using docbook-toys.rpm
+
+# The idea is to have multiple docbook-*.ami with a compatible
+# interface so that we can compare the various formatters.
+# TODO: create more and move them to devtools
+
+# PARAMETERS:
+#  DOCBOOK_MAIN: the main xml document
+#  DOCBOOK_FILES: all the dependencies
+
+DOCBOOK_BASE = $(basename $(DOCBOOK_MAIN))
+DOCBOOK_PDF = $(DOCBOOK_BASE).pdf
+DOCBOOK_PS = $(DOCBOOK_BASE).ps
+DOCBOOK_DVI = $(DOCBOOK_BASE).dvi
+
+pdf: $(DOCBOOK_PDF)
+$(DOCBOOK_PDF): $(DOCBOOK_FILES)
+	db2pdf $(DOCBOOK_MAIN)
+
+ps: $(DOCBOOK_PS)
+$(DOCBOOK_PS): $(DOCBOOK_FILES)
+	db2ps $(DOCBOOK_MAIN)
+
+dvi: $(DOCBOOK_DVI)
+$(DOCBOOK_DVI): $(DOCBOOK_FILES)
+	db2ps $(DOCBOOK_MAIN)
+
+html: $(DOCBOOK_FILES)
+	db2html $(DOCBOOK_MAIN)
+	chmod -R og+rX $(DOCBOOK_BASE)
+
+check-manual: $(DOCBOOK_MAIN)
+	xmllint --nonet --noout $^

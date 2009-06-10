@@ -1,0 +1,214 @@
+/**
+ * File:	modules/Hostname.ycp
+ * Package:	yast2
+ * Summary:	Hostname manipulation routines
+ * Authors:	Michal Svec <msvec@suse.cz>
+ * Flags:	Stable
+ *
+ * $Id$
+ */
+
+{
+
+module "Hostname";
+textdomain "base";
+
+import "IP";
+import "String";
+
+/**
+ * i18n characters in domain names are still not allowed
+ *
+ * @unstable
+ */
+global string ValidChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-";
+global string ValidCharsDomain = ValidChars + ".";
+global string ValidCharsFQ = ValidCharsDomain;
+
+/**
+ * describe a valid domain name
+ * @return description
+ */
+global string ValidDomain () {
+    //Translators: dot: ".", hyphen: "-"
+    return _("A valid domain name consists of components separated by dots.
+Each component contains letters, digits, and hyphens. A hyphen may not
+start or end a component and the last component may not begin with a digit.");
+}
+
+/**
+ * describe a valid host name
+ * @return description
+ */
+global string ValidHost () {
+    //Translators: hyphen: "-"
+    return _("A valid host name consists of letters, digits, and hyphens.
+A host name may not begin or end with a hyphen.
+");
+}
+
+/**
+ * describe a valid FQ host name
+ * @return describe a valid FQ host name
+ */
+global string ValidFQ() {
+    return ValidDomain();
+}
+
+/**
+ * Check syntax of hostname entry
+ * (that is a domain name component, unqualified, without dots)
+ * @see rfc1123, rfc2396 and obsoleted rfc1034
+ * @param host hostname
+ * @return true if correct
+ */
+global define boolean Check(string host) ``{
+    if (host == nil || host == "" || size(host) > 63) return false;
+    return regexpmatch(host, "^[[:alnum:]]([[:alnum:]-]*[[:alnum:]])?$");
+}
+
+/**
+ * Check syntax of domain entry
+ * @param domain domain name
+ * @return true if correct
+ */
+global define boolean CheckDomain(string domain) ``{
+    if (domain == nil || domain == "") return false;
+    // if "domain" contains "." character as last character remove it before validation (but it's valid)
+    if (size(domain)>1){
+     if (substring(domain, size(domain)-1, 1)==".") domain = substring(domain, 0, size(domain)-1);
+    }
+    list <string> l = splitstring(domain, ".");
+    if (contains (maplist(string h, l, ``(Check(h))), false)) return false;
+    return !regexpmatch (domain, "\\.[[:digit:]][^.]*$");
+}
+
+/**
+ * Check syntax of fully qualified hostname
+ * @param host hostname
+ * @return true if correct
+ */
+global define boolean CheckFQ(string host) ``{
+    return CheckDomain(host);
+}
+
+/**
+ * Split FQ hostname to hostname and domain name
+ * @param fqhostname FQ hostname
+ * @return list of hostname and domain name
+ * @example Hostname::SplitFQ("ftp.suse.cz") -> ["ftp", "suse.cz"]
+ * @example Hostname::SplitFQ("ftp") -> ["ftp"]
+ */
+global define list<string> SplitFQ(string fqhostname) ``{
+    if (fqhostname == "" || fqhostname == nil) {
+	y2error("Bad FQ hostname: %1", fqhostname);
+	return [];
+    }
+
+    string hn = "";
+    string dn = "";
+
+    integer dot = findfirstof(fqhostname, ".");
+    if (dot != nil) {
+	hn = substring(fqhostname, 0, dot);
+	dn = substring(fqhostname, dot+1);
+	return [ hn, dn ];
+    }
+    else {
+	hn = fqhostname;
+	return [ hn ];
+    }
+
+    return [ hn, dn ];
+}
+
+/**
+ * Merge short hostname and domain to full-qualified host name
+ * @param hostname short host name
+ * @param domain domain name
+ * @return FQ hostname
+ */
+global define string MergeFQ(string hostname, string domain) {
+    if(domain == "" || domain == nil) return hostname;
+    return hostname + "." + domain;
+}
+
+/**
+ * Retrieve currently set fully qualified hostname
+ * (uses hostname --fqdn)
+ * @return FQ hostname
+ */
+global define string CurrentFQ() {
+    string fqhostname = "";
+
+    map hostname_data = (map) SCR::Execute(.target.bash_output, "hostname --fqdn");
+    if (hostname_data == nil || hostname_data["exit"]:-1 != 0 )
+    {
+	fqhostname = (string) SCR::Read(.target.string, "/etc/HOSTNAME");
+
+	if ( fqhostname == "" || fqhostname == nil )
+	{
+	    //last resort (#429792)
+	    fqhostname = "linux.site";
+	}
+	y2warning("Using fallback hostname %1", fqhostname);
+    }
+    else
+    {
+       fqhostname = String::FirstChunk( hostname_data["stdout"]:"", "\n");
+    }
+
+    y2debug("Current FQDN: %1", fqhostname); 
+    return fqhostname;
+}
+
+/**
+ * Retrieve currently set (short) hostname
+ * @return hostname
+ */
+global define string CurrentHostname() {
+    string hostname = "";
+    string fqhostname = CurrentFQ();
+
+    //current FQDN is IP address - it happens, esp. in inst-sys :)
+    //so let's not cut it into pieces (#415109)
+    if ( IP::Check( fqhostname ) )
+    {
+	hostname = fqhostname;
+    }
+    else
+    {
+        list <string> data = SplitFQ( fqhostname);
+
+        if ( data != [] )
+	    hostname = data[0]:"";
+
+        y2debug("Current hostname: %1", hostname); 
+    }
+    return hostname;
+}
+
+/**
+ * Retrieve currently set domain name
+ * @return domain
+ */
+global define string CurrentDomain() {
+    string domain = "";
+    string fqhostname = CurrentFQ();
+
+    //the same as above, if FQDN is IP address
+    //let's claim domainname as empty (#415109)
+    if ( !IP::Check ( fqhostname ) )
+    {
+        list <string> data = SplitFQ( fqhostname);
+
+        if ( data != [] && ( size( data ) > 1 ) )
+	    domain = data[1]:"";
+    }
+
+    y2debug("Current domainname: %1", domain); 
+    return domain;
+
+}
+/* EOF */
+}

@@ -1,0 +1,112 @@
+/**
+ * File:	clients/lan.ycp
+ * Package:	Network configuration
+ * Summary:	Network cards main file
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ *
+ * Main file for network card configuration.
+ * Uses all other files.
+ */
+
+{
+
+/***
+ * <h3>Network configuration</h3>
+ */
+
+import "CommandLine";
+
+include "network/lan/wizards.ycp";
+
+/**
+ * Command line definition
+ */
+map cmdline = $[
+    "help"	: "Configuration of network cards",
+    "id"	: "lan",
+    "guihandler": ``(LanSequence()),
+    "initialize": ``(Lan::Read()),
+    "finish"	: ``(Lan::Write()),
+    "actions"	: $[
+	"list" : $[
+	    "help"	: "display configuration summary",
+	    "example"	: "lan list configured",
+	    "handler"	: ``(listHandler())
+	],
+	"add" : $[
+	    "help"	: "add a network card",
+	    "handler"	: ``(addHandler())
+	],
+	"delete" : $[
+	    "help"	: "delete a network card",
+	    "handler"	: ``(deleteHandler())
+	]
+    ],
+    "options" : $[
+	"propose" : $[
+	    "help"	: "propose a configuration",
+	    "example"	: "lan add propose",
+	    "type"	: ""
+	],
+	"configured" : $[
+	    "help"	: "list only configured cards"
+	],
+	"unconfigured" : $[
+	    "help"	: "list only not configured cards"
+	],
+	"device" : $[
+	    "help"	: "device ID",
+	    "type"	: "string",
+	    "example"	: "lan add device=eth0"
+	],
+	"ip" : $[
+	    "help": "device address",
+	    "type": "ip"
+	],
+	"netmask" : $[
+	    "help": "network mask",
+	    "type": "netmask"
+	],
+    ],
+    "mappings" : $[
+	"list"	: [ "configured", "unconfigured" ],
+	"add"	: [ "device", "ip", "netmask" ],
+	"delete": [ "device" ],
+    ]
+];
+
+/** handler for action "list" */
+define void listHandler( map options ) ``{
+    CommandLine::Print("\nSummary\n");
+    string summary = CommandLine::Rich2Plain( sformat("%1\n", mergestring( Lan::Summary(false), "") ) );
+    CommandLine::Print(summary);
+}
+
+/** handler for action "add" */
+define void addHandler( map options ) ``{
+    string dev = options["device"]:"";
+}
+
+/** handler for action "delete" */
+define void deleteHandler( map options ) ``{
+    string dev = options["device"]:"";
+    CommandLine::Print("Deleting: "+dev);
+
+    if(Lan::Delete(dev) && Lan::Commit())
+	CommandLine::Print("Success");
+    else
+	CommandLine::Print("Error");
+}
+
+import "Lan";
+
+CommandLineRun( cmdline );
+
+/* Finish */
+y2milestone("Lan module finished");
+y2milestone("----------------------------------------");
+
+/* EOF */
+}

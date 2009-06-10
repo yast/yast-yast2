@@ -1,0 +1,265 @@
+/**
+ * File:
+ *	Installation.ycp
+ *
+ * Module:
+ *	Installation
+ *
+ * Summary:
+ *	provide installation related information
+ *
+ * Author:
+ *	Klaus Kaempf <kkaempf@suse.de>
+ *	Lukas Ocilka <locilka@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+    module "Installation";
+
+    import "Stage";
+    import "Linuxrc";
+    import "Directory";
+
+    // current scr handle
+    // used in installation.ycp and inst_finish.ycp
+    global integer scr_handle		= 0;
+
+    // Usual mountpoint for the destination.
+    global string destdir		= "/";
+
+    // Usual mountpoint for the destination seen from the (default) SCR.  It's
+    // set to "/" when the SCR is restarted in the target system.
+    global string scr_destdir		= "/";
+
+    // usual mountpoint for the source (i.e. CD)
+
+    global string sourcedir		= "/var/adm/mount";
+
+    global string yast2dir		= "/var/lib/YaST2";
+
+    global string mountlog		= Directory::logdir + "/y2logMount";
+
+    // encoding for the language
+    global string encoding		= "ISO-8859-1";
+
+    // remember if user was informed about text fallback
+    // see general/installation.ycp
+    global boolean shown_text_mode_warning = false;
+
+    // remember that hardware has already been probed
+    global boolean probing_done = false;
+
+    boolean _text_fallback = nil;
+    boolean _no_x11 = nil;
+
+
+    // --> configuration from installation.ycp
+
+    // Second stage installation has been aborted by user
+    global string Installation::file_inst_aborted	= Directory::vardir + "/second_stage_aborted";
+
+    // Second stage installation has been killed or just somehow failed
+    global string Installation::file_inst_failed	= Directory::vardir + "/second_stage_failed";
+
+    // Installation scripts (YaST) will be started at boot time
+    global string Installation::run_yast_at_boot	= Directory::vardir + "/runme_at_boot";
+
+    // The current installation step (useful for restarting YaST or rebooting)
+    global string Installation::current_step		= Directory::vardir + "/step";
+
+    // Update instead on New Installation
+    global string Installation::file_update_mode	= Directory::vardir + "/update_mode";
+
+    // Live installation instead on standard Installation
+    global string Installation::file_live_install_mode	= Directory::vardir + "/live_install_mode";
+
+    // Second stage installation (Stage::cont())
+    global string Installation::restart_data_file	= Directory::vardir + "/continue_installation";
+
+    // Computer has been rebooted
+    global string Installation::reboot_file		= Directory::vardir + "/reboot";
+
+    // Just restarting YaST (handled by startup scripts)
+    global string Installation::restart_file		= Directory::vardir + "/restart_yast";
+
+    // Running YaST in upgrade mode (initiated from running system)
+    global string Installation::run_update_file		= Directory::vardir + "/run_system_update";
+
+    // Network should be started before the installation starts (continues)
+    // bugzilla #258742
+    //
+    // File contains a YCP map with services and their status when Installation was about to reboot
+    // e.g., $[ "network" : true, "portmap" : false, "SuSEfirewall2" : true ]
+    global string Installation::reboot_net_settings	= Directory::vardir + "/reboot_network_settings";
+
+    // <-- configuration from installation.ycp
+
+    // Initial settings for variables used in Installation Mode dialog
+    // These settings needs to be persistent during the installation
+    global boolean add_on_selected = false;
+    // Preselected by default
+    // bugzilla #299207
+    global boolean productsources_selected = true;
+
+    //
+    // variables to store data of the installation clients
+    //
+
+    // inst_license
+
+    /**
+     * The license has already been accepted, the respectiev radio button
+     * can be preselected
+     */
+    global boolean license_accepted = false;
+
+    // These maps are used by several YaST modules.
+
+    /**
+     * Version of the targetsystem (currently installed one).
+     *
+     * @struct $[
+     *   "name" : (string) "openSUSE",
+     *   "version" : (string) "10.1",
+     *   "nameandversion" : (string) "openSUSE 10.1",
+     *   "major" : (integer) 10,
+     *   "minor" : (integer) 1,
+     * ]
+     */
+    global map <string, any> installedVersion = $[];
+    
+    /**
+     * Version of system to update to (will be installed, or is
+     * just being installed).
+     *
+     * @struct $[
+     *   "name" : (string) "openSUSE",
+     *   "version" : (string) "11.0",
+     *   "nameandversion" : (string) "openSUSE 11.0",
+     *   "major" : (integer) 11,
+     *   "minor" : (integer) 0,
+     * ]
+     */
+    global map <string, any> updateVersion = $[];
+
+    // Global variables moved here to break dependencies
+    // on yast2-update
+    global boolean update_backup_modified = true;
+
+    global boolean update_backup_sysconfig = true;
+
+    global boolean update_remove_old_backups = false;
+
+    global string update_backup_path = "/var/adm/backup";
+
+    // dirinstall-related
+
+    global boolean dirinstall_installing_into_dir = false;
+
+    global string dirinstall_target = "/var/tmp/dirinstall";
+
+    global integer dirinstall_target_time = 0;
+
+    // image-based installation
+
+    /**
+     * Installation is performed form image(s)
+     */
+    global boolean image_installation = false;
+
+    /**
+     * Installation is performed only from image(s), no additional
+     * RPM (de)installation
+     */
+    global boolean image_only = false;
+
+    //---------------------------------------------------------------
+    // constructor
+
+    global define void Installation () {
+	// get setup data from linuxrc
+	// check setup/descr/info for CD type
+
+	if (Stage::cont ()) {
+	    destdir = "/";
+	    scr_destdir = "/";
+	} else if (Stage::initial ()) {
+	    destdir = "/mnt";
+	    scr_destdir = "/mnt";
+	}
+    }
+
+    define void Initialize () {
+        integer arg_count = size(WFM::Args());
+        integer arg_no = 0;
+
+	_text_fallback= false;
+	_no_x11  = false;
+
+        while ( arg_no < arg_count )
+        {
+            y2debug("option #%1: %2", arg_no, WFM::Args(arg_no) );
+
+            if (WFM::Args(arg_no) == "text_fallback")
+            {
+                _text_fallback= true;
+            }
+            else if (WFM::Args(arg_no) == "no_x11"       )
+            {
+                _no_x11  = true;
+            }
+            else
+            {
+                y2milestone ("skipping unknown option %1", WFM::Args(arg_no) );
+            }
+            arg_no = arg_no + 1;
+        }
+    }
+
+    /**
+     * how we were booted (the type of the installation medium)
+     * /etc/install.inf: InstMode
+     */
+    global string boot () {
+        string _boot = Linuxrc::InstallInf("InstMode");
+        if (_boot == nil)
+            _boot = "cd";
+        return _boot;
+    }
+
+    /**
+     * run X11 configuration after inital boot
+     * this is false in case of:
+     * installation via serial console
+     * installation via ssh
+     * installation via vnc
+     *
+     * Also see Arch::x11_setup_needed ().
+     */
+    global boolean x11_setup_needed () {
+	return ! (Linuxrc::serial_console () || Linuxrc::vnc ()
+	    || Linuxrc::usessh ());
+    }
+
+    /**
+     * no resources/packages for X11
+     */
+    global boolean text_fallback () {
+	if (_text_fallback == nil)
+	    Initialize ();
+	return _text_fallback;
+    }
+
+    /**
+     * somehow, no X11 was started
+     * no x11 or not enough memory for qt
+     */
+    global boolean no_x11 () {
+	if (_no_x11 == nil)
+	    Initialize ();
+	return _no_x11;
+    }
+
+}

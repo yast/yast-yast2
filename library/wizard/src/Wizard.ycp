@@ -1,0 +1,1805 @@
+/**
+ * File:	Wizard.ycp
+ * Package:	yast2
+ * Author:	Stefan Hundhammer <sh@suse.de>
+ *
+ * Provides the wizard dialog (common screen for all YaST2 installation
+ * modules) and functions to set the contents, to replace and restore
+ * special widgets.
+ */
+
+{
+    module "Wizard";
+    textdomain "base";
+
+    import "Label";
+    import "Popup";
+    import "Directory";
+    import "SuSERelease";
+
+    // keep trailing "/" !!
+    string theme_path   = Directory::themedir + "/current";
+    string icon_path    = theme_path + "/icons/22x22/apps";
+    string default_icon = icon_path  + "/yast.png";
+
+    boolean have_fancy_ui_cache = nil;
+
+    // this variable is set from Product:: constructor
+    // to setup correct &product; macro in UI
+    string product_name = "";
+
+    
+    boolean haveFancyUI()
+    {
+	if ( have_fancy_ui_cache == nil )
+	{
+	    map ui_info = UI::GetDisplayInfo();
+
+	    have_fancy_ui_cache = UI::HasSpecialWidget(`Wizard ) == true
+		&& ui_info[ "Depth" ]:0 >= 15
+		&& ui_info[ "DefaultWidth" ]:0 >= 800
+		&& ui_info[ "DefaultHeight"]:0 >= 600;
+
+	    // have_fancy_ui_cache = false;
+
+	    UI::SetFunctionKeys( Label::DefaultFunctionKeyMap() );
+	}
+
+	return have_fancy_ui_cache;
+    }
+
+
+    /**
+     * Returns a button box with buttons "Back", "Abort", "Next"
+     * @return a widget tree
+     **/
+    global term BackAbortNextButtonBox()
+    {
+	return `HBox(
+		     `HWeight(1, `ReplacePoint(`id(`rep_help ), `PushButton(`id(`help ), `opt (`key_F1,`helpButton), Label::HelpButton()  ) ) ),
+		     `HStretch(),
+		     `HWeight(1, `ReplacePoint(`id(`rep_back ), `PushButton(`id(`back ), `opt (`key_F8), Label::BackButton()  ) ) ),
+		     `HStretch(),
+		     `ReplacePoint(`id(`rep_abort), `PushButton(`id(`abort), `opt (`key_F9), Label::AbortButton() ) ),
+		     `HStretch(),
+		     `HWeight(1, `ReplacePoint(`id(`rep_next ), `PushButton(`id(`next), `opt (`key_F10, `default), Label::NextButton()  ) ) )
+		     );
+    }
+
+
+    /**
+     * Returns a button box with buttons "Back", "Abort Installation", "Next"
+     * @return a widget tree
+     **/
+    global term BackAbortInstallationNextButtonBox()
+    {
+	return `HBox(
+		     `HWeight(1, `ReplacePoint(`id(`rep_help ), `PushButton(`id(`help ), `opt (`key_F1, `helpButton), Label::HelpButton()  ) ) ),
+		     `HStretch(),
+		     `HWeight(1, `ReplacePoint(`id(`rep_back ), `PushButton(`id(`back ), `opt (`key_F8), Label::BackButton()  ) ) ),
+		     `HStretch(),
+		     `ReplacePoint(`id(`rep_abort), `PushButton(`id(`abort), `opt (`key_F9), Label::AbortInstallationButton() ) ),
+		     `HStretch(),
+		     `HWeight(1, `ReplacePoint(`id(`rep_next ), `PushButton(`id(`next), `opt (`key_F10, `default), Label::NextButton()  ) ) )
+		     );
+    }
+
+
+    /**
+     * Returns a button box with buttons "Back", "Next"
+     * @return a widget tree
+     **/
+    global term BackNextButtonBox()
+    {
+	return `HBox(
+		     `HWeight(1, `ReplacePoint(`id(`rep_back ), `PushButton(`id(`back ), `opt (`key_F8), Label::BackButton()  ) ) ),
+		     `HStretch(),
+		     `HWeight(1, `ReplacePoint(`id(`rep_next ), `PushButton(`id(`next ), `opt (`key_F10, `default), Label::NextButton()  ) ) )
+		     );
+    }
+
+
+    /**
+     * Returns a button box with buttons "Cancel", "Accept"
+     * @return a widget tree
+     **/
+    global term CancelAcceptButtonBox()
+    {
+	return `HBox(
+		     `HWeight(1, `Empty() ),	// Layout trick to make sure the center button is centered
+		     `HStretch(),
+		     `HWeight(1, `ReplacePoint(`id(`rep_abort), // Make sure HideAbortButton() works (bnc #444176)
+					       `PushButton(`id(`cancel ), `opt (`key_F9), Label::CancelButton()  ) ) ),
+		     `HStretch(),
+		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10, `default), Label::AcceptButton()  ) )
+		     );
+    }
+
+    
+    /**
+     * Returns a button box with buttons "Cancel", "OK"
+     * @return a widget tree
+     **/
+    global term CancelOKButtonBox()
+    {
+	return `HBox(
+		     `HWeight(1, `Empty() ),	// Layout trick to make sure the center button is centered
+		     `HStretch(),
+		     `HWeight(1, `ReplacePoint(`id(`rep_abort), // Make sure HideAbortButton() works (bnc #444176)
+					       `PushButton(`id(`cancel ), `opt (`key_F9), Label::CancelButton()  ) ) ),
+		     `HStretch(),
+		     `HWeight(1, `PushButton(`id(`ok ), `opt (`key_F10, `default), Label::OKButton()  ) )
+		     );
+    }
+
+    
+    /**
+     * Returns a button box with buttons "Abort", "Accept"
+     * @return a widget tree
+     **/
+    global term AbortAcceptButtonBox()
+    {
+	return `HBox(
+		     `HWeight(1, `ReplacePoint (`id (`back_rep), `Empty())),	// Layout trick to make sure the center button is centered
+		     `HStretch(),
+		     `HWeight(1, `ReplacePoint(`id(`rep_abort), // Make sure HideAbortButton() works (bnc #444176)
+					       `PushButton(`id(`abort ), `opt (`key_F9), Label::AbortButton() ) ) ),
+		     `HStretch(),
+		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10, `default), Label::AcceptButton()  ) )
+		     );
+    }
+
+
+    /**
+     * Returns a button box with buttons "Abort Installation", "Accept"
+     * @return a widget tree
+     **/
+    global term AbortInstallationAcceptButtonBox()
+    {
+	return `HBox(
+		     `HWeight(1, `Empty() ),	// Layout trick to make sure the center button is centered
+		     `HStretch(),
+		     `PushButton(`id(`abort ), `opt (`key_F9), Label::AbortInstallationButton() ),
+		     `HStretch(),
+		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10, `default), Label::AcceptButton()  ) )
+		     );
+    }
+
+
+    /**
+     * Returns a button box with buttons "Abort", "Apply", "Finish"
+     * @return a widget tree
+     **/
+    global term AbortApplyFinishButtonBox()
+    {
+	return `ButtonBox (
+		     `PushButton (`id (`abort, `cancelButton, `key_F9), Label::AbortButton()),
+		     // button text
+		     `PushButton (`id (`apply, `applyButton), _("&Apply")),
+		     `PushButton (`id (`finish, `okButton, `key_F10), Label::FinishButton())
+		     );
+    }
+
+    
+    /**
+     * @short Create a Generic Dialog
+     *
+     * @descr Returns a term describing a generic wizard dialog with a configurable
+     * button box.
+     *
+     * @stable
+     *
+     * @param	button_box term that contains a `HBox() with buttons in it
+     * @return	term term describing the dialog.
+     **/
+    global term GenericDialog( term button_box )
+    {
+	return `VBox( `id(`WizardDialog),
+                      `ReplacePoint( `id(`topmenu ), `Empty() ),
+		      `HBox(
+			    `HSpacing(1),
+			    `VBox(
+				  `VSpacing(0.2),
+				  `HBox(
+					// translators: dialog title to appear before any content is initialized
+					`Heading(`id(`title), `opt (`hstretch), _("Initializing ...")),
+					`HStretch()
+					),
+				  `VWeight( 1, // Layout trick: Lower layout priority with weight
+					    `HVCenter(`opt(`hvstretch),
+						      `ReplacePoint(`id(`contents), `Empty() )
+						      )
+					    )
+				  ),
+			    `HSpacing(1)
+			),
+		      `ReplacePoint(`id(`rep_button_box), button_box ),
+		      `VSpacing(0.2)
+	       );
+    }
+
+
+    /**
+     * @short Create a Generic Tree Dialog 
+     *
+     * @descr Returns a term describing a wizard dialog with left menu tree,
+     * right contents and a configurable button box.
+     *
+     *
+     * @stable
+     *
+     * @param	button_box term that contains a `HBox() with buttons in it
+     * @return	term term describing the dialog.
+     **/
+
+    global term GenericTreeDialog( term button_box )
+    {
+	return `VBox( `id(`WizardDialog),
+                      `ReplacePoint( `id(`topmenu ), `Empty() ),
+		      `HBox(
+			    `HSpacing(1),
+			    `HWeight( 30, `ReplacePoint( `id(`helpSpace), `Empty()/*`RichText(`id(`HelpText), "")*/)),
+			    `HSpacing(1),
+			    `HWeight( 70, `VBox(
+						`VSpacing(0.2),
+						`HBox(
+						      // translators: dialog title to appear before any content is initialized
+						      `Heading(`id(`title), `opt (`hstretch), _("YaST2\nInitializing ...")),
+						      `HStretch()
+						      ),
+						`VWeight( 1, // Layout trick: Lower layout priority with weight
+							  `HVCenter(`opt(`hvstretch),
+								    `ReplacePoint(`id(`contents), `Empty() )
+								    )
+							  )
+			    )),
+			    `HSpacing(1)
+			),
+		      `ReplacePoint(`id(`rep_button_box), button_box ),
+		      `VSpacing(0.2)
+	       );
+    }
+
+
+    /**
+     * Check if the topmost dialog is a wizard dialog
+     * (i.e. has a widget with `id(`WizardDialog) )
+     *
+     * @return boolean True if topmost dialog is a wizard dialog, false otherwise
+     **/
+    global boolean IsWizardDialog()
+    {
+	return
+	    UI::WidgetExists(`id(`WizardDialog) ) == true ||
+	    UI::WidgetExists(`wizard) == true;
+    }
+
+
+    /**
+     * Open a popup dialog that displays a help text (rich text format).
+     *
+     * @stable
+     *
+     * @param help_text the text to display
+     **/
+    global void ShowHelp( string help_text )
+    {
+	Popup::LongText(
+			// Heading for help popup window
+			_("Help"),
+			`RichText( help_text ),
+			50, 20 );
+    }
+
+
+    /**
+     * Returns a standard wizard dialog with buttons "Next", "Back", "Abort".
+     *
+     * @stable
+     *
+     * @return term describing the dialog.
+     **/
+    global term NextBackDialog()
+    {
+	return GenericDialog( BackAbortNextButtonBox() );
+    }
+
+
+    /**
+     * Returns a standard wizard dialog with buttons "Cancel", "Accept"
+     *
+     * @stable
+     *
+     * @return term describing the dialog.
+     **/
+    global term AcceptDialog()
+    {
+	return GenericDialog( CancelAcceptButtonBox() );
+    }
+
+    /**
+     * Returns a standard wizard dialog with buttons "Cancel", "OK"
+     *
+     * @stable
+     *
+     * @return term describing the dialog.
+     **/
+    global term OKDialog()
+    {
+	return GenericDialog( CancelOKButtonBox() );
+    }
+
+    
+    /**
+     * Open any wizard dialog.
+     *
+     * @stable
+     *
+     * @param	dialog	a wizard dialog, e.g. Wizard::GenericDialog()
+     **/
+    global void OpenDialog( term dialog )
+    {
+	UI::OpenDialog( `opt(`wizardDialog), dialog );
+    }
+
+
+    /**
+     * Open a dialog with buttons "Next", "Back", "Abort"
+     * and set the keyboard focus to "Next".
+     **/
+    global void OpenNextBackDialog()
+    {
+	if ( haveFancyUI() )
+	{
+	    UI::OpenDialog(`opt(`wizardDialog ),
+			   `Wizard(`back,  Label::BackButton(),
+				   `abort, Label::AbortButton(),
+				   `next,  Label::NextButton() ) );
+	    
+	    UI::WizardCommand(`SetDialogIcon( default_icon ) );
+	}
+	else
+	{
+	    Wizard::OpenDialog( NextBackDialog() );
+	    UI::SetFocus(`id(`next) );
+	}
+    }
+
+
+    /**
+     * Open a dialog with "Accept", "Cancel"
+     * and set the keyboard focus to "Accept".
+     **/
+    global void OpenAcceptDialog()
+    {
+	if ( haveFancyUI() )
+	{
+	    UI::OpenDialog(`opt(`wizardDialog ),
+			   `Wizard(`no_back_button,   	"",
+				   `cancel,		Label::CancelButton(),
+				   `accept,		Label::AcceptButton() ) );
+
+	    // Don't let sloppy calls to Wizard::SetContents() disable this button by accident
+	    UI::WizardCommand(`ProtectNextButton( true ) );
+	    UI::WizardCommand(`SetDialogIcon( default_icon ) );
+	}
+	else
+	{
+	    Wizard::OpenDialog( AcceptDialog() );
+	    UI::SetFocus(`id(`accept) );
+	}
+    }
+
+    
+    /**
+     * Open a dialog with "OK", "Cancel"
+     * and set the keyboard focus to "OK".
+     **/
+    global void OpenOKDialog()
+	{
+	if ( haveFancyUI() )
+	{
+	    UI::OpenDialog(`opt(`wizardDialog ),
+			   `Wizard(`no_back_button,   	"",
+				   `cancel,		Label::CancelButton(),
+				   `ok,			Label::OKButton() ) );
+
+	    // Don't let sloppy calls to Wizard::SetContents() disable this button by accident
+	    UI::WizardCommand(`ProtectNextButton( true ) );
+	    UI::WizardCommand(`SetDialogIcon( default_icon ) );
+	}
+	else
+	{
+	    Wizard::OpenDialog( OKDialog() );
+	    UI::SetFocus(`id(`ok) );
+	}
+    }
+
+
+    /**
+     * Open a dialog with "Accept", "Cancel"
+     * and set the keyboard focus to "Accept".
+     **/
+    global void OpenAbortApplyFinishDialog()
+    {
+	if ( haveFancyUI() )
+	{
+	    UI::OpenDialog(`opt(`wizardDialog ),
+			   `Wizard(`apply,	_( "&Apply" ),
+				   `abort,	Label::AbortButton(),
+				   `finish,	Label::FinishButton() ) );
+	    
+	    UI::WizardCommand(`SetDialogIcon( default_icon ) );
+	}
+	else
+	{
+	    Wizard::OpenDialog( GenericDialog( AbortApplyFinishButtonBox() ) );
+	    UI::SetFocus(`id(`finish ) );
+	}
+    }
+
+
+    /**
+     * Open a dialog with "Accept", "Cancel" that will also accept workflow steps.
+     **/
+    global void OpenAcceptStepsDialog()
+    {
+	if ( haveFancyUI() )
+	{
+	    UI::OpenDialog(`opt(`wizardDialog ),
+			   `Wizard(`opt(`stepsEnabled),
+				   `no_back_button,	"",
+				   `cancel,		Label::CancelButton(),
+				   `accept,		Label::AcceptButton() ) );
+
+	    // Don't let sloppy calls to Wizard::SetContents() disable this button by accident
+	    UI::WizardCommand(`ProtectNextButton( true ) );
+	    UI::WizardCommand(`SetDialogIcon( default_icon ) );
+	}
+	else
+	{
+	    OpenAcceptDialog();
+	}
+    }
+
+
+    /**
+     * Open a dialog with "Accept", "Cancel" that will also accept workflow steps.
+     **/
+    global void OpenAcceptAbortStepsDialog()
+    {
+	if ( haveFancyUI() )
+	{
+	    UI::OpenDialog(`opt(`wizardDialog ),
+			   `Wizard(`opt(`stepsEnabled),
+				   `no_back_button,   	"",
+				   `abort,		Label::AbortButton(),
+				   `accept,		Label::AcceptButton() ) );
+ 
+	    // Don't let sloppy calls to Wizard::SetContents() disable this button by accident
+	    UI::WizardCommand(`ProtectNextButton( true ) );
+	    UI::WizardCommand(`SetDialogIcon( default_icon ) );
+	}
+	else
+	{
+	    Wizard::OpenDialog( GenericDialog( AbortAcceptButtonBox() ) );
+	}
+    }
+
+
+    /**
+     * Open a dialog with "Back", "Next", "Abort" that will also accept workflow steps.
+     **/
+    global void OpenNextBackStepsDialog()
+    {
+	if ( haveFancyUI() )
+	{
+	    UI::OpenDialog(`opt(`wizardDialog ),
+			   `Wizard(`opt(`stepsEnabled),
+				   `back,  Label::BackButton(),
+				   `abort, Label::AbortButton(),
+				   `next,  Label::NextButton() ) );
+	    
+	    UI::WizardCommand(`SetDialogIcon( default_icon ) );
+	}
+	else
+	{
+	    OpenNextBackDialog();
+	}
+    }
+
+
+    /**
+     * Open a wizard dialog with simple layout
+     *
+     * no graphics, no steps,
+     * only a help widget buttons (by default "Back", "Abort", "Next").
+     *
+     * This is the only type of wizard dialog which still allows replacing
+     * the help space - either already upon opening it or later with
+     * Wizard::ReplaceCustomHelp().
+     *
+     * If help_space_contents is 'nil', the normal help widget will remain.
+     * If button_box is 'nil', Wizard::BackAbortNextButtonBox() is used.
+     *
+     * @see CloseDialog
+     *
+     * @param help_space_contents Help space contents
+     * @param button_box Buttom Box
+     * @return void
+     **/
+    global void OpenCustomDialog( term help_space_contents,
+				  term button_box )
+    {
+	if ( button_box == nil )
+	    button_box = BackAbortNextButtonBox();
+
+	UI::OpenDialog(`opt(`wizardDialog),
+		       GenericDialog( button_box ) );
+
+	if ( help_space_contents != nil )
+	    UI::ReplaceWidget(`id(`helpSpace), help_space_contents );
+    }
+
+
+    /**
+     * Replace the help widget for dialogs opened with Wizard::OpenCustomDialog().
+     * @param contents Replace custom help with supplied contents
+     **/
+    global void ReplaceCustomHelp( term contents )
+    {
+	if ( UI::WidgetExists( `id(`helpSpace ) ) )
+	{
+	    UI::ReplaceWidget(`id(`helpSpace), contents);
+	}
+	else
+	{
+	    y2error( "Wizard::ReplaceHelpSpace() works only for dialogs opened with Wizard::OpenSimpleDialog() !" );
+	}
+    }
+
+
+    /**
+     * Close a wizard dialog.
+     *
+     * @stable
+     **/
+    global void CloseDialog()
+    {
+	if ( IsWizardDialog() )
+	{
+	    UI::CloseDialog();
+	}
+	else
+	{
+	    y2error( "Wizard::CloseDialog(): Topmost dialog is not a wizard dialog!" );
+	}
+    }
+
+
+    /**
+     * Substitute for UI::UserInput
+     *
+     * This function transparently handles different variations of the wizard
+     * layout. Returns `next if `next or `accept were clicked, `back if `back
+     * or `cancel were clicked. Simply replace
+     *    ret = UI::UserInput()
+     * with
+     *    ret = Wizard::UserInput()
+     *
+     * @return (maybe normalized) widget ID
+     **/
+    global any UserInput()
+    {
+	any input = UI::UserInput();
+
+	if ( input == `accept )	return `next;
+	if ( input == `cancel )	return `back;
+
+	return input;
+    }
+
+
+    /**
+     * Substitute for UI::TimeoutUserInput
+     *
+     * Analogical to Wizard::UserInput.
+     *
+     * @param integer timeout_millisec
+     **/
+    global any TimeoutUserInput( integer timeout_millisec ) 
+    {
+	any input = UI::TimeoutUserInput( timeout_millisec );
+
+	if ( input == `accept )	return `next;
+	if ( input == `cancel )	return `back;
+
+	return input;
+    }
+
+
+    /**
+     * Substitute for UI::WaitForEvent
+     *
+     * Analog to Wizard::UserInput.
+     **/
+    global map WaitForEvent( integer timeout_millisec ) 
+    {
+	map input = UI::WaitForEvent( timeout_millisec );
+
+	if (input["ID"]:nil == `accept) input["ID"] = `next;
+	if (input["ID"]:nil == `cancel) input["ID"] = `back;
+
+	return input;
+    }
+
+    
+    /**
+     * Set a new help text.
+     * @param help_text Help text
+     * @example Wizard::SetHelpText("This is a help Text");
+     **/
+    global void SetHelpText( string help_text )
+    {
+	if ( UI::WizardCommand(`SetHelpText( help_text ) ) == false )
+	{
+	    UI::ChangeWidget(`id(`WizardDialog), `HelpText, help_text);
+	}
+    }
+
+
+    /**
+     * Replace the wizard help subwindow with a custom widget.
+     *
+     * @deprecated
+     * @param contents Replace Help with contents
+     **/
+    global void ReplaceHelp(term contents)
+    {
+	if ( UI::WidgetExists( `id(`helpSpace ) ) )
+	{
+	    y2warning( "Wizard::ReplaceHelp() is deprecated!" );
+	    UI::ReplaceWidget(`id(`helpSpace), contents);
+	}
+	else
+	{
+	    y2error( "Wizard::ReplaceHelp() is not supported by the new Qt wizard!" );
+	}
+    }
+
+
+    /**
+     * Restore the wizard help subwindow.
+     * @param help_text Help text
+     **/
+    global void RestoreHelp( string help_text )
+    {
+	Wizard::SetHelpText( help_text );
+    }
+
+
+    /**
+     * Create and open a typical installation wizard dialog.
+     *
+     * For backwards compatibility only - don't use this any more in new modules.
+     **/
+    global void CreateDialog()
+    {
+        // Set productname for help text
+	if (product_name == "")
+	    product_name = SuSERelease::ReleaseName ();
+        UI::SetProductName(product_name);
+
+	Wizard::OpenNextBackDialog();
+    }
+
+    
+    /**
+     * Set the contents of a wizard dialog and define if to move focus to next button
+     *
+     * How the general framework for the installation wizard should
+     * look like. This function creates and shows a dialog.
+     *
+     * @param title Dialog Title
+     * @param contents The Dialog contents
+     * @param help_text Help text
+     * @param has_back Is the Back button enabled?
+     * @param has_next Is the Next button enabled?
+     * @param set_focus Should the focus be set to Next button?
+     **/
+    global void SetContentsFocus( string  title,
+				  term    contents,
+				  string  help_text,
+				  boolean has_back,
+				  boolean has_next,
+				  boolean set_focus )
+    {
+
+	if ( UI::WizardCommand(`SetDialogHeading( title ) ) == true )
+	{
+	    UI::WizardCommand(`SetHelpText( help_text ) );
+	    UI::WizardCommand(`EnableNextButton( has_next ) );
+	    UI::WizardCommand(`EnableBackButton( has_back ) );
+	    if (set_focus)
+		UI::WizardCommand(`SetFocusToNextButton() );
+	}
+	else
+	{
+	    if ( UI::WidgetExists(`id(`next ) ) )
+	    {
+		UI::ChangeWidget(`id(`next), `Enabled, has_next);
+		UI::SetFocus( `id(`next) );
+	    }
+
+	    if ( UI::WidgetExists(`id(`back	) ) )	UI::ChangeWidget(`id(`back), `Enabled, has_back);
+	    if ( UI::WidgetExists(`id(`abort	) ) )	UI::ChangeWidget(`id(`abort),`Enabled, true);
+	    if ( UI::WidgetExists(`id(`title	) ) )	UI::ChangeWidget(`id(`title), `Value, title);
+	    
+	    if ( set_focus )
+		if ( UI::WidgetExists(`id(`accept ) ) )	UI::SetFocus( `id(`accept ) );
+	}
+
+	SetHelpText( help_text );
+	UI::ReplaceWidget(`id(`contents), contents);
+    }
+    
+
+    /**
+     * Set the contents of a wizard dialog
+     *
+     * How the general framework for the installation wizard should
+     * look like. This function creates and shows a dialog.
+     *
+     * @stable
+     *
+     * @param title Dialog Title
+     * @param contents The Dialog contents
+     * @param help_text Help text
+     * @param has_back Is the Back button enabled?
+     * @param has_next Is the Next button enabled?
+     * @example_file ../examples/wizard1.ycp
+     * @screenshot screenshots/wizard1.png
+     **/
+    global void SetContents( string  title,
+			     term    contents,
+			     string  help_text,
+			     boolean has_back,
+			     boolean has_next )
+    {
+	SetContentsFocus (title, contents, help_text, has_back, has_next, true);
+    }
+
+    
+    /**
+     * Clear the wizard contents.
+     *
+     * This may sound silly, but it gives much faster feedback to the
+     * user if used properly: Whenever the user clicks "Next" or
+     * "Back", call ClearContents() prior to any lengthy
+     * operation -> the user notices instant response, even though he
+     * may in fact still have to wait.
+     *
+     * @stable
+     **/
+    global void ClearContents()
+    {
+	Wizard::SetContents("", `Empty(), "", false, false);
+    }
+
+    /**
+     * Set the dialog's "Next" button with a new label and a new ID
+     *
+     * @stable
+     *
+     * @param id Button ID
+     * @param label Button Label
+     **/
+    global void SetNextButton( any id, string label )
+    {
+	if ( UI::WizardCommand(`SetNextButtonLabel( label ) ) == true )
+	{
+	    UI::WizardCommand(`SetNextButtonID( id ) );
+	}
+	else
+	{
+	    if ( UI::WidgetExists(`id(`rep_next ) ) )
+	    {
+		UI::ReplaceWidget(`id(`rep_next ),
+				  `PushButton( `id( id ), `opt (`key_F10, `default), label ) );
+	    }
+	}
+
+    }
+
+
+    /**
+     * Set the dialog's "Back" button with a new label and a new ID
+     *
+     * @stable
+     *
+     * @param id Button ID
+     * @param label Button Label
+     **/
+    global void SetBackButton( any id, string label )
+    {
+	if ( UI::WizardCommand(`SetBackButtonLabel( label ) ) == true )
+	{
+	    UI::WizardCommand(`SetBackButtonID( id ) );
+	}
+	else
+	{
+	    if ( UI::WidgetExists(`id(`rep_back ) ) )
+	    {
+		UI::ReplaceWidget(`id(`rep_back),
+				  `PushButton( `id( id ), `opt (`key_F8), label )
+				  );
+	    }
+	}
+    }
+
+
+    /**
+     * Set the dialog's "Abort" button with a new label and a new ID
+     *
+     * @stable
+     *
+     * @param id Button ID
+     * @param label Button Label
+     **/
+    global void SetAbortButton( any id, string label )
+    {
+	if ( UI::WizardCommand(`SetAbortButtonLabel( label ) ) == true )
+	{
+	    UI::WizardCommand(`SetAbortButtonID( id ) );
+	}
+	else
+	{
+	    if ( UI::WidgetExists(`id(`rep_abort ) ) )
+	    {
+		UI::ReplaceWidget(`id(`rep_abort ),
+				  `PushButton( `id( id ), `opt (`key_F9), label )
+				  );
+	    }
+	}
+    }
+
+    
+    /**
+     * Hide the Wizard's "Next" button.
+     * Restore it later with RestoreNextButton():
+     *
+     * @see RestoreNextButton
+     * @stable
+     **/
+    global void HideNextButton()
+    {
+	if ( UI::WizardCommand(`SetNextButtonLabel( "" ) ) == false )
+	{
+	    if ( UI::WidgetExists(`id(`rep_next ) ) )
+		UI::ReplaceWidget(`id(`rep_next ), `Empty() );
+	}
+    }
+
+    
+    /**
+     * Hide the Wizard's "Back" button.
+     * Restore it later with RestoreBackButton():
+     *
+     * @see RestoreBackButton
+     * @stable
+     **/
+    global void HideBackButton()
+    {
+	if ( UI::WizardCommand(`SetBackButtonLabel( "" ) ) == false )
+	{
+	    if ( UI::WidgetExists(`id(`rep_back ) ) )
+		UI::ReplaceWidget(`id(`rep_back), `Empty() );
+	}
+    }
+
+
+    /**
+     * Hide the Wizard's "Abort" button.
+     * Restore it later with RestoreAbortButton():
+     *
+     * @see RestoreAbortButton
+     * @stable
+     **/
+    global void HideAbortButton()
+    {
+	if ( UI::WizardCommand(`SetAbortButtonLabel( "" ) ) == false )
+	{
+	    if ( UI::WidgetExists(`id(`rep_abort ) ) )
+		UI::ReplaceWidget(`id(`rep_abort ), `Empty() );
+	}
+    }
+
+
+    /**
+     * Restore the wizard 'back' button.
+     *
+     * @see HideBackButton
+     * @stable
+     **/
+    global void RestoreBackButton()
+    {
+	Wizard::SetBackButton( `back, Label::BackButton() );
+    }
+
+
+    /**
+     * Restore the wizard 'next' button.
+     *
+     * @see HideNextButton
+     * @stable
+     **/
+    global void RestoreNextButton()
+    {
+	Wizard::SetNextButton( `next, Label::NextButton() );
+    }
+
+
+    /**
+     * Restore the wizard 'abort' button.
+     *
+     * @see HideAbortButton
+     * @stable
+     **/
+    global void RestoreAbortButton()
+    {
+	Wizard::SetAbortButton( `abort, Label::AbortButton() );
+    }
+
+
+
+    /**
+     * Set contents and Buttons of wizard dialog
+     *
+     * Additionally set its title, help_text and buttons labels. Enables both back and next button.
+     *
+     * @params
+     *
+     * @param title title of window
+     * @param contents contents of dialog
+     * @param help_text help text
+     * @param back_label label of back button
+     * @param next_label label of next button
+     **/
+    global void SetContentsButtons( string title,
+				    term   contents,
+				    string help_text,
+				    string back_label,
+				    string next_label )
+    {
+
+
+	UI::PostponeShortcutCheck ();
+
+	Wizard::RestoreBackButton();
+	Wizard::RestoreNextButton();
+	
+	if ( UI::WizardCommand(`SetBackButtonLabel( back_label ) ) == true )
+	{
+	    UI::WizardCommand(`SetNextButtonLabel( next_label ) );
+	    Wizard::SetContents( title, contents, help_text, true, true );
+	}
+	else
+	{
+	    // Set button labels first to avoid geometry problems: SetContents()
+	    // calls ReplaceWidget() wich triggers a re-layout.
+
+	    if ( UI::WidgetExists(`id(`back ) ) )	UI::ChangeWidget(`id (`back), `Label, back_label);
+	    if ( UI::WidgetExists(`id(`next ) ) )	UI::ChangeWidget(`id (`next), `Label, next_label);
+	    Wizard::SetContents( title, contents, help_text, true, true );
+	}
+	SetHelpText( help_text );
+	UI::CheckShortcuts ();
+
+    }
+
+
+    /**
+     * Sets the dialog title shown in the window manager's title bar.
+     *
+     * @param titleText title of the dialog
+     *
+     * @example
+     *	SetDialogTitle ("DNS Server Configuration");
+     **/
+    global void SetDialogTitle( string titleText )
+    {
+	UI::WizardCommand(`SetDialogTitle( titleText ) );
+    }
+
+
+    /**
+     * Sets the wizard 'title' icon to the specified icon from the standard icon
+     * directory.
+     *
+     * @stable
+     *
+     * @param icon_name name (without path) of the new icon
+     * @see ClearTitleIcon
+     *
+     * @example
+     *	SetTitleIcon ("yast-dns-server");
+     **/
+    global void SetTitleIcon( string icon_name )
+    {
+	string icon = icon_name == "" ? "" : ( icon_path + "/" + icon_name + ".png" );
+
+	UI::WizardCommand(`SetDialogIcon( icon ) );
+    }
+
+
+    /**
+     * Clear the wizard 'title' icon, i.e. replace it with nothing
+     *
+     * @stable
+     * @see SetTitleIcon
+     **/
+    global void ClearTitleIcon()
+    {
+	UI::WizardCommand(`SetDialogIcon( "" ) );
+    }
+
+ 
+
+    /**
+     * Sets the window title according to the name specified in a .desktop file got as parameter.
+     * Desktop file is placed in a special directory (/usr/share/applications/YaST2).
+     * Parameter file is realative to that directory without ".desktop" suffix.
+     *
+     * @param file desktop file
+     * @return boolean true on success
+     *
+     * @example
+     *	// Opens /usr/share/applications/YaST2/lan.desktop
+     *	// Reads (localized) "name" entry from there
+     *	// Sets the window title.
+     *	SetDesktopTitle ("lan")
+     */
+    global boolean SetDesktopTitle( string file )
+    {
+ 	path filepath = .yast2.desktop1.v."Desktop Entry";
+        string name = "";
+	string localizedkey = "";
+	string Language = "";
+	string LanguageFull = "";
+	string filename = sformat("%1/%2.desktop", Directory::desktopdir, file);
+	// Do not use .yast2.desktop.v.$filename, because ini-agent reads
+	// all the desktop files anyway which is wasteful for setting one title.
+	// The config is adapted from .yast2.desktop.
+	SCR::RegisterAgent (.yast2.desktop1, `ag_ini(
+				`IniAgent( filename,
+	$[
+	    "options"	: [ "read_only" ], // rw works but not needed
+	    "comments"	: [ "^[ \t]*[;#].*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],
+	    "sections"	: [
+		$[ "begin" : [
+		    "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
+		    "[%s]",
+		]],
+	    ],
+	    "params" : [
+		$[ "match" : [
+		    "^[ \t]*([^=]*[^ \t=])[ \t]*=[ \t]*(.*[^ \t]|)[ \t]*$" ,
+		    "%s=%s",
+		]],
+	    ],
+	]
+	)));
+
+
+	/* read language */
+	LanguageFull = "";
+	Language = UI::GetLanguage(true);
+	if(regexpmatch(Language, "(.*_[^.]*)\\.?.*")) // matches: ll_TT ll_TT.UTF-8
+        LanguageFull = regexpsub(Language, "(.*_[^.]*)\\.?.*", "\\1");
+	if(regexpmatch(Language, "(.*)_"))
+		Language = regexpsub(Language, "(.*)_", "\\1");
+	y2debug("LanguageFull=%1", LanguageFull);
+	y2debug("Language=%1", Language);
+
+	/* get localized Name value from desktop file */
+	if( LanguageFull != nil || LanguageFull != "" )
+	{
+	    localizedkey = sformat("%1[%2]", "Name", LanguageFull);
+	    name = (string) SCR::Read(add(filepath, localizedkey));
+	}
+	if( ( name == nil || name == "" ) && ( Language != nil || Language != "" ))
+	{
+            localizedkey = sformat("%1[%2]", "Name", Language);
+            name = (string) SCR::Read(add(filepath, localizedkey));
+	}
+	if( name == nil || name == "" )
+            name = (string) SCR::Read(add(filepath, "Name"));
+
+	y2debug("Set dialog title: %1", name);
+    	SetDialogTitle( name );
+
+	SCR::UnregisterAgent (.yast2.desktop1);
+
+	return ( name != nil && name != "");
+    }
+
+
+
+
+    /**
+     * Sets the icon specified in a .desktop file got as parameter.
+     * Desktop file is placed in a special directory (/usr/share/applications/YaST2).
+     * Parameter file is realative to that directory without ".desktop" suffix.
+     * Warning: There are no desktop files in inst-sys. Use "SetTitleIcon" instead.
+     *
+     * @param file Icon name
+     * @return boolean true on success
+     *
+     * @example
+     *	// Opens /usr/share/applications/YaST2/lan.desktop
+     *	// Reads "Icon" entry from there
+     *	// Sets the icon.
+     *	SetDesktopIcon ("lan")
+     */
+    global boolean SetDesktopIcon( string file )
+    {
+	string filename = sformat("%1/%2.desktop", Directory::desktopdir, file);
+	// Do not use .yast2.desktop.v.$filename, because ini-agent reads
+	// all the desktop files anyway which is wasteful for setting one icon.
+	// The config is adapted from .yast2.desktop.
+	SCR::RegisterAgent (.yast2.desktop1, `ag_ini(
+				`IniAgent( filename,
+	$[
+	    "options"	: [ "read_only" ], // rw works but not needed
+	    "comments"	: [ "^[ \t]*[;#].*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],
+	    "sections"	: [
+		$[ "begin" : [
+		    "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
+		    "[%s]",
+		]],
+	    ],
+	    "params" : [
+		$[ "match" : [
+		    "^[ \t]*([^=]*[^ \t=])[ \t]*=[ \t]*(.*[^ \t]|)[ \t]*$" ,
+		    "%s=%s",
+		]],
+	    ],
+	]
+				    )
+				)
+	    );
+	path filepath = .yast2.desktop1.v."Desktop Entry".Icon;
+	string icon = (string) SCR::Read(filepath);
+	y2debug("icon: %1 (%2)", icon, filepath);
+
+	if (icon == nil) 
+	    return false;
+
+	SetTitleIcon(icon);
+
+	SCR::UnregisterAgent (.yast2.desktop1);
+
+	return true;
+    }
+
+
+    /**
+     * PRIVATE - Replace the entire Wizard button box with a new one.
+     * @param button_box Button Box term
+     * @return void
+     **/
+    void ReplaceButtonBox( term button_box )
+    {
+	UI::ReplaceWidget(`id(`rep_button_box ), button_box );
+    }
+
+
+    /**
+     * Enable the wizard's "Abort" button.
+     *
+     * @see DisableAbortButton
+     * @stable
+     **/
+    global void EnableAbortButton()
+    {
+	if ( UI::WizardCommand(`EnableAbortButton( true ) ) == false )
+		UI::ChangeWidget(`id(`abort), `Enabled, true );
+    }
+
+
+    /**
+     * Disable the wizard's "Abort" button.
+     *
+     * @see EnableAbortButton
+     * @stable
+     **/
+    global void DisableAbortButton()
+    {
+	if ( UI::WizardCommand(`EnableAbortButton( false ) ) == false )
+	    UI::ChangeWidget(`id(`abort), `Enabled, false );
+    }
+
+
+    /**
+     * Disable the wizard's "Next" (or "Accept") button.
+     *
+     * @see EnableNextButton
+     * @stable
+     **/
+    global void DisableNextButton()
+    {
+	if ( UI::WizardCommand(`EnableNextButton( false ) ) == false )
+	{
+	    if (UI::WidgetExists (`id (`next))) {
+		UI::ChangeWidget(`id (`next), `Enabled, false);
+	    } else if (UI::WidgetExists (`id (`accept))) {
+		UI::ChangeWidget(`id (`accept), `Enabled, false);
+	    } else {
+		y2error (-1, "Neither `next nor `accept widgets exist");
+	    }
+	}
+    }
+
+
+    /**
+     * Enable the wizard's "Next" (or "Accept") button.
+     *
+     * @see DisableNextButton
+     * @stable
+     **/
+    global void EnableNextButton()
+    {
+	if ( UI::WizardCommand(`EnableNextButton( true ) ) == false )
+	{
+	    if ( UI::WidgetExists(`id(`next ) ) )
+		UI::ChangeWidget(`id(`next), `Enabled, true );
+	    else
+		UI::ChangeWidget(`id(`accept), `Enabled, true );
+	}
+    }
+
+
+    /**
+     * Disable the wizard's "Back" button.
+     *
+     * @see EnableBackButton
+     * @stable
+     **/
+    global void DisableBackButton()
+    {
+	if ( UI::WizardCommand(`EnableBackButton( false ) ) == false )
+	    UI::ChangeWidget(`id(`back ), `Enabled, false );
+    }
+
+    /**
+     * Enable the wizard's "Back" button.
+     *
+     * @see DisableBackButton
+     * @stable
+     **/
+    global void EnableBackButton()
+    {
+	if ( UI::WizardCommand(`EnableBackButton( true ) ) == false )
+	    UI::ChangeWidget(`id(`back ), `Enabled, true );
+    }
+
+
+    /**
+     * Disable the wizard's "Cancel" button.
+     *
+     * @see EnableCancelButton
+     * @stable
+     **/
+    global void DisableCancelButton()
+    {
+	if ( UI::WizardCommand(`EnableCancelButton( false ) ) == false )
+	    UI::ChangeWidget(`id(`cancel ), `Enabled, false );
+    }
+    
+
+    /**
+     * Enable the wizard's "Cancel" button.
+     *
+     * @see DisableCancelButton
+     * @stable
+     **/
+    global void EnableCancelButton()
+    {
+	if ( UI::WizardCommand(`EnableCancelButton( true ) ) == false )
+	    UI::ChangeWidget(`id(`cancel ), `Enabled, true );
+    }
+
+    
+    /**
+     * Returns whether the `Wizard widget is available.
+     *
+     * @see bnc #367213.
+     * @return boolean available
+     */
+    boolean HasWidgetWizard () {
+	if (! UI::HasSpecialWidget(`Wizard))
+	{
+	    y2milestone ("no Wizard available");
+	    return false;
+	}
+
+	return true;
+    }
+
+    /**
+     * Show a "Release Notes" button with the specified label and ID if there is a "steps" panel
+     **/
+    global void ShowReleaseNotesButton( string label, string id )
+    {
+	// has wizard? continue
+	//   otherwise reuse the back button
+	// show-releasenotes-button failed? continue
+	//   reuse the back button
+	if ( (HasWidgetWizard() == false) || (UI::WizardCommand (`ShowReleaseNotesButton (label, id)) == false) )
+	{
+	    // Reuse Back button
+	    if (UI::WidgetExists (`id (`back_rep))) {
+		UI::ReplaceWidget (`id (`back_rep), `PushButton (`id (id), label));
+	    } else {
+		y2warning ("Widget `back_rep does not exist");
+	    }
+	}
+    }
+
+
+    /**
+     * Hide the "Release Notes" button, if there is any
+     **/
+    global void HideReleaseNotesButton()
+    {
+	// has wizard? continue
+	//    otherwise reuse the back button
+	// hide-releasenotes-button failed? continue
+	//   reuse the back button
+	if ((HasWidgetWizard() == false) || (UI::WizardCommand (`HideReleaseNotesButton()) == false))
+	{
+	    if (UI::WidgetExists (`id (`back_rep))) {
+		UI::ReplaceWidget (`id (`back_rep), `Empty ());
+	    }
+	}
+    }
+
+
+    /**
+     * Retranslate the wizard buttons.
+     *
+     * This will revert button labels and IDs
+     * to the default that were used upon Wizard::CreateDialog(),
+     * Wizard::OpenNextBackDialog(), or Wizard::OpenAcceptDialog().
+     **/
+    global void RetranslateButtons()
+    {
+	if ( UI::WidgetExists(`id(`WizardDialog ) ) == true )
+	{
+	    ReplaceButtonBox( UI::WidgetExists(`id(`accept ) ) ?
+			      Wizard::AbortAcceptButtonBox() :
+			      Wizard::BackAbortNextButtonBox() );
+	}
+	else // Qt wizard
+	{
+	    UI::WizardCommand(`RetranslateInternalButtons() );
+	    
+	    if ( UI::WidgetExists(`accept) )
+	    {
+		UI::WizardCommand(`SetBackButtonLabel ( "" ) );
+		UI::WizardCommand(`SetAbortButtonLabel( Label::AbortButton()  ) );
+		UI::WizardCommand(`SetNextButtonLabel ( Label::AcceptButton() ) );
+	    }
+	    else
+	    {
+		UI::WizardCommand(`SetBackButtonLabel ( Label::BackButton()  ) );
+		UI::WizardCommand(`SetAbortButtonLabel( Label::AbortButton() ) );
+		UI::WizardCommand(`SetNextButtonLabel ( Label::NextButton()  ) );
+	    }
+	}
+    }
+
+
+    /**
+     * Set the keyboard focus to the wizard's "Next" (or "Accept") button.
+     *
+     * @stable
+     **/
+    global void SetFocusToNextButton()
+    {
+	if ( UI::WizardCommand(`SetFocusToNextButton() ) == false )
+	{
+	    UI::SetFocus( UI::WidgetExists(`id(`next) ) ? `id(`next) : `id(`accept ) );
+	}
+    }
+
+    /**
+     * Set the keyboard focus to the wizard's "Back" (or "Cancel") button.
+     *
+     * @stable
+     **/
+    global void SetFocusToBackButton()
+    {
+	if ( UI::WizardCommand(`SetFocusToBackButton() ) == false )
+	{
+	    UI::SetFocus( UI::WidgetExists(`id(`back) ) ? `id(`back) : `id(`cancel ) );
+	}
+    }
+
+
+
+    //
+    // Screenshot Functions
+    //
+
+    
+    /**
+     * Currently used screenshot name.
+     * Initially, it must match the UI default, "yast2"
+     */
+    string screenshot_name = "yast2";
+    
+    /**
+     * Screenshot names overriden by nested SetScreenShotName calls
+     */
+    list<string> screenshot_name_stack = [];
+
+    
+    /**
+     * Set a name for the current dialog:
+     *
+     * Declare a name for the current dialog to ease making screenshots.
+     * By convention, the name is
+     * {rpm-name-without-yast2}-{sorting-prefix}-{description}
+     * The calls may be nested.
+     * @param s eg. "mail-1-conntype"
+     * @see RestoreScreenShotName
+     */
+    global void SetScreenShotName(string name )
+    {
+	screenshot_name_stack = prepend( screenshot_name_stack, screenshot_name );
+	screenshot_name = name;
+    }
+
+    
+    /**
+     * Restore the screenshot name.
+     *
+     * If it does not match a SetScreenShotName, "yast2" is used
+     * and a y2error logged.
+     */
+    global void RestoreScreenShotName ()
+    {
+	screenshot_name = screenshot_name_stack[0]:nil;
+	if (screenshot_name == nil)
+	{
+	    screenshot_name = "yast2";
+	    y2error (1, "No screenshot name to restore!");
+	}
+	else
+	{
+	    screenshot_name_stack = remove (screenshot_name_stack, 0);
+	}
+    }
+
+
+    
+    //
+    // Tree & Menu Wizard functions
+    //
+
+    /**
+     * Open a Tree  dialog with buttons "Next", "Back", "Abort"
+     * and set the keyboard focus to "Next".
+     **/
+    global void OpenTreeNextBackDialog()
+    {
+        if ( haveFancyUI() )
+        {
+            UI::OpenDialog(`opt(`wizardDialog ),
+			   `Wizard(`opt(`treeEnabled),
+				   `back, Label::BackButton(),
+				   `abort, Label::AbortButton(),
+				   `next, Label::NextButton()
+				   )
+			   );
+	    
+	    UI::WizardCommand(`SetDialogIcon( default_icon ) );
+        }
+        else
+        {
+	    Wizard::OpenDialog( GenericTreeDialog( BackAbortNextButtonBox() ) );
+	    UI::SetFocus(`id(`next) );
+        }
+    }
+
+    
+    /**
+     * Create and open a Tree wizard dialog.
+     *
+     * For backwards compatibility only - don't use this any more in new modules.
+     **/
+    global void CreateTreeDialog()
+    {
+	Wizard::OpenTreeNextBackDialog();
+        return;
+    }
+
+    
+    /**
+     * Add Tree Item to tree enabled Wizard
+     * @param Tree Tree Data
+     * @param parent Parent of this item
+     * @param title Item Title
+     * @param id Item ID
+     * @return list<map> Updated Tree Data
+     **/
+    global list<map> AddTreeItem( list<map> Tree, string parent , string title, string id )
+    {
+        if ( haveFancyUI() )
+        {
+            UI::WizardCommand(`AddTreeItem( parent, title , id ) );
+        }
+        else
+        {
+            Tree = add(Tree, $[ "parent": parent, "title":title, "id": id]);
+        }
+        return Tree;
+    }
+
+
+    /**
+     * Create the Tree Items
+     * @param Tree Tree data
+     * @param parent Parent of current Item
+     * @return list Tree Items
+     **/
+    list CreateTreeInternal( list<map> Tree, string parent )
+    {
+        list<map> m = filter(map c, Tree, ``((c["parent"]:"" == parent )));
+        map ccbak = nil; // #38596, broken recursion for iterators
+        list mm = maplist(map cc, m, ``{
+                    string TreeEntry = cc["id"]:"";
+                    ccbak = cc;
+                    list items = CreateTreeInternal(Tree, TreeEntry);
+                    cc = ccbak;
+                    if (size(items)>0)
+                        return(`item(`id(cc["id"]:""), cc["title"]:"", items));
+                    else
+                        return(`item(`id(cc["id"]:""), cc["title"]:""));
+                });
+        y2debug("items: %1", mm );
+        return mm;
+    }
+
+
+    /**
+     * Query Tree Item
+     * @return Tree Item
+     */
+    global string QueryTreeItem()
+    {
+        if (haveFancyUI() )
+        {
+            return (string)UI::QueryWidget(`id(`wizard), `CurrentItem );
+        }
+        else
+        {
+            return (string)UI::QueryWidget(`id(`wizardTree), `CurrentItem );
+        }
+    }
+
+    
+    /**
+     * Create the tree in the dialog, replaces helpspace with new tree widget
+     * @param Tree Tree data
+     * @param title Tree title
+     **/
+    global void CreateTree(list<map> Tree, string title)
+    {
+        if ( !haveFancyUI() )
+        {
+            list items = [];
+            foreach(map i, Tree, ``{
+                    if (i["parent"]:"" == "")
+                    {
+                        items=add(items, `item(`id(i["id"]:""), i["title"]:"",
+                                CreateTreeInternal(Tree, i["id"]:"") ));
+                    }
+                    });
+            y2debug("tree items: %1", items);
+	    
+            Wizard::ReplaceCustomHelp(
+				      `VBox(
+					    `Tree(
+						  `id(`wizardTree),
+						  `opt(`notify, `vstretch),
+						  title,
+						  items
+						  ),
+					    `VSpacing(1))
+				      );
+        }
+    }
+
+    
+    /**
+     * Select Tree item
+     * @param tree_item tree item
+     */
+    global void SelectTreeItem( string tree_item )
+    {
+        if ( haveFancyUI() )
+        {
+            UI::WizardCommand(`SelectTreeItem( tree_item ) );
+        }
+        else
+        {
+            UI::ChangeWidget(`id(`wizardTree), `CurrentItem, tree_item);
+        }
+    }
+
+    
+    /**
+     * Delete Tree items
+     */
+    global void DeleteTreeItems()
+    {
+        if ( haveFancyUI() )
+        {
+            UI::WizardCommand(`DeleteTreeItems() );
+        }
+        else
+        {
+            Wizard::ReplaceCustomHelp(`Empty());
+        }
+    }
+
+    
+    /**
+     * Delete Menu items
+     */
+    global void DeleteMenus()
+    {
+        if ( haveFancyUI() )
+        {
+            UI::WizardCommand(`DeleteMenus() );
+        }
+        else
+        {
+            UI::ReplaceWidget(`id(`topmenu), `Empty());
+        }
+    }
+
+    
+    /**
+     * Add Menu
+     * @param Menu  Menu data
+     * @param title Menu Title
+     * @param id Menu ID
+     * @return list<map> Updated Menu Data
+     **/
+    global list<map> AddMenu( list<map> Menu, string title, string id )
+    {
+        if ( haveFancyUI() )
+        {
+            UI::WizardCommand(`AddMenu( title, id ) );
+        }
+        else
+        {
+            Menu = add(Menu, $["type":"Menu", "title":title, "id": id]);
+        }
+        return Menu;
+    }
+    
+
+    /**
+     * Add Sub Menu
+     * @param Menu Menu data
+     * @param parent_id Menu Parent
+     * @param title Menu Title
+     * @param id Menu ID
+     * @return list<map> Updated Menu Data
+     **/
+    global list<map>  AddSubMenu( list<map> Menu, string parent_id, string title, string id )
+    {
+        if ( haveFancyUI() )
+        {
+            UI::WizardCommand(`AddSubMenu( parent_id, title, id ) );
+        }
+        else
+        {
+            Menu = add(Menu, $["type":"SubMenu", "parent": parent_id, "title":title, "id": id]);
+        }
+        return Menu;
+    }
+
+    
+    /**
+     * Add Menu Entry
+     * @param Menu Menu data
+     * @param parent_id Menu Parent
+     * @param title Menu Title
+     * @param id Menu ID
+     * @return list<map> Updated Menu Data
+     **/
+    global list<map> AddMenuEntry(list<map> Menu, string parent_id, string title, string id)
+    {
+        if ( haveFancyUI() )
+        {
+            UI::WizardCommand(`AddMenuEntry( parent_id, title, id ) );
+        }
+        else
+        {
+            Menu = add(Menu, $["type":"MenuEntry", "parent": parent_id, "title":title, "id": id]);
+        }
+        return Menu;
+    }
+
+    
+    /**
+     * Create the Menu Items
+     * @param Menu Menu data
+     * @param parent Menu Parent
+     * @return list Menu Items
+     **/
+    list CreateMenuInternal( list<map> Menu, string parent )
+    {
+        list<map> m = filter(map c, Menu, ``((c["parent"]:"" == parent )));
+
+        list mm = maplist(map cc, m, ``{
+                if(cc["type"]:"" == "MenuEntry")
+                {
+                    string MenuEntry = cc["id"]:"";
+                    return(`item(`id(MenuEntry), cc["title"]:""));
+                }
+                else if (cc["type"]:"" == "SubMenu")
+                {
+                    string SubMenu = cc["id"]:"";
+                    return(`menu( cc["title"]:"", CreateMenuInternal(Menu,
+                                SubMenu)));
+                }
+                });
+        y2debug("items: %1", mm );
+        return mm;
+    }
+
+    
+    /**
+     * Create the menu in the dialog
+     * @param Menu Menu data
+     * @return void
+     **/
+    global void CreateMenu( list<map> Menu )
+    {
+        if ( ! haveFancyUI() )
+        {
+            term menu_term = `HBox();
+            foreach(map m, Menu, ``{
+                    if (m["type"]:"" == "Menu")
+                    {
+                        list menu_items = CreateMenuInternal(Menu, m["id"]:"");
+                        y2debug("menu_items: %1", menu_items );
+                        menu_term=add(menu_term, `MenuButton( m["title"]:"",
+                                menu_items));
+                    }
+                    });
+            y2milestone("menu: %1", menu_term );
+            UI::ReplaceWidget(`id(`topmenu), `Left(menu_term));
+        }
+        return;
+    }
+
+
+    /**
+     * Set the product name for UI
+     * @param name the product name
+     * @return void
+     **/
+    global void SetProductName( string name )
+    {
+        y2milestone ("Setting product name to '%1'", name);
+        product_name = name;
+    }
+
+}

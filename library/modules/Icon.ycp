@@ -1,0 +1,162 @@
+/**
+ * File:        modules/Icon.ycp
+ * Package:     YaST2
+ * Authors:     Lukas Ocilka <lukas.ocilka@suse.cz>
+ * Summary:     Transparent access to Icons
+ * Flags:	Stable
+ *
+ * $Id:$
+ */
+{
+    module "Icon";
+
+    textdomain "base";
+
+    import "Directory";
+
+    boolean has_image_support = nil;
+    map <string, string> icons_map = $[];
+    string icon_32x32_path = nil;
+
+    void LazyInit () {
+	if (has_image_support != nil)
+	    return;
+
+	map display_info = UI::GetDisplayInfo();
+	has_image_support = display_info["HasImageSupport"]:false;
+
+	icon_32x32_path = Directory::themedir + "/current/icons/32x32/apps/";
+
+	icons_map = $[
+	    "warning" : "msg_warning.png",
+	    "info" : "msg_info.png",
+	    "error" : "msg_error.png",
+	    "question" : "msg_question.png",
+	];
+    }
+
+    /**
+     * Returns path to an image
+     *
+     * @param string icon_type
+     *
+     * @see Icon::Image() for details
+     *
+     * @example
+     *	Icon::IconPath ("warning") -> "/usr/share/YaST2/theme/current/icons/32x32/apps/msg_warning.png"
+     */
+    global string IconPath (string icon_type) {
+	LazyInit ();
+
+	string icon_path = nil;
+
+	if (icons_map[icon_type]:nil != nil) {
+	    icon_path = icon_32x32_path + icons_map[icon_type]:"";
+	} else {
+	    icon_path = icon_32x32_path + icon_type + ".png";
+	    y2debug ("Image '%1' is not defined, using '%2'", icon_type, icon_path);
+	}
+
+	return icon_path;
+    }
+
+    /**
+     * Returns `Image() term defined by parameters. Returns `Empty() if the current
+     * UI doesn't support images.
+     *
+     * @param string icon_type (one of known types or just an image name without a 'png' suffix)
+     *        Known icon types are "warning", "info", and "error"
+     *
+     * @param map <string, any> options
+     *
+     * @struct options = $[
+     *   "id" : any_icon_id,
+     *   "label" : (string) icon_label, // (used if icon is missing)
+     *   "margin_left" : 0,  // HSpacing on the left
+     *   "margin_right" : 5, // HSpacing on the right
+     * ]
+     *
+     * @example
+     *  Icon::Image ("warning", $["id":`my_warning, "label":_("My Warning")])
+     *    -> `Image (`id (`my_warning), "/usr/share/YaST2/theme/current/icons/32x32/apps/msg_warning.png", "My Warning")
+     *  Icon::Image ("info", $["margin_left":1, "margin_right":2])
+     *    -> `HBox (
+     *      `HSpacing (1),
+     *      `Image (`id ("icon_id_info"), "/usr/share/YaST2/theme/current/icons/32x32/apps/msg_info.png", "info"),
+     *      `HSpacing (2)
+     *    )
+     */
+    global term Image (string icon_type, map <string, any> options) {
+	LazyInit ();
+
+	if (! has_image_support)
+	    return `Empty();
+
+	any icon_id = options["id"]:nil;
+	if (icon_id == nil) icon_id = sformat ("icon_id_%1", icon_type);
+
+	string icon_label = options["label"]:icon_type;
+
+	term ret = nil;
+
+	term this_image = `Image (
+	    `id (icon_id),
+	    IconPath (icon_type),
+	    icon_label
+	);
+
+	// left and/or right margin defined
+	if (options["margin_left"]:0 != 0 || options["margin_right"]:0 != 0) {
+	    ret = `HBox (
+		`HSpacing (options["margin_left"]:0),
+		this_image,
+		`HSpacing (options["margin_right"]:0)
+	    );
+
+	    return ret;
+	// no margin defined
+	} else {
+	    return this_image;
+	}
+    }
+
+    /**
+     * Function calls Icon::Image with default options
+     *
+     * @param string icon_type
+     *
+     * @see Icon for more information
+     */
+    global term Simple (string icon_type) {
+	return Image (icon_type, $[]);
+    }
+
+    /**
+     * Returns UI term `Image() widget with a warning-icon.
+     *
+     * @return term warning icon
+     */
+    global term Warning () {
+	return Image ("warning", $[]);
+    }
+
+    /**
+     * Returns UI term `Image() widget with an error-icon.
+     *
+     * @return term error-icon
+     */
+    global term Error () {
+	return Image ("error", $[]);
+    }
+
+    /**
+     * Returns UI term `Image() widget with an info-icon.
+     *
+     * @return term info icon
+     */
+    global term Info () {
+	return Image ("info", $[]);
+    }
+
+/* EOF */
+}

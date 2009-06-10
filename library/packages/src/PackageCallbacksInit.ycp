@@ -1,0 +1,39 @@
+/**
+ * File:	modules/PackageCallbacksInit.ycp
+ * Package:	yast2
+ * Summary:	Initialize packager callbacks
+ * Authors:	Jiri Srain <jsrain@suse.cz>
+ *
+ * $Id$
+ *
+ * This module is used to initialize package manager callbacks
+ */
+
+{
+
+module "PackageCallbacksInit";
+textdomain "base";
+
+import "PackageCallbacks";
+
+/**
+ * Register package manager callbacks
+ */
+global void InitPackageCallbacks()
+{
+    y2warning(-1, "PackageCallbacksInit::InitPackageCallbacks() is obsoleted, use PackageCallbacks::InitPackageCallbacks() instead");
+    PackageCallbacks::InitPackageCallbacks();
+}
+
+global void SetMediaCallbacks()
+{
+    PackageCallbacks::SetMediaCallbacks();
+}
+
+global void PackageCallbacksInit()
+{
+    y2warning(-1, "PackageCallbacksInit module is obsoleted, use PackageCallbacks instead");
+}
+
+/* EOF */
+}

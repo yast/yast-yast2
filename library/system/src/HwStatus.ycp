@@ -1,0 +1,82 @@
+/**
+ * File:
+ *	HwStatus.ycp
+ *
+ * Module:
+ *	HwStatus
+ *
+ * Authors:
+ *	Klaus Kaempf (kkaempf@suse.de)
+ *
+ * Summary:
+ *	All hardware status relevant functions are here
+ * $Id$
+ */
+{
+    module "HwStatus";
+
+    // status map for devices, key is "unique id", value is symbol (`yes, `no)
+
+    map<string, symbol> statusmap = $[];
+
+    /**
+     * Set
+     * set status for a hardware device
+     * @param id	string, unique-id for device
+     * @param stat	symbol, status of device (`yes or `no)
+     *
+     */
+    global define void Set (string id, symbol stat)
+    ``{
+	statusmap[id] = stat;
+    }
+
+    /**
+     * Get()
+     * get status for device
+     * @param id	string, unique-id for device
+     * @returns symbol	status of device, (`yes or `no)
+     *			returns `unknown if status wasn't set before
+     */
+    global define symbol Get (string id)
+    ``{
+	return statusmap[id]:`unknown;
+    }
+
+    /**
+     * Save()
+     * save stati for all devices
+     */
+    global define void Save ()
+    ``{
+	foreach (string id, symbol stat, statusmap,
+	``{
+	    y2milestone ("Setting status of %1 as %2", id, stat);
+	    SCR::Write(.probe.status.configured, id, stat);
+	});
+    }
+
+    /**
+     * Update()
+     * set stati for all devices
+     */
+    global define void Update ()
+    ``{
+	// probe all pci and isapnp devices once
+	// so they have a defined status after update
+	SCR::Read (.probe.pci);
+	SCR::Read (.probe.isapnp);
+
+	// build relation between old keys and new UDIs (bug #104676)
+	string command = "hwinfo --pci --block --mouse --save-config=all";
+	y2milestone ("Running %1", command);
+	map cmdret = (map)SCR::Execute (.target.bash_output, command);
+	integer exit = cmdret["exit"]:-1;
+	y2milestone ("Command retval: %1", cmdret["exit"]:-1);
+	if (exit != 0)
+	    y2error ("Command output: %1", cmdret);
+	else
+	    y2debug ("Command output: %1", cmdret);
+    }
+
+}

@@ -1,0 +1,210 @@
+.\" Michal Svec <msvec@suse.cz>
+.\"
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.\"
+.TH YAST2 8 "January 2003" "yast2" "System configuration"
+.\"
+.\"
+.SH NAME
+YaST2 \- universal configuration utility
+.\"
+.\"
+.SH SYNOPSIS
+.B yast2 [
+.I options
+.B ] [
+.I module
+.B ] [
+.I module specific options
+.B ]
+.br
+.B yast2 --install
+.I <package>
+.B [
+.I <package>
+.B [
+.I ...
+.B ] ]
+.\"
+.\"
+.SH DESCRIPTION
+.B YaST2
+is used to configure the system. It can configure a common hardware
+(sound cards, printers, keyboards, mice), network connections (network
+cards, ISDN cards, modems, DSL connections), network clients and services
+(NFS, NIS), as well as a general system options (language, partitioning,
+software, bootloader).
+
+.br
+.B YaST2
+comes with three frontends:
+.B GTK
+,
+.B QT
+and
+.B ncurses.
+All frontends are functionally equivalent.
+The correct frontend is selected automatically based on the available
+components and the current environment (the DISPLAY variable).
+
+.br
+Use
+.B yast2
+alone to launch the
+.B YaST2 Control Center
+from which you can select a particular configuration module or use
+.B yast2 <module>
+to launch the module directly.
+.\"
+.\"
+.SH OPTIONS
+.\"
+.TP
+.B --qt
+Run YaST in the QT graphical frontend
+.\"
+.TP
+.B --gtk
+Run YaST in the GTK graphical frontend
+.\"
+.TP
+.B --ncurses
+Run YaST in the ncurses text-mode frontend
+.\"
+.TP
+.B -g, --geometry
+Default window size (QT frontend only).
+.\"
+.TP
+.B -h, --help
+Print a usage and exit.
+.\"
+.TP
+.B -i, --install <package> [ <package> [ ... ] ]
+Install an RPM package. The
+.B package
+can be a single short package name (e.g. gvim)
+which will be installed with dependency checking, or the full
+path to an rpm package (e.g /tmp/gvim.rpm) which will be
+installed without dependency checking.
+.\"
+.\" #222757
+.TP
+.B --remove <package> [ <package> [ ... ] ]
+Remove an RPM package. The
+.B package
+can be short package names (e.g. gvim)
+which will be removed with dependency checking.
+.\"
+.TP
+.B -l, --list
+List all available modules. To obtain usage info about
+a module, use "yast module help".
+.\"
+.\"
+.SH MODULES WITH COMMAND LINE INTERFACE
+.TP
+This is a list of YaST modules currently supporting command line interface:
+.P
+answering_machine, bootloader, ca_mgm, dhcp-server, dns, dns-server, fax,
+firewall, groups, host, http-server, idedma, inetd, irda, kerberos-client,
+keyboard, lan, language, ldap, mail, mouse, nfs, nfs_server, nis, nis_server,
+ntp-client, power-management, powertweak, printer, profile-manager, proxy,
+remote, routing, runlevel, samba-client, samba-server, security, sound,
+sysconfig, tftp-server, timezone, tv, users
+.\"
+.P
+To obtain a list of basic commands for using a YaST module
+with support for command line interface, use:
+.\"
+.br
+.B yast2
+.I module
+.B help
+.br
+.\"
+.P
+To get more comprehensive information about the commands
+available for a YaST module, use:
+.\"
+.br
+.B yast2
+.I module
+.B longhelp
+.br
+.\"
+.P
+To get information about the commands available for a YaST
+module in a XML formatted file, use:
+.\"
+.br
+.B yast2
+.I module
+.B xmlhelp
+.B xmlfile= \fI<filename>\fP
+.br
+.\"
+.P
+To get information about a specific command of a YaST
+module, use:
+.\"
+.br
+.B yast2
+.I module
+.I command
+.B help
+.br
+.\"
+.P
+To start an interactive console in which you can execute
+commands of a YaST module, use
+.\"
+.br
+.B yast2
+.I module
+.B interactive
+.br
+.\"
+.\"
+.SH FILES
+.TP
+/var/log/YaST2/*
+Logs
+.TP
+/etc/sysconfig/yast2, $HOME/.yast2/yast2
+Configures the preferred GUI.
+\" .SH BUGS
+\" Please report bugs at http://www.suse.de/feedback
+.\"
+.\"
+.SH "EXIT STATUS"
+.TP
+.if !'po4a'hide' .B 0
+Successful program execution.
+.TP
+.if !'po4a'hide' .B 1
+Too few arguments.
+.TP
+.if !'po4a'hide' .B 5
+Error in arguments.
+.TP
+.if !'po4a'hide' .B 16
+Generic module error.
+.TP
+.if !'po4a'hide' .B > 16
+Module specific error codes.
+.\"
+.\"
+.SH AUTHOR
+.nf
+Michal Svec <msvec@suse.cz> - manual page
+Jakub Friedl <jfriedl@suse.cz> - manual page
+.fi
+.\"
+.\"
+.SH "SEE ALSO"
+Documentation in /usr/share/doc/packages/yast2*.
+.\"
+.\" EOF
