@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jun 11 15:55:55 CEST 2009 - jsrain@suse.cz
+
+- Getting hostname info from /etc/HOSTNAME only if the file exists.
+
+-------------------------------------------------------------------
 Wed Jun  3 12:25:28 CEST 2009 - jsrain@suse.cz
 
 - prefer Gtk front-end when running xfce (bnc#509121)
