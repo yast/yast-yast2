@@ -81,10 +81,13 @@ global list<string> NewlineItems (string s) {
  * Return a pretty description of a byte count with required precision
  * and using B, kB, MB, GB or TB as unit as appropriate.
  *
+ * Uses the current locale defined decimal separator
+ * (i.e. the result is language dependant).
+ *
  * @param bytes	size (e.g. free diskspace, memory size) in Bytes
  * @param precision number of fraction digits in output
  * @param omit_zeroes if true then do not add zeroes
- *	(usefull for memory size - 128 MB RAM looks better than 128.00 MB RAM)
+ *	(useful for memory size - 128 MB RAM looks better than 128.00 MB RAM)
  * @return formatted string
  *
  * @example FormatSizeWithPrecision(128, 2, true) -> "128 B"
@@ -122,7 +125,7 @@ global define string FormatSizeWithPrecision(integer bytes, integer precision, b
 	precision = 0;
     }
 
-    return tostring(whole, precision) + " " + units[index]:"";
+    return float::tolstring(whole, precision) + " " + units[index]:"";
 }
 
 /**
@@ -130,6 +133,9 @@ global define string FormatSizeWithPrecision(integer bytes, integer precision, b
  *
  * Return a pretty description of a byte count, with two fraction digits
  * and using B, kB, MB, GB or TB as unit as appropriate.
+ *
+ * Uses the current locale defined decimal separator
+ * (i.e. the result is language dependant).
  *
  * @param bytes	size (e.g. free diskspace) in Bytes
  * @return formatted string
