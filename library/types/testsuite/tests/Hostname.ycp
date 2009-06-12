@@ -1,6 +1,12 @@
 {
 
 include "testsuite.ycp";
+map READ = $[
+  "target" : $[
+    "tmpdir" : "/tmp"
+  ]
+];
+TESTSUITE_INIT ([READ], nil);
 import "Hostname";
 
 DUMP("Hostname::Check");
