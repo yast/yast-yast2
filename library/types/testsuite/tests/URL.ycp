@@ -10,6 +10,13 @@
 {
 
 include "testsuite.ycp";
+map READ = $[
+  "target" : $[
+    "tmpdir" : "/tmp"
+  ]
+];
+TESTSUITE_INIT ([READ], nil);
+
 import "URL";
 
 TEST(``(URL::Parse("http://name:pass@www.suse.cz:80/path/index.html?question#part")), [], nil);

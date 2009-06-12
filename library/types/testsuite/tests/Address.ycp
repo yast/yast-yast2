@@ -1,12 +1,20 @@
 {
 
 include "testsuite.ycp";
+
+map READ = $[
+  "target" : $[
+    "tmpdir" : "/tmp"
+  ]
+];
+TESTSUITE_INIT ([READ], nil);
+
 import "Address";
 
 DUMP("Address::Check");
-TEST(``(Address::Check(nil)), [], nil);
-TEST(``(Address::Check("")), [], nil);
-TEST(``(Address::Check("1.2.3.4")), [], nil);
-TEST(``(Address::Check("::1")), [], nil);
+TEST(``(Address::Check(nil)), [READ], nil);
+TEST(``(Address::Check("")), [READ], nil);
+TEST(``(Address::Check("1.2.3.4")), [READ], nil);
+TEST(``(Address::Check("::1")), [READ], nil);
 
 }

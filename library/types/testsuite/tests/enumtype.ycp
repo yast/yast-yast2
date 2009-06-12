@@ -10,6 +10,13 @@
 {
 
     include "testsuite.ycp";
+map READ = $[
+  "target" : $[
+    "tmpdir" : "/tmp"
+  ]
+];
+TESTSUITE_INIT ([READ], nil);
+
     import "TypeRepository";
 
     TEST(``(TypeRepository::enum_validator( ["a","b","c"], "a" )),[],nil);
