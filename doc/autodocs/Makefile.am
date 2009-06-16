@@ -1,10 +1,4 @@
-# Makefile.am for yast2/doc/autodocs
+# Makefile.am for YCP module .../doc/autodocs
 
-htmldir = @docdir@/autodocs
-
-html_DATA = index.html $(wildcard *.html)
-
-CLEANFILES = $(html_DATA)
-
-index.html: $(srcdir)/../../library/*/*.ycp
-	${YCPDOC} -d. $(srcdir)/../../library/*/*.ycp
+AUTODOCS_YCP=$(srcdir)/../../library/*/*.ycp
+include $(top_srcdir)/autodocs-ycp.ami
