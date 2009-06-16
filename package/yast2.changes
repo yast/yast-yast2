@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jun 16 16:44:49 CEST 2009 - mvidner@suse.cz
+
+- Using autodocs-ycp.ami, which contains a fix for automake 1.11.
+
+-------------------------------------------------------------------
 Thu Jun 11 18:09:25 CEST 2009 - lslezak@suse.cz
 
 - use float::tolstring() function in String::FormatSize() and
