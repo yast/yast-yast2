@@ -180,6 +180,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 
 %doc @docdir@/autodocs
 %doc @docdir@/commandline
+%doc @docdir@/control
 %doc @docdir@/cron
 %doc @docdir@/cwm
 %doc @docdir@/desktop
@@ -192,3 +193,4 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %doc @docdir@/system
 %doc @docdir@/types
 %doc @docdir@/wizard
+%doc @docdir@/xml
