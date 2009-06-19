@@ -15,7 +15,6 @@ textdomain "base";
 
 import "IP";
 import "String";
-import "FileUtils";
 
 /**
  * i18n characters in domain names are still not allowed
@@ -145,7 +144,7 @@ global define string CurrentFQ() {
     map hostname_data = (map) SCR::Execute(.target.bash_output, "hostname --fqdn");
     if (hostname_data == nil || hostname_data["exit"]:-1 != 0 )
     {
-	fqhostname = (FileUtils::Exists ("/etc/HOSTNAME") ? (string) SCR::Read(.target.string, "/etc/HOSTNAME"):"");
+	fqhostname = ($[] != (map) SCR::Read(.target.stat, "/etc/HOSTNAME") ? (string) SCR::Read(.target.string, "/etc/HOSTNAME"):"");
 
 	if ( fqhostname == "" || fqhostname == nil )
 	{
