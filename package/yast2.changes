@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 19 13:01:19 CEST 2009 - jsrain@suse.cz
+
+- removed cyclic dependency between YCP modules preventing from
+  correct build
+
+-------------------------------------------------------------------
 Tue Jun 16 16:44:49 CEST 2009 - mvidner@suse.cz
 
 - Using autodocs-ycp.ami, which contains a fix for automake 1.11.

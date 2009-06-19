@@ -1,3 +1,2 @@
-Read	.target.tmpdir "/tmp"
 Log	Request to validate unknown type blem
 Return	false
