@@ -73,7 +73,7 @@ Provides:	yast2-packager:/usr/lib/YaST2/servers_non_y2/ag_anyxml
 Provides:	yast2-dns-server:/usr/share/YaST2/modules/DnsServerAPI.pm
 Provides:       yast2-mail-aliases
 
-Summary:	Main YaST2 package
+Summary:	YaST2 - Main Package
 
 %description
 -
@@ -87,7 +87,7 @@ Obsoletes:	yast2-devel
 Provides:	yast2-devel
 Requires:	yast2-core-devel
 
-Summary:	Documentation for Wizard and Sequencer
+Summary:	YaST2 - Development Scripts and Documentation
 
 %description devel-doc
 -
