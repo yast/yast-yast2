@@ -76,7 +76,8 @@ Provides:       yast2-mail-aliases
 Summary:	YaST2 - Main Package
 
 %description
--
+This package contains scripts and data needed for SuSE Linux
+installation with YaST2
 
 %package devel-doc
 Requires:       yast2 = %version
@@ -90,7 +91,8 @@ Requires:	yast2-core-devel
 Summary:	YaST2 - Development Scripts and Documentation
 
 %description devel-doc
--
+This package contains scripts and data needed for a SUSE Linux
+installation with YaST2.
 
 @PREP@
 
