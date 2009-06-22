@@ -1,6 +1,7 @@
 @HEADER-COMMENT@
 
 @HEADER@
+Group:	System/YaST
 License: GPL v2 or later
 Source1:	yast2-rpmlintrc
 
@@ -82,7 +83,7 @@ installation with YaST2
 
 %package devel-doc
 Requires:       yast2 = %version
-Group:          Development/Libraries
+Group:          System/YaST
 Provides:	yast2-lib-sequencer-devel
 Obsoletes:	yast2-lib-sequencer-devel
 Obsoletes:	yast2-devel
