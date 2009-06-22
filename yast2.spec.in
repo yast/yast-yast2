@@ -1,6 +1,7 @@
 @HEADER-COMMENT@
 
 @HEADER@
+License: GPL v2 or later
 Source1:	yast2-rpmlintrc
 
 BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-testsuite yast2-perl-bindings
