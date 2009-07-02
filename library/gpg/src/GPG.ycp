@@ -307,7 +307,7 @@ boolean SignFile(string keyid, string file, string passphrase, boolean ascii_sig
     }
 
     // use the passphrase
-    map out = callGPG(sformat("--detach-sign -u '%1' --no-tty --command-fd=0 %2 '%3' < '%4'", String::Quote(keyid), (ascii_signature ? "-a" : ""), String::Quote(file), String::Quote(tmpfile)));
+    map out = callGPG(sformat("--detach-sign -u '%1' --no-tty --batch --command-fd=0 --passphrase-fd 0 %2 '%3' < '%4'", String::Quote(keyid), (ascii_signature ? "-a" : ""), String::Quote(file), String::Quote(tmpfile)));
 
     return out["exit"]:-1 == 0;
 }
