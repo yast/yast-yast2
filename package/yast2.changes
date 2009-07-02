@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul  2 12:14:53 CEST 2009 - jsuchome@suse.cz
+
+- do not ask for the same password again and again (bnc#517382)
+- 2.17.69 
+
+-------------------------------------------------------------------
 Mon Feb 23 12:41:52 CET 2009 - locilka@suse.cz
 
 - Fixing ProductControl to avoid leaving a workflow with the `auto
