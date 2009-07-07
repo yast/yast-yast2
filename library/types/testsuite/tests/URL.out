@@ -26,6 +26,9 @@ Return	http://[2001:de8:0:f123::1]:8080/path/to/dir
 Return	$["fragment":"", "host":"2001:de8:0:f123::1", "pass":"", "path":"/path/to/dir", "port":"", "query":"", "scheme":"http", "user":""]
 Return	$["fragment":"", "host":"2001:de8:0:f123::1", "pass":"password", "path":"/path/to/dir", "port":"8080", "query":"", "scheme":"http", "user":"user"]
 Return	http://user:password@[2001:de8:0:f123::1]:8080/path/to/dir
+Return	$["domain":"group", "fragment":"", "host":"servername", "pass":"passwd", "path":"/share/path/on/the/share", "port":"", "query":"mountoptions=ro&workgroup=group", "scheme":"smb", "user":"username"]
+Return	true
+Return	smb://username:passwd@myserver.com/share%24%24share/path/on/the/share?workgroup=workgroup
 Return	dir:///
 Return	http://download.opensuse.org/very/log/path/which/will/be/truncated/target_file
 Return	http://download.opensuse.org/.../target_file
