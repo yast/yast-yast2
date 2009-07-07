@@ -58,6 +58,13 @@ TEST(``(URL::Parse("http://[2001:de8:0:f123::1]/path/to/dir")), [], nil);
 TEST(``(URL::Parse("http://user:password@[2001:de8:0:f123::1]:8080/path/to/dir")), [], nil);
 TEST(``(URL::Build(URL::Parse("http://user:password@[2001:de8:0:f123::1]:8080/path/to/dir"))), [], nil);
 
+// smb:// tests
+string smb_url = "smb://username:passwd@servername/share/path/on/the/share?mountoptions=ro&workgroup=group";
+TEST(``(URL::Parse(smb_url)), [], nil);
+// parse->build must return the orginal value
+TEST(``(URL::Build(URL::Parse(smb_url)) == smb_url), [], nil);
+// bnc#491482
+TEST(``(URL::Build( $["domain":"workgroup", "host":"myserver.com", "pass":"passwd", "path":"/share$$share/path/on/the/share", "scheme":"smb", "user":"username"])), [], nil);
 
 TEST(``(URL::Build(URL::Parse("dir:///"))), [], nil);
 
