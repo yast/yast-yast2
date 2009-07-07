@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul  7 13:24:32 CEST 2009 - lslezak@suse.cz
+
+- Do not display "No package source" popup, just log a warning
+  (bnc#485587)
+
+-------------------------------------------------------------------
 Thu Jul  2 12:14:53 CEST 2009 - jsuchome@suse.cz
 
 - do not ask for the same password again and again (bnc#517382)
