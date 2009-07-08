@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul 08 11:29:44 CEST 2009 - aschnell@suse.de
+
+- added GetIntegerFeature() and SetIntegerFeature() to
+  ProductFeatures module
+- 2.18.19
+
+-------------------------------------------------------------------
 Fri Jun 19 13:01:19 CEST 2009 - jsrain@suse.cz
 
 - removed cyclic dependency between YCP modules preventing from
