@@ -19,6 +19,6 @@ map READ = $[
 TEST (``(ProductFeatures::GetStringFeature ("globals", "ui_mode")), [READ], 0);
 TEST (``(ProductFeatures::GetStringFeature ("globals", "enable_autologin")), [READ], 0);
 TEST (``(ProductFeatures::GetBooleanFeature ("globals", "enable_autologin")), [READ], 0);
-
+TEST (``(ProductFeatures::GetIntegerFeature ("globals", "incomplete_translation_treshold")), [READ], 95);
 
 }

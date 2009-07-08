@@ -214,7 +214,25 @@ global boolean GetBooleanFeature (string section, string feature) {
 	return true;
     else
 	return false;
+}
 
+/**
+ * Get value of a feature
+ * @stable
+ * @param section string section of the feature
+ * @param features string feature name
+ * @return integer the feature value
+ */
+global integer GetIntegerFeature (string section, string feature) {
+    any value = GetFeature (section, feature);
+    if (value == nil)
+	return nil; 
+    else if (is (value, integer))
+	return (integer) value;
+    else if (is (value, string))
+	return tointeger((string) value);
+    else
+	return nil;
 }
 
 /**
@@ -250,6 +268,17 @@ global void SetStringFeature (string section, string feature, string value) {
  * @param value boolean the feature value
  */
 global void SetBooleanFeature (string section, string feature, boolean value) {
+    SetFeature (section, feature, value);
+}
+
+/**
+ * Set value of a feature
+ * @stable
+ * @param section string section of the feature
+ * @param features string feature name
+ * @param value integer the feature value
+ */
+global void SetIntegerFeature (string section, string feature, integer value) {
     SetFeature (section, feature, value);
 }
 
