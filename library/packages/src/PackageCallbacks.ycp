@@ -81,12 +81,16 @@
     // seconds for automatic retry after a timeout
     const integer retry_timeout = 30;
     // number of automatic retries
-    const integer retry_attempts = 3;
+    const integer retry_attempts = 100;
+    // max. retry timeout (15 minutes)
+    const integer retry_max_timeout = 15*60;
 
     // current values for retry functionality
     string retry_url = "";
     integer current_retry_timeout = retry_timeout;
-    integer current_retry_attempt = retry_attempts;
+    integer current_retry_attempt = 0;
+
+    const integer vsize_no_details = 1;
 
     // functions related to the persistent storage
     void LoadConfig()
@@ -175,6 +179,11 @@
 	return ret;
     }
 
+    string RetryLabel(integer timeout)
+    {
+	return sformat(_("Remaining time to automatic retry: %1"), String::FormatTime(timeout));
+    }
+
     /** at start of file providal
      *
      */
@@ -251,9 +260,10 @@
 					`Left(`Label( message))
 				    ),
 				    `VSpacing(0.1),
-				    `Left(`CheckBox(`id(`show), `opt(`notify),
+				    `HBox(`HSpacing(0.6),
+					`Left(`CheckBox(`id(`show), `opt(`notify),
 						    // check box
-						    _("Show &details"), info_on )),
+						    _("Show &details"), info_on ))),
 				    `VSpacing(0.4),
 				    `HBox(`VSpacing(vertical_size),
 					  `HSpacing(0.1),
@@ -280,7 +290,7 @@
 	else
 	{
 	    UI::CloseDialog();
-	    UI::OpenDialog( `opt(`decorated),  LayoutPopup (message, buttonbox, 2, false) );
+	    UI::OpenDialog( `opt(`decorated),  LayoutPopup (message, buttonbox, vsize_no_details, false) );
 	    UI::ReplaceWidget(`id(`info), `Empty() );
 	}
 	return false;
@@ -378,7 +388,7 @@
 	    }
 	    else
 	    {
-		UI::OpenDialog( `opt(`decorated),  LayoutPopup (message, button_box, 2, false) );
+		UI::OpenDialog( `opt(`decorated),  LayoutPopup (message, button_box, vsize_no_details, false) );
 		UI::ReplaceWidget(`id(`info), `Empty() );
 	    }
 
@@ -598,7 +608,7 @@ The system should be later verified by running the Software Management module.")
 		}
 		else
 		{
-		    UI::OpenDialog( `opt(`decorated),  LayoutPopup (message, button_box, 2, false) );
+		    UI::OpenDialog( `opt(`decorated),  LayoutPopup (message, button_box, vsize_no_details, false) );
 		    UI::ReplaceWidget(`id(`info), `Empty() );
 		}
 
@@ -874,26 +884,38 @@ Check whether the server is accessible."), URL::HidePassword(url), wanted_label)
 	// Autoretry code
 	boolean doing_auto_retry = false;
 
-	if (error_code == "IO_SOFT")
+	if (error_code == "IO_SOFT" || contains(["ftp", "sftp", "http", "https", "nfs", "smb"], url_scheme))
 	{
 	    // this a different file, reset the retry counter
 	    if (retry_url != url)
 	    {
 		retry_url = url;
-		current_retry_attempt = retry_attempts;
+		current_retry_attempt = 0;
 	    }
 
 	    // is the maximum retry count reached?
-	    if (current_retry_attempt > 0)
+	    if (current_retry_attempt < retry_attempts)
 	    {
-		// reset the counter
-		current_retry_timeout = retry_timeout;
+		// reset the counter, use logarithmic back-off with maximum limit
+		current_retry_timeout = (current_retry_attempt < 10) ?
+		    retry_timeout * (1 << current_retry_attempt) : retry_max_timeout;
+
+		if (current_retry_timeout > retry_max_timeout)
+		{
+		    current_retry_timeout = retry_max_timeout;
+		}
+
 		button_box = `VBox(
-		    `Left(`Label(`id(`auto_retry), sformat(_("Automatically Retry After %1 Seconds"), current_retry_timeout))),
+		    // failed download will be automatically retried after the timeout, %1 = formatted time (MM:SS format)
+		    `Left(`Label(`id(`auto_retry), RetryLabel(current_retry_timeout))),
 		    button_box
 		);
 
 		doing_auto_retry = true;
+	    }
+	    else
+	    {
+		y2warning("Max. autoretry count (%1) reached, giving up...", retry_attempts);
 	    }
 	}
 
@@ -950,7 +972,7 @@ Check whether the server is accessible."), URL::HidePassword(url), wanted_label)
 	}
 	else
 	{
-	    UI::OpenDialog( `opt(`decorated), LayoutPopup (message, button_box, 2, false) );
+	    UI::OpenDialog( `opt(`decorated), LayoutPopup (message, button_box, vsize_no_details, false) );
 	    UI::ReplaceWidget(`id(`info), `Empty() );
 	}
 
@@ -987,12 +1009,12 @@ Check whether the server is accessible."), URL::HidePassword(url), wanted_label)
 			r = `retry;
 
 			// decrease attempt counter
-			current_retry_attempt = current_retry_attempt - 1;
+			current_retry_attempt = current_retry_attempt + 1;
 		    }
 		    else
 		    {
 			// popup string - refresh the displayed counter
-			UI::ChangeWidget(`id(`auto_retry), `Label, sformat(_("Automatically Retry After %1 Seconds"), current_retry_timeout));
+			UI::ChangeWidget(`id(`auto_retry), `Label, RetryLabel(current_retry_timeout));
 		    }
 		}
 		else
@@ -2086,6 +2108,7 @@ might be missing or out of date.")),
 	{
 	    // push button label
 	    UI::ChangeWidget(`id(`abort), `Label, _("Skip Autorefresh"));
+	    UI::RecalcLayout();
 	}
 
 	autorefreshing = true;
@@ -2097,6 +2120,7 @@ might be missing or out of date.")),
 	if (!Mode::commandline() && UI::WidgetExists(`id(`abort)))
 	{
 	    UI::ChangeWidget(`id(`abort), `Label, Label::AbortButton());
+	    UI::RecalcLayout();
 	}
 
 	y2milestone("Autorefresh done");
@@ -2365,7 +2389,7 @@ global string ErrorScanDb(integer error, string description)
 	`PushButton (`id (`ignore), `opt (`okButton), Label::IgnoreButton())
     );
 
-    UI::OpenDialog( `opt(`decorated),  LayoutPopup (message, button_box, 1, false) );
+    UI::OpenDialog( `opt(`decorated),  LayoutPopup (message, button_box, vsize_no_details, false) );
 
     any r = nil;
 
