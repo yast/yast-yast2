@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Jul  9 13:55:26 CEST 2009 - lslezak@suse.cz
+
+- Call UI::RecalcLayout() after changing push button label
+  (bnc#510282)
+- Improved automatic retry after download failure (more attepts,
+  logarithmic back-off, retry download in more cases) (bnc#119813)
+- 2.18.20
+
+-------------------------------------------------------------------
 Wed Jul 08 11:29:44 CEST 2009 - aschnell@suse.de
 
 - added GetIntegerFeature() and SetIntegerFeature() to
