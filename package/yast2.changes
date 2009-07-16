@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 16 14:06:37 CEST 2009 - jsuchome@suse.cz
+
+- Wizard.ycp: use Fancy UI for 1024x576 screen size (fate#306298)
+- 2.18.21
+
+-------------------------------------------------------------------
 Thu Jul  9 13:55:26 CEST 2009 - lslezak@suse.cz
 
 - Call UI::RecalcLayout() after changing push button label
