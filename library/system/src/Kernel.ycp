@@ -91,6 +91,7 @@ boolean inform_about_kernel_change = false;
  */
 map<string, string> fallbacks = $[
 	"kernel-pae" : "kernel-default",
+	"kernel-desktop" : "kernel-default",
 	// fallback for PPC (#302246)
 	"kernel-iseries64" : "kernel-ppc64"
 ];
@@ -352,6 +353,11 @@ global void SetCmdLine (string new_cmd_line) {
      */
     global define void ProbeKernel ()
     {
+	boolean kernel_desktop_exists =
+	    ((Mode::normal () || Mode::repair()) && Pkg::PkgInstalled("kernel-desktop")) ||
+	    Pkg::PkgAvailable("kernel-desktop");
+	y2milestone ("Desktop kernel available: %1", kernel_desktop_exists);
+
 	kernel_packages = ["kernel-default"];
 
 	// add Xen paravirtualized drivers to a full virtualized host
@@ -400,13 +406,26 @@ global void SetCmdLine (string new_cmd_line) {
 	    if ((memsize >= fourGB || contains (cpuflags, "nx")) && contains (cpuflags, "pae"))
 	    {
 		y2milestone ("Kernel switch: PAE detected");
-		kernel_packages = ["kernel-pae"];
+		if (kernel_desktop_exists && true) { // FIXME: check whether it is really desktop
+		    kernel_packages = ["kernel-desktop"];
 
-		// add PV drivers
-		if (xen)
+		    // add PV drivers
+		    if (xen)
+		    {
+			y2milestone("Adding Xen PV drivers: xen-kmp-desktop");
+			kernel_packages = add(kernel_packages, "xen-kmp-desktop");
+		    }
+		}
+		else
 		{
-		    y2milestone("Adding Xen PV drivers: xen-kmp-pae");
-		    kernel_packages = add(kernel_packages, "xen-kmp-pae");
+		    kernel_packages = ["kernel-pae"];
+
+		    // add PV drivers
+		    if (xen)
+		    {
+			y2milestone("Adding Xen PV drivers: xen-kmp-pae");
+			kernel_packages = add(kernel_packages, "xen-kmp-pae");
+		    }
 		}
 	    }
 	    else
@@ -421,10 +440,21 @@ global void SetCmdLine (string new_cmd_line) {
 	}
 	else if (Arch::x86_64())
 	{
-	    if (xen)
+	    if (kernel_desktop_exists && true) { // FIXME: detect desktop
+		kernel_packages = ["kernel-desktop"];
+		if (xen)
+		{
+		    y2milestone("Adding Xen PV drivers: xen-kmp-desktop");
+		    kernel_packages = add(kernel_packages, "xen-kmp-desktop");
+		}
+	    }
+	    else
 	    {
-		y2milestone("Adding Xen PV drivers: xen-kmp-default");
-		kernel_packages = add(kernel_packages, "xen-kmp-default");
+		if (xen)
+		{
+		    y2milestone("Adding Xen PV drivers: xen-kmp-default");
+		    kernel_packages = add(kernel_packages, "xen-kmp-default");
+		}
 	    }
 	}
 	else if (Arch::ppc ())

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul 29 14:44:48 CEST 2009 - jsrain@suse.cz
+
+- select kernel-desktop by default if exists
+- 2.18.22
+
+-------------------------------------------------------------------
 Thu Jul 16 14:06:37 CEST 2009 - jsuchome@suse.cz
 
 - Wizard.ycp: use Fancy UI for 1024x576 screen size (fate#306298)
