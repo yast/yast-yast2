@@ -7,9 +7,9 @@
 
 usage()
 {
-    echo "Usage: $0 <tgz-file-name>|<bzip2-file-name>"
-    echo ""
-    echo "Copies the YaST2 logs to a compressed tar archive."
+    echo "Usage: $0 <tgz-file-name>|<bzip2-file-name>" >&2
+    echo "" >&2
+    echo "Copies the YaST2 logs to a compressed tar archive." >&2
     exit 1
 }
 
@@ -42,7 +42,7 @@ case "$1" in
 	exit 4
 esac
 
-TMPDIR=`mktemp -d` || ( echo "FATAL: Failed to create a temporary directory"; exit 5 );
+TMPDIR=`mktemp -d` || ( echo "FATAL: Failed to create a temporary directory" >&2; exit 5 );
 LIST=YaST2
 
 if [ -f /var/log/evms-engine.log ]; then
@@ -83,10 +83,9 @@ if [ -f /var/log/$RPM_LIST ]; then
     LIST="$LIST $RPM_LIST"
 fi
 
-echo "Saving y2logs to $TARGET"
+echo "Saving y2logs to $TARGET" >&2
 
 tar cf "$TARGET" $COMPRESSION --directory=/var/log $LIST && rm -rf $TMPDIR && exit 0
 
 echo "FATAL: Error creating archive $TARGET" >&2
 exit 2
-
