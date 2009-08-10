@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 10 14:12:33 CEST 2009 - mvidner@suse.cz
+
+- save_y2logs: print usage to stderr (bnc#522842).
+  This is to notify users who use "$0 > l.tgz" instead of "$0 l.tgz"
+
+-------------------------------------------------------------------
 Wed Jul 29 14:44:48 CEST 2009 - jsrain@suse.cz
 
 - select kernel-desktop by default if exists
