@@ -15,44 +15,33 @@ our @CAPABILITIES       = ('SLES11');
 our %TYPEINFO;
 
 
+# Return the list of services enabled in given runlevel
 BEGIN{$TYPEINFO{Read} = ["function",
-    ["list", [ "map", "string", "any"]]];
+    ["list", "string"], "integer"];
 }
 sub Read {
 
   my $self	= shift;
-  my @ret	= ();
+  my $runlevel	= shift;
 
-  my $current_runlevel	= 3; #FIXME which runlevel?
-
-  my $services	= Service->EnabledServices ($current_runlevel);
-  foreach my $name (@$services) {
-    my $s	= {
-	"name"		=> $name
-#read the status on demand, this is costly
-#	"status"	=> Service->Status ($name)
-    };
-    push @ret, $s;
-  }
-  return \@ret;
+  return Service->EnabledServices ($runlevel);
 }
 
+# Return the status of given service 
+# return value is the exit code of status function
 BEGIN{$TYPEINFO{Get} = ["function",
-    [ "map", "string", "any"],
-    "string" ];
+    "integer", "string" ];
 }
 sub Get {
 
   my $self	= shift;
   my $name	= shift;
 
-  my $service	= {
-    "name"	=> $name,
-    "status"	=> Service->Status ($name)
-  };
-  return $service;
+  return Service->Status ($name);
 }
 
+# Executes an action (e.g. "restart") with given service
+# return value is map with "exit", "stdout" and "stderr" keys
 BEGIN{$TYPEINFO{Execute} = ["function",
     [ "map", "string", "any"],
     "string", "string" ];
