@@ -15,16 +15,31 @@ our @CAPABILITIES       = ('SLES11');
 our %TYPEINFO;
 
 
-# Return the list of services enabled in given runlevel
+# Return the map of services enabled in given runlevel
+# Parameter is an argument map with possible keys:
+# 	"runlevel" 	: integer
+#	"read_status"	: if present, service status will be queried
+# returns array of hashes
 BEGIN{$TYPEINFO{Read} = ["function",
-    ["list", "string"], "integer"];
+    ["list", [ "map", "string", "any"]],
+    ["map", "string", "any"]];
 }
 sub Read {
 
   my $self	= shift;
-  my $runlevel	= shift;
+  my $args	= shift;
+  my @ret	= ();
+  my $runlevel	= 5;
+  $runlevel	= $args->{"runlevel"} if defined $args->{"runlevel"};
 
-  return Service->EnabledServices ($runlevel);
+  foreach my $name (@{Service->EnabledServices ($runlevel)}) {
+    my $s      = {
+	"name"	=> $name
+    };
+    $s->{"status"}	= Service->Status ($name) if ($args->{"read_status"} || 0);
+    push @ret, $s;
+  }
+  return \@ret;
 }
 
 # Return the status of given service 
