@@ -87,6 +87,9 @@ list<string> DisabledModules = [];
 list<string> DisabledProposals = [];
 
 map<string, list <string> > DisabledACItems = $[];
+
+map <string, list<string> > DisabledSubProposals = $[];
+
 // <--
 
 // Log files for hooks
@@ -190,6 +193,30 @@ global list<string> DisableProposal (string disable_proposal) {
  */
 global list <string> GetDisabledProposals () {
     return DisabledProposals;
+}
+
+global map< string, list<string> > EnableSubProposal (string unique_id, string enable_subproposal) {
+
+    if ( haskey( DisabledSubProposals, unique_id ) ) {
+	DisabledSubProposals[unique_id] = filter (string one_subproposal, DisabledSubProposals[unique_id]:[], {
+	    return (one_subproposal != enable_subproposal);
+	});
+    }
+    return DisabledSubProposals;
+}
+
+global map< string, list<string> > DisableSubProposal (string unique_id, string disable_subproposal) {
+
+    if ( haskey( DisabledSubProposals, unique_id) ) {
+	DisabledSubProposals[unique_id] = (list<string>) union (DisabledSubProposals[unique_id]:[], [disable_subproposal]);
+    } else
+	DisabledSubProposals[unique_id] = [disable_subproposal];
+
+    return DisabledSubProposals;
+}
+
+global map < string,list <string> > GetDisabledSubProposals () {
+    return DisabledSubProposals;
 }
 
 global map<string, list<string> > EnableACItem (string unique_id, string enable_ac_item) {
@@ -1009,8 +1036,11 @@ define list<map> getMatchingProposal(
 global define list < list > getProposals(string stage, string mode, string proptype) {
 
     list<map> props = getMatchingProposal(stage, mode, proptype);
-    
-    list< list > final_proposals = maplist(any p, props[0, "proposal_modules"]:[], ``{
+    string unique_id = props[0,"unique_id"]:"";
+    map <string, list<string> > disabled_subprops = GetDisabledSubProposals();
+
+    list< list > final_proposals = [];
+    foreach(any p, props[0, "proposal_modules"]:[], ``{
 	    
 	    string proposal_name = "";
 	    integer order_value = 50;
@@ -1033,15 +1063,20 @@ global define list < list > getProposals(string stage, string mode, string propt
 		}
 	    }
 
+	    boolean is_disabled = haskey( disabled_subprops, unique_id) && 
+				  contains( disabled_subprops[unique_id]:[], proposal_name);
+ 
 	    // All proposal file names end with _proposal
-            if (!issubstring(proposal_name, "_proposal"))
-                return( [proposal_name + "_proposal", order_value ] );
-            else
-                return( [proposal_name, order_value] );
-
+	    if ( !is_disabled) {
+                if (!issubstring(proposal_name, "_proposal"))
+                    final_proposals = add( final_proposals, [proposal_name + "_proposal", order_value ] );
+                else
+                    final_proposals = add( final_proposals,  [proposal_name, order_value] );
+	    }
+	    else
+		y2milestone("Proposal module %1 found among disabled subproposals", proposal_name);
     });
 
-  
     y2debug("final proposals: %1", final_proposals );
     return final_proposals;
 }
