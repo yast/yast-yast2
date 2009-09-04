@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Sep  4 18:29:35 CEST 2009 - kmachalkova@suse.cz
+
+- ProductControl: support for disabling AC sub-items and sub-proposals
+  (related to FaTE #303859 and bnc#534862)
+- 2.18.23
+
+-------------------------------------------------------------------
 Mon Aug 10 14:12:33 CEST 2009 - mvidner@suse.cz
 
 - save_y2logs: print usage to stderr (bnc#522842).
