@@ -86,7 +86,7 @@ list<string> DisabledModules = [];
 // List of proposals to disable in the current run
 list<string> DisabledProposals = [];
 
-
+map<string, list <string> > DisabledACItems = $[];
 // <--
 
 // Log files for hooks
@@ -190,6 +190,33 @@ global list<string> DisableProposal (string disable_proposal) {
  */
 global list <string> GetDisabledProposals () {
     return DisabledProposals;
+}
+
+global map<string, list<string> > EnableACItem (string unique_id, string enable_ac_item) {
+
+    if ( haskey( DisabledACItems, unique_id ) ) {
+	DisabledACItems[unique_id] = filter (string one_ac_item, DisabledACItems[unique_id]:[], {
+	    return (one_ac_item != enable_ac_item);
+	});
+    }
+    else
+	y2error("AC step with id %1 does not exist", unique_id );
+
+    return DisabledACItems;
+}
+
+global map<string, list<string> > DisableACItem (string unique_id, string disable_ac_item) {
+
+    if ( haskey( DisabledACItems, unique_id) ) {
+	DisabledACItems[unique_id] = (list<string>) union (DisabledACItems[unique_id]:[], [disable_ac_item]);
+    } else
+	DisabledACItems[unique_id] = [disable_ac_item];
+
+    return DisabledACItems;
+}
+
+global map< string, list <string> > GetDisabledACItems () {
+    return DisabledACItems;
 }
 
 /**
