@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep  7 15:20:03 CEST 2009 - jsuchome@suse.cz
+
+- package new YaPI file SERVICES.pm (fate #306696)
+- 2.18.24 
+
+-------------------------------------------------------------------
 Fri Sep  4 18:29:35 CEST 2009 - kmachalkova@suse.cz
 
 - ProductControl: support for disabling AC sub-items and sub-proposals
