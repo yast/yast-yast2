@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep 14 13:46:56 CEST 2009 - mvidner@suse.cz
+
+- YaST would not start from the GNOME menu (Unknown option -S) bnc#537470.
+- 2.18.25
+
+-------------------------------------------------------------------
 Mon Sep  7 15:20:03 CEST 2009 - jsuchome@suse.cz
 
 - package new YaPI file SERVICES.pm (fate #306696)

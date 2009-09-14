@@ -243,10 +243,13 @@ fi
 # Pass the arguments to WFM::Args():
 # Surround all args by (...).  args may contain spaces.
 # Use -S to avoid YCP escaping (bnc#382883)
-a=("$@")
-b=("${a[@]/#/(}")
-c=("${b[@]/%/)}")
-set -- -S "${c[@]}"
+# But avoid a lone -S (cc-gnome dies, bnc#537470)
+if [ $# -gt 0 ]; then
+    a=("$@")
+    b=("${a[@]/#/(}")
+    c=("${b[@]/%/)}")
+    set -- -S "${c[@]}"
+fi
 
 case "`basename $0`" in
 	YaST|yast|yast1|zast)
