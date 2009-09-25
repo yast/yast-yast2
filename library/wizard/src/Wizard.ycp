@@ -38,7 +38,8 @@
 	    have_fancy_ui_cache = UI::HasSpecialWidget(`Wizard ) == true
 		&& ui_info[ "Depth" ]:0 >= 15
 		&& ui_info[ "DefaultWidth" ]:0 >= 800
-		&& ui_info[ "DefaultHeight"]:0 >= 600;
+		// some netbooks use such a strange resolution (fate#306298)
+		&& ui_info[ "DefaultHeight"]:0 >= 576;
 
 	    // have_fancy_ui_cache = false;
 
