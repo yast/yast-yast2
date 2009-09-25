@@ -17,6 +17,16 @@ global string ValidChars = "0123456789.";
 global string ValidChars4 = "0123456789.";
 global string ValidChars6 = "0123456789";
 
+global define boolean CheckPrefix4(string prefix){
+    if(prefix == nil || prefix == "") return false;
+    /* <0,32> */
+    if(regexpmatch(prefix, "^[0-9]+$")) {
+	integer nm = tointeger(prefix);
+	return nm >= 0 && nm <= 32;
+    } else
+	return false;
+}
+
 /**
  * Check the IPv4 netmask
  * Note that 0.0.0.0 is not a correct netmask.
@@ -27,11 +37,6 @@ global define boolean Check4(string netmask) ``{
 
     if(netmask == nil || netmask == "") return false;
 
-    /* <0,32> */
-    if(regexpmatch(netmask, "^[0-9]+$")) {
-	integer nm = tointeger(netmask);
-	return nm >= 0 && nm <= 32;
-    }
 
     /* 255.255.240.0 */
     string s1 = "(128|192|224|240|248|252|254|255)";

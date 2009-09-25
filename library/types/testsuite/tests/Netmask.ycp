@@ -40,12 +40,12 @@ TEST(``(Netmask::Check4("1.2.3.4")), [], nil);
 TEST(``(Netmask::Check4("1.A.3.4")), [], nil);
 TEST(``(Netmask::Check4("0.0.0.0")), [], nil);
 
-TEST(``(Netmask::Check4(nil)), [], nil);
-TEST(``(Netmask::Check4("")), [], nil);
-TEST(``(Netmask::Check4("33")), [], nil);
-TEST(``(Netmask::Check4("0")), [], nil);
-TEST(``(Netmask::Check4("24")), [], nil);
-TEST(``(Netmask::Check4("32")), [], nil);
+TEST(``(Netmask::CheckPrefix4(nil)), [], nil);
+TEST(``(Netmask::CheckPrefix4("")), [], nil);
+TEST(``(Netmask::CheckPrefix4("33")), [], nil);
+TEST(``(Netmask::CheckPrefix4("0")), [], nil);
+TEST(``(Netmask::CheckPrefix4("24")), [], nil);
+TEST(``(Netmask::CheckPrefix4("32")), [], nil);
 
 DUMP("Netmask::Check6");
 TEST(``(Netmask::Check6(nil)), [], nil);
