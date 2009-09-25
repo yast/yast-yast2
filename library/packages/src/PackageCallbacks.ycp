@@ -547,11 +547,6 @@ The system should be later verified by running the Software Management module.")
 	{
 	    y2milestone("DonePackage(error: %1, reason: '%2')", error, reason);
 
-	    string infopath = (string) SCR::Read (.target.tmpdir) + "/rpmlog";
-	    SCR::Execute (.target.bash, "/usr/bin/tail '" + String::Quote (Installation::destdir)
-			  + Directory::logdir + "/y2logRPM' > " + infopath);
-	    string info = reason + "\n---\n" + (string) SCR::Read (.target.string, [infopath, "-?-"]);
-
 	    string message = sformat ( _deleting_package ? 
 		// error popup during package installation, %1 is the name of the package
 		_("Removal of package %1 failed.")
@@ -561,7 +556,7 @@ The system should be later verified by running the Software Management module.")
 
 	    if (Mode::commandline()) {
 		CommandLine::Print(message);
-		CommandLine::Print(info);
+		CommandLine::Print(reason);
 
 		// ask user in the interactive mode
 		if (CommandLine::Interactive())
@@ -599,7 +594,7 @@ The system should be later verified by running the Software Management module.")
 		if ( showLongInfo )
 		{
 		    UI::OpenDialog( `opt(`decorated), LayoutPopup (message, button_box, 10, true) );
-		    UI::ReplaceWidget(`id(`info), `RichText (`opt(`plainText), info) );
+		    UI::ReplaceWidget(`id(`info), `RichText (`opt(`plainText), reason) );
 		}
 		else
 		{
@@ -616,7 +611,7 @@ The system should be later verified by running the Software Management module.")
 			showLongInfo = ShowLogInfo (message, button_box);
 			if (showLongInfo)
 			{
-			    UI::ReplaceWidget(`id(`info), `RichText (`opt(`plainText), info) );
+			    UI::ReplaceWidget(`id(`info), `RichText (`opt(`plainText), reason) );
 			}
 			else
 			{
@@ -644,6 +639,16 @@ The system should be later verified by running the Software Management module.")
 	    }
 
 	    // default: ignore
+	}
+	else
+	{
+	    // no error, there is additional info (rpm output), see bnc#456446
+	    y2milestone("Additional RPM otput: %1", reason);
+
+	    if (Mode::commandline())
+	    {
+		CommandLine::Print(reason);
+	    }
 	}
 
 	return "I";

@@ -213,7 +213,7 @@ global boolean DoInstallAndRemove(list<string> toinstall, list<string> toremove)
     //[int successful, list failed, list remaining, list srcremaining]
     list result = Pkg::PkgCommit (0);
     y2debug ("PkgCommit: %1", result);
-    if(result[1]:[] != []) {
+    if(result == nil || result[1]:[] != []) {
 	y2error("Package commit failed: %1", result[1]:[]);
 	return false;
     }
