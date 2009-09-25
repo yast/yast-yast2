@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep 25 17:52:49 CEST 2009 - mzugec@suse.cz
+
+- separation of netmask and prefix validation in Netmask module
+- 2.18.26 
+
+-------------------------------------------------------------------
 Mon Sep 14 13:46:56 CEST 2009 - mvidner@suse.cz
 
 - YaST would not start from the GNOME menu (Unknown option -S) bnc#537470.
