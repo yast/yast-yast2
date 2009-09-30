@@ -5,49 +5,17 @@ Wed Sep 30 15:53:47 CEST 2009 - lslezak@suse.cz
 (backport from from trunk rev. 58399)
 - 2.17.71
 
--------------------------------------------------------------------
-Wed Sep 30 15:50:07 CEST 2009 - lslezak@suse.cz
-
+Merged changes from SP1-Stash branch:
+- read X-SuSE-DocTeamID from desktop files (bnc#448238)
 - package new YaPI file SERVICES.pm (fate #306696)
-
--------------------------------------------------------------------
-Thu Jul 16 14:42:16 CEST 2009 - jsuchome@suse.cz
-
 - Wizard.ycp: use Fancy UI for 1024x576 screen size (fate#306298) 
-
--------------------------------------------------------------------
-Wed Jun 10 09:55:30 CEST 2009 - mzugec@suse.cz
-
 - NetworkInterfaces - possible to not use LABEL for aliases
 (bnc#471253) (bnc#507640)
-
--------------------------------------------------------------------
-Tue May 26 18:59:03 CEST 2009 - juhliarik@suse.cz
-
 - added fix for problem with parsing command line (bnc#462276) 
-
--------------------------------------------------------------------
-Thu Apr  9 10:04:19 CEST 2009 - lslezak@suse.cz
-
 - PackageSystem.ycp - check nil result of Pkg::PkgCommit() call
   which indicates an error (bnc#157551)
-
--------------------------------------------------------------------
-Wed Apr  8 11:27:13 CEST 2009 - lslezak@suse.cz
-
 - PackageCallbacks.ycp - don't read non existing y2logRPM file
   (bnc#456446)
-
--------------------------------------------------------------------
-Fri Apr  3 13:26:58 CEST 2009 - lslezak@suse.cz
-
-- Do not display "No package source" popup, just log a warning
-  (bnc#485587)
-
--------------------------------------------------------------------
-Wed Mar 18 13:08:36 CET 2009 - ug@suse.de
-
-- read X-SuSE-DocTeamID from desktop files (bnc#448238)
 
 -------------------------------------------------------------------
 Tue Jul  7 13:24:32 CEST 2009 - lslezak@suse.cz
