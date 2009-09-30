@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Sep 30 15:50:07 CEST 2009 - lslezak@suse.cz
+
+- package new YaPI file SERVICES.pm (fate #306696)
+
+-------------------------------------------------------------------
 Thu Jul 16 14:42:16 CEST 2009 - jsuchome@suse.cz
 
 - Wizard.ycp: use Fancy UI for 1024x576 screen size (fate#306298) 
