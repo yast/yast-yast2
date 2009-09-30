@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 30 15:53:47 CEST 2009 - lslezak@suse.cz
+
+- Service.ycp - bad regexp, SuSEFirewall2_* not correctly recognized
+(backport from from trunk rev. 58399)
+
+-------------------------------------------------------------------
 Wed Sep 30 15:50:07 CEST 2009 - lslezak@suse.cz
 
 - package new YaPI file SERVICES.pm (fate #306696)
