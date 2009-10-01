@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct  1 11:03:46 CEST 2009 - jsuchome@suse.cz
+
+- correctly package SERVICES.pm
+- 2.17.72 
+
+-------------------------------------------------------------------
 Wed Sep 30 15:53:47 CEST 2009 - lslezak@suse.cz
 
 - Service.ycp - bad regexp, SuSEFirewall2_* not correctly recognized
