@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Oct 19 16:53:58 CEST 2009 - lslezak@suse.cz
+
+- added explicit gpg2 Requires (bnc#544683)
+
+-------------------------------------------------------------------
 Fri Sep 25 17:52:49 CEST 2009 - mzugec@suse.cz
 
 - separation of netmask and prefix validation in Netmask module
