@@ -31,6 +31,8 @@ Requires:	yast2-xml yast2-hardware-detection
 Requires:	yast2-perl-bindings
 # for ag_anyxml
 Requires:	perl-XML-Simple
+# for GPG.ycp
+Requires:	gpg2
 
 # moved cfg_security.scr
 Conflicts:	yast2-security <= 2.13.2
