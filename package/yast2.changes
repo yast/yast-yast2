@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 21 15:02:15 CEST 2009 - mzugec@suse.cz
+
+- Internet.ycp: skip interface status test in case of NM (bnc#535837)
+- 2.18.27 
+
+-------------------------------------------------------------------
 Mon Oct 19 16:53:58 CEST 2009 - lslezak@suse.cz
 
 - added explicit gpg2 Requires (bnc#544683)
