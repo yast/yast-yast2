@@ -169,6 +169,7 @@ global define boolean Status() {
       y2milestone("Skipping interface status test because of NetworkManager");
       return true;
     }
+
     integer ret = (integer) SCR::Execute(.target.bash, "/sbin/ifstatus " + device);
     y2milestone ("ifstatus %1: %2", device, ret);
     return ret == 0 || ret == 10;
