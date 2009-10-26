@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Oct 26 16:59:01 CET 2009 - mzugec@suse.cz
+
+- NetworkPopup: display link state (FaTE#307166)
+- 2.17.73 
+
+-------------------------------------------------------------------
 Thu Oct  1 11:03:46 CEST 2009 - jsuchome@suse.cz
 
 - correctly package SERVICES.pm
