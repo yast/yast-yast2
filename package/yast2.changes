@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Oct 26 16:53:20 CET 2009 - mzugec@suse.cz
+
+- NetworkPopup: display link state (FaTE#307166)
+- 2.18.28 
+
+-------------------------------------------------------------------
 Wed Oct 21 15:02:15 CEST 2009 - mzugec@suse.cz
 
 - Internet.ycp: skip interface status test in case of NM (bnc#535837)

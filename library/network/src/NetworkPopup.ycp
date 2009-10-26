@@ -57,7 +57,9 @@
 		    // TRANSLATORS: table item, informing that device has no IP address
 	            ip_addr = _("No IP address assigned");
 		}
-		return `item(`id(i),  NetworkInterfaces::GetDeviceType(i), device_name, ip_addr, i);
+		string conn = _("No");
+		if (NetworkInterfaces::IsConnected(i)) conn = _("Yes");
+		return `item(`id(i),  NetworkInterfaces::GetDeviceType(i), device_name, ip_addr, i, conn);
 	    }
 	);
 
@@ -66,7 +68,7 @@
 		`HSpacing (60),
 		`HBox (
 		    // translators: table header - details about the network device
-		    `Table(`id(`items), `header(_("Device Type"),_("Device Name"),_("IP Address"),_("Device ID")), Items),
+		    `Table(`id(`items), `header(_("Device Type"),_("Device Name"),_("IP Address"),_("Device ID"), _("Connected")), Items),
 		    `VSpacing(10)
 		    ),
 		`ButtonBox (
