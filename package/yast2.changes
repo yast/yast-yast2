@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov  4 15:40:57 CET 2009 - jsuchome@suse.cz
+
+- SERVICES.pm use ruby-bindings to read yml file (bnc#551276)
+- 2.17.74 
+
+-------------------------------------------------------------------
 Mon Oct 26 16:59:01 CET 2009 - mzugec@suse.cz
 
 - NetworkPopup: display link state (FaTE#307166)
