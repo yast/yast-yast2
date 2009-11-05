@@ -17,7 +17,7 @@ our $VERSION            = '1.0.0';
 our @CAPABILITIES       = ('SLES11');
 our %TYPEINFO;
 
-my $custom_services_file	= "/tmp/custom_services.yml";
+my $custom_services_file	= "/etc/webyast/custom_services.yml";
 
 my $error_message		= "";
 
