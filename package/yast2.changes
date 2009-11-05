@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov  5 15:58:10 CET 2009 - jsuchome@suse.cz
+
+- SERVICES.pm: fixed location of custom services file
+- 2.17.75 
+
+-------------------------------------------------------------------
 Wed Nov  4 15:40:57 CET 2009 - jsuchome@suse.cz
 
 - SERVICES.pm use ruby-bindings to read yml file (bnc#551276)
