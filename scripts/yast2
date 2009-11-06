@@ -408,6 +408,11 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 	echo "Something is wrong with the YaST user interface." >&2
 	exit_code=1		# also skips y2base later
     fi
+    if [ -n "$DISPLAY" -a ! -t 0 ]; then
+	rpm -V yast2-core yast2-ncurses yast2-qt yast2-gtk >&2
+	echo "Something is wrong with the YaST user interface, NCurses selected byt no terminal available." >&2
+	exit_code=1		# also skips y2base later
+    fi
 # quick hack: treat gtk like qt
 elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
 

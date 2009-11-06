@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov  6 14:05:03 CET 2009 - jsrain@suse.cz
+
+- issue an error message instead of trying to start YaST in
+  NCurses without a terminal available (bnc#502688)
+
+-------------------------------------------------------------------
 Mon Oct 26 16:53:20 CET 2009 - mzugec@suse.cz
 
 - NetworkPopup: display link state (FaTE#307166)
