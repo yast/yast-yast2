@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Nov 10 10:07:01 CET 2009 - jsuchome@suse.cz
+
+- SERVICES.pm: use ruby-bindings to read yml file (bnc#551276)
+
+-------------------------------------------------------------------
 Fri Nov  6 14:05:03 CET 2009 - jsrain@suse.cz
 
 - issue an error message instead of trying to start YaST in
