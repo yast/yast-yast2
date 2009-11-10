@@ -1,6 +1,7 @@
 @HEADER-COMMENT@
 
 @HEADER@
+Group:  System/YaST
 Source1:	yast2-rpmlintrc
 
 BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-testsuite yast2-perl-bindings
@@ -80,7 +81,7 @@ Summary:	Main YaST2 package
 
 %package devel-doc
 Requires:       yast2 = %version
-Group:          Development/Libraries
+Group:          System/YaST
 Provides:	yast2-lib-sequencer-devel
 Obsoletes:	yast2-lib-sequencer-devel
 Obsoletes:	yast2-devel
@@ -130,6 +131,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %dir @imagedir@
 %dir @localedir@
 %dir @moduledir@
+%dir @moduledir@/YaPI
 %dir @scrconfdir@
 %dir @ybindir@
 %dir @ydatadir@
@@ -147,6 +149,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 @ydatadir@/*.ycp
 @clientdir@/*
 @moduledir@/*
+@moduledir@/YaPI/*.pm
 @scrconfdir@/*
 @ybindir@/*
 @agentdir@/ag_*
