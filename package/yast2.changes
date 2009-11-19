@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 19 16:51:55 CET 2009 - locilka@susue.cz
+
+- REGISTERPRODUCT from content file moved to control file to
+  globals->require_registration (FATE #305578)
+
+-------------------------------------------------------------------
 Tue Nov 10 10:07:01 CET 2009 - jsuchome@suse.cz
 
 - SERVICES.pm: use ruby-bindings to read yml file (bnc#551276)
