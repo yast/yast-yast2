@@ -67,6 +67,12 @@
     global list <string> additional_finish_steps_after_chroot  = [];
     global list <string> additional_finish_steps_before_umount = [];
 
+    // FATE #305578: Add-On Product Requiring Registration
+    // $[ "workflow filename" : (boolean) require_registration ]
+    list <string> workflows_requiring_registration = [];
+
+    map <string, integer> workflows_to_sources = $[];
+
     boolean base_workflow_stored = false;
 
     /* Contains all currently workflows added to the Workflow Store */
@@ -281,6 +287,9 @@
 	additional_finish_steps_after_chroot  = [];
 	additional_finish_steps_before_umount = [];
 
+	workflows_requiring_registration = [];
+	workflows_to_sources = $[];
+
 	// reset internal variable to force the Prepare... function
 	system_proposals_prepared = false;
 	PrepareSystemProposals();
@@ -373,7 +382,7 @@ test -d '%1' || /bin/mkdir -p '%1';
      * @param string name with unique identification
      * @return string path to already cached workflow file, control file is downloaded if not yet chached
      */
-    string GetCachedWorkflowFilename (symbol type, integer src_id, string name) {
+    global string GetCachedWorkflowFilename (symbol type, integer src_id, string name) {
 	if (type == `addon) {
 	    string disk_filename = GenerateAdditionalControlFilePath (src_id, "");
 
@@ -436,6 +445,7 @@ test -d '%1' || /bin/mkdir -p '%1';
 	    unmerged_changes = true;
 
 	    used_workflows = add (used_workflows, used_filename);
+	    workflows_to_sources[used_filename] = src_id;
 	}
 
 	return true;
@@ -477,6 +487,10 @@ test -d '%1' || /bin/mkdir -p '%1';
 	    used_workflows = filter (string one_workflow, used_workflows, {
 		return one_workflow != used_filename;
 	    });
+
+	    if (haskey (workflows_to_sources, used_filename)) {
+		workflows_to_sources = remove (workflows_to_sources, used_filename);
+	    }
 
 	    if (! Stage::initial()) {
 		if (FileUtils::Exists (used_filename)) {
@@ -956,13 +970,68 @@ rm -rf *.xml *.ycp",
     }
 
     /**
+     * Returns list of workflows requiring registration
+     *
+     * @see FATE #305578: Add-On Product Requiring Registration
+     */
+    global list <string> WorkflowsRequiringRegistration () {
+	return workflows_requiring_registration;
+    }
+
+    /**
+     * Returns whether a repository workflow requires registration
+     *
+     * @param integer src_id
+     * @return boolean if registration is required
+     */
+    global boolean WorkflowRequiresRegistration (integer src_id) {
+	boolean ret = false;
+
+	y2milestone ("Known workflows: %1", workflows_to_sources);
+	y2milestone ("Workflows requiring registration: %1", workflows_requiring_registration);
+
+	foreach (string one_workflow, integer id, workflows_to_sources, {
+	    // sources match and workflow is listed as 'requiring registration'
+	    if (src_id == id  && contains (workflows_requiring_registration, one_workflow)) {
+		ret = true;
+		break;
+	    }
+	});
+
+	y2milestone ("WorkflowRequiresRegistration(%1): %2", src_id, ret);
+	return ret;
+    }
+
+    global boolean IncorporateControlFileOptions (string filename) {
+	map update_file = XML::XMLToYCPFile (filename);
+	if (update_file == nil) {
+	    y2error ("Unable to read the %1 control file", filename);
+	    return false;
+	}
+
+	// FATE #305578: Add-On Product Requiring Registration
+	map <string, any> globals = update_file["globals"]:$[];
+
+	if (haskey(globals, "require_registration") && globals["require_registration"]:false == true) {
+	    y2milestone ("Registration is required by %1", filename);
+	    workflows_requiring_registration = toset (add (workflows_requiring_registration, filename));
+	    y2milestone ("Workflows requiring registration: %1", workflows_requiring_registration);
+	} else {
+	    y2milestone ("Registration is not required by %1", filename);
+	}
+
+	return true;
+    }
+
+    /**
      * Update product options such as global settings, software, partitioning
      * or network.
      *
      * @param update_file a map containing update control file
+     * @param 
      * @return boolean true on success
      */
-    boolean UpdateProductInfo (map update_file) {
+    boolean UpdateProductInfo (map update_file, string filename) {
 	// merging all 'map <string, any>' type
 	foreach (string section, ["globals", "software", "partitioning", "network"], {
 	    map <string, any> sect = ProductFeatures::GetSection (section);
@@ -1048,7 +1117,7 @@ rm -rf *.xml *.ycp",
     	    return false;
 	}
 
-	if (! UpdateProductInfo (update_file)) {
+	if (! UpdateProductInfo (update_file, filename)) {
     	    y2error ("Failed to set product options");
     	    return false;
 	}
@@ -1126,6 +1195,8 @@ rm -rf *.xml *.ycp",
 	    } else {
 		y2error ("Workflow ident is: %1", workflow_ident);
 	    }
+
+	    IncorporateControlFileOptions (one_workflow);
 
 	    if (! IntegrateWorkflow (one_workflow)) {
 		y2error ("Merging '%1' failed!", one_workflow);
