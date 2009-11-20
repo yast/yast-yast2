@@ -466,6 +466,16 @@
     }
 
     /**
+     * Function returns description of a firewall service
+     *
+     * @param	string service
+     * @return	string service description
+     */
+    global define string GetDescription (string service) {
+	return SERVICES[service,"description"]:"";
+    }
+
+    /**
      * Sets that configuration was modified
      */
     global void SetModified () {
