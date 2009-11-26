@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 26 18:10:42 CET 2009 - kmachalkova@suse.cz
+
+- Fixed striping trailing \n from Hostname::CurrentHostname() 
+  (bnc#553213)
+
+-------------------------------------------------------------------
 Thu Nov 26 13:40:24 CET 2009 - locilka@suse.cz
 
 - Fixed access rights for /etc/install.inf (bnc #500124)
