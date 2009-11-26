@@ -42,11 +42,11 @@ global boolean Check () {
 	if (have_lock != true) {
 	    try_again = (Popup::AnyQuestion (
 		// TRANSLATORS: a popup headline
-		_("Accessing the Package Management Failed"),
+		_("Accessing the Software Management Failed"),
 		Pkg::LastError() + "\n\n" +
 		// TRANSLATORS: an error message with question
 		_("Would you like to continue without having access
-to the package management or retry to access it?
+to the software management or retry to access it?
 "),
 		Label::ContinueButton(),
 		Label::RetryButton(),
@@ -87,11 +87,11 @@ global map<string,any> Connect(boolean show_continue_button)
 	    {
 		symbol ret = Popup::AnyQuestion3(
 		    // TRANSLATORS: a popup headline
-		    _("Accessing the Package Management Failed"),
+		    _("Accessing the Softwaree Management Failed"),
 		    Pkg::LastError() + "\n\n" +
 		    // TRANSLATORS: an error message with question
-		    _("Would you like to retry accessing the package manager,
-continue without having access to package management,
+		    _("Would you like to retry accessing the software manager,
+continue without having access to the software management,
 or abort?
 "),
 		    Label::RetryButton(),
@@ -113,7 +113,7 @@ or abort?
 	    {
 		boolean ret = Popup::AnyQuestion(
 		    // TRANSLATORS: a popup headline
-		    _("Accessing the Package Management Failed"),
+		    _("Accessing the Software Management Failed"),
 		    Pkg::LastError() + "\n\n" +
 		    // TRANSLATORS: an error message with question
 _("Would you like to abort or try again?\n"),
