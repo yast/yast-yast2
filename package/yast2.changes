@@ -2,6 +2,7 @@
 Thu Nov 26 13:40:24 CET 2009 - locilka@suse.cz
 
 - Fixed access rights for /etc/install.inf (bnc #500124)
+- 2.17.77
 
 -------------------------------------------------------------------
 Thu Nov 19 16:51:55 CET 2009 - locilka@susue.cz
