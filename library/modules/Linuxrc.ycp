@@ -145,6 +145,8 @@
         {
             SCR::Execute (.target.bash, "/bin/grep -v Sourcemounted /etc/install.inf >" +
                     root + "/etc/install.inf");
+            SCR::Execute (.target.bash, "/bin/chmod 0600 " +
+                    root + "/etc/install.inf");
 
             // just for debug so we can see the original install.inf later
             SCR::Execute (.target.bash, "/bin/cp /etc/install.inf " +

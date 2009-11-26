@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Nov 26 13:40:24 CET 2009 - locilka@suse.cz
+
+- Fixed access rights for /etc/install.inf (bnc #500124)
+
+-------------------------------------------------------------------
 Tue May 12 19:04:12 CEST 2009 - mzugec@suse.de
 
 - support for IPv6/PREFIXLEN (fate#303811)
