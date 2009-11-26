@@ -155,8 +155,10 @@ global define string CurrentFQ() {
     }
     else
     {
-       fqhostname = String::FirstChunk( hostname_data["stdout"]:"", "\n");
+       fqhostname = hostname_data["stdout"]:"";
     }
+
+    fqhostname = String::FirstChunk( fqhostname, "\n");
 
     y2debug("Current FQDN: %1", fqhostname); 
     return fqhostname;
