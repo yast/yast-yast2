@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Dec  7 13:03:25 CET 2009 - jsrain@suse.cz
+
+- translate module names properly in NCurses CC (bnc#553644)
+
+-------------------------------------------------------------------
 Mon Oct 26 16:53:20 CET 2009 - mzugec@suse.cz
 
 - NetworkPopup: display link state (FaTE#307166)
