@@ -74,7 +74,7 @@ define string ReadLocalizedKey(string fname, path keypath, string key) {
 
     //no translations in .desktop, check desktop_translations.mo then
     string msgid = sformat("%1(%2): %3", key, fname, fallback );
-    ret = dgettext( "desktop_translations", msgid );
+    ret = dpgettext( "desktop_translations", "/usr/share/locale", msgid );
 
     //probably untranslated - return english name
     if(ret == msgid)
