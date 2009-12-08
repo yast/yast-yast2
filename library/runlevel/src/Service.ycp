@@ -515,7 +515,7 @@ global list<string> EnabledServices(integer runlevel)
 
     foreach(string s, splitstring(out["stdout"]:"", "\n"),
 	{
-	    string service = regexpsub(s, "^S[0-9]+([^0-9]*)", "\\1");
+	    string service = regexpsub(s, "^S[0-9]+([^0-9]+.*)", "\\1");
 
 	    if (service != nil)
 	    {

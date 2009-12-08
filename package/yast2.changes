@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Dec  1 15:14:52 CET 2009 - jsuchome@suse.cz
+
+- Service.ycp - bad regexp, SuSEFirewall2_* not correctly recognized 
+
+-------------------------------------------------------------------
 Tue Nov 10 10:18:23 CET 2009 - jsuchome@suse.cz
 
 - new YaPI file SERVICES.pm (fate #306696)
