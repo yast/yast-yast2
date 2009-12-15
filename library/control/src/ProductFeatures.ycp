@@ -49,9 +49,9 @@ map<string,map<string,any> > defaults = $[
 	"base_product_license_directory" : "/etc/YaST2/licenses/base/",
     ],
     "partitioning" : $[
-	"evms_config" : "no",
 	"use_flexible_partitioning" : false,
 	"flexible_partitioning" : $[],
+	"vm_keep_unpartitioned_region" : false,
     ],
     "software" : $[
 	"software_proposal" : "selection",
