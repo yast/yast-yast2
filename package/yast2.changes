@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jan  5 15:07:54 UTC 2010 - lslezak@suse.cz
+
+- added missing UI::SetProductName() call - display the proper
+  product name in help texts (using &product; macro) (bnc#535483)
+- 2.19.1
+
+-------------------------------------------------------------------
 Mon Dec  7 13:03:25 CET 2009 - jsrain@suse.cz
 
 - translate module names properly in NCurses CC (bnc#553644)
