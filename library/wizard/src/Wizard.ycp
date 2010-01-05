@@ -1801,6 +1801,7 @@
     {
         y2milestone ("Setting product name to '%1'", name);
         product_name = name;
+        UI::SetProductName(product_name);
     }
 
 }
