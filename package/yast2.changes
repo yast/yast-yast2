@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jan  5 15:07:54 UTC 2010 - lslezak@suse.cz
+
+- added missing UI::SetProductName() call - display the proper
+  product name in help texts (using &product; macro) (bnc#535483)
+- 2.17.78
+
+-------------------------------------------------------------------
 Thu Nov 26 18:10:42 CET 2009 - kmachalkova@suse.cz
 
 - Fixed striping trailing \n from Hostname::CurrentHostname() 
