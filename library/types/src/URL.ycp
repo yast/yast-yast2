@@ -17,6 +17,7 @@ textdomain "base";
 import "Hostname";
 import "String";
 import "IP";
+import "URLRecode";
 
 /**
  * TODO:
@@ -203,9 +204,9 @@ global define map Parse(string url) ``{
 	    pth = substring (pth, 1);
 	}
     }
-    tokens["path"] = UnEscapeString(pth, transform_map_filename);
-    tokens["query"] = UnEscapeString(rawtokens[5]:"", transform_map_query);
-    tokens["fragment"] = UnEscapeString(rawtokens[7]:"", transform_map_passwd);
+    tokens["path"] = URLRecode::UnEscape(pth);
+    tokens["query"] = URLRecode::UnEscape(rawtokens[5]:"");
+    tokens["fragment"] = URLRecode::UnEscape(rawtokens[7]:"");
 
     /* Extract username:pass@host:port */
     list userpass = regexptokenize(rawtokens[2]:"", "^" +
@@ -219,8 +220,8 @@ global define map Parse(string url) ``{
     );
     y2debug("userpass=%1", userpass);
 
-    tokens["user"] = UnEscapeString(userpass[1]:"", transform_map_passwd);
-    tokens["pass"] = UnEscapeString(userpass[3]:"", transform_map_passwd);
+    tokens["user"] = URLRecode::UnEscape(userpass[1]:"");
+    tokens["pass"] = URLRecode::UnEscape(userpass[3]:"");
     tokens["port"] = userpass[7]:"";
 
     if(userpass[5]:"" != "")
@@ -318,6 +319,8 @@ global define string Build (map tokens) ``{
 	string url = "";
 	string userpass = "";
 
+	y2debug("URL::Build(): input: %1", tokens);
+
 	if(regexpmatch(tokens["scheme"]:"", "^[[:alpha:]]*$"))
 	{
 /*	 if (tokens["scheme"]:"" == "samba") url="smb";
@@ -326,12 +329,12 @@ global define string Build (map tokens) ``{
 	y2debug("url: %1", url);
 	if (tokens["user"]:"" != "")
 	{
-		userpass = EscapeString(tokens["user"]:"", transform_map_passwd);
+		userpass = URLRecode::EscapePassword(tokens["user"]:"");
 		y2milestone("Escaped username '%1' => '%2'", tokens["user"]:"", userpass);
 	}
 	if (size(userpass) != 0 && tokens["pass"]:"" != "" )
 	{
-		userpass = sformat("%1:%2", userpass, EscapeString(tokens["pass"]:"", transform_map_passwd) );
+		userpass = sformat("%1:%2", userpass, URLRecode::EscapePassword(tokens["pass"]:"") );
 	}
 	if (size(userpass) > 0 ) userpass = userpass + "@";
 
@@ -355,20 +358,21 @@ global define string Build (map tokens) ``{
 
 	// path is not empty and doesn't start with "/"
 	if (tokens["path"]:"" != "" && ! regexpmatch (tokens["path"]:"", "^/"))
-		url = sformat("%1/%2", url, EscapeString(tokens["path"]:"", transform_map_filename));
+		url = sformat("%1/%2", url, URLRecode::EscapePath(tokens["path"]:""));
 	// patch is not empty and starts with "/"
 	else if (tokens["path"]:"" != "" && regexpmatch (tokens["path"]:"", "^/"))
 	{
 		while (substring (tokens["path"]:"", 0, 2) == "//")
 		    tokens["path"] = substring (tokens["path"]:"", 1);
 		if (tokens["scheme"]:"" == "ftp") {
-		    url = sformat("%1/%%2f%2", url, substring(EscapeString(tokens["path"]:"", transform_map_filename), 1));
+		    url = sformat("%1/%%2f%2", url, substring(URLRecode::EscapePath(tokens["path"]:""), 1));
 		}
 		else {
-		    url = sformat("%1%2", url, EscapeString(tokens["path"]:"", transform_map_filename));
+		    url = sformat("%1%2", url, URLRecode::EscapePath(tokens["path"]:""));
 		}
 	}
 	y2debug("url: %1", url);
+
 
 	map<string,string> query_map = MakeMapFromParams(tokens["query"]:"");
 
@@ -380,15 +384,18 @@ global define string Build (map tokens) ``{
 	}
 
 	if (tokens["query"]:"" != "" )
-		url = sformat("%1?%2", url, EscapeString(tokens["query"]:"", transform_map_query));
+		url = sformat("%1?%2", url, URLRecode::EscapeQuery(tokens["query"]:""));
+
 	if (tokens["fragment"]:"" != "" )
-		url = sformat("%1#%2", url, EscapeString(tokens["fragment"]:"", transform_map_passwd));
+		url = sformat("%1#%2", url, URLRecode::EscapePassword(tokens["fragment"]:""));
 	y2debug("url: %1", url);
 
 	if (!Check(url)) {
 		y2error("Invalid URL: %1", url);
 		return "";
 	}
+
+	y2debug("URL::Build(): result: %1", url);
 
 	return url;
 
