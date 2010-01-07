@@ -379,6 +379,19 @@ Continue or cancel the current operation?
 	return filemd5;
     }
 
+    /**
+     * Changes ownership of a file/directory
+     *
+     * @return	boolean true if succeeded
+     * @param	string user and group name (in the form 'user:group')
+     * @param	string file name
+     * @param	boolean recursive, true if file (2nd param) is a directory
+     *
+     * @example
+     *	FileUtils::Chown ( "somebody:somegroup", "/etc/passwd", false) -> 'chown somebody:somegroup /etc/passwd'
+     *	FileUtils::Chown ( "nobody:nogroup", "/tmp", true) -> 'chown nobody:nogroup -R /tmp'
+     */
+
     global boolean Chown( string usergroup, string file, boolean recursive)
     {
         y2milestone("Setting ownership of file %1 to %2", file, usergroup);
@@ -389,9 +402,22 @@ Continue or cancel the current operation?
 
         if( retval != 0)
             y2error("Cannot chown %1", file);
-    
+
         return (retval == 0);
     }
+
+    /**
+     * Changes access rights to a file/directory
+     *
+     * @return	boolean true if succeeded
+     * @param	string modes ( e.g. '744' or 'u+x')
+     * @param	string file name
+     * @param	boolean recursive, true if file (2nd param) is a directory
+     *
+     * @example
+     *	FileUtils::Chmod ( "go-rwx", "/etc/passwd", false) -> 'chmod go-rwx /etc/passwd'
+     *	FileUtils::Chmod ( "700", "/tmp", true) -> 'chmod 700 -R /tmp'
+     */
 
     global boolean Chmod (string modes, string file, boolean recursive)
     {
@@ -434,16 +460,38 @@ Continue or cancel the current operation?
         return tmpfile;
     }
 
+    /**
+     * Creates temporary file
+     *
+     * @return	string resulting file name or nil on failure
+     * @param	string template for file name e.g. 'tmp.XXXX'
+     * @param	string tmp file owner in a form 'user:group' 
+     * @param	string tmp file access rights
+     *
+     * @example
+     *	FileUtils::MkTempFile ( "/tmp/tmpfile.XXXX", "somebody:somegroup", "744")
+     */
+
     global string MkTempFile (string template, string usergroup, string modes)
     {
         return MkTempInternal( template, usergroup, modes, false );
     }
 
+    /**
+     * The same as MkTempFile, for directories ('mktemp -d ... '). See above
+     *
+     * @example
+     *	FileUtils::MkTempDirectory ( "/tmp/tmpdir.XXXX", "nobody:nogroup", "go+x") 
+     */
     global string MkTempDirectory (string template, string usergroup, string modes)
     {
         return MkTempInternal( template, usergroup, modes, true );
     }
 
+    /**
+     * Removes files and dirs created in all previous calls to MkTemp[File|Directory]
+     *
+     */
     global void CleanupTemp()
     {
         foreach (string one_file, tmpfiles, {
