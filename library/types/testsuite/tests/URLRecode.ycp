@@ -1,0 +1,27 @@
+/**
+ * Testsuite for URLRecode.pm module
+ *
+ * $Id: URLRecode.ycp 57027 2009-04-29 10:24:13Z lslezak $
+ */
+
+{
+
+include "testsuite.ycp";
+import "URLRecode";
+
+
+TEST(``(URLRecode::EscapePath(nil)), [], nil);
+TEST(``(URLRecode::EscapePath("")), [], nil);
+
+string test_path = "/@#$%^&/dir/čýěščýá/file";
+
+TEST(``(URLRecode::EscapePath(test_path)), [], nil);
+TEST(``(URLRecode::UnEscape(URLRecode::EscapePath(test_path)) == test_path), [], nil);
+
+
+TEST(``(URLRecode::EscapePath(" !@#$%^&*()/?+=")), [], nil);
+TEST(``(URLRecode::EscapePassword(" !@#$%^&*()/?+=")), [], nil);
+TEST(``(URLRecode::EscapeQuery(" !@#$%^&*()/?+=")), [], nil);
+
+/* EOF */
+}
