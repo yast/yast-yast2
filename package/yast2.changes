@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan  7 14:26:21 CET 2010 - jsrain@suse.cz
+
+- updated start-up script to behave correctly if QT CC is to be
+  used without QT back-end (bnc#545331)
+
+-------------------------------------------------------------------
 Tue Jan  5 15:07:54 UTC 2010 - lslezak@suse.cz
 
 - added missing UI::SetProductName() call - display the proper
