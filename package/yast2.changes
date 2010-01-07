@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan  7 10:43:13 CET 2010 - mvidner@suse.cz
+
+- YaST would not start from the GNOME menu (Unknown option -S) bnc#568424.
+- 2.17.80
+
+-------------------------------------------------------------------
 Thu Jan  7 08:20:23 UTC 2010 - lslezak@suse.cz
 
 - URL.ycp - escape non-ASCII characters in URL, added URLRecode.pm
