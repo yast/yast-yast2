@@ -18,6 +18,8 @@
     import "Popup";
     import "String";
 
+    list <string> tmpfiles = [];
+
     /**
      * Function which determines if the requested file/directory exists.
      *
@@ -375,6 +377,79 @@ Continue or cancel the current operation?
 	}
 
 	return filemd5;
+    }
+
+    global boolean Chown( string usergroup, string file, boolean recursive)
+    {
+        y2milestone("Setting ownership of file %1 to %2", file, usergroup);
+
+        string cmd = sformat("chown %1 %2 %3", usergroup, (recursive ? "-R" : "" ), file);
+
+        integer retval = (integer) SCR::Execute(.target.bash, cmd);
+
+        if( retval != 0)
+            y2error("Cannot chown %1", file);
+    
+        return (retval == 0);
+    }
+
+    global boolean Chmod (string modes, string file, boolean recursive)
+    {
+        y2milestone("Setting access rights of file %1 to %2", file, modes);
+
+        string cmd = sformat("chmod %1 %2 %3", modes, (recursive ? "-R" : "" ), file);
+
+        integer retval = (integer) SCR::Execute(.target.bash, cmd);
+
+        if( retval != 0)
+            y2error("Cannot chmod %1", file);
+
+        return (retval == 0);
+
+    }
+
+    string MkTempInternal (string template, string usergroup, string modes, boolean directory)
+    {
+        string mktemp = sformat("/bin/mktemp %1 %2", 
+			(directory ? "-d" : ""), template);
+
+        map cmd_out = (map) SCR::Execute (.target.bash_output, mktemp);
+	    if (cmd_out["exit"]:-1 != 0) {
+	    y2error ("Error creating temporary file: %1", cmd_out);
+	    return nil;
+        }
+
+        string tmpfile = splitstring (cmd_out["stdout"]:"", "\n")[0]:"";
+
+        if (tmpfile == nil || tmpfile == "") {
+	    y2error ("Error creating temporary file: %1 - empty output", cmd_out);
+	    return nil;
+        }
+
+        if( !Chown( usergroup, tmpfile, directory) || !Chmod( modes, tmpfile, directory)) {
+	    return nil;
+        }
+
+        tmpfiles = add(tmpfiles, tmpfile);
+        return tmpfile;
+    }
+
+    global string MkTempFile (string template, string usergroup, string modes)
+    {
+        return MkTempInternal( template, usergroup, modes, false );
+    }
+
+    global string MkTempDirectory (string template, string usergroup, string modes)
+    {
+        return MkTempInternal( template, usergroup, modes, true );
+    }
+
+    global void CleanupTemp()
+    {
+        foreach (string one_file, tmpfiles, {
+	    y2milestone("Removing %1", one_file);
+	    SCR::Execute (.target.bash, sformat ("/bin/rm -rf '%1'", one_file));
+        });
     }
 
 /* EOF */
