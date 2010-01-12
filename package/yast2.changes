@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jan 12 11:15:45 UTC 2010 - lslezak@suse.cz
+
+- GPG.ycp - run gpg in C locale (bnc#544680)
+
+-------------------------------------------------------------------
 Thu Jan  7 14:26:21 CET 2010 - jsrain@suse.cz
 
 - updated start-up script to behave correctly if QT CC is to be

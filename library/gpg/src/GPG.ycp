@@ -67,7 +67,7 @@ string buildGPGcommand(string options)
 map callGPG(string options)
 {
     map ret = $[];
-    string command = buildGPGcommand(options);
+    string command = "LC_ALL=C " + buildGPGcommand(options);
 
     ret = (map) SCR::Execute(.target.bash_output, command);
 
@@ -258,7 +258,7 @@ global void CreateKey()
 	}
 
 	// in Qt start GPG in a xterm window
-	SCR::Execute(.target.bash, xterm + " -e " + command);
+	SCR::Execute(.target.bash, "LC_ALL=C " + xterm + " -e " + command);
     }
     else
     {
