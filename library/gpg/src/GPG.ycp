@@ -14,6 +14,7 @@
 
 import "String";
 import "Report";
+import "FileUtils";
 
 module "GPG";
 
@@ -33,8 +34,14 @@ list<map> private_keys = nil;
  * @param home_dir home directory for gpg (location of the keyring)
  * @param force unconditionaly clear the key caches
  */
-global void Init(string home_dir, boolean force)
+global boolean Init(string home_dir, boolean force)
 {
+    if (FileUtils::IsDirectory(home_dir) != true)
+    {
+	y2error("Path %1 is not a directory", home_dir);
+	return false;
+    }
+
     if (home_dir != home || force)
     {
 	// clear the cache, home has been changed
@@ -43,6 +50,8 @@ global void Init(string home_dir, boolean force)
     }
 
     home = home_dir;
+
+    return true;
 }
 
 /**
@@ -67,7 +76,7 @@ string buildGPGcommand(string options)
 map callGPG(string options)
 {
     map ret = $[];
-    string command = buildGPGcommand(options);
+    string command = "LC_ALL=C " + buildGPGcommand(options);
 
     ret = (map) SCR::Execute(.target.bash_output, command);
 
@@ -241,7 +250,7 @@ global list<map> PrivateKeys()
  * Create a new gpg key. Executes 'gpg --gen-key' in an xterm window (in the QT UI)
  * or in the terminal window (in the ncurses UI).
  */
-global void CreateKey()
+global boolean CreateKey()
 {
     string xterm = "/usr/bin/xterm";
     string command = buildGPGcommand("--gen-key");
@@ -249,25 +258,59 @@ global void CreateKey()
 
     y2debug("text_mode: %1", text_mode);
 
+    boolean ret = false;
+
     if (!text_mode)
     {
 	if (SCR::Read(.target.size, xterm) < 0)
 	{
 	    // TODO FIXME
 	    Report::Error(_("Xterm is missing, install xterm package."));
+	    return false;
 	}
 
+	string exit_file = ((string)SCR::Read(.target.tmpdir)) + "/gpg_tmp_exit_file";
+	if (FileUtils::Exists(exit_file))
+	{
+	    SCR::Execute(.target.execute, "rm -f " + exit_file);
+	}
+
+	command = "LC_ALL=C " + xterm + " -e \"" + command + "; echo $? > " + exit_file + "\"";
+	y2internal("Executing: %1", command);
+
 	// in Qt start GPG in a xterm window
-	SCR::Execute(.target.bash, xterm + " -e " + command);
+	SCR::Execute(.target.bash, command);
+
+	if (FileUtils::Exists(exit_file))
+	{
+	    // read the exit code from file
+	    // (the exit code from the SCR call above is the xterm exit code which is not what we want here)
+	    string exit_code = (string)SCR::Read(.target.string, exit_file);
+	    y2milestone("Read exit code from tmp file %1: %2", exit_file, exit_code);
+
+	    ret = exit_code == "0\n";
+	}
+	else
+	{
+	    y2warning("Exit file is missing, the gpg command has failed");
+	    ret = false;
+	}
     }
     else
     {
+	command = "LC_ALL=C " + command;
+	y2internal("Executing in terminal: %1", command);
 	// in ncurses use UI::RunInTerminal
-	UI::RunInTerminal(command);
+	ret = UI::RunInTerminal(command) == 0;
     }
 
-    // invalidate cache, force reloading
-    Init(home, true);
+    if (ret)
+    {
+	// invalidate cache, force reloading
+	Init(home, true);
+    }
+
+    return ret;
 }
 
 /**
