@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jan 14 16:48:19 CET 2010 - kmachalkova@suse.cz
+
+- Added Recommends: xdg-utils. xdg-su is now used in .desktop files
+  of root-only YaST modules (bnc#540627) 
+- 2.19.2
+
+-------------------------------------------------------------------
 Tue Jan 12 11:15:45 UTC 2010 - lslezak@suse.cz
 
 - GPG.ycp - run gpg in C locale (bnc#544680)
