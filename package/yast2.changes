@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 14 17:53:48 CET 2010 - mzugec@suse.cz
+
+- NetworkStorage: adapt functions needed for iBFT (bnc#551380)
+- 2.19.3 
+
+-------------------------------------------------------------------
 Thu Jan 14 16:48:19 CET 2010 - kmachalkova@suse.cz
 
 - Added Recommends: xdg-utils. xdg-su is now used in .desktop files
