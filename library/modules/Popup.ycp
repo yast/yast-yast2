@@ -346,6 +346,52 @@ global define boolean AnyQuestion( string headline,
 
 
 /**
+ * Generic error question popup with two buttons.
+ *
+ * Style guide hint: The first button has to have the semantics of "yes",
+ * "OK", "continue" etc., the second its opposite ("no", "cancel", ...).
+ * NEVER use this generic question popup to simply exchange the order of
+ * yes/no, continue/cancel or ok/cancel buttons!
+ *
+ * @param headline		headline or Popup::NoHeadline()
+ * @param message		message string
+ * @param yes_button_message	label on affirmative buttons (on left side)
+ * @param no_button_message	label on negating button (on right side)
+ * @param focus			`focus_yes (first button) or `focus_no (second button)
+ * @screenshot screenshots/AnyQuestion.png
+ *
+ * @return true:  first button has been clicked
+ *	 false: second button has been clicked
+ *
+ * @see YesNo
+ * @see ContinueCancel
+ *
+ * @example Popup::ErrorAnyQuestion( Label::WarningMsg(), "Do really want to ...?", "Install", "Don't do it", `focus_no );
+ */
+global boolean ErrorAnyQuestion(string headline,
+				string message,
+				string yes_button_message,
+				string no_button_message,
+				symbol focus)
+{
+    term button_box = AnyQuestionButtonBox ( yes_button_message, no_button_message, focus);
+    boolean success = (boolean) UI::OpenDialog( 
+		   `opt(`decorated),
+		   popupLayoutInternal( headline, message, Icon::IconPath ("error"), button_box )
+		   );
+
+    any ret = nil;
+
+    if (success == true) {
+	ret = UI::UserInput();
+	UI::CloseDialog();
+    }
+
+    return ret == `yes;
+}
+
+
+/**
  * Timed question popup with two buttons and time display
  *
  * @param headline		headline or Popup::NoHeadline()
@@ -384,6 +430,71 @@ global define boolean TimedAnyQuestion( string headline,
     boolean success = (boolean) UI::OpenDialog(
 		   `opt(`decorated),
 		   popupLayoutInternal( headline, message, Icon::IconPath ("question"), timed )
+		   );
+
+    any which_input = nil;
+
+    while (timeout_seconds > 0) {
+	which_input = UI::TimeoutUserInput( 1000 );
+
+	if (which_input == `timed_ok)
+	    break;
+	if (which_input == `timed_stop)
+	{
+	    UI::ReplaceWidget(`id(`replace_buttons), button_box);
+	    while (which_input == `timed_stop)
+		which_input = UI::UserInput();
+	    break;
+	}
+	timeout_seconds = timeout_seconds - 1;
+	if (success == true) UI::ChangeWidget (`id(`remaining_time), `Value, ""+timeout_seconds);
+    }
+
+    if (success == true) UI::CloseDialog();
+
+    return which_input == `yes;
+}
+
+
+/**
+ * Timed error question popup with two buttons and time display
+ *
+ * @param headline		headline or Popup::NoHeadline()
+ * @param message		message string
+ * @param yes_button_message	label on affirmative buttons (on left side)
+ * @param no_button_message	label on negating button (on right side)
+ * @param focus			`focus_yes (first button) or `focus_no (second button)
+ * @param timeout_seconds	timeout, if 0, normal behaviour
+ * @return boolean              True if Yes, False if no
+ * @see AnyQuestion
+ */
+global boolean TimedErrorAnyQuestion( string headline,
+				   string message,
+				   string yes_button_message,
+				   string no_button_message,
+				   symbol focus ,
+				   integer timeout_seconds)
+{
+    term button_box = AnyQuestionButtonBox ( yes_button_message, no_button_message, focus);
+    term timed =
+	`ReplacePoint(`id(`replace_buttons) ,
+		      `VBox(
+			    `HCenter(
+				     `Label(`id(`remaining_time), "" + timeout_seconds)
+				     ),
+			    `ButtonBox (
+				  // FIXME: BNC #422612, Use `opt(`noSanityCheck) later
+				  `PushButton (`id (`timed_stop), `opt (`cancelButton), Label::StopButton()),
+				  `PushButton (`id (`timed_ok), `opt (`default, `key_F10, `okButton), Label::OKButton())
+				  ),
+			    `VSpacing(0.2)
+			    )
+		      );
+
+
+    boolean success = (boolean) UI::OpenDialog(
+		   `opt(`decorated),
+		   popupLayoutInternal( headline, message, Icon::IconPath ("error"), timed )
 		   );
 
     any which_input = nil;
