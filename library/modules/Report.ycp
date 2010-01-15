@@ -328,6 +328,57 @@ global define boolean AnyQuestion( string headline,
     return ret;
 }
 
+
+/**
+ * Question with headline and Yes/No Buttons
+ * @param headline Popup Headline
+ * @param message Popup Message
+ * @param yes_button_message Yes Button Message
+ * @param no_button_message No Button Message
+ * @param focus Which Button has the focus
+ * @return boolean True if Yes is pressed, otherwise false
+ */
+global boolean ErrorAnyQuestion(string headline,
+				string message,
+				string yes_button_message,
+				string no_button_message,
+				symbol focus)
+{
+    if (log_yesno_messages)
+    {
+	y2milestone(1, "%1", message);
+    }
+
+    boolean ret = false;
+    if (display_yesno_messages)
+    {
+	if (timeout_yesno_messages > 0)
+	{
+            ret = Popup::TimedErrorAnyQuestion(
+                    headline,
+                    message,
+                    yes_button_message,
+                    no_button_message,
+                    focus,
+                    timeout_yesno_messages);
+	}
+	else
+	{
+            ret = Popup::ErrorAnyQuestion(
+                    headline,
+                    message,
+                    yes_button_message,
+                    no_button_message,
+                    focus );
+
+	}
+    }
+
+    yesno_messages = add(yesno_messages, message);
+    return ret;
+}
+
+
 /**
  * Store new message text
  * @param message_string message text, it can contain new line characters ("\n")

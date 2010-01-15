@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 15 11:44:39 CET 2010 - aschnell@suse.de
+
+- extended Report and Popup module (needed for fate #304500)
+- 2.19.4
+
+-------------------------------------------------------------------
 Thu Jan 14 17:53:48 CET 2010 - mzugec@suse.cz
 
 - NetworkStorage: adapt functions needed for iBFT (bnc#551380)
