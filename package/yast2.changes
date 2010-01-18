@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jan 18 14:36:37 CET 2010 - jsuchome@suse.cz
+
+- SERVICES.pm: read descriptions (bnc#570298); get single service
+  status from the Read function (bnc#570968)
+- 2.19.5
+
+-------------------------------------------------------------------
 Fri Jan 15 11:44:39 CET 2010 - aschnell@suse.de
 
 - extended Report and Popup module (needed for fate #304500)
