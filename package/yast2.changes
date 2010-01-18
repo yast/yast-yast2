@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jan 18 14:38:15 CET 2010 - jsuchome@suse.cz
+
+- SERVICES.pm: read descriptions (bnc#570298); get single service
+  status from the Read function (bnc#570968)
+- 2.17.83   
+
+-------------------------------------------------------------------
 Thu Jan 14 17:21:30 CET 2010 - mzugec@suse.cz
 
 - NetworkStorage: adapt functions needed for iBFT (bnc#551380)
