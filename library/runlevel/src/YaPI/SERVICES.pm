@@ -116,9 +116,11 @@ sub execute_custom_script {
 # Return the map of services enabled in given runlevel
 # Parameter is an argument map with possible keys:
 # 	"runlevel" 	: integer
-#	"read_status"	: if present, service status will be queried
-#	"custom"	: if present, custom services (defined in config file) will be read
-# returns array of hashes
+#	"read_status"	: if true, service status will be queried
+#	"custom"	: if true, custom services (defined in config file) will be read
+#	"description"	: if true, read the description of each service
+#	"service"	: if defined, the status of this given service will be returned
+# @returns array of hashes
 BEGIN{$TYPEINFO{Read} = ["function",
     ["list", [ "map", "string", "any"]],
     ["map", "string", "any"]];
@@ -131,6 +133,21 @@ sub Read {
   my $runlevel	= 5;
   $runlevel	= $args->{"runlevel"} if defined $args->{"runlevel"};
 
+  # only read status of one service if the name was given
+  if ($args->{"service"} || "") {
+    my $exec	= $self->Execute ({
+	"name" 		=> $args->{"service"} || "",
+	"action"	=> "status",
+	"custom"	=> $args->{"custom"} || 0
+    });
+    my $s	= {
+	"name"  	=> $args->{"service"} || "",
+	"status"	=> $exec->{"exit"} || 0
+    };
+    push @ret, $s;
+    return \@ret;
+  }
+
   if ($args->{"custom"} || 0) {
     return read_custom_services ($args);
   }
@@ -140,6 +157,11 @@ sub Read {
 	"name"	=> $name
     };
     $s->{"status"}	= Service->Status ($name) if ($args->{"read_status"} || 0);
+    if (($args->{"description"} || 0) || ($args->{"shortdescription"} || 0)) {
+	my $info	= Service->Info ($name);
+	$s->{"description"}	= ($info->{"description"} || "") if $args->{"description"} || 0;
+	$s->{"shortdescription"}= ($info->{"shortdescription"} || "") if $args->{"shortdescription"} || 0;
+    }
     push @ret, $s;
   }
   return \@ret;
