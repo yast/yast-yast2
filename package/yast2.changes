@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb  2 17:20:29 CET 2010 - locilka@suse.cz
+
+- Fixed generating unique step IDs for Wizard too keep the same
+  durign one YaST run (BNC #575092).
+
+-------------------------------------------------------------------
 Mon Jan 18 14:36:37 CET 2010 - jsuchome@suse.cz
 
 - SERVICES.pm: read descriptions (bnc#570298); get single service
