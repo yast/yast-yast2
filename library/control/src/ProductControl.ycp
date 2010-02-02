@@ -348,7 +348,7 @@ boolean Check(string allowed, string current)
  */
 global define boolean checkArch(map mod , map def)
 {
-    y2milestone("mod: %1", mod);
+    y2debug ("Checking architecture: %1", mod);
     string archs = mod["archs"]:"";
     if (archs == "")
     {
@@ -609,9 +609,18 @@ global define list <map> getModules (string stage, string mode, symbol which)
     map workflow = FindMatchingWorkflow (stage, mode);
 
     list<map> modules = workflow["modules"]:[];
-    y2debug ("modules: %1", modules );
+    y2debug ("M1: %1", modules);
 
+    // Unique IDs have to always keep the same because some steps
+    // can be disabled while YaST is running
+    // @see BNC #575092
     integer id = 1;
+    modules = maplist (map m, modules, ``{
+	m["id"] = sformat("%1_%2", stage, id);
+	id = id + 1;
+	return m;
+    });
+
     if (which == `enabled)
     {
 	modules = filter (map m, modules, {
@@ -619,13 +628,14 @@ global define list <map> getModules (string stage, string mode, symbol which)
 	});
     }
 
-    modules = maplist(map m, modules, ``{
-            m["id"] = sformat("%1_%2", stage, id);
-            PrepareScripts(m);
-            id = id + 1;
-            return (m);
-            });
+    y2debug ("M2: %1", modules);
 
+    modules = maplist(map m, modules, ``{
+	PrepareScripts(m);
+	return m;
+    });
+
+    y2debug ("M3: %1", modules);
     y2debug("Log files: %1", logfiles);
     return modules;
 }
@@ -858,6 +868,7 @@ global define void AddWizardSteps(list<map> stagemode)
 		if (debug_workflow == true) {
 		    label = label + sformat (" [%1]", m["name"]:"");    
 		}
+		y2debug ("AddStep: %1/%2", label, id);
 		UI::WizardCommand (`AddStep (label, id));
 	    }
         });
@@ -1267,6 +1278,8 @@ global symbol RunFrom (integer from, boolean allow_back)
     while ((current_step >= 0) && (current_step < size(modules)))
     {
 	map step = modules[current_step]:$[];
+	y2milestone ("Current step: %1", step);
+
 	string  step_name = step["name"]:"";
 	// BNC #401319
 	// if "execute" is defined, it's called without modifications
@@ -1316,12 +1329,15 @@ global symbol RunFrom (integer from, boolean allow_back)
 		current_step = current_step + 1;
 	    }
 	    else
+	    {
 		current_step = current_step - 1;
+	    }
 	}
+	// Continue in 'while' means 'next step'
 	if ( do_continue ) continue;
 
 	term argterm = getClientTerm( step, defaults, former_result);
-	y2debug("Running module: %1 (%2)", argterm, current_step);
+	y2milestone ("Running module: %1 (%2)", argterm, current_step);
 
 	symbol module_name = symbolof( argterm );
 
