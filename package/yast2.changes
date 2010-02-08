@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb  8 15:23:54 CET 2010 - locilka@suse.cz
+
+- Showing also zone of interface for 'Open Port in Firewall'
+  details (BNC #483455).
+- 2.19.6
+
+-------------------------------------------------------------------
 Tue Feb  2 17:20:29 CET 2010 - locilka@suse.cz
 
 - Fixed generating unique step IDs for Wizard too keep the same

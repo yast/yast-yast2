@@ -153,6 +153,18 @@ void InitAllInterfacesList () {
 	interface_items = maplist (string i, all_interfaces, {
 	    string label = NetworkInterfaces::GetValue (i, "BOOTPROTO");
 	    string ipaddr = NetworkInterfaces::GetValue (i, "IPADDR");
+
+	    // BNC #483455: Interface zone name
+	    string zone = SuSEFirewall::GetZoneOfInterface (i);
+	    if (zone != nil && zone != "")
+	    {
+		zone = SuSEFirewall::GetZoneFullName (zone);
+	    }
+	    else
+	    {
+		zone = _("Interface is not assigned to any zone");
+	    }
+
 	    if (label == "static" || label == "" || label == nil)
 	    {
 		label = ipaddr;
@@ -163,14 +175,16 @@ void InitAllInterfacesList () {
 		if (ipaddr != nil && ipaddr != "")
 		    label = sformat ("%1/%2", label, ipaddr);
 	    }
+
 	    if (label == nil || label == "")
 	    {
 		label = i;
 	    }
 	    else
 	    {
-		label = sformat ("%1 (%2)", i, label);
+		label = sformat ("%1 (%2 / %3)", i, label, zone);
 	    }
+
 	    return `item (`id (i), label);
 	});
     }
