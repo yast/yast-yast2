@@ -2450,6 +2450,7 @@ Run YaST2 Firewall and assign it.
 		// not modified - skip restart
 		} else {
 		    y2milestone("Configuration hasn't modified, skipping restarting services");
+		    return true;
 		}
 	    }
 	// Firewall should stop after Write()

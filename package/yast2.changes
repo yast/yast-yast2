@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb  8 16:13:49 CET 2010 - locilka@suse.cz
+
+- Fixed SuSEFirewall::ActivateConfiguration to return a boolean
+  value in all scenarios (BNC #577932).
+- 2.17.85
+
+-------------------------------------------------------------------
 Tue Feb  2 17:20:29 CET 2010 - locilka@suse.cz
 
 - Fixed generating unique step IDs for Wizard too keep the same
