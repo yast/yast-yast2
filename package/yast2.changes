@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb  8 16:13:49 CET 2010 - locilka@suse.cz
+
+- Fixed SuSEFirewall::ActivateConfiguration to return a boolean
+  value in all scenarios (BNC #577932).
+
+-------------------------------------------------------------------
 Mon Feb  8 15:23:54 CET 2010 - locilka@suse.cz
 
 - Showing also zone of interface for 'Open Port in Firewall'
