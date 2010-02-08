@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb  8 16:13:49 CET 2010 - locilka@suse.cz
+
+- Fixed SuSEFirewall::ActivateConfiguration to return a boolean
+  value in all scenarios (BNC #577932).
+
+-------------------------------------------------------------------
 Tue Dec  1 15:14:52 CET 2009 - jsuchome@suse.cz
 
 - Service.ycp - bad regexp, SuSEFirewall2_* not correctly recognized 
