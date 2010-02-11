@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Feb 11 16:10:40 CET 2010 - juhliarik@suse.cz
+
+- added fix for deleting splash from initrd (bnc#292013)
+
+-------------------------------------------------------------------
 Mon Feb  8 16:13:49 CET 2010 - locilka@suse.cz
 
 - Fixed SuSEFirewall::ActivateConfiguration to return a boolean
