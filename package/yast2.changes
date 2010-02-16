@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 16 15:37:01 CET 2010 - jsrain@suse.cz
+
+- do not save unmodified interfaces (fate#308978)
+- 2.17.86
+
+-------------------------------------------------------------------
 Mon Feb  8 16:13:49 CET 2010 - locilka@suse.cz
 
 - Fixed SuSEFirewall::ActivateConfiguration to return a boolean
