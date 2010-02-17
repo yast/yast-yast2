@@ -712,6 +712,8 @@ global define boolean Write(string devregex) {
     /* write all devices */
     maplist(string typ, map<string,map<string,any> > devsmap, (map<string, map<string, map<string, any> > >) Devs, {
 	maplist(string config, map<string,any> devmap, devsmap, {
+	   if (devmap == OriginalDevs[typ,config]:$[])
+		return;
 	    /* write sysconfig */
 	    string p = ".network.value.\"" + config + "\".";
 

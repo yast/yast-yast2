@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Feb 17 10:09:00 CET 2010 - jsrain@suse.cz
+
+- do not save unmodified interfaces (fate#308978)
+
+-------------------------------------------------------------------
 Thu Feb 11 16:10:40 CET 2010 - juhliarik@suse.cz
 
 - added fix for deleting splash from initrd (bnc#292013)
