@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jan 14 12:48:50 CET 2010 - jsuchome@suse.cz
+
+- SERVICES.pm: use ruby-bindings to read yml file (bnc#551276)
+- SERVICES.pm: read descriptions (bnc#570298); get single service
+  status from the Read function (bnc#570968)
+- 2.18.29 
+
+-------------------------------------------------------------------
 Mon Dec  7 13:03:25 CET 2009 - jsrain@suse.cz
 
 - translate module names properly in NCurses CC (bnc#553644)
