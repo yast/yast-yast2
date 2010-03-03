@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar  3 23:08:31 CET 2010 - jsuchome@suse.cz
+
+- SERVICES.pm: added support for enabling/disabling service 
+- 2.19.7
+
+-------------------------------------------------------------------
 Wed Feb 17 10:09:00 CET 2010 - jsrain@suse.cz
 
 - do not save unmodified interfaces (fate#308978)
