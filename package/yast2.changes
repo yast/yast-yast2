@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar  3 23:09:17 CET 2010 - jsuchome@suse.cz
+
+- SERVICES.pm: added support for enabling/disabling service
+- 2.18.30 
+
+-------------------------------------------------------------------
 Thu Jan 14 12:48:50 CET 2010 - jsuchome@suse.cz
 
 - SERVICES.pm: use ruby-bindings to read yml file (bnc#551276)

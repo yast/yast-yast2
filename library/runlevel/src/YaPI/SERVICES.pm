@@ -21,6 +21,21 @@ my $custom_services_file	= "/etc/webyast/custom_services.yml";
 
 my $error_message		= "";
 
+# check for key presence in given list
+sub contains {
+    my ( $list, $key, $ignorecase ) = @_;
+    if ( $ignorecase ) {
+        if ( grep /^$key$/i, @{$list} ) {
+            return 1;
+        }
+    } else {
+        if ( grep /^$key$/, @{$list} ) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 # log error message and fill it into $error_message variable
 sub report_error {
   $error_message	= shift;
@@ -65,9 +80,20 @@ sub read_custom_services {
   my $services	= parse_custom_services ();
   foreach my $name (keys %$services) {
     my $s      = {
-	"name"		=> $name,
-	"description"	=> $services->{$name}{"description"} || ""
+	"name"		=> $name
     };
+    $s->{"description"}	= ($services->{$name}{"description"} || "") if $args->{"description"} || 0;
+    $s->{"shortdescription"}= ($services->{$name}{"shortdescription"} || "") if $args->{"shortdescription"} || 0;
+
+    # read list of available commands, it may be limited for 'custom service'
+    my @commands	= ();
+    foreach my $key (keys %{$services->{$name}}) {
+	if (contains (["start","stop","restart","reload","try-restart"], $key, 1)) {
+	    push @commands, $key;
+	}
+    }
+    $s->{"commands"}	= \@commands;
+
     if ($args->{"read_status"} || 0)
     {
 	my $cmd	= $services->{$name}{"status"};
@@ -78,6 +104,7 @@ sub read_custom_services {
 	my $out     = SCR->Execute (".target.bash_output", $cmd);
 	$s->{"status"}	= $out->{"exit"};
     }
+
     push @ret, $s;
   }
   return \@ret;
@@ -113,13 +140,19 @@ sub execute_custom_script {
   return $ret;
 }
 
-# Return the map of services enabled in given runlevel
+# Return the list of services enabled in given runlevel, or even all available.
+#
 # Parameter is an argument map with possible keys:
-# 	"runlevel" 	: integer
-#	"read_status"	: if true, service status will be queried
-#	"custom"	: if true, custom services (defined in config file) will be read
+#	"service"	: if defined, only the status of _this given service_ will be returned (= list with one item)
+# 	"runlevel" 	: integer; if not defined, current runlevel will be used
+#	"read_status"	: if true, service status will be queried and returned for each service
+#	"custom"	: if true, custom services (defined in config file) will be read (otherwise list of init.d services)
 #	"description"	: if true, read the description of each service
-#	"service"	: if defined, the status of this given service will be returned
+#	"only_enabled"	: if true, return only list of services enabled in given runlevel
+#		- neither "start_runlevels", nor "enabled" key will be part of resulting maps
+#	"start_runlevels" if true, each service's result map will contain list of runlevels where it is started
+#		- if not present (or false), "enabled" key with boolean value will be returned instead
+#	"filter"	: list of strings; defines filtered list of services that should be returned
 # @returns array of hashes
 BEGIN{$TYPEINFO{Read} = ["function",
     ["list", [ "map", "string", "any"]],
@@ -130,8 +163,15 @@ sub Read {
   my $self	= shift;
   my $args	= shift;
   my @ret	= ();
-  my $runlevel	= 5;
+  my $runlevel	= SCR->Read (".init.scripts.current_runlevel");
   $runlevel	= $args->{"runlevel"} if defined $args->{"runlevel"};
+
+  my @filter	= ();
+  @filter	= @{$args->{"filter"}} if defined $args->{"filter"};
+  my $filter_map= {};
+  foreach my $s (@filter) {
+      $filter_map->{$s}	= 1;
+  }
 
   # only read status of one service if the name was given
   if ($args->{"service"} || "") {
@@ -148,22 +188,58 @@ sub Read {
     return \@ret;
   }
 
+  # read only custom services
   if ($args->{"custom"} || 0) {
     return read_custom_services ($args);
   }
 
-  foreach my $name (@{Service->EnabledServices ($runlevel)}) {
-    my $s      = {
-	"name"	=> $name
-    };
-    $s->{"status"}	= Service->Status ($name) if ($args->{"read_status"} || 0);
-    if (($args->{"description"} || 0) || ($args->{"shortdescription"} || 0)) {
-	my $info	= Service->Info ($name);
+  if ($args->{"only_enabled"}) {
+    # generate the output list
+    foreach my $name (@{Service->EnabledServices ($runlevel)}) {
+	next if (@filter && !defined $filter_map->{$name}); # should not be returned
+	my $s      = {
+	    "name"		=> $name,
+	};
+	$s->{"status"}	= Service->Status ($name) if ($args->{"read_status"} || 0);
+	if (($args->{"description"} || 0) || ($args->{"shortdescription"} || 0)) {
+	    my $info	= Service->Info ($name);
+	    $s->{"description"}	= ($info->{"description"} || "") if $args->{"description"} || 0;
+	    $s->{"shortdescription"}= ($info->{"shortdescription"} || "") if $args->{"shortdescription"} || 0;
+	}
+	push @ret, $s;
+    }
+  }
+  else {
+    my $details = SCR->Read (".init.scripts.runlevels");
+    
+    # copied from RunlevelEd::Read
+    my $full_services	= SCR->Read (".init.scripts.comments");
+    while (my ($name, $info) = each %$full_services) {
+
+	next if (@filter && !defined $filter_map->{$name}); # should not be returned
+
+	my $second_service = $details->{$name} || {};
+
+	my $s      = {
+	    "name"		=> $name
+	};
+	next if (contains ($info->{"defstart"} || [], "B", 1));
+
+	if ($args->{"start_runlevels"} || 0) {
+	    $s->{"start_runlevels"}	= $second_service->{"start"} || [];
+	}
+	else {
+	    my $start		= $second_service->{"start"} || [];
+	    # for "B" check, see RunlevelEd::StartContainsImplicitly
+	    $s->{"enabled"}	= YaST::YCP::Boolean (contains ($start, $runlevel, 1) || contains ($start, "B", 1));
+	}
+	$s->{"status"}		= Service->Status ($name) if ($args->{"read_status"} || 0);
 	$s->{"description"}	= ($info->{"description"} || "") if $args->{"description"} || 0;
 	$s->{"shortdescription"}= ($info->{"shortdescription"} || "") if $args->{"shortdescription"} || 0;
+	push @ret, $s;
     }
-    push @ret, $s;
   }
+
   return \@ret;
 }
 
@@ -181,6 +257,15 @@ sub Get {
 }
 
 # Executes an action (e.g. "restart") with given service
+# If the action is start or stop, it will also enable (resp. disable)
+# the service for current runlevel.
+#
+# parameter is a map where "name" is service name, "action" means what to do
+# - if "only_execute" key is present, do not continue with enabling/disabling
+# - if action is "enable" or "disable", only enables/disables service
+# - if "custom" key is present (with true value), indicates custom service, which
+# has special handling. Also, custom service will not be enabled/disabled.
+#
 # return value is map with "exit", "stdout" and "stderr" keys
 BEGIN{$TYPEINFO{Execute} = ["function",
     [ "map", "string", "any"],
@@ -194,11 +279,65 @@ sub Execute {
   my $name	= $args->{"name"} || "";
   my $action	= $args->{"action"} || "";
 
+  return self->Enable ($args) if ($action eq "enable" || $action eq "disable");
+
   if ($args->{"custom"} || 0) {
     return execute_custom_script ($name, $action);
   }
   else {
-    return Service->RunInitScriptOutput ($name, $action);
+    my $ret = Service->RunInitScriptOutput ($name, $action);
+    if (($action eq "start" || $action eq "stop") && !($args->{"only_execute"} || 0)) {
+	if (($ret->{"exit"} || 0) ne 0) {
+	    y2error ("action '$action' failed");
+	    return $ret;
+	}
+	if ($action eq "start") {
+	    $args->{"action"}	= "enable";
+	}
+	else {
+	    $args->{"action"}	= "disable";
+	}
+	return $self->Enable ($args);
+    }
+    return $ret;
   }
 }
+
+# Enable/Disable given service in current runlevel
+# parameter is a map where "name" is service name, "action" means what to do
+# return value is map with "exit", "stdout" and "stderr" keys
+BEGIN{$TYPEINFO{Enable} = ["function",
+    [ "map", "string", "any"],
+    [ "map", "string", "any"]];
+}
+sub Enable {
+
+  my $self	= shift;
+  my $args	= shift;
+  my $name	= $args->{"name"} || "";
+  my $action	= $args->{"action"} || "";
+  my $ret	= {
+      "stdout"	=> "",
+      "stderr"	=> "",
+      "exit"	=> 0
+  };
+  if ($action eq "enable") {
+    unless (Service->Enable ($name)) {
+	$ret->{"stderr"}	= "Failed to enable service $name.";
+	$ret->{"exit"}		= 1000;
+    }
+  }
+  elsif ($action eq "disable") {
+    unless (Service->Disable ($name)) {
+	$ret->{"stderr"}	= "Failed to disable service $name.";
+	$ret->{"exit"}		= 2000;
+    }
+  }
+  else {
+    $ret->{"stderr"}	= "Unknown action '$action'";
+    $ret->{"exit"}		= 3;
+  }
+  return  $ret;
+}
+
 1;
