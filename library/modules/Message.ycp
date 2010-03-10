@@ -62,7 +62,11 @@ global define string CannotStopService (string service_name) {
  * @return string Cannot write settings to 'destination'
  */
 global define string CannotWriteSettingsTo (string destination) {
-  /* TRANSLATORS: Popup message, %1 is file or service name like "/tmp/out" or "LDAP" */
+  /* TRANSLATORS: Popup message, %1 is file or service name like "/tmp/out" or "LDAP"
+   *  For Right-To-Left languages, you want to put %1 into its own empty line so
+   *  the text renderer doesn't get trip with the English filename
+   *  (see BNC #584466 for details)
+   */
   return sformat(_("Cannot write settings to '%1'"), destination);
 }
 
@@ -73,7 +77,11 @@ global define string CannotWriteSettingsTo (string destination) {
  * @return string Cannot write settings to 'destination'\n\nReason: reason
  */
 global define string CannotWriteSettingsToBecause (string destination, string reason) {
-  /* TRANSLATORS: Popup message, %1 is file or service name like "/tmp/out" or "LDAP", %2 is the reason of error */
+  /* TRANSLATORS: Popup message, %1 is file or service name like "/tmp/out" or "LDAP", %2 is the reason of error
+   *  For Right-To-Left languages, you want to put %1 into its own empty line so
+   *  the text renderer doesn't get trip with the English filename
+   *  (see BNC #584466 for details)
+   */
   return sformat(_("Cannot write settings to '%1'.
 
 Reason: %2"), destination, reason);
@@ -85,7 +93,11 @@ Reason: %2"), destination, reason);
  * @return string Error writing file 'file'
  */
 global define string ErrorWritingFile (string file) {
-  /* TRANSLATORS: Popup message, %1 is a file name like "/tmp/out" */
+  /* TRANSLATORS: Popup message, %1 is a file name like "/tmp/out"
+   *  For Right-To-Left languages, you want to put %1 into its own empty line so
+   *  the text renderer doesn't get trip with the English filename
+   *  (see BNC #584466 for details)
+   */
   return sformat(_("Error writing file '%1'"), file);
 }
 
@@ -96,7 +108,11 @@ global define string ErrorWritingFile (string file) {
  * @return string Error writing file 'file'\n\nReason: reason
  */
 global define string ErrorWritingFileBecause (string file, string reason) {
-  /* TRANSLATORS: Popup message, %1 is a file name like "/tmp/out", %2 is the reason of error */
+  /* TRANSLATORS: Popup message, %1 is a file name like "/tmp/out", %2 is the reason of error
+   *  For Right-To-Left languages, you want to put %1 into its own empty line so
+   *  the text renderer doesn't get trip with the English filename
+   *  (see BNC #584466 for details)
+   */
   return sformat(_("Error writing file '%1'.
 
 Reason: %2"), file, reason);
@@ -108,7 +124,11 @@ Reason: %2"), file, reason);
  * @return string Cannot open file 'file'
  */
 global define string CannotOpenFile (string file) {
-  /* TRANSLATORS: Popup message, %1 is the name of file like "/tmp/in"  */
+  /* TRANSLATORS: Popup message, %1 is the name of file like "/tmp/in"
+   *  For Right-To-Left languages, you want to put %1 into its own empty line so
+   *  the text renderer doesn't get trip with the English filename
+   *  (see BNC #584466 for details)
+   */
   return sformat(_("Cannot open file '%1'"), file);
 }
 
@@ -119,7 +139,11 @@ global define string CannotOpenFile (string file) {
  * @return string Cannot open file 'file'\n\nReason: reason
  */
 global define string CannotOpenFileBecause (string file, string reason) {
-  /* TRANSLATORS: Popup message, %1 is the name of file like "/tmp/in", %2 is the reason of error */
+  /* TRANSLATORS: Popup message, %1 is the name of file like "/tmp/in", %2 is the reason of error
+   *  For Right-To-Left languages, you want to put %1 into its own empty line so
+   *  the text renderer doesn't get trip with the English filename
+   *  (see BNC #584466 for details)
+   */
   return sformat(_("Cannot open file '%1'.
 
 Reason: %2"), file, reason);
@@ -169,7 +193,11 @@ global define string RequiredItem () {
  * @return string The directory '%1' does not exist.\nCreate it?
  */
 global define string DirectoryDoesNotExistCreate (string directory) {
-  /* TRANSLATORS: Popup question */
+  /* TRANSLATORS: Popup question
+   *  For Right-To-Left languages, you want to put %1 into its own empty line so
+   *  the text renderer doesn't get trip with the English directory
+   *  (see BNC #584466 for details)
+   */
   return sformat(_("The directory '%1' does not exist.
 Create it?"), directory);
 }
@@ -220,7 +248,11 @@ global define string MissingParameter (string parameter) {
  * @return string Unable to create directory '%1'.
  */
 global define string UnableToCreateDirectory (string directory) {
-  /* TRANSLATORS: Popup message, %1 is a directory name */
+  /* TRANSLATORS: Popup message, %1 is a directory name
+   *  For Right-To-Left languages, you want to put %1 into its own empty line so
+   *  the text renderer doesn't get trip with the English directory
+   *  (see BNC #584466 for details)
+   */
   return sformat(_("Cannot create directory '%1'."), directory);
 }
 
