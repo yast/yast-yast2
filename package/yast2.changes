@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 10 16:32:25 CET 2010 - locilka@suse.cz
+
+- Added special comments for translators to RTL languages
+  (BNC #584466).
+
+-------------------------------------------------------------------
 Wed Mar 10 15:43:17 CET 2010 - mvidner@suse.cz
 
 - Mode::test(): check getenv instead of the UI
