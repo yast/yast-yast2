@@ -132,14 +132,9 @@ global string testMode () {
     if (_test == nil)
 	Initialize ();
     if (!test_autochecked) {
-
-	// do not call GetDisplayInfo in command line mode (bnc#374259)
-	if (commandline())
-	{
-	    _test = "none";
-	}
-	else if (UI::GetDisplayInfo () == nil) {
-	    _test = "testsuite"; // testsuite runs with a dummy ui. 
+        // bnc#243624#c13: Y2ALLGLOBAL is set by yast2-testsuite/skel/runtest.sh
+        if (getenv ("Y2MODETEST") != nil || getenv ("Y2ALLGLOBAL") != nil) {
+	    _test = "testsuite";
 	}
 	test_autochecked = true;
     }
