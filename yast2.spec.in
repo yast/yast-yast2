@@ -131,7 +131,6 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %dir @imagedir@
 %dir @localedir@
 %dir @moduledir@
-%dir @moduledir@/YaPI
 %dir @scrconfdir@
 %dir @ybindir@
 %dir @ydatadir@
@@ -149,7 +148,6 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 @ydatadir@/*.ycp
 @clientdir@/*
 @moduledir@/*
-@moduledir@/YaPI/*.pm
 @scrconfdir@/*
 @ybindir@/*
 @agentdir@/ag_*
