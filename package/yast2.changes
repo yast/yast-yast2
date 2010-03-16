@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar 16 14:49:06 CET 2010 - jsuchome@suse.cz
+
+- SERVICES.pm moved to webyast-services-ws (bnc#587876)
+- 2.17.89
+
+-------------------------------------------------------------------
 Wed Mar 10 16:32:25 CET 2010 - locilka@suse.cz
 
 - Added special comments for translators to RTL languages
