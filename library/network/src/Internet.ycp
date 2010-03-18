@@ -156,6 +156,11 @@ global define boolean Stop(string log) {
  * @return true if interface is up (which is not equal to connected)
  */
 global define boolean Status() {
+    // Skip test in case of NM because it returns code 3 (interface under NM controll)
+    if(NetworkService::IsManaged ()){
+      y2milestone("Skipping interface status test because of NetworkManager");
+      return true;
+    }
     integer ret = (integer) SCR::Execute(.target.bash, "/sbin/ifstatus " + device);
     y2milestone ("ifstatus %1: %2", device, ret);
     return ret == 0 || ret == 10;
