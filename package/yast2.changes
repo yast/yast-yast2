@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar 22 14:50:16 CET 2010 - mzugec@suse.cz
+
+- L3: autoinstallation with manual setup (bnc#568653)
+- 2.13.116 
+
+-------------------------------------------------------------------
 Thu Nov 26 13:40:24 CET 2009 - locilka@suse.cz
 
 - Fixed access rights for /etc/install.inf (bnc #500124)

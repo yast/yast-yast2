@@ -35,6 +35,9 @@ global define boolean Detection(string class) ``{
 
     if(Linuxrc::manual () != true) return true;
 
+    // L3: no interaction in AY, just re-probe (bnc#568653)
+    if(Mode::autoinst () == true) return true;
+
     boolean result = detection_cache[class]:nil;
     if (result != nil) {
 	y2milestone ("Detection cached result: %1 -> %2", class, result);
