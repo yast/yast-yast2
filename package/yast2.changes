@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar 22 09:12:32 CET 2010 - mzugec@suse.cz
+
+- L3: autoinstallation with manual setup (bnc#568653)
+- 2.19.10 
+
+-------------------------------------------------------------------
 Tue Mar 16 15:28:33 CET 2010 - jsuchome@suse.cz
 
 - SERVICES.pm moved to webyast-services-ws (bnc#587876) 
