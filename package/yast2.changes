@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Mar 29 15:12:35 CEST 2010 - ug@suse.de
+
+- fixed a bug with *.desktop file translations
+  (bnc#580593)
+- 2.17.92
+
+-------------------------------------------------------------------
 Mon Mar 22 09:11:06 CET 2010 - mzugec@suse.cz
 
 - L3: autoinstallation with manual setup (bnc#568653)
