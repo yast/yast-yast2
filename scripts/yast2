@@ -310,96 +310,23 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 	        TTY=console
 		;;
 	esac
-	UC_STARTED=no
-	UTF8STATUS=0
-	UTF8TESTED=no
-	if test -x /bin/testutf8 ; then
-            # binary /bin/testutf8 is missing at least on s390x, #158001
-	    # return code of the /bin/testutf8 (more info in bug #179989)
-	    # 0=stdin does not support utf8, 1=not utf8, 2=utf8
-	    /bin/testutf8
-            UTF8STATUS=$?
-	    UTF8TESTED=yes
-	fi
-        # on console, start yast in UTF-8 locale (only on a 'local' console)
+
         if test "$TERM" = "linux" -a "$TTY" = "console" ; then
 	    case "$LANG" in
 		# if it is known that a language doesn't yet work well with ncurses
 		# on console use English instead:
 		ja*|ko*|zh*)
-		    export LANG=en_US.UTF-8
-		    export LC_CTYPE=en_US.UTF-8
-		    export LC_ALL=en_US.UTF-8 # just to make sure.
-		;;
-		*)
-	            # get rid of encoding and/or modifier from all the
-		    # locale environment variables and add .UTF-8.
-		    # But leave those which are empty or set to POSIX or C alone,
-		    # POSIX.UTF-8, C.UTF-8, or .UTF-8 doesn't make sense (bug #285178).
-                    for lc in LANG LC_CTYPE LC_NUMERIC LC_TIME	\
-	                      LC_COLLATE LC_MONETARY LC_MESSAGES	\
-	                      LC_PAPER LC_NAME LC_ADDRESS 		\
-	                      LC_TELEPHONE LC_MEASUREMENT		\
-	                      LC_IDENTIFICATION LC_ALL
-                    do
-                        eval val="\$$lc"
-		        if [ -n "$val" -a "$val" != "POSIX" -a "$val" != "C" ] ; then
-		            eval $lc=\${val%%[.@]*}.UTF-8
-			    eval export $lc
-		        fi
-		    done
-
-	        ;;
-	    esac
-	    if [ $UTF8TESTED = "yes" -a $UTF8STATUS -ne 2 -a -x /bin/unicode_start ] ; then
-		/bin/unicode_start
-		UC_STARTED=yes
-	    fi
-        else
-	    case "$TERM" in
-		rxvt*|vt*|xterm*|linux|screen*)
-		    # fix locale settings if they are not suitable for the
-		    # terminal setting (UTF-8 or not)
-		    # But should we really do this here? Isn't it user error
-		    # if the locale settings are not suitable for the terminal
-		    # used?
-
-  		    # the terminal is not in UTF-8 mode, strip .UTF-8 suffix
-		    # from the locale variables:
-		    if [ "$UTF8TESTED" == "yes" -a $UTF8STATUS -eq 1 ] ; then
-                        for lc in LANG LC_CTYPE LC_NUMERIC LC_TIME	\
-    	                      LC_COLLATE LC_MONETARY LC_MESSAGES	\
-    	                      LC_PAPER LC_NAME LC_ADDRESS 		\
-    	                      LC_TELEPHONE LC_MEASUREMENT		\
-    	                      LC_IDENTIFICATION LC_ALL
-                        do
-                            eval val="\$$lc"
-    		            if [ -n "$val" ] ; then
-    		                eval $lc=\${val%%.UTF-8}
-    			        eval export $lc
-    		            fi
-			done
-		    # the terminal is in UTF-8 mode so strip any possible suffix from
-		    # the locale variables and append .UTF-8.
-		    # But leave those which are empty or set to POSIX or C alone,
-		    # POSIX.UTF-8, C.UTF-8, or .UTF-8 doesn't make sense (bug #285178).
-		    elif [ "$UTF8TESTED" == "yes" -a $UTF8STATUS -eq 2 ] ; then
-                        for lc in LANG LC_CTYPE LC_NUMERIC LC_TIME	\
-    	                      LC_COLLATE LC_MONETARY LC_MESSAGES	\
-    	                      LC_PAPER LC_NAME LC_ADDRESS 		\
-    	                      LC_TELEPHONE LC_MEASUREMENT		\
-    	                      LC_IDENTIFICATION LC_ALL
-                        do
-                            eval val="\$$lc"
-    		            if [ -n "$val" -a "$val" != "POSIX" -a "$val" != "C" ] ; then
-    		                eval $lc=\${val%%[.@]*}.UTF-8
-    			        eval export $lc
-			    fi
-			done
-		    fi
-		    #default: do nothing, keep locale untouched
-		;;
-	    esac
+		    if test `locale charmap` = "UTF-8" ; then
+			export LANG=en_US.UTF-8
+			export LC_CTYPE=en_US.UTF-8
+			export LC_ALL=en_US.UTF-8 # just to make sure.
+		    else
+			export LANG=en_US
+			export LC_CTYPE=en_US
+			export LC_ALL=en_US # just to make sure.
+		    fi	
+		    ;;
+	     esac	
 	fi
 
 	# this fixes launching of interactive subprocesses, #150799
@@ -465,11 +392,6 @@ else
 	    break
 	fi
     done
-fi
-
-# cleanup
-if [ "$UC_STARTED" = "yes" -a -x /bin/unicode_stop ] ; then
-    /bin/unicode_stop
 fi
 
 if [ "$UID" = 0 ]; then
