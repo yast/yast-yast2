@@ -310,7 +310,11 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 	        TTY=console
 		;;
 	esac
-
+	
+	# The part below has changed: we don't use 'testutf8' any longer,
+	# i.e. don't start YaST in UTF-8 locale and don't fix the settings
+	# in rxvt*|vt*|xterm*|linux|screen* (trust the locale).
+	# See bnc#556555 and bnc#436378.
         if test "$TERM" = "linux" -a "$TTY" = "console" ; then
 	    case "$LANG" in
 		# if it is known that a language doesn't yet work well with ncurses
