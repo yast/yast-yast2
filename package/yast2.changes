@@ -1,9 +1,9 @@
 -------------------------------------------------------------------
 Thu Apr  8 13:11:14 CEST 2010 - gs@suse.de
 
-- yast2 start script: don't start YaST in UTF-8 locale on console
-  and don't fix settings, but respect and trust the locale
-  ('testutf8' is removed, see bnc#556555 and bnc#436378).
+- yast2 start script: don't start YaST on console in UTF-8 mode
+  by default and don't fix settings, but respect and trust the 
+  locale ('testutf8' is removed, see bnc#556555 and bnc#436378).
 
 -------------------------------------------------------------------
 Fri Mar 19 02:19:19 EDT 2010 - cmeng@novell.com
