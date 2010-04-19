@@ -36,7 +36,7 @@ sub EscapePassword
 {
     my ($self, $escaped) = @_;
 
-    if (!defined %escape_cache) { InitCache(); }
+    if (!%escape_cache) { InitCache(); }
 
     $escaped =~ s/([^A-Za-z0-9\\-_.!~*'()])/$escape_cache{$1}/ge;
     return $escaped;
@@ -50,7 +50,7 @@ sub EscapePath
 {
     my ($self, $escaped) = @_;
 
-    if (!defined %escape_cache) { InitCache() };
+    if (!%escape_cache) { InitCache() };
 
     $escaped =~ s/([^A-Za-z0-9\-_.!~*'()\/])/$escape_cache{$1}/ge;
     return $escaped;
@@ -64,7 +64,7 @@ sub EscapeQuery
 {
     my ($self, $escaped) = @_;
 
-    if (!defined %escape_cache) { InitCache(); }
+    if (!%escape_cache) { InitCache(); }
 
     $escaped =~ s/([^A-Za-z0-9\\-_.!~*'()\/:=&])/$escape_cache{$1}/ge;
     return $escaped;
