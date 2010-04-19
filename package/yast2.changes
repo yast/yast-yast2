@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Apr 19 07:49:25 UTC 2010 - lslezak@suse.cz
+
+- URLRecode.pm - fixed "deprecated defined(%hash)" warning
+  (bnc#596920)
+- 2.19.12
+
+-------------------------------------------------------------------
 Thu Apr  8 13:11:14 CEST 2010 - gs@suse.de
 
 - yast2 start script: don't start YaST on console in UTF-8 mode
