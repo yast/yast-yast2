@@ -87,7 +87,7 @@ global map<string,any> Connect(boolean show_continue_button)
 	    {
 		symbol ret = Popup::AnyQuestion3(
 		    // TRANSLATORS: a popup headline
-		    _("Accessing the Softwaree Management Failed"),
+		    _("Accessing the Software Management Failed"),
 		    Pkg::LastError() + "\n\n" +
 		    // TRANSLATORS: an error message with question
 		    _("Would you like to retry accessing the software manager,
