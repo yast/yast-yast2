@@ -78,8 +78,13 @@ while (<STDIN>) {
 	}
 
 	my $xml = new XML::Simple (%in_args);
-	my $root = $xml->XMLin ($file);
+	my $root = eval { $xml->XMLin ($file) };
 	undef $xml;
+
+	if($@) {
+	    y2error ("error while parsing file $file");
+	    undef $root;
+	}
 
 	ycp::Return ($root, 1); # pass everything as string (bnc#409491)
 
