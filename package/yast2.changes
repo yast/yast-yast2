@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul 19 14:56:51 CEST 2010 - mzugec@suse.cz
+
+- yast2 bash completion - show all yast modules (bnc#621848)
+- thanks to Andrea Florio
+
+-------------------------------------------------------------------
 Fri Apr 30 13:32:22 CEST 2010 - jsuchome@suse.cz
 
 - ag_anyxml: do not die on broken XML (bnc#600928)
