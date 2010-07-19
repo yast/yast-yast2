@@ -125,8 +125,8 @@ listmodules()
     else
 	echo "Available modules:"
 	echo
-	grep -h "Exec=/sbin/yast2 " $list | \
-	    sed 's|Exec=/sbin/yast2 \([^ ]\+\)\( .*\)\?|\1|' | \
+	grep -h "X-SuSE-YaST-Call=" $list | \
+	    sed 's|X-SuSE-YaST-Call=\([^ ]\+\)\( .*\)\?|\1|' | \
 	    sort -u
     fi
 }
