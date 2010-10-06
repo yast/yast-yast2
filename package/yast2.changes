@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct  6 16:51:13 UTC 2010 - lslezak@suse.cz
+
+- allow entering some symbols in passwords when adding a new
+  repository (bnc#598836)
+- 2.13.117
+
+-------------------------------------------------------------------
 Mon Mar 22 14:50:16 CET 2010 - mzugec@suse.cz
 
 - L3: autoinstallation with manual setup (bnc#568653)

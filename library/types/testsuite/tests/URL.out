@@ -5,7 +5,7 @@ Return	abcd
 Return	abcd%25
 Return	ab%25c%24d
 Return	%20%25%24%20
-Return	_<>{}
+Return	%5f%3c%3e%7b%7d
 Return	%25
 Return	
 Return	

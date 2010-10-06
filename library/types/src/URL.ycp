@@ -38,17 +38,38 @@ global string ValidChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP
  * order (the first or the last) during processing
  */
 global map<string, string> transform_map_passwd = $[
-    ";":"%3b",
-    "/":"%2f",
-    "?":"%3f",
-    ":":"%3a",
-    "@":"%40",
-    "&":"%26",
-    "=":"%3d",
-    "+":"%2b",
+    " ":"%20",
+    "!":"%21",
+    "\"":"%22",
+    "#":"%23",
     "$":"%24",
+    "&":"%26",
+    "'":"%27",
+    "(":"%28",
+    ")":"%29",
+    "*":"%2a",
+    "+":"%2b",
     ",":"%2c",
-    " ":"%20"
+    "-":"%2d",
+    ".":"%2e",
+    "/":"%2f",
+    ":":"%3a",
+    ";":"%3b",
+    "<":"%3c",
+    "=":"%3d",
+    ">":"%3e",
+    "?":"%3f",
+    "@":"%40",
+    "[":"%5b",
+    "\\":"%5c",
+    "]":"%5d",
+    "^":"%5e",
+    "_":"%5f",
+    "`":"%60",
+    "{":"%7b",
+    "|":"%7c",
+    "}":"%7d",
+    "~":"%7e"
 ];
 
 /**
@@ -289,6 +310,7 @@ global define string Build (map tokens) ``{
 	if (size(userpass) != 0 && tokens["pass"]:"" != "" )
 	{
 		userpass = sformat("%1:%2", userpass, EscapeString(tokens["pass"]:"", transform_map_passwd) );
+		y2debug("Escaped user and password: '%1' => '%2'", tokens["pass"]:"", userpass);
 	}
 	if (size(userpass) > 0 )
 		userpass = userpass + "@";
