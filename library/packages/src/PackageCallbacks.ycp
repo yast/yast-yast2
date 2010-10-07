@@ -1683,17 +1683,17 @@ global void SourceReportDestroy()
 
     global void ProblemDeltaDownload (string descr) {
 	FinishPatchDeltaProvide (); // close popup
-	Report::ShowText (_("Failed to download delta RPM"), descr);
+	y2milestone("Failed to download delta RPM: %1", descr);
     }
 
     global void ProblemDeltaApply (string descr) {
 	FinishPatchDeltaProvide (); // close popup
-	Report::ShowText (_("Failed to apply delta RPM"), descr);
+	y2milestone("Failed to apply delta RPM: %1", descr);
     }
 
     global void ProblemPatchDownload (string descr) {
 	FinishPatchDeltaProvide (); // close popup
-	Report::ShowText (_("Failed to download patch RPM"), descr);
+	y2milestone("Failed to download patch RPM: %1", descr);
     }
 
 
