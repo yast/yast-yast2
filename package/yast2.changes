@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct  7 11:08:42 UTC 2010 - lslezak@suse.cz
+
+- removed textdomain change (not needed, breaks translations)
+  (bnc#445716)
+
+-------------------------------------------------------------------
 Mon Mar 29 15:12:35 CEST 2010 - ug@suse.de
 
 - fixed a bug with *.desktop file translations
