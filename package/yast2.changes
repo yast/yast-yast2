@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 13 10:07:55 CEST 2010 - jsuchome@suse.cz
+
+- open LongError popup instead of Error if the message is too long 
+  (bnc#611596)
+
+-------------------------------------------------------------------
 Thu Oct  7 07:21:57 UTC 2010 - lslezak@suse.cz
 
 - just log problemDeltaDownload callbacks - libzypp automatically
