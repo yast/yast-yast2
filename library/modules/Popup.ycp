@@ -43,7 +43,11 @@ boolean feedback_open = false;
 integer default_width = 60;
 integer default_height = 10;
 
+// if error message is too long, show LongError instead of Error Popup
+global boolean switch_to_richtext	= true;
 
+// lines of message text which force usage of RichText
+global integer too_many_lines		= 20;
 
 /**
  * Internal function that returns a popup dialog with an additional label.
@@ -1272,7 +1276,11 @@ global define void WarningDetails (string message, string details) {
  */
 global define void Error(string message)
 {
-    anyMessageInternal( Label::ErrorMsg(), message, Icon::IconPath ("error") );
+    list lines	= splitstring (message, "\n");
+    if (switch_to_richtext && size (lines) > too_many_lines)
+	anyMessageInternalRich( Label::ErrorMsg(), message, Icon::IconPath ("error"), default_width, default_height );
+    else
+	anyMessageInternal( Label::ErrorMsg(), message, Icon::IconPath ("error") );
 }
 
 /**
