@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct 13 07:52:33 UTC 2010 - lslezak@suse.cz
+
+- install xen-kmp-smp (instead of xen-kmp-default) when kernel-smp
+  is selected (i386) (bnc#526461)
+- 2.13.118
+
+-------------------------------------------------------------------
 Wed Oct  6 16:51:13 UTC 2010 - lslezak@suse.cz
 
 - allow entering some symbols in passwords when adding a new
