@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Oct 18 15:04:37 UTC 2010 - lslezak@suse.cz
+
+- don't display extra error popup when a download fails, the error
+  is reported later via MediaChange callback anyway (bnc#625987)
+- 2.20.1
+
+-------------------------------------------------------------------
 Wed Oct 13 10:07:55 CEST 2010 - jsuchome@suse.cz
 
 - open LongError popup instead of Error if the message is too long 
