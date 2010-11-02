@@ -475,23 +475,13 @@ The system should be later verified by running the Software Management module.")
     /**
      *  At start of package install.
      */
-    global void StartPackage (string name, string summary, integer
+    global void StartPackage (string name, string location, string summary, integer
 					installsize, boolean is_delete)
     {
 	if (!enable_asterix_package)
 	    return;
 
-	list<string> parsed_path = splitstring(name, "/");
-
-	if (size(parsed_path) > 0)
-	{
-	    _package_name = parsed_path[size(parsed_path) - 1]:"";
-	}
-	else
-	{
-	    _package_name = name;
-	}
-
+	_package_name = name;
 	_package_size = installsize;
 	_deleting_package = is_delete;
 	string sz = String::FormatSizeWithPrecision (installsize, 2, false);
@@ -2973,7 +2963,7 @@ void DummyStartProvide(string param1, integer param2, boolean param3) {y2debug("
 
 string DummyDoneProvide (integer error, string reason, string name) {y2debug("Empty DoneProvide callback, returning 'I'");return "I";}
 
-void DummyStartPackage (string name, string summary, integer installsize, boolean is_delete) {y2debug("Empty StartPackage callback");}
+void DummyStartPackage (string name, string location, string summary, integer installsize, boolean is_delete) {y2debug("Empty StartPackage callback");}
 
 string DummyDonePackage (integer error, string reason) {y2debug("Empty DonePackage callback, returning 'I'");return "I";}
 
