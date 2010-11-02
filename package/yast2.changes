@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov  2 15:09:00 UTC 2010 - lslezak@suse.cz
+
+- updated to match the changed StartPackage callback signature
+- 2.20.2
+
+-------------------------------------------------------------------
 Mon Oct 18 15:04:37 UTC 2010 - lslezak@suse.cz
 
 - don't display extra error popup when a download fails, the error

@@ -7,7 +7,7 @@ Source1:	yast2-rpmlintrc
 
 BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-testsuite yast2-perl-bindings
 # Needed already in build time
-BuildRequires:	yast2-pkg-bindings >= 2.17.32 yast2-core >= 2.18.12 yast2-ycp-ui-bindings >= 2.18.4
+BuildRequires:	yast2-pkg-bindings >= 2.20.3 yast2-core >= 2.18.12 yast2-ycp-ui-bindings >= 2.18.4
 
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
 PreReq:		%fillup_prereq
@@ -18,8 +18,8 @@ Requires:       yast2-core >= 2.18.12
 # new UI::OpenContextMenu
 Requires:       yast2-ycp-ui-bindings >= 2.18.4
 
-# Pkg::Get(Set)SolverFlags()
-Requires:	yast2-pkg-bindings >= 2.17.32
+# changed StartPackage callback signature
+Requires:	yast2-pkg-bindings >= 2.20.3
 Requires:	yast2_ui yast2-branding
 # For Cron Agent, Module
 Requires:       perl-Config-Crontab
