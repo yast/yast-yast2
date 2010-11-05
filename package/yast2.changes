@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Nov  5 12:40:03 UTC 2010 - lslezak@suse.cz
+
+- PackageCallbacks: removed the retry/abort/skip dialog from
+  DoneProvide callback - the user is asked via MediaChange
+  callback, don't ask twice when aborting.
+- 2.20.3
+
+-------------------------------------------------------------------
 Tue Nov  2 15:09:00 UTC 2010 - lslezak@suse.cz
 
 - updated to match the changed StartPackage callback signature
