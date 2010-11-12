@@ -33,6 +33,8 @@ Requires:	yast2-perl-bindings
 Requires:	perl-XML-Simple
 # for GPG.ycp
 Requires:	gpg2
+# for Punycode.ycp (bnc#651893)
+Requires:	bind-utils
 # xdg-su in .desktops
 Recommends:	xdg-utils
 
