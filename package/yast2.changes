@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Nov 12 10:23:17 CET 2010 - mzugec@suse.cz
+
+- FileChanges: test rpm command exit value 
+
+-------------------------------------------------------------------
 Fri Nov  5 12:40:03 UTC 2010 - lslezak@suse.cz
 
 - PackageCallbacks: removed the retry/abort/skip dialog from
