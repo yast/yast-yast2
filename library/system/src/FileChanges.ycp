@@ -87,7 +87,7 @@ boolean FileChangedFromPackage (string file) {
     map out = (map)SCR::Execute (.target.bash_output, cmd);
     string package = out["stdout"]:"";
     y2milestone ("Package owning %1: %2", file, package);
-    if (package == "")
+    if (package == "" || out["exit"]:-1 != 0)
 	return false;
     cmd = sformat ("rpm -V %1 |grep ' %2$'", package, file);
     out = (map)SCR::Execute (.target.bash_output, cmd);
