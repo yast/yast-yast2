@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov 12 11:03:58 CET 2010 - mzugec@suse.cz
+
+- yast2 added bind-utils dependency (bnc#651893)
+- 2.20.4 
+
+-------------------------------------------------------------------
 Fri Nov 12 10:23:17 CET 2010 - mzugec@suse.cz
 
 - FileChanges: test rpm command exit value 
