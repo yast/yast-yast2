@@ -34,17 +34,19 @@
     list EXECL = [ $[
 	"target" : $[
 	    "bash_output" : $[
-		"exit" : "0",
+		"exit" : 0,
 		"stdout" : "ntp.rpm",
+		"stderr" : ""
 	    ],
 	],
     ],
     $[
 	"target" : $[
 	    "bash_output" : $[
-		"exit" : "0",
+		"exit" : 0,
 		"stdout" : "S.?....T    /etc/ntp.conf
 ..?.....  c /var/lib/ntp/etc/ntp.conf.iburst",
+		"stderr" : ""
 	    ],
 	],
     ],
