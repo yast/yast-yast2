@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov 16 15:45:30 CET 2010 - mzugec@suse.cz
+
+- save log file into home directory by default (bnc#653601)
+- 2.20.5 
+
+-------------------------------------------------------------------
 Fri Nov 12 15:42:50 CET 2010 - mzugec@suse.cz
 
 - FileChanges: fixed testsuite 

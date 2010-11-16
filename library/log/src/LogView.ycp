@@ -395,8 +395,8 @@ global define symbol LogHandle (string key, map event) {
     if (ret == `_cwm_log_save)
     {
 	string filename = UI::AskForSaveFileName(
-	    // popup caption
-	    "/tmp", "*.log", _("Save Log as..."));
+	    // popup caption, save into home directory by default (bnc#653601)
+	    "~", "*.log", _("Save Log as..."));
 	if (filename != nil)
 	{
 	    SCR::Write (.target.string, filename,
