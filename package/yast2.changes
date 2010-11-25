@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Nov 25 15:43:17 UTC 2010 - lslezak@suse.cz
+
+- fix the previous problem (bnc#526461) also for 64-bit
+  systems (x86_64)
+- 2.13.119
+
+-------------------------------------------------------------------
 Wed Oct 13 07:52:33 UTC 2010 - lslezak@suse.cz
 
 - install xen-kmp-smp (instead of xen-kmp-default) when kernel-smp

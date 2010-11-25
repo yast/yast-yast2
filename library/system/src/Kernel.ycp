@@ -427,8 +427,16 @@ global void SetCmdLine (string new_cmd_line) {
 	{
 	    if (xen)
 	    {
-		y2milestone("Adding Xen PV drivers: xen-kmp-default");
-		kernel_packages = add(kernel_packages, "xen-kmp-default");
+		if (contains(kernel_packages, "kernel-smp"))
+		{
+		    y2milestone("Adding Xen PV drivers: xen-kmp-smp");
+		    kernel_packages = add(kernel_packages, "xen-kmp-smp");
+		}
+		else
+		{
+		    y2milestone("Adding Xen PV drivers: xen-kmp-default");
+		    kernel_packages = add(kernel_packages, "xen-kmp-default");
+		}
 	    }
 	}
 	else if (Arch::alpha ())
