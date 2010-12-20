@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Dec 20 11:27:17 CET 2010 - mzugec@suse.cz
+
+- fate#306855: FCoE boot support
+- 2.20.6 
+
+-------------------------------------------------------------------
 Tue Nov 16 15:45:30 CET 2010 - mzugec@suse.cz
 
 - save log file into home directory by default (bnc#653601)
