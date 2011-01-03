@@ -183,7 +183,7 @@ global string device_type (string dev) {
 global string GetType(string dev) {
  string type = ifcfg_part (dev, "1");
  // test if this is VLAN (ethX.vlanid)
- if (type=="eth" && regexpmatch(dev, "^eth[[:digit:]]+\.[[:digit:]]+$")) return "vlan";
+ if (type=="eth" && regexpmatch(dev, "^eth[[:digit:]]+\\.[[:digit:]]+$")) return "vlan";
  foreach(string dev_type,map confs, Devices, {
   if (haskey(confs, dev)){
    string int_type = confs[dev, "INTERFACETYPE"]:"";
