@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jan  4 13:42:54 UTC 2011 - lslezak@suse.cz
+
+- check PackageKit status, suggest to quit the daemon if it is
+  running (bnc#659522)
+- 2.20.10
+
+-------------------------------------------------------------------
 Mon Jan  3 17:25:36 UTC 2011 - lslezak@suse.cz
 
 - fixed VLAN config type detection (wrong regexp)

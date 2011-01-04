@@ -16,9 +16,45 @@ textdomain "base";
 
 import "Popup";
 import "Label";
+import "PackageKit";
 
 boolean have_lock = nil;
 boolean aborted = false;
+// display a different message in the first PackageKit quit confirmation
+boolean packagekit_asked = false;
+
+/**
+ * Ask whether to quit PackageKit if it is running
+ * @return boolean true if PackageKit was asked to quit
+ */
+boolean AskPackageKit()
+{
+    boolean ret = false;
+
+    if (PackageKit::IsRunning())
+    {
+	// ask to send quit signal to PackageKit
+	string msg = packagekit_asked ?
+	    _("PackageKit is still running (probably busy).
+Ask PackageKit to quit again?")
+	    :
+	    _("PackageKit is blocking software management.
+This happens when the updater applet or another software management
+application is running.
+
+Ask PackageKit to quit?");
+
+	packagekit_asked = true;
+
+	if (Popup::YesNo(msg))
+	{
+	    PackageKit::SuggestQuit();
+	    ret = true;
+	}
+    }
+
+    return ret;
+}
 
 /**
  * Tries to acquire the packager (zypp) lock.
@@ -40,6 +76,13 @@ global boolean Check () {
 	if (have_lock == true) break;
 
 	if (have_lock != true) {
+	    if (AskPackageKit())
+	    {
+		// let the PackageKit quit before retrying
+		sleep(2000);
+		continue;
+	    }
+
 	    try_again = (Popup::AnyQuestion (
 		// TRANSLATORS: a popup headline
 		_("Accessing the Software Management Failed"),
@@ -83,6 +126,13 @@ global map<string,any> Connect(boolean show_continue_button)
 	if (have_lock == true) break;
 
 	if (have_lock != true) {
+	    if (AskPackageKit())
+	    {
+		// let the PackageKit quit before retrying
+		sleep(2000);
+		continue;
+	    }
+
 	    if (show_continue_button)
 	    {
 		symbol ret = Popup::AnyQuestion3(
