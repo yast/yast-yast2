@@ -1,0 +1,63 @@
+/**
+ * File:	modules/PackageKit.ycp
+ * Package:	yast2
+ * Summary:	PackageKit access functions
+ * Authors:	Ladislav Slezak <lslezak@suse.cz>
+ *
+ * $Id:$
+ *
+ * This is a wrrapper around PackageKit DBus interface.
+ */
+
+{
+    module "PackageKit";
+
+    /**
+     * Check whether PackageKit daemon is running
+     * @return boolean return true if PackageKit is currently running
+     */
+    global boolean IsRunning()
+    {
+	string cmd = "dbus-send --system --dest=org.freedesktop.DBus --type=method_call --print-reply "
+	    + "--reply-timeout=200 / org.freedesktop.DBus.NameHasOwner string:org.freedesktop.PackageKit";
+	y2milestone("Checking PackageKit status: %1", cmd);
+
+	map out = (map)SCR::Execute(.target.bash_output, cmd);
+
+	boolean ret = false;
+	list<string> lines = splitstring(out["stdout"]:"", "\n");
+
+	foreach(string line, lines,
+	    {
+		if (regexpmatch(line, "boolean.*true"))
+		{
+		    ret = true;
+		}
+	    }
+	);
+
+	y2milestone("PackageKit is running: %1", ret);
+
+	return ret;
+    }
+
+    /**
+     * Ask the PackageKit daemon to quit
+     * If a transaction is in progress the daemon will not quit,
+     * you have to check the current status using isRunning() function.
+     */
+    global void SuggestQuit()
+    {
+	string cmd = "dbus-send --system --dest=org.freedesktop.PackageKit --type=method_call "
+	    + "/org/freedesktop/PackageKit org.freedesktop.PackageKit.SuggestDaemonQuit";
+	y2milestone("Asking PackageKit to quit: %1", cmd);
+
+	integer ret = (integer)SCR::Execute(.target.bash, cmd);
+
+	if (ret != 0)
+	{
+	    y2error("dbus-send failed!");
+	}
+    }
+
+}
