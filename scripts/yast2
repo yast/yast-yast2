@@ -17,7 +17,7 @@ export PATH=/sbin:/usr/sbin:$PATH
 
 # allow for a different prefix
 # strip the basename off $0, which can be: (bnc#382216, bnc#458385)
-# /sbin/yast2, /sbin/yast, yast2 (sh -x yast2 ...), /sbin//yast2 (PATH=/sbin/:...)
+# /sbin/yast2, /sbin/yast, yast2 (sh -x yast2 ...), /sbin/yast2 (PATH=/sbin/:...)
 shopt -s extglob
 mydir=${0%%*(/)[YyZz]a[Ss][Tt]?(2)}
 if [[ -z "$mydir" || "$mydir" = /sbin ]]; then
@@ -208,6 +208,28 @@ select_gui_frontend()
     fi
 }
 
+
+SNAPPERBIN=/usr/bin/snapper
+
+snapshot_pre()
+{
+    if [ "$1" != "menu" ] ; then
+	if [ "$USE_SNAPPER" = "yes" -a -x $SNAPPERBIN ] ; then
+	    SNAPSHOT_NUMBER=`$SNAPPERBIN --print-number create pre "yast2 $1"`
+	fi
+    fi
+}
+
+snapshot_post()
+{
+    if [ "$1" != "menu" ] ; then
+	if [ "$USE_SNAPPER" = "yes" -a -x $SNAPPERBIN ] ; then
+	    $SNAPPERBIN create post $SNAPSHOT_NUMBER
+	fi
+    fi
+}
+
+
 TEMP=`/usr/bin/getopt -o hlg:s:Si --long help,list,kcontrol,geometry:,style:,strings,install,update,remove,fullscreen,noborder,qt,gtk,ncurses \
      -n 'yast2' -- "$@"`
 
@@ -388,6 +410,7 @@ else
 	# all other cases when YaST has to be restarted
 	*) REDO_FILE=/var/lib/YaST2/restart_yast ;;
     esac
+    snapshot_pre $module
     #  break out on errors, #343258
     while [ $exit_code = 0 ]; do
 	$ybindir/y2base $module "$@" "$SELECTED_GUI" $Y2_GEOMETRY $Y2UI_ARGS
@@ -396,6 +419,7 @@ else
 	    break
 	fi
     done
+    snapshot_post $module
 fi
 
 if [ "$UID" = 0 ]; then
