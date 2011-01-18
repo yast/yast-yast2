@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jan 18 16:37:53 CET 2011 - aschnell@suse.de
+
+- call snapper from yast2 script
+
+-------------------------------------------------------------------
 Tue Jan  4 13:42:54 UTC 2011 - lslezak@suse.cz
 
 - check PackageKit status, suggest to quit the daemon if it is

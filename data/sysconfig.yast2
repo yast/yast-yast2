@@ -62,3 +62,8 @@ SUBVERSION_ADD_DIRS_RECURSIVE="no"
 #   summary - display an installation summary dialog, there user can decide whether to finish or restart
 # The summary dialog is always displayed when an installation error has occured.
 PKGMGR_ACTION_AT_EXIT="close"
+
+## Type: list(yes,no)
+## Default: "yes"
+# Enable use of snapper for YaST.
+USE_SNAPPER="yes"
