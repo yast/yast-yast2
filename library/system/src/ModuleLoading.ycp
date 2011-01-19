@@ -132,7 +132,7 @@
 		return `dont;
 	    }
 
-	    if (ask_before_loading && !Mode::autoinst())
+	    if (ask_before_loading && (!Mode::autoinst()) && (!Mode::autoupgrade()))
 	    {
 
 		UI::OpenDialog(`opt(`decorated, `centered),

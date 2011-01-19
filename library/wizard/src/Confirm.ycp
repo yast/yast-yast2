@@ -40,7 +40,7 @@ global boolean Detection(string class, string icon_name) {
     if(Linuxrc::manual () != true) return true;
 
     // L3: no interaction in AY, just re-probe (bnc#568653)
-    if(Mode::autoinst () == true) return true;
+    if(Mode::autoinst () == true || Mode::autoupgrade() == true) return true;
 
     if(Arch::s390()) return true;
 

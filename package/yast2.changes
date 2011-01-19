@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Wed Jan 19 13:49:48 CET 2011 - jsrain@suse.cz
+
+- adaptations for unattended migration (fate#310481)
+
+-------------------------------------------------------------------
+Wed Jan 19 13:45:05 CET 2011 - jsrain@suse.cz
+
+- adaptations for unattended migration
+
+-------------------------------------------------------------------
 Thu Oct  7 11:08:42 UTC 2010 - lslezak@suse.cz
 
 - removed textdomain change (not needed, breaks translations)

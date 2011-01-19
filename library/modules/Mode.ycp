@@ -88,6 +88,12 @@ global void Initialize () {
         {
 	    _mode ="repair";
         }
+	// FIXME according to what Linuxrc really writes
+	boolean autoupgrade = SCR::Read (.etc.install_inf.AutoUpgrade) != nil;
+	if (autoupgrade)
+	{
+	    _mode = "autoupgrade";
+	}
     }
 }
 
@@ -113,7 +119,7 @@ global void SetMode (string new_mode) {
     if (! contains (
 	[ "installation", "update", "normal", "repair",
 	    "autoinstallation", "autoinst_config",
-	    "live_installation"
+	    "live_installation", "autoupgrade"
 	],
 	new_mode))
     {
@@ -196,7 +202,7 @@ global boolean live_installation () {
  * we're doing an update
  */
 global boolean update () {
-    return mode () == "update";
+    return mode () == "update" || mode () == "autoupgrade";
 }
 
 global boolean Depeche () {
@@ -222,6 +228,13 @@ global boolean repair () {
  */
 global boolean autoinst () {
     return mode () == "autoinstallation";
+}
+
+/**
+ * doing auto-upgrade
+ */
+global boolean autoupgrade () {
+    return mode () == "autoupgrade";
 }
 
 /**
