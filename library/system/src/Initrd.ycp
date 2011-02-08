@@ -405,8 +405,11 @@
 	SCR::Write (.sysconfig.kernel, nil);
 	// recreate initrd
 	string param = "";
-	if (splash != "" && splash != nil)
+	if (splash != "" && splash != nil
+	  && 0 < (integer)SCR::Read (.target.size, "/lib/mkinitrd/scripts/setup-splash.sh"))
+	{
 	    param = sformat ("-s %1", splash);
+	}
 	if ( SCR::Execute (.target.bash, sformat ("/sbin/mkinitrd %1 %2 >> \
 %3 2>&1", param, additional_parameters,
 Directory::logdir + "/y2logmkinitrd")) != 0 )
