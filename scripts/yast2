@@ -215,7 +215,7 @@ snapshot_pre()
 {
     if [ "$1" != "menu" ] ; then
 	if [ "$USE_SNAPPER" = "yes" -a -x $SNAPPERBIN ] ; then
-	    SNAPSHOT_NUMBER=`$SNAPPERBIN --print-number create pre "yast2 $1"`
+	    SNAPSHOT_NUMBER=`$SNAPPERBIN create --type=pre --print-number --description="yast2 $1"`
 	fi
     fi
 }
@@ -224,7 +224,7 @@ snapshot_post()
 {
     if [ "$1" != "menu" ] ; then
 	if [ "$USE_SNAPPER" = "yes" -a -x $SNAPPERBIN ] ; then
-	    $SNAPPERBIN create post $SNAPSHOT_NUMBER
+	    $SNAPPERBIN create --type=post --pre-number=$SNAPSHOT_NUMBER
 	fi
     fi
 }
