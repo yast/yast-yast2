@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Feb  8 16:37:35 CET 2011 - jsrain@suse.cz
+
+- do not define splash screen resolution to mkinitrd if boot splash
+  is not installed (bnc#670225)
+- 2.20.12
+
+-------------------------------------------------------------------
 Wed Jan 19 13:49:18 CET 2011 - jsrain@suse.cz
 
 - adaptations for unattended migration (fate#310481)
