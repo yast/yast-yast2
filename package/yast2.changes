@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 16 10:46:07 CET 2011 - tgoettlicher@suse.de
+
+- Fixed dependencies (bnc #667938)
+- 2.20.13
+
+-------------------------------------------------------------------
 Tue Feb  8 16:37:35 CET 2011 - jsrain@suse.cz
 
 - do not define splash screen resolution to mkinitrd if boot splash
