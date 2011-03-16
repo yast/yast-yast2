@@ -20,7 +20,7 @@ Requires:       yast2-ycp-ui-bindings >= 2.18.4
 
 # changed StartPackage callback signature
 Requires:	yast2-pkg-bindings >= 2.20.3
-Requires:	yast2_ui yast2-branding
+Requires:	yast2_ui 
 # For Cron Agent, Module
 Requires:       perl-Config-Crontab
 # for ag_tty (/bin/stty)
