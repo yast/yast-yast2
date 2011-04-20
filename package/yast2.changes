@@ -1,16 +1,4 @@
 -------------------------------------------------------------------
-Thu Dec 23 00:40:41 CET 2010 - mzugec@suse.de
-
-- ifcfg-ethX.Y style config files for VLAN(fate#309240)
-- 2.17.94 
-
--------------------------------------------------------------------
-Wed Dec 15 09:24:02 CET 2010 - mzugec@suse.de
-
-- fate#306855: FCoE boot support
-- 2.17.93 
-
--------------------------------------------------------------------
 Mon Mar 29 15:12:35 CEST 2010 - ug@suse.de
 
 - fixed a bug with *.desktop file translations
