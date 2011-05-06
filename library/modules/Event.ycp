@@ -1,0 +1,151 @@
+/**
+ * File:	Event.ycp
+ * Package:	yast2
+ * Summary:	UI Event Helpers
+ * Authors:	Arvin Schnell <aschnell@suse.de>
+ */
+{
+    module "Event";
+
+
+    /**
+     * Returns id of widget causing the event.
+     */
+    global symbol GetWidgetId(map event)
+    {
+	return event["ID"]:(symbol)(nil);
+    }
+
+
+    /**
+     * Checks that the EventType is WidgetEvent and the EventReason is
+     * Activated.
+     *
+     * Returns id or nil.
+     */
+    global symbol IsWidgetActivated(map event)
+    {
+	if (event["EventType"]:"Unknown" != "WidgetEvent")
+	    return nil;
+
+	if (event["EventReason"]:"Unknown" != "Activated")
+	    return nil;
+
+	return event["ID"]:(symbol)(nil);
+    }
+
+
+    /**
+     * Checks that the EventType is WidgetEvent and the EventReason is
+     * SelectionChanged.
+     *
+     * Returns id or nil.
+     */
+    global symbol IsWidgetSelectionChanged(map event)
+    {
+	if (event["EventType"]:"Unknown" != "WidgetEvent")
+	    return nil;
+
+	if (event["EventReason"]:"Unknown" != "SelectionChanged")
+	    return nil;
+
+	return event["ID"]:(symbol)(nil);
+    }
+
+
+    /**
+     * Checks that the EventType is WidgetEvent and the EventReason is
+     * ValueChanged.
+     *
+     * Returns id or nil.
+     */
+    global symbol IsWidgetValueChanged(map event)
+    {
+	if (event["EventType"]:"Unknown" != "WidgetEvent")
+	    return nil;
+
+	if (event["EventReason"]:"Unknown" != "ValueChanged")
+	    return nil;
+
+	return event["ID"]:(symbol)(nil);
+    }
+
+
+    /**
+     * Checks that the EventType is WidgetEvent and the EventReason is
+     * Activated or SelectionChanged.
+     *
+     * Returns id or nil.
+     */
+    global symbol IsWidgetActivatedOrSelectionChanged(map event)
+    {
+	if (event["EventType"]:"Unknown" != "WidgetEvent")
+	    return nil;
+
+	if ((event["EventReason"]:"Unknown" != "Activated") &&
+	    (event["EventReason"]:"Unknown" != "SelectionChanged"))
+	    return nil;
+
+	return event["ID"]:(symbol)(nil);
+    }
+
+
+    /**
+     * Checks that the EventType is WidgetEvent and the EventReason is
+     * ContextMenuActivated.
+     *
+     * Returns id or nil.
+     */
+    global symbol IsWidgetContextMenuActivated(map event)
+    {
+	if (event["EventType"]:"Unknown" != "WidgetEvent")
+	    return nil;
+
+	if (event["EventReason"]:"Unknown" != "ContextMenuActivated")
+	    return nil;
+
+	return event["ID"]:(symbol)(nil);
+    }
+
+
+    /**
+     * Checks that the EventType is MenuEvent.
+     *
+     * return id or nil.
+     */
+    global symbol IsMenu(map event)
+    {
+	if (event["EventType"]:"Unknown" != "MenuEvent")
+	    return nil;
+
+	return event["ID"]:(symbol)(nil);
+    }
+
+
+    /**
+     * Checks that the EventType is TimeoutEvent.
+     *
+     * return id or nil.
+     */
+    global symbol IsTimeout(map event)
+    {
+	if (event["EventType"]:"Unknown" != "TimeoutEvent")
+	    return nil;
+
+	return event["ID"]:(symbol)(nil);
+    }
+
+
+    /**
+     * Checks that the EventType is CancelEvent.
+     *
+     * return id or nil.
+     */
+    global symbol IsCancel(map event)
+    {
+	if (event["EventType"]:"Unknown" != "CancelEvent")
+	    return nil;
+
+	return event["ID"]:(symbol)(nil);
+    }
+}

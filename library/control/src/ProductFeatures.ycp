@@ -218,6 +218,25 @@ global boolean GetBooleanFeature (string section, string feature) {
 }
 
 /**
+ * Get value of a feature
+ * @stable
+ * @param section string section of the feature
+ * @param features string feature name
+ * @return integer the feature value
+ */
+global integer GetIntegerFeature (string section, string feature) {
+    any value = GetFeature (section, feature);
+    if (value == nil)
+	return nil; 
+    else if (is (value, integer))
+	return (integer) value;
+    else if (is (value, string))
+	return tointeger((string) value);
+    else
+	return nil;
+}
+
+/**
  * Set value of a feature
  * @stable
  * @param section string section of the feature
