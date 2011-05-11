@@ -52,3 +52,8 @@ STORE_CONFIG_IN_SUBVERSION="no"
 # This option is experimental and not all YaST modules do support
 # configuration tracking via subversion
 SUBVERSION_ADD_DIRS_RECURSIVE="no"
+
+## Type: list(yes,no)
+## Default: "yes"
+# Enable use of snapper for YaST.
+USE_SNAPPER="yes"

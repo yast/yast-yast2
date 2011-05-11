@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May 11 15:05:22 CEST 2011 - aschnell@suse.de
+
+- added snapper call to yast2 script
+- 2.17.94
+
+-------------------------------------------------------------------
 Fri May 06 11:47:03 CEST 2011 - aschnell@suse.de
 
 - backported some modules and functions need by storage
