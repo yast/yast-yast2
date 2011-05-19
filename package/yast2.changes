@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu May 19 14:40:07 CEST 2011 - mvidner@suse.cz
+
+- Don't assume YaST has crashed (and scare the user with a pop-up)
+  simply if a YCP script returns false (bnc#645434).
+- 2.17.95
+
+-------------------------------------------------------------------
 Wed May 11 15:05:22 CEST 2011 - aschnell@suse.de
 
 - added snapper call to yast2 script
