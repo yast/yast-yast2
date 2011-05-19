@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu May 19 14:40:07 CEST 2011 - mvidner@suse.cz
+
+- Don't assume YaST has crashed (and scare the user with a pop-up)
+  simply if a YCP script returns false (bnc#645434).
+- 2.20.14
+
+-------------------------------------------------------------------
 Wed Mar 16 10:46:07 CET 2011 - tgoettlicher@suse.de
 
 - Fixed dependencies (bnc #667938)
