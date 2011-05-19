@@ -71,7 +71,7 @@ exit_trap()
 {
     # handily, exit_code is set to $? of y2base.
     # If there was an error and there is anything to display, pop up.
-    if [ $exit_code != 0 -a -s $ERRLOG ]; then
+    if [ $exit_code != 0 -a $exit_code != 16 -a -s $ERRLOG ]; then
 	display_error_file $ERRLOG
     fi
     rm -f $ERRLOG
