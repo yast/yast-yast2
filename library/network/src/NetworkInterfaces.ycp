@@ -180,16 +180,46 @@ global string device_type (string dev) {
     return ifcfg_part (dev, "1");
 }
 
+list<string> TypeByKeyValue = [
+    "INTERFACETYPE",
+    "TUNNEL",
+    ];
+list<list<string> > TypeByKeyExistence = [
+    ["ETHERDEVICE", "vlan"],
+    ];
+
+/**
+ *
+ */
+global string GetTypeFromIfcfg(ifcfg_t ifcfg) {
+    string type = nil;		// unknown
+    foreach(list<string> key_type, TypeByKeyExistence, {
+	string rule_key = key_type[0]:"";
+	string rule_type = key_type[1]:"";
+	if (ifcfg[rule_key]:"" != "") {
+	  type = rule_type;
+	}
+      });
+    foreach(string rule_key, TypeByKeyValue, {
+	string rule_type = ifcfg[rule_key]:"";
+	if (rule_type != "") {
+	  type = rule_type;
+	}
+      });
+//y2internal("from ifcfg: %1", type);
+    return type;
+}
+
 global string GetType(string dev) {
- string type = ifcfg_part (dev, "1");
- foreach(string dev_type,map confs, Devices, {
-  if (haskey(confs, dev)){
-   string int_type = confs[dev, "INTERFACETYPE"]:"";
-   if (size(confs[dev, "TUNNEL"]:"")>0) int_type = confs[dev, "TUNNEL"]:"";
-   if(size(int_type)>0) type = int_type;
-  }
- });
- return type;
+    string type = device_type (dev);
+    foreach(string dev_type,map<string, ifcfg_t> confs, Devices, {
+	ifcfg_t ifcfg = confs[dev]:$[];
+	string ifcfg_type = GetTypeFromIfcfg(ifcfg);
+	if (ifcfg_type != nil)
+	  type = ifcfg_type;
+      });
+//y2internal("original %1: %2", dev, type);
+    return type;
 }
 
 /**
@@ -505,14 +535,6 @@ global define boolean Read() {
 
     /* Read devices */
     maplist(string d, devices, {
-	string devtype = GetType(d);
-
-//	string devnum = "";
-	// if(regexpmatch(d, "[a-z][a-z-]*[0-9]+"))
-//	    devnum = sformat("%1", device_num(d));
-//	y2debug("devnum=%1", devnum);
-
-	map<string, ifcfg_t> dev = Devices[devtype]:$[];
 	string pth = ".network.value.\"" + d + "\"";
 	y2debug("pth=%1", pth);
 	list<string> values = SCR::Dir(topath(pth));
@@ -559,17 +581,12 @@ global define boolean Read() {
 	config = CanonicalizeIP (config);
 	config = CanonicalizeStartmode (config);
 
-        if (size(config["INTERFACETYPE"]:"")>0) {
-		 y2milestone("option INTERFACETYPE changes devtype from %1 to %2", devtype, config["INTERFACETYPE"]:"");
-		 devtype=config["INTERFACETYPE"]:"";
-		 dev = Devices[devtype]:$[];
-		}
-/*
-	if(haskey(dev, devnum)) {
-	    y2error("device already present: %1", devnum);
-	    return;
+	string devtype = GetTypeFromIfcfg(config);
+	if (devtype == nil) {
+	    devtype = GetType(d);
 	}
-*/
+
+	map<string, ifcfg_t> dev = Devices[devtype]:$[];
 	dev[d] = config;
 	Devices[devtype] = dev;
     });

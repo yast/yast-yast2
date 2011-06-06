@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jun  6 18:06:55 CEST 2011 - mvidner@suse.cz
+
+- Added NetworkInterfaces::GetTypeFromIfcfg which knows
+  ETHERDEVICE=>vlan (FATE#311380).
+- 2.17.96
+
+-------------------------------------------------------------------
 Thu May 19 14:40:07 CEST 2011 - mvidner@suse.cz
 
 - Don't assume YaST has crashed (and scare the user with a pop-up)
