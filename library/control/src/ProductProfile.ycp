@@ -21,7 +21,7 @@
   // If map is not empty, contains reasons why system is not compliant.
   map<string,any> compliance	= $[];
 
-  // profiles for all installed products
+  // profiles for all installed products (full paths)
   global list<string> all_profiles	= [];
 
   // return the result of last compliance test
@@ -127,10 +127,6 @@
 	    reasons	= add (reasons, ((map)val)["message"]:"");
 	}
     });
-    list<string> reasons	= [
-	"Architecture(x86_64) is not one of: s390x, i586",
-	"Number of CPU cores(2) exceeds 1"
-    ];
 
     return Report::AnyQuestion (
 	// popup dialog caption
