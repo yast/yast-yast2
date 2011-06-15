@@ -64,6 +64,6 @@ SUBVERSION_ADD_DIRS_RECURSIVE="no"
 PKGMGR_ACTION_AT_EXIT="close"
 
 ## Type: list(yes,no)
-## Default: "yes"
+## Default: "no"
 # Enable use of snapper for YaST.
-USE_SNAPPER="yes"
+USE_SNAPPER="no"
