@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun 16 14:55:22 CEST 2011 - locilka@suse.cz
+
+- Fixed regexp in Custom broadcast definition in
+  SuSEFirewallExpertRules (BNC #676972).
+
+-------------------------------------------------------------------
 Mon Mar 29 15:12:35 CEST 2010 - ug@suse.de
 
 - fixed a bug with *.desktop file translations

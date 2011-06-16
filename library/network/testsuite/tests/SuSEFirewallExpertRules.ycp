@@ -1,0 +1,30 @@
+{
+
+    include "testsuite.ycp";
+    // testedfiles: SuSEFirewallExpertRules
+
+    import "SuSEFirewallExpertRules";
+
+    DUMP("== IsValidNetwork ==");
+
+    list <string> valid_network_definitions = [
+	"192.168.0.1", "192.168.0.0/24", "192.168.0.1/32", "192.168.0.0/255.255.0.0",
+	"192.168.0.0/255.255.224.0", "0/0",
+    ];
+
+    list <string> invalid_network_definitions = [
+	"192.168.0.355", "192.168.0.1/0", "192.168.0.0/255.255.333.0",
+    ];
+
+    DUMP("All these should be *valid* (true):");
+    foreach (string check_this, valid_network_definitions, {
+	TEST(``(SuSEFirewallExpertRules::IsValidNetwork (check_this)), [], nil);
+    });
+
+    DUMP("All these should be *invalid* (false):");
+    foreach (string check_this, invalid_network_definitions, {
+	TEST(``(SuSEFirewallExpertRules::IsValidNetwork (check_this)), [], nil);
+    });
+
+    DUMP("== Done ==");
+}
