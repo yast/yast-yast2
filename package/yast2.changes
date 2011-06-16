@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jun 16 14:55:22 CEST 2011 - locilka@suse.cz
+
+- Fixed regexp in Custom broadcast definition in
+  SuSEFirewallExpertRules (BNC #676972).
+- 2.17.97
+
+-------------------------------------------------------------------
 Mon Jun  6 18:06:55 CEST 2011 - mvidner@suse.cz
 
 - Added NetworkInterfaces::GetTypeFromIfcfg which knows
