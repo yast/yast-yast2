@@ -83,7 +83,7 @@
 	// A.B.C.D/1 - A.B.C.D/32 (IP with a numeric netmask)
 	else if (regexpmatch(network, "^" + type_ip4 + "/[01234567890]+$")) {
 	    string part_ip   = regexpsub (network, "^(" + type_ip4 + ")/[01234567890]+$", "\\1");
-	    string part_bits = regexpsub (network, "^" + type_ip4 + "/([01234567890])+$", "\\1");
+	    string part_bits = regexpsub (network, "^" + type_ip4 + "/([01234567890]+)$", "\\1");
 	    
 	    return (IP::Check4(part_ip) && ValidNetmaskBits(tointeger(part_bits)));
 	}
