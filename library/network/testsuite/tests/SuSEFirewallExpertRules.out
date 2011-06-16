@@ -1,0 +1,13 @@
+Dump	== IsValidNetwork ==
+Dump	All these should be *valid* (true):
+Return	true
+Return	true
+Return	true
+Return	true
+Return	true
+Return	true
+Dump	All these should be *invalid* (false):
+Return	false
+Return	false
+Return	false
+Dump	== Done ==
