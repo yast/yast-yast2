@@ -159,7 +159,7 @@
 		    `Left (`Label (sz))
 		)
 	    )),
-	    `ProgressBar(`id(`progress), "", 100, 0 ),
+	    `ProgressBar(`id(`progress), " ", 100, 0 ),
 	    `ButtonBox (
 		`PushButton (`id (`abort), `opt (`key_F9, `cancelButton), Label::AbortButton ())
 	    )
