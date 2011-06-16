@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jun 16 14:55:22 CEST 2011 - locilka@suse.cz
+
+- Fixed regexp in Custom broadcast definition in
+  SuSEFirewallExpertRules (BNC #676972).
+- 2.20.15
+
+-------------------------------------------------------------------
 Thu May 19 14:40:07 CEST 2011 - mvidner@suse.cz
 
 - Don't assume YaST has crashed (and scare the user with a pop-up)
