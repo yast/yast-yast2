@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jun 16 17:40:28 CEST 2011 - tgoettlicher@suse.de
+
+- Fixed crushed progress bar (bnc #675443)
+- Version bump
+- 2.21.1
+
+-------------------------------------------------------------------
 Thu Jun 16 14:55:22 CEST 2011 - locilka@suse.cz
 
 - Fixed regexp in Custom broadcast definition in
