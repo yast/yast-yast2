@@ -35,6 +35,47 @@ map MockBash(string stdout) {
     ];
 }
 
+map MockExit(integer exit) {
+    return $[
+	"target" : $[
+	    "bash" : exit
+	],
+    ];
+}
+
+map MockExists =
+    $[
+	"target" : $[
+	    "stat" : [ "yes" ]
+	],
+    ];
+
+map MockFileMissing =
+    $[
+	"target" : $[
+	    "stat" : $[]
+	],
+    ];
+
+map Add(map a, map b) {
+    map c = a;
+    foreach(any k, any v, b, {
+            if (is(v, map) && haskey(c, k) && is(c[k]:nil, map)) {
+                v = Add ((map) v, c[k]:$[]);
+            }
+            c[k] = v;
+        });
+    return c;
+}
+
+map Adder(list<map> many) {
+    map result = $[];
+    foreach(map one, many, {
+            result = Add (result, one);
+        });
+    return result;
+}
+
 map READ = $[
     "target" : $[
         "tmpdir" : "/tmp",
@@ -56,5 +97,38 @@ EXECUTE = MockBash ("nfs.example.com:/home/ /home nfs4 rw,relatime,vers=4,rsize=
 TEST(``(
         AssertEqual("nfs", NetworkStorage::getDevice("/home"), "")
         ), [READ, WRITE, EXECUTE], nil);
+
+ READ = MockFileMissing;
+
+/*
+FIXME polish it to really test it
+
+// pvs | grep foo
+// FIXME I have no idea how the actual output looks like
+EXECUTE = Adder([
+                  MockBash ("sda1 etc\nsda2 etc\n"),
+                  MockExit (1),
+                  ]);
+TEST(``(
+        AssertEqual(7, NetworkStorage::isDiskOnNetwork("/dev/mapper/foo-bar"), "")
+        ), [READ, WRITE, EXECUTE], nil);
+
+EXECUTE = Adder([
+                  MockBash ("A B C D E[i] F[j]"),
+                  MockExit (1),
+                  ]);
+TEST(``(
+        AssertEqual(7, NetworkStorage::isDiskOnNetwork("/dev/md9"), "")
+        ), [READ, WRITE, EXECUTE], nil);
+
+TEST(``(
+        AssertEqual(7, NetworkStorage::isDiskOnNetwork("server:/export"), "")
+        ), [READ, WRITE, EXECUTE], nil);
+
+TEST(``(
+        AssertEqual(7, NetworkStorage::isDiskOnNetwork("server-v4:/"), "")
+        ), [READ, WRITE, EXECUTE], nil);
+*/
+
 
 }
