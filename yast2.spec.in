@@ -6,7 +6,7 @@ Source1:	yast2-rpmlintrc
 
 BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-testsuite yast2-perl-bindings
 # Needed already in build time
-BuildRequires:	yast2-pkg-bindings >= 2.17.32 yast2-core >= 2.17.1
+BuildRequires:	yast2-pkg-bindings >= 2.17.32 yast2-core >= 2.17.1 subscription-tools
 
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
 PreReq:		%fillup_prereq
@@ -30,6 +30,8 @@ Requires:	yast2-xml yast2-hardware-detection
 Requires:	yast2-perl-bindings
 # for ag_anyxml
 Requires:	perl-XML-Simple
+# for ProductProfile.ycp
+Requires:	subscription-tools
 
 # moved cfg_security.scr
 Conflicts:	yast2-security <= 2.13.2

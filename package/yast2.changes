@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 17 10:21:30 CEST 2011 - jsuchome@suse.cz
+
+- added support for handling product profiles (fate#310730)
+- 2.17.98 
+
+-------------------------------------------------------------------
 Thu Jun 16 14:55:22 CEST 2011 - locilka@suse.cz
 
 - Fixed regexp in Custom broadcast definition in
