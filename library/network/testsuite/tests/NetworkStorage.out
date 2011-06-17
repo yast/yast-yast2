@@ -3,3 +3,10 @@ Execute	.target.bash_output "grep ' / ' /proc/mounts|grep -v rootfs|tr -d '\n'" 
 Return	PASS
 Execute	.target.bash_output "grep ' /home ' /proc/mounts|grep -v rootfs|tr -d '\n'" $["exit":0, "stderr":"", "stdout":"nfs.example.com:/home/ /home nfs4 rw,relatime,vers=4,rsize=1048576,wsize=1048576,namlen=255,hard,proto=tcp,port=0,timeo=600,retrans=2,sec=krb5i,clientaddr=10.0.2.2,minorversion=0,local_lock=none,addr=10.0.0.1 0 0"]
 Return	PASS
+Read	.target.stat "/sys/class/block/fc0" $["isdir":true]
+Execute	.target.bash "ls -la /sys/class/block/fc0 | grep -q session" 1
+Read	.target.stat "/sys/class/block/fc0/device" $["isdir":true]
+Read	.target.stat "/sys/class/block/fc0/device" $["isdir":true]
+Execute	.target.bash "cd /sys/class/block/fc0/device; pwd -P | grep -q target" 0
+Log	FCoE detected!
+Return	PASS
