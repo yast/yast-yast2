@@ -1,0 +1,60 @@
+//
+{
+
+include "testsuite.ycp";
+
+// FIXME: factor out as Assert::Equal(...);
+string AssertEqual(any expected, any actual, string fail_message) {
+    if (expected == actual) {
+        return "PASS";
+    }
+    else {
+        if (fail_message == nil || fail_message == "") {
+            fail_message = sformat ("assertion failure, expected '%1', got '%2'", expected, actual);
+        }
+        y2error ("%1", fail_message);
+        return "FAIL";
+    }
+}
+
+/* TODO
+void Mock(map & dummy, path where, any what) {
+...
+}
+Mock (EXECUTE, .target.bash_output, $["stdout": "O HAI!", ...]);
+*/
+map MockBash(string stdout) {
+    return $[
+	"target" : $[
+	    "bash_output" : $[
+		"exit" : 0,
+		"stdout" : stdout,
+		"stderr" : "",
+	    ],
+	],
+    ];
+}
+
+map READ = $[
+    "target" : $[
+        "tmpdir" : "/tmp",
+    ]
+];
+TESTSUITE_INIT([READ], nil);
+
+import "NetworkStorage";
+
+map WRITE = $[];
+map EXECUTE = $[];
+
+EXECUTE = MockBash ("/dev/sda2 / ext3 rw,relatime,errors=continue,user_xattr,acl,commit=15,barrier=1,data=ordered 0 0");
+TEST(``(
+        AssertEqual("/dev/sda2", NetworkStorage::getDevice("/"), "")
+        ), [READ, WRITE, EXECUTE], nil);
+
+EXECUTE = MockBash ("nfs.example.com:/home/ /home nfs4 rw,relatime,vers=4,rsize=1048576,wsize=1048576,namlen=255,hard,proto=tcp,port=0,timeo=600,retrans=2,sec=krb5i,clientaddr=10.0.2.2,minorversion=0,local_lock=none,addr=10.0.0.1 0 0");
+TEST(``(
+        AssertEqual("nfs", NetworkStorage::getDevice("/home"), "")
+        ), [READ, WRITE, EXECUTE], nil);
+
+}
