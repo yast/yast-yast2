@@ -15,13 +15,17 @@ module "NetworkStorage";
 
 import "FileUtils";
 
+/**
+ * Ask /proc/mounts what device a mount point is using.
+ * @return e.g. /dev/sda2 (or just "nfs")
+ */
 global string getDevice(string mount_point) {
-    map out = (map)SCR::Execute(.target.bash_output, sformat("grep ' %1 ' /proc/mounts|grep -v rootfs|tr -d '\n'", mount_point));
+    string cmd = sformat("grep ' %1 ' /proc/mounts|grep -v rootfs|tr -d '\n'", mount_point);
+    map out = (map)SCR::Execute(.target.bash_output, cmd);
     y2milestone("mountpoint found %1", out);
-    list<string> rows =  splitstring(out["stdout"]:"", " ");
-    string device="";
-    if (rows[2]:""=="nfs") device="nfs";
-    else device=rows[0]:"";
+    list<string> fields =  splitstring(out["stdout"]:"", " ");
+    string vfstype = fields[2]:"";
+    string device = (vfstype == "nfs" || vfstype == "nfs4")? "nfs": fields[0]:"";
     y2milestone("%1 is on device: %2", mount_point, device);
     return device;
 }
