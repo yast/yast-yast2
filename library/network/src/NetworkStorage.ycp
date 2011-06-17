@@ -15,92 +15,102 @@ module "NetworkStorage";
 
 import "FileUtils";
 
-global string getDevice(string mount_point){
- map out = (map)SCR::Execute(.target.bash_output, sformat("grep ' %1 ' /proc/mounts|grep -v rootfs|tr -d '\n'", mount_point));
- y2milestone("mountpoint found %1", out);
- list<string> rows =  splitstring(out["stdout"]:"", " ");
- string device="";
- if (rows[2]:""=="nfs") device="nfs";
-	else device=rows[0]:"";
- y2milestone("%1 is on device: %2", mount_point, device);
- return device;
+global string getDevice(string mount_point) {
+    map out = (map)SCR::Execute(.target.bash_output, sformat("grep ' %1 ' /proc/mounts|grep -v rootfs|tr -d '\n'", mount_point));
+    y2milestone("mountpoint found %1", out);
+    list<string> rows =  splitstring(out["stdout"]:"", " ");
+    string device="";
+    if (rows[2]:""=="nfs") device="nfs";
+    else device=rows[0]:"";
+    y2milestone("%1 is on device: %2", mount_point, device);
+    return device;
 }
 
 /**
  * If the disk is on a networked device (NFS, ISCSI),
  * the main NIC needs STARTMODE nfsroot instead of auto.
- * @return root dev over network
+ * @return root dev over network: 1 iSCSI, 2 NFS
  */
-global integer isDiskOnNetwork(string device){
- y2milestone("begin isDiskOnNetwork(%1) function", device);
- if (device=="nfs") return 2;
- if (size(device)==0) {
-	y2error("Empty parameter for isDiskOnNetwork() function");
-	return -1;
-	}
- integer network_based=0;
+global integer isDiskOnNetwork(string device) {
+    y2milestone("begin isDiskOnNetwork(%1) function", device);
+    if (device=="nfs") {
+        return 2;
+    }
+    if (size(device)==0) {
+        y2error("Empty parameter for isDiskOnNetwork() function");
+        return -1;
+    }
+    integer network_based=0;
 
- // test for LVM
- if (network_based==0 && issubstring(device, "/dev/mapper/")) {
-  y2warning("LVM detected!");
-  string group_name = splitstring(splitstring(device, "/")[3]:"", "-")[0]:"";
-  y2milestone("LVM group name %1", group_name);
-  map<string, any> command = (map<string, any>)SCR::Execute(.target.bash_output, sformat("pvs 2>/dev/null|grep %1", group_name));
-  foreach(string row, filter(string s, splitstring(command["stdout"]:"", "\n"), { return (size(s)>0);}), {
-   string lvm_device = filter(string s, splitstring(row, " "), { return (size(s)>0);})[0]:"";
-   y2milestone("LVM physical device: %1", lvm_device);
-   integer nb = isDiskOnNetwork(lvm_device);
-   if (nb>0) network_based=nb;
-  });
- }
+    // test for LVM
+    if (network_based==0 && issubstring(device, "/dev/mapper/")) {
+        y2warning("LVM detected!");
+        string group_name = splitstring(splitstring(device, "/")[3]:"", "-")[0]:"";
+        y2milestone("LVM group name %1", group_name);
+        map<string, any> command = (map<string, any>)SCR::Execute(.target.bash_output, sformat("pvs 2>/dev/null|grep %1", group_name));
+        foreach(string row, filter(string s, splitstring(command["stdout"]:"", "\n"), { return (size(s) > 0);}), {
+                string lvm_device = filter(string s, splitstring(row, " "), { return (size(s)>0);})[0]:"";
+                y2milestone("LVM physical device: %1", lvm_device);
+                integer nb = isDiskOnNetwork(lvm_device);
+                if (nb > 0) {
+                    network_based = nb;
+                }
+        });
+    }
 
- // test for RAID
- if (network_based==0 && issubstring(device, "/dev/md")){
-  y2warning("RAID detected!");
-  string raid = splitstring(device, "/")[2]:"";
-  y2milestone("RAID %1 detected", raid);
-  map<string, any> command = (map<string, any>)SCR::Execute(.target.bash_output, sformat("cat /proc/mdstat |grep %1|tr -d '\\n'", raid));
-  list<string> raid_devices = sublist(splitstring(command["stdout"]:"", " "), 4);
-  foreach(string dev, raid_devices, {
-   if (!issubstring(dev, "/dev/")) dev = sformat("/dev/%1", dev);
-   string raid_device = substring(dev, 0, findfirstof(dev, "["));
-   integer nb = isDiskOnNetwork(raid_device);
-   if (nb>0) network_based=nb;
-   }
-  );
- }
+    // test for RAID
+    if (network_based==0 && issubstring(device, "/dev/md")){
+        y2warning("RAID detected!");
+        string raid = splitstring(device, "/")[2]:"";
+        y2milestone("RAID %1 detected", raid);
+        map<string, any> command = (map<string, any>)SCR::Execute(.target.bash_output, sformat("cat /proc/mdstat |grep %1|tr -d '\\n'", raid));
+        list<string> raid_devices = sublist(splitstring(command["stdout"]:"", " "), 4);
+        foreach(string dev, raid_devices, {
+            if (!issubstring(dev, "/dev/")) {
+                dev = sformat("/dev/%1", dev);
+            }
+            string raid_device = substring(dev, 0, findfirstof(dev, "["));
+            integer nb = isDiskOnNetwork(raid_device);
+            if (nb > 0) {
+                network_based = nb;
+            }
+        });
+    }
 
- //test for iSCSI
- if (network_based==0){
-  if (issubstring(device, "/dev/")){
-   device = splitstring(device, "/")[2]:"";
-  }
-  string sys=sformat("/sys/class/block/%1", device);
-  if (FileUtils::Exists(sys)){
-   if ((integer)SCR::Execute(.target.bash, sformat("ls -la %1 | grep -q session", sys))==0){
-    y2warning("iSCSI detected!");
-    network_based=1;
-   }
-  }
- }
+    //test for iSCSI
+    if (network_based==0){
+        if (issubstring(device, "/dev/")){
+            device = splitstring(device, "/")[2]:"";
+        }
+        string sys=sformat("/sys/class/block/%1", device);
+        if (FileUtils::Exists(sys)){
+            if ((integer)SCR::Execute(.target.bash, sformat("ls -la %1 | grep -q session", sys))==0){
+                y2warning("iSCSI detected!");
+                network_based = 1;
+            }
+        }
+    }
 
-// test for nfs (bnc#384420)
- if (network_based==0) {
-  string space="[[:space:]]";
-  if (SCR::Execute(.target.bash, sformat("grep '%1%2%3*nfs%4' /proc/mounts ", space, device, space, space))==0){
-   y2milestone("device %1 is network based : %2", device, network_based);
-   network_based=2;
-  }
- }
- return network_based;
+    // test for nfs (bnc#384420)
+    if (network_based==0) {
+        string space="[[:space:]]";
+        if (SCR::Execute(.target.bash, sformat("grep '%1%2%3*nfs%4' /proc/mounts ", space, device, space, space))==0){
+            y2milestone("device %1 is network based : %2", device, network_based);
+            network_based = 2;
+        }
+    }
+    return network_based;
 }
 
-global list<string> getiBFTDevices(){
- if (SCR::Execute(.target.bash, "ls /sys/firmware/ibft")==0){
-   map<string, any> output = (map<string, any>)SCR::Execute(.target.bash_output, "ls /sys/firmware/ibft/ethernet*/device/net/");
-   list<string> ifaces = filter(string row, splitstring(output["stdout"]:"", "\n"), { return (size(row)>0);});
-   return ifaces;
- } else return [];
+global list<string> getiBFTDevices() {
+    if (SCR::Execute(.target.bash, "ls /sys/firmware/ibft")==0){
+        map<string, any> output = (map<string, any>)SCR::Execute(.target.bash_output, "ls /sys/firmware/ibft/ethernet*/device/net/");
+        list<string> ifaces = filter(string row, splitstring(output["stdout"]:"", "\n"), { return (size(row)>0);});
+        return ifaces;
+    }
+    else {
+        return [];
+    }
 }
 
 /* EOF */
