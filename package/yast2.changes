@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 17 16:06:26 CEST 2011 - mvidner@suse.cz
+
+- FCoE detection in NetworkStorage::isDiskOnNetwork (bnc#677251, FATE#306855).
+- 2.17.99
+
+-------------------------------------------------------------------
 Fri Jun 17 10:21:30 CEST 2011 - jsuchome@suse.cz
 
 - added support for handling product profiles (fate#310730)

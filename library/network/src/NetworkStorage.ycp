@@ -115,6 +115,21 @@ global integer isDiskOnNetwork(string device) {
         }
     }
 
+    //test for FCoE
+    if (network_based==0){
+        if (issubstring(device, "/dev/")){
+            device = splitstring(device, "/")[2]:"";
+        }
+
+        string sys=sformat("/sys/class/block/%1/device", device);
+        if (FileUtils::Exists(sys) && FileUtils::IsDirectory(sys)){
+            if ((integer)SCR::Execute(.target.bash, sformat("cd %1; pwd -P | grep -q target", sys))==0){
+                y2warning("FCoE detected!");
+                network_based = 3;
+            }
+        }
+    }
+
     // test for nfs (bnc#384420)
     if (network_based==0) {
         string space="[[:space:]]";

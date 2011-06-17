@@ -43,10 +43,12 @@ map MockExit(integer exit) {
     ];
 }
 
-map MockExists =
+map MockDir =
     $[
 	"target" : $[
-	    "stat" : [ "yes" ]
+            "stat" : $[
+                "isdir": true,
+            ]
 	],
     ];
 
@@ -130,5 +132,13 @@ TEST(``(
         ), [READ, WRITE, EXECUTE], nil);
 */
 
+READ = MockDir;
+list EXECUTE2 = [
+    MockExit (1),  //grep session
+    MockExit (0)   //grep target
+];
+TEST(``(
+        AssertEqual(3, NetworkStorage::isDiskOnNetwork("/dev/fc0"), "")
+        ), [READ, WRITE, EXECUTE2], nil);
 
 }
