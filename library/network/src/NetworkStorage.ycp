@@ -46,6 +46,26 @@ global integer isDiskOnNetwork(string device) {
     }
     integer network_based=0;
 
+    // test for multipath
+    if (network_based==0 && issubstring(device, "/dev/dm-")) {
+        y2warning("multipath detected!");
+        string dev_name = splitstring(device, "/")[2]:"";
+        y2milestone("Multipath device name %1", dev_name);
+        map<string, any> cmd = (map<string, any>)SCR::Execute(.target.bash_output, sformat("ls /sys/block/%1/slaves/", dev_name));
+        y2milestone("Show slaves command:%1", cmd);
+        if (cmd["exit"]:-1==0){
+            // FIXME: what about more slaves?
+            list<string> slaves = splitstring(cmd["stdout"]:"", "\n");
+            integer nb = isDiskOnNetwork(sformat("/dev/%1", slaves[0]:""));
+            if (nb > 0) {
+                network_based = nb;
+            }
+        }
+        else {
+            y2error("Error while executed show slaves commad:%1", cmd["stderr"]:"");
+        }
+    }
+
     // test for LVM
     if (network_based==0 && issubstring(device, "/dev/mapper/")) {
         y2warning("LVM detected!");
