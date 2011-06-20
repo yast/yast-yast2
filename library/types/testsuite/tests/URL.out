@@ -36,3 +36,4 @@ Return	http://download.opensuse.org/very/log/path/which/will/be/truncated/target
 Return	http://download.opensuse.org/.../target_file
 Return	http://download.opensuse.org/.../target_file
 Return	http://download.opensuse.org/very/.../be/truncated/target_file
+Return	http://1.2.3.4/gen.xml.cgi?mac=56&borg=yes

@@ -90,5 +90,7 @@ TEST(``(URL::FormatURL(URL::Parse(long_url), 15)), [], nil);
 TEST(``(URL::FormatURL(URL::Parse(long_url), 45)), [], nil);
 TEST(``(URL::FormatURL(URL::Parse(long_url), 65)), [], nil);
 
+TEST(``(URL::Build(URL::Parse("http://1.2.3.4/gen.xml.cgi?mac=56&borg=yes"))), [], nil);
+
 /* EOF */
 }
