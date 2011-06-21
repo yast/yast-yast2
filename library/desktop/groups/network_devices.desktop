@@ -15,3 +15,5 @@ Icon=yast-network_devices
 
 Name=Network Devices
 X-KDE-SubstituteUID=true
+
+Exec=/sbin/yast2

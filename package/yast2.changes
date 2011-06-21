@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jun 21 15:39:34 CEST 2011 - locilka@suse.cz
+
+- Fixed group desktop files by adding Exec=/sbin/yast2 (BNC#470482)
+
+-------------------------------------------------------------------
 Fri Jun 17 16:06:26 CEST 2011 - mvidner@suse.cz
 
 - FCoE detection in NetworkStorage::isDiskOnNetwork (bnc#677251, FATE#306855).
