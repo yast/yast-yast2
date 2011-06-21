@@ -15,3 +15,5 @@ Icon=yast-misc
 
 Name=Miscellaneous
 X-KDE-SubstituteUID=true
+
+Exec=/sbin/yast2

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jun 21 15:39:34 CEST 2011 - locilka@suse.cz
+
+- Fixed group desktop files by adding Exec=/sbin/yast2 (BNC#470482)
+
+-------------------------------------------------------------------
 Thu Jun 16 14:55:22 CEST 2011 - locilka@suse.cz
 
 - Fixed regexp in Custom broadcast definition in
