@@ -15,3 +15,5 @@ Icon=yast-security
 
 Name=Security and Users
 X-KDE-SubstituteUID=true
+
+Exec=/sbin/yast2
