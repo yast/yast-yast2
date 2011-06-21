@@ -16,4 +16,4 @@ Icon=yast-system
 Name=System
 X-KDE-SubstituteUID=true
 
-Exec=yast2
+Exec=/sbin/yast2
