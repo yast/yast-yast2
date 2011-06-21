@@ -17,5 +17,4 @@ Name=Security and Users
 
 X-KDE-SubstituteUID=true
 
-Exec=yast2
-
+Exec=/sbin/yast2

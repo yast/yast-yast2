@@ -16,4 +16,4 @@ Icon=yast-network_services
 Name=Network Services
 X-KDE-SubstituteUID=true
 
-Exec=yast2
+Exec=/sbin/yast2

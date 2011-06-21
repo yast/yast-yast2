@@ -15,4 +15,4 @@ Icon=yast-high_availability
 
 Name=High Availability
 
-Exec=yast2
+Exec=/sbin/yast2
