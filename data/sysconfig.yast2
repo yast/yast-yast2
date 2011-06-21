@@ -54,6 +54,6 @@ STORE_CONFIG_IN_SUBVERSION="no"
 SUBVERSION_ADD_DIRS_RECURSIVE="no"
 
 ## Type: list(yes,no)
-## Default: "yes"
+## Default: "no"
 # Enable use of snapper for YaST.
-USE_SNAPPER="yes"
+USE_SNAPPER="no"
