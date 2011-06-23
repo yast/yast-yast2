@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jun 23 15:28:19 UTC 2011 - lslezak@suse.cz
+
+- read GPG keys in UTF-8 locale to properly read non-ASCII
+  characters, UTF-8 characters caused SLMS webyast module crashing
+  (bnc#696312)
+- 2.17.100
+
+-------------------------------------------------------------------
 Tue Jun 21 15:39:34 CEST 2011 - locilka@suse.cz
 
 - Fixed group desktop files by adding Exec=/sbin/yast2 (BNC#470482)
