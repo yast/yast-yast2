@@ -1063,6 +1063,10 @@ Check whether the server is accessible."), URL::HidePassword(url), wanted_label)
 		autorefreshing_aborted = true;
 		Pkg::SkipRefresh();
 	    }
+	    else
+	    {
+		provide_aborted = true;
+	    }
 
 	    return "C";
 	}

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jun 23 09:48:12 UTC 2011 - lslezak@suse.cz
+
+- Fixed abort callback to abort installation completely
+  (bnc#673629)
+- 2.21.2
+
+-------------------------------------------------------------------
 Tue Jun 21 15:39:34 CEST 2011 - locilka@suse.cz
 
 - Fixed group desktop files by adding Exec=/sbin/yast2 (BNC#470482)
