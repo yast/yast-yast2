@@ -76,7 +76,7 @@ string buildGPGcommand(string options)
 map callGPG(string options)
 {
     map ret = $[];
-    string command = "LC_ALL=C " + buildGPGcommand(options);
+    string command = "LC_ALL=en_US.UTF-8 " + buildGPGcommand(options);
 
     ret = (map) SCR::Execute(.target.bash_output, command);
 
