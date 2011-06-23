@@ -11,6 +11,7 @@
   module "ProductProfile";
 
   import "Directory";
+  import "Label";
   import "Mode";
   import "Report";
   import "YaPI::SubscriptionTools";
@@ -25,6 +26,9 @@
   // profiles for all installed products
   // (full paths to the temporary copies)
   global list<string> all_profiles	= [];
+
+  // mapping of product id's to product names
+  global map<integer,string> productid2name	= $[];
 
   // remember products already checked
   global map<integer,boolean> compliance_checked= $[];
@@ -76,7 +80,7 @@
 	integer src_id	= product["source"]:-1;
 	string name	= product["name"]:"";
 
-	if (product["status"]:`none != `selected)
+	if (productId == nil && product["status"]:`none != `selected)
 	{
 	    return;
 	}
@@ -95,7 +99,8 @@
 	    // backup profiles so they can be copied them to the installed system
 	    string tmp_path	= profiles_dir + name + ".profile";
 	    SCR::Execute (.target.bash, sformat ("/bin/cp -a '%1' '%2'", profile, tmp_path));
-	    all_profiles= add (all_profiles, tmp_path);
+	    all_profiles	= add (all_profiles, tmp_path);
+	    productid2name[src_id]	= name;
 	}
 	else
 	{
@@ -164,23 +169,48 @@
 	    reasons	= add (reasons, ((map)val)["message"]:"");
 	}
     });
+    string reasons_s	= mergestring (reasons, "\n");
+    // popup message, %1 is list of problems
+    string question	= sformat (_("The system is not compliant with provided profile:
 
-    return Report::AnyQuestion (
+    %1
+
+Do you want to continue or abort the installation?"), reasons_s);
+
+    // button label
+    string continue_button	=_("&Continue Installation");
+    // button label
+    string cancel_button	=_("&Abort Installation");
+
+    // checking specific product
+    if (productId != nil)
+    {
+	// popup message, %1 is list of problems
+	question	= sformat (_("The system is not compliant with provided profile:
+
+    %1
+
+Do you want to add new product anyway?"), reasons_s);
+	continue_button	= Label::YesButton ();
+	cancel_button	= Label::NoButton ();
+    }
+
+    boolean ret = Report::AnyQuestion (
 	// popup dialog caption
 	_("Warning"),
-	// popup message, %1 is list of problems
-	sformat (_("The system is not compliant with provided profile:
-
-%1
-
-Do you want to continue or abort the installation?"),
-	    mergestring (reasons, "\n")
-	),
-	// button label
-	_("&Continue Installation"),
-	// button label
-	_("&Abort Installation"),
+	question,
+	continue_button, cancel_button,
 	`no_button
     );
+    if (!ret && productId != nil)
+    {
+	// canceled adding add-on: remove profile stored before
+	string name	= productid2name[productId]:"";
+	string tmp_path	= profiles_dir + name + ".profile";
+	y2milestone ("deleting %1", tmp_path);
+	SCR::Execute (.target.bash, "/bin/rm " + tmp_path);
+	all_profiles	= filter (string p, all_profiles, ``(p != tmp_path));
+    }
+    return ret;
   }
 }
