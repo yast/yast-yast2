@@ -1,10 +1,16 @@
 -------------------------------------------------------------------
+Fri Jun 24 09:15:27 CEST 2011 - jsuchome@suse.cz
+
+- show different popup when adding add-on,
+  remove profile if it should not be copied (bnc#701473)
+- 2.17.100
+
+-------------------------------------------------------------------
 Thu Jun 23 15:28:19 UTC 2011 - lslezak@suse.cz
 
 - read GPG keys in UTF-8 locale to properly read non-ASCII
   characters, UTF-8 characters caused SLMS webyast module crashing
   (bnc#696312)
-- 2.17.100
 
 -------------------------------------------------------------------
 Tue Jun 21 15:39:34 CEST 2011 - locilka@suse.cz
