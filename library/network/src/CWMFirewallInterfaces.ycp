@@ -82,11 +82,6 @@ void EnableOrDisableFirewallDetails () {
     if (size (all_interfaces) == 0)
 	enabled = false;
 
-    //// NetworkManager
-    //if (contains(all_interfaces, special_all_nm_interfaces) && enabled) {
-    //	allowed_interfaces = add (allowed_interfaces, special_all_nm_interfaces);
-    //}
-
     UI::ChangeWidget (`id ("_cwm_firewall_details"), `Enabled, enabled);
 }
 
@@ -196,27 +191,6 @@ void InitAllInterfacesList () {
     }
 
     any_iface_supported = SuSEFirewall::IsAnyNetworkInterfaceSupported();
-
-//    if (NetworkService::IsManaged()) {
-//	nm_managed = true;
-//	if (all_interfaces == nil) all_interfaces = [];
-//	all_interfaces = add (all_interfaces, special_all_nm_interfaces);
-//
-//	if (interface_items == nil) interface_items = [];
-//	interface_items = add (interface_items,
-//	    // multi selection box item
-//	    `item (`id (special_all_nm_interfaces), _("All NetworkManager Interfaces"))
-//	);
-//	
-//	// handled by NetworkManager and also any-feature is supported
-//	if (any_iface_supported) {
-//	    nm_ifaces_have_to_be_supported = true;
-//	} else {
-//	    nm_ifaces_have_to_be_supported = false;
-//	}
-//    } else {
-//	nm_managed = false;
-//    }
 }
 
 /**
@@ -296,10 +270,6 @@ list<string> Selected2Opened (list<string> ifaces, boolean nm_ifaces_have_to_be_
 	return i != nil;
     });
     
-    //if (nm_ifaces_have_to_be_selected) {
-    //	new_ifaces = toset(add(new_ifaces, special_all_nm_interfaces));
-    //}
-    
     return toset (new_ifaces);
 }
 
@@ -370,18 +340,6 @@ global void InitAllowedInterfaces (list<string> services) {
 	y2milestone ("Internal zone is protected or there are no interfaces in it");
     }
 
-    //if (contains(all_interfaces, special_all_nm_interfaces)) {
-    //	boolean special_all_nm_enabled = size(services) > 0;
-    //	foreach (string sr, services, {
-    //	    if (! SuSEFirewall::IsServiceSupportedInZone (sr, SuSEFirewall::special_all_interface_zone)) {
-    //		special_all_nm_enabled = false;
-    //		break;
-    //	    }
-    //	});
-    //
-    //	if (special_all_nm_enabled) allowed_interfaces = toset(add(allowed_interfaces, special_all_nm_interfaces));
-    //}
-
     configuration_changed = false;
 }
 
@@ -405,13 +363,6 @@ global void StoreAllowedInterfaces (list<string> services) {
 	SuSEFirewallProposal::SetChangedByUser(true);
     }
 
-    //boolean set_nm_enable = false;
-    //if (contains(allowed_interfaces, special_all_nm_interfaces)) {
-    //	set_nm_enable = true;
-    //	// to hide the special interface name
-    //	allowed_interfaces = filter(string i, allowed_interfaces, { return i != special_all_nm_interfaces; });
-    //}
-
     list <string> interfaces_supported_by_any =
 	SuSEFirewall::InterfacesSupportedByAnyFeature(SuSEFirewall::special_all_interface_zone);
 
@@ -424,9 +375,6 @@ global void StoreAllowedInterfaces (list<string> services) {
 	SuSEFirewall::SetServices (services, allowed_interfaces, true);
     }
 
-    //if (contains(all_interfaces, special_all_nm_interfaces)) {
-    //	SuSEFirewall::SetServicesForZones(services, [SuSEFirewall::special_all_interface_zone], set_nm_enable);
-    //}
 }
 
 /**
@@ -474,11 +422,6 @@ global define symbol InterfacesHandle (map<string,any> widget, string key, map e
 	UI::ChangeWidget (`id ("_cwm_interface_list"), `SelectedItems, []);
 	return nil;
     }
-    //if (contains((list <string>) UI::QueryWidget(`id ("_cwm_interface_list"), `SelectedItems), special_all_nm_interfaces)) {
-    //	nm_ifaces_have_to_be_supported = true;
-    //} else {
-    //	nm_ifaces_have_to_be_supported = false;
-    //}
     return nil;
 }
 
@@ -491,7 +434,6 @@ global define symbol InterfacesHandle (map<string,any> widget, string key, map e
 global define void InterfacesStore (map<string,any> widget, string key, map event) {
     allowed_interfaces = (list<string>)
 	UI::QueryWidget (`id ("_cwm_interface_list"), `SelectedItems);
-    //allowed_interfaces = Selected2Opened (allowed_interfaces, nm_ifaces_have_to_be_supported);
     allowed_interfaces = Selected2Opened (allowed_interfaces, false);
     configuration_changed = true;
 }
@@ -549,26 +491,6 @@ Continue?"))) {
 	}
     }
 
-    // NetworkManager interfaces have to be supported
-    //if (contains(ifaces, special_all_nm_interfaces)) {
-    //	y2milestone("All Network Interfaces were selected.");
-    //	if (any_iface_supported) {
-    //	    y2milestone("any-feature is supported.");
-    //	} else {
-    //	    y2warning("any-feature is NOT supported.");
-    //	    // yes-no popup
-    //	    if (! Popup::YesNo ("Because of the SuSE Firewall settings, the port
-//for All NetworkManager Interfaces cannot be open.
-    //
-//Continue?")) return false;
-    //	}
-    //	
-    //	nm_ifaces_have_to_be_supported = true;
-    //	ifaces = filter (string i, ifaces, { return i != special_all_nm_interfaces; });
-    //} else {
-    //	nm_ifaces_have_to_be_supported = false;
-    //}
-
     // list<string> firewall_ifaces = toset (Selected2Opened (ifaces, nm_ifaces_have_to_be_supported));
     list<string> firewall_ifaces = toset (Selected2Opened (ifaces, false));
     y2milestone("firewall_ifaces: %1", firewall_ifaces);
@@ -583,8 +505,7 @@ Continue?"))) {
     });
     y2milestone("removed_ifaces: %1", removed_ifaces);
 
-    //// to hide that special string
-    //added_ifaces = filter (string i, added_ifaces, { return i != special_all_nm_interfaces; });
+    // to hide that special string
     if (size (added_ifaces) > 0)
     {
 	string ifaces_list = mergestring (added_ifaces, "\n");
@@ -600,8 +521,7 @@ Continue?"),
 	    return false;
 	}
     }
-    //// to hide that special string
-    //removed_ifaces = filter (string i, removed_ifaces, { return i != special_all_nm_interfaces; });
+    // to hide that special string
     if (size (removed_ifaces) > 0)
     {
 	string ifaces_list = mergestring (removed_ifaces, "\n");
@@ -633,8 +553,6 @@ boolean CheckPossbilityToChangeFirewall (boolean new_status) {
     // that works always
     if (new_status == false)
 	return true;
-
-    // BTW: new_status == true
 
     // 'any' in 'EXT'
     // interfaces are mentioned in some zone or they are covered by the special string
