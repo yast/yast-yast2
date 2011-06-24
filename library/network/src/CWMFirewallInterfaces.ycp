@@ -57,7 +57,7 @@ list<string> allowed_interfaces = nil;
 /**
  * Information if configuration was changed by user
  */
-boolean configuration_changed = nil;
+boolean configuration_changed = false;
 
 /**
  * `Any`-feature is supported in the firewall configuration
