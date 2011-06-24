@@ -4,6 +4,8 @@ Thu Jun 23 15:28:19 UTC 2011 - lslezak@suse.cz
 - read GPG keys in UTF-8 locale to properly read non-ASCII
   characters, UTF-8 characters caused SLMS webyast module crashing
   (bnc#696312)
+- Don't assume YaST has crashed (and scare the user with a pop-up)
+  simply if a YCP script returns false (bnc#645434). (by mvidner)
 
 -------------------------------------------------------------------
 Tue Jun 21 15:39:34 CEST 2011 - locilka@suse.cz
