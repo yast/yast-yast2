@@ -22,10 +22,16 @@ TEST(``(String::FormatSize(nil)), [], nil);
 TEST(``(String::FormatSize(0)), [], nil);
 TEST(``(String::FormatSize(1)), [], nil);
 TEST(``(String::FormatSize(1025)), [], nil);
+TEST(``(String::FormatSize(1125)), [], nil);
+TEST(``(String::FormatSize(743*1024)), [], nil);
 TEST(``(String::FormatSize(1049000)), [], nil);
 TEST(``(String::FormatSize(1074000000)), [], nil);
 TEST(``(String::FormatSize(1100000000000)), [], nil);
 TEST(``(String::FormatSize(1126000000000000)), [], nil);
+TEST(``(String::FormatSize(1 << 10)), [], nil);
+TEST(``(String::FormatSize(1 << 20)), [], nil);
+TEST(``(String::FormatSize(1 << 30)), [], nil);
+TEST(``(String::FormatSize(1 << 40)), [], nil);
 
 DUMP("String::FormatSizeWithPrecision");
 TEST(``(String::FormatSizeWithPrecision(nil,nil,nil)), [], nil);

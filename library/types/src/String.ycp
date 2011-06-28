@@ -85,7 +85,7 @@ global list<string> NewlineItems (string s) {
  * (i.e. the result is language dependant).
  *
  * @param bytes	size (e.g. free diskspace, memory size) in Bytes
- * @param precision number of fraction digits in output
+ * @param precision number of fraction digits in output, if negative (less than 0) the precision is set automatically depending on the suffix
  * @param omit_zeroes if true then do not add zeroes
  *	(useful for memory size - 128 MB RAM looks better than 128.00 MB RAM)
  * @return formatted string
@@ -120,9 +120,31 @@ global define string FormatSizeWithPrecision(integer bytes, integer precision, b
 	index = index + 1;
     }
 
-    if (precision == nil || precision < 0 || (omit_zeroes == true && (whole - tointeger(whole) == 0.0)))
+    if (precision == nil)
     {
 	precision = 0;
+    }
+    else if (precision < 0)
+    {
+	// auto precision - depends on the suffix, but max. 3 decimal digits
+	precision = (index <= 3) ? index : 3;
+    }
+
+    if (omit_zeroes == true)
+    {
+	float max_difference = 0.9;
+	integer i = precision;
+
+	while (i > 0)
+	{
+	    max_difference = max_difference / 10;
+	    i = i - 1;
+	}
+
+	if (whole - tointeger(whole) < max_difference)
+	{
+	    precision = 0;
+	}
     }
 
     return float::tolstring(whole, precision) + " " + units[index]:"";
@@ -143,7 +165,10 @@ global define string FormatSizeWithPrecision(integer bytes, integer precision, b
  * @example FormatSize(23456767890) -> "223.70 MB"
  */
 global define string FormatSize(integer bytes) ``{
-    return FormatSizeWithPrecision(bytes, 2, false);
+    if (bytes == nil) return "";
+
+    // automatic precision, don't print trailing zeroes for sizes < 1MB
+    return FormatSizeWithPrecision(bytes, -1, bytes < 1<<20);
 }
 
 /**
