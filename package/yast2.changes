@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jun 28 13:50:16 UTC 2011 - lslezak@suse.cz
+
+- Suppress decimal zeroes for kB sizes (e.g. display "743 kB"
+  instead of "743.00 kB") (bnc#495045)
+- 2.21.4
+
+-------------------------------------------------------------------
 Thu Jun 23 15:28:19 UTC 2011 - lslezak@suse.cz
 
 - read GPG keys in UTF-8 locale to properly read non-ASCII
