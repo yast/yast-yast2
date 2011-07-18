@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jul 18 08:26:12 CEST 2011 - jsrain@suse.cz
+
+- fixed typo (bnc#702662)
+
+-------------------------------------------------------------------
 Tue Jun 28 13:50:16 UTC 2011 - lslezak@suse.cz
 
 - Suppress decimal zeroes for kB sizes (e.g. display "743 kB"
