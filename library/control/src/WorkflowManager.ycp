@@ -1200,7 +1200,7 @@ rm -rf *.xml *.ycp",
 
 	    if (! IntegrateWorkflow (one_workflow)) {
 		y2error ("Merging '%1' failed!", one_workflow);
-		Report::Error (_("An internal error occured when integrating additional workflow."));
+		Report::Error (_("An internal error occurred when integrating additional workflow."));
 		ret = false;
 	    }
 	});
