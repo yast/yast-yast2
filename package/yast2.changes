@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Thu Jul 21 15:15:51 CEST 2011 - locilka@suse.cz
+
+- Fixed SuSEfirewall2 config library: By default any unassigned
+  network interface is automatically assigned to the external
+  firewall zone (bnc#547309).
+- Fixed CWM library for opening ports in firewall not to list any
+  empty strings returned by network module, just interface names
+  (bnc#547309).
+- 2.21.5
+
+-------------------------------------------------------------------
 Mon Jul 18 08:26:12 CEST 2011 - jsrain@suse.cz
 
 - fixed typo (bnc#702662)

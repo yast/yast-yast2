@@ -240,11 +240,14 @@
     /**
      * Function returns whether the feature 'any' network interface is supported in the
      * firewall configuration. The string 'any' must be in the 'EXT' zone.
+     * Updated: Currently returns only 'true' as every unasigned interface is
+     * automatically assigned to the EXT zone by SuSEfirewall2.
      *
      * @return boolean is_supported whether the feature is supported or not
      */
     global boolean IsAnyNetworkInterfaceSupported () {
-	return contains(GetSpecialInterfacesInZone(special_all_interface_zone), special_all_interface_string);
+	// Currently unasigned interfaces belong to the EXT zone by dafault
+	return true;
     }
 
     /**
