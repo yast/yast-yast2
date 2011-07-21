@@ -33,6 +33,7 @@ import "Popup";
 import "SuSEFirewall";
 import "Report";
 import "Stage";
+import "String";
 
 // used only for (Mode::installation() || Mode::update())
 import "SuSEFirewallProposal";
@@ -139,7 +140,7 @@ void InitAllInterfacesList () {
 	y2milestone("Reading NetworkInterfaces...");
 	NetworkInterfaces::Read ();
     }
-    all_interfaces = NetworkInterfaces::List ("");
+    all_interfaces = String::NonEmpty (NetworkInterfaces::List (""));
     all_interfaces = filter (string i, all_interfaces, {
 	return i != "lo";
     });
@@ -238,7 +239,7 @@ list<string> Selected2Opened (list<string> ifaces, boolean nm_ifaces_have_to_be_
     	groups = add (groups, SuSEFirewall::special_all_interface_zone);
     }
 
-    groups = toset (groups);
+    groups = String::NonEmpty (toset (groups));
     groups = filter (string g, groups, {
 	return g != nil;
     });
@@ -491,7 +492,6 @@ Continue?"))) {
 	}
     }
 
-    // list<string> firewall_ifaces = toset (Selected2Opened (ifaces, nm_ifaces_have_to_be_supported));
     list<string> firewall_ifaces = toset (Selected2Opened (ifaces, false));
     y2milestone("firewall_ifaces: %1", firewall_ifaces);
 
