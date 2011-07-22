@@ -20,8 +20,6 @@ list <string> ifcfgs = [
     "lo",
     "eth0#1",
     "eth1#20",
-    "eth0.1",
-    "eth1.20",
     "eth-pcmcia-0#3",
     "eth-usb-1#0",
     "tr-pcmcia-2#432",

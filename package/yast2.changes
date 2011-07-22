@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Jul 22 16:18:30 CEST 2011 - mvidner@suse.cz
+
+- FCoE detection in NetworkStorage::isDiskOnNetwork (bnc#677251, FATE#306855).
+- Added NetworkInterfaces::GetTypeFromIfcfg which knows
+  ETHERDEVICE=>vlan (FATE#311380).
+- 2.21.6
+
+-------------------------------------------------------------------
 Fri Jul 22 16:10:07 CEST 2011 - locilka@suse.cz
 
 - Removed obsoleted X-KDE-SubstituteUID from desktop files

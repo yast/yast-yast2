@@ -9,8 +9,6 @@ Dump	ifcfg-ppp2, type: ppp
 Dump	ifcfg-lo, type: lo
 Dump	ifcfg-eth0#1, type: eth
 Dump	ifcfg-eth1#20, type: eth
-Dump	ifcfg-eth0.1, type: vlan
-Dump	ifcfg-eth1.20, type: vlan
 Dump	ifcfg-eth-pcmcia-0#3, type: eth
 Dump	ifcfg-eth-usb-1#0, type: eth
 Dump	ifcfg-tr-pcmcia-2#432, type: tr
