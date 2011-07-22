@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jul 22 16:10:07 CEST 2011 - locilka@suse.cz
+
+- Removed obsoleted X-KDE-SubstituteUID from desktop files
+  (bnc#540627)
+
+-------------------------------------------------------------------
 Thu Jul 21 15:15:51 CEST 2011 - locilka@suse.cz
 
 - Fixed SuSEfirewall2 config library: By default any unassigned
