@@ -29,6 +29,10 @@ map READ = $[
 	    "ppp5"	: nil,
 	    "tr5"	: nil,
 	    "tr~"	: nil,
+	    "vlan3"	: nil,
+	    "eth0.3"	: nil,
+	    "virtlan4"	: nil,
+	    "myvlantoo"	: nil,
 	],
 	"value" : $[
 	    "arc5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
@@ -55,6 +59,10 @@ map READ = $[
 	    "myri5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
 	    "ppp5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
 	    "tr5"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual"],
+	    "vlan3"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual", "ETHERDEVICE": "eth0"],
+	    "eth0.3"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual", "ETHERDEVICE": "eth0"],
+	    "virtlan4"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual", "ETHERDEVICE": "eth0"],
+	    "myvlantoo"	: $["BOOTPROTO":"dhcp", "STARTMODE":"manual", "ETHERDEVICE": "eth0", "VLAN_ID": "2"],
 	]
     ],
     "probe" : $[
