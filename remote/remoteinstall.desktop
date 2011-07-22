@@ -17,9 +17,8 @@ X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstResource=
 
 Icon=yast-remoteinstall
-Exec=/sbin/yast2 remoteinstall 
+Exec=/usr/bin/xdg-su -c '/sbin/yast2 remoteinstall'
 
 Name=Remote Installation
 GenericName=Run Installation on Remote Host
-X-KDE-SubstituteUID=true
 StartupNotify=true

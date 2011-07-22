@@ -14,6 +14,5 @@ OnlyShowIn=X-SuSE-YaST;
 Icon=yast-software
 
 Name=Software
-X-KDE-SubstituteUID=true
 
 Exec=/sbin/yast2

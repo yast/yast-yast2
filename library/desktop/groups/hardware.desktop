@@ -14,6 +14,5 @@ OnlyShowIn=X-SuSE-YaST;
 Icon=yast-hardware
 
 Name=Hardware
-X-KDE-SubstituteUID=true
 
 Exec=/sbin/yast2
