@@ -92,7 +92,7 @@
 
 	compliance_checked[src_id]	= true;
 
-	string profile	= Pkg::SourceProvideSignedFile (src_id, 1, profile_path, true);
+	string profile	= Pkg::SourceProvideOptionalFile (src_id, 1, profile_path);
 	if (profile != nil)
 	{
 	    profiles	= add (profiles, profile);
