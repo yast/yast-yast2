@@ -51,7 +51,17 @@
     string dir_file	= Pkg::SourceProvideOptionalFile (src_id, 1, "/directory.yast");
     map out		= (map) SCR::Execute (.target.bash_output, sformat (
 	"grep 'gpg-pubkey' %1 2>/dev/null", dir_file));
-    list<string> keys	= filter (string k, splitstring (out["stdout"]:"", "\n"), ``(k != ""));
+    list<string> keys	= [];
+    foreach (string k, splitstring (out["stdout"]:"", "\n"), {
+	if (k != "")
+	{
+	    string key	= Pkg::SourceProvideOptionalFile (src_id, 1, "/" + k);
+	    if (key != nil)
+	    {
+		keys	= add (keys, key);
+	    }
+	}
+    });
     return keys;
   }
 
