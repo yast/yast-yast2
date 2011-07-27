@@ -507,6 +507,11 @@
 		{
 		    helptext = ((map<string,string>)opthelp)[action]:"";
 		}
+		if (is(opthelp, list<string>))
+		{
+		    string delim = sformat("\n        %1  %2  ", String::Pad("",longestopt), String::Pad("", longestarg));
+		    helptext = mergestring((list<string>)opthelp, delim);
+		}
 		else
 		{
 		    y2error("Invalid data type of help text, only 'string' or 'map<string,string>' types are allowed.");
@@ -603,8 +608,35 @@
 	});
 
 	maplist(string cmd, map desc, modulecommands["actions"]:$[], ``{
-	    // translators: error message: module does not provide any help messages
-	    Print(sformat("    %1  %2", String::Pad(cmd, longest), desc["help"]:_("No help available.")));
+	    if (!haskey(desc, "help"))
+	    {
+		// translators: error message: module does not provide any help messages
+		Print(sformat("    %1  %2", String::Pad(cmd, longest), _("No help available.")));
+	    }
+	    if (is(desc["help"]:nil, string))
+	    {
+		Print(sformat("    %1  %2", String::Pad(cmd, longest), desc["help"]:""));
+	    }
+	    // multiline help text
+	    else if (is(desc["help"]:nil, list<string>))
+	    {
+		list<string> help = (list<string>)desc["help"]:[];
+
+		if (size(help) > 0)
+		{
+		    Print(sformat("    %1  %2", String::Pad(cmd, longest), help[0]:""));
+		    help = remove(help, 0);
+		}
+
+		foreach(string h, help, {
+		    Print(sformat("    %1  %2", String::Pad("", longest), h));
+		});
+	    }
+	    else
+	    {
+		// fallback message - invalid help has been provided by the yast module
+		Print(sformat("    %1  %2", String::Pad(cmd, longest), _("<Error: invalid help>")));
+	    }
 	});
 	Print("");
 	if( ! interactive ) {
