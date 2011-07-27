@@ -507,7 +507,7 @@
 		{
 		    helptext = ((map<string,string>)opthelp)[action]:"";
 		}
-		if (is(opthelp, list<string>))
+		else if (is(opthelp, list<string>))
 		{
 		    string delim = sformat("\n        %1  %2  ", String::Pad("",longestopt), String::Pad("", longestarg));
 		    helptext = mergestring((list<string>)opthelp, delim);
