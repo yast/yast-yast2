@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 28 16:23:46 CEST 2011 - mvidner@suse.cz
+
+- Fixed NetworkInterfaces::GetTypeFromIfcfg to recognize bridges (bnc#704999).
+- 2.17.105
+
+-------------------------------------------------------------------
 Thu Jul 28 13:46:22 CEST 2011 - jsuchome@suse.cz
 
 - adapt the message shown when compliance check fails
