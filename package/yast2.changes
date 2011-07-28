@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 28 13:46:22 CEST 2011 - jsuchome@suse.cz
+
+- adapt the message shown when compliance check fails
+- 2.17.104 
+
+-------------------------------------------------------------------
 Wed Jul 27 09:29:36 UTC 2011 - lslezak@suse.cz
 
 - command line - properly display multiline help texts (bnc#708553)
