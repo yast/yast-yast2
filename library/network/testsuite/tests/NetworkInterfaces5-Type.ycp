@@ -1,0 +1,40 @@
+// bnc#704999
+{
+
+include "testsuite.ycp";
+import "Assert";
+import "NetworkInterfaces";
+
+typedef map<string, any> ifcfg_t;
+
+ifcfg_t mybond = $[
+    "BOOTPROTO": "dhcp",
+    "BONDING_MASTER": "yes",
+    "BONDING_SLAVE_0": "eth0",
+    "BONDING_SLAVE_1": "eth1",
+];
+
+ifcfg_t mybridged = $[
+    "BOOTPROTO": "dhcp",
+    "BRIDGE": "yes",
+    "BRIDGE_PORTS": "eth0 tap0",
+];
+
+ifcfg_t myvirt = $[
+    "BOOTPROTO": "static",
+    "TUNNEL": "tap",
+];
+
+DUMP("NetworkInterfaces::GetTypeFromIfcfg");
+TEST(``(
+        Assert::Equal("bond", NetworkInterfaces::GetTypeFromIfcfg(mybond))
+        ), [], nil);
+TEST(``(
+        Assert::Equal("br", NetworkInterfaces::GetTypeFromIfcfg(mybridged))
+        ), [], nil);
+TEST(``(
+        Assert::Equal("tap", NetworkInterfaces::GetTypeFromIfcfg(myvirt))
+        ), [], nil);
+
+/*EOF*/
+}

@@ -1,0 +1,4 @@
+Dump	NetworkInterfaces::GetTypeFromIfcfg
+Return	true
+Return	true
+Return	true
