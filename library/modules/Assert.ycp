@@ -1,0 +1,36 @@
+/**
+ * File:	Assert.ycp
+ * Summary:	Assertions for test cases
+ * Authors:	Martin Vidner <mvidner@suse.cz>
+ */
+{
+module "Assert";
+
+/**
+ * @param expected expected value of test
+ * @param actual   actual value of test
+ * @param fail_message will be logged if test fails
+ * @return whether test succeeds
+ */
+global boolean EqualMsg(any expected, any actual, string fail_message) {
+    if (expected == actual) {
+        return true;
+    }
+    else {
+        y2error ("%1", fail_message);
+        return false;
+    }
+}   
+
+/**
+ * @param expected expected value of test
+ * @param actual   actual value of test
+ * @return whether test succeeds
+ */
+global boolean Equal(any expected, any actual) {
+    string fail_message = sformat ("assertion failure, expected '%1', got '%2'", expected, actual);
+    return EqualMsg(expected, actual, fail_message);
+}   
+
+/* EOF */
+}
