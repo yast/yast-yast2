@@ -182,10 +182,27 @@ global string device_type (string dev) {
 
 list<string> TypeByKeyValue = [
     "INTERFACETYPE",
-    "TUNNEL",
     ];
 list<list<string> > TypeByKeyExistence = [
     ["ETHERDEVICE", "vlan"],
+    ["WIRELESS_MODE", "wlan"],
+    ["MODEM_DEVICE", "ppp"],
+    ];
+list<list<string> > TypeByValueMatch = [
+    ["BONDING_MASTER", "yes", "bond"],
+    ["BRIDGE", "yes", "br"],
+    ["WIRELESS", "yes", "wlan"],
+    ["TUNNEL", "tap", "tap"],
+    ["TUNNEL", "tun", "tun"],
+    ["TUNNEL", "sit", "sit"],
+    ["TUNNEL", "gre", "gre"],
+    ["TUNNEL", "ipip", "ipip"],
+    ["PPPMODE", "pppoe", "ppp"],
+    ["PPPMODE", "pppoatm", "ppp"],
+    ["PPPMODE", "capi-adsl", "ppp"],
+    ["PPPMODE", "pptp", "ppp"],
+    ["ENCAP", "syncppp", "isdn"],
+    ["ENCAP", "rawip", "isdn"],
     ];
 
 /**
@@ -193,6 +210,14 @@ list<list<string> > TypeByKeyExistence = [
  */
 global string GetTypeFromIfcfg(ifcfg_t ifcfg) {
     string type = nil;		// unknown
+    foreach(list<string> key_type, TypeByValueMatch, {
+	string rule_key = key_type[0]:"";
+	string rule_value = key_type[1]:"";
+	string rule_type = key_type[2]:"";
+	if (ifcfg[rule_key]:"" == rule_value) {
+	  type = rule_type;
+	}
+      });
     foreach(list<string> key_type, TypeByKeyExistence, {
 	string rule_key = key_type[0]:"";
 	string rule_type = key_type[1]:"";

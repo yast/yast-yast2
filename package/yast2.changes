@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 28 16:23:46 CEST 2011 - mvidner@suse.cz
+
+- Fixed NetworkInterfaces::GetTypeFromIfcfg to recognize bridges (bnc#704999).
+- 2.21.8
+
+-------------------------------------------------------------------
 Wed Jul 27 09:29:36 UTC 2011 - lslezak@suse.cz
 
 - command line - properly display multiline help texts (bnc#708553)
