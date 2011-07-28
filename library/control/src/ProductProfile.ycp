@@ -180,12 +180,8 @@
 	}
     });
     string reasons_s	= mergestring (reasons, "\n");
-    // popup message, %1 is list of problems
-    string question	= sformat (_("The system is not compliant with provided profile:
-
-    %1
-
-Do you want to continue or abort the installation?"), reasons_s);
+    // last part of the question (variable)
+    string end_question	= _("Do you want to continue or abort the installation?");
 
     // button label
     string continue_button	=_("&Continue Installation");
@@ -195,12 +191,8 @@ Do you want to continue or abort the installation?"), reasons_s);
     // checking specific product
     if (productId != nil)
     {
-	// popup message, %1 is list of problems
-	question	= sformat (_("The system is not compliant with provided profile:
-
-    %1
-
-Do you want to add new product anyway?"), reasons_s);
+	// last part of the question (variable)
+	end_question	= _("Do you want to add new product anyway?");
 	continue_button	= Label::YesButton ();
 	cancel_button	= Label::NoButton ();
     }
@@ -208,7 +200,16 @@ Do you want to add new product anyway?"), reasons_s);
     boolean ret = Report::AnyQuestion (
 	// popup dialog caption
 	_("Warning"),
-	question,
+	// popup message, %1 is list of problems
+	sformat (_("The profile does not allow you to run the products on this system.
+Proceeding to run this installation will leave you in an unsupported state
+and might impact your compliance requirements.
+     
+The following requirements are not fulfilled on this system:
+    
+%1
+
+%2"), reasons_s, end_question),
 	continue_button, cancel_button,
 	`no_button
     );
