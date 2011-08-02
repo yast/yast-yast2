@@ -498,6 +498,12 @@
      *   "ZONE2" : [ "port3", "port4" ],
      *   "ZONE3" : [ ]
      * ]
+     * or
+     * $[
+     *   "ZONE1" : [ "yes" ],  // will work for all ports automatically
+     *   "ZONE3" : [ ],
+     *   "ZONE3" : [ ]
+     * ]
      */
     global define map <string, list <string> > GetBroadcastAllowedPorts () {
 
@@ -508,9 +514,9 @@
 	    // no broadcast allowed for this zone
 	    if (broadcast == "no") {
 		allowed_ports[zone] = [];
-	    // all UDP port allowed in zone also allow broadcast
+	    // BNC #694782: "yes" is automatically translated by SuSEfirewall2
 	    } else if (broadcast == "yes") {
-		allowed_ports[zone] = GetAllowedServicesForZoneProto (zone, "UDP");
+		allowed_ports[zone] = ["yes"];
 	    // only listed ports allows broadcast
 	    } else {
 		allowed_ports[zone] = splitstring(broadcast, " ");
@@ -535,6 +541,9 @@
 	SetModified();
 
 	foreach (string zone, GetKnownFirewallZones(), {
+	    if (broadcast[zone]:[] == [])
+		broadcast[zone] = ["no"];
+
 	    SetBroadcastConfiguration(zone, mergestring(broadcast[zone]:[], " "));
 	});
     }
