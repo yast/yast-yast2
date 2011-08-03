@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Aug  3 09:04:32 UTC 2011 - lslezak@suse.cz
+
+- use term "Software manager" instead of "Package manager"
+  (bnc#585679)
+- 2.21.10
+
+-------------------------------------------------------------------
 Tue Aug  2 09:19:26 CEST 2011 - locilka@suse.cz
 
 - Fixed Get/SetBroadcastAllowedPorts in SuSEFirewall to keep
