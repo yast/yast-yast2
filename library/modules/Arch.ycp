@@ -34,6 +34,9 @@ boolean _is_xen = nil;
 // Xen dom0
 boolean _is_xen0 = nil;
 
+// KVM
+boolean _is_kvm = nil;
+
 /* ************************************************************ */
 /* system architecture						*/
 
@@ -444,6 +447,26 @@ global boolean is_xen0 () {
  */
 global boolean is_xenU () {
     return (is_xen() && !is_xen0());
+}
+
+/* ************************************************************ */
+/* KVM stuff                                                    */
+
+/**
+ * true if KVM is running
+ *
+ * @return true if we are running on KVM hypervisor
+ */
+global boolean is_kvm () {
+    if (_is_kvm == nil) {
+        // KVM hypervisor has /dev/kvm file
+        map stat = (map)SCR::Read(.target.stat, "/dev/kvm");
+        y2milestone("stat /dev/kvm: %1", stat);
+
+        _is_kvm = (size(stat) > 0);
+    }
+
+    return _is_kvm;
 }
 
 /* ************************************************************ */
