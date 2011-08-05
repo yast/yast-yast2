@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Aug  5 12:35:57 CEST 2011 - tgoettlicher@suse.de
+
+- fixed .desktop file (bnc #681249)
+
+-------------------------------------------------------------------
 Wed Aug  3 09:04:32 UTC 2011 - lslezak@suse.cz
 
 - use term "Software manager" instead of "Package manager"
