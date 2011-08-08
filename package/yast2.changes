@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Mon Aug  8 11:07:38 UTC 2011 - lslezak@suse.cz
+
+- improved GPG key import dialog: changed "Import" button to
+  "Trust" (bnc#694213), display expiration warning for expired
+  keys, better layout for displaying GPG key properties, hide
+  additional help text in ncurses UI (so the GPG key properties are
+  displayed completely)
+- 2.21.11
+
+-------------------------------------------------------------------
 Fri Aug  5 12:35:57 CEST 2011 - tgoettlicher@suse.de
 
 - fixed .desktop file (bnc #681249)
