@@ -482,6 +482,35 @@ Use it anyway?")
 	+ (key["expires"]:"" != "" ? "\n" + sformat(_("Expires: %1"), key["expires"]:"") : "");
     }
 
+    term GPGKeyAsTerm(map<string,any> key)
+    {
+	boolean no_fingerprint = key["fingerprint"]:"" == nil || key["fingerprint"]:"" == "";
+	boolean no_exp_date = key["expires"]:"" == nil || key["expires"]:"" == "";
+	boolean no_create_date = key["created"]:"" == nil || key["expires"]:"" == "";
+
+	return `HBox(
+	    `VBox(
+		// GPG key property
+		`Left(`Label(_("ID: "))),
+		// GPG key property
+		`Left(`Label(_("Name: "))),
+		// GPG key property
+		no_fingerprint ? `Empty() : `Left(`Label(_("Fingerprint: "))),
+		// GPG key property
+		no_create_date ? `Empty() : `Left(`Label(_("Created: "))),
+		// GPG key property
+		no_exp_date ? `Empty() : `Left(`Label(_("Expires: ")))
+	    ),
+	    `VBox(
+		`Left(`Label(key["id"]:"")),
+		`Left(`Label(key["name"]:"")),
+		no_fingerprint ? `Empty() : `Left(`Label(StringSplitter(key["fingerprint"]:"", " ", 4))),
+		no_create_date ? `Empty() : `Left(`Label(key["created"]:"")),
+		no_exp_date ? `Empty() : `Left(`Label(key["expires"]:""))
+	    )
+	);
+    }
+
     /**
      * Used for corrupted file or package. Opens dialog asking whether user wants
      * to use this corrupted item.
@@ -830,39 +859,47 @@ for installation and update without any further warning. In this way,
 importing the key into your keyring of trusted keys allows the key owner
 to have a certain amount of control over the software on your system.</p>") +
 
-	// additional Richtext (HTML) warning text (kind of help), 2/2, %1 stands for the GnuPG key ID
-	sformat(_("<p>A warning dialog opens for every package that
-is not signed by a trusted (imported) key. If you do not import the key,
-packages created by the owner of key <tt>%1</tt> show this warning.</p>"), key["id"]:"");
+	// additional Richtext (HTML) warning text (kind of help), 2/2
+	_("<p>A warning dialog opens for every package that
+is not signed by a trusted (imported) key. If you do not trust the key,
+the packages or repositories created by the owner of the key will not be used.</p>");
 
 	map repo = Pkg::SourceGeneralData(repository);
 
-	// popup message, %1 stands for string "GPG key ID\nfingerprint", %2 for key name
-	string dialog_text = sformat(_("The following GnuPG key has been found in repository %1 
-%2:
+	// popup message - label, part 1, %1 stands for repository name, %2 for its URL
+	string dialog_text = sformat(_("The following GnuPG key has been found in repository\n%1\n(%2):"),
+	    repo["name"]:_("Unknown"),
+	    repo["url"]:_("Unknown"));
 
-%3
-
-You can choose to import it into your keyring of trusted
+	// popup message - label, part 2
+	string dialog_text2 = _("You can choose to import it into your keyring of trusted
 public keys, meaning that you trust the owner of the key.
 You should be sure that you can trust the owner and that
-the key really belongs to that owner before importing it."),
-	    repo["name"]:_("Unknown"),
-	    repo["url"]:_("Unknown"),
-	    "\n" +
-	    GPGKeyAsString(key)
-	);
+the key really belongs to that owner before importing it.");
+
+	integer expires = key["expires_raw"]:0;
+	if (expires > 0 && time() > expires)
+	{
+	    // warning label - the key to import is expired
+	    dialog_text2 = sformat(_("WARNING: The key has expired!")) + "\n\n" + dialog_text2;
+	}
+
+        map displayinfo = UI::GetDisplayInfo();
+	// hide additional help text in not enough wide terminals so
+	// the important GPG key properties are completely displayed
+	boolean hide_help = displayinfo["TextMode"]:false && displayinfo["Width"]:80 < 105;
 
 	UI::OpenDialog(
 	    `opt(`decorated),
 		`HBox (
 		    `VSpacing(19),
 		    // left-side help
-		    `HWeight(3,
-			`VBox (
-			    `RichText(warning_text)
-			)
-		    ),
+		    hide_help ? `Empty() :
+			`HWeight(3,
+			    `VBox (
+				`RichText(warning_text)
+			    )
+			),
 		    `HSpacing(1.5),
 		    // dialog
 		    `HWeight(5,
@@ -876,16 +913,22 @@ the key really belongs to that owner before importing it."),
 					`HStretch()
 				    ),
 				    // dialog message
-				    `MarginBox(0.5, 0.5, `Label(dialog_text))
+				    `MarginBox(0.5, 0.5, `VBox(
+					    `Left(`Label(dialog_text)),
+					    `VSpacing(0.5),
+					    GPGKeyAsTerm(key),
+					    `VSpacing(0.5),
+					    `Left(`Label(dialog_text2))
+					)
+				    )
 				)
 			    ),
 			// dialog buttons
 			`Bottom(
 			    `ButtonBox (
 				// push button
-				`PushButton(`id(`import), `opt (`key_F10, `okButton), _("&Import")),
-				// push button
-				`PushButton(`id(`dont_import), `opt (`key_F9, `cancelButton), _("Do &Not Import"))
+				`PushButton(`id(`trust), `opt (`key_F10, `okButton), _("&Trust")),
+				`PushButton(`id(`cancel), `opt (`key_F9, `cancelButton), Label::CancelButton())
 			    )
 			)
 		    )
@@ -893,17 +936,9 @@ the key really belongs to that owner before importing it."),
 	    )
 	);
 
-	// No details available - disable button
-	// if (key_detailed_description == "") UI::ChangeWidget(`id(`details), `Enabled, false);
-	UI::SetFocus(`dont_import);
+	UI::SetFocus(`cancel);
 
-	symbol ret = nil;
-	while (ret == nil || ret == `details) {
-	    // wait for one of listed ID's, return the default value in case of `cancel
-	    ret = WaitForSymbolUserInput([`import, `details, `dont_import], `dont_import);
-	    if (contains([`import, `dont_import], ret)) break;
-	    // else if (ret == `details) Popup::LongMessage(key_detailed_description);
-	}
+	symbol ret = (symbol)UI::UserInput();
 
 	UI::CloseDialog();
 
