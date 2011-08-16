@@ -2,6 +2,7 @@
 Thu Aug  3 13:42:53 MDT 2011 - carnold@novell.com
 
 - Added an is_kvm() function.  See fate#311371 
+- 2.17.107
 
 -------------------------------------------------------------------
 Tue Aug  2 09:19:26 CEST 2011 - locilka@suse.cz
