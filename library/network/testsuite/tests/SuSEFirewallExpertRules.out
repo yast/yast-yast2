@@ -13,4 +13,22 @@ Return	false
 Return	false
 Return	false
 Return	false
+Dump	Testing adding/reading expert rules
+Return	[]
+Return	true
+Return	[$["dport":"", "network":"192.168.0.1/255.255.240.0", "options":"hitcount=3,blockseconds=60,recentname=ssh", "protocol":"tcp", "sport":"22"]]
+Return	true
+Return	[$["dport":"", "network":"192.168.0.1/255.255.240.0", "options":"hitcount=3,blockseconds=60,recentname=ssh", "protocol":"tcp", "sport":"22"], $["dport":"", "network":"192.168.0.1/255.255.240.0", "options":"whatever=1", "protocol":"tcp", "sport":""]]
+Return	true
+Return	[$["dport":"", "network":"192.168.0.1/255.255.240.0", "options":"whatever=1", "protocol":"tcp", "sport":""]]
+Dump	Cannot remove rule that doesn't exist
+Return	false
+Return	[$["dport":"", "network":"192.168.0.1/255.255.240.0", "options":"whatever=1", "protocol":"tcp", "sport":""]]
+Return	true
+Return	[]
+Dump	Adding special rule allowed 'from all networks'
+Return	true
+Return	[$["dport":"", "network":"0/0", "options":"", "protocol":"udp", "sport":"888"]]
+Return	true
+Return	[$["dport":"", "network":"0/0", "options":"", "protocol":"udp", "sport":"888"], $["dport":"", "network":"0.0.0.0/0", "options":"", "protocol":"tcp", "sport":"999"]]
 Dump	== Done ==

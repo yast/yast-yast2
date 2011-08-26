@@ -299,7 +299,8 @@
     void ReadSysconfigSuSEFirewall (list<string> variables) {
 	foreach (string variable, variables, {
 	    string value = (string) SCR::Read(add(.sysconfig.SuSEfirewall2,variable));
-	    // if variable is undefined, get default value
+
+	    // if value is undefined, get default value
 	    if (value == nil || value == "")
 		value = GetDefaultValue(variable);
 
@@ -364,14 +365,14 @@
 	    );
 
 	    if (! write_status) {
-		Report::Error(Message::CannotWriteSettingsTo("/etc/sysconfig/SuSEFirewall"));
+		Report::Error(Message::CannotWriteSettingsTo("/etc/sysconfig/SuSEFirewall2"));
 		break;
 	    }
 	});
 
 	write_status = SCR::Write(.sysconfig.SuSEfirewall2, nil);
 	if (! write_status) {
-	    Report::Error(Message::CannotWriteSettingsTo("/etc/sysconfig/SuSEFirewall"));
+	    Report::Error(Message::CannotWriteSettingsTo("/etc/sysconfig/SuSEFirewall2"));
 	}
 
 	return write_status;
