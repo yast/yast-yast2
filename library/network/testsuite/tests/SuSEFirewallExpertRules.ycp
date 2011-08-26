@@ -27,5 +27,46 @@
 	TEST(``(SuSEFirewallExpertRules::IsValidNetwork (check_this)), [], nil);
     });
 
+    DUMP("Testing adding/reading expert rules");
+    // Rules are empty at the beginning
+    TEST(``(SuSEFirewallExpertRules::GetListOfAcceptRules("EXT")), [], nil);
+
+    TEST(``(SuSEFirewallExpertRules::AddNewAcceptRule("EXT",
+	$["network":"192.168.0.1/255.255.240.0", "protocol":"tcp", "sport":"22",
+	"options":"hitcount=3,blockseconds=60,recentname=ssh"])
+    ), [], nil);
+    TEST(``(SuSEFirewallExpertRules::GetListOfAcceptRules("EXT")), [], nil);
+
+    TEST(``(SuSEFirewallExpertRules::AddNewAcceptRule("EXT",
+	$["network":"192.168.0.1/255.255.240.0", "protocol":"tcp", "options":"whatever=1"])
+    ), [], nil);
+    TEST(``(SuSEFirewallExpertRules::GetListOfAcceptRules("EXT")), [], nil);
+
+    // Deleting by rule ID (offset in list)
+    TEST(``(SuSEFirewallExpertRules::DeleteRuleID("EXT", 0)), [], nil);
+    TEST(``(SuSEFirewallExpertRules::GetListOfAcceptRules("EXT")), [], nil);
+
+    DUMP("Cannot remove rule that doesn't exist");
+    TEST(``(SuSEFirewallExpertRules::RemoveAcceptRule("EXT",
+	$["network":"192.168.0.1/255.255.240.0", "protocol":"tcp"])
+    ), [], nil);
+    TEST(``(SuSEFirewallExpertRules::GetListOfAcceptRules("EXT")), [], nil);
+
+    // Now "options" match too
+    TEST(``(SuSEFirewallExpertRules::RemoveAcceptRule("EXT",
+	$["network":"192.168.0.1/255.255.240.0", "protocol":"tcp", "options":"whatever=1"])
+    ), [], nil);
+    TEST(``(SuSEFirewallExpertRules::GetListOfAcceptRules("EXT")), [], nil);
+
+    DUMP("Adding special rule allowed 'from all networks'");
+    TEST(``(SuSEFirewallExpertRules::AddNewAcceptRule("EXT",
+	$["protocol":"UDP", "sport":"888"])), [], nil);
+    TEST(``(SuSEFirewallExpertRules::GetListOfAcceptRules("EXT")), [], nil);
+
+    // Special all-IPv4-networks-(only) rule
+    TEST(``(SuSEFirewallExpertRules::AddNewAcceptRule("EXT",
+	$["protocol":"TCP", "sport":"999", "network":"0.0.0.0/0"])), [], nil);
+    TEST(``(SuSEFirewallExpertRules::GetListOfAcceptRules("EXT")), [], nil);
+
     DUMP("== Done ==");
 }

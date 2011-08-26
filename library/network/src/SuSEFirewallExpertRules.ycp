@@ -187,7 +187,7 @@ IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32
 
 	//
 	// FW_SERVICES_ACCEPT_EXT, FW_SERVICES_ACCEPT_INT, FW_SERVICES_ACCEPT_DMZ
-	// Format: space separated list of net,protocol[,dport][,sport]
+	// Format: space separated list of net,protocol[,dport][,sport][,other-comma-separated-options]
 	//
 	list <map <string, string> > rules = maplist (
 	    string one_rule,
@@ -195,11 +195,17 @@ IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32
 	{
 	    // comma separated
 	    list <string> rule_splitted = splitstring(one_rule, ",");
+
+	    // additional options after sport (4th entry)
+	    integer options_entries_count = size(rule_splitted) - 4;
+
 	    return $[
 		"network"  : rule_splitted[0]:"",
 		"protocol" : rule_splitted[1]:"",
 		"dport"    : rule_splitted[2]:"",
 		"sport"    : rule_splitted[3]:"",
+		// additional options if defined (offset 4 and more)
+		"options"  : (options_entries_count > 0 ? mergestring(sublist(rule_splitted, 4, options_entries_count), ",") : ""),
 	    ];
 	});
 	
@@ -209,11 +215,42 @@ IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32
 		one_rule["network"]:""  == "" &&
 		one_rule["protocol"]:"" == "" &&
 		one_rule["dport"]:""    == "" &&
-		one_rule["sport"]:""    == ""
+		one_rule["sport"]:""    == "" &&
+		one_rule["options"]:""  == ""
 	    );
 	});
 	
 	return rules;
+    }
+
+    /**
+     * Creates a string with one rule definition as described by the given params.
+     * All the trailing commas are removed
+     *
+     * @param	map <string, string> params
+     * @return	string rule definition
+     */
+    string CreateRuleFromParams (map <string, string> params) {
+	// Adjusting params (some empty entries are replaced with $everything value)
+	params = AdjustParameters (params);
+
+	// Creating new record
+	string new_rule = params["network"]:""
+	    + "," + params["protocol"]:""
+	    + "," + params["dport"]:""
+	    + "," + params["sport"]:""
+	    + "," + params["options"]:"";
+
+	// Cut out all the trailing commas
+	while (regexpmatch (new_rule, ",\+$")) {
+	    new_rule = regexpsub (new_rule, "(.*),\+$", "\\1");
+	}
+
+	if (new_rule == "0/0,all") {
+	    y2warning("Created rule '%1' that allows everything from all networks!", new_rule);
+	}
+
+	return new_rule;
     }
 
     /**
@@ -230,7 +267,8 @@ IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32
      * @example
      * AddNewAcceptRule (
      *     "EXT",
-     *     $["network":"192.168.0.1/255.255.240.0", "protocol":"tcp", "sport":"22"]
+     *     $["network":"192.168.0.1/255.255.240.0", "protocol":"tcp", "sport":"22",
+     *         "options":"hitcount=3,blockseconds=60,recentname=ssh"]
      * ) -> true
      */
     global boolean AddNewAcceptRule (string zone, map <string, string> params) {
@@ -241,7 +279,7 @@ IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32
 	    y2error("Unknown firewall zone: %1", zone);
 	    return nil;
 	}
-	
+
 	// Get all current rules
 	string current_rules = SuSEFirewall::GetAcceptExpertRules(zone);
 	if (current_rules == nil) {
@@ -249,28 +287,10 @@ IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32
 	    return false;
 	}
 
-	// Adjusting params
-	params = AdjustParameters(params);
+	string new_rule = CreateRuleFromParams (params);
 
-	// Creating new record
-	string new_rule = params["network"]:"" + "," + params["protocol"]:"";
-
-	// either 'dport' or 'sport'
-	if (params["dport"]:"" != "" || params["sport"]:"" != "") {
-	    // 'dport' can be empty even if 'sport' is set
-	    new_rule = new_rule + "," + params["dport"]:"";
-
-	    if (params["sport"]:"" != "") {
-		new_rule = new_rule + "," + params["sport"]:"";
-	    }
-	}
-
-	if (new_rule == "0/0,all") {
-	    y2warning("Adding rule '%1' that allows everything from all networks!", new_rule);
-	}
-	
 	current_rules = current_rules + (size(current_rules) > 0 ? " ":"") + new_rule;
-	
+
 	return SuSEFirewall::SetAcceptExpertRules(zone, current_rules);
     }
     
@@ -305,10 +325,10 @@ IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32
 	    return false;
 	}
 
+	integer current_rules_number = size (current_rules);
+
 	// Creating record to be removed
-	string remove_rule = params["network"]:"" + "," + params["protocol"]:"";
-	if (params["dport"]:"" != "") remove_rule = remove_rule + "," + params["dport"]:"";
-	if (params["sport"]:"" != "") remove_rule = remove_rule + "," + params["sport"]:"";
+	string remove_rule = CreateRuleFromParams (params);
 
 	// Filtering out the record
 	list <string> current_rules_list = splitstring (current_rules, " \n");
@@ -316,8 +336,10 @@ IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32
 	    return (one_rule != remove_rule && one_rule != "" && one_rule != ",");
 	});
 	current_rules = mergestring (current_rules_list, " ");
-	
-	return SuSEFirewall::SetAcceptExpertRules(zone, current_rules);
+
+	SuSEFirewall::SetAcceptExpertRules (zone, current_rules);
+
+	return (size(SuSEFirewall::GetAcceptExpertRules(zone)) < current_rules_number);
     }
 
     /**

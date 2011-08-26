@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Aug 26 13:26:32 CEST 2011 - locilka@suse.cz
+
+- Fixed handling of FW_SERVICES_ACCEPT_* in SuSEFirewall modules to
+  understand flags as the fifth parameter (bnc#712670)
+- Fixed SuSEfirewall2 SCR agent to parse the sysconfig file
+  properly (bnc#712670)
+
+-------------------------------------------------------------------
 Thu Aug  3 13:42:53 MDT 2011 - carnold@novell.com
 
 - Added an is_kvm() function.  See fate#311371 
