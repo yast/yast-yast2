@@ -5,6 +5,7 @@ Fri Aug 26 13:26:32 CEST 2011 - locilka@suse.cz
   understand flags as the fifth parameter (bnc#712670)
 - Fixed SuSEfirewall2 SCR agent to parse the sysconfig file
   properly (bnc#712670)
+- 2.17.108
 
 -------------------------------------------------------------------
 Thu Aug  3 13:42:53 MDT 2011 - carnold@novell.com
