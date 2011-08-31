@@ -1,0 +1,14 @@
+Dump	Test nil
+Return	/
+Return	/
+Return	/
+Dump	Test empty string
+Return	/
+Return	/
+Return	/
+Dump	Test valid values
+Return	/
+Return	/usr
+Return	/usr
+Return	/usr
+Return	/usr/share

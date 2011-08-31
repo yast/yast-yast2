@@ -1,0 +1,24 @@
+{
+
+include "testsuite.ycp";
+
+include "wagon/wagon_helpers.ycp";
+
+//import "Wagon";
+DUMP("Test nil");
+TEST(``(FindMountPoint(nil, nil)), [], nil);
+TEST(``(FindMountPoint(nil, [])), [], nil);
+TEST(``(FindMountPoint(nil, ["/boot", "/"])), [], nil);
+
+DUMP("Test empty string");
+TEST(``(FindMountPoint("", nil)), [], nil);
+TEST(``(FindMountPoint("", [])), [], nil);
+TEST(``(FindMountPoint("", ["/boot", "/"])), [], nil);
+
+DUMP("Test valid values");
+TEST(``(FindMountPoint("/", ["/boot", "/", "/usr"])), [], nil);
+TEST(``(FindMountPoint("/usr", ["/boot", "/", "/usr"])), [], nil);
+TEST(``(FindMountPoint("/usr/", ["/boot", "/", "/usr"])), [], nil);
+TEST(``(FindMountPoint("/usr/share/locale", ["/boot", "/", "/usr"])), [], nil);
+TEST(``(FindMountPoint("/usr/share/locale", ["/boot", "/", "/usr", "/usr/share"])), [], nil);
+}
