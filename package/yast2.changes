@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Aug 31 07:40:54 UTC 2011 - lslezak@suse.cz
+
+- fixed trusting a GPG key (wrong id check) (bnc#713068)
+
+-------------------------------------------------------------------
 Fri Aug 26 13:26:32 CEST 2011 - locilka@suse.cz
 
 - Fixed handling of FW_SERVICES_ACCEPT_* in SuSEFirewall modules to

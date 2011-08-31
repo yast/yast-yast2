@@ -942,7 +942,7 @@ the key really belongs to that owner before importing it.");
 
 	UI::CloseDialog();
 
-	return ret == `import;
+	return ret == `trust;
     }
 
     boolean RunSimpleErrorPopup(string heading, string description_text,
