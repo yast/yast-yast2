@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Oct 11 15:28:25 CEST 2012 - mvidner@suse.cz
+
+- Update Deleted and OriginalDevices in NetworkInterfaces::Write.
+  Thanks to Justus Winter
+- 2.17.120
+
+-------------------------------------------------------------------
 Mon Sep 17 07:31:13 UTC 2012 - mfilka@suse.com
 
 - added missing dependency on bind-utils.

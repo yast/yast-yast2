@@ -748,6 +748,7 @@ global define boolean Write(string devregex) {
 	    });
 	}
     });
+    Deleted = [];
 
     /* write all devices */
     maplist(string typ, map<string,map<string,any> > devsmap, (map<string, map<string, map<string, any> > >) Devs, {
@@ -828,16 +829,20 @@ global define boolean Write(string devregex) {
                 y2debug("Permission change: %1", config);
                 SCR::Write(add(.network.section_private, config), true);
 	    }
+
+	    if (OriginalDevices == nil) {
+		OriginalDevices = $[];
+	    }
+	    if (OriginalDevices[typ]:nil == nil) {
+		OriginalDevices[typ] = $[];
+	    }
+	    OriginalDevices[typ, config] = Devices[typ, config]:$[];
 	});
     });
 
     /* Finish him */
     SCR::Write(.network, nil);
 
-    // Deleted = [];
-    // OriginalDevices = Devices;
-    // Cannot do it because we have written only part of Devices.
-    // This module should be rewritten to objects.
     return true;
 }
 
