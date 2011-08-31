@@ -82,12 +82,12 @@ DUMP(sformat("all=%1", NetworkInterfaces::Devices));
 NetworkInterfaces::OriginalDevices = nil;
 
 DUMP("NetworkInterfaces::Write");
-TEST(``(NetworkInterfaces::Write("")), [READ], nil);
 TEST(``(NetworkInterfaces::Write("eth")), [READ], nil);
 TEST(``(NetworkInterfaces::Write("ppp")), [READ], nil);
 TEST(``(NetworkInterfaces::Write("ippp")), [READ], nil);
 TEST(``(NetworkInterfaces::Write("trx")), [READ], nil);
 TEST(``(NetworkInterfaces::Write("atm|tr")), [READ], nil);
+TEST(``(NetworkInterfaces::Write("")), [READ], nil);
 
 map<string,map> exported = nil;
 
