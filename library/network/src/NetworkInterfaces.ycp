@@ -747,6 +747,7 @@ global define boolean Write(string devregex) {
 	    });
 	}
     });
+    Deleted = [];
 
     /* Devices with chmod=0600 */
     list<string> chmod = [];
@@ -829,6 +830,14 @@ global define boolean Write(string devregex) {
 		y2debug("CHANGED");
 		chmod = add(chmod, file);
 	    }
+
+	    if (OriginalDevices == nil) {
+		OriginalDevices = $[];
+	    }
+	    if (OriginalDevices[typ]:nil == nil) {
+		OriginalDevices[typ] = $[];
+	    }
+	    OriginalDevices[typ, config] = Devices[typ, config]:$[];
 	});
     });
 
@@ -842,10 +851,6 @@ global define boolean Write(string devregex) {
 	SCR::Execute(.target.bash, "/bin/chmod 0600 " + file);
     });
 
-    // Deleted = [];
-    // OriginalDevices = Devices;
-    // Cannot do it because we have written only part of Devices.
-    // This module should be rewritten to objects.
     return true;
 }
 
