@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep  1 06:40:43 UTC 2011 - jsrain@site
+
+- enhanced the help command-line parameters (bnc#712271)
+- 2.21.15
+
+-------------------------------------------------------------------
 Wed Aug 31 16:21:31 CEST 2011 - mvidner@suse.cz
 
 - Update Deleted and OriginalDevices in NetworkInterfaces::Write.
