@@ -1,0 +1,24 @@
+{
+
+include "testsuite.ycp";
+
+import "String";
+
+//import "Wagon";
+DUMP("Test nil");
+TEST(``(String::FindMountPoint(nil, nil)), [], nil);
+TEST(``(String::FindMountPoint(nil, [])), [], nil);
+TEST(``(String::FindMountPoint(nil, ["/boot", "/"])), [], nil);
+
+DUMP("Test empty string");
+TEST(``(String::FindMountPoint("", nil)), [], nil);
+TEST(``(String::FindMountPoint("", [])), [], nil);
+TEST(``(String::FindMountPoint("", ["/boot", "/"])), [], nil);
+
+DUMP("Test valid values");
+TEST(``(String::FindMountPoint("/", ["/boot", "/", "/usr"])), [], nil);
+TEST(``(String::FindMountPoint("/usr", ["/boot", "/", "/usr"])), [], nil);
+TEST(``(String::FindMountPoint("/usr/", ["/boot", "/", "/usr"])), [], nil);
+TEST(``(String::FindMountPoint("/usr/share/locale", ["/boot", "/", "/usr"])), [], nil);
+TEST(``(String::FindMountPoint("/usr/share/locale", ["/boot", "/", "/usr", "/usr/share"])), [], nil);
+}

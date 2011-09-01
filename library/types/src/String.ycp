@@ -1250,5 +1250,29 @@ global boolean StartsWith(string str, string test)
     return search(str, test) == 0;
 }
 
+/*
+* Find a mount point for given directory/file path. Returns "/" if no mount point matches
+* @param dir requested path , e.g. "/usr/share"
+* @param dirs list of mount points, e.g. [ "/", "/usr", "/boot" ]
+* @return string a mount point from the input list or "/" if not found
+*/
+global string FindMountPoint(string dir, list<string> dirs)
+{
+    while (dir != nil && dir != "" && !contains(dirs, dir))
+    {
+	// strip the last path component and try it again
+	list<string> comps = splitstring(dir, "/");
+	comps = remove(comps, size(comps) - 1);
+	dir = mergestring(comps, "/");
+    }
+
+    if (dir == nil || dir == "")
+    {
+	dir = "/";
+    }
+
+    return dir;
+}
+
 /* EOF */
 }

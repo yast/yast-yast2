@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Sep  1 11:33:18 UTC 2011 - lslezak@suse.cz
+
+- added String::FindMountPoint() function (moved from yast2-wagon
+  to share it with yast2-packager)
+- 2.17.110
+
+-------------------------------------------------------------------
 Thu Sep  1 06:40:43 UTC 2011 - jsrain@site
 
 - enhanced the help command-line parameters (bnc#712271)
