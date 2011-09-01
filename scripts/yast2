@@ -220,7 +220,7 @@ eval set -- "$TEMP"
 
 while true ; do
 	case "$1" in
-		-h|--help) printhelp; exit 0 ;;
+		-h|--help) if test "$2" = '--' -a -n "$3" ; then CMDLINE_HELP="help" ; else printhelp && exit 0 ; fi ; shift ;;
 		-l|--list) listmodules; exit 0 ;;
 		-g|--geometry) Y2_GEOMETRY="-geometry $2"; shift 2; ;;
 		-i|--install) Y2_INSTALL_PACKAGES=true; shift ;;
@@ -255,6 +255,10 @@ fi
 # Surround all args by (...).  args may contain spaces.
 # Use -S to avoid YCP escaping (bnc#382883)
 # But avoid a lone -S (cc-gnome dies, bnc#537470)
+
+if [ -n "$CMDLINE_HELP" ]; then
+    set -- $@ help;
+fi
 if [ $# -gt 0 ]; then
     a=("$@")
     b=("${a[@]/#/(}")
