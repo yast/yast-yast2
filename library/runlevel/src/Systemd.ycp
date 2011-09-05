@@ -13,8 +13,7 @@
 
 module "Systemd";
 
-import "Package";
-import "String";
+const string systemd_path = "/bin/systemd";
 
 textdomain "base";
 
@@ -23,8 +22,8 @@ textdomain "base";
  */
 global boolean Installed()
 {
-    // check for systemd package
-    return Package::Installed("systemd");
+    // check for systemd executable
+    return SCR::Read(.target.size, systemd_path) >= 0;
 }
 
 /*
@@ -35,7 +34,6 @@ global boolean Running()
 {
     // check the command of the init program (PID=1)
     const string cmdline_path = "/proc/1/cmdline";
-    const string systemd_path = "/bin/systemd";
 
     // /proc/<pid>/cmdline is a NULL separated list
     // we cannot use NULL separator in YCP (?), check just the begining
