@@ -1,0 +1,18 @@
+Dump	Systemd::Running() tests
+Read	.target.string "/proc/1/cmdline" "init [5]\n"
+Return	false
+Read	.target.string "/proc/1/cmdline" "/bin/systemd\n"
+Return	true
+Dump	Systemd::SetDefaultRunlevel() tests
+Log	Invalid default runlevel (must be in range 0..6): nil
+Return	false
+Log	Invalid default runlevel (must be in range 0..6): -1
+Return	false
+Log	Invalid default runlevel (must be in range 0..6): 7
+Return	false
+Execute	.target.bash "/bin/ln -s -f /lib/systemd/system/runlevel3.target /etc/systemd/system/default.target" 0
+Return	true
+Execute	.target.bash "/bin/ln -s -f /lib/systemd/system/runlevel5.target /etc/systemd/system/default.target" 0
+Return	true
+Execute	.target.bash "/bin/ln -s -f /lib/systemd/system/runlevel5.target /etc/systemd/system/default.target" 1
+Return	false

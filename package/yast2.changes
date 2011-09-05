@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Sep  5 16:40:22 UTC 2011 - lslezak@suse.cz
+
+- added new Systemd.ycp module for handling systemd configuration,
+  (needed for bnc#707418)
+- 2.21.16
+
+-------------------------------------------------------------------
 Thu Sep  1 06:40:43 UTC 2011 - jsrain@site
 
 - enhanced the help command-line parameters (bnc#712271)
