@@ -1,0 +1,83 @@
+/**
+ * File:	modules/Systemd.ycp
+ * Package:	yast2
+ * Summary:	systemd configuration
+ * Authors:	Ladislav Slezák <lslezak@suse.cz>
+ *
+ * $Id$
+ *
+ * Functions for setting systemd options
+ */
+
+{
+
+module "Systemd";
+
+import "Package";
+import "String";
+
+textdomain "base";
+
+/**
+ * Check whether the systemd package is installed
+ */
+global boolean Installed()
+{
+    // check for systemd package
+    return Package::Installed("systemd");
+}
+
+/*
+ * Check whether systemd init is currently running
+ * @return boolean true if systemd init is running
+ */
+global boolean Running()
+{
+    // check the command of the init program (PID=1)
+    const string cmdline_path = "/proc/1/cmdline";
+    const string systemd_path = "/bin/systemd";
+
+    // /proc/<pid>/cmdline is a NULL separated list
+    // we cannot use NULL separator in YCP (?), check just the begining
+    string init_cmdline = (string)SCR::Read(.target.string, cmdline_path);
+    y2milestone("Current init program: %1", init_cmdline);
+
+    boolean ret = substring(init_cmdline, 0, size(systemd_path)) == systemd_path;
+    y2milestone("Systemd detected: %1", ret);
+
+    return ret;
+}
+
+/**
+ * Set default runlevel for systemd (assumes systemd is installed)
+ * @param runlevel the default runlevel to set (integer in range 0..6)
+ * @return boolean true on success
+ */
+global boolean SetDefaultRunlevel(integer runlevel)
+{
+    const string default_symlink = "/etc/systemd/system/default.target";
+
+    if (runlevel == nil || runlevel < 0 || runlevel > 6)
+    {
+	y2error("Invalid default runlevel (must be in range 0..6): %1", runlevel);
+	return false;
+    }
+
+    y2milestone("Setting systemd default runlevel: %1", runlevel);
+
+    // create symbolic link, -f to rewrite the current link (if exists)
+    string command = sformat("/bin/ln -s -f /lib/systemd/system/runlevel%1.target %2", runlevel, default_symlink);
+    y2milestone("Executing: %1", command);
+
+    integer res = (integer)SCR::Execute(.target.bash, command);
+    y2debug("Result: %1", res);
+
+    boolean ret = (res == 0);
+    y2milestone("Default runlevel set: %1", ret);
+
+    return ret;
+}
+
+
+} /* EOF */
+
