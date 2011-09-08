@@ -36,7 +36,7 @@ list<map> private_keys = nil;
  */
 global boolean Init(string home_dir, boolean force)
 {
-    if (FileUtils::IsDirectory(home_dir) != true)
+    if (home_dir != "" && FileUtils::IsDirectory(home_dir) != true)
     {
 	y2error("Path %1 is not a directory", home_dir);
 	return false;
@@ -253,7 +253,7 @@ global list<map> PrivateKeys()
 global boolean CreateKey()
 {
     string xterm = "/usr/bin/xterm";
-    string command = buildGPGcommand("--gen-key");
+    string command = "GPG_AGENT_INFO='' " + buildGPGcommand("--gen-key");
     boolean text_mode = UI::GetDisplayInfo()["TextMode"]:false;
 
     y2debug("text_mode: %1", text_mode);
@@ -272,10 +272,10 @@ global boolean CreateKey()
 	string exit_file = ((string)SCR::Read(.target.tmpdir)) + "/gpg_tmp_exit_file";
 	if (FileUtils::Exists(exit_file))
 	{
-	    SCR::Execute(.target.execute, "rm -f " + exit_file);
+	    SCR::Execute(.target.bash, "rm -f " + exit_file);
 	}
 
-	command = "LC_ALL=C " + xterm + " -e \"" + command + "; echo $? > " + exit_file + "\"";
+	command = "LC_ALL=en_US.UTF-8 " + xterm + " -e \"" + command + "; echo $? > " + exit_file + "\"";
 	y2internal("Executing: %1", command);
 
 	// in Qt start GPG in a xterm window
@@ -298,7 +298,7 @@ global boolean CreateKey()
     }
     else
     {
-	command = "LC_ALL=C " + command;
+	command = "LC_ALL=en_US.UTF-8 " + command;
 	y2internal("Executing in terminal: %1", command);
 	// in ncurses use UI::RunInTerminal
 	ret = UI::RunInTerminal(command) == 0;
