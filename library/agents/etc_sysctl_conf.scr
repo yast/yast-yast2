@@ -1,0 +1,21 @@
+/*
+ * File:
+ *   etc_sysctl_conf.scr
+ * Summary:
+ *   SCR Agent for reading/writing /etc/sysctl.conf
+ * Access:
+ *   r/w
+ *
+ */
+.etc.sysctl_conf
+
+`ag_ini(
+  `IniAgent(
+    "/etc/sysctl.conf",
+    $[ "options" : ["ignore_case", "global_values", "flat"],
+       "comments" : [ "^#.*", "^[ \t]*$", ],
+       "params" : [
+		 $[ "match" : [ "^[ \t]*([^=]*[^ \t=])[ \t]*=[ \t]*(.*[^ \t]|)[ \t]*$" , "%s = %s"],],
+       ]
+	]
+    ))
