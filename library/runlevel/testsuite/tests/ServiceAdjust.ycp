@@ -1,5 +1,8 @@
 {
     include "testsuite.ycp";
+
+    TESTSUITE_INIT ([$[ "target" : $[ "tmpdir": "/tmp" ] ], $[], $[]], nil);
+
     import "Service";
 
     map READ = $[];
@@ -25,7 +28,11 @@
 			]
                     ],
 		"exists" : false,
-	] ] ];
+	] ],
+	    "target" : $[
+		"stat" : $[]
+	    ]
+	];
     TEST (``(Service::Adjust ("aaa", "disable")), [ READ, $[], EXEC ], nil);
 
     // service exists and may run
@@ -43,7 +50,11 @@
 			]
                     ],
 		"exists" : true,
-	] ] ];
+	] ],
+	    "target" : $[
+		"stat" : $["isreg": true]
+	  ]
+	];
     TEST (``(Service::Adjust ("aaa", "disable")), [ READ, $[], EXEC ], nil);
 
     // service exists and does not run
@@ -61,7 +72,11 @@
 			]
                     ],
 		"exists" : true,
-	] ] ];
+	] ],
+	    "target" : $[
+		"stat" : $["isreg": true]
+	  ]
+	];
     TEST (``(Service::Adjust ("aaa", "disable")), [ READ, $[], EXEC ], nil);
 
     // service exists and does not run
@@ -79,7 +94,11 @@
 			]
                     ],
 		"exists" : true,
-	] ] ];
+	] ],
+	    "target" : $[
+		"stat" : $["isreg": true]
+	  ]
+	];
     TEST (``(Service::Adjust ("aaa", "enable")), [ READ, $[], EXEC ], nil);
 
     READ = $[ "init" : $[ "scripts" : $[
@@ -96,7 +115,11 @@
 			]
                     ],
 		"exists" : true,
-	] ] ];
+	] ],
+	    "target" : $[
+		"stat" : $["isreg": true]
+	  ]
+	];
     TEST (``(Service::Adjust ("aaa", "enable")), [ READ, $[], EXEC ], nil);
 
     READ = $[ "init" : $[ "scripts" : $[
@@ -113,7 +136,11 @@
 			]
                     ],
 		"exists" : true,
-	] ] ];
+	] ],
+	    "target" : $[
+		"stat" : $["isreg": true]
+	  ]
+	];
     TEST (``(Service::Adjust ("aaa", "default")), [ READ, $[], EXEC ], nil);
 
     READ = $[ "init" : $[ "scripts" : $[
@@ -130,7 +157,11 @@
 			]
                     ],
 		"exists" : true,
-	] ] ];
+	] ],
+	    "target" : $[
+		"stat" : $["isreg": true]
+	  ]
+	];
     TEST (``(Service::Adjust ("aaa", "default")), [ READ, $[], EXEC ], nil);
 
 }

@@ -16,3 +16,13 @@ Execute	.target.bash "/bin/ln -s -f /lib/systemd/system/runlevel5.target /etc/sy
 Return	true
 Execute	.target.bash "/bin/ln -s -f /lib/systemd/system/runlevel5.target /etc/systemd/system/default.target" 1
 Return	false
+Dump	Systemd::DefaultRunlevel() tests
+Read	.target.symlink "/etc/systemd/system/default.target" nil
+Log	Cannot read symlink target of /etc/systemd/system/default.target
+Return	nil
+Read	.target.symlink "/etc/systemd/system/default.target" "/lib/systemd/system/runlevel3.target"
+Return	3
+Read	.target.symlink "/etc/systemd/system/default.target" "/lib/systemd/system/graphical.target"
+Return	5
+Read	.target.symlink "/etc/systemd/system/default.target" "/lib/systemd/system/unknown_default.target"
+Return	nil

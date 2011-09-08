@@ -1,7 +1,8 @@
-Read	.init.scripts.exists "aaa" true
-Execute	.target.bash_output "/sbin/insserv -rf /etc/init.d/aaa" $["exit":0, "stderr":"", "stdout":""]
-Execute	.target.bash_output "/sbin/insserv -f /etc/init.d/aaa,start=A,B,C" $["exit":0, "stderr":"", "stdout":""]
+Read	.target.tmpdir "/tmp"
+Read	.target.stat "/etc/init.d/aaa" $["isreg":true]
+Execute	.target.bash_output "/sbin/chkconfig -d -f aaa" $["exit":0, "stderr":"", "stdout":""]
+Execute	.target.bash_output "/sbin/chkconfig -s -f aaa 135" $["exit":0, "stderr":"", "stdout":""]
 Return	true
-Read	.init.scripts.exists "aaa" true
-Execute	.target.bash_output "/sbin/insserv -rf /etc/init.d/aaa" $["exit":0, "stderr":"", "stdout":""]
+Read	.target.stat "/etc/init.d/aaa" $["isreg":true]
+Execute	.target.bash_output "/sbin/chkconfig -d -f aaa" $["exit":0, "stderr":"", "stdout":""]
 Return	true

@@ -1,13 +1,13 @@
 
 {
     include "testsuite.ycp";
+
+    TESTSUITE_INIT ([$[ "target" : $[ "tmpdir": "/tmp" ] ], $[], $[]], nil);
+
     import "Service";
 
-    map READ = $[];
-    map EXEC = $[];
-
-    READ = $[ "init" : $[ "scripts" : $[ "exists" : true, ] ] ];
-    EXEC = $[ "target" : $[ "bash" : 3 ] ];
+    map READ = $[ "target" : $[ "stat" : $["isreg": true]  ] ];
+    map EXEC = $[ "target" : $[ "bash" : 3 ] ];
 
     TEST (``(Service::Status ("aaa")), [ READ, $[], EXEC ], nil);
 }
