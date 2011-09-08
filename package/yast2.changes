@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep  8 16:13:26 UTC 2011 - lslezak@suse.cz
+
+- adapted to systemd (bnc#664548)
+- 2.21.18
+
+-------------------------------------------------------------------
 Thu Sep  8 11:33:46 CEST 2011 - jsuchome@suse.cz
 
 - added agent for /etc/sysctl.conf (fate#312343)
