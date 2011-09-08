@@ -1,6 +1,9 @@
 
 {
     include "testsuite.ycp";
+
+    TESTSUITE_INIT ([$[ "target" : $[ "tmpdir": "/tmp" ] ], $[], $[]], nil);
+
     import "Service";
 
     map READ = $[];
@@ -24,7 +27,10 @@
                     ],
 		"exists" : true,
                 ]
-            ]
+            ],
+	"target" : $[
+	    "stat" : $["isreg": true]
+	    ]
         ];
 
     TEST (``(Service::FullInfo ("aaa")), [ READ, $[], EXEC ], nil);

@@ -14,6 +14,7 @@
 module "Systemd";
 
 const string systemd_path = "/bin/systemd";
+const string default_symlink = "/etc/systemd/system/default.target";
 
 textdomain "base";
 
@@ -40,6 +41,12 @@ global boolean Running()
     string init_cmdline = (string)SCR::Read(.target.string, cmdline_path);
     y2milestone("Current init program: %1", init_cmdline);
 
+    if (init_cmdline == nil)
+    {
+	y2error("Cannot check systemd status");
+	return nil;
+    }
+
     boolean ret = substring(init_cmdline, 0, size(systemd_path)) == systemd_path;
     y2milestone("Systemd detected: %1", ret);
 
@@ -53,8 +60,6 @@ global boolean Running()
  */
 global boolean SetDefaultRunlevel(integer runlevel)
 {
-    const string default_symlink = "/etc/systemd/system/default.target";
-
     if (runlevel == nil || runlevel < 0 || runlevel > 6)
     {
 	y2error("Invalid default runlevel (must be in range 0..6): %1", runlevel);
@@ -76,6 +81,57 @@ global boolean SetDefaultRunlevel(integer runlevel)
     return ret;
 }
 
+/**
+ * Get the default runlevel for systemd
+ * @return integer the default runlevel (or nil on error or unknown runlevel)
+ */
+global integer DefaultRunlevel()
+{
+    string target = (string)SCR::Read(.target.symlink, default_symlink);
+    y2milestone("Default symlink points to: %1", target);
+
+    if (target == nil)
+    {
+	y2error("Cannot read symlink target of %1", default_symlink);
+	return nil;
+    }
+
+    // check runlevel<number>.target
+    string runlevel = regexpsub(target, "/runlevel([0-6]).target$", "\\1");
+    if (runlevel != nil)
+    {
+	integer ret = tointeger(runlevel);
+	y2milestone("Default runlevel: %1", ret);
+
+	return ret;
+    }
+
+    // check runlevel specified by a symbolic name
+    // (this is written in systemd documentation how to change the default,
+    // YaST should also support this style in case users do a manual change)
+    string runlevel_name = regexpsub(target, "/([^/]*).target$", "\\1");
+    if (runlevel_name != nil)
+    {
+	y2milestone("Detected default runlevel name: %1", runlevel_name);
+	map<string, integer> mapping = $[
+	    "poweroff"	: 0,
+	    "rescue"	: 1,
+	    // this is ambiguous, runlevels 2 and 4 also point to multi-user
+	    // assume runlevel 3 in this case (the most probable)
+	    "multi-user": 3,
+	    "graphical" : 5,
+	    "reboot"	: 6
+	];
+
+	integer ret = mapping[runlevel_name]:nil;
+	y2milestone("Default runlevel: %1", ret);
+
+	return ret;
+    }
+
+    y2error("Cannot determine the default runlevel");
+    return nil;
+}
 
 } /* EOF */
 

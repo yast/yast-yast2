@@ -1,3 +1,4 @@
-Read	.init.scripts.exists "aaa" true
-Execute	.target.bash "/etc/init.d/aaa status" $["TERM":"raw"] 3
+Read	.target.tmpdir "/tmp"
+Read	.target.stat "/etc/init.d/aaa" $["isreg":true]
+Execute	.target.bash "/sbin/service aaa status" $["TERM":"raw"] 3
 Return	3

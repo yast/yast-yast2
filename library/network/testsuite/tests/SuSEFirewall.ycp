@@ -103,11 +103,15 @@
 	    "tmpdir" : "/tmp",
 	],
     ];
-    
+
     map WRITE = $[
     ];
-    
+
     map EXECUTE = $[
+	"target" : $[
+	    "bash_output" : $[ "exit" : 0 ],
+	    "bash" : 0
+	]
     ];
 
     TESTSUITE_INIT([READ, WRITE, EXECUTE], nil);
@@ -115,6 +119,9 @@
 
     // Configuration must be read!
     SuSEFirewall::Read();
+    // initialize to disabled, not running
+    SuSEFirewall::SetEnableService(false);
+    SuSEFirewall::SetStartService(false);
 
     DUMP("== SuSEfirewall2 service ==");
     TEST(``(SuSEFirewall::GetEnableService()), [READ, WRITE, EXECUTE], nil);

@@ -1,5 +1,8 @@
 {
     include "testsuite.ycp";
+
+    TESTSUITE_INIT ([$[ "target" : $[ "tmpdir": "/tmp" ] ], $[], $[]], nil);
+
     import "Service";
 
     TEST (``(Service::RunInitScript ("aaa", "start")), [$[], $[], $[

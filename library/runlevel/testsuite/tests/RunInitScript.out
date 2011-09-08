@@ -1,2 +1,3 @@
-Execute	.target.bash_output "/etc/init.d/aaa start" $["TERM":"raw"] $["exit":0]
+Read	.target.tmpdir "/tmp"
+Execute	.target.bash_output "/sbin/service aaa start" $["TERM":"raw"] $["exit":0]
 Return	0
