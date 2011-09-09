@@ -286,7 +286,7 @@ global define boolean Finetune (string name, list rl) {
  */
 global define boolean Enabled (string name) {
     if(!checkExists (name)) return false;
-    return 0 == SCR::Execute (.target.bash, sformat ("chkconfig -c %1 3", name));
+    return 0 == SCR::Execute (.target.bash, sformat ("/sbin/chkconfig -c %1 3", name));
 }
 
 /**
