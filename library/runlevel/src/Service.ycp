@@ -277,16 +277,16 @@ global define boolean Finetune (string name, list rl) {
 }
 
 /**
- * Check if service is enabled (in RL 3 or multi-user.target)
+ * Check if service is enabled (in any runlevel)
  *
- * Forwards to chkconfig -c which decides between init and systemd
+ * Forwards to chkconfig -l which decides between init and systemd
  *
  * @param name service name
- * @return true if service is set to run
+ * @return true if service is set to run in any runlevel
  */
 global define boolean Enabled (string name) {
     if(!checkExists (name)) return false;
-    return 0 == SCR::Execute (.target.bash, sformat ("/sbin/chkconfig -c %1 3", name));
+    return 0 == SCR::Execute (.target.bash, sformat ("/sbin/chkconfig -l %1 | /usr/bin/grep -q '[0-6]:on'", name));
 }
 
 /**
