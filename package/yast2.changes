@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Sep  9 15:56:48 CEST 2011 - locilka@suse.cz
+
+- Using ButtonBox in Wizard where possible (bnc#571939)
+
+-------------------------------------------------------------------
 Thu Sep  8 16:13:26 UTC 2011 - lslezak@suse.cz
 
 - adapted to systemd (bnc#664548)

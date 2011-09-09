@@ -106,14 +106,10 @@
      **/
     global term CancelAcceptButtonBox()
     {
-	return `HBox(
-		     `HWeight(1, `Empty() ),	// Layout trick to make sure the center button is centered
-		     `HStretch(),
-		     `HWeight(1, `ReplacePoint(`id(`rep_abort), // Make sure HideAbortButton() works (bnc #444176)
-					       `PushButton(`id(`cancel ), `opt (`key_F9), Label::CancelButton()  ) ) ),
-		     `HStretch(),
-		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10, `default), Label::AcceptButton()  ) )
-		     );
+	return `ButtonBox (
+	    `PushButton(`id(`cancel), `opt (`key_F9, `cancelButton), Label::CancelButton()),
+	    `PushButton(`id(`accept), `opt (`key_F10, `default, `okButton), Label::AcceptButton())
+	);
     }
 
     
@@ -123,14 +119,10 @@
      **/
     global term CancelOKButtonBox()
     {
-	return `HBox(
-		     `HWeight(1, `Empty() ),	// Layout trick to make sure the center button is centered
-		     `HStretch(),
-		     `HWeight(1, `ReplacePoint(`id(`rep_abort), // Make sure HideAbortButton() works (bnc #444176)
-					       `PushButton(`id(`cancel ), `opt (`key_F9), Label::CancelButton()  ) ) ),
-		     `HStretch(),
-		     `HWeight(1, `PushButton(`id(`ok ), `opt (`key_F10, `default), Label::OKButton()  ) )
-		     );
+	return `ButtonBox (
+	    `PushButton(`id(`cancel), `opt(`key_F9, `cancelButton), Label::CancelButton()),
+	    `PushButton(`id(`ok), `opt(`key_F10, `default, `okButton), Label::OKButton())
+	);
     }
 
     
@@ -157,13 +149,10 @@
      **/
     global term AbortInstallationAcceptButtonBox()
     {
-	return `HBox(
-		     `HWeight(1, `Empty() ),	// Layout trick to make sure the center button is centered
-		     `HStretch(),
-		     `PushButton(`id(`abort ), `opt (`key_F9), Label::AbortInstallationButton() ),
-		     `HStretch(),
-		     `HWeight(1, `PushButton(`id(`accept ), `opt (`key_F10, `default), Label::AcceptButton()  ) )
-		     );
+	return `ButtonBox (
+	    `PushButton(`id(`abort), `opt (`key_F9, `cancelButton), Label::AbortInstallationButton()),
+	    `PushButton(`id(`accept), `opt (`key_F10, `okButton, `default), Label::AcceptButton())
+	);
     }
 
 
@@ -951,6 +940,8 @@
 	{
 	    if ( UI::WidgetExists(`id(`rep_abort ) ) )
 		UI::ReplaceWidget(`id(`rep_abort ), `Empty() );
+	    else if ( UI::WidgetExists(`id(`cancel ) ) )
+		UI::ReplaceWidget(`id(`cancel ), `Empty() );
 	}
     }
 
