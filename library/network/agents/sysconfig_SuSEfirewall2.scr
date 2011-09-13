@@ -32,20 +32,19 @@
 	    "options" : [ "line_can_continue", "global_values", "comments_last", "flat", ],
 	    "comments": [ "^[ \t]*#.*$", "#.*", "^[ \t]*$", ],
 	    "params" : [
+		// single quotes
 		$[
-		    // with quotes
-		    "match" : [ "^[ \t]*([_a-zA-Z0-9]+)[ \t]*=[ \t]*\"(.*)\"[ \t]*$", "%s=\"%s\"" ],
-		    // without quotes
-		    "match" : [ "^[ \t]*([_a-zA-Z0-9]+)[ \t]*=[ \t]*([^\"]*)[ \t]*$", "%s=\"%s\"" ],
+		    "match" : [ "^[ \t]*([a-zA-Z0-9_]+)=\"([^\"]*)\"", "%s=\"%s\"" ],
+		    "multiline" : [ "^[ \t]*([^=]+)[ \t]*=[ \t]*\"([^\"]*)", "([^\"]*)\"" ],
 		],
+		// double (common) quotes
 		$[
-		    "match" : [ "([a-zA-Z0-9_]+)[ \t]*=[ \t]*\"([^\"]*)\"", "%s=\"%s\"" ],
-		    "multiline" : [ "([a-zA-Z0-9_]+)[ \t]*=[ \t]*\"([^\"]*)", "([^\"]*)\"", ],
+		    "match" : [ "^[ \t]*([a-zA-Z0-9_]+)='([^']*)'", "%s='%s'" ],
+		    "multiline" : [ "^[ \t]*([^=]+)[ \t]*=[ \t]*'([^']*)", "([^']*)'" ],
 		],
-		// also single quotes, bnc#327565
+		// without any quotes
 		$[
-		    "match" : [ "([a-zA-Z0-9_]+)[ \t]*=[ \t]*'([^']*)'", "%s=\"%s\"" ],
-		    "multiline" : [ "([a-zA-Z0-9_]+)[ \t]*=[ \t]*'([^']*)", "([^\']*)'", ],
+		    "match" : [ "^[ \t]*([a-zA-Z0-9_]+)=([^ \t\"']*)[ \t]*$", "%s=\"%s\"" ],
 		],
 	    ],
 	]
