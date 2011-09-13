@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Sep 13 10:39:42 CEST 2011 - locilka@suse.cz
+
+- Fixed SuSEfirewall2 SCR agent to understand single-quoted and
+  double-quoted, single and multi-line variables and also
+  single-line variables without any quotes (bnc#716013).
+- 2.17.111
+
+-------------------------------------------------------------------
 Thu Sep  1 11:33:18 UTC 2011 - lslezak@suse.cz
 
 - added String::FindMountPoint() function (moved from yast2-wagon
