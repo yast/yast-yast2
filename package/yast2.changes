@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 14 07:31:48 UTC 2011 - lslezak@suse.cz
+
+- .etc.sysctl_conf agent - support also ';' comment character
+- 2.21.20
+
+-------------------------------------------------------------------
 Tue Sep 13 10:39:42 CEST 2011 - locilka@suse.cz
 
 - Fixed SuSEfirewall2 SCR agent to understand single-quoted and

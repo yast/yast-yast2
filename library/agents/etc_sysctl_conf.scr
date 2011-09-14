@@ -6,6 +6,7 @@
  * Access:
  *   r/w
  *
+ * See 'man sysctl.conf' for more details about the format
  */
 .etc.sysctl_conf
 
@@ -13,7 +14,7 @@
   `IniAgent(
     "/etc/sysctl.conf",
     $[ "options" : ["ignore_case", "global_values", "flat"],
-       "comments" : [ "^#.*", "^[ \t]*$", ],
+       "comments" : [ "^#.*", "^;.*", "^[ \t]*$", ],
        "params" : [
 		 $[ "match" : [ "^[ \t]*([^=]*[^ \t=])[ \t]*=[ \t]*(.*[^ \t]|)[ \t]*$" , "%s = %s"],],
        ]
