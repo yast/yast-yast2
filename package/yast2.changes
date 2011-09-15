@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Sep 15 15:23:50 CEST 2011 - mvidner@suse.cz
+
+- Added the interface name patterns emN, pN and pNpM.
+  It fixes recognizing them as configured (bnc#713644)
+  and unbreaks the proposed bridged configuration (bnc#713048).
+- 2.17.112
+
+-------------------------------------------------------------------
 Tue Sep 13 10:39:42 CEST 2011 - locilka@suse.cz
 
 - Fixed SuSEfirewall2 SCR agent to understand single-quoted and
