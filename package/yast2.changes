@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Sep 15 15:23:50 CEST 2011 - mvidner@suse.cz
+
+- Added the interface name patterns emN, pN and pNpM.
+  It fixes recognizing them as configured (bnc#713644)
+  and unbreaks the proposed bridged configuration (bnc#713048).
+- 2.21.21
+
+-------------------------------------------------------------------
 Wed Sep 14 07:31:48 UTC 2011 - lslezak@suse.cz
 
 - .etc.sysctl_conf agent - support also ';' comment character
