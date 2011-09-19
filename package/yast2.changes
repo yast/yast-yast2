@@ -3,6 +3,7 @@ Fri Sep 16 11:46:38 CEST 2011 - visnov@suse.de
 
 - Added UIHelper library module - contains useful
   UI helpers from now obsolete Wizard_hw
+- 2.21.22
 
 -------------------------------------------------------------------
 Thu Sep 15 15:23:50 CEST 2011 - mvidner@suse.cz
