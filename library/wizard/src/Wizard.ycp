@@ -12,6 +12,7 @@
     module "Wizard";
     textdomain "base";
 
+    import "Desktop";
     import "Label";
     import "Popup";
     import "Directory";
@@ -1092,70 +1093,16 @@
      */
     global boolean SetDesktopTitle( string file )
     {
- 	path filepath = .yast2.desktop1.v."Desktop Entry";
-        string name = "";
-	string localizedkey = "";
-	string Language = "";
-	string LanguageFull = "";
-	string filename = sformat("%1/%2.desktop", Directory::desktopdir, file);
-	// Do not use .yast2.desktop.v.$filename, because ini-agent reads
-	// all the desktop files anyway which is wasteful for setting one title.
-	// The config is adapted from .yast2.desktop.
-	SCR::RegisterAgent (.yast2.desktop1, `ag_ini(
-				`IniAgent( filename,
-	$[
-	    "options"	: [ "read_only" ], // rw works but not needed
-	    "comments"	: [ "^[ \t]*[;#].*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],
-	    "sections"	: [
-		$[ "begin" : [
-		    "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
-		    "[%s]",
-		]],
-	    ],
-	    "params" : [
-		$[ "match" : [
-		    "^[ \t]*([^=]*[^ \t=])[ \t]*=[ \t]*(.*[^ \t]|)[ \t]*$" ,
-		    "%s=%s",
-		]],
-	    ],
-	]
-	)));
-
-
-	/* read language */
-	LanguageFull = "";
-	Language = UI::GetLanguage(true);
-	if(regexpmatch(Language, "(.*_[^.]*)\\.?.*")) // matches: ll_TT ll_TT.UTF-8
-        LanguageFull = regexpsub(Language, "(.*_[^.]*)\\.?.*", "\\1");
-	if(regexpmatch(Language, "(.*)_"))
-		Language = regexpsub(Language, "(.*)_", "\\1");
-	y2debug("LanguageFull=%1", LanguageFull);
-	y2debug("Language=%1", Language);
-
-	/* get localized Name value from desktop file */
-	if( LanguageFull != nil || LanguageFull != "" )
-	{
-	    localizedkey = sformat("%1[%2]", "Name", LanguageFull);
-	    name = (string) SCR::Read(add(filepath, localizedkey));
-	}
-	if( ( name == nil || name == "" ) && ( Language != nil || Language != "" ))
-	{
-            localizedkey = sformat("%1[%2]", "Name", Language);
-            name = (string) SCR::Read(add(filepath, localizedkey));
-	}
-	if( name == nil || name == "" )
-            name = (string) SCR::Read(add(filepath, "Name"));
+	map<string,string> description = Desktop::ParseSingleDesktopFile (file);
+	
+	// fallback name for the dialog title
+        string name = description["Name"]:_("Module");
 
 	y2debug("Set dialog title: %1", name);
     	SetDialogTitle( name );
 
-	SCR::UnregisterAgent (.yast2.desktop1);
-
-	return ( name != nil && name != "");
+	return ( haskey(description, "Name") );
     }
-
-
-
 
     /**
      * Sets the icon specified in a .desktop file got as parameter.
@@ -1174,43 +1121,61 @@
      */
     global boolean SetDesktopIcon( string file )
     {
-	string filename = sformat("%1/%2.desktop", Directory::desktopdir, file);
-	// Do not use .yast2.desktop.v.$filename, because ini-agent reads
-	// all the desktop files anyway which is wasteful for setting one icon.
-	// The config is adapted from .yast2.desktop.
-	SCR::RegisterAgent (.yast2.desktop1, `ag_ini(
-				`IniAgent( filename,
-	$[
-	    "options"	: [ "read_only" ], // rw works but not needed
-	    "comments"	: [ "^[ \t]*[;#].*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],
-	    "sections"	: [
-		$[ "begin" : [
-		    "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
-		    "[%s]",
-		]],
-	    ],
-	    "params" : [
-		$[ "match" : [
-		    "^[ \t]*([^=]*[^ \t=])[ \t]*=[ \t]*(.*[^ \t]|)[ \t]*$" ,
-		    "%s=%s",
-		]],
-	    ],
-	]
-				    )
-				)
-	    );
-	path filepath = .yast2.desktop1.v."Desktop Entry".Icon;
-	string icon = (string) SCR::Read(filepath);
-	y2debug("icon: %1 (%2)", icon, filepath);
+	map<string,string> description = Desktop::ParseSingleDesktopFile (file);
+	
+	// fallback name for the dialog title
+        string icon = description["Icon"]:nil;
+
+	y2debug("icon: %1", icon);
 
 	if (icon == nil) 
 	    return false;
 
 	SetTitleIcon(icon);
 
-	SCR::UnregisterAgent (.yast2.desktop1);
-
 	return true;
+    }
+
+
+    /**
+     * Convenience function to avoid 2 calls if application needs to set
+     * both dialog title and icon from desktop file specified as parameter.
+     * Desktop file is placed in a special directory (/usr/share/applications/YaST2).
+     * Parameter file is realative to that directory without ".desktop" suffix.
+     * Warning: There are no desktop files in inst-sys.
+     *
+     * @param file desktop file name
+     * @return boolean true on success
+     *
+     * @example
+     *	// Opens /usr/share/applications/YaST2/lan.desktop
+     *	// Reads "Icon" and "Name" entries from there
+     *	// Sets the icon, sets the dialog title
+     *	SetDialogTitleAndIcon ("lan")
+     */
+    global boolean SetDesktopTitleAndIcon( string file )
+    {
+	boolean result = true;
+	
+	map<string,string> description = Desktop::ParseSingleDesktopFile (file);
+	
+	// fallback name for the dialog title
+        string icon = description["Icon"]:nil;
+
+	y2debug("icon: %1", icon);
+
+	if (icon != nil) 
+	    SetTitleIcon(icon);
+	else
+	    result = false;
+
+	// fallback name for the dialog title
+        string name = description["Name"]:_("Module");
+
+	y2debug("Set dialog title: %1", name);
+    	SetDialogTitle( name );
+
+	return result && ( haskey(description, "Name") );
     }
 
 

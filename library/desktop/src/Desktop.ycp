@@ -12,6 +12,7 @@
 module "Desktop";
 textdomain "base";
 import "Map";
+import "Directory";
 
 /**
  * YaST configuration modules
@@ -74,6 +75,7 @@ define string ReadLocalizedKey(string fname, path keypath, string key) {
 
     //no translations in .desktop, check desktop_translations.mo then
     string msgid = sformat("%1(%2): %3", key, fname, fallback );
+    y2debug( "Looking for key: %1", msgid );
     ret = dpgettext( "desktop_translations", "/usr/share/locale", msgid );
 
     //probably untranslated - return english name
@@ -83,6 +85,21 @@ define string ReadLocalizedKey(string fname, path keypath, string key) {
     }
 
     return ret;
+}
+
+/**
+ * Internal function: set up the language variables.
+ */
+void ReadLanguage() {
+    /* read language */
+    LanguageFull = "";
+    Language = UI::GetLanguage(true);
+    if(regexpmatch(Language, "(.*_[^.]*)\\.?.*")) // matches: ll_TT ll_TT.UTF-8
+	LanguageFull = regexpsub(Language, "(.*_[^.]*)\\.?.*", "\\1");
+    if(regexpmatch(Language, "(.*)_"))
+	Language = regexpsub(Language, "(.*)_", "\\1");
+    y2debug("LanguageFull=%1", LanguageFull);
+    y2debug("Language=%1", Language);
 }
 
 /**
@@ -103,19 +120,11 @@ global define void Read(list<string> Values) {
     map filemap = $[];
     path filepath = nil;
     string name = nil;
+    
+    ReadLanguage();
 
     path ps = add(AgentPath, "s");
     list<string> files = (list<string>) SCR::Dir(ps);
-
-    /* read language */
-    LanguageFull = "";
-    Language = WFM::GetLanguage();
-    if(regexpmatch(Language, "(.*_[^.]*)\\.?.*")) // matches: ll_TT ll_TT.UTF-8
-	LanguageFull = regexpsub(Language, "(.*_[^.]*)\\.?.*", "\\1");
-    if(regexpmatch(Language, "(.*)_"))
-	Language = regexpsub(Language, "(.*)_", "\\1");
-    y2debug("LanguageFull=%1", LanguageFull);
-    y2debug("Language=%1", Language);
 
     /* read groups */
     list<string> groups = (list<string>) SCR::Dir(.yast2.groups.s);
@@ -248,6 +257,72 @@ global void RunViaDesktop (string exec, list<string> args) {
 	    sformat ("%1/yast2-run-%2.desktop", dir, exec),
 	    content);
 }
+
+/**
+ * Parses the a .desktop file it gets as a parameter without trying to use
+ * already cached information or agent to access all desktop files. This is
+ * optimized version to be used for rapid start of modules.
+ * Desktop file is placed in a special directory (/usr/share/applications/YaST2).
+ * Parameter file is relative to that directory without ".desktop" suffix.
+ * Warning: There are no desktop files in inst-sys.
+ *
+ * @param file desktop file name
+ * @return map filled with data, or nil
+ *
+ * @example
+ *	// Opens /usr/share/applications/YaST2/lan.desktop
+ *	map<string,string> description = Desktop::ParseSingleDesktopFile ("lan");
+ *	Wizard::SetDialogTitle (description["Name"]:_("None));
+ */
+global map<string,string> ParseSingleDesktopFile( string file )
+{
+    string filename = sformat("%1/%2.desktop", Directory::desktopdir, file);
+    // Do not use .yast2.desktop.v.$filename, because ini-agent reads
+    // all the desktop files anyway which is wasteful for setting one icon.
+    // The config is adapted from .yast2.desktop.
+    SCR::RegisterAgent (.yast2.desktop1, `ag_ini(
+	`IniAgent( filename,
+	$[
+	    "options"	: [ "read_only" ], // rw works but not needed
+	    "comments"	: [ "^[ \t]*[;#].*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],
+	    "sections"	: [
+		$[ "begin" : [
+		    "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
+		    "[%s]",
+		]],
+	    ],
+	    "params" : [
+		$[ "match" : [
+		    "^[ \t]*([^=]*[^ \t=])[ \t]*=[ \t]*(.*[^ \t]|)[ \t]*$" ,
+		    "%s=%s",
+		]],
+	    ],
+	]
+	))
+    );
+    
+    //non-existent file requested
+    if (SCR::Dir( .yast2.desktop1.v."Desktop Entry" ) == nil)
+    {
+	y2error ("Unknown desktop file: %1", file);
+	SCR::UnregisterAgent (.yast2.desktop1);   
+	return nil;
+    }
+    
+    // we need localized keys
+    ReadLanguage ();
+    
+    map<string, string> result = $[
+	"Icon" : (string) SCR::Read(.yast2.desktop1.v."Desktop Entry".Icon),
+	"Name" : ReadLocalizedKey (file + ".desktop", .yast2.desktop1.v."Desktop Entry", "Name"),
+	"GenericName" : ReadLocalizedKey (file + ".desktop", .yast2.desktop1.v."Desktop Entry", "GenericName")
+    ];
+    
+    SCR::UnregisterAgent (.yast2.desktop1);
+
+    return result;
+}
+
 
 /* EOF */
 }
