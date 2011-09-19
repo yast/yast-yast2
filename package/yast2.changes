@@ -3,6 +3,9 @@ Fri Sep 16 11:46:38 CEST 2011 - visnov@suse.de
 
 - Added UIHelper library module - contains useful
   UI helpers from now obsolete Wizard_hw
+- Drop Wizard_hw
+- Added Wizard::SetDesktopTitleAndIcon
+- Added Desktop::ParseSingleDesktopFile
 - 2.21.22
 
 -------------------------------------------------------------------
