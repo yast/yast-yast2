@@ -2,7 +2,7 @@
 
 yncludedir = @yncludedir@/packages
 
-YCPCFLAGS = -M ../../modules -M ../../wizard/src -M ../../system/src/ -M ../../types/src -M ../../commandline/src -M ../../xml/src -M ../../control/src
+YCPCFLAGS = -M ../../modules -M ../../wizard/src -M ../../system/src/ -M ../../types/src -M ../../commandline/src -M ../../xml/src -M ../../control/src -M ../../desktop/src
 
 module_DATA = $(wildcard [[:upper:]]*.ycp)
 
