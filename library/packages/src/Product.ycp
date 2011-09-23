@@ -82,8 +82,8 @@ global list<map<string,any> > FindBaseProducts() {
     }
 
     y2milestone ("Looking for base products");
-    list<map<string,any> > products = (list<map<string,any> >)
-	Pkg::TargetProducts ();
+    list<map<string,any> > products = (list<map<string,any> >) Pkg::ResolvableProperties("", `product, "");
+    products = filter(map<string,any> p, products, {return p["status"]:`none == `installed;});
 
     y2milestone("All found products: %1", products);
 
