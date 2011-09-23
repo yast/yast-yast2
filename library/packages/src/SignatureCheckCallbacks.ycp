@@ -154,24 +154,6 @@
     // function should ask user whether the key is trusted, returned true value
     // means the key is trusted.
     //
-    // zypp: askUserToTrustKey
-    //
-    /* function for CallbackTrustGpgKey() */
-    global boolean TrustGpgKey (map<string,any> key)
-    {
-	// Check signatures at all?
-	if (SignatureCheckDialogs::CheckSignaturesInYaST() == false)
-	    return default_return_unchecked;
-
-	// There are no details from the callback, maybe in the future
-	return SignatureCheckDialogs::ImportGPGKeyDialog(key) == `import;
-    }
-
-    // Name of the callback handler function. Required callback prototype is
-    // boolean(map<string,any> key). The callback
-    // function should ask user whether the key is trusted, returned true value
-    // means the key is trusted.
-    //
     // zypp: askUserToImportKey
     //
     /* function for CallbackImportGpgKey() */

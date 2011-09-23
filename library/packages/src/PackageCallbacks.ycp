@@ -2913,7 +2913,6 @@ global void InitPackageCallbacks() {
 	Pkg::CallbackAcceptUnsignedFile		(SignatureCheckCallbacks::AcceptUnsignedFile);
 	Pkg::CallbackAcceptUnknownGpgKey	(SignatureCheckCallbacks::AcceptUnknownGpgKey);
 	Pkg::CallbackImportGpgKey		(SignatureCheckCallbacks::ImportGpgKey);
-	Pkg::CallbackAcceptNonTrustedGpgKey	(SignatureCheckCallbacks::TrustGpgKey);
 	Pkg::CallbackAcceptVerificationFailed	(SignatureCheckCallbacks::AcceptVerificationFailed);
 	Pkg::CallbackTrustedKeyAdded		(SignatureCheckCallbacks::TrustedKeyAdded);
 	Pkg::CallbackTrustedKeyRemoved		(SignatureCheckCallbacks::TrustedKeyRemoved);
