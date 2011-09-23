@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep 23 12:00:45 UTC 2011 - lslezak@suse.cz
+
+- use Pkg::ResolvableProperties() instead of obsoleted
+  Pkg::TargetProducts()
+
+-------------------------------------------------------------------
 Fri Sep 16 11:46:38 CEST 2011 - visnov@suse.de
 
 - Added UIHelper library module - contains useful
