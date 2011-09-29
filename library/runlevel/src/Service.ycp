@@ -360,6 +360,9 @@ global define integer RunInitScriptWithTimeOut (string name, string param) {
 	SCR::Execute(.process.kill, process_pid);
     }
 
+    // release the process from the agent
+    SCR::Execute(.process.release, process_pid);
+
     return return_code;
 }
 

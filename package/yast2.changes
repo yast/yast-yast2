@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep 29 14:54:07 UTC 2011 - lslezak@suse.cz
+
+- Service::RunInitScriptWithTimeOut() - fixed memory leak,
+  release the process info at the end
+
+-------------------------------------------------------------------
 Mon Sep 26 10:58:19 UTC 2011 - jsrain@suse.cz
 
 - simplify usage of save_y2logs (bnc#673990)
