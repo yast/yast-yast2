@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct  5 10:21:02 UTC 2011 - jsrain@site
+
+- removed list of controller modules not to be included in ititrd
+  (bnc#719696)
+- 2.21.24
+
+-------------------------------------------------------------------
 Thu Sep 29 14:54:07 UTC 2011 - lslezak@suse.cz
 
 - Service::RunInitScriptWithTimeOut() - fixed memory leak,
