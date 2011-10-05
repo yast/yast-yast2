@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct  5 10:21:02 UTC 2011 - jsrain@site
+
+- removed list of controller modules not to be included in ititrd
+  (bnc#719696)
+- 2.17.113
+
+-------------------------------------------------------------------
 Thu Sep 15 15:23:50 CEST 2011 - mvidner@suse.cz
 
 - Added the interface name patterns emN, pN and pNpM.

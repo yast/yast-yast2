@@ -138,13 +138,7 @@
 		modules_to_skip = (list<string>)
 		    merge (modules_to_skip, ppc_modules_to_skip);
 	    }
-	    // bug 298726 - these modules fail in initrd
-	    list<string> controller_modules_to_skip = [
-		"aic94xx",
-		"qla2xxx",
-	    ];
-	    modules_to_skip = (list<string>)
-		merge (modules_to_skip, controller_modules_to_skip);
+	    // currently no disk controller modules are known to fail in initrd (bnc#719696), list removed
 	}
 	return modules_to_skip;
     }
