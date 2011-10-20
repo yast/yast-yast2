@@ -12,11 +12,7 @@
 # configuration
 # DISTRO: distribution for `pdb` command
 DISTRO="stable-i386"
-# DISTRODIR: distribution directory in /work
-DISTRODIR="full-i386"
 
-# definition of used directories
-RPMDIRECTORY="/work/CDs/all/"$DISTRODIR"/suse"
 # must NOT begin with slash, needs to be relative!
 SUSEFWFILES="etc/sysconfig/SuSEfirewall2.d/*"
 # where new translations are stored
@@ -58,8 +54,28 @@ if [ "$YCPCINSTALLED" == "" ]; then
     exit 5
 fi
 
+# definition of used directories
+RPMDIRECTORY=$1
+
+if [ "$RPMDIRECTORY" == "" ]; then
+    echo "Please use $0 /path/to/a/mounted/installation/DVD/with/related/product"
+    echo
+    exit 6
+fi
+
+if [ ! -d $RPMDIRECTORY ]; then
+    echo "Directory $RPMDIRECTORY does not exist"
+    exit 6
+fi
+
+if [ ! -d $RPMDIRECTORY/suse ]; then
+    echo "Directory $RPMDIRECTORY does not contain SUSE distribution"
+    exit 6
+fi
+
 # checks PDB for packages containing such files
-AFFECTED=`pdb query --release stable-i386 --filter "rpmfile:/$SUSEFWFILES" --attribs packname | grep -v '^SuSEfirewall2[\t ]*$'`
+# PDB certificate is invalid, PERL_LWP_SSL_VERIFY_HOSTNAME must be set to 0
+AFFECTED=`PERL_LWP_SSL_VERIFY_HOSTNAME=0 pdb query --release stable-i386 --filter "rpmfile:/$SUSEFWFILES" --attribs packname | grep -v '^SuSEfirewall2[\t ]*$'`
 
 # create temporary directory
 TMPDIR=`mktemp -d`
@@ -77,7 +93,7 @@ ls -1 $TMPDIR/$SUSEFWFILES > $TMPDIR/last
 # installs these files into a temporary directory
 for ONEPACKAGE in $AFFECTED; do
     echo "Package: "$ONEPACKAGE
-    rpm2cpio $RPMDIRECTORY/*/$ONEPACKAGE.rpm | cpio -idm --no-absolute-filenames "./$SUSEFWFILES" "$SUSEFWFILES" 2> /dev/null
+    rpm2cpio $RPMDIRECTORY/suse/*/$ONEPACKAGE-*.rpm | cpio -idm --no-absolute-filenames "./$SUSEFWFILES" "$SUSEFWFILES" 2> /dev/null
     ls -1 $TMPDIR/$SUSEFWFILES > $TMPDIR/now
 
     for CPIOEDFILE in `diff -u $TMPDIR/last $TMPDIR/now | grep "^\+[^\+]" | sed 's/\+//'`; do
