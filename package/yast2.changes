@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Wed Oct  5 10:21:02 UTC 2011 - jsrain@site
+Wed Oct  5 10:21:02 UTC 2011 - jsrain@suse.cz
 
 - removed list of controller modules not to be included in ititrd
   (bnc#719696)
@@ -29,7 +29,7 @@ Thu Sep  1 11:33:18 UTC 2011 - lslezak@suse.cz
 - 2.17.110
 
 -------------------------------------------------------------------
-Thu Sep  1 06:40:43 UTC 2011 - jsrain@site
+Thu Sep  1 06:40:43 UTC 2011 - jsrain@suse.cz
 
 - enhanced the help command-line parameters (bnc#712271)
 - 2.17.109
