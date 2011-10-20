@@ -1,5 +1,13 @@
 -------------------------------------------------------------------
-Wed Oct  5 10:21:02 UTC 2011 - jsrain@site
+Thu Oct 20 11:54:34 CEST 2011 - locilka@suse.cz
+
+- Fixed script for generating translations for firewall services
+  defined by other packages
+- Regenerated translations for firewall services defined by other
+  packages (bnc#722877)
+
+-------------------------------------------------------------------
+Wed Oct  5 10:21:02 UTC 2011 - jsrain@suse.cz
 
 - removed list of controller modules not to be included in ititrd
   (bnc#719696)
@@ -89,7 +97,7 @@ Mon Sep  5 16:40:22 UTC 2011 - lslezak@suse.cz
 - 2.21.16
 
 -------------------------------------------------------------------
-Thu Sep  1 06:40:43 UTC 2011 - jsrain@site
+Thu Sep  1 06:40:43 UTC 2011 - jsrain@suse.cz
 
 - enhanced the help command-line parameters (bnc#712271)
 - 2.21.15
