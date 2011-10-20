@@ -10,65 +10,11 @@
 
   string tmpstring = nil;
 
-  // TRANSLATORS: Name of Service (File name: apache2, RPM: apache2), can be used as check box, item in multiple selection box...
-  tmpstring = _("HTTP Server");
-
-  // TRANSLATORS: Description of a Service (File name: apache2, RPM: apache2), used as a common label or an item in table
-  tmpstring = _("Opens ports for Apache Web Server.");
-
-  // TRANSLATORS: Name of Service (File name: apache2-ssl, RPM: apache2), can be used as check box, item in multiple selection box...
-  tmpstring = _("HTTPS Server");
-
-  // TRANSLATORS: Description of a Service (File name: apache2-ssl, RPM: apache2), used as a common label or an item in table
-  tmpstring = _("Opens ports for Apache Web Server.");
-
   // TRANSLATORS: Name of Service (File name: avahi, RPM: avahi), can be used as check box, item in multiple selection box...
   tmpstring = _("Zeroconf/Bonjour Multicast DNS");
 
   // TRANSLATORS: Description of a Service (File name: avahi, RPM: avahi), used as a common label or an item in table
   tmpstring = _("Zeroconf/Bonjour Multicast DNS (mDNS) ports for Service Discovery (DNS-SD)");
-
-  // TRANSLATORS: Name of Service (File name: bacula-dir, RPM: bacula-server), can be used as check box, item in multiple selection box...
-  tmpstring = _("Bacula Director");
-
-  // TRANSLATORS: Description of a Service (File name: bacula-dir, RPM: bacula-server), used as a common label or an item in table
-  tmpstring = _("Bacula network backup system director daemon");
-
-  // TRANSLATORS: Name of Service (File name: bacula-fd, RPM: bacula), can be used as check box, item in multiple selection box...
-  tmpstring = _("Bacula File Daemon");
-
-  // TRANSLATORS: Description of a Service (File name: bacula-fd, RPM: bacula), used as a common label or an item in table
-  tmpstring = _("Bacula network backup system file daemon");
-
-  // TRANSLATORS: Name of Service (File name: bacula-sd, RPM: bacula-server), can be used as check box, item in multiple selection box...
-  tmpstring = _("Bacula Storage Daemon");
-
-  // TRANSLATORS: Description of a Service (File name: bacula-sd, RPM: bacula-server), used as a common label or an item in table
-  tmpstring = _("Bacula network backup system storage daemon");
-
-  // TRANSLATORS: Name of Service (File name: bind, RPM: bind ypbind), can be used as check box, item in multiple selection box...
-  tmpstring = _("bind DNS server");
-
-  // TRANSLATORS: Description of a Service (File name: bind, RPM: bind ypbind), used as a common label or an item in table
-  tmpstring = _("Open ports for the bind DNS server");
-
-  // TRANSLATORS: Name of Service (File name: courier-imap, RPM: courier-imap), can be used as check box, item in multiple selection box...
-  tmpstring = _("courier-imapd");
-
-  // TRANSLATORS: Description of a Service (File name: courier-imap, RPM: courier-imap), used as a common label or an item in table
-  tmpstring = _("Opens ports for courier-imapd.");
-
-  // TRANSLATORS: Name of Service (File name: courier-imap-ssl, RPM: courier-imap), can be used as check box, item in multiple selection box...
-  tmpstring = _("courier-imapd");
-
-  // TRANSLATORS: Description of a Service (File name: courier-imap-ssl, RPM: courier-imap), used as a common label or an item in table
-  tmpstring = _("Opens ports for courier-imapd.");
-
-  // TRANSLATORS: Name of Service (File name: cups, RPM: cups-libs), can be used as check box, item in multiple selection box...
-  tmpstring = _("cups");
-
-  // TRANSLATORS: Description of a Service (File name: cups, RPM: cups-libs), used as a common label or an item in table
-  tmpstring = _("Firewall Configuration file for printing service CUPS");
 
   // TRANSLATORS: Name of Service (File name: cyrus-imapd, RPM: cyrus-imapd), can be used as check box, item in multiple selection box...
   tmpstring = _("cyrus-imapd Server");
@@ -77,10 +23,10 @@
   tmpstring = _("Opens ports for the cyrus-imapd Server.");
 
   // TRANSLATORS: Name of Service (File name: dhcp-server, RPM: dhcp), can be used as check box, item in multiple selection box...
-  tmpstring = _("DHCP Server");
+  tmpstring = _("DHCPv4 Server");
 
   // TRANSLATORS: Description of a Service (File name: dhcp-server, RPM: dhcp), used as a common label or an item in table
-  tmpstring = _("Opens ports for ISC DHCP Server.");
+  tmpstring = _("Opens ports for ISC DHCPv4 4.x Server.");
 
   // TRANSLATORS: Name of Service (File name: dnsmasq-dhcp, RPM: dnsmasq), can be used as check box, item in multiple selection box...
   tmpstring = _("dnsmasq");
@@ -94,11 +40,11 @@
   // TRANSLATORS: Description of a Service (File name: dnsmasq-dns, RPM: dnsmasq), used as a common label or an item in table
   tmpstring = _("Open ports for the dnsmasq DNS/DHCP server");
 
-  // TRANSLATORS: Name of Service (File name: finger-server, RPM: finger-server), can be used as check box, item in multiple selection box...
-  tmpstring = _("Finger Server");
+  // TRANSLATORS: Name of Service (File name: hplip, RPM: hplip), can be used as check box, item in multiple selection box...
+  tmpstring = _("mDNS/Bonjour support for HPLIP");
 
-  // TRANSLATORS: Description of a Service (File name: finger-server, RPM: finger-server), used as a common label or an item in table
-  tmpstring = _("Opens ports for Finger Server.");
+  // TRANSLATORS: Description of a Service (File name: hplip, RPM: hplip), used as a common label or an item in table
+  tmpstring = _("Firewall Configuration file for mDNS/Bonjour support for HPLIP");
 
   // TRANSLATORS: Name of Service (File name: iceccd, RPM: icecream), can be used as check box, item in multiple selection box...
   tmpstring = _("icecream daemon");
@@ -112,53 +58,17 @@
   // TRANSLATORS: Description of a Service (File name: icecream-scheduler, RPM: icecream), used as a common label or an item in table
   tmpstring = _("Opens ports for the icecream scheduler");
 
-  // TRANSLATORS: Name of Service (File name: imap, RPM: courier-imap imap-lib), can be used as check box, item in multiple selection box...
-  tmpstring = _("imap Server");
-
-  // TRANSLATORS: Description of a Service (File name: imap, RPM: courier-imap imap-lib), used as a common label or an item in table
-  tmpstring = _("Opens ports for imap Server.");
-
-  // TRANSLATORS: Name of Service (File name: iscsitarget, RPM: tgt), can be used as check box, item in multiple selection box...
-  tmpstring = _("iSCSI Target Daemon");
-
-  // TRANSLATORS: Description of a Service (File name: iscsitarget, RPM: tgt), used as a common label or an item in table
-  tmpstring = _("Opens ports for iSCSI Target Daemon with broadcast allowed.");
-
   // TRANSLATORS: Name of Service (File name: isns, RPM: isns), can be used as check box, item in multiple selection box...
   tmpstring = _("iSNS Daemon");
 
   // TRANSLATORS: Description of a Service (File name: isns, RPM: isns), used as a common label or an item in table
   tmpstring = _("Opens ports for iSNS daemon with broadcast allowed.");
 
-  // TRANSLATORS: Name of Service (File name: kadmind, RPM: krb5-server), can be used as check box, item in multiple selection box...
-  tmpstring = _("Kerberos Admin Server");
+  // TRANSLATORS: Name of Service (File name: netbios-server, RPM: samba), can be used as check box, item in multiple selection box...
+  tmpstring = _("Netbios Server");
 
-  // TRANSLATORS: Description of a Service (File name: kadmind, RPM: krb5-server), used as a common label or an item in table
-  tmpstring = _("Open ports for kadmind Server");
-
-  // TRANSLATORS: Name of Service (File name: kdc, RPM: krb5-server), can be used as check box, item in multiple selection box...
-  tmpstring = _("Key Distribution Center");
-
-  // TRANSLATORS: Description of a Service (File name: kdc, RPM: krb5-server), used as a common label or an item in table
-  tmpstring = _("Open ports for the Key Distribution Center");
-
-  // TRANSLATORS: Name of Service (File name: lighttpd, RPM: lighttpd), can be used as check box, item in multiple selection box...
-  tmpstring = _("lighttpd");
-
-  // TRANSLATORS: Description of a Service (File name: lighttpd, RPM: lighttpd), used as a common label or an item in table
-  tmpstring = _("Open the http port for lighttpd.");
-
-  // TRANSLATORS: Name of Service (File name: lighttpd-ssl, RPM: lighttpd), can be used as check box, item in multiple selection box...
-  tmpstring = _("lighttpd");
-
-  // TRANSLATORS: Description of a Service (File name: lighttpd-ssl, RPM: lighttpd), used as a common label or an item in table
-  tmpstring = _("Open the https port for lighttpd.");
-
-  // TRANSLATORS: Name of Service (File name: mysql, RPM: mysql), can be used as check box, item in multiple selection box...
-  tmpstring = _("MySQL server");
-
-  // TRANSLATORS: Description of a Service (File name: mysql, RPM: mysql), used as a common label or an item in table
-  tmpstring = _("opens ports for MySQL in order to allow other hosts connect to it");
+  // TRANSLATORS: Description of a Service (File name: netbios-server, RPM: samba), used as a common label or an item in table
+  tmpstring = _("Opens ports for Samba Netbios Server with broadcast allowed.");
 
   // TRANSLATORS: Name of Service (File name: nfs-client, RPM: nfs-client), can be used as check box, item in multiple selection box...
   tmpstring = _("NFS Client");
@@ -178,47 +88,41 @@
   // TRANSLATORS: Description of a Service (File name: ntp, RPM: ntp), used as a common label or an item in table
   tmpstring = _("Opens ports for xntp.");
 
-  // TRANSLATORS: Name of Service (File name: nut, RPM: nut-classic), can be used as check box, item in multiple selection box...
-  tmpstring = _("Network UPS Tools");
-
-  // TRANSLATORS: Description of a Service (File name: nut, RPM: nut-classic), used as a common label or an item in table
-  tmpstring = _("Opens ports for remote UPS signalling for Network UPS Tools.");
-
   // TRANSLATORS: Name of Service (File name: openldap, RPM: openldap2), can be used as check box, item in multiple selection box...
   tmpstring = _("OpenLDAP Server");
 
   // TRANSLATORS: Description of a Service (File name: openldap, RPM: openldap2), used as a common label or an item in table
   tmpstring = _("Opens ports for the OpenLDAP Server (slapd).");
 
-  // TRANSLATORS: Name of Service (File name: postfix, RPM: postfix), can be used as check box, item in multiple selection box...
-  tmpstring = _("SMTP with Postfix");
+  // TRANSLATORS: Name of Service (File name: openslp, RPM: openslp-server), can be used as check box, item in multiple selection box...
+  tmpstring = _("Openslp server (SLP)");
 
-  // TRANSLATORS: Description of a Service (File name: postfix, RPM: postfix), used as a common label or an item in table
-  tmpstring = _("Firewall Configuration file for postfix");
+  // TRANSLATORS: Description of a Service (File name: openslp, RPM: openslp-server), used as a common label or an item in table
+  tmpstring = _("Enables Openslp server to advertise services");
 
-  // TRANSLATORS: Name of Service (File name: postgresql, RPM: postgresql-server), can be used as check box, item in multiple selection box...
-  tmpstring = _("PostgreSQL Server");
+  // TRANSLATORS: Name of Service (File name: rsync-server, RPM: rsync), can be used as check box, item in multiple selection box...
+  tmpstring = _("Rsync server");
 
-  // TRANSLATORS: Description of a Service (File name: postgresql, RPM: postgresql-server), used as a common label or an item in table
-  tmpstring = _("Opens TCP port 5432 to allow remote connections to the PostgreSQL server.");
+  // TRANSLATORS: Description of a Service (File name: rsync-server, RPM: rsync), used as a common label or an item in table
+  tmpstring = _("Opens port for rsync server in order to allow remote synchronization");
 
-  // TRANSLATORS: Name of Service (File name: pure-ftpd, RPM: pure-ftpd), can be used as check box, item in multiple selection box...
-  tmpstring = _("pureftpd");
+  // TRANSLATORS: Name of Service (File name: samba-client, RPM: samba-client), can be used as check box, item in multiple selection box...
+  tmpstring = _("Samba Client");
 
-  // TRANSLATORS: Description of a Service (File name: pure-ftpd, RPM: pure-ftpd), used as a common label or an item in table
-  tmpstring = _("Opens ports for pureftpd with broadcast allowed.");
+  // TRANSLATORS: Description of a Service (File name: samba-client, RPM: samba-client), used as a common label or an item in table
+  tmpstring = _("Enables browsing of SMB shares");
+
+  // TRANSLATORS: Name of Service (File name: samba-server, RPM: samba), can be used as check box, item in multiple selection box...
+  tmpstring = _("Samba Server");
+
+  // TRANSLATORS: Description of a Service (File name: samba-server, RPM: samba), used as a common label or an item in table
+  tmpstring = _("Opens ports for Samba Server.");
 
   // TRANSLATORS: Name of Service (File name: sendmail, RPM: sendmail), can be used as check box, item in multiple selection box...
   tmpstring = _("SMTP with sendmail");
 
   // TRANSLATORS: Description of a Service (File name: sendmail, RPM: sendmail), used as a common label or an item in table
   tmpstring = _("Firewall Configuration file for sendmail");
-
-  // TRANSLATORS: Name of Service (File name: squid, RPM: yast2-squid), can be used as check box, item in multiple selection box...
-  tmpstring = _("Squid Service");
-
-  // TRANSLATORS: Description of a Service (File name: squid, RPM: yast2-squid), used as a common label or an item in table
-  tmpstring = _("Opens ports for Squid");
 
   // TRANSLATORS: Name of Service (File name: sshd, RPM: openssh), can be used as check box, item in multiple selection box...
   tmpstring = _("Secure Shell Server");
@@ -231,24 +135,6 @@
 
   // TRANSLATORS: Description of a Service (File name: svnserve, RPM: subversion), used as a common label or an item in table
   tmpstring = _("Open ports for svnserve");
-
-  // TRANSLATORS: Name of Service (File name: talkd, RPM: talk-server), can be used as check box, item in multiple selection box...
-  tmpstring = _("Talk Server");
-
-  // TRANSLATORS: Description of a Service (File name: talkd, RPM: talk-server), used as a common label or an item in table
-  tmpstring = _("Open ports for Talk Server");
-
-  // TRANSLATORS: Name of Service (File name: telnet-server, RPM: telnet-server), can be used as check box, item in multiple selection box...
-  tmpstring = _("Telnet Server");
-
-  // TRANSLATORS: Description of a Service (File name: telnet-server, RPM: telnet-server), used as a common label or an item in table
-  tmpstring = _("Opens ports for Telnet Server.");
-
-  // TRANSLATORS: Name of Service (File name: tetrinet-server, RPM: tetrinet-server), can be used as check box, item in multiple selection box...
-  tmpstring = _("Tetrinet Server");
-
-  // TRANSLATORS: Description of a Service (File name: tetrinet-server, RPM: tetrinet-server), used as a common label or an item in table
-  tmpstring = _("Opens ports in firewall to make possible to connect clients to your server. ");
 
   // TRANSLATORS: Name of Service (File name: vnc-httpd, RPM: tightvnc), can be used as check box, item in multiple selection box...
   tmpstring = _("VNC mini-HTTP server");
@@ -268,28 +154,10 @@
   // TRANSLATORS: Description of a Service (File name: vsftpd, RPM: vsftpd), used as a common label or an item in table
   tmpstring = _("Opens ports for vsftpd Server.");
 
-  // TRANSLATORS: Name of Service (File name: xdmcp, RPM: xorg-x11), can be used as check box, item in multiple selection box...
-  tmpstring = _("xdmcp");
-
-  // TRANSLATORS: Description of a Service (File name: xdmcp, RPM: xorg-x11), used as a common label or an item in table
-  tmpstring = _("Allow other hosts to access your display manager via XDMCP");
-
-  // TRANSLATORS: Name of Service (File name: xorg-x11-server, RPM: xorg-x11-Xvnc), can be used as check box, item in multiple selection box...
-  tmpstring = _("VNC Server");
-
-  // TRANSLATORS: Description of a Service (File name: xorg-x11-server, RPM: xorg-x11-Xvnc), used as a common label or an item in table
-  tmpstring = _("Opens ports for VNC Server");
-
   // TRANSLATORS: Name of Service (File name: ypbind, RPM: ypbind), can be used as check box, item in multiple selection box...
   tmpstring = _("NIS Client");
 
   // TRANSLATORS: Description of a Service (File name: ypbind, RPM: ypbind), used as a common label or an item in table
   tmpstring = _("The ypbind daemon binds NIS clients to an NIS domain");
-
-  // TRANSLATORS: Name of Service (File name: ypserv, RPM: ypserv), can be used as check box, item in multiple selection box...
-  tmpstring = _("NIS Server");
-
-  // TRANSLATORS: Description of a Service (File name: ypserv, RPM: ypserv), used as a common label or an item in table
-  tmpstring = _("Configuration for a NIS master/slave server");
 
 }
