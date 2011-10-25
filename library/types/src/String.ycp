@@ -1354,5 +1354,21 @@ global string FindMountPoint(string dir, list<string> dirs)
     return dir;
 }
 
+/**
+ * Replaces all characters in a given string with some other string or character
+ *
+ * @param (string) input string
+ * @param (string) all characters to replace
+ * @param (string) replace with
+ * @param (string) string with replaced characters
+ *
+ * @example
+ *   // Replace whitespace characters with dashes
+ *   ReplaceWith ("a\nb\tc d", "\n\t ", "-") -> "a-b-c-d"
+ */
+global string ReplaceWith (string str, string chars, string glue) {
+    return mergestring (splitstring (str, chars), glue);
+}
+
 /* EOF */
 }

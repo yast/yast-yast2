@@ -134,3 +134,6 @@ Return	&&Hello
 Return	&&&&Hello
 Return	&&&&Hello
 Return	&&Hello
+Dump	String::ReplaceWith
+Return	a-b-c-d
+Return	this is an input text containing some special characters to remove

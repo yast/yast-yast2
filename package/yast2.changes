@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Oct 25 15:45:33 CEST 2011 - locilka@suse.cz
+
+- Added new function String::ReplaceWith that is a replacement for
+  often used mergestring(splitstring(...))
+
+-------------------------------------------------------------------
 Thu Oct 20 11:54:34 CEST 2011 - locilka@suse.cz
 
 - Fixed script for generating translations for firewall services

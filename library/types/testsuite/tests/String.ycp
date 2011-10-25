@@ -174,4 +174,8 @@ TEST(``(String::RemoveShortcut("&&&Hello")), [], nil);
 TEST(``(String::RemoveShortcut("&&&&Hello")), [], nil);
 TEST(``(String::RemoveShortcut("&&&&&Hello")), [], nil);
 TEST(``(String::RemoveShortcut("&&He&llo")), [], nil);
+
+DUMP("String::ReplaceWith");
+TEST(``(String::ReplaceWith ("a\nb\tc d", "\n\t ", "-")), [], nil);
+TEST(``(String::ReplaceWith ("this$# is an in&put text co@ntain$ing some special## ch@a$racters to remove", "&$#@", "")), [], nil);
 }
