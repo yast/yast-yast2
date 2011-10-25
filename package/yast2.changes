@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct 25 15:36:34 CEST 2011 - mvidner@suse.cz
+
+- Moved NetworkStorage from yast2.rpm to yast2-network.rpm
+  (bnc#726057)
+- 2.17.114
+
+-------------------------------------------------------------------
 Thu Oct 20 11:54:34 CEST 2011 - locilka@suse.cz
 
 - Fixed script for generating translations for firewall services
