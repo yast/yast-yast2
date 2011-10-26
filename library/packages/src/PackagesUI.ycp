@@ -257,9 +257,6 @@ To reject the license of the package, click <b>I Disagree</b></p>.");
 	    return RunPackageSelector($[]);	// Fallback: detailed selection
 	}
 
-	// TODO FIXME: due to the textfreeze "base" cannot be used now, fix it after the GM is out!
-	textdomain "packager";
-
 	// Help text for software patterns / selections dialog
 	string help_text
 	    = _("<p>
@@ -300,9 +297,6 @@ To reject the license of the package, click <b>I Disagree</b></p>.");
 			    help_text,
 			    false,	// has_back
 			    true );	// has_next
-
-	// TODO FIXME: remove this
-	textdomain "base";
 
 	Wizard::SetDesktopIcon( "sw_single" );
 
