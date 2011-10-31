@@ -2049,29 +2049,12 @@ might be missing or out of date.")),
 	return true;
     }
 
-
     global void DoneDownload (integer error_value, string error_text)
     {
 	if (error_value != 0)
 	{
-	    if (autorefreshing && autorefreshing_aborted)
-	    {
-		y2milestone("Refresh aborted");
-	    }
-	    else
-	    {
-		if (Mode::commandline()) {
-		    //error message, %1 is the cause for the error
-		    CommandLine::Print(sformat (_("Download failed:
-    %1"), error_text));
-		}
-		else
-		{
-		    // error message, %1 is the cause for the error
-		    Popup::Error (sformat (_("Download failed:
-    %1"), error_text));
-		}
-	    }
+	    // no error popup - just log a message (download errors are handled in MediaChange callback)
+	    y2milestone("Download failed: error code: %1, message: %2", error_value, error_text);
 	}
     }
 

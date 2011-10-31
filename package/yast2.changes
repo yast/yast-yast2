@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Oct 31 14:18:35 UTC 2011 - lslezak@suse.cz
+
+- package callbacks - do not display error popup for failed
+  optional downloads (bnc#711253)
+- 2.17.116
+
+-------------------------------------------------------------------
 Wed Oct 26 13:12:56 UTC 2011 - lslezak@suse.cz
 
 - PackagesUI.ycp - fixed translations in the pattern selection
