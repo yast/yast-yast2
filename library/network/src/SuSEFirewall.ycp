@@ -115,6 +115,9 @@
     list <string> firewall_services = [ "SuSEfirewall2_init", "SuSEfirewall2_setup" ];
     list <string> firewall_services_reverse = [ "SuSEfirewall2_setup", "SuSEfirewall2_init" ];
 
+    /* script for starting and checking firewall status */
+    string firewall_script = "/sbin/SuSEfirewall2";
+
     list <string> SuSEFirewall_variables = [
 	// zones and interfaces
 	"FW_DEV_INT", "FW_DEV_DMZ", "FW_DEV_EXT",
@@ -1234,8 +1237,8 @@
 	tmpdir_file = tmpdir_file + "/SuSEfirewall2_YaST_output";
 
 	string command = sformat(
-	    "/sbin/SuSEfirewall2 start 2>'%1'; cat '%1'; rm -rf '%1'",
-	    tmpdir_file
+	    "%1 start 2>'%2'; cat '%2'; rm -rf '%2'",
+	    firewall_script, tmpdir_file
 	);
 	y2milestone ("Starting firewall...");
 	map cmd = (map) SCR::Execute (.target.bash_output, command);
@@ -1268,8 +1271,8 @@
 	tmpdir_file = tmpdir_file + "/SuSEfirewall2_YaST_output";
 
 	string command = sformat(
-	    "/sbin/SuSEfirewall2 stop 2>'%1'; cat '%1'; rm -rf '%1'",
-	    tmpdir_file
+	    "%1 stop 2>'%2'; cat '%2'; rm -rf '%2'",
+	    firewall_script, tmpdir_file
 	);
 	y2milestone ("Stopping firewall...");
 	map cmd = (map) SCR::Execute (.target.bash_output, command);
@@ -1371,19 +1374,16 @@
 
 	if (! SuSEFirewallIsInstalled()) return false;
 
-	//if (Mode::normal() || Mode::commandline()) {
-	    foreach (string service, firewall_services, {
-		if (Service::Status(service) == 0) {
-		    started = true;
-		    break;
-		}
-	    });
-	//}
+	if (Mode::testsuite()) return true;
 
-	if (started == true) {
-	    y2milestone("Firewall services are started");
+	y2milestone ("Checking firewall status...");
+	string cmd = sformat ("%1 status 1>/dev/null", firewall_script);
+	integer cmd_ret = (integer) SCR::Execute (.target.bash, cmd);
+	if (cmd_ret == 0) {
+	    y2milestone ("Firewall services are started");
+	    started = true;
 	} else {
-	    y2milestone("Firewall services are stopped");
+	    y2milestone ("Firewall services are stopped");
 	}
 
 	return started;

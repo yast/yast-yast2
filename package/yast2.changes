@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Nov  2 14:49:31 CET 2011 - locilka@suse.cz
+
+- Unified starting, stopping and checking for firewall status
+  (bnc#727445)
+- 2.21.25
+
+-------------------------------------------------------------------
 Tue Oct 25 15:45:33 CEST 2011 - locilka@suse.cz
 
 - Added new function String::ReplaceWith that is a replacement for
