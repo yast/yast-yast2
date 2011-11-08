@@ -749,9 +749,6 @@ global define boolean Write(string devregex) {
 	}
     });
 
-    /* Devices with chmod=0600 */
-    list<string> chmod = [];
-
     /* write all devices */
     maplist(string typ, map<string,map<string,any> > devsmap, (map<string, map<string, map<string, any> > >) Devs, {
 	maplist(string config, map<string,any> devmap, devsmap, {
@@ -825,23 +822,15 @@ global define boolean Write(string devregex) {
 	    boolean has_key = find (string k, SensitiveFields,
 				    ``( devmap[k]:"" != "" )) != nil;
 	    string file = "/etc/sysconfig/network/ifcfg-" + config;
-	    y2debug("Permission change: %1, %2", has_key, file);
 	    if(has_key) {
-		y2debug("CHANGED");
-		chmod = add(chmod, file);
+                y2debug("Permission change: %1", config);
+                SCR::Write(add(.network.section_private, config), true);
 	    }
 	});
     });
 
     /* Finish him */
     SCR::Write(.network, nil);
-
-    /* CHMOD */
-    y2debug("chmod=%1", chmod);
-    maplist(string file, chmod, {
-	y2debug("changing: %1", file);
-	SCR::Execute(.target.bash, "/bin/chmod 0600 " + file);
-    });
 
     // Deleted = [];
     // OriginalDevices = Devices;

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Nov  7 18:18:18 CET 2011 - mvidner@suse.cz
+
+- create user-unreadable ifcfg files without a race (bnc#713661, CVE-2011-3177)
+- 2.17.117
+
+-------------------------------------------------------------------
 Mon Oct 31 14:18:35 UTC 2011 - lslezak@suse.cz
 
 - package callbacks - do not display error popup for failed

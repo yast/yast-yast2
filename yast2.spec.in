@@ -11,8 +11,8 @@ BuildRequires:	yast2-pkg-bindings >= 2.17.32 yast2-core >= 2.17.1 subscription-t
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
 PreReq:		%fillup_prereq
 
-# y2base foo -S (hello) UI, list:: namespace
-Requires:       yast2-core >= 2.17.1
+# ag_ini section_private
+Requires:       yast2-core >= 2.17.41
 # Mod_UI
 # new YButtonBox widget (fate #303446)
 Requires:       yast2-ycp-ui-bindings >= 2.17.8
