@@ -1,15 +1,15 @@
 @HEADER-COMMENT@
 
 @HEADER@
-Group:  System/YaST
-Source1:	yast2-rpmlintrc
+Group:          System/YaST
+Source1:        yast2-rpmlintrc
 
-BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-testsuite yast2-perl-bindings
+BuildRequires:  perl-XML-Writer update-desktop-files yast2-devtools yast2-perl-bindings yast2-testsuite
 # Needed already in build time
-BuildRequires:	yast2-pkg-bindings >= 2.17.32 yast2-core >= 2.17.1 subscription-tools
+BuildRequires:  subscription-tools yast2-core >= 2.17.1 yast2-pkg-bindings >= 2.17.32
 
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
-PreReq:		%fillup_prereq
+PreReq:         %fillup_prereq
 
 # ag_ini section_private
 Requires:       yast2-core >= 2.17.41
@@ -18,65 +18,65 @@ Requires:       yast2-core >= 2.17.41
 Requires:       yast2-ycp-ui-bindings >= 2.17.8
 
 # Pkg::Get(Set)SolverFlags()
-Requires:	yast2-pkg-bindings >= 2.17.32
-Requires:	yast2_ui yast2-branding
+Requires:       yast2-pkg-bindings >= 2.17.32
+Requires:       yast2_ui yast2-branding
 # For Cron Agent, Module
 Requires:       perl-Config-Crontab
 # for ag_tty (/bin/stty)
 # for /usr/bin/md5sum
-Requires:	coreutils sysconfig
-Requires:	yast2-xml yast2-hardware-detection
+Requires:       coreutils sysconfig
+Requires:       yast2-xml yast2-hardware-detection
 # for SLPAPI.pm
-Requires:	yast2-perl-bindings
+Requires:       yast2-perl-bindings
 # for ag_anyxml
-Requires:	perl-XML-Simple
+Requires:       perl-XML-Simple
 # for ProductProfile.ycp
-Requires:	subscription-tools
+Requires:       subscription-tools
 
 # moved cfg_security.scr
-Conflicts:	yast2-security <= 2.13.2
+Conflicts:      yast2-security <= 2.13.2
 # moved ag_netd, cfg_netd.scr, cfg_xinetd.scr
-Conflicts:	yast2-inetd <= 2.13.4
-Conflicts:	yast2-tune < 2.15.6
-Obsoletes:	yast2-mail-aliases <= 2.14.0
-Conflicts:	yast2-storage < 2.16.4
-Conflicts:	yast2-network < 2.16.6
-Conflicts:	yast2-sshd < 2.16.1
+Conflicts:      yast2-inetd <= 2.13.4
+Conflicts:      yast2-tune < 2.15.6
+Obsoletes:      yast2-mail-aliases <= 2.14.0
+Conflicts:      yast2-storage < 2.16.4
+Conflicts:      yast2-network < 2.16.6
+Conflicts:      yast2-sshd < 2.16.1
 
 # moved ag_content agent 
-Conflicts:	yast2-instserver <= 2.16.3
+Conflicts:      yast2-instserver <= 2.16.3
 
 # InstExtensionImage module moved here from installation
-Conflicts:	yast2-installation < 2.16.18
+Conflicts:      yast2-installation < 2.16.18
 
-Conflicts:	yast2-update < 2.16.1
+Conflicts:      yast2-update < 2.16.1
 # Modules 'Slides' and 'SlideShow' moved from yast2-packager to yast2
-Conflicts:	yast2-packager < 2.17.12
-Conflicts:	yast2-mouse < 2.16.0
-Conflicts:	autoyast2-installation < 2.16.2
+Conflicts:      yast2-packager < 2.17.12
+Conflicts:      yast2-mouse < 2.16.0
+Conflicts:      autoyast2-installation < 2.16.2
 # country_long.ycp and country.ycp moved to yast2
-Conflicts:	yast2-country < 2.16.3
+Conflicts:      yast2-country < 2.16.3
 # DnsServerAPI moved to yast2.rpm (by mzugec)
-Conflicts:	yast2-dns-server < 2.17.0
+Conflicts:      yast2-dns-server < 2.17.0
 
-Provides:	yast2-lib-sequencer
-Obsoletes:	yast2-lib-sequencer
-Provides:	yast2-lib-wizard yast2-lib-wizard-devel yast2-trans-wizard
-Obsoletes:	yast2-lib-wizard yast2-lib-wizard-devel yast2-trans-wizard
-Provides:	yast2-trans-menu y2t_menu
-Obsoletes:	yast2-trans-menu y2t_menu
+Provides:       yast2-lib-sequencer
+Obsoletes:      yast2-lib-sequencer
+Provides:       yast2-lib-wizard yast2-lib-wizard-devel yast2-trans-wizard
+Obsoletes:      yast2-lib-wizard yast2-lib-wizard-devel yast2-trans-wizard
+Provides:       yast2-trans-menu y2t_menu
+Obsoletes:      yast2-trans-menu y2t_menu
 
 # moved here from another packages
-Provides:	yast2-installation:/usr/share/YaST2/modules/Installation.ycp
-Provides:	yast2-installation:/usr/share/YaST2/modules/Product.ycp
-Provides:	yast2-installation:/usr/share/YaST2/modules/Hotplug.ycp
-Provides:	yast2-installation:/usr/share/YaST2/modules/HwStatus.ycp
-Provides:	yast2-network:/usr/share/YaST2/modules/Internet.ycp
-Provides:	yast2-packager:/usr/lib/YaST2/servers_non_y2/ag_anyxml
-Provides:	yast2-dns-server:/usr/share/YaST2/modules/DnsServerAPI.pm
+Provides:       yast2-installation:/usr/share/YaST2/modules/Installation.ycp
+Provides:       yast2-installation:/usr/share/YaST2/modules/Product.ycp
+Provides:       yast2-installation:/usr/share/YaST2/modules/Hotplug.ycp
+Provides:       yast2-installation:/usr/share/YaST2/modules/HwStatus.ycp
+Provides:       yast2-network:/usr/share/YaST2/modules/Internet.ycp
+Provides:       yast2-packager:/usr/lib/YaST2/servers_non_y2/ag_anyxml
+Provides:       yast2-dns-server:/usr/share/YaST2/modules/DnsServerAPI.pm
 Provides:       yast2-mail-aliases
 
-Summary:	Main YaST2 package
+Summary:        Main YaST2 package
 
 %description
 -
@@ -84,13 +84,13 @@ Summary:	Main YaST2 package
 %package devel-doc
 Requires:       yast2 = %version
 Group:          System/YaST
-Provides:	yast2-lib-sequencer-devel
-Obsoletes:	yast2-lib-sequencer-devel
-Obsoletes:	yast2-devel
-Provides:	yast2-devel
-Requires:	yast2-core-devel
+Provides:       yast2-lib-sequencer-devel
+Obsoletes:      yast2-lib-sequencer-devel
+Obsoletes:      yast2-devel
+Provides:       yast2-devel
+Requires:       yast2-core-devel
 
-Summary:	Documentation for Wizard and Sequencer
+Summary:        Documentation for Wizard and Sequencer
 
 %description devel-doc
 -
@@ -178,6 +178,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 @yncludedir@/hwinfo/*.ycp
 
 # documentation
+
 %files devel-doc
 %defattr(-,root,root)
 
@@ -195,3 +196,5 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %doc @docdir@/system
 %doc @docdir@/types
 %doc @docdir@/wizard
+
+%changelog
