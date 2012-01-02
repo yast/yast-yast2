@@ -758,18 +758,20 @@ global define boolean Write(string devregex) {
 	    string p = ".network.value.\"" + config + "\".";
 
 
-	if (size(devmap["IPADDR"]:"")>0 && size(devmap["NETMASK"]:"")>0){
-	 devmap["IPADDR"] = sformat("%1/%2", devmap["IPADDR"]:"", Netmask::ToBits(devmap["NETMASK"]:""));
-	 devmap=remove(devmap, "NETMASK");
-	 //TODO : delete NETMASK from config file
-	} else {
-	 if (size(devmap["IPADDR"]:"")>0 && size(devmap["PREFIXLEN"]:"")>0){
-	  devmap["IPADDR"] = sformat("%1/%2", devmap["IPADDR"]:"", devmap["PREFIXLEN"]:"");
-	  devmap=remove(devmap, "PREFIXLEN");
-	 //TODO : delete PREFIXLEN from config file
-	 }
+	if (size(devmap["IPADDR"]:"")>0 && find(devmap["IPADDR"]:"","/") == -1)
+	{
+	    if (size(devmap["IPADDR"]:"")>0 && size(devmap["NETMASK"]:"")>0){
+	     devmap["IPADDR"] = sformat("%1/%2", devmap["IPADDR"]:"", Netmask::ToBits(devmap["NETMASK"]:""));
+	     devmap=remove(devmap, "NETMASK");
+	     //TODO : delete NETMASK from config file
+	    } else {
+	     if (size(devmap["IPADDR"]:"")>0 && size(devmap["PREFIXLEN"]:"")>0){
+	      devmap["IPADDR"] = sformat("%1/%2", devmap["IPADDR"]:"", devmap["PREFIXLEN"]:"");
+	      devmap=remove(devmap, "PREFIXLEN");
+	     //TODO : delete PREFIXLEN from config file
+	     }
+	    }
 	}
-
 
 	    /* write all keys to config */
 	    maplist(string k, (list<string>) Map::Keys(devmap), {
