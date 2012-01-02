@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan  2 16:57:57 UTC 2012 - jreidinger@suse.com
+
+- forbid appending to IPADDR additional suffix if there is already
+  one. Original name have preference. 
+
+-------------------------------------------------------------------
 Mon Nov  7 18:18:18 CET 2011 - mvidner@suse.cz
 
 - create user-unreadable ifcfg files without a race (bnc#713661, CVE-2011-3177)
