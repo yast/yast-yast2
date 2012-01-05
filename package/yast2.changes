@@ -2,7 +2,7 @@
 Mon Jan  2 16:57:57 UTC 2012 - jreidinger@suse.com
 
 - forbid appending to IPADDR additional suffix if there is already
-  one. Original name have preference. 
+  one. Original name have preference (bnc#735109).
 
 -------------------------------------------------------------------
 Mon Nov  7 18:18:18 CET 2011 - mvidner@suse.cz
