@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Fri Jan  6 15:06:00 CET 2012 - mvidner@suse.cz
+
+- Relicensed ConfigHistory from GPL-2.0 to GPL-2.0+
+  to match the rest of the package (bnc#728950).
+- 2.22.2
+
+-------------------------------------------------------------------
+Fri Jan  6 14:57:57 CET 2012 - jreidinger@suse.com
+
+- forbid appending to IPADDR additional suffix if there is already
+  one. Original name have preference (bnc#735109).
+
+-------------------------------------------------------------------
 Fri Jan  6 14:56:00 CET 2012 - mvidner@suse.cz
 
 - create user-unreadable ifcfg files without a race (bnc#713661, CVE-2011-3177)
