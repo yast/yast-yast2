@@ -12,8 +12,8 @@ BuildRequires:	yast2-pkg-bindings >= 2.20.3 yast2-core >= 2.18.12 yast2-ycp-ui-b
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
 PreReq:		%fillup_prereq
 
-# float::tolstring builtin
-Requires:       yast2-core >= 2.18.12
+# ag_ini section_private
+Requires:       yast2-core >= 2.22.1
 # Mod_UI
 # new UI::OpenContextMenu
 Requires:       yast2-ycp-ui-bindings >= 2.18.4
