@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan  6 14:47:16 CET 2012 - mvidner@suse.cz
+
+- Moved NetworkStorage from yast2.rpm to yast2-network.rpm
+  (bnc#726057)
+- 2.22.0
+
+-------------------------------------------------------------------
 Wed Nov  2 14:49:31 CET 2011 - locilka@suse.cz
 
 - Unified starting, stopping and checking for firewall status
