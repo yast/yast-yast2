@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan 13 14:35:47 CET 2012 - mvidner@suse.cz
+
+- Internet test: fail early if NetworkManager has crashed
+  (bnc#739390).
+- 2.22.3
+
+-------------------------------------------------------------------
 Fri Jan  6 15:06:00 CET 2012 - mvidner@suse.cz
 
 - Relicensed ConfigHistory from GPL-2.0 to GPL-2.0+
