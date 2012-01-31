@@ -432,7 +432,7 @@ the integrity of your system at risk.
 Install it anyway?")
 	    :
 	    // popup question, %1 stands for the filename
-	    _("No checksum for file %1 was found the repository.
+	    _("No checksum for file %1 was found in the repository.
 This means that the file is part of the signed repository,
 but the list of checksums in this repository does not mention this file. Using the file
 may put the integrity of your system at risk.
