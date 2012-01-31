@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jan 31 14:44:38 CET 2012 - tgoettlicher@suse.de
+
+- Fixed typo
+
+-------------------------------------------------------------------
 Fri Jan 13 14:35:47 CET 2012 - mvidner@suse.cz
 
 - Internet test: fail early if NetworkManager has crashed
