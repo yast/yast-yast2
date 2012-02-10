@@ -75,6 +75,26 @@ global list<string> NewlineItems (string s) {
     return NonEmpty (splitstring (s, "\n"));
 }
 
+
+/**
+ * @param value boolean
+ * @return boolean value as "Yes" or "No"
+ */
+global string YesNo(boolean value)
+{
+    if (value)
+    {
+	// human text for Boolean value
+	return _("Yes");
+    }
+    else
+    {
+	// human text for Boolean value
+	return _("No");
+    }
+}
+
+
 /**
  * Return a pretty description of a byte count
  *
