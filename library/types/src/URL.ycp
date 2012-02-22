@@ -29,8 +29,12 @@ import "URLRecode";
 
 /**
  * Valid characters in URL
+ *
+ * bnc#694582 - addedd @ as it is allowed in authority part of URI.
+ * for details see RFC2616 and RFC2396
+ *
  */
-global string ValidChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.:_-/%";
+global string ValidChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.:_-/%@";
 
 
 /**
