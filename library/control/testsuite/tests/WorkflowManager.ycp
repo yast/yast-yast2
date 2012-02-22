@@ -7,6 +7,7 @@ include "testsuite.ycp";
 map READ = $[
     "target" : $[
 	"size" : 0,
+    "stat" : $[ "dummy": true ]
     ],
 ];
 
@@ -14,7 +15,9 @@ map WRITE = $[];
 
 map EXEC = $[];
 
-TESTSUITE_INIT([READ, WRITE, EXEC], nil);
+list MOCK = [READ, WRITE, EXEC];
+
+TESTSUITE_INIT( MOCK, nil);
 
 import "WorkflowManager";
 import "ProductControl";
@@ -28,29 +31,29 @@ WorkflowManager::PrepareSystemProposals();
 // init <--
 
 
-TEST (``(WorkflowManager::SetBaseWorkflow (false)), [], nil);
+TEST (``(WorkflowManager::SetBaseWorkflow (false)), MOCK, nil);
 
 DUMP ("");
 DUMP ("Adding new Add-On product");
-TEST (``(WorkflowManager::AddWorkflow (`addon, 3, "")), [], nil);
-TEST (``(WorkflowManager::GetAllUsedControlFiles ()), [], nil);
+TEST (``(WorkflowManager::AddWorkflow (`addon, 3, "")), MOCK, nil);
+TEST (``(WorkflowManager::GetAllUsedControlFiles ()), MOCK, nil);
 
 DUMP ("");
 DUMP ("Adding another Add-On product");
-TEST (``(WorkflowManager::AddWorkflow (`addon, 12, "")), [], nil);
-TEST (``(WorkflowManager::GetAllUsedControlFiles ()), [], nil);
+TEST (``(WorkflowManager::AddWorkflow (`addon, 12, "")), MOCK, nil);
+TEST (``(WorkflowManager::GetAllUsedControlFiles ()), MOCK, nil);
 
 DUMP ("");
 DUMP ("Removing the first Add-On product");
-TEST (``(WorkflowManager::RemoveWorkflow (`addon, 3, "")), [], nil);
-TEST (``(WorkflowManager::GetAllUsedControlFiles ()), [], nil);
+TEST (``(WorkflowManager::RemoveWorkflow (`addon, 3, "")), MOCK, nil);
+TEST (``(WorkflowManager::GetAllUsedControlFiles ()), MOCK, nil);
 
 DUMP ("");
 DUMP ("Removing the first Add-On product");
-TEST (``(WorkflowManager::MergeWorkflows ()), [READ, WRITE, EXEC], nil);
+TEST (``(WorkflowManager::MergeWorkflows ()), MOCK, nil);
 
 DUMP ("");
 DUMP ("Current Settings");
-TEST (``(WorkflowManager::DumpCurrentSettings ()), [], nil);
+TEST (``(WorkflowManager::DumpCurrentSettings ()), MOCK, nil);
 
 }
