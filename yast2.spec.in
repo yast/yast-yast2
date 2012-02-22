@@ -1,16 +1,34 @@
+#
+# spec file for package yast2.spec.in
+#
+# Copyright (c) 2012 SUSE LINUX Products GmbH, Nuernberg, Germany.
+#
+# All modifications and additions to the file contributed by third parties
+# remain the property of their copyright owners, unless otherwise agreed
+# upon. The license for this file, and modifications and additions to the
+# file, is the same license as for the pristine package itself (unless the
+# license for the pristine package is not an Open Source License, in which
+# case the license is the MIT License). An "Open Source License" is a
+# license that conforms to the Open Source Definition (Version 1.9)
+# published by the Open Source Initiative.
+
+# Please submit bugfixes or comments via http://bugs.opensuse.org/
+#
+
+
 @HEADER-COMMENT@
 
 @HEADER@
-Group:	System/YaST
-License: GPL-2.0+
-Source1:	yast2-rpmlintrc
+Group:          System/YaST
+License:        GPL-2.0+
+Source1:        yast2-rpmlintrc
 
-BuildRequires:	perl-XML-Writer update-desktop-files yast2-devtools yast2-testsuite yast2-perl-bindings
+BuildRequires:  perl-XML-Writer update-desktop-files yast2-devtools yast2-perl-bindings yast2-testsuite
 # Needed already in build time
-BuildRequires:	yast2-pkg-bindings >= 2.20.3 yast2-core >= 2.18.12 yast2-ycp-ui-bindings >= 2.18.4
+BuildRequires:  yast2-core >= 2.18.12 yast2-pkg-bindings >= 2.20.3 yast2-ycp-ui-bindings >= 2.18.4
 
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
-PreReq:		%fillup_prereq
+PreReq:         %fillup_prereq
 
 # ag_ini section_private
 Requires:       yast2-core >= 2.22.1
@@ -19,69 +37,69 @@ Requires:       yast2-core >= 2.22.1
 Requires:       yast2-ycp-ui-bindings >= 2.18.4
 
 # changed StartPackage callback signature
-Requires:	yast2-pkg-bindings >= 2.20.3
-Requires:	yast2_ui 
+Requires:       yast2-pkg-bindings >= 2.20.3
+Requires:       yast2_ui 
 # For Cron Agent, Module
 Requires:       perl-Config-Crontab
 # for ag_tty (/bin/stty)
 # for /usr/bin/md5sum
-Requires:	coreutils sysconfig
-Requires:	yast2-xml yast2-hardware-detection
+Requires:       coreutils sysconfig
+Requires:       yast2-xml yast2-hardware-detection
 # for SLPAPI.pm
-Requires:	yast2-perl-bindings
+Requires:       yast2-perl-bindings
 # for ag_anyxml
-Requires:	perl-XML-Simple
+Requires:       perl-XML-Simple
 # for GPG.ycp
-Requires:	gpg2
+Requires:       gpg2
 # for Punycode.ycp (bnc#651893)
-Requires:	bind-utils
+Requires:       bind-utils
 # xdg-su in .desktops
-Recommends:	xdg-utils
+Recommends:     xdg-utils
 
 # moved cfg_security.scr
-Conflicts:	yast2-security <= 2.13.2
+Conflicts:      yast2-security <= 2.13.2
 # moved ag_netd, cfg_netd.scr, cfg_xinetd.scr
-Conflicts:	yast2-inetd <= 2.13.4
-Conflicts:	yast2-tune < 2.15.6
-Obsoletes:	yast2-mail-aliases <= 2.14.0
-Conflicts:	yast2-storage < 2.16.4
-Conflicts:	yast2-network < 2.16.6
-Conflicts:	yast2-sshd < 2.16.1
+Conflicts:      yast2-inetd <= 2.13.4
+Conflicts:      yast2-tune < 2.15.6
+Obsoletes:      yast2-mail-aliases <= 2.14.0
+Conflicts:      yast2-storage < 2.16.4
+Conflicts:      yast2-network < 2.16.6
+Conflicts:      yast2-sshd < 2.16.1
 
 # moved ag_content agent 
-Conflicts:	yast2-instserver <= 2.16.3
+Conflicts:      yast2-instserver <= 2.16.3
 
 # InstError
-Conflicts:	yast2-installation < 2.18.5
+Conflicts:      yast2-installation < 2.18.5
 
-Conflicts:	yast2-update < 2.16.1
+Conflicts:      yast2-update < 2.16.1
 # Modules 'Slides' and 'SlideShow' moved from yast2-packager to yast2
-Conflicts:	yast2-packager < 2.17.12
-Conflicts:	yast2-mouse < 2.16.0
-Conflicts:	autoyast2-installation < 2.16.2
+Conflicts:      yast2-packager < 2.17.12
+Conflicts:      yast2-mouse < 2.16.0
+Conflicts:      autoyast2-installation < 2.16.2
 # country_long.ycp and country.ycp moved to yast2
-Conflicts:	yast2-country < 2.16.3
+Conflicts:      yast2-country < 2.16.3
 # DnsServerAPI moved to yast2.rpm (by mzugec)
-Conflicts:	yast2-dns-server < 2.17.0
+Conflicts:      yast2-dns-server < 2.17.0
 
-Provides:	yast2-lib-sequencer
-Obsoletes:	yast2-lib-sequencer
-Provides:	yast2-lib-wizard yast2-lib-wizard-devel yast2-trans-wizard
-Obsoletes:	yast2-lib-wizard yast2-lib-wizard-devel yast2-trans-wizard
-Provides:	yast2-trans-menu y2t_menu
-Obsoletes:	yast2-trans-menu y2t_menu
+Provides:       yast2-lib-sequencer
+Obsoletes:      yast2-lib-sequencer
+Provides:       yast2-lib-wizard yast2-lib-wizard-devel yast2-trans-wizard
+Obsoletes:      yast2-lib-wizard yast2-lib-wizard-devel yast2-trans-wizard
+Provides:       yast2-trans-menu y2t_menu
+Obsoletes:      yast2-trans-menu y2t_menu
 
 # moved here from another packages
-Provides:	yast2-installation:/usr/share/YaST2/modules/Installation.ycp
-Provides:	yast2-installation:/usr/share/YaST2/modules/Product.ycp
-Provides:	yast2-installation:/usr/share/YaST2/modules/Hotplug.ycp
-Provides:	yast2-installation:/usr/share/YaST2/modules/HwStatus.ycp
-Provides:	yast2-network:/usr/share/YaST2/modules/Internet.ycp
-Provides:	yast2-packager:/usr/lib/YaST2/servers_non_y2/ag_anyxml
-Provides:	yast2-dns-server:/usr/share/YaST2/modules/DnsServerAPI.pm
+Provides:       yast2-installation:/usr/share/YaST2/modules/Installation.ycp
+Provides:       yast2-installation:/usr/share/YaST2/modules/Product.ycp
+Provides:       yast2-installation:/usr/share/YaST2/modules/Hotplug.ycp
+Provides:       yast2-installation:/usr/share/YaST2/modules/HwStatus.ycp
+Provides:       yast2-network:/usr/share/YaST2/modules/Internet.ycp
+Provides:       yast2-packager:/usr/lib/YaST2/servers_non_y2/ag_anyxml
+Provides:       yast2-dns-server:/usr/share/YaST2/modules/DnsServerAPI.pm
 Provides:       yast2-mail-aliases
 
-Summary:	YaST2 - Main Package
+Summary:        YaST2 - Main Package
 
 %description
 This package contains scripts and data needed for SuSE Linux
@@ -90,13 +108,13 @@ installation with YaST2
 %package devel-doc
 Requires:       yast2 = %version
 Group:          System/YaST
-Provides:	yast2-lib-sequencer-devel
-Obsoletes:	yast2-lib-sequencer-devel
-Obsoletes:	yast2-devel
-Provides:	yast2-devel
-Requires:	yast2-core-devel
+Provides:       yast2-lib-sequencer-devel
+Obsoletes:      yast2-lib-sequencer-devel
+Obsoletes:      yast2-devel
+Provides:       yast2-devel
+Requires:       yast2-core-devel
 
-Summary:	YaST2 - Development Scripts and Documentation
+Summary:        YaST2 - Development Scripts and Documentation
 
 %description devel-doc
 This package contains scripts and data needed for a SUSE Linux
@@ -185,6 +203,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 @yncludedir@/hwinfo/*.ycp
 
 # documentation
+
 %files devel-doc
 %defattr(-,root,root)
 
@@ -204,3 +223,5 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %doc @docdir@/types
 %doc @docdir@/wizard
 %doc @docdir@/xml
+
+%changelog
