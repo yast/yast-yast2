@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Wed Feb 22 12:57:01 UTC 2012 - mfilka@suse.com
 
-- bnc#694582 - addedd @ as it is allowed in authority part of URI.
+- bnc#694582 - added @ as it is allowed in authority part of URI.
 - improve Exists(), don't return 'true' if SCR::Read() returned nil
 - fixed testsuite for WorkFlow.ycp - corrupted due to above Exists() fix
 - added String::YesNo
