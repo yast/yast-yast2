@@ -28,7 +28,8 @@
      *
      * @example
      *	FileUtils::Exists ("/tmp") -> true
-     *	FileUtils::Exists ("/tmp/somefile") -> false
+     *	FileUtils::Exists ("/var/log/messages") -> true
+     *	FileUtils::Exists ("/does-not-exist") -> false
      */
     global define boolean Exists (string target) {
 	map info = (map) SCR::Read(.target.stat, target);
