@@ -34,7 +34,7 @@
     global define boolean Exists (string target) {
 	map info = (map) SCR::Read(.target.stat, target);
 
-	if (info != $[] && info != nil) {
+	if (info != $[]) {
 	    return true;
 	}
 	return false;
