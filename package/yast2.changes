@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Mar 28 11:58:34 CEST 2012 - gs@suse.de
+
+- Revert the change in FileUtils::Exists() (change is not needed
+  here but will cause failure of testsuites)
+- 2.22.5 
+
+-------------------------------------------------------------------
 Wed Feb 22 12:57:01 UTC 2012 - mfilka@suse.com
 
 - bnc#694582 - added @ as it is allowed in authority part of URI.
