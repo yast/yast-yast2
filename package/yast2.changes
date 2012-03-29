@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 29 14:02:47 CEST 2012 - jsuchome@suse.cz
+
+- merged proofed texts
+- 2.22.6
+
+-------------------------------------------------------------------
 Wed Mar 28 11:58:34 CEST 2012 - gs@suse.de
 
 - Revert the change in FileUtils::Exists() (change is not needed

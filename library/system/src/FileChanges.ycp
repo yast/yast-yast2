@@ -156,7 +156,8 @@ global boolean CheckFiles (list<string> files) {
     {
 	// Continue/Cancel question, %1 is a file name
 	string msg = _("File %1 has been changed manually.
-YaST might lose some of the changes");
+YaST might lose some of the changes.
+");
 	if (size (files) > 1)
 	    // Continue/Cancel question, %1 is a coma separated list of file names
 	    msg = _("Files %1 have been changed manually.

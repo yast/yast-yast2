@@ -96,10 +96,10 @@ void SetFirewallLabel (symbol status) {
 	// bnc #429861
 	if (Stage::initial()) {
 	    // label
-	    label = _("Firewall cannot be adjusted during first stage installation");
+	    label = _("Firewall cannot be adjusted during first stage installation.");
 	} else {
 	    // label
-	    label = _("Firewall package is not installed");
+	    label = _("Firewall package is not installed.");
 	}
     }
     else if (status == `off)
@@ -469,8 +469,9 @@ global boolean InterfacesValidate (map<string,any> widget, string key, map event
 
 	    Report::Message (
 		sformat (
-		    _("These network interfaces assigned to internal network cannot be unselected:
-%1"),
+		    _("These network interfaces assigned to internal network cannot be deselected:
+%1
+"),
 		    mergestring (int_not_selected, "\n")
 		)
 	    );

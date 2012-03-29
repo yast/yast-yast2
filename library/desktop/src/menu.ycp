@@ -55,7 +55,7 @@ define void OpenMenu() {
 		`HBox(
 		    `HSpacing(2),
 		    /* Heading for NCurses Control Center */
-		    `HCenter(`Heading( _("YaST2 Control Center")) ),
+		    `HCenter(`Heading( _("YaST Control Center")) ),
 		    `HSpacing(2)
 		),
 		`VSpacing(0.4)
@@ -139,7 +139,7 @@ define boolean Launch(string modul) {
 define void ShowNcursesHelp() {
 
     /* NCurses (textmode) Control Center headline */
-    string headline = _("Controlling YaST2 ncurses with the Keyboard");
+    string headline = _("Controlling YaST ncurses with the Keyboard");
 
     /* NCurses Control Center help 1/ */
     string help = _("<p>1) <i>General</i><br>
