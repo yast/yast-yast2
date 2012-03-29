@@ -564,7 +564,7 @@
 	}
 
 	// translators: default module description if none is provided by the module itself
-	Print( modulecommands["help"]: _("This is a YaST2 module.")+"\n" );
+	Print( modulecommands["help"]: _("This is a YaST module.")+"\n" );
 	// translators: short help title for command line
 	Print(_("Basic Syntax:"));
 

@@ -77,7 +77,7 @@ string uiInput(string label) {
  * that she did using YaST, logs it using @ref Note
  */
 global void CommitPopup() {
-    string i = uiInput(_("Enter a log message to describe the changes that you did"));
+    string i = uiInput(_("Enter a log message that describes the changes you made."));
     string msg = (i == nil)? "*empty log message*": i;
     Note(msg);
 }

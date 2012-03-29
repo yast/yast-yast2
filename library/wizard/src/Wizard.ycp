@@ -235,7 +235,9 @@
 						`VSpacing(0.2),
 						`HBox(
 						      // translators: dialog title to appear before any content is initialized
-						      `Heading(`id(`title), `opt (`hstretch), _("YaST2\nInitializing ...")),
+						      `Heading(`id(`title), `opt (`hstretch), _("YaST
+Initializing ...
+")),
 						      `HStretch()
 						      ),
 						`VWeight( 1, // Layout trick: Lower layout priority with weight
@@ -415,7 +417,7 @@
 	if ( haveFancyUI() )
 	{
 	    UI::OpenDialog(`opt(`wizardDialog ),
-			   `Wizard(`apply,	_( "&Apply" ),
+			   `Wizard(`apply,	_("&Apply"),
 				   `abort,	Label::AbortButton(),
 				   `finish,	Label::FinishButton() ) );
 	    

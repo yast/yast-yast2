@@ -377,10 +377,12 @@ Install it anyway?")
 	    // %3 is URL of the repository
 	    _("The file %1 from repository %2
 %3
-is not digitally signed. This means that the origin and integrity of the file
-cannot be verified. Using the file may put the integrity of your system at risk.
+is not digitally signed. The origin and integrity of the file
+cannot be verified. Using the file anyway puts the integrity of your 
+system at risk.
 
-Use it anyway?")
+Use it anyway?
+")
 	), item_name, repo["name"]:_("Unknown"), repo["url"]:_("Unknown"));
 
 	UI::OpenDialog(
@@ -425,11 +427,12 @@ Use it anyway?")
 	string description_text = sformat((item_type == `package ?
 	    // popup question, %1 stands for the package name
 	    _("No checksum for package %1 was found in the repository.
-This means that the package is part of the signed repository, but the list of checksums
-in this repository does not mention this package. Installing the package may put
+While the package is part of the signed repository, it is not contained 
+in the list of checksums in this repository. Installing the package puts 
 the integrity of your system at risk.
 
-Install it anyway?")
+Install it anyway?
+")
 	    :
 	    // popup question, %1 stands for the filename
 	    _("No checksum for file %1 was found in the repository.
@@ -530,22 +533,24 @@ Use it anyway?")
 %3
 is signed with the following GnuPG key, but the integrity check failed: %4
 
-This means that the package has been changed by accident or by an attacker
+The package has been changed, either by accident or by an attacker,
 since the repository creator signed it. Installing it is a big risk
 for the integrity and security of your system.
 
-Install it anyway?")
+Install it anyway?
+")
 	    :
 	    // popup question, %1 stands for the filename, %2 for the complete description of the GnuPG key (multiline)
 	    _("File %1 from repository %2
 %3
 is signed with the following GnuPG key, but the integrity check failed: %4
 
-This means that the file has been changed by accident or by an attacker
+The file has been changed, either by accident or by an attacker,
 since the repository creator signed it. Using it is a big risk
 for the integrity and security of your system.
 
-Use it anyway?")
+Use it anyway?
+")
 	    ),
 	    item_name,
 	    repo["name"]:_("Unknown"),
@@ -673,23 +678,25 @@ Use it anyway?")
 	    _("The package %1 is digitally signed
 with key '%2 (%3)'.
 
-There is no trust relationship to the owner of the key.
+There is no trust relationship with the owner of the key.
 If you trust the owner, mark the key as trusted.
 
-Installing a package from an unknown repository can put
+Installing a package from an unknown repository puts
 the integrity of your system at risk. It is safest
-to skip the package.")
+to skip the package.
+")
 	    :
 	    // popup question, %1 stands for the filename, %2 for the key ID, %3 for the key name
 	    _("The file %1 is digitally signed
 with key '%2 (%3)'.
 
-There is no trust relationship to the owner of the key.
+There is no trust relationship with the owner of the key.
 If you trust the owner, mark the key as trusted.
 
-Installing a file from an unknown repository can put
+Installing a file from an unknown repository puts
 the integrity of your system at risk. It is safest
-to skip it.")
+to skip it.
+")
 	), item_name, key["id"]:"", key["name"]:"");
 
 	UI::OpenDialog(
@@ -880,11 +887,12 @@ the key really belongs to that owner before importing it.");
 is %2,
 but the current checksum is %3.
 
-This means that the file has been changed by accident or by an attacker
+The file has been changed by accident or by an attacker
 since the repository creator signed it. Using it is a big risk
 for the integrity and security of your system.
 
-Use it anyway?"),
+Use it anyway?
+"),
 	    filename,
 	    requested_digest,
 	    found_digest
@@ -912,9 +920,10 @@ is %2,
 but the expected checksum is not known.
 
 This means that the origin and integrity of the file
-cannot be verified. Using the file may put the integrity of your system at risk.
+cannot be verified. Using the file puts the integrity of your system at risk.
 
-Use it anyway?"),
+Use it anyway?
+"),
 	    filename,
 	    digest
 	);

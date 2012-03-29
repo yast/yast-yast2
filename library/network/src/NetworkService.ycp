@@ -165,7 +165,7 @@ global define boolean RunningNetworkPopup()
 y2internal("RunningNetworkPopup %1", isNetworkRunning());
  if (isNetworkRunning()) return true;
 	else {
-	 string error_text = sformat("%1\n%2 %3", _("No running network detected!"),
+	 string error_text = sformat("%1\n%2 %3", _("No running network detected."),
 Mode::installation() ?
 	_("Restart installation and configure network in Linuxrc") :
 	_("Configure network with YaST or Network Manager plug-in

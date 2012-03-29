@@ -517,7 +517,7 @@
 		    is_ssh_enabled = true;
 		    // TRANSLATORS: Network proposal informative text with link around
 		    // IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
-		    output = output + "<li>" + _("SSH port is open (<a href=\"firewall--disable_ssh_in_proposal\">close</a>), but there are still no network interfaces configured") + "</li>";
+		    output = output + "<li>" + _("SSH port is open (<a href=\"firewall--disable_ssh_in_proposal\">close</a>), but\nthere are no network interfaces configured") + "</li>";
 	    }
 	    y2milestone("SSH is " + (is_ssh_enabled ? "":"not ") + "enabled");
 
