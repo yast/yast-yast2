@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May 10 07:17:40 UTC 2012 - mfilka@suse.com
+
+- removed ShellSafeWrite as it is not needed anymore with new ag_ini - bnc#750325
+- 2.23.0 
+
+-------------------------------------------------------------------
 Thu Mar 29 14:02:47 CEST 2012 - jsuchome@suse.cz
 
 - merged proofed texts

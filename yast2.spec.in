@@ -13,7 +13,8 @@ BuildRequires:  yast2-core >= 2.18.12 yast2-pkg-bindings >= 2.20.3 yast2-ycp-ui-
 PreReq:         %fillup_prereq
 
 # ag_ini section_private
-Requires:       yast2-core >= 2.22.1
+# ag_ini with (un)quoting support
+Requires:       yast2-core >= 2.23.0
 # Mod_UI
 # new UI::OpenContextMenu
 Requires:       yast2-ycp-ui-bindings >= 2.18.4

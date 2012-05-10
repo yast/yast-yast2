@@ -9,7 +9,7 @@ map READ = $[
 	    "eth4"	: nil,
 	],
 	"value" : $[
-	    "eth4"	: $["BOOTPROTO":"dhcp", "NAME": "single quotes aren't good"],
+	    "eth4"	: $["BOOTPROTO":"dhcp", "NAME": "we like 'singles'"],
 	]
     ],
     "probe" : $[

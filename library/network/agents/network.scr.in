@@ -24,17 +24,12 @@
     `IniAgent( [ "@IFCFG_DIR@/ifcfg-*" ],
 	$[
 	    /* values at the top level, allow comments after value */
-	    "options"	: [ "global_values", "comments_last" ],
+	    "options"	: [ "global_values", "comments_last", "shell_quoted_value" ],
 	    /* empty lines, comments after value and whole-line comments */
 	    "comments"	: [ "^[ \t]*$", "[ \t]*#.*$", "^[ \t]*#.*$" ],
 	    /* matching rules */
 	    "params"	: [
-		/* VAR1="val1 'bal x" */
-		$[ "match" : [ "^[ \t]*([a-zA-Z_][a-zA-Z0-9_]*)=\"([^\"`\\$]*)\"", "%s='%s'" ] ],
-		/* VAR1='val1 xxx" xx' */
-		$[ "match" : [ "^[ \t]*([a-zA-Z_][a-zA-Z0-9_]*)='([^']*)'", "%s='%s'" ] ],
-		/* VAR1=val1 */
-		$[ "match" : [ "^[ \t]*([a-zA-Z_][a-zA-Z0-9_]*)=([^ \t\"$`'\\#]*)", "%s='%s'" ] ],
+                $[ "match" : [ "^[ \t]*([a-zA-Z_][a-zA-Z0-9_]*)=[ \t]*(.*)[ \t]*", "%s=%s" ] ],
 	    ],
 	    /* matching rules */
 	    "rewrite"	: [
