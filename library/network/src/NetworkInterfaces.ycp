@@ -1459,7 +1459,7 @@ global define list<string> List(string devregex) {
 		y2error("Filtering out : %1", row);
 		return false;
 	});
-    y2milestone("List( %1 ) = %2", devregex, ret);
+    y2debug("List(%1) = %2", devregex, ret);
     return ret;
 }
 
