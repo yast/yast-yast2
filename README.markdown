@@ -1,16 +1,18 @@
 # YaST - The basic libraries #
 
-This repository contains 
+This repository contains basic set of shared libraries and so-called SCR agents
+used for reading and writing configuration files and some even for executing
+commands on the system.
 
 ## Installation ##
 
-  `make -f Makefile.cvs`
-  `make`
-  `sudo make install`
+    make -f Makefile.cvs
+    make
+    sudo make install
 
 ## Running Testsuites ##
 
-  `make check`
+    make check
 
 ## Links ##
 
