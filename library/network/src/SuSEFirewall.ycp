@@ -3394,7 +3394,6 @@ Run YaST2 Firewall and assign it.
         }
 
         if (FileUtils::Exists (converted_to_services_dbp_file)) {
-	    y2milestone ("Configuration has been already converted");
             already_converted = true;
             return;
         }
