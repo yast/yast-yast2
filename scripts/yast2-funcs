@@ -20,14 +20,16 @@ function get_plugindir()
 {
     plugindir=$YAST_PREFIX/lib/YaST2/plugin
     if `ldd $ybindir/y2base | egrep "/lib64/(.*/)?libc.so" > /dev/null` ; then
-	plugindir=$YAST_PREFIX/lib64/YaST2/plugin
+        plugindir=$YAST_PREFIX/lib64/YaST2/plugin
     fi
 }
+
 
 
 #
 # check if a plugin and all necessary libaries are present
 #
+# Only for compatibility with yast2-libyui, can be removed once everyone uses libyui4
 function check_plugin()
 {
     local PLUGIN_SO="$1"
@@ -48,12 +50,23 @@ function check_plugin()
     return 1			# failure
 }
 
+
+function check_libyui_plugin()
+{
+   if [ -e "/usr/lib64/yui/libyui-${1}.so.4" -o -e "/usr/lib/yui/libyui-${1}.so.4" ]; then
+      return 0 # success
+   fi
+
+   return 1    # failure
+
+}
+
 #
 # check if the qt plugin and all necessary libraries are present
 #
 function check_qt()
 {
-    check_plugin libpy2qt.so.2 "the qt frontend"
+   check_libyui_plugin qt || check_plugin libpy2qt.so.2 "the qt frontend"
 }
 
 #
@@ -61,7 +74,7 @@ function check_qt()
 #
 function check_gtk()
 {
-    check_plugin libpy2gtk.so.2 "the gtk frontend"
+    check_libyui_plugin gtk || check_plugin libpy2gtk.so.2 "the gtk frontend"
 }
 
 #
@@ -69,7 +82,7 @@ function check_gtk()
 #
 function check_ncurses()
 {
-    check_plugin libpy2ncurses.so.2 "the ncurses frontend"
+    check_libyui_plugin ncurses || check_plugin libpy2ncurses.so.2 "the ncurses frontend"
 }
 
 

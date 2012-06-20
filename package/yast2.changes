@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 22 11:25:10 UTC 2012 - tgoettlicher@suse.de
+
+- search for UI plugins at new and old location
+- 2.23.2 
+
+-------------------------------------------------------------------
 Thu May 10 07:17:40 UTC 2012 - mfilka@suse.com
 
 - removed ShellSafeWrite as it is not needed anymore with new ag_ini - bnc#750325
