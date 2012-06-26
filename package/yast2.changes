@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun 26 11:45:26 CEST 2012 - gs@suse.de
+
+- added color schemes "highcontrast" and "inverted" to description
+  of Y2NCURSES_COLOR_THEME in sysconfig.yast2 
+
+-------------------------------------------------------------------
 Thu May 10 07:17:40 UTC 2012 - mfilka@suse.com
 
 - removed ShellSafeWrite as it is not needed anymore with new ag_ini - bnc#750325
