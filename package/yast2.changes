@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul  4 06:10:39 UTC 2012 - mfilka@suse.com
+
+- added new filter (FilterUnknownDevices)
+- created new category of devices (special devices - e.g. "lo")
+- 2.23.1
+
+-------------------------------------------------------------------
 Tue Jun 26 11:45:26 CEST 2012 - gs@suse.de
 
 - added color schemes "highcontrast" and "inverted" to description
