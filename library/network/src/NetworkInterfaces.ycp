@@ -87,6 +87,7 @@ global map<string,string> CardRegex = $[
     "modem"	: "ppp|modem",
     "isdn"	: "isdn|ippp",
     "dsl"	: "dsl",
+    "specdev"   : "lo",
     /* other: irlan|lo|plip|... */
 ];
 
@@ -121,6 +122,7 @@ global map<string,string> DeviceRegex = $[
     "dsl"	: CardRegex["dsl"]:"",
     /* device groups */
     "dialup"	: CardRegex["modem"]:"" + "|" + CardRegex["dsl"]:"" + "|" + CardRegex["isdn"]:"",
+    "specdev"   : CardRegex["specdev"]:"",
 ];
 
 /**
@@ -267,6 +269,9 @@ global string GetDeviceType(string dev) {
     }
     else if (regexpmatch(dev,"^" + DeviceRegex["dsl"]:"")) {
 	return(_("DSL"));
+    }
+    else if (regexpmatch(dev,"^" + DeviceRegex["specdev"]:"")) {
+	return(_("Special device"));
     }
     else return(_("Unknown"));
 }
@@ -653,6 +658,14 @@ define map<string,map> Filter(map<string,map> devices, string devregex) {
  */
 global map<string,map> FilterDevices (string devregex) {
     return Filter (Devices, devregex);
+}
+
+global map<string, map> FilterUnknownDevices()
+{
+    return filter( string file, map devmap, Devices,
+    {
+        return GetDeviceType( file) == _("Unknown");
+    });
 }
 
 /**

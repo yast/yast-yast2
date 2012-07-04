@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul  4 06:10:39 UTC 2012 - mfilka@suse.com
+
+- added new filter (FilterUnknownDevices)
+- created new category of devices (special devices - e.g. "lo")
+- 2.23.1
+
+-------------------------------------------------------------------
 Thu May 10 07:17:40 UTC 2012 - mfilka@suse.com
 
 - removed ShellSafeWrite as it is not needed anymore with new ag_ini - bnc#750325
