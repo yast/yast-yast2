@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun 26 11:45:26 CEST 2012 - gs@suse.de
+
+- added color schemes "highcontrast" and "inverted" to description
+  of Y2NCURSES_COLOR_THEME in sysconfig.yast2 
+
+-------------------------------------------------------------------
 Fri Jun 22 11:25:10 UTC 2012 - tgoettlicher@suse.de
 
 - search for UI plugins at new and old location
