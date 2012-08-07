@@ -9,12 +9,12 @@
 
     // test standard System V init
     TEST (``(Systemd::Running()), [$[
-	    "target" : $[ "string" : "init [5]\n" ]
+	    "target" : $[ "stat" : $[] ]
 	    ], $[], $[]], nil);
 
     // systemd
     TEST (``(Systemd::Running()), [$[
-	    "target" : $[ "string" : "/bin/systemd\n" ]
+	    "target" : $[ "stat" : $[ "isdir" : true ]]
 	    ], $[], $[]], nil);
 
     DUMP("Systemd::SetDefaultRunlevel() tests");

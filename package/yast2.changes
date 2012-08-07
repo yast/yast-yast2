@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug  7 14:53:33 CEST 2012 - jsuchome@suse.cz
+
+- fixed checking for systemd status (bnc#774799)
+- 2.23.3 
+
+-------------------------------------------------------------------
 Tue Jun 26 11:45:26 CEST 2012 - gs@suse.de
 
 - added color schemes "highcontrast" and "inverted" to description

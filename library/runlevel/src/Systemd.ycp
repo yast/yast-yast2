@@ -13,8 +13,11 @@
 
 module "Systemd";
 
+import "FileUtils";
+
 const string systemd_path = "/bin/systemd";
 const string default_symlink = "/etc/systemd/system/default.target";
+const string systemd_mountdir = "/sys/fs/cgroup/systemd";
 
 textdomain "base";
 
@@ -33,24 +36,7 @@ global boolean Installed()
  */
 global boolean Running()
 {
-    // check the command of the init program (PID=1)
-    const string cmdline_path = "/proc/1/cmdline";
-
-    // /proc/<pid>/cmdline is a NULL separated list
-    // we cannot use NULL separator in YCP (?), check just the begining
-    string init_cmdline = (string)SCR::Read(.target.string, cmdline_path);
-    y2milestone("Current init program: %1", init_cmdline);
-
-    if (init_cmdline == nil)
-    {
-	y2error("Cannot check systemd status");
-	return nil;
-    }
-
-    boolean ret = substring(init_cmdline, 0, size(systemd_path)) == systemd_path;
-    y2milestone("Systemd detected: %1", ret);
-
-    return ret;
+    return FileUtils::IsDirectory (systemd_mountdir) == true;
 }
 
 /**

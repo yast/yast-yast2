@@ -1,7 +1,7 @@
 Dump	Systemd::Running() tests
-Read	.target.string "/proc/1/cmdline" "init [5]\n"
+Read	.target.stat "/sys/fs/cgroup/systemd" $[]
 Return	false
-Read	.target.string "/proc/1/cmdline" "/bin/systemd\n"
+Read	.target.stat "/sys/fs/cgroup/systemd" $["isdir":true]
 Return	true
 Dump	Systemd::SetDefaultRunlevel() tests
 Log	Invalid default runlevel (must be in range 0..6): nil
