@@ -1440,6 +1440,11 @@
 	    if (IsInterfaceInZone(interface, zone)) interface_zone = add (interface_zone, zone);
 	});
 
+        // Fallback handling for 'any' in the FW_DEV_* configuration
+        if (interface == special_all_interface_string && size(interface_zone) == 0) {
+          interface_zone = [special_all_interface_zone];
+        }
+
 	if (IsVerbose() && size(interface_zone) > 1) {
 	    // TRANSLATORS: Error message, %1 = interface name (like eth0)
 	    Report::Error(sformat(_("Interface '%1' is included in multiple firewall zones.
