@@ -104,6 +104,13 @@
     }
 
     /**
+     * Returns if iSCSI has been requested in Linuxrc.
+     */
+    global boolean useiscsi () {
+        return Linuxrc::InstallInf("WithiSCSI") == "1";
+    }
+
+    /**
      * we're running in textmode (-> UI::GetDisplayInfo())
      */
     global boolean text () {
