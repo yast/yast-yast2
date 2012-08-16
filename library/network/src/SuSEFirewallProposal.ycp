@@ -40,6 +40,8 @@
 
     string ssh_service = "service:sshd";
 
+    string iscsi_target_service = "service:iscsitarget";
+
     # <!-- SuSEFirewall LOCAL VARIABLES //-->
 
     # <!-- SuSEFirewall LOCAL FUNCTIONS //-->
@@ -350,6 +352,13 @@
 	    y2milestone("Adding Xen support into the firewall configuration");
 	    SuSEFirewall::AddXenSupport();
 	}
+
+        // BNC #766300 - Automatically propose opening iscsi-target port
+        // when installing with withiscsi=1
+        if (Linuxrc::useiscsi()) {
+            y2milestone("iSCSI has been used during installation, opening %1 service", iscsi_target_service);
+            OpenServiceOnNonDialUpInterfaces (iscsi_target_service, ["iscsi-target"]);
+        }
 
 	SetKnownInterfaces(SuSEFirewall::GetListOfKnownInterfaces());
     }
