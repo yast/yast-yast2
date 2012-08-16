@@ -216,6 +216,7 @@
      * are only dial-up interfaces, function opens the service for them.
      *
      * @param string service such as "service:koo" or "serice:boo"
+     * @param list <string> list of ports used as a fallback if the given service doesn't exist
      */
     global define void OpenServiceOnNonDialUpInterfaces (string service, list <string> fallback_ports) {
 	list <string> non_dial_up_interfaces = SuSEFirewall::GetAllNonDialUpInterfaces();
