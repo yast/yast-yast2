@@ -42,6 +42,8 @@
 
     string iscsi_target_service = "service:iscsitarget";
 
+    list <string> iscsi_target_fallback_ports = ["iscsi-target"];
+
     # <!-- SuSEFirewall LOCAL VARIABLES //-->
 
     # <!-- SuSEFirewall LOCAL FUNCTIONS //-->
@@ -218,8 +220,8 @@
      * @see OpenServiceOnNonDialUpInterfaces for more info.
      *
      * @param string service, e.g., "service:http-server"
-     * @param list <string> fallback_ports, e.g., "80"
-     * @param list <string> interfaces, e.g., "eth3"
+     * @param list <string> fallback_ports, e.g., ["80"]
+     * @param list <string> interfaces, e.g., ["eth3"]
      */
     define void OpenServiceInInterfaces(string service, list <string> fallback_ports, list <string> interfaces) {
         list <string> zones = SuSEFirewall::GetZonesOfInterfaces(interfaces);
@@ -233,6 +235,41 @@
         if (SuSEFirewallServices::IsKnownService (service) != true || ServiceEnabled (service, interfaces) != true) {
             EnableFallbackPorts (fallback_ports, interfaces);
         }
+    }
+
+    /**
+     * Checks whether the given service or (TCP) ports are open at least in
+     * one FW zone.
+     *
+     * @param string service, e.g., "service:http-server"
+     * @param list <string> fallback_ports, e.g., ["80"]
+     */
+    define boolean IsServiceOrPortsOpen(string service, list <string> fallback_ports) {
+        boolean ret = false;
+
+        foreach (string zone, SuSEFirewall::GetKnownFirewallZones(), {
+            // either service is supported
+            if (SuSEFirewall::IsServiceSupportedInZone(service, zone)) {
+                ret = true;
+            // or check for ports
+            } else {
+                boolean all_ports = true;
+
+                // all ports have to be open
+                foreach (string port, fallback_ports, {
+                    if (! SuSEFirewall::HaveService (port, "TCP", zone)) {
+                        all_ports = false;
+                        break;
+                    }
+                });
+
+                if (all_ports) ret = true;
+            }
+
+            if (ret == true) break;
+        });
+
+        return ret;
     }
 
     /**
@@ -357,7 +394,7 @@
         // when installing with withiscsi=1
         if (Linuxrc::useiscsi()) {
             y2milestone("iSCSI has been used during installation, opening %1 service", iscsi_target_service);
-            OpenServiceOnNonDialUpInterfaces (iscsi_target_service, ["iscsi-target"]);
+            OpenServiceOnNonDialUpInterfaces (iscsi_target_service, iscsi_target_fallback_ports);
         }
 
 	SetKnownInterfaces(SuSEFirewall::GetListOfKnownInterfaces());
@@ -567,7 +604,23 @@
 		    // TRANSLATORS: This is a warning message. Installation over VNC without VNC allowed on firewall
 		    AddWarning(_("You are installing a system using remote administration (VNC), but you have not opened the VNC ports on the firewall."));
 	    }
-	    
+
+            if (Linuxrc::useiscsi()) {
+                boolean is_iscsi_enabled = IsServiceOrPortsOpen(iscsi_target_service, iscsi_target_fallback_ports);
+
+                output = output + "<li>" + (is_iscsi_enabled ?
+                    // TRANSLATORS: Network proposal informative text
+                    _("iSCSI Target ports are open")
+                    :
+                    // TRANSLATORS: Network proposal informative text
+                    _("iSCSI Target ports are blocked")
+                ) + "</li>\n";
+
+                if (! is_iscsi_enabled)
+                    // TRANSLATORS: This is a warning message. Installation to iSCSI without iSCSI allowed on firewall
+                    AddWarning(_("You are installing a system using iSCSI Target, but you have not opened the needed ports on the firewall."));
+            }
+
 	    list <string> warnings_strings = GetWarnings();
 	    if (size(warnings_strings)>0) {
 		ClearWarnings();
