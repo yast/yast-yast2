@@ -1,6 +1,7 @@
 -------------------------------------------------------------------
-Fri Aug 17 04:52:08 EDT 2012 - locilka@suse.com
+Fri Aug 17 15:47:42 CEST 2012 - locilka@suse.com
 
+- Fixed a typo (BNC #766703)
 - Added support for iSCSI Target into the Firewall proposal
   (BNC #766300)
 
