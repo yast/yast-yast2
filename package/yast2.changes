@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Aug 17 15:47:42 CEST 2012 - locilka@suse.com
+
+- Fixed a typo (BNC #766703)
+- Added support for iSCSI Target into the Firewall proposal
+  (BNC #766300)
+
+-------------------------------------------------------------------
 Tue Aug  7 14:53:33 CEST 2012 - jsuchome@suse.cz
 
 - fixed checking for systemd status (bnc#774799)
