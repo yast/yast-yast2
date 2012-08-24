@@ -15,6 +15,10 @@
 
 export PATH=/sbin:/usr/sbin:$PATH
 
+# we need input methods for many locales bnc#776567
+
+export QT_IM_MODULE=xim GTK_IM_MODULE=xim
+
 # allow for a different prefix
 # strip the basename off $0, which can be: (bnc#382216, bnc#458385)
 # /sbin/yast2, /sbin/yast, yast2 (sh -x yast2 ...), /sbin/yast2 (PATH=/sbin/:...)
