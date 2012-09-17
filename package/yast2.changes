@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep 17 07:31:13 UTC 2012 - mfilka@suse.com
+
+- added missing dependency on bind-utils.
+- bnc#651893 and bnc#765235 
+
+-------------------------------------------------------------------
 Fri Jan 13 14:35:47 CET 2012 - mvidner@suse.cz
 
 - Internet test: fail early if NetworkManager has crashed
