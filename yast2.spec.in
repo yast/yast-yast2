@@ -32,6 +32,8 @@ Requires:       yast2-perl-bindings
 Requires:       perl-XML-Simple
 # for ProductProfile.ycp
 Requires:       subscription-tools
+# for Punycode.ycp (bnc#651893)
+Requires:       bind-utils
 
 # moved cfg_security.scr
 Conflicts:      yast2-security <= 2.13.2
