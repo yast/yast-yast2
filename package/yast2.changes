@@ -1,8 +1,14 @@
 -------------------------------------------------------------------
-Tue Sep 18 13:59:34 CEST 2012 - jsuchome@suse.cz
+Tue Sep 18 22:32:59 CEST 2012 - jsuchome@suse.cz
 
 - added San Marino to the list of countries (bnc#780639)
-- 2.23.4 
+- 2.23.5 
+
+-------------------------------------------------------------------
+Mon Aug 27 08:51:54 CEST 2012 - tgoettlicher@suse.de
+
+- fix bnc#776567 YaST doesn't support input method
+- 2.23.4
 
 -------------------------------------------------------------------
 Fri Aug 17 15:47:42 CEST 2012 - locilka@suse.com
