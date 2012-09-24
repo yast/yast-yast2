@@ -116,7 +116,7 @@
     list <string> firewall_services_reverse = [ "SuSEfirewall2_setup", "SuSEfirewall2_init" ];
 
     /* script for starting and checking firewall status */
-    string firewall_script = "/sbin/SuSEfirewall2";
+    string firewall_script = "/sbin/service SuSEfirewall2_setup";
 
     list <string> SuSEFirewall_variables = [
 	// zones and interfaces
