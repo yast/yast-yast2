@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep 24 06:17:16 UTC 2012 - mfilka@suse.com
+
+- extended support for IPv6
+- 2.23.6 
+
+-------------------------------------------------------------------
 Tue Sep 18 22:32:59 CEST 2012 - jsuchome@suse.cz
 
 - added San Marino to the list of countries (bnc#780639)
