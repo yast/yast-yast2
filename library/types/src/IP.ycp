@@ -23,7 +23,7 @@ global string ValidChars6 = "0123456789abcdefABCDEF:";
  */
 global define string Valid4() ``{
     //Translators: dot: "."
-    return _("A valid IP address consists of four integers
+    return _("A valid IPv4 address consists of four integers
 in the range 0-255 separated by dots.");
 }
 
@@ -55,6 +55,17 @@ global defin boolean Check4_new(string ip) ``{
 */
 
 /**
+ * Describe a valid IPv6 address
+ * @return string describtion a valid IPv4 address
+ */
+global define string Valid6() ``{
+    //Translators: dot: "."
+    return _("A valid IPv6 address consists of up to eight
+hexadecimal numbers in the range 0 - FFFF separated by colons.
+It can contain up to one double colon.");
+}
+
+/**
  * Check syntax of IPv6 address
  * @param ip IPv6 address
  * @return true if correct
@@ -80,6 +91,28 @@ global define boolean Check6(string ip) ``{
     if(regexpmatch(ip, "^(" + num + ":){1,6}(:" + num + "){1,6}$")) return true;
 
     return false;
+}
+
+/**
+ * If param contains IPv6 in one of its various forms, extracts it.
+ *
+ * if ip is closed in [ ] or contain % then it can be special case of IPv6 syntax,
+ * so extract ipv6 (see description later) and continue with check.
+ *
+ * IPv6 syntax:
+ * - pure ipv6 blob (e.g. f008::1)
+ * - ipv6 blob with link local suffix (e.g. f008::1%eth0)
+ * - dtto in square brackets (e.g. [f008::1%eth0] )
+ *
+ * @param ip    a buffer with address
+ * @return      IPv6 part of ip param, unchanged ip param otherwise
+ */
+define string UndecorateIPv6( string ip)
+{
+        if( regexpmatch( ip, "^\\[.*\\]") || regexpmatch( ip, "^[^][%]+(%[^][%]+){0,1}$"))
+            ip = regexpsub( ip, "^\\[?([^][%]+)(%[^][%]+){0,1}(\\]|$)", "\\1");
+
+        return ip;
 }
 
 /**
