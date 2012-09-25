@@ -107,7 +107,7 @@ global define boolean Check6(string ip) ``{
  * @param ip    a buffer with address
  * @return      IPv6 part of ip param, unchanged ip param otherwise
  */
-define string UndecorateIPv6( string ip)
+global define string UndecorateIPv6( string ip)
 {
         if( regexpmatch( ip, "^\\[.*\\]") || regexpmatch( ip, "^[^][%]+(%[^][%]+){0,1}$"))
             ip = regexpsub( ip, "^\\[?([^][%]+)(%[^][%]+){0,1}(\\]|$)", "\\1");
