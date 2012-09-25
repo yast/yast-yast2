@@ -59,7 +59,7 @@ global defin boolean Check4_new(string ip) ``{
  * @return string describtion a valid IPv4 address
  */
 global define string Valid6() ``{
-    //Translators: dot: "."
+    //Translators: colon: ":"
     return _("A valid IPv6 address consists of up to eight
 hexadecimal numbers in the range 0 - FFFF separated by colons.
 It can contain up to one double colon.");
