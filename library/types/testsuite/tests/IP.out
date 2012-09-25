@@ -47,6 +47,11 @@ Return	false
 Return	false
 Return	false
 Return	false
+Dump	IP::UndecorateIPv6
+Return	fe80::219:d1ff:feac:fd10
+Return	::1
+Return	fe80::3
+Return	fe80::3
 Dump	IP::ToInteger
 Return	0
 Return	2130706433
