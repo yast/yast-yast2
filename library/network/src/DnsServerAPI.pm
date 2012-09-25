@@ -306,7 +306,7 @@ sub CheckHostameInZone {
 
 The hostname must be relative to the zone or must end 
 with the zone name followed by a dot, for example,
-'dhcp1' or 'dhcp1.example.org.' for the zone 'dhcp.org'.
+'dhcp1' or 'dhcp1.example.org.' for the zone 'example.org'.
 "), $hostname, $zone));
 	    return 0;
 	}
