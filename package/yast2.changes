@@ -1,7 +1,8 @@
 -------------------------------------------------------------------
 Mon Sep 24 17:38:52 CEST 2012 - locilka@suse.com
 
-- Fixed detection whether firewall is running (BNC #779455)
+- Fixed detection whether firewall is running (BNC #779455) and
+  unified with starting and stopping the service via Service API.
 
 -------------------------------------------------------------------
 Tue Sep 18 22:32:59 CEST 2012 - jsuchome@suse.cz
