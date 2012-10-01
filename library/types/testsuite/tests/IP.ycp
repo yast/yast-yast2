@@ -58,6 +58,12 @@ TEST(``(IP::Check6("1::3:4::6:7:8")), [], nil);
 TEST(``(IP::Check6("1:2:3:4:5:6:7:8:9")), [], nil);
 TEST(``(IP::Check6("1:2:3:4::5:6:7:8:9")), [], nil);
 
+DUMP( "IP::UndecorateIPv6");
+TEST( (IP::UndecorateIPv6( "fe80::219:d1ff:feac:fd10")), [], nil);
+TEST( (IP::UndecorateIPv6( "[::1]")), [], nil);
+TEST( (IP::UndecorateIPv6( "fe80::3%eth0")), [], nil);
+TEST( (IP::UndecorateIPv6( "[fe80::3%eth0]")), [], nil);
+
 
 DUMP("IP::ToInteger");
 TEST(``(IP::ToInteger("0.0.0.0")), [], nil);

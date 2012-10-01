@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Oct 01 06:17:16 UTC 2012 - mfilka@suse.com
+
+- extended support for IPv6
+- 2.23.6 
+
+-------------------------------------------------------------------
 Mon Sep 24 17:38:52 CEST 2012 - locilka@suse.com
 
 - Fixed detection whether firewall is running (BNC #779455) and
