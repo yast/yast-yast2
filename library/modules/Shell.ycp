@@ -1,0 +1,56 @@
+/**
+ * File:	Shell.ycp
+ * Summary:	interface for running shell commands and processing its output.
+ * Authors:	Michal Filka <mfilka@suse.cz>
+ */
+{
+module "Shell";
+
+boolean IsEmptyString( string str)
+{
+    return ( str == nil) || isempty( str);
+}
+
+/**
+ * @param Shell command to run
+ * @return Hash in form $[ "exit": <command-exit-code>, "output": [ <1st line>, <2nd line>, ... ], "stderr": <error output> ] 
+ */
+global map< string, any> RunAndRead( string command)
+{
+    map< string, any> ret = $[ "exit": false, "output": [] ];
+    map result = ( map) SCR::Execute( .target.bash_output, command);
+    string output = result[ "stdout"]:"";
+
+    ret[ "exit"] = result[ "exit"]:nil;
+
+    if( regexpmatch( output, ".*\n$"))
+        output = substring( output, 0, size( output) -1 );
+
+    ret[ "output"] = splitstring( output, "\n");
+    ret[ "stderr"] = result[ "stderr"]:nil;
+
+    if( ( ret[ "exit"]:nil != 0) || (IsEmptyString( (string) result[ "stderr"]:nil) == false) )
+    {
+        y2error( "RunAndRead <%1>: Command execution failed. Exit code: %3.\n%2", command, ret[ "exit"]:nil, ret[ "stderr"]:"");
+    }
+
+    return ret;
+}
+
+/**
+ * @param Shell command to run
+ * @return whether command execution succeeds
+ */
+global integer Run( string command)
+{
+    integer ret = (integer) SCR::Execute( .target.bash, command);
+
+    if( ret != 0)
+    {
+        y2error( "Run <%1>: Command execution failed. Exit code: %2", command, ret);
+    }
+
+    return ret;
+}
+
+} /* EOF */
