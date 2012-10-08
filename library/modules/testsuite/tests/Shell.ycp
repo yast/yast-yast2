@@ -1,0 +1,21 @@
+{
+    import "Assert";
+    import "Shell";
+
+    Assert::Equal( true, Shell::Run( "echo") == 0 );
+    Assert::Equal( false, Shell::Run( "false") == 0 );
+
+    map< string, any> echo_expected = $[
+        "exit": 0,
+        "output": [ "Hello world!"],
+        "stderr": ""
+    ];
+    map< string, any> echo_multiline_expected = $[
+        "exit": 0,
+        "output": [ "Hello", "world!"],
+        "stderr": ""
+    ];
+
+    Assert::Equal( echo_expected, Shell::RunAndRead( "echo \"Hello world!\"") );
+    Assert::Equal( echo_multiline_expected, Shell::RunAndRead( "echo \"Hello\nworld!\"") );
+}

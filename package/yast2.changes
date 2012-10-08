@@ -1,5 +1,11 @@
 -------------------------------------------------------------------
-Mon Oct 01 06:17:16 UTC 2012 - mfilka@suse.com
+Wed Oct  3 12:28:07 UTC 2012 - mfilka@suse.com
+
+- interface for executing shell commands
+- 2.24.0 
+
+-------------------------------------------------------------------
+Mon Sep 24 06:17:16 UTC 2012 - mfilka@suse.com
 
 - extended support for IPv6
 - 2.23.6 
