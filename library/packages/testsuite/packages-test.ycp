@@ -88,9 +88,6 @@ Package::RemoveAll(el);
 
 Package::DoInstallAndRemove([], []);
 
-/* Other */
-Package::RunSUSEconfig();
-
 }
 
 Popup::AnyMessage("Package Testsuite", sformat("Number of Successes: %1

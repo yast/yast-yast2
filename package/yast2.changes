@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct 11 14:49:04 CEST 2012 - jsuchome@suse.cz
+
+- removed calls to /sbin/SuSEconfig, packages should care of 
+  updating configurations on their own
+
+-------------------------------------------------------------------
 Mon Oct 01 06:17:16 UTC 2012 - mfilka@suse.com
 
 - extended support for IPv6

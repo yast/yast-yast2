@@ -225,44 +225,6 @@ global boolean RemoveAll(list<string> packages) {
     return RemoveAllMsg(packages, nil);
 }
 
-/**
- * Run SUSEconfig, create new wizard dialog before it,
- * close after it is finished
- */
-global void RunSUSEconfig() {
-    if (Mode::commandline())
-    {
-	// in the commandline mode start SuSEconfig in background
-	SCR::Execute(.background.run_output, "/sbin/SuSEconfig");
-
-	list<string> script_out = [];
-	symbol ret = nil;
-
-	// print SuSEconfig output
-	while((boolean)SCR::Read(.background.output_open) || ((integer)SCR::Read(.background.newlines) > 0))
-	{
-	    script_out = (list<string>)SCR::Read(.background.newout);
-
-	    foreach(string line, script_out, {
-		    CommandLine::PrintVerbose(line);
-		}
-	    );
-
-	    while ((integer)SCR::Read(.background.newlines) == 0 && (boolean)SCR::Read(.background.output_open))
-	    {
-		sleep(200);	// small wait
-	    }
-	}
-    }
-    else
-    {
-	Wizard::CreateDialog ();
-	// inst_suseconfig returns `auto or `next
-	// (update mode or Args(2) is true) => no error checking
-	WFM::CallFunction("inst_suseconfig", [$["enable_back":false, "enable_next":false]]);
-	Wizard::CloseDialog ();
-    }
-}
 
 /**
  * Return result of the last operation
