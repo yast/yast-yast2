@@ -329,17 +329,6 @@ to be solved manually in the software manager."));
     });
     if(ok != true) return false;
 
-    // Only run SUSEconfig if any packages were installed?
-    // No, deleted packages are not covered by this.
-    // if (true || result[0]:-1 > 0)
-
-    // But omit it during installation, one is run at its end.
-    // #25071
-    if (!Stage::initial () && !Stage::cont ())
-    {
-	RunSUSEconfig ();
-    }
-
     // a package or a patch was installed, may be that there is a new yast agent
     if (any_to_install)
     {

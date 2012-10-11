@@ -137,9 +137,6 @@ packages);</para>
       <title>Other</title>
       <itemizedlist spacing="compact">
         <listitem>
-          <para>void RunSUSEconfig();</para>
-        </listitem>
-        <listitem>
           <para id="Module_Package_LastOperationCanceled">boolean Package::LastOperationCanceled();</para>
         </listitem>
         <listitem>
