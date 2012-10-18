@@ -2,6 +2,10 @@
  * File:	modules/Syslog.ycp
  * Package:	yast2
  * Summary:	Access to system log
+ *
+ * Usage:
+ *      Syslog::ComplexLog ("", ["-i", "-f", "/tmp/logmessage"]);
+ *      Syslog::Log ("user was created");
  */
 
 {
@@ -16,10 +20,15 @@ import "String";
  * @param logger options - see man logger for a list
  * @return result off logger call
  */
-global boolean ComplexLog (string message, string options) {
+global boolean ComplexLog (string message, list<string> options) {
+
+    options     = maplist (string o, options, {
+      return sformat ("'%1'", String::Quote (o));
+    });
 
     return 0 == SCR::Execute (.target.bash, sformat ("/bin/logger %1 -- %2",
-      String::Quote (options), String::Quote (message))
+      mergestring (options, " "),
+      message == "" ? "" : ("'" + String::Quote (message) + "'"))
     );
 }
 
@@ -30,6 +39,6 @@ global boolean ComplexLog (string message, string options) {
  */
 global boolean Log (string message) {
 
-    return ComplexLog (message, "");
+    return ComplexLog (message, []);
 }
 }
