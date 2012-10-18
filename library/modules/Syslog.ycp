@@ -1,0 +1,35 @@
+/**
+ * File:	modules/Syslog.ycp
+ * Package:	yast2
+ * Summary:	Access to system log
+ */
+
+{
+
+module "Syslog";
+
+import "String";
+
+/**
+ * Write a message into system log
+ * @param log message
+ * @param logger options - see man logger for a list
+ * @return result off logger call
+ */
+global boolean ComplexLog (string message, string options) {
+
+    return 0 == SCR::Execute (.target.bash, sformat ("/bin/logger %1 -- %2",
+      String::Quote (options), String::Quote (message))
+    );
+}
+
+/**
+ * Write a message into system log
+ * @param log message
+ * @return result off logger call
+ */
+global boolean Log (string message) {
+
+    return ComplexLog (message, "");
+}
+}
