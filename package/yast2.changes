@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 19 11:36:26 CEST 2012 - jsuchome@suse.cz
+
+- added Syslog module, simple API to write into system log 
+- 2.23.7
+
+-------------------------------------------------------------------
 Thu Oct 11 14:49:04 CEST 2012 - jsuchome@suse.cz
 
 - removed calls to /sbin/SuSEconfig, packages should care of 
