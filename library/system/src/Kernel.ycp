@@ -20,6 +20,7 @@
     import "Arch";
     import "Mode";
     import "Linuxrc";
+    import "Popup";
     import "Stage";
 
     textdomain "base";
@@ -79,8 +80,7 @@ list<map<string,string> > kernel_modules_to_load = [];
 // kernel was reinstalled
 
 /**
- *  A flag to indicate if a popup informing about the kernel change should
- *  be displayed by inst_suseconfig.
+ *  A flag to indicate if a popup informing about the kernel change should be displayed
  */
 boolean inform_about_kernel_change = false;
 
@@ -717,6 +717,21 @@ global define void SetInformAboutKernelChange (boolean b)
 global define boolean GetInformAboutKernelChange ()
 {
     return inform_about_kernel_change;
+}
+
+/**
+ *  Display popup about new kernel that was installed
+ */
+global boolean InformAboutKernelChange ()
+{
+    if (GetInformAboutKernelChange ())
+    {
+	// inform the user that he/she has to reboot to activate new kernel
+	Popup::Message(_("Reboot your system
+to activate the new kernel.
+"));
+        return inform_about_kernel_change;
+    }
 }
 
 

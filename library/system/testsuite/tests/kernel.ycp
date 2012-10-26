@@ -43,11 +43,11 @@
 		    ],
 		],
 	    ],
-	]
-/*	"target" : $[
-	    "string" : "",
+	],
+	"target" : $[
 	    "tmpdir" : "/tmp"
 	],
+        /*
 	"etc" : $[
 	    "install_inf" : $[
 		"InstMode" : "",

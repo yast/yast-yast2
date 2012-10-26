@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Oct 25 14:12:12 CEST 2012 - jsuchome@suse.cz
+
+- added Kernel::InformAboutKernelChange - replacement for only
+  non-SuSEconfig part of inst_suseconfig
+- 2.23.8 
+
+-------------------------------------------------------------------
 Fri Oct 19 11:36:26 CEST 2012 - jsuchome@suse.cz
 
 - added Syslog module, simple API to write into system log 
