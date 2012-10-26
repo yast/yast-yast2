@@ -23,7 +23,7 @@ global string ValidChars6 = "0123456789abcdefABCDEF:";
  */
 global define string Valid4() ``{
     //Translators: dot: "."
-    return _("A valid IPv4 address consists of four integers
+    return _("A valid IP address consists of four integers
 in the range 0-255 separated by dots.");
 }
 
