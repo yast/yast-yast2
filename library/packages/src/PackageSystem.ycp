@@ -17,6 +17,7 @@
 module "PackageSystem";
 textdomain "base";
 
+import "Kernel";
 import "Mode";
 import "PackageCallbacks";
 import "PackageLock";
@@ -328,6 +329,14 @@ to be solved manually in the software manager."));
 	    }
     });
     if(ok != true) return false;
+
+    // Show popup when new kernel was installed
+    // But omit it during installation, one is run at its end.
+    // #25071
+    if (!Stage::initial () && !Stage::cont ())
+    {
+	Kernel::InformAboutKernelChange ();
+    }
 
     // a package or a patch was installed, may be that there is a new yast agent
     if (any_to_install)

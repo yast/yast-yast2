@@ -478,11 +478,6 @@ To reject the license of the package, click <b>I Disagree</b></p>.");
 	    items = add(items, HTML::Link(_("Installation log"), "install_log"));
 	}
 
-	if (haskey(summary, "postinstall_log"))
-	{
-	    items = add(items, HTML::Link(_("Post-Installation log (SUSEconfig)"), "postinstall_log"));
-	}
-
 	if (size(items) > 0)
 	{
 	    ret = ret + HTML::Para(
@@ -549,11 +544,6 @@ To reject the license of the package, click <b>I Disagree</b></p>.");
 		if (result == "install_log")
 		{
 		    ShowDetailsString(_("Installation log"), summary["install_log"]:"");
-		}
-		// display post-installation log (suseconfig)
-		else if (result == "postinstall_log")
-		{
-		    ShowDetailsString(_("Post-Installation log (SUSEconfig)"), summary["postinstall_log"]:"");
 		}
 		else if (result == "installed_packages")
 		{
