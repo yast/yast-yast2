@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Oct 29 14:52:40 CET 2012 - jsuchome@suse.cz
+
+- use Kernel::InformAboutKernelChange after package installation
+- do not read SuSEconfig log 
+- 2.23.9
+
+-------------------------------------------------------------------
 Thu Oct 25 14:12:12 CEST 2012 - jsuchome@suse.cz
 
 - added Kernel::InformAboutKernelChange - replacement for only
