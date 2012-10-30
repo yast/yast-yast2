@@ -730,8 +730,8 @@ global boolean InformAboutKernelChange ()
 	Popup::Message(_("Reboot your system
 to activate the new kernel.
 "));
-        return inform_about_kernel_change;
     }
+    return inform_about_kernel_change;
 }
 
 
