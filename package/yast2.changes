@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct 30 08:26:28 CET 2012 - jsuchome@suse.cz
+
+- Kernel::InformAboutKernelChange - always return boolean
+- fixed build dependencies
+- 2.23.10 
+
+-------------------------------------------------------------------
 Mon Oct 29 14:52:40 CET 2012 - jsuchome@suse.cz
 
 - use Kernel::InformAboutKernelChange after package installation
