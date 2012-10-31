@@ -28,7 +28,7 @@ Requires:       coreutils sysconfig
 Requires:       yast2-xml yast2-hardware-detection
 # for SLPAPI.pm
 Requires:       yast2-perl-bindings
-# for ag_anyxml
+# for ag_anyxml, RegistrationStatus.pm
 Requires:       perl-XML-Simple
 # for ProductProfile.ycp
 Requires:       subscription-tools
