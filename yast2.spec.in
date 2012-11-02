@@ -184,6 +184,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 #system
 %dir @yncludedir@/hwinfo
 @yncludedir@/hwinfo/*.ycp
+@desktopdir@/messages.desktop
 
 # documentation
 
