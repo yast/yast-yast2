@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Nov  2 11:43:01 CET 2012 - jsuchome@suse.cz
+
+- move Log Viewer client here from dropped repair module
+  (bnc#787070)
+- 2.23.11
+
+-------------------------------------------------------------------
 Tue Oct 30 08:26:28 CET 2012 - jsuchome@suse.cz
 
 - Kernel::InformAboutKernelChange - always return boolean
