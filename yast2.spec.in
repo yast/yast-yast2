@@ -2,7 +2,7 @@
 
 @HEADER@
 Group:          System/YaST
-License:        GPL-2.0+
+License:        GPL-2.0
 Source1:        yast2-rpmlintrc
 
 BuildRequires:  perl-XML-Writer update-desktop-files yast2-devtools yast2-perl-bindings yast2-testsuite
