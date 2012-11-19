@@ -9,6 +9,7 @@ Wed Oct 31 13:40:19 UTC 2012 - jdsn@suse.de
 Mon Oct 26 06:17:16 UTC 2012 - mfilka@suse.com
 
 - extended support for IPv6
+- see bnc#719538
 - 2.17.121 
 
 -------------------------------------------------------------------
