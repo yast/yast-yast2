@@ -29,7 +29,7 @@ Requires:       yast2-xml yast2-hardware-detection
 # for SLPAPI.pm
 Requires:       yast2-perl-bindings
 # for ag_anyxml, RegistrationStatus.pm
-Requires:       perl-XML-Simple
+Requires:       perl-XML-Simple perl-XML-XPath
 # for ProductProfile.ycp
 Requires:       subscription-tools
 # for Punycode.ycp (bnc#651893)
