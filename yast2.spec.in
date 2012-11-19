@@ -45,7 +45,7 @@ Conflicts:      yast2-storage < 2.16.4
 Conflicts:      yast2-network < 2.16.6
 Conflicts:      yast2-sshd < 2.16.1
 
-# moved ag_content agent 
+# moved ag_content agent
 Conflicts:      yast2-instserver <= 2.16.3
 
 # InstExtensionImage module moved here from installation
@@ -78,10 +78,34 @@ Provides:       yast2-packager:/usr/lib/YaST2/servers_non_y2/ag_anyxml
 Provides:       yast2-dns-server:/usr/share/YaST2/modules/DnsServerAPI.pm
 Provides:       yast2-mail-aliases
 
-Summary:        Main YaST2 package
+Summary:        YaST2 - Main Package
 
 %description
--
+This package contains scripts and data needed for SuSE Linux
+installation with YaST2
+
+
+
+Authors:
+--------
+    Michael Andres <ma@suse.de>
+    Waldo Bastian <bastian@suse.de>
+    Michael Hager <mike@suse.de>
+    Stefan Hundhammer <sh@suse.de>
+    Klaus Kaempf <kkaempf@suse.de>
+    Mathias Kettner <kettner@suse.de>
+    Thomas Roelz <tom@suse.de>
+    Arvin Schnell <arvin@suse.de>
+    Stefan Schubert <schubi@suse.de>
+    Andreas Schwab <schwab@suse.de>
+    Steffen Winterfeldt <snwint@suse.de>
+    Martin Vidner <mvidner@suse.cz>
+    Jiri Srain <jsrain@suse.cz>
+    Lukas Ocilka <locilka@suse.cz>
+    Stanislav Visnovsky <visnov@suse.cz>
+    Jiri Suchomel <jsuchome@suse.cz>
+    Ladislav Slezak <lslezak@suse.cz>
+    J. Daniel Schmidt <jdsn@suse.de>
 
 %package devel-doc
 Requires:       yast2 = %version
@@ -92,10 +116,28 @@ Obsoletes:      yast2-devel
 Provides:       yast2-devel
 Requires:       yast2-core-devel
 
-Summary:        Documentation for Wizard and Sequencer
+Summary:        YaST2 - Development Scripts and Documentation
 
 %description devel-doc
--
+This package contains scripts and data needed for a SUSE Linux
+installation with YaST2.
+
+
+
+Authors:
+--------
+    Michael Andres <ma@suse.de>
+    Waldo Bastian <bastian@suse.de>
+    Michael Hager <mike@suse.de>
+    Stefan Hundhammer <sh@suse.de>
+    Klaus Kaempf <kkaempf@suse.de>
+    Mathias Kettner <kettner@suse.de>
+    Thomas Roelz <tom@suse.de>
+    Arvin Schnell <arvin@suse.de>
+    Stefan Schubert <schubi@suse.de>
+    Andreas Schwab <schwab@suse.de>
+    Steffen Winterfeldt <snwint@suse.de>
+    J. Daniel Schmidt <jdsn@suse.de>
 
 @PREP@
 
