@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov 20 16:52:28 UTC 2012 - jdsn@suse.de
+
+- move RegistrationStatus.pm from wagon to yast2 (fate#312712)
+- new version for proper package dependencies in wagon
+- 2.23.13
+
+-------------------------------------------------------------------
 Tue Nov 13 17:37:41 CET 2012 - tgoettlicher@suse.de
 
 - confirmed license GPL v2
