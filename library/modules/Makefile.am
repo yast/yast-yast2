@@ -2,7 +2,7 @@
 
 SUBDIRS = . testsuite
 
-module_DATA = MailTableInclude.pm MailTable.pm $(wildcard *.ycp) $(wildcard *.pm)
+module_DATA = $(wildcard *.ycp) $(wildcard *.pm)
 EXTRA_DIST = $(module_DATA) Version.ycp.in
 
 YCPCFLAGS = -M ../types/src
