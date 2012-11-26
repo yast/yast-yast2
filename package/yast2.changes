@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Nov 26 13:50:09 UTC 2012 - locilka@suse.com
+
+- Dropped obsolete Runlevel YCP module
+
+-------------------------------------------------------------------
 Tue Nov 20 16:52:28 UTC 2012 - jdsn@suse.de
 
 - move RegistrationStatus.pm from wagon to yast2 (fate#312712)
