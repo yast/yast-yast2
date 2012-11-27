@@ -66,6 +66,34 @@ SUBVERSION_ADD_DIRS_RECURSIVE="no"
 PKGMGR_ACTION_AT_EXIT="close"
 
 ## Type: list(yes,no)
+## Default: "yes"
+#
+# By default the package dependencies are checked on every action (installation/update/removal)
+# done in the package selector and possible conflicts are shown immediately.
+# Set the value to "no" if you want the dependency check only onces before starting the
+# package installation/update/removal.
+PKGMGR_AUTO_CHECK="yes"
+
+## Type: list(yes,no)
+## Default: "no"
+#
+# The default is "no", i.e. the package dependencies of already installed package are
+# not checked when installing a package (only the dependencies of the new package).
+# Set this option to "yes" if you want to verify your system (check the dependencies of
+# all already installed packages).
+PKGMGR_VERIFY_SYSTEM="no"
+
+## Type: list(yes,no)
+## Default: "no"
+#
+# By default the recommended packages for already installed packages are not taken into
+# account, i.e. they are not automatically selected for installation.
+# Set this option to "yes" if you want to reevaluate which packages are recommended, e.g. to
+# get the language dependent packages for an additional language or hardware related packages
+# if the hardware has changed.
+PKGMGR_REEVALUATE_RECOMMENDED="no"
+
+## Type: list(yes,no)
 ## Default: "no"
 # Enable use of snapper for YaST.
 USE_SNAPPER="no"
