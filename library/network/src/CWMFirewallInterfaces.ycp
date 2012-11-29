@@ -1024,11 +1024,15 @@ global map<string,any> CreateOpenFirewallWidget (map<string,any> settings) {
 	);
     }
     firewall_settings = `VBox (
-	`Left (firewall_settings),
-	`Left (`ReplacePoint (`id (`_cwm_firewall_status_rp),
-	    // label text
-	    `Label (_("Firewall is open")))
-	)
+	`Frame (_("Firewall Settings"),
+		`VBox(
+		    `Left (firewall_settings),
+		    `Left (`ReplacePoint (`id (`_cwm_firewall_status_rp),
+					  // label text
+					  `Label (_("Firewall is open")))
+			)
+		    )
+	    )
     );
 
     if (! haskey (settings, "services"))

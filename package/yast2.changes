@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 29 17:04:52 CET 2012 - tgoettlicher@suse.de
+
+- fixed bnc#791294: frame for firewall settings 
+- 2.23.14
+
+-------------------------------------------------------------------
 Tue Nov 27 12:15:32 CET 2012 - gs@suse.de
 
 - Added sysconfig variables (solver options) PKGMGR_VERIFY_SYSTEM,
