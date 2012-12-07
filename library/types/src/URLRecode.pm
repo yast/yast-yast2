@@ -38,7 +38,7 @@ sub EscapePassword
 
     if (!defined %escape_cache) { InitCache(); }
 
-    $escaped =~ s/([^A-Za-z0-9\\-_.!~*'()])/$escape_cache{$1}/ge;
+    $escaped =~ s/([^-A-Za-z0-9_.!~*'()])/$escape_cache{$1}/ge;
     return $escaped;
 }
 
@@ -52,7 +52,7 @@ sub EscapePath
 
     if (!defined %escape_cache) { InitCache() };
 
-    $escaped =~ s/([^A-Za-z0-9\-_.!~*'()\/])/$escape_cache{$1}/ge;
+    $escaped =~ s/([^-A-Za-z0-9_.!~*'()\/])/$escape_cache{$1}/ge;
     return $escaped;
 }
 
@@ -66,7 +66,7 @@ sub EscapeQuery
 
     if (!defined %escape_cache) { InitCache(); }
 
-    $escaped =~ s/([^A-Za-z0-9\\-_.!~*'()\/:=&])/$escape_cache{$1}/ge;
+    $escaped =~ s/([^-A-Za-z0-9_.!~*'()\/:=&])/$escape_cache{$1}/ge;
     return $escaped;
 }
 

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Dec  7 12:08:58 UTC 2012 - lslezak@suse.cz
+
+- allow some characters in URL password field (bnc#786757)
+- 2.17.121.1
+
+-------------------------------------------------------------------
 Mon Oct 26 06:17:16 UTC 2012 - mfilka@suse.com
 
 - extended support for IPv6
