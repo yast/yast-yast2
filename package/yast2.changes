@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Dec  7 12:08:58 UTC 2012 - lslezak@suse.cz
+
+- allow some characters in URL password field (bnc#786757)
+
+-------------------------------------------------------------------
 Thu Nov 29 17:04:52 CET 2012 - tgoettlicher@suse.de
 
 - fixed bnc#791294: frame for firewall settings 
