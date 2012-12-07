@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Dec  7 12:08:58 UTC 2012 - lslezak@suse.cz
+
+- allow some characters in URL password field (bnc#786757)
+- 2.17.123
+
+-------------------------------------------------------------------
 Wed Oct 31 13:40:19 UTC 2012 - jdsn@suse.de
 
 - move RegistrationStatus.pm from wagon to yast2 (fate#312712)
