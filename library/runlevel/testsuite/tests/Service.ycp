@@ -27,41 +27,32 @@ you may find current contact information at www.novell.com
     import "Service";
 
     map EXEC = $[
-	"target": $[
-	    "bash": 0,
-	    "bash_output": $["exit": 0, "stdout": "", "stderr" :""],
-	    ],
-	];
+        "target": $[
+            "bash": 0,
+            "bash_output": $[ "exit": 0, "stdout": "", "stderr" :"" ],
+        ],
+        "process" : $[
+            "start_shell" : 123,
+            "release" : true,
+        ],
+    ];
 
-    map READ = $[ "init" : $[
-		"scripts" : $[
-		    "exists" : true,
-		    "runlevel" : $["aaa":$["start":[], "stop":[]]],
-		    "comment" : $["aaa":$[
-			"defstart":["3", "5"],
-			"defstop":["0", "1", "2", "6"],
-			"description":"description",
-			"provides":["aaa"],
-			"reqstart":["$local_fs", "$remote_fs", "$network"],
-			"reqstop":["$local_fs", "$remote_fs", "$network"],
-			"shortdescription":"description",
-			"shouldstart":["$time"],
-			"shouldstop":["$time"]]
-		    ],
-		]
-	    ],
-	    "target" : $[
-		"stat" : $["isreg": true]
-	    ]
-	];
-    TEST (``(Service::Finetune ("aaa", ["1", "3", "5"])), [ READ, $[], EXEC ], nil);
+    map READ = $[
+        "init" : $[
+            "scripts" : $[
+                "exists" : true,
+            ]
+        ],
+        "target" : $[
+            "stat" : $[
+                "isreg": true
+            ]
+        ],
+        "process" : $[
+            "running" : false,
+            "status" : 0,
+        ],
+    ];
 
-    READ = $[ "init" : $[ "scripts" : $[
-		"exists" : true,
-	    ] ],
-	    "target" : $[
-		"stat" : $["isreg": true]
-	    ]
-	];
-    TEST (``(Service::Finetune ("aaa", [])), [ READ, $[], EXEC ], nil);
+    TEST (``(Service::RunInitScriptWithTimeOut ("aaa", "start")), [ READ, $[], EXEC ], nil);
 }
