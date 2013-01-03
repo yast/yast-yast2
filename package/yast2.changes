@@ -3,6 +3,7 @@ Tue Dec 18 14:34:07 UTC 2012 - locilka@suse.com
 
 - Adapted Service module to use systemd directly instead of via
   init.d (FATE #312568)
+- 2.23.15
 
 -------------------------------------------------------------------
 Fri Dec  7 12:08:58 UTC 2012 - lslezak@suse.cz
