@@ -208,9 +208,10 @@ global define boolean Adjust (string name, string action) {
     boolean is_enabled = size (service["start"]:[]) != 0;
 
     if (action == "disable") {
-	if (is_enabled) return serviceDisable (name, false);
-
-	return true;
+	if (is_enabled)
+	    return serviceDisable (name, false);
+	else
+	    return true;
     } else if ((action == "default") || (action == "enable")) {
 	if (action == "enable" && is_enabled) {
 	    // nothing to do
