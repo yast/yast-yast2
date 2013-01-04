@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 04 16:37:07 CET 2013 - aschnell@suse.de
+
+- fixed path for get_kernel_version (bnc#794084)
+- 2.23.16
+
+-------------------------------------------------------------------
 Tue Dec 18 14:34:07 UTC 2012 - locilka@suse.com
 
 - Adapted Service module to use systemd directly instead of via
