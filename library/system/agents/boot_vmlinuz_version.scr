@@ -16,7 +16,7 @@
 
 `ag_anyagent(
     `Description(
-	(`Run("/sbin/get_kernel_version ", `arg(0))),
+	(`Run("/usr/bin/get_kernel_version ", `arg(0))),
 	"\n", true,
 	(`String("^\n"))
     )
