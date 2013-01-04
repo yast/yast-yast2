@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan  4 15:34:03 UTC 2013 - locilka@suse.com
+
+- SuSEfirewall2 has merged *_init and *_setup services into one
+  systemd service (bnc#795929).
+- 2.23.16
+
+-------------------------------------------------------------------
 Tue Dec 18 14:34:07 UTC 2012 - locilka@suse.com
 
 - Adapted Service module to use systemd directly instead of via
