@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jan  7 08:10:08 UTC 2013 - locilka@suse.com
+
+- SuSEfirewall2 has merged *_init and *_setup services into one
+  systemd service (bnc#795929).
+- 2.23.17
+
+-------------------------------------------------------------------
 Fri Jan 04 16:37:07 CET 2013 - aschnell@suse.de
 
 - fixed path for get_kernel_version (bnc#794084)

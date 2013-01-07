@@ -131,12 +131,7 @@ you may find current contact information at www.novell.com
     /* list of services currently allowed, which share ports (for instance RPC services) */
     map <string, list <string> > allowed_conflict_services = $[];
 
-    /* service for starting and checking firewall status */
-    string firewall_service = "SuSEfirewall2_setup";
-
-    /* services needed for well-running firewall */
-    list <string> firewall_services = [ "SuSEfirewall2_init", "SuSEfirewall2_setup" ];
-    list <string> firewall_services_reverse = [ "SuSEfirewall2_setup", "SuSEfirewall2_init" ];
+    string firewall_service = "SuSEfirewall2";
 
     list <string> SuSEFirewall_variables = [
 	// zones and interfaces
@@ -1244,11 +1239,10 @@ you may find current contact information at www.novell.com
      * @return	boolean result
      */
     global define boolean StartServices () {
-	if (! SuSEFirewallIsInstalled()) return false;
-
 	if (Mode::testsuite()) return true;
 
-	// SuSEfirewall2_init doesn't need to be called, only enabled
+	if (! SuSEFirewallIsInstalled()) return false;
+
 	if (Service::Start(firewall_service)) {
 	    y2milestone ("Started");
 	    return true;
@@ -1264,11 +1258,10 @@ you may find current contact information at www.novell.com
      * @return	boolean result
      */
     global define boolean StopServices () {
-	if (! SuSEFirewallIsInstalled()) return false;
-
 	if (Mode::testsuite()) return true;
 
-	// SuSEfirewall2_init doesn't need to be called, only disabled
+	if (! SuSEFirewallIsInstalled()) return false;
+
 	if (Service::Stop(firewall_service)) {
 	    y2milestone ("Stopped");
 	    return true;
@@ -1288,15 +1281,11 @@ you may find current contact information at www.novell.com
 	
 	if (! SuSEFirewallIsInstalled()) return false;
 
-	foreach (string service, firewall_services, {
-	    y2debug("Enabling service: %1", service);
-
-	    if (! Service::Enable(service)) {
-		all_ok = true;
-		// TRANSLATORS: a popup error message
-		Report::Error (sformat (_("Cannot enable service '%1'."), service));
-	    }
-	});
+	if (! Service::Enable(firewall_service)) {
+	    all_ok = true;
+	    // TRANSLATORS: a popup error message
+	    Report::LongError(Service::Error());
+	}
 
 	return all_ok;
     }
@@ -1307,21 +1296,15 @@ you may find current contact information at www.novell.com
      * @return	boolean result
      */
     global define boolean DisableServices () {
-	boolean all_ok = true;
-	
 	if (! SuSEFirewallIsInstalled()) return false;
 
-	foreach (string service, firewall_services_reverse, {
-	    y2debug("Disabling service: %1", service);
-
-	    if (! Service::Disable(service)) {
-		all_ok = false;
-		// TRANSLATORS: a popup error message
-		Report::Error (sformat (_("Cannot disable service '%1'."), service));
-	    }
-	});
-
-	return all_ok;
+	if (Service::Disable(firewall_service)) {
+	    return true;
+	} else {
+	    // TRANSLATORS: a popup error message
+	    Report::LongError(Service::Error());
+	    return false;
+	}
     }
 
 
@@ -1333,26 +1316,15 @@ you may find current contact information at www.novell.com
      * @return	boolean if enabled
      */
     global define boolean IsEnabled () {
-	boolean enabled = false;
-
 	if (! SuSEFirewallIsInstalled()) return false;
 
-	//if (Mode::normal() || Mode::commandline()) {
-	    foreach (string service, firewall_services, {
-		enabled = Service::Enabled(service);
-		// All services have to be enabled
-		if (!enabled) {
-		    y2milestone("Firewall service %1 is not enabled", service);
-		    break;
-		}
-	    });
-	//}
-
-	if (enabled) {
-	    y2milestone("Firewall init scripts are enabled");
+	if (Service::Enabled(firewall_service)) {
+	    y2milestone("Firewall service is enabled");
+	    return true;
+	} else {
+	    y2milestone("Firewall service is not enabled");
+	    return false;
 	}
-
-	return enabled;
     }
 
     /**
@@ -1362,21 +1334,18 @@ you may find current contact information at www.novell.com
      * @return	boolean if started
      */
     global define boolean IsStarted () {
-	boolean started = false;
-
 	if (! SuSEFirewallIsInstalled()) return false;
 
 	if (Mode::testsuite()) return true;
 
 	y2milestone ("Checking firewall status...");
 	if (Service::Status(firewall_service) == 0) {
-	    y2milestone ("Firewall services are started");
-	    started = true;
+	    y2milestone ("Firewall service is started");
+	    return true;
 	} else {
-	    y2milestone ("Firewall services are stopped");
+	    y2milestone ("Firewall service is stopped");
+	    return false;
 	}
-
-	return started;
     }
 
     /**
@@ -3115,20 +3084,6 @@ Run YaST2 Firewall and assign it.
      * @see: https://bugzilla.novell.com/show_bug.cgi?id=375482
      */
     global define void AddXenSupport () {
-    /*
-	// xenbr+ works for all bridges
-	// bridge number is newly dependant on network card number
-	// eth1 -> xenbr1, eth8 -> xenbr8
-	string special_xen_interface = "xenbr+";
-
-	SetModified();
-
-	list <string> allways_inout_dev = splitstring (SETTINGS["FW_FORWARD_ALWAYS_INOUT_DEV"]:"", " ");
-	allways_inout_dev = toset(add (allways_inout_dev, special_xen_interface));
-	SETTINGS["FW_FORWARD_ALWAYS_INOUT_DEV"] = mergestring(allways_inout_dev, " ");
-	
-	y2milestone("FW_FORWARD_ALWAYS_INOUT_DEV -> %1", SETTINGS["FW_FORWARD_ALWAYS_INOUT_DEV"]:"");
-    */
 	y2milestone ("The whole functionality is currently handled by SuSEfirewall2 itself");
     }
 
