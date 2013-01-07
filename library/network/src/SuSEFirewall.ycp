@@ -1284,7 +1284,7 @@ you may find current contact information at www.novell.com
 	if (! Service::Enable(firewall_service)) {
 	    all_ok = true;
 	    // TRANSLATORS: a popup error message
-	    Report::Error (sformat (_("Cannot enable service '%1'."), firewall_service));
+	    Report::LongError(Service::Error());
 	}
 
 	return all_ok;
@@ -1302,7 +1302,7 @@ you may find current contact information at www.novell.com
 	    return true;
 	} else {
 	    // TRANSLATORS: a popup error message
-	    Report::Error (sformat (_("Cannot disable service '%1'."), firewall_service));
+	    Report::LongError(Service::Error());
 	    return false;
 	}
     }
