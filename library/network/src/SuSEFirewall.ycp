@@ -131,7 +131,6 @@ you may find current contact information at www.novell.com
     /* list of services currently allowed, which share ports (for instance RPC services) */
     map <string, list <string> > allowed_conflict_services = $[];
 
-    /* service needed for well-running firewall */
     string firewall_service = "SuSEfirewall2";
 
     list <string> SuSEFirewall_variables = [
