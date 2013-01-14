@@ -1,12 +1,12 @@
 Read	.target.tmpdir "/tmp"
-Read	.target.stat "/lib/systemd/system/aaa.service" $["isreg":true]
+Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
 Log	Cannot enable service aaa (just) in selected runlevels, enabling in all default ones
-Read	.target.stat "/lib/systemd/system/aaa.service" $["isreg":true]
-Read	.target.stat "/lib/systemd/system/aaa.service" $["isreg":true]
+Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
+Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
 Read	.init.scripts.runlevel "aaa" $["aaa":$["start":[], "stop":[]]]
 Read	.init.scripts.comment "aaa" $["aaa":$["defstart":["3", "5"], "defstop":["0", "1", "2", "6"], "description":"description", "provides":["aaa"], "reqstart":["$local_fs", "$remote_fs", "$network"], "reqstop":["$local_fs", "$remote_fs", "$network"], "shortdescription":"description", "shouldstart":["$time"], "shouldstop":["$time"]]]
 Execute	.target.bash_output "/bin/systemctl enable aaa.service" $["exit":0, "stderr":"", "stdout":""]
 Return	true
-Read	.target.stat "/lib/systemd/system/aaa.service" $["isreg":true]
+Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
 Execute	.target.bash_output "/bin/systemctl --force disable aaa.service" $["exit":0, "stderr":"", "stdout":""]
 Return	true
