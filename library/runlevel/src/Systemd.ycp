@@ -37,7 +37,8 @@ module "Systemd";
 import "FileUtils";
 
 const string systemd_path = "/bin/systemd";
-const string default_symlink = "/etc/systemd/system/default.target";
+const string default_target_symlink = "/etc/systemd/system/default.target";
+const string systemd_targets_dir = "/usr/lib/systemd/system";
 const string systemd_mountdir = "/sys/fs/cgroup/systemd";
 
 textdomain "base";
@@ -65,18 +66,19 @@ global boolean Running()
  * @param runlevel the default runlevel to set (integer in range 0..6)
  * @return boolean true on success
  */
-global boolean SetDefaultRunlevel(integer runlevel)
+global boolean SetDefaultRunlevel(integer selected_runlevel)
 {
-    if (runlevel == nil || runlevel < 0 || runlevel > 6)
+    if (selected_runlevel == nil || selected_runlevel < 0 || selected_runlevel > 6)
     {
-	y2error("Invalid default runlevel (must be in range 0..6): %1", runlevel);
+	y2error("Invalid default runlevel (must be in range 0..6): %1", selected_runlevel);
 	return false;
     }
 
-    y2milestone("Setting systemd default runlevel: %1", runlevel);
+    y2milestone("Setting systemd default runlevel: %1", selected_runlevel);
 
     // create symbolic link, -f to rewrite the current link (if exists)
-    string command = sformat("/bin/ln -s -f /lib/systemd/system/runlevel%1.target %2", runlevel, default_symlink);
+    string command = sformat("/bin/ln -s -f %1/runlevel%2.target %3",
+	systemd_targets_dir, selected_runlevel, default_target_symlink);
     y2milestone("Executing: %1", command);
 
     integer res = (integer)SCR::Execute(.target.bash, command);
@@ -94,12 +96,12 @@ global boolean SetDefaultRunlevel(integer runlevel)
  */
 global integer DefaultRunlevel()
 {
-    string target = (string)SCR::Read(.target.symlink, default_symlink);
+    string target = (string)SCR::Read(.target.symlink, default_target_symlink);
     y2milestone("Default symlink points to: %1", target);
 
     if (target == nil)
     {
-	y2error("Cannot read symlink target of %1", default_symlink);
+	y2error("Cannot read symlink target of %1", default_target_symlink);
 	return nil;
     }
 
