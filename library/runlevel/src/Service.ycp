@@ -72,14 +72,9 @@ import "FileUtils";
 string invoker = "/bin/systemctl";
 
 /**
- * Script location
+ * Unit locations for systemd
  */
-string init_d = "/etc/init.d";
-
-/**
- * Unit location for systemd
- */
-string systemd_d = "/lib/systemd/system";
+list <string> systemd_dirs = ["/usr/lib/systemd/system", "/run/systemd/system", "/etc/systemd/system"];
 
 /**
  * After a function returns an error, this holds an error message,
@@ -101,20 +96,29 @@ string error_msg = "";
 define boolean checkExists (string name) {
     if(name == nil || name == "") {
 	// Error message.
-	// %1 is a name of an init script in /lib/systemd/system,
+	// %1 is a name of an init script in /usr/lib/systemd/system,
 	// eg. nfsserver
 	error_msg = sformat (_("Empty service name: %1."), name);
 	y2error(1, error_msg);
 	return false;
     }
 
-    if (FileUtils::Exists(sformat("%1/%2.service", systemd_d,name))) {
+    boolean service_exists = false;
+
+    foreach (string directory, systemd_dirs, {
+	if (FileUtils::Exists(sformat("%1/%2.service", directory, name))) {
+	    service_exists = true;
+	    break;
+	}
+    });
+
+    if (service_exists) {
 	return true;
     } else {
 	// Error message.
-	// %1 is a name of an init script in /lib/systemd/system,
+	// %1 is a name of an init script in /usr/lib/systemd/system,
 	// eg. nfsserver
-	error_msg = sformat (_("Service %1 does not exist in %2."), name, systemd_d);
+	error_msg = sformat (_("Service %1 does not exist in %2."), name, mergestring(systemd_dirs, ", "));
 	y2milestone (1, error_msg);
 	return false;
     }
@@ -362,9 +366,6 @@ global define integer RunInitScriptWithTimeOut (string name, string param) {
 string lang = nil;
 
 /**
- * Run init script and return output
- */
-/**
  * Run init script and also return its output (stdout and stderr merged).
  * @param name init service name
  * @param param init script argument
@@ -396,7 +397,7 @@ global define map RunInitScriptOutput (string name, string param) {
     // locale_debug = "; ls /nono 2>&1; /usr/bin/locale; /usr/bin/env";
 
     return (map)SCR::Execute (.target.bash_output,
-			 sformat ("%2/%1 %3 2>&1", name, init_d, param)
+			 sformat ("%1 %2 %3.service 2>&1", invoker, param, name)
 			 + locale_debug,
 			 env);
 }
