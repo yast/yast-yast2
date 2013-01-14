@@ -3,6 +3,7 @@ Mon Jan 14 10:17:53 UTC 2013 - locilka@suse.com
 
 - Runlevel definitions (targets) are now in /usr/lib/systemd/system
   (bnc#795929)
+- Checkinf for systemd scripts in more directories (bnc#795929)
 - 2.23.18
 
 -------------------------------------------------------------------
