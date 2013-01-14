@@ -10,11 +10,11 @@ Log	Invalid default runlevel (must be in range 0..6): -1
 Return	false
 Log	Invalid default runlevel (must be in range 0..6): 7
 Return	false
-Execute	.target.bash "/bin/ln -s -f /lib/systemd/system/runlevel3.target /etc/systemd/system/default.target" 0
+Execute	.target.bash "/bin/ln -s -f /usr/lib/systemd/system/runlevel3.target /etc/systemd/system/default.target" 0
 Return	true
-Execute	.target.bash "/bin/ln -s -f /lib/systemd/system/runlevel5.target /etc/systemd/system/default.target" 0
+Execute	.target.bash "/bin/ln -s -f /usr/lib/systemd/system/runlevel5.target /etc/systemd/system/default.target" 0
 Return	true
-Execute	.target.bash "/bin/ln -s -f /lib/systemd/system/runlevel5.target /etc/systemd/system/default.target" 1
+Execute	.target.bash "/bin/ln -s -f /usr/lib/systemd/system/runlevel5.target /etc/systemd/system/default.target" 1
 Return	false
 Dump	Systemd::DefaultRunlevel() tests
 Read	.target.symlink "/etc/systemd/system/default.target" nil

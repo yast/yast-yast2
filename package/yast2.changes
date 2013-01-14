@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jan 14 10:17:53 UTC 2013 - locilka@suse.com
+
+- Runlevel definitions (targets) are now in /usr/lib/systemd/system
+  (bnc#795929)
+- 2.23.18
+
+-------------------------------------------------------------------
 Mon Jan  7 08:10:08 UTC 2013 - locilka@suse.com
 
 - SuSEfirewall2 has merged *_init and *_setup services into one
