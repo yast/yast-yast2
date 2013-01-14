@@ -105,14 +105,12 @@ define boolean checkExists (string name) {
 
     boolean service_exists = false;
 
-    foreach (string directory, systemd_dirs, {
-	if (FileUtils::Exists(sformat("%1/%2.service", directory, name))) {
-	    service_exists = true;
-	    break;
-	}
-    });
 
-    if (service_exists) {
+    string target_dir = find(string directory, systemd_dirs,
+	``(FileUtils::Exists(sformat("%1/%2.service", directory, name)))
+    );
+
+    if (target_dir != nil) {
 	return true;
     } else {
 	// Error message.
