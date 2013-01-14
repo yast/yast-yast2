@@ -1,4 +1,4 @@
 Read	.target.tmpdir "/tmp"
-Read	.target.stat "/lib/systemd/system/aaa.service" $["isreg":true]
+Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
 Execute	.target.bash "/bin/systemctl status aaa.service" $["TERM":"raw"] 3
 Return	3
