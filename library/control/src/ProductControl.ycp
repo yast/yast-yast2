@@ -409,7 +409,7 @@ string getClientName (string name, string execute) {
 
     // BNC #401319
     // 'execute; is defined and thus returned
-    if (execute != "" && execute != "") {
+    if (execute != nil && execute != "") {
 	y2milestone ("Step name '%1' executes '%2'", name, execute);
 	return execute;
     }
