@@ -2,6 +2,7 @@ Read	.target.tmpdir "/tmp"
 Read	.target.stat "/usr/lib/systemd/system/aaa.service" $[]
 Read	.target.stat "/run/systemd/system/aaa.service" $[]
 Read	.target.stat "/etc/systemd/system/aaa.service" $[]
+Read	.target.stat "/etc/init.d/aaa" $[]
 Log	Service aaa does not exist.
 Return	false
 Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
