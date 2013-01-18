@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jan 17 17:00:06 CET 2013 - locilka@suse.com
+
+- Extended checking for service in Service module by also checking
+  in /etc/init.d as a fallback (bnc#795929 comment#20).
+- 2.23.19
+
+-------------------------------------------------------------------
 Wed Jan 16 10:57:28 CET 2013 - locilka@suse.com
 
 - Testcase for Service module moved here from yast2-iscsi-client
