@@ -79,7 +79,7 @@ list <string> systemd_dirs = ["/usr/lib/systemd/system", "/run/systemd/system", 
 /**
  * Init.d scripts location
  */
-const string initd_dir = "/etc/init.d";
+const string INITD_DIR = "/etc/init.d";
 
 /**
  * After a function returns an error, this holds an error message,
@@ -114,7 +114,7 @@ define boolean checkExists (string name) {
         // all known $service.service locations
         maplist(string directory, systemd_dirs, ``(sformat("%1/%2.service", directory, name))),
         // init.d fallback, see bnc#795929 comment#20
-        sformat("%1/%2", initd_dir, name)
+        sformat("%1/%2", INITD_DIR, name)
     );
 
     string target_dir = find(string service_file, possible_service_locations,
@@ -124,7 +124,7 @@ define boolean checkExists (string name) {
     if (target_dir != nil) {
 	return true;
     } else {
-	list <string> possible_locations = add(systemd_dirs, initd_dir);
+	list <string> possible_locations = add(systemd_dirs, INITD_DIR);
 	// Error message.
 	// %1 is a name of an init script in /usr/lib/systemd/system,
 	// eg. nfsserver
