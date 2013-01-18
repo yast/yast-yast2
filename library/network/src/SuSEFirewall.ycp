@@ -51,7 +51,7 @@ you may find current contact information at www.novell.com
 
     // <!-- SuSEFirewall VARIABLES //-->
 
-    string susefirewall_package = "SuSEfirewall2";
+    global const string FIREWALL_PACKAGE = "SuSEfirewall2";
 
     /**
      * configuration hasn't been read for the default
@@ -1007,11 +1007,11 @@ you may find current contact information at www.novell.com
 	    // In mode normal, package can be installed on request
 	    // if required by the module
 	    if (check_and_install_package && Mode::normal()) {
-		needed_packages_installed = PackageSystem::CheckAndInstallPackages ([susefirewall_package]);
+		needed_packages_installed = PackageSystem::CheckAndInstallPackages ([FIREWALL_PACKAGE]);
 		y2milestone ("CheckAndInstallPackages -> %1", needed_packages_installed);
 	    // In mode install/update network might be down
 	    } else {
-		needed_packages_installed = PackageSystem::Installed (susefirewall_package);
+		needed_packages_installed = PackageSystem::Installed (FIREWALL_PACKAGE);
 		y2milestone ("Installed -> %1", needed_packages_installed);
 	    }
 	} else if (needed_packages_installed == false) {
