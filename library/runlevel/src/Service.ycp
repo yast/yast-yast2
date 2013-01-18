@@ -304,7 +304,7 @@ global define boolean Enabled (string name) {
  */
 global define integer RunInitScript (string name, string param) {
     y2milestone("Running service initscript %1 %2", name, param);
-    string command = sformat ("%1 %2 %3.service", invoker, param, name);
+    string command = sformat ("%1 $SYSTEMCTL_OPTIONS %2 %3.service", invoker, param, name);
     map<string, any> output=(map<string, any>)SCR::Execute (.target.bash_output,
         command, $[ "TERM" : "raw"]);
 
@@ -327,7 +327,7 @@ integer sleep_step = 20;
  */
 global define integer RunInitScriptWithTimeOut (string name, string param) {
     y2milestone("Running service initscript %1 %2", name, param);
-    string command = sformat ("TERM=dumb %1 %2 %3.service", invoker, param, name);
+    string command = sformat ("TERM=dumb %1 $SYSTEMCTL_OPTIONS %2 %3.service", invoker, param, name);
 
     // default return code
     integer return_code = nil;
