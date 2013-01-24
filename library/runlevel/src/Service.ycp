@@ -136,6 +136,55 @@ define boolean checkExists (string name) {
 }
 
 /**
+ * Get complete systemd unit id
+ * @param name name or alias of the unit
+ * @return (resolved) unit Id
+ */
+global string GetUnitId(string unit)
+{
+    string cmd = sformat ("%1 --no-pager -p Id show %2", invoker, unit);
+    map<string,any> ret = (map<string,any>) SCR::Execute (.target.bash_output,
+	cmd, $[ "TERM" : "raw"]);
+    if (ret["exit"]:-1 != 0) {
+	y2error (_("Unable to query '%1' unit Id\nCommand returned: %2\n"),
+	    unit, ret);
+	return nil;
+    }
+
+    /* extract first line */
+    integer end = findfirstof (ret["stdout"]:"", "\r\n");
+    string  out = substring(ret["stdout"]:"", 0, end != nil ? end : 0);
+
+    /* extract key anv value */
+    list tmp = splitstring (out, "=");
+    if (size(tmp) != 2 || (tmp[0]:"") != "Id" || (tmp[1]:"") == "") {
+	y2error (_("Unable to parse '%1' unit Id query output: '%2'\n"),
+	    unit, out);
+	return nil;
+    }
+
+    return tmp[1]:"";
+}
+
+/**
+ * Get the name from a systemd service unit id without the .service suffix
+ * @param name name or alias of the service
+ * @return (resolved) service name without the .service suffix
+ */
+global string GetServiceId(string name)
+{
+    string id = GetUnitId(sformat("%1.service", name));
+    if (id == nil)
+	return nil;
+
+    /* return without .service */
+    integer pos = search(id, ".service");
+    if (pos <= 0)
+	return nil;
+    return substring(id, 0, pos);
+}
+
+/**
  * Get service info without peeking if service runs.
  * @param name name of the service
  * @return Service information or empty map ($[])

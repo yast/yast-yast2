@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Thu Jan 24 18:31:36 UTC 2013 - mt@suse.com
+
+- Changed to use network.service alias link, that is installed by
+  the NetworkManager.service while "systemctl enable" and obsoletes
+  the NETWORKMANAGER=yes/no variable in /etc/sysconfig/network/config
+  (bnc#764055,bnc#764336,bnc#798348)
+- Requires sysconfig >= 0.80.0
+- 2.23.20
+
+-------------------------------------------------------------------
 Thu Jan 17 17:00:06 CET 2013 - locilka@suse.com
 
 - Extended checking for service in Service module by also checking
