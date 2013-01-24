@@ -5,6 +5,7 @@ Thu Jan 24 18:31:36 UTC 2013 - mt@suse.com
   the NetworkManager.service while "systemctl enable" and obsoletes
   the NETWORKMANAGER=yes/no variable in /etc/sysconfig/network/config
   (bnc#764055,bnc#764336,bnc#798348)
+- Requires sysconfig >= 0.80.0
 - 2.23.20
 
 -------------------------------------------------------------------
