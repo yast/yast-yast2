@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 28 14:03:48 CET 2013 - jsuchome@suse.cz
+
+- added ruby-based generic API for calling DBus methods
+- 2.23.20
+
+-------------------------------------------------------------------
 Thu Jan 17 17:00:06 CET 2013 - locilka@suse.com
 
 - Extended checking for service in Service module by also checking
