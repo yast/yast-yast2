@@ -2,7 +2,7 @@
 
 SUBDIRS = . testsuite
 
-module_DATA = $(wildcard *.ycp) $(wildcard *.pm)
+module_DATA = $(wildcard *.ycp) $(wildcard *.pm) $(wildcard *.rb)
 EXTRA_DIST = $(module_DATA) Version.ycp.in
 
 YCPCFLAGS = -M ../types/src
