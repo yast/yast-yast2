@@ -69,12 +69,10 @@ module DBUS
     reply = dbus_object.send(method,*arguments)[0]
 
     if reply.nil?
-      return true; # with nil return value, caller should check the last exception
+      return true; # function should return nil only when raising exception
     else
       return reply;
     end
-  rescue Exception => e
-    raise e
   end
 
 end
