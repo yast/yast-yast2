@@ -30,8 +30,10 @@ Requires:       coreutils sysconfig
 Requires:       yast2-xml yast2-hardware-detection
 # for SLPAPI.pm
 Requires:       yast2-perl-bindings
-# for ag_anyxml, RegistrationStatus.pm
+# for ag_anyxml
 Requires:       perl-XML-Simple
+# RegistrationStatus.pm
+Requires:       perl-XML-XPath
 # for GPG.ycp
 Requires:       gpg2
 # for Punycode.ycp (bnc#651893)

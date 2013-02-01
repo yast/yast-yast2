@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb  1 08:55:18 UTC 2013 - lslezak@suse.cz
+
+- added perl-XML-XPath dependency (needed by RegistrationStatus.pm)
+- 2.23.20
+
+-------------------------------------------------------------------
 Thu Jan 17 17:00:06 CET 2013 - locilka@suse.com
 
 - Extended checking for service in Service module by also checking
