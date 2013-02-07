@@ -56,7 +56,7 @@ include "packages/common.ycp";
 global void EnsureTargetInit() {
     // do not initialize the target system in the first installation stage when
     // running in instsys, there is no RPM DB in the RAM disk image (bnc#742420)
-    if (Mode::installation() && !Mode::live_installation() && Stage::initial())
+    if (Stage::initial() && !Mode::live_installation())
     {
         y2milestone("Skipping target initialization in first stage installation");
         return;
