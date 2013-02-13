@@ -339,6 +339,59 @@ global define string CutZeros(string input) ``{
     return output;
 }
 
+
+/**
+ * Repeat a string
+ *
+ * Repeat a string number of times.
+ *
+ * @param input string to repeat
+ * @param input number number of repetitions
+ * @return string repeated string
+ */
+global string Repeat(string text, integer number)
+{
+    if (text == nil)
+	text = "";
+
+    string ret = "";
+
+    while (number > 0)
+    {
+	ret = ret + text;
+	number = number - 1;
+    }
+
+    return ret;
+}
+
+
+/**
+ * Add the padding character around the text to make it long enough
+ *
+ * Add the padding character around the text to make it long enough. If the
+ * text is longer than requested, no changes are made.
+ *
+ * @param text text to be padded
+ * @param length requested length
+ * @param padding padding character
+ * @param alignment alignment to use, either `left or `right
+ * @return padded text
+ */
+global string SuperPad(string text, integer length, string padding, symbol alignment)
+{
+    if (text == nil)
+	text = "";
+
+    string pad = Repeat(padding, length - size(text));
+
+    if (alignment == `right)
+	return pad + text;
+    else
+	return text + pad;
+}
+
+
 /**
  * Add spaces after the text to make it long enough
  *
