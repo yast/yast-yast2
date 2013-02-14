@@ -36,6 +36,7 @@ you may find current contact information at www.novell.com
     import "Stage";
     import "Report";
     import "String";
+    import "Integer";
     import "TypeRepository";
     import "XML";
 
@@ -216,6 +217,82 @@ you may find current contact information at www.novell.com
 	{
 	    PrintNoCR(s);
 	}
+    }
+
+
+    /**
+     *  @short Print a Table
+     *  @descr Print a table using Print(). Format of table is as libyui but not all features
+     *  are supported, e.g. no icons.
+     *
+     *  @param header	header of table in libyui format
+     *  @param content	content of table in libyui format
+     */
+    global void PrintTable(term header, list<term> content)
+    {
+	list<symbol> aligns = [];
+	list<integer> widths = [];
+
+	list<string> Process(term line)
+	{
+	    list<string> ret = [];
+	    list<any> anys = argsof(line);
+	    foreach(any a, anys, {
+		if (is(a, string)) {
+		    string s = (string) a;
+		    ret = add(ret, s);
+		}
+		else if (is(a, term)) {
+		    term t = (term) a;
+		    if (contains([`Left, `Center, `Right], symbolof(t)))
+			ret = add(ret, argsof(t)[0]:"");
+		}
+	    });
+	    return ret;
+	}
+
+	void GetAligns(term header)
+	{
+	    list<any> anys = argsof(header);
+	    foreach(integer i, Integer::Range(size(anys)), {
+		any a = anys[i]:nil;
+		if (is(a, term))
+		{
+		    term t = (term) a;
+		    if (symbolof(t) == `Right)
+			aligns[i] = `right;
+		}
+	    });
+	}
+
+	void UpdateWidths(list<string> columns)
+	{
+	    foreach(integer i, Integer::Range(size(columns)), {
+		widths[i] = Integer::Max([ widths[i]:0, size(columns[i]:"") ]);
+	    });
+	}
+
+	void PrintLine(term line)
+	{
+	    list<string> columns = Process(line);
+	    foreach(integer i, Integer::Range(size(columns)), {
+		columns[i] = String::SuperPad(columns[i]:"", widths[i]:0, " ", aligns[i]:`left);
+	    });
+	    CommandLine::Print(mergestring(columns, " | "));
+	}
+
+	UpdateWidths(Process(header));
+	foreach(term row, content, { UpdateWidths(Process(row)); });
+
+	PrintLine(header);
+
+	GetAligns(header);
+
+	CommandLine::Print(mergestring(maplist(integer width, widths, {
+	    return String::Repeat("-", width);
+	}), "-+-"));
+
+	foreach(term row, content, { PrintLine(row); });
     }
 
 

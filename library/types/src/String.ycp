@@ -339,6 +339,59 @@ global define string CutZeros(string input) ``{
     return output;
 }
 
+
+/**
+ * Repeat a string
+ *
+ * Repeat a string number of times.
+ *
+ * @param input string to repeat
+ * @param input number number of repetitions
+ * @return string repeated string
+ */
+global string Repeat(string text, integer number)
+{
+    if (text == nil)
+	text = "";
+
+    string ret = "";
+
+    while (number > 0)
+    {
+	ret = ret + text;
+	number = number - 1;
+    }
+
+    return ret;
+}
+
+
+/**
+ * Add the padding character around the text to make it long enough
+ *
+ * Add the padding character around the text to make it long enough. If the
+ * text is longer than requested, no changes are made.
+ *
+ * @param text text to be padded
+ * @param length requested length
+ * @param padding padding character
+ * @param alignment alignment to use, either `left or `right
+ * @return padded text
+ */
+global string SuperPad(string text, integer length, string padding, symbol alignment)
+{
+    if (text == nil)
+	text = "";
+
+    string pad = Repeat(padding, length - size(text));
+
+    if (alignment == `right)
+	return pad + text;
+    else
+	return text + pad;
+}
+
+
 /**
  * Add spaces after the text to make it long enough
  *
@@ -349,17 +402,9 @@ global define string CutZeros(string input) ``{
  * @param length requested length
  * @return padded text
  */
-global define string Pad(string text, integer length) {
-    if(text == nil) text = "";
-
-    integer rest = length - size(text);
-    string pad = "";
-    while(rest > 0) {
-	pad = pad + " ";
-	rest = rest - 1;
-    }
-
-    return text + pad;
+global string Pad(string text, integer length)
+{
+    return SuperPad(text, length, " ", `left);
 }
 
 /**
@@ -372,17 +417,9 @@ global define string Pad(string text, integer length) {
  * @param length requested length
  * @return padded text
  */
-global define string PadZeros(string text, integer length) {
-    if(text == nil) text = "";
-
-    integer rest = length - size(text);
-    string pad = "";
-    while(rest > 0) {
-	pad = pad + "0";
-	rest = rest - 1;
-    }
-
-    return pad + text;
+global string PadZeros(string text, integer length)
+{
+    return SuperPad(text, length, "0", `right);
 }
 
 /**
