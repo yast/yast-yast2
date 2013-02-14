@@ -402,17 +402,9 @@ global string SuperPad(string text, integer length, string padding, symbol align
  * @param length requested length
  * @return padded text
  */
-global define string Pad(string text, integer length) {
-    if(text == nil) text = "";
-
-    integer rest = length - size(text);
-    string pad = "";
-    while(rest > 0) {
-	pad = pad + " ";
-	rest = rest - 1;
-    }
-
-    return text + pad;
+global string Pad(string text, integer length)
+{
+    return SuperPad(text, length, " ", `left);
 }
 
 /**
@@ -425,17 +417,9 @@ global define string Pad(string text, integer length) {
  * @param length requested length
  * @return padded text
  */
-global define string PadZeros(string text, integer length) {
-    if(text == nil) text = "";
-
-    integer rest = length - size(text);
-    string pad = "";
-    while(rest > 0) {
-	pad = pad + "0";
-	rest = rest - 1;
-    }
-
-    return pad + text;
+global string PadZeros(string text, integer length)
+{
+    return SuperPad(text, length, "0", `right);
 }
 
 /**
