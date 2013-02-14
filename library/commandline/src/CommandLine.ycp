@@ -222,10 +222,11 @@ you may find current contact information at www.novell.com
 
     /**
      *  @short Print a Table
-     *  @descr Print a table using Print()
+     *  @descr Print a table using Print(). Format of table is as libyui but not all features
+     *  are supported, e.g. no icons.
      *
-     *  @param header	header of table
-     *  @param content	content of table
+     *  @param header	header of table in libyui format
+     *  @param content	content of table in libyui format
      */
     global void PrintTable(term header, list<term> content)
     {
