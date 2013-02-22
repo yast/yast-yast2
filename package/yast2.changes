@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Feb 13 18:10:19 CET 2013 - aschnell@suse.de
+
+- added CommandLine::PrintTable, String::Repeat and
+  String::SuperPad
+- 2.23.21
+
+-------------------------------------------------------------------
 Fri Feb  1 08:55:18 UTC 2013 - lslezak@suse.cz
 
 - added perl-XML-XPath dependency (needed by RegistrationStatus.pm)
