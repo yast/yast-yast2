@@ -148,6 +148,39 @@ function clr_inst_gtk_env()
     :
 }
 
+function find_client()
+{
+    local CLIENT_NAME="$1"
+    #now recognized client suffix, order is preference
+    local SUFFIX_ARRAY=('.ycp' '.rb')
+    #client can be in these location. order set preferences
+    local LOCATION_ARRAY=('/y2update')
+    IFS=':' read -a y2dir <<< "$Y2DIR"
+    for dir in "${y2dir[@]}"
+    do
+        LOCATION_ARRAY+=("$dir")
+    done
+    if [ -n "$HOME" ]
+    then
+        LOCATION_ARRAY+=("$HOME/.yast2")
+    fi
+    # NOTE cannot use compile option YAST2DIR so expand it to production version
+    LOCATION_ARRAY+=("/usr/share/YaST2")
+
+    for location in "${LOCATION_ARRAY[@]}"
+    do
+        for suffix in "${SUFFIX_ARRAY[@]}"
+        do
+            local result="${location}/clients/${CLIENT_NAME}${suffix}"
+            if [ -e $result ]
+            then
+                echo $result
+                return
+            fi
+        done
+    done
+}
+
 
 ### Local Variables: ***
 ### mode: shell-script ***
