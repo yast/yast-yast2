@@ -421,7 +421,17 @@ else
     snapshot_pre $module
     #  break out on errors, #343258
     while [ $exit_code = 0 ]; do
-	$ybindir/y2base $module "$@" "$SELECTED_GUI" $Y2_GEOMETRY $Y2UI_ARGS
+        client=$(find_client "$module")
+        case $client in
+        *.ycp)
+          $ybindir/y2base $client "$@" "$SELECTED_GUI" $Y2_GEOMETRY $Y2UI_ARGS
+          ;;
+        *.rb)
+          $ybindir/r2d2base $client "$@" "$SELECTED_GUI" $Y2_GEOMETRY $Y2UI_ARGS
+          ;;
+        *)
+          echo "client '$client' not found" && exit 1
+        esac
 	exit_code=$?
 	if [ -z "$REDO_FILE" -o ! -f "$REDO_FILE" ]; then
 	    break
