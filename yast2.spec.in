@@ -26,7 +26,7 @@ Requires:       yui_backend
 Requires:       perl-Config-Crontab
 # for ag_tty (/bin/stty)
 # for /usr/bin/md5sum
-Requires:       coreutils sysconfig
+Requires:       coreutils sysconfig >= 0.80.0
 Requires:       yast2-xml yast2-hardware-detection
 # for SLPAPI.pm
 Requires:       yast2-perl-bindings
