@@ -136,11 +136,26 @@ define boolean checkExists (string name) {
 }
 
 /**
+ * Check if service is enabled (in any runlevel)
+ *
+ * Forwards to chkconfig -l which decides between init and systemd
+ *
+ * @param name service name
+ * @return true if service is set to run in any runlevel
+ */
+global define boolean Enabled (string name) {
+    if(!checkExists (name)) return false;
+
+    return (SCR::Execute (.target.bash, sformat ("%1 is-enabled %2.service", invoker, name)) == 0);
+}
+
+/**
  * Get service info without peeking if service runs.
  * @param name name of the service
  * @return Service information or empty map ($[])
  */
 global define map Info (string name) {
+    y2error("### Calling Service::Info is broken with systemd! ###");
     if(!checkExists (name)) return $[];
     map read = (map) SCR::Read (.init.scripts.runlevel, name);
     map detail = read[name]:$[];
@@ -219,8 +234,7 @@ global define boolean Adjust (string name, string action) {
 	return false;
     }
 
-    map service = Info (name);
-    boolean is_enabled = size (service["start"]:[]) != 0;
+    boolean is_enabled = Enabled(name);
 
     if (action == "disable") {
 	if (is_enabled)
@@ -280,20 +294,6 @@ global define boolean Finetune (string name, list rl) {
     } else {
         return serviceDisable(name, true);
     }
-}
-
-/**
- * Check if service is enabled (in any runlevel)
- *
- * Forwards to chkconfig -l which decides between init and systemd
- *
- * @param name service name
- * @return true if service is set to run in any runlevel
- */
-global define boolean Enabled (string name) {
-    if(!checkExists (name)) return false;
-
-    return (SCR::Execute (.target.bash, sformat ("%1 is-enabled %2.service", invoker, name)) == 0);
 }
 
 /**
