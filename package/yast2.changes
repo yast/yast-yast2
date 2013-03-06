@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Tue Mar  5 15:56:58 CET 2013 - mvidner@suse.cz
+
+- Changed to use network.service alias link, that is installed by
+  the NetworkManager.service while "systemctl enable" and obsoletes
+  the NETWORKMANAGER=yes/no variable in /etc/sysconfig/network/config
+  (bnc#764055,bnc#764336,bnc#798348, by mt@suse.com)
+- Requires sysconfig >= 0.80.0
+- 2.23.22
+
+-------------------------------------------------------------------
 Wed Feb 13 18:10:19 CET 2013 - aschnell@suse.de
 
 - added CommandLine::PrintTable, String::Repeat and
