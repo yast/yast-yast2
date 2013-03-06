@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Mar  6 10:07:05 CET 2013 - tgoettlicher@suse.de
+
+- applied lnussel's patch:
+  Don't use Info function to check enable state (bnc#807507)
+- 2.23.22
+
+-------------------------------------------------------------------
 Wed Feb 13 18:10:19 CET 2013 - aschnell@suse.de
 
 - added CommandLine::PrintTable, String::Repeat and
