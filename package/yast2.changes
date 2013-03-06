@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Mar  6 10:07:05 CET 2013 - tgoettlicher@suse.de
+
+- applied lnussel's patch:
+  Don't use Info function to check enable state (bnc#807507)
+- 2.23.23
+
+-------------------------------------------------------------------
 Tue Mar  5 15:56:58 CET 2013 - mvidner@suse.cz
 
 - Changed to use network.service alias link, that is installed by
