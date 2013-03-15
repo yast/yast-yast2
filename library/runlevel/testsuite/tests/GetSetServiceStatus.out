@@ -5,12 +5,10 @@ Return	true
 Read	.target.stat "/usr/lib/systemd/system/boot.iscsid-early.service" $["isreg":true]
 Read	.target.stat "/usr/lib/systemd/system/boot.iscsid-early.service" $["isreg":true]
 Read	.target.stat "/usr/lib/systemd/system/boot.iscsid-early.service" $["isreg":true]
-Read	.init.scripts.runlevel "boot.iscsid-early" $["boot.iscsid-early":$["start":["B"], "stop":[]], "iscsid":$["start":["3", "5"], "stop":["3", "5"]]]
-Read	.init.scripts.comment "boot.iscsid-early" $["boot.iscsid-early":$["defstart":["B"], "defstop":[], "description":"", "provides":["iscsiboot"], "reqstart":["boot.proc"], "reqstop":[], "shortdescription":"Starts the iSCSI initiator daemon", "shouldstart":[], "shouldstop":[]], "iscsid":$["defstart":["3", "5"], "defstop":[], "description":"", "provides":["iscsi"], "reqstart":["$network"], "reqstop":[], "shortdescription":"Starts and stops the iSCSI client initiator", "shouldstart":[], "shouldstop":[]]]
+Execute	.target.bash "/bin/systemctl is-enabled boot.iscsid-early.service" 0
 Return	true
 Read	.target.stat "/usr/lib/systemd/system/iscsid.service" $["isreg":true]
 Read	.target.stat "/usr/lib/systemd/system/iscsid.service" $["isreg":true]
 Read	.target.stat "/usr/lib/systemd/system/iscsid.service" $["isreg":true]
-Read	.init.scripts.runlevel "iscsid" $["boot.iscsid-early":$["start":["B"], "stop":[]], "iscsid":$["start":["3", "5"], "stop":["3", "5"]]]
-Read	.init.scripts.comment "iscsid" $["boot.iscsid-early":$["defstart":["B"], "defstop":[], "description":"", "provides":["iscsiboot"], "reqstart":["boot.proc"], "reqstop":[], "shortdescription":"Starts the iSCSI initiator daemon", "shouldstart":[], "shouldstop":[]], "iscsid":$["defstart":["3", "5"], "defstop":[], "description":"", "provides":["iscsi"], "reqstart":["$network"], "reqstop":[], "shortdescription":"Starts and stops the iSCSI client initiator", "shouldstart":[], "shouldstop":[]]]
+Execute	.target.bash "/bin/systemctl is-enabled iscsid.service" 0
 Return	true
