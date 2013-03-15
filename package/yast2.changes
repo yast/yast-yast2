@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar 15 16:35:14 CET 2013 - jsuchome@suse.cz
+
+- testsuite adapted to previous change (new code in Enable call)
+
+-------------------------------------------------------------------
 Wed Mar  6 10:07:05 CET 2013 - tgoettlicher@suse.de
 
 - applied lnussel's patch:
