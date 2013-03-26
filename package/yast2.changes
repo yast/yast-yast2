@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Mar 26 15:09:56 UTC 2013 - lslezak@suse.cz
+
+- .run.ifconfig agent - "inet" line is optional in the output,
+  do not fail if it is missing (bnc#811760)
+- 2.17.124
+
+-------------------------------------------------------------------
 Fri Dec  7 12:08:58 UTC 2012 - lslezak@suse.cz
 
 - allow some characters in URL password field (bnc#786757)
