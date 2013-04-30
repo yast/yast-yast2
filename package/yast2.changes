@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr 30 16:23:07 CEST 2013 - tgoettlicher@suse.de
+
+- accept any version of libyui
+- 2.23.24
+
+-------------------------------------------------------------------
 Fri Mar 15 16:35:14 CET 2013 - jsuchome@suse.cz
 
 - testsuite adapted to previous change (new code in Enable call)

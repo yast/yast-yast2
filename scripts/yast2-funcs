@@ -53,12 +53,11 @@ function check_plugin()
 
 function check_libyui_plugin()
 {
-   if [ -e "/usr/lib64/yui/libyui-${1}.so.4" -o -e "/usr/lib/yui/libyui-${1}.so.4" ]; then
+   if [ -e "/usr/lib64/yui/libyui-${1}.so."? -o -e "/usr/lib/yui/libyui-${1}.so."? ]; then
       return 0 # success
    fi
 
    return 1    # failure
-
 }
 
 #
