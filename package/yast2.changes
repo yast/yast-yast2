@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May  2 10:32:13 UTC 2013 - locilka@suse.com
+
+- Re-enabling all disabled items (steps, proposals) if stagemode
+  has changed (bnc#813072)
+
+-------------------------------------------------------------------
 Fri Dec  7 12:08:58 UTC 2012 - lslezak@suse.cz
 
 - allow some characters in URL password field (bnc#786757)
