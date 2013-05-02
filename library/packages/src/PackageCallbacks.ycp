@@ -2999,6 +2999,8 @@ void DummyVoidIntegerString(integer param1, string param2) {y2debug("Empty gener
 
 void DummyVoidStringInteger(string param1, integer param2) {y2debug("Empty generic void(string, integer) callback");}
 
+string DummyStringIntegerString(integer param1, string param2) {y2debug("Empty generic string(integer, string) callback"); return "";}
+
 global void SetDummyPatchCallbacks()
 {
     Pkg::CallbackStartDeltaDownload (DummyVoidStringInteger);
@@ -3074,7 +3076,7 @@ global void SetDummyScanDBCallbacks()
 {
     Pkg::CallbackStartScanDb (DummyVoid);
     Pkg::CallbackProgressScanDb (DummyBooleanInteger);
-    Pkg::CallbackErrorScanDb (DummyVoidIntegerString);
+    Pkg::CallbackErrorScanDb (DummyStringIntegerString);
     Pkg::CallbackDoneScanDb (DummyVoidIntegerString);
 }
 
