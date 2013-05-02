@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu May  2 10:32:13 UTC 2013 - locilka@suse.com
+
+- Re-enabling all disabled items (steps, proposals) if stagemode
+  has changed (bnc#813072)
+- 2.23.24
+
+-------------------------------------------------------------------
 Thu May  2 10:04:01 UTC 2013 - lslezak@suse.cz
 
 - correct function signature for Pkg::CallbackErrorScanDb()
