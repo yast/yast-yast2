@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu May  2 09:32:13 UTC 2013 - locilka@suse.com
+
+- Re-enabling all disabled items (steps, proposals) if stagemode
+  has changed (bnc#813072)
+- 2.23.24
+
+-------------------------------------------------------------------
 Fri Mar 15 16:35:14 CET 2013 - jsuchome@suse.cz
 
 - testsuite adapted to previous change (new code in Enable call)
