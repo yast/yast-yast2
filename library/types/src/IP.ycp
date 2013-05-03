@@ -34,6 +34,8 @@ you may find current contact information at www.novell.com
 module "IP";
 textdomain "base";
 
+import "Netmask";
+
 global string ValidChars = "0123456789abcdefABCDEF.:";
 global string ValidChars4 = "0123456789.";
 global string ValidChars6 = "0123456789abcdefABCDEF:";
@@ -285,6 +287,110 @@ global string BitsToIPv4 (string bits) {
     }
     
     return ipv4;
+}
+
+boolean CheckNetworkShared(string network) {
+    if (network == nil || network == "") {
+        return false;
+
+    // all networks
+    } else if (network == "0/0") {
+        return true;
+    }
+
+    return nil;
+}
+
+/**
+ * Checks the given IPv4 network entry.
+ *
+ * @see CheckNetwork for details.
+ * @see CheckNetwork6 for IPv6 version of the same function.
+ *
+ * @example
+ *   CheckNetwork("192.168.0.0/255.255.255.0") -> true
+ *   CheckNetwork("192.168.1.22") -> true
+ *   CheckNetwork("172.55.0.0/33") -> false
+ */
+global boolean CheckNetwork4(string network) {
+    boolean generic_check = CheckNetworkShared(network);
+    if (generic_check != nil) {
+        return generic_check;
+
+    // 192.168.0.1, 0.8.55.999
+    } else if (Check4(network)) {
+        return true;
+
+    // 192.168.0.0/20, 0.8.55/158
+    } else if (regexpmatch(network, "^[" + IP::ValidChars4 + "]+/[0-9]+$")) {
+        list <string> net_parts = splitstring(network, "/");
+        return (Check4 (net_parts[0]:"") && Netmask::CheckPrefix4 (net_parts[1]:""));
+
+    // 192.168.0.0/255.255.255.0, 0.8.55/10.258.12
+    } else if (regexpmatch(network, "^[" + ValidChars4 + "]+/[" + ValidChars4 + "]+$")) {
+        list <string> net_parts = splitstring(network, "/");
+        return (IP::Check4 (net_parts[0]:"") && Netmask::Check4 (net_parts[1]:""));
+    }
+
+    return false;
+}
+
+/**
+ * Checks the given IPv6 network entry.
+ *
+ * @see CheckNetwork for details.
+ * @see CheckNetwork4 for IPv4 version of the same function.
+ *
+ * @example
+ *   CheckNetwork("2001:db8:0::1/64") -> true
+ *   CheckNetwork("2001:db8:0::1") -> true
+ *   CheckNetwork("::1/257") -> false
+ */
+global boolean CheckNetwork6(string network) {
+    boolean generic_check = CheckNetworkShared(network);
+    if (generic_check != nil) {
+        return generic_check;
+
+    // 2001:db8:0::1
+    } else if (IP::Check6(network)) {
+        return true;
+
+    // 2001:db8:0::1/64
+    } else if (regexpmatch(network, "^[" + IP::ValidChars6 + "]+/[" + Netmask::ValidChars6 + "]+$")) {
+        list <string> net_parts = splitstring(network, "/");
+        return (IP::Check6 (net_parts[0]:"") && Netmask::Check6 (net_parts[1]:""));
+
+    // 2001:db8:0::1/ffff:ffff::0
+    } else if (regexpmatch(network, "^[" + IP::ValidChars6 + "]+/[" + IP::ValidChars6 + "]+$")) {
+        list <string> net_parts = splitstring(network, "/");
+        return (IP::Check6 (net_parts[0]:"") && IP::Check6 (net_parts[1]:""));
+    }
+
+    return false;
+}
+
+/**
+ * Checks the given network entry which can be defined in several formats:
+ *   - Single IPv4 or IPv6, e.g., 192.168.0.1 or 2001:db8:0::1
+ *   - IP/Netmask, e.g., 192.168.0.0/255.255.255.0 or 2001:db8:0::1/ffff:ffff::0
+ *   - IP/CIDR, e.g., 192.168.0.0/20 or 2001:db8:0::1/56
+ *
+ * @example
+ *  CheckNetwork("192.168.0.1") -> true
+ *  CheckNetwork("192.168.0.0/20") -> true
+ *  CheckNetwork("192.168.0.0/255.255.255.0") -> true
+ *  CheckNetwork("0/0") -> true
+ *  CheckNetwork("::1/128") -> true
+ *  CheckNetwork("2001:db8:0::1") -> true
+ *  CheckNetwork("2001:db8:0::1/64") -> true
+ *  CheckNetwork("2001:db8:0::1/ffff:ffff::0") -> true
+ *  CheckNetwork("2001:db8:0::xyz") -> false
+ *  CheckNetwork("::1/257") -> false
+ *  CheckNetwork("172.55.0.0/33") -> false
+ *  CheckNetwork("172.55.0.0/125.85.5.5") -> false
+ */
+global boolean CheckNetwork(string network) {
+    return CheckNetwork4(network) || CheckNetwork6(network);
 }
 
 /* EOF */
