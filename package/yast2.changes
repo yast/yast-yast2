@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri May  3 17:04:22 UTC 2013 - locilka@suse.com
+
+- Added functionality for checking network entry with optional
+  netmask in IP or CIDR format (bnc#800592).
+
+-------------------------------------------------------------------
 Thu May  2 10:32:13 UTC 2013 - locilka@suse.com
 
 - Re-enabling all disabled items (steps, proposals) if stagemode
