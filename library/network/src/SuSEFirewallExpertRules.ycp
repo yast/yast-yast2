@@ -76,7 +76,7 @@ you may find current contact information at www.novell.com
      */
     global boolean IsValidNetwork (string network) {
         y2internal("Deprecated, please use IP::CheckNetwork() instead");
-        IP::CheckNetwork(network);
+        return IP::CheckNetwork(network);
     }
 
     /**
