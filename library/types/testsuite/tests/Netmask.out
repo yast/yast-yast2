@@ -40,6 +40,12 @@ Return	false
 Return	true
 Return	true
 Return	true
+Return	false
+Return	false
+Return	false
+Return	true
+Return	true
+Return	true
 Dump	Netmask::Check6
 Return	false
 Return	false

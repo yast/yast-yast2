@@ -37,6 +37,11 @@ global define boolean Check4(string netmask) ``{
 
     if(netmask == nil || netmask == "") return false;
 
+    /* <0,32> */
+    if(regexpmatch(netmask, "^[0-9]+$")) {
+	integer nm = tointeger(netmask);
+	return nm >= 0 && nm <= 32;
+    }
 
     /* 255.255.240.0 */
     string s1 = "(128|192|224|240|248|252|254|255)";
