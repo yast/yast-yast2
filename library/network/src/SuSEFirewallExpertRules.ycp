@@ -48,66 +48,17 @@
     string type_ip4 = "[0123456789]+\.[0123456789]+\.[0123456789]+\.[0123456789]+";
 
     /**
-     * Returns whether the netmask bits are valid.
-     *
-     * @return boolean whether valid
-     */
-    boolean ValidNetmaskBits (integer netmask_bits) {
-	return (netmask_bits > 1 && netmask_bits <= 32);
-    }
-
-    /**
      * Function checks the network definition used for firewall expert rules.
+     * For backward compatibility. Use IP::CheckNetwork() instead.
      *
-     * @example
-     * IsValidNetwork("192.168.0.1")               -> true
-     * IsValidNetwork("192.168.0.355")             -> false
-     * IsValidNetwork("192.168.0.0/24")            -> true
-     * IsValidNetwork("192.168.0.1/32")            -> true
-     * IsValidNetwork("192.168.0.1/0")             -> false
-     * IsValidNetwork("192.168.0.0/255.255.0.0")   -> true
-     * IsValidNetwork("192.168.0.0/255.255.333.0") -> false
-     * IsValidNetwork("192.168.0.0/255.255.224.0") -> true
-     * IsValidNetwork("0/0")                       -> true
-     *
-     * @see `man iptables`
      * @param string network
      * @return boolean if it is a valid network definition
      */
     global boolean IsValidNetwork (string network) {
-	// A.B.C.D (IP)
-	if (regexpmatch(network, "^" + type_ip4 + "$")) {
-	    return IP::Check4(network);
-	}
-
-	// A.B.C.D/1 - A.B.C.D/32 (IP with a numeric netmask)
-	else if (regexpmatch(network, "^" + type_ip4 + "/[01234567890]+$")) {
-	    string part_ip   = regexpsub (network, "^(" + type_ip4 + ")/[01234567890]+$", "\\1");
-	    string part_bits = regexpsub (network, "^" + type_ip4 + "/([01234567890]+)$", "\\1");
-	    
-	    return (IP::Check4(part_ip) && ValidNetmaskBits(tointeger(part_bits)));
-	}
-
-	// 0/0 (all)
-	else if (network == "0/0") {
-	    return true;
-	}
-
-	// A.B.C.D/E.F.G.H (IP with Netmask)
-	else if (regexpmatch(network, "^" + type_ip4 + "/" + type_ip4 + "$")) {
-	    string part_ip      = regexpsub (network, "^(" + type_ip4 + ")/" + type_ip4 + "$", "\\1");
-	    string part_netmask = regexpsub (network, "^" + type_ip4 + "/(" + type_ip4 + ")$", "\\1");
-	    
-	    return (IP::Check4(part_ip) && Netmask::Check4(part_netmask));
-	}
-	
-	// The rest
-	else {
-	    y2warning("Unknown network type: %1", network);
-	    return false;
-	}
+        y2internal("Deprecated, please use IP::CheckNetwork() instead");
+        IP::CheckNetwork(network);
     }
-    
+
     /**
      * Returns string of valid network definition.
      *
@@ -157,7 +108,7 @@ IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32
      * Port can be port number, port name, port range. Protocol can be 'tcp', 'udp',
      * 'icmp', 'all' or '_rpc_' (dport is then a RPC service name, e.g., ypbind).
      *
-     * @see IsValidNetwork()
+     * @see IP::CheckNetwork()
      *
      * @struct This might return, e.g., [
      *     // All requests from 80.44.11.22 to TCP port 22
