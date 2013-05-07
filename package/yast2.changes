@@ -5,6 +5,8 @@ Fri May  3 17:04:22 UTC 2013 - locilka@suse.com
   netmask in IP or CIDR format (bnc#800592).
 - Backported separation of netmask and prefix validation in Netmask
   module (by mzugec in 2009) (bnc#800592).
+- Using new IP::CheckNetwork in Firewall (bnc#800592).
+- ValidNetwork definition moved to IP module.
 - 2.17.125
 
 -------------------------------------------------------------------
