@@ -29,7 +29,7 @@ you may find current contact information at www.novell.com
  * $Id: LogViewCore.ycp 45503 2008-03-17 09:46:23Z aschnell $
  */
 {
-    module "LogViewCore.ycp";
+    module "LogViewCore";
 
     textdomain "base";
 
