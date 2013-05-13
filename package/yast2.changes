@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr 30 16:23:07 CEST 2013 - tgoettlicher@suse.de
+
+- accept any version of libyui
+- 2.23.27
+
+-------------------------------------------------------------------
 Mon May 13 12:43:33 CEST 2013 - locilka@suse.com
 
 - Fixing resetting steps in installation (bnc#813072)
