@@ -53,11 +53,11 @@ function check_plugin()
 
 function check_libyui_plugin()
 {
-   if [ -e "/usr/lib64/yui/libyui-${1}.so."? -o -e "/usr/lib/yui/libyui-${1}.so."? ]; then
-      return 0 # success
-   fi
+   # look for libyui plugins in lib and lib64, accept all so versions
+   # return 0 if libyui plugin exists
 
-   return 1    # failure
+   ls /usr/lib*/yui/libyui-${1}.so.* 2> /dev/null | grep -q .
+   return $?
 }
 
 #
