@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon May 13 12:43:33 CEST 2013 - locilka@suse.com
+
+- Fixing resetting steps in installation (bnc#813072)
+- 2.23.26
+
+-------------------------------------------------------------------
 Fri May  3 17:04:22 UTC 2013 - locilka@suse.com
 
 - Added functionality for checking network entry with optional
