@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon May 13 12:43:33 CEST 2013 - locilka@suse.com
+
+- Fixing resetting steps in installation (bnc#813072)
+
+-------------------------------------------------------------------
 Thu May  2 10:32:13 UTC 2013 - locilka@suse.com
 
 - Re-enabling all disabled items (steps, proposals) if stagemode
