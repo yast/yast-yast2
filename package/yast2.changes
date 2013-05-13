@@ -2,7 +2,35 @@
 Tue Apr 30 16:23:07 CEST 2013 - tgoettlicher@suse.de
 
 - accept any version of libyui
+- 2.23.27
+
+-------------------------------------------------------------------
+Mon May 13 12:43:33 CEST 2013 - locilka@suse.com
+
+- Fixing resetting steps in installation (bnc#813072)
+- 2.23.26
+
+-------------------------------------------------------------------
+Fri May  3 17:04:22 UTC 2013 - locilka@suse.com
+
+- Added functionality for checking network entry with optional
+  netmask in IP or CIDR format (bnc#800592).
+- Using new IP::CheckNetwork in Firewall (bnc#800592).
+- ValidNetwork definition moved to IP module.
+- 2.23.25
+
+-------------------------------------------------------------------
+Thu May  2 10:32:13 UTC 2013 - locilka@suse.com
+
+- Re-enabling all disabled items (steps, proposals) if stagemode
+  has changed (bnc#813072)
 - 2.23.24
+
+-------------------------------------------------------------------
+Thu May  2 10:04:01 UTC 2013 - lslezak@suse.cz
+
+- correct function signature for Pkg::CallbackErrorScanDb()
+  callback
 
 -------------------------------------------------------------------
 Fri Mar 15 16:35:14 CET 2013 - jsuchome@suse.cz
