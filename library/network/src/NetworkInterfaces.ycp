@@ -874,15 +874,33 @@ global define boolean Import(string devregex, map<string,map> devices) {
  */
 global list<string> GetDeviceTypes()
 {
-    list<string> dev_types = ["eth", "tr", "vlan", "br", "tun", "tap", "ib", "bond"];
+    // common linux device types available on all architectures
+    const list<string> common_dev_types = ["eth", "tr", "vlan", "br", "tun", "tap", "bond"];
 
-    if(Arch::s390 ()) 
-        dev_types = (list<string>) merge(dev_types, [ "hsi", "ctc", "escon", "ficon", "iucv", "qeth", "lcs"]);
+    // s390 specific device types
+    const list<string> s390_dev_types = [ "hsi", "ctc", "escon", "ficon", "iucv", "qeth", "lcs"];
+
+    // device types which cannot be present on s390 arch
+    const list<string> s390_unknown_dev_types = [ "arc", "bnep", "dummy", "fddi", "myri", "usb", "wlan", "ib" ];
+
+    // ia64 specific device types
+    const list<string> ia64_dev_types = [ "xp" ];
+
+    list<string> dev_types = common_dev_types;
+
+    if( Arch::s390())
+    {
+        dev_types = (list<string>) merge( dev_types, s390_dev_types);
+    }
     else 
-        dev_types = (list<string>) merge(dev_types, [ "arc", "bnep", "dummy", "fddi", "myri", "usb", "wlan" ]);
+    {
+        if( Arch::ia64())
+        {
+            dev_types = (list<string>) merge( dev_types, ia64_dev_types);
+        }
 
-    if(Arch::ia64 ()) 
-        dev_types = add(dev_types, "xp");
+        dev_types = (list<string>) merge( dev_types, s390_unknown_dev_types);
+    }
 
     foreach(string device, dev_types,
     {
