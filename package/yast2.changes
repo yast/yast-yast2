@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue May 14 11:43:45 UTC 2013 - mfilka@suse.com
+
+- bnc#819327
+    - InfiniBand device is not available on s390 arch.
+- 2.23.28
+
+-------------------------------------------------------------------
 Tue May 14 09:17:11 CEST 2013 - tgoettlicher@suse.de
 
 - accept any version of libyui
