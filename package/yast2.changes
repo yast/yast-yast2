@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue May 14 07:59:30 UTC 2013 - mfilka@suse.com
+
+- bnc#819327
+    - InfiniBand device is not available on s390 arch.
+- 2.17.121.2
+
+-------------------------------------------------------------------
 Mon May 13 12:43:33 CEST 2013 - locilka@suse.com
 
 - Fixing resetting steps in installation (bnc#813072)

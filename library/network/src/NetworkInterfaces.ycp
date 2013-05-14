@@ -872,16 +872,43 @@ global define boolean Import(string devregex, map<string,map> devices) {
  * Return supported network device types (for type netcard)
  * for this hardware
  */
-global list<string> GetDeviceTypes(){
- list<string> dev_types = ["eth", "tr", "vlan", "br", "tun", "tap", "ib", "bond"];
- if(Arch::s390 ()) dev_types = (list<string>) merge(dev_types, [ "hsi", "ctc", "escon", "ficon", "iucv", "qeth", "lcs"]);
-	else dev_types = (list<string>) merge(dev_types, [ "arc", "bnep", "dummy", "fddi", "myri", "usb", "wlan" ]);
- if(Arch::ia64 ()) dev_types = add(dev_types, "xp");
+global list<string> GetDeviceTypes()
+{
+    // common linux device types available on all architectures
+    const list<string> common_dev_types = ["eth", "tr", "vlan", "br", "tun", "tap", "bond"];
 
- foreach(string device,dev_types, {
- if (!contains(splitstring(DeviceRegex["netcard"]:"", "|"), device)) y2error("%1 is not contained in DeviceRegex[\"netcard\"]", device);
- });
- return dev_types;
+    // s390 specific device types
+    const list<string> s390_dev_types = [ "hsi", "ctc", "escon", "ficon", "iucv", "qeth", "lcs"];
+
+    // device types which cannot be present on s390 arch
+    const list<string> s390_unknown_dev_types = [ "arc", "bnep", "dummy", "fddi", "myri", "usb", "wlan", "ib" ];
+
+    // ia64 specific device types
+    const list<string> ia64_dev_types = [ "xp" ];
+
+    list<string> dev_types = common_dev_types;
+
+    if( Arch::s390())
+    {
+        dev_types = (list<string>) merge( dev_types, s390_dev_types);
+    }
+    else 
+    {
+        if( Arch::ia64())
+        {
+            dev_types = (list<string>) merge( dev_types, ia64_dev_types);
+        }
+
+        dev_types = (list<string>) merge( dev_types, s390_unknown_dev_types);
+    }
+
+    foreach(string device, dev_types,
+    {
+        if (!contains(splitstring(DeviceRegex["netcard"]:"", "|"), device)) 
+            y2error("%1 is not contained in DeviceRegex[\"netcard\"]", device);
+    });
+
+    return dev_types;
 }
 
 /**
