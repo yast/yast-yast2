@@ -2930,7 +2930,8 @@ global void InitPackageCallbacks() {
 
     // @see bugzilla #183821
     // Do not register these callbacks in case of AutoInstallation
-    if (Mode::autoinst() != true) {
+    // And for AutoUpgrade neither (bnc#820166)
+    if (!(Mode::autoinst() || Mode::autoupgrade())) {
 	// Signature-related callbacks
 	Pkg::CallbackAcceptUnsignedFile		(SignatureCheckCallbacks::AcceptUnsignedFile);
 	Pkg::CallbackAcceptUnknownGpgKey	(SignatureCheckCallbacks::AcceptUnknownGpgKey);
