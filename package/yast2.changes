@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri May  3 17:04:22 UTC 2013 - locilka@suse.com
+
+- Added functionality for checking network entry with optional
+  netmask in IP or CIDR format (bnc#800592).
+- Using new IP::CheckNetwork in Firewall (bnc#800592).
+- 2.23.23.1
+
+-------------------------------------------------------------------
 Fri Mar 15 16:35:14 CET 2013 - jsuchome@suse.cz
 
 - testsuite adapted to previous change (new code in Enable call)
