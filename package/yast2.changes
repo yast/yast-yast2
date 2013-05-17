@@ -3,7 +3,7 @@ Thu May 16 12:41:09 UTC 2013 - jsrain@suse.cz
 
 - handle GPG keys in AutoUpgrade the same as in AutoYaST
   (bnc#820166)
-- 2.17.128
+- 2.23.29
 
 -------------------------------------------------------------------
 Tue May 14 11:43:45 UTC 2013 - mfilka@suse.com
