@@ -367,7 +367,7 @@ global void SetCmdLine (string new_cmd_line) {
 /**
  * Simple check any graphical desktop was selected
  */
-boolean IsDesktop () {
+boolean IsGraphicalDesktop () {
   return DefaultDesktop::Desktop () != "textmode";
 }
 
@@ -433,7 +433,7 @@ boolean IsDesktop () {
 	    if ((memsize >= fourGB || contains (cpuflags, "nx")) && contains (cpuflags, "pae"))
 	    {
 		y2milestone ("Kernel switch: PAE detected");
-		if (kernel_desktop_exists && IsDesktop ()) {
+		if (kernel_desktop_exists && IsGraphicalDesktop ()) {
 		    kernel_packages = ["kernel-desktop"];
 
 		    // add PV drivers
@@ -467,7 +467,7 @@ boolean IsDesktop () {
 	}
 	else if (Arch::x86_64())
 	{
-	    if (kernel_desktop_exists && IsDesktop ()) {
+	    if (kernel_desktop_exists && IsGraphicalDesktop ()) {
 		kernel_packages = ["kernel-desktop"];
 		if (xen)
 		{
