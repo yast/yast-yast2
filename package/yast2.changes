@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon May 20 08:01:22 CEST 2013 - jsuchome@suse.cz
+
+- do not propose desktop kernel for minimal installation
+  (bnc#819335)
+- 2.24.0 
+
+-------------------------------------------------------------------
 Thu May 16 12:41:09 UTC 2013 - jsrain@suse.cz
 
 - handle GPG keys in AutoUpgrade the same as in AutoYaST

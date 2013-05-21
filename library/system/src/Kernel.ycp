@@ -39,6 +39,7 @@ you may find current contact information at www.novell.com
     module "Kernel";
 
     import "Arch";
+    import "DefaultDesktop";
     import "Mode";
     import "Linuxrc";
     import "Popup";
@@ -363,7 +364,12 @@ global void SetCmdLine (string new_cmd_line) {
     cmdLine = new_cmd_line;
 }
 
-
+/**
+ * Simple check any graphical desktop was selected
+ */
+boolean IsGraphicalDesktop () {
+  return DefaultDesktop::Desktop () != "textmode";
+}
 
     //---------------------------------------------------------------
 
@@ -427,7 +433,7 @@ global void SetCmdLine (string new_cmd_line) {
 	    if ((memsize >= fourGB || contains (cpuflags, "nx")) && contains (cpuflags, "pae"))
 	    {
 		y2milestone ("Kernel switch: PAE detected");
-		if (kernel_desktop_exists && true) { // FIXME: check whether it is really desktop
+		if (kernel_desktop_exists && IsGraphicalDesktop ()) {
 		    kernel_packages = ["kernel-desktop"];
 
 		    // add PV drivers
@@ -461,7 +467,7 @@ global void SetCmdLine (string new_cmd_line) {
 	}
 	else if (Arch::x86_64())
 	{
-	    if (kernel_desktop_exists && true) { // FIXME: detect desktop
+	    if (kernel_desktop_exists && IsGraphicalDesktop ()) {
 		kernel_packages = ["kernel-desktop"];
 		if (xen)
 		{
