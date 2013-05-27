@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon May 27 14:16:53 CEST 2013 - locilka@suse.com
+
+- Reverted resetting disabled steps (bnc#813072)
+- 2.24.1
+
+-------------------------------------------------------------------
 Tue May 21 15:24:25 CEST 2013 - jsuchome@suse.cz
 
 - do not propose desktop kernel for minimal installation
