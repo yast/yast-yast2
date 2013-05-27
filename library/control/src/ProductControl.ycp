@@ -111,13 +111,6 @@ map<string, list <string> > DisabledACItems = $[];
 
 map <string, list<string> > DisabledSubProposals = $[];
 
-void ResetDisabledItems () {
-    DisabledModules = [];
-    DisabledProposals = [];
-    DisabledACItems = $[];
-    DisabledSubProposals = $[];
-}
-
 // <--
 
 // Log files for hooks
@@ -979,14 +972,6 @@ global define void UpdateWizardSteps(list<map> stagemode)
     } else if (last_stage_mode == stagemode) {
 	y2milestone ("No changes in Wizard steps");
 	return;
-    }
-
-    // bnc#813072: stagemode has changed, re-enable all disabled modules
-    // and proposals and other items
-    // function must not be called if there was no previous stage_mode
-    // otherwise it resets everything
-    if (size(last_stage_mode) > 0 && stagemode != last_stage_mode) {
-      ResetDisabledItems();
     }
 
     last_stage_mode = stagemode;
