@@ -90,6 +90,8 @@ list<string> DisabledProposals = [];
 void ResetDisabledItems () {
     DisabledModules = [];
     DisabledProposals = [];
+    DisabledACItems = $[];
+    DisabledSubProposals = $[];
 }
 
 // <--
