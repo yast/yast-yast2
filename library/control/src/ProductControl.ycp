@@ -87,13 +87,6 @@ list<string> DisabledModules = [];
 list<string> DisabledProposals = [];
 
 
-void ResetDisabledItems () {
-    DisabledModules = [];
-    DisabledProposals = [];
-    DisabledACItems = $[];
-    DisabledSubProposals = $[];
-}
-
 // <--
 
 // Log files for hooks
@@ -904,12 +897,6 @@ global define void UpdateWizardSteps(list<map> stagemode)
     } else if (last_stage_mode == stagemode) {
 	y2milestone ("No changes in Wizard steps");
 	return;
-    }
-
-    // bnc#813072: stagemode has changed, re-enable all disabled modules
-    // and proposals and other items
-    if (stagemode != last_stage_mode) {
-      ResetDisabledItems();
     }
 
     last_stage_mode = stagemode;
