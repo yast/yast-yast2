@@ -906,9 +906,7 @@ global define void UpdateWizardSteps(list<map> stagemode)
 
     // bnc#813072: stagemode has changed, re-enable all disabled modules
     // and proposals and other items
-    // function must not be called if there was no previous stage_mode
-    // otherwise it resets everything
-    if (size(last_stage_mode) > 0 && stagemode != last_stage_mode) {
+    if (stagemode != last_stage_mode) {
       ResetDisabledItems();
     }
 
