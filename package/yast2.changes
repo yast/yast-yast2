@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jun 13 06:24:11 UTC 2013 - lslezak@suse.cz
+
+- updated the testsuite to make the transition to Ruby easier
+
+-------------------------------------------------------------------
 Mon May 27 14:16:53 CEST 2013 - locilka@suse.com
 
 - Reverted resetting disabled steps (bnc#813072)
