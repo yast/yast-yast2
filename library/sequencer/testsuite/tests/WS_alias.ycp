@@ -24,9 +24,9 @@ you may find current contact information at www.novell.com
 include "testsuite.ycp";
 import "Sequencer";
 
-void func1() { return; }
-void func2() { return; }
-void func3() { return; }
+symbol func1() { return `func1; }
+symbol func2() { return `func2; }
+symbol func3() { return `func3; }
 
 map aliases = $[
     "1" : nil,
@@ -40,10 +40,10 @@ map aliases = $[
 TEST(``(Sequencer::WS_alias($[], "blah")), [], nil);
 TEST(``(Sequencer::WS_alias(aliases, "blah")), [], nil);
 TEST(``(Sequencer::WS_alias(aliases, "1")), [], nil);
-TEST(``(Sequencer::WS_alias(aliases, "2")), [], nil);
+TEST(``(eval(Sequencer::WS_alias(aliases, "2"))), [], nil);
 TEST(``(Sequencer::WS_alias(aliases, "3")), [], nil);
 TEST(``(Sequencer::WS_alias(aliases, "4")), [], nil);
-TEST(``(Sequencer::WS_alias(aliases, "5")), [], nil);
-TEST(``(Sequencer::WS_alias(aliases, "6")), [], nil);
+TEST(``(eval(Sequencer::WS_alias(aliases, "5"))), [], nil);
+TEST(``(eval(Sequencer::WS_alias(aliases, "6"))), [], nil);
 
 }

@@ -88,7 +88,7 @@ define boolean WS_check(map aliases, map sequence) {
         }
         else if (is(val, list)) {
             if(size((list) val) < 2) {
-                y2error(2, "sequencer check: list too small: %1 (%2)", val, key);
+                y2error(2, "sequencer check: list size too small: %1 (key: %2)", size((list) val), key);
                 return false;
             }
 /* FIXME: use function pointers
