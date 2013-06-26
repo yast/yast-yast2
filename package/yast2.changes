@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Jun 18 05:44:59 UTC 2013 - mfilka@suse.com
+
+- bnc#817797 
+    - data imported into NetworkInterfaces cannot be overwritten by 
+    subsequent Read anymore
+- 2.17.130
+
+-------------------------------------------------------------------
 Mon May 27 14:16:53 CEST 2013 - locilka@suse.com
 
 - Reverted resetting disabled steps (bnc#813072)
