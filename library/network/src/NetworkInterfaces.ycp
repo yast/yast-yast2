@@ -834,10 +834,15 @@ global define boolean Write(string devregex) {
 
 /**
  * Import data
+ *
+ * All devices which confirms to <devregex> are silently removed from Devices
+ * and replaced by those supplied by <devices>.
+ *
  * @param settings settings to be imported
  * @return true on success
  */
-global define boolean Import(string devregex, map<string,map> devices) {
+global define boolean Import(string devregex, map<string,map> devices) 
+{
     map Devs = FilterNOT(Devices, devregex);
     y2debug("Devs=%1", Devs);
 
@@ -850,7 +855,20 @@ global define boolean Import(string devregex, map<string,map> devices) {
     });
 
     Devices = (devices_t) union(Devs, devices);
-    OriginalDevices = nil;
+
+    if( devices == nil || devices == $[])
+    {
+        // devices == $[] is used in lan_auto "Reset" as a way how to
+        // rollback changes imported from AY
+        initialized = false;
+    }
+    else
+    {
+        initialized = true;
+    }
+
+    y2milestone( "NetworkInterfaces::Import - done, cache content: %1", Devices);
+
     return true;
 }
 
