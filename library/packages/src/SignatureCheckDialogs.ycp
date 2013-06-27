@@ -508,31 +508,28 @@ Use it anyway?")
 
     term GPGKeyAsTerm(map<string,any> key)
     {
-	boolean no_fingerprint = key["fingerprint"]:"" == nil || key["fingerprint"]:"" == "";
-	boolean no_exp_date = key["expires"]:"" == nil || key["expires"]:"" == "";
-	boolean no_create_date = key["created"]:"" == nil || key["expires"]:"" == "";
-
-	return `HBox(
-	    `VBox(
-		// GPG key property
-		`Left(`Label(_("ID: "))),
-		// GPG key property
-		`Left(`Label(_("Name: "))),
-		// GPG key property
-		no_fingerprint ? `Empty() : `Left(`Label(_("Fingerprint: "))),
-		// GPG key property
-		no_create_date ? `Empty() : `Left(`Label(_("Created: "))),
-		// GPG key property
-		no_exp_date ? `Empty() : `Left(`Label(_("Expires: ")))
-	    ),
-	    `VBox(
-		`Left(`Label(key["id"]:"")),
-		`Left(`Label(key["name"]:"")),
-		no_fingerprint ? `Empty() : `Left(`Label(StringSplitter(key["fingerprint"]:"", " ", 4))),
-		no_create_date ? `Empty() : `Left(`Label(key["created"]:"")),
-		no_exp_date ? `Empty() : `Left(`Label(key["expires"]:""))
-	    )
-	);
+        string rt       =
+            // GPG key property
+            sformat ("<b>%1</b>%2", _("ID: "), key["id"]:"") +
+            // GPG key property
+            sformat ("<br><b>%1</b>%2", _("Name: "), key["name"]:"");
+        if (size (key["fingerprint"]:"") > 0)
+        {
+            // GPG key property
+            rt  = rt + sformat ("<br><b>%1</b>%2", _("Fingerprint: "),
+              StringSplitter(key["fingerprint"]:"", " ", 4));
+        }
+        if (size (key["created"]:"") > 0)
+        {
+            // GPG key property
+            rt  = rt + sformat ("<br><b>%1</b>%2", _("Created: "), key["created"]:"");
+        }
+        if (size (key["expires"]:"") > 0)
+        {
+            // GPG key property
+            rt  = rt + sformat ("<br><b>%1</b>%2", _("Expires: "), key["expires"]:"");
+        }
+        return `RichText (rt);
     }
 
     /**
@@ -801,10 +798,7 @@ the key really belongs to that owner before importing it.");
 	// the important GPG key properties are completely displayed
 	boolean hide_help = displayinfo["TextMode"]:false && displayinfo["Width"]:80 < 105;
 
-	UI::OpenDialog(
-	    `opt(`decorated),
-		`HBox (
-		    `VSpacing(19),
+	UI::OpenDialog (`opt(`decorated), `HBox (
 		    // left-side help
 		    hide_help ? `Empty() :
 			`HWeight(3,
@@ -814,39 +808,27 @@ the key really belongs to that owner before importing it.");
 			),
 		    `HSpacing(1.5),
 		    // dialog
-		    `HWeight(5,
-			`VBox(
-			    `Top (
-				`VBox (
-				    `HBox (
-					`VCenter(MessageIcon("question")),
-					// popup heading
-					`VCenter(`Heading(_("Import Untrusted GnuPG Key"))),
-					`HStretch()
-				    ),
-				    // dialog message
-				    `MarginBox(0.5, 0.5, `VBox(
-					    `Left(`Label(dialog_text)),
-					    `VSpacing(0.5),
-					    GPGKeyAsTerm(key),
-					    `VSpacing(0.5),
-					    `Left(`Label(dialog_text2))
-					)
-				    )
-				)
+		    `HWeight(5, `VBox(
+			    `HBox (
+				`VCenter(MessageIcon("question")),
+				// popup heading
+				`VCenter(`Heading(_("Import Untrusted GnuPG Key"))),
+				`HStretch()
 			    ),
-			// dialog buttons
-			`Bottom(
+			    // dialog message
+			    `MarginBox(0.4, 0.4, `VBox(
+				    `Left(`Label(dialog_text)),
+				    GPGKeyAsTerm(key),
+				    `Left(`Label(dialog_text2))
+			    )),
+			    // dialog buttons
 			    `ButtonBox (
 				// push button
 				`PushButton(`id(`trust), `opt (`key_F10, `okButton), _("&Trust")),
 				`PushButton(`id(`cancel), `opt (`key_F9, `cancelButton), Label::CancelButton())
 			    )
-			)
-		    )
-		)
-	    )
-	);
+		    ))
+	));
 
 	UI::SetFocus(`cancel);
 
