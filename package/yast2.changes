@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jun 27 16:10:13 CEST 2013 - jsuchome@suse.cz
+
+- show gpg key info in a term that allows copying the text
+  (bnc#611456)
+ -2.24.2
+
+-------------------------------------------------------------------
 Thu Jun 13 06:24:11 UTC 2013 - lslezak@suse.cz
 
 - updated the testsuite to make the transition to Ruby easier
