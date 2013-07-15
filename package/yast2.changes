@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Fri Jul 12 08:20:12 UTC 2013 - mfilka@suse.com
+
+- fixed device type detection when commiting new device into
+  NetworkInterfaces' cache. Fixes bnc#809053.
+- changes API for device type detection - incompatible to previous
+  versions
+- 2.24.4
+
+-------------------------------------------------------------------
 Fri Jun 28 12:08:50 UTC 2013 - mfilka@suse.com
 
 - bnc#817797 

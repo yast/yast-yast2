@@ -42,6 +42,7 @@ import "Map";
 import "Mode";
 import "Netmask";
 import "String";
+import "TypeRepository";
 
 /**
  * False suppresses tones of logs 'NetworkInterfaces.ycp:ABC Check(eth,id-00:aa:bb:cc:dd:ee,)'
@@ -227,10 +228,17 @@ list<list<string> > TypeByValueMatch = [
     ];
 
 /**
+ * Detects device type according given ifcfg configuration
  *
+ * @return device type or nil if type cannot be recognized from ifcfg config
  */
-global string GetTypeFromIfcfg(ifcfg_t ifcfg) {
-    string type = nil;		// unknown
+global string GetTypeFromIfcfg(ifcfg_t ifcfg) 
+{
+    string type = nil;
+
+    if( TypeRepository::IsEmpty( ifcfg) )
+        return nil;
+
     foreach(list<string> key_type, TypeByValueMatch, {
 	string rule_key = key_type[0]:"";
 	string rule_value = key_type[1]:"";
@@ -239,6 +247,7 @@ global string GetTypeFromIfcfg(ifcfg_t ifcfg) {
 	  type = rule_type;
 	}
       });
+
     foreach(list<string> key_type, TypeByKeyExistence, {
 	string rule_key = key_type[0]:"";
 	string rule_type = key_type[1]:"";
@@ -246,25 +255,56 @@ global string GetTypeFromIfcfg(ifcfg_t ifcfg) {
 	  type = rule_type;
 	}
       });
+
     foreach(string rule_key, TypeByKeyValue, {
 	string rule_type = ifcfg[rule_key]:"";
 	if (rule_type != "") {
 	  type = rule_type;
 	}
       });
-//y2internal("from ifcfg: %1", type);
+
     return type;
 }
 
-global string GetType(string dev) {
-    string type = device_type (dev);
-    foreach(string dev_type,map<string, ifcfg_t> confs, Devices, {
+/*
+ * Detects device type according its name and ifcfg configuration.
+ *
+ * @param dev   device name
+ * @param ifcfg device's ifcfg configuration
+ * @return      device type
+ */
+string GetTypeFromIfcfgOrName( string dev, ifcfg_t ifcfg)
+{
+    string type = GetTypeFromIfcfg( ifcfg);
+
+    if( type == nil)
+        type = device_type( dev);
+
+    return type;
+}
+
+/*
+ * Detects device type according cached data
+ *
+ * If cached ifcfg for given device is found it is used as parameter for
+ * GetTypeFromIfcfgOrName( dev, ifcfg). Otherwise is device handled as unconfigured
+ * and result is equal to GetTypeFromIfcfgOrName( dev, nil)
+ *
+ * @param dev   device name
+ * @return      detected device type
+ */
+global string GetType(string dev) 
+{
+    string type = GetTypeFromIfcfgOrName( dev, nil);
+
+    foreach(string dev_type,map<string, ifcfg_t> confs, Devices, 
+    {
 	ifcfg_t ifcfg = confs[dev]:$[];
-	string ifcfg_type = GetTypeFromIfcfg(ifcfg);
-	if (ifcfg_type != nil)
-	  type = ifcfg_type;
-      });
-//y2internal("original %1: %2", dev, type);
+        
+        if( !TypeRepository::IsEmpty( ifcfg) )
+            type = GetTypeFromIfcfgOrName( dev, ifcfg);
+    });
+
     return type;
 }
 
@@ -272,10 +312,10 @@ global string GetType(string dev) {
  * Return device type in human readable form :-)
  * @param dev device
  * @return device type 
- * @example GetDeviceType(eth-bus-pci-0000:01:07.0) -> "Network Card"
- * @example GetDeviceType(modem0) -> "Modem"
+ * @example GetDeviceTypeName(eth-bus-pci-0000:01:07.0) -> "Network Card"
+ * @example GetDeviceTypeName(modem0) -> "Modem"
  */
-global string GetDeviceType(string dev) {
+global string GetDeviceTypeName(string dev) {
     // pppN must be tried before pN, modem before netcard
     if (regexpmatch(dev,"^" + DeviceRegex["modem"]:"")) {
 	return(_("Modem"));
@@ -1263,10 +1303,14 @@ define boolean Change2(string name, ifcfg_t newdev, boolean check) {
 	return false;
     }
 
-    string t = GetType(name);
-    if (name==Name) {
-     string int_type = Current["INTERFACETYPE"]:"";
-     if(size(int_type)>0) t = int_type;
+    string t = !TypeRepository::IsEmpty( newdev) ? GetTypeFromIfcfgOrName( name, newdev) : GetType(name);
+
+    if (name==Name) 
+    {
+        string int_type = Current["INTERFACETYPE"]:"";
+
+        if(size(int_type)>0) 
+            t = int_type;
     }
     string a = alias_num(name);
     y2debug("ChangeDevice(%1)", name);
