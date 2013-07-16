@@ -43,6 +43,7 @@ import "Mode";
 import "Netmask";
 import "String";
 import "TypeRepository";
+import "FileUtils";
 
 /**
  * False suppresses tones of logs 'NetworkInterfaces.ycp:ABC Check(eth,id-00:aa:bb:cc:dd:ee,)'
@@ -200,6 +201,114 @@ string ifcfg_part (string ifcfg, string part) {
  */
 global string device_type (string dev) {
     return ifcfg_part (dev, "1");
+}
+
+/**
+ * Translates type code exposed by kernel in sysfs onto internaly used dev types.
+ */
+const map< string, string> TypeBySysfs = $[
+    "1":        "eth",
+    "24":       "eth",
+    "32":       "ib",
+    "512":      "ppp",
+    "768":      "ipip",
+    "769":      "ip6tnl",
+    "772":      "lo",
+    "776":      "sit",
+    "778":      "gre",
+    "783":      "irda",
+    "801":      "wlan_aux",
+    "65534":    "tun",
+];
+
+/**
+ * Detects a subtype of Ethernet device type according /sys or /proc content
+ */
+string GetEthTypeFromSysfs( string dev)
+{
+    const string sys_dir_path = sformat( "/sys/class/net/%1/", dev);
+
+    if( FileUtils::Exists( sys_dir_path + "wireless") )
+        return "wlan";
+    else if( FileUtils::Exists( sys_dir_path + "phy80211") )
+        return "wlan";
+    else if( FileUtils::Exists( sys_dir_path + "bridge") )
+        return "bridge";
+    else if( FileUtils::Exists( sys_dir_path + "bonding") )
+        return "bond";
+    else if( FileUtils::Exists( sys_dir_path + "tun_flags") )
+        return "tap";
+    else if( FileUtils::Exists( "/proc/net/vlan/" + dev) )
+        return "vlan";
+    else if( FileUtils::Exists( "/sys/devices/virtual/net/" + dev) &&
+        regexpmatch( dev, "dummy.*") )
+        return "dummy";
+    else
+        return "eth";
+}
+
+/**
+ * Detects a subtype of InfiniBand device type according /sys or /proc content
+ */
+string GetIbTypeFromSysfs( string dev)
+{
+    const string sys_dir_path = sformat( "/sys/class/net/%1/", dev);
+
+    if( FileUtils::Exists( sys_dir_path + "bonding") )
+        return "bond";
+    else if( FileUtils::Exists( sys_dir_path + "create_child") )
+        return "ib";
+    else
+        return "ibchild";
+}
+
+/**
+ * Determines device type according /sys/class/net/<dev>/type value
+ *
+ * Firstly, it uses /sys/class/net/<dev>/type for basic decision. Obtained values are translated to 
+ * device type according <kernel src>/include/uapi/linux/if_arp.h. Sometimes it uses some other checks 
+ * to specify a "subtype". E.g. in case of "eth" it checks for presence of "wireless" subdir to
+ * determine "wlan" device.
+ *
+ * @return return device type or nil if nothing known found
+ */
+string GetTypeFromSysfs( string dev)
+{
+    const string sys_dir_path = sformat( "/sys/class/net/%1", dev);
+    string sys_type_path = sformat( "%1/type", sys_dir_path);
+
+    if( IsEmpty( dev) || !FileUtils::Exists( sys_type_path) )
+        return nil;
+
+    string sys_type = (string) SCR::Read( .target.string, sys_type_path);
+
+    sys_type = sys_type != nil ? regexpsub( sys_type, "(.*)\n", "\\1") : "";
+    sys_type = String::CutBlanks( sys_type);
+
+    string type = nil;
+
+    switch( sys_type)
+    {
+        case "1":
+            type = GetEthTypeFromSysfs( dev);
+            break;
+
+        case "32":
+            type = GetIbTypeFromSysfs( dev);
+            break;
+            
+        default:
+            type = TypeBySysfs[ sys_type]: nil;
+    }
+
+    y2milestone( "GetTypeFromSysFs: device='%1', sysfs type='%2', type='%3'", dev, sys_type, type);
+
+    if( TypeRepository::IsEmpty( type))
+    {
+        return nil;
+    }
+
+    return type;
 }
 
 list<string> TypeByKeyValue = [
