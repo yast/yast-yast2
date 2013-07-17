@@ -20,11 +20,21 @@ map READ = $[
     ],
 ];
 
-TESTSUITE_INIT([READ], nil);
+map EXEC = $[
+    "target" : $[
+        "bash_output": $[
+                "exit": 0,
+                "stdout": "",
+                "stderr":"",
+        ],
+    ],
+];
+
+TESTSUITE_INIT([READ, $[], EXEC], nil);
 import "NetworkInterfaces";
 
 DUMP("NetworkInterfaces::Read");
-TEST(``(NetworkInterfaces::Read()), [READ], nil);
+TEST(``(NetworkInterfaces::Read()), [READ, $[], EXEC], nil);
 NetworkInterfaces::OriginalDevices = nil;
 
 DUMP("NetworkInterfaces::Write");
