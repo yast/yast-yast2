@@ -113,6 +113,11 @@ define string HotplugRegex(list<string> devs) {
     return ret;
 }
 
+boolean IsEmpty( any value)
+{
+    return TypeRepository::IsEmpty( value);
+}
+
 /**
  * Predefined network device regular expressions
  */
@@ -283,7 +288,7 @@ string GetTypeFromSysfs( string dev)
 
     y2milestone( "GetTypeFromSysFs: device='%1', sysfs type='%2', type='%3'", dev, sys_type, type);
 
-    if( TypeRepository::IsEmpty( type))
+    if( IsEmpty( type))
     {
         return nil;
     }
@@ -325,7 +330,7 @@ global string GetTypeFromIfcfg(ifcfg_t ifcfg)
 {
     string type = nil;
 
-    if( TypeRepository::IsEmpty( ifcfg) )
+    if( IsEmpty( ifcfg) )
         return nil;
 
     foreach(list<string> key_type, TypeByValueMatch, {
@@ -364,10 +369,18 @@ global string GetTypeFromIfcfg(ifcfg_t ifcfg)
  */
 string GetTypeFromIfcfgOrName( string dev, ifcfg_t ifcfg)
 {
-    string type = GetTypeFromIfcfg( ifcfg);
+    if( IsEmpty( dev) )
+        return nil;
+
+    string type = GetTypeFromSysfs( dev);
+
+    if( IsEmpty( type) )
+        type = GetTypeFromIfcfg( ifcfg);
 
     if( type == nil)
         type = device_type( dev);
+
+    y2milestone( "GetTypeFromIfcfgOrName: device='%1', type='%2'", dev, type);
 
     return type;
 }
@@ -390,7 +403,7 @@ global string GetType(string dev)
     {
 	ifcfg_t ifcfg = confs[dev]:$[];
         
-        if( !TypeRepository::IsEmpty( ifcfg) )
+        if( !IsEmpty( ifcfg) )
             type = GetTypeFromIfcfgOrName( dev, ifcfg);
     });
 
@@ -1443,7 +1456,7 @@ define boolean Change2(string name, ifcfg_t newdev, boolean check) {
 	return false;
     }
 
-    string t = !TypeRepository::IsEmpty( newdev) ? GetTypeFromIfcfgOrName( name, newdev) : GetType(name);
+    string t = !IsEmpty( newdev) ? GetTypeFromIfcfgOrName( name, newdev) : GetType(name);
 
     if (name==Name) 
     {
