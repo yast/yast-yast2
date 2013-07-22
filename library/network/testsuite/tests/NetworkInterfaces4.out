@@ -1,8 +1,11 @@
+Read	.target.tmpdir "/tmp"
 Dump	NetworkInterfaces::Read
 Dir	.network.section: ["eth4"]
 Dir	.network.value."eth4": ["BOOTPROTO", "NAME"]
 Read	.network.value."eth4".BOOTPROTO "dhcp"
 Read	.network.value."eth4".NAME "we like 'singles'"
+Read	.target.stat "/sys/class/net/eth4/type" nil
+Read	.target.string "/sys/class/net/eth4/type" nil
 Return	true
 Dump	NetworkInterfaces::Write
 Write	.network.value."eth4".BOOTPROTO "dhcp" true

@@ -1,25 +1,38 @@
+Read	.target.tmpdir "/tmp"
 Dump	NetworkInterfaces::Read
 Dir	.network.section: ["arc5", "atm5", "ci5", "ctc5", "dummy5", "escon5", "eth0.3", "eth5", "eth6", "eth7", "eth8", "eth9", "fddi5", "hippi5", "hsi5", "ippp5", "iucv5", "lo", "mynet0", "myri5", "myvlantoo", "ppp5", "tr5", "tr~", "virtlan4", "vlan3"]
 Dir	.network.value."arc5": ["BOOTPROTO", "STARTMODE"]
 Read	.network.value."arc5".BOOTPROTO "dhcp"
 Read	.network.value."arc5".STARTMODE "manual"
+Read	.target.stat "/sys/class/net/arc5/type" nil
+Read	.target.string "/sys/class/net/arc5/type" nil
 Dir	.network.value."atm5": ["BOOTPROTO", "STARTMODE"]
 Read	.network.value."atm5".BOOTPROTO "dhcp"
 Read	.network.value."atm5".STARTMODE "manual"
+Read	.target.stat "/sys/class/net/atm5/type" nil
+Read	.target.string "/sys/class/net/atm5/type" nil
 Dir	.network.value."ci5": ["BOOTPROTO", "STARTMODE"]
 Read	.network.value."ci5".BOOTPROTO "dhcp"
 Read	.network.value."ci5".STARTMODE "manual"
+Read	.target.stat "/sys/class/net/ci5/type" nil
+Read	.target.string "/sys/class/net/ci5/type" nil
 Dir	.network.value."ctc5": ["BOOTPROTO", "STARTMODE"]
 Read	.network.value."ctc5".BOOTPROTO "dhcp"
 Read	.network.value."ctc5".STARTMODE "manual"
+Read	.target.stat "/sys/class/net/ctc5/type" nil
+Read	.target.string "/sys/class/net/ctc5/type" nil
 Dir	.network.value."dummy5": ["BOOTPROTO", "IPADDR", "NETMASK", "STARTMODE"]
 Read	.network.value."dummy5".BOOTPROTO "static"
 Read	.network.value."dummy5".IPADDR "1.2.3.4"
 Read	.network.value."dummy5".NETMASK "255.0.0.0"
 Read	.network.value."dummy5".STARTMODE "manual"
+Read	.target.stat "/sys/class/net/dummy5/type" nil
+Read	.target.string "/sys/class/net/dummy5/type" nil
 Dir	.network.value."escon5": ["BOOTPROTO", "STARTMODE"]
 Read	.network.value."escon5".BOOTPROTO "dhcp"
 Read	.network.value."escon5".STARTMODE "manual"
+Read	.target.stat "/sys/class/net/escon5/type" nil
+Read	.target.string "/sys/class/net/escon5/type" nil
 Dir	.network.value."eth0.3": ["BOOTPROTO", "ETHERDEVICE", "STARTMODE"]
 Read	.network.value."eth0.3".BOOTPROTO "dhcp"
 Read	.network.value."eth0.3".ETHERDEVICE "eth0"
@@ -27,40 +40,62 @@ Read	.network.value."eth0.3".STARTMODE "manual"
 Dir	.network.value."eth5": ["BOOTPROTO", "STARTMODE"]
 Read	.network.value."eth5".BOOTPROTO "dhcp"
 Read	.network.value."eth5".STARTMODE "manual"
+Read	.target.stat "/sys/class/net/eth5/type" nil
+Read	.target.string "/sys/class/net/eth5/type" nil
 Dir	.network.value."eth6": ["BOOTPROTO", "IPADDR", "STARTMODE"]
 Read	.network.value."eth6".BOOTPROTO "static"
 Read	.network.value."eth6".IPADDR "1.2.3.4"
 Read	.network.value."eth6".STARTMODE "manual"
+Read	.target.stat "/sys/class/net/eth6/type" nil
+Read	.target.string "/sys/class/net/eth6/type" nil
 Dir	.network.value."eth7": ["STARTMODE"]
 Read	.network.value."eth7".STARTMODE "manual"
+Read	.target.stat "/sys/class/net/eth7/type" nil
+Read	.target.string "/sys/class/net/eth7/type" nil
 Dir	.network.value."eth8": ["IPADDR", "STARTMODE"]
 Read	.network.value."eth8".IPADDR "1.2.3.4/8"
 Read	.network.value."eth8".STARTMODE "manual"
+Read	.target.stat "/sys/class/net/eth8/type" nil
+Read	.target.string "/sys/class/net/eth8/type" nil
 Dir	.network.value."eth9": ["IPADDR", "PREFIXLEN", "STARTMODE"]
 Read	.network.value."eth9".IPADDR "1.2.3.4"
 Read	.network.value."eth9".PREFIXLEN "8"
 Read	.network.value."eth9".STARTMODE "manual"
+Read	.target.stat "/sys/class/net/eth9/type" nil
+Read	.target.string "/sys/class/net/eth9/type" nil
 Dir	.network.value."fddi5": ["BOOTPROTO", "STARTMODE"]
 Read	.network.value."fddi5".BOOTPROTO "dhcp"
 Read	.network.value."fddi5".STARTMODE "manual"
+Read	.target.stat "/sys/class/net/fddi5/type" nil
+Read	.target.string "/sys/class/net/fddi5/type" nil
 Dir	.network.value."hippi5": ["BOOTPROTO", "STARTMODE"]
 Read	.network.value."hippi5".BOOTPROTO "dhcp"
 Read	.network.value."hippi5".STARTMODE "manual"
+Read	.target.stat "/sys/class/net/hippi5/type" nil
+Read	.target.string "/sys/class/net/hippi5/type" nil
 Dir	.network.value."hsi5": ["BOOTPROTO", "STARTMODE"]
 Read	.network.value."hsi5".BOOTPROTO "dhcp"
 Read	.network.value."hsi5".STARTMODE "manual"
+Read	.target.stat "/sys/class/net/hsi5/type" nil
+Read	.target.string "/sys/class/net/hsi5/type" nil
 Dir	.network.value."ippp5": ["BOOTPROTO", "STARTMODE"]
 Read	.network.value."ippp5".BOOTPROTO "dhcp"
 Read	.network.value."ippp5".STARTMODE "manual"
+Read	.target.stat "/sys/class/net/ippp5/type" nil
+Read	.target.string "/sys/class/net/ippp5/type" nil
 Dir	.network.value."iucv5": ["BOOTPROTO", "STARTMODE"]
 Read	.network.value."iucv5".BOOTPROTO "dhcp"
 Read	.network.value."iucv5".STARTMODE "manual"
+Read	.target.stat "/sys/class/net/iucv5/type" nil
+Read	.target.string "/sys/class/net/iucv5/type" nil
 Dir	.network.value."lo": ["BROADCAST", "IPADDR", "NETMASK", "NETWORK", "STARTMODE"]
 Read	.network.value."lo".BROADCAST "127.255.255.255"
 Read	.network.value."lo".IPADDR "127.0.0.1"
 Read	.network.value."lo".NETMASK "255.0.0.0"
 Read	.network.value."lo".NETWORK "127.0.0.0"
 Read	.network.value."lo".STARTMODE "onboot"
+Read	.target.stat "/sys/class/net/lo/type" nil
+Read	.target.string "/sys/class/net/lo/type" nil
 Dir	.network.value."mynet0": ["BOOTPROTO", "INTERFACETYPE", "STARTMODE"]
 Read	.network.value."mynet0".BOOTPROTO "dhcp"
 Read	.network.value."mynet0".INTERFACETYPE "eth"
@@ -68,6 +103,8 @@ Read	.network.value."mynet0".STARTMODE "auto"
 Dir	.network.value."myri5": ["BOOTPROTO", "STARTMODE"]
 Read	.network.value."myri5".BOOTPROTO "dhcp"
 Read	.network.value."myri5".STARTMODE "manual"
+Read	.target.stat "/sys/class/net/myri5/type" nil
+Read	.target.string "/sys/class/net/myri5/type" nil
 Dir	.network.value."myvlantoo": ["BOOTPROTO", "ETHERDEVICE", "STARTMODE", "VLAN_ID"]
 Read	.network.value."myvlantoo".BOOTPROTO "dhcp"
 Read	.network.value."myvlantoo".ETHERDEVICE "eth0"
@@ -76,9 +113,13 @@ Read	.network.value."myvlantoo".VLAN_ID "2"
 Dir	.network.value."ppp5": ["BOOTPROTO", "STARTMODE"]
 Read	.network.value."ppp5".BOOTPROTO "dhcp"
 Read	.network.value."ppp5".STARTMODE "manual"
+Read	.target.stat "/sys/class/net/ppp5/type" nil
+Read	.target.string "/sys/class/net/ppp5/type" nil
 Dir	.network.value."tr5": ["BOOTPROTO", "STARTMODE"]
 Read	.network.value."tr5".BOOTPROTO "dhcp"
 Read	.network.value."tr5".STARTMODE "manual"
+Read	.target.stat "/sys/class/net/tr5/type" nil
+Read	.target.string "/sys/class/net/tr5/type" nil
 Dir	.network.value."virtlan4": ["BOOTPROTO", "ETHERDEVICE", "STARTMODE"]
 Read	.network.value."virtlan4".BOOTPROTO "dhcp"
 Read	.network.value."virtlan4".ETHERDEVICE "eth0"
