@@ -76,6 +76,14 @@ include "packages/common.ycp";
  * This may become superfluous.
  */
 global void EnsureTargetInit() {
+    // do not initialize the target system in the first installation stage when
+    // running in instsys, there is no RPM DB in the RAM disk image (bnc#742420)
+    if (Stage::initial() && !Mode::live_installation())
+    {
+        y2milestone("Skipping target initialization in first stage installation");
+        return;
+    }
+
     PackageLock::Check ();
     // always initizalize target, it should be cheap according to #45356
     target_initialized = Pkg::TargetInit ("/", false);
