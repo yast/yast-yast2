@@ -5,7 +5,10 @@
 #
 
 AUTOMAKE_OPTIONS = dejagnu
-EXTRA_DIST = $(wildcard tests/*.out) $(wildcard tests/*.err) $(wildcard tests/*.ycp) $(wildcard tests/*.yh)
+EXTRA_DIST = $(wildcard tests/*.out) $(wildcard tests/*.err) $(wildcard tests/*.rb)
+
+Y2BASEFLAGS = -I tests
+export Y2BASEFLAGS
 
 testsuite_prepare = @ydatadir@/testsuite/Makefile.testsuite
 

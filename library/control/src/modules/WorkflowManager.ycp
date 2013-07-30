@@ -528,6 +528,8 @@ test -d '%1' || /bin/mkdir -p '%1';
 
     /**
      * Removes all xml and ycp files from directory where 
+     *
+     * TODO FIXME: this function seems to be unused, remove it?
      */
     global void CleanWorkflowsDirectory () {
 	string directory = GetWorkflowDirectory ();
@@ -537,8 +539,8 @@ test -d '%1' || /bin/mkdir -p '%1';
 	    // doesn't add RPM dependency on tar
 	    map cmd = (map) SCR::Execute (.target.bash_ouptut, "
 cd '%1';
-test -x /bin/tar && /bin/tar -zcf workflows_backup.tgz *.xml *.ycp;
-rm -rf *.xml *.ycp",
+test -x /bin/tar && /bin/tar -zcf workflows_backup.tgz *.xml *.ycp *.rb;
+rm -rf *.xml *.ycp *.rb",
 	    String::Quote (directory));
 
 	    if (cmd["exit"]:-1 != 0) {

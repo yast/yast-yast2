@@ -33,7 +33,7 @@ you may find current contact information at www.novell.com
 {
 
     include "testsuite.ycp";
-    include "./tests/testsuitedata.yh";
+    include "testsuitedata.yh";
 
     import "TypeRepository";
     import "CommandLine";

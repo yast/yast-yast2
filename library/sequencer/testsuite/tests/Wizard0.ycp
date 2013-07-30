@@ -23,7 +23,7 @@ you may find current contact information at www.novell.com
 
 list clicks = nil;
 integer cur = -1;
-include "./tests/Wizard.yh";
+include "Wizard.yh";
 
 map Aliases = $[
     "0" : ``(next()),

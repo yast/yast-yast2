@@ -565,6 +565,7 @@ void PrepareScripts(map m)
 /**
  * Get list of required files for the workflow.
  * @return list<string> Required files list.
+ * TODO FIXME: this function seems to be unused, remove it?
  */
 global list<string> RequiredFiles (string stage, string mode) 
 {
@@ -595,6 +596,7 @@ global list<string> RequiredFiles (string stage, string mode)
 		client = "inst_" + m["name"]:"dummy";
 	    }
 	}
+        // TODO FIXME: what about the ruby files?
 	client = Directory::clientdir + "/" + client + ".ycp";
 	needed_client_files = add(needed_client_files, client);
     });

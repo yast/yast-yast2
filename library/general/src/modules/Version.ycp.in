@@ -6,11 +6,11 @@
  *
  * $Id$
  *
- * Version.ycp is a <b>
+ * Version.rb is a <b>
  *
  * ** GENERATED FILE **
  *
- * </b>, so edit Version.ycp.in instead.
+ * </b>, so edit Version.rb.in instead.
  */
 
 {

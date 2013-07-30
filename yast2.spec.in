@@ -9,6 +9,9 @@ BuildRequires:  perl-XML-Writer update-desktop-files yast2-devtools yast2-perl-b
 # Needed already in build time
 BuildRequires:  yast2-core >= 2.18.12 yast2-pkg-bindings >= 2.20.3 yast2-ycp-ui-bindings >= 2.18.4
 
+# for symlinking yardoc duplicates
+BuildRequires:  fdupes
+
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
 PreReq:         %fillup_prereq
 
@@ -87,6 +90,8 @@ Provides:       yast2-packager:/usr/lib/YaST2/servers_non_y2/ag_anyxml
 Provides:       yast2-dns-server:/usr/share/YaST2/modules/DnsServerAPI.pm
 Provides:       yast2-mail-aliases
 
+Requires:       yast2-ruby-bindings >= 1.0.0
+
 Summary:        YaST2 - Main Package
 
 %description
@@ -129,6 +134,11 @@ mkdir -p "$RPM_BUILD_ROOT"@vardir@
 mkdir -p "$RPM_BUILD_ROOT"@schemadir@/control/rnc
 mkdir -p "$RPM_BUILD_ROOT"@schemadir@/autoyast/rnc
 mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
+
+# symlink the yardoc duplicates, saves over 2MB in installed system
+# (the RPM package size is decreased just by few kilobytes
+# because of the compression)
+%fdupes -s %buildroot/%_prefix/share/doc/packages/yast2
 
 @CLEAN@
 
@@ -180,15 +190,15 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 
 # wizard
 %dir @yncludedir@/wizard
-@yncludedir@/wizard/*.ycp
+@yncludedir@/wizard/*.rb
 
 #packags
 %dir @yncludedir@/packages
-@yncludedir@/packages/*.ycp
+@yncludedir@/packages/*.rb
 
 #system
 %dir @yncludedir@/hwinfo
-@yncludedir@/hwinfo/*.ycp
+@yncludedir@/hwinfo/*.rb
 @desktopdir@/messages.desktop
 
 # documentation

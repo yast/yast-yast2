@@ -43,10 +43,9 @@ you may find current contact information at www.novell.com
     import "Report";
 
     // disable use of UI
-    Report::display_errors = false;
-    Report::log_errors = true;
+    Report::Import($["errors" : $["show" : false, "log" : true] ]);
 
-    include "./tests/testfunc.yh";
+    include "testfunc.yh";
 
 
     map<string, any> functions = $[

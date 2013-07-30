@@ -23,6 +23,6 @@ you may find current contact information at www.novell.com
 
 integer cur = 0;
 list clicks = [ `back ];
-include "./tests/Wizard.yh";
+include "Wizard.yh";
 
 }

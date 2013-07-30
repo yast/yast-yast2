@@ -73,7 +73,7 @@ TEST(``(Sequencer::WS_check($[], $[ "ws_start" : `ws_finish ] )), [], nil);
 
 list clicks = nil;
 integer cur = -1;
-include "./tests/Wizard.yh";
+include "Wizard.yh";
 TEST(``(Sequencer::WS_check(aliases(), sequence())), [], nil);
 
 }
