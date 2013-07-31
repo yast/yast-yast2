@@ -1,13 +1,16 @@
-#
-# Makefile.am for control/src
-#
+# Sources for yast2
 
-productdir = ${sysconfdir}/YaST2
-
-module_DATA = $(wildcard *.ycp)
+module_DATA = \
+  modules/Installation.rb \
+  modules/InstExtensionImage.rb \
+  modules/AutoinstData.rb \
+  modules/GetInstArgs.rb \
+  modules/Hooks.rb \
+  modules/InstError.rb \
+  modules/ProductControl.rb \
+  modules/ProductFeatures.rb \
+  modules/WorkflowManager.rb
 
 EXTRA_DIST = $(module_DATA)
-
-YCPCFLAGS = -M ../../modules -M ../../xml/src -M ../../wizard/src -M ../../types/src -M ../../desktop/src
 
 include $(top_srcdir)/Makefile.am.common

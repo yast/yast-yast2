@@ -1,13 +1,12 @@
-# Makefile.am for yast2/library/sequencer/src
-
-yncludedir = @yncludedir@/wizard
-
-ynclude_DATA = \
-	sequencer.ycp
+# Sources for yast2
 
 module_DATA = \
-	Sequencer.ycp
+  modules/Sequencer.rb
 
-EXTRA_DIST = $(ynclude_DATA) $(module_DATA)
+yncludedir = @yncludedir@/wizard
+ynclude_DATA = \
+  include/wizard/sequencer.rb
+
+EXTRA_DIST = $(module_DATA) $(ynclude_DATA)
 
 include $(top_srcdir)/Makefile.am.common

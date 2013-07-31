@@ -1,10 +1,11 @@
-# Makefile.am for yast2/library/desktop/src
+# Sources for yast2
 
-client_DATA = menu.ycp
-module_DATA = Desktop.ycp
+module_DATA = \
+  modules/Desktop.rb
 
-EXTRA_DIST = $(client_DATA) $(module_DATA)
+client_DATA = \
+  clients/menu.rb
 
-YCPCFLAGS = -M ../../types/src -M ../../modules
+EXTRA_DIST = $(module_DATA) $(client_DATA)
 
 include $(top_srcdir)/Makefile.am.common

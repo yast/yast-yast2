@@ -1,13 +1,15 @@
-# Makefile.am for yast2/library/runlevel/src
+# Sources for yast2
 
-agent_SCRIPTS = ag_initscripts
+module_DATA = \
+  modules/Service.rb \
+  modules/Systemd.rb
 
-scrconf_DATA = initscripts.scr
+scrconf_DATA = \
+  scrconf/initscripts.scr
 
-module_DATA = Service.ycp Systemd.ycp
+agent_SCRIPTS = \
+  servers_non_y2/ag_initscripts
 
-EXTRA_DIST = $(agent_SCRIPTS)	\
-	$(scrconf_DATA) $(module_DATA)
+EXTRA_DIST = $(module_DATA) $(scrconf_DATA) $(agent_SCRIPTS)
 
-YCPCFLAGS = -M ../../types/src -M ../../modules
 include $(top_srcdir)/Makefile.am.common

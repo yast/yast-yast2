@@ -1,18 +1,23 @@
-# Makefile.am for yast2/library/packages/src
+# Sources for yast2
+
+module_DATA = \
+  modules/PackageCallbacks.rb \
+  modules/SignatureCheckDialogs.rb \
+  modules/PackageLock.rb \
+  modules/PackagesUI.rb \
+  modules/PackageAI.rb \
+  modules/Slides.rb \
+  modules/PackageCallbacksInit.rb \
+  modules/Product.rb \
+  modules/SlideShow.rb \
+  modules/SignatureCheckCallbacks.rb \
+  modules/PackageKit.rb \
+  modules/PackageSystem.rb \
+  modules/Package.rb
 
 yncludedir = @yncludedir@/packages
-
-YCPCFLAGS = -M ../../modules -M ../../wizard/src -M ../../system/src/ -M ../../types/src -M ../../commandline/src -M ../../xml/src -M ../../control/src -M ../../desktop/src
-
-module_DATA = $(wildcard [[:upper:]]*.ycp)
-
-ynclude_DATA =			\
-	common.ycp
-
-packages:
-	ln -sf . packages
-
-ycpchook = packages
+ynclude_DATA = \
+  include/packages/common.rb
 
 EXTRA_DIST = $(module_DATA) $(ynclude_DATA)
 

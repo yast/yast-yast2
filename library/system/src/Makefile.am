@@ -1,16 +1,32 @@
-# Makefile.am for yast2/library/modules
+# Sources for yast2
 
-module_DATA = $(wildcard [A-Z]*.ycp)
+module_DATA = \
+  modules/Hotplug.rb \
+  modules/Initrd.rb \
+  modules/ModuleLoading.rb \
+  modules/FileChanges.rb \
+  modules/ModulesConf.rb \
+  modules/Kernel.rb \
+  modules/HWConfig.rb \
+  modules/HwStatus.rb
+
+client_DATA = \
+  clients/view_anymsg.rb
 
 yncludedir = @yncludedir@/hwinfo
-ynclude_DATA = classnames.ycp
+ynclude_DATA = \
+  include/hwinfo/classnames.rb
 
-client_DATA = view_anymsg.ycp
+scrconf_DATA = \
+  scrconf/cfg_hardware.scr \
+  scrconf/proc_cpuinfo.scr \
+  scrconf/boot_vmlinuz_version.scr \
+  scrconf/cfg_kernel.scr \
+  scrconf/proc_cmdline.scr
 
-desktop_DATA = messages.desktop
+desktop_DATA = \
+  desktop/messages.desktop
 
-EXTRA_DIST = $(module_DATA) $(ynclude_DATA) $(client_DATA) $(desktop_DATA)
-
-YCPCFLAGS = -M ../../wizard/src -M ../../modules -M ../../types/src -M ../../types/src
+EXTRA_DIST = $(module_DATA) $(client_DATA) $(ynclude_DATA) $(scrconf_DATA) $(desktop_DATA)
 
 include $(top_srcdir)/Makefile.am.common

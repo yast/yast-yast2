@@ -1,12 +1,14 @@
-#
-# Makefile.am for yast2/library/commandline/src/
-#
+# Sources for yast2
 
-module_DATA =			\
-	CommandLine.ycp
+module_DATA = \
+  modules/CommandLine.rb
 
-EXTRA_DIST = $(module_DATA)
+scrconf_DATA = \
+  scrconf/tty.scr
 
-YCPCFLAGS = -M ../../types/src -M ../../modules -M ../../wizard/src -M ../../xml/src
+agent_SCRIPTS = \
+  servers_non_y2/ag_tty
+
+EXTRA_DIST = $(module_DATA) $(scrconf_DATA) $(agent_SCRIPTS)
 
 include $(top_srcdir)/Makefile.am.common

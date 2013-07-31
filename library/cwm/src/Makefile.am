@@ -1,16 +1,14 @@
-# Makefile.am yast2/library/cwm/src
+# Sources for yast2
 
-YCPCFLAGS = -M ../../modules -M ../../wizard/src -M ../../runlevel/src -M ../../control/src -M ../../types/src -M ../../desktop/src
-
-module_DATA =			\
-	CWM.ycp			\
-	TablePopup.ycp		\
-	DialogTree.ycp		\
-	CWMTab.ycp		\
-	CWMTable.ycp		\
-	CWMServiceStart.ycp	\
-	CWMTsigKeys.ycp		\
-	WizardHW.ycp
+module_DATA = \
+  modules/WizardHW.rb \
+  modules/DialogTree.rb \
+  modules/CWM.rb \
+  modules/CWMTsigKeys.rb \
+  modules/CWMTable.rb \
+  modules/CWMServiceStart.rb \
+  modules/CWMTab.rb \
+  modules/TablePopup.rb
 
 EXTRA_DIST = $(module_DATA)
 

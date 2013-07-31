@@ -1,10 +1,7 @@
-#
-# Makefile.am for xml/module/src
-#
+# Sources for yast2
 
-
-module_DATA =			\
-	XML.ycp
+module_DATA = \
+  modules/XML.rb
 
 EXTRA_DIST = $(module_DATA)
 

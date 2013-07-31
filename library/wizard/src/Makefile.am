@@ -1,18 +1,11 @@
-#
-# Makefile.am for yast2/library/wizard/src
-#
+# Sources for yast2
 
-htmldir = @docdir@/wizard
-yncludedir = @yncludedir@/ui
-
-module_DATA =			\
-	Confirm.ycp		\
-	Wizard.ycp		\
-	Progress.ycp		\
-	HTML.ycp
+module_DATA = \
+  modules/Wizard.rb \
+  modules/Progress.rb \
+  modules/Confirm.rb \
+  modules/HTML.rb
 
 EXTRA_DIST = $(module_DATA)
-
-YCPCFLAGS = -M ../../modules -M ../../types/src -M ../../xml/src -M ../../commandline/src -M ../../network/src/ -M ../../runlevel/src -M ../../desktop/src
 
 include $(top_srcdir)/Makefile.am.common

@@ -1,15 +1,29 @@
-#
-# Makefile.am for yast2/library/network/src/
-#
+# Sources for yast2
 
-client_DATA =
+module_DATA = \
+  modules/PortAliases.rb \
+  modules/SuSEFirewall.rb \
+  modules/NetworkConfig.rb \
+  modules/Internet.rb \
+  modules/SuSEFirewallProposal.rb \
+  modules/PortRanges.rb \
+  modules/NetworkInterfaces.rb \
+  modules/CWMFirewallInterfaces.rb \
+  modules/NetworkPopup.rb \
+  modules/NetworkService.rb \
+  modules/SuSEFirewallExpertRules.rb \
+  modules/SuSEFirewallServices.rb \
+  modules/SLPAPI.pm \
+  modules/DnsServerAPI.pm
 
-ynclude_DATA =
+scrconf_DATA = \
+  scrconf/sysconfig_SuSEfirewall2.scr \
+  scrconf/net_showexports.scr \
+  scrconf/network.scr
 
-module_DATA = $(wildcard [[:upper:]]*.ycp [[:upper:]]*.pm)
+agent_SCRIPTS = \
+  servers_non_y2/ag_showexports
 
-EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA)
+EXTRA_DIST = $(module_DATA) $(scrconf_DATA) $(agent_SCRIPTS)
 
-# runlevel: Service, wizard: Report, Progress, system: Kernel
-YCPCFLAGS = -M ../../types/src -M ../../modules -M ../../runlevel/src -M ../../wizard/src -M ../../cwm/src -M ../../control/src -M ../../xml/src -M ../../commandline/src -M ../../packages/src -M ../../desktop/src -M ../../system/src
 include $(top_srcdir)/Makefile.am.common

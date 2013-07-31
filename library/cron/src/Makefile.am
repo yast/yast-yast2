@@ -1,16 +1,14 @@
-#
-# Makefile.am for yast2/library/cron/src
-#
+# Sources for yast2
+
+module_DATA = \
+  modules/Cron.rb
+
+scrconf_DATA = \
+  scrconf/cron.scr
 
 agent_SCRIPTS = \
-	ag_cron
+  servers_non_y2/ag_cron
 
-scrconf_DATA = $(wildcard *.scr)
-
-module_DATA = $(wildcard *.ycp) 
-
-EXTRA_DIST = $(scrconf_DATA)  $(agent_SCRIPTS) $(module_DATA)
-
-
+EXTRA_DIST = $(module_DATA) $(scrconf_DATA) $(agent_SCRIPTS)
 
 include $(top_srcdir)/Makefile.am.common

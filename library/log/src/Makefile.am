@@ -1,12 +1,10 @@
-# Makefile.am for yast2/library/log/src
+# Sources for yast2
 
-module_DATA =			\
-	ALog.ycp		\
-	LogView.ycp		\
-	LogViewCore.ycp
+module_DATA = \
+  modules/ALog.rb \
+  modules/LogView.rb \
+  modules/LogViewCore.rb
 
 EXTRA_DIST = $(module_DATA)
-
-YCPCFLAGS = -M ../../modules -M ../../wizard/src -M ../../cwm/src -M ../../types/src -M ../../desktop/src
 
 include $(top_srcdir)/Makefile.am.common
