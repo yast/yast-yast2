@@ -1,0 +1,31 @@
+# encoding: utf-8
+
+# File:	modules/Version.ycp
+# Package:	yast2
+# Summary:	yast2 package version
+# Authors:	Michal Svec <msvec@suse.cz>
+#
+# $Id$
+#
+# Version.rb is a <b>
+#
+# ** GENERATED FILE **
+#
+# </b>, so edit Version.rb.in instead.
+require "yast"
+
+module Yast
+  class VersionClass < Module
+    def main
+      # Version of the yast2 package
+      @yast2 = "@VERSION@" 
+
+      # EOF
+    end
+
+    publish :variable => :yast2, :type => "string"
+  end
+
+  Version = VersionClass.new
+  Version.main
+end
