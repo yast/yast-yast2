@@ -1,5 +1,5 @@
 #
-# Makefile.am for yast2/commandline
+# Makefile.am for yast2/library/commandline
 #
 
-SUBDIRS = agents doc src testsuite
+SUBDIRS = doc src testsuite
