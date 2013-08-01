@@ -1,3 +1,3 @@
-# Makefile.am for yast2/library
+# Makefile.am for yast2/library/system
 
-SUBDIRS = agents doc src testsuite
+SUBDIRS = doc src testsuite
