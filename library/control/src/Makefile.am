@@ -9,6 +9,7 @@ module_DATA = \
   modules/InstError.rb \
   modules/ProductControl.rb \
   modules/ProductFeatures.rb \
+  modules/ProductProfile.rb \
   modules/WorkflowManager.rb
 
 EXTRA_DIST = $(module_DATA)
