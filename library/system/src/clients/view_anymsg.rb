@@ -46,7 +46,7 @@ module Yast
   class ViewAnymsgClient < Client
     def main
       Yast.import "UI"
-      textdomain "repair"
+      textdomain "base"
 
       Yast.import "CommandLine"
       Yast.import "Directory"
