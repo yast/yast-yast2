@@ -151,7 +151,7 @@ module Yast
               )
             )
             next
-          elsif @eventid == :progs &&
+          elsif ( @eventid == :progs || @eventid == :run ) &&
               Ops.get_string(@event, "EventReason", "") == "Activated"
             @program = Convert.to_string(
               UI.QueryWidget(Id(:progs), :CurrentItem)
@@ -261,6 +261,7 @@ module Yast
             HSpacing(1),
             PushButton(Id(:help), Opt(:key_F1, :helpButton), Label.HelpButton),
             HStretch(),
+            PushButton(Id(:run), Opt(:defaultButton), _("Run")),
             PushButton(Id(:quit), Opt(:key_F9, :cancelButton), Label.QuitButton),
             HSpacing(1)
           ),
