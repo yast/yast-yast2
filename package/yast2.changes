@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Aug  8 13:57:09 CEST 2013 - tgoettlicher@suse.de
+
+- fixed navigation in yast2-cc without mouse (bnc#651350)
+
+-------------------------------------------------------------------
 Mon Aug  5 10:47:14 CEST 2013 - jsuchome@suse.cz
 
 - added support for handling product profiles (port of fate#310730)
