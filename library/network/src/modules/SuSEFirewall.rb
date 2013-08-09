@@ -2528,7 +2528,7 @@ module Yast
       # Always call NI::Read, bnc #396646
       NetworkInterfaces.Read
 
-      if Mode.installation || Mode.autoinst
+      if Mode.installation
         # Allways modified for installation, allways save the final state
         # fixing bug #67355
         # SetModified();
