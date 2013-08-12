@@ -2528,7 +2528,7 @@ module Yast
       # Always call NI::Read, bnc #396646
       NetworkInterfaces.Read
 
-      if Mode.installation || Mode.autoinst
+      if Mode.installation
         # Allways modified for installation, allways save the final state
         # fixing bug #67355
         # SetModified();
@@ -2612,6 +2612,15 @@ module Yast
     def ActivateConfiguration
       # just disabled
       return true if !SuSEFirewallIsInstalled()
+
+      # starting firewall during second stage can cause deadlock in systemd - bnc#798620
+      # Moreover, it is not needed. Firewall gets started via dependency on multi-user.target
+      # when second stage is over.
+      if Mode.installation
+        Builtins.y2milestone( "Do not touch firewall services during installation")
+
+        return true
+      end
 
       # Firewall should start after Write()
       if GetStartService()

@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Aug  9 07:02:01 UTC 2013 - mfilka@suse.com
+
+- bnc#798620
+    - disabled starting firewall during second stage. It could
+    cause deadlock in systemd initialization sequence.
+- 3.0.2 
+
+-------------------------------------------------------------------
 Thu Aug  8 13:57:09 CEST 2013 - tgoettlicher@suse.de
 
 - fixed navigation in yast2-cc without mouse (bnc#651350)
