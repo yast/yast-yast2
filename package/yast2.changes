@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Aug 13 16:45:59 CEST 2013 - locilka@suse.com
+
+- Changed some y2milestone into y2debug in GetTypeFrom* in
+  NetworkInterfaces to decrease overfilling Yast log
+- 3.0.3
+
+-------------------------------------------------------------------
 Fri Aug  9 07:02:01 UTC 2013 - mfilka@suse.com
 
 - bnc#798620
