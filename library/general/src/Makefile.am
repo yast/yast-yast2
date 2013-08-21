@@ -28,6 +28,7 @@ module_DATA = \
   modules/Label.rb \
   modules/Assert.rb \
   modules/SuSERelease.rb \
+  modules/OSRelease.rb \
   modules/PackagesProposal.rb \
   modules/Popup.rb \
   modules/MailAliases.rb \
