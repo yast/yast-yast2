@@ -36,23 +36,14 @@ module Yast
       @file_path        = "/etc/os-release"
     end
 
-    # Make a nice name for a system out of the long name
-    # @param [String] longname string the long product name
-    # @return [String] nice product name (to be displayed)
-    def MakeNiceName(longname)
-      # remove everything after first left parenthesis and spaces leading to it
-      longname.gsub(/[ ]*\(.*/, "")
-    end
-
-    # Get information about the release for displaying in the selection list
-    #  of found systems
+    # Get information about the OS release
     # @param [String] directory containing the installed system (/ in installed system)
     # @return [String] the release information
     def ReleaseInformation(directory)
       MakeNiceName(Misc.CustomSysconfigRead("PRETTY_NAME", "?", directory + @file_path))
     end
 
-    # Get information about the release for using in the help text
+    # Get information about the OS name
     # Is limited for the currently running product
     # @return [String] the release information
     def ReleaseName
@@ -63,7 +54,7 @@ module Yast
       Misc.CustomSysconfigRead("NAME", "SUSE LINUX", directory + @file_path)
     end
 
-    # Get information about the release
+    # Get information about the OS version
     # Is limited for the currently running product
     # @return [String] the release information
     def ReleaseVersion
@@ -72,6 +63,16 @@ module Yast
       end
       directory = "/"
       Misc.CustomSysconfigRead("VERSION_ID", "", directory + @file_path)
+    end
+
+    private
+
+    # Make a nice name for a system out of the long name
+    # @param [String] longname string the long product name
+    # @return [String] nice product name (to be displayed)
+    def MakeNiceName(longname)
+      # remove everything after first left parenthesis and spaces leading to it
+      longname.gsub(/[ ]*\(.*/, "")
     end
 
     publish :function => :ReleaseInformation, :type => "string (string)"
