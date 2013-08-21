@@ -2,7 +2,7 @@
 
 # ***************************************************************************
 #
-# Copyright (c) 2002 - 2012 Novell, Inc.
+# Copyright (c) 2002 - 2013 Novell, Inc.
 # All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
@@ -21,14 +21,9 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# Module:	OSRelease.ycp
 #
-# Authors:	Jiri Srain <jsrain@suse.de>
+# Purpose:  Responsible for getting information from the /etc/os-release file
 #
-# Purpose:	Responsible for getting information from the /etc/os-release
-#              (and similar for other system) file
-#
-# $Id$
 require "yast"
 
 module Yast
