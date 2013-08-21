@@ -65,6 +65,11 @@ module Yast
       Misc.CustomSysconfigRead("VERSION_ID", "", directory + @file_path)
     end
 
+
+    publish :function => :ReleaseInformation, :type => "string (string)"
+    publish :function => :ReleaseName, :type => "string ()"
+    publish :function => :ReleaseVersion, :type => "string ()"
+
     private
 
     # Make a nice name for a system out of the long name
@@ -74,10 +79,6 @@ module Yast
       # remove everything after first left parenthesis and spaces leading to it
       longname.gsub(/[ ]*\(.*/, "")
     end
-
-    publish :function => :ReleaseInformation, :type => "string (string)"
-    publish :function => :ReleaseName, :type => "string ()"
-    publish :function => :ReleaseVersion, :type => "string ()"
   end
 
   OSRelease = OSReleaseClass.new
