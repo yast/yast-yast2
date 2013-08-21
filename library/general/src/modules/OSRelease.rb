@@ -27,11 +27,12 @@
 require "yast"
 
 module Yast
-  class OSReleaseClass < Module
-    def main
-      Yast.import "Misc"
-      Yast.import "Stage"
 
+  import "Misc"
+  import "Stage"
+
+  class OSReleaseClass < Module
+    def initialize
       @file_path        = "/etc/os-release"
     end
 
@@ -54,9 +55,9 @@ module Yast
     # Get information about the release for using in the help text
     # Is limited for the currently running product
     # @return [String] the release information
-    def ReleaseName(directory="/")
+    def ReleaseName
       if Stage.initial
-        return Convert.to_string(SCR.Read(path(".content.PRODUCT")))
+        return SCR.Read(path(".content.PRODUCT"))
       end
       directory = "/" # TODO make this optional argument
       Misc.CustomSysconfigRead("NAME", "SUSE LINUX", directory + @file_path)
@@ -67,7 +68,7 @@ module Yast
     # @return [String] the release information
     def ReleaseVersion
       if Stage.initial
-        return Convert.to_string(SCR.Read(path(".content.VERSION")))
+        return SCR.Read(path(".content.VERSION"))
       end
       directory = "/"
       Misc.CustomSysconfigRead("VERSION_ID", "", directory + @file_path)
@@ -79,5 +80,4 @@ module Yast
   end
 
   OSRelease = OSReleaseClass.new
-  OSRelease.main
 end
