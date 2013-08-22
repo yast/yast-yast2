@@ -202,7 +202,9 @@ module Yast
           )
           Builtins.y2milestone("PATTERNS: %1", @patterns)
         end
-      elsif !Mode.config
+      # not during testing: Misc::CustomSysconfigRead used by OSRelease creates agent in runtime,
+      # mocking IniParser not possible
+      elsif !Mode.config && !Mode.test
         @short_name = OSRelease.ReleaseName
         @version = OSRelease.ReleaseVersion
         @name = Ops.add(Ops.add(@short_name, " "), @version)
