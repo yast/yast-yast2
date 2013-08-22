@@ -29,6 +29,7 @@
 #
 # $Id$
 require "yast"
+require "resolv"
 
 module Yast
   class IPClass < Module
@@ -58,10 +59,8 @@ module Yast
     # @param [String] ip IPv4 address
     # @return true if correct
     def Check4(ip)
-      return false if ip == nil || ip == ""
-      num = "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])"
-      ipv4 = Ops.add(Ops.add(Ops.add(Ops.add("^", num), "(\\."), num), "){3}$")
-      Builtins.regexpmatch(ip, ipv4)
+      return false if ip == nil
+      !Resolv::IPv4::Regex.match(ip).nil?
     end
 
     # Check syntax of IPv4 address (maybe better)

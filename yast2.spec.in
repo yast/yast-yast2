@@ -9,6 +9,9 @@ BuildRequires:  perl-XML-Writer update-desktop-files yast2-devtools yast2-perl-b
 # Needed already in build time
 BuildRequires:  yast2-core >= 2.18.12 yast2-pkg-bindings >= 2.20.3 yast2-ycp-ui-bindings >= 2.18.4
 
+# Needed for tests
+BuildRequires:  ruby
+
 # for symlinking yardoc duplicates
 BuildRequires:  fdupes
 
