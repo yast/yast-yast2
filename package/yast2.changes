@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Aug 22 11:22:26 CEST 2013 - jsuchome@suse.cz
+
+- prevent accessing /etc/os-release during tests from Product.rb
+  constructor
+- 3.0.5 
+
+-------------------------------------------------------------------
 Thu Aug 22 08:17:06 CEST 2013 - jsuchome@suse.cz
 
 - replace SuSERelease with OSRelease, which uses /etc/os-release
