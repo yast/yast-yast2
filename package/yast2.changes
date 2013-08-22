@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Aug 22 08:17:06 CEST 2013 - jsuchome@suse.cz
+
+- replace SuSERelease with OSRelease, which uses /etc/os-release
+  (bnc#833955,fate#316268)
+- 3.0.4
+
+-------------------------------------------------------------------
 Tue Aug 13 16:45:59 CEST 2013 - locilka@suse.com
 
 - Changed some y2milestone into y2debug in GetTypeFrom* in
