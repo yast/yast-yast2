@@ -40,7 +40,7 @@ module Yast
       Yast.import "Label"
       Yast.import "Popup"
       Yast.import "Directory"
-      Yast.import "SuSERelease"
+      Yast.import "OSRelease"
 
       # keep trailing "/" !!
       @theme_path = Ops.add(Directory.themedir, "/current")
@@ -813,7 +813,7 @@ module Yast
     #
     def CreateDialog
       # Set productname for help text
-      @product_name = SuSERelease.ReleaseName if @product_name == ""
+      @product_name = OSRelease.ReleaseName if @product_name == ""
       UI.SetProductName(@product_name)
 
       OpenNextBackDialog()
