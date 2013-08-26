@@ -89,9 +89,10 @@ listmodules()
 probe_desktop_gui()
 {
     if [ "$DESKTOP_SESSION" = "gnome" -o \
+         "$DESKTOP_SESSION" = "LXDE" -o \
          "$DESKTOP_SESSION" = "xfce" ]; then
 	DESKTOP_GUI="gtk"
-    elif echo $WINDOWMANAGER | grep -qi "\(gnome\|xfce\)"; then
+    elif echo $WINDOWMANAGER | grep -qi "\(gnome\|xfce|lxde\)"; then
 	DESKTOP_GUI="gtk"
     else
 	DESKTOP_GUI="qt"
