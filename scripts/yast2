@@ -68,19 +68,6 @@ printhelp()
 	echo "	--noborder      no window manager border for main window"
 	echo "	--fullscreen    use full screen"
 	echo
-	echo "exceptional case for installing packages:"
-	echo "$0 OPTION <package> [<package> [...]]"
-	echo
-	echo "OPTION:"
-	echo "	-i, --install	install rpm package"
-	echo "	    --update 	update rpm package"
-	echo "	    --remove	remove rpm package"
-	echo
-	echo "<package> can be a single short package name (e.g. gvim)"
-	echo "which will be installed with dependency checking, or the full"
-	echo "path to an rpm package (e.g /tmp/gvim.rpm) which will be"
-	echo "installed without dependency checking"
-	echo
 }
 
 listmodules()
