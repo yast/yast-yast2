@@ -253,7 +253,6 @@ if [ "$UID" = 0 ]; then
     echo $$ > /var/run/yast.pid
 fi
 
-# set lang from sysconfig
 set_lang_from_sysconfig
 
 # default defaults
@@ -270,7 +269,7 @@ if [ -f "$HOME/.yast2/yast2" ]; then
     source "$HOME/.yast2/yast2"
 fi
 
-if [ ! -z "$CMDLINE_UI" ]; then
+if [ -n "$CMDLINE_UI" ]; then
     WANTED_GUI="$CMDLINE_UI"
     WANTED_SHELL="$CMDLINE_UI"
 fi
@@ -314,13 +313,8 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 	     esac	
 	fi
 
-	# this fixes launching of interactive subprocesses, #150799
-	#Y2UI_ARGS="$Y2UI_ARGS --nothreads"
-        #uncomment the above line if anything in TUI breaks ;-)
-        #threads are welcomed back in ncurses frontend (F#301899)
-
 	# set color theme, if defined
-	if [ ! -z "$Y2NCURSES_COLOR_THEME" ]; then
+	if [ -n "$Y2NCURSES_COLOR_THEME" ]; then
 	    export Y2NCURSES_COLOR_THEME="$Y2NCURSES_COLOR_THEME"
 	fi
 
@@ -334,7 +328,6 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 	echo "Something is wrong with the YaST user interface, NCurses selected but no terminal available." >&2
 	exit_code=1		# also skips y2base later
     fi
-# quick hack: treat gtk like qt
 elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
 
     if [ "$SELECTED_GUI" = "qt" ]; then
@@ -355,7 +348,7 @@ fi
 
 # do it!
 # $@ are args for ycp
-if [ $module == "menu" -a -f "$y2ccbin" ] ; then
+if [ $module == "menu" -a -x "$y2ccbin" ] ; then
     $y2ccbin $Y2UI_ARGS "$@"
     exit_code=$?
 else
