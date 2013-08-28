@@ -44,44 +44,7 @@ if test $mount_ok -eq 0 ; then
     exit 1;
 fi
 
-# #211392, #265263
-# if we are in X and do not have _input_ from terminal,
-# save the output and display it via xmessage in case of error.
-# TODO: also use bug-buddy or the kde thing... (#265263#c48)
-redirect()
-{
-    if [ -n "$DISPLAY" -a ! -t 0 ]; then
-	ERRLOG=`mktemp -t yast2-err-XXXXXX`
-	trap exit_trap EXIT
-	exec &> $ERRLOG
-    fi
-}
-
-# $1: file with error message
-display_error_file()
-{
-    if [ -x /usr/bin/zenity ]; then
-	/usr/bin/zenity  --title="Error" --text-info --filename="$1"
-    elif [ -x /usr/bin/kdialog ]; then
-	/usr/bin/kdialog --title "Error" --textbox "$1"
-    else
-	xmessage -buttons OK:0 -default OK -center -file "$1"
-    fi
-}
-
 exit_code=0
-
-exit_trap()
-{
-    # handily, exit_code is set to $? of y2base.
-    # If there was an error and there is anything to display, pop up.
-    if [ $exit_code != 0 -a $exit_code != 16 -a -s $ERRLOG ]; then
-	display_error_file $ERRLOG
-    fi
-    rm -f $ERRLOG
-}
-# redirect the output if necessary
-redirect
 
 # Accumulated arguments for both the Qt UI and y2cc; currently supported:
 # --fullscreen
@@ -105,19 +68,6 @@ printhelp()
 	echo "	--noborder      no window manager border for main window"
 	echo "	--fullscreen    use full screen"
 	echo
-	echo "exceptional case for installing packages:"
-	echo "$0 OPTION <package> [<package> [...]]"
-	echo
-	echo "OPTION:"
-	echo "	-i, --install	install rpm package"
-	echo "	    --update 	update rpm package"
-	echo "	    --remove	remove rpm package"
-	echo
-	echo "<package> can be a single short package name (e.g. gvim)"
-	echo "which will be installed with dependency checking, or the full"
-	echo "path to an rpm package (e.g /tmp/gvim.rpm) which will be"
-	echo "installed without dependency checking"
-	echo
 }
 
 listmodules()
@@ -139,9 +89,10 @@ listmodules()
 probe_desktop_gui()
 {
     if [ "$DESKTOP_SESSION" = "gnome" -o \
+         "$DESKTOP_SESSION" = "LXDE" -o \
          "$DESKTOP_SESSION" = "xfce" ]; then
 	DESKTOP_GUI="gtk"
-    elif echo $WINDOWMANAGER | grep -qi "\(gnome\|xfce\)"; then
+    elif echo $WINDOWMANAGER | grep -qi "\(gnome\|xfce|lxde\)"; then
 	DESKTOP_GUI="gtk"
     else
 	DESKTOP_GUI="qt"
@@ -302,7 +253,6 @@ if [ "$UID" = 0 ]; then
     echo $$ > /var/run/yast.pid
 fi
 
-# set lang from sysconfig
 set_lang_from_sysconfig
 
 # default defaults
@@ -319,7 +269,7 @@ if [ -f "$HOME/.yast2/yast2" ]; then
     source "$HOME/.yast2/yast2"
 fi
 
-if [ ! -z "$CMDLINE_UI" ]; then
+if [ -n "$CMDLINE_UI" ]; then
     WANTED_GUI="$CMDLINE_UI"
     WANTED_SHELL="$CMDLINE_UI"
 fi
@@ -363,13 +313,8 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 	     esac	
 	fi
 
-	# this fixes launching of interactive subprocesses, #150799
-	#Y2UI_ARGS="$Y2UI_ARGS --nothreads"
-        #uncomment the above line if anything in TUI breaks ;-)
-        #threads are welcomed back in ncurses frontend (F#301899)
-
 	# set color theme, if defined
-	if [ ! -z "$Y2NCURSES_COLOR_THEME" ]; then
+	if [ -n "$Y2NCURSES_COLOR_THEME" ]; then
 	    export Y2NCURSES_COLOR_THEME="$Y2NCURSES_COLOR_THEME"
 	fi
 
@@ -383,7 +328,6 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 	echo "Something is wrong with the YaST user interface, NCurses selected but no terminal available." >&2
 	exit_code=1		# also skips y2base later
     fi
-# quick hack: treat gtk like qt
 elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
 
     if [ "$SELECTED_GUI" = "qt" ]; then
@@ -404,7 +348,7 @@ fi
 
 # do it!
 # $@ are args for ycp
-if [ $module == "menu" -a -f "$y2ccbin" ] ; then
+if [ $module == "menu" -a -x "$y2ccbin" ] ; then
     $y2ccbin $Y2UI_ARGS "$@"
     exit_code=$?
 else
