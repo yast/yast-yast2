@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Aug 29 05:57:29 UTC 2013 - jreidinger@suse.com
+
+- use ruby builtin IP regexp and clean a bit code
+- 3.0.7
+
+-------------------------------------------------------------------
 Wed Aug 28 08:13:21 UTC 2013 - jreidinger@suse.com
 
 - removed output redirection for /sbin/yast2, now it ends up in

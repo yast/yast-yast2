@@ -60,19 +60,9 @@ module Yast
     # @return true if correct
     def Check4(ip)
       return false if ip == nil
+
       !Resolv::IPv4::Regex.match(ip).nil?
     end
-
-    # Check syntax of IPv4 address (maybe better)
-    # @param ip IPv4 address
-    # @return true if correct
-    # global defin boolean Check4_new(string ip) ``{
-    #     if(ip == nil || ip == "") return false;
-    #     string num0 = "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[1-9])";
-    #     string num1 = "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])";
-    #     string ipv4 = "^" + num0 + "(\\." + num1 + "){3}$";
-    #     return regexpmatch(ip, ipv4);
-    # }
 
     # Describe a valid IPv6 address
     # @return [String] describtion a valid IPv4 address
@@ -89,43 +79,26 @@ module Yast
     # @param [String] ip IPv6 address
     # @return true if correct
     def Check6(ip)
-      return false if ip == nil || ip == ""
+      return false if ip == nil
 
-      #string num = "([1-9a-fA-F][0-9a-fA-F]*|0)";
-      num = "([0-9a-fA-F]{1,4})"
+      # we need special regex because Resolv::IPv6::Regex support also directly
+      # mapped ipv4 to ipv6 which yast doesn't support
+      regexp = /
+        (?:#{Resolv::IPv6::Regex_8Hex}) |
+        (?:#{Resolv::IPv6::Regex_CompressedHex})
+      /xo
+      res = !regexp.match(ip).nil?
 
-      # 1:2:3:4:5:6:7:8
-      if Builtins.regexpmatch(
-          ip,
-          Ops.add(Ops.add(Ops.add(Ops.add("^", num), "(:"), num), "){7}$")
-        )
-        return true
-      end
-      # ::3:4:5:6:7:8
-      if Builtins.regexpmatch(ip, Ops.add(Ops.add("^:(:", num), "){1,6}$"))
-        return true
-      end
-      # 1:2:3:4:5:6::
-      if Builtins.regexpmatch(ip, Ops.add(Ops.add("^(", num), ":){1,6}:$"))
-        return true
-      end
-      # :: only once
-      return false if Builtins.regexpmatch(ip, "::.*::")
-      # : max 7x
-      return false if Builtins.regexpmatch(ip, "^([^:]*:){8,}")
-      # 1:2:3::5:6:7:8
-      # 1:2:3:4:5:6::8
-      if Builtins.regexpmatch(
-          ip,
-          Ops.add(
-            Ops.add(Ops.add(Ops.add("^(", num), ":){1,6}(:"), num),
-            "){1,6}$"
-          )
-        )
-        return true
+      # workaround for compressed address as it is hard to check correct number
+      # in compressed ip using regexp only
+      if res && ip.include?("::")
+        prefix, suffix = ip.split("::")
+        elements = prefix.split(":")
+        elements += suffix.split(":") if suffix
+        return elements.size < 8
       end
 
-      false
+      return res
     end
 
     # If param contains IPv6 in one of its various forms, extracts it.
@@ -181,36 +154,21 @@ module Yast
     # @param [String] ip IPv4 address
     # @return ip address as integer
     def ToInteger(ip)
-      # FIXME: Check4, also to Compute*
-      l = Builtins.maplist(Builtins.splitstring(ip, ".")) do |e|
-        Builtins.tointeger(e)
-      end
-      Ops.add(
-        Ops.add(
-          Ops.add(
-            Ops.get_integer(l, 3, 0),
-            Ops.shift_left(Ops.get_integer(l, 2, 0), 8)
-          ),
-          Ops.shift_left(Ops.get_integer(l, 1, 0), 16)
-        ),
-        Ops.shift_left(Ops.get_integer(l, 0, 0), 24)
-      )
+      return nil unless Check4(ip)
+
+      parts = ip.split(".")
+      parts.reduce(0) {|r, p| (r << 8) + p.to_i }
     end
 
     # Convert IPv4 address from integer to string
     # @param [Fixnum] ip IPv4 address
     # @return ip address as string
     def ToString(ip)
-      l = Builtins.maplist([16777216, 65536, 256, 1]) do |b|
-        Ops.bitwise_and(Ops.divide(ip, b), 255)
+      parts = [16777216, 65536, 256, 1].map do |b|
+        (ip / b) & 255
       end
-      Builtins.sformat(
-        "%1.%2.%3.%4",
-        Ops.get_integer(l, 0, 0),
-        Ops.get_integer(l, 1, 0),
-        Ops.get_integer(l, 2, 0),
-        Ops.get_integer(l, 3, 0)
-      )
+
+      parts.join(".")
     end
 
     # Converts IPv4 address from string to hex format
@@ -219,14 +177,12 @@ module Yast
     # @example IP::ToHex("192.168.1.1") -> "0xC0A80101"
     # @example IP::ToHex("10.10.0.1") -> "0x0A0A0001"
     def ToHex(ip)
-      tmp = Ops.add(
-        "00000000",
-        Builtins.substring(
-          Builtins.toupper(Builtins.tohexstring(ToInteger(ip))),
-          2
-        )
-      )
-      Builtins.substring(tmp, Ops.subtract(Builtins.size(tmp), 8))
+      int = ToInteger(ip)
+      return nil unless int
+
+      hex = int.to_s(16)
+
+      ("0" * (8 - hex.size)) + hex.upcase
     end
 
     # Compute IPv4 network address from ip4 address and network mask.
@@ -264,25 +220,13 @@ module Yast
     #     IPv4ToBits("80.25.135.2")    -> "01010000000110011000011100000010"
     #     IPv4ToBits("172.24.233.211") -> "10101100000110001110100111010011"
     def IPv4ToBits(ipv4)
-      if !Check4(ipv4)
+      unless Check4(ipv4)
         Builtins.y2error("Not a valid IPv4: %1", ipv4)
         return nil
       end
 
-      ret = ""
-      Builtins.foreach(Builtins.splitstring(ipv4, ".")) do |ipv4_part|
-        ipv4_part_i = Builtins.tointeger(ipv4_part)
-        Builtins.foreach(@bit_weight_row) do |try_i|
-          if Ops.greater_than(Ops.divide(ipv4_part_i, try_i), 0)
-            ipv4_part_i = Ops.modulo(ipv4_part_i, try_i)
-            ret = Ops.add(ret, "1")
-          else
-            ret = Ops.add(ret, "0")
-          end
-        end
-      end
-
-      ret
+      bits = ToInteger(ipv4).to_s(2)
+      "0" * (32 - bits.size) + bits
     end
 
     # Converts 32 bit binary number to its IPv4 repserentation.
@@ -305,30 +249,7 @@ module Yast
         return nil
       end
 
-      ipv4 = ""
-      position = 0
-      while Ops.less_than(position, 32)
-        ip_part = 0
-        eight_bits = Builtins.substring(bits, position, 8)
-
-        counter = -1
-        while Ops.less_than(counter, 8)
-          counter = Ops.add(counter, 1)
-          one_bit = Builtins.substring(eight_bits, counter, 1)
-
-          if one_bit == "1"
-            ip_part = Ops.add(ip_part, Ops.get(@bit_weight_row, counter, 0))
-          end
-        end
-
-        ipv4 = Ops.add(
-          Ops.add(ipv4, ipv4 != "" ? "." : ""),
-          Builtins.tostring(ip_part)
-        )
-        position = Ops.add(position, 8)
-      end
-
-      ipv4
+      ToString(bits.to_i(2))
     end
 
     def CheckNetworkShared(network)
