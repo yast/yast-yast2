@@ -30,6 +30,11 @@ library/*/testsuite/*.out.*
 library/*/testsuite/*.log
 library/*/testsuite/*.sum
 library/*/testsuite/*.exp
+library/*/testsuite/*.bak
+library/*/test/*.log
+library/*/test/*.trs
+/test-driver
+
 doc/yast.8
 
 
