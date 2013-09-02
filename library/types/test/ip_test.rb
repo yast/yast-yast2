@@ -67,7 +67,9 @@ describe Yast::IP do
       "0000::",
       "0:1::",
       "1:0::",
-      "1:0::0"
+      "1:0::0",
+      "1:2:3:4:5:6:127.0.0.1",
+      "1:2:3::6:127.0.0.1",
     ]
     valid_ip6s.each do |valid_ip6|
       it "return true for valid IPv6 '#{valid_ip6}'" do
@@ -83,7 +85,8 @@ describe Yast::IP do
       "1:2:3:4:5:6:7:",
       "g:FF:b:c:d:d:e:e",
       "127.0.0.1",
-      "1:2:3:4:5:6:127.0.0.1", # FIXME old yast doesn't support direct mapping IPv4 to IPv6
+      "1:2:3:4:5:6:7:127.0.0.1",
+      "1:2:3::6:7:8:127.0.0.1",
     ]
     invalid_ip6s.each do |invalid_ip6|
       it "return false for invalid IPv6 '#{invalid_ip6}" do
