@@ -81,21 +81,17 @@ module Yast
     def Check6(ip)
       return false if ip == nil
 
-      # we need special regex because Resolv::IPv6::Regex support also directly
-      # mapped ipv4 to ipv6 which yast doesn't support
-      regexp = /
-        (?:#{Resolv::IPv6::Regex_8Hex}) |
-        (?:#{Resolv::IPv6::Regex_CompressedHex})
-      /xo
-      res = !regexp.match(ip).nil?
+      res = !Resolv::IPv6::Regex.match(ip).nil?
 
       # workaround for compressed address as it is hard to check correct number
       # in compressed ip using regexp only
       if res && ip.include?("::")
         prefix, suffix = ip.split("::")
         elements = prefix.split(":")
+        contain_ipv4 = ip.include? "."
         elements += suffix.split(":") if suffix
-        return elements.size < 8
+        max_elements = contain_ipv4 ? 6 : 7
+        return elements.size <= max_elements
       end
 
       return res
