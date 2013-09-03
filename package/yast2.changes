@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Sep  3 08:47:37 UTC 2013 - mfilka@suse.com
+
+- bnc#837517
+    - fixed misinterpreting IPv6 prefixes when converting to netmask
+- 2.17.121.3 
+
+-------------------------------------------------------------------
 Mon May 27 14:16:53 CEST 2013 - locilka@suse.com
 
 - Reverted resetting disabled steps (bnc#813072)
