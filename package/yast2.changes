@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Sep  3 08:47:37 UTC 2013 - mfilka@suse.com
+
+- bnc#837517
+    - fixed misinterpreting IPv6 prefixes when converting to netmask
+- 3.0.3 
+
+-------------------------------------------------------------------
 Fri Aug  9 07:02:01 UTC 2013 - mfilka@suse.com
 
 - bnc#798620
