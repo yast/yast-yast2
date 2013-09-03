@@ -32,29 +32,13 @@ list <string> ifcfgs = [
     "ip6tnl0",
     "ip6tnl31",
     "mip6mnha3",
-/*
-    // trying
-    "bogusname",
-    "bogus#foo#bar",
-    "42",
-*/
     ];
 
 foreach (string ifcfg, ifcfgs, {
     string t = NetworkInterfaces::GetType(ifcfg);
     DUMP (sformat ("ifcfg-%1, type: %2", ifcfg, t));
-//    string i = NetworkDevices::device_num (ifcfg);
-//    string ai = NetworkDevices::alias_num (ifcfg);
 });
 
-/*
-DUMP ("Obsolete:");
-TEST(``(NetworkDevices::device_name("eth-pcmcia-","0")), [], nil);
-TEST(``(NetworkDevices::device_name("tr-pcmcia-","1")), [], nil);
-
-TEST(``(NetworkDevices::alias_name("eth-pcmcia-","0","1")), [], nil);
-TEST(``(NetworkDevices::alias_name("tr-pcmcia-","1","1")), [], nil);
-*/
 DUMP ("CanonicalizeIP:");
 list<map<string, any> > addresses = [
     // normal cases
