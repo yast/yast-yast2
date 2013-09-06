@@ -45,6 +45,7 @@ module Yast
       Yast.import "String"
       Yast.import "TypeRepository"
       Yast.import "FileUtils"
+      Yast.import "IP"
 
       # False suppresses tones of logs 'NetworkInterfaces.ycp:ABC Check(eth,id-00:aa:bb:cc:dd:ee,)'
       @report_every_check =
@@ -605,19 +606,30 @@ module Yast
       deep_copy(ifcfg)
     end
 
-    # Canonicalize netmask data (#46885)
-    # Sysconfig allows:
-    # IPADDR=10.0.0.1/8
-    # IPADDR=10.0.0.1 PREFIXLEN=8
-    # IPADDR=10.0.0.1 NETMASK=255.0.0.0
-    # (IPADDR overrides PREFIXLEN, NETMASK used only if prefix length unspecified)
-    # If prefix length and NETMASK are unspecified, 32 is implied.
-    # Canonicalize it to
-    # IPADDR=10.0.0.1 PREFIXLEN= NETMASK=255.0.0.0
-    # @param [Hash{String => Object}] ifcfg a map containing IPADDR and possibly NETMASK, PREFIXLEN
-    # and possibly other fields
-    # @return the map with IPADDR, NETMASK adjusted; PREFIXLEN ""
-    # others unchanged. If IPADDR is empty, return the original.
+    #
+    # Canonicalize static ip configuration obtained from sysconfig. (suse#46885) 
+    # 
+    # Static ip configuration formats supported by sysconfig: 
+    # 1) IPADDR=10.0.0.1/8 
+    # 2) IPADDR=10.0.0.1 PREFIXLEN=8 
+    # 3) IPADDR=10.0.0.1 NETMASK=255.0.0.0 
+    # 
+    # Features: 
+    # - IPADDR (in form <ip>/<prefix>) overrides PREFIXLEN,  
+    # - NETMASK is used only if prefix length unspecified) 
+    # - If prefix length and NETMASK are unspecified, 32 is implied. 
+    # 
+    # Canonicalize it to: 
+    # - IPADDR="<ipv4>" PREFIXLEN="<prefix>" NETMASK="<netmask>") in case of IPv4 config
+    # E.g. IPADDR=10.0.0.1 PREFIXLEN=8 NETMASK=255.0.0.0 
+    # - IPADDR="<ipv6>" PREFIXLEN="<prefix>" NETMASK="") in case of IPv6 config
+    # E.g. IPADDR=2001:15c0:668e::5 PREFIXLEN=48 NETMASK=""
+    #
+    # @param ifcfg     a map with netconfig (ifcfg) configuration for a one device 
+    # @return          a map with IPADDR, NETMASK and PREFIXLEN adjusted if IPADDR is present. 
+    #                  Returns original ifcfg if IPADDR is not present. In case of error, 
+    #                  returns nil.
+    #                  
     def CanonicalizeIP(ifcfg)
       ifcfg = deep_copy(ifcfg)
       return nil if ifcfg == nil
@@ -628,8 +640,10 @@ module Yast
       )
       ipaddr = Ops.get(ip_and_prefix, 0, "")
       return deep_copy(ifcfg) if ipaddr == "" # DHCP or inconsistent
+
       prefixlen = Ops.get(ip_and_prefix, 1, "")
       prefixlen = Ops.get_string(ifcfg, "PREFIXLEN", "") if prefixlen == ""
+
       if prefixlen == ""
         prefixlen = Builtins.tostring(
           Netmask.ToBits(Ops.get_string(ifcfg, "NETMASK", ""))
@@ -638,12 +652,14 @@ module Yast
 
       # Now we have ipaddr and prefixlen
       # Let's compute the rest
-      netmask = Netmask.FromBits(Builtins.tointeger(prefixlen))
-      ret = deep_copy(ifcfg)
-      Ops.set(ret, "IPADDR", ipaddr)
-      Ops.set(ret, "PREFIXLEN", prefixlen)
-      Ops.set(ret, "NETMASK", netmask)
-      deep_copy(ret)
+      netmask = ""
+      netmask = Netmask.FromBits(Builtins.tointeger(prefixlen)) if IP.Check4( ipaddr)
+
+      Ops.set(ifcfg, "IPADDR", ipaddr)
+      Ops.set(ifcfg, "PREFIXLEN", prefixlen)
+      Ops.set(ifcfg, "NETMASK", netmask)
+
+      ifcfg
     end
 
     # Conceal secret information, such as WEP keys, so that the output
