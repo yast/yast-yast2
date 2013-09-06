@@ -21,6 +21,7 @@ import "Map";
 import "Mode";
 import "Netmask";
 import "String";
+import "IP";
 
 /**
  * False suppresses tones of logs 'NetworkInterfaces.ycp:ABC Check(eth,id-00:aa:bb:cc:dd:ee,)'
@@ -431,21 +432,31 @@ global map<string, any> CanonicalizeStartmode (map<string, any> ifcfg) {
 }
 
 /**
- * Canonicalize netmask data (#46885)
- * Sysconfig allows:
- * IPADDR=10.0.0.1/8
- * IPADDR=10.0.0.1 PREFIXLEN=8
- * IPADDR=10.0.0.1 NETMASK=255.0.0.0
- * (IPADDR overrides PREFIXLEN, NETMASK used only if prefix length unspecified)
- * If prefix length and NETMASK are unspecified, 32 is implied.
- * Canonicalize it to
- * IPADDR=10.0.0.1 PREFIXLEN= NETMASK=255.0.0.0
- * @param ifcfg a map containing IPADDR and possibly NETMASK, PREFIXLEN
- * and possibly other fields
- * @return the map with IPADDR, NETMASK adjusted; PREFIXLEN ""
- * others unchanged. If IPADDR is empty, return the original.
+ * Canonicalize static ip configuration obtained from sysconfig. (suse#46885)
+ *
+ * Static ip configuration formats supported by sysconfig:
+ * 1) IPADDR=10.0.0.1/8
+ * 2) IPADDR=10.0.0.1 PREFIXLEN=8
+ * 3) IPADDR=10.0.0.1 NETMASK=255.0.0.0
+ *
+ * Features:
+ * - IPADDR (in form <ip>/<prefix>) overrides PREFIXLEN, 
+ * - NETMASK is used only if prefix length unspecified)
+ * - If prefix length and NETMASK are unspecified, 32 is implied.
+ *
+ * Canonicalize it to:
+ * - IPADDR="<ipv4>" PREFIXLEN="<prefix>" NETMASK="<netmask>") in case of IPv4 config and
+ * E.g. IPADDR=10.0.0.1 PREFIXLEN=8 NETMASK=255.0.0.0
+ * - IPADDR="<ipv6>" PREFIXLEN="<prefix>" NETMASK="") in case of IPv4 config and
+ * E.g. IPADDR=2001:15c0:668e::5 PREFIXLEN=48 NETMASK="" in case of IPv6
+ *
+ * @param ifcfg     a map with netconfig (ifcfg) configuration for a one device
+ * @return          a map with IPADDR, NETMASK and PREFIXLEN adjusted if IPADDR is present.
+ *                  Returns original ifcfg if IPADDR is not present. In case of error,
+ *                  returns nil.
  */
-global map<string, any> CanonicalizeIP (map<string, any> ifcfg) {
+global map<string, any> CanonicalizeIP (map<string, any> ifcfg)
+{
     if (ifcfg == nil)
     {
 	return nil;
@@ -469,7 +480,13 @@ global map<string, any> CanonicalizeIP (map<string, any> ifcfg) {
 
     // Now we have ipaddr and prefixlen
     // Let's compute the rest
-    string netmask = Netmask::FromBits (tointeger (prefixlen));
+    string netmask = "";
+
+    if( IP::Check4( ipaddr))
+    {
+        netmask = Netmask::FromBits (tointeger (prefixlen));
+    }
+
     map<string, any> ret = ifcfg;
     ret["IPADDR"] = ipaddr;
     ret["PREFIXLEN"] = prefixlen;

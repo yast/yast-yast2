@@ -2,6 +2,7 @@
 
 include "testsuite.ycp";
 import "Netmask";
+import "Assert";
 
 DUMP("Netmask::Check4");
 TEST(``(Netmask::Check4("128.0.0.0")), [], nil);
@@ -64,6 +65,15 @@ DUMP("Netmask::FromBits");
 i = 32;
 while (i >= 0) {
     TEST(``(Netmask::FromBits (i)), [], nil);
+    i = i - 1;
+}
+
+// tests that returns empty mask for IPv6 specific prefixes (>32, <=128)
+// implementatio of FromBits is IPv4 specific
+i = 128;
+while( i > 32)
+{
+    Assert::Equal( "", Netmask::FromBits(i) );
     i = i - 1;
 }
 

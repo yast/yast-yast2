@@ -75,11 +75,18 @@ global define boolean Check(string netmask) ``{
 }
 
 /**
- * Convert netmask in bits form (20) to netmask string (255.255.240.0)
- * @param bits number of bits in netmask
- * @return netmask string
+ * Convert netmask in bits form (20) to IPv4 netmask string (255.255.240.0)
+ *
+ * @param bits  number of bits in netmask
+ * @return      netmask string or empty string in case of invalid bits (e.g.
+ *              when prefix is incompatible with IPv4)
  */
 global define string FromBits(integer bits) ``{
+    if( ( bits < 0) || (bits > 32) )
+    {
+        return "";
+    }
+
     integer b = bits / 8;
     integer d = bits % 8;
 
