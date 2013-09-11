@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Sep  3 08:47:37 UTC 2013 - mfilka@suse.com
+
+- bnc#837517
+    - fixed misinterpreting IPv6 prefixes when converting to netmask
+- 3.0.8 
+
+-------------------------------------------------------------------
 Thu Aug 29 05:57:29 UTC 2013 - jreidinger@suse.com
 
 - use ruby builtin IP regexp and clean a bit code

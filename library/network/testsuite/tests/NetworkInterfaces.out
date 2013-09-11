@@ -32,5 +32,3 @@ Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.0.0.0", "PREFIXLEN":"8", "other":"d
 Return	nil
 Return	$[]
 Return	$["IPADDR":"10.0.0.1", "NETMASK":"255.255.255.255", "PREFIXLEN":"32", "other":"data"]
-Return	$["IPADDR":"2001:15c0:668e::5", "NETMASK":"", "PREFIXLEN":"48"]
-Return	$["IPADDR":"2001:15c0:668e::5", "NETMASK":"", "PREFIXLEN":"48"]

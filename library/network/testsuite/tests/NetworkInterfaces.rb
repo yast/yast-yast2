@@ -80,9 +80,6 @@ module Yast
         nil,
         {},
         { "IPADDR" => "10.0.0.1", "other" => "data" },
-        # IPv6
-        { "IPADDR" => "2001:15c0:668e::5", "PREFIXLEN" => "48" },
-        { "IPADDR" => "2001:15c0:668e::5/48", "PREFIXLEN" => "" }
       ]
       Builtins.foreach(@addresses) { |address| TEST(lambda do
         NetworkInterfaces.CanonicalizeIP(address)

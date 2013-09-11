@@ -108,10 +108,16 @@ module Yast
       Check4(netmask) || Check6(netmask)
     end
 
-    # Convert netmask in bits form (20) to netmask string (255.255.240.0)
-    # @param [Fixnum] bits number of bits in netmask
-    # @return netmask string
+    #
+    # Convert netmask in bits form (20) to IPv4 netmask string (255.255.240.0) 
+    #
+    # @param bits  number of bits in netmask 
+    # @return      netmask string or empty string in case of invalid bits (e.g. 
+    #              when prefix is incompatible with IPv4)
+    #
     def FromBits(bits)
+      return "" unless bits.between?( 0, 32)
+
       b = Ops.divide(bits, 8)
       d = Ops.modulo(bits, 8)
 
