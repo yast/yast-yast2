@@ -37,7 +37,7 @@ module Yast
 
       Yast.import "Mode"
       Yast.import "Stage"
-      Yast.import "SuSERelease"
+      Yast.import "OSRelease"
       Yast.import "PackageLock"
       Yast.import "PackageSystem"
 
@@ -202,9 +202,11 @@ module Yast
           )
           Builtins.y2milestone("PATTERNS: %1", @patterns)
         end
-      elsif !Mode.config
-        @short_name = SuSERelease.ReleaseName
-        @version = SuSERelease.ReleaseVersion
+      # not during testing: Misc::CustomSysconfigRead used by OSRelease creates agent in runtime,
+      # mocking IniParser not possible
+      elsif !Mode.config && !Mode.test
+        @short_name = OSRelease.ReleaseName
+        @version = OSRelease.ReleaseVersion
         @name = Ops.add(Ops.add(@short_name, " "), @version)
       end
 

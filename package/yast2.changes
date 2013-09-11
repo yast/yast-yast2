@@ -3,7 +3,41 @@ Tue Sep  3 08:47:37 UTC 2013 - mfilka@suse.com
 
 - bnc#837517
     - fixed misinterpreting IPv6 prefixes when converting to netmask
-- 3.0.3 
+- 3.0.8 
+
+-------------------------------------------------------------------
+Thu Aug 29 05:57:29 UTC 2013 - jreidinger@suse.com
+
+- use ruby builtin IP regexp and clean a bit code
+- 3.0.7
+
+-------------------------------------------------------------------
+Wed Aug 28 08:13:21 UTC 2013 - jreidinger@suse.com
+
+- removed output redirection for /sbin/yast2, now it ends up in
+  ~/.xsession-errors like for every other X program (BNC#766555)
+- 3.0.6
+
+-------------------------------------------------------------------
+Thu Aug 22 11:22:26 CEST 2013 - jsuchome@suse.cz
+
+- prevent accessing /etc/os-release during tests from Product.rb
+  constructor
+- 3.0.5 
+
+-------------------------------------------------------------------
+Thu Aug 22 08:17:06 CEST 2013 - jsuchome@suse.cz
+
+- replace SuSERelease with OSRelease, which uses /etc/os-release
+  (bnc#833955,fate#316268)
+- 3.0.4
+
+-------------------------------------------------------------------
+Tue Aug 13 16:45:59 CEST 2013 - locilka@suse.com
+
+- Changed some y2milestone into y2debug in GetTypeFrom* in
+  NetworkInterfaces to decrease overfilling Yast log
+- 3.0.3
 
 -------------------------------------------------------------------
 Fri Aug  9 07:02:01 UTC 2013 - mfilka@suse.com

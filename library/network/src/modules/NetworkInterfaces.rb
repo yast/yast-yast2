@@ -348,7 +348,7 @@ module Yast
           type = Ops.get(@TypeBySysfs, sys_type)
       end
 
-      Builtins.y2milestone(
+      Builtins.y2debug(
         "GetTypeFromSysFs: device='%1', sysfs type='%2', type='%3'",
         dev,
         sys_type,
@@ -405,7 +405,7 @@ module Yast
 
       type = device_type(dev) if type == nil
 
-      Builtins.y2milestone(
+      Builtins.y2debug(
         "GetTypeFromIfcfgOrName: device='%1', type='%2'",
         dev,
         type
