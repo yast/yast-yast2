@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Sep 19 17:59:55 UTC 2013 - lslezak@suse.cz
+
+- do not use *.spec.in template, use *.spec file with RPM macros
+  instead
+- 3.1.0
+
+-------------------------------------------------------------------
 Tue Sep  3 08:47:37 UTC 2013 - mfilka@suse.com
 
 - bnc#837517
