@@ -47,8 +47,15 @@ require "yast"
 
 module Yast
   class NetworkServiceClass < Module
-    def main
 
+    BACKENDS = {
+    # <internal-id>        <service name>
+      :network          => "network",
+      :network_manager  => "NetworkManager",
+      :wicked           => "wicked"
+    }
+
+    def main
       Yast.import "Service"
       Yast.import "NetworkConfig"
       Yast.import "Popup"
@@ -60,10 +67,10 @@ module Yast
       @initialized = false
 
       # current network service id name
-      @cur_service_id_name = ""
+      @cur_service_id_name = nil
 
       # the new network service id name
-      @new_service_id_name = ""
+      @new_service_id_name = nil
 
       # Path to the systemctl command
       @systemctl = "/bin/systemctl"
@@ -101,18 +108,52 @@ module Yast
       ret
     end
 
-    # Whether use NetworkManager or ifup
-    # @return true when the network is managed, false when
-    #         the /etc/init.d/network script is in use.
-    def IsManaged
+    # Replies with currently used network service name
+    #
+    # Currently known backends:
+    # - :NetworkManager - not supported by YaST
+    # - :ifup - supported
+    # - :wicked - supported (via its backward compatibility to
+    # ifup)
+    #
+    def get_net_service_name
       Read()
-      @new_service_id_name != "network"
+      return @new_service_id_name
     end
 
-    # @param [Boolean] m whether networkmanager will be used
-    def SetManaged(m)
+    # Checks if configuration is managed by NetworkManager
+    #
+    # @return true  when the network is managed by an external tool, 
+    #               like NetworkManager, false otherwise
+    def controlled_by_network_manager
+      get_net_service_name == :network_manager
+    end
+
+    def controlled_by_netconfig
+      get_net_service_name == :network
+    end
+
+    def controlled_by_wicked
+      get_net_service_name == :wicked
+    end
+
+    def use_network_manager
       Read()
-      @new_service_id_name = m ? "NetworkManager" : "network"
+      @new_service_id_name = :network_manager
+
+      nil
+    end
+
+    def use_netconfig
+      Read()
+      @new_service_id_name = :network
+
+      nil
+    end
+
+    def use_wicked
+      Read()
+      @new_service_id_name = :wicked
 
       nil
     end
@@ -120,10 +161,18 @@ module Yast
     # Initialize module data
     def Read
       if !@initialized
-        @cur_service_id_name = Service.GetServiceId("network")
+        case Service.GetServiceId("network")
+          when "network"
+            @cur_service_id_name = :network
+          when "NetworkManager"
+            @cur_service_id_name = :network_manager
+          when "wicked"
+            @cur_service_id_name = :wicked
+        end
+  
         @new_service_id_name = @cur_service_id_name
 
-        nm = @new_service_id_name != "network"
+        nm = @new_service_id_name == :network_manager
         Builtins.y2milestone("NetworkManager: %1", nm)
       end
       @initialized = true
@@ -161,15 +210,19 @@ module Yast
         # no effect.
         # So let's kill all processes in the network service
         # cgroup to make sure e.g. dhcp clients are stopped.
-        RunSystemCtl(@cur_service_id_name, "kill")
+        @initialized = false
+        RunSystemCtl( BACKENDS[ @cur_service_id_name], "kill")
 
-        if @new_service_id_name == "network"
-          RunSystemCtl(@cur_service_id_name, "disable")
-        else
-          RunSystemCtl(@new_service_id_name, "--force enable")
+        case @new_service_id_name
+          when :network_manager
+            RunSystemCtl( BACKENDS[ @new_service_id_name], "--force enable")
+          when :wicked
+            RunSystemCtl( BACKENDS[ @new_service_id_name], "--force enable")
+          when :network
+            RunSystemCtl( BACKENDS[ @cur_service_id_name], "disable")
         end
-        @cur_service_id_name = Service.GetServiceId("network")
-        @new_service_id_name = @cur_service_id_name
+
+        Read()
       end
 
       nil
@@ -228,7 +281,7 @@ module Yast
     #
     # @return [Boolean] continue
     def ConfirmNetworkManager
-      if !@already_asked_for_NetworkManager && IsManaged()
+      if !@already_asked_for_NetworkManager && controlled_by_NetworkManager
         # TRANSLATORS: pop-up question when reading the service configuration
         cont = Popup.ContinueCancel(
           _(
@@ -310,8 +363,12 @@ module Yast
 
     publish :function => :Read, :type => "void ()"
     publish :function => :Modified, :type => "boolean ()"
-    publish :function => :IsManaged, :type => "boolean ()"
-    publish :function => :SetManaged, :type => "void (boolean)"
+    publish :function => :controlled_by_network_manager, :type => "boolean ()"
+    publish :function => :controlled_by_netconfig, :type => "boolean ()"
+    publish :function => :controlled_by_wicked, :type => "boolean ()"
+    publish :function => :use_network_manager, :type => "void ()"
+    publish :function => :use_netconfig, :type => "void ()"
+    publish :function => :use_wicked, :type => "void ()"
     publish :function => :EnableDisable, :type => "void ()"
     publish :function => :IsActive, :type => "boolean ()"
     publish :function => :ReloadOrRestart, :type => "void ()"
