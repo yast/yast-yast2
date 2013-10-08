@@ -47,6 +47,7 @@ require "yast"
 
 module Yast
   class NetworkServiceClass < Module
+    attr_reader :current_name
 
     BACKENDS = {
     # <internal-id>        <service name>
@@ -67,7 +68,7 @@ module Yast
       @initialized = false
 
       # current network service id name
-      @cur_service_id_name = nil
+      @current_name = nil
 
       # the new network service id name
       @new_service_id_name = nil
@@ -98,17 +99,17 @@ module Yast
     def Modified
       ret = false
       Read()
-      ret = true if @new_service_id_name != @cur_service_id_name
+      ret = true if @new_service_id_name != @current_name
       Builtins.y2debug(
         "NetworkService::Modified(%1, %2) => %3",
-        @cur_service_id_name,
+        @current_name,
         @new_service_id_name,
         ret
       )
       ret
     end
 
-    # Replies with currently used network service name
+    # Replies with currently selected network service name
     #
     # Currently known backends:
     # - :NetworkManager - not supported by YaST
@@ -116,7 +117,7 @@ module Yast
     # - :wicked - supported (via its backward compatibility to
     # ifup)
     #
-    def get_net_service_name
+    def selected_name
       Read()
       return @new_service_id_name
     end
@@ -126,15 +127,15 @@ module Yast
     # @return true  when the network is managed by an external tool, 
     #               like NetworkManager, false otherwise
     def controlled_by_network_manager
-      get_net_service_name == :network_manager
+      selected_name == :network_manager
     end
 
     def controlled_by_netconfig
-      get_net_service_name == :network
+      selected_name == :network
     end
 
     def controlled_by_wicked
-      get_net_service_name == :wicked
+      selected_name == :wicked
     end
 
     def use_network_manager
@@ -163,14 +164,14 @@ module Yast
       if !@initialized
         case Service.GetServiceId("network")
           when "network"
-            @cur_service_id_name = :network
+            @current_name = :network
           when "NetworkManager"
-            @cur_service_id_name = :network_manager
+            @current_name = :network_manager
           when "wicked"
-            @cur_service_id_name = :wicked
+            @current_name = :wicked
         end
   
-        @new_service_id_name = @cur_service_id_name
+        @new_service_id_name = @current_name
 
         nm = @new_service_id_name == :network_manager
         Builtins.y2milestone("NetworkManager: %1", nm)
@@ -211,7 +212,7 @@ module Yast
         # So let's kill all processes in the network service
         # cgroup to make sure e.g. dhcp clients are stopped.
         @initialized = false
-        RunSystemCtl( BACKENDS[ @cur_service_id_name], "kill")
+        RunSystemCtl( BACKENDS[ @current_name], "kill")
 
         case @new_service_id_name
           when :network_manager
@@ -219,7 +220,7 @@ module Yast
           when :wicked
             RunSystemCtl( BACKENDS[ @new_service_id_name], "--force enable")
           when :network
-            RunSystemCtl( BACKENDS[ @cur_service_id_name], "disable")
+            RunSystemCtl( BACKENDS[ @current_name], "disable")
         end
 
         Read()
@@ -363,6 +364,7 @@ module Yast
 
     publish :function => :Read, :type => "void ()"
     publish :function => :Modified, :type => "boolean ()"
+    publish :function => :current_name, :type => "string ()"
     publish :function => :controlled_by_network_manager, :type => "boolean ()"
     publish :function => :controlled_by_netconfig, :type => "boolean ()"
     publish :function => :controlled_by_wicked, :type => "boolean ()"
