@@ -1,11 +1,34 @@
-@HEADER-COMMENT@
+#
+# spec file for package yast2
+#
+# Copyright (c) 2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
+#
+# All modifications and additions to the file contributed by third parties
+# remain the property of their copyright owners, unless otherwise agreed
+# upon. The license for this file, and modifications and additions to the
+# file, is the same license as for the pristine package itself (unless the
+# license for the pristine package is not an Open Source License, in which
+# case the license is the MIT License). An "Open Source License" is a
+# license that conforms to the Open Source Definition (Version 1.9)
+# published by the Open Source Initiative.
 
-@HEADER@
+# Please submit bugfixes or comments via http://bugs.opensuse.org/
+#
+
+
+Name:           yast2
+Version:        3.1.0
+Release:        0
+
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+Source0:        %{name}-%{version}.tar.bz2
+
 Group:          System/YaST
 License:        GPL-2.0
 Source1:        yast2-rpmlintrc
 
-BuildRequires:  perl-XML-Writer update-desktop-files yast2-devtools yast2-perl-bindings yast2-testsuite
+BuildRequires:  perl-XML-Writer update-desktop-files yast2-perl-bindings yast2-testsuite
+BuildRequires:  yast2-devtools >= 3.0.6
 # Needed already in build time
 BuildRequires:  yast2-core >= 2.18.12 yast2-pkg-bindings >= 2.20.3 yast2-ycp-ui-bindings >= 2.18.4
 
@@ -116,26 +139,29 @@ Summary:        YaST2 - Development Scripts and Documentation
 This package contains scripts and data needed for a SUSE Linux
 installation with YaST2.
 
-@PREP@
+%prep
+%setup -n %{name}-%{version}
 
-@BUILD@
+%build
+%yast_build
 
 # removed explicit adding of translations to group desktop files, since it is covered by the general call (they are in a subdirectory) and it caused build fail
 
-@INSTALL@
+%install
+%yast_install
 
-mkdir -p "$RPM_BUILD_ROOT"@clientdir@
-mkdir -p "$RPM_BUILD_ROOT"@desktopdir@
-mkdir -p "$RPM_BUILD_ROOT"@imagedir@
-mkdir -p "$RPM_BUILD_ROOT"@localedir@
-mkdir -p "$RPM_BUILD_ROOT"@moduledir@
-mkdir -p "$RPM_BUILD_ROOT"@scrconfdir@
-mkdir -p "$RPM_BUILD_ROOT"@ybindir@
-mkdir -p "$RPM_BUILD_ROOT"@ydatadir@
-mkdir -p "$RPM_BUILD_ROOT"@yncludedir@
-mkdir -p "$RPM_BUILD_ROOT"@vardir@
-mkdir -p "$RPM_BUILD_ROOT"@schemadir@/control/rnc
-mkdir -p "$RPM_BUILD_ROOT"@schemadir@/autoyast/rnc
+mkdir -p "$RPM_BUILD_ROOT"%{yast_clientdir}
+mkdir -p "$RPM_BUILD_ROOT"%{yast_desktopdir}
+mkdir -p "$RPM_BUILD_ROOT"%{yast_imagedir}
+mkdir -p "$RPM_BUILD_ROOT"%{yast_localedir}
+mkdir -p "$RPM_BUILD_ROOT"%{yast_moduledir}
+mkdir -p "$RPM_BUILD_ROOT"%{yast_scrconfdir}
+mkdir -p "$RPM_BUILD_ROOT"%{yast_ybindir}
+mkdir -p "$RPM_BUILD_ROOT"%{yast_ydatadir}
+mkdir -p "$RPM_BUILD_ROOT"%{yast_yncludedir}
+mkdir -p "$RPM_BUILD_ROOT"%{yast_vardir}
+mkdir -p "$RPM_BUILD_ROOT"%{yast_schemadir}/control/rnc
+mkdir -p "$RPM_BUILD_ROOT"%{yast_schemadir}/autoyast/rnc
 mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 
 # symlink the yardoc duplicates, saves over 2MB in installed system
@@ -143,7 +169,6 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 # because of the compression)
 %fdupes -s %buildroot/%_prefix/share/doc/packages/yast2
 
-@CLEAN@
 
 %post
 %{fillup_only -n yast2}
@@ -153,77 +178,77 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 
 # basic directory structure
 
-%dir @clientdir@
-%dir @desktopdir@
-@desktopdir@/groups
-%dir @imagedir@
-%dir @localedir@
-%dir @moduledir@
-%dir @scrconfdir@
-%dir @ybindir@
-%dir @ydatadir@
-%dir @yncludedir@
-%dir @vardir@
-%dir @schemadir@
-%dir @schemadir@/control
-%dir @schemadir@/control/rnc
-%dir @schemadir@/autoyast
-%dir @schemadir@/autoyast/rnc
+%dir %{yast_clientdir}
+%dir %{yast_desktopdir}
+%{yast_desktopdir}/groups
+%dir %{yast_imagedir}
+%dir %{yast_localedir}
+%dir %{yast_moduledir}
+%dir %{yast_scrconfdir}
+%dir %{yast_ybindir}
+%dir %{yast_ydatadir}
+%dir %{yast_yncludedir}
+%dir %{yast_vardir}
+%dir %{yast_schemadir}
+%dir %{yast_schemadir}/control
+%dir %{yast_schemadir}/control/rnc
+%dir %{yast_schemadir}/autoyast
+%dir %{yast_schemadir}/autoyast/rnc
 %dir /etc/YaST2
 
 # yast2
 
-@ydatadir@/*.ycp
-@clientdir@/*
-@moduledir@/*
-@scrconfdir@/*
-@ybindir@/*
-@agentdir@/ag_*
+%{yast_ydatadir}/*.ycp
+%{yast_clientdir}/*
+%{yast_moduledir}/*
+%{yast_scrconfdir}/*
+%{yast_ybindir}/*
+%{yast_agentdir}/ag_*
 /etc/bash_completion.d/yast2*.sh
 /etc/YaST2/XVersion
 /var/adm/fillup-templates/sysconfig.yast2
 
 # documentation (not included in devel subpackage)
-%doc %dir @docdir@
-%doc @docdir@/COPYING
-%doc @docdir@/README
+%doc %dir %{yast_docdir}
+%doc %{yast_docdir}/COPYING
+%doc %{yast_docdir}/README
 %doc %{_mandir}/*/*
 
 /sbin/*
 
 # wizard
-%dir @yncludedir@/wizard
-@yncludedir@/wizard/*.rb
+%dir %{yast_yncludedir}/wizard
+%{yast_yncludedir}/wizard/*.rb
 
 #packags
-%dir @yncludedir@/packages
-@yncludedir@/packages/*.rb
+%dir %{yast_yncludedir}/packages
+%{yast_yncludedir}/packages/*.rb
 
 #system
-%dir @yncludedir@/hwinfo
-@yncludedir@/hwinfo/*.rb
-@desktopdir@/messages.desktop
+%dir %{yast_yncludedir}/hwinfo
+%{yast_yncludedir}/hwinfo/*.rb
+%{yast_desktopdir}/messages.desktop
 
 # documentation
 
 %files devel-doc
 %defattr(-,root,root)
 
-%doc @docdir@/autodocs
-%doc @docdir@/commandline
-%doc @docdir@/control
-%doc @docdir@/cron
-%doc @docdir@/cwm
-%doc @docdir@/desktop
-%doc @docdir@/gpg
-%doc @docdir@/log
-%doc @docdir@/network
-%doc @docdir@/packages
-%doc @docdir@/runlevel
-%doc @docdir@/sequencer
-%doc @docdir@/system
-%doc @docdir@/types
-%doc @docdir@/wizard
-%doc @docdir@/xml
+%doc %{yast_docdir}/autodocs
+%doc %{yast_docdir}/commandline
+%doc %{yast_docdir}/control
+%doc %{yast_docdir}/cron
+%doc %{yast_docdir}/cwm
+%doc %{yast_docdir}/desktop
+%doc %{yast_docdir}/gpg
+%doc %{yast_docdir}/log
+%doc %{yast_docdir}/network
+%doc %{yast_docdir}/packages
+%doc %{yast_docdir}/runlevel
+%doc %{yast_docdir}/sequencer
+%doc %{yast_docdir}/system
+%doc %{yast_docdir}/types
+%doc %{yast_docdir}/wizard
+%doc %{yast_docdir}/xml
 
 %changelog

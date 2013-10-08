@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Sep 26 17:59:55 UTC 2013 - lslezak@suse.cz
+
+- do not use *.spec.in template, use *.spec file with RPM macros
+  instead
+- 3.1.0
+
+-------------------------------------------------------------------
 Tue Sep 24 10:03:12 UTC 2013 - jreidinger@suse.com
 
 - allow nested ipv4 in ipv6 (BNC#828683)
