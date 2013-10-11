@@ -181,16 +181,6 @@ module Yast
       nil
     end
 
-    # Enables and disables the appropriate services.
-    def EnableDisable
-      # Workaround for bug #61055:
-      Builtins.y2milestone("Enabling service %1", "network")
-      cmd = "cd /; /sbin/insserv -d /etc/init.d/network"
-      SCR.Execute(path(".target.bash"), cmd)
-
-      nil
-    end
-
     # Run /etc/init.d script with specified action
     # @param script name of the init script
     # @param action the action to use
@@ -221,6 +211,11 @@ module Yast
             RunSystemCtl( BACKENDS[ @new_service_id_name], "--force enable")
           when :network
             RunSystemCtl( BACKENDS[ @current_name], "disable")
+
+            # Workaround for bug #61055:
+            Builtins.y2milestone("Enabling service %1", "network")
+            cmd = "cd /; /sbin/insserv -d /etc/init.d/network"
+            SCR.Execute(path(".target.bash"), cmd)
         end
 
         Read()
@@ -371,7 +366,6 @@ module Yast
     publish :function => :use_network_manager, :type => "void ()"
     publish :function => :use_netconfig, :type => "void ()"
     publish :function => :use_wicked, :type => "void ()"
-    publish :function => :EnableDisable, :type => "void ()"
     publish :function => :IsActive, :type => "boolean ()"
     publish :function => :ReloadOrRestart, :type => "void ()"
     publish :function => :Restart, :type => "void ()"
