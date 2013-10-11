@@ -194,7 +194,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %dir %{yast_schemadir}/control/rnc
 %dir %{yast_schemadir}/autoyast
 %dir %{yast_schemadir}/autoyast/rnc
-%dir /etc/YaST2
+%dir %{_sysconfdir}/YaST2
 
 # yast2
 
@@ -204,8 +204,8 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %{yast_scrconfdir}/*
 %{yast_ybindir}/*
 %{yast_agentdir}/ag_*
-/etc/bash_completion.d/yast2*.sh
-/etc/YaST2/XVersion
+%{_sysconfdir}/bash_completion.d/yast2*.sh
+%{_sysconfdir}/YaST2/XVersion
 /var/adm/fillup-templates/sysconfig.yast2
 
 # documentation (not included in devel subpackage)
@@ -215,6 +215,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %doc %{_mandir}/*/*
 
 /sbin/*
+%{_sbindir}/*
 
 # wizard
 %dir %{yast_yncludedir}/wizard
