@@ -13,10 +13,9 @@ EXTRA_DIST = $(sbin_SCRIPTS) $(ybin_SCRIPTS) $(completion_DATA)
 
 install-data-local:
 	install -d -m 755 $(DESTDIR)$(ybindir)
-	ln -snf yast2 $(DESTDIR)$(sbindir)/zast2
-	ln -snf yast2 $(DESTDIR)$(sbindir)/YaST2
-	ln -snf yast2 $(DESTDIR)$(sbindir)/ZaST2
+# symlink to call yast in ncurses
 	ln -snf yast2 $(DESTDIR)$(sbindir)/yast
-	ln -snf yast2 $(DESTDIR)$(sbindir)/zast
-	ln -snf yast2 $(DESTDIR)$(sbindir)/YaST
-	ln -snf yast2 $(DESTDIR)$(sbindir)/ZaST
+# backward compatibility
+	install -d -m 755 $(DESTDIR)/sbin
+	ln -snf $(sbindir)/yast2 $(DESTDIR)/sbin/yast2
+	ln -snf $(sbindir)/yast2 $(DESTDIR)/sbin/yast
