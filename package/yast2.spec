@@ -211,7 +211,6 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 # documentation (not included in devel subpackage)
 %doc %dir %{yast_docdir}
 %doc %{yast_docdir}/COPYING
-%doc %{yast_docdir}/README
 %doc %{_mandir}/*/*
 
 /sbin/*
