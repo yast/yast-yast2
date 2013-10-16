@@ -1445,7 +1445,7 @@ module Yast
       # has wizard? continue
       #   otherwise use dedicated ReplacePoint or reuse the back button
       # show-releasenotes-button failed? continue
-      #   use dedicated ReplacePoint or rreuse the back button
+      #   use dedicated ReplacePoint or reuse the back button
       if HasWidgetWizard() == false ||
           UI.WizardCommand(term(:ShowReleaseNotesButton, label, id)) == false
         if UI.WidgetExists(Id(:relnotes_rp))
@@ -1465,11 +1465,11 @@ module Yast
 
     # Hide the "Release Notes" button, if there is any
     #
-    def HideReleaseNotesButton
+    ref HideReleaseNotesButton
       # has wizard? continue
       #    otherwise use dedicated ReplacePoint or reuse the back button
       # hide-releasenotes-button failed? continue
-      #   reuse use dedicated ReplacePoint or rthe back button
+      #   reuse use dedicated ReplacePoint or the back button
       if HasWidgetWizard() == false ||
           UI.WizardCommand(term(:HideReleaseNotesButton)) == false
         if UI.WidgetExists(Id(:relnotes_rp))
