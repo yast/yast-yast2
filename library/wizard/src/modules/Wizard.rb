@@ -292,7 +292,8 @@ module Yast
             HBox(
               # translators: dialog title to appear before any content is initialized
               Heading(Id(:title), Opt(:hstretch), _("Initializing ...")),
-              HStretch()
+              HStretch(),
+              ReplacePoint(Id(:relnotes_rp), Empty())
             ),
             VWeight(
               1, # Layout trick: Lower layout priority with weight
@@ -1442,13 +1443,16 @@ module Yast
     #
     def ShowReleaseNotesButton(label, id)
       # has wizard? continue
-      #   otherwise reuse the back button
+      #   otherwise use dedicated ReplacePoint or reuse the back button
       # show-releasenotes-button failed? continue
-      #   reuse the back button
+      #   use dedicated ReplacePoint or reuse the back button
       if HasWidgetWizard() == false ||
           UI.WizardCommand(term(:ShowReleaseNotesButton, label, id)) == false
+        if UI.WidgetExists(Id(:relnotes_rp))
+          UI.ReplaceWidget(Id(:relnotes_rp), PushButton(Id(id), label))
         # Reuse Back button
-        if UI.WidgetExists(Id(:back_rep))
+        # TODO: can this situation happen
+        elsif UI.WidgetExists(Id(:back_rep))
           UI.ReplaceWidget(Id(:back_rep), PushButton(Id(id), label))
         else
           Builtins.y2warning("Widget `back_rep does not exist")
@@ -1461,14 +1465,16 @@ module Yast
 
     # Hide the "Release Notes" button, if there is any
     #
-    def HideReleaseNotesButton
+    ref HideReleaseNotesButton
       # has wizard? continue
-      #    otherwise reuse the back button
+      #    otherwise use dedicated ReplacePoint or reuse the back button
       # hide-releasenotes-button failed? continue
-      #   reuse the back button
+      #   reuse use dedicated ReplacePoint or the back button
       if HasWidgetWizard() == false ||
           UI.WizardCommand(term(:HideReleaseNotesButton)) == false
-        if UI.WidgetExists(Id(:back_rep))
+        if UI.WidgetExists(Id(:relnotes_rp))
+          UI.ReplaceWidget(Id(:relnotes_rp), Empty())
+        elsif UI.WidgetExists(Id(:back_rep))
           UI.ReplaceWidget(Id(:back_rep), Empty())
         end
       end

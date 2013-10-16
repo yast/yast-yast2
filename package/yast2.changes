@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 16 10:48:14 UTC 2013 - jsrain@suse.cz
+
+- added dedicated "Show Release Notes" button support for NCurses
+  (fate#314695)
+
+-------------------------------------------------------------------
 Wed Oct  9 13:45:40 UTC 2013 - jreidinger@suse.com
 
 - Install binaries to /usr/sbin instead of /sbin to be consistent 
