@@ -1467,7 +1467,7 @@ module Yast
     #
     def HideReleaseNotesButton
       # has wizard? continue
-      #    otherwise use dedicated ReplacePoint or rreuse the back button
+      #    otherwise use dedicated ReplacePoint or reuse the back button
       # hide-releasenotes-button failed? continue
       #   reuse use dedicated ReplacePoint or rthe back button
       if HasWidgetWizard() == false ||
