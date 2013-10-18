@@ -1860,22 +1860,6 @@ module Yast
       ret
     end
 
-    # Check if the given device has any virtual alias.
-    # @param dev device to be checked
-    # @return true if there are some aliases
-    def HasAliases(name)
-      if !Check(name)
-        Builtins.y2error("Device not found: %1", name)
-        return false
-      end
-
-      t = device_type(name)
-      d = device_num(name)
-      a = alias_num(name)
-
-      a == "" && Ops.get_map(@Devices, [t, d, "_aliases"], {}) != {}
-    end
-
     # DSL needs to save its config while the underlying network card is
     # being configured.
     def Push
@@ -1987,7 +1971,6 @@ module Yast
     publish :function => :List, :type => "list <string> (string)"
     publish :function => :Fastest, :type => "string ()"
     publish :function => :FastestType, :type => "string (string)"
-    publish :function => :HasAliases, :type => "boolean (string)"
     publish :function => :Push, :type => "void ()"
     publish :function => :Pop, :type => "void ()"
     publish :function => :ValidCharsIfcfg, :type => "string ()"
