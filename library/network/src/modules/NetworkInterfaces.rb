@@ -246,7 +246,7 @@ module Yast
     # @param [String] dev device
     # @return device type
     # @example device_type("eth1") -> "eth"
-    # @example device_type("eth-pcmcia-0") -> "eth-pcmcia"
+    # @example device_type("eth-pcmcia-0") -> "eth"
     def device_type(dev)
       ifcfg_part(dev, "1")
     end
