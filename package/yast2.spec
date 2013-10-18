@@ -38,6 +38,9 @@ BuildRequires:  ruby
 # for symlinking yardoc duplicates
 BuildRequires:  fdupes
 
+# For running RSpec tests during build
+BuildRequires:  rubygem-rspec
+
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
 PreReq:         %fillup_prereq
 
