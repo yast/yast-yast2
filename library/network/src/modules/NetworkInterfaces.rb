@@ -484,6 +484,13 @@ module Yast
       Builtins.sformat("%1-%2", typ, num)
     end
 
+    # Extracts device name from alias name
+    #
+    # alias_name := <device_name>{ALIAS_SEPARATOR}<alias_name>
+    def device_name_from_alias(alias_name)
+      alias_name.sub(/#{ALIAS_SEPARATOR}.*/, "")
+    end
+
     # Create a alias name from its type and numbers
     # @param [String] typ device type
     # @param [String] num device number
@@ -846,9 +853,8 @@ module Yast
           Builtins.y2debug("deleting: %1", p)
           SCR.Write(p, nil)
         else
-          typ = device_type(d)
-          num = device_num(d)
-          dev = device_name(typ, num)
+          dev = device_name_from_alias(d)
+          typ = GetType(dev)
           base = Builtins.add(path(".network.value"), dev)
           # look in OriginalDevs because we need to catch all variables
           # of the alias
