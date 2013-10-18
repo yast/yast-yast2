@@ -77,31 +77,45 @@ describe "Linuxrc" do
     }
   end
 
-  it "returns that serial console is in use if it's in install.inf" do
-    expect(Linuxrc.serial_console).to be_true
+  describe "#serial_console" do
+    it "returns true if is found in install.inf" do
+      expect(Linuxrc.serial_console).to be_true
+    end
   end
 
-  it "returns that braille display is not in use if it's not in install.inf" do
-    expect(Linuxrc.braille).to be_false
+  describe "#braille" do
+    it "returns true if is found in install.inf" do
+      expect(Linuxrc.braille).to be_false
+    end
   end
 
-  it "returns that VNC is not in use if it's not in install.inf" do
-    expect(Linuxrc.vnc).to be_false
+  describe "#vnc" do
+    it "returns true if is found in install.inf" do
+      expect(Linuxrc.vnc).to be_false
+    end
   end
 
-  it "returns that SSH is in use if it's in install.inf" do
-    expect(Linuxrc.usessh).to be_true
+  describe "#usessh" do
+    it "returns true if is found in install.inf" do
+      expect(Linuxrc.usessh).to be_true
+    end
   end
 
-  it "returns that iSCSI is not in use if it's not in install.inf" do
-    expect(Linuxrc.useiscsi).to be_false
+  describe "#useiscsi" do
+    it "returns true if is found in install.inf" do
+      expect(Linuxrc.useiscsi).to be_false
+    end
   end
 
-  it "returns that text mode is not in use if it's not in install.inf" do
-    expect(Linuxrc.text).to be_false
+  describe "#text" do
+    it "returns true if is found in install.inf" do
+      expect(Linuxrc.text).to be_false
+    end
   end
 
-  it "returns locale defined in install.inf" do
-    expect(Linuxrc::InstallInf("Locale")).to be_equal(INSTAL_INF["Locale"])
+  describe "#InstallInf" do
+    it "returns locale defined in install.inf" do
+      expect(Linuxrc.InstallInf("Locale")).to be_equal(INSTAL_INF["Locale"])
+    end
   end
 end
