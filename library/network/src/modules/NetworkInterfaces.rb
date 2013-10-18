@@ -35,6 +35,16 @@ require "yast"
 
 module Yast
   class NetworkInterfacesClass < Module
+
+    Yast.import "String"
+
+    # A single character used to separate alias id
+    ALIAS_SEPARATOR = "#"
+    TYPE_REGEX = "(ip6tnl|mip6mnha|[#{String.CAlpha}]+)"
+    ID_REGEX = "([^#{ALIAS_SEPARATOR}]*)"
+    ALIAS_REGEX = "(.*)"
+    DEVNAME_REGEX = "#{TYPE_REGEX}-?#{ID_REGEX}"
+
     def main
       textdomain "base"
 
@@ -42,7 +52,6 @@ module Yast
       Yast.import "Map"
       Yast.import "Mode"
       Yast.import "Netmask"
-      Yast.import "String"
       Yast.import "TypeRepository"
       Yast.import "FileUtils"
       Yast.import "IP"
@@ -140,46 +149,11 @@ module Yast
 
       # -------------------- components of configuration names --------------------
 
-      # A single character used to separate alias id
-      @alias_separator = "#"
-
       # ifcfg name = type + id + alias_id
       # If id is numeric, it is not separated from type, otherwise separated by "-"
       # Id may be empty
       # Alias_id, if nonempty, is separated by alias_separator
-      @ifcfg_name_regex = Ops.add(
-        Ops.add(
-          Ops.add(
-            Ops.add(
-              Ops.add(
-                Ops.add(
-                  Ops.add(
-                    Ops.add(
-                      Ops.add(
-                        Ops.add(
-                          "^" +
-                            # ip6: #48696
-                            "(ip6tnl|mip6mnha|[",
-                          String.CAlpha
-                        ),
-                        "]+)"
-                      ),
-                      "-?"
-                    ),
-                    "([^"
-                  ),
-                  @alias_separator
-                ),
-                "]*)"
-              ),
-              @alias_separator
-            ),
-            "?"
-          ),
-          "(.*)"
-        ),
-        "$"
-      )
+      @ifcfg_name_regex = "^#{DEVNAME_REGEX}#{ALIAS_SEPARATOR}?#{ALIAS_REGEX}$"
 
       # Translates type code exposed by kernel in sysfs onto internaly used dev types.
       @TypeBySysfs = {
@@ -264,7 +238,7 @@ module Yast
 
     def ifcfg_part(ifcfg, part)
       return "" if Builtins.regexpmatch(ifcfg, @ifcfg_name_regex) != true
-      ret = Builtins.regexpsub(ifcfg, @ifcfg_name_regex, Ops.add("\\", part))
+      ret = Builtins.regexpsub(ifcfg, @ifcfg_name_regex, "\\#{part}")
       ret == nil ? "" : ret
     end
 
@@ -470,7 +444,10 @@ module Yast
     # @return device number
     # @example device_num("eth1") -> "1"
     # @example device_num("lo") -> ""
+    #
+    # Obsolete: It is incompatible with new device naming scheme.
     def device_num(dev)
+      Builtins.y2warning( "Do not use device_num.")
       ifcfg_part(dev, "2")
     end
 
