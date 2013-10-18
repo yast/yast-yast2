@@ -116,7 +116,9 @@ module Yast
         )
       }
 
-      @Functions = Mode.config ? @FunctionsAI : @FunctionsSystem
+      @Functions = Mode.config ?
+        deep_copy(@FunctionsAI) :
+        deep_copy(@FunctionsSystem)
 
       @last_op_canceled = false
 
