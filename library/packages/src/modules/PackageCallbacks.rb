@@ -154,7 +154,7 @@ module Yast
         Builtins.y2milestone("Reading config file %1", @conf_file)
         read_conf = Convert.to_map(SCR.Read(path(".target.ycp"), @conf_file))
 
-        @config = read_conf != nil ? read_conf : {}
+        @config = read_conf != nil ? deep_copy(read_conf) : {}
         Builtins.y2milestone("Current config: %1", @config)
       else
         Builtins.y2milestone(
