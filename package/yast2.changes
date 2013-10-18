@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Oct 18 10:45:51 UTC 2013 - mfilka@suse.com
+
+- bnc#846550
+  - deleting aliases works even for devices with name according
+    new scheme
+- 3.0.10
+
+-------------------------------------------------------------------
 Tue Sep 24 10:03:12 UTC 2013 - jreidinger@suse.com
 
 - allow nested ipv4 in ipv6 (BNC#828683)
