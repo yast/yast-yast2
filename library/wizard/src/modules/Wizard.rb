@@ -1465,7 +1465,7 @@ module Yast
 
     # Hide the "Release Notes" button, if there is any
     #
-    ref HideReleaseNotesButton
+    def HideReleaseNotesButton
       # has wizard? continue
       #    otherwise use dedicated ReplacePoint or reuse the back button
       # hide-releasenotes-button failed? continue
