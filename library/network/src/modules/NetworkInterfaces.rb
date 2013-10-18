@@ -858,10 +858,10 @@ module Yast
           base = Builtins.add(path(".network.value"), dev)
           # look in OriginalDevs because we need to catch all variables
           # of the alias
-          Builtins.foreach(
-            Ops.get_map(_OriginalDevs, [typ, dev, "_aliases", anum], {})
-          ) do |key, dummy|
-            p = Builtins.add(base, Ops.add(Ops.add(key, "_"), anum))
+
+          dev_aliases = _OriginalDevs[typ][dev]["_aliases"][anum] || {}
+          dev_aliases.keys.each do |key|
+            p = base + "#{key}_#{anum}"
             Builtins.y2debug("deleting: %1", p)
             SCR.Write(p, nil)
           end
