@@ -1,5 +1,5 @@
 TESTS = \
-  linuxrc.rb
+  $(wildcard *.rb)
 
 TEST_EXTENSIONS = .rb
 RB_LOG_COMPILER = rspec
