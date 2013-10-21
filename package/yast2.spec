@@ -33,7 +33,7 @@ BuildRequires:  yast2-devtools >= 3.0.6
 BuildRequires:  yast2-core >= 2.18.12 yast2-pkg-bindings >= 2.20.3 yast2-ycp-ui-bindings >= 2.18.4
 
 # Needed for tests
-BuildRequires:  ruby
+BuildRequires:  rubygem-rspec
 
 # for symlinking yardoc duplicates
 BuildRequires:  fdupes
