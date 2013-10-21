@@ -155,12 +155,12 @@ describe "Linuxrc" do
   end
 
   describe "#text" do
-    it "returns false if 'Textmode' is set to '1' in install.inf" do
+    it "returns true if 'Textmode' is set to '1' in install.inf" do
       load_install_inf("Textmode" => "1")
       expect(Linuxrc.text).to be_true
     end
 
-    it "returns true if 'Textmode' is set to '1' in install.inf" do
+    it "returns false if 'Textmode' is not set to '1' in install.inf" do
       load_install_inf("Textmode" => "0")
       expect(Linuxrc.text).to be_false
     end
