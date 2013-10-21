@@ -78,37 +78,43 @@ describe "Linuxrc" do
   end
 
   describe "#serial_console" do
-    it "returns true if is found in install.inf" do
+    it "returns true if 'Console' is found in install.inf" do
       expect(Linuxrc.serial_console).to be_true
     end
   end
 
   describe "#braille" do
-    it "returns true if is found in install.inf" do
+    it "returns true if 'Braille' is found in install.inf" do
       expect(Linuxrc.braille).to be_false
     end
   end
 
   describe "#vnc" do
-    it "returns true if is found in install.inf" do
+    it "returns true if 'VNC' is set to '1' in install.inf" do
       expect(Linuxrc.vnc).to be_false
     end
   end
 
+  describe "#display_ip" do
+    it "returns true if 'Display_IP' is found in install.inf" do
+      expect(Linuxrc.display_ip).to be_false
+    end
+  end
+
   describe "#usessh" do
-    it "returns true if is found in install.inf" do
+    it "returns true if 'UseSSH' is set to '1' in install.inf" do
       expect(Linuxrc.usessh).to be_true
     end
   end
 
   describe "#useiscsi" do
-    it "returns true if is found in install.inf" do
+    it "returns true if 'WithiSCSI' is set to '1' in install.inf" do
       expect(Linuxrc.useiscsi).to be_false
     end
   end
 
   describe "#text" do
-    it "returns true if is found in install.inf" do
+    it "returns true if 'Textmode' is set to '1' in install.inf" do
       expect(Linuxrc.text).to be_false
     end
   end
