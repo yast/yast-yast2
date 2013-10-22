@@ -1,7 +1,8 @@
-#! /usr/bin/env ruby
+#! /usr/bin/env rspec
 
-require "minitest/spec"
-require "minitest/autorun"
+inc_dirs = Dir.glob("../../../library/*/src")
+inc_dirs.map { |inc_dir| File.expand_path(inc_dir, __FILE__) }
+ENV["Y2DIR"] = inc_dirs.join(":")
 
 require "yast"
 
@@ -23,11 +24,15 @@ IPV6_IFCFG = [
   }
 ]
 
-describe "When reading devices configuration with IPv6 setup" do
-  it "Sets ipaddr, prefix and empty mask" do
-    IPV6_IFCFG.each do |ipv6_ifcfg|
-      canonical_ifcfg = Yast::NetworkInterfaces.CanonicalizeIP( ipv6_ifcfg[ :data])
-      canonical_ifcfg.must_equal( ipv6_ifcfg[ :expected])
+describe Yast::NetworkInterfaces do
+  context "Handling IPv6 address" do
+    describe "#CanonicalizeIP" do
+      it "Sets ipaddr, prefix and empty mask" do
+        IPV6_IFCFG.each do |ipv6_ifcfg|
+          canonical_ifcfg = Yast::NetworkInterfaces.CanonicalizeIP( ipv6_ifcfg[ :data])
+          expect( canonical_ifcfg).to be_eql( ipv6_ifcfg[ :expected])
+        end
+      end
     end
   end
 end

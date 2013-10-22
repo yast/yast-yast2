@@ -47,3 +47,10 @@ library/packages/src/packages
 # Package
 package/yast2-*.tar.bz2
 package/yast2.spec
+
+# other
+home:*:*
+YaST:Head
+*.sw?
+library/modules/Version.ycp
+library/network/agents/network.scr
