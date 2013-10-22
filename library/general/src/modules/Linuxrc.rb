@@ -43,6 +43,8 @@ module Yast
     # routines for reading data from /etc/install.inf
 
     def ReadInstallInf
+      return if @install_inf != nil
+
       @install_inf = {}
       # don't read anything if the file doesn't exist
       if SCR.Read(path(".target.size"), "/etc/install.inf") == -1
@@ -70,8 +72,13 @@ module Yast
     end
 
     def InstallInf(key)
-      ReadInstallInf() if @install_inf == nil
-      Ops.get(@install_inf, key)
+      ReadInstallInf()
+      @install_inf[key]
+    end
+
+    def keys
+      ReadInstallInf()
+      @install_inf.keys
     end
 
     # installation mode wrappers
@@ -216,6 +223,7 @@ module Yast
     publish :function => :text, :type => "boolean ()"
     publish :function => :WriteYaSTInf, :type => "void (map <string, string>)"
     publish :function => :SaveInstallInf, :type => "boolean (string)"
+    publish :function => :keys, :type => "list <string> ()"
   end
 
   Linuxrc = LinuxrcClass.new

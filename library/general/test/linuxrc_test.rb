@@ -171,5 +171,22 @@ describe "Linuxrc" do
       load_install_inf
       expect(Linuxrc.InstallInf("Locale")).to be_equal(DEFAULT_INSTALL_INF["Locale"])
     end
+
+    it "returns nil if value for unknown key is requested" do
+      load_install_inf
+      expect(Linuxrc.InstallInf("Unknown Key Requested")).to be_nil
+    end
+
+    it "returns nil if value for 'nil' key is requested" do
+      load_install_inf
+      expect(Linuxrc.InstallInf(nil)).to be_nil
+    end
+  end
+
+  describe "#keys" do
+    it "returns all keys defined in install.inf" do
+      load_install_inf
+      expect(Linuxrc.keys.sort).to eq(DEFAULT_INSTALL_INF.keys.sort)
+    end
   end
 end
