@@ -172,4 +172,11 @@ describe "Linuxrc" do
       expect(Linuxrc.InstallInf("Locale")).to be_equal(DEFAULT_INSTALL_INF["Locale"])
     end
   end
+
+  describe "#keys" do
+    it "returns all keys defined in install.inf" do
+      load_install_inf
+      expect(Linuxrc.keys.sort).to eq(DEFAULT_INSTALL_INF.keys.sort)
+    end
+  end
 end
