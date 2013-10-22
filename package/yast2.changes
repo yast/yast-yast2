@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Oct 18 10:45:51 UTC 2013 - mfilka@suse.com
+
+- bnc#846550
+  - deleting aliases works even for devices with name according
+    new scheme
+- 3.1.1
+
+-------------------------------------------------------------------
 Wed Oct  9 13:45:40 UTC 2013 - jreidinger@suse.com
 
 - Install binaries to /usr/sbin instead of /sbin to be consistent 
