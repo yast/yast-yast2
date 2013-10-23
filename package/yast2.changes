@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jan 21 09:17:41 CET 2014 - gs@suse.de
+
+- bnc#827031
+    - fixed /sbin/yast2 to start correctly in non UTF-8 environment
+- 2.17.133
+
+-------------------------------------------------------------------
 Fri Nov 15 12:39:16 CET 2013 - jsuchome@suse.cz
 
 - Warn the user if Chef could overwrite her changes (bnc#803358).
