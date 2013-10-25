@@ -43,6 +43,7 @@ doc/yast.8
 library/network/src/scrconf/network.scr
 missing
 library/packages/src/packages
+/.yardoc
 
 # Package
 package/yast2-*.tar.bz2
