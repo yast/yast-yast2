@@ -547,6 +547,8 @@ module Yast
 
 
     # Display and record error string.
+    #
+    # @note Displaying can be globally disabled using Display* methods.
     # @param [String] error_string error text, it can contain new line characters ("\n")
     # @return [nil]
     def Error(error_string)
