@@ -29,12 +29,15 @@
 #
 # $Id$
 #
-# Report module collects warnings and errors from modules in auto installation mode.
-# Collected messages can be displayed later.
 #
 require "yast"
 
 module Yast
+  # Report module is universal reporting module. It properly display messages
+  # in CLI, TUI, GUI or even in automatic installation. It also collects
+  # warnings and errors. Collected messages can be displayed later.
+  # @TODO not all methods respect all environment, feel free to open issue with
+  #   method that doesn't respect it.
   class ReportClass < Module
     def main
       textdomain "base"
@@ -543,9 +546,9 @@ module Yast
     end
 
 
-    # Store new error text
+    # Display and record error string.
     # @param [String] error_string error text, it can contain new line characters ("\n")
-    # @return [void]
+    # @return [nil]
     def Error(error_string)
       Builtins.y2error(1, "%1", error_string) if @log_errors
 
