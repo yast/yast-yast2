@@ -39,6 +39,7 @@ module Yast
     def main
       textdomain "base"
 
+      Yast.import "Mode"
       Yast.import "Popup"
       Yast.import "Summary"
 
@@ -549,7 +550,10 @@ module Yast
       Builtins.y2error(1, "%1", error_string) if @log_errors
 
       if @display_errors
-        if Ops.greater_than(@timeout_errors, 0)
+        if Mode.commandline
+          Yast.import "CommandLine"
+          CommandLine.Print error_string
+        elsif Ops.greater_than(@timeout_errors, 0)
           Popup.TimedError(error_string, @timeout_errors)
         else
           Popup.Error(error_string)
