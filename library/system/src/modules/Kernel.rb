@@ -50,6 +50,12 @@ module Yast
 
       textdomain "base"
 
+      @modules_scr = path(".kernel_modules_to_load")
+
+      @modules_dir = "/etc/modules-load.d/"
+
+      @modules_conf_file = "yast.conf"
+
       # kernel packages and binary
 
       @kernel_probed = false
@@ -80,13 +86,8 @@ module Yast
 
       # modules loaded on boot
 
-      # List of changes in /etc/sysconfig/kernel:MODULES_LOADED_ON_BOOT
-      # Needs to be stored as a list of changes due to the fact that some RPMs
-      # change the variable during installation
-      # list member is a map with keys "operation" (value "add" or "detete") and
-      # "name" (name of the module)
-      @kernel_modules_to_load = []
-
+      # Kernel modules configured to be loaded on boot
+      @modules_to_load = nil
 
       # kernel was reinstalled
 
@@ -547,74 +548,112 @@ module Yast
 
     # functions related to kernel's modules loaded on boot
 
+    def register_new_modules_agent(file_name)
+      full_path = File.join(@modules_dir, file_name)
+
+      SCR::RegisterAgent(
+        @modules_scr,
+        term(
+          :ag_anyagent,
+          term(
+            :Description,
+
+            term(
+              :File,
+              full_path
+            ),
+
+            # Comments
+            "#\n",
+
+            # Read-only?
+            false,
+
+            term(
+              :List,
+              term(:String, "^\n"),
+              "\n"
+            )
+          )
+        )
+      )
+    end
+
+    def read_modules_to_load
+      @modules_to_load = {@modules_conf_file => []}
+
+      SCR::Read(path(".target.dir"), @modules_dir).each do |file_name|
+        unless register_new_modules_agent(file_name)
+          Builtins.y2error("Cannot register new SCR agent for #{file_path} file")
+          next
+        end
+        @modules_to_load[file_name] = SCR::Read(@modules_scr)
+        SCR.UnregisterAgent(@modules_scr)
+      end
+
+      @modules_to_load
+    end
+
+    def reset_modules_to_load
+      @modules_to_load = nil
+    end
+
+    # Returns list of kernel modules to be loaded on boot
+    def modules_to_load
+      read_modules_to_load if @modules_to_load.nil?
+
+      @modules_to_load
+    end
+
+    # Returns whether the given kernel module is included in list of modules
+    # to be loaded on boot
+    def module_to_be_loaded?(kernel_module)
+      modules_to_load.map{|key, val| val}.flatten.include?(kernel_module)
+    end
+
     # Add a kernel module to the list of modules to load after boot
     # @param string module name
-    # add the module name to sysconfig variable
     def AddModuleToLoad(name)
+      modules_to_load
       Builtins.y2milestone("Adding module to be loaded at boot: %1", name)
-      @kernel_modules_to_load = Builtins.add(
-        @kernel_modules_to_load,
-        { "operation" => "add", "name" => name }
-      )
 
-      nil
+      unless module_to_be_loaded?(name)
+        @modules_to_load[@modules_conf_file] << name
+      end
     end
 
     # Remove a kernel module from the list of modules to load after boot
     # @param [String] name string the name of the module
     def RemoveModuleToLoad(name)
-      Builtins.y2milestone("Removing module to be loaded at boot: %1", name)
-      @kernel_modules_to_load = Builtins.add(
-        @kernel_modules_to_load,
-        { "operation" => "remove", "name" => name }
-      )
+      modules_to_load
 
-      nil
+      return unless module_to_be_loaded?(name)
+
+      Builtins.y2milestone("Removing module to be loaded at boot: %1", name)
+      @modules_to_load.each do |key, val|
+        val.delete_if { |kernel_module| kernel_module == name }
+        @modules_to_load[key] = val
+      end
     end
 
     # SaveModuleToLoad ()
-    # save the sysconfig variable to the file
+    # save the sysconfig variable to /etc/modules-load.d/*.conf configuration files
     # @return [Boolean] true on success
     def SaveModulesToLoad
-      # if nothing changed, just return success
-      return true if Builtins.size(@kernel_modules_to_load) == 0
+      modules_to_load
+      success = true
 
-      # first read current status
-      modules_to_load_str = Convert.to_string(
-        SCR.Read(path(".sysconfig.kernel.MODULES_LOADED_ON_BOOT"))
-      )
-      modules_to_load_str = "" if modules_to_load_str == nil
-      modules_to_load = Builtins.splitstring(modules_to_load_str, " ")
-      modules_to_load = Builtins.filter(modules_to_load) { |s| s != "" }
-      Builtins.y2milestone(
-        "Read modules to be loaded at boot: %1",
-        modules_to_load
-      )
-
-      # apply operations on the list
-      Builtins.foreach(@kernel_modules_to_load) do |op_desc|
-        op = Ops.get(op_desc, "operation", "")
-        name = Ops.get(op_desc, "name", "")
-        if op == "remove"
-          modules_to_load = Builtins.filter(modules_to_load) { |m| m != name }
-        elsif op == "add"
-          if !Builtins.contains(modules_to_load, name)
-            modules_to_load = Builtins.add(modules_to_load, name)
-          end
+      @modules_to_load.each do |file, modules|
+        unless register_new_modules_agent(file)
+          Builtins.y2error("Cannot register new SCR agent for #{file_path} file")
+          success = false
+          next
         end
+        SCR::Write(@modules_scr, modules)
+        SCR.UnregisterAgent(@modules_scr)
       end
 
-      # and sabe the list
-      Builtins.y2milestone(
-        "Saving modules to be loaded at boot: %1",
-        modules_to_load
-      )
-      modules_to_load_str = Builtins.mergestring(modules_to_load, " ")
-      SCR.Write(
-        path(".sysconfig.kernel.MODULES_LOADED_ON_BOOT"),
-        modules_to_load_str
-      )
-      SCR.Write(path(".sysconfig.kernel"), nil)
+      success
     end
 
     # kernel was reinstalled stuff
@@ -660,6 +699,10 @@ module Yast
     publish :function => :SetInformAboutKernelChange, :type => "void (boolean)"
     publish :function => :GetInformAboutKernelChange, :type => "boolean ()"
     publish :function => :InformAboutKernelChange, :type => "boolean ()"
+    publish :variable => :modules_dir, :type => "string"
+    publish :variable => :modules_conf_file, :type => "string"
+    publish :function => :reset_modules_to_load, :type => "void ()"
+    publish :function => :modules_to_load, :type => "map <string, list> ()"
   end
 
   Kernel = KernelClass.new
