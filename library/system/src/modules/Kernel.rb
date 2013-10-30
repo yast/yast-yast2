@@ -583,6 +583,7 @@ module Yast
       @modules_to_load = {@modules_conf_file => []}
 
       SCR::Read(path(".target.dir"), @modules_dir).each do |file_name|
+        next unless file_name =~ /^.+\.conf$/
         unless register_new_modules_agent(file_name)
           Builtins.y2error("Cannot register new SCR agent for #{file_path} file")
           next
