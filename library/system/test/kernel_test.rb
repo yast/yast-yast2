@@ -13,13 +13,13 @@ DEFAULT_DATA_DIR = File.join(File.expand_path(File.dirname(__FILE__)), "data/mod
 
 describe "Kernel" do
   before (:each) do
+    stub_const("Yast::KernelClass::MODULES_DIR", DEFAULT_DATA_DIR)
     @default_modules = {
-      Yast::Kernel.modules_conf_file => [],
+      Yast::KernelClass::MODULES_CONF_FILE => [],
       "MODULES_LOADED_ON_BOOT.conf"=>["module-a", "module-b"],
       "user-added-1.conf" => ["user-module-1", "user-module-2", "user-module-3"],
       "user-added-2.conf"=>["user-module-4"],
     }
-    Yast::Kernel.modules_dir = DEFAULT_DATA_DIR
     Yast::Kernel.reset_modules_to_load
   end
 
@@ -66,7 +66,7 @@ describe "Kernel" do
       Dir.mktmpdir do |tmpdir|
         FileUtils.cp_r(DEFAULT_DATA_DIR + "/.", tmpdir)
 
-        Yast::Kernel.modules_dir = tmpdir
+        stub_const("Yast::KernelClass::MODULES_DIR", tmpdir)
         Yast::Kernel.reset_modules_to_load
 
         # Tests on the default data

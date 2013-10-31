@@ -38,6 +38,16 @@ require "yast"
 
 module Yast
   class KernelClass < Module
+
+    # default configuration file for Kernel modules loaded on boot
+    MODULES_CONF_FILE = "yast.conf"
+
+    # directory where configuration for Kernel modules loaded on boot is stored
+    MODULES_DIR = "/etc/modules-load.d/"
+
+    # SCR path for reading/writing Kernel modules
+    MODULES_SCR = path(".kernel_modules_to_load")
+
     def main
       Yast.import "Pkg"
 
@@ -49,12 +59,6 @@ module Yast
       Yast.import "Stage"
 
       textdomain "base"
-
-      @modules_scr = path(".kernel_modules_to_load")
-
-      @modules_dir = "/etc/modules-load.d/"
-
-      @modules_conf_file = "yast.conf"
 
       # kernel packages and binary
 
@@ -549,10 +553,10 @@ module Yast
     # functions related to kernel's modules loaded on boot
 
     def register_new_modules_agent(file_name)
-      full_path = File.join(@modules_dir, file_name)
+      full_path = File.join(MODULES_DIR, file_name)
 
       SCR::RegisterAgent(
-        @modules_scr,
+        MODULES_SCR,
         term(
           :ag_anyagent,
           term(
@@ -580,16 +584,16 @@ module Yast
     end
 
     def read_modules_to_load
-      @modules_to_load = {@modules_conf_file => []}
+      @modules_to_load = {MODULES_CONF_FILE => []}
 
-      SCR::Read(path(".target.dir"), @modules_dir).each do |file_name|
+      SCR::Read(path(".target.dir"), MODULES_DIR).each do |file_name|
         next unless file_name =~ /^.+\.conf$/
         unless register_new_modules_agent(file_name)
           Builtins.y2error("Cannot register new SCR agent for #{file_path} file")
           next
         end
-        @modules_to_load[file_name] = SCR::Read(@modules_scr)
-        SCR.UnregisterAgent(@modules_scr)
+        @modules_to_load[file_name] = SCR::Read(MODULES_SCR)
+        SCR.UnregisterAgent(MODULES_SCR)
       end
 
       @modules_to_load
@@ -619,7 +623,7 @@ module Yast
       Builtins.y2milestone("Adding module to be loaded at boot: %1", name)
 
       unless module_to_be_loaded?(name)
-        @modules_to_load[@modules_conf_file] << name
+        @modules_to_load[MODULES_CONF_FILE] << name
       end
     end
 
@@ -650,8 +654,8 @@ module Yast
           success = false
           next
         end
-        SCR::Write(@modules_scr, modules)
-        SCR.UnregisterAgent(@modules_scr)
+        SCR::Write(MODULES_SCR, modules)
+        SCR.UnregisterAgent(MODULES_SCR)
       end
 
       success
@@ -694,14 +698,14 @@ module Yast
     publish :function => :GetFinalKernel, :type => "string ()"
     publish :function => :ComputePackagesForBase, :type => "list <string> (string, boolean)"
     publish :function => :ComputePackages, :type => "list <string> ()"
-    publish :function => :AddModuleToLoad, :type => "void (string)"
-    publish :function => :RemoveModuleToLoad, :type => "void (string)"
-    publish :function => :SaveModulesToLoad, :type => "boolean ()"
     publish :function => :SetInformAboutKernelChange, :type => "void (boolean)"
     publish :function => :GetInformAboutKernelChange, :type => "boolean ()"
     publish :function => :InformAboutKernelChange, :type => "boolean ()"
-    publish :variable => :modules_dir, :type => "string"
-    publish :variable => :modules_conf_file, :type => "string"
+
+    # Handling for Kernel modules loaded on boot
+    publish :function => :AddModuleToLoad, :type => "void (string)"
+    publish :function => :RemoveModuleToLoad, :type => "void (string)"
+    publish :function => :SaveModulesToLoad, :type => "boolean ()"
     publish :function => :reset_modules_to_load, :type => "void ()"
     publish :function => :modules_to_load, :type => "map <string, list> ()"
   end
