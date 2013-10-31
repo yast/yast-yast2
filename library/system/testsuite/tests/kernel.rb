@@ -78,14 +78,7 @@ module Yast
 
       # test behavior of modules loaded on boot
       DUMP("----------------------------------------")
-      DUMP("Testing modules to load on boot behavior")
-      TEST(lambda { Kernel.AddModuleToLoad("ext2") }, [@READ, @WRITE, @EXEC], 0)
-      TEST(lambda { Kernel.RemoveModuleToLoad("reiserfs") }, [
-        @READ,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(lambda { Kernel.SaveModulesToLoad }, [@READ, @WRITE, @EXEC], 0)
+
 
       TEST(lambda { Kernel.HidePasswords(nil) }, [@READ, @WRITE, @EXEC], 0)
       TEST(lambda { Kernel.HidePasswords("") }, [@READ, @WRITE, @EXEC], 0)

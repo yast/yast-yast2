@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.1.1
+Version:        3.1.2
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -33,7 +33,7 @@ BuildRequires:  yast2-devtools >= 3.0.6
 BuildRequires:  yast2-core >= 2.18.12 yast2-pkg-bindings >= 2.20.3 yast2-ycp-ui-bindings >= 2.18.4
 
 # Needed for tests
-BuildRequires:  rubygem-rspec
+BuildRequires:  rubygem-rspec grep
 
 # for symlinking yardoc duplicates
 BuildRequires:  fdupes
