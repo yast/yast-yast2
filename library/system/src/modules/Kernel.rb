@@ -92,6 +92,7 @@ module Yast
 
       # Kernel modules configured to be loaded on boot
       @modules_to_load = nil
+      @modules_to_load_old = nil
 
       # kernel was reinstalled
 
@@ -569,6 +570,7 @@ module Yast
         SCR.UnregisterAgent(MODULES_SCR)
       end
 
+      @modules_to_load_old = deep_copy(@modules_to_load)
       @modules_to_load
     end
 
@@ -628,11 +630,15 @@ module Yast
       success = true
 
       @modules_to_load.each do |file, modules|
-        unless register_modules_agent(file)
+        # The content hasn't changed
+        next if (modules.sort == @modules_to_load_old[file].sort)
+
+        if !register_modules_agent(file)
           Builtins.y2error("Cannot register new SCR agent for #{file_path} file")
           success = false
           next
         end
+
         SCR::Write(MODULES_SCR, modules)
         SCR.UnregisterAgent(MODULES_SCR)
       end
