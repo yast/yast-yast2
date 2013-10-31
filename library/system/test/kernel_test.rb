@@ -30,13 +30,11 @@ describe "Kernel" do
   end
 
   describe "#module_to_be_loaded?" do
-    it "ensures that modules are listed within modules to be loaded on boot" do
+    it "tests whether module is loaded on boot" do
       ["module-a", "module-b", "user-module-1", "user-module-2", "user-module-3", "user-module-4"].each do |kernel_module|
         expect(Yast::Kernel.module_to_be_loaded?(kernel_module)).to be_true
       end
-    end
 
-    it "checks that other modules are not listed within modules to be loaded on boot" do
       ["module-c", "user-module-5"].each do |kernel_module|
         expect(Yast::Kernel.module_to_be_loaded?(kernel_module)).to be_false
       end
@@ -50,12 +48,26 @@ describe "Kernel" do
       Yast::Kernel.AddModuleToLoad new_module
       expect(Yast::Kernel.module_to_be_loaded?(new_module)).to be_true
     end
+
+    it "adds module only once" do
+      new_module = "new-kernel-module"
+      Yast::Kernel.AddModuleToLoad new_module
+      Yast::Kernel.AddModuleToLoad new_module
+      expect(Yast::Kernel.modules_to_load.values.flatten.select{|m| m == new_module}.size).to eq(1)
+    end
   end
 
   describe "#RemoveModuleToLoad" do
     it "removes module from list of modules to be loaded on boot" do
       module_to_remove = "user-module-2"
       expect(Yast::Kernel.module_to_be_loaded?(module_to_remove)).to be_true
+      Yast::Kernel.RemoveModuleToLoad module_to_remove
+      expect(Yast::Kernel.module_to_be_loaded?(module_to_remove)).to be_false
+    end
+
+    it "does not remove module which is not in list" do
+      module_to_remove = "not-in-list"
+      expect(Yast::Kernel.module_to_be_loaded?(module_to_remove)).to be_false
       Yast::Kernel.RemoveModuleToLoad module_to_remove
       expect(Yast::Kernel.module_to_be_loaded?(module_to_remove)).to be_false
     end
@@ -74,17 +86,29 @@ describe "Kernel" do
           expect(Yast::Kernel.module_to_be_loaded?(kernel_module)).to be_true
         end
 
+        new_module = "new-kernel-module"
+        remove_module = "user-module-2"
+
         # Modifying data
-        Yast::Kernel.AddModuleToLoad "new-kernel-module"
-        Yast::Kernel.RemoveModuleToLoad "user-module-2"
+        Yast::Kernel.AddModuleToLoad new_module
+        Yast::Kernel.RemoveModuleToLoad remove_module
 
         expect(Yast::Kernel.SaveModulesToLoad).to be_true
 
         # Tests on the stored modified data
         Yast::Kernel.reset_modules_to_load
-        ["module-a", "module-b", "user-module-1", "user-module-3", "user-module-4", "new-kernel-module"].each do |kernel_module|
+        ["module-a", "module-b", "user-module-1", "user-module-3", "user-module-4", new_module].each do |kernel_module|
           expect(Yast::Kernel.module_to_be_loaded?(kernel_module)).to be_true
         end
+
+        expect(Yast::Kernel.module_to_be_loaded?(remove_module)).to be_false
+
+        # Tests directly on the system
+        number_of_nkm = `grep --count --no-filename #{new_module} #{tmpdir}/*`
+        expect(number_of_nkm.split.map{|i| i.to_i}.inject(:+)).to eq(1)
+
+        number_of_rkm = `grep --count --no-filename #{remove_module} #{tmpdir}/*`
+        expect(number_of_rkm.split.map{|i| i.to_i}.inject(:+)).to eq(0)
       end
     end
   end
