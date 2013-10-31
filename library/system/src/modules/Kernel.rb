@@ -552,46 +552,19 @@ module Yast
 
     # functions related to kernel's modules loaded on boot
 
-    def register_new_modules_agent(file_name)
-      full_path = File.join(MODULES_DIR, file_name)
 
-      SCR::RegisterAgent(
-        MODULES_SCR,
-        term(
-          :ag_anyagent,
-          term(
-            :Description,
-
-            term(
-              :File,
-              full_path
-            ),
-
-            # Comments
-            "#\n",
-
-            # Read-only?
-            false,
-
-            term(
-              :List,
-              term(:String, "^\n"),
-              "\n"
-            )
-          )
-        )
-      )
-    end
 
     def read_modules_to_load
       @modules_to_load = {MODULES_CONF_FILE => []}
 
       SCR::Read(path(".target.dir"), MODULES_DIR).each do |file_name|
         next unless file_name =~ /^.+\.conf$/
-        unless register_new_modules_agent(file_name)
+
+        if !register_modules_agent(file_name)
           Builtins.y2error("Cannot register new SCR agent for #{file_path} file")
           next
         end
+
         @modules_to_load[file_name] = SCR::Read(MODULES_SCR)
         SCR.UnregisterAgent(MODULES_SCR)
       end
@@ -603,7 +576,11 @@ module Yast
       @modules_to_load = nil
     end
 
-    # Returns list of kernel modules to be loaded on boot
+    # Returns hash of kernel modules to be loaded on boot
+    # - key is the config file
+    # - value is list of modules in that particular file
+    #
+    # @return [Hash] of modules
     def modules_to_load
       read_modules_to_load if @modules_to_load.nil?
 
@@ -612,8 +589,11 @@ module Yast
 
     # Returns whether the given kernel module is included in list of modules
     # to be loaded on boot
+    #
+    # @param [String] kernel module
+    # @return [Boolean] whether the given module is in the list
     def module_to_be_loaded?(kernel_module)
-      modules_to_load.map{|key, val| val}.flatten.include?(kernel_module)
+      modules_to_load.values.any? {|m| m.include?(kernel_module)}
     end
 
     # Add a kernel module to the list of modules to load after boot
@@ -632,12 +612,11 @@ module Yast
     def RemoveModuleToLoad(name)
       modules_to_load
 
-      return unless module_to_be_loaded?(name)
+      return true unless module_to_be_loaded?(name)
 
       Builtins.y2milestone("Removing module to be loaded at boot: %1", name)
       @modules_to_load.each do |key, val|
-        val.delete_if { |kernel_module| kernel_module == name }
-        @modules_to_load[key] = val
+        val.delete(name)
       end
     end
 
@@ -649,7 +628,7 @@ module Yast
       success = true
 
       @modules_to_load.each do |file, modules|
-        unless register_new_modules_agent(file)
+        unless register_modules_agent(file)
           Builtins.y2error("Cannot register new SCR agent for #{file_path} file")
           success = false
           next
@@ -682,6 +661,39 @@ module Yast
         Popup.Message(_("Reboot your system\nto activate the new kernel.\n"))
       end
       @inform_about_kernel_change
+    end
+
+  private
+
+    def register_modules_agent(file_name)
+      full_path = File.join(MODULES_DIR, file_name)
+
+      SCR::RegisterAgent(
+        MODULES_SCR,
+        term(
+          :ag_anyagent,
+          term(
+            :Description,
+
+            term(
+              :File,
+              full_path
+            ),
+
+            # Comments
+            "#\n",
+
+            # Read-only?
+            false,
+
+            term(
+              :List,
+              term(:String, "^\n"),
+              "\n"
+            )
+          )
+        )
+      )
     end
 
     publish :function => :AddCmdLine, :type => "void (string, string)"
