@@ -105,10 +105,10 @@ describe "Kernel" do
 
         # Tests directly on the system
         number_of_nkm = `grep --count --no-filename #{new_module} #{tmpdir}/*`
-        expect(number_of_nkm.split.map{|i| i.to_i}.inject(:+)).to eq(1)
+        expect(number_of_nkm.split.map(&:to_i).inject(:+)).to eq(1)
 
         number_of_rkm = `grep --count --no-filename #{remove_module} #{tmpdir}/*`
-        expect(number_of_rkm.split.map{|i| i.to_i}.inject(:+)).to eq(0)
+        expect(number_of_rkm.split.map(&:to_i).inject(:+)).to eq(0)
       end
     end
   end
