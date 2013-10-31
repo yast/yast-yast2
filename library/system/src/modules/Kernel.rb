@@ -555,25 +555,7 @@ module Yast
 
 
 
-    def read_modules_to_load
-      @modules_to_load = {MODULES_CONF_FILE => []}
-
-      SCR::Read(path(".target.dir"), MODULES_DIR).each do |file_name|
-        next unless file_name =~ /^.+\.conf$/
-
-        if !register_modules_agent(file_name)
-          Builtins.y2error("Cannot register new SCR agent for #{file_path} file")
-          next
-        end
-
-        @modules_to_load[file_name] = SCR::Read(MODULES_SCR)
-        SCR.UnregisterAgent(MODULES_SCR)
-      end
-
-      @modules_to_load_old = deep_copy(@modules_to_load)
-      @modules_to_load
-    end
-
+    # Resets the internal cache
     def reset_modules_to_load
       @modules_to_load = nil
     end
@@ -601,7 +583,6 @@ module Yast
     # Add a kernel module to the list of modules to load after boot
     # @param string module name
     def AddModuleToLoad(name)
-      modules_to_load
       Builtins.y2milestone("Adding module to be loaded at boot: %1", name)
 
       unless module_to_be_loaded?(name)
@@ -671,6 +652,9 @@ module Yast
 
   private
 
+    # Registers new SCR agent for a file given as parameter
+    #
+    # @param [String] file name in directory defined in MODULES_DIR
     def register_modules_agent(file_name)
       full_path = File.join(MODULES_DIR, file_name)
 
@@ -700,6 +684,29 @@ module Yast
           )
         )
       )
+    end
+
+    # Loads the current configuration of Kernel modules
+    # to be loaded on boot to the internal cache
+    #
+    # @return [Hash] with the configuration
+    def read_modules_to_load
+      @modules_to_load = {MODULES_CONF_FILE => []}
+
+      SCR::Read(path(".target.dir"), MODULES_DIR).each do |file_name|
+        next unless file_name =~ /^.+\.conf$/
+
+        if !register_modules_agent(file_name)
+          Builtins.y2error("Cannot register new SCR agent for #{file_path} file")
+          next
+        end
+
+        @modules_to_load[file_name] = SCR::Read(MODULES_SCR)
+        SCR.UnregisterAgent(MODULES_SCR)
+      end
+
+      @modules_to_load_old = deep_copy(@modules_to_load)
+      @modules_to_load
     end
 
     publish :function => :AddCmdLine, :type => "void (string, string)"
