@@ -46,7 +46,7 @@ module Yast
     MODULES_DIR = "/etc/modules-load.d/"
 
     # SCR path for reading/writing Kernel modules
-    MODULES_SCR = path(".kernel_modules_to_load")
+    MODULES_SCR = ".kernel_modules_to_load"
 
     def main
       Yast.import "Pkg"
@@ -620,8 +620,8 @@ module Yast
           next
         end
 
-        SCR::Write(MODULES_SCR, modules)
-        SCR.UnregisterAgent(MODULES_SCR)
+        SCR::Write(path(MODULES_SCR), modules)
+        SCR.UnregisterAgent(path(MODULES_SCR))
       end
 
       success
@@ -659,7 +659,7 @@ module Yast
       full_path = File.join(MODULES_DIR, file_name)
 
       SCR::RegisterAgent(
-        MODULES_SCR,
+        path(MODULES_SCR),
         term(
           :ag_anyagent,
           term(
@@ -701,8 +701,8 @@ module Yast
           next
         end
 
-        @modules_to_load[file_name] = SCR::Read(MODULES_SCR)
-        SCR.UnregisterAgent(MODULES_SCR)
+        @modules_to_load[file_name] = SCR::Read(path(MODULES_SCR))
+        SCR.UnregisterAgent(path(MODULES_SCR))
       end
 
       @modules_to_load_old = deep_copy(@modules_to_load)
