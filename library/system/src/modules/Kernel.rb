@@ -46,7 +46,7 @@ module Yast
     MODULES_DIR = "/etc/modules-load.d/"
 
     # SCR path for reading/writing Kernel modules
-    MODULES_SCR = path(".kernel_modules_to_load")
+    MODULES_SCR = Path.new(".kernel_modules_to_load")
 
     def main
       Yast.import "Pkg"
