@@ -80,17 +80,14 @@ module Yast
 
       # The custom control file location, usually copied from
       # the root of the CD to the installation directory by linuxrc
-      @default_control_file = "/control.xml"
+      @installation_control_file = "/control.xml"
 
       # The file above get saved into the installed system for later
       # processing
       @saved_control_file = Ops.add(Directory.etcdir, "/control.xml")
 
-      # The packaged file which contains all default worklfows
-      @packaged_control_file = "/usr/share/YaST2/control/control.xml"
-
       # The control file we are using for this session.
-      @current_control_file = ""
+      @current_control_file = nil
 
 
       # Current Wizard Step
@@ -1328,36 +1325,33 @@ module Yast
     # @return [Boolean] True on success
     def Init
       ret = false
-      @current_control_file = ""
-      order = [
-        @y2update_control_file, # /y2update/control.xml
-        @default_control_file, # /control.xml
-        @saved_control_file, # /etc/YaST2/control.xml
-        @packaged_control_file
-      ] # /usr/share/YaST2/control/control.xml
 
-      if @custom_control_file != ""
-        order = Builtins.prepend(order, @custom_control_file)
-      end
+      # Ordered list
+      control_file_candidates = [
+        @y2update_control_file,     # /y2update/control.xml
+        @installation_control_file, # /control.xml
+        @saved_control_file,        # /etc/YaST2/control.xml
+      ]
 
-      Builtins.y2milestone("Candidates: %1", order)
-      Builtins.foreach(order) do |control_file|
-        if FileUtils.Exists(control_file) && @current_control_file == ""
+      control_file_candidates.unshift(@custom_control_file) if @custom_control_file != ""
+
+      Builtins.y2milestone("Candidates: #{control_file_candidates.inspect}")
+      control_file_candidates.each do |control_file|
+        if FileUtils.Exists(control_file)
           @current_control_file = control_file
-          raise Break
+          break
         end
       end
 
-      if @current_control_file == ""
-        Builtins.y2error("No control file found")
-
+      if @current_control_file.nil?
+        Builtins.y2error("No control file found within #{control_file_candidates.inspect}")
         return false
       end
 
-      Builtins.y2milestone("Reading control file: %1", @current_control_file)
+      Builtins.y2milestone("Reading control file: #{@current_control_file}")
       ReadControlFile(@current_control_file)
 
-      @current_control_file != ""
+      true
     end
 
     # Re-translate static part of wizard dialog and other predefined messages
