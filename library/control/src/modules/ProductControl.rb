@@ -1336,12 +1336,7 @@ module Yast
       control_file_candidates.unshift(@custom_control_file) if @custom_control_file != ""
 
       Builtins.y2milestone("Candidates: #{control_file_candidates.inspect}")
-      control_file_candidates.each do |control_file|
-        if FileUtils.Exists(control_file)
-          @current_control_file = control_file
-          break
-        end
-      end
+      @current_control_file = control_file_candidates.find { |f| FileUtils.Exists(f) }
 
       if @current_control_file.nil?
         Builtins.y2error("No control file found within #{control_file_candidates.inspect}")
