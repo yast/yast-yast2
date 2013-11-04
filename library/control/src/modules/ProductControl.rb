@@ -1324,8 +1324,6 @@ module Yast
     # Initialize Product Control
     # @return [Boolean] True on success
     def Init
-      ret = false
-
       # Ordered list
       control_file_candidates = [
         @y2update_control_file,     # /y2update/control.xml
@@ -1333,7 +1331,12 @@ module Yast
         @saved_control_file,        # /etc/YaST2/control.xml
       ]
 
-      control_file_candidates.unshift(@custom_control_file) if @custom_control_file != ""
+      if @custom_control_file.nil?
+        Bultins.y2error("Incorrectly set custom control file: #{@custom_control_file}")
+        return false
+      end
+
+      control_file_candidates.unshift(@custom_control_file) if !@custom_control_file.empty?
 
       Builtins.y2milestone("Candidates: #{control_file_candidates.inspect}")
       @current_control_file = control_file_candidates.find { |f| FileUtils.Exists(f) }
