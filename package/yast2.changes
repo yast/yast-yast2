@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Nov  4 16:56:18 CET 2013 - locilka@suse.com
+
+- Removed obsolete clients: password, remotechooser, remoteinstall
+  (gh#yast/yast-yast2#100)
+
+-------------------------------------------------------------------
 Fri Nov  1 14:54:16 CET 2013 - locilka@suse.com
 
 - Removed checking for a fallback control file, that file is always
