@@ -36,11 +36,6 @@ module_DATA = \
   modules/MailTable.pm \
   modules/MailTableInclude.pm
 
-client_DATA = \
-  clients/remoteinstall.rb \
-  clients/remotechooser.rb \
-  clients/password.rb
-
 scrconf_DATA = \
   scrconf/content.scr \
   scrconf/cfg_hotplug.scr \
