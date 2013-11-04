@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Nov  1 14:54:16 CET 2013 - locilka@suse.com
+
+- Removed checking for a fallback control file, that file is always
+  outdated and cannot work for all products
+  (gh#yast/yast-installation#86)
+- 3.1.3
+
+-------------------------------------------------------------------
 Thu Oct 31 21:50:05 CET 2013 - locilka@suse.com
 
 - Configuration of Kernel modules loaded on boot has been moved
