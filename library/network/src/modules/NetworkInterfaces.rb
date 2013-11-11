@@ -35,6 +35,16 @@ require "yast"
 
 module Yast
   class NetworkInterfacesClass < Module
+
+    Yast.import "String"
+
+    # A single character used to separate alias id
+    ALIAS_SEPARATOR = "#"
+    TYPE_REGEX = "(ip6tnl|mip6mnha|[#{String.CAlpha}]+)"
+    ID_REGEX = "([^#{ALIAS_SEPARATOR}]*)"
+    ALIAS_REGEX = "(.*)"
+    DEVNAME_REGEX = "#{TYPE_REGEX}-?#{ID_REGEX}"
+
     def main
       textdomain "base"
 
@@ -42,7 +52,6 @@ module Yast
       Yast.import "Map"
       Yast.import "Mode"
       Yast.import "Netmask"
-      Yast.import "String"
       Yast.import "TypeRepository"
       Yast.import "FileUtils"
       Yast.import "IP"
@@ -140,46 +149,11 @@ module Yast
 
       # -------------------- components of configuration names --------------------
 
-      # A single character used to separate alias id
-      @alias_separator = "#"
-
       # ifcfg name = type + id + alias_id
       # If id is numeric, it is not separated from type, otherwise separated by "-"
       # Id may be empty
       # Alias_id, if nonempty, is separated by alias_separator
-      @ifcfg_name_regex = Ops.add(
-        Ops.add(
-          Ops.add(
-            Ops.add(
-              Ops.add(
-                Ops.add(
-                  Ops.add(
-                    Ops.add(
-                      Ops.add(
-                        Ops.add(
-                          "^" +
-                            # ip6: #48696
-                            "(ip6tnl|mip6mnha|[",
-                          String.CAlpha
-                        ),
-                        "]+)"
-                      ),
-                      "-?"
-                    ),
-                    "([^"
-                  ),
-                  @alias_separator
-                ),
-                "]*)"
-              ),
-              @alias_separator
-            ),
-            "?"
-          ),
-          "(.*)"
-        ),
-        "$"
-      )
+      @ifcfg_name_regex = "^#{DEVNAME_REGEX}#{ALIAS_SEPARATOR}?#{ALIAS_REGEX}$"
 
       # Translates type code exposed by kernel in sysfs onto internaly used dev types.
       @TypeBySysfs = {
@@ -264,7 +238,7 @@ module Yast
 
     def ifcfg_part(ifcfg, part)
       return "" if Builtins.regexpmatch(ifcfg, @ifcfg_name_regex) != true
-      ret = Builtins.regexpsub(ifcfg, @ifcfg_name_regex, Ops.add("\\", part))
+      ret = Builtins.regexpsub(ifcfg, @ifcfg_name_regex, "\\#{part}")
       ret == nil ? "" : ret
     end
 
@@ -272,7 +246,7 @@ module Yast
     # @param [String] dev device
     # @return device type
     # @example device_type("eth1") -> "eth"
-    # @example device_type("eth-pcmcia-0") -> "eth-pcmcia"
+    # @example device_type("eth-pcmcia-0") -> "eth"
     def device_type(dev)
       ifcfg_part(dev, "1")
     end
@@ -470,7 +444,10 @@ module Yast
     # @return device number
     # @example device_num("eth1") -> "1"
     # @example device_num("lo") -> ""
+    #
+    # Obsolete: It is incompatible with new device naming scheme.
     def device_num(dev)
+      Builtins.y2warning( "Do not use device_num.")
       ifcfg_part(dev, "2")
     end
 
@@ -505,6 +482,13 @@ module Yast
         return Builtins.sformat("%1%2", typ, num)
       end
       Builtins.sformat("%1-%2", typ, num)
+    end
+
+    # Extracts device name from alias name
+    #
+    # alias_name := <device_name>{ALIAS_SEPARATOR}<alias_name>
+    def device_name_from_alias(alias_name)
+      alias_name.sub(/#{ALIAS_SEPARATOR}.*/, "")
     end
 
     # Create a alias name from its type and numbers
@@ -869,16 +853,15 @@ module Yast
           Builtins.y2debug("deleting: %1", p)
           SCR.Write(p, nil)
         else
-          typ = device_type(d)
-          num = device_num(d)
-          dev = device_name(typ, num)
+          dev = device_name_from_alias(d)
+          typ = GetType(dev)
           base = Builtins.add(path(".network.value"), dev)
           # look in OriginalDevs because we need to catch all variables
           # of the alias
-          Builtins.foreach(
-            Ops.get_map(_OriginalDevs, [typ, dev, "_aliases", anum], {})
-          ) do |key, dummy|
-            p = Builtins.add(base, Ops.add(Ops.add(key, "_"), anum))
+
+          dev_aliases = _OriginalDevs[typ][dev]["_aliases"][anum] || {}
+          dev_aliases.keys.each do |key|
+            p = base + "#{key}_#{anum}"
             Builtins.y2debug("deleting: %1", p)
             SCR.Write(p, nil)
           end
@@ -1860,22 +1843,6 @@ module Yast
       ret
     end
 
-    # Check if the given device has any virtual alias.
-    # @param dev device to be checked
-    # @return true if there are some aliases
-    def HasAliases(name)
-      if !Check(name)
-        Builtins.y2error("Device not found: %1", name)
-        return false
-      end
-
-      t = device_type(name)
-      d = device_num(name)
-      a = alias_num(name)
-
-      a == "" && Ops.get_map(@Devices, [t, d, "_aliases"], {}) != {}
-    end
-
     # DSL needs to save its config while the underlying network card is
     # being configured.
     def Push
@@ -1987,7 +1954,6 @@ module Yast
     publish :function => :List, :type => "list <string> (string)"
     publish :function => :Fastest, :type => "string ()"
     publish :function => :FastestType, :type => "string (string)"
-    publish :function => :HasAliases, :type => "boolean (string)"
     publish :function => :Push, :type => "void ()"
     publish :function => :Pop, :type => "void ()"
     publish :function => :ValidCharsIfcfg, :type => "string ()"

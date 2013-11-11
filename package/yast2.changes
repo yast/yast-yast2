@@ -5,6 +5,41 @@ Wed Oct 16 10:48:14 UTC 2013 - jsrain@suse.cz
   (fate#314695)
 
 -------------------------------------------------------------------
+Mon Nov  4 16:56:18 CET 2013 - locilka@suse.com
+
+- Removed obsolete clients: password, remotechooser, remoteinstall
+  (gh#yast/yast-yast2#100)
+
+-------------------------------------------------------------------
+Fri Nov  1 14:54:16 CET 2013 - locilka@suse.com
+
+- Removed checking for a fallback control file, that file is always
+  outdated and cannot work for all products
+  (gh#yast/yast-installation#86)
+- 3.1.3
+
+-------------------------------------------------------------------
+Thu Oct 31 21:50:05 CET 2013 - locilka@suse.com
+
+- Configuration of Kernel modules loaded on boot has been moved
+  to /etc/modules-load.d/*.conf files. Adapted Kernel library
+  internal handling (bnc#838185).
+- 3.1.2
+
+-------------------------------------------------------------------
+Tue Oct 22 11:17:25 UTC 2013 - mfilka@suse.com
+
+- bnc#846550
+  - deleting aliases works even for devices with name according
+    new scheme
+
+-------------------------------------------------------------------
+Tue Oct 22 10:57:46 CEST 2013 - locilka@suse.com
+
+- Added Linuxrc.keys (FATE#314982)
+- 3.1.1
+
+-------------------------------------------------------------------
 Wed Oct  9 13:45:40 UTC 2013 - jreidinger@suse.com
 
 - Install binaries to /usr/sbin instead of /sbin to be consistent 

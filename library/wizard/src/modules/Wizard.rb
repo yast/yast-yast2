@@ -1449,7 +1449,7 @@ module Yast
       if HasWidgetWizard() == false ||
           UI.WizardCommand(term(:ShowReleaseNotesButton, label, id)) == false
         if UI.WidgetExists(Id(:relnotes_rp))
-          UI.ReplaceWidget(Id(:relnotes_rp), PushButton(Id(id), label))
+          UI.ReplaceWidget(Id(:relnotes_rp), PushButton(Id(id), Opt(:relNotesButton), label))
         # Reuse Back button
         # TODO: can this situation happen
         elsif UI.WidgetExists(Id(:back_rep))
