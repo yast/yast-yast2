@@ -1832,29 +1832,10 @@ module Yast
 
     publish :variable => :Name, :type => "string"
     publish :variable => :Current, :type => "map <string, any>"
-    publish :variable => :Deleted, :type => "list <string>", :private => true
-    publish :variable => :initialized, :type => "boolean", :private => true
-    publish :variable => :operation, :type => "symbol", :private => true
     publish :variable => :CardRegex, :type => "map <string, string>"
-    publish :variable => :HotplugTypes, :type => "list <string>", :private => true
-    publish :function => :HotplugRegex, :type => "string (list <string>)", :private => true
-    publish :function => :IsEmpty, :type => "boolean (any)", :private => true
     publish :variable => :DeviceRegex, :type => "map <string, string>"
-    publish :variable => :FastestTypes, :type => "map <integer, string>", :private => true
-    publish :variable => :stack, :type => "map", :private => true
-    publish :variable => :alias_separator, :type => "string", :private => true
-    publish :variable => :ifcfg_name_regex, :type => "string", :private => true
-    publish :function => :ifcfg_part, :type => "string (string, string)", :private => true
     publish :function => :device_type, :type => "string (string)"
-    publish :variable => :TypeBySysfs, :type => "const map <string, string>", :private => true
-    publish :function => :GetEthTypeFromSysfs, :type => "string (string)", :private => true
-    publish :function => :GetIbTypeFromSysfs, :type => "string (string)", :private => true
-    publish :function => :GetTypeFromSysfs, :type => "string (string)", :private => true
-    publish :variable => :TypeByKeyValue, :type => "list <string>", :private => true
-    publish :variable => :TypeByKeyExistence, :type => "list <list <string>>", :private => true
-    publish :variable => :TypeByValueMatch, :type => "list <list <string>>", :private => true
     publish :function => :GetTypeFromIfcfg, :type => "string (map <string, any>)"
-    publish :function => :GetTypeFromIfcfgOrName, :type => "string (string, map <string, any>)", :private => true
     publish :function => :GetType, :type => "string (string)"
     publish :function => :GetDeviceTypeName, :type => "string (string)"
     publish :function => :device_num, :type => "string (string)"
@@ -1866,14 +1847,11 @@ module Yast
     publish :function => :RealType, :type => "string (string, string)"
     publish :function => :CanonicalizeStartmode, :type => "map <string, any> (map <string, any>)"
     publish :function => :CanonicalizeIP, :type => "map <string, any> (map <string, any>)"
-    publish :variable => :SensitiveFields, :type => "list <string>", :private => true
     publish :function => :ConcealSecrets1, :type => "map (map <string, any>)"
     publish :function => :ConcealSecrets, :type => "map (map)"
     publish :function => :Read, :type => "boolean ()"
     publish :function => :CleanCacheRead, :type => "boolean ()"
-    publish :function => :Filter, :type => "map <string, map> (map <string, map>, string)", :private => true
     publish :function => :FilterDevices, :type => "map <string, map> (string)"
-    publish :function => :FilterNOT, :type => "map <string, map> (map <string, map>, string)", :private => true
     publish :function => :Write, :type => "boolean (string)"
     publish :function => :Import, :type => "boolean (string, map <string, map>)"
     publish :function => :GetDeviceTypes, :type => "list <string> ()"
@@ -1888,7 +1866,6 @@ module Yast
     publish :function => :Add, :type => "boolean ()"
     publish :function => :Edit, :type => "boolean (string)"
     publish :function => :Delete, :type => "boolean (string)"
-    publish :function => :Change2, :type => "boolean (string, map <string, any>, boolean)", :private => true
     publish :function => :Delete2, :type => "boolean (string)"
     publish :function => :DeleteAlias, :type => "boolean (string, string)"
     publish :function => :Commit, :type => "boolean ()"
