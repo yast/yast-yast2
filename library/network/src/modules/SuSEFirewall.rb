@@ -2456,10 +2456,6 @@ module Yast
     #
     # @return [Boolean] if successful
     def Read
-      # Don't fill up the logs with tones of Check-logs
-      # Turn on for debugging
-      NetworkInterfaces.report_every_check = false
-
       # Do not read it again and again
       # to avoid rewriting changes already made
       if @configuration_has_been_read

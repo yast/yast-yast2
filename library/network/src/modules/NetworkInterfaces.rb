@@ -56,11 +56,6 @@ module Yast
       Yast.import "FileUtils"
       Yast.import "IP"
 
-      # False suppresses tones of logs 'NetworkInterfaces.ycp:ABC Check(eth,id-00:aa:bb:cc:dd:ee,)'
-      @report_every_check =
-        # value is not just string, can be a map for aliases
-        true
-
       # Current device identifier
       # @example eth0, eth1:blah, lo, ...
       # Add, Edit and Delete copy the requested device info (via Select)
@@ -1433,7 +1428,6 @@ module Yast
       typ = GetType(dev)
       #    string num = device_num(dev);
       #    string anum = alias_num(dev);
-      Builtins.y2milestone("Check(%1)", dev) if @report_every_check
       return false if !Builtins.haskey(@Devices, typ)
 
       devsmap = Ops.get(@Devices, typ, {})
@@ -1878,7 +1872,6 @@ module Yast
       deep_copy(devices)
     end
 
-    publish :variable => :report_every_check, :type => "boolean"
     publish :variable => :Name, :type => "string"
     publish :variable => :Current, :type => "map <string, any>"
     publish :variable => :Devices, :type => "map <string, map <string, map <string, any>>>", :private => true
