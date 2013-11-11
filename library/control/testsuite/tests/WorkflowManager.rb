@@ -128,7 +128,7 @@ module Yast
             "bootloader",
             "timezone",
             "language",
-            "runlevel"
+            "default_target"
           ],
           "proposal_tabs"    => [
             {
@@ -150,7 +150,7 @@ module Yast
                 "bootloader",
                 "timezone",
                 "language",
-                "runlevel"
+                "default_target"
               ]
             }
           ],
@@ -169,7 +169,7 @@ module Yast
             "bootloader",
             "timezone",
             "language",
-            "runlevel"
+            "default_target"
           ],
           "proposal_tabs"    => [
             {
@@ -191,7 +191,7 @@ module Yast
                 "bootloader",
                 "timezone",
                 "language",
-                "runlevel"
+                "default_target"
               ]
             }
           ],
@@ -210,7 +210,7 @@ module Yast
             "bootloader",
             "timezone",
             "language",
-            "runlevel"
+            "default_target"
           ],
           "proposal_tabs"    => [
             {
@@ -232,7 +232,7 @@ module Yast
                 "bootloader",
                 "timezone",
                 "language",
-                "runlevel"
+                "default_target"
               ]
             }
           ],

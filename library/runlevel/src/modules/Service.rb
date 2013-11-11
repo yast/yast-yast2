@@ -611,7 +611,7 @@ module Yast
       ) do |s|
         service = Builtins.regexpsub(s, "^S[0-9]+([^0-9]+.*)", "\\1")
         ret = Builtins.add(ret, service) if service != nil
-      end 
+      end
 
 
       Builtins.y2milestone("Enabled services in runlevel %1: %2", runlevel, ret)

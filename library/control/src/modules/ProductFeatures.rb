@@ -53,7 +53,7 @@ module Yast
           "language"                        => "",
           "skip_language_dialog"            => false,
           "keyboard"                        => "",
-          "runlevel"                        => "",
+          "default_target"                  => "",
           "timezone"                        => "",
           "fam_local_only"                  => "never",
           "enable_firewall"                 => true,
