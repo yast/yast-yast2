@@ -534,7 +534,6 @@ module Yast
     # @return true if connected
     def IsConnected(dev)
       if !Mode.testsuite
-        #        string iface = MatchInterface(dev);
         cmd = Ops.add(Ops.add("cat /sys/class/net/", dev), "/carrier")
 
         ret = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
@@ -680,7 +679,6 @@ module Yast
     # Read devices from files
     # @return true if sucess
     def Read
-      # initialized = true; // FIXME
       return true if @initialized == true
 
       @Devices = {}
@@ -704,11 +702,6 @@ module Yast
         !Builtins.regexpmatch(file, "[~]")
       end
       Builtins.y2debug("devices=%1", devices)
-      # FIXME: devname
-      # devices = filter(string d, devices, {
-      # 	return regexpmatch(d, "[a-z][a-z-]*[0-9]*");
-      # });
-      # y2debug("devices=%1", devices);
 
       # Read devices
       Builtins.maplist(devices) do |d|
@@ -840,7 +833,6 @@ module Yast
       # remove deleted devices
       Builtins.y2milestone("Deleted=%1", @Deleted)
       Builtins.foreach(@Deleted) do |d|
-        # if(!haskey(OriginalDevs, d)) return;
         anum = alias_num(d)
         if anum == ""
           # delete config file
@@ -938,7 +930,6 @@ module Yast
               # writing, but we create it in 2 ways so it's
               # better here. Actually it does not work because
               # the edit dialog nukes LABEL :-(
-              #			boolean seen_label = false;
               if Ops.greater_than(Builtins.size(Ops.get(amap, "IPADDR", "")), 0) &&
                   Ops.greater_than(
                     Builtins.size(Ops.get(amap, "NETMASK", "")),
@@ -980,10 +971,7 @@ module Yast
               Builtins.maplist(amap) do |ak, av|
                 akk = Ops.add(Ops.add(ak, "_"), anum)
                 SCR.Write(Builtins.topath(Ops.add(p, akk)), av) #			    seen_label = seen_label || ak == "LABEL";
-              end # 			if (!seen_label)
-              # 			{
-              # 			    ShellSafeWrite (topath (p + ("LABEL_" + anum)), anum);
-              # 			}
+              end
             end
           else
             # Write regular keys
@@ -993,10 +981,6 @@ module Yast
             )
           end
         end
-        # update libhd unique number * /
-        # // FIXME: move it somewhere else: hardware
-        # string unq = devmap["UNIQUE"]:"";
-        # if(unq != "") SCR::Write(.probe.status.configured, unq, `yes);
 
         # 0600 if contains encryption key (#24842)
         has_key = Builtins.find(@SensitiveFields) do |k|
@@ -1433,19 +1417,6 @@ module Yast
       devsmap = Ops.get(@Devices, typ, {})
       return false if !Builtins.haskey(devsmap, dev)
 
-      # FIXME NI: not needed?
-      # Name = dev;
-      # Current = (map) eval(devsmap[num]:$[]);
-
-      #     if(anum != "") {
-      # 	map devmap = devsmap[num]:$[];
-      # 	map amap = devmap["_aliases"]:$[];
-      # 	if(!haskey(amap, anum))
-      # 	    return false;
-      # 	// FIXME NI: not needed?
-      # //	Current = (map) eval(amap[anum]:$[]);
-      # //	alias = anum;
-      #     }
       Builtins.y2debug("Check passed")
       true
     end
@@ -1464,8 +1435,6 @@ module Yast
       end
 
       @Name = name
-      # FIXME NI: Current = Devices[device_type(Name), device_num(Name)]:$[];
-      # may be fixed already. or not: #39236
       t = GetType(@Name)
       @Current = Ops.get(@Devices, [t, @Name], {})
       a = alias_num(@Name)
@@ -1584,16 +1553,8 @@ module Yast
       # interface that was not present at Read (had no ifcfg file).
       # #115448: OriginalDevices is not updated after Write so
       # returning to the network proposal and deleting a card would not work.
-      if true ||
-          Builtins.haskey(@OriginalDevices, t) &&
-            Builtins.haskey(Ops.get(@OriginalDevices, t, {}), name)
-        Builtins.y2milestone("Deleting file: %1", name)
-        Ops.set(@Deleted, Builtins.size(@Deleted), name)
-      else
-        Builtins.y2milestone("Not deleting file: %1", name)
-        Builtins.y2debug("OriginalDevices=%1", @OriginalDevices)
-        Builtins.y2debug("a=%1", a)
-      end
+      Builtins.y2milestone("Deleting file: %1", name)
+      Ops.set(@Deleted, Builtins.size(@Deleted), name)
       true
     end
 
@@ -1830,10 +1791,7 @@ module Yast
           ret = type
         end
       end
-      # maplist(string typ, string regex, DeviceRegex, {
-      # 	if (ret == "" && regexpmatch(name, "^" + regex + "[0-9]*$"))
-      # 	ret = typ;
-      # });
+
       ret
     end
 
