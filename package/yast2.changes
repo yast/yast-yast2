@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Wed Oct 16 10:48:14 UTC 2013 - jsrain@suse.cz
+Mon Nov 11 10:48:14 UTC 2013 - jsrain@suse.cz
 
 - added dedicated "Show Release Notes" button support for NCurses
   (fate#314695)
