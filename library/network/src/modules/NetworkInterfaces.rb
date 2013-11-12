@@ -456,8 +456,6 @@ module Yast
         return nil
       end
       # FIXME: devname
-      # if(IsHotplug(typ) && num != "") return sformat("%1-%2", typ, num);
-      # return sformat("%1%2", typ, num);
       if Builtins.regexpmatch(num, "^[0-9]*$")
         return Builtins.sformat("%1%2", typ, num)
       end
