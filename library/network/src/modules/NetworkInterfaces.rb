@@ -44,6 +44,8 @@ module Yast
     ID_REGEX = "([^#{ALIAS_SEPARATOR}]*)"
     ALIAS_REGEX = "(.*)"
     DEVNAME_REGEX = "#{TYPE_REGEX}-?#{ID_REGEX}"
+    # Supported hotplug types
+    HOTPLUG_TYPES = ["pcmcia", "usb"]
 
     def main
       textdomain "base"
@@ -100,11 +102,6 @@ module Yast
           "isdn"    => "isdn|ippp",
           "dsl"     => "dsl"
         }
-
-      # define string HotplugRegex(list<string> devs);
-
-      # Supported hotplug types
-      @HotplugTypes = ["pcmcia", "usb"] #, "pci"
 
       # Predefined network device regular expressions
       @DeviceRegex = {
@@ -203,26 +200,14 @@ module Yast
 
     # Create a list of hot-pluggable device names for the given devices
     def HotplugRegex(devs)
-      devs = deep_copy(devs)
+      return "" unless devs
+
       ret = ""
-      Builtins.foreach(devs) { |dev| Builtins.foreach(@HotplugTypes) do |hot|
-        ret = Ops.add(
-          Ops.add(
-            Ops.add(
-              Ops.add(
-                Ops.add(
-                  Ops.add(Ops.add(Ops.add(Ops.add(ret, "|"), dev), "-"), hot),
-                  "|"
-                ),
-                dev
-              ),
-              "-"
-            ),
-            hot
-          ),
-          "-"
-        )
-      end }
+      devs.each do |dev|
+        HOTPLUG_TYPES.each do |hot|
+          ret += "|#{dev}-#{hot}|#{dev}-#{hot}-"
+        end
+      end
       ret
     end
 
