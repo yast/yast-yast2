@@ -1336,44 +1336,6 @@ module Yast
       deep_copy(ret)
     end
 
-    # Compute free devices
-    # @param [String] type device type
-    # @param [Fixnum] num how many free devices return
-    # @return num of free devices
-    # @example GetFreeDevices("eth", 2) -&gt; [ 1, 2 ]
-    def GetFreeDevicesOld(type, num)
-      Builtins.y2debug("Devices=%1", @Devices)
-      Builtins.y2debug("type,num=%1,%2", type, num)
-      Builtins.y2debug("Devices[%1]=%2", type, Ops.get(@Devices, type, {}))
-
-      curdevs = Map.Keys(Ops.get(@Devices, type, {}))
-      Builtins.y2debug("curdevs=%1", curdevs)
-
-      i = 0
-      count = 0
-      ret = []
-
-      # Hotpluggable devices
-      if IsHotplug(type) && !Builtins.contains(curdevs, "")
-        Builtins.y2debug("Added simple hotplug device")
-        count = Ops.add(count, 1)
-        ret = Builtins.add(ret, "")
-      end
-
-      # Remaining numbered devices
-      while Ops.less_than(count, num)
-        ii = Builtins.sformat("%1", i)
-        if !Builtins.contains(curdevs, ii)
-          ret = Builtins.add(ret, ii)
-          count = Ops.add(count, 1)
-        end
-        i = Ops.add(i, 1)
-      end
-
-      Builtins.y2debug("Free devices=%1", ret)
-      deep_copy(ret)
-    end
-
     # Return free device
     # @param [String] type device type
     # @return free device
@@ -1580,13 +1542,6 @@ module Yast
     def GetValue(name, key)
       return nil if !Select(name)
       Ops.get_string(@Current, key, "")
-    end
-
-    def SetValue(name, key, value)
-      return nil if !Edit(name)
-      return false if key == nil || key == "" || value == nil
-      Ops.set(@Current, key, value)
-      Commit()
     end
 
     # get IP addres + additional IP addresses
