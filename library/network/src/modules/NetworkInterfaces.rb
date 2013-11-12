@@ -1832,8 +1832,6 @@ module Yast
 
     publish :variable => :Name, :type => "string"
     publish :variable => :Current, :type => "map <string, any>"
-    publish :variable => :Devices, :type => "map <string, map <string, map <string, any>>>", :private => true
-    publish :variable => :OriginalDevices, :type => "map <string, map <string, map <string, any>>>", :private => true
     publish :variable => :Deleted, :type => "list <string>", :private => true
     publish :variable => :initialized, :type => "boolean", :private => true
     publish :variable => :operation, :type => "symbol", :private => true
