@@ -496,7 +496,7 @@ module Yast
     # @return true if hotpluggable
     def IsHotplug(type)
       return false if type == "" || type == nil
-      return true if Builtins.regexpmatch(type, "(pcmcia|usb|pci)$")
+      return true if HOTPLUG_TYPES.any? {|t| type.end_with?(t)}
       false
     end
 
