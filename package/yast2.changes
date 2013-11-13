@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Nov 11 10:48:14 UTC 2013 - jsrain@suse.cz
+
+- added dedicated "Show Release Notes" button support for NCurses
+  (fate#314695)
+
+-------------------------------------------------------------------
 Mon Nov  4 16:56:18 CET 2013 - locilka@suse.com
 
 - Removed obsolete clients: password, remotechooser, remoteinstall

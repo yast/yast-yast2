@@ -1,26 +1,31 @@
-#! /usr/bin/env ruby
+#! /usr/bin/env rspec --format=doc
 
-require "minitest/spec"
-require "minitest/autorun"
+ENV["Y2DIR"] = File.expand_path("../../src", __FILE__)
 
 require "yast"
 
-Yast.import "Netmask"
+include Yast
 
-describe "When creating netmask from prefixlen" do
-  it "returns valid netmask for prefix shorter than 32 bits" do
-    0.upto 32 do |prefix_len|
-      Yast::Netmask.FromBits( prefix_len).wont_be_empty
-    end
+describe "Yast::Netmask" do
+  before( :all) do
+    Yast.import "Netmask"
   end
 
-  it "returns empty netmask for prefix longer than 32 bits" do
-    33.upto 128 do |prefix_len| 
-      Yast::Netmask.FromBits( prefix_len).must_be_empty
+  describe "#FromBits" do
+    it "returns valid netmask for prefix shorter than 32 bits" do
+      0.upto 32 do |prefix_len|
+        expect(Netmask.FromBits(prefix_len)).not_to be_empty
+      end
     end
-  end
 
-  it "returns empty netmask for incorrect prefix length" do
-    Yast::Netmask.FromBits( -1).must_be_empty
+    it "returns empty netmask for prefix longer than 32 bits" do
+      33.upto 128 do |prefix_len|
+        expect(Netmask.FromBits(prefix_len)).to be_empty
+      end
+    end
+
+    it "returns empty netmask for incorrect prefix length" do
+      expect(Netmask.FromBits(-1)).to be_empty
+    end
   end
 end
