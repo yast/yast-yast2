@@ -451,11 +451,10 @@ module Yast
         Builtins.y2error("wrong type: %1", typ)
         return nil
       end
-      if num == nil # || num < 0
+      if num == nil
         Builtins.y2error("wrong number: %1", num)
         return nil
       end
-      # FIXME: devname
       if Builtins.regexpmatch(num, "^[0-9]*$")
         return Builtins.sformat("%1%2", typ, num)
       end
