@@ -1,8 +1,38 @@
 -------------------------------------------------------------------
-Wed Feb 13 17:16:26 CET 2013 - mvidner@suse.cz
+Wed Nov 13 12:41:48 UTC 2013 - mvidner@suse.cz
 
 - Warn the user if Chef could overwrite her changes (bnc#803358).
+- 2.17.121.4
+
+-------------------------------------------------------------------
+Tue Sep  3 08:47:37 UTC 2013 - mfilka@suse.com
+
+- bnc#837517
+    - fixed misinterpreting IPv6 prefixes when converting to netmask
+- 2.17.121.3 
+
+-------------------------------------------------------------------
+Mon May 27 14:16:53 CEST 2013 - locilka@suse.com
+
+- Reverted resetting disabled steps (bnc#813072)
+
+-------------------------------------------------------------------
+Tue May 14 07:59:30 UTC 2013 - mfilka@suse.com
+
+- bnc#819327
+    - InfiniBand device is not available on s390 arch.
 - 2.17.121.2
+
+-------------------------------------------------------------------
+Mon May 13 12:43:33 CEST 2013 - locilka@suse.com
+
+- Fixing resetting steps in installation (bnc#813072)
+
+-------------------------------------------------------------------
+Thu May  2 10:32:13 UTC 2013 - locilka@suse.com
+
+- Re-enabling all disabled items (steps, proposals) if stagemode
+  has changed (bnc#813072)
 
 -------------------------------------------------------------------
 Fri Dec  7 12:08:58 UTC 2012 - lslezak@suse.cz
