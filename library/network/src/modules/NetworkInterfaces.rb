@@ -1497,8 +1497,8 @@ module Yast
       # interface that was not present at Read (had no ifcfg file).
       # #115448: OriginalDevices is not updated after Write so
       # returning to the network proposal and deleting a card would not work.
-      Builtins.y2milestone("Deleting file: %1", name)
-      Ops.set(@Deleted, Builtins.size(@Deleted), name)
+      Builtins.y2milestone("Deleting file: #{name}")
+      @Deleted << name
       true
     end
 
@@ -1508,7 +1508,7 @@ module Yast
     def DeleteAlias(device, aid)
       _alias = Builtins.sformat("%1#%2", device, aid)
       Builtins.y2milestone("Deleting alias: %1", _alias)
-      Ops.set(@Deleted, Builtins.size(@Deleted), _alias)
+      @Deleted <<  _alias
       true
     end
 
