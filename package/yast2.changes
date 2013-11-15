@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Nov 15 13:59:06 UTC 2013 - jreidinger@suse.com
+
+- Removed unused API from NetworkInterfaces 
+
+-------------------------------------------------------------------
 Wed Nov 13 17:08:09 CET 2013 - aschnell@suse.de
 
 - use correct binary prefix (see bnc#849276)

@@ -22,6 +22,12 @@
 #
 # ***************************************************************************
 module Yast
+
+  #inject NetworkInterfaces accessor so we can modify Devices
+  class NetworkInterfacesClass < Module
+    attr_accessor :OriginalDevices
+  end
+
   class NetworkInterfaces4Client < Client
     def main
       # bug 72164

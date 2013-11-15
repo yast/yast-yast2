@@ -22,6 +22,13 @@
 #
 # ***************************************************************************
 module Yast
+
+  #inject NetworkInterfaces accessor so we can modify Devices
+  class NetworkInterfacesClass < Module
+    attr_accessor :Devices
+    attr_accessor :OriginalDevices
+  end
+
   class NetworkInterfaces2Client < Client
     def main
       Yast.include self, "testsuite.rb"

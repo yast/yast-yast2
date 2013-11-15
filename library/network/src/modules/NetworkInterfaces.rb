@@ -44,6 +44,8 @@ module Yast
     ID_REGEX = "([^#{ALIAS_SEPARATOR}]*)"
     ALIAS_REGEX = "(.*)"
     DEVNAME_REGEX = "#{TYPE_REGEX}-?#{ID_REGEX}"
+    # Supported hotplug types
+    HOTPLUG_TYPES = ["pcmcia", "usb"]
 
     def main
       textdomain "base"
@@ -55,11 +57,6 @@ module Yast
       Yast.import "TypeRepository"
       Yast.import "FileUtils"
       Yast.import "IP"
-
-      # False suppresses tones of logs 'NetworkInterfaces.ycp:ABC Check(eth,id-00:aa:bb:cc:dd:ee,)'
-      @report_every_check =
-        # value is not just string, can be a map for aliases
-        true
 
       # Current device identifier
       # @example eth0, eth1:blah, lo, ...
@@ -105,11 +102,6 @@ module Yast
           "isdn"    => "isdn|ippp",
           "dsl"     => "dsl"
         }
-
-      # define string HotplugRegex(list<string> devs);
-
-      # Supported hotplug types
-      @HotplugTypes = ["pcmcia", "usb"] #, "pci"
 
       # Predefined network device regular expressions
       @DeviceRegex = {
@@ -208,26 +200,14 @@ module Yast
 
     # Create a list of hot-pluggable device names for the given devices
     def HotplugRegex(devs)
-      devs = deep_copy(devs)
+      return "" unless devs
+
       ret = ""
-      Builtins.foreach(devs) { |dev| Builtins.foreach(@HotplugTypes) do |hot|
-        ret = Ops.add(
-          Ops.add(
-            Ops.add(
-              Ops.add(
-                Ops.add(
-                  Ops.add(Ops.add(Ops.add(Ops.add(ret, "|"), dev), "-"), hot),
-                  "|"
-                ),
-                dev
-              ),
-              "-"
-            ),
-            hot
-          ),
-          "-"
-        )
-      end }
+      devs.each do |dev|
+        HOTPLUG_TYPES.each do |hot|
+          ret += "|#{dev}-#{hot}|#{dev}-#{hot}-"
+        end
+      end
       ret
     end
 
@@ -471,13 +451,10 @@ module Yast
         Builtins.y2error("wrong type: %1", typ)
         return nil
       end
-      if num == nil # || num < 0
+      if num == nil
         Builtins.y2error("wrong number: %1", num)
         return nil
       end
-      # FIXME: devname
-      # if(IsHotplug(typ) && num != "") return sformat("%1-%2", typ, num);
-      # return sformat("%1%2", typ, num);
       if Builtins.regexpmatch(num, "^[0-9]*$")
         return Builtins.sformat("%1%2", typ, num)
       end
@@ -518,7 +495,7 @@ module Yast
     # @return true if hotpluggable
     def IsHotplug(type)
       return false if type == "" || type == nil
-      return true if Builtins.regexpmatch(type, "(pcmcia|usb|pci)$")
+      return true if HOTPLUG_TYPES.any? {|t| type.end_with?(t)}
       false
     end
 
@@ -539,7 +516,6 @@ module Yast
     # @return true if connected
     def IsConnected(dev)
       if !Mode.testsuite
-        #        string iface = MatchInterface(dev);
         cmd = Ops.add(Ops.add("cat /sys/class/net/", dev), "/carrier")
 
         ret = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
@@ -685,7 +661,6 @@ module Yast
     # Read devices from files
     # @return true if sucess
     def Read
-      # initialized = true; // FIXME
       return true if @initialized == true
 
       @Devices = {}
@@ -709,11 +684,6 @@ module Yast
         !Builtins.regexpmatch(file, "[~]")
       end
       Builtins.y2debug("devices=%1", devices)
-      # FIXME: devname
-      # devices = filter(string d, devices, {
-      # 	return regexpmatch(d, "[a-z][a-z-]*[0-9]*");
-      # });
-      # y2debug("devices=%1", devices);
 
       # Read devices
       Builtins.maplist(devices) do |d|
@@ -845,7 +815,6 @@ module Yast
       # remove deleted devices
       Builtins.y2milestone("Deleted=%1", @Deleted)
       Builtins.foreach(@Deleted) do |d|
-        # if(!haskey(OriginalDevs, d)) return;
         anum = alias_num(d)
         if anum == ""
           # delete config file
@@ -943,7 +912,6 @@ module Yast
               # writing, but we create it in 2 ways so it's
               # better here. Actually it does not work because
               # the edit dialog nukes LABEL :-(
-              #			boolean seen_label = false;
               if Ops.greater_than(Builtins.size(Ops.get(amap, "IPADDR", "")), 0) &&
                   Ops.greater_than(
                     Builtins.size(Ops.get(amap, "NETMASK", "")),
@@ -985,10 +953,7 @@ module Yast
               Builtins.maplist(amap) do |ak, av|
                 akk = Ops.add(Ops.add(ak, "_"), anum)
                 SCR.Write(Builtins.topath(Ops.add(p, akk)), av) #			    seen_label = seen_label || ak == "LABEL";
-              end # 			if (!seen_label)
-              # 			{
-              # 			    ShellSafeWrite (topath (p + ("LABEL_" + anum)), anum);
-              # 			}
+              end
             end
           else
             # Write regular keys
@@ -998,10 +963,6 @@ module Yast
             )
           end
         end
-        # update libhd unique number * /
-        # // FIXME: move it somewhere else: hardware
-        # string unq = devmap["UNIQUE"]:"";
-        # if(unq != "") SCR::Write(.probe.status.configured, unq, `yes);
 
         # 0600 if contains encryption key (#24842)
         has_key = Builtins.find(@SensitiveFields) do |k|
@@ -1374,44 +1335,6 @@ module Yast
       deep_copy(ret)
     end
 
-    # Compute free devices
-    # @param [String] type device type
-    # @param [Fixnum] num how many free devices return
-    # @return num of free devices
-    # @example GetFreeDevices("eth", 2) -&gt; [ 1, 2 ]
-    def GetFreeDevicesOld(type, num)
-      Builtins.y2debug("Devices=%1", @Devices)
-      Builtins.y2debug("type,num=%1,%2", type, num)
-      Builtins.y2debug("Devices[%1]=%2", type, Ops.get(@Devices, type, {}))
-
-      curdevs = Map.Keys(Ops.get(@Devices, type, {}))
-      Builtins.y2debug("curdevs=%1", curdevs)
-
-      i = 0
-      count = 0
-      ret = []
-
-      # Hotpluggable devices
-      if IsHotplug(type) && !Builtins.contains(curdevs, "")
-        Builtins.y2debug("Added simple hotplug device")
-        count = Ops.add(count, 1)
-        ret = Builtins.add(ret, "")
-      end
-
-      # Remaining numbered devices
-      while Ops.less_than(count, num)
-        ii = Builtins.sformat("%1", i)
-        if !Builtins.contains(curdevs, ii)
-          ret = Builtins.add(ret, ii)
-          count = Ops.add(count, 1)
-        end
-        i = Ops.add(i, 1)
-      end
-
-      Builtins.y2debug("Free devices=%1", ret)
-      deep_copy(ret)
-    end
-
     # Return free device
     # @param [String] type device type
     # @return free device
@@ -1433,25 +1356,11 @@ module Yast
       typ = GetType(dev)
       #    string num = device_num(dev);
       #    string anum = alias_num(dev);
-      Builtins.y2milestone("Check(%1)", dev) if @report_every_check
       return false if !Builtins.haskey(@Devices, typ)
 
       devsmap = Ops.get(@Devices, typ, {})
       return false if !Builtins.haskey(devsmap, dev)
 
-      # FIXME NI: not needed?
-      # Name = dev;
-      # Current = (map) eval(devsmap[num]:$[]);
-
-      #     if(anum != "") {
-      # 	map devmap = devsmap[num]:$[];
-      # 	map amap = devmap["_aliases"]:$[];
-      # 	if(!haskey(amap, anum))
-      # 	    return false;
-      # 	// FIXME NI: not needed?
-      # //	Current = (map) eval(amap[anum]:$[]);
-      # //	alias = anum;
-      #     }
       Builtins.y2debug("Check passed")
       true
     end
@@ -1470,8 +1379,6 @@ module Yast
       end
 
       @Name = name
-      # FIXME NI: Current = Devices[device_type(Name), device_num(Name)]:$[];
-      # may be fixed already. or not: #39236
       t = GetType(@Name)
       @Current = Ops.get(@Devices, [t, @Name], {})
       a = alias_num(@Name)
@@ -1590,16 +1497,8 @@ module Yast
       # interface that was not present at Read (had no ifcfg file).
       # #115448: OriginalDevices is not updated after Write so
       # returning to the network proposal and deleting a card would not work.
-      if true ||
-          Builtins.haskey(@OriginalDevices, t) &&
-            Builtins.haskey(Ops.get(@OriginalDevices, t, {}), name)
-        Builtins.y2milestone("Deleting file: %1", name)
-        Ops.set(@Deleted, Builtins.size(@Deleted), name)
-      else
-        Builtins.y2milestone("Not deleting file: %1", name)
-        Builtins.y2debug("OriginalDevices=%1", @OriginalDevices)
-        Builtins.y2debug("a=%1", a)
-      end
+      Builtins.y2milestone("Deleting file: #{name}")
+      @Deleted << name
       true
     end
 
@@ -1609,7 +1508,7 @@ module Yast
     def DeleteAlias(device, aid)
       _alias = Builtins.sformat("%1#%2", device, aid)
       Builtins.y2milestone("Deleting alias: %1", _alias)
-      Ops.set(@Deleted, Builtins.size(@Deleted), _alias)
+      @Deleted <<  _alias
       true
     end
 
@@ -1645,9 +1544,11 @@ module Yast
     end
 
     def SetValue(name, key, value)
-      return nil if !Edit(name)
+      return nil unless Edit(name)
       return false if key == nil || key == "" || value == nil
-      Ops.set(@Current, key, value)
+
+      @Current[key] = value
+
       Commit()
     end
 
@@ -1836,10 +1737,7 @@ module Yast
           ret = type
         end
       end
-      # maplist(string typ, string regex, DeviceRegex, {
-      # 	if (ret == "" && regexpmatch(name, "^" + regex + "[0-9]*$"))
-      # 	ret = typ;
-      # });
+
       ret
     end
 
@@ -1878,68 +1776,36 @@ module Yast
       deep_copy(devices)
     end
 
-    publish :variable => :report_every_check, :type => "boolean"
     publish :variable => :Name, :type => "string"
     publish :variable => :Current, :type => "map <string, any>"
-    publish :variable => :Devices, :type => "map <string, map <string, map <string, any>>>", :private => true
-    publish :variable => :OriginalDevices, :type => "map <string, map <string, map <string, any>>>", :private => true
-    publish :variable => :Deleted, :type => "list <string>", :private => true
-    publish :variable => :initialized, :type => "boolean", :private => true
-    publish :variable => :operation, :type => "symbol", :private => true
     publish :variable => :CardRegex, :type => "map <string, string>"
-    publish :variable => :HotplugTypes, :type => "list <string>", :private => true
-    publish :function => :HotplugRegex, :type => "string (list <string>)", :private => true
-    publish :function => :IsEmpty, :type => "boolean (any)", :private => true
-    publish :variable => :DeviceRegex, :type => "map <string, string>"
-    publish :variable => :FastestTypes, :type => "map <integer, string>", :private => true
-    publish :variable => :stack, :type => "map", :private => true
-    publish :variable => :alias_separator, :type => "string", :private => true
-    publish :variable => :ifcfg_name_regex, :type => "string", :private => true
-    publish :function => :ifcfg_part, :type => "string (string, string)", :private => true
     publish :function => :device_type, :type => "string (string)"
-    publish :variable => :TypeBySysfs, :type => "const map <string, string>", :private => true
-    publish :function => :GetEthTypeFromSysfs, :type => "string (string)", :private => true
-    publish :function => :GetIbTypeFromSysfs, :type => "string (string)", :private => true
-    publish :function => :GetTypeFromSysfs, :type => "string (string)", :private => true
-    publish :variable => :TypeByKeyValue, :type => "list <string>", :private => true
-    publish :variable => :TypeByKeyExistence, :type => "list <list <string>>", :private => true
-    publish :variable => :TypeByValueMatch, :type => "list <list <string>>", :private => true
     publish :function => :GetTypeFromIfcfg, :type => "string (map <string, any>)"
-    publish :function => :GetTypeFromIfcfgOrName, :type => "string (string, map <string, any>)", :private => true
     publish :function => :GetType, :type => "string (string)"
     publish :function => :GetDeviceTypeName, :type => "string (string)"
     publish :function => :device_num, :type => "string (string)"
     publish :function => :alias_num, :type => "string (string)"
-    publish :function => :device_name, :type => "string (string, string)"
-    publish :function => :alias_name, :type => "string (string, string, string)"
     publish :function => :IsHotplug, :type => "boolean (string)"
     publish :function => :IsConnected, :type => "boolean (string)"
     publish :function => :RealType, :type => "string (string, string)"
-    publish :function => :CanonicalizeStartmode, :type => "map <string, any> (map <string, any>)"
     publish :function => :CanonicalizeIP, :type => "map <string, any> (map <string, any>)"
-    publish :variable => :SensitiveFields, :type => "list <string>", :private => true
     publish :function => :ConcealSecrets1, :type => "map (map <string, any>)"
     publish :function => :ConcealSecrets, :type => "map (map)"
     publish :function => :Read, :type => "boolean ()"
     publish :function => :CleanCacheRead, :type => "boolean ()"
-    publish :function => :Filter, :type => "map <string, map> (map <string, map>, string)", :private => true
     publish :function => :FilterDevices, :type => "map <string, map> (string)"
-    publish :function => :FilterNOT, :type => "map <string, map> (map <string, map>, string)", :private => true
     publish :function => :Write, :type => "boolean (string)"
     publish :function => :Import, :type => "boolean (string, map <string, map>)"
     publish :function => :GetDeviceTypes, :type => "list <string> ()"
     publish :function => :GetDevTypeDescription, :type => "string (string, boolean)"
     publish :function => :Export, :type => "map <string, map> (string)"
-    publish :function => :Modified, :type => "boolean (string)"
     publish :function => :GetFreeDevices, :type => "list <string> (string, integer)"
-    publish :function => :GetFreeDevicesOld, :type => "list (string, integer)"
     publish :function => :GetFreeDevice, :type => "string (string)"
     publish :function => :Check, :type => "boolean (string)"
     publish :function => :Select, :type => "boolean (string)"
     publish :function => :Add, :type => "boolean ()"
     publish :function => :Edit, :type => "boolean (string)"
     publish :function => :Delete, :type => "boolean (string)"
-    publish :function => :Change2, :type => "boolean (string, map <string, any>, boolean)", :private => true
     publish :function => :Delete2, :type => "boolean (string)"
     publish :function => :DeleteAlias, :type => "boolean (string, string)"
     publish :function => :Commit, :type => "boolean ()"
@@ -1947,7 +1813,6 @@ module Yast
     publish :function => :SetValue, :type => "boolean (string, string, string)"
     publish :function => :GetIP, :type => "list <string> (string)"
     publish :function => :Locate, :type => "list <string> (string, string)"
-    publish :function => :LocateNOT, :type => "list <string> (string, string)"
     publish :function => :LocateProvider, :type => "boolean (string)"
     publish :function => :UpdateModemSymlink, :type => "boolean ()"
     publish :function => :CleanHotplugSymlink, :type => "boolean ()"
