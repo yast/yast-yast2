@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Nov 15 16:23:46 CET 2013 - jsuchome@suse.cz
+
+- Warn the user if Chef could overwrite her changes (bnc#803358). 
+
+-------------------------------------------------------------------
 Fri Nov 15 13:59:06 UTC 2013 - jreidinger@suse.com
 
 - Removed unused API from NetworkInterfaces 
