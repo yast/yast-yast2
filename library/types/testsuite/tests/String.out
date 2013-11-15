@@ -14,34 +14,34 @@ Dump	String::FormatSize
 Return	
 Return	0 B
 Return	1 B
-Return	1 kB
-Return	1.1 kB
-Return	743 kB
-Return	1.00 MB
-Return	1.000 GB
-Return	1.000 TB
-Return	1024.091 TB
-Return	1 kB
-Return	1.00 MB
-Return	1.000 GB
-Return	1.000 TB
+Return	1 KiB
+Return	1.1 KiB
+Return	743 KiB
+Return	1.00 MiB
+Return	1.000 GiB
+Return	1.000 TiB
+Return	1024.091 TiB
+Return	1 KiB
+Return	1.00 MiB
+Return	1.000 GiB
+Return	1.000 TiB
 Dump	String::FormatSizeWithPrecision
 Return	
 Return	0 B
 Return	1.00 B
-Return	1.001 kB
-Return	1 MB
-Return	1 MB
-Return	1 GB
-Return	1.000 GB
-Return	1.00 TB
-Return	1024.1 TB
-Return	4 kB
-Return	4.00 kB
-Return	4 kB
-Return	8 GB
+Return	1.001 KiB
+Return	1 MiB
+Return	1 MiB
+Return	1 GiB
+Return	1.000 GiB
+Return	1.00 TiB
+Return	1024.1 TiB
+Return	4 KiB
+Return	4.00 KiB
+Return	4 KiB
+Return	8 GiB
 Return	15.00000 B
-Return	21.846 GB
+Return	21.846 GiB
 Dump	String::CutBlanks
 Return	
 Return	

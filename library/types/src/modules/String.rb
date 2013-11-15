@@ -121,7 +121,7 @@ module Yast
     # Return a pretty description of a byte count
     #
     # Return a pretty description of a byte count with required precision
-    # and using B, kB, MB, GB or TB as unit as appropriate.
+    # and using B, KiB, MiB, GiB or TiB as unit as appropriate.
     #
     # Uses the current locale defined decimal separator
     # (i.e. the result is language dependant).
@@ -129,13 +129,13 @@ module Yast
     # @param [Fixnum] bytes	size (e.g. free diskspace, memory size) in Bytes
     # @param [Fixnum] precision number of fraction digits in output, if negative (less than 0) the precision is set automatically depending on the suffix
     # @param [Boolean] omit_zeroes if true then do not add zeroes
-    #	(useful for memory size - 128 MB RAM looks better than 128.00 MB RAM)
+    #	(useful for memory size - 128 MiB RAM looks better than 128.00 MiB RAM)
     # @return formatted string
     #
     # @example FormatSizeWithPrecision(128, 2, true) -> "128 B"
-    # @example FormatSizeWithPrecision(4096, 2, true) -> "4 kB"
-    # @example FormatSizeWithPrecision(4096, 2, false) -> "4.00 kB"
-    # @example FormatSizeWithPrecision(1024*1024, 2, true) -> "1 MB"
+    # @example FormatSizeWithPrecision(4096, 2, true) -> "4 KiB"
+    # @example FormatSizeWithPrecision(4096, 2, false) -> "4.00 KiB"
+    # @example FormatSizeWithPrecision(1024*1024, 2, true) -> "1 MiB"
     def FormatSizeWithPrecision(bytes, precision, omit_zeroes)
       return "" if bytes == nil
 
@@ -143,13 +143,13 @@ module Yast
         # Byte abbreviated
         _("B"),
         # KiloByte abbreviated
-        _("kB"),
+        _("KiB"),
         # MegaByte abbreviated
-        _("MB"),
+        _("MiB"),
         # GigaByte abbreviated
-        _("GB"),
+        _("GiB"),
         # TeraByte abbreviated
-        _("TB")
+        _("TiB")
       ]
 
       index = 0
@@ -205,7 +205,7 @@ module Yast
     # Return a pretty description of a byte count
     #
     # Return a pretty description of a byte count, with two fraction digits
-    # and using B, kB, MB, GB or TB as unit as appropriate.
+    # and using B, KiB, MiB, GiB or TiB as unit as appropriate.
     #
     # Uses the current locale defined decimal separator
     # (i.e. the result is language dependant).
@@ -213,18 +213,18 @@ module Yast
     # @param [Fixnum] bytes	size (e.g. free diskspace) in Bytes
     # @return formatted string
     #
-    # @example FormatSize(23456767890) -> "223.70 MB"
+    # @example FormatSize(23456767890) -> "223.70 MiB"
     def FormatSize(bytes)
       return "" if bytes == nil
 
-      # automatic precision, don't print trailing zeroes for sizes < 1MB
+      # automatic precision, don't print trailing zeroes for sizes < 1MiB
       FormatSizeWithPrecision(bytes, -1, Ops.less_than(bytes, 1 << 20))
     end
 
     # Return a pretty description of a download rate
     #
     # Return a pretty description of a download rate, with two fraction digits
-    # and using B/s, kB/s, MB/s, GB/s or TB/s as unit as appropriate.
+    # and using B/s, KiB/s, MiB/s, GiB/s or TiB/s as unit as appropriate.
     #
     # @param [Fixnum] bytes_per_second download rate (in B/s)
     # @return formatted string
@@ -234,7 +234,7 @@ module Yast
     # @example FormatRate(895321) -> ""
     def FormatRate(bytes_per_second)
       # covert a number to download rate string
-      # %1 is string - size in bytes, B, kB, MB, GB or TB
+      # %1 is string - size in bytes, B, KiB, MiB, GiB or TiB
       Builtins.sformat(_("%1/s"), FormatSize(bytes_per_second))
     end
 
