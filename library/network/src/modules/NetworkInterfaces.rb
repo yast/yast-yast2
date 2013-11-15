@@ -1543,6 +1543,13 @@ module Yast
       Ops.get_string(@Current, key, "")
     end
 
+    def SetValue(name, key, value)
+      return nil if !Edit(name)
+      return false if key == nil || key == "" || value == nil
+      Ops.set(@Current, key, value)
+      Commit()
+    end
+
     # get IP addres + additional IP addresses
     # @param identifier for network interface
     # @return [Array] of IP addresses of selected interface
@@ -1801,6 +1808,7 @@ module Yast
     publish :function => :DeleteAlias, :type => "boolean (string, string)"
     publish :function => :Commit, :type => "boolean ()"
     publish :function => :GetValue, :type => "string (string, string)"
+    publish :function => :SetValue, :type => "boolean (string, string, string)"
     publish :function => :GetIP, :type => "list <string> (string)"
     publish :function => :Locate, :type => "list <string> (string, string)"
     publish :function => :LocateProvider, :type => "boolean (string)"
