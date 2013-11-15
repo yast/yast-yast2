@@ -1544,9 +1544,11 @@ module Yast
     end
 
     def SetValue(name, key, value)
-      return nil if !Edit(name)
+      return nil unless Edit(name)
       return false if key == nil || key == "" || value == nil
-      Ops.set(@Current, key, value)
+
+      @Current[key] = value
+
       Commit()
     end
 
