@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Nov 15 13:59:06 UTC 2013 - jreidinger@suse.com
+
+- Removed unused API from NetworkInterfaces 
+
+-------------------------------------------------------------------
 Mon Nov 11 10:48:14 UTC 2013 - jsrain@suse.cz
 
 - added dedicated "Show Release Notes" button support for NCurses
