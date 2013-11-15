@@ -1614,7 +1614,7 @@ module Yast
         end
 
         # A hacky bail-out hook before interactive modules
-        return false if !IgnoreOtherConfigTools()
+        return false unless IgnoreOtherConfigTools()
 
         if Ops.is(Ops.get(commandline, "guihandler"), "symbol ()")
           exec = Convert.convert(
