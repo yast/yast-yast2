@@ -3,7 +3,7 @@ require 'pathname'
 module Yast
   class HooksClass < Module
     HOOKS_DIR = '/var/lib/YaST2/hooks'
-    # Example: /var/lib/YaST2/wagon/hooks/before_package_migration_00_postgresql_backup
+    # Example: /var/lib/YaST2/hooks/before_package_migration_00_postgresql_backup
 
     attr_reader :hooks
 
@@ -50,29 +50,33 @@ module Yast
 
       def find_hook_files hook_name
         Pathname.new(HOOKS_DIR).children.select do |file|
-          file.basename.fnmatch?(hook_name.to_s)
+          file.basename.fnmatch?("#{hook_name}_[0-9][0-9]_*")
         end.sort
       end
 
       class File
-        attr_reader :path, :content
-        attr_reader :step, :number, :name
+        attr_reader :path, :content, :result
 
         def initialize path
           @path = path
-          # split the file name into the parts
-          # step name (defined by the yast client)
-          # number   (set by the user)
-          # prefix [optional] or is this needed?
-          # name of the hook (defined by user)
         end
 
         def execute
-          SCR.Execute(path(".target.bash"), path_to_file)
+          @result = File::Result.new(SCR.Execute(Path.new(".target.bash_output"), path))
         end
 
         def content
           @content ||= ::File.read(path)
+        end
+
+        class Result
+          attr_reader :exit_code, :stderr, :stdout
+
+          def initialize params
+            @exit_code = params['exit']
+            @stderr    = params['stderr']
+            @stdout    = params['stdout'].split
+          end
         end
       end
     end
