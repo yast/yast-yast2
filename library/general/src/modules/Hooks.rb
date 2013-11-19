@@ -1,11 +1,9 @@
 require 'pathname'
+require 'ostruct'
 
 module Yast
   class HooksClass < Module
-    HOOKS_DIR = '/var/lib/YaST2/hooks'
-    # Example: /var/lib/YaST2/hooks/before_package_migration_00_postgresql_backup
-
-    attr_reader :hooks
+    attr_reader :hooks, :last
 
     def initialize
       textdomain 'base'
@@ -14,10 +12,15 @@ module Yast
 
     def run hook_name
       register(hook_name, caller.first).execute
+      @last = find(hook_name)
     end
 
     def find hook_name
       hooks[hook_name]
+    end
+
+    def find_all
+      hooks
     end
 
     def exists? hook_name
@@ -34,11 +37,12 @@ module Yast
     end
 
     class Hook
-      # validate the hook filename format
+      DIR = '/var/lib/YaST2/hooks'
+
       attr_reader :results, :files, :client_path
 
       def initialize name, client_caller
-        @files = find_hook_files(name).map {|path| Hook::File.new(path) }
+        @files = find_hook_files(name).map {|path| HookFile.new(path) }
         @client_path = client_caller
       end
 
@@ -46,38 +50,40 @@ module Yast
         files.each {|hook_file| hook_file.execute }
       end
 
+      def results
+        files.map &:result
+      end
+
+      def succeeded?
+        files.all? {|hook_file| hook_file.result && hook_file.result.exit.zero? }
+      end
+
+      def failed?
+        !succeeded?
+      end
+
       private
 
       def find_hook_files hook_name
-        Pathname.new(HOOKS_DIR).children.select do |file|
+        Pathname.new(DIR).children.select do |file|
           file.basename.fnmatch?("#{hook_name}_[0-9][0-9]_*")
         end.sort
       end
+    end
 
-      class File
-        attr_reader :path, :content, :result
+    class HookFile
+      attr_reader :path, :content, :result
 
-        def initialize path
-          @path = path
-        end
+      def initialize path
+        @path = path
+      end
 
-        def execute
-          @result = File::Result.new(SCR.Execute(Path.new(".target.bash_output"), path))
-        end
+      def execute
+        @result = OpenStruct.new(SCR.Execute(Path.new(".target.bash_output"), path.to_s))
+      end
 
-        def content
-          @content ||= ::File.read(path)
-        end
-
-        class Result
-          attr_reader :exit_code, :stderr, :stdout
-
-          def initialize params
-            @exit_code = params['exit']
-            @stderr    = params['stderr']
-            @stdout    = params['stdout'].split
-          end
-        end
+      def content
+        @content ||= ::File.read(path)
       end
     end
 
