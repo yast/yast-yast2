@@ -119,7 +119,10 @@ describe "Yast::IP" do
 
     RESULT_MAP_INT.each_pair do |k,v|
       it "returns #{v} for #{k}" do
-        expect( IP.ToInteger(k)).to be_equal v
+        # in 32bits arch IP#ToInteger returns Bignum, so equal? returns false
+        # and eql? has to be used
+        # in 64bits arch the result is Fixnum and the problem do not appear
+        expect( IP.ToInteger(k)).to be_eql v
       end
     end
 
