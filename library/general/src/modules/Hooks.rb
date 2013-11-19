@@ -11,15 +11,16 @@ module Yast
     end
 
     def run hook_name
-      register(hook_name, caller.first).execute
-      @last = find(hook_name)
+      hook = register(hook_name, caller.first)
+      hook.execute
+      @last = hook
     end
 
     def find hook_name
       hooks[hook_name]
     end
 
-    def find_all
+    def all
       hooks
     end
 
@@ -47,7 +48,7 @@ module Yast
       end
 
       def execute
-        files.each {|hook_file| hook_file.execute }
+        files.each &:execute
       end
 
       def results

@@ -11,7 +11,7 @@ module Yast
 
   describe Hooks do
     before do
-      Hooks.find_all.clear
+      Hooks.all.clear
       stub_const "Yast::HooksClass::Hook::DIR", File.join(__dir__, 'hooks')
     end
 
@@ -24,13 +24,13 @@ module Yast
     it "allows to retrieve information about hooks" do
       expect(Hooks.exists?(:before_hook)).to eq(false)
       expect(Hooks.find(:before_hook)).to eq(nil)
-      expect(Hooks.find_all).to be_empty
+      expect(Hooks.all).to be_empty
 
       Hooks.run :before_hook
       expect(Hooks.exists?(:before_hook)).to eq(true)
       expect(Hooks.find(:before_hook)).not_to eq(nil)
-      expect(Hooks.find_all).not_to be_empty
-      expect(Hooks.find_all.size).to eq(1)
+      expect(Hooks.all).not_to be_empty
+      expect(Hooks.all.size).to eq(1)
       expect(Hooks.find(:before_hook).failed?).to eq(true)
       expect(Hooks.find(:before_hook).succeeded?).to eq(false)
     end
