@@ -31,6 +31,14 @@
 require "yast"
 
 module Yast
+
+  # @example
+  #  file = {}
+  #  file_ref = arg_ref(file)
+  #  AsciiFile.SetComment(file_ref, "^[ \t]*#")
+  #  AsciiFile.SetDelimiter(file_ref, " \t")
+  #  AsciiFile.SetListWidth(file_ref, [20, 20, 10, 21, 1, 1])
+  #  AsciiFile.ReadFile(file_ref, "/etc/fstab")
   class AsciiFileClass < Module
     def main
 

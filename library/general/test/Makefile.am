@@ -1,4 +1,5 @@
 TESTS = \
+  asciifile_test.rb \
   linuxrc_test.rb
 
 TEST_EXTENSIONS = .rb
