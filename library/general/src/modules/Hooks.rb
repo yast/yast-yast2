@@ -150,7 +150,7 @@ module Yast
 
       def find_hook_files hook_name
         Builtins.y2milestone "Searching for hook files in '#{search_path}'..."
-        hook_files = Pathname.new(search_path).children.select do |file|
+        hook_files = search_path.children.select do |file|
           file.basename.fnmatch?("#{hook_name}_[0-9][0-9]_*")
         end
         Builtins.y2milestone "Found #{hook_files.size} hook files: " +
