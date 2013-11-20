@@ -178,7 +178,7 @@ module Yast
         Builtins.y2milestone "Executing hook file '#{path}'"
         @result = OpenStruct.new(SCR.Execute(Path.new(".target.bash_output"), path.to_s))
         if failed?
-          Buitins.y2error "Hook file '#{path.basename}' failed with stderr: #{result.stderr}"
+          Builtins.y2error "Hook file '#{path.basename}' failed with stderr: #{result.stderr}"
         end
       end
 
