@@ -3,11 +3,13 @@ require 'ostruct'
 
 module Yast
   class HooksClass < Module
-    attr_reader :hooks, :last
+
+    attr_reader :hooks, :last, :load_path
 
     def initialize
       textdomain 'base'
       @hooks = {}
+      @load_path = HooksPath.new
     end
 
     def run hook_name
@@ -31,20 +33,41 @@ module Yast
     private
 
     def create hook_name, source_file
-      hooks[hook_name] = Hook.new(hook_name, source_file)
+      if hooks[hook_name]
+        Builtins.y2warning "Hook '#{hook_name}' has already been run from #{hooks[hook_name].caller_path}"
+      else
+        hooks[hook_name] = Hook.new(hook_name, source_file, load_path)
+      end
     end
 
+    class HooksPath
+      DEFAULT_DIR = '/var/lib/YaST2/hooks'
+
+      attr_reader :path
+
+      def initialize
+        @path = Pathname.new(DEFAULT_DIR)
+      end
+
+      def join new_path
+        path = path.join(new_path)
+      end
+    end
+
+
     class Hook
-      DIR = '/var/lib/YaST2/hooks'
+      attr_reader :name, :results, :files, :caller_path, :load_path
 
-      attr_reader :results, :files, :source_path
-
-      def initialize name, source_caller
+      def initialize name, caller_path, load_path
+        Builtins.y2milestone "Creating hook '#{name}' from '#{caller_path}'"
+        @name = name
         @files = find_hook_files(name).map {|path| HookFile.new(path) }
-        @source_path = source_caller
+        @caller_path = caller_path
+        @load_path = load_path
       end
 
       def execute
+        Builtins.y2milestone "Executing hook '#{name}'"
         files.each &:execute
       end
 
@@ -63,9 +86,12 @@ module Yast
       private
 
       def find_hook_files hook_name
-        hook_files = Pathname.new(DIR).children.select do |file|
+        Builtins.y2milestone "Searching for hook files in '#{load_path}'..."
+        hook_files = Pathname.new(load_path).children.select do |file|
           file.basename.fnmatch?("#{hook_name}_[0-9][0-9]_*")
         end
+        Builtins.y2milestone "Found #{hook_files.size} hook files: " +
+          "#{hook_files.map {|f| f.basename.to_s}.join(', ')}"
         hook_files.sort
       end
     end
@@ -78,6 +104,7 @@ module Yast
       end
 
       def execute
+        Builtins.y2milestone "Executing hook file '#{path}'"
         @result = OpenStruct.new(SCR.Execute(Path.new(".target.bash_output"), path.to_s))
       end
 
