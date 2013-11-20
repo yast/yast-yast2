@@ -3,6 +3,12 @@ Thu Nov 21 08:48:50 UTC 2013 - lslezak@suse.cz
 
 - PKGMGR_ACTION_AT_EXIT: change the default action to "summary",
   added combobox for changing the value
+
+-------------------------------------------------------------------
+Wed Nov 20 13:36:39 UTC 2013 - lslezak@suse.cz
+
+- removed support for automatic 2nd stage (the 2nd stage has been
+  dropped completely) (FATE#314695)
 - 3.1.4
 
 -------------------------------------------------------------------
