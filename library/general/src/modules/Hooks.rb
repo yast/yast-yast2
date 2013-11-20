@@ -110,6 +110,10 @@ module Yast
         @path = Pathname.new(new_path)
       end
 
+      def children
+        path.children
+      end
+
       private
 
       def set_default_path
