@@ -419,7 +419,6 @@ module Yast
     end
 
     def InstallationSummary(summary)
-      summary = deep_copy(summary)
       ret = ""
 
       if Builtins.haskey(summary, "success")
@@ -637,13 +636,14 @@ module Yast
 
 
     def ShowInstallationSummaryMap(summary)
-      summary = deep_copy(summary)
       summary_str = InstallationSummary(summary)
 
-      if summary_str == nil || summary_str == ""
+      if summary["installed"] == 0 && summary["updated"] == 0 && summary["removed"] == 0 && summary["remaining"] == []
         Builtins.y2warning("No summary, skipping summary dialog")
         return :next
       end
+
+      Builtins.y2milestone("Displaying installation report: #{summary.inspect}")
 
       wizard_opened = false
 
@@ -653,16 +653,28 @@ module Yast
         wizard_opened = true
       end
 
-      dialog = RichText(Id(:rtext), summary_str)
+      current_action = SCR.Read(path(".sysconfig.yast2.PKGMGR_ACTION_AT_EXIT"))
+
+      dialog = VBox(
+        RichText(Id(:rtext), summary_str),
+        Left(
+          ComboBox(Id(:action), _("After Installing Packages"), [
+            Item(Id("summary"), _("Show This Report"), current_action == "summary"),
+            Item(Id("close"), _("Finish"), current_action == "close"),
+            Item(Id("restart"), _("Continue in the Software Manager"), current_action == "restart")
+          ])
+        )
+      )
 
       help_text = _(
-        "<P><BIG><B>Installation Summary</B></BIG><BR>Here is a summary of installed packages.</P>"
+        "<P><BIG><B>Installation Report</B></BIG><BR>Here is a summary of installed or removed packages.</P>"
       )
 
       Wizard.SetNextButton(:next, Label.FinishButton)
+      Wizard.SetBackButton(:back, Label.ContinueButton)
 
       Wizard.SetContents(
-        _("Installation Summary"), #has_next
+        _("Installation Report"),
         dialog,
         help_text,
         true,
@@ -714,7 +726,26 @@ module Yast
 
       Builtins.y2milestone("Installation Summary result: %1", result)
 
+      new_action = UI.QueryWidget(Id(:action), :Value)
+
+      # the combobox value has been changed, save the new value
+      if result == :next && current_action != new_action
+        if new_action != "summary"
+          # disabling installation report dialog, inform the user how to enable it back
+          Popup.Message(_("If you want to show this report dialog again edit\n\n"+
+            "System > Yast2 > GUI > PKGMGR_ACTION_AT_EXIT\n\n" +
+            "value in the YaST sysconfig editor."))
+        end
+
+        Builtins.y2milestone("Changing PKGMGR_ACTION_AT_EXIT from #{current_action.inspect} to #{new_action.inspect}")
+
+        SCR.Write(path(".sysconfig.yast2.PKGMGR_ACTION_AT_EXIT"), new_action)
+        # flush
+        SCR.Write(path(".sysconfig.yast2"), nil)
+      end
+
       Wizard.RestoreNextButton
+      Wizard.RestoreBackButton
 
       if wizard_opened
         # close the opened window
