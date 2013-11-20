@@ -12,7 +12,7 @@ module Yast
   describe Hooks do
     before do
       Hooks.all.clear
-      stub_const "Yast::HooksClass::Hook::DIR", File.join(__dir__, 'hooks')
+      Hooks.search_path.set File.join(__dir__, 'hooks')
     end
 
     it "executes single hook specified by a name" do

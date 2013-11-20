@@ -1,15 +1,64 @@
 require 'pathname'
 require 'ostruct'
 
+## Description
+#
+#  Main goal of hooks is to execute a third party code within the workflow of
+#  installation, system update or some other process. Hook files must be executable
+#  files written in bash, ruby or anything else available in inst-sys environment.
+#
+#  The module provides method #run which creates a hook and executes it instantly.
+#
+#  This includes following actions:
+#  * adding the hook into the hooks collection - every hook is identified by unique
+#    name which should be self-descriptive
+#  * looking up the files matching the hook script pattern;
+#  * executing the identified hook files
+#  * storing the results returned by the scripts for further inspection later if needed;
+#    this might be useful if some of the files has failed and we want to show it the user.
+#
+#  If a hook script returns non-zero result, the whole hook is considered as failed.
+#  By default the hooks are searched for in /var/lib/YaST2/hooks directory. This path
+#  can be modified globally for all hooks before they get called.
+#
+## Example
+#
+#  * using a hook within a yast client
+#
+#  module Yast
+#    import 'Hooks'
+#
+#    class MyFavoriteClient < Client
+#      def main
+#        # this will change the search path to /var/lib/YaST2/hooks/personal
+#        Hooks.search_path.join!('personal')
+#        # and this will set a completely different path
+#        Hooks.search_path.set "/root/hooks"
+#        Hooks.run :before_showing_ui
+#        # Lot of beautiful and useful code follows here.
+#        # If needed make use of:
+#        #   * Hooks.last.failed?
+#        #   * Hooks.last.succeeded?
+#        #   * Hooks.last.name
+#        #   * Hooks.last.search_path
+#        #   * Hooks.last.results
+#        #   * Hooks.last.files
+#        Hooks.run :after_showing_ui
+#        # reset the search path if needed
+#        Hooks.search_path.reset
+#      end
+#    end
+#  end
+
 module Yast
   class HooksClass < Module
 
-    attr_reader :hooks, :last, :load_path
+    attr_reader :hooks, :last, :search_path
 
     def initialize
       textdomain 'base'
       @hooks = {}
-      @load_path = HooksPath.new
+      @search_path = SearchPath.new
     end
 
     def run hook_name
@@ -36,34 +85,48 @@ module Yast
       if hooks[hook_name]
         Builtins.y2warning "Hook '#{hook_name}' has already been run from #{hooks[hook_name].caller_path}"
       else
-        hooks[hook_name] = Hook.new(hook_name, source_file, load_path)
+        hooks[hook_name] = Hook.new(hook_name, source_file, search_path)
       end
     end
 
-    class HooksPath
+    class SearchPath
       DEFAULT_DIR = '/var/lib/YaST2/hooks'
 
       attr_reader :path
 
       def initialize
-        @path = Pathname.new(DEFAULT_DIR)
+        set_default_path
       end
 
-      def join new_path
-        path = path.join(new_path)
+      def join! new_path
+        @path = path.join(new_path)
+      end
+
+      def reset
+        set_default_path
+      end
+
+      def set new_path
+        @path = Pathname.new(new_path)
+      end
+
+      private
+
+      def set_default_path
+        @path = Pathname.new(DEFAULT_DIR)
       end
     end
 
 
     class Hook
-      attr_reader :name, :results, :files, :caller_path, :load_path
+      attr_reader :name, :results, :files, :caller_path, :search_path
 
-      def initialize name, caller_path, load_path
+      def initialize name, caller_path, search_path
         Builtins.y2milestone "Creating hook '#{name}' from '#{caller_path}'"
         @name = name
+        @search_path = search_path
         @files = find_hook_files(name).map {|path| HookFile.new(path) }
-        @caller_path = caller_path
-        @load_path = load_path
+        @caller_path = caller_path.split(':in').first
       end
 
       def execute
@@ -86,8 +149,8 @@ module Yast
       private
 
       def find_hook_files hook_name
-        Builtins.y2milestone "Searching for hook files in '#{load_path}'..."
-        hook_files = Pathname.new(load_path).children.select do |file|
+        Builtins.y2milestone "Searching for hook files in '#{search_path}'..."
+        hook_files = Pathname.new(search_path).children.select do |file|
           file.basename.fnmatch?("#{hook_name}_[0-9][0-9]_*")
         end
         Builtins.y2milestone "Found #{hook_files.size} hook files: " +
