@@ -114,6 +114,10 @@ module Yast
         path.children
       end
 
+      def to_s
+        path.to_s
+      end
+
       private
 
       def set_default_path
@@ -126,11 +130,11 @@ module Yast
       attr_reader :name, :results, :files, :caller_path, :search_path
 
       def initialize name, caller_path, search_path
-        Builtins.y2milestone "Creating hook '#{name}' from '#{caller_path}'"
         @name = name
         @search_path = search_path
         @files = find_hook_files(name).map {|path| HookFile.new(path) }
         @caller_path = caller_path.split(':in').first
+        Builtins.y2milestone "Creating hook '#{self.name}' from '#{self.caller_path}'"
       end
 
       def execute
@@ -147,7 +151,7 @@ module Yast
       end
 
       def failed?
-        !succeeded?
+        files.any? &:failed?
       end
 
       private
@@ -173,6 +177,9 @@ module Yast
       def execute
         Builtins.y2milestone "Executing hook file '#{path}'"
         @result = OpenStruct.new(SCR.Execute(Path.new(".target.bash_output"), path.to_s))
+        if failed?
+          Buitins.y2error "Hook file '#{path.basename}' failed with stderr: #{result.stderr}"
+        end
       end
 
       def content
@@ -182,8 +189,11 @@ module Yast
       def succeeded?
         result.exit.zero?
       end
-    end
 
+      def failed?
+        result.exit.nonzero?
+      end
+    end
   end
   Hooks = HooksClass.new
 end
