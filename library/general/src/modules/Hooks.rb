@@ -11,7 +11,7 @@ module Yast
     end
 
     def run hook_name
-      hook = register(hook_name, caller.first)
+      hook = create(hook_name, caller.first)
       hook.execute
       @last = hook
     end
@@ -30,21 +30,18 @@ module Yast
 
     private
 
-    def register hook_name, client_file
-      if exists?(hook_name)
-        raise "Hook '#{hook_name}' is already registered from #{find(hook_name).client_path}"
-      end
-      hooks[hook_name] = Hook.new(hook_name, client_file)
+    def create hook_name, source_file
+      hooks[hook_name] = Hook.new(hook_name, source_file)
     end
 
     class Hook
       DIR = '/var/lib/YaST2/hooks'
 
-      attr_reader :results, :files, :client_path
+      attr_reader :results, :files, :source_path
 
-      def initialize name, client_caller
+      def initialize name, source_caller
         @files = find_hook_files(name).map {|path| HookFile.new(path) }
-        @client_path = client_caller
+        @source_path = source_caller
       end
 
       def execute
@@ -56,7 +53,7 @@ module Yast
       end
 
       def succeeded?
-        files.all? {|hook_file| hook_file.result && hook_file.result.exit.zero? }
+        files.all? &:succeeded?
       end
 
       def failed?
@@ -66,9 +63,10 @@ module Yast
       private
 
       def find_hook_files hook_name
-        Pathname.new(DIR).children.select do |file|
+        hook_files = Pathname.new(DIR).children.select do |file|
           file.basename.fnmatch?("#{hook_name}_[0-9][0-9]_*")
-        end.sort
+        end
+        hook_files.sort
       end
     end
 
@@ -85,6 +83,10 @@ module Yast
 
       def content
         @content ||= ::File.read(path)
+      end
+
+      def succeeded?
+        result.exit.zero?
       end
     end
 
