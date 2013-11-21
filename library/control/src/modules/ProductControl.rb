@@ -46,7 +46,7 @@ module Yast
       Yast.import "Label"
       Yast.import "Wizard"
       Yast.import "Report"
-      Yast.import "Hooks"
+      Yast.import "DebugHooks"
       Yast.import "Popup"
       Yast.import "FileUtils"
       Yast.import "Installation"
@@ -275,7 +275,7 @@ module Yast
             Ops.get_string(mod, "proposal", "")
           )
           return true
-        end 
+        end
         # Normal step
       elsif Ops.get_string(mod, "name", "") != nil &&
           Ops.get_string(mod, "name", "") != ""
@@ -397,7 +397,7 @@ module Yast
 
       # Defined custom control file
       if @custom_control_file != ""
-        return name 
+        return name
 
         # All standard clients start with "inst_"
       else
@@ -678,7 +678,7 @@ module Yast
         # modules
         if Ops.get_string(one_module, "name", "") != nil &&
             Ops.get_string(one_module, "name", "") != ""
-          next true 
+          next true
           # proposals
         elsif Ops.get_string(one_module, "proposal", "") != nil &&
             Ops.get_string(one_module, "proposal", "") != ""
@@ -796,7 +796,7 @@ module Yast
           Builtins.y2milestone("Enabling proposal: %1", m)
           @DisabledProposals = Builtins.filter(@DisabledProposals) do |one_proposal|
             Ops.get_string(m, "proposal", "") != one_proposal
-          end 
+          end
           # A module
           # Enable it only if it was enabled before
         elsif Ops.get_string(m, "name", "") != nil &&
@@ -898,7 +898,7 @@ module Yast
               Builtins.dgettext(
                 wizard_textdomain,
                 Ops.get_string(m, "label", "")
-              ) 
+              )
 
             # Label
           elsif Ops.get_string(m, "label", "") != ""
@@ -916,7 +916,7 @@ module Yast
 
             id = Ops.get_string(m, "id", "")
             last_label = Ops.get_string(m, "label", "")
-            last_domain = Ops.get_string(m, "textdomain", "") 
+            last_domain = Ops.get_string(m, "textdomain", "")
 
             # The rest
           else
@@ -1370,8 +1370,8 @@ module Yast
         Builtins.y2milestone("Calling %1", argterm)
 
         if !wasRun(step_name)
-          Hooks.Checkpoint(Builtins.sformat("%1", module_name), true)
-          Hooks.Run(step_name, true)
+          DebugHooks.Checkpoint(Builtins.sformat("%1", module_name), true)
+          DebugHooks.Run(step_name, true)
         end
 
         args = []
@@ -1422,18 +1422,18 @@ module Yast
           end
         end
 
-        # Dont call hook scripts after installation is done. (#36831)
+        # Dont call debug hook scripts after installation is done. (#36831)
         if Ops.less_than(@current_step, Ops.subtract(Builtins.size(modules), 1)) &&
             !wasRun(step_name)
-          Hooks.Run(step_name, false)
+          DebugHooks.Run(step_name, false)
         else
           Builtins.y2milestone(
-            "Not running hooks at the end of the installation"
+            "Not running debug hooks at the end of the installation"
           )
         end
 
         # This should be safe (#36831)
-        Hooks.Checkpoint(step_name, false) # exit hook
+        DebugHooks.Checkpoint(step_name, false) # exit hook
 
         addToStack(step_name)
 

@@ -21,7 +21,7 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Hooks.ycp
+# File:	modules/DebugHooks.rb
 # Package:	yast2
 # Summary:	Provide debug hooks during installation
 # Authors:	Klaus Kaempf <kkaempf@suse.de>
@@ -30,7 +30,7 @@
 require "yast"
 
 module Yast
-  class HooksClass < Module
+  class DebugHooksClass < Module
     def main
 
       Yast.import "Popup"
@@ -104,7 +104,7 @@ module Yast
     # @param [String] filename == name of .ycp file
     # @param [Boolean] at_entry == true before call of file == false after call of file
     def Run(filename, at_entry)
-      Builtins.y2debug("Running Hook: %1", filename)
+      Builtins.y2debug("Running debug hook: %1", filename)
       # do not run scripts twice
       if at_entry
         if Ops.greater_than(
@@ -125,7 +125,7 @@ module Yast
           ExecuteScript(Builtins.sformat("%1_pre.pl", filename), "perl")
         else
           Builtins.y2debug(
-            "Hook not found: %1/%2_pre.{sh,pl}",
+            "Debug hook not found: %1/%2_pre.{sh,pl}",
             @tmp_dir,
             filename
           )
@@ -149,7 +149,7 @@ module Yast
           ExecuteScript(Builtins.sformat("%1_post.pl", filename), "perl")
         else
           Builtins.y2debug(
-            "Hook not found: %1/%2_post.{sh,pl}",
+            "Debug hook not found: %1/%2_post.{sh,pl}",
             @tmp_dir,
             filename
           )
@@ -162,6 +162,6 @@ module Yast
     publish :function => :Run, :type => "void (string, boolean)"
   end
 
-  Hooks = HooksClass.new
-  Hooks.main
+  DebugHooks = HooksClass.new
+  DebugHooks.main
 end
