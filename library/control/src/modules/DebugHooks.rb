@@ -21,7 +21,7 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/DebugHooks.ycp
+# File:	modules/DebugHooks.rb
 # Package:	yast2
 # Summary:	Provide debug hooks during installation
 # Authors:	Klaus Kaempf <kkaempf@suse.de>
