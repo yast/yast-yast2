@@ -34,9 +34,15 @@ require 'ostruct'
 #        Hooks.search_path.join!('personal')
 #        # and this will set a completely different path
 #        Hooks.search_path.set "/root/hooks"
-#        Hooks.run :before_showing_ui
+#        hook = Hooks.run :before_showing_ui
 #        # Lot of beautiful and useful code follows here.
 #        # If needed make use of:
+#        #   * hook.failed?
+#        #   * hook.succeeded?
+#        #   * hook.name
+#        #   * hook.results
+#        #   * hook.files
+#        #   * hook.search_path
 #        #   * Hooks.last.failed?
 #        #   * Hooks.last.succeeded?
 #        #   * Hooks.last.name
@@ -84,6 +90,7 @@ module Yast
     def create hook_name, source_file
       if hooks[hook_name]
         Builtins.y2warning "Hook '#{hook_name}' has already been run from #{hooks[hook_name].caller_path}"
+        hooks[hook_name]
       else
         hooks[hook_name] = Hook.new(hook_name, source_file, search_path)
       end
@@ -151,7 +158,7 @@ module Yast
       end
 
       def failed?
-        files.any? &:failed?
+        !succeeded?
       end
 
       private
@@ -180,6 +187,7 @@ module Yast
         if failed?
           Builtins.y2error "Hook file '#{path.basename}' failed with stderr: #{result.stderr}"
         end
+        result
       end
 
       def content
@@ -191,7 +199,7 @@ module Yast
       end
 
       def failed?
-        result.exit.nonzero?
+        !succeeded?
       end
     end
   end
