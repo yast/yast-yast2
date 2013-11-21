@@ -12,7 +12,7 @@ require 'ostruct'
 #  This includes following actions:
 #  * adding the hook into the hooks collection - every hook is identified by unique
 #    name which should be self-descriptive
-#  * looking up the files matching the hook script pattern;
+#  * looking up the files matching the hook script pattern: hook_name_[0-9][0-9]_*
 #  * executing the identified hook files
 #  * storing the results returned by the scripts for further inspection later if needed;
 #    this might be useful if some of the files has failed and we want to show it the user.
