@@ -1,4 +1,4 @@
-#! /usr/bin/env rspec
+#! /usr/bin/rspec
 
 ENV["Y2DIR"] = File.expand_path("../../src", __FILE__)
 
