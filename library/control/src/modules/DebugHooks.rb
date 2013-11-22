@@ -162,6 +162,6 @@ module Yast
     publish :function => :Run, :type => "void (string, boolean)"
   end
 
-  DebugHooks = HooksClass.new
+  DebugHooks = DebugHooksClass.new
   DebugHooks.main
 end
