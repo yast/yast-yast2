@@ -15,6 +15,9 @@
 
 export PATH=/sbin:/usr/sbin:$PATH
 
+# make sure the system ruby is used, bnc#845897
+unset GEM_HOME GEM_PATH RUBYLIB RUBYPATH RUBYOPT
+
 # we need input methods for many locales bnc#776567
 
 export QT_IM_MODULE=xim GTK_IM_MODULE=xim
