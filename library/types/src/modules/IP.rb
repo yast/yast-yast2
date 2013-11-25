@@ -374,6 +374,15 @@ module Yast
       CheckNetwork4(network) || CheckNetwork6(network)
     end
 
+    # Checks if given IPv4 address is reserved by any related RFC.
+    #
+    # RFCs covered by this method are #1700, #1918, #2544, #3068, #5735, #5737,
+    # 5771, #6333 and #6598
+    #
+    # @param[String] ip IPv4 address
+    # @return[true,false] if address is reserved
+    #
+    # @raise [RuntimeError] if ip address is invalid
     def reserved4(ip)
       if !Check4(ip)
         raise "Invalid IP address passed '#{ip}'"
