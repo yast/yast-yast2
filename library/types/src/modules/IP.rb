@@ -374,6 +374,54 @@ module Yast
       CheckNetwork4(network) || CheckNetwork6(network)
     end
 
+    # Checks if given IPv4 address is reserved by any related RFC.
+    #
+    # RFCs covered by this method are #1700, #1918, #2544, #3068, #5735, #5737,
+    # 5771, #6333 and #6598
+    #
+    # @param[String] ip IPv4 address
+    # @return[true,false] if address is reserved
+    #
+    # @raise [RuntimeError] if ip address is invalid
+    def reserved4(ip)
+      if !Check4(ip)
+        raise "Invalid IP address passed '#{ip}'"
+      end
+
+      # RFC#1700
+      return true if ip.start_with?("0.")
+
+      # RFC#6598
+      return true if private_carrier_grade_nat?(ip)
+
+      # RFC#5735
+      return true if ip.start_with?("127.")
+      return true if ip.start_with?("169.254")
+
+      # RFC#1918
+      return true if private_network?(ip)
+
+      # RFC#6333
+      return true if ds_lite_address?(ip)
+
+      # RFC#5737
+      return true if ip.start_with?("192.0.2.")
+      return true if ip.start_with?("198.51.100.")
+      return true if ip.start_with?("203.0.113.")
+
+      # RFC#3068
+      return true if ip.start_with?("192.88.99.")
+
+      # RFC#2544
+      return true if ip.start_with?("192.18.")
+      return true if ip.start_with?("192.19.")
+
+      # all from 224. is covered by RFC#5771 and RFC#5735
+      return true if (224..255).include?(ip.split(".").first.to_i)
+
+      return false
+    end
+
     publish :variable => :ValidChars, :type => "string"
     publish :variable => :ValidChars4, :type => "string"
     publish :variable => :ValidChars6, :type => "string"
@@ -394,6 +442,38 @@ module Yast
     publish :function => :CheckNetwork4, :type => "boolean (string)"
     publish :function => :CheckNetwork6, :type => "boolean (string)"
     publish :function => :CheckNetwork, :type => "boolean (string)"
+    publish :function => :reserved4, :type => "boolean (string)"
+
+
+  private
+
+    def private_carrier_grade_nat?(ip)
+      return false unless ip.start_with?("100.")
+
+      second_part = ip.split(".")[1].to_i
+      return (64..127).include?(second_part)
+    end
+
+    def private_network?(ip)
+      # 10.0.0.0/8
+      return true if ip.start_with?("10.")
+
+      # 192.168.0.0/8
+      return true if ip.start_with?("192.168.")
+
+      # 172.16.0.0/12
+      return false unless ip.start_with?("172.")
+
+      second_part = ip.split(".")[1].to_i
+      return (16..31).include?(second_part)
+    end
+
+    def ds_lite_address?(ip)
+      return false unless ip.start_with?("192.0.0.")
+
+      fourth_part = ip.split(".")[3].to_i
+      return (0..7).include?(fourth_part)
+    end
   end
 
   IP = IPClass.new
