@@ -34,7 +34,7 @@ require 'ostruct'
 #        Hooks.search_path.join!('personal')
 #        # and this will set a completely different path
 #        Hooks.search_path.set "/root/hooks"
-#        hook = Hooks.run :before_showing_ui
+#        hook = Hooks.run 'before_showing_ui'
 #        # Lot of beautiful and useful code follows here.
 #        # If needed make use of:
 #        #   * hook.failed?
@@ -49,7 +49,7 @@ require 'ostruct'
 #        #   * Hooks.last.search_path
 #        #   * Hooks.last.results
 #        #   * Hooks.last.files
-#        Hooks.run :after_showing_ui
+#        Hooks.run 'after_showing_ui'
 #        # reset the search path if needed
 #        Hooks.search_path.reset
 #      end
@@ -68,6 +68,9 @@ module Yast
     end
 
     def run hook_name
+      hook_name = hook_name.to_s
+      raise "Hook name not specified" if hook_name.empty?
+
       hook = create(hook_name, caller.first)
       hook.execute
       @last = hook
@@ -125,6 +128,14 @@ module Yast
         path.to_s
       end
 
+      def verify!
+        if path.exist?
+          path
+        else
+          raise "Hook search path #{path} does not exists"
+        end
+      end
+
       private
 
       def set_default_path
@@ -132,16 +143,16 @@ module Yast
       end
     end
 
-
     class Hook
       attr_reader :name, :results, :files, :caller_path, :search_path
 
       def initialize name, caller_path, search_path
-        @name = name
+        search_path.verify!
         @search_path = search_path
+        @name = name
         @files = find_hook_files(name).map {|path| HookFile.new(path) }
         @caller_path = caller_path.split(':in').first
-        Builtins.y2milestone "Creating hook '#{self.name}' from '#{self.caller_path}'"
+        Builtins.y2milestone "Creating hook '#{name}' from '#{self.caller_path}'"
       end
 
       def execute
