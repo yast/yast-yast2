@@ -34,7 +34,8 @@ module_DATA = \
   modules/Stage.rb \
   modules/RegistrationStatus.pm \
   modules/MailTable.pm \
-  modules/MailTableInclude.pm
+  modules/MailTableInclude.pm \
+  modules/Hooks.rb
 
 scrconf_DATA = \
   scrconf/content.scr \

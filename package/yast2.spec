@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.1.5
+Version:        3.1.6
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -163,6 +163,7 @@ mkdir -p "$RPM_BUILD_ROOT"%{yast_ybindir}
 mkdir -p "$RPM_BUILD_ROOT"%{yast_ydatadir}
 mkdir -p "$RPM_BUILD_ROOT"%{yast_yncludedir}
 mkdir -p "$RPM_BUILD_ROOT"%{yast_vardir}
+mkdir -p "$RPM_BUILD_ROOT"%{yast_vardir}/hooks
 mkdir -p "$RPM_BUILD_ROOT"%{yast_schemadir}/control/rnc
 mkdir -p "$RPM_BUILD_ROOT"%{yast_schemadir}/autoyast/rnc
 mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
@@ -198,6 +199,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %dir %{yast_schemadir}/autoyast
 %dir %{yast_schemadir}/autoyast/rnc
 %dir %{_sysconfdir}/YaST2
+%dir %{yast_vardir}/hooks
 
 # yast2
 
@@ -215,6 +217,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %doc %dir %{yast_docdir}
 %doc %{yast_docdir}/COPYING
 %doc %{_mandir}/*/*
+%doc %{yast_vardir}/hooks/README.md
 
 /sbin/*
 %{_sbindir}/*
@@ -253,5 +256,6 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %doc %{yast_docdir}/types
 %doc %{yast_docdir}/wizard
 %doc %{yast_docdir}/xml
+%doc %{yast_docdir}/general
 
 %changelog

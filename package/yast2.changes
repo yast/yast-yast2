@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 28 12:42:12 UTC 2013 - vmoravec@suse.com
+
+- Add hook into installation workflow
+- 3.1.6
+
+-------------------------------------------------------------------
 Mon Nov 25 11:48:21 UTC 2013 - jreidinger@suse.com
 
 - Make sure the system ruby is used (BNC#845897)

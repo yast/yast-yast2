@@ -50,6 +50,7 @@ module Yast
       Yast.import "Popup"
       Yast.import "FileUtils"
       Yast.import "Installation"
+      Yast.import "Hooks"
 
       # The complete parsed control file
       @productControl = {}
@@ -88,18 +89,11 @@ module Yast
       # The control file we are using for this session.
       @current_control_file = nil
 
-
       # Current Wizard Step
       @CurrentWizardStep = ""
 
-
       # Last recently used stage_mode for RetranslateWizardSteps
       @last_stage_mode = []
-
-
-      # -->
-
-      # Currently only local variables, they have their own API
 
       # List of module to disable in the current run
       @DisabledModules = []
@@ -109,8 +103,6 @@ module Yast
 
       @DisabledSubProposals = {}
 
-      # <--
-
       # Log files for hooks
       @logfiles = []
 
@@ -118,19 +110,16 @@ module Yast
 
       @restarting_step = nil
 
-
-
-
       @_client_prefix = "inst_"
 
       @stack = []
-
 
       @first_id = ""
 
       @current_step = 0
 
       @localDisabledProposals = []
+
       @localDisabledModules = []
 
       @already_disabled_workflows = []
@@ -139,6 +128,9 @@ module Yast
       @force_UpdateWizardSteps = false
 
       @lastDisabledModules = deep_copy(@DisabledModules)
+
+      @installation_hooks = []
+
       ProductControl()
     end
 
@@ -1396,9 +1388,18 @@ module Yast
           end
         end
 
+        before_hook_name = "before_#{step_name}"
+        before_hook = Hooks.run(before_hook_name)
+        @installation_hooks << before_hook
+
         result = Convert.to_symbol(
           WFM.CallFunction(getClientName(step_name, step_execute), args)
         )
+
+        after_hook_name = "after_#{step_name}"
+        after_hook = Hooks.run(after_hook_name)
+        @installation_hooks << after_hook
+
         Builtins.y2milestone("Calling %1 returned %2", argterm, result)
 
         # bnc #369846
@@ -1548,6 +1549,18 @@ module Yast
         end
         former_result = result
       end
+
+      failed_hooks = @installation_hooks.select {|hook| hook.failed? }
+      if !failed_hooks.empty?
+        Report.Error _("#{failed_hooks.size} installation hooks have failed: " +
+                      "#{failed_hooks.map {|h| h.name}.join(', ')}")
+        #TODO
+        # show some structured widget for the user to see:
+        # * all run hooks
+        # * all succeeded hooks
+        # * all failed hooks with the error output
+      end
+
       final_result = :abort if former_result == :abort
 
       Builtins.y2milestone(
