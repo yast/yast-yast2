@@ -13,7 +13,7 @@ module Yast
 
   describe Hooks do
     before do
-      Hooks.all.clear
+      Hooks.__send__(:hooks).clear
       Hooks.search_path.set(TEST_HOOK_SEARCH_PATH)
     end
 

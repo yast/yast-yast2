@@ -129,8 +129,6 @@ module Yast
 
       @lastDisabledModules = deep_copy(@DisabledModules)
 
-      @installation_hooks = []
-
       ProductControl()
     end
 
@@ -1388,17 +1386,13 @@ module Yast
           end
         end
 
-        before_hook_name = "before_#{step_name}"
-        before_hook = Hooks.run(before_hook_name)
-        @installation_hooks << before_hook
+        Hooks.run("before_#{step_name}")
 
         result = Convert.to_symbol(
           WFM.CallFunction(getClientName(step_name, step_execute), args)
         )
 
-        after_hook_name = "after_#{step_name}"
-        after_hook = Hooks.run(after_hook_name)
-        @installation_hooks << after_hook
+        Hooks.run("after_#{step_name}")
 
         Builtins.y2milestone("Calling %1 returned %2", argterm, result)
 
@@ -1548,17 +1542,6 @@ module Yast
           next
         end
         former_result = result
-      end
-
-      failed_hooks = @installation_hooks.select {|hook| hook.failed? }
-      if !failed_hooks.empty?
-        Report.Error _("#{failed_hooks.size} installation hooks have failed: " +
-                      "#{failed_hooks.map {|h| h.name}.join(', ')}")
-        #TODO
-        # show some structured widget for the user to see:
-        # * all run hooks
-        # * all succeeded hooks
-        # * all failed hooks with the error output
       end
 
       final_result = :abort if former_result == :abort
