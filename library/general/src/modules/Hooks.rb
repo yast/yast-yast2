@@ -166,10 +166,6 @@ module Yast
         !files.empty?
       end
 
-      def unused?
-        !used?
-      end
-
       def results
         files.map &:result
       end
