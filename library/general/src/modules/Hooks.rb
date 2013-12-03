@@ -61,6 +61,8 @@ module Yast
 
     attr_reader :hooks, :last, :search_path
 
+    private :hooks
+
     def initialize
       textdomain 'base'
       @hooks = {}
@@ -81,7 +83,7 @@ module Yast
     end
 
     def all
-      hooks
+      hooks.values
     end
 
     def exists? hook_name
@@ -158,6 +160,10 @@ module Yast
       def execute
         Builtins.y2milestone "Executing hook '#{name}'"
         files.each &:execute
+      end
+
+      def used?
+        !files.empty?
       end
 
       def results
