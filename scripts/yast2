@@ -201,9 +201,9 @@ while true ; do
 		-h|--help) if test "$2" = '--' -a -n "$3" ; then CMDLINE_HELP="help" ; else printhelp && exit 0 ; fi ; shift ;;
 		-l|--list) listmodules; exit 0 ;;
 		-g|--geometry) Y2_GEOMETRY="-geometry $2"; shift 2; ;;
-		-i|--install) Y2_INSTALL_PACKAGES=true; shift ;;
-		--update) Y2_INSTALL_PACKAGES=true; Y2_INSTALL_ACTION=--update; shift ;;
-		--remove) Y2_INSTALL_PACKAGES=true; Y2_INSTALL_ACTION=--remove; shift ;;
+		-i|--install) Y2_INSTALL_PACKAGES=true; Y2_INSTALL_ACTION=install; shift ;;
+		--update) Y2_INSTALL_PACKAGES=true; Y2_INSTALL_ACTION=update; shift ;;
+		--remove) Y2_INSTALL_PACKAGES=true; Y2_INSTALL_ACTION=remove; shift ;;
                 --fullscreen) Y2UI_ARGS="$Y2UI_ARGS --fullscreen"; shift ;;
 		--noborder)   Y2UI_ARGS="$Y2UI_ARGS --noborder"  ; shift ;;
 		--kcontrol)   Y2UI_ARGS="$Y2UI_ARGS --kcontrol_id YaST" ; shift ;;
@@ -219,10 +219,22 @@ while true ; do
 done
 
 if [ "$Y2_INSTALL_PACKAGES" = "true" ]; then
-	export module=sw_single
-	# #222757
-	# prepend an additional argument if necessary
-	set -- $Y2_INSTALL_ACTION "$@"
+    if [ $# -eq 0 ]; then
+        echo "DEPRECATED. Use sw_single directly: $0 sw_single" >&2
+        export module="sw_single"
+    else
+        # support passing text files with packages, ycp list of files are dropped
+        if [[ -f $1 && ! $1 == .*\.rpm ]] ; then
+          cmd='zypper --non-interactive '$Y2_INSTALL_ACTION' `cat '$1'`'
+        else
+          cmd="zypper --non-interactive $Y2_INSTALL_ACTION $@"
+        fi
+
+        echo "DEPRECATED. Use zypper directly: $cmd" >&2
+
+        eval "$cmd"
+        exit $?
+    fi
 else
 	# allow module as argument, defaults to "menu"
 	export module="${1-menu}"
