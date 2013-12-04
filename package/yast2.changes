@@ -1,8 +1,9 @@
 -------------------------------------------------------------------
 Wed Dec  4 12:39:02 UTC 2013 - jreidinger@suse.com
 
-- deprecate yast --install, --upgrade and --remove. Suggest using
-  zypper directly from command line. (FATE#316458)
+- deprecate yast --install, --upgrade and --remove and use zypper
+  instead. Suggest using zypper directly from command line.
+  (FATE#316458)
 - 3.1.8
 
 -------------------------------------------------------------------
