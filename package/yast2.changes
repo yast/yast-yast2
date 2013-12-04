@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Dec  4 12:39:02 UTC 2013 - jreidinger@suse.com
+
+- deprecate yast --install, --upgrade and --remove. Suggest using
+  zypper directly from command line. (FATE#316458)
+- 3.1.8
+
+-------------------------------------------------------------------
 Tue Dec  3 13:34:50 UTC 2013 - vmoravec@suse.com
 
 - Update hooks
