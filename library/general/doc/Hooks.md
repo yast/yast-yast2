@@ -77,15 +77,17 @@ will create and run the hook `installation_finish` which translates to:
 2. The path `/var/lib/YaST2/hooks/installation` is searched for the files matching 
    the pattern `installation_finish_[0-9][0-9]_*`. Search results are logged.
 3. Have some files been found, they are executed sequentially by the
-   numbers in their name. Results are saved and logged. Script is considered as failed
-   if its exit value is non-zero.
-4. There will be a window displayed with list of all registered hooks with results
-   and files output if some of the scripts failed.
+   numbers in their name. Results are saved and logged.
+4. Hook is considered as failed on of the executed files returns non-zero exit code.
+5. There will be a window displayed with list of all registered hooks with results
+   among with files output if any of the file failed.
 
 
 ## Debugging
 
 All important events are logged into the yast log located in `/var/log/YaST2/y2log`.
+The installation workflow displays a pop-up at its end if any hook file failed.
+Beside this no other information is stored for later inspection.
 
 
 ## Examples
