@@ -218,14 +218,16 @@ while true ; do
 	esac
 done
 
+# deprecated, drop after SLE12
 if [ "$Y2_INSTALL_PACKAGES" = "true" ]; then
     if [ $# -eq 0 ]; then
         echo "DEPRECATED. Use sw_single directly: $0 sw_single" >&2
         export module="sw_single"
     else
-        # support passing text files with packages, ycp list of files are dropped
-        if [[ -f $1 && ! $1 == .*\.rpm ]] ; then
-          cmd='zypper --non-interactive '$Y2_INSTALL_ACTION' `cat '$1'`'
+        # support passing text files with packages
+        # any ycp file support is dropped
+        if [[ -f "$1" && ! "$1" == *rpm ]] ; then
+          cmd="zypper --non-interactive $Y2_INSTALL_ACTION \`cat \"$1\"\`"
         else
           cmd="zypper --non-interactive $Y2_INSTALL_ACTION $@"
         fi
