@@ -6,13 +6,13 @@ some pre-defined workflow, e.g. installation or update process.
 
 ## What is a hook
 
-Hook is a predefined checkpoint at which the workflow will look for files
-located in a specific directory matching specific patterns and execute them
-sequentially.
+Hook is an action which will be triggered at some predefined checkpoint during
+some workflow. The action includes searching for files located in a specific 
+directory matching some patterns and executing them sequentially.
 
-The results of the script do not affect the workflow, failed script are registered
+The results of the scripts do not affect the workflow, failed script are registered
 and logged as well as the succeeded ones. The author of the hook scripts should
-however keep in mind that he should not make any changes in the underlying system
+however keep in mind that he should not make any changes to the underlying system
 that could negatively impact the parent workflow.
 
 
@@ -28,7 +28,7 @@ the add-on.
 A hook file must meet following requirements:
 
 * it must be an executable file
-* it must follow the hook [file naming convention](#file-name)
+* it must follow the hook [file naming convention](#file-name-format)
 * it must be an [idempotent script](#script-idempotence) that can be executed multiple times
 * it must be be a Bash, Ruby, Perl or binary file
 * it must not be interactive
@@ -59,7 +59,7 @@ the user or admin.
 
 ### Script idempotence
 
-The author of a script code must expect the hook to get executed multiple times
+The author of a script code must expect the hook to be executed multiple times
 during the workflow for various reasons, e.g. the UI may allow the user to go back
 and forth in a wizard, or abort the process and start again. 
 
@@ -75,7 +75,7 @@ installation will search for hook scripts in path `/var/lib/YaST2/hooks/installa
 ## Environment
 
 The hooks are executed with **root** privileges so it is possible to
-perform any maintenance tasks. However, some workflows might discourage to perform
+perform any maintenance tasks. However, some workflows might you discourage to perform
 any such actions as they can corrupt the specific workflow and the results
 of the whole process, even if they might not visible instantly.
 
@@ -84,14 +84,6 @@ of the whole process, even if they might not visible instantly.
 Keep in mind that the search path for installation hooks `/var/lib/YaST2/hooks/installation`
 is read-only. The recommended way of putting the script into the directory is using command
 `mount -o bind /some/dir/with/hook/scripts /var/lib/YaST2/hook/installation` .
-
-
-## Checkpoints
-
-The hooks are created and triggered at some specific events - checkpoints -
-usually considered important for the workflow. If the hook finds no files to be
-executed, the worfkflow process continues its work until the next checkpoint has 
-been reached. 
 
 
 ## Anatomy of hook execution
@@ -105,7 +97,7 @@ will create and run the hook `installation_finish` which translates to:
    the pattern `installation_finish_[0-9][0-9]_*`. Search results are logged.
 3. Have some files been found, they are executed sequentially by the
    numbers in their name. Results are saved and logged.
-4. Hook is considered as failed on of the executed files returns non-zero exit code.
+4. Hook is considered as failed if one of the executed files returns non-zero exit code.
 5. There will be a window displayed with list of all registered hooks with results
    among with files output if any of the file failed.
 
@@ -115,4 +107,28 @@ will create and run the hook `installation_finish` which translates to:
 All important events are logged into the yast log located in `/var/log/YaST2/y2log`.
 The installation workflow displays a pop-up at its end if some of the hook files failed.
 Beside this no other information is stored for later inspection.
+
+
+## Checkpoints
+
+The hooks are created and triggered at some specific events - checkpoints -
+usually considered important for the workflow. If the hook finds no files in the
+search path, the worfkflow process continues its job until the next checkpoint has 
+been reached. This will repeat for all checkpoints.
+
+### List of main installation checkpoints
+
+* *installation_start*
+  It is triggered at the very beginning of the installation.
+
+* *before_setup_dhcp*
+  Triggered before the network dhcp configuration
+
+* *after_setup_dhcp*
+  Triggered after the network dhcp configuration
+
+* *before_driver_update1*
+
+* ... many more to come or do we want to pick only some?
+
 
