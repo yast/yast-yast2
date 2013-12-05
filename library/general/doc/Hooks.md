@@ -118,17 +118,13 @@ been reached. This will repeat for all checkpoints.
 
 ### List of main installation checkpoints
 
-* *installation_start*
-  It is triggered at the very beginning of the installation.
-
-* *before_setup_dhcp*
-  Triggered before the network dhcp configuration
-
-* *after_setup_dhcp*
-  Triggered after the network dhcp configuration
-
-* *before_driver_update1*
-
-* ... many more to come or do we want to pick only some?
+* **installation_start**
+  It is triggered at the very beginning of the installation.  
+* **before_setup_dhcp**
+  Triggered before the network dhcp configuration  
+* **after_setup_dhcp**
+  Triggered after the network dhcp configuration  
+* **before_driver_update1**
+* ... many more to come or do we want to pick only some?  
 
 
