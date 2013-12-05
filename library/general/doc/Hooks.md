@@ -1,26 +1,26 @@
 # Hooks
 
-Hooks is officialy supported way of executing any custom scripts in the context of
-some closed workflow, e.g. installation, update. Their goals may vary according to
-the needs of the user or system admin.
+Hooks is the recommended way of executing custom scripts in the context of
+some pre-defined workflow, e.g. installation or update process.
 
 
 ## What is a hook
 
-Hook is a file execution context within some workflow like installation or update.
-Hook is a predefined checkpoint at which the process will look for files matching
-specific patterns stored in some predefined directory and execute them sequentially.
+Hook is a predefined checkpoint at which the workflow will look for files
+located in a specific directory matching specific patterns and execute them
+sequentially.
 
-What is a registered hook?
-How to make use of a registered hook?
-How is the execution of the script evaluated? (failures are ignored)
-How to evaluate the hook script result?
-How will the script success/failure result influcence the workflow?
+The results of the script do not affect the workflow, failed script are registered
+and logged as well as the succeeded ones. The author of the hook scripts should
+however keep in mind that he should not make any changes in the underlying system
+that could negatively impact the parent workflow.
 
 
 ## What is not a hook
 
-Hook is not a system extension (an add-on), but a workflow extension.
+Hook is not a system extension (an add-on), but a workflow extension. A hook may be
+a part of an add-on product, but should not contain logic and code intended for
+the add-on.
 
 
 ## Requirements
@@ -28,27 +28,48 @@ Hook is not a system extension (an add-on), but a workflow extension.
 A hook file must meet following requirements:
 
 * it must be an executable file
-* it must be an [idempotent script](#Script-idempotence) that can be executed multiple times
+* it must follow the hook [file naming convention](#file-name)
+* it must be an [idempotent script](#script-idempotence) that can be executed multiple times
 * it must be be a Bash, Ruby, Perl or binary file
 * it must not be interactive
-* it must be located in the [hook search path](#Search-path)
-* it must follow the hook [file naming convention](#File-naming-convention)
+* it must be located in the [hook search path](#search-path)
 * the code within the script must not access the X session
 * some warning about requiring yast library from a Ruby script and using yast 
   modules there
 
 
+### File name format
+
+The hook script file name consists of 3 parts.
+
+The first part of the file name is derived from the events significant for the 
+running workflow, e.g. `installation_start`, `after_setup_dhcp`
+
+The second part of the file name contains two integers setting up the sequence in
+which the scripts will be executed in case you have multiple scripts for a single hook.
+
+The third part of the file name may be arbitrarily chosen to fit the needs of 
+the user or admin.
+
+#### Example
+
+* `installation_start_00_do_some_things.rb`
+* `after_setup_dhcp_00_ping_remote_server.sh`
+
+
 ### Script idempotence
+
+The author of a script code must expect the hook to get executed multiple times
+during the workflow for various reasons, e.g. the UI may allow the user to go back
+and forth in a wizard, or abort the process and start again. 
 
 
 ### Search path
 
-Is a workflow specific directory (search path)
-This predefined hooks directory is workflow specific, installation workflow will be
-searching for the files in the directory `/var/lib/YaST2/hooks/installation`. The
-default hooks directory is `/var/lib/YaST2/hooks`, but this path might be changed 
-by the process managing the hooks, e.g. installation will look for the hook scripts
-in the path `/var/lib/YaST2/hooks/installation`.
+Search path is the the workflow specific directory where the hook scripts are expected
+to be stored during its runtime. In general the default search path is 
+`var/lib/YaST2/hooks`, but this might be altered by the underlying workflow, e.g. 
+installation will search for hook scripts in path `/var/lib/YaST2/hooks/installation`.
 
 
 ## Environment
@@ -57,6 +78,12 @@ The hooks are executed with **root** privileges so it is possible to
 perform any maintenance tasks. However, some workflows might discourage to perform
 any such actions as they can corrupt the specific workflow and the results
 of the whole process, even if they might not visible instantly.
+
+### Installation environment
+
+Keep in mind that the search path for installation hooks `/var/lib/YaST2/hooks/installation`
+is read-only. The recommended way of putting the script into the directory is using command
+`mount -o bind /some/dir/with/hook/scripts /var/lib/YaST2/hook/installation` .
 
 
 ## Checkpoints
@@ -86,8 +113,6 @@ will create and run the hook `installation_finish` which translates to:
 ## Debugging
 
 All important events are logged into the yast log located in `/var/log/YaST2/y2log`.
-The installation workflow displays a pop-up at its end if any hook file failed.
+The installation workflow displays a pop-up at its end if some of the hook files failed.
 Beside this no other information is stored for later inspection.
 
-
-## Examples
