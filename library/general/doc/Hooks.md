@@ -27,15 +27,12 @@ the add-on.
 
 A hook file must meet following requirements:
 
-* it must be an executable file
+* it must be an executable file with all its dependencies satisfied
 * it must follow the hook [file naming convention](#file-name-format)
 * it must be an [idempotent script](#script-idempotence) that can be executed multiple times
-* it must be be a Bash, Ruby, Perl or binary file
 * it must not be interactive
 * it must be located in the [hook search path](#search-path)
 * the code within the script must not access the X session
-* some warning about requiring yast library from a Ruby script and using yast 
-  modules there
 
 
 ### File name format
