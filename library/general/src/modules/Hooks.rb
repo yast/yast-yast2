@@ -212,7 +212,7 @@ module Yast
       end
 
       def output
-        return unless result
+        return '' unless result
         output = []
         output << "STDERR: #{result.stderr.strip}" unless result.stderr.empty?
         output << "STDOUT: #{result.stdout.strip}" unless result.stdout.empty?
