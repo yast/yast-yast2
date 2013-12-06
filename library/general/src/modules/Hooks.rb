@@ -211,6 +211,14 @@ module Yast
         @content ||= ::File.read(path)
       end
 
+      def output
+        return unless result
+        output = []
+        output << result.stdout.strip
+        output << result.stderr.strip
+        output.reject(&:empty?).join('; ')
+      end
+
       def succeeded?
         result.exit.zero?
       end
