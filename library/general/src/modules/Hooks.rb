@@ -214,9 +214,9 @@ module Yast
       def output
         return unless result
         output = []
-        output << result.stdout.strip
-        output << result.stderr.strip
-        output.reject(&:empty?).join('; ')
+        output << "STDERR: #{result.stderr.strip}" unless result.stderr.empty?
+        output << "STDOUT: #{result.stdout.strip}" unless result.stdout.empty?
+        output.join('; ')
       end
 
       def succeeded?
