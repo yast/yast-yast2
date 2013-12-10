@@ -59,10 +59,12 @@ module Yast
       failed_hook_file = Hooks.find('before_hook').results.first
       expect(failed_hook_file.exit).not_to eq(0)
       expect(failed_hook_file.stderr).to match(/failure/)
+      expect(failed_hook_file.output).to match(/failure/)
 
       succeeded_hook_file = Hooks.find('before_hook').results.last
       expect(succeeded_hook_file.exit).to eq(0)
       expect(succeeded_hook_file.stdout).to match(/success/)
+      expect(succeeded_hook_file.output).to match(/success/)
     end
 
     it "raises exception if the search path for hooks does not exist" do

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Dec 10 08:37:31 UTC 2013 - vmoravec@suse.com
+
+- add hook file #output method
+- 3.1.9
+
+-------------------------------------------------------------------
 Wed Dec  4 12:39:02 UTC 2013 - jreidinger@suse.com
 
 - deprecate yast --install, --upgrade and --remove and use zypper
