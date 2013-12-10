@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Dec 10 11:40:46 UTC 2013 - mfilka@suse.com
+
+- bnc#851769
+  - fixed reading bridge configuration
+  - thanks to Waldemar Spitz <wspitz@uni-bonn.de>
+- 3.1.10
+
+-------------------------------------------------------------------
 Tue Dec 10 08:37:31 UTC 2013 - vmoravec@suse.com
 
 - add hook file #output method
