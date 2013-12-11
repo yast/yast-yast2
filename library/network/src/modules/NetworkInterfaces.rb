@@ -260,7 +260,7 @@ module Yast
       elsif FileUtils.Exists(Ops.add(sys_dir_path, "phy80211"))
         return "wlan"
       elsif FileUtils.Exists(Ops.add(sys_dir_path, "bridge"))
-        return "bridge"
+        return "br"
       elsif FileUtils.Exists(Ops.add(sys_dir_path, "bonding"))
         return "bond"
       elsif FileUtils.Exists(Ops.add(sys_dir_path, "tun_flags"))
