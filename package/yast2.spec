@@ -28,7 +28,7 @@ License:        GPL-2.0
 Source1:        yast2-rpmlintrc
 
 BuildRequires:  perl-XML-Writer update-desktop-files yast2-perl-bindings yast2-testsuite
-BuildRequires:  yast2-devtools >= 3.0.6
+BuildRequires:  yast2-devtools >= 3.1.10
 # Needed already in build time
 BuildRequires:  yast2-core >= 2.18.12 yast2-pkg-bindings >= 2.20.3 yast2-ycp-ui-bindings >= 2.18.4
 
