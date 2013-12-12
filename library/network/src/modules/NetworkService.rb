@@ -47,14 +47,19 @@ require "yast"
 
 module Yast
   class NetworkServiceClass < Module
+
+    # it returns network backend identification - a key into
+    # NetworkServicesClass::BACKENDS. Currently supported
+    # backends are :netconfig, :network_manager, :wicked
     attr_reader :current_name
 
-    # @current_name - current network service id name
-    # @cached_name  - the new network service id name
+    # @current_name - current network backend identification
+    # @cached_name  - the new network backend identification
 
+    # network backend identification to service name mapping
     BACKENDS = {
     # <internal-id>        <service name>
-      :netconfig          => "network",
+      :netconfig        => "network",
       :network_manager  => "NetworkManager",
       :wicked           => "wicked"
     }
@@ -124,19 +129,19 @@ module Yast
     # @return true  when the network is managed by an external tool, 
     #               like NetworkManager, false otherwise
     def network_manager?
-      selected_name == :network_manager
+      cached_name == :network_manager
     end
 
     alias_method :is_network_manager, :network_manager?
 
     def netconfig?
-      selected_name == :netconfig
+      cached_name == :netconfig
     end
 
     alias_method :is_netconfig, :netconfig?
 
     def wicked?
-      selected_name == :wicked
+      cached_name == :wicked
     end
 
     alias_method :is_wicked, :wicked?
