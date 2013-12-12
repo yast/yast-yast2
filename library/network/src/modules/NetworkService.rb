@@ -64,11 +64,20 @@ module Yast
       :wicked           => "wicked"
     }
 
+    # network backend identification to its rpm package name mapping
+    BACKEND_PKG_NAMES = {
+    # <internal-id>        <service name>
+      :netconfig        => "sysconfig-network",
+      :network_manager  => "NetworkManager",
+      :wicked           => "wicked"
+    }
+
     def main
       Yast.import "Service"
       Yast.import "NetworkConfig"
       Yast.import "Popup"
       Yast.import "Mode"
+      Yast.import "PackageSystem"
 
       textdomain "base"
 
@@ -110,6 +119,13 @@ module Yast
       )
       ret
     end
+
+    # Checks if given network backend is available in the system
+    def backend_available?(backend)
+      PackageSystem.Installed( BACKEND_PKG_NAMES[backend])
+    end
+
+    alias_method :is_backend_available, :backend_available?
 
     # Replies with currently selected network service name
     #
@@ -364,6 +380,7 @@ module Yast
 
     publish :function => :Read, :type => "void ()"
     publish :function => :Modified, :type => "boolean ()"
+    publish :function => :is_backend_available, :type => "boolean (symbol)"
     publish :function => :is_network_manager, :type => "boolean ()"
     publish :function => :is_netconfig, :type => "boolean ()"
     publish :function => :is_wicked, :type => "boolean ()"
