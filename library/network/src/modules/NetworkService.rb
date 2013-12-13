@@ -108,16 +108,8 @@ module Yast
     # Whether a network service change were requested
     # @return true when service change were requested
     def Modified
-      ret = false
       Read()
-      ret = @cached_name != @current_name
-      Builtins.y2debug(
-        "NetworkService::Modified(%1, %2) => %3",
-        @current_name,
-        @cached_name,
-        ret
-      )
-      ret
+      @cached_name != current_name
     end
 
     # Checks if given network backend is available in the system
