@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Dec 12 13:14:11 UTC 2013 - mfilka@suse.com
+
+- changed API for querying network configuration backend
+- 3.1.11
+
+-------------------------------------------------------------------
 Tue Dec 10 11:40:46 UTC 2013 - mfilka@suse.com
 
 - bnc#851769

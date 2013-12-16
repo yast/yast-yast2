@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.1.10
+Version:        3.1.11
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build

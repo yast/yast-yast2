@@ -47,23 +47,37 @@ require "yast"
 
 module Yast
   class NetworkServiceClass < Module
-    def main
 
+    # @current_name - current network backend identification
+    # @cached_name  - the new network backend identification
+
+    # network backend identification to service name mapping
+    BACKENDS = {
+    # <internal-id>        <service name>
+      :netconfig        => "network",
+      :network_manager  => "NetworkManager",
+      :wicked           => "wicked"
+    }
+
+    # network backend identification to its rpm package name mapping
+    BACKEND_PKG_NAMES = {
+    # <internal-id>        <service name>
+      :netconfig        => "sysconfig-network",
+      :network_manager  => "NetworkManager",
+      :wicked           => "wicked"
+    }
+
+    def main
       Yast.import "Service"
       Yast.import "NetworkConfig"
       Yast.import "Popup"
       Yast.import "Mode"
+      Yast.import "PackageSystem"
 
       textdomain "base"
 
       # if false, read needs to do work
       @initialized = false
-
-      # current network service id name
-      @cur_service_id_name = ""
-
-      # the new network service id name
-      @new_service_id_name = ""
 
       # Path to the systemctl command
       @systemctl = "/bin/systemctl"
@@ -89,30 +103,56 @@ module Yast
     # Whether a network service change were requested
     # @return true when service change were requested
     def Modified
-      ret = false
       Read()
-      ret = true if @new_service_id_name != @cur_service_id_name
-      Builtins.y2debug(
-        "NetworkService::Modified(%1, %2) => %3",
-        @cur_service_id_name,
-        @new_service_id_name,
-        ret
-      )
-      ret
+      @cached_name != @current_name
     end
 
-    # Whether use NetworkManager or ifup
-    # @return true when the network is managed, false when
-    #         the /etc/init.d/network script is in use.
-    def IsManaged
-      Read()
-      @new_service_id_name != "network"
+    # Checks if given network backend is available in the system
+    def backend_available?(backend)
+      PackageSystem.Installed( BACKEND_PKG_NAMES[backend])
     end
 
-    # @param [Boolean] m whether networkmanager will be used
-    def SetManaged(m)
+    alias_method :is_backend_available, :backend_available?
+
+    # Checks if configuration is managed by NetworkManager
+    #
+    # @return true  when the network is managed by an external tool, 
+    #               like NetworkManager, false otherwise
+    def network_manager?
+      cached_name == :network_manager
+    end
+
+    alias_method :is_network_manager, :network_manager?
+
+    def netconfig?
+      cached_name == :netconfig
+    end
+
+    alias_method :is_netconfig, :netconfig?
+
+    def wicked?
+      cached_name == :wicked
+    end
+
+    alias_method :is_wicked, :wicked?
+
+    def use_network_manager
       Read()
-      @new_service_id_name = m ? "NetworkManager" : "network"
+      @cached_name = :network_manager
+
+      nil
+    end
+
+    def use_netconfig
+      Read()
+      @cached_name = :netconfig
+
+      nil
+    end
+
+    def use_wicked
+      Read()
+      @cached_name = :wicked
 
       nil
     end
@@ -120,23 +160,20 @@ module Yast
     # Initialize module data
     def Read
       if !@initialized
-        @cur_service_id_name = Service.GetServiceId("network")
-        @new_service_id_name = @cur_service_id_name
+        case Service.GetServiceId("network")
+          when "network"
+            @current_name = :netconfig
+          when "NetworkManager"
+            @current_name = :network_manager
+          when "wicked"
+            @current_name = :wicked
+        end
+  
+        @cached_name = @current_name
 
-        nm = @new_service_id_name != "network"
-        Builtins.y2milestone("NetworkManager: %1", nm)
+        Builtins.y2milestone("Current backend: #{@current_name}")
       end
       @initialized = true
-
-      nil
-    end
-
-    # Enables and disables the appropriate services.
-    def EnableDisable
-      # Workaround for bug #61055:
-      Builtins.y2milestone("Enabling service %1", "network")
-      cmd = "cd /; /sbin/insserv -d /etc/init.d/network"
-      SCR.Execute(path(".target.bash"), cmd)
 
       nil
     end
@@ -161,15 +198,22 @@ module Yast
         # no effect.
         # So let's kill all processes in the network service
         # cgroup to make sure e.g. dhcp clients are stopped.
-        RunSystemCtl(@cur_service_id_name, "kill")
+        @initialized = false
+        RunSystemCtl( BACKENDS[ @current_name], "kill")
 
-        if @new_service_id_name == "network"
-          RunSystemCtl(@cur_service_id_name, "disable")
-        else
-          RunSystemCtl(@new_service_id_name, "--force enable")
+        case @cached_name
+          when :network_manager, :wicked
+            RunSystemCtl( BACKENDS[ @cached_name], "--force enable")
+          when :netconfig
+            RunSystemCtl( BACKENDS[ @current_name], "disable")
+
+            # Workaround for bug #61055:
+            Builtins.y2milestone("Enabling service %1", "network")
+            cmd = "cd /; /sbin/insserv -d /etc/init.d/network"
+            SCR.Execute(path(".target.bash"), cmd)
         end
-        @cur_service_id_name = Service.GetServiceId("network")
-        @new_service_id_name = @cur_service_id_name
+
+        Read()
       end
 
       nil
@@ -228,7 +272,7 @@ module Yast
     #
     # @return [Boolean] continue
     def ConfirmNetworkManager
-      if !@already_asked_for_NetworkManager && IsManaged()
+      if !@already_asked_for_NetworkManager && network_manager?
         # TRANSLATORS: pop-up question when reading the service configuration
         cont = Popup.ContinueCancel(
           _(
@@ -308,11 +352,29 @@ module Yast
       end
     end
 
+    # Replies with currently selected network service name
+    #
+    # Currently known backends:
+    # - :network_manager - not supported by YaST
+    # - :netconfig - supported
+    # - :wicked - supported (via its backward compatibility to
+    # ifup)
+    #
+    private
+    def cached_name
+      Read()
+      return @cached_name
+    end
+
     publish :function => :Read, :type => "void ()"
     publish :function => :Modified, :type => "boolean ()"
-    publish :function => :IsManaged, :type => "boolean ()"
-    publish :function => :SetManaged, :type => "void (boolean)"
-    publish :function => :EnableDisable, :type => "void ()"
+    publish :function => :is_backend_available, :type => "boolean (symbol)"
+    publish :function => :is_network_manager, :type => "boolean ()"
+    publish :function => :is_netconfig, :type => "boolean ()"
+    publish :function => :is_wicked, :type => "boolean ()"
+    publish :function => :use_network_manager, :type => "void ()"
+    publish :function => :use_netconfig, :type => "void ()"
+    publish :function => :use_wicked, :type => "void ()"
     publish :function => :IsActive, :type => "boolean ()"
     publish :function => :ReloadOrRestart, :type => "void ()"
     publish :function => :Restart, :type => "void ()"
