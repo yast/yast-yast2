@@ -48,11 +48,6 @@ require "yast"
 module Yast
   class NetworkServiceClass < Module
 
-    # it returns network backend identification - a key into
-    # NetworkServicesClass::BACKENDS. Currently supported
-    # backends are :netconfig, :network_manager, :wicked
-    attr_reader :current_name
-
     # @current_name - current network backend identification
     # @cached_name  - the new network backend identification
 
@@ -109,7 +104,7 @@ module Yast
     # @return true when service change were requested
     def Modified
       Read()
-      @cached_name != current_name
+      @cached_name != @current_name
     end
 
     # Checks if given network backend is available in the system
@@ -118,19 +113,6 @@ module Yast
     end
 
     alias_method :is_backend_available, :backend_available?
-
-    # Replies with currently selected network service name
-    #
-    # Currently known backends:
-    # - :network_manager - not supported by YaST
-    # - :netconfig - supported
-    # - :wicked - supported (via its backward compatibility to
-    # ifup)
-    #
-    def cached_name
-      Read()
-      return @cached_name
-    end
 
     # Checks if configuration is managed by NetworkManager
     #
@@ -368,6 +350,20 @@ module Yast
         Builtins.y2error("Network not runing!")
         return false
       end
+    end
+
+    # Replies with currently selected network service name
+    #
+    # Currently known backends:
+    # - :network_manager - not supported by YaST
+    # - :netconfig - supported
+    # - :wicked - supported (via its backward compatibility to
+    # ifup)
+    #
+    private
+    def cached_name
+      Read()
+      return @cached_name
     end
 
     publish :function => :Read, :type => "void ()"
