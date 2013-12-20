@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Dec 20 09:29:58 UTC 2013 - vmoravec@suse.com
+
+- Add fail and abort hooks for installation
+- 3.1.12
+
+-------------------------------------------------------------------
 Thu Dec 12 13:14:11 UTC 2013 - mfilka@suse.com
 
 - changed API for querying network configuration backend
