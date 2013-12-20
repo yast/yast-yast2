@@ -6,9 +6,12 @@ some pre-defined workflow, e.g. installation or update process.
 
 ## What is a hook
 
-Hook is an action which will be triggered at some predefined checkpoint during
-some workflow. The action includes searching for files located in a specific 
-directory matching some patterns and executing them sequentially.
+Hook is an action which will be triggered at some predefined [checkpoint](#checkpoints)
+during a running workflow. The action includes: 
+
+* searching for files matching [pre-defined patterns](#file-name-format) in a specific 
+  directory 
+* executing those files sequentially.
 
 The results of the scripts do not affect the workflow, failed script are registered
 and logged as well as the succeeded ones. The author of the hook scripts should
@@ -108,7 +111,64 @@ Beside this no other information is stored for later inspection.
 
 ## Checkpoints
 
-The hooks are created and triggered at some specific events - checkpoints -
-usually considered important for the workflow. If the hook finds no files in the
-search path, the worfkflow process continues its job until the next checkpoint has 
-been reached. This will repeat for all checkpoints.
+The hooks are created and triggered at some specific events - **checkpoints** -
+considered important for the workflow. If a hook finds no files to be executed in the
+search path, the worfkflow process continues to the next checkpoint. This will repeat
+for all checkpoints until the worflow has finished.
+
+The checkpoints are specified separately for every workflow, even within a workflow the
+checkpoints may vary, e.g. checkpoints within installation workflow are defined
+special for every type of installation (e.g. autoinstallation, manual installation).
+Some of the checkpoints are fixed, other may depend on some external definition of
+the workflow (for installation the checkpoints depends on the control file definition).
+
+
+## Installation checkpoints
+
+Installation makes the broadest use of hooks due to its possible customization and
+system setup importance. There are at least 4 types of installation workflows which
+partly share some of their hook checkpoints, and some have espacially defined for itself:
+
+* manual installation using GUI
+* autoinstallation using a profile definition written in xml
+* upgrade using GUI
+* autoupgrade using a profile definition
+
+Workflows like upgrade, autoupgrade and others are not (yet) in scope of this document.
+
+### General installation hooks
+
+There are four general checkpoints used commonly by all installation workflows. Their
+names are:
+
+* installation_start
+* installation_finish
+* installation_aborted
+* installation_failure
+
+Hook files referencing these checkpoints must not have any prefix in their names,
+unlike the other hook files specified above. There is no before or after option.
+
+Example of general installation hook script:
+
+* installation_start_[0-9][0-9]_custom_script_name
+* installation_finish_[0-9][0-9]_custom_script_name
+* installation_aborted_[0-9][0-9]_custom_script_name
+* installation_failure_[0-9][0-9]_custom_script_name
+
+### Manual installation checkpoints
+
+Notes:
+* checkpoints based on the control file entries which are static
+  setup_dhcp
+  complex_welcome
+  system_analysis
+  installation_options
+  disk_proposal
+  timezone
+
+* checkpoints based on the installation process internals (clients, modules ...)
+  which typicaly write the configuration set up in the previous steps
+
+
+### Autoinstallation checkpoints
