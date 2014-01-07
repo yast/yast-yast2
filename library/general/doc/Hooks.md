@@ -234,7 +234,20 @@ those above from 2 to 13. Instead there are these:
 * autoinit
 * autosetup
 * initial_autoinstallation_proposal
-* autoimage .
+* autoimage
 
 Those entries might vary due to different entries in you xml profile which drives
 the autoinstallation workflow. The rest of the checkpoints listed above should not much differ.
+
+
+## Report an issue
+
+In case you followed the notes above and you are still having an issue with executing your
+script, please create a bug at http://bugzilla.novell.com.
+
+If you are missing something important in this documentation or you have a question,
+please send your query to yast-devel mailing list yast-devel@opensuse.org.
+
+
+
+
