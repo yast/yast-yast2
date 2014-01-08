@@ -81,14 +81,19 @@ module Yast
       # FIXME remove the part below and let it be set in clients
       if @_mode == "installation" &&
           SCR.Read(path(".target.size"), "/etc/install.inf") != -1
+
         autoinst = SCR.Read(path(".etc.install_inf.AutoYaST")) != nil
         @_mode = "autoinstallation" if autoinst
 
         repair = SCR.Read(path(".etc.install_inf.Repair")) != nil
         @_mode = "repair" if repair
+
         # FIXME according to what Linuxrc really writes
         autoupgrade = SCR.Read(path(".etc.install_inf.AutoUpgrade")) != nil
         @_mode = "autoupgrade" if autoupgrade
+
+        update = SCR.Read(path(".etc.install_inf.Upgrade")) != nil
+        @_mode = "update" if update
       end
 
       nil
