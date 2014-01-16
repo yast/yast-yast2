@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Thu Jan 16 15:56:21 UTC 2014 - jreidinger@suse.com
 
-- Yast2 package own /usr/share/YaST2/lib
+- make the package owner of /usr/share/YaST2/lib
 - 3.1.14
 
 -------------------------------------------------------------------
