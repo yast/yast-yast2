@@ -162,6 +162,7 @@ mkdir -p "$RPM_BUILD_ROOT"%{yast_scrconfdir}
 mkdir -p "$RPM_BUILD_ROOT"%{yast_ybindir}
 mkdir -p "$RPM_BUILD_ROOT"%{yast_ydatadir}
 mkdir -p "$RPM_BUILD_ROOT"%{yast_yncludedir}
+mkdir -p "$RPM_BUILD_ROOT"%{yast_libdir}
 mkdir -p "$RPM_BUILD_ROOT"%{yast_vardir}
 mkdir -p "$RPM_BUILD_ROOT"%{yast_vardir}/hooks
 mkdir -p "$RPM_BUILD_ROOT"%{yast_schemadir}/control/rnc
@@ -193,6 +194,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %dir %{yast_ydatadir}
 %dir %{yast_yncludedir}
 %dir %{yast_vardir}
+%dir %{yast_libdir}
 %dir %{yast_schemadir}
 %dir %{yast_schemadir}/control
 %dir %{yast_schemadir}/control/rnc
