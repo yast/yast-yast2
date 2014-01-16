@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 16 15:56:21 UTC 2014 - jreidinger@suse.com
+
+- Yast2 package own /usr/share/YaST2/lib
+- 3.1.14
+
+-------------------------------------------------------------------
 Wed Jan  8 13:12:19 CET 2014 - locilka@suse.com
 
 - Upgrade mode in installer is newly set by Linuxrc (bnc#857847)
