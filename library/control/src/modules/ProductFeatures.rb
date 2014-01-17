@@ -207,7 +207,7 @@ module Yast
     def GetStringFeature(section, feature)
       value = GetFeature(section, feature)
       if Ops.is_string?(value)
-        return Convert.to_string(value)
+        return value
       elsif Ops.is_boolean?(value)
         return Convert.to_boolean(value) ? "yes" : "no"
       else
@@ -223,7 +223,7 @@ module Yast
     def GetBooleanFeature(section, feature)
       value = GetFeature(section, feature)
       if Ops.is_boolean?(value)
-        return Convert.to_boolean(value)
+        return value
       elsif Ops.is_string?(value) &&
           Builtins.tolower(Convert.to_string(value)) == "yes"
         return true
@@ -240,7 +240,7 @@ module Yast
     def GetIntegerFeature(section, feature)
       value = GetFeature(section, feature)
       if Ops.is_integer?(value)
-        return Convert.to_integer(value)
+        return value
       elsif Ops.is_string?(value)
         return Builtins.tointeger(Convert.to_string(value))
       else
