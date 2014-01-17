@@ -2,7 +2,7 @@
 
 # ***************************************************************************
 #
-# Copyright (c) 2002 - 2012 Novell, Inc.
+# Copyright (c) 2002 - 2014 Novell, Inc.
 # All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
@@ -206,9 +206,7 @@ module Yast
     # @return [String] the feature value
     def GetStringFeature(section, feature)
       value = GetFeature(section, feature)
-      if value == nil
-        return nil
-      elsif Ops.is_string?(value)
+      if Ops.is_string?(value)
         return Convert.to_string(value)
       elsif Ops.is_boolean?(value)
         return Convert.to_boolean(value) ? "yes" : "no"
@@ -224,9 +222,7 @@ module Yast
     # @return [Boolean] the feature value
     def GetBooleanFeature(section, feature)
       value = GetFeature(section, feature)
-      if value == nil
-        return nil
-      elsif Ops.is_boolean?(value)
+      if Ops.is_boolean?(value)
         return Convert.to_boolean(value)
       elsif Ops.is_string?(value) &&
           Builtins.tolower(Convert.to_string(value)) == "yes"
@@ -243,9 +239,7 @@ module Yast
     # @return [Fixnum] the feature value
     def GetIntegerFeature(section, feature)
       value = GetFeature(section, feature)
-      if value == nil
-        return nil
-      elsif Ops.is_integer?(value)
+      if Ops.is_integer?(value)
         return Convert.to_integer(value)
       elsif Ops.is_string?(value)
         return Builtins.tointeger(Convert.to_string(value))
