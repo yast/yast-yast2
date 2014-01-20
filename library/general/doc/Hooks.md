@@ -166,8 +166,11 @@ Hook scripts defined for these checkpoints are being run **before** or **after**
 checkpoint. Thus, the author of the hook files must pick the suitable prefix and
 adapt the hook file name.
 
-This is a list of checkpoint names which a manual installation typically goes
-through (including the main checkpoints in brackets just for completness):
+This is a list of checkpoints which a manual installation might go
+through including the main checkpoints in brackets just for completness 
+( **Notice:** The list below takes into consideration the basic user workflow for
+installing a system. Doing a highly customized installation or adding some
+add-ons during the installation will result in a modified list.)
 
   1. [ installation_start ]
   2. setup_dhcp
