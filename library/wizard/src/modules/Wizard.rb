@@ -42,11 +42,6 @@ module Yast
       Yast.import "Directory"
       Yast.import "OSRelease"
 
-      # keep trailing "/" !!
-      @theme_path = Ops.add(Directory.themedir, "/current")
-      @icon_path = Ops.add(@theme_path, "/icons/22x22/apps")
-      @default_icon = Ops.add(@icon_path, "/yast.png")
-
       @have_fancy_ui_cache = nil
 
       # this variable is set from Product:: constructor
@@ -455,8 +450,6 @@ module Yast
             Label.NextButton
           )
         )
-
-        UI.WizardCommand(term(:SetDialogIcon, @default_icon))
       else
         OpenDialog(NextBackDialog())
         UI.SetFocus(Id(:next))
@@ -484,7 +477,6 @@ module Yast
 
         # Don't let sloppy calls to Wizard::SetContents() disable this button by accident
         UI.WizardCommand(term(:ProtectNextButton, true))
-        UI.WizardCommand(term(:SetDialogIcon, @default_icon))
       else
         OpenDialog(AcceptDialog())
         UI.SetFocus(Id(:accept))
@@ -513,7 +505,6 @@ module Yast
 
         # Don't let sloppy calls to Wizard::SetContents() disable this button by accident
         UI.WizardCommand(term(:ProtectNextButton, true))
-        UI.WizardCommand(term(:SetDialogIcon, @default_icon))
       else
         OpenDialog(OKDialog())
         UI.SetFocus(Id(:ok))
@@ -539,8 +530,6 @@ module Yast
             Label.FinishButton
           )
         )
-
-        UI.WizardCommand(term(:SetDialogIcon, @default_icon))
       else
         OpenDialog(GenericDialog(AbortApplyFinishButtonBox()))
         UI.SetFocus(Id(:finish))
@@ -569,7 +558,6 @@ module Yast
 
         # Don't let sloppy calls to Wizard::SetContents() disable this button by accident
         UI.WizardCommand(term(:ProtectNextButton, true))
-        UI.WizardCommand(term(:SetDialogIcon, @default_icon))
       else
         OpenAcceptDialog()
       end
@@ -597,7 +585,6 @@ module Yast
 
         # Don't let sloppy calls to Wizard::SetContents() disable this button by accident
         UI.WizardCommand(term(:ProtectNextButton, true))
-        UI.WizardCommand(term(:SetDialogIcon, @default_icon))
       else
         OpenDialog(GenericDialog(AbortAcceptButtonBox()))
       end
@@ -622,8 +609,6 @@ module Yast
             Label.NextButton
           )
         )
-
-        UI.WizardCommand(term(:SetDialogIcon, @default_icon))
       else
         OpenNextBackDialog()
       end
@@ -1039,7 +1024,6 @@ module Yast
           )
         )
         HideBackButton()
-        UI.WizardCommand(term(:SetDialogIcon, @default_icon))
       else
         OpenDialog(NextBackDialog())
         UI.SetFocus(Id(:next))
@@ -1168,7 +1152,7 @@ module Yast
     # Sets the wizard 'title' icon to the specified icon from the standard icon
     # directory.
     #
-    # @note This is a stable API function
+    # @note Deprecated. Do nothing.
     #
     # @param [String] icon_name name (without path) of the new icon
     # @see #ClearTitleIcon
@@ -1177,24 +1161,16 @@ module Yast
     #	SetTitleIcon ("yast-dns-server");
     #
     def SetTitleIcon(icon_name)
-      icon = icon_name == "" ?
-        "" :
-        Ops.add(Ops.add(Ops.add(@icon_path, "/"), icon_name), ".png")
-
-      UI.WizardCommand(term(:SetDialogIcon, icon))
-
       nil
     end
 
 
     # Clear the wizard 'title' icon, i.e. replace it with nothing
     #
-    # @note This is a stable API function
+    # @note Deprecated. Do nothing.
     # @see #SetTitleIcon
     #
     def ClearTitleIcon
-      UI.WizardCommand(term(:SetDialogIcon, ""))
-
       nil
     end
 
@@ -1597,8 +1573,6 @@ module Yast
             Label.NextButton
           )
         )
-
-        UI.WizardCommand(term(:SetDialogIcon, @default_icon))
       else
         OpenDialog(GenericTreeDialog(BackAbortNextButtonBox()))
         UI.SetFocus(Id(:next))
