@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Jan 21 08:26:38 UTC 2014 - mfilka@suse.com
+
+- fate#316768
+  - use wicked tools for network service restart / reload when 
+    running in installation mode
+- 3.1.15
+
+-------------------------------------------------------------------
 Thu Jan 16 15:56:21 UTC 2014 - jreidinger@suse.com
 
 - make the package owner of /usr/share/YaST2/lib
