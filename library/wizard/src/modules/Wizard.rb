@@ -1204,6 +1204,8 @@ module Yast
     # Desktop file is placed in a special directory (/usr/share/applications/YaST2).
     # Parameter file is realative to that directory without ".desktop" suffix.
     # Warning: There are no desktop files in inst-sys. Use "SetTitleIcon" instead.
+    # @note do nothing. Title icon do not provide additional value
+    # and is distracting
     #
     # @param [String] file Icon name
     # @return [Boolean] true on success
@@ -1214,17 +1216,6 @@ module Yast
     #	// Sets the icon.
     #	SetDesktopIcon ("lan")
     def SetDesktopIcon(file)
-      description = Desktop.ParseSingleDesktopFile(file)
-
-      # fallback name for the dialog title
-      icon = Ops.get(description, "Icon")
-
-      Builtins.y2debug("icon: %1", icon)
-
-      return false if icon == nil
-
-      SetTitleIcon(icon)
-
       true
     end
 
@@ -1234,6 +1225,7 @@ module Yast
     # Desktop file is placed in a special directory (/usr/share/applications/YaST2).
     # Parameter file is realative to that directory without ".desktop" suffix.
     # Warning: There are no desktop files in inst-sys.
+    # @deprecated Use SetDesktopTitle only as icon setting is removed
     #
     # @param [String] file desktop file name
     # @return [Boolean] true on success
@@ -1247,17 +1239,6 @@ module Yast
       result = true
 
       description = Desktop.ParseSingleDesktopFile(file)
-
-      # fallback name for the dialog title
-      icon = Ops.get(description, "Icon")
-
-      Builtins.y2debug("icon: %1", icon)
-
-      if icon != nil
-        SetTitleIcon(icon)
-      else
-        result = false
-      end
 
       # fallback name for the dialog title
       name = Ops.get(description, "Name", _("Module"))
