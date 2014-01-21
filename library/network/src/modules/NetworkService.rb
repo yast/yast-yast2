@@ -67,6 +67,10 @@ module Yast
       :wicked           => "wicked"
     }
 
+    SYSTEMCTL = "/bin/systemctl"
+
+    WICKED = "/usr/sbin/wicked"
+
     def main
       Yast.import "Service"
       Yast.import "NetworkConfig"
@@ -79,9 +83,6 @@ module Yast
       # if false, read needs to do work
       @initialized = false
 
-      # Path to the systemctl command
-      @systemctl = "/bin/systemctl"
-
       # Variable remembers that the question has been asked during this run already.
       # It avoids useless questions over and over again.
       @already_asked_for_NetworkManager = false
@@ -90,7 +91,7 @@ module Yast
     # Helper to run systemctl actions
     # @return exit code
     def RunSystemCtl(service, action)
-      cmd = Builtins.sformat("%1 %2 %3.service", @systemctl, action, service)
+      cmd = Builtins.sformat("%1 %2 %3.service", SYSTEMCTL, action, service)
       ret = Convert.convert(
         SCR.Execute(path(".target.bash_output"), cmd, { "TERM" => "raw" }),
         :from => "any",
@@ -103,7 +104,7 @@ module Yast
     def run_wicked(*params)
       SCR.Execute(
         path(".target.bash_output"),
-        "#{wicked_path} #{params.join(" ")}"
+        "#{WICKED} #{params.join(" ")}"
       )
     end
 
