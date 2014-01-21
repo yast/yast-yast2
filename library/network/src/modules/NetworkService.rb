@@ -67,6 +67,10 @@ module Yast
       :wicked           => "wicked"
     }
 
+    SYSTEMCTL = "/bin/systemctl"
+
+    WICKED = "/usr/sbin/wicked"
+
     def main
       Yast.import "Service"
       Yast.import "NetworkConfig"
@@ -79,9 +83,6 @@ module Yast
       # if false, read needs to do work
       @initialized = false
 
-      # Path to the systemctl command
-      @systemctl = "/bin/systemctl"
-
       # Variable remembers that the question has been asked during this run already.
       # It avoids useless questions over and over again.
       @already_asked_for_NetworkManager = false
@@ -90,7 +91,7 @@ module Yast
     # Helper to run systemctl actions
     # @return exit code
     def RunSystemCtl(service, action)
-      cmd = Builtins.sformat("%1 %2 %3.service", @systemctl, action, service)
+      cmd = Builtins.sformat("%1 %2 %3.service", SYSTEMCTL, action, service)
       ret = Convert.convert(
         SCR.Execute(path(".target.bash_output"), cmd, { "TERM" => "raw" }),
         :from => "any",
@@ -98,6 +99,16 @@ module Yast
       )
       Builtins.y2debug("RunSystemCtl: Command '%1' returned '%2'", cmd, ret)
       Ops.get_integer(ret, "exit", -1)
+    end
+
+    def run_wicked(*params)
+      cmd = "#{WICKED} #{params.join(" ")}" 
+      ret = SCR.Execute(
+        path(".target.bash"),
+        cmd
+      )
+
+      Builtins.y2milestone("run_wicked: #{cmd} -> #{ret}")
     end
 
     # Whether a network service change were requested
@@ -228,31 +239,22 @@ module Yast
 
     # Reload or restars the network service.
     def ReloadOrRestart
-      if IsActive()
-        if Modified()
-          # reload is not sufficient
-          RunSystemCtl("network", "stop")
-          EnableDisableNow()
-          RunSystemCtl("network", "start")
-        else
-          # reload may be unsupported
-          RunSystemCtl("network", "reload-or-try-restart")
-        end
+      if Mode.installation
+        # inst-sys is not running systemd nor sysV init, so systemctl call
+        # is not available and service has to be restarted directly
+        wicked_restart
       else
-        # always stop, it does not hurt if the net was stopped.
-        RunSystemCtl("network", "stop")
-        EnableDisableNow()
-        RunSystemCtl("network", "start")
+        systemctl_reload_restart
       end
-
-      nil
     end
 
     # Restarts the network service
     def Restart
-      RunSystemCtl("network", "stop")
-      EnableDisableNow()
-      RunSystemCtl("network", "start")
+      if Mode.installation
+        wicked_restart
+      else
+        systemctl_restart
+      end
 
       nil
     end
@@ -364,6 +366,38 @@ module Yast
     def cached_name
       Read()
       return @cached_name
+    end
+
+    # Restarts wicked backend directly
+    def wicked_restart
+      run_wicked( "ifdown", "all")
+      run_wicked( "ifup", "all")
+    end
+
+    # Restarts network backend using systemctl call
+    def systemctl_restart
+      RunSystemCtl("network", "stop")
+      EnableDisableNow()
+      RunSystemCtl("network", "start")
+    end
+
+    # Restarts or reloads configuration for network backend when
+    # systemctl is available
+    def systemctl_reload_restart
+      if IsActive()
+        if Modified()
+          # reload is not sufficient
+          systemctl_restart
+        else
+          # reload may be unsupported
+          RunSystemCtl("network", "reload-or-try-restart")
+        end
+      else
+        # always stop, it does not hurt if the net was stopped.
+        systemctl_restart
+      end
+
+      nil
     end
 
     publish :function => :Read, :type => "void ()"
