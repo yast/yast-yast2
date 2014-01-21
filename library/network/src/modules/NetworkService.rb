@@ -102,10 +102,13 @@ module Yast
     end
 
     def run_wicked(*params)
-      SCR.Execute(
-        path(".target.bash_output"),
-        "#{WICKED} #{params.join(" ")}"
+      cmd = "#{WICKED} #{params.join(" ")}" 
+      ret = SCR.Execute(
+        path(".target.bash"),
+        cmd
       )
+
+      Builtins.y2milestone("run_wicked: #{cmd} -> #{ret}")
     end
 
     # Whether a network service change were requested
