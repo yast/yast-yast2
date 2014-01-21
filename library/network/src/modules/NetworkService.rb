@@ -100,6 +100,13 @@ module Yast
       Ops.get_integer(ret, "exit", -1)
     end
 
+    def run_wicked(*params)
+      SCR.Execute(
+        path(".target.bash_output"),
+        "#{wicked_path} #{params.join(" ")}"
+      )
+    end
+
     # Whether a network service change were requested
     # @return true when service change were requested
     def Modified
@@ -228,31 +235,22 @@ module Yast
 
     # Reload or restars the network service.
     def ReloadOrRestart
-      if IsActive()
-        if Modified()
-          # reload is not sufficient
-          RunSystemCtl("network", "stop")
-          EnableDisableNow()
-          RunSystemCtl("network", "start")
-        else
-          # reload may be unsupported
-          RunSystemCtl("network", "reload-or-try-restart")
-        end
+      if Mode.installation
+        # inst-sys is not running systemd nor sysV init, so systemctl call
+        # is not available and service has to be restarted directly
+        wicked_restart
       else
-        # always stop, it does not hurt if the net was stopped.
-        RunSystemCtl("network", "stop")
-        EnableDisableNow()
-        RunSystemCtl("network", "start")
+        systemctl_reload_restart
       end
-
-      nil
     end
 
     # Restarts the network service
     def Restart
-      RunSystemCtl("network", "stop")
-      EnableDisableNow()
-      RunSystemCtl("network", "start")
+      if Mode.installation
+        wicked_restart
+      else
+        systemctl_restart
+      end
 
       nil
     end
@@ -364,6 +362,38 @@ module Yast
     def cached_name
       Read()
       return @cached_name
+    end
+
+    # Restarts wicked backend directly
+    def wicked_restart
+      run_wicked( "ifdown", "all")
+      run_wicked( "ifup", "all")
+    end
+
+    # Restarts network backend using systemctl call
+    def systemctl_restart
+      RunSystemCtl("network", "stop")
+      EnableDisableNow()
+      RunSystemCtl("network", "start")
+    end
+
+    # Restarts or reloads configuration for network backend when
+    # systemctl is available
+    def systemctl_reload_restart
+      if IsActive()
+        if Modified()
+          # reload is not sufficient
+          systemctl_restart
+        else
+          # reload may be unsupported
+          RunSystemCtl("network", "reload-or-try-restart")
+        end
+      else
+        # always stop, it does not hurt if the net was stopped.
+        systemctl_restart
+      end
+
+      nil
     end
 
     publish :function => :Read, :type => "void ()"
