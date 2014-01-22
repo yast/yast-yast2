@@ -2,7 +2,7 @@
 
 # ***************************************************************************
 #
-# Copyright (c) 2002 - 2012 Novell, Inc.
+# Copyright (c) 2002 - 2014 Novell, Inc.
 # All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
@@ -206,10 +206,8 @@ module Yast
     # @return [String] the feature value
     def GetStringFeature(section, feature)
       value = GetFeature(section, feature)
-      if value == nil
-        return nil
-      elsif Ops.is_string?(value)
-        return Convert.to_string(value)
+      if Ops.is_string?(value)
+        return value
       elsif Ops.is_boolean?(value)
         return Convert.to_boolean(value) ? "yes" : "no"
       else
@@ -218,16 +216,16 @@ module Yast
     end
 
     # Get value of a feature
+    # If the feature is missing false is returned. So it is not possible to
+    # distingush between a missing value and a false value.
     # @note This is a stable API function
     # @param [String] section string section of the feature
     # @param features string feature name
     # @return [Boolean] the feature value
     def GetBooleanFeature(section, feature)
       value = GetFeature(section, feature)
-      if value == nil
-        return nil
-      elsif Ops.is_boolean?(value)
-        return Convert.to_boolean(value)
+      if Ops.is_boolean?(value)
+        return value
       elsif Ops.is_string?(value) &&
           Builtins.tolower(Convert.to_string(value)) == "yes"
         return true
@@ -243,10 +241,8 @@ module Yast
     # @return [Fixnum] the feature value
     def GetIntegerFeature(section, feature)
       value = GetFeature(section, feature)
-      if value == nil
-        return nil
-      elsif Ops.is_integer?(value)
-        return Convert.to_integer(value)
+      if Ops.is_integer?(value)
+        return value
       elsif Ops.is_string?(value)
         return Builtins.tointeger(Convert.to_string(value))
       else
