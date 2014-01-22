@@ -216,6 +216,8 @@ module Yast
     end
 
     # Get value of a feature
+    # If the feature is missing false is returned. So it is not possible to
+    # distingush between a missing value and a false value.
     # @note This is a stable API function
     # @param [String] section string section of the feature
     # @param features string feature name
