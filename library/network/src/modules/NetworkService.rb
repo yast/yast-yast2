@@ -178,8 +178,16 @@ module Yast
             @current_name = :network_manager
           when "wicked"
             @current_name = :wicked
+          else
+            if Mode.installation || Mode.config
+              Builtins.y2milestone("Running in installer, use default: wicked")
+              @current_name = :wicked
+            else
+              Builtins.y2error("Cannot determine used network service.")
+              raise "Cannot detect used network service"
+            end
         end
-  
+
         @cached_name = @current_name
 
         Builtins.y2milestone("Current backend: #{@current_name}")
