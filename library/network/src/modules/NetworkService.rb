@@ -130,19 +130,19 @@ module Yast
     # @return true  when the network is managed by an external tool, 
     #               like NetworkManager, false otherwise
     def network_manager?
-      cached_name == :network_manager
+      cached_service?(:network_manager)
     end
 
     alias_method :is_network_manager, :network_manager?
 
     def netconfig?
-      cached_name == :netconfig
+      cached_service?(:netconfig)
     end
 
     alias_method :is_netconfig, :netconfig?
 
     def wicked?
-      cached_name == :wicked
+      cached_service?(:wicked)
     end
 
     alias_method :is_wicked, :wicked?
@@ -362,6 +362,8 @@ module Yast
       end
     end
 
+    private
+
     # Replies with currently selected network service name
     #
     # Currently known backends:
@@ -370,10 +372,17 @@ module Yast
     # - :wicked - supported (via its backward compatibility to
     # ifup)
     #
-    private
     def cached_name
       Read()
       return @cached_name
+    end
+
+    # Checks if currently cached service is the given one
+    def cached_service?( service)
+      cached_name == service
+    rescue
+      Builtins.y2error("NetworkService: error when checking cached network service")
+      false
     end
 
     # Restarts wicked backend directly
