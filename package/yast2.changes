@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan 31 21:12:49 UTC 2014 - lslezak@suse.cz
+
+- added Y2Logger - Ruby Logger for writing logs using the Yast
+  format, can be used by external libraries for logging into y2log
+- 3.1.18
+
+-------------------------------------------------------------------
 Thu Jan 30 09:27:43 UTC 2014 - mfilka@suse.com
 
 - bnc#861078
