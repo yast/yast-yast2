@@ -187,6 +187,20 @@ snapshot_post()
     fi
 }
 
+# check if chef-client is running and warn user about it (bnc#803358)
+chef_conflicting()
+{
+  # - no need to check for installation/firstboot, they are started directly with y2base
+  # - ignore the check if there are arguments for yast module (=CLI mode)
+  if [ "$1" != "" ]; then
+    return 1
+  fi
+  if `pgrep -fl chef-client >/dev/null`; then
+    $ybindir/y2base chef_warning "$SELECTED_GUI" $Y2_GEOMETRY $Y2UI_ARGS
+    if [ $? != 0 ]; then return 0; fi
+  fi
+  return 1
+}
 
 TEMP=`/usr/bin/getopt -o hlg:s:Si --long help,list,kcontrol,geometry:,style:,strings,install,update,remove,fullscreen,noborder,qt,gtk,ncurses \
      -n 'yast2' -- "$@"`
@@ -368,6 +382,8 @@ fi
 if [ $module == "menu" -a -x "$y2ccbin" ] ; then
     $y2ccbin $Y2UI_ARGS "$@"
     exit_code=$?
+elif test $module != "menu" && chef_conflicting $@ ; then
+    exit_code=1
 else
     # In case YaST has to be restarted, create this file
     # and exit. Script that creates the file should also
