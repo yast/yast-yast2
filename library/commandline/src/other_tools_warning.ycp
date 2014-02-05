@@ -1,0 +1,29 @@
+/**
+ * File:	clients/other_tools_warning.ycp
+ * Package:	yast2
+ *
+ * There may be different ways to configure the system than YaST, e.g. Chef.
+ * It will periodically overwrite files under its control.
+ * If it is running, now is a good time to tell the user
+ * and ask if she wants to proceed with YaST anyway.
+ * We do not try to find out which files these are and ask
+ * before any interactive YaST module.
+ * See bnc#803358
+ */
+{
+    import "Popup";
+    textdomain "base";
+
+    list args = WFM::Args();
+    if (size(args) > 0 && contains (args, "chef")) {
+
+      // Translators: a warning message in a continue-cancel question
+      // Opscode Chef is a different way to configure the system.
+      string message = _("Chef Client is running. The changes that you make
+may be overridden by Chef later.
+Continue configuration with YaST?");
+      return Popup::ContinueCancel(message);
+    }
+    return true;
+}
+
