@@ -235,7 +235,7 @@ other_tools_are_conflicting ()
   # existing arguments for yast module = CLI mode
   # continue, but print a warning
   if [ -n "$1"  ]; then
-    echo "Warning: Chef Client is running. Your changes may be overridden by Chef later."
+    echo "Warning: Chef Client is running. Your changes may be overridden by Chef later." >&2
     return 1
   fi
 
