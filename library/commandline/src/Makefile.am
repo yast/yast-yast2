@@ -5,7 +5,10 @@
 module_DATA =			\
 	CommandLine.ycp
 
-EXTRA_DIST = $(module_DATA)
+client_DATA = \
+        other_tools_warning.ycp
+
+EXTRA_DIST = $(module_DATA) $(client_DATA)
 
 YCPCFLAGS = -M ../../types/src -M ../../modules -M ../../wizard/src -M ../../xml/src
 
