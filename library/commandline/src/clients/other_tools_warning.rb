@@ -2,7 +2,7 @@
 
 # ***************************************************************************
 #
-# Copyright (c) 2002 - 2012 Novell, Inc.
+# Copyright (c) 2014 SUSE LLC
 # All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
@@ -22,22 +22,34 @@
 #
 # ***************************************************************************
 
+#*
+# There may be different ways to configure the system than YaST, e.g. Chef.
+# It will periodically overwrite files under its control.
+# If it is running, now is a good time to tell the user
+# and ask if she wants to proceed with YaST anyway.
+# We do not try to find out which files these are and ask
+# before any interactive YaST module.
+# See bnc#803358
+
 module Yast
-  class ChefWarningClient < Client
+  class OtherToolsWarningClient < Client
     def main
       Yast.import "Popup"
       textdomain "base"
 
-      # Translators: a warning message in a continue-cancel question
-      # Opscode Chef is a different way to configure the system.
-      message = _(
+      if WFM.Args().include? "chef"
+        # Translators: a warning message in a continue-cancel question
+        # Opscode Chef is a different way to configure the system.
+        message = _(
            "Chef Client is running. The changes that you make\n" +
              "may be overridden by Chef later.\n" +
              "Continue configuration with YaST?"
-      )
-      return Popup.ContinueCancel(message)
+        )
+        return Popup.ContinueCancel(message)
+      end
+
     end
   end
 end
 
-Yast::ChefWarningClient.new.main
+Yast::OtherToolsWarningClient.new.main

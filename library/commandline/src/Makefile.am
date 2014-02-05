@@ -4,7 +4,7 @@ module_DATA = \
   modules/CommandLine.rb
 
 client_DATA = \
-  clients/chef_warning.rb
+  clients/other_tools_warning.rb
 
 scrconf_DATA = \
   scrconf/tty.scr

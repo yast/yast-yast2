@@ -187,19 +187,40 @@ snapshot_post()
     fi
 }
 
-# check if chef-client is running and warn user about it (bnc#803358)
-chef_conflicting()
+chef_is_running ()
+{
+  pgrep -fl chef-client >/dev/null
+}
+
+# ask user if he want to continue despite there is chef-client running
+# return 0 if user decided to continue
+chef_warning_continue ()
+{
+  $ybindir/y2base other_tools_warning -S "(chef)" "$SELECTED_GUI" $Y2_GEOMETRY $Y2UI_ARGS
+}
+
+# Check if chef-client is running and warn user about it (bnc#803358)
+# Returns 0 if user confirmed the conflict and wants to exit before starting YaST.
+# (check for other tools (like puppet) may be added here)
+other_tools_are_conflicting ()
 {
   # - no need to check for installation/firstboot, they are started directly with y2base
-  # - ignore the check if there are arguments for yast module (=CLI mode)
-  if [ "$1" != "" ]; then
+
+  if ! chef_is_running; then
     return 1
   fi
-  if `pgrep -fl chef-client >/dev/null`; then
-    $ybindir/y2base chef_warning "$SELECTED_GUI" $Y2_GEOMETRY $Y2UI_ARGS
-    if [ $? != 0 ]; then return 0; fi
+
+  # existing arguments for yast module = CLI mode
+  # continue, but print a warning
+  if [ -n "$1"  ]; then
+    echo "Warning: Chef Client is running. Your changes may be overridden by Chef later."
+    return 1
   fi
-  return 1
+
+  if chef_warning_continue; then
+    return 1
+  fi
+  return 0
 }
 
 TEMP=`/usr/bin/getopt -o hlg:s:Si --long help,list,kcontrol,geometry:,style:,strings,install,update,remove,fullscreen,noborder,qt,gtk,ncurses \
@@ -382,7 +403,7 @@ fi
 if [ $module == "menu" -a -x "$y2ccbin" ] ; then
     $y2ccbin $Y2UI_ARGS "$@"
     exit_code=$?
-elif test $module != "menu" && chef_conflicting $@ ; then
+elif test $module != "menu" && other_tools_are_conflicting "$@" ; then
     exit_code=1
 else
     # In case YaST has to be restarted, create this file
