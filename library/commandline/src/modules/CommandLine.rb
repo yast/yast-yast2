@@ -1542,37 +1542,6 @@ module Yast
       ret
     end
 
-     def ChefIsRunning
-       SCR.Execute(path(".target.bash"), "pgrep -fl chef-client") == 0
-     end
- 
-     # Chef is a different way to configure the system.
-     # It will periodically overwrite files under its control.
-     # If it is running, now is a good time to tell the user
-     # and ask if she wants to proceed with YaST anyway.
-     # We do not try to find out which files these are and ask
-     # before any interactive YaST module.
-     # bnc#803358
-     # @return true if we can go on: chef not running, or if the user
-     #              wants to continue anyway
-     def IgnoreOtherConfigTools
-       if ChefIsRunning()
-         # Translators: a warning message in a continue-cancel question
-         # Opscode Chef is a different way to configure the system.
-         message = _(
-           "Chef Client is running. The changes that you make\n" +
-             "may be overridden by Chef later.\n" +
-             "Continue configuration with YaST?"
-         )
-         return Popup.ContinueCancel(message)
-       end
- 
-       # if we want to check other tools (Puppet?) add them here
- 
-       # no conflicting tool found
-       true
-     end
-
     # Parse the Command Line
     #
     # Function to parse the command line, start a GUI or handle interactive and
@@ -1612,9 +1581,6 @@ module Yast
           Error(_("There is no user interface available for this module."))
           return false
         end
-
-        # A hacky bail-out hook before interactive modules
-        return false unless IgnoreOtherConfigTools()
 
         if Ops.is(Ops.get(commandline, "guihandler"), "symbol ()")
           exec = Convert.convert(

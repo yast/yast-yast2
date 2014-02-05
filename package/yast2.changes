@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Feb  5 11:26:09 CET 2014 - jsuchome@suse.cz
+
+- Check for Chef outside in the yast2 shell script to catch modules
+  not using CommandLine (bnc#803358)
+- 3.1.18
+
+-------------------------------------------------------------------
 Thu Jan 30 09:27:43 UTC 2014 - mfilka@suse.com
 
 - bnc#861078
