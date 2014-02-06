@@ -71,6 +71,10 @@ if [ -f /etc/X11/xorg.conf ]; then
     LIST="$LIST /etc/X11/xorg.conf"
 fi
 
+if [ -f /etc/X11/xorg.conf.install ]; then
+    LIST="$LIST /etc/X11/xorg.conf.install"
+fi
+
 if [ -f /var/log/Xorg.0.log ]; then
     LIST="$LIST /var/log/Xorg.0.log"
 fi
