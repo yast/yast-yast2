@@ -32,7 +32,7 @@ require "yast"
 
 module Yast
 
-  # @example
+  # @example Reading fstab with AsciiFile
   #  file = {}
   #  file_ref = arg_ref(file)
   #  AsciiFile.SetComment(file_ref, "^[ \t]*#")

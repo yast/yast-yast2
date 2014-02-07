@@ -15,7 +15,7 @@ UUID=001c0d61-e99f-4ab7-ba4b-bda6f54a052d       /       btrfs   defaults 0 0
 # trailing comment
 EOS
 
-def stub_fstab(filename = FSTAB_FILENAME, contents = FSTAB_CONTENTS)
+def stub_file_reading(filename, contents)
   SCR.stub(:Read)
     .with(path(".target.size"), filename)
     .and_return contents.length
@@ -28,7 +28,7 @@ end
 describe "AsciiFile" do
   describe "#ReadFile" do
     it "does something" do
-      stub_fstab "/etc/fstab"
+      stub_file_reading(FSTAB_FILENAME, FSTAB_CONTENTS)
       fstab = {}
       fstab_ref = arg_ref(fstab)
       AsciiFile.SetComment(fstab_ref, "^[ \t]*#")
