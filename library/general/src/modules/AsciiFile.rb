@@ -32,13 +32,35 @@ require "yast"
 
 module Yast
 
-  # @example Reading fstab with AsciiFile
-  #  file = {}
-  #  file_ref = arg_ref(file)
-  #  AsciiFile.SetComment(file_ref, "^[ \t]*#")
-  #  AsciiFile.SetDelimiter(file_ref, " \t")
-  #  AsciiFile.SetListWidth(file_ref, [20, 20, 10, 21, 1, 1])
-  #  AsciiFile.ReadFile(file_ref, "/etc/fstab")
+  # Assume this /etc/fstab file
+  #
+  #     # main filesystem
+  #     UUID=001c0d61-e99f-4ab7-ba4b-bda6f54a052d       /       btrfs   defaults 0 0
+  #
+  # then with this set-up
+  #
+  #     file = {}
+  #     file_ref = arg_ref(file)  # an artefact of YCP API
+  #     AsciiFile.SetComment(file_ref, "^[ \t]*#")
+  #     AsciiFile.SetDelimiter(file_ref, " \t")
+  #     AsciiFile.SetListWidth(file_ref, [20, 20, 10, 21, 1, 1])
+  #
+  # this main call
+  #
+  #     AsciiFile.ReadFile(file_ref, "/etc/fstab")
+  #     # note that the result is `file["l"]`
+  #     # as the rest of `file` are the parsing parameters
+  #     result = file["l"]
+  #
+  # will produce
+  #
+  #     result.size               # =>  2
+  #     # an integer keyed hash starting at ONE!
+  #     result.keys               # =>  [1, 2]
+  #     result[1]["comment"]      # =>  true
+  #     result[1]["line"]         # =>  "# main filesystem"
+  #     result[2]["fields"].size  # =>  6
+  #     result[2]["fields"][1]    # =>  "/"
   class AsciiFileClass < Module
     def main
 
