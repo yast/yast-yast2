@@ -15,6 +15,9 @@
 
 export PATH=/sbin:/usr/sbin:$PATH
 
+# make sure the system ruby is used, bnc#845897
+unset GEM_HOME GEM_PATH RUBYLIB RUBYPATH RUBYOPT
+
 # we need input methods for many locales bnc#776567
 
 export QT_IM_MODULE=xim GTK_IM_MODULE=xim
@@ -184,6 +187,41 @@ snapshot_post()
     fi
 }
 
+chef_is_running ()
+{
+  pgrep -fl chef-client >/dev/null
+}
+
+# ask user if he want to continue despite there is chef-client running
+# return 0 if user decided to continue
+chef_warning_continue ()
+{
+  $ybindir/y2base other_tools_warning -S "(chef)" "$SELECTED_GUI" $Y2_GEOMETRY $Y2UI_ARGS
+}
+
+# Check if chef-client is running and warn user about it (bnc#803358)
+# Returns 0 if user confirmed the conflict and wants to exit before starting YaST.
+# (check for other tools (like puppet) may be added here)
+other_tools_are_conflicting ()
+{
+  # - no need to check for installation/firstboot, they are started directly with y2base
+
+  if ! chef_is_running; then
+    return 1
+  fi
+
+  # existing arguments for yast module = CLI mode
+  # continue, but print a warning
+  if [ -n "$1"  ]; then
+    echo "Warning: Chef Client is running. Your changes may be overridden by Chef later." >&2
+    return 1
+  fi
+
+  if chef_warning_continue; then
+    return 1
+  fi
+  return 0
+}
 
 TEMP=`/usr/bin/getopt -o hlg:s:Si --long help,list,kcontrol,geometry:,style:,strings,install,update,remove,fullscreen,noborder,qt,gtk,ncurses \
      -n 'yast2' -- "$@"`
@@ -198,9 +236,9 @@ while true ; do
 		-h|--help) if test "$2" = '--' -a -n "$3" ; then CMDLINE_HELP="help" ; else printhelp && exit 0 ; fi ; shift ;;
 		-l|--list) listmodules; exit 0 ;;
 		-g|--geometry) Y2_GEOMETRY="-geometry $2"; shift 2; ;;
-		-i|--install) Y2_INSTALL_PACKAGES=true; shift ;;
-		--update) Y2_INSTALL_PACKAGES=true; Y2_INSTALL_ACTION=--update; shift ;;
-		--remove) Y2_INSTALL_PACKAGES=true; Y2_INSTALL_ACTION=--remove; shift ;;
+		-i|--install) Y2_INSTALL_PACKAGES=true; Y2_INSTALL_ACTION=install; shift ;;
+		--update) Y2_INSTALL_PACKAGES=true; Y2_INSTALL_ACTION=update; shift ;;
+		--remove) Y2_INSTALL_PACKAGES=true; Y2_INSTALL_ACTION=remove; shift ;;
                 --fullscreen) Y2UI_ARGS="$Y2UI_ARGS --fullscreen"; shift ;;
 		--noborder)   Y2UI_ARGS="$Y2UI_ARGS --noborder"  ; shift ;;
 		--kcontrol)   Y2UI_ARGS="$Y2UI_ARGS --kcontrol_id YaST" ; shift ;;
@@ -215,11 +253,25 @@ while true ; do
 	esac
 done
 
+# deprecated, drop after SLE12
 if [ "$Y2_INSTALL_PACKAGES" = "true" ]; then
-	export module=sw_single
-	# #222757
-	# prepend an additional argument if necessary
-	set -- $Y2_INSTALL_ACTION "$@"
+    if [ $# -eq 0 ]; then
+        echo "DEPRECATED. Use sw_single directly: $0 sw_single" >&2
+        export module="sw_single"
+    else
+        # support passing text files with packages
+        # any ycp file support is dropped
+        if [[ -f "$1" && ! "$1" == *rpm ]] ; then
+          cmd="zypper --non-interactive $Y2_INSTALL_ACTION \`cat \"$1\"\`"
+        else
+          cmd="zypper --non-interactive $Y2_INSTALL_ACTION $@"
+        fi
+
+        echo "DEPRECATED. Use zypper directly: $cmd" >&2
+
+        eval "$cmd"
+        exit $?
+    fi
 else
 	# allow module as argument, defaults to "menu"
 	export module="${1-menu}"
@@ -351,6 +403,8 @@ fi
 if [ $module == "menu" -a -x "$y2ccbin" ] ; then
     $y2ccbin $Y2UI_ARGS "$@"
     exit_code=$?
+elif test $module != "menu" && other_tools_are_conflicting "$@" ; then
+    exit_code=1
 else
     # In case YaST has to be restarted, create this file
     # and exit. Script that creates the file should also

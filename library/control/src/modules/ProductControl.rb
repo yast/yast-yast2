@@ -21,7 +21,7 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/ProductControl.ycp
+# File:	modules/ProductControl.rb
 # Package:	installation
 # Summary:	Product Control routines
 # Authors:	Anas Nashif <nashif@suse.de>
@@ -29,7 +29,6 @@
 #		Jiri Srain <jsrain@suse.cz>
 #		Lukas Ocilka <locilka@suse.cz>
 #
-# $Id$
 require "yast"
 
 module Yast
@@ -47,10 +46,11 @@ module Yast
       Yast.import "Label"
       Yast.import "Wizard"
       Yast.import "Report"
-      Yast.import "Hooks"
+      Yast.import "DebugHooks"
       Yast.import "Popup"
       Yast.import "FileUtils"
       Yast.import "Installation"
+      Yast.import "Hooks"
 
       # The complete parsed control file
       @productControl = {}
@@ -89,18 +89,11 @@ module Yast
       # The control file we are using for this session.
       @current_control_file = nil
 
-
       # Current Wizard Step
       @CurrentWizardStep = ""
 
-
       # Last recently used stage_mode for RetranslateWizardSteps
       @last_stage_mode = []
-
-
-      # -->
-
-      # Currently only local variables, they have their own API
 
       # List of module to disable in the current run
       @DisabledModules = []
@@ -108,11 +101,7 @@ module Yast
       # List of proposals to disable in the current run
       @DisabledProposals = []
 
-      @DisabledACItems = {}
-
       @DisabledSubProposals = {}
-
-      # <--
 
       # Log files for hooks
       @logfiles = []
@@ -121,19 +110,16 @@ module Yast
 
       @restarting_step = nil
 
-
-
-
       @_client_prefix = "inst_"
 
       @stack = []
-
 
       @first_id = ""
 
       @current_step = 0
 
       @localDisabledProposals = []
+
       @localDisabledModules = []
 
       @already_disabled_workflows = []
@@ -141,15 +127,8 @@ module Yast
       # Forces UpdateWizardSteps to redraw steps even if nothing seem to be changed
       @force_UpdateWizardSteps = false
 
-      # -->
-      # Installation without second stage
-      # "Automatic Configuration"
-
-      @use_automatic_configuration = nil
-
-      # <--
-
       @lastDisabledModules = deep_copy(@DisabledModules)
+
       ProductControl()
     end
 
@@ -268,47 +247,6 @@ module Yast
       deep_copy(@DisabledSubProposals)
     end
 
-    def EnableACItem(unique_id, enable_ac_item)
-      if Builtins.haskey(@DisabledACItems, unique_id)
-        Ops.set(
-          @DisabledACItems,
-          unique_id,
-          Builtins.filter(Ops.get(@DisabledACItems, unique_id, [])) do |one_ac_item|
-            one_ac_item != enable_ac_item
-          end
-        )
-      else
-        Builtins.y2error("AC step with id %1 does not exist", unique_id)
-      end
-
-      deep_copy(@DisabledACItems)
-    end
-
-    def DisableACItem(unique_id, disable_ac_item)
-      if Builtins.haskey(@DisabledACItems, unique_id)
-        Ops.set(
-          @DisabledACItems,
-          unique_id,
-          Convert.convert(
-            Builtins.union(
-              Ops.get(@DisabledACItems, unique_id, []),
-              [disable_ac_item]
-            ),
-            :from => "list",
-            :to   => "list <string>"
-          )
-        )
-      else
-        Ops.set(@DisabledACItems, unique_id, [disable_ac_item])
-      end
-
-      deep_copy(@DisabledACItems)
-    end
-
-    def GetDisabledACItems
-      deep_copy(@DisabledACItems)
-    end
-
     # Check if a module is disabled
     # @param map module map
     # @return [Boolean]
@@ -327,7 +265,7 @@ module Yast
             Ops.get_string(mod, "proposal", "")
           )
           return true
-        end 
+        end
         # Normal step
       elsif Ops.get_string(mod, "name", "") != nil &&
           Ops.get_string(mod, "name", "") != ""
@@ -449,7 +387,7 @@ module Yast
 
       # Defined custom control file
       if @custom_control_file != ""
-        return name 
+        return name
 
         # All standard clients start with "inst_"
       else
@@ -730,7 +668,7 @@ module Yast
         # modules
         if Ops.get_string(one_module, "name", "") != nil &&
             Ops.get_string(one_module, "name", "") != ""
-          next true 
+          next true
           # proposals
         elsif Ops.get_string(one_module, "proposal", "") != nil &&
             Ops.get_string(one_module, "proposal", "") != ""
@@ -848,7 +786,7 @@ module Yast
           Builtins.y2milestone("Enabling proposal: %1", m)
           @DisabledProposals = Builtins.filter(@DisabledProposals) do |one_proposal|
             Ops.get_string(m, "proposal", "") != one_proposal
-          end 
+          end
           # A module
           # Enable it only if it was enabled before
         elsif Ops.get_string(m, "name", "") != nil &&
@@ -950,7 +888,7 @@ module Yast
               Builtins.dgettext(
                 wizard_textdomain,
                 Ops.get_string(m, "label", "")
-              ) 
+              )
 
             # Label
           elsif Ops.get_string(m, "label", "") != ""
@@ -968,7 +906,7 @@ module Yast
 
             id = Ops.get_string(m, "id", "")
             last_label = Ops.get_string(m, "label", "")
-            last_domain = Ops.get_string(m, "textdomain", "") 
+            last_domain = Ops.get_string(m, "textdomain", "")
 
             # The rest
           else
@@ -1003,59 +941,6 @@ module Yast
       UI.WizardCommand(term(:SetCurrentStep, @CurrentWizardStep))
 
       nil
-    end
-
-    # Inits the default value for use_automatic_configuration
-    def InitAutomaticConfiguration
-      return if @use_automatic_configuration != nil
-
-      # AytoYaST default - not to use Automatic configuration at all
-      if Mode.autoinst || Mode.config
-        @use_automatic_configuration = false 
-        # The rest is on user
-        # FIXME: read the default value from control file
-      else
-        @use_automatic_configuration = false
-      end
-
-      Builtins.y2milestone(
-        "Default 'UseAutomaticConfiguration': %1",
-        @use_automatic_configuration
-      )
-
-      nil
-    end
-
-    # Adjust the automatic configuration to be either enabled or disabled.
-    # Enabling it means that second stage will be disabled.
-    #
-    # @param boolean enabled
-    def SetUseAutomaticConfiguration(set_param)
-      if set_param == nil
-        Builtins.y2error(
-          "Automatic configuration can be either enabled or disabled, not nil!"
-        )
-        return
-      end
-
-      @use_automatic_configuration = set_param
-
-      Builtins.y2milestone(
-        "UseAutomaticConfiguration has been set to: %1",
-        @use_automatic_configuration
-      )
-
-      nil
-    end
-
-    # Returns whether automatic configuration will be enabled.
-    #
-    # @return [Boolean] if enabled
-    def GetUseAutomaticConfiguration
-      # lazy loading
-      InitAutomaticConfiguration()
-
-      @use_automatic_configuration
     end
 
     # Update Steps
@@ -1475,8 +1360,8 @@ module Yast
         Builtins.y2milestone("Calling %1", argterm)
 
         if !wasRun(step_name)
-          Hooks.Checkpoint(Builtins.sformat("%1", module_name), true)
-          Hooks.Run(step_name, true)
+          DebugHooks.Checkpoint(Builtins.sformat("%1", module_name), true)
+          DebugHooks.Run(step_name, true)
         end
 
         args = []
@@ -1501,9 +1386,17 @@ module Yast
           end
         end
 
-        result = Convert.to_symbol(
-          WFM.CallFunction(getClientName(step_name, step_execute), args)
-        )
+        Hooks.run("before_#{step_name}")
+
+        result = WFM.CallFunction(getClientName(step_name, step_execute), args)
+
+        # this code will be triggered before the red pop window appears on the user's screen
+        Hooks.run('installation_failure') if result == false
+
+        result = Convert.to_symbol(result)
+
+        Hooks.run("after_#{step_name}")
+
         Builtins.y2milestone("Calling %1 returned %2", argterm, result)
 
         # bnc #369846
@@ -1527,18 +1420,18 @@ module Yast
           end
         end
 
-        # Dont call hook scripts after installation is done. (#36831)
+        # Dont call debug hook scripts after installation is done. (#36831)
         if Ops.less_than(@current_step, Ops.subtract(Builtins.size(modules), 1)) &&
             !wasRun(step_name)
-          Hooks.Run(step_name, false)
+          DebugHooks.Run(step_name, false)
         else
           Builtins.y2milestone(
-            "Not running hooks at the end of the installation"
+            "Not running debug hooks at the end of the installation"
           )
         end
 
         # This should be safe (#36831)
-        Hooks.Checkpoint(step_name, false) # exit hook
+        DebugHooks.Checkpoint(step_name, false) # exit hook
 
         addToStack(step_name)
 
@@ -1624,6 +1517,7 @@ module Yast
         elsif result == :abort
           # handling when user aborts the workflow (FATE #300422, bnc #406401, bnc #247552)
           final_result = result
+          Hooks.run('installation_aborted')
 
           break
         elsif result == :finish
@@ -1653,6 +1547,7 @@ module Yast
         end
         former_result = result
       end
+
       final_result = :abort if former_result == :abort
 
       Builtins.y2milestone(
@@ -1770,9 +1665,6 @@ module Yast
     publish :function => :EnableSubProposal, :type => "map <string, list <string>> (string, string)"
     publish :function => :DisableSubProposal, :type => "map <string, list <string>> (string, string)"
     publish :function => :GetDisabledSubProposals, :type => "map <string, list <string>> ()"
-    publish :function => :EnableACItem, :type => "map <string, list <string>> (string, string)"
-    publish :function => :DisableACItem, :type => "map <string, list <string>> (string, string)"
-    publish :function => :GetDisabledACItems, :type => "map <string, list <string>> ()"
     publish :function => :checkDisabled, :type => "boolean (map)"
     publish :function => :checkHeading, :type => "boolean (map)"
     publish :function => :ReadControlFile, :type => "boolean (string)"
@@ -1787,9 +1679,6 @@ module Yast
     publish :function => :DisableAllModulesAndProposals, :type => "void (string, string)"
     publish :function => :UnDisableAllModulesAndProposals, :type => "void (string, string)"
     publish :function => :AddWizardSteps, :type => "void (list <map>)"
-    publish :function => :InitAutomaticConfiguration, :type => "void ()"
-    publish :function => :SetUseAutomaticConfiguration, :type => "void (boolean)"
-    publish :function => :GetUseAutomaticConfiguration, :type => "boolean ()"
     publish :function => :UpdateWizardSteps, :type => "void (list <map>)"
     publish :function => :RetranslateWizardSteps, :type => "void ()"
     publish :function => :getProposals, :type => "list <list> (string, string, string)"

@@ -5,7 +5,7 @@ module_DATA = \
   modules/InstExtensionImage.rb \
   modules/AutoinstData.rb \
   modules/GetInstArgs.rb \
-  modules/Hooks.rb \
+  modules/DebugHooks.rb \
   modules/InstError.rb \
   modules/ProductControl.rb \
   modules/ProductFeatures.rb \

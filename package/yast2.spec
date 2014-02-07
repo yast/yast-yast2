@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.1.3
+Version:        3.1.18
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -28,7 +28,7 @@ License:        GPL-2.0
 Source1:        yast2-rpmlintrc
 
 BuildRequires:  perl-XML-Writer update-desktop-files yast2-perl-bindings yast2-testsuite
-BuildRequires:  yast2-devtools >= 3.0.6
+BuildRequires:  yast2-devtools >= 3.1.10
 # Needed already in build time
 BuildRequires:  yast2-core >= 2.18.12 yast2-pkg-bindings >= 2.20.3 yast2-ycp-ui-bindings >= 2.18.4
 
@@ -162,7 +162,9 @@ mkdir -p "$RPM_BUILD_ROOT"%{yast_scrconfdir}
 mkdir -p "$RPM_BUILD_ROOT"%{yast_ybindir}
 mkdir -p "$RPM_BUILD_ROOT"%{yast_ydatadir}
 mkdir -p "$RPM_BUILD_ROOT"%{yast_yncludedir}
+mkdir -p "$RPM_BUILD_ROOT"%{yast_libdir}
 mkdir -p "$RPM_BUILD_ROOT"%{yast_vardir}
+mkdir -p "$RPM_BUILD_ROOT"%{yast_vardir}/hooks
 mkdir -p "$RPM_BUILD_ROOT"%{yast_schemadir}/control/rnc
 mkdir -p "$RPM_BUILD_ROOT"%{yast_schemadir}/autoyast/rnc
 mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
@@ -192,12 +194,14 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %dir %{yast_ydatadir}
 %dir %{yast_yncludedir}
 %dir %{yast_vardir}
+%dir %{yast_libdir}
 %dir %{yast_schemadir}
 %dir %{yast_schemadir}/control
 %dir %{yast_schemadir}/control/rnc
 %dir %{yast_schemadir}/autoyast
 %dir %{yast_schemadir}/autoyast/rnc
 %dir %{_sysconfdir}/YaST2
+%dir %{yast_vardir}/hooks
 
 # yast2
 
@@ -215,6 +219,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %doc %dir %{yast_docdir}
 %doc %{yast_docdir}/COPYING
 %doc %{_mandir}/*/*
+%doc %{yast_vardir}/hooks/README.md
 
 /sbin/*
 %{_sbindir}/*
@@ -253,5 +258,6 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %doc %{yast_docdir}/types
 %doc %{yast_docdir}/wizard
 %doc %{yast_docdir}/xml
+%doc %{yast_docdir}/general
 
 %changelog

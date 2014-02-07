@@ -1,12 +1,122 @@
 -------------------------------------------------------------------
+Wed Feb  5 11:26:09 CET 2014 - jsuchome@suse.cz
+
+- Check for Chef outside in the yast2 shell script to catch modules
+  not using CommandLine (bnc#803358)
+- 3.1.18
+
+-------------------------------------------------------------------
+Thu Jan 30 09:27:43 UTC 2014 - mfilka@suse.com
+
+- bnc#861078
+  - detected network service set properly when running in
+    installation mode
+- 3.1.17
+
+-------------------------------------------------------------------
+Tue Jan 21 14:57:14 UTC 2014 - jreidinger@suse.com
+
+- remove from wizard icons for title as proposed by Ken
+  (fate#314695)
+- 3.1.16
+
+-------------------------------------------------------------------
+Tue Jan 21 08:26:38 UTC 2014 - mfilka@suse.com
+
+- fate#316768
+  - use wicked tools for network service restart / reload when 
+    running in installation mode
+- 3.1.15
+
+-------------------------------------------------------------------
+Thu Jan 16 15:56:21 UTC 2014 - jreidinger@suse.com
+
+- make the package owner of /usr/share/YaST2/lib
+- 3.1.14
+
+-------------------------------------------------------------------
+Wed Jan  8 13:12:19 CET 2014 - locilka@suse.com
+
+- Upgrade mode in installer is newly set by Linuxrc (bnc#857847)
+- 3.1.13
+
+-------------------------------------------------------------------
+Fri Dec 20 09:29:58 UTC 2013 - vmoravec@suse.com
+
+- Add fail and abort hooks for installation
+- 3.1.12
+
+-------------------------------------------------------------------
+Thu Dec 12 13:14:11 UTC 2013 - mfilka@suse.com
+
+- changed API for querying network configuration backend
+- 3.1.11
+
+-------------------------------------------------------------------
+Tue Dec 10 11:40:46 UTC 2013 - mfilka@suse.com
+
+- bnc#851769
+  - fixed reading bridge configuration
+  - thanks to Waldemar Spitz <wspitz@uni-bonn.de>
+- 3.1.10
+
+-------------------------------------------------------------------
+Tue Dec 10 08:37:31 UTC 2013 - vmoravec@suse.com
+
+- add hook file #output method
+- 3.1.9
+
+-------------------------------------------------------------------
+Wed Dec  4 12:39:02 UTC 2013 - jreidinger@suse.com
+
+- deprecate yast --install, --upgrade and --remove and use zypper
+  instead. Suggest using zypper directly from command line.
+  (FATE#316458)
+- 3.1.8
+
+-------------------------------------------------------------------
+Tue Dec  3 13:34:50 UTC 2013 - vmoravec@suse.com
+
+- Update hooks
+- 3.1.7
+
+-------------------------------------------------------------------
+Thu Nov 28 12:42:12 UTC 2013 - vmoravec@suse.com
+
+- Add hook into installation workflow
+- 3.1.6
+
+-------------------------------------------------------------------
+Mon Nov 25 11:48:21 UTC 2013 - jreidinger@suse.com
+
+- Make sure the system ruby is used (BNC#845897)
+  ( thanks to Marc Schütz <schuetzm@gmx.net>)
+- Add hooks module (FATE#315992) (vmoravec)
+- Fix rspec run on OS-12.3
+- 3.1.5
+
+-------------------------------------------------------------------
+Thu Nov 21 08:48:50 UTC 2013 - lslezak@suse.cz
+
+- PKGMGR_ACTION_AT_EXIT: change the default action to "summary",
+  added combobox for changing the value
+
+-------------------------------------------------------------------
+Wed Nov 20 13:36:39 UTC 2013 - lslezak@suse.cz
+
+- removed support for automatic 2nd stage (the 2nd stage has been
+  dropped completely) (FATE#314695)
+- 3.1.4
+
+-------------------------------------------------------------------
 Fri Nov 15 16:23:46 CET 2013 - jsuchome@suse.cz
 
-- Warn the user if Chef could overwrite her changes (bnc#803358). 
+- Warn the user if Chef could overwrite her changes (bnc#803358).
 
 -------------------------------------------------------------------
 Fri Nov 15 13:59:06 UTC 2013 - jreidinger@suse.com
 
-- Removed unused API from NetworkInterfaces 
+- Removed unused API from NetworkInterfaces
 
 -------------------------------------------------------------------
 Wed Nov 13 17:08:09 CET 2013 - aschnell@suse.de

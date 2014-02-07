@@ -21,12 +21,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/GetInstArgs.ycp
+# File:	modules/GetInstArgs.rb
 # Package:	yast2
 # Summary:	Get client arguments
 # Authors:	Anas Nashif <nashif@suse.de>
 #
-# $Id$
 require "yast"
 
 module Yast
@@ -52,14 +51,6 @@ module Yast
       Builtins.y2milestone("args=%1", @args)
 
       nil
-    end
-
-    # Is the automatic configuraton just in progress?
-    #
-    # @return [Boolean] if running the automatic configuration
-    def automatic_configuration
-      Init()
-      Ops.get_boolean(@args, "AutomaticConfiguration", false)
     end
 
     # Should be the [Next] button enabled?
@@ -151,7 +142,6 @@ module Yast
       deep_copy(__args)
     end
 
-    publish :function => :automatic_configuration, :type => "boolean ()"
     publish :function => :enable_next, :type => "boolean ()"
     publish :function => :enable_back, :type => "boolean ()"
     publish :function => :going_back, :type => "boolean ()"
