@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.1.18
+Version:        3.1.19
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -208,6 +208,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %{yast_ydatadir}/*.ycp
 %{yast_clientdir}/*
 %{yast_moduledir}/*
+%{yast_libdir}/*
 %{yast_scrconfdir}/*
 %{yast_ybindir}/*
 %{yast_agentdir}/ag_*
