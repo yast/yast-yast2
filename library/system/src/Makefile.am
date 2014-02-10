@@ -27,6 +27,11 @@ scrconf_DATA = \
 desktop_DATA = \
   desktop/messages.desktop
 
-EXTRA_DIST = $(module_DATA) $(client_DATA) $(ynclude_DATA) $(scrconf_DATA) $(desktop_DATA)
+ylibdir = @ylibdir@/yast2
+ylib_DATA = \
+  lib/yast2/hw_detection.rb
+
+
+EXTRA_DIST = $(module_DATA) $(client_DATA) $(ynclude_DATA) $(scrconf_DATA) $(desktop_DATA) $(ylib_DATA)
 
 include $(top_srcdir)/Makefile.am.common

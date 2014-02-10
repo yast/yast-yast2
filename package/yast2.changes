@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 10 13:18:52 UTC 2014 - lslezak@suse.cz
+
+- added memory detection code (gh#yast/yast-packager#33)
+- 3.1.19
+
+-------------------------------------------------------------------
 Wed Feb  5 11:26:09 CET 2014 - jsuchome@suse.cz
 
 - Check for Chef outside in the yast2 shell script to catch modules
