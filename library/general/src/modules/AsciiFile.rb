@@ -31,6 +31,36 @@
 require "yast"
 
 module Yast
+
+  # Assume this /etc/fstab file
+  #
+  #     # main filesystem
+  #     UUID=001c0d61-e99f-4ab7-ba4b-bda6f54a052d       /       btrfs   defaults 0 0
+  #
+  # then with this set-up
+  #
+  #     file = {}
+  #     file_ref = arg_ref(file)  # an artefact of YCP API
+  #     AsciiFile.SetComment(file_ref, "^[ \t]*#")
+  #     AsciiFile.SetDelimiter(file_ref, " \t")
+  #     AsciiFile.SetListWidth(file_ref, [20, 20, 10, 21, 1, 1])
+  #
+  # this main call
+  #
+  #     AsciiFile.ReadFile(file_ref, "/etc/fstab")
+  #     # note that the result is `file["l"]`
+  #     # as the rest of `file` are the parsing parameters
+  #     result = file["l"]
+  #
+  # will produce
+  #
+  #     result.size               # =>  2
+  #     # an integer keyed hash starting at ONE!
+  #     result.keys               # =>  [1, 2]
+  #     result[1]["comment"]      # =>  true
+  #     result[1]["line"]         # =>  "# main filesystem"
+  #     result[2]["fields"].size  # =>  6
+  #     result[2]["fields"][1]    # =>  "/"
   class AsciiFileClass < Module
     def main
 
@@ -51,8 +81,8 @@ module Yast
 
     # Sets the widths of records on one line
     #
-    # @param [map &] file content
-    # @param list		of widths
+    # @param [ArgRef<Hash>] file content
+    # @param [Array] widths list of widths
     def SetListWidth(file, widths)
       widths = deep_copy(widths)
       Ops.set(file.value, "widths", widths)
@@ -62,8 +92,8 @@ module Yast
 
     # Sets the delimiter between the records on one line
     #
-    # @param [map &] file content
-    # @param string	delimiter
+    # @param [ArgRef<Hash>] file content
+    # @param [String] delim delimiter
     def SetDelimiter(file, delim)
       Ops.set(file.value, "delim", delim)
 
@@ -112,8 +142,8 @@ module Yast
 
     # Reads the file from the disk
     #
-    # @param [map &] file content
-    # @param [map &] file name
+    # @param [ArgRef<Hash>] file content
+    # @param [String] pathname file name
     def ReadFile(file, pathname)
       Builtins.y2milestone("path=%1", pathname)
       lines = []
@@ -182,8 +212,8 @@ module Yast
     # Returns the list of rows where matches searched string in the defined column
     #
     # @param [Hash] file content
-    # @param integer		column (counted from 0 to n)
-    # @param string		searched string
+    # @param [Integer] field		column (counted from 0 to n)
+    # @param [String] content		searched string
     # @return [Array<Fixnum>]	matching rows
     def FindLineField(file, field, content)
       file = deep_copy(file)
@@ -200,9 +230,9 @@ module Yast
 
     # Returns map of wanted lines
     #
-    # @param [map &] file content
-    # @param list<integer>		rows (counted from 1 to n)
-    # @return [Hash{Fixnum => map}]	with wanted lines
+    # @param [ArgRef<Hash>] file content
+    # @param [Array<Integer>] lines		rows (counted from 1 to n)
+    # @return [Hash<Fixnum, Hash>]	hash with wanted lines
     def GetLines(file, lines)
       lines = deep_copy(lines)
       ret = {}
@@ -220,8 +250,8 @@ module Yast
 
     # Returns map of wanted line
     #
-    # @param [map &] file content
-    # @param integer	row number (counted from 1 to n)
+    # @param [ArgRef<Hash>] file content
+    # @param [Integer] line	row number (counted from 1 to n)
     # @return [Hash]		of wanted line
     def GetLine(file, line)
       ret = {}
@@ -248,9 +278,9 @@ module Yast
 
     # Changes the record in the file defined by row and column
     #
-    # @param [map &] file content
-    # @param integer	row number (counted from 1 to n)
-    # @param integer	column number (counted from 0 to n)
+    # @param [ArgRef<Hash>] file content
+    # @param [Integer] line	row number (counted from 1 to n)
+    # @param [Integer] field	column number (counted from 0 to n)
     def ChangeLineField(file, line, field, entry)
       Builtins.y2debug("line %1 field %2 entry %3", line, field, entry)
       changed = false
@@ -288,9 +318,9 @@ module Yast
 
     # Changes a complete line
     #
-    # @param [map &] file content
-    # @param integer	row number (counted from 1 to n)
-    # @param list	        of new entries on the line
+    # @param [ArgRef<Hash>] file content
+    # @param [Integer] line	row number (counted from 1 to n)
+    # @param [Array] entry	array of new fields on the line
     def ReplaceLine(file, line, entry)
       entry = deep_copy(entry)
       Builtins.y2debug("line %1 entry %2", line, entry)
@@ -307,8 +337,8 @@ module Yast
 
     # Appends a new line at the bottom
     #
-    # @param [map &] file content
-    # @param list	of new entries on one line
+    # @param [ArgRef<Hash>] file content
+    # @param [Array] entry	array of new fields on the line
     def AppendLine(file, entry)
       entry = deep_copy(entry)
       line = Ops.add(Builtins.size(Ops.get_map(file.value, "l", {})), 1)
@@ -323,7 +353,7 @@ module Yast
 
     # Removes lines
     #
-    # @param [map &] file content
+    # @param [ArgRef<Hash>] file content
     # @param [Array<Fixnum>] lines to remove (counted from 1 to n)
     def RemoveLines(file, lines)
       lines = deep_copy(lines)
@@ -343,8 +373,8 @@ module Yast
 
     # Writes a content into the file
     #
-    # @param [map &] file content
-    # @param [map &] file name
+    # @param [ArgRef<Hash>] file content
+    # @param [String] fpath file name
     def RewriteFile(file, fpath)
       Builtins.y2milestone("path %1", fpath)
       Builtins.y2debug("out: %1", file.value)
