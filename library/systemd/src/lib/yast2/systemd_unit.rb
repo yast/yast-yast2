@@ -51,7 +51,7 @@ module Yast
 
     extend Forwardable
 
-    def_delegators :@properties, :id, :path,
+    def_delegators :@properties, :id, :path, :description,
                    :active?, :enabled?, :running?, :loaded?
 
     attr_reader   :unit_name, :unit_type, :input_properties, :errors, :properties

@@ -25,6 +25,18 @@ module Yast
         ( sockets_from_files | sockets_from_units ).compact
       end
 
+      def service_units
+        services_from_files = list_unit_files(:type=>:service).lines.map do |line|
+          line[/\S+/]
+        end
+
+        services_from_units = list_units(:type=>:service).lines.map do |line|
+          line[/\S+/]
+        end
+
+        ( services_from_files | services_from_units ).compact
+      end
+
       private
 
       def list_unit_files type: nil
