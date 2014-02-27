@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 27 09:56:16 UTC 2014 - vmoravec@suse.com
+
+- Add systemd socket support (bnc#853300)
+- 3.1.20
+
+-------------------------------------------------------------------
 Mon Feb 10 13:18:52 UTC 2014 - lslezak@suse.cz
 
 - added memory detection code (gh#yast/yast-packager#33)
