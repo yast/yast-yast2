@@ -6,9 +6,15 @@ require "yast"
 
 module SystemctlStubs
 
-  def stub_systemctl
-    stub_socket_unit_files
-    stub_socket_units
+  def stub_systemctl unit
+    case unit
+    when :socket
+      stub_socket_unit_files
+      stub_socket_units
+    when :service
+      stub_service_unit_files
+      stub_service_units
+    end
     stub_execute
   end
 
@@ -29,6 +35,30 @@ avahi-daemon.socket          enabled
 cups.socket                  enabled
 dbus.socket                  static
 dm-event.socket              disabled
+LIST
+    )
+  end
+
+  def stub_service_unit_files
+    Yast::Systemctl.stub(:list_unit_files).and_return(<<LIST
+single.service                             masked
+smartd.service                             disabled
+smb.service                                disabled
+sshd.service                               enabled
+sssd.service                               enabled
+startpreload.service                       masked
+LIST
+    )
+  end
+
+  def stub_service_units
+    Yast::Systemctl.stub(:list_units).and_return(<<LIST
+rsyslog.service                       loaded active   running System Logging Service
+scsidev.service                       not-found inactive dead    scsidev.service
+sendmail.service                      not-found inactive dead    sendmail.service
+sshd.service                          loaded active   running OpenSSH Daemon
+sssd.service                          loaded active   running System Security Services Daemon
+SuSEfirewall2.service                 loaded inactive dead    SuSEfirewall2 phase 2
 LIST
     )
   end
@@ -76,7 +106,7 @@ module SystemdSocketStubs
 
   def stub_sockets
     stub_unit_command
-    stub_systemctl
+    stub_systemctl(:socket)
     stub_socket_properties
   end
 
@@ -86,6 +116,28 @@ module SystemdSocketStubs
       .stub(:load_systemd_properties)
       .and_return(socket_properties)
   end
+end
 
+module SystemdServiceStubs
+  include SystemctlStubs
+  include SystemdUnitStubs
+
+  def stub_services service: 'sshd'
+    stub_unit_command
+    stub_systemctl(:service)
+    properties = load_service_properties(service)
+    Yast::SystemdUnit::Properties
+      .any_instance
+      .stub(:load_systemd_properties)
+      .and_return(properties)
+  end
+
+  def load_service_properties service_name
+    OpenStruct.new(
+      :stdout => File.read(File.join(__dir__, 'data', "#{service_name}_service_properties")),
+      :stderr => '',
+      :exit   => 0
+      )
+  end
 end
 

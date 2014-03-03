@@ -28,7 +28,6 @@ module Yast
         unit = SystemdUnit.new("iscsid.socket")
         expect(unit.properties[:enabled?]).not_to be_nil
         expect(unit.properties[:active?]).not_to be_nil
-        expect(unit.properties[:running?]).not_to be_nil
         expect(unit.properties[:loaded?]).not_to be_nil
         expect(unit.properties[:supported?]).not_to be_nil
         expect(unit.properties[:not_found?]).not_to be_nil
@@ -41,7 +40,6 @@ module Yast
         unit = SystemdUnit.new("iscsid.socket")
         expect(unit).to respond_to(:enabled?)
         expect(unit).to respond_to(:active?)
-        expect(unit).to respond_to(:running?)
         expect(unit).to respond_to(:loaded?)
         expect(unit).to respond_to(:path)
       end
