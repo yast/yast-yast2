@@ -7,6 +7,8 @@ module Yast
     ENV_VARS        = " LANG=C TERM=dumb COLUMNS=1024 "
     SYSTEMCTL       = ENV_VARS + CONTROL + COMMAND_OPTIONS
 
+    FIRST_COLUMN    = /\S+/
+
     class << self
 
       def execute command
@@ -15,11 +17,11 @@ module Yast
 
       def socket_units
         sockets_from_files = list_unit_files(:type=>:socket).lines.map do |line|
-          line[/\S+/]
+          line[FIRST_COLUMN]
         end
 
         sockets_from_units = list_units(:type=>:socket).lines.map do |line|
-          line[/\S+/]
+          line[FIRST_COLUMN]
         end
 
         ( sockets_from_files | sockets_from_units ).compact
@@ -27,11 +29,11 @@ module Yast
 
       def service_units
         services_from_files = list_unit_files(:type=>:service).lines.map do |line|
-          line[/\S+/]
+          line[FIRST_COLUMN]
         end
 
         services_from_units = list_units(:type=>:service).lines.map do |line|
-          line[/\S+/]
+          line[FIRST_COLUMN]
         end
 
         ( services_from_files | services_from_units ).compact

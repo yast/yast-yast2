@@ -13,6 +13,8 @@ module Yast
   #    ## Get a service unit by its name
   #
   #    service = Yast::SystemdService.find('sshd')
+  #    # or using the full unit id 'sshd.service'
+  #    service = Yast::SystemdService.find('sshd.service')
   #
   #    ## Get basic unit properties
   #
@@ -46,7 +48,7 @@ module Yast
   #    # you can extend the parameters for .find method. Those properties are
   #    # then available on the service unit object under the #properties instance method.
   #    # An extended property is always a string, you must convert it manually,
-  #    # not automatical casting is done by yast.
+  #    # no automatical casting is done by yast.
   #    # To get an overview of available service properties, try e.g., `systemctl show sshd.service`
   #
   #    service = Yast::SystemdService.find('sshd', :type=>'Type')
@@ -71,7 +73,13 @@ module Yast
     end
 
     class Service < SystemdUnit
-      # TODO
+      def pid
+        properties.pid
+      end
+
+      def running?
+        properties.running?
+      end
     end
   end
   SystemdService = SystemdServiceClass.new
