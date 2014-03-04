@@ -108,8 +108,6 @@ module Yast
         return false
       end
 
-      service_exists = false
-
       possible_service_locations = Builtins.add(
         # all known $service.service locations
         Builtins.maplist(@systemd_dirs) do |directory|
@@ -202,8 +200,6 @@ module Yast
     # @param [String] name service name
     # @return true if service is set to run in any runlevel
     def Enabled(name)
-      return false if !checkExists(name)
-
       SCR.Execute(
         path(".target.bash"),
         Builtins.sformat("%1 is-enabled %2.service", @invoker, name)
@@ -234,7 +230,6 @@ module Yast
     # @param [String] name name of the service
     # @return init script exit status or -1 if it does not exist
     def Status(name)
-      return -1 if !checkExists(name)
       Convert.to_integer(
         SCR.Execute(
           path(".target.bash"),
@@ -295,11 +290,6 @@ module Yast
     #    defaults.
     # @return [Boolean] success state
     def Adjust(name, action)
-      if !checkExists(name)
-        Builtins.y2error("Service %1 does not exist.", name)
-        return false
-      end
-
       is_enabled = Enabled(name)
 
       if action == "disable"
@@ -509,7 +499,6 @@ module Yast
     # @param [String] service service to be enabled
     # @return true if operation is  successful
     def Enable(service)
-      return false if !checkExists(service)
       Builtins.y2milestone("Enabling service %1", service)
       Adjust(service, "enable")
     end
@@ -518,7 +507,6 @@ module Yast
     # @param [String] service service to be disabled
     # @return true if operation is  successful
     def Disable(service)
-      return false if !checkExists(service)
       Builtins.y2milestone("Disabling service %1", service)
       Adjust(service, "disable")
     end
@@ -527,8 +515,6 @@ module Yast
     # @param [String] service service to be started
     # @return true if operation is  successful
     def Start(service)
-      return false if !checkExists(service)
-      ret = nil
       Builtins.y2milestone("Starting service %1", service)
       ret = RunInitScript(service, "start")
       Builtins.y2debug("ret=%1", ret)
@@ -539,8 +525,6 @@ module Yast
     # @param [String] service service to be restarted
     # @return true if operation is  successful
     def Restart(service)
-      return false if !checkExists(service)
-      ret = nil
       Builtins.y2milestone("Restarting service %1", service)
       ret = RunInitScript(service, "restart")
       Builtins.y2debug("ret=%1", ret)
@@ -551,8 +535,6 @@ module Yast
     # @param [String] service service to be reloaded
     # @return true if operation is  successful
     def Reload(service)
-      return false if !checkExists(service)
-      ret = nil
       Builtins.y2milestone("Reloading service %1", service)
       ret = RunInitScript(service, "reload")
       Builtins.y2debug("ret=%1", ret)
@@ -563,8 +545,6 @@ module Yast
     # @param [String] service service to be stopped
     # @return true if operation is  successful
     def Stop(service)
-      return false if !checkExists(service)
-      ret = nil
       Builtins.y2milestone("Stopping service %1", service)
       ret = RunInitScript(service, "stop")
       Builtins.y2debug("ret=%1", ret)
@@ -611,7 +591,7 @@ module Yast
       ) do |s|
         service = Builtins.regexpsub(s, "^S[0-9]+([^0-9]+.*)", "\\1")
         ret = Builtins.add(ret, service) if service != nil
-      end 
+      end
 
 
       Builtins.y2milestone("Enabled services in runlevel %1: %2", runlevel, ret)

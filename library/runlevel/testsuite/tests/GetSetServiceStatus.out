@@ -1,14 +1,7 @@
 Read	.target.tmpdir "/tmp"
-Read	.target.stat "/usr/lib/systemd/system/iscsid.service" $["isreg":true]
 Execute	.target.bash "/bin/systemctl is-enabled iscsid.service" 0
 Return	true
-Read	.target.stat "/usr/lib/systemd/system/boot.iscsid-early.service" $["isreg":true]
-Read	.target.stat "/usr/lib/systemd/system/boot.iscsid-early.service" $["isreg":true]
-Read	.target.stat "/usr/lib/systemd/system/boot.iscsid-early.service" $["isreg":true]
 Execute	.target.bash "/bin/systemctl is-enabled boot.iscsid-early.service" 0
 Return	true
-Read	.target.stat "/usr/lib/systemd/system/iscsid.service" $["isreg":true]
-Read	.target.stat "/usr/lib/systemd/system/iscsid.service" $["isreg":true]
-Read	.target.stat "/usr/lib/systemd/system/iscsid.service" $["isreg":true]
 Execute	.target.bash "/bin/systemctl is-enabled iscsid.service" 0
 Return	true
