@@ -1,8 +1,6 @@
 Read	.target.tmpdir "/tmp"
 Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
 Log	Cannot enable service aaa (just) in selected runlevels, enabling in all default ones
-Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
-Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
 Execute	.target.bash "/bin/systemctl is-enabled aaa.service" 0
 Return	true
 Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
