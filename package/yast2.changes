@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Mar  4 13:12:37 UTC 2014 - vmoravec@suse.com
+
+- Do not check for existence of systemd unit files in
+  Service module (bnc#864934)
+- 3.0.13
+
+-------------------------------------------------------------------
 Thu Feb 27 11:52:53 UTC 2014 - vmoravec@suse.com
 
 - Add systemd socket support (bnc#853300)
