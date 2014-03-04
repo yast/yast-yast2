@@ -212,9 +212,11 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %{yast_scrconfdir}/*
 %{yast_ybindir}/*
 %{yast_agentdir}/ag_*
-%{_sysconfdir}/bash_completion.d/yast2*.sh
-%{_sysconfdir}/YaST2/XVersion
 /var/adm/fillup-templates/sysconfig.yast2
+
+# configuration files
+%config %{_sysconfdir}/bash_completion.d/yast2*.sh
+%config %{_sysconfdir}/YaST2/XVersion
 
 # documentation (not included in devel subpackage)
 %doc %dir %{yast_docdir}
