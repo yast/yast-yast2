@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Mar  4 12:20:41 UTC 2014 - vmoravec@suse.com
+
+- Allow the Service module to configure services witout
+  systemd unit files (bnc#864934)
+- 3.1.21
+
+-------------------------------------------------------------------
 Thu Feb 27 09:56:16 UTC 2014 - vmoravec@suse.com
 
 - Add systemd socket support (bnc#853300)

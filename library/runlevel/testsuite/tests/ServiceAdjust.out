@@ -1,35 +1,20 @@
 Read	.target.tmpdir "/tmp"
-Read	.target.stat "/usr/lib/systemd/system/aaa.service" $[]
-Read	.target.stat "/run/systemd/system/aaa.service" $[]
-Read	.target.stat "/etc/systemd/system/aaa.service" $[]
-Read	.target.stat "/etc/init.d/aaa" $[]
-Log	Service aaa does not exist.
-Return	false
-Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
-Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
 Execute	.target.bash "/bin/systemctl is-enabled aaa.service" 0
 Execute	.target.bash_output "/bin/systemctl  disable aaa.service" $["exit":0, "stderr":"", "stdout":""]
 Return	true
-Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
-Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
 Execute	.target.bash "/bin/systemctl is-enabled aaa.service" 0
 Execute	.target.bash_output "/bin/systemctl  disable aaa.service" $["exit":0, "stderr":"", "stdout":""]
 Return	true
-Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
-Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
+Execute	.target.bash "/bin/systemctl is-enabled aaa.service" 0
+Execute	.target.bash_output "/bin/systemctl  disable aaa.service" $["exit":0, "stderr":"", "stdout":""]
+Return	true
 Execute	.target.bash "/bin/systemctl is-enabled aaa.service" 0
 Return	true
-Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
-Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
 Execute	.target.bash "/bin/systemctl is-enabled aaa.service" 0
 Return	true
-Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
-Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
 Execute	.target.bash "/bin/systemctl is-enabled aaa.service" 0
 Execute	.target.bash_output "/bin/systemctl enable aaa.service" $["exit":0, "stderr":"", "stdout":""]
 Return	true
-Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
-Read	.target.stat "/usr/lib/systemd/system/aaa.service" $["isreg":true]
 Execute	.target.bash "/bin/systemctl is-enabled aaa.service" 0
 Execute	.target.bash_output "/bin/systemctl enable aaa.service" $["exit":0, "stderr":"", "stdout":""]
 Return	true
