@@ -23,7 +23,7 @@ module Yast
         service_units = Systemctl.service_units
         expect(service_units).to be_a(Array)
         expect(service_units).not_to be_empty
-        service_units.each {|u| expect(u).to match(/.service$/)/ }
+        service_units.each {|u| expect(u).to match(/.service$/) }
       end
     end
   end
