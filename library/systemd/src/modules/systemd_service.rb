@@ -11,10 +11,19 @@ module Yast
   #    Yast.import 'SystemdService'
   #
   #    ## Get a service unit by its name
+  #    ## If the service unit can't be found, you'll get nil
   #
-  #    service = Yast::SystemdService.find('sshd')
+  #    service = Yast::SystemdService.find('sshd') # service unit object
+  #
   #    # or using the full unit id 'sshd.service'
+  #
   #    service = Yast::SystemdService.find('sshd.service')
+  #
+  #    ## If you can't handle any nil at the place of calling,
+  #    ## use the finder with exclamation mark;
+  #    ## SystemdServiceNotFound exception will be raised
+  #
+  #    service = Yast::SystemdService.find!('IcanHasMoar') # SystemdServiceNotFound: Service unit 'IcanHasMoar' not found
   #
   #    ## Get basic unit properties
   #
@@ -56,6 +65,8 @@ module Yast
   #
   ##
 
+  class SystemdServiceNotFound < StandardError ; end
+
   class SystemdServiceClass < Module
     UNIT_SUFFIX = ".service"
 
@@ -64,6 +75,12 @@ module Yast
       service = Service.new(service_name, properties)
       return nil if service.properties.not_found?
       service
+    end
+
+    def find! service_name, properties={}
+      service = find(service_name, properties)
+      return service if service
+      raise SystemdServiceNotFound, "Service unit '#{service_name}' not found"
     end
 
     def all properties={}

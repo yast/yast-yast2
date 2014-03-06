@@ -21,6 +21,20 @@ module Yast
       end
     end
 
+    describe ".find!" do
+      it "returns the unit object specified in parameter" do
+        socket = SystemdSocket.find "iscsid"
+        expect(socket).to be_a(SystemdUnit)
+        expect(socket.unit_type).to eq("socket")
+        expect(socket.unit_name).to eq("iscsid")
+      end
+
+      it "raises SystemdServiceNotFound error if unit does not exist" do
+        stub_sockets(:socket=>'unknown')
+        expect { SystemdSocket.find!('unknown') }.to raise_error(SystemdSocketNotFound)
+      end
+    end
+
     describe ".all" do
       it "returns all supported sockets found" do
         sockets = SystemdSocket.all

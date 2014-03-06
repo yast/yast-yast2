@@ -11,8 +11,15 @@ module Yast
   #    Yast.import 'SystemdSocket'
   #
   #    ## Get a socket unit by its name
+  #    ## If the socket unit can't be found, you'll get a nil object
   #
-  #    socket = Yast::SystemdSocket.find('iscsid')
+  #    socket = Yast::SystemdSocket.find('iscsid') # socket unit object
+  #
+  #    ## If you can't handle any nil at the place of calling,
+  #    ## use the finder with exclamation mark;
+  #    ## SystemdSocketNotFound exception will be raised
+  #
+  #    socket = Yast::SystemdSocket.find!('IcanHasCheez') # SystemdSocketNotFound: Socket unit 'IcanHasCheez' not found
   #
   #    ## Get basic unit properties
   #
@@ -52,6 +59,8 @@ module Yast
   #
   ##
 
+  class SystemdSocketNotFound < StandardError ; end
+
   class SystemdSocketClass < Module
     UNIT_SUFFIX = ".socket"
 
@@ -60,6 +69,12 @@ module Yast
       socket = Socket.new(socket_name, properties)
       return nil if socket.properties.not_found?
       socket
+    end
+
+    def find! socket_name, properties={}
+      socket = find(socket_name, properties)
+      return socket if socket
+      raise SystemdSocketNotFound, "Socket unit '#{socket_name}' not found"
     end
 
     def all properties={}

@@ -96,25 +96,22 @@ module SystemdSocketStubs
   include SystemctlStubs
   include SystemdUnitStubs
 
-  def socket_properties
-    @properties ||= OpenStruct.new(
-      :stdout => File.read(File.join(__dir__, 'data', 'iscsid_socket_properties')),
-      :stderr => '',
+  def load_socket_properties socket_name
+    OpenStruct.new(
+      :stdout => File.read(File.join(__dir__, "data", "#{socket_name}_socket_properties")),
+      :stderr => "",
       :exit   => 0
       )
   end
 
-  def stub_sockets
+  def stub_sockets socket: 'iscsid'
     stub_unit_command
     stub_systemctl(:socket)
-    stub_socket_properties
-  end
-
-  def stub_socket_properties
+    properties = load_socket_properties(socket)
     Yast::SystemdUnit::Properties
       .any_instance
       .stub(:load_systemd_properties)
-      .and_return(socket_properties)
+      .and_return(properties)
   end
 end
 
