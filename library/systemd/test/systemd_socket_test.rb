@@ -29,7 +29,7 @@ module Yast
         expect(socket.unit_name).to eq("iscsid")
       end
 
-      it "raises SystemdServiceNotFound error if unit does not exist" do
+      it "raises SystemdSocketNotFound error if unit does not exist" do
         stub_sockets(:socket=>'unknown')
         expect { SystemdSocket.find!('unknown') }.to raise_error(SystemdSocketNotFound)
       end
