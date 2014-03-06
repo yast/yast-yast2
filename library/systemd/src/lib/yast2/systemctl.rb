@@ -15,14 +15,26 @@ module Yast
 
       def socket_units
         sockets_from_files = list_unit_files(:type=>:socket).lines.map do |line|
-          line[/\S+/]
+          first_column(line)
         end
 
         sockets_from_units = list_units(:type=>:socket).lines.map do |line|
-          line[/\S+/]
+          first_column(line)
         end
 
         ( sockets_from_files | sockets_from_units ).compact
+      end
+
+      def service_units
+        services_from_files = list_unit_files(:type=>:service).lines.map do |line|
+          first_column(line)
+        end
+
+        services_from_units = list_units(:type=>:service).lines.map do |line|
+          first_column(line)
+        end
+
+        ( services_from_files | services_from_units ).compact
       end
 
       private
@@ -38,6 +50,10 @@ module Yast
         command << " --all " if all
         command << " --type=#{type} " if type
         execute(command).stdout
+      end
+
+      def first_column line
+        line[/\S+/]
       end
     end
   end
