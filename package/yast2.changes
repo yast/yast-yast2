@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Mar  6 15:21:44 UTC 2014 - vmoravec@suse.com
+
+- Allow raising exceptions for not found systemd units;
+  updates the expectations for bnc#853300
+- 3.1.23
+
+-------------------------------------------------------------------
 Thu Mar  6 07:48:29 UTC 2014 - vmoravec@suse.com
 
 - Add systemd service support; needed by fate#314946

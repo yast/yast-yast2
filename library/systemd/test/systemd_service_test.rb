@@ -29,6 +29,20 @@ module Yast
       end
     end
 
+    describe ".find!" do
+      it "returns the service unit object specified in parameter" do
+        service = SystemdService.find('sshd')
+        expect(service).to be_a(SystemdUnit)
+        expect(service.unit_type).to eq("service")
+        expect(service.unit_name).to eq("sshd")
+      end
+
+      it "raises SystemdServiceNotFound error if unit does not exist" do
+        stub_services(:service=>'unknown')
+        expect { SystemdService.find!('unknown') }.to raise_error(SystemdServiceNotFound)
+      end
+    end
+
     describe ".all" do
       it "returns all supported services found" do
         services = SystemdService.all
