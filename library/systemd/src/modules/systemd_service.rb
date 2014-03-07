@@ -65,7 +65,11 @@ module Yast
   #
   ##
 
-  class SystemdServiceNotFound < StandardError ; end
+  class SystemdServiceNotFound < StandardError
+    def initialize service_name
+      super "Service unit '#{service_name}' not found"
+    end
+  end
 
   class SystemdServiceClass < Module
     UNIT_SUFFIX = ".service"
@@ -78,9 +82,7 @@ module Yast
     end
 
     def find! service_name, properties={}
-      service = find(service_name, properties)
-      return service if service
-      raise SystemdServiceNotFound, "Service unit '#{service_name}' not found"
+      find(service_name, properties) || raise(SystemdServiceNotFound, service_name)
     end
 
     def all properties={}

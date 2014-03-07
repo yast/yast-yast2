@@ -59,7 +59,11 @@ module Yast
   #
   ##
 
-  class SystemdSocketNotFound < StandardError ; end
+  class SystemdSocketNotFound < StandardError
+    def initialize socket_name
+      super "Socket unit '#{socket_name}' not found"
+    end
+  end
 
   class SystemdSocketClass < Module
     UNIT_SUFFIX = ".socket"
@@ -72,9 +76,7 @@ module Yast
     end
 
     def find! socket_name, properties={}
-      socket = find(socket_name, properties)
-      return socket if socket
-      raise SystemdSocketNotFound, "Socket unit '#{socket_name}' not found"
+      find(socket_name, properties) || raise(SystemdSocketNotFound, socket_name)
     end
 
     def all properties={}
