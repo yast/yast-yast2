@@ -233,7 +233,7 @@ module Yast
       Convert.to_integer(
         SCR.Execute(
           path(".target.bash"),
-          Builtins.sformat("%1 status %2.service", @invoker, name),
+          Builtins.sformat("%1 is-active %2.service", @invoker, name),
           { "TERM" => "raw" }
         )
       )
