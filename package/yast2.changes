@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 13 14:34:42 CET 2014 - gs@suse.de
+
+- Check IPv4 and IPv6 for running network (bnc#868001)
+- 3.1.25
+
+-------------------------------------------------------------------
 Tue Mar 11 13:41:08 UTC 2014 - vmoravec@suse.com
 
 - Adapt System.Status for latest systemctl (bnc#867378)
