@@ -304,9 +304,12 @@ module Yast
       end
     end
 
+    def isNetworkRunning
+      isNetworkv4Running || isNetworkv6Running
+    end
 
     # test for IPv4
-    def isNetworkRunning
+    def isNetworkv4Running
       net = Convert.to_integer(
         SCR.Execute(
           path(".target.bash"),
@@ -314,10 +317,10 @@ module Yast
         )
       )
       if net == 0
-        Builtins.y2milestone("Network is running ...")
+        Builtins.y2milestone("IPv4 network is running ...")
         return true
       else
-        Builtins.y2milestone("Network is not running ...")
+        Builtins.y2milestone("IPv4 network is not running ...")
         return false
       end
     end
@@ -330,10 +333,10 @@ module Yast
         )
       )
       if net == 0
-        Builtins.y2milestone("Network is running ...")
+        Builtins.y2milestone("IPv6 network is running ...")
         return true
       else
-        Builtins.y2milestone("Network is not running ...")
+        Builtins.y2milestone("IPv6 network is not running ...")
         return false
       end
     end
@@ -356,9 +359,9 @@ module Yast
             ),
           _("or continue without network.")
         )
-        Popup.ContinueCancel(error_text)
+        ret = Popup.ContinueCancel(error_text)
         Builtins.y2error("Network not runing!")
-        return false
+        return ret
       end
     end
 
@@ -432,6 +435,7 @@ module Yast
     publish :function => :StartStop, :type => "void ()"
     publish :function => :ConfirmNetworkManager, :type => "boolean ()"
     publish :function => :isNetworkRunning, :type => "boolean ()"
+    publish :function => :isNetworkv4Running, :type => "boolean ()"
     publish :function => :isNetworkv6Running, :type => "boolean ()"
     publish :function => :RunningNetworkPopup, :type => "boolean ()"
   end
