@@ -16,10 +16,8 @@ module Yast
 
       def execute command
         command = SYSTEMCTL.dup << command
-        OpenStruct.new(
-          result = SCR.Execute(Path.new(".target.bash_output"), command)
-          result.merge!(:command => command)
-        )
+        result = SCR.Execute(Path.new(".target.bash_output"), command)
+        OpenStruct.new(result.merge!(:command => command))
       end
 
       def socket_units

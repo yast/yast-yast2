@@ -29,30 +29,31 @@ module Yast
       end
     end
 
-    # returns string
     def get_default
       result = Systemctl.execute("get-default")
       raise(SystemctlError, result) unless result.exit.zero?
 
-      result.stdout
+      find(result.stdout.strip)
     end
 
-    # returns boolean
-    def set_default target_name
-      target_unit = find(target_name)
-      raise(SystemdTargetNotFound, target_name) unless target_unit
-
-      result = Systemctl.execute("set-default " << target_name)
-      raise(SystemctlError, result) unless result.exit.zero?
-
-      true
+    def set_default target
+      target_unit = target.is_a?(Target) ? target : find(target)
+      raise(SystemdTargetNotFound, target) unless target_unit
+      target_unit.set_default
     end
 
     class Target < SystemdUnit
       def isolate_allowed?
         properties.allow_isolate == 'yes'
       end
+
+      def set_default
+        return false unless isolate_allowed?
+
+        result = Systemctl.execute("set-default --force " << self.id)
+        result.exit.zero?
+      end
     end
   end
-  SystemdService = SystemdServiceClass.new
+  SystemdTarget = SystemdTargetClass.new
 end
