@@ -70,10 +70,10 @@ module Yast
 
     context "Start a service on the installation system" do
       it "starts a service with a specialized inst-sys helper if available" do
-        File.stub(:exist?).and_return(true)
+        File.stub(:exist?).with('/bin/service_start').and_return(true)
         service = SystemdService.find("sshd")
         SCR.stub(:Execute).and_return({'stderr'=>'', 'stdout'=>'', 'exit'=>0})
-        expect(service).not_to receive(:command)
+        expect(service).not_to receive(:command) # SystemdUnit#command
         expect(service.start).to be_true
       end
     end
