@@ -372,7 +372,7 @@ module Yast
     def RunInitScript(name, param)
       Builtins.y2milestone("Running service initscript %1 %2", name, param)
 
-      if File.exist?(START_SERVICE_COMMAND)
+      if File.exist?(START_SERVICE_COMMAND) && param == 'start'
         command = "#{START_SERVICE_COMMAND} #{name}"
       else
         command = Builtins.sformat("%1 %2 %3.service", @invoker, param, name)

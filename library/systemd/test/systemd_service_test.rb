@@ -68,8 +68,8 @@ module Yast
       end
     end
 
-    context "Start a service on installation system" do
-      it "starts a service even if systemd is not available" do
+    context "Start a service on the installation system" do
+      it "starts a service with a specialized inst-sys helper if available" do
         File.stub(:exist?).and_return(true)
         service = SystemdService.find("sshd")
         SCR.stub(:Execute).and_return({'stderr'=>'', 'stdout'=>'', 'exit'=>0})
