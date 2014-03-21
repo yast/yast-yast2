@@ -67,5 +67,15 @@ module Yast
         expect(service.pid).not_to be_empty
       end
     end
+
+    context "Start a service on installation system" do
+      it "starts a service even if systemd is not available" do
+        File.stub(:exist?).and_return(true)
+        service = SystemdService.find("sshd")
+        SCR.stub(:Execute).and_return({'stderr'=>'', 'stdout'=>'', 'exit'=>0})
+        expect(service).not_to receive(:command)
+        expect(service.start).to be_true
+      end
+    end
   end
 end
