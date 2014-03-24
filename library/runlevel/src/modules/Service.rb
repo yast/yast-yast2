@@ -362,13 +362,22 @@ module Yast
       end
     end
 
+    # Available only in installation system
+    START_SERVICE_COMMAND = "/bin/service_start"
+
     # Run init script.
     # @param [String] name init service name
     # @param [String] param init script argument
     # @return [Fixnum] exit value
     def RunInitScript(name, param)
       Builtins.y2milestone("Running service initscript %1 %2", name, param)
-      command = Builtins.sformat("%1 %2 %3.service", @invoker, param, name)
+
+      if File.exist?(START_SERVICE_COMMAND) && param == 'start'
+        command = "#{START_SERVICE_COMMAND} #{name}"
+      else
+        command = Builtins.sformat("%1 %2 %3.service", @invoker, param, name)
+      end
+
       output = Convert.convert(
         SCR.Execute(path(".target.bash_output"), command, { "TERM" => "raw" }),
         :from => "any",
