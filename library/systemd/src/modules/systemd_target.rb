@@ -20,12 +20,12 @@ module Yast
     end
 
     def find! target_name, properties={}
-      find(target_name, PROPERTIES.merge(properties)) || raise(SystemdTargetNotFound, target_name)
+      find(target_name) || raise(SystemdTargetNotFound, target_name)
     end
 
     def all properties={}
-      targets = Systemctl.target_units.map do |target_unit|
-        Target.new(target_unit, PROPERTIES.merge(properties))
+      Systemctl.target_units.map do |target_unit_name|
+        find(target_unit_name)
       end
     end
 
@@ -38,17 +38,21 @@ module Yast
 
     def set_default target
       target_unit = target.is_a?(Target) ? target : find(target)
-      raise(SystemdTargetNotFound, target) unless target_unit
+      return false unless target_unit
       target_unit.set_default
     end
 
     class Target < SystemdUnit
-      def isolate_allowed?
+
+      # Disable unsupported methods for target units
+      undef_method :start, :stop, :enable, :disable
+
+      def allow_isolate?
         properties.allow_isolate == 'yes'
       end
 
       def set_default
-        return false unless isolate_allowed?
+        return false unless allow_isolate?
 
         result = Systemctl.execute("set-default --force " << self.id)
         result.exit.zero?

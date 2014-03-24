@@ -44,7 +44,7 @@ module Yast
         ( services_from_files | services_from_units ).compact
       end
 
-      def target_units isolate: false
+      def target_units
         targets_from_files = list_unit_files(:type=>:target).lines.map do |line|
           first_column(line)
         end
