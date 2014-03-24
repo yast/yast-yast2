@@ -32,7 +32,7 @@ module Yast
         expect(unit.properties[:supported?]).not_to be_nil
         expect(unit.properties[:not_found?]).not_to be_nil
         expect(unit.properties[:path]).not_to be_nil
-        expect(unit.properties[:errors]).not_to be_nil
+        expect(unit.properties[:error]).not_to be_nil
         expect(unit.properties[:raw]).not_to be_nil
       end
 
@@ -85,7 +85,7 @@ module Yast
         stub_unit_command(:success=>false)
         unit = SystemdUnit.new("my.socket")
         expect(unit.stop).to be_false
-        expect(unit.errors).not_to be_empty
+        expect(unit.error).not_to be_empty
       end
 
       it "triggers reloading of unit properties" do
@@ -104,7 +104,7 @@ module Yast
         stub_unit_command(:success=>false)
         unit = SystemdUnit.new("my.socket")
         expect(unit.start).to be_false
-        expect(unit.errors).not_to be_empty
+        expect(unit.error).not_to be_empty
       end
 
       it "triggers reloading of unit properties" do
@@ -155,37 +155,37 @@ module Yast
       end
     end
 
-    describe "#errors" do
+    describe "#error" do
       it "returns empty string if the unit commands succeed" do
         stub_unit_command(:success=>true)
         unit = SystemdUnit.new("your.socket")
         unit.start
-        expect(unit.errors).to be_empty
+        expect(unit.error).to be_empty
 
         unit.stop
-        expect(unit.errors).to be_empty
+        expect(unit.error).to be_empty
 
         unit.enable
-        expect(unit.errors).to be_empty
+        expect(unit.error).to be_empty
 
         unit.disable
-        expect(unit.errors).to be_empty
+        expect(unit.error).to be_empty
       end
 
       it "returns error string if the unit commands fail" do
         stub_unit_command(:success=>false)
         unit = SystemdUnit.new("your.socket")
         unit.start
-        expect(unit.errors).not_to be_empty
+        expect(unit.error).not_to be_empty
 
         unit.stop
-        expect(unit.errors).not_to be_empty
+        expect(unit.error).not_to be_empty
 
         unit.enable
-        expect(unit.errors).not_to be_empty
+        expect(unit.error).not_to be_empty
 
         unit.disable
-        expect(unit.errors).not_to be_empty
+        expect(unit.error).not_to be_empty
       end
     end
 

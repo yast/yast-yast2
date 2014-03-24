@@ -53,14 +53,14 @@ module Yast
 
     def_delegators :@properties, :id, :path, :description, :active?, :enabled?, :loaded?
 
-    attr_reader   :unit_name, :unit_type, :input_properties, :errors, :properties
+    attr_reader   :unit_name, :unit_type, :input_properties, :error, :properties
 
     def initialize full_unit_name, properties={}
       @unit_name, @unit_type = full_unit_name.split(".")
       raise "Missing unit type suffix" unless unit_type
       raise "Unsupported unit type '#{unit_type}'" unless SUPPORTED_TYPES.member?(unit_type)
 
-      @errors = ""
+      @error = ""
       @input_properties = properties.merge!(DEFAULT_PROPERTIES)
       @properties = show
     end
@@ -89,6 +89,14 @@ module Yast
       run_command! { command("disable") }
     end
 
+    def restart
+      run_command! { command("restart") }
+    end
+
+    def reload
+      run_command! { command("reload") }
+    end
+
     def command command_name, options={}
       Systemctl.execute("#{command_name} #{unit_name}.#{unit_type} #{options[:options]}")
     end
@@ -96,9 +104,9 @@ module Yast
     private
 
     def run_command!
-      errors.clear
+      error.clear
       command_result = yield
-      errors << command_result.stderr
+      error << command_result.stderr
       @properties = show
       command_result.exit.zero?
     end
@@ -110,7 +118,7 @@ module Yast
         self[:systemd_unit] = systemd_unit
         raw_properties = load_systemd_properties
         self[:raw] = raw_properties.stdout
-        self[:errors] = raw_properties.stderr
+        self[:error] = raw_properties.stderr
         extract_properties
         self[:active?]    = active_state    == "active"
         self[:running?]   = sub_state       == "running"
