@@ -3,6 +3,7 @@ require "ostruct"
 module Yast
   class SystemctlError < StandardError
     def initialize struct
+      super "Systemctl command failed: #{struct}"
     end
   end
 
