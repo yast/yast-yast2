@@ -1,6 +1,12 @@
 require "ostruct"
 
 module Yast
+  class SystemctlError < StandardError
+    def initialize struct
+      super "Systemctl command failed: #{struct}"
+    end
+  end
+
   module Systemctl
     CONTROL         = "systemctl"
     COMMAND_OPTIONS = " --no-legend --no-pager --no-ask-password "
@@ -10,7 +16,9 @@ module Yast
     class << self
 
       def execute command
-        OpenStruct.new(SCR.Execute(Path.new(".target.bash_output"), SYSTEMCTL + command))
+        command = SYSTEMCTL + command
+        result = SCR.Execute(Path.new(".target.bash_output"), command)
+        OpenStruct.new(result.merge!(:command => command))
       end
 
       def socket_units
@@ -35,6 +43,18 @@ module Yast
         end
 
         ( services_from_files | services_from_units ).compact
+      end
+
+      def target_units
+        targets_from_files = list_unit_files(:type=>:target).lines.map do |line|
+          first_column(line)
+        end
+
+        targets_from_units = list_units(:type=>:target).lines.map do |line|
+          first_column(line)
+        end
+
+        ( targets_from_files | targets_from_units ).compact
       end
 
       private
