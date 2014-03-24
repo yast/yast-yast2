@@ -88,7 +88,7 @@ module Yast
       def set_default
         return false unless allow_isolate?
 
-        result = Systemctl.execute("set-default --force " << self.id)
+        result = Systemctl.execute("set-default --force " << id)
         result.exit.zero?
       end
     end

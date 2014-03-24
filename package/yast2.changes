@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar 24 12:16:08 UTC 2014 - vmoravec@suse.com
+
+- Add support for systemd target with SystemdTarget module 
+
+-------------------------------------------------------------------
 Thu Mar 13 14:34:42 CET 2014 - gs@suse.de
 
 - Check IPv4 and IPv6 for running network (bnc#868001)

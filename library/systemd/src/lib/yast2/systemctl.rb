@@ -16,7 +16,7 @@ module Yast
     class << self
 
       def execute command
-        command = SYSTEMCTL.dup << command
+        command = SYSTEMCTL + command
         result = SCR.Execute(Path.new(".target.bash_output"), command)
         OpenStruct.new(result.merge!(:command => command))
       end
