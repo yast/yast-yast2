@@ -1,6 +1,40 @@
 require 'yast2/systemd_unit'
 
 module Yast
+
+  ###
+  # Systemd.target unit control API
+  # @example How to find a custom systemd target
+  #
+  #   require 'yast'
+  #
+  #   Yast.import 'SystemdTarget'
+  #
+  #   # This will return either a target object or nil
+  #   target = Yast::SystemdTarget.find('graphical')
+  #
+  #   # This returns target object or raises exception SystemdTargetNotFound
+  #   target = Yast::SystemdTarget.find!('whatever')
+  #
+  #   # This returns collection of all available targets
+  #   Yast::SystemdTarget.all
+  #
+  # @example How to find the current default target
+  #
+  #   target = Yast::SystemdTarget.get_default
+  #   target.unit_name      # name of the default target
+  #   target.allow_isolate? # should return true
+  #
+  # @example Set the default target
+  #
+  #   Yast::SystemdTarget.set_default('multi-user') # returns true if success
+  #
+  #   # Or if we have already an target object, use this for default target
+  #   target = Yast::SystemdTarget.find('graphical')
+  #   target.allow_isolate? # must be true to set default target
+  #   target.set_default # returns true if success
+  ###
+
   class SystemdTargetNotFound < StandardError
     def initialize target_name
       super "Target unit '#{target_name}' not found"
