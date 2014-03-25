@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Mar 25 14:34:29 UTC 2014 - lslezak@suse.cz
+
+- added Popup.Feedback for displaying progress popup when running
+  a block of code
+- 3.1.26
+
+-------------------------------------------------------------------
 Tue Mar 25 08:09:09 CET 2014 - jsuchome@suse.cz
 
 - better check if chef-client is running (bnc#868483)
