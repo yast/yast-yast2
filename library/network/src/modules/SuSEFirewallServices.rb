@@ -2,7 +2,7 @@
 
 # ***************************************************************************
 #
-# Copyright (c) 2002 - 2012 Novell, Inc.
+# Copyright (c) 2002 - 2014 Novell, Inc.
 # All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
@@ -21,60 +21,84 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/SuSEFirewallServices.ycp
+#
+# File:	modules/SuSEFirewallServices.rb
 # Package:	Firewall Services, Ports Aliases.
 # Summary:	Definition of Supported Firewall Services and Port Aliases.
 # Authors:	Lukas Ocilka <locilka@suse.cz>
 #
-# $Id$
-#
 # Global Definition of Firewall Services
 # Defined using TCP, UDP and RPC ports and IP protocols and Broadcast UDP
 # ports. Results are cached, so repeating requests are answered faster.
+
 require "yast"
 
 module Yast
+  class SuSEFirewalServiceNotFound < StandardError
+    def initialize service_name
+      super "Service with name '#{service_name}' does not exist"
+    end
+  end
+
   class SuSEFirewallServicesClass < Module
+    include Yast::Logger
+
+    # this is how services defined by package are distinguished
+    DEFINED_BY_PKG_PREFIX = "service:"
+
+    SERVICES_DIR = "/etc/sysconfig/SuSEfirewall2.d/services/"
+
+    # please, check it with configuration in refresh-srv-def-by-pkgs-trans.sh script
+    SERVICES_TEXTDOMAIN = "firewall-services"
+
+    DEFAULT_SERVICE = {
+      "tcp_ports"       => [],
+      "udp_ports"       => [],
+      "rpc_ports"       => [],
+      "ip_protocols"    => [],
+      "broadcast_ports" => [],
+      "name"            => "",
+      "description"     => "",
+    }
+
+    READ_ONLY_SERVICE_FEATURES = ["name", "description"]
+
+    IGNORED_SERVICES = ["TEMPLATE", "..", "."]
+
     def main
       textdomain "base"
 
       Yast.import "FileUtils"
 
       #
-      #
-      # PLEASE, DO NOT ADD MORE SERVICES.
-      # ADD THE SERVICE DEFINITION TO THE PACKAGE TO WHICH IT BELONGS.
+      # IF YOU NEED TO ADD ANOTHER SERVICE, CREATE THE SERVICE DEFINITION
+      # IN A FILE AND ADD IT TO THE PACKAGE TO WHICH IT BELONGS.
       # USE /etc/sysconfig/SuSEfirewall2.d/services/TEMPLATE FOR THAT.
+      #
       # MORE INFORMATION IN FEATURE #300687: Ports for SuSEfirewall added via packages.
       # ANOTHER REFERENCE: Bugzilla #246911.
       #
-      # See also http://en.opensuse.org/SuSEfirewall2/Service_Definitions_Added_via_Packages
+      # See also http://kobliha-suse.blogspot.cz/2008/06/firewall-services-defined-by-packages.html
       #
-
-      #**
+      #
       # Names assigned to Port and Protocol numbers can be found
       # here:
       #
       # http://www.iana.org/assignments/protocol-numbers
       # http://www.iana.org/assignments/port-numbers
-
       #
       # Format of SERVICES
       #
-      # "service-id" : $[
-      #		"name"			: _("Service Name"),
-      #		"tcp_ports"		: list <tcp_ports>,
-      #		"udp_ports"		: list <udp_ports>,
-      #		"rpc_ports"		: list <rpc_ports>,
-      #		"ip_protocols"		: list <ip_protocols>,
-      #		"broadcast_ports"	: list <broadcast_ports>,
-      # ],
+      #   "service-id" : $[
+      #     "name"            : _("Service Name"),
+      #     "tcp_ports"       : list <tcp_ports>,
+      #     "udp_ports"       : list <udp_ports>,
+      #     "rpc_ports"       : list <rpc_ports>,
+      #     "ip_protocols"    : list <ip_protocols>,
+      #     "broadcast_ports" : list <broadcast_ports>,
+      #   ],
       #
-
-      @services_definitions_in = "/etc/sysconfig/SuSEfirewall2.d/services/"
-
-      # please, check it with configuration in refresh-srv-def-by-pkgs-trans.sh script
-      @fw_services_textdomain = "firewall-services"
+      @SERVICES = nil
 
       # firewall needs restarting
       @sfws_modified = false
@@ -88,9 +112,6 @@ module Yast
       }
 
       @known_metadata = { "Name" => "name", "Description" => "description" }
-
-      # this is how services defined by package are distinguished
-      @ser_def_by_pkg_string = "service:"
 
       # Services definitions for conversion to the new ones.
       @OLD_SERVICES = {
@@ -240,10 +261,6 @@ module Yast
         }
       }
 
-      # Definitions were moved to OLD_SERVICES for conversion
-      # and replaced by definitions in packages.
-      # FATE #300687: Ports for SuSEfirewall added via packages.
-      @SERVICES = {}
     end
 
     # Returns whether the service ID is defined by package.
@@ -256,10 +273,7 @@ module Yast
     #	ServiceDefinedByPackage ("http-server") -> false
     #	ServiceDefinedByPackage ("service:http-server") -> true
     def ServiceDefinedByPackage(service)
-      Builtins.regexpmatch(
-        service,
-        Ops.add(Ops.add("^", @ser_def_by_pkg_string), ".*")
-      )
+      service =~ /\A#{DEFINED_BY_PKG_PREFIX}.*/
     end
 
     # Creates a file name from service name defined by package.
@@ -273,18 +287,12 @@ module Yast
     #	GetFilenameFromServiceDefinedByPackage ("abc") -> nil
     def GetFilenameFromServiceDefinedByPackage(service)
       if !ServiceDefinedByPackage(service)
-        Builtins.y2error("Service %1 is not defined by package", service)
+        log.error "Service #{service} is not defined by package"
         return nil
       end
 
-      ret = Builtins.regexpsub(
-        service,
-        Ops.add(Ops.add("^", @ser_def_by_pkg_string), "(.*)$"),
-        "\\1"
-      )
-      Builtins.y2error("Wrong regexpsub definition") if ret == nil
-
-      ret
+      service =~ /\A#{DEFINED_BY_PKG_PREFIX}(.*)/
+      $1
     end
 
     # Returns SCR Agent definition.
@@ -319,25 +327,52 @@ module Yast
       )
     end
 
+    # Returns service definition.
+    # See @SERVICES for the format.
+    # If `silent` is not defined or set to `true`, function throws an exception
+    # SuSEFirewalServiceNotFound if service is not found on disk.
+    #
+    # @param [String] service name
+    # @param [String] (optional) whether to silently return nil
+    #                 when service is not found (default false)
+    def service_details(service_name, silent = false)
+      services = all_services
+      if services[service_name].nil? and !silent
+        log.error "Uknown service '#{service_name}'"
+        log.info "Known services: #{services.inspect}"
+        raise(SuSEFirewalServiceNotFound, service_name)
+      end
+
+      services[service_name]
+    end
+
+    # Returns all known services loaded from disk on-the-fly
+    def all_services
+      ReadServicesDefinedByRPMPackages() if @SERVICES.nil?
+      @SERVICES
+    end
+
     # Reads definition of services that can be used in FW_CONFIGURATIONS_[EXT|INT|DMZ]
     # in SuSEfirewall2.
     #
     # @return [Boolean] if successful
     def ReadServicesDefinedByRPMPackages
-      if !FileUtils.Exists(@services_definitions_in) ||
-          !FileUtils.IsDirectory(@services_definitions_in)
-        Builtins.y2error("Cannot read %1", @services_definitions_in)
+      @SERVICES = {} if @SERVICES.nil?
+
+      if !FileUtils.Exists(SERVICES_DIR) ||
+          !FileUtils.IsDirectory(SERVICES_DIR)
+        log.error "Cannot read #{SERVICES_DIR}"
         return false
       end
 
       all_definitions = Convert.convert(
-        SCR.Read(path(".target.dir"), @services_definitions_in),
+        SCR.Read(path(".target.dir"), SERVICES_DIR),
         :from => "any",
         :to   => "list <string>"
       )
-      # skip the TEMPLATE file
-      all_definitions = Builtins.filter(all_definitions) do |filename|
-        filename != "TEMPLATE"
+
+      all_definitions.reject! do |service|
+        IGNORED_SERVICES.include?(service)
       end
 
       one_definition = nil
@@ -345,18 +380,18 @@ module Yast
       # for all files in that directory
       Builtins.foreach(all_definitions) do |filename|
         # "service:abc_server" to distinguis between dynamic definition and the static one
-        one_definition = Ops.add(@ser_def_by_pkg_string, filename)
+        one_definition = Ops.add(DEFINED_BY_PKG_PREFIX, filename)
         # Do not read already defined service
         # Just read only new definitions
         next if Ops.get(@SERVICES, one_definition, {}) != {}
-        filefullpath = Ops.add(@services_definitions_in, filename)
+        filefullpath = Ops.add(SERVICES_DIR, filename)
         Ops.set(@SERVICES, one_definition, {})
         # Registering sysconfig agent for this file
         if !SCR.RegisterAgent(
             path(".firewall_service_definition"),
             term(:ag_ini, term(:SysConfigFile, filefullpath))
           )
-          Builtins.y2error("Cannot register agent for %1", filefullpath)
+          log.error "Cannot register agent for #{filefullpath}"
           next
         end
         definition = nil
@@ -403,16 +438,13 @@ module Yast
             Ops.set(
               @SERVICES,
               [one_definition, metadata_key],
-              Builtins.dgettext(@fw_services_textdomain, definition)
+              Builtins.dgettext(SERVICES_TEXTDOMAIN, definition)
             )
           end
 
           SCR.UnregisterAgent(path(".firewall_service_metadata"))
         else
-          Builtins.y2error(
-            "Cannot register agent for %1 (metadata)",
-            filefullpath
-          )
+          log.error "Cannot register agent for #{filefullpath} (metadata)"
         end
         Builtins.y2debug(
           "'%1' -> %2",
@@ -429,11 +461,7 @@ module Yast
     # @param [String] service_id
     # @return	[Boolean] if is known (defined)
     def IsKnownService(service_id)
-      if Ops.get(@SERVICES, service_id, {}) == {}
-        return false
-      else
-        return true
-      end
+      !service_details(service_id, true).nil?
     end
 
     # Function returns the map of supported (known) services.
@@ -452,7 +480,7 @@ module Yast
     def GetSupportedServices
       supported_services = {}
 
-      Builtins.foreach(@SERVICES) do |service_id, service_definition|
+      all_services.each do |service_id, service_definition|
         Ops.set(
           supported_services,
           service_id,
@@ -472,13 +500,7 @@ module Yast
     #
     # @return [Array<String>] service ids
     def GetListOfServicesAddedByPackage
-      ret = Builtins.maplist(@SERVICES) do |service_id, service_definition|
-        service_id
-      end
-      ret = Builtins.filter(ret) do |service_id|
-        ServiceDefinedByPackage(service_id)
-      end
-      deep_copy(ret)
+      all_services.keys
     end
 
     # Function returns needed TCP ports for service
@@ -486,7 +508,7 @@ module Yast
     # @param [String] service
     # @return	[Array<String>] of needed TCP ports
     def GetNeededTCPPorts(service)
-      Ops.get_list(@SERVICES, [service, "tcp_ports"], [])
+      service_details(service).fetch("tcp_ports", [])
     end
 
     # Function returns needed UDP ports for service
@@ -494,7 +516,7 @@ module Yast
     # @param [String] service
     # @return	[Array<String>] of needed UDP ports
     def GetNeededUDPPorts(service)
-      Ops.get_list(@SERVICES, [service, "udp_ports"], [])
+      service_details(service).fetch("udp_ports", [])
     end
 
     # Function returns needed RPC ports for service
@@ -502,7 +524,7 @@ module Yast
     # @param [String] service
     # @return	[Array<String>] of needed RPC ports
     def GetNeededRPCPorts(service)
-      Ops.get_list(@SERVICES, [service, "rpc_ports"], [])
+      service_details(service).fetch("rpc_ports", [])
     end
 
     # Function returns needed IP protocols for service
@@ -510,7 +532,7 @@ module Yast
     # @param [String] service
     # @return	[Array<String>] of needed IP protocols
     def GetNeededIPProtocols(service)
-      Ops.get_list(@SERVICES, [service, "ip_protocols"], [])
+      service_details(service).fetch("ip_protocols", [])
     end
 
     # Function returns description of a firewall service
@@ -518,7 +540,7 @@ module Yast
     # @param [String] service
     # @return	[String] service description
     def GetDescription(service)
-      Ops.get_string(@SERVICES, [service, "description"], "")
+      service_details(service).fetch("description", [])
     end
 
     # Sets that configuration was modified
@@ -547,11 +569,13 @@ module Yast
     # @param [String] service
     # @return	[Array<String>] of needed broadcast ports
     def GetNeededBroadcastPorts(service)
-      Ops.get_list(@SERVICES, [service, "broadcast_ports"], [])
+      service_details(service).fetch("broadcast_ports", [])
     end
 
     # Function returns needed ports and protocols for service.
-    # Function cares about if the service is defined or not.
+    # Service needs to be known (installed in the system).
+    # Function throws an exception SuSEFirewalServiceNotFound
+    # if service is not known (undefined).
     #
     # @param [String] service
     # @return	[Hash{String => Array<String>}] of needed ports and protocols
@@ -565,36 +589,15 @@ module Yast
     #		"broadcast_ports" : [ "427" ],
     #	];
     def GetNeededPortsAndProtocols(service)
-      needed = {}
-
-      # Service defined by package, not known now
-      # Reading new definitions
-      if ServiceDefinedByPackage(service) && !IsKnownService(service)
-        Builtins.y2milestone(
-          "Service %1 is not known, searching for new definitions...",
-          service
-        )
-        ReadServicesDefinedByRPMPackages()
-      end
-
-      if !IsKnownService(service)
-        Builtins.y2error("Uknown service '%1'", service)
-        Builtins.y2milestone("Known services: %1", @SERVICES)
-        return nil
-      end
-
-      Ops.set(needed, "tcp_ports", GetNeededTCPPorts(service))
-      Ops.set(needed, "udp_ports", GetNeededUDPPorts(service))
-      Ops.set(needed, "rpc_ports", GetNeededRPCPorts(service))
-      Ops.set(needed, "ip_protocols", GetNeededIPProtocols(service))
-      Ops.set(needed, "broadcast_ports", GetNeededBroadcastPorts(service))
-
-      deep_copy(needed)
+      DEFAULT_SERVICE.merge(service_details(service))
     end
 
     # Immediately writes the configuration of service defined by package to the
     # service definition file. Service must be defined by package, this function
     # doesn't work for hard-coded services (SuSEFirewallServices).
+    # Function throws an exception SuSEFirewalServiceNotFound
+    # if service is not known (undefined) or it is not a service
+    # defined by package.
     #
     # @param [String] service ID (e.g., "service:ssh")
     # @param map <string, list <string> > of full service definition
@@ -615,39 +618,26 @@ module Yast
     #		]
     #	);
     def SetNeededPortsAndProtocols(service, store_definition)
-      store_definition = deep_copy(store_definition)
-      if !ServiceDefinedByPackage(service)
-        Builtins.y2error("Service %1 is not defined by package", service)
-        return nil
-      end
-
-      # fallback
-      ReadServicesDefinedByRPMPackages() if !IsKnownService(service)
-
       if !IsKnownService(service)
-        Builtins.y2error("Service %1 is unknown", service)
-        return nil
+        log.error "Service #{service} is unknown"
+        raise(SuSEFirewalServiceNotFound, service)
       end
 
       # create the filename from service name
       filename = GetFilenameFromServiceDefinedByPackage(service)
       if filename == nil || filename == ""
-        Builtins.y2error(
-          "Can't operate with fileaname '%1' created from '%2'",
-          filename,
-          service
-        )
+        log.error "Can't operate with filename '#{filename}' created from '#{service}'"
         return false
       end
 
       # full path to the filename
       filefullpath = Builtins.sformat(
         "%1/%2",
-        @services_definitions_in,
+        SERVICES_DIR,
         filename
       )
       if !FileUtils.Exists(filefullpath)
-        Builtins.y2error("File '%1' doesn't exist", filefullpath)
+        log.error "File '#{filefullpath}' doesn't exist"
         return false
       end
 
@@ -656,7 +646,7 @@ module Yast
           path(".firewall_service_definition"),
           term(:ag_ini, term(:SysConfigFile, filefullpath))
         )
-        Builtins.y2error("Cannot register agent for %1", filefullpath)
+        log.error "Cannot register agent for #{filefullpath}"
         return false
       end
 
@@ -670,9 +660,12 @@ module Yast
       new_store_definition = deep_copy(store_definition)
 
       Builtins.foreach(store_definition) do |ycp_id, one_def|
+        # Skipping read-only features
+        next if READ_ONLY_SERVICE_FEATURES.include? ycp_id
+
         sysconfig_id = Ops.get(ks_features_backward, ycp_id)
         if sysconfig_id == nil
-          Builtins.y2error("Unknown key '%1'", ycp_id)
+          log.error "Unknown key '#{ycp_id}'"
           write_ok = false
           next
         end
@@ -680,15 +673,10 @@ module Yast
           one_def_item != nil && one_def_item != "" &&
             !Builtins.regexpmatch(one_def_item, "^ *$")
         end
-        if !SCR.Write(
-            Builtins.add(path(".firewall_service_definition"), sysconfig_id),
-            Builtins.mergestring(one_def, " ")
-          )
-          Builtins.y2error(
-            "Cannot write %1 to %2",
-            Builtins.mergestring(one_def, " "),
-            Builtins.add(path(".firewall_service_definition"), sysconfig_id)
-          )
+        service_entry_path = Path.new(".firewall_service_definition.#{sysconfig_id}")
+        service_entry_value = one_def.join(" ")
+        if !SCR.Write(service_entry_path, service_entry_value)
+          log.error "Cannot write #{service_entry_value} to #{service_entry_path}",
           write_ok = false
           next
         end
@@ -699,7 +687,7 @@ module Yast
       # flush the cache to the disk
       if write_ok
         if !SCR.Write(path(".firewall_service_definition"), nil)
-          Builtins.y2error("Cannot write to disk!")
+          log.error "Cannot write to disk!"
           write_ok = false
         else
           # not only store to disk but also to the memory
