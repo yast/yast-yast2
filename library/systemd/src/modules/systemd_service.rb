@@ -43,13 +43,13 @@ module Yast
   #
   #    # Unit file commands do modifications on the service unit. Calling them triggers
   #    # service properties reloading. If a command fails, the error message is available
-  #    # through the method #errors as a string.
+  #    # through the method #error as a string.
   #
   #    service.start       # true if unit has been activated successfully
   #    service.stop        # true if unit has been deactivated successfully
   #    service.enable      # true if unit has been enabled successfully
   #    service.disable     # true if unit has been disabled successfully
-  #    service.errors      # error string available if some of the actions above fails
+  #    service.error       # error string available if some of the actions above fails
   #
   #    ## Extended service properties
   #
@@ -109,11 +109,11 @@ module Yast
         if File.exist?(START_SERVICE_INSTSYS_COMMAND)
           command = "#{START_SERVICE_INSTSYS_COMMAND} #{unit_name}"
           log.info("Running command '#{command}'")
-          errors.clear
+          error.clear
           result = OpenStruct.new(
             SCR.Execute(Path.new(".target.bash_output"), command)
           )
-          errors << result.stderr
+          error << result.stderr
           result.exit.zero?
         else
           super

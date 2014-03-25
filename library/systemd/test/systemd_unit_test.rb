@@ -63,10 +63,6 @@ module Yast
         expect { SystemdUnit.new("sshd.service")   }.not_to raise_error
       end
 
-      it "raises an exception if unsupported unit name is passed" do
-        expect { SystemdUnit.new("random.unit")    }.to raise_error
-      end
-
       it "accepts parameters to extend the default properties" do
         unit = SystemdUnit.new("iscsid.socket", :requires => "Requires", :wants => "Wants")
         expect(unit.properties.wants).not_to be_nil
@@ -152,6 +148,14 @@ module Yast
       it "always returns new unit properties object" do
         unit = SystemdUnit.new("startrek.socket")
         expect(unit.show).not_to equal(unit.show)
+      end
+    end
+
+    describe "#refresh!" do
+      it "rewrites and returns the properties instance variable" do
+        unit = SystemdUnit.new("your.socket")
+        properties = unit.properties
+        expect(unit.refresh!).not_to equal(properties)
       end
     end
 

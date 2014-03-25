@@ -1,8 +1,6 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
-# Copyright (c) 2002 - 2012 Novell, Inc.
+# Copyright (c) 2002 - 2014 Novell, Inc.
 # All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
@@ -31,11 +29,10 @@
 ###
 
 # Functions for systemd service handling used by other modules.
-# This is a legacy yast module. For new code, please use SystemdService
 
 require "yast"
 
-module Yasj
+module Yast
   import "SystemdService"
 
   class ServiceClass < Module
@@ -48,22 +45,137 @@ module Yasj
       @error = ""
     end
 
-    # @deprecated Use SystemdService.find('service_name')
+    # Check if service is active/running
+    #
+    # @param [String] name service name
+    # @return true if service is active
+    def Active service_name
+      service = SystemdService.find(service_name)
+      !!(service && service.active?)
+    end
+
+    alias_method :active?, :Active
+
+    # Check if service is enabled (in any runlevel)
+    #
+    # Forwards to chkconfig -l which decides between init and systemd
+    #
+    # @param [String] name service name
+    # @return true if service is set to run in any runlevel
+    def Enabled name
+      service = SystemdService.find(name)
+      !!(service && service.enabled?)
+    end
+
+    alias_method :enabled?, :Enabled
+
+    # Enable service
+    # @param [String] service service to be enabled
+    # @return true if operation is successful
+    def Enable service_name
+      log.info "Enabling service %1", service_name
+      service = SystemdService.find(service_name)
+      return failure(:not_found, service_name) unless service
+      return failure(:enable, service_name, service.error) unless service.enable
+      true
+    end
+
+    alias_method :enable, :Enable
+
+    # Disable service
+    # @param [String] service service to be disabled
+    # @return true if operation is  successful
+    def Disable service_name
+      log.info "Disabling service %1", service_name
+      service = SystemdService.find(service_name)
+      return failure(:not_found, service_name) unless service
+      return failure(:disable, service_name, service.error) unless service.disable
+      true
+    end
+
+    alias_method :disable, :Disable
+
+    # Start service
+    # @param [String] service service to be started
+    # @return true if operation is  successful
+    def Start service_name
+      log.info "Starting service %1", service_name
+      service = SystemdService.find(service_name)
+      return failure(:not_found, service_name) unless service
+      return failure(:start, service_name, service.error) unless service.start
+      true
+    end
+
+    alias_method :start, :Start
+
+    # Restart service
+    # @param [String] service service to be restarted
+    # @return true if operation is  successful
+    def Restart service_name
+      log.info "Restarting service %1", service_name
+      service = SystemdService.find(service_name)
+      return failure(:not_found, service_name) unless service
+      return failure(:restart, service_name, service.error) unless service.restart
+      true
+    end
+
+    alias_method :restart, :Restart
+
+    # Reload service
+    # @param [String] service service to be reloaded
+    # @return true if operation is  successful
+    def Reload service_name
+      log.info "Reloading service %1", service_name
+      service = SystemdService.find(service_name)
+      return failure(:not_found, service_name) unless service
+      return failure(:reload, service_name, service.error) unless service.reload
+      true
+    end
+
+    alias_method :reload, :Reload
+
+    # Stop service
+    # @param [String] service service to be stopped
+    # @return true if operation is  successful
+    def Stop service_name
+      log.info "Stopping service %1", service_name
+      service = SystemdService.find(service_name)
+      return failure(:not_found, service_name) unless service
+      return failure(:stop, service_name, service.error) unless service.stop
+      true
+    end
+
+    alias_method :stop, :Stop
+
+    # Error Message
+    #
+    # If a Service function returns an error, this function would return
+    # an error message, including insserv stderr and possibly containing
+    # newlines.
+    # @return error message from the last operation
+    def Error
+      error
+    end
+
+    # @deprecated Use SystemdService.find
     # Check that a service exists.
     # If not, set error_msg.
     # @param [String] name service name without a path, eg. nfsserver
     # @return Return true if the service exists.
-    def checkExists(name)
-      log.warn "[DEPRECIATION] `checkExists` is deprecated; use SystemdService instead"
-      !!SystemdService.find(name)
+    def checkExists name
+      deprecate("use `SystemdService.find` instead")
+
+      return failure(:not_found, name) unless SystemdService.find(name)
+      true
     end
 
     # @deprecated Not supported by systemd
     # Get service info without peeking if service runs.
     # @param [String] name name of the service
     # @return Service information or empty map ($[])
-    def Info(name)
-      log.warn "[DEPRECIATION] `Info` is deprecated and not supported by systemd"
+    def Info name
+      deprecate("not supported by systemd")
+
       unit = SystemdService.find(name)
       return {} unless unit
 
@@ -78,33 +190,28 @@ module Yasj
       )
     end
 
+    # @deprecated Use SystemdService.find('service_name').id
     # Get complete systemd unit id
     # @param name name or alias of the unit
     # @return (resolved) unit Id
-    def GetUnitId(unit)
+    def GetUnitId unit
+      deprecate("use SystemdService.find('service_name').id")
+
       unit = SystemdService.find(unit)
       return nil unless unit
       unit.id
     end
 
+    # @deprecated Use SystemdService.find('service_name').name
     # Get the name from a systemd service unit id without the .service suffix
     # @param [String] name name or alias of the service
     # @return (resolved) service name without the .service suffix
-    def GetServiceId(name)
+    def GetServiceId name
+      deprecate("use SystemdService.find('service_name').name")
+
       unit = SystemdService.find(name)
       return nil unless unit
-      unit.id.split('.').first
-    end
-
-    # Check if service is enabled (in any runlevel)
-    #
-    # Forwards to chkconfig -l which decides between init and systemd
-    #
-    # @param [String] name service name
-    # @return true if service is set to run in any runlevel
-    def Enabled(name)
-      unit = SystemdService.find(name)
-      !!(unit && unit.enabled?)
+      unit.name
     end
 
     # @deprecated Use `Active` instead
@@ -113,21 +220,22 @@ module Yasj
     # It should conform to LSB. 0 means the service is running.
     # @param [String] name name of the service
     # @return init script exit status or -1 if it does not exist
-    def Status(name)
-      log.warn "[DEPRECIATION] `Status` is deprecated; use Active instead"
+    def Status name
+      deprecate("use `active?` instead")
+
       unit = SystemdService.find(name)
+      failure(:not_found, name) unless unit
+
       unit && unit.active? ? 0 : -1
     end
 
-    def Active service_name
-      unit = SystemdService.find(service_name)
-      !!(unit && unit.active?)
-    end
-
+    # @deprecated Not supported by systemd
     # Get service info and find out whether service is running.
     # @param [String] name name of the service
     # @return service map or empty map ($[])
-    def FullInfo(name)
+    def FullInfo name
+      deprecate("not supported by systemd")
+
       return {} if !checkExists(name)
       Builtins.add(Info(name), "started", Status(name))
     end
@@ -139,8 +247,9 @@ module Yasj
     # @param [String] name service name
     # @param [Boolean] force pass "--force" (workaround for #17608, #27370)
     # @return success state
-    def serviceDisable(name, force)
-      log.warn "[DEPRECIATION] `serviceDisable` is deprecated; use `Disable` instead"
+    def serviceDisable name, force
+      deprecate("use `disable` instead")
+
       unit = SystemdService.find(name)
       !!(unit && unit.disable)
     end
@@ -153,16 +262,17 @@ module Yasj
     #    no links, set default, otherwise do nothing, "default" -- set
     #    defaults.
     # @return [Boolean] success state
-    def Adjust(name, action)
-      log.warn "[DEPRECIATION] `Adjust` is deprecated; use `Enable` or `Disable` instead"
-      unit = SystemdService.find(name)
-      return false unless unit
+    def Adjust name, action
+      deprecate("use `enable` or `disable` instead")
+
+      service = SystemdService.find(name)
+      return failure(:not_found, name) unless service
 
       case action
       when "disable"
-        unit.disable
+        service.disable
       when "enable", "default"
-        unit.enable
+        service.enable
       else
         log.error "Unknown action '#{action}' for service '#{name}'"
         false
@@ -178,16 +288,17 @@ module Yasj
     # @param [String] name name of service to adjust
     # @param [Array] rl list of runlevels in which service should start
     # @return success state
-    def Finetune(name, rl)
-      log.warn "[DEPRECIATION] `Finetune` is deprecated; use `Enable` or `Disable` instead"
-      unit = SystemdService.find(name)
-      return false unless unit
+    def Finetune name, rl
+      deprecate("use `enable` or `disable` instead")
+
+      service = SystemdService.find(name)
+      return failure(:not_found, name) unless service
 
       if rl.empty?
-        unit.disable
+        service.disable
       else
         log.warn "Cannot enable service '#{name}' in selected runlevels, enabling for all"
-        unit.enable
+        service.enable
       end
     end
 
@@ -196,11 +307,14 @@ module Yasj
     # @param [String] name init service name
     # @param [String] param init script argument
     # @return [Fixnum] exit value
-    def RunInitScript(name, param)
-      log.warn "[DEPRECIATION] `RunInitScript` is deprecated; use other methods directly"
+    def RunInitScript name, param
+      deprecate("use `start` or `stop` instead")
 
       service = SystemdService.find(name)
-      return -1 unless service
+      if !service
+        failure(:not_found, name)
+        return -1
+      end
 
       case param
       when 'start'
@@ -209,272 +323,93 @@ module Yasj
         service.stop
       else
         log.error "Unknown action '#{param}' for service '#{name}'"
-        -1
+        return -1
       end
+      0
     end
 
+    # @deprecated Use specific unit methods for service configuration
     # Run init script with a time-out.
     # @param [String] name init service name
     # @param [String] param init script argument
     # @return [Fixnum] exit value
-    def RunInitScriptWithTimeOut(name, param)
-      Builtins.y2milestone("Running service initscript %1 %2", name, param)
-      command = Builtins.sformat(
-        "TERM=dumb %1 %2 %3.service",
-        @invoker,
-        param,
-        name
-      )
+    def RunInitScriptWithTimeOut name, param
+      deprecate("use `start` or `stop` instead")
 
-      # default return code
-      return_code = nil
-
-      # starting the process
-      process_pid = Convert.to_integer(
-        SCR.Execute(path(".process.start_shell"), command)
-      )
-      if process_pid == nil || Ops.less_or_equal(process_pid, 0)
-        Builtins.y2error("Cannot run '%1' -> %2", command, process_pid)
-        return return_code
+      service = SystemdService.find(name)
+      if !service
+        failure(:not_found, name)
+        return 1
       end
-      Builtins.y2debug("Running: %1", command)
-
-      script_out = []
-      time_spent = 0
-      cont_loop = true
-
-      # while continuing is needed and while it is possible
-      while cont_loop &&
-          Convert.to_boolean(SCR.Read(path(".process.running"), process_pid))
-        if Ops.greater_or_equal(time_spent, @script_time_out)
-          Builtins.y2error(
-            "Command '%1' timed-out after %2 mces",
-            command,
-            time_spent
-          )
-          cont_loop = false
-        end
-
-        # sleep a little while
-        time_spent = Ops.add(time_spent, @sleep_step)
-        Builtins.sleep(@sleep_step)
-      end
-
-      # fetching the return code if not timed-out
-      if cont_loop
-        return_code = Convert.to_integer(
-          SCR.Read(path(".process.status"), process_pid)
-        )
-      end
-
-      Builtins.y2milestone(
-        "Time spent: %1 msecs, retcode: %2",
-        time_spent,
-        return_code
-      )
-
-      # killing the process (if it still runs)
-      if Convert.to_boolean(SCR.Read(path(".process.running"), process_pid))
-        SCR.Execute(path(".process.kill"), process_pid)
-      end
-
-      # release the process from the agent
-      SCR.Execute(path(".process.release"), process_pid)
-
-      return_code
+      service.send(param) ? 0 : 1
     end
 
+    # @deprecated Use a specific method instread
     # Run init script and also return its output (stdout and stderr merged).
     # @param [String] name init service name
     # @param [String] param init script argument
     # @return A map of $[ "stdout" : "...", "stderr" : "...", "exit" : int]
-    def RunInitScriptOutput(name, param)
-      env = { "TERM" => "raw" }
+    def RunInitScriptOutput name, param
+      deprecate("use `start` or `stop` instead")
 
-      # encoding problems - append .UTF-8 to LANG
-      if @lang == nil
-        ex = Convert.convert(
-          SCR.Execute(path(".target.bash_output"), "echo -n $LANG"),
-          :from => "any",
-          :to   => "map <string, any>"
-        )
-        @lang = Ops.get_string(ex, "stdout", "")
-        ll = Builtins.splitstring(@lang, ".")
-        @lang = Ops.get_string(ll, 0, "")
-        @lang = Ops.add(@lang, ".UTF-8") if @lang != ""
-        Builtins.y2debug("LANG: %1", @lang)
+      service = SystemdService.find(name)
+      if !service
+        failure(:not_found, name)
+        success = false
+      else
+        success = service.send(param)
+        self.error = service.error
       end
-      env = Builtins.add(env, "LANG", @lang) if @lang != ""
-
-      # looks like a bug in bash...
-      locale_debug = ""
-      # locale_debug = "; ls /nono 2>&1; /usr/bin/locale; /usr/bin/env";
-
-      Convert.to_map(
-        SCR.Execute(
-          path(".target.bash_output"),
-          Ops.add(
-            Builtins.sformat("%1 %2 %3.service 2>&1", @invoker, param, name),
-            locale_debug
-          ),
-          env
-        )
-      )
+      {'stdout'=>'', 'stderr'=>error, 'exit'=> success ? 0 : 1 }
     end
 
-    def service_not_found service_name
-      message = "Service '#{service_name}' not found"
-      self.error = message
-      log.error(message)
-    end
-
-    def action_failed service, action
-      message = "Service::#{action} failed for service '#{service.unit_name}' ; "
-      message << service.error
-      self.error = message
-      log.error(message)
-    end
-
-    # Enable service
-    # @param [String] service service to be enabled
-    # @return true if operation is  successful
-    def Enable(service)
-      log.info "Enabling service %1", service
-      service_unit = SystemdService.find(service)
-
-      if !service_unit
-        service_not_found(service)
-        return false
-      end
-
-      if !service_unit.enable
-        action_failed(service_unit, __method__)
-        return false
-      end
-
-      true
-    end
-
-    # Disable service
-    # @param [String] service service to be disabled
-    # @return true if operation is  successful
-    def Disable(service)
-      log.info "Disabling service %1", service
-      service_unit = SystemdService.find(service)
-
-      if !service_unit
-        service_not_found(service)
-        return false
-      end
-
-      if !service_unit.disable
-        action_failed(service_unit, __method__)
-        return false
-      end
-
-      true
-    end
-
-    # Start service
-    # @param [String] service service to be started
-    # @return true if operation is  successful
-    def Start(service)
-      log.info "Starting service %1", service
-      service = SystemdService.find(service)
-      !!(service && service.start)
-    end
-
-    # Restart service
-    # @param [String] service service to be restarted
-    # @return true if operation is  successful
-    def Restart(service)
-      log.info "Restarting service %1", service
-      service = SystemdService.find(service)
-      !!(service && service.restart)
-    end
-
-    # Reload service
-    # @param [String] service service to be reloaded
-    # @return true if operation is  successful
-    def Reload(service)
-      log.info "Reloading service %1", service
-      service = SystemdService.find(service)
-      !!(service && service.reload)
-    end
-
-    # Stop service
-    # @param [String] service service to be stopped
-    # @return true if operation is  successful
-    def Stop(service)
-      log.info "Stopping service %1", service
-      service = SystemdService.find(service)
-      !!(service && service.stop)
-    end
-
-    # Error Message
-    #
-    # If a Service function returns an error, this function would return
-    # an error message, including insserv stderr and possibly containing
-    # newlines.
-    # @return error message from the last operation
-    def Error
-      error
-    end
-
+    # @deprecated Runlevel features are not supported by systemd
     # Get list of enabled services in a runlevel
     # @param [Fixnum] runlevel requested runlevel number (0-6, -1 = Single)
     # @return [Array<String>] enabled services
-    def EnabledServices(runlevel)
-      if Ops.less_than(runlevel, -1) || Ops.greater_than(runlevel, 6)
-        Builtins.y2error("ERROR: Invalid runlevel: %1", runlevel)
-        return nil
-      end
+    def EnabledServices runlevel
+      deprecate("use `SystemdService.all.select(&:enabled?)`")
 
-      # convert the integer to a string (-1 = S)
-      runlevel_str = runlevel == -1 ? "S" : Builtins.sformat("%1", runlevel)
-
-      ret = []
-
-      command = Builtins.sformat("ls -1 /etc/init.d/rc%1.d/", runlevel_str)
-      Builtins.y2milestone("Executing: %1", command)
-
-      out = Convert.to_map(SCR.Execute(path(".target.bash_output"), command))
-      Builtins.y2debug("Result: %1", out)
-
-      if Ops.get_integer(out, "exit", -1) != 0
-        Builtins.y2error("ERROR: %1", out)
-        return nil
-      end
-
-      Builtins.foreach(
-        Builtins.splitstring(Ops.get_string(out, "stdout", ""), "\n")
-      ) do |s|
-        service = Builtins.regexpsub(s, "^S[0-9]+([^0-9]+.*)", "\\1")
-        ret = Builtins.add(ret, service) if service != nil
-      end
-
-
-      Builtins.y2milestone("Enabled services in runlevel %1: %2", runlevel, ret)
-
-      deep_copy(ret)
+      SystemdService.all.select(&:enabled?).map(&:name)
     end
 
+    # @deprecated Use SystemdService.find instead
     # Return the first of the list of services which is available
     # (has init script) or "" if none is.
     # @param list<string> list of service names
     # @return [String] the first found service
-    def Find(services)
-      services = deep_copy(services)
-      found_service = ""
+    def Find services
+      deprecate("use `SystemdService.find` instead")
 
-      Builtins.foreach(services) do |service|
-        if checkExists(service)
-          found_service = service
-          raise Break
+      service_found = nil
+      services.each do |service_name|
+        service = SystemdService.find(service_name)
+        if service
+          service_found = service_name
+          break
         end
       end
+      service_found
+    end
 
-      found_service
+    private
+
+    def failure event, service_name, error=""
+      case event
+      when :not_found
+        error << "Service '#{service_name}' not found"
+      else
+        error.prepend("Attempt to `#{event}` service '#{service_name}' failed. ")
+      end
+      self.error = error
+      log.error(error)
+    ensure
+      return false
+    end
+
+
+    def deprecate message
+      log.warn "[DEPRECIATION] #{caller[0].split.last} is deprecated; #{message}"
     end
 
     publish :function => :GetUnitId, :type => "string (string)"

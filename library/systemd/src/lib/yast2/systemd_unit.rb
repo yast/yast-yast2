@@ -34,6 +34,7 @@ module Yast
   ###
 
   class SystemdUnit
+    include Yast::Logger
 
     SUPPORTED_TYPES  = %w( service socket target )
     SUPPORTED_STATES = %w( enabled disabled )
@@ -53,16 +54,23 @@ module Yast
 
     def_delegators :@properties, :id, :path, :description, :active?, :enabled?, :loaded?
 
-    attr_reader   :unit_name, :unit_type, :input_properties, :error, :properties
+    attr_reader :name, :unit_name, :unit_type, :input_properties, :error, :properties
 
     def initialize full_unit_name, properties={}
       @unit_name, @unit_type = full_unit_name.split(".")
       raise "Missing unit type suffix" unless unit_type
-      raise "Unsupported unit type '#{unit_type}'" unless SUPPORTED_TYPES.member?(unit_type)
+      log.warn "Unsupported unit type '#{unit_type}'" unless SUPPORTED_TYPES.member?(unit_type)
 
-      @error = ""
       @input_properties = properties.merge!(DEFAULT_PROPERTIES)
       @properties = show
+      @error = self.properties.error
+      @name = id.to_s.split(".").first.to_s
+    end
+
+    def refresh!
+      @properties = show
+      @error = properties.error
+      properties
     end
 
     def show
@@ -107,7 +115,7 @@ module Yast
       error.clear
       command_result = yield
       error << command_result.stderr
-      @properties = show
+      refresh!
       command_result.exit.zero?
     end
 
