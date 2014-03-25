@@ -1173,6 +1173,20 @@ module Yast
       nil
     end
 
+    # Run the block with a feeback popup
+    # The popup is automatically closed at the end
+    # (even when an exception is raised)
+    # @see {ShowFeedback} and {ClearFeedback} for details
+    # @param headline [String] popup headline (displayed in bold)
+    # @param message [String] message with details, displayed below the headline
+    # @param block block to execute
+    def Feedback(headline, message, &block)
+      ShowFeedback(headline, message)
+      yield
+    ensure
+      ClearFeedback
+    end
+
     # Show a simple message and wait until user clicked "OK".
     #
     #
