@@ -1,0 +1,5 @@
+## Name: NIS Client
+## Description: The ypbind daemon binds NIS clients to an NIS domain
+
+# space separated list of allowed RPC services
+RPC="rpcbind portmap ypbind"

@@ -1,0 +1,6 @@
+## Name: Test Service
+## Description: Opens ports for test service and makes Yast developers happy!
+
+TCP="5000 6000 7000"
+
+UDP="41 42 43"
