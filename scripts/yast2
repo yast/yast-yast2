@@ -189,7 +189,7 @@ snapshot_post()
 
 chef_is_running ()
 {
-  pgrep -fl chef-client >/dev/null
+  service chef-client status >/dev/null 2>&1
 }
 
 # ask user if he want to continue despite there is chef-client running
