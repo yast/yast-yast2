@@ -381,15 +381,7 @@ module Yast
     def Find services
       deprecate("use `SystemdService.find` instead")
 
-      service_found = nil
-      services.each do |service_name|
-        service = SystemdService.find(service_name)
-        if service
-          service_found = service_name
-          break
-        end
-      end
-      service_found
+      services.find {|service_name| SystemdService.find(service_name) }
     end
 
     private
