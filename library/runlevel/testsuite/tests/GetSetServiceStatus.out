@@ -1,7 +1,0 @@
-Read	.target.tmpdir "/tmp"
-Execute	.target.bash "/bin/systemctl is-enabled iscsid.service" 0
-Return	true
-Execute	.target.bash "/bin/systemctl is-enabled boot.iscsid-early.service" 0
-Return	true
-Execute	.target.bash "/bin/systemctl is-enabled iscsid.service" 0
-Return	true

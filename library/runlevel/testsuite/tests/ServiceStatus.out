@@ -1,3 +1,0 @@
-Read	.target.tmpdir "/tmp"
-Execute	.target.bash "/bin/systemctl is-active aaa.service" $["TERM":"raw"] 3
-Return	3
