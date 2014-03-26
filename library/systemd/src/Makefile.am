@@ -1,5 +1,7 @@
 module_DATA = \
-  modules/systemd_socket.rb
+  modules/systemd_socket.rb \
+  modules/systemd_service.rb \
+  modules/systemd_target.rb
 
 ylibdir = @ylibdir@/yast2
 ylib_DATA = \
