@@ -1,4 +1,5 @@
 require "ostruct"
+require 'timeout'
 
 module Yast
   class SystemctlError < StandardError
@@ -8,17 +9,23 @@ module Yast
   end
 
   module Systemctl
+    include Yast::Logger
+
     CONTROL         = "systemctl"
     COMMAND_OPTIONS = " --no-legend --no-pager --no-ask-password "
     ENV_VARS        = " LANG=C TERM=dumb COLUMNS=1024 "
     SYSTEMCTL       = ENV_VARS + CONTROL + COMMAND_OPTIONS
+    TIMEOUT         = 30 # seconds
 
     class << self
 
       def execute command
         command = SYSTEMCTL + command
-        result = SCR.Execute(Path.new(".target.bash_output"), command)
+        log.debug "Executing `systemctl` command: #{command}"
+        result = timeout(TIMEOUT) { SCR.Execute(Path.new(".target.bash_output"), command) }
         OpenStruct.new(result.merge!(:command => command))
+      rescue Timeout::Error
+        raise SystemctlError, "Timeout #{TIMEOUT} seconds: #{command}"
       end
 
       def socket_units

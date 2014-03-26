@@ -79,7 +79,7 @@ module Yast
     class Target < SystemdUnit
 
       # Disable unsupported methods for target units
-      undef_method :start, :stop, :enable, :disable
+      undef_method :start, :stop, :enable, :disable, :restart
 
       def allow_isolate?
         properties.allow_isolate == 'yes'
