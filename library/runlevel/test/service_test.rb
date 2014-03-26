@@ -33,7 +33,7 @@ module Yast
       end
 
       it "returns false if a service does not exist" do
-        expect(Service.Active('unknown').to be_false
+        expect(Service.Active('unknown')).to be_false
       end
     end
 
@@ -45,12 +45,12 @@ module Yast
       it "returns false if a service in not enabled" do
         stub_service_with(:enabled?, false)
         stub_service_with(:error, 'error')
-        expect(Service.Enabled('sshd').to be_false
+        expect(Service.Enabled('sshd')).to be_false
         expect(Service.Error).not_to be_empty
       end
 
       it "returns false if a service does not exists" do
-        expect(Service.Enabled('unknown').to be_false
+        expect(Service.Enabled('unknown')).to be_false
       end
     end
 
@@ -74,7 +74,7 @@ module Yast
 
     describe "Disable" do
       it "returns true if a service has been disabled" do
-        expect(Service.Disable('sshd').to be_true
+        expect(Service.Disable('sshd')).to be_true
       end
 
       it "returns false if a service has not been disabled" do
@@ -126,7 +126,7 @@ module Yast
       end
     end
 
-    desribe "Reload" do
+    describe "Reload" do
       it "returns true if a service has been reloaded successfully" do
         expect(Service.Reload('sshd')).to be_true
       end
