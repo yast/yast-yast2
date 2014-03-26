@@ -1,7 +1,8 @@
 TESTS = \
   asciifile_test.rb \
   linuxrc_test.rb \
-  hooks_test.rb
+  hooks_test.rb \
+  popup_test.rb
 
 TEST_EXTENSIONS = .rb
 RB_LOG_COMPILER = rspec

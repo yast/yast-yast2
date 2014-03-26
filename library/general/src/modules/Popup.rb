@@ -1184,7 +1184,7 @@ module Yast
       ShowFeedback(headline, message)
       yield
     ensure
-      ClearFeedback
+      ClearFeedback()
     end
 
     # Show a simple message and wait until user clicked "OK".

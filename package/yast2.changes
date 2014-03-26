@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 26 17:02:08 UTC 2014 - lslezak@suse.cz
+
+- fixed syntax error in Popup.Feedback()
+- 3.1.30
+
+-------------------------------------------------------------------
 Wed Mar 26 16:25:32 UTC 2014 - vmoravec@suse.com
 
 - Deprecate and refactor Service module with SystemdService backend
