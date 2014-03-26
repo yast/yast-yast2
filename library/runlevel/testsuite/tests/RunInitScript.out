@@ -1,3 +1,0 @@
-Read	.target.tmpdir "/tmp"
-Execute	.target.bash_output "/bin/systemctl start aaa.service" $["TERM":"raw"] $["exit":0]
-Return	0

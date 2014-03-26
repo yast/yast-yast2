@@ -78,7 +78,7 @@ module Yast
     # @param [String] service service to be enabled
     # @return true if operation is successful
     def Enable service_name
-      log.info "Enabling service %1", service_name
+      log.info "Enabling service '#{service_name}'"
       service = SystemdService.find(service_name)
       return failure(:not_found, service_name) unless service
       return failure(:enable, service_name, service.error) unless service.enable
@@ -91,7 +91,7 @@ module Yast
     # @param [String] service service to be disabled
     # @return true if operation is  successful
     def Disable service_name
-      log.info "Disabling service %1", service_name
+      log.info "Disabling service '#{service_name}'"
       service = SystemdService.find(service_name)
       return failure(:not_found, service_name) unless service
       return failure(:disable, service_name, service.error) unless service.disable
@@ -104,7 +104,7 @@ module Yast
     # @param [String] service service to be started
     # @return true if operation is  successful
     def Start service_name
-      log.info "Starting service %1", service_name
+      log.info "Starting service '#{service_name}'"
       service = SystemdService.find(service_name)
       return failure(:not_found, service_name) unless service
       return failure(:start, service_name, service.error) unless service.start
@@ -117,7 +117,7 @@ module Yast
     # @param [String] service service to be restarted
     # @return true if operation is  successful
     def Restart service_name
-      log.info "Restarting service %1", service_name
+      log.info "Restarting service '#{service_name}'"
       service = SystemdService.find(service_name)
       return failure(:not_found, service_name) unless service
       return failure(:restart, service_name, service.error) unless service.restart
@@ -130,7 +130,7 @@ module Yast
     # @param [String] service service to be reloaded
     # @return true if operation is  successful
     def Reload service_name
-      log.info "Reloading service %1", service_name
+      log.info "Reloading service '#{service_name}'"
       service = SystemdService.find(service_name)
       return failure(:not_found, service_name) unless service
       return failure(:reload, service_name, service.error) unless service.reload
@@ -143,7 +143,7 @@ module Yast
     # @param [String] service service to be stopped
     # @return true if operation is  successful
     def Stop service_name
-      log.info "Stopping service %1", service_name
+      log.info "Stopping service '#{service_name}'"
       service = SystemdService.find(service_name)
       return failure(:not_found, service_name) unless service
       return failure(:stop, service_name, service.error) unless service.stop

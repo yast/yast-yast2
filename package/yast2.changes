@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Mar 26 16:25:32 UTC 2014 - vmoravec@suse.com
+
+- Deprecate and refactor Service module with SystemdService backend
+- Add support for /bin/service_start script in installation system
+  that has no running systemd
+- 3.1.29
+
+-------------------------------------------------------------------
 Wed Mar 26 15:45:45 CET 2014 - locilka@suse.com
 
 - Throwing exception Yast::OSReleaseFileMissingError from
