@@ -833,7 +833,16 @@ module Yast
       end
       services = Ops.get_list(widget, "services", [])
       InitAllInterfacesList()
-      InitAllowedInterfaces(services)
+
+      begin
+        InitAllowedInterfaces(services)
+      rescue SuSEFirewalServiceNotFound => e
+        Report.Error(
+          # TRANSLATORS: Error message, do not translate %{details}
+          _("Error checking service status:\n%{details}") % { :details => e.message }
+        )
+      end
+
       open_firewall = Ops.greater_than(Builtins.size(@allowed_interfaces), 0)
       firewall_enabled = SuSEFirewall.GetEnableService &&
         Ops.greater_than(Builtins.size(@all_interfaces), 0)
@@ -859,7 +868,15 @@ module Yast
         return
       end
       services = Ops.get_list(widget, "services", [])
-      StoreAllowedInterfaces(services)
+
+      begin
+        StoreAllowedInterfaces(services)
+      rescue SuSEFirewalServiceNotFound => e
+        Report.Error(
+          # TRANSLATORS: Error message, do not translate %{details}
+          _("Error setting service status:\n%{details}") % { :details => e.message }
+        )
+      end
 
       nil
     end

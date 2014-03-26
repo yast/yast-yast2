@@ -358,23 +358,6 @@ module Yast
       ], nil)
 
       DUMP("")
-      DUMP("== Services handling ==")
-      # needs a better testsuite for SuSEFirewallServices module
-      # these services are not known
-      TEST(lambda do
-        SuSEFirewall.IsServiceSupportedInZone("service:aaa-bbb", "EXT")
-      end, [
-        @READ,
-        @WRITE,
-        @EXECUTE
-      ], nil)
-      TEST(lambda { SuSEFirewall.IsServiceSupportedInZone("service:xyz", "EXT") }, [
-        @READ,
-        @WRITE,
-        @EXECUTE
-      ], nil)
-
-      DUMP("")
       DUMP("== Ports handling ==")
       TEST(lambda { SuSEFirewall.HaveService("www", "TCP", "EXT") }, [
         @READ,

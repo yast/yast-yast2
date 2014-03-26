@@ -1,0 +1,6 @@
+## Name: MySQL server
+## Description: opens ports for MySQL in order to allow other hosts connect to it
+
+# space separated list of allowed TCP ports
+TCP="3306"
+
