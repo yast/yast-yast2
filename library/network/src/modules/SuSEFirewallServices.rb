@@ -35,8 +35,8 @@ require "yast"
 
 module Yast
   class SuSEFirewalServiceNotFound < StandardError
-    def initialize service_name
-      super "Service with name '#{service_name}' does not exist"
+    def initialize message
+      super message
     end
   end
 
@@ -98,7 +98,7 @@ module Yast
       #     "broadcast_ports" : list <broadcast_ports>,
       #   ],
       #
-      @SERVICES = nil
+      @services = nil
 
       # firewall needs restarting
       @sfws_modified = false
@@ -273,7 +273,7 @@ module Yast
     #	ServiceDefinedByPackage ("http-server") -> false
     #	ServiceDefinedByPackage ("service:http-server") -> true
     def ServiceDefinedByPackage(service)
-      service =~ /\A#{DEFINED_BY_PKG_PREFIX}.*/
+      service.start_with? DEFINED_BY_PKG_PREFIX
     end
 
     # Creates a file name from service name defined by package.
@@ -291,8 +291,7 @@ module Yast
         return nil
       end
 
-      service =~ /\A#{DEFINED_BY_PKG_PREFIX}(.*)/
-      $1
+      service[/\A#{DEFINED_BY_PKG_PREFIX}(.*)/, 1]
     end
 
     # Returns SCR Agent definition.
@@ -328,7 +327,7 @@ module Yast
     end
 
     # Returns service definition.
-    # See @SERVICES for the format.
+    # See @services for the format.
     # If `silent` is not defined or set to `true`, function throws an exception
     # SuSEFirewalServiceNotFound if service is not found on disk.
     #
@@ -336,20 +335,24 @@ module Yast
     # @param [String] (optional) whether to silently return nil
     #                 when service is not found (default false)
     def service_details(service_name, silent = false)
-      services = all_services
-      if services[service_name].nil? and !silent
+      service = all_services[service_name]
+      if service.nil? and !silent
         log.error "Uknown service '#{service_name}'"
-        log.info "Known services: #{services.inspect}"
-        raise(SuSEFirewalServiceNotFound, service_name)
+        log.info "Known services: #{all_services.keys}"
+
+        raise(
+          SuSEFirewalServiceNotFound,
+          _("Service with name '%{service_name}' does not exist") % { :service_name => service_name }
+        )
       end
 
-      services[service_name]
+      service
     end
 
     # Returns all known services loaded from disk on-the-fly
     def all_services
-      ReadServicesDefinedByRPMPackages() if @SERVICES.nil?
-      @SERVICES
+      ReadServicesDefinedByRPMPackages() if @services.nil?
+      @services
     end
 
     # Reads definition of services that can be used in FW_CONFIGURATIONS_[EXT|INT|DMZ]
@@ -357,7 +360,7 @@ module Yast
     #
     # @return [Boolean] if successful
     def ReadServicesDefinedByRPMPackages
-      @SERVICES = {} if @SERVICES.nil?
+      @services ||= {}
 
       if !FileUtils.Exists(SERVICES_DIR) ||
           !FileUtils.IsDirectory(SERVICES_DIR)
@@ -365,27 +368,24 @@ module Yast
         return false
       end
 
-      all_definitions = Convert.convert(
-        SCR.Read(path(".target.dir"), SERVICES_DIR),
-        :from => "any",
-        :to   => "list <string>"
-      )
-
+      all_definitions = SCR.Read(path(".target.dir"), SERVICES_DIR)
       all_definitions.reject! do |service|
         IGNORED_SERVICES.include?(service)
       end
 
-      one_definition = nil
+      service_name = nil
       filefullpath = nil
+
       # for all files in that directory
       Builtins.foreach(all_definitions) do |filename|
         # "service:abc_server" to distinguis between dynamic definition and the static one
-        one_definition = Ops.add(DEFINED_BY_PKG_PREFIX, filename)
-        # Do not read already defined service
-        # Just read only new definitions
-        next if Ops.get(@SERVICES, one_definition, {}) != {}
-        filefullpath = Ops.add(SERVICES_DIR, filename)
-        Ops.set(@SERVICES, one_definition, {})
+        service_name = DEFINED_BY_PKG_PREFIX + filename
+        # Do not read already known services
+        next unless @services[service_name].nil?
+
+        filefullpath = SERVICES_DIR + filename
+        @services[service_name] = {}
+
         # Registering sysconfig agent for this file
         if !SCR.RegisterAgent(
             path(".firewall_service_definition"),
@@ -394,8 +394,10 @@ module Yast
           log.error "Cannot register agent for #{filefullpath}"
           next
         end
+
         definition = nil
         definition_values = nil
+
         Builtins.foreach(@known_services_features) do |known_feature, map_key|
           definition = Convert.to_string(
             SCR.Read(
@@ -408,17 +410,16 @@ module Yast
           definition_values = Builtins.filter(definition_values) do |one_value|
             one_value != ""
           end
-          Ops.set(@SERVICES, [one_definition, map_key], definition_values)
+          @services[service_name][map_key] = definition_values
         end
+
         # Unregistering sysconfig agent for this file
         SCR.UnregisterAgent(path(".firewall_service_definition"))
+
         # Fallback for presented service
-        Ops.set(
-          @SERVICES,
-          [one_definition, "name"],
-          Builtins.sformat(_("Service: %1"), filename)
-        )
-        Ops.set(@SERVICES, [one_definition, "description"], "")
+        @services[service_name]["name"] = _("Service: %{filename}") % { :filename => filename }
+        @services[service_name]["description"] = ""
+
         # Registering sysconfig agent for this file (to get metadata)
         if SCR.RegisterAgent(
             path(".firewall_service_metadata"),
@@ -433,24 +434,15 @@ module Yast
                 )
               )
             )
-            next if definition == nil || definition == ""
+            next if definition.nil? || definition == ""
             # call gettext to translate the metadata
-            Ops.set(
-              @SERVICES,
-              [one_definition, metadata_key],
-              Builtins.dgettext(SERVICES_TEXTDOMAIN, definition)
-            )
+            @services[service_name][metadata_key] = Builtins.dgettext(SERVICES_TEXTDOMAIN, definition)
           end
 
           SCR.UnregisterAgent(path(".firewall_service_metadata"))
         else
           log.error "Cannot register agent for #{filefullpath} (metadata)"
         end
-        Builtins.y2debug(
-          "'%1' -> %2",
-          filename,
-          Ops.get(@SERVICES, one_definition, {})
-        )
       end
 
       true
@@ -484,7 +476,7 @@ module Yast
         Ops.set(
           supported_services,
           service_id,
-          # TRANSLATORS: Name of unknown service. This should never happen, just for cases..., %1 is a requested service id like nis-server
+          # TRANSLATORS: Name of unknown service. %1 is a requested service id like nis-server
           Ops.get_string(
             service_definition,
             "name",
@@ -508,7 +500,7 @@ module Yast
     # @param [String] service
     # @return	[Array<String>] of needed TCP ports
     def GetNeededTCPPorts(service)
-      service_details(service).fetch("tcp_ports", [])
+      service_details(service)["tcp_ports"] || []
     end
 
     # Function returns needed UDP ports for service
@@ -516,7 +508,7 @@ module Yast
     # @param [String] service
     # @return	[Array<String>] of needed UDP ports
     def GetNeededUDPPorts(service)
-      service_details(service).fetch("udp_ports", [])
+      service_details(service)["udp_ports"] || []
     end
 
     # Function returns needed RPC ports for service
@@ -524,7 +516,7 @@ module Yast
     # @param [String] service
     # @return	[Array<String>] of needed RPC ports
     def GetNeededRPCPorts(service)
-      service_details(service).fetch("rpc_ports", [])
+      service_details(service)["rpc_ports"] || []
     end
 
     # Function returns needed IP protocols for service
@@ -532,7 +524,7 @@ module Yast
     # @param [String] service
     # @return	[Array<String>] of needed IP protocols
     def GetNeededIPProtocols(service)
-      service_details(service).fetch("ip_protocols", [])
+      service_details(service)["ip_protocols"] || []
     end
 
     # Function returns description of a firewall service
@@ -540,7 +532,7 @@ module Yast
     # @param [String] service
     # @return	[String] service description
     def GetDescription(service)
-      service_details(service).fetch("description", [])
+      service_details(service)["description"] || []
     end
 
     # Sets that configuration was modified
@@ -569,7 +561,7 @@ module Yast
     # @param [String] service
     # @return	[Array<String>] of needed broadcast ports
     def GetNeededBroadcastPorts(service)
-      service_details(service).fetch("broadcast_ports", [])
+      service_details(service)["broadcast_ports"] || []
     end
 
     # Function returns needed ports and protocols for service.
@@ -620,7 +612,10 @@ module Yast
     def SetNeededPortsAndProtocols(service, store_definition)
       if !IsKnownService(service)
         log.error "Service #{service} is unknown"
-        raise(SuSEFirewalServiceNotFound, service)
+        raise(
+          SuSEFirewalServiceNotFound,
+          _("Service with name '%{service_name}' does not exist") % { :service_name => service_name }
+        )
       end
 
       # create the filename from service name
@@ -631,11 +626,8 @@ module Yast
       end
 
       # full path to the filename
-      filefullpath = Builtins.sformat(
-        "%1/%2",
-        SERVICES_DIR,
-        filename
-      )
+      filefullpath = SERVICES_DIR + filename
+
       if !FileUtils.Exists(filefullpath)
         log.error "File '#{filefullpath}' doesn't exist"
         return false
@@ -691,8 +683,7 @@ module Yast
           write_ok = false
         else
           # not only store to disk but also to the memory
-          Ops.set(@SERVICES, service, {}) if Ops.get(@SERVICES, service) == nil
-          Ops.set(@SERVICES, service, new_store_definition)
+          @services[service] = new_store_definition
           SetModified()
         end
       end
@@ -700,11 +691,7 @@ module Yast
       # Unregistering sysconfig agent for that file
       SCR.UnregisterAgent(path(".firewall_service_definition"))
 
-      Builtins.y2milestone(
-        "Call SetNeededPortsAndProtocols(%1, ...) result is %2",
-        service,
-        write_ok
-      )
+      log.info "Call SetNeededPortsAndProtocols(#{service}, ...) result is #{write_ok}"
       write_ok
     end
 
