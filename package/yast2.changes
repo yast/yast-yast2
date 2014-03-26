@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Mar 26 15:45:45 CET 2014 - locilka@suse.com
+
+- Throwing exception Yast::OSReleaseFileMissingError from
+  OSRelease if /etc/os-release file is missing (bnc#869091)
+- 3.1.28
+
+-------------------------------------------------------------------
 Wed Mar 26 10:04:24 CET 2014 - locilka@suse.com
 
 - Refactored SUSEFirewallServices to throw exceptions when user
