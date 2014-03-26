@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Mar 26 10:04:24 CET 2014 - locilka@suse.com
+
+- Refactored SUSEFirewallServices to throw exceptions when user
+  or code tries to handle unknown services (bnc#867377)
+- Adjusted CWMFirewallInterfaces to handle the new exception
+  and inform user about it (bnc#867377)
+- 3.1.27
+
+-------------------------------------------------------------------
 Tue Mar 25 14:34:29 UTC 2014 - lslezak@suse.cz
 
 - added Popup.Feedback for displaying progress popup when running
