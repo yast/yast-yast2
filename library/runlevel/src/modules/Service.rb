@@ -38,7 +38,12 @@ module Yast
   class ServiceClass < Module
     include Yast::Logger
 
-    attr_accessor :error
+    private
+    attr_writer :error
+
+    public
+    attr_reader :error
+
 
     def initialize
       textdomain "base"
