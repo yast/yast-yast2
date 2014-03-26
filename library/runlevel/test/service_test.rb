@@ -18,7 +18,7 @@ module Yast
       stub_services
     end
 
-    describe "Active" do
+    describe ".Active" do
       it "returns true if a service is active" do
         expect(Service.Active('sshd')).to be_true
       end
@@ -34,7 +34,7 @@ module Yast
       end
     end
 
-    describe "Enabled" do
+    describe ".Enabled" do
       it "returns true if a service is enabled" do
         expect(Service.Enabled('sshd')).to be_true
       end
@@ -50,7 +50,7 @@ module Yast
       end
     end
 
-    describe "Enable" do
+    describe ".Enable" do
       it "returns true if a service has been enabled successfully" do
         expect(Service.Enable('sshd')).to be_true
       end
@@ -69,7 +69,7 @@ module Yast
       end
     end
 
-    describe "Disable" do
+    describe ".Disable" do
       it "returns true if a service has been disabled" do
         expect(Service.Disable('sshd')).to be_true
       end
@@ -88,7 +88,7 @@ module Yast
       end
     end
 
-    describe "Start" do
+    describe ".Start" do
       it "returns true if a service has been started successfully" do
         expect(Service.Start('sshd')).to be_true
       end
@@ -107,7 +107,7 @@ module Yast
       end
     end
 
-    describe "Restart" do
+    describe ".Restart" do
       it "returns true if a service has been restarted successfully" do
         expect(Service.Restart('sshd')).to be_true
       end
@@ -126,7 +126,7 @@ module Yast
       end
     end
 
-    describe "Reload" do
+    describe ".Reload" do
       it "returns true if a service has been reloaded successfully" do
         expect(Service.Reload('sshd')).to be_true
       end
@@ -145,7 +145,7 @@ module Yast
       end
     end
 
-    describe "Stop" do
+    describe ".Stop" do
       it "returns true if a service has been stopped successfully" do
         expect(Service.Stop('sshd')).to be_true
       end
