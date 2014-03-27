@@ -12,7 +12,7 @@ module_DATA = \
   modules/Integer.rb \
   modules/Punycode.rb \
   modules/Hostname.rb \
-  modules/URLRecode.pm
+  modules/URLRecode.rb
 
 EXTRA_DIST = $(module_DATA)
 
