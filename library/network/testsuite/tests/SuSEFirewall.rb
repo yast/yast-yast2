@@ -148,7 +148,14 @@ module Yast
       @WRITE = {}
 
       @EXECUTE = {
-        "target" => { "bash_output" => { "exit" => 0 }, "bash" => 0 }
+        "target" => {
+          "bash_output" => {
+            "exit" => 0,
+            "stdout" => "",
+            "stderr" => "",
+          },
+          "bash" => 0
+        }
       }
 
       TESTSUITE_INIT([@READ, @WRITE, @EXECUTE], nil)
