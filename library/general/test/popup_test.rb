@@ -1,6 +1,6 @@
 #! /usr/bin/env rspec
 
-ENV["Y2DIR"] = File.expand_path("../../src", __FILE__)
+require File.expand_path("../test_helper.rb", __FILE__)
 
 require "yast"
 include Yast
