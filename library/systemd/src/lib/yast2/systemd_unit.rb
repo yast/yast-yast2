@@ -115,18 +115,30 @@ module Yast
       error.clear
       command_result = yield
       error << command_result.stderr
+      return false unless error.empty?
+
       refresh!
       command_result.exit.zero?
     end
 
     class Properties < OpenStruct
+      include Yast::Logger
 
       def initialize systemd_unit
         super()
         self[:systemd_unit] = systemd_unit
-        raw_properties = load_systemd_properties
-        self[:raw] = raw_properties.stdout
-        self[:error] = raw_properties.stderr
+        raw_output = load_systemd_properties
+        self[:error] = raw_output.stderr
+
+        if !error.empty?
+          message = "Failed to get properties for unit '#{systemd_unit.unit_name}' ; "
+          message << "Command `#{raw_output.command}` returned error: #{error}"
+          log.error(message)
+          self[:not_found?] = true
+          return
+        end
+
+        self[:raw] = raw_output.stdout
         extract_properties
         self[:active?]    = active_state    == "active"
         self[:running?]   = sub_state       == "running"
