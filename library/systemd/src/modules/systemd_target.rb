@@ -47,7 +47,7 @@ module Yast
     PROPERTIES     = { :allow_isolate => "AllowIsolate" }
 
     def find target_name, properties={}
-      target_name << UNIT_SUFFIX unless target_name.end_with?(UNIT_SUFFIX)
+      target_name += UNIT_SUFFIX unless target_name.end_with?(UNIT_SUFFIX)
       target = Target.new(target_name, PROPERTIES.merge(properties))
       return nil if target.properties.not_found?
       target
