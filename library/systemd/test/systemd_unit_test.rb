@@ -6,6 +6,7 @@ require 'yast2/systemd_unit'
 module Yast
   describe SystemdUnit do
     include SystemdSocketStubs
+    include SystemdServiceStubs
 
     def trigger_reloading_properties command
       unit = SystemdUnit.new("new.socket")
@@ -16,6 +17,7 @@ module Yast
 
     before do
       stub_sockets
+      stub_services
     end
 
     describe "#properties" do
@@ -156,6 +158,71 @@ module Yast
         unit = SystemdUnit.new("your.socket")
         properties = unit.properties
         expect(unit.refresh!).not_to equal(properties)
+      end
+    end
+
+    describe "#restart" do
+      it "returns true if unit has been restarted" do
+        unit = SystemdUnit.new("sshd.service")
+        expect(unit.restart).to be_true
+      end
+
+      it "returns false if the restart fails" do
+        stub_unit_command(:success=>false)
+        unit = SystemdUnit.new("sshd.service")
+        expect(unit.restart).to be_false
+      end
+    end
+
+    describe "#try_restart" do
+      it "returns true if the unit has been restarted" do
+        unit = SystemdUnit.new("sshd.service")
+        expect(unit.try_restart).to be_true
+      end
+
+      it "returns false if the try_restart fails" do
+        stub_unit_command(:success=>false)
+        unit = SystemdUnit.new("sshd.service")
+        expect(unit.try_restart).to be_false
+      end
+    end
+
+    describe "#reload" do
+      it "returns true if the unit has been reloaded" do
+        unit = SystemdUnit.new("sshd.service")
+        expect(unit.reload).to be_true
+      end
+
+      it "returns false if the reload fails" do
+        stub_unit_command(:success=>false)
+        unit = SystemdUnit.new("sshd.service")
+        expect(unit.reload).to be_false
+      end
+    end
+
+    describe "#reload_or_restart" do
+      it "returns true if the unit has been reloaded or restarted" do
+        unit = SystemdUnit.new("sshd.service")
+        expect(unit.reload_or_restart).to be_true
+      end
+
+      it "returns false if the reload_or_restart action fails" do
+        stub_unit_command(:success=>false)
+        unit = SystemdUnit.new("sshd.service")
+        expect(unit.reload_or_restart).to be_false
+      end
+    end
+
+    describe "#reload_or_try_restart" do
+      it "returns true if the unit has been reload_or_try_restarted" do
+        unit = SystemdUnit.new("sshd.service")
+        expect(unit.reload_or_try_restart).to be_true
+      end
+
+      it "returns false if the reload_or_try_restart action fails" do
+        stub_unit_command(:success=>false)
+        unit = SystemdUnit.new("sshd.service")
+        expect(unit.reload_or_try_restart).to be_false
       end
     end
 

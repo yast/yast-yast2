@@ -99,7 +99,7 @@ module SystemdUnitStubs
       .stub(:command)
       .and_return(
         OpenStruct.new \
-        :stdout => 'success',
+        :stdout => '',
         :stderr => ( success ? '' : 'failure'),
         :exit   => ( success ? 0  : 1 )
       )

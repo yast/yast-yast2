@@ -101,8 +101,20 @@ module Yast
       run_command! { command("restart") }
     end
 
+    def try_restart
+      run_command! { command("try-restart") }
+    end
+
     def reload
       run_command! { command("reload") }
+    end
+
+    def reload_or_restart
+      run_command! { command("reload-or-restart") }
+    end
+
+    def reload_or_try_restart
+      run_command! { command("reload-or-try-restart") }
     end
 
     def command command_name, options={}
