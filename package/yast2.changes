@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 28 13:13:54 UTC 2014 - vmoravec@suse.com
+
+- Add more systemd unit commands to SystemdService
+- 3.1.34
+
+-------------------------------------------------------------------
 Fri Mar 28 13:07:16 UTC 2014 - vmoravec@suse.com
 
 - Don't change service name which might be frozen string
