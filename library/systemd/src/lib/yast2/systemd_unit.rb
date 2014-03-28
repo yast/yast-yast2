@@ -130,7 +130,7 @@ module Yast
         raw_output = load_systemd_properties
         self[:error] = raw_output.stderr
 
-        if !error.empty?
+        if !raw_output.exit.zero?
           message = "Failed to get properties for unit '#{systemd_unit.unit_name}' ; "
           message << "Command `#{raw_output.command}` returned error: #{error}"
           log.error(message)
