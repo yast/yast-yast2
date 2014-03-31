@@ -402,7 +402,7 @@ module Yast
       when :not_found
         error << "Service '#{service_name}' not found"
       else
-        error.prepend("Attempt to `#{event}` service '#{service_name}' failed. ")
+        error.prepend("Attempt to `#{event}` service '#{service_name}' failed.\nERROR: ")
       end
       self.error = error
       log.error(error)

@@ -4,6 +4,8 @@ require_relative 'test_helper'
 require 'yast2/systemd_unit'
 
 module Yast
+  import "Mode"
+
   describe SystemdUnit do
     include SystemdSocketStubs
     include SystemdServiceStubs
@@ -18,6 +20,44 @@ module Yast
     before do
       stub_sockets
       stub_services
+    end
+
+    context "Installation system without full support of systemd" do
+      before do
+        Yast::Mode.stub(:installation).and_return(true)
+      end
+
+      describe "#properties" do
+        it "returns struct with restricted installation properties" do
+          allow_any_instance_of(SystemdUnit).to receive(:command)
+            .with("is-enabled sshd.service").and_return(
+              OpenStruct.new('stderr'=>'', 'stdout'=>'enabled', 'exit'=>0)
+            )
+          unit = SystemdUnit.new("sshd.service")
+          expect(unit.properties).to be_a(SystemdUnit::InstallationProperties)
+        end
+
+        describe "#enabled?" do
+          it "returns true if service is enabled" do
+            allow_any_instance_of(SystemdUnit).to receive(:command)
+              .with("is-enabled sshd.service").and_return(
+                OpenStruct.new('stderr'=>'', 'stdout'=>'enabled', 'exit'=>0)
+              )
+            unit = SystemdUnit.new("sshd.service")
+            expect(unit.enabled?).to be_true
+          end
+
+          it "returns false if service is disabled" do
+            stub_unit_command(:success=>false)
+            allow_any_instance_of(SystemdUnit).to receive(:command)
+              .with("is-enabled sshd.service").and_return(
+                OpenStruct.new('stderr'=>'', 'stdout'=>'disabled', 'exit'=>1)
+              )
+            unit = SystemdUnit.new("sshd.service")
+            expect(unit.enabled?).to be_false
+          end
+        end
+      end
     end
 
     describe "#properties" do
