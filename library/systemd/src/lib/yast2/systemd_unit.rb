@@ -122,7 +122,7 @@ module Yast
     def command command_name, options={}
       command = "#{command_name} #{unit_name}.#{unit_type} #{options[:options]}"
       log.info "`#{Systemctl::CONTROL} #{command}`"
-      Systemctl.execute("#{command_name} #{unit_name}.#{unit_type} #{options[:options]}")
+      Systemctl.execute(command)
     end
 
     private
