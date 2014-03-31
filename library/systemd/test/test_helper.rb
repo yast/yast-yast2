@@ -1,8 +1,14 @@
 require 'rspec'
 
-ENV["Y2DIR"] = File.expand_path("../../src", __FILE__)
+ENV["Y2DIR"] = File.expand_path("../../src", __FILE__) unless ENV["Y2DIR"]
 
 require "yast"
+
+require 'yast2/systemd_unit'
+
+Yast.import 'SystemdSocket'
+Yast.import 'SystemdService'
+Yast.import 'SystemdTarget'
 
 module SystemctlStubs
 

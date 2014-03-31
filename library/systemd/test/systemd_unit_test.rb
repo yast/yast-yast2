@@ -1,11 +1,8 @@
 #!/usr/bin/env rspec
 
 require_relative 'test_helper'
-require 'yast2/systemd_unit'
 
 module Yast
-  import "Mode"
-
   describe SystemdUnit do
     include SystemdSocketStubs
     include SystemdServiceStubs
