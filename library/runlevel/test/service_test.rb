@@ -3,6 +3,8 @@
 require_relative 'test_helper'
 
 module Yast
+  import 'Service'
+
   describe Service do
     include SystemdServiceStubs
 
