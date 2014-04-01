@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr  1 13:58:20 CEST 2014 - gs@suse.de
+
+- Add info about text mode navigation in trees to general help
+  (bnc #840672)
+
+-------------------------------------------------------------------
 Mon Mar 31 19:48:07 UTC 2014 - vmoravec@suse.com
 
 - Fix failing tests
