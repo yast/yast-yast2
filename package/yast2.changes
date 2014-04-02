@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Apr  2 09:18:51 UTC 2014 - jreidinger@suse.com
+
+- add control option to enable sshd in installation (bnc#865056)
+- 3.1.37
+
+-------------------------------------------------------------------
 Tue Apr  1 13:58:20 CEST 2014 - gs@suse.de
 
 - Add info about text mode navigation in trees to general help

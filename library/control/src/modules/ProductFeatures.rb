@@ -58,6 +58,7 @@ module Yast
           "fam_local_only"                  => "never",
           "enable_firewall"                 => true,
           "firewall_enable_ssh"             => false,
+          "enable_sshd"                     => false,
           "additional_kernel_parameters"    => "",
           "flags"                           => [],
           "run_you"                         => true,
