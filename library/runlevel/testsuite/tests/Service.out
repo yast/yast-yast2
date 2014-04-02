@@ -1,7 +1,0 @@
-Read	.target.tmpdir "/tmp"
-Execute	.process.start_shell "TERM=dumb /bin/systemctl start aaa.service" 123
-Read	.process.running 123 false
-Read	.process.status 123 0
-Read	.process.running 123 false
-Execute	.process.release 123 true
-Return	0

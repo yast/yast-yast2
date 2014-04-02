@@ -30,17 +30,39 @@ module Yast
 
   import "Misc"
   import "Stage"
+  import "FileUtils"
+
+  class OSReleaseFileMissingError < StandardError
+    def initialize(message)
+      super message
+    end
+  end
 
   class OSReleaseClass < Module
+    include Yast::Logger
+
     def initialize
       @file_path        = "/etc/os-release"
     end
 
     # Get information about the OS release
+    # Throws exception Yast::OSReleaseFileMissingError if release file
+    # is missing.
+    #
     # @param [String] directory containing the installed system (/ in installed system)
     # @return [String] the release information
     def ReleaseInformation(directory)
-      MakeNiceName(Misc.CustomSysconfigRead("PRETTY_NAME", "?", directory + @file_path))
+      release_file = File.join(directory, @file_path)
+
+      if !FileUtils.Exists(release_file)
+        log.info "Release file #{release_file} not found"
+        raise(
+          OSReleaseFileMissingError,
+          _("Release file %{file} not found") % { :file => release_file }
+        )
+      end
+
+      MakeNiceName(Misc.CustomSysconfigRead("PRETTY_NAME", "?", release_file))
     end
 
     # Get information about the OS name

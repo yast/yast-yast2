@@ -51,10 +51,6 @@ Return	yes
 Return	no
 Return	yes
 Dump	
-Dump	== Services handling ==
-Return	nil
-Return	nil
-Dump	
 Dump	== Ports handling ==
 Return	false
 Return	true

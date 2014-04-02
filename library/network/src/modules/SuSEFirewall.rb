@@ -2168,11 +2168,6 @@ module Yast
       return nil if !IsKnownZone(zone)
 
       needed = SuSEFirewallServices.GetNeededPortsAndProtocols(service)
-      # unknown service
-      if needed == nil
-        Builtins.y2error("Undefined service '%1'", service)
-        return nil
-      end
 
       # SuSEFirewall feature FW_PROTECT_FROM_INT
       # should not be protected and searched zones include also internal (or the zone IS internal, sure)

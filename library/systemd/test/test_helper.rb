@@ -1,8 +1,14 @@
 require 'rspec'
 
-ENV["Y2DIR"] = File.expand_path("../../src", __FILE__)
+ENV["Y2DIR"] = File.expand_path("../../src", __FILE__) unless ENV["Y2DIR"]
 
 require "yast"
+
+require 'yast2/systemd_unit'
+
+Yast.import 'SystemdSocket'
+Yast.import 'SystemdService'
+Yast.import 'SystemdTarget'
 
 module SystemctlStubs
 
@@ -76,6 +82,20 @@ LIST
     )
   end
 
+  def stub_target_units
+    Yast::Systemctl.stub(:list_units).and_return(<<LIST
+getty.target           loaded active   active Login Prompts
+graphical.target       loaded inactive dead   Graphical Interface
+local-fs-pre.target    loaded active   active Local File Systems (Pre)
+local-fs.target        loaded active   active Local File Systems
+multi-user.target      loaded active   active Multi-User System
+network-online.target  loaded inactive dead   Network is Online
+network.target         loaded active   active Network
+nss-lookup.target      loaded active   active Host and Network Name Lookups
+LIST
+    )
+  end
+
 end
 
 module SystemdUnitStubs
@@ -85,7 +105,7 @@ module SystemdUnitStubs
       .stub(:command)
       .and_return(
         OpenStruct.new \
-        :stdout => 'success',
+        :stdout => '',
         :stderr => ( success ? '' : 'failure'),
         :exit   => ( success ? 0  : 1 )
       )
@@ -138,3 +158,25 @@ module SystemdServiceStubs
   end
 end
 
+module SystemdTargetStubs
+  include SystemctlStubs
+  include SystemdUnitStubs
+
+  def stub_targets target: 'graphical'
+    stub_unit_command
+    stub_systemctl(:target)
+    properties = load_target_properties(target)
+    Yast::SystemdUnit::Properties
+      .any_instance
+      .stub(:load_systemd_properties)
+      .and_return(properties)
+  end
+
+  def load_target_properties target_name
+    OpenStruct.new(
+      :stdout => File.read(File.join(__dir__, 'data', "#{target_name}_target_properties")),
+      :stderr => '',
+      :exit   => 0
+      )
+  end
+end

@@ -148,7 +148,14 @@ module Yast
       @WRITE = {}
 
       @EXECUTE = {
-        "target" => { "bash_output" => { "exit" => 0 }, "bash" => 0 }
+        "target" => {
+          "bash_output" => {
+            "exit" => 0,
+            "stdout" => "",
+            "stderr" => "",
+          },
+          "bash" => 0
+        }
       }
 
       TESTSUITE_INIT([@READ, @WRITE, @EXECUTE], nil)
@@ -352,23 +359,6 @@ module Yast
         @EXECUTE
       ], nil)
       TEST(lambda { SuSEFirewall.GetIgnoreLoggingBroadcast("DMZ") }, [
-        @READ,
-        @WRITE,
-        @EXECUTE
-      ], nil)
-
-      DUMP("")
-      DUMP("== Services handling ==")
-      # needs a better testsuite for SuSEFirewallServices module
-      # these services are not known
-      TEST(lambda do
-        SuSEFirewall.IsServiceSupportedInZone("service:aaa-bbb", "EXT")
-      end, [
-        @READ,
-        @WRITE,
-        @EXECUTE
-      ], nil)
-      TEST(lambda { SuSEFirewall.IsServiceSupportedInZone("service:xyz", "EXT") }, [
         @READ,
         @WRITE,
         @EXECUTE

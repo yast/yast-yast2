@@ -1,4 +1,94 @@
 -------------------------------------------------------------------
+Tue Apr  1 13:58:20 CEST 2014 - gs@suse.de
+
+- Add info about text mode navigation in trees to general help
+  (bnc #840672)
+
+-------------------------------------------------------------------
+Mon Mar 31 19:48:07 UTC 2014 - vmoravec@suse.com
+
+- Fix failing tests
+- 3.1.36
+
+-------------------------------------------------------------------
+Mon Mar 31 14:54:17 UTC 2014 - vmoravec@suse.com
+
+- Fix enabling services in inst-sys (bnc#870949)
+- 3.1.35
+
+-------------------------------------------------------------------
+Fri Mar 28 13:13:54 UTC 2014 - vmoravec@suse.com
+
+- Add more systemd unit commands to SystemdService
+- 3.1.34
+
+-------------------------------------------------------------------
+Fri Mar 28 13:07:16 UTC 2014 - vmoravec@suse.com
+
+- Don't change service name which might be frozen string
+  (bnc#870803)
+- 3.1.33
+
+-------------------------------------------------------------------
+Thu Mar 27 10:15:12 UTC 2014 - vmoravec@suse.com
+
+- Fix for template systemd units properties
+- 3.1.32
+
+-------------------------------------------------------------------
+Thu Mar 27 10:03:16 UTC 2014 - lslezak@suse.cz
+
+- fixed popup_test
+- 3.1.31
+
+-------------------------------------------------------------------
+Wed Mar 26 17:02:08 UTC 2014 - lslezak@suse.cz
+
+- fixed syntax error in Popup.Feedback()
+- 3.1.30
+
+-------------------------------------------------------------------
+Wed Mar 26 16:25:32 UTC 2014 - vmoravec@suse.com
+
+- Deprecate and refactor Service module with SystemdService backend
+- Add support for /bin/service_start script in installation system
+  that has no running systemd
+- 3.1.29
+
+-------------------------------------------------------------------
+Wed Mar 26 15:45:45 CET 2014 - locilka@suse.com
+
+- Throwing exception Yast::OSReleaseFileMissingError from
+  OSRelease if /etc/os-release file is missing (bnc#869091)
+- 3.1.28
+
+-------------------------------------------------------------------
+Wed Mar 26 10:04:24 CET 2014 - locilka@suse.com
+
+- Refactored SUSEFirewallServices to throw exceptions when user
+  or code tries to handle unknown services (bnc#867377)
+- Adjusted CWMFirewallInterfaces to handle the new exception
+  and inform user about it (bnc#867377)
+- 3.1.27
+
+-------------------------------------------------------------------
+Tue Mar 25 14:34:29 UTC 2014 - lslezak@suse.cz
+
+- added Popup.Feedback for displaying progress popup when running
+  a block of code
+- 3.1.26
+
+-------------------------------------------------------------------
+Tue Mar 25 08:09:09 CET 2014 - jsuchome@suse.cz
+
+- better check if chef-client is running (bnc#868483)
+
+-------------------------------------------------------------------
+Mon Mar 24 12:16:08 UTC 2014 - vmoravec@suse.com
+
+- Add support for systemd target with SystemdTarget module 
+
+-------------------------------------------------------------------
 Thu Mar 13 14:34:42 CET 2014 - gs@suse.de
 
 - Check IPv4 and IPv6 for running network (bnc#868001)

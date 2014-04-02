@@ -1,16 +1,31 @@
 require "ostruct"
+require 'timeout'
 
 module Yast
+  class SystemctlError < StandardError
+    def initialize struct
+      super "Systemctl command failed: #{struct}"
+    end
+  end
+
   module Systemctl
+    include Yast::Logger
+
     CONTROL         = "systemctl"
     COMMAND_OPTIONS = " --no-legend --no-pager --no-ask-password "
     ENV_VARS        = " LANG=C TERM=dumb COLUMNS=1024 "
     SYSTEMCTL       = ENV_VARS + CONTROL + COMMAND_OPTIONS
+    TIMEOUT         = 30 # seconds
 
     class << self
 
       def execute command
-        OpenStruct.new(SCR.Execute(Path.new(".target.bash_output"), SYSTEMCTL + command))
+        command = SYSTEMCTL + command
+        log.debug "Executing `systemctl` command: #{command}"
+        result = timeout(TIMEOUT) { SCR.Execute(Path.new(".target.bash_output"), command) }
+        OpenStruct.new(result.merge!(:command => command))
+      rescue Timeout::Error
+        raise SystemctlError, "Timeout #{TIMEOUT} seconds: #{command}"
       end
 
       def socket_units
@@ -35,6 +50,18 @@ module Yast
         end
 
         ( services_from_files | services_from_units ).compact
+      end
+
+      def target_units
+        targets_from_files = list_unit_files(:type=>:target).lines.map do |line|
+          first_column(line)
+        end
+
+        targets_from_units = list_units(:type=>:target).lines.map do |line|
+          first_column(line)
+        end
+
+        ( targets_from_files | targets_from_units ).compact
       end
 
       private

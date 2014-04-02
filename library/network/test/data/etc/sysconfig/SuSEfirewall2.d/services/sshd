@@ -1,0 +1,5 @@
+## Name: Secure Shell Server
+## Description: Open ports for Secure Shell Server
+
+# space separated list of allowed TCP ports
+TCP="ssh"

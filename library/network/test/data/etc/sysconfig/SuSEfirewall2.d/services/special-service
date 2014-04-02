@@ -1,0 +1,27 @@
+## Name: Special testing service
+## Description: This service will be parsed and every single pice of it will be inspected!
+
+# comment
+ # comment
+  # # comment
+TCP="port_1 port_44 port_2"
+
+UDP="zzz bbb aaa" # comment
+
+RPC=""
+
+IP="ICMP HMP DDP RSVP"
+
+BROADCAST="port_x port_z"
+
+### variables below are only needed in very special cases
+
+# space separated list of net,protocol[,sport[,dport]]
+# see FW_SERVICES_ACCEPT_RELATED_EXT
+# net 0/0 means IPv4 and IPv6. If this sevice should only work for
+# IPv4 use 0.0.0.0/0
+RELATED="192.168.0.0/16"
+
+# additional kernel modules needed for this service
+# see FW_LOAD_MODULES
+MODULES="module_x"
