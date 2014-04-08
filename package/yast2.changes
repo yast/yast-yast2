@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Apr  8 15:01:00 CEST 2014 - locilka@suse.com
+
+- Changed way of reading the product information: Reads it from
+  /content file if it exists, then from /etc/os-release, then it
+  throws exception if there is no other place to read (bnc#871261)
+- 3.1.39
+
+-------------------------------------------------------------------
 Tue Apr  8 11:40:15 UTC 2014 - lslezak@suse.cz
 
 - fixed "uninitialized constant Yast2::HwDetection::SCR" error
