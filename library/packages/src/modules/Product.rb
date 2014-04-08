@@ -178,7 +178,7 @@ module Yast
         # not reasonable
         @name = SCR.Read(path(".content.LABEL"))
         @short_name = SCR.Read(path(".content.SHORTLABEL"))
-        @short_name = @name if @short_name.nil?
+        @short_name ||= @name
         @version = SCR.Read(path(".content.VERSION"))
         @vendor = SCR.Read(path(".content.VENDOR"))
 
