@@ -198,7 +198,7 @@ module Yast
         end
       # not during testing: Misc::CustomSysconfigRead used by OSRelease creates agent in runtime,
       # mocking IniParser not possible
-      elsif !Mode.config && !Mode.test
+      elsif !Mode.test
         @short_name = OSRelease.ReleaseName
         @version = OSRelease.ReleaseVersion
         @name = Ops.add(Ops.add(@short_name, " "), @version)
