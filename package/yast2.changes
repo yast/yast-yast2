@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Apr  8 11:40:15 UTC 2014 - lslezak@suse.cz
+
+- fixed "uninitialized constant Yast2::HwDetection::SCR" error
+  (bnc#871783), fixed testsuite
+- 3.1.38
+
+-------------------------------------------------------------------
 Wed Apr  2 09:18:51 UTC 2014 - jreidinger@suse.com
 
 - add control option to enable sshd in installation (bnc#865056)

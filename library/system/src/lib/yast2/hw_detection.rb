@@ -43,7 +43,7 @@ module Yast2
     # Return size of the system memory (in bytes)
     # @return Fixnum,Bignum detected memory size
     def self.memory
-      memory = SCR.Read(path(".probe.memory"))
+      memory = Yast::SCR.Read(Yast::Path.new(".probe.memory"))
       log.debug("hwinfo memory: #{memory}")
 
       raise "Memory detection failed" unless memory
