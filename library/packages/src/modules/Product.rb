@@ -165,30 +165,24 @@ module Yast
         # it should use the same mechanism as running system. But it would
         # mean to initialize package manager from constructor, which is
         # not reasonable
-        @name = Convert.to_string(SCR.Read(path(".content.LABEL")))
-        @short_name = Convert.to_string(SCR.Read(path(".content.SHORTLABEL")))
-        @short_name = @name if @short_name == nil
-        @version = Convert.to_string(SCR.Read(path(".content.VERSION")))
-        @vendor = Convert.to_string(SCR.Read(path(".content.VENDOR")))
+        @name = SCR.Read(path(".content.LABEL"))
+        @short_name = SCR.Read(path(".content.SHORTLABEL"))
+        @short_name = @name if @short_name.nil?
+        @version = SCR.Read(path(".content.VERSION"))
+        @vendor = SCR.Read(path(".content.VENDOR"))
 
-        @distproduct = Convert.to_string(SCR.Read(path(".content.DISTPRODUCT")))
-        @distversion = Convert.to_string(SCR.Read(path(".content.DISTVERSION")))
+        @distproduct = SCR.Read(path(".content.DISTPRODUCT"))
+        @distversion = SCR.Read(path(".content.DISTVERSION"))
 
-        @baseproduct = Convert.to_string(SCR.Read(path(".content.BASEPRODUCT")))
+        @baseproduct = SCR.Read(path(".content.BASEPRODUCT"))
         @baseproduct = @name if @baseproduct == ""
-        @baseversion = Convert.to_string(SCR.Read(path(".content.BASEVERSION")))
+        @baseversion = SCR.Read(path(".content.BASEVERSION"))
 
-        @relnotesurl = Convert.to_string(SCR.Read(path(".content.RELNOTESURL")))
-        @shortlabel = Convert.to_string(SCR.Read(path(".content.SHORTLABEL")))
+        @relnotesurl = SCR.Read(path(".content.RELNOTESURL"))
+        @shortlabel = SCR.Read(path(".content.SHORTLABEL"))
 
-        tmp1 = SCR.Read(path(".content.FLAGS"))
-        if tmp1 != nil
-          @flags = Builtins.splitstring(Convert.to_string(tmp1), " ")
-        end
-        tmp1 = SCR.Read(path(".content.PATTERNS"))
-        if tmp1 != nil
-          @patterns = Builtins.splitstring(Convert.to_string(tmp1), " ")
-        end
+        @flags = (SCR.Read(path(".content.FLAGS")) || "").split
+        @patterns = (SCR.Read(path(".content.PATTERNS")) || "").split
 
         # bugzilla #252122, since openSUSE 10.3
         # deprecated:
@@ -211,9 +205,9 @@ module Yast
       end
 
       @distproduct = "" if @distproduct == nil
-      @dist = Ops.get(Builtins.splitstring(@distproduct, "-"), 2, "")
+      @dist = @distproduct.split("-")[2] || ""
 
-      @run_you = !Builtins.contains(@flags, "no_you")
+      @run_you = !@flags.include?("no_you")
 
       # set the product name for UI
       Yast.import "Wizard"
