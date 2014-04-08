@@ -32,6 +32,9 @@ require "yast"
 
 module Yast
   class ProductClass < Module
+
+    CONTENT_FILE = "/content"
+
     def main
       Yast.import "Pkg"
 
@@ -40,6 +43,7 @@ module Yast
       Yast.import "OSRelease"
       Yast.import "PackageLock"
       Yast.import "PackageSystem"
+      Yast.import "FileUtils"
 
       # General product name and version
       @name = "" # "SuSE Linux 8.1"
@@ -157,11 +161,18 @@ module Yast
       nil
     end
 
+    def use_content_file?
+      FileUtils.Exists(CONTENT_FILE) && !Mode.live_installation
+    end
+
+    def use_os_release_file?
+      OSRelease.supported?
+    end
 
     # -----------------------------------------------
     # Constructor
     def Product
-      if Stage.initial && !Mode.live_installation
+      if use_content_file?
         # it should use the same mechanism as running system. But it would
         # mean to initialize package manager from constructor, which is
         # not reasonable
@@ -198,10 +209,12 @@ module Yast
         end
       # not during testing: Misc::CustomSysconfigRead used by OSRelease creates agent in runtime,
       # mocking IniParser not possible
-      elsif !Mode.test
+      elsif use_os_release_file?
         @short_name = OSRelease.ReleaseName
         @version = OSRelease.ReleaseVersion
         @name = "#{@short_name} #{@version}"
+      else
+        raise "Cannot determine the product. Neither from the content, nor the os-relese file"
       end
 
       @distproduct = "" if @distproduct == nil

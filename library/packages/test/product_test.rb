@@ -48,10 +48,10 @@ def load_content_file(file_name)
 end
 
 describe Yast::Product do
-  context "while called in initial installation" do
+  context "while called in initial installation (content file exists)" do
     before(:each) do
-      Yast::Stage.stub(:stage).and_return("initial")
-      Yast::Mode.stub(:mode).and_return("installation")
+      Yast::Product.stub(:use_content_file?).and_return(true)
+      Yast::Product.stub(:use_os_release_file?).and_return(false)
     end
 
     it "reads product information from content file and fills up internal variables" do
@@ -71,36 +71,13 @@ describe Yast::Product do
     end
   end
 
-  context "while called in initial update" do
+  context "while called on a running system (os-release file exists)" do
     before(:each) do
-      Yast::Stage.stub(:stage).and_return("initial")
-      Yast::Mode.stub(:mode).and_return("update")
+      Yast::Product.stub(:use_content_file?).and_return(false)
+      Yast::Product.stub(:use_os_release_file?).and_return(true)
     end
 
-    it "reads product information from content file and fills up internal variables" do
-      load_content_file("openSUSE_13.1_GM")
-      Yast::Product.Product
-      expect(Yast::Product.name).to                eq("openSUSE")
-      expect(Yast::Product.short_name).to          eq("openSUSE")
-      expect(Yast::Product.version).to             eq("13.1")
-      expect(Yast::Product.vendor).to              eq("openSUSE")
-
-      load_content_file("SLES_12_Beta4")
-      Yast::Product.Product
-      expect(Yast::Product.name).to                eq("SUSE Linux Enterprise Server 12")
-      expect(Yast::Product.short_name).to          eq("SUSE Linux Enterprise Server 12")
-      expect(Yast::Product.version).to             be_nil
-      expect(Yast::Product.vendor).to              eq("SUSE")
-    end
-  end
-
-  context "while called on a running system in AutoYast" do
-    before(:each) do
-      Yast::Stage.stub(:stage).and_return("normal")
-      Yast::Mode.stub(:mode).and_return("autoinst_config")
-    end
-
-    it "reads reads product information from OSRelease and fills up internal variables" do
+    it "reads product information from OSRelease and fills up internal variables" do
       release_name = "Happy Feet"
       release_version = "1.0.1"
 
@@ -111,6 +88,38 @@ describe Yast::Product do
       expect(Yast::Product.short_name).to eq(release_name)
       expect(Yast::Product.version).to eq(release_version)
       expect(Yast::Product.name).to eq("#{release_name} #{release_version}")
+    end
+  end
+
+  context "while called on a system with both content and os-release files supported" do
+    before(:each) do
+      Yast::Product.stub(:use_content_file?).and_return(true)
+      Yast::Product.stub(:use_os_release_file?).and_return(true)
+    end
+
+    it "prefers content file to os-release file" do
+      load_content_file("SLES_12_Beta4")
+
+      release_name = "Happy Feet"
+      release_version = "1.0.1"
+
+      Yast::OSRelease.stub(:ReleaseName).and_return(release_name)
+      Yast::OSRelease.stub(:ReleaseVersion).and_return(release_version)
+
+      Yast::Product.Product
+      expect(Yast::Product.short_name).to eq("SUSE Linux Enterprise Server 12")
+      expect(Yast::Product.short_name).not_to eq(release_name)
+    end
+  end
+
+  context "while called on a broken system (neither content nor os-release file exists)" do
+    before(:each) do
+      Yast::Product.stub(:use_content_file?).and_return(false)
+      Yast::Product.stub(:use_os_release_file?).and_return(false)
+    end
+
+    it "raises error while reading the product information" do
+      expect { Yast::Product.Product }.to raise_error(/Cannot determine the product/)
     end
   end
 end
