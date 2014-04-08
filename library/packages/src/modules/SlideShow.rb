@@ -158,6 +158,10 @@ module Yast
 
       @_stages = {} # list of the configured stages
       @_current_stage = nil # current stage
+
+      @_rn_tabs = {} #tabs with release notes
+      @_relnotes = {} #texts with release notes, product -> text
+      @_base_product = "" #base product for release notes ordering
     end
 
     # Set the flag that user requested abort of the installation
@@ -232,8 +236,12 @@ module Yast
     # Check if currently the "Release Notes" page is shown
     # @return true if showing details, false otherwise
     #
-    def ShowingRelNotes
-      @widgets_created && UI.WidgetExists(:relNotesPage)
+    def ShowingRelNotes(id)
+      @widgets_created && UI.WidgetExists(id)
+    end
+
+    def ProductRelNotesID(product)
+      ("rn_" + product).to_sym
     end
 
     # Restart the subprogress of the slideshow. This means the
@@ -573,8 +581,8 @@ module Yast
     #
     # @return	A term describing the widgets
     #
-    def RelNotesPageWidgets
-      widgets = AddProgressWidgets(:relNotesPage, RichText(@relnotes))
+    def RelNotesPageWidgets(id)
+      widgets = AddProgressWidgets(:relNotesPage, RichText(@_rn_tabs[id]))
       Builtins.y2debug("widget term: \n%1", widgets)
       deep_copy(widgets)
     end
@@ -623,12 +631,12 @@ module Yast
 
     # Switch to the 'release notes' view.
     #
-    def SwitchToReleaseNotesView
-      return if ShowingRelNotes()
+    def SwitchToReleaseNotesView(id)
+      return if ShowingRelNotes(id)
 
       if UI.WidgetExists(:tabContents)
-        UI.ChangeWidget(:dumbTab, :CurrentItem, :showRelNotes)
-        UI.ReplaceWidget(:tabContents, RelNotesPageWidgets()) 
+        UI.ChangeWidget(:dumbTab, :CurrentItem, id)
+        UI.ReplaceWidget(:tabContents, RelNotesPageWidgets(id)) 
         # UpdateTotalProgress(false);
       end
 
@@ -647,6 +655,10 @@ module Yast
       help_text
     end
 
+    def SetReleaseNotes(relnotes, base_product)
+      @_relnotes = relnotes
+      @_base_product = base_product
+    end
 
     # Rebuild the dialog. Useful if slides become available post-creating the dialog.
     def RebuildDialog
@@ -660,12 +672,25 @@ module Yast
           # tab
           Item(Id(:showDetails), _("&Details"))
         ]
-        if @relnotes != nil && @relnotes != ""
-          # tab
+
+        @_rn_tabs = {}
+        if @_relnotes.key?(@_base_product)
+          id = ProductRelNotesID @_base_product
           tabs = Builtins.add(
-            tabs,
-            Item(Id(:showRelNotes), _("Release &Notes"))
+          tabs,
+            Item(Id(id), _("Release Notes %s") % @_base_product)
           )
+          @_rn_tabs[id] = @_relnotes[@_base_product]
+        end
+	@_relnotes.each do | product, relnotes |
+          if @_base_product != product
+            id = ProductRelNotesID product
+            tabs = Builtins.add(
+              tabs,
+              Item(Id(id), _("Release Notes %s") % product)
+            )
+            @_rn_tabs[id] = relnotes
+          end
         end
 
         contents = DumbTab(
@@ -778,9 +803,9 @@ module Yast
         else
           UI.ChangeWidget(:dumbTab, :CurrentItem, :showDetails)
         end
-      elsif button == :showRelNotes && !ShowingRelNotes()
+      elsif @_rn_tabs.key?(button) && !ShowingRelNotes(button)
         @user_switched_to_details = false
-        SwitchToReleaseNotesView()
+        SwitchToReleaseNotesView(button)
       elsif button == :debugHotkey
         @debug = !@debug
         Builtins.y2milestone("Debug mode: %1", @debug)
@@ -1021,7 +1046,7 @@ module Yast
     publish :function => :StopTimer, :type => "void ()"
     publish :function => :ShowingDetails, :type => "boolean ()"
     publish :function => :ShowingSlide, :type => "boolean ()"
-    publish :function => :ShowingRelNotes, :type => "boolean ()"
+    publish :function => :ShowingRelNotes, :type => "boolean (symbol)"
     publish :function => :SubProgressStart, :type => "void (string)"
     publish :function => :SubProgress, :type => "void (integer, string)"
     publish :function => :GlobalProgressStart, :type => "void (string)"
@@ -1036,7 +1061,7 @@ module Yast
     publish :function => :TableItem, :type => "term (string, string, string, string, string)"
     publish :function => :SwitchToSlideView, :type => "void ()"
     publish :function => :SwitchToDetailsView, :type => "void ()"
-    publish :function => :SwitchToReleaseNotesView, :type => "void ()"
+    publish :function => :SwitchToReleaseNotesView, :type => "void (symbol)"
     publish :function => :RebuildDialog, :type => "void ()"
     publish :function => :Reset, :type => "void ()"
     publish :function => :HandleInput, :type => "void (any)"
