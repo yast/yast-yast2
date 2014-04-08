@@ -52,7 +52,7 @@ module Yast
     def ReleaseInformation(directory)
       release_file = File.join(directory, OS_RELEASE_PATH)
 
-      if !supported?(directory)
+      if !os_release_exists?(directory)
         log.info "Release file #{release_file} not found"
         raise(
           OSReleaseFileMissingError,
@@ -89,7 +89,7 @@ module Yast
     #
     # @param [String] (optional) directory, defaults to "/"
     # @return [Boolean] whether exists
-    def supported?(directory = "/")
+    def os_release_exists?(directory = "/")
       FileUtils.Exists(
         File.join(directory, OS_RELEASE_PATH)
       )

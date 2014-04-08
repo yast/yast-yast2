@@ -166,7 +166,7 @@ module Yast
     end
 
     def use_os_release_file?
-      OSRelease.supported?
+      OSRelease.os_release_exists?
     end
 
     # -----------------------------------------------
