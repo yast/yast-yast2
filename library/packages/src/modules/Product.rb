@@ -201,7 +201,7 @@ module Yast
       elsif !Mode.test
         @short_name = OSRelease.ReleaseName
         @version = OSRelease.ReleaseVersion
-        @name = Ops.add(Ops.add(@short_name, " "), @version)
+        @name = "#{@short_name} #{@version}"
       end
 
       @distproduct = "" if @distproduct == nil
