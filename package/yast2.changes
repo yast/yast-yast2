@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Apr  8 16:03:31 UTC 2014 - mvidner@suse.com
+
+- Enable wizard title on the left instead of on top during the
+  installation (bnc#868859).
+- 3.1.40
+
+-------------------------------------------------------------------
 Tue Apr  8 15:01:00 CEST 2014 - locilka@suse.com
 
 - Changed way of reading the product information: Reads it from
