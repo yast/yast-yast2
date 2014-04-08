@@ -655,9 +655,19 @@ module Yast
       help_text
     end
 
+    #set the release notes for slide show
+    # @param [map<string,string>] map product name -> release notes text
+    # @param [string] base product name
     def SetReleaseNotes(relnotes, base_product)
       @_relnotes = relnotes
       @_base_product = base_product
+    end
+
+    def add_relnotes_for_product product, relnotes, tabs
+      id = ProductRelNotesID product
+      #Translators: Tab name, keep short, %s is product name, e.g. SLES
+      tabs << Item(Id(id), _("%s Release Notes") % product)
+      @_rn_tabs[id] = relnotes
     end
 
     # Rebuild the dialog. Useful if slides become available post-creating the dialog.
@@ -675,21 +685,11 @@ module Yast
 
         @_rn_tabs = {}
         if @_relnotes.key?(@_base_product)
-          id = ProductRelNotesID @_base_product
-          tabs = Builtins.add(
-          tabs,
-            Item(Id(id), _("Release Notes %s") % @_base_product)
-          )
-          @_rn_tabs[id] = @_relnotes[@_base_product]
+          add_relnotes_for_product @_base_product, @_relnotes[@_base_product], tabs
         end
 	@_relnotes.each do | product, relnotes |
           if @_base_product != product
-            id = ProductRelNotesID product
-            tabs = Builtins.add(
-              tabs,
-              Item(Id(id), _("Release Notes %s") % product)
-            )
-            @_rn_tabs[id] = relnotes
+            add_releasenotes_for_product product, relnotes, tabs
           end
         end
 
@@ -1073,6 +1073,7 @@ module Yast
     publish :function => :UpdateTable, :type => "void (list <term>)"
     publish :function => :Setup, :type => "void (list <map <string, any>>)"
     publish :function => :GetSetup, :type => "map <string, map <string, any>> ()"
+    publish :function => :SetReleaseNotes, :type => "void (map<string, string>, string)"
   end
 
   SlideShow = SlideShowClass.new
