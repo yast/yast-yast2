@@ -87,6 +87,10 @@ if [ -f /var/log/pk_backend_zypp ]; then
     LIST="$LIST /var/log/pk_backend_zypp"
 fi
 
+if [ -f /var/log/pbl.log ]; then
+    LIST="$LIST /var/log/pbl.log"
+fi
+
 RPM_LIST="rpm-qa"
 if [ -f /var/lib/rpm/Packages ]; then
     rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}\t\t\t(%{VENDOR})\t%{DISTRIBUTION}\n' 2>/dev/null | sort >/var/log/$RPM_LIST

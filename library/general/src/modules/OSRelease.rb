@@ -41,9 +41,7 @@ module Yast
   class OSReleaseClass < Module
     include Yast::Logger
 
-    def initialize
-      @file_path        = "/etc/os-release"
-    end
+    OS_RELEASE_PATH = "/etc/os-release"
 
     # Get information about the OS release
     # Throws exception Yast::OSReleaseFileMissingError if release file
@@ -52,9 +50,9 @@ module Yast
     # @param [String] directory containing the installed system (/ in installed system)
     # @return [String] the release information
     def ReleaseInformation(directory)
-      release_file = File.join(directory, @file_path)
+      release_file = File.join(directory, OS_RELEASE_PATH)
 
-      if !FileUtils.Exists(release_file)
+      if !os_release_exists?(directory)
         log.info "Release file #{release_file} not found"
         raise(
           OSReleaseFileMissingError,
@@ -73,7 +71,7 @@ module Yast
         return SCR.Read(path(".content.PRODUCT"))
       end
       directory = "/" # TODO make this optional argument
-      Misc.CustomSysconfigRead("NAME", "SUSE LINUX", directory + @file_path)
+      Misc.CustomSysconfigRead("NAME", "SUSE LINUX", directory + OS_RELEASE_PATH)
     end
 
     # Get information about the OS version
@@ -84,9 +82,18 @@ module Yast
         return SCR.Read(path(".content.VERSION"))
       end
       directory = "/"
-      Misc.CustomSysconfigRead("VERSION_ID", "", directory + @file_path)
+      Misc.CustomSysconfigRead("VERSION_ID", "", directory + OS_RELEASE_PATH)
     end
 
+    # Returns whether os-release file exists in the given directory
+    #
+    # @param [String] (optional) directory, defaults to "/"
+    # @return [Boolean] whether exists
+    def os_release_exists?(directory = "/")
+      FileUtils.Exists(
+        File.join(directory, OS_RELEASE_PATH)
+      )
+    end
 
     publish :function => :ReleaseInformation, :type => "string (string)"
     publish :function => :ReleaseName, :type => "string ()"
