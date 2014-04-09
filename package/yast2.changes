@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Apr  9 10:24:14 UTC 2014 - mvidner@suse.com
+
+- Enable wizard title on the left instead of on top during the
+  installation (bnc#868859).
+- 3.1.42
+
+-------------------------------------------------------------------
 Wed Apr  9 07:09:37 UTC 2014 - jsrain@suse.cz
 
 - added tabs for release notes into slide show dialog (bnc#871158)

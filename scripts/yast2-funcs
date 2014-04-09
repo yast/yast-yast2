@@ -124,6 +124,7 @@ function set_inst_qt_env()
 {
     export XCURSOR_THEME="DMZ"
     export Y2STYLE="installation.qss"
+    export LIBYUI_WIZARD_TITLE_LEFT=1
     export QT_HOME_DIR="/tmp/.qt/"
     mkdir -p /tmp/.qt
     [ -e /usr/share/desktop-data/qtrc ] && cp /usr/share/desktop-data/qtrc /tmp/.qt/
