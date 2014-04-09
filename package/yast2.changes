@@ -1,8 +1,20 @@
 -------------------------------------------------------------------
-Tue Apr  8 16:03:31 UTC 2014 - mvidner@suse.com
+Wed Apr  9 10:24:14 UTC 2014 - mvidner@suse.com
 
 - Enable wizard title on the left instead of on top during the
   installation (bnc#868859).
+- 3.1.42
+
+-------------------------------------------------------------------
+Wed Apr  9 07:09:37 UTC 2014 - jsrain@suse.cz
+
+- added tabs for release notes into slide show dialog (bnc#871158)
+- 3.1.41
+
+-------------------------------------------------------------------
+Wed Apr  9 06:35:54 UTC 2014 - jreidinger@suse.com
+
+- save_y2logs: save also log from perl-Bootloader (bnc#872486)
 - 3.1.40
 
 -------------------------------------------------------------------
