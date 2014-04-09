@@ -617,6 +617,31 @@ module Yast
     end
 
 
+    # Open a dialog with "Back", "Next", "Abort"
+    # that has the title on the left, as wanted by
+    # the installation visual design
+    def OpenLeftTitleNextBackDialog
+      if haveFancyUI
+        UI.OpenDialog(
+          Opt(:wizardDialog),
+          Wizard(
+            Opt(:titleOnLeft),
+            :back,
+            Label.BackButton,
+            :abort,
+            Label.AbortButton,
+            :next,
+            Label.NextButton
+          )
+        )
+      else
+        OpenNextBackDialog()
+      end
+
+      nil
+    end
+
+
 
     # Open a wizard dialog with simple layout
     #
@@ -1871,6 +1896,7 @@ module Yast
     publish :function => :OpenAcceptStepsDialog, :type => "void ()"
     publish :function => :OpenAcceptAbortStepsDialog, :type => "void ()"
     publish :function => :OpenNextBackStepsDialog, :type => "void ()"
+    publish :function => :OpenLeftTitleNextBackDialog, :type => "void ()"
     publish :function => :OpenCustomDialog, :type => "void (term, term)"
     publish :function => :ReplaceCustomHelp, :type => "void (term)"
     publish :function => :CloseDialog, :type => "void ()"
