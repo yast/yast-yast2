@@ -93,8 +93,9 @@ module Yast
 
       Builtins.y2milestone("Looking for base products")
       products = Pkg.ResolvableProperties("", :product, "")
-      products = Builtins.filter(products) do |p|
-        Ops.get_symbol(p, "status", :none) == :installed
+      expected_status = Stage.initial ? :selected : :installed
+      products = products.select do |p|
+        p["status"] == expected_status
       end
 
       Builtins.y2milestone("All found products: %1", products)
@@ -111,7 +112,7 @@ module Yast
             Ops.get_string(p, "display_name", "")
           )
         end
-        Ops.get_string(p, "category", "") == "base"
+        Stage.initial ? (p["source"] == 0) : (p["category"] == "base")
       end
 
       Builtins.y2milestone("Found base products: %1", products)
