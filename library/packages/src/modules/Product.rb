@@ -162,21 +162,21 @@ module Yast
       nil
     end
 
-    def use_content_file?
+    def can_use_content_file?
       FileUtils.Exists(CONTENT_FILE) && !Mode.live_installation
     end
 
-    def use_os_release_file?
+    def can_use_os_release_file?
       OSRelease.os_release_exists?
     end
 
     # -----------------------------------------------
     # Constructor
     def Product
-      if use_content_file?
-        read_content_file
-      elsif use_os_release_file?
+      if can_use_os_release_file?
         read_os_release_file
+      elsif can_use_content_file?
+        read_content_file
       else
         raise "Cannot determine the product. Neither from the content, nor the os-relese file"
       end
