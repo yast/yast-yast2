@@ -162,58 +162,21 @@ module Yast
       nil
     end
 
-    def use_content_file?
+    def can_use_content_file?
       FileUtils.Exists(CONTENT_FILE) && !Mode.live_installation
     end
 
-    def use_os_release_file?
+    def can_use_os_release_file?
       OSRelease.os_release_exists?
     end
 
     # -----------------------------------------------
     # Constructor
     def Product
-      if use_content_file?
-        # it should use the same mechanism as running system. But it would
-        # mean to initialize package manager from constructor, which is
-        # not reasonable
-        @name = SCR.Read(path(".content.LABEL"))
-        @short_name = SCR.Read(path(".content.SHORTLABEL"))
-        @short_name ||= @name
-        @version = SCR.Read(path(".content.VERSION"))
-        @vendor = SCR.Read(path(".content.VENDOR"))
-
-        @distproduct = SCR.Read(path(".content.DISTPRODUCT"))
-        @distversion = SCR.Read(path(".content.DISTVERSION"))
-
-        @baseproduct = SCR.Read(path(".content.BASEPRODUCT"))
-        @baseproduct = @name if @baseproduct == ""
-        @baseversion = SCR.Read(path(".content.BASEVERSION"))
-
-        @relnotesurl = SCR.Read(path(".content.RELNOTESURL"))
-        @shortlabel = SCR.Read(path(".content.SHORTLABEL"))
-
-        @flags = (SCR.Read(path(".content.FLAGS")) || "").split
-        @patterns = (SCR.Read(path(".content.PATTERNS")) || "").split
-
-        # bugzilla #252122, since openSUSE 10.3
-        # deprecated:
-        # 		content.PATTERNS: abc cba bac
-        # should re replaced with (and/or)
-        # 		content.REQUIRES: pattern:abc pattern:cba pattern:bac
-        #		content.RECOMMENDS: pattern:abc pattern:cba pattern:bac
-        if @patterns != []
-          Builtins.y2warning(
-            "Product content file contains deprecated PATTERNS tag, use REQUIRES and/or RECOMMENDS instead"
-          )
-          Builtins.y2milestone("PATTERNS: %1", @patterns)
-        end
-      # not during testing: Misc::CustomSysconfigRead used by OSRelease creates agent in runtime,
-      # mocking IniParser not possible
-      elsif use_os_release_file?
-        @short_name = OSRelease.ReleaseName
-        @version = OSRelease.ReleaseVersion
-        @name = "#{@short_name} #{@version}"
+      if can_use_os_release_file?
+        read_os_release_file
+      elsif can_use_content_file?
+        read_content_file
       else
         raise "Cannot determine the product. Neither from the content, nor the os-relese file"
       end
@@ -231,6 +194,52 @@ module Yast
       Wizard.SetProductName(@name) if @name != nil && @name != ""
 
       nil
+    end
+
+  private
+
+    def read_content_file
+      # it should use the same mechanism as running system. But it would
+      # mean to initialize package manager from constructor, which is
+      # not reasonable
+      @name = SCR.Read(path(".content.LABEL"))
+      @short_name = SCR.Read(path(".content.SHORTLABEL"))
+      @short_name ||= @name
+
+      @version = SCR.Read(path(".content.VERSION"))
+      @vendor = SCR.Read(path(".content.VENDOR"))
+
+      @distproduct = SCR.Read(path(".content.DISTPRODUCT"))
+      @distversion = SCR.Read(path(".content.DISTVERSION"))
+
+      @baseproduct = SCR.Read(path(".content.BASEPRODUCT"))
+      @baseproduct = @name if @baseproduct == ""
+      @baseversion = SCR.Read(path(".content.BASEVERSION"))
+
+      @relnotesurl = SCR.Read(path(".content.RELNOTESURL"))
+      @shortlabel = SCR.Read(path(".content.SHORTLABEL"))
+
+      @flags = (SCR.Read(path(".content.FLAGS")) || "").split
+      @patterns = (SCR.Read(path(".content.PATTERNS")) || "").split
+
+      # bugzilla #252122, since openSUSE 10.3
+      # deprecated:
+      # 		content.PATTERNS: abc cba bac
+      # should re replaced with (and/or)
+      # 		content.REQUIRES: pattern:abc pattern:cba pattern:bac
+      #		content.RECOMMENDS: pattern:abc pattern:cba pattern:bac
+      if @patterns != []
+        Builtins.y2warning(
+          "Product content file contains deprecated PATTERNS tag, use REQUIRES and/or RECOMMENDS instead"
+        )
+        Builtins.y2milestone("PATTERNS: %1", @patterns)
+      end
+    end
+
+    def read_os_release_file
+      @short_name = OSRelease.ReleaseName
+      @version = OSRelease.ReleaseVersion
+      @name = "#{@short_name} #{@version}"
     end
 
     publish :variable => :name, :type => "string"

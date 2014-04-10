@@ -50,8 +50,8 @@ end
 describe Yast::Product do
   context "while called in initial installation (content file exists)" do
     before(:each) do
-      Yast::Product.stub(:use_content_file?).and_return(true)
-      Yast::Product.stub(:use_os_release_file?).and_return(false)
+      Yast::Product.stub(:can_use_content_file?).and_return(true)
+      Yast::Product.stub(:can_use_os_release_file?).and_return(false)
     end
 
     it "reads product information from content file and fills up internal variables" do
@@ -73,8 +73,8 @@ describe Yast::Product do
 
   context "while called on a running system (os-release file exists)" do
     before(:each) do
-      Yast::Product.stub(:use_content_file?).and_return(false)
-      Yast::Product.stub(:use_os_release_file?).and_return(true)
+      Yast::Product.stub(:can_use_content_file?).and_return(false)
+      Yast::Product.stub(:can_use_os_release_file?).and_return(true)
     end
 
     it "reads product information from OSRelease and fills up internal variables" do
@@ -93,11 +93,11 @@ describe Yast::Product do
 
   context "while called on a system with both content and os-release files supported" do
     before(:each) do
-      Yast::Product.stub(:use_content_file?).and_return(true)
-      Yast::Product.stub(:use_os_release_file?).and_return(true)
+      Yast::Product.stub(:can_use_content_file?).and_return(true)
+      Yast::Product.stub(:can_use_os_release_file?).and_return(true)
     end
 
-    it "prefers content file to os-release file" do
+    it "prefers os-release file to content file" do
       load_content_file("SLES_12_Beta4")
 
       release_name = "Happy Feet"
@@ -107,15 +107,16 @@ describe Yast::Product do
       Yast::OSRelease.stub(:ReleaseVersion).and_return(release_version)
 
       Yast::Product.Product
-      expect(Yast::Product.short_name).to eq("SUSE Linux Enterprise Server 12")
-      expect(Yast::Product.short_name).not_to eq(release_name)
+      expect(Yast::Product.name).to eq("#{release_name} #{release_version}")
+      expect(Yast::Product.short_name).to eq(release_name)
+      expect(Yast::Product.short_name).not_to eq("SUSE Linux Enterprise Server 12")
     end
   end
 
   context "while called on a broken system (neither content nor os-release file exists)" do
     before(:each) do
-      Yast::Product.stub(:use_content_file?).and_return(false)
-      Yast::Product.stub(:use_os_release_file?).and_return(false)
+      Yast::Product.stub(:can_use_content_file?).and_return(false)
+      Yast::Product.stub(:can_use_os_release_file?).and_return(false)
     end
 
     it "raises error while reading the product information" do

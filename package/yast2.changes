@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Apr 10 11:02:13 CEST 2014 - locilka@suse.com
+
+- Prefering os-release file to content file (which is used only as
+  a fallback now) both in installation and on a running system
+  (bnc#871261)
+- 3.1.44
+
+-------------------------------------------------------------------
 Thu Apr 10 09:06:02 UTC 2014 - mvidner@suse.com
 
 - Enable wizard title on the left instead of on top during the
