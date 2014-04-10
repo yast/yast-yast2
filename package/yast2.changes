@@ -1,8 +1,15 @@
 -------------------------------------------------------------------
-Wed Apr  9 13:23:35 UTC 2014 - mvidner@suse.com
+Thu Apr 10 09:06:02 UTC 2014 - mvidner@suse.com
 
 - Enable wizard title on the left instead of on top during the
   installation (bnc#868859).
+- 3.1.43
+
+-------------------------------------------------------------------
+Thu Apr 10 08:04:42 UTC 2014 - jsrain@suse.cz
+
+- adjusted Product.FindBaseProducts to be usable during
+  installation (needed for fix of bnc#871158)
 - 3.1.42
 
 -------------------------------------------------------------------
