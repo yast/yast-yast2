@@ -215,7 +215,8 @@ module Yast
     def CustomSysconfigRead(key, defval, location)
       return defval if location == ""
 
-      custom_path = Builtins.topath(location)
+      # Replacing / with _ to make mocking with dummy_agent possible
+      custom_path = Builtins.topath(location.tr("/", "_"))
       SCR.RegisterAgent(
         custom_path,
         term(:ag_ini, term(:SysConfigFile, location))
