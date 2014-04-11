@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Apr 11 15:15:30 CEST 2014 - locilka@suse.com
+
+- Misc library: replacing / with _ in custom SCR path to make
+  mocking with dummy_agent possible
+- 3.1.45
+
+-------------------------------------------------------------------
 Thu Apr 10 11:07:13 CEST 2014 - locilka@suse.com
 
 - Prefering os-release file to content file (which is used only as
