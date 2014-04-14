@@ -48,7 +48,7 @@ def load_content_file(file_name)
 end
 
 describe Yast::Product do
-  context "while called in initial installation (content file exists)" do
+  context "while called on a system without os-release file (and content file exists)" do
     before(:each) do
       Yast::Product.stub(:can_use_content_file?).and_return(true)
       Yast::Product.stub(:can_use_os_release_file?).and_return(false)
@@ -71,45 +71,63 @@ describe Yast::Product do
     end
   end
 
-  context "while called on a running system (os-release file exists)" do
+  context "while called on a system with os-release file" do
     before(:each) do
       Yast::Product.stub(:can_use_content_file?).and_return(false)
       Yast::Product.stub(:can_use_os_release_file?).and_return(true)
     end
 
-    it "reads product information from OSRelease and fills up internal variables" do
-      release_name = "Happy Feet"
-      release_version = "1.0.1"
+    # This is the default behavior
+    context "OSRelease.ReleaseInformation is not empty" do
+      it "reads product information from OSRelease and fills up internal variables" do
+        release_info = "Happy Feet 2.0"
+        Yast::OSRelease.stub(:ReleaseInformation).and_return(release_info)
 
-      Yast::OSRelease.stub(:ReleaseName).and_return(release_name)
-      Yast::OSRelease.stub(:ReleaseVersion).and_return(release_version)
+        Yast::Product.Product
+        expect(Yast::Product.name).to eq(release_info)
+      end
+    end
 
-      Yast::Product.Product
-      expect(Yast::Product.short_name).to eq(release_name)
-      expect(Yast::Product.version).to eq(release_version)
-      expect(Yast::Product.name).to eq("#{release_name} #{release_version}")
+    # This is the fallback behavior
+    context "OSRelease.ReleaseInformation empty" do
+      it "reads product information from OSRelease and fills up internal variables" do
+        release_name = "Happy Feet"
+        release_version = "1.0.1"
+
+        Yast::OSRelease.stub(:ReleaseInformation).and_return("")
+        Yast::OSRelease.stub(:ReleaseName).and_return(release_name)
+        Yast::OSRelease.stub(:ReleaseVersion).and_return(release_version)
+
+        Yast::Product.Product
+        expect(Yast::Product.short_name).to eq(release_name)
+        expect(Yast::Product.version).to eq(release_version)
+        expect(Yast::Product.name).to eq("#{release_name} #{release_version}")
+      end
     end
   end
 
-  context "while called on a system with both content and os-release files supported" do
+  context "while called on a system having both content and os-release files" do
     before(:each) do
       Yast::Product.stub(:can_use_content_file?).and_return(true)
       Yast::Product.stub(:can_use_os_release_file?).and_return(true)
     end
 
-    it "prefers os-release file to content file" do
-      load_content_file("SLES_12_Beta4")
+    context "OSRelease.ReleaseInformation empty" do
+      it "prefers os-release file to content file" do
+        load_content_file("SLES_12_Beta4")
 
-      release_name = "Happy Feet"
-      release_version = "1.0.1"
+        release_name = "Happy Feet"
+        release_version = "1.0.1"
 
-      Yast::OSRelease.stub(:ReleaseName).and_return(release_name)
-      Yast::OSRelease.stub(:ReleaseVersion).and_return(release_version)
+        Yast::OSRelease.stub(:ReleaseInformation).and_return("")
+        Yast::OSRelease.stub(:ReleaseName).and_return(release_name)
+        Yast::OSRelease.stub(:ReleaseVersion).and_return(release_version)
 
-      Yast::Product.Product
-      expect(Yast::Product.name).to eq("#{release_name} #{release_version}")
-      expect(Yast::Product.short_name).to eq(release_name)
-      expect(Yast::Product.short_name).not_to eq("SUSE Linux Enterprise Server 12")
+        Yast::Product.Product
+        expect(Yast::Product.name).to eq("#{release_name} #{release_version}")
+        expect(Yast::Product.short_name).to eq(release_name)
+        expect(Yast::Product.short_name).not_to eq("SUSE Linux Enterprise Server 12")
+      end
     end
   end
 
