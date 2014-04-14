@@ -33,6 +33,9 @@ require "yast"
 module Yast
   class ProductClass < Module
 
+    include Yast::Logger
+
+
     CONTENT_FILE = "/content"
 
     def main
@@ -239,7 +242,12 @@ module Yast
     def read_os_release_file
       @short_name = OSRelease.ReleaseName
       @version = OSRelease.ReleaseVersion
-      @name = "#{@short_name} #{@version}"
+
+      @name = OSRelease.ReleaseInformation("/")
+      if @name.empty?
+        @name = "#{@short_name} #{@version}"
+        log.warn "OSRelease.ReleaseInformation is empty, using default product name: #{@name}"
+      end
     end
 
     publish :variable => :name, :type => "string"
