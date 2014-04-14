@@ -35,7 +35,6 @@ module Yast
 
     include Yast::Logger
 
-
     CONTENT_FILE = "/content"
 
     def main
@@ -243,7 +242,7 @@ module Yast
       @short_name = OSRelease.ReleaseName
       @version = OSRelease.ReleaseVersion
 
-      @name = OSRelease.ReleaseInformation("/")
+      @name = OSRelease.ReleaseInformation
       if @name.empty?
         @name = "#{@short_name} #{@version}"
         log.warn "OSRelease.ReleaseInformation is empty, using default product name: #{@name}"
