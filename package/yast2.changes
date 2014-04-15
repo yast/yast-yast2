@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Apr 15 09:09:57 CEST 2014 - locilka@suse.com
+
+- Changed Product.FindBaseProducts to throw an exception if no
+  base products are found in installation (bnc#873458, bnc#873377)
+- 3.1.46
+
+-------------------------------------------------------------------
 Mon Apr 14 15:11:22 CEST 2014 - locilka@suse.com
 
 - Changed OSRelease not to read content file instead of os-release
