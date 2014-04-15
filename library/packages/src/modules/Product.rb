@@ -120,6 +120,7 @@ module Yast
       Builtins.y2milestone("Found base products: %1", products)
       if Builtins.size(products) == 0
         Builtins.y2error("No base product found")
+        raise "No base product for installation found" if Stage.initial
       elsif Ops.greater_than(Builtins.size(products), 1)
         Builtins.y2warning("More than one base product found")
       end
