@@ -175,6 +175,13 @@ describe Yast::Product do
         Yast::Product.ReadProducts
         expect(Yast::Product.name).to eq("openSUSE (SELECTED)")
       end
+
+      it "raises an exception if no bse product is selected" do
+        Yast::Mode.stub(:mode).and_return("installation")
+        Yast::Stage.stub(:stage).and_return("initial")
+        Yast::Pkg.stub(:ResolvableProperties).with("", :product, "").and_return([])
+        expect { Yast::Product.ReadProducts }.to raise_error(/No base product/)
+      end
     end
 
     context "while called on a running system" do
@@ -183,15 +190,6 @@ describe Yast::Product do
         Yast::Stage.stub(:stage).and_return("normal")
         Yast::Product.ReadProducts
         expect(Yast::Product.name).to eq("openSUSE (INSTALLED)")
-      end
-    end
-
-    context "while running in initial installation without having any products selected" do
-      it "throws an exception" do
-        Yast::Mode.stub(:mode).and_return("installation")
-        Yast::Stage.stub(:stage).and_return("initial")
-        Yast::Pkg.stub(:ResolvableProperties).with("", :product, "").and_return([])
-        expect { Yast::Product.ReadProducts }.to raise_error(/No base product/)
       end
     end
   end
