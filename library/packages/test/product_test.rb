@@ -5,6 +5,7 @@ inc_dirs = Dir.glob("#{top_srcdir}/library/*/src")
 ENV["Y2DIR"] = inc_dirs.join(":")
 
 require "yast"
+require "yaml"
 
 # Important: Loads data in constructor
 Yast.import "Product"
@@ -12,16 +13,21 @@ Yast.import "Product"
 Yast.import "Mode"
 Yast.import "Stage"
 Yast.import "OSRelease"
+Yast.import "PackageSystem"
+Yast.import "Pkg"
+Yast.import "PackageLock"
+Yast.import "Mode"
+Yast.import "Stage"
 
 include Yast::Logger
 
 # Path to a test data - service file - mocking the default data path
-DATA_PATH = File.join(File.expand_path(File.dirname(__FILE__)), "data", "content_files")
+DATA_PATH = File.join(File.expand_path(File.dirname(__FILE__)), "data")
 
 SCR_PATH = Yast::Path.new(".content")
 
 def load_content_file(file_name)
-  file_name = File.join(DATA_PATH, file_name)
+  file_name = File.join(DATA_PATH, "content_files", file_name)
 
   raise "File not found: #{file_name}" unless File.exists?(file_name)
 
@@ -45,6 +51,14 @@ def load_content_file(file_name)
       )
     )
   )
+end
+
+def load_zypp(file_name)
+  file_name = File.join(DATA_PATH, "zypp", file_name)
+
+  raise "File not found: #{file_name}" unless File.exists?(file_name)
+
+  YAML.load_file(file_name)
 end
 
 describe Yast::Product do
@@ -139,6 +153,46 @@ describe Yast::Product do
 
     it "raises error while reading the product information" do
       expect { Yast::Product.Product }.to raise_error(/Cannot determine the product/)
+    end
+  end
+
+  ZYPP_PRODUCTS = load_zypp('products.yml')
+
+  describe "#ReadProducts" do
+    before (:each) do
+      # FIXME: Method that needs that much stubbing needs refactoring
+      Yast::Pkg.stub(:ResolvableProperties).with("", :product, "").and_return(ZYPP_PRODUCTS)
+      Yast::PackageSystem.stub(:EnsureTargetInit).and_return(true)
+      Yast::PackageSystem.stub(:EnsureSourceInit).and_return(true)
+      Yast::Pkg.stub(:PkgSolve).and_return(true)
+      Yast::PackageLock.stub(:Check).and_return(true)
+    end
+
+    context "while called in initial installation" do
+      it "reads products from zypp and selects first :selected base product" do
+        Yast::Mode.stub(:mode).and_return("installation")
+        Yast::Stage.stub(:stage).and_return("initial")
+        Yast::Product.ReadProducts
+        expect(Yast::Product.name).to eq("openSUSE (SELECTED)")
+      end
+    end
+
+    context "while called on a running system" do
+      it "reads products from zypp and selects first :installed base product" do
+        Yast::Mode.stub(:mode).and_return("normal")
+        Yast::Stage.stub(:stage).and_return("normal")
+        Yast::Product.ReadProducts
+        expect(Yast::Product.name).to eq("openSUSE (INSTALLED)")
+      end
+    end
+
+    context "while running in initial installation without having any products selected" do
+      it "throws an exception" do
+        Yast::Mode.stub(:mode).and_return("installation")
+        Yast::Stage.stub(:stage).and_return("initial")
+        Yast::Pkg.stub(:ResolvableProperties).with("", :product, "").and_return([])
+        expect { Yast::Product.ReadProducts }.to raise_error(/No base product/)
+      end
     end
   end
 end
