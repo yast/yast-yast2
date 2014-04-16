@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Apr 16 11:46:55 UTC 2014 - mfilka@suse.com
+
+- bnc#869661
+  - fixed internal error raised in inst_lan during update
+- 3.1.47
+
+-------------------------------------------------------------------
 Tue Apr 15 09:09:57 CEST 2014 - locilka@suse.com
 
 - Changed Product.FindBaseProducts to throw an exception if no
