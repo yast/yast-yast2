@@ -200,18 +200,28 @@ module Yast
       def initialize systemd_unit
         super()
         self[:systemd_unit] = systemd_unit
-        status = get_status
+        self[:status]       = get_status
         self[:raw]          = status.stdout
         self[:error]        = status.stderr
         self[:exit]         = status.exit
         self[:enabled?]     = status.exit.zero?
-        self[:not_found?]   = status.stderr.empty? ? false : true
+        self[:not_found?]   = service_missing?
       end
 
       private
 
       def get_status
         systemd_unit.command("is-enabled")
+      end
+
+      # Analyze the exit code and stdout of the command `systemctl is-enabled service_name`
+      def service_missing?
+        # the service exists and it's enabled
+        return false if status.exit.zero?
+        # the service exists and it's disabled
+        return false if status.exit.nonzero? && status.stdout.strip.match(/\Adisabled$/)
+        # for all other cases the service does not exist
+        true
       end
     end
   end
