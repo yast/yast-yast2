@@ -3,7 +3,7 @@ Wed Apr 16 13:02:54 UTC 2014 - jreidinger@suse.com
 
 - ensure that dialog was closed even if exception is raised
   (bnc#873916)
-- store versions of packages in inst-sys
+- save_y2logs: store versions of packages in inst-sys
 - 3.1.48
 
 -------------------------------------------------------------------
