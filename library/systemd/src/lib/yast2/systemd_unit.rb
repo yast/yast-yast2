@@ -66,7 +66,7 @@ module Yast
 
       @properties = show
       @error = self.properties.error
-      @name = id.to_s.split(".").first.to_s
+      @name = id.to_s.split(".").first || unit_name
     end
 
     def refresh!
