@@ -179,7 +179,7 @@ module Yast
           when "wicked"
             @current_name = :wicked
           else
-            if Mode.installation || Mode.config
+            if running_installer?
               Builtins.y2milestone("Running in installer, use default: wicked")
               @current_name = :wicked
             else
@@ -418,6 +418,11 @@ module Yast
       end
 
       nil
+    end
+
+    # Check if currently runs in installer
+    def running_installer?
+      Mode.installation || Mode.config || Mode.update
     end
 
     publish :function => :Read, :type => "void ()"

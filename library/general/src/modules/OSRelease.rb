@@ -49,7 +49,7 @@ module Yast
     #
     # @param [String] directory containing the installed system (/ in installed system)
     # @return [String] the release information
-    def ReleaseInformation(directory)
+    def ReleaseInformation(directory = "/")
       release_file = File.join(directory, OS_RELEASE_PATH)
 
       if !os_release_exists?(directory)
@@ -60,29 +60,21 @@ module Yast
         )
       end
 
-      MakeNiceName(Misc.CustomSysconfigRead("PRETTY_NAME", "?", release_file))
+      MakeNiceName(Misc.CustomSysconfigRead("PRETTY_NAME", "", release_file))
     end
 
     # Get information about the OS name
     # Is limited for the currently running product
     # @return [String] the release information
-    def ReleaseName
-      if Stage.initial
-        return SCR.Read(path(".content.PRODUCT"))
-      end
-      directory = "/" # TODO make this optional argument
-      Misc.CustomSysconfigRead("NAME", "SUSE LINUX", directory + OS_RELEASE_PATH)
+    def ReleaseName(directory = "/")
+      Misc.CustomSysconfigRead("NAME", "SUSE Linux", File.join(directory, OS_RELEASE_PATH))
     end
 
     # Get information about the OS version
     # Is limited for the currently running product
     # @return [String] the release information
-    def ReleaseVersion
-      if Stage.initial
-        return SCR.Read(path(".content.VERSION"))
-      end
-      directory = "/"
-      Misc.CustomSysconfigRead("VERSION_ID", "", directory + OS_RELEASE_PATH)
+    def ReleaseVersion(directory = "/")
+      Misc.CustomSysconfigRead("VERSION_ID", "", File.join(directory, OS_RELEASE_PATH))
     end
 
     # Returns whether os-release file exists in the given directory

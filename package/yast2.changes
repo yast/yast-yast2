@@ -3,6 +3,60 @@ Thu Apr 17 15:08:41 UTC 2014 - mvidner@suse.com
 
 - rewrote URLRecode.pm to URLRecode.rb so that 'yast2 repositories'
   can run without Perl bindings
+- 3.1.51
+
+-------------------------------------------------------------------
+Thu Apr 17 11:11:01 CEST 2014 - locilka@suse.com
+
+- Decreased number of logs coming from Hooks (to enhance logs
+  readability)
+- 3.1.50
+
+-------------------------------------------------------------------
+Thu Apr 17 08:22:23 UTC 2014 - vmoravec@suse.com
+
+- Add path to deprecation warnings (bnc#873973)
+- Fix enabling LSB services during installation (bnc#873929)
+- 3.1.49
+
+-------------------------------------------------------------------
+Wed Apr 16 13:02:54 UTC 2014 - jreidinger@suse.com
+
+- ensure that dialog was closed even if exception is raised
+  (bnc#873916)
+- save_y2logs: store versions of packages in inst-sys
+- 3.1.48
+
+-------------------------------------------------------------------
+Wed Apr 16 11:46:55 UTC 2014 - mfilka@suse.com
+
+- bnc#869661
+  - fixed internal error raised in inst_lan during update
+- 3.1.47
+
+-------------------------------------------------------------------
+Tue Apr 15 09:09:57 CEST 2014 - locilka@suse.com
+
+- Changed Product.FindBaseProducts to throw an exception if no
+  base products are found in installation (bnc#873458, bnc#873377)
+- 3.1.46
+
+-------------------------------------------------------------------
+Mon Apr 14 15:11:22 CEST 2014 - locilka@suse.com
+
+- Changed OSRelease not to read content file instead of os-release
+  file in inst-sys (bnc#873366)
+- Changed Product to use OSRelease.ReleaseInformation as :name
+  instead of creating it from ReleaseName and ReleaseVersion,
+  these are only used as fallback (bnc#873366)
+- 3.1.45
+
+-------------------------------------------------------------------
+Thu Apr 10 11:07:13 CEST 2014 - locilka@suse.com
+
+- Prefering os-release file to content file (which is used only as
+  a fallback now) both in installation and on a running system
+  (bnc#871261)
 - 3.1.44
 
 -------------------------------------------------------------------

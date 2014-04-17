@@ -91,6 +91,10 @@ if [ -f /var/log/pbl.log ]; then
     LIST="$LIST /var/log/pbl.log"
 fi
 
+if [ -f /.packages.root ]; then
+    LIST="$LIST /.packages.root"
+fi
+
 RPM_LIST="rpm-qa"
 if [ -f /var/lib/rpm/Packages ]; then
     rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}\t\t\t(%{VENDOR})\t%{DISTRIBUTION}\n' 2>/dev/null | sort >/var/log/$RPM_LIST
