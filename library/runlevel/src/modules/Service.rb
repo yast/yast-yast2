@@ -313,7 +313,7 @@ module Yast
     # @param [String] param init script argument
     # @return [Fixnum] exit value
     def RunInitScript name, param
-      deprecate("use `start` or `stop` instead")
+      deprecate("use the specific unit command instead")
 
       service = SystemdService.find(name)
       if !service
@@ -321,16 +321,22 @@ module Yast
         return -1
       end
 
-      case param
-      when 'start'
-        service.start
-      when 'stop'
-        service.stop
-      else
-        log.error "Unknown action '#{param}' for service '#{name}'"
-        return -1
-      end
-      0
+      result =
+        case param
+        when 'start', 'stop', 'status', 'reload', 'restart', 'enable', 'disable'
+          service.send(param)
+        when 'try-restart'
+          service.try_restart
+        when 'reload-or-restart'
+          service.reload_or_restart
+        when 'reload-or-try-restart'
+          service.reload_or_try_restart
+        else
+          log.error "Unknown action '#{param}' for service '#{name}'"
+          false
+        end
+
+      result ? 0 : -1
     end
 
     # @deprecated Use specific unit methods for service configuration
@@ -396,7 +402,7 @@ module Yast
       when :not_found
         error << "Service '#{service_name}' not found"
       else
-        error.prepend("Attempt to `#{event}` service '#{service_name}' failed. ")
+        error.prepend("Attempt to `#{event}` service '#{service_name}' failed.\nERROR: ")
       end
       self.error = error
       log.error(error)

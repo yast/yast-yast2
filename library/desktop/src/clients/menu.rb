@@ -330,15 +330,22 @@ module Yast
           "Select or activate elements with [SPACE] or [ENTER].\n" +
           "Some elements use arrow keys (e.g., to scroll in lists).</p>"
       ) +
-        # NCurses Control Center help 2/9
+        # NCurses Control Center help 2/10
+        _(
+          "<p>Tree navigation is also done by arrow keys. To open or close a " +
+          "branch use [SPACE]. For modules showing a tree (might look like a list) " +
+          "of configuration items on the left side use [ENTER] to get corresponding " +
+          "dialog on the right.</p>"
+        ) +
+        # NCurses Control Center help 3/10
         _(
           "<p>Buttons are equipped with shortcut keys (the highlighted\nletter). Use [ALT] and the letter to activate the button.</p>"
         ) +
-        # NCurses Control Center help 3/9
+        # NCurses Control Center help 4/10
         _(
           "<p>Press [ESC] to close selection pop-ups (e.g., from\nmenu buttons) without choosing anything.</p>\n"
         ) +
-        # NCurses Control Center help 4/9
+        # NCurses Control Center help 5/10
         _(
           "<p>2) <i>Substitution of Keystrokes</i><br>\n" +
             "<p>Because the environment can affect the use of the keyboard,\n" +
@@ -346,21 +353,22 @@ module Yast
             "If [TAB] and [SHIFT] (or [ALT]) + [TAB] do not work,\n" +
             "move focus forward with [CTRL] + [F] and backward with [CTRL] + [B].</p>"
         ) +
-        # NCurses Control Center help 5/9
+        # NCurses Control Center help 6/10
         _(
           "<p>If [ALT] + [letter] does not work,\n" +
             "try [ESC] + [letter]. Example: [ESC] + [H] for [ALT] + [H].\n" +
             "[ESC] + [TAB] is also a substitute for [ALT] + [TAB].</p>"
         ) +
-        # NCurses Control Center help 6/9
+        # NCurses Control Center help 7/10
         _(
           "<p>3) <i>Function Keys</i><br>\n" +
-            "F keys provide a quick access to main functions.\n" +
-            "Press F1 to get the function key bindings for the current dialog.</p>"
+            "F keys provide a quick access to main functions. " +
+            "The function key bindings for the current dialog are " +
+            "shown in the bottom line.</p>"
         ) +
-        # NCurses Control Center help 7/9
+        # NCurses Control Center help 8/10
         _("<p>The F keys are usually connected to a certain action:</p>") +
-        # NCurses Control Center help 8/9
+        # NCurses Control Center help 9/10
         _(
           "F1  = Help<br>\n" +
             "F2  = Info or Description<br>\n" +
@@ -373,7 +381,7 @@ module Yast
             "F9  = Abort or Cancel<br>\n" +
             "F10 = OK, Next, Finish, or Accept<br>"
         ) +
-        # NCurses Control Center help 9/9
+        # NCurses Control Center help 10/10
         _("<p>In some environments, all or some\nF keys are not available.</p>")
 
       Popup.LongText(headline, RichText(help), 60, 20)

@@ -1,9 +1,93 @@
 -------------------------------------------------------------------
-Thu Mar 27 15:32:23 UTC 2014 - mvidner@suse.com
+Thu Apr 17 15:08:41 UTC 2014 - mvidner@suse.com
 
 - rewrote URLRecode.pm to URLRecode.rb so that 'yast2 repositories'
   can run without Perl bindings
+- 3.1.44
+
+-------------------------------------------------------------------
+Thu Apr 10 09:06:02 UTC 2014 - mvidner@suse.com
+
+- Enable wizard title on the left instead of on top during the
+  installation (bnc#868859).
+- 3.1.43
+
+-------------------------------------------------------------------
+Thu Apr 10 08:04:42 UTC 2014 - jsrain@suse.cz
+
+- adjusted Product.FindBaseProducts to be usable during
+  installation (needed for fix of bnc#871158)
+- 3.1.42
+
+-------------------------------------------------------------------
+Wed Apr  9 07:09:37 UTC 2014 - jsrain@suse.cz
+
+- added tabs for release notes into slide show dialog (bnc#871158)
+- 3.1.41
+
+-------------------------------------------------------------------
+Wed Apr  9 06:35:54 UTC 2014 - jreidinger@suse.com
+
+- save_y2logs: save also log from perl-Bootloader (bnc#872486)
+- 3.1.40
+
+-------------------------------------------------------------------
+Tue Apr  8 15:01:00 CEST 2014 - locilka@suse.com
+
+- Changed way of reading the product information: Reads it from
+  /content file if it exists, then from /etc/os-release, then it
+  throws exception if there is no other place to read (bnc#871261)
+- 3.1.39
+
+-------------------------------------------------------------------
+Tue Apr  8 11:40:15 UTC 2014 - lslezak@suse.cz
+
+- fixed "uninitialized constant Yast2::HwDetection::SCR" error
+  (bnc#871783), fixed testsuite
+- 3.1.38
+
+-------------------------------------------------------------------
+Wed Apr  2 09:18:51 UTC 2014 - jreidinger@suse.com
+
+- add control option to enable sshd in installation (bnc#865056)
+- 3.1.37
+
+-------------------------------------------------------------------
+Tue Apr  1 13:58:20 CEST 2014 - gs@suse.de
+
+- Add info about text mode navigation in trees to general help
+  (bnc #840672)
+
+-------------------------------------------------------------------
+Mon Mar 31 19:48:07 UTC 2014 - vmoravec@suse.com
+
+- Fix failing tests
+- 3.1.36
+
+-------------------------------------------------------------------
+Mon Mar 31 14:54:17 UTC 2014 - vmoravec@suse.com
+
+- Fix enabling services in inst-sys (bnc#870949)
+- 3.1.35
+
+-------------------------------------------------------------------
+Fri Mar 28 13:13:54 UTC 2014 - vmoravec@suse.com
+
+- Add more systemd unit commands to SystemdService
+- 3.1.34
+
+-------------------------------------------------------------------
+Fri Mar 28 13:07:16 UTC 2014 - vmoravec@suse.com
+
+- Don't change service name which might be frozen string
+  (bnc#870803)
 - 3.1.33
+
+-------------------------------------------------------------------
+Thu Mar 27 10:15:12 UTC 2014 - vmoravec@suse.com
+
+- Fix for template systemd units properties
+- 3.1.32
 
 -------------------------------------------------------------------
 Thu Mar 27 10:03:16 UTC 2014 - lslezak@suse.cz

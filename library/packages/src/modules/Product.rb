@@ -32,6 +32,9 @@ require "yast"
 
 module Yast
   class ProductClass < Module
+
+    CONTENT_FILE = "/content"
+
     def main
       Yast.import "Pkg"
 
@@ -40,6 +43,7 @@ module Yast
       Yast.import "OSRelease"
       Yast.import "PackageLock"
       Yast.import "PackageSystem"
+      Yast.import "FileUtils"
 
       # General product name and version
       @name = "" # "SuSE Linux 8.1"
@@ -89,8 +93,9 @@ module Yast
 
       Builtins.y2milestone("Looking for base products")
       products = Pkg.ResolvableProperties("", :product, "")
-      products = Builtins.filter(products) do |p|
-        Ops.get_symbol(p, "status", :none) == :installed
+      expected_status = Stage.initial ? :selected : :installed
+      products = products.select do |p|
+        p["status"] == expected_status
       end
 
       Builtins.y2milestone("All found products: %1", products)
@@ -107,7 +112,7 @@ module Yast
             Ops.get_string(p, "display_name", "")
           )
         end
-        Ops.get_string(p, "category", "") == "base"
+        Stage.initial ? (p["source"] == 0) : (p["category"] == "base")
       end
 
       Builtins.y2milestone("Found base products: %1", products)
@@ -157,38 +162,39 @@ module Yast
       nil
     end
 
+    def use_content_file?
+      FileUtils.Exists(CONTENT_FILE) && !Mode.live_installation
+    end
+
+    def use_os_release_file?
+      OSRelease.os_release_exists?
+    end
 
     # -----------------------------------------------
     # Constructor
     def Product
-      if Stage.initial && !Mode.live_installation
+      if use_content_file?
         # it should use the same mechanism as running system. But it would
         # mean to initialize package manager from constructor, which is
         # not reasonable
-        @name = Convert.to_string(SCR.Read(path(".content.LABEL")))
-        @short_name = Convert.to_string(SCR.Read(path(".content.SHORTLABEL")))
-        @short_name = @name if @short_name == nil
-        @version = Convert.to_string(SCR.Read(path(".content.VERSION")))
-        @vendor = Convert.to_string(SCR.Read(path(".content.VENDOR")))
+        @name = SCR.Read(path(".content.LABEL"))
+        @short_name = SCR.Read(path(".content.SHORTLABEL"))
+        @short_name ||= @name
+        @version = SCR.Read(path(".content.VERSION"))
+        @vendor = SCR.Read(path(".content.VENDOR"))
 
-        @distproduct = Convert.to_string(SCR.Read(path(".content.DISTPRODUCT")))
-        @distversion = Convert.to_string(SCR.Read(path(".content.DISTVERSION")))
+        @distproduct = SCR.Read(path(".content.DISTPRODUCT"))
+        @distversion = SCR.Read(path(".content.DISTVERSION"))
 
-        @baseproduct = Convert.to_string(SCR.Read(path(".content.BASEPRODUCT")))
+        @baseproduct = SCR.Read(path(".content.BASEPRODUCT"))
         @baseproduct = @name if @baseproduct == ""
-        @baseversion = Convert.to_string(SCR.Read(path(".content.BASEVERSION")))
+        @baseversion = SCR.Read(path(".content.BASEVERSION"))
 
-        @relnotesurl = Convert.to_string(SCR.Read(path(".content.RELNOTESURL")))
-        @shortlabel = Convert.to_string(SCR.Read(path(".content.SHORTLABEL")))
+        @relnotesurl = SCR.Read(path(".content.RELNOTESURL"))
+        @shortlabel = SCR.Read(path(".content.SHORTLABEL"))
 
-        tmp1 = SCR.Read(path(".content.FLAGS"))
-        if tmp1 != nil
-          @flags = Builtins.splitstring(Convert.to_string(tmp1), " ")
-        end
-        tmp1 = SCR.Read(path(".content.PATTERNS"))
-        if tmp1 != nil
-          @patterns = Builtins.splitstring(Convert.to_string(tmp1), " ")
-        end
+        @flags = (SCR.Read(path(".content.FLAGS")) || "").split
+        @patterns = (SCR.Read(path(".content.PATTERNS")) || "").split
 
         # bugzilla #252122, since openSUSE 10.3
         # deprecated:
@@ -204,16 +210,18 @@ module Yast
         end
       # not during testing: Misc::CustomSysconfigRead used by OSRelease creates agent in runtime,
       # mocking IniParser not possible
-      elsif !Mode.config && !Mode.test
+      elsif use_os_release_file?
         @short_name = OSRelease.ReleaseName
         @version = OSRelease.ReleaseVersion
-        @name = Ops.add(Ops.add(@short_name, " "), @version)
+        @name = "#{@short_name} #{@version}"
+      else
+        raise "Cannot determine the product. Neither from the content, nor the os-relese file"
       end
 
       @distproduct = "" if @distproduct == nil
-      @dist = Ops.get(Builtins.splitstring(@distproduct, "-"), 2, "")
+      @dist = @distproduct.split("-")[2] || ""
 
-      @run_you = !Builtins.contains(@flags, "no_you")
+      @run_you = !@flags.include?("no_you")
 
       # set the product name for UI
       Yast.import "Wizard"
