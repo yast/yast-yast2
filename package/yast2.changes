@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Apr 17 11:11:01 CEST 2014 - locilka@suse.com
+
+- Decreased number of logs coming from Hooks (to enhance logs
+  readability)
+- 3.1.50
+
+-------------------------------------------------------------------
 Thu Apr 17 08:22:23 UTC 2014 - vmoravec@suse.com
 
 - Add path to deprecation warnings (bnc#873973)
