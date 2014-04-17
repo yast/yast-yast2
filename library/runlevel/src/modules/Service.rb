@@ -412,7 +412,7 @@ module Yast
 
 
     def deprecate message
-      log.warn "[DEPRECIATION] #{caller[0].split.last} in \"#{caller[1]}\" is deprecated; #{message}"
+      log.warn "[DEPRECATION] #{caller[0].split.last} in \"#{caller[1]}\" is deprecated; #{message}"
     end
 
     publish :function => :GetUnitId, :type => "string (string)"
