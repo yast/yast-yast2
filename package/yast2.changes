@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Apr 17 15:08:41 UTC 2014 - mvidner@suse.com
+
+- rewrote URLRecode.pm to URLRecode.rb so that 'yast2 repositories'
+  can run without Perl bindings
+- 3.1.51
+
+-------------------------------------------------------------------
 Thu Apr 17 11:11:01 CEST 2014 - locilka@suse.com
 
 - Decreased number of logs coming from Hooks (to enhance logs
