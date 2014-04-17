@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Apr 17 08:22:23 UTC 2014 - vmoravec@suse.com
+
+- Add path to deprecation warnings (bnc#873973)
+- Fix enabling LSB services during installation (bnc#873929)
+- 3.1.49
+
+-------------------------------------------------------------------
 Wed Apr 16 13:02:54 UTC 2014 - jreidinger@suse.com
 
 - ensure that dialog was closed even if exception is raised
