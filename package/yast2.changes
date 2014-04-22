@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Apr 22 11:03:21 CEST 2014 - locilka@suse.com
+
+- Removed Product.patterns (replaced by Packages.default_patterns)
+  (bnc#873923)
+- 3.1.52
+
+-------------------------------------------------------------------
 Thu Apr 17 15:08:41 UTC 2014 - mvidner@suse.com
 
 - rewrote URLRecode.pm to URLRecode.rb so that 'yast2 repositories'

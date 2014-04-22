@@ -78,9 +78,6 @@ module Yast
       # list of flags from content file
       @flags = []
 
-      # list of patterns from content file
-      @patterns = []
-
       # Short label for bootloader entry
       @shortlabel = ""
       Product()
@@ -223,20 +220,6 @@ module Yast
       @shortlabel = SCR.Read(path(".content.SHORTLABEL"))
 
       @flags = (SCR.Read(path(".content.FLAGS")) || "").split
-      @patterns = (SCR.Read(path(".content.PATTERNS")) || "").split
-
-      # bugzilla #252122, since openSUSE 10.3
-      # deprecated:
-      # 		content.PATTERNS: abc cba bac
-      # should re replaced with (and/or)
-      # 		content.REQUIRES: pattern:abc pattern:cba pattern:bac
-      #		content.RECOMMENDS: pattern:abc pattern:cba pattern:bac
-      if @patterns != []
-        Builtins.y2warning(
-          "Product content file contains deprecated PATTERNS tag, use REQUIRES and/or RECOMMENDS instead"
-        )
-        Builtins.y2milestone("PATTERNS: %1", @patterns)
-      end
     end
 
     def read_os_release_file
@@ -264,7 +247,6 @@ module Yast
     publish :variable => :product_of_relnotes, :type => "map <string, string>"
     publish :variable => :run_you, :type => "boolean"
     publish :variable => :flags, :type => "list"
-    publish :variable => :patterns, :type => "list <string>"
     publish :variable => :shortlabel, :type => "string"
     publish :function => :FindBaseProducts, :type => "list <map <string, any>> ()"
     publish :function => :ReadProducts, :type => "void ()"
