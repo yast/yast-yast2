@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr 22 15:05:41 CEST 2014 - locilka@suse.com
+
+- Published Service.Active (used from Perl)
+- 3.1.53
+
+-------------------------------------------------------------------
 Tue Apr 22 11:03:21 CEST 2014 - locilka@suse.com
 
 - Removed Product.patterns (replaced by Packages.default_patterns)
