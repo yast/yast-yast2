@@ -420,6 +420,7 @@ module Yast
     publish :function => :Enabled, :type => "boolean (string)"
     publish :function => :Info, :type => "map (string)"
     publish :function => :Status, :type => "integer (string)"
+    publish :function => :Active, :type => "boolean (string)"
     publish :function => :FullInfo, :type => "map (string)"
     publish :function => :Adjust, :type => "boolean (string, string)"
     publish :function => :Finetune, :type => "boolean (string, list)"
