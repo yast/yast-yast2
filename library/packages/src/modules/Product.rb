@@ -35,222 +35,235 @@ module Yast
 
     include Yast::Logger
 
-    CONTENT_FILE = "/content"
-
     def main
       Yast.import "Pkg"
-
       Yast.import "Mode"
       Yast.import "Stage"
       Yast.import "OSRelease"
       Yast.import "PackageLock"
       Yast.import "PackageSystem"
-      Yast.import "FileUtils"
-
-      # General product name and version
-      @name = "" # "SuSE Linux 8.1"
-      @short_name = "" # "SuSE Linux"
-      @version = "" # "8.1"
-      @vendor = "" # "SuSE Linux AG"
-
-      # Distribution: Personal, Professional, etc.
-      @dist = ""
-      @distproduct = "" # "SuSE-Linux-Professional-INT-i386"
-      @distversion = "" # "8.1-0"
-
-      # base product
-      @baseproduct = "" # "UnitedLinux"
-      @baseversion = "" # "1.0"
-
-      # url of release notes (downloaded during internet test)
-      @relnotesurl = ""
-
-      # list of all urls of release notes (downloaded during internet test)
-      # bugzilla #160563
-      @relnotesurl_all = []
-
-      # map relnotes url to product name
-      @product_of_relnotes = {}
-
-      #  Run YOU during the Internet connection test.
-      @run_you = true
-
-      # list of flags from content file
-      @flags = []
-
-      # Short label for bootloader entry
-      @shortlabel = ""
-      Product()
     end
 
+    # Loads and returns base product property
+    #
+    # @param [Symbol] key (optional)
+    def find_property(key = __callee__)
+      load_product_data(key)
+      @product[key]
+    end
+
+    # Long product name incuding version
+    alias_method :name, :find_property
+
+    # Short product name
+    alias_method :short_name, :find_property
+
+    # Product version
+    alias_method :version, :find_property
+
+    # Returns whether product requires to run online update
+    alias_method :run_you, :find_property
+
+    # Product flags such as "no_you"
+    alias_method :flags, :find_property
+
+    # URL to release notes
+    alias_method :relnotesurl, :find_property
+
+    # Array of URLs of all release notes
+    alias_method :relnotesurl_all, :find_property
+
+    # Hash of { URL => product_name } pairs
+    alias_method :product_of_relnotes, :find_property
+
+    # Values loaded from os-release file
+    OS_RELEASE_PROPERTIES = [
+      :name, :short_name, :version
+    ]
+
+    # All these methods have been dropped
+    DROPPED_METHODS = [
+      :vendor, :dist, :distproduct, :distversion, :shortlabel
+    ]
+
+    # Returns list of selected (installation) or installed (running system)
+    # base products got from libzypp
+    #
+    # @return [Hash] products
     def FindBaseProducts
-      # bugzilla #238556
-      if !PackageLock.Check
-        Builtins.y2error("Locked!")
-        return []
+      return unless load_zypp
+
+      log.info "Looking for base products"
+
+      products = Pkg.ResolvableProperties("", :product, "").dup || []
+      required_status = use_installed_products? ? :installed : :selected
+      products.select!{ |p| p["status"] == required_status }
+
+      log.info "All #{required_status} products: #{products}"
+
+      # For all (not only base) products
+      fill_up_relnotes(products)
+
+      # Use only base products
+      products.select! do |p|
+        use_installed_products? ? (p["category"] == "base") : (p["source"] == 0)
       end
 
-      Builtins.y2milestone("Looking for base products")
-      products = Pkg.ResolvableProperties("", :product, "")
-      expected_status = Stage.initial ? :selected : :installed
-      products = products.select do |p|
-        p["status"] == expected_status
+      log.info "Found #{products.size} base product(s)"
+
+      if products.empty?
+        log.error "No base product found"
+        raise "No #{required_status} base product found"
+      elsif products.size > 1
+        log.warn "More than one base product found!"
       end
 
-      Builtins.y2milestone("All found products: %1", products)
-
-      products = Builtins.filter(products) do |p|
-        # bug 165314, relnotes_url needn't be defined (or empty string)
-        if Ops.get_string(p, "relnotes_url", "") != ""
-          rn_url = Ops.get_string(p, "relnotes_url", "")
-          @relnotesurl_all = Builtins.add(@relnotesurl_all, rn_url)
-          # bug 180581, relnotes should be identified by name
-          Ops.set(
-            @product_of_relnotes,
-            rn_url,
-            Ops.get_string(p, "display_name", "")
-          )
-        end
-        Stage.initial ? (p["source"] == 0) : (p["category"] == "base")
-      end
-
-      Builtins.y2milestone("Found base products: %1", products)
-      if Builtins.size(products) == 0
-        Builtins.y2error("No base product found")
-        raise "No base product for installation found" if Stage.initial
-      elsif Ops.greater_than(Builtins.size(products), 1)
-        Builtins.y2warning("More than one base product found")
-      end
       deep_copy(products)
     end
 
-    # Read the products from the package manager
+    # Reads products from libzypp and fills the internal products cache
+    # that can be read by other methods in this library
     def ReadProducts
-      Builtins.y2milestone("Product::ReadProducts() started")
-      if !Mode.config
-        # bugzilla #238556
-        if !PackageLock.Check
-          Builtins.y2error("Locked!")
-          return
-        end
+      # Do not read any product information from zypp on a running system
+      return if Mode.config
 
-        PackageSystem.EnsureTargetInit
-        PackageSystem.EnsureSourceInit # TODO: is it still needed?
+      Builtins.y2milestone("Product.#{__method__} started")
+      return unless load_zypp
 
-        # run the solver to compute the installed products
-        Pkg.PkgSolve(true) # TODO: is it still needed?
+      base_product = FindBaseProducts().fetch(0, {})
 
-        base_products = FindBaseProducts()
-        base_product = Ops.get(base_products, 0, {}) # there should be only one - hopefuly
-
-        @name = Ops.get_string(
-          base_product,
-          "display_name",
-          Ops.get_string(
-            base_product,
-            "summary",
-            Ops.get_string(base_product, "name", "")
+      set_property(
+        :name,
+        base_product.fetch("display_name",
+          base_product.fetch("summary",
+            base_product.fetch("name", "")
           )
         )
-        @short_name = Ops.get_string(base_product, "short_name", @name)
-        @version = Ops.get_string(base_product, "version", "")
-        @vendor = Ops.get_string(base_product, "vendor", "")
-        @relnotesurl = Ops.get_string(base_product, "relnotes_url", "")
-        @flags = Ops.get_list(base_product, "flags", [])
-      end
+      )
 
-      nil
-    end
-
-    def can_use_content_file?
-      FileUtils.Exists(CONTENT_FILE) && !Mode.live_installation
-    end
-
-    def can_use_os_release_file?
-      OSRelease.os_release_exists?
-    end
-
-    # -----------------------------------------------
-    # Constructor
-    def Product
-      if can_use_os_release_file?
-        read_os_release_file
-      elsif can_use_content_file?
-        read_content_file
-      else
-        raise "Cannot determine the product. Neither from the content, nor the os-relese file"
-      end
-
-      @distproduct = "" if @distproduct == nil
-      @dist = @distproduct.split("-")[2] || ""
-
-      @run_you = !@flags.include?("no_you")
-
-      # set the product name for UI
-      Yast.import "Wizard"
-
-      Builtins.y2milestone("Product name: '%1'", @name)
-
-      Wizard.SetProductName(@name) if @name != nil && @name != ""
+      set_property(:short_name, base_product.fetch("short_name", name))
+      set_property(:version, base_product.fetch("version", "").split("-")[0])
+      set_property(:relnotesurl, base_product.fetch("relnotes_url", ""))
+      set_property(:flags, base_product.fetch("flags", []))
+      set_property(:run_you, flags.include?("no_you"))
 
       nil
     end
 
   private
 
-    def read_content_file
-      # it should use the same mechanism as running system. But it would
-      # mean to initialize package manager from constructor, which is
-      # not reasonable
-      @name = SCR.Read(path(".content.LABEL"))
-      @short_name = SCR.Read(path(".content.SHORTLABEL"))
-      @short_name ||= @name
-
-      @version = SCR.Read(path(".content.VERSION"))
-      @vendor = SCR.Read(path(".content.VENDOR"))
-
-      @distproduct = SCR.Read(path(".content.DISTPRODUCT"))
-      @distversion = SCR.Read(path(".content.DISTVERSION"))
-
-      @baseproduct = SCR.Read(path(".content.BASEPRODUCT"))
-      @baseproduct = @name if @baseproduct == ""
-      @baseversion = SCR.Read(path(".content.BASEVERSION"))
-
-      @relnotesurl = SCR.Read(path(".content.RELNOTESURL"))
-      @shortlabel = SCR.Read(path(".content.SHORTLABEL"))
-
-      @flags = (SCR.Read(path(".content.FLAGS")) || "").split
+    # Is it possible to use os-release file?
+    def can_use_os_release_file?
+      !Stage.initial && !Mode.installation && OSRelease.os_release_exists?
     end
 
-    def read_os_release_file
-      @short_name = OSRelease.ReleaseName
-      @version = OSRelease.ReleaseVersion
+    # Whether to use :installed or :selected products
+    def use_installed_products?
+      !Mode.installation || Mode.live_installation
+    end
 
-      @name = OSRelease.ReleaseInformation
-      if @name.empty?
-        @name = "#{@short_name} #{@version}"
-        log.warn "OSRelease.ReleaseInformation is empty, using default product name: #{@name}"
+    # Ensures that we can load data from libzypp
+    def load_zypp
+      if !PackageLock.Check
+        Builtins.y2error("Packager is locked, can't read product info!")
+        return false
+      end
+
+      if use_installed_products?
+        PackageSystem.EnsureTargetInit
+      else
+        PackageSystem.EnsureSourceInit
+      end
+
+      Pkg.PkgSolve(true)
+    end
+
+    # Reads basic product information from os-release file
+    def read_os_release_file
+      set_property(:short_name, OSRelease.ReleaseName)
+      set_property(:version, OSRelease.ReleaseVersion)
+      set_property(:name, OSRelease.ReleaseInformation)
+    end
+
+    # Uses products information to fill up release-notes variables
+    def fill_up_relnotes(products)
+      all_release_notes = []
+      release_notes_to_product = {}
+
+      products.map do |p|
+        if p["relnotes_url"] != ""
+          url = p["relnotes_url"]
+          all_release_notes << url
+          release_notes_to_product[url] = (p["display_name"] || "")
+        end
+      end
+
+      set_property(:relnotesurl_all, all_release_notes)
+      set_property(:product_of_relnotes, release_notes_to_product)
+    end
+
+    # Fills up internal product data
+    def set_property(key, value)
+      # Redefining already existent information
+      if @product[key] && !@product[key].empty? && @product[key] != value
+        if value.nil? || value == ""
+          log.error "Ignoring setting new Product property #{key} (#{@product[key]}) to new value '#{value}'"
+          return
+        else
+          log.warn "Redefining Product property #{key} (#{@product[key]}) to new value '#{value}'"
+        end
+      end
+
+      @product[key] = value
+    end
+
+    # Loads product information from os-release or libzypp
+    def load_product_data(key)
+      @product ||= {}
+
+      # Already loaded
+      return if @product[key]
+
+      # Try to read the data from os-release
+      if OS_RELEASE_PROPERTIES.include?(key) && can_use_os_release_file?
+        read_os_release_file
+        return if OS_RELEASE_PROPERTIES.all?{ |key| @product[key] and !@product[key].empty? }
+        log.warn "Incomplete os-release file, continue reading from zypp"
+      end
+
+      # Read from libzypp (expensive)
+      ReadProducts()
+
+      raise "Cannot determine the base product property #{key}" if @product[key].nil?
+    end
+
+    # Needed for testing and internal cleanup
+    def reset
+      @product = nil
+    end
+
+    # Handles using dropped methods
+    def method_missing(method_name, *args, &block)
+      if DROPPED_METHODS.include? method_name
+        log.error "Method #{self.class.name}.#{method_name} dropped"
+        raise "Method #{self.class.name}.#{method_name} has been dropped"
+      else
+        super
       end
     end
 
-    publish :variable => :name, :type => "string"
-    publish :variable => :short_name, :type => "string"
-    publish :variable => :version, :type => "string"
-    publish :variable => :vendor, :type => "string"
-    publish :variable => :dist, :type => "string"
-    publish :variable => :distproduct, :type => "string"
-    publish :variable => :distversion, :type => "string"
-    publish :variable => :baseproduct, :type => "string"
-    publish :variable => :baseversion, :type => "string"
-    publish :variable => :relnotesurl, :type => "string"
-    publish :variable => :relnotesurl_all, :type => "list <string>"
-    publish :variable => :product_of_relnotes, :type => "map <string, string>"
-    publish :variable => :run_you, :type => "boolean"
-    publish :variable => :flags, :type => "list"
-    publish :variable => :shortlabel, :type => "string"
+    publish :function => :name, :type => "string ()"
+    publish :function => :short_name, :type => "string ()"
+    publish :function => :version, :type => "string ()"
+    publish :function => :vendor, :type => "string ()"
+    publish :function => :relnotesurl, :type => "string ()"
+    publish :function => :relnotesurl_all, :type => "list <string> ()"
+    publish :function => :product_of_relnotes, :type => "map <string, string> ()"
+    publish :function => :run_you, :type => "boolean ()"
+    publish :function => :flags, :type => "list ()"
+
     publish :function => :FindBaseProducts, :type => "list <map <string, any>> ()"
     publish :function => :ReadProducts, :type => "void ()"
-    publish :function => :Product, :type => "void ()"
   end
 
   Product = ProductClass.new
