@@ -35,9 +35,7 @@ end
 
 PRODUCTS_FROM_ZYPP = load_zypp('products.yml').freeze
 
-# Describes Product handling as a whole, methods descriptions are below
-describe Yast::Product do
-  before(:each) do
+def stub_defaults
     log.info "--------- Running test ---------"
     Yast::Product.send(:reset)
     Yast::PackageSystem.stub(:EnsureTargetInit).and_return(true)
@@ -45,6 +43,13 @@ describe Yast::Product do
     Yast::Pkg.stub(:PkgSolve).and_return(true)
     Yast::PackageLock.stub(:Check).and_return(true)
     Yast::Pkg.stub(:ResolvableProperties).with("", :product, "").and_return(PRODUCTS_FROM_ZYPP.dup)
+end
+
+# Describes Product handling as a whole (due to lazy loading and internal caching),
+# methods descriptions are below
+describe "Yast::Product (integration)" do
+  before(:each) do
+    stub_defaults
   end
 
   context "while called in installation without os-release file" do
@@ -111,15 +116,10 @@ describe Yast::Product do
   end
 end
 
+# Describes Product methods
 describe Yast::Product do
   before(:each) do
-    log.info "--------- Running test ---------"
-    Yast::Product.send(:reset)
-    Yast::PackageSystem.stub(:EnsureTargetInit).and_return(true)
-    Yast::PackageSystem.stub(:EnsureSourceInit).and_return(true)
-    Yast::Pkg.stub(:PkgSolve).and_return(true)
-    Yast::PackageLock.stub(:Check).and_return(true)
-    Yast::Pkg.stub(:ResolvableProperties).with("", :product, "").and_return(PRODUCTS_FROM_ZYPP.dup)
+    stub_defaults
   end
 
   context "while called in installation without os-release file" do
