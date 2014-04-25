@@ -71,6 +71,11 @@ describe "Yast::Product (integration)" do
       Yast::Stage.stub(:stage).and_return("normal")
       Yast::Mode.stub(:mode).and_return("normal")
       Yast::OSRelease.stub(:os_release_exists?).and_return(true)
+
+      # Default behavior: complete os-release file
+      Yast::OSRelease.stub(:ReleaseName).and_return("anything")
+      Yast::OSRelease.stub(:ReleaseVersion).and_return("anything")
+      Yast::OSRelease.stub(:ReleaseInformation).and_return("anything")
     end
 
     # This is the default behavior
