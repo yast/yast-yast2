@@ -19,7 +19,7 @@
   short_name: openSUSE
   source: -1
   status: :installed
-  summary: openSUSE
+  summary: openSUSE (installed on the system)
   transact_by: :solver
   type: base
   update_urls: []
@@ -46,7 +46,7 @@
   short_name: openSUSE
   source: 0
   status: :selected
-  summary: openSUSE
+  summary: openSUSE (selected for installation)
   transact_by: :solver
   type: base
   update_urls: []

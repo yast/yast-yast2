@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Apr 24 15:59:44 CEST 2014 - locilka@suse.com
+
+- Product library changed to read data only from os-release and
+  libzypp (bnc#873877), no more from content file
+- 3.1.54
+
+-------------------------------------------------------------------
 Tue Apr 22 15:05:41 CEST 2014 - locilka@suse.com
 
 - Published Service.Active (used from Perl)
