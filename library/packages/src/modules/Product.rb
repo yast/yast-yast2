@@ -49,10 +49,10 @@ module Yast
     # @param [Symbol] key (optional)
     def find_property(key = __callee__)
       load_product_data(key)
-      @product[key]
+      get_property(key)
     end
 
-    # Long product name incuding version
+    # Long product name including version
     alias_method :name, :find_property
 
     # Short product name
@@ -61,10 +61,10 @@ module Yast
     # Product version
     alias_method :version, :find_property
 
-    # Returns whether product requires to run online update
+    # Boolean whether product requires to run online update
     alias_method :run_you, :find_property
 
-    # Product flags such as "no_you"
+    # Array of Strings - Product flags such as "no_you"
     alias_method :flags, :find_property
 
     # URL to release notes
@@ -179,10 +179,14 @@ module Yast
     end
 
     # Reads basic product information from os-release file
+    #
+    # @return [Boolean] whether all the data have been successfully loaded
     def read_os_release_file
       set_property(:short_name, OSRelease.ReleaseName)
       set_property(:version, OSRelease.ReleaseVersion)
       set_property(:name, OSRelease.ReleaseInformation)
+
+      return OS_RELEASE_PROPERTIES.all?{ |key| !get_property(key).nil? and !get_property(key).empty? }
     end
 
     # Uses products information to fill up release-notes variables
@@ -203,41 +207,54 @@ module Yast
     end
 
     # Fills up internal product data
+    #
+    # @param [Symbol] key
+    # @param [Any] value
     def set_property(key, value)
+      current_value = get_property(key)
+
       # Redefining already existent information
-      if @product[key] && !@product[key].empty? && @product[key] != value
+      if !current_value.nil? && !current_value.empty? && current_value != value
         if value.nil? || value == ""
-          log.error "Ignoring setting new Product property #{key} (#{@product[key]}) to new value '#{value}'"
+          log.error "Ignoring setting new Product property #{key} (#{current_value}) to new value '#{value}'"
           return
         else
-          log.warn "Redefining Product property #{key} (#{@product[key]}) to new value '#{value}'"
+          log.warn "Redefining Product property #{key} (#{current_value}) to new value '#{value}'"
         end
       end
 
       @product[key] = value
     end
 
+    # Returns product property
+    #
+    # @param [Symbol] key
+    def get_property(key)
+      @product[key]
+    end
+
     # Loads product information from os-release or libzypp
     def load_product_data(key)
       @product ||= {}
 
+      current_value = get_property(key)
       # Already loaded
-      return if @product[key]
+      return if !current_value.nil?
 
-      # Try to read the data from os-release
+      # Try to read the data from os-release (fast)
       if OS_RELEASE_PROPERTIES.include?(key) && can_use_os_release_file?
-        read_os_release_file
-        return if OS_RELEASE_PROPERTIES.all?{ |key| @product[key] and !@product[key].empty? }
+        return if read_os_release_file
         log.warn "Incomplete os-release file, continue reading from zypp"
       end
 
       # Read from libzypp (expensive)
       ReadProducts()
 
-      raise "Cannot determine the base product property #{key}" if @product[key].nil?
+      raise "Cannot determine the base product property #{key}" if get_property(key).nil?
     end
 
     # Needed for testing and internal cleanup
+    # Resets internal cache
     def reset
       @product = nil
     end
@@ -245,8 +262,8 @@ module Yast
     # Handles using dropped methods
     def method_missing(method_name, *args, &block)
       if DROPPED_METHODS.include? method_name
-        log.error "Method #{self.class.name}.#{method_name} dropped"
-        raise "Method #{self.class.name}.#{method_name} has been dropped"
+        log.error "Method Product.#{method_name} dropped"
+        raise "Method Product.#{method_name} has been dropped"
       else
         super
       end
