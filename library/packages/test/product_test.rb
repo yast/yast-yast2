@@ -78,6 +78,8 @@ describe "Yast::Product (integration)" do
       it "reads product information from OSRelease and fills up internal variables" do
         release_info = "Happy Feet 2.0"
 
+        Yast::OSRelease.stub(:ReleaseName).and_return("anything")
+        Yast::OSRelease.stub(:ReleaseVersion).and_return("anything")
         Yast::OSRelease.stub(:ReleaseInformation).and_return(release_info)
 
         expect(Yast::Product.name).to eq(release_info)
