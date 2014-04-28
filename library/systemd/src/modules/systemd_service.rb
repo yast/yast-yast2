@@ -91,6 +91,18 @@ module Yast
       end
     end
 
+    class Service < SystemdUnit
+      include Yast::Logger
+
+      def pid
+        properties.pid
+      end
+
+      def running?
+        properties.running?
+      end
+
+    end
   end
   SystemdService = SystemdServiceClass.new
 end
