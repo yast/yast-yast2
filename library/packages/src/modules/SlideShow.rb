@@ -543,7 +543,7 @@ module Yast
             # Table headings for CD statistics during installation
             _("Media"),
             # Table headings for CD statistics during installation - keep as short as possible!
-            Right(_("Installed Size")),
+            Right(_("Remaining")),
             # Table headings for CD statistics during installation
             Right(_("Packages")),
             # Table headings for CD statistics during installation
@@ -718,7 +718,7 @@ module Yast
 
       Wizard.SetContents(
         # Dialog heading while software packages are being installed
-        _("Perform Installation"),
+        _("Performing Installation"),
         contents,
         HelpText(),
         false,
