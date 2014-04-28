@@ -91,35 +91,6 @@ module Yast
       end
     end
 
-    class Service < SystemdUnit
-      include Yast::Logger
-
-      # Available only on installation system
-      START_SERVICE_INSTSYS_COMMAND = "/bin/service_start"
-
-      def pid
-        properties.pid
-      end
-
-      def running?
-        properties.running?
-      end
-
-      def start
-        if File.exist?(START_SERVICE_INSTSYS_COMMAND)
-          command = "#{START_SERVICE_INSTSYS_COMMAND} #{unit_name}"
-          log.info("Running command '#{command}'")
-          error.clear
-          result = OpenStruct.new(
-            SCR.Execute(Path.new(".target.bash_output"), command)
-          )
-          error << result.stderr
-          result.exit.zero?
-        else
-          super
-        end
-      end
-    end
   end
   SystemdService = SystemdServiceClass.new
 end
