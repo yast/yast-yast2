@@ -38,6 +38,9 @@ module Yast
   class ServiceClass < Module
     include Yast::Logger
 
+    # Available only on installation system
+    START_SERVICE_INSTSYS_COMMAND = "/bin/service_start"
+
     private
     attr_writer :error
 
@@ -105,9 +108,20 @@ module Yast
     # @return true if operation is  successful
     def Start service_name
       log.info "Starting service '#{service_name}'"
-      service = SystemdService.find(service_name)
-      return failure(:not_found, service_name) unless service
-      return failure(:start, service_name, service.error) unless service.start
+      if File.exist?(START_SERVICE_INSTSYS_COMMAND)
+        command = "#{START_SERVICE_INSTSYS_COMMAND} #{service_name}"
+        log.info("Running command '#{command}'")
+        error.clear
+        result = OpenStruct.new(
+          SCR.Execute(Path.new(".target.bash_output"), command)
+        )
+        error << result.stderr
+        result.exit.zero?
+      else
+        service = SystemdService.find(service_name)
+        return failure(:not_found, service_name) unless service
+        return failure(:start, service_name, service.error) unless service.start
+      end
       true
     end
 
@@ -118,9 +132,14 @@ module Yast
     # @return true if operation is  successful
     def Restart service_name
       log.info "Restarting service '#{service_name}'"
-      service = SystemdService.find(service_name)
-      return failure(:not_found, service_name) unless service
-      return failure(:restart, service_name, service.error) unless service.restart
+      if File.exist?(START_SERVICE_INSTSYS_COMMAND)
+        Stop service_name
+        Start service_name
+      else
+        service = SystemdService.find(service_name)
+        return failure(:not_found, service_name) unless service
+        return failure(:restart, service_name, service.error) unless service.restart
+      end
       true
     end
 
@@ -144,9 +163,20 @@ module Yast
     # @return true if operation is  successful
     def Stop service_name
       log.info "Stopping service '#{service_name}'"
-      service = SystemdService.find(service_name)
-      return failure(:not_found, service_name) unless service
-      return failure(:stop, service_name, service.error) unless service.stop
+      if File.exist?(START_SERVICE_INSTSYS_COMMAND)
+        command = "#{START_SERVICE_INSTSYS_COMMAND} --stop #{service_name}"
+        log.info("Running command '#{command}'")
+        error.clear
+        result = OpenStruct.new(
+          SCR.Execute(Path.new(".target.bash_output"), command)
+        )
+        error << result.stderr
+        result.exit.zero?
+      else
+        service = SystemdService.find(service_name)
+        return failure(:not_found, service_name) unless service
+        return failure(:stop, service_name, service.error) unless service.stop
+      end
       true
     end
 
