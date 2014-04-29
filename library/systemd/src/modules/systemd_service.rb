@@ -107,12 +107,12 @@ module Yast
 
       def start
         command = "#{START_SERVICE_INSTSYS_COMMAND} #{unit_name}"
-        consider_instsys_command(command)
+        installation_system? ? run_instsys_command(command) : super
       end
 
       def stop
         command = "#{START_SERVICE_INSTSYS_COMMAND} --stop #{unit_name}"
-        consider_instsys_command(command)
+        installation_system? ? run_instsys_command(command) : super
       end
 
       def restart
@@ -123,18 +123,18 @@ module Yast
 
       private
 
-      def consider_instsys_command command
-        if File.exist?(START_SERVICE_INSTSYS_COMMAND)
-          log.info("Running command '#{command}'")
-          error.clear
-          result = OpenStruct.new(
-            SCR.Execute(Path.new(".target.bash_output"), command)
-          )
-          error << result.stderr
-          result.exit.zero?
-        else
-          super
-        end
+      def installation_system?
+        File.exist?(START_SERVICE_INSTSYS_COMMAND)
+      end
+
+      def run_instsys_command command
+        log.info("Running command '#{command}'")
+        error.clear
+        result = OpenStruct.new(
+          SCR.Execute(Path.new(".target.bash_output"), command)
+        )
+        error << result.stderr
+        result.exit.zero?
       end
     end
   end
