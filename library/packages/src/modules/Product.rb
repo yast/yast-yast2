@@ -154,12 +154,12 @@ module Yast
 
     # Is it possible to use os-release file?
     def can_use_os_release_file?
-      !Stage.initial && !Mode.installation && OSRelease.os_release_exists?
+      !Stage.initial && OSRelease.os_release_exists?
     end
 
     # Whether to use :installed or :selected products
     def use_installed_products?
-      !Mode.installation || Mode.live_installation
+      !Stage.initial
     end
 
     # Ensures that we can load data from libzypp
