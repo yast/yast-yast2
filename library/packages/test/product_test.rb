@@ -52,17 +52,30 @@ describe "Yast::Product (integration)" do
     stub_defaults
   end
 
-  context "while called in installation without os-release file" do
+  context "while called in installation system without os-release file" do
     before(:each) do
       Yast::Stage.stub(:stage).and_return("initial")
-      Yast::Mode.stub(:mode).and_return("installation")
       Yast::OSRelease.stub(:os_release_exists?).and_return(false)
     end
 
-    it "reads product information from zypp and fills up internal variables" do
-      expect(Yast::Product.name).to                eq("openSUSE (SELECTED)")
-      expect(Yast::Product.short_name).to          eq("openSUSE")
-      expect(Yast::Product.version).to             eq("13.1")
+    describe "when the mode is Installation" do
+      it "reads product information from zypp and fills up internal variables" do
+        Yast::Mode.stub(:mode).and_return("installation")
+
+        expect(Yast::Product.name).to                eq("openSUSE (SELECTED)")
+        expect(Yast::Product.short_name).to          eq("openSUSE")
+        expect(Yast::Product.version).to             eq("13.1")
+      end
+    end
+
+    describe "when the mode is Update" do
+      it "reads product information from zypp and fills up internal variables" do
+        Yast::Mode.stub(:mode).and_return("update")
+
+        expect(Yast::Product.name).to                eq("openSUSE (SELECTED)")
+        expect(Yast::Product.short_name).to          eq("openSUSE")
+        expect(Yast::Product.version).to             eq("13.1")
+      end
     end
   end
 
