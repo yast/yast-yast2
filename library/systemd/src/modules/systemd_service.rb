@@ -106,8 +106,25 @@ module Yast
       end
 
       def start
+        command = "#{START_SERVICE_INSTSYS_COMMAND} #{unit_name}"
+        consider_instsys_command(command)
+      end
+
+      def stop
+        command = "#{START_SERVICE_INSTSYS_COMMAND} --stop #{unit_name}"
+        consider_instsys_command(command)
+      end
+
+      def restart
+        stop
+        sleep(1)
+        start
+      end
+
+      private
+
+      def consider_instsys_command command
         if File.exist?(START_SERVICE_INSTSYS_COMMAND)
-          command = "#{START_SERVICE_INSTSYS_COMMAND} #{unit_name}"
           log.info("Running command '#{command}'")
           error.clear
           result = OpenStruct.new(
