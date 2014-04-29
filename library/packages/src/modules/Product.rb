@@ -152,21 +152,14 @@ module Yast
 
   private
 
-    # Are we running in installation system (inst-sys)?
-    def in_installation_system?
-      Stage.initial && (Mode.installation || Mode.update)
-    end
-
     # Is it possible to use os-release file?
     def can_use_os_release_file?
-      return false if in_installation_system?
-
-      OSRelease.os_release_exists?
+      !Stage.initial && OSRelease.os_release_exists?
     end
 
     # Whether to use :installed or :selected products
     def use_installed_products?
-      !in_installation_system?
+      !Stage.initial
     end
 
     # Ensures that we can load data from libzypp
