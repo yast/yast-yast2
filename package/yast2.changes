@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Apr 29 11:27:09 CEST 2014 - gs@suse.de
+
+- Add support for 'stop' and 'restart' of services in inst-sys
+  (related to bnc #873057, bnc #873448)
+- 3.1.56
+
+-------------------------------------------------------------------
 Mon Apr 28 16:41:57 CEST 2014 - locilka@suse.com
 
 - Fixed SlideShow table header to match the reality (bnc#874823)
