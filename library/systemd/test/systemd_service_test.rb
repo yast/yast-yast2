@@ -80,12 +80,13 @@ module Yast
 
     context "Restart a service on the installation system" do
       it "restarts a service with a specialized inst-sys helper if available" do
+        SystemdServiceClass::Service.any_instance.stub(:sleep).and_return(1)
         File.stub(:exist?).with('/bin/service_start').and_return(true)
         service = SystemdService.find("sshd")
         SCR.stub(:Execute).and_return({'stderr'=>'', 'stdout'=>'', 'exit'=>0})
         expect(service).not_to receive(:command) # SystemdUnit#command
         expect(service).to receive(:stop)
-        expect(service).to recieve(:start)
+        expect(service).to receive(:start)
         expect(service.restart).to be_true
       end
 
