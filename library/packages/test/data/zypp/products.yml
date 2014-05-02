@@ -1,0 +1,55 @@
+---
+- arch: x86_64
+  category: base
+  description: openSUSE is a distribution by the openSUSE.org project.
+  display_name: openSUSE (INSTALLED)
+  download_size: 0
+  flags: []
+  flavor: dvd-promo
+  inst_size: 0
+  locked: false
+  medium_nr: 0
+  name: openSUSE
+  product_file: /etc/products.d/openSUSE.prod
+  register_release: ''
+  register_target: openSUSE-13.1-x86_64
+  relnotes_url: http://doc.opensuse.org/release-notes/x86_64/openSUSE/13.1/release-notes-openSUSE.rpm
+  relnotes_urls:
+  - http://doc.opensuse.org/release-notes/x86_64/openSUSE/13.1/release-notes-openSUSE.rpm
+  short_name: openSUSE
+  source: -1
+  status: :installed
+  summary: openSUSE (installed on the system)
+  transact_by: :solver
+  type: base
+  update_urls: []
+  upgrades: []
+  vendor: openSUSE
+  version: 13.1-1.10
+- arch: x86_64
+  category: base
+  description: openSUSE is a distribution by the openSUSE.org project.
+  display_name: openSUSE (SELECTED)
+  download_size: 0
+  flags: []
+  flavor: dvd-promo
+  inst_size: 0
+  locked: false
+  medium_nr: 0
+  name: openSUSE
+  product_file: /etc/products.d/openSUSE.prod
+  register_release: ''
+  register_target: openSUSE-13.1-x86_64
+  relnotes_url: http://doc.opensuse.org/release-notes/x86_64/openSUSE/13.1/release-notes-openSUSE.rpm
+  relnotes_urls:
+  - http://doc.opensuse.org/release-notes/x86_64/openSUSE/13.1/release-notes-openSUSE.rpm
+  short_name: openSUSE
+  source: 0
+  status: :selected
+  summary: openSUSE (selected for installation)
+  transact_by: :solver
+  type: base
+  update_urls: []
+  upgrades: []
+  vendor: openSUSE
+  version: 13.1-1.10

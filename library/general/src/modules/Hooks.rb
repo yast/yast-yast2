@@ -1,5 +1,6 @@
 require 'pathname'
 require 'ostruct'
+require 'yast'
 
 ## Description
 #
@@ -59,6 +60,8 @@ require 'ostruct'
 module Yast
   class HooksClass < Module
 
+    include Yast::Logger
+
     attr_reader :hooks, :last, :search_path
 
     private :hooks
@@ -94,7 +97,7 @@ module Yast
 
     def create hook_name, source_file
       if hooks[hook_name]
-        Builtins.y2warning "Hook '#{hook_name}' has already been run from #{hooks[hook_name].caller_path}"
+        log.warn "Hook '#{hook_name}' has already been run from #{hooks[hook_name].caller_path}"
         hooks[hook_name]
       else
         hooks[hook_name] = Hook.new(hook_name, source_file, search_path)
@@ -146,15 +149,17 @@ module Yast
     end
 
     class Hook
+      include Yast::Logger
+
       attr_reader :name, :results, :files, :caller_path, :search_path
 
       def initialize name, caller_path, search_path
+        log.debug "Creating hook '#{name}' from '#{self.caller_path}'"
         search_path.verify!
         @search_path = search_path
         @name = name
         @files = find_hook_files(name).map {|path| HookFile.new(path) }
         @caller_path = caller_path.split(':in').first
-        Builtins.y2milestone "Creating hook '#{name}' from '#{self.caller_path}'"
       end
 
       def execute
@@ -181,17 +186,21 @@ module Yast
       private
 
       def find_hook_files hook_name
-        Builtins.y2milestone "Searching for hook files in '#{search_path}'..."
+        log.debug "Searching for hook files in '#{search_path}'..."
         hook_files = search_path.children.select do |file|
           file.basename.fnmatch?("#{hook_name}_[0-9][0-9]_*")
         end
-        Builtins.y2milestone "Found #{hook_files.size} hook files: " +
-          "#{hook_files.map {|f| f.basename.to_s}.join(', ')}"
+        unless hook_files.empty?
+          log.info "Found #{hook_files.size} hook files: " +
+            "#{hook_files.map {|f| f.basename.to_s}.join(', ')}"
+        end
         hook_files.sort
       end
     end
 
     class HookFile
+      include Yast::Logger
+
       attr_reader :path, :content, :result
 
       def initialize path
@@ -199,10 +208,10 @@ module Yast
       end
 
       def execute
-        Builtins.y2milestone "Executing hook file '#{path}'"
+        log.info "Executing hook file '#{path}'"
         @result = OpenStruct.new(SCR.Execute(Path.new(".target.bash_output"), path.to_s))
         if failed?
-          Builtins.y2error "Hook file '#{path.basename}' failed with stderr: #{result.stderr}"
+          log.error "Hook file '#{path.basename}' failed with stderr: #{result.stderr}"
         end
         result
       end

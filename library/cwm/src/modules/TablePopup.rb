@@ -503,16 +503,19 @@ module Yast
         HSpacing(1)
       )
       UI.OpenDialog(widget)
-      UI.SetFocus(Id(:optname))
-      ret = nil
-      option = nil
-      while ret != :_tp_ok && ret != :_tp_cancel
-        ret = UI.UserInput
-        if ret == :_tp_ok
-          option = Convert.to_string(UI.QueryWidget(Id(:optname), :Value))
+      begin
+        UI.SetFocus(Id(:optname))
+        ret = nil
+        option = nil
+        while ret != :_tp_ok && ret != :_tp_cancel
+          ret = UI.UserInput
+          if ret == :_tp_ok
+            option = Convert.to_string(UI.QueryWidget(Id(:optname), :Value))
+          end
         end
+      ensure
+        UI.CloseDialog
       end
-      UI.CloseDialog
       return nil if ret == :_tp_cancel
       return option if Ops.get(known_keys, option, false)
       Ops.get(val2key, option, option)
@@ -563,54 +566,56 @@ module Yast
         HSpacing(1)
       )
       UI.OpenDialog(contents)
-      if Ops.get(popup_descr, "init") != nil
-        toEval = Convert.convert(
-          Ops.get(popup_descr, "init"),
-          :from => "any",
-          :to   => "void (any, string)"
-        )
-        toEval.call(opt_id, opt_key)
-      end
-      ret = nil
-      event_descr = {}
-      while ret != :_tp_ok && ret != :_tp_cancel
-        event_descr2 = UI.WaitForEvent
-        event_descr2 = { "ID" => :_tp_ok } if Mode.test
-        ret = Ops.get(event_descr2, "ID")
-        if Ops.get(popup_descr, "handle") != nil
+      begin
+        if Ops.get(popup_descr, "init") != nil
           toEval = Convert.convert(
-            Ops.get(popup_descr, "handle"),
+            Ops.get(popup_descr, "init"),
             :from => "any",
-            :to   => "void (any, string, map)"
+            :to   => "void (any, string)"
           )
-          toEval.call(opt_id, opt_key, event_descr2)
+          toEval.call(opt_id, opt_key)
         end
-        if ret == :_tp_ok
-          val_type = Ops.get_symbol(popup_descr, "validate_type")
-          if val_type == :function
+        ret = nil
+        event_descr = {}
+        while ret != :_tp_ok && ret != :_tp_cancel
+          event_descr2 = UI.WaitForEvent
+          event_descr2 = { "ID" => :_tp_ok } if Mode.test
+          ret = Ops.get(event_descr2, "ID")
+          if Ops.get(popup_descr, "handle") != nil
             toEval = Convert.convert(
-              Ops.get(popup_descr, "validate_function"),
+              Ops.get(popup_descr, "handle"),
               :from => "any",
-              :to   => "boolean (any, string, map)"
+              :to   => "void (any, string, map)"
             )
-            if toEval != nil
-              ret = nil if !toEval.call(opt_id, opt_key, event_descr2)
+            toEval.call(opt_id, opt_key, event_descr2)
+          end
+          if ret == :_tp_ok
+            val_type = Ops.get_symbol(popup_descr, "validate_type")
+            if val_type == :function
+              toEval = Convert.convert(
+                Ops.get(popup_descr, "validate_function"),
+                :from => "any",
+                :to   => "boolean (any, string, map)"
+              )
+              if toEval != nil
+                ret = nil if !toEval.call(opt_id, opt_key, event_descr2)
+              end
+            elsif !CWM.validateWidget(popup_descr, event_descr2, opt_key)
+              ret = nil
             end
-          elsif !CWM.validateWidget(popup_descr, event_descr2, opt_key)
-            ret = nil
           end
         end
+        if ret == :_tp_ok && Ops.get(popup_descr, "store") != nil
+          toEval = Convert.convert(
+            Ops.get(popup_descr, "store"),
+            :from => "any",
+            :to   => "void (any, string)"
+          )
+          toEval.call(opt_id, opt_key)
+        end
+      ensure
+        UI.CloseDialog
       end
-      if ret == :_tp_ok && Ops.get(popup_descr, "store") != nil
-        toEval = Convert.convert(
-          Ops.get(popup_descr, "store"),
-          :from => "any",
-          :to   => "void (any, string)"
-        )
-        toEval.call(opt_id, opt_key)
-      end
-
-      UI.CloseDialog
       Convert.to_symbol(ret)
     end
 

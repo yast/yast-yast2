@@ -4,6 +4,88 @@ Fri May  2 08:43:37 UTC 2014 - jsrain@suse.cz
 - fixed incorrect function name (bnc#876105)
 
 -------------------------------------------------------------------
+Tue Apr 29 12:46:18 CEST 2014 - locilka@suse.com
+
+- Fixed Product lazy loading in Update mode (bnc#875605)
+- 3.1.57
+
+-------------------------------------------------------------------
+Tue Apr 29 11:27:09 CEST 2014 - gs@suse.de
+
+- Add support for 'stop' and 'restart' of services in inst-sys
+  (related to bnc #873057, bnc #873448)
+- 3.1.56
+
+-------------------------------------------------------------------
+Mon Apr 28 16:41:57 CEST 2014 - locilka@suse.com
+
+- Fixed SlideShow table header to match the reality (bnc#874823)
+- 3.1.55
+
+-------------------------------------------------------------------
+Thu Apr 24 15:59:44 CEST 2014 - locilka@suse.com
+
+- Product library changed to read data only from os-release and
+  libzypp (bnc#873877), no more from content file
+- 3.1.54
+
+-------------------------------------------------------------------
+Tue Apr 22 15:05:41 CEST 2014 - locilka@suse.com
+
+- Published Service.Active (used from Perl)
+- 3.1.53
+
+-------------------------------------------------------------------
+Tue Apr 22 11:03:21 CEST 2014 - locilka@suse.com
+
+- Removed Product.patterns (replaced by Packages.default_patterns)
+  (bnc#873923)
+- 3.1.52
+
+-------------------------------------------------------------------
+Thu Apr 17 15:08:41 UTC 2014 - mvidner@suse.com
+
+- rewrote URLRecode.pm to URLRecode.rb so that 'yast2 repositories'
+  can run without Perl bindings
+- 3.1.51
+
+-------------------------------------------------------------------
+Thu Apr 17 11:11:01 CEST 2014 - locilka@suse.com
+
+- Decreased number of logs coming from Hooks (to enhance logs
+  readability)
+- 3.1.50
+
+-------------------------------------------------------------------
+Thu Apr 17 08:22:23 UTC 2014 - vmoravec@suse.com
+
+- Add path to deprecation warnings (bnc#873973)
+- Fix enabling LSB services during installation (bnc#873929)
+- 3.1.49
+
+-------------------------------------------------------------------
+Wed Apr 16 13:02:54 UTC 2014 - jreidinger@suse.com
+
+- ensure that dialog was closed even if exception is raised
+  (bnc#873916)
+- save_y2logs: store versions of packages in inst-sys
+- 3.1.48
+
+-------------------------------------------------------------------
+Wed Apr 16 11:46:55 UTC 2014 - mfilka@suse.com
+
+- bnc#869661
+  - fixed internal error raised in inst_lan during update
+- 3.1.47
+
+-------------------------------------------------------------------
+Tue Apr 15 09:09:57 CEST 2014 - locilka@suse.com
+
+- Changed Product.FindBaseProducts to throw an exception if no
+  base products are found in installation (bnc#873458, bnc#873377)
+- 3.1.46
+
+-------------------------------------------------------------------
 Mon Apr 14 15:11:22 CEST 2014 - locilka@suse.com
 
 - Changed OSRelease not to read content file instead of os-release

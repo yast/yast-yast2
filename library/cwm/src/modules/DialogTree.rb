@@ -292,9 +292,9 @@ module Yast
     # @return [Symbol] wizard sequencer symbol
     def RunAndHide(settings)
       settings = deep_copy(settings)
-      ret = Run(settings)
+      Run(settings)
+    ensure
       UI.CloseDialog
-      ret
     end
 
     # Display the dialog and run its event loop
