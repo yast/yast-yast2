@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri May  2 08:43:37 UTC 2014 - jsrain@suse.cz
+
+- fixed incorrect function name (bnc#876105)
+
+-------------------------------------------------------------------
 Mon Apr 14 15:11:22 CEST 2014 - locilka@suse.com
 
 - Changed OSRelease not to read content file instead of os-release
