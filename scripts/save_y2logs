@@ -106,7 +106,7 @@ fi
 
 echo "Saving y2logs to $TARGET" >&2
 
-tar cf "$TARGET" $COMPRESSION --directory=/var/log $LIST && rm -rf $TMPDIR && exit 0
+tar cf "$TARGET" $COMPRESSION --directory=/var/log --dereference $LIST && rm -rf $TMPDIR && exit 0
 
 echo "FATAL: Error creating archive $TARGET" >&2
 exit 2
