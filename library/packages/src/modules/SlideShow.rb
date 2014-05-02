@@ -689,7 +689,7 @@ module Yast
         end
 	@_relnotes.each do | product, relnotes |
           if @_base_product != product
-            add_releasenotes_for_product product, relnotes, tabs
+            add_relnotes_for_product product, relnotes, tabs
           end
         end
 
