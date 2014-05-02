@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri May  2 08:50:16 UTC 2014 - jreidinger@suse.com
+
+- Make sure the system ruby is used (BNC#845897)
+  ( thanks to Marc Schuetz <schuetz@gmx.net> )
+- 3.0.14
+
+-------------------------------------------------------------------
 Tue Mar  4 13:12:37 UTC 2014 - vmoravec@suse.com
 
 - Do not check for existence of systemd unit files in
