@@ -116,9 +116,16 @@ module Yast
       end
 
       def restart
-        stop
+        # Delegate to SystemdUnit#restart if not within installation
+        return super unless installation_system?
+
+        # Return false if service was not stopped succesffuly
+        return false unless stop
+
         sleep(1)
-        start
+
+        # Return false if service was not started succesffuly
+        return false unless start
       end
 
       private
