@@ -155,15 +155,40 @@ module Yast
         end
 
         extract_properties
-        self[:active?]    = active_state    == "active"
-        self[:running?]   = sub_state       == "running"
-        self[:loaded?]    = load_state      == "loaded"
-        self[:not_found?] = load_state      == "not-found"
-        self[:enabled?]   = unit_file_state == "enabled"
+        self[:active?]    = active_state == "active"
+        self[:running?]   = sub_state    == "running"
+        self[:loaded?]    = load_state   == "loaded"
+        self[:not_found?] = load_state   == "not-found"
+        self[:enabled?]   = is_enabled?
         self[:supported?] = SUPPORTED_STATES.member?(unit_file_state)
       end
 
       private
+
+      # Check the value of #unit_file_state; its value mirrors UnitFileState dbus property
+      # @return [Boolean] True if enabled, False if not
+      def is_enabled?
+        # If UnitFileState property is missing due to e.g. legacy sysvinit service
+        # we must use a different way how to get the real status of the service
+        if unit_file_state.nil?
+          # Check for exit code of `systemctl is-enabled systemd_unit.name` ; additionally
+          # test the stdout of the command for valid values when the service is enabled
+          # http://www.freedesktop.org/software/systemd/man/systemctl.html#is-enabled%20NAME...
+          status = systemd_unit.command("is-enabled")
+          status.exit.zero? && state_name_enabled?(status.stdout)
+        else
+          state_name_enabled?(unit_file_state)
+        end
+      end
+
+      # Systemd service unit can have various states like enabled, enabled-runtime,
+      # linked, linked-runtime, masked, masked-runtime, static, disabled, invalid.
+      # We test for the return value 'enabled' and 'enabled-runtime' to consider
+      # a service as enabled.
+      # @return [Boolean] True if enabled, False if not
+      def state_name_enabled? state
+        ["enabled", "enabled-runtime"].member?(state.strip)
+      end
 
       def extract_properties
         systemd_unit.input_properties.each do |name, property|
@@ -215,11 +240,12 @@ module Yast
       end
 
       # Analyze the exit code and stdout of the command `systemctl is-enabled service_name`
+      # http://www.freedesktop.org/software/systemd/man/systemctl.html#is-enabled%20NAME...
       def service_missing?
         # the service exists and it's enabled
         return false if status.exit.zero?
         # the service exists and it's disabled
-        return false if status.exit.nonzero? && status.stdout.strip.match(/\Adisabled$/)
+        return false if status.exit.nonzero? && status.stdout.match(/disabled|masked|linked/)
         # for all other cases the service does not exist
         true
       end
