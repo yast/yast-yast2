@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon May  5 11:38:34 UTC 2014 - vmoravec@suse.com
+
+- Fix getting the status of sysvinit services (bnc#876144)
+- 3.1.60
+
+-------------------------------------------------------------------
 Fri May  2 14:22:48 UTC 2014 - jreidinger@suse.com
 
 - save_y2logs: store target of symlinks as symlinks are useless
