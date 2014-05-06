@@ -20,6 +20,17 @@ module Yast
       stub_services
     end
 
+    describe ".call" do
+      it "raises error if command name or service name parameter is missing" do
+        expect(Service.call(:start)).to raise_error
+      end
+
+      it "returns the result of the original result of the command call" do
+        stub_service_with(:"try-restart", false)
+        expect(Service.call(:"try-restart", "sshd")).to be_false
+      end
+    end
+
     describe ".Active" do
       it "returns true if a service is active" do
         expect(Service.Active('sshd')).to be_true

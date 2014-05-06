@@ -123,9 +123,7 @@ module Yast
         return false unless stop
 
         sleep(1)
-
-        # Return false if service was not started succesffuly
-        return false unless start
+        start
       end
 
       private

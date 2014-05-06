@@ -50,6 +50,17 @@ module Yast
       @error = ""
     end
 
+    # Send whatever command you need to call for a specific service
+    # Command name must be a member of instance methods defined in SystemdUnit class
+    # @return [Boolean] Result of the action, true means success
+    def call command_name, service_name
+      service = SystemdService.find(service_name)
+      return failure(:not_found, service_name) unless service
+      result = service.send(command_name)
+      self.error = service.error
+      result
+    end
+
     # Check if service is active/running
     #
     # @param [String] name service name
