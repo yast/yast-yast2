@@ -22,12 +22,12 @@ module Yast
 
     describe ".call" do
       it "raises error if command name or service name parameter is missing" do
-        expect(Service.call(:start)).to raise_error
+        expect{ Service.call(:start) }.to raise_error
       end
 
       it "returns the result of the original result of the command call" do
-        stub_service_with(:"try-restart", false)
-        expect(Service.call(:"try-restart", "sshd")).to be_false
+        stub_service_with(:"try_restart", false)
+        expect(Service.call(:"try_restart", "sshd")).to be_false
       end
     end
 
