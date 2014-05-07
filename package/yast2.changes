@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed May  7 08:12:12 UTC 2014 - jsrain@suse.cz
+
+- avoid hiding release notes button when new wizard window is
+  opened (bnc#876668)
+- 3.1.61
+
+-------------------------------------------------------------------
 Mon May  5 11:38:34 UTC 2014 - vmoravec@suse.com
 
 - Fix getting the status of sysvinit services (bnc#876144)
