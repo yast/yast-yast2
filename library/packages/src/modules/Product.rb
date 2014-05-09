@@ -95,17 +95,17 @@ module Yast
 
       log.info "Looking for base products"
 
-      products = Pkg.ResolvableProperties("", :product, "").dup || []
-      required_status = use_installed_products? ? :installed : :selected
-      products.select!{ |p| p["status"] == required_status }
-
-      log.info "All #{required_status} products: #{products}"
+      products = Pkg.ResolvableProperties("", :product, "") || []
 
       # For all (not only base) products
-      fill_up_relnotes(products)
+      required_status = use_installed_products? ? :installed : :selected
+      fill_up_relnotes(products.select{ |p| p["status"] == required_status })
 
       # Use only base products
       products.select! do |p|
+        # The category "base" is not set during installation yet, it is set
+        # only for _installed_ base product (otherwise "addon" is reported).
+        # Use the product from the initial repository during installation.
         use_installed_products? ? (p["category"] == "base") : (p["source"] == 0)
       end
 
@@ -113,7 +113,7 @@ module Yast
 
       if products.empty?
         log.error "No base product found"
-        raise "No #{required_status} base product found"
+        raise "No base product found"
       elsif products.size > 1
         log.warn "More than one base product found!"
       end

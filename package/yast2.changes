@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri May  9 07:15:25 UTC 2014 - lslezak@suse.cz
+
+- Product.rb - fixed base product detection (do not check the
+  product status, always use the product from the initial
+  repository during installation) (bnc#876836)
+- 3.1.61
+
+-------------------------------------------------------------------
 Mon May  5 11:38:34 UTC 2014 - vmoravec@suse.com
 
 - Fix getting the status of sysvinit services (bnc#876144)
