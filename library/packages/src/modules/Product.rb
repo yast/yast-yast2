@@ -98,6 +98,8 @@ module Yast
       products = Pkg.ResolvableProperties("", :product, "") || []
 
       # For all (not only base) products
+      # TODO FIXME: filling release notes is a nasty side effect of searching the base product,
+      # it should be handled separately...
       required_status = use_installed_products? ? :installed : :selected
       fill_up_relnotes(products.select{ |p| p["status"] == required_status })
 
