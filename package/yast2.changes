@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon May 12 12:38:40 UTC 2014 - jsrain@suse.cz
+
+- avoid hiding release notes button when new wizard window is
+  opened (bnc#876668)
+- 3.1.62
+
+-------------------------------------------------------------------
 Fri May  9 07:15:25 UTC 2014 - lslezak@suse.cz
 
 - Product.rb - fixed base product detection (do not check the

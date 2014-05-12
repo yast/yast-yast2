@@ -61,6 +61,11 @@ module Yast
 
       # Screenshot names overriden by nested SetScreenShotName calls
       @screenshot_name_stack = []
+
+      # Handling of relnotes button when creating a wizard over existing one
+      # Cannot be handled by libyui for NCurses
+      @relnotes_button_label = ""
+      @relnotes_button_id = "";
     end
 
     def haveFancyUI
@@ -429,6 +434,9 @@ module Yast
     def OpenDialog(dialog)
       dialog = deep_copy(dialog)
       UI.OpenDialog(Opt(:wizardDialog), dialog)
+      if ! @relnotes_button_id.empty?
+        ShowReleaseNotesButton(@relnotes_button_label, @relnotes_button_id)
+      end
 
       nil
     end
@@ -1430,6 +1438,8 @@ module Yast
       #   use dedicated ReplacePoint or reuse the back button
       if HasWidgetWizard() == false ||
           UI.WizardCommand(term(:ShowReleaseNotesButton, label, id)) == false
+        @relnotes_button_label = label
+        @relnotes_button_id = id
         if UI.WidgetExists(Id(:relnotes_rp))
           UI.ReplaceWidget(Id(:relnotes_rp), PushButton(Id(id), Opt(:relNotesButton), label))
         # Reuse Back button
@@ -1454,6 +1464,8 @@ module Yast
       #   reuse use dedicated ReplacePoint or the back button
       if HasWidgetWizard() == false ||
           UI.WizardCommand(term(:HideReleaseNotesButton)) == false
+        @relnotes_button_label = ""
+        @relnotes_button_id = ""
         if UI.WidgetExists(Id(:relnotes_rp))
           UI.ReplaceWidget(Id(:relnotes_rp), Empty())
         elsif UI.WidgetExists(Id(:back_rep))
