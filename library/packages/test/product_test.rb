@@ -288,7 +288,7 @@ describe Yast::Product do
 
         SUPPORTED_METHODS.each do |method_name|
           log.info "Yast::Product.#{method_name}"
-          expect{ Yast::Product.send(method_name) }.to raise_error(/no selected base product found/i)
+          expect{ Yast::Product.send(method_name) }.to raise_error(/no base product found/i)
         end
 
         SUPPORTED_METHODS_ALLOWED_EMPTY.each do |method_name|
@@ -305,7 +305,7 @@ describe Yast::Product do
 
         SUPPORTED_METHODS.each do |method_name|
           log.info "Yast::Product.#{method_name}"
-          expect{ Yast::Product.send(method_name) }.to raise_error(/no installed base product found/i)
+          expect{ Yast::Product.send(method_name) }.to raise_error(/no base product found/i)
         end
 
         SUPPORTED_METHODS_ALLOWED_EMPTY.each do |method_name|
