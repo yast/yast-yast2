@@ -64,8 +64,8 @@ module Yast
 
       # Handling of relnotes button when creating a wizard over existing one
       # Cannot be handled by libyui for NCurses
-      @_relnotes_button_label = ""
-      @_relnotes_button_id = "";
+      @relnotes_button_label = ""
+      @relnotes_button_id = "";
     end
 
     def haveFancyUI
@@ -434,8 +434,8 @@ module Yast
     def OpenDialog(dialog)
       dialog = deep_copy(dialog)
       UI.OpenDialog(Opt(:wizardDialog), dialog)
-      if ! @_relnotes_button_id.empty?
-        ShowReleaseNotesButton(@_relnotes_button_label, @_relnotes_button_id)
+      if ! @relnotes_button_id.empty?
+        ShowReleaseNotesButton(@relnotes_button_label, @relnotes_button_id)
       end
 
       nil
@@ -1438,8 +1438,8 @@ module Yast
       #   use dedicated ReplacePoint or reuse the back button
       if HasWidgetWizard() == false ||
           UI.WizardCommand(term(:ShowReleaseNotesButton, label, id)) == false
-        @_relnotes_button_label = label
-        @_relnotes_button_id = id
+        @relnotes_button_label = label
+        @relnotes_button_id = id
         if UI.WidgetExists(Id(:relnotes_rp))
           UI.ReplaceWidget(Id(:relnotes_rp), PushButton(Id(id), Opt(:relNotesButton), label))
         # Reuse Back button
@@ -1464,8 +1464,8 @@ module Yast
       #   reuse use dedicated ReplacePoint or the back button
       if HasWidgetWizard() == false ||
           UI.WizardCommand(term(:HideReleaseNotesButton)) == false
-        @_relnotes_button_label = ""
-        @_relnotes_button_id = ""
+        @relnotes_button_label = ""
+        @relnotes_button_id = ""
         if UI.WidgetExists(Id(:relnotes_rp))
           UI.ReplaceWidget(Id(:relnotes_rp), Empty())
         elsif UI.WidgetExists(Id(:back_rep))
