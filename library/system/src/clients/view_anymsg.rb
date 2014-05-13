@@ -171,23 +171,25 @@ module Yast
       )
 
 
-      @file_contents = ""
       @go_on = true
 
       # wait until user clicks "OK"
       # check if ComboBox selected and change view accordingly
 
       while @go_on
-        # read file contents
-        @file_contents = Convert.to_string(
-          SCR.Read(path(".target.string"), @filename)
-        )
 
-        # Fill the LogView with file contents
-        UI.ChangeWidget(Id(:log), :Value, @file_contents)
+        # read file content
+        file_content = SCR.Read(path(".target.string"), @filename)
 
-        @heading = Builtins.sformat(_("System Log (%1)"), @filename)
-        UI.ChangeWidget(Id(:log), :Label, @heading)
+        if file_content == nil
+          file_content = _("File not found.")
+        end
+
+        # Fill the LogView with file content
+        UI.ChangeWidget(Id(:log), :Value, file_content)
+
+        heading = Builtins.sformat(_("System Log (%1)"), @filename)
+        UI.ChangeWidget(Id(:log), :Label, heading)
 
         # wait for user input
 
