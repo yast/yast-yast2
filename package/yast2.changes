@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon May 19 15:42:28 CEST 2014 - locilka@suse.com
+
+- Always using special InstallationProperties for systemd_unit
+  while called in first stage (bnc#878560)
+- 3.1.65
+
+-------------------------------------------------------------------
 Mon May 19 15:07:50 CEST 2014 - locilka@suse.com
 
 - Changed dialog label for updating/installing in SlideShow
