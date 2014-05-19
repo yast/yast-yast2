@@ -4,7 +4,7 @@ require 'ostruct'
 require 'forwardable'
 
 module Yast
-  import 'Mode'
+  import 'Stage'
 
   ###
   #  Use this class always as a parent class for implementing various systemd units.
@@ -76,7 +76,8 @@ module Yast
     end
 
     def show
-      Mode.installation ? InstallationProperties.new(self) : Properties.new(self)
+      # Using different handler during first stage (installation, update, ...)
+      Stage.initial ? InstallationProperties.new(self) : Properties.new(self)
     end
 
     def status
@@ -218,7 +219,7 @@ module Yast
     #    the error message mentioned above in this comment.
     #
     # Once the inst-sys has running dbus/systemd, this class definition can be removed
-    # together with the condition for Mode.installation in the SystemdUnit#show.
+    # together with the condition for Stage.initial in the SystemdUnit#show.
     class InstallationProperties < OpenStruct
       include Yast::Logger
 
