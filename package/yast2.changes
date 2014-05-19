@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon May 19 15:07:50 CEST 2014 - locilka@suse.com
+
+- Changed dialog label for updating/installing in SlideShow
+  depending on the selected method (bnc#874995)
+- 3.1.64
+
+-------------------------------------------------------------------
 Tue May 13 12:03:12 CEST 2014 - aschnell@suse.de
 
 - added error handing for viewing log files (bnc#876895)
