@@ -717,13 +717,18 @@ module Yast
       Builtins.y2milestone("SlideShow contents: %1", contents)
 
       Wizard.SetContents(
-        # Dialog heading while software packages are being installed
-        _("Performing Installation"),
+        (Mode.update ?
+          # Dialog heading - software packages are being upgraded
+          _("Performing Upgrade")
+          :
+          # Dialog heading - software packages are being installed
+          _("Performing Installation")
+        ),
         contents,
         HelpText(),
-        false,
-        false
-      ) # has_back, has_next
+        false, # no back button
+        false  # no next button
+      )
 
       @widgets_created = true
 
