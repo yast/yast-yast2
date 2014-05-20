@@ -109,6 +109,12 @@ require "yast"
 
 module Yast
   class SlideShowClass < Module
+    include Yast::Logger
+
+    module UI_ID
+      TOTAL_PROGRESS = :progressTotal
+    end
+
     def main
       Yast.import "UI"
 
@@ -280,9 +286,9 @@ module Yast
     # @param [String] text	new label for the global progress
     def GlobalProgressStart(text)
       @total_progress_label = text
-      if UI.WidgetExists(:progressTotal)
-        UI.ChangeWidget(:progressTotal, :Value, 0)
-        UI.ChangeWidget(:progressTotal, :Label, text)
+      if UI.WidgetExists(UI_ID::TOTAL_PROGRESS)
+        UI.ChangeWidget(UI_ID::TOTAL_PROGRESS, :Value, 0)
+        UI.ChangeWidget(UI_ID::TOTAL_PROGRESS, :Label, text)
       end
 
       @total_progress_label = text
@@ -291,20 +297,29 @@ module Yast
       nil
     end
 
-    # Update status of global progress of the slideshow. The new value will be set
-    # to \param value, if the \text is not nil, the label will be updated
-    # to this text as well. Otherwise label will not change.
+    # Updates status of global progress of the slideshow. The new value will be set
+    # to \param value, if the \label is not nil, the label will be updated
+    # to this text as well. Otherwise label will not change. The same rule applies
+    # to value as well.
+    #
     # @param [Fixnum] value	new value for the global progress
-    # @param text	new label for the global progress
-    def UpdateGlobalProgress(value, new_text)
-      @total_progress_label = new_text if new_text != nil
-      @total_progress_value = value
+    # @param [String] label	new label for the global progress
+    def UpdateGlobalProgress(value, label)
+      value = @total_progress_value unless value
+      label = @total_progress_label unless label
 
-      if UI.WidgetExists(:progressTotal)
-        UI.ChangeWidget(:progressTotal, :Value, value)
-        UI.ChangeWidget(:progressTotal, :Label, new_text) if new_text != nil
+      if UI.WidgetExists(UI_ID::TOTAL_PROGRESS)
+        if @total_progress_value != value
+          @total_progress_value = value
+          UI.ChangeWidget(UI_ID::TOTAL_PROGRESS, :Value, value)
+        end
+
+        if @total_progress_label != label
+          @total_progress_label = label
+          UI.ChangeWidget(UI_ID::TOTAL_PROGRESS, :Label, label)
+        end
       else
-        Builtins.y2milestone("progressTotal widget missing")
+        log.warn "progressTotal widget missing"
       end
 
       # update slide
@@ -375,8 +390,8 @@ module Yast
     # @return [String]	current label
     def SetGlobalProgressLabel(text)
       @total_progress_label = text
-      if UI.WidgetExists(:progressTotal)
-        UI.ChangeWidget(:progressTotal, :Label, text)
+      if UI.WidgetExists(UI_ID::TOTAL_PROGRESS)
+        UI.ChangeWidget(UI_ID::TOTAL_PROGRESS, :Label, text)
       end
 
       nil
@@ -508,7 +523,7 @@ module Yast
           # too much flicker upon update (UI::RecalcLayout() ) on NCurses
           # Progress bar for overall progress of software package installation
           ProgressBar(
-            Id(:progressTotal),
+            Id(UI_ID::TOTAL_PROGRESS),
             @total_progress_label,
             100,
             @total_progress_value
