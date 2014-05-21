@@ -61,4 +61,42 @@ describe "Yast::SlideShow" do
       end
     end
   end
+
+  describe "#SubProgress" do
+    progress_id = Yast::SlideShowClass::UI_ID::CURRENT_PACKAGE
+
+    describe "when total progress widget exists" do
+      before(:each) do
+        Yast::UI.stub(:WidgetExists).and_return(false)
+        expect(Yast::UI).to receive(:WidgetExists).with(progress_id).and_return(true)
+      end
+
+      # IMPORTANT: Yast::SlideShow keeps 'value' and 'label' cached,
+      # always use different value and label for each test so they
+      # don't interfere with each other
+
+      it "does not update progress label when setting it to nil" do
+        expect(Yast::UI).to receive(:ChangeWidget).with(progress_id, :Value, 13)
+        expect(Yast::UI).not_to receive(:ChangeWidget).with(progress_id, :Label, anything())
+
+        Yast::SlideShow.SubProgress(13, nil)
+      end
+
+      it "does not update progress value when setting it to nil" do
+        expect(Yast::UI).not_to receive(:ChangeWidget).with(progress_id, :Value, anything())
+        expect(Yast::UI).to receive(:ChangeWidget).with(progress_id, :Label, "package test 1")
+
+        Yast::SlideShow.SubProgress(nil, "package test 1")
+      end
+
+      # optimizes doing useless UI changes
+      it "does not update progress value or label if setting them to their current value" do
+        expect(Yast::UI).to receive(:ChangeWidget).with(progress_id, :Value, 67).once
+        expect(Yast::UI).to receive(:ChangeWidget).with(progress_id, :Label, "package test 2").once
+
+        # updates UI only once
+        3.times { Yast::SlideShow.SubProgress(67, "package test 2") }
+      end
+    end
+  end
 end
