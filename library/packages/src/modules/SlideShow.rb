@@ -149,6 +149,7 @@ module Yast
       @user_abort = false
 
       # we need to remember the values for tab switching
+      # these are the initial values
       @total_progress_label = _("Installing...")
       @sub_progress_label = _("Installing...")
       @total_progress_value = 0
@@ -255,15 +256,7 @@ module Yast
     # label will be set to \param text, value to 0.
     # @param [String] text	new label for the subprogress
     def SubProgressStart(text)
-      if UI.WidgetExists(UI_ID::CURRENT_PACKAGE)
-        UI.ChangeWidget(UI_ID::CURRENT_PACKAGE, :Value, 0)
-        UI.ChangeWidget(UI_ID::CURRENT_PACKAGE, :Label, text)
-      end
-
-      @sub_progress_label = text
-      @sub_progress_value = 0
-
-      nil
+      SubProgress(0, text)
     end
 
     # Updates status of subprogress of the slideshow. The new value will be set
@@ -274,8 +267,8 @@ module Yast
     # @param [Fixnum] value	new value for the subprogress
     # @param [String] label	new label for the subprogress
     def SubProgress(value, label)
-      value = @sub_progress_value unless value
-      label = @sub_progress_label unless label
+      value ||= @sub_progress_value
+      label ||= @sub_progress_label
 
       if UI.WidgetExists(UI_ID::CURRENT_PACKAGE)
         if @sub_progress_value != value
@@ -296,16 +289,7 @@ module Yast
     # label will be set to \param text, value to 0.
     # @param [String] text	new label for the global progress
     def GlobalProgressStart(text)
-      @total_progress_label = text
-      if UI.WidgetExists(UI_ID::TOTAL_PROGRESS)
-        UI.ChangeWidget(UI_ID::TOTAL_PROGRESS, :Value, 0)
-        UI.ChangeWidget(UI_ID::TOTAL_PROGRESS, :Label, text)
-      end
-
-      @total_progress_label = text
-      @total_progress_value = 0
-
-      nil
+      UpdateGlobalProgress(0, text)
     end
 
     # Updates status of global progress of the slideshow. The new value will be set
@@ -316,8 +300,8 @@ module Yast
     # @param [Fixnum] value	new value for the global progress
     # @param [String] label	new label for the global progress
     def UpdateGlobalProgress(value, label)
-      value = @total_progress_value unless value
-      label = @total_progress_label unless label
+      value ||= @total_progress_value
+      label ||= @total_progress_label
 
       if UI.WidgetExists(UI_ID::TOTAL_PROGRESS)
         if @total_progress_value != value
@@ -397,13 +381,11 @@ module Yast
       nil
     end
 
-    # Return the current global progress label.
-    # @return [String]	current label
+    # Sets the current global progress label.
+    #
+    # @param [String]	new label
     def SetGlobalProgressLabel(text)
-      @total_progress_label = text
-      if UI.WidgetExists(UI_ID::TOTAL_PROGRESS)
-        UI.ChangeWidget(UI_ID::TOTAL_PROGRESS, :Label, text)
-      end
+      UpdateGlobalProgress(nil, text)
 
       nil
     end
@@ -411,13 +393,12 @@ module Yast
     # Append message to the installation log.
     # @param [String] msg	message to be added, without trailing eoln
     def AppendMessageToInstLog(msg)
-      log_line = Ops.add(msg, "\n")
-      @inst_log = Ops.add(@inst_log, log_line)
+      log_line = "#{msg}\n"
 
-      if ShowingDetails()
-        if UI.WidgetExists(:instLog)
-          UI.ChangeWidget(:instLog, :LastLine, log_line)
-        end
+      @inst_log << log_line
+
+      if ShowingDetails() && UI.WidgetExists(:instLog)
+        UI.ChangeWidget(:instLog, :LastLine, log_line)
       end
 
       nil
