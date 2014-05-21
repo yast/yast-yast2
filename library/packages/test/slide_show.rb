@@ -21,9 +21,12 @@ describe "Yast::SlideShow" do
       Yast::SlideShow.stub(:ShowingSlide).and_return(false)
     end
 
+    progress_id = Yast::SlideShowClass::UI_ID::TOTAL_PROGRESS
+
     describe "when total progress widget exists" do
       before(:each) do
-        Yast::UI.stub(:WidgetExists).with(:progressTotal).and_return(true)
+        Yast::UI.stub(:WidgetExists).and_return(false)
+        expect(Yast::UI).to receive(:WidgetExists).with(progress_id).and_return(true)
       end
 
       it "updates slides if using slides" do
@@ -38,23 +41,23 @@ describe "Yast::SlideShow" do
       # don't interfere with each other
 
       it "does not update progress label when setting it to nil" do
-        expect(Yast::UI).to receive(:ChangeWidget).with(:progressTotal, :Value, 25)
-        expect(Yast::UI).not_to receive(:ChangeWidget).with(:progressTotal, :Label, anything())
+        expect(Yast::UI).to receive(:ChangeWidget).with(progress_id, :Value, 25)
+        expect(Yast::UI).not_to receive(:ChangeWidget).with(progress_id, :Label, anything())
 
         Yast::SlideShow.UpdateGlobalProgress(25, nil)
       end
 
       it "does not update progress value when setting it to nil" do
-        expect(Yast::UI).not_to receive(:ChangeWidget).with(:progressTotal, :Value, anything())
-        expect(Yast::UI).to receive(:ChangeWidget).with(:progressTotal, :Label, "new label 1")
+        expect(Yast::UI).not_to receive(:ChangeWidget).with(progress_id, :Value, anything())
+        expect(Yast::UI).to receive(:ChangeWidget).with(progress_id, :Label, "new label 1")
 
         Yast::SlideShow.UpdateGlobalProgress(nil, "new label 1")
       end
 
       # optimizes doing useless UI changes
       it "does not update progress value or label if setting them to their current value" do
-        expect(Yast::UI).to receive(:ChangeWidget).with(:progressTotal, :Value, 31).once
-        expect(Yast::UI).to receive(:ChangeWidget).with(:progressTotal, :Label, "new label 5").once
+        expect(Yast::UI).to receive(:ChangeWidget).with(progress_id, :Value, 31).once
+        expect(Yast::UI).to receive(:ChangeWidget).with(progress_id, :Label, "new label 5").once
 
         # updates UI only once
         3.times { Yast::SlideShow.UpdateGlobalProgress(31, "new label 5") }
