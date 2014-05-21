@@ -102,4 +102,5 @@ describe "Yast::SlideShow" do
       end
     end
   end
+
 end
