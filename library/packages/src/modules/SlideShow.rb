@@ -253,16 +253,15 @@ module Yast
     end
 
     # Restart the subprogress of the slideshow. This means the
-    # label will be set to \param text, value to 0.
+    # label will be set to given text, value to 0.
     # @param [String] text	new label for the subprogress
     def SubProgressStart(text)
       SubProgress(0, text)
     end
 
-    # Updates status of subprogress of the slideshow. The new value will be set
-    # to \param value, if the \label is not nil, the label will be updated
-    # to this text as well. Otherwise label will not change. The same applies
-    # also to progress value.
+    # Updates status of the sub-progress in slide show. The new value and label
+    # will be set to values given as parametes. If a given parameter contains *nil*,
+    # respective value/label will not be updated.
     #
     # @param [Fixnum] value	new value for the subprogress
     # @param [String] label	new label for the subprogress
@@ -286,16 +285,16 @@ module Yast
     end
 
     # Restart the global progress of the slideshow. This means the
-    # label will be set to \param text, value to 0.
+    # label will be set to given text, value to 0.
+    #
     # @param [String] text	new label for the global progress
     def GlobalProgressStart(text)
       UpdateGlobalProgress(0, text)
     end
 
-    # Updates status of global progress of the slideshow. The new value will be set
-    # to \param value, if the \label is not nil, the label will be updated
-    # to this text as well. Otherwise label will not change. The same rule applies
-    # to value as well.
+    # Updates status of the global progress in slide show. The new value and label
+    # will be set to values given as parametes. If a given parameter contains *nil*,
+    # respective value/label will not be updated.
     #
     # @param [Fixnum] value	new value for the global progress
     # @param [String] label	new label for the global progress
