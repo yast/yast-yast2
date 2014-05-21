@@ -113,6 +113,7 @@ module Yast
 
     module UI_ID
       TOTAL_PROGRESS = :progressTotal
+      CURRENT_PACKAGE = :progressCurrentPackage
     end
 
     def main
@@ -254,29 +255,39 @@ module Yast
     # label will be set to \param text, value to 0.
     # @param [String] text	new label for the subprogress
     def SubProgressStart(text)
-      if UI.WidgetExists(:progressCurrentPackage)
-        UI.ChangeWidget(:progressCurrentPackage, :Value, 0)
-        UI.ChangeWidget(:progressCurrentPackage, :Label, text)
+      if UI.WidgetExists(UI_ID::CURRENT_PACKAGE)
+        UI.ChangeWidget(UI_ID::CURRENT_PACKAGE, :Value, 0)
+        UI.ChangeWidget(UI_ID::CURRENT_PACKAGE, :Label, text)
       end
 
       @sub_progress_label = text
+      @sub_progress_value = 0
 
       nil
     end
 
-    # Update status of subprogress of the slideshow. The new value will be set
-    # to \param value, if the \text is not nil, the label will be updated
-    # to this text as well. Otherwise label will not change.
+    # Updates status of subprogress of the slideshow. The new value will be set
+    # to \param value, if the \label is not nil, the label will be updated
+    # to this text as well. Otherwise label will not change. The same applies
+    # also to progress value.
+    #
     # @param [Fixnum] value	new value for the subprogress
-    # @param [String] text	new label for the subprogress
-    def SubProgress(value, text)
-      if UI.WidgetExists(:progressCurrentPackage)
-        UI.ChangeWidget(:progressCurrentPackage, :Value, value)
-        UI.ChangeWidget(:progressCurrentPackage, :Label, text) if text != nil
-      end
+    # @param [String] label	new label for the subprogress
+    def SubProgress(value, label)
+      value = @sub_progress_value unless value
+      label = @sub_progress_label unless label
 
-      @sub_progress_value = value
-      @sub_progress_label = text if text != nil
+      if UI.WidgetExists(UI_ID::CURRENT_PACKAGE)
+        if @sub_progress_value != value
+          @sub_progress_value = value
+          UI.ChangeWidget(UI_ID::CURRENT_PACKAGE, :Value, value)
+        end
+
+        if @sub_progress_label != label
+          @sub_progress_label = label
+          UI.ChangeWidget(UI_ID::CURRENT_PACKAGE, :Label, label)
+        end
+      end
 
       nil
     end
@@ -580,7 +591,7 @@ module Yast
           @_show_table ? DetailsTableWidget() : Empty(),
           VWeight(1, LogView(Id(:instLog), _("Actions performed:"), 6, 0)),
           ProgressBar(
-            Id(:progressCurrentPackage),
+            Id(UI_ID::CURRENT_PACKAGE),
             @sub_progress_label,
             100,
             @sub_progress_value
