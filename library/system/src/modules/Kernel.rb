@@ -57,6 +57,7 @@ module Yast
       Yast.import "PackagesProposal"
       Yast.import "Popup"
       Yast.import "Stage"
+      Yast.import "FileUtils"
 
       textdomain "base"
 
@@ -608,6 +609,16 @@ module Yast
     # @return [Boolean] true on success
     def SaveModulesToLoad
       modules_to_load
+
+      unless FileUtils.Exists(MODULES_DIR)
+        log.warn "Directory #{MODULES_DIR} does not exist, creating"
+
+        unless SCR::Execute(path(".target.mkdir"), MODULES_DIR)
+          log.error "Cannot not create directory #{MODULES_DIR}"
+          return false
+        end
+      end
+
       success = true
 
       @modules_to_load.each do |file, modules|
@@ -693,11 +704,24 @@ module Yast
     def read_modules_to_load
       @modules_to_load = {MODULES_CONF_FILE => []}
 
-      SCR::Read(path(".target.dir"), MODULES_DIR).each do |file_name|
+      config_files = []
+
+      if FileUtils.Exists(MODULES_DIR)
+        config_files = SCR::Read(path(".target.dir"), MODULES_DIR)
+      else
+        log.error "Cannot read modules to load on boot, directory #{MODULES_DIR} does not exist"
+      end
+
+      if config_files.nil?
+        log.error "Cannot read config files from #{MODULES_DIR}"
+        config_files = []
+      end
+
+      config_files.each do |file_name|
         next unless file_name =~ /^.+\.conf$/
 
         if !register_modules_agent(file_name)
-          Builtins.y2error("Cannot register new SCR agent for #{file_path} file")
+          log.error "Cannot register new SCR agent for #{file_path} file"
           next
         end
 
