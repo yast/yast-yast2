@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri May 23 09:06:28 UTC 2014 - mfilka@suse.com
+
+- bnc#879399
+  - offer /var/log/boot.log in SysLog module for view
+- 3.1.66
+
+-------------------------------------------------------------------
 Mon May 19 15:42:28 CEST 2014 - locilka@suse.com
 
 - Always using special InstallationProperties for systemd_unit

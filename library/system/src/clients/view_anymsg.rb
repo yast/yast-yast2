@@ -73,8 +73,10 @@ module Yast
       @filenames = Convert.to_string(
         SCR.Read(path(".target.string"), Ops.add(@vardir, "/filenames"))
       )
-      if @filenames == nil || Ops.less_or_equal(Builtins.size(@filenames), 0)
-        @filenames = "/var/log/boot.msg\n/var/log/messages\n"
+      if !@filenames || @filenames.empty?
+        @filenames = ""
+        @filenames << "/var/log/boot.log\n"
+        @filenames << "/var/log/messages\n"
       end
 
       # convert \n separated string to ycp list.
