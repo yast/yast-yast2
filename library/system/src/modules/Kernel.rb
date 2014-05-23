@@ -614,7 +614,7 @@ module Yast
         log.warn "Directory #{MODULES_DIR} does not exist, creating"
 
         unless SCR::Execute(path(".target.mkdir"), MODULES_DIR)
-          log.error "Cannot not create directory #{MODULES_DIR}"
+          log.error "Cannot create directory #{MODULES_DIR}"
           return false
         end
       end
