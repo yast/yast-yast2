@@ -5,8 +5,6 @@ ENV["Y2DIR"] = File.expand_path("../../src", __FILE__)
 require "yast"
 require "tmpdir"
 
-include Yast
-
 include Yast::Logger
 
 Yast.import "Kernel"

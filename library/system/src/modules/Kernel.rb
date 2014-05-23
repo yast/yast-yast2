@@ -704,8 +704,6 @@ module Yast
     def read_modules_to_load
       @modules_to_load = {MODULES_CONF_FILE => []}
 
-      config_files = []
-
       if FileUtils.Exists(MODULES_DIR)
         config_files = SCR::Read(path(".target.dir"), MODULES_DIR)
       else
