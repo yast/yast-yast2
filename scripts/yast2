@@ -144,7 +144,6 @@ select_gui_frontend()
 	    if check_qt; then
 		SELECTED_GUI=qt
 		WANTED_GUI=qt
-		echo >&2 "GTK GUI wanted but not found, falling back to Qt."
 	    else
 		echo >&2 "GTK GUI wanted but not found, falling back to ncurses."
 	    fi
@@ -156,7 +155,6 @@ select_gui_frontend()
 	    if check_gtk; then
 		SELECTED_GUI=gtk
 		WANTED_GUI=gtk
-		echo >&2 "Qt GUI wanted but not found, falling back to GTK."
 	    else
 		echo >&2 "Qt GUI wanted but not found, falling back to ncurses."
 	    fi
