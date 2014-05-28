@@ -213,111 +213,9 @@ module Yast
         @last_op_canceled = false
       end
 
-
-      # check if the database is consistent before packages are added
-      packages_consistent = Pkg.PkgSolveCheckTargetOnly
-      transact = Pkg.IsAnyResolvable(:any, :to_install) ||
-        Pkg.IsAnyResolvable(:any, :to_remove)
-
-      Builtins.y2internal(
-        "Target solved: %1, something to transact: %2",
-        packages_consistent,
-        transact
-      )
-
       return false if !SelectPackages(toinstall, toremove)
 
-      packager_displayed = false
-
-      # display an error message and advice to manually fix the system
-      if !packages_consistent || transact
-        Builtins.y2warning("The current system is not consistent")
-
-        message = _(
-          "The current system is not consistent,\nsome packages have unresolved dependencies."
-        )
-
-        if !packages_consistent
-          message = Ops.add(
-            Ops.add(message, "\n\n"),
-            _(
-              "Automatic resolving failed, manual dependency resolving is needed."
-            )
-          )
-        end
-
-        if transact
-          message = Ops.add(
-            Ops.add(message, "\n\n"),
-            _(
-              "Yast has automatically added or removed some packages,\n" +
-                "check the changes scheduled to fix the system\n" +
-                "in the software manager."
-            )
-          )
-        end
-
-
-        message = Ops.add(
-          Ops.add(message, "\n\n"),
-          _(
-            "Start the software manager and fix the problems\nor skip fixing and install the already confirmed packages only?"
-          )
-        )
-
-        fixsystem = Popup.AnyQuestion3(
-          Label.WarningMsg,
-          message,
-          Label.ContinueButton,
-          Label.SkipButton,
-          Label.AbortButton,
-          :focus_yes
-        )
-
-        Builtins.y2milestone("Fixsystem answer: %1", fixsystem)
-
-        # the 3rd button ("Abort" label in this case)
-        if fixsystem == :retry
-          Builtins.y2milestone("Aborting package installation")
-          # do not install anything, abort
-          return false
-        elsif fixsystem == :yes
-          # disable repomanagement during installation
-          repomgmt = !Mode.installation
-          # start the package selector
-          ret = PackagesUI.RunPackageSelector(
-            { "enable_repo_mgr" => repomgmt, "mode" => :summaryMode }
-          )
-
-          Builtins.y2internal("Package selector returned: %1", ret)
-
-          # do not install anything
-          if ret == :cancel || ret == :close
-            Builtins.y2milestone("Aborting package installation")
-            return false
-          end
-
-          packager_displayed = true
-        # `no = do not fix the system, install the required packages only
-        # and ignore the inconsistencies
-        elsif fixsystem == :no
-          Builtins.y2milestone("Resetting the preselected packages")
-          # reset the solver - disable the fixsystem solver mode (bnc#439373)
-          Pkg.SetSolverFlags({ "reset" => true })
-          # reset the preselected transactions to fix the problems
-          Pkg.PkgApplReset
-
-          # reselect the packages again after the reset
-          return false if !SelectPackages(toinstall, toremove)
-        else
-          Builtins.y2internal("Unknown result %1, aborting", fixsystem)
-          return false
-        end
-      end
-
-      solved = Pkg.PkgSolve(false)
-
-      if solved != true
+      if !Pkg.PkgSolve(false)
         Builtins.y2error("Package solve failed: %1", Pkg.LastError)
 
         # error message, after pressing [OK] the package manager is displayed
@@ -338,8 +236,6 @@ module Yast
 
         # do not fix the system
         return false if ret == :cancel || ret == :close
-
-        packager_displayed = true
       end
 
       # is a package or a patch selected for installation?
@@ -379,8 +275,7 @@ module Yast
       end
 
       # check if the required packages have been installed
-      # (user could deselect or uninstall them in the packager widget)
-      if packager_displayed && !InstalledAll(toinstall)
+      if !InstalledAll(toinstall)
         Builtins.y2error("Required packages have not been installed")
         return false
       end

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed May 28 10:00:17 UTC 2014 - lslezak@suse.cz
+
+- removed system verification check when yast module installs
+  required packages (bnc#866256)
+- 3.1.69
+
+-------------------------------------------------------------------
 Wed May 28 07:56:29 UTC 2014 - jreidinger@suse.com
 
 - save_y2logs: store also pbl.log from target system, if bootloader
