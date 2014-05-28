@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed May 28 10:55:02 UTC 2014 - locilka@suse.com
+
+- Removed warning message when starting Yast in Qt instead of GTK
+  and vice versa (bnc#861807)
+- 3.1.71
+
+-------------------------------------------------------------------
 Wed May 28 10:39:00 UTC 2014 - jreidinger@suse.com
 
 - split too wide urls for accepting GnuGP key (bnc#870822)
