@@ -90,13 +90,13 @@ fi
 if [ -f /var/log/pbl.log ]; then
     LIST="$LIST /var/log/pbl.log"
 fi
-
-if [ -f /.packages.root ]; then
-    LIST="$LIST /.packages.root"
-fi
 # if storing logs at the end of installation after bootloader fail, try to store pbl log from target system
 if [ -f /mnt/var/log/pbl.log ]; then
     LIST="$LIST /mnt/var/log/pbl.log"
+fi
+
+if [ -f /.packages.root ]; then
+    LIST="$LIST /.packages.root"
 fi
 
 RPM_LIST="rpm-qa"
