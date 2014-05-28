@@ -974,7 +974,8 @@ module Yast
             "(%2):"
         ),
         Ops.get_locale(repo, "name", _("Unknown")),
-        Ops.get_locale(repo, "url", _("Unknown"))
+        repo["url"] ? repo["url"].scan(/.{1,59}/).join("\n") :
+          _("Unknown")
       )
 
       # popup message - label, part 2
