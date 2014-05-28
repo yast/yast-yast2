@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May 28 10:39:00 UTC 2014 - jreidinger@suse.com
+
+- split too wide urls for accepting GnuGP key (bnc#870822)
+- 3.1.69
+
+-------------------------------------------------------------------
 Wed May 28 07:56:29 UTC 2014 - jreidinger@suse.com
 
 - save_y2logs: store also pbl.log from target system, if bootloader
