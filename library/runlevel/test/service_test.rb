@@ -25,6 +25,11 @@ module Yast
         expect(Service.call('reload', 'sshd')).to be_true
       end
 
+      it "returns false if the service has not been found" do
+        stub_services(:service=>'unknown')
+        expect(Service.call('restart', 'unknown')).to be_false
+      end
+
       it "raises error if the command is not recognized" do
         expect { Service.call('make-coffee', 'sshd') }.to raise_error
       end
