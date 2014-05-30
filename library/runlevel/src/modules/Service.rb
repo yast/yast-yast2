@@ -103,6 +103,7 @@ module Yast
     alias_method :enabled?, :Enabled
 
     # Enable service
+    # Logs error with output from systemctl if the command fails
     # @param [String] service service to be enabled
     # @return true if operation is successful
     def Enable service_name
@@ -116,6 +117,7 @@ module Yast
     alias_method :enable, :Enable
 
     # Disable service
+    # Logs error with output from systemctl if the command fails
     # @param [String] service service to be disabled
     # @return true if operation is  successful
     def Disable service_name
@@ -129,6 +131,7 @@ module Yast
     alias_method :disable, :Disable
 
     # Start service
+    # Logs error with output from systemctl if the command fails
     # @param [String] service service to be started
     # @return true if operation is  successful
     def Start service_name
@@ -142,6 +145,7 @@ module Yast
     alias_method :start, :Start
 
     # Restart service
+    # Logs error with output from systemctl if the command fails
     # @param [String] service service to be restarted
     # @return true if operation is  successful
     def Restart service_name
@@ -155,6 +159,7 @@ module Yast
     alias_method :restart, :Restart
 
     # Reload service
+    # Logs error with output from systemctl if the command fails
     # @param [String] service service to be reloaded
     # @return true if operation is  successful
     def Reload service_name
@@ -168,6 +173,7 @@ module Yast
     alias_method :reload, :Reload
 
     # Stop service
+    # Logs error with output from systemctl if the command fails
     # @param [String] service service to be stopped
     # @return true if operation is  successful
     def Stop service_name
