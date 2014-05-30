@@ -116,6 +116,9 @@ module Yast
       end
 
       def restart
+        # Delegate to SystemdUnit#restart if not within installation
+        return super unless installation_system?
+
         stop
         sleep(1)
         start

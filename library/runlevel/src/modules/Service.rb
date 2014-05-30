@@ -50,6 +50,35 @@ module Yast
       @error = ""
     end
 
+    # Send whatever systemd command you need to call for a specific service
+    # If the command fails, log entry with output from systemctl is created in y2log
+    # @param [String,String] Command name and service name
+    # @return [Boolean] Result of the action, true means success
+    def call command_name, service_name
+      service = SystemdService.find(service_name)
+      return failure(:not_found, service_name) unless service
+
+      systemd_command =
+        case command_name
+          when 'show'    then :show
+          when 'status'  then :status
+          when 'start'   then :start
+          when 'stop'    then :stop
+          when 'enable'  then :enable
+          when 'disable' then :disable
+          when 'restart' then :restart
+          when 'reload'  then :reload
+          when 'try-restart' then :try_restart
+          when 'reload-or-restart' then :reload_or_restart
+          when 'reload-or-try-restart' then :reload_or_try_restart
+          else
+            raise "Command '#{command_name}' not supported"
+        end
+      result = service.send(systemd_command)
+      failure(command_name, service_name, service.error) unless result
+      result
+    end
+
     # Check if service is active/running
     #
     # @param [String] name service name
@@ -75,6 +104,7 @@ module Yast
     alias_method :enabled?, :Enabled
 
     # Enable service
+    # Logs error with output from systemctl if the command fails
     # @param [String] service service to be enabled
     # @return true if operation is successful
     def Enable service_name
@@ -88,6 +118,7 @@ module Yast
     alias_method :enable, :Enable
 
     # Disable service
+    # Logs error with output from systemctl if the command fails
     # @param [String] service service to be disabled
     # @return true if operation is  successful
     def Disable service_name
@@ -101,6 +132,7 @@ module Yast
     alias_method :disable, :Disable
 
     # Start service
+    # Logs error with output from systemctl if the command fails
     # @param [String] service service to be started
     # @return true if operation is  successful
     def Start service_name
@@ -114,6 +146,7 @@ module Yast
     alias_method :start, :Start
 
     # Restart service
+    # Logs error with output from systemctl if the command fails
     # @param [String] service service to be restarted
     # @return true if operation is  successful
     def Restart service_name
@@ -127,6 +160,7 @@ module Yast
     alias_method :restart, :Restart
 
     # Reload service
+    # Logs error with output from systemctl if the command fails
     # @param [String] service service to be reloaded
     # @return true if operation is  successful
     def Reload service_name
@@ -140,6 +174,7 @@ module Yast
     alias_method :reload, :Reload
 
     # Stop service
+    # Logs error with output from systemctl if the command fails
     # @param [String] service service to be stopped
     # @return true if operation is  successful
     def Stop service_name
