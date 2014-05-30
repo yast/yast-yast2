@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri May 30 08:55:45 UTC 2014 - lslezak@suse.cz
+
+- DonePackage callback: remove invalid UTF-8 characters to avoid
+  crash (bnc#876459)
+- 3.1.73
+
+-------------------------------------------------------------------
 Fri May 30 10:41:14 CEST 2014 - locilka@suse.com
 
 - Fixed network backend handling during upgrade - unified with
