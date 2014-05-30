@@ -567,6 +567,11 @@ module Yast
     #  return "R" for retry
     #  return "C" for abort (not implemented !)
     def DonePackage(error, reason)
+
+      # remove invalid characters (bnc#876459)
+      reason.encode!('UTF-16', :undef => :replace, :invalid => :replace, :replace => "?")
+      reason.encode!('UTF-8')
+
       UI.CloseDialog if @_package_popup
       @_package_popup = false
 
