@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri May 30 10:41:14 CEST 2014 - locilka@suse.com
+
+- Fixed network backend handling during upgrade - unified with
+  installation (bnc#879594)
+- 3.1.72
+
+-------------------------------------------------------------------
 Wed May 28 10:55:02 UTC 2014 - locilka@suse.com
 
 - Removed warning message when starting Yast in Qt instead of GTK
