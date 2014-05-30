@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri May 30 11:06:47 UTC 2014 - vmoravec@suse.com
+
+- Add Service.call method to make available all systemctl commands
+- 3.1.74
+
+-------------------------------------------------------------------
 Fri May 30 08:55:45 UTC 2014 - lslezak@suse.cz
 
 - DonePackage callback: remove invalid UTF-8 characters to avoid
