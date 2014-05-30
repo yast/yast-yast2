@@ -50,15 +50,32 @@ module Yast
       @error = ""
     end
 
-    # Send whatever command you need to call for a specific service
-    # Command name must be a member of instance methods defined in SystemdUnit class
+    # Send whatever systemd command you need to call for a specific service
+    # If the command fails, log entry with output from systemctl is created in y2log
     # @return [Boolean] Result of the action, true means success
     def call command_name, service_name
       service = SystemdService.find(service_name)
       return failure(:not_found, service_name) unless service
-      result = service.send(command_name)
-      self.error = service.error
-      result
+
+      systemd_command =
+        case command_name
+          when 'show'    then :show
+          when 'status'  then :status
+          when 'start'   then :start
+          when 'stop'    then :stop
+          when 'enable'  then :enable
+          when 'disable' then :disable
+          when 'restart' then :restart
+          when 'reload'  then :reload
+          when 'try-restart' then :try_restart
+          when 'reload-or-restart' then :reload_or_restart
+          when 'reload-or-try-restart' then :reload_or_try_restart
+          else
+            raise "Command '#{command_name}' not supported"
+        end
+      success = service.send(systemd_command)
+      return failure(command_name, service_name, service.error) unless success
+      true
     end
 
     # Check if service is active/running
