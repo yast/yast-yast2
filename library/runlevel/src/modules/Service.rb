@@ -52,6 +52,7 @@ module Yast
 
     # Send whatever systemd command you need to call for a specific service
     # If the command fails, log entry with output from systemctl is created in y2log
+    # @param [String,String] Command name and service name
     # @return [Boolean] Result of the action, true means success
     def call command_name, service_name
       service = SystemdService.find(service_name)
