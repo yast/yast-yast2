@@ -74,9 +74,9 @@ module Yast
           else
             raise "Command '#{command_name}' not supported"
         end
-      success = service.send(systemd_command)
-      return failure(command_name, service_name, service.error) unless success
-      true
+      result = service.send(systemd_command)
+      failure(command_name, service_name, service.error) unless result
+      result
     end
 
     # Check if service is active/running
