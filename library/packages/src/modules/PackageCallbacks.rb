@@ -35,6 +35,8 @@ require "yast"
 
 module Yast
   class PackageCallbacksClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "Pkg"
       Yast.import "UI"
@@ -569,8 +571,11 @@ module Yast
     def DonePackage(error, reason)
 
       # remove invalid characters (bnc#876459)
-      reason.encode!('UTF-16', :undef => :replace, :invalid => :replace, :replace => "?")
-      reason.encode!('UTF-8')
+      if !reason.valid_encoding?
+        reason.encode!('UTF-16', :undef => :replace, :invalid => :replace, :replace => "?")
+        reason.encode!('UTF-8')
+        log.warn "Invalid byte sequence found, fixed text: #{reason}"
+      end
 
       UI.CloseDialog if @_package_popup
       @_package_popup = false
