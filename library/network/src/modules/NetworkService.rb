@@ -71,11 +71,16 @@ module Yast
 
     WICKED = "/usr/sbin/wicked"
 
+    DEFAULT_BACKEND = :wicked
+
+    include Yast::Logger
+
     def main
       Yast.import "Service"
       Yast.import "NetworkConfig"
       Yast.import "Popup"
       Yast.import "Mode"
+      Yast.import "Stage"
       Yast.import "PackageSystem"
 
       textdomain "base"
@@ -179,18 +184,21 @@ module Yast
           when "wicked"
             @current_name = :wicked
           else
-            if running_installer?
-              Builtins.y2milestone("Running in installer, use default: wicked")
-              @current_name = :wicked
+            if Stage.initial
+              @current_name = DEFAULT_BACKEND
+              log.info "Running in installer, use default: #{@current_name}"
+            elsif Mode.config
+              @current_name = DEFAULT_BACKEND
+              log.info "Running in AutoYast config, use default: #{@current_name}"
             else
-              Builtins.y2error("Cannot determine used network service.")
+              log.info "Cannot determine used network service."
               raise "Cannot detect used network service"
             end
         end
 
         @cached_name = @current_name
 
-        Builtins.y2milestone("Current backend: #{@current_name}")
+        log.info "Current backend: #{@current_name}"
       end
       @initialized = true
 
@@ -247,7 +255,7 @@ module Yast
 
     # Reload or restars the network service.
     def ReloadOrRestart
-      if Mode.installation
+      if Stage.initial
         # inst-sys is not running systemd nor sysV init, so systemctl call
         # is not available and service has to be restarted directly
         wicked_restart
@@ -258,7 +266,7 @@ module Yast
 
     # Restarts the network service
     def Restart
-      if Mode.installation
+      if Stage.initial
         wicked_restart
       else
         systemctl_restart
@@ -342,25 +350,33 @@ module Yast
     end
 
     # If there is network running, return true.
-    # Otherwise show error popup depending on Mode and return false
+    # Otherwise show error popup depending on Stage and return false
     # @return true if network running
     def RunningNetworkPopup
-      Builtins.y2internal("RunningNetworkPopup %1", isNetworkRunning)
-      if isNetworkRunning
+      network_running = isNetworkRunning
+
+      log.info "RunningNetworkPopup #{network_running}"
+
+      if network_running
         return true
       else
-        error_text = Builtins.sformat(
-          "%1\n%2 %3",
-          _("No running network detected."),
-          Mode.installation ?
-            _("Restart installation and configure network in Linuxrc") :
-            _(
-              "Configure network with YaST or Network Manager plug-in\nand start this module again"
-            ),
-          _("or continue without network.")
-        )
+        error_text = Stage.initial ?
+          _(
+            "No running network detected.\n" +
+            "Restart installation and configure network in Linuxrc\n" +
+            "or continue without network."
+          )
+          :
+          _(
+            "No running network detected.\n" +
+            "Configure network with YaST or Network Manager plug-in\n" +
+            "and start this module again\n" +
+            "or continue without network."
+          )
+
         ret = Popup.ContinueCancel(error_text)
-        Builtins.y2error("Network not runing!")
+
+        log.error "Network not runing!"
         return ret
       end
     end
@@ -418,11 +434,6 @@ module Yast
       end
 
       nil
-    end
-
-    # Check if currently runs in installer
-    def running_installer?
-      Mode.installation || Mode.config || Mode.update
     end
 
     publish :function => :Read, :type => "void ()"
