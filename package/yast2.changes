@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun  4 12:47:17 CEST 2014 - locilka@suse.com
+
+- Adjusted textdomain for OSRelease library
+- 3.1.75
+
+-------------------------------------------------------------------
 Fri May 30 11:06:47 UTC 2014 - vmoravec@suse.com
 
 - Add Service.call method to make available all systemctl commands
