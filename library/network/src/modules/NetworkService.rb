@@ -76,7 +76,7 @@ module Yast
     include Yast::Logger
 
     def main
-      Yast.import "Service"
+      Yast.import "SystemdService"
       Yast.import "NetworkConfig"
       Yast.import "Popup"
       Yast.import "Mode"
@@ -175,31 +175,19 @@ module Yast
 
     # Initialize module data
     def Read
-      if !@initialized
-        case Service.GetServiceId("network")
-          when "network"
-            @current_name = :netconfig
-          when "NetworkManager"
-            @current_name = :network_manager
-          when "wicked"
-            @current_name = :wicked
-          else
-            if Stage.initial
-              @current_name = DEFAULT_BACKEND
-              log.info "Running in installer, use default: #{@current_name}"
-            elsif Mode.config
-              @current_name = DEFAULT_BACKEND
-              log.info "Running in AutoYast config, use default: #{@current_name}"
-            else
-              log.info "Cannot determine used network service."
-              raise "Cannot detect used network service"
-            end
-        end
+      return if @initialized
 
-        @cached_name = @current_name
-
-        log.info "Current backend: #{@current_name}"
+      if Stage.initial
+        @current_name = DEFAULT_BACKEND
+        log.info "Running in installer/AutoYaST, use default: #{@current_name}"
+      else
+        name = SystemdService.find!("network").name
+        @current_name = BACKENDS.invert[name]
       end
+
+      @cached_name = @current_name
+
+      log.info "Current backend: #{@current_name}"
       @initialized = true
 
       nil
