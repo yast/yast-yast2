@@ -221,13 +221,7 @@ module Yast
     def EnableDisableNow
       return if !Modified()
 
-      # Stop should be called before, but when the service
-      # were not correctly started until now, stop may have
-      # no effect.
-      # So let's kill all processes in the network service
-      # cgroup to make sure e.g. dhcp clients are stopped.
-      @initialized = false
-      RunSystemCtl( BACKENDS[ @current_name], "kill")
+      stop_service(@current_name)
 
       case @cached_name
         when :network_manager, :wicked
@@ -241,6 +235,7 @@ module Yast
           SCR.Execute(path(".target.bash"), cmd)
       end
 
+      @initialized = false
       Read()
 
       nil
@@ -434,6 +429,25 @@ module Yast
       end
 
       nil
+    end
+
+    # Stops backend network service
+    def stop_service(service)
+      if service == :wicked
+        # FIXME:
+        # you really need to use 'wickedd'. Moreover kill action do not
+        # kill all wickedd services - e.g. nanny, dhcp* ... stays running
+        # This needs to be clarified with wicked people.
+        # bnc#864619
+        RunSystemCtl("wickedd", "stop")
+      else
+        # Stop should be called before, but when the service
+        # were not correctly started until now, stop may have
+        # no effect.
+        # So let's kill all processes in the network service
+        # cgroup to make sure e.g. dhcp clients are stopped.
+        RunSystemCtl(BACKENDS[ @current_name], "kill")
+      end
     end
 
     publish :function => :Read, :type => "void ()"
