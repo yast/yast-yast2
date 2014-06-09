@@ -219,29 +219,29 @@ module Yast
 
     # Helper to apply a change of the network service
     def EnableDisableNow
-      if Modified()
-        # Stop should be called before, but when the service
-        # were not correctly started until now, stop may have
-        # no effect.
-        # So let's kill all processes in the network service
-        # cgroup to make sure e.g. dhcp clients are stopped.
-        @initialized = false
-        RunSystemCtl( BACKENDS[ @current_name], "kill")
+      return if !Modified()
 
-        case @cached_name
-          when :network_manager, :wicked
-            RunSystemCtl( BACKENDS[ @cached_name], "--force enable")
-          when :netconfig
-            RunSystemCtl( BACKENDS[ @current_name], "disable")
+      # Stop should be called before, but when the service
+      # were not correctly started until now, stop may have
+      # no effect.
+      # So let's kill all processes in the network service
+      # cgroup to make sure e.g. dhcp clients are stopped.
+      @initialized = false
+      RunSystemCtl( BACKENDS[ @current_name], "kill")
 
-            # Workaround for bug #61055:
-            Builtins.y2milestone("Enabling service %1", "network")
-            cmd = "cd /; /sbin/insserv -d /etc/init.d/network"
-            SCR.Execute(path(".target.bash"), cmd)
-        end
+      case @cached_name
+        when :network_manager, :wicked
+          RunSystemCtl( BACKENDS[ @cached_name], "--force enable")
+        when :netconfig
+          RunSystemCtl( BACKENDS[ @current_name], "disable")
 
-        Read()
+          # Workaround for bug #61055:
+          Builtins.y2milestone("Enabling service %1", "network")
+          cmd = "cd /; /sbin/insserv -d /etc/init.d/network"
+          SCR.Execute(path(".target.bash"), cmd)
       end
+
+      Read()
 
       nil
     end
