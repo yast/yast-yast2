@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jun  9 11:53:58 UTC 2014 - mfilka@suse.com
+
+- bnc#864619
+  - stop wicked service(s) properly when switching network services
+- 3.1.76 
+
+-------------------------------------------------------------------
 Wed Jun  4 12:47:17 CEST 2014 - locilka@suse.com
 
 - Adjusted textdomain for OSRelease library
