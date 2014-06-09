@@ -76,7 +76,7 @@ module Yast
     include Yast::Logger
 
     def main
-      Yast.import "Service"
+      Yast.import "SystemdService"
       Yast.import "NetworkConfig"
       Yast.import "Popup"
       Yast.import "Mode"
@@ -175,31 +175,19 @@ module Yast
 
     # Initialize module data
     def Read
-      if !@initialized
-        case Service.GetServiceId("network")
-          when "network"
-            @current_name = :netconfig
-          when "NetworkManager"
-            @current_name = :network_manager
-          when "wicked"
-            @current_name = :wicked
-          else
-            if Stage.initial
-              @current_name = DEFAULT_BACKEND
-              log.info "Running in installer, use default: #{@current_name}"
-            elsif Mode.config
-              @current_name = DEFAULT_BACKEND
-              log.info "Running in AutoYast config, use default: #{@current_name}"
-            else
-              log.info "Cannot determine used network service."
-              raise "Cannot detect used network service"
-            end
-        end
+      return if @initialized
 
-        @cached_name = @current_name
-
-        log.info "Current backend: #{@current_name}"
+      if Stage.initial
+        @current_name = DEFAULT_BACKEND
+        log.info "Running in installer/AutoYaST, use default: #{@current_name}"
+      else
+        name = SystemdService.find!("network").name
+        @current_name = BACKENDS.invert[name]
       end
+
+      @cached_name = @current_name
+
+      log.info "Current backend: #{@current_name}"
       @initialized = true
 
       nil
@@ -219,29 +207,24 @@ module Yast
 
     # Helper to apply a change of the network service
     def EnableDisableNow
-      if Modified()
-        # Stop should be called before, but when the service
-        # were not correctly started until now, stop may have
-        # no effect.
-        # So let's kill all processes in the network service
-        # cgroup to make sure e.g. dhcp clients are stopped.
-        @initialized = false
-        RunSystemCtl( BACKENDS[ @current_name], "kill")
+      return if !Modified()
 
-        case @cached_name
-          when :network_manager, :wicked
-            RunSystemCtl( BACKENDS[ @cached_name], "--force enable")
-          when :netconfig
-            RunSystemCtl( BACKENDS[ @current_name], "disable")
+      stop_service(@current_name)
 
-            # Workaround for bug #61055:
-            Builtins.y2milestone("Enabling service %1", "network")
-            cmd = "cd /; /sbin/insserv -d /etc/init.d/network"
-            SCR.Execute(path(".target.bash"), cmd)
-        end
+      case @cached_name
+        when :network_manager, :wicked
+          RunSystemCtl( BACKENDS[ @cached_name], "--force enable")
+        when :netconfig
+          RunSystemCtl( BACKENDS[ @current_name], "disable")
 
-        Read()
+          # Workaround for bug #61055:
+          Builtins.y2milestone("Enabling service %1", "network")
+          cmd = "cd /; /sbin/insserv -d /etc/init.d/network"
+          SCR.Execute(path(".target.bash"), cmd)
       end
+
+      @initialized = false
+      Read()
 
       nil
     end
@@ -434,6 +417,25 @@ module Yast
       end
 
       nil
+    end
+
+    # Stops backend network service
+    def stop_service(service)
+      if service == :wicked
+        # FIXME:
+        # you really need to use 'wickedd'. Moreover kill action do not
+        # kill all wickedd services - e.g. nanny, dhcp* ... stays running
+        # This needs to be clarified with wicked people.
+        # bnc#864619
+        RunSystemCtl("wickedd", "stop")
+      else
+        # Stop should be called before, but when the service
+        # were not correctly started until now, stop may have
+        # no effect.
+        # So let's kill all processes in the network service
+        # cgroup to make sure e.g. dhcp clients are stopped.
+        RunSystemCtl(BACKENDS[ @current_name], "kill")
+      end
     end
 
     publish :function => :Read, :type => "void ()"
