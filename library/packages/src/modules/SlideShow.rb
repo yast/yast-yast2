@@ -601,7 +601,7 @@ module Yast
 
       if UI.WidgetExists(:tabContents)
         UI.ChangeWidget(:dumbTab, :CurrentItem, :showSlide)
-        UI.ReplaceWidget(:tabContents, SlidePageWidgets()) 
+        UI.ReplaceWidget(:tabContents, SlidePageWidgets())
         # UpdateTotalProgress(false);		// FIXME: this breaks other stages!
       end
 
@@ -642,7 +642,7 @@ module Yast
 
       if UI.WidgetExists(:tabContents)
         UI.ChangeWidget(:dumbTab, :CurrentItem, id)
-        UI.ReplaceWidget(:tabContents, RelNotesPageWidgets(id)) 
+        UI.ReplaceWidget(:tabContents, RelNotesPageWidgets(id))
         # UpdateTotalProgress(false);
       end
 
@@ -820,7 +820,7 @@ module Yast
       elsif button == :debugHotkey
         @debug = !@debug
         Builtins.y2milestone("Debug mode: %1", @debug)
-      end 
+      end
       # note: `abort is handled in SlideShowCallbacks::HandleInput()
 
       nil
@@ -944,6 +944,7 @@ module Yast
     #  ]
     def Setup(stages)
       stages = deep_copy(stages)
+      log.info "SlideShow stages: #{stages}"
       # initiliaze the generic counters
       Reset()
 
@@ -971,6 +972,7 @@ module Yast
 
       @_stages = {} # prepare a new stages description
 
+      total_size = 0
       # distribute the total time to stages as per cents
       Builtins.foreach(stages) do |stage|
         if Ops.get_symbol(stage, "units", :sec) == :sec
@@ -1008,9 +1010,28 @@ module Yast
 
           start = Ops.add(start, Ops.get_integer(stage, "size", 0))
         end
+        total_size += stage["size"]
         Ops.set(@_stages, Ops.get_string(stage, "name", ""), stage)
         # setup first stage
         @_current_stage = deep_copy(stage) if @_current_stage == nil
+      end
+
+      # Because of using integers in the calculation above the sum of the sizes
+      # might not be 100% due to rounding. Update the last stage so the
+      # total installation progress is 100%.
+      if total_size != 100
+        log.info "Total global progress: #{total_size}%, adjusting to 100%..."
+
+        # find the last stage and adjust it
+        updated_stage_name = stages.last["name"]
+        updated_stage = @_stages[updated_stage_name]
+
+        new_size = 100 - total_size + updated_stage["size"]
+        log.info "Updating '#{updated_stage_name}' stage size from " \
+          "#{updated_stage["size"]}% to #{new_size}%"
+
+        updated_stage["size"] = new_size
+        @_stages[updated_stage_name] = updated_stage
       end
 
       Builtins.y2milestone("Global progress bar: %1", @_stages)
