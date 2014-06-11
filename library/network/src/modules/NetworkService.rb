@@ -173,6 +173,13 @@ module Yast
       nil
     end
 
+    # disables network service completely
+    def disable
+      @cached_name = nil
+      stop_service(@current_name)
+      RunSystemCtl( BACKENDS[ @current_name], "disable")
+    end
+
     # Initialize module data
     def Read
       return if @initialized
