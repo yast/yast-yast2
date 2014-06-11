@@ -152,6 +152,12 @@ module Yast
 
     alias_method :is_wicked, :wicked?
 
+    def disabled?
+      cached_service?(nil)
+    end
+
+    alias_method :is_disabled, :disabled?
+
     def use_network_manager
       Read()
       @cached_name = :network_manager
@@ -178,6 +184,8 @@ module Yast
       @cached_name = nil
       stop_service(@current_name)
       RunSystemCtl( BACKENDS[ @current_name], "disable")
+
+      Read()
     end
 
     # Initialize module data
@@ -453,6 +461,7 @@ module Yast
     publish :function => :is_network_manager, :type => "boolean ()"
     publish :function => :is_netconfig, :type => "boolean ()"
     publish :function => :is_wicked, :type => "boolean ()"
+    publish :function => :is_disabled, :type => "boolean ()"
     publish :function => :use_network_manager, :type => "void ()"
     publish :function => :use_netconfig, :type => "void ()"
     publish :function => :use_wicked, :type => "void ()"
