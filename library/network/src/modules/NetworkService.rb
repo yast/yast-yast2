@@ -181,8 +181,8 @@ module Yast
         @current_name = DEFAULT_BACKEND
         log.info "Running in installer/AutoYaST, use default: #{@current_name}"
       else
-        name = SystemdService.find!("network").name
-        @current_name = BACKENDS.invert[name]
+        service = SystemdService.find("network")
+        @current_name = BACKENDS.invert[service.name] if service
       end
 
       @cached_name = @current_name
@@ -421,6 +421,8 @@ module Yast
 
     # Stops backend network service
     def stop_service(service)
+      return if !service
+
       if service == :wicked
         # FIXME:
         # you really need to use 'wickedd'. Moreover kill action do not
