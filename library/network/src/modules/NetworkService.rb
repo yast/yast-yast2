@@ -152,6 +152,12 @@ module Yast
 
     alias_method :is_wicked, :wicked?
 
+    def disabled?
+      cached_service?(nil)
+    end
+
+    alias_method :is_disabled, :disabled?
+
     def use_network_manager
       Read()
       @cached_name = :network_manager
@@ -173,6 +179,15 @@ module Yast
       nil
     end
 
+    # disables network service completely
+    def disable
+      @cached_name = nil
+      stop_service(@current_name)
+      RunSystemCtl( BACKENDS[ @current_name], "disable")
+
+      Read()
+    end
+
     # Initialize module data
     def Read
       return if @initialized
@@ -181,8 +196,8 @@ module Yast
         @current_name = DEFAULT_BACKEND
         log.info "Running in installer/AutoYaST, use default: #{@current_name}"
       else
-        name = SystemdService.find!("network").name
-        @current_name = BACKENDS.invert[name]
+        service = SystemdService.find("network")
+        @current_name = BACKENDS.invert[service.name] if service
       end
 
       @cached_name = @current_name
@@ -421,6 +436,8 @@ module Yast
 
     # Stops backend network service
     def stop_service(service)
+      return if !service
+
       if service == :wicked
         # FIXME:
         # you really need to use 'wickedd'. Moreover kill action do not
@@ -444,6 +461,7 @@ module Yast
     publish :function => :is_network_manager, :type => "boolean ()"
     publish :function => :is_netconfig, :type => "boolean ()"
     publish :function => :is_wicked, :type => "boolean ()"
+    publish :function => :is_disabled, :type => "boolean ()"
     publish :function => :use_network_manager, :type => "void ()"
     publish :function => :use_netconfig, :type => "void ()"
     publish :function => :use_wicked, :type => "void ()"
