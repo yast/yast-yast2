@@ -614,7 +614,7 @@ module Yast
         log.error "Service #{service} is unknown"
         raise(
           SuSEFirewalServiceNotFound,
-          _("Service with name '%{service_name}' does not exist") % { :service_name => service_name }
+          _("Service with name '%{service_name}' does not exist") % { :service_name => service }
         )
       end
 
