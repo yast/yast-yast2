@@ -183,7 +183,7 @@ module Yast
     def disable
       @cached_name = nil
       stop_service(@current_name)
-      RunSystemCtl( BACKENDS[ @current_name], "disable")
+      disable_service(@current_name)
 
       Read()
     end
@@ -225,6 +225,7 @@ module Yast
       return if !Modified()
 
       stop_service(@current_name)
+      disable_service(@current_name)
 
       case @cached_name
         when :network_manager, :wicked
@@ -453,6 +454,10 @@ module Yast
         # cgroup to make sure e.g. dhcp clients are stopped.
         RunSystemCtl(BACKENDS[ @current_name], "kill")
       end
+    end
+
+    def disable_service(service)
+      RunSystemCtl( BACKENDS[service], "disable")
     end
 
     publish :function => :Read, :type => "void ()"
