@@ -26,8 +26,6 @@
 # Summary:	Init script handling, ifup vs NetworkManager
 # Authors:	Martin Vidner <mvidner@suse.cz>
 #
-# $Id$
-#
 # This module used to switch between /etc/init.d/network providing
 # LSB network.service and the NetworkManager.service (or another),
 # which installs a network.service alias link.
@@ -107,7 +105,7 @@ module Yast
     end
 
     def run_wicked(*params)
-      cmd = "#{WICKED} #{params.join(" ")}" 
+      cmd = "#{WICKED} #{params.join(" ")}"
       ret = SCR.Execute(
         path(".target.bash"),
         cmd
@@ -132,7 +130,7 @@ module Yast
 
     # Checks if configuration is managed by NetworkManager
     #
-    # @return true  when the network is managed by an external tool, 
+    # @return true  when the network is managed by an external tool,
     #               like NetworkManager, false otherwise
     def network_manager?
       cached_service?(:network_manager)
@@ -183,7 +181,7 @@ module Yast
     def disable
       @cached_name = nil
       stop_service(@current_name)
-      RunSystemCtl( BACKENDS[ @current_name], "disable")
+      disable_service(@current_name)
 
       Read()
     end
@@ -208,23 +206,12 @@ module Yast
       nil
     end
 
-    # Run /etc/init.d script with specified action
-    # @param script name of the init script
-    # @param action the action to use
-    # @return true, when the script exits with 0
-    def RunScript(script, action)
-      return true if script == ""
-      Builtins.y2milestone("rc%1 %2", script, action)
-      # Workaround for bug #61055:
-      cmd = Builtins.sformat("cd /; /etc/init.d/%1 %2", script, action)
-      SCR.Execute(path(".target.bash"), cmd) == 0
-    end
-
     # Helper to apply a change of the network service
     def EnableDisableNow
       return if !Modified()
 
       stop_service(@current_name)
+      disable_service(@current_name)
 
       case @cached_name
         when :network_manager, :wicked
@@ -453,6 +440,10 @@ module Yast
         # cgroup to make sure e.g. dhcp clients are stopped.
         RunSystemCtl(BACKENDS[ @current_name], "kill")
       end
+    end
+
+    def disable_service(service)
+      RunSystemCtl( BACKENDS[service], "disable")
     end
 
     publish :function => :Read, :type => "void ()"

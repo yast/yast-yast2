@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jun 23 10:38:15 UTC 2014 - mfilka@suse.com
+
+- bnc#864619
+  - old network service is also disabled when switching to new one. 
+- 3.1.80
+
+-------------------------------------------------------------------
 Tue Jun 17 12:56:20 CEST 2014 - schubi@suse.de
 
 - Fixed error message for missing services
