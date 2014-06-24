@@ -65,6 +65,7 @@ module Yast
           "relnotesurl"                     => "",
           "vendor_url"                      => "",
           "enable_clone"                    => false,
+          "disable_os_prober"               => false,
           # FATE #304865
           "base_product_license_directory"  => "/etc/YaST2/licenses/base/"
         },
