@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun 24 12:59:43 UTC 2014 - jreidinger@suse.com
+
+- add option to disable os probing for some products (bnc#884007)
+- 3.1.81
+
+-------------------------------------------------------------------
 Mon Jun 23 10:38:15 UTC 2014 - mfilka@suse.com
 
 - bnc#864619
