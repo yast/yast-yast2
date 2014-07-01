@@ -58,9 +58,10 @@ module Yast
     end
 
     def all properties={}
-      Systemctl.target_units.map do |target_unit_name|
+      targets = Systemctl.target_units.map do |target_unit_name|
         find(target_unit_name)
       end
+      targets.compact
     end
 
     def get_default

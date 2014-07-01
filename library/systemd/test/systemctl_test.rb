@@ -47,5 +47,15 @@ module Yast
         service_units.each {|u| expect(u).to match(/.service$/) }
       end
     end
+
+    describe ".target_units" do
+      before { stub_systemctl(:target) }
+      it "returns a list of target unit names" do
+        target_units = Systemctl.target_units
+        expect(target_units).to be_a(Array)
+        expect(target_units).not_to be_empty
+        target_units.each {|u| expect(u).to match(/.target$/) }
+      end
+    end
   end
 end

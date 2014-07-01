@@ -45,6 +45,7 @@ module Yast
         targets = SystemdTarget.all
         expect(targets).to be_a(Array)
         expect(targets).not_to be_empty
+        expect(targets).not_to include(nil)
         targets.each {|s| expect(s.unit_type).to eq('target')}
       end
     end

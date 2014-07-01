@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul  1 09:00:51 UTC 2014 - vmoravec@suse.com
+
+- Fix SystemdTarget.all not to return nil in the collection
+- 3.1.82
+
+-------------------------------------------------------------------
 Tue Jun 24 12:59:43 UTC 2014 - jreidinger@suse.com
 
 - add option to disable os probing for some products (bnc#884007)
