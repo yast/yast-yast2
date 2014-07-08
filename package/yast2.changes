@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jul  8 15:49:43 CEST 2014 - locilka@suse.com
+
+- Fixed Product.get_property by ensuring that we don't try to get
+  property of an undefined product (bnc#886151)
+- 3.1.84
+
+-------------------------------------------------------------------
 Fri Jul  4 15:45:38 UTC 2014 - lslezak@suse.cz
 
 - view_anymsg: remove escape sequences from input log file
