@@ -89,7 +89,7 @@ module Yast
     # Returns list Hashes of selected (installation) or installed (running system)
     # base products got from libzypp
     #
-    # @return [Array] of Hashes with product definitions
+    # @return [Array <Hash>] with product definitions
     def FindBaseProducts
       return unless load_zypp
 
