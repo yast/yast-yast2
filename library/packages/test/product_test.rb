@@ -192,6 +192,12 @@ describe Yast::Product do
       end
     end
 
+    describe "#FindBaseProducts" do
+      it "reads data from zypp and returns list of base products selected for installation" do
+        expect(Yast::Product.FindBaseProducts).to eq(["openSUSE (SELECTED)"])
+      end
+    end
+
     it "reports that method has been dropped" do
       [:vendor, :dist, :distproduct, :distversion, :shortlabel].each do |method_name|
         expect{ Yast::Product.send(method_name) }.to raise_error(/#{method_name}.*dropped/)
