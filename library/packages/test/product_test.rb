@@ -194,7 +194,12 @@ describe Yast::Product do
 
     describe "#FindBaseProducts" do
       it "reads data from zypp and returns list of base products selected for installation" do
-        expect(Yast::Product.FindBaseProducts).to eq(["openSUSE (SELECTED)"])
+        list_of_products = Yast::Product.FindBaseProducts
+
+        expect(list_of_products).to be_a_kind_of(Array)
+        expect(list_of_products[0]).to be_a_kind_of(Hash)
+        expect(list_of_products[0]["display_name"]).to eq("openSUSE (SELECTED)")
+        expect(list_of_products[0]["status"]).to eq(:selected)
       end
     end
 

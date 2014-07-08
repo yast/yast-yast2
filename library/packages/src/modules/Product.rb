@@ -86,10 +86,10 @@ module Yast
       :vendor, :dist, :distproduct, :distversion, :shortlabel
     ]
 
-    # Returns list of selected (installation) or installed (running system)
+    # Returns list Hashes of selected (installation) or installed (running system)
     # base products got from libzypp
     #
-    # @return [Hash] products
+    # @return [Array] of Hashes with product definitions
     def FindBaseProducts
       return unless load_zypp
 
@@ -232,6 +232,7 @@ module Yast
     #
     # @param [Symbol] key
     def get_property(key)
+      @product ||= {}
       @product[key]
     end
 
