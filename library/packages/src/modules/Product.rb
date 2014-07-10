@@ -130,7 +130,7 @@ module Yast
       return if Mode.config
 
       Builtins.y2milestone("Product.#{__method__} started")
-      return unless load_zypp
+      load_zypp
 
       base_product = FindBaseProducts().fetch(0, {})
 
