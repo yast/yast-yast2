@@ -80,6 +80,7 @@ module Yast
       Yast.import "Mode"
       Yast.import "Stage"
       Yast.import "PackageSystem"
+      Yast.import "Linuxrc"
 
       textdomain "base"
 
@@ -406,12 +407,17 @@ module Yast
     # systemctl is available
     def systemctl_reload_restart
       if IsActive()
-        if Modified()
-          # reload is not sufficient
-          systemctl_restart
-        else
-          # reload may be unsupported
-          RunSystemCtl("network", "reload-or-try-restart")
+        unless Linuxrc.usessh
+          # Second stage has been called by yast.ssh via
+          # ssh. So we should not restart network cause systemctl
+          # hangs in that case. (bnc#885640)
+          if Modified()
+            # reload is not sufficient
+            systemctl_restart
+          else
+            # reload may be unsupported
+            RunSystemCtl("network", "reload-or-try-restart")
+          end
         end
       else
         # always stop, it does not hurt if the net was stopped.

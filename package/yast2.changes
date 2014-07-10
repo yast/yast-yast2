@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jul 10 16:36:05 CEST 2014 - schubi@suse.de
+
+- Do not restart network if the installation has been started
+  via a SSH connection. (bnc#885640)
+- 3.1.86
+
+-------------------------------------------------------------------
 Thu Jul 10 12:56:20 UTC 2014 - lslezak@suse.cz
 
 - Product.rb: do not stop initialization on solver errors
