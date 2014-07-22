@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jul 22 13:08:32 CEST 2014 - locilka@suse.com
+
+- Added new ServicesProposal library to hold and export services
+  enabled/disabled during installation (bnc#887688)
+- 3.1.86
+
+-------------------------------------------------------------------
 Thu Jul 10 12:56:20 UTC 2014 - lslezak@suse.cz
 
 - Product.rb: do not stop initialization on solver errors
