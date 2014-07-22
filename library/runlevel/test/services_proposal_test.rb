@@ -15,18 +15,28 @@ module Yast
     end
 
     describe "#enable_service" do
-      it "marks service as enabled and returns all currently enabled services" do
-        expect(ServicesProposal.enable_service('s1')).to eq(['s1'])
-        expect(ServicesProposal.enable_service('s2').sort).to eq(['s1', 's2'].sort)
-        expect(ServicesProposal.enable_service('s5').sort).to eq(['s1', 's2', 's5'].sort)
+      it "marks service as enabled" do
+        ServicesProposal.enable_service('s1')
+        expect(ServicesProposal.enabled_services).to eq(['s1'])
+
+        ServicesProposal.enable_service('s2')
+        expect(ServicesProposal.enabled_services.sort).to eq(['s1', 's2'].sort)
+
+        ServicesProposal.enable_service('s5')
+        expect(ServicesProposal.enabled_services).to eq(['s1', 's2', 's5'].sort)
       end
     end
 
     describe "#disable_service" do
-      it "marks service as disabled and returns all currently enabled services" do
-        expect(ServicesProposal.disable_service('s7')).to eq(['s7'])
-        expect(ServicesProposal.disable_service('s8').sort).to eq(['s7', 's8'].sort)
-        expect(ServicesProposal.disable_service('s9').sort).to eq(['s7', 's8', 's9'].sort)
+      it "marks service as disabled" do
+        ServicesProposal.disable_service('s7')
+        expect(ServicesProposal.disabled_services).to eq(['s7'])
+
+        ServicesProposal.disable_service('s8')
+        expect(ServicesProposal.disabled_services.sort).to eq(['s7', 's8'].sort)
+
+        ServicesProposal.disable_service('s9')
+        expect(ServicesProposal.disabled_services.sort).to eq(['s7', 's8', 's9'].sort)
       end
     end
 

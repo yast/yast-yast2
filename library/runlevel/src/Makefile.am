@@ -2,8 +2,8 @@
 
 module_DATA = \
   modules/Service.rb \
-  modules/Systemd.rb \
-  modules/ServicesProposal.rb
+  modules/ServicesProposal.rb \
+  modules/Systemd.rb
 
 scrconf_DATA = \
   scrconf/initscripts.scr
