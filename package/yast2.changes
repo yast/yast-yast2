@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jul 24 12:09:29 CEST 2014 - locilka@suse.com
+
+- Fixed checking for :active state of a systemd unit - it's :active
+  already even if it's just being activated (bnc#884756)
+- 3.1.87
+
+-------------------------------------------------------------------
 Tue Jul 22 13:08:32 CEST 2014 - locilka@suse.com
 
 - Added new ServicesProposal library to hold and export services
