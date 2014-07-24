@@ -156,7 +156,7 @@ module Yast
         end
 
         extract_properties
-        self[:active?]    = active_state == "active"
+        self[:active?]    = active_state == "active" || active_state == "activating"
         self[:running?]   = sub_state    == "running"
         self[:loaded?]    = load_state   == "loaded"
         self[:not_found?] = load_state   == "not-found"
