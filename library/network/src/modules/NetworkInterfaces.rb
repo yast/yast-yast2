@@ -41,20 +41,19 @@ module Yast
     # Supported hotplug types
     HOTPLUG_TYPES = ["pcmcia", "usb"]
 
-    # @method Name=
-    # @method Name
-    # @example eth0, eth1:blah, lo, ...
+    # @attribute Name
+    # @return [String]
     #
-    # Current device identifier
+    # Current device identifier, like eth0, eth1:blah, lo, ...
     #
     # {#Add}, {#Edit} and {#Delete} copy the requested device info
     # (via {#Select}) to {#Name} and {#Current}, {#Commit} puts it back.
 
-    # @method Current=
-    # @method Current
-    # @example { "BOOTPROTO"=>"dhcp", "STARTMODE"=>"auto" }
+    # @attribute Current
+    # @return [Hash<String>]
     #
     # Current device information
+    # like { "BOOTPROTO"=>"dhcp", "STARTMODE"=>"auto" }
     #
     # {#Add}, {#Edit} and {#Delete} copy the requested device info
     # (via {#Select}) to {#Name} and {#Current}, {#Commit} puts it back.
