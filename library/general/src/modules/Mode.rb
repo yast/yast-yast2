@@ -35,6 +35,59 @@
 require "yast"
 
 module Yast
+  # There are three modes combined here:
+  #
+  # 1. Installation
+  # 2. UI
+  # 3. Test
+  #
+  # See also {StageClass Stage}
+  #
+  # # *Installation* mode
+  #
+  # It is the most complex one. Its values are used in the installation
+  # {https://github.com/yast/?query=skelcd-control control files}.
+  #
+  # It has these mutually exclusive values and corresponding boolean queries:
+  # <table>
+  # <tr><th> {#mode} value </th>    <th colspan=2> boolean shortcut   </th></tr>
+  # <tr><td> normal </td>           <td colspan=2> {#normal}          </td></tr>
+  # <tr><td> installation </td>     <td rowspan=3> {#installation}    </td></tr>
+  # <tr><td> autoinstallation </td> <td>         {#autoinst} (short!) </td></tr>
+  # <tr><td> live_installation </td><td>         {#live_installation} </td></tr>
+  # <tr><td> autoinst_config </td>  <td colspan=2> {#config}          </td></tr>
+  # <tr><td> update </td>           <td rowspan=2> {#update}          </td></tr>
+  # <tr><td> autoupgrade </td>      <td>           {#autoupgrade}     </td></tr>
+  # <tr><td> repair (obsolete) </td><td colspan=2> {#repair}          </td></tr>
+  # </table>
+  #
+  # Set with {#SetMode}.
+  #
+  # # *UI* mode
+  #
+  # It has these mutually exclusive values and corresponding boolean queries:
+  # <table>
+  # <tr><th> {#ui} value</th>   <th> boolean shortcut </th></tr>
+  # <tr><td> dialog       </td> <td> (none)           </td></tr>
+  # <tr><td> commandline  </td> <td> {#commandline}   </td></tr>
+  # <tr><td> none(*)      </td> <td> (none)           </td></tr>
+  # </table>
+  #
+  # Apparently "none" is never used.
+  #
+  # Set with {#SetUI}.
+  #
+  # # *Test* mode
+  #
+  # It has these mutually exclusive values and corresponding boolean queries:
+  # <table>
+  # <tr><th> {#testMode} value</th>  <th colspan=2> boolean shortcut </th> </tr>
+  # <tr><td> test </td>              <td rowspan=3> {#test} </td></tr>
+  # <tr><td> testsuite  </td>        <td> {#testsuite}      </td></tr>
+  # <tr><td> screenshot </td>        <td> {#screen_shot} (underscore!)</td></tr>
+  # </table>
+  #
+  # Set with {#SetTest}.
   class ModeClass < Module
     def main
 
