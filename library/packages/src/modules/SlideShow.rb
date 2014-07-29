@@ -481,7 +481,6 @@ module Yast
     #
     def ChangeSlideIfNecessary
       if Builtins.time > (@slide_start_time + @slide_interval)
-        log.debug("Loading slide #%1", Ops.add(@current_slide_no, 2))
         LoadSlide(@current_slide_no + 1)
       end
 
