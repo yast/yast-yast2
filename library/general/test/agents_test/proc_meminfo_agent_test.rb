@@ -6,7 +6,8 @@ describe ".proc.meminfo" do
   AGENT_PATH = Yast::Path.new(".proc.meminfo")
   before :each do
     root = File.join(File.dirname(__FILE__), "test_root")
-    handle = Yast::WFM.SCROpen("chroot=#{root}:scr", false)
+    check_version = false
+    handle = Yast::WFM.SCROpen("chroot=#{root}:scr", check_version)
     Yast::WFM.SCRSetDefault(handle)
   end
 
