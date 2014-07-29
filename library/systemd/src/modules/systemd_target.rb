@@ -42,6 +42,8 @@ module Yast
   end
 
   class SystemdTargetClass < Module
+    include Yast::Logger
+
     UNIT_SUFFIX    = ".target"
     DEFAULT_TARGET = "default.target"
     PROPERTIES     = { :allow_isolate => "AllowIsolate" }
@@ -49,7 +51,12 @@ module Yast
     def find target_name, properties={}
       target_name += UNIT_SUFFIX unless target_name.end_with?(UNIT_SUFFIX)
       target = Target.new(target_name, PROPERTIES.merge(properties))
-      return nil if target.properties.not_found?
+
+      if target.properties.not_found?
+        log.error "Target #{target_name} not found: #{target.properties.inspect}"
+        return nil
+      end
+
       target
     end
 
@@ -73,7 +80,12 @@ module Yast
 
     def set_default target
       target_unit = target.is_a?(Target) ? target : find(target)
-      return false unless target_unit
+
+      unless target_unit
+        log.error "Cannot find target #{target.inspect}"
+        return false
+      end
+
       target_unit.set_default
     end
 
@@ -83,13 +95,22 @@ module Yast
       undef_method :start, :stop, :enable, :disable, :restart
 
       def allow_isolate?
-        properties.allow_isolate == 'yes'
+        # We cannot find out a target properties from /mnt in inst-sys
+        # systemctl doesn't return any properties in chroot
+        # See bnc#889323
+        ['yes', nil].include?(properties.allow_isolate)
       end
 
       def set_default
-        return false unless allow_isolate?
+        unless allow_isolate?
+          log.error "Cannot set #{id.inspect} as default target: Cannot be isolated (#{properties.allow_isolate})"
+          return false
+        end
 
-        result = Systemctl.execute("set-default --force " << id)
+        # Constructing a fallback target ID if we can't get it from systemctl
+        target_name = id ? id : "#{name}.target"
+
+        result = Systemctl.execute("set-default --force #{target_name}")
         result.exit.zero?
       end
     end
