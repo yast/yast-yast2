@@ -1,0 +1,2 @@
+initrd=initrd splash=silent
+install=hd:///	biosdevname=1
