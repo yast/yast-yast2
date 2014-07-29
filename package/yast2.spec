@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.1.89
+Version:        3.1.90
 Release:        0
 URL:            https://github.com/yast/yast-yast2
 
@@ -94,8 +94,8 @@ Conflicts:      yast2-wagon <= 2.22.2
 Conflicts:      yast2-installation < 2.18.5
 
 Conflicts:      yast2-update < 2.16.1
-# Modules 'Slides' and 'SlideShow' moved from yast2-packager to yast2
-Conflicts:      yast2-packager < 2.17.12
+# Older packager use removed API
+Conflicts:      yast2-packager < 3.1.34
 Conflicts:      yast2-mouse < 2.16.0
 Conflicts:      autoyast2-installation < 2.16.2
 # country_long.ycp and country.ycp moved to yast2
