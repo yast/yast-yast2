@@ -611,7 +611,7 @@ module Yast
     # Rebuild the details page.
     def RebuildDetailsView
       if UI.WidgetExists(:tabContents)
-        UI.ChangeWidget(:dumbTab, :CurrentItem, :showDetails)
+        UI.ChangeWidget(:dumbTab, :CurrentItem, :showDetails) if UI.WidgetExists(:dumbTab)
         UI.ReplaceWidget(:tabContents, DetailsPageWidgets())
         Builtins.y2milestone("Contents set to details")
       end
@@ -716,8 +716,8 @@ module Yast
           )
         )
       else
-        # no tabs
-        contents = DetailsPageWidgets()
+        # no tabs, but we need to modify hide cd statistics table, so add replace point
+        contents = ReplacePoint(Id(:tabContents), DetailsPageWidgets())
       end
 
       Builtins.y2milestone("SlideShow contents: %1", contents)
