@@ -136,9 +136,7 @@ module Yast
 
       @current_slide_no = 0
       @slide_start_time = 0
-      @slide_min_interval = 30 # const - minimum seconds between slide changes
-      @slide_max_interval = 3 * 60 # const - maximum seconds between slide changes
-      @slide_interval = @slide_min_interval
+      @slide_interval = 30 # FIXME constant
       @language = "en"
       @widgets_created = false
       @user_switched_to_details = false
@@ -464,7 +462,8 @@ module Yast
     # @param [Fixnum] slide_no number of slide to load
     #
     def LoadSlide(slide_no)
-      slide_no = 0 if Ops.greater_than(slide_no, Builtins.size(Slides.slides))
+      slide_no = 0 if slide_no >= Slides.slides.size
+      log.info "load slide #{slide_no}"
 
       @current_slide_no = slide_no
 
@@ -481,16 +480,8 @@ module Yast
     # necessary.
     #
     def ChangeSlideIfNecessary
-      if Ops.less_than(
-          Ops.add(@current_slide_no, 1),
-          Builtins.size(Slides.slides)
-        ) &&
-          Ops.greater_than(
-            Builtins.time,
-            Ops.add(@slide_start_time, @slide_interval)
-          )
-        Builtins.y2debug("Loading slide #%1", Ops.add(@current_slide_no, 2))
-        LoadSlide(Ops.add(@current_slide_no, 1))
+      if Builtins.time > (@slide_start_time + @slide_interval)
+        LoadSlide(@current_slide_no + 1)
       end
 
       nil
@@ -784,7 +775,7 @@ module Yast
 
     # Initialize generic data to default values
     def Reset
-      @current_slide_no = 0
+      @current_slide_no = -1
       @slide_start_time = 0
       @total_time_elapsed = 0
       @start_time = -1
@@ -1058,8 +1049,6 @@ module Yast
     publish :variable => :next_recalc_time, :type => "integer"
     publish :variable => :current_slide_no, :type => "integer"
     publish :variable => :slide_start_time, :type => "integer"
-    publish :variable => :slide_min_interval, :type => "integer"
-    publish :variable => :slide_max_interval, :type => "integer"
     publish :variable => :slide_interval, :type => "integer"
     publish :variable => :language, :type => "string"
     publish :variable => :widgets_created, :type => "boolean"
