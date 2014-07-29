@@ -462,9 +462,8 @@ module Yast
     # @param [Fixnum] slide_no number of slide to load
     #
     def LoadSlide(slide_no)
-
-      log.info "load slide #{slide_no}"
       slide_no = 0 if slide_no >= Slides.slides.size
+      log.info "load slide #{slide_no}"
 
       @current_slide_no = slide_no
 
