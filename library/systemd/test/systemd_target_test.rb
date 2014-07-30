@@ -99,6 +99,16 @@ module Yast
         target = SystemdTarget.find("network")
         expect(target.set_default).to be_false
       end
+
+      context "when target properties cannot be found out (e.g. in chroot)" do
+        it "it returns true if the target unit object has been set as default target" do
+          expect(Systemctl).to receive(:execute).with("set-default --force multi-user-in-installation.target")
+            .and_return(OpenStruct.new('exit'=>0, 'stdout'=>'', 'stderr'=>''))
+          stub_targets(:target=>"multi-user-in-installation")
+          target = SystemdTarget.find("multi-user-in-installation")
+          expect(target.set_default).to be_true
+        end
+      end
     end
 
     describe "#allow_isolate?" do
@@ -111,6 +121,14 @@ module Yast
         stub_targets(:target=>'network')
         target = SystemdTarget.find("network")
         expect(target.allow_isolate?).to be_false
+      end
+
+      context "when target properties cannot be found out (e.g. in chroot)" do
+        it "returns true" do
+          stub_targets(:target=>"multi-user-in-installation")
+          target = SystemdTarget.find("multi-user-in-installation")
+          expect(target.allow_isolate?).to be_true
+        end
       end
     end
   end

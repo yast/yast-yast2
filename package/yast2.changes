@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Jul 30 09:13:36 CEST 2014 - locilka@suse.com
+
+- Fixed setting the default target during installation - systemctl
+  doesn't return any target properties while running in chroot so
+  we have to guess the Id and AllowIsolate properties (bnc#889323)
+- 3.1.91
+
+-------------------------------------------------------------------
 Tue Jul 29 13:30:04 UTC 2014 - jreidinger@suse.com
 
 - Fix timing of slideshow - now slides goes in cycle and all have
