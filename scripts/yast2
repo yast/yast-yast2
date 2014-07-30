@@ -19,8 +19,14 @@ export PATH=/sbin:/usr/sbin:$PATH
 unset GEM_HOME GEM_PATH RUBYLIB RUBYPATH RUBYOPT
 
 # we need input methods for many locales bnc#776567
-
 export QT_IM_MODULE=xim GTK_IM_MODULE=xim
+
+# Do not load libproxy modules (config_kde4 module crashes because of Qt4/Qt5
+# clash), empty path causes that the installed modules are not found. Sysconfig
+# and envvar extensions are still loaded, /etc/sysconfig/proxy values are still
+# used correctly (see bnc#866692 for details).
+export PX_MODULE_PATH=""
+
 
 # allow for a different prefix
 # strip the basename off $0, which can be: (bnc#382216, bnc#458385)
