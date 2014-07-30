@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul 30 07:50:20 UTC 2014 - lslezak@suse.cz
+
+- fixed a crash in package management when running in Qt UI with
+  libproxy1-config-kde4 package installed (bnc#866692)
+- 3.1.92
+
+-------------------------------------------------------------------
 Wed Jul 30 09:13:36 CEST 2014 - locilka@suse.com
 
 - Fixed setting the default target during installation - systemctl
