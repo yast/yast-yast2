@@ -105,7 +105,7 @@ module Yast
 
     # Initialize everything from command-line of y2base.
     #
-    # WARNING, {#ui} aka {#commandline} is not initialized. Probably a bug.
+    # @note {#ui} aka {#commandline} is not initialized. Probably a bug.
     def Initialize
       @_mode = "normal"
       @_test = "none"
@@ -288,8 +288,8 @@ module Yast
 
     # Configuration for {#autoinst}, usually in the running system.
     #
-    # Gotcha: also true during the installation
-    # when cloning the just installed system.
+    # @note also true during the installation
+    #  when cloning the just installed system.
     def config
       mode == "autoinst_config"
     end
@@ -320,8 +320,8 @@ module Yast
 
     # We're running in command line interface, not in GUI or ncurses TUI.
     #
-    # Gotcha: this is set in the {CommandLineClass CommandLine} library,
-    # not in the core, and defaults to false.
+    # @note this is set in the {CommandLineClass CommandLine} library,
+    #  not in the core, and defaults to false.
     # @return true if command-line is running
     def commandline
       ui == "commandline"
