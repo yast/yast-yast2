@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Aug  6 11:45:33 UTC 2014 - jsrain@suse.cz
+
+- read products from system (not repository) also during live
+  installation (bnc#889157)
+- 3.1.93
+
+-------------------------------------------------------------------
 Wed Jul 30 07:50:20 UTC 2014 - lslezak@suse.cz
 
 - fixed a crash in package management when running in Qt UI with

@@ -161,7 +161,8 @@ module Yast
 
     # Whether to use :installed or :selected products
     def use_installed_products?
-      !Stage.initial
+      # Live installation sets Stage to initial
+      Mode.live_installation || !Stage.initial
     end
 
     # Ensures that we can load data from libzypp
