@@ -21,8 +21,8 @@
 	"#\n",				// comment
 	true,				// read-only
 	(`List(
-	    `String("^ \n"),
-	    " "
+	    `String("^ \n\t"),
+	    `Separator(" \n\t")
 	))
     )
 )

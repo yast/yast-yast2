@@ -20,6 +20,9 @@ module SystemctlStubs
     when :service
       stub_service_unit_files
       stub_service_units
+    when :target
+      stub_target_unit_files
+      stub_target_units
     end
     stub_execute
   end
@@ -55,6 +58,20 @@ sssd.service                               enabled
 startpreload.service                       masked
 LIST
     )
+  end
+
+  def stub_target_unit_files
+    Yast::Systemctl.stub(:list_unit_files).and_return(<<LIST
+graphical.target          enabled
+halt.target               disabled
+hibernate.target          static
+sleep.target              static
+initrd-root-fs.target     static
+initrd.target             static
+kexec.target              disabled
+multi-user.target         disabled
+LIST
+  )
   end
 
   def stub_service_units

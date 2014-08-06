@@ -41,6 +41,10 @@ module Yast
   class OSReleaseClass < Module
     include Yast::Logger
 
+    def initialize
+      textdomain "base"
+    end
+
     OS_RELEASE_PATH = "/etc/os-release"
 
     # Get information about the OS release

@@ -21,19 +21,13 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/NetworkInterfaces.ycp
-# Package:	Network configuration
-# Summary:	Interface manipulation (/etc/sysconfig/network/ifcfg-*)
-# Authors:	Michal Svec <msvec@suse.cz>
-#
-# $Id: NetworkInterfaces.ycp 43062 2007-12-13 16:12:26Z mzugec $
-#
-# The new sysconfig naming is interface (eg. eth0) vs. device
-# (eg. NE2000 card), but historically yast has called them device
-# vs. module.
+
 require "yast"
 
 module Yast
+  # Reads and writes the ifcfg files (/etc/sysconfig/network/ifcfg-*).
+  # Categorizes the configurations according to type.
+  # Presents them one ifcfg at a time through the {#Current} hash.
   class NetworkInterfacesClass < Module
 
     Yast.import "String"
@@ -47,6 +41,23 @@ module Yast
     # Supported hotplug types
     HOTPLUG_TYPES = ["pcmcia", "usb"]
 
+    # @attribute Name
+    # @return [String]
+    #
+    # Current device identifier, like eth0, eth1:blah, lo, ...
+    #
+    # {#Add}, {#Edit} and {#Delete} copy the requested device info
+    # (via {#Select}) to {#Name} and {#Current}, {#Commit} puts it back.
+
+    # @attribute Current
+    # @return [Hash<String>]
+    #
+    # Current device information
+    # like { "BOOTPROTO"=>"dhcp", "STARTMODE"=>"auto" }
+    #
+    # {#Add}, {#Edit} and {#Delete} copy the requested device info
+    # (via {#Select}) to {#Name} and {#Current}, {#Commit} puts it back.
+
     def main
       textdomain "base"
 
@@ -58,15 +69,8 @@ module Yast
       Yast.import "FileUtils"
       Yast.import "IP"
 
-      # Current device identifier
-      # @example eth0, eth1:blah, lo, ...
-      # Add, Edit and Delete copy the requested device info (via Select)
-      # to Name and Current,
-      # Commit puts it back
       @Name = ""
 
-      # Current device information
-      # @example $["BOOTPROTO":"dhcp", "STARTMODE":"auto"]
       @Current = {}
 
       # Interface information:

@@ -26,8 +26,6 @@
 # Summary:	Init script handling, ifup vs NetworkManager
 # Authors:	Martin Vidner <mvidner@suse.cz>
 #
-# $Id$
-#
 # This module used to switch between /etc/init.d/network providing
 # LSB network.service and the NetworkManager.service (or another),
 # which installs a network.service alias link.
@@ -71,11 +69,16 @@ module Yast
 
     WICKED = "/usr/sbin/wicked"
 
+    DEFAULT_BACKEND = :wicked
+
+    include Yast::Logger
+
     def main
-      Yast.import "Service"
+      Yast.import "SystemdService"
       Yast.import "NetworkConfig"
       Yast.import "Popup"
       Yast.import "Mode"
+      Yast.import "Stage"
       Yast.import "PackageSystem"
 
       textdomain "base"
@@ -102,7 +105,7 @@ module Yast
     end
 
     def run_wicked(*params)
-      cmd = "#{WICKED} #{params.join(" ")}" 
+      cmd = "#{WICKED} #{params.join(" ")}"
       ret = SCR.Execute(
         path(".target.bash"),
         cmd
@@ -127,7 +130,7 @@ module Yast
 
     # Checks if configuration is managed by NetworkManager
     #
-    # @return true  when the network is managed by an external tool, 
+    # @return true  when the network is managed by an external tool,
     #               like NetworkManager, false otherwise
     def network_manager?
       cached_service?(:network_manager)
@@ -146,6 +149,12 @@ module Yast
     end
 
     alias_method :is_wicked, :wicked?
+
+    def disabled?
+      cached_service?(nil)
+    end
+
+    alias_method :is_disabled, :disabled?
 
     def use_network_manager
       Read()
@@ -168,72 +177,56 @@ module Yast
       nil
     end
 
+    # disables network service completely
+    def disable
+      @cached_name = nil
+      stop_service(@current_name)
+      disable_service(@current_name)
+
+      Read()
+    end
+
     # Initialize module data
     def Read
-      if !@initialized
-        case Service.GetServiceId("network")
-          when "network"
-            @current_name = :netconfig
-          when "NetworkManager"
-            @current_name = :network_manager
-          when "wicked"
-            @current_name = :wicked
-          else
-            if running_installer?
-              Builtins.y2milestone("Running in installer, use default: wicked")
-              @current_name = :wicked
-            else
-              Builtins.y2error("Cannot determine used network service.")
-              raise "Cannot detect used network service"
-            end
-        end
+      return if @initialized
 
-        @cached_name = @current_name
-
-        Builtins.y2milestone("Current backend: #{@current_name}")
+      if Stage.initial
+        @current_name = DEFAULT_BACKEND
+        log.info "Running in installer/AutoYaST, use default: #{@current_name}"
+      else
+        service = SystemdService.find("network")
+        @current_name = BACKENDS.invert[service.name] if service
       end
+
+      @cached_name = @current_name
+
+      log.info "Current backend: #{@current_name}"
       @initialized = true
 
       nil
     end
 
-    # Run /etc/init.d script with specified action
-    # @param script name of the init script
-    # @param action the action to use
-    # @return true, when the script exits with 0
-    def RunScript(script, action)
-      return true if script == ""
-      Builtins.y2milestone("rc%1 %2", script, action)
-      # Workaround for bug #61055:
-      cmd = Builtins.sformat("cd /; /etc/init.d/%1 %2", script, action)
-      SCR.Execute(path(".target.bash"), cmd) == 0
-    end
-
     # Helper to apply a change of the network service
     def EnableDisableNow
-      if Modified()
-        # Stop should be called before, but when the service
-        # were not correctly started until now, stop may have
-        # no effect.
-        # So let's kill all processes in the network service
-        # cgroup to make sure e.g. dhcp clients are stopped.
-        @initialized = false
-        RunSystemCtl( BACKENDS[ @current_name], "kill")
+      return if !Modified()
 
-        case @cached_name
-          when :network_manager, :wicked
-            RunSystemCtl( BACKENDS[ @cached_name], "--force enable")
-          when :netconfig
-            RunSystemCtl( BACKENDS[ @current_name], "disable")
+      stop_service(@current_name)
+      disable_service(@current_name)
 
-            # Workaround for bug #61055:
-            Builtins.y2milestone("Enabling service %1", "network")
-            cmd = "cd /; /sbin/insserv -d /etc/init.d/network"
-            SCR.Execute(path(".target.bash"), cmd)
-        end
+      case @cached_name
+        when :network_manager, :wicked
+          RunSystemCtl( BACKENDS[ @cached_name], "--force enable")
+        when :netconfig
+          RunSystemCtl( BACKENDS[ @current_name], "disable")
 
-        Read()
+          # Workaround for bug #61055:
+          Builtins.y2milestone("Enabling service %1", "network")
+          cmd = "cd /; /sbin/insserv -d /etc/init.d/network"
+          SCR.Execute(path(".target.bash"), cmd)
       end
+
+      @initialized = false
+      Read()
 
       nil
     end
@@ -247,7 +240,7 @@ module Yast
 
     # Reload or restars the network service.
     def ReloadOrRestart
-      if Mode.installation
+      if Stage.initial
         # inst-sys is not running systemd nor sysV init, so systemctl call
         # is not available and service has to be restarted directly
         wicked_restart
@@ -258,7 +251,7 @@ module Yast
 
     # Restarts the network service
     def Restart
-      if Mode.installation
+      if Stage.initial
         wicked_restart
       else
         systemctl_restart
@@ -342,25 +335,33 @@ module Yast
     end
 
     # If there is network running, return true.
-    # Otherwise show error popup depending on Mode and return false
+    # Otherwise show error popup depending on Stage and return false
     # @return true if network running
     def RunningNetworkPopup
-      Builtins.y2internal("RunningNetworkPopup %1", isNetworkRunning)
-      if isNetworkRunning
+      network_running = isNetworkRunning
+
+      log.info "RunningNetworkPopup #{network_running}"
+
+      if network_running
         return true
       else
-        error_text = Builtins.sformat(
-          "%1\n%2 %3",
-          _("No running network detected."),
-          Mode.installation ?
-            _("Restart installation and configure network in Linuxrc") :
-            _(
-              "Configure network with YaST or Network Manager plug-in\nand start this module again"
-            ),
-          _("or continue without network.")
-        )
+        error_text = Stage.initial ?
+          _(
+            "No running network detected.\n" +
+            "Restart installation and configure network in Linuxrc\n" +
+            "or continue without network."
+          )
+          :
+          _(
+            "No running network detected.\n" +
+            "Configure network with YaST or Network Manager plug-in\n" +
+            "and start this module again\n" +
+            "or continue without network."
+          )
+
         ret = Popup.ContinueCancel(error_text)
-        Builtins.y2error("Network not runing!")
+
+        log.error "Network not runing!"
         return ret
       end
     end
@@ -420,9 +421,29 @@ module Yast
       nil
     end
 
-    # Check if currently runs in installer
-    def running_installer?
-      Mode.installation || Mode.config || Mode.update
+    # Stops backend network service
+    def stop_service(service)
+      return if !service
+
+      if service == :wicked
+        # FIXME:
+        # you really need to use 'wickedd'. Moreover kill action do not
+        # kill all wickedd services - e.g. nanny, dhcp* ... stays running
+        # This needs to be clarified with wicked people.
+        # bnc#864619
+        RunSystemCtl("wickedd", "stop")
+      else
+        # Stop should be called before, but when the service
+        # were not correctly started until now, stop may have
+        # no effect.
+        # So let's kill all processes in the network service
+        # cgroup to make sure e.g. dhcp clients are stopped.
+        RunSystemCtl(BACKENDS[ @current_name], "kill")
+      end
+    end
+
+    def disable_service(service)
+      RunSystemCtl( BACKENDS[service], "disable")
     end
 
     publish :function => :Read, :type => "void ()"
@@ -431,6 +452,7 @@ module Yast
     publish :function => :is_network_manager, :type => "boolean ()"
     publish :function => :is_netconfig, :type => "boolean ()"
     publish :function => :is_wicked, :type => "boolean ()"
+    publish :function => :is_disabled, :type => "boolean ()"
     publish :function => :use_network_manager, :type => "void ()"
     publish :function => :use_netconfig, :type => "void ()"
     publish :function => :use_wicked, :type => "void ()"

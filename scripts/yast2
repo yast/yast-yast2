@@ -19,8 +19,14 @@ export PATH=/sbin:/usr/sbin:$PATH
 unset GEM_HOME GEM_PATH RUBYLIB RUBYPATH RUBYOPT
 
 # we need input methods for many locales bnc#776567
-
 export QT_IM_MODULE=xim GTK_IM_MODULE=xim
+
+# Do not load libproxy modules (config_kde4 module crashes because of Qt4/Qt5
+# clash), empty path causes that the installed modules are not found. Sysconfig
+# and envvar extensions are still loaded, /etc/sysconfig/proxy values are still
+# used correctly (see bnc#866692 for details).
+export PX_MODULE_PATH=""
+
 
 # allow for a different prefix
 # strip the basename off $0, which can be: (bnc#382216, bnc#458385)
@@ -135,6 +141,7 @@ select_gui_frontend()
     if [ "$WANTED_GUI" = "auto" ]; then
 	probe_desktop_gui
 	WANTED_GUI=$DESKTOP_GUI
+	GUI_SELECTION=auto
     fi
 
     if [ "$WANTED_GUI" = "gtk" ]; then
@@ -144,7 +151,9 @@ select_gui_frontend()
 	    if check_qt; then
 		SELECTED_GUI=qt
 		WANTED_GUI=qt
-		echo >&2 "GTK GUI wanted but not found, falling back to Qt."
+		if [ "$GUI_SELECTION" != "auto" ]; then
+		    echo >&2 "GTK GUI wanted but not found, falling back to Qt."
+		fi
 	    else
 		echo >&2 "GTK GUI wanted but not found, falling back to ncurses."
 	    fi
@@ -156,7 +165,9 @@ select_gui_frontend()
 	    if check_gtk; then
 		SELECTED_GUI=gtk
 		WANTED_GUI=gtk
-		echo >&2 "Qt GUI wanted but not found, falling back to GTK."
+		if [ "$GUI_SELECTION" != "auto" ]; then
+		    echo >&2 "Qt GUI wanted but not found, falling back to GTK."
+		fi
 	    else
 		echo >&2 "Qt GUI wanted but not found, falling back to ncurses."
 	    fi

@@ -109,6 +109,13 @@ require "yast"
 
 module Yast
   class SlideShowClass < Module
+    include Yast::Logger
+
+    module UI_ID
+      TOTAL_PROGRESS = :progressTotal
+      CURRENT_PACKAGE = :progressCurrentPackage
+    end
+
     def main
       Yast.import "UI"
 
@@ -129,9 +136,7 @@ module Yast
 
       @current_slide_no = 0
       @slide_start_time = 0
-      @slide_min_interval = 30 # const - minimum seconds between slide changes
-      @slide_max_interval = 3 * 60 # const - maximum seconds between slide changes
-      @slide_interval = @slide_min_interval
+      @slide_interval = 30 # FIXME constant
       @language = "en"
       @widgets_created = false
       @user_switched_to_details = false
@@ -142,6 +147,7 @@ module Yast
       @user_abort = false
 
       # we need to remember the values for tab switching
+      # these are the initial values
       @total_progress_label = _("Installing...")
       @sub_progress_label = _("Installing...")
       @total_progress_value = 0
@@ -245,66 +251,67 @@ module Yast
     end
 
     # Restart the subprogress of the slideshow. This means the
-    # label will be set to \param text, value to 0.
+    # label will be set to given text, value to 0.
     # @param [String] text	new label for the subprogress
     def SubProgressStart(text)
-      if UI.WidgetExists(:progressCurrentPackage)
-        UI.ChangeWidget(:progressCurrentPackage, :Value, 0)
-        UI.ChangeWidget(:progressCurrentPackage, :Label, text)
-      end
-
-      @sub_progress_label = text
-
-      nil
+      SubProgress(0, text)
     end
 
-    # Update status of subprogress of the slideshow. The new value will be set
-    # to \param value, if the \text is not nil, the label will be updated
-    # to this text as well. Otherwise label will not change.
+    # Updates status of the sub-progress in slide show. The new value and label
+    # will be set to values given as parametes. If a given parameter contains *nil*,
+    # respective value/label will not be updated.
+    #
     # @param [Fixnum] value	new value for the subprogress
-    # @param [String] text	new label for the subprogress
-    def SubProgress(value, text)
-      if UI.WidgetExists(:progressCurrentPackage)
-        UI.ChangeWidget(:progressCurrentPackage, :Value, value)
-        UI.ChangeWidget(:progressCurrentPackage, :Label, text) if text != nil
-      end
+    # @param [String] label	new label for the subprogress
+    def SubProgress(value, label)
+      value ||= @sub_progress_value
+      label ||= @sub_progress_label
 
-      @sub_progress_value = value
-      @sub_progress_label = text if text != nil
+      if UI.WidgetExists(UI_ID::CURRENT_PACKAGE)
+        if @sub_progress_value != value
+          @sub_progress_value = value
+          UI.ChangeWidget(UI_ID::CURRENT_PACKAGE, :Value, value)
+        end
+
+        if @sub_progress_label != label
+          @sub_progress_label = label
+          UI.ChangeWidget(UI_ID::CURRENT_PACKAGE, :Label, label)
+        end
+      end
 
       nil
     end
 
     # Restart the global progress of the slideshow. This means the
-    # label will be set to \param text, value to 0.
+    # label will be set to given text, value to 0.
+    #
     # @param [String] text	new label for the global progress
     def GlobalProgressStart(text)
-      @total_progress_label = text
-      if UI.WidgetExists(:progressTotal)
-        UI.ChangeWidget(:progressTotal, :Value, 0)
-        UI.ChangeWidget(:progressTotal, :Label, text)
-      end
-
-      @total_progress_label = text
-      @total_progress_value = 0
-
-      nil
+      UpdateGlobalProgress(0, text)
     end
 
-    # Update status of global progress of the slideshow. The new value will be set
-    # to \param value, if the \text is not nil, the label will be updated
-    # to this text as well. Otherwise label will not change.
+    # Updates status of the global progress in slide show. The new value and label
+    # will be set to values given as parametes. If a given parameter contains *nil*,
+    # respective value/label will not be updated.
+    #
     # @param [Fixnum] value	new value for the global progress
-    # @param text	new label for the global progress
-    def UpdateGlobalProgress(value, new_text)
-      @total_progress_label = new_text if new_text != nil
-      @total_progress_value = value
+    # @param [String] label	new label for the global progress
+    def UpdateGlobalProgress(value, label)
+      value ||= @total_progress_value
+      label ||= @total_progress_label
 
-      if UI.WidgetExists(:progressTotal)
-        UI.ChangeWidget(:progressTotal, :Value, value)
-        UI.ChangeWidget(:progressTotal, :Label, new_text) if new_text != nil
+      if UI.WidgetExists(UI_ID::TOTAL_PROGRESS)
+        if @total_progress_value != value
+          @total_progress_value = value
+          UI.ChangeWidget(UI_ID::TOTAL_PROGRESS, :Value, value)
+        end
+
+        if @total_progress_label != label
+          @total_progress_label = label
+          UI.ChangeWidget(UI_ID::TOTAL_PROGRESS, :Label, label)
+        end
       else
-        Builtins.y2milestone("progressTotal widget missing")
+        log.warn "progressTotal widget missing"
       end
 
       # update slide
@@ -371,13 +378,11 @@ module Yast
       nil
     end
 
-    # Return the current global progress label.
-    # @return [String]	current label
+    # Sets the current global progress label.
+    #
+    # @param [String]	new label
     def SetGlobalProgressLabel(text)
-      @total_progress_label = text
-      if UI.WidgetExists(:progressTotal)
-        UI.ChangeWidget(:progressTotal, :Label, text)
-      end
+      UpdateGlobalProgress(nil, text)
 
       nil
     end
@@ -385,13 +390,12 @@ module Yast
     # Append message to the installation log.
     # @param [String] msg	message to be added, without trailing eoln
     def AppendMessageToInstLog(msg)
-      log_line = Ops.add(msg, "\n")
-      @inst_log = Ops.add(@inst_log, log_line)
+      log_line = "#{msg}\n"
 
-      if ShowingDetails()
-        if UI.WidgetExists(:instLog)
-          UI.ChangeWidget(:instLog, :LastLine, log_line)
-        end
+      @inst_log << log_line
+
+      if ShowingDetails() && UI.WidgetExists(:instLog)
+        UI.ChangeWidget(:instLog, :LastLine, log_line)
       end
 
       nil
@@ -458,7 +462,8 @@ module Yast
     # @param [Fixnum] slide_no number of slide to load
     #
     def LoadSlide(slide_no)
-      slide_no = 0 if Ops.greater_than(slide_no, Builtins.size(Slides.slides))
+      slide_no = 0 if slide_no >= Slides.slides.size
+      log.info "load slide #{slide_no}"
 
       @current_slide_no = slide_no
 
@@ -475,16 +480,8 @@ module Yast
     # necessary.
     #
     def ChangeSlideIfNecessary
-      if Ops.less_than(
-          Ops.add(@current_slide_no, 1),
-          Builtins.size(Slides.slides)
-        ) &&
-          Ops.greater_than(
-            Builtins.time,
-            Ops.add(@slide_start_time, @slide_interval)
-          )
-        Builtins.y2debug("Loading slide #%1", Ops.add(@current_slide_no, 2))
-        LoadSlide(Ops.add(@current_slide_no, 1))
+      if Builtins.time > (@slide_start_time + @slide_interval)
+        LoadSlide(@current_slide_no + 1)
       end
 
       nil
@@ -508,7 +505,7 @@ module Yast
           # too much flicker upon update (UI::RecalcLayout() ) on NCurses
           # Progress bar for overall progress of software package installation
           ProgressBar(
-            Id(:progressTotal),
+            Id(UI_ID::TOTAL_PROGRESS),
             @total_progress_label,
             100,
             @total_progress_value
@@ -565,7 +562,7 @@ module Yast
           @_show_table ? DetailsTableWidget() : Empty(),
           VWeight(1, LogView(Id(:instLog), _("Actions performed:"), 6, 0)),
           ProgressBar(
-            Id(:progressCurrentPackage),
+            Id(UI_ID::CURRENT_PACKAGE),
             @sub_progress_label,
             100,
             @sub_progress_value
@@ -595,7 +592,7 @@ module Yast
 
       if UI.WidgetExists(:tabContents)
         UI.ChangeWidget(:dumbTab, :CurrentItem, :showSlide)
-        UI.ReplaceWidget(:tabContents, SlidePageWidgets()) 
+        UI.ReplaceWidget(:tabContents, SlidePageWidgets())
         # UpdateTotalProgress(false);		// FIXME: this breaks other stages!
       end
 
@@ -605,7 +602,7 @@ module Yast
     # Rebuild the details page.
     def RebuildDetailsView
       if UI.WidgetExists(:tabContents)
-        UI.ChangeWidget(:dumbTab, :CurrentItem, :showDetails)
+        UI.ChangeWidget(:dumbTab, :CurrentItem, :showDetails) if UI.WidgetExists(:dumbTab)
         UI.ReplaceWidget(:tabContents, DetailsPageWidgets())
         Builtins.y2milestone("Contents set to details")
       end
@@ -636,7 +633,7 @@ module Yast
 
       if UI.WidgetExists(:tabContents)
         UI.ChangeWidget(:dumbTab, :CurrentItem, id)
-        UI.ReplaceWidget(:tabContents, RelNotesPageWidgets(id)) 
+        UI.ReplaceWidget(:tabContents, RelNotesPageWidgets(id))
         # UpdateTotalProgress(false);
       end
 
@@ -710,20 +707,25 @@ module Yast
           )
         )
       else
-        # no tabs
-        contents = DetailsPageWidgets()
+        # no tabs, but we need to modify hide cd statistics table, so add replace point
+        contents = ReplacePoint(Id(:tabContents), DetailsPageWidgets())
       end
 
       Builtins.y2milestone("SlideShow contents: %1", contents)
 
       Wizard.SetContents(
-        # Dialog heading while software packages are being installed
-        _("Performing Installation"),
+        (Mode.update ?
+          # Dialog heading - software packages are being upgraded
+          _("Performing Upgrade")
+          :
+          # Dialog heading - software packages are being installed
+          _("Performing Installation")
+        ),
         contents,
         HelpText(),
-        false,
-        false
-      ) # has_back, has_next
+        false, # no back button
+        false  # no next button
+      )
 
       @widgets_created = true
 
@@ -773,7 +775,7 @@ module Yast
 
     # Initialize generic data to default values
     def Reset
-      @current_slide_no = 0
+      @current_slide_no = -1
       @slide_start_time = 0
       @total_time_elapsed = 0
       @start_time = -1
@@ -809,7 +811,7 @@ module Yast
       elsif button == :debugHotkey
         @debug = !@debug
         Builtins.y2milestone("Debug mode: %1", @debug)
-      end 
+      end
       # note: `abort is handled in SlideShowCallbacks::HandleInput()
 
       nil
@@ -933,6 +935,7 @@ module Yast
     #  ]
     def Setup(stages)
       stages = deep_copy(stages)
+      log.info "SlideShow stages: #{stages}"
       # initiliaze the generic counters
       Reset()
 
@@ -960,6 +963,7 @@ module Yast
 
       @_stages = {} # prepare a new stages description
 
+      total_size = 0
       # distribute the total time to stages as per cents
       Builtins.foreach(stages) do |stage|
         if Ops.get_symbol(stage, "units", :sec) == :sec
@@ -997,9 +1001,28 @@ module Yast
 
           start = Ops.add(start, Ops.get_integer(stage, "size", 0))
         end
+        total_size += stage["size"]
         Ops.set(@_stages, Ops.get_string(stage, "name", ""), stage)
         # setup first stage
         @_current_stage = deep_copy(stage) if @_current_stage == nil
+      end
+
+      # Because of using integers in the calculation above the sum of the sizes
+      # might not be 100% due to rounding. Update the last stage so the
+      # total installation progress is 100%.
+      if total_size != 100
+        log.info "Total global progress: #{total_size}%, adjusting to 100%..."
+
+        # find the last stage and adjust it
+        updated_stage_name = stages.last["name"]
+        updated_stage = @_stages[updated_stage_name]
+
+        new_size = 100 - total_size + updated_stage["size"]
+        log.info "Updating '#{updated_stage_name}' stage size from " \
+          "#{updated_stage["size"]}% to #{new_size}%"
+
+        updated_stage["size"] = new_size
+        @_stages[updated_stage_name] = updated_stage
       end
 
       Builtins.y2milestone("Global progress bar: %1", @_stages)
@@ -1026,8 +1049,6 @@ module Yast
     publish :variable => :next_recalc_time, :type => "integer"
     publish :variable => :current_slide_no, :type => "integer"
     publish :variable => :slide_start_time, :type => "integer"
-    publish :variable => :slide_min_interval, :type => "integer"
-    publish :variable => :slide_max_interval, :type => "integer"
     publish :variable => :slide_interval, :type => "integer"
     publish :variable => :language, :type => "string"
     publish :variable => :widgets_created, :type => "boolean"

@@ -86,10 +86,10 @@ module Yast
       :vendor, :dist, :distproduct, :distversion, :shortlabel
     ]
 
-    # Returns list of selected (installation) or installed (running system)
+    # Returns list Hashes of selected (installation) or installed (running system)
     # base products got from libzypp
     #
-    # @return [Hash] products
+    # @return [Array <Hash>] with product definitions
     def FindBaseProducts
       return unless load_zypp
 
@@ -166,6 +166,8 @@ module Yast
     end
 
     # Ensures that we can load data from libzypp
+    # @return [Boolean] false if libzypp lock cannot be obtained, otherwise true
+    #                   (solver errors are ignored, see bnc#886588)
     def load_zypp
       if !PackageLock.Check
         Builtins.y2error("Packager is locked, can't read product info!")
@@ -179,6 +181,9 @@ module Yast
       end
 
       Pkg.PkgSolve(true)
+
+      # ignore solver errors
+      true
     end
 
     # Reads basic product information from os-release file
@@ -233,6 +238,7 @@ module Yast
     #
     # @param [Symbol] key
     def get_property(key)
+      @product ||= {}
       @product[key]
     end
 

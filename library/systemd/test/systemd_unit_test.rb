@@ -21,7 +21,7 @@ module Yast
 
     context "Installation system without full support of systemd" do
       before do
-        Yast::Mode.stub(:installation).and_return(true)
+        Yast::Stage.stub(:initial).and_return(true)
       end
 
       describe "#properties" do

@@ -3,6 +3,211 @@ Wed Aug  6 11:45:33 UTC 2014 - jsrain@suse.cz
 
 - read products from system (not repository) also during live
   installation (bnc#889157)
+- 3.1.93
+
+-------------------------------------------------------------------
+Wed Jul 30 07:50:20 UTC 2014 - lslezak@suse.cz
+
+- fixed a crash in package management when running in Qt UI with
+  libproxy1-config-kde4 package installed (bnc#866692)
+- 3.1.92
+
+-------------------------------------------------------------------
+Wed Jul 30 09:13:36 CEST 2014 - locilka@suse.com
+
+- Fixed setting the default target during installation - systemctl
+  doesn't return any target properties while running in chroot so
+  we have to guess the Id and AllowIsolate properties (bnc#889323)
+- 3.1.91
+
+-------------------------------------------------------------------
+Tue Jul 29 13:30:04 UTC 2014 - jreidinger@suse.com
+
+- Fix timing of slideshow - now slides goes in cycle and all have
+  equal time to display which improve user experience (bnc#885973)
+- 3.1.90
+
+-------------------------------------------------------------------
+Tue Jul 29 08:09:27 UTC 2014 - ancor@suse.com
+
+- Fixed .proc.cmdline parsing to support more situations
+  (bnc#889241)
+- 3.1.89
+
+-------------------------------------------------------------------
+Tue Jul 29 06:46:55 UTC 2014 - jreidinger@suse.com
+
+- fix hidding cd statistics in text only mode (bnc#864507)
+- 3.1.88
+
+-------------------------------------------------------------------
+Thu Jul 24 12:09:29 CEST 2014 - locilka@suse.com
+
+- Fixed checking for :active state of a systemd unit - it's :active
+  already even if it's just being activated (bnc#884756)
+- 3.1.87
+
+-------------------------------------------------------------------
+Tue Jul 22 13:08:32 CEST 2014 - locilka@suse.com
+
+- Added new ServicesProposal library to hold and export services
+  enabled/disabled during installation (bnc#887688)
+- 3.1.86
+
+-------------------------------------------------------------------
+Thu Jul 10 12:56:20 UTC 2014 - lslezak@suse.cz
+
+- Product.rb: do not stop initialization on solver errors
+  (bnc#886588)
+- 3.1.85
+
+-------------------------------------------------------------------
+Tue Jul  8 15:49:43 CEST 2014 - locilka@suse.com
+
+- Fixed Product.get_property by ensuring that we don't try to get
+  property of an undefined product (bnc#886151)
+- 3.1.84
+
+-------------------------------------------------------------------
+Fri Jul  4 15:45:38 UTC 2014 - lslezak@suse.cz
+
+- view_anymsg: remove escape sequences from input log file
+  (bnc#879629)
+- 3.1.83
+
+-------------------------------------------------------------------
+Tue Jul  1 09:00:51 UTC 2014 - vmoravec@suse.com
+
+- Fix SystemdTarget.all not to return nil in the collection
+- 3.1.82
+
+-------------------------------------------------------------------
+Tue Jun 24 12:59:43 UTC 2014 - jreidinger@suse.com
+
+- add option to disable os probing for some products (bnc#884007)
+- 3.1.81
+
+-------------------------------------------------------------------
+Mon Jun 23 10:38:15 UTC 2014 - mfilka@suse.com
+
+- bnc#864619
+  - old network service is also disabled when switching to new one. 
+- 3.1.80
+
+-------------------------------------------------------------------
+Tue Jun 17 12:56:20 CEST 2014 - schubi@suse.de
+
+- Fixed error message for missing services
+  (bnc#882609)
+- 3.1.79
+
+-------------------------------------------------------------------
+Wed Jun 11 10:02:27 UTC 2014 - mfilka@suse.com
+
+- bnc#878719
+  - improved handling of inactive network service
+- 3.1.78
+
+-------------------------------------------------------------------
+Tue Jun 10 16:31:19 UTC 2014 - lslezak@suse.cz
+
+- make sure the total installation progress is always 100%
+  (adjust the rounding issues when computing the subprogress
+  percentages) (bnc#865585)
+- 3.1.77
+
+-------------------------------------------------------------------
+Mon Jun  9 11:53:58 UTC 2014 - mfilka@suse.com
+
+- bnc#864619
+  - stop wicked service(s) properly when switching network services
+- 3.1.76 
+
+-------------------------------------------------------------------
+Wed Jun  4 12:47:17 CEST 2014 - locilka@suse.com
+
+- Adjusted textdomain for OSRelease library
+- 3.1.75
+
+-------------------------------------------------------------------
+Fri May 30 11:06:47 UTC 2014 - vmoravec@suse.com
+
+- Add Service.call method to make available all systemctl commands
+- 3.1.74
+
+-------------------------------------------------------------------
+Fri May 30 08:55:45 UTC 2014 - lslezak@suse.cz
+
+- DonePackage callback: remove invalid UTF-8 characters to avoid
+  crash (bnc#876459)
+- 3.1.73
+
+-------------------------------------------------------------------
+Fri May 30 10:41:14 CEST 2014 - locilka@suse.com
+
+- Fixed network backend handling during upgrade - unified with
+  installation (bnc#879594)
+- 3.1.72
+
+-------------------------------------------------------------------
+Wed May 28 10:55:02 UTC 2014 - locilka@suse.com
+
+- Removed warning message when starting Yast in Qt instead of GTK
+  and vice versa (bnc#861807)
+- 3.1.71
+
+-------------------------------------------------------------------
+Wed May 28 10:39:00 UTC 2014 - jreidinger@suse.com
+
+- split too wide urls for accepting GnuGP key (bnc#870822)
+- 3.1.70
+
+-------------------------------------------------------------------
+Wed May 28 10:00:17 UTC 2014 - lslezak@suse.cz
+
+- removed system verification check when yast module installs
+  required packages (bnc#866256)
+- 3.1.69
+
+-------------------------------------------------------------------
+Wed May 28 07:56:29 UTC 2014 - jreidinger@suse.com
+
+- save_y2logs: store also pbl.log from target system, if bootloader
+  installation failed (bnc#879622)
+- 3.1.68
+
+-------------------------------------------------------------------
+Fri May 23 12:35:42 CEST 2014 - locilka@suse.com
+
+- Added check for existence of /etc/modules.d/ directory in Kernel
+  library, the directory is created when missing (bnc#879428)
+- 3.1.67
+
+-------------------------------------------------------------------
+Fri May 23 09:06:28 UTC 2014 - mfilka@suse.com
+
+- bnc#879399
+  - offer /var/log/boot.log in SysLog module for view
+- 3.1.66
+
+-------------------------------------------------------------------
+Mon May 19 15:42:28 CEST 2014 - locilka@suse.com
+
+- Always using special InstallationProperties for systemd_unit
+  while called in first stage (bnc#878560)
+- 3.1.65
+
+-------------------------------------------------------------------
+Mon May 19 15:07:50 CEST 2014 - locilka@suse.com
+
+- Changed dialog label for updating/installing in SlideShow
+  depending on the selected method (bnc#874995)
+- 3.1.64
+
+-------------------------------------------------------------------
+Tue May 13 12:03:12 CEST 2014 - aschnell@suse.de
+
+- added error handing for viewing log files (bnc#876895)
 - 3.1.63
 
 -------------------------------------------------------------------

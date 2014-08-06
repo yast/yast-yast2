@@ -20,6 +20,28 @@ module Yast
       stub_services
     end
 
+    describe ".call" do
+      it "executes the command for the specified service" do
+        expect(Service.call('reload', 'sshd')).to be_true
+      end
+
+      it "returns false if the service has not been found" do
+        stub_services(:service=>'unknown')
+        expect(Service.call('restart', 'unknown')).to be_false
+      end
+
+      it "raises error if the command is not recognized" do
+        expect { Service.call('make-coffee', 'sshd') }.to raise_error
+      end
+
+      it "returns the result of the original result of the command call" do
+        expect(Service.call('status', 'sshd')).to be_kind_of(String)
+
+        stub_service_with(:"try_restart", false)
+        expect(Service.call('try-restart', "sshd")).to be_false
+      end
+    end
+
     describe ".Active" do
       it "returns true if a service is active" do
         expect(Service.Active('sshd')).to be_true

@@ -73,8 +73,10 @@ module Yast
       @filenames = Convert.to_string(
         SCR.Read(path(".target.string"), Ops.add(@vardir, "/filenames"))
       )
-      if @filenames == nil || Ops.less_or_equal(Builtins.size(@filenames), 0)
-        @filenames = "/var/log/boot.msg\n/var/log/messages\n"
+      if !@filenames || @filenames.empty?
+        @filenames = ""
+        @filenames << "/var/log/boot.log\n"
+        @filenames << "/var/log/messages\n"
       end
 
       # convert \n separated string to ycp list.
@@ -171,23 +173,31 @@ module Yast
       )
 
 
-      @file_contents = ""
       @go_on = true
 
       # wait until user clicks "OK"
       # check if ComboBox selected and change view accordingly
 
       while @go_on
-        # read file contents
-        @file_contents = Convert.to_string(
-          SCR.Read(path(".target.string"), @filename)
-        )
 
-        # Fill the LogView with file contents
-        UI.ChangeWidget(Id(:log), :Value, @file_contents)
+        # read file content
+        file_content = SCR.Read(path(".target.string"), @filename)
 
-        @heading = Builtins.sformat(_("System Log (%1)"), @filename)
-        UI.ChangeWidget(Id(:log), :Label, @heading)
+        if file_content == nil
+          file_content = _("File not found.")
+        end
+
+        # remove ANSI color escape sequences
+        file_content.gsub!(/\e\[(\d|;|\[)+m/, "")
+        # remove remaining ASCII control characters (ASCII 0-31 and 127 (DEL))
+        # (except new line, CR = 0xd)
+        file_content.tr!("\u0000-\u000c\u000e-\u001f\u007f", "")
+
+        # Fill the LogView with file content
+        UI.ChangeWidget(Id(:log), :Value, file_content)
+
+        heading = Builtins.sformat(_("System Log (%1)"), @filename)
+        UI.ChangeWidget(Id(:log), :Label, heading)
 
         # wait for user input
 
