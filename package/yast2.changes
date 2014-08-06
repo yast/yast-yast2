@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Aug  6 11:45:33 UTC 2014 - jsrain@suse.cz
+
+- read products from system (not repository) also during live
+  installation (bnc#889157)
+- 3.1.63
+
+-------------------------------------------------------------------
 Mon May 12 12:38:40 UTC 2014 - jsrain@suse.cz
 
 - avoid hiding release notes button when new wizard window is
