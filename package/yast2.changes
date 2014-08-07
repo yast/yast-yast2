@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Aug  7 12:14:16 UTC 2014 - locilka@suse.com
+
+- SuSEFirewall: Reading SuSEfirewall2 configuration whenever it's
+  possible instead of simply skipping it in Stage.initial - package
+  can be already available at the end of installation (bnc#887406)
+- 3.1.95
+
+-------------------------------------------------------------------
 Thu Aug  7 11:02:41 UTC 2014 - ancor@suse.com
 
 - Added two new generic 'waiting' messages, needed in yast-country

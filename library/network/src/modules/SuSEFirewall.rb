@@ -34,6 +34,10 @@ require "yast"
 
 module Yast
   class SuSEFirewallClass < Module
+    CONFIG_FILE = "/etc/sysconfig/SuSEfirewall2"
+
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -2460,17 +2464,9 @@ module Yast
         return @fw_service_can_be_configured
       end
 
-      # bnc #429861
-      if Stage.initial
-        Builtins.y2warning("Stage::initial -> firewall can't be configured.")
-        FillUpEmptyConfig()
-        return false
-      end
-
-      if !SuSEFirewallIsInstalled()
-        Builtins.y2warning(
-          "Package not installed, disabling SuSEfirewall2-related functions."
-        )
+      # bnc #887406
+      if !FileUtils.Exists(CONFIG_FILE) || !SuSEFirewallIsInstalled()
+        log.warn "No firewall config -> firewall can't be read"
         FillUpEmptyConfig()
         return false
       end
