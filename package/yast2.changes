@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Aug  7 11:02:41 UTC 2014 - ancor@suse.com
+
+- Added two new generic 'waiting' messages, needed in yast-country
+  to fix bnc#888804
+- 3.1.94
+
+-------------------------------------------------------------------
 Wed Aug  6 11:45:33 UTC 2014 - jsrain@suse.cz
 
 - read products from system (not repository) also during live

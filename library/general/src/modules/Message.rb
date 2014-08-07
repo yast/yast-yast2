@@ -260,6 +260,15 @@ module Yast
       _("Failed to install required packages.")
     end
 
+    def updating_configuration
+      # TRANSLATORS: Popup message
+      _("Updating system configuration...")
+    end
+
+    def takes_a_while
+      _("This may take a while.")
+    end
+
     publish :function => :CannotContinueWithoutPackagesInstalled, :type => "string ()"
     publish :function => :CannotStartService, :type => "string (string)"
     publish :function => :CannotRestartService, :type => "string (string)"
@@ -283,6 +292,8 @@ module Yast
     publish :function => :CannotReadCurrentSettings, :type => "string ()"
     publish :function => :SuSEConfigFailed, :type => "string ()"
     publish :function => :FailedToInstallPackages, :type => "string ()"
+    publish :function => :updating_configuration, :type => "string ()"
+    publish :function => :takes_a_while, :type => "string ()"
   end
 
   Message = MessageClass.new
