@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Aug 12 12:13:36 CEST 2014 - schubi@suse.de
+
+- When changing installation mode in "Mode.rb" the mode in Package.rb
+  has to be updated too. (bnc#888212)
+- 3.1.96
+
+-------------------------------------------------------------------
 Thu Aug  7 12:14:16 UTC 2014 - locilka@suse.com
 
 - SuSEFirewall: Reading SuSEfirewall2 configuration whenever it's
