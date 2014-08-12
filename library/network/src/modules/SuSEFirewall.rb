@@ -3897,6 +3897,7 @@ module Yast
     publish :function => :GetServicesAcceptRelated, :type => "list <string> (string)"
     publish :function => :SetServicesAcceptRelated, :type => "void (string, list <string>)"
     publish :function => :RemoveOldAllowedServiceFromZone, :type => "void (map <string, any>, string)", :private => true
+    publish :variable => :needed_packages_installed, :type => "boolean"
   end
 
   SuSEFirewall = SuSEFirewallClass.new
