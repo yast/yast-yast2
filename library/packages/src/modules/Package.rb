@@ -116,11 +116,18 @@ module Yast
         )
       }
 
-      @Functions = Mode.config ? @FunctionsAI : @FunctionsSystem
+      self.UpdateInstallationMode
 
       @last_op_canceled = false
 
       Yast.include self, "packages/common.rb"
+    end
+
+    # If Yast is running in the autoyast configuration mode
+    # no changes will be done on the target system by using
+    # the PackageAI class.
+    def UpdateInstallationMode
+      @Functions = Mode.config ? @FunctionsAI : @FunctionsSystem
     end
 
     # Install list of packages
