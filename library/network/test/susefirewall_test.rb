@@ -14,20 +14,25 @@ Yast.import "Stage"
 
 FW_PACKAGE = "SuSEfirewall2"
 
+def reset_SuSEFirewallIsInstalled_cache
+  Yast::SuSEFirewall.needed_packages_installed = nil
+end
+
 describe Yast::SuSEFirewall do
   describe "#SuSEFirewallIsInstalled" do
     before(:each) do
-      Yast::SuSEFirewall.needed_packages_installed = nil
+      reset_SuSEFirewallIsInstalled_cache
     end
 
     context "while in inst-sys" do
       it "returns whether SuSEfirewall2 is selected for installation" do
         expect(Yast::Stage).to receive(:stage).and_return("initial").at_least(:once)
-        expect(Yast::Pkg).to receive(:IsSelected).and_return(true).exactly(3).times
 
         # Value is not cached
+        expect(Yast::Pkg).to receive(:IsSelected).and_return(true, false, true).exactly(3).times
+
         expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
         expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
       end
     end
@@ -38,11 +43,17 @@ describe Yast::SuSEFirewall do
         expect(Yast::Mode).to receive(:mode).and_return("normal").at_least(:once)
 
         # Value is cached
-        expect(Yast::PackageSystem).to receive(:CheckAndInstallPackages).and_return(true).once
+        expect(Yast::PackageSystem).to receive(:CheckAndInstallPackages).and_return(true, false).twice
 
         expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
         expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
         expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
+
+        reset_SuSEFirewallIsInstalled_cache
+
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
       end
     end
 
@@ -52,7 +63,13 @@ describe Yast::SuSEFirewall do
         expect(Yast::Mode).to receive(:mode).and_return("autoinst_config").at_least(:once)
 
         # Value is cached
-        expect(Yast::PackageSystem).to receive(:Installed).and_return(true).once
+        expect(Yast::PackageSystem).to receive(:Installed).and_return(false, true).twice
+
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
+
+        reset_SuSEFirewallIsInstalled_cache
 
         expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
         expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
