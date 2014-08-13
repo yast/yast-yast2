@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Aug 12 16:35:30 CEST 2014 - locilka@suse.com
+
+- Fixed checking for SuSEfirewall2 package installed/selected
+  for installation depending on the current stage/mode (bnc#887406)
+- 3.1.97
+
+-------------------------------------------------------------------
 Tue Aug 12 12:13:36 CEST 2014 - schubi@suse.de
 
 - When changing installation mode in "Mode.rb" the mode in Package.rb

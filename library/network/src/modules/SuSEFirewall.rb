@@ -54,6 +54,7 @@ module Yast
       Yast.import "FileUtils"
       Yast.import "Directory"
       Yast.import "Stage"
+      Yast.import "Pkg"
 
       # <!-- SuSEFirewall VARIABLES //-->
 
@@ -1101,30 +1102,24 @@ module Yast
       nil
     end
 
-    # Returns whether all needed packages are installed.
+    # Returns whether all needed packages are installed (or selected for
+    # installation)
     #
     # @return [Boolean] whether SuSEfirewall2 is installed
     def SuSEFirewallIsInstalled
-      if @needed_packages_installed == nil
-        # In mode normal, package can be installed on request
-        # if required by the module
-        if @check_and_install_package && Mode.normal
-          @needed_packages_installed = PackageSystem.CheckAndInstallPackages(
-            [@FIREWALL_PACKAGE]
-          )
-          Builtins.y2milestone(
-            "CheckAndInstallPackages -> %1",
-            @needed_packages_installed
-          ) 
-          # In mode install/update network might be down
+      # Always recheck the status in inst-sys, user/solver might have change
+      # the list of packages selected for installation
+      if Stage.initial
+        @needed_packages_installed = Pkg.IsSelected(@FIREWALL_PACKAGE)
+        log.info "Selected for installation -> #{@needed_packages_installed}"
+      elsif @needed_packages_installed.nil?
+        if Mode.normal
+          @needed_packages_installed = PackageSystem.CheckAndInstallPackages([@FIREWALL_PACKAGE])
+          log.info "CheckAndInstallPackages -> #{@needed_packages_installed}"
         else
-          @needed_packages_installed = PackageSystem.Installed(
-            @FIREWALL_PACKAGE
-          )
-          Builtins.y2milestone("Installed -> %1", @needed_packages_installed)
+          @needed_packages_installed = PackageSystem.Installed(@FIREWALL_PACKAGE)
+          log.info "Installed -> #{@needed_packages_installed}"
         end
-      elsif @needed_packages_installed == false
-        Builtins.y2milestone("SuSEfirewall2 is not installed, skipping...")
       end
 
       @needed_packages_installed
@@ -3904,6 +3899,7 @@ module Yast
     publish :function => :GetServicesAcceptRelated, :type => "list <string> (string)"
     publish :function => :SetServicesAcceptRelated, :type => "void (string, list <string>)"
     publish :function => :RemoveOldAllowedServiceFromZone, :type => "void (map <string, any>, string)", :private => true
+    publish :variable => :needed_packages_installed, :type => "boolean"
   end
 
   SuSEFirewall = SuSEFirewallClass.new
