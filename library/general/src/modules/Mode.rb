@@ -90,8 +90,6 @@ module Yast
 
       textdomain "base"
 
-      Yast.import "Package"
-
       # Current mode
       @_mode = nil
 
@@ -185,9 +183,6 @@ module Yast
 
       Builtins.y2milestone("setting mode to %1", new_mode)
       @_mode = new_mode
-
-      # Update package manipulation mode
-      Package.UpdateInstallationMode
 
       nil
     end
