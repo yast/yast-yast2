@@ -31,10 +31,13 @@ require "yast"
 
 module Yast
   class SignatureCheckCallbacksClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
       Yast.import "SignatureCheckDialogs"
+      Yast.import "Pkg"
 
 
       # Default return when signatures shouldn't be checked
@@ -241,6 +244,21 @@ module Yast
       SignatureCheckDialogs.ImportGPGKeyIntoTrustedDialog(key, repo_id)
     end
 
+    # Alternative implementation of #ImportGpgKey, used during installation,
+    # that disables the repository if the key is not trusted and enables it
+    # otherwise (a single call to Pkg.ServiceRefresh asks the user several
+    # times for the same repository, last decision must prevail).
+    #
+    # zypp: askUserToImportKey
+    #
+    # function for CallbackImportGpgKey()
+    def import_gpg_key_or_disable(key, repo_id)
+      trusted = ImportGpgKey(key, repo_id)
+      log.info "Setting enabled to #{trusted} for repo #{repo_id}, due to user reply to ImportGpgKey"
+      Pkg.SourceSetEnabled(repo_id, trusted)
+      trusted
+    end
+
     # Name of the callback handler function. Required callback prototype is
     # boolean(string filename, map<string,any> key). The callback
     # function should ask user whether the unsigned file can be accepted,
@@ -299,6 +317,7 @@ module Yast
     publish :function => :AcceptUnknownDigest, :type => "boolean (string, string)"
     publish :function => :AcceptUnknownGpgKey, :type => "boolean (string, string, integer)"
     publish :function => :ImportGpgKey, :type => "boolean (map <string, any>, integer)"
+    publish :function => :import_gpg_key_or_disable, :type => "boolean (map <string, any>, integer)"
     publish :function => :AcceptVerificationFailed, :type => "boolean (string, map <string, any>, integer)"
     publish :function => :TrustedKeyAdded, :type => "void (map <string, any>)"
     publish :function => :TrustedKeyRemoved, :type => "void (map <string, any>)"

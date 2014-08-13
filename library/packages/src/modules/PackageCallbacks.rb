@@ -47,6 +47,7 @@ module Yast
       Yast.import "Directory"
       Yast.import "Label"
       Yast.import "Mode"
+      Yast.import "Stage"
       Yast.import "Popup"
       Yast.import "URL"
       Yast.import "CommandLine"
@@ -3149,9 +3150,12 @@ module Yast
             "boolean (string, string, integer)"
           )
         )
+        # During installation untrusted repositories are disabled to avoid
+        # asking again
+        gpg_callback = Stage.initial ? :import_gpg_key_or_disable : :ImportGpgKey
         Pkg.CallbackImportGpgKey(
           fun_ref(
-            SignatureCheckCallbacks.method(:ImportGpgKey),
+            SignatureCheckCallbacks.method(gpg_callback),
             "boolean (map <string, any>, integer)"
           )
         )
