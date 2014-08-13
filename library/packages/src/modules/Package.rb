@@ -116,8 +116,6 @@ module Yast
         )
       }
 
-      self.UpdateInstallationMode
-
       @last_op_canceled = false
 
       Yast.include self, "packages/common.rb"
@@ -126,8 +124,8 @@ module Yast
     # If Yast is running in the autoyast configuration mode
     # no changes will be done on the target system by using
     # the PackageAI class.
-    def UpdateInstallationMode
-      @Functions = Mode.config ? @FunctionsAI : @FunctionsSystem
+    def functions
+      Mode.config ? @FunctionsAI : @FunctionsSystem
     end
 
     # Install list of packages
@@ -136,7 +134,7 @@ module Yast
     def DoInstall(packages)
       packages = deep_copy(packages)
       function = Convert.convert(
-        Ops.get(@Functions, "DoInstall"),
+        Ops.get(functions, "DoInstall"),
         :from => "any",
         :to   => "boolean (list <string>)"
       )
@@ -149,7 +147,7 @@ module Yast
     def DoRemove(packages)
       packages = deep_copy(packages)
       function = Convert.convert(
-        Ops.get(@Functions, "DoRemove"),
+        Ops.get(functions, "DoRemove"),
         :from => "any",
         :to   => "boolean (list <string>)"
       )
@@ -164,7 +162,7 @@ module Yast
       toinstall = deep_copy(toinstall)
       toremove = deep_copy(toremove)
       function = Convert.convert(
-        Ops.get(@Functions, "DoInstallAndRemove"),
+        Ops.get(functions, "DoInstallAndRemove"),
         :from => "any",
         :to   => "boolean (list <string>, list <string>)"
       )
@@ -173,7 +171,7 @@ module Yast
 
     def Available(package)
       function = Convert.convert(
-        Ops.get(@Functions, "Available"),
+        Ops.get(functions, "Available"),
         :from => "any",
         :to   => "boolean (string)"
       )
@@ -182,7 +180,7 @@ module Yast
 
     def Installed(package)
       function = Convert.convert(
-        Ops.get(@Functions, "Installed"),
+        Ops.get(functions, "Installed"),
         :from => "any",
         :to   => "boolean (string)"
       )
@@ -191,7 +189,7 @@ module Yast
 
     def PackageAvailable(package)
       function = Convert.convert(
-        Ops.get(@Functions, "PackageAvailable"),
+        Ops.get(functions, "PackageAvailable"),
         :from => "any",
         :to   => "boolean (string)"
       )
@@ -200,7 +198,7 @@ module Yast
 
     def PackageInstalled(package)
       function = Convert.convert(
-        Ops.get(@Functions, "PackageInstalled"),
+        Ops.get(functions, "PackageInstalled"),
         :from => "any",
         :to   => "boolean (string)"
       )
@@ -210,7 +208,7 @@ module Yast
     def InstallKernel(kernel_modules)
       kernel_modules = deep_copy(kernel_modules)
       function = Convert.convert(
-        Ops.get(@Functions, "InstallKernel"),
+        Ops.get(functions, "InstallKernel"),
         :from => "any",
         :to   => "boolean (list <string>)"
       )
