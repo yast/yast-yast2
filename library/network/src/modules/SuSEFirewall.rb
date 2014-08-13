@@ -1107,6 +1107,8 @@ module Yast
     #
     # @return [Boolean] whether SuSEfirewall2 is installed
     def SuSEFirewallIsInstalled
+      # Always recheck the status in inst-sys, user/solver might have change
+      # the list of packages selected for installation
       if Stage.initial
         @needed_packages_installed = Pkg.IsSelected(@FIREWALL_PACKAGE)
         log.info "Selected for installation -> #{@needed_packages_installed}"
