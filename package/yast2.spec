@@ -1,7 +1,7 @@
 #
 # spec file for package yast2
 #
-# Copyright (c) 2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
+# Copyright (c) 2013-2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.1.99
+Version:        3.1.100
 Release:        0
 URL:            https://github.com/yast/yast-yast2
 
@@ -125,7 +125,7 @@ Requires:       yast2-ruby-bindings >= 1.0.0
 Summary:        YaST2 - Main Package
 
 %description
-This package contains scripts and data needed for SuSE Linux
+This package contains scripts and data needed for SUSE Linux
 installation with YaST2
 
 %package devel-doc
