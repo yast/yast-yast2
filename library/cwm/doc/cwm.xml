@@ -28,7 +28,7 @@
        <firstname>Jiri</firstname>
        <surname>Srain</surname>
     </author>
-    <copyright><year>2003</year><holder>SuSE Linux AG</holder></copyright>
+    <copyright><year>2003</year><holder>SUSE LLC</holder></copyright>
     <legalnotice id="id_legal">
       <para>This document is meant for YaST2 development only.</para>
     </legalnotice>
