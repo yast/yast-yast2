@@ -25,14 +25,19 @@ describe Yast::SuSEFirewall do
     end
 
     context "while in inst-sys" do
-      it "returns whether SuSEfirewall2 is selected for installation" do
+      it "returns whether SuSEfirewall2 is selected for installation or already installed" do
         expect(Yast::Stage).to receive(:stage).and_return("initial").at_least(:once)
 
         # Value is not cached
-        expect(Yast::Pkg).to receive(:IsSelected).and_return(true, false, true).exactly(3).times
+        expect(Yast::Pkg).to receive(:IsSelected).and_return(true, false, false).exactly(3).times
+        # Fallback: if not selected, checks whether the package is installed
+        expect(Yast::PackageSystem).to receive(:Installed).and_return(false, true).twice
 
+        # Selected
         expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
+        # Not selected and not installed
         expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
+        # Not selected, but installed
         expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
       end
     end

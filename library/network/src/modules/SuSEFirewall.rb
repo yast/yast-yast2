@@ -1109,9 +1109,10 @@ module Yast
     def SuSEFirewallIsInstalled
       # Always recheck the status in inst-sys, user/solver might have change
       # the list of packages selected for installation
+      # bnc#892935: in inst_finish, the package is already installed
       if Stage.initial
-        @needed_packages_installed = Pkg.IsSelected(@FIREWALL_PACKAGE)
-        log.info "Selected for installation -> #{@needed_packages_installed}"
+        @needed_packages_installed = Pkg.IsSelected(@FIREWALL_PACKAGE) || PackageSystem.Installed(@FIREWALL_PACKAGE)
+        log.info "Selected for installation/installed -> #{@needed_packages_installed}"
       elsif @needed_packages_installed.nil?
         if Mode.normal
           @needed_packages_installed = PackageSystem.CheckAndInstallPackages([@FIREWALL_PACKAGE])
