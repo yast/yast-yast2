@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Aug 21 13:29:52 CEST 2014 - locilka@suse.com
+
+- Fixed checking whether SuSEfirewall2 package is selected or
+  installed - in inst_finish, the package is already installed
+  (bnc#892935)
+- 3.1.101
+
+-------------------------------------------------------------------
 Wed Aug 20 10:11:10 CEST 2014 - locilka@suse.com
 
 - Fixed RPM description (bnc#888994)
