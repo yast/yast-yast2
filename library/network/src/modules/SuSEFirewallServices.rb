@@ -65,6 +65,9 @@ module Yast
 
     IGNORED_SERVICES = ["TEMPLATE", "..", "."]
 
+    TEMPLATE_SERVICE_NAME = "template service"
+    TEMPLATE_SERVICE_DESCRIPTION = "opens ports for foo in order to allow bar"
+
     def main
       textdomain "base"
 
@@ -312,6 +315,8 @@ module Yast
           "comments" => [
             # jail followed by anything but jail (immediately)
             "^[ \t]*#[^#].*$",
+            # comments that are not commented key:value pairs (see "params")
+            "^[ \t]*##[^([a-zA-Z0-9_]+:.*)]*$",
             # jail alone
             "^[ \t]*\#$",
             # (empty space)
@@ -320,7 +325,9 @@ module Yast
             "^[ \t]*[a-zA-Z0-9_]+.*"
           ],
           "params"   => [
-            { "match" => ["^##[ \t]*([^:]+):[ \t]*(.*)[ \t]*$", "%s: %s"] }
+            # commented key:value pairs
+            # e.g.: ## Name: service name
+            { "match" => ["^##[ \t]*([a-zA-Z0-9_]+):[ \t]*(.*)[ \t]*$", "%s: %s"] }
           ]
         }
       )
@@ -434,9 +441,17 @@ module Yast
                 )
               )
             )
-            next if definition.nil? || definition == ""
+            next if definition.nil? || definition.empty?
             # call gettext to translate the metadata
             @services[service_name][metadata_key] = Builtins.dgettext(SERVICES_TEXTDOMAIN, definition)
+
+            # bnc#893583: Sanitize metadata, do not allow using texts from template service
+            case metadata_key
+            when "name"
+              @services[service_name][metadata_key] = filename if definition == TEMPLATE_SERVICE_NAME
+            when "description"
+              @services[service_name][metadata_key] = "" if definition == TEMPLATE_SERVICE_DESCRIPTION
+            end
           end
 
           SCR.UnregisterAgent(path(".firewall_service_metadata"))
