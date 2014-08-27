@@ -370,6 +370,7 @@ module Yast
     #
     # @return [Boolean] if successful
     def ReadServicesDefinedByRPMPackages
+      log.info "Reading SuSEfirewall2 services from #{SERVICES_DIR}"
       @services ||= {}
 
       if !FileUtils.Exists(SERVICES_DIR) ||
@@ -462,6 +463,8 @@ module Yast
           log.error "Cannot register agent for #{filefullpath} (metadata)"
         end
       end
+
+      log.info "Services found: #{@services.keys.sort}"
 
       true
     end

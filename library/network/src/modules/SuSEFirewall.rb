@@ -2480,7 +2480,7 @@ module Yast
         Progress.New(
           read_caption,
           " ",
-          4,
+          3,
           [
             # TRANSLATORS: Progress step
             _("Check for network devices"),
@@ -2488,8 +2488,6 @@ module Yast
             _("Read current configuration"),
             # TRANSLATORS: Progress step
             _("Check possibly conflicting services"),
-            # TRANSLATORS: Progress step
-            _("Read dynamic definitions of installed services")
           ],
           [
             # TRANSLATORS: Progress step
@@ -2498,8 +2496,6 @@ module Yast
             _("Reading current configuration..."),
             # TRANSLATORS: Progress step
             _("Checking possibly conflicting services..."),
-            # TRANSLATORS: Progress step
-            _("Reading dynamic definitions of installed services..."),
             Message.Finished
           ],
           ""
@@ -2542,10 +2538,6 @@ module Yast
       )
       # to read configuration only once
       @configuration_has_been_read = true
-
-      Progress.NextStage if have_progress
-
-      SuSEFirewallServices.ReadServicesDefinedByRPMPackages
 
       Progress.NextStage if have_progress
 
