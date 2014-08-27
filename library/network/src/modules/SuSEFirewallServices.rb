@@ -65,6 +65,9 @@ module Yast
 
     IGNORED_SERVICES = ["TEMPLATE", "..", "."]
 
+    TEMPLATE_SERVICE_NAME = "template service"
+    TEMPLATE_SERVICE_DESCRIPTION = "opens ports for foo in order to allow bar"
+
     def main
       textdomain "base"
 
@@ -312,15 +315,22 @@ module Yast
           "comments" => [
             # jail followed by anything but jail (immediately)
             "^[ \t]*#[^#].*$",
+            # comments that are not commented key:value pairs (see "params")
+            # they always use two jails
+            "^[ \t]*##[ \t]*[^([a-zA-Z0-9_]+:.*)]$",
+            # comments with three jails and more
+            "^[ \t]*###.*$",
             # jail alone
-            "^[ \t]*\#$",
+            "^[ \t]*#[ \t]*$",
             # (empty space)
             "^[ \t]*$",
             # sysconfig entries
             "^[ \t]*[a-zA-Z0-9_]+.*"
           ],
           "params"   => [
-            { "match" => ["^##[ \t]*([^:]+):[ \t]*(.*)[ \t]*$", "%s: %s"] }
+            # commented key:value pairs
+            # e.g.: ## Name: service name
+            { "match" => ["^##[ \t]*([a-zA-Z0-9_]+):[ \t]*(.*)[ \t]*$", "%s: %s"] }
           ]
         }
       )
@@ -360,6 +370,7 @@ module Yast
     #
     # @return [Boolean] if successful
     def ReadServicesDefinedByRPMPackages
+      log.info "Reading SuSEfirewall2 services from #{SERVICES_DIR}"
       @services ||= {}
 
       if !FileUtils.Exists(SERVICES_DIR) ||
@@ -434,9 +445,17 @@ module Yast
                 )
               )
             )
-            next if definition.nil? || definition == ""
+            next if definition.nil? || definition.empty?
             # call gettext to translate the metadata
             @services[service_name][metadata_key] = Builtins.dgettext(SERVICES_TEXTDOMAIN, definition)
+
+            # bnc#893583: Sanitize metadata, do not allow using texts from template service
+            case metadata_key
+            when "name"
+              @services[service_name][metadata_key] = filename if definition == TEMPLATE_SERVICE_NAME
+            when "description"
+              @services[service_name][metadata_key] = "" if definition == TEMPLATE_SERVICE_DESCRIPTION
+            end
           end
 
           SCR.UnregisterAgent(path(".firewall_service_metadata"))
@@ -444,6 +463,8 @@ module Yast
           log.error "Cannot register agent for #{filefullpath} (metadata)"
         end
       end
+
+      log.info "Services found: #{@services.keys.sort}"
 
       true
     end
