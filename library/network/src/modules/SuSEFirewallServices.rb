@@ -316,9 +316,12 @@ module Yast
             # jail followed by anything but jail (immediately)
             "^[ \t]*#[^#].*$",
             # comments that are not commented key:value pairs (see "params")
-            "^[ \t]*##[^([a-zA-Z0-9_]+:.*)]*$",
+            # they always use two jails
+            "^[ \t]*##[ \t]*[^([a-zA-Z0-9_]+:.*)]$",
+            # comments with three jails and more
+            "^[ \t]*###.*$",
             # jail alone
-            "^[ \t]*\#$",
+            "^[ \t]*#[ \t]*$",
             # (empty space)
             "^[ \t]*$",
             # sysconfig entries
