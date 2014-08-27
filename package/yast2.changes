@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Wed Aug 27 13:24:34 CEST 2014 - locilka@suse.com
+
+- Lazy-loading SuSEfirewall2 services - some new services can be
+  added when Yast is already running, and the config has been read
+  already (bnc#872960)
+- Preventing from showing incorrect service name or description if
+  they are coming from TEMPLATE file (bnc#893583)
+- Fixed service file parsing - comments starting with more than one
+  '#' characters were reported as unexpected input (just warning)
+- 3.1.102
+
+-------------------------------------------------------------------
 Thu Aug 21 13:29:52 CEST 2014 - locilka@suse.com
 
 - Fixed checking whether SuSEfirewall2 package is selected or
