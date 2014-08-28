@@ -22,7 +22,8 @@ DEBUG "DEBUG\n";
 # Automake invokes dejagnu with an absolute srcdir :(
 # This will replace the current directory in file names by "./"
 # Turn it on only in old testsuite
-my $strip = defined ($ENV{'Y2ALLGLOBAL'}) and $ENV{'Y2ALLGLOBAL'} eq "1";
+# TODO remove all this stuff when we drop old testsuite in yast2-inetd
+my $strip = defined($ENV{'Y2ALLGLOBAL'}) && ($ENV{'Y2ALLGLOBAL'} eq "1");
 my $pwd;
 if ($strip)
 {
@@ -480,13 +481,13 @@ sub parse_service ($)
 	    {
 		if (/^\s*include\s+(\S+)/)
 		{
-                    my $ipath = File::Spec->canonpath(File::Spec->catfile($main::root, $1));
+                    my $ipath = $strip ? $1 : File::Spec->canonpath(File::Spec->catfile($main::root, $1));
 		    $class->parse_file ($ipath);
 		    $reclineno = 0;
 		}
 		elsif (/^\s*includedir\s+(\S+)/)
 		{
-                    my $ipath = File::Spec->canonpath(File::Spec->catfile($main::root, $1));
+                    my $ipath = $strip ? $1 : File::Spec->canonpath(File::Spec->catfile($main::root, $1));
 		    $class->include_dir ($ipath);
 		    # Bug 24270:
 		    # the include directive must not belong
@@ -698,7 +699,7 @@ while ( <STDIN> )
       $root = shift @arguments;
       y2milestone("Set root to '$root'");
       my $fn = shift @arguments || "/etc/$netd.conf";
-      $fn = File::Spec->canonpath(File::Spec->catfile($root, $fn));
+      $fn = File::Spec->canonpath(File::Spec->catfile($root, $fn)) unless $strip;
 
       $base_file = strip_pwd ($fn);
       next;
@@ -710,7 +711,7 @@ while ( <STDIN> )
 	print "\n";
 	$netd = ($command eq "Xinetd")? "xinetd": "inetd";
 	my $fn = shift @arguments || "/etc/$netd.conf";
-        $fn = File::Spec->canonpath(File::Spec->catfile($root, $fn));
+        $fn = File::Spec->canonpath(File::Spec->catfile($root, $fn)) unless $strip;
 
 	$base_file = strip_pwd ($fn);
 
