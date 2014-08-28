@@ -21,8 +21,8 @@ DEBUG "DEBUG\n";
 # Testsuite hack:
 # Automake invokes dejagnu with an absolute srcdir :(
 # This will replace the current directory in file names by "./"
-# Turn it off by -n
-my $strip = ! (defined ($ARGV[0]) && $ARGV[0] =~ "^-.*n");
+# Turn it on only in old testsuite
+my $strip = defined ($ENV{'Y2ALLGLOBAL'}) and $ENV{'Y2ALLGLOBAL'} eq "1";
 my $pwd;
 if ($strip)
 {
@@ -697,6 +697,10 @@ while ( <STDIN> )
       ycp::Return(undef);
       $root = shift @arguments;
       y2milestone("Set root to '$root'");
+      my $fn = shift @arguments || "/etc/$netd.conf";
+      $fn = File::Spec->canonpath(File::Spec->catfile($root, $fn));
+
+      $base_file = strip_pwd ($fn);
       next;
     }
     if ($command =~ "Netd|Inetd|Xinetd")
