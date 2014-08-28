@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Aug 28 11:17:16 UTC 2014 - jreidinger@suse.com
+
+- fix using changed root in netd agent so it can be used in
+  installation (bnc#893965)
+- 3.1.103
+
+-------------------------------------------------------------------
 Wed Aug 27 13:24:34 CEST 2014 - locilka@suse.com
 
 - Lazy-loading SuSEfirewall2 services - some new services can be
