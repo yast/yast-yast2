@@ -7,6 +7,8 @@
 use ycp;
 use strict;
 use File::Basename;
+use File::Spec;
+
 
 my $debug = defined ($ARGV[0]) && $ARGV[0] =~ "^-.*d";
 
@@ -19,8 +21,9 @@ DEBUG "DEBUG\n";
 # Testsuite hack:
 # Automake invokes dejagnu with an absolute srcdir :(
 # This will replace the current directory in file names by "./"
-# Turn it off by -n
-my $strip = ! (defined ($ARGV[0]) && $ARGV[0] =~ "^-.*n");
+# Turn it on only in old testsuite
+# TODO remove all this stuff when we drop old testsuite in yast2-inetd
+my $strip = defined($ENV{'Y2ALLGLOBAL'}) && ($ENV{'Y2ALLGLOBAL'} eq "1");
 my $pwd;
 if ($strip)
 {
@@ -478,12 +481,14 @@ sub parse_service ($)
 	    {
 		if (/^\s*include\s+(\S+)/)
 		{
-		    $class->parse_file ($1);
+                    my $ipath = $strip ? $1 : File::Spec->canonpath(File::Spec->catfile($main::root, $1));
+		    $class->parse_file ($ipath);
 		    $reclineno = 0;
 		}
 		elsif (/^\s*includedir\s+(\S+)/)
 		{
-		    $class->include_dir ($1);
+                    my $ipath = $strip ? $1 : File::Spec->canonpath(File::Spec->catfile($main::root, $1));
+		    $class->include_dir ($ipath);
 		    # Bug 24270:
 		    # the include directive must not belong
 		    # to the following service
@@ -675,6 +680,7 @@ package main;
 my $netd;
 # if reading fails, defaulting to no services
 @services = ();
+our $root = "/";
 
 while ( <STDIN> )
 {
@@ -687,6 +693,17 @@ while ( <STDIN> )
     }
 
     my ($command, @arguments) = ycp::ParseTerm ($_);
+    if ($command eq "SetRoot")
+    {
+      ycp::Return(undef);
+      $root = shift @arguments;
+      y2milestone("Set root to '$root'");
+      my $fn = shift @arguments || "/etc/$netd.conf";
+      $fn = File::Spec->canonpath(File::Spec->catfile($root, $fn)) unless $strip;
+
+      $base_file = strip_pwd ($fn);
+      next;
+    }
     if ($command =~ "Netd|Inetd|Xinetd")
     {
 	# reply to the client (this actually gets eaten by the ScriptingAgent)
@@ -694,6 +711,7 @@ while ( <STDIN> )
 	print "\n";
 	$netd = ($command eq "Xinetd")? "xinetd": "inetd";
 	my $fn = shift @arguments || "/etc/$netd.conf";
+        $fn = File::Spec->canonpath(File::Spec->catfile($root, $fn)) unless $strip;
 
 	$base_file = strip_pwd ($fn);
 
