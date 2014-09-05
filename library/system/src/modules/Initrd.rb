@@ -39,6 +39,8 @@ require "yast"
 
 module Yast
   class InitrdClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
 
@@ -138,7 +140,7 @@ module Yast
             :from => "list",
             :to   => "list <string>"
           )
-        end 
+        end
         # currently no disk controller modules are known to fail in initrd (bnc#719696), list removed
       end
       deep_copy(@modules_to_skip)
@@ -195,6 +197,9 @@ module Yast
     # @param [String] modname name of module
     # @param [String] modargs arguments to be passes to module
     def AddModule(modname, modargs)
+      log.warn "Initrd.AddModule() is deprecated, do not use (sysconfig.kernel.INITRD_MODULES " \
+        "is not written anymore, see bnc#895084)"
+
       if Stage.initial && Builtins.size(@modules) == 0
         tmp_mods = Convert.to_string(
           SCR.Read(path(".etc.install_inf.InitrdModules"))
@@ -372,10 +377,12 @@ module Yast
         path(".target.bash"),
         "/usr/bin/touch /etc/sysconfig/bootloader"
       )
+
+      # TODO FIXME: the modules are not written, remove them completely,
+      # for now just log them without any change
       mods = Builtins.mergestring(ListModules(), " ")
-      Builtins.y2milestone("Writing modules %1", mods)
-      SCR.Write(path(".sysconfig.kernel.INITRD_MODULES"), mods)
-      SCR.Write(path(".sysconfig.kernel"), nil)
+      log.warn "Ignoring configured kernel modules: #{mods}" unless mods.empty?
+
       # recreate initrd
       param = ""
       if @splash != "" && @splash != nil &&
