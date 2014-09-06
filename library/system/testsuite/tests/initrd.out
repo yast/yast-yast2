@@ -10,6 +10,7 @@ Return	["reiserfs", "lvmmod"]
 Dump	Reseting again
 Return	nil
 Dump	Adding ne2k
+Log	Initrd.AddModule() is deprecated, do not use (sysconfig.kernel.INITRD_MODULES is not written anymore, see bnc#895084)
 Read	.target.size "/etc/sysconfig/kernel" 0
 Read	.sysconfig.kernel.INITRD_MODULES "reiserfs lvmmod"
 Return	nil
@@ -23,8 +24,7 @@ Write	.modules nil true
 Read	.target.size "/etc/sysconfig/kernel" 0
 Read	.sysconfig.kernel.INITRD_MODULES "reiserfs lvmmod"
 Execute	.target.bash "/usr/bin/touch /etc/sysconfig/bootloader" 0
-Write	.sysconfig.kernel.INITRD_MODULES "reiserfs ne2k" true
-Write	.sysconfig.kernel nil true
+Log	Ignoring configured kernel modules: reiserfs ne2k
 Execute	.target.bash "/sbin/mkinitrd   >> /var/log/YaST2/y2logmkinitrd 2>&1" 0
 Return	true
 Dump	Importing with filtered module
@@ -35,8 +35,7 @@ Dump	Writing
 Read	.target.size "/etc/sysconfig/kernel" 0
 Read	.sysconfig.kernel.INITRD_MODULES "reiserfs lvmmod"
 Execute	.target.bash "/usr/bin/touch /etc/sysconfig/bootloader" 0
-Write	.sysconfig.kernel.INITRD_MODULES "ne2k xfs_dmapi xfs_support lvmmod" true
-Write	.sysconfig.kernel nil true
+Log	Ignoring configured kernel modules: ne2k xfs_dmapi xfs_support lvmmod
 Execute	.target.bash "/sbin/mkinitrd   >> /var/log/YaST2/y2logmkinitrd 2>&1" 0
 Return	true
 Dump	Setting Mode::Update
@@ -49,8 +48,7 @@ Dump	Writing
 Read	.target.size "/etc/sysconfig/kernel" 0
 Read	.sysconfig.kernel.INITRD_MODULES "reiserfs lvmmod"
 Execute	.target.bash "/usr/bin/touch /etc/sysconfig/bootloader" 0
-Write	.sysconfig.kernel.INITRD_MODULES "ne2k lvmmod" true
-Write	.sysconfig.kernel nil true
+Log	Ignoring configured kernel modules: ne2k lvmmod
 Execute	.target.bash "/sbin/mkinitrd   >> /var/log/YaST2/y2logmkinitrd 2>&1" 0
 Return	true
 Dump	Resetting for installation test
@@ -58,8 +56,11 @@ Return	nil
 Return	nil
 Return	nil
 Dump	Testing keeping installation order
+Log	Initrd.AddModule() is deprecated, do not use (sysconfig.kernel.INITRD_MODULES is not written anymore, see bnc#895084)
 Read	.etc.install_inf.InitrdModules "driver1 driver2 driver3"
 Return	nil
+Log	Initrd.AddModule() is deprecated, do not use (sysconfig.kernel.INITRD_MODULES is not written anymore, see bnc#895084)
 Return	nil
+Log	Initrd.AddModule() is deprecated, do not use (sysconfig.kernel.INITRD_MODULES is not written anymore, see bnc#895084)
 Return	nil
 Return	["driver2", "driver3", "ne2k"]
