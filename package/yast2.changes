@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Sep 16 12:58:53 UTC 2014 - ancor@suse.com
+
+- Added an extra help message when authentication against a
+  registration server fails while refreshing repositories
+  (bnc#895719)
+- 3.1.106
+
+-------------------------------------------------------------------
 Fri Sep  5 14:32:23 UTC 2014 - lslezak@suse.cz
 
 - do not write /etc/sysconfig/kernel:INITRD_MODULES, it has been
