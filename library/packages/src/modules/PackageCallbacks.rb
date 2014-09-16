@@ -32,6 +32,7 @@
 # $Id$
 #
 require "yast"
+require "uri"
 
 module Yast
   class PackageCallbacksClass < Module
@@ -2538,6 +2539,23 @@ module Yast
 
 
     def Authentication(url, msg, username, password)
+
+      # FIXME after SLE12 release
+      # The following 'if' block is a workaround for bnc#895719 that should be
+      # extracted to a proper private method (not sure if it will work as
+      # expected being a callback) and adapted to use normal _() instead of
+      # dgettext()
+      url_query = URI(url).query
+      if url_query
+        url_params = Hash[URI.decode_www_form(url_query)]
+        if url_params.has_key?("credentials")
+          # Seems to be the url of a registration server, so add the tip to msg
+          tip = Builtins.dgettext("registration",
+                                  "Check that this system is known to the registration server.")
+          msg = "#{tip}\n#{msg}"
+        end
+      end
+
       popup = VBox(
         HSpacing(50), # enforce width
         VSpacing(0.1),
