@@ -2,7 +2,7 @@
 Wed Sep 17 08:16:51 UTC 2014 - jsrain@suse.cz
 
 - change order in mode initialization so that selected Upgrade
-  entry in boot menu does not override AutoUpgrade (bnc897044)
+  entry in boot menu does not override AutoUpgrade (bnc#897044)
 - 3.1.108
 
 -------------------------------------------------------------------
