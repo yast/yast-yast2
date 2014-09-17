@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 17 09:16:23 CEST 2014 - schubi@suse.de
+
+- Checking nil for repository name. (bnc#896466)
+- 3.1.107
+
+-------------------------------------------------------------------
 Tue Sep 16 12:58:53 UTC 2014 - ancor@suse.com
 
 - Added an extra help message when authentication against a
