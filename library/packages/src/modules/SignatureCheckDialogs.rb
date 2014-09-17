@@ -974,7 +974,7 @@ module Yast
             "(%2):"
         ),
         Ops.get_locale(repo, "name", _("Unknown")),
-        repo["url"] ? repo["url"].scan(/.{1,59}/).join("\n") :
+        repo && repo["url"] ? repo["url"].scan(/.{1,59}/).join("\n") :
           _("Unknown")
       )
 
