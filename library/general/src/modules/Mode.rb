@@ -140,12 +140,12 @@ module Yast
         repair = SCR.Read(path(".etc.install_inf.Repair")) != nil
         @_mode = "repair" if repair
 
+        update = SCR.Read(path(".etc.install_inf.Upgrade")) != nil
+        @_mode = "update" if update
+
         # FIXME according to what Linuxrc really writes
         autoupgrade = SCR.Read(path(".etc.install_inf.AutoUpgrade")) != nil
         @_mode = "autoupgrade" if autoupgrade
-
-        update = SCR.Read(path(".etc.install_inf.Upgrade")) != nil
-        @_mode = "update" if update
       end
 
       nil
