@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Sep 17 08:16:51 UTC 2014 - jsrain@suse.cz
+
+- change order in mode initialization so that selected Upgrade
+  entry in boot menu does not override AutoUpgrade (bnc#897044)
+- 3.1.108
+
+-------------------------------------------------------------------
 Wed Sep 17 09:16:23 CEST 2014 - schubi@suse.de
 
 - Checking nil for repository name. (bnc#896466)
