@@ -1,4 +1,4 @@
-#! /usr/bin/rspec
+#!/usr/bin/env rspec
 
 top_srcdir = File.expand_path("../../../..", __FILE__)
 inc_dirs = Dir.glob("#{top_srcdir}/library/*/src")
