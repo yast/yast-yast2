@@ -1,4 +1,4 @@
-#! /usr/bin/rspec
+#!/usr/bin/env rspec
 
 require "yast"
 

@@ -1,4 +1,4 @@
-#! /usr/bin/rspec
+#!/usr/bin/env rspec
 
 require File.expand_path("../test_helper.rb", __FILE__)
 
