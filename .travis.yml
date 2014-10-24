@@ -5,9 +5,10 @@ before_install:
     - curl http://download.opensuse.org/repositories/YaST:/Head:/Travis/xUbuntu_12.04/Release.key | sudo apt-key add -
     - echo "deb http://download.opensuse.org/repositories/YaST:/Head:/Travis/xUbuntu_12.04/ ./" | sudo tee -a /etc/apt/sources.list
     - sudo apt-get update -q
-    - sudo apt-get install --no-install-recommends -y yast2-core yast2-devtools yast2-testsuite yast2-ruby-bindings yast2 yast2-pkg-bindings ruby-rspec
+    - sudo apt-get install --no-install-recommends -y yast2-core yast2-devtools yast2-testsuite yast2-ruby-bindings yast2 yast2-pkg-bindings
     # disable rvm, use system Ruby
     - rvm reset
+    - sudo gem install rspec:2.14.1
 script:
     - make -f Makefile.cvs
     - make
