@@ -69,14 +69,6 @@ function check_qt()
 }
 
 #
-# check if the gtk plugin and all necessary libraries are present
-#
-function check_gtk()
-{
-    check_libyui_plugin gtk || check_plugin libpy2gtk.so.2 "the gtk frontend"
-}
-
-#
 # check if the ncurses plugin and all necessary libraries are present
 #
 function check_ncurses()
@@ -133,18 +125,6 @@ function set_inst_qt_env()
 function clr_inst_qt_env()
 {
     rm -rf /tmp/.qt/
-}
-
-
-function set_inst_gtk_env()
-{
-    export XCURSOR_THEME="DMZ"
-}
-
-
-function clr_inst_gtk_env()
-{
-    :
 }
 
 
