@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Oct 31 07:10:48 UTC 2014 - jreidinger@suse.com
+
+- do not crash for non-english locale if log file does not exist
+  (bnc#898204)
+- 3.1.109
+
+-------------------------------------------------------------------
 Wed Sep 17 08:16:51 UTC 2014 - jsrain@suse.cz
 
 - change order in mode initialization so that selected Upgrade
