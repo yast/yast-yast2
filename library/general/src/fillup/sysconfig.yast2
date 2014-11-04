@@ -4,7 +4,7 @@
 
 ## Path: System/Yast2/GUI
 ## Description: Default UI for YaST
-## Type: list(auto,qt,gtk)
+## Type: list(auto,qt)
 ## Default: "auto"
 # Default control center for YaST
 # selects the control-center implementation to be used
@@ -13,13 +13,12 @@
 #       presence and adapt accordingly
 WANTED_SHELL="auto"
 
-## Type: list(auto,qt,gtk,ncurses)
+## Type: list(auto,qt,ncurses)
 ## Default: "auto"
 # Default UI backend for YaST
 # selects the GUI plugin to be used to render yast widgets
 # auto: will attempt to detect both desktop & plugin
-#       presence and adapt accordingly, falling back to
-#       qt rendering if gtk is not present
+#       presence and adapt accordingly
 WANTED_GUI="auto"
 
 ## Type: string(linux,xterm,rxvt,mono,inverted,highcontrast,braille)
