@@ -12,8 +12,9 @@
 
     import "Directory";
     import "Mode";
-    import "Stage";
+    import "Popup";
     import "Report";
+    import "Stage";
     import "String";
     import "TypeRepository";
     import "XML";
@@ -812,7 +813,7 @@
      *
      *  @param cmdlineinfo		the map describing the module command line
      *  @param args			arguments given by the user on the command line
-     *  @return boolean		true, if there are some commands to be processed
+     *  @return boolean		true, if there are some commands to be processed (and cmdlineinfo passes sanity checks)
      *  @see Command
      */
     global define boolean Init (map cmdlineinfo, list<any> args) ``{
