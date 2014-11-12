@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Nov 12 14:04:51 UTC 2014 - lslezak@suse.cz
+
+- removed RegistrationStatus.pm module (obsolete, not supported
+  by the new SCC registration)
+- 3.1.110
+
+-------------------------------------------------------------------
 Fri Oct 31 07:10:48 UTC 2014 - jreidinger@suse.com
 
 - do not crash for non-english locale if log file does not exist
