@@ -65,8 +65,6 @@ Requires:       yast2-xml yast2-hardware-detection
 Requires:       yast2-perl-bindings
 # for ag_anyxml
 Requires:       perl-XML-Simple
-# RegistrationStatus.pm
-Requires:       perl-XML-XPath
 # for GPG.ycp
 Requires:       gpg2
 # for Punycode.ycp (bnc#651893)
@@ -86,9 +84,6 @@ Conflicts:      yast2-sshd < 2.16.1
 
 # moved ag_content agent 
 Conflicts:      yast2-instserver <= 2.16.3
-
-# moved RegistrationStatus.pm here from wagon (fate#312712)
-Conflicts:      yast2-wagon <= 2.22.2
 
 # InstError
 Conflicts:      yast2-installation < 2.18.5
