@@ -30,9 +30,12 @@
 # $Id$
 require "yast"
 require "resolv"
+require 'ipaddr'
 
 module Yast
   class IPClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -59,9 +62,12 @@ module Yast
     # @param [String] ip IPv4 address
     # @return true if correct
     def Check4(ip)
-      return false if ip == nil
-
-      !Resolv::IPv4::Regex.match(ip).nil?
+      begin
+        IPAddr.new(ip).ipv4?
+      rescue
+        log.error "Not a valid IPv4: #{ip}"
+        return false
+      end
     end
 
     # Describe a valid IPv6 address
@@ -79,22 +85,11 @@ module Yast
     # @param [String] ip IPv6 address
     # @return true if correct
     def Check6(ip)
-      return false if ip == nil
-
-      res = !Resolv::IPv6::Regex.match(ip).nil?
-
-      # workaround for compressed address as it is hard to check correct number
-      # in compressed ip using regexp only
-      if res && ip.include?("::")
-        prefix, suffix = ip.split("::")
-        elements = prefix.split(":")
-        contain_ipv4 = ip.include? "."
-        elements += suffix.split(":") if suffix
-        max_elements = contain_ipv4 ? 6 : 7
-        return elements.size <= max_elements
+      begin
+        IPAddr.new(ip).ipv6?
+      rescue
+        return false
       end
-
-      return res
     end
 
     # If param contains IPv6 in one of its various forms, extracts it.
@@ -151,20 +146,15 @@ module Yast
     # @return ip address as integer
     def ToInteger(ip)
       return nil unless Check4(ip)
-
-      parts = ip.split(".")
-      parts.reduce(0) {|r, p| (r << 8) + p.to_i }
+      IPAddr.new(ip).to_i
     end
 
     # Convert IPv4 address from integer to string
     # @param [Fixnum] ip IPv4 address
     # @return ip address as string
     def ToString(ip)
-      parts = [16777216, 65536, 256, 1].map do |b|
-        (ip / b) & 255
-      end
-
-      parts.join(".")
+      return nil unless Check4(ip)
+      IPAddr.new(ip).to_s
     end
 
     # Converts IPv4 address from string to hex format
@@ -175,10 +165,7 @@ module Yast
     def ToHex(ip)
       int = ToInteger(ip)
       return nil unless int
-
-      hex = int.to_s(16)
-
-      ("0" * (8 - hex.size)) + hex.upcase
+      "%08X" % int
     end
 
     # Compute IPv4 network address from ip4 address and network mask.
@@ -216,16 +203,12 @@ module Yast
     #     IPv4ToBits("80.25.135.2")    -> "01010000000110011000011100000010"
     #     IPv4ToBits("172.24.233.211") -> "10101100000110001110100111010011"
     def IPv4ToBits(ipv4)
-      unless Check4(ipv4)
-        Builtins.y2error("Not a valid IPv4: %1", ipv4)
-        return nil
-      end
-
-      bits = ToInteger(ipv4).to_s(2)
-      "0" * (32 - bits.size) + bits
+      int = ToInteger(ipv4)
+      return nil unless int
+      "%032b" % int
     end
 
-    # Converts 32 bit binary number to its IPv4 repserentation.
+    # Converts 32 bit binary number to its IPv4 representation.
     #
     # @param string binary
     # @return [String] ipv4
@@ -236,15 +219,6 @@ module Yast
     #     BitsToIPv4("10111100000110001110001100000101") -> "188.24.227.5"
     #     BitsToIPv4("00110101000110001110001001100101") -> "53.24.226.101"
     def BitsToIPv4(bits)
-      if Builtins.size(bits) != 32
-        Builtins.y2error("Not a valid IPv4 in Bits: %1", bits)
-        return nil
-      end
-      if !Builtins.regexpmatch(bits, "^[01]+$")
-        Builtins.y2error("Not a valid IPv4 in Bits: %1", bits)
-        return nil
-      end
-
       ToString(bits.to_i(2))
     end
 
