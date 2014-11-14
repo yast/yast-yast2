@@ -5,8 +5,10 @@ before_install:
     # disable rvm, use system Ruby
     - rvm reset
     - wget https://raw.githubusercontent.com/yast/yast-devtools/SLE-12-GA/travis-tools/travis_setup.sh
-    - sh ./travis_setup.sh -p "yast2-core yast2-devtools yast2-testsuite yast2-ruby-bindings yast2 yast2-pkg-bindings" -g rspec:2.14.1
+    - sh ./travis_setup.sh -p "rake yast2-core yast2-devtools yast2-testsuite yast2-ruby-bindings yast2 yast2-pkg-bindings" -g "rspec:2.14.1 yast-rake gettext"
 script:
+    - rake check:syntax
+    - rake check:pot
     - make -f Makefile.cvs
     - make
     - sudo make install
