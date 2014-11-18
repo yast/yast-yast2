@@ -134,7 +134,7 @@ describe "Yast::IP" do
   describe "#ToString" do
     RESULT_MAP_INT.each_pair do |k,v|
       it "it returns #{k} for #{v}" do
-        expect( IP.ToString(v)) == k
+        expect( IP.ToString(v)).to eq k
       end
     end
   end
@@ -149,7 +149,7 @@ describe "Yast::IP" do
 
     RESULT_MAP_HEX.each_pair do |k,v|
       it "returns #{v} for valid #{k}" do
-        expect( IP.ToHex(k)) == v
+        expect( IP.ToHex(k)).to eq v
       end
     end
 
@@ -166,7 +166,7 @@ describe "Yast::IP" do
   describe "#IPv4ToBits" do
     RESULT_MAP_BITS.each_pair do |k,v|
       it "returns bitmap for #{k}" do
-        expect( IP.IPv4ToBits(k)) == v
+        expect( IP.IPv4ToBits(k)).to eq v
       end
     end
 
@@ -178,7 +178,7 @@ describe "Yast::IP" do
   describe "#BitsToIPv4" do
     RESULT_MAP_BITS.each_pair do |k,v|
       it "returns #{k} for #{v}" do
-        expect( IP.BitsToIPv4(v)) == k
+        expect( IP.BitsToIPv4(v)).to eq k
       end
     end
 
