@@ -186,7 +186,6 @@ module Yast
     #         "fragment": "part"
     #     ]
     def Parse(url)
-      log.error("Using Yast::URL is deprecated. Use URI instead!")
       log.debug("url: #{url}")
 
       # We don't parse empty URLs

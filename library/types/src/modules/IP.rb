@@ -65,7 +65,6 @@ module Yast
       begin
         IPAddr.new(ip).ipv4?
       rescue
-        log.error "Not a valid IPv4: #{ip}"
         return false
       end
     end
