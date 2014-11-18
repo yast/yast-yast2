@@ -181,7 +181,16 @@
 	if (SignatureCheckDialogs::CheckSignaturesInYaST() == false)
 	    return default_return_unchecked;
 
-	return SignatureCheckDialogs::ImportGPGKeyIntoTrustedDialog(key, repo_id);
+        boolean trusted = SignatureCheckDialogs::ImportGPGKeyIntoTrustedDialog(key, repo_id);
+
+        if (!trusted)
+        {
+            y2milestone("Disabling repository %1 (id: %2)", Pkg::SourceGeneralData(repo_id)["alias"]:"", repo_id);
+            Pkg::SourceSetEnabled(repo_id, trusted);
+            Pkg::SourceSaveAll();
+        }
+
+        return trusted;
     }
     
     // Name of the callback handler function. Required callback prototype is
