@@ -153,8 +153,7 @@ module Yast
     # @param [Fixnum] ip IPv4 address
     # @return ip address as string
     def ToString(ip)
-      return nil unless Check4(ip)
-      IPAddr.new(ip).to_s
+      IPAddr.new(ip, Socket::AF_INET).to_s
     end
 
     # Converts IPv4 address from string to hex format
@@ -219,6 +218,7 @@ module Yast
     #     BitsToIPv4("10111100000110001110001100000101") -> "188.24.227.5"
     #     BitsToIPv4("00110101000110001110001001100101") -> "53.24.226.101"
     def BitsToIPv4(bits)
+      return nil unless /\A[01]{32}\z/ =~ bits
       ToString(bits.to_i(2))
     end
 
