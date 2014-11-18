@@ -32,7 +32,6 @@ module_DATA = \
   modules/Popup.rb \
   modules/MailAliases.rb \
   modules/Stage.rb \
-  modules/RegistrationStatus.pm \
   modules/MailTable.pm \
   modules/MailTableInclude.pm \
   modules/Hooks.rb

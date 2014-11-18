@@ -183,15 +183,16 @@ module Yast
         # read file content
         file_content = SCR.Read(path(".target.string"), @filename)
 
-        if file_content == nil
+        if file_content
+          # remove ANSI color escape sequences
+          file_content.gsub!(/\e\[(\d|;|\[)+m/, "")
+          # remove remaining ASCII control characters (ASCII 0-31 and 127 (DEL))
+          # (except new line, CR = 0xd)
+          file_content.tr!("\u0000-\u000c\u000e-\u001f\u007f", "")
+        else
           file_content = _("File not found.")
         end
 
-        # remove ANSI color escape sequences
-        file_content.gsub!(/\e\[(\d|;|\[)+m/, "")
-        # remove remaining ASCII control characters (ASCII 0-31 and 127 (DEL))
-        # (except new line, CR = 0xd)
-        file_content.tr!("\u0000-\u000c\u000e-\u001f\u007f", "")
 
         # Fill the LogView with file content
         UI.ChangeWidget(Id(:log), :Value, file_content)
