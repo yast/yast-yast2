@@ -81,6 +81,10 @@ ydata_DATA = \
 fillup_DATA = \
   fillup/sysconfig.yast2
 
+ylibdir = "${yast2dir}/lib/installation"
+ylib_DATA = \
+  lib/installation/proposal_client.rb
+
 EXTRA_DIST = $(module_DATA) $(client_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ydata_DATA) $(fillup_DATA)
 
 include $(top_srcdir)/Makefile.am.common
