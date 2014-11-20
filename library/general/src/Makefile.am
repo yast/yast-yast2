@@ -83,8 +83,9 @@ fillup_DATA = \
 
 ylibdir = "${yast2dir}/lib/installation"
 ylib_DATA = \
+  lib/installation/finish_client.rb \
   lib/installation/proposal_client.rb
 
-EXTRA_DIST = $(module_DATA) $(client_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ydata_DATA) $(fillup_DATA)
+EXTRA_DIST = $(module_DATA) $(client_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ydata_DATA) $(fillup_DATA) $(ylib_DATA)
 
 include $(top_srcdir)/Makefile.am.common
