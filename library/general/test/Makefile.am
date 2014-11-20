@@ -1,5 +1,6 @@
 TESTS = \
   asciifile_test.rb \
+  finish_client_test.rb \
   hooks_test.rb \
   linuxrc_test.rb \
   os_release_test.rb \

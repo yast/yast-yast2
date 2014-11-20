@@ -9,7 +9,7 @@ module Installation
   #   ::Installation::ExampleFinish.run
   # @see for example client in installation clone_finish.rb
   # @see inst_finish in yast2-installation doc to get overview of finish client API
-  class FinishClient < Client
+  class FinishClient < Yast::Client
     include Yast::Logger
 
     # Entry point for calling client. Only part needed in client rb file.
@@ -20,7 +20,7 @@ module Installation
 
     # Dispatches to abstract method based on passed arguments to client
     def run
-      func = Yast::WFM.Args
+      func = Yast::WFM.Args.first
       case func
       when "Info"
         info
