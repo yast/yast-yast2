@@ -21,6 +21,8 @@ module Installation
     # Dispatches to abstract method based on passed arguments to client
     def run
       func = Yast::WFM.Args.first
+      log.info "Called #{self.class}.run with #{func}"
+
       case func
       when "Info"
         info
