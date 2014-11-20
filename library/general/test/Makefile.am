@@ -4,6 +4,7 @@ TESTS = \
   linuxrc_test.rb \
   os_release_test.rb \
   popup_test.rb \
+  proposal_client_test.rb \
   agents_test/proc_meminfo_agent_test.rb
 
 TEST_EXTENSIONS = .rb

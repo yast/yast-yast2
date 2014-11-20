@@ -9,7 +9,7 @@ module Installation
   #   ::Installation::ExampleProposal.run
   # @see for example client in installation clone_proposal.rb
   # @see proposal_api_reference to get overview of proposal client API
-  class ProposalClient < Client
+  class ProposalClient < Yast::Client
     include Yast::Logger
 
     # Entry point for calling client. Only part needed in client rb file.
