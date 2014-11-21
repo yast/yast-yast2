@@ -83,6 +83,7 @@ fillup_DATA = \
 
 ylibdir = "${yast2dir}/lib/installation"
 ylib_DATA = \
+  lib/installation/auto_client.rb \
   lib/installation/finish_client.rb \
   lib/installation/proposal_client.rb
 
