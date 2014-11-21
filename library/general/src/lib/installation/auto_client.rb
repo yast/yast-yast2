@@ -41,6 +41,10 @@ module Installation
         packages
       when "Read"
         read
+      when "GetModified"
+        modified?
+      when "SetModified"
+        modified
       else
         raise "Invalid action for auto client '#{func.inspect}'"
       end
@@ -101,5 +105,16 @@ module Installation
     def read
       raise NotImplementedError, "Calling abstract method 'write'"
     end
+
+    # Abstract method to set flag for configuration that it is modified by autoyast.
+    def modified
+      raise NotImplementedError, "Calling abstract method 'modified'"
+    end
+
+    # Abstract method to query if configuration is modified and should be written.
+    def modified?
+      raise NotImplementedError, "Calling abstract method 'modified?'"
+    end
+
   end
 end

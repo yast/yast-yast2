@@ -9,7 +9,7 @@ class TestAuto < ::Installation::AutoClient
     args.empty? ? "import" : args
   end
 
-  ["export", "summary", "reset", "change", "write", "packages", "read"].each do |m|
+  ["export", "summary", "reset", "change", "write", "packages", "read", "modified?", "modified"].each do |m|
     define_method(m.to_sym) { m }
   end
 end
@@ -120,6 +120,34 @@ describe ::Installation::AutoClient do
 
       it "dispatch call to abstract method read" do
         expect(subject.run).to eq "read"
+      end
+
+      it "raise NotImplementedError exception if abstract method not defined" do
+        expect{::Installation::AutoClient.run}.to raise_error(NotImplementedError)
+      end
+    end
+
+    context "first client argument is GetModified" do
+      before do
+        allow(Yast::WFM).to receive(:Args).and_return(["GetModified", {}])
+      end
+
+      it "dispatch call to abstract method modified?" do
+        expect(subject.run).to eq "modified?"
+      end
+
+      it "raise NotImplementedError exception if abstract method not defined" do
+        expect{::Installation::AutoClient.run}.to raise_error(NotImplementedError)
+      end
+    end
+
+    context "first client argument is SetModified" do
+      before do
+        allow(Yast::WFM).to receive(:Args).and_return(["SetModified", {}])
+      end
+
+      it "dispatch call to abstract method modified" do
+        expect(subject.run).to eq "modified"
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
