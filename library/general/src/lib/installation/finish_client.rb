@@ -8,7 +8,33 @@ module Installation
   #   require "installation/example_finish"
   #   ::Installation::ExampleFinish.run
   # @see for example client in installation clone_finish.rb
-  # @see inst_finish in yast2-installation doc to get overview of finish client API
+  #
+  # # Inst-Finish Scripts
+  # ## About
+  # They are called by the inst_finish.ycp installation client at the end of the
+  # first stage installation.
+  #
+  # Part of these clients are called with SCR connected to inst-sys, the others
+  # are called after SCR gets switched to the installed system (chrooted).
+  #
+  # Script inst_finish.ycp contains several stages, every has
+  #
+  #   * label - visible in the writing progress
+  #
+  #   * steps - list of additional inst_finish scripts that are called
+  #   ("bingo" -> "bingo_finish.ycp")
+  #   Important script is "switch_scr", after that call, SCR is connected to the
+  #   just installed system.
+  #
+  # ## Finish Scripts
+  #
+  # Every single finish script is a non-interactive script (write-only). It's
+  # basically called twice:
+  #
+  #   * At first "Info" returns in which modes "Write" should be called
+  #
+  #   * Then "Write" should be called to do the job
+  #
   class FinishClient < Yast::Client
     include Yast::Logger
 
