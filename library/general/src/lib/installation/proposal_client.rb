@@ -186,7 +186,6 @@ module Installation
       raise NotImplementedError, "Calling abstract method 'description'"
     end
 
-    # ### Write
     # Optional abstract class to write the proposed (and probably modified) settings to the system.
     # It is up to the proposal dispatcher how it remembers the settings.
     # The errors must be reported using the Report:: module to have
