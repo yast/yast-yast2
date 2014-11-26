@@ -55,7 +55,7 @@ module Installation
       when "Write"
         write
       else
-        raise "Invalid action for proposal '#{func.inspect}'"
+        raise ArgumentError, "Invalid action for proposal '#{func.inspect}'"
       end
     end
 

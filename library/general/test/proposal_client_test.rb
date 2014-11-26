@@ -25,9 +25,9 @@ end
 describe ::Installation::ProposalClient do
   subject { ::TestProposal }
   describe ".run" do
-    it "raise exception if unknown first argument is passed" do
+    it "raise ArgumentError exception if unknown first argument is passed" do
       allow(Yast::WFM).to receive(:Args).and_return(["Unknown", {}])
-      expect{::Installation::ProposalClient.run}.to raise_error
+      expect{::Installation::ProposalClient.run}.to raise_error(ArgumentError)
     end
 
     context "first client argument is MakeProposal" do

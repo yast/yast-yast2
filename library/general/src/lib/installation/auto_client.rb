@@ -46,7 +46,7 @@ module Installation
       when "SetModified"
         modified
       else
-        raise "Invalid action for auto client '#{func.inspect}'"
+        raise ArgumentError, "Invalid action for auto client '#{func.inspect}'"
       end
     end
 
