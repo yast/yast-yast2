@@ -69,14 +69,6 @@ function check_qt()
 }
 
 #
-# check if the gtk plugin and all necessary libraries are present
-#
-function check_gtk()
-{
-    check_libyui_plugin gtk || check_plugin libpy2gtk.so.2 "the gtk frontend"
-}
-
-#
 # check if the ncurses plugin and all necessary libraries are present
 #
 function check_ncurses()

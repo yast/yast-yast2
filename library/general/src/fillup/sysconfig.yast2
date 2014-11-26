@@ -13,7 +13,7 @@
 #       presence and adapt accordingly
 WANTED_SHELL="auto"
 
-## Type: list(auto,qt,gtk,ncurses)
+## Type: list(auto,qt,ncurses)
 ## Default: "auto"
 # Default UI backend for YaST
 # selects the GUI plugin to be used to render yast widgets
