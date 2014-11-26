@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 26 09:31:55 UTC 2014 - gber@opensuse.org
+
+- remove support for the unmaintained GTK UI plugin (bnc#901511)
+- 3.1.111
+
+-------------------------------------------------------------------
 Wed Nov 12 14:04:51 UTC 2014 - lslezak@suse.cz
 
 - removed RegistrationStatus.pm module (obsolete, not supported

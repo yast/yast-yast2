@@ -140,37 +140,25 @@ select_gui_frontend()
 {
     if [ "$WANTED_GUI" = "auto" ]; then
 	probe_desktop_gui
-	WANTED_GUI=$DESKTOP_GUI
+	WANTED_GUI=qt
 	GUI_SELECTION=auto
     fi
 
     if [ "$WANTED_GUI" = "gtk" ]; then
-	if check_gtk; then
-	    SELECTED_GUI=gtk
-	else
-	    if check_qt; then
-		SELECTED_GUI=qt
-		WANTED_GUI=qt
-		if [ "$GUI_SELECTION" != "auto" ]; then
-		    echo >&2 "GTK GUI wanted but not found, falling back to Qt."
-		fi
-	    else
-		echo >&2 "GTK GUI wanted but not found, falling back to ncurses."
+	if check_qt; then
+	    SELECTED_GUI=qt
+	    WANTED_GUI=qt
+	    if [ "$GUI_SELECTION" != "auto" ]; then
+		echo >&2 "The GTK GUI has been retired, falling back to Qt."
 	    fi
+	else
+	    echo >&2 "The GTK GUI has been retired, falling back to ncurses."
 	fi
     elif [ "$WANTED_GUI" = "qt" ]; then
 	if check_qt; then
 	    SELECTED_GUI=qt
 	else
-	    if check_gtk; then
-		SELECTED_GUI=gtk
-		WANTED_GUI=gtk
-		if [ "$GUI_SELECTION" != "auto" ]; then
-		    echo >&2 "Qt GUI wanted but not found, falling back to GTK."
-		fi
-	    else
-		echo >&2 "Qt GUI wanted but not found, falling back to ncurses."
-	    fi
+	    echo >&2 "Qt GUI wanted but not found, falling back to ncurses."
 	fi
     elif [ "$SELECTED_GUI" != "gtk" -a "$WANTED_GUI" != "ncurses" ]; then
 	echo >&2 "Unknown GUI '$WANTED_GUI', falling back to ncurses."
@@ -391,11 +379,9 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 	echo "Something is wrong with the YaST user interface, NCurses selected but no terminal available." >&2
 	exit_code=1		# also skips y2base later
     fi
-elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
+elif [ "$SELECTED_GUI" = "qt" ]; then
 
-    if [ "$SELECTED_GUI" = "qt" ]; then
-	set_qt_home_dir
-    fi
+    set_qt_home_dir
 
     # find which control center shell we want, if there is none we
     # fall back to the built-in ycp menu
