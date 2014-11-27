@@ -236,20 +236,5 @@ module Installation
     def description
       raise NotImplementedError, "Calling abstract method 'description'"
     end
-
-    # Optional abstract method to write the proposed (and probably modified)
-    # settings to the system.
-    #
-    # It is up to the proposal dispatcher how it remembers the settings.
-    # The errors must be reported using the {Yast::ReportClass Report} class
-    # to have the possibility to control the behaviour from the main program.
-    #
-    # @return [Boolean] `true` if the settings were written successfully.
-    #
-    def write(attrs)
-      log.error "Write called, but proposal do not implement it"
-
-      nil
-    end
   end
 end

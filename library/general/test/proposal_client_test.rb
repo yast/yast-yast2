@@ -85,26 +85,5 @@ describe ::Installation::ProposalClient do
         expect{::Installation::ProposalClient.run}.to raise_error(NotImplementedError)
       end
     end
-
-    context "first client argument is Write" do
-      before do
-        allow(Yast::WFM).to receive(:Args).and_return(["Write", {}])
-      end
-
-      it "dispatch call to abstract method write" do
-        expect(subject.run).to eq "write"
-      end
-
-      it "passes argument hash to abstract method" do
-        test_params = { :a => :b, :c => :d }
-        allow(Yast::WFM).to receive(:Args).and_return(["Write", test_params])
-
-        expect(subject.run).to eq test_params
-      end
-
-      it "just log error if abstract method not defined" do
-        expect{::Installation::ProposalClient.run}.to_not raise_error
-      end
-    end
   end
 end
