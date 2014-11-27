@@ -1,19 +1,30 @@
 require "yast"
 
 module Installation
-  # Abstract class that simplify writting auto clients for autoyast.
-  # It provides single entry point and abstract methods, that all proposal clients
+  # An abstract class that simplifies writing `*_auto.rb` clients for AutoYaST.
+  #
+  # It provides a single entry point
+  # which dispatches calls to the abstract methods that all proposal clients
   # need to implement.
-  # @example how to run client
+  #
+  # You need to implement all the methods, except {#packages}.
+  #
+  # "Autoinstall" basically means {#import}, then {#write}.
+  # "Clone" means {#read}, then {#export}.
+  #
+  # @example how to run a client
   #   require "installation/example_auto"
   #   ::Installation::ExampleAuto.run
   #
-  # @see for example client in installation bootloader_auto.rb
-  # @see http://users.suse.com/~ug/autoyast_doc/devel/ar01s05.html for configuration and some old documenation
+  # @see https://github.com/yast/yast-bootloader/blob/master/src/clients/bootloader_auto.rb
+  #   Example client, bootloader_auto.rb
+  # @see http://users.suse.com/~ug/autoyast_doc/devel/ar01s05.html
+  #   Code-related configuration and some old documenation.
   class AutoClient < Yast::Client
     include Yast::Logger
 
-    # Entry point for calling client. Only part needed in client rb file.
+    # Entry point for calling the client.
+    # The only part needed in client rb file.
     # @return response from abstract methods
     def self.run
       self.new.run
@@ -52,69 +63,84 @@ module Installation
 
   protected
 
-    # Abstract method to import data from autoyast profile
-    # @param [Map] data from autoyast
-    # @return true if succeed
-    def import(data)
+    # Import data from AutoYaST profile.
+    #
+    # The profile is a Hash or an Array according to the configuration item
+    # `X-SuSE-YaST-AutoInstDataType`
+    # @param profile [Hash, Array] profile data specific to this module.
+    # @return true on success
+    def import(profile)
       raise NotImplementedError, "Calling abstract method 'import'"
     end
 
-    # Abstract method to return configuration map for autoyast
-    # @return [Map] autoyast data
+    # Export profile data from AutoYaST.
+    #
+    # The profile is a Hash or an Array according to the configuration item
+    # `X-SuSE-YaST-AutoInstDataType`
+    # @return [Hash, Array] profile data
     def export
       raise NotImplementedError, "Calling abstract method 'export'"
     end
 
-    # Abstract method to provide brief summary of configuration.
-    # @return [String] description in richtext format
+    # Provide a brief summary of configuration.
+    # @return [String] description in RichText format
     def summary
       raise NotImplementedError, "Calling abstract method 'summary'"
     end
 
-    # Abstract method to reset configuration to default state.
-    # @return [Map] returns empty map or default values. TODO it looks like it doesn't matter
+    # Reset configuration to default state.
+    # @return [void]
     def reset
       raise NotImplementedError, "Calling abstract method 'reset'"
     end
 
-    # Abstract method to start widget sequence to modify configuration
-    # @return [Symbol] returns sequence symbol from widget
+    # Run UI to modify the  configuration.
+    # @return [Symbol] If one of `:accept`, `:next`, `:finish` is returned,
+    #   the changes are accepted, otherwise they are discarded.
     def change
       raise NotImplementedError, "Calling abstract method 'change'"
     end
 
 
-    # Abstract method to write settings to target.
-    # @return true if succeed
+    # Write settings to the target system.
+    # @return [Boolean] true on success
     def write
       raise NotImplementedError, "Calling abstract method 'write'"
     end
 
-    # Optional abstract method to get list of methods needed for configuration.
-    # Default implementation return empty list
+    # Get a list of packages needed for configuration.
+    #
+    # The default implementation returns an empty list.
     # @return [Array<String>] list of required packages
     def packages
-      log.info "#{self.class} do not implement packages, return default."
+      log.info "#{self.class}#packages not implemented, returning []."
 
       []
     end
 
-    # Abstract method to read settings from target. It is used to initialize configuration
-    # from current system for further represent in autoyast profile.
-    # @return ignored
+    # Read settings from the target system.
+    #
+    # It is used to initialize configuration from the current system
+    # for further represent in AutoYaST profile.
+    # @return [void]
     def read
       raise NotImplementedError, "Calling abstract method 'write'"
     end
 
-    # Abstract method to set flag for configuration that it is modified by autoyast.
+    # Set that the profile data has beed modified
+    # and should be exported from the interactive editor,
+    # or included in the cloned data.
+    # @return [void]
     def modified
       raise NotImplementedError, "Calling abstract method 'modified'"
     end
 
-    # Abstract method to query if configuration is modified and should be written.
+    # Query whether the profile data has beed modified
+    # and should be exported from the interactive editor,
+    # or included in the cloned data.
+    # @return [Boolean]
     def modified?
       raise NotImplementedError, "Calling abstract method 'modified?'"
     end
-
   end
 end
