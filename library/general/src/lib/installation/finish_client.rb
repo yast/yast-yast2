@@ -87,8 +87,6 @@ module Installation
       raise NotImplementedError, "Calling abstract method 'title'"
     end
 
-    private
-
     # Adapt the metadata for inst_finish API
     def info
       {
