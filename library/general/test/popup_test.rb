@@ -1,8 +1,7 @@
 #! /usr/bin/env rspec
 
-require File.expand_path("../test_helper.rb", __FILE__)
+require_relative "test_helper"
 
-require "yast"
 include Yast
 
 Yast.import "Popup"
