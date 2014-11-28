@@ -38,7 +38,8 @@ module Installation
   class FinishClient < Yast::Client
     include Yast::Logger
 
-    # Entry point for calling client. Only part needed in client rb file.
+    # Entry point for calling client.
+    # The only part needed in client rb file.
     # @return response from abstract methods
     def self.run
       self.new.run
@@ -59,7 +60,7 @@ module Installation
       end
     end
 
-  protected
+    protected
 
     # Abstract method to write configuration
     def write
@@ -67,10 +68,14 @@ module Installation
     end
 
     # Abstract method to provide information about client
-    # @return [Map] with keys "steps" which specify number of client steps,
-    #   "when" with list of symbols for modes when client make sense, if missing,
-    #   then run always. And last but not least is tittle which is used to display
-    #   to user what happening.
+    # @return [Hash] with keys
+    #
+    #   * **`"steps"`** [Integer] ---
+    #     number of client steps,
+    #   * **`"when"`**  [Array<Symbol>] ---
+    #     modes when client make sense; if missing, then run always
+    #   * **`"title"`** [String] ---
+    #     used to display to user what is happening.
     def info
       raise NotImplementedError, "Calling abstract method 'info'"
     end
