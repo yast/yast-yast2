@@ -62,22 +62,40 @@ module Installation
 
     protected
 
-    # Abstract method to write configuration
+    # Write configuration.
     def write
       raise NotImplementedError, "Calling abstract method 'write'"
     end
 
-    # Abstract method to provide information about client
-    # @return [Hash] with keys
-    #
-    #   * **`"steps"`** [Integer] ---
-    #     number of client steps,
-    #   * **`"when"`**  [Array<Symbol>] ---
-    #     modes when client make sense; if missing, then run always
-    #   * **`"title"`** [String] ---
-    #     used to display to user what is happening.
+    # Restrict in which modes it should run.
+    # @return [Array<Symbol>, nil]
+    #   Valid values are `:autoinst`, `:autoupg`, `:installation`,
+    #   `:live_installation`, and `:update`. NOTE that these values
+    #   are NOT consistent with the names used in {Yast::ModeClass Mode}.
+    #   By default it returns `nil`, meaning to run always.
+    def modes
+      nil
+    end
+
+    # @return [Integer] the number of client steps.
+    def steps
+      1
+    end
+
+    # @return [String] a title used to display to the user what is happening.
+    def title
+      raise NotImplementedError, "Calling abstract method 'title'"
+    end
+
+    private
+
+    # Adapt the metadata for inst_finish API
     def info
-      raise NotImplementedError, "Calling abstract method 'info'"
+      {
+        "when " => modes,
+        "steps" => steps,
+        "title" => title
+      }
     end
   end
 end
