@@ -2777,7 +2777,8 @@ module Yast
           opened = true
         end
 
-        # set 100% + number of stages as the max value
+        # set 100 + number of stages as the max value,
+        # Progress module counts stages as extra steps
         Progress.New(task, "", 100 + stages.size, stages, [], help)
         Progress.Title(task)
         @last_stage = 0
