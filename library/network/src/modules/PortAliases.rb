@@ -37,6 +37,8 @@ require "yast"
 
 module Yast
   class PortAliasesClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -114,7 +116,7 @@ module Yast
     # @return	[Boolean] if allowed
     def IsAllowedPortName(port_name)
       if port_name == nil
-        Builtins.y2error("Invalid port name: %1", port_name)
+        log.error "Invalid port name: #{port_name}"
         return false 
         # port is number
       elsif Builtins.regexpmatch(port_name, "^[0123456789]+$")
@@ -174,11 +176,7 @@ module Yast
           aliases = Builtins.add(aliases, _alias)
         end
       else
-        Builtins.y2error(
-          "Services Command: %1 -> %2",
-          command,
-          Ops.get_string(found, "stderr", "")
-        )
+        log.error "Services Command: #{command} -> #{Ops.get_string(found, "stderr", "")}"
         return nil
       end
 
@@ -195,7 +193,7 @@ module Yast
     # Internal function for loading unknown ports into memory and returning them as integer
     def LoadAndReturnNameToPort(port_name)
       if !IsAllowedPortName(port_name)
-        Builtins.y2error("Disallwed port-name '%1'", port_name)
+        log.error "Disallwed port-name '#{port_name}'"
         return nil
       end
 
@@ -214,11 +212,7 @@ module Yast
           alias_found = Builtins.tointeger(_alias)
         end
       else
-        Builtins.y2error(
-          "Services Command: %1 -> %2",
-          command,
-          Ops.get_string(found, "stderr", "")
-        )
+        log.error "Services Command: #{command} -> #{Ops.get_string(found, "stderr", "")}"
         return nil
       end
 
@@ -287,9 +281,9 @@ module Yast
             @cache_not_allowed_ports,
             port
           )
-          Builtins.y2error("Port name '%1' is not allowed", port)
+          log.error "Port name '#{port}' is not allowed"
         else
-          Builtins.y2debug("Port name '%1' is not allowed", port)
+          log.debug "Port name '#{port}' is not allowed"
         end
         return [port]
       end

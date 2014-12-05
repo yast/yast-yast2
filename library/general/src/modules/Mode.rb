@@ -86,6 +86,8 @@ module Yast
   # <tr><td> screenshot (obsolete)</td><td> {#screen_shot}  </td></tr>
   # </table>
   class ModeClass < Module
+    include Yast::Logger
+
     def main
 
       textdomain "base"
@@ -119,10 +121,10 @@ module Yast
         # parsing for test mode
         elsif WFM.Args(arg_no) == "test" || WFM.Args(arg_no) == "demo"
           @_test = "test"
-          Builtins.y2warning("***** Test mode enabled *****")
+          log.warn "***** Test mode enabled *****"
         elsif WFM.Args(arg_no) == "screenshots"
           @_test = "screenshot"
-          Builtins.y2warning("***** Screen shot mode enabled *****")
+          log.warn "***** Screen shot mode enabled *****"
         end
 
         arg_no = Ops.add(arg_no, 1)
@@ -177,10 +179,10 @@ module Yast
           ],
           new_mode
         )
-        Builtins.y2error("Unknown mode %1", new_mode)
+        log.error "Unknown mode #{new_mode}"
       end
 
-      Builtins.y2milestone("setting mode to %1", new_mode)
+      log.info "setting mode to #{new_mode}"
       @_mode = new_mode
 
       nil
@@ -192,8 +194,8 @@ module Yast
       Initialize() if @_test == nil
       if !@test_autochecked
         # bnc#243624#c13: Y2ALLGLOBAL is set by yast2-testsuite/skel/runtest.sh
-        if Builtins.getenv("Y2MODETEST") != nil ||
-            Builtins.getenv("Y2ALLGLOBAL") != nil
+        if ENV["Y2MODETEST"] != nil ||
+            ENV["Y2ALLGLOBAL"] != nil
           @_test = "testsuite"
         end
         @test_autochecked = true
@@ -210,7 +212,7 @@ module Yast
           ["none", "test", "demo", "screenshot", "testsuite"],
           new_test_mode
         )
-        Builtins.y2error("Unknown test mode %1", new_test_mode)
+        log.error "Unknown test mode #{new_test_mode}"
       end
       @_test = new_test_mode
 
@@ -228,7 +230,7 @@ module Yast
     # Setter for {#ui}.
     def SetUI(new_ui)
       if !Builtins.contains(["commandline", "dialog", "none"], new_ui)
-        Builtins.y2error("Unknown UI mode %1", new_ui)
+        log.error "Unknown UI mode #{new_ui}"
       end
       @_ui = new_ui
 

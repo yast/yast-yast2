@@ -33,6 +33,8 @@ require "yast"
 
 module Yast
   class PackageLockClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "Pkg"
       textdomain "base"
@@ -118,10 +120,10 @@ module Yast
           ) == false
         end
 
-        Builtins.y2milestone("User decided to retry...") if try_again
+        log.info "User decided to retry..." if try_again
       end
 
-      Builtins.y2milestone("PackageLock::Check result: %1", @have_lock)
+      log.info "PackageLock::Check result: #{@have_lock}"
       @have_lock
     end
 
@@ -194,18 +196,14 @@ module Yast
             @aborted = !ret2
           end
 
-          Builtins.y2milestone(
-            "try_again: %1, aborted: %2",
-            try_again,
-            @aborted
-          )
+          log.info "try_again: #{try_again}, aborted: #{@aborted}"
         end
 
-        Builtins.y2milestone("User decided to retry...") if try_again
+        log.info "User decided to retry..." if try_again
       end
 
       ret = { "connected" => @have_lock, "aborted" => @aborted }
-      Builtins.y2milestone("PackageLock::Connect result: %1", ret)
+      log.info "PackageLock::Connect result: #{ret}"
 
       deep_copy(ret)
     end

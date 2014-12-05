@@ -39,6 +39,8 @@ require "yast"
 
 module Yast
   class PopupClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
 
@@ -621,7 +623,7 @@ module Yast
         :focus_yes
       )
 
-      Builtins.y2debug("ContinueCancelHeadline returned: %1", ret)
+      log.debug "ContinueCancelHeadline returned: #{ret}"
 
       ret
     end
@@ -644,7 +646,7 @@ module Yast
     # @see #AnyQuestion
     def ContinueCancel(message)
       ret = ContinueCancelHeadline(NoHeadline(), message)
-      Builtins.y2debug("ContinueCancel returned: %1", ret)
+      log.debug "ContinueCancel returned: #{ret}"
 
       ret
     end
@@ -680,7 +682,7 @@ module Yast
         :focus_yes
       )
 
-      Builtins.y2debug("YesNoHeadline returned: %1", ret)
+      log.debug "YesNoHeadline returned: #{ret}"
 
       ret
     end
@@ -706,7 +708,7 @@ module Yast
     def YesNo(message)
       ret = YesNoHeadline(NoHeadline(), message)
 
-      Builtins.y2debug("YesNo returned: %1", ret)
+      log.debug "YesNo returned: #{ret}"
 
       ret
     end
@@ -874,10 +876,10 @@ module Yast
             "You will need to reinstall."
         )
       else
-        Builtins.y2error("Unknown symbol for ConfirmAbort")
+        log.error "Unknown symbol for ConfirmAbort"
       end
 
-      message = Ops.add(Ops.add(abort_label, "\n\n"), what_will_happen)
+      message = abort_label + "\n\n" + what_will_happen
 
       button_box = AnyQuestionButtonBox(
         abort_button,
@@ -902,7 +904,7 @@ module Yast
 
       ret = user_ret == :yes
 
-      Builtins.y2debug("ConfirmAbort returned: %1", ret)
+      log.debug "ConfirmAbort returned: #{ret}"
 
       ret
     end
@@ -944,7 +946,7 @@ module Yast
         focus
       )
 
-      Builtins.y2debug("ReallyAbort returned: %1", ret)
+      log.debug "ReallyAbort returned: #{ret}"
 
       ret
     end

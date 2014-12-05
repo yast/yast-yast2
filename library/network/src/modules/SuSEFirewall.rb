@@ -273,7 +273,7 @@ module Yast
     # Do not use this function.
     # Only for firewall installation proposal.
     def ResetModified
-      Builtins.y2milestone("Reseting firewall-modified to 'false'")
+      log.info "Reseting firewall-modified to 'false'"
       @modified = false
 
       nil
@@ -604,7 +604,7 @@ module Yast
         end
       end
 
-      Builtins.y2debug("Allowed Broadcast Ports: %1", allowed_ports)
+      log.debug "Allowed Broadcast Ports: #{allowed_ports}"
 
       deep_copy(allowed_ports)
     end
@@ -638,7 +638,7 @@ module Yast
     def IsBroadcastAllowed(needed_ports, zone)
       needed_ports = deep_copy(needed_ports)
       if Builtins.size(needed_ports) == 0
-        Builtins.y2warning("Unknown service with no needed ports!")
+        log.warn "Unknown service with no needed ports!"
         return nil
       end
 
@@ -773,10 +773,7 @@ module Yast
     def RemoveAllowedPortsOrServices(remove_ports, protocol, zone, check_for_aliases)
       remove_ports = deep_copy(remove_ports)
       if Ops.less_than(Builtins.size(remove_ports), 1)
-        Builtins.y2warning(
-          "Undefined list of %1 services/ports for service",
-          protocol
-        )
+        log.warn "Undefined list of #{protocol} services/ports for service"
         return
       end
 
@@ -884,10 +881,7 @@ module Yast
     def AddAllowedPortsOrServices(add_ports, protocol, zone)
       add_ports = deep_copy(add_ports)
       if Ops.less_than(Builtins.size(add_ports), 1)
-        Builtins.y2warning(
-          "Undefined list of %1 services/ports for service",
-          protocol
-        )
+        log.warn "Undefined list of #{protocol} services/ports for service"
         return
       end
 
@@ -919,7 +913,7 @@ module Yast
       return nil if !IsKnownZone(zone)
 
       if service == nil
-        Builtins.y2error("Service Id can't be nil!")
+        log.error "Service Id can't be nil!"
         return nil
       elsif Builtins.regexpmatch(service, "^service:.*")
         service = Builtins.regexpsub(service, "^service:(.*)", "\\1")
@@ -957,7 +951,7 @@ module Yast
       return nil if !IsKnownZone(zone)
 
       if service == nil
-        Builtins.y2error("Service Id can't be nil!")
+        log.error "Service Id can't be nil!"
         return nil
       elsif Builtins.regexpmatch(service, "^service:.*")
         service = Builtins.regexpsub(service, "^service:(.*)", "\\1")
@@ -993,7 +987,7 @@ module Yast
       needed = SuSEFirewallServices.GetNeededPortsAndProtocols(service)
       # unknown service
       if needed == nil
-        Builtins.y2error("Undefined service '%1'", service)
+        log.error "Undefined service '#{service}'"
         return nil
       end
 
@@ -1023,7 +1017,7 @@ module Yast
         elsif "broadcast_ports" == key
           RemoveAllowedBroadcast(needed_ports, zone)
         else
-          Builtins.y2error("Unknown key '%1'", key)
+          log.error "Unknown key '#{key}'"
         end
       end
 
@@ -1039,7 +1033,7 @@ module Yast
       needed = SuSEFirewallServices.GetNeededPortsAndProtocols(service)
       # unknown service
       if needed == nil
-        Builtins.y2error("Undefined service '%1'", service)
+        log.error "Undefined service '#{service}'"
         return nil
       end
 
@@ -1071,7 +1065,7 @@ module Yast
         elsif "broadcast_ports" == key
           AddAllowedBroadcast(needed_ports, zone)
         else
-          Builtins.y2error("Unknown key '%1'", key)
+          log.error "Unknown key '#{key}'"
         end
       end
 
@@ -1085,18 +1079,16 @@ module Yast
     # @param [Boolean] new_status, 'true' if packages should be offered for installation
     def SetInstallPackagesIfMissing(new_status)
       if new_status == nil
-        Builtins.y2error("Wrong value: %1", new_status)
+        log.error "Wrong value: #{new_status}"
         return
       end
 
       @check_and_install_package = new_status
 
       if @check_and_install_package
-        Builtins.y2milestone("SuSEfirewall2 packages will installed if missing")
+        log.info "SuSEfirewall2 packages will installed if missing"
       else
-        Builtins.y2milestone(
-          "SuSEfirewall2 packages will not be installed even if missing"
-        )
+        log.info "SuSEfirewall2 packages will not be installed even if missing"
       end
 
       nil
@@ -1220,11 +1212,7 @@ module Yast
           # unknown zone, changing to default value
         else
           defaultv = GetDefaultValue("FW_IPSEC_TRUST")
-          Builtins.y2warning(
-            "Trust IPsec as '%1' (unknown zone) changed to '%2'",
-            zone,
-            defaultv
-          )
+          log.warn "Trust IPsec as '#{zone}' (unknown zone) changed to '#{defaultv}'"
           Ops.set(@SETTINGS, "FW_IPSEC_TRUST", defaultv)
         end
       end
@@ -1254,11 +1242,7 @@ module Yast
         else
           SetModified()
           defaultv = GetDefaultValue("FW_IPSEC_TRUST")
-          Builtins.y2warning(
-            "Trust IPsec as '%1' (unknown zone) changed to '%2'",
-            Ops.get_string(@SETTINGS, "FW_IPSEC_TRUST", ""),
-            defaultv
-          )
+          log.warn "Trust IPsec as '#{Ops.get_string(@SETTINGS, "FW_IPSEC_TRUST", "")}' (unknown zone) changed to '#{defaultv}'"
           SetTrustIPsecAs(defaultv)
           return "no"
         end
@@ -1279,21 +1263,18 @@ module Yast
     # @see #GetStartService()
     def SetStartService(start_service)
       if !SuSEFirewallIsInstalled()
-        Builtins.y2warning("Cannot set SetStartService")
+        log.warn "Cannot set SetStartService"
         return nil
       end
 
       if GetStartService() != start_service
         SetModified()
 
-        Builtins.y2milestone("Setting start-firewall to %1", start_service)
+        log.info "Setting start-firewall to #{start_service}"
         Ops.set(@SETTINGS, "start_firewall", start_service)
       else
         # without set modified!
-        Builtins.y2milestone(
-          "start-firewall has been already set to %1",
-          start_service
-        )
+        log.info "start-firewall has been already set to #{start_service}"
         Ops.set(@SETTINGS, "start_firewall", start_service)
       end
 
@@ -1316,21 +1297,18 @@ module Yast
     # @param	boolean start_service at Write() process
     def SetEnableService(enable_service)
       if !SuSEFirewallIsInstalled()
-        Builtins.y2warning("Cannot set SetEnableService")
+        log.warn "Cannot set SetEnableService"
         return nil
       end
 
       if GetEnableService() != enable_service
         SetModified()
 
-        Builtins.y2milestone("Setting enable-firewall to %1", enable_service)
+        log.info "Setting enable-firewall to #{enable_service}"
         Ops.set(@SETTINGS, "enable_firewall", enable_service)
       else
         # without set modified
-        Builtins.y2milestone(
-          "enable-firewall has been already set to %1",
-          enable_service
-        )
+        log.info "enable-firewall has been already set to #{enable_service}"
         Ops.set(@SETTINGS, "enable_firewall", enable_service)
       end
 
@@ -1346,10 +1324,10 @@ module Yast
       return false if !SuSEFirewallIsInstalled()
 
       if Service.Start(@firewall_service)
-        Builtins.y2milestone("Started")
+        log.info "Started"
         return true
       else
-        Builtins.y2error("Cannot start service %1", @firewall_service)
+        log.error "Cannot start service #{@firewall_service}"
         return false
       end
     end
@@ -1363,10 +1341,10 @@ module Yast
       return false if !SuSEFirewallIsInstalled()
 
       if Service.Stop(@firewall_service)
-        Builtins.y2milestone("Stopped")
+        log.info "Stopped"
         return true
       else
-        Builtins.y2error("Could not stop service %1", @firewall_service)
+        log.error "Could not stop service #{@firewall_service}"
         return false
       end
     end
@@ -1413,10 +1391,10 @@ module Yast
       return false if !SuSEFirewallIsInstalled()
 
       if Service.Enabled(@firewall_service)
-        Builtins.y2milestone("Firewall service is enabled")
+        log.info "Firewall service is enabled"
         return true
       else
-        Builtins.y2milestone("Firewall service is not enabled")
+        log.info "Firewall service is not enabled"
         return false
       end
     end
@@ -1430,12 +1408,12 @@ module Yast
 
       return true if Mode.testsuite
 
-      Builtins.y2milestone("Checking firewall status...")
+      log.info "Checking firewall status..."
       if Service.Status(@firewall_service) == 0
-        Builtins.y2milestone("Firewall service is started")
+        log.info "Firewall service is started"
         return true
       else
-        Builtins.y2milestone("Firewall service is stopped")
+        log.info "Firewall service is stopped"
         return false
       end
     end
@@ -1588,7 +1566,7 @@ module Yast
       # bugzilla #303858 - wrong values from NetworkInterfaces
       dialup_interfaces = Builtins.filter(dialup_interfaces) do |one_iface|
         if one_iface == nil || one_iface == ""
-          Builtins.y2error("Wrong interface definition '%1'", one_iface)
+          log.error "Wrong interface definition '#{one_iface}'"
           next false
         end
         true
@@ -1606,7 +1584,7 @@ module Yast
       # bugzilla #303858 - wrong values from NetworkInterfaces
       non_dialup_interfaces = Builtins.filter(non_dialup_interfaces) do |one_iface|
         if one_iface == nil || one_iface == ""
-          Builtins.y2error("Wrong interface definition '%1'", one_iface)
+          log.error "Wrong interface definition '#{one_iface}'"
           next false
         end
         true
@@ -1713,11 +1691,7 @@ module Yast
     def RemoveInterfaceFromZone(interface, zone)
       SetModified()
 
-      Builtins.y2milestone(
-        "Removing interface '%1' from '%2' zone.",
-        interface,
-        zone
-      )
+      log.info "Removing interface '#{interface}' from '#{zone}' zone."
 
       interfaces_in_zone = Builtins.splitstring(
         Ops.get_string(@SETTINGS, Ops.add("FW_DEV_", zone), ""),
@@ -1755,11 +1729,7 @@ module Yast
       end
       IncreaseVerbosity()
 
-      Builtins.y2milestone(
-        "Adding interface '%1' into '%2' zone.",
-        interface,
-        zone
-      )
+      log.info "Adding interface '#{interface}' into '#{zone}' zone."
       interfaces_in_zone = Builtins.splitstring(
         Ops.get_string(@SETTINGS, Ops.add("FW_DEV_", zone), ""),
         " "
@@ -1830,12 +1800,7 @@ module Yast
         configured_interfaces = GetFirewallInterfaces()
         Builtins.foreach(known_interfaces_now) do |one_interface|
           if !Builtins.contains(configured_interfaces, one_interface)
-            Builtins.y2milestone(
-              "Interface '%1' supported by special string '%2' in zone '%3'",
-              one_interface,
-              @special_all_interface_string,
-              @special_all_interface_zone
-            )
+            log.info "Interface '#{one_interface}' supported by special string '#{@special_all_interface_string}' in zone '#{@special_all_interface_zone}'"
             result = Builtins.add(result, one_interface)
           end
         end
@@ -1881,7 +1846,7 @@ module Yast
     #	HaveService ("53", "UDP", "dsl") -> false
     def HaveService(service, protocol, interface)
       if !IsSupportedProtocol(protocol)
-        Builtins.y2error("Unknown protocol: %1", protocol)
+        log.error "Unknown protocol: #{protocol}"
         return nil
       end
 
@@ -1904,11 +1869,7 @@ module Yast
       # should not be protected and searched zones include also internal (or the zone IS internal, sure)
       if !GetProtectFromInternalZone() &&
           Builtins.contains(zones, @int_zone_shortname)
-        Builtins.y2milestone(
-          "Checking for service '%1', in '%2', PROTECT_FROM_INTERNAL='no' => allowed",
-          service,
-          interface
-        )
+        log.info "Checking for service '#{service}', in '#{interface}', PROTECT_FROM_INTERNAL='no' => allowed"
         return true
       end
 
@@ -1938,15 +1899,10 @@ module Yast
     #	AddService ("ssh", "TCP", "dsl0")
     def AddService(service, protocol, interface)
       success = false
-      Builtins.y2milestone(
-        "Adding service %1, protocol %2 to %3",
-        service,
-        protocol,
-        interface
-      )
+      log.info "Adding service #{service}, protocol #{protocol} to #{interface}"
 
       if !IsSupportedProtocol(protocol)
-        Builtins.y2error("Unknown protocol: %1", protocol)
+        log.error "Unknown protocol: #{protocol}"
         return false
       end
 
@@ -1973,10 +1929,7 @@ module Yast
                 interface
               )
             )
-            Builtins.y2warning(
-              "Interface '%1' is not assigned to any firewall zone",
-              interface
-            )
+            log.warn "Interface '#{interface}' is not assigned to any firewall zone"
             return false
           end
         end
@@ -1991,11 +1944,7 @@ module Yast
         if !ArePortsOrServicesAllowed([service], protocol, zone, true)
           AddAllowedPortsOrServices([service], protocol, zone)
         else
-          Builtins.y2milestone(
-            "Port %1 has been already allowed in %2",
-            service,
-            zone
-          )
+          log.info "Port #{service} has been already allowed in #{zone}"
         end
       end
 
@@ -2016,15 +1965,10 @@ module Yast
     #	RemoveService ("ssh", "TCP", "DMZ") -> true
     def RemoveService(service, protocol, interface)
       success = false
-      Builtins.y2milestone(
-        "Removing service %1, protocol %2 from %3",
-        service,
-        protocol,
-        interface
-      )
+      log.info "Removing service #{service}, protocol #{protocol} from #{interface}"
 
       if !IsSupportedProtocol(protocol)
-        Builtins.y2error("Unknown protocol: %1", protocol)
+        log.error "Unknown protocol: #{protocol}"
         return false
       end
 
@@ -2050,10 +1994,7 @@ module Yast
                 interface
               )
             )
-            Builtins.y2warning(
-              "Interface '%1' is not assigned to any firewall zone",
-              interface
-            )
+            log.warn "Interface '#{interface}' is not assigned to any firewall zone"
             return false
           end
         end
@@ -2069,11 +2010,7 @@ module Yast
         if ArePortsOrServicesAllowed([service], protocol, zone, true)
           RemoveAllowedPortsOrServices([service], protocol, zone, true)
         else
-          Builtins.y2milestone(
-            "Port %1 has been already removed from %2",
-            service,
-            zone
-          )
+          log.info "Port #{service} has been already removed from #{zone}"
         end
       end
 
@@ -2084,10 +2021,7 @@ module Yast
       are_allowed = true
 
       if Ops.less_than(Builtins.size(needed_ports), 1)
-        Builtins.y2warning(
-          "Undefined list of %1 services/ports for service",
-          protocol
-        )
+        log.warn "Undefined list of #{protocol} services/ports for service"
         return true
       end
 
@@ -2133,7 +2067,7 @@ module Yast
       return nil if !IsKnownZone(zone)
 
       if service == nil
-        Builtins.y2error("Service Id can't be nil!")
+        log.error "Service Id can't be nil!"
         return nil
       elsif Builtins.regexpmatch(service, "^service:.*")
         service = Builtins.regexpsub(service, "^service:(.*)", "\\1")
@@ -2172,11 +2106,7 @@ module Yast
       # SuSEFirewall feature FW_PROTECT_FROM_INT
       # should not be protected and searched zones include also internal (or the zone IS internal, sure)
       if zone == @int_zone_shortname && !GetProtectFromInternalZone()
-        Builtins.y2milestone(
-          "Checking for service '%1', in '%2', PROTECT_FROM_INTERNAL='no' => allowed",
-          service,
-          zone
-        )
+        log.info "Checking for service '#{service}', in '#{zone}', PROTECT_FROM_INTERNAL='no' => allowed"
         return true
       end
 
@@ -2223,7 +2153,7 @@ module Yast
           # testing for allowed broadcast ports
           service_is_supported = IsBroadcastAllowed(needed_ports, zone)
         else
-          Builtins.y2error("Unknown key '%1'", key)
+          log.error "Unknown key '#{key}'"
         end
         # service is not supported, we don't have to do more tests
         raise Break if service_is_supported == false
@@ -2347,27 +2277,16 @@ module Yast
         Builtins.foreach(firewall_zones) do |firewall_zone|
           # zone must be known one
           if !IsKnownZone(firewall_zone)
-            Builtins.y2error(
-              "Zone '%1' is unknown firewall zone, skipping...",
-              firewall_zone
-            )
+            log.error "Zone '#{firewall_zone}' is unknown firewall zone, skipping..."
             next
           end
           SetModified()
           # setting new status
           if new_status == true
-            Builtins.y2milestone(
-              "Adding '%1' into '%2' zone",
-              service_id,
-              firewall_zone
-            )
+            log.info "Adding '#{service_id}' into '#{firewall_zone}' zone"
             AddServiceSupportIntoZone(service_id, firewall_zone)
           else
-            Builtins.y2milestone(
-              "Removing '%1' from '%2' zone",
-              service_id,
-              firewall_zone
-            )
+            log.info "Removing '#{service_id}' from '#{firewall_zone}' zone"
             RemoveServiceSupportFromZone(service_id, firewall_zone)
           end
         end
@@ -2394,10 +2313,7 @@ module Yast
       interfaces = deep_copy(interfaces)
       firewall_zones = GetZonesOfInterfacesWithAnyFeatureSupported(interfaces)
       if Builtins.size(firewall_zones) == 0
-        Builtins.y2error(
-          "Interfaces '%1' are not in any group if interfaces",
-          interfaces
-        )
+        log.error "Interfaces '#{interfaces}' are not in any group if interfaces"
         return false
       end
 
@@ -2454,9 +2370,7 @@ module Yast
       # Do not read it again and again
       # to avoid rewriting changes already made
       if @configuration_has_been_read
-        Builtins.y2milestone(
-          "SuSEfirewall2 configuration has been read already."
-        )
+        log.info "SuSEfirewall2 configuration has been read already."
         return @fw_service_can_be_configured
       end
 
@@ -2532,10 +2446,7 @@ module Yast
       # CheckAllPossiblyConflictingServices();
       # -- Function has been turned off as we don't support services defined by YaST itself anymore --
 
-      Builtins.y2milestone(
-        "Firewall configuration has been read: %1.",
-        @SETTINGS
-      )
+      log.info "Firewall configuration has been read: #{@SETTINGS}."
       # to read configuration only once
       @configuration_has_been_read = true
 
@@ -2576,7 +2487,7 @@ module Yast
         end
       end
 
-      Builtins.y2milestone("Some RPC service found: %1", ret)
+      log.info "Some RPC service found: #{ret}"
       ret
     end
 
@@ -2592,7 +2503,7 @@ module Yast
       # Moreover, it is not needed. Firewall gets started via dependency on multi-user.target
       # when second stage is over.
       if Mode.installation
-        Builtins.y2milestone( "Do not touch firewall services during installation")
+        log.info "Do not touch firewall services during installation"
 
         return true
       end
@@ -2601,7 +2512,7 @@ module Yast
       if GetStartService()
         # Not started - start it
         if !IsStarted()
-          Builtins.y2milestone("Starting firewall services")
+          log.info "Starting firewall services"
           return StartServices() 
           # Started - restart it
         else
@@ -2611,15 +2522,13 @@ module Yast
           # Some of these service's ports might have been reallocated (when SuSEFirewall
           # is used from outside, e.g., yast2-nfs-server)
           if GetModified() || AnyRPCServiceInConfiguration()
-            Builtins.y2milestone("Stopping firewall services")
+            log.info "Stopping firewall services"
             StopServices()
-            Builtins.y2milestone("Starting firewall services")
+            log.info "Starting firewall services"
             return StartServices() 
             # not modified - skip restart
           else
-            Builtins.y2milestone(
-              "Configuration hasn't modified, skipping restarting services"
-            )
+            log.info "Configuration hasn't modified, skipping restarting services"
             return true
           end
         end 
@@ -2627,11 +2536,11 @@ module Yast
       else
         # started - stop
         if IsStarted()
-          Builtins.y2milestone("Stopping firewall services")
+          log.info "Stopping firewall services"
           return StopServices() 
           # stopped - skip stopping
         else
-          Builtins.y2milestone("Firewall has been stopped already")
+          log.info "Firewall has been stopped already"
           return true
         end
       end
@@ -2680,10 +2589,7 @@ module Yast
 
       # only modified configuration is written
       if GetModified()
-        Builtins.y2milestone(
-          "Firewall configuration has been changed. Writing: %1.",
-          @SETTINGS
-        )
+        log.info "Firewall configuration has been changed. Writing: #{@SETTINGS}."
 
         if !WriteSysconfigSuSEFirewall(GetListOfSuSEFirewallVariables())
           # TRANSLATORS: a popup error message
@@ -2691,7 +2597,7 @@ module Yast
           return false
         end
       else
-        Builtins.y2milestone("Firewall settings weren't modified, skipping...")
+        log.info "Firewall settings weren't modified, skipping..."
       end
 
       Progress.NextStage if have_progress
@@ -2700,28 +2606,22 @@ module Yast
       if GetModified()
         # enabling firewall in /etc/init.d/
         if Ops.get_boolean(@SETTINGS, "enable_firewall", false)
-          Builtins.y2milestone("Enabling firewall services")
+          log.info "Enabling firewall services"
           return false if !EnableServices() 
           # disabling firewall in /etc/init.d/
         else
-          Builtins.y2milestone("Disabling firewall services")
+          log.info "Disabling firewall services"
           return false if !DisableServices()
         end
       else
-        Builtins.y2milestone(
-          "Firewall enable/disable wasn't modified, skipping..."
-        )
+        log.info "Firewall enable/disable wasn't modified, skipping..."
       end
 
       Progress.NextStage if have_progress
 
       if @already_converted &&
           !FileUtils.Exists(@converted_to_services_dbp_file)
-        Builtins.y2milestone(
-          "Writing %1: %2",
-          @converted_to_services_dbp_file,
-          SCR.Write(path(".target.string"), @converted_to_services_dbp_file, "")
-        )
+        log.info "Writing #{@converted_to_services_dbp_file}: #{SCR.Write(path(".target.string"), @converted_to_services_dbp_file, "")}"
       end
 
       Progress.Finish if have_progress
@@ -2759,7 +2659,7 @@ module Yast
     #
     # @return	[Boolean] if successful
     def SaveAndRestartService
-      Builtins.y2milestone("Forced save and restart")
+      log.info "Forced save and restart"
       SetModified()
 
       SetStartService(true)
@@ -2782,11 +2682,11 @@ module Yast
       additional_services = []
 
       if !IsSupportedProtocol(protocol)
-        Builtins.y2error("Unknown protocol '%1'", protocol)
+        log.error "Unknown protocol '#{protocol}'"
         return nil
       end
       if !IsKnownZone(zone)
-        Builtins.y2error("Unknown zone '%1'", zone)
+        log.error "Unknown zone '#{zone}'"
         return nil
       end
 
@@ -2875,21 +2775,11 @@ module Yast
         end
 
         if Ops.greater_than(Builtins.size(remove_services), 0)
-          Builtins.y2milestone(
-            "Removing additional services %1/%2 from zone %3",
-            remove_services,
-            protocol,
-            zone
-          )
+          log.info "Removing additional services #{remove_services}/#{protocol} from zone #{zone}"
           RemoveAllowedPortsOrServices(remove_services, protocol, zone, true)
         end
         if Ops.greater_than(Builtins.size(add_services), 0)
-          Builtins.y2milestone(
-            "Adding additional services %1/%2 into zone %3",
-            add_services,
-            protocol,
-            zone
-          )
+          log.info "Adding additional services #{add_services}/#{protocol} into zone #{zone}"
           AddAllowedPortsOrServices(add_services, protocol, zone)
         end
       end
@@ -2920,10 +2810,7 @@ module Yast
           iptable_rule != ""
         end
 
-        Builtins.y2milestone(
-          "Count of active iptables now: %1",
-          Builtins.size(iptables_list)
-        )
+        log.info "Count of active iptables now: #{Builtins.size(iptables_list)}"
 
         # none iptables rules
         if Ops.greater_than(Builtins.size(iptables_list), 0)
@@ -2934,18 +2821,13 @@ module Yast
         end 
         # error running command
       else
-        Builtins.y2error(
-          "Services Command: %1 (Exit %2) -> %3",
-          command,
-          Ops.get(iptables, "exit"),
-          Ops.get(iptables, "stderr")
-        )
+        log.error "Services Command: #{command} (Exit #{Ops.get(iptables, "exit")}) -> #{Ops.get(iptables, "stderr")}"
         return nil
       end
 
       # any firewall is running but it is not a SuSEfirewall2
       if any_firewall_running && !IsStarted()
-        Builtins.y2warning("Any other firewall is running...")
+        log.warn "Any other firewall is running..."
         return true
       end
       # no firewall is running or the running firewall is SuSEfirewall2
@@ -3014,11 +2896,7 @@ module Yast
     def RemoveSpecialInterfaceFromZone(interface, zone)
       SetModified()
 
-      Builtins.y2milestone(
-        "Removing special string '%1' from '%2' zone.",
-        interface,
-        zone
-      )
+      log.info "Removing special string '#{interface}' from '#{zone}' zone."
 
       interfaces_in_zone = Builtins.splitstring(
         Ops.get_string(@SETTINGS, Ops.add("FW_DEV_", zone), ""),
@@ -3043,11 +2921,7 @@ module Yast
     def AddSpecialInterfaceIntoZone(interface, zone)
       SetModified()
 
-      Builtins.y2milestone(
-        "Adding special string '%1' into '%2' zone.",
-        interface,
-        zone
-      )
+      log.info "Adding special string '#{interface}' into '#{zone}' zone."
       interfaces_in_zone = Builtins.splitstring(
         Ops.get_string(@SETTINGS, Ops.add("FW_DEV_", zone), ""),
         " "
@@ -3123,11 +2997,7 @@ module Yast
         if Ops.get(fw_rul, 0, "") == "" || Ops.get(fw_rul, 1, "") == "" ||
             Ops.get(fw_rul, 2, "") == "" ||
             Ops.get(fw_rul, 3, "") == ""
-          Builtins.y2warning(
-            "Wrong definition of redirect rule: '%1', part of '%2'",
-            forward_rule,
-            Ops.get_string(@SETTINGS, "FW_FORWARD_MASQ", "")
-          )
+          log.warn "Wrong definition of redirect rule: '#{forward_rule}', part of '#{Ops.get_string(@SETTINGS, "FW_FORWARD_MASQ", "")}'"
         end
         list_of_rules = Builtins.add(
           list_of_rules,
@@ -3275,7 +3145,7 @@ module Yast
           ret_val = "NONE"
         end
       else
-        Builtins.y2error("Possible rules are only 'ACCEPT' or 'DROP'")
+        log.error "Possible rules are only 'ACCEPT' or 'DROP'"
       end
 
       ret_val
@@ -3315,7 +3185,7 @@ module Yast
           Ops.set(@SETTINGS, "FW_LOG_DROP_ALL", "no")
         end
       else
-        Builtins.y2error("Possible rules are only 'ACCEPT' or 'DROP'")
+        log.error "Possible rules are only 'ACCEPT' or 'DROP'"
       end
 
       nil
@@ -3331,7 +3201,7 @@ module Yast
     #	GetIgnoreLoggingBroadcast ("EXT") -> "yes"
     def GetIgnoreLoggingBroadcast(zone)
       if !IsKnownZone(zone)
-        Builtins.y2error("Unknown zone '%1'", zone)
+        log.error "Unknown zone '#{zone}'"
         return nil
       end
 
@@ -3348,7 +3218,7 @@ module Yast
     #	SetIgnoreLoggingBroadcast ("DMZ", "yes")
     def SetIgnoreLoggingBroadcast(zone, bcast)
       if !IsKnownZone(zone)
-        Builtins.y2error("Unknown zone '%1'", zone)
+        log.error "Unknown zone '#{zone}'"
         return nil
       end
 
@@ -3365,9 +3235,7 @@ module Yast
     # @see #https://bugzilla.novell.com/show_bug.cgi?id=233934
     # @see #https://bugzilla.novell.com/show_bug.cgi?id=375482
     def AddXenSupport
-      Builtins.y2milestone(
-        "The whole functionality is currently handled by SuSEfirewall2 itself"
-      )
+      log.info "The whole functionality is currently handled by SuSEfirewall2 itself"
 
       nil
     end
@@ -3385,7 +3253,7 @@ module Yast
 
       # Check for zone
       if !Builtins.contains(GetKnownFirewallZones(), zone)
-        Builtins.y2error("Unknown firewall zone: %1", zone)
+        log.error "Unknown firewall zone: #{zone}"
         return nil
       end
 
@@ -3402,7 +3270,7 @@ module Yast
 
       # Check for zone
       if !Builtins.contains(GetKnownFirewallZones(), zone)
-        Builtins.y2error("Unknown firewall zone: %1", zone)
+        log.error "Unknown firewall zone: #{zone}"
         return false
       end
 
@@ -3440,24 +3308,15 @@ module Yast
       k_modules = deep_copy(k_modules)
       k_modules = Builtins.filter(k_modules) do |one_module|
         if one_module == nil
-          Builtins.y2error(
-            "List of modules %1 contains 'nil'! It will be ignored.",
-            k_modules
-          )
+          log.error "List of modules #{k_modules} contains 'nil'! It will be ignored."
           next false
         elsif one_module == ""
-          Builtins.y2warning(
-            "List of modules %1 contains an empty string, it will be ignored.",
-            k_modules
-          )
+          log.warn "List of modules #{k_modules} contains an empty string, it will be ignored."
           next false
         end
         if Builtins.regexpmatch(one_module, " ") ||
             Builtins.regexpmatch(one_module, "\t")
-          Builtins.y2warning(
-            "Additional module '%1' contains spaces. They will be evaluated as two or more modules later.",
-            one_module
-          )
+          log.warn "Additional module '#{one_module}' contains spaces. They will be evaluated as two or more modules later."
         end
         true
       end
@@ -3483,7 +3342,7 @@ module Yast
       if protocol == ""
         return ""
       elsif Ops.get(@protocol_translations, protocol) == nil
-        Builtins.y2error("Unknown protocol: %1", protocol)
+        log.error "Unknown protocol: #{protocol}"
         # table item, %1 stands for the buggy protocol name
         return Builtins.sformat(_("Unknown protocol (%1)"), protocol)
       else
@@ -3504,7 +3363,7 @@ module Yast
     # @see #SetServicesAcceptRelated()
     def GetServicesAcceptRelated(zone)
       if !IsKnownZone(zone)
-        Builtins.y2error("Uknown zone '%1'", zone)
+        log.error "Uknown zone '#{zone}'"
         return []
       end
 
@@ -3532,7 +3391,7 @@ module Yast
     def SetServicesAcceptRelated(zone, ruleset)
       ruleset = deep_copy(ruleset)
       if !IsKnownZone(zone)
-        Builtins.y2error("Uknown zone '%1'", zone)
+        log.error "Uknown zone '#{zone}'"
         return
       end
 
@@ -3556,7 +3415,7 @@ module Yast
             Builtins.size(GetServicesAcceptRelated(one_zone)),
             0
           )
-          Builtins.y2milestone("Some ServicesAcceptRelated are defined")
+          log.info "Some ServicesAcceptRelated are defined"
           needs_additional_module = true
           raise Break
         end
@@ -3569,10 +3428,7 @@ module Yast
         )
 
         if !Builtins.contains(k_modules, @broadcast_related_module)
-          Builtins.y2warning(
-            "FW_LOAD_MODULES doesn't contain %1, adding",
-            @broadcast_related_module
-          )
+          log.warn "FW_LOAD_MODULES doesn't contain #{@broadcast_related_module}, adding"
           k_modules = Builtins.add(k_modules, @broadcast_related_module)
           Ops.set(
             @SETTINGS,
@@ -3590,7 +3446,7 @@ module Yast
     # by packages.
     def RemoveOldAllowedServiceFromZone(old_service_def, zone)
       old_service_def = deep_copy(old_service_def)
-      Builtins.y2milestone("Removing: %1 from zone %2", old_service_def, zone)
+      log.info "Removing: #{old_service_def} from zone #{zone}"
 
       if Ops.get_list(old_service_def, "tcp_ports", []) != []
         Builtins.foreach(Ops.get_list(old_service_def, "tcp_ports", [])) do |one_service|
@@ -3662,11 +3518,11 @@ module Yast
         end
       end
 
-      Builtins.y2milestone("Current conf: %1", current_conf)
+      log.info "Current conf: #{current_conf}"
 
       Builtins.foreach(GetKnownFirewallZones()) do |zone|
         Builtins.foreach(SuSEFirewallServices.OLD_SERVICES) do |old_service_id, old_service_def|
-          Builtins.y2milestone("Checking %1 in %2 zone", old_service_id, zone)
+          log.info "Checking #{old_service_id} in #{zone} zone"
           if Ops.get_list(old_service_def, "tcp_ports", []) != [] &&
               ArePortsOrServicesAllowed(
                 Ops.get_list(old_service_def, "tcp_ports", []),
@@ -3711,20 +3567,13 @@ module Yast
             next
           end
           if Ops.get_list(old_service_def, "convert_to", []) == []
-            Builtins.y2milestone(
-              "Service %1 supported, but it doesn't have any replacement",
-              old_service_id
-            )
+            log.info "Service #{old_service_id} supported, but it doesn't have any replacement"
             next
           end
           replaced = false
           Builtins.foreach(Ops.get_list(old_service_def, "convert_to", [])) do |replacement|
             if SuSEFirewallServices.IsKnownService(replacement)
-              Builtins.y2milestone(
-                "Old service %1 matches %2",
-                old_service_id,
-                replacement
-              )
+              log.info "Old service #{old_service_id} matches #{replacement}"
               RemoveOldAllowedServiceFromZone(old_service_def, zone)
               SetServicesForZones([replacement], [zone], true)
               replaced = true
@@ -3732,16 +3581,12 @@ module Yast
             end
           end
           if !replaced
-            Builtins.y2warning(
-              "Old service %1 matches %2 but none are installed",
-              old_service_id,
-              Ops.get_list(old_service_def, "convert_to", [])
-            )
+            log.warn "Old service #{old_service_id} matches #{Ops.get_list(old_service_def, "convert_to", [])} but none are installed"
           end
         end
       end
 
-      Builtins.y2milestone("Converting done")
+      log.info "Converting done"
       @already_converted = true
 
       nil

@@ -32,6 +32,8 @@ require "yast"
 
 module Yast
   class TypeRepositoryClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "Address"
       Yast.import "Hostname"
@@ -55,7 +57,7 @@ module Yast
       if validator != nil
         return validator.call(value)
       else
-        Builtins.y2error("Request to validate unknown type %1", type)
+        log.error "Request to validate unknown type #{type}"
       end
       false
     end

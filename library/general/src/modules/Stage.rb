@@ -35,6 +35,8 @@ require "yast"
 
 module Yast
   class StageClass < Module
+    include Yast::Logger
+
     def main
 
       textdomain "base"
@@ -75,10 +77,10 @@ module Yast
           ["normal", "initial", "continue", "firstboot", "hardware_probed"],
           new_stage
         )
-        Builtins.y2error("Unknown stage %1", new_stage)
+        log.error "Unknown stage #{new_stage}"
       end
 
-      Builtins.y2milestone("setting stage to %1", new_stage)
+      log.info "setting stage to #{new_stage}"
       @_stage = new_stage
 
       nil

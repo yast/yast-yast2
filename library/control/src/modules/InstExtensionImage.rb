@@ -38,6 +38,8 @@ require "yast"
 
 module Yast
   class InstExtensionImageClass < Module
+    include Yast::Logger
+
     def main
 
       textdomain "base"
@@ -170,7 +172,7 @@ module Yast
     #   ) -> "param1=x&param2=z&param3=a"
     def MergeURLsParams(base_url, url_with_modifs)
       if base_url == nil || url_with_modifs == nil
-        Builtins.y2error("Wrong params: %1 or %2", base_url, url_with_modifs)
+        log.error "Wrong params: #{base_url} or #{url_with_modifs}"
         return nil
       end
 
@@ -246,7 +248,7 @@ module Yast
     #   ) -> "nfs://server2.net/boot/i386/"
     def MergeURLs(url_base, url_with_modifs)
       if url_base == nil || url_with_modifs == nil
-        Builtins.y2error("Wrong URLs: %1 or %2", url_base, url_with_modifs)
+        log.error "Wrong URLs: #{url_base} or #{url_with_modifs}"
         return nil
       end
 
@@ -288,7 +290,7 @@ module Yast
       # already initialized
       return if @initialized
 
-      Builtins.y2milestone("Initializing...")
+      log.info "Initializing..."
       @initialized = true
 
       # base repo URL
@@ -301,11 +303,11 @@ module Yast
 
       # final base URL (last file/dir already removed)
       @base_url = MergeURLs(repo_url, inst_sys_url)
-      Builtins.y2milestone("Base URL: %1", @base_url)
+      log.info "Base URL: #{@base_url}"
 
       # final params
       @base_url_params = MergeURLsParams(repo_url, inst_sys_url)
-      Builtins.y2milestone("Base URL params: %1", @base_url_params)
+      log.info "Base URL params: #{@base_url_params}"
 
       run = Convert.to_map(
         WFM.Execute(
@@ -314,11 +316,7 @@ module Yast
         )
       )
       if Ops.get_integer(run, "exit", -1) != 0
-        Builtins.y2error(
-          "Cannot create temporary directory: %1: %2",
-          @base_tmpdir,
-          run
-        )
+        log.error "Cannot create temporary directory: #{@base_tmpdir}: #{run}"
       end
 
       run = Convert.to_map(
@@ -328,11 +326,7 @@ module Yast
         )
       )
       if Ops.get_integer(run, "exit", -1) != 0
-        Builtins.y2error(
-          "Cannot create mounts directory: %1: %2",
-          @base_mounts,
-          run
-        )
+        log.error "Cannot create mounts directory: #{@base_mounts}: #{run}"
       end
 
       nil
@@ -344,16 +338,16 @@ module Yast
     # @param [String] message	The message to be shown in the progress popup
     def LoadExtension(package, message)
       if !Stage.initial
-        Builtins.y2error("This module should be used in Stage::initial only!")
+        log.error "This module should be used in Stage::initial only!"
       end
 
       if package == nil || package == ""
-        Builtins.y2error("Such package name can't work: %1", package)
+        log.error "Such package name can't work: #{package}"
         return false
       end
 
       if Builtins.contains(@integrated_extensions, package)
-        Builtins.y2milestone("Package %1 has already been integrated", package)
+        log.info "Package #{package} has already been integrated"
         return true
       end
 
@@ -361,13 +355,13 @@ module Yast
 
       # See BNC #376870
       cmd = Builtins.sformat("extend '%1'", String.Quote(package))
-      Builtins.y2milestone("Calling: %1", cmd)
+      log.info "Calling: #{cmd}"
       cmd_out = Convert.to_map(WFM.Execute(path(".local.bash_output"), cmd))
-      Builtins.y2milestone("Returned: %1", cmd_out)
+      log.info "Returned: #{cmd_out}"
 
       ret = true
       if Ops.get_integer(cmd_out, "exit", -1) != 0
-        Builtins.y2error("'extend' failed!")
+        log.error "'extend' failed!"
         ret = false
       else
         @integrated_extensions = Builtins.add(@integrated_extensions, package)
@@ -384,29 +378,29 @@ module Yast
     # @param [String] message	The message to be shown in the progress popup
     def UnLoadExtension(package, message)
       if !Stage.initial
-        Builtins.y2error("This module should be used in Stage::initial only!")
+        log.error "This module should be used in Stage::initial only!"
       end
 
       if package == nil || package == ""
-        Builtins.y2error("Such package name can't work: %1", package)
+        log.error "Such package name can't work: #{package}"
         return false
       end
 
       if !Builtins.contains(@integrated_extensions, package)
-        Builtins.y2milestone("Package %1 wasn't integrated", package)
+        log.info "Package #{package} wasn't integrated"
         return true
       end
 
       Popup.ShowFeedback("", message) if message != "" && message != nil
 
       cmd = Builtins.sformat("extend -r '%1'", String.Quote(package))
-      Builtins.y2milestone("Calling: %1", cmd)
+      log.info "Calling: #{cmd}"
       cmd_out = Convert.to_map(WFM.Execute(path(".local.bash_output"), cmd))
-      Builtins.y2milestone("Returned: %1", cmd_out)
+      log.info "Returned: #{cmd_out}"
 
       ret = true
       if Ops.get_integer(cmd_out, "exit", -1) != 0
-        Builtins.y2error("'extend' failed!")
+        log.error "'extend' failed!"
         ret = false
       else
         @integrated_extensions = Builtins.filter(@integrated_extensions) do |p|
@@ -424,12 +418,12 @@ module Yast
     end
 
     def DesintegrateExtension(extension)
-      Builtins.y2warning("Function is empty, see BNC #376870")
+      log.warn "Function is empty, see BNC #376870"
       true
     end
 
     def DisintegrateAllExtensions
-      Builtins.y2warning("Function is empty, see BNC #376870")
+      log.warn "Function is empty, see BNC #376870"
       true
     end
 

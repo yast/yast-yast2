@@ -31,6 +31,8 @@ require "yast"
 
 module Yast
   class PackagesProposalClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -52,9 +54,9 @@ module Yast
     # Resets all resolvables to install. Use carefully.
     def ResetAll
       if @resolvables_to_install != {}
-        Builtins.y2warning("Reseting all PackagesProposal items")
+        log.warn "Reseting all PackagesProposal items"
       else
-        Builtins.y2milestone("Reseting all PackagesProposal items")
+        log.info "Reseting all PackagesProposal items"
       end
 
       @resolvables_to_install = {}
@@ -73,7 +75,7 @@ module Yast
 
     def IsSupportedResolvableType(type)
       if type == nil
-        Builtins.y2error("Wrong type: %1", type)
+        log.error "Wrong type: #{type}"
         return false
       end
 
@@ -87,19 +89,12 @@ module Yast
     # @param [Symbol] type
     def CreateEmptyStructureIfMissing(unique_ID, type)
       if !Builtins.haskey(@resolvables_to_install, unique_ID)
-        Builtins.y2debug(
-          "Creating '%1' key in resolvables_to_install",
-          unique_ID
-        )
+        log.debug "Creating '#{unique_ID}' key in resolvables_to_install"
         Ops.set(@resolvables_to_install, unique_ID, {})
       end
 
       if !Builtins.haskey(Ops.get(@resolvables_to_install, unique_ID, {}), type)
-        Builtins.y2debug(
-          "Creating '%1' key in resolvables_to_install[%2]",
-          type,
-          unique_ID
-        )
+        log.debug "Creating '#{type}' key in resolvables_to_install[#{unique_ID}]"
         Ops.set(@resolvables_to_install, [unique_ID, type], [])
       end
 
@@ -113,16 +108,12 @@ module Yast
     # @return [Boolean] if parameters are correct
     def CheckParams(unique_ID, type)
       if unique_ID == nil || unique_ID == ""
-        Builtins.y2error("Unique ID cannot be: %1", unique_ID)
+        log.error "Unique ID cannot be: #{unique_ID}"
         return false
       end
 
       if !IsSupportedResolvableType(type)
-        Builtins.y2error(
-          "Not a supported type: %1, supported are only: %2",
-          type,
-          @supported_resolvables
-        )
+        log.error "Not a supported type: #{type}, supported are only: #{@supported_resolvables}"
         return false
       end
 
@@ -151,16 +142,11 @@ module Yast
       CreateEmptyStructureIfMissing(unique_ID, type)
 
       if resolvables == nil
-        Builtins.y2warning("Changing resolvables %1 to empty list", resolvables)
+        log.warn "Changing resolvables #{resolvables} to empty list"
         resolvables = []
       end
 
-      Builtins.y2milestone(
-        "Adding resolvables %1 type %2 for %3",
-        resolvables,
-        type,
-        unique_ID
-      )
+      log.info "Adding resolvables #{resolvables} type #{type} for #{unique_ID}"
       Ops.set(
         @resolvables_to_install,
         [unique_ID, type],
@@ -192,16 +178,11 @@ module Yast
       CreateEmptyStructureIfMissing(unique_ID, type)
 
       if resolvables == nil
-        Builtins.y2warning("Changing resolvables %1 to empty list", resolvables)
+        log.warn "Changing resolvables #{resolvables} to empty list"
         resolvables = []
       end
 
-      Builtins.y2milestone(
-        "Adjusting resolvables %1 type %2 for %3",
-        resolvables,
-        type,
-        unique_ID
-      )
+      log.info "Adjusting resolvables #{resolvables} type #{type} for #{unique_ID}"
       Ops.set(@resolvables_to_install, [unique_ID, type], resolvables)
 
       true
@@ -227,16 +208,11 @@ module Yast
       CreateEmptyStructureIfMissing(unique_ID, type)
 
       if resolvables == nil
-        Builtins.y2warning("Changing resolvables %1 to empty list", resolvables)
+        log.warn "Changing resolvables #{resolvables} to empty list"
         resolvables = []
       end
 
-      Builtins.y2milestone(
-        "Removing resolvables %1 type %2 for %3",
-        resolvables,
-        type,
-        unique_ID
-      )
+      log.info "Removing resolvables #{resolvables} type #{type} for #{unique_ID}"
       Ops.set(
         @resolvables_to_install,
         [unique_ID, type],
@@ -244,10 +220,7 @@ module Yast
           !Builtins.contains(resolvables, one_resolvable)
         end
       )
-      Builtins.y2milestone(
-        "Resolvables left: %1",
-        Ops.get(@resolvables_to_install, [unique_ID, type], [])
-      )
+      log.info "Resolvables left: #{Ops.get(@resolvables_to_install, [unique_ID, type], [])}"
 
       true
     end
@@ -280,11 +253,7 @@ module Yast
     # @see #supported_resolvables
     def GetAllResolvables(type)
       if !IsSupportedResolvableType(type)
-        Builtins.y2error(
-          "Not a supported type: %1, supported are only: %2",
-          type,
-          @supported_resolvables
-        )
+        log.error "Not a supported type: #{type}, supported are only: #{@supported_resolvables}"
         return nil
       end
 
@@ -346,7 +315,7 @@ module Yast
     # @return [Boolean] whether the ID is not in use yet
     def IsUniqueID(unique_ID)
       if unique_ID == nil || unique_ID == ""
-        Builtins.y2error("Unique ID cannot be: %1", unique_ID)
+        log.error "Unique ID cannot be: #{unique_ID}"
         return nil
       end
 

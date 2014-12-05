@@ -32,6 +32,8 @@ require "yast"
 
 module Yast
   class CWMTableClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
       textdomain "base"
@@ -66,7 +68,7 @@ module Yast
       Builtins.foreach(attr) do |k, v|
         type = Ops.get(types, k)
         if type == nil
-          Builtins.y2error("Unknown attribute %1", k)
+          log.error "Unknown attribute #{k}"
           ret = false
         else
           ret = CWM.ValidateBasicType(v, type) && ret
@@ -89,11 +91,7 @@ module Yast
       success = Ops.is_string?(value) if key == "help"
 
       if !success
-        Builtins.y2error(
-          "Wrong type of option %1 in description map of %2",
-          key,
-          widget
-        )
+        log.error "Wrong type of option #{key} in description map of #{widget}"
       end
 
       success
@@ -139,7 +137,7 @@ module Yast
     # @param opt_descr map selected option description map
     def updateButtons(descr)
       descr = deep_copy(descr)
-      Builtins.y2milestone("update buttons")
+      log.info "update buttons"
       id = Convert.to_string(UI.QueryWidget(Id(:_tw_table), :CurrentItem))
       item_list = Convert.convert(
         UI.QueryWidget(Id(:_tw_table), :Items),
@@ -155,16 +153,16 @@ module Yast
       end
       if Ops.get_boolean(descr, ["_cwm_attrib", "up_down_buttons"], false)
         if Ops.less_than(max, 1) || index == -1
-          Builtins.y2milestone("short list")
+          log.info "short list"
           UI.ChangeWidget(Id(:_tw_up), :Enabled, false)
           UI.ChangeWidget(Id(:_tw_down), :Enabled, false)
         else
           if index == 0
-            Builtins.y2milestone("first item")
+            log.info "first item"
             UI.ChangeWidget(Id(:_tw_up), :Enabled, false)
             UI.ChangeWidget(Id(:_tw_down), :Enabled, true)
           elsif index == max
-            Builtins.y2milestone("last item")
+            log.info "last item"
             UI.ChangeWidget(Id(:_tw_up), :Enabled, true)
             UI.ChangeWidget(Id(:_tw_down), :Enabled, false)
           else

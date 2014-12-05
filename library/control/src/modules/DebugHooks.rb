@@ -31,6 +31,8 @@ require "yast"
 
 module Yast
   class DebugHooksClass < Module
+    include Yast::Logger
+
     def main
 
       Yast.import "Popup"
@@ -72,7 +74,7 @@ module Yast
     # @param [String] script name
     # @param [String] type
     def ExecuteScript(script, type)
-      Builtins.y2milestone("Executing script: %1", script)
+      log.info "Executing script: #{script}"
       # string message =  sformat(_("Executing user supplied script: %1"), scriptName);
       executionString = ""
       scriptPath = Builtins.sformat("%1/%2", @tmp_dir, script)
@@ -93,9 +95,9 @@ module Yast
         )
         WFM.Execute(path(".local.bash"), executionString)
       else
-        Builtins.y2error("Unknown interpreter: %1", type)
+        log.error "Unknown interpreter: #{type}"
       end
-      Builtins.y2milestone("Script Execution command: %1", executionString)
+      log.info "Script Execution command: #{executionString}"
 
       nil
     end
@@ -104,7 +106,7 @@ module Yast
     # @param [String] filename == name of .ycp file
     # @param [Boolean] at_entry == true before call of file == false after call of file
     def Run(filename, at_entry)
-      Builtins.y2debug("Running debug hook: %1", filename)
+      log.debug "Running debug hook: #{filename}"
       # do not run scripts twice
       if at_entry
         if Ops.greater_than(
@@ -124,11 +126,7 @@ module Yast
           )
           ExecuteScript(Builtins.sformat("%1_pre.pl", filename), "perl")
         else
-          Builtins.y2debug(
-            "Debug hook not found: %1/%2_pre.{sh,pl}",
-            @tmp_dir,
-            filename
-          )
+          log.debug "Debug hook not found: #{@tmp_dir}/#{filename}_pre.{sh,pl}"
         end
       else
         if Ops.greater_than(
@@ -148,11 +146,7 @@ module Yast
           )
           ExecuteScript(Builtins.sformat("%1_post.pl", filename), "perl")
         else
-          Builtins.y2debug(
-            "Debug hook not found: %1/%2_post.{sh,pl}",
-            @tmp_dir,
-            filename
-          )
+          log.debug "Debug hook not found: #{@tmp_dir}/#{filename}_post.{sh,pl}"
         end
       end
       nil

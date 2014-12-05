@@ -32,6 +32,8 @@ require "yast"
 
 module Yast
   class CWMTsigKeysClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
       textdomain "base"
@@ -90,7 +92,7 @@ module Yast
         end
         false
       end
-      Builtins.y2milestone("Key: %1, File: %2", key, filename)
+      log.info "Key: #{key}, File: #{filename}"
       filename
     end
 
@@ -172,7 +174,7 @@ module Yast
       filename = NormalizeFilename(filename)
       contents = Convert.to_string(SCR.Read(path(".target.string"), filename))
       if contents == nil
-        Builtins.y2warning("Unable to read file with TSIG keys: %1", filename)
+        log.warn "Unable to read file with TSIG keys: #{filename}"
         return []
       end
       ret = []
@@ -189,7 +191,7 @@ module Yast
           )
         end
       end
-      Builtins.y2milestone("File: %1, Keys: %2", filename, ret)
+      log.info "File: #{filename}, Keys: #{ret}"
       deep_copy(ret)
     end
 
@@ -197,7 +199,7 @@ module Yast
     # @param [String] main string filename of the main file
     def DeleteTSIGKeyFromDisk(main)
       keys = AnalyzeTSIGKeyFile(main)
-      Builtins.y2milestone("Removing file %1, found keys: %2", main, keys)
+      log.info "Removing file #{main}, found keys: #{keys}"
       Builtins.foreach(keys) do |k|
         SCR.Execute(
           path(".target.bash"),
@@ -219,7 +221,7 @@ module Yast
         Builtins.maplist(keys) { |k| { "filename" => f, "key" => k } }
       end
       ret = Builtins.flatten(tmpret)
-      Builtins.y2milestone("Files: %1, Keys: %2", filenames, ret)
+      log.info "Files: #{filenames}, Keys: #{ret}"
       deep_copy(ret)
     end
 
@@ -230,7 +232,7 @@ module Yast
       filenames = deep_copy(filenames)
       keys = Files2KeyMaps(filenames)
       ret = Builtins.maplist(keys) { |k| Ops.get(k, "key", "") }
-      Builtins.y2milestone("Files: %1, Keys: %2", filenames, ret)
+      log.info "Files: #{filenames}, Keys: #{ret}"
       deep_copy(ret)
     end
 
@@ -342,7 +344,7 @@ module Yast
         return nil
       elsif ret == "_cwm_generate_key"
         if !UI.WidgetExists(Id("_cwm_new_key_file"))
-          Builtins.y2error("No such UI widget: %1", "_cwm_new_key_file")
+          log.error "No such UI widget: #{"_cwm_new_key_file"}"
           return nil
         end
 
@@ -431,7 +433,7 @@ module Yast
           String.Quote(new_filename),
           String.Quote(key2)
         )
-        Builtins.y2milestone("Running %1", gen_command)
+        log.info "Running #{gen_command}"
         gen_ret = Convert.to_integer(
           SCR.Execute(path(".target.bash"), gen_command)
         )

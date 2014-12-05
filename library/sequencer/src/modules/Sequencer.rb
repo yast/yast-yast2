@@ -38,6 +38,8 @@ require "yast"
 
 module Yast
   class SequencerClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -257,7 +259,7 @@ module Yast
     # @return returned value from function or nil, if function is nil or returned something else than symbol
     def WS_run(aliases, id)
       aliases = deep_copy(aliases)
-      Builtins.y2debug("Running: %1", id)
+      log.debug "Running: #{id}"
       function = nil
 
       function = WS_alias(aliases, id)
@@ -331,12 +333,12 @@ module Yast
 
       while true
         if Ops.is_symbol?(current)
-          Builtins.y2debug("Finished")
+          log.debug "Finished"
           return Convert.to_symbol(current)
         end
 
         stack = WS_push(stack, current)
-        Builtins.y2debug("stack=%1", stack)
+        log.debug "stack=#{stack}"
         ret = WS_run(aliases, Convert.to_string(current))
 
         if ret == nil || !Ops.is_symbol?(ret)
@@ -344,26 +346,26 @@ module Yast
             WS_error(Builtins.sformat("Invalid ret: %1", ret))
           )
         elsif ret == :back
-          Builtins.y2debug("Back")
+          log.debug "Back"
           poped = []
           special = true
           begin
             return :back if Ops.less_than(Builtins.size(stack), 2)
             poped = WS_pop(stack)
-            Builtins.y2debug("poped=%1", poped)
+            log.debug "poped=#{poped}"
             current = Ops.get(poped, 1)
             stack = Ops.get_list(poped, 0)
             special = WS_special(aliases, Convert.to_string(current))
-            Builtins.y2debug("special=%1", special)
+            log.debug "special=#{special}"
           end while special
         else
-          Builtins.y2debug("ret=%1", ret)
+          log.debug "ret=#{ret}"
           current = WS_next(
             sequence,
             Convert.to_string(current),
             Convert.to_symbol(ret)
           )
-          Builtins.y2debug("current=%1", current)
+          log.debug "current=#{current}"
           if current == nil
             return Convert.to_symbol(
               WS_error(Builtins.sformat("Next not found: %1", current))

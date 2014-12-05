@@ -38,6 +38,8 @@ require "yast"
 
 module Yast
   class ModulesConfClass < Module
+    include Yast::Logger
+
     def main
 
       Yast.import "Arch"
@@ -78,7 +80,7 @@ module Yast
         )
       )
 
-      Builtins.y2milestone("running /sbin/depmod")
+      log.info "running /sbin/depmod"
 
       if Ops.greater_than(Builtins.size(kernel_version), 0)
         SCR.Execute(

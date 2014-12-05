@@ -33,6 +33,8 @@ require "yast"
 
 module Yast
   class ModuleLoadingClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
 
@@ -147,7 +149,7 @@ module Yast
 
         # #97655
         if MarkedAsBroken(modulename)
-          Builtins.y2milestone("In BrokenModules, skipping: %1", modulename)
+          log.info "In BrokenModules, skipping: #{modulename}"
           return :dont
         end
 
@@ -249,11 +251,7 @@ module Yast
           UI.CloseDialog
 
           if ret == :cancel_msg
-            Builtins.y2milestone(
-              "NOT loaded module %1 %2",
-              modulename,
-              moduleargs
-            )
+            log.info "NOT loaded module #{modulename} #{moduleargs}"
             return :dont
           end
         end # ask_before_loading
@@ -271,12 +269,7 @@ module Yast
       end
       load_success = false if load_success == nil
 
-      Builtins.y2milestone(
-        "Loaded module %1 %2 %3",
-        modulename,
-        moduleargs,
-        load_success ? "Ok" : "Failed"
-      )
+      log.info "Loaded module #{modulename} #{moduleargs} #{load_success ? "Ok" : "Failed"}"
 
       load_success ? :ok : :fail
     end

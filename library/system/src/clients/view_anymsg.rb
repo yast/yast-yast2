@@ -44,6 +44,8 @@
 # The default is either given as WFM::Args(0) or is the file last viewed.
 module Yast
   class ViewAnymsgClient < Client
+    include Yast::Logger
+
     def main
       Yast.import "UI"
       textdomain "base"
@@ -219,7 +221,7 @@ module Yast
           )
           @filename = @new_file if @new_file != nil
         else
-          Builtins.y2milestone("bad UserInput (%1)", @ret)
+          log.info "bad UserInput (#{@ret})"
         end
       end
 

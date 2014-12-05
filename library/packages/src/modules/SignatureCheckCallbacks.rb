@@ -286,12 +286,7 @@ module Yast
     # function for CallbackTrustedKeyAdded()
     def TrustedKeyAdded(key)
       key = deep_copy(key)
-      Builtins.y2milestone(
-        "Trusted key has been added: %1 / %2 (%3)",
-        Ops.get_string(key, "id", ""),
-        Ops.get_string(key, "fingerprint", ""),
-        Ops.get_string(key, "name", "")
-      )
+      log.info "Trusted key has been added: #{Ops.get_string(key, "id", "")} / #{Ops.get_string(key, "fingerprint", "")} (#{Ops.get_string(key, "name", "")})"
       nil
     end
 
@@ -302,12 +297,7 @@ module Yast
     # function for CallbackTrustedKeyRemoved()
     def TrustedKeyRemoved(key)
       key = deep_copy(key)
-      Builtins.y2milestone(
-        "Trusted key has been removed: %1 / %2 (%3)",
-        Ops.get_string(key, "id", ""),
-        Ops.get_string(key, "fingerprint", ""),
-        Ops.get_string(key, "name", "")
-      )
+      log.info "Trusted key has been removed: #{Ops.get_string(key, "id", "")} / #{Ops.get_string(key, "fingerprint", "")} (#{Ops.get_string(key, "name", "")})"
       nil
     end
 

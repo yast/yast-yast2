@@ -32,6 +32,8 @@ require "yast"
 
 module Yast
   class CrashClass < Module
+    include Yast::Logger
+
     def main
 
       Yast.import "Popup"
@@ -61,7 +63,7 @@ module Yast
           :from => "any",
           :to   => "map <string, any>"
         )
-        Builtins.y2milestone("Read settings: %1", settings)
+        log.info "Read settings: #{settings}"
         @all_failed = Ops.get_list(settings, "all_failed", [])
         @last_failed = Ops.get_list(settings, "last_failed", [])
         @last_done = Ops.get_string(settings, "last_done")
@@ -78,7 +80,7 @@ module Yast
         "last_done"   => @last_done
       }
       SCR.Write(path(".target.ycp"), @filename, settings)
-      Builtins.y2milestone("Written settings: %1", settings)
+      log.info "Written settings: #{settings}"
       SCR.Execute(path(".target.bash"), "/bin/sync")
 
       nil

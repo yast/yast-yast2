@@ -31,6 +31,8 @@ require "yast"
 
 module Yast
   class DesktopClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
       textdomain "base"
@@ -89,7 +91,7 @@ module Yast
 
       #no translations in .desktop, check desktop_translations.mo then
       msgid = Builtins.sformat("%1(%2): %3", key, fname, fallback)
-      Builtins.y2debug("Looking for key: %1", msgid)
+      log.debug "Looking for key: #{msgid}"
       ret = Builtins.dpgettext(
         "desktop_translations",
         "/usr/share/locale",
@@ -113,8 +115,8 @@ module Yast
       if Builtins.regexpmatch(@Language, "(.*)_")
         @Language = Builtins.regexpsub(@Language, "(.*)_", "\\1")
       end
-      Builtins.y2debug("LanguageFull=%1", @LanguageFull)
-      Builtins.y2debug("Language=%1", @Language)
+      log.debug "LanguageFull=#{@LanguageFull}"
+      log.debug "Language=#{@Language}"
 
       nil
     end
@@ -146,7 +148,7 @@ module Yast
 
       # read groups
       groups = SCR.Dir(path(".yast2.groups.s"))
-      Builtins.y2debug("groups=%1", groups)
+      log.debug "groups=#{groups}"
       Builtins.foreach(groups) do |group|
         filemap = {}
         filepath = Ops.add(
@@ -173,7 +175,7 @@ module Yast
         )
         Ops.set(@Groups, name2, filemap)
       end
-      Builtins.y2debug("Groups=%1", @Groups)
+      log.debug "Groups=#{@Groups}"
 
       # read modules
       Builtins.foreach(files) do |file|
@@ -206,8 +208,8 @@ module Yast
           end
         end
       end
-      Builtins.y2debug("Groups=%1", @Groups)
-      Builtins.y2debug("Modules=%1", @Modules)
+      log.debug "Groups=#{@Groups}"
+      log.debug "Modules=#{@Modules}"
 
       nil
     end
@@ -217,7 +219,7 @@ module Yast
       if Builtins.regexpmatch(key, "_\\(\"(.*)\"\\)") == true
         ke = Builtins.regexpsub(key, "_\\(\"(.*)\"\\)", "\\1")
         key = Builtins.eval(ke)
-        Builtins.y2milestone("%1 -> %2", ke, key)
+        log.info "#{ke} -> #{key}"
       end
       key
     end
@@ -237,7 +239,7 @@ module Yast
         Ops.get_string(_M, [key, "Hidden"], "false") != "true"
       end
 
-      Builtins.y2debug("keys=%1", keys)
+      log.debug "keys=#{keys}"
 
       Builtins.maplist(keys) do |name|
         Item(Id(name), Translate(Ops.get_string(_M, [name, "Name"], "???")))
@@ -373,7 +375,7 @@ module Yast
 
       #non-existent file requested
       if SCR.Dir(path(".yast2.desktop1.v.\"Desktop Entry\"")) == nil
-        Builtins.y2error("Unknown desktop file: %1", file)
+        log.error "Unknown desktop file: #{file}"
         SCR.UnregisterAgent(path(".yast2.desktop1"))
         return nil
       end

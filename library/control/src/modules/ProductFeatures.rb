@@ -32,6 +32,8 @@ require "yast"
 
 module Yast
   class ProductFeaturesClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -107,7 +109,7 @@ module Yast
     def SetSection(section_name, section_map)
       section_map = deep_copy(section_map)
       InitFeatures(false)
-      Builtins.y2debug("Setting section: %1", section_name)
+      log.debug "Setting section: #{section_name}"
       section_map = Convert.convert(
         Builtins.union(Ops.get(@defaults, section_name, {}), section_map),
         :from => "map",
@@ -139,7 +141,7 @@ module Yast
       end
       Builtins.foreach(@features) { |group, options| Builtins.foreach(options) do |key, value|
         if Ops.is_map?(value) || Ops.is_list?(value) || Ops.is_symbol?(value)
-          Builtins.y2debug("Skipping option %1", key)
+          log.debug "Skipping option #{key}"
         else
           strval = GetStringFeature(group, key)
           SCR.Write(

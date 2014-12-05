@@ -32,6 +32,8 @@ require "yast"
 
 module Yast
   class LogViewCoreClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
 
@@ -170,7 +172,7 @@ module Yast
         end
       end
 
-      Builtins.y2milestone("Calling process agent with command %1", command)
+      log.info "Calling process agent with command #{command}"
 
       @id = Convert.to_integer(
         SCR.Execute(path(".process.start_shell"), command, { "tty" => true })

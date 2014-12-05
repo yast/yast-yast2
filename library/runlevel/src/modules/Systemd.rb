@@ -33,6 +33,8 @@ require "yast"
 
 module Yast
   class SystemdClass < Module
+    include Yast::Logger
+
     def main
 
       Yast.import "FileUtils"
@@ -63,17 +65,11 @@ module Yast
     def SetDefaultRunlevel(selected_runlevel)
       if selected_runlevel == nil || Ops.less_than(selected_runlevel, 0) ||
           Ops.greater_than(selected_runlevel, 6)
-        Builtins.y2error(
-          "Invalid default runlevel (must be in range 0..6): %1",
-          selected_runlevel
-        )
+        log.error "Invalid default runlevel (must be in range 0..6): #{selected_runlevel}"
         return false
       end
 
-      Builtins.y2milestone(
-        "Setting systemd default runlevel: %1",
-        selected_runlevel
-      )
+      log.info "Setting systemd default runlevel: #{selected_runlevel}"
 
       # create symbolic link, -f to rewrite the current link (if exists)
       command = Builtins.sformat(
@@ -82,13 +78,13 @@ module Yast
         selected_runlevel,
         @default_target_symlink
       )
-      Builtins.y2milestone("Executing: %1", command)
+      log.info "Executing: #{command}"
 
       res = Convert.to_integer(SCR.Execute(path(".target.bash"), command))
-      Builtins.y2debug("Result: %1", res)
+      log.debug "Result: #{res}"
 
       ret = res == 0
-      Builtins.y2milestone("Default runlevel set: %1", ret)
+      log.info "Default runlevel set: #{ret}"
 
       ret
     end
@@ -99,13 +95,10 @@ module Yast
       target = Convert.to_string(
         SCR.Read(path(".target.symlink"), @default_target_symlink)
       )
-      Builtins.y2milestone("Default symlink points to: %1", target)
+      log.info "Default symlink points to: #{target}"
 
       if target == nil
-        Builtins.y2error(
-          "Cannot read symlink target of %1",
-          @default_target_symlink
-        )
+        log.error "Cannot read symlink target of #{@default_target_symlink}"
         return nil
       end
 
@@ -113,7 +106,7 @@ module Yast
       runlevel = Builtins.regexpsub(target, "/runlevel([0-6]).target$", "\\1")
       if runlevel != nil
         ret = Builtins.tointeger(runlevel)
-        Builtins.y2milestone("Default runlevel: %1", ret)
+        log.info "Default runlevel: #{ret}"
 
         return ret
       end
@@ -123,10 +116,7 @@ module Yast
       # YaST should also support this style in case users do a manual change)
       runlevel_name = Builtins.regexpsub(target, "/([^/]*).target$", "\\1")
       if runlevel_name != nil
-        Builtins.y2milestone(
-          "Detected default runlevel name: %1",
-          runlevel_name
-        )
+        log.info "Detected default runlevel name: #{runlevel_name}"
         mapping = {
           "poweroff"   => 0,
           "rescue"     => 1,
@@ -138,12 +128,12 @@ module Yast
         }
 
         ret = Ops.get(mapping, runlevel_name)
-        Builtins.y2milestone("Default runlevel: %1", ret)
+        log.info "Default runlevel: #{ret}"
 
         return ret
       end
 
-      Builtins.y2error("Cannot determine the default runlevel")
+      log.error "Cannot determine the default runlevel"
       nil
     end
 

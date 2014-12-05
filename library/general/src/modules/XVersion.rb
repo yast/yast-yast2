@@ -30,6 +30,8 @@ require "yast"
 
 module Yast
   class XVersionClass < Module
+    include Yast::Logger
+
     def main
 
       # All paths related to X server
@@ -49,9 +51,9 @@ module Yast
             Convert.to_string(SCR.Read(Builtins.add(path(".x_version"), k)))
           )
         end
-        Builtins.y2milestone("X11 paths: %1", @_paths)
+        log.info "X11 paths: #{@_paths}"
       else
-        Builtins.y2error("Data for XVersion not defined!")
+        log.error "Data for XVersion not defined!"
       end
 
       nil

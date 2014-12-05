@@ -32,6 +32,8 @@ require "yast"
 
 module Yast
   class CWMServiceStartClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
       textdomain "base"
@@ -130,7 +132,7 @@ module Yast
     def AutoStartInit(widget, key)
       widget = deep_copy(widget)
       if !UI.WidgetExists(Id("_cwm_service_startup"))
-        Builtins.y2error("Widget _cwm_service_startup does not exist")
+        log.error "Widget _cwm_service_startup does not exist"
         return
       end
       get_auto_start = Convert.convert(
@@ -170,7 +172,7 @@ module Yast
       widget = deep_copy(widget)
       event = deep_copy(event)
       if !UI.WidgetExists(Id("_cwm_service_startup"))
-        Builtins.y2error("Widget _cwm_service_startup does not exist")
+        log.error "Widget _cwm_service_startup does not exist"
         return
       end
 

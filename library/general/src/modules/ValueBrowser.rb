@@ -33,6 +33,8 @@ require "yast"
 
 module Yast
   class ValueBrowserClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
 
@@ -171,14 +173,14 @@ module Yast
       variable = deep_copy(variable)
       simple = FormatSimpleType(variable, indent)
       if simple != nil
-        Builtins.y2debug("%1", simple)
+        log.debug "#{simple}"
       elsif Ops.is_list?(variable)
         Builtins.foreach(Convert.to_list(variable)) do |i|
           DebugBrowseHelper(i, Ops.add(indent, "  "))
         end
       elsif Ops.is_map?(variable)
         Builtins.foreach(Convert.to_map(variable)) do |k, v|
-          Builtins.y2debug("%2%1 (map key)", k, indent)
+          log.debug "#{indent}#{k} (map key)"
           DebugBrowseHelper(v, Builtins.sformat("  %1", indent))
         end
       elsif Ops.is_term?(variable)
@@ -186,7 +188,7 @@ module Yast
         items = []
         len = Builtins.size(tvariable)
         i = 0
-        Builtins.y2debug("%1%2 (term)", indent, Builtins.symbolof(tvariable))
+        log.debug "#{indent}#{Builtins.symbolof(tvariable)} (term)"
         while Ops.less_than(i, len)
           items = Builtins.add(
             items,

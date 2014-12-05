@@ -33,6 +33,8 @@ require "yast"
 
 module Yast
   class PunycodeClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -76,7 +78,7 @@ module Yast
       if new_max_size != nil
         @maximum_cache_size = new_max_size
       else
-        Builtins.y2error("Cannot set MaximumCacheSize to nil!")
+        log.error "Cannot set MaximumCacheSize to nil!"
       end
 
       nil
@@ -229,7 +231,7 @@ module Yast
         if Convert.to_integer(
             SCR.Execute(path(".target.bash"), convert_command)
           ) != 0
-          Builtins.y2error("Conversion failed!")
+          log.error "Conversion failed!"
         else
           converted_not_cached = Convert.convert(
             SCR.Read(path(".target.ycp"), tmp_out),
@@ -238,10 +240,7 @@ module Yast
           )
           # Parsing the YCP file failed
           if converted_not_cached == nil
-            Builtins.y2error(
-              "Erroneous YCP file: %1",
-              SCR.Read(path(".target.string"), tmp_out)
-            )
+            log.error "Erroneous YCP file: #{SCR.Read(path(".target.string"), tmp_out)}"
           end
         end
       end
@@ -386,11 +385,7 @@ module Yast
         _end = Ops.get(backward_map_of_conversion, [current_domain_index, 1])
         # error?
         if current == nil || _end == nil
-          Builtins.y2error(
-            "Cannot find start/end for %1 in %2",
-            one_encoded,
-            Ops.get(backward_map_of_conversion, current_domain_index)
-          )
+          log.error "Cannot find start/end for #{one_encoded} in #{Ops.get(backward_map_of_conversion, current_domain_index)}"
           Ops.set(decoded_domain_names, current_domain_index, one_encoded)
         else
           # create a list of items of the current domain (translated)

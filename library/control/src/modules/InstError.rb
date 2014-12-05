@@ -34,6 +34,8 @@ require "yast"
 
 module Yast
   class InstErrorClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
       textdomain "base"
@@ -58,11 +60,7 @@ module Yast
         )
         homedir = "/" if homedir == ""
       else
-        Builtins.y2warning(
-          "Unable to find out home dir: %1, using %2",
-          cmd,
-          homedir
-        )
+        log.warn "Unable to find out home dir: #{cmd}, using #{homedir}"
       end
       homedir = Builtins.sformat("%1/y2logs.tgz", homedir)
 
@@ -78,7 +76,7 @@ module Yast
       UI.OpenDialog(
         Label(Builtins.sformat(_("Saving YaST logs to %1..."), savelogsto))
       )
-      Builtins.y2milestone("Saving YaST logs to: %1", savelogsto)
+      log.info "Saving YaST logs to: #{savelogsto}"
 
       cmd = Convert.to_map(
         WFM.Execute(
@@ -89,7 +87,7 @@ module Yast
       dialog_ret = nil
 
       if Ops.get_integer(cmd, "exit", -1) != 0
-        Builtins.y2error("Unable to save logs to %1", savelogsto)
+        log.error "Unable to save logs to #{savelogsto}"
 
         Report.Error(
           Builtins.sformat(
@@ -103,7 +101,7 @@ module Yast
 
         dialog_ret = false
       else
-        Builtins.y2milestone("Logs have been saved to: %1", savelogsto)
+        log.info "Logs have been saved to: #{savelogsto}"
         dialog_ret = true
       end
 
@@ -181,12 +179,7 @@ module Yast
       )
 
       if success != true
-        Builtins.y2error(
-          "Cannot open a dialog: %1/%2/%3",
-          heading,
-          error_text,
-          details
-        )
+        log.error "Cannot open a dialog: #{heading}/#{error_text}/#{details}"
         return
       end
 

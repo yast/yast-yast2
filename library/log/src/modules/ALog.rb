@@ -42,6 +42,8 @@ require "yast"
 
 module Yast
   class ALogClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
       textdomain "base"
@@ -51,7 +53,7 @@ module Yast
 
     def doLog(type, msg)
       # TODO make a separate log, this is just a prototype
-      Builtins.y2internal("{%1} %2", type, msg)
+      log.fatal "{#{type}} #{msg}"
 
       nil
     end

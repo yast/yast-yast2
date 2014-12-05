@@ -30,6 +30,8 @@ require "yast"
 
 module Yast
   class GetInstArgsClass < Module
+    include Yast::Logger
+
     def main
 
       @args = {}
@@ -48,7 +50,7 @@ module Yast
         end
         i = Ops.add(i, 1)
       end
-      Builtins.y2milestone("args=%1", @args)
+      log.info "args=#{@args}"
 
       nil
     end

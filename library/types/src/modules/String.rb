@@ -31,6 +31,8 @@ require "yast"
 
 module Yast
   class StringClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -71,10 +73,10 @@ module Yast
     # @see #quote
     def UnQuote(var)
       return "" if var == nil || var == ""
-      Builtins.y2debug("var=%1", var)
+      log.debug "var=#{var}"
       while Builtins.regexpmatch(var, "'\\\\''")
         var = Builtins.regexpsub(var, "(.*)'\\\\''(.*)", "\\1'\\2")
-        Builtins.y2debug("var=%1", var)
+        log.debug "var=#{var}"
       end
       var
     end
@@ -433,17 +435,8 @@ module Yast
       )
       remove_whitespace = Ops.get_boolean(parameters, "remove_whitespace", true)
 
-      Builtins.y2debug(
-        "Input: string: '%1', parameters: %2",
-        options,
-        parameters
-      )
-      Builtins.y2debug(
-        "Used values: separator: '%1', unique: %2, remove_whitespace: %3",
-        separator,
-        unique,
-        remove_whitespace
-      )
+      log.debug "Input: string: '#{options}', parameters: #{parameters}"
+      log.debug "Used values: separator: '#{separator}', unique: #{unique}, remove_whitespace: #{remove_whitespace}"
 
       return [] if options == nil
 
@@ -481,12 +474,7 @@ module Yast
         while Ops.less_than(index, Builtins.size(options))
           character = Builtins.substring(options, index, 1)
 
-          Builtins.y2debug(
-            "character: %1 state: %2 index: %3",
-            character,
-            state,
-            index
-          )
+          log.debug "character: #{character} state: #{state} index: #{index}"
 
           # interpret backslash sequence
           if character == "\\" && interpret_backslash == true
@@ -524,11 +512,9 @@ module Yast
                 end
               end
 
-              Builtins.y2debug("backslash sequence: '%1'", character)
+              log.debug "backslash sequence: '#{character}'"
             else
-              Builtins.y2warning(
-                "Missing character after backslash (\\) at the end of string"
-              )
+              log.warn "Missing character after backslash (\\) at the end of string"
             end
           end
 
@@ -603,10 +589,7 @@ module Yast
         # error - still in quoted string
         if state == :in_quoted_string || state == :in_quoted_string_after_dblqt
           if state == :in_quoted_string
-            Builtins.y2warning(
-              "Missing trainling double quote character(\") in input: '%1'",
-              options
-            )
+            log.warn "Missing trainling double quote character(\") in input: '#{options}'"
           end
 
           if unique == true
@@ -629,7 +612,7 @@ module Yast
       end
 
 
-      Builtins.y2debug("Parsed values: %1", ret)
+      log.debug "Parsed values: #{ret}"
 
       deep_copy(ret)
     end
@@ -978,7 +961,7 @@ module Yast
       joined_multilines = []
       multiline = ""
 
-      Builtins.y2debug("metadata: %1", metalines)
+      log.debug "metadata: #{metalines}"
 
       # join multi line metadata lines
       Builtins.foreach(metalines) do |metaline|
@@ -1018,10 +1001,7 @@ module Yast
       end 
 
 
-      Builtins.y2debug(
-        "metadata after multiline joining: %1",
-        joined_multilines
-      )
+      log.debug "metadata after multiline joining: #{joined_multilines}"
 
       # parse each metadata line
       Builtins.foreach(joined_multilines) do |metaline|
@@ -1045,20 +1025,20 @@ module Yast
         # remove whitespaces from parts
         tag = CutBlanks(tag)
         val = CutBlanks(val)
-        Builtins.y2debug("tag: %1 val: '%2'", tag, val)
+        log.debug "tag: #{tag} val: '#{val}'"
         # add tag and value to map if they are present in comment
         if tag != ""
           ret = Builtins.add(ret, tag, val)
         else
           # ignore separator lines
           if !Builtins.regexpmatch(metaline, "^#*$")
-            Builtins.y2warning("Unknown metadata line: %1", metaline)
+            log.warn "Unknown metadata line: #{metaline}"
           end
         end
       end 
 
 
-      Builtins.y2debug("parsed sysconfig comment: %1", ret)
+      log.debug "parsed sysconfig comment: #{ret}"
 
       deep_copy(ret)
     end
@@ -1072,12 +1052,12 @@ module Yast
       return nil if s == nil
 
       if source == nil || source == ""
-        Builtins.y2warning("invalid parameter source: %1", source)
+        log.warn "invalid parameter source: #{source}"
         return s
       end
 
       if target == nil
-        Builtins.y2warning("invalid parameter target: %1", target)
+        log.warn "invalid parameter target: #{target}"
         return s
       end
 

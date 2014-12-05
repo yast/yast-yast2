@@ -24,6 +24,8 @@
 # This is an example file for GPG.ycp and GPGWidgets.ycp modules.
 module Yast
   class ExampleClient < Client
+    include Yast::Logger
+
     def main
       Yast.import "UI"
 
@@ -31,8 +33,8 @@ module Yast
       Yast.import "GPGWidgets"
       Yast.import "CWM"
 
-      Builtins.y2milestone("PrivateKeys: %1", GPG.PrivateKeys)
-      Builtins.y2milestone("PublicKeys: %1", GPG.PublicKeys)
+      log.info "PrivateKeys: #{GPG.PrivateKeys}"
+      log.info "PublicKeys: #{GPG.PublicKeys}"
 
       @w = CWM.CreateWidgets(
         ["select_private_key", "create_new_key"],
@@ -57,12 +59,12 @@ module Yast
 
       UI.OpenDialog(@contents)
       @ret = CWM.Run(@w, {})
-      Builtins.y2milestone("Ret: %1", @ret)
+      log.info "Ret: #{@ret}"
       UI.CloseDialog
 
       @selected_key = GPGWidgets.SelectedPrivateKey
 
-      Builtins.y2milestone("SelectedPrivateKey: %1", @selected_key)
+      log.info "SelectedPrivateKey: #{@selected_key}"
 
       if @selected_key != nil && @selected_key != ""
         GPGWidgets.AskPassphrasePopup(GPGWidgets.SelectedPrivateKey)

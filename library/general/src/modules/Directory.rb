@@ -31,6 +31,8 @@ require "yast"
 
 module Yast
   class DirectoryClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -104,7 +106,7 @@ module Yast
     def ResetTmpDir
       @tmpdir = Convert.to_string(SCR.Read(path(".target.tmpdir")))
       if @tmpdir == "" || @tmpdir == nil
-        Builtins.y2error("Failed to set temporary directory: %1", @tmpdir)
+        log.error "Failed to set temporary directory: #{@tmpdir}"
         @tmpdir = "/tmp"
       end
 

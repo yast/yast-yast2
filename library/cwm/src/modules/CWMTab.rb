@@ -32,6 +32,8 @@ require "yast"
 
 module Yast
   class CWMTabClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
       textdomain "base"
@@ -301,7 +303,7 @@ module Yast
 
     # A hook to handle Alt-Ctrl-Shift-D
     def handleDebug
-      Builtins.y2debug("Handling a debugging event")
+      log.debug "Handling a debugging event"
 
       nil
     end

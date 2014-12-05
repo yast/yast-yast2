@@ -31,6 +31,8 @@ require "yast"
 
 module Yast
   class EncodingClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -74,19 +76,19 @@ module Yast
       m = {} if m == nil
 
       out = Builtins.splitstring(Ops.get_string(m, "stdout", ""), "\n")
-      Builtins.y2milestone("list %1", out)
+      log.info "list #{out}"
 
       out = Builtins.filter(out) { |e| Builtins.find(e, "charmap=") == 0 }
-      Builtins.y2milestone("list %1", out)
+      log.info "list #{out}"
 
       if Ops.greater_than(Builtins.size(Ops.get(out, 0, "")), 0)
         enc = Builtins.substring(Ops.get(out, 0, ""), 8)
-        Builtins.y2milestone("enc %1", enc)
+        log.info "enc #{enc}"
         enc = Builtins.deletechars(enc, "\" ")
-        Builtins.y2milestone("enc %1", enc)
+        log.info "enc #{enc}"
         @console = enc if Ops.greater_than(Builtins.size(enc), 0)
       end
-      Builtins.y2milestone("encoding %1", @console)
+      log.info "encoding #{@console}"
       @console
     end
 
@@ -95,7 +97,7 @@ module Yast
     # @return [void]
     def SetEncLang(new_lang)
       @lang = new_lang
-      Builtins.y2milestone("SetEncLang %1", @lang)
+      log.info "SetEncLang #{@lang}"
 
       nil
     end
@@ -104,7 +106,7 @@ module Yast
     # @return Language
     def GetEncLang
       ret = @lang
-      Builtins.y2milestone("GetEncLang ret %1", ret)
+      log.info "GetEncLang ret #{ret}"
       ret
     end
 
@@ -113,7 +115,7 @@ module Yast
     # @return [void]
     def SetUtf8Lang(new_utf8)
       @utf8 = new_utf8
-      Builtins.y2milestone("SetUtf8Lang %1", @utf8)
+      log.info "SetUtf8Lang #{@utf8}"
 
       nil
     end
@@ -122,7 +124,7 @@ module Yast
     # @return [Boolean]
     def GetUtf8Lang
       ret = @utf8
-      Builtins.y2milestone("GetUtf8Lang ret %1", ret)
+      log.info "GetUtf8Lang ret #{ret}"
       ret
     end
 
@@ -137,12 +139,7 @@ module Yast
         l = Builtins.substring(@lang, 0, 5)
         code = Ops.get_string(@lang_map, l, "")
       end
-      Builtins.y2milestone(
-        "GetCodePage enc %1 lang %2 ret %3",
-        enc,
-        @lang,
-        code
-      )
+      log.info "GetCodePage enc #{enc} lang #{@lang} ret #{code}"
       code
     end
 

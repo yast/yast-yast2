@@ -32,6 +32,8 @@ require "yast"
 
 module Yast
   class CustomDialogsClass < Module
+    include Yast::Logger
+
     def main
 
     end
@@ -45,8 +47,8 @@ module Yast
         p = Ops.get(patterns, i, "")
         tmp = Ops.add(Ops.add(file_path, "/"), p)
         if !Builtins.issubstring(p, "%")
-          Builtins.y2debug("no pattern")
-          Builtins.y2debug("checking for %1", tmp)
+          log.debug "no pattern"
+          log.debug "checking for #{tmp}"
           text = Convert.to_string(SCR.Read(path(".target.string"), [tmp, ""]))
           if text != ""
             break
@@ -56,17 +58,17 @@ module Yast
           end
         end
         file = Builtins.sformat(tmp, language)
-        Builtins.y2debug("checking for %1", file)
+        log.debug "checking for #{file}"
         text = Convert.to_string(SCR.Read(path(".target.string"), [file, ""]))
         break if text != ""
 
         file = Builtins.sformat(tmp, Builtins.substring(language, 0, 2))
-        Builtins.y2debug("checking for %1", file)
+        log.debug "checking for #{file}"
         text = Convert.to_string(SCR.Read(path(".target.string"), [file, ""]))
         break if text != ""
 
         file = Builtins.sformat(tmp, "en")
-        Builtins.y2debug("checking for %1", file)
+        log.debug "checking for #{file}"
         text = Convert.to_string(SCR.Read(path(".target.string"), [file, ""]))
         break if text != ""
         i = Ops.add(i, 1)

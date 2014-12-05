@@ -23,6 +23,8 @@
 # ***************************************************************************
 module Yast
   module WizardInclude
+    include Yast::Logger
+
     def initialize_Wizard(include_target)
       Yast.include include_target, "testsuite.rb"
       Yast.import "Sequencer"
@@ -32,27 +34,27 @@ module Yast
     end
 
     def ok
-      Builtins.y2error("ok")
+      log.error "ok"
       :ok
     end
     def back
-      Builtins.y2error("back")
+      log.error "back"
       :back
     end
     def next
-      Builtins.y2error("next")
+      log.error "next"
       :next
     end
     def finish
-      Builtins.y2error("finish")
+      log.error "finish"
       :finish
     end
     def details
-      Builtins.y2error("details")
+      log.error "details"
       :details
     end
     def expert
-      Builtins.y2error("expert")
+      log.error "expert"
       :expert
     end
 
@@ -72,7 +74,7 @@ module Yast
       if Builtins.substring(log, 0, 1) == "`"
         log = Builtins.substring(log, 1, Builtins.size(log))
       end
-      Builtins.y2error("%1", log)
+      log.error "#{log}"
       ret
     end
 

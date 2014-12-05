@@ -34,6 +34,8 @@ require "yast"
 
 module Yast
   class PackagesUIClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "Pkg"
       Yast.import "UI"
@@ -55,18 +57,18 @@ module Yast
     def SetPackageSummary(summary)
       summary = deep_copy(summary)
       if summary == nil
-        Builtins.y2error("Cannot set nil package summary!")
+        log.error "Cannot set nil package summary!"
         return
       end
 
-      Builtins.y2debug("Setting package summary: %1", summary)
+      log.debug "Setting package summary: #{summary}"
       @package_summary = deep_copy(summary)
 
       nil
     end
 
     def ResetPackageSummary
-      Builtins.y2debug("Resetting package summary")
+      log.debug "Resetting package summary"
       @package_summary = {}
 
       nil
@@ -75,11 +77,11 @@ module Yast
     def SetPackageSummaryItem(name, value)
       value = deep_copy(value)
       if name == nil || name == ""
-        Builtins.y2error("Invalid item name: '%1'", name)
+        log.error "Invalid item name: '#{name}'"
         return
       end
 
-      Builtins.y2debug("Package summary '%1': %2", name, value)
+      log.debug "Package summary '#{name}': #{value}"
 
       Ops.set(@package_summary, name, value)
 
@@ -132,8 +134,8 @@ module Yast
       to_install = Pkg.GetPackages(:selected, true)
       licenses = Pkg.PkgGetLicensesToConfirm(to_install)
 
-      Builtins.y2milestone("Licenses to confirm: %1", Builtins.size(licenses))
-      Builtins.y2debug("Licenses to confirm: %1", licenses)
+      log.info "Licenses to confirm: #{Builtins.size(licenses)}"
+      log.debug "Licenses to confirm: #{licenses}"
 
       display_info = UI.GetDisplayInfo
       size_x = Builtins.tointeger(Ops.get_integer(display_info, "Width", 800))
@@ -200,11 +202,7 @@ module Yast
           end
         end
         UI.CloseDialog
-        Builtins.y2milestone(
-          "License of package %1 accepted: %2",
-          package,
-          ui == :accept
-        )
+        log.info "License of package #{package} accepted: #{ui == :accept}"
         if ui != :accept
           Pkg.PkgTaboo(package)
           ret = false
@@ -227,7 +225,7 @@ module Yast
         "software",
         "display_support_status"
       )
-      Builtins.y2milestone("Feature display_support_status: %1", ret)
+      log.info "Feature display_support_status: #{ret}"
       ret
     end
 
@@ -249,7 +247,7 @@ module Yast
     # @return [Symbol] Returns `accept or `cancel .
     def RunPackageSelector(options)
       options = deep_copy(options)
-      Builtins.y2milestone("Called RunPackageSelector(%1)", options)
+      log.info "Called RunPackageSelector(#{options})"
 
       enable_repo_mgr = Ops.get_boolean(options, "enable_repo_mgr")
       display_support_status = Ops.get_boolean(
@@ -268,12 +266,7 @@ module Yast
         enable_repo_mgr = false
       end
 
-      Builtins.y2milestone(
-        "Running package selection, mode: %1, options: display repo management: %2, display support status: %3",
-        mode,
-        enable_repo_mgr,
-        display_support_status
-      )
+      log.info "Running package selection, mode: #{mode}, options: display repo management: #{enable_repo_mgr}, display support status: #{display_support_status}"
 
       widget_options = Opt()
 
@@ -287,10 +280,7 @@ module Yast
         widget_options = Builtins.add(widget_options, :confirmUnsupported)
       end
 
-      Builtins.y2milestone(
-        "Options for the package selector widget: %1",
-        widget_options
-      )
+      log.info "Options for the package selector widget: #{widget_options}"
 
       UI.OpenDialog(
         Opt(:defaultsize),
@@ -306,7 +296,7 @@ module Yast
       result = Convert.to_symbol(UI.RunPkgSelection(Id(:packages)))
 
       UI.CloseDialog
-      Builtins.y2milestone("Package selector returned %1", result)
+      log.info "Package selector returned #{result}"
 
       result
     end
@@ -319,7 +309,7 @@ module Yast
     #
     #
     def RunPatternSelector
-      Builtins.y2milestone("Running pattern selection dialog")
+      log.info "Running pattern selection dialog"
 
       if !UI.HasSpecialWidget(:PatternSelector) ||
           UI.WizardCommand(term(:Ping)) != true
@@ -381,7 +371,7 @@ module Yast
       result = nil
       begin
         result = Convert.to_symbol(UI.RunPkgSelection(Id(:patterns)))
-        Builtins.y2milestone("Pattern selector returned %1", result)
+        log.info "Pattern selector returned #{result}"
 
         if result == :details
           result = RunPackageSelector({})
@@ -396,7 +386,7 @@ module Yast
 
       Wizard.CloseDialog
 
-      Builtins.y2milestone("Pattern selector returned %1", result)
+      log.info "Pattern selector returned #{result}"
       result
     end
 
@@ -613,7 +603,7 @@ module Yast
         )
       end
 
-      Builtins.y2milestone("Installation summary: %1", ret)
+      log.info "Installation summary: #{ret}"
 
       ret
     end
@@ -639,7 +629,7 @@ module Yast
       summary_str = InstallationSummary(summary)
 
       if summary["installed"] == 0 && summary["updated"] == 0 && summary["removed"] == 0 && summary["remaining"] == []
-        Builtins.y2warning("No summary, skipping summary dialog")
+        log.warn "No summary, skipping summary dialog"
         return :next
       end
 
@@ -684,7 +674,7 @@ module Yast
       result = nil
       begin
         result = UI.UserInput
-        Builtins.y2milestone("input: %1", result)
+        log.info "input: #{result}"
 
         # handle detail requests (clicking a link in the summary)
         if Ops.is_string?(result)
@@ -715,7 +705,7 @@ module Yast
               Ops.get_list(summary, "remaining", [])
             )
           else
-            Builtins.y2error("Unknown input: %1", result)
+            log.error "Unknown input: #{result}"
           end
         elsif Ops.is_symbol?(result)
           # close by WM
@@ -724,7 +714,7 @@ module Yast
       end while Ops.is_string?(result) ||
         !Builtins.contains([:next, :abort, :back], Convert.to_symbol(result))
 
-      Builtins.y2milestone("Installation Summary result: %1", result)
+      log.info "Installation Summary result: #{result}"
 
       new_action = UI.QueryWidget(Id(:action), :Value)
 

@@ -38,6 +38,8 @@ require "yast"
 
 module Yast
   class KernelClass < Module
+    include Yast::Logger
+
 
     # default configuration file for Kernel modules loaded on boot
     MODULES_CONF_FILE = "yast.conf"
@@ -156,7 +158,7 @@ module Yast
       ParseInstallationKernelCmdline() if !@cmdline_parsed
       @cmdLine = Ops.add(Ops.add(@cmdLine, " "), name)
       @cmdLine = Ops.add(Ops.add(@cmdLine, "="), arg) if arg != ""
-      Builtins.y2milestone("cmdLine '%1'", HidePasswords(@cmdLine))
+      log.info "cmdLine '#{HidePasswords(@cmdLine)}'"
       nil
     end
 
@@ -233,7 +235,7 @@ module Yast
                   Builtins.contains(["normal", "ext", "ask"], value)
                 @vgaType = value
               else
-                Builtins.y2warning("Incorrect VGA kernel parameter: %1", value)
+                log.warn "Incorrect VGA kernel parameter: #{value}"
               end
             else
               AddCmdLine(key, value)
@@ -249,10 +251,7 @@ module Yast
       return if !(Stage.initial || Stage.cont)
       tmp = Convert.to_string(SCR.Read(path(".etc.install_inf.Cmdline")))
 
-      Builtins.y2milestone(
-        "cmdline from install.inf is: %1",
-        HidePasswords(tmp)
-      )
+      log.info "cmdline from install.inf is: #{HidePasswords(tmp)}"
       if tmp != nil
         # extract extra boot parameters given in installation
         ExtractCmdlineParameters(tmp)
@@ -317,24 +316,21 @@ module Yast
       kernel_desktop_exists = (Mode.normal || Mode.repair) &&
         Pkg.PkgInstalled("kernel-desktop") ||
         Pkg.PkgAvailable("kernel-desktop")
-      Builtins.y2milestone(
-        "Desktop kernel available: %1",
-        kernel_desktop_exists
-      )
+      log.info "Desktop kernel available: #{kernel_desktop_exists}"
 
       @kernel_packages = ["kernel-default"]
 
       # add Xen paravirtualized drivers to a full virtualized host
       xen = Convert.to_boolean(SCR.Read(path(".probe.is_xen")))
       if xen == nil
-        Builtins.y2warning("XEN detection failed, assuming XEN is NOT running")
+        log.warn "XEN detection failed, assuming XEN is NOT running"
         xen = false
       end
 
-      Builtins.y2milestone("Detected XEN: %1", xen)
+      log.info "Detected XEN: #{xen}"
 
       if Arch.is_uml
-        Builtins.y2milestone("ProbeKernel: UML")
+        log.info "ProbeKernel: UML"
         @kernel_packages = ["kernel-um"]
       elsif Arch.is_xen
         # kernel-xen contains PAE kernel (since oS11.0)
@@ -353,11 +349,8 @@ module Yast
             Builtins.splitstring(cpuinfo_flags, " ") :
             []
         else
-          Builtins.y2error("Cannot read cpuflags")
-          Builtins.y2milestone(
-            "Mounted: %1",
-            SCR.Execute(path(".target.bash_output"), "mount -l")
-          )
+          log.error "Cannot read cpuflags"
+          log.info "Mounted: #{SCR.Execute(path(".target.bash_output"), "mount -l")}"
         end
 
         # check for "roughly" >= 4GB memory (see bug #40729)
@@ -368,20 +361,20 @@ module Yast
           0
         )
         fourGB = 3221225472
-        Builtins.y2milestone("Physical memory %1", memsize)
+        log.info "Physical memory #{memsize}"
 
         # for memory > 4GB and PAE support we install kernel-pae,
         # PAE kernel is needed if NX flag exists as well (bnc#467328)
         if (Ops.greater_or_equal(memsize, fourGB) ||
             Builtins.contains(cpuflags, "nx")) &&
             Builtins.contains(cpuflags, "pae")
-          Builtins.y2milestone("Kernel switch: PAE detected")
+          log.info "Kernel switch: PAE detected"
           if kernel_desktop_exists && IsGraphicalDesktop()
             @kernel_packages = ["kernel-desktop"]
 
             # add PV drivers
             if xen
-              Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-desktop")
+              log.info "Adding Xen PV drivers: xen-kmp-desktop"
               @kernel_packages = Builtins.add(
                 @kernel_packages,
                 "xen-kmp-desktop"
@@ -392,14 +385,14 @@ module Yast
 
             # add PV drivers
             if xen
-              Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-pae")
+              log.info "Adding Xen PV drivers: xen-kmp-pae"
               @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-pae")
             end
           end
         else
           # add PV drivers
           if xen
-            Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-default")
+            log.info "Adding Xen PV drivers: xen-kmp-default"
             @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-default")
           end
         end
@@ -407,12 +400,12 @@ module Yast
         if kernel_desktop_exists && IsGraphicalDesktop()
           @kernel_packages = ["kernel-desktop"]
           if xen
-            Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-desktop")
+            log.info "Adding Xen PV drivers: xen-kmp-desktop"
             @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-desktop")
           end
         else
           if xen
-            Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-default")
+            log.info "Adding Xen PV drivers: xen-kmp-default"
             @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-default")
           end
         end
@@ -434,7 +427,7 @@ module Yast
       end
 
       @kernel_probed = true
-      Builtins.y2milestone("ProbeKernel determined: %1", @kernel_packages)
+      log.info "ProbeKernel determined: #{@kernel_packages}"
 
       nil
     end # ProbeKernel ()
@@ -472,31 +465,25 @@ module Yast
     def ComputePackage
       packages = GetPackages()
       the_kernel = Ops.get(packages, 0, "")
-      Builtins.y2milestone("Selecting '%1' as kernel package", the_kernel)
+      log.info "Selecting '#{the_kernel}' as kernel package"
 
       # Check for provided kernel packages in installed system
       if Mode.normal || Mode.repair
         while the_kernel != "" && !Pkg.PkgInstalled(the_kernel)
           the_kernel = Ops.get(@fallbacks, the_kernel, "")
-          Builtins.y2milestone("Not provided, falling back to '%1'", the_kernel)
+          log.info "Not provided, falling back to '#{the_kernel}'"
         end
       else
         while the_kernel != "" && !Pkg.PkgAvailable(the_kernel)
           the_kernel = Ops.get(@fallbacks, the_kernel, "")
-          Builtins.y2milestone(
-            "Not available, falling back to '%1'",
-            the_kernel
-          )
+          log.info "Not available, falling back to '#{the_kernel}'"
         end
       end
 
       if the_kernel != ""
         @final_kernel = the_kernel
       else
-        Builtins.y2warning(
-          "%1 not available, using kernel-default",
-          @kernel_packages
-        )
+        log.warn "#{@kernel_packages} not available, using kernel-default"
 
         @final_kernel = "kernel-default"
       end
@@ -518,7 +505,7 @@ module Yast
       # Note: kernel-*-nongpl packages have been dropped, use base only
       ret = [base]
 
-      Builtins.y2milestone("Packages for base %1: %2", base, ret)
+      log.info "Packages for base #{base}: #{ret}"
       deep_copy(ret)
     end
 
@@ -537,17 +524,14 @@ module Yast
         Builtins.foreach(extra_pkgs) do |pkg|
           if Pkg.IsAvailable(pkg)
             ret = Builtins.add(ret, pkg)
-            Builtins.y2milestone("Added extra kernel package: %1", pkg)
+            log.info "Added extra kernel package: #{pkg}"
           else
-            Builtins.y2warning(
-              "Extra kernel package '%1' is not available",
-              pkg
-            )
+            log.warn "Extra kernel package '#{pkg}' is not available"
           end
         end
       end
 
-      Builtins.y2milestone("Computed kernel packages: %1", ret)
+      log.info "Computed kernel packages: #{ret}"
 
       deep_copy(ret)
     end
@@ -584,7 +568,7 @@ module Yast
     # Add a kernel module to the list of modules to load after boot
     # @param string module name
     def AddModuleToLoad(name)
-      Builtins.y2milestone("Adding module to be loaded at boot: %1", name)
+      log.info "Adding module to be loaded at boot: #{name}"
 
       unless module_to_be_loaded?(name)
         @modules_to_load[MODULES_CONF_FILE] << name
@@ -598,7 +582,7 @@ module Yast
 
       return true unless module_to_be_loaded?(name)
 
-      Builtins.y2milestone("Removing module to be loaded at boot: %1", name)
+      log.info "Removing module to be loaded at boot: #{name}"
       @modules_to_load.each do |key, val|
         val.delete(name)
       end

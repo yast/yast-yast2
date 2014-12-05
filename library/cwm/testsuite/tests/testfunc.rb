@@ -2,6 +2,8 @@
 
 module Yast
   module TestfuncInclude
+    include Yast::Logger
+
     def initialize_testfunc(include_target)
       Yast.include include_target, "testsuite.rb"
 
@@ -108,89 +110,89 @@ module Yast
     def a_handle(id, key, event)
       id = deep_copy(id)
       event = deep_copy(event)
-      Builtins.y2error("a_handle: id %1, key %2, event %3", id, key, event)
+      log.error "a_handle: id #{id}, key #{key}, event #{event}"
       nil
     end
 
     def fallback_init(id, key)
       id = deep_copy(id)
-      Builtins.y2error("fallback_init: id %1, key %2", id, key)
+      log.error "fallback_init: id #{id}, key #{key}"
 
       nil
     end
 
     def fallback_summary(opt_id, opt_key)
       opt_id = deep_copy(opt_id)
-      Builtins.y2error("fallback_summary: id %1, key %2", opt_id, opt_key)
+      log.error "fallback_summary: id #{opt_id}, key #{opt_key}"
       Builtins.sformat("%1:%2", opt_id, opt_key)
     end
 
     def fallback_store(id, key)
       id = deep_copy(id)
-      Builtins.y2error("fallback_store: id %1, key %2", id, key)
+      log.error "fallback_store: id #{id}, key #{key}"
 
       nil
     end
 
     def w1_init(key)
-      Builtins.y2error("w1_init: Initing %1", key)
+      log.error "w1_init: Initing #{key}"
 
       nil
     end
 
     def w1_handle(key, event)
       event = deep_copy(event)
-      Builtins.y2error("w1_handle: Handling %1, event %2", key, event)
+      log.error "w1_handle: Handling #{key}, event #{event}"
       nil
     end
 
     def w1_validate(key, event)
       event = deep_copy(event)
-      Builtins.y2error("w1_validate: Validating %1, event %2", key, event)
+      log.error "w1_validate: Validating #{key}, event #{event}"
       true
     end
 
     def w2_store(key, event)
       event = deep_copy(event)
-      Builtins.y2error("w2_store: Saving %1, event %2", key, event)
+      log.error "w2_store: Saving #{key}, event #{event}"
 
       nil
     end
 
     def w2_handle(key, event)
       event = deep_copy(event)
-      Builtins.y2error("w2_handle: Handling %1, event %2", key, event)
+      log.error "w2_handle: Handling #{key}, event #{event}"
       nil
     end
 
     def w2_validate(key, event)
       event = deep_copy(event)
-      Builtins.y2error("w2_validate: Validating %1, event %2", key, event)
+      log.error "w2_validate: Validating #{key}, event #{event}"
       true
     end
 
     def generic_init(key)
-      Builtins.y2error("generic_init: Initing %1", key)
+      log.error "generic_init: Initing #{key}"
 
       nil
     end
 
     def generic_save(key, event)
       event = deep_copy(event)
-      Builtins.y2error("generic_save: Saving %1, event %2", key, event)
+      log.error "generic_save: Saving #{key}, event #{event}"
 
       nil
     end
 
     def w1_handle_symbol(key, event)
       event = deep_copy(event)
-      Builtins.y2error("w1_handle_symbol: Handling %1, event %2", key, event)
+      log.error "w1_handle_symbol: Handling #{key}, event #{event}"
       :symbol
     end
 
     def w1_validat_false(key, event)
       event = deep_copy(event)
-      Builtins.y2error("w1_validate_false: Validating %1, event %2", key, event)
+      log.error "w1_validate_false: Validating #{key}, event #{event}"
       false
     end
   end

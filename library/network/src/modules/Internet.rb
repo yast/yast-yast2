@@ -32,6 +32,8 @@ require "yast"
 
 module Yast
   class InternetClass < Module
+    include Yast::Logger
+
     def main
 
       Yast.import "Map"
@@ -104,10 +106,10 @@ module Yast
     def Start(log)
       if @type == "dsl" && @capi_adsl || @type == "isdn"
         status = Service.Status("isdn")
-        Builtins.y2milestone("We need ISDN service, status: %1", status)
+        log.info "We need ISDN service, status: #{status}"
         if status != 0
           if !Service.Start("isdn")
-            Builtins.y2error("start failed")
+            log.error "start failed"
             return false
           end
         end
@@ -135,10 +137,7 @@ module Yast
         ret = SCR.Execute(path(".target.bash"), cmd)
       end
       if ret != 0
-        Builtins.y2error(
-          "%1",
-          NetworkService.IsManaged ? "NM.setActiveDevice failed" : "ifup failed"
-        )
+        log.error "#{NetworkService.IsManaged ? "NM.setActiveDevice failed" : "ifup failed"}"
         return false
       end
 
@@ -147,7 +146,7 @@ module Yast
             path(".target.bash"),
             Ops.add("/sbin/isdnctrl dial ", @device)
           ) != 0
-          Builtins.y2error("isdnctrl failed")
+          log.error "isdnctrl failed"
           return false
         end
       end
@@ -171,9 +170,7 @@ module Yast
     def Status
       # Skip test in case of NM because it returns code 3 (interface under NM controll)
       if NetworkService.IsManaged
-        Builtins.y2milestone(
-          "Skipping interface status test because of NetworkManager"
-        )
+        log.info "Skipping interface status test because of NetworkManager"
         # only check if NM has not crashed
         return SCR.Execute(path(".target.bash"), "pgrep NetworkManager") == 0
       end
@@ -181,7 +178,7 @@ module Yast
       ret = Convert.to_integer(
         SCR.Execute(path(".target.bash"), Ops.add("/sbin/ifstatus ", @device))
       )
-      Builtins.y2milestone("ifstatus %1: %2", @device, ret)
+      log.info "ifstatus #{@device}: #{ret}"
       ret == 0 || ret == 10
     end
 
@@ -243,11 +240,7 @@ module Yast
         Builtins.regexpmatch(one_pidfile, "dhcpcd-.*.pid")
       end
 
-      Builtins.y2milestone(
-        "DHCPCD uses these file under %1 directory: %2",
-        pid_directory,
-        dhcp_pidfiles
-      )
+      log.info "DHCPCD uses these file under #{pid_directory} directory: #{dhcp_pidfiles}"
 
       return true if Builtins.size(dhcp_pidfiles) == 0
 
@@ -258,7 +251,7 @@ module Yast
             Builtins.sformat("%1%2", pid_directory, one_pidfile)
           )
         )
-        Builtins.y2milestone("Killing process ID: %1", process_ID)
+        log.info "Killing process ID: #{process_ID}"
         # Calls a correct kill command for SIGHUP and waits
         # Then a confirmation SIGKILL is called (should be ignored because process has hopefully already ended)
         WFM.Execute(

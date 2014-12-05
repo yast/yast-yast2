@@ -31,6 +31,8 @@ require "yast"
 
 module Yast
   class LinuxrcClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "Mode"
       Yast.import "Stage"
@@ -48,12 +50,12 @@ module Yast
       @install_inf = {}
       # don't read anything if the file doesn't exist
       if SCR.Read(path(".target.size"), "/etc/install.inf") == -1
-        Builtins.y2error("Reading install.inf, but file doesn't exist!!!")
+        log.error "Reading install.inf, but file doesn't exist!!!"
         return
       end
       entries = SCR.Dir(path(".etc.install_inf"))
       if entries == nil
-        Builtins.y2error("install.inf is empty")
+        log.error "install.inf is empty"
         return
       end
       Builtins.foreach(entries) do |e|
@@ -149,7 +151,7 @@ module Yast
           "\n"
         )
       end
-      Builtins.y2milestone("WriteYaSTInf(%1) = %2", linuxrc, yast_inf)
+      log.info "WriteYaSTInf(#{linuxrc}) = #{yast_inf}"
 
       WFM.Write(path(".local.string"), "/etc/yast.inf", yast_inf) if !Mode.test
       nil
@@ -165,7 +167,7 @@ module Yast
 
         if root != nil && root != "" && root != "/"
           if WFM.Read(path(".local.size"), inst_if_file) != -1
-            Builtins.y2milestone("Copying %1 to %2", inst_if_file, root)
+            log.info "Copying #{inst_if_file} to #{root}"
             if Convert.to_integer(
                 WFM.Execute(
                   path(".local.bash"),
@@ -176,20 +178,13 @@ module Yast
                   )
                 )
               ) != 0
-              Builtins.y2error(
-                "Cannot SaveInstallInf %1 to %2",
-                inst_if_file,
-                root
-              )
+              log.error "Cannot SaveInstallInf #{inst_if_file} to #{root}"
             end
           else
-            Builtins.y2error(
-              "Can't SaveInstallInf, file %1 doesn't exist",
-              inst_if_file
-            )
+            log.error "Can't SaveInstallInf, file #{inst_if_file} doesn't exist"
           end
         else
-          Builtins.y2error("Can't SaveInstallInf, root is %1", root)
+          log.error "Can't SaveInstallInf, root is #{root}"
         end
 
         # just for debug so we can see the original install.inf later

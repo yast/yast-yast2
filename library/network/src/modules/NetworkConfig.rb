@@ -35,6 +35,8 @@ require "yast"
 
 module Yast
   class NetworkConfigClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "String"
 
@@ -63,7 +65,7 @@ module Yast
     # @param [Yast::Path] config sysconfig file SCR path
     # @return sysconfig file contents
     def ReadConfig(config)
-      Builtins.y2debug("config=%1", config)
+      log.debug "config=#{config}"
       return {} if config == nil
       ret = {}
 
@@ -83,7 +85,7 @@ module Yast
           )
         end
         val = Convert.to_string(SCR.Read(varpath))
-        Builtins.y2debug("%1[%2]=%3", var, comment, val)
+        log.debug "#{var}[#{comment}]=#{val}"
         if val != nil
           if comment == "yesno" || val == "yes" || val == "no"
             Ops.set(ret, var, val == "yes")
@@ -95,7 +97,7 @@ module Yast
         end
       end
       ret = {} if ret == nil
-      Builtins.y2debug("ret=%1", ret)
+      log.debug "ret=#{ret}"
       deep_copy(ret)
     end
 
@@ -105,8 +107,8 @@ module Yast
     # @return true if success
     def WriteConfig(config, data)
       data = deep_copy(data)
-      Builtins.y2debug("config=%1", config)
-      Builtins.y2debug("data=%1", data)
+      log.debug "config=#{config}"
+      log.debug "data=#{data}"
 
       return false if config == nil || data == nil
 
@@ -131,7 +133,7 @@ module Yast
       end
       SCR.Write(config, nil) if changed == true
 
-      Builtins.y2debug("changed=%1", changed)
+      log.debug "changed=#{changed}"
       true
     end
 
@@ -142,7 +144,7 @@ module Yast
     # @return true if modified
     def Modified
       ret = @DHCP != @Orig_DHCP || @Config != @Orig_Config
-      Builtins.y2debug("ret=%1", ret)
+      log.debug "ret=#{ret}"
       ret
     end
 
@@ -164,9 +166,9 @@ module Yast
     # Update the SCR according to network settings
     # @return true on success
     def Write
-      Builtins.y2milestone("Writing configuration")
+      log.info "Writing configuration"
       if !Modified()
-        Builtins.y2milestone("No changes to NetworkConfig -> nothing to write")
+        log.info "No changes to NetworkConfig -> nothing to write"
         return true
       end
 

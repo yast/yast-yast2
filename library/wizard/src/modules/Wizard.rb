@@ -32,6 +32,8 @@ require "yast"
 
 module Yast
   class WizardClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
       textdomain "base"
@@ -692,9 +694,7 @@ module Yast
       if UI.WidgetExists(Id(:helpSpace))
         UI.ReplaceWidget(Id(:helpSpace), contents)
       else
-        Builtins.y2error(
-          "Wizard::ReplaceHelpSpace() works only for dialogs opened with Wizard::OpenSimpleDialog() !"
-        )
+        log.error "Wizard::ReplaceHelpSpace() works only for dialogs opened with Wizard::OpenSimpleDialog() !"
       end
 
       nil
@@ -709,9 +709,7 @@ module Yast
       if IsWizardDialog()
         UI.CloseDialog
       else
-        Builtins.y2error(
-          "Wizard::CloseDialog(): Topmost dialog is not a wizard dialog!"
-        )
+        log.error "Wizard::CloseDialog(): Topmost dialog is not a wizard dialog!"
       end
 
       nil
@@ -804,12 +802,10 @@ module Yast
     def ReplaceHelp(contents)
       contents = deep_copy(contents)
       if UI.WidgetExists(Id(:helpSpace))
-        Builtins.y2warning("Wizard::ReplaceHelp() is deprecated!")
+        log.warn "Wizard::ReplaceHelp() is deprecated!"
         UI.ReplaceWidget(Id(:helpSpace), contents)
       else
-        Builtins.y2error(
-          "Wizard::ReplaceHelp() is not supported by the new Qt wizard!"
-        )
+        log.error "Wizard::ReplaceHelp() is not supported by the new Qt wizard!"
       end
 
       nil
@@ -1227,7 +1223,7 @@ module Yast
       # fallback name for the dialog title
       name = Ops.get(description, "Name", _("Module"))
 
-      Builtins.y2debug("Set dialog title: %1", name)
+      log.debug "Set dialog title: #{name}"
       SetDialogTitle(name)
 
       Builtins.haskey(description, "Name")
@@ -1276,7 +1272,7 @@ module Yast
       # fallback name for the dialog title
       name = Ops.get(description, "Name", _("Module"))
 
-      Builtins.y2debug("Set dialog title: %1", name)
+      log.debug "Set dialog title: #{name}"
       SetDialogTitle(name)
 
       result && Builtins.haskey(description, "Name")
@@ -1422,7 +1418,7 @@ module Yast
     # @return [Boolean] available
     def HasWidgetWizard
       if !UI.HasSpecialWidget(:Wizard)
-        Builtins.y2milestone("no Wizard available")
+        log.info "no Wizard available"
         return false
       end
 
@@ -1447,7 +1443,7 @@ module Yast
         elsif UI.WidgetExists(Id(:back_rep))
           UI.ReplaceWidget(Id(:back_rep), PushButton(Id(id), label))
         else
-          Builtins.y2warning("Widget `back_rep does not exist")
+          log.warn "Widget `back_rep does not exist"
         end
       end
 
@@ -1660,7 +1656,7 @@ module Yast
           )
         end
       end
-      Builtins.y2debug("items: %1", mm)
+      log.debug "items: #{mm}"
       deep_copy(mm)
     end
 
@@ -1696,7 +1692,7 @@ module Yast
             )
           end
         end
-        Builtins.y2debug("tree items: %1", items)
+        log.debug "tree items: #{items}"
 
         ReplaceCustomHelp(
           VBox(
@@ -1843,7 +1839,7 @@ module Yast
           )
         end
       end
-      Builtins.y2debug("items: %1", mm)
+      log.debug "items: #{mm}"
       deep_copy(mm)
     end
 
@@ -1859,14 +1855,14 @@ module Yast
         Builtins.foreach(_Menu) do |m|
           if Ops.get_string(m, "type", "") == "Menu"
             menu_items = CreateMenuInternal(_Menu, Ops.get_string(m, "id", ""))
-            Builtins.y2debug("menu_items: %1", menu_items)
+            log.debug "menu_items: #{menu_items}"
             menu_term = Builtins.add(
               menu_term,
               MenuButton(Ops.get_string(m, "title", ""), menu_items)
             )
           end
         end
-        Builtins.y2milestone("menu: %1", menu_term)
+        log.info "menu: #{menu_term}"
         UI.ReplaceWidget(Id(:topmenu), Left(menu_term))
       end
       nil
@@ -1878,7 +1874,7 @@ module Yast
     # @return [void]
     #
     def SetProductName(name)
-      Builtins.y2milestone("Setting product name to '%1'", name)
+      log.info "Setting product name to '#{name}'"
       @product_name = name
       UI.SetProductName(@product_name)
 

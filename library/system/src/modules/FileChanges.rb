@@ -48,6 +48,8 @@ require "yast"
 
 module Yast
   class FileChangesClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
 
@@ -114,12 +116,12 @@ module Yast
       )
       out = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
       package = Ops.get_string(out, "stdout", "")
-      Builtins.y2milestone("Package owning %1: %2", file, package)
+      log.info "Package owning #{file}: #{package}"
       return false if package == "" || Ops.get_integer(out, "exit", -1) != 0
       cmd = Builtins.sformat("rpm -V %1 |grep ' %2$'", package, file)
       out = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
       changes = Ops.get_string(out, "stdout", "")
-      Builtins.y2milestone("File possibly changed: %1", changes)
+      log.info "File possibly changed: #{changes}"
       lines = Builtins.splitstring(changes, "\n")
       changed = false
       Builtins.foreach(lines) do |line|
@@ -139,14 +141,14 @@ module Yast
       ReadSettings()
       ret = false
       if Builtins.haskey(@file_checksums, file)
-        Builtins.y2milestone("Comparing file %1 to stored checksum", file)
+        log.info "Comparing file #{file} to stored checksum"
         sum = ComputeFileChecksum(file)
         ret = !(sum == Ops.get(@file_checksums, file, ""))
       else
-        Builtins.y2milestone("Comparing file %1 to RPM database", file)
+        log.info "Comparing file #{file} to RPM database"
         ret = FileChangedFromPackage(file)
       end
-      Builtins.y2milestone("File differs: %1", ret)
+      log.info "File differs: #{ret}"
       ret
     end
 
@@ -198,9 +200,9 @@ module Yast
           UI.OpenDialog(content)
           UI.SetFocus(:ok)
           ret = UI.UserInput
-          Builtins.y2milestone("ret = %1", ret)
+          log.info "ret = #{ret}"
           if ret == :ok && Convert.to_boolean(UI.QueryWidget(:disable, :Value))
-            Builtins.y2milestone("Disabled checksum popups")
+            log.info "Disabled checksum popups"
             SCR.Write(
               path(".target.string"),
               Ops.add(Directory.vardir, popup_file),

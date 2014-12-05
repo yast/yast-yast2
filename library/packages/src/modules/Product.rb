@@ -170,7 +170,7 @@ module Yast
     #                   (solver errors are ignored, see bnc#886588)
     def load_zypp
       if !PackageLock.Check
-        Builtins.y2error("Packager is locked, can't read product info!")
+        log.error "Packager is locked, can't read product info!"
         return false
       end
 

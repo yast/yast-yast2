@@ -43,6 +43,8 @@ require "yast"
 
 module Yast
   class CWMFirewallInterfacesClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
       textdomain "base"
@@ -140,7 +142,7 @@ module Yast
     def InitAllInterfacesList
       # Do not read NetworkInterfaces when they are already read
       if !Mode.config && !Mode.installation && !Mode.update
-        Builtins.y2milestone("Reading NetworkInterfaces...")
+        log.info "Reading NetworkInterfaces..."
         NetworkInterfaces.Read
       end
       @all_interfaces = String.NonEmpty(NetworkInterfaces.List(""))
@@ -200,12 +202,7 @@ module Yast
         status = :closed
       end
 
-      Builtins.y2milestone(
-        "Status: %1, All: %2, Allowed: %3",
-        status,
-        @all_interfaces,
-        @allowed_interfaces
-      )
+      log.info "Status: #{status}, All: #{@all_interfaces}, Allowed: #{@allowed_interfaces}"
       SetFirewallLabel(status)
       open = status == :open_all || status == :custom
       UI.ChangeWidget(Id("_cwm_open_firewall"), :Value, open)
@@ -219,7 +216,7 @@ module Yast
     # @return a list of interfaces that will be opened
     def Selected2Opened(ifaces, nm_ifaces_have_to_be_selected)
       ifaces = deep_copy(ifaces)
-      Builtins.y2milestone("Selected ifaces: %1", ifaces)
+      log.info "Selected ifaces: #{ifaces}"
       groups = Builtins.maplist(ifaces) do |i|
         SuSEFirewall.GetZoneOfInterface(i)
       end
@@ -246,10 +243,7 @@ module Yast
           ) do |iface|
             Builtins.contains(ifaces, iface)
           end
-          Builtins.y2milestone(
-            "Ifaces left in zone: %1",
-            ifaces_left_explicitely
-          )
+          log.info "Ifaces left in zone: #{ifaces_left_explicitely}"
           # there are no interfaces left that would be explicitely mentioned in the EXT zone
           if ifaces_left_explicitely == []
             next [] 
@@ -262,7 +256,7 @@ module Yast
           next deep_copy(ifaces_also_supported_by_any)
         end
       end
-      Builtins.y2milestone("Ifaces touched: %1", iface_groups)
+      log.info "Ifaces touched: #{iface_groups}"
       new_ifaces = Builtins.toset(Builtins.flatten(iface_groups))
       new_ifaces = Builtins.filter(new_ifaces) { |i| i != nil }
 
@@ -303,7 +297,7 @@ module Yast
         )
       end }
       service_status = Builtins.filter(service_status) { |iface, en| en == true }
-      Builtins.y2milestone("Status: %1", service_status)
+      log.info "Status: #{service_status}"
       @allowed_interfaces = Builtins.maplist(service_status) do |iface, en|
         iface
       end
@@ -351,19 +345,14 @@ module Yast
       internal_interfaces = SuSEFirewall.GetInterfacesInZone("INT")
       if Ops.greater_than(Builtins.size(internal_interfaces), 0) &&
           SuSEFirewall.GetProtectFromInternalZone == false
-        Builtins.y2milestone(
-          "Unprotected internal interfaces: %1",
-          internal_interfaces
-        )
+        log.info "Unprotected internal interfaces: #{internal_interfaces}"
         @allowed_interfaces = Convert.convert(
           Builtins.union(@allowed_interfaces, internal_interfaces),
           :from => "list",
           :to   => "list <string>"
         )
       else
-        Builtins.y2milestone(
-          "Internal zone is protected or there are no interfaces in it"
-        )
+        log.info "Internal zone is protected or there are no interfaces in it"
       end
 
       @configuration_changed = false
@@ -385,7 +374,7 @@ module Yast
       # If configuring firewall in any type of installation
       # proposal must be set to 'modified'
       if Mode.installation || Mode.update
-        Builtins.y2milestone("Firewall proposal modified by user")
+        log.info "Firewall proposal modified by user"
         SuSEFirewallProposal.SetChangedByUser(true)
       end
 
@@ -485,7 +474,7 @@ module Yast
         :to   => "list <string>"
       )
       ifaces = Builtins.toset(ifaces)
-      Builtins.y2milestone("Selected ifaces: %1", ifaces)
+      log.info "Selected ifaces: #{ifaces}"
 
       # Check the INT zone, it's not protected by default
       # See bnc #382686
@@ -501,10 +490,7 @@ module Yast
         end
 
         if Ops.greater_than(Builtins.size(int_not_selected), 0)
-          Builtins.y2warning(
-            "Unprotected internal interfaces not selected: %1",
-            int_not_selected
-          )
+          log.warn "Unprotected internal interfaces not selected: #{int_not_selected}"
 
           Report.Message(
             Builtins.sformat(
@@ -520,7 +506,7 @@ module Yast
             :from => "list",
             :to   => "list <string>"
           )
-          Builtins.y2milestone("Selected interfaces: %1", ifaces)
+          log.info "Selected interfaces: #{ifaces}"
           UI.ChangeWidget(Id("_cwm_interface_list"), :SelectedItems, ifaces)
           return false
         end
@@ -541,17 +527,17 @@ module Yast
       end
 
       firewall_ifaces = Builtins.toset(Selected2Opened(ifaces, false))
-      Builtins.y2milestone("firewall_ifaces: %1", firewall_ifaces)
+      log.info "firewall_ifaces: #{firewall_ifaces}"
 
       added_ifaces = Builtins.filter(firewall_ifaces) do |i|
         !Builtins.contains(ifaces, i)
       end
-      Builtins.y2milestone("added_ifaces: %1", added_ifaces)
+      log.info "added_ifaces: #{added_ifaces}"
 
       removed_ifaces = Builtins.filter(ifaces) do |i|
         !Builtins.contains(firewall_ifaces, i)
       end
-      Builtins.y2milestone("removed_ifaces: %1", removed_ifaces)
+      log.info "removed_ifaces: #{removed_ifaces}"
 
       # to hide that special string
       if Ops.greater_than(Builtins.size(added_ifaces), 0)
@@ -614,10 +600,7 @@ module Yast
       Builtins.foreach(SuSEFirewall.GetAllKnownInterfaces) do |one_interface|
         if Ops.get(one_interface, "zone") == nil ||
             Ops.get(one_interface, "zone", "") == ""
-          Builtins.y2warning(
-            "Cannot enable service because interface %1 is not mentioned anywhere...",
-            Ops.get(one_interface, "id", "ID")
-          )
+          log.warn "Cannot enable service because interface #{Ops.get(one_interface, "id", "ID")} is not mentioned anywhere..."
           @buggy_ifaces = Builtins.add(
             @buggy_ifaces,
             Ops.get(one_interface, "id", "interface")
@@ -828,7 +811,7 @@ module Yast
     def OpenFirewallInit(widget, key)
       widget = deep_copy(widget)
       if !UI.WidgetExists(Id("_cwm_open_firewall"))
-        Builtins.y2error("Firewall widget doesn't exist")
+        log.error "Firewall widget doesn't exist"
         return
       end
       services = Ops.get_list(widget, "services", [])
@@ -864,7 +847,7 @@ module Yast
       widget = deep_copy(widget)
       event = deep_copy(event)
       if !UI.WidgetExists(Id("_cwm_open_firewall"))
-        Builtins.y2error("Widget _cwm_open_firewall does not exist")
+        log.error "Widget _cwm_open_firewall does not exist"
         return
       end
       services = Ops.get_list(widget, "services", [])
@@ -896,9 +879,9 @@ module Yast
           :from => "any",
           :to   => "symbol ()"
         )
-        Builtins.y2milestone("FD: %1", handle_firewall_details)
+        log.info "FD: #{handle_firewall_details}"
         ret = nil
-        Builtins.y2milestone("RT: %1", ret)
+        log.info "RT: #{ret}"
         if handle_firewall_details != nil
           ret = handle_firewall_details.call
         else
@@ -913,7 +896,7 @@ module Yast
         value = Convert.to_boolean(
           UI.QueryWidget(Id("_cwm_open_firewall"), :Value)
         )
-        Builtins.y2milestone("OF: %1", value)
+        log.info "OF: #{value}"
         if value
           @allowed_interfaces = deep_copy(@all_interfaces)
         else
@@ -1127,7 +1110,7 @@ module Yast
       if !Builtins.haskey(settings, "services")
         firewall_settings = VBox()
         help = ""
-        Builtins.y2error("Firewall services not specified")
+        log.error "Firewall services not specified"
       end
 
       ret = Convert.convert(

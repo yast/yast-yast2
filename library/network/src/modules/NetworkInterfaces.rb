@@ -29,6 +29,8 @@ module Yast
   # Categorizes the configurations according to type.
   # Presents them one ifcfg at a time through the {#Current} hash.
   class NetworkInterfacesClass < Module
+    include Yast::Logger
+
 
     Yast.import "String"
 
@@ -306,12 +308,7 @@ module Yast
           type = Ops.get(@TypeBySysfs, sys_type)
       end
 
-      Builtins.y2debug(
-        "GetTypeFromSysFs: device='%1', sysfs type='%2', type='%3'",
-        dev,
-        sys_type,
-        type
-      )
+      log.debug "GetTypeFromSysFs: device='#{dev}', sysfs type='#{sys_type}', type='#{type}'"
 
       return nil if IsEmpty(type)
 
@@ -363,11 +360,7 @@ module Yast
 
       type = device_type(dev) if type == nil
 
-      Builtins.y2debug(
-        "GetTypeFromIfcfgOrName: device='%1', type='%2'",
-        dev,
-        type
-      )
+      log.debug "GetTypeFromIfcfgOrName: device='#{dev}', type='#{type}'"
 
       type
     end
@@ -431,7 +424,7 @@ module Yast
     #
     # Obsolete: It is incompatible with new device naming scheme.
     def device_num(dev)
-      Builtins.y2warning( "Do not use device_num.")
+      log.warn "Do not use device_num."
       ifcfg_part(dev, "2")
     end
 
@@ -452,11 +445,11 @@ module Yast
     # @example device_name("lo", "") -> "lo"
     def device_name(typ, num)
       if typ == nil || typ == ""
-        Builtins.y2error("wrong type: %1", typ)
+        log.error "wrong type: #{typ}"
         return nil
       end
       if num == nil
-        Builtins.y2error("wrong number: %1", num)
+        log.error "wrong number: #{num}"
         return nil
       end
       if Builtins.regexpmatch(num, "^[0-9]*$")
@@ -480,15 +473,15 @@ module Yast
     # @example alias_name("eth", "1", "2") -> "eth1#2"
     def alias_name(typ, num, anum)
       if typ == nil || typ == ""
-        Builtins.y2error("wrong type: %1", typ)
+        log.error "wrong type: #{typ}"
         return nil
       end
       if num == nil # || num < 0
-        Builtins.y2error("wrong number: %1", num)
+        log.error "wrong number: #{num}"
         return nil
       end
       if anum == nil || anum == ""
-        Builtins.y2error("wrong alias number: %1", anum)
+        log.error "wrong alias number: #{anum}"
         return nil
       end
       Builtins.sformat("%1#%2", device_name(typ, num), anum)
@@ -523,7 +516,7 @@ module Yast
         cmd = Ops.add(Ops.add("cat /sys/class/net/", dev), "/carrier")
 
         ret = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
-        Builtins.y2milestone("Sysfs returned %1", ret)
+        log.info "Sysfs returned #{ret}"
 
         return Builtins.deletechars(Ops.get_string(ret, "stdout", ""), "\n") == "1" ? true : false
       else
@@ -538,16 +531,16 @@ module Yast
     # @return real type
     # @example RealType("eth", "usb") -> "eth-usb"
     def RealType(type, hotplug)
-      Builtins.y2debug("type=%1", type)
+      log.debug "type=#{type}"
       if type == "" || type == nil
-        Builtins.y2error("Wrong type: %1", type)
+        log.error "Wrong type: #{type}"
         return "eth"
       end
 
       return type if hotplug == "" || hotplug == nil
 
       realtype = Ops.add(Ops.add(type, "-"), hotplug)
-      Builtins.y2debug("realtype=%1", realtype)
+      log.debug "realtype=#{realtype}"
       realtype
     end
 
@@ -687,20 +680,20 @@ module Yast
       devices = Builtins.filter(allfiles) do |file|
         !Builtins.regexpmatch(file, "[~]")
       end
-      Builtins.y2debug("devices=%1", devices)
+      log.debug "devices=#{devices}"
 
       # Read devices
       Builtins.maplist(devices) do |d|
         pth = Ops.add(Ops.add(".network.value.\"", d), "\"")
-        Builtins.y2debug("pth=%1", pth)
+        log.debug "pth=#{pth}"
         values = SCR.Dir(Builtins.topath(pth))
-        Builtins.y2debug("values=%1", values)
+        log.debug "values=#{values}"
         config = {}
         Builtins.maplist(values) do |val|
           item = Convert.to_string(
             SCR.Read(Builtins.topath(Ops.add(Ops.add(pth, "."), val)))
           )
-          Builtins.y2debug("item=%1", item)
+          log.debug "item=#{item}"
           next if item == nil
           # No underscore '_' -> global
           # Also temporarily standard globals
@@ -713,7 +706,7 @@ module Yast
           v = Builtins.substring(val, 0, Builtins.findlastof(val, "_"))
           s = Builtins.substring(val, Builtins.findlastof(val, "_"))
           s = Builtins.substring(s, 1) if Ops.greater_than(Builtins.size(s), 1)
-          Builtins.y2milestone("%1:%2:%3", val, v, s)
+          log.info "#{val}:#{v}:#{s}"
           # Global
           if !Builtins.contains(_Locals, v)
             Ops.set(config, val, item)
@@ -725,7 +718,7 @@ module Yast
             Ops.set(config, "_aliases", __aliases)
           end
         end
-        Builtins.y2milestone("config=%1", ConcealSecrets1(config))
+        log.info "config=#{ConcealSecrets1(config)}"
         # canonicalize, #46885
         caliases = Builtins.mapmap(Ops.get_map(config, "_aliases", {})) do |a, c|
           { a => CanonicalizeIP(c) }
@@ -741,7 +734,7 @@ module Yast
         Ops.set(dev, d, config)
         Ops.set(@Devices, devtype, dev)
       end
-      Builtins.y2debug("Devices=%1", @Devices)
+      log.debug "Devices=#{@Devices}"
 
       @OriginalDevices = deep_copy(@Devices)
       @initialized = true
@@ -767,11 +760,11 @@ module Yast
         Ops.add("^(", Ops.get(@DeviceRegex, devregex, devregex)),
         ")[0-9]*$"
       )
-      Builtins.y2debug("regex=%1", regex)
+      log.debug "regex=#{regex}"
       devices = Builtins.filter(devices) do |file, devmap|
         Builtins.regexpmatch(file, regex) == true
       end
-      Builtins.y2debug("devices=%1", devices)
+      log.debug "devices=#{devices}"
       deep_copy(devices)
     end
 
@@ -789,41 +782,38 @@ module Yast
         Ops.add("^(", Ops.get(@DeviceRegex, devregex, devregex)),
         ")[0-9]*$"
       )
-      Builtins.y2debug("regex=%1", regex)
+      log.debug "regex=#{regex}"
       devices = Builtins.filter(devices) do |file, devmap|
         Builtins.regexpmatch(file, regex) != true
       end
-      Builtins.y2debug("devices=%1", devices)
+      log.debug "devices=#{devices}"
       deep_copy(devices)
     end
 
     def Write(devregex)
-      Builtins.y2milestone("Writing configuration")
-      Builtins.y2debug("Devices=%1", @Devices)
-      Builtins.y2debug("Deleted=%1", @Deleted)
+      log.info "Writing configuration"
+      log.debug "Devices=#{@Devices}"
+      log.debug "Deleted=#{@Deleted}"
 
       _Devs = Filter(@Devices, devregex)
       _OriginalDevs = Filter(@OriginalDevices, devregex)
-      Builtins.y2milestone("OriginalDevs=%1", ConcealSecrets(_OriginalDevs))
-      Builtins.y2milestone("Devs=%1", ConcealSecrets(_Devs))
+      log.info "OriginalDevs=#{ConcealSecrets(_OriginalDevs)}"
+      log.info "Devs=#{ConcealSecrets(_Devs)}"
 
       # Check for changes
       if _Devs == _OriginalDevs
-        Builtins.y2milestone(
-          "No changes to %1 devices -> nothing to write",
-          devregex
-        )
+        log.info "No changes to #{devregex} devices -> nothing to write"
         return true
       end
 
       # remove deleted devices
-      Builtins.y2milestone("Deleted=%1", @Deleted)
+      log.info "Deleted=#{@Deleted}"
       Builtins.foreach(@Deleted) do |d|
         anum = alias_num(d)
         if anum == ""
           # delete config file
           p = Builtins.add(path(".network.section"), d)
-          Builtins.y2debug("deleting: %1", p)
+          log.debug "deleting: #{p}"
           SCR.Write(p, nil)
         else
           dev = device_name_from_alias(d)
@@ -835,7 +825,7 @@ module Yast
           dev_aliases = _OriginalDevs[typ][dev]["_aliases"][anum] || {}
           dev_aliases.keys.each do |key|
             p = base + "#{key}_#{anum}"
-            Builtins.y2debug("deleting: %1", p)
+            log.debug "deleting: #{p}"
             SCR.Write(p, nil)
           end
         end
@@ -974,7 +964,7 @@ module Yast
         end != nil
         file = Ops.add("/etc/sysconfig/network/ifcfg-", config)
         if has_key
-          Builtins.y2debug("Permission change: %1", config)
+          log.debug "Permission change: #{config}"
           SCR.Write(
             Builtins.add(path(".network.section_private"), config),
             true
@@ -1007,7 +997,7 @@ module Yast
     def Import(devregex, devices)
       devices = deep_copy(devices)
       _Devs = FilterNOT(@Devices, devregex)
-      Builtins.y2debug("Devs=%1", _Devs)
+      log.debug "Devs=#{_Devs}"
 
       devices = Builtins.mapmap(devices) do |typ, devsmap|
         {
@@ -1039,10 +1029,7 @@ module Yast
         @initialized = true
       end
 
-      Builtins.y2milestone(
-        "NetworkInterfaces::Import - done, cache content: %1",
-        @Devices
-      )
+      log.info "NetworkInterfaces::Import - done, cache content: #{@Devices}"
 
       true
     end
@@ -1100,10 +1087,7 @@ module Yast
             Builtins.splitstring(Ops.get(@DeviceRegex, "netcard", ""), "|"),
             device
           )
-          Builtins.y2error(
-            "%1 is not contained in DeviceRegex[\"netcard\"]",
-            device
-          )
+          log.error "#{device} is not contained in DeviceRegex[\"netcard\"]"
         end
       end
 
@@ -1275,7 +1259,7 @@ module Yast
         )
       end
 
-      Builtins.y2error("Unknown type: %1", type)
+      log.error "Unknown type: #{type}"
       type
     end
 
@@ -1283,7 +1267,7 @@ module Yast
     # @return dumped settings (later acceptable by Import())
     def Export(devregex)
       _Devs = Filter(@Devices, devregex)
-      Builtins.y2debug("Devs=%1", _Devs)
+      log.debug "Devs=#{_Devs}"
       Convert.convert(_Devs, :from => "map", :to => "map <string, map>")
     end
 
@@ -1292,15 +1276,15 @@ module Yast
     def Modified(devregex)
       _Devs = Filter(@Devices, devregex)
       _OriginalDevs = Filter(@OriginalDevices, devregex)
-      Builtins.y2debug("OriginalDevs=%1", _OriginalDevs)
-      Builtins.y2debug("Devs=%1", _Devs)
+      log.debug "OriginalDevs=#{_OriginalDevs}"
+      log.debug "Devs=#{_Devs}"
       _Devs == _OriginalDevs
     end
 
     def GetFreeDevices(type, num)
-      Builtins.y2debug("Devices=%1", @Devices)
-      Builtins.y2debug("type,num=%1,%2", type, num)
-      Builtins.y2debug("Devices[%1]=%2", type, Ops.get(@Devices, type, {}))
+      log.debug "Devices=#{@Devices}"
+      log.debug "type,num=#{type},#{num}"
+      log.debug "Devices[#{type}]=#{Ops.get(@Devices, type, {})}"
 
       curdevs = []
       Builtins.foreach(
@@ -1320,7 +1304,7 @@ module Yast
 
       # Hotpluggable devices
       if IsHotplug(type) && !Builtins.contains(curdevs, "")
-        Builtins.y2debug("Added simple hotplug device")
+        log.debug "Added simple hotplug device"
         count = Ops.add(count, 1)
         ret = Builtins.add(ret, "")
       end
@@ -1335,7 +1319,7 @@ module Yast
         i = Ops.add(i, 1)
       end
 
-      Builtins.y2debug("Free devices=%1", ret)
+      log.debug "Free devices=#{ret}"
       deep_copy(ret)
     end
 
@@ -1344,11 +1328,11 @@ module Yast
     # @return free device
     # @example GetFreeDevice("eth") -&gt; "1"
     def GetFreeDevice(type)
-      Builtins.y2debug("type=%1", type)
+      log.debug "type=#{type}"
       freedevs = GetFreeDevices(type, 1)
       ret = Ops.get(freedevs, 0)
-      Builtins.y2error("Free device location error: %1", ret) if ret == nil
-      Builtins.y2debug("Free device=%1", ret)
+      log.error "Free device location error: #{ret}" if ret == nil
+      log.debug "Free device=#{ret}"
       ret
     end
 
@@ -1356,7 +1340,7 @@ module Yast
     # @param [String] dev device identifier
     # @return true if device is present
     def Check(dev)
-      Builtins.y2debug("Check(%1)", dev)
+      log.debug "Check(#{dev})"
       typ = GetType(dev)
       #    string num = device_num(dev);
       #    string anum = alias_num(dev);
@@ -1365,7 +1349,7 @@ module Yast
       devsmap = Ops.get(@Devices, typ, {})
       return false if !Builtins.haskey(devsmap, dev)
 
-      Builtins.y2debug("Check passed")
+      log.debug "Check passed"
       true
     end
 
@@ -1376,9 +1360,9 @@ module Yast
       @Name = ""
       @Current = {}
 
-      Builtins.y2debug("name=%1", name)
+      log.debug "name=#{name}"
       if name != "" && !Check(name)
-        Builtins.y2error("No such device: %1", name)
+        log.error "No such device: #{name}"
         return false
       end
 
@@ -1397,8 +1381,8 @@ module Yast
           {}
       end
 
-      Builtins.y2debug("Name=%1", @Name)
-      Builtins.y2debug("Current=%1", @Current)
+      log.debug "Name=#{@Name}"
+      log.debug "Current=#{@Current}"
 
       true
     end
@@ -1439,10 +1423,10 @@ module Yast
     # @return true if success
     def Change2(name, newdev, check)
       newdev = deep_copy(newdev)
-      Builtins.y2debug("Change(%1,%2,%3)", name, newdev, check)
-      Builtins.y2debug("Devices=%1", @Devices)
+      log.debug "Change(#{name},#{newdev},#{check})"
+      log.debug "Devices=#{@Devices}"
       if Check(name) && check
-        Builtins.y2error("Device already present: %1", name)
+        log.error "Device already present: #{name}"
         return false
       end
 
@@ -1456,7 +1440,7 @@ module Yast
         t = int_type if Ops.greater_than(Builtins.size(int_type), 0)
       end
       a = alias_num(name)
-      Builtins.y2debug("ChangeDevice(%1)", name)
+      log.debug "ChangeDevice(#{name})"
 
       devsmap = Ops.get(@Devices, t, {})
       devmap = Ops.get(devsmap, name, {})
@@ -1472,13 +1456,13 @@ module Yast
       Ops.set(devsmap, name, devmap)
       Ops.set(@Devices, t, devsmap)
 
-      Builtins.y2debug("Devices=%1", @Devices)
+      log.debug "Devices=#{@Devices}"
       true
     end
 
     def Delete2(name)
       if !Check(name)
-        Builtins.y2error("Device not found: %1", name)
+        log.error "Device not found: #{name}"
         return false
       end
 
@@ -1511,29 +1495,29 @@ module Yast
     # #48191
     def DeleteAlias(device, aid)
       _alias = Builtins.sformat("%1#%2", device, aid)
-      Builtins.y2milestone("Deleting alias: %1", _alias)
+      log.info "Deleting alias: #{_alias}"
       @Deleted <<  _alias
       true
     end
 
     def Commit
-      Builtins.y2debug("Name=%1", @Name)
-      Builtins.y2debug("Current=%1", @Current)
-      Builtins.y2debug("Devices=%1", @Devices)
-      Builtins.y2debug("Deleted=%1", @Deleted)
-      Builtins.y2debug("operation=%1", @operation)
+      log.debug "Name=#{@Name}"
+      log.debug "Current=#{@Current}"
+      log.debug "Devices=#{@Devices}"
+      log.debug "Deleted=#{@Deleted}"
+      log.debug "operation=#{@operation}"
 
       if @operation == :add || @operation == :edit
         Change2(@Name, @Current, @operation == :add)
       elsif @operation == :delete
         Delete2(@Name)
       else
-        Builtins.y2error("Unknown operation: %1 (%2)", @operation, @Name)
+        log.error "Unknown operation: #{@operation} (#{@Name})"
         return false
       end
 
-      Builtins.y2debug("Devices=%1", @Devices)
-      Builtins.y2debug("Deleted=%1", @Deleted)
+      log.debug "Devices=#{@Devices}"
+      log.debug "Deleted=#{@Deleted}"
 
       @Name = ""
       @Current = {}
@@ -1650,22 +1634,22 @@ module Yast
       types = ["eth-pcmcia", "eth-usb", "tr-pcmcia", "tr-usb"]
       Builtins.maplist(types) do |t|
         link = Ops.add("/etc/sysconfig/network/ifcfg-", t)
-        Builtins.y2debug("link=%1", link)
+        log.debug "link=#{link}"
         lstat = Convert.to_map(SCR.Read(path(".target.lstat"), link))
         if Ops.get_boolean(lstat, "islink", false) == true
           file = Convert.to_string(SCR.Read(path(".target.symlink"), link))
           file = Ops.add("/etc/sysconfig/network/", file)
-          Builtins.y2debug("file=%1", file)
+          log.debug "file=#{file}"
           if Ops.greater_than(SCR.Read(path(".target.size"), file), -1)
-            Builtins.y2milestone("Cleaning hotplug symlink")
-            Builtins.y2milestone("Devices[%1]=%2", t, Ops.get(@Devices, t, {}))
+            log.info "Cleaning hotplug symlink"
+            log.info "Devices[#{t}]=#{Ops.get(@Devices, t, {})}"
             Ops.set(@Devices, t, Builtins.remove(Ops.get(@Devices, t, {}), ""))
-            Builtins.y2milestone("Devices[%1]=%2", t, Ops.get(@Devices, t, {}))
+            log.info "Devices[#{t}]=#{Ops.get(@Devices, t, {})}"
           end
         end
       end
 
-      Builtins.y2debug("Devices=%1", @Devices)
+      log.debug "Devices=#{@Devices}"
       true
     end
 
@@ -1704,10 +1688,10 @@ module Yast
       end
       ret = Builtins.filter(ret) do |row|
         next true if row != nil
-        Builtins.y2error("Filtering out : %1", row)
+        log.error "Filtering out : #{row}"
         false
       end
-      Builtins.y2debug("List(%1) = %2", devregex, ret)
+      log.debug "List(#{devregex}) = #{ret}"
       deep_copy(ret)
     end
 
@@ -1728,7 +1712,7 @@ module Yast
         end
       end }
 
-      Builtins.y2milestone("ret=%1", ret)
+      log.info "ret=#{ret}"
       ret
     end
 
@@ -1748,17 +1732,17 @@ module Yast
     # DSL needs to save its config while the underlying network card is
     # being configured.
     def Push
-      Builtins.y2error("Stack not empty: %1", @stack) if @stack != {}
+      log.error "Stack not empty: #{@stack}" if @stack != {}
       Ops.set(@stack, "Name", @Name)
       Ops.set(@stack, "Current", @Current)
       Ops.set(@stack, "operation", @operation)
-      Builtins.y2milestone("PUSH: %1", @stack)
+      log.info "PUSH: #{@stack}"
 
       nil
     end
 
     def Pop
-      Builtins.y2milestone("POP: %1", @stack)
+      log.info "POP: #{@stack}"
       @Name = Ops.get_string(@stack, "Name", "")
       @Current = Ops.get_map(@stack, "Current", {})
       @operation = Ops.get_symbol(@stack, "operation")

@@ -33,6 +33,8 @@ require "yast"
 
 module Yast
   class SuSEFirewallProposalClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -200,12 +202,12 @@ module Yast
     def ServiceEnabled(service, zones)
       zones = deep_copy(zones)
       if service == nil || service == ""
-        Builtins.y2error("Ups, service: %1?", service)
+        log.error "Ups, service: #{service}?"
         return false
       end
 
       if zones == nil || zones == []
-        Builtins.y2error("Ups, zones: %1?", zones)
+        log.error "Ups, zones: #{zones}?"
         return false
       end
 
@@ -214,11 +216,7 @@ module Yast
       serstat = SuSEFirewall.GetServices([service])
       Builtins.foreach(zones) do |one_zone|
         if Ops.get(serstat, [service, one_zone]) == false
-          Builtins.y2milestone(
-            "Service %1 is not enabled in %2",
-            service,
-            one_zone
-          )
+          log.info "Service #{service} is not enabled in #{one_zone}"
           serenabled = false
           raise Break
         end
@@ -234,11 +232,7 @@ module Yast
     def EnableFallbackPorts(fallback_ports, zones)
       fallback_ports = deep_copy(fallback_ports)
       zones = deep_copy(zones)
-      Builtins.y2warning(
-        "Enabling fallback ports: %1 in zones: %2",
-        fallback_ports,
-        zones
-      )
+      log.warn "Enabling fallback ports: #{fallback_ports} in zones: #{zones}"
 
       Builtins.foreach(zones) { |one_zone| Builtins.foreach(fallback_ports) do |one_port|
         SuSEFirewall.AddService(one_port, "TCP", one_zone)
@@ -261,12 +255,7 @@ module Yast
       zones = SuSEFirewall.GetZonesOfInterfaces(interfaces)
 
       if SuSEFirewallServices.IsKnownService(service)
-        Builtins.y2milestone(
-          "Opening service %1 on interfaces %2 (zones %3)",
-          service,
-          interfaces,
-          zones
-        )
+        log.info "Opening service #{service} on interfaces #{interfaces} (zones #{zones})"
         SuSEFirewall.SetServicesForZones([service], zones, true)
       end
 
@@ -332,10 +321,7 @@ module Yast
         # No network interfaces are known
       elsif Builtins.size(@known_interfaces) == 0
         if SuSEFirewall.IsAnyNetworkInterfaceSupported == true
-          Builtins.y2warning(
-            "WARNING: Opening %1 for the External zone without any known interface!",
-            Builtins.toupper(service)
-          )
+          log.warn "WARNING: Opening #{Builtins.toupper(service)} for the External zone without any known interface!"
           OpenServiceInInterfaces(
             service,
             fallback_ports,
@@ -378,11 +364,7 @@ module Yast
         end
       end
 
-      Builtins.y2milestone(
-        "Proposal based on configuration: Dial-up interfaces: %1, Other: %2",
-        dial_up_interfaces,
-        non_dup_interfaces
-      )
+      log.info "Proposal based on configuration: Dial-up interfaces: #{dial_up_interfaces}, Other: #{non_dup_interfaces}"
 
       # has any network interface
       if Builtins.size(non_dup_interfaces) == 0 ||
@@ -428,17 +410,13 @@ module Yast
       # VNC Installation proposes to open VNC Access up on the Non-dial-up interfaces only.
       # SSH Installation is the same case...
       if Linuxrc.vnc
-        Builtins.y2milestone(
-          "This is an installation over VNC, opening VNC on all non-dial-up interfaces..."
-        )
+        log.info "This is an installation over VNC, opening VNC on all non-dial-up interfaces..."
         # Try the service first, then ports
         # bnc #398855
         OpenServiceOnNonDialUpInterfaces(@vnc_service, @vnc_fallback_ports)
       end
       if Linuxrc.usessh
-        Builtins.y2milestone(
-          "This is an installation over SSH, opening SSH on all non-dial-up interfaces..."
-        )
+        log.info "This is an installation over SSH, opening SSH on all non-dial-up interfaces..."
         # Try the service first, then ports
         # bnc #398855
         OpenServiceOnNonDialUpInterfaces(@ssh_service, ["ssh"])
@@ -446,19 +424,14 @@ module Yast
 
       # Firewall support for XEN domain0
       if IsXenInstalled()
-        Builtins.y2milestone(
-          "Adding Xen support into the firewall configuration"
-        )
+        log.info "Adding Xen support into the firewall configuration"
         SuSEFirewall.AddXenSupport
       end
 
       # BNC #766300 - Automatically propose opening iscsi-target port
       # when installing with withiscsi=1
       if Linuxrc.useiscsi
-        Builtins.y2milestone(
-          "iSCSI has been used during installation, opening %1 service",
-          @iscsi_target_service
-        )
+        log.info "iSCSI has been used during installation, opening #{@iscsi_target_service} service"
         OpenServiceOnNonDialUpInterfaces(
           @iscsi_target_service,
           @iscsi_target_fallback_ports
@@ -478,7 +451,7 @@ module Yast
     #
     # @param	boolean if changed by user
     def SetChangedByUser(changed)
-      Builtins.y2milestone("Proposal was changed by user")
+      log.info "Proposal was changed by user"
       @proposal_changed_by_user = changed
 
       nil
@@ -530,12 +503,12 @@ module Yast
 
       # Not changed by user - Propose from scratch
       if !GetChangedByUser()
-        Builtins.y2milestone("Calling firewall configuration proposal")
+        log.info "Calling firewall configuration proposal"
         Reset()
         ProposeFunctions() 
         # Changed - don't break user's configuration
       else
-        Builtins.y2milestone("Calling firewall configuration update proposal")
+        log.info "Calling firewall configuration update proposal"
         UpdateProposal()
       end
 
@@ -597,13 +570,13 @@ module Yast
 
         # Any known interfaces
         if Ops.greater_than(Builtins.size(@known_interfaces), 0)
-          Builtins.y2milestone("Interfaces: %1", @known_interfaces)
+          log.info "Interfaces: #{@known_interfaces}"
 
           # all known interfaces for testing
           used_zones = SuSEFirewall.GetZonesOfInterfacesWithAnyFeatureSupported(
             @known_interfaces
           )
-          Builtins.y2milestone("Zones used by firewall: %1", used_zones)
+          log.info "Zones used by firewall: #{used_zones}"
 
           Builtins.foreach(used_zones) do |zone|
             if SuSEFirewall.IsServiceSupportedInZone(@ssh_service, zone) ||

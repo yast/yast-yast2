@@ -32,6 +32,8 @@ require "yast"
 
 module Yast
   class CWMClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
       textdomain "base"
@@ -121,7 +123,7 @@ module Yast
       while Ops.less_than(index, args)
         arg = Ops.get(t, index)
         if current == :Frame && index == 0 # no action
-          Builtins.y2debug("Leaving untouched %1", arg)
+          log.debug "Leaving untouched #{arg}"
         elsif Ops.is_term?(arg) && arg != nil # recurse
           s = Builtins.symbolof(Convert.to_term(arg))
           if Builtins.contains(@ContainerWidgets, s)
@@ -153,7 +155,7 @@ module Yast
         arg = Ops.get(t, index)
         current = Builtins.symbolof(t)
         if current == :Frame && index == 0 # no action
-          Builtins.y2debug("Leaving untouched %1", arg)
+          log.debug "Leaving untouched #{arg}"
         elsif Ops.is_term?(arg) && arg != nil # recurse
           s = Builtins.symbolof(Convert.to_term(arg))
           if Builtins.contains(@ContainerWidgets, s)
@@ -181,7 +183,7 @@ module Yast
       return Ops.is_boolean?(value) if type == "boolean"
       return Ops.is_integer?(value) if type == "integer"
 
-      Builtins.y2error("Unknown value type %1", type)
+      log.error "Unknown value type #{type}"
       true
     end
 
@@ -234,11 +236,7 @@ module Yast
       end
 
       if !success
-        Builtins.y2error(
-          "Wrong type of option %1 in description map of %2",
-          key,
-          widget
-        )
+        log.error "Wrong type of option #{key} in description map of #{widget}"
       end
 
       success
@@ -273,7 +271,7 @@ module Yast
 
       return true if error == ""
 
-      Builtins.y2error("Error on key %1 of widget %2: %3", key, widget, error)
+      log.error "Error on key #{key} of widget #{widget}: #{error}"
       false
     end
 
@@ -764,7 +762,7 @@ module Yast
 
     # A hook to handle Alt-Ctrl-Shift-D
     def handleDebug
-      Builtins.y2debug("Handling a debugging event")
+      log.debug "Handling a debugging event"
 
       nil
     end

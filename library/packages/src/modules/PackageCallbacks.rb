@@ -155,16 +155,13 @@ module Yast
     # functions related to the persistent storage
     def LoadConfig
       if FileUtils.Exists(@conf_file) && FileUtils.IsFile(@conf_file)
-        Builtins.y2milestone("Reading config file %1", @conf_file)
+        log.info "Reading config file #{@conf_file}"
         read_conf = Convert.to_map(SCR.Read(path(".target.ycp"), @conf_file))
 
         @config = read_conf != nil ? read_conf : {}
-        Builtins.y2milestone("Current config: %1", @config)
+        log.info "Current config: #{@config}"
       else
-        Builtins.y2milestone(
-          "No configuration found (file %1 is missing)",
-          @conf_file
-        )
+        log.info "No configuration found (file #{@conf_file} is missing)"
       end
 
       @config = {} if @config == nil
@@ -182,14 +179,14 @@ module Yast
       value = deep_copy(value)
       LoadConfig() if @config == nil
 
-      Builtins.y2milestone("Config: setting %1 to %2", key, value)
+      log.info "Config: setting #{key} to #{value}"
       Ops.set(@config, key, value)
 
       nil
     end
 
     def SaveConfig
-      Builtins.y2milestone("Saving the current config to %1", @conf_file)
+      log.info "Saving the current config to #{@conf_file}"
       SCR.Write(path(".target.ycp"), @conf_file, @config)
     end
 
@@ -222,7 +219,7 @@ module Yast
       return false if Mode.commandline
 
       ret = UI.WidgetExists(:progress_replace_point)
-      Builtins.y2debug("Running in fullscreen mode: %1", ret)
+      log.debug "Running in fullscreen mode: #{ret}"
       ret
     end
 
@@ -236,7 +233,7 @@ module Yast
     # at start of file providal
     #
     def StartProvide(name, archivesize, remote)
-      Builtins.y2milestone("StartProvide: name: %1, remote: %2", name, remote)
+      log.info "StartProvide: name: #{name}, remote: #{remote}"
       if remote
         sz = String.FormatSizeWithPrecision(archivesize, 2, false)
         if Mode.commandline
@@ -268,7 +265,7 @@ module Yast
     # during file providal
     #
     def ProgressProvide(percent)
-      Builtins.y2milestone("ProgressProvide: %1", percent)
+      log.info "ProgressProvide: #{percent}"
       if @_provide_popup
         UI.ChangeWidget(Id(:progress), :Value, percent)
         @provide_aborted = UI.PollInput == :abort
@@ -356,7 +353,7 @@ module Yast
     #  // return "R" for retry
     #  // return "C" for abort
     def DoneProvide(error, reason, name)
-      Builtins.y2milestone("DoneProvide: %1, %2, %3", error, reason, name)
+      log.info "DoneProvide: #{error}, #{reason}, #{name}"
 
       if @_provide_popup
         UI.CloseDialog
@@ -471,7 +468,7 @@ module Yast
           end
         end until r == :abort || r == :retry || r == :ignore
 
-        Builtins.y2milestone("DoneProvide %1", r)
+        log.info "DoneProvide #{r}"
 
         UI.CloseDialog
 
@@ -492,7 +489,7 @@ module Yast
           return "I"
         end
 
-        Builtins.y2error("Unknown user input: %1", r)
+        log.error "Unknown user input: #{r}"
       end
 
       "I"
@@ -583,11 +580,7 @@ module Yast
       @_package_popup = false
 
       if error != 0
-        Builtins.y2milestone(
-          "DonePackage(error: %1, reason: '%2')",
-          error,
-          reason
-        )
+        log.info "DonePackage(error: #{error}, reason: '#{reason}')"
 
         message = Builtins.sformat(
           @_deleting_package ?
@@ -658,7 +651,7 @@ module Yast
             end
           end until r == :abort || r == :retry || r == :ignore
 
-          Builtins.y2milestone("DonePackage %1", r)
+          log.info "DonePackage #{r}"
 
           UI.CloseDialog
 
@@ -679,7 +672,7 @@ module Yast
         # default: ignore
       else
         # no error, there is additional info (rpm output), see bnc#456446
-        Builtins.y2milestone("Additional RPM otput: %1", reason)
+        log.info "Additional RPM otput: #{reason}"
 
         CommandLine.Print(reason) if Mode.commandline
       end
@@ -713,7 +706,7 @@ module Yast
         end
       end if cds != nil
 
-      Builtins.y2milestone("Detected CD devices: %1", ret)
+      log.info "Detected CD devices: #{ret}"
 
       deep_copy(ret)
     end
@@ -752,22 +745,11 @@ module Yast
     def MediaChange(error_code, error, url, product, current, current_label, wanted, wanted_label, double_sided, devices, current_device)
       devices = deep_copy(devices)
       if @autorefreshing && @autorefreshing_aborted
-        Builtins.y2milestone("Refresh aborted")
+        log.info "Refresh aborted"
         return "C"
       end
 
-      Builtins.y2milestone(
-        "MediaChange error: err'%1', url'%2', prd'%3', cur'%4'/'%5', wan'%6'/'%7', devs: %8, curr_dev: %9",
-        Ops.add(Ops.add(error_code, ":"), error),
-        URL.HidePassword(url),
-        product,
-        current,
-        current_label,
-        wanted,
-        wanted_label,
-        devices,
-        current_device
-      )
+      log.info "MediaChange error: err'#{Ops.add(Ops.add(error_code, ":"), error)}', url'#{URL.HidePassword(url)}', prd'#{product}', cur'#{current}'/'#{current_label}', wan'#{wanted}'/'#{wanted_label}', devs: #{devices}, curr_dev: #{current_device}"
 
       url_tokens = URL.Parse(url)
       url_scheme = Ops.get_string(url_tokens, "scheme", "")
@@ -780,7 +762,7 @@ module Yast
       if offer_eject_button &&
           Convert.to_boolean(GetConfig("automatic_eject")) == true
         if !@doing_eject
-          Builtins.y2milestone("Automatically ejecting the medium...")
+          log.info "Automatically ejecting the medium..."
           @doing_eject = true
           return "E"
         end
@@ -964,17 +946,14 @@ module Yast
 
           doing_auto_retry = true
         else
-          Builtins.y2warning(
-            "Max. autoretry count (%1) reached, giving up...",
-            @retry_attempts
-          )
+          log.warn "Max. autoretry count (#{@retry_attempts}) reached, giving up..."
         end
       end
 
-      Builtins.y2milestone("Autoretry: %1", doing_auto_retry)
+      log.info "Autoretry: #{doing_auto_retry}"
 
       if doing_auto_retry
-        Builtins.y2milestone("Autoretry attempt: %1", @current_retry_attempt)
+        log.info "Autoretry attempt: #{@current_retry_attempt}"
       end
 
       if Mode.commandline
@@ -1008,10 +987,7 @@ module Yast
         return "S"
       end
 
-      Builtins.y2debug(
-        "Opening Dialog: %1",
-        LayoutPopup(message, button_box, 10, true)
-      )
+      log.debug "Opening Dialog: #{LayoutPopup(message, button_box, 10, true)}"
 
       if @showLongInfo
         UI.OpenDialog(
@@ -1055,7 +1031,7 @@ module Yast
             @current_retry_timeout = Ops.subtract(@current_retry_timeout, 1)
 
             if @current_retry_timeout == 0
-              Builtins.y2milestone("The time is out, doing automatic retry...")
+              log.info "The time is out, doing automatic retry..."
               # do the retry
               r = :retry
 
@@ -1071,7 +1047,7 @@ module Yast
             end
           else
             # user has pressed a button, reset the retry counter in the next timeout
-            Builtins.y2milestone("User input: %1, resetting autoretry url", r)
+            log.info "User input: #{r}, resetting autoretry url"
             @retry_url = ""
           end
         end
@@ -1101,7 +1077,7 @@ module Yast
           end
         elsif Ops.is_string?(r) &&
             Builtins.regexpmatch(Convert.to_string(r), "^/dev/")
-          Builtins.y2milestone("Eject request for %1", r)
+          log.info "Eject request for #{r}"
           eject_device = Convert.to_string(r)
           r = :eject
         end
@@ -1114,7 +1090,7 @@ module Yast
         CheckAndSaveAutoEject()
       end
 
-      Builtins.y2milestone("MediaChange %1", r)
+      log.info "MediaChange #{r}"
 
       UI.CloseDialog
 
@@ -1151,20 +1127,17 @@ module Yast
           end
 
           if found != nil
-            Builtins.y2milestone("Device %1 has index %2", eject_device, dindex)
+            log.info "Device #{eject_device} has index #{dindex}"
             return Ops.add("E", Builtins.tostring(dindex))
           else
-            Builtins.y2warning(
-              "Device %1 not found in the list, using default",
-              eject_device
-            )
+            log.warn "Device #{eject_device} not found in the list, using default"
             return "E"
           end
         end
       end
 
       if r == :url
-        Builtins.y2milestone("Redirecting to: %1", URL.HidePassword(url))
+        log.info "Redirecting to: #{URL.HidePassword(url)}"
         return url
       end
 
@@ -1174,7 +1147,7 @@ module Yast
 
     # dummy repository change callback, see SlideShowCallbacks for the real one
     def SourceChange(source, medianr)
-      Builtins.y2milestone("SourceChange (%1, %2)", source, medianr)
+      log.info "SourceChange (#{source}, #{medianr})"
       @_current_source = source
 
       nil
@@ -1184,7 +1157,7 @@ module Yast
     def ProcessMessage(msg, max_len)
       words = Builtins.splitstring(msg, " ")
 
-      Builtins.y2debug("words: %1", words)
+      log.debug "words: #{words}"
 
       words = Builtins.maplist(words) do |w|
         parsed = URL.Parse(w)
@@ -1214,11 +1187,7 @@ module Yast
       ret = Builtins.mergestring(words, " ")
 
       if ret != msg
-        Builtins.y2milestone(
-          "URL conversion: '%1' converted to '%2'",
-          URL.HidePassword(msg),
-          URL.HidePassword(ret)
-        )
+        log.info "URL conversion: '#{URL.HidePassword(msg)}' converted to '#{URL.HidePassword(ret)}'"
       end
 
       ret
@@ -1236,7 +1205,7 @@ module Yast
       end
 
       @_source_open = Ops.add(@_source_open, 1)
-      Builtins.y2milestone("OpenSourcePopup: _source_open: %1", @_source_open)
+      log.info "OpenSourcePopup: _source_open: #{@_source_open}"
 
       nil
     end
@@ -1253,7 +1222,7 @@ module Yast
       end
 
       UI.ChangeWidget(:label_source_popup, :Value, text)
-      Builtins.y2milestone("SourcePopup: new header: %1", text)
+      log.info "SourcePopup: new header: #{text}"
 
       nil
     end
@@ -1271,7 +1240,7 @@ module Yast
 
       # refresh the label in the popup
       UI.ChangeWidget(:progress, :Label, text)
-      Builtins.y2milestone("SourcePopup: new label: %1", text)
+      log.info "SourcePopup: new label: #{text}"
 
       nil
     end
@@ -1292,26 +1261,24 @@ module Yast
 
     def CloseSourcePopup
       if !IsSourcePopup()
-        Builtins.y2error(
-          "The toplevel dialog is not a repository popup dialog!"
-        )
+        log.error "The toplevel dialog is not a repository popup dialog!"
         return
       end
 
       @_source_open = Ops.subtract(@_source_open, 1)
 
       if @_source_open == 0
-        Builtins.y2milestone("Closing repository progress popup")
+        log.info "Closing repository progress popup"
         UI.CloseDialog
       end
-      Builtins.y2milestone("CloseSourcePopup: _source_open: %1", @_source_open)
+      log.info "CloseSourcePopup: _source_open: #{@_source_open}"
 
       nil
     end
 
 
     def SourceCreateInit
-      Builtins.y2milestone("SourceCreateInit")
+      log.info "SourceCreateInit"
 
       OpenSourcePopup()
 
@@ -1319,7 +1286,7 @@ module Yast
     end
 
     def SourceCreateDestroy
-      Builtins.y2milestone("SourceCreateDestroy")
+      log.info "SourceCreateDestroy"
 
       CloseSourcePopup()
 
@@ -1327,7 +1294,7 @@ module Yast
     end
 
     def SourceCreateStart(url)
-      Builtins.y2milestone("SourceCreateStart: %1", url)
+      log.info "SourceCreateStart: #{url}"
 
       # popup label (%1 is repository URL)
       msg = Builtins.sformat(_("Creating Repository %1"), url)
@@ -1335,7 +1302,7 @@ module Yast
       if Mode.commandline
         CommandLine.Print(msg)
       else
-        Builtins.y2milestone("_source_open: %1", @_source_open)
+        log.info "_source_open: #{@_source_open}"
 
         if @_source_open == 1
           SetHeaderSourcePopup(msg)
@@ -1349,18 +1316,13 @@ module Yast
 
     def SourceCreateProgress(percent)
       ret = SourcePopupSetProgress(percent)
-      Builtins.y2milestone("SourceCreateProgress(%1) = %2", percent, ret)
+      log.info "SourceCreateProgress(#{percent}) = #{ret}"
 
       ret
     end
 
     def SourceCreateError(url, error, description)
-      Builtins.y2milestone(
-        "Source create: error: url: %1, error: %2, description: %3",
-        URL.HidePassword(url),
-        error,
-        description
-      )
+      log.info "Source create: error: url: #{URL.HidePassword(url)}, error: #{error}, description: #{description}"
 
       # error message - a label followed by a richtext with details
       message = _("An error occurred while creating the repository.")
@@ -1412,7 +1374,7 @@ module Yast
       )
       ret = Convert.to_symbol(UI.UserInput)
       UI.CloseDialog
-      Builtins.y2milestone("Source create error: Returning %1", ret)
+      log.info "Source create error: Returning #{ret}"
 
       ret
     end
@@ -1421,12 +1383,7 @@ module Yast
       # set 100% progress
       SourcePopupSetProgress(100)
 
-      Builtins.y2milestone(
-        "Source create end: error: url: %1, error: %2, description: %3",
-        URL.HidePassword(url),
-        error,
-        description
-      )
+      log.info "Source create end: error: url: #{URL.HidePassword(url)}, error: #{error}, description: #{description}"
 
       nil
     end
@@ -1434,7 +1391,7 @@ module Yast
 
 
     def SourceProbeStart(url)
-      Builtins.y2milestone("SourceProbeStart: %1", URL.HidePassword(url))
+      log.info "SourceProbeStart: #{URL.HidePassword(url)}"
 
       # popup label (%1 is repository URL)
       msg = Builtins.sformat(_("Probing Repository %1"), URL.HidePassword(url))
@@ -1461,21 +1418,13 @@ module Yast
 
 
     def SourceProbeFailed(url, type)
-      Builtins.y2milestone(
-        "Repository %1 is not %2 repository",
-        URL.HidePassword(url),
-        type
-      )
+      log.info "Repository #{URL.HidePassword(url)} is not #{type} repository"
 
       nil
     end
 
     def SourceProbeSucceeded(url, type)
-      Builtins.y2milestone(
-        "Repository %1 is type %2",
-        URL.HidePassword(url),
-        type
-      )
+      log.info "Repository #{URL.HidePassword(url)} is type #{type}"
 
       nil
     end
@@ -1486,12 +1435,7 @@ module Yast
     end
 
     def SourceProbeError(url, error, description)
-      Builtins.y2milestone(
-        "Source probe: error: url: %1, error: %2, description: %3",
-        URL.HidePassword(url),
-        error,
-        description
-      )
+      log.info "Source probe: error: url: #{URL.HidePassword(url)}, error: #{error}, description: #{description}"
 
       # error message - a label followed by a richtext with details
       message = _("Error occurred while probing the repository.")
@@ -1546,7 +1490,7 @@ module Yast
       )
       ret = Convert.to_symbol(UI.UserInput)
       UI.CloseDialog
-      Builtins.y2milestone("Source probe error: Returning %1", ret)
+      log.info "Source probe error: Returning #{ret}"
       ret
     end
 
@@ -1554,29 +1498,19 @@ module Yast
       CloseSourcePopup()
       CloseSourcePopup()
 
-      Builtins.y2milestone(
-        "Source probe end: error: url: %1, error: %2, description: %3",
-        URL.HidePassword(url),
-        error,
-        description
-      )
+      log.info "Source probe end: error: url: #{URL.HidePassword(url)}, error: #{error}, description: #{description}"
 
       nil
     end
 
 
     def SourceReportStart(source_id, url, task)
-      Builtins.y2milestone(
-        "Source report start: src: %1, URL: %2, task: %3",
-        source_id,
-        URL.HidePassword(url),
-        task
-      )
+      log.info "Source report start: src: #{source_id}, URL: #{URL.HidePassword(url)}, task: #{task}"
 
       if Mode.commandline
         CommandLine.Print(task)
       else
-        Builtins.y2milestone("_source_open: %1", @_source_open)
+        log.info "_source_open: #{@_source_open}"
 
         if @_source_open == 1
           SetHeaderSourcePopup(task)
@@ -1590,20 +1524,14 @@ module Yast
 
     def SourceReportProgress(value)
       ret = SourcePopupSetProgress(value)
-      Builtins.y2debug("SourceReportProgress(%1) = %2", value, ret)
+      log.debug "SourceReportProgress(#{value}) = #{ret}"
 
       ret
     end
 
 
     def SourceReportError(source_id, url, error, description)
-      Builtins.y2milestone(
-        "Source report: error: id: %1, url: %2, error: %3, description: %4",
-        source_id,
-        URL.HidePassword(url),
-        error,
-        description
-      )
+      log.info "Source report: error: id: #{source_id}, url: #{URL.HidePassword(url)}, error: #{error}, description: #{description}"
 
       # error message - a label followed by a richtext with details
       message = Builtins.sformat(_("Repository %1"), url)
@@ -1652,20 +1580,13 @@ module Yast
       )
       ret = Convert.to_symbol(UI.UserInput)
       UI.CloseDialog
-      Builtins.y2milestone("Source report error: Returning %1", ret)
+      log.info "Source report error: Returning #{ret}"
 
       ret
     end
 
     def SourceReportEnd(src_id, url, task, error, description)
-      Builtins.y2milestone(
-        "Source report end: src: %1, url: %2, task: %3, error: %4, description: %5",
-        src_id,
-        URL.HidePassword(url),
-        task,
-        error,
-        description
-      )
+      log.info "Source report end: src: #{src_id}, url: #{URL.HidePassword(url)}, task: #{task}, error: #{error}, description: #{description}"
 
       # set 100% progress
       SourcePopupSetProgress(100)
@@ -1674,14 +1595,14 @@ module Yast
     end
 
     def SourceReportInit
-      Builtins.y2milestone("Source report init")
+      log.info "Source report init"
       OpenSourcePopup()
 
       nil
     end
 
     def SourceReportDestroy
-      Builtins.y2milestone("Source report destroy")
+      log.info "Source report destroy"
       CloseSourcePopup()
 
       nil
@@ -1770,21 +1691,21 @@ module Yast
 
     def ProblemDeltaDownload(descr)
       FinishPatchDeltaProvide() # close popup
-      Builtins.y2milestone("Failed to download delta RPM: %1", descr)
+      log.info "Failed to download delta RPM: #{descr}"
 
       nil
     end
 
     def ProblemDeltaApply(descr)
       FinishPatchDeltaProvide() # close popup
-      Builtins.y2milestone("Failed to apply delta RPM: %1", descr)
+      log.info "Failed to apply delta RPM: #{descr}"
 
       nil
     end
 
     def ProblemPatchDownload(descr)
       FinishPatchDeltaProvide() # close popup
-      Builtins.y2milestone("Failed to download patch RPM: %1", descr)
+      log.info "Failed to download patch RPM: #{descr}"
 
       nil
     end
@@ -1812,11 +1733,7 @@ module Yast
     def ScriptStart(patch_name, patch_version, patch_arch, script_path)
       patch_full_name = FormatPatchName(patch_name, patch_version, patch_arch)
 
-      Builtins.y2milestone(
-        "ScriptStart callback: patch: %1, script: %2",
-        patch_full_name,
-        script_path
-      )
+      log.info "ScriptStart callback: patch: #{patch_full_name}, script: #{script_path}"
 
       if Mode.commandline
         CommandLine.PrintVerbose(
@@ -1870,12 +1787,12 @@ module Yast
     end
 
     def ScriptProgress(ping, output)
-      Builtins.y2milestone("ScriptProgress: ping:%1, output: %2", ping, output)
+      log.info "ScriptProgress: ping:#{ping}, output: #{output}"
 
       if @_script_popup
         if ping
           # TODO: refresh progress indicator
-          Builtins.y2debug("-ping-")
+          log.debug "-ping-"
         end
 
         if output != nil && output != ""
@@ -1890,7 +1807,7 @@ module Yast
     end
 
     def ScriptProblem(description)
-      Builtins.y2warning("ScriptProblem: %1", description)
+      log.warn "ScriptProblem: #{description}"
 
       ui = Popup.AnyQuestion3(
         "", #symbol focus
@@ -1901,7 +1818,7 @@ module Yast
         :retry
       )
 
-      Builtins.y2milestone("Problem result: %1", ui)
+      log.info "Problem result: #{ui}"
 
       # Abort is the default
       ret = "A"
@@ -1916,14 +1833,14 @@ module Yast
         # abort
         ret = "A"
       else
-        Builtins.y2warning("Unknown result: %1, aborting", ui)
+        log.warn "Unknown result: #{ui}, aborting"
       end
 
       ret
     end
 
     def ScriptFinish
-      Builtins.y2milestone("ScriptFinish")
+      log.info "ScriptFinish"
 
       UI.CloseDialog if @_script_popup
 
@@ -1932,7 +1849,7 @@ module Yast
 
     def Message(patch_name, patch_version, patch_arch, message)
       patch_full_name = FormatPatchName(patch_name, patch_version, patch_arch)
-      Builtins.y2milestone("Message (%1): %2", patch_full_name, message)
+      log.info "Message (#{patch_full_name}): #{message}"
 
       if patch_full_name != ""
         # label, %1 is patch name with version and architecture
@@ -1940,7 +1857,7 @@ module Yast
       end
 
       ret = Popup.ContinueCancel(Ops.add(patch_full_name, message))
-      Builtins.y2milestone("User input: %1", ret)
+      log.info "User input: #{ret}"
 
       ret
     end
@@ -1982,7 +1899,7 @@ module Yast
 
       ui = :continue if ui == :close
 
-      Builtins.y2milestone("User request: %1", ui)
+      log.info "User request: #{ui}"
 
       ui
     end
@@ -2037,11 +1954,7 @@ module Yast
     end
 
     def StartDownload(url, localfile)
-      Builtins.y2milestone(
-        "Downloading %1 to %2",
-        URL.HidePassword(url),
-        localfile
-      )
+      log.info "Downloading #{URL.HidePassword(url)} to #{localfile}"
 
       # heading of popup
       heading = _("Downloading")
@@ -2072,7 +1985,7 @@ module Yast
 
     def ProgressDownload(percent, bps_avg, bps_current)
       if @autorefreshing && @autorefreshing_aborted
-        Builtins.y2milestone("Refresh aborted")
+        log.info "Refresh aborted"
         return false
       end
 
@@ -2133,7 +2046,7 @@ module Yast
 
             Pkg.SkipRefresh
           else
-            Builtins.y2error("Unknown input value: %1", answer)
+            log.error "Unknown input value: #{answer}"
           end
         end
 
@@ -2146,16 +2059,12 @@ module Yast
     # just log the status, errors are handled in MediaChange callback
     def DoneDownload(error_value, error_text)
       if error_value == 0
-        Builtins.y2milestone("Download finished")
+        log.info "Download finished"
       else
         if @autorefreshing && @autorefreshing_aborted
-          Builtins.y2milestone("Refresh aborted")
+          log.info "Refresh aborted"
         else
-          Builtins.y2warning(
-            "Download failed: error %1: %2",
-            error_value,
-            error_text
-          )
+          log.warn "Download failed: error #{error_value}: #{error_text}"
         end
       end
 
@@ -2163,7 +2072,7 @@ module Yast
     end
 
     def RefreshStarted
-      Builtins.y2milestone("Autorefreshing repositories...")
+      log.info "Autorefreshing repositories..."
 
       if !Mode.commandline && UI.WidgetExists(Id(:abort))
         # push button label
@@ -2183,7 +2092,7 @@ module Yast
         UI.RecalcLayout
       end
 
-      Builtins.y2milestone("Autorefresh done")
+      log.info "Autorefresh done"
       @autorefreshing = false
       @autorefreshing_aborted = false
 
@@ -2358,7 +2267,7 @@ module Yast
 
     # Callback for start RPM DB scan event
     def StartScanDb
-      Builtins.y2milestone("Scanning RPM DB...")
+      log.info "Scanning RPM DB..."
 
       if Mode.commandline
         # progress message (command line mode)
@@ -2412,7 +2321,7 @@ module Yast
           UI.ChangeWidget(Id(:progress), :Value, value)
           cont = UI.PollInput != :abort
 
-          Builtins.y2warning("Scan DB aborted") if !cont
+          log.warn "Scan DB aborted" if !cont
 
           return cont
         elsif FullScreen()
@@ -2426,11 +2335,7 @@ module Yast
 
     # Callback for error handling during RPM DB scan
     def ErrorScanDb(error, description)
-      Builtins.y2error(
-        "ErrorScanDb callback: error: %1, description: %2",
-        error,
-        description
-      )
+      log.error "ErrorScanDb callback: error: #{error}, description: #{description}"
 
       # error message, could not read RPM database
       message = _("Initialization of the target failed.")
@@ -2501,7 +2406,7 @@ module Yast
         end
       end until r == :abort || r == :retry || r == :ignore
 
-      Builtins.y2milestone("ErrorScanDb: user input: %1", r)
+      log.info "ErrorScanDb: user input: #{r}"
 
       UI.CloseDialog
 
@@ -2509,18 +2414,14 @@ module Yast
       return "R" if r == :retry
       return "I" if r == :ignore
 
-      Builtins.y2error("Unknown user input: %1", r)
+      log.error "Unknown user input: #{r}"
 
       "C"
     end
 
     # Callback for finish RPM DB scan event
     def DoneScanDb(error, description)
-      Builtins.y2milestone(
-        "RPM DB scan finished: error: %1, reason: '%2'",
-        error,
-        description
-      )
+      log.info "RPM DB scan finished: error: #{error}, reason: '#{description}'"
 
       if Mode.commandline
         # status message (command line mode)
@@ -2530,7 +2431,7 @@ module Yast
           UI.CloseDialog
           @_scan_popup = false
         elsif !FullScreen()
-          Builtins.y2error("The toplevel dialog is not a scan DB popup!")
+          log.error "The toplevel dialog is not a scan DB popup!"
         end
       end
 
@@ -2622,7 +2523,7 @@ module Yast
     end
 
     def ProgressStart(id, task, in_percent, is_alive, min, max, val_raw, val_percent)
-      Builtins.y2milestone("ProgressStart: %1", id)
+      log.info "ProgressStart: #{id}"
 
       @tick_progress = is_alive
       @val_progress = !in_percent && !is_alive
@@ -2641,7 +2542,7 @@ module Yast
         if IsProgressPopup() &&
             Ops.less_or_equal(Builtins.size(@progress_stack), 1)
           # huh, the popup is already there?
-          Builtins.y2warning("Progress popup already opened...")
+          log.warn "Progress popup already opened..."
           UI.CloseDialog
         end
 
@@ -2674,7 +2575,7 @@ module Yast
     end
 
     def ProgressEnd(id)
-      Builtins.y2milestone("ProgressFinish: %1", id)
+      log.info "ProgressFinish: #{id}"
 
       # remove the last element from the progress stack
       @progress_stack = Builtins.remove(
@@ -2706,7 +2607,7 @@ module Yast
     end
 
     def ProgressProgress(id, val_raw, val_percent)
-      Builtins.y2debug("ProgressProgress: %1, %2%% ", id, val_percent)
+      log.debug "ProgressProgress: #{id}, #{val_percent}% "
 
       if Mode.commandline
         if @tick_progress
@@ -2729,12 +2630,7 @@ module Yast
           # aborted ?
           input = UI.PollInput
           if input == :abort
-            Builtins.y2warning(
-              "Callback %1 has been aborted at %2%% (raw: %3)",
-              id,
-              val_percent,
-              val_raw
-            )
+            log.warn "Callback #{id} has been aborted at #{val_percent}% (raw: #{val_raw})"
             return false
           end
         elsif FullScreen()
@@ -2752,17 +2648,8 @@ module Yast
     # @param [String] help Help text describing the process
     def ProcessStart(task, stages, help)
       stages = deep_copy(stages)
-      Builtins.y2milestone(
-        "Process: Start: task: %1, stages: %2, help: %3",
-        task,
-        stages,
-        help
-      )
-      Builtins.y2milestone(
-        "Progress: status: %1, isrunning: %2",
-        Progress.status,
-        Progress.IsRunning
-      )
+      log.info "Process: Start: task: #{task}, stages: #{stages}, help: #{help}"
+      log.info "Progress: status: #{Progress.status}, isrunning: #{Progress.IsRunning}"
 
       return if Mode.commandline
 
@@ -2770,7 +2657,7 @@ module Yast
 
       if Progress.status
         if !Progress.IsRunning
-          Builtins.y2milestone("Opening Wizard window...")
+          log.info "Opening Wizard window..."
           Wizard.CreateDialog
           Wizard.SetDesktopIcon("sw_single")
 
@@ -2784,7 +2671,7 @@ module Yast
       end
 
       @opened_wizard = Builtins.add(@opened_wizard, opened)
-      Builtins.y2milestone("Wizard stack: %1", @opened_wizard)
+      log.info "Wizard stack: #{@opened_wizard}"
 
       nil
     end
@@ -2792,7 +2679,7 @@ module Yast
     # Hander for ProcessProgress callback - report total progress
     # @param [Fixnum] percent Total progress in percent
     def ProcessProgress(percent)
-      Builtins.y2debug("Process: %1%%", percent)
+      log.debug "Process: #{percent}%"
 
       return true if Mode.commandline
 
@@ -2803,7 +2690,7 @@ module Yast
 
     # Hander for ProcessNextStage callback - the current stage has been finished
     def ProcessNextStage
-      Builtins.y2milestone("Setting stage: %1", @last_stage)
+      log.info "Setting stage: #{@last_stage}"
 
       return if Mode.commandline
 
@@ -2816,7 +2703,7 @@ module Yast
 
     # Hander for ProcessDone callback - the process has been finished
     def ProcessDone
-      Builtins.y2milestone("Process: Finished")
+      log.info "Process: Finished"
       return if Mode.commandline
 
       idx = Ops.subtract(Builtins.size(@opened_wizard), 1)
@@ -2824,17 +2711,13 @@ module Yast
       close = Ops.get(@opened_wizard, idx, false)
       @opened_wizard = Builtins.remove(@opened_wizard, idx)
 
-      Builtins.y2milestone(
-        "Close Wizard window: %1, new stack: %2",
-        close,
-        @opened_wizard
-      )
+      log.info "Close Wizard window: #{close}, new stack: #{@opened_wizard}"
 
       # set 100%
       Progress.Finish
 
       if close
-        Builtins.y2milestone("Closing Wizard window...")
+        log.info "Closing Wizard window..."
         Wizard.CloseDialog
       end
 
@@ -3232,23 +3115,23 @@ module Yast
 
     def DummyProcessStart(param1, param2, param3)
       param2 = deep_copy(param2)
-      Builtins.y2debug("Empty ProcessStart callback")
+      log.debug "Empty ProcessStart callback"
 
       nil
     end
 
     def DummyBooleanInteger(param1)
-      Builtins.y2debug("Empty generic boolean(integer)->true callback")
+      log.debug "Empty generic boolean(integer)->true callback"
       true
     end
 
     def DummyStringString(param1)
-      Builtins.y2debug("Empty generic string(string)->\"\" callback")
+      log.debug "Empty generic string(string)->\"\" callback"
       ""
     end
 
     def DummyVoid
-      Builtins.y2debug("Empty generic void() callback")
+      log.debug "Empty generic void() callback"
 
       nil
     end
@@ -3271,24 +3154,24 @@ module Yast
 
 
     def DummyStartProvide(param1, param2, param3)
-      Builtins.y2debug("Empty StartProvide callback")
+      log.debug "Empty StartProvide callback"
 
       nil
     end
 
     def DummyDoneProvide(error, reason, name)
-      Builtins.y2debug("Empty DoneProvide callback, returning 'I'")
+      log.debug "Empty DoneProvide callback, returning 'I'"
       "I"
     end
 
     def DummyStartPackage(name, location, summary, installsize, is_delete)
-      Builtins.y2debug("Empty StartPackage callback")
+      log.debug "Empty StartPackage callback"
 
       nil
     end
 
     def DummyDonePackage(error, reason)
-      Builtins.y2debug("Empty DonePackage callback, returning 'I'")
+      log.debug "Empty DonePackage callback, returning 'I'"
       "I"
     end
 
@@ -3319,31 +3202,31 @@ module Yast
     end
 
     def DummyVoidString(param1)
-      Builtins.y2debug("Empty generic void(string) callback")
+      log.debug "Empty generic void(string) callback"
 
       nil
     end
 
     def DummyVoidInteger(param1)
-      Builtins.y2debug("Empty generic void(integer) callback")
+      log.debug "Empty generic void(integer) callback"
 
       nil
     end
 
     def DummyVoidIntegerString(param1, param2)
-      Builtins.y2debug("Empty generic void(integer, string) callback")
+      log.debug "Empty generic void(integer, string) callback"
 
       nil
     end
 
     def DummyVoidStringInteger(param1, param2)
-      Builtins.y2debug("Empty generic void(string, integer) callback")
+      log.debug "Empty generic void(string, integer) callback"
 
       nil
     end
 
     def DummyStringIntegerString(param1, param2)
-      Builtins.y2debug("Empty generic string(integer, string) callback")
+      log.debug "Empty generic string(integer, string) callback"
       ""
     end
 
@@ -3385,12 +3268,12 @@ module Yast
     end
 
     def DummySourceCreateError(url, error, description)
-      Builtins.y2debug("Empty SourceCreateError callback, returning `ABORT")
+      log.debug "Empty SourceCreateError callback, returning `ABORT"
       :ABORT
     end
 
     def DummySourceCreateEnd(url, error, description)
-      Builtins.y2debug("Empty SourceCreateEnd callback")
+      log.debug "Empty SourceCreateEnd callback"
 
       nil
     end
@@ -3418,16 +3301,16 @@ module Yast
     end
 
     def DummySourceReportStart(source_id, url, task)
-      Builtins.y2debug("Empty SourceReportStart callback")
+      log.debug "Empty SourceReportStart callback"
 
       nil
     end
     def DummySourceReportError(source_id, url, error, description)
-      Builtins.y2debug("Empty SourceReportError callback, returning `ABORT")
+      log.debug "Empty SourceReportError callback, returning `ABORT"
       :ABORT
     end
     def DummySourceReportEnd(src_id, url, task, error, description)
-      Builtins.y2debug("Empty SourceReportEnd callback")
+      log.debug "Empty SourceReportEnd callback"
 
       nil
     end
@@ -3462,12 +3345,12 @@ module Yast
     end
 
     def DummyProgressStart(id, task, in_percent, is_alive, min, max, val_raw, val_percent)
-      Builtins.y2debug("Empty ProgressStart callback")
+      log.debug "Empty ProgressStart callback"
 
       nil
     end
     def DummyProgressProgress(id, val_raw, val_percent)
-      Builtins.y2debug("Empty ProgressProgress callback, returning true")
+      log.debug "Empty ProgressProgress callback, returning true"
       true
     end
 
@@ -3492,16 +3375,16 @@ module Yast
     end
 
     def DummyScriptStart(patch_name, patch_version, patch_arch, script_path)
-      Builtins.y2debug("Empty ScriptStart callback")
+      log.debug "Empty ScriptStart callback"
 
       nil
     end
     def DummyScriptProgress(ping, output)
-      Builtins.y2debug("Empty ScriptProgress callback, returning true")
+      log.debug "Empty ScriptProgress callback, returning true"
       true
     end
     def DummyMessage(patch_name, patch_version, patch_arch, message)
-      Builtins.y2debug("Empty Message callback")
+      log.debug "Empty Message callback"
       true # continue
     end
 
@@ -3546,16 +3429,16 @@ module Yast
     end
 
     def DummyStartDownload(url, localfile)
-      Builtins.y2debug("Empty StartDownload callback")
+      log.debug "Empty StartDownload callback"
 
       nil
     end
     def DummyProgressDownload(percent, bps_avg, bps_current)
-      Builtins.y2debug("Empty ProgressDownload callback, returning true")
+      log.debug "Empty ProgressDownload callback, returning true"
       true
     end
     def DummyDoneDownload(error_value, error_text)
-      Builtins.y2debug("Empty DoneDownload callback")
+      log.debug "Empty DoneDownload callback"
 
       nil
     end
@@ -3701,7 +3584,7 @@ module Yast
     # constructor
 
     def PackageCallbacks
-      Builtins.y2milestone("PackageCallbacks constructor")
+      log.info "PackageCallbacks constructor"
       InitPackageCallbacks()
 
       nil

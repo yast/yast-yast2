@@ -32,6 +32,8 @@ require "yast"
 
 module Yast
   class MapClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -94,7 +96,7 @@ module Yast
       ret = true
       Builtins.foreach(keys) do |k|
         if k == nil || !Builtins.haskey(m, k)
-          Builtins.y2error("Missing key: %1", k)
+          log.error "Missing key: #{k}"
           ret = false
         end
       end

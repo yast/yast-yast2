@@ -31,6 +31,8 @@ require "yast"
 
 module Yast
   class CommandLineClass < Module
+    include Yast::Logger
+
     def main
 
       Yast.import "Directory"
@@ -159,7 +161,7 @@ module Yast
 
       # avoid using of uninitialized value in .dev.tty perl agent
       if s == nil
-        Builtins.y2warning("CommandLine::Print: invalid argument (nil)")
+        log.warn "CommandLine::Print: invalid argument (nil)"
         return
       end
 
@@ -353,15 +355,12 @@ module Yast
 
       # Parse command
       command = Ops.get_string(args, 0, "")
-      Builtins.y2debug("command=%1", command)
+      log.debug "command=#{command}"
       args = Builtins.remove(args, 0)
-      Builtins.y2debug("args=%1", args)
+      log.debug "args=#{args}"
 
       if command == ""
-        Builtins.y2error(
-          "CommandLine::Parse called with first parameter being empty. Arguments passed: %1",
-          arguments
-        )
+        log.error "CommandLine::Parse called with first parameter being empty. Arguments passed: #{arguments}"
         return {}
       end
 
@@ -388,11 +387,11 @@ module Yast
       # Parse options
       givenoptions = {}
       Builtins.maplist(args) do |aos|
-        Builtins.y2debug("os=%1", aos)
+        log.debug "os=#{aos}"
         next if !Ops.is_string?(aos)
         os = Convert.to_string(aos)
         o = Builtins.regexptokenize(os, "([^=]+)=(.+)")
-        Builtins.y2debug("o=%1", o)
+        log.debug "o=#{o}"
         if Builtins.size(o) == 2
           givenoptions = Builtins.add(
             givenoptions,
@@ -421,7 +420,7 @@ module Yast
 
       return {} if ret != true
 
-      Builtins.y2debug("options=%1", givenoptions)
+      log.debug "options=#{givenoptions}"
 
       # Check options
 
@@ -430,7 +429,7 @@ module Yast
         Ops.get_list(@allcommands, ["actions", command, "options"], []),
         "non_strict"
       )
-      Builtins.y2debug("Using non-strict check for %1", command) if non_strict
+      log.debug "Using non-strict check for #{command}" if non_strict
 
 
       # check (and convert data types)
@@ -517,10 +516,7 @@ module Yast
           else
             # type is missing
             if v != ""
-              Builtins.y2error(
-                "Type specification for option '%1' is missing, cannot assign a value to the option",
-                o
-              )
+              log.error "Type specification for option '#{o}' is missing, cannot assign a value to the option"
               # translators: error message if option has a value, but cannot have one
               Print(
                 Builtins.sformat(
@@ -690,9 +686,7 @@ module Yast
               delim
             )
           else
-            Builtins.y2error(
-              "Invalid data type of help text, only 'string' or 'map<string,string>' types are allowed."
-            )
+            log.error "Invalid data type of help text, only 'string' or 'map<string,string>' types are allowed."
           end
 
           Print(
@@ -727,7 +721,7 @@ module Yast
             Convert.convert(example, :from => "any", :to => "list <string>")
           ) { |e| Print(Builtins.sformat("        %1", e)) }
         else
-          Builtins.y2error("Unsupported data type - value: %1", example)
+          log.error "Unsupported data type - value: #{example}"
         end
       end
       Print("")
@@ -991,7 +985,7 @@ module Yast
         mappings = Ops.get_map(@cmdlinespec, "mappings", {})
         options = Ops.get_map(@cmdlinespec, "options", {})
 
-        Builtins.y2debug("cmdlinespec: %1", @cmdlinespec)
+        log.debug "cmdlinespec: #{@cmdlinespec}"
 
         Builtins.foreach(actions) do |action, description|
           help = ""
@@ -1009,10 +1003,7 @@ module Yast
               "\n"
             )
           else
-            Builtins.y2error(
-              "Unsupported data type for 'help' key: %1, use 'string' or 'list<string>' type!",
-              help_value
-            )
+            log.error "Unsupported data type for 'help' key: #{help_value}, use 'string' or 'list<string>' type!"
           end
           opts = []
           Builtins.foreach(Ops.get(mappings, action, [])) do |option|
@@ -1048,7 +1039,7 @@ module Yast
         Ops.set(exportmap, "module", Ops.get_string(@cmdlinespec, "id", ""))
 
         XML.YCPToXMLFile(:xmlhelp, exportmap, xmlfilename)
-        Builtins.y2milestone("exported XML map: %1", exportmap)
+        log.info "exported XML map: #{exportmap}"
         return true
       end
 
@@ -1085,7 +1076,7 @@ module Yast
       # sanity checks on cmdlineinfo
       # check for id string , it must exist, and non-empty
       if cmdline_supported && (id_string == "" || !Ops.is_string?(id_string))
-        Builtins.y2error("Command line specification does not define module id")
+        log.error "Command line specification does not define module id"
 
         # use 'unknown' as id
         if Builtins.haskey(cmdlineinfo, "id")
@@ -1103,9 +1094,7 @@ module Yast
       # check for helps, they are required everywhere
       # global help text
       if cmdline_supported && !Builtins.haskey(cmdlineinfo, "help")
-        Builtins.y2error(
-          "Command line specification does not define global help for the module"
-        )
+        log.error "Command line specification does not define global help for the module"
 
         # it's better to abort now
         @done = true
@@ -1116,10 +1105,7 @@ module Yast
       if Builtins.haskey(cmdlineinfo, "actions")
         Builtins.foreach(Ops.get_map(cmdlineinfo, "actions", {})) do |action, _def|
           if !Builtins.haskey(_def, "help")
-            Builtins.y2error(
-              "Command line specification does not define help for action '%1'",
-              action
-            )
+            log.error "Command line specification does not define help for action '#{action}'"
 
             # it's better to abort now
             @done = true
@@ -1132,10 +1118,7 @@ module Yast
       if Builtins.haskey(cmdlineinfo, "options")
         Builtins.foreach(Ops.get_map(cmdlineinfo, "options", {})) do |option, _def|
           if !Builtins.haskey(_def, "help")
-            Builtins.y2error(
-              "Command line specification does not define help for option '%1'",
-              option
-            )
+            log.error "Command line specification does not define help for option '#{option}'"
 
             # it's better to abort now
             @done = true
@@ -1145,10 +1128,7 @@ module Yast
           if (Ops.get_string(_def, "type", "") == "regex" ||
               Ops.get_string(_def, "type", "") == "enum") &&
               !Builtins.haskey(_def, "typespec")
-            Builtins.y2error(
-              "Command line specification does not define typespec for option '%1'",
-              option
-            )
+            log.error "Command line specification does not define typespec for option '#{option}'"
 
             # it's better to abort now
             @done = true
@@ -1165,10 +1145,7 @@ module Yast
               Ops.get_map(cmdlineinfo, "actions", {}),
               mapaction
             )
-            Builtins.y2error(
-              "Command line specification maps undefined action '%1'",
-              mapaction
-            )
+            log.error "Command line specification maps undefined action '#{mapaction}'"
 
             # it's better to abort now
             @done = true
@@ -1181,11 +1158,7 @@ module Yast
                 Ops.get_map(cmdlineinfo, "options", {}),
                 Convert.to_string(mapopt)
               )
-              Builtins.y2error(
-                "Command line specification maps undefined option '%1' for action '%2'",
-                mapopt,
-                mapaction
-              )
+              log.error "Command line specification maps undefined option '#{mapopt}' for action '#{mapaction}'"
 
               # it's better to abort now
               @done = true
@@ -1439,9 +1412,7 @@ module Yast
       unique_options = deep_copy(unique_options)
       # sanity check
       if Builtins.size(unique_options) == 0
-        Builtins.y2error(
-          "Unique test of options required, but the list of the possible options is empty"
-        )
+        log.error "Unique test of options required, but the list of the possible options is empty"
         return nil
       end
 
@@ -1555,8 +1526,8 @@ module Yast
     def Run(commandline)
       commandline = deep_copy(commandline)
       # The main ()
-      Builtins.y2milestone("----------------------------------------")
-      Builtins.y2milestone("Command line interface started")
+      log.info "----------------------------------------"
+      log.info "Command line interface started"
 
       # Initialize the arguments
       return !Aborted() if !Init(commandline, WFM.Args)
@@ -1573,10 +1544,7 @@ module Yast
       # Start GUI
       if StartGUI()
         if !Builtins.haskey(commandline, "guihandler")
-          Builtins.y2error(
-            "Missing GUI handler for %1",
-            Ops.get_string(commandline, "id", "<unknown>")
-          )
+          log.error "Missing GUI handler for #{Ops.get_string(commandline, "id", "<unknown>")}"
           # translators: error message - the module does not provide command line interface
           Error(_("There is no user interface available for this module."))
           return false
@@ -1589,7 +1557,7 @@ module Yast
             :to   => "symbol ()"
           )
           symbol_ret = exec.call
-          Builtins.y2debug("GUI handler ret=%1", symbol_ret)
+          log.debug "GUI handler ret=#{symbol_ret}"
           return symbol_ret
         else
           exec = Convert.convert(
@@ -1602,7 +1570,7 @@ module Yast
             :to   => "boolean ()"
           )
           ret = exec.call
-          Builtins.y2debug("GUI handler ret=%1", ret)
+          log.debug "GUI handler ret=#{ret}"
           return ret
         end
       else
@@ -1654,7 +1622,7 @@ module Yast
               )
 
               if !ret2
-                Builtins.y2milestone("Module initialization failed")
+                log.info "Module initialization failed"
                 return false
               else
                 initialized = true
@@ -1676,7 +1644,7 @@ module Yast
             Abort() if !Interactive() && res == false
           else
             if !Done()
-              Builtins.y2error("Unknown command '%1' from CommandLine", command)
+              log.error "Unknown command '#{command}' from CommandLine"
               next
             end
           end
@@ -1700,7 +1668,7 @@ module Yast
           )
         )
         if !ret
-          Builtins.y2milestone("Module finishing failed")
+          log.info "Module finishing failed"
           return false
         end
         # translators: The command line interface is finished
@@ -1710,8 +1678,8 @@ module Yast
         PrintVerbose(_("Quitting (without changes)"))
       end
 
-      Builtins.y2milestone("Commandline interface finished")
-      Builtins.y2milestone("----------------------------------------")
+      log.info "Commandline interface finished"
+      log.info "----------------------------------------"
 
       ret
     end

@@ -33,6 +33,8 @@ require "yast"
 
 module Yast
   class MiscClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
 
@@ -123,7 +125,7 @@ module Yast
 
       Builtins.foreach(values) do |entry|
         if Builtins.size(entry) != 2
-          Builtins.y2error("bad entry in rc_write()")
+          log.error "bad entry in rc_write()"
         else
           if !SCR.Write(
               Ops.add(level, Ops.get_path(entry, 0, path("."))),
@@ -188,13 +190,10 @@ module Yast
       local_ret = Convert.to_string(SCR.Read(sysconfig_path))
 
       if local_ret == nil
-        Builtins.y2warning(
-          "Failed reading '%1', using default value",
-          sysconfig_path
-        )
+        log.warn "Failed reading '#{sysconfig_path}', using default value"
         return defaultv
       else
-        Builtins.y2milestone("%1: '%2'", sysconfig_path, local_ret)
+        log.info "#{sysconfig_path}: '#{local_ret}'"
         return local_ret
       end
     end # SysconfigRead()
@@ -241,17 +240,14 @@ module Yast
     # @param [Fixnum] script_time_out in sec.
     # @return [Hash] with out, err and ret_code
     def RunCommandWithTimeout(run_command, log_command, script_time_out)
-      Builtins.y2milestone(
-        "Running command \"%1\" in background...",
-        log_command
-      )
+      log.info "Running command \"#{log_command}\" in background..."
 
       processID = Convert.to_integer(
         SCR.Execute(path(".process.start_shell"), run_command)
       )
 
       if processID == 0
-        Builtins.y2error("Cannot run '%1'", run_command)
+        log.error "Cannot run '#{run_command}'"
         return nil
       end
 
@@ -270,10 +266,10 @@ module Yast
         )
         # debugging #165821
         if Ops.modulo(time_spent, 100000) == 0
-          Builtins.y2milestone("running: %1", running)
+          log.info "running: #{running}"
           flag = "/tmp/SourceManagerTimeout"
           if SCR.Read(path(".target.size"), flag) != -1
-            Builtins.y2milestone("Emergency exit")
+            log.info "Emergency exit"
             SCR.Execute(path(".target.remove"), flag)
             break
           end
@@ -287,7 +283,7 @@ module Yast
         else
           ui = UI.TimeoutUserInput(sleep_step)
           if ui == :abort
-            Builtins.y2milestone("aborted")
+            log.info "aborted"
             timed_out = true
             break
           end
@@ -295,32 +291,32 @@ module Yast
 
         # time-out
         if Ops.greater_or_equal(time_spent, script_time_out)
-          Builtins.y2error("Command timed out after %1 msec", time_spent)
+          log.error "Command timed out after #{time_spent} msec"
           timed_out = true
         end
 
         time_spent = Ops.add(time_spent, sleep_step)
       end
-      Builtins.y2milestone("Time spent: %1 msec", time_spent)
+      log.info "Time spent: #{time_spent} msec"
 
       # fetching the return code if not timed-out
       if !timed_out
-        Builtins.y2milestone("getting output")
+        log.info "getting output"
         script_out = Builtins.splitstring(
           Convert.to_string(SCR.Read(path(".process.read"), processID)),
           "\n"
         )
-        Builtins.y2milestone("getting errors")
+        log.info "getting errors"
         script_err = Builtins.splitstring(
           Convert.to_string(SCR.Read(path(".process.read_stderr"), processID)),
           "\n"
         )
-        Builtins.y2milestone("getting status")
+        log.info "getting status"
         return_code = Convert.to_integer(
           SCR.Read(path(".process.status"), processID)
         )
       end
-      Builtins.y2milestone("killing")
+      log.info "killing"
       SCR.Execute(path(".process.kill"), processID)
 
       # release the process from the agent

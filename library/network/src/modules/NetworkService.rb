@@ -100,7 +100,7 @@ module Yast
         :from => "any",
         :to   => "map <string, any>"
       )
-      Builtins.y2debug("RunSystemCtl: Command '%1' returned '%2'", cmd, ret)
+      log.debug "RunSystemCtl: Command '#{cmd}' returned '#{ret}'"
       Ops.get_integer(ret, "exit", -1)
     end
 
@@ -220,7 +220,7 @@ module Yast
           RunSystemCtl( BACKENDS[ @current_name], "disable")
 
           # Workaround for bug #61055:
-          Builtins.y2milestone("Enabling service %1", "network")
+          log.info "Enabling service #{"network"}"
           cmd = "cd /; /sbin/insserv -d /etc/init.d/network"
           SCR.Execute(path(".target.bash"), cmd)
       end
@@ -285,10 +285,7 @@ module Yast
               "Really continue?"
           )
         )
-        Builtins.y2milestone(
-          "Network is controlled by NetworkManager, user decided %1...",
-          cont ? "to continue" : "not to continue"
-        )
+        log.info "Network is controlled by NetworkManager, user decided #{cont ? "to continue" : "not to continue"}..."
         @already_asked_for_NetworkManager = true
 
         return cont
@@ -310,10 +307,10 @@ module Yast
         )
       )
       if net == 0
-        Builtins.y2milestone("IPv4 network is running ...")
+        log.info "IPv4 network is running ..."
         return true
       else
-        Builtins.y2milestone("IPv4 network is not running ...")
+        log.info "IPv4 network is not running ..."
         return false
       end
     end
@@ -326,10 +323,10 @@ module Yast
         )
       )
       if net == 0
-        Builtins.y2milestone("IPv6 network is running ...")
+        log.info "IPv6 network is running ..."
         return true
       else
-        Builtins.y2milestone("IPv6 network is not running ...")
+        log.info "IPv6 network is not running ..."
         return false
       end
     end
@@ -385,7 +382,7 @@ module Yast
     def cached_service?( service)
       cached_name == service
     rescue
-      Builtins.y2error("NetworkService: error when checking cached network service")
+      log.error "NetworkService: error when checking cached network service"
       false
     end
 

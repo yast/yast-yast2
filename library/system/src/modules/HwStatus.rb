@@ -37,6 +37,8 @@ require "yast"
 
 module Yast
   class HwStatusClass < Module
+    include Yast::Logger
+
     def main
 
       # status map for devices, key is "unique id", value is symbol (`yes, `no)
@@ -68,7 +70,7 @@ module Yast
     # save stati for all devices
     def Save
       Builtins.foreach(@statusmap) do |id, stat|
-        Builtins.y2milestone("Setting status of %1 as %2", id, stat)
+        log.info "Setting status of #{id} as #{stat}"
         SCR.Write(path(".probe.status.configured"), id, stat)
       end
 
@@ -85,17 +87,14 @@ module Yast
 
       # build relation between old keys and new UDIs (bug #104676)
       command = "hwinfo --pci --block --mouse --save-config=all"
-      Builtins.y2milestone("Running %1", command)
+      log.info "Running #{command}"
       cmdret = Convert.to_map(SCR.Execute(path(".target.bash_output"), command))
       exit = Ops.get_integer(cmdret, "exit", -1)
-      Builtins.y2milestone(
-        "Command retval: %1",
-        Ops.get_integer(cmdret, "exit", -1)
-      )
+      log.info "Command retval: #{Ops.get_integer(cmdret, "exit", -1)}"
       if exit != 0
-        Builtins.y2error("Command output: %1", cmdret)
+        log.error "Command output: #{cmdret}"
       else
-        Builtins.y2debug("Command output: %1", cmdret)
+        log.debug "Command output: #{cmdret}"
       end
 
       nil

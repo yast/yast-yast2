@@ -32,6 +32,8 @@
 # Use module Sequencer instead.
 module Yast
   module WizardSequencerInclude
+    include Yast::Logger
+
     def initialize_wizard_sequencer(include_target)
       Yast.import "Sequencer"
     end
@@ -39,8 +41,8 @@ module Yast
     def WizardSequencer(aliases, sequence)
       aliases = deep_copy(aliases)
       sequence = deep_copy(sequence)
-      Builtins.y2warning("The sequencer include is obsolete")
-      Builtins.y2warning("Use Sequencer module instead")
+      log.warn "The sequencer include is obsolete"
+      log.warn "Use Sequencer module instead"
       Sequencer.Run(aliases, sequence)
     end
   end

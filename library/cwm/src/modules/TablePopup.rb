@@ -32,6 +32,8 @@ require "yast"
 
 module Yast
   class TablePopupClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
       textdomain "base"
@@ -83,7 +85,7 @@ module Yast
       Builtins.foreach(attr) do |k, v|
         type = Ops.get(types, k)
         if type == nil
-          Builtins.y2error("Unknown attribute %1", k)
+          log.error "Unknown attribute #{k}"
           ret = false
         else
           ret = CWM.ValidateBasicType(v, type) && ret
@@ -141,11 +143,7 @@ module Yast
       end
 
       if !success
-        Builtins.y2error(
-          "Wrong type of option %1 in description map of %2",
-          key,
-          widget
-        )
+        log.error "Wrong type of option #{key} in description map of #{widget}"
       end
 
       nil
@@ -169,7 +167,7 @@ module Yast
         )
         Builtins.foreach(des) do |group, d|
           if group != "table" && group != "popup"
-            Builtins.y2error("Unknown entry in option %1: %2", w_key, group)
+            log.error "Unknown entry in option #{w_key}: #{group}"
           end
           Builtins.foreach(d) do |key2, value|
             ValidateValueType(key2, value, w_key, true)

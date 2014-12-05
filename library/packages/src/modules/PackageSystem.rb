@@ -36,6 +36,8 @@ require "yast"
 
 module Yast
   class PackageSystemClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "Pkg"
       textdomain "base"
@@ -76,9 +78,7 @@ module Yast
       # do not initialize the target system in the first installation stage when
       # running in instsys, there is no RPM DB in the RAM disk image (bnc#742420)
       if Stage.initial && !Mode.live_installation
-        Builtins.y2milestone(
-          "Skipping target initialization in first stage installation"
-        )
+        log.info "Skipping target initialization in first stage installation"
         return
       end
 
@@ -112,7 +112,7 @@ module Yast
         @source_initialized = true
       else
         # all repositories are disabled or no repository defined
-        Builtins.y2warning("No package repository available")
+        log.warn "No package repository available"
       end
 
       nil
@@ -136,7 +136,7 @@ module Yast
       Builtins.foreach(toinstall) do |p|
         if ok == true
           if Pkg.PkgInstall(p) != true
-            Builtins.y2error("Package %1 install failed: %2", p, Pkg.LastError)
+            log.error "Package #{p} install failed: #{Pkg.LastError}"
             ok = false
           end
         end
@@ -146,7 +146,7 @@ module Yast
       Builtins.foreach(toremove) do |p|
         if ok == true
           if Pkg.PkgDelete(p) != true
-            Builtins.y2error("Package %1 delete failed: %2", p, Pkg.LastError)
+            log.error "Package #{p} delete failed: #{Pkg.LastError}"
             ok = false
           end
         end
@@ -158,7 +158,7 @@ module Yast
     def DoInstallAndRemoveInt(toinstall, toremove)
       toinstall = deep_copy(toinstall)
       toremove = deep_copy(toremove)
-      Builtins.y2debug("toinstall: %1, toremove: %2", toinstall, toremove)
+      log.debug "toinstall: #{toinstall}, toremove: #{toremove}"
       return false if !PackageLock.Check
 
       EnsureSourceInit()
@@ -200,10 +200,10 @@ module Yast
           )
         end
 
-        Builtins.y2milestone("Licenses accepted: %1", accepted)
+        log.info "Licenses accepted: #{accepted}"
 
         if !accepted
-          Builtins.y2milestone("License not accepted: %1", toinstall)
+          log.info "License not accepted: #{toinstall}"
           @last_op_canceled = true
           return false
         end
@@ -216,7 +216,7 @@ module Yast
       return false if !SelectPackages(toinstall, toremove)
 
       if !Pkg.PkgSolve(false)
-        Builtins.y2error("Package solve failed: %1", Pkg.LastError)
+        log.error "Package solve failed: #{Pkg.LastError}"
 
         # error message, after pressing [OK] the package manager is displayed
         Report.Error(
@@ -232,7 +232,7 @@ module Yast
           { "enable_repo_mgr" => repomgmt, "mode" => :summaryMode }
         )
 
-        Builtins.y2internal("Package selector returned: %1", ret)
+        log.fatal "Package selector returned: #{ret}"
 
         # do not fix the system
         return false if ret == :cancel || ret == :close
@@ -244,19 +244,16 @@ module Yast
 
       #[int successful, list failed, list remaining, list srcremaining]
       result = Pkg.PkgCommit(0)
-      Builtins.y2debug("PkgCommit: %1", result)
+      log.debug "PkgCommit: #{result}"
       if result == nil || Ops.get_list(result, 1, []) != []
-        Builtins.y2error(
-          "Package commit failed: %1",
-          Ops.get_list(result, 1, [])
-        )
+        log.error "Package commit failed: #{Ops.get_list(result, 1, [])}"
         return false
       end
 
       Builtins.foreach(Ops.get_list(result, 2, [])) do |remaining|
         if ok == true
           if Builtins.contains(toinstall, remaining)
-            Builtins.y2error("Package remain: %1", remaining)
+            log.error "Package remain: #{remaining}"
             ok = false
           end
         end
@@ -276,7 +273,7 @@ module Yast
 
       # check if the required packages have been installed
       if !InstalledAll(toinstall)
-        Builtins.y2error("Required packages have not been installed")
+        log.error "Required packages have not been installed"
         return false
       end
 
@@ -445,7 +442,7 @@ module Yast
     def InstallKernel(kernel_modules)
       kernel_modules = deep_copy(kernel_modules)
       # this function may be responsible for the horrible startup time
-      Builtins.y2milestone("want: %1", kernel_modules)
+      log.info "want: #{kernel_modules}"
       if kernel_modules == []
         return true # nothing to do
       end
@@ -453,11 +450,11 @@ module Yast
       # check whether tag "kernel" is provided
       # do not initialize the package manager if it's not necessary
       rpm_command = "/bin/rpm -q --whatprovides kernel"
-      Builtins.y2milestone("Starting RPM query: %1", rpm_command)
+      log.info "Starting RPM query: #{rpm_command}"
       output = Convert.to_map(
         SCR.Execute(path(".target.bash_output"), rpm_command)
       )
-      Builtins.y2debug("result of the query: %1", output)
+      log.debug "result of the query: #{output}"
 
       if Ops.get_integer(output, "exit", -1) == 0
         packages = Builtins.splitstring(
@@ -465,20 +462,20 @@ module Yast
           "\n"
         )
         packages = Builtins.filter(packages) { |pkg| pkg != "" }
-        Builtins.y2milestone("Packages providing tag 'kernel': %1", packages)
+        log.info "Packages providing tag 'kernel': #{packages}"
 
         return true if Ops.greater_than(Builtins.size(packages), 0)
 
-        Builtins.y2milestone("Huh? Kernel is not installed??")
+        log.info "Huh? Kernel is not installed??"
       else
-        Builtins.y2warning("RPM query failed, quering the package manager...")
+        log.warn "RPM query failed, quering the package manager..."
       end
 
 
       EnsureTargetInit()
 
       provides = Pkg.PkgQueryProvides("kernel")
-      Builtins.y2milestone("provides: %1", provides)
+      log.info "provides: #{provides}"
 
       kernels = Builtins.filter(provides) do |l|
         Ops.get_symbol(l, 1, :NONE) == :BOTH ||
@@ -486,7 +483,7 @@ module Yast
       end
 
       if Builtins.size(kernels) != 1
-        Builtins.y2error("not exactly one package provides tag kernel")
+        log.error "not exactly one package provides tag kernel"
       end
 
       kernel = Ops.get_string(kernels, [0, 0], "none")

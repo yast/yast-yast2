@@ -39,6 +39,8 @@ require "yast"
 
 module Yast
   class WorkflowManagerClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
       Yast.import "Pkg"
@@ -126,7 +128,7 @@ module Yast
       elsif which_steps == "before_umount"
         return deep_copy(@additional_finish_steps_before_umount)
       else
-        Builtins.y2error("Unknown FinishSteps type: %1", which_steps)
+        log.error "Unknown FinishSteps type: #{which_steps}"
         return nil
       end
     end
@@ -137,7 +139,7 @@ module Yast
     # @param [Boolean] force storing even if it was already stored, in most cases, it should be 'false'
     def SetBaseWorkflow(force)
       if @base_workflow_stored && !force
-        Builtins.y2milestone("Base Workflow has been already set")
+        log.info "Base Workflow has been already set"
         return
       end
 
@@ -279,9 +281,7 @@ module Yast
     # Used workflows mustn't be cleared automatically, merging would fail!
     def FillUpInitialWorkflowSettings
       if !@base_workflow_stored
-        Builtins.y2error(
-          "Base Workflow has never been stored, you should have called SetBaseWorkflow() before!"
-        )
+        log.error "Base Workflow has never been stored, you should have called SetBaseWorkflow() before!"
       end
 
       ProductFeatures.Import(@wkf_initial_product_features)
@@ -343,18 +343,14 @@ module Yast
     # @return [String] final filename
     def StoreWorkflowFile(file_from, file_to)
       if file_from == nil || file_from == "" || file_to == nil || file_to == ""
-        Builtins.y2error("Cannot copy '%1' to '%2'", file_from, file_to)
+        log.error "Cannot copy '#{file_from}' to '#{file_to}'"
         return nil
       end
 
       # Return nil if cannot copy
       file_location = nil
 
-      Builtins.y2milestone(
-        "Copying workflow from '%1' to '%2'",
-        file_from,
-        file_to
-      )
+      log.info "Copying workflow from '#{file_from}' to '#{file_to}'"
       cmd = Convert.to_map(
         SCR.Execute(
           path(".target.bash_output"),
@@ -373,11 +369,11 @@ module Yast
       if Ops.get_integer(cmd, "exit", -1) == 0
         file_location = file_to
       else
-        Builtins.y2error("Error occurred while copying control file: %1", cmd)
+        log.error "Error occurred while copying control file: #{cmd}"
 
         # Not in installation, try to skip the error
         if !Stage.initial && FileUtils.Exists(file_from)
-          Builtins.y2milestone("Using fallback file %1", file_from)
+          log.info "Using fallback file #{file_from}"
           file_location = file_from
         end
       end
@@ -398,11 +394,11 @@ module Yast
 
         # A cached copy exists
         if FileUtils.Exists(disk_filename)
-          Builtins.y2milestone("Using cached file %1", disk_filename)
+          log.info "Using cached file #{disk_filename}"
           return disk_filename 
           # Trying to get the file from source
         else
-          Builtins.y2milestone("File %1 not cached", disk_filename)
+          log.info "File #{disk_filename} not cached"
           # using a file from source
           use_filename = Pkg.SourceProvideDigestedFile(
             src_id,
@@ -422,7 +418,7 @@ module Yast
 
         # New workflow types can be added here
       else
-        Builtins.y2error("Unknown workflow type: %1", type)
+        log.error "Unknown workflow type: #{type}"
         return nil
       end
     end
@@ -438,14 +434,9 @@ module Yast
     # @example
     #	AddWorkflow (`addon, 4, "");
     def AddWorkflow(type, src_id, name)
-      Builtins.y2milestone(
-        "Adding Workflow:  Type %1, ID %2, Name %3",
-        type,
-        src_id,
-        name
-      )
+      log.info "Adding Workflow:  Type #{type}, ID #{src_id}, Name #{name}"
       if !Builtins.contains([:addon, :pattern], type)
-        Builtins.y2error("Unknown workflow type: %1", type)
+        log.error "Unknown workflow type: #{type}"
         return false
       end
 
@@ -455,7 +446,7 @@ module Yast
       if type == :addon
         used_filename = GetCachedWorkflowFilename(:addon, src_id, "")
       elsif type == :pattern
-        Builtins.y2error("Not implemented yet")
+        log.error "Not implemented yet"
         return false
       end
 
@@ -481,14 +472,9 @@ module Yast
     # @example
     #	RemoveWorkflow (`addon, 4, "");
     def RemoveWorkflow(type, src_id, name)
-      Builtins.y2milestone(
-        "Removing Workflow:  Type %1, ID %2, Name %3",
-        type,
-        src_id,
-        name
-      )
+      log.info "Removing Workflow:  Type #{type}, ID #{src_id}, Name #{name}"
       if !Builtins.contains([:addon, :pattern], type)
-        Builtins.y2error("Unknown workflow type: %1", type)
+        log.error "Unknown workflow type: #{type}"
         return false
       end
 
@@ -498,7 +484,7 @@ module Yast
       if type == :addon
         used_filename = GenerateAdditionalControlFilePath(src_id, "")
       else
-        Builtins.y2error("Not implemented yet")
+        log.error "Not implemented yet"
         return false
       end
 
@@ -518,11 +504,7 @@ module Yast
 
         if !Stage.initial
           if FileUtils.Exists(used_filename)
-            Builtins.y2milestone(
-              "Removing cached file '%1': %2",
-              used_filename,
-              SCR.Execute(path(".target.remove"), used_filename)
-            )
+            log.info "Removing cached file '#{used_filename}': #{SCR.Execute(path(".target.remove"), used_filename)}"
           end
         end
       end
@@ -535,10 +517,7 @@ module Yast
     # TODO FIXME: this function seems to be unused, remove it?
     def CleanWorkflowsDirectory
       directory = GetWorkflowDirectory()
-      Builtins.y2milestone(
-        "Removing all xml and ycp files from '%1' directory",
-        directory
-      )
+      log.info "Removing all xml and ycp files from '#{directory}' directory"
 
       if FileUtils.Exists(directory)
         # doesn't add RPM dependency on tar
@@ -554,7 +533,7 @@ module Yast
         )
 
         if Ops.get_integer(cmd, "exit", -1) != 0
-          Builtins.y2error("Removing failed: %1", cmd)
+          log.error "Removing failed: #{cmd}"
         end
       end
 
@@ -591,7 +570,7 @@ module Yast
       end
 
       if !found
-        Builtins.y2internal("Replace/Remove proposal item %1 not found", old)
+        log.fatal "Replace/Remove proposal item #{old} not found"
       end
 
       Ops.set(proposal, "proposal_modules", Builtins.flatten(modules))
@@ -774,10 +753,7 @@ module Yast
       end
 
       if !found
-        Builtins.y2internal(
-          "Insert/Replace/Remove workflow module %1 not found",
-          old
-        )
+        log.fatal "Insert/Replace/Remove workflow module #{old} not found"
       end
 
       Ops.set(workflow, "modules", Builtins.flatten(modules))
@@ -799,7 +775,7 @@ module Yast
       removes = Ops.get_list(addon, "remove_modules", [])
 
       if Ops.greater_than(Builtins.size(removes), 0)
-        Builtins.y2milestone("Remove: %1", removes)
+        log.info "Remove: #{removes}"
         Builtins.foreach(removes) do |r|
           base = ReplaceWorkflowModule(base, r, [], domain, false)
         end
@@ -813,7 +789,7 @@ module Yast
       end
 
       if Ops.greater_than(Builtins.size(replaces), 0)
-        Builtins.y2milestone("Replace: %1", replaces)
+        log.info "Replace: #{replaces}"
         Builtins.foreach(replaces) do |old, new|
           base = ReplaceWorkflowModule(base, old, new, domain, false)
         end
@@ -827,7 +803,7 @@ module Yast
       end
 
       if Ops.greater_than(Builtins.size(inserts), 0)
-        Builtins.y2milestone("Insert: %1", inserts)
+        log.info "Insert: #{inserts}"
         Builtins.foreach(inserts) do |old, new|
           base = ReplaceWorkflowModule(base, old, new, domain, true)
         end
@@ -837,7 +813,7 @@ module Yast
       appends = Ops.get_list(addon, "append_modules", [])
 
       if Ops.greater_than(Builtins.size(appends), 0)
-        Builtins.y2milestone("Append: %1", appends)
+        log.info "Append: #{appends}"
         Builtins.foreach(appends) do |new|
           Ops.set(new, "textdomain", domain)
           Ops.set(
@@ -977,19 +953,13 @@ module Yast
 
       Builtins.foreach(proposals) do |proposal|
         if !Builtins.contains(forbidden, Ops.get_string(proposal, "name", ""))
-          Builtins.y2milestone(
-            "Adding new proposal %1",
-            Ops.get_string(proposal, "name", "")
-          )
+          log.info "Adding new proposal #{Ops.get_string(proposal, "name", "")}"
           ProductControl.proposals = Builtins.add(
             ProductControl.proposals,
             proposal
           )
         else
-          Builtins.y2warning(
-            "Proposal '%1' already exists, not adding",
-            Ops.get_string(proposal, "name", "")
-          )
+          log.warn "Proposal '#{Ops.get_string(proposal, "name", "")}' already exists, not adding"
         end
       end
 
@@ -1009,10 +979,8 @@ module Yast
       # That's why it is not allowed for the first stage of the installation.
       workflows = Builtins.filter(workflows) do |workflow|
         if Ops.get_string(workflow, "stage", "") == "initial"
-          Builtins.y2error(
-            "Attempting to replace 1st stage workflow. This is not possible"
-          )
-          Builtins.y2milestone("Workflow: %1", workflow)
+          log.error "Attempting to replace 1st stage workflow. This is not possible"
+          log.info "Workflow: #{workflow}"
           next false
         end
         true
@@ -1040,11 +1008,8 @@ module Yast
         ]
       end
 
-      Builtins.y2milestone("Existing replace workflows: %1", sm)
-      Builtins.y2milestone(
-        "Workflows before filtering: %1",
-        Builtins.size(ProductControl.workflows)
-      )
+      log.info "Existing replace workflows: #{sm}"
+      log.info "Workflows before filtering: #{Builtins.size(ProductControl.workflows)}"
 
       ProductControl.workflows = Builtins.filter(ProductControl.workflows) do |w|
         !Ops.get(
@@ -1054,10 +1019,7 @@ module Yast
         )
       end
 
-      Builtins.y2milestone(
-        "Workflows after filtering: %1",
-        Builtins.size(ProductControl.workflows)
-      )
+      log.info "Workflows after filtering: #{Builtins.size(ProductControl.workflows)}"
       ProductControl.workflows = Convert.convert(
         Builtins.merge(ProductControl.workflows, workflows),
         :from => "list",
@@ -1081,11 +1043,8 @@ module Yast
     def WorkflowRequiresRegistration(src_id)
       ret = false
 
-      Builtins.y2milestone("Known workflows: %1", @workflows_to_sources)
-      Builtins.y2milestone(
-        "Workflows requiring registration: %1",
-        @workflows_requiring_registration
-      )
+      log.info "Known workflows: #{@workflows_to_sources}"
+      log.info "Workflows requiring registration: #{@workflows_requiring_registration}"
 
       Builtins.foreach(@workflows_to_sources) do |one_workflow, id|
         # sources match and workflow is listed as 'requiring registration'
@@ -1096,14 +1055,14 @@ module Yast
         end
       end
 
-      Builtins.y2milestone("WorkflowRequiresRegistration(%1): %2", src_id, ret)
+      log.info "WorkflowRequiresRegistration(#{src_id}): #{ret}"
       ret
     end
 
     def IncorporateControlFileOptions(filename)
       update_file = XML.XMLToYCPFile(filename)
       if update_file == nil
-        Builtins.y2error("Unable to read the %1 control file", filename)
+        log.error "Unable to read the #{filename} control file"
         return false
       end
 
@@ -1112,16 +1071,13 @@ module Yast
 
       if Builtins.haskey(globals, "require_registration") &&
           Ops.get_boolean(globals, "require_registration", false) == true
-        Builtins.y2milestone("Registration is required by %1", filename)
+        log.info "Registration is required by #{filename}"
         @workflows_requiring_registration = Builtins.toset(
           Builtins.add(@workflows_requiring_registration, filename)
         )
-        Builtins.y2milestone(
-          "Workflows requiring registration: %1",
-          @workflows_requiring_registration
-        )
+        log.info "Workflows requiring registration: #{@workflows_requiring_registration}"
       else
-        Builtins.y2milestone("Registration is not required by %1", filename)
+        log.info "Registration is not required by #{filename}"
       end
 
       true
@@ -1195,7 +1151,7 @@ module Yast
     # Redraws workflow steps. Function must be called when steps (or help for steps)
     # are active. It doesn't work in case of active another dialog.
     def RedrawWizardSteps
-      Builtins.y2milestone("Retranslating messages, redrawing wizard steps")
+      log.info "Retranslating messages, redrawing wizard steps"
 
       # Make sure the labels for default function keys are retranslated, too.
       # Using Label::DefaultFunctionKeyMap() from Label module.
@@ -1213,7 +1169,7 @@ module Yast
     # @param [String] filename string filename of the control file (local filename)
     # @return [Boolean] true on success
     def IntegrateWorkflow(filename)
-      Builtins.y2milestone("IntegrateWorkflow %1", filename)
+      log.info "IntegrateWorkflow #{filename}"
 
       update_file = XML.XMLToYCPFile(filename)
       name = Ops.get_string(update_file, "display_name", "")
@@ -1223,29 +1179,29 @@ module Yast
           name,
           Ops.get_string(update_file, "textdomain", "control")
         )
-        Builtins.y2error("Failed to update installation workflow")
+        log.error "Failed to update installation workflow"
         return false
       end
 
       if !UpdateProductInfo(update_file, filename)
-        Builtins.y2error("Failed to set product options")
+        log.error "Failed to set product options"
         return false
       end
 
       if !AddNewProposals(Ops.get_list(update_file, "proposals", []))
-        Builtins.y2error("Failed to add new proposals")
+        log.error "Failed to add new proposals"
         return false
       end
 
       if !Replaceworkflows(Ops.get_list(update_file, "workflows", []))
-        Builtins.y2error("Failed to replace workflows")
+        log.error "Failed to replace workflows"
         return false
       end
 
       if !UpdateInstFinish(
           Ops.get_map(update_file, ["update", "inst_finish"], {})
         )
-        Builtins.y2error("Adding inst_finish steps failed")
+        log.error "Adding inst_finish steps failed"
         return false
       end
 
@@ -1261,18 +1217,14 @@ module Yast
       file_md5sum = FileUtils.MD5sum(workflow_filename)
 
       if file_md5sum == nil || file_md5sum == ""
-        Builtins.y2error(
-          "MD5 sum of file %1 is %2",
-          workflow_filename,
-          file_md5sum
-        )
+        log.error "MD5 sum of file #{workflow_filename} is #{file_md5sum}"
         return nil
       end
 
       file_size = FileUtils.GetSize(workflow_filename)
 
       if Ops.less_than(file_size, 0)
-        Builtins.y2error("File size %1 is %2", workflow_filename, file_size)
+        log.error "File size #{workflow_filename} is #{file_size}"
         return nil
       end
 
@@ -1284,7 +1236,7 @@ module Yast
     #
     # @return [Boolean] if successful
     def MergeWorkflows
-      Builtins.y2milestone("Merging additional control files from scratch...")
+      log.info "Merging additional control files from scratch..."
       @unmerged_changes = false
 
       # Init the Base Workflow settings
@@ -1300,9 +1252,7 @@ module Yast
         workflow_ident = GenerateWorkflowIdent(one_workflow)
         if workflow_ident != nil &&
             Builtins.contains(already_merged_workflows, workflow_ident)
-          Builtins.y2milestone(
-            "The very same workflow has been already merged, skipping..."
-          )
+          log.info "The very same workflow has been already merged, skipping..."
           next
         elsif workflow_ident != nil
           already_merged_workflows = Builtins.add(
@@ -1310,11 +1260,11 @@ module Yast
             workflow_ident
           )
         else
-          Builtins.y2error("Workflow ident is: %1", workflow_ident)
+          log.error "Workflow ident is: #{workflow_ident}"
         end
         IncorporateControlFileOptions(one_workflow)
         if !IntegrateWorkflow(one_workflow)
-          Builtins.y2error("Merging '%1' failed!", one_workflow)
+          log.error "Merging '#{one_workflow}' failed!"
           Report.Error(
             _(
               "An internal error occurred when integrating additional workflow."
@@ -1351,7 +1301,7 @@ module Yast
     #	SetAllUsedControlFiles (["/tmp/new_addon_control.xml", "/root/special_addon.xml"]);
     def SetAllUsedControlFiles(new_list)
       new_list = deep_copy(new_list)
-      Builtins.y2milestone("New list of additional workflows: %1", new_list)
+      log.info "New list of additional workflows: #{new_list}"
       @unmerged_changes = true
       @used_workflows = deep_copy(new_list)
 

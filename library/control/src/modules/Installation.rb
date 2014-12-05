@@ -39,6 +39,8 @@ require "yast"
 
 module Yast
   class InstallationClass < Module
+    include Yast::Logger
+
     def main
 
       Yast.import "Stage"
@@ -225,14 +227,14 @@ module Yast
       @_no_x11 = false
 
       while Ops.less_than(arg_no, arg_count)
-        Builtins.y2debug("option #%1: %2", arg_no, WFM.Args(arg_no))
+        log.debug "option ##{arg_no}: #{WFM.Args(arg_no)}"
 
         if WFM.Args(arg_no) == "text_fallback"
           @_text_fallback = true
         elsif WFM.Args(arg_no) == "no_x11"
           @_no_x11 = true
         else
-          Builtins.y2milestone("skipping unknown option %1", WFM.Args(arg_no))
+          log.info "skipping unknown option #{WFM.Args(arg_no)}"
         end
         arg_no = Ops.add(arg_no, 1)
       end

@@ -31,6 +31,8 @@ require "yast"
 
 module Yast
   class SignatureCheckDialogsClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "Pkg"
       Yast.import "UI"
@@ -81,29 +83,16 @@ module Yast
     # @param [String] popup_url
     def SetShowThisPopup(popup_type, show_it, popup_url)
       if popup_type == nil || show_it == nil
-        Builtins.y2error(
-          "Neither popup_type %1 nor show_it %2 can be nil!",
-          popup_type,
-          show_it
-        )
+        log.error "Neither popup_type #{popup_type} nor show_it #{show_it} can be nil!"
         return
       end
 
       # it's the default
       if show_it
-        Builtins.y2debug(
-          "User decision to show dialog '%1' again is '%2'",
-          popup_type,
-          show_it
-        ) 
+        log.debug "User decision to show dialog '#{popup_type}' again is '#{show_it}'" 
         # store only "don't show"
       else
-        Builtins.y2milestone(
-          "User decision to show dialog '%1' for '%2' again is '%3'",
-          popup_type,
-          popup_url,
-          show_it
-        )
+        log.info "User decision to show dialog '#{popup_type}' for '#{popup_url}' again is '#{show_it}'"
         # Show again -> false, so, store it
         DontShowAgain.SetShowQuestionAgain(
           {
@@ -126,7 +115,7 @@ module Yast
     # @return [Boolean] show the dialog
     def GetShowThisPopup(popup_type, popup_url)
       if popup_type == nil
-        Builtins.y2error("popup_type %1 mustn't be nil!", popup_type)
+        log.error "popup_type #{popup_type} mustn't be nil!"
         return true
       end
 
@@ -155,19 +144,10 @@ module Yast
     # @param [Boolean] default_return
     def SetDefaultDialogReturn(popup_type, default_return, popup_url)
       if popup_type == nil || default_return == nil
-        Builtins.y2error(
-          "Neither popup_type %1 nor default_return %2 can be nil!",
-          popup_type,
-          default_return
-        )
+        log.error "Neither popup_type #{popup_type} nor default_return #{default_return} can be nil!"
         return
       end
-      Builtins.y2milestone(
-        "User decision in default return for '%1' for '%2' is '%3'",
-        popup_type,
-        popup_url,
-        default_return
-      )
+      log.info "User decision in default return for '#{popup_type}' for '#{popup_url}' is '#{default_return}'"
       DontShowAgain.SetDefaultReturn(
         {
           "q_type"  => "inst-source",
@@ -187,7 +167,7 @@ module Yast
     # @boolean boolean default dialog return
     def GetDefaultDialogReturn(popup_type, popup_url)
       if popup_type == nil
-        Builtins.y2error("popup_type %1 mustn't be nil!", popup_type)
+        log.error "popup_type #{popup_type} mustn't be nil!"
         return false
       end
 
@@ -201,11 +181,7 @@ module Yast
         )
       )
 
-      Builtins.y2milestone(
-        "User decided not to show popup for '%1' again, returning user-decision '%2'",
-        popup_type,
-        stored_return
-      )
+      log.info "User decided not to show popup for '#{popup_type}' again, returning user-decision '#{stored_return}'"
       stored_return
     end
 
@@ -215,17 +191,10 @@ module Yast
       )
       # Widget doesn't exist
       if dont_show_status == nil
-        Builtins.y2warning(
-          "No such UI widget with ID: %1",
-          dont_show_dialog_checkboxid
-        ) 
+        log.warn "No such UI widget with ID: #{dont_show_dialog_checkboxid}" 
         # Checkbox selected -> Don't show again
       elsif dont_show_status == true
-        Builtins.y2debug(
-          "User decision -- don't show the dialog %1 again, setting default return %2",
-          dont_show_dialog_ident,
-          default_return
-        )
+        log.debug "User decision -- don't show the dialog #{dont_show_dialog_ident} again, setting default return #{default_return}"
         SetShowThisPopup(dont_show_dialog_ident, false, dont_show_url)
         SetDefaultDialogReturn(
           dont_show_dialog_ident,
@@ -245,7 +214,7 @@ module Yast
     # @return sysconfig value: yes, yast, no
     def CheckSignatures
       cmdline = Linuxrc.InstallInf("Cmdline")
-      Builtins.y2milestone("Cmdline: %1", cmdline)
+      log.info "Cmdline: #{cmdline}"
 
       val = Builtins.regexpsub(
         cmdline,
@@ -277,7 +246,7 @@ module Yast
             SCR.Read(path(".sysconfig.security.CHECK_SIGNATURES"))
           )
         end
-        Builtins.y2milestone("CHECK_SIGNATURES: %1", chs)
+        log.info "CHECK_SIGNATURES: #{chs}"
         @check_signatures = chs != "no"
       end
       @check_signatures
@@ -334,7 +303,7 @@ module Yast
       # UI can show images
       if @has_local_image_support
         if Ops.get(@msg_icons, msg_type) == nil
-          Builtins.y2warning("Message type %1 not defined", msg_type)
+          log.warn "Message type #{msg_type} not defined"
           return Empty()
         end
         return MarginBox(
@@ -402,7 +371,7 @@ module Yast
           ret = nil
           break
         else
-          Builtins.y2error("Unknown user input: '%1'", user_input)
+          log.error "Unknown user input: '#{user_input}'"
           next
         end
       end
@@ -429,7 +398,7 @@ module Yast
           ret = default_symb
           break
         else
-          Builtins.y2error("Unknown user input: '%1'", user_input)
+          log.error "Unknown user input: '#{user_input}'"
           next
         end
       end
@@ -445,13 +414,7 @@ module Yast
     # @param [String] dont_show_dialog_ident for the identification in magic "don't show" functions
     # @return [Boolean] use or don't use ('true' if 'yes')
     def UseUnsignedItem(item_type, item_name, dont_show_dialog_ident, repository)
-      Builtins.y2milestone(
-        "UseUnsignedItem: type: %1, name: %2, dontshowid: %3, repo: %4",
-        item_type,
-        item_name,
-        dont_show_dialog_ident,
-        repository
-      )
+      log.info "UseUnsignedItem: type: #{item_type}, name: #{item_name}, dontshowid: #{dont_show_dialog_ident}, repo: #{repository}"
 
       repo = Pkg.SourceGeneralData(repository)
 
@@ -988,7 +951,7 @@ module Yast
 
       expires = Ops.get_integer(key, "expires_raw", 0)
       if Ops.greater_than(expires, 0) &&
-          Ops.greater_than(Builtins.time, expires)
+          Ops.greater_than(::Time.now.to_i, expires)
         # warning label - the key to import is expired
         dialog_text2 = Ops.add(
           Ops.add(Builtins.sformat(_("WARNING: The key has expired!")), "\n\n"),

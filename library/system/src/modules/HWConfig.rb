@@ -40,6 +40,8 @@ require "yast"
 
 module Yast
   class HWConfigClass < Module
+    include Yast::Logger
+
     def main
 
       textdomain "base"
@@ -57,7 +59,7 @@ module Yast
         !Builtins.regexpmatch(file, "[~]")
       end
 
-      Builtins.y2debug("config files=%1", modules)
+      log.debug "config files=#{modules}"
 
       deep_copy(all)
     end
@@ -69,7 +71,7 @@ module Yast
       p = Ops.add(path(".sysconfig.hardware.value"), file)
 
       values = SCR.Dir(p)
-      Builtins.y2debug("values=%1", values)
+      log.debug "values=#{values}"
 
       deep_copy(values)
     end
@@ -149,7 +151,7 @@ module Yast
     # @return true on success
     def RemoveConfig(file)
       p = Ops.add(path(".sysconfig.hardware.section"), file)
-      Builtins.y2debug("deleting: %1", file)
+      log.debug "deleting: #{file}"
       SCR.Write(p, nil)
     end
 

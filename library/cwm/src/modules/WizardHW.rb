@@ -32,6 +32,8 @@ require "yast"
 
 module Yast
   class WizardHWClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
       textdomain "base"
@@ -119,7 +121,7 @@ module Yast
       if @set_items_callback != nil
         @set_items_callback.call
       else
-        Builtins.y2warning("No initialization callback")
+        log.warn "No initialization callback"
       end
       if @select_initial_item_callback != nil
         @select_initial_item_callback.call
@@ -197,7 +199,7 @@ module Yast
       if sz == 1
         id = Ops.get(actions, [0, 0])
         if id == nil
-          Builtins.y2error("Unknown ID for button: %1", Ops.get(actions, 0))
+          log.error "Unknown ID for button: #{Ops.get(actions, 0)}"
           id = "nil"
         end
         return PushButton(Id(id), GetActionLabel(Ops.get(actions, 0, [])))
@@ -205,7 +207,7 @@ module Yast
       items = Builtins.maplist(actions) do |i|
         id = Ops.get(i, 0)
         if id == nil
-          Builtins.y2error("Unknown ID for button: %1", Ops.get(actions, 0))
+          log.error "Unknown ID for button: #{Ops.get(actions, 0)}"
           id = "nil"
         end
         Item(Id(id), GetActionLabel(i))

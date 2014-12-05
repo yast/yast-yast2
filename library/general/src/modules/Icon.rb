@@ -32,6 +32,8 @@ require "yast"
 
 module Yast
   class IconClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
 
@@ -89,11 +91,7 @@ module Yast
         )
       else
         icon_path = Ops.add(Ops.add(@icon_32x32_path, icon_type), ".png")
-        Builtins.y2debug(
-          "Image '%1' is not defined, using '%2'",
-          icon_type,
-          icon_path
-        )
+        log.debug "Image '#{icon_type}' is not defined, using '#{icon_path}'"
       end
 
       icon_path

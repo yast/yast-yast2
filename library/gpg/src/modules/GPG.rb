@@ -34,6 +34,8 @@ require "yast"
 
 module Yast
   class GPGClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
 
@@ -71,7 +73,7 @@ module Yast
     # @param [Boolean] force unconditionaly clear the key caches
     def Init(home_dir, force)
       if home_dir != "" && FileUtils.IsDirectory(home_dir) != true
-        Builtins.y2error("Path %1 is not a directory", home_dir)
+        log.error "Path #{home_dir} is not a directory"
         return false
       end
 
@@ -94,7 +96,7 @@ module Yast
         Builtins.sformat("--homedir '%1' ", String.Quote(@home)) :
         ""
       ret = Ops.add(Ops.add("gpg ", home_opt), options)
-      Builtins.y2milestone("gpg command: %1", ret)
+      log.info "gpg command: #{ret}"
 
       ret
     end
@@ -109,7 +111,7 @@ module Yast
       ret = Convert.to_map(SCR.Execute(path(".target.bash_output"), command))
 
       if Ops.get_integer(ret, "exit", -1) != 0
-        Builtins.y2error("gpg error: %1", ret)
+        log.error "gpg error: #{ret}"
       end
 
       deep_copy(ret)
@@ -127,16 +129,11 @@ module Yast
         if parsed != nil
           # there might be more UIDs
           if key == "uid"
-            Builtins.y2milestone("%1: %2", key, parsed)
+            log.info "#{key}: #{parsed}"
             Ops.set(ret, key, Builtins.add(Ops.get_list(ret, key, []), parsed))
           else
             if Builtins.haskey(ret, key)
-              Builtins.y2warning(
-                "Key %1: replacing old value '%2' with '%3'",
-                key,
-                Ops.get_string(ret, key, ""),
-                parsed
-              )
+              log.warn "Key #{key}: replacing old value '#{Ops.get_string(ret, key, "")}' with '#{parsed}'"
             end
             Ops.set(ret, key, parsed)
           end
@@ -144,7 +141,7 @@ module Yast
       end } 
 
 
-      Builtins.y2milestone("Parsed key: %1", ret)
+      log.info "Parsed key: #{ret}"
 
       deep_copy(ret)
     end
@@ -190,7 +187,7 @@ module Yast
       end 
 
 
-      Builtins.y2milestone("Parsed keys: %1", ret)
+      log.info "Parsed keys: #{ret}"
 
       deep_copy(ret)
     end
@@ -232,7 +229,7 @@ module Yast
       command = Ops.add("GPG_AGENT_INFO='' ", buildGPGcommand("--gen-key"))
       text_mode = Ops.get_boolean(UI.GetDisplayInfo, "TextMode", false)
 
-      Builtins.y2debug("text_mode: %1", text_mode)
+      log.debug "text_mode: #{text_mode}"
 
       ret = false
 
@@ -255,7 +252,7 @@ module Yast
           Ops.add(
             Ops.add(
               Ops.add(
-                Ops.add(Ops.add("LC_ALL=en_US.UTF-8 ", xterm), " -e \""),
+                "LC_ALL=en_US.UTF-8 " + xterm + " -e \"",
                 command
               ),
               "; echo $? > "
@@ -264,7 +261,7 @@ module Yast
           ),
           "\""
         )
-        Builtins.y2internal("Executing: %1", command)
+        log.fatal "Executing: #{command}"
 
         # in Qt start GPG in a xterm window
         SCR.Execute(path(".target.bash"), command)
@@ -275,20 +272,16 @@ module Yast
           exit_code = Convert.to_string(
             SCR.Read(path(".target.string"), exit_file)
           )
-          Builtins.y2milestone(
-            "Read exit code from tmp file %1: %2",
-            exit_file,
-            exit_code
-          )
+          log.info "Read exit code from tmp file #{exit_file}: #{exit_code}"
 
           ret = exit_code == "0\n"
         else
-          Builtins.y2warning("Exit file is missing, the gpg command has failed")
+          log.warn "Exit file is missing, the gpg command has failed"
           ret = false
         end
       else
         command = Ops.add("LC_ALL=en_US.UTF-8 ", command)
-        Builtins.y2internal("Executing in terminal: %1", command)
+        log.fatal "Executing in terminal: #{command}"
         # in ncurses use UI::RunInTerminal
         ret = UI.RunInTerminal(command) == 0
       end
@@ -311,12 +304,7 @@ module Yast
     def SignFile(keyid, file, passphrase, ascii_signature)
       if passphrase == nil || keyid == nil || keyid == "" || file == nil ||
           file == ""
-        Builtins.y2error(
-          "Invalid parameters: keyid: %1, file: %2, passphrase: %3",
-          keyid,
-          file,
-          passphrase
-        )
+        log.error "Invalid parameters: keyid: #{keyid}, file: #{file}, passphrase: #{passphrase}"
         return false
       end
 

@@ -62,6 +62,8 @@ module Yast
   #     result[2]["fields"].size  # =>  6
   #     result[2]["fields"][1]    # =>  "/"
   class AsciiFileClass < Module
+    include Yast::Logger
+
     def main
 
       textdomain "base"
@@ -145,7 +147,7 @@ module Yast
     # @param [ArgRef<Hash>] file content
     # @param [String] pathname file name
     def ReadFile(file, pathname)
-      Builtins.y2milestone("path=%1", pathname)
+      log.info "path=#{pathname}"
       lines = []
       if Ops.greater_than(SCR.Read(path(".target.size"), pathname), 0)
         value = Convert.to_string(SCR.Read(path(".target.string"), pathname))
@@ -224,7 +226,7 @@ module Yast
           ret = Builtins.add(ret, num)
         end
       end
-      Builtins.y2milestone("field %1 content %2 ret %3", field, content, ret)
+      log.info "field #{field} content #{content} ret #{ret}"
       deep_copy(ret)
     end
 
@@ -244,7 +246,7 @@ module Yast
           Ops.set(ret, num, Ops.get_map(file.value, ["l", num], {}))
         end
       end
-      Builtins.y2milestone("lines %1 ret %2", lines, ret)
+      log.info "lines #{lines} ret #{ret}"
       deep_copy(ret)
     end
 
@@ -261,7 +263,7 @@ module Yast
         file.value = file_ref.value
         ret = Ops.get_map(file.value, ["l", line], {})
       end
-      Builtins.y2milestone("line %1 ret %2", line, ret)
+      log.info "line #{line} ret #{ret}"
       deep_copy(ret)
     end
 
@@ -282,7 +284,7 @@ module Yast
     # @param [Integer] line	row number (counted from 1 to n)
     # @param [Integer] field	column number (counted from 0 to n)
     def ChangeLineField(file, line, field, entry)
-      Builtins.y2debug("line %1 field %2 entry %3", line, field, entry)
+      log.debug "line #{line} field #{field} entry #{entry}"
       changed = false
       if !Builtins.haskey(Ops.get_map(file.value, "l", {}), line)
         Ops.set(file.value, ["l", line], {})
@@ -323,7 +325,7 @@ module Yast
     # @param [Array] entry	array of new fields on the line
     def ReplaceLine(file, line, entry)
       entry = deep_copy(entry)
-      Builtins.y2debug("line %1 entry %2", line, entry)
+      log.debug "line #{line} entry #{entry}"
       changed = false
       if !Builtins.haskey(Ops.get_map(file.value, "l", {}), line)
         Ops.set(file.value, ["l", line], {})
@@ -342,7 +344,7 @@ module Yast
     def AppendLine(file, entry)
       entry = deep_copy(entry)
       line = Ops.add(Builtins.size(Ops.get_map(file.value, "l", {})), 1)
-      Builtins.y2debug("new line %1 entry %2", line, entry)
+      log.debug "new line #{line} entry #{entry}"
       Ops.set(file.value, ["l", line], {})
       Ops.set(file.value, ["l", line, "fields"], entry)
       Ops.set(file.value, ["l", line, "changed"], true)
@@ -357,7 +359,7 @@ module Yast
     # @param [Array<Fixnum>] lines to remove (counted from 1 to n)
     def RemoveLines(file, lines)
       lines = deep_copy(lines)
-      Builtins.y2debug("lines %1", lines)
+      log.debug "lines #{lines}"
       Builtins.foreach(lines) do |num|
         if Builtins.haskey(Ops.get_map(file.value, "l", {}), num)
           Ops.set(
@@ -376,8 +378,8 @@ module Yast
     # @param [ArgRef<Hash>] file content
     # @param [String] fpath file name
     def RewriteFile(file, fpath)
-      Builtins.y2milestone("path %1", fpath)
-      Builtins.y2debug("out: %1", file.value)
+      log.info "path #{fpath}"
+      log.debug "out: #{file.value}"
       out = ""
       Builtins.foreach(Ops.get_map(file.value, "l", {})) do |num, entry|
         out = Ops.add(
@@ -393,7 +395,7 @@ module Yast
           "\n"
         )
       end
-      Builtins.y2debug("Out text: %1", out)
+      log.debug "Out text: #{out}"
       if Builtins.size(out) == 0
         if Ops.greater_or_equal(SCR.Read(path(".target.size"), fpath), 0)
           SCR.Execute(path(".target.remove"), fpath)

@@ -31,6 +31,8 @@ require "yast"
 
 module Yast
   class DistroClass < Module
+    include Yast::Logger
+
     def main
 
       textdomain "base"
@@ -44,7 +46,7 @@ module Yast
       if @_distro == nil
         if SCR.Read(path(".target.size"), "/etc/SuSE-release") != -1
           @_distro = "suse"
-          Builtins.y2milestone("Found SUSE")
+          log.info "Found SUSE"
         end
       end
 
@@ -56,7 +58,7 @@ module Yast
       if @_distro == nil
         if SCR.Read(path(".target.size"), "/etc/fedora-release") != -1
           @_distro = "fedora"
-          Builtins.y2milestone("Found Fedora")
+          log.info "Found Fedora"
         end
       end
 
@@ -71,7 +73,7 @@ module Yast
             "grep DISTRIB_ID=Ubuntu /etc/lsb-release"
           ) == 0
           @_distro = "debian"
-          Builtins.y2milestone("Found Debian/Ubuntu")
+          log.info "Found Debian/Ubuntu"
         end
       end
 

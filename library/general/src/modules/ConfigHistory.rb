@@ -48,6 +48,8 @@ require "yast"
 
 module Yast
   class ConfigHistoryClass < Module
+    include Yast::Logger
+
     def main
       textdomain "config-history"
 
@@ -80,7 +82,7 @@ module Yast
         @use_svn = Convert.to_string(
           SCR.Read(path(".sysconfig.yast2.STORE_CONFIG_IN_SUBVERSION"))
         ) == "yes"
-        Builtins.y2milestone("Using SVN for configuration files: %1", @use_svn)
+        log.info "Using SVN for configuration files: #{@use_svn}"
       end
       @use_svn
     end
@@ -90,10 +92,7 @@ module Yast
         @store_whole_subtree = Convert.to_string(
           SCR.Read(path(".sysconfig.yast2.SUBVERSION_ADD_DIRS_RECURSIVE"))
         ) == "yes"
-        Builtins.y2milestone(
-          "Automatically store whole subtree: %1",
-          @store_whole_subtree
-        )
+        log.info "Automatically store whole subtree: #{@store_whole_subtree}"
       end
       @store_whole_subtree
     end
@@ -101,7 +100,7 @@ module Yast
     # Initialize a SVN repository for config files in /var/lib/YaST2
     # @return [Boolean] true on success, false otherwise
     def InitSvnRepository
-      Builtins.y2milestone("Initializing repo at %1", @history_location)
+      log.info "Initializing repo at #{@history_location}"
       out = Convert.to_map(
         SCR.Execute(
           path(".target.bash_output"),
@@ -109,10 +108,7 @@ module Yast
         )
       )
       if Ops.get_integer(out, "exit", -1) != 0
-        Builtins.y2error(
-          "Failed to initialize SVN repository: %1",
-          Ops.get_string(out, "stderr", "")
-        )
+        log.error "Failed to initialize SVN repository: #{Ops.get_string(out, "stderr", "")}"
         return false
       end
       out = Convert.to_map(
@@ -125,20 +121,17 @@ module Yast
         )
       )
       if Ops.get_integer(out, "exit", -1) != 0
-        Builtins.y2error(
-          "Failed to set svn repo permissions: %1",
-          Ops.get_string(out, "stderr", "")
-        )
+        log.error "Failed to set svn repo permissions: #{Ops.get_string(out, "stderr", "")}"
         return false
       end
-      Builtins.y2milestone("Repo initialized")
+      log.info "Repo initialized"
       true
     end
 
     # Check the presence of SVN repo for storing changes
     # @return [Boolean] true if repo exists
     def CheckSvnRepository
-      Builtins.y2milestone("Checking repo presence")
+      log.info "Checking repo presence"
       out = Convert.to_map(
         SCR.Execute(
           path(".target.bash_output"),
@@ -146,14 +139,14 @@ module Yast
         )
       )
       ret = Ops.get_integer(out, "exit", -1) == 0
-      Builtins.y2milestone("Repo found: %1", ret)
+      log.info "Repo found: #{ret}"
       ret
     end
 
     # Check whether repo has been deployed to the filesystem
     # @return [Boolean] true if yes (/.svn exists), false otherwise
     def CheckRepoLinked
-      Builtins.y2milestone("Checking whether repo is linked to root directory")
+      log.info "Checking whether repo is linked to root directory"
       out = Convert.to_map(
         SCR.Execute(
           path(".target.bash_output"),
@@ -161,7 +154,7 @@ module Yast
         )
       )
       ret = Ops.get_integer(out, "exit", -1) == 0
-      Builtins.y2milestone("Repo linked: %1", ret)
+      log.info "Repo linked: #{ret}"
       ret
     end
 
@@ -170,10 +163,7 @@ module Yast
     #        false to add directory itself only
     # @return [Boolean] true on success, false on failure
     def InitDirectories(recursive)
-      Builtins.y2milestone(
-        "Linking system with the repository; recursive: %1",
-        recursive
-      )
+      log.info "Linking system with the repository; recursive: #{recursive}"
       out = Convert.to_map(
         SCR.Execute(
           path(".target.bash_output"),
@@ -181,15 +171,12 @@ module Yast
         )
       )
       if Ops.get_integer(out, "exit", -1) != 0
-        Builtins.y2error(
-          "svn check out to root failed: %1",
-          Ops.get_string(out, "stderr", "")
-        )
+        log.error "svn check out to root failed: #{Ops.get_string(out, "stderr", "")}"
         return false
       end
       success = true
       Builtins.foreach(@log_directories) do |dir|
-        Builtins.y2milestone("Initializing directory %1", dir)
+        log.info "Initializing directory #{dir}"
         params = recursive ? "" : "-N"
         out = Convert.to_map(
           SCR.Execute(
@@ -199,11 +186,7 @@ module Yast
         )
         if Ops.get_integer(out, "exit", -1) != 0
           success = false
-          Builtins.y2error(
-            "Failed to add directory %1: %2",
-            dir,
-            Ops.get_string(out, "stderr", "")
-          )
+          log.error "Failed to add directory #{dir}: #{Ops.get_string(out, "stderr", "")}"
         end
       end
       return false if !success
@@ -214,13 +197,10 @@ module Yast
         )
       )
       if Ops.get_integer(out, "exit", -1) != 0
-        Builtins.y2error(
-          "Initial check-in to repo failed: %1",
-          Ops.get_string(out, "stderr", "")
-        )
+        log.error "Initial check-in to repo failed: #{Ops.get_string(out, "stderr", "")}"
         return false
       end
-      Builtins.y2milestone("Initial check-in succeeded")
+      log.info "Initial check-in succeeded"
       true
     end
 
@@ -229,7 +209,7 @@ module Yast
     def CheckUncommitedChanges
       success = true
       Builtins.foreach(@log_directories) do |dir|
-        Builtins.y2milestone("Checking for uncommitted changes in %1", dir)
+        log.info "Checking for uncommitted changes in #{dir}"
         out = Convert.to_map(
           SCR.Execute(
             path(".target.bash_output"),
@@ -237,7 +217,7 @@ module Yast
           )
         )
         if Ops.get_integer(out, "exit", -1) == 1 && !@commit_needed
-          Builtins.y2milestone("No uncommitted change detected")
+          log.info "No uncommitted change detected"
         else
           out = Convert.to_map(
             SCR.Execute(
@@ -250,22 +230,18 @@ module Yast
           )
           if Ops.get_integer(out, "exit", -1) != 0
             success = false
-            Builtins.y2error(
-              "Failed to commit changes in %1: %2",
-              dir,
-              Ops.get_string(out, "stderr", "")
-            )
+            log.error "Failed to commit changes in #{dir}: #{Ops.get_string(out, "stderr", "")}"
           end
         end
       end
-      Builtins.y2milestone("Commit successful: %1", success)
+      log.info "Commit successful: #{success}"
       success
     end
 
     # Create a timestamp to find changed files which are not under version control
     # @return [Boolean] true on success
     def CreateTimeStamp
-      Builtins.y2milestone("Creating timestamp to detect changes")
+      log.info "Creating timestamp to detect changes"
       out = Convert.to_map(
         SCR.Execute(
           path(".target.bash_output"),
@@ -273,7 +249,7 @@ module Yast
         )
       )
       ret = Ops.get_integer(out, "exit", -1) == 0
-      Builtins.y2milestone("Success: %1", ret)
+      log.info "Success: #{ret}"
       ret
     end
 
@@ -283,7 +259,7 @@ module Yast
     def CheckChangedFilesOutOfVersionControl
       success = true
       Builtins.foreach(@log_directories) do |dir|
-        Builtins.y2milestone("Checking for new files in %1", dir)
+        log.info "Checking for new files in #{dir}"
         out = Convert.to_map(
           SCR.Execute(
             path(".target.bash_output"),
@@ -295,7 +271,7 @@ module Yast
           )
         )
         if Ops.get_integer(out, "exit", -1) == 1
-          Builtins.y2milestone("No changes found")
+          log.info "No changes found"
           next
         end
         param = Ops.get_string(out, "stdout", "")
@@ -322,10 +298,7 @@ module Yast
           )
           if Ops.get_integer(out, "exit", -1) != 0
             success = false
-            Builtins.y2error(
-              "Failed to add changes: %1",
-              Ops.get_string(out, "stderr", "")
-            )
+            log.error "Failed to add changes: #{Ops.get_string(out, "stderr", "")}"
           end
         end
       end
@@ -341,7 +314,7 @@ module Yast
     # @return [Boolean] true on success, false otherwise
     def CheckAllFilesOutOfVersionControl
       success = true
-      Builtins.y2milestone("Adding all files out of version control")
+      log.info "Adding all files out of version control"
       Builtins.foreach(@log_directories) do |dir|
         out = Convert.to_map(
           SCR.Execute(
@@ -353,16 +326,12 @@ module Yast
           )
         )
         if Ops.get_integer(out, "exit", -1) != 0
-          Builtins.y2error(
-            "Failed to add files in %1: %2",
-            dir,
-            Ops.get_string(out, "stderr", "")
-          )
+          log.error "Failed to add files in #{dir}: #{Ops.get_string(out, "stderr", "")}"
           success = false
         end
       end
       @commit_needed = true # TODO check if really necessary
-      Builtins.y2milestone("Finished successfuly: %1", success)
+      log.info "Finished successfuly: #{success}"
       success
     end
 
@@ -371,7 +340,7 @@ module Yast
     # @return [Boolean] true on success, false otherwise
     def RemoveDeletedFiles
       success = true
-      Builtins.y2milestone("Checking for removed files")
+      log.info "Checking for removed files"
       Builtins.foreach(@log_directories) do |dir|
         out = Convert.to_map(
           SCR.Execute(
@@ -380,11 +349,7 @@ module Yast
           )
         )
         if Ops.get_integer(out, "exit", -1) != 0
-          Builtins.y2error(
-            "Failed to check for deleted files in %1: %2",
-            dir,
-            Ops.get_string(out, "stderr", "")
-          )
+          log.error "Failed to check for deleted files in #{dir}: #{Ops.get_string(out, "stderr", "")}"
           success = false
           next
         end
@@ -400,25 +365,21 @@ module Yast
           )
         )
         if Ops.get_integer(out, "exit", -1) != 0
-          Builtins.y2error(
-            "Failed to remove files in %1: %2",
-            dir,
-            Ops.get_string(out, "stderr", "")
-          )
+          log.error "Failed to remove files in #{dir}: #{Ops.get_string(out, "stderr", "")}"
           success = false
         end
       end
       @commit_needed = true # TODO check if really necessary
-      Builtins.y2milestone("Finished successfuly: %1", success)
+      log.info "Finished successfuly: #{success}"
       success
     end
 
     # Do commit to subversion
     # @return [Boolean] tru eon success
     def DoCommit(mod)
-      Builtins.y2milestone("Committing changes")
+      log.info "Committing changes"
       arg = Builtins.mergestring(@log_directories, " ")
-      Builtins.y2debug("Directories to commit: %1", arg)
+      log.debug "Directories to commit: #{arg}"
       log = Builtins.sformat("Changes by YaST module %1", mod)
       out = Convert.to_map(
         SCR.Execute(
@@ -427,7 +388,7 @@ module Yast
         )
       )
       ret = Ops.get_integer(out, "exit", -1) == 0
-      Builtins.y2milestone("Success: %1", ret)
+      log.info "Success: #{ret}"
       ret
     end
 
@@ -436,7 +397,7 @@ module Yast
     def UpdateCheckout
       success = true
       Builtins.foreach(@log_directories) do |dir|
-        Builtins.y2milestone("Updating configuration files in %1", dir)
+        log.info "Updating configuration files in #{dir}"
         out = Convert.to_map(
           SCR.Execute(
             path(".target.bash_output"),
@@ -444,11 +405,7 @@ module Yast
           )
         )
         if Ops.get_integer(out, "exit", -1) != 0
-          Builtins.y2error(
-            "Failed to update %1 from SVN: %2",
-            dir,
-            Ops.get_string(out, "stderr", "")
-          )
+          log.error "Failed to update #{dir} from SVN: #{Ops.get_string(out, "stderr", "")}"
           success = false
         end
       end
@@ -462,9 +419,7 @@ module Yast
       return true if !UseSvn()
       if Ops.greater_than(@nested_transactions, 0)
         @nested_transactions = Ops.add(@nested_transactions, 1)
-        Builtins.y2milestone(
-          "Skiping SVN initialization, translaction already in progress"
-        )
+        log.info "Skiping SVN initialization, translaction already in progress"
         return true
       end
       #ensure the repo exists
@@ -487,9 +442,7 @@ module Yast
       return true if !UseSvn()
       @nested_transactions = Ops.subtract(@nested_transactions, 1)
       if Ops.greater_than(@nested_transactions, 0)
-        Builtins.y2milestone(
-          "Skipping commit, all nested transaction not yet finished"
-        )
+        log.info "Skipping commit, all nested transaction not yet finished"
         return true
       end
       success = true
@@ -515,7 +468,7 @@ module Yast
       return true if !UseSvn()
       return true if Recursive()
       if @nested_transactions == 0
-        Builtins.y2error("InitFiles called before prior initialization")
+        log.error "InitFiles called before prior initialization"
         return false
       end
       filelist = Builtins.mergestring(files, " ")
@@ -526,11 +479,7 @@ module Yast
         )
       )
       if Ops.get_integer(out, "exit", -1) != 0
-        Builtins.y2error(
-          "Failed to schedule files %1 for addition: %2",
-          filelist,
-          Ops.get_string(out, "stderr", "")
-        )
+        log.error "Failed to schedule files #{filelist} for addition: #{Ops.get_string(out, "stderr", "")}"
         return false
       end
       success = true
@@ -545,11 +494,7 @@ module Yast
           )
         )
         if Ops.get_integer(out, "exit", -1) != 0
-          Builtins.y2error(
-            "Failed to commit changes to %1: %2",
-            dir,
-            Ops.get_string(out, "exit", "")
-          )
+          log.error "Failed to commit changes to #{dir}: #{Ops.get_string(out, "exit", "")}"
           success = false
         end
       end

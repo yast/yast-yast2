@@ -36,6 +36,8 @@ require "yast"
 
 module Yast
   class ConfirmClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
 
@@ -71,11 +73,7 @@ module Yast
 
       result = Ops.get(@detection_cache, _class)
       if result != nil
-        Builtins.y2milestone(
-          "Detection cached result: %1 -> %2",
-          _class,
-          result
-        )
+        log.info "Detection cached result: #{_class} -> #{result}"
         return result
       end
 
@@ -145,7 +143,7 @@ module Yast
 
       result = true
       if ret != :continue
-        Builtins.y2milestone("Detection skipped: %1", _class)
+        log.info "Detection skipped: #{_class}"
         result = false
       end
 
@@ -168,7 +166,7 @@ module Yast
           0
         )
         if !Stage.initial
-          Builtins.y2warning("/usr/bin/id not existing, supposing to be root")
+          log.warn "/usr/bin/id not existing, supposing to be root"
         end
         return true
       end
@@ -189,7 +187,7 @@ module Yast
 
       # Popup headline
       if Popup.ContinueCancelHeadline(_("Root Privileges Needed"), pop)
-        Builtins.y2error("NOT running as root!")
+        log.error "NOT running as root!"
         return true
       end
 

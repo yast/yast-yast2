@@ -33,6 +33,8 @@ require "yast"
 
 module Yast
   class PackageKitClass < Module
+    include Yast::Logger
+
     def main
 
     end
@@ -42,7 +44,7 @@ module Yast
     def IsRunning
       cmd = "dbus-send --system --dest=org.freedesktop.DBus --type=method_call --print-reply " +
         "--reply-timeout=200 / org.freedesktop.DBus.NameHasOwner string:org.freedesktop.PackageKit"
-      Builtins.y2milestone("Checking PackageKit status: %1", cmd)
+      log.info "Checking PackageKit status: #{cmd}"
 
       out = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
 
@@ -54,7 +56,7 @@ module Yast
       end 
 
 
-      Builtins.y2milestone("PackageKit is running: %1", ret)
+      log.info "PackageKit is running: #{ret}"
 
       ret
     end
@@ -65,11 +67,11 @@ module Yast
     def SuggestQuit
       cmd = "dbus-send --system --dest=org.freedesktop.PackageKit --type=method_call " +
         "/org/freedesktop/PackageKit org.freedesktop.PackageKit.SuggestDaemonQuit"
-      Builtins.y2milestone("Asking PackageKit to quit: %1", cmd)
+      log.info "Asking PackageKit to quit: #{cmd}"
 
       ret = Convert.to_integer(SCR.Execute(path(".target.bash"), cmd))
 
-      Builtins.y2error("dbus-send failed!") if ret != 0
+      log.error "dbus-send failed!" if ret != 0
 
       nil
     end

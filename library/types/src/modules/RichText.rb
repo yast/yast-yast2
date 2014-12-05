@@ -33,6 +33,8 @@ require "yast"
 
 module Yast
   class RichTextClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
       Yast.import "String"
@@ -47,10 +49,10 @@ module Yast
     # @param [String] richtext the text to be converted
     # @return the converted text
     def Rich2Plain(richtext)
-      Builtins.y2debug("richtext=%1", richtext)
+      log.debug "richtext=#{richtext}"
 
       lparts = Builtins.splitstring(DropWS(richtext), "<")
-      Builtins.y2debug("lparts=%1", lparts)
+      log.debug "lparts=#{lparts}"
 
       # Am I in <LI>?
       inli = false

@@ -35,6 +35,8 @@ require "yast"
 
 module Yast
   class SuSEFirewallExpertRulesClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -71,7 +73,7 @@ module Yast
     # @param [String] network
     # @return [Boolean] if it is a valid network definition
     def IsValidNetwork(network)
-      Builtins.y2internal("Deprecated, please use IP::CheckNetwork() instead")
+      log.fatal "Deprecated, please use IP::CheckNetwork() instead"
       IP.CheckNetwork(network)
     end
 
@@ -80,7 +82,7 @@ module Yast
     #
     # @return [String] describing the valid network.
     def ValidNetwork
-      Builtins.y2internal("Deprecated, please, use IP::ValidNetwork() instead")
+      log.fatal "Deprecated, please, use IP::ValidNetwork() instead"
       IP.ValidNetwork
     end
 
@@ -91,11 +93,11 @@ module Yast
     def AdjustParameters(params)
       params = deep_copy(params)
       if Ops.get(params, "network", "") == ""
-        Builtins.y2warning("No network defined, using '0/0' instead!")
+        log.warn "No network defined, using '0/0' instead!"
         Ops.set(params, "network", "0/0")
       end
       if Ops.get(params, "protocol", "") == ""
-        Builtins.y2warning("No protocol defined, using 'all' instead!")
+        log.warn "No protocol defined, using 'all' instead!"
         Ops.set(params, "protocol", "all")
       end
       Ops.set(
@@ -144,7 +146,7 @@ module Yast
 
       # Check the zone
       if !Builtins.contains(SuSEFirewall.GetKnownFirewallZones, zone)
-        Builtins.y2error("Unknown firewall zone: %1", zone)
+        log.error "Unknown firewall zone: #{zone}"
         return nil
       end
 
@@ -229,10 +231,7 @@ module Yast
       end
 
       if new_rule == "0/0,all"
-        Builtins.y2warning(
-          "Created rule '%1' that allows everything from all networks!",
-          new_rule
-        )
+        log.warn "Created rule '#{new_rule}' that allows everything from all networks!"
       end
 
       new_rule
@@ -260,17 +259,14 @@ module Yast
 
       # Check the zone
       if !Builtins.contains(SuSEFirewall.GetKnownFirewallZones, zone)
-        Builtins.y2error("Unknown firewall zone: %1", zone)
+        log.error "Unknown firewall zone: #{zone}"
         return nil
       end
 
       # Get all current rules
       current_rules = SuSEFirewall.GetAcceptExpertRules(zone)
       if current_rules == nil
-        Builtins.y2error(
-          "Impossible to set new AcceptExpertRule for zone %1",
-          zone
-        )
+        log.error "Impossible to set new AcceptExpertRule for zone #{zone}"
         return false
       end
 
@@ -307,16 +303,13 @@ module Yast
 
       # Check the zone
       if !Builtins.contains(SuSEFirewall.GetKnownFirewallZones, zone)
-        Builtins.y2error("Unknown firewall zone: %1", zone)
+        log.error "Unknown firewall zone: #{zone}"
         return nil
       end
 
       current_rules = SuSEFirewall.GetAcceptExpertRules(zone)
       if current_rules == nil
-        Builtins.y2error(
-          "Impossible remove any AcceptExpertRule for zone %1",
-          zone
-        )
+        log.error "Impossible remove any AcceptExpertRule for zone #{zone}"
         return false
       end
 
@@ -356,16 +349,13 @@ module Yast
     def DeleteRuleID(zone, rule_id)
       # Check the zone
       if !Builtins.contains(SuSEFirewall.GetKnownFirewallZones, zone)
-        Builtins.y2error("Unknown firewall zone: %1", zone)
+        log.error "Unknown firewall zone: #{zone}"
         return nil
       end
 
       current_rules = SuSEFirewall.GetAcceptExpertRules(zone)
       if current_rules == nil
-        Builtins.y2error(
-          "Impossible remove any AcceptExpertRule for zone %1",
-          zone
-        )
+        log.error "Impossible remove any AcceptExpertRule for zone #{zone}"
         return false
       end
 
@@ -376,10 +366,7 @@ module Yast
         SuSEFirewall.SetAcceptExpertRules(zone, current_rules)
         return true
       else
-        Builtins.y2error(
-          "Cannot remove %1, such entry does not exist.",
-          rule_id
-        )
+        log.error "Cannot remove #{rule_id}, such entry does not exist."
         return false
       end
     end

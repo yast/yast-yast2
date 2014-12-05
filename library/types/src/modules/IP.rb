@@ -33,6 +33,8 @@ require "resolv"
 
 module Yast
   class IPClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -217,7 +219,7 @@ module Yast
     #     IPv4ToBits("172.24.233.211") -> "10101100000110001110100111010011"
     def IPv4ToBits(ipv4)
       unless Check4(ipv4)
-        Builtins.y2error("Not a valid IPv4: %1", ipv4)
+        log.error "Not a valid IPv4: #{ipv4}"
         return nil
       end
 
@@ -237,11 +239,11 @@ module Yast
     #     BitsToIPv4("00110101000110001110001001100101") -> "53.24.226.101"
     def BitsToIPv4(bits)
       if Builtins.size(bits) != 32
-        Builtins.y2error("Not a valid IPv4 in Bits: %1", bits)
+        log.error "Not a valid IPv4 in Bits: #{bits}"
         return nil
       end
       if !Builtins.regexpmatch(bits, "^[01]+$")
-        Builtins.y2error("Not a valid IPv4 in Bits: %1", bits)
+        log.error "Not a valid IPv4 in Bits: #{bits}"
         return nil
       end
 

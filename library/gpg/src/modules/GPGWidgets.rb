@@ -33,6 +33,8 @@ require "yast"
 
 module Yast
   class GPGWidgetsClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
 
@@ -96,7 +98,7 @@ module Yast
     # Init function of a widget - initialize the private table widget
     # @param [String] key string widget key
     def GpgInitPrivate(key)
-      Builtins.y2milestone("GpgInitPrivate: %1", key)
+      log.info "GpgInitPrivate: #{key}"
 
       if key == "select_private_key"
         UI.ChangeWidget(Id(:gpg_priv_table), :Items, GPGItems(true))
@@ -116,7 +118,7 @@ module Yast
     # Init function of a widget - initialize the public table widget
     # @param [String] key string widget key
     def GpgInitPublic(key)
-      Builtins.y2milestone("GpgInitPublic: %1", key)
+      log.info "GpgInitPublic: #{key}"
 
       if key == "select_public_key"
         UI.ChangeWidget(Id(:gpg_public_table), :Items, GPGItems(false))
@@ -138,16 +140,13 @@ module Yast
     # @param [Hash] event event
     def GpgStorePrivate(key, event)
       event = deep_copy(event)
-      Builtins.y2debug("GpgStorePrivate: %1, %2", key, event)
+      log.debug "GpgStorePrivate: #{key}, #{event}"
 
       if key == "select_private_key"
         @_selected_id_private_key = Convert.to_string(
           UI.QueryWidget(Id(:gpg_priv_table), :CurrentItem)
         )
-        Builtins.y2milestone(
-          "Selected private key: %1",
-          @_selected_id_private_key
-        )
+        log.info "Selected private key: #{@_selected_id_private_key}"
       end
 
       nil
@@ -158,16 +157,13 @@ module Yast
     # @param [Hash] event event
     def GpgStorePublic(key, event)
       event = deep_copy(event)
-      Builtins.y2debug("GpgStorePublic: %1, %2", key, event)
+      log.debug "GpgStorePublic: #{key}, #{event}"
 
       if key == "select_public_key"
         @_selected_id_public_key = Convert.to_string(
           UI.QueryWidget(Id(:gpg_public_table), :CurrentItem)
         )
-        Builtins.y2milestone(
-          "Selected public key: %1",
-          @_selected_id_public_key
-        )
+        log.info "Selected public key: #{@_selected_id_public_key}"
       end
 
       nil
@@ -248,7 +244,7 @@ module Yast
     # @param [Hash] event event
     def GpgNewKey(key, event)
       event = deep_copy(event)
-      Builtins.y2debug("GpgNewKey: %1, %2", key, event)
+      log.debug "GpgNewKey: #{key}, #{event}"
 
       if key == "create_new_key"
         GPG.CreateKey
@@ -297,7 +293,7 @@ module Yast
     # @param [Hash] event event
     def PassphraseStore(key, event)
       event = deep_copy(event)
-      Builtins.y2debug("PassphraseStore: %1, %2", key, event)
+      log.debug "PassphraseStore: #{key}, #{event}"
 
       if Ops.get_symbol(event, "WidgetID", :_none) == :ok
         @passphrase = Convert.to_string(UI.QueryWidget(Id(:passphrase), :Value))

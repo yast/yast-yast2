@@ -31,6 +31,8 @@ require "yast"
 
 module Yast
   class XMLClass < Module
+    include Yast::Logger
+
     def main
 
       # Sections in XML file that should be treated as CDATA when saving
@@ -103,12 +105,12 @@ module Yast
     def YCPToXMLFile(docType, contents, outputPath)
       contents = deep_copy(contents)
       if !Builtins.haskey(@docs, docType)
-        Builtins.y2error("doc type %1 undecalred...", docType)
+        log.error "doc type #{docType} undecalred..."
         return false
       end
       docSettings = Ops.get_map(@docs, docType, {})
       Ops.set(docSettings, "fileName", outputPath)
-      Builtins.y2debug("Write(.xml, %1, %2)", docSettings, contents)
+      log.debug "Write(.xml, #{docSettings}, #{contents})"
       ret = Convert.to_boolean(SCR.Execute(path(".xml"), docSettings, contents))
       ret
     end
@@ -138,20 +140,16 @@ module Yast
     # @return Map with YCP data
     def XMLToYCPFile(xmlFile)
       if Ops.greater_than(SCR.Read(path(".target.size"), xmlFile), 0)
-        Builtins.y2milestone("Reading %1", xmlFile)
+        log.info "Reading #{xmlFile}"
         out = Convert.convert(
           SCR.Read(path(".xml"), xmlFile),
           :from => "any",
           :to   => "map <string, any>"
         )
-        Builtins.y2debug("XML Agent output: %1", out)
+        log.debug "XML Agent output: #{out}"
         return deep_copy(out)
       else
-        Builtins.y2warning(
-          "XML file %1 (%2) not found",
-          xmlFile,
-          SCR.Read(path(".target.size"), xmlFile)
-        )
+        log.warn "XML file #{xmlFile} (#{SCR.Read(path(".target.size"), xmlFile)}) not found"
         return {}
       end
     end
@@ -166,10 +164,10 @@ module Yast
           :from => "any",
           :to   => "map <string, any>"
         )
-        Builtins.y2debug("XML Agent output: %1", out)
+        log.debug "XML Agent output: #{out}"
         return deep_copy(out)
       else
-        Builtins.y2warning("can't convert empty XML string")
+        log.warn "can't convert empty XML string"
         return {}
       end
     end

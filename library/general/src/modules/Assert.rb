@@ -28,6 +28,8 @@ require "yast"
 
 module Yast
   class AssertClass < Module
+    include Yast::Logger
+
     # @param [Object] expected expected value of test
     # @param [Object] actual   actual value of test
     # @param [String] fail_message will be logged if test fails
@@ -38,7 +40,7 @@ module Yast
       if expected == actual
         return true
       else
-        Builtins.y2error("%1", fail_message)
+        log.error "#{fail_message}"
         return false
       end
     end

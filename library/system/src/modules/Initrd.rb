@@ -148,7 +148,7 @@ module Yast
 
     # reset settings to empty list of modules
     def Reset
-      Builtins.y2milestone("Reseting initrd settings")
+      log.info "Reseting initrd settings"
       @was_read = false
       @changed = false
       @modules = []
@@ -168,7 +168,7 @@ module Yast
 
       # test for missing files - probably an error - should never occur
       if SCR.Read(path(".target.size"), "/etc/sysconfig/kernel") == -1
-        Builtins.y2error("sysconfig/kernel not found")
+        log.error "sysconfig/kernel not found"
         return false
       end
 
@@ -222,26 +222,15 @@ module Yast
           Ops.set(@modules_settings, modname, Misc.SplitOptions(modargs, {}))
           if !Builtins.contains(@modules, modname)
             @modules = Builtins.add(@modules, modname)
-            Builtins.y2milestone(
-              "Module %1 added to initrd, now contains %2",
-              modname,
-              ListModules()
-            )
+            log.info "Module #{modname} added to initrd, now contains #{ListModules()}"
           else
-            Builtins.y2milestone(
-              "Module %1 from initial list added to initrd, now contains %2",
-              modname,
-              ListModules()
-            )
+            log.info "Module #{modname} from initial list added to initrd, now contains #{ListModules()}"
           end
         else
-          Builtins.y2milestone(
-            "Module %1 is in list of modules not to insert to initrd",
-            modname
-          )
+          log.info "Module #{modname} is in list of modules not to insert to initrd"
         end
       else
-        Builtins.y2milestone("Module %1 already present in initrd", modname)
+        log.info "Module #{modname} already present in initrd"
       end
       nil
     end
@@ -330,11 +319,7 @@ module Yast
     def Write
       Read() if !(@was_read || Mode.config)
       Update() if Mode.update
-      Builtins.y2milestone(
-        "Initrd::Write called, changed: %1, list: %2",
-        @changed,
-        ListModules()
-      )
+      log.info "Initrd::Write called, changed: #{@changed}, list: #{ListModules()}"
       # check whether it is neccessary to write initrd
       return true if !@changed && Mode.normal
 
@@ -365,10 +350,7 @@ module Yast
         s_modules = Builtins.filter(s_modules) do |m|
           !Builtins.contains(@modules, m)
         end
-        Builtins.y2milestone(
-          "Modules %1 were added to initrd not using Initrd module",
-          s_modules
-        )
+        log.info "Modules #{s_modules} were added to initrd not using Initrd module"
         Builtins.foreach(s_modules) { |m| AddModule(m, "") }
       end
 
@@ -426,7 +408,7 @@ module Yast
         :to   => "list <map>"
       )
       if all_modes == nil || Builtins.size(all_modes) == 0
-        Builtins.y2warning("Probing VGA modes failed, using fallback list")
+        log.warn "Probing VGA modes failed, using fallback list"
         all_modes = deep_copy(@known_modes)
       end
       deep_copy(all_modes)
@@ -455,7 +437,7 @@ module Yast
             end
           end
         end
-        Builtins.y2milestone("Setting splash resolution to %1", @splash)
+        log.info "Setting splash resolution to #{@splash}"
       end
 
       nil

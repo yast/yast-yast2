@@ -32,6 +32,8 @@ require "yast"
 
 module Yast
   class SlidesClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
 
@@ -69,7 +71,7 @@ module Yast
       end
 
       if slide_list == nil
-        Builtins.y2error("Directory %1 does not exist", txt_path)
+        log.error "Directory #{txt_path} does not exist"
         if Ops.greater_than(Builtins.size(lang), 2)
           lang = Builtins.substring(lang, 0, 2)
           txt_path = Builtins.sformat("%1/txt/%2", @slide_base_path, lang)
@@ -85,43 +87,28 @@ module Yast
       end
 
       if slide_list == nil
-        Builtins.y2milestone("Slideshow directory %1 does not exist", txt_path)
+        log.info "Slideshow directory #{txt_path} does not exist"
       else
-        Builtins.y2milestone(
-          "Using slides from '%1' (%2 slides)",
-          txt_path,
-          Builtins.size(slide_list)
-        )
+        log.info "Using slides from '#{txt_path}' (#{Builtins.size(slide_list)} slides)"
 
         slide_list = Builtins.sort(Builtins.filter(slide_list) do |filename|
           Builtins.regexpmatch(filename, ".*.(rtf|RTF|html|HTML|htm|HTM)$")
         end)
 
-        Builtins.y2debug(
-          "GetSlideList(): Slides at %1: %2",
-          txt_path,
-          slide_list
-        )
+        log.debug "GetSlideList(): Slides at #{txt_path}: #{slide_list}"
       end
 
       if slide_list != nil && Ops.greater_than(Builtins.size(slide_list), 0) # Slide texts found
         @slide_txt_path = txt_path
         @slide_pic_path = Ops.add(@slide_base_path, "/pic")
 
-        Builtins.y2milestone(
-          "Using TXT: %1, PIC: %2",
-          @slide_txt_path,
-          @slide_pic_path
-        ) # No slide texts found
+        log.info "Using TXT: #{@slide_txt_path}, PIC: #{@slide_pic_path}" # No slide texts found
       else
-        Builtins.y2debug("No slides found at %1", txt_path)
+        log.debug "No slides found at #{txt_path}"
 
         # function calls itself!
         if lang != @fallback_lang
-          Builtins.y2debug(
-            "Trying to load slides from fallback: %1",
-            @fallback_lang
-          )
+          log.debug "Trying to load slides from fallback: #{@fallback_lang}"
           slide_list = GetSlideList(@fallback_lang)
         end
       end
@@ -196,11 +183,11 @@ module Yast
       tmp = Convert.to_map(WFM.Read(path(".local.stat"), @slide_base_path))
 
       if !Ops.get_boolean(tmp, "isdir", false)
-        Builtins.y2error("Using default path instead of %1", tmp)
+        log.error "Using default path instead of #{tmp}"
         @slide_base_path = "/var/adm/YaST/InstSrcManager/tmp/CurrentMedia/suse/setup/slide"
       end
 
-      Builtins.y2milestone("SetSlideDir: %1", @slide_base_path)
+      log.info "SetSlideDir: #{@slide_base_path}"
 
       nil
     end
@@ -218,7 +205,7 @@ module Yast
     def CheckBasePath
       tmp = Convert.to_map(WFM.Read(path(".local.stat"), @slide_base_path))
       if !Ops.get_boolean(tmp, "isdir", false)
-        Builtins.y2error("Using default path instead of %1", @slide_base_path)
+        log.error "Using default path instead of #{@slide_base_path}"
         @slide_base_path = "/var/adm/YaST/InstSrcManager/tmp/CurrentMedia/suse/setup/slide"
 
         return false

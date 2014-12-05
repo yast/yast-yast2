@@ -33,6 +33,8 @@ require "yast"
 
 module Yast
   class URLClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -173,7 +175,7 @@ module Yast
     #         "fragment": "part"
     #     ]
     def Parse(url)
-      Builtins.y2debug("url=%1", url)
+      log.debug "url=#{url}"
 
       # We don't parse empty URLs
       return {} if url == nil || Ops.less_than(Builtins.size(url), 1)
@@ -193,7 +195,7 @@ module Yast
           # 6,7: #fragment
           "(#(.*))?"
       )
-      Builtins.y2debug("rawtokens=%1", rawtokens)
+      log.debug "rawtokens=#{rawtokens}"
       tokens = {}
       Ops.set(tokens, "scheme", Ops.get_string(rawtokens, 1, ""))
       pth = Ops.get_string(rawtokens, 3, "")
@@ -228,7 +230,7 @@ module Yast
           # 8,9: port
           "(:([^:@]+))?"
       )
-      Builtins.y2debug("userpass=%1", userpass)
+      log.debug "userpass=#{userpass}"
 
       Ops.set(
         tokens,
@@ -252,16 +254,16 @@ module Yast
         Ops.get_string(rawtokens, 2, ""),
         Builtins.size(Ops.get_string(userpass, 0, ""))
       )
-      Builtins.y2debug("hostport6: %1", hostport6)
+      log.debug "hostport6: #{hostport6}"
 
       # check if there is an IPv6 address
       host6 = Builtins.regexpsub(hostport6, "^\\[(.*)\\]", "\\1")
 
       if host6 != nil && host6 != ""
-        Builtins.y2milestone("IPv6 host detected: %1", host6)
+        log.info "IPv6 host detected: #{host6}"
         Ops.set(tokens, "host", host6)
         port6 = Builtins.regexpsub(hostport6, "^\\[.*\\]:(.*)", "\\1")
-        Builtins.y2debug("port: %1", port6)
+        log.debug "port: #{port6}"
         Ops.set(tokens, "port", port6 != nil ? port6 : "")
       end
 
@@ -279,7 +281,7 @@ module Yast
           Ops.set(tokens, "domain", Ops.get(options, "workgroup", ""))
         end
       end
-      Builtins.y2debug("tokens=%1", tokens)
+      log.debug "tokens=#{tokens}"
       deep_copy(tokens)
     end
 
@@ -297,7 +299,7 @@ module Yast
 
       tokens = Parse(url)
 
-      Builtins.y2debug("tokens: %1", tokens)
+      log.debug "tokens: #{tokens}"
 
       # Check "scheme"  : "http"
       if !Builtins.regexpmatch(
@@ -343,7 +345,7 @@ module Yast
       url = ""
       userpass = ""
 
-      Builtins.y2debug("URL::Build(): input: %1", tokens)
+      log.debug "URL::Build(): input: #{tokens}"
 
       if Builtins.regexpmatch(
           Ops.get_string(tokens, "scheme", ""),
@@ -353,14 +355,10 @@ module Yast
         # 		else
         url = Ops.get_string(tokens, "scheme", "")
       end
-      Builtins.y2debug("url: %1", url)
+      log.debug "url: #{url}"
       if Ops.get_string(tokens, "user", "") != ""
         userpass = URLRecode.EscapePassword(Ops.get_string(tokens, "user", ""))
-        Builtins.y2milestone(
-          "Escaped username '%1' => '%2'",
-          Ops.get_string(tokens, "user", ""),
-          userpass
-        )
+        log.info "Escaped username '#{Ops.get_string(tokens, "user", "")}' => '#{userpass}'"
       end
       if Builtins.size(userpass) != 0 &&
           Ops.get_string(tokens, "pass", "") != ""
@@ -375,7 +373,7 @@ module Yast
       end
 
       url = Builtins.sformat("%1://%2", url, userpass)
-      Builtins.y2debug("url: %1", url)
+      log.debug "url: #{url}"
 
       if Hostname.CheckFQ(Ops.get_string(tokens, "host", "")) ||
           IP.Check(Ops.get_string(tokens, "host", ""))
@@ -384,13 +382,13 @@ module Yast
           Builtins.sformat("%1[%2]", url, Ops.get_string(tokens, "host", "")) :
           Builtins.sformat("%1%2", url, Ops.get_string(tokens, "host", ""))
       end
-      Builtins.y2debug("url: %1", url)
+      log.debug "url: #{url}"
 
       if Builtins.regexpmatch(Ops.get_string(tokens, "port", ""), "^[0-9]*$") &&
           Ops.get_string(tokens, "port", "") != ""
         url = Builtins.sformat("%1:%2", url, Ops.get_string(tokens, "port", ""))
       end
-      Builtins.y2debug("url: %1", url)
+      log.debug "url: #{url}"
 
       # path is not empty and doesn't start with "/"
       if Ops.get_string(tokens, "path", "") != "" &&
@@ -427,7 +425,7 @@ module Yast
           )
         end
       end
-      Builtins.y2debug("url: %1", url)
+      log.debug "url: #{url}"
 
 
       query_map = MakeMapFromParams(Ops.get_string(tokens, "query", ""))
@@ -459,14 +457,14 @@ module Yast
           URLRecode.EscapePassword(Ops.get_string(tokens, "fragment", ""))
         )
       end
-      Builtins.y2debug("url: %1", url)
+      log.debug "url: #{url}"
 
       if !Check(url)
-        Builtins.y2error("Invalid URL: %1", url)
+        log.error "Invalid URL: #{url}"
         return ""
       end
 
-      Builtins.y2debug("URL::Build(): result: %1", url)
+      log.debug "URL::Build(): result: #{url}"
 
       url
     end
@@ -539,7 +537,7 @@ module Yast
     def MakeMapFromParams(params)
       # Error
       if params == nil
-        Builtins.y2error("Erroneous (nil) params!")
+        log.error "Erroneous (nil) params!"
         return nil 
         # Empty
       elsif params == ""
@@ -592,11 +590,11 @@ module Yast
         # ["key" : "value", ...] -> ["key=value", ...]
         Builtins.maplist(params_map) do |key, value|
           if value == nil
-            Builtins.y2warning("Empty value for key %1", key)
+            log.warn "Empty value for key #{key}"
             value = ""
           end
           if key == nil || key == ""
-            Builtins.y2error("Empty key (will be skipped)")
+            log.error "Empty key (will be skipped)"
             next ""
           end
           # "key=value"

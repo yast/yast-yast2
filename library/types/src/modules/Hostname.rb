@@ -32,6 +32,8 @@ require "yast"
 
 module Yast
   class HostnameClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -118,7 +120,7 @@ module Yast
     # @example Hostname::SplitFQ("ftp") -> ["ftp"]
     def SplitFQ(fqhostname)
       if fqhostname == "" || fqhostname == nil
-        Builtins.y2error("Bad FQ hostname: %1", fqhostname)
+        log.error "Bad FQ hostname: #{fqhostname}"
         return []
       end
 
@@ -166,14 +168,14 @@ module Yast
           #last resort (#429792)
           fqhostname = "linux.site"
         end
-        Builtins.y2warning("Using fallback hostname %1", fqhostname)
+        log.warn "Using fallback hostname #{fqhostname}"
       else
         fqhostname = Ops.get_string(hostname_data, "stdout", "")
       end
 
       fqhostname = String.FirstChunk(fqhostname, "\n")
 
-      Builtins.y2debug("Current FQDN: %1", fqhostname)
+      log.debug "Current FQDN: #{fqhostname}"
       fqhostname
     end
 
@@ -192,7 +194,7 @@ module Yast
 
         hostname = Ops.get(data, 0, "") if data != []
 
-        Builtins.y2debug("Current hostname: %1", hostname)
+        log.debug "Current hostname: #{hostname}"
       end
       hostname
     end
@@ -213,7 +215,7 @@ module Yast
         end
       end
 
-      Builtins.y2debug("Current domainname: %1", domain)
+      log.debug "Current domainname: #{domain}"
       domain
     end
 

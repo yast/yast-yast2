@@ -33,6 +33,8 @@ require "yast"
 
 module Yast
   class ProductControlClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
       textdomain "base"
@@ -157,7 +159,7 @@ module Yast
     # @return current list of disabled modules
     def DisableModule(modname)
       if modname == nil || modname == ""
-        Builtins.y2error("Module to disable is '%1'", modname)
+        log.error "Module to disable is '#{modname}'"
       else
         @DisabledModules = Convert.convert(
           Builtins.union(@DisabledModules, [modname]),
@@ -190,7 +192,7 @@ module Yast
     # @return current list of disabled proposals
     def DisableProposal(disable_proposal)
       if disable_proposal == nil || disable_proposal == ""
-        Builtins.y2error("Module to disable is '%1'", disable_proposal)
+        log.error "Module to disable is '#{disable_proposal}'"
       else
         @DisabledProposals = Convert.convert(
           Builtins.union(@DisabledProposals, [disable_proposal]),
@@ -253,7 +255,7 @@ module Yast
     def checkDisabled(mod)
       mod = deep_copy(mod)
       if mod == nil
-        Builtins.y2error("Unknown module %1", mod)
+        log.error "Unknown module #{mod}"
         return nil
       end
 
@@ -336,8 +338,8 @@ module Yast
       allowedlist = Builtins.filter(
         Builtins.splitstring(Builtins.deletechars(allowed, " "), ",")
       ) { |s| s != "" }
-      Builtins.y2debug("allowedlist: %1", allowedlist)
-      Builtins.y2debug("current: %1", current)
+      log.debug "allowedlist: #{allowedlist}"
+      log.debug "current: #{current}"
       if Builtins.size(allowedlist) == 0
         return true
       elsif Builtins.contains(allowedlist, current)
@@ -354,14 +356,14 @@ module Yast
     def checkArch(mod, _def)
       mod = deep_copy(mod)
       _def = deep_copy(_def)
-      Builtins.y2debug("Checking architecture: %1", mod)
+      log.debug "Checking architecture: #{mod}"
       archs = Ops.get_string(mod, "archs", "")
       archs = Ops.get_string(_def, "archs", "all") if archs == ""
 
       return true if archs == "all"
 
-      Builtins.y2milestone("short arch desc: %1", Arch.arch_short)
-      Builtins.y2milestone("supported archs: %1", archs)
+      log.info "short arch desc: #{Arch.arch_short}"
+      log.info "supported archs: #{archs}"
       return true if Builtins.issubstring(archs, Arch.arch_short)
 
       false
@@ -381,7 +383,7 @@ module Yast
       # BNC #401319
       # 'execute; is defined and thus returned
       if execute != nil && execute != ""
-        Builtins.y2milestone("Step name '%1' executes '%2'", name, execute)
+        log.info "Step name '#{name}' executes '#{execute}'"
         return execute
       end
 
@@ -467,10 +469,7 @@ module Yast
         # it is considered to be matching that parameter
         if key_to_check == "add_on_mode" &&
             !Builtins.haskey(check_workflow.value, key_to_check)
-          Builtins.y2debug(
-            "No 'add_on_mode' defined, matching %1",
-            value_to_check
-          )
+          log.debug "No 'add_on_mode' defined, matching #{value_to_check}"
         elsif Ops.get(check_workflow.value, key_to_check) != value_to_check
           ret = false
           raise Break
@@ -487,7 +486,7 @@ module Yast
     # @param [String] mode
     # @return [Hash] workflow
     def FindMatchingWorkflow(stage, mode)
-      Builtins.y2debug("workflows: %1", @workflows)
+      log.debug "workflows: #{@workflows}"
 
       tmp = Builtins.filter(@workflows) do |wf|
         Check(Ops.get_string(wf, "stage", ""), stage) &&
@@ -500,7 +499,7 @@ module Yast
           )
       end
 
-      Builtins.y2debug("Workflow: %1", Ops.get(tmp, 0, {}))
+      log.debug "Workflow: #{Ops.get(tmp, 0, {})}"
 
       Ops.get(tmp, 0, {})
     end
@@ -622,7 +621,7 @@ module Yast
       workflow = FindMatchingWorkflow(stage, mode)
 
       modules = Ops.get_list(workflow, "modules", [])
-      Builtins.y2debug("M1: %1", modules)
+      log.debug "M1: #{modules}"
 
       # Unique IDs have to always keep the same because some steps
       # can be disabled while YaST is running
@@ -638,15 +637,15 @@ module Yast
         Ops.get_boolean(m, "enabled", true) && !checkDisabled(m)
       end if which == :enabled
 
-      Builtins.y2debug("M2: %1", modules)
+      log.debug "M2: #{modules}"
 
       modules = Builtins.maplist(modules) do |m|
         PrepareScripts(m)
         deep_copy(m)
       end
 
-      Builtins.y2debug("M3: %1", modules)
-      Builtins.y2debug("Log files: %1", @logfiles)
+      log.debug "M3: #{modules}"
+      log.debug "Log files: #{@logfiles}"
       deep_copy(modules)
     end
 
@@ -660,7 +659,7 @@ module Yast
       modules = getModules(stage, mode, :enabled)
 
       if modules == nil
-        Builtins.y2error("Undefined %1/%2", stage, mode)
+        log.error "Undefined #{stage}/#{mode}"
         return nil
       end
 
@@ -679,7 +678,7 @@ module Yast
       end
 
       # for debugging purposes
-      Builtins.y2milestone("Enabled: (%1) %2", Builtins.size(modules), modules)
+      log.info "Enabled: (#{Builtins.size(modules)}) #{modules}"
 
       Ops.greater_than(Builtins.size(modules), 0)
     end
@@ -707,7 +706,7 @@ module Yast
       this_workflow = { "mode" => mode, "stage" => stage }
 
       if Builtins.contains(@already_disabled_workflows, this_workflow)
-        Builtins.y2milestone("Workflow %1 already disabled", this_workflow)
+        log.info "Workflow #{this_workflow} already disabled"
         return
       end
 
@@ -716,16 +715,13 @@ module Yast
       @localDisabledProposals = deep_copy(@DisabledProposals)
       @localDisabledModules = deep_copy(@DisabledModules)
 
-      Builtins.y2milestone(
-        "localDisabledProposals: %1",
-        @localDisabledProposals
-      )
-      Builtins.y2milestone("localDisabledModules: %1", @localDisabledModules)
+      log.info "localDisabledProposals: #{@localDisabledProposals}"
+      log.info "localDisabledModules: #{@localDisabledModules}"
 
       Builtins.foreach(getModules(stage, mode, :all)) do |m|
         if Ops.get_string(m, "proposal", "") != nil &&
             Ops.get_string(m, "proposal", "") != ""
-          Builtins.y2milestone("Disabling proposal: %1", m)
+          log.info "Disabling proposal: #{m}"
           @DisabledProposals = Convert.convert(
             Builtins.union(
               @DisabledProposals,
@@ -736,7 +732,7 @@ module Yast
           )
         elsif Ops.get_string(m, "name", "") != nil &&
             Ops.get_string(m, "name", "") != ""
-          Builtins.y2milestone("Disabling module: %1", m)
+          log.info "Disabling module: #{m}"
           @DisabledModules = Convert.convert(
             Builtins.union(@DisabledModules, [Ops.get_string(m, "name", "")]),
             :from => "list",
@@ -759,14 +755,11 @@ module Yast
 
       # Such mode/stage not disabled
       if !Builtins.contains(@already_disabled_workflows, this_workflow)
-        Builtins.y2milestone(
-          "Not yet disabled, not un-disabling: %1",
-          this_workflow
-        )
+        log.info "Not yet disabled, not un-disabling: #{this_workflow}"
         return
       end
 
-      Builtins.y2milestone("Un-Disabling workflow %1", this_workflow)
+      log.info "Un-Disabling workflow #{this_workflow}"
       @already_disabled_workflows = Builtins.filter(@already_disabled_workflows) do |one_workflow|
         one_workflow != this_workflow
       end
@@ -783,7 +776,7 @@ module Yast
               @localDisabledProposals,
               Ops.get_string(m, "proposal", "")
             )
-          Builtins.y2milestone("Enabling proposal: %1", m)
+          log.info "Enabling proposal: #{m}"
           @DisabledProposals = Builtins.filter(@DisabledProposals) do |one_proposal|
             Ops.get_string(m, "proposal", "") != one_proposal
           end
@@ -795,7 +788,7 @@ module Yast
               @localDisabledModules,
               Ops.get_string(m, "name", "")
             )
-          Builtins.y2milestone("Enabling module: %1", m)
+          log.info "Enabling module: #{m}"
           @DisabledModules = Builtins.filter(@DisabledModules) do |one_module|
             Ops.get_string(m, "name", "") != one_module
           end
@@ -830,17 +823,14 @@ module Yast
         "textdomain",
         "control"
       )
-      Builtins.y2debug(
-        "Using textdomain '%1' for wizard steps",
-        wizard_textdomain
-      )
+      log.debug "Using textdomain '#{wizard_textdomain}' for wizard steps"
 
       first_id = ""
       # UI::WizardCommand(`SetVerboseCommands( true ) );
       Builtins.foreach(stagemode) do |sm|
-        Builtins.y2debug("Adding wizard steps for %1", sm)
+        log.debug "Adding wizard steps for #{sm}"
         # only for debugging
-        Builtins.y2milestone("Adding wizard steps for %1", sm)
+        log.info "Adding wizard steps for #{sm}"
         slabel = getWorkflowLabel(
           Ops.get_string(sm, "stage", ""),
           Ops.get_string(sm, "mode", ""),
@@ -857,10 +847,7 @@ module Yast
           Ops.get_string(m, "heading", "") == ""
         end
         if Builtins.size(enabled_modules) == 0
-          Builtins.y2milestone(
-            "There are no (more) steps for %1, section will be disabled",
-            sm
-          )
+          log.info "There are no (more) steps for #{sm}, section will be disabled"
           next
         end
         last_label = ""
@@ -873,7 +860,7 @@ module Yast
           )
         ) do |m|
           # only for debugging
-          Builtins.y2debug("Adding wizard step: %1", m)
+          log.debug "Adding wizard step: #{m}"
           heading = ""
           label = ""
           id = ""
@@ -932,7 +919,7 @@ module Yast
                 Builtins.sformat(" [%1]", Ops.get_string(m, "name", ""))
               )
             end
-            Builtins.y2debug("AddStep: %1/%2", label, id)
+            log.debug "AddStep: #{label}/#{id}"
             UI.WizardCommand(term(:AddStep, label, id))
           end
         end
@@ -947,12 +934,12 @@ module Yast
     def UpdateWizardSteps(stagemode)
       stagemode = deep_copy(stagemode)
       if @force_UpdateWizardSteps == true
-        Builtins.y2milestone("UpdateWizardSteps forced")
+        log.info "UpdateWizardSteps forced"
         @force_UpdateWizardSteps = false
       elsif @DisabledModules != @lastDisabledModules
-        Builtins.y2milestone("Disabled modules were changed")
+        log.info "Disabled modules were changed"
       elsif @last_stage_mode == stagemode
-        Builtins.y2milestone("No changes in Wizard steps")
+        log.info "No changes in Wizard steps"
         return
       end
 
@@ -970,7 +957,7 @@ module Yast
     # Retranslate Wizard Steps
     def RetranslateWizardSteps
       if Ops.greater_than(Builtins.size(@last_stage_mode), 0)
-        Builtins.y2debug("Retranslating wizard steps")
+        log.debug "Retranslating wizard steps"
         @force_UpdateWizardSteps = true
         UpdateWizardSteps(@last_stage_mode)
       end
@@ -983,33 +970,24 @@ module Yast
 
 
     def getMatchingProposal(stage, mode, proptype)
-      Builtins.y2milestone(
-        "Stage: %1 Mode: %2, Type: %3",
-        stage,
-        mode,
-        proptype
-      )
+      log.info "Stage: #{stage} Mode: #{mode}, Type: #{proptype}"
 
       # First we search for proposals for current stage if there are
       # any.
       props = Builtins.filter(@proposals) do |p|
         Check(Ops.get_string(p, "stage", ""), stage)
       end
-      Builtins.y2debug("1. proposals: %1", props)
+      log.debug "1. proposals: #{props}"
 
       # Then we check for mode: installation or update
       props = Builtins.filter(props) do |p|
         Check(Ops.get_string(p, "mode", ""), mode)
       end
 
-      Builtins.y2debug("2. proposals: %1", props)
+      log.debug "2. proposals: #{props}"
 
       # Now we check for architecture
-      Builtins.y2debug(
-        "Architecture: %1, Proposals: %2",
-        Arch.architecture,
-        props
-      )
+      log.debug "Architecture: #{Arch.architecture}, Proposals: #{props}"
 
       arch_proposals = Builtins.filter(props) do |p|
         Ops.get_string(p, "name", "") == proptype &&
@@ -1019,14 +997,14 @@ module Yast
           )
       end
 
-      Builtins.y2debug("3. arch proposals: %1", arch_proposals)
+      log.debug "3. arch proposals: #{arch_proposals}"
 
       props = Builtins.filter(props) do |p|
         Ops.get_string(p, "archs", "") == "" ||
           Ops.get_string(p, "archs", "") == "all"
       end
 
-      Builtins.y2debug("4. other proposals: %1", props)
+      log.debug "4. other proposals: #{props}"
       # If architecture specific proposals are available, we continue with those
       # and check for proposal type, else we continue with pre arch proposal
       # list
@@ -1034,26 +1012,20 @@ module Yast
         props = Builtins.filter(arch_proposals) do |p|
           Ops.get_string(p, "name", "") == proptype
         end
-        Builtins.y2debug("5. arch proposals: %1", props)
+        log.debug "5. arch proposals: #{props}"
       else
         props = Builtins.filter(props) do |p|
           Ops.get_string(p, "name", "") == proptype
         end
-        Builtins.y2debug("5. other proposals: %1", props)
+        log.debug "5. other proposals: #{props}"
       end
 
       if Ops.greater_than(Builtins.size(props), 1)
-        Builtins.y2error(
-          "Something Wrong happened, more than one proposal after filter:\n                %1",
-          props
-        )
+        log.error "Something Wrong happened, more than one proposal after filter:\n                #{props}"
       end
 
       # old style proposal
-      Builtins.y2milestone(
-        "Proposal modules: %1",
-        Ops.get(props, [0, "proposal_modules"])
-      )
+      log.info "Proposal modules: #{Ops.get(props, [0, "proposal_modules"])}"
       deep_copy(props)
     end
 
@@ -1081,11 +1053,7 @@ module Yast
 
           order_value = Builtins.tointeger(proposal_order)
           if order_value == nil
-            Builtins.y2error(
-              "Unable to use '%1' as proposal order, using %2 instead",
-              proposal_order,
-              50
-            )
+            log.error "Unable to use '#{proposal_order}' as proposal order, using #{50} instead"
             order_value = 50
           end
         end
@@ -1108,14 +1076,11 @@ module Yast
             )
           end
         else
-          Builtins.y2milestone(
-            "Proposal module %1 found among disabled subproposals",
-            proposal_name
-          )
+          log.info "Proposal module #{proposal_name} found among disabled subproposals"
         end
       end
 
-      Builtins.y2debug("final proposals: %1", final_proposals)
+      log.debug "final proposals: #{final_proposals}"
       deep_copy(final_proposals)
     end
 
@@ -1144,10 +1109,7 @@ module Yast
         "control"
       )
 
-      Builtins.y2debug(
-        "Using textdomain '%1' for proposals",
-        current_proposal_textdomain
-      )
+      log.debug "Using textdomain '#{current_proposal_textdomain}' for proposals"
       current_proposal_textdomain
     end
 
@@ -1181,7 +1143,7 @@ module Yast
       controlfile_texts = ProductFeatures.GetSection("texts")
 
       if !Builtins.haskey(controlfile_texts, key)
-        Builtins.y2error("No such text %1", key)
+        log.error "No such text #{key}"
         return ""
       end
 
@@ -1198,7 +1160,7 @@ module Yast
         Ops.get_string(@productControl, "textdomain", "control")
       )
       if domain == ""
-        Builtins.y2warning("The text domain for label %1 not set", key)
+        log.warn "The text domain for label #{key} not set"
         return label
       end
 
@@ -1240,7 +1202,7 @@ module Yast
     # Re-translate static part of wizard dialog and other predefined messages
     # after language change
     def retranslateWizardDialog
-      Builtins.y2milestone("Retranslating messages, redrawing wizard steps")
+      log.info "Retranslating messages, redrawing wizard steps"
 
       # Make sure the labels for default function keys are retranslated, too.
       # Using Label::DefaultFunctionKeyMap() from Label module.
@@ -1271,20 +1233,16 @@ module Yast
 
       Wizard.SetFocusToNextButton
 
-      Builtins.y2debug(
-        "Starting Workflow with  \"%1\" \"%2\"",
-        Stage.stage,
-        Mode.mode
-      )
+      log.debug "Starting Workflow with  \"#{Stage.stage}\" \"#{Mode.mode}\""
 
       modules = getModules(Stage.stage, Mode.mode, :enabled)
 
       defaults = getModeDefaults(Stage.stage, Mode.mode)
 
-      Builtins.y2debug("modules: %1", modules)
+      log.debug "modules: #{modules}"
 
       if Builtins.size(modules) == 0
-        Builtins.y2error("No workflow found: %1", modules)
+        log.error "No workflow found: #{modules}"
         # error report
         Report.Error(_("No workflow defined for this installation mode."))
         return :abort
@@ -1293,18 +1251,14 @@ module Yast
       minimum_step = allow_back ? 0 : from
 
       if Ops.less_than(minimum_step, from)
-        Builtins.y2warning(
-          "Minimum step set to: %1 even if running from %2, fixing",
-          minimum_step,
-          from
-        )
+        log.warn "Minimum step set to: #{minimum_step} even if running from #{from}, fixing"
         minimum_step = from
       end
 
       while Ops.greater_or_equal(@current_step, 0) &&
           Ops.less_than(@current_step, Builtins.size(modules))
         step = Ops.get(modules, @current_step, {})
-        Builtins.y2milestone("Current step: %1", step)
+        log.info "Current step: #{step}"
 
         step_name = Ops.get_string(step, "name", "")
         # BNC #401319
@@ -1320,12 +1274,7 @@ module Yast
           # is forced in the control file
           if !Builtins.haskey(step, "enable_back")
             Ops.set(step, "enable_back", "no")
-            Builtins.y2milestone(
-              "Disabling back: %1 %2 %3",
-              @current_step,
-              minimum_step,
-              Ops.get(step, "enable_back")
-            )
+            log.info "Disabling back: #{@current_step} #{minimum_step} #{Ops.get(step, "enable_back")}"
           end
         end
 
@@ -1353,11 +1302,11 @@ module Yast
         next if do_continue
 
         argterm = getClientTerm(step, defaults, former_result)
-        Builtins.y2milestone("Running module: %1 (%2)", argterm, @current_step)
+        log.info "Running module: #{argterm} (#{@current_step})"
 
         module_name = Builtins.symbolof(argterm)
 
-        Builtins.y2milestone("Calling %1", argterm)
+        log.info "Calling #{argterm}"
 
         if !wasRun(step_name)
           DebugHooks.Checkpoint(Builtins.sformat("%1", module_name), true)
@@ -1382,7 +1331,7 @@ module Yast
               Installation.current_step,
               step_id
             )
-            Builtins.y2error("Error writing step identifier")
+            log.error "Error writing step identifier"
           end
         end
 
@@ -1397,11 +1346,11 @@ module Yast
 
         Hooks.run("after_#{step_name}")
 
-        Builtins.y2milestone("Calling %1 returned %2", argterm, result)
+        log.info "Calling #{argterm} returned #{result}"
 
         # bnc #369846
         if result == :accept || result == :ok
-          Builtins.y2milestone("Evaluating %1 as it was `next", result)
+          log.info "Evaluating #{result} as it was `next"
           result = :next
         end
 
@@ -1416,7 +1365,7 @@ module Yast
           if !Convert.to_boolean(
               SCR.Execute(path(".target.remove"), Installation.current_step)
             )
-            Builtins.y2error("Error removing step identifier")
+            log.error "Error removing step identifier"
           end
         end
 
@@ -1425,9 +1374,7 @@ module Yast
             !wasRun(step_name)
           DebugHooks.Run(step_name, false)
         else
-          Builtins.y2milestone(
-            "Not running debug hooks at the end of the installation"
-          )
+          log.info "Not running debug hooks at the end of the installation"
         end
 
         # This should be safe (#36831)
@@ -1436,7 +1383,7 @@ module Yast
         addToStack(step_name)
 
         if retranslate
-          Builtins.y2milestone("retranslate")
+          log.info "retranslate"
           retranslateWizardDialog
           retranslate = false
         end
@@ -1447,10 +1394,7 @@ module Yast
           # If workflow module is marked as optional, skip if it returns nil,
           # For example, if it is not installed.
           if Ops.get_boolean(step, "optional", false)
-            Builtins.y2milestone(
-              "Skipping optional %1",
-              Builtins.symbolof(argterm)
-            )
+            log.info "Skipping optional #{Builtins.symbolof(argterm)}"
             @current_step = Ops.add(@current_step, 1)
             next
           end
@@ -1498,12 +1442,7 @@ module Yast
         # or `auto
         if @current_step == 0 &&
             (result == :back || result == :auto && former_result == :back)
-          Builtins.y2warning(
-            "Returned %1, Current step %2 (%3). The current step will be called again...",
-            result,
-            @current_step,
-            step_name
-          )
+          log.warn "Returned #{result}, Current step #{@current_step} (#{step_name}). The current step will be called again..."
           former_result = :next
           result = :again
         end
@@ -1550,25 +1489,17 @@ module Yast
 
       final_result = :abort if former_result == :abort
 
-      Builtins.y2milestone(
-        "Former result: %1, Final result: %2",
-        former_result,
-        final_result
-      )
+      log.info "Former result: #{former_result}, Final result: #{final_result}"
 
       if final_result != nil
-        Builtins.y2milestone("Final result already set.")
+        log.info "Final result already set."
       elsif Ops.less_or_equal(@current_step, -1)
         final_result = :back
       else
         final_result = :next
       end
 
-      Builtins.y2milestone(
-        "Current step: %1, Returning: %2",
-        @current_step,
-        final_result
-      )
+      log.info "Current step: #{@current_step}, Returning: #{final_result}"
       final_result
     end
 
@@ -1576,7 +1507,7 @@ module Yast
     #
     def Run
       ret = RunFrom(0, false)
-      Builtins.y2milestone("Run() returning %1", ret)
+      log.info "Run() returning #{ret}"
       ret
     end
 
@@ -1609,7 +1540,7 @@ module Yast
     # ProductControl Constructor
     # @return [void]
     def ProductControl
-      Builtins.y2error("control file missing") if !Init()
+      log.error "control file missing" if !Init()
       nil
     end
 
@@ -1620,10 +1551,7 @@ module Yast
     # @example SetAdditionalWorkflowParams ($["add_on_mode":"installation"]);
     def SetAdditionalWorkflowParams(params)
       params = deep_copy(params)
-      Builtins.y2milestone(
-        "Adjusting new additional workflow params: %1",
-        params
-      )
+      log.info "Adjusting new additional workflow params: #{params}"
 
       @_additional_workflow_params = deep_copy(params)
 

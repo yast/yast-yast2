@@ -90,6 +90,8 @@ require "yast"
 
 module Yast
   class ProgressClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
 
@@ -200,7 +202,7 @@ module Yast
         )
       end
 
-      Builtins.y2milestone("Current state: %1", state)
+      log.info "Current state: #{state}"
 
       @progress_stack = Builtins.add(@progress_stack, state)
 
@@ -220,7 +222,7 @@ module Yast
         Ops.subtract(Builtins.size(@progress_stack), 1)
       )
 
-      Builtins.y2milestone("setting up the previous state: %1", state)
+      log.info "setting up the previous state: #{state}"
 
       # refresh the variables
       @stages = Ops.get_integer(state, "stages", 0)
@@ -361,7 +363,7 @@ module Yast
       end
 
       if !FileUtils.Exists(one_icon)
-        Builtins.y2error("Image %1 doesn't exist, using fallback", one_icon)
+        log.error "Image #{one_icon} doesn't exist, using fallback"
         one_icon = visible == true ?
           FallbackIconVisible() :
           FallbackIconInvisible()
@@ -426,12 +428,7 @@ module Yast
       # a progress is already running, remember the current status
       PushState() if IsRunning()
 
-      Builtins.y2milestone(
-        "Progress::New(%1, %2, %3)",
-        window_title,
-        length,
-        stg
-      )
+      log.info "Progress::New(#{window_title}, #{length}, #{stg})"
 
       orig_current_step = @current_step
 
@@ -442,11 +439,7 @@ module Yast
       @current_stage = -1
 
       if Ops.less_than(length, Builtins.size(stg))
-        Builtins.y2warning(
-          "Number of stages (%1) is greater than number of steps (%2)",
-          Builtins.size(stg),
-          length
-        )
+        log.warn "Number of stages (#{Builtins.size(stg)}) is greater than number of steps (#{length})"
       end
 
       if progress_title == ""
@@ -474,7 +467,7 @@ module Yast
           Id(:progress_replace_point),
           ProgressBar(Id(:pb), progress_title, @progress_max, @progress_val)
         )
-        Builtins.y2debug("New progress: %1/%2", @progress_val, @progress_max)
+        log.debug "New progress: #{@progress_val}/#{@progress_max}"
 
         # increase the reference counter
         @progress_running = Ops.add(@progress_running, 1)
@@ -510,11 +503,11 @@ module Yast
         if 0 != @steps
           progress_icons = Empty()
           if @use_icons_in_progress == true
-            Builtins.y2milestone("Using icons in progress")
+            log.info "Using icons in progress"
             progress_icons = GenerateIdleIcons(length)
             @has_icon_progress_bar = true
           else
-            Builtins.y2milestone("No progress icons defined")
+            log.info "No progress icons defined"
             @has_icon_progress_bar = false
           end
 
@@ -596,7 +589,7 @@ module Yast
       elsif current_type == :tick
         UI.ChangeWidget(Id(:subprogress_tick), :Alive, true)
       else
-        Builtins.y2warning("No subprogress is defined, cannot set the value!")
+        log.warn "No subprogress is defined, cannot set the value!"
       end
 
       nil
@@ -609,17 +602,13 @@ module Yast
     def SubprogressType(type, max_value)
       return if !@visible || Mode.commandline
 
-      Builtins.y2debug(
-        "SubprogressType: type: %1, max_value: %2",
-        type,
-        max_value
-      )
+      log.debug "SubprogressType: type: #{type}, max_value: #{max_value}"
 
       if type == CurrentSubprogressType()
         if type == :progress
           # just reset the current value of the progress bar if the requested progress is the same
           if max_value == @last_subprogress_max
-            Builtins.y2milestone("Resetting the subprogressbar...")
+            log.info "Resetting the subprogressbar..."
             SubprogressValue(0)
             return
           end
@@ -627,7 +616,7 @@ module Yast
           # just restart the animation
           UI.ChangeWidget(Id(:subprogress_tick), :Alive, true)
         else
-          Builtins.y2milestone("Subprogress initialization skipped")
+          log.info "Subprogress initialization skipped"
           return
         end
       end
@@ -641,10 +630,10 @@ module Yast
       elsif type == :none
         widget = Empty()
       else
-        Builtins.y2error("Unknown subprogress type: %1", type)
+        log.error "Unknown subprogress type: #{type}"
       end
 
-      Builtins.y2debug("widget: %1", widget)
+      log.debug "widget: #{widget}"
       UI.ReplaceWidget(Id(:subprogress_replace_point), widget)
 
       # remember the max. value
@@ -665,7 +654,7 @@ module Yast
       elsif current_type == :tick
         UI.ChangeWidget(Id(:subprogress_tick), :Label, title)
       else
-        Builtins.y2warning("No subprogress is defined, cannot set the label!")
+        log.warn "No subprogress is defined, cannot set the label!"
       end
 
       nil
@@ -776,19 +765,13 @@ module Yast
         )
       end
 
-      Builtins.y2debug(
-        "New progress value: %1, current_step: %2/%3 (%4%%)",
-        progress_value,
-        @current_step,
-        @steps,
-        Ops.divide(
+      log.debug "New progress value: #{progress_value}, current_step: #{@current_step}/#{@steps} (#{Ops.divide(
           Ops.multiply(
             100.0,
             Convert.convert(progress_value, :from => "integer", :to => "float")
           ),
           Convert.convert(@progress_max, :from => "integer", :to => "float")
-        )
-      )
+        )}%)"
 
       UI.ChangeWidget(Id(:pb), :Value, progress_value)
 
@@ -820,7 +803,7 @@ module Yast
       NextStep()
 
       if 0 == @stages || Ops.greater_than(@current_stage, @stages)
-        Builtins.y2error("Non-existing stage requested.")
+        log.error "Non-existing stage requested."
         return
       end
 

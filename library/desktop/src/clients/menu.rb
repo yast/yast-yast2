@@ -32,6 +32,8 @@
 # with ncurses, for X the yast2 control center should be used.
 module Yast
   class MenuClient < Client
+    include Yast::Logger
+
     def main
       Yast.import "UI"
 
@@ -67,8 +69,8 @@ module Yast
       Desktop.Read(@Values)
       @Groups = deep_copy(Desktop.Groups)
       @Modules = deep_copy(Desktop.Modules)
-      Builtins.y2debug("Groups=%1", @Groups)
-      Builtins.y2debug("Modules=%1", @Modules)
+      log.debug "Groups=#{@Groups}"
+      log.debug "Modules=#{@Modules}"
 
       @non_root_modules = []
 
@@ -80,7 +82,7 @@ module Yast
           @non_root_modules = Builtins.add(@non_root_modules, name)
         end
       end
-      Builtins.y2debug("non-root modules: %1", @non_root_modules)
+      log.debug "non-root modules: #{@non_root_modules}"
 
       if FileUtils.Exists(@restart_file)
         SCR.Execute(path(".target.remove"), @restart_file)
@@ -94,7 +96,7 @@ module Yast
 
       # precache groups (#38363)
       @groups = Builtins.maplist(@GroupList) { |gr| Ops.get_string(gr, [0, 0]) }
-      Builtins.y2debug("groups=%1", @groups)
+      log.debug "groups=#{@groups}"
 
       @modules = Builtins.listmap(@groups) do |gr|
         all_modules = Desktop.ModuleList(gr)
@@ -104,11 +106,11 @@ module Yast
         end if !@root
         { gr => all_modules }
       end
-      Builtins.y2debug("modules=%1", @modules)
+      log.debug "modules=#{@modules}"
 
 
       @first = Ops.get(@groups, 0)
-      Builtins.y2debug("first=%1", @first)
+      log.debug "first=#{@first}"
 
       #do not show groups containing no modules to the user (#309452)
       @GroupList = Builtins.filter(@GroupList) do |t|
@@ -126,7 +128,7 @@ module Yast
           @GroupList
         )
       )
-      Builtins.y2debug("GroupList=%1", @GroupList)
+      log.debug "GroupList=#{@GroupList}"
 
       ReplaceModuleList(@first)
       UI.SetFocus(Id(:groups))
@@ -165,7 +167,7 @@ module Yast
           elsif @eventid == :quit || @eventid == :cancel
             break
           else
-            Builtins.y2warning("Event or widget ID not handled: %1", @event)
+            log.warn "Event or widget ID not handled: #{@event}"
           end
         elsif Ops.is_string?(@eventid)
           if Ops.get_symbol(@event, "FocusWidgetID", :none) == :groups &&
@@ -175,10 +177,10 @@ module Yast
               @eventid == "CursorLeft"
             UI.SetFocus(Id(:groups))
           else
-            Builtins.y2warning("Event or widget ID not handled: %1", @event)
+            log.warn "Event or widget ID not handled: #{@event}"
           end
         else
-          Builtins.y2warning("Event or widget ID not handled: %1", @event)
+          log.warn "Event or widget ID not handled: #{@event}"
         end
       end
 
@@ -285,7 +287,7 @@ module Yast
     def Launch(modul)
       function = Ops.get_string(@Modules, [modul, "X-SuSE-YaST-Call"], "")
       argument = Ops.get_string(@Modules, [modul, "X-SuSE-YaST-Argument"], "")
-      Builtins.y2debug("Calling: %1 (%2)", function, argument)
+      log.debug "Calling: #{function} (#{argument})"
 
       display_info = UI.GetDisplayInfo
       textmode = Ops.get_boolean(display_info, "TextMode", false)
@@ -302,11 +304,11 @@ module Yast
           cmd = Builtins.sformat("/sbin/yast2 %1 %2 >&2", function, argument)
           ret = SCR.Execute(path(".target.bash"), cmd)
         end
-        Builtins.y2milestone("Got %1 from %2", ret, cmd)
+        log.info "Got #{ret} from #{cmd}"
 
         if function == "online_update" && ret != :cancel && ret != :abort &&
             FileUtils.Exists(@restart_you)
-          Builtins.y2milestone("yast needs to be restarted - exiting...")
+          log.info "yast needs to be restarted - exiting..."
           SCR.Execute(
             path(".target.bash"),
             Builtins.sformat("touch %1", @restart_file)

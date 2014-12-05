@@ -34,6 +34,8 @@
 # <a href="../index.html">.../docs/index.html</a>.
 module Yast
   module PackagesCommonInclude
+    include Yast::Logger
+
     def initialize_packages_common(include_target)
       textdomain "base"
 
@@ -120,11 +122,11 @@ module Yast
     # @return true on success
     def PackageDialog(packages, install, message)
       packages = deep_copy(packages)
-      Builtins.y2debug("Asking for packages: %1", packages)
+      log.debug "Asking for packages: #{packages}"
       packs = Builtins.filter(packages) do |package|
         install ? !Installed(package) : Installed(package)
       end
-      Builtins.y2debug("Remaining packages: %1", packs)
+      log.debug "Remaining packages: #{packs}"
 
       return true if Ops.less_than(Builtins.size(packs), 1)
 

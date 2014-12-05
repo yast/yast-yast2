@@ -10,6 +10,8 @@ require "yast"
 
 module Yast
   class ProductProfileClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -105,7 +107,7 @@ module Yast
           @all_profiles = Builtins.add(@all_profiles, tmp_path)
           Ops.set(@productid2name, src_id, name)
         else
-          Builtins.y2debug("no profile found for product %1", name)
+          log.debug "no profile found for product #{name}"
           next
         end
         # generate product map:
@@ -131,7 +133,7 @@ module Yast
       end
 
       if profiles == []
-        Builtins.y2milestone("no product profile present")
+        log.info "no product profile present"
         @compliance = {}
         return true
       end
@@ -221,7 +223,7 @@ module Yast
         # canceled adding add-on: remove profile stored before
         name = Ops.get(@productid2name, productId, "")
         tmp_path = Ops.add(Ops.add(@profiles_dir, name), ".profile")
-        Builtins.y2milestone("deleting %1", tmp_path)
+        log.info "deleting #{tmp_path}"
         SCR.Execute(path(".target.bash"), Ops.add("/bin/rm ", tmp_path))
         @all_profiles = Builtins.filter(@all_profiles) { |p| p != tmp_path }
       end

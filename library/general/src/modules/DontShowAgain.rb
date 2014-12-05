@@ -30,6 +30,8 @@ require "yast"
 
 module Yast
   class DontShowAgainClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -73,7 +75,7 @@ module Yast
     def LazyLoadCurrentConf
       if !@already_read
         if FileUtils.Exists(@conf_file) && FileUtils.IsFile(@conf_file)
-          Builtins.y2milestone("Reading %1 file", @conf_file)
+          log.info "Reading #{@conf_file} file"
           # Read and evaluate the current configuration
           read_conf = Convert.convert(
             SCR.Read(path(".target.ycp"), @conf_file),
@@ -82,10 +84,7 @@ module Yast
           )
           @current_configuration = deep_copy(read_conf) if read_conf != nil
         else
-          Builtins.y2milestone(
-            "Configuration file %1 doesn't exist, there's no current configuration.",
-            @conf_file
-          )
+          log.info "Configuration file #{@conf_file} doesn't exist, there's no current configuration."
         end
 
         # Configuration mustn't be read again
@@ -159,7 +158,7 @@ module Yast
         q_url = Ops.get(params, "q_url")
 
         if q_ident == nil
-          Builtins.y2error("'q_ident' is a mandatory parameter")
+          log.error "'q_ident' is a mandatory parameter"
           return nil
         end
 
@@ -181,7 +180,7 @@ module Yast
 
         # Add another types here...
       else
-        Builtins.y2error("'%1' is an unknown type", q_type)
+        log.error "'#{q_type}' is an unknown type"
         return nil
       end
     end
@@ -212,7 +211,7 @@ module Yast
         q_url = Ops.get(params, "q_url")
 
         if q_ident == nil
-          Builtins.y2error("'q_ident' is a mandatory parameter")
+          log.error "'q_ident' is a mandatory parameter"
           return nil
         end
 
@@ -238,7 +237,7 @@ module Yast
 
         # Add another types here...
       else
-        Builtins.y2error("'%1' is an unknown type", q_type)
+        log.error "'#{q_type}' is an unknown type"
         return nil
       end
 
@@ -285,7 +284,7 @@ module Yast
 
         # Add another types here...
       else
-        Builtins.y2error("'%1' is an unknown type", q_type)
+        log.error "'#{q_type}' is an unknown type"
         return nil
       end 
       # <--- repositories --->
@@ -316,7 +315,7 @@ module Yast
         q_url = Ops.get(params, "q_url")
 
         if q_ident == nil
-          Builtins.y2error("'q_ident' is a mandatory parameter")
+          log.error "'q_ident' is a mandatory parameter"
           return nil
         end
 
@@ -342,7 +341,7 @@ module Yast
 
         # Add another types here...
       else
-        Builtins.y2error("'%1' is an unknown type", q_type)
+        log.error "'#{q_type}' is an unknown type"
         return nil
       end
 
@@ -387,7 +386,7 @@ module Yast
           Ops.get(@current_configuration, [q_type, q_ident]) != nil &&
           Ops.get(@current_configuration, [q_type, q_ident, q_url]) != nil
       else
-        Builtins.y2error("'%1' is an unknown type", q_type)
+        log.error "'#{q_type}' is an unknown type"
         return false
       end
     end

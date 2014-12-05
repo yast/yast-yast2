@@ -39,6 +39,8 @@ require "yast"
 
 module Yast
   class HotplugClass < Module
+    include Yast::Logger
+
     def main
 
       Yast.import "Arch"
@@ -91,7 +93,7 @@ module Yast
       #   no need to check "active", already done before !
 
       Builtins.foreach(module_drivers) do |modulemap|
-        Builtins.y2milestone("modulemap: %1", modulemap)
+        log.info "modulemap: #{modulemap}"
         module_modprobe = Ops.get_boolean(modulemap, "modprobe", false)
         all_modules_loaded = true
         if !stop_loading
@@ -157,7 +159,7 @@ module Yast
         @haveUSB = true if start_result
       end
 
-      Builtins.y2milestone("haveUSB = %1", @haveUSB)
+      log.info "haveUSB = #{@haveUSB}"
 
       nil
     end
@@ -182,7 +184,7 @@ module Yast
         @haveFireWire = true if start_result
       end
 
-      Builtins.y2milestone("haveFireWire = %1", @haveFireWire)
+      log.info "haveFireWire = #{@haveFireWire}"
 
       nil
     end

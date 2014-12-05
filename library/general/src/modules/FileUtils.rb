@@ -34,6 +34,8 @@ require "yast"
 
 module Yast
   class FileUtilsClass < Module
+    include Yast::Logger
+
     def main
 
       textdomain "base"
@@ -276,17 +278,17 @@ module Yast
       if Builtins.regexpmatch(check_path, "/$") && check_path != "/"
         check_path = Builtins.regexpsub(check_path, "^(.*)/$", "\\1")
       end
-      Builtins.y2milestone("Checking existency of %1 path", check_path)
+      log.info "Checking existency of #{check_path} path"
 
       # Directory (path) already exists
       if Exists(check_path)
-        Builtins.y2milestone("Path %1 exists", check_path)
+        log.info "Path #{check_path} exists"
         # Directory (path) is a type 'directory'
         if IsDirectory(check_path)
           return true 
           # Directory (path) is not a valid 'directory'
         else
-          Builtins.y2warning("Path %1 is not a directory", check_path)
+          log.warn "Path #{check_path} is not a directory"
           # Continue despite the error?
           return Popup.ContinueCancel(
             Builtins.sformat(
@@ -301,7 +303,7 @@ module Yast
         end 
         # Directory (path) doesn't exist, trying to create it if wanted
       else
-        Builtins.y2milestone("Path %1 does not exist", check_path)
+        log.info "Path #{check_path} does not exist"
         if Popup.YesNo(
             Builtins.sformat(
               # TRANSLATORS: question popup (with yes / no buttons). A user entered non-existent path
@@ -312,14 +314,11 @@ module Yast
           )
           # Directory creation successful
           if Convert.to_boolean(SCR.Execute(path(".target.mkdir"), check_path))
-            Builtins.y2milestone(
-              "Directory %1 successfully created",
-              check_path
-            )
+            log.info "Directory #{check_path} successfully created"
             return true 
             # Failed to create the directory
           else
-            Builtins.y2warning("Failed to create directory %1", check_path)
+            log.warn "Failed to create directory #{check_path}"
             # Continue despite the error?
             return Popup.ContinueCancel(
               Builtins.sformat(
@@ -334,10 +333,7 @@ module Yast
           end 
           # User doesn't want to create the directory
         else
-          Builtins.y2warning(
-            "User doesn't want to create the directory %1",
-            check_path
-          )
+          log.warn "User doesn't want to create the directory #{check_path}"
           return true
         end
       end
@@ -353,12 +349,12 @@ module Yast
     #	FileUtils::MD5sum ("/does-not-exist") -> nil
     def MD5sum(target)
       if !Exists(target)
-        Builtins.y2error("File %1 doesn't exist", target)
+        log.error "File #{target} doesn't exist"
         return nil
       end
 
       if !IsFile(target)
-        Builtins.y2error("Not a file %1", target)
+        log.error "Not a file #{target}"
         return nil
       end
 
@@ -366,7 +362,7 @@ module Yast
       cmd_out = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
 
       if Ops.get_integer(cmd_out, "exit", -1) != 0
-        Builtins.y2error("Command >%1< returned %2", cmd, cmd_out)
+        log.error "Command >#{cmd}< returned #{cmd_out}"
         return nil
       end
 
@@ -375,7 +371,7 @@ module Yast
         # Format: '19ea7ea41de37314f71c6849ddd259d5 /the/file'
         filemd5 = Builtins.regexpsub(filemd5, "^([^ \t]+)[ \t]+.*$", "\\1")
       else
-        Builtins.y2warning("Strange md5out: '%1'", filemd5)
+        log.warn "Strange md5out: '#{filemd5}'"
         return nil
       end
 
@@ -394,11 +390,7 @@ module Yast
     #	FileUtils::Chown ( "nobody:nogroup", "/tmp", true) -> 'chown nobody:nogroup -R /tmp'
 
     def Chown(usergroup, file, recursive)
-      Builtins.y2milestone(
-        "Setting ownership of file %1 to %2",
-        file,
-        usergroup
-      )
+      log.info "Setting ownership of file #{file} to #{usergroup}"
 
       cmd = Builtins.sformat(
         "chown %1 %2 %3",
@@ -409,7 +401,7 @@ module Yast
 
       retval = Convert.to_integer(SCR.Execute(path(".target.bash"), cmd))
 
-      Builtins.y2error("Cannot chown %1", file) if retval != 0
+      log.error "Cannot chown #{file}" if retval != 0
 
       retval == 0
     end
@@ -426,11 +418,7 @@ module Yast
     #	FileUtils::Chmod ( "700", "/tmp", true) -> 'chmod 700 -R /tmp'
 
     def Chmod(modes, file, recursive)
-      Builtins.y2milestone(
-        "Setting access rights of file %1 to %2",
-        file,
-        modes
-      )
+      log.info "Setting access rights of file #{file} to #{modes}"
 
       cmd = Builtins.sformat(
         "chmod %1 %2 %3",
@@ -441,7 +429,7 @@ module Yast
 
       retval = Convert.to_integer(SCR.Execute(path(".target.bash"), cmd))
 
-      Builtins.y2error("Cannot chmod %1", file) if retval != 0
+      log.error "Cannot chmod #{file}" if retval != 0
 
       retval == 0
     end
@@ -455,7 +443,7 @@ module Yast
 
       cmd_out = Convert.to_map(SCR.Execute(path(".target.bash_output"), mktemp))
       if Ops.get_integer(cmd_out, "exit", -1) != 0
-        Builtins.y2error("Error creating temporary file: %1", cmd_out)
+        log.error "Error creating temporary file: #{cmd_out}"
         return nil
       end
 
@@ -466,10 +454,7 @@ module Yast
       )
 
       if tmpfile == nil || tmpfile == ""
-        Builtins.y2error(
-          "Error creating temporary file: %1 - empty output",
-          cmd_out
-        )
+        log.error "Error creating temporary file: #{cmd_out} - empty output"
         return nil
       end
 
@@ -508,7 +493,7 @@ module Yast
     #
     def CleanupTemp
       Builtins.foreach(@tmpfiles) do |one_file|
-        Builtins.y2milestone("Removing %1", one_file)
+        log.info "Removing #{one_file}"
         SCR.Execute(
           path(".target.bash"),
           Builtins.sformat("/bin/rm -rf '%1'", one_file)

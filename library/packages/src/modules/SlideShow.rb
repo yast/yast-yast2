@@ -132,7 +132,7 @@ module Yast
       @start_time = -1
       @initial_recalc_delay = 60 # const - seconds before initially calculating remaining times
       @recalc_interval = 30 # const - seconds between "remaining time" recalculations
-      @next_recalc_time = Builtins.time
+      @next_recalc_time = ::Time.now.to_i
 
       @current_slide_no = 0
       @slide_start_time = 0
@@ -187,7 +187,7 @@ module Yast
     # Start the internal (global) timer.
     #
     def StartTimer
-      @start_time = Builtins.time
+      @start_time = ::Time.now.to_i
 
       nil
     end
@@ -196,7 +196,7 @@ module Yast
     # Reset the internal (global) timer.
     #
     def ResetTimer
-      @start_time = Builtins.time
+      @start_time = ::Time.now.to_i
 
       nil
     end
@@ -206,20 +206,14 @@ module Yast
     #
     def StopTimer
       if Ops.less_than(@start_time, 0)
-        Builtins.y2error("StopTimer(): No timer running.")
+        log.error "StopTimer(): No timer running."
         return
       end
 
-      elapsed = Ops.subtract(Builtins.time, @start_time)
+      elapsed = Ops.subtract(::Time.now.to_i, @start_time)
       @start_time = -1
       @total_time_elapsed = Ops.add(@total_time_elapsed, elapsed)
-      Builtins.y2debug(
-        "StopTimer(): Elapsed this time: %1 sec; total: %2 sec (%3:%4)",
-        elapsed,
-        @total_time_elapsed,
-        Ops.divide(@total_time_elapsed, 60),
-        Ops.modulo(@total_time_elapsed, 60) # min
-      ) # sec
+      log.debug "StopTimer(): Elapsed this time: #{elapsed} sec; total: #{@total_time_elapsed} sec (#{Ops.divide(@total_time_elapsed, 60)}:#{Ops.modulo(@total_time_elapsed, 60)})" # sec
 
       nil
     end
@@ -330,17 +324,13 @@ module Yast
     # @param [String] stage_name	id of the stage to move to
     def MoveToStage(stage_name)
       if !Builtins.haskey(@_stages, stage_name)
-        Builtins.y2error("Unknown progress stage \"%1\"", stage_name)
+        log.error "Unknown progress stage \"#{stage_name}\""
         return
       end
 
       @_current_stage = Ops.get(@_stages, stage_name)
 
-      Builtins.y2milestone(
-        "Moving to stage %1 (%2)",
-        stage_name,
-        Ops.get_integer(@_stages, [stage_name, "start"], 0)
-      )
+      log.info "Moving to stage #{stage_name} (#{Ops.get_integer(@_stages, [stage_name, "start"], 0)})"
       # translators: default global progress bar label
       UpdateGlobalProgress(
         Ops.get_integer(@_stages, [stage_name, "start"], 0),
@@ -360,7 +350,7 @@ module Yast
     # @param [String] text	new label for the global progress
     def StageProgress(value, text)
       if Ops.greater_than(value, 100)
-        Builtins.y2error("Stage progress value larger than expected: %1", value)
+        log.error "Stage progress value larger than expected: #{value}"
         value = 100
       end
 
@@ -418,12 +408,10 @@ module Yast
 
       if Stage.initial || Stage.cont
         if Slides.HaveSlideSupport
-          Builtins.y2milestone("Display OK for slide show, loading")
+          log.info "Display OK for slide show, loading"
           Slides.LoadSlides(@language)
         else
-          Builtins.y2warning(
-            "Disabling slide show - insufficient display capabilities"
-          )
+          log.warn "Disabling slide show - insufficient display capabilities"
         end
       end
 
@@ -445,7 +433,7 @@ module Yast
     #
     def SetLanguage(new_language)
       @language = new_language
-      Builtins.y2milestone("New SlideShow language: %1", @language)
+      log.info "New SlideShow language: #{@language}"
 
       nil
     end
@@ -468,7 +456,7 @@ module Yast
       @current_slide_no = slide_no
 
       slide_name = Ops.get(Slides.slides, slide_no, "")
-      @slide_start_time = Builtins.time
+      @slide_start_time = ::Time.now.to_i
 
       SetSlideText(Slides.LoadSlideFile(slide_name))
 
@@ -480,7 +468,7 @@ module Yast
     # necessary.
     #
     def ChangeSlideIfNecessary
-      if Builtins.time > (@slide_start_time + @slide_interval)
+      if ::Time.now.to_i > (@slide_start_time + @slide_interval)
         LoadSlide(@current_slide_no + 1)
       end
 
@@ -514,7 +502,7 @@ module Yast
         HSpacing(0.5)
       )
 
-      Builtins.y2debug("widget term: \n%1", widgets)
+      log.debug "widget term: \n#{widgets}"
       deep_copy(widgets)
     end
 
@@ -526,7 +514,7 @@ module Yast
     #
     def SlidePageWidgets
       widgets = AddProgressWidgets(:slideShowPage, RichText(Id(:slideText), ""))
-      Builtins.y2debug("widget term: \n%1", widgets)
+      log.debug "widget term: \n#{widgets}"
       deep_copy(widgets)
     end
 
@@ -570,7 +558,7 @@ module Yast
         )
       )
 
-      Builtins.y2debug("widget term: \n%1", widgets)
+      log.debug "widget term: \n#{widgets}"
       deep_copy(widgets)
     end
 
@@ -580,7 +568,7 @@ module Yast
     #
     def RelNotesPageWidgets(id)
       widgets = AddProgressWidgets(:relNotesPage, RichText(@_rn_tabs[id]))
-      Builtins.y2debug("widget term: \n%1", widgets)
+      log.debug "widget term: \n#{widgets}"
       deep_copy(widgets)
     end
 
@@ -604,7 +592,7 @@ module Yast
       if UI.WidgetExists(:tabContents)
         UI.ChangeWidget(:dumbTab, :CurrentItem, :showDetails) if UI.WidgetExists(:dumbTab)
         UI.ReplaceWidget(:tabContents, DetailsPageWidgets())
-        Builtins.y2milestone("Contents set to details")
+        log.info "Contents set to details"
       end
 
       if UI.WidgetExists(:instLog) && @inst_log != ""
@@ -618,7 +606,7 @@ module Yast
     #
     def SwitchToDetailsView
       if ShowingDetails()
-        Builtins.y2milestone("Already showing details")
+        log.info "Already showing details"
         return
       end
       RebuildDetailsView()
@@ -711,7 +699,7 @@ module Yast
         contents = ReplacePoint(Id(:tabContents), DetailsPageWidgets())
       end
 
-      Builtins.y2milestone("SlideShow contents: %1", contents)
+      log.info "SlideShow contents: #{contents}"
 
       Wizard.SetContents(
         (Mode.update ?
@@ -794,7 +782,7 @@ module Yast
     def HandleInput(button)
       button = deep_copy(button)
       if button == :showDetails && !ShowingDetails()
-        Builtins.y2milestone("User asks to switch to details")
+        log.info "User asks to switch to details"
         @user_switched_to_details = true
         SwitchToDetailsView()
       elsif button == :showSlide && !ShowingSlide()
@@ -810,7 +798,7 @@ module Yast
         SwitchToReleaseNotesView(button)
       elsif button == :debugHotkey
         @debug = !@debug
-        Builtins.y2milestone("Debug mode: %1", @debug)
+        log.info "Debug mode: #{@debug}"
       end
       # note: `abort is handled in SlideShowCallbacks::HandleInput()
 
@@ -957,7 +945,7 @@ module Yast
       # avoid division by zero, set at least 1 second
       total_time = 1 if total_time == 0
 
-      Builtins.y2milestone("Total estimated time: %1", total_time)
+      log.info "Total estimated time: #{total_time}"
 
       start = 0 # value where the current stage starts
 
@@ -1025,7 +1013,7 @@ module Yast
         @_stages[updated_stage_name] = updated_stage
       end
 
-      Builtins.y2milestone("Global progress bar: %1", @_stages)
+      log.info "Global progress bar: #{@_stages}"
 
       nil
     end
