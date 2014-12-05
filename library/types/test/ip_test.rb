@@ -122,19 +122,19 @@ describe "Yast::IP" do
         # in 32bits arch IP#ToInteger returns Bignum, so equal? returns false
         # and eql? has to be used
         # in 64bits arch the result is Fixnum and the problem do not appear
-        expect( IP.ToInteger(k)).to be_eql v
+        expect( IP.ToInteger(k)).to eq v
       end
     end
 
     it "returns nil if value is not valid IPv4 in dotted format" do
-      expect( IP.ToInteger("foobar")).to be_equal nil
+      expect( IP.ToInteger("foobar")).to eq nil
     end
   end
 
   describe "#ToString" do
     RESULT_MAP_INT.each_pair do |k,v|
       it "it returns #{k} for #{v}" do
-        expect( IP.ToString(v)) == k
+        expect( IP.ToString(v)).to eq k
       end
     end
   end
@@ -149,12 +149,12 @@ describe "Yast::IP" do
 
     RESULT_MAP_HEX.each_pair do |k,v|
       it "returns #{v} for valid #{k}" do
-        expect( IP.ToHex(k)) == v
+        expect( IP.ToHex(k)).to eq v
       end
     end
 
     it "returns nil if value is not valid IPv4 in dotted format" do
-      expect( IP.ToHex("foobar")).to be_equal nil
+      expect( IP.ToHex("foobar")).to eq nil
     end
   end
 
@@ -166,28 +166,28 @@ describe "Yast::IP" do
   describe "#IPv4ToBits" do
     RESULT_MAP_BITS.each_pair do |k,v|
       it "returns bitmap for #{k}" do
-        expect( IP.IPv4ToBits(k)) == v
+        expect( IP.IPv4ToBits(k)).to eq v
       end
     end
 
     it "returns nil if value is not valid IPv4" do
-      expect( IP.IPv4ToBits("blabla")).to be_equal nil
+      expect( IP.IPv4ToBits("blabla")).to eq nil
     end
   end
 
   describe "#BitsToIPv4" do
     RESULT_MAP_BITS.each_pair do |k,v|
       it "returns #{k} for #{v}" do
-        expect( IP.BitsToIPv4(v)) == k
+        expect( IP.BitsToIPv4(v)).to eq k
       end
     end
 
     it "returns nil if length of bitmap is not 32" do
-      expect( IP.BitsToIPv4("101")).to be_equal nil
+      expect( IP.BitsToIPv4("101")).to eq nil
     end
 
     it "returns nil if value is not valid bitmap with 0 or 1 only" do
-      expect( IP.BitsToIPv4("foobar")).to be_equal nil
+      expect( IP.BitsToIPv4("foobar")).to eq nil
     end
   end
 
