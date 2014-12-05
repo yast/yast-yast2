@@ -110,13 +110,13 @@ module Yast
     def a_handle(id, key, event)
       id = deep_copy(id)
       event = deep_copy(event)
-      log.error "a_handle: id #{id}, key #{key}, event #{event}"
+      log.error "a_handle: id #{id.inspect}, key #{key}, event #{event}"
       nil
     end
 
     def fallback_init(id, key)
       id = deep_copy(id)
-      log.error "fallback_init: id #{id}, key #{key}"
+      log.error "fallback_init: id #{id.inspect}, key #{key}"
 
       nil
     end
@@ -129,7 +129,7 @@ module Yast
 
     def fallback_store(id, key)
       id = deep_copy(id)
-      log.error "fallback_store: id #{id}, key #{key}"
+      log.error "fallback_store: id #{id.inspect}, key #{key}"
 
       nil
     end

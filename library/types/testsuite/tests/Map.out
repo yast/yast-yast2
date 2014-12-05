@@ -37,7 +37,7 @@ Log	Missing key: 1
 Return	false
 Return	true
 Return	true
-Log	Missing key: `y
+Log	Missing key: :y
 Return	false
 Log	Missing key: 1
 Return	false
@@ -51,7 +51,7 @@ Log	Missing key: 5
 Return	false
 Log	Missing key: 2
 Return	false
-Log	Missing key: `x
+Log	Missing key: :x
 Return	false
 Dump	Map::ToString
 Return	

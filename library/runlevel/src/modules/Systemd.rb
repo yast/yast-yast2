@@ -65,7 +65,7 @@ module Yast
     def SetDefaultRunlevel(selected_runlevel)
       if selected_runlevel == nil || Ops.less_than(selected_runlevel, 0) ||
           Ops.greater_than(selected_runlevel, 6)
-        log.error "Invalid default runlevel (must be in range 0..6): #{selected_runlevel}"
+        log.error "Invalid default runlevel (must be in range 0..6): #{selected_runlevel.inspect}"
         return false
       end
 

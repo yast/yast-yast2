@@ -96,7 +96,7 @@ module Yast
       ret = true
       Builtins.foreach(keys) do |k|
         if k == nil || !Builtins.haskey(m, k)
-          log.error "Missing key: #{k}"
+          log.error "Missing key: #{k.inspect}"
           ret = false
         end
       end

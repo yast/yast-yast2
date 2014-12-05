@@ -18,7 +18,7 @@ Dump	nil branch, returning a
 Dump	Returned `a_handle
 Dump	Translating id nil of table to key
 Dump	nil branch, returning a
-Log	a_handle: id nil, key a, event $["ID":`_tp_edit]
+Log	a_handle: id nil, key a, event {"ID"=>:_tp_edit}
 Dump	Returned nil
 Dump	=========================================
 Dump	Popups
@@ -33,5 +33,5 @@ Dump	Prepared: $["_cwm_key":"a", "custom_widget":nil, "handle":<YCPRef:symbol a_
 Dump	=========================================
 Dump	Run popup
 Log	fallback_init: id nil, key a
-Log	a_handle: id nil, key a, event $["ID":`_tp_ok]
+Log	a_handle: id nil, key a, event {"ID"=>:_tp_ok}
 Log	fallback_store: id nil, key a

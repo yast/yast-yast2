@@ -70,11 +70,11 @@ module Yast
         ret = Ops.get_symbol(@clicks, @cur)
       end
       @cur = Ops.add(@cur, 1)
-      log = Builtins.sformat("%1", ret)
-      if Builtins.substring(log, 0, 1) == "`"
-        log = Builtins.substring(log, 1, Builtins.size(log))
+      msg = Builtins.sformat("%1", ret)
+      if Builtins.substring(msg, 0, 1) == "`"
+        msg = Builtins.substring(msg, 1, Builtins.size(msg))
       end
-      log.error "#{log}"
+      log.error "#{msg}"
       ret
     end
 

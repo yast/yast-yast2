@@ -1217,7 +1217,7 @@ module Yast
       file_md5sum = FileUtils.MD5sum(workflow_filename)
 
       if file_md5sum == nil || file_md5sum == ""
-        log.error "MD5 sum of file #{workflow_filename} is #{file_md5sum}"
+        log.error "MD5 sum of file #{workflow_filename} is #{file_md5sum.inspect}"
         return nil
       end
 
@@ -1260,7 +1260,7 @@ module Yast
             workflow_ident
           )
         else
-          log.error "Workflow ident is: #{workflow_ident}"
+          log.error "Workflow ident is: #{workflow_ident.inspect}"
         end
         IncorporateControlFileOptions(one_workflow)
         if !IntegrateWorkflow(one_workflow)

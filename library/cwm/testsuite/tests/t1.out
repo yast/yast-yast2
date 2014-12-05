@@ -16,22 +16,22 @@ Log	generic_init: Initing w2
 Dump	=========================================
 Dump	Handle
 Dump	- Both will run
-Log	w1_handle: Handling w1, event $["ID":`event]
-Log	w2_handle: Handling w2, event $["ID":`event]
+Log	w1_handle: Handling w1, event {"ID"=>:event}
+Log	w2_handle: Handling w2, event {"ID"=>:event}
 Dump	Returned nil
 Dump	- First causes event loop finish
-Log	w1_handle_symbol: Handling w1, event $["ID":`event]
+Log	w1_handle_symbol: Handling w1, event {"ID"=>:event}
 Dump	Returned `symbol
 Dump	=========================================
 Dump	Validate
 Dump	- Run both
-Log	w1_validate: Validating w1, event $["ID":`event]
-Log	w2_validate: Validating w2, event $["ID":`event]
+Log	w1_validate: Validating w1, event {"ID"=>:event}
+Log	w2_validate: Validating w2, event {"ID"=>:event}
 Dump	Returned true
 Dump	- First fails
-Log	w1_validate_false: Validating w1, event $["ID":`event]
+Log	w1_validate_false: Validating w1, event {"ID"=>:event}
 Dump	Returned false
 Dump	=========================================
 Dump	Save
-Log	generic_save: Saving w1, event $["ID":`event]
-Log	w2_store: Saving w2, event $["ID":`event]
+Log	generic_save: Saving w1, event {"ID"=>:event}
+Log	w2_store: Saving w2, event {"ID"=>:event}
