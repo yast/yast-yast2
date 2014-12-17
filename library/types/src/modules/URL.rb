@@ -271,128 +271,36 @@ module Yast
     # @see RFC 2396 (updated by RFC 2732)
     # @see also perl-URI: URI(3)
     def Build(tokens)
-      tokens = deep_copy(tokens)
-      url = ""
-      userpass = ""
-
       Builtins.y2debug("URL::Build(): input: %1", tokens)
 
-      if Builtins.regexpmatch(
-          Ops.get_string(tokens, "scheme", ""),
-          "^[[:alpha:]]*$"
-        )
-        # if (tokens["scheme"]:"" == "samba") url="smb";
-        # 		else
-        url = Ops.get_string(tokens, "scheme", "")
-      end
-      Builtins.y2debug("url: %1", url)
-      if Ops.get_string(tokens, "user", "") != ""
-        userpass = URLRecode.EscapePassword(Ops.get_string(tokens, "user", ""))
-        Builtins.y2milestone(
-          "Escaped username '%1' => '%2'",
-          Ops.get_string(tokens, "user", ""),
-          userpass
-        )
-      end
-      if Builtins.size(userpass) != 0 &&
-          Ops.get_string(tokens, "pass", "") != ""
-        userpass = Builtins.sformat(
-          "%1:%2",
-          userpass,
-          URLRecode.EscapePassword(Ops.get_string(tokens, "pass", ""))
-        )
-      end
-      if Ops.greater_than(Builtins.size(userpass), 0)
-        userpass = Ops.add(userpass, "@")
-      end
+      uri = URI()
+      
+      uri.scheme = tokens["scheme"]
+      uri.hostname = tokens["host"]
+      uri.port.to_s = tokens["port"]
+      uri.path = tokens["path"]
+      uri.user = tokens["user"]  
+      uri.password = tokens["pass"]
+      uri.query = tokens["query"]
+      uri.fragment = tokens["fragment"]
 
-      url = Builtins.sformat("%1://%2", url, userpass)
+      url = uri.to_s
+      
+      #if Ops.get_string(tokens, "scheme", "") == "smb" &&
+      #    Ops.greater_than(
+      #      Builtins.size(Ops.get_string(tokens, "domain", "")),
+      #      0
+      #    ) &&
+      #    Ops.get(query_map, "workgroup", "") !=
+      #      Ops.get_string(tokens, "domain", "")
+      #  Ops.set(query_map, "workgroup", Ops.get_string(tokens, "domain", ""))
+      #
+      #  Ops.set(tokens, "query", MakeParamsFromMap(query_map))
+      #end
+
       Builtins.y2debug("url: %1", url)
 
-      if Hostname.CheckFQ(Ops.get_string(tokens, "host", "")) ||
-          IP.Check(Ops.get_string(tokens, "host", ""))
-        # enclose an IPv6 address in square brackets
-        url = IP.Check6(Ops.get_string(tokens, "host", "")) ?
-          Builtins.sformat("%1[%2]", url, Ops.get_string(tokens, "host", "")) :
-          Builtins.sformat("%1%2", url, Ops.get_string(tokens, "host", ""))
-      end
-      Builtins.y2debug("url: %1", url)
-
-      if Builtins.regexpmatch(Ops.get_string(tokens, "port", ""), "^[0-9]*$") &&
-          Ops.get_string(tokens, "port", "") != ""
-        url = Builtins.sformat("%1:%2", url, Ops.get_string(tokens, "port", ""))
-      end
-      Builtins.y2debug("url: %1", url)
-
-      # path is not empty and doesn't start with "/"
-      if Ops.get_string(tokens, "path", "") != "" &&
-          !Builtins.regexpmatch(Ops.get_string(tokens, "path", ""), "^/")
-        url = Builtins.sformat(
-          "%1/%2",
-          url,
-          URLRecode.EscapePath(Ops.get_string(tokens, "path", ""))
-        )
-      # patch is not empty and starts with "/"
-      elsif Ops.get_string(tokens, "path", "") != "" &&
-          Builtins.regexpmatch(Ops.get_string(tokens, "path", ""), "^/")
-        while Builtins.substring(Ops.get_string(tokens, "path", ""), 0, 2) == "//"
-          Ops.set(
-            tokens,
-            "path",
-            Builtins.substring(Ops.get_string(tokens, "path", ""), 1)
-          )
-        end
-        if Ops.get_string(tokens, "scheme", "") == "ftp"
-          url = Builtins.sformat(
-            "%1/%%2f%2",
-            url,
-            Builtins.substring(
-              URLRecode.EscapePath(Ops.get_string(tokens, "path", "")),
-              1
-            )
-          )
-        else
-          url = Builtins.sformat(
-            "%1%2",
-            url,
-            URLRecode.EscapePath(Ops.get_string(tokens, "path", ""))
-          )
-        end
-      end
-      Builtins.y2debug("url: %1", url)
-
-
-      query_map = MakeMapFromParams(Ops.get_string(tokens, "query", ""))
-
-      if Ops.get_string(tokens, "scheme", "") == "smb" &&
-          Ops.greater_than(
-            Builtins.size(Ops.get_string(tokens, "domain", "")),
-            0
-          ) &&
-          Ops.get(query_map, "workgroup", "") !=
-            Ops.get_string(tokens, "domain", "")
-        Ops.set(query_map, "workgroup", Ops.get_string(tokens, "domain", ""))
-
-        Ops.set(tokens, "query", MakeParamsFromMap(query_map))
-      end
-
-      if Ops.get_string(tokens, "query", "") != ""
-        url = Builtins.sformat(
-          "%1?%2",
-          url,
-          URLRecode.EscapeQuery(Ops.get_string(tokens, "query", ""))
-        )
-      end
-
-      if Ops.get_string(tokens, "fragment", "") != ""
-        url = Builtins.sformat(
-          "%1#%2",
-          url,
-          URLRecode.EscapePassword(Ops.get_string(tokens, "fragment", ""))
-        )
-      end
-      Builtins.y2debug("url: %1", url)
-
+      # maybe obsolete:
       if !Check(url)
         Builtins.y2error("Invalid URL: %1", url)
         return ""

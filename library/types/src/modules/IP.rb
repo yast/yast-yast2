@@ -158,8 +158,8 @@ module Yast
     # Converts IPv4 address from string to hex format
     # @param [String] ip IPv4 address as string in "ipv4" format
     # @return [String] representing IP in Hex
-    # @example IP::ToHex("192.168.1.1") -> "0xC0A80101"
-    # @example IP::ToHex("10.10.0.1") -> "0x0A0A0001"
+    # @example IP::ToHex("192.168.1.1") -> "C0A80101"
+    # @example IP::ToHex("10.10.0.1") -> "0A0A0001"
     def ToHex(ip)
       int = ToInteger(ip)
       return nil unless int
@@ -247,30 +247,21 @@ module Yast
       if generic_check != nil
         return generic_check 
 
-        # 192.168.0.1, 0.8.55.999
+      # 192.168.0.0/20, 0.8.55/158
+      elsif network =~ Regexp.new("^[" + @ValidChars4 + "]+/[0-9]+$")
+        net_parts = network.split("/")
+        return Check4(net_parts[0]) &&
+               Netmask.CheckPrefix4(net_parts[1]) 
+
+      # 192.168.0.0/255.255.255.0, 0.8.55/10.258.12
+      elsif network =~ Regexp.new("^[" + @ValidChars4 + "]+/[" + @ValidChars4 + "]+$")
+        net_parts = network.split("/")
+        return Check4(net_parts[0]) &&
+               Netmask.Check4(net_parts[1])
+
+      # 192.168.0.1, 0.8.55.999
       elsif Check4(network)
         return true 
-
-        # 192.168.0.0/20, 0.8.55/158
-      elsif Builtins.regexpmatch(
-          network,
-          Ops.add(Ops.add("^[", @ValidChars4), "]+/[0-9]+$")
-        )
-        net_parts = Builtins.splitstring(network, "/")
-        return Check4(Ops.get(net_parts, 0, "")) &&
-          Netmask.CheckPrefix4(Ops.get(net_parts, 1, "")) 
-
-        # 192.168.0.0/255.255.255.0, 0.8.55/10.258.12
-      elsif Builtins.regexpmatch(
-          network,
-          Ops.add(
-            Ops.add(Ops.add(Ops.add("^[", @ValidChars4), "]+/["), @ValidChars4),
-            "]+$"
-          )
-        )
-        net_parts = Builtins.splitstring(network, "/")
-        return Check4(Ops.get(net_parts, 0, "")) &&
-          Netmask.Check4(Ops.get(net_parts, 1, ""))
       end
 
       false
@@ -290,36 +281,21 @@ module Yast
       if generic_check != nil
         return generic_check 
 
-        # 2001:db8:0::1
-      elsif Check6(network)
-        return true 
-
         # 2001:db8:0::1/64
-      elsif Builtins.regexpmatch(
-          network,
-          Ops.add(
-            Ops.add(
-              Ops.add(Ops.add("^[", @ValidChars6), "]+/["),
-              Netmask.ValidChars6
-            ),
-            "]+$"
-          )
-        )
-        net_parts = Builtins.splitstring(network, "/")
-        return Check6(Ops.get(net_parts, 0, "")) &&
-          Netmask.Check6(Ops.get(net_parts, 1, "")) 
+      elsif network =~ Regexp.new("^[" + @ValidChars6 + "]+/[" + Netmask.ValidChars6 + "]+$")
+        net_parts = network.split("/")
+        return Check6(net_parts[0]) &&
+               Netmask.Check6(net_parts[1]) 
 
         # 2001:db8:0::1/ffff:ffff::0
-      elsif Builtins.regexpmatch(
-          network,
-          Ops.add(
-            Ops.add(Ops.add(Ops.add("^[", @ValidChars6), "]+/["), @ValidChars6),
-            "]+$"
-          )
-        )
-        net_parts = Builtins.splitstring(network, "/")
-        return Check6(Ops.get(net_parts, 0, "")) &&
-          Check6(Ops.get(net_parts, 1, ""))
+      elsif network =~ Regexp.new("^[" + @ValidChars6) + "]+/[" + @ValidChars6 + "]+$"
+        net_parts = network.split("/")
+        return Check6(net_parts[0]) &&
+               Check6(net_parts[1])
+                # 2001:db8:0::1
+
+      elsif Check6(network)
+        return true 
       end
 
       false
