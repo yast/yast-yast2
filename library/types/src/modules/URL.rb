@@ -134,7 +134,7 @@ module Yast
         # replace both upper and lower case escape sequences
         _in = String.Replace(_in, Builtins.tolower(src), tgt)
         _in = String.Replace(_in, Builtins.toupper(src), tgt)
-      end 
+      end
 
 
       # replace % at the end
@@ -165,7 +165,7 @@ module Yast
       # replace the other reserved characters
       Builtins.foreach(transform) do |src, tgt|
         ret = Builtins.mergestring(Builtins.splitstring(ret, src), tgt)
-      end 
+      end
 
 
       ret
@@ -274,18 +274,18 @@ module Yast
       Builtins.y2debug("URL::Build(): input: %1", tokens)
 
       uri = URI()
-      
+
       uri.scheme = tokens["scheme"]
       uri.hostname = tokens["host"]
       uri.port.to_s = tokens["port"]
       uri.path = tokens["path"]
-      uri.user = tokens["user"]  
+      uri.user = tokens["user"]
       uri.password = tokens["pass"]
       uri.query = tokens["query"]
       uri.fragment = tokens["fragment"]
 
       url = uri.to_s
-      
+
       #if Ops.get_string(tokens, "scheme", "") == "smb" &&
       #    Ops.greater_than(
       #      Builtins.size(Ops.get_string(tokens, "domain", "")),
@@ -380,7 +380,7 @@ module Yast
       # Error
       if params == nil
         Builtins.y2error("Erroneous (nil) params!")
-        return nil 
+        return nil
         # Empty
       elsif params == ""
         return {}
