@@ -62,11 +62,9 @@ module Yast
     # @param [String] ip IPv4 address
     # @return true if correct
     def Check4(ip)
-      begin
-        IPAddr.new(ip).ipv4?
-      rescue
-        return false
-      end
+      IPAddr.new(ip).ipv4?
+    rescue
+      false
     end
 
     # Describe a valid IPv6 address
@@ -84,11 +82,9 @@ module Yast
     # @param [String] ip IPv6 address
     # @return true if correct
     def Check6(ip)
-      begin
-        IPAddr.new(ip).ipv6?
-      rescue
-        return false
-      end
+      IPAddr.new(ip).ipv6?
+    rescue
+      false
     end
 
     # If param contains IPv6 in one of its various forms, extracts it.
