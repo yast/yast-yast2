@@ -282,7 +282,7 @@ module Yast
         return generic_check 
 
         # 2001:db8:0::1/64
-      elsif network =~ Regexp.new("^[" + @ValidChars6 + "]+/[" + Netmask.ValidChars6 + "]+$")
+      elsif network =~ Regexp.new("^[" + @ValidChars6 + "]+/[" + Netmask.ValidChars6 + "]*$")
         net_parts = network.split("/")
         return Check6(net_parts[0]) &&
                Netmask.Check6(net_parts[1]) 
