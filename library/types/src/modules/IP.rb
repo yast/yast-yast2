@@ -288,7 +288,7 @@ module Yast
                Netmask.Check6(net_parts[1]) 
 
         # 2001:db8:0::1/ffff:ffff::0
-      elsif network =~ Regexp.new("^[" + @ValidChars6) + "]+/[" + @ValidChars6 + "]+$"
+      elsif network =~ Regexp.new("^[" + @ValidChars6 + "]+/[" + @ValidChars6 + "]+$")
         net_parts = network.split("/")
         return Check6(net_parts[0]) &&
                Check6(net_parts[1])
