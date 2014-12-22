@@ -273,11 +273,10 @@ module Yast
     def Build(tokens)
       Builtins.y2debug("URL::Build(): input: %1", tokens)
 
-      uri = URI()
+      uri = URI(tokens["host"])
 
       uri.scheme = tokens["scheme"]
-      uri.hostname = tokens["host"]
-      uri.port.to_s = tokens["port"]
+      uri.port = tokens["port"]
       uri.path = tokens["path"]
       uri.user = tokens["user"]
       uri.password = tokens["pass"]
