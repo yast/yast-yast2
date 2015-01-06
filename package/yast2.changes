@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jan  7 10:05:55 UTC 2015 - dvaleev@suse.com
+
+- Treat PowerNV platform as CHRP
+
+-------------------------------------------------------------------
 Thu Dec  4 09:51:50 UTC 2014 - jreidinger@suse.com
 
 - remove X-KDE-Library from desktop file (bnc#899104)
