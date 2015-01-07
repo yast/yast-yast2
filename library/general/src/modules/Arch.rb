@@ -226,6 +226,11 @@ module Yast
         # Cell and Maple based boards have no CHRP in /proc/cpuinfo
         # Pegasos and Cell do have CHRP in /proc/cpuinfo, but Pegasos2 should no be handled as CHRP
         # Efika is handled like Pegasos for the time being
+        # Treat PowerNV as CHRP. It is harmless for now. Patch for hwinfo is sent but it is better to be safe
+        if @_board_compatible == "PowerNV"
+          @_board_compatible = "CHRP"
+        end
+
         if ppc && (@_board_compatible == nil || @_board_compatible == "CHRP")
           device_type = Convert.to_map(
             SCR.Execute(
@@ -247,11 +252,21 @@ module Yast
             model,
             device_type
           )
+          compatible = Convert.to_map(
+            SCR.Execute(
+              path(".target.bash_output"),
+              "echo -n `cat /proc/device-tree/compatible`",
+              {}
+            )
+          )
           # catch remaining IBM boards
           if Builtins.issubstring(
               Ops.get_string(device_type, "stdout", ""),
               "chrp"
-            )
+	     ) || Builtins.issubstring(
+              Ops.get_string(compatible, "stdout", ""),
+	      "ibm,powernv"
+	     )
             @_board_compatible = "CHRP"
           end
           # Maple has its own way of pretenting OF1275 compliance
