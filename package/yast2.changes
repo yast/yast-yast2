@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jan  7 10:05:55 UTC 2015 - dvaleev@suse.com
+
+- Treat PowerNV platform as CHRP
+
+-------------------------------------------------------------------
 Wed Sep 17 08:16:51 UTC 2014 - jsrain@suse.cz
 
 - change order in mode initialization so that selected Upgrade
