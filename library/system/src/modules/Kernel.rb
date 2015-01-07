@@ -216,7 +216,7 @@ module Yast
 
       # get rid of live-installer-specific parameters
       if Mode.live_installation
-        discardlist.push("initrd", "ramdisk_size", "ramdisk_blocksize", "liveinstall", "splash", "quiet", "vga", "lang")
+        discardlist.push("initrd", "ramdisk_size", "ramdisk_blocksize", "liveinstall", "splash", "quiet", "lang")
       end
 
       # backdoor to re-enable update on UL/SLES
@@ -252,10 +252,11 @@ module Yast
     def ParseInstallationKernelCmdline
       @cmdline_parsed = true
       return if !(Stage.initial || Stage.cont)
-      tmp = Convert.to_string(SCR.Read(path(".etc.install_inf.Cmdline")))
       # live installation does not create /etc/install.inf (bsc#793065)
       if Mode.live_installation
         tmp = Convert.to_string(SCR.Read(path(".target.string"), "/proc/cmdline"))
+      else
+        tmp = Convert.to_string(SCR.Read(path(".etc.install_inf.Cmdline")))
       end
 
       Builtins.y2milestone(
