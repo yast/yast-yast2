@@ -33,10 +33,10 @@ module Yast
 
       @sequence = {
         "ws_start" => "begin",
-        "begin"    => { :next => "decide" },
-        "config"   => { :next => "end" },
-        "decide"   => { :no => "end", :yes => "config" },
-        "end"      => { :finish => :ws_finish }
+        "begin"    => { next: "decide" },
+        "config"   => { next: "end" },
+        "decide"   => { no: "end", yes: "config" },
+        "end"      => { finish: :ws_finish }
       }
 
       TEST(lambda { Sequencer.WS_next({}, "blah", :id3) }, [], nil)
@@ -44,7 +44,7 @@ module Yast
       TEST(lambda { Sequencer.WS_next(@sequence, "begin", :id3) }, [], nil)
       TEST(lambda { Sequencer.WS_next(@sequence, "begin", :id3) }, [], nil)
       TEST(lambda { Sequencer.WS_next(@sequence, "begin", :id3) }, [], nil)
-      #TEST(``(Sequencer::WS_next(sequence, "ws_start", `next)), [], nil);
+      # TEST(``(Sequencer::WS_next(sequence, "ws_start", `next)), [], nil);
       TEST(lambda { Sequencer.WS_next(@sequence, "decide", :yes) }, [], nil)
       TEST(lambda { Sequencer.WS_next(@sequence, "decide", :no) }, [], nil)
       TEST(lambda { Sequencer.WS_next(@sequence, "end", :finish) }, [], nil)
@@ -55,9 +55,11 @@ module Yast
     def f1
       "1"
     end
+
     def f2
       2
     end
+
     def f3
       :id3
     end

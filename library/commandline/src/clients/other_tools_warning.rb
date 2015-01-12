@@ -22,7 +22,7 @@
 #
 # ***************************************************************************
 
-#*
+# *
 # There may be different ways to configure the system than YaST, e.g. Chef.
 # It will periodically overwrite files under its control.
 # If it is running, now is a good time to tell the user
@@ -41,13 +41,12 @@ module Yast
         # Translators: a warning message in a continue-cancel question
         # Opscode Chef is a different way to configure the system.
         message = _(
-           "Chef Client is running. The changes that you make\n" +
-             "may be overridden by Chef later.\n" +
+           "Chef Client is running. The changes that you make\n" \
+             "may be overridden by Chef later.\n" \
              "Continue configuration with YaST?"
         )
         return Popup.ContinueCancel(message)
       end
-
     end
   end
 end

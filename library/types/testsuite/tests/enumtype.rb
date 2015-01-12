@@ -38,7 +38,7 @@ module Yast
 
       TEST(lambda { TypeRepository.enum_validator(["a", "b", "c"], "a") }, [], nil)
       TEST(lambda { TypeRepository.enum_validator(["a", "b", "c"], "x") }, [], nil)
-      TEST(lambda { TypeRepository.enum_validator([], "ahoj") }, [], nil) 
+      TEST(lambda { TypeRepository.enum_validator([], "ahoj") }, [], nil)
 
       # EOF
 

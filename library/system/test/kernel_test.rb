@@ -16,14 +16,14 @@ Yast.import "SCR"
 DEFAULT_DATA_DIR = File.join(File.expand_path(File.dirname(__FILE__)), "data/modules.d")
 
 describe "Kernel" do
-  before (:each) do
+  before do
     log.info "--- test ---"
     stub_const("Yast::KernelClass::MODULES_DIR", DEFAULT_DATA_DIR)
     @default_modules = {
       Yast::KernelClass::MODULES_CONF_FILE => [],
-      "MODULES_LOADED_ON_BOOT.conf"=>["module-a", "module-b"],
-      "user-added-1.conf" => ["user-module-1", "user-module-2", "user-module-3"],
-      "user-added-2.conf"=>["user-module-4"],
+      "MODULES_LOADED_ON_BOOT.conf"        => ["module-a", "module-b"],
+      "user-added-1.conf"                  => ["user-module-1", "user-module-2", "user-module-3"],
+      "user-added-2.conf"                  => ["user-module-4"]
     }
     Yast::Kernel.reset_modules_to_load
     allow(Yast::FileUtils).to receive(:Exists).and_return(true)
@@ -39,7 +39,7 @@ describe "Kernel" do
     describe "when modules.d directory is missing" do
       it "returns empty list of modules for modules.d directory" do
         expect(Yast::FileUtils).to receive(:Exists).with(Yast::KernelClass::MODULES_DIR).and_return(false)
-        expect(Yast::Kernel.modules_to_load).to eq({Yast::KernelClass::MODULES_CONF_FILE => []})
+        expect(Yast::Kernel.modules_to_load).to eq(Yast::KernelClass::MODULES_CONF_FILE => [])
       end
     end
   end
@@ -68,7 +68,7 @@ describe "Kernel" do
       new_module = "new-kernel-module"
       Yast::Kernel.AddModuleToLoad new_module
       Yast::Kernel.AddModuleToLoad new_module
-      expect(Yast::Kernel.modules_to_load.values.flatten.select{|m| m == new_module}.size).to eq(1)
+      expect(Yast::Kernel.modules_to_load.values.flatten.select { |m| m == new_module }.size).to eq(1)
     end
   end
 
@@ -91,10 +91,10 @@ describe "Kernel" do
   describe "#SaveModulesToLoad" do
     describe "when modules.d directory does not exist" do
       it "tries to create the missing directory and returns false if it fails" do
-        expect(Yast::FileUtils).to receive(:Exists).twice().and_return(false)
+        expect(Yast::FileUtils).to receive(:Exists).twice.and_return(false)
         expect(Yast::SCR).to receive(:Execute).with(
           Yast::Path.new(".target.mkdir"),
-          anything()
+          anything
         ).and_return(false)
         expect(Yast::Kernel.SaveModulesToLoad).to eq(false)
       end
@@ -140,5 +140,4 @@ describe "Kernel" do
       end
     end
   end
-
 end

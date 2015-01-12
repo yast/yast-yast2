@@ -45,7 +45,7 @@ module Yast
     end
 
     def LazyInit
-      return if @has_image_support != nil
+      return if !@has_image_support.nil?
 
       display_info = UI.GetDisplayInfo
       @has_image_support = Ops.get_boolean(
@@ -133,7 +133,7 @@ module Yast
       return Empty() if !@has_image_support
 
       icon_id = Ops.get(options, "id")
-      icon_id = Builtins.sformat("icon_id_%1", icon_type) if icon_id == nil
+      icon_id = Builtins.sformat("icon_id_%1", icon_type) if icon_id.nil?
 
       icon_label = Ops.get_string(options, "label", icon_type)
 
@@ -187,12 +187,12 @@ module Yast
       Image("info", {})
     end
 
-    publish :function => :IconPath, :type => "string (string)"
-    publish :function => :Image, :type => "term (string, map <string, any>)"
-    publish :function => :Simple, :type => "term (string)"
-    publish :function => :Warning, :type => "term ()"
-    publish :function => :Error, :type => "term ()"
-    publish :function => :Info, :type => "term ()"
+    publish function: :IconPath, type: "string (string)"
+    publish function: :Image, type: "term (string, map <string, any>)"
+    publish function: :Simple, type: "term (string)"
+    publish function: :Warning, type: "term ()"
+    publish function: :Error, type: "term ()"
+    publish function: :Info, type: "term ()"
   end
 
   Icon = IconClass.new

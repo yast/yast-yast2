@@ -136,7 +136,6 @@ module Yast
       @current_step
     end
 
-
     # Set Client Prefix
     def setClientPrefix(prefix)
       @_client_prefix = prefix
@@ -156,13 +155,13 @@ module Yast
     # Disable given module in installation workflow
     # @return current list of disabled modules
     def DisableModule(modname)
-      if modname == nil || modname == ""
+      if modname.nil? || modname == ""
         Builtins.y2error("Module to disable is '%1'", modname)
       else
         @DisabledModules = Convert.convert(
           Builtins.union(@DisabledModules, [modname]),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
       end
 
@@ -189,13 +188,13 @@ module Yast
     # Disable given proposal in installation workflow
     # @return current list of disabled proposals
     def DisableProposal(disable_proposal)
-      if disable_proposal == nil || disable_proposal == ""
+      if disable_proposal.nil? || disable_proposal == ""
         Builtins.y2error("Module to disable is '%1'", disable_proposal)
       else
         @DisabledProposals = Convert.convert(
           Builtins.union(@DisabledProposals, [disable_proposal]),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
       end
 
@@ -232,8 +231,8 @@ module Yast
               Ops.get(@DisabledSubProposals, unique_id, []),
               [disable_subproposal]
             ),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
         )
       else
@@ -252,7 +251,7 @@ module Yast
     # @return [Boolean]
     def checkDisabled(mod)
       mod = deep_copy(mod)
-      if mod == nil
+      if mod.nil?
         Builtins.y2error("Unknown module %1", mod)
         return nil
       end
@@ -261,8 +260,8 @@ module Yast
       if Ops.get_string(mod, "proposal", "") != nil &&
           Ops.get_string(mod, "proposal", "") != ""
         if Builtins.contains(
-            @DisabledProposals,
-            Ops.get_string(mod, "proposal", "")
+          @DisabledProposals,
+          Ops.get_string(mod, "proposal", "")
           )
           return true
         end
@@ -288,7 +287,7 @@ module Yast
     def ReadControlFile(controlfile)
       @productControl = XML.XMLToYCPFile(controlfile)
 
-      return false if @productControl == nil
+      return false if @productControl.nil?
 
       @workflows = Ops.get_list(@productControl, "workflows", [])
       @proposals = Ops.get_list(@productControl, "proposals", [])
@@ -308,10 +307,10 @@ module Yast
 
       # FIXME would be nice if it could be done generic way
       if Ops.greater_than(
-          Builtins.size(
-            Ops.get_list(@productControl, ["partitioning", "partitions"], [])
-          ),
-          0
+        Builtins.size(
+          Ops.get_list(@productControl, ["partitioning", "partitions"], [])
+        ),
+        0
         )
         partitioning = Ops.get_map(@productControl, "partitioning", {})
         ProductFeatures.SetBooleanFeature(
@@ -328,8 +327,6 @@ module Yast
 
       true
     end
-
-
 
     def Check(allowed, current)
       # create allowed list
@@ -380,7 +377,7 @@ module Yast
 
       # BNC #401319
       # 'execute; is defined and thus returned
-      if execute != nil && execute != ""
+      if !execute.nil? && execute != ""
         Builtins.y2milestone("Step name '%1' executes '%2'", name, execute)
         return execute
       end
@@ -431,8 +428,8 @@ module Yast
       if Ops.greater_than(Builtins.size(other_args), 0)
         arguments = Convert.convert(
           Builtins.union(arguments, other_args),
-          :from => "map",
-          :to   => "map <string, any>"
+          from: "map",
+          to:   "map <string, any>"
         )
       end
 
@@ -454,7 +451,7 @@ module Yast
     # @param [map &] check_workflow
     # @see #SetAdditionalWorkflowParams()
     def CheckAdditionalParams(check_workflow)
-      if @_additional_workflow_params == nil ||
+      if @_additional_workflow_params.nil? ||
           @_additional_workflow_params == {}
         return true
       end
@@ -561,8 +558,6 @@ module Yast
       nil
     end
 
-
-
     # Get list of required files for the workflow.
     # @return [Array<String>] Required files list.
     # TODO FIXME: this function seems to be unused, remove it?
@@ -601,8 +596,6 @@ module Yast
       deep_copy(needed_client_files)
     end
 
-
-
     # Get Workflow
     # @param [String] stage Stage
     # @param [String] mode Mode
@@ -610,8 +603,6 @@ module Yast
     def getCompleteWorkflow(stage, mode)
       FindMatchingWorkflow(stage, mode)
     end
-
-
 
     # Get modules of current Workflow
     # @param [String] stage
@@ -659,7 +650,7 @@ module Yast
     def RunRequired(stage, mode)
       modules = getModules(stage, mode, :enabled)
 
-      if modules == nil
+      if modules.nil?
         Builtins.y2error("Undefined %1/%2", stage, mode)
         return nil
       end
@@ -731,24 +722,24 @@ module Yast
               @DisabledProposals,
               [Ops.get_string(m, "proposal", "")]
             ),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
         elsif Ops.get_string(m, "name", "") != nil &&
             Ops.get_string(m, "name", "") != ""
           Builtins.y2milestone("Disabling module: %1", m)
           @DisabledModules = Convert.convert(
             Builtins.union(@DisabledModules, [Ops.get_string(m, "name", "")]),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
         end
       end
 
       @already_disabled_workflows = Convert.convert(
         Builtins.union(@already_disabled_workflows, [this_workflow]),
-        :from => "list",
-        :to   => "list <map>"
+        from: "list",
+        to:   "list <map>"
       )
 
       nil
@@ -922,10 +913,10 @@ module Yast
               id = Ops.get_string(m, "id", "")
             end
           end
-          if heading != nil && heading != ""
+          if !heading.nil? && heading != ""
             UI.WizardCommand(term(:AddStepHeading, heading))
           end
-          if label != nil && label != ""
+          if !label.nil? && label != ""
             if debug_workflow == true
               label = Ops.add(
                 label,
@@ -966,7 +957,6 @@ module Yast
       nil
     end
 
-
     # Retranslate Wizard Steps
     def RetranslateWizardSteps
       if Ops.greater_than(Builtins.size(@last_stage_mode), 0)
@@ -977,10 +967,6 @@ module Yast
 
       nil
     end
-
-
-
-
 
     def getMatchingProposal(stage, mode, proptype)
       Builtins.y2milestone(
@@ -1057,8 +1043,6 @@ module Yast
       deep_copy(props)
     end
 
-
-
     # Get modules of current Workflow
     # @param [String] stage
     # @param [String] mode
@@ -1075,12 +1059,12 @@ module Yast
         if Ops.is_string?(p)
           proposal_name = Convert.to_string(p)
         else
-          pm = Convert.convert(p, :from => "any", :to => "map <string, string>")
+          pm = Convert.convert(p, from: "any", to: "map <string, string>")
           proposal_name = Ops.get(pm, "name", "")
           proposal_order = Ops.get(pm, "presentation_order", "50")
 
           order_value = Builtins.tointeger(proposal_order)
-          if order_value == nil
+          if order_value.nil?
             Builtins.y2error(
               "Unable to use '%1' as proposal order, using %2 instead",
               proposal_order,
@@ -1119,7 +1103,6 @@ module Yast
       deep_copy(final_proposals)
     end
 
-
     # Get Proposal list that can not be changed by the user.
     # @return [Array<String>] list of locked proposals
     def getLockedProposals(stage, mode, proptype)
@@ -1150,7 +1133,6 @@ module Yast
       )
       current_proposal_textdomain
     end
-
 
     # Return proposal Label
     def getProposalProperties(stage, mode, proptype)
@@ -1205,7 +1187,6 @@ module Yast
       Builtins.dgettext(domain, label)
     end
 
-
     # Initialize Product Control
     # @return [Boolean] True on success
     def Init
@@ -1252,8 +1233,6 @@ module Yast
       Wizard.SetFocusToNextButton
       nil
     end
-
-
 
     def addToStack(name)
       @stack = Builtins.add(@stack, name)
@@ -1378,9 +1357,9 @@ module Yast
         # Register what step we are going to run
         if !Stage.initial
           if !SCR.Write(
-              path(".target.string"),
-              Installation.current_step,
-              step_id
+            path(".target.string"),
+            Installation.current_step,
+            step_id
             )
             Builtins.y2error("Error writing step identifier")
           end
@@ -1443,7 +1422,7 @@ module Yast
 
         # If the module return nil, something basic went wrong.
         # We show a stub dialog instead.
-        if result == nil
+        if result.nil?
           # If workflow module is marked as optional, skip if it returns nil,
           # For example, if it is not installed.
           if Ops.get_boolean(step, "optional", false)
@@ -1465,11 +1444,11 @@ module Yast
               # %3 - link to our bugzilla
               # %4 - directory where YaST logs are stored
               # %5 - link to the Yast Bug Reporting HOWTO Web page
-              "Calling the YaST module %1 has failed.\n" +
-                "More information can be found near the end of the '%2' file.\n" +
-                "\n" +
-                "This is worth reporting a bug at %3.\n" +
-                "Please, attach also all YaST logs stored in the '%4' directory.\n" +
+              "Calling the YaST module %1 has failed.\n" \
+                "More information can be found near the end of the '%2' file.\n" \
+                "\n" \
+                "This is worth reporting a bug at %3.\n" \
+                "Please, attach also all YaST logs stored in the '%4' directory.\n" \
                 "See %5 for more information about YaST logs.",
               Builtins.symbolof(argterm),
               "/var/log/YaST2/y2log",
@@ -1531,7 +1510,7 @@ module Yast
           final_result = result
           break
         elsif result == :auto
-          if former_result != nil
+          if !former_result.nil?
             if former_result == :next
               # if the first client just returns `auto, the back button
               # of the next client must be disabled
@@ -1556,7 +1535,7 @@ module Yast
         final_result
       )
 
-      if final_result != nil
+      if !final_result.nil?
         Builtins.y2milestone("Final result already set.")
       elsif Ops.less_or_equal(@current_step, -1)
         final_result = :back
@@ -1586,7 +1565,7 @@ module Yast
     # @return a list of maps describing the steps
     def SkippedSteps
       modules = getModules(Stage.stage, Mode.mode, :enabled)
-      return nil if @first_step == nil
+      return nil if @first_step.nil?
       return nil if Ops.greater_or_equal(@first_step, Builtins.size(modules))
       index = 0
       ret = []
@@ -1600,11 +1579,10 @@ module Yast
     # Return step which restarted YaST (or rebooted the system)
     # @return a map describing the step
     def RestartingStep
-      return nil if @restarting_step == nil
+      return nil if @restarting_step.nil?
       modules = getModules(Stage.stage, Mode.mode, :enabled)
       Ops.get(modules, @restarting_step, {})
     end
-
 
     # ProductControl Constructor
     # @return [void]
@@ -1638,63 +1616,63 @@ module Yast
       nil
     end
 
-    publish :variable => :productControl, :type => "map"
-    publish :variable => :workflows, :type => "list <map>"
-    publish :variable => :proposals, :type => "list <map>"
-    publish :variable => :inst_finish, :type => "list <map <string, any>>"
-    publish :variable => :clone_modules, :type => "list <string>"
-    publish :variable => :custom_control_file, :type => "string"
-    publish :variable => :y2update_control_file, :type => "string"
-    publish :variable => :default_control_file, :type => "string"
-    publish :variable => :saved_control_file, :type => "string"
-    publish :variable => :packaged_control_file, :type => "string"
-    publish :variable => :current_control_file, :type => "string"
-    publish :variable => :CurrentWizardStep, :type => "string"
-    publish :variable => :last_stage_mode, :type => "list <map>"
-    publish :variable => :logfiles, :type => "list <string>"
-    publish :variable => :first_step, :type => "integer"
-    publish :variable => :restarting_step, :type => "integer"
-    publish :function => :CurrentStep, :type => "integer ()"
-    publish :function => :setClientPrefix, :type => "void (string)"
-    publish :function => :EnableModule, :type => "list <string> (string)"
-    publish :function => :DisableModule, :type => "list <string> (string)"
-    publish :function => :GetDisabledModules, :type => "list <string> ()"
-    publish :function => :EnableProposal, :type => "list <string> (string)"
-    publish :function => :DisableProposal, :type => "list <string> (string)"
-    publish :function => :GetDisabledProposals, :type => "list <string> ()"
-    publish :function => :EnableSubProposal, :type => "map <string, list <string>> (string, string)"
-    publish :function => :DisableSubProposal, :type => "map <string, list <string>> (string, string)"
-    publish :function => :GetDisabledSubProposals, :type => "map <string, list <string>> ()"
-    publish :function => :checkDisabled, :type => "boolean (map)"
-    publish :function => :checkHeading, :type => "boolean (map)"
-    publish :function => :ReadControlFile, :type => "boolean (string)"
-    publish :function => :checkArch, :type => "boolean (map, map)"
-    publish :function => :getClientTerm, :type => "term (map, map, any)"
-    publish :function => :getModeDefaults, :type => "map (string, string)"
-    publish :function => :RequiredFiles, :type => "list <string> (string, string)"
-    publish :function => :getCompleteWorkflow, :type => "map (string, string)"
-    publish :function => :getModules, :type => "list <map> (string, string, symbol)"
-    publish :function => :RunRequired, :type => "boolean (string, string)"
-    publish :function => :getWorkflowLabel, :type => "string (string, string, string)"
-    publish :function => :DisableAllModulesAndProposals, :type => "void (string, string)"
-    publish :function => :UnDisableAllModulesAndProposals, :type => "void (string, string)"
-    publish :function => :AddWizardSteps, :type => "void (list <map>)"
-    publish :function => :UpdateWizardSteps, :type => "void (list <map>)"
-    publish :function => :RetranslateWizardSteps, :type => "void ()"
-    publish :function => :getProposals, :type => "list <list> (string, string, string)"
-    publish :function => :getLockedProposals, :type => "list <string> (string, string, string)"
-    publish :function => :getProposalTextDomain, :type => "string ()"
-    publish :function => :getProposalProperties, :type => "map (string, string, string)"
-    publish :function => :GetTranslatedText, :type => "string (string)"
-    publish :function => :Init, :type => "boolean ()"
-    publish :function => :wasRun, :type => "boolean (string)"
-    publish :function => :RunFrom, :type => "symbol (integer, boolean)"
-    publish :function => :Run, :type => "symbol ()"
-    publish :function => :SkippedSteps, :type => "list <map> ()"
-    publish :function => :RestartingStep, :type => "map ()"
-    publish :function => :ProductControl, :type => "void ()"
-    publish :function => :SetAdditionalWorkflowParams, :type => "void (map <string, any>)"
-    publish :function => :ResetAdditionalWorkflowParams, :type => "void ()"
+    publish variable: :productControl, type: "map"
+    publish variable: :workflows, type: "list <map>"
+    publish variable: :proposals, type: "list <map>"
+    publish variable: :inst_finish, type: "list <map <string, any>>"
+    publish variable: :clone_modules, type: "list <string>"
+    publish variable: :custom_control_file, type: "string"
+    publish variable: :y2update_control_file, type: "string"
+    publish variable: :default_control_file, type: "string"
+    publish variable: :saved_control_file, type: "string"
+    publish variable: :packaged_control_file, type: "string"
+    publish variable: :current_control_file, type: "string"
+    publish variable: :CurrentWizardStep, type: "string"
+    publish variable: :last_stage_mode, type: "list <map>"
+    publish variable: :logfiles, type: "list <string>"
+    publish variable: :first_step, type: "integer"
+    publish variable: :restarting_step, type: "integer"
+    publish function: :CurrentStep, type: "integer ()"
+    publish function: :setClientPrefix, type: "void (string)"
+    publish function: :EnableModule, type: "list <string> (string)"
+    publish function: :DisableModule, type: "list <string> (string)"
+    publish function: :GetDisabledModules, type: "list <string> ()"
+    publish function: :EnableProposal, type: "list <string> (string)"
+    publish function: :DisableProposal, type: "list <string> (string)"
+    publish function: :GetDisabledProposals, type: "list <string> ()"
+    publish function: :EnableSubProposal, type: "map <string, list <string>> (string, string)"
+    publish function: :DisableSubProposal, type: "map <string, list <string>> (string, string)"
+    publish function: :GetDisabledSubProposals, type: "map <string, list <string>> ()"
+    publish function: :checkDisabled, type: "boolean (map)"
+    publish function: :checkHeading, type: "boolean (map)"
+    publish function: :ReadControlFile, type: "boolean (string)"
+    publish function: :checkArch, type: "boolean (map, map)"
+    publish function: :getClientTerm, type: "term (map, map, any)"
+    publish function: :getModeDefaults, type: "map (string, string)"
+    publish function: :RequiredFiles, type: "list <string> (string, string)"
+    publish function: :getCompleteWorkflow, type: "map (string, string)"
+    publish function: :getModules, type: "list <map> (string, string, symbol)"
+    publish function: :RunRequired, type: "boolean (string, string)"
+    publish function: :getWorkflowLabel, type: "string (string, string, string)"
+    publish function: :DisableAllModulesAndProposals, type: "void (string, string)"
+    publish function: :UnDisableAllModulesAndProposals, type: "void (string, string)"
+    publish function: :AddWizardSteps, type: "void (list <map>)"
+    publish function: :UpdateWizardSteps, type: "void (list <map>)"
+    publish function: :RetranslateWizardSteps, type: "void ()"
+    publish function: :getProposals, type: "list <list> (string, string, string)"
+    publish function: :getLockedProposals, type: "list <string> (string, string, string)"
+    publish function: :getProposalTextDomain, type: "string ()"
+    publish function: :getProposalProperties, type: "map (string, string, string)"
+    publish function: :GetTranslatedText, type: "string (string)"
+    publish function: :Init, type: "boolean ()"
+    publish function: :wasRun, type: "boolean (string)"
+    publish function: :RunFrom, type: "symbol (integer, boolean)"
+    publish function: :Run, type: "symbol ()"
+    publish function: :SkippedSteps, type: "list <map> ()"
+    publish function: :RestartingStep, type: "map ()"
+    publish function: :ProductControl, type: "void ()"
+    publish function: :SetAdditionalWorkflowParams, type: "void (map <string, any>)"
+    publish function: :ResetAdditionalWorkflowParams, type: "void ()"
   end
 
   ProductControl = ProductControlClass.new

@@ -33,7 +33,6 @@ module Yast
       Yast.import "Label"
       Yast.import "Popup"
 
-
       UI.OpenDialog(
         VBox(
           PushButton(Id(:msg), Opt(:hstretch), "&Message Popup"),
@@ -66,10 +65,9 @@ module Yast
         )
       )
 
-
       @button_id = :dummy
       @ok = false
-      begin
+      loop do
         @button_id = Convert.to_symbol(UI.UserInput)
 
         if @button_id == :msg
@@ -102,8 +100,8 @@ module Yast
           )
           Popup.ShowText("Boot Messages", @text)
         end
-      end while @button_id != :close
-
+        break if @button_id == :close
+      end
 
       UI.CloseDialog
 

@@ -10,7 +10,7 @@ Yast.import "SCR"
 
 DEFAULT_DATA_DIR = File.join(File.expand_path(File.dirname(__FILE__)), "data")
 
-def set_root_path(directory)
+def assign_root_path(directory)
   root = File.join(DEFAULT_DATA_DIR, directory)
   desc = Yast::WFM.SCROpen("chroot=#{root}:scr", false)
   Yast::WFM.SCRSetDefault(desc)
@@ -23,17 +23,17 @@ describe "SCR" do
       let(:read_list) { Yast::SCR.Read(Yast::Path.new(".proc.cmdline")).sort }
 
       it "parses correctly simple files" do
-        set_root_path("cmdline-simple")
+        assign_root_path("cmdline-simple")
         expect(read_list).to eq(expected_list)
       end
 
       it "parses correctly files with two separators" do
-        set_root_path("cmdline-twoseparators")
+        assign_root_path("cmdline-twoseparators")
         expect(read_list).to eq(expected_list)
       end
 
       it "parses correctly files with several lines" do
-        set_root_path("cmdline-newlines")
+        assign_root_path("cmdline-newlines")
         expect(read_list).to eq(expected_list)
       end
     end

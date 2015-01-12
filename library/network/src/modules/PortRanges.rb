@@ -48,7 +48,7 @@ module Yast
 
       # Maximal number of port number, they are in the interval 1-65535 included.
       # The very same value should appear in SuSEFirewall::max_port_number.
-      @max_port_number = 65535
+      @max_port_number = 65_535
     end
 
     # Report the error, warning, message only once.
@@ -126,7 +126,7 @@ module Yast
       )
 
       # couldn't extract two integers
-      if min_pr == nil && max_pr == nil
+      if min_pr.nil? && max_pr.nil?
         warning = Builtins.sformat(
           "Wrong port-range: '%1':'%2'",
           min_pr,
@@ -205,7 +205,7 @@ module Yast
             raise Break # break the loop, match found
           end
         end
-      end if port_number != nil
+      end if !port_number.nil?
 
       ret
     end
@@ -236,7 +236,7 @@ module Yast
             ret,
             "port_ranges",
             Builtins.add(Ops.get(ret, "port_ranges", []), port)
-          ) 
+          )
           # is a normal port
         else
           # find also aliases
@@ -249,10 +249,10 @@ module Yast
                   Ops.get(ret, "ports", []),
                   PortAliases.GetListOfServiceAliases(port)
                 ),
-                :from => "list",
-                :to   => "list <string>"
+                from: "list",
+                to:   "list <string>"
               )
-            ) 
+            )
             # only add the port itself
           else
             Ops.set(ret, "ports", Builtins.add(Ops.get(ret, "ports", []), port))
@@ -270,13 +270,13 @@ module Yast
     # @param integer max_port
     # @return [String] new port range
     def CreateNewPortRange(min_pr, max_pr)
-      if min_pr == nil || min_pr == 0
+      if min_pr.nil? || min_pr == 0
         Builtins.y2error(
           "Wrong definition of the starting port '%1', it must be between 1 and 65535",
           min_pr
         )
         return ""
-      elsif max_pr == nil || max_pr == 0 || Ops.greater_than(max_pr, 65535)
+      elsif max_pr.nil? || max_pr == 0 || Ops.greater_than(max_pr, 65_535)
         Builtins.y2error(
           "Wrong definition of the ending port '%1', it must be between 1 and 65535",
           max_pr
@@ -286,13 +286,13 @@ module Yast
 
       # max and min are the same, this is not a port range
       if min_pr == max_pr
-        return Builtins.tostring(min_pr) 
+        return Builtins.tostring(min_pr)
         # right port range
       elsif Ops.less_than(min_pr, max_pr)
         return Ops.add(
           Ops.add(Builtins.tostring(min_pr), ":"),
           Builtins.tostring(max_pr)
-        ) 
+        )
         # min is bigger than max
       else
         Builtins.y2error(
@@ -317,8 +317,8 @@ module Yast
     def RemovePortFromPortRanges(port_number, port_ranges)
       port_ranges = deep_copy(port_ranges)
       # Checking necessarity of filtering and params
-      return deep_copy(port_ranges) if port_ranges == nil || port_ranges == []
-      return deep_copy(port_ranges) if port_number == nil || port_number == 0
+      return deep_copy(port_ranges) if port_ranges.nil? || port_ranges == []
+      return deep_copy(port_ranges) if port_number.nil? || port_number == 0
 
       Builtins.y2milestone(
         "Removing port %1 from port ranges %2",
@@ -334,7 +334,7 @@ module Yast
           # If the port doesn't match the ~port_range...
           if Builtins.tostring(port_number) != port_range
             ret = Builtins.add(ret, port_range)
-          end 
+          end
           # If matches, it isn't added (it is filtered)
           # Modify the port range when the port is included
         elsif PortIsInPortranges(Builtins.tostring(port_number), [port_range])
@@ -350,13 +350,13 @@ module Yast
             ret = Builtins.add(
               ret,
               CreateNewPortRange(Ops.add(port_number, 1), max_pr)
-            ) 
+            )
             # Port matches the max. value of port range
           elsif port_number == max_pr
             ret = Builtins.add(
               ret,
               CreateNewPortRange(min_pr, Ops.subtract(port_number, 1))
-            ) 
+            )
             # Port is inside the port range, split it up
           else
             ret = Builtins.add(
@@ -367,7 +367,7 @@ module Yast
               ret,
               CreateNewPortRange(min_pr, Ops.subtract(port_number, 1))
             )
-          end 
+          end
           # Port isn't in the port range, adding the current port range
         else
           ret = Builtins.add(ret, port_range)
@@ -410,7 +410,7 @@ module Yast
         else
           port_number = PortAliases.GetPortNumber(one_item)
           # Cannot find port number for this port, it is en error of the configuration
-          if port_number == nil
+          if port_number.nil?
             Builtins.y2warning(
               "Unknown port %1 but leaving it in the configuration.",
               one_item
@@ -431,29 +431,29 @@ module Yast
         end
       end
 
-      Builtins.foreach(port_numbers_to_port_names) do |port_number, port_names|
+      Builtins.foreach(port_numbers_to_port_names) do |port_number, _port_names|
         # Port is not in any defined port range
         if !PortIsInPortranges(Builtins.tostring(port_number), list_of_ranges)
           # Port - 1 IS in some port range
           if PortIsInPortranges(
-              Builtins.tostring(Ops.subtract(port_number, 1)),
-              list_of_ranges
+            Builtins.tostring(Ops.subtract(port_number, 1)),
+            list_of_ranges
             )
             # Creating fake port range, to be joined with another one
             list_of_ranges = Builtins.add(
               list_of_ranges,
               CreateNewPortRange(Ops.subtract(port_number, 1), port_number)
-            ) 
+            )
             # Port + 1 IS in some port range
           elsif PortIsInPortranges(
-              Builtins.tostring(Ops.add(port_number, 1)),
-              list_of_ranges
+            Builtins.tostring(Ops.add(port_number, 1)),
+            list_of_ranges
             )
             # Creating fake port range, to be joined with another one
             list_of_ranges = Builtins.add(
               list_of_ranges,
               CreateNewPortRange(port_number, Ops.add(port_number, 1))
-            ) 
+            )
             # Port is not in any port range and also it cannot be joined with any one
           else
             # Port names of this port
@@ -472,7 +472,7 @@ module Yast
               # There are no port names (hmm?), adding port number
               new_list = Builtins.add(new_list, Builtins.tostring(port_number))
             end
-          end 
+          end
           # Port is in a port range
         else
           Builtins.y2milestone(
@@ -512,7 +512,7 @@ module Yast
           max_pr = Builtins.tointeger(
             Builtins.regexpsub(port_range, "^.*:([0123456789]+)$", "\\1")
           )
-          if min_pr == nil || max_pr == nil
+          if min_pr.nil? || max_pr.nil?
             Builtins.y2error("Not a port range %1", port_range)
             next
           end
@@ -531,7 +531,7 @@ module Yast
               "^.*:([0123456789]+)$",
               "\\1"
             )
-            if this_min == nil || this_max == nil
+            if this_min.nil? || this_max.nil?
               Builtins.y2error(
                 "Wrong port range %1, %2 > %3",
                 port_range,
@@ -563,34 +563,34 @@ module Yast
               # take min_pr & max_pr
               any_change_during_this_loop = true
               new_min = min_pr
-              new_max = max_pr 
+              new_max = max_pr
               # the fist one is inside the second one
             elsif Ops.greater_or_equal(min_pr, this_min_pr) &&
                 Ops.less_or_equal(max_pr, this_max_pr)
               # take this_min_pr & this_max_pr
               any_change_during_this_loop = true
               new_min = this_min_pr
-              new_max = this_max_pr 
+              new_max = this_max_pr
               # the fist one partly covers the second one (by its right side)
             elsif Ops.less_or_equal(min_pr, this_min_pr) &&
                 Ops.greater_or_equal(max_pr, this_min_pr)
               # take min_pr & this_max_pr
               any_change_during_this_loop = true
               new_min = min_pr
-              new_max = this_max_pr 
+              new_max = this_max_pr
               # the second one partly covers the first one (by its left side)
             elsif Ops.greater_or_equal(min_pr, this_min_pr) &&
                 Ops.less_or_equal(max_pr, this_max_pr)
               # take this_min_pr & max_pr
               any_change_during_this_loop = true
               new_min = this_min_pr
-              new_max = max_pr 
+              new_max = max_pr
               # the first one has the second one just next on the right
             elsif Ops.add(max_pr, 1) == this_min_pr
               # take min_pr & this_max_pr
               any_change_during_this_loop = true
               new_min = min_pr
-              new_max = this_max_pr 
+              new_max = this_max_pr
               # the first one has the second one just next on the left side
             elsif Ops.subtract(min_pr, 1) == this_max_pr
               # take this_min_pr & max_pr
@@ -598,7 +598,7 @@ module Yast
               new_min = this_min_pr
               new_max = max_pr
             end
-            if any_change_during_this_loop && new_min != nil && new_max != nil
+            if any_change_during_this_loop && !new_min.nil? && !new_max.nil?
               new_port_range = CreateNewPortRange(new_min, new_max)
               Builtins.y2milestone(
                 "Joining %1 and %2 into %3",
@@ -626,21 +626,21 @@ module Yast
 
       new_list = Convert.convert(
         Builtins.union(new_list, list_of_ranges),
-        :from => "list",
-        :to   => "list <string>"
+        from: "list",
+        to:   "list <string>"
       )
 
       deep_copy(new_list)
     end
 
-    publish :variable => :max_port_number, :type => "integer"
-    publish :function => :IsPortRange, :type => "boolean (string)"
-    publish :function => :IsValidPortRange, :type => "boolean (string)"
-    publish :function => :PortIsInPortranges, :type => "boolean (string, list <string>)"
-    publish :function => :DividePortsAndPortRanges, :type => "map <string, list <string>> (list <string>, boolean)"
-    publish :function => :CreateNewPortRange, :type => "string (integer, integer)"
-    publish :function => :RemovePortFromPortRanges, :type => "list <string> (integer, list <string>)"
-    publish :function => :FlattenServices, :type => "list <string> (list <string>, string)"
+    publish variable: :max_port_number, type: "integer"
+    publish function: :IsPortRange, type: "boolean (string)"
+    publish function: :IsValidPortRange, type: "boolean (string)"
+    publish function: :PortIsInPortranges, type: "boolean (string, list <string>)"
+    publish function: :DividePortsAndPortRanges, type: "map <string, list <string>> (list <string>, boolean)"
+    publish function: :CreateNewPortRange, type: "string (integer, integer)"
+    publish function: :RemovePortFromPortRanges, type: "list <string> (integer, list <string>)"
+    publish function: :FlattenServices, type: "list <string> (list <string>, string)"
   end
 
   PortRanges = PortRangesClass.new

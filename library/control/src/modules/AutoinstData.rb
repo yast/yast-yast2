@@ -39,12 +39,12 @@ module Yast
       #
       # Keyboard
       #
-      #global map keyboard = $[];
+      # global map keyboard = $[];
 
       #
       # Language
       #
-      #global string language = "";
+      # global string language = "";
 
       #
       # Mouse, if not autoprobed
@@ -54,8 +54,7 @@ module Yast
       #
       # Clock Settings
       #
-      #global map Clock = $[];
-
+      # global map Clock = $[];
 
       # Moved here from AutoinstSoftware.ycp
 
@@ -77,12 +76,12 @@ module Yast
       @BootLVMWarning = true
     end
 
-    publish :variable => :mouse, :type => "map"
-    publish :variable => :post_packages, :type => "list <string>"
-    publish :variable => :post_patterns, :type => "list <string>"
-    publish :variable => :BootCylWarning, :type => "boolean"
-    publish :variable => :BootRaidWarning, :type => "boolean"
-    publish :variable => :BootLVMWarning, :type => "boolean"
+    publish variable: :mouse, type: "map"
+    publish variable: :post_packages, type: "list <string>"
+    publish variable: :post_patterns, type: "list <string>"
+    publish variable: :BootCylWarning, type: "boolean"
+    publish variable: :BootRaidWarning, type: "boolean"
+    publish variable: :BootLVMWarning, type: "boolean"
   end
 
   AutoinstData = AutoinstDataClass.new

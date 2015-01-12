@@ -41,7 +41,7 @@ module Yast
     end
 
     def CheckPrefix4(prefix)
-      return false if prefix == nil || prefix == ""
+      return false if prefix.nil? || prefix == ""
       # <0,32>
       if Builtins.regexpmatch(prefix, "^[0-9]+$")
         nm = Builtins.tointeger(prefix)
@@ -56,8 +56,7 @@ module Yast
     # @param [String] netmask network mask
     # @return true if correct
     def Check4(netmask)
-      return false if netmask == nil || netmask == ""
-
+      return false if netmask.nil? || netmask == ""
 
       # 255.255.240.0
       s1 = "(128|192|224|240|248|252|254|255)"
@@ -93,7 +92,7 @@ module Yast
     # @param [String] netmask network mask
     # @return true if correct
     def Check6(netmask)
-      return false if netmask == nil || netmask == ""
+      return false if netmask.nil? || netmask == ""
 
       # <0,256>
       return false if !Builtins.regexpmatch(netmask, "^[0-9]+$")
@@ -109,14 +108,14 @@ module Yast
     end
 
     #
-    # Convert netmask in bits form (20) to IPv4 netmask string (255.255.240.0) 
+    # Convert netmask in bits form (20) to IPv4 netmask string (255.255.240.0)
     #
-    # @param bits  number of bits in netmask 
-    # @return      netmask string or empty string in case of invalid bits (e.g. 
+    # @param bits  number of bits in netmask
+    # @return      netmask string or empty string in case of invalid bits (e.g.
     #              when prefix is incompatible with IPv4)
     #
     def FromBits(bits)
-      return "" unless bits.between?( 0, 32)
+      return "" unless bits.between?(0, 32)
 
       b = Ops.divide(bits, 8)
       d = Ops.modulo(bits, 8)
@@ -170,15 +169,15 @@ module Yast
       bits
     end
 
-    publish :variable => :ValidChars, :type => "string"
-    publish :variable => :ValidChars4, :type => "string"
-    publish :variable => :ValidChars6, :type => "string"
-    publish :function => :CheckPrefix4, :type => "boolean (string)"
-    publish :function => :Check4, :type => "boolean (string)"
-    publish :function => :Check6, :type => "boolean (string)"
-    publish :function => :Check, :type => "boolean (string)"
-    publish :function => :FromBits, :type => "string (integer)"
-    publish :function => :ToBits, :type => "integer (string)"
+    publish variable: :ValidChars, type: "string"
+    publish variable: :ValidChars4, type: "string"
+    publish variable: :ValidChars6, type: "string"
+    publish function: :CheckPrefix4, type: "boolean (string)"
+    publish function: :Check4, type: "boolean (string)"
+    publish function: :Check6, type: "boolean (string)"
+    publish function: :Check, type: "boolean (string)"
+    publish function: :FromBits, type: "string (integer)"
+    publish function: :ToBits, type: "integer (string)"
   end
 
   Netmask = NetmaskClass.new

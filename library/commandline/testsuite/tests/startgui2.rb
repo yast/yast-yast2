@@ -41,7 +41,7 @@ module Yast
       # should not be successfull
       TEST(lambda { CommandLine.Init(@cmdline, ["add"]) }, [], nil)
       TEST(lambda { CommandLine.StartGUI }, [], nil)
-      TEST(lambda { CommandLine.Done }, [], nil) 
+      TEST(lambda { CommandLine.Done }, [], nil)
 
       # EOF
 

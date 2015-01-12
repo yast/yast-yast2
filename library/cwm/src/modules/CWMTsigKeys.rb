@@ -42,7 +42,6 @@ module Yast
       Yast.import "Popup"
       Yast.import "String"
 
-
       # private variables
 
       # Currently configured TSIG keys
@@ -126,13 +125,12 @@ module Yast
       Builtins.foreach(keys) do |k|
         @tsig_keys = Builtins.add(
           @tsig_keys,
-          { "key" => k, "filename" => filename }
+          "key" => k, "filename" => filename
         )
       end
 
       nil
     end
-
 
     # public routines related to TSIG keys management
 
@@ -171,7 +169,7 @@ module Yast
     def AnalyzeTSIGKeyFile(filename)
       filename = NormalizeFilename(filename)
       contents = Convert.to_string(SCR.Read(path(".target.string"), filename))
-      if contents == nil
+      if contents.nil?
         Builtins.y2warning("Unable to read file with TSIG keys: %1", filename)
         return []
       end
@@ -234,18 +232,17 @@ module Yast
       deep_copy(ret)
     end
 
-
     # widget related functions
 
     # Init function of the widget
     # @param [Hash{String => Object}] widget a widget description map
     # @param [String] key strnig the widget key
-    def Init(widget, key)
+    def Init(widget, _key)
       widget = deep_copy(widget)
       get_keys_info = Convert.convert(
         Ops.get(widget, "get_keys_info"),
-        :from => "any",
-        :to   => "map <string, any> ()"
+        from: "any",
+        to:   "map <string, any> ()"
       )
       info = get_keys_info.call
       @tsig_keys = Ops.get_list(info, "tsig_keys", [])
@@ -273,7 +270,7 @@ module Yast
     # @param [String] key strnig the widget key
     # @param [Hash] event map event to be handled
     # @return [Symbol] for wizard sequencer or nil
-    def Handle(widget, key, event)
+    def Handle(widget, _key, event)
       widget = deep_copy(widget)
       event = deep_copy(event)
       ret = Ops.get(event, "ID")
@@ -288,12 +285,11 @@ module Yast
           UI.QueryWidget(Id("_cwm_key_listing_table"), :CurrentItem)
         )
         delete_filename = Key2File(key2)
-        if Ops.get(widget, "list_used_keys") != nil &&
-            Ops.is(Ops.get(widget, "list_used_keys"), "list <string> ()")
+        if widget["list_used_keys"].is_a? ::Array
           lister = Convert.convert(
             Ops.get(widget, "list_used_keys"),
-            :from => "any",
-            :to   => "list <string> ()"
+            from: "any",
+            to:   "list <string> ()"
           )
           used_keys = lister.call
           keys_to_delete = AnalyzeTSIGKeyFile(delete_filename)
@@ -301,11 +297,10 @@ module Yast
             Builtins.contains(used_keys, k)
           end
           if Ops.greater_than(Builtins.size(keys_to_delete), 0)
-            message = Builtins.mergestring(keys_to_delete, ", ")
             # popup message
             message = _(
-              "The selected TSIG key cannot be deleted,\n" +
-                "because it is in use.\n" +
+              "The selected TSIG key cannot be deleted,\n" \
+                "because it is in use.\n" \
                 "Stop using it in the configuration first."
             )
             # popup title
@@ -321,7 +316,7 @@ module Yast
           # popup headline
           _("Select File with the Authentication Key")
         )
-        if existing_filename != nil
+        if !existing_filename.nil?
           UI.ChangeWidget(
             Id("_cwm_existing_key_file"),
             :Value,
@@ -336,7 +331,7 @@ module Yast
           # popup headline
           _("Select File for the Authentication Key")
         )
-        if new_filename != nil
+        if !new_filename.nil?
           UI.ChangeWidget(Id("_cwm_new_key_file"), :Value, new_filename)
         end
         return nil
@@ -366,7 +361,7 @@ module Yast
             RemoveTSIGKeyFile(new_filename)
           end
         end
-        if key2 == nil || key2 == ""
+        if key2.nil? || key2 == ""
           UI.SetFocus(Id("_cwm_new_key_id"))
           # error report
           Popup.Error(_("The TSIG key ID was not specified."))
@@ -409,8 +404,8 @@ module Yast
             )
             files = Convert.convert(
               SCR.Read(path(".target.dir"), "/etc/named.d"),
-              :from => "any",
-              :to   => "list <string>"
+              from: "any",
+              to:   "list <string>"
             )
             Builtins.foreach(files) do |f|
               if Builtins.contains(AnalyzeTSIGKeyFile(f), key2)
@@ -464,8 +459,8 @@ module Yast
           # yes-no popup
           if !Popup.YesNo(
               _(
-                "The specified file contains a TSIG key with the same\n" +
-                  "identifier as some of already present keys.\n" +
+                "The specified file contains a TSIG key with the same\n" \
+                  "identifier as some of already present keys.\n" \
                   "Old keys will be removed. Continue?"
               )
             )
@@ -482,15 +477,12 @@ module Yast
 
     # Store function of the widget
     # @param [Hash{String => Object}] widget a widget description map
-    # @param [String] key strnig the widget key
-    # @param [Hash] event map that caused widget data storing
-    def Store(widget, key, event)
+    def Store(widget, _key, _event)
       widget = deep_copy(widget)
-      event = deep_copy(event)
       set_info = Convert.convert(
         Ops.get(widget, "set_keys_info"),
-        :from => "any",
-        :to   => "void (map <string, any>)"
+        from: "any",
+        to:   "void (map <string, any>)"
       )
       info = {
         "removed_files" => @deleted_tsig_keys,
@@ -572,24 +564,24 @@ module Yast
       ) +
         # tsig keys management dialog help 2/4
         _(
-          "<p><big><b>Adding an Existing TSIG Key</b></big><br>\n" +
-            "To add an already created TSIG key, select a <b>Filename</b> of the file\n" +
+          "<p><big><b>Adding an Existing TSIG Key</b></big><br>\n" \
+            "To add an already created TSIG key, select a <b>Filename</b> of the file\n" \
             "containing the key and click <b>Add</b>.</p>\n"
         ) +
         # tsig keys management dialog help 3/4
         _(
-          "<p><big><b>Creating a New TSIG Key</b></big><br>\n" +
-            "To create a new TSIG key, set the <b>Filename</b> of the file in which to\n" +
-            "create the key and the <b>Key ID</b> to identify the key then click\n" +
+          "<p><big><b>Creating a New TSIG Key</b></big><br>\n" \
+            "To create a new TSIG key, set the <b>Filename</b> of the file in which to\n" \
+            "create the key and the <b>Key ID</b> to identify the key then click\n" \
             "<b>Generate</b>.</p>\n"
         ) +
         # tsig keys management dialog help 4/4
         _(
-          "<p><big><b>Removing a TSIG Key</b></big><br>\n" +
-            "To remove a configured TSIG key, select it and click <b>Delete</b>.\n" +
-            "All keys in the same file are deleted.\n" +
-            "If a TSIG key is in use in the configuration\n" +
-            "of the server, it cannot be deleted. The server must stop using it\n" +
+          "<p><big><b>Removing a TSIG Key</b></big><br>\n" \
+            "To remove a configured TSIG key, select it and click <b>Delete</b>.\n" \
+            "All keys in the same file are deleted.\n" \
+            "If a TSIG key is in use in the configuration\n" \
+            "of the server, it cannot be deleted. The server must stop using it\n" \
             "in the configuration first.</p>\n"
         )
 
@@ -752,25 +744,25 @@ module Yast
           },
           settings
         ),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
 
       deep_copy(ret)
     end
 
-    publish :function => :AnalyzeTSIGKeyFile, :type => "list <string> (string)"
-    publish :function => :NormalizeFilename, :type => "string (string)"
-    publish :function => :DeleteTSIGKeyFromDisk, :type => "void (string)"
-    publish :function => :Files2KeyMaps, :type => "list <map <string, string>> (list <string>)"
-    publish :function => :Files2Keys, :type => "list <string> (list <string>)"
-    publish :function => :Init, :type => "void (map <string, any>, string)"
-    publish :function => :Handle, :type => "symbol (map <string, any>, string, map)"
-    publish :function => :Store, :type => "void (map <string, any>, string, map)"
-    publish :function => :InitWrapper, :type => "void (string)"
-    publish :function => :HandleWrapper, :type => "symbol (string, map)"
-    publish :function => :StoreWrapper, :type => "void (string, map)"
-    publish :function => :CreateWidget, :type => "map <string, any> (map <string, any>)"
+    publish function: :AnalyzeTSIGKeyFile, type: "list <string> (string)"
+    publish function: :NormalizeFilename, type: "string (string)"
+    publish function: :DeleteTSIGKeyFromDisk, type: "void (string)"
+    publish function: :Files2KeyMaps, type: "list <map <string, string>> (list <string>)"
+    publish function: :Files2Keys, type: "list <string> (list <string>)"
+    publish function: :Init, type: "void (map <string, any>, string)"
+    publish function: :Handle, type: "symbol (map <string, any>, string, map)"
+    publish function: :Store, type: "void (map <string, any>, string, map)"
+    publish function: :InitWrapper, type: "void (string)"
+    publish function: :HandleWrapper, type: "symbol (string, map)"
+    publish function: :StoreWrapper, type: "void (string, map)"
+    publish function: :CreateWidget, type: "map <string, any> (map <string, any>)"
   end
 
   CWMTsigKeys = CWMTsigKeysClass.new

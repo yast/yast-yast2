@@ -39,7 +39,6 @@ require "yast"
 module Yast
   class InstExtensionImageClass < Module
     def main
-
       textdomain "base"
 
       Yast.import "Linuxrc"
@@ -49,7 +48,7 @@ module Yast
       Yast.import "Popup"
       Yast.import "Stage"
 
-      #**
+      # **
       #
       # Paths where to download inst-sys extension images are taken
       # from '/etc/install.inf'. An extension image contains the
@@ -147,7 +146,7 @@ module Yast
     end
 
     def IsURLRelative(url)
-      return nil if url == nil
+      return nil if url.nil?
 
       # "http://..." -> not-relative
       # "cd:/" -> not relative
@@ -169,7 +168,7 @@ module Yast
     #   // param2 from the first URL has been replaced by tho one from the second URL
     #   ) -> "param1=x&param2=z&param3=a"
     def MergeURLsParams(base_url, url_with_modifs)
-      if base_url == nil || url_with_modifs == nil
+      if base_url.nil? || url_with_modifs.nil?
         Builtins.y2error("Wrong params: %1 or %2", base_url, url_with_modifs)
         return nil
       end
@@ -178,7 +177,7 @@ module Yast
       base_params_pos = Builtins.search(base_url, "?")
       base_params = ""
 
-      if base_params_pos != nil && Ops.greater_or_equal(base_params_pos, 0)
+      if !base_params_pos.nil? && Ops.greater_or_equal(base_params_pos, 0)
         base_params = Builtins.substring(base_url, Ops.add(base_params_pos, 1))
       end
 
@@ -186,7 +185,7 @@ module Yast
       modif_params_pos = Builtins.search(url_with_modifs, "?")
       modif_params = ""
 
-      if modif_params_pos != nil && Ops.greater_or_equal(modif_params_pos, 0)
+      if !modif_params_pos.nil? && Ops.greater_or_equal(modif_params_pos, 0)
         modif_params = Builtins.substring(
           url_with_modifs,
           Ops.add(modif_params_pos, 1)
@@ -201,8 +200,8 @@ module Yast
       modif_params_map = URL.MakeMapFromParams(modif_params)
       final_params_map = Convert.convert(
         Builtins.union(base_params_map, modif_params_map),
-        :from => "map",
-        :to   => "map <string, string>"
+        from: "map",
+        to:   "map <string, string>"
       )
 
       URL.MakeParamsFromMap(final_params_map)
@@ -214,7 +213,7 @@ module Yast
     #   CutLastDirOrFile ("http://server/some/dir/") -> "http://server/some/"
     #   CutLastDirOrFile ("http://server/some/dir")  -> "http://server/some/"
     def CutLastDirOrFile(url)
-      if url == nil || url == "" || url == "/" ||
+      if url.nil? || url == "" || url == "/" ||
           !Builtins.regexpmatch(url, "/")
         Builtins.y2error(-1, "Wrong URL: %1", url)
         return ""
@@ -245,7 +244,7 @@ module Yast
     #     "nfs://server2.net/boot/i386/root?device=eth1&aaa=bbb"
     #   ) -> "nfs://server2.net/boot/i386/"
     def MergeURLs(url_base, url_with_modifs)
-      if url_base == nil || url_with_modifs == nil
+      if url_base.nil? || url_with_modifs.nil?
         Builtins.y2error("Wrong URLs: %1 or %2", url_base, url_with_modifs)
         return nil
       end
@@ -254,7 +253,7 @@ module Yast
       url_with_modifs_pos = Builtins.search(url_with_modifs, "?")
       url_with_modifs_onlyurl = url_with_modifs
 
-      if url_with_modifs_pos != nil &&
+      if !url_with_modifs_pos.nil? &&
           Ops.greater_or_equal(url_with_modifs_pos, 0)
         url_with_modifs_onlyurl = Builtins.substring(
           url_with_modifs,
@@ -272,7 +271,7 @@ module Yast
       url_base_pos = Builtins.search(url_base, "?")
       url_base_onlyurl = url_base
 
-      if url_base_pos != nil && Ops.greater_or_equal(url_base_pos, 0)
+      if !url_base_pos.nil? && Ops.greater_or_equal(url_base_pos, 0)
         url_base_onlyurl = Builtins.substring(url_base, 0, url_base_pos)
       end
 
@@ -347,7 +346,7 @@ module Yast
         Builtins.y2error("This module should be used in Stage::initial only!")
       end
 
-      if package == nil || package == ""
+      if package.nil? || package == ""
         Builtins.y2error("Such package name can't work: %1", package)
         return false
       end
@@ -357,7 +356,7 @@ module Yast
         return true
       end
 
-      Popup.ShowFeedback("", message) if message != "" && message != nil
+      Popup.ShowFeedback("", message) if message != "" && !message.nil?
 
       # See BNC #376870
       cmd = Builtins.sformat("extend '%1'", String.Quote(package))
@@ -373,7 +372,7 @@ module Yast
         @integrated_extensions = Builtins.add(@integrated_extensions, package)
       end
 
-      Popup.ClearFeedback if message != "" && message != nil
+      Popup.ClearFeedback if message != "" && !message.nil?
 
       ret
     end
@@ -387,7 +386,7 @@ module Yast
         Builtins.y2error("This module should be used in Stage::initial only!")
       end
 
-      if package == nil || package == ""
+      if package.nil? || package == ""
         Builtins.y2error("Such package name can't work: %1", package)
         return false
       end
@@ -397,7 +396,7 @@ module Yast
         return true
       end
 
-      Popup.ShowFeedback("", message) if message != "" && message != nil
+      Popup.ShowFeedback("", message) if message != "" && !message.nil?
 
       cmd = Builtins.sformat("extend -r '%1'", String.Quote(package))
       Builtins.y2milestone("Calling: %1", cmd)
@@ -414,7 +413,7 @@ module Yast
         end
       end
 
-      Popup.ClearFeedback if message != "" && message != nil
+      Popup.ClearFeedback if message != "" && !message.nil?
 
       ret
     end
@@ -423,7 +422,7 @@ module Yast
       LoadExtension(extension, "")
     end
 
-    def DesintegrateExtension(extension)
+    def DesintegrateExtension(_extension)
       Builtins.y2warning("Function is empty, see BNC #376870")
       true
     end
@@ -433,11 +432,11 @@ module Yast
       true
     end
 
-    publish :function => :LoadExtension, :type => "boolean (string, string)"
-    publish :function => :UnLoadExtension, :type => "boolean (string, string)"
-    publish :function => :DownloadAndIntegrateExtension, :type => "boolean (string)"
-    publish :function => :DesintegrateExtension, :type => "boolean (string)"
-    publish :function => :DisintegrateAllExtensions, :type => "boolean ()"
+    publish function: :LoadExtension, type: "boolean (string, string)"
+    publish function: :UnLoadExtension, type: "boolean (string, string)"
+    publish function: :DownloadAndIntegrateExtension, type: "boolean (string)"
+    publish function: :DesintegrateExtension, type: "boolean (string)"
+    publish function: :DisintegrateAllExtensions, type: "boolean ()"
   end
 
   InstExtensionImage = InstExtensionImageClass.new

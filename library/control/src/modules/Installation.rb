@@ -40,7 +40,6 @@ require "yast"
 module Yast
   class InstallationClass < Module
     def main
-
       Yast.import "Stage"
       Yast.import "Linuxrc"
       Yast.import "Directory"
@@ -76,7 +75,6 @@ module Yast
 
       @_text_fallback = nil
       @_no_x11 = nil
-
 
       # --> configuration from installation.ycp
 
@@ -244,7 +242,7 @@ module Yast
     # /etc/install.inf: InstMode
     def boot
       __boot = Linuxrc.InstallInf("InstMode")
-      __boot = "cd" if __boot == nil
+      __boot = "cd" if __boot.nil?
       __boot
     end
 
@@ -261,56 +259,56 @@ module Yast
 
     # no resources/packages for X11
     def text_fallback
-      Initialize() if @_text_fallback == nil
+      Initialize() if @_text_fallback.nil?
       @_text_fallback
     end
 
     # somehow, no X11 was started
     # no x11 or not enough memory for qt
     def no_x11
-      Initialize() if @_no_x11 == nil
+      Initialize() if @_no_x11.nil?
       @_no_x11
     end
 
-    publish :variable => :scr_handle, :type => "integer"
-    publish :variable => :destdir, :type => "string"
-    publish :variable => :scr_destdir, :type => "string"
-    publish :variable => :sourcedir, :type => "string"
-    publish :variable => :yast2dir, :type => "string"
-    publish :variable => :mountlog, :type => "string"
-    publish :variable => :encoding, :type => "string"
-    publish :variable => :shown_text_mode_warning, :type => "boolean"
-    publish :variable => :probing_done, :type => "boolean"
-    publish :variable => :file_inst_aborted, :type => "string"
-    publish :variable => :file_inst_failed, :type => "string"
-    publish :variable => :run_yast_at_boot, :type => "string"
-    publish :variable => :current_step, :type => "string"
-    publish :variable => :file_update_mode, :type => "string"
-    publish :variable => :file_live_install_mode, :type => "string"
-    publish :variable => :restart_data_file, :type => "string"
-    publish :variable => :reboot_file, :type => "string"
-    publish :variable => :restart_file, :type => "string"
-    publish :variable => :run_update_file, :type => "string"
-    publish :variable => :reboot_net_settings, :type => "string"
-    publish :variable => :add_on_selected, :type => "boolean"
-    publish :variable => :productsources_selected, :type => "boolean"
-    publish :variable => :license_accepted, :type => "boolean"
-    publish :variable => :installedVersion, :type => "map <string, any>"
-    publish :variable => :updateVersion, :type => "map <string, any>"
-    publish :variable => :update_backup_modified, :type => "boolean"
-    publish :variable => :update_backup_sysconfig, :type => "boolean"
-    publish :variable => :update_remove_old_backups, :type => "boolean"
-    publish :variable => :update_backup_path, :type => "string"
-    publish :variable => :dirinstall_installing_into_dir, :type => "boolean"
-    publish :variable => :dirinstall_target, :type => "string"
-    publish :variable => :dirinstall_target_time, :type => "integer"
-    publish :variable => :image_installation, :type => "boolean"
-    publish :variable => :image_only, :type => "boolean"
-    publish :function => :Installation, :type => "void ()"
-    publish :function => :boot, :type => "string ()"
-    publish :function => :x11_setup_needed, :type => "boolean ()"
-    publish :function => :text_fallback, :type => "boolean ()"
-    publish :function => :no_x11, :type => "boolean ()"
+    publish variable: :scr_handle, type: "integer"
+    publish variable: :destdir, type: "string"
+    publish variable: :scr_destdir, type: "string"
+    publish variable: :sourcedir, type: "string"
+    publish variable: :yast2dir, type: "string"
+    publish variable: :mountlog, type: "string"
+    publish variable: :encoding, type: "string"
+    publish variable: :shown_text_mode_warning, type: "boolean"
+    publish variable: :probing_done, type: "boolean"
+    publish variable: :file_inst_aborted, type: "string"
+    publish variable: :file_inst_failed, type: "string"
+    publish variable: :run_yast_at_boot, type: "string"
+    publish variable: :current_step, type: "string"
+    publish variable: :file_update_mode, type: "string"
+    publish variable: :file_live_install_mode, type: "string"
+    publish variable: :restart_data_file, type: "string"
+    publish variable: :reboot_file, type: "string"
+    publish variable: :restart_file, type: "string"
+    publish variable: :run_update_file, type: "string"
+    publish variable: :reboot_net_settings, type: "string"
+    publish variable: :add_on_selected, type: "boolean"
+    publish variable: :productsources_selected, type: "boolean"
+    publish variable: :license_accepted, type: "boolean"
+    publish variable: :installedVersion, type: "map <string, any>"
+    publish variable: :updateVersion, type: "map <string, any>"
+    publish variable: :update_backup_modified, type: "boolean"
+    publish variable: :update_backup_sysconfig, type: "boolean"
+    publish variable: :update_remove_old_backups, type: "boolean"
+    publish variable: :update_backup_path, type: "string"
+    publish variable: :dirinstall_installing_into_dir, type: "boolean"
+    publish variable: :dirinstall_target, type: "string"
+    publish variable: :dirinstall_target_time, type: "integer"
+    publish variable: :image_installation, type: "boolean"
+    publish variable: :image_only, type: "boolean"
+    publish function: :Installation, type: "void ()"
+    publish function: :boot, type: "string ()"
+    publish function: :x11_setup_needed, type: "boolean ()"
+    publish function: :text_fallback, type: "boolean ()"
+    publish function: :no_x11, type: "boolean ()"
   end
 
   Installation = InstallationClass.new

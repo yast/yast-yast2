@@ -40,7 +40,7 @@ module Yast
 
       # unknown option
       TEST(lambda { CommandLine.Init(@cmdline, ["add", "dev"]) }, [], nil)
-      TEST(lambda { CommandLine.Command }, [], nil) 
+      TEST(lambda { CommandLine.Command }, [], nil)
       # EOF
 
       nil

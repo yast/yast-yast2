@@ -49,7 +49,7 @@ module Yast
       )
 
       @button_id = :dummy
-      begin
+      loop do
         @button_id = Convert.to_symbol(UI.UserInput)
 
         if @button_id == :painless
@@ -61,7 +61,8 @@ module Yast
         elsif @button_id == :error
           Popup.ModuleError("The module inst_games.ycp does not work.")
         end
-      end while @button_id != :close
+        break if @button_id == :close
+      end
 
       UI.CloseDialog
 

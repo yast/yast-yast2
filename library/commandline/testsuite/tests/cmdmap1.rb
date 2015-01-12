@@ -39,7 +39,7 @@ module Yast
       # map must define id and global help
       TEST(lambda { CommandLine.Init({}, []) }, [], nil)
       TEST(lambda { CommandLine.Done }, [], nil)
-      TEST(lambda { CommandLine.Aborted }, [], nil) 
+      TEST(lambda { CommandLine.Aborted }, [], nil)
 
       # EOF
 

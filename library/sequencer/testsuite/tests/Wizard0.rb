@@ -34,9 +34,9 @@ module Yast
 
       @Sequence = {
         "ws_start" => "0",
-        "0"        => { :next => "1" },
-        "1"        => { :next => "F" },
-        "F"        => { :finish => :ws_finish }
+        "0"        => { next: "1" },
+        "1"        => { next: "F" },
+        "F"        => { finish: :ws_finish }
       }
 
       TEST(lambda { Sequencer.Run(nil, nil) }, [], nil)
@@ -45,7 +45,7 @@ module Yast
       TEST(lambda { Sequencer.Run(nil, {}) }, [], nil)
       TEST(lambda { Sequencer.Run({}, @Sequence) }, [], nil)
       TEST(lambda { Sequencer.Run(@Aliases, {}) }, [], nil)
-      TEST(lambda { Sequencer.Run({}, { "ws_start" => :ok }) }, [], nil)
+      TEST(lambda { Sequencer.Run({},  "ws_start" => :ok) }, [], nil)
 
       nil
     end

@@ -49,7 +49,7 @@ module Yast
         nil
       )
       TEST(lambda { CommandLine.Done }, [], nil)
-      TEST(lambda { CommandLine.Aborted }, [], nil) 
+      TEST(lambda { CommandLine.Aborted }, [], nil)
 
       # EOF
 

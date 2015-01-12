@@ -84,7 +84,6 @@ module Yast
         PushButton(Id(:delete_button), Opt(:key_F5), _("De&lete"))
       )
 
-
       if nil != buttons
         but_box = Builtins.add(Builtins.add(but_box, HStretch()), buttons)
       end
@@ -92,8 +91,6 @@ module Yast
       contents = Builtins.add(contents, below_buttons) if nil != below_buttons
       deep_copy(contents)
     end
-
-
 
     # Encloses the content into VBoxes and HBoxes with the appropriate
     # spacings around it.
@@ -137,9 +134,9 @@ module Yast
       )
     end
 
-    publish :function => :EditTable, :type => "term (term, list, term, term, term, term)"
-    publish :function => :SpacingAround, :type => "term (term, float, float, float, float)"
-    publish :function => :SizeAtLeast, :type => "term (term, float, float)"
+    publish function: :EditTable, type: "term (term, list, term, term, term, term)"
+    publish function: :SpacingAround, type: "term (term, float, float, float, float)"
+    publish function: :SizeAtLeast, type: "term (term, float, float)"
   end
 
   UIHelper = UIHelperClass.new

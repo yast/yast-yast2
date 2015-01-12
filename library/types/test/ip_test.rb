@@ -7,13 +7,13 @@ require "yast"
 include Yast
 
 describe "Yast::IP" do
-  before( :all) do
+  before(:all) do
     Yast.import "IP"
   end
 
   describe "#Valid4" do
     it "must return valid IPv4 description" do
-      expect( IP.Valid4).not_to be_empty
+      expect(IP.Valid4).not_to be_empty
     end
   end
 
@@ -22,12 +22,12 @@ describe "Yast::IP" do
       "0.0.0.0",
       "127.0.0.1",
       "255.255.255.255",
-      "10.11.12.13",
+      "10.11.12.13"
     ]
 
     VALID_IP4S.each do |valid_ip4|
       it "returns true for valid IPv4 '#{valid_ip4}'" do
-        expect( IP.Check4(valid_ip4)).to be_true
+        expect(IP.Check4(valid_ip4)).to be_true
       end
     end
 
@@ -36,24 +36,23 @@ describe "Yast::IP" do
       "127.0.0.1.1",
       "256.255.255.255",
       "01.01.012.013",
-      "10,11.12.13",
+      "10,11.12.13"
     ]
 
     INVALID_IP4S.each do |invalid_ip4|
       it "returns false for invalid IPv4 '#{invalid_ip4}'" do
-        expect( IP.Check4(invalid_ip4)).to be_false
+        expect(IP.Check4(invalid_ip4)).to be_false
       end
     end
 
     it "returns false for empty argument" do
-      expect( IP.Check4("")).to be_false
+      expect(IP.Check4("")).to be_false
     end
 
     it "returns false for nil argument" do
-      expect( IP.Check4(nil)).to be_false
+      expect(IP.Check4(nil)).to be_false
     end
   end
-
 
   describe "#Check6" do
     VALID_IP6S = [
@@ -70,12 +69,12 @@ describe "Yast::IP" do
       "1:0::",
       "1:0::0",
       "1:2:3:4:5:6:127.0.0.1",
-      "1:2:3::6:127.0.0.1",
+      "1:2:3::6:127.0.0.1"
     ]
 
     VALID_IP6S.each do |valid_ip6|
       it "returns true for valid IPv6 '#{valid_ip6}'" do
-        expect( IP.Check6(valid_ip6)).to be_true
+        expect(IP.Check6(valid_ip6)).to be_true
       end
     end
 
@@ -89,52 +88,52 @@ describe "Yast::IP" do
       "127.0.0.1",
       "1:2:3:4:5:6:7:127.0.0.1",
       "1:2:3::6:7:8:127.0.0.1",
-#FIXME deprecated syntax, so we should handle it like invalid "::127.0.0.1",
-#FIXME deprecated syntax, so we should handle it invalid "::FFFF:127.0.0.1",
-#FIXME insufficient regex for ipv4 included in ipv6 "1:2:3:4:5:6:127.0.0.256"
+      # FIXME deprecated syntax, so we should handle it like invalid "::127.0.0.1",
+      # FIXME deprecated syntax, so we should handle it invalid "::FFFF:127.0.0.1",
+      # FIXME insufficient regex for ipv4 included in ipv6 "1:2:3:4:5:6:127.0.0.256"
     ]
 
     INVALID_IP6S.each do |invalid_ip6|
       it "returns false for invalid IPv6 '#{invalid_ip6}" do
-          expect( IP.Check6(invalid_ip6)).to be_false
+        expect(IP.Check6(invalid_ip6)).to be_false
       end
     end
 
     it "returns false for empty argument" do
-      expect( IP.Check6("")).to be_false
+      expect(IP.Check6("")).to be_false
     end
 
     it "returns false for nil argument" do
-      expect( IP.Check6(nil)).to be_false
+      expect(IP.Check6(nil)).to be_false
     end
   end
 
   describe "#ToInteger" do
     RESULT_MAP_INT = {
       "0.0.0.0"        => 0,
-      "127.0.0.1"      => 2130706433,
-      "192.168.110.23" => 3232263703,
-      "10.20.1.29"     => 169083165
+      "127.0.0.1"      => 2_130_706_433,
+      "192.168.110.23" => 3_232_263_703,
+      "10.20.1.29"     => 169_083_165
     }
 
-    RESULT_MAP_INT.each_pair do |k,v|
+    RESULT_MAP_INT.each_pair do |k, v|
       it "returns #{v} for #{k}" do
         # in 32bits arch IP#ToInteger returns Bignum, so equal? returns false
         # and eql? has to be used
         # in 64bits arch the result is Fixnum and the problem do not appear
-        expect( IP.ToInteger(k)).to be_eql v
+        expect(IP.ToInteger(k)).to be_eql v
       end
     end
 
     it "returns nil if value is not valid IPv4 in dotted format" do
-      expect( IP.ToInteger("foobar")).to be_equal nil
+      expect(IP.ToInteger("foobar")).to be_equal nil
     end
   end
 
   describe "#ToString" do
-    RESULT_MAP_INT.each_pair do |k,v|
+    RESULT_MAP_INT.each_pair do |k, v|
       it "it returns #{k} for #{v}" do
-        expect( IP.ToString(v)) == k
+        expect(IP.ToString(v)) == k
       end
     end
   end
@@ -147,14 +146,14 @@ describe "Yast::IP" do
       "255.255.255.255" => "FFFFFFFF"
     }
 
-    RESULT_MAP_HEX.each_pair do |k,v|
+    RESULT_MAP_HEX.each_pair do |k, v|
       it "returns #{v} for valid #{k}" do
-        expect( IP.ToHex(k)) == v
+        expect(IP.ToHex(k)) == v
       end
     end
 
     it "returns nil if value is not valid IPv4 in dotted format" do
-      expect( IP.ToHex("foobar")).to be_equal nil
+      expect(IP.ToHex("foobar")).to be_equal nil
     end
   end
 
@@ -164,38 +163,37 @@ describe "Yast::IP" do
   }
 
   describe "#IPv4ToBits" do
-    RESULT_MAP_BITS.each_pair do |k,v|
+    RESULT_MAP_BITS.each_pair do |k, v|
       it "returns bitmap for #{k}" do
-        expect( IP.IPv4ToBits(k)) == v
+        expect(IP.IPv4ToBits(k)) == v
       end
     end
 
     it "returns nil if value is not valid IPv4" do
-      expect( IP.IPv4ToBits("blabla")).to be_equal nil
+      expect(IP.IPv4ToBits("blabla")).to be_equal nil
     end
   end
 
   describe "#BitsToIPv4" do
-    RESULT_MAP_BITS.each_pair do |k,v|
+    RESULT_MAP_BITS.each_pair do |k, v|
       it "returns #{k} for #{v}" do
-        expect( IP.BitsToIPv4(v)) == k
+        expect(IP.BitsToIPv4(v)) == k
       end
     end
 
     it "returns nil if length of bitmap is not 32" do
-      expect( IP.BitsToIPv4("101")).to be_equal nil
+      expect(IP.BitsToIPv4("101")).to be_equal nil
     end
 
     it "returns nil if value is not valid bitmap with 0 or 1 only" do
-      expect( IP.BitsToIPv4("foobar")).to be_equal nil
+      expect(IP.BitsToIPv4("foobar")).to be_equal nil
     end
   end
 
   describe "#reserved4" do
-
     it "raises exception for invalid IPv4 address" do
-      expect{IP.reserved4(nil)}.to raise_error(RuntimeError)
-      expect{IP.reserved4("0.0.0")}.to raise_error(RuntimeError)
+      expect { IP.reserved4(nil) }.to raise_error(RuntimeError)
+      expect { IP.reserved4("0.0.0") }.to raise_error(RuntimeError)
     end
 
     it "returns true for address in 0.0.0.0/8 (RFC#1700)" do

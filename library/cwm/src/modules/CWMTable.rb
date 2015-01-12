@@ -65,7 +65,7 @@ module Yast
       ret = true
       Builtins.foreach(attr) do |k, v|
         type = Ops.get(types, k)
-        if type == nil
+        if type.nil?
           Builtins.y2error("Unknown attribute %1", k)
           ret = false
         else
@@ -74,7 +74,6 @@ module Yast
       end
       ret
     end
-
 
     # Validate type of entry of the option description map
     # Also checks option description maps if present
@@ -120,13 +119,13 @@ module Yast
         end
         false
       end
-      targs = Convert.convert(args, :from => "list", :to => "list <term>")
+      targs = Convert.convert(args, from: "list", to: "list <term>")
       if Builtins.size(targs) == 1
         return Ops.get(
           Convert.convert(
             Builtins.argsof(Ops.get(targs, 0)),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           ),
           0
         )
@@ -143,12 +142,12 @@ module Yast
       id = Convert.to_string(UI.QueryWidget(Id(:_tw_table), :CurrentItem))
       item_list = Convert.convert(
         UI.QueryWidget(Id(:_tw_table), :Items),
-        :from => "any",
-        :to   => "list <term>"
+        from: "any",
+        to:   "list <term>"
       )
       index = -1
       counter = 0
-      max = Ops.subtract(item_list == nil ? 0 : Builtins.size(item_list), 1)
+      max = Ops.subtract(item_list.nil? ? 0 : Builtins.size(item_list), 1)
       Builtins.foreach(item_list) do |t|
         index = counter if getItemId(t) == id
         counter = Ops.add(counter, 1)
@@ -182,7 +181,6 @@ module Yast
 
     # functions
 
-
     # Initialize the displayed table
     # @param [Hash{String => Object}] descr map description map of the whole table
     # @param [String] key table widget key
@@ -207,8 +205,8 @@ module Yast
       id = Convert.to_string(UI.QueryWidget(Id(:_tw_table), :CurrentItem))
       item_list = Convert.convert(
         UI.QueryWidget(Id(:_tw_table), :Items),
-        :from => "any",
-        :to   => "list <term>"
+        from: "any",
+        to:   "list <term>"
       )
       index = -1
       counter = 0
@@ -226,46 +224,42 @@ module Yast
       if event_id == :_tw_edit
         edit_handle = Convert.convert(
           Ops.get(attrib, "edit"),
-          :from => "any",
-          :to   => "symbol (string, map, integer)"
+          from: "any",
+          to:   "symbol (string, map, integer)"
         )
-        ret = edit_handle.call(key, event_descr, index) if edit_handle != nil
+        ret = edit_handle.call(key, event_descr, index) if edit_handle
       elsif event_id == :_tw_add
         add_handle = Convert.convert(
           Ops.get(attrib, "add"),
-          :from => "any",
-          :to   => "symbol (string, map, integer)"
+          from: "any",
+          to:   "symbol (string, map, integer)"
         )
-        ret = add_handle.call(key, event_descr, index) if add_handle != nil
+        ret = add_handle.call(key, event_descr, index) if add_handle
       elsif event_id == :_tw_delete
         delete_handle = Convert.convert(
           Ops.get(attrib, "delete"),
-          :from => "any",
-          :to   => "symbol (string, map, integer)"
+          from: "any",
+          to:   "symbol (string, map, integer)"
         )
-        if delete_handle != nil
-          ret = delete_handle.call(key, event_descr, index)
-        end
+        ret = delete_handle.call(key, event_descr, index) if delete_handle
       elsif event_id == :_tw_custom
         custom_handle = Convert.convert(
           Ops.get(attrib, "custom_handle"),
-          :from => "any",
-          :to   => "symbol (string, map, integer)"
+          from: "any",
+          to:   "symbol (string, map, integer)"
         )
-        if custom_handle != nil
-          ret = custom_handle.call(key, event_descr, index)
-        end
+        ret = custom_handle.call(key, event_descr, index) if custom_handle
       elsif event_id == :_tw_up || event_id == :_tw_down
         up = event_id == :_tw_up
         updown_handle = Convert.convert(
           Ops.get(attrib, "updown"),
-          :from => "any",
-          :to   => "symbol (string, map, boolean, integer)"
+          from: "any",
+          to:   "symbol (string, map, boolean, integer)"
         )
-        if updown_handle != nil && !(index == 0 && up) &&
+        if !updown_handle.nil? && !(index == 0 && up) &&
             !(index == Ops.subtract(Builtins.size(item_list), 1) && !up)
           ret = updown_handle.call(key, event_descr, up, index)
-          UI.ChangeWidget(Id(:_tw_table), :CurrentItem, id) if ret == nil
+          UI.ChangeWidget(Id(:_tw_table), :CurrentItem, id) if ret.nil?
         end
       end
       updateButtons(descr)
@@ -342,35 +336,45 @@ module Yast
       attrib = deep_copy(attrib)
       widget_descr = deep_copy(widget_descr)
       ValidateTableAttr(attrib)
-      add_button = Ops.get_boolean(attrib, "add_delete_buttons", true) ?
-        PushButton(Id(:_tw_add), Opt(:key_F3, :notify), Label.AddButton) :
-        HSpacing(0)
-      edit_button = Ops.get_boolean(attrib, "edit_button", true) ?
-        PushButton(Id(:_tw_edit), Opt(:key_F4, :notify), Label.EditButton) :
-        HSpacing(0)
-      delete_button = Ops.get_boolean(attrib, "add_delete_buttons", true) ?
-        PushButton(Id(:_tw_delete), Opt(:key_F5, :notify), Label.DeleteButton) :
-        HSpacing(0)
+      add_button = if Ops.get_boolean(attrib, "add_delete_buttons", true)
+                     PushButton(Id(:_tw_add), Opt(:key_F3, :notify), Label.AddButton)
+                   else
+                     HSpacing(0)
+                   end
+      edit_button = if Ops.get_boolean(attrib, "edit_button", true)
+                      PushButton(Id(:_tw_edit), Opt(:key_F4, :notify), Label.EditButton)
+                    else
+                      HSpacing(0)
+                    end
+      delete_button = if Ops.get_boolean(attrib, "add_delete_buttons", true)
+                        PushButton(Id(:_tw_delete), Opt(:key_F5, :notify), Label.DeleteButton)
+                      else
+                        HSpacing(0)
+                      end
       table_header = Ops.get_term(attrib, "header")
 
-      custom_button = Ops.get_boolean(attrib, "custom_button", false) ?
-        PushButton(
-          Id(:_tw_custom),
-          Opt(:notify),
-          Ops.get_string(attrib, "custom_button_name", "Custom button")
-        ) :
-        HSpacing(0)
+      custom_button = if Ops.get_boolean(attrib, "custom_button", false)
+                        PushButton(
+                          Id(:_tw_custom),
+                          Opt(:notify),
+                          Ops.get_string(attrib, "custom_button_name", "Custom button")
+                        )
+                      else
+                        HSpacing(0)
+                      end
 
-      up_down = Ops.get_boolean(attrib, "up_down_buttons", false) ?
-        VBox(
-          VStretch(),
-          # push button
-          PushButton(Id(:_tw_up), Opt(:notify), _("&Up")),
-          # push button
-          PushButton(Id(:_tw_down), Opt(:notify), _("&Down")),
-          VStretch()
-        ) :
-        HSpacing(0)
+      up_down = if Ops.get_boolean(attrib, "up_down_buttons", false)
+                  VBox(
+                    VStretch(),
+                    # push button
+                    PushButton(Id(:_tw_up), Opt(:notify), _("&Up")),
+                    # push button
+                    PushButton(Id(:_tw_down), Opt(:notify), _("&Down")),
+                    VStretch()
+                  )
+                else
+                  HSpacing(0)
+                end
 
       ret = Convert.convert(
         Builtins.union(
@@ -406,8 +410,8 @@ module Yast
           },
           widget_descr
         ),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
 
       if !Builtins.haskey(ret, "init")
@@ -428,12 +432,12 @@ module Yast
       deep_copy(ret)
     end
 
-    publish :function => :TableInit, :type => "void (map <string, any>, string)"
-    publish :function => :DisableTable, :type => "void (map <string, any>)"
-    publish :function => :EnableTable, :type => "void (map <string, any>)"
-    publish :function => :TableInitWrapper, :type => "void (string)"
-    publish :function => :TableHandleWrapper, :type => "symbol (string, map)"
-    publish :function => :CreateTableDescr, :type => "map <string, any> (map <string, any>, map <string, any>)"
+    publish function: :TableInit, type: "void (map <string, any>, string)"
+    publish function: :DisableTable, type: "void (map <string, any>)"
+    publish function: :EnableTable, type: "void (map <string, any>)"
+    publish function: :TableInitWrapper, type: "void (string)"
+    publish function: :TableHandleWrapper, type: "symbol (string, map)"
+    publish function: :CreateTableDescr, type: "map <string, any> (map <string, any>, map <string, any>)"
   end
 
   CWMTable = CWMTableClass.new

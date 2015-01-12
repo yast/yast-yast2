@@ -32,7 +32,6 @@ require "yast"
 module Yast
   class DistroClass < Module
     def main
-
       textdomain "base"
 
       # Cache
@@ -41,7 +40,7 @@ module Yast
 
     # Is it SUSE based? openSUSE, SLES, SLED, ...
     def suse
-      if @_distro == nil
+      if @_distro.nil?
         if SCR.Read(path(".target.size"), "/etc/SuSE-release") != -1
           @_distro = "suse"
           Builtins.y2milestone("Found SUSE")
@@ -53,7 +52,7 @@ module Yast
 
     # Is it Fedora based? RHEL, Oracle, ...
     def fedora
-      if @_distro == nil
+      if @_distro.nil?
         if SCR.Read(path(".target.size"), "/etc/fedora-release") != -1
           @_distro = "fedora"
           Builtins.y2milestone("Found Fedora")
@@ -65,10 +64,10 @@ module Yast
 
     # Is it Debian based? Ubuntu, ...
     def debian
-      if @_distro == nil
+      if @_distro.nil?
         if SCR.Execute(
-            path(".target.bash"),
-            "grep DISTRIB_ID=Ubuntu /etc/lsb-release"
+          path(".target.bash"),
+          "grep DISTRIB_ID=Ubuntu /etc/lsb-release"
           ) == 0
           @_distro = "debian"
           Builtins.y2milestone("Found Debian/Ubuntu")
@@ -78,9 +77,9 @@ module Yast
       @_distro == "debian"
     end
 
-    publish :function => :suse, :type => "boolean ()"
-    publish :function => :fedora, :type => "boolean ()"
-    publish :function => :debian, :type => "boolean ()"
+    publish function: :suse, type: "boolean ()"
+    publish function: :fedora, type: "boolean ()"
+    publish function: :debian, type: "boolean ()"
   end
 
   Distro = DistroClass.new

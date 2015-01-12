@@ -42,7 +42,7 @@ module Yast
       Yast.import "Netmask"
       Yast.import "IP"
 
-      #**
+      # **
       # Firewall Expert Rulezz
       #
       # ATTENTION: You have to call SuSEFirewall::Read() to read the configuration
@@ -266,7 +266,7 @@ module Yast
 
       # Get all current rules
       current_rules = SuSEFirewall.GetAcceptExpertRules(zone)
-      if current_rules == nil
+      if current_rules.nil?
         Builtins.y2error(
           "Impossible to set new AcceptExpertRule for zone %1",
           zone
@@ -312,7 +312,7 @@ module Yast
       end
 
       current_rules = SuSEFirewall.GetAcceptExpertRules(zone)
-      if current_rules == nil
+      if current_rules.nil?
         Builtins.y2error(
           "Impossible remove any AcceptExpertRule for zone %1",
           zone
@@ -361,7 +361,7 @@ module Yast
       end
 
       current_rules = SuSEFirewall.GetAcceptExpertRules(zone)
-      if current_rules == nil
+      if current_rules.nil?
         Builtins.y2error(
           "Impossible remove any AcceptExpertRule for zone %1",
           zone
@@ -384,13 +384,13 @@ module Yast
       end
     end
 
-    publish :function => :GetAllExpertRulesProtocols, :type => "list <string> ()"
-    publish :function => :IsValidNetwork, :type => "boolean (string)"
-    publish :function => :ValidNetwork, :type => "string ()"
-    publish :function => :GetListOfAcceptRules, :type => "list <map <string, string>> (string)"
-    publish :function => :AddNewAcceptRule, :type => "boolean (string, map <string, string>)"
-    publish :function => :RemoveAcceptRule, :type => "boolean (string, map <string, string>)"
-    publish :function => :DeleteRuleID, :type => "boolean (string, integer)"
+    publish function: :GetAllExpertRulesProtocols, type: "list <string> ()"
+    publish function: :IsValidNetwork, type: "boolean (string)"
+    publish function: :ValidNetwork, type: "string ()"
+    publish function: :GetListOfAcceptRules, type: "list <map <string, string>> (string)"
+    publish function: :AddNewAcceptRule, type: "boolean (string, map <string, string>)"
+    publish function: :RemoveAcceptRule, type: "boolean (string, map <string, string>)"
+    publish function: :DeleteRuleID, type: "boolean (string, integer)"
   end
 
   SuSEFirewallExpertRules = SuSEFirewallExpertRulesClass.new

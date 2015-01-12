@@ -39,7 +39,7 @@ module Yast
 
       TEST(lambda { CommandLine.Init(@cmdline, ["interactive"]) }, [], nil)
       TEST(lambda { CommandLine.StartGUI }, [], nil)
-      TEST(lambda { CommandLine.Done }, [], nil) 
+      TEST(lambda { CommandLine.Done }, [], nil)
       # EOF
 
       nil

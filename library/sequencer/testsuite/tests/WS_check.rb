@@ -59,7 +59,7 @@ module Yast
       TEST(lambda { Sequencer.WS_check({}, {}) }, [], nil)
       TEST(lambda { Sequencer.WS_check(@aliases1, @sequence1) }, [], nil)
 
-      TEST(lambda { Sequencer.WS_check({}, { "ws_start" => :ws_finish }) }, [], nil)
+      TEST(lambda { Sequencer.WS_check({},  "ws_start" => :ws_finish) }, [], nil)
 
       @clicks = nil
       @cur = -1
@@ -72,9 +72,11 @@ module Yast
     def f1
       "1"
     end
+
     def f2
       2
     end
+
     def f3
       :id3
     end
@@ -82,12 +84,15 @@ module Yast
     def f4
       1
     end
+
     def f5
       1
     end
+
     def f6
       1
     end
+
     def f7
       1
     end

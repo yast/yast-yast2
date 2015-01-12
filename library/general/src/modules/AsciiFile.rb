@@ -31,7 +31,6 @@
 require "yast"
 
 module Yast
-
   # Assume this /etc/fstab file
   #
   #     # main filesystem
@@ -63,7 +62,6 @@ module Yast
   #     result[2]["fields"][1]    # =>  "/"
   class AsciiFileClass < Module
     def main
-
       textdomain "base"
 
       @blanks = "                                                             "
@@ -115,8 +113,8 @@ module Yast
           lstr = Ops.add(lstr, delim) if Ops.greater_than(num, 0)
           lstr = Ops.add(lstr, text)
           if Ops.less_than(
-              Builtins.size(text),
-              Ops.get_integer(file.value, ["widths", num], 0)
+            Builtins.size(text),
+            Ops.get_integer(file.value, ["widths", num], 0)
             )
             lstr = Ops.add(
               lstr,
@@ -157,8 +155,8 @@ module Yast
         l = {}
         Ops.set(l, "line", line)
         if Ops.greater_than(
-            Builtins.size(Ops.get_string(file.value, "comment", "")),
-            0
+          Builtins.size(Ops.get_string(file.value, "comment", "")),
+          0
           ) &&
             Builtins.regexpmatch(
               line,
@@ -178,14 +176,14 @@ module Yast
               line,
               Ops.get_string(file.value, "delim", "")
             )
-            if pos != nil && Ops.greater_than(pos, 0)
+            if !pos.nil? && Ops.greater_than(pos, 0)
               line = Builtins.substring(line, pos)
             end
             pos = Builtins.findfirstof(
               line,
               Ops.get_string(file.value, "delim", "")
             )
-            if pos != nil && Ops.greater_than(pos, 0)
+            if !pos.nil? && Ops.greater_than(pos, 0)
               fields = Builtins.add(fields, Builtins.substring(line, 0, pos))
               line = Builtins.substring(line, pos)
             else
@@ -265,7 +263,6 @@ module Yast
       deep_copy(ret)
     end
 
-
     # Returns count of lines in file
     #
     # @param [Hash] file content
@@ -274,7 +271,6 @@ module Yast
       file = deep_copy(file)
       Builtins.size(Ops.get_map(file, "l", {}))
     end
-
 
     # Changes the record in the file defined by row and column
     #
@@ -289,8 +285,8 @@ module Yast
         Ops.set(file.value, ["l", line, "fields"], [])
       end
       if Ops.less_than(
-          Builtins.size(Ops.get_list(file.value, ["l", line, "fields"], [])),
-          field
+        Builtins.size(Ops.get_list(file.value, ["l", line, "fields"], [])),
+        field
         )
         changed = true
         i = 0
@@ -314,7 +310,6 @@ module Yast
 
       nil
     end
-
 
     # Changes a complete line
     #
@@ -379,14 +374,14 @@ module Yast
       Builtins.y2milestone("path %1", fpath)
       Builtins.y2debug("out: %1", file.value)
       out = ""
-      Builtins.foreach(Ops.get_map(file.value, "l", {})) do |num, entry|
+      Builtins.foreach(Ops.get_map(file.value, "l", {})) do |num, _entry|
         out = Ops.add(
           Ops.add(
             out,
             (
-              file_ref = arg_ref(file.value);
-              _AssertLineValid_result = AssertLineValid(file_ref, num);
-              file.value = file_ref.value;
+              file_ref = arg_ref(file.value)
+              _AssertLineValid_result = AssertLineValid(file_ref, num)
+              file.value = file_ref.value
               _AssertLineValid_result
             )
           ),
@@ -405,19 +400,19 @@ module Yast
       nil
     end
 
-    publish :function => :SetComment, :type => "void (map &, string)"
-    publish :function => :SetListWidth, :type => "void (map &, list)"
-    publish :function => :SetDelimiter, :type => "void (map &, string)"
-    publish :function => :ReadFile, :type => "void (map &, string)"
-    publish :function => :FindLineField, :type => "list <integer> (map, integer, string)"
-    publish :function => :GetLines, :type => "map <integer, map> (map &, list <integer>)"
-    publish :function => :GetLine, :type => "map (map &, integer)"
-    publish :function => :NumLines, :type => "integer (map)"
-    publish :function => :ChangeLineField, :type => "void (map &, integer, integer, string)"
-    publish :function => :ReplaceLine, :type => "void (map &, integer, list <string>)"
-    publish :function => :AppendLine, :type => "void (map &, list)"
-    publish :function => :RemoveLines, :type => "void (map &, list <integer>)"
-    publish :function => :RewriteFile, :type => "void (map &, string)"
+    publish function: :SetComment, type: "void (map &, string)"
+    publish function: :SetListWidth, type: "void (map &, list)"
+    publish function: :SetDelimiter, type: "void (map &, string)"
+    publish function: :ReadFile, type: "void (map &, string)"
+    publish function: :FindLineField, type: "list <integer> (map, integer, string)"
+    publish function: :GetLines, type: "map <integer, map> (map &, list <integer>)"
+    publish function: :GetLine, type: "map (map &, integer)"
+    publish function: :NumLines, type: "integer (map)"
+    publish function: :ChangeLineField, type: "void (map &, integer, integer, string)"
+    publish function: :ReplaceLine, type: "void (map &, integer, list <string>)"
+    publish function: :AppendLine, type: "void (map &, list)"
+    publish function: :RemoveLines, type: "void (map &, list <integer>)"
+    publish function: :RewriteFile, type: "void (map &, string)"
   end
 
   AsciiFile = AsciiFileClass.new

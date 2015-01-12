@@ -22,8 +22,7 @@
 #
 # ***************************************************************************
 module Yast
-
-  #inject NetworkInterfaces accessor so we can modify Devices
+  # inject NetworkInterfaces accessor so we can modify Devices
   class NetworkInterfacesClass < Module
     attr_accessor :Devices
     attr_accessor :OriginalDevices
@@ -77,9 +76,9 @@ module Yast
               "STARTMODE" => "manual"
             },
             "escon5"    => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
-            "eth5" =>
-              # "IPADDR_x":"1.1.1.1", "NETMASK_x":"0.0.0.0"
-              { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
+            "eth5"      =>
+                           # "IPADDR_x":"1.1.1.1", "NETMASK_x":"0.0.0.0"
+                           { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
             # 32 bit prefix
             "eth6"      => {
               "BOOTPROTO" => "static",
@@ -105,15 +104,15 @@ module Yast
             "hsi5"      => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
             "ippp5"     => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
             "iucv5"     => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
-            "lo" =>
-              # "IPADDR_1":"7.7.7.7"
-              {
-                "BROADCAST" => "127.255.255.255",
-                "IPADDR"    => "127.0.0.1",
-                "NETMASK"   => "255.0.0.0",
-                "NETWORK"   => "127.0.0.0",
-                "STARTMODE" => "onboot"
-              },
+            "lo"        =>
+                           # "IPADDR_1":"7.7.7.7"
+                           {
+                             "BROADCAST" => "127.255.255.255",
+                             "IPADDR"    => "127.0.0.1",
+                             "NETMASK"   => "255.0.0.0",
+                             "NETWORK"   => "127.0.0.0",
+                             "STARTMODE" => "onboot"
+                           },
             "myri5"     => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
             "ppp5"      => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
             "tr5"       => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },

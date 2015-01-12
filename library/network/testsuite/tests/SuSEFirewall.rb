@@ -103,9 +103,9 @@ module Yast
             "STARTMODE" => "manual"
           },
           "escon5" => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
-          "eth5" =>
-            # "IPADDR_x":"1.1.1.1", "NETMASK_x":"0.0.0.0"
-            { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
+          "eth5"   =>
+                      # "IPADDR_x":"1.1.1.1", "NETMASK_x":"0.0.0.0"
+                      { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
           "eth6"   => {
             "BOOTPROTO" => "static",
             "IPADDR"    => "1.2.3.4",
@@ -123,15 +123,15 @@ module Yast
           "hsi5"   => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
           "ippp5"  => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
           "iucv5"  => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
-          "lo" =>
-            # "IPADDR_1":"7.7.7.7"
-            {
-              "BROADCAST" => "127.255.255.255",
-              "IPADDR"    => "127.0.0.1",
-              "NETMASK"   => "255.0.0.0",
-              "NETWORK"   => "127.0.0.0",
-              "STARTMODE" => "onboot"
-            },
+          "lo"     =>
+                      # "IPADDR_1":"7.7.7.7"
+                      {
+                        "BROADCAST" => "127.255.255.255",
+                        "IPADDR"    => "127.0.0.1",
+                        "NETMASK"   => "255.0.0.0",
+                        "NETWORK"   => "127.0.0.0",
+                        "STARTMODE" => "onboot"
+                      },
           "myri5"  => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
           "ppp5"   => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
           "tr5"    => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" }
@@ -150,11 +150,11 @@ module Yast
       @EXECUTE = {
         "target" => {
           "bash_output" => {
-            "exit" => 0,
+            "exit"   => 0,
             "stdout" => "",
-            "stderr" => "",
+            "stderr" => ""
           },
-          "bash" => 0
+          "bash"        => 0
         }
       }
 
@@ -401,7 +401,7 @@ module Yast
       ], nil)
       TEST(lambda do
         SuSEFirewall.SetBroadcastAllowedPorts(
-          { "INT" => [], "DMZ" => ["5", "3", "1"], "EXT" => ["22", "33", "44"] }
+           "INT" => [], "DMZ" => ["5", "3", "1"], "EXT" => ["22", "33", "44"]
         )
       end, [
         @READ,
@@ -427,7 +427,7 @@ module Yast
       Ops.set(
         @EXECUTE_OK,
         ["target", "bash_output"],
-        { "exit" => 0, "stdout" => "Some warnings about IPv6", "stderr" => "" }
+        "exit" => 0, "stdout" => "Some warnings about IPv6", "stderr" => ""
       )
 
       @EXECUTE_ERR = deep_copy(@EXECUTE)
@@ -437,11 +437,11 @@ module Yast
       Ops.set(
         @EXECUTE_ERR,
         ["target", "bash_output"],
-        {
-          "exit"   => 35,
-          "stdout" => "Some warnings about IPv6",
-          "stderr" => "Some errors!"
-        }
+
+        "exit"   => 35,
+        "stdout" => "Some warnings about IPv6",
+        "stderr" => "Some errors!"
+
       )
 
       DUMP("")

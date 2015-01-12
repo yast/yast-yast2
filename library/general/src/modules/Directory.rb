@@ -93,7 +93,6 @@ module Yast
       # Must be updated with ResetTmpDir() call after the SCR change!
       @tmpdir = "/tmp"
 
-
       # Directory needed for custom installation workflows
       # It can be set to the path containing additional file on a CDROM
       @custom_workflow_dir = ""
@@ -103,7 +102,7 @@ module Yast
     # Set temporary directory
     def ResetTmpDir
       @tmpdir = Convert.to_string(SCR.Read(path(".target.tmpdir")))
-      if @tmpdir == "" || @tmpdir == nil
+      if @tmpdir == "" || @tmpdir.nil?
         Builtins.y2error("Failed to set temporary directory: %1", @tmpdir)
         @tmpdir = "/tmp"
       end
@@ -118,29 +117,29 @@ module Yast
       nil
     end
 
-    publish :variable => :bindir, :type => "string"
-    publish :variable => :ybindir, :type => "string"
-    publish :variable => :logdir, :type => "string"
-    publish :variable => :vardir, :type => "string"
-    publish :variable => :etcdir, :type => "string"
-    publish :variable => :agentdir, :type => "string"
-    publish :variable => :datadir, :type => "string"
-    publish :variable => :ydatadir, :type => "string"
-    publish :variable => :schemadir, :type => "string"
-    publish :variable => :includedir, :type => "string"
-    publish :variable => :yncludedir, :type => "string"
-    publish :variable => :imagedir, :type => "string"
-    publish :variable => :themedir, :type => "string"
-    publish :variable => :localedir, :type => "string"
-    publish :variable => :clientdir, :type => "string"
-    publish :variable => :moduledir, :type => "string"
-    publish :variable => :scrconfdir, :type => "string"
-    publish :variable => :desktopdir, :type => "string"
-    publish :variable => :icondir, :type => "string"
-    publish :variable => :tmpdir, :type => "string"
-    publish :variable => :custom_workflow_dir, :type => "string"
-    publish :function => :ResetTmpDir, :type => "void ()"
-    publish :function => :Directory, :type => "void ()"
+    publish variable: :bindir, type: "string"
+    publish variable: :ybindir, type: "string"
+    publish variable: :logdir, type: "string"
+    publish variable: :vardir, type: "string"
+    publish variable: :etcdir, type: "string"
+    publish variable: :agentdir, type: "string"
+    publish variable: :datadir, type: "string"
+    publish variable: :ydatadir, type: "string"
+    publish variable: :schemadir, type: "string"
+    publish variable: :includedir, type: "string"
+    publish variable: :yncludedir, type: "string"
+    publish variable: :imagedir, type: "string"
+    publish variable: :themedir, type: "string"
+    publish variable: :localedir, type: "string"
+    publish variable: :clientdir, type: "string"
+    publish variable: :moduledir, type: "string"
+    publish variable: :scrconfdir, type: "string"
+    publish variable: :desktopdir, type: "string"
+    publish variable: :icondir, type: "string"
+    publish variable: :tmpdir, type: "string"
+    publish variable: :custom_workflow_dir, type: "string"
+    publish function: :ResetTmpDir, type: "void ()"
+    publish function: :Directory, type: "void ()"
   end
 
   Directory = DirectoryClass.new

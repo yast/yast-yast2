@@ -39,14 +39,11 @@ module Yast
 
       Yast.import "Report"
 
-
       # default value of maximum displayed lines
       @max_lines_default = 100
 
-
       # lines of the log
       @lines = []
-
 
       # data describing log:
       #   file:       filename to read from
@@ -55,10 +52,8 @@ module Yast
       #   max_lines:  max lines to keep (0 -> infinite)
       @data = {}
 
-
       # id of background process
       @id = nil
-
 
       # flag indicating if background process is (or should be) running
       @is_running = false
@@ -75,16 +70,15 @@ module Yast
 
       new_lines = []
 
-      while true
+      loop do
         line = Convert.to_string(SCR.Read(path(".process.read_line"), @id))
-        break if line == nil
+        break if line.nil?
 
         new_lines = Builtins.add(new_lines, line)
       end
 
       deep_copy(new_lines)
     end
-
 
     # Remove unneeded items from a list of lines
     # If max_lines is 0, then don't remove anything
@@ -93,8 +87,8 @@ module Yast
       return if max_lines == 0
 
       if Ops.greater_than(
-          Ops.subtract(Ops.subtract(Builtins.size(@lines), max_lines), 1),
-          0
+        Ops.subtract(Ops.subtract(Builtins.size(@lines), max_lines), 1),
+        0
         )
         @lines = Builtins.sublist(
           @lines,
@@ -105,7 +99,6 @@ module Yast
       nil
     end
 
-
     # Starts the log reading command via process agent.
     #
     # The LogView widget must exist when calling this function. The `MaxLines
@@ -113,7 +106,7 @@ module Yast
     def Start(widget, d)
       widget = deep_copy(widget)
       d = deep_copy(d)
-      if @id != nil
+      if !@id.nil?
         SCR.Execute(path(".process.release"), @id)
         @id = nil
       end
@@ -173,7 +166,7 @@ module Yast
       Builtins.y2milestone("Calling process agent with command %1", command)
 
       @id = Convert.to_integer(
-        SCR.Execute(path(".process.start_shell"), command, { "tty" => true })
+        SCR.Execute(path(".process.start_shell"), command,  "tty" => true)
       )
       @is_running = true
 
@@ -194,16 +187,15 @@ module Yast
       nil
     end
 
-
     def Update(widget)
       widget = deep_copy(widget)
-      if @id != nil
+      if !@id.nil?
         new_lines = GetNewLines()
         if Ops.greater_than(Builtins.size(new_lines), 0)
           @lines = Convert.convert(
             Builtins.merge(@lines, new_lines),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
           DeleteOldLines()
 
@@ -220,9 +212,8 @@ module Yast
       nil
     end
 
-
     def Stop
-      if @id != nil
+      if !@id.nil?
         SCR.Execute(path(".process.release"), @id)
         @id = nil
       end
@@ -230,15 +221,14 @@ module Yast
       nil
     end
 
-
     def GetLines
       deep_copy(@lines)
     end
 
-    publish :function => :Start, :type => "void (term, map <string, any>)"
-    publish :function => :Update, :type => "void (term)"
-    publish :function => :Stop, :type => "void ()"
-    publish :function => :GetLines, :type => "list <string> ()"
+    publish function: :Start, type: "void (term, map <string, any>)"
+    publish function: :Update, type: "void (term)"
+    publish function: :Stop, type: "void ()"
+    publish function: :GetLines, type: "list <string> ()"
   end
 
   LogViewCore = LogViewCoreClass.new

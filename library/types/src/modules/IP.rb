@@ -49,7 +49,7 @@ module Yast
     # Describe a valid IPv4 address
     # @return [String] describtion a valid IPv4 address
     def Valid4
-      #Translators: dot: "."
+      # Translators: dot: "."
       _(
         "A valid IPv4 address consists of four integers\nin the range 0-255 separated by dots."
       )
@@ -59,7 +59,7 @@ module Yast
     # @param [String] ip IPv4 address
     # @return true if correct
     def Check4(ip)
-      return false if ip == nil
+      return false if ip.nil?
 
       !Resolv::IPv4::Regex.match(ip).nil?
     end
@@ -67,10 +67,10 @@ module Yast
     # Describe a valid IPv6 address
     # @return [String] describtion a valid IPv4 address
     def Valid6
-      #Translators: colon: ":"
+      # Translators: colon: ":"
       _(
-        "A valid IPv6 address consists of up to eight\n" +
-          "hexadecimal numbers in the range 0 - FFFF separated by colons.\n" +
+        "A valid IPv6 address consists of up to eight\n" \
+          "hexadecimal numbers in the range 0 - FFFF separated by colons.\n" \
           "It can contain up to one double colon."
       )
     end
@@ -79,7 +79,7 @@ module Yast
     # @param [String] ip IPv6 address
     # @return true if correct
     def Check6(ip)
-      return false if ip == nil
+      return false if ip.nil?
 
       res = !Resolv::IPv6::Regex.match(ip).nil?
 
@@ -94,7 +94,7 @@ module Yast
         return elements.size <= max_elements
       end
 
-      return res
+      res
     end
 
     # If param contains IPv6 in one of its various forms, extracts it.
@@ -136,12 +136,12 @@ module Yast
     def ValidNetwork
       # TRANSLATORS: description of the valid network definition
       _(
-        "A valid network definition can contain the IP,\n" +
-          "IP/Netmask, IP/Netmask_Bits, or 0/0 for all networks.\n" +
-          "\n" +
-          "Examples:\n" +
-          "IP: 192.168.0.1 or 2001:db8:0::1\n" +
-          "IP/Netmask: 192.168.0.0/255.255.255.0 or 2001:db8:0::1/56\n" +
+        "A valid network definition can contain the IP,\n" \
+          "IP/Netmask, IP/Netmask_Bits, or 0/0 for all networks.\n" \
+          "\n" \
+          "Examples:\n" \
+          "IP: 192.168.0.1 or 2001:db8:0::1\n" \
+          "IP/Netmask: 192.168.0.0/255.255.255.0 or 2001:db8:0::1/56\n" \
           "IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32 or 2001:db8:0::1/ffff::0\n"
       )
     end
@@ -153,14 +153,14 @@ module Yast
       return nil unless Check4(ip)
 
       parts = ip.split(".")
-      parts.reduce(0) {|r, p| (r << 8) + p.to_i }
+      parts.reduce(0) { |r, p| (r << 8) + p.to_i }
     end
 
     # Convert IPv4 address from integer to string
     # @param [Fixnum] ip IPv4 address
     # @return ip address as string
     def ToString(ip)
-      parts = [16777216, 65536, 256, 1].map do |b|
+      parts = [16_777_216, 65_536, 256, 1].map do |b|
         (ip / b) & 255
       end
 
@@ -188,7 +188,7 @@ module Yast
     def ComputeNetwork(ip, mask)
       i = ToInteger(ip)
       m = ToInteger(mask)
-      ToString(Ops.bitwise_and(Ops.bitwise_and(i, m), 4294967295))
+      ToString(Ops.bitwise_and(Ops.bitwise_and(i, m), 4_294_967_295))
     end
 
     # Compute IPv4 broadcast address from ip4 address and network mask.
@@ -201,7 +201,7 @@ module Yast
       i = ToInteger(ip)
       m = ToInteger(mask)
       ToString(
-        Ops.bitwise_and(Ops.bitwise_or(i, Ops.bitwise_not(m)), 4294967295)
+        Ops.bitwise_and(Ops.bitwise_or(i, Ops.bitwise_not(m)), 4_294_967_295)
       )
     end
 
@@ -249,8 +249,8 @@ module Yast
     end
 
     def CheckNetworkShared(network)
-      if network == nil || network == ""
-        return false 
+      if network.nil? || network == ""
+        return false
 
         # all networks
       elsif network == "0/0"
@@ -271,29 +271,29 @@ module Yast
     #   CheckNetwork("172.55.0.0/33") -> false
     def CheckNetwork4(network)
       generic_check = CheckNetworkShared(network)
-      if generic_check != nil
-        return generic_check 
+      if !generic_check.nil?
+        return generic_check
 
         # 192.168.0.1, 0.8.55.999
       elsif Check4(network)
-        return true 
+        return true
 
         # 192.168.0.0/20, 0.8.55/158
       elsif Builtins.regexpmatch(
-          network,
-          Ops.add(Ops.add("^[", @ValidChars4), "]+/[0-9]+$")
+        network,
+        Ops.add(Ops.add("^[", @ValidChars4), "]+/[0-9]+$")
         )
         net_parts = Builtins.splitstring(network, "/")
         return Check4(Ops.get(net_parts, 0, "")) &&
-          Netmask.CheckPrefix4(Ops.get(net_parts, 1, "")) 
+          Netmask.CheckPrefix4(Ops.get(net_parts, 1, ""))
 
         # 192.168.0.0/255.255.255.0, 0.8.55/10.258.12
       elsif Builtins.regexpmatch(
-          network,
-          Ops.add(
-            Ops.add(Ops.add(Ops.add("^[", @ValidChars4), "]+/["), @ValidChars4),
-            "]+$"
-          )
+        network,
+        Ops.add(
+          Ops.add(Ops.add(Ops.add("^[", @ValidChars4), "]+/["), @ValidChars4),
+          "]+$"
+        )
         )
         net_parts = Builtins.splitstring(network, "/")
         return Check4(Ops.get(net_parts, 0, "")) &&
@@ -314,35 +314,35 @@ module Yast
     #   CheckNetwork("::1/257") -> false
     def CheckNetwork6(network)
       generic_check = CheckNetworkShared(network)
-      if generic_check != nil
-        return generic_check 
+      if !generic_check.nil?
+        return generic_check
 
         # 2001:db8:0::1
       elsif Check6(network)
-        return true 
+        return true
 
         # 2001:db8:0::1/64
       elsif Builtins.regexpmatch(
-          network,
+        network,
+        Ops.add(
           Ops.add(
-            Ops.add(
-              Ops.add(Ops.add("^[", @ValidChars6), "]+/["),
-              Netmask.ValidChars6
-            ),
-            "]+$"
-          )
+            Ops.add(Ops.add("^[", @ValidChars6), "]+/["),
+            Netmask.ValidChars6
+          ),
+          "]+$"
+        )
         )
         net_parts = Builtins.splitstring(network, "/")
         return Check6(Ops.get(net_parts, 0, "")) &&
-          Netmask.Check6(Ops.get(net_parts, 1, "")) 
+          Netmask.Check6(Ops.get(net_parts, 1, ""))
 
         # 2001:db8:0::1/ffff:ffff::0
       elsif Builtins.regexpmatch(
-          network,
-          Ops.add(
-            Ops.add(Ops.add(Ops.add("^[", @ValidChars6), "]+/["), @ValidChars6),
-            "]+$"
-          )
+        network,
+        Ops.add(
+          Ops.add(Ops.add(Ops.add("^[", @ValidChars6), "]+/["), @ValidChars6),
+          "]+$"
+        )
         )
         net_parts = Builtins.splitstring(network, "/")
         return Check6(Ops.get(net_parts, 0, "")) &&
@@ -419,31 +419,30 @@ module Yast
       # all from 224. is covered by RFC#5771 and RFC#5735
       return true if (224..255).include?(ip.split(".").first.to_i)
 
-      return false
+      false
     end
 
-    publish :variable => :ValidChars, :type => "string"
-    publish :variable => :ValidChars4, :type => "string"
-    publish :variable => :ValidChars6, :type => "string"
-    publish :function => :Valid4, :type => "string ()"
-    publish :function => :Check4, :type => "boolean (string)"
-    publish :function => :Valid6, :type => "string ()"
-    publish :function => :Check6, :type => "boolean (string)"
-    publish :function => :UndecorateIPv6, :type => "string (string)"
-    publish :function => :Check, :type => "boolean (string)"
-    publish :function => :ValidNetwork, :type => "string ()"
-    publish :function => :ToInteger, :type => "integer (string)"
-    publish :function => :ToString, :type => "string (integer)"
-    publish :function => :ToHex, :type => "string (string)"
-    publish :function => :ComputeNetwork, :type => "string (string, string)"
-    publish :function => :ComputeBroadcast, :type => "string (string, string)"
-    publish :function => :IPv4ToBits, :type => "string (string)"
-    publish :function => :BitsToIPv4, :type => "string (string)"
-    publish :function => :CheckNetwork4, :type => "boolean (string)"
-    publish :function => :CheckNetwork6, :type => "boolean (string)"
-    publish :function => :CheckNetwork, :type => "boolean (string)"
-    publish :function => :reserved4, :type => "boolean (string)"
-
+    publish variable: :ValidChars, type: "string"
+    publish variable: :ValidChars4, type: "string"
+    publish variable: :ValidChars6, type: "string"
+    publish function: :Valid4, type: "string ()"
+    publish function: :Check4, type: "boolean (string)"
+    publish function: :Valid6, type: "string ()"
+    publish function: :Check6, type: "boolean (string)"
+    publish function: :UndecorateIPv6, type: "string (string)"
+    publish function: :Check, type: "boolean (string)"
+    publish function: :ValidNetwork, type: "string ()"
+    publish function: :ToInteger, type: "integer (string)"
+    publish function: :ToString, type: "string (integer)"
+    publish function: :ToHex, type: "string (string)"
+    publish function: :ComputeNetwork, type: "string (string, string)"
+    publish function: :ComputeBroadcast, type: "string (string, string)"
+    publish function: :IPv4ToBits, type: "string (string)"
+    publish function: :BitsToIPv4, type: "string (string)"
+    publish function: :CheckNetwork4, type: "boolean (string)"
+    publish function: :CheckNetwork6, type: "boolean (string)"
+    publish function: :CheckNetwork, type: "boolean (string)"
+    publish function: :reserved4, type: "boolean (string)"
 
   private
 
@@ -451,7 +450,7 @@ module Yast
       return false unless ip.start_with?("100.")
 
       second_part = ip.split(".")[1].to_i
-      return (64..127).include?(second_part)
+      (64..127).include?(second_part)
     end
 
     def private_network?(ip)
@@ -465,14 +464,14 @@ module Yast
       return false unless ip.start_with?("172.")
 
       second_part = ip.split(".")[1].to_i
-      return (16..31).include?(second_part)
+      (16..31).include?(second_part)
     end
 
     def ds_lite_address?(ip)
       return false unless ip.start_with?("192.0.0.")
 
       fourth_part = ip.split(".")[3].to_i
-      return (0..7).include?(fourth_part)
+      (0..7).include?(fourth_part)
     end
   end
 

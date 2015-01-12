@@ -73,21 +73,21 @@ module Yast
       newkey = ""
       fallback = Convert.to_string(SCR.Read(Builtins.add(keypath, key)))
 
-      #check if there are any translation in .desktop file
-      #that is - Name[$lang_code]
-      if @LanguageFull != nil || @LanguageFull != ""
+      # check if there are any translation in .desktop file
+      # that is - Name[$lang_code]
+      if !@LanguageFull.nil? || @LanguageFull != ""
         newkey = Builtins.sformat("%1[%2]", key, @LanguageFull)
         ret = Convert.to_string(SCR.Read(Builtins.add(keypath, newkey)))
-        return ret if ret != nil && ret != ""
+        return ret if !ret.nil? && ret != ""
       end
 
-      if @Language != nil || @Language != ""
+      if !@Language.nil? || @Language != ""
         newkey = Builtins.sformat("%1[%2]", key, @Language)
         ret = Convert.to_string(SCR.Read(Builtins.add(keypath, newkey)))
-        return ret if ret != nil && ret != ""
+        return ret if !ret.nil? && ret != ""
       end
 
-      #no translations in .desktop, check desktop_translations.mo then
+      # no translations in .desktop, check desktop_translations.mo then
       msgid = Builtins.sformat("%1(%2): %3", key, fname, fallback)
       Builtins.y2debug("Looking for key: %1", msgid)
       ret = Builtins.dpgettext(
@@ -96,7 +96,7 @@ module Yast
         msgid
       )
 
-      #probably untranslated - return english name
+      # probably untranslated - return english name
       return fallback if ret == msgid
 
       ret
@@ -184,13 +184,13 @@ module Yast
         )
         values = SCR.Dir(filepath)
         filename = _ExtractDesktopFilename.call(file)
-        values = deep_copy(_Values) if _Values != nil && _Values != []
+        values = deep_copy(_Values) if !_Values.nil? && _Values != []
         Builtins.foreach(values) do |value|
           ret = ReadLocalizedKey(filename, filepath, value)
-          Ops.set(filemap, value, ret) if ret != nil && ret != ""
+          Ops.set(filemap, value, ret) if !ret.nil? && ret != ""
         end
         name2 = Builtins.regexpsub(file, "^.*/(.*).desktop", "\\1")
-        if name2 != "" && name2 != nil
+        if name2 != "" && !name2.nil?
           Ops.set(@Modules, name2, filemap)
           group = Ops.get_string(filemap, "X-SuSE-YaST-Group", "")
           if group != ""
@@ -212,7 +212,6 @@ module Yast
       nil
     end
 
-
     def Translate(key)
       if Builtins.regexpmatch(key, "_\\(\"(.*)\"\\)") == true
         ke = Builtins.regexpsub(key, "_\\(\"(.*)\"\\)", "\\1")
@@ -221,7 +220,6 @@ module Yast
       end
       key
     end
-
 
     def CreateList(_M)
       _M = deep_copy(_M)
@@ -244,11 +242,9 @@ module Yast
       end
     end
 
-
     def GroupList
       CreateList(@Groups)
     end
-
 
     def ModuleList(group)
       mods = Ops.get_list(@Groups, [group, "modules"], [])
@@ -283,7 +279,6 @@ module Yast
       # y2debug too costly: y2debug("%1", m);
       deep_copy(l)
     end
-
 
     def MakeAutostartMap(exec, args)
       args = deep_copy(args)
@@ -347,32 +342,32 @@ module Yast
           term(
             :IniAgent,
             filename,
-            {
-              "options"  => ["read_only"], # rw works but not needed
-              "comments" => ["^[ \t]*[;#].*", ";.*", "\\{[^}]*\\}", "^[ \t]*$"],
-              "sections" => [
-                {
-                  "begin" => [
-                    "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
-                    "[%s]"
-                  ]
-                }
-              ],
-              "params"   => [
-                {
-                  "match" => [
-                    "^[ \t]*([^=]*[^ \t=])[ \t]*=[ \t]*(.*[^ \t]|)[ \t]*$",
-                    "%s=%s"
-                  ]
-                }
-              ]
-            }
+
+            "options"  => ["read_only"], # rw works but not needed
+            "comments" => ["^[ \t]*[;#].*", ";.*", "\\{[^}]*\\}", "^[ \t]*$"],
+            "sections" => [
+              {
+                "begin" => [
+                  "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
+                  "[%s]"
+                ]
+              }
+            ],
+            "params"   => [
+              {
+                "match" => [
+                  "^[ \t]*([^=]*[^ \t=])[ \t]*=[ \t]*(.*[^ \t]|)[ \t]*$",
+                  "%s=%s"
+                ]
+              }
+            ]
+
           )
         )
       )
 
-      #non-existent file requested
-      if SCR.Dir(path(".yast2.desktop1.v.\"Desktop Entry\"")) == nil
+      # non-existent file requested
+      if SCR.Dir(path(".yast2.desktop1.v.\"Desktop Entry\"")).nil?
         Builtins.y2error("Unknown desktop file: %1", file)
         SCR.UnregisterAgent(path(".yast2.desktop1"))
         return nil
@@ -402,15 +397,15 @@ module Yast
       deep_copy(result)
     end
 
-    publish :variable => :Modules, :type => "map <string, map>"
-    publish :variable => :Groups, :type => "map <string, map>"
-    publish :variable => :AgentPath, :type => "path"
-    publish :function => :Read, :type => "void (list <string>)"
-    publish :function => :Translate, :type => "string (string)"
-    publish :function => :GroupList, :type => "list <term> ()"
-    publish :function => :ModuleList, :type => "list <term> (string)"
-    publish :function => :RunViaDesktop, :type => "void (string, list <string>)"
-    publish :function => :ParseSingleDesktopFile, :type => "map <string, string> (string)"
+    publish variable: :Modules, type: "map <string, map>"
+    publish variable: :Groups, type: "map <string, map>"
+    publish variable: :AgentPath, type: "path"
+    publish function: :Read, type: "void (list <string>)"
+    publish function: :Translate, type: "string (string)"
+    publish function: :GroupList, type: "list <term> ()"
+    publish function: :ModuleList, type: "list <term> (string)"
+    publish function: :RunViaDesktop, type: "void (string, list <string>)"
+    publish function: :ParseSingleDesktopFile, type: "map <string, string> (string)"
   end
 
   Desktop = DesktopClass.new

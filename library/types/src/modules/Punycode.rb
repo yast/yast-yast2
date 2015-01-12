@@ -73,7 +73,7 @@ module Yast
     # @param [Fixnum] new_max_size
     # @see #GetMaximumCacheSize()
     def SetMaximumCacheSize(new_max_size)
-      if new_max_size != nil
+      if !new_max_size.nil?
         @maximum_cache_size = new_max_size
       else
         Builtins.y2error("Cannot set MaximumCacheSize to nil!")
@@ -88,7 +88,7 @@ module Yast
     # @param [String] encoded
     def CreateNewCacheRecord(decoded, encoded)
       # Erroneous cache record
-      return if decoded == nil || encoded == nil
+      return if decoded.nil? || encoded.nil?
 
       # Already cached
       return if Builtins.contains(@cache_decoded, decoded)
@@ -98,8 +98,8 @@ module Yast
 
       # Do not store this record if the cache would exceed maximum
       if Ops.greater_than(
-          Ops.add(Ops.add(@current_cache_size, decoded_size), encoded_size),
-          @maximum_cache_size
+        Ops.add(Ops.add(@current_cache_size, decoded_size), encoded_size),
+        @maximum_cache_size
         )
         return
       end
@@ -172,7 +172,7 @@ module Yast
     # Returns the current temporary directory.
     # Lazy loading for the initialization is used.
     def GetTmpDirectory
-      if @tmp_dir == nil
+      if @tmp_dir.nil?
         @tmp_dir = Convert.to_string(SCR.Read(path(".target.tmpdir")))
       end
 
@@ -204,7 +204,7 @@ module Yast
             string_out = GetDecodedCachedString(string_in)
           end
         end
-        if string_out == nil
+        if string_out.nil?
           current_index = Ops.add(current_index, 1)
           Ops.set(not_cached, current_index, string_in)
         end
@@ -233,11 +233,11 @@ module Yast
         else
           converted_not_cached = Convert.convert(
             SCR.Read(path(".target.ycp"), tmp_out),
-            :from => "any",
-            :to   => "list <string>"
+            from: "any",
+            to:   "list <string>"
           )
           # Parsing the YCP file failed
-          if converted_not_cached == nil
+          if converted_not_cached.nil?
             Builtins.y2error(
               "Erroneous YCP file: %1",
               SCR.Read(path(".target.string"), tmp_out)
@@ -385,7 +385,7 @@ module Yast
         current = Ops.get(backward_map_of_conversion, [current_domain_index, 0])
         _end = Ops.get(backward_map_of_conversion, [current_domain_index, 1])
         # error?
-        if current == nil || _end == nil
+        if current.nil? || _end.nil?
           Builtins.y2error(
             "Cannot find start/end for %1 in %2",
             one_encoded,
@@ -414,13 +414,13 @@ module Yast
       deep_copy(decoded_domain_names)
     end
 
-    publish :function => :GetMaximumCacheSize, :type => "integer ()"
-    publish :function => :SetMaximumCacheSize, :type => "void (integer)"
-    publish :function => :EncodePunycodes, :type => "list <string> (list <string>)"
-    publish :function => :DecodePunycodes, :type => "list <string> (list <string>)"
-    publish :function => :EncodeDomainName, :type => "string (string)"
-    publish :function => :DecodeDomainName, :type => "string (string)"
-    publish :function => :DocodeDomainNames, :type => "list <string> (list <string>)"
+    publish function: :GetMaximumCacheSize, type: "integer ()"
+    publish function: :SetMaximumCacheSize, type: "void (integer)"
+    publish function: :EncodePunycodes, type: "list <string> (list <string>)"
+    publish function: :DecodePunycodes, type: "list <string> (list <string>)"
+    publish function: :EncodeDomainName, type: "string (string)"
+    publish function: :DecodeDomainName, type: "string (string)"
+    publish function: :DocodeDomainNames, type: "list <string> (list <string>)"
   end
 
   Punycode = PunycodeClass.new

@@ -38,7 +38,6 @@ require "yast"
 
 module Yast
   class KernelClass < Module
-
     # default configuration file for Kernel modules loaded on boot
     MODULES_CONF_FILE = "yast.conf"
 
@@ -117,11 +116,11 @@ module Yast
     # Hide passwords in command line option string
     # @param [String] in input string
     # @return [String] outpit string
-    def HidePasswords(_in)
+    def HidePasswords(in_)
       ret = ""
 
-      if _in != nil
-        parts = Builtins.splitstring(_in, " ")
+      if !in_.nil?
+        parts = Builtins.splitstring(in_, " ")
 
         first = true
         Builtins.foreach(parts) do |p|
@@ -244,6 +243,7 @@ module Yast
 
       nil
     end
+
     def ParseInstallationKernelCmdline
       @cmdline_parsed = true
       return if !(Stage.initial || Stage.cont)
@@ -253,7 +253,7 @@ module Yast
         "cmdline from install.inf is: %1",
         HidePasswords(tmp)
       )
-      if tmp != nil
+      if !tmp.nil?
         # extract extra boot parameters given in installation
         ExtractCmdlineParameters(tmp)
       end
@@ -269,7 +269,7 @@ module Yast
     end
 
     # Set the vga= kernel argument
-    # FIXME is heer because of bootloader module, should be removed
+    # FIXME: is heer because of bootloader module, should be removed
     def SetVgaType(new_vga)
       ParseInstallationKernelCmdline() if !@cmdline_parsed
       @vgaType = new_vga
@@ -292,7 +292,7 @@ module Yast
     end
 
     # Set the kernel command line
-    # FIXME is heer because of bootloader module, should be removed
+    # FIXME: is heer because of bootloader module, should be removed
     def SetCmdLine(new_cmd_line)
       ParseInstallationKernelCmdline() if !@cmdline_parsed
       @cmdLine = new_cmd_line
@@ -326,7 +326,7 @@ module Yast
 
       # add Xen paravirtualized drivers to a full virtualized host
       xen = Convert.to_boolean(SCR.Read(path(".probe.is_xen")))
-      if xen == nil
+      if xen.nil?
         Builtins.y2warning("XEN detection failed, assuming XEN is NOT running")
         xen = false
       end
@@ -348,10 +348,8 @@ module Yast
         cpuflags = []
 
         # bugzilla #303842
-        if cpuflags != nil
-          cpuflags = Ops.greater_than(Builtins.size(cpuinfo_flags), 0) ?
-            Builtins.splitstring(cpuinfo_flags, " ") :
-            []
+        if !cpuflags.nil?
+          cpuflags = cpuinfo_flags.empty? ? [] : Builtins.splitstring(cpuinfo_flags, " ")
         else
           Builtins.y2error("Cannot read cpuflags")
           Builtins.y2milestone(
@@ -367,7 +365,7 @@ module Yast
           [0, "resource", "phys_mem", 0, "range"],
           0
         )
-        fourGB = 3221225472
+        fourGB = 3_221_225_472
         Builtins.y2milestone("Physical memory %1", memsize)
 
         # for memory > 4GB and PAE support we install kernel-pae,
@@ -450,7 +448,6 @@ module Yast
       nil
     end
 
-
     # functinos related to kernel packages
 
     # Het the name of kernel binary under /boot
@@ -514,7 +511,7 @@ module Yast
     #  for being available on the medias before adding to the list
     # @return a list of all kernel packages (including the base package) that
     #  are to be installed together with the base package
-    def ComputePackagesForBase(base, check_avail)
+    def ComputePackagesForBase(base, _check_avail)
       # Note: kernel-*-nongpl packages have been dropped, use base only
       ret = [base]
 
@@ -554,8 +551,6 @@ module Yast
 
     # functions related to kernel's modules loaded on boot
 
-
-
     # Resets the internal cache
     def reset_modules_to_load
       @modules_to_load = nil
@@ -578,7 +573,7 @@ module Yast
     # @param [String] kernel module
     # @return [Boolean] whether the given module is in the list
     def module_to_be_loaded?(kernel_module)
-      modules_to_load.values.any? {|m| m.include?(kernel_module)}
+      modules_to_load.values.any? { |m| m.include?(kernel_module) }
     end
 
     # Add a kernel module to the list of modules to load after boot
@@ -586,9 +581,7 @@ module Yast
     def AddModuleToLoad(name)
       Builtins.y2milestone("Adding module to be loaded at boot: %1", name)
 
-      unless module_to_be_loaded?(name)
-        @modules_to_load[MODULES_CONF_FILE] << name
-      end
+      @modules_to_load[MODULES_CONF_FILE] << name unless module_to_be_loaded?(name)
     end
 
     # Remove a kernel module from the list of modules to load after boot
@@ -599,7 +592,7 @@ module Yast
       return true unless module_to_be_loaded?(name)
 
       Builtins.y2milestone("Removing module to be loaded at boot: %1", name)
-      @modules_to_load.each do |key, val|
+      @modules_to_load.each do |_key, val|
         val.delete(name)
       end
     end
@@ -702,7 +695,7 @@ module Yast
     #
     # @return [Hash] with the configuration
     def read_modules_to_load
-      @modules_to_load = {MODULES_CONF_FILE => []}
+      @modules_to_load = { MODULES_CONF_FILE => [] }
 
       if FileUtils.Exists(MODULES_DIR)
         config_files = SCR::Read(path(".target.dir"), MODULES_DIR)
@@ -731,30 +724,30 @@ module Yast
       @modules_to_load
     end
 
-    publish :function => :AddCmdLine, :type => "void (string, string)"
-    publish :function => :GetVgaType, :type => "string ()"
-    publish :function => :SetVgaType, :type => "void (string)"
-    publish :function => :GetSuSEUpdate, :type => "boolean ()"
-    publish :function => :GetCmdLine, :type => "string ()"
-    publish :function => :SetCmdLine, :type => "void (string)"
-    publish :function => :ProbeKernel, :type => "void ()"
-    publish :function => :SetPackages, :type => "void (list <string>)"
-    publish :function => :GetBinary, :type => "string ()"
-    publish :function => :GetPackages, :type => "list <string> ()"
-    publish :function => :ComputePackage, :type => "string ()"
-    publish :function => :GetFinalKernel, :type => "string ()"
-    publish :function => :ComputePackagesForBase, :type => "list <string> (string, boolean)"
-    publish :function => :ComputePackages, :type => "list <string> ()"
-    publish :function => :SetInformAboutKernelChange, :type => "void (boolean)"
-    publish :function => :GetInformAboutKernelChange, :type => "boolean ()"
-    publish :function => :InformAboutKernelChange, :type => "boolean ()"
+    publish function: :AddCmdLine, type: "void (string, string)"
+    publish function: :GetVgaType, type: "string ()"
+    publish function: :SetVgaType, type: "void (string)"
+    publish function: :GetSuSEUpdate, type: "boolean ()"
+    publish function: :GetCmdLine, type: "string ()"
+    publish function: :SetCmdLine, type: "void (string)"
+    publish function: :ProbeKernel, type: "void ()"
+    publish function: :SetPackages, type: "void (list <string>)"
+    publish function: :GetBinary, type: "string ()"
+    publish function: :GetPackages, type: "list <string> ()"
+    publish function: :ComputePackage, type: "string ()"
+    publish function: :GetFinalKernel, type: "string ()"
+    publish function: :ComputePackagesForBase, type: "list <string> (string, boolean)"
+    publish function: :ComputePackages, type: "list <string> ()"
+    publish function: :SetInformAboutKernelChange, type: "void (boolean)"
+    publish function: :GetInformAboutKernelChange, type: "boolean ()"
+    publish function: :InformAboutKernelChange, type: "boolean ()"
 
     # Handling for Kernel modules loaded on boot
-    publish :function => :AddModuleToLoad, :type => "void (string)"
-    publish :function => :RemoveModuleToLoad, :type => "void (string)"
-    publish :function => :SaveModulesToLoad, :type => "boolean ()"
-    publish :function => :reset_modules_to_load, :type => "void ()"
-    publish :function => :modules_to_load, :type => "map <string, list> ()"
+    publish function: :AddModuleToLoad, type: "void (string)"
+    publish function: :RemoveModuleToLoad, type: "void (string)"
+    publish function: :SaveModulesToLoad, type: "boolean ()"
+    publish function: :reset_modules_to_load, type: "void ()"
+    publish function: :modules_to_load, type: "map <string, list> ()"
   end
 
   Kernel = KernelClass.new

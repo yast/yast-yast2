@@ -40,9 +40,11 @@ module Yast
     def f1
       "1"
     end
+
     def f2
       2
     end
+
     def f3
       :id3
     end

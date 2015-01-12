@@ -35,7 +35,7 @@ require "yast"
 
 module Yast
   class SuSEFirewalServiceNotFound < StandardError
-    def initialize message
+    def initialize(message)
       super message
     end
   end
@@ -58,7 +58,7 @@ module Yast
       "ip_protocols"    => [],
       "broadcast_ports" => [],
       "name"            => "",
-      "description"     => "",
+      "description"     => ""
     }
 
     READ_ONLY_SERVICE_FEATURES = ["name", "description"]
@@ -263,7 +263,6 @@ module Yast
           "convert_to" => ["service:iscsitarget"]
         }
       }
-
     end
 
     # Returns whether the service ID is defined by package.
@@ -305,34 +304,34 @@ module Yast
       term(
         :IniAgent,
         filefullpath,
-        {
-          "options"  => [
-            "global_values",
-            "flat",
-            "read_only",
-            "ignore_case_regexps"
-          ],
-          "comments" => [
-            # jail followed by anything but jail (immediately)
-            "^[ \t]*#[^#].*$",
-            # comments that are not commented key:value pairs (see "params")
-            # they always use two jails
-            "^[ \t]*##[ \t]*[^([a-zA-Z0-9_]+:.*)]$",
-            # comments with three jails and more
-            "^[ \t]*###.*$",
-            # jail alone
-            "^[ \t]*#[ \t]*$",
-            # (empty space)
-            "^[ \t]*$",
-            # sysconfig entries
-            "^[ \t]*[a-zA-Z0-9_]+.*"
-          ],
-          "params"   => [
-            # commented key:value pairs
-            # e.g.: ## Name: service name
-            { "match" => ["^##[ \t]*([a-zA-Z0-9_]+):[ \t]*(.*)[ \t]*$", "%s: %s"] }
-          ]
-        }
+
+        "options"  => [
+          "global_values",
+          "flat",
+          "read_only",
+          "ignore_case_regexps"
+        ],
+        "comments" => [
+          # jail followed by anything but jail (immediately)
+          "^[ \t]*#[^#].*$",
+          # comments that are not commented key:value pairs (see "params")
+          # they always use two jails
+          "^[ \t]*##[ \t]*[^([a-zA-Z0-9_]+:.*)]$",
+          # comments with three jails and more
+          "^[ \t]*###.*$",
+          # jail alone
+          "^[ \t]*#[ \t]*$",
+          # (empty space)
+          "^[ \t]*$",
+          # sysconfig entries
+          "^[ \t]*[a-zA-Z0-9_]+.*"
+        ],
+        "params"   => [
+          # commented key:value pairs
+          # e.g.: ## Name: service name
+          { "match" => ["^##[ \t]*([a-zA-Z0-9_]+):[ \t]*(.*)[ \t]*$", "%s: %s"] }
+        ]
+
       )
     end
 
@@ -346,13 +345,13 @@ module Yast
     #                 when service is not found (default false)
     def service_details(service_name, silent = false)
       service = all_services[service_name]
-      if service.nil? and !silent
+      if service.nil? && !silent
         log.error "Uknown service '#{service_name}'"
         log.info "Known services: #{all_services.keys}"
 
         raise(
           SuSEFirewalServiceNotFound,
-          _("Service with name '%{service_name}' does not exist") % { :service_name => service_name }
+          _("Service with name '%{service_name}' does not exist") % { service_name: service_name }
         )
       end
 
@@ -399,8 +398,8 @@ module Yast
 
         # Registering sysconfig agent for this file
         if !SCR.RegisterAgent(
-            path(".firewall_service_definition"),
-            term(:ag_ini, term(:SysConfigFile, filefullpath))
+          path(".firewall_service_definition"),
+          term(:ag_ini, term(:SysConfigFile, filefullpath))
           )
           log.error "Cannot register agent for #{filefullpath}"
           next
@@ -415,7 +414,7 @@ module Yast
               Builtins.add(path(".firewall_service_definition"), known_feature)
             )
           )
-          definition = "" if definition == nil
+          definition = "" if definition.nil?
           # map of services contains list of entries
           definition_values = Builtins.splitstring(definition, " \t\n")
           definition_values = Builtins.filter(definition_values) do |one_value|
@@ -428,13 +427,13 @@ module Yast
         SCR.UnregisterAgent(path(".firewall_service_definition"))
 
         # Fallback for presented service
-        @services[service_name]["name"] = _("Service: %{filename}") % { :filename => filename }
+        @services[service_name]["name"] = _("Service: %{filename}") % { filename: filename }
         @services[service_name]["description"] = ""
 
         # Registering sysconfig agent for this file (to get metadata)
         if SCR.RegisterAgent(
-            path(".firewall_service_metadata"),
-            term(:ag_ini, GetMetadataAgent(filefullpath))
+          path(".firewall_service_metadata"),
+          term(:ag_ini, GetMetadataAgent(filefullpath))
           )
           Builtins.foreach(@known_metadata) do |metadata_feature, metadata_key|
             definition = Convert.to_string(
@@ -635,13 +634,13 @@ module Yast
         log.error "Service #{service} is unknown"
         raise(
           SuSEFirewalServiceNotFound,
-          _("Service with name '%{service_name}' does not exist") % { :service_name => service }
+          _("Service with name '%{service_name}' does not exist") % { service_name: service }
         )
       end
 
       # create the filename from service name
       filename = GetFilenameFromServiceDefinedByPackage(service)
-      if filename == nil || filename == ""
+      if filename.nil? || filename == ""
         log.error "Can't operate with filename '#{filename}' created from '#{service}'"
         return false
       end
@@ -656,8 +655,8 @@ module Yast
 
       # Registering sysconfig agent for that file
       if !SCR.RegisterAgent(
-          path(".firewall_service_definition"),
-          term(:ag_ini, term(:SysConfigFile, filefullpath))
+        path(".firewall_service_definition"),
+        term(:ag_ini, term(:SysConfigFile, filefullpath))
         )
         log.error "Cannot register agent for #{filefullpath}"
         return false
@@ -677,20 +676,20 @@ module Yast
         next if READ_ONLY_SERVICE_FEATURES.include? ycp_id
 
         sysconfig_id = Ops.get(ks_features_backward, ycp_id)
-        if sysconfig_id == nil
+        if sysconfig_id.nil?
           log.error "Unknown key '#{ycp_id}'"
           write_ok = false
           next
         end
         one_def = Builtins.filter(one_def) do |one_def_item|
-          one_def_item != nil && one_def_item != "" &&
+          !one_def_item.nil? && one_def_item != "" &&
             !Builtins.regexpmatch(one_def_item, "^ *$")
         end
         service_entry_path = Path.new(".firewall_service_definition.#{sysconfig_id}")
         service_entry_value = one_def.join(" ")
         if !SCR.Write(service_entry_path, service_entry_value)
           log.error "Cannot write #{service_entry_value} to #{service_entry_path}",
-          write_ok = false
+            write_ok = false
           next
         end
         # new definition of the service
@@ -725,25 +724,25 @@ module Yast
       []
     end
 
-    publish :variable => :OLD_SERVICES, :type => "map <string, map <string, any>>"
-    publish :function => :ServiceDefinedByPackage, :type => "boolean (string)"
-    publish :function => :GetFilenameFromServiceDefinedByPackage, :type => "string (string)"
-    publish :function => :ReadServicesDefinedByRPMPackages, :type => "boolean ()"
-    publish :function => :IsKnownService, :type => "boolean (string)"
-    publish :function => :GetSupportedServices, :type => "map <string, string> ()"
-    publish :function => :GetListOfServicesAddedByPackage, :type => "list <string> ()"
-    publish :function => :GetNeededTCPPorts, :type => "list <string> (string)"
-    publish :function => :GetNeededUDPPorts, :type => "list <string> (string)"
-    publish :function => :GetNeededRPCPorts, :type => "list <string> (string)"
-    publish :function => :GetNeededIPProtocols, :type => "list <string> (string)"
-    publish :function => :GetDescription, :type => "string (string)"
-    publish :function => :SetModified, :type => "void ()"
-    publish :function => :ResetModified, :type => "void ()"
-    publish :function => :GetModified, :type => "boolean ()"
-    publish :function => :GetNeededBroadcastPorts, :type => "list <string> (string)"
-    publish :function => :GetNeededPortsAndProtocols, :type => "map <string, list <string>> (string)"
-    publish :function => :SetNeededPortsAndProtocols, :type => "boolean (string, map <string, list <string>>)"
-    publish :function => :GetPossiblyConflictServices, :type => "list <string> ()"
+    publish variable: :OLD_SERVICES, type: "map <string, map <string, any>>"
+    publish function: :ServiceDefinedByPackage, type: "boolean (string)"
+    publish function: :GetFilenameFromServiceDefinedByPackage, type: "string (string)"
+    publish function: :ReadServicesDefinedByRPMPackages, type: "boolean ()"
+    publish function: :IsKnownService, type: "boolean (string)"
+    publish function: :GetSupportedServices, type: "map <string, string> ()"
+    publish function: :GetListOfServicesAddedByPackage, type: "list <string> ()"
+    publish function: :GetNeededTCPPorts, type: "list <string> (string)"
+    publish function: :GetNeededUDPPorts, type: "list <string> (string)"
+    publish function: :GetNeededRPCPorts, type: "list <string> (string)"
+    publish function: :GetNeededIPProtocols, type: "list <string> (string)"
+    publish function: :GetDescription, type: "string (string)"
+    publish function: :SetModified, type: "void ()"
+    publish function: :ResetModified, type: "void ()"
+    publish function: :GetModified, type: "boolean ()"
+    publish function: :GetNeededBroadcastPorts, type: "list <string> (string)"
+    publish function: :GetNeededPortsAndProtocols, type: "map <string, list <string>> (string)"
+    publish function: :SetNeededPortsAndProtocols, type: "boolean (string, map <string, list <string>>)"
+    publish function: :GetPossiblyConflictServices, type: "list <string> ()"
   end
 
   SuSEFirewallServices = SuSEFirewallServicesClass.new

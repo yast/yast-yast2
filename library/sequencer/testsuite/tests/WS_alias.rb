@@ -51,9 +51,11 @@ module Yast
     def func1
       :func1
     end
+
     def func2
       :func2
     end
+
     def func3
       :func3
     end

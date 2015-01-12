@@ -43,7 +43,7 @@ module Yast
 
       TEST(lambda { CommandLine.Command }, [{ "dev" => { "tty" => "abort" } }], nil)
       TEST(lambda { CommandLine.Done }, [], nil)
-      TEST(lambda { CommandLine.Aborted }, [], nil) 
+      TEST(lambda { CommandLine.Aborted }, [], nil)
 
       # EOF
 

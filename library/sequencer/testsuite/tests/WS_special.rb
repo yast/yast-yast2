@@ -44,9 +44,11 @@ module Yast
     def Normal
       1
     end
+
     def SpecialN
       1
     end
+
     def SpecialY
       1
     end

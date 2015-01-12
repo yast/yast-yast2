@@ -59,14 +59,14 @@ module Yast
     # @param [Array<String>] items	a list of items
     # @param [String] selected	preselected a value in the list
     # @return		one item or nil
-    def ChooseItem(title, items, selected)
+    def ChooseItem(_title, items, selected)
       items = deep_copy(items)
       item = nil
 
       _Items = Builtins.maplist(items) do |i|
         device_name = NetworkInterfaces.GetValue(i, "NAME")
-        if device_name == nil || device_name == ""
-          #TRANSLATORS: Informs that device name is not known
+        if device_name.nil? || device_name == ""
+          # TRANSLATORS: Informs that device name is not known
           device_name = _("Unknown device")
         end
         if Ops.greater_than(Builtins.size(device_name), 30)
@@ -76,7 +76,7 @@ module Yast
           # TRANSLATORS: Informs that the IP address is assigned via DHCP
           _("DHCP address") :
           NetworkInterfaces.GetValue(i, "IPADDR")
-        if ip_addr == nil || ip_addr == ""
+        if ip_addr.nil? || ip_addr == ""
           # TRANSLATORS: table item, informing that device has no IP address
           ip_addr = _("No IP address assigned")
         end
@@ -188,7 +188,7 @@ module Yast
     # @param [String] selected	preselected a value in the list
     # @return		a hostname or nil if "Cancel" was pressed
     def NFSServer(selected)
-      if @found_nfs_servers == nil
+      if @found_nfs_servers.nil?
         # label message
         UI.OpenDialog(Label(_("Scanning for hosts on this LAN...")))
         # #71064
@@ -200,7 +200,7 @@ module Yast
         ) { |s| s != "" }
         UI.CloseDialog
 
-        if @found_nfs_servers == nil
+        if @found_nfs_servers.nil?
           @found_nfs_servers = []
         else
           # sort list of servers
@@ -219,17 +219,17 @@ module Yast
     # @param [String] selected	preselect a value in the list
     # @return		a hostname or nil if "Cancel" was pressed
     def HostName(selected)
-      if @found_hosts == nil
+      if @found_hosts.nil?
         # label message
         UI.OpenDialog(Label(_("Scanning for hosts on this LAN...")))
         @found_hosts = Convert.convert(
           Builtins.sort(Convert.to_list(SCR.Read(path(".net.hostnames")))),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
         UI.CloseDialog
 
-        @found_hosts = [] if @found_hosts == nil
+        @found_hosts = [] if @found_hosts.nil?
       end
 
       # selection box label
@@ -246,21 +246,21 @@ module Yast
     def NFSExport(server, selected)
       dirs = Convert.convert(
         SCR.Read(path(".net.showexports"), server),
-        :from => "any",
-        :to   => "list <string>"
+        from: "any",
+        to:   "list <string>"
       )
 
-      dirs = [] if dirs == nil
+      dirs = [] if dirs.nil?
 
       # selection box label
       ret = ChooseItemSimple(_("&Exported Directories"), dirs, selected)
       ret
     end
 
-    publish :function => :ChooseItem, :type => "string (string, list <string>, string)"
-    publish :function => :NFSServer, :type => "string (string)"
-    publish :function => :HostName, :type => "string (string)"
-    publish :function => :NFSExport, :type => "string (string, string)"
+    publish function: :ChooseItem, type: "string (string, list <string>, string)"
+    publish function: :NFSServer, type: "string (string)"
+    publish function: :HostName, type: "string (string)"
+    publish function: :NFSExport, type: "string (string, string)"
   end
 
   NetworkPopup = NetworkPopupClass.new

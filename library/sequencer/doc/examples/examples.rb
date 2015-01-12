@@ -48,14 +48,14 @@ module Yast
       i = 0
       t = HBox()
       _Buttons = {
-        :back    => "Back",
-        :next    => "Next",
-        :finish  => "Finish",
-        :details => "Details",
-        :expert  => "Expert",
-        :yes     => "Yes",
-        :no      => "No",
-        :ok      => "OK"
+        back:    "Back",
+        next:    "Next",
+        finish:  "Finish",
+        details: "Details",
+        expert:  "Expert",
+        yes:     "Yes",
+        no:      "No",
+        ok:      "OK"
       }
       while Ops.less_than(i, Builtins.size(buttons))
         _B = Ops.get_string(_Buttons, Ops.get(buttons, i), "-")

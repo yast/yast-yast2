@@ -35,22 +35,27 @@ module Yast
       Builtins.y2error("ok")
       :ok
     end
+
     def back
       Builtins.y2error("back")
       :back
     end
+
     def next
       Builtins.y2error("next")
       :next
     end
+
     def finish
       Builtins.y2error("finish")
       :finish
     end
+
     def details
       Builtins.y2error("details")
       :details
     end
+
     def expert
       Builtins.y2error("expert")
       :expert
@@ -111,21 +116,21 @@ module Yast
     def sequence
       _Sequence5 = {
         "ws_start"     => "begin",
-        "begin"        => { :next => "config" },
-        "expert"       => { :next => "expert2" },
-        "expert2"      => { :next => "end", :ok => "config" },
+        "begin"        => { next: "config" },
+        "expert"       => { next: "expert2" },
+        "expert2"      => { next: "end", ok: "config" },
         "config"       => {
-          :next    => "end",
-          :details => "details",
-          :expert  => "expert"
+          next:    "end",
+          details: "details",
+          expert:  "expert"
         },
         "details"      => {
-          :next    => "end",
-          :details => "superdetails",
-          :ok      => "config"
+          next:    "end",
+          details: "superdetails",
+          ok:      "config"
         },
-        "superdetails" => { :next => "end", :ok => "details" },
-        "end"          => { :finish => :ws_finish }
+        "superdetails" => { next: "end", ok: "details" },
+        "end"          => { finish: :ws_finish }
       }
 
       deep_copy(_Sequence5)

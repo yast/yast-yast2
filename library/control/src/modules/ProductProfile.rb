@@ -62,12 +62,11 @@ module Yast
       ) do |k|
         if k != ""
           key = Pkg.SourceProvideOptionalFile(src_id, 1, Ops.add("/", k))
-          keys = Builtins.add(keys, key) if key != nil
+          keys = Builtins.add(keys, key) if !key.nil?
         end
       end
       deep_copy(keys)
     end
-
 
     # Checks the profile compliance with the system.
     # @param if productId is not nil, check only compliance with given product
@@ -87,14 +86,14 @@ module Yast
       Builtins.foreach(Pkg.ResolvableProperties("", :product, "")) do |product|
         src_id = Ops.get_integer(product, "source", -1)
         name = Ops.get_string(product, "name", "")
-        if productId == nil &&
+        if productId.nil? &&
             Ops.get_symbol(product, "status", :none) != :selected
           next
         end
-        next if productId != nil && src_id != productId
+        next if !productId.nil? && src_id != productId
         Ops.set(@compliance_checked, src_id, true)
         profile = Pkg.SourceProvideOptionalFile(src_id, 1, @profile_path)
-        if profile != nil
+        if !profile.nil?
           profiles = Builtins.add(profiles, profile)
           # backup profiles so they can be copied them to the installed system
           tmp_path = Ops.add(Ops.add(@profiles_dir, name), ".profile")
@@ -115,18 +114,18 @@ module Yast
         )
         products = Builtins.add(
           products,
-          {
-            "arch"    => Ops.get_string(product, "arch", ""),
-            "name"    => name,
-            "version" => Ops.get(version_release, 0, ""),
-            "release" => Ops.get(version_release, 1, ""),
-            "vendor"  => Ops.get_string(product, "vendor", "")
-          }
+
+          "arch"    => Ops.get_string(product, "arch", ""),
+          "name"    => name,
+          "version" => Ops.get(version_release, 0, ""),
+          "release" => Ops.get(version_release, 1, ""),
+          "vendor"  => Ops.get_string(product, "vendor", "")
+
         )
         sigkeys = Convert.convert(
           Builtins.union(sigkeys, GetSigKeysForProduct(src_id)),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
       end
 
@@ -137,9 +136,8 @@ module Yast
       end
 
       @compliance = YaPI::SubscriptionTools.isCompliant(profiles, products, sigkeys)
-      @compliance == nil
+      @compliance.nil?
     end
-
 
     # Checks the profile compliance with the system.
     # If system is not complient, shows a popup with reasons and asks
@@ -153,8 +151,8 @@ module Yast
       return true if !Mode.installation
 
       # no need to check same products twice
-      if productId == nil && @compliance_checked != {} ||
-          productId != nil && Ops.get(@compliance_checked, productId, false)
+      if productId.nil? && @compliance_checked != {} ||
+          !productId.nil? && Ops.get(@compliance_checked, productId, false)
         return true
       end
 
@@ -169,7 +167,7 @@ module Yast
       return true if IsCompliant(productId)
 
       reasons = []
-      Builtins.foreach(@compliance) do |key, val|
+      Builtins.foreach(@compliance) do |_key, val|
         if Ops.is_map?(val) && Builtins.haskey(Convert.to_map(val), "message")
           reasons = Builtins.add(
             reasons,
@@ -187,7 +185,7 @@ module Yast
       cancel_button = _("&Abort Installation")
 
       # checking specific product
-      if productId != nil
+      if !productId.nil?
         # last part of the question (variable)
         end_question = _("Do you want to add new product anyway?")
         continue_button = Label.YesButton
@@ -200,14 +198,14 @@ module Yast
         # popup message, %1 is list of problems
         Builtins.sformat(
           _(
-            "The profile does not allow you to run the products on this system.\n" +
-              "Proceeding to run this installation will leave you in an unsupported state\n" +
-              "and might impact your compliance requirements.\n" +
-              "     \n" +
-              "The following requirements are not fulfilled on this system:\n" +
-              "    \n" +
-              "%1\n" +
-              "\n" +
+            "The profile does not allow you to run the products on this system.\n" \
+              "Proceeding to run this installation will leave you in an unsupported state\n" \
+              "and might impact your compliance requirements.\n" \
+              "     \n" \
+              "The following requirements are not fulfilled on this system:\n" \
+              "    \n" \
+              "%1\n" \
+              "\n" \
               "%2"
           ),
           reasons_s,
@@ -217,7 +215,7 @@ module Yast
         cancel_button,
         :no_button
       )
-      if !ret && productId != nil
+      if !ret && !productId.nil?
         # canceled adding add-on: remove profile stored before
         name = Ops.get(@productid2name, productId, "")
         tmp_path = Ops.add(Ops.add(@profiles_dir, name), ".profile")
@@ -228,13 +226,13 @@ module Yast
       ret
     end
 
-    publish :variable => :all_profiles, :type => "list <string>"
-    publish :variable => :productid2name, :type => "map <integer, string>"
-    publish :variable => :compliance_checked, :type => "map <integer, boolean>"
-    publish :function => :GetComplianceMap, :type => "map <string, any> ()"
-    publish :function => :GetSigKeysForProduct, :type => "list <string> (integer)"
-    publish :function => :IsCompliant, :type => "boolean (integer)"
-    publish :function => :CheckCompliance, :type => "boolean (integer)"
+    publish variable: :all_profiles, type: "list <string>"
+    publish variable: :productid2name, type: "map <integer, string>"
+    publish variable: :compliance_checked, type: "map <integer, boolean>"
+    publish function: :GetComplianceMap, type: "map <string, any> ()"
+    publish function: :GetSigKeysForProduct, type: "list <string> (integer)"
+    publish function: :IsCompliant, type: "boolean (integer)"
+    publish function: :CheckCompliance, type: "boolean (integer)"
   end
 
   ProductProfile = ProductProfileClass.new

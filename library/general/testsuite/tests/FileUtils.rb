@@ -54,10 +54,10 @@ module Yast
       @READ_EXISTS_1 = {
         "target" => {
           "stat" => {
-            "atime"   => 1101890288,
-            "ctime"   => 1101890286,
+            "atime"   => 1_101_890_288,
+            "ctime"   => 1_101_890_286,
             "gid"     => 0,
-            "inode"   => 29236,
+            "inode"   => 29_236,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -65,7 +65,7 @@ module Yast
             "islink"  => false,
             "isreg"   => true,
             "issock"  => false,
-            "mtime"   => 1101890286,
+            "mtime"   => 1_101_890_286,
             "nlink"   => 1,
             "size"    => 804,
             "uid"     => 0
@@ -81,10 +81,10 @@ module Yast
       @READ_DIRECTORY_1 = {
         "target" => {
           "stat" => {
-            "atime"   => 1101890288,
-            "ctime"   => 1101890286,
+            "atime"   => 1_101_890_288,
+            "ctime"   => 1_101_890_286,
             "gid"     => 0,
-            "inode"   => 29236,
+            "inode"   => 29_236,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => true,
@@ -92,9 +92,9 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1101890286,
+            "mtime"   => 1_101_890_286,
             "nlink"   => 1,
-            "size"    => 55888,
+            "size"    => 55_888,
             "uid"     => 0
           }
         }
@@ -102,10 +102,10 @@ module Yast
       @READ_DIRECTORY_2 = {
         "target" => {
           "stat" => {
-            "atime"   => 1101890288,
-            "ctime"   => 1101890286,
+            "atime"   => 1_101_890_288,
+            "ctime"   => 1_101_890_286,
             "gid"     => 0,
-            "inode"   => 29236,
+            "inode"   => 29_236,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -113,7 +113,7 @@ module Yast
             "islink"  => false,
             "isreg"   => true,
             "issock"  => false,
-            "mtime"   => 1101890286,
+            "mtime"   => 1_101_890_286,
             "nlink"   => 1,
             "size"    => 804,
             "uid"     => 0
@@ -125,10 +125,10 @@ module Yast
       @READ_FILE_1 = {
         "target" => {
           "stat" => {
-            "atime"   => 1101890288,
-            "ctime"   => 1101890286,
+            "atime"   => 1_101_890_288,
+            "ctime"   => 1_101_890_286,
             "gid"     => 0,
-            "inode"   => 29236,
+            "inode"   => 29_236,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -136,7 +136,7 @@ module Yast
             "islink"  => false,
             "isreg"   => true,
             "issock"  => false,
-            "mtime"   => 1101890286,
+            "mtime"   => 1_101_890_286,
             "nlink"   => 1,
             "size"    => 804,
             "uid"     => 0
@@ -146,10 +146,10 @@ module Yast
       @READ_FILE_2 = {
         "target" => {
           "stat" => {
-            "atime"   => 1101890288,
-            "ctime"   => 1101890286,
+            "atime"   => 1_101_890_288,
+            "ctime"   => 1_101_890_286,
             "gid"     => 0,
-            "inode"   => 29236,
+            "inode"   => 29_236,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -157,9 +157,9 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1101890286,
+            "mtime"   => 1_101_890_286,
             "nlink"   => 1,
-            "size"    => 55888,
+            "size"    => 55_888,
             "uid"     => 0
           }
         }
@@ -169,10 +169,10 @@ module Yast
       @READ_BLOCK_1 = {
         "target" => {
           "stat" => {
-            "atime"   => 1101195257,
-            "ctime"   => 1097483383,
+            "atime"   => 1_101_195_257,
+            "ctime"   => 1_097_483_383,
             "gid"     => 6,
-            "inode"   => 27982,
+            "inode"   => 27_982,
             "isblock" => true,
             "ischr"   => false,
             "isdir"   => false,
@@ -180,7 +180,7 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1096706283,
+            "mtime"   => 1_096_706_283,
             "nlink"   => 1,
             "size"    => 0,
             "uid"     => 0
@@ -190,10 +190,10 @@ module Yast
       @READ_BLOCK_2 = {
         "target" => {
           "stat" => {
-            "atime"   => 1101890288,
-            "ctime"   => 1101890286,
+            "atime"   => 1_101_890_288,
+            "ctime"   => 1_101_890_286,
             "gid"     => 0,
-            "inode"   => 29236,
+            "inode"   => 29_236,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => true,
@@ -201,9 +201,9 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1101890286,
+            "mtime"   => 1_101_890_286,
             "nlink"   => 1,
-            "size"    => 55888,
+            "size"    => 55_888,
             "uid"     => 0
           }
         }
@@ -213,10 +213,10 @@ module Yast
       @READ_FIFO_1 = {
         "target" => {
           "stat" => {
-            "atime"   => 1101195257,
-            "ctime"   => 1097483383,
+            "atime"   => 1_101_195_257,
+            "ctime"   => 1_097_483_383,
             "gid"     => 6,
-            "inode"   => 27982,
+            "inode"   => 27_982,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -224,7 +224,7 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1096706283,
+            "mtime"   => 1_096_706_283,
             "nlink"   => 1,
             "size"    => 0,
             "uid"     => 0
@@ -234,10 +234,10 @@ module Yast
       @READ_FIFO_2 = {
         "target" => {
           "stat" => {
-            "atime"   => 1101890288,
-            "ctime"   => 1101890286,
+            "atime"   => 1_101_890_288,
+            "ctime"   => 1_101_890_286,
             "gid"     => 0,
-            "inode"   => 29236,
+            "inode"   => 29_236,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => true,
@@ -245,9 +245,9 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1101890286,
+            "mtime"   => 1_101_890_286,
             "nlink"   => 1,
-            "size"    => 55888,
+            "size"    => 55_888,
             "uid"     => 0
           }
         }
@@ -258,10 +258,10 @@ module Yast
         "target" => {
           # Link uses "lstat" instead of "stat"
           "lstat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 0,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -269,7 +269,7 @@ module Yast
             "islink"  => true,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 0
@@ -280,10 +280,10 @@ module Yast
         "target" => {
           # Link uses "lstat" instead of "stat"
           "lstat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 0,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => true,
             "ischr"   => false,
             "isdir"   => false,
@@ -291,7 +291,7 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 0
@@ -303,10 +303,10 @@ module Yast
       @READ_SOCKET_1 = {
         "target" => {
           "stat" => {
-            "atime"   => 1101890288,
-            "ctime"   => 1101890286,
+            "atime"   => 1_101_890_288,
+            "ctime"   => 1_101_890_286,
             "gid"     => 0,
-            "inode"   => 29236,
+            "inode"   => 29_236,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -314,9 +314,9 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => true,
-            "mtime"   => 1101890286,
+            "mtime"   => 1_101_890_286,
             "nlink"   => 1,
-            "size"    => 55888,
+            "size"    => 55_888,
             "uid"     => 0
           }
         }
@@ -324,10 +324,10 @@ module Yast
       @READ_SOCKET_2 = {
         "target" => {
           "stat" => {
-            "atime"   => 1101890288,
-            "ctime"   => 1101890286,
+            "atime"   => 1_101_890_288,
+            "ctime"   => 1_101_890_286,
             "gid"     => 0,
-            "inode"   => 29236,
+            "inode"   => 29_236,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -335,9 +335,9 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1101890286,
+            "mtime"   => 1_101_890_286,
             "nlink"   => 1,
-            "size"    => 55888,
+            "size"    => 55_888,
             "uid"     => 0
           }
         }
@@ -347,10 +347,10 @@ module Yast
       @READ_CHARACTERDEVICE_1 = {
         "target" => {
           "stat" => {
-            "atime"   => 1101890288,
-            "ctime"   => 1101890286,
+            "atime"   => 1_101_890_288,
+            "ctime"   => 1_101_890_286,
             "gid"     => 0,
-            "inode"   => 29236,
+            "inode"   => 29_236,
             "isblock" => false,
             "ischr"   => true,
             "isdir"   => false,
@@ -358,9 +358,9 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => true,
-            "mtime"   => 1101890286,
+            "mtime"   => 1_101_890_286,
             "nlink"   => 1,
-            "size"    => 55888,
+            "size"    => 55_888,
             "uid"     => 0
           }
         }
@@ -368,10 +368,10 @@ module Yast
       @READ_CHARACTERDEVICE_2 = {
         "target" => {
           "stat" => {
-            "atime"   => 1101890288,
-            "ctime"   => 1101890286,
+            "atime"   => 1_101_890_288,
+            "ctime"   => 1_101_890_286,
             "gid"     => 0,
-            "inode"   => 29236,
+            "inode"   => 29_236,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -379,9 +379,9 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1101890286,
+            "mtime"   => 1_101_890_286,
             "nlink"   => 1,
-            "size"    => 55888,
+            "size"    => 55_888,
             "uid"     => 0
           }
         }
@@ -393,10 +393,10 @@ module Yast
         "target" => {
           # RealType uses "lstat" instead of "stat"
           "lstat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 0,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => true,
             "ischr"   => false,
             "isdir"   => false,
@@ -404,7 +404,7 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 0
@@ -415,10 +415,10 @@ module Yast
         "target" => {
           # RealType uses "lstat" instead of "stat"
           "lstat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 0,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => false,
             "ischr"   => true,
             "isdir"   => false,
@@ -426,7 +426,7 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 0
@@ -437,10 +437,10 @@ module Yast
         "target" => {
           # RealType uses "lstat" instead of "stat"
           "lstat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 0,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => true,
@@ -448,7 +448,7 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 0
@@ -459,10 +459,10 @@ module Yast
         "target" => {
           # RealType uses "lstat" instead of "stat"
           "lstat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 0,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -470,7 +470,7 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 0
@@ -481,10 +481,10 @@ module Yast
         "target" => {
           # RealType uses "lstat" instead of "stat"
           "lstat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 0,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -492,7 +492,7 @@ module Yast
             "islink"  => true,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 0
@@ -503,10 +503,10 @@ module Yast
         "target" => {
           # RealType uses "lstat" instead of "stat"
           "lstat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 0,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -514,7 +514,7 @@ module Yast
             "islink"  => false,
             "isreg"   => true,
             "issock"  => false,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 0
@@ -525,10 +525,10 @@ module Yast
         "target" => {
           # RealType uses "lstat" instead of "stat"
           "lstat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 0,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -536,7 +536,7 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => true,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 0
@@ -547,10 +547,10 @@ module Yast
         "target" => {
           # RealType uses "lstat" instead of "stat"
           "lstat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 0,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -558,7 +558,7 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 0
@@ -572,10 +572,10 @@ module Yast
         "target" => {
           # RealType uses "lstat" instead of "stat"
           "stat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 0,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => true,
             "ischr"   => false,
             "isdir"   => false,
@@ -583,7 +583,7 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 0
@@ -594,10 +594,10 @@ module Yast
         "target" => {
           # RealType uses "lstat" instead of "stat"
           "stat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 0,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => false,
             "ischr"   => true,
             "isdir"   => false,
@@ -605,7 +605,7 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 0
@@ -616,10 +616,10 @@ module Yast
         "target" => {
           # RealType uses "lstat" instead of "stat"
           "stat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 0,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => true,
@@ -627,7 +627,7 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 0
@@ -638,10 +638,10 @@ module Yast
         "target" => {
           # RealType uses "lstat" instead of "stat"
           "stat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 0,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -649,7 +649,7 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 0
@@ -660,10 +660,10 @@ module Yast
         "target" => {
           # RealType uses "lstat" instead of "stat"
           "stat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 0,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -671,7 +671,7 @@ module Yast
             "islink"  => true,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 0
@@ -682,10 +682,10 @@ module Yast
         "target" => {
           # RealType uses "lstat" instead of "stat"
           "stat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 0,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -693,7 +693,7 @@ module Yast
             "islink"  => false,
             "isreg"   => true,
             "issock"  => false,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 0
@@ -704,10 +704,10 @@ module Yast
         "target" => {
           # RealType uses "lstat" instead of "stat"
           "stat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 0,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -715,7 +715,7 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => true,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 0
@@ -726,10 +726,10 @@ module Yast
         "target" => {
           # UnrealType uses "stat" instead of "lstat"
           "stat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 0,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -737,7 +737,7 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 0
@@ -748,10 +748,10 @@ module Yast
       @READ_USER = {
         "target" => {
           "stat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 0,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -759,7 +759,7 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 1003
@@ -770,10 +770,10 @@ module Yast
       @READ_GROUP = {
         "target" => {
           "stat" => {
-            "atime"   => 1101892352,
-            "ctime"   => 1100268833,
+            "atime"   => 1_101_892_352,
+            "ctime"   => 1_100_268_833,
             "gid"     => 500,
-            "inode"   => 19561,
+            "inode"   => 19_561,
             "isblock" => false,
             "ischr"   => false,
             "isdir"   => false,
@@ -781,7 +781,7 @@ module Yast
             "islink"  => false,
             "isreg"   => false,
             "issock"  => false,
-            "mtime"   => 1100268833,
+            "mtime"   => 1_100_268_833,
             "nlink"   => 1,
             "size"    => 5,
             "uid"     => 1003
@@ -789,11 +789,10 @@ module Yast
         }
       }
 
-      @READ_SIZE = { "target" => { "size" => 58899 } }
+      @READ_SIZE = { "target" => { "size" => 58_899 } }
 
       @WRITE = {}
       @EXEC = {}
-
 
       @tested_file = "/file/name/anywhere.is"
 

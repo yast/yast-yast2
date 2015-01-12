@@ -39,7 +39,7 @@ module Yast
 
       # unknown option
       TEST(lambda { CommandLine.Init(@cmdline, ["add", "ip=10.20.a.b"]) }, [], nil)
-      TEST(lambda { CommandLine.Command }, [], nil) 
+      TEST(lambda { CommandLine.Command }, [], nil)
 
       # EOF
 

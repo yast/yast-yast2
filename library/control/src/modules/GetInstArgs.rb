@@ -31,7 +31,6 @@ require "yast"
 module Yast
   class GetInstArgsClass < Module
     def main
-
       @args = {}
     end
 
@@ -142,13 +141,13 @@ module Yast
       deep_copy(__args)
     end
 
-    publish :function => :enable_next, :type => "boolean ()"
-    publish :function => :enable_back, :type => "boolean ()"
-    publish :function => :going_back, :type => "boolean ()"
-    publish :function => :proposal, :type => "string ()"
-    publish :function => :argmap, :type => "map ()"
-    publish :function => :ButtonsProposal, :type => "map (boolean, boolean, string)"
-    publish :function => :Buttons, :type => "map (boolean, boolean)"
+    publish function: :enable_next, type: "boolean ()"
+    publish function: :enable_back, type: "boolean ()"
+    publish function: :going_back, type: "boolean ()"
+    publish function: :proposal, type: "string ()"
+    publish function: :argmap, type: "map ()"
+    publish function: :ButtonsProposal, type: "map (boolean, boolean, string)"
+    publish function: :Buttons, type: "map (boolean, boolean)"
   end
 
   GetInstArgs = GetInstArgsClass.new

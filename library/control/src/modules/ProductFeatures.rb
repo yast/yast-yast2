@@ -93,7 +93,7 @@ module Yast
     # Initialize default values of features
     # @param [Boolean] force boolean drop all settings which were set before
     def InitFeatures(force)
-      return if !(force || @features == nil)
+      return if !(force || @features.nil?)
       @features = deep_copy(@defaults)
 
       nil
@@ -110,8 +110,8 @@ module Yast
       Builtins.y2debug("Setting section: %1", section_name)
       section_map = Convert.convert(
         Builtins.union(Ops.get(@defaults, section_name, {}), section_map),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
       Ops.set(@features, section_name, section_map)
 
@@ -137,17 +137,18 @@ module Yast
           "test -f /etc/YaST2/ProductFeatures && /bin/rm /etc/YaST2/ProductFeatures"
         )
       end
-      Builtins.foreach(@features) { |group, options| Builtins.foreach(options) do |key, value|
-        if Ops.is_map?(value) || Ops.is_list?(value) || Ops.is_symbol?(value)
-          Builtins.y2debug("Skipping option %1", key)
-        else
-          strval = GetStringFeature(group, key)
-          SCR.Write(
-            Ops.add(Ops.add(path(".product.features.value"), group), key),
-            strval
-          )
-        end
-      end }
+      Builtins.foreach(@features) do |group, options|
+        Builtins.foreach(options) do |key, value|
+          if Ops.is_map?(value) || Ops.is_list?(value) || Ops.is_symbol?(value)
+            Builtins.y2debug("Skipping option %1", key)
+          else
+            strval = GetStringFeature(group, key)
+            SCR.Write(
+              Ops.add(Ops.add(path(".product.features.value"), group), key),
+              strval
+            )
+          end
+        end end
       SCR.Write(path(".product.features"), nil) # flush
 
       nil
@@ -179,7 +180,7 @@ module Yast
     # @note This is a stable API function
     # Either read from /etc/YaST2/ProductFeatures or set default values
     def InitIfNeeded
-      return if @features != nil
+      return if !@features.nil?
       if Stage.normal || Stage.firstboot
         Restore()
       else
@@ -197,7 +198,7 @@ module Yast
     def GetFeature(section, feature)
       InitIfNeeded()
       ret = Ops.get(@features, [section, feature])
-      ret = "" if ret == nil
+      ret = "" if ret.nil?
       deep_copy(ret)
     end
 
@@ -316,21 +317,21 @@ module Yast
       nil
     end
 
-    publish :function => :GetStringFeature, :type => "string (string, string)"
-    publish :function => :SetSection, :type => "void (string, map <string, any>)"
-    publish :function => :GetSection, :type => "map <string, any> (string)"
-    publish :function => :Save, :type => "void ()"
-    publish :function => :Restore, :type => "void ()"
-    publish :function => :InitIfNeeded, :type => "void ()"
-    publish :function => :GetFeature, :type => "any (string, string)"
-    publish :function => :GetBooleanFeature, :type => "boolean (string, string)"
-    publish :function => :GetIntegerFeature, :type => "integer (string, string)"
-    publish :function => :SetFeature, :type => "void (string, string, any)"
-    publish :function => :SetStringFeature, :type => "void (string, string, string)"
-    publish :function => :SetBooleanFeature, :type => "void (string, string, boolean)"
-    publish :function => :SetIntegerFeature, :type => "void (string, string, integer)"
-    publish :function => :Export, :type => "map <string, map <string, any>> ()"
-    publish :function => :Import, :type => "void (map <string, map <string, any>>)"
+    publish function: :GetStringFeature, type: "string (string, string)"
+    publish function: :SetSection, type: "void (string, map <string, any>)"
+    publish function: :GetSection, type: "map <string, any> (string)"
+    publish function: :Save, type: "void ()"
+    publish function: :Restore, type: "void ()"
+    publish function: :InitIfNeeded, type: "void ()"
+    publish function: :GetFeature, type: "any (string, string)"
+    publish function: :GetBooleanFeature, type: "boolean (string, string)"
+    publish function: :GetIntegerFeature, type: "integer (string, string)"
+    publish function: :SetFeature, type: "void (string, string, any)"
+    publish function: :SetStringFeature, type: "void (string, string, string)"
+    publish function: :SetBooleanFeature, type: "void (string, string, boolean)"
+    publish function: :SetIntegerFeature, type: "void (string, string, integer)"
+    publish function: :Export, type: "map <string, map <string, any>> ()"
+    publish function: :Import, type: "void (map <string, map <string, any>>)"
   end
 
   ProductFeatures = ProductFeaturesClass.new
