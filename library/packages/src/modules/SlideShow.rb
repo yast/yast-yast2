@@ -136,7 +136,7 @@ module Yast
 
       @current_slide_no = 0
       @slide_start_time = 0
-      @slide_interval = 30 # FIXME constant
+      @slide_interval = 30 # FIXME: constant
       @language = "en"
       @widgets_created = false
       @user_switched_to_details = false
@@ -700,13 +700,13 @@ module Yast
       Builtins.y2milestone("SlideShow contents: %1", contents)
 
       Wizard.SetContents(
-        (Mode.update ?
+        if Mode.update
           # Dialog heading - software packages are being upgraded
           _("Performing Upgrade")
-          :
+        else
           # Dialog heading - software packages are being installed
           _("Performing Installation")
-        ),
+        end,
         contents,
         HelpText(),
         false, # no back button

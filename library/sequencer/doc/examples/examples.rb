@@ -31,14 +31,14 @@ module Yast
 
     def Aliases
       aliases = {
-        "begin"        => lambda { BeginDialog() },
-        "end"          => lambda { EndDialog() },
-        "config"       => lambda { ConfigDialog() },
-        "details"      => lambda { DetailsDialog() },
-        "superdetails" => lambda { SuperDetailsDialog() },
-        "expert"       => lambda { ExpertDialog() },
-        "expert2"      => lambda { Expert2Dialog() },
-        "decide"       => [lambda { Decide() }, true]
+        "begin"        => ->() { BeginDialog() },
+        "end"          => ->() { EndDialog() },
+        "config"       => ->() { ConfigDialog() },
+        "details"      => ->() { DetailsDialog() },
+        "superdetails" => ->() { SuperDetailsDialog() },
+        "expert"       => ->() { ExpertDialog() },
+        "expert2"      => ->() { Expert2Dialog() },
+        "decide"       => [->() { Decide() }, true]
       }
       deep_copy(aliases)
     end
@@ -47,7 +47,7 @@ module Yast
       buttons = deep_copy(buttons)
       i = 0
       t = HBox()
-      _Buttons = {
+      buttons_label = {
         back:    "Back",
         next:    "Next",
         finish:  "Finish",
@@ -58,11 +58,11 @@ module Yast
         ok:      "OK"
       }
       while Ops.less_than(i, Builtins.size(buttons))
-        _B = Ops.get_string(_Buttons, Ops.get(buttons, i), "-")
-        if _B == "-"
-          t = Builtins.add(t, PushButton(_B))
+        button = Ops.get_string(buttons_label, Ops.get(buttons, i), "-")
+        if button == "-"
+          t = Builtins.add(t, PushButton(button))
         else
-          t = Builtins.add(t, PushButton(Id(Ops.get(buttons, i)), _B))
+          t = Builtins.add(t, PushButton(Id(Ops.get(buttons, i)), button))
         end
         i = Ops.add(i, 1)
       end

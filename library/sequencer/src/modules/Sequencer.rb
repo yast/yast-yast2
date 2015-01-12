@@ -75,7 +75,7 @@ module Yast
       end
 
       # check if ws_start is in aliases
-      if Ops.get(aliases, "ws_start") != nil
+      if aliases["ws_start"]
         Builtins.y2error(2, "sequencer check: ws_start cannot be an alias name")
         ret = Builtins.add(ret, false)
       else
@@ -157,8 +157,7 @@ module Yast
               next true
             end
           end
-          next false if Builtins.find(ret1) { |n| n == false } != nil
-          next true
+          next ret1.all? { |n| n }
         end
       end
       ret = Builtins.flatten([ret, ret0])
@@ -166,15 +165,14 @@ module Yast
       # check that all aliases are used
       ret0 = Builtins.maplist(aliases) do |key, _val|
         if !Builtins.haskey(sequence, key)
-          Builtins.y2warning(2, "sequencer check: alias not used: %1", key) 
+          Builtins.y2warning(2, "sequencer check: alias not used: %1", key)
           # return false;
         end
         true
       end
       ret = Builtins.flatten([ret, ret0])
 
-      return false if Builtins.find(ret) { |n| n == false } != nil
-      true
+      ret.all? { |n| n }
     end
 
     # Report error and return nil
@@ -190,11 +188,11 @@ module Yast
     # @param [Hash] aliases map of aliases
     # @param [String] alias given alias
     # @return [Yast::Term] belonging to the given alias or nil, if error
-    def WS_alias(aliases, _alias)
+    def WS_alias(aliases, alias_)
       aliases = deep_copy(aliases)
-      found = Ops.get(aliases, _alias)
+      found = Ops.get(aliases, alias_)
       if found.nil?
-        return WS_error(Builtins.sformat("Alias not found: %1", _alias))
+        return WS_error(Builtins.sformat("Alias not found: %1", alias_))
       end
       if Ops.is_list?(found)
         if Ops.less_or_equal(Builtins.size(Convert.to_list(found)), 0)
@@ -207,20 +205,19 @@ module Yast
       end
       # FIXME: use function pointers
       #     if (is(found, term))
-      return deep_copy(found)
-      WS_error(Builtins.sformat("Invalid alias: %1", found))
+      deep_copy(found)
     end
 
     # Decide if an alias is special
     # @param [Hash] aliases map of aliases
     # @param [String] alias given alias
     # @return true if the given alias is special or nil, if not found
-    def WS_special(aliases, _alias)
+    def WS_special(aliases, alias_)
       aliases = deep_copy(aliases)
-      found = Ops.get(aliases, _alias)
+      found = Ops.get(aliases, alias_)
       if found.nil?
         return Convert.to_boolean(
-          WS_error(Builtins.sformat("Alias not found: %1", _alias))
+          WS_error(Builtins.sformat("Alias not found: %1", alias_))
         )
       end
       ret = false
@@ -244,11 +241,11 @@ module Yast
         return WS_error(Builtins.sformat("Current not found: %1", current))
       end
       # string|symbol next
-      _next = Ops.get(found, ret)
-      if _next.nil?
+      next_ = Ops.get(found, ret)
+      if next_.nil?
         return WS_error(Builtins.sformat("Symbol not found: %1", ret))
       end
-      deep_copy(_next)
+      deep_copy(next_)
     end
 
     # Run a function from the aliases map
@@ -258,7 +255,6 @@ module Yast
     def WS_run(aliases, id)
       aliases = deep_copy(aliases)
       Builtins.y2debug("Running: %1", id)
-      function = nil
 
       function = WS_alias(aliases, id)
       if function.nil?
@@ -345,9 +341,7 @@ module Yast
           )
         elsif ret == :back
           Builtins.y2debug("Back")
-          poped = []
-          special = true
-          begin
+          loop do
             return :back if Ops.less_than(Builtins.size(stack), 2)
             poped = WS_pop(stack)
             Builtins.y2debug("poped=%1", poped)
@@ -355,7 +349,8 @@ module Yast
             stack = Ops.get_list(poped, 0)
             special = WS_special(aliases, Convert.to_string(current))
             Builtins.y2debug("special=%1", special)
-          end while special
+            break unless special
+          end
         else
           Builtins.y2debug("ret=%1", ret)
           current = WS_next(

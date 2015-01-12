@@ -147,7 +147,7 @@ describe "Yast::SlideShow" do
       ]
 
       Yast::SlideShow.Setup(stages)
-      total_size = Yast::SlideShow.GetSetup.values.reduce(0) { |sum, stage| sum += stage["size"] }
+      total_size = Yast::SlideShow.GetSetup.values.reduce(0) { |a, e| a + e["size"] }
       expect(total_size).to eq(100)
     end
   end
