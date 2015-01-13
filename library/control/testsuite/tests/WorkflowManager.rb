@@ -273,30 +273,30 @@ module Yast
       # init <--
 
 
-      TEST(lambda { WorkflowManager.SetBaseWorkflow(false) }, @MOCK, nil)
+      TEST(->() { WorkflowManager.SetBaseWorkflow(false) }, @MOCK, nil)
 
       DUMP("")
       DUMP("Adding new Add-On product")
-      TEST(lambda { WorkflowManager.AddWorkflow(:addon, 3, "") }, @MOCK, nil)
-      TEST(lambda { WorkflowManager.GetAllUsedControlFiles }, @MOCK, nil)
+      TEST(->() { WorkflowManager.AddWorkflow(:addon, 3, "") }, @MOCK, nil)
+      TEST(->() { WorkflowManager.GetAllUsedControlFiles }, @MOCK, nil)
 
       DUMP("")
       DUMP("Adding another Add-On product")
-      TEST(lambda { WorkflowManager.AddWorkflow(:addon, 12, "") }, @MOCK, nil)
-      TEST(lambda { WorkflowManager.GetAllUsedControlFiles }, @MOCK, nil)
+      TEST(->() { WorkflowManager.AddWorkflow(:addon, 12, "") }, @MOCK, nil)
+      TEST(->() { WorkflowManager.GetAllUsedControlFiles }, @MOCK, nil)
 
       DUMP("")
       DUMP("Removing the first Add-On product")
-      TEST(lambda { WorkflowManager.RemoveWorkflow(:addon, 3, "") }, @MOCK, nil)
-      TEST(lambda { WorkflowManager.GetAllUsedControlFiles }, @MOCK, nil)
+      TEST(->() { WorkflowManager.RemoveWorkflow(:addon, 3, "") }, @MOCK, nil)
+      TEST(->() { WorkflowManager.GetAllUsedControlFiles }, @MOCK, nil)
 
       DUMP("")
       DUMP("Removing the first Add-On product")
-      TEST(lambda { WorkflowManager.MergeWorkflows }, @MOCK, nil)
+      TEST(->() { WorkflowManager.MergeWorkflows }, @MOCK, nil)
 
       DUMP("")
       DUMP("Current Settings")
-      TEST(lambda { WorkflowManager.DumpCurrentSettings }, @MOCK, nil)
+      TEST(->() { WorkflowManager.DumpCurrentSettings }, @MOCK, nil)
 
       nil
     end

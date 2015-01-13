@@ -42,8 +42,8 @@ module Yast
       TEST(lambda do
         CommandLine.Init({ "id" => "", "help" => _("This is testsuite") }, [])
       end, [], nil)
-      TEST(lambda { CommandLine.Done }, [], nil)
-      TEST(lambda { CommandLine.Aborted }, [], nil) 
+      TEST(->() { CommandLine.Done }, [], nil)
+      TEST(->() { CommandLine.Aborted }, [], nil) 
 
       # EOF
 

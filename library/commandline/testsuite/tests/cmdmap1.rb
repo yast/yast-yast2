@@ -37,9 +37,9 @@ module Yast
       Yast.import "CommandLine"
 
       # map must define id and global help
-      TEST(lambda { CommandLine.Init({}, []) }, [], nil)
-      TEST(lambda { CommandLine.Done }, [], nil)
-      TEST(lambda { CommandLine.Aborted }, [], nil) 
+      TEST(->() { CommandLine.Init({}, []) }, [], nil)
+      TEST(->() { CommandLine.Done }, [], nil)
+      TEST(->() { CommandLine.Aborted }, [], nil) 
 
       # EOF
 

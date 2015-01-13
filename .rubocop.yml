@@ -253,10 +253,6 @@ Style/IndentationWidth:
 Style/InfiniteLoop:
   Enabled: false
 
-# Offense count: 772
-Style/Lambda:
-  Enabled: false
-
 # Offense count: 68
 # Cop supports --auto-correct.
 Style/LeadingCommentSpace:

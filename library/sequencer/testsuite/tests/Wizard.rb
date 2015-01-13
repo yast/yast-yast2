@@ -28,7 +28,7 @@ module Yast
       Yast.import "Sequencer"
       Sequencer.docheck = false
 
-      TEST(lambda { Sequencer.Run(aliases, sequence) }, [], nil) if @cur != -1
+      TEST(->() { Sequencer.Run(aliases, sequence) }, [], nil) if @cur != -1
     end
 
     def ok
@@ -97,13 +97,13 @@ module Yast
     # aliases
     def aliases
       {
-        "begin"        => lambda { click },
-        "config"       => lambda { click },
-        "end"          => lambda { click },
-        "expert"       => lambda { click },
-        "expert2"      => lambda { click },
-        "details"      => lambda { click },
-        "superdetails" => lambda { click }
+        "begin"        => ->() { click },
+        "config"       => ->() { click },
+        "end"          => ->() { click },
+        "expert"       => ->() { click },
+        "expert2"      => ->() { click },
+        "details"      => ->() { click },
+        "superdetails" => ->() { click }
       }
     end
 

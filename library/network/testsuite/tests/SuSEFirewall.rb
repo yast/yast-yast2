@@ -168,43 +168,43 @@ module Yast
       SuSEFirewall.SetStartService(false)
 
       DUMP("== SuSEfirewall2 service ==")
-      TEST(lambda { SuSEFirewall.GetEnableService }, [@READ, @WRITE, @EXECUTE], nil)
-      TEST(lambda { SuSEFirewall.GetStartService }, [@READ, @WRITE, @EXECUTE], nil)
-      TEST(lambda { SuSEFirewall.SetEnableService(true) }, [
+      TEST(->() { SuSEFirewall.GetEnableService }, [@READ, @WRITE, @EXECUTE], nil)
+      TEST(->() { SuSEFirewall.GetStartService }, [@READ, @WRITE, @EXECUTE], nil)
+      TEST(->() { SuSEFirewall.SetEnableService(true) }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.SetStartService(true) }, [
+      TEST(->() { SuSEFirewall.SetStartService(true) }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.GetEnableService }, [@READ, @WRITE, @EXECUTE], nil)
-      TEST(lambda { SuSEFirewall.GetStartService }, [@READ, @WRITE, @EXECUTE], nil)
+      TEST(->() { SuSEFirewall.GetEnableService }, [@READ, @WRITE, @EXECUTE], nil)
+      TEST(->() { SuSEFirewall.GetStartService }, [@READ, @WRITE, @EXECUTE], nil)
 
       DUMP("")
       DUMP("== Read/Write ==")
-      TEST(lambda { SuSEFirewall.Read }, [@READ, @WRITE, @EXECUTE], nil)
-      TEST(lambda { SuSEFirewall.Write }, [@READ, @WRITE, @EXECUTE], nil)
+      TEST(->() { SuSEFirewall.Read }, [@READ, @WRITE, @EXECUTE], nil)
+      TEST(->() { SuSEFirewall.Write }, [@READ, @WRITE, @EXECUTE], nil)
 
       DUMP("")
       DUMP("== Import/Export ==")
-      TEST(lambda { SuSEFirewall.Import(@SuSEfirewall2) }, [
+      TEST(->() { SuSEFirewall.Import(@SuSEfirewall2) }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.Export }, [@READ, @WRITE, @EXECUTE], nil)
+      TEST(->() { SuSEFirewall.Export }, [@READ, @WRITE, @EXECUTE], nil)
 
       DUMP("")
       DUMP("== Firewall behaviour ==")
-      TEST(lambda { SuSEFirewall.GetAllKnownInterfaces }, [
+      TEST(->() { SuSEFirewall.GetAllKnownInterfaces }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.GetKnownFirewallZones }, [
+      TEST(->() { SuSEFirewall.GetKnownFirewallZones }, [
         @READ,
         @WRITE,
         @EXECUTE
@@ -212,74 +212,74 @@ module Yast
 
       DUMP("")
       DUMP("== Interfaces Handling ==")
-      TEST(lambda { SuSEFirewall.GetInterfacesInZone("EXT") }, [
+      TEST(->() { SuSEFirewall.GetInterfacesInZone("EXT") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.AddInterfaceIntoZone("undefined", "EXT") }, [
+      TEST(->() { SuSEFirewall.AddInterfaceIntoZone("undefined", "EXT") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.AddInterfaceIntoZone("eth9", "EXT") }, [
+      TEST(->() { SuSEFirewall.AddInterfaceIntoZone("eth9", "EXT") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.GetInterfacesInZone("EXT") }, [
+      TEST(->() { SuSEFirewall.GetInterfacesInZone("EXT") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.GetSpecialInterfacesInZone("EXT") }, [
-        @READ,
-        @WRITE,
-        @EXECUTE
-      ], nil)
-
-      TEST(lambda { SuSEFirewall.AddInterfaceIntoZone("eth9", "DMZ") }, [
-        @READ,
-        @WRITE,
-        @EXECUTE
-      ], nil)
-      TEST(lambda { SuSEFirewall.RemoveInterfaceFromZone("eth6", "EXT") }, [
-        @READ,
-        @WRITE,
-        @EXECUTE
-      ], nil)
-      TEST(lambda { SuSEFirewall.RemoveInterfaceFromZone("undefined", "EXT") }, [
-        @READ,
-        @WRITE,
-        @EXECUTE
-      ], nil)
-      TEST(lambda { SuSEFirewall.GetInterfacesInZone("EXT") }, [
-        @READ,
-        @WRITE,
-        @EXECUTE
-      ], nil)
-      TEST(lambda { SuSEFirewall.GetInterfacesInZone("DMZ") }, [
-        @READ,
-        @WRITE,
-        @EXECUTE
-      ], nil)
-      TEST(lambda { SuSEFirewall.GetSpecialInterfacesInZone("EXT") }, [
+      TEST(->() { SuSEFirewall.GetSpecialInterfacesInZone("EXT") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
 
-      TEST(lambda { SuSEFirewall.GetZoneOfInterface("-none-") }, [
+      TEST(->() { SuSEFirewall.AddInterfaceIntoZone("eth9", "DMZ") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.GetZoneOfInterface("eth9") }, [
+      TEST(->() { SuSEFirewall.RemoveInterfaceFromZone("eth6", "EXT") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.GetZonesOfInterfaces(["eth9", "dsl0"]) }, [
+      TEST(->() { SuSEFirewall.RemoveInterfaceFromZone("undefined", "EXT") }, [
+        @READ,
+        @WRITE,
+        @EXECUTE
+      ], nil)
+      TEST(->() { SuSEFirewall.GetInterfacesInZone("EXT") }, [
+        @READ,
+        @WRITE,
+        @EXECUTE
+      ], nil)
+      TEST(->() { SuSEFirewall.GetInterfacesInZone("DMZ") }, [
+        @READ,
+        @WRITE,
+        @EXECUTE
+      ], nil)
+      TEST(->() { SuSEFirewall.GetSpecialInterfacesInZone("EXT") }, [
+        @READ,
+        @WRITE,
+        @EXECUTE
+      ], nil)
+
+      TEST(->() { SuSEFirewall.GetZoneOfInterface("-none-") }, [
+        @READ,
+        @WRITE,
+        @EXECUTE
+      ], nil)
+      TEST(->() { SuSEFirewall.GetZoneOfInterface("eth9") }, [
+        @READ,
+        @WRITE,
+        @EXECUTE
+      ], nil)
+      TEST(->() { SuSEFirewall.GetZonesOfInterfaces(["eth9", "dsl0"]) }, [
         @READ,
         @WRITE,
         @EXECUTE
@@ -287,78 +287,78 @@ module Yast
 
       DUMP("")
       DUMP("== Logging settings ==")
-      TEST(lambda { SuSEFirewall.GetLoggingSettings("ACCEPT") }, [
+      TEST(->() { SuSEFirewall.GetLoggingSettings("ACCEPT") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.GetLoggingSettings("DROP") }, [
+      TEST(->() { SuSEFirewall.GetLoggingSettings("DROP") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.SetLoggingSettings("ACCEPT", "ALL") }, [
+      TEST(->() { SuSEFirewall.SetLoggingSettings("ACCEPT", "ALL") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.SetLoggingSettings("DROP", "NONE") }, [
+      TEST(->() { SuSEFirewall.SetLoggingSettings("DROP", "NONE") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.GetLoggingSettings("ACCEPT") }, [
+      TEST(->() { SuSEFirewall.GetLoggingSettings("ACCEPT") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.GetLoggingSettings("DROP") }, [
+      TEST(->() { SuSEFirewall.GetLoggingSettings("DROP") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
 
-      TEST(lambda { SuSEFirewall.GetIgnoreLoggingBroadcast("INT") }, [
+      TEST(->() { SuSEFirewall.GetIgnoreLoggingBroadcast("INT") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.GetIgnoreLoggingBroadcast("EXT") }, [
+      TEST(->() { SuSEFirewall.GetIgnoreLoggingBroadcast("EXT") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.GetIgnoreLoggingBroadcast("DMZ") }, [
+      TEST(->() { SuSEFirewall.GetIgnoreLoggingBroadcast("DMZ") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.SetIgnoreLoggingBroadcast("INT", "yes") }, [
+      TEST(->() { SuSEFirewall.SetIgnoreLoggingBroadcast("INT", "yes") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.SetIgnoreLoggingBroadcast("EXT", "no") }, [
+      TEST(->() { SuSEFirewall.SetIgnoreLoggingBroadcast("EXT", "no") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.SetIgnoreLoggingBroadcast("DMZ", "yes") }, [
+      TEST(->() { SuSEFirewall.SetIgnoreLoggingBroadcast("DMZ", "yes") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.GetIgnoreLoggingBroadcast("INT") }, [
+      TEST(->() { SuSEFirewall.GetIgnoreLoggingBroadcast("INT") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.GetIgnoreLoggingBroadcast("EXT") }, [
+      TEST(->() { SuSEFirewall.GetIgnoreLoggingBroadcast("EXT") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.GetIgnoreLoggingBroadcast("DMZ") }, [
+      TEST(->() { SuSEFirewall.GetIgnoreLoggingBroadcast("DMZ") }, [
         @READ,
         @WRITE,
         @EXECUTE
@@ -366,27 +366,27 @@ module Yast
 
       DUMP("")
       DUMP("== Ports handling ==")
-      TEST(lambda { SuSEFirewall.HaveService("www", "TCP", "EXT") }, [
+      TEST(->() { SuSEFirewall.HaveService("www", "TCP", "EXT") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.AddService("www", "TCP", "EXT") }, [
+      TEST(->() { SuSEFirewall.AddService("www", "TCP", "EXT") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.HaveService("80", "TCP", "EXT") }, [
+      TEST(->() { SuSEFirewall.HaveService("80", "TCP", "EXT") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.RemoveService("www-http", "TCP", "EXT") }, [
+      TEST(->() { SuSEFirewall.RemoveService("www-http", "TCP", "EXT") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.HaveService("80", "TCP", "EXT") }, [
+      TEST(->() { SuSEFirewall.HaveService("80", "TCP", "EXT") }, [
         @READ,
         @WRITE,
         @EXECUTE
@@ -394,7 +394,7 @@ module Yast
 
       DUMP("")
       DUMP("== Broadcast handling ==")
-      TEST(lambda { SuSEFirewall.GetBroadcastAllowedPorts }, [
+      TEST(->() { SuSEFirewall.GetBroadcastAllowedPorts }, [
         @READ,
         @WRITE,
         @EXECUTE
@@ -408,7 +408,7 @@ module Yast
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.GetBroadcastAllowedPorts }, [
+      TEST(->() { SuSEFirewall.GetBroadcastAllowedPorts }, [
         @READ,
         @WRITE,
         @EXECUTE
@@ -416,9 +416,9 @@ module Yast
 
       DUMP("")
       DUMP("== Masquerade handling ==")
-      TEST(lambda { SuSEFirewall.GetMasquerade }, [@READ, @WRITE, @EXECUTE], nil)
-      TEST(lambda { SuSEFirewall.SetMasquerade(true) }, [@READ, @WRITE, @EXECUTE], nil)
-      TEST(lambda { SuSEFirewall.GetMasquerade }, [@READ, @WRITE, @EXECUTE], nil)
+      TEST(->() { SuSEFirewall.GetMasquerade }, [@READ, @WRITE, @EXECUTE], nil)
+      TEST(->() { SuSEFirewall.SetMasquerade(true) }, [@READ, @WRITE, @EXECUTE], nil)
+      TEST(->() { SuSEFirewall.GetMasquerade }, [@READ, @WRITE, @EXECUTE], nil)
 
       @EXECUTE_OK = deep_copy(@EXECUTE)
       if Ops.get_map(@EXECUTE_OK, "target", {}) == {}
@@ -446,14 +446,14 @@ module Yast
 
       DUMP("")
       DUMP("== Service Stop / Start ==")
-      TEST(lambda { SuSEFirewall.StopServices }, [@READ, @WRITE, @EXECUTE_OK], nil)
-      TEST(lambda { SuSEFirewall.StopServices }, [@READ, @WRITE, @EXECUTE_OK], nil)
-      TEST(lambda { SuSEFirewall.StartServices }, [@READ, @WRITE, @EXECUTE_ERR], nil)
-      TEST(lambda { SuSEFirewall.StartServices }, [@READ, @WRITE, @EXECUTE_ERR], nil)
+      TEST(->() { SuSEFirewall.StopServices }, [@READ, @WRITE, @EXECUTE_OK], nil)
+      TEST(->() { SuSEFirewall.StopServices }, [@READ, @WRITE, @EXECUTE_OK], nil)
+      TEST(->() { SuSEFirewall.StartServices }, [@READ, @WRITE, @EXECUTE_ERR], nil)
+      TEST(->() { SuSEFirewall.StartServices }, [@READ, @WRITE, @EXECUTE_ERR], nil)
 
       DUMP("")
       DUMP("== Additional Kernel Modules ==")
-      TEST(lambda { SuSEFirewall.GetFirewallKernelModules }, [
+      TEST(->() { SuSEFirewall.GetFirewallKernelModules }, [
         @READ,
         @WRITE,
         @EXECUTE
@@ -468,7 +468,7 @@ module Yast
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.GetFirewallKernelModules }, [
+      TEST(->() { SuSEFirewall.GetFirewallKernelModules }, [
         @READ,
         @WRITE,
         @EXECUTE
@@ -482,7 +482,7 @@ module Yast
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.GetFirewallKernelModules }, [
+      TEST(->() { SuSEFirewall.GetFirewallKernelModules }, [
         @READ,
         @WRITE,
         @EXECUTE
@@ -497,7 +497,7 @@ module Yast
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { SuSEFirewall.GetFirewallKernelModules }, [
+      TEST(->() { SuSEFirewall.GetFirewallKernelModules }, [
         @READ,
         @WRITE,
         @EXECUTE

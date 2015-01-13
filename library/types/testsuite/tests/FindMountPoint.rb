@@ -30,19 +30,19 @@ module Yast
 
       #import "Wagon";
       DUMP("Test nil")
-      TEST(lambda { String.FindMountPoint(nil, nil) }, [], nil)
-      TEST(lambda { String.FindMountPoint(nil, []) }, [], nil)
-      TEST(lambda { String.FindMountPoint(nil, ["/boot", "/"]) }, [], nil)
+      TEST(->() { String.FindMountPoint(nil, nil) }, [], nil)
+      TEST(->() { String.FindMountPoint(nil, []) }, [], nil)
+      TEST(->() { String.FindMountPoint(nil, ["/boot", "/"]) }, [], nil)
 
       DUMP("Test empty string")
-      TEST(lambda { String.FindMountPoint("", nil) }, [], nil)
-      TEST(lambda { String.FindMountPoint("", []) }, [], nil)
-      TEST(lambda { String.FindMountPoint("", ["/boot", "/"]) }, [], nil)
+      TEST(->() { String.FindMountPoint("", nil) }, [], nil)
+      TEST(->() { String.FindMountPoint("", []) }, [], nil)
+      TEST(->() { String.FindMountPoint("", ["/boot", "/"]) }, [], nil)
 
       DUMP("Test valid values")
-      TEST(lambda { String.FindMountPoint("/", ["/boot", "/", "/usr"]) }, [], nil)
-      TEST(lambda { String.FindMountPoint("/usr", ["/boot", "/", "/usr"]) }, [], nil)
-      TEST(lambda { String.FindMountPoint("/usr/", ["/boot", "/", "/usr"]) }, [], nil)
+      TEST(->() { String.FindMountPoint("/", ["/boot", "/", "/usr"]) }, [], nil)
+      TEST(->() { String.FindMountPoint("/usr", ["/boot", "/", "/usr"]) }, [], nil)
+      TEST(->() { String.FindMountPoint("/usr/", ["/boot", "/", "/usr"]) }, [], nil)
       TEST(lambda do
         String.FindMountPoint("/usr/share/locale", ["/boot", "/", "/usr"])
       end, [], nil)

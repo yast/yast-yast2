@@ -29,21 +29,21 @@ module Yast
 
       @aliases = {
         "1" => nil,
-        "2" => lambda { func1 },
+        "2" => ->() { func1 },
         "3" => [],
         "4" => [nil],
-        "5" => [lambda { func2 }],
-        "6" => [lambda { func3 }, :blah]
+        "5" => [->() { func2 }],
+        "6" => [->() { func3 }, :blah]
       }
 
-      TEST(lambda { Sequencer.WS_alias({}, "blah") }, [], nil)
-      TEST(lambda { Sequencer.WS_alias(@aliases, "blah") }, [], nil)
-      TEST(lambda { Sequencer.WS_alias(@aliases, "1") }, [], nil)
-      TEST(lambda { Builtins.eval(Sequencer.WS_alias(@aliases, "2")) }, [], nil)
-      TEST(lambda { Sequencer.WS_alias(@aliases, "3") }, [], nil)
-      TEST(lambda { Sequencer.WS_alias(@aliases, "4") }, [], nil)
-      TEST(lambda { Builtins.eval(Sequencer.WS_alias(@aliases, "5")) }, [], nil)
-      TEST(lambda { Builtins.eval(Sequencer.WS_alias(@aliases, "6")) }, [], nil)
+      TEST(->() { Sequencer.WS_alias({}, "blah") }, [], nil)
+      TEST(->() { Sequencer.WS_alias(@aliases, "blah") }, [], nil)
+      TEST(->() { Sequencer.WS_alias(@aliases, "1") }, [], nil)
+      TEST(->() { Builtins.eval(Sequencer.WS_alias(@aliases, "2")) }, [], nil)
+      TEST(->() { Sequencer.WS_alias(@aliases, "3") }, [], nil)
+      TEST(->() { Sequencer.WS_alias(@aliases, "4") }, [], nil)
+      TEST(->() { Builtins.eval(Sequencer.WS_alias(@aliases, "5")) }, [], nil)
+      TEST(->() { Builtins.eval(Sequencer.WS_alias(@aliases, "6")) }, [], nil)
 
       nil
     end

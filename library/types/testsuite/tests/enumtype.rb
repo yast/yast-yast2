@@ -36,9 +36,9 @@ module Yast
 
       Yast.import "TypeRepository"
 
-      TEST(lambda { TypeRepository.enum_validator(["a", "b", "c"], "a") }, [], nil)
-      TEST(lambda { TypeRepository.enum_validator(["a", "b", "c"], "x") }, [], nil)
-      TEST(lambda { TypeRepository.enum_validator([], "ahoj") }, [], nil) 
+      TEST(->() { TypeRepository.enum_validator(["a", "b", "c"], "a") }, [], nil)
+      TEST(->() { TypeRepository.enum_validator(["a", "b", "c"], "x") }, [], nil)
+      TEST(->() { TypeRepository.enum_validator([], "ahoj") }, [], nil) 
 
       # EOF
 

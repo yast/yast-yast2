@@ -39,7 +39,7 @@ module Yast
       Yast.import "CommandLine"
 
       # test of the resulting maps
-      TEST(lambda { CommandLine.Init(@cmdline, ["add", "help"]) }, [], nil) 
+      TEST(->() { CommandLine.Init(@cmdline, ["add", "help"]) }, [], nil) 
 
       # EOF
 

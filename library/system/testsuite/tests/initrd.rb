@@ -67,25 +67,25 @@ module Yast
       Yast.import "Mode"
       Yast.import "Stage"
 
-      TEST(lambda { Initrd.ListModules }, [@READ, {}, {}], 0)
+      TEST(->() { Initrd.ListModules }, [@READ, {}, {}], 0)
       DUMP("Now reseting")
-      TEST(lambda { Initrd.Reset }, [@READ, {}, {}], 0)
+      TEST(->() { Initrd.Reset }, [@READ, {}, {}], 0)
       DUMP("Reading again")
-      TEST(lambda { Initrd.ListModules }, [@READ, {}, {}], 0)
+      TEST(->() { Initrd.ListModules }, [@READ, {}, {}], 0)
       DUMP("Reseting again")
-      TEST(lambda { Initrd.Reset }, [@READ, {}, {}], 0)
+      TEST(->() { Initrd.Reset }, [@READ, {}, {}], 0)
       DUMP("Adding ne2k")
-      TEST(lambda { Initrd.AddModule("ne2k", "io=0x300, irq=5") }, [
+      TEST(->() { Initrd.AddModule("ne2k", "io=0x300, irq=5") }, [
         @READ,
         {},
         {}
       ], 0)
-      TEST(lambda { Initrd.ListModules }, [@READ, {}, {}], 0)
+      TEST(->() { Initrd.ListModules }, [@READ, {}, {}], 0)
       DUMP("Removing lvmmod")
-      TEST(lambda { Initrd.RemoveModule("lvmmod") }, [@READ, {}, {}], 0)
-      TEST(lambda { Initrd.ListModules }, [@READ, {}, {}], 0)
+      TEST(->() { Initrd.RemoveModule("lvmmod") }, [@READ, {}, {}], 0)
+      TEST(->() { Initrd.ListModules }, [@READ, {}, {}], 0)
       DUMP("Writing")
-      TEST(lambda { Initrd.Write }, [@READ, {}, {}], 0)
+      TEST(->() { Initrd.Write }, [@READ, {}, {}], 0)
       DUMP("Importing with filtered module")
       TEST(lambda do
         Initrd.Import(
@@ -97,7 +97,7 @@ module Yast
         {}
       ], 0)
       DUMP("Writing")
-      TEST(lambda { Initrd.Write }, [@READ, {}, {}], 0)
+      TEST(->() { Initrd.Write }, [@READ, {}, {}], 0)
       DUMP("Setting Mode::Update")
       Mode.SetMode("update")
       DUMP("Importing with filtered module")
@@ -110,18 +110,18 @@ module Yast
         {},
         {}
       ], 0)
-      TEST(lambda { Initrd.ListModules }, [@READ, {}, {}], 0)
+      TEST(->() { Initrd.ListModules }, [@READ, {}, {}], 0)
       DUMP("Writing")
-      TEST(lambda { Initrd.Write }, [@READ, {}, {}], 0)
+      TEST(->() { Initrd.Write }, [@READ, {}, {}], 0)
       DUMP("Resetting for installation test")
-      TEST(lambda { Stage.Set("initial") }, [@READ, {}, {}], 0)
-      TEST(lambda { Mode.SetMode("installation") }, [@READ, {}, {}], 0)
-      TEST(lambda { Initrd.Reset }, [@READ, {}, {}], 0)
+      TEST(->() { Stage.Set("initial") }, [@READ, {}, {}], 0)
+      TEST(->() { Mode.SetMode("installation") }, [@READ, {}, {}], 0)
+      TEST(->() { Initrd.Reset }, [@READ, {}, {}], 0)
       DUMP("Testing keeping installation order")
-      TEST(lambda { Initrd.AddModule("ne2k", "") }, [@READ, {}, {}], 0)
-      TEST(lambda { Initrd.AddModule("driver3", "") }, [@READ, {}, {}], 0)
-      TEST(lambda { Initrd.AddModule("driver2", "") }, [@READ, {}, {}], 0)
-      TEST(lambda { Initrd.ListModules }, [@READ, {}, {}], 0)
+      TEST(->() { Initrd.AddModule("ne2k", "") }, [@READ, {}, {}], 0)
+      TEST(->() { Initrd.AddModule("driver3", "") }, [@READ, {}, {}], 0)
+      TEST(->() { Initrd.AddModule("driver2", "") }, [@READ, {}, {}], 0)
+      TEST(->() { Initrd.ListModules }, [@READ, {}, {}], 0)
 
       nil
     end

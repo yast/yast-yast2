@@ -42,22 +42,22 @@ module Yast
         )
       end, [], nil)
 
-      TEST(lambda { URL.EscapeString(nil, URL.transform_map_passwd) }, [], nil)
-      TEST(lambda { URL.EscapeString("", URL.transform_map_passwd) }, [], nil)
-      TEST(lambda { URL.EscapeString("abcd", URL.transform_map_passwd) }, [], nil)
-      TEST(lambda { URL.EscapeString("abcd%", URL.transform_map_passwd) }, [], nil)
-      TEST(lambda { URL.EscapeString("ab%c$d", URL.transform_map_passwd) }, [], nil)
-      TEST(lambda { URL.EscapeString(" %$ ", URL.transform_map_passwd) }, [], nil)
-      TEST(lambda { URL.EscapeString("_<>{}", URL.transform_map_passwd) }, [], nil)
-      TEST(lambda { URL.EscapeString("%", URL.transform_map_passwd) }, [], nil)
+      TEST(->() { URL.EscapeString(nil, URL.transform_map_passwd) }, [], nil)
+      TEST(->() { URL.EscapeString("", URL.transform_map_passwd) }, [], nil)
+      TEST(->() { URL.EscapeString("abcd", URL.transform_map_passwd) }, [], nil)
+      TEST(->() { URL.EscapeString("abcd%", URL.transform_map_passwd) }, [], nil)
+      TEST(->() { URL.EscapeString("ab%c$d", URL.transform_map_passwd) }, [], nil)
+      TEST(->() { URL.EscapeString(" %$ ", URL.transform_map_passwd) }, [], nil)
+      TEST(->() { URL.EscapeString("_<>{}", URL.transform_map_passwd) }, [], nil)
+      TEST(->() { URL.EscapeString("%", URL.transform_map_passwd) }, [], nil)
 
-      TEST(lambda { URL.UnEscapeString(nil, URL.transform_map_passwd) }, [], nil)
-      TEST(lambda { URL.UnEscapeString("", URL.transform_map_passwd) }, [], nil)
-      TEST(lambda { URL.UnEscapeString("abcd", URL.transform_map_passwd) }, [], nil)
-      TEST(lambda { URL.UnEscapeString("ab%2fcd%25", URL.transform_map_passwd) }, [], nil)
-      TEST(lambda { URL.UnEscapeString("ab%40%25", URL.transform_map_passwd) }, [], nil)
-      TEST(lambda { URL.UnEscapeString("%40", URL.transform_map_passwd) }, [], nil)
-      TEST(lambda { URL.UnEscapeString("_<>{}", URL.transform_map_passwd) }, [], nil)
+      TEST(->() { URL.UnEscapeString(nil, URL.transform_map_passwd) }, [], nil)
+      TEST(->() { URL.UnEscapeString("", URL.transform_map_passwd) }, [], nil)
+      TEST(->() { URL.UnEscapeString("abcd", URL.transform_map_passwd) }, [], nil)
+      TEST(->() { URL.UnEscapeString("ab%2fcd%25", URL.transform_map_passwd) }, [], nil)
+      TEST(->() { URL.UnEscapeString("ab%40%25", URL.transform_map_passwd) }, [], nil)
+      TEST(->() { URL.UnEscapeString("%40", URL.transform_map_passwd) }, [], nil)
+      TEST(->() { URL.UnEscapeString("_<>{}", URL.transform_map_passwd) }, [], nil)
 
       # parse->build must return the orginal value
       TEST(lambda do
@@ -77,7 +77,7 @@ module Yast
         )
       end, [], nil)
 
-      TEST(lambda { test }, [], nil)
+      TEST(->() { test }, [], nil)
 
       TEST(lambda do
         URL.Build(
@@ -156,7 +156,7 @@ module Yast
           }
         )
       end, [], nil)
-      TEST(lambda { URL.Parse("http://[2001:de8:0:f123::1]/path/to/dir") }, [], nil)
+      TEST(->() { URL.Parse("http://[2001:de8:0:f123::1]/path/to/dir") }, [], nil)
       TEST(lambda do
         URL.Parse("http://user:password@[2001:de8:0:f123::1]:8080/path/to/dir")
       end, [], nil)
@@ -170,9 +170,9 @@ module Yast
 
       # smb:// tests
       @smb_url = "smb://username:passwd@servername/share/path/on/the/share?mountoptions=ro&workgroup=group"
-      TEST(lambda { URL.Parse(@smb_url) }, [], nil)
+      TEST(->() { URL.Parse(@smb_url) }, [], nil)
       # parse->build must return the orginal value
-      TEST(lambda { URL.Build(URL.Parse(@smb_url)) == @smb_url }, [], nil)
+      TEST(->() { URL.Build(URL.Parse(@smb_url)) == @smb_url }, [], nil)
       # bnc#491482
       TEST(lambda do
         URL.Build(
@@ -187,18 +187,18 @@ module Yast
         )
       end, [], nil)
 
-      TEST(lambda { URL.Build(URL.Parse("dir:///")) }, [], nil)
+      TEST(->() { URL.Build(URL.Parse("dir:///")) }, [], nil)
 
       @long_url = "http://download.opensuse.org/very/log/path/which/will/be/truncated/target_file"
 
       # no truncation needed
-      TEST(lambda { URL.FormatURL(URL.Parse(@long_url), 200) }, [], nil)
+      TEST(->() { URL.FormatURL(URL.Parse(@long_url), 200) }, [], nil)
 
       # request too short result
-      TEST(lambda { URL.FormatURL(URL.Parse(@long_url), 15) }, [], nil)
+      TEST(->() { URL.FormatURL(URL.Parse(@long_url), 15) }, [], nil)
 
-      TEST(lambda { URL.FormatURL(URL.Parse(@long_url), 45) }, [], nil)
-      TEST(lambda { URL.FormatURL(URL.Parse(@long_url), 65) }, [], nil) 
+      TEST(->() { URL.FormatURL(URL.Parse(@long_url), 45) }, [], nil)
+      TEST(->() { URL.FormatURL(URL.Parse(@long_url), 65) }, [], nil) 
 
       # EOF
 

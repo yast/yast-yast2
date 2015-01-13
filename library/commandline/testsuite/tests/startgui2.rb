@@ -39,9 +39,9 @@ module Yast
       Yast.import "CommandLine"
 
       # should not be successfull
-      TEST(lambda { CommandLine.Init(@cmdline, ["add"]) }, [], nil)
-      TEST(lambda { CommandLine.StartGUI }, [], nil)
-      TEST(lambda { CommandLine.Done }, [], nil) 
+      TEST(->() { CommandLine.Init(@cmdline, ["add"]) }, [], nil)
+      TEST(->() { CommandLine.StartGUI }, [], nil)
+      TEST(->() { CommandLine.Done }, [], nil) 
 
       # EOF
 
