@@ -442,7 +442,6 @@ module Yast
       end
       self.error = error
       log.error(error)
-    ensure
       return false
     end
 
