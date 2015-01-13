@@ -108,12 +108,12 @@ module Yast
             "lo"        =>
               # "IPADDR_1":"7.7.7.7"
                            {
-                "BROADCAST" => "127.255.255.255",
-                "IPADDR"    => "127.0.0.1",
-                "NETMASK"   => "255.0.0.0",
-                "NETWORK"   => "127.0.0.0",
-                "STARTMODE" => "onboot"
-              },
+                             "BROADCAST" => "127.255.255.255",
+                             "IPADDR"    => "127.0.0.1",
+                             "NETMASK"   => "255.0.0.0",
+                             "NETWORK"   => "127.0.0.0",
+                             "STARTMODE" => "onboot"
+                           },
             "myri5"     => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
             "ppp5"      => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
             "tr5"       => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
