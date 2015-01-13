@@ -684,7 +684,7 @@ module Yast
         if @_relnotes.key?(@_base_product)
           add_relnotes_for_product @_base_product, @_relnotes[@_base_product], tabs
         end
-	@_relnotes.each do | product, relnotes |
+        @_relnotes.each do | product, relnotes |
           if @_base_product != product
             add_relnotes_for_product product, relnotes, tabs
           end
