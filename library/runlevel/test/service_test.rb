@@ -26,7 +26,7 @@ module Yast
       end
 
       it "returns false if the service has not been found" do
-        stub_services(:service=>'unknown')
+        stub_services(service: 'unknown')
         expect(Service.call('restart', 'unknown')).to be_false
       end
 
@@ -53,7 +53,7 @@ module Yast
       end
 
       it "returns false if a service does not exist" do
-        stub_services(:service=>'unknown')
+        stub_services(service: 'unknown')
         expect(Service.Active('unknown')).to be_false
       end
     end
@@ -69,7 +69,7 @@ module Yast
       end
 
       it "returns false if a service does not exists" do
-        stub_services(:service=>'unknown')
+        stub_services(service: 'unknown')
         expect(Service.Enabled('unknown')).to be_false
       end
     end
@@ -87,7 +87,7 @@ module Yast
       end
 
       it "returns false if a service has not been found" do
-        stub_services(:service=>'unknown')
+        stub_services(service: 'unknown')
         expect(Service.Enable('unknown')).to be_false
         expect(Service.Error).not_to be_empty
       end
@@ -106,7 +106,7 @@ module Yast
       end
 
       it "returns false if a service does not exist" do
-        stub_services(:service=>'unknown')
+        stub_services(service: 'unknown')
         expect(Service.Disable('unknown')).to be_false
         expect(Service.Error).not_to be_empty
       end
@@ -125,7 +125,7 @@ module Yast
       end
 
       it "returns false if a service has not been found" do
-        stub_services(:service=>'unknown')
+        stub_services(service: 'unknown')
         expect(Service.Start('unknown')).to be_false
         expect(Service.Error).not_to be_empty
       end
@@ -144,7 +144,7 @@ module Yast
       end
 
       it "returns false if a service has not been found" do
-        stub_services(:service=>'unknown')
+        stub_services(service: 'unknown')
         expect(Service.Restart('unknown')).to be_false
         expect(Service.Error).not_to be_empty
       end
@@ -163,7 +163,7 @@ module Yast
       end
 
       it "returns false if a service has not been found" do
-        stub_services(:service=>'unknown')
+        stub_services(service: 'unknown')
         expect(Service.Reload('unknown')).to be_false
         expect(Service.Error).not_to be_empty
       end
@@ -182,7 +182,7 @@ module Yast
       end
 
       it "returns false if a service has not been found" do
-        stub_services(:service=>'unknown')
+        stub_services(service: 'unknown')
         expect(Service.Stop('unknown')).to be_false
         expect(Service.Error).not_to be_empty
       end

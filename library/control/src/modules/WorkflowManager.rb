@@ -921,20 +921,20 @@ module Yast
 
       @additional_finish_steps_before_chroot = Convert.convert(
         Builtins.merge(@additional_finish_steps_before_chroot, before_chroot),
-        :from => "list",
-        :to   => "list <string>"
+        from: "list",
+        to:   "list <string>"
       )
 
       @additional_finish_steps_after_chroot = Convert.convert(
         Builtins.merge(@additional_finish_steps_after_chroot, after_chroot),
-        :from => "list",
-        :to   => "list <string>"
+        from: "list",
+        to:   "list <string>"
       )
 
       @additional_finish_steps_before_umount = Convert.convert(
         Builtins.merge(@additional_finish_steps_before_umount, before_umount),
-        :from => "list",
-        :to   => "list <string>"
+        from: "list",
+        to:   "list <string>"
       )
 
       true
@@ -1060,8 +1060,8 @@ module Yast
       )
       ProductControl.workflows = Convert.convert(
         Builtins.merge(ProductControl.workflows, workflows),
-        :from => "list",
-        :to   => "list <map>"
+        from: "list",
+        to:   "list <map>"
       )
 
       true
@@ -1141,8 +1141,8 @@ module Yast
         addon = Ops.get_map(update_file, section, {})
         sect = Convert.convert(
           Builtins.union(sect, addon),
-          :from => "map",
-          :to   => "map <string, any>"
+          from: "map",
+          to:   "map <string, any>"
         )
         ProductFeatures.SetSection(section, sect)
       end
@@ -1151,8 +1151,8 @@ module Yast
       addon_clone = Ops.get_list(update_file, "clone_modules", [])
       ProductControl.clone_modules = Convert.convert(
         Builtins.merge(ProductControl.clone_modules, addon_clone),
-        :from => "list",
-        :to   => "list <string>"
+        from: "list",
+        to:   "list <string>"
       )
 
       # merging texts
@@ -1184,8 +1184,8 @@ module Yast
 
       controlfile_texts = Convert.convert(
         Builtins.union(controlfile_texts, update_file_texts),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
       ProductFeatures.SetSection("texts", controlfile_texts)
 
@@ -1389,30 +1389,30 @@ module Yast
       }
     end
 
-    publish :variable => :additional_finish_steps_before_chroot, :type => "list <string>"
-    publish :variable => :additional_finish_steps_after_chroot, :type => "list <string>"
-    publish :variable => :additional_finish_steps_before_umount, :type => "list <string>"
-    publish :function => :GetAdditionalFinishSteps, :type => "list <string> (string)"
-    publish :function => :SetBaseWorkflow, :type => "void (boolean)"
-    publish :function => :PrepareProposals, :type => "list <map> (list <map>)"
-    publish :function => :PrepareSystemProposals, :type => "void ()"
-    publish :function => :PrepareWorkflows, :type => "list <map> (list <map>)"
-    publish :function => :PrepareSystemWorkflows, :type => "void ()"
-    publish :function => :ResetWorkflow, :type => "void ()"
-    publish :function => :GetCachedWorkflowFilename, :type => "string (symbol, integer, string)"
-    publish :function => :AddWorkflow, :type => "boolean (symbol, integer, string)"
-    publish :function => :RemoveWorkflow, :type => "boolean (symbol, integer, string)"
-    publish :function => :CleanWorkflowsDirectory, :type => "void ()"
-    publish :function => :WorkflowsRequiringRegistration, :type => "list <string> ()"
-    publish :function => :WorkflowRequiresRegistration, :type => "boolean (integer)"
-    publish :function => :IncorporateControlFileOptions, :type => "boolean (string)"
-    publish :function => :RedrawWizardSteps, :type => "boolean ()"
-    publish :function => :MergeWorkflows, :type => "boolean ()"
-    publish :function => :SomeWorkflowsWereChanged, :type => "boolean ()"
-    publish :function => :GetAllUsedControlFiles, :type => "list <string> ()"
-    publish :function => :SetAllUsedControlFiles, :type => "void (list <string>)"
-    publish :function => :HaveAdditionalWorkflows, :type => "boolean ()"
-    publish :function => :DumpCurrentSettings, :type => "map <string, any> ()"
+    publish variable: :additional_finish_steps_before_chroot, type: "list <string>"
+    publish variable: :additional_finish_steps_after_chroot, type: "list <string>"
+    publish variable: :additional_finish_steps_before_umount, type: "list <string>"
+    publish function: :GetAdditionalFinishSteps, type: "list <string> (string)"
+    publish function: :SetBaseWorkflow, type: "void (boolean)"
+    publish function: :PrepareProposals, type: "list <map> (list <map>)"
+    publish function: :PrepareSystemProposals, type: "void ()"
+    publish function: :PrepareWorkflows, type: "list <map> (list <map>)"
+    publish function: :PrepareSystemWorkflows, type: "void ()"
+    publish function: :ResetWorkflow, type: "void ()"
+    publish function: :GetCachedWorkflowFilename, type: "string (symbol, integer, string)"
+    publish function: :AddWorkflow, type: "boolean (symbol, integer, string)"
+    publish function: :RemoveWorkflow, type: "boolean (symbol, integer, string)"
+    publish function: :CleanWorkflowsDirectory, type: "void ()"
+    publish function: :WorkflowsRequiringRegistration, type: "list <string> ()"
+    publish function: :WorkflowRequiresRegistration, type: "boolean (integer)"
+    publish function: :IncorporateControlFileOptions, type: "boolean (string)"
+    publish function: :RedrawWizardSteps, type: "boolean ()"
+    publish function: :MergeWorkflows, type: "boolean ()"
+    publish function: :SomeWorkflowsWereChanged, type: "boolean ()"
+    publish function: :GetAllUsedControlFiles, type: "list <string> ()"
+    publish function: :SetAllUsedControlFiles, type: "void (list <string>)"
+    publish function: :HaveAdditionalWorkflows, type: "boolean ()"
+    publish function: :DumpCurrentSettings, type: "map <string, any> ()"
   end
 
   WorkflowManager = WorkflowManagerClass.new

@@ -137,8 +137,8 @@ module Yast
           ppc_modules_to_skip = ["reiserfs", "ext3", "jbd"]
           @modules_to_skip = Convert.convert(
             Builtins.merge(@modules_to_skip, ppc_modules_to_skip),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
         end
         # currently no disk controller modules are known to fail in initrd (bnc#719696), list removed
@@ -422,8 +422,8 @@ module Yast
     def VgaModes
       all_modes = Convert.convert(
         SCR.Read(path(".probe.framebuffer")),
-        :from => "any",
-        :to   => "list <map>"
+        from: "any",
+        to:   "list <map>"
       )
       if all_modes == nil || Builtins.size(all_modes) == 0
         Builtins.y2warning("Probing VGA modes failed, using fallback list")
@@ -475,22 +475,22 @@ module Yast
       nil
     end
 
-    publish :variable => :changed, :type => "boolean"
-    publish :function => :getModulesToSkip, :type => "list <string> ()"
-    publish :function => :Reset, :type => "void ()"
-    publish :function => :Read, :type => "boolean ()"
-    publish :function => :ListModules, :type => "list <string> ()"
-    publish :function => :AddModule, :type => "void (string, string)"
-    publish :function => :Export, :type => "map ()"
-    publish :function => :Import, :type => "void (map)"
-    publish :function => :RemoveModule, :type => "void (string)"
-    publish :function => :Update, :type => "void ()"
-    publish :function => :errorWithLogPopup, :type => "void (string, string)"
-    publish :function => :Write, :type => "boolean ()"
-    publish :function => :VgaModes, :type => "list <map> ()"
-    publish :function => :setSplash, :type => "void (string)"
-    publish :function => :AdditionalParameters, :type => "string ()"
-    publish :function => :SetAdditionalParameters, :type => "void (string)"
+    publish variable: :changed, type: "boolean"
+    publish function: :getModulesToSkip, type: "list <string> ()"
+    publish function: :Reset, type: "void ()"
+    publish function: :Read, type: "boolean ()"
+    publish function: :ListModules, type: "list <string> ()"
+    publish function: :AddModule, type: "void (string, string)"
+    publish function: :Export, type: "map ()"
+    publish function: :Import, type: "void (map)"
+    publish function: :RemoveModule, type: "void (string)"
+    publish function: :Update, type: "void ()"
+    publish function: :errorWithLogPopup, type: "void (string, string)"
+    publish function: :Write, type: "boolean ()"
+    publish function: :VgaModes, type: "list <map> ()"
+    publish function: :setSplash, type: "void (string)"
+    publish function: :AdditionalParameters, type: "string ()"
+    publish function: :SetAdditionalParameters, type: "void (string)"
   end
 
   Initrd = InitrdClass.new

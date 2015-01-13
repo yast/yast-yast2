@@ -211,19 +211,19 @@ module Yast
       true
     end
 
-    publish :function => :ResetInstallInf, :type => "void ()"
-    publish :function => :InstallInf, :type => "string (string)"
-    publish :function => :manual, :type => "boolean ()"
-    publish :function => :serial_console, :type => "boolean ()"
-    publish :function => :braille, :type => "boolean ()"
-    publish :function => :vnc, :type => "boolean ()"
-    publish :function => :display_ip, :type => "boolean ()"
-    publish :function => :usessh, :type => "boolean ()"
-    publish :function => :useiscsi, :type => "boolean ()"
-    publish :function => :text, :type => "boolean ()"
-    publish :function => :WriteYaSTInf, :type => "void (map <string, string>)"
-    publish :function => :SaveInstallInf, :type => "boolean (string)"
-    publish :function => :keys, :type => "list <string> ()"
+    publish function: :ResetInstallInf, type: "void ()"
+    publish function: :InstallInf, type: "string (string)"
+    publish function: :manual, type: "boolean ()"
+    publish function: :serial_console, type: "boolean ()"
+    publish function: :braille, type: "boolean ()"
+    publish function: :vnc, type: "boolean ()"
+    publish function: :display_ip, type: "boolean ()"
+    publish function: :usessh, type: "boolean ()"
+    publish function: :useiscsi, type: "boolean ()"
+    publish function: :text, type: "boolean ()"
+    publish function: :WriteYaSTInf, type: "void (map <string, string>)"
+    publish function: :SaveInstallInf, type: "boolean (string)"
+    publish function: :keys, type: "list <string> ()"
   end
 
   Linuxrc = LinuxrcClass.new

@@ -74,7 +74,7 @@ module Yast
       { "text" => text, "file" => file }
     end
 
-    publish :function => :load_file_locale, :type => "map (list <string>, string, string)"
+    publish function: :load_file_locale, type: "map (list <string>, string, string)"
   end
 
   CustomDialogs = CustomDialogsClass.new

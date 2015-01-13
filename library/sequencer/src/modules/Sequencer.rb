@@ -376,17 +376,17 @@ module Yast
       nil
     end
 
-    publish :variable => :docheck, :type => "boolean", :private => true
-    publish :function => :WS_testall, :type => "list (map)", :private => true
-    publish :function => :WS_check, :type => "boolean (map, map)", :private => true
-    publish :function => :WS_error, :type => "any (string)", :private => true
-    publish :function => :WS_alias, :type => "any (map, string)", :private => true
-    publish :function => :WS_special, :type => "boolean (map, string)", :private => true
-    publish :function => :WS_next, :type => "any (map, string, symbol)", :private => true
-    publish :function => :WS_run, :type => "symbol (map, string)", :private => true
-    publish :function => :WS_push, :type => "list (list, any)", :private => true
-    publish :function => :WS_pop, :type => "list (list)", :private => true
-    publish :function => :Run, :type => "symbol (map, map)"
+    publish variable: :docheck, type: "boolean", private: true
+    publish function: :WS_testall, type: "list (map)", private: true
+    publish function: :WS_check, type: "boolean (map, map)", private: true
+    publish function: :WS_error, type: "any (string)", private: true
+    publish function: :WS_alias, type: "any (map, string)", private: true
+    publish function: :WS_special, type: "boolean (map, string)", private: true
+    publish function: :WS_next, type: "any (map, string, symbol)", private: true
+    publish function: :WS_run, type: "symbol (map, string)", private: true
+    publish function: :WS_push, type: "list (list, any)", private: true
+    publish function: :WS_pop, type: "list (list)", private: true
+    publish function: :Run, type: "symbol (map, map)"
   end
 
   Sequencer = SequencerClass.new

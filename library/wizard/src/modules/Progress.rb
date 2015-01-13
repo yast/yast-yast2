@@ -784,9 +784,9 @@ module Yast
         Ops.divide(
           Ops.multiply(
             100.0,
-            Convert.convert(progress_value, :from => "integer", :to => "float")
+            Convert.convert(progress_value, from: "integer", to: "float")
           ),
-          Convert.convert(@progress_max, :from => "integer", :to => "float")
+          Convert.convert(@progress_max, from: "integer", to: "float")
         )
       )
 
@@ -1051,28 +1051,28 @@ module Yast
       nil
     end
 
-    publish :function => :IsRunning, :type => "boolean ()"
-    publish :function => :CurrentSubprogressType, :type => "symbol ()"
-    publish :function => :SubprogressTitle, :type => "void (string)"
-    publish :function => :SubprogressValue, :type => "void (integer)"
-    publish :function => :SubprogressType, :type => "void (symbol, integer)"
-    publish :function => :set, :type => "boolean (boolean)"
-    publish :function => :status, :type => "boolean ()"
-    publish :function => :off, :type => "void ()"
-    publish :function => :on, :type => "void ()"
-    publish :function => :New, :type => "void (string, string, integer, list <string>, list, string)"
-    publish :function => :NewProgressIcons, :type => "void (string, string, integer, list <string>, list, string, list <list <string>>)"
-    publish :function => :Simple, :type => "void (string, string, integer, string)"
-    publish :function => :NextStep, :type => "void ()"
-    publish :function => :NextStage, :type => "void ()"
-    publish :function => :Step, :type => "void (integer)"
-    publish :function => :Stage, :type => "void (integer, string, integer)"
-    publish :function => :NextStageStep, :type => "void (integer)"
-    publish :function => :Title, :type => "void (string)"
-    publish :function => :Finish, :type => "void ()"
-    publish :function => :OpenSuperior, :type => "void (string, list <string>)"
-    publish :function => :CloseSuperior, :type => "void ()"
-    publish :function => :StepSuperior, :type => "void ()"
+    publish function: :IsRunning, type: "boolean ()"
+    publish function: :CurrentSubprogressType, type: "symbol ()"
+    publish function: :SubprogressTitle, type: "void (string)"
+    publish function: :SubprogressValue, type: "void (integer)"
+    publish function: :SubprogressType, type: "void (symbol, integer)"
+    publish function: :set, type: "boolean (boolean)"
+    publish function: :status, type: "boolean ()"
+    publish function: :off, type: "void ()"
+    publish function: :on, type: "void ()"
+    publish function: :New, type: "void (string, string, integer, list <string>, list, string)"
+    publish function: :NewProgressIcons, type: "void (string, string, integer, list <string>, list, string, list <list <string>>)"
+    publish function: :Simple, type: "void (string, string, integer, string)"
+    publish function: :NextStep, type: "void ()"
+    publish function: :NextStage, type: "void ()"
+    publish function: :Step, type: "void (integer)"
+    publish function: :Stage, type: "void (integer, string, integer)"
+    publish function: :NextStageStep, type: "void (integer)"
+    publish function: :Title, type: "void (string)"
+    publish function: :Finish, type: "void ()"
+    publish function: :OpenSuperior, type: "void (string, list <string>)"
+    publish function: :CloseSuperior, type: "void ()"
+    publish function: :StepSuperior, type: "void ()"
   end
 
   Progress = ProgressClass.new

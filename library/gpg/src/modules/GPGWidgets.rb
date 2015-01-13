@@ -410,13 +410,13 @@ module Yast
       }
     end
 
-    publish :function => :SetSelectedPrivateKey, :type => "void (string)"
-    publish :function => :SetSelectedPublicKey, :type => "void (string)"
-    publish :function => :SelectedPrivateKey, :type => "string ()"
-    publish :function => :Passphrase, :type => "string ()"
-    publish :function => :AskPassphraseWidget, :type => "map <string, map <string, any>> (string)"
-    publish :function => :AskPassphrasePopup, :type => "string (string)"
-    publish :function => :Widgets, :type => "map <string, map <string, any>> ()"
+    publish function: :SetSelectedPrivateKey, type: "void (string)"
+    publish function: :SetSelectedPublicKey, type: "void (string)"
+    publish function: :SelectedPrivateKey, type: "string ()"
+    publish function: :Passphrase, type: "string ()"
+    publish function: :AskPassphraseWidget, type: "map <string, map <string, any>> (string)"
+    publish function: :AskPassphrasePopup, type: "string (string)"
+    publish function: :Widgets, type: "map <string, map <string, any>> ()"
   end
 
   GPGWidgets = GPGWidgetsClass.new

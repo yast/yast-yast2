@@ -21,7 +21,7 @@ module Yast
       end
 
       it "returns nil if the target unit does not exist" do
-        stub_targets(:target=>"unknown")
+        stub_targets(target: "unknown")
         target = SystemdTarget.find("unknown")
         expect(target).to be_nil
       end
@@ -35,7 +35,7 @@ module Yast
       end
 
       it "raises SystemdTargetNotFound error if the target unit does not exist" do
-        stub_targets(:target=>'unknown')
+        stub_targets(target: 'unknown')
         expect { SystemdTarget.find!('unknown') }.to raise_error(SystemdTargetNotFound)
       end
     end
@@ -81,7 +81,7 @@ module Yast
       end
 
       it "returns false if the default target has not been set" do
-        stub_targets(:target=>'unknown')
+        stub_targets(target: 'unknown')
         expect(SystemdTarget.set_default("unknown")).to be_false
       end
     end
@@ -95,7 +95,7 @@ module Yast
       end
 
       it "returns false if the target unit has not been set as default target" do
-        stub_targets(:target=>'network')
+        stub_targets(target: 'network')
         target = SystemdTarget.find("network")
         expect(target.set_default).to be_false
       end
@@ -104,7 +104,7 @@ module Yast
         it "it returns true if the target unit object has been set as default target" do
           expect(Systemctl).to receive(:execute).with("set-default --force multi-user-in-installation.target")
             .and_return(OpenStruct.new('exit'=>0, 'stdout'=>'', 'stderr'=>''))
-          stub_targets(:target=>"multi-user-in-installation")
+          stub_targets(target: "multi-user-in-installation")
           target = SystemdTarget.find("multi-user-in-installation")
           expect(target.set_default).to be_true
         end
@@ -118,14 +118,14 @@ module Yast
       end
 
       it "returns false if the unit is not allowed to be isolated" do
-        stub_targets(:target=>'network')
+        stub_targets(target: 'network')
         target = SystemdTarget.find("network")
         expect(target.allow_isolate?).to be_false
       end
 
       context "when target properties cannot be found out (e.g. in chroot)" do
         it "returns true" do
-          stub_targets(:target=>"multi-user-in-installation")
+          stub_targets(target: "multi-user-in-installation")
           target = SystemdTarget.find("multi-user-in-installation")
           expect(target.allow_isolate?).to be_true
         end

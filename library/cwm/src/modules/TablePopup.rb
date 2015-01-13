@@ -60,8 +60,8 @@ module Yast
       descr = deep_copy(descr)
       toEval = Convert.convert(
         Ops.get(descr, "ids"),
-        :from => "any",
-        :to   => "list (map)"
+        from: "any",
+        to:   "list (map)"
       )
       return toEval.call(descr) if toEval != nil
       []
@@ -164,8 +164,8 @@ module Yast
       Builtins.foreach(options) do |w_key, v|
         des = Convert.convert(
           v,
-          :from => "any",
-          :to   => "map <string, map <string, any>>"
+          from: "any",
+          to:   "map <string, map <string, any>>"
         )
         Builtins.foreach(des) do |group, d|
           if group != "table" && group != "popup"
@@ -194,8 +194,8 @@ module Yast
       end
       toEval = Convert.convert(
         Ops.get(descr, "id2key"),
-        :from => "any",
-        :to   => "string (map, any)"
+        from: "any",
+        to:   "string (map, any)"
       )
       if toEval != nil
         return toEval.call(descr, opt_id)
@@ -293,8 +293,8 @@ module Yast
       if Builtins.haskey(Ops.get_map(opt_descr, "table", {}), "label_func")
         label_func = Convert.convert(
           Ops.get(opt_descr, ["table", "label_func"]),
-          :from => "any",
-          :to   => "string (any, string)"
+          from: "any",
+          to:   "string (any, string)"
         )
         label = label_func.call(opt_id, opt_key)
       end
@@ -311,8 +311,8 @@ module Yast
       opt_key = Ops.get_string(opt_descr, "_cwm_key", "")
       toEval = Convert.convert(
         Ops.get(opt_descr, ["table", "summary"]),
-        :from => "any",
-        :to   => "string (any, string)"
+        from: "any",
+        to:   "string (any, string)"
       )
       return toEval.call(opt_id, opt_key) if toEval != nil
       ""
@@ -328,8 +328,8 @@ module Yast
       opt_key = Ops.get_string(opt_descr, "_cwm_key", "")
       toEval = Convert.convert(
         Ops.get(opt_descr, ["table", "changed"]),
-        :from => "any",
-        :to   => "boolean (any, string)"
+        from: "any",
+        to:   "boolean (any, string)"
       )
       return toEval.call(opt_id, opt_key) if toEval != nil
       false
@@ -345,8 +345,8 @@ module Yast
       descr = deep_copy(descr)
       toEval = Convert.convert(
         Ops.get(descr, "option_delete"),
-        :from => "any",
-        :to   => "boolean (any, string)"
+        from: "any",
+        to:   "boolean (any, string)"
       )
       if nil != toEval
         opt_key = id2key(descr, opt_id)
@@ -402,8 +402,8 @@ module Yast
       descr = deep_copy(descr)
       toEval = Convert.convert(
         Ops.get(descr, "option_move"),
-        :from => "any",
-        :to   => "any (any, string, symbol)"
+        from: "any",
+        to:   "any (any, string, symbol)"
       )
       return toEval.call(opt_id, id2key(descr, opt_id), dir) if nil != toEval
       nil
@@ -570,8 +570,8 @@ module Yast
         if Ops.get(popup_descr, "init") != nil
           toEval = Convert.convert(
             Ops.get(popup_descr, "init"),
-            :from => "any",
-            :to   => "void (any, string)"
+            from: "any",
+            to:   "void (any, string)"
           )
           toEval.call(opt_id, opt_key)
         end
@@ -584,8 +584,8 @@ module Yast
           if Ops.get(popup_descr, "handle") != nil
             toEval = Convert.convert(
               Ops.get(popup_descr, "handle"),
-              :from => "any",
-              :to   => "void (any, string, map)"
+              from: "any",
+              to:   "void (any, string, map)"
             )
             toEval.call(opt_id, opt_key, event_descr2)
           end
@@ -594,8 +594,8 @@ module Yast
             if val_type == :function
               toEval = Convert.convert(
                 Ops.get(popup_descr, "validate_function"),
-                :from => "any",
-                :to   => "boolean (any, string, map)"
+                from: "any",
+                to:   "boolean (any, string, map)"
               )
               if toEval != nil
                 ret = nil if !toEval.call(opt_id, opt_key, event_descr2)
@@ -608,8 +608,8 @@ module Yast
         if ret == :_tp_ok && Ops.get(popup_descr, "store") != nil
           toEval = Convert.convert(
             Ops.get(popup_descr, "store"),
-            :from => "any",
-            :to   => "void (any, string)"
+            from: "any",
+            to:   "void (any, string)"
           )
           toEval.call(opt_id, opt_key)
         end
@@ -745,8 +745,8 @@ module Yast
           else
             toEval_c = Convert.convert(
               Ops.get(option_map, ["table", "handle"]),
-              :from => "any",
-              :to   => "symbol (any, string, map)"
+              from: "any",
+              to:   "symbol (any, string, map)"
             )
             ret2 = toEval_c.call(opt_id, opt_key, event_descr)
             return ret2 if ret2 != :_tp_normal
@@ -982,8 +982,8 @@ module Yast
           },
           widget_descr
         ),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
 
       if !Builtins.haskey(ret, "init")
@@ -1004,21 +1004,21 @@ module Yast
       deep_copy(ret)
     end
 
-    publish :function => :id2key, :type => "string (map <string, any>, any)"
-    publish :function => :key2descr, :type => "map <string, any> (map <string, any>, string)"
-    publish :function => :updateOptionMap, :type => "map <string, any> (map <string, any>, map)"
-    publish :function => :tableEntryChanged, :type => "boolean (any, map <string, any>)"
-    publish :function => :deleteTableItem, :type => "boolean (any, map <string, any>)"
-    publish :function => :updateButtons, :type => "void (map <string, any>, map <string, any>)"
-    publish :function => :askForNewOption, :type => "string (list, boolean, map <string, any>)"
-    publish :function => :singleOptionEditPopup, :type => "symbol (map <string, any>)"
-    publish :function => :DisableTable, :type => "void (map <string, any>)"
-    publish :function => :EnableTable, :type => "void (map <string, any>)"
-    publish :function => :TableInit, :type => "void (map <string, any>, string)"
-    publish :function => :TableHandle, :type => "symbol (map <string, any>, string, map)"
-    publish :function => :TableInitWrapper, :type => "void (string)"
-    publish :function => :TableHandleWrapper, :type => "symbol (string, map)"
-    publish :function => :CreateTableDescr, :type => "map <string, any> (map <string, any>, map <string, any>)"
+    publish function: :id2key, type: "string (map <string, any>, any)"
+    publish function: :key2descr, type: "map <string, any> (map <string, any>, string)"
+    publish function: :updateOptionMap, type: "map <string, any> (map <string, any>, map)"
+    publish function: :tableEntryChanged, type: "boolean (any, map <string, any>)"
+    publish function: :deleteTableItem, type: "boolean (any, map <string, any>)"
+    publish function: :updateButtons, type: "void (map <string, any>, map <string, any>)"
+    publish function: :askForNewOption, type: "string (list, boolean, map <string, any>)"
+    publish function: :singleOptionEditPopup, type: "symbol (map <string, any>)"
+    publish function: :DisableTable, type: "void (map <string, any>)"
+    publish function: :EnableTable, type: "void (map <string, any>)"
+    publish function: :TableInit, type: "void (map <string, any>, string)"
+    publish function: :TableHandle, type: "symbol (map <string, any>, string, map)"
+    publish function: :TableInitWrapper, type: "void (string)"
+    publish function: :TableHandleWrapper, type: "symbol (string, map)"
+    publish function: :CreateTableDescr, type: "map <string, any> (map <string, any>, map <string, any>)"
   end
 
   TablePopup = TablePopupClass.new

@@ -215,14 +215,14 @@ module Yast
       true
     end
 
-    publish :variable => :aliases, :type => "list <map>"
-    publish :variable => :root_alias, :type => "string"
-    publish :function => :FilterRootAlias, :type => "void ()"
-    publish :function => :ReadAliases, :type => "boolean ()"
-    publish :function => :MergeRootAlias, :type => "list <map> (list <map>)"
-    publish :function => :WriteAliases, :type => "boolean ()"
-    publish :function => :GetRootAlias, :type => "string ()"
-    publish :function => :SetRootAlias, :type => "boolean (string)"
+    publish variable: :aliases, type: "list <map>"
+    publish variable: :root_alias, type: "string"
+    publish function: :FilterRootAlias, type: "void ()"
+    publish function: :ReadAliases, type: "boolean ()"
+    publish function: :MergeRootAlias, type: "list <map> (list <map>)"
+    publish function: :WriteAliases, type: "boolean ()"
+    publish function: :GetRootAlias, type: "string ()"
+    publish function: :SetRootAlias, type: "boolean (string)"
   end
 
   MailAliases = MailAliasesClass.new

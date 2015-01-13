@@ -352,7 +352,7 @@ module Yast
 
         raise(
           SuSEFirewalServiceNotFound,
-          _("Service with name '%{service_name}' does not exist") % { :service_name => service_name }
+          _("Service with name '%{service_name}' does not exist") % { service_name: service_name }
         )
       end
 
@@ -428,7 +428,7 @@ module Yast
         SCR.UnregisterAgent(path(".firewall_service_definition"))
 
         # Fallback for presented service
-        @services[service_name]["name"] = _("Service: %{filename}") % { :filename => filename }
+        @services[service_name]["name"] = _("Service: %{filename}") % { filename: filename }
         @services[service_name]["description"] = ""
 
         # Registering sysconfig agent for this file (to get metadata)
@@ -635,7 +635,7 @@ module Yast
         log.error "Service #{service} is unknown"
         raise(
           SuSEFirewalServiceNotFound,
-          _("Service with name '%{service_name}' does not exist") % { :service_name => service }
+          _("Service with name '%{service_name}' does not exist") % { service_name: service }
         )
       end
 
@@ -725,25 +725,25 @@ module Yast
       []
     end
 
-    publish :variable => :OLD_SERVICES, :type => "map <string, map <string, any>>"
-    publish :function => :ServiceDefinedByPackage, :type => "boolean (string)"
-    publish :function => :GetFilenameFromServiceDefinedByPackage, :type => "string (string)"
-    publish :function => :ReadServicesDefinedByRPMPackages, :type => "boolean ()"
-    publish :function => :IsKnownService, :type => "boolean (string)"
-    publish :function => :GetSupportedServices, :type => "map <string, string> ()"
-    publish :function => :GetListOfServicesAddedByPackage, :type => "list <string> ()"
-    publish :function => :GetNeededTCPPorts, :type => "list <string> (string)"
-    publish :function => :GetNeededUDPPorts, :type => "list <string> (string)"
-    publish :function => :GetNeededRPCPorts, :type => "list <string> (string)"
-    publish :function => :GetNeededIPProtocols, :type => "list <string> (string)"
-    publish :function => :GetDescription, :type => "string (string)"
-    publish :function => :SetModified, :type => "void ()"
-    publish :function => :ResetModified, :type => "void ()"
-    publish :function => :GetModified, :type => "boolean ()"
-    publish :function => :GetNeededBroadcastPorts, :type => "list <string> (string)"
-    publish :function => :GetNeededPortsAndProtocols, :type => "map <string, list <string>> (string)"
-    publish :function => :SetNeededPortsAndProtocols, :type => "boolean (string, map <string, list <string>>)"
-    publish :function => :GetPossiblyConflictServices, :type => "list <string> ()"
+    publish variable: :OLD_SERVICES, type: "map <string, map <string, any>>"
+    publish function: :ServiceDefinedByPackage, type: "boolean (string)"
+    publish function: :GetFilenameFromServiceDefinedByPackage, type: "string (string)"
+    publish function: :ReadServicesDefinedByRPMPackages, type: "boolean ()"
+    publish function: :IsKnownService, type: "boolean (string)"
+    publish function: :GetSupportedServices, type: "map <string, string> ()"
+    publish function: :GetListOfServicesAddedByPackage, type: "list <string> ()"
+    publish function: :GetNeededTCPPorts, type: "list <string> (string)"
+    publish function: :GetNeededUDPPorts, type: "list <string> (string)"
+    publish function: :GetNeededRPCPorts, type: "list <string> (string)"
+    publish function: :GetNeededIPProtocols, type: "list <string> (string)"
+    publish function: :GetDescription, type: "string (string)"
+    publish function: :SetModified, type: "void ()"
+    publish function: :ResetModified, type: "void ()"
+    publish function: :GetModified, type: "boolean ()"
+    publish function: :GetNeededBroadcastPorts, type: "list <string> (string)"
+    publish function: :GetNeededPortsAndProtocols, type: "map <string, list <string>> (string)"
+    publish function: :SetNeededPortsAndProtocols, type: "boolean (string, map <string, list <string>>)"
+    publish function: :GetPossiblyConflictServices, type: "list <string> ()"
   end
 
   SuSEFirewallServices = SuSEFirewallServicesClass.new

@@ -147,10 +147,10 @@ module Yast
       nil
     end
 
-    publish :function => :Installed, :type => "boolean ()"
-    publish :function => :Running, :type => "boolean ()"
-    publish :function => :SetDefaultRunlevel, :type => "boolean (integer)"
-    publish :function => :DefaultRunlevel, :type => "integer ()"
+    publish function: :Installed, type: "boolean ()"
+    publish function: :Running, type: "boolean ()"
+    publish function: :SetDefaultRunlevel, type: "boolean (integer)"
+    publish function: :DefaultRunlevel, type: "integer ()"
   end
 
   Systemd = SystemdClass.new

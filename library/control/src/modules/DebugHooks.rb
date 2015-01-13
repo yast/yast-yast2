@@ -158,8 +158,8 @@ module Yast
       nil
     end
 
-    publish :function => :Checkpoint, :type => "void (string, boolean)"
-    publish :function => :Run, :type => "void (string, boolean)"
+    publish function: :Checkpoint, type: "void (string, boolean)"
+    publish function: :Run, type: "void (string, boolean)"
   end
 
   DebugHooks = DebugHooksClass.new

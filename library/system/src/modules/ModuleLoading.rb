@@ -281,8 +281,8 @@ module Yast
       load_success ? :ok : :fail
     end
 
-    publish :function => :prepareVendorDeviceInfo, :type => "list (map)"
-    publish :function => :Load, :type => "symbol (string, string, string, string, boolean, boolean)"
+    publish function: :prepareVendorDeviceInfo, type: "list (map)"
+    publish function: :Load, type: "symbol (string, string, string, string, boolean, boolean)"
   end
 
   ModuleLoading = ModuleLoadingClass.new

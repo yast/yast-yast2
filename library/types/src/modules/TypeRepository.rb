@@ -137,11 +137,11 @@ module Yast
       Builtins.contains(values, value)
     end
 
-    publish :function => :is_a, :type => "boolean (any, string)"
-    publish :function => :TypeRepository, :type => "void ()"
-    publish :function => :IsEmpty, :type => "boolean (any)"
-    publish :function => :regex_validator, :type => "boolean (string, string)"
-    publish :function => :enum_validator, :type => "boolean (list, string)"
+    publish function: :is_a, type: "boolean (any, string)"
+    publish function: :TypeRepository, type: "void ()"
+    publish function: :IsEmpty, type: "boolean (any)"
+    publish function: :regex_validator, type: "boolean (string, string)"
+    publish function: :enum_validator, type: "boolean (list, string)"
   end
 
   TypeRepository = TypeRepositoryClass.new

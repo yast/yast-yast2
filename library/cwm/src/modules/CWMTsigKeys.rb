@@ -244,8 +244,8 @@ module Yast
       widget = deep_copy(widget)
       get_keys_info = Convert.convert(
         Ops.get(widget, "get_keys_info"),
-        :from => "any",
-        :to   => "map <string, any> ()"
+        from: "any",
+        to:   "map <string, any> ()"
       )
       info = get_keys_info.call
       @tsig_keys = Ops.get_list(info, "tsig_keys", [])
@@ -292,8 +292,8 @@ module Yast
             Ops.is(Ops.get(widget, "list_used_keys"), "list <string> ()")
           lister = Convert.convert(
             Ops.get(widget, "list_used_keys"),
-            :from => "any",
-            :to   => "list <string> ()"
+            from: "any",
+            to:   "list <string> ()"
           )
           used_keys = lister.call
           keys_to_delete = AnalyzeTSIGKeyFile(delete_filename)
@@ -409,8 +409,8 @@ module Yast
             )
             files = Convert.convert(
               SCR.Read(path(".target.dir"), "/etc/named.d"),
-              :from => "any",
-              :to   => "list <string>"
+              from: "any",
+              to:   "list <string>"
             )
             Builtins.foreach(files) do |f|
               if Builtins.contains(AnalyzeTSIGKeyFile(f), key2)
@@ -489,8 +489,8 @@ module Yast
       event = deep_copy(event)
       set_info = Convert.convert(
         Ops.get(widget, "set_keys_info"),
-        :from => "any",
-        :to   => "void (map <string, any>)"
+        from: "any",
+        to:   "void (map <string, any>)"
       )
       info = {
         "removed_files" => @deleted_tsig_keys,
@@ -752,25 +752,25 @@ module Yast
           },
           settings
         ),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
 
       deep_copy(ret)
     end
 
-    publish :function => :AnalyzeTSIGKeyFile, :type => "list <string> (string)"
-    publish :function => :NormalizeFilename, :type => "string (string)"
-    publish :function => :DeleteTSIGKeyFromDisk, :type => "void (string)"
-    publish :function => :Files2KeyMaps, :type => "list <map <string, string>> (list <string>)"
-    publish :function => :Files2Keys, :type => "list <string> (list <string>)"
-    publish :function => :Init, :type => "void (map <string, any>, string)"
-    publish :function => :Handle, :type => "symbol (map <string, any>, string, map)"
-    publish :function => :Store, :type => "void (map <string, any>, string, map)"
-    publish :function => :InitWrapper, :type => "void (string)"
-    publish :function => :HandleWrapper, :type => "symbol (string, map)"
-    publish :function => :StoreWrapper, :type => "void (string, map)"
-    publish :function => :CreateWidget, :type => "map <string, any> (map <string, any>)"
+    publish function: :AnalyzeTSIGKeyFile, type: "list <string> (string)"
+    publish function: :NormalizeFilename, type: "string (string)"
+    publish function: :DeleteTSIGKeyFromDisk, type: "void (string)"
+    publish function: :Files2KeyMaps, type: "list <map <string, string>> (list <string>)"
+    publish function: :Files2Keys, type: "list <string> (list <string>)"
+    publish function: :Init, type: "void (map <string, any>, string)"
+    publish function: :Handle, type: "symbol (map <string, any>, string, map)"
+    publish function: :Store, type: "void (map <string, any>, string, map)"
+    publish function: :InitWrapper, type: "void (string)"
+    publish function: :HandleWrapper, type: "symbol (string, map)"
+    publish function: :StoreWrapper, type: "void (string, map)"
+    publish function: :CreateWidget, type: "map <string, any> (map <string, any>)"
   end
 
   CWMTsigKeys = CWMTsigKeysClass.new

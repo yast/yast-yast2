@@ -161,8 +161,8 @@ module Yast
       else
         @DisabledModules = Convert.convert(
           Builtins.union(@DisabledModules, [modname]),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
       end
 
@@ -194,8 +194,8 @@ module Yast
       else
         @DisabledProposals = Convert.convert(
           Builtins.union(@DisabledProposals, [disable_proposal]),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
       end
 
@@ -232,8 +232,8 @@ module Yast
               Ops.get(@DisabledSubProposals, unique_id, []),
               [disable_subproposal]
             ),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
         )
       else
@@ -431,8 +431,8 @@ module Yast
       if Ops.greater_than(Builtins.size(other_args), 0)
         arguments = Convert.convert(
           Builtins.union(arguments, other_args),
-          :from => "map",
-          :to   => "map <string, any>"
+          from: "map",
+          to:   "map <string, any>"
         )
       end
 
@@ -731,24 +731,24 @@ module Yast
               @DisabledProposals,
               [Ops.get_string(m, "proposal", "")]
             ),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
         elsif Ops.get_string(m, "name", "") != nil &&
             Ops.get_string(m, "name", "") != ""
           Builtins.y2milestone("Disabling module: %1", m)
           @DisabledModules = Convert.convert(
             Builtins.union(@DisabledModules, [Ops.get_string(m, "name", "")]),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
         end
       end
 
       @already_disabled_workflows = Convert.convert(
         Builtins.union(@already_disabled_workflows, [this_workflow]),
-        :from => "list",
-        :to   => "list <map>"
+        from: "list",
+        to:   "list <map>"
       )
 
       nil
@@ -1075,7 +1075,7 @@ module Yast
         if Ops.is_string?(p)
           proposal_name = Convert.to_string(p)
         else
-          pm = Convert.convert(p, :from => "any", :to => "map <string, string>")
+          pm = Convert.convert(p, from: "any", to: "map <string, string>")
           proposal_name = Ops.get(pm, "name", "")
           proposal_order = Ops.get(pm, "presentation_order", "50")
 
@@ -1638,63 +1638,63 @@ module Yast
       nil
     end
 
-    publish :variable => :productControl, :type => "map"
-    publish :variable => :workflows, :type => "list <map>"
-    publish :variable => :proposals, :type => "list <map>"
-    publish :variable => :inst_finish, :type => "list <map <string, any>>"
-    publish :variable => :clone_modules, :type => "list <string>"
-    publish :variable => :custom_control_file, :type => "string"
-    publish :variable => :y2update_control_file, :type => "string"
-    publish :variable => :default_control_file, :type => "string"
-    publish :variable => :saved_control_file, :type => "string"
-    publish :variable => :packaged_control_file, :type => "string"
-    publish :variable => :current_control_file, :type => "string"
-    publish :variable => :CurrentWizardStep, :type => "string"
-    publish :variable => :last_stage_mode, :type => "list <map>"
-    publish :variable => :logfiles, :type => "list <string>"
-    publish :variable => :first_step, :type => "integer"
-    publish :variable => :restarting_step, :type => "integer"
-    publish :function => :CurrentStep, :type => "integer ()"
-    publish :function => :setClientPrefix, :type => "void (string)"
-    publish :function => :EnableModule, :type => "list <string> (string)"
-    publish :function => :DisableModule, :type => "list <string> (string)"
-    publish :function => :GetDisabledModules, :type => "list <string> ()"
-    publish :function => :EnableProposal, :type => "list <string> (string)"
-    publish :function => :DisableProposal, :type => "list <string> (string)"
-    publish :function => :GetDisabledProposals, :type => "list <string> ()"
-    publish :function => :EnableSubProposal, :type => "map <string, list <string>> (string, string)"
-    publish :function => :DisableSubProposal, :type => "map <string, list <string>> (string, string)"
-    publish :function => :GetDisabledSubProposals, :type => "map <string, list <string>> ()"
-    publish :function => :checkDisabled, :type => "boolean (map)"
-    publish :function => :checkHeading, :type => "boolean (map)"
-    publish :function => :ReadControlFile, :type => "boolean (string)"
-    publish :function => :checkArch, :type => "boolean (map, map)"
-    publish :function => :getClientTerm, :type => "term (map, map, any)"
-    publish :function => :getModeDefaults, :type => "map (string, string)"
-    publish :function => :RequiredFiles, :type => "list <string> (string, string)"
-    publish :function => :getCompleteWorkflow, :type => "map (string, string)"
-    publish :function => :getModules, :type => "list <map> (string, string, symbol)"
-    publish :function => :RunRequired, :type => "boolean (string, string)"
-    publish :function => :getWorkflowLabel, :type => "string (string, string, string)"
-    publish :function => :DisableAllModulesAndProposals, :type => "void (string, string)"
-    publish :function => :UnDisableAllModulesAndProposals, :type => "void (string, string)"
-    publish :function => :AddWizardSteps, :type => "void (list <map>)"
-    publish :function => :UpdateWizardSteps, :type => "void (list <map>)"
-    publish :function => :RetranslateWizardSteps, :type => "void ()"
-    publish :function => :getProposals, :type => "list <list> (string, string, string)"
-    publish :function => :getLockedProposals, :type => "list <string> (string, string, string)"
-    publish :function => :getProposalTextDomain, :type => "string ()"
-    publish :function => :getProposalProperties, :type => "map (string, string, string)"
-    publish :function => :GetTranslatedText, :type => "string (string)"
-    publish :function => :Init, :type => "boolean ()"
-    publish :function => :wasRun, :type => "boolean (string)"
-    publish :function => :RunFrom, :type => "symbol (integer, boolean)"
-    publish :function => :Run, :type => "symbol ()"
-    publish :function => :SkippedSteps, :type => "list <map> ()"
-    publish :function => :RestartingStep, :type => "map ()"
-    publish :function => :ProductControl, :type => "void ()"
-    publish :function => :SetAdditionalWorkflowParams, :type => "void (map <string, any>)"
-    publish :function => :ResetAdditionalWorkflowParams, :type => "void ()"
+    publish variable: :productControl, type: "map"
+    publish variable: :workflows, type: "list <map>"
+    publish variable: :proposals, type: "list <map>"
+    publish variable: :inst_finish, type: "list <map <string, any>>"
+    publish variable: :clone_modules, type: "list <string>"
+    publish variable: :custom_control_file, type: "string"
+    publish variable: :y2update_control_file, type: "string"
+    publish variable: :default_control_file, type: "string"
+    publish variable: :saved_control_file, type: "string"
+    publish variable: :packaged_control_file, type: "string"
+    publish variable: :current_control_file, type: "string"
+    publish variable: :CurrentWizardStep, type: "string"
+    publish variable: :last_stage_mode, type: "list <map>"
+    publish variable: :logfiles, type: "list <string>"
+    publish variable: :first_step, type: "integer"
+    publish variable: :restarting_step, type: "integer"
+    publish function: :CurrentStep, type: "integer ()"
+    publish function: :setClientPrefix, type: "void (string)"
+    publish function: :EnableModule, type: "list <string> (string)"
+    publish function: :DisableModule, type: "list <string> (string)"
+    publish function: :GetDisabledModules, type: "list <string> ()"
+    publish function: :EnableProposal, type: "list <string> (string)"
+    publish function: :DisableProposal, type: "list <string> (string)"
+    publish function: :GetDisabledProposals, type: "list <string> ()"
+    publish function: :EnableSubProposal, type: "map <string, list <string>> (string, string)"
+    publish function: :DisableSubProposal, type: "map <string, list <string>> (string, string)"
+    publish function: :GetDisabledSubProposals, type: "map <string, list <string>> ()"
+    publish function: :checkDisabled, type: "boolean (map)"
+    publish function: :checkHeading, type: "boolean (map)"
+    publish function: :ReadControlFile, type: "boolean (string)"
+    publish function: :checkArch, type: "boolean (map, map)"
+    publish function: :getClientTerm, type: "term (map, map, any)"
+    publish function: :getModeDefaults, type: "map (string, string)"
+    publish function: :RequiredFiles, type: "list <string> (string, string)"
+    publish function: :getCompleteWorkflow, type: "map (string, string)"
+    publish function: :getModules, type: "list <map> (string, string, symbol)"
+    publish function: :RunRequired, type: "boolean (string, string)"
+    publish function: :getWorkflowLabel, type: "string (string, string, string)"
+    publish function: :DisableAllModulesAndProposals, type: "void (string, string)"
+    publish function: :UnDisableAllModulesAndProposals, type: "void (string, string)"
+    publish function: :AddWizardSteps, type: "void (list <map>)"
+    publish function: :UpdateWizardSteps, type: "void (list <map>)"
+    publish function: :RetranslateWizardSteps, type: "void ()"
+    publish function: :getProposals, type: "list <list> (string, string, string)"
+    publish function: :getLockedProposals, type: "list <string> (string, string, string)"
+    publish function: :getProposalTextDomain, type: "string ()"
+    publish function: :getProposalProperties, type: "map (string, string, string)"
+    publish function: :GetTranslatedText, type: "string (string)"
+    publish function: :Init, type: "boolean ()"
+    publish function: :wasRun, type: "boolean (string)"
+    publish function: :RunFrom, type: "symbol (integer, boolean)"
+    publish function: :Run, type: "symbol ()"
+    publish function: :SkippedSteps, type: "list <map> ()"
+    publish function: :RestartingStep, type: "map ()"
+    publish function: :ProductControl, type: "void ()"
+    publish function: :SetAdditionalWorkflowParams, type: "void (map <string, any>)"
+    publish function: :ResetAdditionalWorkflowParams, type: "void ()"
   end
 
   ProductControl = ProductControlClass.new

@@ -58,8 +58,8 @@ module Yast
       if SCR.Read(path(".target.size"), @filename) != -1
         settings = Convert.convert(
           SCR.Read(path(".target.ycp"), @filename),
-          :from => "any",
-          :to   => "map <string, any>"
+          from: "any",
+          to:   "map <string, any>"
         )
         Builtins.y2milestone("Read settings: %1", settings)
         @all_failed = Ops.get_list(settings, "all_failed", [])
@@ -158,15 +158,15 @@ module Yast
       ret
     end
 
-    publish :variable => :filename, :type => "string"
-    publish :function => :Read, :type => "void ()"
-    publish :function => :Write, :type => "void ()"
-    publish :function => :Run, :type => "void (string)"
-    publish :function => :Finish, :type => "void (string)"
-    publish :function => :Failed, :type => "boolean (string)"
-    publish :function => :FailedLast, :type => "boolean (string)"
-    publish :function => :LastFinished, :type => "string ()"
-    publish :function => :AskRun, :type => "boolean (string, string)"
+    publish variable: :filename, type: "string"
+    publish function: :Read, type: "void ()"
+    publish function: :Write, type: "void ()"
+    publish function: :Run, type: "void (string)"
+    publish function: :Finish, type: "void (string)"
+    publish function: :Failed, type: "boolean (string)"
+    publish function: :FailedLast, type: "boolean (string)"
+    publish function: :LastFinished, type: "string ()"
+    publish function: :AskRun, type: "boolean (string, string)"
   end
 
   Crash = CrashClass.new

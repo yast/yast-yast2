@@ -135,8 +135,8 @@ module Yast
       packages = deep_copy(packages)
       function = Convert.convert(
         Ops.get(functions, "DoInstall"),
-        :from => "any",
-        :to   => "boolean (list <string>)"
+        from: "any",
+        to:   "boolean (list <string>)"
       )
       function.call(packages)
     end
@@ -148,8 +148,8 @@ module Yast
       packages = deep_copy(packages)
       function = Convert.convert(
         Ops.get(functions, "DoRemove"),
-        :from => "any",
-        :to   => "boolean (list <string>)"
+        from: "any",
+        to:   "boolean (list <string>)"
       )
       function.call(packages)
     end
@@ -163,8 +163,8 @@ module Yast
       toremove = deep_copy(toremove)
       function = Convert.convert(
         Ops.get(functions, "DoInstallAndRemove"),
-        :from => "any",
-        :to   => "boolean (list <string>, list <string>)"
+        from: "any",
+        to:   "boolean (list <string>, list <string>)"
       )
       function.call(toinstall, toremove)
     end
@@ -172,8 +172,8 @@ module Yast
     def Available(package)
       function = Convert.convert(
         Ops.get(functions, "Available"),
-        :from => "any",
-        :to   => "boolean (string)"
+        from: "any",
+        to:   "boolean (string)"
       )
       function.call(package)
     end
@@ -181,8 +181,8 @@ module Yast
     def Installed(package)
       function = Convert.convert(
         Ops.get(functions, "Installed"),
-        :from => "any",
-        :to   => "boolean (string)"
+        from: "any",
+        to:   "boolean (string)"
       )
       function.call(package)
     end
@@ -190,8 +190,8 @@ module Yast
     def PackageAvailable(package)
       function = Convert.convert(
         Ops.get(functions, "PackageAvailable"),
-        :from => "any",
-        :to   => "boolean (string)"
+        from: "any",
+        to:   "boolean (string)"
       )
       function.call(package)
     end
@@ -199,8 +199,8 @@ module Yast
     def PackageInstalled(package)
       function = Convert.convert(
         Ops.get(functions, "PackageInstalled"),
-        :from => "any",
-        :to   => "boolean (string)"
+        from: "any",
+        to:   "boolean (string)"
       )
       function.call(package)
     end
@@ -209,35 +209,35 @@ module Yast
       kernel_modules = deep_copy(kernel_modules)
       function = Convert.convert(
         Ops.get(functions, "InstallKernel"),
-        :from => "any",
-        :to   => "boolean (list <string>)"
+        from: "any",
+        to:   "boolean (list <string>)"
       )
       function.call(kernel_modules)
     end
 
-    publish :function => :Available, :type => "boolean (string)"
-    publish :function => :Installed, :type => "boolean (string)"
-    publish :function => :DoInstall, :type => "boolean (list <string>)"
-    publish :function => :DoRemove, :type => "boolean (list <string>)"
-    publish :function => :DoInstallAndRemove, :type => "boolean (list <string>, list <string>)"
-    publish :function => :AvailableAll, :type => "boolean (list <string>)"
-    publish :function => :AvailableAny, :type => "boolean (list <string>)"
-    publish :function => :InstalledAll, :type => "boolean (list <string>)"
-    publish :function => :InstalledAny, :type => "boolean (list <string>)"
-    publish :function => :InstallMsg, :type => "boolean (string, string)"
-    publish :function => :InstallAllMsg, :type => "boolean (list <string>, string)"
-    publish :function => :InstallAnyMsg, :type => "boolean (list <string>, string)"
-    publish :function => :RemoveMsg, :type => "boolean (string, string)"
-    publish :function => :RemoveAllMsg, :type => "boolean (list <string>, string)"
-    publish :function => :Install, :type => "boolean (string)"
-    publish :function => :InstallAll, :type => "boolean (list <string>)"
-    publish :function => :InstallAny, :type => "boolean (list <string>)"
-    publish :function => :Remove, :type => "boolean (string)"
-    publish :function => :RemoveAll, :type => "boolean (list <string>)"
-    publish :function => :LastOperationCanceled, :type => "boolean ()"
-    publish :function => :PackageAvailable, :type => "boolean (string)"
-    publish :function => :PackageInstalled, :type => "boolean (string)"
-    publish :function => :InstallKernel, :type => "boolean (list <string>)"
+    publish function: :Available, type: "boolean (string)"
+    publish function: :Installed, type: "boolean (string)"
+    publish function: :DoInstall, type: "boolean (list <string>)"
+    publish function: :DoRemove, type: "boolean (list <string>)"
+    publish function: :DoInstallAndRemove, type: "boolean (list <string>, list <string>)"
+    publish function: :AvailableAll, type: "boolean (list <string>)"
+    publish function: :AvailableAny, type: "boolean (list <string>)"
+    publish function: :InstalledAll, type: "boolean (list <string>)"
+    publish function: :InstalledAny, type: "boolean (list <string>)"
+    publish function: :InstallMsg, type: "boolean (string, string)"
+    publish function: :InstallAllMsg, type: "boolean (list <string>, string)"
+    publish function: :InstallAnyMsg, type: "boolean (list <string>, string)"
+    publish function: :RemoveMsg, type: "boolean (string, string)"
+    publish function: :RemoveAllMsg, type: "boolean (list <string>, string)"
+    publish function: :Install, type: "boolean (string)"
+    publish function: :InstallAll, type: "boolean (list <string>)"
+    publish function: :InstallAny, type: "boolean (list <string>)"
+    publish function: :Remove, type: "boolean (string)"
+    publish function: :RemoveAll, type: "boolean (list <string>)"
+    publish function: :LastOperationCanceled, type: "boolean ()"
+    publish function: :PackageAvailable, type: "boolean (string)"
+    publish function: :PackageInstalled, type: "boolean (string)"
+    publish function: :InstallKernel, type: "boolean (list <string>)"
   end
 
   Package = PackageClass.new

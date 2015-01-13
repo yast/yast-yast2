@@ -81,7 +81,7 @@ module Yast
     end
 
     def status
-      command("status", :options => "2>&1").stdout
+      command("status", options: "2>&1").stdout
     end
 
     def start
@@ -201,7 +201,7 @@ module Yast
         properties = systemd_unit.input_properties.map do |_, property_name|
           " --property=#{property_name} "
         end
-        systemd_unit.command("show", :options => properties.join)
+        systemd_unit.command("show", options: properties.join)
       end
     end
 

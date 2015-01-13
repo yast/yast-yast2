@@ -115,15 +115,15 @@ module Yast
       Path("fontdir")
     end
 
-    publish :function => :Path, :type => "string (string)"
-    publish :function => :binPath, :type => "string ()"
-    publish :function => :libPath, :type => "string ()"
-    publish :function => :lib64Path, :type => "string ()"
-    publish :function => :manPath, :type => "string ()"
-    publish :function => :includePath, :type => "string ()"
-    publish :function => :sharePath, :type => "string ()"
-    publish :function => :infoPath, :type => "string ()"
-    publish :function => :fontPath, :type => "string ()"
+    publish function: :Path, type: "string (string)"
+    publish function: :binPath, type: "string ()"
+    publish function: :libPath, type: "string ()"
+    publish function: :lib64Path, type: "string ()"
+    publish function: :manPath, type: "string ()"
+    publish function: :includePath, type: "string ()"
+    publish function: :sharePath, type: "string ()"
+    publish function: :infoPath, type: "string ()"
+    publish function: :fontPath, type: "string ()"
   end
 
   XVersion = XVersionClass.new

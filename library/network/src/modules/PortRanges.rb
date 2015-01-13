@@ -249,8 +249,8 @@ module Yast
                   Ops.get(ret, "ports", []),
                   PortAliases.GetListOfServiceAliases(port)
                 ),
-                :from => "list",
-                :to   => "list <string>"
+                from: "list",
+                to:   "list <string>"
               )
             ) 
             # only add the port itself
@@ -626,21 +626,21 @@ module Yast
 
       new_list = Convert.convert(
         Builtins.union(new_list, list_of_ranges),
-        :from => "list",
-        :to   => "list <string>"
+        from: "list",
+        to:   "list <string>"
       )
 
       deep_copy(new_list)
     end
 
-    publish :variable => :max_port_number, :type => "integer"
-    publish :function => :IsPortRange, :type => "boolean (string)"
-    publish :function => :IsValidPortRange, :type => "boolean (string)"
-    publish :function => :PortIsInPortranges, :type => "boolean (string, list <string>)"
-    publish :function => :DividePortsAndPortRanges, :type => "map <string, list <string>> (list <string>, boolean)"
-    publish :function => :CreateNewPortRange, :type => "string (integer, integer)"
-    publish :function => :RemovePortFromPortRanges, :type => "list <string> (integer, list <string>)"
-    publish :function => :FlattenServices, :type => "list <string> (list <string>, string)"
+    publish variable: :max_port_number, type: "integer"
+    publish function: :IsPortRange, type: "boolean (string)"
+    publish function: :IsValidPortRange, type: "boolean (string)"
+    publish function: :PortIsInPortranges, type: "boolean (string, list <string>)"
+    publish function: :DividePortsAndPortRanges, type: "map <string, list <string>> (list <string>, boolean)"
+    publish function: :CreateNewPortRange, type: "string (integer, integer)"
+    publish function: :RemovePortFromPortRanges, type: "list <string> (integer, list <string>)"
+    publish function: :FlattenServices, type: "list <string> (list <string>, string)"
   end
 
   PortRanges = PortRangesClass.new

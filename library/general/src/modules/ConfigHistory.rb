@@ -556,9 +556,9 @@ module Yast
       success
     end
 
-    publish :function => :Init, :type => "boolean ()"
-    publish :function => :CommitChanges, :type => "boolean (string)"
-    publish :function => :InitFiles, :type => "boolean (list <string>)"
+    publish function: :Init, type: "boolean ()"
+    publish function: :CommitChanges, type: "boolean (string)"
+    publish function: :InitFiles, type: "boolean (list <string>)"
   end
 
   ConfigHistory = ConfigHistoryClass.new

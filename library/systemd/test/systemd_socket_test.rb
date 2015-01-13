@@ -31,7 +31,7 @@ module Yast
       end
 
       it "raises SystemdSocketNotFound error if unit does not exist" do
-        stub_sockets(:socket=>'unknown')
+        stub_sockets(socket: 'unknown')
         expect { SystemdSocket.find!('unknown') }.to raise_error(SystemdSocketNotFound)
       end
     end

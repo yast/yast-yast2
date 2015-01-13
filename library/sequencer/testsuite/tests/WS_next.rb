@@ -33,10 +33,10 @@ module Yast
 
       @sequence = {
         "ws_start" => "begin",
-        "begin"    => { :next => "decide" },
-        "config"   => { :next => "end" },
-        "decide"   => { :no => "end", :yes => "config" },
-        "end"      => { :finish => :ws_finish }
+        "begin"    => { next: "decide" },
+        "config"   => { next: "end" },
+        "decide"   => { no: "end", yes: "config" },
+        "end"      => { finish: :ws_finish }
       }
 
       TEST(->() { Sequencer.WS_next({}, "blah", :id3) }, [], nil)

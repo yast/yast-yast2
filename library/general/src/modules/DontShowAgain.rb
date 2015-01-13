@@ -77,8 +77,8 @@ module Yast
           # Read and evaluate the current configuration
           read_conf = Convert.convert(
             SCR.Read(path(".target.ycp"), @conf_file),
-            :from => "any",
-            :to   => "map <string, map <string, map <string, any>>>"
+            from: "any",
+            to:   "map <string, map <string, map <string, any>>>"
           )
           @current_configuration = deep_copy(read_conf) if read_conf != nil
         else
@@ -392,13 +392,13 @@ module Yast
       end
     end
 
-    publish :variable => :already_read, :type => "boolean"
-    publish :function => :GetShowQuestionAgain, :type => "boolean (map <string, string>)"
-    publish :function => :SetShowQuestionAgain, :type => "boolean (map <string, string>, boolean)"
-    publish :function => :GetDefaultReturn, :type => "any (map <string, string>)"
-    publish :function => :SetDefaultReturn, :type => "boolean (map <string, string>, any)"
-    publish :function => :GetCurrentConfigurationMap, :type => "map <string, map <string, map <string, any>>> ()"
-    publish :function => :RemoveShowQuestionAgain, :type => "boolean (map <string, string>)"
+    publish variable: :already_read, type: "boolean"
+    publish function: :GetShowQuestionAgain, type: "boolean (map <string, string>)"
+    publish function: :SetShowQuestionAgain, type: "boolean (map <string, string>, boolean)"
+    publish function: :GetDefaultReturn, type: "any (map <string, string>)"
+    publish function: :SetDefaultReturn, type: "boolean (map <string, string>, any)"
+    publish function: :GetCurrentConfigurationMap, type: "map <string, map <string, map <string, any>>> ()"
+    publish function: :RemoveShowQuestionAgain, type: "boolean (map <string, string>)"
   end
 
   DontShowAgain = DontShowAgainClass.new

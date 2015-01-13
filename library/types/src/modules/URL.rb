@@ -639,20 +639,20 @@ module Yast
       deep_copy(ret)
     end
 
-    publish :variable => :ValidChars, :type => "string"
-    publish :variable => :transform_map_passwd, :type => "map <string, string>"
-    publish :variable => :transform_map_filename, :type => "map <string, string>"
-    publish :variable => :transform_map_query, :type => "map <string, string>"
-    publish :function => :UnEscapeString, :type => "string (string, map <string, string>)"
-    publish :function => :EscapeString, :type => "string (string, map <string, string>)"
-    publish :function => :MakeMapFromParams, :type => "map <string, string> (string)"
-    publish :function => :MakeParamsFromMap, :type => "string (map <string, string>)"
-    publish :function => :Parse, :type => "map (string)"
-    publish :function => :Check, :type => "boolean (string)"
-    publish :function => :Build, :type => "string (map)"
-    publish :function => :FormatURL, :type => "string (map, integer)"
-    publish :function => :HidePassword, :type => "string (string)"
-    publish :function => :HidePasswordToken, :type => "map (map)"
+    publish variable: :ValidChars, type: "string"
+    publish variable: :transform_map_passwd, type: "map <string, string>"
+    publish variable: :transform_map_filename, type: "map <string, string>"
+    publish variable: :transform_map_query, type: "map <string, string>"
+    publish function: :UnEscapeString, type: "string (string, map <string, string>)"
+    publish function: :EscapeString, type: "string (string, map <string, string>)"
+    publish function: :MakeMapFromParams, type: "map <string, string> (string)"
+    publish function: :MakeParamsFromMap, type: "string (map <string, string>)"
+    publish function: :Parse, type: "map (string)"
+    publish function: :Check, type: "boolean (string)"
+    publish function: :Build, type: "string (map)"
+    publish function: :FormatURL, type: "string (map, integer)"
+    publish function: :HidePassword, type: "string (string)"
+    publish function: :HidePasswordToken, type: "map (map)"
   end
 
   URL = URLClass.new

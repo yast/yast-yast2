@@ -759,17 +759,17 @@ module Yast
       ShowInstallationSummaryMap(@package_summary)
     end
 
-    publish :function => :GetPackageSummary, :type => "map <string, any> ()"
-    publish :function => :SetPackageSummary, :type => "void (map <string, any>)"
-    publish :function => :ResetPackageSummary, :type => "void ()"
-    publish :function => :SetPackageSummaryItem, :type => "void (string, any)"
-    publish :function => :DisplayHelpMsg, :type => "any (string, term, symbol, integer)"
-    publish :function => :ConfirmLicenses, :type => "boolean ()"
-    publish :function => :RunPackageSelector, :type => "symbol (map <string, any>)"
-    publish :function => :RunPatternSelector, :type => "symbol ()"
-    publish :function => :InstallationSummary, :type => "string (map <string, any>)"
-    publish :function => :ShowInstallationSummaryMap, :type => "symbol (map <string, any>)"
-    publish :function => :ShowInstallationSummary, :type => "symbol ()"
+    publish function: :GetPackageSummary, type: "map <string, any> ()"
+    publish function: :SetPackageSummary, type: "void (map <string, any>)"
+    publish function: :ResetPackageSummary, type: "void ()"
+    publish function: :SetPackageSummaryItem, type: "void (string, any)"
+    publish function: :DisplayHelpMsg, type: "any (string, term, symbol, integer)"
+    publish function: :ConfirmLicenses, type: "boolean ()"
+    publish function: :RunPackageSelector, type: "symbol (map <string, any>)"
+    publish function: :RunPatternSelector, type: "symbol ()"
+    publish function: :InstallationSummary, type: "string (map <string, any>)"
+    publish function: :ShowInstallationSummaryMap, type: "symbol (map <string, any>)"
+    publish function: :ShowInstallationSummary, type: "symbol ()"
   end
 
   PackagesUI = PackagesUIClass.new

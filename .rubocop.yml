@@ -220,12 +220,6 @@ Style/FileName:
 Style/GuardClause:
   Enabled: false
 
-# Offense count: 4086
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/HashSyntax:
-  Enabled: false
-
 # Offense count: 4
 # Configuration parameters: MaxLineLength.
 Style/IfUnlessModifier:

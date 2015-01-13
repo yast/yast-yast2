@@ -74,8 +74,8 @@ module Yast
       nil
     end
 
-    publish :function => :IsRunning, :type => "boolean ()"
-    publish :function => :SuggestQuit, :type => "void ()"
+    publish function: :IsRunning, type: "boolean ()"
+    publish function: :SuggestQuit, type: "void ()"
   end
 
   PackageKit = PackageKitClass.new

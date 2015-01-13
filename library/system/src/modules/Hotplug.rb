@@ -148,8 +148,8 @@ module Yast
     def StartUSB
       usb_controllers = Convert.convert(
         SCR.Read(path(".probe.usbctrl")),
-        :from => "any",
-        :to   => "list <map>"
+        from: "any",
+        to:   "list <map>"
       )
 
       Builtins.foreach(usb_controllers) do |controller|
@@ -173,8 +173,8 @@ module Yast
 
       firewire_controllers = Convert.convert(
         SCR.Read(path(".probe.ieee1394ctrl")),
-        :from => "any",
-        :to   => "list <map>"
+        from: "any",
+        to:   "list <map>"
       )
 
       Builtins.foreach(firewire_controllers) do |controller|
@@ -187,10 +187,10 @@ module Yast
       nil
     end
 
-    publish :variable => :haveUSB, :type => "boolean"
-    publish :variable => :haveFireWire, :type => "boolean"
-    publish :function => :StartUSB, :type => "void ()"
-    publish :function => :StartFireWire, :type => "void ()"
+    publish variable: :haveUSB, type: "boolean"
+    publish variable: :haveFireWire, type: "boolean"
+    publish function: :StartUSB, type: "void ()"
+    publish function: :StartFireWire, type: "void ()"
   end
 
   Hotplug = HotplugClass.new

@@ -224,8 +224,8 @@ module Yast
         UI.OpenDialog(Label(_("Scanning for hosts on this LAN...")))
         @found_hosts = Convert.convert(
           Builtins.sort(Convert.to_list(SCR.Read(path(".net.hostnames")))),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
         UI.CloseDialog
 
@@ -246,8 +246,8 @@ module Yast
     def NFSExport(server, selected)
       dirs = Convert.convert(
         SCR.Read(path(".net.showexports"), server),
-        :from => "any",
-        :to   => "list <string>"
+        from: "any",
+        to:   "list <string>"
       )
 
       dirs = [] if dirs == nil
@@ -257,10 +257,10 @@ module Yast
       ret
     end
 
-    publish :function => :ChooseItem, :type => "string (string, list <string>, string)"
-    publish :function => :NFSServer, :type => "string (string)"
-    publish :function => :HostName, :type => "string (string)"
-    publish :function => :NFSExport, :type => "string (string, string)"
+    publish function: :ChooseItem, type: "string (string, list <string>, string)"
+    publish function: :NFSServer, type: "string (string)"
+    publish function: :HostName, type: "string (string)"
+    publish function: :NFSExport, type: "string (string, string)"
   end
 
   NetworkPopup = NetworkPopupClass.new

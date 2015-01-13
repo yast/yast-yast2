@@ -233,8 +233,8 @@ module Yast
         else
           converted_not_cached = Convert.convert(
             SCR.Read(path(".target.ycp"), tmp_out),
-            :from => "any",
-            :to   => "list <string>"
+            from: "any",
+            to:   "list <string>"
           )
           # Parsing the YCP file failed
           if converted_not_cached == nil
@@ -414,13 +414,13 @@ module Yast
       deep_copy(decoded_domain_names)
     end
 
-    publish :function => :GetMaximumCacheSize, :type => "integer ()"
-    publish :function => :SetMaximumCacheSize, :type => "void (integer)"
-    publish :function => :EncodePunycodes, :type => "list <string> (list <string>)"
-    publish :function => :DecodePunycodes, :type => "list <string> (list <string>)"
-    publish :function => :EncodeDomainName, :type => "string (string)"
-    publish :function => :DecodeDomainName, :type => "string (string)"
-    publish :function => :DocodeDomainNames, :type => "list <string> (list <string>)"
+    publish function: :GetMaximumCacheSize, type: "integer ()"
+    publish function: :SetMaximumCacheSize, type: "void (integer)"
+    publish function: :EncodePunycodes, type: "list <string> (list <string>)"
+    publish function: :DecodePunycodes, type: "list <string> (list <string>)"
+    publish function: :EncodeDomainName, type: "string (string)"
+    publish function: :DecodeDomainName, type: "string (string)"
+    publish function: :DocodeDomainNames, type: "list <string> (list <string>)"
   end
 
   Punycode = PunycodeClass.new

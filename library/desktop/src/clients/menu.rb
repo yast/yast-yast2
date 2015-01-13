@@ -74,7 +74,7 @@ module Yast
 
       #create the list of modules available to non-root users
       Builtins.foreach(
-        Convert.convert(@Modules, :from => "map", :to => "map <string, map>")
+        Convert.convert(@Modules, from: "map", to: "map <string, map>")
       ) do |name, params|
         if !(Ops.get_string(params, "X-SuSE-YaST-RootOnly", "false") == "true")
           @non_root_modules = Builtins.add(@non_root_modules, name)

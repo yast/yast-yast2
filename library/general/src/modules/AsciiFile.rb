@@ -405,19 +405,19 @@ module Yast
       nil
     end
 
-    publish :function => :SetComment, :type => "void (map &, string)"
-    publish :function => :SetListWidth, :type => "void (map &, list)"
-    publish :function => :SetDelimiter, :type => "void (map &, string)"
-    publish :function => :ReadFile, :type => "void (map &, string)"
-    publish :function => :FindLineField, :type => "list <integer> (map, integer, string)"
-    publish :function => :GetLines, :type => "map <integer, map> (map &, list <integer>)"
-    publish :function => :GetLine, :type => "map (map &, integer)"
-    publish :function => :NumLines, :type => "integer (map)"
-    publish :function => :ChangeLineField, :type => "void (map &, integer, integer, string)"
-    publish :function => :ReplaceLine, :type => "void (map &, integer, list <string>)"
-    publish :function => :AppendLine, :type => "void (map &, list)"
-    publish :function => :RemoveLines, :type => "void (map &, list <integer>)"
-    publish :function => :RewriteFile, :type => "void (map &, string)"
+    publish function: :SetComment, type: "void (map &, string)"
+    publish function: :SetListWidth, type: "void (map &, list)"
+    publish function: :SetDelimiter, type: "void (map &, string)"
+    publish function: :ReadFile, type: "void (map &, string)"
+    publish function: :FindLineField, type: "list <integer> (map, integer, string)"
+    publish function: :GetLines, type: "map <integer, map> (map &, list <integer>)"
+    publish function: :GetLine, type: "map (map &, integer)"
+    publish function: :NumLines, type: "integer (map)"
+    publish function: :ChangeLineField, type: "void (map &, integer, integer, string)"
+    publish function: :ReplaceLine, type: "void (map &, integer, list <string>)"
+    publish function: :AppendLine, type: "void (map &, list)"
+    publish function: :RemoveLines, type: "void (map &, list <integer>)"
+    publish function: :RewriteFile, type: "void (map &, string)"
   end
 
   AsciiFile = AsciiFileClass.new

@@ -97,13 +97,13 @@ module Yast
       i
     end
 
-    publish :function => :Range, :type => "list <integer> (integer)"
-    publish :function => :RangeFrom, :type => "list <integer> (integer, integer)"
-    publish :function => :IsPowerOfTwo, :type => "boolean (integer)"
-    publish :function => :Sum, :type => "integer (list <integer>)"
-    publish :function => :Min, :type => "integer (list <integer>)"
-    publish :function => :Max, :type => "integer (list <integer>)"
-    publish :function => :Clamp, :type => "integer (integer, integer, integer)"
+    publish function: :Range, type: "list <integer> (integer)"
+    publish function: :RangeFrom, type: "list <integer> (integer, integer)"
+    publish function: :IsPowerOfTwo, type: "boolean (integer)"
+    publish function: :Sum, type: "integer (list <integer>)"
+    publish function: :Min, type: "integer (list <integer>)"
+    publish function: :Max, type: "integer (list <integer>)"
+    publish function: :Clamp, type: "integer (integer, integer, integer)"
   end
 
   Integer = IntegerClass.new

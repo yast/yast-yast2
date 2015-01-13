@@ -52,17 +52,17 @@ module Yast
     # network backend identification to service name mapping
     BACKENDS = {
     # <internal-id>        <service name>
-      :netconfig       => "network",
-      :network_manager => "NetworkManager",
-      :wicked          => "wicked"
+      netconfig:       "network",
+      network_manager: "NetworkManager",
+      wicked:          "wicked"
     }
 
     # network backend identification to its rpm package name mapping
     BACKEND_PKG_NAMES = {
     # <internal-id>        <service name>
-      :netconfig       => "sysconfig-network",
-      :network_manager => "NetworkManager",
-      :wicked          => "wicked"
+      netconfig:       "sysconfig-network",
+      network_manager: "NetworkManager",
+      wicked:          "wicked"
     }
 
     SYSTEMCTL = "/bin/systemctl"
@@ -97,8 +97,8 @@ module Yast
       cmd = Builtins.sformat("%1 %2 %3.service", SYSTEMCTL, action, service)
       ret = Convert.convert(
         SCR.Execute(path(".target.bash_output"), cmd, { "TERM" => "raw" }),
-        :from => "any",
-        :to   => "map <string, any>"
+        from: "any",
+        to:   "map <string, any>"
       )
       Builtins.y2debug("RunSystemCtl: Command '%1' returned '%2'", cmd, ret)
       Ops.get_integer(ret, "exit", -1)
@@ -446,25 +446,25 @@ module Yast
       RunSystemCtl( BACKENDS[service], "disable")
     end
 
-    publish :function => :Read, :type => "void ()"
-    publish :function => :Modified, :type => "boolean ()"
-    publish :function => :is_backend_available, :type => "boolean (symbol)"
-    publish :function => :is_network_manager, :type => "boolean ()"
-    publish :function => :is_netconfig, :type => "boolean ()"
-    publish :function => :is_wicked, :type => "boolean ()"
-    publish :function => :is_disabled, :type => "boolean ()"
-    publish :function => :use_network_manager, :type => "void ()"
-    publish :function => :use_netconfig, :type => "void ()"
-    publish :function => :use_wicked, :type => "void ()"
-    publish :function => :IsActive, :type => "boolean ()"
-    publish :function => :ReloadOrRestart, :type => "void ()"
-    publish :function => :Restart, :type => "void ()"
-    publish :function => :StartStop, :type => "void ()"
-    publish :function => :ConfirmNetworkManager, :type => "boolean ()"
-    publish :function => :isNetworkRunning, :type => "boolean ()"
-    publish :function => :isNetworkv4Running, :type => "boolean ()"
-    publish :function => :isNetworkv6Running, :type => "boolean ()"
-    publish :function => :RunningNetworkPopup, :type => "boolean ()"
+    publish function: :Read, type: "void ()"
+    publish function: :Modified, type: "boolean ()"
+    publish function: :is_backend_available, type: "boolean (symbol)"
+    publish function: :is_network_manager, type: "boolean ()"
+    publish function: :is_netconfig, type: "boolean ()"
+    publish function: :is_wicked, type: "boolean ()"
+    publish function: :is_disabled, type: "boolean ()"
+    publish function: :use_network_manager, type: "void ()"
+    publish function: :use_netconfig, type: "void ()"
+    publish function: :use_wicked, type: "void ()"
+    publish function: :IsActive, type: "boolean ()"
+    publish function: :ReloadOrRestart, type: "void ()"
+    publish function: :Restart, type: "void ()"
+    publish function: :StartStop, type: "void ()"
+    publish function: :ConfirmNetworkManager, type: "boolean ()"
+    publish function: :isNetworkRunning, type: "boolean ()"
+    publish function: :isNetworkv4Running, type: "boolean ()"
+    publish function: :isNetworkv6Running, type: "boolean ()"
+    publish function: :RunningNetworkPopup, type: "boolean ()"
   end
 
   NetworkService = NetworkServiceClass.new

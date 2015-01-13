@@ -23,7 +23,7 @@ module Yast
       end
 
       it "returns nil if the service unit does not exist" do
-        stub_services(:service=>'unknown')
+        stub_services(service: 'unknown')
         service = SystemdService.find('unknown')
         expect(service).to be_nil
       end
@@ -38,7 +38,7 @@ module Yast
       end
 
       it "raises SystemdServiceNotFound error if unit does not exist" do
-        stub_services(:service=>'unknown')
+        stub_services(service: 'unknown')
         expect { SystemdService.find!('unknown') }.to raise_error(SystemdServiceNotFound)
       end
     end

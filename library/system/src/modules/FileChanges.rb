@@ -74,8 +74,8 @@ module Yast
       end
       @file_checksums = Convert.convert(
         SCR.Read(path(".target.ycp"), @data_file),
-        :from => "any",
-        :to   => "map <string, string>"
+        from: "any",
+        to:   "map <string, string>"
       )
       @file_checksums = {} if @file_checksums == nil
 
@@ -221,9 +221,9 @@ module Yast
       true
     end
 
-    publish :function => :FileChanged, :type => "boolean (string)"
-    publish :function => :StoreFileCheckSum, :type => "void (string)"
-    publish :function => :CheckFiles, :type => "boolean (list <string>)"
+    publish function: :FileChanged, type: "boolean (string)"
+    publish function: :StoreFileCheckSum, type: "void (string)"
+    publish function: :CheckFiles, type: "boolean (list <string>)"
   end
 
   FileChanges = FileChangesClass.new

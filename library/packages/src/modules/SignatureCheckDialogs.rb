@@ -1170,20 +1170,20 @@ module Yast
       )
     end
 
-    publish :function => :SetShowThisPopup, :type => "void (string, boolean, string)"
-    publish :function => :GetShowThisPopup, :type => "boolean (string, string)"
-    publish :function => :SetDefaultDialogReturn, :type => "void (string, boolean, string)"
-    publish :function => :GetDefaultDialogReturn, :type => "boolean (string, string)"
-    publish :function => :CheckSignatures, :type => "string ()"
-    publish :function => :CheckSignaturesInYaST, :type => "boolean ()"
-    publish :function => :UseUnsignedItem, :type => "boolean (symbol, string, string, integer)"
-    publish :function => :UseItemWithNoChecksum, :type => "boolean (symbol, string, string)"
-    publish :function => :UseCorruptedItem, :type => "boolean (symbol, string, map <string, any>, integer)"
-    publish :function => :ItemSignedWithUnknownSignature, :type => "boolean (symbol, string, string, string, integer)"
-    publish :function => :ItemSignedWithPublicSignature, :type => "symbol (symbol, string, map <string, any>)"
-    publish :function => :ImportGPGKeyIntoTrustedDialog, :type => "boolean (map <string, any>, integer)"
-    publish :function => :UseFileWithWrongDigest, :type => "boolean (string, string, string, string)"
-    publish :function => :UseFileWithUnknownDigest, :type => "boolean (string, string, string)"
+    publish function: :SetShowThisPopup, type: "void (string, boolean, string)"
+    publish function: :GetShowThisPopup, type: "boolean (string, string)"
+    publish function: :SetDefaultDialogReturn, type: "void (string, boolean, string)"
+    publish function: :GetDefaultDialogReturn, type: "boolean (string, string)"
+    publish function: :CheckSignatures, type: "string ()"
+    publish function: :CheckSignaturesInYaST, type: "boolean ()"
+    publish function: :UseUnsignedItem, type: "boolean (symbol, string, string, integer)"
+    publish function: :UseItemWithNoChecksum, type: "boolean (symbol, string, string)"
+    publish function: :UseCorruptedItem, type: "boolean (symbol, string, map <string, any>, integer)"
+    publish function: :ItemSignedWithUnknownSignature, type: "boolean (symbol, string, string, string, integer)"
+    publish function: :ItemSignedWithPublicSignature, type: "symbol (symbol, string, map <string, any>)"
+    publish function: :ImportGPGKeyIntoTrustedDialog, type: "boolean (map <string, any>, integer)"
+    publish function: :UseFileWithWrongDigest, type: "boolean (string, string, string, string)"
+    publish function: :UseFileWithUnknownDigest, type: "boolean (string, string, string)"
   end
 
   SignatureCheckDialogs = SignatureCheckDialogsClass.new

@@ -430,15 +430,15 @@ module Yast
       Ops.get_integer(out, "exit", -1) == 0
     end
 
-    publish :function => :Init, :type => "boolean (string, boolean)"
-    publish :function => :PublicKeys, :type => "list <map> ()"
-    publish :function => :PrivateKeys, :type => "list <map> ()"
-    publish :function => :CreateKey, :type => "boolean ()"
-    publish :function => :SignAsciiDetached, :type => "boolean (string, string, string)"
-    publish :function => :SignDetached, :type => "boolean (string, string, string)"
-    publish :function => :VerifyFile, :type => "boolean (string, string)"
-    publish :function => :ExportAsciiPublicKey, :type => "boolean (string, string)"
-    publish :function => :ExportPublicKey, :type => "boolean (string, string)"
+    publish function: :Init, type: "boolean (string, boolean)"
+    publish function: :PublicKeys, type: "list <map> ()"
+    publish function: :PrivateKeys, type: "list <map> ()"
+    publish function: :CreateKey, type: "boolean ()"
+    publish function: :SignAsciiDetached, type: "boolean (string, string, string)"
+    publish function: :SignDetached, type: "boolean (string, string, string)"
+    publish function: :VerifyFile, type: "boolean (string, string)"
+    publish function: :ExportAsciiPublicKey, type: "boolean (string, string)"
+    publish function: :ExportPublicKey, type: "boolean (string, string)"
   end
 
   GPG = GPGClass.new

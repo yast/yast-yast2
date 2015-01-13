@@ -384,13 +384,13 @@ module Yast
       end
     end
 
-    publish :function => :GetAllExpertRulesProtocols, :type => "list <string> ()"
-    publish :function => :IsValidNetwork, :type => "boolean (string)"
-    publish :function => :ValidNetwork, :type => "string ()"
-    publish :function => :GetListOfAcceptRules, :type => "list <map <string, string>> (string)"
-    publish :function => :AddNewAcceptRule, :type => "boolean (string, map <string, string>)"
-    publish :function => :RemoveAcceptRule, :type => "boolean (string, map <string, string>)"
-    publish :function => :DeleteRuleID, :type => "boolean (string, integer)"
+    publish function: :GetAllExpertRulesProtocols, type: "list <string> ()"
+    publish function: :IsValidNetwork, type: "boolean (string)"
+    publish function: :ValidNetwork, type: "string ()"
+    publish function: :GetListOfAcceptRules, type: "list <map <string, string>> (string)"
+    publish function: :AddNewAcceptRule, type: "boolean (string, map <string, string>)"
+    publish function: :RemoveAcceptRule, type: "boolean (string, map <string, string>)"
+    publish function: :DeleteRuleID, type: "boolean (string, integer)"
   end
 
   SuSEFirewallExpertRules = SuSEFirewallExpertRulesClass.new

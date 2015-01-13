@@ -94,16 +94,16 @@ module Yast
       Builtins.regexpmatch(address, regexp)
     end
 
-    publish :variable => :ValidChars, :type => "string"
-    publish :variable => :ValidChars4, :type => "string"
-    publish :variable => :ValidChars6, :type => "string"
-    publish :variable => :ValidCharsMAC, :type => "string"
-    publish :function => :Valid4, :type => "string ()"
-    publish :function => :Check4, :type => "boolean (string)"
-    publish :function => :Check6, :type => "boolean (string)"
-    publish :function => :Check, :type => "boolean (string)"
-    publish :function => :ValidMAC, :type => "string ()"
-    publish :function => :CheckMAC, :type => "boolean (string)"
+    publish variable: :ValidChars, type: "string"
+    publish variable: :ValidChars4, type: "string"
+    publish variable: :ValidChars6, type: "string"
+    publish variable: :ValidCharsMAC, type: "string"
+    publish function: :Valid4, type: "string ()"
+    publish function: :Check4, type: "boolean (string)"
+    publish function: :Check6, type: "boolean (string)"
+    publish function: :Check, type: "boolean (string)"
+    publish function: :ValidMAC, type: "string ()"
+    publish function: :CheckMAC, type: "boolean (string)"
   end
 
   Address = AddressClass.new

@@ -63,8 +63,8 @@ module Yast
       if FileUtils.Exists(txt_path)
         slide_list = Convert.convert(
           SCR.Read(path(".target.dir"), txt_path),
-          :from => "any",
-          :to   => "list <string>"
+          from: "any",
+          to:   "list <string>"
         )
       end
 
@@ -77,8 +77,8 @@ module Yast
           if FileUtils.Exists(txt_path)
             slide_list = Convert.convert(
               SCR.Read(path(".target.dir"), txt_path),
-              :from => "any",
-              :to   => "list <string>"
+              from: "any",
+              to:   "list <string>"
             )
           end
         end
@@ -226,17 +226,17 @@ module Yast
       true
     end
 
-    publish :variable => :slides, :type => "list <string>"
-    publish :variable => :slide_base_path, :type => "string"
-    publish :variable => :slide_txt_path, :type => "string"
-    publish :variable => :slide_pic_path, :type => "string"
-    publish :variable => :fallback_lang, :type => "string"
-    publish :function => :HaveSlideSupport, :type => "boolean ()"
-    publish :function => :HaveSlides, :type => "boolean ()"
-    publish :function => :LoadSlideFile, :type => "string (string)"
-    publish :function => :SetSlideDir, :type => "void (string)"
-    publish :function => :LoadSlides, :type => "void (string)"
-    publish :function => :CheckBasePath, :type => "boolean ()"
+    publish variable: :slides, type: "list <string>"
+    publish variable: :slide_base_path, type: "string"
+    publish variable: :slide_txt_path, type: "string"
+    publish variable: :slide_pic_path, type: "string"
+    publish variable: :fallback_lang, type: "string"
+    publish function: :HaveSlideSupport, type: "boolean ()"
+    publish function: :HaveSlides, type: "boolean ()"
+    publish function: :LoadSlideFile, type: "string (string)"
+    publish function: :SetSlideDir, type: "void (string)"
+    publish function: :LoadSlides, type: "void (string)"
+    publish function: :CheckBasePath, type: "boolean ()"
   end
 
   Slides = SlidesClass.new

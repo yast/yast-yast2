@@ -78,9 +78,9 @@ module Yast
       @_distro == "debian"
     end
 
-    publish :function => :suse, :type => "boolean ()"
-    publish :function => :fedora, :type => "boolean ()"
-    publish :function => :debian, :type => "boolean ()"
+    publish function: :suse, type: "boolean ()"
+    publish function: :fedora, type: "boolean ()"
+    publish function: :debian, type: "boolean ()"
   end
 
   Distro = DistroClass.new

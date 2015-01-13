@@ -207,8 +207,8 @@ module Yast
       buttons = deep_copy(buttons)
       buttons2 = Convert.convert(
         Builtins.filter(buttons) { |k, v| Builtins.issubstring(k, "_button") },
-        :from => "map <string, any>",
-        :to   => "map <string, string>"
+        from: "map <string, any>",
+        to:   "map <string, string>"
       )
       AdjustButtons(buttons2)
 
@@ -262,8 +262,8 @@ module Yast
         if ret == :_cwm_internal_tree_handle
           toEval = Convert.convert(
             Ops.get(screens, [@selected_screen, "init"]),
-            :from => "any",
-            :to   => "symbol (string)"
+            from: "any",
+            to:   "symbol (string)"
           )
           tab_init = nil
           tab_init = toEval.call(@selected_screen) if toEval != nil
@@ -317,8 +317,8 @@ module Yast
       screens = Ops.get_map(settings, "screens", {})
       tree_handler = Convert.convert(
         Ops.get(settings, "tree_creator"),
-        :from => "any",
-        :to   => "list <map> ()"
+        from: "any",
+        to:   "list <map> ()"
       )
 
       if tree_handler != nil
@@ -336,13 +336,13 @@ module Yast
       RunAndHide(settings)
     end
 
-    publish :function => :ShowFlat, :type => "void (list <string>, map <string, map <string, any>>)"
-    publish :function => :ShowTree, :type => "void (list <map> ())"
-    publish :function => :AdjustButtons, :type => "void (map <string, string>)"
-    publish :function => :AdjustButtonsAny, :type => "void (map <string, any>)"
-    publish :function => :Run, :type => "symbol (map <string, any>)"
-    publish :function => :RunAndHide, :type => "symbol (map <string, any>)"
-    publish :function => :ShowAndRun, :type => "symbol (map <string, any>)"
+    publish function: :ShowFlat, type: "void (list <string>, map <string, map <string, any>>)"
+    publish function: :ShowTree, type: "void (list <map> ())"
+    publish function: :AdjustButtons, type: "void (map <string, string>)"
+    publish function: :AdjustButtonsAny, type: "void (map <string, any>)"
+    publish function: :Run, type: "symbol (map <string, any>)"
+    publish function: :RunAndHide, type: "symbol (map <string, any>)"
+    publish function: :ShowAndRun, type: "symbol (map <string, any>)"
   end
 
   DialogTree = DialogTreeClass.new

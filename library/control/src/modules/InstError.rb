@@ -231,8 +231,8 @@ module Yast
       nil
     end
 
-    publish :function => :ShowErrorPopUp, :type => "void (string, string, string)"
-    publish :function => :ShowErrorPopupWithLogs, :type => "void (string)"
+    publish function: :ShowErrorPopUp, type: "void (string, string, string)"
+    publish function: :ShowErrorPopupWithLogs, type: "void (string)"
   end
 
   InstError = InstErrorClass.new

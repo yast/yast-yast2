@@ -137,9 +137,9 @@ module Yast
       )
     end
 
-    publish :function => :EditTable, :type => "term (term, list, term, term, term, term)"
-    publish :function => :SpacingAround, :type => "term (term, float, float, float, float)"
-    publish :function => :SizeAtLeast, :type => "term (term, float, float)"
+    publish function: :EditTable, type: "term (term, list, term, term, term, term)"
+    publish function: :SpacingAround, type: "term (term, float, float, float, float)"
+    publish function: :SizeAtLeast, type: "term (term, float, float)"
   end
 
   UIHelper = UIHelperClass.new

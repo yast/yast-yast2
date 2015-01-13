@@ -406,8 +406,8 @@ module Yast
         iret = Convert.to_integer(ret)
         func = Convert.convert(
           Ops.get(@mb_actions, [iret, 1]),
-          :from => "any",
-          :to   => "void ()"
+          from: "any",
+          to:   "void ()"
         )
         func.call if func != nil
         if Ops.get(@mb_actions, [iret, 2]) == true
@@ -626,17 +626,17 @@ module Yast
       nil
     end
 
-    publish :function => :LogSelectionHelp, :type => "string ()"
-    publish :function => :SingleLogHelp, :type => "string ()"
-    publish :function => :AdvancedSaveHelp, :type => "string (string)"
-    publish :function => :AdvancedHelp, :type => "string (string)"
-    publish :function => :SaveHelp, :type => "string ()"
-    publish :function => :LogInit, :type => "void (string)"
-    publish :function => :LogHandle, :type => "symbol (string, map)"
-    publish :function => :CreateWidget, :type => "map (map <string, any>, list <map <string, any>>)"
-    publish :function => :Display, :type => "void (map <string, any>)"
-    publish :function => :DisplaySimple, :type => "void (string)"
-    publish :function => :DisplayFiltered, :type => "void (string, string)"
+    publish function: :LogSelectionHelp, type: "string ()"
+    publish function: :SingleLogHelp, type: "string ()"
+    publish function: :AdvancedSaveHelp, type: "string (string)"
+    publish function: :AdvancedHelp, type: "string (string)"
+    publish function: :SaveHelp, type: "string ()"
+    publish function: :LogInit, type: "void (string)"
+    publish function: :LogHandle, type: "symbol (string, map)"
+    publish function: :CreateWidget, type: "map (map <string, any>, list <map <string, any>>)"
+    publish function: :Display, type: "void (map <string, any>)"
+    publish function: :DisplaySimple, type: "void (string)"
+    publish function: :DisplayFiltered, type: "void (string, string)"
   end
 
   LogView = LogViewClass.new

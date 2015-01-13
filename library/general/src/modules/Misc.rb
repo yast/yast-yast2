@@ -353,16 +353,16 @@ module Yast
       deep_copy(ret)
     end
 
-    publish :variable => :boot_msg, :type => "string"
-    publish :function => :ReadAlternateFile, :type => "any (string, string)"
-    publish :function => :hardware_name, :type => "string (map)"
-    publish :function => :translate, :type => "string (map, string)"
-    publish :function => :SysconfigWrite, :type => "boolean (path, list <list>)"
-    publish :function => :SplitOptions, :type => "map (string, map)"
-    publish :function => :SysconfigRead, :type => "string (path, string)"
-    publish :function => :CustomSysconfigRead, :type => "string (string, string, string)"
-    publish :function => :RunCommandWithTimeout, :type => "map (string, string, integer)"
-    publish :function => :RunDumbTimeout, :type => "map (string, string, integer)"
+    publish variable: :boot_msg, type: "string"
+    publish function: :ReadAlternateFile, type: "any (string, string)"
+    publish function: :hardware_name, type: "string (map)"
+    publish function: :translate, type: "string (map, string)"
+    publish function: :SysconfigWrite, type: "boolean (path, list <list>)"
+    publish function: :SplitOptions, type: "map (string, map)"
+    publish function: :SysconfigRead, type: "string (path, string)"
+    publish function: :CustomSysconfigRead, type: "string (string, string, string)"
+    publish function: :RunCommandWithTimeout, type: "map (string, string, integer)"
+    publish function: :RunDumbTimeout, type: "map (string, string, integer)"
   end
 
   Misc = MiscClass.new

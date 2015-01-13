@@ -207,10 +207,10 @@ module Yast
       nil
     end
 
-    publish :function => :BrowseTreeHelper, :type => "term (any, string)"
-    publish :function => :BrowseTree, :type => "void (any)"
-    publish :function => :DebugBrowseHelper, :type => "void (any, string)"
-    publish :function => :DebugBrowse, :type => "void (any)"
+    publish function: :BrowseTreeHelper, type: "term (any, string)"
+    publish function: :BrowseTree, type: "void (any)"
+    publish function: :DebugBrowseHelper, type: "void (any, string)"
+    publish function: :DebugBrowse, type: "void (any)"
   end
 
   ValueBrowser = ValueBrowserClass.new

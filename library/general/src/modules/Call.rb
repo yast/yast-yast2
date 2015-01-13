@@ -45,7 +45,7 @@ module Yast
       WFM.CallFunction(f, a)
     end
 
-    publish :function => :Function, :type => "any (string, list)"
+    publish function: :Function, type: "any (string, list)"
   end
 
   Call = CallClass.new

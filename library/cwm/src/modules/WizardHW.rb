@@ -306,23 +306,23 @@ module Yast
       # callbacks
       @action_callback = Convert.convert(
         Ops.get(settings, "action_callback"),
-        :from => "any",
-        :to   => "symbol (string, map)"
+        from: "any",
+        to:   "symbol (string, map)"
       )
       @get_item_descr_callback = Convert.convert(
         Ops.get(settings, "item_descr_callback"),
-        :from => "any",
-        :to   => "string (string)"
+        from: "any",
+        to:   "string (string)"
       )
       @set_items_callback = Convert.convert(
         Ops.get(settings, "set_items_callback"),
-        :from => "any",
-        :to   => "void ()"
+        from: "any",
+        to:   "void ()"
       )
       @select_initial_item_callback = Convert.convert(
         Ops.get(settings, "set_initial_item_callback"),
-        :from => "any",
-        :to   => "void ()"
+        from: "any",
+        to:   "void ()"
       )
 
       # other variables
@@ -529,17 +529,17 @@ module Yast
       ]
     end
 
-    publish :function => :CreateWidget, :type => "map <string, any> (list <string>, list <list>)"
-    publish :function => :RunHWDialog, :type => "symbol (map)"
-    publish :function => :CreateHWDialog, :type => "void (string, string, list <string>, list <list>)"
-    publish :function => :SetSelectedItem, :type => "void (string)"
-    publish :function => :SelectedItem, :type => "string ()"
-    publish :function => :SetRichDescription, :type => "void (string)"
-    publish :function => :SetContents, :type => "void (list <map <string, any>>)"
-    publish :function => :WaitForEvent, :type => "map <string, any> ()"
-    publish :function => :UserInput, :type => "map <string, any> ()"
-    publish :function => :CreateRichTextDescription, :type => "string (string, list <string>)"
-    publish :function => :UnconfiguredDevice, :type => "list <string> ()"
+    publish function: :CreateWidget, type: "map <string, any> (list <string>, list <list>)"
+    publish function: :RunHWDialog, type: "symbol (map)"
+    publish function: :CreateHWDialog, type: "void (string, string, list <string>, list <list>)"
+    publish function: :SetSelectedItem, type: "void (string)"
+    publish function: :SelectedItem, type: "string ()"
+    publish function: :SetRichDescription, type: "void (string)"
+    publish function: :SetContents, type: "void (list <map <string, any>>)"
+    publish function: :WaitForEvent, type: "map <string, any> ()"
+    publish function: :UserInput, type: "map <string, any> ()"
+    publish function: :CreateRichTextDescription, type: "string (string, list <string>)"
+    publish function: :UnconfiguredDevice, type: "list <string> ()"
   end
 
   WizardHW = WizardHWClass.new

@@ -67,8 +67,8 @@ module Yast
       ComplexLog(message, [])
     end
 
-    publish :function => :ComplexLog, :type => "boolean (string, list <string>)"
-    publish :function => :Log, :type => "boolean (string)"
+    publish function: :ComplexLog, type: "boolean (string, list <string>)"
+    publish function: :Log, type: "boolean (string)"
   end
 
   Syslog = SyslogClass.new

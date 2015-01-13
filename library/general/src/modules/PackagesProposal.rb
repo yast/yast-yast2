@@ -169,8 +169,8 @@ module Yast
             Ops.get(@resolvables_to_install, [unique_ID, type], []),
             resolvables
           ),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
       )
 
@@ -295,8 +295,8 @@ module Yast
           ret = Builtins.sort(
             Convert.convert(
               Builtins.union(ret, Ops.get(resolvables, type, [])),
-              :from => "list",
-              :to   => "list <string>"
+              from: "list",
+              to:   "list <string>"
             )
           )
         end
@@ -353,15 +353,15 @@ module Yast
       !Builtins.haskey(@resolvables_to_install, unique_ID)
     end
 
-    publish :function => :ResetAll, :type => "void ()"
-    publish :function => :GetSupportedResolvables, :type => "list <symbol> ()"
-    publish :function => :AddResolvables, :type => "boolean (string, symbol, list <string>)"
-    publish :function => :SetResolvables, :type => "boolean (string, symbol, list <string>)"
-    publish :function => :RemoveResolvables, :type => "boolean (string, symbol, list <string>)"
-    publish :function => :GetResolvables, :type => "list <string> (string, symbol)"
-    publish :function => :GetAllResolvables, :type => "list <string> (symbol)"
-    publish :function => :GetAllResolvablesForAllTypes, :type => "map <symbol, list <string>> ()"
-    publish :function => :IsUniqueID, :type => "boolean (string)"
+    publish function: :ResetAll, type: "void ()"
+    publish function: :GetSupportedResolvables, type: "list <symbol> ()"
+    publish function: :AddResolvables, type: "boolean (string, symbol, list <string>)"
+    publish function: :SetResolvables, type: "boolean (string, symbol, list <string>)"
+    publish function: :RemoveResolvables, type: "boolean (string, symbol, list <string>)"
+    publish function: :GetResolvables, type: "list <string> (string, symbol)"
+    publish function: :GetAllResolvables, type: "list <string> (symbol)"
+    publish function: :GetAllResolvablesForAllTypes, type: "map <symbol, list <string>> ()"
+    publish function: :IsUniqueID, type: "boolean (string)"
   end
 
   PackagesProposal = PackagesProposalClass.new

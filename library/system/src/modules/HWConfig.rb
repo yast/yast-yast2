@@ -160,15 +160,15 @@ module Yast
       SCR.Write(path(".sysconfig.hardware"), nil)
     end
 
-    publish :function => :ConfigFiles, :type => "list <string> ()"
-    publish :function => :Variables, :type => "list <string> (string)"
-    publish :function => :Values, :type => "map <string, string> (string)"
-    publish :function => :SetValue, :type => "boolean (string, string, string)"
-    publish :function => :GetValue, :type => "string (string, string)"
-    publish :function => :SetComment, :type => "boolean (string, string, string)"
-    publish :function => :GetComment, :type => "string (string, string)"
-    publish :function => :RemoveConfig, :type => "boolean (string)"
-    publish :function => :Flush, :type => "boolean ()"
+    publish function: :ConfigFiles, type: "list <string> ()"
+    publish function: :Variables, type: "list <string> (string)"
+    publish function: :Values, type: "map <string, string> (string)"
+    publish function: :SetValue, type: "boolean (string, string, string)"
+    publish function: :GetValue, type: "string (string, string)"
+    publish function: :SetComment, type: "boolean (string, string, string)"
+    publish function: :GetComment, type: "string (string, string)"
+    publish function: :RemoveConfig, type: "boolean (string)"
+    publish function: :Flush, type: "boolean ()"
   end
 
   HWConfig = HWConfigClass.new

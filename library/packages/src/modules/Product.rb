@@ -278,18 +278,18 @@ module Yast
       end
     end
 
-    publish :function => :name, :type => "string ()"
-    publish :function => :short_name, :type => "string ()"
-    publish :function => :version, :type => "string ()"
-    publish :function => :vendor, :type => "string ()"
-    publish :function => :relnotesurl, :type => "string ()"
-    publish :function => :relnotesurl_all, :type => "list <string> ()"
-    publish :function => :product_of_relnotes, :type => "map <string, string> ()"
-    publish :function => :run_you, :type => "boolean ()"
-    publish :function => :flags, :type => "list ()"
+    publish function: :name, type: "string ()"
+    publish function: :short_name, type: "string ()"
+    publish function: :version, type: "string ()"
+    publish function: :vendor, type: "string ()"
+    publish function: :relnotesurl, type: "string ()"
+    publish function: :relnotesurl_all, type: "list <string> ()"
+    publish function: :product_of_relnotes, type: "map <string, string> ()"
+    publish function: :run_you, type: "boolean ()"
+    publish function: :flags, type: "list ()"
 
-    publish :function => :FindBaseProducts, :type => "list <map <string, any>> ()"
-    publish :function => :ReadProducts, :type => "void ()"
+    publish function: :FindBaseProducts, type: "list <map <string, any>> ()"
+    publish function: :ReadProducts, type: "void ()"
   end
 
   Product = ProductClass.new

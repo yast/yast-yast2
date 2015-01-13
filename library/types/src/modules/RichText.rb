@@ -136,8 +136,8 @@ module Yast
       end
     end
 
-    publish :function => :Rich2Plain, :type => "string (string)"
-    publish :function => :DetectRichText, :type => "symbol (string)"
+    publish function: :Rich2Plain, type: "string (string)"
+    publish function: :DetectRichText, type: "symbol (string)"
   end
 
   RichText = RichTextClass.new

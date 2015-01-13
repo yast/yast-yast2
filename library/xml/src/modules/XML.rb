@@ -141,8 +141,8 @@ module Yast
         Builtins.y2milestone("Reading %1", xmlFile)
         out = Convert.convert(
           SCR.Read(path(".xml"), xmlFile),
-          :from => "any",
-          :to   => "map <string, any>"
+          from: "any",
+          to:   "map <string, any>"
         )
         Builtins.y2debug("XML Agent output: %1", out)
         return deep_copy(out)
@@ -163,8 +163,8 @@ module Yast
       if Ops.greater_than(Builtins.size(xmlString), 0)
         out = Convert.convert(
           SCR.Read(path(".xml.string"), xmlString),
-          :from => "any",
-          :to   => "map <string, any>"
+          from: "any",
+          to:   "map <string, any>"
         )
         Builtins.y2debug("XML Agent output: %1", out)
         return deep_copy(out)
@@ -182,19 +182,19 @@ module Yast
       Convert.to_string(SCR.Read(path(".xml.error_message")))
     end
 
-    publish :variable => :cdataSections, :type => "list"
-    publish :variable => :listEntries, :type => "map"
-    publish :variable => :systemID, :type => "string"
-    publish :variable => :rootElement, :type => "string"
-    publish :variable => :nameSpace, :type => "string"
-    publish :variable => :typeNamespace, :type => "string"
-    publish :variable => :docs, :type => "map"
-    publish :function => :xmlCreateDoc, :type => "void (symbol, map)"
-    publish :function => :YCPToXMLFile, :type => "boolean (symbol, map, string)"
-    publish :function => :YCPToXMLString, :type => "string (symbol, map)"
-    publish :function => :XMLToYCPFile, :type => "map <string, any> (string)"
-    publish :function => :XMLToYCPString, :type => "map <string, any> (string)"
-    publish :function => :XMLError, :type => "string ()"
+    publish variable: :cdataSections, type: "list"
+    publish variable: :listEntries, type: "map"
+    publish variable: :systemID, type: "string"
+    publish variable: :rootElement, type: "string"
+    publish variable: :nameSpace, type: "string"
+    publish variable: :typeNamespace, type: "string"
+    publish variable: :docs, type: "map"
+    publish function: :xmlCreateDoc, type: "void (symbol, map)"
+    publish function: :YCPToXMLFile, type: "boolean (symbol, map, string)"
+    publish function: :YCPToXMLString, type: "string (symbol, map)"
+    publish function: :XMLToYCPFile, type: "map <string, any> (string)"
+    publish function: :XMLToYCPString, type: "map <string, any> (string)"
+    publish function: :XMLError, type: "string ()"
   end
 
   XML = XMLClass.new

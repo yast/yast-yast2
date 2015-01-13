@@ -311,16 +311,16 @@ module Yast
       nil
     end
 
-    publish :function => :AcceptUnsignedFile, :type => "boolean (string, integer)"
-    publish :function => :AcceptFileWithoutChecksum, :type => "boolean (string)"
-    publish :function => :AcceptWrongDigest, :type => "boolean (string, string, string)"
-    publish :function => :AcceptUnknownDigest, :type => "boolean (string, string)"
-    publish :function => :AcceptUnknownGpgKey, :type => "boolean (string, string, integer)"
-    publish :function => :ImportGpgKey, :type => "boolean (map <string, any>, integer)"
-    publish :function => :import_gpg_key_or_disable, :type => "boolean (map <string, any>, integer)"
-    publish :function => :AcceptVerificationFailed, :type => "boolean (string, map <string, any>, integer)"
-    publish :function => :TrustedKeyAdded, :type => "void (map <string, any>)"
-    publish :function => :TrustedKeyRemoved, :type => "void (map <string, any>)"
+    publish function: :AcceptUnsignedFile, type: "boolean (string, integer)"
+    publish function: :AcceptFileWithoutChecksum, type: "boolean (string)"
+    publish function: :AcceptWrongDigest, type: "boolean (string, string, string)"
+    publish function: :AcceptUnknownDigest, type: "boolean (string, string)"
+    publish function: :AcceptUnknownGpgKey, type: "boolean (string, string, integer)"
+    publish function: :ImportGpgKey, type: "boolean (map <string, any>, integer)"
+    publish function: :import_gpg_key_or_disable, type: "boolean (map <string, any>, integer)"
+    publish function: :AcceptVerificationFailed, type: "boolean (string, map <string, any>, integer)"
+    publish function: :TrustedKeyAdded, type: "void (map <string, any>)"
+    publish function: :TrustedKeyRemoved, type: "void (map <string, any>)"
   end
 
   SignatureCheckCallbacks = SignatureCheckCallbacksClass.new

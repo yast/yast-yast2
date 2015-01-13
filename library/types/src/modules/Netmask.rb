@@ -170,15 +170,15 @@ module Yast
       bits
     end
 
-    publish :variable => :ValidChars, :type => "string"
-    publish :variable => :ValidChars4, :type => "string"
-    publish :variable => :ValidChars6, :type => "string"
-    publish :function => :CheckPrefix4, :type => "boolean (string)"
-    publish :function => :Check4, :type => "boolean (string)"
-    publish :function => :Check6, :type => "boolean (string)"
-    publish :function => :Check, :type => "boolean (string)"
-    publish :function => :FromBits, :type => "string (integer)"
-    publish :function => :ToBits, :type => "integer (string)"
+    publish variable: :ValidChars, type: "string"
+    publish variable: :ValidChars4, type: "string"
+    publish variable: :ValidChars6, type: "string"
+    publish function: :CheckPrefix4, type: "boolean (string)"
+    publish function: :Check4, type: "boolean (string)"
+    publish function: :Check6, type: "boolean (string)"
+    publish function: :Check, type: "boolean (string)"
+    publish function: :FromBits, type: "string (integer)"
+    publish function: :ToBits, type: "integer (string)"
   end
 
   Netmask = NetmaskClass.new

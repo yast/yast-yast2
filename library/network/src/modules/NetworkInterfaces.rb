@@ -650,8 +650,8 @@ module Yast
       out = Builtins.mapmap(
         Convert.convert(
           devs,
-          :from => "map",
-          :to   => "map <string, map <string, map <string, any>>>"
+          from: "map",
+          to:   "map <string, map <string, map <string, any>>>"
         )
       ) do |t, tdevs|
         tout = Builtins.mapmap(tdevs) do |id, ifcfg|
@@ -846,8 +846,8 @@ module Yast
       Builtins.maplist(
         Convert.convert(
           _Devs,
-          :from => "map",
-          :to   => "map <string, map <string, map <string, any>>>"
+          from: "map",
+          to:   "map <string, map <string, map <string, any>>>"
         )
       ) { |typ, devsmap| Builtins.maplist(devsmap) do |config, devmap|
         next if devmap == Ops.get_map(_OriginalDevs, [typ, config], {})
@@ -904,8 +904,8 @@ module Yast
         Builtins.maplist(
           Convert.convert(
             Map.Keys(devmap),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
         ) do |k|
           # Write aliases
@@ -1014,8 +1014,8 @@ module Yast
           typ => Builtins.mapmap(
             Convert.convert(
               devsmap,
-              :from => "map",
-              :to   => "map <string, map <string, any>>"
+              from: "map",
+              to:   "map <string, map <string, any>>"
             )
           ) do |num, config|
             config = CanonicalizeIP(config)
@@ -1027,8 +1027,8 @@ module Yast
 
       @Devices = Convert.convert(
         Builtins.union(_Devs, devices),
-        :from => "map",
-        :to   => "map <string, map <string, map <string, any>>>"
+        from: "map",
+        to:   "map <string, map <string, map <string, any>>>"
       )
 
       if devices == nil || devices == {}
@@ -1076,22 +1076,22 @@ module Yast
       if Arch.s390
         dev_types = Convert.convert(
           Builtins.merge(dev_types, s390_dev_types),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
       else
         if Arch.ia64
           dev_types = Convert.convert(
             Builtins.merge(dev_types, ia64_dev_types),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
         end
 
         dev_types = Convert.convert(
           Builtins.merge(dev_types, s390_unknown_dev_types),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
       end
 
@@ -1284,7 +1284,7 @@ module Yast
     def Export(devregex)
       _Devs = Filter(@Devices, devregex)
       Builtins.y2debug("Devs=%1", _Devs)
-      Convert.convert(_Devs, :from => "map", :to => "map <string, map>")
+      Convert.convert(_Devs, from: "map", to: "map <string, map>")
     end
 
     # Were the devices changed?
@@ -1306,8 +1306,8 @@ module Yast
       Builtins.foreach(
         Convert.convert(
           Map.Keys(Ops.get(@Devices, type, {})),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
       ) do |dev|
         dev = device_num(dev) if Builtins.issubstring(dev, type)
@@ -1578,7 +1578,7 @@ module Yast
       ret = []
       Builtins.maplist(@Devices) do |typ, devsmap|
         Builtins.maplist(
-          Convert.convert(devsmap, :from => "map", :to => "map <string, map>")
+          Convert.convert(devsmap, from: "map", to: "map <string, map>")
         ) do |device, devmap|
           if Ops.get_string(devmap, key, "") == val
             ret = Builtins.add(ret, device)
@@ -1597,7 +1597,7 @@ module Yast
       ret = []
       Builtins.maplist(@Devices) do |typ, devsmap|
         Builtins.maplist(
-          Convert.convert(devsmap, :from => "map", :to => "map <string, map>")
+          Convert.convert(devsmap, from: "map", to: "map <string, map>")
         ) do |device, devmap|
           if Ops.get_string(devmap, key, "") != val
             ret = Builtins.add(ret, device)
@@ -1679,8 +1679,8 @@ module Yast
           Builtins.maplist(
             Convert.convert(
               Map.Keys(d),
-              :from => "list",
-              :to   => "list <string>"
+              from: "list",
+              to:   "list <string>"
             )
           ) { |device| Ops.set(ret, Builtins.size(ret), device) }
         end
@@ -1695,8 +1695,8 @@ module Yast
             Builtins.maplist(
               Convert.convert(
                 Map.Keys(d),
-                :from => "list",
-                :to   => "list <string>"
+                from: "list",
+                to:   "list <string>"
               )
             ) { |device| Ops.set(ret, Builtins.size(ret), device) }
           end
@@ -1780,53 +1780,53 @@ module Yast
       deep_copy(devices)
     end
 
-    publish :variable => :Name, :type => "string"
-    publish :variable => :Current, :type => "map <string, any>"
-    publish :variable => :CardRegex, :type => "map <string, string>"
-    publish :function => :device_type, :type => "string (string)"
-    publish :function => :GetTypeFromIfcfg, :type => "string (map <string, any>)"
-    publish :function => :GetType, :type => "string (string)"
-    publish :function => :GetDeviceTypeName, :type => "string (string)"
-    publish :function => :device_num, :type => "string (string)"
-    publish :function => :alias_num, :type => "string (string)"
-    publish :function => :IsHotplug, :type => "boolean (string)"
-    publish :function => :IsConnected, :type => "boolean (string)"
-    publish :function => :RealType, :type => "string (string, string)"
-    publish :function => :CanonicalizeIP, :type => "map <string, any> (map <string, any>)"
-    publish :function => :ConcealSecrets1, :type => "map (map <string, any>)"
-    publish :function => :ConcealSecrets, :type => "map (map)"
-    publish :function => :Read, :type => "boolean ()"
-    publish :function => :CleanCacheRead, :type => "boolean ()"
-    publish :function => :FilterDevices, :type => "map <string, map> (string)"
-    publish :function => :Write, :type => "boolean (string)"
-    publish :function => :Import, :type => "boolean (string, map <string, map>)"
-    publish :function => :GetDeviceTypes, :type => "list <string> ()"
-    publish :function => :GetDevTypeDescription, :type => "string (string, boolean)"
-    publish :function => :Export, :type => "map <string, map> (string)"
-    publish :function => :GetFreeDevices, :type => "list <string> (string, integer)"
-    publish :function => :GetFreeDevice, :type => "string (string)"
-    publish :function => :Check, :type => "boolean (string)"
-    publish :function => :Select, :type => "boolean (string)"
-    publish :function => :Add, :type => "boolean ()"
-    publish :function => :Edit, :type => "boolean (string)"
-    publish :function => :Delete, :type => "boolean (string)"
-    publish :function => :Delete2, :type => "boolean (string)"
-    publish :function => :DeleteAlias, :type => "boolean (string, string)"
-    publish :function => :Commit, :type => "boolean ()"
-    publish :function => :GetValue, :type => "string (string, string)"
-    publish :function => :SetValue, :type => "boolean (string, string, string)"
-    publish :function => :GetIP, :type => "list <string> (string)"
-    publish :function => :Locate, :type => "list <string> (string, string)"
-    publish :function => :LocateProvider, :type => "boolean (string)"
-    publish :function => :UpdateModemSymlink, :type => "boolean ()"
-    publish :function => :CleanHotplugSymlink, :type => "boolean ()"
-    publish :function => :List, :type => "list <string> (string)"
-    publish :function => :Fastest, :type => "string ()"
-    publish :function => :FastestType, :type => "string (string)"
-    publish :function => :Push, :type => "void ()"
-    publish :function => :Pop, :type => "void ()"
-    publish :function => :ValidCharsIfcfg, :type => "string ()"
-    publish :function => :ListDevicesExcept, :type => "list <string> (string)"
+    publish variable: :Name, type: "string"
+    publish variable: :Current, type: "map <string, any>"
+    publish variable: :CardRegex, type: "map <string, string>"
+    publish function: :device_type, type: "string (string)"
+    publish function: :GetTypeFromIfcfg, type: "string (map <string, any>)"
+    publish function: :GetType, type: "string (string)"
+    publish function: :GetDeviceTypeName, type: "string (string)"
+    publish function: :device_num, type: "string (string)"
+    publish function: :alias_num, type: "string (string)"
+    publish function: :IsHotplug, type: "boolean (string)"
+    publish function: :IsConnected, type: "boolean (string)"
+    publish function: :RealType, type: "string (string, string)"
+    publish function: :CanonicalizeIP, type: "map <string, any> (map <string, any>)"
+    publish function: :ConcealSecrets1, type: "map (map <string, any>)"
+    publish function: :ConcealSecrets, type: "map (map)"
+    publish function: :Read, type: "boolean ()"
+    publish function: :CleanCacheRead, type: "boolean ()"
+    publish function: :FilterDevices, type: "map <string, map> (string)"
+    publish function: :Write, type: "boolean (string)"
+    publish function: :Import, type: "boolean (string, map <string, map>)"
+    publish function: :GetDeviceTypes, type: "list <string> ()"
+    publish function: :GetDevTypeDescription, type: "string (string, boolean)"
+    publish function: :Export, type: "map <string, map> (string)"
+    publish function: :GetFreeDevices, type: "list <string> (string, integer)"
+    publish function: :GetFreeDevice, type: "string (string)"
+    publish function: :Check, type: "boolean (string)"
+    publish function: :Select, type: "boolean (string)"
+    publish function: :Add, type: "boolean ()"
+    publish function: :Edit, type: "boolean (string)"
+    publish function: :Delete, type: "boolean (string)"
+    publish function: :Delete2, type: "boolean (string)"
+    publish function: :DeleteAlias, type: "boolean (string, string)"
+    publish function: :Commit, type: "boolean ()"
+    publish function: :GetValue, type: "string (string, string)"
+    publish function: :SetValue, type: "boolean (string, string, string)"
+    publish function: :GetIP, type: "list <string> (string)"
+    publish function: :Locate, type: "list <string> (string, string)"
+    publish function: :LocateProvider, type: "boolean (string)"
+    publish function: :UpdateModemSymlink, type: "boolean ()"
+    publish function: :CleanHotplugSymlink, type: "boolean ()"
+    publish function: :List, type: "list <string> (string)"
+    publish function: :Fastest, type: "string ()"
+    publish function: :FastestType, type: "string (string)"
+    publish function: :Push, type: "void ()"
+    publish function: :Pop, type: "void ()"
+    publish function: :ValidCharsIfcfg, type: "string ()"
+    publish function: :ListDevicesExcept, type: "list <string> (string)"
   end
 
   NetworkInterfaces = NetworkInterfacesClass.new

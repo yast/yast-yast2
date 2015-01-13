@@ -300,14 +300,14 @@ module Yast
       functions = Builtins.filter(functions) { |k, v| Ops.is_string?(k) }
       fallback_functions = Convert.convert(
         functions,
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
       Builtins.maplist(widgets) do |w|
         Convert.convert(
           Builtins.union(fallback_functions, w),
-          :from => "map",
-          :to   => "map <string, any>"
+          from: "map",
+          to:   "map <string, any>"
         )
       end
     end
@@ -331,8 +331,8 @@ module Yast
         @processed_widget = deep_copy(w)
         toEval = Convert.convert(
           Ops.get(w, "init"),
-          :from => "any",
-          :to   => "void (string)"
+          from: "any",
+          to:   "void (string)"
         )
         toEval.call(Ops.get_string(w, "_cwm_key", "")) if toEval != nil
       end
@@ -355,8 +355,8 @@ module Yast
           events = Ops.get_list(w, "handle_events", [])
           toEval = Convert.convert(
             Ops.get(w, "handle"),
-            :from => "any",
-            :to   => "symbol (string, map)"
+            from: "any",
+            to:   "symbol (string, map)"
           )
           if toEval != nil &&
               (events == [] ||
@@ -380,8 +380,8 @@ module Yast
         @processed_widget = deep_copy(w)
         toEval = Convert.convert(
           Ops.get(w, "store"),
-          :from => "any",
-          :to   => "void (string, map)"
+          from: "any",
+          to:   "void (string, map)"
         )
         toEval.call(Ops.get_string(w, "_cwm_key", ""), event) if toEval != nil
       end
@@ -398,8 +398,8 @@ module Yast
         @processed_widget = deep_copy(w)
         toEval = Convert.convert(
           Ops.get(w, "clean_up"),
-          :from => "any",
-          :to   => "void (string)"
+          from: "any",
+          to:   "void (string)"
         )
         toEval.call(Ops.get_string(w, "_cwm_key", "")) if toEval != nil
       end
@@ -454,8 +454,8 @@ module Yast
         if !Builtins.haskey(v, "no_help")
           to_check = Convert.convert(
             Builtins.merge(to_check, ["help"]),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
         end
         Builtins.foreach(to_check) do |key|
@@ -477,8 +477,8 @@ module Yast
         if Builtins.haskey(v, "_cwm_do_validate")
           val_func = Convert.convert(
             Ops.get(v, "_cwm_do_validate"),
-            :from => "any",
-            :to   => "boolean (string, map <string, any>)"
+            from: "any",
+            to:   "boolean (string, map <string, any>)"
           )
           ret = val_func.call(k, v) && ret if val_func != nil
         end
@@ -502,8 +502,8 @@ module Yast
       elsif Ops.get(w, "widget") == :func
         toEval = Convert.convert(
           Ops.get(w, "widget_func"),
-          :from => "any",
-          :to   => "term ()"
+          from: "any",
+          to:   "term ()"
         )
         if toEval != nil
           Ops.set(w, "widget", toEval.call)
@@ -645,8 +645,8 @@ module Yast
       if val_type == :function || val_type == :function_no_popup
         toEval = Convert.convert(
           Ops.get(widget, "validate_function"),
-          :from => "any",
-          :to   => "boolean (string, map)"
+          from: "any",
+          to:   "boolean (string, map)"
         )
         failed = !toEval.call(key, event) if toEval != nil
       elsif val_type == :regexp
@@ -816,8 +816,8 @@ module Yast
           if Ops.get(functions, :abort) != nil
             toEval = Convert.convert(
               Ops.get(functions, :abort),
-              :from => "any",
-              :to   => "boolean ()"
+              from: "any",
+              to:   "boolean ()"
             )
             if toEval != nil
               eval_ret = toEval.call
@@ -828,8 +828,8 @@ module Yast
           if Ops.get(functions, :back) != nil
             toEval = Convert.convert(
               Ops.get(functions, :back),
-              :from => "any",
-              :to   => "boolean ()"
+              from: "any",
+              to:   "boolean ()"
             )
             if toEval != nil
               eval_ret = toEval.call
@@ -917,8 +917,8 @@ module Yast
       contents = Ops.get_term(settings, "contents", VBox())
       widget_names = Convert.convert(
         Ops.get(settings, "widget_names") { StringsOfTerm(contents) },
-        :from => "any",
-        :to   => "list <string>"
+        from: "any",
+        to:   "list <string>"
       )
       caption = Ops.get_string(settings, "caption", "")
       back_button = Ops.get_string(settings, "back_button") { Label.BackButton }
@@ -993,32 +993,32 @@ module Yast
       nil
     end
 
-    publish :function => :StringsOfTerm, :type => "list <string> (term)"
-    publish :function => :ValidateBasicType, :type => "boolean (any, string)"
-    publish :function => :ValidateValueType, :type => "boolean (string, any, string)"
-    publish :function => :mergeFunctions, :type => "list <map <string, any>> (list <map <string, any>>, map)"
-    publish :function => :initWidgets, :type => "void (list <map <string, any>>)"
-    publish :function => :handleWidgets, :type => "symbol (list <map <string, any>>, map)"
-    publish :function => :saveWidgets, :type => "void (list <map <string, any>>, map)"
-    publish :function => :cleanupWidgets, :type => "void (list <map <string, any>>)"
-    publish :function => :GetProcessedWidget, :type => "map <string, any> ()"
-    publish :function => :OkCancelBox, :type => "term ()"
-    publish :function => :ValidateMaps, :type => "boolean (map <string, map <string, any>>)"
-    publish :function => :prepareWidget, :type => "map <string, any> (map <string, any>)"
-    publish :function => :validateWidget, :type => "boolean (map <string, any>, map, string)"
-    publish :function => :validateWidgets, :type => "boolean (list <map <string, any>>, map)"
-    publish :function => :CreateWidgets, :type => "list <map <string, any>> (list <string>, map <string, map <string, any>>)"
-    publish :function => :MergeHelps, :type => "string (list <map <string, any>>)"
-    publish :function => :PrepareDialog, :type => "term (term, list <map <string, any>>)"
-    publish :function => :ReplaceWidgetHelp, :type => "void (string, string)"
-    publish :function => :Run, :type => "symbol (list <map <string, any>>, map)"
-    publish :function => :DisableButtons, :type => "void (list <string>)"
-    publish :function => :AdjustButtons, :type => "void (string, string, string, string)"
-    publish :function => :SetValidationFailedHandler, :type => "void (void ())"
-    publish :function => :ShowAndRun, :type => "symbol (map <string, any>)"
-    publish :function => :ShowAndRunOrig, :type => "symbol (list <string>, map <string, map <string, any>>, term, string, string, string, map)"
-    publish :function => :InitNull, :type => "void (string)"
-    publish :function => :StoreNull, :type => "void (string, map)"
+    publish function: :StringsOfTerm, type: "list <string> (term)"
+    publish function: :ValidateBasicType, type: "boolean (any, string)"
+    publish function: :ValidateValueType, type: "boolean (string, any, string)"
+    publish function: :mergeFunctions, type: "list <map <string, any>> (list <map <string, any>>, map)"
+    publish function: :initWidgets, type: "void (list <map <string, any>>)"
+    publish function: :handleWidgets, type: "symbol (list <map <string, any>>, map)"
+    publish function: :saveWidgets, type: "void (list <map <string, any>>, map)"
+    publish function: :cleanupWidgets, type: "void (list <map <string, any>>)"
+    publish function: :GetProcessedWidget, type: "map <string, any> ()"
+    publish function: :OkCancelBox, type: "term ()"
+    publish function: :ValidateMaps, type: "boolean (map <string, map <string, any>>)"
+    publish function: :prepareWidget, type: "map <string, any> (map <string, any>)"
+    publish function: :validateWidget, type: "boolean (map <string, any>, map, string)"
+    publish function: :validateWidgets, type: "boolean (list <map <string, any>>, map)"
+    publish function: :CreateWidgets, type: "list <map <string, any>> (list <string>, map <string, map <string, any>>)"
+    publish function: :MergeHelps, type: "string (list <map <string, any>>)"
+    publish function: :PrepareDialog, type: "term (term, list <map <string, any>>)"
+    publish function: :ReplaceWidgetHelp, type: "void (string, string)"
+    publish function: :Run, type: "symbol (list <map <string, any>>, map)"
+    publish function: :DisableButtons, type: "void (list <string>)"
+    publish function: :AdjustButtons, type: "void (string, string, string, string)"
+    publish function: :SetValidationFailedHandler, type: "void (void ())"
+    publish function: :ShowAndRun, type: "symbol (map <string, any>)"
+    publish function: :ShowAndRunOrig, type: "symbol (list <string>, map <string, map <string, any>>, term, string, string, string, map)"
+    publish function: :InitNull, type: "void (string)"
+    publish function: :StoreNull, type: "void (string, map)"
   end
 
   CWM = CWMClass.new

@@ -139,13 +139,13 @@ module Yast
       deep_copy(ret)
     end
 
-    publish :function => :Keys, :type => "list (map)"
-    publish :function => :Values, :type => "list (map)"
-    publish :function => :KeysToLower, :type => "map (map <string, any>)"
-    publish :function => :KeysToUpper, :type => "map (map <string, any>)"
-    publish :function => :CheckKeys, :type => "boolean (map, list)"
-    publish :function => :ToString, :type => "string (map)"
-    publish :function => :FromString, :type => "map (string)"
+    publish function: :Keys, type: "list (map)"
+    publish function: :Values, type: "list (map)"
+    publish function: :KeysToLower, type: "map (map <string, any>)"
+    publish function: :KeysToUpper, type: "map (map <string, any>)"
+    publish function: :CheckKeys, type: "boolean (map, list)"
+    publish function: :ToString, type: "string (map)"
+    publish function: :FromString, type: "map (string)"
   end
 
   Map = MapClass.new

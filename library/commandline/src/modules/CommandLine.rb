@@ -606,7 +606,7 @@ module Yast
         Print(Builtins.sformat("    %1", commandhelp))
       elsif Ops.is(commandhelp, "list <string>")
         Builtins.foreach(
-          Convert.convert(commandhelp, :from => "any", :to => "list <string>")
+          Convert.convert(commandhelp, from: "any", to: "list <string>")
         ) { |e| Print(Builtins.sformat("    %1", e)) }
       end
 
@@ -673,8 +673,8 @@ module Yast
             helptext = Ops.get(
               Convert.convert(
                 opthelp,
-                :from => "any",
-                :to   => "map <string, string>"
+                from: "any",
+                to:   "map <string, string>"
               ),
               action,
               ""
@@ -686,7 +686,7 @@ module Yast
               String.Pad("", longestarg)
             )
             helptext = Builtins.mergestring(
-              Convert.convert(opthelp, :from => "any", :to => "list <string>"),
+              Convert.convert(opthelp, from: "any", to: "list <string>"),
               delim
             )
           else
@@ -724,7 +724,7 @@ module Yast
           Print(Builtins.sformat("        %1", example))
         elsif Ops.is(example, "list <string>")
           Builtins.foreach(
-            Convert.convert(example, :from => "any", :to => "list <string>")
+            Convert.convert(example, from: "any", to: "list <string>")
           ) { |e| Print(Builtins.sformat("        %1", e)) }
         else
           Builtins.y2error("Unsupported data type - value: %1", example)
@@ -1003,8 +1003,8 @@ module Yast
             help = Builtins.mergestring(
               Convert.convert(
                 help_value,
-                :from => "any",
-                :to   => "list <string>"
+                from: "any",
+                to:   "list <string>"
               ),
               "\n"
             )
@@ -1585,8 +1585,8 @@ module Yast
         if Ops.is(Ops.get(commandline, "guihandler"), "symbol ()")
           exec = Convert.convert(
             Ops.get(commandline, "guihandler"),
-            :from => "any",
-            :to   => "symbol ()"
+            from: "any",
+            to:   "symbol ()"
           )
           symbol_ret = exec.call
           Builtins.y2debug("GUI handler ret=%1", symbol_ret)
@@ -1598,8 +1598,8 @@ module Yast
               "guihandler",
               fun_ref(method(:fake_false), "boolean ()")
             ),
-            :from => "any",
-            :to   => "boolean ()"
+            from: "any",
+            to:   "boolean ()"
           )
           ret = exec.call
           Builtins.y2debug("GUI handler ret=%1", ret)
@@ -1648,8 +1648,8 @@ module Yast
                     "initialize",
                     fun_ref(method(:fake_false), "boolean ()")
                   ),
-                  :from => "any",
-                  :to   => "boolean ()"
+                  from: "any",
+                  to:   "boolean ()"
                 )
               )
 
@@ -1664,8 +1664,8 @@ module Yast
 
           exec = Convert.convert(
             Ops.get(commandline, ["actions", command, "handler"]),
-            :from => "any",
-            :to   => "boolean (map <string, string>)"
+            from: "any",
+            to:   "boolean (map <string, string>)"
           )
 
           # there is a handler, execute the action
@@ -1695,8 +1695,8 @@ module Yast
               "finish",
               fun_ref(method(:fake_false), "boolean ()")
             ),
-            :from => "any",
-            :to   => "boolean ()"
+            from: "any",
+            to:   "boolean ()"
           )
         )
         if !ret
@@ -1744,47 +1744,47 @@ module Yast
       @verbose
     end
 
-    publish :variable => :cmdlineprompt, :type => "string", :private => true
-    publish :variable => :systemcommands, :type => "map <string, map <string, any>>", :private => true
-    publish :variable => :modulecommands, :type => "map", :private => true
-    publish :variable => :allcommands, :type => "map", :private => true
-    publish :variable => :interactive, :type => "boolean", :private => true
-    publish :variable => :done, :type => "boolean", :private => true
-    publish :variable => :aborted, :type => "boolean", :private => true
-    publish :variable => :commandcache, :type => "map <string, any>", :private => true
-    publish :variable => :verbose, :type => "boolean", :private => true
-    publish :variable => :cmdlinespec, :type => "map", :private => true
-    publish :variable => :nosupport, :type => "string", :private => true
-    publish :function => :PrintInternal, :type => "void (string, boolean)", :private => true
-    publish :function => :Print, :type => "void (string)"
-    publish :function => :PrintNoCR, :type => "void (string)"
-    publish :function => :PrintVerbose, :type => "void (string)"
-    publish :function => :PrintVerboseNoCR, :type => "void (string)"
-    publish :function => :PrintTable, :type => "void (term, list <term>)"
-    publish :function => :Error, :type => "void (string)"
-    publish :function => :Parse, :type => "map <string, any> (list)"
-    publish :function => :PrintHead, :type => "void ()", :private => true
-    publish :function => :PrintActionHelp, :type => "void (string)", :private => true
-    publish :function => :PrintGeneralHelp, :type => "void ()", :private => true
-    publish :function => :ProcessSystemCommands, :type => "boolean (map)", :private => true
-    publish :function => :Init, :type => "boolean (map, list)"
-    publish :function => :Scan, :type => "list <string> ()"
-    publish :function => :GetInput, :type => "string (string, symbol)", :private => true
-    publish :function => :UserInput, :type => "string (string)"
-    publish :function => :PasswordInput, :type => "string (string)"
-    publish :function => :Command, :type => "map ()"
-    publish :function => :StartGUI, :type => "boolean ()"
-    publish :function => :Interactive, :type => "boolean ()"
-    publish :function => :Aborted, :type => "boolean ()"
-    publish :function => :Abort, :type => "void ()"
-    publish :function => :Done, :type => "boolean ()"
-    publish :function => :UniqueOption, :type => "string (map <string, string>, list)"
-    publish :function => :fake_false, :type => "boolean ()", :private => true
-    publish :function => :RunFunction, :type => "boolean (boolean ())", :private => true
-    publish :function => :RunMapFunction, :type => "boolean (boolean (map <string, string>), map <string, string>)", :private => true
-    publish :function => :Run, :type => "any (map)"
-    publish :function => :YesNo, :type => "boolean ()"
-    publish :function => :Verbose, :type => "boolean ()"
+    publish variable: :cmdlineprompt, type: "string", private: true
+    publish variable: :systemcommands, type: "map <string, map <string, any>>", private: true
+    publish variable: :modulecommands, type: "map", private: true
+    publish variable: :allcommands, type: "map", private: true
+    publish variable: :interactive, type: "boolean", private: true
+    publish variable: :done, type: "boolean", private: true
+    publish variable: :aborted, type: "boolean", private: true
+    publish variable: :commandcache, type: "map <string, any>", private: true
+    publish variable: :verbose, type: "boolean", private: true
+    publish variable: :cmdlinespec, type: "map", private: true
+    publish variable: :nosupport, type: "string", private: true
+    publish function: :PrintInternal, type: "void (string, boolean)", private: true
+    publish function: :Print, type: "void (string)"
+    publish function: :PrintNoCR, type: "void (string)"
+    publish function: :PrintVerbose, type: "void (string)"
+    publish function: :PrintVerboseNoCR, type: "void (string)"
+    publish function: :PrintTable, type: "void (term, list <term>)"
+    publish function: :Error, type: "void (string)"
+    publish function: :Parse, type: "map <string, any> (list)"
+    publish function: :PrintHead, type: "void ()", private: true
+    publish function: :PrintActionHelp, type: "void (string)", private: true
+    publish function: :PrintGeneralHelp, type: "void ()", private: true
+    publish function: :ProcessSystemCommands, type: "boolean (map)", private: true
+    publish function: :Init, type: "boolean (map, list)"
+    publish function: :Scan, type: "list <string> ()"
+    publish function: :GetInput, type: "string (string, symbol)", private: true
+    publish function: :UserInput, type: "string (string)"
+    publish function: :PasswordInput, type: "string (string)"
+    publish function: :Command, type: "map ()"
+    publish function: :StartGUI, type: "boolean ()"
+    publish function: :Interactive, type: "boolean ()"
+    publish function: :Aborted, type: "boolean ()"
+    publish function: :Abort, type: "void ()"
+    publish function: :Done, type: "boolean ()"
+    publish function: :UniqueOption, type: "string (map <string, string>, list)"
+    publish function: :fake_false, type: "boolean ()", private: true
+    publish function: :RunFunction, type: "boolean (boolean ())", private: true
+    publish function: :RunMapFunction, type: "boolean (boolean (map <string, string>), map <string, string>)", private: true
+    publish function: :Run, type: "any (map)"
+    publish function: :YesNo, type: "boolean ()"
+    publish function: :Verbose, type: "boolean ()"
   end
 
   CommandLine = CommandLineClass.new

@@ -156,16 +156,16 @@ module Yast
       nil
     end
 
-    publish :variable => :console, :type => "string"
-    publish :variable => :lang, :type => "string"
-    publish :variable => :utf8, :type => "boolean"
-    publish :function => :Restore, :type => "string ()"
-    publish :function => :SetEncLang, :type => "void (string)"
-    publish :function => :GetEncLang, :type => "string ()"
-    publish :function => :SetUtf8Lang, :type => "void (boolean)"
-    publish :function => :GetUtf8Lang, :type => "boolean ()"
-    publish :function => :GetCodePage, :type => "string (string)"
-    publish :function => :Encoding, :type => "void ()"
+    publish variable: :console, type: "string"
+    publish variable: :lang, type: "string"
+    publish variable: :utf8, type: "boolean"
+    publish function: :Restore, type: "string ()"
+    publish function: :SetEncLang, type: "void (string)"
+    publish function: :GetEncLang, type: "string ()"
+    publish function: :SetUtf8Lang, type: "void (boolean)"
+    publish function: :GetUtf8Lang, type: "boolean ()"
+    publish function: :GetCodePage, type: "string (string)"
+    publish function: :Encoding, type: "void ()"
   end
 
   Encoding = EncodingClass.new

@@ -274,8 +274,8 @@ module Yast
       widget = deep_copy(widget)
       common_details_handler = Convert.convert(
         Ops.get(widget, "common_details_handler"),
-        :from => "any",
-        :to   => "void (map <string, any>)"
+        from: "any",
+        to:   "void (map <string, any>)"
       )
       common_details_handler.call(widget) if common_details_handler != nil
 
@@ -339,8 +339,8 @@ module Yast
             )
             @allowed_interfaces = Convert.convert(
               Builtins.union(@allowed_interfaces, interfaces_supported_by_any),
-              :from => "list",
-              :to   => "list <string>"
+              from: "list",
+              to:   "list <string>"
             )
           end
         end
@@ -357,8 +357,8 @@ module Yast
         )
         @allowed_interfaces = Convert.convert(
           Builtins.union(@allowed_interfaces, internal_interfaces),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
       else
         Builtins.y2milestone(
@@ -462,8 +462,8 @@ module Yast
       event = deep_copy(event)
       @allowed_interfaces = Convert.convert(
         UI.QueryWidget(Id("_cwm_interface_list"), :SelectedItems),
-        :from => "any",
-        :to   => "list <string>"
+        from: "any",
+        to:   "list <string>"
       )
       @allowed_interfaces = Selected2Opened(@allowed_interfaces, false)
       @configuration_changed = true
@@ -481,8 +481,8 @@ module Yast
       event = deep_copy(event)
       ifaces = Convert.convert(
         UI.QueryWidget(Id("_cwm_interface_list"), :SelectedItems),
-        :from => "any",
-        :to   => "list <string>"
+        from: "any",
+        to:   "list <string>"
       )
       ifaces = Builtins.toset(ifaces)
       Builtins.y2milestone("Selected ifaces: %1", ifaces)
@@ -517,8 +517,8 @@ module Yast
 
           ifaces = Convert.convert(
             Builtins.union(ifaces, int_not_selected),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
           Builtins.y2milestone("Selected interfaces: %1", ifaces)
           UI.ChangeWidget(Id("_cwm_interface_list"), :SelectedItems, ifaces)
@@ -784,8 +784,8 @@ module Yast
             )
           }
         ),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
 
       deep_copy(ret)
@@ -839,7 +839,7 @@ module Yast
       rescue SuSEFirewalServiceNotFound => e
         Report.Error(
           # TRANSLATORS: Error message, do not translate %{details}
-          _("Error checking service status:\n%{details}") % { :details => e.message }
+          _("Error checking service status:\n%{details}") % { details: e.message }
         )
       end
 
@@ -874,7 +874,7 @@ module Yast
       rescue SuSEFirewalServiceNotFound => e
         Report.Error(
           # TRANSLATORS: Error message, do not translate %{details}
-          _("Error setting service status:\n%{details}") % { :details => e.message }
+          _("Error setting service status:\n%{details}") % { details: e.message }
         )
       end
 
@@ -893,8 +893,8 @@ module Yast
       if event_id == "_cwm_firewall_details"
         handle_firewall_details = Convert.convert(
           Ops.get(widget, "firewall_details_handler"),
-          :from => "any",
-          :to   => "symbol ()"
+          from: "any",
+          to:   "symbol ()"
         )
         Builtins.y2milestone("FD: %1", handle_firewall_details)
         ret = nil
@@ -1152,8 +1152,8 @@ module Yast
           },
           settings
         ),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
 
       deep_copy(ret)
@@ -1165,32 +1165,32 @@ module Yast
       SuSEFirewall.GetModified
     end
 
-    publish :function => :InitAllowedInterfaces, :type => "void (list <string>)"
-    publish :function => :StoreAllowedInterfaces, :type => "void (list <string>)"
-    publish :function => :InterfacesInit, :type => "void (map <string, any>, string)"
-    publish :function => :InterfacesHandle, :type => "symbol (map <string, any>, string, map)"
-    publish :function => :InterfacesStore, :type => "void (map <string, any>, string, map)"
-    publish :function => :InterfacesValidate, :type => "boolean (map <string, any>, string, map)"
-    publish :function => :InterfacesInitWrapper, :type => "void (string)"
-    publish :function => :InterfacesHandleWrapper, :type => "symbol (string, map)"
-    publish :function => :InterfacesStoreWrapper, :type => "void (string, map)"
-    publish :function => :InterfacesValidateWrapper, :type => "boolean (string, map)"
-    publish :function => :CreateInterfacesWidget, :type => "map <string, any> (map <string, any>)"
-    publish :function => :DisplayDetailsPopup, :type => "symbol (map <string, any>)"
-    publish :function => :OpenFirewallInit, :type => "void (map <string, any>, string)"
-    publish :function => :OpenFirewallStore, :type => "void (map <string, any>, string, map)"
-    publish :function => :OpenFirewallHandle, :type => "symbol (map <string, any>, string, map)"
-    publish :function => :OpenFirewallInitWrapper, :type => "void (string)"
-    publish :function => :OpenFirewallStoreWrapper, :type => "void (string, map)"
-    publish :function => :OpenFirewallHandleWrapper, :type => "symbol (string, map)"
-    publish :function => :OpenFirewallModified, :type => "boolean (string)"
-    publish :function => :EnableOpenFirewallWidget, :type => "void ()"
-    publish :function => :DisableOpenFirewallWidget, :type => "void ()"
-    publish :function => :OpenFirewallWidgetExists, :type => "boolean ()"
-    publish :function => :OpenFirewallHelpTemplate, :type => "string (boolean)"
-    publish :function => :OpenFirewallHelp, :type => "string (boolean)"
-    publish :function => :CreateOpenFirewallWidget, :type => "map <string, any> (map <string, any>)"
-    publish :function => :Modified, :type => "boolean ()"
+    publish function: :InitAllowedInterfaces, type: "void (list <string>)"
+    publish function: :StoreAllowedInterfaces, type: "void (list <string>)"
+    publish function: :InterfacesInit, type: "void (map <string, any>, string)"
+    publish function: :InterfacesHandle, type: "symbol (map <string, any>, string, map)"
+    publish function: :InterfacesStore, type: "void (map <string, any>, string, map)"
+    publish function: :InterfacesValidate, type: "boolean (map <string, any>, string, map)"
+    publish function: :InterfacesInitWrapper, type: "void (string)"
+    publish function: :InterfacesHandleWrapper, type: "symbol (string, map)"
+    publish function: :InterfacesStoreWrapper, type: "void (string, map)"
+    publish function: :InterfacesValidateWrapper, type: "boolean (string, map)"
+    publish function: :CreateInterfacesWidget, type: "map <string, any> (map <string, any>)"
+    publish function: :DisplayDetailsPopup, type: "symbol (map <string, any>)"
+    publish function: :OpenFirewallInit, type: "void (map <string, any>, string)"
+    publish function: :OpenFirewallStore, type: "void (map <string, any>, string, map)"
+    publish function: :OpenFirewallHandle, type: "symbol (map <string, any>, string, map)"
+    publish function: :OpenFirewallInitWrapper, type: "void (string)"
+    publish function: :OpenFirewallStoreWrapper, type: "void (string, map)"
+    publish function: :OpenFirewallHandleWrapper, type: "symbol (string, map)"
+    publish function: :OpenFirewallModified, type: "boolean (string)"
+    publish function: :EnableOpenFirewallWidget, type: "void ()"
+    publish function: :DisableOpenFirewallWidget, type: "void ()"
+    publish function: :OpenFirewallWidgetExists, type: "boolean ()"
+    publish function: :OpenFirewallHelpTemplate, type: "string (boolean)"
+    publish function: :OpenFirewallHelp, type: "string (boolean)"
+    publish function: :CreateOpenFirewallWidget, type: "map <string, any> (map <string, any>)"
+    publish function: :Modified, type: "boolean ()"
   end
 
   CWMFirewallInterfaces = CWMFirewallInterfacesClass.new

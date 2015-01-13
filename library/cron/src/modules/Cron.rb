@@ -98,9 +98,9 @@ module Yast
       ret
     end
 
-    publish :function => :Read, :type => "list (string, map)"
-    publish :function => :Write, :type => "boolean (string, list)"
-    publish :function => :AddSimple, :type => "boolean (string, map, string, map, string)"
+    publish function: :Read, type: "list (string, map)"
+    publish function: :Write, type: "boolean (string, list)"
+    publish function: :AddSimple, type: "boolean (string, map, string, map, string)"
   end
 
   Cron = CronClass.new

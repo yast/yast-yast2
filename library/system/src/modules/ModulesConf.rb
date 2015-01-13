@@ -147,9 +147,9 @@ module Yast
       nil
     end
 
-    publish :function => :ModuleArgs, :type => "void (string, string)"
-    publish :function => :RunDepmod, :type => "void (boolean)"
-    publish :function => :Save, :type => "void (boolean)"
+    publish function: :ModuleArgs, type: "void (string, string)"
+    publish function: :RunDepmod, type: "void (boolean)"
+    publish function: :Save, type: "void (boolean)"
   end
 
   ModulesConf = ModulesConfClass.new

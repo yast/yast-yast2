@@ -34,9 +34,9 @@ module Yast
 
       @Sequence = {
         "ws_start" => "0",
-        "0"        => { :next => "1" },
-        "1"        => { :next => "F" },
-        "F"        => { :finish => :ws_finish }
+        "0"        => { next: "1" },
+        "1"        => { next: "F" },
+        "F"        => { finish: :ws_finish }
       }
 
       TEST(->() { Sequencer.Run(nil, nil) }, [], nil)

@@ -210,8 +210,8 @@ module Yast
       deep_copy(ret)
     end
 
-    publish :function => :Check, :type => "boolean ()"
-    publish :function => :Connect, :type => "map <string, any> (boolean)"
+    publish function: :Check, type: "boolean ()"
+    publish function: :Connect, type: "map <string, any> (boolean)"
   end
 
   PackageLock = PackageLockClass.new

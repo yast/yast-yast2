@@ -233,18 +233,18 @@ module Yast
       html
     end
 
-    publish :function => :Para, :type => "string (string)"
-    publish :function => :Heading, :type => "string (string)"
-    publish :function => :Link, :type => "string (string, string)"
-    publish :function => :ListStart, :type => "string ()"
-    publish :function => :ListEnd, :type => "string ()"
-    publish :function => :ListItem, :type => "string (string)"
-    publish :function => :List, :type => "string (list <string>)"
-    publish :function => :ColoredList, :type => "string (list <string>, string)"
-    publish :function => :Colorize, :type => "string (string, string)"
-    publish :function => :Bold, :type => "string (string)"
-    publish :function => :Newline, :type => "string ()"
-    publish :function => :Newlines, :type => "string (integer)"
+    publish function: :Para, type: "string (string)"
+    publish function: :Heading, type: "string (string)"
+    publish function: :Link, type: "string (string, string)"
+    publish function: :ListStart, type: "string ()"
+    publish function: :ListEnd, type: "string ()"
+    publish function: :ListItem, type: "string (string)"
+    publish function: :List, type: "string (list <string>)"
+    publish function: :ColoredList, type: "string (list <string>, string)"
+    publish function: :Colorize, type: "string (string, string)"
+    publish function: :Bold, type: "string (string)"
+    publish function: :Newline, type: "string ()"
+    publish function: :Newlines, type: "string (integer)"
   end
 
   HTML = HTMLClass.new

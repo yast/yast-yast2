@@ -101,10 +101,10 @@ module Yast
       nil
     end
 
-    publish :function => :Set, :type => "void (string, symbol)"
-    publish :function => :Get, :type => "symbol (string)"
-    publish :function => :Save, :type => "void ()"
-    publish :function => :Update, :type => "void ()"
+    publish function: :Set, type: "void (string, symbol)"
+    publish function: :Get, type: "symbol (string)"
+    publish function: :Save, type: "void ()"
+    publish function: :Update, type: "void ()"
   end
 
   HwStatus = HwStatusClass.new

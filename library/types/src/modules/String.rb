@@ -176,7 +176,7 @@ module Yast
         while Ops.greater_than(i, 0)
           max_difference = Ops.divide(
             max_difference,
-            Convert.convert(10, :from => "integer", :to => "float")
+            Convert.convert(10, from: "integer", to: "float")
           )
           i = Ops.subtract(i, 1)
         end
@@ -186,8 +186,8 @@ module Yast
               whole,
               Convert.convert(
                 Builtins.tointeger(whole),
-                :from => "integer",
-                :to   => "float"
+                from: "integer",
+                to:   "float"
               )
             ),
             max_difference
@@ -1324,52 +1324,52 @@ module Yast
       Builtins.mergestring(Builtins.splitstring(str, chars), glue)
     end
 
-    publish :function => :Quote, :type => "string (string)"
-    publish :function => :UnQuote, :type => "string (string)"
-    publish :function => :OptFormat, :type => "string (string, string)"
-    publish :function => :OptParens, :type => "string (string)"
-    publish :function => :NonEmpty, :type => "list <string> (list <string>)"
-    publish :function => :NewlineItems, :type => "list <string> (string)"
-    publish :function => :YesNo, :type => "string (boolean)"
-    publish :function => :FormatSizeWithPrecision, :type => "string (integer, integer, boolean)"
-    publish :function => :FormatSize, :type => "string (integer)"
-    publish :function => :FormatRate, :type => "string (integer)"
-    publish :function => :FormatRateMessage, :type => "string (string, integer, integer)"
-    publish :function => :FormatTime, :type => "string (integer)"
-    publish :function => :CutBlanks, :type => "string (string)"
-    publish :function => :CutZeros, :type => "string (string)"
-    publish :function => :Repeat, :type => "string (string, integer)"
-    publish :function => :SuperPad, :type => "string (string, integer, string, symbol)"
-    publish :function => :Pad, :type => "string (string, integer)"
-    publish :function => :PadZeros, :type => "string (string, integer)"
-    publish :function => :ParseOptions, :type => "list <string> (string, map)"
-    publish :function => :CutRegexMatch, :type => "string (string, string, boolean)"
-    publish :function => :EscapeTags, :type => "string (string)"
-    publish :function => :FirstChunk, :type => "string (string, string)"
-    publish :function => :CUpper, :type => "string ()"
-    publish :function => :CLower, :type => "string ()"
-    publish :function => :CAlpha, :type => "string ()"
-    publish :function => :CDigit, :type => "string ()"
-    publish :function => :CXdigit, :type => "string ()"
-    publish :function => :CAlnum, :type => "string ()"
-    publish :function => :CPunct, :type => "string ()"
-    publish :function => :CGraph, :type => "string ()"
-    publish :function => :CSpace, :type => "string ()"
-    publish :function => :CPrint, :type => "string ()"
-    publish :function => :ValidCharsFilename, :type => "string ()"
-    publish :function => :TextTable, :type => "string (list <string>, list <list <string>>, map <string, any>)"
-    publish :function => :UnderlinedHeader, :type => "string (string, integer)"
-    publish :function => :GetMetaDataLines, :type => "list <string> (string)"
-    publish :function => :GetCommentLines, :type => "string (string)"
-    publish :function => :ParseSysconfigComment, :type => "map <string, string> (string)"
-    publish :function => :Replace, :type => "string (string, string, string)"
-    publish :function => :WrapAt, :type => "string (string, integer, string)"
-    publish :function => :Random, :type => "string (integer)"
-    publish :function => :FormatFilename, :type => "string (string, integer)"
-    publish :function => :RemoveShortcut, :type => "string (string)"
-    publish :function => :StartsWith, :type => "boolean (string, string)"
-    publish :function => :FindMountPoint, :type => "string (string, list <string>)"
-    publish :function => :ReplaceWith, :type => "string (string, string, string)"
+    publish function: :Quote, type: "string (string)"
+    publish function: :UnQuote, type: "string (string)"
+    publish function: :OptFormat, type: "string (string, string)"
+    publish function: :OptParens, type: "string (string)"
+    publish function: :NonEmpty, type: "list <string> (list <string>)"
+    publish function: :NewlineItems, type: "list <string> (string)"
+    publish function: :YesNo, type: "string (boolean)"
+    publish function: :FormatSizeWithPrecision, type: "string (integer, integer, boolean)"
+    publish function: :FormatSize, type: "string (integer)"
+    publish function: :FormatRate, type: "string (integer)"
+    publish function: :FormatRateMessage, type: "string (string, integer, integer)"
+    publish function: :FormatTime, type: "string (integer)"
+    publish function: :CutBlanks, type: "string (string)"
+    publish function: :CutZeros, type: "string (string)"
+    publish function: :Repeat, type: "string (string, integer)"
+    publish function: :SuperPad, type: "string (string, integer, string, symbol)"
+    publish function: :Pad, type: "string (string, integer)"
+    publish function: :PadZeros, type: "string (string, integer)"
+    publish function: :ParseOptions, type: "list <string> (string, map)"
+    publish function: :CutRegexMatch, type: "string (string, string, boolean)"
+    publish function: :EscapeTags, type: "string (string)"
+    publish function: :FirstChunk, type: "string (string, string)"
+    publish function: :CUpper, type: "string ()"
+    publish function: :CLower, type: "string ()"
+    publish function: :CAlpha, type: "string ()"
+    publish function: :CDigit, type: "string ()"
+    publish function: :CXdigit, type: "string ()"
+    publish function: :CAlnum, type: "string ()"
+    publish function: :CPunct, type: "string ()"
+    publish function: :CGraph, type: "string ()"
+    publish function: :CSpace, type: "string ()"
+    publish function: :CPrint, type: "string ()"
+    publish function: :ValidCharsFilename, type: "string ()"
+    publish function: :TextTable, type: "string (list <string>, list <list <string>>, map <string, any>)"
+    publish function: :UnderlinedHeader, type: "string (string, integer)"
+    publish function: :GetMetaDataLines, type: "list <string> (string)"
+    publish function: :GetCommentLines, type: "string (string)"
+    publish function: :ParseSysconfigComment, type: "map <string, string> (string)"
+    publish function: :Replace, type: "string (string, string, string)"
+    publish function: :WrapAt, type: "string (string, integer, string)"
+    publish function: :Random, type: "string (integer)"
+    publish function: :FormatFilename, type: "string (string, integer)"
+    publish function: :RemoveShortcut, type: "string (string)"
+    publish function: :StartsWith, type: "boolean (string, string)"
+    publish function: :FindMountPoint, type: "string (string, list <string>)"
+    publish function: :ReplaceWith, type: "string (string, string, string)"
   end
 
   String = StringClass.new

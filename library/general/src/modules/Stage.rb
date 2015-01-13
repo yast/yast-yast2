@@ -116,13 +116,13 @@ module Yast
       stage == "hardware_probed"
     end
 
-    publish :function => :stage, :type => "string ()"
-    publish :function => :Set, :type => "void (string)"
-    publish :function => :initial, :type => "boolean ()"
-    publish :function => :cont, :type => "boolean ()"
-    publish :function => :firstboot, :type => "boolean ()"
-    publish :function => :normal, :type => "boolean ()"
-    publish :function => :reprobe, :type => "boolean ()"
+    publish function: :stage, type: "string ()"
+    publish function: :Set, type: "void (string)"
+    publish function: :initial, type: "boolean ()"
+    publish function: :cont, type: "boolean ()"
+    publish function: :firstboot, type: "boolean ()"
+    publish function: :normal, type: "boolean ()"
+    publish function: :reprobe, type: "boolean ()"
   end
 
   Stage = StageClass.new

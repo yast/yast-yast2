@@ -110,8 +110,8 @@ module Yast
       Builtins.y2debug("Setting section: %1", section_name)
       section_map = Convert.convert(
         Builtins.union(Ops.get(@defaults, section_name, {}), section_map),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
       Ops.set(@features, section_name, section_map)
 
@@ -316,21 +316,21 @@ module Yast
       nil
     end
 
-    publish :function => :GetStringFeature, :type => "string (string, string)"
-    publish :function => :SetSection, :type => "void (string, map <string, any>)"
-    publish :function => :GetSection, :type => "map <string, any> (string)"
-    publish :function => :Save, :type => "void ()"
-    publish :function => :Restore, :type => "void ()"
-    publish :function => :InitIfNeeded, :type => "void ()"
-    publish :function => :GetFeature, :type => "any (string, string)"
-    publish :function => :GetBooleanFeature, :type => "boolean (string, string)"
-    publish :function => :GetIntegerFeature, :type => "integer (string, string)"
-    publish :function => :SetFeature, :type => "void (string, string, any)"
-    publish :function => :SetStringFeature, :type => "void (string, string, string)"
-    publish :function => :SetBooleanFeature, :type => "void (string, string, boolean)"
-    publish :function => :SetIntegerFeature, :type => "void (string, string, integer)"
-    publish :function => :Export, :type => "map <string, map <string, any>> ()"
-    publish :function => :Import, :type => "void (map <string, map <string, any>>)"
+    publish function: :GetStringFeature, type: "string (string, string)"
+    publish function: :SetSection, type: "void (string, map <string, any>)"
+    publish function: :GetSection, type: "map <string, any> (string)"
+    publish function: :Save, type: "void ()"
+    publish function: :Restore, type: "void ()"
+    publish function: :InitIfNeeded, type: "void ()"
+    publish function: :GetFeature, type: "any (string, string)"
+    publish function: :GetBooleanFeature, type: "boolean (string, string)"
+    publish function: :GetIntegerFeature, type: "integer (string, string)"
+    publish function: :SetFeature, type: "void (string, string, any)"
+    publish function: :SetStringFeature, type: "void (string, string, string)"
+    publish function: :SetBooleanFeature, type: "void (string, string, boolean)"
+    publish function: :SetIntegerFeature, type: "void (string, string, integer)"
+    publish function: :Export, type: "map <string, map <string, any>> ()"
+    publish function: :Import, type: "void (map <string, map <string, any>>)"
   end
 
   ProductFeatures = ProductFeaturesClass.new

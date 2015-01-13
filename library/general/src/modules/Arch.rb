@@ -204,8 +204,8 @@ module Yast
         @_checkgeneration = ""
         systemProbe = Convert.convert(
           SCR.Read(path(".probe.system")),
-          :from => "any",
-          :to   => "list <map>"
+          from: "any",
+          to:   "list <map>"
         )
         systemProbe = [] if systemProbe == nil
 
@@ -361,8 +361,8 @@ module Yast
       if @_is_laptop == nil
         system = Convert.convert(
           SCR.Read(path(".probe.system")),
-          :from => "any",
-          :to   => "list <map>"
+          from: "any",
+          to:   "list <map>"
         )
         formfactor = Ops.get_string(system, [0, "formfactor"], "")
         @_is_laptop = formfactor == "laptop"
@@ -508,43 +508,43 @@ module Yast
       true
     end
 
-    publish :function => :architecture, :type => "string ()"
-    publish :function => :i386, :type => "boolean ()"
-    publish :function => :sparc32, :type => "boolean ()"
-    publish :function => :sparc64, :type => "boolean ()"
-    publish :function => :sparc, :type => "boolean ()"
-    publish :function => :mips32, :type => "boolean ()"
-    publish :function => :mips64, :type => "boolean ()"
-    publish :function => :mips, :type => "boolean ()"
-    publish :function => :ppc32, :type => "boolean ()"
-    publish :function => :ppc64, :type => "boolean ()"
-    publish :function => :ppc, :type => "boolean ()"
-    publish :function => :alpha, :type => "boolean ()"
-    publish :function => :s390_32, :type => "boolean ()"
-    publish :function => :s390_64, :type => "boolean ()"
-    publish :function => :s390, :type => "boolean ()"
-    publish :function => :ia64, :type => "boolean ()"
-    publish :function => :x86_64, :type => "boolean ()"
-    publish :function => :arch_short, :type => "string ()"
-    publish :function => :board_compatible, :type => "string ()"
-    publish :function => :board_mac, :type => "boolean ()"
-    publish :function => :board_mac_new, :type => "boolean ()"
-    publish :function => :board_mac_old, :type => "boolean ()"
-    publish :function => :board_chrp, :type => "boolean ()"
-    publish :function => :board_iseries, :type => "boolean ()"
-    publish :function => :board_prep, :type => "boolean ()"
-    publish :function => :board_pegasos, :type => "boolean ()"
-    publish :function => :board_wintel, :type => "boolean ()"
-    publish :function => :has_pcmcia, :type => "boolean ()"
-    publish :function => :is_laptop, :type => "boolean ()"
-    publish :function => :is_uml, :type => "boolean ()"
-    publish :function => :is_xen, :type => "boolean ()"
-    publish :function => :is_xen0, :type => "boolean ()"
-    publish :function => :is_xenU, :type => "boolean ()"
-    publish :function => :is_kvm, :type => "boolean ()"
-    publish :function => :setSMP, :type => "void (boolean)"
-    publish :function => :has_smp, :type => "boolean ()"
-    publish :function => :x11_setup_needed, :type => "boolean ()"
+    publish function: :architecture, type: "string ()"
+    publish function: :i386, type: "boolean ()"
+    publish function: :sparc32, type: "boolean ()"
+    publish function: :sparc64, type: "boolean ()"
+    publish function: :sparc, type: "boolean ()"
+    publish function: :mips32, type: "boolean ()"
+    publish function: :mips64, type: "boolean ()"
+    publish function: :mips, type: "boolean ()"
+    publish function: :ppc32, type: "boolean ()"
+    publish function: :ppc64, type: "boolean ()"
+    publish function: :ppc, type: "boolean ()"
+    publish function: :alpha, type: "boolean ()"
+    publish function: :s390_32, type: "boolean ()"
+    publish function: :s390_64, type: "boolean ()"
+    publish function: :s390, type: "boolean ()"
+    publish function: :ia64, type: "boolean ()"
+    publish function: :x86_64, type: "boolean ()"
+    publish function: :arch_short, type: "string ()"
+    publish function: :board_compatible, type: "string ()"
+    publish function: :board_mac, type: "boolean ()"
+    publish function: :board_mac_new, type: "boolean ()"
+    publish function: :board_mac_old, type: "boolean ()"
+    publish function: :board_chrp, type: "boolean ()"
+    publish function: :board_iseries, type: "boolean ()"
+    publish function: :board_prep, type: "boolean ()"
+    publish function: :board_pegasos, type: "boolean ()"
+    publish function: :board_wintel, type: "boolean ()"
+    publish function: :has_pcmcia, type: "boolean ()"
+    publish function: :is_laptop, type: "boolean ()"
+    publish function: :is_uml, type: "boolean ()"
+    publish function: :is_xen, type: "boolean ()"
+    publish function: :is_xen0, type: "boolean ()"
+    publish function: :is_xenU, type: "boolean ()"
+    publish function: :is_kvm, type: "boolean ()"
+    publish function: :setSMP, type: "void (boolean)"
+    publish function: :has_smp, type: "boolean ()"
+    publish function: :x11_setup_needed, type: "boolean ()"
   end
 
   Arch = ArchClass.new

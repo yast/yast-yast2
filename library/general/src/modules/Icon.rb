@@ -187,12 +187,12 @@ module Yast
       Image("info", {})
     end
 
-    publish :function => :IconPath, :type => "string (string)"
-    publish :function => :Image, :type => "term (string, map <string, any>)"
-    publish :function => :Simple, :type => "term (string)"
-    publish :function => :Warning, :type => "term ()"
-    publish :function => :Error, :type => "term ()"
-    publish :function => :Info, :type => "term ()"
+    publish function: :IconPath, type: "string (string)"
+    publish function: :Image, type: "term (string, map <string, any>)"
+    publish function: :Simple, type: "term (string)"
+    publish function: :Warning, type: "term ()"
+    publish function: :Error, type: "term ()"
+    publish function: :Info, type: "term ()"
   end
 
   Icon = IconClass.new

@@ -89,8 +89,8 @@ module Yast
       return if !UI.WidgetExists(Id("_cwm_use_ldap"))
       get_use_ldap = Convert.convert(
         Ops.get(widget, "get_use_ldap"),
-        :from => "any",
-        :to   => "boolean ()"
+        from: "any",
+        to:   "boolean ()"
       )
       use_ldap = get_use_ldap.call
       UI.ChangeWidget(Id("_cwm_use_ldap"), :Value, use_ldap)
@@ -107,8 +107,8 @@ module Yast
       if event_id == "_cwm_use_ldap"
         set_use_ldap = Convert.convert(
           Ops.get(widget, "set_use_ldap"),
-          :from => "any",
-          :to   => "void (boolean)"
+          from: "any",
+          to:   "void (boolean)"
         )
         use_ldap = Convert.to_boolean(
           UI.QueryWidget(Id("_cwm_use_ldap"), :Value)
@@ -135,8 +135,8 @@ module Yast
       end
       get_auto_start = Convert.convert(
         Ops.get(widget, "get_service_auto_start"),
-        :from => "any",
-        :to   => "boolean ()"
+        from: "any",
+        to:   "boolean ()"
       )
       auto_start = get_auto_start.call
       UI.ChangeWidget(
@@ -147,8 +147,8 @@ module Yast
       if Builtins.haskey(widget, "get_service_start_via_xinetd")
         start_via_xinetd = Convert.convert(
           Ops.get(widget, "get_service_start_via_xinetd"),
-          :from => "any",
-          :to   => "boolean ()"
+          from: "any",
+          to:   "boolean ()"
         )
         if start_via_xinetd.call
           UI.ChangeWidget(
@@ -179,15 +179,15 @@ module Yast
 
       set_auto_start = Convert.convert(
         Ops.get(widget, "set_service_auto_start"),
-        :from => "any",
-        :to   => "void (boolean)"
+        from: "any",
+        to:   "void (boolean)"
       )
       set_auto_start.call(auto_start)
       if !auto_start && Builtins.haskey(widget, "set_service_start_via_xinetd")
         start_via_xinetd = Convert.convert(
           Ops.get(widget, "set_service_start_via_xinetd"),
-          :from => "any",
-          :to   => "void (boolean)"
+          from: "any",
+          to:   "void (boolean)"
         )
         start_via_xinetd.call(
           UI.QueryWidget(Id("_cwm_service_startup"), :CurrentButton) ==
@@ -401,8 +401,8 @@ module Yast
             )
           }
         ),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
 
       deep_copy(ret)
@@ -423,8 +423,8 @@ module Yast
         if Builtins.haskey(widget, "start_now_action")
           start_now_func = Convert.convert(
             Ops.get(widget, "start_now_action"),
-            :from => "any",
-            :to   => "void ()"
+            from: "any",
+            to:   "void ()"
           )
           start_now_func.call
         else
@@ -435,8 +435,8 @@ module Yast
         if Builtins.haskey(widget, "stop_now_action")
           stop_now_func = Convert.convert(
             Ops.get(widget, "stop_now_action"),
-            :from => "any",
-            :to   => "void ()"
+            from: "any",
+            to:   "void ()"
           )
           stop_now_func.call
         else
@@ -446,8 +446,8 @@ module Yast
       elsif event_id == "_cwm_save_settings_now"
         func = Convert.convert(
           Ops.get(widget, "save_now_action"),
-          :from => "any",
-          :to   => "void ()"
+          from: "any",
+          to:   "void ()"
         )
         func.call
         Builtins.sleep(500)
@@ -666,8 +666,8 @@ module Yast
             ]
           }
         ),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
 
       if Builtins.haskey(settings, "service_id")
@@ -808,36 +808,36 @@ module Yast
             "handle_events" => ["_cwm_use_ldap"]
           }
         ),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
 
       deep_copy(ret)
     end
 
-    publish :function => :AutoStartInit, :type => "void (map <string, any>, string)"
-    publish :function => :AutoStartStore, :type => "void (map <string, any>, string, map)"
-    publish :function => :AutoStartInitWrapper, :type => "void (string)"
-    publish :function => :AutoStartStoreWrapper, :type => "void (string, map)"
-    publish :function => :AutoStartHelpTemplate, :type => "string ()"
-    publish :function => :AutoStartHelpXinetdTemplate, :type => "string ()"
-    publish :function => :AutoStartHelp, :type => "string ()"
-    publish :function => :AutoStartXinetdHelp, :type => "string ()"
-    publish :function => :CreateAutoStartWidget, :type => "map <string, any> (map <string, any>)"
-    publish :function => :StartStopHandle, :type => "symbol (map <string, any>, string, map)"
-    publish :function => :StartStopInit, :type => "void (map <string, any>, string)"
-    publish :function => :StartStopHandleWrapper, :type => "symbol (string, map)"
-    publish :function => :StartStopInitWrapper, :type => "void (string)"
-    publish :function => :StartStopHelpTemplate, :type => "string (boolean)"
-    publish :function => :StartStopHelp, :type => "string (boolean)"
-    publish :function => :CreateStartStopWidget, :type => "map <string, any> (map <string, any>)"
-    publish :function => :LdapInit, :type => "void (map <string, any>, string)"
-    publish :function => :LdapHandle, :type => "symbol (map <string, any>, string, map)"
-    publish :function => :LdapInitWrapper, :type => "void (string)"
-    publish :function => :LdapHandleWrapper, :type => "symbol (string, map)"
-    publish :function => :EnableLdapHelpTemplate, :type => "string ()"
-    publish :function => :EnableLdapHelp, :type => "string ()"
-    publish :function => :CreateLdapWidget, :type => "map <string, any> (map <string, any>)"
+    publish function: :AutoStartInit, type: "void (map <string, any>, string)"
+    publish function: :AutoStartStore, type: "void (map <string, any>, string, map)"
+    publish function: :AutoStartInitWrapper, type: "void (string)"
+    publish function: :AutoStartStoreWrapper, type: "void (string, map)"
+    publish function: :AutoStartHelpTemplate, type: "string ()"
+    publish function: :AutoStartHelpXinetdTemplate, type: "string ()"
+    publish function: :AutoStartHelp, type: "string ()"
+    publish function: :AutoStartXinetdHelp, type: "string ()"
+    publish function: :CreateAutoStartWidget, type: "map <string, any> (map <string, any>)"
+    publish function: :StartStopHandle, type: "symbol (map <string, any>, string, map)"
+    publish function: :StartStopInit, type: "void (map <string, any>, string)"
+    publish function: :StartStopHandleWrapper, type: "symbol (string, map)"
+    publish function: :StartStopInitWrapper, type: "void (string)"
+    publish function: :StartStopHelpTemplate, type: "string (boolean)"
+    publish function: :StartStopHelp, type: "string (boolean)"
+    publish function: :CreateStartStopWidget, type: "map <string, any> (map <string, any>)"
+    publish function: :LdapInit, type: "void (map <string, any>, string)"
+    publish function: :LdapHandle, type: "symbol (map <string, any>, string, map)"
+    publish function: :LdapInitWrapper, type: "void (string)"
+    publish function: :LdapHandleWrapper, type: "symbol (string, map)"
+    publish function: :EnableLdapHelpTemplate, type: "string ()"
+    publish function: :EnableLdapHelp, type: "string ()"
+    publish function: :CreateLdapWidget, type: "map <string, any> (map <string, any>)"
   end
 
   CWMServiceStart = CWMServiceStartClass.new

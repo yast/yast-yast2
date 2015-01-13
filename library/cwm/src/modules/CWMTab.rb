@@ -365,8 +365,8 @@ module Yast
         contents = Ops.get_term(v, "contents", VBox())
         widget_names = Convert.convert(
           Ops.get(v, "widget_names") { CWM.StringsOfTerm(contents) },
-          :from => "any",
-          :to   => "list <string>"
+          from: "any",
+          to:   "list <string>"
         )
         # second arg wins
         fallback = Builtins.union(
@@ -406,16 +406,16 @@ module Yast
       }
     end
 
-    publish :function => :Init, :type => "void (map <string, any>, string)"
-    publish :function => :CleanUp, :type => "void (string)"
-    publish :function => :Handle, :type => "symbol (map <string, any>, string, map)"
-    publish :function => :Store, :type => "void (string, map)"
-    publish :function => :InitWrapper, :type => "void (string)"
-    publish :function => :CurrentTab, :type => "string ()"
-    publish :function => :LastTab, :type => "string ()"
-    publish :function => :HandleWrapper, :type => "symbol (string, map)"
-    publish :function => :Validate, :type => "boolean (string, map)"
-    publish :function => :CreateWidget, :type => "map <string, any> (map)"
+    publish function: :Init, type: "void (map <string, any>, string)"
+    publish function: :CleanUp, type: "void (string)"
+    publish function: :Handle, type: "symbol (map <string, any>, string, map)"
+    publish function: :Store, type: "void (string, map)"
+    publish function: :InitWrapper, type: "void (string)"
+    publish function: :CurrentTab, type: "string ()"
+    publish function: :LastTab, type: "string ()"
+    publish function: :HandleWrapper, type: "symbol (string, map)"
+    publish function: :Validate, type: "boolean (string, map)"
+    publish function: :CreateWidget, type: "map <string, any> (map)"
   end
 
   CWMTab = CWMTabClass.new

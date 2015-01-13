@@ -223,10 +223,10 @@ module Yast
       )
     end
 
-    publish :function => :Detection, :type => "boolean (string, string)"
-    publish :function => :MustBeRoot, :type => "boolean ()"
-    publish :function => :DeleteSelected, :type => "boolean ()"
-    publish :function => :Delete, :type => "boolean (string)"
+    publish function: :Detection, type: "boolean (string, string)"
+    publish function: :MustBeRoot, type: "boolean ()"
+    publish function: :DeleteSelected, type: "boolean ()"
+    publish function: :Delete, type: "boolean (string)"
   end
 
   Confirm = ConfirmClass.new

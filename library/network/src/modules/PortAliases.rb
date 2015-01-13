@@ -251,8 +251,8 @@ module Yast
               service_aliases,
               Builtins.splitstring(sport_name, " ")
             ),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
         end 
         # service is a port name, any space isn't allowed
@@ -277,8 +277,8 @@ module Yast
                 " "
               )
             ),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
         end
       else
@@ -331,11 +331,11 @@ module Yast
       end
     end
 
-    publish :function => :IsAllowedPortName, :type => "boolean (string)"
-    publish :function => :AllowedPortNameOrNumber, :type => "string ()"
-    publish :function => :GetListOfServiceAliases, :type => "list <string> (string)"
-    publish :function => :IsKnownPortName, :type => "boolean (string)"
-    publish :function => :GetPortNumber, :type => "integer (string)"
+    publish function: :IsAllowedPortName, type: "boolean (string)"
+    publish function: :AllowedPortNameOrNumber, type: "string ()"
+    publish function: :GetListOfServiceAliases, type: "list <string> (string)"
+    publish function: :IsKnownPortName, type: "boolean (string)"
+    publish function: :GetPortNumber, type: "integer (string)"
   end
 
   PortAliases = PortAliasesClass.new

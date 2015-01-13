@@ -164,15 +164,15 @@ module Yast
       Ops.get_symbol(event, "ID")
     end
 
-    publish :function => :GetWidgetId, :type => "symbol (map)"
-    publish :function => :IsWidgetActivated, :type => "symbol (map)"
-    publish :function => :IsWidgetSelectionChanged, :type => "symbol (map)"
-    publish :function => :IsWidgetValueChanged, :type => "symbol (map)"
-    publish :function => :IsWidgetActivatedOrSelectionChanged, :type => "symbol (map)"
-    publish :function => :IsWidgetContextMenuActivated, :type => "symbol (map)"
-    publish :function => :IsMenu, :type => "symbol (map)"
-    publish :function => :IsTimeout, :type => "symbol (map)"
-    publish :function => :IsCancel, :type => "symbol (map)"
+    publish function: :GetWidgetId, type: "symbol (map)"
+    publish function: :IsWidgetActivated, type: "symbol (map)"
+    publish function: :IsWidgetSelectionChanged, type: "symbol (map)"
+    publish function: :IsWidgetValueChanged, type: "symbol (map)"
+    publish function: :IsWidgetActivatedOrSelectionChanged, type: "symbol (map)"
+    publish function: :IsWidgetContextMenuActivated, type: "symbol (map)"
+    publish function: :IsMenu, type: "symbol (map)"
+    publish function: :IsTimeout, type: "symbol (map)"
+    publish function: :IsCancel, type: "symbol (map)"
   end
 
   Event = EventClass.new

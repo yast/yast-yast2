@@ -402,15 +402,15 @@ module Yast
       deep_copy(result)
     end
 
-    publish :variable => :Modules, :type => "map <string, map>"
-    publish :variable => :Groups, :type => "map <string, map>"
-    publish :variable => :AgentPath, :type => "path"
-    publish :function => :Read, :type => "void (list <string>)"
-    publish :function => :Translate, :type => "string (string)"
-    publish :function => :GroupList, :type => "list <term> ()"
-    publish :function => :ModuleList, :type => "list <term> (string)"
-    publish :function => :RunViaDesktop, :type => "void (string, list <string>)"
-    publish :function => :ParseSingleDesktopFile, :type => "map <string, string> (string)"
+    publish variable: :Modules, type: "map <string, map>"
+    publish variable: :Groups, type: "map <string, map>"
+    publish variable: :AgentPath, type: "path"
+    publish function: :Read, type: "void (list <string>)"
+    publish function: :Translate, type: "string (string)"
+    publish function: :GroupList, type: "list <term> ()"
+    publish function: :ModuleList, type: "list <term> (string)"
+    publish function: :RunViaDesktop, type: "void (string, list <string>)"
+    publish function: :ParseSingleDesktopFile, type: "map <string, string> (string)"
   end
 
   Desktop = DesktopClass.new

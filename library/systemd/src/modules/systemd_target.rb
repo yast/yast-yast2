@@ -46,7 +46,7 @@ module Yast
 
     UNIT_SUFFIX    = ".target"
     DEFAULT_TARGET = "default.target"
-    PROPERTIES     = { :allow_isolate => "AllowIsolate" }
+    PROPERTIES     = { allow_isolate: "AllowIsolate" }
 
     def find target_name, properties={}
       target_name += UNIT_SUFFIX unless target_name.end_with?(UNIT_SUFFIX)

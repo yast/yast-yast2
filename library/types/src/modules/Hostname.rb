@@ -217,20 +217,20 @@ module Yast
       domain
     end
 
-    publish :variable => :ValidChars, :type => "string"
-    publish :variable => :ValidCharsDomain, :type => "string"
-    publish :variable => :ValidCharsFQ, :type => "string"
-    publish :function => :ValidDomain, :type => "string ()"
-    publish :function => :ValidHost, :type => "string ()"
-    publish :function => :ValidFQ, :type => "string ()"
-    publish :function => :Check, :type => "boolean (string)"
-    publish :function => :CheckDomain, :type => "boolean (string)"
-    publish :function => :CheckFQ, :type => "boolean (string)"
-    publish :function => :SplitFQ, :type => "list <string> (string)"
-    publish :function => :MergeFQ, :type => "string (string, string)"
-    publish :function => :CurrentFQ, :type => "string ()"
-    publish :function => :CurrentHostname, :type => "string ()"
-    publish :function => :CurrentDomain, :type => "string ()"
+    publish variable: :ValidChars, type: "string"
+    publish variable: :ValidCharsDomain, type: "string"
+    publish variable: :ValidCharsFQ, type: "string"
+    publish function: :ValidDomain, type: "string ()"
+    publish function: :ValidHost, type: "string ()"
+    publish function: :ValidFQ, type: "string ()"
+    publish function: :Check, type: "boolean (string)"
+    publish function: :CheckDomain, type: "boolean (string)"
+    publish function: :CheckFQ, type: "boolean (string)"
+    publish function: :SplitFQ, type: "list <string> (string)"
+    publish function: :MergeFQ, type: "string (string, string)"
+    publish function: :CurrentFQ, type: "string ()"
+    publish function: :CurrentHostname, type: "string ()"
+    publish function: :CurrentDomain, type: "string ()"
   end
 
   Hostname = HostnameClass.new

@@ -111,9 +111,9 @@ module Yast
       nil
     end
 
-    publish :function => :Item, :type => "void (string)"
-    publish :function => :Note, :type => "void (string)"
-    publish :function => :CommitPopup, :type => "void ()"
+    publish function: :Item, type: "void (string)"
+    publish function: :Note, type: "void (string)"
+    publish function: :CommitPopup, type: "void ()"
   end
 
   ALog = ALogClass.new

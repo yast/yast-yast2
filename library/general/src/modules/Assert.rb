@@ -57,8 +57,8 @@ module Yast
       EqualMsg(expected, actual, fail_message)
     end
 
-    publish :function => :EqualMsg, :type => "boolean (any, any, string)"
-    publish :function => :Equal, :type => "boolean (any, any)"
+    publish function: :EqualMsg, type: "boolean (any, any, string)"
+    publish function: :Equal, type: "boolean (any, any)"
   end
 
   Assert = AssertClass.new

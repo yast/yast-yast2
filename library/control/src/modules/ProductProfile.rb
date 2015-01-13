@@ -125,8 +125,8 @@ module Yast
         )
         sigkeys = Convert.convert(
           Builtins.union(sigkeys, GetSigKeysForProduct(src_id)),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
       end
 
@@ -228,13 +228,13 @@ module Yast
       ret
     end
 
-    publish :variable => :all_profiles, :type => "list <string>"
-    publish :variable => :productid2name, :type => "map <integer, string>"
-    publish :variable => :compliance_checked, :type => "map <integer, boolean>"
-    publish :function => :GetComplianceMap, :type => "map <string, any> ()"
-    publish :function => :GetSigKeysForProduct, :type => "list <string> (integer)"
-    publish :function => :IsCompliant, :type => "boolean (integer)"
-    publish :function => :CheckCompliance, :type => "boolean (integer)"
+    publish variable: :all_profiles, type: "list <string>"
+    publish variable: :productid2name, type: "map <integer, string>"
+    publish variable: :compliance_checked, type: "map <integer, boolean>"
+    publish function: :GetComplianceMap, type: "map <string, any> ()"
+    publish function: :GetSigKeysForProduct, type: "list <string> (integer)"
+    publish function: :IsCompliant, type: "boolean (integer)"
+    publish function: :CheckCompliance, type: "boolean (integer)"
   end
 
   ProductProfile = ProductProfileClass.new

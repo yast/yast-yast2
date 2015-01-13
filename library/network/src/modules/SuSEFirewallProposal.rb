@@ -768,14 +768,14 @@ module Yast
       { "output" => output, "warning" => warning }
     end
 
-    publish :function => :OpenServiceOnNonDialUpInterfaces, :type => "void (string, list <string>)"
-    publish :function => :SetChangedByUser, :type => "void (boolean)"
-    publish :function => :GetChangedByUser, :type => "boolean ()"
-    publish :function => :SetProposalInitialized, :type => "void (boolean)"
-    publish :function => :GetProposalInitialized, :type => "boolean ()"
-    publish :function => :Reset, :type => "void ()"
-    publish :function => :Propose, :type => "void ()"
-    publish :function => :ProposalSummary, :type => "map <string, string> ()"
+    publish function: :OpenServiceOnNonDialUpInterfaces, type: "void (string, list <string>)"
+    publish function: :SetChangedByUser, type: "void (boolean)"
+    publish function: :GetChangedByUser, type: "boolean ()"
+    publish function: :SetProposalInitialized, type: "void (boolean)"
+    publish function: :GetProposalInitialized, type: "boolean ()"
+    publish function: :Reset, type: "void ()"
+    publish function: :Propose, type: "void ()"
+    publish function: :ProposalSummary, type: "map <string, string> ()"
   end
 
   SuSEFirewallProposal = SuSEFirewallProposalClass.new

@@ -65,8 +65,8 @@ module Yast
       packages = deep_copy(packages)
       @toinstall = Convert.convert(
         Builtins.union(@toinstall, packages),
-        :from => "list",
-        :to   => "list <string>"
+        from: "list",
+        to:   "list <string>"
       )
       @toremove = Builtins.filter(@toremove) do |p|
         !Builtins.contains(packages, p)
@@ -79,8 +79,8 @@ module Yast
       packages = deep_copy(packages)
       @toremove = Convert.convert(
         Builtins.union(@toremove, packages),
-        :from => "list",
-        :to   => "list <string>"
+        from: "list",
+        to:   "list <string>"
       )
       @toinstall = Builtins.filter(@toinstall) do |p|
         !Builtins.contains(packages, p)
@@ -128,34 +128,34 @@ module Yast
       true
     end
 
-    publish :variable => :toinstall, :type => "list <string>"
-    publish :variable => :toremove, :type => "list <string>"
-    publish :function => :Available, :type => "boolean (string)"
-    publish :function => :Installed, :type => "boolean (string)"
-    publish :function => :DoInstall, :type => "boolean (list <string>)"
-    publish :function => :DoRemove, :type => "boolean (list <string>)"
-    publish :function => :DoInstallAndRemove, :type => "boolean (list <string>, list <string>)"
-    publish :function => :AvailableAll, :type => "boolean (list <string>)"
-    publish :function => :AvailableAny, :type => "boolean (list <string>)"
-    publish :function => :InstalledAll, :type => "boolean (list <string>)"
-    publish :function => :InstalledAny, :type => "boolean (list <string>)"
-    publish :function => :InstallMsg, :type => "boolean (string, string)"
-    publish :function => :InstallAllMsg, :type => "boolean (list <string>, string)"
-    publish :function => :InstallAnyMsg, :type => "boolean (list <string>, string)"
-    publish :function => :RemoveMsg, :type => "boolean (string, string)"
-    publish :function => :RemoveAllMsg, :type => "boolean (list <string>, string)"
-    publish :function => :Install, :type => "boolean (string)"
-    publish :function => :InstallAll, :type => "boolean (list <string>)"
-    publish :function => :InstallAny, :type => "boolean (list <string>)"
-    publish :function => :Remove, :type => "boolean (string)"
-    publish :function => :RemoveAll, :type => "boolean (list <string>)"
-    publish :function => :LastOperationCanceled, :type => "boolean ()"
-    publish :variable => :modified, :type => "boolean"
-    publish :function => :SetModified, :type => "void ()"
-    publish :function => :GetModified, :type => "boolean ()"
-    publish :function => :PackageInstalled, :type => "boolean (string)"
-    publish :function => :PackageAvailable, :type => "boolean (string)"
-    publish :function => :InstallKernel, :type => "boolean (list <string>)"
+    publish variable: :toinstall, type: "list <string>"
+    publish variable: :toremove, type: "list <string>"
+    publish function: :Available, type: "boolean (string)"
+    publish function: :Installed, type: "boolean (string)"
+    publish function: :DoInstall, type: "boolean (list <string>)"
+    publish function: :DoRemove, type: "boolean (list <string>)"
+    publish function: :DoInstallAndRemove, type: "boolean (list <string>, list <string>)"
+    publish function: :AvailableAll, type: "boolean (list <string>)"
+    publish function: :AvailableAny, type: "boolean (list <string>)"
+    publish function: :InstalledAll, type: "boolean (list <string>)"
+    publish function: :InstalledAny, type: "boolean (list <string>)"
+    publish function: :InstallMsg, type: "boolean (string, string)"
+    publish function: :InstallAllMsg, type: "boolean (list <string>, string)"
+    publish function: :InstallAnyMsg, type: "boolean (list <string>, string)"
+    publish function: :RemoveMsg, type: "boolean (string, string)"
+    publish function: :RemoveAllMsg, type: "boolean (list <string>, string)"
+    publish function: :Install, type: "boolean (string)"
+    publish function: :InstallAll, type: "boolean (list <string>)"
+    publish function: :InstallAny, type: "boolean (list <string>)"
+    publish function: :Remove, type: "boolean (string)"
+    publish function: :RemoveAll, type: "boolean (list <string>)"
+    publish function: :LastOperationCanceled, type: "boolean ()"
+    publish variable: :modified, type: "boolean"
+    publish function: :SetModified, type: "void ()"
+    publish function: :GetModified, type: "boolean ()"
+    publish function: :PackageInstalled, type: "boolean (string)"
+    publish function: :PackageAvailable, type: "boolean (string)"
+    publish function: :InstallKernel, type: "boolean (list <string>)"
   end
 
   PackageAI = PackageAIClass.new

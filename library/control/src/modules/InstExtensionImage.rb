@@ -201,8 +201,8 @@ module Yast
       modif_params_map = URL.MakeMapFromParams(modif_params)
       final_params_map = Convert.convert(
         Builtins.union(base_params_map, modif_params_map),
-        :from => "map",
-        :to   => "map <string, string>"
+        from: "map",
+        to:   "map <string, string>"
       )
 
       URL.MakeParamsFromMap(final_params_map)
@@ -433,11 +433,11 @@ module Yast
       true
     end
 
-    publish :function => :LoadExtension, :type => "boolean (string, string)"
-    publish :function => :UnLoadExtension, :type => "boolean (string, string)"
-    publish :function => :DownloadAndIntegrateExtension, :type => "boolean (string)"
-    publish :function => :DesintegrateExtension, :type => "boolean (string)"
-    publish :function => :DisintegrateAllExtensions, :type => "boolean ()"
+    publish function: :LoadExtension, type: "boolean (string, string)"
+    publish function: :UnLoadExtension, type: "boolean (string, string)"
+    publish function: :DownloadAndIntegrateExtension, type: "boolean (string)"
+    publish function: :DesintegrateExtension, type: "boolean (string)"
+    publish function: :DisintegrateAllExtensions, type: "boolean ()"
   end
 
   InstExtensionImage = InstExtensionImageClass.new

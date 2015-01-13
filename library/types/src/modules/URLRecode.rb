@@ -52,10 +52,10 @@ module Yast
       end
     end
 
-    publish :function => :EscapePassword, :type => "string (string)"
-    publish :function => :EscapePath,     :type => "string (string)"
-    publish :function => :EscapeQuery,    :type => "string (string)"
-    publish :function => :UnEscape,       :type => "string (string)"
+    publish function: :EscapePassword, type: "string (string)"
+    publish function: :EscapePath,     type: "string (string)"
+    publish function: :EscapeQuery,    type: "string (string)"
+    publish function: :UnEscape,       type: "string (string)"
   end
 
   URLRecode = URLRecodeClass.new

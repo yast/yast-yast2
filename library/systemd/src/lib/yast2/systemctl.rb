@@ -23,17 +23,17 @@ module Yast
         command = SYSTEMCTL + command
         log.debug "Executing `systemctl` command: #{command}"
         result = timeout(TIMEOUT) { SCR.Execute(Path.new(".target.bash_output"), command) }
-        OpenStruct.new(result.merge!(:command => command))
+        OpenStruct.new(result.merge!(command: command))
       rescue Timeout::Error
         raise SystemctlError, "Timeout #{TIMEOUT} seconds: #{command}"
       end
 
       def socket_units
-        sockets_from_files = list_unit_files(:type=>:socket).lines.map do |line|
+        sockets_from_files = list_unit_files(type: :socket).lines.map do |line|
           first_column(line)
         end
 
-        sockets_from_units = list_units(:type=>:socket).lines.map do |line|
+        sockets_from_units = list_units(type: :socket).lines.map do |line|
           first_column(line)
         end
 
@@ -41,11 +41,11 @@ module Yast
       end
 
       def service_units
-        services_from_files = list_unit_files(:type=>:service).lines.map do |line|
+        services_from_files = list_unit_files(type: :service).lines.map do |line|
           first_column(line)
         end
 
-        services_from_units = list_units(:type=>:service).lines.map do |line|
+        services_from_units = list_units(type: :service).lines.map do |line|
           first_column(line)
         end
 
@@ -53,11 +53,11 @@ module Yast
       end
 
       def target_units
-        targets_from_files = list_unit_files(:type=>:target).lines.map do |line|
+        targets_from_files = list_unit_files(type: :target).lines.map do |line|
           first_column(line)
         end
 
-        targets_from_units = list_units(:type=>:target).lines.map do |line|
+        targets_from_units = list_units(type: :target).lines.map do |line|
           first_column(line)
         end
 

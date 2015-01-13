@@ -115,7 +115,7 @@ module Yast
 
       changed = false
       Builtins.maplist(
-        Convert.convert(data, :from => "map", :to => "map <string, any>")
+        Convert.convert(data, from: "map", to: "map <string, any>")
       ) do |var, val|
         oldval = Convert.to_string(SCR.Read(Builtins.add(config, var)))
         newval = ""
@@ -196,13 +196,13 @@ module Yast
       Builtins.eval({ "config" => @Config, "dhcp" => @DHCP })
     end
 
-    publish :variable => :Config, :type => "map"
-    publish :variable => :DHCP, :type => "map"
-    publish :function => :Modified, :type => "boolean ()"
-    publish :function => :Read, :type => "boolean ()"
-    publish :function => :Write, :type => "boolean ()"
-    publish :function => :Import, :type => "boolean (map)"
-    publish :function => :Export, :type => "map ()"
+    publish variable: :Config, type: "map"
+    publish variable: :DHCP, type: "map"
+    publish function: :Modified, type: "boolean ()"
+    publish function: :Read, type: "boolean ()"
+    publish function: :Write, type: "boolean ()"
+    publish function: :Import, type: "boolean (map)"
+    publish function: :Export, type: "map ()"
   end
 
   NetworkConfig = NetworkConfigClass.new

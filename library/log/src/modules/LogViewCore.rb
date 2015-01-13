@@ -202,8 +202,8 @@ module Yast
         if Ops.greater_than(Builtins.size(new_lines), 0)
           @lines = Convert.convert(
             Builtins.merge(@lines, new_lines),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
           DeleteOldLines()
 
@@ -235,10 +235,10 @@ module Yast
       deep_copy(@lines)
     end
 
-    publish :function => :Start, :type => "void (term, map <string, any>)"
-    publish :function => :Update, :type => "void (term)"
-    publish :function => :Stop, :type => "void ()"
-    publish :function => :GetLines, :type => "list <string> ()"
+    publish function: :Start, type: "void (term, map <string, any>)"
+    publish function: :Update, type: "void (term)"
+    publish function: :Stop, type: "void ()"
+    publish function: :GetLines, type: "list <string> ()"
   end
 
   LogViewCore = LogViewCoreClass.new

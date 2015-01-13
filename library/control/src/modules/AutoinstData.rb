@@ -77,12 +77,12 @@ module Yast
       @BootLVMWarning = true
     end
 
-    publish :variable => :mouse, :type => "map"
-    publish :variable => :post_packages, :type => "list <string>"
-    publish :variable => :post_patterns, :type => "list <string>"
-    publish :variable => :BootCylWarning, :type => "boolean"
-    publish :variable => :BootRaidWarning, :type => "boolean"
-    publish :variable => :BootLVMWarning, :type => "boolean"
+    publish variable: :mouse, type: "map"
+    publish variable: :post_packages, type: "list <string>"
+    publish variable: :post_patterns, type: "list <string>"
+    publish variable: :BootCylWarning, type: "boolean"
+    publish variable: :BootRaidWarning, type: "boolean"
+    publish variable: :BootLVMWarning, type: "boolean"
   end
 
   AutoinstData = AutoinstDataClass.new

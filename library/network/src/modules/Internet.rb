@@ -235,8 +235,8 @@ module Yast
 
       dhcp_pidfiles = Convert.convert(
         WFM.Read(path(".local.dir"), pid_directory),
-        :from => "any",
-        :to   => "list <string>"
+        from: "any",
+        to:   "list <string>"
       )
       # only dhcpcd files
       dhcp_pidfiles = Builtins.filter(dhcp_pidfiles) do |one_pidfile|
@@ -273,28 +273,28 @@ module Yast
       true
     end
 
-    publish :variable => :do_test, :type => "boolean"
-    publish :variable => :suse_register, :type => "boolean"
-    publish :variable => :do_you, :type => "boolean"
-    publish :variable => :test, :type => "boolean"
-    publish :variable => :devices, :type => "list <string>", :private => true
-    publish :variable => :device, :type => "string"
-    publish :variable => :type, :type => "string"
-    publish :variable => :logfile, :type => "string"
-    publish :variable => :provider, :type => "string"
-    publish :variable => :password, :type => "string"
-    publish :variable => :demand, :type => "boolean"
-    publish :variable => :askpassword, :type => "boolean"
-    publish :variable => :capi_adsl, :type => "boolean"
-    publish :variable => :capi_isdn, :type => "boolean"
-    publish :function => :Reset, :type => "void ()"
-    publish :function => :GetDevices, :type => "list <string> ()"
-    publish :function => :Start, :type => "boolean (string)"
-    publish :function => :Stop, :type => "boolean (string)"
-    publish :function => :Status, :type => "boolean ()"
-    publish :function => :Connected, :type => "boolean ()"
-    publish :function => :SetDemand, :type => "void (boolean)"
-    publish :function => :ShutdownAllLocalDHCPClients, :type => "boolean ()"
+    publish variable: :do_test, type: "boolean"
+    publish variable: :suse_register, type: "boolean"
+    publish variable: :do_you, type: "boolean"
+    publish variable: :test, type: "boolean"
+    publish variable: :devices, type: "list <string>", private: true
+    publish variable: :device, type: "string"
+    publish variable: :type, type: "string"
+    publish variable: :logfile, type: "string"
+    publish variable: :provider, type: "string"
+    publish variable: :password, type: "string"
+    publish variable: :demand, type: "boolean"
+    publish variable: :askpassword, type: "boolean"
+    publish variable: :capi_adsl, type: "boolean"
+    publish variable: :capi_isdn, type: "boolean"
+    publish function: :Reset, type: "void ()"
+    publish function: :GetDevices, type: "list <string> ()"
+    publish function: :Start, type: "boolean (string)"
+    publish function: :Stop, type: "boolean (string)"
+    publish function: :Status, type: "boolean ()"
+    publish function: :Connected, type: "boolean ()"
+    publish function: :SetDemand, type: "void (boolean)"
+    publish function: :ShutdownAllLocalDHCPClients, type: "boolean ()"
   end
 
   Internet = InternetClass.new

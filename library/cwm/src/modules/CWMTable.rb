@@ -120,13 +120,13 @@ module Yast
         end
         false
       end
-      targs = Convert.convert(args, :from => "list", :to => "list <term>")
+      targs = Convert.convert(args, from: "list", to: "list <term>")
       if Builtins.size(targs) == 1
         return Ops.get(
           Convert.convert(
             Builtins.argsof(Ops.get(targs, 0)),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           ),
           0
         )
@@ -143,8 +143,8 @@ module Yast
       id = Convert.to_string(UI.QueryWidget(Id(:_tw_table), :CurrentItem))
       item_list = Convert.convert(
         UI.QueryWidget(Id(:_tw_table), :Items),
-        :from => "any",
-        :to   => "list <term>"
+        from: "any",
+        to:   "list <term>"
       )
       index = -1
       counter = 0
@@ -207,8 +207,8 @@ module Yast
       id = Convert.to_string(UI.QueryWidget(Id(:_tw_table), :CurrentItem))
       item_list = Convert.convert(
         UI.QueryWidget(Id(:_tw_table), :Items),
-        :from => "any",
-        :to   => "list <term>"
+        from: "any",
+        to:   "list <term>"
       )
       index = -1
       counter = 0
@@ -226,22 +226,22 @@ module Yast
       if event_id == :_tw_edit
         edit_handle = Convert.convert(
           Ops.get(attrib, "edit"),
-          :from => "any",
-          :to   => "symbol (string, map, integer)"
+          from: "any",
+          to:   "symbol (string, map, integer)"
         )
         ret = edit_handle.call(key, event_descr, index) if edit_handle != nil
       elsif event_id == :_tw_add
         add_handle = Convert.convert(
           Ops.get(attrib, "add"),
-          :from => "any",
-          :to   => "symbol (string, map, integer)"
+          from: "any",
+          to:   "symbol (string, map, integer)"
         )
         ret = add_handle.call(key, event_descr, index) if add_handle != nil
       elsif event_id == :_tw_delete
         delete_handle = Convert.convert(
           Ops.get(attrib, "delete"),
-          :from => "any",
-          :to   => "symbol (string, map, integer)"
+          from: "any",
+          to:   "symbol (string, map, integer)"
         )
         if delete_handle != nil
           ret = delete_handle.call(key, event_descr, index)
@@ -249,8 +249,8 @@ module Yast
       elsif event_id == :_tw_custom
         custom_handle = Convert.convert(
           Ops.get(attrib, "custom_handle"),
-          :from => "any",
-          :to   => "symbol (string, map, integer)"
+          from: "any",
+          to:   "symbol (string, map, integer)"
         )
         if custom_handle != nil
           ret = custom_handle.call(key, event_descr, index)
@@ -259,8 +259,8 @@ module Yast
         up = event_id == :_tw_up
         updown_handle = Convert.convert(
           Ops.get(attrib, "updown"),
-          :from => "any",
-          :to   => "symbol (string, map, boolean, integer)"
+          from: "any",
+          to:   "symbol (string, map, boolean, integer)"
         )
         if updown_handle != nil && !(index == 0 && up) &&
             !(index == Ops.subtract(Builtins.size(item_list), 1) && !up)
@@ -406,8 +406,8 @@ module Yast
           },
           widget_descr
         ),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
 
       if !Builtins.haskey(ret, "init")
@@ -428,12 +428,12 @@ module Yast
       deep_copy(ret)
     end
 
-    publish :function => :TableInit, :type => "void (map <string, any>, string)"
-    publish :function => :DisableTable, :type => "void (map <string, any>)"
-    publish :function => :EnableTable, :type => "void (map <string, any>)"
-    publish :function => :TableInitWrapper, :type => "void (string)"
-    publish :function => :TableHandleWrapper, :type => "symbol (string, map)"
-    publish :function => :CreateTableDescr, :type => "map <string, any> (map <string, any>, map <string, any>)"
+    publish function: :TableInit, type: "void (map <string, any>, string)"
+    publish function: :DisableTable, type: "void (map <string, any>)"
+    publish function: :EnableTable, type: "void (map <string, any>)"
+    publish function: :TableInitWrapper, type: "void (string)"
+    publish function: :TableHandleWrapper, type: "symbol (string, map)"
+    publish function: :CreateTableDescr, type: "map <string, any> (map <string, any>, map <string, any>)"
   end
 
   CWMTable = CWMTableClass.new
