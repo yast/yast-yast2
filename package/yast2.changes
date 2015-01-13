@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 13 13:43:40 UTC 2015 - cwh@suse.com
+
+- Use native Ruby implementation (IPAddr) for Yast::IP.
+- 3.1.116
+
+-------------------------------------------------------------------
 Wed Jan  7 10:55:13 UTC 2015 - jsrain@suse.cz
 
 - keep kernel cmdline options during live installation (bsc#793065)
