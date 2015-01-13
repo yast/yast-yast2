@@ -228,7 +228,7 @@ module Yast
         repomgmt = !Mode.installation
         # start the package selector
         ret = PackagesUI.RunPackageSelector(
-          { "enable_repo_mgr" => repomgmt, "mode" => :summaryMode }
+           "enable_repo_mgr" => repomgmt, "mode" => :summaryMode 
         )
 
         Builtins.y2internal("Package selector returned: %1", ret)
@@ -289,7 +289,7 @@ module Yast
       solver_flags = Pkg.GetSolverFlags
 
       # do not install recommended packages for already installed packages (bnc#445476)
-      Pkg.SetSolverFlags({ "ignoreAlreadyRecommended" => true })
+      Pkg.SetSolverFlags( "ignoreAlreadyRecommended" => true )
 
       ret = DoInstallAndRemoveInt(toinstall, toremove)
 

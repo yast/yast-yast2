@@ -211,7 +211,7 @@ module Yast
       TabInit(@current_tab_map)
       # allow a handler to enabled/disable widgets before the first real
       # UserInput takes place
-      UI.FakeUserInput({ "ID" => "_cwm_tab_wakeup" })
+      UI.FakeUserInput( "ID" => "_cwm_tab_wakeup" )
 
       nil
     end

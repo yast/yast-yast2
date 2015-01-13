@@ -293,7 +293,7 @@ module Yast
         HBox(
           # maybe more icon types could be used
           # "info, "warning", "error"
-          Icon.Image("warning", { "margin_right" => 2 }),
+          Icon.Image("warning",  "margin_right" => 2 ),
           Left(Label(message))
         ),
         VSpacing(0.1),
@@ -2591,7 +2591,7 @@ module Yast
         subprogress_type = @tick_progress ? :tick : :progress
         @progress_stack = Builtins.add(
           @progress_stack,
-          { "type" => subprogress_type, "task" => task }
+           "type" => subprogress_type, "task" => task 
         )
 
         if IsProgressPopup() &&

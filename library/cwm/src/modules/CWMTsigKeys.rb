@@ -125,7 +125,7 @@ module Yast
       Builtins.foreach(keys) do |k|
         @tsig_keys = Builtins.add(
           @tsig_keys,
-          { "key" => k, "filename" => filename }
+           "key" => k, "filename" => filename 
         )
       end
 

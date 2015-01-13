@@ -304,7 +304,7 @@ module Yast
       term(
         :IniAgent,
         filefullpath,
-        {
+        
           "options"  => [
             "global_values",
             "flat",
@@ -331,7 +331,7 @@ module Yast
             # e.g.: ## Name: service name
             { "match" => ["^##[ \t]*([a-zA-Z0-9_]+):[ \t]*(.*)[ \t]*$", "%s: %s"] }
           ]
-        }
+        
       )
     end
 

@@ -606,7 +606,7 @@ module Yast
     # Display specified file, list 100 lines
     # @param [String] file string filename of file with the log
     def DisplaySimple(file)
-      Display({ "file" => file })
+      Display( "file" => file )
 
       nil
     end
@@ -615,7 +615,7 @@ module Yast
     # @param [String] file string filename of file with the log
     # @param [String] grep string basic regular expression to be grepped in file
     def DisplayFiltered(file, grep)
-      Display({ "file" => file, "grep" => grep })
+      Display( "file" => file, "grep" => grep )
 
       nil
     end

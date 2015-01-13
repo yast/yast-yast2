@@ -960,11 +960,11 @@ module Yast
         Ops.set(
           doc,
           "listEntries",
-          {
+          
             "commands" => "command",
             "options"  => "option",
             "examples" => "example"
-          }
+          
         )
         #	    doc["cdataSections"] = [];
         Ops.set(
@@ -1273,7 +1273,7 @@ module Yast
     def Scan
       res = Convert.to_string(SCR.Read(path(".dev.tty")))
       return nil if res == nil
-      String.ParseOptions(res, { "separator" => " " })
+      String.ParseOptions(res,  "separator" => " " )
     end
 
     # Set prompt and read input from command line
@@ -1600,11 +1600,11 @@ module Yast
       else
         # disable Reports, we handle them on our own
         Report.Import(
-          {
+          
             "messages" => { "show" => false },
             "warnings" => { "show" => false },
             "errors"   => { "show" => false }
-          }
+          
         )
 
         # translators: progress message - command line interface ready

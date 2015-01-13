@@ -39,7 +39,7 @@ describe "Kernel" do
     describe "when modules.d directory is missing" do
       it "returns empty list of modules for modules.d directory" do
         expect(Yast::FileUtils).to receive(:Exists).with(Yast::KernelClass::MODULES_DIR).and_return(false)
-        expect(Yast::Kernel.modules_to_load).to eq({Yast::KernelClass::MODULES_CONF_FILE => []})
+        expect(Yast::Kernel.modules_to_load).to eq(Yast::KernelClass::MODULES_CONF_FILE => [])
       end
     end
   end

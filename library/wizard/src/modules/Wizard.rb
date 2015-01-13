@@ -1536,7 +1536,7 @@ module Yast
       else
         _Tree = Builtins.add(
           _Tree,
-          { "parent" => parent, "title" => title, "id" => id }
+           "parent" => parent, "title" => title, "id" => id 
         )
       end
       deep_copy(_Tree)
@@ -1665,7 +1665,7 @@ module Yast
       else
         _Menu = Builtins.add(
           _Menu,
-          { "type" => "Menu", "title" => title, "id" => id }
+           "type" => "Menu", "title" => title, "id" => id 
         )
       end
       deep_copy(_Menu)
@@ -1685,12 +1685,12 @@ module Yast
       else
         _Menu = Builtins.add(
           _Menu,
-          {
+          
             "type"   => "SubMenu",
             "parent" => parent_id,
             "title"  => title,
             "id"     => id
-          }
+          
         )
       end
       deep_copy(_Menu)
@@ -1710,12 +1710,12 @@ module Yast
       else
         _Menu = Builtins.add(
           _Menu,
-          {
+          
             "type"   => "MenuEntry",
             "parent" => parent_id,
             "title"  => title,
             "id"     => id
-          }
+          
         )
       end
       deep_copy(_Menu)

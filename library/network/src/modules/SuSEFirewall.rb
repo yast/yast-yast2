@@ -1619,7 +1619,7 @@ module Yast
       Builtins.foreach(dialup_interfaces) do |interface|
         known_interfaces = Builtins.add(
           known_interfaces,
-          {
+          
             "id"   => interface,
             "type" => "dialup",
             # using function to get name
@@ -1628,14 +1628,14 @@ module Yast
               "NAME"
             ),
             "zone" => GetZoneOfInterface(interface)
-          }
+          
         )
       end
 
       Builtins.foreach(non_dialup_interfaces) do |interface|
         known_interfaces = Builtins.add(
           known_interfaces,
-          {
+          
             "id"   => interface,
             # using function to get name
             "name" => NetworkInterfaces.GetValue(
@@ -1643,7 +1643,7 @@ module Yast
               "NAME"
             ),
             "zone" => GetZoneOfInterface(interface)
-          }
+          
         )
       end
 
@@ -3129,7 +3129,7 @@ module Yast
         end
         list_of_rules = Builtins.add(
           list_of_rules,
-          {
+          
             "source_net" => Ops.get(fw_rul, 0, ""),
             "forward_to" => Ops.get(fw_rul, 1, ""),
             "protocol"   => Builtins.tolower(Ops.get(fw_rul, 2, "")),
@@ -3139,7 +3139,7 @@ module Yast
               Ops.get(fw_rul, 4, Ops.get(fw_rul, 3, ""))
             ),
             "req_ip"     => Builtins.tolower(Ops.get(fw_rul, 5, ""))
-          }
+          
         )
       end
 

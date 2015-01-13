@@ -87,7 +87,7 @@ module Yast
     def PushSettings
       @settings_stack = Builtins.prepend(
         @settings_stack,
-        { "widgets" => @current_dialog_widgets }
+         "widgets" => @current_dialog_widgets 
       )
 
       nil
@@ -783,7 +783,7 @@ module Yast
 
       # allow a handler to enable/disable widgets before the first real
       # UserInput takes place
-      UI.FakeUserInput({ "ID" => "_cwm_wakeup" })
+      UI.FakeUserInput( "ID" => "_cwm_wakeup" )
 
       ret = nil
       save_exits = [:next, :ok]
@@ -960,7 +960,7 @@ module Yast
       contents = deep_copy(contents)
       fallback = deep_copy(fallback)
       ShowAndRun(
-        {
+        
           "widget_names"       => widget_names,
           "widget_descr"       => widget_descr,
           "contents"           => contents,
@@ -968,7 +968,7 @@ module Yast
           "back_button"        => back_button,
           "next_button"        => next_button,
           "fallback_functions" => fallback
-        }
+        
       )
     end
 

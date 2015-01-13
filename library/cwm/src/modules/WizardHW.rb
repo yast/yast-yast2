@@ -337,7 +337,7 @@ module Yast
 
       # now run the dialog via CWM with handler set
       CWM.ShowAndRun(
-        {
+        
           "widget_descr" => widget_descr,
           "widget_names" => ["wizard_hw"],
           "contents"     => VBox("wizard_hw"),
@@ -351,7 +351,7 @@ module Yast
           "next_button"  => Ops.get_string(settings, "next_button") do
             Label.NextButton
           end
-        }
+        
       )
     end
 
@@ -386,7 +386,7 @@ module Yast
       # now create the dialog
       widget_descr = CreateWidget(headers, actions)
       Ops.set(widget_descr, "help", help) # to suppress error in log
-      w = CWM.CreateWidgets(["wizard_hw"], { "wizard_hw" => widget_descr })
+      w = CWM.CreateWidgets(["wizard_hw"],  "wizard_hw" => widget_descr )
       contents = Ops.get_term(w, [0, "widget"], VBox())
       Wizard.SetContents(title, contents, help, false, true)
 

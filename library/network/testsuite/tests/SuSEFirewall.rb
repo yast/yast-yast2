@@ -401,7 +401,7 @@ module Yast
       ], nil)
       TEST(lambda do
         SuSEFirewall.SetBroadcastAllowedPorts(
-          { "INT" => [], "DMZ" => ["5", "3", "1"], "EXT" => ["22", "33", "44"] }
+           "INT" => [], "DMZ" => ["5", "3", "1"], "EXT" => ["22", "33", "44"] 
         )
       end, [
         @READ,
@@ -427,7 +427,7 @@ module Yast
       Ops.set(
         @EXECUTE_OK,
         ["target", "bash_output"],
-        { "exit" => 0, "stdout" => "Some warnings about IPv6", "stderr" => "" }
+         "exit" => 0, "stdout" => "Some warnings about IPv6", "stderr" => "" 
       )
 
       @EXECUTE_ERR = deep_copy(@EXECUTE)
@@ -437,11 +437,11 @@ module Yast
       Ops.set(
         @EXECUTE_ERR,
         ["target", "bash_output"],
-        {
+        
           "exit"   => 35,
           "stdout" => "Some warnings about IPv6",
           "stderr" => "Some errors!"
-        }
+        
       )
 
       DUMP("")

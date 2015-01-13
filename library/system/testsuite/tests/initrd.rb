@@ -89,7 +89,7 @@ module Yast
       DUMP("Importing with filtered module")
       TEST(lambda do
         Initrd.Import(
-          { "list" => ["ne2k", "xfs_dmapi", "xfs_support", "lvmmod"] }
+           "list" => ["ne2k", "xfs_dmapi", "xfs_support", "lvmmod"] 
         )
       end, [
         @READ,
@@ -103,7 +103,7 @@ module Yast
       DUMP("Importing with filtered module")
       TEST(lambda do
         Initrd.Import(
-          { "list" => ["ne2k", "xfs_dmapi", "xfs_support", "lvmmod"] }
+           "list" => ["ne2k", "xfs_dmapi", "xfs_support", "lvmmod"] 
         )
       end, [
         @READ,

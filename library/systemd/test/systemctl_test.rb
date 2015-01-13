@@ -10,7 +10,7 @@ module Yast
     describe ".execute" do
       it "returns a struct with command results" do
         expect(SCR).to receive(:Execute).and_return(
-          {'exit'=>1, 'stderr'=>'', 'stdout'=>''}
+          'exit'=>1, 'stderr'=>'', 'stdout'=>''
         )
         result = Systemctl.execute('enable cups.service')
         expect(result).to be_a(OpenStruct)

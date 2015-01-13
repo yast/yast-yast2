@@ -47,10 +47,10 @@ describe Yast::SuSEFirewallServices do
 
   describe "#service_details" do
     it "returns non-empty service definition" do
-      Yast::SuSEFirewallServices.stub(:all_services).and_return({
-                                                                  "service:dns-server"  => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge({"tcp_ports" => ["a", "b"]}),
-                                                                  "service:dhcp-server" => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge({"udp_ports" => ["x", "y"]}),
-                                                                })
+      Yast::SuSEFirewallServices.stub(:all_services).and_return(
+                                                                  "service:dns-server"  => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge("tcp_ports" => ["a", "b"]),
+                                                                  "service:dhcp-server" => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge("udp_ports" => ["x", "y"]),
+                                                                )
       expect(Yast::SuSEFirewallServices.service_details("service:dns-server")).not_to be_nil
       expect(Yast::SuSEFirewallServices.service_details("service:dns-server")["tcp_ports"]).to eq(["a", "b"])
     end

@@ -758,7 +758,7 @@ module Yast
       ret = Convert.convert(
         Builtins.union(
           settings,
-          {
+          
             "widget"            => :custom,
             "custom_widget"     => widget,
             "help"              => help,
@@ -779,7 +779,7 @@ module Yast
               method(:InterfacesValidateWrapper),
               "boolean (string, map)"
             )
-          }
+          
         ),
         from: "map",
         to:   "map <string, any>"
@@ -796,7 +796,7 @@ module Yast
       # settings stack must be created in CWM::Run
       w = CWM.CreateWidgets(
         ["firewall_ifaces"],
-        { "firewall_ifaces" => CreateInterfacesWidget(settings) }
+         "firewall_ifaces" => CreateInterfacesWidget(settings) 
       )
       help = CWM.MergeHelps(w)
       contents = VBox(
