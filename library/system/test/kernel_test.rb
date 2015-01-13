@@ -21,9 +21,9 @@ describe "Kernel" do
     stub_const("Yast::KernelClass::MODULES_DIR", DEFAULT_DATA_DIR)
     @default_modules = {
       Yast::KernelClass::MODULES_CONF_FILE => [],
-      "MODULES_LOADED_ON_BOOT.conf"=>["module-a", "module-b"],
-      "user-added-1.conf" => ["user-module-1", "user-module-2", "user-module-3"],
-      "user-added-2.conf"=>["user-module-4"],
+      "MODULES_LOADED_ON_BOOT.conf"        => ["module-a", "module-b"],
+      "user-added-1.conf"                  => ["user-module-1", "user-module-2", "user-module-3"],
+      "user-added-2.conf"                  => ["user-module-4"],
     }
     Yast::Kernel.reset_modules_to_load
     allow(Yast::FileUtils).to receive(:Exists).and_return(true)

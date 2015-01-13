@@ -16,33 +16,33 @@ module Yast
 
       DEVICE_DESCS = [
         { 
-          name: "",
-          alias_id: "",
+          name:          "",
+          alias_id:      "",
           type_by_regex: ""
         },
         {
-          name: "eth0",
-          alias_id: "",
+          name:          "eth0",
+          alias_id:      "",
           type_by_regex: "eth"
         },
         {
-          name: "eth-pcmcia-0",
-          alias_id: "",
+          name:          "eth-pcmcia-0",
+          alias_id:      "",
           type_by_regex: "eth"
         },
         {
-          name: "enp0s3",
-          alias_id: "",
+          name:          "enp0s3",
+          alias_id:      "",
           type_by_regex: "enp"
         },
         {
-          name: "eth0#1",
-          alias_id: "1",
+          name:          "eth0#1",
+          alias_id:      "1",
           type_by_regex: "eth"
         },
         {
-          name: "enp0s3#0",
-          alias_id: "0",
+          name:          "enp0s3#0",
+          alias_id:      "0",
           type_by_regex: "enp"
         }
       ]

@@ -9,23 +9,23 @@ describe "HwDetection" do
     # 16GB
     @ramsize = 16*1024*1024*1024
     @memory = {
-      "bus" => "None",
-      "bus_hwcfg" => "none",
-      "class_id" => 257,
-      "model" => "Main Memory",
+      "bus"            => "None",
+      "bus_hwcfg"      => "none",
+      "class_id"       => 257,
+      "model"          => "Main Memory",
       "old_unique_key" => "4srm.CxwsZFjVASF",
-      "resource" =>  {
-        "mem" => [{"active" => true, "length" => 16815341568, "start" => 0}],
+      "resource"       => {
+        "mem"      => [{"active" => true, "length" => 16815341568, "start" => 0}],
         "phys_mem" => [{"range" => @ramsize}]
       },
-      "sub_class_id" => 2,
-      "unique_key" => "rdCR.CxwsZFjVASF"
+      "sub_class_id"   => 2,
+      "unique_key"     => "rdCR.CxwsZFjVASF"
     }
     @non_memory = {
-      "class_id" => 42,
+      "class_id"     => 42,
       "sub_class_id" => 42,
-      "resource" =>  {
-        "mem" => [{"active" => true, "length" => 16815341568, "start" => 0}],
+      "resource"     => {
+        "mem"      => [{"active" => true, "length" => 16815341568, "start" => 0}],
         "phys_mem" => [{"range" => @ramsize}]
       }
     }

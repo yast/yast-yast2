@@ -103,9 +103,9 @@ module Yast
             "STARTMODE" => "manual"
           },
           "escon5" => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
-          "eth5" =>
+          "eth5"   =>
             # "IPADDR_x":"1.1.1.1", "NETMASK_x":"0.0.0.0"
-            { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
+                      { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
           "eth6"   => {
             "BOOTPROTO" => "static",
             "IPADDR"    => "1.2.3.4",
@@ -123,9 +123,9 @@ module Yast
           "hsi5"   => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
           "ippp5"  => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
           "iucv5"  => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
-          "lo" =>
+          "lo"     =>
             # "IPADDR_1":"7.7.7.7"
-            {
+                      {
               "BROADCAST" => "127.255.255.255",
               "IPADDR"    => "127.0.0.1",
               "NETMASK"   => "255.0.0.0",
@@ -150,11 +150,11 @@ module Yast
       @EXECUTE = {
         "target" => {
           "bash_output" => {
-            "exit" => 0,
+            "exit"   => 0,
             "stdout" => "",
             "stderr" => "",
           },
-          "bash" => 0
+          "bash"        => 0
         }
       }
 
