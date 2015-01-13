@@ -30,9 +30,37 @@
 #
 # $Id$
 require "yast"
+require 'uri'
+
+module URI
+  class SMB < Generic
+#    COMPONENT = [
+#      :scheme,
+#      :userinfo, :host, :port,
+#      :path,
+#      :domain
+#    ].freeze
+
+    @domain = nil
+
+    def domain
+      self.query[/workgroup=(.*)/,1]
+    end
+
+    def domain=(domain)
+      new_query = URI.decode_www_form(self.query) << ["workgroup", domain]
+      self.query = URI.encode_www_form(new_query)
+    end
+
+  end
+  @@schemes['SMB'] = SMB
+  @@schemes['SAMBA'] = SMB
+end
 
 module Yast
   class URLClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -121,7 +149,7 @@ module Yast
         # replace both upper and lower case escape sequences
         _in = String.Replace(_in, Builtins.tolower(src), tgt)
         _in = String.Replace(_in, Builtins.toupper(src), tgt)
-      end 
+      end
 
 
       # replace % at the end
@@ -152,7 +180,7 @@ module Yast
       # replace the other reserved characters
       Builtins.foreach(transform) do |src, tgt|
         ret = Builtins.mergestring(Builtins.splitstring(ret, src), tgt)
-      end 
+      end
 
 
       ret
@@ -173,114 +201,33 @@ module Yast
     #         "fragment": "part"
     #     ]
     def Parse(url)
-      Builtins.y2debug("url=%1", url)
+      log.debug("url: #{url}")
 
       # We don't parse empty URLs
-      return {} if url == nil || Ops.less_than(Builtins.size(url), 1)
+      return {} if url == nil || url.empty?
 
-      # Extract basic URL parts: scheme://host/path?question#part
-      rawtokens = Builtins.regexptokenize(
-        url,
-        "^" +
-          # 0,1: http://
-          "(([^:/?#]+):[/]{0,2})?" +
-          # 2: user:pass@www.suse.cz:23
-          "([^/?#]*)?" +
-          # 3: /some/path
-          "([^?#]*)?" +
-          # 4,5: ?question
-          "(\\?([^#]*))?" +
-          # 6,7: #fragment
-          "(#(.*))?"
-      )
-      Builtins.y2debug("rawtokens=%1", rawtokens)
-      tokens = {}
-      Ops.set(tokens, "scheme", Ops.get_string(rawtokens, 1, ""))
-      pth = Ops.get_string(rawtokens, 3, "")
-      if Ops.get_string(tokens, "scheme", "") == "ftp"
-        if Builtins.substring(pth, 0, 4) == "/%2f"
-          pth = Ops.add("/", Builtins.substring(pth, 4))
-        elsif pth != ""
-          pth = Builtins.substring(pth, 1)
-        end
-      end
-      Ops.set(tokens, "path", URLRecode.UnEscape(pth))
-      Ops.set(
-        tokens,
-        "query",
-        URLRecode.UnEscape(Ops.get_string(rawtokens, 5, ""))
-      )
-      Ops.set(
-        tokens,
-        "fragment",
-        URLRecode.UnEscape(Ops.get_string(rawtokens, 7, ""))
-      )
+      uri = URI(url)
 
-      # Extract username:pass@host:port
-      userpass = Builtins.regexptokenize(
-        Ops.get_string(rawtokens, 2, ""),
-        "^" +
-          # 0,1,2,3: user:pass@
-          "(([^@:]+)(:([^@:]+))?@)?" +
-          # 4,5,6,7: hostname|[xxx]
-          "(([^:@]+))" +
-          # FIXME "(([^:@]+)|(\\[([^]]+)\\]))" +
-          # 8,9: port
-          "(:([^:@]+))?"
-      )
-      Builtins.y2debug("userpass=%1", userpass)
+      tokens = {
+        "scheme"  => uri.scheme,
+        "host"    => uri.hostname,
+        "port"    => uri.port.to_s,
+        "path"    => uri.path,
+        "user"    => uri.user,
+        "pass"    => uri.password,
+        "query"   => uri.query,
+        "fragment"=> uri.fragment
+      }
 
-      Ops.set(
-        tokens,
-        "user",
-        URLRecode.UnEscape(Ops.get_string(userpass, 1, ""))
-      )
-      Ops.set(
-        tokens,
-        "pass",
-        URLRecode.UnEscape(Ops.get_string(userpass, 3, ""))
-      )
-      Ops.set(tokens, "port", Ops.get_string(userpass, 7, ""))
-
-      if Ops.get_string(userpass, 5, "") != ""
-        Ops.set(tokens, "host", Ops.get_string(userpass, 5, ""))
-      else
-        Ops.set(tokens, "host", Ops.get_string(userpass, 7, ""))
+      if defined? uri.domain
+        tokens["domain"] = uri.domain
       end
 
-      hostport6 = Builtins.substring(
-        Ops.get_string(rawtokens, 2, ""),
-        Builtins.size(Ops.get_string(userpass, 0, ""))
-      )
-      Builtins.y2debug("hostport6: %1", hostport6)
-
-      # check if there is an IPv6 address
-      host6 = Builtins.regexpsub(hostport6, "^\\[(.*)\\]", "\\1")
-
-      if host6 != nil && host6 != ""
-        Builtins.y2milestone("IPv6 host detected: %1", host6)
-        Ops.set(tokens, "host", host6)
-        port6 = Builtins.regexpsub(hostport6, "^\\[.*\\]:(.*)", "\\1")
-        Builtins.y2debug("port: %1", port6)
-        Ops.set(tokens, "port", port6 != nil ? port6 : "")
-      end
-
-      # some exceptions for samba scheme (there is optional extra option "domain")
-      if Ops.get_string(tokens, "scheme", "") == "samba" ||
-          Ops.get_string(tokens, "scheme", "") == "smb"
-        # Note: CUPS uses different URL syntax for Samba printers:
-        #     smb://username:password@workgroup/server/printer
-        # Fortunately yast2-printer does not use URL.ycp, so we can safely support libzypp syntax only:
-        #     smb://username:passwd@servername/share/path/on/the/share?workgroup=mygroup
-
-        options = MakeMapFromParams(Ops.get_string(tokens, "query", ""))
-
-        if Builtins.haskey(options, "workgroup")
-          Ops.set(tokens, "domain", Ops.get(options, "workgroup", ""))
-        end
-      end
-      Builtins.y2debug("tokens=%1", tokens)
-      deep_copy(tokens)
+      Hash[
+           tokens.to_a.map{ |k,v|
+             [k,v.nil? ? "" : v]
+           }
+          ]
     end
 
     # Check URL
@@ -339,128 +286,37 @@ module Yast
     # @see RFC 2396 (updated by RFC 2732)
     # @see also perl-URI: URI(3)
     def Build(tokens)
-      tokens = deep_copy(tokens)
-      url = ""
-      userpass = ""
-
       Builtins.y2debug("URL::Build(): input: %1", tokens)
 
-      if Builtins.regexpmatch(
-          Ops.get_string(tokens, "scheme", ""),
-          "^[[:alpha:]]*$"
-        )
-        # if (tokens["scheme"]:"" == "samba") url="smb";
-        # 		else
-        url = Ops.get_string(tokens, "scheme", "")
-      end
-      Builtins.y2debug("url: %1", url)
-      if Ops.get_string(tokens, "user", "") != ""
-        userpass = URLRecode.EscapePassword(Ops.get_string(tokens, "user", ""))
-        Builtins.y2milestone(
-          "Escaped username '%1' => '%2'",
-          Ops.get_string(tokens, "user", ""),
-          userpass
-        )
-      end
-      if Builtins.size(userpass) != 0 &&
-          Ops.get_string(tokens, "pass", "") != ""
-        userpass = Builtins.sformat(
-          "%1:%2",
-          userpass,
-          URLRecode.EscapePassword(Ops.get_string(tokens, "pass", ""))
-        )
-      end
-      if Ops.greater_than(Builtins.size(userpass), 0)
-        userpass = Ops.add(userpass, "@")
-      end
+      uri = URI(tokens["host"])
 
-      url = Builtins.sformat("%1://%2", url, userpass)
-      Builtins.y2debug("url: %1", url)
-
-      if Hostname.CheckFQ(Ops.get_string(tokens, "host", "")) ||
-          IP.Check(Ops.get_string(tokens, "host", ""))
-        # enclose an IPv6 address in square brackets
-        url = IP.Check6(Ops.get_string(tokens, "host", "")) ?
-          Builtins.sformat("%1[%2]", url, Ops.get_string(tokens, "host", "")) :
-          Builtins.sformat("%1%2", url, Ops.get_string(tokens, "host", ""))
-      end
-      Builtins.y2debug("url: %1", url)
-
-      if Builtins.regexpmatch(Ops.get_string(tokens, "port", ""), "^[0-9]*$") &&
-          Ops.get_string(tokens, "port", "") != ""
-        url = Builtins.sformat("%1:%2", url, Ops.get_string(tokens, "port", ""))
-      end
-      Builtins.y2debug("url: %1", url)
-
-      # path is not empty and doesn't start with "/"
-      if Ops.get_string(tokens, "path", "") != "" &&
-          !Builtins.regexpmatch(Ops.get_string(tokens, "path", ""), "^/")
-        url = Builtins.sformat(
-          "%1/%2",
-          url,
-          URLRecode.EscapePath(Ops.get_string(tokens, "path", ""))
-        )
-      # patch is not empty and starts with "/"
-      elsif Ops.get_string(tokens, "path", "") != "" &&
-          Builtins.regexpmatch(Ops.get_string(tokens, "path", ""), "^/")
-        while Builtins.substring(Ops.get_string(tokens, "path", ""), 0, 2) == "//"
-          Ops.set(
-            tokens,
-            "path",
-            Builtins.substring(Ops.get_string(tokens, "path", ""), 1)
-          )
+      tokens.each do |k,v|
+        if k == "pass"
+          k = "password"
+        elsif k == "port"
+          v = v.to_i
         end
-        if Ops.get_string(tokens, "scheme", "") == "ftp"
-          url = Builtins.sformat(
-            "%1/%%2f%2",
-            url,
-            Builtins.substring(
-              URLRecode.EscapePath(Ops.get_string(tokens, "path", "")),
-              1
-            )
-          )
-        else
-          url = Builtins.sformat(
-            "%1%2",
-            url,
-            URLRecode.EscapePath(Ops.get_string(tokens, "path", ""))
-          )
-        end
+
+        uri.method(k + "=").call(v)
       end
+
+      url = uri.to_s
+
+      #if Ops.get_string(tokens, "scheme", "") == "smb" &&
+      #    Ops.greater_than(
+      #      Builtins.size(Ops.get_string(tokens, "domain", "")),
+      #      0
+      #    ) &&
+      #    Ops.get(query_map, "workgroup", "") !=
+      #      Ops.get_string(tokens, "domain", "")
+      #  Ops.set(query_map, "workgroup", Ops.get_string(tokens, "domain", ""))
+      #
+      #  Ops.set(tokens, "query", MakeParamsFromMap(query_map))
+      #end
+
       Builtins.y2debug("url: %1", url)
 
-
-      query_map = MakeMapFromParams(Ops.get_string(tokens, "query", ""))
-
-      if Ops.get_string(tokens, "scheme", "") == "smb" &&
-          Ops.greater_than(
-            Builtins.size(Ops.get_string(tokens, "domain", "")),
-            0
-          ) &&
-          Ops.get(query_map, "workgroup", "") !=
-            Ops.get_string(tokens, "domain", "")
-        Ops.set(query_map, "workgroup", Ops.get_string(tokens, "domain", ""))
-
-        Ops.set(tokens, "query", MakeParamsFromMap(query_map))
-      end
-
-      if Ops.get_string(tokens, "query", "") != ""
-        url = Builtins.sformat(
-          "%1?%2",
-          url,
-          URLRecode.EscapeQuery(Ops.get_string(tokens, "query", ""))
-        )
-      end
-
-      if Ops.get_string(tokens, "fragment", "") != ""
-        url = Builtins.sformat(
-          "%1#%2",
-          url,
-          URLRecode.EscapePassword(Ops.get_string(tokens, "fragment", ""))
-        )
-      end
-      Builtins.y2debug("url: %1", url)
-
+      # maybe obsolete:
       if !Check(url)
         Builtins.y2error("Invalid URL: %1", url)
         return ""
@@ -469,6 +325,10 @@ module Yast
       Builtins.y2debug("URL::Build(): result: %1", url)
 
       url
+    rescue Exception => e
+      Builtins.y2error("Could not build URL: %1", e.message)
+      puts e.message
+      return ""
     end
 
     #  * Format URL - truncate the middle part of the directory to fit to the requested lenght.
@@ -540,7 +400,7 @@ module Yast
       # Error
       if params == nil
         Builtins.y2error("Erroneous (nil) params!")
-        return nil 
+        return nil
         # Empty
       elsif params == ""
         return {}
