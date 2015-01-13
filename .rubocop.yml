@@ -62,3 +62,15 @@ Style/VariableName:
 # do not work well with new rubocop
 Style/TrivialAccessors:
   Enabled: false
+
+# it is part of API, so do not change it now
+Style/AccessorMethodName:
+  Enabled: false
+
+# it is part of API, so do not change it now
+Style/PredicateName:
+  Enabled: false
+
+# problem is UI_ID which looks like constant module
+Style/ClassAndModuleCamelCase:
+  Enabled: false
