@@ -54,17 +54,19 @@ module Yast
 
       if PackageKit.IsRunning
         # ask to send quit signal to PackageKit
-        msg = @packagekit_asked ?
-          _(
-            "PackageKit is still running (probably busy).\nAsk PackageKit to quit again?"
-          ) :
-          _(
-            "PackageKit is blocking software management.\n" +
-              "This happens when the updater applet or another software management\n" +
-              "application is running.\n" +
-              "\n" +
-              "Ask PackageKit to quit?"
-          )
+        msg = if @packagekit_asked
+                _(
+                  "PackageKit is still running (probably busy).\nAsk PackageKit to quit again?"
+                )
+              else
+                _(
+                  "PackageKit is blocking software management.\n" \
+                  "This happens when the updater applet or another software management\n" \
+                  "application is running.\n" \
+                  "\n" \
+                  "Ask PackageKit to quit?"
+                )
+              end
 
         @packagekit_asked = true
 
@@ -83,7 +85,7 @@ module Yast
     # @return true if we can continue
     def Check
       # we already have a lock
-      return @have_lock if @have_lock != nil
+      return @have_lock if !@have_lock.nil?
 
       # just to allow 'Retry', see more in bug #280383
       try_again = true
@@ -132,7 +134,7 @@ module Yast
     # @return [Hash] with lock status and user reaction
     def Connect(show_continue_button)
       # we already have a lock
-      if @have_lock != nil
+      if !@have_lock.nil?
         return { "connected" => @have_lock, "aborted" => @aborted }
       end
 
@@ -159,8 +161,8 @@ module Yast
                 Ops.add(Pkg.LastError, "\n\n"),
                 # TRANSLATORS: an error message with question
                 _(
-                  "Would you like to retry accessing the software manager,\n" +
-                    "continue without having access to the software management,\n" +
+                  "Would you like to retry accessing the software manager,\n" \
+                    "continue without having access to the software management,\n" \
                     "or abort?\n"
                 )
               ),
@@ -210,8 +212,8 @@ module Yast
       deep_copy(ret)
     end
 
-    publish :function => :Check, :type => "boolean ()"
-    publish :function => :Connect, :type => "map <string, any> (boolean)"
+    publish function: :Check, type: "boolean ()"
+    publish function: :Connect, type: "map <string, any> (boolean)"
   end
 
   PackageLock = PackageLockClass.new

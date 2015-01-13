@@ -21,12 +21,7 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	enumtype.ycp
-# Package:	yast2
-# Summary:	enumerated type generic validator test
-# Author:	Stanislav Visnovsky <visnov@suse.cz>
-#
-# $Id$
+
 module Yast
   class EnumtypeClient < Client
     def main
@@ -36,9 +31,9 @@ module Yast
 
       Yast.import "TypeRepository"
 
-      TEST(lambda { TypeRepository.enum_validator(["a", "b", "c"], "a") }, [], nil)
-      TEST(lambda { TypeRepository.enum_validator(["a", "b", "c"], "x") }, [], nil)
-      TEST(lambda { TypeRepository.enum_validator([], "ahoj") }, [], nil) 
+      TEST(->() { TypeRepository.enum_validator(["a", "b", "c"], "a") }, [], nil)
+      TEST(->() { TypeRepository.enum_validator(["a", "b", "c"], "x") }, [], nil)
+      TEST(->() { TypeRepository.enum_validator([], "ahoj") }, [], nil)
 
       # EOF
 

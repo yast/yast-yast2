@@ -24,7 +24,6 @@
 module Yast
   class ProgressMasterPartlyhiddenClient < Client
     def main
-
       # call progress_client1 and progress_client2
       # progress_client2 call is partly hidden - the detailed progress of progress_client2 is hidden from UI
 

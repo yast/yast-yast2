@@ -39,7 +39,6 @@ module Yast
       Yast.import "SignatureCheckDialogs"
       Yast.import "Pkg"
 
-
       # Default return when signatures shouldn't be checked
       # @see #SignatureCheckDialogs::CheckSignaturesInYaST()
       @default_return_unchecked = true
@@ -67,15 +66,15 @@ module Yast
 
       # Show the popup?
       if SignatureCheckDialogs.GetShowThisPopup(
-          dont_show_dialog_ident,
-          filename
+        dont_show_dialog_ident,
+        filename
         )
         return SignatureCheckDialogs.UseUnsignedItem(
           :file,
           filename,
           dont_show_dialog_ident,
           repo_id
-        ) 
+        )
         # Return the default value entered by user
       else
         return SignatureCheckDialogs.GetDefaultDialogReturn(
@@ -84,7 +83,6 @@ module Yast
         )
       end
     end
-
 
     # Name of the callback handler function. Required callback prototype is
     # boolean(string filename) The callback function should ask user whether
@@ -105,14 +103,14 @@ module Yast
 
       # Show the popup?
       if SignatureCheckDialogs.GetShowThisPopup(
-          dont_show_dialog_ident,
-          filename
+        dont_show_dialog_ident,
+        filename
         )
         return SignatureCheckDialogs.UseItemWithNoChecksum(
           :file,
           filename,
           dont_show_dialog_ident
-        ) 
+        )
         # Return the default value entered by user
       else
         return SignatureCheckDialogs.GetDefaultDialogReturn(
@@ -121,7 +119,6 @@ module Yast
         )
       end
     end
-
 
     # Callback handler function. Required callback prototype is <code>boolean(string filename, string requested_digest, string found_digest)</code>. The callback function should ask user whether the wrong digest can be accepted, returned true value means to accept the file.
     # @return [Boolean]
@@ -136,8 +133,8 @@ module Yast
 
       # Show the popup?
       if SignatureCheckDialogs.GetShowThisPopup(
-          dont_show_dialog_ident,
-          filename
+        dont_show_dialog_ident,
+        filename
         )
         return SignatureCheckDialogs.UseFileWithWrongDigest(
           filename,
@@ -168,8 +165,8 @@ module Yast
 
       # Show the popup?
       if SignatureCheckDialogs.GetShowThisPopup(
-          dont_show_dialog_ident,
-          filename
+        dont_show_dialog_ident,
+        filename
         )
         return SignatureCheckDialogs.UseFileWithUnknownDigest(
           filename,
@@ -184,7 +181,6 @@ module Yast
         )
       end
     end
-
 
     # Name of the callback handler function. Required callback prototype is
     # boolean(string filename, string keyid, string keyname). The callback
@@ -206,8 +202,8 @@ module Yast
 
       # Show the popup?
       if SignatureCheckDialogs.GetShowThisPopup(
-          dont_show_dialog_ident,
-          filename
+        dont_show_dialog_ident,
+        filename
         )
         # Unknown keyname == "Unknown Key"
         return SignatureCheckDialogs.ItemSignedWithUnknownSignature(
@@ -216,7 +212,7 @@ module Yast
           keyid,
           dont_show_dialog_ident,
           repoid
-        ) 
+        )
         # Return the default value entered by user
       else
         return SignatureCheckDialogs.GetDefaultDialogReturn(
@@ -311,16 +307,16 @@ module Yast
       nil
     end
 
-    publish :function => :AcceptUnsignedFile, :type => "boolean (string, integer)"
-    publish :function => :AcceptFileWithoutChecksum, :type => "boolean (string)"
-    publish :function => :AcceptWrongDigest, :type => "boolean (string, string, string)"
-    publish :function => :AcceptUnknownDigest, :type => "boolean (string, string)"
-    publish :function => :AcceptUnknownGpgKey, :type => "boolean (string, string, integer)"
-    publish :function => :ImportGpgKey, :type => "boolean (map <string, any>, integer)"
-    publish :function => :import_gpg_key_or_disable, :type => "boolean (map <string, any>, integer)"
-    publish :function => :AcceptVerificationFailed, :type => "boolean (string, map <string, any>, integer)"
-    publish :function => :TrustedKeyAdded, :type => "void (map <string, any>)"
-    publish :function => :TrustedKeyRemoved, :type => "void (map <string, any>)"
+    publish function: :AcceptUnsignedFile, type: "boolean (string, integer)"
+    publish function: :AcceptFileWithoutChecksum, type: "boolean (string)"
+    publish function: :AcceptWrongDigest, type: "boolean (string, string, string)"
+    publish function: :AcceptUnknownDigest, type: "boolean (string, string)"
+    publish function: :AcceptUnknownGpgKey, type: "boolean (string, string, integer)"
+    publish function: :ImportGpgKey, type: "boolean (map <string, any>, integer)"
+    publish function: :import_gpg_key_or_disable, type: "boolean (map <string, any>, integer)"
+    publish function: :AcceptVerificationFailed, type: "boolean (string, map <string, any>, integer)"
+    publish function: :TrustedKeyAdded, type: "void (map <string, any>)"
+    publish function: :TrustedKeyRemoved, type: "void (map <string, any>)"
   end
 
   SignatureCheckCallbacks = SignatureCheckCallbacksClass.new

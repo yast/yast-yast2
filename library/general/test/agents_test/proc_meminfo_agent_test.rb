@@ -4,7 +4,6 @@ require_relative "../test_helper"
 require "yast"
 
 describe ".proc.meminfo" do
-
   AGENT_PATH = Yast::Path.new(".proc.meminfo")
   before :each do
     root = File.join(File.dirname(__FILE__), "test_root")
@@ -25,12 +24,12 @@ describe ".proc.meminfo" do
 
     it "returned hash contain memtotal key" do
       content = Yast::SCR.Read(AGENT_PATH)
-      expect(content).to include("memtotal" => 1021032)
+      expect(content).to include("memtotal" => 1_021_032)
     end
 
     it "returned hash contain memfree key" do
       content = Yast::SCR.Read(AGENT_PATH)
-      expect(content).to include("memfree" => 83408)
+      expect(content).to include("memfree" => 83_408)
     end
   end
 end

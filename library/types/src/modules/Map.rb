@@ -43,8 +43,8 @@ module Yast
     # @return a list of all keys from the map
     def Keys(m)
       m = deep_copy(m)
-      return [] if m == nil || m == {}
-      Builtins.maplist(m) { |var, val| var }
+      return [] if m.nil? || m == {}
+      Builtins.maplist(m) { |var, _val| var }
     end
 
     # Return all values from the map
@@ -52,8 +52,8 @@ module Yast
     # @return a list of all values from the map
     def Values(m)
       m = deep_copy(m)
-      return [] if m == nil || m == {}
-      Builtins.maplist(m) { |var, val| val }
+      return [] if m.nil? || m == {}
+      Builtins.maplist(m) { |_var, val| val }
     end
 
     # Switch map keys to lower case
@@ -62,7 +62,7 @@ module Yast
     def KeysToLower(m)
       m = deep_copy(m)
       newk = nil
-      return {} if m == nil
+      return {} if m.nil?
       Builtins.mapmap(m) do |k, v|
         newk = Builtins.tolower(k)
         { newk => v }
@@ -75,7 +75,7 @@ module Yast
     def KeysToUpper(m)
       m = deep_copy(m)
       newk = nil
-      return {} if m == nil
+      return {} if m.nil?
       Builtins.mapmap(m) do |k, v|
         newk = Builtins.toupper(k)
         { newk => v }
@@ -89,11 +89,11 @@ module Yast
     def CheckKeys(m, keys)
       m = deep_copy(m)
       keys = deep_copy(keys)
-      return false if m == nil || keys == nil
+      return false if m.nil? || keys.nil?
 
       ret = true
       Builtins.foreach(keys) do |k|
-        if k == nil || !Builtins.haskey(m, k)
+        if k.nil? || !Builtins.haskey(m, k)
           Builtins.y2error("Missing key: %1", k)
           ret = false
         end
@@ -107,7 +107,7 @@ module Yast
     # @return converted map
     def ToString(m)
       m = deep_copy(m)
-      return "" if m == nil
+      return "" if m.nil?
 
       ret = ""
       Builtins.foreach(m) do |var, val|
@@ -120,7 +120,7 @@ module Yast
     # @param [String] s string to be converted
     # @return converted string
     def FromString(s)
-      return {} if s == nil
+      return {} if s.nil?
 
       ret = {}
       Builtins.foreach(Builtins.splitstring(s, " ")) do |vals|
@@ -139,13 +139,13 @@ module Yast
       deep_copy(ret)
     end
 
-    publish :function => :Keys, :type => "list (map)"
-    publish :function => :Values, :type => "list (map)"
-    publish :function => :KeysToLower, :type => "map (map <string, any>)"
-    publish :function => :KeysToUpper, :type => "map (map <string, any>)"
-    publish :function => :CheckKeys, :type => "boolean (map, list)"
-    publish :function => :ToString, :type => "string (map)"
-    publish :function => :FromString, :type => "map (string)"
+    publish function: :Keys, type: "list (map)"
+    publish function: :Values, type: "list (map)"
+    publish function: :KeysToLower, type: "map (map <string, any>)"
+    publish function: :KeysToUpper, type: "map (map <string, any>)"
+    publish function: :CheckKeys, type: "boolean (map, list)"
+    publish function: :ToString, type: "string (map)"
+    publish function: :FromString, type: "map (string)"
   end
 
   Map = MapClass.new

@@ -33,7 +33,6 @@ require "yast"
 module Yast
   class CustomDialogsClass < Module
     def main
-
     end
 
     def load_file_locale(patterns, file_path, language)
@@ -74,7 +73,7 @@ module Yast
       { "text" => text, "file" => file }
     end
 
-    publish :function => :load_file_locale, :type => "map (list <string>, string, string)"
+    publish function: :load_file_locale, type: "map (list <string>, string, string)"
   end
 
   CustomDialogs = CustomDialogsClass.new

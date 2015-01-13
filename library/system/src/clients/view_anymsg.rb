@@ -172,7 +172,6 @@ module Yast
         )
       )
 
-
       @go_on = true
 
       # wait until user clicks "OK"
@@ -182,10 +181,7 @@ module Yast
 
         # read file content
         file_content = SCR.Read(path(".target.string"), @filename)
-
-        if file_content == nil
-          file_content = _("File not found.")
-        end
+        file_content ||= _("File not found.")
 
         # remove ANSI color escape sequences
         file_content.gsub!(/\e\[(\d|;|\[)+m/, "")
@@ -216,7 +212,7 @@ module Yast
           @new_file = Convert.to_string(
             UI.QueryWidget(Id(:custom_file), :Value)
           )
-          @filename = @new_file if @new_file != nil
+          @filename = @new_file if !@new_file.nil?
         else
           Builtins.y2milestone("bad UserInput (%1)", @ret)
         end

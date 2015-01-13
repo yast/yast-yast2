@@ -104,7 +104,6 @@ module Yast
         )
       )
 
-
       if Ops.greater_than(Builtins.size(headline), 0)
         content = VBox(
           VSpacing(0.4),
@@ -116,7 +115,7 @@ module Yast
               VSpacing(0.2),
               richtext ? rt : Left(Label(message)),
               VSpacing(0.2),
-              label != nil && label != "" ? Label(Id(:label), label) : Empty()
+              !label.nil? && label != "" ? Label(Id(:label), label) : Empty()
             )
           )
         ) # no headline
@@ -129,7 +128,7 @@ module Yast
             VBox(
               richtext ? rt : VCenter(Label(message)),
               VSpacing(0.2),
-              label != nil && label != "" ? Label(Id(:label), label) : Empty()
+              !label.nil? && label != "" ? Label(Id(:label), label) : Empty()
             )
           )
         )
@@ -180,13 +179,6 @@ module Yast
         height
       )
     end
-
-
-
-
-
-
-
 
     # Internal version of AnyTimedMessage
     #
@@ -247,9 +239,6 @@ module Yast
       nil
     end
 
-
-
-
     # Internal function - wrapper for anyTimedMessageTypeInternal call
     def anyTimedMessageInternal(headline, message, icon_name, timeout)
       anyTimedMessageTypeInternal(
@@ -264,11 +253,6 @@ module Yast
 
       nil
     end
-
-
-
-
-
 
     # Internal function - wrapper for anyTimedMessageTypeInternal call
     def anyTimedRichMessageInternal(headline, message, icon_name, timeout, width, height)
@@ -295,15 +279,11 @@ module Yast
       ""
     end
 
-
     # Indicator for empty icon for popups that can have one - for code readability.
     #
     def NoIcon
       ""
     end
-
-
-
 
     # Button box for the AnyQuestion Dialog (internal function).
     #
@@ -339,11 +319,6 @@ module Yast
       button_box = ButtonBox(yes_button, no_button)
       deep_copy(button_box)
     end
-
-
-
-
-
 
     # Generic question popup with two buttons.
     #
@@ -392,11 +367,6 @@ module Yast
       ret == :yes
     end
 
-
-
-
-
-
     # Generic error question popup with two buttons.
     #
     # Style guide hint: The first button has to have the semantics of "yes",
@@ -444,12 +414,6 @@ module Yast
       ret == :yes
     end
 
-
-
-
-
-
-
     # Timed question popup with two buttons and time display
     #
     # @param [String] headline		headline or Popup::NoHeadline()
@@ -482,7 +446,6 @@ module Yast
           VSpacing(0.2)
         )
       )
-
 
       success = UI.OpenDialog(
         Opt(:decorated),
@@ -517,12 +480,6 @@ module Yast
       which_input == :yes
     end
 
-
-
-
-
-
-
     # Timed error question popup with two buttons and time display
     #
     # @param [String] headline		headline or Popup::NoHeadline()
@@ -556,7 +513,6 @@ module Yast
         )
       )
 
-
       success = UI.OpenDialog(
         Opt(:decorated),
         popupLayoutInternal(headline, message, Icon.IconPath("error"), timed)
@@ -589,7 +545,6 @@ module Yast
 
       which_input == :yes
     end
-
 
     # Dialog which displays the "message" and has a <b>Continue</b>
     # and a <b>Cancel</b> button.
@@ -626,7 +581,6 @@ module Yast
       ret
     end
 
-
     # Dialog which displays the "message" and has a <b>Continue</b>
     # and a <b>Cancel</b> button.
     #
@@ -648,7 +602,6 @@ module Yast
 
       ret
     end
-
 
     # This dialog displays "message" (a question) and has a <b>Yes</b> and
     # a <b>No</b> button.
@@ -685,7 +638,6 @@ module Yast
       ret
     end
 
-
     # Display a yes/no question and wait for answer.
     #
     # Should be used for decisions about two about equivalent paths,
@@ -710,8 +662,6 @@ module Yast
 
       ret
     end
-
-
 
     # Show a long text that might need scrolling.
     #
@@ -757,12 +707,6 @@ module Yast
 
       nil
     end
-
-
-
-
-
-
 
     # Show a question that might need scrolling.
     #
@@ -813,7 +757,6 @@ module Yast
       ui == :ok
     end
 
-
     # Confirmation for "Abort" button during installation.
     #
     # According to the "severity" parameter an appropriate text will be
@@ -849,28 +792,28 @@ module Yast
         else
           # Warning text for aborting an installation before anything is installed
           what_will_happen = _(
-            "If you abort the installation now,\n" +
-              "Linux will not be installed.\n" +
+            "If you abort the installation now,\n" \
+              "Linux will not be installed.\n" \
               "Your hard disk will remain untouched."
           )
-        end 
+        end
         # icon_name = "info";
       elsif severity == :incomplete
         # Warning text for aborting an installation during the install process
         # - After some installation steps have been performed - e.g.
         # disks formatted / some packages already installed
         what_will_happen = _(
-          "If you abort the installation now, you will\n" +
-            "have an incomplete Linux system\n" +
-            "that might or might not be usable.\n" +
+          "If you abort the installation now, you will\n" \
+            "have an incomplete Linux system\n" \
+            "that might or might not be usable.\n" \
             "You might need to reinstall.\n"
         )
       elsif severity == :unusable
         # Warning text for aborting an installation during the install process
         # right in the middle of some critical process (e.g. formatting)
         what_will_happen = _(
-          "If you abort the installation now,\n" +
-            "Linux will be unusable.\n" +
+          "If you abort the installation now,\n" \
+            "Linux will be unusable.\n" \
             "You will need to reinstall."
         )
       else
@@ -906,7 +849,6 @@ module Yast
 
       ret
     end
-
 
     # Confirmation popup when user clicked "Abort".
     #
@@ -949,7 +891,6 @@ module Yast
       ret
     end
 
-
     # Generic message popup with Details button - internal
     #
     # Show a message with optional headline above and
@@ -982,7 +923,7 @@ module Yast
 
       UI.SetFocus(Id(:ok_msg))
 
-      while true
+      loop do
         ret = UI.UserInput
         if ret == :details
           success2 = UI.OpenDialog(
@@ -1090,7 +1031,6 @@ module Yast
       nil
     end
 
-
     # Generic message popup - internal
     #
     # Show a message with optional headline above and
@@ -1124,7 +1064,6 @@ module Yast
       nil
     end
 
-
     # Generic message popup
     #
     # Show a message with optional headline above and
@@ -1139,7 +1078,6 @@ module Yast
       nil
     end
 
-
     # Clear feedback message
     # @return [void]
     def ClearFeedback
@@ -1148,7 +1086,6 @@ module Yast
 
       nil
     end
-
 
     # Show popup with a headline and a message for feedback
     # @param [String] headline headline of Feedback popup
@@ -1180,7 +1117,7 @@ module Yast
     # @param headline [String] popup headline (displayed in bold)
     # @param message [String] message with details, displayed below the headline
     # @param block block to execute
-    def Feedback(headline, message, &block)
+    def Feedback(headline, message, &_block)
       ShowFeedback(headline, message)
       yield
     ensure
@@ -1567,7 +1504,6 @@ module Yast
       nil
     end
 
-
     # Show a notification message and wait until user clicked "OK".
     #
     # ![screenshots/Notify.png](../../screenshots/Notify.png)
@@ -1667,7 +1603,6 @@ module Yast
       nil
     end
 
-
     # Show a notify message with Details button and wait until user clicked "OK".
     #
     # @param [String] message	error message string
@@ -1751,12 +1686,6 @@ module Yast
 
       which_input != :timed_cancel
     end
-
-
-
-
-
-
 
     # Generic question popup with three buttons.
     #
@@ -1852,7 +1781,6 @@ module Yast
       ret
     end
 
-
     # Special error popup for YCP modules that don't work.
     #
     # The user can choose one of:
@@ -1908,7 +1836,6 @@ module Yast
       ret
     end
 
-
     # Generic message popup
     #
     # Show a message with optional headline above and
@@ -1938,9 +1865,6 @@ module Yast
 
       nil
     end
-
-
-
 
     # it is misaligned because there used to be UI() around it
 
@@ -2001,7 +1925,6 @@ module Yast
 
       nil
     end
-
 
     # Show the contents of an entire file in a popup.
     #
@@ -2064,61 +1987,61 @@ module Yast
       nil
     end
 
-    publish :variable => :switch_to_richtext, :type => "boolean"
-    publish :variable => :too_many_lines, :type => "integer"
-    publish :function => :NoHeadline, :type => "string ()"
-    publish :function => :NoIcon, :type => "string ()"
-    publish :function => :AnyQuestion, :type => "boolean (string, string, string, string, symbol)"
-    publish :function => :ErrorAnyQuestion, :type => "boolean (string, string, string, string, symbol)"
-    publish :function => :TimedAnyQuestion, :type => "boolean (string, string, string, string, symbol, integer)"
-    publish :function => :TimedErrorAnyQuestion, :type => "boolean (string, string, string, string, symbol, integer)"
-    publish :function => :ContinueCancelHeadline, :type => "boolean (string, string)"
-    publish :function => :ContinueCancel, :type => "boolean (string)"
-    publish :function => :YesNoHeadline, :type => "boolean (string, string)"
-    publish :function => :YesNo, :type => "boolean (string)"
-    publish :function => :LongText, :type => "void (string, term, integer, integer)"
-    publish :function => :AnyQuestionRichText, :type => "boolean (string, string, integer, integer, string, string, symbol)"
-    publish :function => :ConfirmAbort, :type => "boolean (symbol)"
-    publish :function => :ReallyAbort, :type => "boolean (boolean)"
-    publish :function => :AnyMessage, :type => "void (string, string)"
-    publish :function => :ClearFeedback, :type => "void ()"
-    publish :function => :ShowFeedback, :type => "void (string, string)"
-    publish :function => :Message, :type => "void (string)"
-    publish :function => :LongMessage, :type => "void (string)"
-    publish :function => :LongMessageGeometry, :type => "void (string, integer, integer)"
-    publish :function => :TimedMessage, :type => "void (string, integer)"
-    publish :function => :TimedLongMessage, :type => "void (string, integer)"
-    publish :function => :TimedLongMessageGeometry, :type => "void (string, integer, integer, integer)"
-    publish :function => :MessageDetails, :type => "void (string, string)"
-    publish :function => :Warning, :type => "void (string)"
-    publish :function => :LongWarning, :type => "void (string)"
-    publish :function => :LongWarningGeometry, :type => "void (string, integer, integer)"
-    publish :function => :TimedWarning, :type => "void (string, integer)"
-    publish :function => :TimedLongWarning, :type => "void (string, integer)"
-    publish :function => :TimedLongWarningGeometry, :type => "void (string, integer, integer, integer)"
-    publish :function => :WarningDetails, :type => "void (string, string)"
-    publish :function => :Error, :type => "void (string)"
-    publish :function => :LongError, :type => "void (string)"
-    publish :function => :LongErrorGeometry, :type => "void (string, integer, integer)"
-    publish :function => :TimedError, :type => "void (string, integer)"
-    publish :function => :TimedLongError, :type => "void (string, integer)"
-    publish :function => :TimedLongErrorGeometry, :type => "void (string, integer, integer, integer)"
-    publish :function => :ErrorDetails, :type => "void (string, string)"
-    publish :function => :Notify, :type => "void (string)"
-    publish :function => :LongNotify, :type => "void (string)"
-    publish :function => :LongNotifyGeometry, :type => "void (string, integer, integer)"
-    publish :function => :TimedNotify, :type => "void (string, integer)"
-    publish :function => :TimedLongNotify, :type => "void (string, integer)"
-    publish :function => :TimedLongNotifyGeometry, :type => "void (string, integer, integer, integer)"
-    publish :function => :NotifyDetails, :type => "void (string, string)"
-    publish :function => :TimedOKCancel, :type => "boolean (string, integer)"
-    publish :function => :AnyQuestion3, :type => "symbol (string, string, string, string, string, symbol)"
-    publish :function => :ModuleError, :type => "symbol (string)"
-    publish :function => :AnyTimedMessage, :type => "void (string, string, integer)"
-    publish :function => :AnyTimedRichMessage, :type => "void (string, string, integer)"
-    publish :function => :ShowTextTimed, :type => "void (string, string, integer)"
-    publish :function => :ShowText, :type => "void (string, string)"
-    publish :function => :ShowFile, :type => "void (string, string)"
+    publish variable: :switch_to_richtext, type: "boolean"
+    publish variable: :too_many_lines, type: "integer"
+    publish function: :NoHeadline, type: "string ()"
+    publish function: :NoIcon, type: "string ()"
+    publish function: :AnyQuestion, type: "boolean (string, string, string, string, symbol)"
+    publish function: :ErrorAnyQuestion, type: "boolean (string, string, string, string, symbol)"
+    publish function: :TimedAnyQuestion, type: "boolean (string, string, string, string, symbol, integer)"
+    publish function: :TimedErrorAnyQuestion, type: "boolean (string, string, string, string, symbol, integer)"
+    publish function: :ContinueCancelHeadline, type: "boolean (string, string)"
+    publish function: :ContinueCancel, type: "boolean (string)"
+    publish function: :YesNoHeadline, type: "boolean (string, string)"
+    publish function: :YesNo, type: "boolean (string)"
+    publish function: :LongText, type: "void (string, term, integer, integer)"
+    publish function: :AnyQuestionRichText, type: "boolean (string, string, integer, integer, string, string, symbol)"
+    publish function: :ConfirmAbort, type: "boolean (symbol)"
+    publish function: :ReallyAbort, type: "boolean (boolean)"
+    publish function: :AnyMessage, type: "void (string, string)"
+    publish function: :ClearFeedback, type: "void ()"
+    publish function: :ShowFeedback, type: "void (string, string)"
+    publish function: :Message, type: "void (string)"
+    publish function: :LongMessage, type: "void (string)"
+    publish function: :LongMessageGeometry, type: "void (string, integer, integer)"
+    publish function: :TimedMessage, type: "void (string, integer)"
+    publish function: :TimedLongMessage, type: "void (string, integer)"
+    publish function: :TimedLongMessageGeometry, type: "void (string, integer, integer, integer)"
+    publish function: :MessageDetails, type: "void (string, string)"
+    publish function: :Warning, type: "void (string)"
+    publish function: :LongWarning, type: "void (string)"
+    publish function: :LongWarningGeometry, type: "void (string, integer, integer)"
+    publish function: :TimedWarning, type: "void (string, integer)"
+    publish function: :TimedLongWarning, type: "void (string, integer)"
+    publish function: :TimedLongWarningGeometry, type: "void (string, integer, integer, integer)"
+    publish function: :WarningDetails, type: "void (string, string)"
+    publish function: :Error, type: "void (string)"
+    publish function: :LongError, type: "void (string)"
+    publish function: :LongErrorGeometry, type: "void (string, integer, integer)"
+    publish function: :TimedError, type: "void (string, integer)"
+    publish function: :TimedLongError, type: "void (string, integer)"
+    publish function: :TimedLongErrorGeometry, type: "void (string, integer, integer, integer)"
+    publish function: :ErrorDetails, type: "void (string, string)"
+    publish function: :Notify, type: "void (string)"
+    publish function: :LongNotify, type: "void (string)"
+    publish function: :LongNotifyGeometry, type: "void (string, integer, integer)"
+    publish function: :TimedNotify, type: "void (string, integer)"
+    publish function: :TimedLongNotify, type: "void (string, integer)"
+    publish function: :TimedLongNotifyGeometry, type: "void (string, integer, integer, integer)"
+    publish function: :NotifyDetails, type: "void (string, string)"
+    publish function: :TimedOKCancel, type: "boolean (string, integer)"
+    publish function: :AnyQuestion3, type: "symbol (string, string, string, string, string, symbol)"
+    publish function: :ModuleError, type: "symbol (string)"
+    publish function: :AnyTimedMessage, type: "void (string, string, integer)"
+    publish function: :AnyTimedRichMessage, type: "void (string, string, integer)"
+    publish function: :ShowTextTimed, type: "void (string, string, integer)"
+    publish function: :ShowText, type: "void (string, string)"
+    publish function: :ShowFile, type: "void (string, string)"
   end
 
   Popup = PopupClass.new

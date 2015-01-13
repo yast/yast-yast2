@@ -27,22 +27,22 @@ DATA_PATH = File.join(File.expand_path(File.dirname(__FILE__)), "data")
 def load_zypp(file_name)
   file_name = File.join(DATA_PATH, "zypp", file_name)
 
-  raise "File not found: #{file_name}" unless File.exists?(file_name)
+  raise "File not found: #{file_name}" unless File.exist?(file_name)
 
   log.info "Loading file: #{file_name}"
   YAML.load_file(file_name)
 end
 
-PRODUCTS_FROM_ZYPP = load_zypp('products.yml').freeze
+PRODUCTS_FROM_ZYPP = load_zypp("products.yml").freeze
 
 def stub_defaults
-    log.info "--------- Running test ---------"
-    Yast::Product.send(:reset)
-    Yast::PackageSystem.stub(:EnsureTargetInit).and_return(true)
-    Yast::PackageSystem.stub(:EnsureSourceInit).and_return(true)
-    Yast::Pkg.stub(:PkgSolve).and_return(true)
-    Yast::PackageLock.stub(:Check).and_return(true)
-    Yast::Pkg.stub(:ResolvableProperties).with("", :product, "").and_return(PRODUCTS_FROM_ZYPP.dup)
+  log.info "--------- Running test ---------"
+  Yast::Product.send(:reset)
+  Yast::PackageSystem.stub(:EnsureTargetInit).and_return(true)
+  Yast::PackageSystem.stub(:EnsureSourceInit).and_return(true)
+  Yast::Pkg.stub(:PkgSolve).and_return(true)
+  Yast::PackageLock.stub(:Check).and_return(true)
+  Yast::Pkg.stub(:ResolvableProperties).with("", :product, "").and_return(PRODUCTS_FROM_ZYPP.dup)
 end
 
 # Describes Product handling as a whole (due to lazy loading and internal caching),
@@ -62,9 +62,9 @@ describe "Yast::Product (integration)" do
       it "reads product information from zypp and fills up internal variables" do
         Yast::Mode.stub(:mode).and_return("installation")
 
-        expect(Yast::Product.name).to                eq("openSUSE (SELECTED)")
-        expect(Yast::Product.short_name).to          eq("openSUSE")
-        expect(Yast::Product.version).to             eq("13.1")
+        expect(Yast::Product.name).to eq("openSUSE (SELECTED)")
+        expect(Yast::Product.short_name).to eq("openSUSE")
+        expect(Yast::Product.version).to eq("13.1")
       end
     end
 
@@ -72,9 +72,9 @@ describe "Yast::Product (integration)" do
       it "reads product information from zypp and fills up internal variables" do
         Yast::Mode.stub(:mode).and_return("update")
 
-        expect(Yast::Product.name).to                eq("openSUSE (SELECTED)")
-        expect(Yast::Product.short_name).to          eq("openSUSE")
-        expect(Yast::Product.version).to             eq("13.1")
+        expect(Yast::Product.name).to eq("openSUSE (SELECTED)")
+        expect(Yast::Product.short_name).to eq("openSUSE")
+        expect(Yast::Product.version).to eq("13.1")
       end
     end
   end
@@ -186,9 +186,9 @@ describe Yast::Product do
 
     describe "#product_of_relnotes" do
       it "reads data from zypp and returns hash of release notes URLs linking to their product names" do
-        expect(Yast::Product.product_of_relnotes).to eq({
+        expect(Yast::Product.product_of_relnotes).to eq(
           "http://doc.opensuse.org/release-notes/x86_64/openSUSE/13.1/release-notes-openSUSE.rpm" => "openSUSE (SELECTED)"
-        })
+        )
       end
     end
 
@@ -205,7 +205,7 @@ describe Yast::Product do
 
     it "reports that method has been dropped" do
       [:vendor, :dist, :distproduct, :distversion, :shortlabel].each do |method_name|
-        expect{ Yast::Product.send(method_name) }.to raise_error(/#{method_name}.*dropped/)
+        expect { Yast::Product.send(method_name) }.to raise_error(/#{method_name}.*dropped/)
       end
     end
   end
@@ -267,24 +267,24 @@ describe Yast::Product do
 
     describe "#product_of_relnotes" do
       it "reads data from zypp and returns hash of release notes URLs linking to their product names" do
-        expect(Yast::Product.product_of_relnotes).to eq({
+        expect(Yast::Product.product_of_relnotes).to eq(
           "http://doc.opensuse.org/release-notes/x86_64/openSUSE/13.1/release-notes-openSUSE.rpm" => "openSUSE (INSTALLED)"
-        })
+        )
       end
     end
 
     it "reports that method has been dropped" do
       [:vendor, :dist, :distproduct, :distversion, :shortlabel].each do |method_name|
-        expect{ Yast::Product.send(method_name) }.to raise_error(/#{method_name}.*dropped/)
+        expect { Yast::Product.send(method_name) }.to raise_error(/#{method_name}.*dropped/)
       end
     end
   end
 
   # Methods that do not allow empty result
-  SUPPORTED_METHODS = [ :name, :short_name, :version, :run_you, :flags, :relnotesurl ]
+  SUPPORTED_METHODS = [:name, :short_name, :version, :run_you, :flags, :relnotesurl]
 
   # Empty result is allowed
-  SUPPORTED_METHODS_ALLOWED_EMPTY = [ :relnotesurl_all, :product_of_relnotes ]
+  SUPPORTED_METHODS_ALLOWED_EMPTY = [:relnotesurl_all, :product_of_relnotes]
 
   context "while called on a broken system (no os-release, no zypp information)" do
     before(:each) do
@@ -299,7 +299,7 @@ describe Yast::Product do
 
         SUPPORTED_METHODS.each do |method_name|
           log.info "Yast::Product.#{method_name}"
-          expect{ Yast::Product.send(method_name) }.to raise_error(/no base product found/i)
+          expect { Yast::Product.send(method_name) }.to raise_error(/no base product found/i)
         end
 
         SUPPORTED_METHODS_ALLOWED_EMPTY.each do |method_name|
@@ -316,7 +316,7 @@ describe Yast::Product do
 
         SUPPORTED_METHODS.each do |method_name|
           log.info "Yast::Product.#{method_name}"
-          expect{ Yast::Product.send(method_name) }.to raise_error(/no base product found/i)
+          expect { Yast::Product.send(method_name) }.to raise_error(/no base product found/i)
         end
 
         SUPPORTED_METHODS_ALLOWED_EMPTY.each do |method_name|
@@ -326,5 +326,4 @@ describe Yast::Product do
       end
     end
   end
-
 end

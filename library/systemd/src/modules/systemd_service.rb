@@ -1,4 +1,4 @@
-require 'yast2/systemd_unit'
+require "yast2/systemd_unit"
 
 module Yast
   ###
@@ -66,7 +66,7 @@ module Yast
   ##
 
   class SystemdServiceNotFound < StandardError
-    def initialize service_name
+    def initialize(service_name)
       super "Service unit '#{service_name}' not found"
     end
   end
@@ -74,19 +74,19 @@ module Yast
   class SystemdServiceClass < Module
     UNIT_SUFFIX = ".service"
 
-    def find service_name, properties={}
+    def find(service_name, properties = {})
       service_name += UNIT_SUFFIX unless service_name.end_with?(UNIT_SUFFIX)
       service = Service.new(service_name, properties)
       return nil if service.properties.not_found?
       service
     end
 
-    def find! service_name, properties={}
+    def find!(service_name, properties = {})
       find(service_name, properties) || raise(SystemdServiceNotFound, service_name)
     end
 
-    def all properties={}
-      services = Systemctl.service_units.map do |service_unit|
+    def all(properties = {})
+      Systemctl.service_units.map do |service_unit|
         Service.new(service_unit, properties)
       end
     end
@@ -130,7 +130,7 @@ module Yast
         File.exist?(START_SERVICE_INSTSYS_COMMAND)
       end
 
-      def run_instsys_command command
+      def run_instsys_command(command)
         log.info("Running command '#{command}'")
         error.clear
         result = OpenStruct.new(

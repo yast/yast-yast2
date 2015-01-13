@@ -21,33 +21,26 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/CWMFirewallInterfaces.ycp
-# Package:	Common widget manipulation, firewall interfaces widget
-# Summary:	Routines for selecting interfaces opened in firewall
-# Authors:	Jiri Srain <jsrain@suse.cz>
-#
-# $Id$
-#
-# WARNING: If you want to use this functionality of this module
-#          you should allways call 'SuSEFirewall::Read()' in the
-#          Read() function of you module
-#          and you should call 'SuSEFirewall::Write()' in the
-#          Write() function.
-#
-#	    Functionality of this module only changes the SuSEFirewall
-#          settings in memory, it never Reads or Writes the settings.
-#
-#	    Additionally you may need to call Progress::set(false)
-#	    before SuSEFirewall::Read() or SuSEFirewall::Write().
+
 require "yast"
 
 module Yast
+  # Routines for selecting interfaces opened in firewall
+  # WARNING: If you want to use this functionality of this module
+  #          you should allways call 'SuSEFirewall::Read()' in the
+  #          Read() function of you module
+  #          and you should call 'SuSEFirewall::Write()' in the
+  #          Write() function.
+  #
+  #	    Functionality of this module only changes the SuSEFirewall
+  #          settings in memory, it never Reads or Writes the settings.
+  #
+  #	    Additionally you may need to call Progress::set(false)
+  #	    before SuSEFirewall::Read() or SuSEFirewall::Write().
   class CWMFirewallInterfacesClass < Module
     def main
       Yast.import "UI"
       textdomain "base"
-
-
 
       Yast.import "CWM"
       Yast.import "Label"
@@ -92,7 +85,7 @@ module Yast
       enabled = Convert.to_boolean(
         UI.QueryWidget(Id("_cwm_open_firewall"), :Value)
       )
-      enabled = false if enabled == nil
+      enabled = false if enabled.nil?
       enabled = false if Builtins.size(@all_interfaces) == 0
 
       UI.ChangeWidget(Id("_cwm_firewall_details"), :Enabled, enabled)
@@ -151,20 +144,20 @@ module Yast
           ipaddr = NetworkInterfaces.GetValue(i, "IPADDR")
           # BNC #483455: Interface zone name
           zone = SuSEFirewall.GetZoneOfInterface(i)
-          if zone != nil && zone != ""
+          if !zone.nil? && zone != ""
             zone = SuSEFirewall.GetZoneFullName(zone)
           else
             zone = _("Interface is not assigned to any zone")
           end
-          if label == "static" || label == "" || label == nil
+          if label == "static" || label == "" || label.nil?
             label = ipaddr
           else
             label = Builtins.toupper(label)
-            if ipaddr != nil && ipaddr != ""
+            if !ipaddr.nil? && ipaddr != ""
               label = Builtins.sformat("%1/%2", label, ipaddr)
             end
           end
-          if label == nil || label == ""
+          if label.nil? || label == ""
             label = i
           else
             label = Builtins.sformat("%1 (%2 / %3)", i, label, zone)
@@ -184,7 +177,7 @@ module Yast
 
     # Update the firewall status label according to the current status
     def UpdateFirewallStatus
-      InitAllInterfacesList() if @all_interfaces == nil
+      InitAllInterfacesList() if @all_interfaces.nil?
       status = :custom
 
       # bnc #429861
@@ -217,7 +210,7 @@ module Yast
     # @param [Array<String>] ifaces a list of interfaces selected by the user
     # @param [Boolean] nm_ifaces_have_to_be_selected defines whether also NetworkManager have to be selected too
     # @return a list of interfaces that will be opened
-    def Selected2Opened(ifaces, nm_ifaces_have_to_be_selected)
+    def Selected2Opened(ifaces, _nm_ifaces_have_to_be_selected)
       ifaces = deep_copy(ifaces)
       Builtins.y2milestone("Selected ifaces: %1", ifaces)
       groups = Builtins.maplist(ifaces) do |i|
@@ -232,7 +225,7 @@ module Yast
       end
 
       groups = String.NonEmpty(Builtins.toset(groups))
-      groups = Builtins.filter(groups) { |g| g != nil }
+      groups = Builtins.filter(groups) { |g| !g.nil? }
       iface_groups = Builtins.maplist(groups) do |g|
         ifaces_also_supported_by_any = SuSEFirewall.GetInterfacesInZoneSupportingAnyFeature(
           g
@@ -252,11 +245,11 @@ module Yast
           )
           # there are no interfaces left that would be explicitely mentioned in the EXT zone
           if ifaces_left_explicitely == []
-            next [] 
+            next []
             # Hmm, some interfaces left
           else
             next deep_copy(ifaces_also_supported_by_any)
-          end 
+          end
           # Just report all interfaces mentioned in zone
         else
           next deep_copy(ifaces_also_supported_by_any)
@@ -264,7 +257,7 @@ module Yast
       end
       Builtins.y2milestone("Ifaces touched: %1", iface_groups)
       new_ifaces = Builtins.toset(Builtins.flatten(iface_groups))
-      new_ifaces = Builtins.filter(new_ifaces) { |i| i != nil }
+      new_ifaces = Builtins.filter(new_ifaces) { |i| !i.nil? }
 
       Builtins.toset(new_ifaces)
     end
@@ -274,10 +267,10 @@ module Yast
       widget = deep_copy(widget)
       common_details_handler = Convert.convert(
         Ops.get(widget, "common_details_handler"),
-        :from => "any",
-        :to   => "void (map <string, any>)"
+        from: "any",
+        to:   "void (map <string, any>)"
       )
-      common_details_handler.call(widget) if common_details_handler != nil
+      common_details_handler.call(widget) if !common_details_handler.nil?
 
       nil
     end
@@ -293,18 +286,19 @@ module Yast
       services = deep_copy(services)
       service_status = {}
 
-
       ifaces_info = SuSEFirewall.GetServicesInZones(services)
-      Builtins.foreach(ifaces_info) { |s, status| Builtins.foreach(status) do |iface, en|
-        Ops.set(
-          service_status,
-          iface,
-          Ops.get(service_status, iface, true) && en
-        )
-      end }
-      service_status = Builtins.filter(service_status) { |iface, en| en == true }
+      Builtins.foreach(ifaces_info) do |_s, status|
+        Builtins.foreach(status) do |iface, en|
+          Ops.set(
+            service_status,
+            iface,
+            Ops.get(service_status, iface, true) && en
+          )
+        end
+      end
+      service_status = Builtins.filter(service_status) { |_iface, en| en == true }
       Builtins.y2milestone("Status: %1", service_status)
-      @allowed_interfaces = Builtins.maplist(service_status) do |iface, en|
+      @allowed_interfaces = Builtins.maplist(service_status) do |iface, _en|
         iface
       end
 
@@ -333,14 +327,14 @@ module Yast
             )
           end
           if Ops.get(
-              service_status,
-              SuSEFirewall.special_all_interface_zone,
-              false
+            service_status,
+            SuSEFirewall.special_all_interface_zone,
+            false
             )
             @allowed_interfaces = Convert.convert(
               Builtins.union(@allowed_interfaces, interfaces_supported_by_any),
-              :from => "list",
-              :to   => "list <string>"
+              from: "list",
+              to:   "list <string>"
             )
           end
         end
@@ -357,8 +351,8 @@ module Yast
         )
         @allowed_interfaces = Convert.convert(
           Builtins.union(@allowed_interfaces, internal_interfaces),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
       else
         Builtins.y2milestone(
@@ -389,10 +383,6 @@ module Yast
         SuSEFirewallProposal.SetChangedByUser(true)
       end
 
-      interfaces_supported_by_any = SuSEFirewall.InterfacesSupportedByAnyFeature(
-        SuSEFirewall.special_all_interface_zone
-      )
-
       if Ops.greater_than(Builtins.size(forbidden_interfaces), 0)
         SuSEFirewall.SetServices(services, forbidden_interfaces, false)
       end
@@ -406,10 +396,9 @@ module Yast
     # Init function of the widget
     # @param [Hash{String => Object}] widget a widget description map
     # @param [String] key strnig the widget key
-    def InterfacesInit(widget, key)
-      widget = deep_copy(widget)
+    def InterfacesInit(_widget, _key)
       # set the list of ifaces
-      InitAllInterfacesList() if @all_interfaces == nil
+      InitAllInterfacesList() if @all_interfaces.nil?
       UI.ReplaceWidget(
         Id("_cwm_interface_list_rp"),
         MultiSelectionBox(
@@ -434,8 +423,7 @@ module Yast
     # @param [String] key strnig the widget key
     # @param [Hash] event map event to be handled
     # @return [Symbol] for wizard sequencer or nil
-    def InterfacesHandle(widget, key, event)
-      widget = deep_copy(widget)
+    def InterfacesHandle(_widget, _key, event)
       event = deep_copy(event)
       event_id = Ops.get(event, "ID")
       if event_id == "_cwm_interface_select_all"
@@ -457,13 +445,11 @@ module Yast
     # @param [Hash{String => Object}] widget a widget description map
     # @param [String] key strnig the widget key
     # @param [Hash] event map that caused widget data storing
-    def InterfacesStore(widget, key, event)
-      widget = deep_copy(widget)
-      event = deep_copy(event)
+    def InterfacesStore(_widget, _key, _event)
       @allowed_interfaces = Convert.convert(
         UI.QueryWidget(Id("_cwm_interface_list"), :SelectedItems),
-        :from => "any",
-        :to   => "list <string>"
+        from: "any",
+        to:   "list <string>"
       )
       @allowed_interfaces = Selected2Opened(@allowed_interfaces, false)
       @configuration_changed = true
@@ -476,13 +462,11 @@ module Yast
     # @param [String] key strnig the widget key
     # @param [Hash] event map event that caused the validation
     # @return true if validation succeeded, false otherwise
-    def InterfacesValidate(widget, key, event)
-      widget = deep_copy(widget)
-      event = deep_copy(event)
+    def InterfacesValidate(_widget, _key, _event)
       ifaces = Convert.convert(
         UI.QueryWidget(Id("_cwm_interface_list"), :SelectedItems),
-        :from => "any",
-        :to   => "list <string>"
+        from: "any",
+        to:   "list <string>"
       )
       ifaces = Builtins.toset(ifaces)
       Builtins.y2milestone("Selected ifaces: %1", ifaces)
@@ -517,8 +501,8 @@ module Yast
 
           ifaces = Convert.convert(
             Builtins.union(ifaces, int_not_selected),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
           Builtins.y2milestone("Selected interfaces: %1", ifaces)
           UI.ChangeWidget(Id("_cwm_interface_list"), :SelectedItems, ifaces)
@@ -530,9 +514,9 @@ module Yast
         # question popup
         if !Popup.YesNo(
             _(
-              "No interface is selected. Service will not\n" +
-                "be available for other computers.\n" +
-                "\n" +
+              "No interface is selected. Service will not\n" \
+                "be available for other computers.\n" \
+                "\n" \
                 "Continue?"
             )
           )
@@ -560,10 +544,10 @@ module Yast
             Builtins.sformat(
               # yes-no popup
               _(
-                "Because of SuSE Firewall settings, the port\n" +
-                  "on the following interfaces will additionally be open:\n" +
-                  "%1\n" +
-                  "\n" +
+                "Because of SuSE Firewall settings, the port\n" \
+                  "on the following interfaces will additionally be open:\n" \
+                  "%1\n" \
+                  "\n" \
                   "Continue?"
               ),
               ifaces_list
@@ -579,10 +563,10 @@ module Yast
             Builtins.sformat(
               # yes-no popup
               _(
-                "Because of SuSE Firewall settings, the port\n" +
-                  "on the following interfaces cannot be opened:\n" +
-                  "%1\n" +
-                  "\n" +
+                "Because of SuSE Firewall settings, the port\n" \
+                  "on the following interfaces cannot be opened:\n" \
+                  "%1\n" \
+                  "\n" \
                   "Continue?"
               ),
               ifaces_list
@@ -612,7 +596,7 @@ module Yast
       all_ok = true
       all_ifaces = SuSEFirewall.GetAllKnownInterfaces
       Builtins.foreach(SuSEFirewall.GetAllKnownInterfaces) do |one_interface|
-        if Ops.get(one_interface, "zone") == nil ||
+        if Ops.get(one_interface, "zone").nil? ||
             Ops.get(one_interface, "zone", "") == ""
           Builtins.y2warning(
             "Cannot enable service because interface %1 is not mentioned anywhere...",
@@ -633,10 +617,10 @@ module Yast
         if Popup.YesNo(
             Builtins.sformat(
               _(
-                "Because of SuSE Firewall settings, the port\n" +
-                  "on the following interfaces cannot be opened:\n" +
-                  "%1\n" +
-                  "\n" +
+                "Because of SuSE Firewall settings, the port\n" \
+                  "on the following interfaces cannot be opened:\n" \
+                  "%1\n" \
+                  "\n" \
                   "Continue?"
               ),
               ifaces_list
@@ -761,31 +745,31 @@ module Yast
       ret = Convert.convert(
         Builtins.union(
           settings,
-          {
-            "widget"            => :custom,
-            "custom_widget"     => widget,
-            "help"              => help,
-            "init"              => fun_ref(
-              method(:InterfacesInitWrapper),
-              "void (string)"
-            ),
-            "store"             => fun_ref(
-              method(:InterfacesStoreWrapper),
-              "void (string, map)"
-            ),
-            "handle"            => fun_ref(
-              method(:InterfacesHandleWrapper),
-              "symbol (string, map)"
-            ),
-            "validate_type"     => :function,
-            "validate_function" => fun_ref(
-              method(:InterfacesValidateWrapper),
-              "boolean (string, map)"
-            )
-          }
+
+          "widget"            => :custom,
+          "custom_widget"     => widget,
+          "help"              => help,
+          "init"              => fun_ref(
+            method(:InterfacesInitWrapper),
+            "void (string)"
+          ),
+          "store"             => fun_ref(
+            method(:InterfacesStoreWrapper),
+            "void (string, map)"
+          ),
+          "handle"            => fun_ref(
+            method(:InterfacesHandleWrapper),
+            "symbol (string, map)"
+          ),
+          "validate_type"     => :function,
+          "validate_function" => fun_ref(
+            method(:InterfacesValidateWrapper),
+            "boolean (string, map)"
+          )
+
         ),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
 
       deep_copy(ret)
@@ -795,13 +779,12 @@ module Yast
     # @return [Symbol] return value of the dialog
     def DisplayDetailsPopup(settings)
       settings = deep_copy(settings)
-      # FIXME breaks help if run in dialog with Tab!!!!!!
+      # FIXME: breaks help if run in dialog with Tab!!!!!!
       # settings stack must be created in CWM::Run
       w = CWM.CreateWidgets(
         ["firewall_ifaces"],
-        { "firewall_ifaces" => CreateInterfacesWidget(settings) }
+        "firewall_ifaces" => CreateInterfacesWidget(settings)
       )
-      help = CWM.MergeHelps(w)
       contents = VBox(
         "firewall_ifaces",
         ButtonBox(
@@ -820,12 +803,11 @@ module Yast
       ret
     end
 
-
     # firewall openning widget
 
     # Initialize the open firewall widget
     # @param [Hash{String => Object}] widget a map describing the whole widget
-    def OpenFirewallInit(widget, key)
+    def OpenFirewallInit(widget, _key)
       widget = deep_copy(widget)
       if !UI.WidgetExists(Id("_cwm_open_firewall"))
         Builtins.y2error("Firewall widget doesn't exist")
@@ -839,7 +821,7 @@ module Yast
       rescue SuSEFirewalServiceNotFound => e
         Report.Error(
           # TRANSLATORS: Error message, do not translate %{details}
-          _("Error checking service status:\n%{details}") % { :details => e.message }
+          _("Error checking service status:\n%{details}") % { details: e.message }
         )
       end
 
@@ -860,9 +842,8 @@ module Yast
     # Store function of the widget
     # @param [String] key strnig the widget key
     # @param [Hash] event map that caused widget data storing
-    def OpenFirewallStore(widget, key, event)
+    def OpenFirewallStore(widget, _key, _event)
       widget = deep_copy(widget)
-      event = deep_copy(event)
       if !UI.WidgetExists(Id("_cwm_open_firewall"))
         Builtins.y2error("Widget _cwm_open_firewall does not exist")
         return
@@ -874,7 +855,7 @@ module Yast
       rescue SuSEFirewalServiceNotFound => e
         Report.Error(
           # TRANSLATORS: Error message, do not translate %{details}
-          _("Error setting service status:\n%{details}") % { :details => e.message }
+          _("Error setting service status:\n%{details}") % { details: e.message }
         )
       end
 
@@ -886,23 +867,23 @@ module Yast
     # @param [String] key strnig the widget key
     # @param event_id any the ID of the occurred event
     # @return always nil
-    def OpenFirewallHandle(widget, key, event)
+    def OpenFirewallHandle(widget, _key, event)
       widget = deep_copy(widget)
       event = deep_copy(event)
       event_id = Ops.get(event, "ID")
       if event_id == "_cwm_firewall_details"
         handle_firewall_details = Convert.convert(
           Ops.get(widget, "firewall_details_handler"),
-          :from => "any",
-          :to   => "symbol ()"
+          from: "any",
+          to:   "symbol ()"
         )
         Builtins.y2milestone("FD: %1", handle_firewall_details)
         ret = nil
         Builtins.y2milestone("RT: %1", ret)
-        if handle_firewall_details != nil
+        if !handle_firewall_details.nil?
           ret = handle_firewall_details.call
         else
-          w = Builtins.filter(widget) { |k, v| "services" == k }
+          w = Builtins.filter(widget) { |k, _v| "services" == k }
           DisplayDetailsPopup(w)
         end
         UpdateFirewallStatus()
@@ -971,7 +952,7 @@ module Yast
     # Check if the widget was modified
     # @param [String] key strnig the widget key
     # @return [Boolean] true if widget was modified
-    def OpenFirewallModified(key)
+    def OpenFirewallModified(_key)
       @configuration_changed
     end
 
@@ -1011,8 +992,8 @@ module Yast
       # help text for firewall settings widget 1/3,
       # %1 is check box label, eg. "Open Port in Firewall" (without quotes)
       help = _(
-        "<p><b><big>Firewall Settings</big></b><br>\n" +
-          "To open the firewall to allow access to the service from remote computers,\n" +
+        "<p><b><big>Firewall Settings</big></b><br>\n" \
+          "To open the firewall to allow access to the service from remote computers,\n" \
           "set <b>%1</b>.<br>"
       )
       if restart_displayed
@@ -1152,8 +1133,8 @@ module Yast
           },
           settings
         ),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
 
       deep_copy(ret)
@@ -1165,32 +1146,32 @@ module Yast
       SuSEFirewall.GetModified
     end
 
-    publish :function => :InitAllowedInterfaces, :type => "void (list <string>)"
-    publish :function => :StoreAllowedInterfaces, :type => "void (list <string>)"
-    publish :function => :InterfacesInit, :type => "void (map <string, any>, string)"
-    publish :function => :InterfacesHandle, :type => "symbol (map <string, any>, string, map)"
-    publish :function => :InterfacesStore, :type => "void (map <string, any>, string, map)"
-    publish :function => :InterfacesValidate, :type => "boolean (map <string, any>, string, map)"
-    publish :function => :InterfacesInitWrapper, :type => "void (string)"
-    publish :function => :InterfacesHandleWrapper, :type => "symbol (string, map)"
-    publish :function => :InterfacesStoreWrapper, :type => "void (string, map)"
-    publish :function => :InterfacesValidateWrapper, :type => "boolean (string, map)"
-    publish :function => :CreateInterfacesWidget, :type => "map <string, any> (map <string, any>)"
-    publish :function => :DisplayDetailsPopup, :type => "symbol (map <string, any>)"
-    publish :function => :OpenFirewallInit, :type => "void (map <string, any>, string)"
-    publish :function => :OpenFirewallStore, :type => "void (map <string, any>, string, map)"
-    publish :function => :OpenFirewallHandle, :type => "symbol (map <string, any>, string, map)"
-    publish :function => :OpenFirewallInitWrapper, :type => "void (string)"
-    publish :function => :OpenFirewallStoreWrapper, :type => "void (string, map)"
-    publish :function => :OpenFirewallHandleWrapper, :type => "symbol (string, map)"
-    publish :function => :OpenFirewallModified, :type => "boolean (string)"
-    publish :function => :EnableOpenFirewallWidget, :type => "void ()"
-    publish :function => :DisableOpenFirewallWidget, :type => "void ()"
-    publish :function => :OpenFirewallWidgetExists, :type => "boolean ()"
-    publish :function => :OpenFirewallHelpTemplate, :type => "string (boolean)"
-    publish :function => :OpenFirewallHelp, :type => "string (boolean)"
-    publish :function => :CreateOpenFirewallWidget, :type => "map <string, any> (map <string, any>)"
-    publish :function => :Modified, :type => "boolean ()"
+    publish function: :InitAllowedInterfaces, type: "void (list <string>)"
+    publish function: :StoreAllowedInterfaces, type: "void (list <string>)"
+    publish function: :InterfacesInit, type: "void (map <string, any>, string)"
+    publish function: :InterfacesHandle, type: "symbol (map <string, any>, string, map)"
+    publish function: :InterfacesStore, type: "void (map <string, any>, string, map)"
+    publish function: :InterfacesValidate, type: "boolean (map <string, any>, string, map)"
+    publish function: :InterfacesInitWrapper, type: "void (string)"
+    publish function: :InterfacesHandleWrapper, type: "symbol (string, map)"
+    publish function: :InterfacesStoreWrapper, type: "void (string, map)"
+    publish function: :InterfacesValidateWrapper, type: "boolean (string, map)"
+    publish function: :CreateInterfacesWidget, type: "map <string, any> (map <string, any>)"
+    publish function: :DisplayDetailsPopup, type: "symbol (map <string, any>)"
+    publish function: :OpenFirewallInit, type: "void (map <string, any>, string)"
+    publish function: :OpenFirewallStore, type: "void (map <string, any>, string, map)"
+    publish function: :OpenFirewallHandle, type: "symbol (map <string, any>, string, map)"
+    publish function: :OpenFirewallInitWrapper, type: "void (string)"
+    publish function: :OpenFirewallStoreWrapper, type: "void (string, map)"
+    publish function: :OpenFirewallHandleWrapper, type: "symbol (string, map)"
+    publish function: :OpenFirewallModified, type: "boolean (string)"
+    publish function: :EnableOpenFirewallWidget, type: "void ()"
+    publish function: :DisableOpenFirewallWidget, type: "void ()"
+    publish function: :OpenFirewallWidgetExists, type: "boolean ()"
+    publish function: :OpenFirewallHelpTemplate, type: "string (boolean)"
+    publish function: :OpenFirewallHelp, type: "string (boolean)"
+    publish function: :CreateOpenFirewallWidget, type: "map <string, any> (map <string, any>)"
+    publish function: :Modified, type: "boolean ()"
   end
 
   CWMFirewallInterfaces = CWMFirewallInterfacesClass.new

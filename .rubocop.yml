@@ -1,0 +1,80 @@
+# use the shared Yast defaults
+inherit_from:
+  /usr/share/YaST2/data/devtools/data/rubocop_yast_style.yml
+
+# Offense count: 153
+Metrics/AbcSize:
+  Max: 446
+
+# Offense count: 32
+Metrics/BlockNesting:
+  Max: 8
+
+Metrics/ParameterLists:
+  Max: 11
+
+Metrics/ClassLength:
+  Max: 2900
+
+Metrics/CyclomaticComplexity:
+  Max: 59
+
+Metrics/LineLength:
+  Max: 350
+
+# Offense count: 201
+# Configuration parameters: CountComments.
+Metrics/MethodLength:
+  Max: 500
+
+# Offense count: 89
+Metrics/PerceivedComplexity:
+  Max: 74
+
+# Offense count: 6
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle, SupportedStyles.
+Style/AccessModifierIndentation:
+  Enabled: false
+
+# Offense count: 85
+Style/Documentation:
+  Enabled: false
+
+# Offense count: 6
+# Configuration parameters: Exclude.
+Style/FileName:
+  Include:
+    - "**/src/lib/**/*.rb"
+
+# Offense count: 179
+# Configuration parameters: EnforcedStyle, SupportedStyles.
+Style/MethodName:
+  Include:
+   - "**/src/lib/**/*.rb"
+
+# Offense count: 22
+# Configuration parameters: EnforcedStyle, SupportedStyles.
+Style/VariableName:
+  Include:
+    - "**/src/lib/**/*.rb"
+
+# do not work well with new rubocop
+Style/TrivialAccessors:
+  Enabled: false
+
+# it is part of API, so do not change it now
+Style/AccessorMethodName:
+  Enabled: false
+
+# it is part of API, so do not change it now
+Style/PredicateName:
+  Enabled: false
+
+# problem is UI_ID which looks like constant module
+Style/ClassAndModuleCamelCase:
+  Enabled: false
+
+# ascii comments are used for examples with non-ascii code like Punycode module
+Style/AsciiComments:
+  Enabled: false

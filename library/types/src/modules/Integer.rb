@@ -46,7 +46,6 @@ module Yast
       deep_copy(ret)
     end
 
-
     # Generate a list<integer> with the integers from start to stop - 1.
     def RangeFrom(start, stop)
       ret = []
@@ -58,37 +57,36 @@ module Yast
       deep_copy(ret)
     end
 
-
     # Checks whether i is a power of two. That is 1, 2, 4, 8, ... .
     def IsPowerOfTwo(i)
       Ops.greater_than(i, 0) && Ops.bitwise_and(i, Ops.subtract(i, 1)) == 0
     end
 
-
     # Calculates the sum of values.
     def Sum(values)
       values = deep_copy(values)
-      Builtins::List.reduce(0, values) { |x, y| Ops.add(x, y) }
+      Builtins::List.reduce(0, values) { |a, e| Ops.add(a, e) }
     end
-
 
     # Returns the smallest integer in values.
     #
     # Behaviour is undefined for empty values.
+    # @deprecated use ruby native min method
     def Min(values)
-      values = deep_copy(values)
-      Builtins::List.reduce(values) { |x, y| Ops.less_than(x, y) ? x : y }
-    end
+      return nil unless values
 
+      values.min
+    end
 
     # Returns the highest integer in values.
     #
     # Behaviour is undefined for empty values.
+    # @deprecated use ruby native max method
     def Max(values)
-      values = deep_copy(values)
-      Builtins::List.reduce(values) { |x, y| Ops.greater_than(x, y) ? x : y }
-    end
+      return nil unless values
 
+      values.max
+    end
 
     # Clamps the integer i.
     def Clamp(i, min, max)
@@ -97,13 +95,13 @@ module Yast
       i
     end
 
-    publish :function => :Range, :type => "list <integer> (integer)"
-    publish :function => :RangeFrom, :type => "list <integer> (integer, integer)"
-    publish :function => :IsPowerOfTwo, :type => "boolean (integer)"
-    publish :function => :Sum, :type => "integer (list <integer>)"
-    publish :function => :Min, :type => "integer (list <integer>)"
-    publish :function => :Max, :type => "integer (list <integer>)"
-    publish :function => :Clamp, :type => "integer (integer, integer, integer)"
+    publish function: :Range, type: "list <integer> (integer)"
+    publish function: :RangeFrom, type: "list <integer> (integer, integer)"
+    publish function: :IsPowerOfTwo, type: "boolean (integer)"
+    publish function: :Sum, type: "integer (list <integer>)"
+    publish function: :Min, type: "integer (list <integer>)"
+    publish function: :Max, type: "integer (list <integer>)"
+    publish function: :Clamp, type: "integer (integer, integer, integer)"
   end
 
   Integer = IntegerClass.new

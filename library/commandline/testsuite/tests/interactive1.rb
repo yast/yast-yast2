@@ -37,9 +37,9 @@ module Yast
 
       Yast.import "CommandLine"
 
-      TEST(lambda { CommandLine.Init(@cmdline, ["interactive"]) }, [], nil)
-      TEST(lambda { CommandLine.StartGUI }, [], nil)
-      TEST(lambda { CommandLine.Done }, [], nil) 
+      TEST(->() { CommandLine.Init(@cmdline, ["interactive"]) }, [], nil)
+      TEST(->() { CommandLine.StartGUI }, [], nil)
+      TEST(->() { CommandLine.Done }, [], nil)
       # EOF
 
       nil

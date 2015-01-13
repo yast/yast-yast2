@@ -21,12 +21,6 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	regextype.ycp
-# Package:	yast2
-# Summary:	regular expression generic validator test
-# Author:	Stanislav Visnovsky <visnov@suse.cz>
-#
-# $Id$
 module Yast
   class RegextypeClient < Client
     def main
@@ -36,8 +30,8 @@ module Yast
 
       Yast.import "TypeRepository"
 
-      TEST(lambda { TypeRepository.regex_validator("^[abc]+.*m$", "blem") }, [], nil)
-      TEST(lambda { TypeRepository.regex_validator("^[abc]+.*m$", "blec") }, [], nil) 
+      TEST(->() { TypeRepository.regex_validator("^[abc]+.*m$", "blem") }, [], nil)
+      TEST(->() { TypeRepository.regex_validator("^[abc]+.*m$", "blec") }, [], nil)
 
       # EOF
 

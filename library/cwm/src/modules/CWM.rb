@@ -87,7 +87,7 @@ module Yast
     def PushSettings
       @settings_stack = Builtins.prepend(
         @settings_stack,
-        { "widgets" => @current_dialog_widgets }
+        "widgets" => @current_dialog_widgets
       )
 
       nil
@@ -97,7 +97,7 @@ module Yast
     def PopSettings
       current_dialog = Ops.get(@settings_stack, 0, {})
       Ops.set(@settings_stack, 0, nil)
-      @settings_stack = Builtins.filter(@settings_stack) { |e| e != nil }
+      @settings_stack = Builtins.filter(@settings_stack) { |e| !e.nil? }
       @current_dialog_widgets = Ops.get_list(current_dialog, "widgets", [])
 
       nil
@@ -122,7 +122,7 @@ module Yast
         arg = Ops.get(t, index)
         if current == :Frame && index == 0 # no action
           Builtins.y2debug("Leaving untouched %1", arg)
-        elsif Ops.is_term?(arg) && arg != nil # recurse
+        elsif Ops.is_term?(arg) && !arg.nil? # recurse
           s = Builtins.symbolof(Convert.to_term(arg))
           if Builtins.contains(@ContainerWidgets, s)
             arg = ProcessTerm(Convert.to_term(arg), widgets)
@@ -154,7 +154,7 @@ module Yast
         current = Builtins.symbolof(t)
         if current == :Frame && index == 0 # no action
           Builtins.y2debug("Leaving untouched %1", arg)
-        elsif Ops.is_term?(arg) && arg != nil # recurse
+        elsif Ops.is_term?(arg) && !arg.nil? # recurse
           s = Builtins.symbolof(Convert.to_term(arg))
           if Builtins.contains(@ContainerWidgets, s)
             rets = Ops.add(rets, StringsOfTerm(Convert.to_term(arg)))
@@ -211,7 +211,7 @@ module Yast
       }
       type = Ops.get(types, key)
       success = true
-      if type == nil
+      if type.nil?
         if key == "widget_func"
           success = Ops.is(value, "term ()")
         elsif key == "init"
@@ -255,20 +255,20 @@ module Yast
       error = ""
       if key == "label"
         s = Convert.to_string(value)
-        if s == nil || Builtins.size(s) == 0
+        if s.nil? || Builtins.size(s) == 0
           error = "Empty label"
         elsif Builtins.size(Builtins.filterchars(s, "&")) != 1
           error = "Label has no shortcut or more than 1 shortcuts"
         end
       elsif key == "help"
         s = Convert.to_string(value)
-        error = "Empty help" if s == nil
+        error = "Empty help" if s.nil?
       elsif key == "widget"
         s = Convert.to_symbol(value)
-        error = "No widget specified" if s == nil
+        error = "No widget specified" if s.nil?
       elsif key == "custom_widget"
         s = Convert.to_term(value)
-        error = "No custom widget specified" if s == nil
+        error = "No custom widget specified" if s.nil?
       end
 
       return true if error == ""
@@ -297,17 +297,17 @@ module Yast
     def mergeFunctions(widgets, functions)
       widgets = deep_copy(widgets)
       functions = deep_copy(functions)
-      functions = Builtins.filter(functions) { |k, v| Ops.is_string?(k) }
+      functions = Builtins.filter(functions) { |k, _v| Ops.is_string?(k) }
       fallback_functions = Convert.convert(
         functions,
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
       Builtins.maplist(widgets) do |w|
         Convert.convert(
           Builtins.union(fallback_functions, w),
-          :from => "map",
-          :to   => "map <string, any>"
+          from: "map",
+          to:   "map <string, any>"
         )
       end
     end
@@ -320,7 +320,7 @@ module Yast
       Builtins.foreach(widgets) do |w|
         # set initial properties
         valid_chars = Ops.get_string(w, "valid_chars")
-        if valid_chars != nil
+        if !valid_chars.nil?
           UI.ChangeWidget(
             Id(Ops.get_string(w, "_cwm_key", "")),
             :ValidChars,
@@ -331,10 +331,10 @@ module Yast
         @processed_widget = deep_copy(w)
         toEval = Convert.convert(
           Ops.get(w, "init"),
-          :from => "any",
-          :to   => "void (string)"
+          from: "any",
+          to:   "void (string)"
         )
-        toEval.call(Ops.get_string(w, "_cwm_key", "")) if toEval != nil
+        toEval.call(Ops.get_string(w, "_cwm_key", "")) if !toEval.nil?
       end
 
       nil
@@ -350,15 +350,15 @@ module Yast
       event_descr = deep_copy(event_descr)
       ret = nil
       Builtins.foreach(widgets) do |w|
-        if ret == nil
+        if ret.nil?
           @processed_widget = deep_copy(w)
           events = Ops.get_list(w, "handle_events", [])
           toEval = Convert.convert(
             Ops.get(w, "handle"),
-            :from => "any",
-            :to   => "symbol (string, map)"
+            from: "any",
+            to:   "symbol (string, map)"
           )
-          if toEval != nil &&
+          if !toEval.nil? &&
               (events == [] ||
                 Builtins.contains(events, Ops.get(event_descr, "ID")))
             ret = toEval.call(Ops.get_string(w, "_cwm_key", ""), event_descr)
@@ -380,10 +380,10 @@ module Yast
         @processed_widget = deep_copy(w)
         toEval = Convert.convert(
           Ops.get(w, "store"),
-          :from => "any",
-          :to   => "void (string, map)"
+          from: "any",
+          to:   "void (string, map)"
         )
-        toEval.call(Ops.get_string(w, "_cwm_key", ""), event) if toEval != nil
+        toEval.call(Ops.get_string(w, "_cwm_key", ""), event) if !toEval.nil?
       end
 
       nil
@@ -398,10 +398,10 @@ module Yast
         @processed_widget = deep_copy(w)
         toEval = Convert.convert(
           Ops.get(w, "clean_up"),
-          :from => "any",
-          :to   => "void (string)"
+          from: "any",
+          to:   "void (string)"
         )
-        toEval.call(Ops.get_string(w, "_cwm_key", "")) if toEval != nil
+        toEval.call(Ops.get_string(w, "_cwm_key", "")) if !toEval.nil?
       end
 
       nil
@@ -454,15 +454,15 @@ module Yast
         if !Builtins.haskey(v, "no_help")
           to_check = Convert.convert(
             Builtins.merge(to_check, ["help"]),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
         end
         Builtins.foreach(to_check) do |key|
           if key != "label" ||
               Ops.get(v, "widget") != :radio_buttons &&
-                Ops.get(v, "widget") != :custom &&
-                Ops.get(v, "widget") != :func
+                  Ops.get(v, "widget") != :custom &&
+                  Ops.get(v, "widget") != :func
             ret = ValidateValueContents(key, Ops.get(v, key), k) && ret
           end
         end
@@ -477,10 +477,10 @@ module Yast
         if Builtins.haskey(v, "_cwm_do_validate")
           val_func = Convert.convert(
             Ops.get(v, "_cwm_do_validate"),
-            :from => "any",
-            :to   => "boolean (string, map <string, any>)"
+            from: "any",
+            to:   "boolean (string, map <string, any>)"
           )
-          ret = val_func.call(k, v) && ret if val_func != nil
+          ret = val_func.call(k, v) && ret if !val_func.nil?
         end
       end
       ret
@@ -497,15 +497,15 @@ module Yast
       if Ops.get(w, "widget") == :empty
         Ops.set(w, "widget", VBox())
       elsif Ops.get(w, "widget") == :custom &&
-          Ops.get(w, "custom_widget") != nil
-        Ops.set(w, "widget", Ops.get_term(w, "custom_widget") { VSpacing(0) })
+          w["custom_widget"]
+        w["widget"] = Ops.get_term(w, "custom_widget") { VSpacing(0) }
       elsif Ops.get(w, "widget") == :func
         toEval = Convert.convert(
           Ops.get(w, "widget_func"),
-          :from => "any",
-          :to   => "term ()"
+          from: "any",
+          to:   "term ()"
         )
-        if toEval != nil
+        if !toEval.nil?
           Ops.set(w, "widget", toEval.call)
         else
           Ops.set(w, "widget", VBox())
@@ -569,7 +569,7 @@ module Yast
           )
         elsif widget == :intfield
           min = Ops.get_integer(w, "minimum", 0)
-          max = Ops.get_integer(w, "maximum", 2147483647)
+          max = Ops.get_integer(w, "maximum", 2_147_483_647)
           Ops.set(
             w,
             "widget",
@@ -645,15 +645,15 @@ module Yast
       if val_type == :function || val_type == :function_no_popup
         toEval = Convert.convert(
           Ops.get(widget, "validate_function"),
-          :from => "any",
-          :to   => "boolean (string, map)"
+          from: "any",
+          to:   "boolean (string, map)"
         )
-        failed = !toEval.call(key, event) if toEval != nil
+        failed = !toEval.call(key, event) if !toEval.nil?
       elsif val_type == :regexp
         regexp = Ops.get_string(widget, "validate_condition", "")
         if !Builtins.regexpmatch(
-            Convert.to_string(UI.QueryWidget(Id(:_tp_value), :Value)),
-            regexp
+          Convert.to_string(UI.QueryWidget(Id(:_tp_value), :Value)),
+          regexp
           )
           failed = true
         end
@@ -692,9 +692,9 @@ module Yast
       result = true
       Builtins.foreach(widgets) do |w|
         widget_key = Ops.get_string(w, "_cwm_key", "")
-        result = result && validateWidget(w, event, widget_key)
+        result &&= validateWidget(w, event, widget_key)
       end
-      if !result && @validation_failed_handler != nil
+      if !result && !@validation_failed_handler.nil?
         @validation_failed_handler.call
       end
       result
@@ -707,7 +707,7 @@ module Yast
     def CreateWidgets(names, source)
       names = deep_copy(names)
       source = deep_copy(source)
-      ValidateMaps(source) # FIXME find better place
+      ValidateMaps(source) # FIXME: find better place
       ret = Builtins.maplist(names) do |w|
         m = Ops.get(source, w, {})
         # leave add here in order to make a copy of the structure
@@ -720,14 +720,13 @@ module Yast
       deep_copy(ret)
     end
 
-
     # Merge helps from the widgets
     # @param [Array<Hash{String => Object>}] widgets a list of widget description maps
     # @return [String] merged helps of the widgets
     def MergeHelps(widgets)
       widgets = deep_copy(widgets)
       helps = Builtins.maplist(widgets) { |w| Ops.get_string(w, "help") }
-      helps = Builtins.filter(helps) { |h| h != nil }
+      helps = Builtins.filter(helps) { |h| !h.nil? }
       Builtins.mergestring(helps, "\n")
     end
 
@@ -784,7 +783,7 @@ module Yast
 
       # allow a handler to enable/disable widgets before the first real
       # UserInput takes place
-      UI.FakeUserInput({ "ID" => "_cwm_wakeup" })
+      UI.FakeUserInput("ID" => "_cwm_wakeup")
 
       ret = nil
       save_exits = [:next, :ok]
@@ -802,10 +801,10 @@ module Yast
           handleDebug
         end
         handle_ret = handleWidgets(widgets, event_descr)
-        if handle_ret != nil ||
+        if !handle_ret.nil? ||
             Ops.is_symbol?(ret) && Builtins.contains(save_exits, ret)
           save = true
-          if handle_ret != nil
+          if !handle_ret.nil?
             ret = handle_ret
             Ops.set(event_descr, "ID", ret)
           end
@@ -813,36 +812,36 @@ module Yast
 
         ret = :abort if ret == :cancel
         if ret == :abort
-          if Ops.get(functions, :abort) != nil
+          if functions[:abort]
             toEval = Convert.convert(
-              Ops.get(functions, :abort),
-              :from => "any",
-              :to   => "boolean ()"
+              functions[:abort],
+              from: "any",
+              to:   "boolean ()"
             )
-            if toEval != nil
+            if !toEval.nil?
               eval_ret = toEval.call
               ret = eval_ret ? :abort : nil
             end
           end
         elsif ret == :back
-          if Ops.get(functions, :back) != nil
+          if functions[:back]
             toEval = Convert.convert(
-              Ops.get(functions, :back),
-              :from => "any",
-              :to   => "boolean ()"
+              functions[:back],
+              from: "any",
+              to:   "boolean ()"
             )
-            if toEval != nil
+            if !toEval.nil?
               eval_ret = toEval.call
               ret = eval_ret ? :back : nil
             end
           end
         end
 
-        next if ret == nil
+        next if ret.nil?
 
         ret = nil if !validateWidgets(widgets, event_descr) if save
 
-        if ret == nil
+        if ret.nil?
           save = false
           next
         end
@@ -870,17 +869,15 @@ module Yast
     # @param [String] next label of the "Next" button
     # @param [String] back string label of the "Back" button
     # @param [String] abort string label of the "Abort" button
-    # @param [String] help string label of the additional "Help" button (if needed)
-    def AdjustButtons(_next, back, abort, help)
+    # @param [String] _help string label of the additional "Help" button (if needed)
+    def AdjustButtons(next_, back, abort, _help)
       # FIXME: there is no point in the help parameter, since we cannot hide the Help
       # button anyway, get rid of it, it's not used at all
-      help = "" if UI.HasSpecialWidget(:Wizard)
-      help = "" if help == nil
-      _next = "" if _next == nil
-      back = "" if back == nil
-      abort = "" if abort == nil
-      if _next != ""
-        Wizard.SetNextButton(:next, _next)
+      next_ = "" if next_.nil?
+      back = "" if back.nil?
+      abort = "" if abort.nil?
+      if next_ != ""
+        Wizard.SetNextButton(:next, next_)
       else
         Wizard.HideNextButton
       end
@@ -917,8 +914,8 @@ module Yast
       contents = Ops.get_term(settings, "contents", VBox())
       widget_names = Convert.convert(
         Ops.get(settings, "widget_names") { StringsOfTerm(contents) },
-        :from => "any",
-        :to   => "list <string>"
+        from: "any",
+        to:   "list <string>"
       )
       caption = Ops.get_string(settings, "caption", "")
       back_button = Ops.get_string(settings, "back_button") { Label.BackButton }
@@ -943,8 +940,6 @@ module Yast
       Run(w, fallback)
     end
 
-
-
     # Display the dialog and run its event loop
     # @param [Array<String>] widget_names list of names of widgets that will be used in the
     #   dialog
@@ -963,7 +958,6 @@ module Yast
       contents = deep_copy(contents)
       fallback = deep_copy(fallback)
       ShowAndRun(
-        {
           "widget_names"       => widget_names,
           "widget_descr"       => widget_descr,
           "contents"           => contents,
@@ -971,7 +965,6 @@ module Yast
           "back_button"        => back_button,
           "next_button"        => next_button,
           "fallback_functions" => fallback
-        }
       )
     end
 
@@ -980,7 +973,7 @@ module Yast
     # Do-nothing replacement for a widget initialization function.
     # Used for push buttons if all the other widgets have a fallback.
     # @param [String] key id of the widget
-    def InitNull(key)
+    def InitNull(_key)
       nil
     end
 
@@ -988,37 +981,36 @@ module Yast
     # Used for push buttons if all the other widgets have a fallback.
     # @param [String] key	id of the widget
     # @param [Hash] event	the event being handled
-    def StoreNull(key, event)
-      event = deep_copy(event)
+    def StoreNull(_key, _event)
       nil
     end
 
-    publish :function => :StringsOfTerm, :type => "list <string> (term)"
-    publish :function => :ValidateBasicType, :type => "boolean (any, string)"
-    publish :function => :ValidateValueType, :type => "boolean (string, any, string)"
-    publish :function => :mergeFunctions, :type => "list <map <string, any>> (list <map <string, any>>, map)"
-    publish :function => :initWidgets, :type => "void (list <map <string, any>>)"
-    publish :function => :handleWidgets, :type => "symbol (list <map <string, any>>, map)"
-    publish :function => :saveWidgets, :type => "void (list <map <string, any>>, map)"
-    publish :function => :cleanupWidgets, :type => "void (list <map <string, any>>)"
-    publish :function => :GetProcessedWidget, :type => "map <string, any> ()"
-    publish :function => :OkCancelBox, :type => "term ()"
-    publish :function => :ValidateMaps, :type => "boolean (map <string, map <string, any>>)"
-    publish :function => :prepareWidget, :type => "map <string, any> (map <string, any>)"
-    publish :function => :validateWidget, :type => "boolean (map <string, any>, map, string)"
-    publish :function => :validateWidgets, :type => "boolean (list <map <string, any>>, map)"
-    publish :function => :CreateWidgets, :type => "list <map <string, any>> (list <string>, map <string, map <string, any>>)"
-    publish :function => :MergeHelps, :type => "string (list <map <string, any>>)"
-    publish :function => :PrepareDialog, :type => "term (term, list <map <string, any>>)"
-    publish :function => :ReplaceWidgetHelp, :type => "void (string, string)"
-    publish :function => :Run, :type => "symbol (list <map <string, any>>, map)"
-    publish :function => :DisableButtons, :type => "void (list <string>)"
-    publish :function => :AdjustButtons, :type => "void (string, string, string, string)"
-    publish :function => :SetValidationFailedHandler, :type => "void (void ())"
-    publish :function => :ShowAndRun, :type => "symbol (map <string, any>)"
-    publish :function => :ShowAndRunOrig, :type => "symbol (list <string>, map <string, map <string, any>>, term, string, string, string, map)"
-    publish :function => :InitNull, :type => "void (string)"
-    publish :function => :StoreNull, :type => "void (string, map)"
+    publish function: :StringsOfTerm, type: "list <string> (term)"
+    publish function: :ValidateBasicType, type: "boolean (any, string)"
+    publish function: :ValidateValueType, type: "boolean (string, any, string)"
+    publish function: :mergeFunctions, type: "list <map <string, any>> (list <map <string, any>>, map)"
+    publish function: :initWidgets, type: "void (list <map <string, any>>)"
+    publish function: :handleWidgets, type: "symbol (list <map <string, any>>, map)"
+    publish function: :saveWidgets, type: "void (list <map <string, any>>, map)"
+    publish function: :cleanupWidgets, type: "void (list <map <string, any>>)"
+    publish function: :GetProcessedWidget, type: "map <string, any> ()"
+    publish function: :OkCancelBox, type: "term ()"
+    publish function: :ValidateMaps, type: "boolean (map <string, map <string, any>>)"
+    publish function: :prepareWidget, type: "map <string, any> (map <string, any>)"
+    publish function: :validateWidget, type: "boolean (map <string, any>, map, string)"
+    publish function: :validateWidgets, type: "boolean (list <map <string, any>>, map)"
+    publish function: :CreateWidgets, type: "list <map <string, any>> (list <string>, map <string, map <string, any>>)"
+    publish function: :MergeHelps, type: "string (list <map <string, any>>)"
+    publish function: :PrepareDialog, type: "term (term, list <map <string, any>>)"
+    publish function: :ReplaceWidgetHelp, type: "void (string, string)"
+    publish function: :Run, type: "symbol (list <map <string, any>>, map)"
+    publish function: :DisableButtons, type: "void (list <string>)"
+    publish function: :AdjustButtons, type: "void (string, string, string, string)"
+    publish function: :SetValidationFailedHandler, type: "void (void ())"
+    publish function: :ShowAndRun, type: "symbol (map <string, any>)"
+    publish function: :ShowAndRunOrig, type: "symbol (list <string>, map <string, map <string, any>>, term, string, string, string, map)"
+    publish function: :InitNull, type: "void (string)"
+    publish function: :StoreNull, type: "void (string, map)"
   end
 
   CWM = CWMClass.new

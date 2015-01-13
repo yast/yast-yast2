@@ -35,7 +35,6 @@ require "yast"
 module Yast
   class FileUtilsClass < Module
     def main
-
       textdomain "base"
       Yast.import "Popup"
       Yast.import "String"
@@ -197,7 +196,6 @@ module Yast
     def GetFileType(target)
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
 
-
       if Ops.get_boolean(info, "isdir", false) == true
         return "directory"
       elsif Ops.get_boolean(info, "isreg", false) == true
@@ -257,7 +255,6 @@ module Yast
       Ops.get_integer(info, "gid")
     end
 
-
     # Checks whether the path (directory) exists and return a boolean
     # value whether everything is OK or user accepted the behavior as
     # despite some errors. If the directory doesn't exist, it offers
@@ -283,7 +280,7 @@ module Yast
         Builtins.y2milestone("Path %1 exists", check_path)
         # Directory (path) is a type 'directory'
         if IsDirectory(check_path)
-          return true 
+          return true
           # Directory (path) is not a valid 'directory'
         else
           Builtins.y2warning("Path %1 is not a directory", check_path)
@@ -298,7 +295,7 @@ module Yast
               pathvalue
             )
           )
-        end 
+        end
         # Directory (path) doesn't exist, trying to create it if wanted
       else
         Builtins.y2milestone("Path %1 does not exist", check_path)
@@ -316,7 +313,7 @@ module Yast
               "Directory %1 successfully created",
               check_path
             )
-            return true 
+            return true
             # Failed to create the directory
           else
             Builtins.y2warning("Failed to create directory %1", check_path)
@@ -331,7 +328,7 @@ module Yast
                 pathvalue
               )
             )
-          end 
+          end
           # User doesn't want to create the directory
         else
           Builtins.y2warning(
@@ -465,7 +462,7 @@ module Yast
         ""
       )
 
-      if tmpfile == nil || tmpfile == ""
+      if tmpfile.nil? || tmpfile == ""
         Builtins.y2error(
           "Error creating temporary file: %1 - empty output",
           cmd_out
@@ -518,26 +515,26 @@ module Yast
       nil
     end
 
-    publish :function => :Exists, :type => "boolean (string)"
-    publish :function => :IsDirectory, :type => "boolean (string)"
-    publish :function => :IsFile, :type => "boolean (string)"
-    publish :function => :IsBlock, :type => "boolean (string)"
-    publish :function => :IsFifo, :type => "boolean (string)"
-    publish :function => :IsLink, :type => "boolean (string)"
-    publish :function => :IsSocket, :type => "boolean (string)"
-    publish :function => :IsCharacterDevice, :type => "boolean (string)"
-    publish :function => :GetFileRealType, :type => "string (string)"
-    publish :function => :GetFileType, :type => "string (string)"
-    publish :function => :GetSize, :type => "integer (string)"
-    publish :function => :GetOwnerUserID, :type => "integer (string)"
-    publish :function => :GetOwnerGroupID, :type => "integer (string)"
-    publish :function => :CheckAndCreatePath, :type => "boolean (string)"
-    publish :function => :MD5sum, :type => "string (string)"
-    publish :function => :Chown, :type => "boolean (string, string, boolean)"
-    publish :function => :Chmod, :type => "boolean (string, string, boolean)"
-    publish :function => :MkTempFile, :type => "string (string, string, string)"
-    publish :function => :MkTempDirectory, :type => "string (string, string, string)"
-    publish :function => :CleanupTemp, :type => "void ()"
+    publish function: :Exists, type: "boolean (string)"
+    publish function: :IsDirectory, type: "boolean (string)"
+    publish function: :IsFile, type: "boolean (string)"
+    publish function: :IsBlock, type: "boolean (string)"
+    publish function: :IsFifo, type: "boolean (string)"
+    publish function: :IsLink, type: "boolean (string)"
+    publish function: :IsSocket, type: "boolean (string)"
+    publish function: :IsCharacterDevice, type: "boolean (string)"
+    publish function: :GetFileRealType, type: "string (string)"
+    publish function: :GetFileType, type: "string (string)"
+    publish function: :GetSize, type: "integer (string)"
+    publish function: :GetOwnerUserID, type: "integer (string)"
+    publish function: :GetOwnerGroupID, type: "integer (string)"
+    publish function: :CheckAndCreatePath, type: "boolean (string)"
+    publish function: :MD5sum, type: "string (string)"
+    publish function: :Chown, type: "boolean (string, string, boolean)"
+    publish function: :Chmod, type: "boolean (string, string, boolean)"
+    publish function: :MkTempFile, type: "string (string, string, string)"
+    publish function: :MkTempDirectory, type: "string (string, string, string)"
+    publish function: :CleanupTemp, type: "void ()"
   end
 
   FileUtils = FileUtilsClass.new

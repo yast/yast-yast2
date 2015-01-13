@@ -31,7 +31,6 @@ require "yast"
 module Yast
   class XVersionClass < Module
     def main
-
       # All paths related to X server
       @_paths = nil
     end
@@ -61,7 +60,7 @@ module Yast
     # @param [String] id string path identification to provide
     # @return [String] required path, nil if not defined
     def Path(id)
-      Initialize() if @_paths == nil
+      Initialize() if @_paths.nil?
       Ops.get(@_paths, id)
     end
 
@@ -115,15 +114,15 @@ module Yast
       Path("fontdir")
     end
 
-    publish :function => :Path, :type => "string (string)"
-    publish :function => :binPath, :type => "string ()"
-    publish :function => :libPath, :type => "string ()"
-    publish :function => :lib64Path, :type => "string ()"
-    publish :function => :manPath, :type => "string ()"
-    publish :function => :includePath, :type => "string ()"
-    publish :function => :sharePath, :type => "string ()"
-    publish :function => :infoPath, :type => "string ()"
-    publish :function => :fontPath, :type => "string ()"
+    publish function: :Path, type: "string (string)"
+    publish function: :binPath, type: "string ()"
+    publish function: :libPath, type: "string ()"
+    publish function: :lib64Path, type: "string ()"
+    publish function: :manPath, type: "string ()"
+    publish function: :includePath, type: "string ()"
+    publish function: :sharePath, type: "string ()"
+    publish function: :infoPath, type: "string ()"
+    publish function: :fontPath, type: "string ()"
   end
 
   XVersion = XVersionClass.new

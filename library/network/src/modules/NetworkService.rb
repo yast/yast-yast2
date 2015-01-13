@@ -45,24 +45,23 @@ require "yast"
 
 module Yast
   class NetworkServiceClass < Module
-
     # @current_name - current network backend identification
     # @cached_name  - the new network backend identification
 
     # network backend identification to service name mapping
     BACKENDS = {
-    # <internal-id>        <service name>
-      :netconfig        => "network",
-      :network_manager  => "NetworkManager",
-      :wicked           => "wicked"
+      # <internal-id>        <service name>
+      netconfig:       "network",
+      network_manager: "NetworkManager",
+      wicked:          "wicked"
     }
 
     # network backend identification to its rpm package name mapping
     BACKEND_PKG_NAMES = {
-    # <internal-id>        <service name>
-      :netconfig        => "sysconfig-network",
-      :network_manager  => "NetworkManager",
-      :wicked           => "wicked"
+      # <internal-id>        <service name>
+      netconfig:       "sysconfig-network",
+      network_manager: "NetworkManager",
+      wicked:          "wicked"
     }
 
     SYSTEMCTL = "/bin/systemctl"
@@ -96,9 +95,9 @@ module Yast
     def RunSystemCtl(service, action)
       cmd = Builtins.sformat("%1 %2 %3.service", SYSTEMCTL, action, service)
       ret = Convert.convert(
-        SCR.Execute(path(".target.bash_output"), cmd, { "TERM" => "raw" }),
-        :from => "any",
-        :to   => "map <string, any>"
+        SCR.Execute(path(".target.bash_output"), cmd,  "TERM" => "raw"),
+        from: "any",
+        to:   "map <string, any>"
       )
       Builtins.y2debug("RunSystemCtl: Command '%1' returned '%2'", cmd, ret)
       Ops.get_integer(ret, "exit", -1)
@@ -123,7 +122,7 @@ module Yast
 
     # Checks if given network backend is available in the system
     def backend_available?(backend)
-      PackageSystem.Installed( BACKEND_PKG_NAMES[backend])
+      PackageSystem.Installed(BACKEND_PKG_NAMES[backend])
     end
 
     alias_method :is_backend_available, :backend_available?
@@ -214,15 +213,15 @@ module Yast
       disable_service(@current_name)
 
       case @cached_name
-        when :network_manager, :wicked
-          RunSystemCtl( BACKENDS[ @cached_name], "--force enable")
-        when :netconfig
-          RunSystemCtl( BACKENDS[ @current_name], "disable")
+      when :network_manager, :wicked
+        RunSystemCtl(BACKENDS[@cached_name], "--force enable")
+      when :netconfig
+        RunSystemCtl(BACKENDS[@current_name], "disable")
 
-          # Workaround for bug #61055:
-          Builtins.y2milestone("Enabling service %1", "network")
-          cmd = "cd /; /sbin/insserv -d /etc/init.d/network"
-          SCR.Execute(path(".target.bash"), cmd)
+        # Workaround for bug #61055:
+        Builtins.y2milestone("Enabling service %1", "network")
+        cmd = "cd /; /sbin/insserv -d /etc/init.d/network"
+        SCR.Execute(path(".target.bash"), cmd)
       end
 
       @initialized = false
@@ -279,9 +278,9 @@ module Yast
         # TRANSLATORS: pop-up question when reading the service configuration
         cont = Popup.ContinueCancel(
           _(
-            "Your network interfaces are currently controlled by NetworkManager\n" +
-              "but the service to configure might not work well with it.\n" +
-              "\n" +
+            "Your network interfaces are currently controlled by NetworkManager\n" \
+              "but the service to configure might not work well with it.\n" \
+              "\n" \
               "Really continue?"
           )
         )
@@ -345,19 +344,20 @@ module Yast
       if network_running
         return true
       else
-        error_text = Stage.initial ?
-          _(
-            "No running network detected.\n" +
-            "Restart installation and configure network in Linuxrc\n" +
-            "or continue without network."
-          )
-          :
-          _(
-            "No running network detected.\n" +
-            "Configure network with YaST or Network Manager plug-in\n" +
-            "and start this module again\n" +
-            "or continue without network."
-          )
+        error_text = if Stage.initial
+                       _(
+                         "No running network detected.\n" \
+                         "Restart installation and configure network in Linuxrc\n" \
+                         "or continue without network."
+                       )
+                     else
+                       _(
+                         "No running network detected.\n" \
+                         "Configure network with YaST or Network Manager plug-in\n" \
+                         "and start this module again\n" \
+                         "or continue without network."
+                       )
+                     end
 
         ret = Popup.ContinueCancel(error_text)
 
@@ -378,11 +378,11 @@ module Yast
     #
     def cached_name
       Read()
-      return @cached_name
+      @cached_name
     end
 
     # Checks if currently cached service is the given one
-    def cached_service?( service)
+    def cached_service?(service)
       cached_name == service
     rescue
       Builtins.y2error("NetworkService: error when checking cached network service")
@@ -391,8 +391,8 @@ module Yast
 
     # Restarts wicked backend directly
     def wicked_restart
-      run_wicked( "ifdown", "all")
-      run_wicked( "ifup", "all")
+      run_wicked("ifdown", "all")
+      run_wicked("ifup", "all")
     end
 
     # Restarts network backend using systemctl call
@@ -426,8 +426,7 @@ module Yast
       return if !service
 
       if service == :wicked
-        # FIXME:
-        # you really need to use 'wickedd'. Moreover kill action do not
+        # FIXME: you really need to use 'wickedd'. Moreover kill action do not
         # kill all wickedd services - e.g. nanny, dhcp* ... stays running
         # This needs to be clarified with wicked people.
         # bnc#864619
@@ -438,33 +437,33 @@ module Yast
         # no effect.
         # So let's kill all processes in the network service
         # cgroup to make sure e.g. dhcp clients are stopped.
-        RunSystemCtl(BACKENDS[ @current_name], "kill")
+        RunSystemCtl(BACKENDS[@current_name], "kill")
       end
     end
 
     def disable_service(service)
-      RunSystemCtl( BACKENDS[service], "disable")
+      RunSystemCtl(BACKENDS[service], "disable")
     end
 
-    publish :function => :Read, :type => "void ()"
-    publish :function => :Modified, :type => "boolean ()"
-    publish :function => :is_backend_available, :type => "boolean (symbol)"
-    publish :function => :is_network_manager, :type => "boolean ()"
-    publish :function => :is_netconfig, :type => "boolean ()"
-    publish :function => :is_wicked, :type => "boolean ()"
-    publish :function => :is_disabled, :type => "boolean ()"
-    publish :function => :use_network_manager, :type => "void ()"
-    publish :function => :use_netconfig, :type => "void ()"
-    publish :function => :use_wicked, :type => "void ()"
-    publish :function => :IsActive, :type => "boolean ()"
-    publish :function => :ReloadOrRestart, :type => "void ()"
-    publish :function => :Restart, :type => "void ()"
-    publish :function => :StartStop, :type => "void ()"
-    publish :function => :ConfirmNetworkManager, :type => "boolean ()"
-    publish :function => :isNetworkRunning, :type => "boolean ()"
-    publish :function => :isNetworkv4Running, :type => "boolean ()"
-    publish :function => :isNetworkv6Running, :type => "boolean ()"
-    publish :function => :RunningNetworkPopup, :type => "boolean ()"
+    publish function: :Read, type: "void ()"
+    publish function: :Modified, type: "boolean ()"
+    publish function: :is_backend_available, type: "boolean (symbol)"
+    publish function: :is_network_manager, type: "boolean ()"
+    publish function: :is_netconfig, type: "boolean ()"
+    publish function: :is_wicked, type: "boolean ()"
+    publish function: :is_disabled, type: "boolean ()"
+    publish function: :use_network_manager, type: "void ()"
+    publish function: :use_netconfig, type: "void ()"
+    publish function: :use_wicked, type: "void ()"
+    publish function: :IsActive, type: "boolean ()"
+    publish function: :ReloadOrRestart, type: "void ()"
+    publish function: :Restart, type: "void ()"
+    publish function: :StartStop, type: "void ()"
+    publish function: :ConfirmNetworkManager, type: "boolean ()"
+    publish function: :isNetworkRunning, type: "boolean ()"
+    publish function: :isNetworkv4Running, type: "boolean ()"
+    publish function: :isNetworkv6Running, type: "boolean ()"
+    publish function: :RunningNetworkPopup, type: "boolean ()"
   end
 
   NetworkService = NetworkServiceClass.new
