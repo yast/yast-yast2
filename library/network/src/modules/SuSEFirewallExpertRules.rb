@@ -165,15 +165,14 @@ module Yast
           "dport"    => Ops.get(rule_splitted, 2, ""),
           "sport"    => Ops.get(rule_splitted, 3, ""),
           # additional options if defined (offset 4 and more)
-          "options"  => Ops.greater_than(
-            options_entries_count,
-            0
-          ) ?
-            Builtins.mergestring(
-              Builtins.sublist(rule_splitted, 4, options_entries_count),
-              ","
-            ) :
-            ""
+          "options"  => if Ops.greater_than(options_entries_count, 0)
+                          Builtins.mergestring(
+                            Builtins.sublist(rule_splitted, 4, options_entries_count),
+                            ","
+                          )
+                        else
+                          ""
+                        end
         }
       end
 
@@ -370,7 +369,7 @@ module Yast
       end
 
       current_rules_list = Builtins.splitstring(current_rules, " \n")
-      if Ops.get(current_rules_list, rule_id) != nil
+      if Ops.get(current_rules_list, rule_id)
         current_rules_list = Builtins.remove(current_rules_list, rule_id)
         current_rules = Builtins.mergestring(current_rules_list, " ")
         SuSEFirewall.SetAcceptExpertRules(zone, current_rules)

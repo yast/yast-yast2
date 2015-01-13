@@ -28,7 +28,7 @@ module Yast
       @cur = -1
       Yast.include self, "Wizard.rb"
 
-      @Aliases = { "0" => lambda { next }, "1" => lambda { next }, "F" => lambda do
+      @Aliases = { "0" => ->() { next }, "1" => ->() { next }, "F" => lambda do
         finish
       end }
 
@@ -39,13 +39,13 @@ module Yast
         "F"        => { finish: :ws_finish }
       }
 
-      TEST(lambda { Sequencer.Run(nil, nil) }, [], nil)
-      TEST(lambda { Sequencer.Run({}, {}) }, [], nil)
-      TEST(lambda { Sequencer.Run({}, nil) }, [], nil)
-      TEST(lambda { Sequencer.Run(nil, {}) }, [], nil)
-      TEST(lambda { Sequencer.Run({}, @Sequence) }, [], nil)
-      TEST(lambda { Sequencer.Run(@Aliases, {}) }, [], nil)
-      TEST(lambda { Sequencer.Run({},  "ws_start" => :ok) }, [], nil)
+      TEST(->() { Sequencer.Run(nil, nil) }, [], nil)
+      TEST(->() { Sequencer.Run({}, {}) }, [], nil)
+      TEST(->() { Sequencer.Run({}, nil) }, [], nil)
+      TEST(->() { Sequencer.Run(nil, {}) }, [], nil)
+      TEST(->() { Sequencer.Run({}, @Sequence) }, [], nil)
+      TEST(->() { Sequencer.Run(@Aliases, {}) }, [], nil)
+      TEST(->() { Sequencer.Run({},  "ws_start" => :ok) }, [], nil)
 
       nil
     end

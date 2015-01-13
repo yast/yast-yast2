@@ -39,8 +39,8 @@ module Yast
 
       # list is non-strict, so any parameter can be passed to it, but known are checked,
       # so configured is incorrect here
-      TEST(lambda { CommandLine.Init(@cmdline, ["list", "eth0", "configured=1"]) }, [], nil)
-      TEST(lambda { CommandLine.Command }, [], nil)
+      TEST(->() { CommandLine.Init(@cmdline, ["list", "eth0", "configured=1"]) }, [], nil)
+      TEST(->() { CommandLine.Command }, [], nil)
 
       # EOF
 

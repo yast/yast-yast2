@@ -27,7 +27,7 @@ module Yast
       Yast.include self, "testsuite.rb"
       Yast.import "Sequencer"
 
-      TEST(lambda { Sequencer.WS_error("testsuite message") }, [], nil)
+      TEST(->() { Sequencer.WS_error("testsuite message") }, [], nil)
 
       nil
     end

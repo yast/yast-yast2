@@ -28,7 +28,7 @@ module Yast
       Yast.import "Sequencer"
       Sequencer.docheck = false
 
-      TEST(lambda { Sequencer.Run(aliases, sequence) }, [], nil) if @cur != -1
+      TEST(->() { Sequencer.Run(aliases, sequence) }, [], nil) if @cur != -1
     end
 
     def ok
@@ -102,19 +102,19 @@ module Yast
     # aliases
     def aliases
       {
-        "begin"        => lambda { click },
-        "config"       => lambda { click },
-        "end"          => lambda { click },
-        "expert"       => lambda { click },
-        "expert2"      => lambda { click },
-        "details"      => lambda { click },
-        "superdetails" => lambda { click }
+        "begin"        => ->() { click },
+        "config"       => ->() { click },
+        "end"          => ->() { click },
+        "expert"       => ->() { click },
+        "expert2"      => ->() { click },
+        "details"      => ->() { click },
+        "superdetails" => ->() { click }
       }
     end
 
     # example5.ycp sequence
     def sequence
-      _Sequence5 = {
+      sequence5 = {
         "ws_start"     => "begin",
         "begin"        => { next: "config" },
         "expert"       => { next: "expert2" },
@@ -133,7 +133,7 @@ module Yast
         "end"          => { finish: :ws_finish }
       }
 
-      deep_copy(_Sequence5)
+      deep_copy(sequence5)
     end
   end
 end

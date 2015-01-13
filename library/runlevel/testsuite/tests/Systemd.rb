@@ -32,11 +32,11 @@ module Yast
       # Note: \0 should be used here as the separator, but YCP does not allows that...
 
       # test standard System V init
-      TEST(lambda { Systemd.Running }, [{ "target" => { "stat" => {} } }, {}, {}], nil)
+      TEST(->() { Systemd.Running }, [{ "target" => { "stat" => {} } }, {}, {}], nil)
 
       # systemd
       TEST(
-        lambda { Systemd.Running },
+        ->() { Systemd.Running },
         [{ "target" => { "stat" => { "isdir" => true } } }, {}, {}],
         nil
       )
@@ -44,39 +44,39 @@ module Yast
       DUMP("Systemd::SetDefaultRunlevel() tests")
 
       # test invalid parameters
-      TEST(lambda { Systemd.SetDefaultRunlevel(nil) }, [
+      TEST(->() { Systemd.SetDefaultRunlevel(nil) }, [
         {},
         {},
         { "target" => { "bash" => 0 } }
       ], nil)
 
-      TEST(lambda { Systemd.SetDefaultRunlevel(-1) }, [
+      TEST(->() { Systemd.SetDefaultRunlevel(-1) }, [
         {},
         {},
         { "target" => { "bash" => 0 } }
       ], nil)
 
-      TEST(lambda { Systemd.SetDefaultRunlevel(7) }, [
+      TEST(->() { Systemd.SetDefaultRunlevel(7) }, [
         {},
         {},
         { "target" => { "bash" => 0 } }
       ], nil)
 
       # test valid parameters
-      TEST(lambda { Systemd.SetDefaultRunlevel(3) }, [
+      TEST(->() { Systemd.SetDefaultRunlevel(3) }, [
         {},
         {},
         { "target" => { "bash" => 0 } }
       ], nil)
 
-      TEST(lambda { Systemd.SetDefaultRunlevel(5) }, [
+      TEST(->() { Systemd.SetDefaultRunlevel(5) }, [
         {},
         {},
         { "target" => { "bash" => 0 } }
       ], nil)
 
       # test failure
-      TEST(lambda { Systemd.SetDefaultRunlevel(5) }, [
+      TEST(->() { Systemd.SetDefaultRunlevel(5) }, [
         {},
         {},
         { "target" => { "bash" => 1 } }
@@ -85,7 +85,7 @@ module Yast
       DUMP("Systemd::DefaultRunlevel() tests")
 
       # test missing / invalid (not a symlink) default
-      TEST(lambda { Systemd.DefaultRunlevel }, [
+      TEST(->() { Systemd.DefaultRunlevel }, [
         { "target" => { "symlink" => nil } },
         {},
         {}
@@ -93,7 +93,7 @@ module Yast
 
       # test numeric runlevel
       TEST(
-        lambda { Systemd.DefaultRunlevel },
+        ->() { Systemd.DefaultRunlevel },
         [
           {
             "target" => { "symlink" => "/lib/systemd/system/runlevel3.target" }
@@ -106,7 +106,7 @@ module Yast
 
       # test symbolic runlevel
       TEST(
-        lambda { Systemd.DefaultRunlevel },
+        ->() { Systemd.DefaultRunlevel },
         [
           {
             "target" => { "symlink" => "/lib/systemd/system/graphical.target" }
@@ -119,7 +119,7 @@ module Yast
 
       # test unknown symbolic runlevel
       TEST(
-        lambda { Systemd.DefaultRunlevel },
+        ->() { Systemd.DefaultRunlevel },
         [
           {
             "target" => {

@@ -38,18 +38,18 @@ module Yast
       Yast.import "CommandLine"
 
       # startup
-      TEST(lambda { CommandLine.Init(@cmdline, ["interactive"]) }, [], nil)
-      TEST(lambda { CommandLine.StartGUI }, [], nil)
-      TEST(lambda { CommandLine.Done }, [], nil)
+      TEST(->() { CommandLine.Init(@cmdline, ["interactive"]) }, [], nil)
+      TEST(->() { CommandLine.StartGUI }, [], nil)
+      TEST(->() { CommandLine.Done }, [], nil)
 
       # do help
       TEST(
-        lambda { CommandLine.Command },
+        ->() { CommandLine.Command },
         [[{ "dev" => { "tty" => "help" } }, { "dev" => { "tty" => "abort" } }]],
         nil
       )
-      TEST(lambda { CommandLine.Done }, [], nil)
-      TEST(lambda { CommandLine.Aborted }, [], nil)
+      TEST(->() { CommandLine.Done }, [], nil)
+      TEST(->() { CommandLine.Aborted }, [], nil)
 
       # EOF
 

@@ -27,7 +27,7 @@ module Yast
       Yast.include self, "testsuite.rb"
       Yast.import "Sequencer"
 
-      @aliases = { "1" => lambda { f1 }, "2" => lambda { f2 }, "3" => lambda do
+      @aliases = { "1" => ->() { f1 }, "2" => ->() { f2 }, "3" => lambda do
         f3
       end }
 
@@ -39,15 +39,15 @@ module Yast
         "end"      => { finish: :ws_finish }
       }
 
-      TEST(lambda { Sequencer.WS_next({}, "blah", :id3) }, [], nil)
-      TEST(lambda { Sequencer.WS_next(@sequence, "blah", :id3) }, [], nil)
-      TEST(lambda { Sequencer.WS_next(@sequence, "begin", :id3) }, [], nil)
-      TEST(lambda { Sequencer.WS_next(@sequence, "begin", :id3) }, [], nil)
-      TEST(lambda { Sequencer.WS_next(@sequence, "begin", :id3) }, [], nil)
+      TEST(->() { Sequencer.WS_next({}, "blah", :id3) }, [], nil)
+      TEST(->() { Sequencer.WS_next(@sequence, "blah", :id3) }, [], nil)
+      TEST(->() { Sequencer.WS_next(@sequence, "begin", :id3) }, [], nil)
+      TEST(->() { Sequencer.WS_next(@sequence, "begin", :id3) }, [], nil)
+      TEST(->() { Sequencer.WS_next(@sequence, "begin", :id3) }, [], nil)
       # TEST(``(Sequencer::WS_next(sequence, "ws_start", `next)), [], nil);
-      TEST(lambda { Sequencer.WS_next(@sequence, "decide", :yes) }, [], nil)
-      TEST(lambda { Sequencer.WS_next(@sequence, "decide", :no) }, [], nil)
-      TEST(lambda { Sequencer.WS_next(@sequence, "end", :finish) }, [], nil)
+      TEST(->() { Sequencer.WS_next(@sequence, "decide", :yes) }, [], nil)
+      TEST(->() { Sequencer.WS_next(@sequence, "decide", :no) }, [], nil)
+      TEST(->() { Sequencer.WS_next(@sequence, "end", :finish) }, [], nil)
 
       nil
     end

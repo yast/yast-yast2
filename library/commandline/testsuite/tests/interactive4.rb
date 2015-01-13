@@ -38,21 +38,21 @@ module Yast
       Yast.import "CommandLine"
 
       # startup
-      TEST(lambda { CommandLine.Init(@cmdline, ["interactive"]) }, [], nil)
-      TEST(lambda { CommandLine.StartGUI }, [], nil)
-      TEST(lambda { CommandLine.Done }, [], nil)
+      TEST(->() { CommandLine.Init(@cmdline, ["interactive"]) }, [], nil)
+      TEST(->() { CommandLine.StartGUI }, [], nil)
+      TEST(->() { CommandLine.Done }, [], nil)
 
       # do help
-      TEST(lambda { CommandLine.Command }, [
+      TEST(->() { CommandLine.Command }, [
         { "dev" => { "tty" => "add device=eth0" } }
       ], nil)
-      TEST(lambda { CommandLine.Done }, [], nil)
-      TEST(lambda { CommandLine.Aborted }, [], nil)
+      TEST(->() { CommandLine.Done }, [], nil)
+      TEST(->() { CommandLine.Aborted }, [], nil)
 
       # quit
-      TEST(lambda { CommandLine.Command }, [{ "dev" => { "tty" => "abort" } }], nil)
-      TEST(lambda { CommandLine.Done }, [], nil)
-      TEST(lambda { CommandLine.Aborted }, [], nil)
+      TEST(->() { CommandLine.Command }, [{ "dev" => { "tty" => "abort" } }], nil)
+      TEST(->() { CommandLine.Done }, [], nil)
+      TEST(->() { CommandLine.Aborted }, [], nil)
 
       # EOF
 
