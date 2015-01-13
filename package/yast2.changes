@@ -1,4 +1,42 @@
 -------------------------------------------------------------------
+Wed Jan  7 10:55:13 UTC 2015 - jsrain@suse.cz
+
+- keep kernel cmdline options during live installation (bsc#793065)
+
+-------------------------------------------------------------------
+Thu Dec 18 19:55:46 UTC 2014 - lslezak@suse.cz
+
+- 3.1.115
+
+-------------------------------------------------------------------
+Wed Dec 17 14:00:42 UTC 2014 - schwab@suse.de
+
+- Add Arch.aarch64
+
+-------------------------------------------------------------------
+Thu Dec  4 09:51:50 UTC 2014 - jreidinger@suse.com
+
+- remove X-KDE-Library from desktop file (bnc#899104)
+
+-------------------------------------------------------------------
+Mon Dec  1 12:23:34 UTC 2014 - lslezak@suse.cz
+
+- PackageCallbacks: fixed progress reporting (progress overflow was
+  caused by missing stage count)
+- 3.1.113
+
+-------------------------------------------------------------------
+Wed Nov 26 09:49:19 UTC 2014 - jreidinger@suse.com
+
+- Add base class for installation proposal and finish clients
+- 3.1.112
+
+-------------------------------------------------------------------
+Wed Nov 26 09:31:55 UTC 2014 - gber@opensuse.org
+
+- remove support for the unmaintained GTK UI plugin (bnc#901511)
+
+-------------------------------------------------------------------
 Wed Nov 12 14:04:51 UTC 2014 - lslezak@suse.cz
 
 - removed RegistrationStatus.pm module (obsolete, not supported
