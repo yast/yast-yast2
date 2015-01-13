@@ -36,13 +36,13 @@ end
 PRODUCTS_FROM_ZYPP = load_zypp('products.yml').freeze
 
 def stub_defaults
-    log.info "--------- Running test ---------"
-    Yast::Product.send(:reset)
-    Yast::PackageSystem.stub(:EnsureTargetInit).and_return(true)
-    Yast::PackageSystem.stub(:EnsureSourceInit).and_return(true)
-    Yast::Pkg.stub(:PkgSolve).and_return(true)
-    Yast::PackageLock.stub(:Check).and_return(true)
-    Yast::Pkg.stub(:ResolvableProperties).with("", :product, "").and_return(PRODUCTS_FROM_ZYPP.dup)
+  log.info "--------- Running test ---------"
+  Yast::Product.send(:reset)
+  Yast::PackageSystem.stub(:EnsureTargetInit).and_return(true)
+  Yast::PackageSystem.stub(:EnsureSourceInit).and_return(true)
+  Yast::Pkg.stub(:PkgSolve).and_return(true)
+  Yast::PackageLock.stub(:Check).and_return(true)
+  Yast::Pkg.stub(:ResolvableProperties).with("", :product, "").and_return(PRODUCTS_FROM_ZYPP.dup)
 end
 
 # Describes Product handling as a whole (due to lazy loading and internal caching),

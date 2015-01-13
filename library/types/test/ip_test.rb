@@ -96,7 +96,7 @@ describe "Yast::IP" do
 
     INVALID_IP6S.each do |invalid_ip6|
       it "returns false for invalid IPv6 '#{invalid_ip6}" do
-          expect( IP.Check6(invalid_ip6)).to be_false
+        expect( IP.Check6(invalid_ip6)).to be_false
       end
     end
 
