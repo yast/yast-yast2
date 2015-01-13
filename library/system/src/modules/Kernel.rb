@@ -214,6 +214,11 @@ module Yast
         discardlist = Builtins.add(discardlist, "ramdisk_size")
       end
 
+      # get rid of live-installer-specific parameters
+      if Mode.live_installation
+        discardlist.push("initrd", "ramdisk_size", "ramdisk_blocksize", "liveinstall", "splash", "quiet", "lang")
+      end
+
       # backdoor to re-enable update on UL/SLES
       if Builtins.contains(cmdlist, "suse_update")
         discardlist = Builtins.add(discardlist, "suse_update")
@@ -247,7 +252,14 @@ module Yast
     def ParseInstallationKernelCmdline
       @cmdline_parsed = true
       return if !(Stage.initial || Stage.cont)
-      tmp = Convert.to_string(SCR.Read(path(".etc.install_inf.Cmdline")))
+      # live installation does not create /etc/install.inf (bsc#793065)
+      if Mode.live_installation
+        # not using dedicated agent in order to use the same parser for cmdline
+        # independently on whether it comes from /proc/cmdline or /etc/install.inf
+        tmp = Convert.to_string(SCR.Read(path(".target.string"), "/proc/cmdline"))
+      else
+        tmp = Convert.to_string(SCR.Read(path(".etc.install_inf.Cmdline")))
+      end
 
       Builtins.y2milestone(
         "cmdline from install.inf is: %1",

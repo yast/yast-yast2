@@ -1,8 +1,6 @@
 #! /usr/bin/env rspec
 
-require File.expand_path("../test_helper.rb", __FILE__)
-
-require "yast"
+require_relative "test_helper"
 
 module Yast
   import 'Hooks'
