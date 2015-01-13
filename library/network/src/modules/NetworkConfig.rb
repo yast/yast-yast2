@@ -109,9 +109,6 @@ module Yast
 
       return false if config.nil? || data.nil?
 
-      vars = SCR.Dir(config)
-      vars = [] if vars.nil?
-
       changed = false
       Builtins.maplist(
         Convert.convert(data, from: "map", to: "map <string, any>")

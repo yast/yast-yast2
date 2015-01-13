@@ -63,7 +63,7 @@ module Yast
       items = deep_copy(items)
       item = nil
 
-      _Items = Builtins.maplist(items) do |i|
+      items = Builtins.maplist(items) do |i|
         device_name = NetworkInterfaces.GetValue(i, "NAME")
         if device_name.nil? || device_name == ""
           # TRANSLATORS: Informs that device name is not known
@@ -72,10 +72,12 @@ module Yast
         if Ops.greater_than(Builtins.size(device_name), 30)
           device_name = Ops.add(Builtins.substring(device_name, 0, 27), "...")
         end
-        ip_addr = NetworkInterfaces.GetValue(i, "BOOTPROTO") == "dhcp" ?
-          # TRANSLATORS: Informs that the IP address is assigned via DHCP
-          _("DHCP address") :
-          NetworkInterfaces.GetValue(i, "IPADDR")
+        ip_addr = if NetworkInterfaces.GetValue(i, "BOOTPROTO") == "dhcp"
+                    # TRANSLATORS: Informs that the IP address is assigned via DHCP
+                    _("DHCP address")
+                  else
+                    NetworkInterfaces.GetValue(i, "IPADDR")
+                  end
         if ip_addr.nil? || ip_addr == ""
           # TRANSLATORS: table item, informing that device has no IP address
           ip_addr = _("No IP address assigned")
@@ -106,7 +108,7 @@ module Yast
                 _("Device ID"),
                 _("Connected")
               ),
-              _Items
+              items
             ),
             VSpacing(10)
           ),
@@ -127,9 +129,7 @@ module Yast
       UI.ChangeWidget(Id(:items), :CurrentItem, selected)
       UI.SetFocus(Id(:items))
       ret = nil
-      begin
-        ret = Convert.to_symbol(UI.UserInput)
-      end while ret != :cancel && ret != :ok
+      ret = UI.UserInput while ret != :cancel && ret != :ok
 
       if ret == :ok
         item = Convert.to_string(UI.QueryWidget(Id(:items), :CurrentItem))
@@ -148,12 +148,12 @@ module Yast
       items = deep_copy(items)
       item = nil
 
-      _Items = Builtins.maplist(items) { |i| Item(Id(i), i, i == selected) }
+      items = Builtins.maplist(items) { |i| Item(Id(i), i, i == selected) }
 
       UI.OpenDialog(
         VBox(
           HSpacing(40),
-          HBox(SelectionBox(Id(:items), title, _Items), VSpacing(10)),
+          HBox(SelectionBox(Id(:items), title, items), VSpacing(10)),
           ButtonBox(
             PushButton(
               Id(:ok),
@@ -170,9 +170,7 @@ module Yast
       )
       UI.SetFocus(Id(:items))
       ret = nil
-      begin
-        ret = Convert.to_symbol(UI.UserInput)
-      end while ret != :cancel && ret != :ok
+      ret = Convert.to_symbol(UI.UserInput) while ret != :cancel && ret != :ok
 
       if ret == :ok
         item = Convert.to_string(UI.QueryWidget(Id(:items), :CurrentItem))
