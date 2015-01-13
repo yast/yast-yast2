@@ -163,7 +163,7 @@ module Yast
 
       def execute
         Builtins.y2milestone "Executing hook '#{name}'"
-        files.each &:execute
+        files.each(&:execute)
       end
 
       def used?
@@ -171,11 +171,11 @@ module Yast
       end
 
       def results
-        files.map &:result
+        files.map(&:result)
       end
 
       def succeeded?
-        files.all? &:succeeded?
+        files.all?(&:succeeded?)
       end
 
       def failed?
