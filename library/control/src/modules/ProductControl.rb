@@ -257,8 +257,7 @@ module Yast
       end
 
       # Proposal
-      if Ops.get_string(mod, "proposal", "") != nil &&
-          Ops.get_string(mod, "proposal", "") != ""
+      if mod["proposal"] && mod["proposal"].empty?
         if Builtins.contains(
           @DisabledProposals,
           Ops.get_string(mod, "proposal", "")
@@ -266,8 +265,7 @@ module Yast
           return true
         end
         # Normal step
-      elsif Ops.get_string(mod, "name", "") != nil &&
-          Ops.get_string(mod, "name", "") != ""
+      elsif mod["name"] && mod["name"].empty?
         if Builtins.contains(@DisabledModules, Ops.get_string(mod, "name", ""))
           return true
         end
@@ -305,7 +303,7 @@ module Yast
         end
       end
 
-      # FIXME would be nice if it could be done generic way
+      # FIXME: would be nice if it could be done generic way
       if Ops.greater_than(
         Builtins.size(
           Ops.get_list(@productControl, ["partitioning", "partitions"], [])
@@ -400,9 +398,9 @@ module Yast
     # @param map module data
     # @param map default data
     # @return [Yast::Term] module data with params
-    def getClientTerm(step, _def, former_result)
+    def getClientTerm(step, def_, former_result)
       step = deep_copy(step)
-      _def = deep_copy(_def)
+      def_ = deep_copy(def_)
       former_result = deep_copy(former_result)
       client = getClientName(
         Ops.get_string(step, "name", "dummy"),
@@ -412,7 +410,7 @@ module Yast
       arguments = {}
 
       Builtins.foreach(["enable_back", "enable_next"]) do |button|
-        default_setting = Ops.get_string(_def, button, "yes")
+        default_setting = Ops.get_string(def_, button, "yes")
         Ops.set(
           arguments,
           button,
@@ -490,10 +488,8 @@ module Yast
         Check(Ops.get_string(wf, "stage", ""), stage) &&
           Check(Ops.get_string(wf, "mode", ""), mode) &&
           (
-            wf_ref = arg_ref(wf);
-            _CheckAdditionalParams_result = CheckAdditionalParams(wf_ref);
-            wf = wf_ref.value;
-            _CheckAdditionalParams_result
+            wf_ref = arg_ref(wf)
+            CheckAdditionalParams(wf_ref)
           )
       end
 
