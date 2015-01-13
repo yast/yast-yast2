@@ -5,6 +5,7 @@ module UI
   # @example simple OK/cancel dialog
   #   class OKDialog
   #     include Yast::UIShortcuts
+  #     include Yast::Logger
   #     include UI::EventDispatcher
   #     Yast.import "UI"
   #
@@ -23,21 +24,26 @@ module UI
   #     end
   #
   #     def ok_handler
-  #       exit_dialog(true)
+  #       finish_dialog(:ok)
+  #       log.info "OK button pressed"
   #     end
   #   end
   module EventDispatcher
+    # @internal constant to continue with dispatching
+    CONTINUE_WITH_DISPATCHING = :_dispatcher_continue
+
     # Does UI event dispatching.
     # @return value from exit_dialog method.
     def event_loop
       Yast.import "UI"
+      @_finish_dialog_dispatcher = CONTINUE_WITH_DISPATCHING
 
       loop do
         input = Yast::UI.UserInput
         if respond_to?(:"#{input}_handler")
-          res = send(:"#{input}_handler")
-          if res.is_a?(::Hash) && res.has_key?(:_exit_dialog)
-            return res[:_exit_dialog]
+          send(:"#{input}_handler")
+          if @_finish_dialog_dispatcher != CONTINUE_WITH_DISPATCHING
+            return @_finish_dialog_dispatcher
           end
         else
           raise "Unknown action #{input}"
@@ -45,17 +51,15 @@ module UI
       end
     end
 
-    # Construct value that indicate that handler cause end of dialog
+    # Set internal flag to not continue with processing other UI inputs
     # @param return_value[Object] value to return from event_loop
-    def exit_dialog(return_value = nil)
-      {
-        :_exit_dialog => return_value
-      }
+    def finish_dialog(return_value = nil)
+      @_finish_dialog_dispatcher = return_value
     end
 
     # Default handler for cancel which can be also 'x' on dialog window
     def cancel_handler
-      exit_dialog
+      finish_dialog
     end
   end
 end

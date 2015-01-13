@@ -25,7 +25,7 @@ class TestDialog
   end
 
   def ok_handler
-    exit_dialog(true)
+    finish_dialog(true)
   end
 
   def again_handler
@@ -54,7 +54,7 @@ describe UI::EventDispatcher do
       expect(subject.again_handler_called?).to eq(true)
     end
 
-    it "returns value of first handler which return exit_dialog" do
+    it "returns value of first handler which call finish_dialog" do
       mock_ui_events(:ok, :again, :cancel)
 
       expect(subject.event_loop).to eq(true)
