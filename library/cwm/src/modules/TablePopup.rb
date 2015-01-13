@@ -895,8 +895,8 @@ module Yast
       replace_point = ReplacePoint(Id(:_tp_table_repl), HSpacing(0))
       # help 1/4
       help = _(
-        "<p><b><big>Editing the Settings</big></b><br>\n" +
-          "To edit the settings, choose the appropriate\n" +
+        "<p><b><big>Editing the Settings</big></b><br>\n" \
+          "To edit the settings, choose the appropriate\n" \
           "entry of the table then click <b>Edit</b>.</p>"
       )
       if Ops.get_boolean(attrib, "add_delete_buttons", true)
@@ -924,8 +924,8 @@ module Yast
         help = Ops.add(
           help,
           _(
-            "<p>To reorder the options, select an option\n" +
-              "and use <b>Up</b> and <b>Down</b> to move it up or down\n" +
+            "<p>To reorder the options, select an option\n" \
+              "and use <b>Up</b> and <b>Down</b> to move it up or down\n" \
               "in the list.</p>"
           )
         )

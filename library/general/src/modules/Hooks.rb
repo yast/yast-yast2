@@ -190,7 +190,7 @@ module Yast
           file.basename.fnmatch?("#{hook_name}_[0-9][0-9]_*")
         end
         unless hook_files.empty?
-          log.info "Found #{hook_files.size} hook files: " +
+          log.info "Found #{hook_files.size} hook files: " \
             "#{hook_files.map {|f| f.basename.to_s}.join(', ')}"
         end
         hook_files.sort

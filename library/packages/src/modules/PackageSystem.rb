@@ -415,8 +415,8 @@ module Yast
             success = Popup.ContinueCancel(
               # continue/cancel popup
               _(
-                "Installing required packages failed. If you continue\n" +
-                  "without installing required packages,\n" +
+                "Installing required packages failed. If you continue\n" \
+                  "without installing required packages,\n" \
                   "YaST may not work properly.\n"
               )
             )

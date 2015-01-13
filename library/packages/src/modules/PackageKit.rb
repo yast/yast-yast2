@@ -39,7 +39,7 @@ module Yast
     # Check whether PackageKit daemon is running
     # @return [Boolean] return true if PackageKit is currently running
     def IsRunning
-      cmd = "dbus-send --system --dest=org.freedesktop.DBus --type=method_call --print-reply " +
+      cmd = "dbus-send --system --dest=org.freedesktop.DBus --type=method_call --print-reply " \
         "--reply-timeout=200 / org.freedesktop.DBus.NameHasOwner string:org.freedesktop.PackageKit"
       Builtins.y2milestone("Checking PackageKit status: %1", cmd)
 
@@ -61,7 +61,7 @@ module Yast
     # If a transaction is in progress the daemon will not quit,
     # you have to check the current status using isRunning() function.
     def SuggestQuit
-      cmd = "dbus-send --system --dest=org.freedesktop.PackageKit --type=method_call " +
+      cmd = "dbus-send --system --dest=org.freedesktop.PackageKit --type=method_call " \
         "/org/freedesktop/PackageKit org.freedesktop.PackageKit.SuggestDaemonQuit"
       Builtins.y2milestone("Asking PackageKit to quit: %1", cmd)
 

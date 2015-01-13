@@ -792,8 +792,8 @@ module Yast
         else
           # Warning text for aborting an installation before anything is installed
           what_will_happen = _(
-            "If you abort the installation now,\n" +
-              "Linux will not be installed.\n" +
+            "If you abort the installation now,\n" \
+              "Linux will not be installed.\n" \
               "Your hard disk will remain untouched."
           )
         end 
@@ -803,17 +803,17 @@ module Yast
         # - After some installation steps have been performed - e.g.
         # disks formatted / some packages already installed
         what_will_happen = _(
-          "If you abort the installation now, you will\n" +
-            "have an incomplete Linux system\n" +
-            "that might or might not be usable.\n" +
+          "If you abort the installation now, you will\n" \
+            "have an incomplete Linux system\n" \
+            "that might or might not be usable.\n" \
             "You might need to reinstall.\n"
         )
       elsif severity == :unusable
         # Warning text for aborting an installation during the install process
         # right in the middle of some critical process (e.g. formatting)
         what_will_happen = _(
-          "If you abort the installation now,\n" +
-            "Linux will be unusable.\n" +
+          "If you abort the installation now,\n" \
+            "Linux will be unusable.\n" \
             "You will need to reinstall."
         )
       else

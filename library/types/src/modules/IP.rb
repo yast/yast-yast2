@@ -69,8 +69,8 @@ module Yast
     def Valid6
       #Translators: colon: ":"
       _(
-        "A valid IPv6 address consists of up to eight\n" +
-          "hexadecimal numbers in the range 0 - FFFF separated by colons.\n" +
+        "A valid IPv6 address consists of up to eight\n" \
+          "hexadecimal numbers in the range 0 - FFFF separated by colons.\n" \
           "It can contain up to one double colon."
       )
     end
@@ -136,12 +136,12 @@ module Yast
     def ValidNetwork
       # TRANSLATORS: description of the valid network definition
       _(
-        "A valid network definition can contain the IP,\n" +
-          "IP/Netmask, IP/Netmask_Bits, or 0/0 for all networks.\n" +
-          "\n" +
-          "Examples:\n" +
-          "IP: 192.168.0.1 or 2001:db8:0::1\n" +
-          "IP/Netmask: 192.168.0.0/255.255.255.0 or 2001:db8:0::1/56\n" +
+        "A valid network definition can contain the IP,\n" \
+          "IP/Netmask, IP/Netmask_Bits, or 0/0 for all networks.\n" \
+          "\n" \
+          "Examples:\n" \
+          "IP: 192.168.0.1 or 2001:db8:0::1\n" \
+          "IP/Netmask: 192.168.0.0/255.255.255.0 or 2001:db8:0::1/56\n" \
           "IP/Netmask_Bits: 192.168.0.0/24 or 192.168.0.1/32 or 2001:db8:0::1/ffff::0\n"
       )
     end

@@ -527,9 +527,9 @@ module Yast
         # question popup
         if !Popup.YesNo(
             _(
-              "No interface is selected. Service will not\n" +
-                "be available for other computers.\n" +
-                "\n" +
+              "No interface is selected. Service will not\n" \
+                "be available for other computers.\n" \
+                "\n" \
                 "Continue?"
             )
           )
@@ -557,10 +557,10 @@ module Yast
             Builtins.sformat(
               # yes-no popup
               _(
-                "Because of SuSE Firewall settings, the port\n" +
-                  "on the following interfaces will additionally be open:\n" +
-                  "%1\n" +
-                  "\n" +
+                "Because of SuSE Firewall settings, the port\n" \
+                  "on the following interfaces will additionally be open:\n" \
+                  "%1\n" \
+                  "\n" \
                   "Continue?"
               ),
               ifaces_list
@@ -576,10 +576,10 @@ module Yast
             Builtins.sformat(
               # yes-no popup
               _(
-                "Because of SuSE Firewall settings, the port\n" +
-                  "on the following interfaces cannot be opened:\n" +
-                  "%1\n" +
-                  "\n" +
+                "Because of SuSE Firewall settings, the port\n" \
+                  "on the following interfaces cannot be opened:\n" \
+                  "%1\n" \
+                  "\n" \
                   "Continue?"
               ),
               ifaces_list
@@ -630,10 +630,10 @@ module Yast
         if Popup.YesNo(
             Builtins.sformat(
               _(
-                "Because of SuSE Firewall settings, the port\n" +
-                  "on the following interfaces cannot be opened:\n" +
-                  "%1\n" +
-                  "\n" +
+                "Because of SuSE Firewall settings, the port\n" \
+                  "on the following interfaces cannot be opened:\n" \
+                  "%1\n" \
+                  "\n" \
                   "Continue?"
               ),
               ifaces_list
@@ -1007,8 +1007,8 @@ module Yast
       # help text for firewall settings widget 1/3,
       # %1 is check box label, eg. "Open Port in Firewall" (without quotes)
       help = _(
-        "<p><b><big>Firewall Settings</big></b><br>\n" +
-          "To open the firewall to allow access to the service from remote computers,\n" +
+        "<p><b><big>Firewall Settings</big></b><br>\n" \
+          "To open the firewall to allow access to the service from remote computers,\n" \
           "set <b>%1</b>.<br>"
       )
       if restart_displayed

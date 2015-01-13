@@ -301,8 +301,8 @@ module Yast
             message = Builtins.mergestring(keys_to_delete, ", ")
             # popup message
             message = _(
-              "The selected TSIG key cannot be deleted,\n" +
-                "because it is in use.\n" +
+              "The selected TSIG key cannot be deleted,\n" \
+                "because it is in use.\n" \
                 "Stop using it in the configuration first."
             )
             # popup title
@@ -461,8 +461,8 @@ module Yast
           # yes-no popup
           if !Popup.YesNo(
               _(
-                "The specified file contains a TSIG key with the same\n" +
-                  "identifier as some of already present keys.\n" +
+                "The specified file contains a TSIG key with the same\n" \
+                  "identifier as some of already present keys.\n" \
                   "Old keys will be removed. Continue?"
               )
             )
@@ -569,24 +569,24 @@ module Yast
       ) +
         # tsig keys management dialog help 2/4
         _(
-          "<p><big><b>Adding an Existing TSIG Key</b></big><br>\n" +
-            "To add an already created TSIG key, select a <b>Filename</b> of the file\n" +
+          "<p><big><b>Adding an Existing TSIG Key</b></big><br>\n" \
+            "To add an already created TSIG key, select a <b>Filename</b> of the file\n" \
             "containing the key and click <b>Add</b>.</p>\n"
         ) +
         # tsig keys management dialog help 3/4
         _(
-          "<p><big><b>Creating a New TSIG Key</b></big><br>\n" +
-            "To create a new TSIG key, set the <b>Filename</b> of the file in which to\n" +
-            "create the key and the <b>Key ID</b> to identify the key then click\n" +
+          "<p><big><b>Creating a New TSIG Key</b></big><br>\n" \
+            "To create a new TSIG key, set the <b>Filename</b> of the file in which to\n" \
+            "create the key and the <b>Key ID</b> to identify the key then click\n" \
             "<b>Generate</b>.</p>\n"
         ) +
         # tsig keys management dialog help 4/4
         _(
-          "<p><big><b>Removing a TSIG Key</b></big><br>\n" +
-            "To remove a configured TSIG key, select it and click <b>Delete</b>.\n" +
-            "All keys in the same file are deleted.\n" +
-            "If a TSIG key is in use in the configuration\n" +
-            "of the server, it cannot be deleted. The server must stop using it\n" +
+          "<p><big><b>Removing a TSIG Key</b></big><br>\n" \
+            "To remove a configured TSIG key, select it and click <b>Delete</b>.\n" \
+            "All keys in the same file are deleted.\n" \
+            "If a TSIG key is in use in the configuration\n" \
+            "of the server, it cannot be deleted. The server must stop using it\n" \
             "in the configuration first.</p>\n"
         )
 

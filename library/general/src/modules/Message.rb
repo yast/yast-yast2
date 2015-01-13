@@ -94,8 +94,8 @@ module Yast
       #  (see BNC #584466 for details)
       Builtins.sformat(
         _(
-          "Cannot write settings to '%1'.\n" +
-            "\n" +
+          "Cannot write settings to '%1'.\n" \
+            "\n" \
             "Reason: %2"
         ),
         destination,

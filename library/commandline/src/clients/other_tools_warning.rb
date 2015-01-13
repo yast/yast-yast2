@@ -41,8 +41,8 @@ module Yast
         # Translators: a warning message in a continue-cancel question
         # Opscode Chef is a different way to configure the system.
         message = _(
-           "Chef Client is running. The changes that you make\n" +
-             "may be overridden by Chef later.\n" +
+           "Chef Client is running. The changes that you make\n" \
+             "may be overridden by Chef later.\n" \
              "Continue configuration with YaST?"
         )
         return Popup.ContinueCancel(message)

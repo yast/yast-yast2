@@ -198,14 +198,14 @@ module Yast
         # popup message, %1 is list of problems
         Builtins.sformat(
           _(
-            "The profile does not allow you to run the products on this system.\n" +
-              "Proceeding to run this installation will leave you in an unsupported state\n" +
-              "and might impact your compliance requirements.\n" +
-              "     \n" +
-              "The following requirements are not fulfilled on this system:\n" +
-              "    \n" +
-              "%1\n" +
-              "\n" +
+            "The profile does not allow you to run the products on this system.\n" \
+              "Proceeding to run this installation will leave you in an unsupported state\n" \
+              "and might impact your compliance requirements.\n" \
+              "     \n" \
+              "The following requirements are not fulfilled on this system:\n" \
+              "    \n" \
+              "%1\n" \
+              "\n" \
               "%2"
           ),
           reasons_s,

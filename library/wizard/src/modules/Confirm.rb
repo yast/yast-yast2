@@ -181,9 +181,9 @@ module Yast
 
       # Message in a continue/cancel popup
       pop = _(
-        "This module must be run as root.\n" +
-          "If you continue now, the module may not function properly.\n" +
-          "For example, some settings can be read improperly\n" +
+        "This module must be run as root.\n" \
+          "If you continue now, the module may not function properly.\n" \
+          "For example, some settings can be read improperly\n" \
           "and it is unlikely that settings can be written.\n"
       )
 

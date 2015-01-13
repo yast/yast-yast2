@@ -1444,11 +1444,11 @@ module Yast
               # %3 - link to our bugzilla
               # %4 - directory where YaST logs are stored
               # %5 - link to the Yast Bug Reporting HOWTO Web page
-              "Calling the YaST module %1 has failed.\n" +
-                "More information can be found near the end of the '%2' file.\n" +
-                "\n" +
-                "This is worth reporting a bug at %3.\n" +
-                "Please, attach also all YaST logs stored in the '%4' directory.\n" +
+              "Calling the YaST module %1 has failed.\n" \
+                "More information can be found near the end of the '%2' file.\n" \
+                "\n" \
+                "This is worth reporting a bug at %3.\n" \
+                "Please, attach also all YaST logs stored in the '%4' directory.\n" \
                 "See %5 for more information about YaST logs.",
               Builtins.symbolof(argterm),
               "/var/log/YaST2/y2log",

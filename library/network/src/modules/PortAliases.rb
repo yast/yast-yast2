@@ -134,8 +134,8 @@ module Yast
     def AllowedPortNameOrNumber
       # TRANSLATORS: popup informing message, allowed characters for port-names
       _(
-        "A port name may consist of the characters 'a-z', 'A-Z', '0-9', and '*+._-'.\n" +
-          "A port number may be a number from 0 to 65535.\n" +
+        "A port name may consist of the characters 'a-z', 'A-Z', '0-9', and '*+._-'.\n" \
+          "A port number may be a number from 0 to 65535.\n" \
           "No spaces are allowed.\n"
       )
     end

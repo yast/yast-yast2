@@ -461,24 +461,24 @@ module Yast
           # %2 is a repository name
           # %3 is URL of the repository
           _(
-            "The package %1 from repository %2\n" +
-              "%3\n" +
-              "is not digitally signed. This means that the origin\n" +
-              "and integrity of the package cannot be verified. Installing the package\n" +
-              "may put the integrity of your system at risk.\n" +
-              "\n" +
+            "The package %1 from repository %2\n" \
+              "%3\n" \
+              "is not digitally signed. This means that the origin\n" \
+              "and integrity of the package cannot be verified. Installing the package\n" \
+              "may put the integrity of your system at risk.\n" \
+              "\n" \
               "Install it anyway?"
           ) :
           # popup question, %1 stands for the filename
           # %2 is a repository name
           # %3 is URL of the repository
           _(
-            "The file %1 from repository %2\n" +
-              "%3\n" +
-              "is not digitally signed. The origin and integrity of the file\n" +
-              "cannot be verified. Using the file anyway puts the integrity of your \n" +
-              "system at risk.\n" +
-              "\n" +
+            "The file %1 from repository %2\n" \
+              "%3\n" \
+              "is not digitally signed. The origin and integrity of the file\n" \
+              "cannot be verified. Using the file anyway puts the integrity of your \n" \
+              "system at risk.\n" \
+              "\n" \
               "Use it anyway?\n"
           ),
         item_name,
@@ -545,20 +545,20 @@ module Yast
         item_type == :package ?
           # popup question, %1 stands for the package name
           _(
-            "No checksum for package %1 was found in the repository.\n" +
-              "While the package is part of the signed repository, it is not contained \n" +
-              "in the list of checksums in this repository. Installing the package puts \n" +
-              "the integrity of your system at risk.\n" +
-              "\n" +
+            "No checksum for package %1 was found in the repository.\n" \
+              "While the package is part of the signed repository, it is not contained \n" \
+              "in the list of checksums in this repository. Installing the package puts \n" \
+              "the integrity of your system at risk.\n" \
+              "\n" \
               "Install it anyway?\n"
           ) :
           # popup question, %1 stands for the filename
           _(
-            "No checksum for file %1 was found in the repository.\n" +
-              "This means that the file is part of the signed repository,\n" +
-              "but the list of checksums in this repository does not mention this file. Using the file\n" +
-              "may put the integrity of your system at risk.\n" +
-              "\n" +
+            "No checksum for file %1 was found in the repository.\n" \
+              "This means that the file is part of the signed repository,\n" \
+              "but the list of checksums in this repository does not mention this file. Using the file\n" \
+              "may put the integrity of your system at risk.\n" \
+              "\n" \
               "Use it anyway?"
           ),
         item_name
@@ -720,26 +720,26 @@ module Yast
         item_type == :package ?
           # popup question, %1 stands for the package name, %2 for the complete description of the GnuPG key (multiline)
           _(
-            "Package %1 from repository %2\n" +
-              "%3\n" +
-              "is signed with the following GnuPG key, but the integrity check failed: %4\n" +
-              "\n" +
-              "The package has been changed, either by accident or by an attacker,\n" +
-              "since the repository creator signed it. Installing it is a big risk\n" +
-              "for the integrity and security of your system.\n" +
-              "\n" +
+            "Package %1 from repository %2\n" \
+              "%3\n" \
+              "is signed with the following GnuPG key, but the integrity check failed: %4\n" \
+              "\n" \
+              "The package has been changed, either by accident or by an attacker,\n" \
+              "since the repository creator signed it. Installing it is a big risk\n" \
+              "for the integrity and security of your system.\n" \
+              "\n" \
               "Install it anyway?\n"
           ) :
           # popup question, %1 stands for the filename, %2 for the complete description of the GnuPG key (multiline)
           _(
-            "File %1 from repository %2\n" +
-              "%3\n" +
-              "is signed with the following GnuPG key, but the integrity check failed: %4\n" +
-              "\n" +
-              "The file has been changed, either by accident or by an attacker,\n" +
-              "since the repository creator signed it. Using it is a big risk\n" +
-              "for the integrity and security of your system.\n" +
-              "\n" +
+            "File %1 from repository %2\n" \
+              "%3\n" \
+              "is signed with the following GnuPG key, but the integrity check failed: %4\n" \
+              "\n" \
+              "The file has been changed, either by accident or by an attacker,\n" \
+              "since the repository creator signed it. Using it is a big risk\n" \
+              "for the integrity and security of your system.\n" \
+              "\n" \
               "Use it anyway?\n"
           ),
         item_name,
@@ -785,24 +785,24 @@ module Yast
         item_type == :package ?
           # popup question, %1 stands for the package name, %2 for the complex multiline description of the GnuPG key
           _(
-            "The package %1 is digitally signed\n" +
-              "with the following unknown GnuPG key: %2.\n" +
-              "\n" +
-              "This means that a trust relationship to the creator of the package\n" +
-              "cannot be established. Installing the package may put the integrity\n" +
-              "of your system at risk.\n" +
-              "\n" +
+            "The package %1 is digitally signed\n" \
+              "with the following unknown GnuPG key: %2.\n" \
+              "\n" \
+              "This means that a trust relationship to the creator of the package\n" \
+              "cannot be established. Installing the package may put the integrity\n" \
+              "of your system at risk.\n" \
+              "\n" \
               "Install it anyway?"
           ) :
           # popup question, %1 stands for the filename, %2 for the complex multiline description of the GnuPG key
           _(
-            "The file %1\n" +
-              "is digitally signed with the following unknown GnuPG key: %2.\n" +
-              "\n" +
-              "This means that a trust relationship to the creator of the file\n" +
-              "cannot be established. Using the file may put the integrity\n" +
-              "of your system at risk.\n" +
-              "\n" +
+            "The file %1\n" \
+              "is digitally signed with the following unknown GnuPG key: %2.\n" \
+              "\n" \
+              "This means that a trust relationship to the creator of the file\n" \
+              "cannot be established. Using the file may put the integrity\n" \
+              "of your system at risk.\n" \
+              "\n" \
               "Use it anyway?"
           ),
         # TODO use something like "%1 from %2" and make it translatable
@@ -874,26 +874,26 @@ module Yast
         item_type == :package ?
           # popup question, %1 stands for the package name, %2 for the key ID, %3 for the key name
           _(
-            "The package %1 is digitally signed\n" +
-              "with key '%2 (%3)'.\n" +
-              "\n" +
-              "There is no trust relationship with the owner of the key.\n" +
-              "If you trust the owner, mark the key as trusted.\n" +
-              "\n" +
-              "Installing a package from an unknown repository puts\n" +
-              "the integrity of your system at risk. It is safest\n" +
+            "The package %1 is digitally signed\n" \
+              "with key '%2 (%3)'.\n" \
+              "\n" \
+              "There is no trust relationship with the owner of the key.\n" \
+              "If you trust the owner, mark the key as trusted.\n" \
+              "\n" \
+              "Installing a package from an unknown repository puts\n" \
+              "the integrity of your system at risk. It is safest\n" \
               "to skip the package.\n"
           ) :
           # popup question, %1 stands for the filename, %2 for the key ID, %3 for the key name
           _(
-            "The file %1 is digitally signed\n" +
-              "with key '%2 (%3)'.\n" +
-              "\n" +
-              "There is no trust relationship with the owner of the key.\n" +
-              "If you trust the owner, mark the key as trusted.\n" +
-              "\n" +
-              "Installing a file from an unknown repository puts\n" +
-              "the integrity of your system at risk. It is safest\n" +
+            "The file %1 is digitally signed\n" \
+              "with key '%2 (%3)'.\n" \
+              "\n" \
+              "There is no trust relationship with the owner of the key.\n" \
+              "If you trust the owner, mark the key as trusted.\n" \
+              "\n" \
+              "Installing a file from an unknown repository puts\n" \
+              "the integrity of your system at risk. It is safest\n" \
               "to skip it.\n"
           ),
         item_name,
@@ -951,16 +951,16 @@ module Yast
       key = deep_copy(key)
       # additional Richtext (HTML) warning text (kind of help), 1/2
       warning_text = _(
-        "<p>The owner of the key may distribute updates,\n" +
-          "packages, and package repositories that your system will trust and offer\n" +
-          "for installation and update without any further warning. In this way,\n" +
-          "importing the key into your keyring of trusted keys allows the key owner\n" +
+        "<p>The owner of the key may distribute updates,\n" \
+          "packages, and package repositories that your system will trust and offer\n" \
+          "for installation and update without any further warning. In this way,\n" \
+          "importing the key into your keyring of trusted keys allows the key owner\n" \
           "to have a certain amount of control over the software on your system.</p>"
       ) +
         # additional Richtext (HTML) warning text (kind of help), 2/2
         _(
-          "<p>A warning dialog opens for every package that\n" +
-            "is not signed by a trusted (imported) key. If you do not trust the key,\n" +
+          "<p>A warning dialog opens for every package that\n" \
+            "is not signed by a trusted (imported) key. If you do not trust the key,\n" \
             "the packages or repositories created by the owner of the key will not be used.</p>"
         )
 
@@ -969,8 +969,8 @@ module Yast
       # popup message - label, part 1, %1 stands for repository name, %2 for its URL
       dialog_text = Builtins.sformat(
         _(
-          "The following GnuPG key has been found in repository\n" +
-            "%1\n" +
+          "The following GnuPG key has been found in repository\n" \
+            "%1\n" \
             "(%2):"
         ),
         Ops.get_locale(repo, "name", _("Unknown")),
@@ -980,9 +980,9 @@ module Yast
 
       # popup message - label, part 2
       dialog_text2 = _(
-        "You can choose to import it into your keyring of trusted\n" +
-          "public keys, meaning that you trust the owner of the key.\n" +
-          "You should be sure that you can trust the owner and that\n" +
+        "You can choose to import it into your keyring of trusted\n" \
+          "public keys, meaning that you trust the owner of the key.\n" \
+          "You should be sure that you can trust the owner and that\n" \
           "the key really belongs to that owner before importing it."
       )
 
@@ -1110,14 +1110,14 @@ module Yast
         # %3 is the current checksum (e.g. "803a8ff00d00c9075a1bd223a480bcf92d2481c1")
         Builtins.sformat(
           _(
-            "The expected checksum of file %1\n" +
-              "is %2,\n" +
-              "but the current checksum is %3.\n" +
-              "\n" +
-              "The file has been changed by accident or by an attacker\n" +
-              "since the repository creator signed it. Using it is a big risk\n" +
-              "for the integrity and security of your system.\n" +
-              "\n" +
+            "The expected checksum of file %1\n" \
+              "is %2,\n" \
+              "but the current checksum is %3.\n" \
+              "\n" \
+              "The file has been changed by accident or by an attacker\n" \
+              "since the repository creator signed it. Using it is a big risk\n" \
+              "for the integrity and security of your system.\n" \
+              "\n" \
               "Use it anyway?\n"
           ),
           filename,
@@ -1146,13 +1146,13 @@ module Yast
         # popup question, %1 stands for the filename, %2 is expected digest, %3 is the current digest
         Builtins.sformat(
           _(
-            "The checksum of file %1\n" +
-              "is %2,\n" +
-              "but the expected checksum is not known.\n" +
-              "\n" +
-              "This means that the origin and integrity of the file\n" +
-              "cannot be verified. Using the file puts the integrity of your system at risk.\n" +
-              "\n" +
+            "The checksum of file %1\n" \
+              "is %2,\n" \
+              "but the expected checksum is not known.\n" \
+              "\n" \
+              "This means that the origin and integrity of the file\n" \
+              "cannot be verified. Using the file puts the integrity of your system at risk.\n" \
+              "\n" \
               "Use it anyway?\n"
           ),
           filename,

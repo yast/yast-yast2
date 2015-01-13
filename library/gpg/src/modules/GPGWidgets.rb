@@ -283,9 +283,9 @@ module Yast
         "handle_events" => ["create_new_key"],
         "handle"        => fun_ref(method(:GpgNewKey), "symbol (string, map)"),
         "help"          => _(
-          "<p><big><b>Create a new GPG key</b></big><br>\n" +
-            "<tt>gpg --gen-key</tt> is started, see <tt>gpg</tt> manual pager for more information.\n" +
-            "Press Ctrl+C to cancel.\n" +
+          "<p><big><b>Create a new GPG key</b></big><br>\n" \
+            "<tt>gpg --gen-key</tt> is started, see <tt>gpg</tt> manual pager for more information.\n" \
+            "Press Ctrl+C to cancel.\n" \
             "</p>"
         )
       }

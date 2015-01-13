@@ -278,9 +278,9 @@ module Yast
         # TRANSLATORS: pop-up question when reading the service configuration
         cont = Popup.ContinueCancel(
           _(
-            "Your network interfaces are currently controlled by NetworkManager\n" +
-              "but the service to configure might not work well with it.\n" +
-              "\n" +
+            "Your network interfaces are currently controlled by NetworkManager\n" \
+              "but the service to configure might not work well with it.\n" \
+              "\n" \
               "Really continue?"
           )
         )
@@ -346,15 +346,15 @@ module Yast
       else
         error_text = Stage.initial ?
           _(
-            "No running network detected.\n" +
-            "Restart installation and configure network in Linuxrc\n" +
+            "No running network detected.\n" \
+            "Restart installation and configure network in Linuxrc\n" \
             "or continue without network."
           )
           :
           _(
-            "No running network detected.\n" +
-            "Configure network with YaST or Network Manager plug-in\n" +
-            "and start this module again\n" +
+            "No running network detected.\n" \
+            "Configure network with YaST or Network Manager plug-in\n" \
+            "and start this module again\n" \
             "or continue without network."
           )
 

@@ -59,10 +59,10 @@ module Yast
             "PackageKit is still running (probably busy).\nAsk PackageKit to quit again?"
           ) :
           _(
-            "PackageKit is blocking software management.\n" +
-              "This happens when the updater applet or another software management\n" +
-              "application is running.\n" +
-              "\n" +
+            "PackageKit is blocking software management.\n" \
+              "This happens when the updater applet or another software management\n" \
+              "application is running.\n" \
+              "\n" \
               "Ask PackageKit to quit?"
           )
 
@@ -159,8 +159,8 @@ module Yast
                 Ops.add(Pkg.LastError, "\n\n"),
                 # TRANSLATORS: an error message with question
                 _(
-                  "Would you like to retry accessing the software manager,\n" +
-                    "continue without having access to the software management,\n" +
+                  "Would you like to retry accessing the software manager,\n" \
+                    "continue without having access to the software management,\n" \
                     "or abort?\n"
                 )
               ),

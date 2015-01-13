@@ -178,16 +178,16 @@ module Yast
       # Extract basic URL parts: scheme://host/path?question#part
       rawtokens = Builtins.regexptokenize(
         url,
-        "^" +
-          # 0,1: http://
-          "(([^:/?#]+):[/]{0,2})?" +
-          # 2: user:pass@www.suse.cz:23
-          "([^/?#]*)?" +
-          # 3: /some/path
-          "([^?#]*)?" +
-          # 4,5: ?question
-          "(\\?([^#]*))?" +
-          # 6,7: #fragment
+        # 0,1: http://
+        # 2: user:pass@www.suse.cz:23
+        # 3: /some/path
+        # 4,5: ?question
+        # 6,7: #fragment
+        "^" \
+          "(([^:/?#]+):[/]{0,2})?" \
+          "([^/?#]*)?" \
+          "([^?#]*)?" \
+          "(\\?([^#]*))?" \
           "(#(.*))?"
       )
       Builtins.y2debug("rawtokens=%1", rawtokens)
@@ -216,13 +216,13 @@ module Yast
       # Extract username:pass@host:port
       userpass = Builtins.regexptokenize(
         Ops.get_string(rawtokens, 2, ""),
-        "^" +
-          # 0,1,2,3: user:pass@
-          "(([^@:]+)(:([^@:]+))?@)?" +
-          # 4,5,6,7: hostname|[xxx]
-          "(([^:@]+))" +
-          # FIXME "(([^:@]+)|(\\[([^]]+)\\]))" +
-          # 8,9: port
+        # 0,1,2,3: user:pass@
+        # 4,5,6,7: hostname|[xxx]
+        # FIXME "(([^:@]+)|(\\[([^]]+)\\]))" +
+        # 8,9: port
+        "^" \
+          "(([^@:]+)(:([^@:]+))?@)?" \
+          "(([^:@]+))" \
           "(:([^:@]+))?"
       )
       Builtins.y2debug("userpass=%1", userpass)

@@ -224,8 +224,8 @@ module Yast
       # %2 is eg. "Off -- Start Service Manually"
       # (both without quotes)
       _(
-        "<p><b><big>Service Start</big></b><br>\n" +
-          "To start the service every time your computer is booted, set\n" +
+        "<p><b><big>Service Start</big></b><br>\n" \
+          "To start the service every time your computer is booted, set\n" \
           "<b>%1</b>. Otherwise set <b>%2</b>.</p>"
       )
     end
@@ -240,9 +240,9 @@ module Yast
       # %3 is eg. "Start Service via xinetd"
       # (both without quotes)
       _(
-        "<p><b><big>Service Start</big></b><br>\n" +
-          "To start the service every time your computer is booted, set\n" +
-          "<b>%1</b>. To start the service via the xinetd daemon, set <b>%3</b>.\n" +
+        "<p><b><big>Service Start</big></b><br>\n" \
+          "To start the service every time your computer is booted, set\n" \
+          "<b>%1</b>. To start the service via the xinetd daemon, set <b>%3</b>.\n" \
           "Otherwise set <b>%2</b>.</p>"
       )
     end
@@ -503,8 +503,8 @@ module Yast
       # %2 is eg. "Stop the Service Now"
       # (both without quotes)
       help = _(
-        "<p><b><big>Switch On or Off</big></b><br>\n" +
-          "To start or stop the service immediately, use \n" +
+        "<p><b><big>Switch On or Off</big></b><br>\n" \
+          "To start or stop the service immediately, use \n" \
           "<b>%1</b> or <b>%2</b>.</p>"
       )
       if restart_displayed
@@ -727,8 +727,8 @@ module Yast
       # help text for LDAP enablement widget
       # %1 is button label, eg. "LDAP Support Active" (without quotes)
       _(
-        "<p><b><big>LDAP Support</big></b><br>\n" +
-          "To store the settings in LDAP instead of native configuration files,\n" +
+        "<p><b><big>LDAP Support</big></b><br>\n" \
+          "To store the settings in LDAP instead of native configuration files,\n" \
           "set <b>%1</b>.</p>"
       )
     end

@@ -51,8 +51,8 @@ module Yast
     def ValidDomain
       #Translators: dot: ".", hyphen: "-"
       _(
-        "A valid domain name consists of components separated by dots.\n" +
-          "Each component contains letters, digits, and hyphens. A hyphen may not\n" +
+        "A valid domain name consists of components separated by dots.\n" \
+          "Each component contains letters, digits, and hyphens. A hyphen may not\n" \
           "start or end a component and the last component may not begin with a digit."
       )
     end

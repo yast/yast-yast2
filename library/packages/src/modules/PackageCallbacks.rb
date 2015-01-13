@@ -772,9 +772,9 @@ module Yast
         error =
           # error report
           _(
-            "<p>The repository at the specified URL now provides a different media ID.\n" +
-              "If the URL is correct, this indicates that the repository content has changed. To \n" +
-              "continue using this repository, start <b>Installation Repositories</b> from \n" +
+            "<p>The repository at the specified URL now provides a different media ID.\n" \
+              "If the URL is correct, this indicates that the repository content has changed. To \n" \
+              "continue using this repository, start <b>Installation Repositories</b> from \n" \
               "the YaST control center and refresh the repository.</p>\n"
           )
       end
@@ -816,9 +816,9 @@ module Yast
         # report error while accessing local directory with product (%1 = URL, %2 = "SuSE Linux ...")
         message = Builtins.sformat(
           _(
-            "Cannot access installation media\n" +
-              "%1\n" +
-              "%2.\n" +
+            "Cannot access installation media\n" \
+              "%1\n" \
+              "%2.\n" \
               "Check whether the directory is accessible."
           ),
           URL.HidePassword(url),
@@ -828,9 +828,9 @@ module Yast
         # report error while accessing network media of product (%1 = URL, %2 = "SuSE Linux ...")
         message = Builtins.sformat(
           _(
-            "Cannot access installation media \n" +
-              "%1\n" +
-              "%2.\n" +
+            "Cannot access installation media \n" \
+              "%1\n" \
+              "%2.\n" \
               "Check whether the server is accessible."
           ),
           URL.HidePassword(url),
@@ -1925,10 +1925,10 @@ module Yast
             # a popup question with "Continue", "Skip" and "Abort" buttons
             Label(
               _(
-                "The repositories are being refreshed.\n" +
-                  "Continue with refreshing?\n" +
-                  "\n" +
-                  "Note: If the refresh is skipped some packages\n" +
+                "The repositories are being refreshed.\n" \
+                  "Continue with refreshing?\n" \
+                  "\n" \
+                  "Note: If the refresh is skipped some packages\n" \
                   "might be missing or out of date."
               )
             ),

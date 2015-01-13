@@ -170,12 +170,12 @@ module Yast
 
             # help text
             help = _(
-              "<p><b><big>License Confirmation</big></b><br>\n" +
-                "The package in the headline of the dialog requires an explicit confirmation\n" +
-                "of acceptance of its license.\n" +
-                "If you reject the license of the package, the package will not be installed.\n" +
-                "<br>\n" +
-                "To accept the license of the package, click <b>I Agree</b>.\n" +
+              "<p><b><big>License Confirmation</big></b><br>\n" \
+                "The package in the headline of the dialog requires an explicit confirmation\n" \
+                "of acceptance of its license.\n" \
+                "If you reject the license of the package, the package will not be installed.\n" \
+                "<br>\n" \
+                "To accept the license of the package, click <b>I Agree</b>.\n" \
                 "To reject the license of the package, click <b>I Disagree</b></p>."
             )
 
@@ -326,32 +326,32 @@ module Yast
 
       # Help text for software patterns / selections dialog
       help_text = _(
-        "<p>\n" +
-          "\t\t This dialog allows you to define this system's tasks and what software to install.\n" +
-          "\t\t Available tasks and software for this system are shown by category in the left\n" +
-          "\t\t column.  To view a description for an item, select it in the list.\n" +
+        "<p>\n" \
+          "\t\t This dialog allows you to define this system's tasks and what software to install.\n" \
+          "\t\t Available tasks and software for this system are shown by category in the left\n" \
+          "\t\t column.  To view a description for an item, select it in the list.\n" \
           "\t\t </p>"
       ) +
         _(
-          "<p>\n" +
-            "\t\t Change the status of an item by clicking its status icon\n" +
-            "\t\t or right-click any icon for a context menu.\n" +
-            "\t\t With the context menu, you can also change the status of all items.\n" +
+          "<p>\n" \
+            "\t\t Change the status of an item by clicking its status icon\n" \
+            "\t\t or right-click any icon for a context menu.\n" \
+            "\t\t With the context menu, you can also change the status of all items.\n" \
             "\t\t </p>"
         ) +
         _(
-          "<p>\n" +
-            "\t\t <b>Details</b> opens the detailed software package selection\n" +
-            "\t\t where you can view and select individual software packages.\n" +
+          "<p>\n" \
+            "\t\t <b>Details</b> opens the detailed software package selection\n" \
+            "\t\t where you can view and select individual software packages.\n" \
             "\t\t </p>"
         ) +
         _(
-          "<p>\n" +
-            "\t\t The disk usage display in the lower right corner shows the remaining disk space\n" +
-            "\t\t after all requested changes will have been performed.\n" +
-            "\t\t Hard disk partitions that are full or nearly full can degrade\n" +
-            "\t\t system performance and in some cases even cause serious problems.\n" +
-            "\t\t The system needs some available disk space to run properly.\n" +
+          "<p>\n" \
+            "\t\t The disk usage display in the lower right corner shows the remaining disk space\n" \
+            "\t\t after all requested changes will have been performed.\n" \
+            "\t\t Hard disk partitions that are full or nearly full can degrade\n" \
+            "\t\t system performance and in some cases even cause serious problems.\n" \
+            "\t\t The system needs some available disk space to run properly.\n" \
             "\t\t </p>"
         )
 
@@ -728,8 +728,8 @@ module Yast
       if result == :next && current_action != new_action
         if new_action != "summary"
           # disabling installation report dialog, inform the user how to enable it back
-          Popup.Message(_("If you want to show this report dialog again edit\n\n"+
-            "System > Yast2 > GUI > PKGMGR_ACTION_AT_EXIT\n\n" +
+          Popup.Message(_("If you want to show this report dialog again edit\n\n"\
+            "System > Yast2 > GUI > PKGMGR_ACTION_AT_EXIT\n\n" \
             "value in the YaST sysconfig editor."))
         end
 

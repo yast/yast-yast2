@@ -359,8 +359,8 @@ module Yast
         SCR.Execute(
           path(".target.bash_output"),
           Builtins.sformat(
-            "\n" +
-              "test -d '%1' || /bin/mkdir -p '%1';\n" +
+            "\n" \
+              "test -d '%1' || /bin/mkdir -p '%1';\n" \
               "/bin/cp -v '%2' '%3';\n",
             GetWorkflowDirectory(),
             String.Quote(file_from),
@@ -545,9 +545,9 @@ module Yast
         cmd = Convert.to_map(
           SCR.Execute(
             path(".target.bash_ouptut"),
-            "\n" +
-              "cd '%1';\n" +
-              "test -x /bin/tar && /bin/tar -zcf workflows_backup.tgz *.xml *.ycp *.rb;\n" +
+            "\n" \
+              "cd '%1';\n" \
+              "test -x /bin/tar && /bin/tar -zcf workflows_backup.tgz *.xml *.ycp *.rb;\n" \
               "rm -rf *.xml *.ycp *.rb",
             String.Quote(directory)
           )

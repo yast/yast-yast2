@@ -1500,10 +1500,10 @@ module Yast
         Report.Error(
           Builtins.sformat(
             _(
-              "Interface '%1' is included in multiple firewall zones.\n" +
-                "Continuing with configuration can produce errors.\n" +
-                "\n" +
-                "It is recommended to leave the configuration and repair it manually in\n" +
+              "Interface '%1' is included in multiple firewall zones.\n" \
+                "Continuing with configuration can produce errors.\n" \
+                "\n" \
+                "It is recommended to leave the configuration and repair it manually in\n" \
                 "the file '/etc/sysconfig/SuSEFirewall'."
             ),
             interface

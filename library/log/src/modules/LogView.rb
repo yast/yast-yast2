@@ -107,8 +107,8 @@ module Yast
     def LogSelectionHelp
       # help for the log widget, part 1, alt. 1
       _(
-        "<p><b><big>Displayed Log</big></b><br>\n" +
-          "Use <b>Log</b> to select the log to display. It will be displayed in\n" +
+        "<p><b><big>Displayed Log</big></b><br>\n" \
+          "Use <b>Log</b> to select the log to display. It will be displayed in\n" \
           "the field below.</p>\n"
       )
     end
@@ -128,8 +128,8 @@ module Yast
       # help for the log widget, part 2, alt. 1, %1 is a menu button label
       Builtins.sformat(
         _(
-          "<p>\n" +
-            "To process advanced actions or save the log into a file, click <b>%1</b>\n" +
+          "<p>\n" \
+            "To process advanced actions or save the log into a file, click <b>%1</b>\n" \
             "and select the action to process.</p>"
         ),
         label
@@ -143,8 +143,8 @@ module Yast
       # help for the log widget, part 2, alt. 2, %1 is a menu button label
       Builtins.sformat(
         _(
-          "<p>\n" +
-            "To process advanced actions, click <b>%1</b>\n" +
+          "<p>\n" \
+            "To process advanced actions, click <b>%1</b>\n" \
             "and select the action to process.</p>"
         ),
         label
@@ -156,8 +156,8 @@ module Yast
     def SaveHelp
       # help for the log widget, part 2, alt. 3
       _(
-        "<p>\n" +
-          "To save the log into a file, click <b>Save Log</b> and select the file\n" +
+        "<p>\n" \
+          "To save the log into a file, click <b>Save Log</b> and select the file\n" \
           "to which to save the log.</p>\n"
       )
     end

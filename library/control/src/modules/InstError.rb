@@ -153,8 +153,8 @@ module Yast
                     # %2 - directory where YaST logs are stored
                     # %3 - link to the Yast Bug Reporting HOWTO Web page
                     _(
-                      "This is worth reporting a bug at %1.\n" +
-                        "Please, attach also all YaST logs stored in the '%2' directory.\n" +
+                      "This is worth reporting a bug at %1.\n" \
+                        "Please, attach also all YaST logs stored in the '%2' directory.\n" \
                         "See %3 for more information about YaST logs."
                     ),
                     "http://bugzilla.novell.com/",
