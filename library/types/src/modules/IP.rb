@@ -153,7 +153,7 @@ module Yast
       return nil unless Check4(ip)
 
       parts = ip.split(".")
-      parts.reduce(0) { |r, p| (r << 8) + p.to_i }
+      parts.reduce(0) { |a, e| (a << 8) + e.to_i }
     end
 
     # Convert IPv4 address from integer to string
@@ -384,9 +384,7 @@ module Yast
     #
     # @raise [RuntimeError] if ip address is invalid
     def reserved4(ip)
-      if !Check4(ip)
-        raise "Invalid IP address passed '#{ip}'"
-      end
+      raise "Invalid IP address passed '#{ip}'" unless Check4(ip)
 
       # RFC#1700
       return true if ip.start_with?("0.")

@@ -157,10 +157,11 @@ module Yast
         SCR.Execute(path(".target.bash_output"), "hostname --fqdn")
       )
       if hostname_data.nil? || Ops.get_integer(hostname_data, "exit", -1) != 0
-        fqhostname = {} !=
-          Convert.to_map(SCR.Read(path(".target.stat"), "/etc/HOSTNAME")) ?
-          Convert.to_string(SCR.Read(path(".target.string"), "/etc/HOSTNAME")) :
-          ""
+        fqhostname = if !SCR.Read(path(".target.stat"), "/etc/HOSTNAME").empty?
+                       Convert.to_string(SCR.Read(path(".target.string"), "/etc/HOSTNAME"))
+                     else
+                       ""
+                     end
 
         if fqhostname == "" || fqhostname.nil?
           # last resort (#429792)

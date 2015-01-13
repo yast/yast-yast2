@@ -21,17 +21,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Punycode.ycp
-# Package:	Main yast package
-# Summary:	DNS Punycode Handling
-# Authors:	Lukas Ocilka <lukas.ocilka@suse.cz>
-# Tags:	Unstable
-#
-# $Id$
 #
 require "yast"
 
 module Yast
+  # DNS Punycode Handling
   class PunycodeClass < Module
     def main
       textdomain "base"
@@ -55,7 +49,7 @@ module Yast
 
       # cached amount of data should be controled
       @current_cache_size = 0
-      @maximum_cache_size = 32768
+      @maximum_cache_size = 32_768
     end
 
     # Returns the maximum cache size (sum of already converted
@@ -252,12 +246,12 @@ module Yast
       Builtins.foreach(strings_in) do |string_in|
         current_index = Ops.add(current_index, 1)
         # Already cached string
-        if Ops.get(test_cached, string_in) != nil
+        if Ops.get(test_cached, string_in)
           Ops.set(
             strings_out,
             current_index,
             Ops.get(test_cached, string_in, "")
-          ) 
+          )
 
           # Recently converted strings
         else
@@ -383,9 +377,9 @@ module Yast
         current_domain_index = Ops.add(current_domain_index, 1)
         # Where the current string starts and ends
         current = Ops.get(backward_map_of_conversion, [current_domain_index, 0])
-        _end = Ops.get(backward_map_of_conversion, [current_domain_index, 1])
+        end_ = Ops.get(backward_map_of_conversion, [current_domain_index, 1])
         # error?
-        if current.nil? || _end.nil?
+        if current.nil? || end_.nil?
           Builtins.y2error(
             "Cannot find start/end for %1 in %2",
             one_encoded,
@@ -395,7 +389,7 @@ module Yast
         else
           # create a list of items of the current domain (translated)
           decoded_domain = []
-          while Ops.less_or_equal(current, _end)
+          while Ops.less_or_equal(current, end_)
             decoded_domain = Builtins.add(
               decoded_domain,
               Ops.get(strings_to_decode, current, "")

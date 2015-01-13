@@ -74,3 +74,7 @@ Style/PredicateName:
 # problem is UI_ID which looks like constant module
 Style/ClassAndModuleCamelCase:
   Enabled: false
+
+# ascii comments are used for examples with non-ascii code like Punycode module
+Style/AsciiComments:
+  Enabled: false

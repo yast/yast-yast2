@@ -141,7 +141,11 @@ module Yast
       Ops.add(
         Ops.add(
           Ops.get_string(l, b, ""),
-          d != 0 ? Ops.add(Ops.get_string(m, d, ""), b != 3 ? "." : "") : ""
+          if d != 0
+            Ops.add(Ops.get_string(m, d, ""), b != 3 ? "." : "")
+          else
+            ""
+          end
         ),
         Ops.get_string(r, d == 0 ? b : Ops.add(b, 1), "")
       )

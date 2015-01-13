@@ -213,15 +213,15 @@ module Yast
       disable_service(@current_name)
 
       case @cached_name
-        when :network_manager, :wicked
-          RunSystemCtl(BACKENDS[@cached_name], "--force enable")
-        when :netconfig
-          RunSystemCtl(BACKENDS[@current_name], "disable")
+      when :network_manager, :wicked
+        RunSystemCtl(BACKENDS[@cached_name], "--force enable")
+      when :netconfig
+        RunSystemCtl(BACKENDS[@current_name], "disable")
 
-          # Workaround for bug #61055:
-          Builtins.y2milestone("Enabling service %1", "network")
-          cmd = "cd /; /sbin/insserv -d /etc/init.d/network"
-          SCR.Execute(path(".target.bash"), cmd)
+        # Workaround for bug #61055:
+        Builtins.y2milestone("Enabling service %1", "network")
+        cmd = "cd /; /sbin/insserv -d /etc/init.d/network"
+        SCR.Execute(path(".target.bash"), cmd)
       end
 
       @initialized = false
@@ -344,19 +344,20 @@ module Yast
       if network_running
         return true
       else
-        error_text = Stage.initial ?
-          _(
-            "No running network detected.\n" \
-            "Restart installation and configure network in Linuxrc\n" \
-            "or continue without network."
-          )
-          :
-          _(
-            "No running network detected.\n" \
-            "Configure network with YaST or Network Manager plug-in\n" \
-            "and start this module again\n" \
-            "or continue without network."
-          )
+        error_text = if Stage.initial
+                       _(
+                         "No running network detected.\n" \
+                         "Restart installation and configure network in Linuxrc\n" \
+                         "or continue without network."
+                       )
+                     else
+                       _(
+                         "No running network detected.\n" \
+                         "Configure network with YaST or Network Manager plug-in\n" \
+                         "and start this module again\n" \
+                         "or continue without network."
+                       )
+                     end
 
         ret = Popup.ContinueCancel(error_text)
 
@@ -425,8 +426,7 @@ module Yast
       return if !service
 
       if service == :wicked
-        # FIXME:
-        # you really need to use 'wickedd'. Moreover kill action do not
+        # FIXME: you really need to use 'wickedd'. Moreover kill action do not
         # kill all wickedd services - e.g. nanny, dhcp* ... stays running
         # This needs to be clarified with wicked people.
         # bnc#864619

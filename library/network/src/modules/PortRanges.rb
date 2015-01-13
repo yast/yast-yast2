@@ -396,7 +396,6 @@ module Yast
       end
 
       new_list = []
-      list_of_ports = []
       list_of_ranges = []
       # Using port number, we can remove ports mentioned in port ranges
       ports_to_port_numbers = {}
@@ -490,7 +489,7 @@ module Yast
       # Joining port ranges together
       # this is a bit dangerous!
       Builtins.y2milestone("Joining list of ranges %1", list_of_ranges)
-      while true && Ops.greater_than(max_loops, 0)
+      while Ops.greater_than(max_loops, 0)
         # if something goes wrong
         max_loops = Ops.subtract(max_loops, 1)
 

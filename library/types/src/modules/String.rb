@@ -275,9 +275,11 @@ module Yast
     # @return [String] number as two-digit string
     #
     def FormatTwoDigits(x)
-      Ops.less_than(x, 10) && Ops.greater_or_equal(x, 0) ?
-        Builtins.sformat("0%1", x) :
+      if Ops.less_than(x, 10) && Ops.greater_or_equal(x, 0)
+        Builtins.sformat("0%1", x)
+      else
         Builtins.sformat("%1", x)
+      end
     end
 
     # Format an integer seconds value with min:sec or hours:min:sec
@@ -640,7 +642,7 @@ module Yast
       output = input
       if Builtins.regexpmatch(output, regex)
         p = Builtins.regexppos(output, regex)
-        begin
+        loop do
           output = Ops.add(
             Builtins.substring(output, 0, Ops.get_integer(p, 0, 0)),
             Builtins.substring(
@@ -649,7 +651,8 @@ module Yast
             )
           )
           p = Builtins.regexppos(output, regex)
-        end while glob && Ops.greater_than(Builtins.size(p), 0)
+          break if !glob || !Ops.greater_than(Builtins.size(p), 0)
+        end
       end
       output
     end
@@ -1236,7 +1239,7 @@ module Yast
       end
 
       ret = ""
-      begin
+      loop do
         # put the ellipsis in the middle of the path
         ellipsis = Ops.divide(Builtins.size(dir), 2)
 
@@ -1253,7 +1256,8 @@ module Yast
           # the size is OK
           break
         end
-      end while Ops.greater_than(Builtins.size(dir), 0)
+        break unless Ops.greater_than(Builtins.size(dir), 0)
+      end
 
       ret
     end

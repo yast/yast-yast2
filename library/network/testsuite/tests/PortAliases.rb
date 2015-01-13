@@ -45,32 +45,32 @@ module Yast
       Yast.import "PortAliases"
 
       DUMP("== Allowed Port Aliases ==")
-      TEST(lambda { PortAliases.IsAllowedPortName("xyz-abc-def") }, [
+      TEST(->() { PortAliases.IsAllowedPortName("xyz-abc-def") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { PortAliases.IsAllowedPortName("a*a/b+b.c_c-d") }, [
+      TEST(->() { PortAliases.IsAllowedPortName("a*a/b+b.c_c-d") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { PortAliases.IsAllowedPortName("!port") }, [
+      TEST(->() { PortAliases.IsAllowedPortName("!port") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { PortAliases.IsAllowedPortName("1") }, [
+      TEST(->() { PortAliases.IsAllowedPortName("1") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { PortAliases.IsAllowedPortName("65535") }, [
+      TEST(->() { PortAliases.IsAllowedPortName("65535") }, [
         @READ,
         @WRITE,
         @EXECUTE
       ], nil)
-      TEST(lambda { PortAliases.IsAllowedPortName("65536") }, [
+      TEST(->() { PortAliases.IsAllowedPortName("65536") }, [
         @READ,
         @WRITE,
         @EXECUTE
@@ -135,7 +135,7 @@ module Yast
           "http-alt"
         ]
       ) do |port|
-        TEST(lambda { PortAliases.GetListOfServiceAliases(port) }, [
+        TEST(->() { PortAliases.GetListOfServiceAliases(port) }, [
           @READ,
           @WRITE,
           @EXECUTE
@@ -144,7 +144,7 @@ module Yast
 
       DUMP("")
       DUMP("== Service Aliases External ==")
-      TEST(lambda { PortAliases.GetListOfServiceAliases("333") }, [
+      TEST(->() { PortAliases.GetListOfServiceAliases("333") }, [
         @READ,
         @WRITE,
         @EXECUTE
@@ -152,7 +152,7 @@ module Yast
 
       DUMP("")
       DUMP("== Port Name ==")
-      TEST(lambda { PortAliases.IsKnownPortName("www") }, [
+      TEST(->() { PortAliases.IsKnownPortName("www") }, [
         @READ,
         @WRITE,
         @EXECUTE

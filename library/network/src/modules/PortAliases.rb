@@ -167,11 +167,9 @@ module Yast
       aliases = []
 
       if Ops.get_integer(found, "exit", 0) == 0
-        Builtins.foreach(
-          Builtins.splitstring(Ops.get_string(found, "stdout", ""), "\n")
-        ) do |_alias|
-          next if _alias == ""
-          aliases = Builtins.add(aliases, _alias)
+        found["stdout"].split("\n").each do |alias_|
+          next if _alias.empty?
+          aliases << alias_
         end
       else
         Builtins.y2error(
@@ -207,11 +205,9 @@ module Yast
       alias_found = nil
 
       if Ops.get_integer(found, "exit", 0) == 0
-        Builtins.foreach(
-          Builtins.splitstring(Ops.get_string(found, "stdout", ""), "\n")
-        ) do |_alias|
-          next if _alias == ""
-          alias_found = Builtins.tointeger(_alias)
+        found["stdout"].split("\n").each do |alias_|
+          next if alias_.empty?
+          alias_found = Builtins.tointeger(alias_)
         end
       else
         Builtins.y2error(
