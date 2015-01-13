@@ -348,12 +348,12 @@ module Yast
     # @param map module data
     # @param map default data
     # @return [Boolean] true if arch match
-    def checkArch(mod, _def)
+    def checkArch(mod, def_)
       mod = deep_copy(mod)
-      _def = deep_copy(_def)
+      def_ = deep_copy(def_)
       Builtins.y2debug("Checking architecture: %1", mod)
       archs = Ops.get_string(mod, "archs", "")
-      archs = Ops.get_string(_def, "archs", "all") if archs == ""
+      archs = Ops.get_string(def_, "archs", "all") if archs == ""
 
       return true if archs == "all"
 
@@ -560,7 +560,7 @@ module Yast
 
     # Get list of required files for the workflow.
     # @return [Array<String>] Required files list.
-    # TODO FIXME: this function seems to be unused, remove it?
+    # FIXME: this function seems to be unused, remove it?
     def RequiredFiles(stage, mode)
       # Files needed during installation.
       needed_client_files = []
@@ -568,7 +568,6 @@ module Yast
       workflow = FindMatchingWorkflow(stage, mode)
 
       modules = Ops.get_list(workflow, "modules", [])
-      id = 1
       modules = Builtins.filter(modules) do |m|
         Ops.get_boolean(m, "enabled", true)
       end
@@ -584,7 +583,7 @@ module Yast
             client = Ops.add("inst_", Ops.get_string(m, "name", "dummy"))
           end
         end
-        # TODO FIXME: what about the ruby files?
+        # FIXME: what about the ruby files?
         client = Ops.add(
           Ops.add(Ops.add(Directory.clientdir, "/"), client),
           ".ycp"
@@ -657,12 +656,10 @@ module Yast
 
       modules = Builtins.filter(modules) do |one_module|
         # modules
-        if Ops.get_string(one_module, "name", "") != nil &&
-            Ops.get_string(one_module, "name", "") != ""
+        if one_module["name"] && !one_module["name"].empty?
           next true
           # proposals
-        elsif Ops.get_string(one_module, "proposal", "") != nil &&
-            Ops.get_string(one_module, "proposal", "") != ""
+        elsif one_module["proposal"] && one_module["proposal"].empty?
           next true
         end
         # the rest
@@ -714,19 +711,17 @@ module Yast
       Builtins.y2milestone("localDisabledModules: %1", @localDisabledModules)
 
       Builtins.foreach(getModules(stage, mode, :all)) do |m|
-        if Ops.get_string(m, "proposal", "") != nil &&
-            Ops.get_string(m, "proposal", "") != ""
+        if m["proposal"] && !m["proposal"].empty?
           Builtins.y2milestone("Disabling proposal: %1", m)
           @DisabledProposals = Convert.convert(
             Builtins.union(
               @DisabledProposals,
-              [Ops.get_string(m, "proposal", "")]
+              m["proposal"]
             ),
             from: "list",
             to:   "list <string>"
           )
-        elsif Ops.get_string(m, "name", "") != nil &&
-            Ops.get_string(m, "name", "") != ""
+        elsif m["name"] && !m["name"].empty?
           Builtins.y2milestone("Disabling module: %1", m)
           @DisabledModules = Convert.convert(
             Builtins.union(@DisabledModules, [Ops.get_string(m, "name", "")]),
@@ -768,8 +763,7 @@ module Yast
       Builtins.foreach(getModules(stage, mode, :all)) do |m|
         # A proposal
         # Enable it only if it was enabled before
-        if Ops.get_string(m, "proposal", "") != nil &&
-            Ops.get_string(m, "proposal", "") != "" &&
+        if m["proposal"] && !m["proposal"].empty? &&
             !Builtins.contains(
               @localDisabledProposals,
               Ops.get_string(m, "proposal", "")
@@ -780,15 +774,14 @@ module Yast
           end
           # A module
           # Enable it only if it was enabled before
-        elsif Ops.get_string(m, "name", "") != nil &&
-            Ops.get_string(m, "name", "") != "" &&
+        elsif m["name"] && !m["name"].empty? &&
             !Builtins.contains(
               @localDisabledModules,
               Ops.get_string(m, "name", "")
             )
           Builtins.y2milestone("Enabling module: %1", m)
           @DisabledModules = Builtins.filter(@DisabledModules) do |one_module|
-            Ops.get_string(m, "name", "") != one_module
+            m["name"] != one_module
           end
         end
       end
@@ -871,29 +864,33 @@ module Yast
           # Heading
           if Builtins.haskey(m, "heading") &&
               Ops.get_string(m, "label", "") != ""
-            heading = Builtins.haskey(m, "textdomain") ?
-              Builtins.dgettext(
-                Ops.get_string(m, "textdomain", ""),
-                Ops.get_string(m, "label", "")
-              ) :
-              Builtins.dgettext(
-                wizard_textdomain,
-                Ops.get_string(m, "label", "")
-              )
+            heading = if Builtins.haskey(m, "textdomain")
+                        Builtins.dgettext(
+                          Ops.get_string(m, "textdomain", ""),
+                          Ops.get_string(m, "label", "")
+                        )
+                      else
+                        Builtins.dgettext(
+                          wizard_textdomain,
+                          Ops.get_string(m, "label", "")
+                        )
+                      end
 
             # Label
           elsif Ops.get_string(m, "label", "") != ""
             first_id = Ops.get_string(m, "id", "") if first_id == ""
 
-            label = Builtins.haskey(m, "textdomain") ?
-              Builtins.dgettext(
-                Ops.get_string(m, "textdomain", ""),
-                Ops.get_string(m, "label", "")
-              ) :
-              Builtins.dgettext(
-                wizard_textdomain,
-                Ops.get_string(m, "label", "")
-              )
+            label = if Builtins.haskey(m, "textdomain")
+                      Builtins.dgettext(
+                        Ops.get_string(m, "textdomain", ""),
+                        Ops.get_string(m, "label", "")
+                      )
+                    else
+                      Builtins.dgettext(
+                        wizard_textdomain,
+                        Ops.get_string(m, "label", "")
+                      )
+                    end
 
             id = Ops.get_string(m, "id", "")
             last_label = Ops.get_string(m, "label", "")
@@ -1346,8 +1343,7 @@ module Yast
         args = []
         i = 0
         while Ops.less_than(i, Builtins.size(argterm))
-          _def = nil
-          Ops.set(args, i, Ops.get(argterm, i, _def))
+          Ops.set(args, i, Ops.get(argterm, i))
           i = Ops.add(i, 1)
         end
 
@@ -1370,7 +1366,7 @@ module Yast
         result = WFM.CallFunction(getClientName(step_name, step_execute), args)
 
         # this code will be triggered before the red pop window appears on the user's screen
-        Hooks.run('installation_failure') if result == false
+        Hooks.run("installation_failure") if result == false
 
         result = Convert.to_symbol(result)
 
@@ -1496,7 +1492,7 @@ module Yast
         elsif result == :abort
           # handling when user aborts the workflow (FATE #300422, bnc #406401, bnc #247552)
           final_result = result
-          Hooks.run('installation_aborted')
+          Hooks.run("installation_aborted")
 
           break
         elsif result == :finish

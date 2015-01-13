@@ -532,7 +532,7 @@ module Yast
 
     # Removes all xml and ycp files from directory where
     #
-    # TODO FIXME: this function seems to be unused, remove it?
+    # FIXME: this function seems to be unused, remove it?
     def CleanWorkflowsDirectory
       directory = GetWorkflowDirectory()
       Builtins.y2milestone(
@@ -656,7 +656,6 @@ module Yast
       appends = Ops.get_list(additional_control, "append_modules", [])
 
       if Ops.greater_than(Builtins.size(appends), 0)
-        as_map = false
         append2 = deep_copy(appends)
 
         if Ops.is_map?(Ops.get(base, ["proposal_modules", 0]))

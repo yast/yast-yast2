@@ -40,7 +40,7 @@ module Yast
         }
       }
 
-      TEST(lambda { ProductFeatures.GetStringFeature("globals", "ui_mode") }, [
+      TEST(->() { ProductFeatures.GetStringFeature("globals", "ui_mode") }, [
         @READ
       ], 0)
       TEST(lambda do
