@@ -37,11 +37,11 @@ module Yast
       Yast.import "TypeRepository"
 
       # correct IPv4
-      TEST(lambda { TypeRepository.is_a("10.20.0.0", "ip") }, [], nil)
+      TEST(->() { TypeRepository.is_a("10.20.0.0", "ip") }, [], nil)
       # incorrect IPv4
-      TEST(lambda { TypeRepository.is_a("10.blem.0.0", "ip") }, [], nil)
+      TEST(->() { TypeRepository.is_a("10.blem.0.0", "ip") }, [], nil)
       # correct IPv6
-      TEST(lambda { TypeRepository.is_a("fe80::250:fcff:fe74:f702", "ip") }, [], nil)
+      TEST(->() { TypeRepository.is_a("fe80::250:fcff:fe74:f702", "ip") }, [], nil)
 
       # EOF
 

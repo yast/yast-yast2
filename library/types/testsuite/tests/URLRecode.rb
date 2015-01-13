@@ -30,19 +30,19 @@ module Yast
       Yast.include self, "testsuite.rb"
       Yast.import "URLRecode"
 
-      TEST(lambda { URLRecode.EscapePath(nil) }, [], nil)
-      TEST(lambda { URLRecode.EscapePath("") }, [], nil)
+      TEST(->() { URLRecode.EscapePath(nil) }, [], nil)
+      TEST(->() { URLRecode.EscapePath("") }, [], nil)
 
       @test_path = "/@\#$%^&/dir/\u010D\u00FD\u011B\u0161\u010D\u00FD\u00E1/file"
 
-      TEST(lambda { URLRecode.EscapePath(@test_path) }, [], nil)
+      TEST(->() { URLRecode.EscapePath(@test_path) }, [], nil)
       TEST(lambda do
         URLRecode.UnEscape(URLRecode.EscapePath(@test_path)) == @test_path
       end, [], nil)
 
-      TEST(lambda { URLRecode.EscapePath(" !@\#$%^&*()/?+=") }, [], nil)
-      TEST(lambda { URLRecode.EscapePassword(" !@\#$%^&*()/?+=<>[]|\"") }, [], nil)
-      TEST(lambda { URLRecode.EscapeQuery(" !@\#$%^&*()/?+=") }, [], nil)
+      TEST(->() { URLRecode.EscapePath(" !@\#$%^&*()/?+=") }, [], nil)
+      TEST(->() { URLRecode.EscapePassword(" !@\#$%^&*()/?+=<>[]|\"") }, [], nil)
+      TEST(->() { URLRecode.EscapeQuery(" !@\#$%^&*()/?+=") }, [], nil)
 
       # EOF
 

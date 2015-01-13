@@ -241,9 +241,7 @@ module Yast
     # how we were booted (the type of the installation medium)
     # /etc/install.inf: InstMode
     def boot
-      __boot = Linuxrc.InstallInf("InstMode")
-      __boot = "cd" if __boot.nil?
-      __boot
+      Linuxrc.InstallInf("InstMode") || "cd"
     end
 
     # run X11 configuration after inital boot

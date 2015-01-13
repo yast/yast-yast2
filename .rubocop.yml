@@ -4,7 +4,7 @@ inherit_from:
 
 # Offense count: 153
 Metrics/AbcSize:
-  Max: 304
+  Max: 446
 
 # Offense count: 32
 Metrics/BlockNesting:
