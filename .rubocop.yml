@@ -10,16 +10,6 @@ inherit_from:
   /usr/share/YaST2/data/devtools/data/rubocop_yast_style.yml
 
 # Offense count: 1
-# Cop supports --auto-correct.
-Lint/BlockAlignment:
-  Enabled: false
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Lint/DeprecatedClassMethods:
-  Enabled: false
-
-# Offense count: 1
 Lint/EnsureReturn:
   Enabled: false
 

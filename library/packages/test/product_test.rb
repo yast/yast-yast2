@@ -27,7 +27,7 @@ DATA_PATH = File.join(File.expand_path(File.dirname(__FILE__)), "data")
 def load_zypp(file_name)
   file_name = File.join(DATA_PATH, "zypp", file_name)
 
-  raise "File not found: #{file_name}" unless File.exists?(file_name)
+  raise "File not found: #{file_name}" unless File.exist?(file_name)
 
   log.info "Loading file: #{file_name}"
   YAML.load_file(file_name)
