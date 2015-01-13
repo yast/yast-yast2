@@ -75,7 +75,6 @@ module Yast
       ret
     end
 
-
     # Validate type of entry of the option description map
     # Also checks option description maps if present
     # @param [String] key string key of the map entry
@@ -181,7 +180,6 @@ module Yast
     end
 
     # functions
-
 
     # Initialize the displayed table
     # @param [Hash{String => Object}] descr map description map of the whole table

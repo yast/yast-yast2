@@ -309,6 +309,5 @@ module Yast
         expect(unit.error).not_to be_empty
       end
     end
-
   end
 end

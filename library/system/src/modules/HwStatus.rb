@@ -38,7 +38,6 @@ require "yast"
 module Yast
   class HwStatusClass < Module
     def main
-
       # status map for devices, key is "unique id", value is symbol (`yes, `no)
 
       @statusmap = {}

@@ -104,7 +104,6 @@ module Yast
         )
       )
 
-
       if Ops.greater_than(Builtins.size(headline), 0)
         content = VBox(
           VSpacing(0.4),
@@ -181,13 +180,6 @@ module Yast
       )
     end
 
-
-
-
-
-
-
-
     # Internal version of AnyTimedMessage
     #
     # Show a message with optional headline above and
@@ -247,9 +239,6 @@ module Yast
       nil
     end
 
-
-
-
     # Internal function - wrapper for anyTimedMessageTypeInternal call
     def anyTimedMessageInternal(headline, message, icon_name, timeout)
       anyTimedMessageTypeInternal(
@@ -264,11 +253,6 @@ module Yast
 
       nil
     end
-
-
-
-
-
 
     # Internal function - wrapper for anyTimedMessageTypeInternal call
     def anyTimedRichMessageInternal(headline, message, icon_name, timeout, width, height)
@@ -295,15 +279,11 @@ module Yast
       ""
     end
 
-
     # Indicator for empty icon for popups that can have one - for code readability.
     #
     def NoIcon
       ""
     end
-
-
-
 
     # Button box for the AnyQuestion Dialog (internal function).
     #
@@ -339,11 +319,6 @@ module Yast
       button_box = ButtonBox(yes_button, no_button)
       deep_copy(button_box)
     end
-
-
-
-
-
 
     # Generic question popup with two buttons.
     #
@@ -392,11 +367,6 @@ module Yast
       ret == :yes
     end
 
-
-
-
-
-
     # Generic error question popup with two buttons.
     #
     # Style guide hint: The first button has to have the semantics of "yes",
@@ -444,12 +414,6 @@ module Yast
       ret == :yes
     end
 
-
-
-
-
-
-
     # Timed question popup with two buttons and time display
     #
     # @param [String] headline		headline or Popup::NoHeadline()
@@ -482,7 +446,6 @@ module Yast
           VSpacing(0.2)
         )
       )
-
 
       success = UI.OpenDialog(
         Opt(:decorated),
@@ -517,12 +480,6 @@ module Yast
       which_input == :yes
     end
 
-
-
-
-
-
-
     # Timed error question popup with two buttons and time display
     #
     # @param [String] headline		headline or Popup::NoHeadline()
@@ -556,7 +513,6 @@ module Yast
         )
       )
 
-
       success = UI.OpenDialog(
         Opt(:decorated),
         popupLayoutInternal(headline, message, Icon.IconPath("error"), timed)
@@ -589,7 +545,6 @@ module Yast
 
       which_input == :yes
     end
-
 
     # Dialog which displays the "message" and has a <b>Continue</b>
     # and a <b>Cancel</b> button.
@@ -626,7 +581,6 @@ module Yast
       ret
     end
 
-
     # Dialog which displays the "message" and has a <b>Continue</b>
     # and a <b>Cancel</b> button.
     #
@@ -648,7 +602,6 @@ module Yast
 
       ret
     end
-
 
     # This dialog displays "message" (a question) and has a <b>Yes</b> and
     # a <b>No</b> button.
@@ -685,7 +638,6 @@ module Yast
       ret
     end
 
-
     # Display a yes/no question and wait for answer.
     #
     # Should be used for decisions about two about equivalent paths,
@@ -710,8 +662,6 @@ module Yast
 
       ret
     end
-
-
 
     # Show a long text that might need scrolling.
     #
@@ -757,12 +707,6 @@ module Yast
 
       nil
     end
-
-
-
-
-
-
 
     # Show a question that might need scrolling.
     #
@@ -812,7 +756,6 @@ module Yast
 
       ui == :ok
     end
-
 
     # Confirmation for "Abort" button during installation.
     #
@@ -907,7 +850,6 @@ module Yast
       ret
     end
 
-
     # Confirmation popup when user clicked "Abort".
     #
     # Set "have changes" to "true" when there are changes that will be lost.
@@ -948,7 +890,6 @@ module Yast
 
       ret
     end
-
 
     # Generic message popup with Details button - internal
     #
@@ -1090,7 +1031,6 @@ module Yast
       nil
     end
 
-
     # Generic message popup - internal
     #
     # Show a message with optional headline above and
@@ -1124,7 +1064,6 @@ module Yast
       nil
     end
 
-
     # Generic message popup
     #
     # Show a message with optional headline above and
@@ -1139,7 +1078,6 @@ module Yast
       nil
     end
 
-
     # Clear feedback message
     # @return [void]
     def ClearFeedback
@@ -1148,7 +1086,6 @@ module Yast
 
       nil
     end
-
 
     # Show popup with a headline and a message for feedback
     # @param [String] headline headline of Feedback popup
@@ -1567,7 +1504,6 @@ module Yast
       nil
     end
 
-
     # Show a notification message and wait until user clicked "OK".
     #
     # ![screenshots/Notify.png](../../screenshots/Notify.png)
@@ -1667,7 +1603,6 @@ module Yast
       nil
     end
 
-
     # Show a notify message with Details button and wait until user clicked "OK".
     #
     # @param [String] message	error message string
@@ -1751,12 +1686,6 @@ module Yast
 
       which_input != :timed_cancel
     end
-
-
-
-
-
-
 
     # Generic question popup with three buttons.
     #
@@ -1852,7 +1781,6 @@ module Yast
       ret
     end
 
-
     # Special error popup for YCP modules that don't work.
     #
     # The user can choose one of:
@@ -1908,7 +1836,6 @@ module Yast
       ret
     end
 
-
     # Generic message popup
     #
     # Show a message with optional headline above and
@@ -1938,9 +1865,6 @@ module Yast
 
       nil
     end
-
-
-
 
     # it is misaligned because there used to be UI() around it
 
@@ -2001,7 +1925,6 @@ module Yast
 
       nil
     end
-
 
     # Show the contents of an entire file in a popup.
     #

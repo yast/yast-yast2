@@ -38,7 +38,6 @@ require "yast"
 
 module Yast
   class KernelClass < Module
-
     # default configuration file for Kernel modules loaded on boot
     MODULES_CONF_FILE = "yast.conf"
 
@@ -244,6 +243,7 @@ module Yast
 
       nil
     end
+
     def ParseInstallationKernelCmdline
       @cmdline_parsed = true
       return if !(Stage.initial || Stage.cont)
@@ -450,7 +450,6 @@ module Yast
       nil
     end
 
-
     # functinos related to kernel packages
 
     # Het the name of kernel binary under /boot
@@ -553,8 +552,6 @@ module Yast
     end
 
     # functions related to kernel's modules loaded on boot
-
-
 
     # Resets the internal cache
     def reset_modules_to_load

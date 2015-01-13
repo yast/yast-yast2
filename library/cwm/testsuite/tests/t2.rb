@@ -56,7 +56,6 @@ module Yast
 
       Mode.SetTest("testsuite")
 
-
       @functions = {
         "init"  => fun_ref(method(:generic_init), "void (string)"),
         "store" => fun_ref(method(:generic_save), "void (string, map)")

@@ -39,11 +39,12 @@ module Yast
     include Yast::Logger
 
     private
+
     attr_writer :error
 
     public
-    attr_reader :error
 
+    attr_reader :error
 
     def initialize
       textdomain "base"
@@ -444,7 +445,6 @@ module Yast
     ensure
       return false
     end
-
 
     def deprecate message
       log.warn "[DEPRECATION] #{caller[0].split.last} in \"#{caller[1]}\" is deprecated; #{message}"

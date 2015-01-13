@@ -106,7 +106,6 @@ module Yast
       end
       Builtins.y2debug("modules=%1", @modules)
 
-
       @first = Ops.get(@groups, 0)
       Builtins.y2debug("first=%1", @first)
 
@@ -202,7 +201,6 @@ module Yast
 
       nil
     end
-
 
     def OpenMenu
       #check if user is root (#246015)
@@ -317,7 +315,6 @@ module Yast
       false
     end
 
-
     def ShowNcursesHelp
       # NCurses (textmode) Control Center headline
       headline = _("Controlling YaST ncurses with the Keyboard")
@@ -388,7 +385,6 @@ module Yast
 
       nil
     end
-
 
     def ReplaceModuleList(group)
       # y2debug too costly: y2debug("group=%1", group);

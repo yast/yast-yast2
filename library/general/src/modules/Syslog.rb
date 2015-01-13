@@ -33,7 +33,6 @@ require "yast"
 module Yast
   class SyslogClass < Module
     def main
-
       Yast.import "String"
     end
 

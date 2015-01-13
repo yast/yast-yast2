@@ -272,7 +272,6 @@ module Yast
       WorkflowManager.PrepareSystemProposals
       # init <--
 
-
       TEST(->() { WorkflowManager.SetBaseWorkflow(false) }, @MOCK, nil)
 
       DUMP("")

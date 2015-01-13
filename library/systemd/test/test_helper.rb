@@ -11,7 +11,6 @@ Yast.import 'SystemdService'
 Yast.import 'SystemdTarget'
 
 module SystemctlStubs
-
   def stub_systemctl unit
     case unit
     when :socket
@@ -26,7 +25,6 @@ module SystemctlStubs
     end
     stub_execute
   end
-
 
   def stub_execute success: true
     Yast::Systemctl.stub(:execute).and_return(
@@ -112,7 +110,6 @@ nss-lookup.target      loaded active   active Host and Network Name Lookups
 LIST
     )
   end
-
 end
 
 module SystemdUnitStubs

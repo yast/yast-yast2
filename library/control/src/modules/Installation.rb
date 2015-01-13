@@ -40,7 +40,6 @@ require "yast"
 module Yast
   class InstallationClass < Module
     def main
-
       Yast.import "Stage"
       Yast.import "Linuxrc"
       Yast.import "Directory"
@@ -76,7 +75,6 @@ module Yast
 
       @_text_fallback = nil
       @_no_x11 = nil
-
 
       # --> configuration from installation.ycp
 

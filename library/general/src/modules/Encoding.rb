@@ -126,8 +126,6 @@ module Yast
       ret
     end
 
-
-
     # Get Code Page
     # @param [String] enc Encoding
     # @return [String]
@@ -145,7 +143,6 @@ module Yast
       )
       code
     end
-
 
     # Constructor
     # does nothing in initial mode

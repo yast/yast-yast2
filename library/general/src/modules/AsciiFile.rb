@@ -31,7 +31,6 @@
 require "yast"
 
 module Yast
-
   # Assume this /etc/fstab file
   #
   #     # main filesystem
@@ -63,7 +62,6 @@ module Yast
   #     result[2]["fields"][1]    # =>  "/"
   class AsciiFileClass < Module
     def main
-
       textdomain "base"
 
       @blanks = "                                                             "
@@ -265,7 +263,6 @@ module Yast
       deep_copy(ret)
     end
 
-
     # Returns count of lines in file
     #
     # @param [Hash] file content
@@ -274,7 +271,6 @@ module Yast
       file = deep_copy(file)
       Builtins.size(Ops.get_map(file, "l", {}))
     end
-
 
     # Changes the record in the file defined by row and column
     #
@@ -314,7 +310,6 @@ module Yast
 
       nil
     end
-
 
     # Changes a complete line
     #

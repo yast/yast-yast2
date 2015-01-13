@@ -4,7 +4,6 @@ require_relative "../test_helper"
 require "yast"
 
 describe ".proc.meminfo" do
-
   AGENT_PATH = Yast::Path.new(".proc.meminfo")
   before :each do
     root = File.join(File.dirname(__FILE__), "test_root")

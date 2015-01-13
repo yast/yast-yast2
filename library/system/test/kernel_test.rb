@@ -140,5 +140,4 @@ describe "Kernel" do
       end
     end
   end
-
 end

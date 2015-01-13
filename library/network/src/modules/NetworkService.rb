@@ -45,7 +45,6 @@ require "yast"
 
 module Yast
   class NetworkServiceClass < Module
-
     # @current_name - current network backend identification
     # @cached_name  - the new network backend identification
 

@@ -54,7 +54,6 @@ describe "Yast::IP" do
     end
   end
 
-
   describe "#Check6" do
     VALID_IP6S = [
       "1:2:3:4:5:6:7:8",
@@ -192,7 +191,6 @@ describe "Yast::IP" do
   end
 
   describe "#reserved4" do
-
     it "raises exception for invalid IPv4 address" do
       expect{IP.reserved4(nil)}.to raise_error(RuntimeError)
       expect{IP.reserved4("0.0.0")}.to raise_error(RuntimeError)

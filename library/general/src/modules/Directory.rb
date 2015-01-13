@@ -93,7 +93,6 @@ module Yast
       # Must be updated with ResetTmpDir() call after the SCR change!
       @tmpdir = "/tmp"
 
-
       # Directory needed for custom installation workflows
       # It can be set to the path containing additional file on a CDROM
       @custom_workflow_dir = ""

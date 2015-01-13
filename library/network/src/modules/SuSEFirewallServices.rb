@@ -263,7 +263,6 @@ module Yast
           "convert_to" => ["service:iscsitarget"]
         }
       }
-
     end
 
     # Returns whether the service ID is defined by package.

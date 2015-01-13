@@ -33,7 +33,6 @@ require "yast"
 module Yast
   class CrashClass < Module
     def main
-
       Yast.import "Popup"
 
       # All operations that failed when were running last time

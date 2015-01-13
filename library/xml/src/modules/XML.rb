@@ -32,7 +32,6 @@ require "yast"
 module Yast
   class XMLClass < Module
     def main
-
       # Sections in XML file that should be treated as CDATA when saving
       @cdataSections = []
 
@@ -112,8 +111,6 @@ module Yast
       ret = Convert.to_boolean(SCR.Execute(path(".xml"), docSettings, contents))
       ret
     end
-
-
 
     # Write YCP data into formated XML string
     #  @param symbol Document type identifier

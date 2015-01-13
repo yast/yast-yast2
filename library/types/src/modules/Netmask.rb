@@ -58,7 +58,6 @@ module Yast
     def Check4(netmask)
       return false if netmask == nil || netmask == ""
 
-
       # 255.255.240.0
       s1 = "(128|192|224|240|248|252|254|255)"
       nm = Ops.add(

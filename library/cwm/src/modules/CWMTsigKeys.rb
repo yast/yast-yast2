@@ -42,7 +42,6 @@ module Yast
       Yast.import "Popup"
       Yast.import "String"
 
-
       # private variables
 
       # Currently configured TSIG keys
@@ -132,7 +131,6 @@ module Yast
 
       nil
     end
-
 
     # public routines related to TSIG keys management
 
@@ -233,7 +231,6 @@ module Yast
       Builtins.y2milestone("Files: %1, Keys: %2", filenames, ret)
       deep_copy(ret)
     end
-
 
     # widget related functions
 

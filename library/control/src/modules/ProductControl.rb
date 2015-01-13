@@ -136,7 +136,6 @@ module Yast
       @current_step
     end
 
-
     # Set Client Prefix
     def setClientPrefix(prefix)
       @_client_prefix = prefix
@@ -328,8 +327,6 @@ module Yast
 
       true
     end
-
-
 
     def Check(allowed, current)
       # create allowed list
@@ -561,8 +558,6 @@ module Yast
       nil
     end
 
-
-
     # Get list of required files for the workflow.
     # @return [Array<String>] Required files list.
     # TODO FIXME: this function seems to be unused, remove it?
@@ -601,8 +596,6 @@ module Yast
       deep_copy(needed_client_files)
     end
 
-
-
     # Get Workflow
     # @param [String] stage Stage
     # @param [String] mode Mode
@@ -610,8 +603,6 @@ module Yast
     def getCompleteWorkflow(stage, mode)
       FindMatchingWorkflow(stage, mode)
     end
-
-
 
     # Get modules of current Workflow
     # @param [String] stage
@@ -966,7 +957,6 @@ module Yast
       nil
     end
 
-
     # Retranslate Wizard Steps
     def RetranslateWizardSteps
       if Ops.greater_than(Builtins.size(@last_stage_mode), 0)
@@ -977,10 +967,6 @@ module Yast
 
       nil
     end
-
-
-
-
 
     def getMatchingProposal(stage, mode, proptype)
       Builtins.y2milestone(
@@ -1057,8 +1043,6 @@ module Yast
       deep_copy(props)
     end
 
-
-
     # Get modules of current Workflow
     # @param [String] stage
     # @param [String] mode
@@ -1119,7 +1103,6 @@ module Yast
       deep_copy(final_proposals)
     end
 
-
     # Get Proposal list that can not be changed by the user.
     # @return [Array<String>] list of locked proposals
     def getLockedProposals(stage, mode, proptype)
@@ -1150,7 +1133,6 @@ module Yast
       )
       current_proposal_textdomain
     end
-
 
     # Return proposal Label
     def getProposalProperties(stage, mode, proptype)
@@ -1205,7 +1187,6 @@ module Yast
       Builtins.dgettext(domain, label)
     end
 
-
     # Initialize Product Control
     # @return [Boolean] True on success
     def Init
@@ -1252,8 +1233,6 @@ module Yast
       Wizard.SetFocusToNextButton
       nil
     end
-
-
 
     def addToStack(name)
       @stack = Builtins.add(@stack, name)
@@ -1604,7 +1583,6 @@ module Yast
       modules = getModules(Stage.stage, Mode.mode, :enabled)
       Ops.get(modules, @restarting_step, {})
     end
-
 
     # ProductControl Constructor
     # @return [void]

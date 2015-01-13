@@ -210,5 +210,4 @@ describe Yast::SuSEFirewallServices do
       expect(old_services.is_a?(Hash)).to be_true
     end
   end
-
 end

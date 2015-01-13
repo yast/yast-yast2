@@ -87,7 +87,6 @@ module Yast
   # </table>
   class ModeClass < Module
     def main
-
       textdomain "base"
 
       # Current mode

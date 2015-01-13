@@ -32,7 +32,6 @@ require "yast"
 module Yast
   class DistroClass < Module
     def main
-
       textdomain "base"
 
       # Cache

@@ -33,7 +33,6 @@ require "yast"
 module Yast
   class ArchClass < Module
     def main
-
       # local variables
 
       @_architecture = nil
@@ -338,7 +337,6 @@ module Yast
     def board_wintel
       board_compatible == "wintel"
     end
-
 
     # ************************************************************
     # BIOS stuff

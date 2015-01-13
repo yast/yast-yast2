@@ -31,7 +31,6 @@ require "yast"
 module Yast
   class XVersionClass < Module
     def main
-
       # All paths related to X server
       @_paths = nil
     end

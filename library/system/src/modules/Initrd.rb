@@ -324,7 +324,6 @@ module Yast
       nil
     end
 
-
     # write settings to sysconfig, rebuild initrd images
     # @return true on success
     def Write

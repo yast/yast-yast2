@@ -40,7 +40,6 @@ require "yast"
 module Yast
   class HotplugClass < Module
     def main
-
       Yast.import "Arch"
       Yast.import "ModuleLoading"
       Yast.import "HwStatus"
@@ -137,7 +136,6 @@ module Yast
 
       !one_module_failed
     end
-
 
     # @param	none
     #

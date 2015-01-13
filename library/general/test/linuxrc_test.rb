@@ -77,7 +77,6 @@ def load_install_inf(defaults_replacement={})
 end
 
 describe "Linuxrc" do
-
   before(:each) do
     Linuxrc.ResetInstallInf
   end

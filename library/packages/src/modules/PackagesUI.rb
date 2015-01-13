@@ -86,7 +86,6 @@ module Yast
       nil
     end
 
-
     #
     # Popup displays helptext
     #
@@ -311,7 +310,6 @@ module Yast
       result
     end
 
-
     # Start the pattern selection dialog. If the UI does not support the
     # PatternSelector, start the detailed selection with "patterns" as the
     # initial view.
@@ -325,7 +323,6 @@ module Yast
           UI.WizardCommand(term(:Ping)) != true
         return RunPackageSelector({}) # Fallback: detailed selection
       end
-
 
       # Help text for software patterns / selections dialog
       help_text = _(
@@ -633,7 +630,6 @@ module Yast
 
       nil
     end
-
 
     def ShowInstallationSummaryMap(summary)
       summary_str = InstallationSummary(summary)

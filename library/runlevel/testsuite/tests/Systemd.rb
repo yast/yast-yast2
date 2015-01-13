@@ -27,7 +27,6 @@ module Yast
       Yast.import "Systemd"
       Yast.include self, "testsuite.rb"
 
-
       DUMP("Systemd::Running() tests")
 
       # Note: \0 should be used here as the separator, but YCP does not allows that...
@@ -82,7 +81,6 @@ module Yast
         {},
         { "target" => { "bash" => 1 } }
       ], nil)
-
 
       DUMP("Systemd::DefaultRunlevel() tests")
 

@@ -42,10 +42,6 @@ module Yast
       Yast.import "Popup"
       Yast.import "Wizard"
 
-
-
-
-
       # local store
 
       # List of items in the currently displayed dialog
@@ -162,7 +158,6 @@ module Yast
       end
     end
 
-
     # internal functions
 
     def StoreCurrentItems(items)
@@ -213,9 +208,6 @@ module Yast
       # menu button
       MenuButton(_("&Other"), items)
     end
-
-
-
 
     # CWM widget
 
@@ -363,12 +355,6 @@ module Yast
       )
     end
 
-
-
-
-
-
-
     # simple iface
 
     # Create the Hardware Wizard dialog
@@ -415,7 +401,6 @@ module Yast
 
       nil
     end
-
 
     # Return the id of the currently selected item in the table
     # @note This is a stable API function
@@ -512,7 +497,6 @@ module Yast
 
       ret
     end
-
 
     # Get propertly list of an unconfigured device. Should be used together with
     # device name in CreateRichTextDescription() function.

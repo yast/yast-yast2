@@ -40,7 +40,6 @@ module Yast
       Yast.import "Label"
       Yast.import "Wizard"
 
-
       # local data
 
       # Currently selected item in the tree
@@ -111,8 +110,6 @@ module Yast
       }
     end
 
-
-
     # internal functions
 
     # Draw the screen related to the particular tree item
@@ -141,9 +138,6 @@ module Yast
       # return widgets of the dialog for further usage
       deep_copy(w)
     end
-
-
-
 
     # Draw the dialog with the flat tree (only single level of the tree entries)
     # @param [Array<String>] ids_order a list of IDs in the same order as they are expected to be

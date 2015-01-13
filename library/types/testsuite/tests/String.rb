@@ -236,7 +236,6 @@ module Yast
         {}
       ], nil)
 
-
       DUMP("String::CutRegexMatch")
       TEST(->() { String.CutRegexMatch("abc", "[0-9]+", true) }, [], nil)
       TEST(->() { String.CutRegexMatch("abc12def345ghi678900", "[0-9]+", true) }, [], nil)

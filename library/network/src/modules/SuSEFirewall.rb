@@ -210,7 +210,6 @@ module Yast
       # FATE #300970: Firewall support for SMB browsing
       @broadcast_related_module = "nf_conntrack_netbios_ns"
 
-
       # Variable for ReportOnlyOnce() function
       @report_only_once = []
 
@@ -1403,7 +1402,6 @@ module Yast
       end
     end
 
-
     # Function determines if all SuSEFirewall scripts are enabled in
     # init scripts /etc/init.d/ now.
     # For configuration "enabled" status use GetEnableService().
@@ -2062,7 +2060,6 @@ module Yast
 
       SetModified()
 
-
       # Adding service support into each mentioned zone
       Builtins.foreach(zones_affected) do |zone|
         # if the service is allowed
@@ -2079,6 +2076,7 @@ module Yast
 
       true
     end
+
     def ArePortsOrServicesAllowed(needed_ports, protocol, zone, check_for_aliases)
       needed_ports = deep_copy(needed_ports)
       are_allowed = true
@@ -3182,9 +3180,6 @@ module Yast
       nil
     end
 
-
-
-
     # Adds forward into masquerade rule.
     #
     # @param [String] source_net
@@ -3548,6 +3543,7 @@ module Yast
 
       nil
     end
+
     def CheckKernelModules
       needs_additional_module = false
 

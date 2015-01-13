@@ -47,8 +47,6 @@ module Yast
       Yast.import "UI"
       textdomain "base"
 
-
-
       Yast.import "CWM"
       Yast.import "Label"
       Yast.import "Mode"
@@ -292,7 +290,6 @@ module Yast
     def InitAllowedInterfaces(services)
       services = deep_copy(services)
       service_status = {}
-
 
       ifaces_info = SuSEFirewall.GetServicesInZones(services)
       Builtins.foreach(ifaces_info) { |s, status| Builtins.foreach(status) do |iface, en|
@@ -819,7 +816,6 @@ module Yast
       UI.CloseDialog
       ret
     end
-
 
     # firewall openning widget
 

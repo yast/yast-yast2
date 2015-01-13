@@ -38,7 +38,6 @@ module Yast
     def main
       Yast.import "String"
 
-
       # Basic network settings (/etc/sysconfig/network/config)
       @Config = {}
 

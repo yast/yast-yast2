@@ -151,5 +151,4 @@ describe "Yast::SlideShow" do
       expect(total_size).to eq(100)
     end
   end
-
 end

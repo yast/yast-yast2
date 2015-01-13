@@ -39,7 +39,6 @@ require "yast"
 module Yast
   class ModulesConfClass < Module
     def main
-
       Yast.import "Arch"
       Yast.import "Misc"
       Yast.import "Mode"
@@ -62,7 +61,6 @@ module Yast
 
       nil
     end
-
 
     # RunDepmod
     # runs /sbin/depmod
@@ -105,7 +103,6 @@ module Yast
 
       nil
     end
-
 
     # Save
     # save module names and arguments to /etc/modules.conf

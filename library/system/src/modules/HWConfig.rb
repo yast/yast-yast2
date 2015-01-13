@@ -41,7 +41,6 @@ require "yast"
 module Yast
   class HWConfigClass < Module
     def main
-
       textdomain "base"
     end
 

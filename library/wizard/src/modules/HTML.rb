@@ -51,7 +51,6 @@ module Yast
       Ops.add(Ops.add("<p>", text), "</p>")
     end
 
-
     # Make a HTML heading from a text
     #
     # i.e. embed a text into [h3]...[/h3]
@@ -65,7 +64,6 @@ module Yast
     def Heading(text)
       Ops.add(Ops.add("<h3>", text), "</h3>")
     end
-
 
     # Make a HTML link
     #
@@ -81,7 +79,6 @@ module Yast
       Builtins.sformat("<a href=\"%1\">%2</a>", link_id, text)
     end
 
-
     # Start a HTML (unsorted) list
     #
     # For example [ul]
@@ -94,7 +91,6 @@ module Yast
     def ListStart
       "<ul>"
     end
-
 
     # End a HTML (unsorted) list
     #
@@ -109,7 +105,6 @@ module Yast
       "</ul>"
     end
 
-
     # Make a HTML list item
     #
     # For example  embed a text into [li][p]...[/p][/li]
@@ -123,7 +118,6 @@ module Yast
     def ListItem(text)
       Ops.add(Ops.add("<li><p>", text), "</p></li>")
     end
-
 
     # Make a HTML (unsorted) list from a list of strings
     #
@@ -149,7 +143,6 @@ module Yast
 
       html
     end
-
 
     # Make a HTML (unsorted) colored list from a list of strings
     #
@@ -179,7 +172,6 @@ module Yast
       html
     end
 
-
     # Colorize a piece of HTML code
     #
     # i.e. embed it into [font color="..."]...[/font]
@@ -194,7 +186,6 @@ module Yast
       Builtins.sformat("<font color=\"%1\">%2</font>", color, text)
     end
 
-
     # Make a piece of HTML code bold
     #
     # i.e. embed it into [b]...[/b]
@@ -208,7 +199,6 @@ module Yast
       Ops.add(Ops.add("<b>", text), "</b>")
     end
 
-
     # Make a forced HTML line break
     #
     # @return HTML code
@@ -216,7 +206,6 @@ module Yast
     def Newline
       "<br>"
     end
-
 
     # Make a number of forced HTML line breaks
     #

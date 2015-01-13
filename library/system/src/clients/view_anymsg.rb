@@ -172,7 +172,6 @@ module Yast
         )
       )
 
-
       @go_on = true
 
       # wait until user clicks "OK"

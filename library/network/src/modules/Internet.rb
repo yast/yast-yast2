@@ -33,7 +33,6 @@ require "yast"
 module Yast
   class InternetClass < Module
     def main
-
       Yast.import "Map"
       Yast.import "NetworkService"
       Yast.import "Service"

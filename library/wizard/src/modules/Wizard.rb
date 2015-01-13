@@ -48,12 +48,9 @@ module Yast
       # to setup correct &product; macro in UI
       @product_name = ""
 
-
-
       #
       # Screenshot Functions
       #
-
 
       # Currently used screenshot name.
       # Initially, it must match the UI default, "yast2"
@@ -88,7 +85,6 @@ module Yast
 
       @have_fancy_ui_cache
     end
-
 
     # Returns a button box with buttons "Back", "Abort", "Next"
     # @return a widget tree
@@ -126,7 +122,6 @@ module Yast
       )
     end
 
-
     # Returns a button box with buttons "Back", "Abort Installation", "Next"
     # @return a widget tree
     #
@@ -163,7 +158,6 @@ module Yast
       )
     end
 
-
     # Returns a button box with buttons "Back", "Next"
     # @return a widget tree
     #
@@ -187,7 +181,6 @@ module Yast
       )
     end
 
-
     # Returns a button box with buttons "Cancel", "Accept"
     # @return a widget tree
     #
@@ -202,7 +195,6 @@ module Yast
       )
     end
 
-
     # Returns a button box with buttons "Cancel", "OK"
     # @return a widget tree
     #
@@ -212,7 +204,6 @@ module Yast
         PushButton(Id(:ok), Opt(:key_F10, :default, :okButton), Label.OKButton)
       )
     end
-
 
     # Returns a button box with buttons "Abort", "Accept"
     # @return a widget tree
@@ -236,7 +227,6 @@ module Yast
       )
     end
 
-
     # Returns a button box with buttons "Abort Installation", "Accept"
     # @return a widget tree
     #
@@ -255,7 +245,6 @@ module Yast
       )
     end
 
-
     # Returns a button box with buttons "Abort", "Apply", "Finish"
     # @return a widget tree
     #
@@ -267,7 +256,6 @@ module Yast
         PushButton(Id(:finish, :okButton, :key_F10), Label.FinishButton)
       )
     end
-
 
     # Create a Generic Dialog
     #
@@ -306,7 +294,6 @@ module Yast
         VSpacing(0.2)
       )
     end
-
 
     # Create a Generic Tree Dialog
     #
@@ -362,7 +349,6 @@ module Yast
       )
     end
 
-
     # Check if the topmost dialog is a wizard dialog
     # (i.e. has a widget with `id(`WizardDialog) )
     #
@@ -372,7 +358,6 @@ module Yast
       UI.WidgetExists(Id(:WizardDialog)) == true ||
         UI.WidgetExists(:wizard) == true
     end
-
 
     # Open a popup dialog that displays a help text (rich text format).
     #
@@ -392,7 +377,6 @@ module Yast
       nil
     end
 
-
     # Returns a standard wizard dialog with buttons "Next", "Back", "Abort".
     #
     # @note This is a stable API function
@@ -402,7 +386,6 @@ module Yast
     def NextBackDialog
       GenericDialog(BackAbortNextButtonBox())
     end
-
 
     # Returns a standard wizard dialog with buttons "Cancel", "Accept"
     #
@@ -424,7 +407,6 @@ module Yast
       GenericDialog(CancelOKButtonBox())
     end
 
-
     # Open any wizard dialog.
     #
     # @note This is a stable API function
@@ -440,7 +422,6 @@ module Yast
 
       nil
     end
-
 
     # Open a dialog with buttons "Next", "Back", "Abort"
     # and set the keyboard focus to "Next".
@@ -493,7 +474,6 @@ module Yast
       nil
     end
 
-
     # Open a dialog with "OK", "Cancel"
     # and set the keyboard focus to "OK".
     #
@@ -521,7 +501,6 @@ module Yast
       nil
     end
 
-
     # Open a dialog with "Accept", "Cancel"
     # and set the keyboard focus to "Accept".
     #
@@ -545,7 +524,6 @@ module Yast
 
       nil
     end
-
 
     # Open a dialog with "Accept", "Cancel" that will also accept workflow steps.
     #
@@ -573,7 +551,6 @@ module Yast
       nil
     end
 
-
     # Open a dialog with "Accept", "Cancel" that will also accept workflow steps.
     #
     def OpenAcceptAbortStepsDialog
@@ -600,7 +577,6 @@ module Yast
       nil
     end
 
-
     # Open a dialog with "Back", "Next", "Abort" that will also accept workflow steps.
     #
     def OpenNextBackStepsDialog
@@ -623,7 +599,6 @@ module Yast
 
       nil
     end
-
 
     # Open a dialog with "Back", "Next", "Abort"
     # that has the title on the left, as wanted by
@@ -648,8 +623,6 @@ module Yast
 
       nil
     end
-
-
 
     # Open a wizard dialog with simple layout
     #
@@ -683,7 +656,6 @@ module Yast
       nil
     end
 
-
     # Replace the help widget for dialogs opened with Wizard::OpenCustomDialog().
     # @param [Yast::Term] contents Replace custom help with supplied contents
     #
@@ -700,7 +672,6 @@ module Yast
       nil
     end
 
-
     # Close a wizard dialog.
     #
     # @note This is a stable API function
@@ -716,7 +687,6 @@ module Yast
 
       nil
     end
-
 
     # Substitute for UI::UserInput
     #
@@ -738,7 +708,6 @@ module Yast
       deep_copy(input)
     end
 
-
     # Substitute for UI::TimeoutUserInput
     #
     # Analogical to Wizard::UserInput.
@@ -754,7 +723,6 @@ module Yast
       deep_copy(input)
     end
 
-
     # Substitute for UI::WaitForEvent
     #
     # Analog to Wizard::UserInput.
@@ -767,7 +735,6 @@ module Yast
 
       deep_copy(input)
     end
-
 
     # Substitute for UI::WaitForEvent with timeout
     #
@@ -782,7 +749,6 @@ module Yast
       deep_copy(input)
     end
 
-
     # Set a new help text.
     # @param [String] help_text Help text
     # @example Wizard::SetHelpText("This is a help Text");
@@ -794,7 +760,6 @@ module Yast
 
       nil
     end
-
 
     # Replace the wizard help subwindow with a custom widget.
     #
@@ -815,7 +780,6 @@ module Yast
       nil
     end
 
-
     # Restore the wizard help subwindow.
     # @param [String] help_text Help text
     #
@@ -824,7 +788,6 @@ module Yast
 
       nil
     end
-
 
     # Create and open a typical installation wizard dialog.
     #
@@ -839,12 +802,6 @@ module Yast
 
       nil
     end
-
-
-
-
-
-
 
     # Set the contents of a wizard dialog and define if to move focus to next button
     #
@@ -890,11 +847,6 @@ module Yast
       nil
     end
 
-
-
-
-
-
     # Set the contents of a wizard dialog
     #
     # How the general framework for the installation wizard should
@@ -916,7 +868,6 @@ module Yast
 
       nil
     end
-
 
     # Clear the wizard contents.
     #
@@ -957,7 +908,6 @@ module Yast
       nil
     end
 
-
     # Set the dialog's "Back" button with a new label and a new ID
     #
     # @note This is a stable API function
@@ -980,7 +930,6 @@ module Yast
 
       nil
     end
-
 
     # Set the dialog's "Abort" button with a new label and a new ID
     #
@@ -1005,7 +954,6 @@ module Yast
       nil
     end
 
-
     # Hide the Wizard's "Next" button.
     # Restore it later with RestoreNextButton():
     #
@@ -1021,7 +969,6 @@ module Yast
 
       nil
     end
-
 
     # Hide the Wizard's "Back" button.
     # Restore it later with RestoreBackButton():
@@ -1065,8 +1012,6 @@ module Yast
       nil
     end
 
-
-
     # Hide the Wizard's "Abort" button.
     # Restore it later with RestoreAbortButton():
     #
@@ -1085,7 +1030,6 @@ module Yast
       nil
     end
 
-
     # Restore the wizard 'back' button.
     #
     # @see #HideBackButton
@@ -1096,7 +1040,6 @@ module Yast
 
       nil
     end
-
 
     # Restore the wizard 'next' button.
     #
@@ -1109,7 +1052,6 @@ module Yast
       nil
     end
 
-
     # Restore the wizard 'abort' button.
     #
     # @see #HideAbortButton
@@ -1120,12 +1062,6 @@ module Yast
 
       nil
     end
-
-
-
-
-
-
 
     # Set contents and Buttons of wizard dialog
     #
@@ -1167,7 +1103,6 @@ module Yast
       nil
     end
 
-
     # Sets the dialog title shown in the window manager's title bar.
     #
     # @param [String] titleText title of the dialog
@@ -1180,7 +1115,6 @@ module Yast
 
       nil
     end
-
 
     # Sets the wizard 'title' icon to the specified icon from the standard icon
     # directory.
@@ -1197,7 +1131,6 @@ module Yast
       nil
     end
 
-
     # Clear the wizard 'title' icon, i.e. replace it with nothing
     #
     # @note Deprecated. Do nothing.
@@ -1206,8 +1139,6 @@ module Yast
     def ClearTitleIcon
       nil
     end
-
-
 
     # Sets the window title according to the name specified in a .desktop file got as parameter.
     # Desktop file is placed in a special directory (/usr/share/applications/YaST2).
@@ -1252,7 +1183,6 @@ module Yast
       true
     end
 
-
     # Convenience function to avoid 2 calls if application needs to set
     # both dialog title and icon from desktop file specified as parameter.
     # Desktop file is placed in a special directory (/usr/share/applications/YaST2).
@@ -1282,7 +1212,6 @@ module Yast
       result && Builtins.haskey(description, "Name")
     end
 
-
     # PRIVATE - Replace the entire Wizard button box with a new one.
     # @param [Yast::Term] button_box Button Box term
     # @return [void]
@@ -1293,7 +1222,6 @@ module Yast
 
       nil
     end
-
 
     # Enable the wizard's "Abort" button.
     #
@@ -1308,7 +1236,6 @@ module Yast
       nil
     end
 
-
     # Disable the wizard's "Abort" button.
     #
     # @see #EnableAbortButton
@@ -1321,7 +1248,6 @@ module Yast
 
       nil
     end
-
 
     # Disable the wizard's "Next" (or "Accept") button.
     #
@@ -1342,7 +1268,6 @@ module Yast
       nil
     end
 
-
     # Enable the wizard's "Next" (or "Accept") button.
     #
     # @see #DisableNextButton
@@ -1359,7 +1284,6 @@ module Yast
 
       nil
     end
-
 
     # Disable the wizard's "Back" button.
     #
@@ -1387,7 +1311,6 @@ module Yast
       nil
     end
 
-
     # Disable the wizard's "Cancel" button.
     #
     # @see #EnableCancelButton
@@ -1401,7 +1324,6 @@ module Yast
       nil
     end
 
-
     # Enable the wizard's "Cancel" button.
     #
     # @see #DisableCancelButton
@@ -1414,7 +1336,6 @@ module Yast
 
       nil
     end
-
 
     # Returns whether the `Wizard widget is available.
     #
@@ -1454,7 +1375,6 @@ module Yast
       nil
     end
 
-
     # Hide the "Release Notes" button, if there is any
     #
     def HideReleaseNotesButton
@@ -1475,7 +1395,6 @@ module Yast
 
       nil
     end
-
 
     # Retranslate the wizard buttons.
     #
@@ -1507,7 +1426,6 @@ module Yast
       nil
     end
 
-
     # Set the keyboard focus to the wizard's "Next" (or "Accept") button.
     #
     # @note This is a stable API function
@@ -1532,7 +1450,6 @@ module Yast
       nil
     end
 
-
     # Set a name for the current dialog:
     #
     # Declare a name for the current dialog to ease making screenshots.
@@ -1551,7 +1468,6 @@ module Yast
       nil
     end
 
-
     # Restore the screenshot name.
     #
     # If it does not match a SetScreenShotName, "yast2" is used
@@ -1567,8 +1483,6 @@ module Yast
 
       nil
     end
-
-
 
     #
     # Tree & Menu Wizard functions
@@ -1599,7 +1513,6 @@ module Yast
       nil
     end
 
-
     # Create and open a Tree wizard dialog.
     #
     # For backwards compatibility only - don't use this any more in new modules.
@@ -1608,7 +1521,6 @@ module Yast
       OpenTreeNextBackDialog()
       nil
     end
-
 
     # Add Tree Item to tree enabled Wizard
     # @param [Array<Hash>] Tree Tree Data
@@ -1629,7 +1541,6 @@ module Yast
       end
       deep_copy(_Tree)
     end
-
 
     # Create the Tree Items
     # @param [Array<Hash>] Tree Tree data
@@ -1664,7 +1575,6 @@ module Yast
       deep_copy(mm)
     end
 
-
     # Query Tree Item
     # @return Tree Item
     def QueryTreeItem
@@ -1674,7 +1584,6 @@ module Yast
         return Convert.to_string(UI.QueryWidget(Id(:wizardTree), :CurrentItem))
       end
     end
-
 
     # Create the tree in the dialog, replaces helpspace with new tree widget
     # @param [Array<Hash>] Tree Tree data
@@ -1709,7 +1618,6 @@ module Yast
       nil
     end
 
-
     # Select Tree item
     # @param [String] tree_item tree item
     def SelectTreeItem(tree_item)
@@ -1722,7 +1630,6 @@ module Yast
       nil
     end
 
-
     # Delete Tree items
     def DeleteTreeItems
       if haveFancyUI
@@ -1734,7 +1641,6 @@ module Yast
       nil
     end
 
-
     # Delete Menu items
     def DeleteMenus
       if haveFancyUI
@@ -1745,7 +1651,6 @@ module Yast
 
       nil
     end
-
 
     # Add Menu
     # @param [Array<Hash>] Menu  Menu data
@@ -1765,7 +1670,6 @@ module Yast
       end
       deep_copy(_Menu)
     end
-
 
     # Add Sub Menu
     # @param [Array<Hash>] Menu Menu data
@@ -1792,7 +1696,6 @@ module Yast
       deep_copy(_Menu)
     end
 
-
     # Add Menu Entry
     # @param [Array<Hash>] Menu Menu data
     # @param [String] parent_id Menu Parent
@@ -1817,7 +1720,6 @@ module Yast
       end
       deep_copy(_Menu)
     end
-
 
     # Create the Menu Items
     # @param [Array<Hash>] Menu Menu data
@@ -1847,7 +1749,6 @@ module Yast
       deep_copy(mm)
     end
 
-
     # Create the menu in the dialog
     # @param [Array<Hash>] Menu Menu data
     # @return [void]
@@ -1871,7 +1772,6 @@ module Yast
       end
       nil
     end
-
 
     # Set the product name for UI
     # @param [String] name the product name

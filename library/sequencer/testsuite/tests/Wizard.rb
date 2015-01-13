@@ -35,22 +35,27 @@ module Yast
       Builtins.y2error("ok")
       :ok
     end
+
     def back
       Builtins.y2error("back")
       :back
     end
+
     def next
       Builtins.y2error("next")
       :next
     end
+
     def finish
       Builtins.y2error("finish")
       :finish
     end
+
     def details
       Builtins.y2error("details")
       :details
     end
+
     def expert
       Builtins.y2error("expert")
       :expert

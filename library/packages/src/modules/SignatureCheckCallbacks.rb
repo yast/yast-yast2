@@ -39,7 +39,6 @@ module Yast
       Yast.import "SignatureCheckDialogs"
       Yast.import "Pkg"
 
-
       # Default return when signatures shouldn't be checked
       # @see #SignatureCheckDialogs::CheckSignaturesInYaST()
       @default_return_unchecked = true
@@ -85,7 +84,6 @@ module Yast
       end
     end
 
-
     # Name of the callback handler function. Required callback prototype is
     # boolean(string filename) The callback function should ask user whether
     # the unsigned file can be accepted, returned true value means to accept the file.
@@ -121,7 +119,6 @@ module Yast
         )
       end
     end
-
 
     # Callback handler function. Required callback prototype is <code>boolean(string filename, string requested_digest, string found_digest)</code>. The callback function should ask user whether the wrong digest can be accepted, returned true value means to accept the file.
     # @return [Boolean]
@@ -184,7 +181,6 @@ module Yast
         )
       end
     end
-
 
     # Name of the callback handler function. Required callback prototype is
     # boolean(string filename, string keyid, string keyname). The callback

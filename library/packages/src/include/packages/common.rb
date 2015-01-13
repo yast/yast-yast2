@@ -222,7 +222,6 @@ module Yast
       RemoveAllMsg(packages, nil)
     end
 
-
     # Return result of the last operation
     # Use immediately after calling any Package*:: function
     # @return true if it last operation was canceled

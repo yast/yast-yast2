@@ -38,7 +38,6 @@ module Yast
 
       Yast.import "Mode"
 
-
       # Message after finishing installation and before the system
       # boots for the first time.
       #
@@ -82,7 +81,6 @@ module Yast
         )
       end
     end
-
 
     # @param [Hash] lmap	map	map of language codes and translations
     #				e.g. $[ "default" : "Defaultstring", "de" : "German....", ...]
@@ -136,8 +134,6 @@ module Yast
       result
     end
 
-
-
     # MergeOptions
     # Merges "opt1=val1 opt2=val2 ..." and $["opta":"vala", ..."]
     # to $["opt1":"val1", "opt2":"val2", "opta":"vala", ...]
@@ -170,7 +166,6 @@ module Yast
       end
       deep_copy(optmap)
     end
-
 
     # SysconfigRead()
     #
@@ -224,7 +219,6 @@ module Yast
       SCR.UnregisterAgent(custom_path)
       ret
     end
-
 
     # Runs a bash command with timeout.
     #

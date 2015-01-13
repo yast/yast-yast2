@@ -36,7 +36,6 @@ require "yast"
 module Yast
   class StageClass < Module
     def main
-
       textdomain "base"
 
       # Current stage

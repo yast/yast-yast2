@@ -48,7 +48,6 @@ module Yast
 
       Yast.include self, "testfunc.rb"
 
-
       @functions = {
         "init"  => fun_ref(method(:generic_init), "void (string)"),
         "store" => fun_ref(method(:generic_save), "void (string, map)")
@@ -105,7 +104,6 @@ module Yast
       )
       @ret = CWM.validateWidgets(@widget_data, { "ID" => :event })
       DUMP(Builtins.sformat("Returned %1", @ret))
-
 
       DUMP("=========================================")
       DUMP("Save")

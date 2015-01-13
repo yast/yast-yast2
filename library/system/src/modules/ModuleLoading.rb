@@ -112,8 +112,6 @@ module Yast
       Builtins.contains(@broken_modules, mod)
     end
 
-
-
     # @param [String] modulename
     # @param [String] moduleargs
     # @param [String] vendorname

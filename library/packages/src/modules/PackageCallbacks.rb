@@ -74,7 +74,6 @@ module Yast
       # make showLongInfo module-global so it gets remembered (cf. #14018)
       @showLongInfo = false
 
-
       # used to en-/disable StartPackage, ProgressPackage and DonePackage
       @enable_asterix_package = true
 
@@ -111,7 +110,6 @@ module Yast
 
       @vsize_no_details = 1
 
-
       #=============================================================================
       #	MEDIA CHANGE
       #=============================================================================
@@ -134,7 +132,6 @@ module Yast
 
       # ProgressStart/End events may be nested, remember the types of progresses
       @progress_stack = []
-
 
       @last_stage = 0
 
@@ -263,8 +260,6 @@ module Yast
       nil
     end
 
-
-
     # during file providal
     #
     def ProgressProvide(percent)
@@ -288,8 +283,6 @@ module Yast
 
       nil
     end
-
-
 
     # creates layout for ChangeMediumPopup
     def LayoutPopup(message, button_box, vertical_size, info_on)
@@ -349,7 +342,6 @@ module Yast
       false
     end
 
-
     # during file providal
     #  *
     #  // return "I" for ignore
@@ -380,7 +372,6 @@ module Yast
           _("Package %1 is broken, integrity check has failed."),
           name
         )
-
 
         if Mode.commandline
           CommandLine.Print(message)
@@ -498,7 +489,6 @@ module Yast
       "I"
     end
 
-
     #  Enable or disable StartPackage, ProgressPackage and DonePackage
     #  callbacks, but only the progress bar and not the final error
     #  message.  Returns old value.
@@ -507,8 +497,6 @@ module Yast
       @enable_asterix_package = f
       ret
     end
-
-
 
     #  At start of package install.
     def StartPackage(name, location, summary, installsize, is_delete)
@@ -543,7 +531,6 @@ module Yast
       nil
     end
 
-
     #  During package install.
     def ProgressPackage(percent)
       if @_package_popup
@@ -564,14 +551,12 @@ module Yast
       true
     end
 
-
     #  After package install.
     #
     #  return "I" for ignore
     #  return "R" for retry
     #  return "C" for abort (not implemented !)
     def DonePackage(error, reason)
-
       # remove invalid characters (bnc#876459)
       if !reason.valid_encoding?
         reason.encode!('UTF-16', undef: :replace, invalid: :replace, replace: "?")
@@ -732,9 +717,6 @@ module Yast
 
       nil
     end
-
-
-
 
     #-------------------------------------------------------------------------
     #
@@ -909,7 +891,6 @@ module Yast
             PushButton(Id(:eject), Opt(:customButton), _("&Eject"))
           )
         end
-
 
         auto_eject = Convert.to_boolean(GetConfig("automatic_eject"))
         auto_eject = false if auto_eject == nil
@@ -1171,7 +1152,6 @@ module Yast
       ""
     end
 
-
     # dummy repository change callback, see SlideShowCallbacks for the real one
     def SourceChange(source, medianr)
       Builtins.y2milestone("SourceChange (%1, %2)", source, medianr)
@@ -1179,7 +1159,6 @@ module Yast
 
       nil
     end
-
 
     def ProcessMessage(msg, max_len)
       words = Builtins.splitstring(msg, " ")
@@ -1309,7 +1288,6 @@ module Yast
       nil
     end
 
-
     def SourceCreateInit
       Builtins.y2milestone("SourceCreateInit")
 
@@ -1431,8 +1409,6 @@ module Yast
       nil
     end
 
-
-
     def SourceProbeStart(url)
       Builtins.y2milestone("SourceProbeStart: %1", URL.HidePassword(url))
 
@@ -1459,7 +1435,6 @@ module Yast
       nil
     end
 
-
     def SourceProbeFailed(url, type)
       Builtins.y2milestone(
         "Repository %1 is not %2 repository",
@@ -1479,7 +1454,6 @@ module Yast
 
       nil
     end
-
 
     def SourceProbeProgress(url, value)
       SourcePopupSetProgress(value)
@@ -1564,7 +1538,6 @@ module Yast
       nil
     end
 
-
     def SourceReportStart(source_id, url, task)
       Builtins.y2milestone(
         "Source report start: src: %1, URL: %2, task: %3",
@@ -1594,7 +1567,6 @@ module Yast
 
       ret
     end
-
 
     def SourceReportError(source_id, url, error, description)
       Builtins.y2milestone(
@@ -1788,7 +1760,6 @@ module Yast
 
       nil
     end
-
 
     def FormatPatchName(patch_name, patch_version, patch_arch)
       patch_full_name = patch_name != nil && patch_name != "" ? patch_name : ""
@@ -2202,7 +2173,6 @@ module Yast
       nil
     end
 
-
     def StartRebuildDB
       # heading of popup
       heading = _("Checking Package Database")
@@ -2233,13 +2203,11 @@ module Yast
       nil
     end
 
-
     def ProgressRebuildDB(percent)
       UI.ChangeWidget(Id(:progress), :Value, percent)
 
       nil
     end
-
 
     def StopRebuildDB(error_value, error_text)
       if error_value != 0
@@ -2257,11 +2225,9 @@ module Yast
       nil
     end
 
-
     def NotifyRebuildDB
       nil
     end
-
 
     def SetRebuildDBCallbacks
       Pkg.CallbackStartRebuildDb(fun_ref(method(:StartRebuildDB), "void ()"))
@@ -2275,8 +2241,6 @@ module Yast
 
       nil
     end
-
-
 
     def StartConvertDB(unused1)
       # heading of popup
@@ -2309,13 +2273,11 @@ module Yast
       nil
     end
 
-
     def ProgressConvertDB(percent, file)
       UI.ChangeWidget(Id(:progress), :Value, percent)
 
       nil
     end
-
 
     def StopConvertDB(error_value, error_text)
       if error_value != 0
@@ -2333,11 +2295,9 @@ module Yast
       nil
     end
 
-
     def NotifyConvertDB
       nil
     end
-
 
     def SetConvertDBCallbacks
       Pkg.CallbackStartConvertDb(
@@ -2353,8 +2313,6 @@ module Yast
 
       nil
     end
-
-
 
     # Callback for start RPM DB scan event
     def StartScanDb
@@ -2537,9 +2495,7 @@ module Yast
       nil
     end
 
-
     def Authentication(url, msg, username, password)
-
       # FIXME after SLE12 release
       # The following 'if' block is a workaround for bnc#895719 that should be
       # extracted to a proper private method (not sure if it will work as
@@ -2855,7 +2811,6 @@ module Yast
 
       nil
     end
-
 
     def ClearScriptCallbacks
       Pkg.CallbackScriptStart(nil)
@@ -3269,7 +3224,6 @@ module Yast
       nil
     end
 
-
     def DummyStartProvide(param1, param2, param3)
       Builtins.y2debug("Empty StartProvide callback")
 
@@ -3422,10 +3376,12 @@ module Yast
 
       nil
     end
+
     def DummySourceReportError(source_id, url, error, description)
       Builtins.y2debug("Empty SourceReportError callback, returning `ABORT")
       :ABORT
     end
+
     def DummySourceReportEnd(src_id, url, task, error, description)
       Builtins.y2debug("Empty SourceReportEnd callback")
 
@@ -3466,6 +3422,7 @@ module Yast
 
       nil
     end
+
     def DummyProgressProgress(id, val_raw, val_percent)
       Builtins.y2debug("Empty ProgressProgress callback, returning true")
       true
@@ -3496,10 +3453,12 @@ module Yast
 
       nil
     end
+
     def DummyScriptProgress(ping, output)
       Builtins.y2debug("Empty ScriptProgress callback, returning true")
       true
     end
+
     def DummyMessage(patch_name, patch_version, patch_arch, message)
       Builtins.y2debug("Empty Message callback")
       true # continue
@@ -3550,10 +3509,12 @@ module Yast
 
       nil
     end
+
     def DummyProgressDownload(percent, bps_avg, bps_current)
       Builtins.y2debug("Empty ProgressDownload callback, returning true")
       true
     end
+
     def DummyDoneDownload(error_value, error_text)
       Builtins.y2debug("Empty DoneDownload callback")
 
@@ -3582,7 +3543,6 @@ module Yast
 
       nil
     end
-
 
     def RegisterEmptyProgressCallbacks
       SetDummyProcessCallbacks()
@@ -3674,7 +3634,6 @@ module Yast
 
       nil
     end
-
 
     def RestorePreviousProgressCallbacks
       RestoreProcessCallbacks()

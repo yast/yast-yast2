@@ -68,7 +68,6 @@ module Yast
       deep_copy(keys)
     end
 
-
     # Checks the profile compliance with the system.
     # @param if productId is not nil, check only compliance with given product
     # (once new product is added, function should be called to with new product ID)
@@ -139,7 +138,6 @@ module Yast
       @compliance = YaPI::SubscriptionTools.isCompliant(profiles, products, sigkeys)
       @compliance == nil
     end
-
 
     # Checks the profile compliance with the system.
     # If system is not complient, shows a popup with reasons and asks

@@ -39,7 +39,6 @@ require "yast"
 module Yast
   class InstExtensionImageClass < Module
     def main
-
       textdomain "base"
 
       Yast.import "Linuxrc"

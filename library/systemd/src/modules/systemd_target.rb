@@ -1,7 +1,6 @@
 require 'yast2/systemd_unit'
 
 module Yast
-
   ###
   # Systemd.target unit control API
   # @example How to find a custom systemd target
@@ -90,7 +89,6 @@ module Yast
     end
 
     class Target < SystemdUnit
-
       # Disable unsupported methods for target units
       undef_method :start, :stop, :enable, :disable, :restart
 

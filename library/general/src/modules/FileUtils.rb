@@ -35,7 +35,6 @@ require "yast"
 module Yast
   class FileUtilsClass < Module
     def main
-
       textdomain "base"
       Yast.import "Popup"
       Yast.import "String"
@@ -197,7 +196,6 @@ module Yast
     def GetFileType(target)
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
 
-
       if Ops.get_boolean(info, "isdir", false) == true
         return "directory"
       elsif Ops.get_boolean(info, "isreg", false) == true
@@ -256,7 +254,6 @@ module Yast
 
       Ops.get_integer(info, "gid")
     end
-
 
     # Checks whether the path (directory) exists and return a boolean
     # value whether everything is OK or user accepted the behavior as

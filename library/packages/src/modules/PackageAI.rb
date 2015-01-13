@@ -118,7 +118,6 @@ module Yast
       Available(package)
     end
 
-
     def InstallKernel(kernel_modules)
       kernel_modules = deep_copy(kernel_modules)
       # TODO: for 9.2, we always install all packages, but

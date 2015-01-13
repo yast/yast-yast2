@@ -59,7 +59,6 @@ require 'yast'
 
 module Yast
   class HooksClass < Module
-
     include Yast::Logger
 
     attr_reader :hooks, :last, :search_path

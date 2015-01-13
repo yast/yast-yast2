@@ -152,7 +152,6 @@ module Yast
       Ops.add(Ops.add(Ops.add(summary, "\n<li>"), item), "</li>")
     end
 
-
     # Add a simple section to an existing summary,
     # consisting of a header and one single item.
     #

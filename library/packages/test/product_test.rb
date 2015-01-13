@@ -326,5 +326,4 @@ describe Yast::Product do
       end
     end
   end
-
 end

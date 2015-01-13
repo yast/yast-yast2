@@ -38,5 +38,4 @@ describe "Popup" do
       expect{Popup.Feedback("Label", "Message")}.to raise_error(LocalJumpError)
     end
   end
-
 end

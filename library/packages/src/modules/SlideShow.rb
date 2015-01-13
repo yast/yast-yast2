@@ -192,7 +192,6 @@ module Yast
       nil
     end
 
-
     # Reset the internal (global) timer.
     #
     def ResetTimer
@@ -200,7 +199,6 @@ module Yast
 
       nil
     end
-
 
     # Stop the internal (global) timer and account elapsed time.
     #
@@ -230,7 +228,6 @@ module Yast
     def ShowingDetails
       @widgets_created && UI.WidgetExists(:detailsPage)
     end
-
 
     # Check if currently the "Slide Show" page is shown
     # @return true if showing details, false otherwise
@@ -401,14 +398,11 @@ module Yast
       nil
     end
 
-
-
     # Check if the dialog is currently set up so the user could switch to the slide page.
     #
     def HaveSlideWidget
       UI.WidgetExists(:dumbTab)
     end
-
 
     # Check if the slide show is available. This must be called before trying
     # to access any slides; some late initialization is done here.
@@ -430,7 +424,6 @@ module Yast
       nil
     end
 
-
     # Set the slide show text.
     # @param [String] text
     #
@@ -439,7 +432,6 @@ module Yast
 
       nil
     end
-
 
     # Set the curent language. Must be called once during initialization.
     #
@@ -450,13 +442,11 @@ module Yast
       nil
     end
 
-
     # Create one single item for the CD statistics table
     #
     def TableItem(id, col1, col2, col3, col4)
       Item(Id(id), col1, col2, col3, col4)
     end
-
 
     # Load a slide image + text.
     # @param [Fixnum] slide_no number of slide to load
@@ -474,7 +464,6 @@ module Yast
 
       nil
     end
-
 
     # Check if the current slide needs to be changed and do that if
     # necessary.
@@ -517,7 +506,6 @@ module Yast
       Builtins.y2debug("widget term: \n%1", widgets)
       deep_copy(widgets)
     end
-
 
     # Construct widgets describing a page with the real slide show
     # (the RichText / HTML page)
@@ -584,7 +572,6 @@ module Yast
       deep_copy(widgets)
     end
 
-
     # Switch from the 'details' view to the 'slide show' view.
     #
     def SwitchToSlideView
@@ -639,7 +626,6 @@ module Yast
 
       nil
     end
-
 
     # Help text for the dialog
     def HelpText
@@ -737,8 +723,6 @@ module Yast
       nil
     end
 
-
-
     # Open the slide show base dialog with empty work area (placeholder for
     # the image) and CD statistics.
     #
@@ -772,7 +756,6 @@ module Yast
       nil
     end
 
-
     # Initialize generic data to default values
     def Reset
       @current_slide_no = -1
@@ -786,8 +769,6 @@ module Yast
 
       nil
     end
-
-
 
     # Process (slide show) input (button press).
     #
@@ -816,7 +797,6 @@ module Yast
 
       nil
     end
-
 
     # Check for user button presses and handle them. Generic handling to be used in the
     # progress handlers.
@@ -871,7 +851,6 @@ module Yast
 
       nil
     end
-
 
     # Close the slide show dialog.
     #

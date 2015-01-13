@@ -56,7 +56,6 @@ module Yast
       #
       #global map Clock = $[];
 
-
       # Moved here from AutoinstSoftware.ycp
 
       # Packages that should be installed in continue mode

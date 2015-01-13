@@ -32,7 +32,6 @@ require "yast"
 module Yast
   class CallClass < Module
     def main
-
     end
 
     # Workaround function for WFM::CallFunction scope problems (#22486).

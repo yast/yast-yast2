@@ -30,7 +30,6 @@ module Yast
       Yast.include self, "testsuite.rb"
       Yast.import "URLRecode"
 
-
       TEST(->() { URLRecode.EscapePath(nil) }, [], nil)
       TEST(->() { URLRecode.EscapePath("") }, [], nil)
 
@@ -40,7 +39,6 @@ module Yast
       TEST(lambda do
         URLRecode.UnEscape(URLRecode.EscapePath(@test_path)) == @test_path
       end, [], nil)
-
 
       TEST(->() { URLRecode.EscapePath(" !@\#$%^&*()/?+=") }, [], nil)
       TEST(->() { URLRecode.EscapePassword(" !@\#$%^&*()/?+=<>[]|\"") }, [], nil)

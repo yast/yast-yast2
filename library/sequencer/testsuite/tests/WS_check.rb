@@ -72,9 +72,11 @@ module Yast
     def f1
       "1"
     end
+
     def f2
       2
     end
+
     def f3
       :id3
     end
@@ -82,12 +84,15 @@ module Yast
     def f4
       1
     end
+
     def f5
       1
     end
+
     def f6
       1
     end
+
     def f7
       1
     end

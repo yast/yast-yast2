@@ -70,7 +70,6 @@ module Yast
       @log_messages = true
       @log_yesno_messages = true
 
-
       @message_settings = {}
       @error_settings = {}
       @warning_settings = {}
@@ -93,9 +92,6 @@ module Yast
     def GetModified
       @modified
     end
-
-
-
 
     # Summary of current settings
     # @return Html formatted configuration summary
@@ -222,8 +218,6 @@ module Yast
       summary
     end
 
-
-
     # Get all the Report configuration from a map.
     #
     # the map may be empty.
@@ -269,7 +263,6 @@ module Yast
 
       true
     end
-
 
     # Dump the Report settings to a map, for autoinstallation use.
     # @return [Hash] Map with settings
@@ -321,7 +314,6 @@ module Yast
       nil
     end
 
-
     # Clear stored warnings
     # @return [void]
     def ClearWarnings
@@ -329,7 +321,6 @@ module Yast
 
       nil
     end
-
 
     # Clear all stored messages (errors, messages and warnings)
     # @return [void]
@@ -360,16 +351,11 @@ module Yast
       Builtins.size(@warnings)
     end
 
-
     # Return number of stored errors
     # @return [Fixnum] number of errors
     def NumErrors
       Builtins.size(@errors)
     end
-
-
-
-
 
     # Question with headline and Yes/No Buttons
     # @param [String] headline Popup Headline
@@ -407,11 +393,6 @@ module Yast
       ret
     end
 
-
-
-
-
-
     # Question with headline and Yes/No Buttons
     # @param [String] headline Popup Headline
     # @param [String] message Popup Message
@@ -447,7 +428,6 @@ module Yast
       @yesno_messages = Builtins.add(@yesno_messages, message)
       ret
     end
-
 
     # Store new message text
     # @param [String] message_string message text, it can contain new line characters ("\n")
@@ -545,7 +525,6 @@ module Yast
       nil
     end
 
-
     # Display and record error string.
     #
     # @note Displaying can be globally disabled using Display* methods.
@@ -589,7 +568,6 @@ module Yast
       nil
     end
 
-
     # Error popup dialog can displayed immediately when new error is stored.
     #
     # This function enables or diables popuping of dialogs.
@@ -603,7 +581,6 @@ module Yast
       nil
     end
 
-
     # Warning popup dialog can displayed immediately when new warningr is stored.
     #
     # This function enables or diables popuping of dialogs.
@@ -616,8 +593,6 @@ module Yast
       @timeout_warnings = timeout
       nil
     end
-
-
 
     # Message popup dialog can be displayed immediately when a new message  is stored.
     #
@@ -646,7 +621,6 @@ module Yast
       @timeout_yesno_messages = timeout
       nil
     end
-
 
     # Set warnings logging to .y2log file
     # @param [Boolean] log if log is true then warning messages will be logged
@@ -683,7 +657,6 @@ module Yast
       nil
     end
 
-
     # Create rich text string from stored warning, message or error messages.
     #
     # Every new line character "\n" is replaced by string "[BR]".
@@ -710,7 +683,6 @@ module Yast
           end
         end 
 
-
         richtext = Ops.add(richtext, "</P>")
       end
 
@@ -727,7 +699,6 @@ module Yast
             richtext = Ops.add(Ops.add(richtext, line), "<BR>")
           end
         end 
-
 
         richtext = Ops.add(richtext, "</P>")
       end
@@ -746,7 +717,6 @@ module Yast
           end
         end 
 
-
         richtext = Ops.add(richtext, "</P>")
       end
 
@@ -763,7 +733,6 @@ module Yast
             richtext = Ops.add(Ops.add(richtext, line), "<BR>")
           end
         end 
-
 
         richtext = Ops.add(richtext, "</P>")
       end

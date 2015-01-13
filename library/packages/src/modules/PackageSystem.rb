@@ -63,7 +63,6 @@ module Yast
       # Has Pkg::SourceStartCache run?
       @source_initialized = false
 
-
       Yast.include self, "packages/common.rb"
 
       @_rpm_query_binary_initialized = false
@@ -300,7 +299,6 @@ module Yast
       ret
     end
 
-
     # Is a package available?
     # @return true if yes (nil = no package source available)
     def Available(package)
@@ -473,7 +471,6 @@ module Yast
       else
         Builtins.y2warning("RPM query failed, quering the package manager...")
       end
-
 
       EnsureTargetInit()
 

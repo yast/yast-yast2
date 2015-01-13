@@ -720,7 +720,6 @@ module Yast
       deep_copy(ret)
     end
 
-
     # Merge helps from the widgets
     # @param [Array<Hash{String => Object>}] widgets a list of widget description maps
     # @return [String] merged helps of the widgets
@@ -942,8 +941,6 @@ module Yast
       DisableButtons(Ops.get_list(settings, "disable_buttons", []))
       Run(w, fallback)
     end
-
-
 
     # Display the dialog and run its event loop
     # @param [Array<String>] widget_names list of names of widgets that will be used in the

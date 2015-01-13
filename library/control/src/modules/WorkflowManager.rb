@@ -619,7 +619,6 @@ module Yast
       deep_copy(proposal)
     end
 
-
     # Merge add-on proposal to a base proposal
     #
     # @param [Hash] base with the current product proposal
@@ -784,7 +783,6 @@ module Yast
 
       deep_copy(workflow)
     end
-
 
     # Merge add-on workflow to a base workflow
     #
@@ -995,7 +993,6 @@ module Yast
 
       true
     end
-
 
     # Replace workflows for 2nd stage of installation
     #

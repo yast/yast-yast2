@@ -444,7 +444,6 @@ module Yast
     publish function: :CheckNetwork, type: "boolean (string)"
     publish function: :reserved4, type: "boolean (string)"
 
-
   private
 
     def private_carrier_grade_nat?(ip)

@@ -184,7 +184,6 @@ module Yast
       true
     end
 
-
     # ----------------------------------------------------------------
 
     # For use by the Users package.
@@ -194,7 +193,6 @@ module Yast
       return "" if !ReadAliases()
       @root_alias
     end
-
 
     # For use by the Users package.
     # Does not use the internal state, just calls the agent.

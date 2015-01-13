@@ -33,7 +33,6 @@ module Yast
       Yast.import "Label"
       Yast.import "Popup"
 
-
       UI.OpenDialog(
         VBox(
           PushButton(
@@ -48,7 +47,6 @@ module Yast
           PushButton(Id(:close), Label.CloseButton)
         )
       )
-
 
       @button_id = :dummy
       begin
@@ -126,7 +124,6 @@ module Yast
           ) # height
         end
       end while @button_id != :close
-
 
       UI.CloseDialog
 

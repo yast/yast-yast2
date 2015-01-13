@@ -129,7 +129,6 @@ module Yast
       deep_copy(slide_list)
     end
 
-
     # Check if showing slides is supported.
     #
     # Not to be confused with HaveSlides() which checks if there are slides available.
@@ -148,7 +147,6 @@ module Yast
         return false
       end
     end
-
 
     # Check if slides are available.
     #
@@ -187,7 +185,6 @@ module Yast
 
       text
     end
-
 
     # Set the slide show directory
     def SetSlideDir(dir)

@@ -41,7 +41,6 @@ module Yast
       Yast.import "Mode"
       Yast.import "Report"
 
-
       # variables
 
       # Item, that is the last selected
@@ -91,7 +90,6 @@ module Yast
       end
       ret
     end
-
 
     # Validate type of entry of the option description map
     # Also checks option description maps if present
@@ -618,9 +616,6 @@ module Yast
       end
       Convert.to_symbol(ret)
     end
-
-
-
 
     # functions
 

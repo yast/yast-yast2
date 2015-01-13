@@ -32,7 +32,6 @@ require "yast"
 module Yast
   class CommandLineClass < Module
     def main
-
       Yast.import "Directory"
       Yast.import "Mode"
       Yast.import "Popup"
@@ -141,7 +140,6 @@ module Yast
       # Remember the command line specification for later use
       @cmdlinespec = {}
 
-
       # string: command line interface is not supported
       @nosupport = _(
         "This YaST2 module does not support the command line interface."
@@ -217,7 +215,6 @@ module Yast
 
       nil
     end
-
 
     #  Print a Table
     #
@@ -314,7 +311,6 @@ module Yast
 
       nil
     end
-
 
     # Print an Error Message
     #
@@ -431,7 +427,6 @@ module Yast
         "non_strict"
       )
       Builtins.y2debug("Using non-strict check for %1", command) if non_strict
-
 
       # check (and convert data types)
       Builtins.maplist(givenoptions) do |o, val|
@@ -647,7 +642,6 @@ module Yast
           longestopt = Builtins.size(Convert.to_string(opt))
         end
       end
-
 
       Builtins.foreach(opts) do |opt|
         op = Ops.get_map(allopts, opt, {})
@@ -1042,7 +1036,6 @@ module Yast
           end
           commands = Builtins.add(commands, actiondescr)
         end 
-
 
         Ops.set(exportmap, "commands", commands)
         Ops.set(exportmap, "module", Ops.get_string(@cmdlinespec, "id", ""))
@@ -1522,7 +1515,6 @@ module Yast
       ret
     end
 
-
     def RunMapFunction(funct, arg)
       funct = deep_copy(funct)
       arg = deep_copy(arg)
@@ -1626,7 +1618,6 @@ module Yast
         options = {}
         exit = ""
         l = []
-
 
         while !Done()
           m = Command()

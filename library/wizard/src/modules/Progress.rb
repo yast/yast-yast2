@@ -671,7 +671,6 @@ module Yast
       nil
     end
 
-
     # Function adds icon-support to progress dialog.
     # Parameters are the same as for Progress::New() function with one parameter added.
     #
@@ -829,7 +828,6 @@ module Yast
       # do not update the UI in a nested progress
       return if Ops.greater_than(StackSize(), 0)
 
-
       if Mode.commandline
         if Ops.less_than(@current_stage, @stages) &&
             Ops.less_than(@current_stage, Builtins.size(@titles))
@@ -915,7 +913,6 @@ module Yast
 
       nil
     end
-
 
     # Jumps to the next stage and sets step to st.
     # @param [Fixnum] st new progress bar value

@@ -34,7 +34,6 @@ require "yast"
 module Yast
   class PackageKitClass < Module
     def main
-
     end
 
     # Check whether PackageKit daemon is running
@@ -52,7 +51,6 @@ module Yast
       Builtins.foreach(lines) do |line|
         ret = true if Builtins.regexpmatch(line, "boolean.*true")
       end 
-
 
       Builtins.y2milestone("PackageKit is running: %1", ret)
 

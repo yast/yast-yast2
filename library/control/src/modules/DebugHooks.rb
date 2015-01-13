@@ -32,7 +32,6 @@ require "yast"
 module Yast
   class DebugHooksClass < Module
     def main
-
       Yast.import "Popup"
       Yast.import "Directory"
 
@@ -66,7 +65,6 @@ module Yast
       end
       nil
     end
-
 
     # Execute Script
     # @param [String] script name

@@ -29,7 +29,6 @@ module Yast
   # Categorizes the configurations according to type.
   # Presents them one ifcfg at a time through the {#Current} hash.
   class NetworkInterfacesClass < Module
-
     Yast.import "String"
 
     # A single character used to separate alias id
@@ -755,8 +754,6 @@ module Yast
       Read()
     end
 
-
-
     def Filter(devices, devregex)
       devices = deep_copy(devices)
       if devices == nil || devregex == nil || devregex == ""
@@ -779,7 +776,6 @@ module Yast
     def FilterDevices(devregex)
       Filter(@Devices, devregex)
     end
-
 
     def FilterNOT(devices, devregex)
       devices = deep_copy(devices)
@@ -1568,7 +1564,6 @@ module Yast
       end
       deep_copy(ips)
     end
-
 
     # Locate devices of the given type and value
     # @param [String] key device key

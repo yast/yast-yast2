@@ -9,11 +9,8 @@ require "yast"
 Yast.import("NetworkInterfaces")
 
 module Yast
-
   describe NetworkInterfaces do
-
     context "Parsing device name" do
-
       DEVICE_DESCS = [
         { 
           name:          "",
@@ -54,7 +51,6 @@ module Yast
         type_by_regex = device_desc[:type_by_regex]
 
         describe '#alias_num' do
-
           it "returns alias_id: <#{alias_id}> for name: <#{device_name}>" do
             expect(NetworkInterfaces.alias_num(device_name)).to be_eql alias_id
           end

@@ -85,7 +85,6 @@ module Yast
       end
     end
 
-
     # Creates tree with contents of variable. This function creates the tree items and
     # returns them as term. This offers using the generated output in your behavior,
     # such as data-structure browser with editor. Heavy recursion...

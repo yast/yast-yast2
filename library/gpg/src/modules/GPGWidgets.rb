@@ -89,7 +89,6 @@ module Yast
         )
       end 
 
-
       deep_copy(ret)
     end
 

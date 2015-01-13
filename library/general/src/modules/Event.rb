@@ -35,7 +35,6 @@ module Yast
       Ops.get_symbol(event, "ID")
     end
 
-
     # Checks that the EventType is WidgetEvent and the EventReason is
     # Activated.
     #
@@ -52,7 +51,6 @@ module Yast
 
       Ops.get_symbol(event, "ID")
     end
-
 
     # Checks that the EventType is WidgetEvent and the EventReason is
     # SelectionChanged.
@@ -71,7 +69,6 @@ module Yast
       Ops.get_symbol(event, "ID")
     end
 
-
     # Checks that the EventType is WidgetEvent and the EventReason is
     # ValueChanged.
     #
@@ -88,7 +85,6 @@ module Yast
 
       Ops.get_symbol(event, "ID")
     end
-
 
     # Checks that the EventType is WidgetEvent and the EventReason is
     # Activated or SelectionChanged.
@@ -108,7 +104,6 @@ module Yast
       Ops.get_symbol(event, "ID")
     end
 
-
     # Checks that the EventType is WidgetEvent and the EventReason is
     # ContextMenuActivated.
     #
@@ -127,7 +122,6 @@ module Yast
       Ops.get_symbol(event, "ID")
     end
 
-
     # Checks that the EventType is MenuEvent.
     #
     # return id or nil.
@@ -137,7 +131,6 @@ module Yast
 
       Ops.get_symbol(event, "ID")
     end
-
 
     # Checks that the EventType is TimeoutEvent.
     #
@@ -150,7 +143,6 @@ module Yast
 
       Ops.get_symbol(event, "ID")
     end
-
 
     # Checks that the EventType is CancelEvent.
     #

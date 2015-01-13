@@ -794,7 +794,6 @@ module Yast
       @WRITE = {}
       @EXEC = {}
 
-
       @tested_file = "/file/name/anywhere.is"
 
       DUMP("=Exists===============>")

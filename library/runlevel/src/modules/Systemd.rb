@@ -34,7 +34,6 @@ require "yast"
 module Yast
   class SystemdClass < Module
     def main
-
       Yast.import "FileUtils"
 
       @systemd_path = "/bin/systemd"

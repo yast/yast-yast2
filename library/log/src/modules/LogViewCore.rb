@@ -39,14 +39,11 @@ module Yast
 
       Yast.import "Report"
 
-
       # default value of maximum displayed lines
       @max_lines_default = 100
 
-
       # lines of the log
       @lines = []
-
 
       # data describing log:
       #   file:       filename to read from
@@ -55,10 +52,8 @@ module Yast
       #   max_lines:  max lines to keep (0 -> infinite)
       @data = {}
 
-
       # id of background process
       @id = nil
-
 
       # flag indicating if background process is (or should be) running
       @is_running = false
@@ -85,7 +80,6 @@ module Yast
       deep_copy(new_lines)
     end
 
-
     # Remove unneeded items from a list of lines
     # If max_lines is 0, then don't remove anything
     def DeleteOldLines
@@ -104,7 +98,6 @@ module Yast
 
       nil
     end
-
 
     # Starts the log reading command via process agent.
     #
@@ -194,7 +187,6 @@ module Yast
       nil
     end
 
-
     def Update(widget)
       widget = deep_copy(widget)
       if @id != nil
@@ -220,7 +212,6 @@ module Yast
       nil
     end
 
-
     def Stop
       if @id != nil
         SCR.Execute(path(".process.release"), @id)
@@ -229,7 +220,6 @@ module Yast
 
       nil
     end
-
 
     def GetLines
       deep_copy(@lines)

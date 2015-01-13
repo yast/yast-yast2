@@ -47,7 +47,6 @@ module Yast
       @cspace = "  \n\t"
       @cprint = Ops.add(@cspace, @cgraph)
 
-
       # 64 characters is the base undeline length
       @base_underline = "----------------------------------------------------------------"
     end
@@ -104,7 +103,6 @@ module Yast
       NonEmpty(Builtins.splitstring(s, "\n"))
     end
 
-
     # @param [Boolean] value boolean
     # @return [Boolean] value as "Yes" or "No"
     def YesNo(value)
@@ -116,7 +114,6 @@ module Yast
         return _("No")
       end
     end
-
 
     # Return a pretty description of a byte count
     #
@@ -283,7 +280,6 @@ module Yast
         Builtins.sformat("%1", x)
     end
 
-
     # Format an integer seconds value with min:sec or hours:min:sec
     # @param [Fixnum] seconds time (in seconds)
     # @return [String] formatted string (empty for negative values)
@@ -340,7 +336,6 @@ module Yast
       output
     end
 
-
     # Repeat a string
     #
     # Repeat a string number of times.
@@ -360,7 +355,6 @@ module Yast
 
       ret
     end
-
 
     # Add the padding character around the text to make it long enough
     #
@@ -383,7 +377,6 @@ module Yast
         return Ops.add(text, pad)
       end
     end
-
 
     # Add spaces after the text to make it long enough
     #
@@ -627,7 +620,6 @@ module Yast
           end
         end
       end
-
 
       Builtins.y2debug("Parsed values: %1", ret)
 
@@ -925,8 +917,6 @@ module Yast
       )
     end
 
-
-
     #////////////////////////////////////////
     # sysconfig metadata related functions //
     #////////////////////////////////////////
@@ -962,7 +952,6 @@ module Yast
           ret = Ops.add(Ops.add(ret, com_line), "\n")
         end
       end 
-
 
       ret
     end
@@ -1017,7 +1006,6 @@ module Yast
         end
       end 
 
-
       Builtins.y2debug(
         "metadata after multiline joining: %1",
         joined_multilines
@@ -1056,7 +1044,6 @@ module Yast
           end
         end
       end 
-
 
       Builtins.y2debug("parsed sysconfig comment: %1", ret)
 

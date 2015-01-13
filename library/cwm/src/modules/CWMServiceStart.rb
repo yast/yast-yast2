@@ -41,7 +41,6 @@ module Yast
       Yast.import "ProductFeatures"
       Yast.import "Service"
 
-
       # private variables
 
       # Label saying that service is running
@@ -703,7 +702,6 @@ module Yast
       end
       nil
     end
-
 
     # Init function of the widget
     # @param [String] key strnig the widget key

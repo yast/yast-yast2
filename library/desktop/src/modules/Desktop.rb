@@ -212,7 +212,6 @@ module Yast
       nil
     end
 
-
     def Translate(key)
       if Builtins.regexpmatch(key, "_\\(\"(.*)\"\\)") == true
         ke = Builtins.regexpsub(key, "_\\(\"(.*)\"\\)", "\\1")
@@ -221,7 +220,6 @@ module Yast
       end
       key
     end
-
 
     def CreateList(_M)
       _M = deep_copy(_M)
@@ -244,11 +242,9 @@ module Yast
       end
     end
 
-
     def GroupList
       CreateList(@Groups)
     end
-
 
     def ModuleList(group)
       mods = Ops.get_list(@Groups, [group, "modules"], [])
@@ -283,7 +279,6 @@ module Yast
       # y2debug too costly: y2debug("%1", m);
       deep_copy(l)
     end
-
 
     def MakeAutostartMap(exec, args)
       args = deep_copy(args)

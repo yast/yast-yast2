@@ -1054,7 +1054,6 @@ module Yast
       ret == :trust
     end
 
-
     def RunSimpleErrorPopup(heading, description_text, dont_show_dialog_ident, dont_show_dialog_param)
       UI.OpenDialog(
         Opt(:decorated),

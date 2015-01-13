@@ -33,7 +33,6 @@ require "yast"
 module Yast
   class CustomDialogsClass < Module
     def main
-
     end
 
     def load_file_locale(patterns, file_path, language)

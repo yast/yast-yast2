@@ -18,7 +18,6 @@ module Yast
     TIMEOUT         = 30 # seconds
 
     class << self
-
       def execute command
         command = SYSTEMCTL + command
         log.debug "Executing `systemctl` command: #{command}"

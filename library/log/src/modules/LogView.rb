@@ -162,7 +162,6 @@ module Yast
       )
     end
 
-
     # Get the help of the widget
     # @param [Fixnum] logs integer count of displayed logs
     # @param [Hash] parameters map parameters of the log to display
@@ -243,7 +242,6 @@ module Yast
       deep_copy(selection_combo)
     end
 
-
     # Get the widget with the menu button with actions to be processed on the log
     # @param [Array<Array>] actions a list of all actions
     # @param [Boolean] save boolean true if the log should be offered to be saved
@@ -286,7 +284,6 @@ module Yast
       end
       Empty()
     end
-
 
     # Get the buttons below the box with the log
     # @param [Boolean] popup boolean true if running in popup (and Close is needed)
@@ -423,7 +420,6 @@ module Yast
       nil
     end
 
-
     # Get the map with the log view widget
     # @param [Hash{String => Object}] parameters map parameters of the widget to be created, will be
     #  unioned with the generated map
@@ -511,9 +507,7 @@ module Yast
       )
     end
 
-
     # old functions for displaying log as a popup
-
 
     # Main function for displaying logs
     # @param [Hash{String => Object}] parameters map description of parameters, with following keys

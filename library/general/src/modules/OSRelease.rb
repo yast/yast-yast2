@@ -27,7 +27,6 @@
 require "yast"
 
 module Yast
-
   import "Misc"
   import "Stage"
   import "FileUtils"

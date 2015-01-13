@@ -46,7 +46,6 @@ module Yast
       deep_copy(ret)
     end
 
-
     # Generate a list<integer> with the integers from start to stop - 1.
     def RangeFrom(start, stop)
       ret = []
@@ -58,19 +57,16 @@ module Yast
       deep_copy(ret)
     end
 
-
     # Checks whether i is a power of two. That is 1, 2, 4, 8, ... .
     def IsPowerOfTwo(i)
       Ops.greater_than(i, 0) && Ops.bitwise_and(i, Ops.subtract(i, 1)) == 0
     end
-
 
     # Calculates the sum of values.
     def Sum(values)
       values = deep_copy(values)
       Builtins::List.reduce(0, values) { |x, y| Ops.add(x, y) }
     end
-
 
     # Returns the smallest integer in values.
     #
@@ -80,7 +76,6 @@ module Yast
       Builtins::List.reduce(values) { |x, y| Ops.less_than(x, y) ? x : y }
     end
 
-
     # Returns the highest integer in values.
     #
     # Behaviour is undefined for empty values.
@@ -88,7 +83,6 @@ module Yast
       values = deep_copy(values)
       Builtins::List.reduce(values) { |x, y| Ops.greater_than(x, y) ? x : y }
     end
-
 
     # Clamps the integer i.
     def Clamp(i, min, max)

@@ -39,7 +39,6 @@ module Yast
       Yast.import "CWM"
       Yast.import "Wizard"
 
-
       # local constants
 
       # Empty tab (just to be used as fallback constant)

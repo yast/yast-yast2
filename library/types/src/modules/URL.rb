@@ -54,7 +54,6 @@ module Yast
       #
       @ValidChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.:_-/%@"
 
-
       # Transform map used for (un)escaping characters in username/password part of an URL.
       # It doesn't contain '%' because this character must be used in a particular
       # order (the first or the last) during processing
@@ -123,7 +122,6 @@ module Yast
         _in = String.Replace(_in, Builtins.toupper(src), tgt)
       end 
 
-
       # replace % at the end
       _in = String.Replace(_in, "%25", "%")
 
@@ -153,7 +151,6 @@ module Yast
       Builtins.foreach(transform) do |src, tgt|
         ret = Builtins.mergestring(Builtins.splitstring(ret, src), tgt)
       end 
-
 
       ret
     end
@@ -332,7 +329,6 @@ module Yast
       true
     end
 
-
     # Build URL from tokens as parsed with Parse
     # @param map token as returned from Parse
     # @return [String] url, empty string if invalid data is used to build the url.
@@ -428,7 +424,6 @@ module Yast
         end
       end
       Builtins.y2debug("url: %1", url)
-
 
       query_map = MakeMapFromParams(Ops.get_string(tokens, "query", ""))
 

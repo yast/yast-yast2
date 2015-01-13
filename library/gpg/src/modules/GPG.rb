@@ -43,7 +43,6 @@ module Yast
 
       textdomain "base"
 
-
       # value for --homedir gpg option, empty string means default home directory
       @home = ""
 
@@ -143,7 +142,6 @@ module Yast
         end
       end } 
 
-
       Builtins.y2milestone("Parsed key: %1", ret)
 
       deep_copy(ret)
@@ -177,7 +175,6 @@ module Yast
         end
       end 
 
-
       # not needed anymore, save some memory
       lines = []
 
@@ -188,7 +185,6 @@ module Yast
           ret = Builtins.add(ret, parsed)
         end
       end 
-
 
       Builtins.y2milestone("Parsed keys: %1", ret)
 

@@ -31,7 +31,6 @@ require "yast"
 module Yast
   class GetInstArgsClass < Module
     def main
-
       @args = {}
     end
 
