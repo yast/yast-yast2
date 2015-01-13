@@ -9,10 +9,6 @@
 inherit_from:
   /usr/share/YaST2/data/devtools/data/rubocop_yast_style.yml
 
-# Offense count: 14
-Lint/LiteralInCondition:
-  Enabled: false
-
 # Offense count: 17
 Lint/Loop:
   Enabled: false

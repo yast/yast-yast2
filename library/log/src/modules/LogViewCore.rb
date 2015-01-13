@@ -70,7 +70,7 @@ module Yast
 
       new_lines = []
 
-      while true
+      loop do
         line = Convert.to_string(SCR.Read(path(".process.read_line"), @id))
         break if line == nil
 

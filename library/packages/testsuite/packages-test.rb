@@ -82,19 +82,6 @@ module Yast
       T(->() { Package.DoRemove([@e]) }, true)
       T(->() { Package.Installed(@e) }, false)
 
-      if false
-        T(->() { Package.Install(@n) }, false)
-        T(->() { Package.Install(@e) }, false)
-
-        Package.InstallAll(@el)
-        Package.InstallAny(@el)
-
-        Package.Remove(@e)
-        Package.RemoveAll(@el)
-
-        Package.DoInstallAndRemove([], [])
-      end
-
       Popup.AnyMessage(
         "Package Testsuite",
         Builtins.sformat(

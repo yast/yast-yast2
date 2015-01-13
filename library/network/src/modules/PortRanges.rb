@@ -490,7 +490,7 @@ module Yast
       # Joining port ranges together
       # this is a bit dangerous!
       Builtins.y2milestone("Joining list of ranges %1", list_of_ranges)
-      while true && Ops.greater_than(max_loops, 0)
+      while Ops.greater_than(max_loops, 0)
         # if something goes wrong
         max_loops = Ops.subtract(max_loops, 1)
 

@@ -329,7 +329,7 @@ module Yast
         return Convert.to_symbol(WS_error("Starting dialog not found"))
       end
 
-      while true
+      loop do
         if Ops.is_symbol?(current)
           Builtins.y2debug("Finished")
           return Convert.to_symbol(current)

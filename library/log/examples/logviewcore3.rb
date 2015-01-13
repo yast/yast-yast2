@@ -44,7 +44,7 @@ module Yast
 
       LogViewCore.Start(Id(:log),  "command" => @command )
 
-      while true
+      loop do
         @widget = UI.TimeoutUserInput(250)
 
         if @widget == :timeout

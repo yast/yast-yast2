@@ -173,7 +173,7 @@ module Yast
       #
       # Fix <img src> tags: Replace image path with current slide_pic_path
       #
-      while true
+      loop do
         replaced = Builtins.regexpsub(
           text,
           "(.*)&imagedir;(.*)",

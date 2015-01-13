@@ -130,7 +130,7 @@ module Yast
       ReplaceModuleList(@first)
       UI.SetFocus(Id(:groups))
 
-      while true
+      loop do
         @event = UI.WaitForEvent
         @eventid = Ops.get(@event, "ID")
         # y2debug too constly: y2debug("event=%1", event);

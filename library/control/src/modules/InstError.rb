@@ -192,7 +192,7 @@ module Yast
 
       uret = nil
 
-      while true
+      loop do
         uret = UI.UserInput
 
         if uret == :save_y2logs

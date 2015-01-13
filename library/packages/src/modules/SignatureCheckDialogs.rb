@@ -294,7 +294,7 @@ module Yast
       after_chars_counter = 0
       max_size = Builtins.size(whattosplit)
 
-      while true
+      loop do
         if Ops.greater_or_equal(
             Ops.add(after_chars_counter, after_chars),
             max_size
@@ -387,7 +387,7 @@ module Yast
       user_input = nil
       ret = nil
 
-      while true
+      loop do
         user_input = UI.UserInput
         # yes button
         if user_input == :yes
@@ -420,7 +420,7 @@ module Yast
       user_input = nil
       ret = nil
 
-      while true
+      loop do
         user_input = Convert.to_symbol(UI.UserInput)
         if Builtins.contains(list_of_accepted, user_input)
           ret = user_input

@@ -923,7 +923,7 @@ module Yast
 
       UI.SetFocus(Id(:ok_msg))
 
-      while true
+      loop do
         ret = UI.UserInput
         if ret == :details
           success2 = UI.OpenDialog(
