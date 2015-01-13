@@ -429,7 +429,7 @@ module Yast
         end
 
         r = nil
-        begin
+        loop do
           r = UI.UserInput
           if r == :show
             @showLongInfo = ShowLogInfo(message, button_box)
@@ -460,7 +460,8 @@ module Yast
               UI.ReplaceWidget(Id(:info), Empty())
             end
           end
-        end until r == :abort || r == :retry || r == :ignore
+          break if r == :abort || r == :retry || r == :ignore
+        end
 
         Builtins.y2milestone("DoneProvide %1", r)
 
@@ -631,7 +632,7 @@ module Yast
           end
 
           r = nil
-          begin
+          loop do
             r = UI.UserInput
             if r == :show
               @showLongInfo = ShowLogInfo(message, button_box)
@@ -641,8 +642,8 @@ module Yast
                 UI.ReplaceWidget(Id(:info), Empty())
               end
             end
-          end until r == :abort || r == :retry || r == :ignore
-
+            break if r == :abort || r == :retry || r == :ignore
+          end
           Builtins.y2milestone("DonePackage %1", r)
 
           UI.CloseDialog
@@ -1022,7 +1023,7 @@ module Yast
       r = nil
 
       eject_device = ""
-      begin
+      loop do
         if doing_auto_retry
           r = UI.TimeoutUserInput(1000)
         else
@@ -1086,8 +1087,8 @@ module Yast
           eject_device = Convert.to_string(r)
           r = :eject
         end
-      end until r == :cancel || r == :retry || r == :eject || r == :skip || r == :ignore ||
-        r == :url
+        break if [:cancel, :retry, :eject, :skip, :ignore, :url].include?(r)
+      end
 
       # remember the state of autoeject option
       if offer_eject_button
@@ -2428,7 +2429,7 @@ module Yast
       )
 
       r = nil
-      begin
+      loop do
         r = UI.UserInput
         if r == :show
           show_details = ShowLogInfo(message, button_box)
@@ -2457,7 +2458,8 @@ module Yast
             UI.ReplaceWidget(Id(:info), Empty())
           end
         end
-      end until r == :abort || r == :retry || r == :ignore
+        break if r == :abort || r == :retry || r == :ignore
+      end
 
       Builtins.y2milestone("ErrorScanDb: user input: %1", r)
 

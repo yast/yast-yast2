@@ -92,9 +92,7 @@ module Yast
       )
       UI.OpenDialog(d)
       ui = nil
-      begin
-        ui = UI.UserInput
-      end while ui != :ok || ui != :cancel
+      ui = UI.UserInput while ui != :ok || ui != :cancel
 
       val = nil
       val = Convert.to_string(UI.QueryWidget(Id(:val), :Value)) if ui == :ok

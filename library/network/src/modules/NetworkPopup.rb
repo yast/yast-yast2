@@ -127,9 +127,7 @@ module Yast
       UI.ChangeWidget(Id(:items), :CurrentItem, selected)
       UI.SetFocus(Id(:items))
       ret = nil
-      begin
-        ret = Convert.to_symbol(UI.UserInput)
-      end while ret != :cancel && ret != :ok
+      ret = UI.UserInput while ret != :cancel && ret != :ok
 
       if ret == :ok
         item = Convert.to_string(UI.QueryWidget(Id(:items), :CurrentItem))
@@ -170,9 +168,7 @@ module Yast
       )
       UI.SetFocus(Id(:items))
       ret = nil
-      begin
-        ret = Convert.to_symbol(UI.UserInput)
-      end while ret != :cancel && ret != :ok
+      ret = UI.UserInput while ret != :cancel && ret != :ok
 
       if ret == :ok
         item = Convert.to_string(UI.QueryWidget(Id(:items), :CurrentItem))

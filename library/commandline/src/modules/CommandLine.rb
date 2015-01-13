@@ -1345,11 +1345,9 @@ module Yast
       else
         # if in interactive mode, ask user for input
         if @interactive
-          begin
+          loop do
             newcommand = []
-            begin
-              newcommand = Scan()
-            end while Builtins.size(newcommand) == 0
+            newcommand = Scan() while Builtins.size(newcommand) == 0
 
             # EOF reached
             if newcommand == nil
@@ -1358,7 +1356,9 @@ module Yast
             end
 
             @commandcache = Parse(newcommand)
-          end while ProcessSystemCommands(@commandcache) && !@done
+            break if !ProcessSystemCommands(@commandcache)
+            break if @done
+          end
 
           if @done
             if @aborted

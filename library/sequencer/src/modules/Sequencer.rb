@@ -347,7 +347,7 @@ module Yast
           Builtins.y2debug("Back")
           poped = []
           special = true
-          begin
+          loop do
             return :back if Ops.less_than(Builtins.size(stack), 2)
             poped = WS_pop(stack)
             Builtins.y2debug("poped=%1", poped)
@@ -355,7 +355,8 @@ module Yast
             stack = Ops.get_list(poped, 0)
             special = WS_special(aliases, Convert.to_string(current))
             Builtins.y2debug("special=%1", special)
-          end while special
+            break if !special
+          end
         else
           Builtins.y2debug("ret=%1", ret)
           current = WS_next(

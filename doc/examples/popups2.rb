@@ -49,10 +49,11 @@ module Yast
       )
 
       @button_id = :dummy
-      begin
+      loop do
         @button_id = Convert.to_symbol(UI.UserInput)
 
-        if @button_id == :yesNo
+        case @button_id
+        when :yesNo
           Popup.YesNoHeadline(
             "Really delete world?",
             "You in your infinite wisdom have chosen to delete this only world of ours.\n" \
@@ -64,7 +65,7 @@ module Yast
               "\n" \
               "Are you absolutely sure you wish to delete this world?"
           )
-        elsif @button_id == :generic2
+        when :generic2
           Popup.AnyQuestion(
             "Great Dilemma",
             "You must now decide how to save the world.\n" \
@@ -86,7 +87,7 @@ module Yast
             "I'll &buy one of it",
             :focus_no
           )
-        elsif @button_id == :generic3
+        when :generic3
           Popup.AnyQuestion3(
             "Greatest Dilemma of the Millennium",
             "You must now decide how to save the world.\n" \
@@ -109,7 +110,7 @@ module Yast
             "But I don't have a &car",
             :focus_no
           )
-        elsif @button_id == :longText
+        when :longText
           Popup.LongText(
             "Bad News",
             RichText(
@@ -122,8 +123,10 @@ module Yast
             50, # width
             10
           ) # height
+        when :close
+          break
         end
-      end while @button_id != :close
+      end
 
       UI.CloseDialog
 

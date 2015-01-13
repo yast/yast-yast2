@@ -376,7 +376,7 @@ module Yast
       Wizard.SetDesktopIcon("sw_single")
 
       result = nil
-      begin
+      loop do
         result = Convert.to_symbol(UI.RunPkgSelection(Id(:patterns)))
         Builtins.y2milestone("Pattern selector returned %1", result)
 
@@ -389,7 +389,8 @@ module Yast
             result = nil
           end
         end
-      end until result == :cancel || result == :accept
+        break if result == :cancel || result == :accept
+      end
 
       Wizard.CloseDialog
 
@@ -678,7 +679,7 @@ module Yast
       )
 
       result = nil
-      begin
+      loop do
         result = UI.UserInput
         Builtins.y2milestone("input: %1", result)
 
@@ -717,8 +718,8 @@ module Yast
           # close by WM
           result = :abort if result == :cancel
         end
-      end while Ops.is_string?(result) ||
-        !Builtins.contains([:next, :abort, :back], Convert.to_symbol(result))
+        break if [:next, :abort, :back].include?(result)
+      end
 
       Builtins.y2milestone("Installation Summary result: %1", result)
 

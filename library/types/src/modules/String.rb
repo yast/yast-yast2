@@ -640,7 +640,7 @@ module Yast
       output = input
       if Builtins.regexpmatch(output, regex)
         p = Builtins.regexppos(output, regex)
-        begin
+        loop do
           output = Ops.add(
             Builtins.substring(output, 0, Ops.get_integer(p, 0, 0)),
             Builtins.substring(
@@ -649,7 +649,9 @@ module Yast
             )
           )
           p = Builtins.regexppos(output, regex)
-        end while glob && Ops.greater_than(Builtins.size(p), 0)
+          break unless glob
+          break unless Ops.greater_than(Builtins.size(p), 0)
+        end
       end
       output
     end
@@ -1236,7 +1238,7 @@ module Yast
       end
 
       ret = ""
-      begin
+      loop do
         # put the ellipsis in the middle of the path
         ellipsis = Ops.divide(Builtins.size(dir), 2)
 
@@ -1253,7 +1255,8 @@ module Yast
           # the size is OK
           break
         end
-      end while Ops.greater_than(Builtins.size(dir), 0)
+        break unless Ops.greater_than(Builtins.size(dir), 0)
+      end
 
       ret
     end
