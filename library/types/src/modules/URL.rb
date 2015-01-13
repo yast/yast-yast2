@@ -34,9 +34,24 @@ require 'uri'
 
 module URI
   class SMB < Generic
+#    COMPONENT = [
+#      :scheme,
+#      :userinfo, :host, :port,
+#      :path,
+#      :domain
+#    ].freeze
+
+    @domain = nil
+
     def domain
       self.query[/workgroup=(.*)/,1]
     end
+
+    def domain=(domain)
+      new_query = URI.decode_www_form(self.query) << ["workgroup", domain]
+      self.query = URI.encode_www_form(new_query)
+    end
+
   end
   @@schemes['SMB'] = SMB
   @@schemes['SAMBA'] = SMB
@@ -275,13 +290,15 @@ module Yast
 
       uri = URI(tokens["host"])
 
-      uri.scheme = tokens["scheme"]
-      uri.port = tokens["port"]
-      uri.path = tokens["path"]
-      uri.user = tokens["user"]
-      uri.password = tokens["pass"]
-      uri.query = tokens["query"]
-      uri.fragment = tokens["fragment"]
+      tokens.each do |k,v|
+        if k == "pass"
+          k = "password"
+        elsif k == "port"
+          v = v.to_i
+        end
+
+        uri.method(k + "=").call(v)
+      end
 
       url = uri.to_s
 
@@ -308,6 +325,10 @@ module Yast
       Builtins.y2debug("URL::Build(): result: %1", url)
 
       url
+    rescue Exception => e
+      Builtins.y2error("Could not build URL: %1", e.message)
+      puts e.message
+      return ""
     end
 
     #  * Format URL - truncate the middle part of the directory to fit to the requested lenght.
