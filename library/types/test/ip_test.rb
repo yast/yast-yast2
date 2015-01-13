@@ -88,9 +88,9 @@ describe "Yast::IP" do
       "127.0.0.1",
       "1:2:3:4:5:6:7:127.0.0.1",
       "1:2:3::6:7:8:127.0.0.1",
-#FIXME deprecated syntax, so we should handle it like invalid "::127.0.0.1",
-#FIXME deprecated syntax, so we should handle it invalid "::FFFF:127.0.0.1",
-#FIXME insufficient regex for ipv4 included in ipv6 "1:2:3:4:5:6:127.0.0.256"
+      #FIXME deprecated syntax, so we should handle it like invalid "::127.0.0.1",
+      #FIXME deprecated syntax, so we should handle it invalid "::FFFF:127.0.0.1",
+      #FIXME insufficient regex for ipv4 included in ipv6 "1:2:3:4:5:6:127.0.0.256"
     ]
 
     INVALID_IP6S.each do |invalid_ip6|

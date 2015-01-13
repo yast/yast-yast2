@@ -50,7 +50,7 @@ module Yast
 
     # network backend identification to service name mapping
     BACKENDS = {
-    # <internal-id>        <service name>
+      # <internal-id>        <service name>
       netconfig:       "network",
       network_manager: "NetworkManager",
       wicked:          "wicked"
@@ -58,7 +58,7 @@ module Yast
 
     # network backend identification to its rpm package name mapping
     BACKEND_PKG_NAMES = {
-    # <internal-id>        <service name>
+      # <internal-id>        <service name>
       netconfig:       "sysconfig-network",
       network_manager: "NetworkManager",
       wicked:          "wicked"
