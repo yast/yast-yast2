@@ -50,7 +50,7 @@ module Yast
       # read all files
       all = SCR.Dir(path(".sysconfig.hardware.section"))
 
-      all = [] if all == nil
+      all = [] if all.nil?
 
       modules = Builtins.filter(all) do |file|
         !Builtins.regexpmatch(file, "[~]")
@@ -83,7 +83,7 @@ module Yast
 
       Builtins.maplist(vars) do |var|
         item = Convert.to_string(SCR.Read(Ops.add(p, var)))
-        Ops.set(ret, var, item) if item != nil
+        Ops.set(ret, var, item) if !item.nil?
       end
 
       deep_copy(ret)

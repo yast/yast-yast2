@@ -43,7 +43,7 @@ module Yast
     # routines for reading data from /etc/install.inf
 
     def ReadInstallInf
-      return if @install_inf != nil
+      return if !@install_inf.nil?
 
       @install_inf = {}
       # don't read anything if the file doesn't exist
@@ -52,7 +52,7 @@ module Yast
         return
       end
       entries = SCR.Dir(path(".etc.install_inf"))
-      if entries == nil
+      if entries.nil?
         Builtins.y2error("install.inf is empty")
         return
       end
@@ -84,13 +84,13 @@ module Yast
     # installation mode wrappers
 
     def manual
-      return @_manual if @_manual != nil
+      return @_manual if !@_manual.nil?
       @_manual = InstallInf("Manual") == "1"
       if !@_manual
         tmp = Convert.to_string(
           SCR.Read(path(".target.string"), "/proc/cmdline")
         )
-        if tmp != nil &&
+        if !tmp.nil? &&
             Builtins.contains(Builtins.splitstring(tmp, " \n"), "manual")
           @_manual = true
         end
@@ -100,12 +100,12 @@ module Yast
 
     # running via serial console
     def serial_console
-      InstallInf("Console") != nil
+      !InstallInf("Console").nil?
     end
 
     # braille mode ?
     def braille
-      InstallInf("Braille") != nil
+      !InstallInf("Braille").nil?
     end
 
     # vnc mode ?
@@ -114,7 +114,7 @@ module Yast
     end
     # remote X mode ?
     def display_ip
-      InstallInf("Display_IP") != nil
+      !InstallInf("Display_IP").nil?
     end
 
     # ssh mode ?
@@ -163,7 +163,7 @@ module Yast
       if Stage.initial && !Mode.test
         inst_if_file = "/etc/install.inf"
 
-        if root != nil && root != "" && root != "/"
+        if !root.nil? && root != "" && root != "/"
           if WFM.Read(path(".local.size"), inst_if_file) != -1
             Builtins.y2milestone("Copying %1 to %2", inst_if_file, root)
             if Convert.to_integer(

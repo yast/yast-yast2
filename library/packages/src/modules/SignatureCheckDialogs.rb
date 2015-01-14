@@ -80,7 +80,7 @@ module Yast
     # @param boolean show again
     # @param [String] popup_url
     def SetShowThisPopup(popup_type, show_it, popup_url)
-      if popup_type == nil || show_it == nil
+      if popup_type.nil? || show_it.nil?
         Builtins.y2error(
           "Neither popup_type %1 nor show_it %2 can be nil!",
           popup_type,
@@ -125,7 +125,7 @@ module Yast
     # @param [String] popup_url if any
     # @return [Boolean] show the dialog
     def GetShowThisPopup(popup_type, popup_url)
-      if popup_type == nil
+      if popup_type.nil?
         Builtins.y2error("popup_type %1 mustn't be nil!", popup_type)
         return true
       end
@@ -140,7 +140,7 @@ module Yast
       )
 
       # Stored in the configuration
-      if stored != nil
+      if !stored.nil?
         return stored
       else
         # Unknown status, return default
@@ -154,7 +154,7 @@ module Yast
     # @param [String] popup_type dialog type
     # @param [Boolean] default_return
     def SetDefaultDialogReturn(popup_type, default_return, popup_url)
-      if popup_type == nil || default_return == nil
+      if popup_type.nil? || default_return.nil?
         Builtins.y2error(
           "Neither popup_type %1 nor default_return %2 can be nil!",
           popup_type,
@@ -186,7 +186,7 @@ module Yast
     # @param [String] popup_type dialog type
     # @boolean boolean default dialog return
     def GetDefaultDialogReturn(popup_type, popup_url)
-      if popup_type == nil
+      if popup_type.nil?
         Builtins.y2error("popup_type %1 mustn't be nil!", popup_type)
         return false
       end
@@ -214,7 +214,7 @@ module Yast
         UI.QueryWidget(Id(dont_show_dialog_checkboxid), :Value)
       )
       # Widget doesn't exist
-      if dont_show_status == nil
+      if dont_show_status.nil?
         Builtins.y2warning(
           "No such UI widget with ID: %1",
           dont_show_dialog_checkboxid
@@ -252,14 +252,14 @@ module Yast
         "CHECK_SIGNATURES=([[:alpha:]]+)",
         "\\1"
       )
-      if val == nil
+      if val.nil?
         val = Builtins.regexpsub(cmdline, "no_sig_check=([^[:digit:]]+)", "\\1")
-        if val != nil
+        if !val.nil?
           trans = { "0" => "yes", "1" => "yast", "2" => "no" }
           val = Ops.get(trans, val)
         end
       end
-      val = "yes" if val == nil
+      val = "yes" if val.nil?
       val
     end
 
@@ -267,7 +267,7 @@ module Yast
     # (or a kernel parameter for the 1st installation stage).
     # @return do checking?
     def CheckSignaturesInYaST
-      if @check_signatures == nil
+      if @check_signatures.nil?
         chs = nil
         if Stage.initial
           chs = CheckSignatures()
@@ -322,7 +322,7 @@ module Yast
     # @return [Yast::Term] `Image(...) with margins
     def MessageIcon(msg_type)
       # lazy loading
-      if @has_local_image_support == nil
+      if @has_local_image_support.nil?
         ui_capabilities = UI.GetDisplayInfo
         @has_local_image_support = Ops.get_boolean(
           ui_capabilities,
@@ -333,7 +333,7 @@ module Yast
 
       # UI can show images
       if @has_local_image_support
-        if Ops.get(@msg_icons, msg_type) == nil
+        if Ops.get(@msg_icons, msg_type).nil?
           Builtins.y2warning("Message type %1 not defined", msg_type)
           return Empty()
         end
@@ -523,7 +523,7 @@ module Yast
 
       ret = WaitForYesNoCancelUserInput()
       # default value
-      ret = false if ret == nil
+      ret = false if ret.nil?
 
       # Store the don't show value, store the default return value
       HandleDoNotShowDialogAgain(
@@ -597,7 +597,7 @@ module Yast
 
       ret = WaitForYesNoCancelUserInput()
       # default value
-      ret = false if ret == nil
+      ret = false if ret.nil?
 
       # Store the don't show value, store the default return value
       HandleDoNotShowDialogAgain(
@@ -622,7 +622,7 @@ module Yast
                 Builtins.sformat(_("ID: %1"), Ops.get_string(key, "id", "")),
                 "\n"
               ),
-              if Ops.get_string(key, "fingerprint", "") == nil ||
+              if Ops.get_string(key, "fingerprint", "").nil? ||
                 Ops.get_string(key, "fingerprint", "") == ""
                 # Part of the GnuPG key description in popup, %1 is a GnuPG key fingerprint
                 ""
@@ -778,7 +778,7 @@ module Yast
 
       ret = WaitForYesNoCancelUserInput()
       # default value
-      ret = false if ret == nil
+      ret = false if ret.nil?
 
       UI.CloseDialog
       ret
@@ -864,7 +864,7 @@ module Yast
       # But by now it only handles yes/no/cancel
       ret = WaitForYesNoCancelUserInput()
       # default value
-      ret = false if ret == nil
+      ret = false if ret.nil?
 
       # Store the don't show value, store the default return value
       HandleDoNotShowDialogAgain(
@@ -1105,7 +1105,7 @@ module Yast
 
       ret = WaitForYesNoCancelUserInput()
       # default value
-      ret = false if ret == nil
+      ret = false if ret.nil?
 
       # Store the don't show value, store the default return value
       HandleDoNotShowDialogAgain(

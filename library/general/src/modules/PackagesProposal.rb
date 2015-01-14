@@ -72,7 +72,7 @@ module Yast
     end
 
     def IsSupportedResolvableType(type)
-      if type == nil
+      if type.nil?
         Builtins.y2error("Wrong type: %1", type)
         return false
       end
@@ -112,7 +112,7 @@ module Yast
     # @param [Symbol] type
     # @return [Boolean] if parameters are correct
     def CheckParams(unique_ID, type)
-      if unique_ID == nil || unique_ID == ""
+      if unique_ID.nil? || unique_ID == ""
         Builtins.y2error("Unique ID cannot be: %1", unique_ID)
         return false
       end
@@ -150,7 +150,7 @@ module Yast
 
       CreateEmptyStructureIfMissing(unique_ID, type)
 
-      if resolvables == nil
+      if resolvables.nil?
         Builtins.y2warning("Changing resolvables %1 to empty list", resolvables)
         resolvables = []
       end
@@ -191,7 +191,7 @@ module Yast
 
       CreateEmptyStructureIfMissing(unique_ID, type)
 
-      if resolvables == nil
+      if resolvables.nil?
         Builtins.y2warning("Changing resolvables %1 to empty list", resolvables)
         resolvables = []
       end
@@ -226,7 +226,7 @@ module Yast
 
       CreateEmptyStructureIfMissing(unique_ID, type)
 
-      if resolvables == nil
+      if resolvables.nil?
         Builtins.y2warning("Changing resolvables %1 to empty list", resolvables)
         resolvables = []
       end
@@ -332,7 +332,7 @@ module Yast
 
       Builtins.foreach(GetSupportedResolvables()) do |one_type|
         resolvables = GetAllResolvables(one_type)
-        if resolvables != nil && resolvables != []
+        if !resolvables.nil? && resolvables != []
           Ops.set(ret, one_type, resolvables)
         end
       end
@@ -345,7 +345,7 @@ module Yast
     # @param [String] unique_ID to check
     # @return [Boolean] whether the ID is not in use yet
     def IsUniqueID(unique_ID)
-      if unique_ID == nil || unique_ID == ""
+      if unique_ID.nil? || unique_ID == ""
         Builtins.y2error("Unique ID cannot be: %1", unique_ID)
         return nil
       end

@@ -97,7 +97,7 @@ module Yast
     def PopSettings
       current_dialog = Ops.get(@settings_stack, 0, {})
       Ops.set(@settings_stack, 0, nil)
-      @settings_stack = Builtins.filter(@settings_stack) { |e| e != nil }
+      @settings_stack = Builtins.filter(@settings_stack) { |e| !e.nil? }
       @current_dialog_widgets = Ops.get_list(current_dialog, "widgets", [])
 
       nil
@@ -122,7 +122,7 @@ module Yast
         arg = Ops.get(t, index)
         if current == :Frame && index == 0 # no action
           Builtins.y2debug("Leaving untouched %1", arg)
-        elsif Ops.is_term?(arg) && arg != nil # recurse
+        elsif Ops.is_term?(arg) && !arg.nil? # recurse
           s = Builtins.symbolof(Convert.to_term(arg))
           if Builtins.contains(@ContainerWidgets, s)
             arg = ProcessTerm(Convert.to_term(arg), widgets)
@@ -154,7 +154,7 @@ module Yast
         current = Builtins.symbolof(t)
         if current == :Frame && index == 0 # no action
           Builtins.y2debug("Leaving untouched %1", arg)
-        elsif Ops.is_term?(arg) && arg != nil # recurse
+        elsif Ops.is_term?(arg) && !arg.nil? # recurse
           s = Builtins.symbolof(Convert.to_term(arg))
           if Builtins.contains(@ContainerWidgets, s)
             rets = Ops.add(rets, StringsOfTerm(Convert.to_term(arg)))
@@ -211,7 +211,7 @@ module Yast
       }
       type = Ops.get(types, key)
       success = true
-      if type == nil
+      if type.nil?
         if key == "widget_func"
           success = Ops.is(value, "term ()")
         elsif key == "init"
@@ -255,20 +255,20 @@ module Yast
       error = ""
       if key == "label"
         s = Convert.to_string(value)
-        if s == nil || Builtins.size(s) == 0
+        if s.nil? || Builtins.size(s) == 0
           error = "Empty label"
         elsif Builtins.size(Builtins.filterchars(s, "&")) != 1
           error = "Label has no shortcut or more than 1 shortcuts"
         end
       elsif key == "help"
         s = Convert.to_string(value)
-        error = "Empty help" if s == nil
+        error = "Empty help" if s.nil?
       elsif key == "widget"
         s = Convert.to_symbol(value)
-        error = "No widget specified" if s == nil
+        error = "No widget specified" if s.nil?
       elsif key == "custom_widget"
         s = Convert.to_term(value)
-        error = "No custom widget specified" if s == nil
+        error = "No custom widget specified" if s.nil?
       end
 
       return true if error == ""
@@ -320,7 +320,7 @@ module Yast
       Builtins.foreach(widgets) do |w|
         # set initial properties
         valid_chars = Ops.get_string(w, "valid_chars")
-        if valid_chars != nil
+        if !valid_chars.nil?
           UI.ChangeWidget(
             Id(Ops.get_string(w, "_cwm_key", "")),
             :ValidChars,
@@ -334,7 +334,7 @@ module Yast
           from: "any",
           to:   "void (string)"
         )
-        toEval.call(Ops.get_string(w, "_cwm_key", "")) if toEval != nil
+        toEval.call(Ops.get_string(w, "_cwm_key", "")) if !toEval.nil?
       end
 
       nil
@@ -350,7 +350,7 @@ module Yast
       event_descr = deep_copy(event_descr)
       ret = nil
       Builtins.foreach(widgets) do |w|
-        if ret == nil
+        if ret.nil?
           @processed_widget = deep_copy(w)
           events = Ops.get_list(w, "handle_events", [])
           toEval = Convert.convert(
@@ -358,7 +358,7 @@ module Yast
             from: "any",
             to:   "symbol (string, map)"
           )
-          if toEval != nil &&
+          if !toEval.nil? &&
               (events == [] ||
                 Builtins.contains(events, Ops.get(event_descr, "ID")))
             ret = toEval.call(Ops.get_string(w, "_cwm_key", ""), event_descr)
@@ -383,7 +383,7 @@ module Yast
           from: "any",
           to:   "void (string, map)"
         )
-        toEval.call(Ops.get_string(w, "_cwm_key", ""), event) if toEval != nil
+        toEval.call(Ops.get_string(w, "_cwm_key", ""), event) if !toEval.nil?
       end
 
       nil
@@ -401,7 +401,7 @@ module Yast
           from: "any",
           to:   "void (string)"
         )
-        toEval.call(Ops.get_string(w, "_cwm_key", "")) if toEval != nil
+        toEval.call(Ops.get_string(w, "_cwm_key", "")) if !toEval.nil?
       end
 
       nil
@@ -480,7 +480,7 @@ module Yast
             from: "any",
             to:   "boolean (string, map <string, any>)"
           )
-          ret = val_func.call(k, v) && ret if val_func != nil
+          ret = val_func.call(k, v) && ret if !val_func.nil?
         end
       end
       ret
@@ -497,7 +497,7 @@ module Yast
       if Ops.get(w, "widget") == :empty
         Ops.set(w, "widget", VBox())
       elsif Ops.get(w, "widget") == :custom &&
-          Ops.get(w, "custom_widget") != nil
+          Ops.get(w, "custom_widget")
         Ops.set(w, "widget", Ops.get_term(w, "custom_widget") { VSpacing(0) })
       elsif Ops.get(w, "widget") == :func
         toEval = Convert.convert(
@@ -505,7 +505,7 @@ module Yast
           from: "any",
           to:   "term ()"
         )
-        if toEval != nil
+        if !toEval.nil?
           Ops.set(w, "widget", toEval.call)
         else
           Ops.set(w, "widget", VBox())
@@ -648,7 +648,7 @@ module Yast
           from: "any",
           to:   "boolean (string, map)"
         )
-        failed = !toEval.call(key, event) if toEval != nil
+        failed = !toEval.call(key, event) if !toEval.nil?
       elsif val_type == :regexp
         regexp = Ops.get_string(widget, "validate_condition", "")
         if !Builtins.regexpmatch(
@@ -694,7 +694,7 @@ module Yast
         widget_key = Ops.get_string(w, "_cwm_key", "")
         result = result && validateWidget(w, event, widget_key)
       end
-      if !result && @validation_failed_handler != nil
+      if !result && !@validation_failed_handler.nil?
         @validation_failed_handler.call
       end
       result
@@ -726,7 +726,7 @@ module Yast
     def MergeHelps(widgets)
       widgets = deep_copy(widgets)
       helps = Builtins.maplist(widgets) { |w| Ops.get_string(w, "help") }
-      helps = Builtins.filter(helps) { |h| h != nil }
+      helps = Builtins.filter(helps) { |h| !h.nil? }
       Builtins.mergestring(helps, "\n")
     end
 
@@ -801,10 +801,10 @@ module Yast
           handleDebug
         end
         handle_ret = handleWidgets(widgets, event_descr)
-        if handle_ret != nil ||
+        if !handle_ret.nil? ||
             Ops.is_symbol?(ret) && Builtins.contains(save_exits, ret)
           save = true
-          if handle_ret != nil
+          if !handle_ret.nil?
             ret = handle_ret
             Ops.set(event_descr, "ID", ret)
           end
@@ -812,36 +812,36 @@ module Yast
 
         ret = :abort if ret == :cancel
         if ret == :abort
-          if Ops.get(functions, :abort) != nil
+          if Ops.get(functions, :abort)
             toEval = Convert.convert(
               Ops.get(functions, :abort),
               from: "any",
               to:   "boolean ()"
             )
-            if toEval != nil
+            if !toEval.nil?
               eval_ret = toEval.call
               ret = eval_ret ? :abort : nil
             end
           end
         elsif ret == :back
-          if Ops.get(functions, :back) != nil
+          if Ops.get(functions, :back) 
             toEval = Convert.convert(
               Ops.get(functions, :back),
               from: "any",
               to:   "boolean ()"
             )
-            if toEval != nil
+            if !toEval.nil?
               eval_ret = toEval.call
               ret = eval_ret ? :back : nil
             end
           end
         end
 
-        next if ret == nil
+        next if ret.nil?
 
         ret = nil if !validateWidgets(widgets, event_descr) if save
 
-        if ret == nil
+        if ret.nil?
           save = false
           next
         end
@@ -871,9 +871,9 @@ module Yast
     # @param [String] abort string label of the "Abort" button
     # @param [String] help string label of the additional "Help" button (if needed)
     def AdjustButtons(next_, back, abort, _help)
-      next_ = "" if next_ == nil
-      back = "" if back == nil
-      abort = "" if abort == nil
+      next_ = "" if next_.nil?
+      back = "" if back.nil?
+      abort = "" if abort.nil?
       if next_ != ""
         Wizard.SetNextButton(:next, next_)
       else

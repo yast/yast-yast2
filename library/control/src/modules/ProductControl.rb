@@ -155,7 +155,7 @@ module Yast
     # Disable given module in installation workflow
     # @return current list of disabled modules
     def DisableModule(modname)
-      if modname == nil || modname == ""
+      if modname.nil? || modname == ""
         Builtins.y2error("Module to disable is '%1'", modname)
       else
         @DisabledModules = Convert.convert(
@@ -188,7 +188,7 @@ module Yast
     # Disable given proposal in installation workflow
     # @return current list of disabled proposals
     def DisableProposal(disable_proposal)
-      if disable_proposal == nil || disable_proposal == ""
+      if disable_proposal.nil? || disable_proposal == ""
         Builtins.y2error("Module to disable is '%1'", disable_proposal)
       else
         @DisabledProposals = Convert.convert(
@@ -251,13 +251,13 @@ module Yast
     # @return [Boolean]
     def checkDisabled(mod)
       mod = deep_copy(mod)
-      if mod == nil
+      if mod.nil?
         Builtins.y2error("Unknown module %1", mod)
         return nil
       end
 
       # Proposal
-      if Ops.get_string(mod, "proposal", "") != nil &&
+      if !Ops.get_string(mod, "proposal", "").nil? &&
           Ops.get_string(mod, "proposal", "") != ""
         if Builtins.contains(
           @DisabledProposals,
@@ -266,7 +266,7 @@ module Yast
           return true
         end
         # Normal step
-      elsif Ops.get_string(mod, "name", "") != nil &&
+      elsif !Ops.get_string(mod, "name", "").nil? &&
           Ops.get_string(mod, "name", "") != ""
         if Builtins.contains(@DisabledModules, Ops.get_string(mod, "name", ""))
           return true
@@ -287,7 +287,7 @@ module Yast
     def ReadControlFile(controlfile)
       @productControl = XML.XMLToYCPFile(controlfile)
 
-      return false if @productControl == nil
+      return false if @productControl.nil?
 
       @workflows = Ops.get_list(@productControl, "workflows", [])
       @proposals = Ops.get_list(@productControl, "proposals", [])
@@ -377,7 +377,7 @@ module Yast
 
       # BNC #401319
       # 'execute; is defined and thus returned
-      if execute != nil && execute != ""
+      if !execute.nil? && execute != ""
         Builtins.y2milestone("Step name '%1' executes '%2'", name, execute)
         return execute
       end
@@ -451,7 +451,7 @@ module Yast
     # @param [map &] check_workflow
     # @see #SetAdditionalWorkflowParams()
     def CheckAdditionalParams(check_workflow)
-      if @_additional_workflow_params == nil ||
+      if @_additional_workflow_params.nil? ||
           @_additional_workflow_params == {}
         return true
       end
@@ -647,18 +647,18 @@ module Yast
     def RunRequired(stage, mode)
       modules = getModules(stage, mode, :enabled)
 
-      if modules == nil
+      if modules.nil?
         Builtins.y2error("Undefined %1/%2", stage, mode)
         return nil
       end
 
       modules = Builtins.filter(modules) do |one_module|
         # modules
-        if Ops.get_string(one_module, "name", "") != nil &&
+        if !Ops.get_string(one_module, "name").nil? &&
             Ops.get_string(one_module, "name", "") != ""
           next true
           # proposals
-        elsif Ops.get_string(one_module, "proposal", "") != nil &&
+        elsif !Ops.get_string(one_module, "proposal").nil? &&
             Ops.get_string(one_module, "proposal", "") != ""
           next true
         end
@@ -711,7 +711,7 @@ module Yast
       Builtins.y2milestone("localDisabledModules: %1", @localDisabledModules)
 
       Builtins.foreach(getModules(stage, mode, :all)) do |m|
-        if Ops.get_string(m, "proposal", "") != nil &&
+        if !Ops.get_string(m, "proposal").nil? &&
             Ops.get_string(m, "proposal", "") != ""
           Builtins.y2milestone("Disabling proposal: %1", m)
           @DisabledProposals = Convert.convert(
@@ -722,7 +722,7 @@ module Yast
             from: "list",
             to:   "list <string>"
           )
-        elsif Ops.get_string(m, "name", "") != nil &&
+        elsif !Ops.get_string(m, "name").nil? &&
             Ops.get_string(m, "name", "") != ""
           Builtins.y2milestone("Disabling module: %1", m)
           @DisabledModules = Convert.convert(
@@ -765,7 +765,7 @@ module Yast
       Builtins.foreach(getModules(stage, mode, :all)) do |m|
         # A proposal
         # Enable it only if it was enabled before
-        if Ops.get_string(m, "proposal", "") != nil &&
+        if !Ops.get_string(m, "proposal").nil? &&
             Ops.get_string(m, "proposal", "") != "" &&
             !Builtins.contains(
               @localDisabledProposals,
@@ -777,7 +777,7 @@ module Yast
           end
           # A module
           # Enable it only if it was enabled before
-        elsif Ops.get_string(m, "name", "") != nil &&
+        elsif !Ops.get_string(m, "name").nil? &&
             Ops.get_string(m, "name", "") != "" &&
             !Builtins.contains(
               @localDisabledModules,
@@ -914,10 +914,10 @@ module Yast
               id = Ops.get_string(m, "id", "")
             end
           end
-          if heading != nil && heading != ""
+          if !heading.nil? && heading != ""
             UI.WizardCommand(term(:AddStepHeading, heading))
           end
-          if label != nil && label != ""
+          if !label.nil? && label != ""
             if debug_workflow == true
               label = Ops.add(
                 label,
@@ -1065,7 +1065,7 @@ module Yast
           proposal_order = Ops.get(pm, "presentation_order", "50")
 
           order_value = Builtins.tointeger(proposal_order)
-          if order_value == nil
+          if order_value.nil?
             Builtins.y2error(
               "Unable to use '%1' as proposal order, using %2 instead",
               proposal_order,
@@ -1422,7 +1422,7 @@ module Yast
 
         # If the module return nil, something basic went wrong.
         # We show a stub dialog instead.
-        if result == nil
+        if result.nil?
           # If workflow module is marked as optional, skip if it returns nil,
           # For example, if it is not installed.
           if Ops.get_boolean(step, "optional", false)
@@ -1510,7 +1510,7 @@ module Yast
           final_result = result
           break
         elsif result == :auto
-          if former_result != nil
+          if !former_result.nil?
             if former_result == :next
               # if the first client just returns `auto, the back button
               # of the next client must be disabled
@@ -1535,7 +1535,7 @@ module Yast
         final_result
       )
 
-      if final_result != nil
+      if !final_result.nil?
         Builtins.y2milestone("Final result already set.")
       elsif Ops.less_or_equal(@current_step, -1)
         final_result = :back
@@ -1565,7 +1565,7 @@ module Yast
     # @return a list of maps describing the steps
     def SkippedSteps
       modules = getModules(Stage.stage, Mode.mode, :enabled)
-      return nil if @first_step == nil
+      return nil if @first_step.nil?
       return nil if Ops.greater_or_equal(@first_step, Builtins.size(modules))
       index = 0
       ret = []
@@ -1579,7 +1579,7 @@ module Yast
     # Return step which restarted YaST (or rebooted the system)
     # @return a map describing the step
     def RestartingStep
-      return nil if @restarting_step == nil
+      return nil if @restarting_step.nil?
       modules = getModules(Stage.stage, Mode.mode, :enabled)
       Ops.get(modules, @restarting_step, {})
     end

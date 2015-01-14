@@ -74,16 +74,16 @@ module Yast
 
       # check if there are any translation in .desktop file
       # that is - Name[$lang_code]
-      if @LanguageFull != nil || @LanguageFull != ""
+      if !@LanguageFull.nil? || @LanguageFull != ""
         newkey = Builtins.sformat("%1[%2]", key, @LanguageFull)
         ret = Convert.to_string(SCR.Read(Builtins.add(keypath, newkey)))
-        return ret if ret != nil && ret != ""
+        return ret if !ret.nil? && ret != ""
       end
 
-      if @Language != nil || @Language != ""
+      if !@Language.nil? || @Language != ""
         newkey = Builtins.sformat("%1[%2]", key, @Language)
         ret = Convert.to_string(SCR.Read(Builtins.add(keypath, newkey)))
-        return ret if ret != nil && ret != ""
+        return ret if !ret.nil? && ret != ""
       end
 
       # no translations in .desktop, check desktop_translations.mo then
@@ -182,13 +182,13 @@ module Yast
         )
         values = SCR.Dir(filepath)
         filename = extract_desktop_filename.call(file)
-        values = deep_copy(values_to_parse) if values_to_parse != nil && values_to_parse != []
+        values = deep_copy(values_to_parse) if !values_to_parse.nil? && values_to_parse != []
         Builtins.foreach(values) do |value|
           ret = ReadLocalizedKey(filename, filepath, value)
-          Ops.set(filemap, value, ret) if ret != nil && ret != ""
+          Ops.set(filemap, value, ret) if !ret.nil? && ret != ""
         end
         name2 = Builtins.regexpsub(file, "^.*/(.*).desktop", "\\1")
-        if name2 != "" && name2 != nil
+        if name2 != "" && !name2.nil?
           Ops.set(@Modules, name2, filemap)
           group = Ops.get_string(filemap, "X-SuSE-YaST-Group", "")
           if group != ""
@@ -365,7 +365,7 @@ module Yast
       )
 
       # non-existent file requested
-      if SCR.Dir(path(".yast2.desktop1.v.\"Desktop Entry\"")) == nil
+      if SCR.Dir(path(".yast2.desktop1.v.\"Desktop Entry\"")).nil?
         Builtins.y2error("Unknown desktop file: %1", file)
         SCR.UnregisterAgent(path(".yast2.desktop1"))
         return nil

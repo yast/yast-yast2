@@ -101,11 +101,11 @@ module Yast
     # @param [String] mod module
     # @return broken?
     def MarkedAsBroken(mod)
-      if @broken_modules == nil
+      if @broken_modules.nil?
         bms = Convert.to_string(
           SCR.Read(path(".etc.install_inf.BrokenModules"))
         )
-        bms = "" if bms == nil
+        bms = "" if bms.nil?
         @broken_modules = Builtins.splitstring(bms, " ")
       end
 
@@ -225,14 +225,14 @@ module Yast
             if Ops.greater_than(Builtins.size(module_data), 0)
               # skip leading spaces
               firstspace = Builtins.findfirstnotof(module_data, " ")
-              if firstspace != nil
+              if !firstspace.nil?
                 module_data = Builtins.substring(module_data, firstspace)
               end
 
               # split name and args
               firstspace = Builtins.findfirstof(module_data, " ")
 
-              if firstspace == nil
+              if firstspace.nil?
                 modulename = module_data
                 moduleargs = ""
               else
@@ -267,7 +267,7 @@ module Yast
           SCR.Execute(path(".target.insmod"), modulename, moduleargs)
         )
       end
-      load_success = false if load_success == nil
+      load_success = false if load_success.nil?
 
       Builtins.y2milestone(
         "Loaded module %1 %2 %3",

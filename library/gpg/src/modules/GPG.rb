@@ -121,7 +121,7 @@ module Yast
       Builtins.foreach(lines) do |line| 
         Builtins.foreach(@parsing_map) do |regexp, key|
           parsed = Builtins.regexpsub(line, regexp, "\\1")
-          if parsed != nil
+          if !parsed.nil?
             # there might be more UIDs
             if key == "uid"
               Builtins.y2milestone("%1: %2", key, parsed)
@@ -191,7 +191,7 @@ module Yast
     # @return [Array<Hash> public keys: [ $["fingerprint": String key_fingerprint, "id": String key_ID, "uid": Array<String>] user_ids], ...]
     def PublicKeys
       # return the cached values if available
-      return deep_copy(@public_keys) if @public_keys != nil
+      return deep_copy(@public_keys) if !@public_keys.nil?
 
       out = callGPG("--list-keys --fingerprint")
 
@@ -206,7 +206,7 @@ module Yast
     # @return [Array<Hash> public keys: [ $["fingerprint": String key_fingerprint, "id": String key_ID, "uid": Array<String>] user_ids], ...]
     def PrivateKeys
       # return the cached values if available
-      return deep_copy(@private_keys) if @private_keys != nil
+      return deep_copy(@private_keys) if !@private_keys.nil?
 
       out = callGPG("--list-secret-keys --fingerprint")
 
@@ -301,7 +301,7 @@ module Yast
     #        (with suffix .asc) otherwise binary signature (with suffix .sig) is created
     # @return [Boolean] true if the file has been successfuly signed
     def SignFile(keyid, file, passphrase, ascii_signature)
-      if passphrase == nil || keyid == nil || keyid == "" || file == nil ||
+      if passphrase.nil? || keyid.nil? || keyid == "" || file.nil? ||
           file == ""
         Builtins.y2error(
           "Invalid parameters: keyid: %1, file: %2, passphrase: %3",

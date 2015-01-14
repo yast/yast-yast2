@@ -54,7 +54,7 @@ module Yast
 
     def ReadAlternateFile(first, second)
       result = SCR.Read(path(".target.yast2"), [first, nil])
-      result = SCR.Read(path(".target.yast2"), second) if result == nil
+      result = SCR.Read(path(".target.yast2"), second) if result.nil?
       deep_copy(result)
     end
 
@@ -179,7 +179,7 @@ module Yast
     def SysconfigRead(sysconfig_path, defaultv)
       local_ret = Convert.to_string(SCR.Read(sysconfig_path))
 
-      if local_ret == nil
+      if local_ret.nil?
         Builtins.y2warning(
           "Failed reading '%1', using default value",
           sysconfig_path
@@ -340,7 +340,7 @@ module Yast
       dumb_log_command = Builtins.sformat(dumb_format, log_command)
       # explicit export in case TERM was not in the environment
       ret = RunCommandWithTimeout(dumb_command, dumb_log_command, seconds)
-      ret = {} if ret == nil
+      ret = {} if ret.nil?
       deep_copy(ret)
     end
 

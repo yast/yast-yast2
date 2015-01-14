@@ -983,7 +983,7 @@ module Yast
         total_size += stage["size"]
         Ops.set(@_stages, Ops.get_string(stage, "name", ""), stage)
         # setup first stage
-        @_current_stage = deep_copy(stage) if @_current_stage == nil
+        @_current_stage = deep_copy(stage) if @_current_stage.nil?
       end
 
       # Because of using integers in the calculation above the sum of the sizes

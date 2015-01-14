@@ -62,7 +62,7 @@ module Yast
       ) do |k|
         if k != ""
           key = Pkg.SourceProvideOptionalFile(src_id, 1, Ops.add("/", k))
-          keys = Builtins.add(keys, key) if key != nil
+          keys = Builtins.add(keys, key) if !key.nil?
         end
       end
       deep_copy(keys)
@@ -86,14 +86,14 @@ module Yast
       Builtins.foreach(Pkg.ResolvableProperties("", :product, "")) do |product|
         src_id = Ops.get_integer(product, "source", -1)
         name = Ops.get_string(product, "name", "")
-        if productId == nil &&
+        if productId.nil? &&
             Ops.get_symbol(product, "status", :none) != :selected
           next
         end
-        next if productId != nil && src_id != productId
+        next if !productId.nil? && src_id != productId
         Ops.set(@compliance_checked, src_id, true)
         profile = Pkg.SourceProvideOptionalFile(src_id, 1, @profile_path)
-        if profile != nil
+        if !profile.nil?
           profiles = Builtins.add(profiles, profile)
           # backup profiles so they can be copied them to the installed system
           tmp_path = Ops.add(Ops.add(@profiles_dir, name), ".profile")
@@ -136,7 +136,7 @@ module Yast
       end
 
       @compliance = YaPI::SubscriptionTools.isCompliant(profiles, products, sigkeys)
-      @compliance == nil
+      @compliance.nil?
     end
 
     # Checks the profile compliance with the system.
@@ -151,8 +151,8 @@ module Yast
       return true if !Mode.installation
 
       # no need to check same products twice
-      if productId == nil && @compliance_checked != {} ||
-          productId != nil && Ops.get(@compliance_checked, productId, false)
+      if productId.nil? && @compliance_checked != {} ||
+          !productId.nil? && Ops.get(@compliance_checked, productId, false)
         return true
       end
 
@@ -185,7 +185,7 @@ module Yast
       cancel_button = _("&Abort Installation")
 
       # checking specific product
-      if productId != nil
+      if !productId.nil?
         # last part of the question (variable)
         end_question = _("Do you want to add new product anyway?")
         continue_button = Label.YesButton
@@ -215,7 +215,7 @@ module Yast
         cancel_button,
         :no_button
       )
-      if !ret && productId != nil
+      if !ret && !productId.nil?
         # canceled adding add-on: remove profile stored before
         name = Ops.get(@productid2name, productId, "")
         tmp_path = Ops.add(Ops.add(@profiles_dir, name), ".profile")

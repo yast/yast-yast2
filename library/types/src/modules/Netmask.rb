@@ -41,7 +41,7 @@ module Yast
     end
 
     def CheckPrefix4(prefix)
-      return false if prefix == nil || prefix == ""
+      return false if prefix.nil? || prefix == ""
       # <0,32>
       if Builtins.regexpmatch(prefix, "^[0-9]+$")
         nm = Builtins.tointeger(prefix)
@@ -56,7 +56,7 @@ module Yast
     # @param [String] netmask network mask
     # @return true if correct
     def Check4(netmask)
-      return false if netmask == nil || netmask == ""
+      return false if netmask.nil? || netmask == ""
 
       # 255.255.240.0
       s1 = "(128|192|224|240|248|252|254|255)"
@@ -92,7 +92,7 @@ module Yast
     # @param [String] netmask network mask
     # @return true if correct
     def Check6(netmask)
-      return false if netmask == nil || netmask == ""
+      return false if netmask.nil? || netmask == ""
 
       # <0,256>
       return false if !Builtins.regexpmatch(netmask, "^[0-9]+$")

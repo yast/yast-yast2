@@ -114,7 +114,7 @@ module Yast
               VSpacing(0.2),
               richtext ? rt : Left(Label(message)),
               VSpacing(0.2),
-              label != nil && label != "" ? Label(Id(:label), label) : Empty()
+              !label.nil? && label != "" ? Label(Id(:label), label) : Empty()
             )
           )
         ) # no headline
@@ -127,7 +127,7 @@ module Yast
             VBox(
               richtext ? rt : VCenter(Label(message)),
               VSpacing(0.2),
-              label != nil && label != "" ? Label(Id(:label), label) : Empty()
+              !label.nil? && label != "" ? Label(Id(:label), label) : Empty()
             )
           )
         )

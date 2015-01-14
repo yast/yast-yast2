@@ -96,7 +96,7 @@ module Yast
     # Set which item is to be selected
     # @param [String] selected string the item that is should be marked as selected
     def _SetSelectedItem(selected)
-      if selected != nil
+      if !selected.nil?
         UI.ChangeWidget(Id(:_hw_items), :CurrentItem, selected)
         UI.ChangeWidget(
           Id(:_hw_sum),
@@ -112,12 +112,12 @@ module Yast
     # Used when using the callback interface
     # @param [String] key strnig the widget key
     def Init(_key)
-      if @set_items_callback != nil
+      if !@set_items_callback.nil?
         @set_items_callback.call
       else
         Builtins.y2warning("No initialization callback")
       end
-      if @select_initial_item_callback != nil
+      if !@select_initial_item_callback.nil?
         @select_initial_item_callback.call
       else
         _SetSelectedItem(Ops.get_string(@current_items, [0, "id"]))
@@ -138,7 +138,7 @@ module Yast
       current = Convert.to_string(UI.QueryWidget(Id(:_hw_items), :CurrentItem))
       if Ops.get(event, "ID") == :_hw_items
         descr = ""
-        if @get_item_descr_callback == nil
+        if @get_item_descr_callback.nil?
           descr = Ops.get(@descriptions, current, "")
         else
           descr = @get_item_descr_callback.call(current)
@@ -146,7 +146,7 @@ module Yast
         UI.ChangeWidget(Id(:_hw_sum), :Value, descr)
         return nil
       end
-      if @action_callback == nil
+      if @action_callback.nil?
         ret = Ops.get(event, "ID")
         if Ops.is_symbol?(ret)
           return Convert.to_symbol(ret)
@@ -191,7 +191,7 @@ module Yast
       return Empty() if sz == 0
       if sz == 1
         id = Ops.get(actions, [0, 0])
-        if id == nil
+        if id.nil?
           Builtins.y2error("Unknown ID for button: %1", Ops.get(actions, 0))
           id = "nil"
         end
@@ -199,7 +199,7 @@ module Yast
       end
       items = Builtins.maplist(actions) do |i|
         id = Ops.get(i, 0)
-        if id == nil
+        if id.nil?
           Builtins.y2error("Unknown ID for button: %1", Ops.get(actions, 0))
           id = "nil"
         end
@@ -237,7 +237,7 @@ module Yast
 
       handle_events = [:_hw_items, :add, :edit, :delete]
       extra_events = Builtins.maplist(actions) { |i| Ops.get(i, 1) }
-      extra_events = Builtins.filter(extra_events) { |i| i != nil }
+      extra_events = Builtins.filter(extra_events) { |i| !i.nil? }
       handle_events = Builtins.merge(handle_events, extra_events)
 
       ret = {
@@ -450,9 +450,9 @@ module Yast
     #  "selected" : string = ID of the selected item in the list box
     def WaitForEvent
       event = nil
-      while event == nil
+      while event.nil?
         event = UI.WaitForEvent
-        event = nil if Handle("wizard_hw", event) == nil
+        event = nil if Handle("wizard_hw", event).nil?
       end
       deep_copy(@dialog_ret)
     end
@@ -479,7 +479,7 @@ module Yast
       properties = deep_copy(properties)
       items = ""
 
-      if properties != nil && Ops.greater_than(Builtins.size(properties), 0)
+      if !properties.nil? && Ops.greater_than(Builtins.size(properties), 0)
         Builtins.foreach(properties) do |prop|
           items = Ops.add(Ops.add(Ops.add(items, "<LI>"), prop), "</LI>")
         end
@@ -487,7 +487,7 @@ module Yast
 
       ret = ""
 
-      if title != nil && title != ""
+      if !title.nil? && title != ""
         ret = Ops.add(Ops.add("<P><B>", title), "</B></P>")
       end
 

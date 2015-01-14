@@ -60,7 +60,7 @@ module Yast
     # @param runlevel the default runlevel to set (integer in range 0..6)
     # @return [Boolean] true on success
     def SetDefaultRunlevel(selected_runlevel)
-      if selected_runlevel == nil || Ops.less_than(selected_runlevel, 0) ||
+      if selected_runlevel.nil? || Ops.less_than(selected_runlevel, 0) ||
           Ops.greater_than(selected_runlevel, 6)
         Builtins.y2error(
           "Invalid default runlevel (must be in range 0..6): %1",
@@ -100,7 +100,7 @@ module Yast
       )
       Builtins.y2milestone("Default symlink points to: %1", target)
 
-      if target == nil
+      if target.nil?
         Builtins.y2error(
           "Cannot read symlink target of %1",
           @default_target_symlink
@@ -110,7 +110,7 @@ module Yast
 
       # check runlevel<number>.target
       runlevel = Builtins.regexpsub(target, "/runlevel([0-6]).target$", "\\1")
-      if runlevel != nil
+      if !runlevel.nil?
         ret = Builtins.tointeger(runlevel)
         Builtins.y2milestone("Default runlevel: %1", ret)
 
@@ -121,7 +121,7 @@ module Yast
       # (this is written in systemd documentation how to change the default,
       # YaST should also support this style in case users do a manual change)
       runlevel_name = Builtins.regexpsub(target, "/([^/]*).target$", "\\1")
-      if runlevel_name != nil
+      if !runlevel_name.nil?
         Builtins.y2milestone(
           "Detected default runlevel name: %1",
           runlevel_name

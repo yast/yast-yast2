@@ -80,7 +80,7 @@ module Yast
             from: "any",
             to:   "map <string, map <string, map <string, any>>>"
           )
-          @current_configuration = deep_copy(read_conf) if read_conf != nil
+          @current_configuration = deep_copy(read_conf) if !read_conf.nil?
         else
           Builtins.y2milestone(
             "Configuration file %1 doesn't exist, there's no current configuration.",
@@ -110,12 +110,12 @@ module Yast
             # Every URL
             Builtins.foreach(one_record) do |url, record_options|
               # Record mustn't be nil or empty to be reused
-              if record_options != nil && record_options != {}
+              if !record_options.nil? && record_options != {}
                 # Creating map from the base
-                if Ops.get(new_configuration, dont_show_type) == nil
+                if Ops.get(new_configuration, dont_show_type).nil?
                   Ops.set(new_configuration, dont_show_type, {})
                 end
-                if Ops.get(new_configuration, [dont_show_type, popup_type]) == nil
+                if Ops.get(new_configuration, [dont_show_type, popup_type]).nil?
                   Ops.set(new_configuration, [dont_show_type, popup_type], {})
                 end
 
@@ -158,18 +158,18 @@ module Yast
         q_ident = Ops.get(params, "q_ident")
         q_url = Ops.get(params, "q_url")
 
-        if q_ident == nil
+        if q_ident.nil?
           Builtins.y2error("'q_ident' is a mandatory parameter")
           return nil
         end
 
-        if Ops.get(@current_configuration, q_type) == nil ||
-            Ops.get(@current_configuration, [q_type, q_ident]) == nil ||
-            Ops.get(@current_configuration, [q_type, q_ident, q_url]) == nil ||
+        if Ops.get(@current_configuration, q_type).nil? ||
+            Ops.get(@current_configuration, [q_type, q_ident]).nil? ||
+            Ops.get(@current_configuration, [q_type, q_ident, q_url]).nil? ||
             Ops.get(
               @current_configuration,
               [q_type, q_ident, q_url, "show_again"]
-            ) == nil
+            ).nil?
           return nil
         end
 
@@ -211,19 +211,19 @@ module Yast
         q_ident = Ops.get(params, "q_ident")
         q_url = Ops.get(params, "q_url")
 
-        if q_ident == nil
+        if q_ident.nil?
           Builtins.y2error("'q_ident' is a mandatory parameter")
           return nil
         end
 
         # building the configuration map
-        if Ops.get(@current_configuration, q_type) == nil
+        if Ops.get(@current_configuration, q_type).nil?
           Ops.set(@current_configuration, q_type, {})
         end
-        if Ops.get(@current_configuration, [q_type, q_ident]) == nil
+        if Ops.get(@current_configuration, [q_type, q_ident]).nil?
           Ops.set(@current_configuration, [q_type, q_ident], {})
         end
-        if Ops.get(@current_configuration, [q_type, q_ident, q_url]) == nil
+        if Ops.get(@current_configuration, [q_type, q_ident, q_url]).nil?
           Ops.set(@current_configuration, [q_type, q_ident, q_url], {})
         end
 
@@ -271,10 +271,10 @@ module Yast
         q_ident = Ops.get(params, "q_ident")
         q_url = Ops.get(params, "q_url")
 
-        if Ops.get(@current_configuration, q_type) == nil ||
-            Ops.get(@current_configuration, [q_type, q_ident]) == nil ||
-            Ops.get(@current_configuration, [q_type, q_ident, q_url]) == nil ||
-            Ops.get(@current_configuration, [q_type, q_ident, q_url, "return"]) == nil
+        if Ops.get(@current_configuration, q_type).nil? ||
+            Ops.get(@current_configuration, [q_type, q_ident]).nil? ||
+            Ops.get(@current_configuration, [q_type, q_ident, q_url]).nil? ||
+            Ops.get(@current_configuration, [q_type, q_ident, q_url, "return"]).nil?
           return nil
         end
 
@@ -315,19 +315,19 @@ module Yast
         q_ident = Ops.get(params, "q_ident")
         q_url = Ops.get(params, "q_url")
 
-        if q_ident == nil
+        if q_ident.nil?
           Builtins.y2error("'q_ident' is a mandatory parameter")
           return nil
         end
 
         # building the configuration map
-        if Ops.get(@current_configuration, q_type) == nil
+        if Ops.get(@current_configuration, q_type).nil?
           Ops.set(@current_configuration, q_type, {})
         end
-        if Ops.get(@current_configuration, [q_type, q_ident]) == nil
+        if Ops.get(@current_configuration, [q_type, q_ident]).nil?
           Ops.set(@current_configuration, [q_type, q_ident], {})
         end
-        if Ops.get(@current_configuration, [q_type, q_ident, q_url]) == nil
+        if Ops.get(@current_configuration, [q_type, q_ident, q_url]).nil?
           Ops.set(@current_configuration, [q_type, q_ident, q_url], {})
         end
 
@@ -376,16 +376,12 @@ module Yast
         q_ident = Ops.get(params, "q_ident")
         q_url = Ops.get(params, "q_url")
 
-        if Ops.get(@current_configuration, q_type) != nil &&
-            Ops.get(@current_configuration, [q_type, q_ident]) != nil &&
-            Ops.get(@current_configuration, [q_type, q_ident, q_url]) != nil
+        if !Ops.get(@current_configuration, [q_type, q_ident, q_url]).nil?
           Ops.set(@current_configuration, [q_type, q_ident, q_url], nil)
           SaveCurrentConfiguration()
         end
 
-        return Ops.get(@current_configuration, q_type) != nil &&
-          Ops.get(@current_configuration, [q_type, q_ident]) != nil &&
-          Ops.get(@current_configuration, [q_type, q_ident, q_url]) != nil
+        return Ops.get(@current_configuration, [q_type, q_ident, q_url]).nil?
       else
         Builtins.y2error("'%1' is an unknown type", q_type)
         return false

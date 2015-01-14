@@ -60,7 +60,7 @@ module Yast
     # @param [String] id string path identification to provide
     # @return [String] required path, nil if not defined
     def Path(id)
-      Initialize() if @_paths == nil
+      Initialize() if @_paths.nil?
       Ops.get(@_paths, id)
     end
 

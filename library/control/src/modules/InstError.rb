@@ -72,7 +72,7 @@ module Yast
         _("Save y2logs to...")
       )
 
-      return nil if savelogsto == nil
+      return nil if savelogsto.nil?
 
       # Busy message, %1 is replaced with a filename
       UI.OpenDialog(

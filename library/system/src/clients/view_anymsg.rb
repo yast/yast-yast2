@@ -212,7 +212,7 @@ module Yast
           @new_file = Convert.to_string(
             UI.QueryWidget(Id(:custom_file), :Value)
           )
-          @filename = @new_file if @new_file != nil
+          @filename = @new_file if !@new_file.nil?
         else
           Builtins.y2milestone("bad UserInput (%1)", @ret)
         end

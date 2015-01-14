@@ -86,7 +86,7 @@ module Yast
     # @param [String] address MAC address
     # @return true if correct
     def CheckMAC(address)
-      return false if address == nil || address == ""
+      return false if address.nil? || address == ""
 
       regexp = "[0-9a-fA-F]{2,2}"
       regexp = Builtins.sformat("(%1:){5,5}%1", regexp)

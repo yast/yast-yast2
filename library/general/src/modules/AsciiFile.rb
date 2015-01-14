@@ -175,14 +175,14 @@ module Yast
               line,
               Ops.get_string(file.value, "delim", "")
             )
-            if pos != nil && Ops.greater_than(pos, 0)
+            if !pos.nil? && Ops.greater_than(pos, 0)
               line = Builtins.substring(line, pos)
             end
             pos = Builtins.findfirstof(
               line,
               Ops.get_string(file.value, "delim", "")
             )
-            if pos != nil && Ops.greater_than(pos, 0)
+            if !pos.nil? && Ops.greater_than(pos, 0)
               fields = Builtins.add(fields, Builtins.substring(line, 0, pos))
               line = Builtins.substring(line, pos)
             else

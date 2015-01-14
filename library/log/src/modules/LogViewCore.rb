@@ -72,7 +72,7 @@ module Yast
 
       loop do
         line = Convert.to_string(SCR.Read(path(".process.read_line"), @id))
-        break if line == nil
+        break if line.nil?
 
         new_lines = Builtins.add(new_lines, line)
       end
@@ -106,7 +106,7 @@ module Yast
     def Start(widget, d)
       widget = deep_copy(widget)
       d = deep_copy(d)
-      if @id != nil
+      if !@id.nil?
         SCR.Execute(path(".process.release"), @id)
         @id = nil
       end
@@ -189,7 +189,7 @@ module Yast
 
     def Update(widget)
       widget = deep_copy(widget)
-      if @id != nil
+      if !@id.nil?
         new_lines = GetNewLines()
         if Ops.greater_than(Builtins.size(new_lines), 0)
           @lines = Convert.convert(
@@ -213,7 +213,7 @@ module Yast
     end
 
     def Stop
-      if @id != nil
+      if !@id.nil?
         SCR.Execute(path(".process.release"), @id)
         @id = nil
       end

@@ -160,7 +160,7 @@ module Yast
         # already known but not assigned
         next if Builtins.contains(last_known_interfaces, interface)
         # already configured in some zone
-        next if SuSEFirewall.GetZoneOfInterface(interface) != nil
+        next if !SuSEFirewall.GetZoneOfInterface(interface).nil?
         # any dial-up interfaces presented and the new one isn't dial-up
         if had_dialup_interfaces && !IsDialUpInterface(interface)
           AddWarning(
@@ -199,12 +199,12 @@ module Yast
     # @return [Boolean] if enabled
     def ServiceEnabled(service, zones)
       zones = deep_copy(zones)
-      if service == nil || service == ""
+      if service.nil? || service == ""
         Builtins.y2error("Ups, service: %1?", service)
         return false
       end
 
-      if zones == nil || zones == []
+      if zones.nil? || zones == []
         Builtins.y2error("Ups, zones: %1?", zones)
         return false
       end

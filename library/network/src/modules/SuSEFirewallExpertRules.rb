@@ -265,7 +265,7 @@ module Yast
 
       # Get all current rules
       current_rules = SuSEFirewall.GetAcceptExpertRules(zone)
-      if current_rules == nil
+      if current_rules.nil?
         Builtins.y2error(
           "Impossible to set new AcceptExpertRule for zone %1",
           zone
@@ -311,7 +311,7 @@ module Yast
       end
 
       current_rules = SuSEFirewall.GetAcceptExpertRules(zone)
-      if current_rules == nil
+      if current_rules.nil?
         Builtins.y2error(
           "Impossible remove any AcceptExpertRule for zone %1",
           zone
@@ -360,7 +360,7 @@ module Yast
       end
 
       current_rules = SuSEFirewall.GetAcceptExpertRules(zone)
-      if current_rules == nil
+      if current_rules.nil?
         Builtins.y2error(
           "Impossible remove any AcceptExpertRule for zone %1",
           zone
@@ -369,7 +369,7 @@ module Yast
       end
 
       current_rules_list = Builtins.splitstring(current_rules, " \n")
-      if Ops.get(current_rules_list, rule_id) != nil
+      if !Ops.get(current_rules_list, rule_id).nil?
         current_rules_list = Builtins.remove(current_rules_list, rule_id)
         current_rules = Builtins.mergestring(current_rules_list, " ")
         SuSEFirewall.SetAcceptExpertRules(zone, current_rules)

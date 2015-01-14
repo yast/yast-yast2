@@ -66,7 +66,7 @@ module Yast
     #
     # @return [String] architecture
     def architecture
-      if @_architecture == nil
+      if @_architecture.nil?
         @_architecture = Convert.to_string(
           SCR.Read(path(".probe.architecture"))
         )
@@ -199,14 +199,14 @@ module Yast
     # general system board types (initialized in constructor)
 
     def board_compatible
-      if @_board_compatible == nil
+      if @_board_compatible.nil?
         @_checkgeneration = ""
         systemProbe = Convert.convert(
           SCR.Read(path(".probe.system")),
           from: "any",
           to:   "list <map>"
         )
-        systemProbe = [] if systemProbe == nil
+        systemProbe = [] if systemProbe.nil?
 
         Builtins.foreach(systemProbe) do |systemEntry|
           checksys = Ops.get_string(systemEntry, "system", "")
@@ -223,7 +223,7 @@ module Yast
         # Treat PowerNV as CHRP. It is harmless for now. Patch for hwinfo is sent but it is better to be safe
         @_board_compatible = "CHRP" if @_board_compatible == "PowerNV"
 
-        if ppc && (@_board_compatible == nil || @_board_compatible == "CHRP")
+        if ppc && (@_board_compatible.nil? || @_board_compatible == "CHRP")
           device_type = Convert.to_map(
             SCR.Execute(
               path(".target.bash_output"),
@@ -285,7 +285,7 @@ module Yast
         end
         # avoid future re-probing if probing failed
         # also avoid passing nil outside the module
-        if fun_ref(method(:board_compatible), "string ()") == nil
+        if fun_ref(method(:board_compatible), "string ()").nil?
           @_board_compatible = ""
         end
       end
@@ -344,7 +344,7 @@ module Yast
     # @see #is_laptop
     # @return true if the system supports PCMCIA
     def has_pcmcia
-      if @_has_pcmcia == nil
+      if @_has_pcmcia.nil?
         @_has_pcmcia = Convert.to_boolean(SCR.Read(path(".probe.has_pcmcia")))
       end
       @_has_pcmcia
@@ -354,7 +354,7 @@ module Yast
     #
     # @return if the system is a laptop
     def is_laptop
-      if @_is_laptop == nil
+      if @_is_laptop.nil?
         system = Convert.convert(
           SCR.Read(path(".probe.system")),
           from: "any",
@@ -373,7 +373,7 @@ module Yast
     # @deprecated
     # @return true if the system is UML
     def is_uml
-      if @_is_uml == nil
+      if @_is_uml.nil?
         @_is_uml = Convert.to_boolean(SCR.Read(path(".probe.is_uml")))
       end
       @_is_uml
@@ -384,7 +384,7 @@ module Yast
     # true if Xen kernel is running (dom0 or domU)
     # @return true if the Xen kernel is running
     def is_xen
-      if @_is_xen == nil
+      if @_is_xen.nil?
         # XEN kernel has /proc/xen directory
         stat = Convert.to_map(SCR.Read(path(".target.stat"), "/proc/xen"))
         Builtins.y2milestone("stat /proc/xen: %1", stat)
@@ -423,7 +423,7 @@ module Yast
     # @see #is_xen
     # @return true if the Xen kernel is running in dom0
     def is_xen0
-      if @_is_xen0 == nil
+      if @_is_xen0.nil?
         # dom0 Xen kernel has /proc/xen/xsd_port file
         stat = Convert.to_map(
           SCR.Read(path(".target.stat"), "/proc/xen/xsd_port")
@@ -452,7 +452,7 @@ module Yast
     #
     # @return true if we are running on KVM hypervisor
     def is_kvm
-      if @_is_kvm == nil
+      if @_is_kvm.nil?
         # KVM hypervisor has /dev/kvm file
         stat = Convert.to_map(SCR.Read(path(".target.stat"), "/dev/kvm"))
         Builtins.y2milestone("stat /dev/kvm: %1", stat)
@@ -481,7 +481,7 @@ module Yast
     #
     # @return true if running on multiprocessor board
     def has_smp
-      if @_has_smp == nil
+      if @_has_smp.nil?
         @_has_smp = Convert.to_boolean(SCR.Read(path(".probe.has_smp")))
       end
       if alpha

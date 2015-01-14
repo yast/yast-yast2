@@ -462,7 +462,7 @@ module Yast
         ""
       )
 
-      if tmpfile == nil || tmpfile == ""
+      if tmpfile.nil? || tmpfile == ""
         Builtins.y2error(
           "Error creating temporary file: %1 - empty output",
           cmd_out

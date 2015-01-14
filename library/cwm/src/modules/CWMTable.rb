@@ -65,7 +65,7 @@ module Yast
       ret = true
       Builtins.foreach(attr) do |k, v|
         type = Ops.get(types, k)
-        if type == nil
+        if type.nil?
           Builtins.y2error("Unknown attribute %1", k)
           ret = false
         else
@@ -147,7 +147,7 @@ module Yast
       )
       index = -1
       counter = 0
-      max = Ops.subtract(item_list == nil ? 0 : Builtins.size(item_list), 1)
+      max = Ops.subtract(item_list.nil? ? 0 : Builtins.size(item_list), 1)
       Builtins.foreach(item_list) do |t|
         index = counter if getItemId(t) == id
         counter = Ops.add(counter, 1)
@@ -227,32 +227,28 @@ module Yast
           from: "any",
           to:   "symbol (string, map, integer)"
         )
-        ret = edit_handle.call(key, event_descr, index) if edit_handle != nil
+        ret = edit_handle.call(key, event_descr, index) if !edit_handle.nil?
       elsif event_id == :_tw_add
         add_handle = Convert.convert(
           Ops.get(attrib, "add"),
           from: "any",
           to:   "symbol (string, map, integer)"
         )
-        ret = add_handle.call(key, event_descr, index) if add_handle != nil
+        ret = add_handle.call(key, event_descr, index) if !add_handle.nil?
       elsif event_id == :_tw_delete
         delete_handle = Convert.convert(
           Ops.get(attrib, "delete"),
           from: "any",
           to:   "symbol (string, map, integer)"
         )
-        if delete_handle != nil
-          ret = delete_handle.call(key, event_descr, index)
-        end
+        ret = delete_handle.call(key, event_descr, index) if delete_handle
       elsif event_id == :_tw_custom
         custom_handle = Convert.convert(
           Ops.get(attrib, "custom_handle"),
           from: "any",
           to:   "symbol (string, map, integer)"
         )
-        if custom_handle != nil
-          ret = custom_handle.call(key, event_descr, index)
-        end
+        ret = custom_handle.call(key, event_descr, index) if custom_handle
       elsif event_id == :_tw_up || event_id == :_tw_down
         up = event_id == :_tw_up
         updown_handle = Convert.convert(
@@ -260,10 +256,10 @@ module Yast
           from: "any",
           to:   "symbol (string, map, boolean, integer)"
         )
-        if updown_handle != nil && !(index == 0 && up) &&
+        if !updown_handle.nil? && !(index == 0 && up) &&
             !(index == Ops.subtract(Builtins.size(item_list), 1) && !up)
           ret = updown_handle.call(key, event_descr, up, index)
-          UI.ChangeWidget(Id(:_tw_table), :CurrentItem, id) if ret == nil
+          UI.ChangeWidget(Id(:_tw_table), :CurrentItem, id) if ret.nil?
         end
       end
       updateButtons(descr)

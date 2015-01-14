@@ -45,7 +45,7 @@ module Yast
     # Get the current stage
     # @return [String] the current stage
     def stage
-      if @_stage == nil
+      if @_stage.nil?
         @_stage = "normal"
 
         arg_count = Builtins.size(WFM.Args)

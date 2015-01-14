@@ -93,7 +93,7 @@ module Yast
     # Initialize default values of features
     # @param [Boolean] force boolean drop all settings which were set before
     def InitFeatures(force)
-      return if !(force || @features == nil)
+      return if !(force || @features.nil?)
       @features = deep_copy(@defaults)
 
       nil
@@ -181,7 +181,7 @@ module Yast
     # @note This is a stable API function
     # Either read from /etc/YaST2/ProductFeatures or set default values
     def InitIfNeeded
-      return if @features != nil
+      return if !@features.nil?
       if Stage.normal || Stage.firstboot
         Restore()
       else
@@ -199,7 +199,7 @@ module Yast
     def GetFeature(section, feature)
       InitIfNeeded()
       ret = Ops.get(@features, [section, feature])
-      ret = "" if ret == nil
+      ret = "" if ret.nil?
       deep_copy(ret)
     end
 

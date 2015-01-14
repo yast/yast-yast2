@@ -111,7 +111,7 @@ module Yast
 
     def UnEscapeString(in_, transform)
       transform = deep_copy(transform)
-      return "" if in_ == nil || in_ == ""
+      return "" if in_.nil? || in_ == ""
 
       # replace the other reserved characters
       Builtins.foreach(transform) do |tgt, src|
@@ -140,7 +140,7 @@ module Yast
       transform = deep_copy(transform)
       ret = ""
 
-      return ret if in_ == nil || in_ == ""
+      return ret if in_.nil? || in_ == ""
 
       # replace % at first
       ret = Builtins.mergestring(Builtins.splitstring(in_, "%"), "%25")
@@ -171,7 +171,7 @@ module Yast
       Builtins.y2debug("url=%1", url)
 
       # We don't parse empty URLs
-      return {} if url == nil || Ops.less_than(Builtins.size(url), 1)
+      return {} if url.nil? || Ops.less_than(Builtins.size(url), 1)
 
       # Extract basic URL parts: scheme://host/path?question#part
       rawtokens = Builtins.regexptokenize(
@@ -252,12 +252,12 @@ module Yast
       # check if there is an IPv6 address
       host6 = Builtins.regexpsub(hostport6, "^\\[(.*)\\]", "\\1")
 
-      if host6 != nil && host6 != ""
+      if !host6.nil? && host6 != ""
         Builtins.y2milestone("IPv6 host detected: %1", host6)
         Ops.set(tokens, "host", host6)
         port6 = Builtins.regexpsub(hostport6, "^\\[.*\\]:(.*)", "\\1")
         Builtins.y2debug("port: %1", port6)
-        Ops.set(tokens, "port", port6 != nil ? port6 : "")
+        Ops.set(tokens, "port", !port6.nil? ? port6 : "")
       end
 
       # some exceptions for samba scheme (there is optional extra option "domain")
@@ -285,10 +285,10 @@ module Yast
     # @see also perl-URI: URI(3)
     def Check(url)
       # We don't allow empty URLs
-      return false if url == nil || Ops.less_than(Builtins.size(url), 1)
+      return false if url.nil? || Ops.less_than(Builtins.size(url), 1)
 
       # We don't allow URLs with spaces
-      return false if Builtins.search(url, " ") != nil
+      return false if url.include?(" ")
 
       tokens = Parse(url)
 
@@ -533,7 +533,7 @@ module Yast
     #      ]
     def MakeMapFromParams(params)
       # Error
-      if params == nil
+      if params.nil?
         Builtins.y2error("Erroneous (nil) params!")
         return nil 
         # Empty
@@ -544,7 +544,7 @@ module Yast
       params_list = Builtins.splitstring(params, "&")
 
       params_list = Builtins.filter(params_list) do |one_param|
-        one_param != "" && one_param != nil
+        one_param != "" && !one_param.nil?
       end
 
       ret = {}
@@ -554,7 +554,7 @@ module Yast
 
       Builtins.foreach(params_list) do |one_param|
         eq_pos = Builtins.search(one_param, "=")
-        if eq_pos == nil
+        if eq_pos.nil?
           Ops.set(ret, one_param, "")
         else
           opt = Builtins.substring(one_param, 0, eq_pos)
@@ -586,11 +586,11 @@ module Yast
       Builtins.mergestring(
         # ["key" : "value", ...] -> ["key=value", ...]
         Builtins.maplist(params_map) do |key, value|
-          if value == nil
+          if value.nil?
             Builtins.y2warning("Empty value for key %1", key)
             value = ""
           end
-          if key == nil || key == ""
+          if key.nil? || key == ""
             Builtins.y2error("Empty key (will be skipped)")
             next ""
           end
@@ -614,7 +614,7 @@ module Yast
         "(.*)(://[^/:]*):[^/@]*@(.*)",
         "\\1\\2:PASSWORD@\\3"
       )
-      subd == nil ? url : subd
+      subd.nil? ? url : subd
     end
 
     # Hide password token in parsed URL (by URL::Parse()) - the password is replaced by 'PASSWORD' string.

@@ -66,12 +66,12 @@ module Yast
       @console = Convert.to_string(
         SCR.Read(path(".sysconfig.console.CONSOLE_ENCODING"))
       )
-      @console = "" if @console == nil
+      @console = "" if @console.nil?
 
       m = Convert.to_map(
         SCR.Execute(path(".target.bash_output"), "locale -k charmap")
       )
-      m = {} if m == nil
+      m = {} if m.nil?
 
       out = Builtins.splitstring(Ops.get_string(m, "stdout", ""), "\n")
       Builtins.y2milestone("list %1", out)
@@ -131,7 +131,7 @@ module Yast
     # @return [String]
     def GetCodePage(enc)
       code = Ops.get_string(@enc_map, enc, "")
-      if Builtins.size(code) == 0 && @lang != nil
+      if Builtins.size(code) == 0 && !@lang.nil?
         l = Builtins.substring(@lang, 0, 5)
         code = Ops.get_string(@lang_map, l, "")
       end

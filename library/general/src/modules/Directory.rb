@@ -102,7 +102,7 @@ module Yast
     # Set temporary directory
     def ResetTmpDir
       @tmpdir = Convert.to_string(SCR.Read(path(".target.tmpdir")))
-      if @tmpdir == "" || @tmpdir == nil
+      if @tmpdir == "" || @tmpdir.nil?
         Builtins.y2error("Failed to set temporary directory: %1", @tmpdir)
         @tmpdir = "/tmp"
       end

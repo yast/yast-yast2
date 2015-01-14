@@ -52,7 +52,7 @@ module Yast
     def is_a(value, type)
       value = deep_copy(value)
       validator = Ops.get(@types, type)
-      if validator != nil
+      if !validator.nil?
         return validator.call(value)
       else
         Builtins.y2error("Request to validate unknown type %1", type)
@@ -101,7 +101,7 @@ module Yast
     # For string checks if value is nil or equal to string without any chars ("").
     def IsEmpty(value)
       value = deep_copy(value)
-      return true if value == nil
+      return true if value.nil?
 
       ret = false
 

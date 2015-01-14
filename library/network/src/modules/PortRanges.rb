@@ -126,7 +126,7 @@ module Yast
       )
 
       # couldn't extract two integers
-      if min_pr == nil && max_pr == nil
+      if min_pr.nil? && max_pr.nil?
         warning = Builtins.sformat(
           "Wrong port-range: '%1':'%2'",
           min_pr,
@@ -205,7 +205,7 @@ module Yast
             raise Break # break the loop, match found
           end
         end
-      end if port_number != nil
+      end if !port_number.nil?
 
       ret
     end
@@ -270,13 +270,13 @@ module Yast
     # @param integer max_port
     # @return [String] new port range
     def CreateNewPortRange(min_pr, max_pr)
-      if min_pr == nil || min_pr == 0
+      if min_pr.nil? || min_pr == 0
         Builtins.y2error(
           "Wrong definition of the starting port '%1', it must be between 1 and 65535",
           min_pr
         )
         return ""
-      elsif max_pr == nil || max_pr == 0 || Ops.greater_than(max_pr, 65535)
+      elsif max_pr.nil? || max_pr == 0 || Ops.greater_than(max_pr, 65535)
         Builtins.y2error(
           "Wrong definition of the ending port '%1', it must be between 1 and 65535",
           max_pr
@@ -317,8 +317,8 @@ module Yast
     def RemovePortFromPortRanges(port_number, port_ranges)
       port_ranges = deep_copy(port_ranges)
       # Checking necessarity of filtering and params
-      return deep_copy(port_ranges) if port_ranges == nil || port_ranges == []
-      return deep_copy(port_ranges) if port_number == nil || port_number == 0
+      return deep_copy(port_ranges) if port_ranges.nil? || port_ranges == []
+      return deep_copy(port_ranges) if port_number.nil? || port_number == 0
 
       Builtins.y2milestone(
         "Removing port %1 from port ranges %2",
@@ -409,7 +409,7 @@ module Yast
         else
           port_number = PortAliases.GetPortNumber(one_item)
           # Cannot find port number for this port, it is en error of the configuration
-          if port_number == nil
+          if port_number.nil?
             Builtins.y2warning(
               "Unknown port %1 but leaving it in the configuration.",
               one_item
@@ -511,7 +511,7 @@ module Yast
           max_pr = Builtins.tointeger(
             Builtins.regexpsub(port_range, "^.*:([0123456789]+)$", "\\1")
           )
-          if min_pr == nil || max_pr == nil
+          if min_pr.nil? || max_pr.nil?
             Builtins.y2error("Not a port range %1", port_range)
             next
           end
@@ -530,7 +530,7 @@ module Yast
               "^.*:([0123456789]+)$",
               "\\1"
             )
-            if this_min == nil || this_max == nil
+            if this_min.nil? || this_max.nil?
               Builtins.y2error(
                 "Wrong port range %1, %2 > %3",
                 port_range,
@@ -597,7 +597,7 @@ module Yast
               new_min = this_min_pr
               new_max = max_pr
             end
-            if any_change_during_this_loop && new_min != nil && new_max != nil
+            if any_change_during_this_loop && !new_min.nil? && !new_max.nil?
               new_port_range = CreateNewPortRange(new_min, new_max)
               Builtins.y2milestone(
                 "Joining %1 and %2 into %3",

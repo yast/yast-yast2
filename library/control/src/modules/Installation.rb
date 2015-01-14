@@ -257,14 +257,14 @@ module Yast
 
     # no resources/packages for X11
     def text_fallback
-      Initialize() if @_text_fallback == nil
+      Initialize() if @_text_fallback.nil?
       @_text_fallback
     end
 
     # somehow, no X11 was started
     # no x11 or not enough memory for qt
     def no_x11
-      Initialize() if @_no_x11 == nil
+      Initialize() if @_no_x11.nil?
       @_no_x11
     end
 

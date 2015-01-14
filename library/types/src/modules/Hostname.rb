@@ -78,7 +78,7 @@ module Yast
     # @param [String] host hostname
     # @return true if correct
     def Check(host)
-      if host == nil || host == "" || Ops.greater_than(Builtins.size(host), 63)
+      if host.nil? || host == "" || Ops.greater_than(Builtins.size(host), 63)
         return false
       end
       Builtins.regexpmatch(host, "^[[:alnum:]]([[:alnum:]-]*[[:alnum:]])?$")
@@ -88,7 +88,7 @@ module Yast
     # @param [String] domain domain name
     # @return true if correct
     def CheckDomain(domain)
-      return false if domain == nil || domain == ""
+      return false if domain.nil? || domain == ""
       # if "domain" contains "." character as last character remove it before validation (but it's valid)
       if Ops.greater_than(Builtins.size(domain), 1)
         if Builtins.substring(domain, Ops.subtract(Builtins.size(domain), 1), 1) == "."
@@ -117,7 +117,7 @@ module Yast
     # @example Hostname::SplitFQ("ftp.suse.cz") -> ["ftp", "suse.cz"]
     # @example Hostname::SplitFQ("ftp") -> ["ftp"]
     def SplitFQ(fqhostname)
-      if fqhostname == "" || fqhostname == nil
+      if fqhostname == "" || fqhostname.nil?
         Builtins.y2error("Bad FQ hostname: %1", fqhostname)
         return []
       end
@@ -126,7 +126,7 @@ module Yast
       dn = ""
 
       dot = Builtins.findfirstof(fqhostname, ".")
-      if dot != nil
+      if !dot.nil?
         hn = Builtins.substring(fqhostname, 0, dot)
         dn = Builtins.substring(fqhostname, Ops.add(dot, 1))
         return [hn, dn]
@@ -143,7 +143,7 @@ module Yast
     # @param [String] domain domain name
     # @return FQ hostname
     def MergeFQ(hostname, domain)
-      return hostname if domain == "" || domain == nil
+      return hostname if domain == "" || domain.nil?
       Ops.add(Ops.add(hostname, "."), domain)
     end
 
@@ -156,14 +156,14 @@ module Yast
       hostname_data = Convert.to_map(
         SCR.Execute(path(".target.bash_output"), "hostname --fqdn")
       )
-      if hostname_data == nil || Ops.get_integer(hostname_data, "exit", -1) != 0
+      if hostname_data.nil? || Ops.get_integer(hostname_data, "exit", -1) != 0
         fqhostname = if SCR.Read(path(".target.stat"), "/etc/HOSTNAME").empty?
                        SCR.Read(path(".target.string"), "/etc/HOSTNAME")
                      else
                        ""
                      end
 
-        if fqhostname == "" || fqhostname == nil
+        if fqhostname == "" || fqhostname.nil?
           # last resort (#429792)
           fqhostname = "linux.site"
         end

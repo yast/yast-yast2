@@ -60,7 +60,7 @@ module Yast
     # @return quoted string
     # @example quote("a'b") -> "a'\''b"
     def Quote(var)
-      return "" if var == nil || var == ""
+      return "" if var.nil? || var == ""
       Builtins.mergestring(Builtins.splitstring(var, "'"), "'\\''")
     end
 
@@ -69,7 +69,7 @@ module Yast
     # @return unquoted string
     # @see #quote
     def UnQuote(var)
-      return "" if var == nil || var == ""
+      return "" if var.nil? || var == ""
       Builtins.y2debug("var=%1", var)
       while Builtins.regexpmatch(var, "'\\\\''")
         var = Builtins.regexpsub(var, "(.*)'\\\\''(.*)", "\\1'\\2")
@@ -81,7 +81,7 @@ module Yast
     # Optional formatted text
     # @return sformat (f, s) if s is neither empty or nil, else ""
     def OptFormat(f, s)
-      s == "" || s == nil ? "" : Builtins.sformat(f, s)
+      s == "" || s.nil? ? "" : Builtins.sformat(f, s)
     end
 
     # Optional parenthesized text
@@ -134,7 +134,7 @@ module Yast
     # @example FormatSizeWithPrecision(4096, 2, false) -> "4.00 KiB"
     # @example FormatSizeWithPrecision(1024*1024, 2, true) -> "1 MiB"
     def FormatSizeWithPrecision(bytes, precision, omit_zeroes)
-      return "" if bytes == nil
+      return "" if bytes.nil?
 
       units = [
         # Byte abbreviated
@@ -159,7 +159,7 @@ module Yast
         index = Ops.add(index, 1)
       end
 
-      if precision == nil
+      if precision.nil?
         precision = 0
       elsif Ops.less_than(precision, 0)
         # auto precision - depends on the suffix, but max. 3 decimal digits
@@ -212,7 +212,7 @@ module Yast
     #
     # @example FormatSize(23456767890) -> "223.70 MiB"
     def FormatSize(bytes)
-      return "" if bytes == nil
+      return "" if bytes.nil?
 
       # automatic precision, don't print trailing zeroes for sizes < 1MiB
       FormatSizeWithPrecision(bytes, -1, Ops.less_than(bytes, 1 << 20))
@@ -312,10 +312,10 @@ module Yast
     # @return stripped string
     # @example CutBlanks("  any  input     ") -> "any  input"
     def CutBlanks(input)
-      return "" if input == nil || Ops.less_than(Builtins.size(input), 1)
+      return "" if input.nil? || Ops.less_than(Builtins.size(input), 1)
 
       pos1 = Builtins.findfirstnotof(input, " \t")
-      return "" if pos1 == nil
+      return "" if pos1.nil?
 
       pos2 = Builtins.findlastnotof(input, " \t")
 
@@ -331,7 +331,7 @@ module Yast
     # @param [String] input number that might contain leadig zero
     # @return [String] that has leading zeros removed
     def CutZeros(input)
-      return "" if input == nil || Ops.less_than(Builtins.size(input), 1)
+      return "" if input.nil? || Ops.less_than(Builtins.size(input), 1)
       return input if !Builtins.regexpmatch(input, "^0.*")
       output = Builtins.regexpsub(input, "^0+(.*)$", "\\1")
       return "0" if Ops.less_than(Builtins.size(output), 1)
@@ -346,7 +346,7 @@ module Yast
     # @param input number number of repetitions
     # @return [String] repeated string
     def Repeat(text, number)
-      text = "" if text == nil
+      text = "" if text.nil?
 
       ret = ""
 
@@ -369,7 +369,7 @@ module Yast
     # @param [Symbol] alignment alignment to use, either `left or `right
     # @return padded text
     def SuperPad(text, length, padding, alignment)
-      text = "" if text == nil
+      text = "" if text.nil?
 
       pad = Repeat(padding, Ops.subtract(length, Builtins.size(text)))
 
@@ -440,7 +440,7 @@ module Yast
         remove_whitespace
       )
 
-      return [] if options == nil
+      return [] if options.nil?
 
       # two algorithms are used:
       # first is much faster, but only usable if string
@@ -448,7 +448,7 @@ module Yast
       # and backslash sequences are not interpreted
       # second is more general, but of course slower
 
-      if Builtins.findfirstof(options, "\"") == nil &&
+      if Builtins.findfirstof(options, "\"").nil? &&
           interpret_backslash == false
         # easy case - no qouting, don't interpres backslash sequences => use splitstring
         values = Builtins.splitstring(options, separator)
@@ -638,7 +638,7 @@ module Yast
     # @param [Boolean] glob flag if only first or every occuring match should be removed
     # @return [String] that has matches removed
     def CutRegexMatch(input, regex, glob)
-      return "" if input == nil || Ops.less_than(Builtins.size(input), 1)
+      return "" if input.nil? || Ops.less_than(Builtins.size(input), 1)
       output = input
       if Builtins.regexpmatch(output, regex)
         p = Builtins.regexppos(output, regex)
@@ -929,7 +929,7 @@ module Yast
     # @param [String] input Input string - complete comment of a sysconfig variable
     # @return [Array<String>] Metadata lines in list
     def GetMetaDataLines(input)
-      return [] if input == nil || input == ""
+      return [] if input.nil? || input == ""
 
       lines = Builtins.splitstring(input, "\n")
       Builtins.filter(lines) { |line| Builtins.regexpmatch(line, "^##.*") }
@@ -939,7 +939,7 @@ module Yast
     # @param [String] input Input string - complete comment of a sysconfig variable
     # @return [String] Comment used as variable description
     def GetCommentLines(input)
-      return "" if input == nil || input == ""
+      return "" if input.nil? || input == ""
 
       lines = Builtins.splitstring(input, "\n")
 
@@ -947,7 +947,7 @@ module Yast
 
       Builtins.foreach(lines) do |line|
         com_line = Builtins.regexpsub(line, "^#([^#].*)", "\\1")
-        if com_line == nil
+        if com_line.nil?
           # add empty lines
           if Builtins.regexpmatch(line, "^#[ \t]*$") == true
             ret = Ops.add(ret, "\n")
@@ -984,7 +984,7 @@ module Yast
             # this not first multiline so remove comment mark
             without_comment = Builtins.regexpsub(metaline, "^##(.*)", "\\1")
 
-            metaline = without_comment if without_comment != nil
+            metaline = without_comment if !without_comment.nil?
           end
           joined_multilines = Builtins.add(
             joined_multilines,
@@ -1002,7 +1002,7 @@ module Yast
             # this not first multiline so remove comment mark
             without_comment = Builtins.regexpsub(part, "^##(.*)", "\\1")
 
-            part = without_comment if without_comment != nil
+            part = without_comment if !without_comment.nil?
           end
 
           # add line to the previous lines
@@ -1024,7 +1024,7 @@ module Yast
         colon_pos = Builtins.findfirstof(meta, ":")
         tag = ""
         val = ""
-        if colon_pos == nil
+        if colon_pos.nil?
           # colon is missing
           tag = meta
         else
@@ -1060,14 +1060,14 @@ module Yast
     # @param [String] target the new string which is used instead of source
     # @return [String] result
     def Replace(s, source, target)
-      return nil if s == nil
+      return nil if s.nil?
 
-      if source == nil || source == ""
+      if source.nil? || source == ""
         Builtins.y2warning("invalid parameter source: %1", source)
         return s
       end
 
-      if target == nil
+      if target.nil?
         Builtins.y2warning("invalid parameter target: %1", target)
         return s
       end
@@ -1128,14 +1128,14 @@ module Yast
               ),
               Ops.add(" \n", split_string)
             )
-            if split_at != nil
+            if !split_at.nil?
               split_at = Ops.add(split_at, 1)
             else
               split_at = Builtins.findlastof(
                 Builtins.substring(word, 0, width),
                 Ops.add(" \n", split_string)
               )
-              if split_at != nil
+              if !split_at.nil?
                 split_at = Ops.add(split_at, 1)
               else
                 split_at = Ops.subtract(avail, Builtins.size(wsep))
@@ -1290,14 +1290,14 @@ module Yast
     # @return string a mount point from the input list or "/" if not found
     def FindMountPoint(dir, dirs)
       dirs = deep_copy(dirs)
-      while dir != nil && dir != "" && !Builtins.contains(dirs, dir)
+      while !dir.nil? && dir != "" && !Builtins.contains(dirs, dir)
         # strip the last path component and try it again
         comps = Builtins.splitstring(dir, "/")
         comps = Builtins.remove(comps, Ops.subtract(Builtins.size(comps), 1))
         dir = Builtins.mergestring(comps, "/")
       end
 
-      dir = "/" if dir == nil || dir == ""
+      dir = "/" if dir.nil? || dir == ""
 
       dir
     end

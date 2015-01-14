@@ -103,7 +103,7 @@ module Yast
     # that she did using YaST, logs it using {#Note}
     def CommitPopup
       i = uiInput(_("Enter a log message that describes the changes you made."))
-      msg = i == nil ? "*empty log message*" : i
+      msg = i.nil? ? "*empty log message*" : i
       Note(msg)
 
       nil

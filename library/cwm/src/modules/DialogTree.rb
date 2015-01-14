@@ -229,7 +229,7 @@ module Yast
       initial_screen = Ops.get_string(settings, "initial_screen", "")
       functions = Ops.get_map(settings, "functions", {})
 
-      initial_screen = "" if initial_screen == nil
+      initial_screen = "" if initial_screen.nil?
       Builtins.foreach(screens) do |k, _v|
         initial_screen = k if initial_screen == ""
       end if initial_screen == ""
@@ -246,7 +246,7 @@ module Yast
       )
 
       ret = nil
-      while ret == nil
+      while ret.nil?
         CWM.SetValidationFailedHandler(
           fun_ref(method(:RestoreSelectedDialog), "void ()")
         )
@@ -261,8 +261,8 @@ module Yast
           to:   "symbol (string)"
         )
         tab_init = nil
-        tab_init = toEval.call(@selected_screen) if toEval != nil
-        if tab_init == nil # everything OK
+        tab_init = toEval.call(@selected_screen) if !toEval.nil?
+        if tab_init.nil? # everything OK
           w = DrawScreen(
             Ops.get(screens, @selected_screen, {}),
             widget_descr,
@@ -315,7 +315,7 @@ module Yast
         to:   "list <map> ()"
       )
 
-      if tree_handler != nil
+      if !tree_handler.nil?
         ShowTree(tree_handler)
       else
         ShowFlat(ids_order, screens)

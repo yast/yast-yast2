@@ -66,7 +66,7 @@ module Yast
     end
 
     def haveFancyUI
-      if @have_fancy_ui_cache == nil
+      if @have_fancy_ui_cache.nil?
         ui_info = UI.GetDisplayInfo
 
         @have_fancy_ui_cache = UI.HasSpecialWidget(:Wizard) == true &&
@@ -645,11 +645,11 @@ module Yast
     def OpenCustomDialog(help_space_contents, button_box)
       help_space_contents = deep_copy(help_space_contents)
       button_box = deep_copy(button_box)
-      button_box = BackAbortNextButtonBox() if button_box == nil
+      button_box = BackAbortNextButtonBox() if button_box.nil?
 
       UI.OpenDialog(Opt(:wizardDialog), GenericDialog(button_box))
 
-      if help_space_contents != nil
+      if !help_space_contents.nil?
         UI.ReplaceWidget(Id(:helpSpace), help_space_contents)
       end
 
@@ -1476,7 +1476,7 @@ module Yast
     # and a y2error logged.
     def RestoreScreenShotName
       @screenshot_name = Ops.get(@screenshot_name_stack, 0)
-      if @screenshot_name == nil
+      if @screenshot_name.nil?
         @screenshot_name = "yast2"
         Builtins.y2error(1, "No screenshot name to restore!")
       else

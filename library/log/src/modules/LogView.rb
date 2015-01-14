@@ -169,10 +169,10 @@ module Yast
     def CreateHelp(logs, parameters)
       parameters = deep_copy(parameters)
       help = Ops.get_string(parameters, "help", "")
-      return help if help != "" && help != nil
+      return help if help != "" && !help.nil?
 
       adv_button = Ops.get_string(parameters, "mb_label", "")
-      if adv_button == "" || adv_button == nil
+      if adv_button == "" || adv_button.nil?
         # menu button
         adv_button = _("Ad&vanced")
       end
@@ -182,10 +182,10 @@ module Yast
       end
 
       save = Ops.get_boolean(parameters, "save", false)
-      save = false if save == nil
+      save = false if save.nil?
 
       actions_lst = Ops.get_list(parameters, "actions", [])
-      actions_lst = [] if actions_lst == nil
+      actions_lst = [] if actions_lst.nil?
       actions = Builtins.size(actions_lst)
 
       actions = Ops.add(actions, 1) if save
@@ -268,13 +268,13 @@ module Yast
 
       if Ops.greater_than(Builtins.size(menubutton), 1)
         menubutton = Builtins.filter(menubutton) do |m|
-          Ops.is_list?(m) && Ops.get(Convert.to_list(m), 0) != nil
+          m.is_a?(Array) && m.first
         end
         menubutton = Builtins.maplist(menubutton) do |m|
           ml = Convert.to_list(m)
           Item(Id(Ops.get(ml, 0)), Ops.get_string(ml, 1, ""))
         end
-        mb_label = _("Ad&vanced") if mb_label == "" || mb_label == nil
+        mb_label = _("Ad&vanced") if mb_label == "" || mb_label.nil?
         return MenuButton(Id(:_cwm_log_menu), mb_label, menubutton)
       elsif Builtins.size(menubutton) == 1
         return PushButton(
@@ -389,7 +389,7 @@ module Yast
           "*.log",
           _("Save Log as...")
         )
-        if filename != nil
+        if !filename.nil?
           SCR.Write(
             path(".target.string"),
             filename,
@@ -397,14 +397,14 @@ module Yast
           )
         end
       # other operation specified by user
-      elsif ret != nil && Ops.is_integer?(ret)
+      elsif !ret.nil? && Ops.is_integer?(ret)
         iret = Convert.to_integer(ret)
         func = Convert.convert(
           Ops.get(@mb_actions, [iret, 1]),
           from: "any",
           to:   "void ()"
         )
-        func.call if func != nil
+        func.call if !func.nil?
         if Ops.get(@mb_actions, [iret, 2]) == true
           KillBackgroundProcess(nil)
           UI.ChangeWidget(Id(:_cwm_log), :Value, "")

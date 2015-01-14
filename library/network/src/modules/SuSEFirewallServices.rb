@@ -414,7 +414,7 @@ module Yast
               Builtins.add(path(".firewall_service_definition"), known_feature)
             )
           )
-          definition = "" if definition == nil
+          definition = "" if definition.nil?
           # map of services contains list of entries
           definition_values = Builtins.splitstring(definition, " \t\n")
           definition_values = Builtins.filter(definition_values) do |one_value|
@@ -640,7 +640,7 @@ module Yast
 
       # create the filename from service name
       filename = GetFilenameFromServiceDefinedByPackage(service)
-      if filename == nil || filename == ""
+      if filename.nil? || filename == ""
         log.error "Can't operate with filename '#{filename}' created from '#{service}'"
         return false
       end
@@ -676,13 +676,13 @@ module Yast
         next if READ_ONLY_SERVICE_FEATURES.include? ycp_id
 
         sysconfig_id = Ops.get(ks_features_backward, ycp_id)
-        if sysconfig_id == nil
+        if sysconfig_id.nil?
           log.error "Unknown key '#{ycp_id}'"
           write_ok = false
           next
         end
         one_def = Builtins.filter(one_def) do |one_def_item|
-          one_def_item != nil && one_def_item != "" &&
+          !one_def_item.nil? && one_def_item != "" &&
             !Builtins.regexpmatch(one_def_item, "^ *$")
         end
         service_entry_path = Path.new(".firewall_service_definition.#{sysconfig_id}")

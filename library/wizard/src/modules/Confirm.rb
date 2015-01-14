@@ -65,12 +65,12 @@ module Yast
 
       return true if Arch.s390
 
-      icon_name = "yast-hardware" if icon_name == nil
+      icon_name = "yast-hardware" if icon_name.nil?
 
       icon = Icon.Image(icon_name, {})
 
       result = Ops.get(@detection_cache, class_)
-      if result != nil
+      if !result.nil?
         Builtins.y2milestone(
           "Detection cached result: %1 -> %2",
           class_,

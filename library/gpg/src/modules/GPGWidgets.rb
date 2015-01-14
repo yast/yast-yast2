@@ -100,7 +100,7 @@ module Yast
       if key == "select_private_key"
         UI.ChangeWidget(Id(:gpg_priv_table), :Items, GPGItems(true))
 
-        if @_selected_id_private_key != nil
+        if !@_selected_id_private_key.nil?
           UI.ChangeWidget(
             Id(:gpg_priv_table),
             :CurrentItem,
@@ -120,7 +120,7 @@ module Yast
       if key == "select_public_key"
         UI.ChangeWidget(Id(:gpg_public_table), :Items, GPGItems(false))
 
-        if @_selected_id_public_key != nil
+        if !@_selected_id_public_key.nil?
           UI.ChangeWidget(
             Id(:gpg_public_table),
             :CurrentItem,

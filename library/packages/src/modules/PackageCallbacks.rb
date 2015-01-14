@@ -157,7 +157,7 @@ module Yast
         Builtins.y2milestone("Reading config file %1", @conf_file)
         read_conf = Convert.to_map(SCR.Read(path(".target.ycp"), @conf_file))
 
-        @config = read_conf != nil ? read_conf : {}
+        @config = !read_conf.nil? ? read_conf : {}
         Builtins.y2milestone("Current config: %1", @config)
       else
         Builtins.y2milestone(
@@ -166,20 +166,20 @@ module Yast
         )
       end
 
-      @config = {} if @config == nil
+      @config = {} if @config.nil?
 
       nil
     end
 
     def GetConfig(key)
-      LoadConfig() if @config == nil
+      LoadConfig() if @config.nil?
 
       Ops.get(@config, key)
     end
 
     def SetConfig(key, value)
       value = deep_copy(value)
-      LoadConfig() if @config == nil
+      LoadConfig() if @config.nil?
 
       Builtins.y2milestone("Config: setting %1 to %2", key, value)
       Ops.set(@config, key, value)
@@ -691,7 +691,7 @@ module Yast
         dev = Ops.get_string(cd, "dev_name", "")
         model = Ops.get_string(cd, "model", "")
         deflt = preferred == dev
-        if dev != nil && dev != "" && model != nil
+        if !dev.nil? && dev != "" && !model.nil?
           ret = Builtins.add(
             ret,
             Item(
@@ -703,7 +703,7 @@ module Yast
             )
           )
         end
-      end if cds != nil
+      end if !cds.nil?
 
       Builtins.y2milestone("Detected CD devices: %1", ret)
 
@@ -715,7 +715,7 @@ module Yast
       autoeject = Convert.to_boolean(UI.QueryWidget(Id(:auto_eject), :Value))
 
       current = Convert.to_boolean(GetConfig("automatic_eject"))
-      current = false if current == nil
+      current = false if current.nil?
 
       if autoeject != current
         SetConfig("automatic_eject", autoeject)
@@ -900,7 +900,7 @@ module Yast
         end
 
         auto_eject = Convert.to_boolean(GetConfig("automatic_eject"))
-        auto_eject = false if auto_eject == nil
+        auto_eject = false if auto_eject.nil?
 
         button_box = VBox(
           Left(
@@ -1137,7 +1137,7 @@ module Yast
             d == eject_device
           end
 
-          if found != nil
+          if !found.nil?
             Builtins.y2milestone("Device %1 has index %2", eject_device, dindex)
             return Ops.add("E", Builtins.tostring(dindex))
           else
@@ -1768,17 +1768,17 @@ module Yast
     end
 
     def FormatPatchName(patch_name, patch_version, patch_arch)
-      patch_full_name = patch_name != nil && patch_name != "" ? patch_name : ""
+      patch_full_name = !patch_name.nil? && patch_name != "" ? patch_name : ""
 
       if patch_full_name != ""
-        if patch_version != nil && patch_version != ""
+        if !patch_version.nil? && patch_version != ""
           patch_full_name = Ops.add(
             Ops.add(patch_full_name, "-"),
             patch_version
           )
         end
 
-        if patch_arch != nil && patch_arch != ""
+        if !patch_arch.nil? && patch_arch != ""
           patch_full_name = Ops.add(Ops.add(patch_full_name, "."), patch_arch)
         end
       end
@@ -1857,7 +1857,7 @@ module Yast
           Builtins.y2debug("-ping-")
         end
 
-        if output != nil && output != ""
+        if !output.nil? && output != ""
           # add the output to the log widget
           UI.ChangeWidget(Id(:log), :Value, output)
         end

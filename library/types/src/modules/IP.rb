@@ -59,7 +59,7 @@ module Yast
     # @param [String] ip IPv4 address
     # @return true if correct
     def Check4(ip)
-      return false if ip == nil
+      return false if ip.nil?
 
       !Resolv::IPv4::Regex.match(ip).nil?
     end
@@ -79,7 +79,7 @@ module Yast
     # @param [String] ip IPv6 address
     # @return true if correct
     def Check6(ip)
-      return false if ip == nil
+      return false if ip.nil?
 
       res = !Resolv::IPv6::Regex.match(ip).nil?
 
@@ -249,7 +249,7 @@ module Yast
     end
 
     def CheckNetworkShared(network)
-      if network == nil || network == ""
+      if network.nil? || network == ""
         return false 
 
         # all networks
@@ -271,7 +271,7 @@ module Yast
     #   CheckNetwork("172.55.0.0/33") -> false
     def CheckNetwork4(network)
       generic_check = CheckNetworkShared(network)
-      if generic_check != nil
+      if !generic_check.nil?
         return generic_check 
 
         # 192.168.0.1, 0.8.55.999
@@ -314,7 +314,7 @@ module Yast
     #   CheckNetwork("::1/257") -> false
     def CheckNetwork6(network)
       generic_check = CheckNetworkShared(network)
-      if generic_check != nil
+      if !generic_check.nil?
         return generic_check 
 
         # 2001:db8:0::1

@@ -53,13 +53,13 @@ module Yast
 
       which = Builtins.find(packages) do |p|
         avail = Available(p)
-        error = true if avail == nil
+        error = true if avail.nil?
         !avail
       end
 
       return nil if error
 
-      which == nil
+      which.nil?
     end
 
     # Is any of these packages available?
@@ -71,13 +71,13 @@ module Yast
 
       which = Builtins.find(packages) do |p|
         avail = Available(p)
-        error = true if avail == nil
+        error = true if avail.nil?
         avail
       end
 
       return nil if error
 
-      which != nil
+      !which.nil?
     end
 
     # Are all of these packages installed?
@@ -86,7 +86,7 @@ module Yast
     def InstalledAll(packages)
       packages = deep_copy(packages)
       which = Builtins.find(packages) { |p| !Installed(p) }
-      which == nil
+      which.nil?
     end
 
     # Is any of these packages installed?
@@ -95,7 +95,7 @@ module Yast
     def InstalledAny(packages)
       packages = deep_copy(packages)
       which = Builtins.find(packages) { |p| Installed(p) }
-      which != nil
+      !which.nil?
     end
 
     def AskPackages(packs, install)
@@ -140,7 +140,7 @@ module Yast
         text = Ops.add(text, Builtins.sformat("%1<br>", p))
       end
 
-      if message != nil
+      if !message.nil?
         text = Builtins.sformat(message, Builtins.mergestring(packs, ", "))
       end
 

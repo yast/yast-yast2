@@ -76,7 +76,7 @@ module Yast
     # Is the SVN history in use?
     # @return [Boolean] true to log to SVN
     def UseSvn
-      if @use_svn == nil
+      if @use_svn.nil?
         @use_svn = Convert.to_string(
           SCR.Read(path(".sysconfig.yast2.STORE_CONFIG_IN_SUBVERSION"))
         ) == "yes"
@@ -86,7 +86,7 @@ module Yast
     end
 
     def Recursive
-      if @store_whole_subtree == nil
+      if @store_whole_subtree.nil?
         @store_whole_subtree = Convert.to_string(
           SCR.Read(path(".sysconfig.yast2.SUBVERSION_ADD_DIRS_RECURSIVE"))
         ) == "yes"

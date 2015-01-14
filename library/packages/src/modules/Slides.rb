@@ -68,7 +68,7 @@ module Yast
         )
       end
 
-      if slide_list == nil
+      if slide_list.nil?
         Builtins.y2error("Directory %1 does not exist", txt_path)
         if Ops.greater_than(Builtins.size(lang), 2)
           lang = Builtins.substring(lang, 0, 2)
@@ -84,7 +84,7 @@ module Yast
         end
       end
 
-      if slide_list == nil
+      if slide_list.nil?
         Builtins.y2milestone("Slideshow directory %1 does not exist", txt_path)
       else
         Builtins.y2milestone(
@@ -104,7 +104,7 @@ module Yast
         )
       end
 
-      if slide_list != nil && Ops.greater_than(Builtins.size(slide_list), 0) # Slide texts found
+      if !slide_list.nil? && Ops.greater_than(Builtins.size(slide_list), 0) # Slide texts found
         @slide_txt_path = txt_path
         @slide_pic_path = Ops.add(@slide_base_path, "/pic")
 
@@ -137,7 +137,7 @@ module Yast
     def HaveSlideSupport
       disp = UI.GetDisplayInfo
 
-      if disp != nil && # This shouldn't happen, but who knows?
+      if !disp.nil? && # This shouldn't happen, but who knows?
           Ops.get_boolean(disp, "HasImageSupport", false) &&
           Ops.greater_or_equal(Ops.get_integer(disp, "DefaultWidth", -1), 800) &&
           Ops.greater_or_equal(Ops.get_integer(disp, "DefaultHeight", -1), 600) &&
@@ -179,7 +179,7 @@ module Yast
           "(.*)&imagedir;(.*)",
           Builtins.sformat("\\1%1\\2", @slide_pic_path)
         )
-        break if replaced == nil
+        break if replaced.nil?
         text = replaced
       end
 

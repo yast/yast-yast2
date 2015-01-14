@@ -169,7 +169,7 @@ module Yast
     def AnalyzeTSIGKeyFile(filename)
       filename = NormalizeFilename(filename)
       contents = Convert.to_string(SCR.Read(path(".target.string"), filename))
-      if contents == nil
+      if contents.nil?
         Builtins.y2warning("Unable to read file with TSIG keys: %1", filename)
         return []
       end
@@ -285,7 +285,7 @@ module Yast
           UI.QueryWidget(Id("_cwm_key_listing_table"), :CurrentItem)
         )
         delete_filename = Key2File(key2)
-        if Ops.get(widget, "list_used_keys") != nil &&
+        if Ops.get(widget, "list_used_keys") &&
             Ops.is(Ops.get(widget, "list_used_keys"), "list <string> ()")
           lister = Convert.convert(
             Ops.get(widget, "list_used_keys"),
@@ -317,7 +317,7 @@ module Yast
           # popup headline
           _("Select File with the Authentication Key")
         )
-        if existing_filename != nil
+        if !existing_filename.nil?
           UI.ChangeWidget(
             Id("_cwm_existing_key_file"),
             :Value,
@@ -332,7 +332,7 @@ module Yast
           # popup headline
           _("Select File for the Authentication Key")
         )
-        if new_filename != nil
+        if !new_filename.nil?
           UI.ChangeWidget(Id("_cwm_new_key_file"), :Value, new_filename)
         end
         return nil
@@ -362,7 +362,7 @@ module Yast
             RemoveTSIGKeyFile(new_filename)
           end
         end
-        if key2 == nil || key2 == ""
+        if key2.nil? || key2 == ""
           UI.SetFocus(Id("_cwm_new_key_id"))
           # error report
           Popup.Error(_("The TSIG key ID was not specified."))

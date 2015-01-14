@@ -63,11 +63,11 @@ module Yast
     # @return sysconfig file contents
     def ReadConfig(config)
       Builtins.y2debug("config=%1", config)
-      return {} if config == nil
+      return {} if config.nil?
       ret = {}
 
       vars = SCR.Dir(config)
-      vars = [] if vars == nil
+      vars = [] if vars.nil?
       Builtins.maplist(vars) do |var|
         varpath = Builtins.add(config, var)
         comment = Convert.to_string(SCR.Read(Builtins.add(varpath, "comment")))
@@ -83,7 +83,7 @@ module Yast
         end
         val = Convert.to_string(SCR.Read(varpath))
         Builtins.y2debug("%1[%2]=%3", var, comment, val)
-        if val != nil
+        if !val.nil?
           if comment == "yesno" || val == "yes" || val == "no"
             Ops.set(ret, var, val == "yes")
           elsif comment == "integer"
@@ -93,7 +93,7 @@ module Yast
           end
         end
       end
-      ret = {} if ret == nil
+      ret = {} if ret.nil?
       Builtins.y2debug("ret=%1", ret)
       deep_copy(ret)
     end
@@ -107,7 +107,7 @@ module Yast
       Builtins.y2debug("config=%1", config)
       Builtins.y2debug("data=%1", data)
 
-      return false if config == nil || data == nil
+      return false if config.nil? || data.nil?
 
       changed = false
       Builtins.maplist(
@@ -120,7 +120,7 @@ module Yast
         else
           newval = Builtins.sformat("%1", val)
         end
-        if oldval == nil || oldval != newval
+        if oldval.nil? || oldval != newval
           SCR.Write(Builtins.add(config, var), newval)
           changed = true
         end

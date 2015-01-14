@@ -256,7 +256,7 @@ module Yast
     # Returns whether records in variable should be written one record on one line.
     # @return [Boolean] if wolpr
     def WriteOneRecordPerLine(key_name)
-      return true if key_name == nil && key_name == ""
+      return true if key_name.nil? && key_name == ""
 
       Builtins.contains(@one_line_per_record, key_name)
     end
@@ -370,13 +370,13 @@ module Yast
           SCR.Read(Builtins.add(path(".sysconfig.SuSEfirewall2"), variable))
         )
         # if value is undefined, get default value
-        value = GetDefaultValue(variable) if value == nil || value == ""
+        value = GetDefaultValue(variable) if value.nil? || value == ""
         # BNC #426000
         # backslash at the end
         if Builtins.regexpmatch(value, "[ \t]*\\\\[ \t]*\n")
           rules = Builtins.splitstring(value, "\\ \t\n")
           rules = Builtins.filter(rules) do |one_rule|
-            one_rule != nil && one_rule != ""
+            !one_rule.nil? && one_rule != ""
           end
           value = Builtins.mergestring(rules, " ")
         end
@@ -798,7 +798,7 @@ module Yast
             next
           end
           remove_these_ports = PortAliases.GetListOfServiceAliases(remove_port)
-          remove_these_ports = [remove_port] if remove_these_ports == nil
+          remove_these_ports = [remove_port] if remove_these_ports.nil?
           remove_ports_with_aliases = Convert.convert(
             Builtins.union(remove_ports_with_aliases, remove_these_ports),
             from: "list",
@@ -915,7 +915,7 @@ module Yast
     def RemoveServiceDefinedByPackageFromZone(service, zone)
       return nil if !IsKnownZone(zone)
 
-      if service == nil
+      if service.nil?
         Builtins.y2error("Service Id can't be nil!")
         return nil
       elsif Builtins.regexpmatch(service, "^service:.*")
@@ -953,7 +953,7 @@ module Yast
     def AddServiceDefinedByPackageIntoZone(service, zone)
       return nil if !IsKnownZone(zone)
 
-      if service == nil
+      if service.nil?
         Builtins.y2error("Service Id can't be nil!")
         return nil
       elsif Builtins.regexpmatch(service, "^service:.*")
@@ -989,7 +989,7 @@ module Yast
     def RemoveServiceSupportFromZone(service, zone)
       needed = SuSEFirewallServices.GetNeededPortsAndProtocols(service)
       # unknown service
-      if needed == nil
+      if needed.nil?
         Builtins.y2error("Undefined service '%1'", service)
         return nil
       end
@@ -1035,7 +1035,7 @@ module Yast
     def AddServiceSupportIntoZone(service, zone)
       needed = SuSEFirewallServices.GetNeededPortsAndProtocols(service)
       # unknown service
-      if needed == nil
+      if needed.nil?
         Builtins.y2error("Undefined service '%1'", service)
         return nil
       end
@@ -1081,7 +1081,7 @@ module Yast
     #
     # @param [Boolean] new_status, 'true' if packages should be offered for installation
     def SetInstallPackagesIfMissing(new_status)
-      if new_status == nil
+      if new_status.nil?
         Builtins.y2error("Wrong value: %1", new_status)
         return
       end
@@ -1528,7 +1528,7 @@ module Yast
 
       Builtins.foreach(interfaces) do |interface|
         zone = GetZoneOfInterface(interface)
-        zones = Builtins.add(zones, zone) if zone != nil
+        zones = Builtins.add(zones, zone) if !zone.nil?
       end
 
       Builtins.toset(zones)
@@ -1560,7 +1560,7 @@ module Yast
           # interface is explicitely mentioned in some zone
           zone = GetZoneOfInterface(interface)
         end
-        zones = Builtins.add(zones, zone) if zone != nil
+        zones = Builtins.add(zones, zone) if !zone.nil?
       end
 
       Builtins.toset(zones)
@@ -1579,11 +1579,11 @@ module Yast
 
       # All dial-up interfaces
       dialup_interfaces = NetworkInterfaces.List("dialup")
-      dialup_interfaces = [] if dialup_interfaces == nil
+      dialup_interfaces = [] if dialup_interfaces.nil?
 
       # bugzilla #303858 - wrong values from NetworkInterfaces
       dialup_interfaces = Builtins.filter(dialup_interfaces) do |one_iface|
-        if one_iface == nil || one_iface == ""
+        if one_iface.nil? || one_iface == ""
           Builtins.y2error("Wrong interface definition '%1'", one_iface)
           next false
         end
@@ -1597,11 +1597,11 @@ module Yast
 
       # All non-dial-up interfaces
       non_dialup_interfaces = NetworkInterfaces.List("")
-      non_dialup_interfaces = [] if non_dialup_interfaces == nil
+      non_dialup_interfaces = [] if non_dialup_interfaces.nil?
 
       # bugzilla #303858 - wrong values from NetworkInterfaces
       non_dialup_interfaces = Builtins.filter(non_dialup_interfaces) do |one_iface|
-        if one_iface == nil || one_iface == ""
+        if one_iface.nil? || one_iface == ""
           Builtins.y2error("Wrong interface definition '%1'", one_iface)
           next false
         end
@@ -1744,7 +1744,7 @@ module Yast
 
       DecreaseVerbosity()
       # removing all appearances of interface in zones, excepting current_zone==new_zone
-      while current_zone != nil && current_zone != zone
+      while !current_zone.nil? && current_zone != zone
         # interface is in any zone already, removing it at first
         RemoveInterfaceFromZone(interface, current_zone) if current_zone != zone
         current_zone = GetZoneOfInterface(interface)
@@ -1893,7 +1893,7 @@ module Yast
         # interface is the interface name
       else
         interface = GetZoneOfInterface(interface)
-        zones = Builtins.add(zones, interface) if interface != nil
+        zones = Builtins.add(zones, interface) if !interface.nil?
       end
 
       # SuSEFirewall feature FW_PROTECT_FROM_INT
@@ -1958,7 +1958,7 @@ module Yast
           # interface is probably interface-name, checking for respective zone
           interface = GetZoneOfInterface(interface)
           # interface is not assigned to any zone
-          if interface == nil
+          if interface.nil?
             # TRANSLATORS: Error message, %1 = interface name (like eth0)
             Report.Error(
               Builtins.sformat(
@@ -2034,7 +2034,7 @@ module Yast
           # interface is probably interface-name, checking for respective zone
           interface = GetZoneOfInterface(interface)
           # interface is not assigned to any zone
-          if interface == nil
+          if interface.nil?
             # TRANSLATORS: Error message, %1 = interface name (like eth0)
             Report.Error(
               Builtins.sformat(
@@ -2126,7 +2126,7 @@ module Yast
     def IsServiceDefinedByPackageSupportedInZone(service, zone)
       return nil if !IsKnownZone(zone)
 
-      if service == nil
+      if service.nil?
         Builtins.y2error("Service Id can't be nil!")
         return nil
       elsif Builtins.regexpmatch(service, "^service:.*")
@@ -2250,7 +2250,7 @@ module Yast
         # zone of interface
         zone_used = GetZoneOfInterface(interface)
         # interface can be unassigned
-        next if zone_used == nil || zone_used == ""
+        next if zone_used.nil? || zone_used == ""
         Ops.set(
           interface_in_zone,
           zone_used,
@@ -2551,7 +2551,7 @@ module Yast
           GetDefaultValue(fw_rule)
         end
         # easy case
-        next if listed_services == nil || listed_services == ""
+        next if listed_services.nil? || listed_services == ""
         # something listed but it still might be empty definition
         services_list = Builtins.splitstring(listed_services, " \n\t")
         services_list = Builtins.filter(services_list) do |service|
@@ -3421,7 +3421,7 @@ module Yast
     def SetFirewallKernelModules(k_modules)
       k_modules = deep_copy(k_modules)
       k_modules = Builtins.filter(k_modules) do |one_module|
-        if one_module == nil
+        if one_module.nil?
           Builtins.y2error(
             "List of modules %1 contains 'nil'! It will be ignored.",
             k_modules
@@ -3464,7 +3464,7 @@ module Yast
 
       if protocol == ""
         return ""
-      elsif Ops.get(@protocol_translations, protocol) == nil
+      elsif Ops.get(@protocol_translations, protocol).nil?
         Builtins.y2error("Unknown protocol: %1", protocol)
         # table item, %1 stands for the buggy protocol name
         return Builtins.sformat(_("Unknown protocol (%1)"), protocol)
@@ -3518,7 +3518,7 @@ module Yast
         return
       end
 
-      ruleset = Builtins.filter(ruleset) { |one_rule| one_rule != nil }
+      ruleset = Builtins.filter(ruleset) { |one_rule| !one_rule.nil? }
 
       SetModified()
 

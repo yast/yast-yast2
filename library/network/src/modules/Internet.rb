@@ -86,7 +86,7 @@ module Yast
     # Calls ip
     # @return eg. ["eth0", "eth1"]
     def GetDevices
-      if @devices == nil
+      if @devices.nil?
         command = "ip -oneline link list | sed -e 's/^[0-9]*: \\([^:]*\\).*/\\1/' | grep -v 'lo\\|sit0'"
         out = Convert.to_map(SCR.Execute(path(".target.bash_output"), command))
         @devices = Builtins.filter(

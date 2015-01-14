@@ -73,7 +73,7 @@ module Yast
     # @param [Fixnum] new_max_size
     # @see #GetMaximumCacheSize()
     def SetMaximumCacheSize(new_max_size)
-      if new_max_size != nil
+      if !new_max_size.nil?
         @maximum_cache_size = new_max_size
       else
         Builtins.y2error("Cannot set MaximumCacheSize to nil!")
@@ -88,7 +88,7 @@ module Yast
     # @param [String] encoded
     def CreateNewCacheRecord(decoded, encoded)
       # Erroneous cache record
-      return if decoded == nil || encoded == nil
+      return if decoded.nil? || encoded.nil?
 
       # Already cached
       return if Builtins.contains(@cache_decoded, decoded)
@@ -172,7 +172,7 @@ module Yast
     # Returns the current temporary directory.
     # Lazy loading for the initialization is used.
     def GetTmpDirectory
-      if @tmp_dir == nil
+      if @tmp_dir.nil?
         @tmp_dir = Convert.to_string(SCR.Read(path(".target.tmpdir")))
       end
 
@@ -204,7 +204,7 @@ module Yast
             string_out = GetDecodedCachedString(string_in)
           end
         end
-        if string_out == nil
+        if string_out.nil?
           current_index = Ops.add(current_index, 1)
           Ops.set(not_cached, current_index, string_in)
         end
@@ -237,7 +237,7 @@ module Yast
             to:   "list <string>"
           )
           # Parsing the YCP file failed
-          if converted_not_cached == nil
+          if converted_not_cached.nil?
             Builtins.y2error(
               "Erroneous YCP file: %1",
               SCR.Read(path(".target.string"), tmp_out)
@@ -252,7 +252,7 @@ module Yast
       Builtins.foreach(strings_in) do |string_in|
         current_index = Ops.add(current_index, 1)
         # Already cached string
-        if Ops.get(test_cached, string_in) != nil
+        if !Ops.get(test_cached, string_in).nil?
           Ops.set(
             strings_out,
             current_index,
@@ -385,7 +385,7 @@ module Yast
         current = Ops.get(backward_map_of_conversion, [current_domain_index, 0])
         end_ = Ops.get(backward_map_of_conversion, [current_domain_index, 1])
         # error?
-        if current == nil || end_ == nil
+        if current.nil? || end_.nil?
           Builtins.y2error(
             "Cannot find start/end for %1 in %2",
             one_encoded,

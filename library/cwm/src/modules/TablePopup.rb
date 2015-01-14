@@ -62,7 +62,7 @@ module Yast
         from: "any",
         to:   "list (map)"
       )
-      return toEval.call(descr) if toEval != nil
+      return toEval.call(descr) if !toEval.nil?
       []
     end
 
@@ -81,7 +81,7 @@ module Yast
       ret = true
       Builtins.foreach(attr) do |k, v|
         type = Ops.get(types, k)
-        if type == nil
+        if type.nil?
           Builtins.y2error("Unknown attribute %1", k)
           ret = false
         else
@@ -185,7 +185,7 @@ module Yast
     def id2key(descr, opt_id)
       descr = deep_copy(descr)
       opt_id = deep_copy(opt_id)
-      if opt_id != nil && Ops.is_string?(opt_id) &&
+      if !opt_id.nil? && Ops.is_string?(opt_id) &&
           Ops.greater_or_equal(Builtins.size(Convert.to_string(opt_id)), 7) &&
           Builtins.substring(Convert.to_string(opt_id), 0, 7) == "____sep"
         return "____sep"
@@ -195,7 +195,7 @@ module Yast
         from: "any",
         to:   "string (map, any)"
       )
-      if toEval != nil
+      if !toEval.nil?
         return toEval.call(descr, opt_id)
       else
         return Convert.to_string(opt_id)
@@ -224,7 +224,7 @@ module Yast
         "popup",
         Builtins.add(Ops.get_map(opt_descr, "popup", {}), "_cwm_key", opt_key)
       )
-      if Ops.get(opt_descr, ["popup", "label"]) == nil
+      if Ops.get(opt_descr, ["popup", "label"]).nil?
         Ops.set(
           opt_descr,
           ["popup", "label"],
@@ -312,7 +312,7 @@ module Yast
         from: "any",
         to:   "string (any, string)"
       )
-      return toEval.call(opt_id, opt_key) if toEval != nil
+      return toEval.call(opt_id, opt_key) if !toEval.nil?
       ""
     end
 
@@ -329,7 +329,7 @@ module Yast
         from: "any",
         to:   "boolean (any, string)"
       )
-      return toEval.call(opt_id, opt_key) if toEval != nil
+      return toEval.call(opt_id, opt_key) if !toEval.nil?
       false
     end
 
@@ -414,7 +414,7 @@ module Yast
     def TableRedraw(descr, update_buttons)
       descr = deep_copy(descr)
       id_list = getIdList(descr)
-      if @previous_selected_item == nil
+      if @previous_selected_item.nil?
         @previous_selected_item = Ops.get(id_list, 0)
       end
       entries = Builtins.maplist(id_list) do |opt_id|
@@ -540,7 +540,7 @@ module Yast
       popup_descr = CWM.prepareWidget(Ops.get_map(option, "popup", {}))
       widget = Ops.get_term(popup_descr, "widget", VBox())
       help = Ops.get_string(popup_descr, "help", "")
-      help = "" if help == nil
+      help = "" if help.nil?
       contents = HBox(
         HSpacing(1),
         VBox(
@@ -564,7 +564,7 @@ module Yast
       )
       UI.OpenDialog(contents)
       begin
-        if Ops.get(popup_descr, "init") != nil
+        if Ops.get(popup_descr, "init")
           toEval = Convert.convert(
             Ops.get(popup_descr, "init"),
             from: "any",
@@ -577,7 +577,7 @@ module Yast
           event_descr2 = UI.WaitForEvent
           event_descr2 = { "ID" => :_tp_ok } if Mode.test
           ret = Ops.get(event_descr2, "ID")
-          if Ops.get(popup_descr, "handle") != nil
+          if Ops.get(popup_descr, "handle")
             toEval = Convert.convert(
               Ops.get(popup_descr, "handle"),
               from: "any",
@@ -595,14 +595,14 @@ module Yast
               from: "any",
               to:   "boolean (any, string, map)"
             )
-            if toEval != nil
+            if !toEval.nil?
               ret = nil if !toEval.call(opt_id, opt_key, event_descr2)
             end
           elsif !CWM.validateWidget(popup_descr, event_descr2, opt_key)
             ret = nil
           end
         end
-        if ret == :_tp_ok && Ops.get(popup_descr, "store") != nil
+        if ret == :_tp_ok && Ops.get(popup_descr, "store")
           toEval = Convert.convert(
             Ops.get(popup_descr, "store"),
             from: "any",
@@ -713,7 +713,7 @@ module Yast
             selected = false
             until selected
               opt_key = askForNewOption(add_opts, add_unlisted, descr)
-              return nil if opt_key == nil
+              return nil if opt_key.nil?
               if Builtins.contains(present, opt_key)
                 Report.Error(
                   # error report
@@ -724,14 +724,14 @@ module Yast
               end
             end
           end
-          return nil if opt_key == nil
+          return nil if opt_key.nil?
         elsif event_id == :_tp_edit
           opt_id = UI.QueryWidget(Id(:_tp_table), :CurrentItem)
           opt_key = id2key(descr, opt_id)
         end
         option_map = key2descr(descr, opt_key)
         toEval = Ops.get(option_map, ["table", "handle"])
-        if toEval != nil
+        if !toEval.nil?
           #		if (is (toEval, symbol))
           if !Ops.is(toEval, "symbol (any, string, map)")
             ret2 = Convert.to_symbol(toEval)
@@ -789,7 +789,7 @@ module Yast
         if key2 == "____sep"
           id_list = getIdList(descr)
           previous_index = 0
-          if @previous_selected_item != nil
+          if !@previous_selected_item.nil?
             previous_index = -1
             Builtins.find(id_list) do |e|
               previous_index = Ops.add(previous_index, 1)

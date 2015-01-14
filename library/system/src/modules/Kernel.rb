@@ -119,7 +119,7 @@ module Yast
     def HidePasswords(in_)
       ret = ""
 
-      if in_ != nil
+      if !in_.nil?
         parts = Builtins.splitstring(in_, " ")
 
         first = true
@@ -253,7 +253,7 @@ module Yast
         "cmdline from install.inf is: %1",
         HidePasswords(tmp)
       )
-      if tmp != nil
+      if !tmp.nil?
         # extract extra boot parameters given in installation
         ExtractCmdlineParameters(tmp)
       end
@@ -326,7 +326,7 @@ module Yast
 
       # add Xen paravirtualized drivers to a full virtualized host
       xen = Convert.to_boolean(SCR.Read(path(".probe.is_xen")))
-      if xen == nil
+      if xen.nil?
         Builtins.y2warning("XEN detection failed, assuming XEN is NOT running")
         xen = false
       end
@@ -348,7 +348,7 @@ module Yast
         cpuflags = []
 
         # bugzilla #303842
-        if cpuflags != nil
+        if !cpuflags.nil?
           cpuflags = cpuinfo_flags.empty? ? [] : cpuinfo_flags.split(" ")
         else
           Builtins.y2error("Cannot read cpuflags")

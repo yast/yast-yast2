@@ -45,7 +45,7 @@ module Yast
     end
 
     def LazyInit
-      return if @has_image_support != nil
+      return if !@has_image_support.nil?
 
       display_info = UI.GetDisplayInfo
       @has_image_support = Ops.get_boolean(
@@ -82,7 +82,7 @@ module Yast
 
       icon_path = nil
 
-      if Ops.get(@icons_map, icon_type) != nil
+      if Ops.get(@icons_map, icon_type)
         icon_path = Ops.add(
           @icon_32x32_path,
           Ops.get(@icons_map, icon_type, "")
@@ -133,7 +133,7 @@ module Yast
       return Empty() if !@has_image_support
 
       icon_id = Ops.get(options, "id")
-      icon_id = Builtins.sformat("icon_id_%1", icon_type) if icon_id == nil
+      icon_id = Builtins.sformat("icon_id_%1", icon_type) if icon_id.nil?
 
       icon_label = Ops.get_string(options, "label", icon_type)
 

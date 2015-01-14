@@ -54,7 +54,7 @@ module Yast
 
     def SetPackageSummary(summary)
       summary = deep_copy(summary)
-      if summary == nil
+      if summary.nil?
         Builtins.y2error("Cannot set nil package summary!")
         return
       end
@@ -74,7 +74,7 @@ module Yast
 
     def SetPackageSummaryItem(name, value)
       value = deep_copy(value)
-      if name == nil || name == ""
+      if name.nil? || name == ""
         Builtins.y2error("Invalid item name: '%1'", name)
         return
       end
@@ -163,7 +163,7 @@ module Yast
         )
         UI.OpenDialog(popup)
         ui = nil
-        while ui == nil
+        while ui.nil?
           ui = Convert.to_symbol(UI.UserInput)
           next if ui != :help
 
@@ -258,11 +258,11 @@ module Yast
       mode = Ops.get_symbol(options, "mode")
 
       # set the defaults if the option is missing or nil
-      if display_support_status == nil
+      if display_support_status.nil?
         display_support_status = ReadSupportStatus()
       end
 
-      if enable_repo_mgr == nil
+      if enable_repo_mgr.nil?
         # disable repository management by default
         enable_repo_mgr = false
       end
@@ -276,13 +276,13 @@ module Yast
 
       widget_options = Opt()
 
-      widget_options = Builtins.add(widget_options, mode) if mode != nil
+      widget_options = Builtins.add(widget_options, mode) if !mode.nil?
 
-      if enable_repo_mgr != nil && enable_repo_mgr
+      if !enable_repo_mgr.nil? && enable_repo_mgr
         widget_options = Builtins.add(widget_options, :repoMgr)
       end
 
-      if display_support_status != nil && display_support_status
+      if !display_support_status.nil? && display_support_status
         widget_options = Builtins.add(widget_options, :confirmUnsupported)
       end
 

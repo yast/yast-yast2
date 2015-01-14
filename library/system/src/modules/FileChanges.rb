@@ -77,7 +77,7 @@ module Yast
         from: "any",
         to:   "map <string, string>"
       )
-      @file_checksums = {} if @file_checksums == nil
+      @file_checksums = {} if @file_checksums.nil?
 
       nil
     end

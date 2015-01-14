@@ -90,7 +90,7 @@ module Yast
       enabled = Convert.to_boolean(
         UI.QueryWidget(Id("_cwm_open_firewall"), :Value)
       )
-      enabled = false if enabled == nil
+      enabled = false if enabled.nil?
       enabled = false if Builtins.size(@all_interfaces) == 0
 
       UI.ChangeWidget(Id("_cwm_firewall_details"), :Enabled, enabled)
@@ -149,20 +149,20 @@ module Yast
           ipaddr = NetworkInterfaces.GetValue(i, "IPADDR")
           # BNC #483455: Interface zone name
           zone = SuSEFirewall.GetZoneOfInterface(i)
-          if zone != nil && zone != ""
+          if !zone.nil? && zone != ""
             zone = SuSEFirewall.GetZoneFullName(zone)
           else
             zone = _("Interface is not assigned to any zone")
           end
-          if label == "static" || label == "" || label == nil
+          if label == "static" || label == "" || label.nil?
             label = ipaddr
           else
             label = Builtins.toupper(label)
-            if ipaddr != nil && ipaddr != ""
+            if !ipaddr.nil? && ipaddr != ""
               label = Builtins.sformat("%1/%2", label, ipaddr)
             end
           end
-          if label == nil || label == ""
+          if label.nil? || label == ""
             label = i
           else
             label = Builtins.sformat("%1 (%2 / %3)", i, label, zone)
@@ -182,7 +182,7 @@ module Yast
 
     # Update the firewall status label according to the current status
     def UpdateFirewallStatus
-      InitAllInterfacesList() if @all_interfaces == nil
+      InitAllInterfacesList() if @all_interfaces.nil?
       status = :custom
 
       # bnc #429861
@@ -230,7 +230,7 @@ module Yast
       end
 
       groups = String.NonEmpty(Builtins.toset(groups))
-      groups = Builtins.filter(groups) { |g| g != nil }
+      groups = Builtins.filter(groups) { |g| !g.nil? }
       iface_groups = Builtins.maplist(groups) do |g|
         ifaces_also_supported_by_any = SuSEFirewall.GetInterfacesInZoneSupportingAnyFeature(
           g
@@ -262,7 +262,7 @@ module Yast
       end
       Builtins.y2milestone("Ifaces touched: %1", iface_groups)
       new_ifaces = Builtins.toset(Builtins.flatten(iface_groups))
-      new_ifaces = Builtins.filter(new_ifaces) { |i| i != nil }
+      new_ifaces = Builtins.filter(new_ifaces) { |i| !i.nil? }
 
       Builtins.toset(new_ifaces)
     end
@@ -275,7 +275,7 @@ module Yast
         from: "any",
         to:   "void (map <string, any>)"
       )
-      common_details_handler.call(widget) if common_details_handler != nil
+      common_details_handler.call(widget) if !common_details_handler.nil?
 
       nil
     end
@@ -403,7 +403,7 @@ module Yast
     # @param [String] key strnig the widget key
     def InterfacesInit(_widget, _key)
       # set the list of ifaces
-      InitAllInterfacesList() if @all_interfaces == nil
+      InitAllInterfacesList() if @all_interfaces.nil?
       UI.ReplaceWidget(
         Id("_cwm_interface_list_rp"),
         MultiSelectionBox(
@@ -600,7 +600,7 @@ module Yast
       all_ok = true
       all_ifaces = SuSEFirewall.GetAllKnownInterfaces
       Builtins.foreach(SuSEFirewall.GetAllKnownInterfaces) do |one_interface|
-        if Ops.get(one_interface, "zone") == nil ||
+        if Ops.get(one_interface, "zone").nil? ||
             Ops.get(one_interface, "zone", "") == ""
           Builtins.y2warning(
             "Cannot enable service because interface %1 is not mentioned anywhere...",
@@ -884,7 +884,7 @@ module Yast
         Builtins.y2milestone("FD: %1", handle_firewall_details)
         ret = nil
         Builtins.y2milestone("RT: %1", ret)
-        if handle_firewall_details != nil
+        if !handle_firewall_details.nil?
           ret = handle_firewall_details.call
         else
           w = Builtins.filter(widget) { |k, _v| "services" == k }

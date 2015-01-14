@@ -113,7 +113,7 @@ module Yast
     #
     # @return	[Boolean] if allowed
     def IsAllowedPortName(port_name)
-      if port_name == nil
+      if port_name.nil?
         Builtins.y2error("Invalid port name: %1", port_name)
         return false 
         # port is number
@@ -241,7 +241,7 @@ module Yast
           LoadAndReturnPortToName(port_number)
         end
 
-        if sport_name != nil
+        if !sport_name.nil?
           service_aliases = Convert.convert(
             Builtins.union(
               service_aliases,
@@ -256,7 +256,7 @@ module Yast
         found_alias_port = Ops.get(@SERVICE_NAME_TO_PORT, port) do
           LoadAndReturnNameToPort(port)
         end
-        if found_alias_port != nil
+        if !found_alias_port.nil?
           service_aliases = Builtins.add(
             service_aliases,
             Builtins.tostring(found_alias_port)
@@ -317,7 +317,7 @@ module Yast
         end
 
         # not a known port
-        if port_number == nil
+        if port_number.nil?
           return nil
         else
           return Builtins.tointeger(port_number)

@@ -65,7 +65,7 @@ module Yast
 
       items = Builtins.maplist(items) do |i|
         device_name = NetworkInterfaces.GetValue(i, "NAME")
-        if device_name == nil || device_name == ""
+        if device_name.nil? || device_name == ""
           # TRANSLATORS: Informs that device name is not known
           device_name = _("Unknown device")
         end
@@ -78,7 +78,7 @@ module Yast
                   else
                     NetworkInterfaces.GetValue(i, "IPADDR")
                   end
-        if ip_addr == nil || ip_addr == ""
+        if ip_addr.nil? || ip_addr == ""
           # TRANSLATORS: table item, informing that device has no IP address
           ip_addr = _("No IP address assigned")
         end
@@ -186,7 +186,7 @@ module Yast
     # @param [String] selected	preselected a value in the list
     # @return		a hostname or nil if "Cancel" was pressed
     def NFSServer(selected)
-      if @found_nfs_servers == nil
+      if @found_nfs_servers.nil?
         # label message
         UI.OpenDialog(Label(_("Scanning for hosts on this LAN...")))
         # #71064
@@ -198,7 +198,7 @@ module Yast
         ) { |s| s != "" }
         UI.CloseDialog
 
-        if @found_nfs_servers == nil
+        if @found_nfs_servers.nil?
           @found_nfs_servers = []
         else
           # sort list of servers
@@ -217,7 +217,7 @@ module Yast
     # @param [String] selected	preselect a value in the list
     # @return		a hostname or nil if "Cancel" was pressed
     def HostName(selected)
-      if @found_hosts == nil
+      if @found_hosts.nil?
         # label message
         UI.OpenDialog(Label(_("Scanning for hosts on this LAN...")))
         @found_hosts = Convert.convert(
@@ -227,7 +227,7 @@ module Yast
         )
         UI.CloseDialog
 
-        @found_hosts = [] if @found_hosts == nil
+        @found_hosts = [] if @found_hosts.nil?
       end
 
       # selection box label
@@ -248,7 +248,7 @@ module Yast
         to:   "list <string>"
       )
 
-      dirs = [] if dirs == nil
+      dirs = [] if dirs.nil?
 
       # selection box label
       ret = ChooseItemSimple(_("&Exported Directories"), dirs, selected)

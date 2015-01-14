@@ -233,7 +233,7 @@ module Yast
       @progress_val = Ops.get_integer(state, "progress_val", 0)
 
       pb_value = Ops.get_integer(state, "progress_value", 0)
-      pb_value = Ops.add(pb_value == nil ? 0 : pb_value, 1)
+      pb_value = Ops.add(pb_value.nil? ? 0 : pb_value, 1)
 
       # refresh the progress widget, add one step for the embedded progress
       UI.ReplaceWidget(
@@ -339,7 +339,7 @@ module Yast
     end
 
     def NormalizeIconPath(one_icon, visible)
-      if one_icon == nil || one_icon == ""
+      if one_icon.nil? || one_icon == ""
         one_icon = visible ? FallbackIconVisible() : FallbackIconInvisible()
       end
 
@@ -724,7 +724,7 @@ module Yast
     # @param integer current step ID
     def HighlightProgressIcon(step_id)
       if @has_icon_progress_bar
-        @last_highlighted_icon = -1 if @last_highlighted_icon == nil
+        @last_highlighted_icon = -1 if @last_highlighted_icon.nil?
 
         # some steps might have been skipped, change all (not changed yet)
         # icons one by one

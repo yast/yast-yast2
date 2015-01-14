@@ -156,7 +156,7 @@ module Yast
       return if !Mode.commandline
 
       # avoid using of uninitialized value in .dev.tty perl agent
-      if s == nil
+      if s.nil?
         Builtins.y2warning("CommandLine::Print: invalid argument (nil)")
         return
       end
@@ -317,7 +317,7 @@ module Yast
     # Print an error message and add the description how to get the help.
     # @param [String] message	error message to be printed. Use nil for no message
     def Error(message)
-      Print(message) if message != nil
+      Print(message) if !message.nil?
 
       if @interactive
         # translators: default error message for command line
@@ -432,7 +432,7 @@ module Yast
       Builtins.maplist(givenoptions) do |o, val|
         v = Convert.to_string(val)
         next if ret != true
-        if Ops.get(cmdoptions, o) == nil
+        if Ops.get(cmdoptions, o).nil?
           if !non_strict
             # translators: error message, %1 is a command, %2 is the wrong option given by the user
             Print(
@@ -476,7 +476,7 @@ module Yast
               end
             elsif opttype == "integer"
               i = Builtins.tointeger(v)
-              ret = i != nil
+              ret = !i.nil?
               if ret != true
                 # translators: error message, %2 is the value given
                 Print(
@@ -590,7 +590,7 @@ module Yast
       command = Ops.get_map(@allcommands, ["actions", action], {})
       # translators: the command does not provide any help
       commandhelp = Ops.get(command, "help")
-      commandhelp = _("No help available") if commandhelp == nil
+      commandhelp = _("No help available") if commandhelp.nil?
       has_string_option = false
       # Process <command> "help"
       # translators: %1 is the command name
@@ -889,7 +889,7 @@ module Yast
       command = deep_copy(command)
       # handle help for specific command
       # this needs to be before general help, so "help help" works
-      if Ops.get(command, ["options", "help"]) != nil
+      if Ops.get(command, ["options", "help"])
         PrintHead()
         PrintActionHelp(Ops.get_string(command, "command", ""))
         return true
@@ -944,7 +944,7 @@ module Yast
 
         xmlfilename = Ops.get_string(command, ["options", "xmlfile"], "")
 
-        if xmlfilename == nil || xmlfilename == ""
+        if xmlfilename.nil? || xmlfilename == ""
           # error message - command line option xmlfile is missing
           Print(
             _(
@@ -1228,7 +1228,7 @@ module Yast
         Print("")
 
         help = Ops.get_string(cmdlineinfo, "help", "")
-        if help != nil && help != ""
+        if !help.nil? && help != ""
           Print(Ops.get_string(cmdlineinfo, "help", ""))
           Print("")
         end
@@ -1270,7 +1270,7 @@ module Yast
     # @return [Array<String>] the list of command line parts, nil for end of file
     def Scan
       res = Convert.to_string(SCR.Read(path(".dev.tty")))
-      return nil if res == nil
+      return nil if res.nil?
       String.ParseOptions(res,  "separator" => " " )
     end
 
@@ -1348,7 +1348,7 @@ module Yast
             newcommand = Scan() while Builtins.size(newcommand) == 0
 
             # EOF reached
-            if newcommand == nil
+            if newcommand.nil?
               @done = true
               return { "command" => "exit" }
             end
@@ -1554,7 +1554,7 @@ module Yast
       ret = true
 
       initialized = false
-      if Ops.get(commandline, "initialize") == nil
+      if Ops.get(commandline, "initialize").nil?
         # no initialization routine
         # set initialized state to true => call finish handler at the end in command line mode
         initialized = true
@@ -1618,7 +1618,7 @@ module Yast
             # check whether command is defined in the map (i.e. it is not predefined command or invalid command)
             # and start initialization if it's defined
             if Builtins.haskey(Ops.get_map(commandline, "actions", {}), command) &&
-                Ops.get(commandline, "initialize") != nil
+                Ops.get(commandline, "initialize")
               # non-GUI handling
               PrintVerbose(_("Initializing"))
               ret2 = RunFunction(
@@ -1649,7 +1649,7 @@ module Yast
           )
 
           # there is a handler, execute the action
-          if exec != nil
+          if !exec.nil?
             res = RunMapFunction(exec, options)
 
             # if it is not interactive, abort on errors
@@ -1665,7 +1665,7 @@ module Yast
         ret = !Aborted()
       end
 
-      if ret && Ops.get(commandline, "finish") != nil && initialized
+      if ret && Ops.get(commandline, "finish") && initialized
         # translators: Progress message - the command line interface is about to finish
         PrintVerbose(_("Finishing"))
         ret = RunFunction(

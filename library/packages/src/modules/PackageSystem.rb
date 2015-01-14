@@ -246,7 +246,7 @@ module Yast
       # [int successful, list failed, list remaining, list srcremaining]
       result = Pkg.PkgCommit(0)
       Builtins.y2debug("PkgCommit: %1", result)
-      if result == nil || Ops.get_list(result, 1, []) != []
+      if result.nil? || Ops.get_list(result, 1, []) != []
         Builtins.y2error(
           "Package commit failed: %1",
           Ops.get_list(result, 1, [])

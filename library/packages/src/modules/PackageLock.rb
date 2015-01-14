@@ -85,7 +85,7 @@ module Yast
     # @return true if we can continue
     def Check
       # we already have a lock
-      return @have_lock if @have_lock != nil
+      return @have_lock if !@have_lock.nil?
 
       # just to allow 'Retry', see more in bug #280383
       try_again = true
@@ -134,7 +134,7 @@ module Yast
     # @return [Hash] with lock status and user reaction
     def Connect(show_continue_button)
       # we already have a lock
-      if @have_lock != nil
+      if !@have_lock.nil?
         return { "connected" => @have_lock, "aborted" => @aborted }
       end
 

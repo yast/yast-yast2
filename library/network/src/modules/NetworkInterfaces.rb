@@ -222,7 +222,7 @@ module Yast
     def ifcfg_part(ifcfg, part)
       return "" if Builtins.regexpmatch(ifcfg, @ifcfg_name_regex) != true
       ret = Builtins.regexpsub(ifcfg, @ifcfg_name_regex, "\\#{part}")
-      ret == nil ? "" : ret
+      ret.nil? ? "" : ret
     end
 
     # Return a device type
@@ -362,7 +362,7 @@ module Yast
 
       type = GetTypeFromIfcfg(ifcfg) if IsEmpty(type)
 
-      type = device_type(dev) if type == nil
+      type = device_type(dev) if type.nil?
 
       Builtins.y2debug(
         "GetTypeFromIfcfgOrName: device='%1', type='%2'",
@@ -452,11 +452,11 @@ module Yast
     # @example device_name("eth", "1") -> "eth1"
     # @example device_name("lo", "") -> "lo"
     def device_name(typ, num)
-      if typ == nil || typ == ""
+      if typ.nil? || typ == ""
         Builtins.y2error("wrong type: %1", typ)
         return nil
       end
-      if num == nil
+      if num.nil?
         Builtins.y2error("wrong number: %1", num)
         return nil
       end
@@ -480,15 +480,15 @@ module Yast
     # @return alias name
     # @example alias_name("eth", "1", "2") -> "eth1#2"
     def alias_name(typ, num, anum)
-      if typ == nil || typ == ""
+      if typ.nil? || typ == ""
         Builtins.y2error("wrong type: %1", typ)
         return nil
       end
-      if num == nil # || num < 0
+      if num.nil? # || num < 0
         Builtins.y2error("wrong number: %1", num)
         return nil
       end
-      if anum == nil || anum == ""
+      if anum.nil? || anum == ""
         Builtins.y2error("wrong alias number: %1", anum)
         return nil
       end
@@ -499,7 +499,7 @@ module Yast
     # @param [String] type device type
     # @return true if hotpluggable
     def IsHotplug(type)
-      return false if type == "" || type == nil
+      return false if type == "" || type.nil?
       return true if HOTPLUG_TYPES.any? {|t| type.end_with?(t)}
       false
     end
@@ -540,12 +540,12 @@ module Yast
     # @example RealType("eth", "usb") -> "eth-usb"
     def RealType(type, hotplug)
       Builtins.y2debug("type=%1", type)
-      if type == "" || type == nil
+      if type == "" || type.nil?
         Builtins.y2error("Wrong type: %1", type)
         return "eth"
       end
 
-      return type if hotplug == "" || hotplug == nil
+      return type if hotplug == "" || hotplug.nil?
 
       realtype = Ops.add(Ops.add(type, "-"), hotplug)
       Builtins.y2debug("realtype=%1", realtype)
@@ -597,7 +597,7 @@ module Yast
     #                  
     def CanonicalizeIP(ifcfg)
       ifcfg = deep_copy(ifcfg)
-      return nil if ifcfg == nil
+      return nil if ifcfg.nil?
 
       ip_and_prefix = Builtins.splitstring(
         Ops.get_string(ifcfg, "IPADDR", ""),
@@ -633,7 +633,7 @@ module Yast
     # @return ifcfg with secret fields masked out
     def ConcealSecrets1(ifcfg)
       ifcfg = deep_copy(ifcfg)
-      return nil if ifcfg == nil
+      return nil if ifcfg.nil?
       out = Builtins.mapmap(ifcfg) do |k, v|
         v = "CONCEALED" if Builtins.contains(@SensitiveFields, k) && v != ""
         { k => v }
@@ -647,7 +647,7 @@ module Yast
     # @return ifcfgs with secret fields masked out
     def ConcealSecrets(devs)
       devs = deep_copy(devs)
-      return nil if devs == nil
+      return nil if devs.nil?
       out = Builtins.mapmap(
         Convert.convert(
           devs,
@@ -684,7 +684,7 @@ module Yast
 
       # preparation
       allfiles = SCR.Dir(path(".network.section"))
-      allfiles = [] if allfiles == nil
+      allfiles = [] if allfiles.nil?
       devices = Builtins.filter(allfiles) do |file|
         !Builtins.regexpmatch(file, "[~]")
       end
@@ -702,7 +702,7 @@ module Yast
             SCR.Read(Builtins.topath(Ops.add(Ops.add(pth, "."), val)))
           )
           Builtins.y2debug("item=%1", item)
-          next if item == nil
+          next if item.nil?
           # No underscore '_' -> global
           # Also temporarily standard globals
           if Ops.less_than(Builtins.find(val, "_"), 0) ||
@@ -735,7 +735,7 @@ module Yast
         config = CanonicalizeIP(config)
         config = CanonicalizeStartmode(config)
         devtype = GetTypeFromIfcfg(config)
-        devtype = GetType(d) if devtype == nil
+        devtype = GetType(d) if devtype.nil?
         dev = Ops.get(@Devices, devtype, {})
         Ops.set(dev, d, config)
         Ops.set(@Devices, devtype, dev)
@@ -756,7 +756,7 @@ module Yast
 
     def Filter(devices, devregex)
       devices = deep_copy(devices)
-      if devices == nil || devregex == nil || devregex == ""
+      if devices.nil? || devregex.nil? || devregex == ""
         return deep_copy(devices)
       end
 
@@ -779,7 +779,7 @@ module Yast
 
     def FilterNOT(devices, devregex)
       devices = deep_copy(devices)
-      return {} if devices == nil || devregex == nil || devregex == ""
+      return {} if devices.nil? || devregex.nil? || devregex == ""
 
       regex = Ops.add(
         Ops.add("^(", Ops.get(@DeviceRegex, devregex, devregex)),
@@ -966,9 +966,7 @@ module Yast
           end
 
           # 0600 if contains encryption key (#24842)
-          has_key = Builtins.find(@SensitiveFields) do |k|
-            Ops.get_string(devmap, k, "") != ""
-          end != nil
+          has_key = @SensitiveFields.any? { |k| devmap[k] && !devmap[k].empty? }
           if has_key
             Builtins.y2debug("Permission change: %1", config)
             SCR.Write(
@@ -976,8 +974,8 @@ module Yast
               true
             )
           end
-          @OriginalDevices = {} if @OriginalDevices == nil
-          if Ops.get(@OriginalDevices, typ) == nil
+          @OriginalDevices = {} if @OriginalDevices.nil?
+          if Ops.get(@OriginalDevices, typ).nil?
             Ops.set(@OriginalDevices, typ, {})
           end
           Ops.set(
@@ -1028,7 +1026,7 @@ module Yast
         to:   "map <string, map <string, map <string, any>>>"
       )
 
-      if devices == nil || devices == {}
+      if devices.nil? || devices == {}
         # devices == $[] is used in lan_auto "Reset" as a way how to
         # rollback changes imported from AY
         @initialized = false
@@ -1344,7 +1342,7 @@ module Yast
       Builtins.y2debug("type=%1", type)
       freedevs = GetFreeDevices(type, 1)
       ret = Ops.get(freedevs, 0)
-      Builtins.y2error("Free device location error: %1", ret) if ret == nil
+      Builtins.y2error("Free device location error: %1", ret) if ret.nil?
       Builtins.y2debug("Free device=%1", ret)
       ret
     end
@@ -1383,7 +1381,7 @@ module Yast
       t = GetType(@Name)
       @Current = Ops.get(@Devices, [t, @Name], {})
       a = alias_num(@Name)
-      if a != nil && a != ""
+      if !a.nil? && a != ""
         @Current = Ops.get_map(@Current, ["_aliases", a], {})
       end
 
@@ -1548,7 +1546,7 @@ module Yast
 
     def SetValue(name, key, value)
       return nil unless Edit(name)
-      return false if key == nil || key == "" || value == nil
+      return false if key.nil? || key == "" || value.nil?
 
       @Current[key] = value
 
@@ -1672,7 +1670,7 @@ module Yast
     # @return [Array] of found devices
     def List(devregex)
       ret = []
-      if devregex == "" || devregex == nil
+      if devregex == "" || devregex.nil?
         Builtins.maplist(@Devices) do |_t, d|
           Builtins.maplist(
             Convert.convert(
@@ -1701,7 +1699,7 @@ module Yast
         end
       end
       ret = Builtins.filter(ret) do |row|
-        next true if row != nil
+        next true if !row.nil?
         Builtins.y2error("Filtering out : %1", row)
         false
       end

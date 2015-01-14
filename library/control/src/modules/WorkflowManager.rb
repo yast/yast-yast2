@@ -342,7 +342,7 @@ module Yast
     # @param [String] file_to filename
     # @return [String] final filename
     def StoreWorkflowFile(file_from, file_to)
-      if file_from == nil || file_from == "" || file_to == nil || file_to == ""
+      if file_from.nil? || file_from == "" || file_to.nil? || file_to == ""
         Builtins.y2error("Cannot copy '%1' to '%2'", file_from, file_to)
         return nil
       end
@@ -412,7 +412,7 @@ module Yast
           )
 
           # File exists
-          if use_filename != nil
+          if !use_filename.nil?
             return StoreWorkflowFile(use_filename, disk_filename) 
             # No such file
           else
@@ -459,7 +459,7 @@ module Yast
         return false
       end
 
-      if used_filename != nil && used_filename != ""
+      if !used_filename.nil? && used_filename != ""
         @unmerged_changes = true
 
         @used_workflows = Builtins.add(@used_workflows, used_filename)
@@ -502,7 +502,7 @@ module Yast
         return false
       end
 
-      if used_filename != nil && used_filename != ""
+      if !used_filename.nil? && used_filename != ""
         @unmerged_changes = true
 
         @used_workflows = Builtins.filter(@used_workflows) do |one_workflow|
@@ -1098,7 +1098,7 @@ module Yast
 
     def IncorporateControlFileOptions(filename)
       update_file = XML.XMLToYCPFile(filename)
-      if update_file == nil
+      if update_file.nil?
         Builtins.y2error("Unable to read the %1 control file", filename)
         return false
       end
@@ -1171,7 +1171,7 @@ module Yast
 
       # if textdomain is different to the base one
       # we have to put it into the map
-      if update_file_textdomain != nil && update_file_textdomain != ""
+      if !update_file_textdomain.nil? && update_file_textdomain != ""
         update_file_texts = Builtins.mapmap(update_file_texts) do |text_ident, text_def|
           Ops.set(text_def, "textdomain", update_file_textdomain)
           { text_ident => text_def }
@@ -1256,7 +1256,7 @@ module Yast
     def GenerateWorkflowIdent(workflow_filename)
       file_md5sum = FileUtils.MD5sum(workflow_filename)
 
-      if file_md5sum == nil || file_md5sum == ""
+      if file_md5sum.nil? || file_md5sum == ""
         Builtins.y2error(
           "MD5 sum of file %1 is %2",
           workflow_filename,
@@ -1294,13 +1294,13 @@ module Yast
         # make sure that every workflow is merged only once
         # bugzilla #332436
         workflow_ident = GenerateWorkflowIdent(one_workflow)
-        if workflow_ident != nil &&
+        if !workflow_ident.nil? &&
             Builtins.contains(already_merged_workflows, workflow_ident)
           Builtins.y2milestone(
             "The very same workflow has been already merged, skipping..."
           )
           next
-        elsif workflow_ident != nil
+        elsif !workflow_ident.nil?
           already_merged_workflows = Builtins.add(
             already_merged_workflows,
             workflow_ident

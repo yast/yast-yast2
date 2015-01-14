@@ -117,7 +117,7 @@ module Yast
     # architecture
     # @return a list of modules
     def getModulesToSkip
-      if @modules_to_skip == nil
+      if @modules_to_skip.nil?
         # usb and cdrom modules dont belong to initrd,
         # they're loaded by hotplug
         @modules_to_skip = [
@@ -175,7 +175,7 @@ module Yast
       s_modnames = Convert.to_string(
         SCR.Read(path(".sysconfig.kernel.INITRD_MODULES"))
       )
-      s_modnames = "" if s_modnames == nil
+      s_modnames = "" if s_modnames.nil?
       @modules = Builtins.splitstring(s_modnames, " ")
       @modules = Builtins.filter(@modules) { |m| m != "" }
       Builtins.foreach(@modules) do |m|
@@ -204,7 +204,7 @@ module Yast
         tmp_mods = Convert.to_string(
           SCR.Read(path(".etc.install_inf.InitrdModules"))
         )
-        if tmp_mods != nil && tmp_mods != ""
+        if !tmp_mods.nil? && tmp_mods != ""
           @modules = Builtins.splitstring(tmp_mods, " ")
         end
         @was_read = true
@@ -302,7 +302,7 @@ module Yast
     # @param [String] header string error header
     # @param [String] log string logfile contents
     def errorWithLogPopup(header, log)
-      log = "" if log == nil
+      log = "" if log.nil?
       text = RichText(Opt(:plainText), log)
       UI.OpenDialog(
         Opt(:decorated),
@@ -356,7 +356,7 @@ module Yast
         s_modnames = Convert.to_string(
           SCR.Read(path(".sysconfig.kernel.INITRD_MODULES"))
         )
-        s_modnames = "" if s_modnames == nil
+        s_modnames = "" if s_modnames.nil?
         s_modules = Builtins.splitstring(s_modnames, " ")
         s_modules = Builtins.filter(s_modules) do |m|
           !Builtins.contains(@read_modules, m)
@@ -384,7 +384,7 @@ module Yast
 
       # recreate initrd
       param = ""
-      if @splash != "" && @splash != nil &&
+      if @splash != "" && !@splash.nil? &&
           Ops.less_than(
             0,
             Convert.to_integer(
@@ -424,7 +424,7 @@ module Yast
         from: "any",
         to:   "list <map>"
       )
-      if all_modes == nil || Builtins.size(all_modes) == 0
+      if all_modes.nil? || Builtins.size(all_modes) == 0
         Builtins.y2warning("Probing VGA modes failed, using fallback list")
         all_modes = deep_copy(@known_modes)
       end
