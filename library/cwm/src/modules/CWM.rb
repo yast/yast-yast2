@@ -707,7 +707,7 @@ module Yast
     def CreateWidgets(names, source)
       names = deep_copy(names)
       source = deep_copy(source)
-      ValidateMaps(source) # FIXME find better place
+      ValidateMaps(source) # FIXME: find better place
       ret = Builtins.maplist(names) do |w|
         m = Ops.get(source, w, {})
         # leave add here in order to make a copy of the structure

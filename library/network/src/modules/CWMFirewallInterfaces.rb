@@ -782,7 +782,7 @@ module Yast
     # @return [Symbol] return value of the dialog
     def DisplayDetailsPopup(settings)
       settings = deep_copy(settings)
-      # FIXME breaks help if run in dialog with Tab!!!!!!
+      # FIXME: breaks help if run in dialog with Tab!!!!!!
       # settings stack must be created in CWM::Run
       w = CWM.CreateWidgets(
         ["firewall_ifaces"],

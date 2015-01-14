@@ -41,9 +41,7 @@ module Yast
       Yast.import "IP"
       Yast.import "URLRecode"
 
-      # TODO:
-      # - read URI(3)
-      # - esp. compare the regex mentioned in the URI(3) with ours:
+      # TODO: read URI(3), esp. compare the regex mentioned in the URI(3) with ours:
       #   my($scheme, $authority, $path, $query, $fragment) =
       #   $uri =~ m|^(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?|;
 
@@ -218,7 +216,7 @@ module Yast
         Ops.get_string(rawtokens, 2, ""),
         # 0,1,2,3: user:pass@
         # 4,5,6,7: hostname|[xxx]
-        # FIXME "(([^:@]+)|(\\[([^]]+)\\]))" +
+        # FIXME: "(([^:@]+)|(\\[([^]]+)\\]))" +
         # 8,9: port
         "^" \
           "(([^@:]+)(:([^@:]+))?@)?" \

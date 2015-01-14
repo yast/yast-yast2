@@ -361,7 +361,7 @@ module Yast
           success = false
         end
       end
-      @commit_needed = true # TODO check if really necessary
+      @commit_needed = true # TODO: check if really necessary
       Builtins.y2milestone("Finished successfuly: %1", success)
       success
     end
@@ -408,7 +408,7 @@ module Yast
           success = false
         end
       end
-      @commit_needed = true # TODO check if really necessary
+      @commit_needed = true # TODO: check if really necessary
       Builtins.y2milestone("Finished successfuly: %1", success)
       success
     end

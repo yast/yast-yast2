@@ -425,8 +425,7 @@ module Yast
       return if !service
 
       if service == :wicked
-        # FIXME:
-        # you really need to use 'wickedd'. Moreover kill action do not
+        # FIXME: you really need to use 'wickedd'. Moreover kill action do not
         # kill all wickedd services - e.g. nanny, dhcp* ... stays running
         # This needs to be clarified with wicked people.
         # bnc#864619

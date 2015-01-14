@@ -305,7 +305,7 @@ module Yast
         end
       end
 
-      # FIXME would be nice if it could be done generic way
+      # FIXME: would be nice if it could be done generic way
       if Ops.greater_than(
         Builtins.size(
           Ops.get_list(@productControl, ["partitioning", "partitions"], [])
@@ -558,7 +558,7 @@ module Yast
 
     # Get list of required files for the workflow.
     # @return [Array<String>] Required files list.
-    # TODO FIXME: this function seems to be unused, remove it?
+    # FIXME: this function seems to be unused, remove it?
     def RequiredFiles(stage, mode)
       # Files needed during installation.
       needed_client_files = []
@@ -581,7 +581,7 @@ module Yast
             client = Ops.add("inst_", Ops.get_string(m, "name", "dummy"))
           end
         end
-        # TODO FIXME: what about the ruby files?
+        # FIXME: what about the ruby files?
         client = Ops.add(
           Ops.add(Ops.add(Directory.clientdir, "/"), client),
           ".ycp"

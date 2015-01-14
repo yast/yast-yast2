@@ -231,7 +231,7 @@ module Yast
 
       if !text_mode
         if Ops.less_than(SCR.Read(path(".target.size"), xterm), 0)
-          # TODO FIXME
+          # FIXME: do it
           Report.Error(_("Xterm is missing, install xterm package."))
           return false
         end

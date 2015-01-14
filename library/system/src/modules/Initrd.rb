@@ -298,7 +298,7 @@ module Yast
     end
 
     # Display error popup with log
-    # FIXME this is copy-paste from ../routines/popups.ycp
+    # FIXME: this is copy-paste from ../routines/popups.ycp
     # @param [String] header string error header
     # @param [String] log string logfile contents
     def errorWithLogPopup(header, log)
@@ -377,7 +377,7 @@ module Yast
         "/usr/bin/touch /etc/sysconfig/bootloader"
       )
 
-      # TODO FIXME: the modules are not written, remove them completely,
+      # FIXME: the modules are not written, remove them completely,
       # for now just log them without any change
       mods = Builtins.mergestring(ListModules(), " ")
       log.warn "Ignoring configured kernel modules: #{mods}" unless mods.empty?

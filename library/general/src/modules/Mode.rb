@@ -129,7 +129,7 @@ module Yast
 
       # only use the /etc/install.inf agent when file is present
       # and installation is being processed
-      # FIXME remove the part below and let it be set in clients
+      # FIXME: remove the part below and let it be set in clients
       if @_mode == "installation" &&
           SCR.Read(path(".target.size"), "/etc/install.inf") != -1
 

@@ -64,11 +64,6 @@ Style/AsciiComments:
 Style/ClassAndModuleCamelCase:
   Enabled: false
 
-# Offense count: 27
-# Configuration parameters: Keywords.
-Style/CommentAnnotation:
-  Enabled: false
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/DeprecatedHashMethods:

@@ -269,7 +269,7 @@ module Yast
     end
 
     # Set the vga= kernel argument
-    # FIXME is heer because of bootloader module, should be removed
+    # FIXME: is heer because of bootloader module, should be removed
     def SetVgaType(new_vga)
       ParseInstallationKernelCmdline() if !@cmdline_parsed
       @vgaType = new_vga
@@ -292,7 +292,7 @@ module Yast
     end
 
     # Set the kernel command line
-    # FIXME is heer because of bootloader module, should be removed
+    # FIXME: is heer because of bootloader module, should be removed
     def SetCmdLine(new_cmd_line)
       ParseInstallationKernelCmdline() if !@cmdline_parsed
       @cmdLine = new_cmd_line

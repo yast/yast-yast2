@@ -805,7 +805,7 @@ module Yast
               "\n" \
               "Use it anyway?"
           ),
-        # TODO use something like "%1 from %2" and make it translatable
+        # TODO: use something like "%1 from %2" and make it translatable
         repo_url != "" ?
           Builtins.sformat("%1 (%2)", item_name, repo_url) :
           item_name,

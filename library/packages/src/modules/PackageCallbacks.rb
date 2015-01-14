@@ -2489,7 +2489,7 @@ module Yast
     end
 
     def Authentication(url, msg, username, password)
-      # FIXME after SLE12 release
+      # FIXME: after SLE12 release
       # The following 'if' block is a workaround for bnc#895719 that should be
       # extracted to a proper private method (not sure if it will work as
       # expected being a callback) and adapted to use normal _() instead of

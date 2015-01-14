@@ -136,7 +136,7 @@ module Yast
 
       @current_slide_no = 0
       @slide_start_time = 0
-      @slide_interval = 30 # FIXME constant
+      @slide_interval = 30 # FIXME: constant
       @language = "en"
       @widgets_created = false
       @user_switched_to_details = false

@@ -532,7 +532,7 @@ module Yast
 
     # Removes all xml and ycp files from directory where
     #
-    # TODO FIXME: this function seems to be unused, remove it?
+    # FIXME: this function seems to be unused, remove it?
     def CleanWorkflowsDirectory
       directory = GetWorkflowDirectory()
       Builtins.y2milestone(

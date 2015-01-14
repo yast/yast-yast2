@@ -28,7 +28,7 @@
 #
 # $Id$
 # FATE#303700
-# TODO stability tag.
+# TODO: stability tag.
 #
 # <pre>
 # ALog::Item("/etc/ntp.conf: added 'server ntp.example.org'");
@@ -50,7 +50,7 @@ module Yast
     end
 
     def doLog(type, msg)
-      # TODO make a separate log, this is just a prototype
+      # TODO: make a separate log, this is just a prototype
       Builtins.y2internal("{%1} %2", type, msg)
 
       nil
@@ -79,7 +79,7 @@ module Yast
     end
 
     def uiInput(label)
-      # TODO more lines?
+      # TODO: more lines?
       d = VBox(
         InputField(Id(:val), label, ""),
         ButtonBox(
