@@ -1,6 +1,6 @@
-require 'pathname'
-require 'ostruct'
-require 'yast'
+require "pathname"
+require "ostruct"
+require "yast"
 
 ## Description
 #
@@ -66,7 +66,7 @@ module Yast
     private :hooks
 
     def initialize
-      textdomain 'base'
+      textdomain "base"
       @hooks = {}
       @search_path = SearchPath.new
     end
@@ -104,7 +104,7 @@ module Yast
     end
 
     class SearchPath
-      DEFAULT_DIR = '/var/lib/YaST2/hooks'
+      DEFAULT_DIR = "/var/lib/YaST2/hooks"
 
       attr_reader :path
 
@@ -158,7 +158,7 @@ module Yast
         @search_path = search_path
         @name = name
         @files = find_hook_files(name).map { |path| HookFile.new(path) }
-        @caller_path = caller_path.split(':in').first
+        @caller_path = caller_path.split(":in").first
       end
 
       def execute
@@ -191,7 +191,7 @@ module Yast
         end
         unless hook_files.empty?
           log.info "Found #{hook_files.size} hook files: " \
-            "#{hook_files.map { |f| f.basename.to_s }.join(', ')}"
+            "#{hook_files.map { |f| f.basename.to_s }.join(", ")}"
         end
         hook_files.sort
       end
@@ -220,11 +220,11 @@ module Yast
       end
 
       def output
-        return '' unless result
+        return "" unless result
         output = []
         output << "STDERR: #{result.stderr.strip}" unless result.stderr.empty?
         output << "STDOUT: #{result.stdout.strip}" unless result.stdout.empty?
-        output.join('; ')
+        output.join("; ")
       end
 
       def succeeded?

@@ -1,4 +1,4 @@
-require 'yast2/systemd_unit'
+require "yast2/systemd_unit"
 
 module Yast
   ###
@@ -96,7 +96,7 @@ module Yast
         # We cannot find out a target properties from /mnt in inst-sys
         # systemctl doesn't return any properties in chroot
         # See bnc#889323
-        ['yes', nil].include?(properties.allow_isolate)
+        ["yes", nil].include?(properties.allow_isolate)
       end
 
       def set_default

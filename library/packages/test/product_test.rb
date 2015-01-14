@@ -33,7 +33,7 @@ def load_zypp(file_name)
   YAML.load_file(file_name)
 end
 
-PRODUCTS_FROM_ZYPP = load_zypp('products.yml').freeze
+PRODUCTS_FROM_ZYPP = load_zypp("products.yml").freeze
 
 def stub_defaults
   log.info "--------- Running test ---------"

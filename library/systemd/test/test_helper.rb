@@ -1,14 +1,14 @@
-require 'rspec'
+require "rspec"
 
 ENV["Y2DIR"] = File.expand_path("../../src", __FILE__) unless ENV["Y2DIR"]
 
 require "yast"
 
-require 'yast2/systemd_unit'
+require "yast2/systemd_unit"
 
-Yast.import 'SystemdSocket'
-Yast.import 'SystemdService'
-Yast.import 'SystemdTarget'
+Yast.import "SystemdSocket"
+Yast.import "SystemdService"
+Yast.import "SystemdTarget"
 
 module SystemctlStubs
   def stub_systemctl(unit)
@@ -29,8 +29,8 @@ module SystemctlStubs
   def stub_execute(success: true)
     Yast::Systemctl.stub(:execute).and_return(
       OpenStruct.new \
-      stdout: 'success',
-      stderr: (success ? '' : 'failure'),
+      stdout: "success",
+      stderr: (success ? "" : "failure"),
       exit:   (success ? 0  : 1)
     )
   end
@@ -119,8 +119,8 @@ module SystemdUnitStubs
       .stub(:command)
       .and_return(
         OpenStruct.new \
-        stdout: '',
-        stderr: (success ? '' : 'failure'),
+        stdout: "",
+        stderr: (success ? "" : "failure"),
         exit:   (success ? 0  : 1)
       )
   end
@@ -138,7 +138,7 @@ module SystemdSocketStubs
       )
   end
 
-  def stub_sockets(socket: 'iscsid')
+  def stub_sockets(socket: "iscsid")
     stub_unit_command
     stub_systemctl(:socket)
     properties = load_socket_properties(socket)
@@ -153,7 +153,7 @@ module SystemdServiceStubs
   include SystemctlStubs
   include SystemdUnitStubs
 
-  def stub_services(service: 'sshd')
+  def stub_services(service: "sshd")
     stub_unit_command
     stub_systemctl(:service)
     properties = load_service_properties(service)
@@ -165,8 +165,8 @@ module SystemdServiceStubs
 
   def load_service_properties(service_name)
     OpenStruct.new(
-      stdout: File.read(File.join(__dir__, 'data', "#{service_name}_service_properties")),
-      stderr: '',
+      stdout: File.read(File.join(__dir__, "data", "#{service_name}_service_properties")),
+      stderr: "",
       exit:   0
       )
   end
@@ -176,7 +176,7 @@ module SystemdTargetStubs
   include SystemctlStubs
   include SystemdUnitStubs
 
-  def stub_targets(target: 'graphical')
+  def stub_targets(target: "graphical")
     stub_unit_command
     stub_systemctl(:target)
     properties = load_target_properties(target)
@@ -188,8 +188,8 @@ module SystemdTargetStubs
 
   def load_target_properties(target_name)
     OpenStruct.new(
-      stdout: File.read(File.join(__dir__, 'data', "#{target_name}_target_properties")),
-      stderr: '',
+      stdout: File.read(File.join(__dir__, "data", "#{target_name}_target_properties")),
+      stderr: "",
       exit:   0
       )
   end

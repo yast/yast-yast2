@@ -1,10 +1,10 @@
-require 'yast2/systemctl'
+require "yast2/systemctl"
 
-require 'ostruct'
-require 'forwardable'
+require "ostruct"
+require "forwardable"
 
 module Yast
-  import 'Stage'
+  import "Stage"
 
   ###
   #  Use this class always as a parent class for implementing various systemd units.

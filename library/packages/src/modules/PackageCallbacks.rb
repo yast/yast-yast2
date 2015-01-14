@@ -564,8 +564,8 @@ module Yast
     def DonePackage(error, reason)
       # remove invalid characters (bnc#876459)
       if !reason.valid_encoding?
-        reason.encode!('UTF-16', undef: :replace, invalid: :replace, replace: "?")
-        reason.encode!('UTF-8')
+        reason.encode!("UTF-16", undef: :replace, invalid: :replace, replace: "?")
+        reason.encode!("UTF-8")
         log.warn "Invalid byte sequence found, fixed text: #{reason}"
       end
 

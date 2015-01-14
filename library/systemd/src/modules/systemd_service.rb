@@ -1,4 +1,4 @@
-require 'yast2/systemd_unit'
+require "yast2/systemd_unit"
 
 module Yast
   ###

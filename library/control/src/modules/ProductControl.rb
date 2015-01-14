@@ -1370,7 +1370,7 @@ module Yast
         result = WFM.CallFunction(getClientName(step_name, step_execute), args)
 
         # this code will be triggered before the red pop window appears on the user's screen
-        Hooks.run('installation_failure') if result == false
+        Hooks.run("installation_failure") if result == false
 
         result = Convert.to_symbol(result)
 
@@ -1496,7 +1496,7 @@ module Yast
         elsif result == :abort
           # handling when user aborts the workflow (FATE #300422, bnc #406401, bnc #247552)
           final_result = result
-          Hooks.run('installation_aborted')
+          Hooks.run("installation_aborted")
 
           break
         elsif result == :finish

@@ -1,10 +1,10 @@
 #!/usr/bin/env rspec
-require 'yast'
+require "yast"
 require_relative "test_helper"
-require 'yast2/systemd_unit'
+require "yast2/systemd_unit"
 
 module Yast
-  import 'SystemdSocket'
+  import "SystemdSocket"
 
   describe SystemdSocket do
     include SystemdSocketStubs
@@ -31,8 +31,8 @@ module Yast
       end
 
       it "raises SystemdSocketNotFound error if unit does not exist" do
-        stub_sockets(socket: 'unknown')
-        expect { SystemdSocket.find!('unknown') }.to raise_error(SystemdSocketNotFound)
+        stub_sockets(socket: "unknown")
+        expect { SystemdSocket.find!("unknown") }.to raise_error(SystemdSocketNotFound)
       end
     end
 
@@ -41,7 +41,7 @@ module Yast
         sockets = SystemdSocket.all
         expect(sockets).to be_a(Array)
         expect(sockets).not_to be_empty
-        sockets.each { |s| expect(s.unit_type).to eq('socket') }
+        sockets.each { |s| expect(s.unit_type).to eq("socket") }
       end
     end
 

@@ -50,7 +50,7 @@ module Yast
         alias_id = device_desc[:alias_id]
         type_by_regex = device_desc[:type_by_regex]
 
-        describe '#alias_num' do
+        describe "#alias_num" do
           it "returns alias_id: <#{alias_id}> for name: <#{device_name}>" do
             expect(NetworkInterfaces.alias_num(device_name)).to be_eql alias_id
           end

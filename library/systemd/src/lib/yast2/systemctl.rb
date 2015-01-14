@@ -1,5 +1,5 @@
 require "ostruct"
-require 'timeout'
+require "timeout"
 
 module Yast
   class SystemctlError < StandardError
