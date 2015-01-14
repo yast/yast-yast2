@@ -461,8 +461,8 @@ module Yast
         Builtins.foreach(to_check) do |key|
           if key != "label" ||
               Ops.get(v, "widget") != :radio_buttons &&
-                Ops.get(v, "widget") != :custom &&
-                Ops.get(v, "widget") != :func
+                  Ops.get(v, "widget") != :custom &&
+                  Ops.get(v, "widget") != :func
             ret = ValidateValueContents(key, Ops.get(v, key), k) && ret
           end
         end

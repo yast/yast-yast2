@@ -431,7 +431,7 @@ module Yast
             0
           ) &&
           Ops.get(query_map, "workgroup", "") !=
-            Ops.get_string(tokens, "domain", "")
+              Ops.get_string(tokens, "domain", "")
         Ops.set(query_map, "workgroup", Ops.get_string(tokens, "domain", ""))
 
         Ops.set(tokens, "query", MakeParamsFromMap(query_map))

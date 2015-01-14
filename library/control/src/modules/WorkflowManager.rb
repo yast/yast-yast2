@@ -575,7 +575,7 @@ module Yast
       modules = Builtins.maplist(Ops.get_list(proposal, "proposal_modules", [])) do |m|
         if Ops.is_string?(m) && Convert.to_string(m) == old ||
             Ops.is_map?(m) &&
-              Ops.get_string(Convert.to_map(m), "name", "") == old
+                Ops.get_string(Convert.to_map(m), "name", "") == old
           found = true
 
           if Ops.is_map?(m)

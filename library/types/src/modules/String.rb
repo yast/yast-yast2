@@ -529,7 +529,7 @@ module Yast
             # ignore separator or white space at the beginning of the string
             if Builtins.issubstring(separator, character) == true ||
                 remove_whitespace == true &&
-                  (character == " " || character == "\t")
+                    (character == " " || character == "\t")
               index = Ops.add(index, 1)
               next
             # start of a quoted string

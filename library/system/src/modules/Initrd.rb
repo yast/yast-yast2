@@ -213,9 +213,9 @@ module Yast
       end
       if !Builtins.contains(ListModules(), modname) ||
           modname == "aic7xxx" &&
-            !Builtins.contains(ListModules(), "aic7xxx_old") ||
+              !Builtins.contains(ListModules(), "aic7xxx_old") ||
           modname == "aic7xxx_old" &&
-            !Builtins.contains(ListModules(), "aic7xxx")
+              !Builtins.contains(ListModules(), "aic7xxx")
         if !Builtins.contains(getModulesToSkip, modname)
           @changed = true
           Ops.set(@modules_to_store, modname, true)
