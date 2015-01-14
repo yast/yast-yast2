@@ -29,8 +29,8 @@ describe Yast::NetworkInterfaces do
     describe "#CanonicalizeIP" do
       it "Sets ipaddr, prefix and empty mask" do
         IPV6_IFCFG.each do |ipv6_ifcfg|
-          canonical_ifcfg = Yast::NetworkInterfaces.CanonicalizeIP( ipv6_ifcfg[ :data])
-          expect( canonical_ifcfg).to be_eql( ipv6_ifcfg[ :expected])
+          canonical_ifcfg = Yast::NetworkInterfaces.CanonicalizeIP(ipv6_ifcfg[:data])
+          expect(canonical_ifcfg).to be_eql(ipv6_ifcfg[:expected])
         end
       end
     end

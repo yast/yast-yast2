@@ -57,7 +57,7 @@ module Yast
 
     attr_reader :name, :unit_name, :unit_type, :input_properties, :error, :properties
 
-    def initialize(full_unit_name, properties={})
+    def initialize(full_unit_name, properties = {})
       @unit_name, @unit_type = full_unit_name.split(".")
       raise "Missing unit type suffix" unless unit_type
 
@@ -120,7 +120,7 @@ module Yast
       run_command! { command("reload-or-try-restart") }
     end
 
-    def command(command_name, options={})
+    def command(command_name, options = {})
       command = "#{command_name} #{unit_name}.#{unit_type} #{options[:options]}"
       log.info "`#{Systemctl::CONTROL} #{command}`"
       Systemctl.execute(command)

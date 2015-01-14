@@ -29,7 +29,7 @@ module Yast
           it "returns struct with restricted installation properties" do
             allow_any_instance_of(SystemdUnit).to receive(:command)
               .with("is-enabled sshd.service").and_return(
-                OpenStruct.new('stderr'=>'', 'stdout'=>'enabled', 'exit'=>0)
+                OpenStruct.new('stderr' => '', 'stdout' => 'enabled', 'exit' => 0)
               )
             unit = SystemdUnit.new("sshd.service")
             expect(unit.properties).to be_a(SystemdUnit::InstallationProperties)
@@ -40,7 +40,7 @@ module Yast
             it "returns true if service is enabled" do
               allow_any_instance_of(SystemdUnit).to receive(:command)
                 .with("is-enabled sshd.service").and_return(
-                  OpenStruct.new('stderr'=>'', 'stdout'=>'enabled', 'exit'=>0)
+                  OpenStruct.new('stderr' => '', 'stdout' => 'enabled', 'exit' => 0)
                 )
               unit = SystemdUnit.new("sshd.service")
               expect(unit.enabled?).to be_true
@@ -50,7 +50,7 @@ module Yast
               stub_unit_command(success: false)
               allow_any_instance_of(SystemdUnit).to receive(:command)
                 .with("is-enabled sshd.service").and_return(
-                  OpenStruct.new('stderr'=>'', 'stdout'=>'disabled', 'exit'=>1)
+                  OpenStruct.new('stderr' => '', 'stdout' => 'disabled', 'exit' => 1)
                 )
               unit = SystemdUnit.new("sshd.service")
               expect(unit.enabled?).to be_false

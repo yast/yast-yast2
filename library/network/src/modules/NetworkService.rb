@@ -95,7 +95,7 @@ module Yast
     def RunSystemCtl(service, action)
       cmd = Builtins.sformat("%1 %2 %3.service", SYSTEMCTL, action, service)
       ret = Convert.convert(
-        SCR.Execute(path(".target.bash_output"), cmd,  "TERM" => "raw" ),
+        SCR.Execute(path(".target.bash_output"), cmd,  "TERM" => "raw"),
         from: "any",
         to:   "map <string, any>"
       )
@@ -122,7 +122,7 @@ module Yast
 
     # Checks if given network backend is available in the system
     def backend_available?(backend)
-      PackageSystem.Installed( BACKEND_PKG_NAMES[backend])
+      PackageSystem.Installed(BACKEND_PKG_NAMES[backend])
     end
 
     alias_method :is_backend_available, :backend_available?
@@ -214,9 +214,9 @@ module Yast
 
       case @cached_name
       when :network_manager, :wicked
-        RunSystemCtl( BACKENDS[ @cached_name], "--force enable")
+        RunSystemCtl(BACKENDS[@cached_name], "--force enable")
       when :netconfig
-        RunSystemCtl( BACKENDS[ @current_name], "disable")
+        RunSystemCtl(BACKENDS[@current_name], "disable")
 
         # Workaround for bug #61055:
         Builtins.y2milestone("Enabling service %1", "network")
@@ -382,7 +382,7 @@ module Yast
     end
 
     # Checks if currently cached service is the given one
-    def cached_service?( service)
+    def cached_service?(service)
       cached_name == service
     rescue
       Builtins.y2error("NetworkService: error when checking cached network service")
@@ -391,8 +391,8 @@ module Yast
 
     # Restarts wicked backend directly
     def wicked_restart
-      run_wicked( "ifdown", "all")
-      run_wicked( "ifup", "all")
+      run_wicked("ifdown", "all")
+      run_wicked("ifup", "all")
     end
 
     # Restarts network backend using systemctl call
@@ -437,12 +437,12 @@ module Yast
         # no effect.
         # So let's kill all processes in the network service
         # cgroup to make sure e.g. dhcp clients are stopped.
-        RunSystemCtl(BACKENDS[ @current_name], "kill")
+        RunSystemCtl(BACKENDS[@current_name], "kill")
       end
     end
 
     def disable_service(service)
-      RunSystemCtl( BACKENDS[service], "disable")
+      RunSystemCtl(BACKENDS[service], "disable")
     end
 
     publish function: :Read, type: "void ()"

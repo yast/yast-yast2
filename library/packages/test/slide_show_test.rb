@@ -140,14 +140,14 @@ describe "Yast::SlideShow" do
     it "the total progress is adjusted to exact 100%" do
       # input data from minimal SLES installation
       stages = [
-        {"name"=>"disk", "description"=>"Preparing disks...", "value"=>120, "units"=>:sec},
-        {"name"=>"images", "description"=>"Deploying Images...", "value"=>0, "units"=>:kb},
-        {"name"=>"packages", "description"=>"Installing Packages...", "value"=>1_348_246, "units"=>:kb},
-        {"name"=>"finish", "description"=>"Finishing Basic Installation", "value"=>100, "units"=>:sec}
+        { "name" => "disk", "description" => "Preparing disks...", "value" => 120, "units" => :sec },
+        { "name" => "images", "description" => "Deploying Images...", "value" => 0, "units" => :kb },
+        { "name" => "packages", "description" => "Installing Packages...", "value" => 1_348_246, "units" => :kb },
+        { "name" => "finish", "description" => "Finishing Basic Installation", "value" => 100, "units" => :sec }
       ]
 
       Yast::SlideShow.Setup(stages)
-      total_size = Yast::SlideShow.GetSetup.values.reduce(0){|a, e| a + e["size"]}
+      total_size = Yast::SlideShow.GetSetup.values.reduce(0) { |a, e| a + e["size"] }
       expect(total_size).to eq(100)
     end
   end

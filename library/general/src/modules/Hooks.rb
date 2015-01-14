@@ -157,7 +157,7 @@ module Yast
         search_path.verify!
         @search_path = search_path
         @name = name
-        @files = find_hook_files(name).map {|path| HookFile.new(path) }
+        @files = find_hook_files(name).map { |path| HookFile.new(path) }
         @caller_path = caller_path.split(':in').first
       end
 
@@ -191,7 +191,7 @@ module Yast
         end
         unless hook_files.empty?
           log.info "Found #{hook_files.size} hook files: " \
-            "#{hook_files.map {|f| f.basename.to_s}.join(', ')}"
+            "#{hook_files.map { |f| f.basename.to_s }.join(', ')}"
         end
         hook_files.sort
       end

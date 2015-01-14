@@ -52,7 +52,7 @@ DEFAULT_INSTALL_INF = {
   "umount_result"    => "0",
 }
 
-def load_install_inf(defaults_replacement={})
+def load_install_inf(defaults_replacement = {})
   # Default value
   SCR.stub(:Read).and_return nil
 

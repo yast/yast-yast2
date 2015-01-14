@@ -100,7 +100,7 @@ module Yast
       # FIXME: filling release notes is a nasty side effect of searching the base product,
       # it should be handled separately...
       required_status = use_installed_products? ? :installed : :selected
-      fill_up_relnotes(products.select{ |p| p["status"] == required_status })
+      fill_up_relnotes(products.select { |p| p["status"] == required_status })
 
       # Use only base products
       products.select! do |p|
@@ -193,7 +193,7 @@ module Yast
       set_property(:version, OSRelease.ReleaseVersion)
       set_property(:name, OSRelease.ReleaseInformation)
 
-      OS_RELEASE_PROPERTIES.all?{ |key| !get_property(key).nil? && !get_property(key).empty? }
+      OS_RELEASE_PROPERTIES.all? { |key| !get_property(key).nil? && !get_property(key).empty? }
     end
 
     # Uses products information to fill up release-notes variables

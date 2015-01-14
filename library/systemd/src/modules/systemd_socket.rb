@@ -68,22 +68,22 @@ module Yast
   class SystemdSocketClass < Module
     UNIT_SUFFIX = ".socket"
 
-    def find(socket_name, properties={})
+    def find(socket_name, properties = {})
       socket_name += UNIT_SUFFIX unless socket_name.end_with?(UNIT_SUFFIX)
       socket = Socket.new(socket_name, properties)
       return nil if socket.properties.not_found?
       socket
     end
 
-    def find!(socket_name, properties={})
+    def find!(socket_name, properties = {})
       find(socket_name, properties) || raise(SystemdSocketNotFound, socket_name)
     end
 
-    def all(properties={})
+    def all(properties = {})
       sockets = Systemctl.socket_units.map do |socket_unit|
         Socket.new(socket_unit, properties)
       end
-      sockets.select {|s| s.properties.supported?}
+      sockets.select { |s| s.properties.supported? }
     end
 
     class Socket < SystemdUnit

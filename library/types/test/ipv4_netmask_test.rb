@@ -7,7 +7,7 @@ require "yast"
 include Yast
 
 describe "Yast::Netmask" do
-  before( :all) do
+  before(:all) do
     Yast.import "Netmask"
   end
 

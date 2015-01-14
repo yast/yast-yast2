@@ -2579,7 +2579,7 @@ module Yast
       # Moreover, it is not needed. Firewall gets started via dependency on multi-user.target
       # when second stage is over.
       if Mode.installation
-        Builtins.y2milestone( "Do not touch firewall services during installation")
+        Builtins.y2milestone("Do not touch firewall services during installation")
 
         return true
       end

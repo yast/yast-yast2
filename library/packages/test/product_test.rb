@@ -62,9 +62,9 @@ describe "Yast::Product (integration)" do
       it "reads product information from zypp and fills up internal variables" do
         Yast::Mode.stub(:mode).and_return("installation")
 
-        expect(Yast::Product.name).to                eq("openSUSE (SELECTED)")
-        expect(Yast::Product.short_name).to          eq("openSUSE")
-        expect(Yast::Product.version).to             eq("13.1")
+        expect(Yast::Product.name).to eq("openSUSE (SELECTED)")
+        expect(Yast::Product.short_name).to eq("openSUSE")
+        expect(Yast::Product.version).to eq("13.1")
       end
     end
 
@@ -72,9 +72,9 @@ describe "Yast::Product (integration)" do
       it "reads product information from zypp and fills up internal variables" do
         Yast::Mode.stub(:mode).and_return("update")
 
-        expect(Yast::Product.name).to                eq("openSUSE (SELECTED)")
-        expect(Yast::Product.short_name).to          eq("openSUSE")
-        expect(Yast::Product.version).to             eq("13.1")
+        expect(Yast::Product.name).to eq("openSUSE (SELECTED)")
+        expect(Yast::Product.short_name).to eq("openSUSE")
+        expect(Yast::Product.version).to eq("13.1")
       end
     end
   end
@@ -205,7 +205,7 @@ describe Yast::Product do
 
     it "reports that method has been dropped" do
       [:vendor, :dist, :distproduct, :distversion, :shortlabel].each do |method_name|
-        expect{ Yast::Product.send(method_name) }.to raise_error(/#{method_name}.*dropped/)
+        expect { Yast::Product.send(method_name) }.to raise_error(/#{method_name}.*dropped/)
       end
     end
   end
@@ -275,16 +275,16 @@ describe Yast::Product do
 
     it "reports that method has been dropped" do
       [:vendor, :dist, :distproduct, :distversion, :shortlabel].each do |method_name|
-        expect{ Yast::Product.send(method_name) }.to raise_error(/#{method_name}.*dropped/)
+        expect { Yast::Product.send(method_name) }.to raise_error(/#{method_name}.*dropped/)
       end
     end
   end
 
   # Methods that do not allow empty result
-  SUPPORTED_METHODS = [ :name, :short_name, :version, :run_you, :flags, :relnotesurl ]
+  SUPPORTED_METHODS = [:name, :short_name, :version, :run_you, :flags, :relnotesurl]
 
   # Empty result is allowed
-  SUPPORTED_METHODS_ALLOWED_EMPTY = [ :relnotesurl_all, :product_of_relnotes ]
+  SUPPORTED_METHODS_ALLOWED_EMPTY = [:relnotesurl_all, :product_of_relnotes]
 
   context "while called on a broken system (no os-release, no zypp information)" do
     before(:each) do
@@ -299,7 +299,7 @@ describe Yast::Product do
 
         SUPPORTED_METHODS.each do |method_name|
           log.info "Yast::Product.#{method_name}"
-          expect{ Yast::Product.send(method_name) }.to raise_error(/no base product found/i)
+          expect { Yast::Product.send(method_name) }.to raise_error(/no base product found/i)
         end
 
         SUPPORTED_METHODS_ALLOWED_EMPTY.each do |method_name|
@@ -316,7 +316,7 @@ describe Yast::Product do
 
         SUPPORTED_METHODS.each do |method_name|
           log.info "Yast::Product.#{method_name}"
-          expect{ Yast::Product.send(method_name) }.to raise_error(/no base product found/i)
+          expect { Yast::Product.send(method_name) }.to raise_error(/no base product found/i)
         end
 
         SUPPORTED_METHODS_ALLOWED_EMPTY.each do |method_name|

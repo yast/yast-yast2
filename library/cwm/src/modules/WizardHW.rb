@@ -386,7 +386,7 @@ module Yast
       # now create the dialog
       widget_descr = CreateWidget(headers, actions)
       Ops.set(widget_descr, "help", help) # to suppress error in log
-      w = CWM.CreateWidgets(["wizard_hw"],  "wizard_hw" => widget_descr )
+      w = CWM.CreateWidgets(["wizard_hw"],  "wizard_hw" => widget_descr)
       contents = Ops.get_term(w, [0, "widget"], VBox())
       Wizard.SetContents(title, contents, help, false, true)
 

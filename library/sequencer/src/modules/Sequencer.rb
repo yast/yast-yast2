@@ -172,7 +172,7 @@ module Yast
       end
       ret = Builtins.flatten([ret, ret0])
 
-      ret.all? {|v| v }
+      ret.all? { |v| v }
     end
 
     # Report error and return nil

@@ -41,7 +41,7 @@ module Yast
         sockets = SystemdSocket.all
         expect(sockets).to be_a(Array)
         expect(sockets).not_to be_empty
-        sockets.each {|s| expect(s.unit_type).to eq('socket')}
+        sockets.each { |s| expect(s.unit_type).to eq('socket') }
       end
     end
 

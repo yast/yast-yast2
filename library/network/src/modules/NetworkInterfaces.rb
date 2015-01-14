@@ -432,7 +432,7 @@ module Yast
     #
     # Obsolete: It is incompatible with new device naming scheme.
     def device_num(dev)
-      Builtins.y2warning( "Do not use device_num.")
+      Builtins.y2warning("Do not use device_num.")
       ifcfg_part(dev, "2")
     end
 
@@ -500,7 +500,7 @@ module Yast
     # @return true if hotpluggable
     def IsHotplug(type)
       return false if type == "" || type.nil?
-      return true if HOTPLUG_TYPES.any? {|t| type.end_with?(t)}
+      return true if HOTPLUG_TYPES.any? { |t| type.end_with?(t) }
       false
     end
 
@@ -618,7 +618,7 @@ module Yast
       # Now we have ipaddr and prefixlen
       # Let's compute the rest
       netmask = ""
-      netmask = Netmask.FromBits(Builtins.tointeger(prefixlen)) if IP.Check4( ipaddr)
+      netmask = Netmask.FromBits(Builtins.tointeger(prefixlen)) if IP.Check4(ipaddr)
 
       Ops.set(ifcfg, "IPADDR", ipaddr)
       Ops.set(ifcfg, "PREFIXLEN", prefixlen)

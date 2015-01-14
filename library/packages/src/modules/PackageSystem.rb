@@ -291,7 +291,7 @@ module Yast
       solver_flags = Pkg.GetSolverFlags
 
       # do not install recommended packages for already installed packages (bnc#445476)
-      Pkg.SetSolverFlags( "ignoreAlreadyRecommended" => true )
+      Pkg.SetSolverFlags("ignoreAlreadyRecommended" => true)
 
       ret = DoInstallAndRemoveInt(toinstall, toremove)
 

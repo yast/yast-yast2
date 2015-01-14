@@ -68,7 +68,7 @@ describe "Kernel" do
       new_module = "new-kernel-module"
       Yast::Kernel.AddModuleToLoad new_module
       Yast::Kernel.AddModuleToLoad new_module
-      expect(Yast::Kernel.modules_to_load.values.flatten.select{|m| m == new_module}.size).to eq(1)
+      expect(Yast::Kernel.modules_to_load.values.flatten.select { |m| m == new_module }.size).to eq(1)
     end
   end
 

@@ -103,11 +103,11 @@ module Yast
       pkgs = Builtins.mergestring(packs, ", ")
       # the message is followed by list of required packages
       text = Ops.add(
-        ( if install
-            _("These packages need to be installed:")
-          else
-            _("These packages need to be removed:")
-          end
+        (if install
+           _("These packages need to be installed:")
+         else
+           _("These packages need to be removed:")
+         end
         ) + " ",
         pkgs
       )

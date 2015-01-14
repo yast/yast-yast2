@@ -150,7 +150,7 @@ module Yast
               )
             )
             next
-          elsif ( @eventid == :progs || @eventid == :run ) &&
+          elsif (@eventid == :progs || @eventid == :run) &&
               Ops.get_string(@event, "EventReason", "") == "Activated"
             @program = Convert.to_string(
               UI.QueryWidget(Id(:progs), :CurrentItem)

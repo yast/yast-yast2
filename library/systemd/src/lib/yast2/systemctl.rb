@@ -36,7 +36,7 @@ module Yast
           first_column(line)
         end
 
-        ( sockets_from_files | sockets_from_units ).compact
+        (sockets_from_files | sockets_from_units).compact
       end
 
       def service_units
@@ -48,7 +48,7 @@ module Yast
           first_column(line)
         end
 
-        ( services_from_files | services_from_units ).compact
+        (services_from_files | services_from_units).compact
       end
 
       def target_units
@@ -60,7 +60,7 @@ module Yast
           first_column(line)
         end
 
-        ( targets_from_files | targets_from_units ).compact
+        (targets_from_files | targets_from_units).compact
       end
 
     private

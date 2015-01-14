@@ -407,7 +407,7 @@ module Yast
         success = service.send(param)
         self.error = service.error
       end
-      {'stdout'=>'', 'stderr'=>error, 'exit'=> success ? 0 : 1 }
+      { 'stdout' => '', 'stderr' => error, 'exit' => success ? 0 : 1 }
     end
 
     # @deprecated Runlevel features are not supported by systemd
@@ -428,12 +428,12 @@ module Yast
     def Find(services)
       deprecate("use `SystemdService.find` instead")
 
-      services.find {|service_name| SystemdService.find(service_name) }
+      services.find { |service_name| SystemdService.find(service_name) }
     end
 
   private
 
-    def failure(event, service_name, error="")
+    def failure(event, service_name, error = "")
       case event
       when :not_found
         error << "Service '#{service_name}' not found"

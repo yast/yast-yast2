@@ -48,7 +48,7 @@ module Yast
         services = SystemdService.all
         expect(services).to be_a(Array)
         expect(services).not_to be_empty
-        services.each {|s| expect(s.unit_type).to eq('service')}
+        services.each { |s| expect(s.unit_type).to eq('service') }
       end
     end
 
@@ -72,7 +72,7 @@ module Yast
       it "starts a service with a specialized inst-sys helper if available" do
         File.stub(:exist?).with('/bin/service_start').and_return(true)
         service = SystemdService.find("sshd")
-        SCR.stub(:Execute).and_return('stderr'=>'', 'stdout'=>'', 'exit'=>0)
+        SCR.stub(:Execute).and_return('stderr' => '', 'stdout' => '', 'exit' => 0)
         expect(service).not_to receive(:command) # SystemdUnit#command
         expect(service.start).to be_true
       end
@@ -83,7 +83,7 @@ module Yast
         SystemdServiceClass::Service.any_instance.stub(:sleep).and_return(1)
         File.stub(:exist?).with('/bin/service_start').and_return(true)
         service = SystemdService.find("sshd")
-        SCR.stub(:Execute).and_return('stderr'=>'', 'stdout'=>'', 'exit'=>0)
+        SCR.stub(:Execute).and_return('stderr' => '', 'stdout' => '', 'exit' => 0)
         expect(service).to receive(:stop).ordered.and_call_original
         expect(service).to receive(:start).ordered.and_call_original
         expect(service).not_to receive(:command) # SystemdUnit#command
@@ -95,7 +95,7 @@ module Yast
       it "stops a service with a specialized inst-sys helper" do
         File.stub(:exist?).with('/bin/service_start').and_return(true)
         service = SystemdService.find("sshd")
-        SCR.stub(:Execute).and_return('stderr'=>'', 'stdout'=>'', 'exit'=>0)
+        SCR.stub(:Execute).and_return('stderr' => '', 'stdout' => '', 'exit' => 0)
         expect(service).not_to receive(:command) # SystemdUnit#command
         expect(service.stop).to be_true
       end

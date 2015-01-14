@@ -153,7 +153,7 @@ module Yast
       return nil unless Check4(ip)
 
       parts = ip.split(".")
-      parts.reduce(0) {|a, e| (a << 8) + e.to_i }
+      parts.reduce(0) { |a, e| (a << 8) + e.to_i }
     end
 
     # Convert IPv4 address from integer to string

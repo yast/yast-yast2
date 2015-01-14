@@ -10,7 +10,7 @@ module Yast
     describe ".execute" do
       it "returns a struct with command results" do
         expect(SCR).to receive(:Execute).and_return(
-          'exit'=>1, 'stderr'=>'', 'stdout'=>''
+          'exit' => 1, 'stderr' => '', 'stdout' => ''
         )
         result = Systemctl.execute('enable cups.service')
         expect(result).to be_a(OpenStruct)
@@ -34,7 +34,7 @@ module Yast
         socket_units = Systemctl.socket_units
         expect(socket_units).to be_a(Array)
         expect(socket_units).not_to be_empty
-        socket_units.each {|u| expect(u).to match(/.socket$/) }
+        socket_units.each { |u| expect(u).to match(/.socket$/) }
       end
     end
 
@@ -44,7 +44,7 @@ module Yast
         service_units = Systemctl.service_units
         expect(service_units).to be_a(Array)
         expect(service_units).not_to be_empty
-        service_units.each {|u| expect(u).to match(/.service$/) }
+        service_units.each { |u| expect(u).to match(/.service$/) }
       end
     end
 
@@ -54,7 +54,7 @@ module Yast
         target_units = Systemctl.target_units
         expect(target_units).to be_a(Array)
         expect(target_units).not_to be_empty
-        target_units.each {|u| expect(u).to match(/.target$/) }
+        target_units.each { |u| expect(u).to match(/.target$/) }
       end
     end
   end

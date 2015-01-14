@@ -7,7 +7,7 @@ require_relative "../src/lib/yast2/hw_detection"
 describe "HwDetection" do
   before do
     # 16GB
-    @ramsize = 16*1024*1024*1024
+    @ramsize = 16 * 1024 * 1024 * 1024
     @memory = {
       "bus"            => "None",
       "bus_hwcfg"      => "none",
@@ -15,8 +15,8 @@ describe "HwDetection" do
       "model"          => "Main Memory",
       "old_unique_key" => "4srm.CxwsZFjVASF",
       "resource"       => {
-        "mem"      => [{"active" => true, "length" => 16_815_341_568, "start" => 0}],
-        "phys_mem" => [{"range" => @ramsize}]
+        "mem"      => [{ "active" => true, "length" => 16_815_341_568, "start" => 0 }],
+        "phys_mem" => [{ "range" => @ramsize }]
       },
       "sub_class_id"   => 2,
       "unique_key"     => "rdCR.CxwsZFjVASF"
@@ -25,8 +25,8 @@ describe "HwDetection" do
       "class_id"     => 42,
       "sub_class_id" => 42,
       "resource"     => {
-        "mem"      => [{"active" => true, "length" => 16_815_341_568, "start" => 0}],
-        "phys_mem" => [{"range" => @ramsize}]
+        "mem"      => [{ "active" => true, "length" => 16_815_341_568, "start" => 0 }],
+        "phys_mem" => [{ "range" => @ramsize }]
       }
     }
   end
@@ -39,7 +39,7 @@ describe "HwDetection" do
 
     it "sums detected memory sizes" do
       Yast::SCR.should_receive(:Read).with(Yast::Path.new(".probe.memory")).and_return([@memory, @memory])
-      expect(Yast2::HwDetection.memory).to eq(2*@ramsize)
+      expect(Yast2::HwDetection.memory).to eq(2 * @ramsize)
     end
 
     it "ignores non-memory devices" do
@@ -49,7 +49,7 @@ describe "HwDetection" do
 
     it "raises exception when detection fails" do
       Yast::SCR.should_receive(:Read).with(Yast::Path.new(".probe.memory")).and_return(nil)
-      expect{Yast2::HwDetection.memory}.to raise_error
+      expect { Yast2::HwDetection.memory }.to raise_error
     end
   end
 end

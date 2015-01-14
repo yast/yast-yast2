@@ -148,9 +148,9 @@ describe Yast::SuSEFirewallServices do
 
         expect(service_details.is_a?(Hash)).to be_true
 
-        expect(service_details["tcp_ports"]).not_to       be_empty
-        expect(service_details["udp_ports"]).not_to       be_empty
-        expect(service_details["ip_protocols"]).not_to    be_empty
+        expect(service_details["tcp_ports"]).not_to be_empty
+        expect(service_details["udp_ports"]).not_to be_empty
+        expect(service_details["ip_protocols"]).not_to be_empty
         expect(service_details["broadcast_ports"]).not_to be_empty
 
         expect(service_details["rpc_ports"]).to be_empty

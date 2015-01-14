@@ -189,7 +189,7 @@ module Yast
     # Export data
     # @return dumped settings (later acceptable by Import())
     def Export
-      Builtins.eval( "config" => @Config, "dhcp" => @DHCP )
+      Builtins.eval("config" => @Config, "dhcp" => @DHCP)
     end
 
     publish variable: :Config, type: "map"

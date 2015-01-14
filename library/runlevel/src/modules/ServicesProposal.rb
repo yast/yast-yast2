@@ -61,14 +61,14 @@ module Yast
     #
     # @return [Array <String>] list of enabled services
     def enabled_services
-      @services.select{|_service, status| status == :enabled}.keys
+      @services.select { |_service, status| status == :enabled }.keys
     end
 
     # Returns all services currently marked as disabled
     #
     # @return [Array <String>] list of disabled services
     def disabled_services
-      @services.select{|_service, status| status == :disabled}.keys
+      @services.select { |_service, status| status == :disabled }.keys
     end
 
   private

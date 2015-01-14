@@ -47,7 +47,7 @@ module Yast
       return nil if input.nil?
       input.gsub(/[^#{safe_chars}]/) do |unicode_char|
         escaped = ""
-        unicode_char.each_byte {|b| escaped << sprintf("%%%02x", b) }
+        unicode_char.each_byte { |b| escaped << sprintf("%%%02x", b) }
         escaped
       end
     end

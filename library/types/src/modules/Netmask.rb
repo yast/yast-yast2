@@ -115,7 +115,7 @@ module Yast
     #              when prefix is incompatible with IPv4)
     #
     def FromBits(bits)
-      return "" unless bits.between?( 0, 32)
+      return "" unless bits.between?(0, 32)
 
       b = Ops.divide(bits, 8)
       d = Ops.modulo(bits, 8)

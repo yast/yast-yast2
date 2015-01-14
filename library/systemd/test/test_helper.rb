@@ -30,8 +30,8 @@ module SystemctlStubs
     Yast::Systemctl.stub(:execute).and_return(
       OpenStruct.new \
       stdout: 'success',
-      stderr: ( success ? '' : 'failure'),
-      exit:   ( success ? 0  : 1 )
+      stderr: (success ? '' : 'failure'),
+      exit:   (success ? 0  : 1)
     )
   end
 
@@ -120,8 +120,8 @@ module SystemdUnitStubs
       .and_return(
         OpenStruct.new \
         stdout: '',
-        stderr: ( success ? '' : 'failure'),
-        exit:   ( success ? 0  : 1 )
+        stderr: (success ? '' : 'failure'),
+        exit:   (success ? 0  : 1)
       )
   end
 end

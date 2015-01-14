@@ -49,7 +49,7 @@ module Yast
       Yast.import "Report"
 
       # disable use of UI
-      Report.Import( "errors" => { "show" => false, "log" => true } )
+      Report.Import("errors" => { "show" => false, "log" => true })
 
       Yast.include self, "testfunc.rb"
       Yast.import "Mode"
@@ -78,14 +78,14 @@ module Yast
       DUMP("=========================================")
       DUMP("Handle")
 
-      @ret = CWM.handleWidgets(@widget_data,  "ID" => :_tp_edit )
+      @ret = CWM.handleWidgets(@widget_data,  "ID" => :_tp_edit)
       DUMP(Builtins.sformat("Returned %1", @ret))
       Ops.set(
         @widget_data,
         [0, "options", "a", "table", "handle"],
         fun_ref(method(:a_handle), "symbol (any, string, map)")
       )
-      @ret = CWM.handleWidgets(@widget_data,  "ID" => :_tp_edit )
+      @ret = CWM.handleWidgets(@widget_data,  "ID" => :_tp_edit)
       DUMP(Builtins.sformat("Returned %1", @ret))
 
       DUMP("=========================================")

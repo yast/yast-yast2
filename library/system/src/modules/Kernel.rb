@@ -573,7 +573,7 @@ module Yast
     # @param [String] kernel module
     # @return [Boolean] whether the given module is in the list
     def module_to_be_loaded?(kernel_module)
-      modules_to_load.values.any? {|m| m.include?(kernel_module)}
+      modules_to_load.values.any? { |m| m.include?(kernel_module) }
     end
 
     # Add a kernel module to the list of modules to load after boot
@@ -695,7 +695,7 @@ module Yast
     #
     # @return [Hash] with the configuration
     def read_modules_to_load
-      @modules_to_load = {MODULES_CONF_FILE => []}
+      @modules_to_load = { MODULES_CONF_FILE => [] }
 
       if FileUtils.Exists(MODULES_DIR)
         config_files = SCR::Read(path(".target.dir"), MODULES_DIR)

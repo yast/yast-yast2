@@ -783,7 +783,7 @@ module Yast
 
       # allow a handler to enable/disable widgets before the first real
       # UserInput takes place
-      UI.FakeUserInput( "ID" => "_cwm_wakeup" )
+      UI.FakeUserInput("ID" => "_cwm_wakeup")
 
       ret = nil
       save_exits = [:next, :ok]

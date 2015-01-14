@@ -47,7 +47,7 @@ module Yast
     DEFAULT_TARGET = "default.target"
     PROPERTIES     = { allow_isolate: "AllowIsolate" }
 
-    def find(target_name, properties={})
+    def find(target_name, properties = {})
       target_name += UNIT_SUFFIX unless target_name.end_with?(UNIT_SUFFIX)
       target = Target.new(target_name, PROPERTIES.merge(properties))
 
@@ -59,11 +59,11 @@ module Yast
       target
     end
 
-    def find!(target_name, _properties={})
+    def find!(target_name, _properties = {})
       find(target_name) || raise(SystemdTargetNotFound, target_name)
     end
 
-    def all(_properties={})
+    def all(_properties = {})
       targets = Systemctl.target_units.map do |target_unit_name|
         find(target_unit_name)
       end

@@ -74,18 +74,18 @@ module Yast
   class SystemdServiceClass < Module
     UNIT_SUFFIX = ".service"
 
-    def find(service_name, properties={})
+    def find(service_name, properties = {})
       service_name += UNIT_SUFFIX unless service_name.end_with?(UNIT_SUFFIX)
       service = Service.new(service_name, properties)
       return nil if service.properties.not_found?
       service
     end
 
-    def find!(service_name, properties={})
+    def find!(service_name, properties = {})
       find(service_name, properties) || raise(SystemdServiceNotFound, service_name)
     end
 
-    def all(properties={})
+    def all(properties = {})
       Systemctl.service_units.map do |service_unit|
         Service.new(service_unit, properties)
       end
