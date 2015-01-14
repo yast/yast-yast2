@@ -42,7 +42,8 @@ Conflicts:      yast2-inetd <= 2.13.4
 Conflicts:      yast2-tune < 2.15.6
 Obsoletes:      yast2-mail-aliases <= 2.14.0
 Conflicts:      yast2-storage < 2.16.4
-Conflicts:      yast2-network < 2.16.6
+# older yast2-network uses old device type detection API
+Conflicts:      yast2-network < 2.17.201
 Conflicts:      yast2-sshd < 2.16.1
 
 # moved ag_content agent

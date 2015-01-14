@@ -59,7 +59,7 @@
 		}
 		string conn = _("No");
 		if (NetworkInterfaces::IsConnected(i)) conn = _("Yes");
-		return `item(`id(i),  NetworkInterfaces::GetDeviceType(i), device_name, ip_addr, i, conn);
+		return `item(`id(i),  NetworkInterfaces::GetDeviceTypeName(i), device_name, ip_addr, i, conn);
 	    }
 	);
 
