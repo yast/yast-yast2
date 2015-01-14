@@ -92,7 +92,7 @@ module Yast
       !!find(hook_name)
     end
 
-    private
+  private
 
     def create hook_name, source_file
       if hooks[hook_name]
@@ -140,7 +140,7 @@ module Yast
         end
       end
 
-      private
+    private
 
       def set_default_path
         @path = Pathname.new(DEFAULT_DIR)
@@ -182,7 +182,7 @@ module Yast
         !succeeded?
       end
 
-      private
+    private
 
       def find_hook_files hook_name
         log.debug "Searching for hook files in '#{search_path}'..."

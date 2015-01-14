@@ -126,7 +126,7 @@ module Yast
       Systemctl.execute(command)
     end
 
-    private
+  private
 
     def run_command!
       error.clear
@@ -164,7 +164,7 @@ module Yast
         self[:supported?] = SUPPORTED_STATES.member?(unit_file_state)
       end
 
-      private
+    private
 
       # Check the value of #unit_file_state; its value mirrors UnitFileState dbus property
       # @return [Boolean] True if enabled, False if not
@@ -234,7 +234,7 @@ module Yast
         self[:not_found?]   = service_missing?
       end
 
-      private
+    private
 
       def get_status
         systemd_unit.command("is-enabled")

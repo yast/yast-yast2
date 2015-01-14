@@ -365,7 +365,7 @@ module Yast
       end
     end
 
-    private
+  private
 
     # Replies with currently selected network service name
     #

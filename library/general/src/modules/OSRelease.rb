@@ -94,7 +94,7 @@ module Yast
     publish function: :ReleaseName, type: "string ()"
     publish function: :ReleaseVersion, type: "string ()"
 
-    private
+  private
 
     # Make a nice name for a system out of the long name
     # @param [String] longname string the long product name

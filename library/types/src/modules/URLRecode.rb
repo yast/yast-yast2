@@ -41,7 +41,7 @@ module Yast
       input.gsub(/%([0-9A-Fa-f]{2})/) { $1.to_i(16).chr }.force_encoding(input.encoding)
     end
 
-    private
+  private
 
     def escape(input, safe_chars)
       return nil if input.nil?

@@ -63,7 +63,7 @@ module Yast
         ( targets_from_files | targets_from_units ).compact
       end
 
-      private
+    private
 
       def list_unit_files type: nil
         command = " list-unit-files "

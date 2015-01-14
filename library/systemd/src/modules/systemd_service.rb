@@ -124,7 +124,7 @@ module Yast
         start
       end
 
-      private
+    private
 
       def installation_system?
         File.exist?(START_SERVICE_INSTSYS_COMMAND)

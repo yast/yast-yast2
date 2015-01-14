@@ -38,11 +38,11 @@ module Yast
   class ServiceClass < Module
     include Yast::Logger
 
-    private
+  private
 
     attr_writer :error
 
-    public
+  public
 
     attr_reader :error
 
@@ -431,7 +431,7 @@ module Yast
       services.find {|service_name| SystemdService.find(service_name) }
     end
 
-    private
+  private
 
     def failure event, service_name, error=""
       case event
