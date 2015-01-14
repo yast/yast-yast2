@@ -843,41 +843,22 @@ module Yast
           from: "map",
           to:   "map <string, map <string, map <string, any>>>"
         )
-      ) do |typ, devsmap| Builtins.maplist(devsmap) do |config, devmap|
-        next if devmap == Ops.get_map(original_devs, [typ, config], {})
-        # write sysconfig
-        p = Ops.add(Ops.add(".network.value.\"", config), "\".")
-        if Ops.greater_than(
-          Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
-          0
-          ) &&
-            Builtins.find(Ops.get_string(devmap, "IPADDR", ""), "/") == -1
+      ) do |typ, devsmap| 
+        Builtins.maplist(devsmap) do |config, devmap|
+          next if devmap == Ops.get_map(original_devs, [typ, config], {})
+          # write sysconfig
+          p = Ops.add(Ops.add(".network.value.\"", config), "\".")
           if Ops.greater_than(
             Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
             0
             ) &&
-              Ops.greater_than(
-                Builtins.size(Ops.get_string(devmap, "NETMASK", "")),
-                0
-              )
-            Ops.set(
-              devmap,
-              "IPADDR",
-              Builtins.sformat(
-                "%1/%2",
-                Ops.get_string(devmap, "IPADDR", ""),
-                Netmask.ToBits(Ops.get_string(devmap, "NETMASK", ""))
-              )
-            )
-            devmap = Builtins.remove(devmap, "NETMASK") 
-            # TODO : delete NETMASK from config file
-          else
+              Builtins.find(Ops.get_string(devmap, "IPADDR", ""), "/") == -1
             if Ops.greater_than(
               Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
               0
               ) &&
                 Ops.greater_than(
-                  Builtins.size(Ops.get_string(devmap, "PREFIXLEN", "")),
+                  Builtins.size(Ops.get_string(devmap, "NETMASK", "")),
                   0
                 )
               Ops.set(
@@ -886,53 +867,53 @@ module Yast
                 Builtins.sformat(
                   "%1/%2",
                   Ops.get_string(devmap, "IPADDR", ""),
-                  Ops.get_string(devmap, "PREFIXLEN", "")
+                  Netmask.ToBits(Ops.get_string(devmap, "NETMASK", ""))
                 )
               )
-              devmap = Builtins.remove(devmap, "PREFIXLEN") 
-              # TODO : delete PREFIXLEN from config file
-            end
-          end
-        end
-        # write all keys to config
-        Builtins.maplist(
-          Convert.convert(
-            Map.Keys(devmap),
-            from: "list",
-            to:   "list <string>"
-          )
-        ) do |k|
-          # Write aliases
-          if k == "_aliases"
-            Builtins.maplist(Ops.get_map(devmap, k, {})) do |anum, amap|
-              # Normally defaulting the label would be done
-              # when creating the map, not here when
-              # writing, but we create it in 2 ways so it's
-              # better here. Actually it does not work because
-              # the edit dialog nukes LABEL :-(
-              if Ops.greater_than(Builtins.size(Ops.get(amap, "IPADDR", "")), 0) &&
+              devmap = Builtins.remove(devmap, "NETMASK") 
+              # TODO : delete NETMASK from config file
+            else
+              if Ops.greater_than(
+                Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
+                0
+                ) &&
                   Ops.greater_than(
-                    Builtins.size(Ops.get(amap, "NETMASK", "")),
+                    Builtins.size(Ops.get_string(devmap, "PREFIXLEN", "")),
                     0
                   )
                 Ops.set(
-                  amap,
+                  devmap,
                   "IPADDR",
                   Builtins.sformat(
                     "%1/%2",
-                    Ops.get(amap, "IPADDR", ""),
-                    Netmask.ToBits(Ops.get(amap, "NETMASK", ""))
+                    Ops.get_string(devmap, "IPADDR", ""),
+                    Ops.get_string(devmap, "PREFIXLEN", "")
                   )
                 )
-                amap = Builtins.remove(amap, "NETMASK") 
-                # TODO : delete NETMASK from config file
-              else
-                if Ops.greater_than(
-                  Builtins.size(Ops.get(amap, "IPADDR", "")),
-                  0
-                  ) &&
+                devmap = Builtins.remove(devmap, "PREFIXLEN") 
+                # TODO : delete PREFIXLEN from config file
+              end
+            end
+          end
+          # write all keys to config
+          Builtins.maplist(
+            Convert.convert(
+              Map.Keys(devmap),
+              from: "list",
+              to:   "list <string>"
+            )
+          ) do |k|
+            # Write aliases
+            if k == "_aliases"
+              Builtins.maplist(Ops.get_map(devmap, k, {})) do |anum, amap|
+                # Normally defaulting the label would be done
+                # when creating the map, not here when
+                # writing, but we create it in 2 ways so it's
+                # better here. Actually it does not work because
+                # the edit dialog nukes LABEL :-(
+                if Ops.greater_than(Builtins.size(Ops.get(amap, "IPADDR", "")), 0) &&
                     Ops.greater_than(
-                      Builtins.size(Ops.get(amap, "PREFIXLEN", "")),
+                      Builtins.size(Ops.get(amap, "NETMASK", "")),
                       0
                     )
                   Ops.set(
@@ -941,48 +922,68 @@ module Yast
                     Builtins.sformat(
                       "%1/%2",
                       Ops.get(amap, "IPADDR", ""),
-                      Ops.get(amap, "PREFIXLEN", "")
+                      Netmask.ToBits(Ops.get(amap, "NETMASK", ""))
                     )
                   )
-                  amap = Builtins.remove(amap, "PREFIXLEN") 
-                  # TODO : delete PREFIXLEN from config file
+                  amap = Builtins.remove(amap, "NETMASK") 
+                  # TODO : delete NETMASK from config file
+                else
+                  if Ops.greater_than(
+                    Builtins.size(Ops.get(amap, "IPADDR", "")),
+                    0
+                    ) &&
+                      Ops.greater_than(
+                        Builtins.size(Ops.get(amap, "PREFIXLEN", "")),
+                        0
+                      )
+                    Ops.set(
+                      amap,
+                      "IPADDR",
+                      Builtins.sformat(
+                        "%1/%2",
+                        Ops.get(amap, "IPADDR", ""),
+                        Ops.get(amap, "PREFIXLEN", "")
+                      )
+                    )
+                    amap = Builtins.remove(amap, "PREFIXLEN") 
+                    # TODO : delete PREFIXLEN from config file
+                  end
+                end
+                Builtins.maplist(amap) do |ak, av|
+                  akk = Ops.add(Ops.add(ak, "_"), anum)
+                  SCR.Write(Builtins.topath(Ops.add(p, akk)), av) #			    seen_label = seen_label || ak == "LABEL";
                 end
               end
-              Builtins.maplist(amap) do |ak, av|
-                akk = Ops.add(Ops.add(ak, "_"), anum)
-                SCR.Write(Builtins.topath(Ops.add(p, akk)), av) #			    seen_label = seen_label || ak == "LABEL";
-              end
+            else
+              # Write regular keys
+              SCR.Write(
+                Builtins.topath(Ops.add(p, k)),
+                Ops.get_string(devmap, k, "")
+              )
             end
-          else
-            # Write regular keys
+          end
+
+          # 0600 if contains encryption key (#24842)
+          has_key = Builtins.find(@SensitiveFields) do |k|
+            Ops.get_string(devmap, k, "") != ""
+          end != nil
+          if has_key
+            Builtins.y2debug("Permission change: %1", config)
             SCR.Write(
-              Builtins.topath(Ops.add(p, k)),
-              Ops.get_string(devmap, k, "")
+              Builtins.add(path(".network.section_private"), config),
+              true
             )
           end
-        end
-
-        # 0600 if contains encryption key (#24842)
-        has_key = Builtins.find(@SensitiveFields) do |k|
-          Ops.get_string(devmap, k, "") != ""
-        end != nil
-        if has_key
-          Builtins.y2debug("Permission change: %1", config)
-          SCR.Write(
-            Builtins.add(path(".network.section_private"), config),
-            true
+          @OriginalDevices = {} if @OriginalDevices == nil
+          if Ops.get(@OriginalDevices, typ) == nil
+            Ops.set(@OriginalDevices, typ, {})
+          end
+          Ops.set(
+            @OriginalDevices,
+            [typ, config],
+            Ops.get(@Devices, [typ, config], {})
           )
-        end
-        @OriginalDevices = {} if @OriginalDevices == nil
-        if Ops.get(@OriginalDevices, typ) == nil
-          Ops.set(@OriginalDevices, typ, {})
-        end
-        Ops.set(
-          @OriginalDevices,
-          [typ, config],
-          Ops.get(@Devices, [typ, config], {})
-        )
-      end 
+        end 
       end
 
       # Finish him
@@ -1710,16 +1711,17 @@ module Yast
       devices = List("")
 
       # Find the fastest device
-      Builtins.foreach(@FastestTypes) do |_num, type| Builtins.foreach(devices) do |dev|
-        if ret == "" &&
-            Builtins.regexpmatch(
-              dev,
-              Ops.add(Ops.add("^", Ops.get(@DeviceRegex, type, "")), "[0-9]*$")
-            ) &&
-            IsConnected(dev)
-          ret = dev
-        end
-      end 
+      Builtins.foreach(@FastestTypes) do |_num, type| 
+        Builtins.foreach(devices) do |dev|
+          if ret == "" &&
+              Builtins.regexpmatch(
+                dev,
+                Ops.add(Ops.add("^", Ops.get(@DeviceRegex, type, "")), "[0-9]*$")
+              ) &&
+              IsConnected(dev)
+            ret = dev
+          end
+        end 
       end
 
       Builtins.y2milestone("ret=%1", ret)

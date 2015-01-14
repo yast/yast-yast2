@@ -81,9 +81,10 @@ module Yast
         {},
         { "IPADDR" => "10.0.0.1", "other" => "data" },
       ]
-      Builtins.foreach(@addresses) do |address| TEST(lambda do
-        NetworkInterfaces.CanonicalizeIP(address)
-      end, [], nil) 
+      Builtins.foreach(@addresses) do |address| 
+        TEST(lambda do
+               NetworkInterfaces.CanonicalizeIP(address)
+             end, [], nil) 
       end
 
       nil

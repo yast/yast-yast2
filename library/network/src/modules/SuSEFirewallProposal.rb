@@ -240,9 +240,10 @@ module Yast
         zones
       )
 
-      Builtins.foreach(zones) do |one_zone| Builtins.foreach(fallback_ports) do |one_port|
-        SuSEFirewall.AddService(one_port, "TCP", one_zone)
-      end 
+      Builtins.foreach(zones) do |one_zone| 
+        Builtins.foreach(fallback_ports) do |one_port|
+          SuSEFirewall.AddService(one_port, "TCP", one_zone)
+        end 
       end
 
       nil

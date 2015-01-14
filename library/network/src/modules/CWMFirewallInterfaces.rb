@@ -292,13 +292,14 @@ module Yast
       service_status = {}
 
       ifaces_info = SuSEFirewall.GetServicesInZones(services)
-      Builtins.foreach(ifaces_info) do |_s, status| Builtins.foreach(status) do |iface, en|
-        Ops.set(
-          service_status,
-          iface,
-          Ops.get(service_status, iface, true) && en
-        )
-      end 
+      Builtins.foreach(ifaces_info) do |_s, status| 
+        Builtins.foreach(status) do |iface, en|
+          Ops.set(
+            service_status,
+            iface,
+            Ops.get(service_status, iface, true) && en
+          )
+        end 
       end
       service_status = Builtins.filter(service_status) { |_iface, en| en == true }
       Builtins.y2milestone("Status: %1", service_status)

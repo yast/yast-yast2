@@ -134,11 +134,12 @@ module Yast
           "8080",
           "http-alt"
         ]
-      ) do |port| TEST(->() { PortAliases.GetListOfServiceAliases(port) }, [
-        @READ,
-        @WRITE,
-        @EXECUTE
-      ], nil) 
+      ) do |port| 
+        TEST(->() { PortAliases.GetListOfServiceAliases(port) }, [
+          @READ,
+          @WRITE,
+          @EXECUTE
+        ], nil) 
       end
 
       DUMP("")

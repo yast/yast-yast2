@@ -120,26 +120,27 @@ module Yast
       lines = deep_copy(lines)
       ret = {}
 
-      Builtins.foreach(lines) do |line| Builtins.foreach(@parsing_map) do |regexp, key|
-        parsed = Builtins.regexpsub(line, regexp, "\\1")
-        if parsed != nil
-          # there might be more UIDs
-          if key == "uid"
-            Builtins.y2milestone("%1: %2", key, parsed)
-            Ops.set(ret, key, Builtins.add(Ops.get_list(ret, key, []), parsed))
-          else
-            if Builtins.haskey(ret, key)
-              Builtins.y2warning(
-                "Key %1: replacing old value '%2' with '%3'",
-                key,
-                Ops.get_string(ret, key, ""),
-                parsed
-              )
+      Builtins.foreach(lines) do |line| 
+        Builtins.foreach(@parsing_map) do |regexp, key|
+          parsed = Builtins.regexpsub(line, regexp, "\\1")
+          if parsed != nil
+            # there might be more UIDs
+            if key == "uid"
+              Builtins.y2milestone("%1: %2", key, parsed)
+              Ops.set(ret, key, Builtins.add(Ops.get_list(ret, key, []), parsed))
+            else
+              if Builtins.haskey(ret, key)
+                Builtins.y2warning(
+                  "Key %1: replacing old value '%2' with '%3'",
+                  key,
+                  Ops.get_string(ret, key, ""),
+                  parsed
+                )
+              end
+              Ops.set(ret, key, parsed)
             end
-            Ops.set(ret, key, parsed)
           end
-        end
-      end 
+        end 
       end 
 
       Builtins.y2milestone("Parsed key: %1", ret)

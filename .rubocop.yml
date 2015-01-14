@@ -82,11 +82,6 @@ Style/FileName:
 Style/MethodName:
   Enabled: false
 
-# Offense count: 10
-# Cop supports --auto-correct.
-Style/MultilineBlockLayout:
-  Enabled: false
-
 # Offense count: 247
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles.
