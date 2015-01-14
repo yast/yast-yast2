@@ -378,7 +378,7 @@ module Yast
     #
     def cached_name
       Read()
-      return @cached_name
+      @cached_name
     end
 
     # Checks if currently cached service is the given one

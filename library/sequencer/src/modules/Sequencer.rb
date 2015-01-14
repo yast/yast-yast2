@@ -204,7 +204,7 @@ module Yast
         return WS_error(Builtins.sformat("Invalid alias: %1", found))
       end
 
-      return deep_copy(found)
+      deep_copy(found)
     end
 
     # Decide if an alias is special

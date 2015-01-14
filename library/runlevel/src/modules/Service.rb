@@ -442,7 +442,7 @@ module Yast
       end
       self.error = error
       log.error(error)
-      return false
+      false
     end
 
     def deprecate(message)

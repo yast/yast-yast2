@@ -59,7 +59,7 @@ module Yast2
       end
 
       log.info("Detected memory size: #{memory_size} (#{memory_size/1024/1024}MiB)")
-      return memory_size
+      memory_size
     end
   end
 end

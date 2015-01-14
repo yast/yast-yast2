@@ -94,7 +94,7 @@ module Yast
         return elements.size <= max_elements
       end
 
-      return res
+      res
     end
 
     # If param contains IPv6 in one of its various forms, extracts it.
@@ -417,7 +417,7 @@ module Yast
       # all from 224. is covered by RFC#5771 and RFC#5735
       return true if (224..255).include?(ip.split(".").first.to_i)
 
-      return false
+      false
     end
 
     publish variable: :ValidChars, type: "string"
@@ -448,7 +448,7 @@ module Yast
       return false unless ip.start_with?("100.")
 
       second_part = ip.split(".")[1].to_i
-      return (64..127).include?(second_part)
+      (64..127).include?(second_part)
     end
 
     def private_network?(ip)
@@ -462,14 +462,14 @@ module Yast
       return false unless ip.start_with?("172.")
 
       second_part = ip.split(".")[1].to_i
-      return (16..31).include?(second_part)
+      (16..31).include?(second_part)
     end
 
     def ds_lite_address?(ip)
       return false unless ip.start_with?("192.0.0.")
 
       fourth_part = ip.split(".")[3].to_i
-      return (0..7).include?(fourth_part)
+      (0..7).include?(fourth_part)
     end
   end
 
