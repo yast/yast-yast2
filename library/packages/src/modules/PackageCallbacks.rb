@@ -2497,7 +2497,7 @@ module Yast
       url_query = URI(url).query
       if url_query
         url_params = Hash[URI.decode_www_form(url_query)]
-        if url_params.has_key?("credentials")
+        if url_params.key?("credentials")
           # Seems to be the url of a registration server, so add the tip to msg
           tip = Builtins.dgettext("registration",
             "Check that this system is known to the registration server.")
