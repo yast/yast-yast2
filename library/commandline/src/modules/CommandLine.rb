@@ -961,9 +961,9 @@ module Yast
           doc,
           "listEntries",
           
-            "commands" => "command",
-            "options"  => "option",
-            "examples" => "example"
+          "commands" => "command",
+          "options"  => "option",
+          "examples" => "example"
           
         )
         #	    doc["cdataSections"] = [];
@@ -1155,8 +1155,8 @@ module Yast
         Builtins.foreach(Ops.get_map(cmdlineinfo, "mappings", {})) do |mapaction, def_|
           # is this action defined?
           if !Builtins.haskey(
-              Ops.get_map(cmdlineinfo, "actions", {}),
-              mapaction
+            Ops.get_map(cmdlineinfo, "actions", {}),
+            mapaction
             )
             Builtins.y2error(
               "Command line specification maps undefined action '%1'",
@@ -1171,8 +1171,8 @@ module Yast
             next if !Ops.is_string?(mapopt)
             # is this option defined?
             if !Builtins.haskey(
-                Ops.get_map(cmdlineinfo, "options", {}),
-                Convert.to_string(mapopt)
+              Ops.get_map(cmdlineinfo, "options", {}),
+              Convert.to_string(mapopt)
               )
               Builtins.y2error(
                 "Command line specification maps undefined option '%1' for action '%2'",

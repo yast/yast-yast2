@@ -66,8 +66,8 @@ module Yast
     # Read the data file containing file checksums
     def ReadSettings
       if Ops.less_or_equal(
-          Convert.to_integer(SCR.Read(path(".target.size"), @data_file)),
-          0
+        Convert.to_integer(SCR.Read(path(".target.size"), @data_file)),
+        0
         )
         @file_checksums = {}
         return

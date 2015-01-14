@@ -115,11 +115,11 @@ module Yast
         products = Builtins.add(
           products,
           
-            "arch"    => Ops.get_string(product, "arch", ""),
-            "name"    => name,
-            "version" => Ops.get(version_release, 0, ""),
-            "release" => Ops.get(version_release, 1, ""),
-            "vendor"  => Ops.get_string(product, "vendor", "")
+          "arch"    => Ops.get_string(product, "arch", ""),
+          "name"    => name,
+          "version" => Ops.get(version_release, 0, ""),
+          "release" => Ops.get(version_release, 1, ""),
+          "vendor"  => Ops.get_string(product, "vendor", "")
           
         )
         sigkeys = Convert.convert(

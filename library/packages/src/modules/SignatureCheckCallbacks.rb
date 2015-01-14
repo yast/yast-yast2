@@ -66,8 +66,8 @@ module Yast
 
       # Show the popup?
       if SignatureCheckDialogs.GetShowThisPopup(
-          dont_show_dialog_ident,
-          filename
+        dont_show_dialog_ident,
+        filename
         )
         return SignatureCheckDialogs.UseUnsignedItem(
           :file,
@@ -103,8 +103,8 @@ module Yast
 
       # Show the popup?
       if SignatureCheckDialogs.GetShowThisPopup(
-          dont_show_dialog_ident,
-          filename
+        dont_show_dialog_ident,
+        filename
         )
         return SignatureCheckDialogs.UseItemWithNoChecksum(
           :file,
@@ -133,8 +133,8 @@ module Yast
 
       # Show the popup?
       if SignatureCheckDialogs.GetShowThisPopup(
-          dont_show_dialog_ident,
-          filename
+        dont_show_dialog_ident,
+        filename
         )
         return SignatureCheckDialogs.UseFileWithWrongDigest(
           filename,
@@ -165,8 +165,8 @@ module Yast
 
       # Show the popup?
       if SignatureCheckDialogs.GetShowThisPopup(
-          dont_show_dialog_ident,
-          filename
+        dont_show_dialog_ident,
+        filename
         )
         return SignatureCheckDialogs.UseFileWithUnknownDigest(
           filename,
@@ -202,8 +202,8 @@ module Yast
 
       # Show the popup?
       if SignatureCheckDialogs.GetShowThisPopup(
-          dont_show_dialog_ident,
-          filename
+        dont_show_dialog_ident,
+        filename
         )
         # Unknown keyname == "Unknown Key"
         return SignatureCheckDialogs.ItemSignedWithUnknownSignature(

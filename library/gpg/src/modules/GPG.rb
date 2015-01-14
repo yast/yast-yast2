@@ -316,10 +316,10 @@ module Yast
       suffix = ascii_signature ? ".asc" : ".sig"
 
       if Ops.greater_or_equal(
-          Convert.to_integer(
-            SCR.Read(path(".target.size"), Ops.add(file, suffix))
-          ),
-          0
+        Convert.to_integer(
+          SCR.Read(path(".target.size"), Ops.add(file, suffix))
+        ),
+        0
         )
         # remove the existing key
         SCR.Execute(

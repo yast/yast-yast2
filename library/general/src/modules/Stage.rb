@@ -71,8 +71,8 @@ module Yast
     # @param [String] new_stage string currently processed stage
     def Set(new_stage)
       if !Builtins.contains(
-          ["normal", "initial", "continue", "firstboot", "hardware_probed"],
-          new_stage
+        ["normal", "initial", "continue", "firstboot", "hardware_probed"],
+        new_stage
         )
         Builtins.y2error("Unknown stage %1", new_stage)
       end

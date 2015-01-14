@@ -105,9 +105,9 @@ module Yast
         ret = Builtins.prepend(
           ret,
           
-            "alias"        => "root",
-            "destinations" => @root_alias,
-            "comment"      => @root_alias_comment
+          "alias"        => "root",
+          "destinations" => @root_alias,
+          "comment"      => @root_alias_comment
           
         )
       end

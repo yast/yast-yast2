@@ -280,8 +280,8 @@ module Yast
 
         # 192.168.0.0/20, 0.8.55/158
       elsif Builtins.regexpmatch(
-          network,
-          Ops.add(Ops.add("^[", @ValidChars4), "]+/[0-9]+$")
+        network,
+        Ops.add(Ops.add("^[", @ValidChars4), "]+/[0-9]+$")
         )
         net_parts = Builtins.splitstring(network, "/")
         return Check4(Ops.get(net_parts, 0, "")) &&
@@ -289,11 +289,11 @@ module Yast
 
         # 192.168.0.0/255.255.255.0, 0.8.55/10.258.12
       elsif Builtins.regexpmatch(
-          network,
-          Ops.add(
-            Ops.add(Ops.add(Ops.add("^[", @ValidChars4), "]+/["), @ValidChars4),
-            "]+$"
-          )
+        network,
+        Ops.add(
+          Ops.add(Ops.add(Ops.add("^[", @ValidChars4), "]+/["), @ValidChars4),
+          "]+$"
+        )
         )
         net_parts = Builtins.splitstring(network, "/")
         return Check4(Ops.get(net_parts, 0, "")) &&
@@ -323,14 +323,14 @@ module Yast
 
         # 2001:db8:0::1/64
       elsif Builtins.regexpmatch(
-          network,
+        network,
+        Ops.add(
           Ops.add(
-            Ops.add(
-              Ops.add(Ops.add("^[", @ValidChars6), "]+/["),
-              Netmask.ValidChars6
-            ),
-            "]+$"
-          )
+            Ops.add(Ops.add("^[", @ValidChars6), "]+/["),
+            Netmask.ValidChars6
+          ),
+          "]+$"
+        )
         )
         net_parts = Builtins.splitstring(network, "/")
         return Check6(Ops.get(net_parts, 0, "")) &&
@@ -338,11 +338,11 @@ module Yast
 
         # 2001:db8:0::1/ffff:ffff::0
       elsif Builtins.regexpmatch(
-          network,
-          Ops.add(
-            Ops.add(Ops.add(Ops.add("^[", @ValidChars6), "]+/["), @ValidChars6),
-            "]+$"
-          )
+        network,
+        Ops.add(
+          Ops.add(Ops.add(Ops.add("^[", @ValidChars6), "]+/["), @ValidChars6),
+          "]+$"
+        )
         )
         net_parts = Builtins.splitstring(network, "/")
         return Check6(Ops.get(net_parts, 0, "")) &&

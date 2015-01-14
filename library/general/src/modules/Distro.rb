@@ -66,8 +66,8 @@ module Yast
     def debian
       if @_distro == nil
         if SCR.Execute(
-            path(".target.bash"),
-            "grep DISTRIB_ID=Ubuntu /etc/lsb-release"
+          path(".target.bash"),
+          "grep DISTRIB_ID=Ubuntu /etc/lsb-release"
           ) == 0
           @_distro = "debian"
           Builtins.y2milestone("Found Debian/Ubuntu")

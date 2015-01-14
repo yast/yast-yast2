@@ -260,8 +260,8 @@ module Yast
       if Ops.get_string(mod, "proposal", "") != nil &&
           Ops.get_string(mod, "proposal", "") != ""
         if Builtins.contains(
-            @DisabledProposals,
-            Ops.get_string(mod, "proposal", "")
+          @DisabledProposals,
+          Ops.get_string(mod, "proposal", "")
           )
           return true
         end
@@ -307,10 +307,10 @@ module Yast
 
       # FIXME would be nice if it could be done generic way
       if Ops.greater_than(
-          Builtins.size(
-            Ops.get_list(@productControl, ["partitioning", "partitions"], [])
-          ),
-          0
+        Builtins.size(
+          Ops.get_list(@productControl, ["partitioning", "partitions"], [])
+        ),
+        0
         )
         partitioning = Ops.get_map(@productControl, "partitioning", {})
         ProductFeatures.SetBooleanFeature(
@@ -1353,9 +1353,9 @@ module Yast
         # Register what step we are going to run
         if !Stage.initial
           if !SCR.Write(
-              path(".target.string"),
-              Installation.current_step,
-              step_id
+            path(".target.string"),
+            Installation.current_step,
+            step_id
             )
             Builtins.y2error("Error writing step identifier")
           end

@@ -341,24 +341,24 @@ module Yast
             :IniAgent,
             filename,
             
-              "options"  => ["read_only"], # rw works but not needed
-              "comments" => ["^[ \t]*[;#].*", ";.*", "\\{[^}]*\\}", "^[ \t]*$"],
-              "sections" => [
-                {
-                  "begin" => [
-                    "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
-                    "[%s]"
-                  ]
-                }
-              ],
-              "params"   => [
-                {
-                  "match" => [
-                    "^[ \t]*([^=]*[^ \t=])[ \t]*=[ \t]*(.*[^ \t]|)[ \t]*$",
-                    "%s=%s"
-                  ]
-                }
-              ]
+            "options"  => ["read_only"], # rw works but not needed
+            "comments" => ["^[ \t]*[;#].*", ";.*", "\\{[^}]*\\}", "^[ \t]*$"],
+            "sections" => [
+              {
+                "begin" => [
+                  "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
+                  "[%s]"
+                ]
+              }
+            ],
+            "params"   => [
+              {
+                "match" => [
+                  "^[ \t]*([^=]*[^ \t=])[ \t]*=[ \t]*(.*[^ \t]|)[ \t]*$",
+                  "%s=%s"
+                ]
+              }
+            ]
             
           )
         )

@@ -330,9 +330,9 @@ module Yast
             )
           end
           if Ops.get(
-              service_status,
-              SuSEFirewall.special_all_interface_zone,
-              false
+            service_status,
+            SuSEFirewall.special_all_interface_zone,
+            false
             )
             @allowed_interfaces = Convert.convert(
               Builtins.union(@allowed_interfaces, interfaces_supported_by_any),
@@ -748,26 +748,26 @@ module Yast
         Builtins.union(
           settings,
           
-            "widget"            => :custom,
-            "custom_widget"     => widget,
-            "help"              => help,
-            "init"              => fun_ref(
-              method(:InterfacesInitWrapper),
-              "void (string)"
-            ),
-            "store"             => fun_ref(
-              method(:InterfacesStoreWrapper),
-              "void (string, map)"
-            ),
-            "handle"            => fun_ref(
-              method(:InterfacesHandleWrapper),
-              "symbol (string, map)"
-            ),
-            "validate_type"     => :function,
-            "validate_function" => fun_ref(
-              method(:InterfacesValidateWrapper),
-              "boolean (string, map)"
-            )
+          "widget"            => :custom,
+          "custom_widget"     => widget,
+          "help"              => help,
+          "init"              => fun_ref(
+            method(:InterfacesInitWrapper),
+            "void (string)"
+          ),
+          "store"             => fun_ref(
+            method(:InterfacesStoreWrapper),
+            "void (string, map)"
+          ),
+          "handle"            => fun_ref(
+            method(:InterfacesHandleWrapper),
+            "symbol (string, map)"
+          ),
+          "validate_type"     => :function,
+          "validate_function" => fun_ref(
+            method(:InterfacesValidateWrapper),
+            "boolean (string, map)"
+          )
           
         ),
         from: "map",
@@ -785,7 +785,7 @@ module Yast
       # settings stack must be created in CWM::Run
       w = CWM.CreateWidgets(
         ["firewall_ifaces"],
-         "firewall_ifaces" => CreateInterfacesWidget(settings)
+        "firewall_ifaces" => CreateInterfacesWidget(settings)
       )
       contents = VBox(
         "firewall_ifaces",

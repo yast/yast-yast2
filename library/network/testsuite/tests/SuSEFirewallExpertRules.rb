@@ -67,10 +67,10 @@ module Yast
         SuSEFirewallExpertRules.AddNewAcceptRule(
           "EXT",
           
-            "network"  => "192.168.0.1/255.255.240.0",
-            "protocol" => "tcp",
-            "sport"    => "22",
-            "options"  => "hitcount=3,blockseconds=60,recentname=ssh"
+          "network"  => "192.168.0.1/255.255.240.0",
+          "protocol" => "tcp",
+          "sport"    => "22",
+          "options"  => "hitcount=3,blockseconds=60,recentname=ssh"
           
         )
       end, [], nil)
@@ -80,9 +80,9 @@ module Yast
         SuSEFirewallExpertRules.AddNewAcceptRule(
           "EXT",
           
-            "network"  => "192.168.0.1/255.255.240.0",
-            "protocol" => "tcp",
-            "options"  => "whatever=1"
+          "network"  => "192.168.0.1/255.255.240.0",
+          "protocol" => "tcp",
+          "options"  => "whatever=1"
           
         )
       end, [], nil)
@@ -96,7 +96,7 @@ module Yast
       TEST(lambda do
         SuSEFirewallExpertRules.RemoveAcceptRule(
           "EXT",
-           "network" => "192.168.0.1/255.255.240.0", "protocol" => "tcp" 
+          "network" => "192.168.0.1/255.255.240.0", "protocol" => "tcp" 
         )
       end, [], nil)
       TEST(->() { SuSEFirewallExpertRules.GetListOfAcceptRules("EXT") }, [], nil)
@@ -106,9 +106,9 @@ module Yast
         SuSEFirewallExpertRules.RemoveAcceptRule(
           "EXT",
           
-            "network"  => "192.168.0.1/255.255.240.0",
-            "protocol" => "tcp",
-            "options"  => "whatever=1"
+          "network"  => "192.168.0.1/255.255.240.0",
+          "protocol" => "tcp",
+          "options"  => "whatever=1"
           
         )
       end, [], nil)
@@ -118,7 +118,7 @@ module Yast
       TEST(lambda do
         SuSEFirewallExpertRules.AddNewAcceptRule(
           "EXT",
-           "protocol" => "UDP", "sport" => "888" 
+          "protocol" => "UDP", "sport" => "888" 
         )
       end, [], nil)
       TEST(->() { SuSEFirewallExpertRules.GetListOfAcceptRules("EXT") }, [], nil)
@@ -127,7 +127,7 @@ module Yast
       TEST(lambda do
         SuSEFirewallExpertRules.AddNewAcceptRule(
           "EXT",
-           "protocol" => "TCP", "sport" => "999", "network" => "0.0.0.0/0" 
+          "protocol" => "TCP", "sport" => "999", "network" => "0.0.0.0/0" 
         )
       end, [], nil)
       TEST(->() { SuSEFirewallExpertRules.GetListOfAcceptRules("EXT") }, [], nil)

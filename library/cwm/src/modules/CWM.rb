@@ -87,7 +87,7 @@ module Yast
     def PushSettings
       @settings_stack = Builtins.prepend(
         @settings_stack,
-         "widgets" => @current_dialog_widgets 
+        "widgets" => @current_dialog_widgets 
       )
 
       nil
@@ -652,8 +652,8 @@ module Yast
       elsif val_type == :regexp
         regexp = Ops.get_string(widget, "validate_condition", "")
         if !Builtins.regexpmatch(
-            Convert.to_string(UI.QueryWidget(Id(:_tp_value), :Value)),
-            regexp
+          Convert.to_string(UI.QueryWidget(Id(:_tp_value), :Value)),
+          regexp
           )
           failed = true
         end

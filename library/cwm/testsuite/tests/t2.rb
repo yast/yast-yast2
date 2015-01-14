@@ -122,25 +122,25 @@ module Yast
       ret = TablePopup.CreateTableDescr(
         {},
         
-          "init"     => fun_ref(
-            TablePopup.method(:TableInitWrapper),
-            "void (string)"
-          ),
-          "handle"   => fun_ref(
-            TablePopup.method(:TableHandleWrapper),
-            "symbol (string, map)"
-          ),
-          "ids"      => fun_ref(method(:getIdList), "list (map)"),
-          "id2key"   => fun_ref(method(:id2key), "string (map, any)"),
-          "options"  => @popups,
-          "fallback" => {
-            "init"    => fun_ref(method(:fallback_init), "void (any, string)"),
-            "store"   => fun_ref(method(:fallback_store), "void (any, string)"),
-            "summary" => fun_ref(
-              method(:fallback_summary),
-              "string (any, string)"
-            )
-          }
+        "init"     => fun_ref(
+          TablePopup.method(:TableInitWrapper),
+          "void (string)"
+        ),
+        "handle"   => fun_ref(
+          TablePopup.method(:TableHandleWrapper),
+          "symbol (string, map)"
+        ),
+        "ids"      => fun_ref(method(:getIdList), "list (map)"),
+        "id2key"   => fun_ref(method(:id2key), "string (map, any)"),
+        "options"  => @popups,
+        "fallback" => {
+          "init"    => fun_ref(method(:fallback_init), "void (any, string)"),
+          "store"   => fun_ref(method(:fallback_store), "void (any, string)"),
+          "summary" => fun_ref(
+            method(:fallback_summary),
+            "string (any, string)"
+          )
+        }
         
       )
       deep_copy(ret)

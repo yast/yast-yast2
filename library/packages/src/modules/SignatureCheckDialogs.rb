@@ -296,8 +296,8 @@ module Yast
 
       loop do
         if Ops.greater_or_equal(
-            Ops.add(after_chars_counter, after_chars),
-            max_size
+          Ops.add(after_chars_counter, after_chars),
+          max_size
           )
           splittedstring = Ops.add(
             Ops.add(splittedstring, splittedstring == "" ? "" : delimiter),
@@ -667,8 +667,8 @@ module Yast
         )
       )
       if Ops.greater_than(
-          Builtins.size(Ops.get_string(key, "fingerprint", "")),
-          0
+        Builtins.size(Ops.get_string(key, "fingerprint", "")),
+        0
         )
         # GPG key property
         rt = Ops.add(

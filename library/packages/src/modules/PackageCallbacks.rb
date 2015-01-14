@@ -1171,8 +1171,8 @@ module Yast
         )
         # is it a valid URL?
         if Builtins.contains(
-            ["ftp", "http", "nfs", "file", "dir", "iso", "smb", "disk"],
-            Ops.get_string(parsed, "scheme", "")
+          ["ftp", "http", "nfs", "file", "dir", "iso", "smb", "disk"],
+          Ops.get_string(parsed, "scheme", "")
           )
           # reformat the URL
           w = URL.FormatURL(parsed, max_len)
@@ -1223,8 +1223,8 @@ module Yast
       ui_adjustment = textmode ? 0 : 5
 
       if Ops.greater_than(
-          Builtins.size(text),
-          Ops.subtract(@max_size, ui_adjustment)
+        Builtins.size(text),
+        Ops.subtract(@max_size, ui_adjustment)
         )
         text = ProcessMessage(text, Ops.subtract(@max_size, ui_adjustment))
       end
@@ -1240,8 +1240,8 @@ module Yast
       ui_adjustment = textmode ? 0 : 6
 
       if Ops.greater_than(
-          Builtins.size(text),
-          Ops.add(@max_size, ui_adjustment)
+        Builtins.size(text),
+        Ops.add(@max_size, ui_adjustment)
         )
         text = ProcessMessage(text, Ops.add(@max_size, ui_adjustment))
       end
@@ -2500,7 +2500,7 @@ module Yast
         if url_params.has_key?("credentials")
           # Seems to be the url of a registration server, so add the tip to msg
           tip = Builtins.dgettext("registration",
-                                  "Check that this system is known to the registration server.")
+            "Check that this system is known to the registration server.")
           msg = "#{tip}\n#{msg}"
         end
       end
@@ -2584,7 +2584,7 @@ module Yast
         subprogress_type = @tick_progress ? :tick : :progress
         @progress_stack = Builtins.add(
           @progress_stack,
-           "type" => subprogress_type, "task" => task 
+          "type" => subprogress_type, "task" => task 
         )
 
         if IsProgressPopup() &&

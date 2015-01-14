@@ -523,8 +523,8 @@ module Yast
       end
 
       if Ops.greater_than(
-          Builtins.size(Ops.get_list(summary, "remaining", [])),
-          0
+        Builtins.size(Ops.get_list(summary, "remaining", [])),
+        0
         )
         items = Builtins.add(
           items,

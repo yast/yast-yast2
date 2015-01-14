@@ -121,8 +121,8 @@ module Yast
           Builtins.y2error("bad entry in rc_write()")
         else
           if !SCR.Write(
-              Ops.add(level, Ops.get_path(entry, 0, path("."))),
-              Ops.get_string(entry, 1, "")
+            Ops.add(level, Ops.get_path(entry, 0, path("."))),
+            Ops.get_string(entry, 1, "")
             )
             result = false
           end

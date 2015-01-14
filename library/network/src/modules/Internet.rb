@@ -143,8 +143,8 @@ module Yast
 
       if @type == "isdn" && !@capi_isdn
         if SCR.Execute(
-            path(".target.bash"),
-            Ops.add("/sbin/isdnctrl dial ", @device)
+          path(".target.bash"),
+          Ops.add("/sbin/isdnctrl dial ", @device)
           ) != 0
           Builtins.y2error("isdnctrl failed")
           return false

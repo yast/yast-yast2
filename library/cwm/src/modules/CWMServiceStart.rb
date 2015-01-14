@@ -386,17 +386,17 @@ module Yast
         Builtins.union(
           settings,
           
-            "widget"        => :custom,
-            "custom_widget" => booting,
-            "help"          => help,
-            "init"          => fun_ref(
-              method(:AutoStartInitWrapper),
-              "void (string)"
-            ),
-            "store"         => fun_ref(
-              method(:AutoStartStoreWrapper),
-              "void (string, map)"
-            )
+          "widget"        => :custom,
+          "custom_widget" => booting,
+          "help"          => help,
+          "init"          => fun_ref(
+            method(:AutoStartInitWrapper),
+            "void (string)"
+          ),
+          "store"         => fun_ref(
+            method(:AutoStartStoreWrapper),
+            "void (string, map)"
+          )
           
         ),
         from: "map",
@@ -645,23 +645,23 @@ module Yast
         Builtins.union(
           settings,
           
-            "widget"        => :custom,
-            "custom_widget" => immediate_actions,
-            "help"          => help,
-            "init"          => fun_ref(
-              method(:StartStopInitWrapper),
-              "void (string)"
-            ),
-            "handle"        => fun_ref(
-              method(:StartStopHandleWrapper),
-              "symbol (string, map)"
-            ),
-            "handle_events" => [
-              :timeout,
-              "_cwm_start_service_now",
-              "_cwm_stop_service_now",
-              "_cwm_save_settings_now"
-            ]
+          "widget"        => :custom,
+          "custom_widget" => immediate_actions,
+          "help"          => help,
+          "init"          => fun_ref(
+            method(:StartStopInitWrapper),
+            "void (string)"
+          ),
+          "handle"        => fun_ref(
+            method(:StartStopHandleWrapper),
+            "symbol (string, map)"
+          ),
+          "handle_events" => [
+            :timeout,
+            "_cwm_start_service_now",
+            "_cwm_stop_service_now",
+            "_cwm_save_settings_now"
+          ]
           
         ),
         from: "map",
@@ -791,18 +791,18 @@ module Yast
         Builtins.union(
           settings,
           
-            "widget"        => :custom,
-            "custom_widget" => ldap_settings,
-            "help"          => help,
-            "init"          => fun_ref(
-              method(:LdapInitWrapper),
-              "void (string)"
-            ),
-            "handle"        => fun_ref(
-              method(:LdapHandleWrapper),
-              "symbol (string, map)"
-            ),
-            "handle_events" => ["_cwm_use_ldap"]
+          "widget"        => :custom,
+          "custom_widget" => ldap_settings,
+          "help"          => help,
+          "init"          => fun_ref(
+            method(:LdapInitWrapper),
+            "void (string)"
+          ),
+          "handle"        => fun_ref(
+            method(:LdapHandleWrapper),
+            "symbol (string, map)"
+          ),
+          "handle_events" => ["_cwm_use_ldap"]
           
         ),
         from: "map",

@@ -305,32 +305,32 @@ module Yast
         :IniAgent,
         filefullpath,
         
-          "options"  => [
-            "global_values",
-            "flat",
-            "read_only",
-            "ignore_case_regexps"
-          ],
-          "comments" => [
-            # jail followed by anything but jail (immediately)
-            "^[ \t]*#[^#].*$",
-            # comments that are not commented key:value pairs (see "params")
-            # they always use two jails
-            "^[ \t]*##[ \t]*[^([a-zA-Z0-9_]+:.*)]$",
-            # comments with three jails and more
-            "^[ \t]*###.*$",
-            # jail alone
-            "^[ \t]*#[ \t]*$",
-            # (empty space)
-            "^[ \t]*$",
-            # sysconfig entries
-            "^[ \t]*[a-zA-Z0-9_]+.*"
-          ],
-          "params"   => [
-            # commented key:value pairs
-            # e.g.: ## Name: service name
-            { "match" => ["^##[ \t]*([a-zA-Z0-9_]+):[ \t]*(.*)[ \t]*$", "%s: %s"] }
-          ]
+        "options"  => [
+          "global_values",
+          "flat",
+          "read_only",
+          "ignore_case_regexps"
+        ],
+        "comments" => [
+          # jail followed by anything but jail (immediately)
+          "^[ \t]*#[^#].*$",
+          # comments that are not commented key:value pairs (see "params")
+          # they always use two jails
+          "^[ \t]*##[ \t]*[^([a-zA-Z0-9_]+:.*)]$",
+          # comments with three jails and more
+          "^[ \t]*###.*$",
+          # jail alone
+          "^[ \t]*#[ \t]*$",
+          # (empty space)
+          "^[ \t]*$",
+          # sysconfig entries
+          "^[ \t]*[a-zA-Z0-9_]+.*"
+        ],
+        "params"   => [
+          # commented key:value pairs
+          # e.g.: ## Name: service name
+          { "match" => ["^##[ \t]*([a-zA-Z0-9_]+):[ \t]*(.*)[ \t]*$", "%s: %s"] }
+        ]
         
       )
     end
@@ -398,8 +398,8 @@ module Yast
 
         # Registering sysconfig agent for this file
         if !SCR.RegisterAgent(
-            path(".firewall_service_definition"),
-            term(:ag_ini, term(:SysConfigFile, filefullpath))
+          path(".firewall_service_definition"),
+          term(:ag_ini, term(:SysConfigFile, filefullpath))
           )
           log.error "Cannot register agent for #{filefullpath}"
           next
@@ -432,8 +432,8 @@ module Yast
 
         # Registering sysconfig agent for this file (to get metadata)
         if SCR.RegisterAgent(
-            path(".firewall_service_metadata"),
-            term(:ag_ini, GetMetadataAgent(filefullpath))
+          path(".firewall_service_metadata"),
+          term(:ag_ini, GetMetadataAgent(filefullpath))
           )
           Builtins.foreach(@known_metadata) do |metadata_feature, metadata_key|
             definition = Convert.to_string(
@@ -655,8 +655,8 @@ module Yast
 
       # Registering sysconfig agent for that file
       if !SCR.RegisterAgent(
-          path(".firewall_service_definition"),
-          term(:ag_ini, term(:SysConfigFile, filefullpath))
+        path(".firewall_service_definition"),
+        term(:ag_ini, term(:SysConfigFile, filefullpath))
         )
         log.error "Cannot register agent for #{filefullpath}"
         return false
@@ -689,7 +689,7 @@ module Yast
         service_entry_value = one_def.join(" ")
         if !SCR.Write(service_entry_path, service_entry_value)
           log.error "Cannot write #{service_entry_value} to #{service_entry_path}",
-          write_ok = false
+            write_ok = false
           next
         end
         # new definition of the service

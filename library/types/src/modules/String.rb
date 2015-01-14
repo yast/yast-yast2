@@ -179,15 +179,15 @@ module Yast
         end
 
         if Ops.less_than(
-            Ops.subtract(
-              whole,
-              Convert.convert(
-                Builtins.tointeger(whole),
-                from: "integer",
-                to:   "float"
-              )
-            ),
-            max_difference
+          Ops.subtract(
+            whole,
+            Convert.convert(
+              Builtins.tointeger(whole),
+              from: "integer",
+              to:   "float"
+            )
+          ),
+          max_difference
           )
           precision = 0
         end
@@ -974,9 +974,9 @@ module Yast
       # join multi line metadata lines
       Builtins.foreach(metalines) do |metaline|
         if Builtins.substring(
-            metaline,
-            Ops.subtract(Builtins.size(metaline), 1),
-            1
+          metaline,
+          Ops.subtract(Builtins.size(metaline), 1),
+          1
           ) != "\\"
           if multiline != ""
             # this not first multiline so remove comment mark
@@ -1074,8 +1074,8 @@ module Yast
       while Ops.greater_or_equal(pos, 0)
         tmp = Ops.add(Builtins.substring(s, 0, pos), target)
         if Ops.greater_than(
-            Builtins.size(s),
-            Ops.add(pos, Builtins.size(source))
+          Builtins.size(s),
+          Ops.add(pos, Builtins.size(source))
           )
           tmp = Ops.add(
             tmp,

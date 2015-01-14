@@ -113,8 +113,8 @@ module Yast
           lstr = Ops.add(lstr, delim) if Ops.greater_than(num, 0)
           lstr = Ops.add(lstr, text)
           if Ops.less_than(
-              Builtins.size(text),
-              Ops.get_integer(file.value, ["widths", num], 0)
+            Builtins.size(text),
+            Ops.get_integer(file.value, ["widths", num], 0)
             )
             lstr = Ops.add(
               lstr,
@@ -155,8 +155,8 @@ module Yast
         l = {}
         Ops.set(l, "line", line)
         if Ops.greater_than(
-            Builtins.size(Ops.get_string(file.value, "comment", "")),
-            0
+          Builtins.size(Ops.get_string(file.value, "comment", "")),
+          0
           ) &&
             Builtins.regexpmatch(
               line,
@@ -284,8 +284,8 @@ module Yast
         Ops.set(file.value, ["l", line, "fields"], [])
       end
       if Ops.less_than(
-          Builtins.size(Ops.get_list(file.value, ["l", line, "fields"], [])),
-          field
+        Builtins.size(Ops.get_list(file.value, ["l", line, "fields"], [])),
+        field
         )
         changed = true
         i = 0

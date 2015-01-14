@@ -1215,9 +1215,9 @@ module Yast
       name = Ops.get_string(update_file, "display_name", "")
 
       if !UpdateInstallation(
-          Ops.get_map(update_file, "update", {}),
-          name,
-          Ops.get_string(update_file, "textdomain", "control")
+        Ops.get_map(update_file, "update", {}),
+        name,
+        Ops.get_string(update_file, "textdomain", "control")
         )
         Builtins.y2error("Failed to update installation workflow")
         return false

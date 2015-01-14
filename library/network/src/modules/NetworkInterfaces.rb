@@ -398,23 +398,23 @@ module Yast
     def GetDeviceTypeName(dev)
       # pppN must be tried before pN, modem before netcard
       if Builtins.regexpmatch(
-          dev,
-          Ops.add("^", Ops.get(@DeviceRegex, "modem", ""))
+        dev,
+        Ops.add("^", Ops.get(@DeviceRegex, "modem", ""))
         )
         return _("Modem")
       elsif Builtins.regexpmatch(
-          dev,
-          Ops.add("^", Ops.get(@DeviceRegex, "netcard", ""))
+        dev,
+        Ops.add("^", Ops.get(@DeviceRegex, "netcard", ""))
         )
         return _("Network Card")
       elsif Builtins.regexpmatch(
-          dev,
-          Ops.add("^", Ops.get(@DeviceRegex, "isdn", ""))
+        dev,
+        Ops.add("^", Ops.get(@DeviceRegex, "isdn", ""))
         )
         return _("ISDN")
       elsif Builtins.regexpmatch(
-          dev,
-          Ops.add("^", Ops.get(@DeviceRegex, "dsl", ""))
+        dev,
+        Ops.add("^", Ops.get(@DeviceRegex, "dsl", ""))
         )
         return _("DSL")
       else
@@ -850,13 +850,13 @@ module Yast
         # write sysconfig
         p = Ops.add(Ops.add(".network.value.\"", config), "\".")
         if Ops.greater_than(
-            Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
-            0
+          Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
+          0
           ) &&
             Builtins.find(Ops.get_string(devmap, "IPADDR", ""), "/") == -1
           if Ops.greater_than(
-              Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
-              0
+            Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
+            0
             ) &&
               Ops.greater_than(
                 Builtins.size(Ops.get_string(devmap, "NETMASK", "")),
@@ -875,8 +875,8 @@ module Yast
             #TODO : delete NETMASK from config file
           else
             if Ops.greater_than(
-                Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
-                0
+              Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
+              0
               ) &&
                 Ops.greater_than(
                   Builtins.size(Ops.get_string(devmap, "PREFIXLEN", "")),
@@ -930,8 +930,8 @@ module Yast
                 #TODO : delete NETMASK from config file
               else
                 if Ops.greater_than(
-                    Builtins.size(Ops.get(amap, "IPADDR", "")),
-                    0
+                  Builtins.size(Ops.get(amap, "IPADDR", "")),
+                  0
                   ) &&
                     Ops.greater_than(
                       Builtins.size(Ops.get(amap, "PREFIXLEN", "")),
@@ -1092,8 +1092,8 @@ module Yast
 
       Builtins.foreach(dev_types) do |device|
         if !Builtins.contains(
-            Builtins.splitstring(Ops.get(@DeviceRegex, "netcard", ""), "|"),
-            device
+          Builtins.splitstring(Ops.get(@DeviceRegex, "netcard", ""), "|"),
+          device
           )
           Builtins.y2error(
             "%1 is not contained in DeviceRegex[\"netcard\"]",

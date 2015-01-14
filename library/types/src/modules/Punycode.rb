@@ -98,8 +98,8 @@ module Yast
 
       # Do not store this record if the cache would exceed maximum
       if Ops.greater_than(
-          Ops.add(Ops.add(@current_cache_size, decoded_size), encoded_size),
-          @maximum_cache_size
+        Ops.add(Ops.add(@current_cache_size, decoded_size), encoded_size),
+        @maximum_cache_size
         )
         return
       end

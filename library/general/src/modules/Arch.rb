@@ -255,11 +255,11 @@ module Yast
           )
           # catch remaining IBM boards
           if Builtins.issubstring(
-              Ops.get_string(device_type, "stdout", ""),
-              "chrp"
+            Ops.get_string(device_type, "stdout", ""),
+            "chrp"
 	     ) || Builtins.issubstring(
-              Ops.get_string(compatible, "stdout", ""),
-	      "ibm,powernv"
+        Ops.get_string(compatible, "stdout", ""),
+	       "ibm,powernv"
 	     )
             @_board_compatible = "CHRP"
           end

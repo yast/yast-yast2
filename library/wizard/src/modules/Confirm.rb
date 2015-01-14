@@ -164,8 +164,8 @@ module Yast
     # @return true if running as root
     def MustBeRoot
       if Ops.less_or_equal(
-          Convert.to_integer(SCR.Read(path(".target.size"), "/usr/bin/id")),
-          0
+        Convert.to_integer(SCR.Read(path(".target.size"), "/usr/bin/id")),
+        0
         )
         if !Stage.initial
           Builtins.y2warning("/usr/bin/id not existing, supposing to be root")

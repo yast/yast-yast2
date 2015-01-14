@@ -397,13 +397,13 @@ module Yast
         param = Builtins.sformat("-s %1", @splash)
       end
       if SCR.Execute(
-          path(".target.bash"),
-          Builtins.sformat(
-            "/sbin/mkinitrd %1 %2 >> %3 2>&1",
-            param,
-            @additional_parameters,
-            Ops.add(Directory.logdir, "/y2logmkinitrd")
-          )
+        path(".target.bash"),
+        Builtins.sformat(
+          "/sbin/mkinitrd %1 %2 >> %3 2>&1",
+          param,
+          @additional_parameters,
+          Ops.add(Directory.logdir, "/y2logmkinitrd")
+        )
         ) != 0
         log = Convert.to_string(
           SCR.Read(

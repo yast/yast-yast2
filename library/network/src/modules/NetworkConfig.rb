@@ -72,8 +72,8 @@ module Yast
         varpath = Builtins.add(config, var)
         comment = Convert.to_string(SCR.Read(Builtins.add(varpath, "comment")))
         if Builtins.regexpmatch(
-            comment,
-            Ops.add(Ops.add("^.*## Type:[ \t]*([", String.CLower), "]*).*$")
+          comment,
+          Ops.add(Ops.add("^.*## Type:[ \t]*([", String.CLower), "]*).*$")
           )
           comment = Builtins.regexpsub(
             comment,

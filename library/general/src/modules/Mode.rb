@@ -164,17 +164,17 @@ module Yast
       Initialize() if @_mode == nil
 
       if !Builtins.contains(
-          [
-            "installation",
-            "update",
-            "normal",
-            "repair",
-            "autoinstallation",
-            "autoinst_config",
-            "live_installation",
-            "autoupgrade"
-          ],
-          new_mode
+        [
+          "installation",
+          "update",
+          "normal",
+          "repair",
+          "autoinstallation",
+          "autoinst_config",
+          "live_installation",
+          "autoupgrade"
+        ],
+        new_mode
         )
         Builtins.y2error("Unknown mode %1", new_mode)
       end
@@ -206,8 +206,8 @@ module Yast
       Initialize() if @_test == nil
 
       if !Builtins.contains(
-          ["none", "test", "demo", "screenshot", "testsuite"],
-          new_test_mode
+        ["none", "test", "demo", "screenshot", "testsuite"],
+        new_test_mode
         )
         Builtins.y2error("Unknown test mode %1", new_test_mode)
       end

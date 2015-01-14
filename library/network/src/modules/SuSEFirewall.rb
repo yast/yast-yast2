@@ -661,8 +661,8 @@ module Yast
       Builtins.foreach(needed_ports) do |needed_port|
         # allowed ports don't contain the needed one and also portranges don't
         if !Builtins.contains(
-            Ops.get(allowed_ports_divided, "ports", []),
-            needed_port
+          Ops.get(allowed_ports_divided, "ports", []),
+          needed_port
           ) &&
             !PortRanges.PortIsInPortranges(
               needed_port,
@@ -1618,14 +1618,14 @@ module Yast
         known_interfaces = Builtins.add(
           known_interfaces,
           
-            "id"   => interface,
-            "type" => "dialup",
-            # using function to get name
-            "name" => NetworkInterfaces.GetValue(
-              interface,
-              "NAME"
-            ),
-            "zone" => GetZoneOfInterface(interface)
+          "id"   => interface,
+          "type" => "dialup",
+          # using function to get name
+          "name" => NetworkInterfaces.GetValue(
+            interface,
+            "NAME"
+          ),
+          "zone" => GetZoneOfInterface(interface)
           
         )
       end
@@ -1634,13 +1634,13 @@ module Yast
         known_interfaces = Builtins.add(
           known_interfaces,
           
-            "id"   => interface,
-            # using function to get name
-            "name" => NetworkInterfaces.GetValue(
-              interface,
-              "NAME"
-            ),
-            "zone" => GetZoneOfInterface(interface)
+          "id"   => interface,
+          # using function to get name
+          "name" => NetworkInterfaces.GetValue(
+            interface,
+            "NAME"
+          ),
+          "zone" => GetZoneOfInterface(interface)
           
         )
       end
@@ -3117,15 +3117,15 @@ module Yast
         list_of_rules = Builtins.add(
           list_of_rules,
           
-            "source_net" => Ops.get(fw_rul, 0, ""),
-            "forward_to" => Ops.get(fw_rul, 1, ""),
-            "protocol"   => Builtins.tolower(Ops.get(fw_rul, 2, "")),
-            "req_port"   => Builtins.tolower(Ops.get(fw_rul, 3, "")),
-            # to_port is req_port when undefined
-            "to_port"    => Builtins.tolower(
-              Ops.get(fw_rul, 4, Ops.get(fw_rul, 3, ""))
-            ),
-            "req_ip"     => Builtins.tolower(Ops.get(fw_rul, 5, ""))
+          "source_net" => Ops.get(fw_rul, 0, ""),
+          "forward_to" => Ops.get(fw_rul, 1, ""),
+          "protocol"   => Builtins.tolower(Ops.get(fw_rul, 2, "")),
+          "req_port"   => Builtins.tolower(Ops.get(fw_rul, 3, "")),
+          # to_port is req_port when undefined
+          "to_port"    => Builtins.tolower(
+            Ops.get(fw_rul, 4, Ops.get(fw_rul, 3, ""))
+          ),
+          "req_ip"     => Builtins.tolower(Ops.get(fw_rul, 5, ""))
           
         )
       end
@@ -3536,8 +3536,8 @@ module Yast
 
       Builtins.foreach(GetKnownFirewallZones()) do |one_zone|
         if Ops.greater_or_equal(
-            Builtins.size(GetServicesAcceptRelated(one_zone)),
-            0
+          Builtins.size(GetServicesAcceptRelated(one_zone)),
+          0
           )
           Builtins.y2milestone("Some ServicesAcceptRelated are defined")
           needs_additional_module = true

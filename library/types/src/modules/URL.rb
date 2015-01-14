@@ -298,8 +298,8 @@ module Yast
 
       # Check "scheme"  : "http"
       if !Builtins.regexpmatch(
-          Ops.get_string(tokens, "scheme", ""),
-          "^[[:alpha:]]*$"
+        Ops.get_string(tokens, "scheme", ""),
+        "^[[:alpha:]]*$"
         )
         return false
       end
@@ -342,8 +342,8 @@ module Yast
       Builtins.y2debug("URL::Build(): input: %1", tokens)
 
       if Builtins.regexpmatch(
-          Ops.get_string(tokens, "scheme", ""),
-          "^[[:alpha:]]*$"
+        Ops.get_string(tokens, "scheme", ""),
+        "^[[:alpha:]]*$"
         )
         # if (tokens["scheme"]:"" == "samba") url="smb";
         # 		else

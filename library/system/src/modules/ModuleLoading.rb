@@ -134,8 +134,8 @@ module Yast
         # always look whether the module is already loaded
         loaded_modules = Convert.to_map(SCR.Read(path(".proc.modules")))
         if Ops.greater_than(
-            Builtins.size(Ops.get_map(loaded_modules, modulename, {})),
-            0
+          Builtins.size(Ops.get_map(loaded_modules, modulename, {})),
+          0
           )
           # already loaded
           return :ok
