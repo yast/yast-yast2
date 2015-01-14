@@ -253,28 +253,28 @@ module Yast
         ret = CWM.Run(w, functions)
         CWM.SetValidationFailedHandler(nil)
         # switching scrren, dialog was validated and stored
-        if ret == :_cwm_internal_tree_handle
-          toEval = Convert.convert(
-            Ops.get(screens, [@selected_screen, "init"]),
-            from: "any",
-            to:   "symbol (string)"
+        next if ret != :_cwm_internal_tree_handle
+
+        toEval = Convert.convert(
+          Ops.get(screens, [@selected_screen, "init"]),
+          from: "any",
+          to:   "symbol (string)"
+        )
+        tab_init = nil
+        tab_init = toEval.call(@selected_screen) if toEval != nil
+        if tab_init == nil # everything OK
+          w = DrawScreen(
+            Ops.get(screens, @selected_screen, {}),
+            widget_descr,
+            extra_widget,
+            false
           )
-          tab_init = nil
-          tab_init = toEval.call(@selected_screen) if toEval != nil
-          if tab_init == nil # everything OK
-            w = DrawScreen(
-              Ops.get(screens, @selected_screen, {}),
-              widget_descr,
-              extra_widget,
-              false
-            )
-            ret = nil
-          elsif tab_init == :refuse_display # do not display this screen
-            @selected_screen = @previous_screen
-            ret = nil # exit dialog
-          else
-            ret = tab_init
-          end
+          ret = nil
+        elsif tab_init == :refuse_display # do not display this screen
+          @selected_screen = @previous_screen
+          ret = nil # exit dialog
+        else
+          ret = tab_init
         end
       end
       ret

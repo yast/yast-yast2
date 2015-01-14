@@ -82,11 +82,6 @@ Style/FileName:
 Style/MethodName:
   Enabled: false
 
-# Offense count: 7
-# Configuration parameters: EnforcedStyle, MinBodyLength, SupportedStyles.
-Style/Next:
-  Enabled: false
-
 # Offense count: 364
 # Cop supports --auto-correct.
 Style/NilComparison:

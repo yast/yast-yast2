@@ -51,10 +51,10 @@ module Yast2
       memory_size = 0
       memory.each do |info|
         # internal class, main memory
-        if info["class_id"] == MEMORY_CLASS && info["sub_class_id"] == MEMORY_SUBCLASS
-          info.fetch("resource", {}).fetch("phys_mem", []).each do |phys_mem|
-            memory_size += phys_mem.fetch("range", 0)
-          end
+        next if info["class_id"] != MEMORY_CLASS || info["sub_class_id"] != MEMORY_SUBCLASS
+
+        info.fetch("resource", {}).fetch("phys_mem", []).each do |phys_mem|
+          memory_size += phys_mem.fetch("range", 0)
         end
       end
 

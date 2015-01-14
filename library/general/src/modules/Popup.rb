@@ -463,13 +463,14 @@ module Yast
           break
         end
         timeout_seconds = Ops.subtract(timeout_seconds, 1)
-        if success == true
-          UI.ChangeWidget(
-            Id(:remaining_time),
-            :Value,
-            Ops.add("", timeout_seconds)
-          )
-        end
+
+        next unless success
+
+        UI.ChangeWidget(
+          Id(:remaining_time),
+          :Value,
+          Ops.add("", timeout_seconds)
+        )
       end
 
       UI.CloseDialog if success == true
@@ -527,13 +528,14 @@ module Yast
           break
         end
         timeout_seconds = Ops.subtract(timeout_seconds, 1)
-        if success == true
-          UI.ChangeWidget(
-            Id(:remaining_time),
-            :Value,
-            Ops.add("", timeout_seconds)
-          )
-        end
+
+        next unless success
+
+        UI.ChangeWidget(
+          Id(:remaining_time),
+          :Value,
+          Ops.add("", timeout_seconds)
+        )
       end
 
       UI.CloseDialog if success == true

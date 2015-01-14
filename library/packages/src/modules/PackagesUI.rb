@@ -165,38 +165,38 @@ module Yast
         ui = nil
         while ui == nil
           ui = Convert.to_symbol(UI.UserInput)
-          if ui == :help
-            ui = nil
+          next if ui != :help
 
-            # help text
-            help = _(
-              "<p><b><big>License Confirmation</big></b><br>\n" \
-                "The package in the headline of the dialog requires an explicit confirmation\n" \
-                "of acceptance of its license.\n" \
-                "If you reject the license of the package, the package will not be installed.\n" \
-                "<br>\n" \
-                "To accept the license of the package, click <b>I Agree</b>.\n" \
-                "To reject the license of the package, click <b>I Disagree</b></p>."
-            )
+          ui = nil
 
-            UI.OpenDialog(
-              HBox(
-                VSpacing(18),
-                VBox(
-                  HSpacing(70),
-                  RichText(help),
-                  HBox(
-                    HStretch(),
-                    # push button
-                    PushButton(Id(:close), Label.CloseButton),
-                    HStretch()
-                  )
+          # help text
+          help = _(
+            "<p><b><big>License Confirmation</big></b><br>\n" \
+              "The package in the headline of the dialog requires an explicit confirmation\n" \
+              "of acceptance of its license.\n" \
+              "If you reject the license of the package, the package will not be installed.\n" \
+              "<br>\n" \
+              "To accept the license of the package, click <b>I Agree</b>.\n" \
+              "To reject the license of the package, click <b>I Disagree</b></p>."
+          )
+
+          UI.OpenDialog(
+            HBox(
+              VSpacing(18),
+              VBox(
+                HSpacing(70),
+                RichText(help),
+                HBox(
+                  HStretch(),
+                  # push button
+                  PushButton(Id(:close), Label.CloseButton),
+                  HStretch()
                 )
               )
             )
-            UI.UserInput
-            UI.CloseDialog
-          end
+          )
+          UI.UserInput
+          UI.CloseDialog
         end
         UI.CloseDialog
         Builtins.y2milestone(

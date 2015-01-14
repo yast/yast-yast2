@@ -585,20 +585,21 @@ module Yast
             )
             toEval.call(opt_id, opt_key, event_descr2)
           end
-          if ret == :_tp_ok
-            val_type = Ops.get_symbol(popup_descr, "validate_type")
-            if val_type == :function
-              toEval = Convert.convert(
-                Ops.get(popup_descr, "validate_function"),
-                from: "any",
-                to:   "boolean (any, string, map)"
-              )
-              if toEval != nil
-                ret = nil if !toEval.call(opt_id, opt_key, event_descr2)
-              end
-            elsif !CWM.validateWidget(popup_descr, event_descr2, opt_key)
-              ret = nil
+
+          next if ret != :_tp_ok
+
+          val_type = Ops.get_symbol(popup_descr, "validate_type")
+          if val_type == :function
+            toEval = Convert.convert(
+              Ops.get(popup_descr, "validate_function"),
+              from: "any",
+              to:   "boolean (any, string, map)"
+            )
+            if toEval != nil
+              ret = nil if !toEval.call(opt_id, opt_key, event_descr2)
             end
+          elsif !CWM.validateWidget(popup_descr, event_descr2, opt_key)
+            ret = nil
           end
         end
         if ret == :_tp_ok && Ops.get(popup_descr, "store") != nil
