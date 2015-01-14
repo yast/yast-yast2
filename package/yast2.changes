@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Wed Nov  5 09:33:08 UTC 2014 - mfilka@suse.com
+
+- bnc#900383 - ported several fixes for device renaming
+  - added net device type detection based on sysfs
+  - fixed type detection workflow
+- bnc#809053
+  - fixed device type detection when commiting new device into
+    NetworkInterfaces' cache.
+  - changes API for device type detection - incompatible to previous
+    versions
+- 2.17.135.1
+
+-------------------------------------------------------------------
 Tue Mar 25 08:11:08 CET 2014 - jsuchome@suse.cz
 
 - better check for running chef-client (bnc#868483)
