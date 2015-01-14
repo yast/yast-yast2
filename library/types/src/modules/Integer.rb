@@ -64,24 +64,27 @@ module Yast
 
     # Calculates the sum of values.
     def Sum(values)
-      values = deep_copy(values)
-      Builtins::List.reduce(0, values) { |x, y| Ops.add(x, y) }
+      return nil unless values
+
+      values.reduce(:+)
     end
 
     # Returns the smallest integer in values.
     #
     # Behaviour is undefined for empty values.
     def Min(values)
-      values = deep_copy(values)
-      Builtins::List.reduce(values) { |x, y| Ops.less_than(x, y) ? x : y }
+      return nil unless values
+
+      values.min
     end
 
     # Returns the highest integer in values.
     #
     # Behaviour is undefined for empty values.
     def Max(values)
-      values = deep_copy(values)
-      Builtins::List.reduce(values) { |x, y| Ops.greater_than(x, y) ? x : y }
+      return nil unless values
+
+      values.max
     end
 
     # Clamps the integer i.

@@ -86,17 +86,6 @@ Style/MethodName:
 Style/PredicateName:
   Enabled: false
 
-# Offense count: 39
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/SignalException:
-  Enabled: false
-
-# Offense count: 5
-# Configuration parameters: Methods.
-Style/SingleLineBlockParams:
-  Enabled: false
-
 # Offense count: 9
 # Cop supports --auto-correct.
 Style/SingleSpaceBeforeFirstArg:
