@@ -181,10 +181,7 @@ module Yast
 
         # read file content
         file_content = SCR.Read(path(".target.string"), @filename)
-
-        if file_content == nil
-          file_content = _("File not found.")
-        end
+        file_content ||= _("File not found.")
 
         # remove ANSI color escape sequences
         file_content.gsub!(/\e\[(\d|;|\[)+m/, "")

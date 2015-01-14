@@ -583,9 +583,7 @@ module Yast
     def AddModuleToLoad(name)
       Builtins.y2milestone("Adding module to be loaded at boot: %1", name)
 
-      unless module_to_be_loaded?(name)
-        @modules_to_load[MODULES_CONF_FILE] << name
-      end
+      @modules_to_load[MODULES_CONF_FILE] << name unless module_to_be_loaded?(name)
     end
 
     # Remove a kernel module from the list of modules to load after boot

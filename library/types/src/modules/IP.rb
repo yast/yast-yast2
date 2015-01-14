@@ -384,9 +384,7 @@ module Yast
     #
     # @raise [RuntimeError] if ip address is invalid
     def reserved4(ip)
-      if !Check4(ip)
-        raise "Invalid IP address passed '#{ip}'"
-      end
+      raise "Invalid IP address passed '#{ip}'" unless Check4(ip)
 
       # RFC#1700
       return true if ip.start_with?("0.")

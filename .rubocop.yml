@@ -77,16 +77,6 @@ Style/DoubleNegation:
 Style/FileName:
   Enabled: false
 
-# Offense count: 3
-# Configuration parameters: MinBodyLength.
-Style/GuardClause:
-  Enabled: false
-
-# Offense count: 4
-# Configuration parameters: MaxLineLength.
-Style/IfUnlessModifier:
-  Enabled: false
-
 # Offense count: 12
 # Cop supports --auto-correct.
 Style/InfiniteLoop:

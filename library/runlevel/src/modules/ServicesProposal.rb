@@ -76,9 +76,9 @@ module Yast
     # Checks the given service
     # Raises an exception in case of an error
     def check_service(service)
-      if service.nil? || service.empty?
-        raise ArgumentError, "Wrong service name '#{service.inspect}'"
-      end
+      return if service && !service.empty?
+
+      raise ArgumentError, "Wrong service name '#{service.inspect}'"
     end
   end
 

@@ -47,6 +47,8 @@ module Yast
         )
         return Popup.ContinueCancel(message)
       end
+
+      nil
     end
   end
 end

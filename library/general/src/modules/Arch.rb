@@ -221,9 +221,7 @@ module Yast
         # Pegasos and Cell do have CHRP in /proc/cpuinfo, but Pegasos2 should no be handled as CHRP
         # Efika is handled like Pegasos for the time being
         # Treat PowerNV as CHRP. It is harmless for now. Patch for hwinfo is sent but it is better to be safe
-        if @_board_compatible == "PowerNV"
-          @_board_compatible = "CHRP"
-        end
+        @_board_compatible = "CHRP" if @_board_compatible == "PowerNV"
 
         if ppc && (@_board_compatible == nil || @_board_compatible == "CHRP")
           device_type = Convert.to_map(
