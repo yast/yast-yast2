@@ -193,7 +193,7 @@ module Yast
       set_property(:version, OSRelease.ReleaseVersion)
       set_property(:name, OSRelease.ReleaseInformation)
 
-      return OS_RELEASE_PROPERTIES.all?{ |key| !get_property(key).nil? and !get_property(key).empty? }
+      return OS_RELEASE_PROPERTIES.all?{ |key| !get_property(key).nil? && !get_property(key).empty? }
     end
 
     # Uses products information to fill up release-notes variables

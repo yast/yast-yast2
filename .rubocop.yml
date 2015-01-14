@@ -56,12 +56,6 @@ Style/AccessorMethodName:
   Exclude:
     - library/systemd/src/modules/systemd_target.rb
 
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/AndOr:
-  Enabled: false
-
 # Offense count: 8
 Style/AsciiComments:
   Enabled: false

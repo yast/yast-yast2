@@ -345,7 +345,7 @@ module Yast
     #                 when service is not found (default false)
     def service_details(service_name, silent = false)
       service = all_services[service_name]
-      if service.nil? and !silent
+      if service.nil? && !silent
         log.error "Uknown service '#{service_name}'"
         log.info "Known services: #{all_services.keys}"
 
