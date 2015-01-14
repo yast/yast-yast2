@@ -2,4 +2,4 @@
 # Makefile.am for yast2/gpg
 #
 
-SUBDIRS = doc src testsuite
+SUBDIRS = doc src
