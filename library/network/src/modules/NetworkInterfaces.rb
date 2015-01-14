@@ -661,24 +661,24 @@ module Yast
       deep_copy(out)
     end
 
+    # Variables which could be suffixed and thus duplicated
+    LOCALS = [
+      "IPADDR",
+      "REMOTE_IPADDR",
+      "NETMASK",
+      "PREFIXLEN",
+      "BROADCAST",
+      "SCOPE",
+      "LABEL",
+      "IP_OPTIONS"
+    ]
+
     # Read devices from files
     # @return true if sucess
     def Read
       return true if @initialized == true
 
       @Devices = {}
-
-      # Variables which could be suffixed and thus duplicated
-      _Locals = [
-        "IPADDR",
-        "REMOTE_IPADDR",
-        "NETMASK",
-        "PREFIXLEN",
-        "BROADCAST",
-        "SCOPE",
-        "LABEL",
-        "IP_OPTIONS"
-      ]
 
       # preparation
       allfiles = SCR.Dir(path(".network.section"))
@@ -704,7 +704,7 @@ module Yast
           # No underscore '_' -> global
           # Also temporarily standard globals
           if Ops.less_than(Builtins.find(val, "_"), 0) ||
-              Builtins.contains(_Locals, val)
+              LOCALS.include?(val)
             Ops.set(config, val, item)
             next
           end
@@ -717,11 +717,11 @@ module Yast
           if !Builtins.contains(_Locals, v)
             Ops.set(config, val, item)
           else
-            __aliases = Ops.get_map(config, "_aliases", {})
-            suf = Ops.get_map(__aliases, s, {})
+            aliases = Ops.get_map(config, "_aliases", {})
+            suf = Ops.get_map(aliases, s, {})
             Ops.set(suf, v, item)
-            Ops.set(__aliases, s, suf)
-            Ops.set(config, "_aliases", __aliases)
+            Ops.set(aliases, s, suf)
+            Ops.set(config, "_aliases", aliases)
           end
         end
         Builtins.y2milestone("config=%1", ConcealSecrets1(config))
@@ -798,13 +798,13 @@ module Yast
       Builtins.y2debug("Devices=%1", @Devices)
       Builtins.y2debug("Deleted=%1", @Deleted)
 
-      _Devs = Filter(@Devices, devregex)
-      _OriginalDevs = Filter(@OriginalDevices, devregex)
-      Builtins.y2milestone("OriginalDevs=%1", ConcealSecrets(_OriginalDevs))
-      Builtins.y2milestone("Devs=%1", ConcealSecrets(_Devs))
+      devs = Filter(@Devices, devregex)
+      original_devs = Filter(@OriginalDevices, devregex)
+      Builtins.y2milestone("OriginalDevs=%1", ConcealSecrets(original_devs))
+      Builtins.y2milestone("Devs=%1", ConcealSecrets(devs))
 
       # Check for changes
-      if _Devs == _OriginalDevs
+      if devs == original_devs
         Builtins.y2milestone(
           "No changes to %1 devices -> nothing to write",
           devregex
@@ -828,7 +828,7 @@ module Yast
           # look in OriginalDevs because we need to catch all variables
           # of the alias
 
-          dev_aliases = _OriginalDevs[typ][dev]["_aliases"][anum] || {}
+          dev_aliases = original_devs[typ][dev]["_aliases"][anum] || {}
           dev_aliases.keys.each do |key|
             p = base + "#{key}_#{anum}"
             Builtins.y2debug("deleting: %1", p)
@@ -841,12 +841,12 @@ module Yast
       # write all devices
       Builtins.maplist(
         Convert.convert(
-          _Devs,
+          devs,
           from: "map",
           to:   "map <string, map <string, map <string, any>>>"
         )
       ) { |typ, devsmap| Builtins.maplist(devsmap) do |config, devmap|
-        next if devmap == Ops.get_map(_OriginalDevs, [typ, config], {})
+        next if devmap == Ops.get_map(original_devs, [typ, config], {})
         # write sysconfig
         p = Ops.add(Ops.add(".network.value.\"", config), "\".")
         if Ops.greater_than(
@@ -1002,8 +1002,8 @@ module Yast
     # @return true on success
     def Import(devregex, devices)
       devices = deep_copy(devices)
-      _Devs = FilterNOT(@Devices, devregex)
-      Builtins.y2debug("Devs=%1", _Devs)
+      devs = FilterNOT(@Devices, devregex)
+      Builtins.y2debug("Devs=%1", devs)
 
       devices = Builtins.mapmap(devices) do |typ, devsmap|
         {
@@ -1022,7 +1022,7 @@ module Yast
       end
 
       @Devices = Convert.convert(
-        Builtins.union(_Devs, devices),
+        Builtins.union(devs, devices),
         from: "map",
         to:   "map <string, map <string, map <string, any>>>"
       )
@@ -1278,19 +1278,19 @@ module Yast
     # Export data
     # @return dumped settings (later acceptable by Import())
     def Export(devregex)
-      _Devs = Filter(@Devices, devregex)
-      Builtins.y2debug("Devs=%1", _Devs)
-      Convert.convert(_Devs, from: "map", to: "map <string, map>")
+      devs = Filter(@Devices, devregex)
+      Builtins.y2debug("Devs=%1", devs)
+      Convert.convert(devs, from: "map", to: "map <string, map>")
     end
 
     # Were the devices changed?
     # @return true if modified
     def Modified(devregex)
-      _Devs = Filter(@Devices, devregex)
-      _OriginalDevs = Filter(@OriginalDevices, devregex)
-      Builtins.y2debug("OriginalDevs=%1", _OriginalDevs)
-      Builtins.y2debug("Devs=%1", _Devs)
-      _Devs == _OriginalDevs
+      devs = Filter(@Devices, devregex)
+      original_devs = Filter(@OriginalDevices, devregex)
+      Builtins.y2debug("OriginalDevs=%1", original_devs)
+      Builtins.y2debug("Devs=%1", devs)
+      devs == original_devs
     end
 
     def GetFreeDevices(type, num)
@@ -1506,9 +1506,9 @@ module Yast
     # Called when exiting from the aliases-of-device dialog.
     # #48191
     def DeleteAlias(device, aid)
-      _alias = Builtins.sformat("%1#%2", device, aid)
-      Builtins.y2milestone("Deleting alias: %1", _alias)
-      @Deleted <<  _alias
+      alias_ = Builtins.sformat("%1#%2", device, aid)
+      Builtins.y2milestone("Deleting alias: %1", alias_)
+      @Deleted <<  alias_
       true
     end
 

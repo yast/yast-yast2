@@ -116,11 +116,11 @@ module Yast
     # Hide passwords in command line option string
     # @param [String] in input string
     # @return [String] outpit string
-    def HidePasswords(_in)
+    def HidePasswords(in_)
       ret = ""
 
-      if _in != nil
-        parts = Builtins.splitstring(_in, " ")
+      if in_ != nil
+        parts = Builtins.splitstring(in_, " ")
 
         first = true
         Builtins.foreach(parts) do |p|

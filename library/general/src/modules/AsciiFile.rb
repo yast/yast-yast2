@@ -380,9 +380,9 @@ module Yast
             out,
             (
               file_ref = arg_ref(file.value);
-              _AssertLineValid_result = AssertLineValid(file_ref, num);
+              assert_line_valid_result = AssertLineValid(file_ref, num);
               file.value = file_ref.value;
-              _AssertLineValid_result
+              assert_line_valid_result
             )
           ),
           "\n"

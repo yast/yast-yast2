@@ -63,7 +63,7 @@ module Yast
       items = deep_copy(items)
       item = nil
 
-      _Items = Builtins.maplist(items) do |i|
+      items = Builtins.maplist(items) do |i|
         device_name = NetworkInterfaces.GetValue(i, "NAME")
         if device_name == nil || device_name == ""
           #TRANSLATORS: Informs that device name is not known
@@ -106,7 +106,7 @@ module Yast
                 _("Device ID"),
                 _("Connected")
               ),
-              _Items
+              items
             ),
             VSpacing(10)
           ),
@@ -146,12 +146,12 @@ module Yast
       items = deep_copy(items)
       item = nil
 
-      _Items = Builtins.maplist(items) { |i| Item(Id(i), i, i == selected) }
+      items = Builtins.maplist(items) { |i| Item(Id(i), i, i == selected) }
 
       UI.OpenDialog(
         VBox(
           HSpacing(40),
-          HBox(SelectionBox(Id(:items), title, _Items), VSpacing(10)),
+          HBox(SelectionBox(Id(:items), title, items), VSpacing(10)),
           ButtonBox(
             PushButton(
               Id(:ok),

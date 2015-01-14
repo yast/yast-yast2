@@ -348,12 +348,12 @@ module Yast
     # @param map module data
     # @param map default data
     # @return [Boolean] true if arch match
-    def checkArch(mod, _def)
+    def checkArch(mod, def_)
       mod = deep_copy(mod)
-      _def = deep_copy(_def)
+      def_ = deep_copy(def_)
       Builtins.y2debug("Checking architecture: %1", mod)
       archs = Ops.get_string(mod, "archs", "")
-      archs = Ops.get_string(_def, "archs", "all") if archs == ""
+      archs = Ops.get_string(def_, "archs", "all") if archs == ""
 
       return true if archs == "all"
 
@@ -400,9 +400,9 @@ module Yast
     # @param map module data
     # @param map default data
     # @return [Yast::Term] module data with params
-    def getClientTerm(step, _def, former_result)
+    def getClientTerm(step, def_, former_result)
       step = deep_copy(step)
-      _def = deep_copy(_def)
+      def_ = deep_copy(def_)
       former_result = deep_copy(former_result)
       client = getClientName(
         Ops.get_string(step, "name", "dummy"),
@@ -412,7 +412,7 @@ module Yast
       arguments = {}
 
       Builtins.foreach(["enable_back", "enable_next"]) do |button|
-        default_setting = Ops.get_string(_def, button, "yes")
+        default_setting = Ops.get_string(def_, button, "yes")
         Ops.set(
           arguments,
           button,
@@ -491,9 +491,7 @@ module Yast
           Check(Ops.get_string(wf, "mode", ""), mode) &&
           (
             wf_ref = arg_ref(wf);
-            _CheckAdditionalParams_result = CheckAdditionalParams(wf_ref);
-            wf = wf_ref.value;
-            _CheckAdditionalParams_result
+            CheckAdditionalParams(wf_ref);
           )
       end
 
@@ -1346,8 +1344,7 @@ module Yast
         args = []
         i = 0
         while Ops.less_than(i, Builtins.size(argterm))
-          _def = nil
-          Ops.set(args, i, Ops.get(argterm, i, _def))
+          Ops.set(args, i, Ops.get(argterm, i))
           i = Ops.add(i, 1)
         end
 

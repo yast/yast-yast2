@@ -57,7 +57,7 @@ module Yast
     # @param [String] class hardware class (network cards)
     # @param [String] icon_name name of the icon. If nil, generic hardware icon will be used
     # @return true on continue
-    def Detection(_class, icon_name)
+    def Detection(class_, icon_name)
       return true if Linuxrc.manual != true
 
       # L3: no interaction in AY, just re-probe (bnc#568653)
@@ -69,11 +69,11 @@ module Yast
 
       icon = Icon.Image(icon_name, {})
 
-      result = Ops.get(@detection_cache, _class)
+      result = Ops.get(@detection_cache, class_)
       if result != nil
         Builtins.y2milestone(
           "Detection cached result: %1 -> %2",
-          _class,
+          class_,
           result
         )
         return result
@@ -107,7 +107,7 @@ module Yast
                       HVCenter(
                         Label(_("YaST will detect the following hardware:"))
                       ),
-                      HVCenter(HBox(icon, HSpacing(0.5), Heading(_class))),
+                      HVCenter(HBox(icon, HSpacing(0.5), Heading(class_))),
                       VSpacing(0.5)
                     )
                   )
@@ -145,11 +145,11 @@ module Yast
 
       result = true
       if ret != :continue
-        Builtins.y2milestone("Detection skipped: %1", _class)
+        Builtins.y2milestone("Detection skipped: %1", class_)
         result = false
       end
 
-      Ops.set(@detection_cache, _class, result)
+      Ops.set(@detection_cache, class_, result)
       result
     end
 

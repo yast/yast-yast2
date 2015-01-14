@@ -111,21 +111,21 @@ module Yast
     #	URL::UnEscapeString ("http%3a%2f%2fsome.nice.url%2f%3awith%3a%2f%24p#ci%26l%2fch%40rs%2f", URL::transform_map_passwd)
     #		-> http://some.nice.url/:with:/$p#ci&l/ch@rs/
 
-    def UnEscapeString(_in, transform)
+    def UnEscapeString(in_, transform)
       transform = deep_copy(transform)
-      return "" if _in == nil || _in == ""
+      return "" if in_ == nil || in_ == ""
 
       # replace the other reserved characters
       Builtins.foreach(transform) do |tgt, src|
         # replace both upper and lower case escape sequences
-        _in = String.Replace(_in, Builtins.tolower(src), tgt)
-        _in = String.Replace(_in, Builtins.toupper(src), tgt)
+        in_ = String.Replace(in_, Builtins.tolower(src), tgt)
+        in_ = String.Replace(in_, Builtins.toupper(src), tgt)
       end 
 
       # replace % at the end
-      _in = String.Replace(_in, "%25", "%")
+      in_ = String.Replace(in_, "%25", "%")
 
-      _in
+      in_
     end
 
     # Escape reserved characters in string used as a part of URL (e.g. '%' => '%25', '@' => '%40'...)
@@ -138,14 +138,14 @@ module Yast
     #	URL::EscapeString ("http://some.nice.url/:with:/$p#ci&l/ch@rs/", URL::transform_map_passwd)
     #		-> http%3a%2f%2fsome.nice.url%2f%3awith%3a%2f%24p#ci%26l%2fch%40rs%2f
 
-    def EscapeString(_in, transform)
+    def EscapeString(in_, transform)
       transform = deep_copy(transform)
       ret = ""
 
-      return ret if _in == nil || _in == ""
+      return ret if in_ == nil || in_ == ""
 
       # replace % at first
-      ret = Builtins.mergestring(Builtins.splitstring(_in, "%"), "%25")
+      ret = Builtins.mergestring(Builtins.splitstring(in_, "%"), "%25")
 
       # replace the other reserved characters
       Builtins.foreach(transform) do |src, tgt|

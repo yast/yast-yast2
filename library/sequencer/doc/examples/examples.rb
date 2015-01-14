@@ -47,7 +47,7 @@ module Yast
       buttons = deep_copy(buttons)
       i = 0
       t = HBox()
-      _Buttons = {
+      buttons_map = {
         back:    "Back",
         next:    "Next",
         finish:  "Finish",
@@ -58,11 +58,11 @@ module Yast
         ok:      "OK"
       }
       while Ops.less_than(i, Builtins.size(buttons))
-        _B = Ops.get_string(_Buttons, Ops.get(buttons, i), "-")
-        if _B == "-"
-          t = Builtins.add(t, PushButton(_B))
+        b = Ops.get_string(buttons_map, Ops.get(buttons, i), "-")
+        if b == "-"
+          t = Builtins.add(t, PushButton(b))
         else
-          t = Builtins.add(t, PushButton(Id(Ops.get(buttons, i)), _B))
+          t = Builtins.add(t, PushButton(Id(Ops.get(buttons, i)), b))
         end
         i = Ops.add(i, 1)
       end

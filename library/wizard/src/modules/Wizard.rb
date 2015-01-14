@@ -1529,17 +1529,17 @@ module Yast
     # @param [String] id Item ID
     # @return [Array<Hash>] Updated Tree Data
     #
-    def AddTreeItem(_Tree, parent, title, id)
-      _Tree = deep_copy(_Tree)
+    def AddTreeItem(tree, parent, title, id)
+      tree = deep_copy(tree)
       if haveFancyUI
         UI.WizardCommand(term(:AddTreeItem, parent, title, id))
       else
-        _Tree = Builtins.add(
-          _Tree,
+        tree = Builtins.add(
+          tree,
            "parent" => parent, "title" => title, "id" => id 
         )
       end
-      deep_copy(_Tree)
+      deep_copy(tree)
     end
 
     # Create the Tree Items
@@ -1547,16 +1547,16 @@ module Yast
     # @param [String] parent Parent of current Item
     # @return [Array] Tree Items
     #
-    def CreateTreeInternal(_Tree, parent)
-      _Tree = deep_copy(_Tree)
-      m = Builtins.filter(_Tree) do |c|
+    def CreateTreeInternal(tree, parent)
+      tree = deep_copy(tree)
+      m = Builtins.filter(tree) do |c|
         Ops.get_string(c, "parent", "") == parent
       end
       ccbak = nil # #38596, broken recursion for iterators
       mm = Builtins.maplist(m) do |cc|
-        _TreeEntry = Ops.get_string(cc, "id", "")
+        tree_entry = Ops.get_string(cc, "id", "")
         ccbak = deep_copy(cc)
-        items = CreateTreeInternal(_Tree, _TreeEntry)
+        items = CreateTreeInternal(tree, tree_entry)
         cc = deep_copy(ccbak)
         if Ops.greater_than(Builtins.size(items), 0)
           next Item(
@@ -1589,18 +1589,18 @@ module Yast
     # @param [Array<Hash>] Tree Tree data
     # @param [String] title Tree title
     #
-    def CreateTree(_Tree, title)
-      _Tree = deep_copy(_Tree)
+    def CreateTree(tree, title)
+      tree = deep_copy(tree)
       if !haveFancyUI
         items = []
-        Builtins.foreach(_Tree) do |i|
+        Builtins.foreach(tree) do |i|
           if Ops.get_string(i, "parent", "") == ""
             items = Builtins.add(
               items,
               Item(
                 Id(Ops.get_string(i, "id", "")),
                 Ops.get_string(i, "title", ""),
-                CreateTreeInternal(_Tree, Ops.get_string(i, "id", ""))
+                CreateTreeInternal(tree, Ops.get_string(i, "id", ""))
               )
             )
           end
@@ -1658,17 +1658,17 @@ module Yast
     # @param [String] id Menu ID
     # @return [Array<Hash>] Updated Menu Data
     #
-    def AddMenu(_Menu, title, id)
-      _Menu = deep_copy(_Menu)
+    def AddMenu(menu, title, id)
+      menu = deep_copy(menu)
       if haveFancyUI
         UI.WizardCommand(term(:AddMenu, title, id))
       else
-        _Menu = Builtins.add(
-          _Menu,
-           "type" => "Menu", "title" => title, "id" => id 
+        menu = Builtins.add(
+          menu,
+          "type" => "Menu", "title" => title, "id" => id
         )
       end
-      deep_copy(_Menu)
+      deep_copy(menu)
     end
 
     # Add Sub Menu
@@ -1678,22 +1678,20 @@ module Yast
     # @param [String] id Menu ID
     # @return [Array<Hash>] Updated Menu Data
     #
-    def AddSubMenu(_Menu, parent_id, title, id)
-      _Menu = deep_copy(_Menu)
+    def AddSubMenu(menu, parent_id, title, id)
+      menu = deep_copy(menu)
       if haveFancyUI
         UI.WizardCommand(term(:AddSubMenu, parent_id, title, id))
       else
-        _Menu = Builtins.add(
-          _Menu,
-          
-            "type"   => "SubMenu",
-            "parent" => parent_id,
-            "title"  => title,
-            "id"     => id
-          
+        menu = Builtins.add(
+          menu,
+          "type"   => "SubMenu",
+          "parent" => parent_id,
+          "title"  => title,
+          "id"     => id
         )
       end
-      deep_copy(_Menu)
+      deep_copy(menu)
     end
 
     # Add Menu Entry
@@ -1703,22 +1701,20 @@ module Yast
     # @param [String] id Menu ID
     # @return [Array<Hash>] Updated Menu Data
     #
-    def AddMenuEntry(_Menu, parent_id, title, id)
-      _Menu = deep_copy(_Menu)
+    def AddMenuEntry(menu, parent_id, title, id)
+      menu = deep_copy(menu)
       if haveFancyUI
         UI.WizardCommand(term(:AddMenuEntry, parent_id, title, id))
       else
-        _Menu = Builtins.add(
-          _Menu,
-          
-            "type"   => "MenuEntry",
-            "parent" => parent_id,
-            "title"  => title,
-            "id"     => id
-          
+        menu = Builtins.add(
+          menu,
+          "type"   => "MenuEntry",
+          "parent" => parent_id,
+          "title"  => title,
+          "id"     => id
         )
       end
-      deep_copy(_Menu)
+      deep_copy(menu)
     end
 
     # Create the Menu Items
@@ -1726,22 +1722,22 @@ module Yast
     # @param [String] parent Menu Parent
     # @return [Array] Menu Items
     #
-    def CreateMenuInternal(_Menu, parent)
-      _Menu = deep_copy(_Menu)
-      m = Builtins.filter(_Menu) do |c|
+    def CreateMenuInternal(menu, parent)
+      menu = deep_copy(menu)
+      m = Builtins.filter(menu) do |c|
         Ops.get_string(c, "parent", "") == parent
       end
 
       mm = Builtins.maplist(m) do |cc|
         if Ops.get_string(cc, "type", "") == "MenuEntry"
-          _MenuEntry = Ops.get_string(cc, "id", "")
-          next Item(Id(_MenuEntry), Ops.get_string(cc, "title", ""))
+          menu_entry = Ops.get_string(cc, "id", "")
+          next Item(Id(menu_entry), Ops.get_string(cc, "title", ""))
         elsif Ops.get_string(cc, "type", "") == "SubMenu"
-          _SubMenu = Ops.get_string(cc, "id", "")
+          sub_menu = Ops.get_string(cc, "id", "")
           next term(
             :menu,
             Ops.get_string(cc, "title", ""),
-            CreateMenuInternal(_Menu, _SubMenu)
+            CreateMenuInternal(menu, sub_menu)
           )
         end
       end
@@ -1753,13 +1749,13 @@ module Yast
     # @param [Array<Hash>] Menu Menu data
     # @return [void]
     #
-    def CreateMenu(_Menu)
-      _Menu = deep_copy(_Menu)
+    def CreateMenu(menu)
+      menu = deep_copy(menu)
       if !haveFancyUI
         menu_term = HBox()
-        Builtins.foreach(_Menu) do |m|
+        Builtins.foreach(menu) do |m|
           if Ops.get_string(m, "type", "") == "Menu"
-            menu_items = CreateMenuInternal(_Menu, Ops.get_string(m, "id", ""))
+            menu_items = CreateMenuInternal(menu, Ops.get_string(m, "id", ""))
             Builtins.y2debug("menu_items: %1", menu_items)
             menu_term = Builtins.add(
               menu_term,

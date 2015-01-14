@@ -114,7 +114,7 @@ module Yast
 
     # example5.ycp sequence
     def sequence
-      _Sequence5 = {
+      {
         "ws_start"     => "begin",
         "begin"        => { next: "config" },
         "expert"       => { next: "expert2" },
@@ -132,8 +132,6 @@ module Yast
         "superdetails" => { next: "end", ok: "details" },
         "end"          => { finish: :ws_finish }
       }
-
-      deep_copy(_Sequence5)
     end
   end
 end

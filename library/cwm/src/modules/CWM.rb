@@ -870,16 +870,16 @@ module Yast
     # @param [String] back string label of the "Back" button
     # @param [String] abort string label of the "Abort" button
     # @param [String] help string label of the additional "Help" button (if needed)
-    def AdjustButtons(_next, back, abort, help)
+    def AdjustButtons(next_, back, abort, help)
       # FIXME: there is no point in the help parameter, since we cannot hide the Help
       # button anyway, get rid of it, it's not used at all
       help = "" if UI.HasSpecialWidget(:Wizard)
       help = "" if help == nil
-      _next = "" if _next == nil
+      next_ = "" if next_ == nil
       back = "" if back == nil
       abort = "" if abort == nil
-      if _next != ""
-        Wizard.SetNextButton(:next, _next)
+      if next_ != ""
+        Wizard.SetNextButton(:next, next_)
       else
         Wizard.HideNextButton
       end

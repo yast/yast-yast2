@@ -190,11 +190,11 @@ module Yast
     # @param [Hash] aliases map of aliases
     # @param [String] alias given alias
     # @return [Yast::Term] belonging to the given alias or nil, if error
-    def WS_alias(aliases, _alias)
+    def WS_alias(aliases, alias_)
       aliases = deep_copy(aliases)
-      found = Ops.get(aliases, _alias)
+      found = Ops.get(aliases, alias_)
       if found == nil
-        return WS_error(Builtins.sformat("Alias not found: %1", _alias))
+        return WS_error(Builtins.sformat("Alias not found: %1", alias_))
       end
       if Ops.is_list?(found)
         if Ops.less_or_equal(Builtins.size(Convert.to_list(found)), 0)
@@ -215,12 +215,12 @@ module Yast
     # @param [Hash] aliases map of aliases
     # @param [String] alias given alias
     # @return true if the given alias is special or nil, if not found
-    def WS_special(aliases, _alias)
+    def WS_special(aliases, alias_)
       aliases = deep_copy(aliases)
-      found = Ops.get(aliases, _alias)
+      found = Ops.get(aliases, alias_)
       if found == nil
         return Convert.to_boolean(
-          WS_error(Builtins.sformat("Alias not found: %1", _alias))
+          WS_error(Builtins.sformat("Alias not found: %1", alias_))
         )
       end
       ret = false
@@ -244,11 +244,11 @@ module Yast
         return WS_error(Builtins.sformat("Current not found: %1", current))
       end
       # string|symbol next
-      _next = Ops.get(found, ret)
-      if _next == nil
+      next_ = Ops.get(found, ret)
+      if next_ == nil
         return WS_error(Builtins.sformat("Symbol not found: %1", ret))
       end
-      deep_copy(_next)
+      deep_copy(next_)
     end
 
     # Run a function from the aliases map

@@ -229,7 +229,7 @@ module Yast
       aligns = []
       widths = []
 
-      _Process = lambda do |line|
+      process = lambda do |line|
         line = deep_copy(line)
         ret = []
         anys = Builtins.argsof(line)
@@ -247,7 +247,7 @@ module Yast
         deep_copy(ret)
       end
 
-      _GetAligns = lambda do |header2|
+      get_aligns = lambda do |header2|
         header2 = deep_copy(header2)
         anys = Builtins.argsof(header2)
         Builtins.foreach(Integer.Range(Builtins.size(anys))) do |i|
@@ -261,7 +261,7 @@ module Yast
         nil
       end
 
-      _UpdateWidths = lambda do |columns|
+      update_widths = lambda do |columns|
         columns = deep_copy(columns)
         Builtins.foreach(Integer.Range(Builtins.size(columns))) do |i|
           Ops.set(
@@ -276,9 +276,9 @@ module Yast
         nil
       end
 
-      _PrintLine = lambda do |line|
+      print_line = lambda do |line|
         line = deep_copy(line)
-        columns = _Process.call(line)
+        columns = process.call(line)
         Builtins.foreach(Integer.Range(Builtins.size(columns))) do |i|
           Ops.set(
             columns,
@@ -296,18 +296,18 @@ module Yast
         nil
       end
 
-      _UpdateWidths.call(_Process.call(header))
-      Builtins.foreach(content) { |row| _UpdateWidths.call(_Process.call(row)) }
+      update_widths.call(process.call(header))
+      Builtins.foreach(content) { |row| update_widths.call(process.call(row)) }
 
-      _PrintLine.call(header)
+      print_line.call(header)
 
-      _GetAligns.call(header)
+      get_aligns.call(header)
 
       Print(Builtins.mergestring(Builtins.maplist(widths) do |width|
         String.Repeat("-", width)
       end, "-+-"))
 
-      Builtins.foreach(content) { |row| _PrintLine.call(row) }
+      Builtins.foreach(content) { |row| print_line.call(row) }
 
       nil
     end
@@ -1107,8 +1107,8 @@ module Yast
 
       # help texts for actions
       if Builtins.haskey(cmdlineinfo, "actions")
-        Builtins.foreach(Ops.get_map(cmdlineinfo, "actions", {})) do |action, _def|
-          if !Builtins.haskey(_def, "help")
+        Builtins.foreach(Ops.get_map(cmdlineinfo, "actions", {})) do |action, def_|
+          if !Builtins.haskey(def_, "help")
             Builtins.y2error(
               "Command line specification does not define help for action '%1'",
               action
@@ -1123,8 +1123,8 @@ module Yast
 
       # help for options
       if Builtins.haskey(cmdlineinfo, "options")
-        Builtins.foreach(Ops.get_map(cmdlineinfo, "options", {})) do |option, _def|
-          if !Builtins.haskey(_def, "help")
+        Builtins.foreach(Ops.get_map(cmdlineinfo, "options", {})) do |option, def_|
+          if !Builtins.haskey(def_, "help")
             Builtins.y2error(
               "Command line specification does not define help for option '%1'",
               option
@@ -1135,9 +1135,9 @@ module Yast
             @aborted = true
           end
           # check that regex and enum have defined typespec
-          if (Ops.get_string(_def, "type", "") == "regex" ||
-              Ops.get_string(_def, "type", "") == "enum") &&
-              !Builtins.haskey(_def, "typespec")
+          if (Ops.get_string(def_, "type", "") == "regex" ||
+              Ops.get_string(def_, "type", "") == "enum") &&
+              !Builtins.haskey(def_, "typespec")
             Builtins.y2error(
               "Command line specification does not define typespec for option '%1'",
               option
@@ -1152,7 +1152,7 @@ module Yast
 
       # mappings - check for existing actions and options
       if Builtins.haskey(cmdlineinfo, "mappings")
-        Builtins.foreach(Ops.get_map(cmdlineinfo, "mappings", {})) do |mapaction, _def|
+        Builtins.foreach(Ops.get_map(cmdlineinfo, "mappings", {})) do |mapaction, def_|
           # is this action defined?
           if !Builtins.haskey(
               Ops.get_map(cmdlineinfo, "actions", {}),
@@ -1167,7 +1167,7 @@ module Yast
             @done = true
             @aborted = true
           end
-          Builtins.foreach(_def) do |mapopt|
+          Builtins.foreach(def_) do |mapopt|
             next if !Ops.is_string?(mapopt)
             # is this option defined?
             if !Builtins.haskey(

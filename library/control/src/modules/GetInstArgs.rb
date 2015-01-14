@@ -116,12 +116,12 @@ module Yast
     #		"enable_next" : true,
     #		"proposal"  : "initial"
     #	]
-    def ButtonsProposal(back, _next, proposal_name)
-      __args = {}
-      Ops.set(__args, "enable_back", back)
-      Ops.set(__args, "enable_next", _next)
-      Ops.set(__args, "proposal", proposal_name)
-      deep_copy(__args)
+    def ButtonsProposal(back, next_, proposal_name)
+      {
+        "enable_back" => back,
+        "enable_next" => next_,
+        "proposal"    => proposal_name
+      }
     end
 
     # Returns map of client parameters only with keys:
@@ -134,11 +134,11 @@ module Yast
     #		"enable_back" : false,
     #		"enable_next" : true
     #	]
-    def Buttons(back, _next)
-      __args = {}
-      Ops.set(__args, "enable_back", back)
-      Ops.set(__args, "enable_next", _next)
-      deep_copy(__args)
+    def Buttons(back, next_)
+      {
+        "enable_back" => back,
+        "enable_next" => next_,
+      }
     end
 
     publish function: :enable_next, type: "boolean ()"
