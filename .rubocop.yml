@@ -86,10 +86,6 @@ Style/MethodName:
 Style/PredicateName:
   Enabled: false
 
-# Offense count: 2
-Style/SelfAssignment:
-  Enabled: false
-
 # Offense count: 7
 # Cop supports --auto-correct.
 # Configuration parameters: AllowAsExpressionSeparator.

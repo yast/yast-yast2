@@ -310,8 +310,7 @@ module Yast
               )
             )
         end
-        @commit_needed = @commit_needed ||
-          Ops.greater_than(Builtins.size(files), 0)
+        @commit_needed ||= Ops.greater_than(Builtins.size(files), 0)
         if Ops.greater_than(Builtins.size(files), 0)
           param = Builtins.mergestring(files, " ")
           out = Convert.to_map(

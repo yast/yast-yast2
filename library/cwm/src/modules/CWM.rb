@@ -692,7 +692,7 @@ module Yast
       result = true
       Builtins.foreach(widgets) do |w|
         widget_key = Ops.get_string(w, "_cwm_key", "")
-        result = result && validateWidget(w, event, widget_key)
+        result &&= validateWidget(w, event, widget_key)
       end
       if !result && !@validation_failed_handler.nil?
         @validation_failed_handler.call
