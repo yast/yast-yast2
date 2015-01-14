@@ -60,12 +60,7 @@ Style/AccessorMethodName:
 Style/AsciiComments:
   Enabled: false
 
-# Offense count: 15
-# Configuration parameters: IndentWhenRelativeTo, SupportedStyles, IndentOneStep.
-Style/CaseIndentation:
-  Enabled: false
-
-# Offense count: 1
+# UI_ID module is not camel case
 Style/ClassAndModuleCamelCase:
   Enabled: false
 

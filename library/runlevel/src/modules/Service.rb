@@ -61,19 +61,19 @@ module Yast
 
       systemd_command =
         case command_name
-          when 'show'    then :show
-          when 'status'  then :status
-          when 'start'   then :start
-          when 'stop'    then :stop
-          when 'enable'  then :enable
-          when 'disable' then :disable
-          when 'restart' then :restart
-          when 'reload'  then :reload
-          when 'try-restart' then :try_restart
-          when 'reload-or-restart' then :reload_or_restart
-          when 'reload-or-try-restart' then :reload_or_try_restart
-          else
-            raise "Command '#{command_name}' not supported"
+        when 'show'    then :show
+        when 'status'  then :status
+        when 'start'   then :start
+        when 'stop'    then :stop
+        when 'enable'  then :enable
+        when 'disable' then :disable
+        when 'restart' then :restart
+        when 'reload'  then :reload
+        when 'try-restart' then :try_restart
+        when 'reload-or-restart' then :reload_or_restart
+        when 'reload-or-try-restart' then :reload_or_try_restart
+        else
+          raise "Command '#{command_name}' not supported"
         end
       result = service.send(systemd_command)
       failure(command_name, service_name, service.error) unless result

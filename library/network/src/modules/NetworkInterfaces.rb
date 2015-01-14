@@ -297,12 +297,12 @@ module Yast
       type = nil
 
       case sys_type
-        when "1"
-          type = GetEthTypeFromSysfs(dev)
-        when "32"
-          type = GetIbTypeFromSysfs(dev)
-        else
-          type = Ops.get(@TypeBySysfs, sys_type)
+      when "1"
+        type = GetEthTypeFromSysfs(dev)
+      when "32"
+        type = GetIbTypeFromSysfs(dev)
+      else
+        type = Ops.get(@TypeBySysfs, sys_type)
       end
 
       Builtins.y2debug(
