@@ -714,7 +714,7 @@ module Yast
           s = Builtins.substring(s, 1) if Ops.greater_than(Builtins.size(s), 1)
           Builtins.y2milestone("%1:%2:%3", val, v, s)
           # Global
-          if !Builtins.contains(_Locals, v)
+          if !LOCALS.include?(v)
             Ops.set(config, val, item)
           else
             aliases = Ops.get_map(config, "_aliases", {})
