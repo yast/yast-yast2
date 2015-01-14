@@ -226,7 +226,7 @@ module Yast
       def initialize systemd_unit
         super()
         self[:systemd_unit] = systemd_unit
-        self[:status]       = get_status
+        self[:status]       = read_status
         self[:raw]          = status.stdout
         self[:error]        = status.stderr
         self[:exit]         = status.exit
@@ -236,7 +236,7 @@ module Yast
 
     private
 
-      def get_status
+      def read_status
         systemd_unit.command("is-enabled")
       end
 

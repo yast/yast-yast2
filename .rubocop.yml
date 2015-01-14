@@ -51,9 +51,10 @@ Metrics/PerceivedComplexity:
 Style/AccessModifierIndentation:
   EnforcedStyle: outdent
 
-# Offense count: 4
 Style/AccessorMethodName:
-  Enabled: false
+  # keep backward compatibility, but do not allow new code to be non-ruby style
+  Exclude:
+    - library/systemd/src/modules/systemd_target.rb
 
 # Offense count: 4
 # Cop supports --auto-correct.
