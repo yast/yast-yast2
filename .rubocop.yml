@@ -9,10 +9,6 @@
 inherit_from:
   /usr/share/YaST2/data/devtools/data/rubocop_yast_style.yml
 
-# Offense count: 1
-Lint/UnreachableCode:
-  Enabled: false
-
 # Offense count: 35
 # Cop supports --auto-correct.
 Lint/UnusedBlockArgument:

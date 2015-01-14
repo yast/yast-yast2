@@ -205,10 +205,8 @@ module Yast
       if found == nil
         return WS_error(Builtins.sformat("Invalid alias: %1", found))
       end
-      # FIXME: use function pointers
-      #     if (is(found, term))
+
       return deep_copy(found)
-      WS_error(Builtins.sformat("Invalid alias: %1", found))
     end
 
     # Decide if an alias is special
