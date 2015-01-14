@@ -62,7 +62,7 @@ module Yast
       # Handling of relnotes button when creating a wizard over existing one
       # Cannot be handled by libyui for NCurses
       @relnotes_button_label = ""
-      @relnotes_button_id = "";
+      @relnotes_button_id = ""
     end
 
     def haveFancyUI

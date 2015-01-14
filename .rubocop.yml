@@ -86,12 +86,6 @@ Style/MethodName:
 Style/PredicateName:
   Enabled: false
 
-# Offense count: 7
-# Cop supports --auto-correct.
-# Configuration parameters: AllowAsExpressionSeparator.
-Style/Semicolon:
-  Enabled: false
-
 # Offense count: 39
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles.

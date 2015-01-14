@@ -490,8 +490,8 @@ module Yast
         Check(Ops.get_string(wf, "stage", ""), stage) &&
           Check(Ops.get_string(wf, "mode", ""), mode) &&
           (
-            wf_ref = arg_ref(wf);
-            CheckAdditionalParams(wf_ref);
+            wf_ref = arg_ref(wf)
+            CheckAdditionalParams(wf_ref)
           )
       end
 

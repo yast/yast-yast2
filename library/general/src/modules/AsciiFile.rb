@@ -377,9 +377,9 @@ module Yast
           Ops.add(
             out,
             (
-              file_ref = arg_ref(file.value);
-              assert_line_valid_result = AssertLineValid(file_ref, num);
-              file.value = file_ref.value;
+              file_ref = arg_ref(file.value)
+              assert_line_valid_result = AssertLineValid(file_ref, num)
+              file.value = file_ref.value
               assert_line_valid_result
             )
           ),
