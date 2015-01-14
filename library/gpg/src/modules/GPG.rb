@@ -120,7 +120,7 @@ module Yast
       lines = deep_copy(lines)
       ret = {}
 
-      Builtins.foreach(lines) { |line| Builtins.foreach(@parsing_map) do |regexp, key|
+      Builtins.foreach(lines) do |line| Builtins.foreach(@parsing_map) do |regexp, key|
         parsed = Builtins.regexpsub(line, regexp, "\\1")
         if parsed != nil
           # there might be more UIDs
@@ -139,7 +139,8 @@ module Yast
             Ops.set(ret, key, parsed)
           end
         end
-      end } 
+      end 
+      end 
 
       Builtins.y2milestone("Parsed key: %1", ret)
 

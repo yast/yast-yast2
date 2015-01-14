@@ -56,18 +56,8 @@ Style/AccessorMethodName:
   Exclude:
     - library/systemd/src/modules/systemd_target.rb
 
-# Offense count: 8
+# Keep non-ascii comments as it contains e.g. examples for Punycode
 Style/AsciiComments:
-  Enabled: false
-
-# Offense count: 10
-# Cop supports --auto-correct.
-Style/BlockEndNewline:
-  Enabled: false
-
-# Offense count: 13
-# Cop supports --auto-correct.
-Style/Blocks:
   Enabled: false
 
 # Offense count: 15

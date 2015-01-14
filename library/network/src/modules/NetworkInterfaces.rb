@@ -845,7 +845,7 @@ module Yast
           from: "map",
           to:   "map <string, map <string, map <string, any>>>"
         )
-      ) { |typ, devsmap| Builtins.maplist(devsmap) do |config, devmap|
+      ) do |typ, devsmap| Builtins.maplist(devsmap) do |config, devmap|
         next if devmap == Ops.get_map(original_devs, [typ, config], {})
         # write sysconfig
         p = Ops.add(Ops.add(".network.value.\"", config), "\".")
@@ -984,7 +984,8 @@ module Yast
           [typ, config],
           Ops.get(@Devices, [typ, config], {})
         )
-      end }
+      end 
+      end
 
       # Finish him
       SCR.Write(path(".network"), nil)
@@ -1711,7 +1712,7 @@ module Yast
       devices = List("")
 
       # Find the fastest device
-      Builtins.foreach(@FastestTypes) { |_num, type| Builtins.foreach(devices) do |dev|
+      Builtins.foreach(@FastestTypes) do |_num, type| Builtins.foreach(devices) do |dev|
         if ret == "" &&
             Builtins.regexpmatch(
               dev,
@@ -1720,7 +1721,8 @@ module Yast
             IsConnected(dev)
           ret = dev
         end
-      end }
+      end 
+      end
 
       Builtins.y2milestone("ret=%1", ret)
       ret
