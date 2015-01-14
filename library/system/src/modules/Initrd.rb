@@ -318,7 +318,7 @@ module Yast
       )
 
       UI.SetFocus(Id(:ok_help))
-      r = UI.UserInput
+      UI.UserInput
       UI.CloseDialog
 
       nil

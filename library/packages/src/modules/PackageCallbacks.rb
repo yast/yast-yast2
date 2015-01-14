@@ -839,9 +839,6 @@ module Yast
         )
       end
 
-      # currently unused
-      media_prompt = _("The correct repository medium could not be mounted.")
-
       # --------------------------------------
       # build up button box
 
@@ -2015,9 +2012,6 @@ module Yast
         localfile
       )
 
-      # heading of popup
-      heading = _("Downloading")
-
       # reformat the URL
       url_report = URL.FormatURL(URL.Parse(URL.HidePassword(url)), @max_size)
       # remember the URL
@@ -2182,9 +2176,6 @@ module Yast
       message = _(
         "Rebuilding package database. This process can take some time."
       )
-
-      # progress bar label
-      progress_label = _("Status")
 
       UI.OpenDialog(
         Opt(:decorated),
@@ -3187,8 +3178,7 @@ module Yast
     #	constructor and callback init
     #=============================================================================
 
-    def DummyProcessStart(_param1, param2, _param3)
-      param2 = deep_copy(param2)
+    def DummyProcessStart(_param1, _param2, _param3)
       Builtins.y2debug("Empty ProcessStart callback")
 
       nil

@@ -70,7 +70,6 @@ module Yast
       end
 
       ret = ""
-      newkey = ""
       fallback = Convert.to_string(SCR.Read(Builtins.add(keypath, key)))
 
       #check if there are any translation in .desktop file
@@ -137,7 +136,6 @@ module Yast
       # read modules
       filemap = {}
       filepath = nil
-      name = nil
 
       ReadLanguage()
 

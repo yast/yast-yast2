@@ -1610,15 +1610,6 @@ module Yast
         # translators: progress message - command line interface ready
         PrintVerbose(_("Ready"))
 
-        ret = true
-
-        # Init variables
-        command = ""
-        flags = []
-        options = {}
-        exit = ""
-        l = []
-
         while !Done()
           m = Command()
           command = Ops.get_string(m, "command", "exit")

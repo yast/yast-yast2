@@ -256,7 +256,6 @@ module Yast
     def WS_run(aliases, id)
       aliases = deep_copy(aliases)
       Builtins.y2debug("Running: %1", id)
-      function = nil
 
       function = WS_alias(aliases, id)
       if function == nil

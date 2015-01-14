@@ -54,7 +54,7 @@ module Yast
     end
 
     it "tracks the results of the run hook files" do
-      hook = Hooks.run 'before_hook'
+      Hooks.run 'before_hook'
       expect(Hooks.last.results.size).to eq(2)
       failed_hook_file = Hooks.find('before_hook').files.first
       expect(failed_hook_file.result.exit).not_to eq(0)

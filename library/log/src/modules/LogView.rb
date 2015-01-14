@@ -290,12 +290,10 @@ module Yast
     # @param [Hash{String => Object}] glob_param a map of global parameters of the log widget
     # @param [Array<Hash{String => Object>}] log_maps a list of maps describing all the logs
     # @return [Yast::Term] the widget with buttons
-    def GetButtonsBelowLog(popup, glob_param, log_maps)
+    def GetButtonsBelowLog(popup, glob_param, _log_maps)
       glob_param = deep_copy(glob_param)
-      log_maps = deep_copy(log_maps)
       left = Empty()
       center = Empty()
-      right = Empty()
 
       if popup
         center = PushButton(Id(:close), Opt(:key_F9), Label.CloseButton)
@@ -544,7 +542,6 @@ module Yast
       @param = deep_copy(parameters)
 
       # menubutton
-      mb_label = Ops.get_locale(@param, "mb_label", _("Ad&vanced"))
       log_label = Ops.get_locale(@param, "log_label", _("&Log"))
 
       @logs = [@param]

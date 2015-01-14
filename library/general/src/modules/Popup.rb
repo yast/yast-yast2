@@ -75,7 +75,6 @@ module Yast
     def popupLayoutInternalTypeWithLabel(headline, message, icon_name, button_box, label, richtext, width, height)
       button_box = deep_copy(button_box)
       content = Empty()
-      heading = VSpacing(0.2)
       icon = Empty()
 
       if Ops.greater_than(Builtins.size(icon_name), 0)
@@ -452,8 +451,6 @@ module Yast
         popupLayoutInternal(headline, message, Icon.IconPath("question"), timed)
       )
 
-      which_input = nil
-
       while Ops.greater_than(timeout_seconds, 0)
         which_input = UI.TimeoutUserInput(1000)
 
@@ -517,8 +514,6 @@ module Yast
         Opt(:decorated),
         popupLayoutInternal(headline, message, Icon.IconPath("error"), timed)
       )
-
-      which_input = nil
 
       while Ops.greater_than(timeout_seconds, 0)
         which_input = UI.TimeoutUserInput(1000)
@@ -1663,8 +1658,6 @@ module Yast
         )
       )
 
-      which_input = nil
-
       while Ops.greater_than(timeout_seconds, 0)
         which_input = UI.TimeoutUserInput(1000)
         break if which_input == :timed_ok
@@ -1876,8 +1869,6 @@ module Yast
     #
     # @example Popup::ShowText ("Boot Messages", "kernel panic", 10);
     def ShowTextTimed(headline, text, timeout)
-      heading = Empty()
-
       if Builtins.size(headline) == 0
         heading = VSpacing(0.2)
       else

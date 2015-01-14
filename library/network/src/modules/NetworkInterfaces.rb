@@ -968,7 +968,6 @@ module Yast
         has_key = Builtins.find(@SensitiveFields) do |k|
           Ops.get_string(devmap, k, "") != ""
         end != nil
-        file = Ops.add("/etc/sysconfig/network/ifcfg-", config)
         if has_key
           Builtins.y2debug("Permission change: %1", config)
           SCR.Write(

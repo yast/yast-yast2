@@ -393,7 +393,7 @@ module Yast
 
       UI.OpenDialog(contents)
       UI.SetFocus(Id(:passphrase))
-      ret = CWM.Run(w, {})
+      CWM.Run(w, {})
       UI.CloseDialog
 
       @passphrase

@@ -382,7 +382,6 @@ module Yast
 
       ret = HBox(HSpacing(2))
       i = -1
-      one_icon = ""
 
       number_of_stages = Ops.subtract(number_of_stages, 1)
 

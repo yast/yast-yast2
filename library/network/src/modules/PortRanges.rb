@@ -396,7 +396,6 @@ module Yast
       end
 
       new_list = []
-      list_of_ports = []
       list_of_ranges = []
       # Using port number, we can remove ports mentioned in port ranges
       ports_to_port_numbers = {}

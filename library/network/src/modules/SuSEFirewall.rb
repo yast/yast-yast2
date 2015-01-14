@@ -655,8 +655,6 @@ module Yast
           Ops.get(allowed_ports_divided, "port_ranges", []) == []
         return false
       end
-      # clean up the memory a bit
-      allowed_ports_map = nil
 
       is_allowed = true
       # checking all needed ports;
@@ -1935,7 +1933,6 @@ module Yast
     #	AddService ("ssh", "TCP", "EXT")
     #	AddService ("ssh", "TCP", "dsl0")
     def AddService(service, protocol, interface)
-      success = false
       Builtins.y2milestone(
         "Adding service %1, protocol %2 to %3",
         service,
@@ -2013,7 +2010,6 @@ module Yast
     #  is the same as
     #	RemoveService ("ssh", "TCP", "DMZ") -> true
     def RemoveService(service, protocol, interface)
-      success = false
       Builtins.y2milestone(
         "Removing service %1, protocol %2 from %3",
         service,
@@ -2505,13 +2501,6 @@ module Yast
       # Always call NI::Read, bnc #396646
       NetworkInterfaces.Read
 
-      if Mode.installation
-        # Allways modified for installation, allways save the final state
-        # fixing bug #67355
-        # SetModified();
-        make_parser_happy = true
-      end
-
       Progress.NextStage if have_progress
 
       # get default configuration for autoinstallation
@@ -2568,7 +2557,7 @@ module Yast
         services_list = Builtins.filter(services_list) do |service|
           service != ""
         end
-        if Ops.greater_than(Builtins.size(listed_services), 0)
+        if Ops.greater_than(Builtins.size(services_list), 0)
           ret = true
           raise Break
         end
@@ -2777,8 +2766,6 @@ module Yast
     # @example
     #	GetAdditionalServices("TCP", "EXT") -> ["53", "128"]
     def GetAdditionalServices(protocol, zone)
-      additional_services = []
-
       if !IsSupportedProtocol(protocol)
         Builtins.y2error("Unknown protocol '%1'", protocol)
         return nil

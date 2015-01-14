@@ -37,8 +37,6 @@ module Yast
 
     def load_file_locale(patterns, file_path, language)
       patterns = deep_copy(patterns)
-      text = ""
-      file = ""
       i = 0
       while Ops.less_than(i, Builtins.size(patterns))
         p = Ops.get(patterns, i, "")

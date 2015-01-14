@@ -386,10 +386,6 @@ module Yast
         SuSEFirewallProposal.SetChangedByUser(true)
       end
 
-      interfaces_supported_by_any = SuSEFirewall.InterfacesSupportedByAnyFeature(
-        SuSEFirewall.special_all_interface_zone
-      )
-
       if Ops.greater_than(Builtins.size(forbidden_interfaces), 0)
         SuSEFirewall.SetServices(services, forbidden_interfaces, false)
       end
@@ -403,8 +399,7 @@ module Yast
     # Init function of the widget
     # @param [Hash{String => Object}] widget a widget description map
     # @param [String] key strnig the widget key
-    def InterfacesInit(widget, _key)
-      widget = deep_copy(widget)
+    def InterfacesInit(_widget, _key)
       # set the list of ifaces
       InitAllInterfacesList() if @all_interfaces == nil
       UI.ReplaceWidget(
@@ -431,9 +426,7 @@ module Yast
     # @param [String] key strnig the widget key
     # @param [Hash] event map event to be handled
     # @return [Symbol] for wizard sequencer or nil
-    def InterfacesHandle(widget, _key, event)
-      widget = deep_copy(widget)
-      event = deep_copy(event)
+    def InterfacesHandle(_widget, _key, event)
       event_id = Ops.get(event, "ID")
       if event_id == "_cwm_interface_select_all"
         UI.ChangeWidget(
@@ -454,9 +447,7 @@ module Yast
     # @param [Hash{String => Object}] widget a widget description map
     # @param [String] key strnig the widget key
     # @param [Hash] event map that caused widget data storing
-    def InterfacesStore(widget, _key, event)
-      widget = deep_copy(widget)
-      event = deep_copy(event)
+    def InterfacesStore(_widget, _key, _event)
       @allowed_interfaces = Convert.convert(
         UI.QueryWidget(Id("_cwm_interface_list"), :SelectedItems),
         from: "any",
@@ -473,9 +464,7 @@ module Yast
     # @param [String] key strnig the widget key
     # @param [Hash] event map event that caused the validation
     # @return true if validation succeeded, false otherwise
-    def InterfacesValidate(widget, _key, event)
-      widget = deep_copy(widget)
-      event = deep_copy(event)
+    def InterfacesValidate(_widget, _key, _event)
       ifaces = Convert.convert(
         UI.QueryWidget(Id("_cwm_interface_list"), :SelectedItems),
         from: "any",
@@ -796,9 +785,8 @@ module Yast
       # settings stack must be created in CWM::Run
       w = CWM.CreateWidgets(
         ["firewall_ifaces"],
-         "firewall_ifaces" => CreateInterfacesWidget(settings) 
+         "firewall_ifaces" => CreateInterfacesWidget(settings)
       )
-      help = CWM.MergeHelps(w)
       contents = VBox(
         "firewall_ifaces",
         ButtonBox(
@@ -856,9 +844,8 @@ module Yast
     # Store function of the widget
     # @param [String] key strnig the widget key
     # @param [Hash] event map that caused widget data storing
-    def OpenFirewallStore(widget, _key, event)
+    def OpenFirewallStore(widget, _key, _event)
       widget = deep_copy(widget)
-      event = deep_copy(event)
       if !UI.WidgetExists(Id("_cwm_open_firewall"))
         Builtins.y2error("Widget _cwm_open_firewall does not exist")
         return

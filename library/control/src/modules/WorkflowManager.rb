@@ -656,7 +656,6 @@ module Yast
       appends = Ops.get_list(additional_control, "append_modules", [])
 
       if Ops.greater_than(Builtins.size(appends), 0)
-        as_map = false
         append2 = deep_copy(appends)
 
         if Ops.is_map?(Ops.get(base, ["proposal_modules", 0]))

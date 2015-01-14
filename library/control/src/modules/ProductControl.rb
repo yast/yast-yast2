@@ -566,7 +566,6 @@ module Yast
       workflow = FindMatchingWorkflow(stage, mode)
 
       modules = Ops.get_list(workflow, "modules", [])
-      id = 1
       modules = Builtins.filter(modules) do |m|
         Ops.get_boolean(m, "enabled", true)
       end

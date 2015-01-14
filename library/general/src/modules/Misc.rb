@@ -65,9 +65,6 @@ module Yast
 
     def hardware_name(hardware_entry)
       hardware_entry = deep_copy(hardware_entry)
-      sub_vendor = ""
-      sub_device = ""
-
       sub_vendor = Ops.get_string(hardware_entry, "sub_vendor", "")
       sub_device = Ops.get_string(hardware_entry, "sub_device", "")
 

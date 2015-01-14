@@ -870,11 +870,7 @@ module Yast
     # @param [String] back string label of the "Back" button
     # @param [String] abort string label of the "Abort" button
     # @param [String] help string label of the additional "Help" button (if needed)
-    def AdjustButtons(next_, back, abort, help)
-      # FIXME: there is no point in the help parameter, since we cannot hide the Help
-      # button anyway, get rid of it, it's not used at all
-      help = "" if UI.HasSpecialWidget(:Wizard)
-      help = "" if help == nil
+    def AdjustButtons(next_, back, abort, _help)
       next_ = "" if next_ == nil
       back = "" if back == nil
       abort = "" if abort == nil
@@ -985,8 +981,7 @@ module Yast
     # Used for push buttons if all the other widgets have a fallback.
     # @param [String] key	id of the widget
     # @param [Hash] event	the event being handled
-    def StoreNull(_key, event)
-      event = deep_copy(event)
+    def StoreNull(_key, _event)
       nil
     end
 

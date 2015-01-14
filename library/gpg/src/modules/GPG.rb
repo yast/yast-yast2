@@ -102,7 +102,6 @@ module Yast
     # @param [String] options additional gpg options
     # @return [Hash] result of the execution
     def callGPG(options)
-      ret = {}
       command = Ops.add("LC_ALL=en_US.UTF-8 ", buildGPGcommand(options))
 
       ret = Convert.to_map(SCR.Execute(path(".target.bash_output"), command))
@@ -174,9 +173,6 @@ module Yast
           key_line_list = Builtins.add(key_line_list, line)
         end
       end 
-
-      # not needed anymore, save some memory
-      lines = []
 
       # parse each group to map
       Builtins.foreach(key_lines) do |keylines|

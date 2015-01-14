@@ -118,12 +118,7 @@ module Yast
       Available(package)
     end
 
-    def InstallKernel(kernel_modules)
-      kernel_modules = deep_copy(kernel_modules)
-      # TODO: for 9.2, we always install all packages, but
-      # we could only install those really needed (#44394)
-
-      # the kernel packages are handled by autoyast on its own
+    def InstallKernel(_kernel_modules)
       true
     end
 

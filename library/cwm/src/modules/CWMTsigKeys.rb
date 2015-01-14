@@ -298,7 +298,6 @@ module Yast
             Builtins.contains(used_keys, k)
           end
           if Ops.greater_than(Builtins.size(keys_to_delete), 0)
-            message = Builtins.mergestring(keys_to_delete, ", ")
             # popup message
             message = _(
               "The selected TSIG key cannot be deleted,\n" \
@@ -481,9 +480,8 @@ module Yast
     # @param [Hash{String => Object}] widget a widget description map
     # @param [String] key strnig the widget key
     # @param [Hash] event map that caused widget data storing
-    def Store(widget, _key, event)
+    def Store(widget, _key, _event)
       widget = deep_copy(widget)
-      event = deep_copy(event)
       set_info = Convert.convert(
         Ops.get(widget, "set_keys_info"),
         from: "any",

@@ -137,8 +137,6 @@ module Yast
 
       icon_label = Ops.get_string(options, "label", icon_type)
 
-      ret = nil
-
       this_image = term(:Image, Id(icon_id), IconPath(icon_type), icon_label)
 
       # left and/or right margin defined

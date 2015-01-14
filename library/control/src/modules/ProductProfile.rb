@@ -159,7 +159,7 @@ module Yast
       begin
         # YaPI::SubscriptionTools are only available for SLES
         Yast.import "YaPI::SubscriptionTools"
-      rescue NameError => e
+      rescue NameError
         y2milestone("subscription-tools package not present: no compliance checking")
         return true
       end

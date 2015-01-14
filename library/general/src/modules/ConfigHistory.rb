@@ -501,7 +501,7 @@ module Yast
       success = RemoveDeletedFiles() && success
       success = false if !UpdateCheckout()
       success = DoCommit(module_name) && success
-      true
+      success
     end
 
     # Initialize specified files for version control; useful when

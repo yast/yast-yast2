@@ -165,9 +165,8 @@ module Yast
     # @param [Hash{String => Object}] widget a widget description map
     # @param [String] key strnig the widget key
     # @param [Hash] event map that caused widget data storing
-    def AutoStartStore(widget, _key, event)
+    def AutoStartStore(widget, _key, _event)
       widget = deep_copy(widget)
-      event = deep_copy(event)
       if !UI.WidgetExists(Id("_cwm_service_startup"))
         Builtins.y2error("Widget _cwm_service_startup does not exist")
         return

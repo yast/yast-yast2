@@ -167,8 +167,6 @@ module Yast
     # @return success
     # @see #SetRootAlias
     def WriteAliases
-      # aliases
-      alias_path = "aliases"
       a_raw = Builtins.maplist(MergeRootAlias(@aliases)) do |e|
         {
           "comment" => Ops.get_string(e, "comment", ""),
@@ -176,10 +174,6 @@ module Yast
           "value"   => Ops.get_string(e, "destinations", "")
         }
       end
-      #	if (merge_aliases)
-      #	{
-      #	    a_raw = mergeTables (a_raw, MailTable::Read (alias_path));
-      #	}
       MailTable.Write("aliases", a_raw)
       true
     end

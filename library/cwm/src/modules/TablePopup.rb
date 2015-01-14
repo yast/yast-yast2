@@ -419,7 +419,6 @@ module Yast
       end
       entries = Builtins.maplist(id_list) do |opt_id|
         opt_val = ""
-        val = ""
         opt_changed = false
         opt_key = id2key(descr, opt_id)
         opt_descr = key2descr(descr, opt_key)
@@ -574,7 +573,6 @@ module Yast
           toEval.call(opt_id, opt_key)
         end
         ret = nil
-        event_descr = {}
         while ret != :_tp_ok && ret != :_tp_cancel
           event_descr2 = UI.WaitForEvent
           event_descr2 = { "ID" => :_tp_ok } if Mode.test
@@ -818,7 +816,6 @@ module Yast
           end
           new_index = Ops.add(current_index, step)
           opt_id = Ops.get(id_list, new_index)
-          key2 = id2key(descr, opt_id)
           UI.ChangeWidget(Id(:_tp_table), :CurrentItem, opt_id)
         end
         @previous_selected_item = deep_copy(opt_id)

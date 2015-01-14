@@ -169,7 +169,6 @@ module Yast
               Builtins.size(Ops.get_string(file.value, "delim", "")),
               0
             )
-          pos = 0
           fields = []
           while Ops.greater_than(Builtins.size(line), 0)
             pos = Builtins.findfirstnotof(
@@ -319,7 +318,6 @@ module Yast
     def ReplaceLine(file, line, entry)
       entry = deep_copy(entry)
       Builtins.y2debug("line %1 entry %2", line, entry)
-      changed = false
       if !Builtins.haskey(Ops.get_map(file.value, "l", {}), line)
         Ops.set(file.value, ["l", line], {})
       end

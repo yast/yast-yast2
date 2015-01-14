@@ -86,7 +86,7 @@ module Yast
     end
 
     def all properties={}
-      services = Systemctl.service_units.map do |service_unit|
+      Systemctl.service_units.map do |service_unit|
         Service.new(service_unit, properties)
       end
     end
