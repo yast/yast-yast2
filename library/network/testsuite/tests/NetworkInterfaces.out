@@ -1,3 +1,5 @@
+Read	.target.tmpdir nil
+Log	Failed to set temporary directory: nil
 Dump	Combined:
 Dump	ifcfg-eth0, type: eth
 Dump	ifcfg-eth1, type: eth

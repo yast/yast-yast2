@@ -70,6 +70,35 @@ global define void TypeRepository() ``{
     ];
 }
 
+/*
+ * Checks if given argument is empty.
+ *
+ * For other types than string, list, map returns true when value is nil.
+ * For list and map checks if value is nil or doesn't contain any item ( [] resp $[] ).
+ * For string checks if value is nil or equal to string without any chars ("").
+ */
+global boolean IsEmpty( any value)
+{
+    if( value == nil)
+        return true;
+
+    boolean ret = false;
+
+    if( is( value, string))
+        ret = isempty( (string) value);
+
+    if( is( value, list))
+        ret = isempty( (list) value);
+
+    if( is( value, map))
+        ret = isempty( (map) value);
+
+    if( is( value, term) )
+        ret = size( (term) value) == 0;
+
+    return ret;
+}
+
 /************************* generic validators *******************************/
 
 /**

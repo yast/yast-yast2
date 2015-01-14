@@ -35,7 +35,7 @@ list <string> ifcfgs = [
     ];
 
 foreach (string ifcfg, ifcfgs, {
-    string t = NetworkInterfaces::GetType(ifcfg);
+    string t = NetworkInterfaces::device_type(ifcfg);
     DUMP (sformat ("ifcfg-%1, type: %2", ifcfg, t));
 });
 
