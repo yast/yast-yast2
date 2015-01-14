@@ -68,7 +68,7 @@ Style/ClassAndModuleCamelCase:
 Style/Documentation:
   Enabled: false
 
-# Offense count: 4
+# keep double negation as conversion to boolean
 Style/DoubleNegation:
   Enabled: false
 
