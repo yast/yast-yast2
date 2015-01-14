@@ -91,10 +91,10 @@ describe "Kernel" do
   describe "#SaveModulesToLoad" do
     describe "when modules.d directory does not exist" do
       it "tries to create the missing directory and returns false if it fails" do
-        expect(Yast::FileUtils).to receive(:Exists).twice().and_return(false)
+        expect(Yast::FileUtils).to receive(:Exists).twice.and_return(false)
         expect(Yast::SCR).to receive(:Execute).with(
           Yast::Path.new(".target.mkdir"),
-          anything()
+          anything
         ).and_return(false)
         expect(Yast::Kernel.SaveModulesToLoad).to eq(false)
       end

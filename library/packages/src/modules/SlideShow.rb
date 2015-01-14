@@ -646,7 +646,7 @@ module Yast
       @_base_product = base_product
     end
 
-    def add_relnotes_for_product product, relnotes, tabs
+    def add_relnotes_for_product(product, relnotes, tabs)
       id = ProductRelNotesID product
       # Translators: Tab name, keep short, %s is product name, e.g. SLES
       tabs << Item(Id(id), _("%s Release Notes") % product)

@@ -71,7 +71,7 @@ module Yast
       @search_path = SearchPath.new
     end
 
-    def run hook_name
+    def run(hook_name)
       hook_name = hook_name.to_s
       raise "Hook name not specified" if hook_name.empty?
 
@@ -80,7 +80,7 @@ module Yast
       @last = hook
     end
 
-    def find hook_name
+    def find(hook_name)
       hooks[hook_name]
     end
 
@@ -88,13 +88,13 @@ module Yast
       hooks.values
     end
 
-    def exists? hook_name
+    def exists?(hook_name)
       !!find(hook_name)
     end
 
   private
 
-    def create hook_name, source_file
+    def create(hook_name, source_file)
       if hooks[hook_name]
         log.warn "Hook '#{hook_name}' has already been run from #{hooks[hook_name].caller_path}"
         hooks[hook_name]
@@ -112,7 +112,7 @@ module Yast
         set_default_path
       end
 
-      def join! new_path
+      def join!(new_path)
         @path = path.join(new_path)
       end
 
@@ -120,7 +120,7 @@ module Yast
         set_default_path
       end
 
-      def set new_path
+      def set(new_path)
         @path = Pathname.new(new_path)
       end
 
@@ -152,7 +152,7 @@ module Yast
 
       attr_reader :name, :results, :files, :caller_path, :search_path
 
-      def initialize name, caller_path, search_path
+      def initialize(name, caller_path, search_path)
         log.debug "Creating hook '#{name}' from '#{self.caller_path}'"
         search_path.verify!
         @search_path = search_path
@@ -184,7 +184,7 @@ module Yast
 
     private
 
-      def find_hook_files hook_name
+      def find_hook_files(hook_name)
         log.debug "Searching for hook files in '#{search_path}'..."
         hook_files = search_path.children.select do |file|
           file.basename.fnmatch?("#{hook_name}_[0-9][0-9]_*")
@@ -202,7 +202,7 @@ module Yast
 
       attr_reader :path, :content, :result
 
-      def initialize path
+      def initialize(path)
         @path = path
       end
 

@@ -8,7 +8,7 @@ module Yast
   describe Service do
     include SystemdServiceStubs
 
-    def stub_service_with method, result
+    def stub_service_with(method, result)
       allow_any_instance_of(SystemdServiceClass::Service).to receive(method)
         .and_return(result)
     end

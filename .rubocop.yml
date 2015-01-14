@@ -77,17 +77,6 @@ Style/DoubleNegation:
 Style/FileName:
   Enabled: false
 
-# Offense count: 10
-# Cop supports --auto-correct.
-Style/MethodCallParentheses:
-  Enabled: false
-
-# Offense count: 71
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/MethodDefParentheses:
-  Enabled: false
-
 # Offense count: 1748
 # Configuration parameters: EnforcedStyle, SupportedStyles.
 Style/MethodName:

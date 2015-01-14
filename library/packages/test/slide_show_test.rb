@@ -29,7 +29,7 @@ describe "Yast::SlideShow" do
     describe "when total progress widget is missing" do
       it "does not update the total progress" do
         expect(Yast::UI).to receive(:WidgetExists).with(TOTAL_PROGRESS_ID).and_return(false)
-        expect(Yast::UI).not_to receive(:ChangeWidget).with(TOTAL_PROGRESS_ID, anything(), anything())
+        expect(Yast::UI).not_to receive(:ChangeWidget).with(TOTAL_PROGRESS_ID, anything, anything)
 
         Yast::SlideShow.UpdateGlobalProgress(1, "new label -1")
       end
@@ -57,13 +57,13 @@ describe "Yast::SlideShow" do
 
       it "does not update progress label when setting it to nil" do
         expect(Yast::UI).to receive(:ChangeWidget).with(TOTAL_PROGRESS_ID, :Value, 25)
-        expect(Yast::UI).not_to receive(:ChangeWidget).with(TOTAL_PROGRESS_ID, :Label, anything())
+        expect(Yast::UI).not_to receive(:ChangeWidget).with(TOTAL_PROGRESS_ID, :Label, anything)
 
         Yast::SlideShow.UpdateGlobalProgress(25, nil)
       end
 
       it "does not update progress value when setting it to nil" do
-        expect(Yast::UI).not_to receive(:ChangeWidget).with(TOTAL_PROGRESS_ID, :Value, anything())
+        expect(Yast::UI).not_to receive(:ChangeWidget).with(TOTAL_PROGRESS_ID, :Value, anything)
         expect(Yast::UI).to receive(:ChangeWidget).with(TOTAL_PROGRESS_ID, :Label, "new label 1")
 
         Yast::SlideShow.UpdateGlobalProgress(nil, "new label 1")
@@ -93,7 +93,7 @@ describe "Yast::SlideShow" do
     describe "when total progress widget does not exists" do
       it "does not update the total progress" do
         expect(Yast::UI).to receive(:WidgetExists).with(PACKAGES_PROGRESS_ID).and_return(false)
-        expect(Yast::UI).not_to receive(:ChangeWidget).with(PACKAGES_PROGRESS_ID, anything(), anything())
+        expect(Yast::UI).not_to receive(:ChangeWidget).with(PACKAGES_PROGRESS_ID, anything, anything)
 
         Yast::SlideShow.SubProgress(9, "some label")
       end
@@ -113,13 +113,13 @@ describe "Yast::SlideShow" do
 
       it "does not update progress label when setting it to nil" do
         expect(Yast::UI).to receive(:ChangeWidget).with(PACKAGES_PROGRESS_ID, :Value, 13)
-        expect(Yast::UI).not_to receive(:ChangeWidget).with(PACKAGES_PROGRESS_ID, :Label, anything())
+        expect(Yast::UI).not_to receive(:ChangeWidget).with(PACKAGES_PROGRESS_ID, :Label, anything)
 
         Yast::SlideShow.SubProgress(13, nil)
       end
 
       it "does not update progress value when setting it to nil" do
-        expect(Yast::UI).not_to receive(:ChangeWidget).with(PACKAGES_PROGRESS_ID, :Value, anything())
+        expect(Yast::UI).not_to receive(:ChangeWidget).with(PACKAGES_PROGRESS_ID, :Value, anything)
         expect(Yast::UI).to receive(:ChangeWidget).with(PACKAGES_PROGRESS_ID, :Label, "package test 1")
 
         Yast::SlideShow.SubProgress(nil, "package test 1")

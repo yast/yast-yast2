@@ -35,7 +35,7 @@ module Yast
   ###
 
   class SystemdTargetNotFound < StandardError
-    def initialize target_name
+    def initialize(target_name)
       super "Target unit '#{target_name}' not found"
     end
   end
@@ -47,7 +47,7 @@ module Yast
     DEFAULT_TARGET = "default.target"
     PROPERTIES     = { allow_isolate: "AllowIsolate" }
 
-    def find target_name, properties={}
+    def find(target_name, properties={})
       target_name += UNIT_SUFFIX unless target_name.end_with?(UNIT_SUFFIX)
       target = Target.new(target_name, PROPERTIES.merge(properties))
 
@@ -59,11 +59,11 @@ module Yast
       target
     end
 
-    def find! target_name, _properties={}
+    def find!(target_name, _properties={})
       find(target_name) || raise(SystemdTargetNotFound, target_name)
     end
 
-    def all _properties={}
+    def all(_properties={})
       targets = Systemctl.target_units.map do |target_unit_name|
         find(target_unit_name)
       end
@@ -77,7 +77,7 @@ module Yast
       find(result.stdout.strip)
     end
 
-    def set_default target
+    def set_default(target)
       target_unit = target.is_a?(Target) ? target : find(target)
 
       unless target_unit

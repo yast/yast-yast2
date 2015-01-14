@@ -57,7 +57,7 @@ module Yast
 
     attr_reader :name, :unit_name, :unit_type, :input_properties, :error, :properties
 
-    def initialize full_unit_name, properties={}
+    def initialize(full_unit_name, properties={})
       @unit_name, @unit_type = full_unit_name.split(".")
       raise "Missing unit type suffix" unless unit_type
 
@@ -120,7 +120,7 @@ module Yast
       run_command! { command("reload-or-try-restart") }
     end
 
-    def command command_name, options={}
+    def command(command_name, options={})
       command = "#{command_name} #{unit_name}.#{unit_type} #{options[:options]}"
       log.info "`#{Systemctl::CONTROL} #{command}`"
       Systemctl.execute(command)
@@ -139,7 +139,7 @@ module Yast
     class Properties < OpenStruct
       include Yast::Logger
 
-      def initialize systemd_unit
+      def initialize(systemd_unit)
         super()
         self[:systemd_unit] = systemd_unit
         raw_output   = load_systemd_properties
@@ -187,7 +187,7 @@ module Yast
       # We test for the return value 'enabled' and 'enabled-runtime' to consider
       # a service as enabled.
       # @return [Boolean] True if enabled, False if not
-      def state_name_enabled? state
+      def state_name_enabled?(state)
         ["enabled", "enabled-runtime"].member?(state.strip)
       end
 
@@ -223,7 +223,7 @@ module Yast
     class InstallationProperties < OpenStruct
       include Yast::Logger
 
-      def initialize systemd_unit
+      def initialize(systemd_unit)
         super()
         self[:systemd_unit] = systemd_unit
         self[:status]       = read_status

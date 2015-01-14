@@ -7,7 +7,7 @@ module Yast
     include SystemdSocketStubs
     include SystemdServiceStubs
 
-    def trigger_reloading_properties command
+    def trigger_reloading_properties(command)
       unit = SystemdUnit.new("new.socket")
       properties = unit.properties
       unit.send(command)

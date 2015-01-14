@@ -3,7 +3,7 @@ require 'timeout'
 
 module Yast
   class SystemctlError < StandardError
-    def initialize struct
+    def initialize(struct)
       super "Systemctl command failed: #{struct}"
     end
   end
@@ -18,7 +18,7 @@ module Yast
     TIMEOUT         = 30 # seconds
 
     class << self
-      def execute command
+      def execute(command)
         command = SYSTEMCTL + command
         log.debug "Executing `systemctl` command: #{command}"
         result = timeout(TIMEOUT) { SCR.Execute(Path.new(".target.bash_output"), command) }
@@ -65,20 +65,20 @@ module Yast
 
     private
 
-      def list_unit_files type: nil
+      def list_unit_files(type: nil)
         command = " list-unit-files "
         command << " --type=#{type} " if type
         execute(command).stdout
       end
 
-      def list_units type: nil, all: true
+      def list_units(type: nil, all: true)
         command = " list-units "
         command << " --all " if all
         command << " --type=#{type} " if type
         execute(command).stdout
       end
 
-      def first_column line
+      def first_column(line)
         line[/\S+/]
       end
     end

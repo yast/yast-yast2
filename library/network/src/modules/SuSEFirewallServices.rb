@@ -35,7 +35,7 @@ require "yast"
 
 module Yast
   class SuSEFirewalServiceNotFound < StandardError
-    def initialize message
+    def initialize(message)
       super message
     end
   end
