@@ -66,7 +66,7 @@ module Yast
 
     # Init function of virtual DialogTree widget
     # @param [String] key string widget key
-    def DialogTreeInit(key)
+    def DialogTreeInit(_key)
       if UI.WidgetExists(Id(:wizardTree))
         UI.ChangeWidget(Id(:wizardTree), :CurrentItem, @selected_screen)
         UI.SetFocus(Id(:wizardTree))
@@ -81,7 +81,7 @@ module Yast
     # @param [String] key string widget key
     # @param [Hash] event map event that caused handler call
     # @return [Symbol] for wizard sequencer or nil
-    def DialogTreeHandle(key, event)
+    def DialogTreeHandle(_key, event)
       event = deep_copy(event)
       ret = Ops.get(event, "ID")
 
@@ -200,7 +200,7 @@ module Yast
     def AdjustButtonsAny(buttons)
       buttons = deep_copy(buttons)
       buttons2 = Convert.convert(
-        Builtins.filter(buttons) { |k, v| Builtins.issubstring(k, "_button") },
+        Builtins.filter(buttons) { |k, _v| Builtins.issubstring(k, "_button") },
         from: "map <string, any>",
         to:   "map <string, string>"
       )
@@ -230,12 +230,12 @@ module Yast
       functions = Ops.get_map(settings, "functions", {})
 
       initial_screen = "" if initial_screen == nil
-      Builtins.foreach(screens) do |k, v|
+      Builtins.foreach(screens) do |k, _v|
         initial_screen = k if initial_screen == ""
       end if initial_screen == ""
 
       @selected_screen = initial_screen
-      ids = Builtins.maplist(screens) { |k, v| k }
+      ids = Builtins.maplist(screens) { |k, _v| k }
       extra_widget = GetVirtualDialogTreeWidget(ids)
 
       w = DrawScreen(

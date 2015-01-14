@@ -36,7 +36,7 @@
 # see file src/ids/src/class in hwinfo sources
 module Yast
   module HwinfoClassnamesInclude
-    def initialize_hwinfo_classnames(include_target)
+    def initialize_hwinfo_classnames(_include_target)
       textdomain "base"
 
       # Class names collected

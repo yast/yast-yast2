@@ -392,7 +392,7 @@ module Yast
     # @param [Fixnum] src_id with Source ID
     # @param [String] name with unique identification
     # @return [String] path to already cached workflow file, control file is downloaded if not yet chached
-    def GetCachedWorkflowFilename(type, src_id, name)
+    def GetCachedWorkflowFilename(type, src_id, _name)
       if type == :addon
         disk_filename = GenerateAdditionalControlFilePath(src_id, "")
 
@@ -790,7 +790,7 @@ module Yast
     # @param [Hash] addon map the workflow of the addon product
     # @param [String] prod_name a name of the add-on product
     # @return [Hash] merged workflows
-    def MergeWorkflow(base, addon, prod_name, domain)
+    def MergeWorkflow(base, addon, _prod_name, domain)
       base = deep_copy(base)
       addon = deep_copy(addon)
       # Merging - removing steps, settings
@@ -1130,7 +1130,7 @@ module Yast
     # @param [Hash] update_file a map containing update control file
     # @param
     # @return [Boolean] true on success
-    def UpdateProductInfo(update_file, filename)
+    def UpdateProductInfo(update_file, _filename)
       update_file = deep_copy(update_file)
       # merging all 'map <string, any>' type
       Builtins.foreach(["globals", "software", "partitioning", "network"]) do |section|

@@ -208,7 +208,7 @@ module Yast
         end
 
         # mark licenses as confirmed
-        Builtins.foreach(licenses) { |p, l| Pkg.PkgMarkLicenseConfirmed(p) }
+        Builtins.foreach(licenses) { |p, _l| Pkg.PkgMarkLicenseConfirmed(p) }
         @last_op_canceled = false
       end
 

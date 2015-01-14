@@ -422,7 +422,7 @@ module Yast
       LoadExtension(extension, "")
     end
 
-    def DesintegrateExtension(extension)
+    def DesintegrateExtension(_extension)
       Builtins.y2warning("Function is empty, see BNC #376870")
       true
     end

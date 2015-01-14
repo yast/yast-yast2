@@ -297,7 +297,7 @@ module Yast
     def mergeFunctions(widgets, functions)
       widgets = deep_copy(widgets)
       functions = deep_copy(functions)
-      functions = Builtins.filter(functions) { |k, v| Ops.is_string?(k) }
+      functions = Builtins.filter(functions) { |k, _v| Ops.is_string?(k) }
       fallback_functions = Convert.convert(
         functions,
         from: "map",
@@ -977,7 +977,7 @@ module Yast
     # Do-nothing replacement for a widget initialization function.
     # Used for push buttons if all the other widgets have a fallback.
     # @param [String] key id of the widget
-    def InitNull(key)
+    def InitNull(_key)
       nil
     end
 
@@ -985,7 +985,7 @@ module Yast
     # Used for push buttons if all the other widgets have a fallback.
     # @param [String] key	id of the widget
     # @param [Hash] event	the event being handled
-    def StoreNull(key, event)
+    def StoreNull(_key, event)
       event = deep_copy(event)
       nil
     end

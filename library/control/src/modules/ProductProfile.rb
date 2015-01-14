@@ -167,7 +167,7 @@ module Yast
       return true if IsCompliant(productId)
 
       reasons = []
-      Builtins.foreach(@compliance) do |key, val|
+      Builtins.foreach(@compliance) do |_key, val|
         if Ops.is_map?(val) && Builtins.haskey(Convert.to_map(val), "message")
           reasons = Builtins.add(
             reasons,

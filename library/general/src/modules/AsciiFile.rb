@@ -374,7 +374,7 @@ module Yast
       Builtins.y2milestone("path %1", fpath)
       Builtins.y2debug("out: %1", file.value)
       out = ""
-      Builtins.foreach(Ops.get_map(file.value, "l", {})) do |num, entry|
+      Builtins.foreach(Ops.get_map(file.value, "l", {})) do |num, _entry|
         out = Ops.add(
           Ops.add(
             out,

@@ -96,7 +96,7 @@ module Yast
 
     # Kill processes running on the backgrouns
     # @param [String] key log widget key
-    def KillBackgroundProcess(key)
+    def KillBackgroundProcess(_key)
       LogViewCore.Stop
 
       nil
@@ -361,7 +361,7 @@ module Yast
     # Initialize the displayed log
     # @param [String] key log widget key
     # @param [String] key table widget key
-    def LogInit(key)
+    def LogInit(_key)
       @param = CWM.GetProcessedWidget
       @current_index = Ops.get_integer(@param, "_cwm_default_index", 0)
       @mb_actions = Ops.get_list(@param, "_cwm_button_actions", [])
@@ -378,7 +378,7 @@ module Yast
     # @param [String] key log widget key
     # @param [Hash] event map event to handle
     # @return [Symbol] always nil
-    def LogHandle(key, event)
+    def LogHandle(_key, event)
       event = deep_copy(event)
       @param = CWM.GetProcessedWidget
       LogViewCore.Update(Id(:_cwm_log))

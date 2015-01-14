@@ -111,7 +111,7 @@ module Yast
     # Init function of the widget
     # Used when using the callback interface
     # @param [String] key strnig the widget key
-    def Init(key)
+    def Init(_key)
       if @set_items_callback != nil
         @set_items_callback.call
       else
@@ -132,7 +132,7 @@ module Yast
     # @param [String] key strnig the widget key
     # @param [Hash] event map event to be handled
     # @return [Symbol] for wizard sequencer or nil
-    def Handle(key, event)
+    def Handle(_key, event)
       event = deep_copy(event)
       @last_event = deep_copy(event)
       current = Convert.to_string(UI.QueryWidget(Id(:_hw_items), :CurrentItem))

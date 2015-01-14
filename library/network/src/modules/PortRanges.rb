@@ -431,7 +431,7 @@ module Yast
         end
       end
 
-      Builtins.foreach(port_numbers_to_port_names) do |port_number, port_names|
+      Builtins.foreach(port_numbers_to_port_names) do |port_number, _port_names|
         # Port is not in any defined port range
         if !PortIsInPortranges(Builtins.tostring(port_number), list_of_ranges)
           # Port - 1 IS in some port range

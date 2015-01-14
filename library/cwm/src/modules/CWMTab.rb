@@ -221,7 +221,7 @@ module Yast
     # Init function of the widget
     # @param [Hash{String => Object}] widget a widget description map
     # @param [String] key strnig the widget key
-    def Init(widget, key)
+    def Init(widget, _key)
       widget = deep_copy(widget)
       Push()
       InitNewTab(Ops.get_string(widget, "initial_tab", ""), widget)
@@ -231,7 +231,7 @@ module Yast
 
     # Clean up function of the widget
     # @param [String] key the widget key (ignored)
-    def CleanUp(key)
+    def CleanUp(_key)
       TabCleanup(@current_tab_map)
       @last_tab_id = @current_tab_id
       Pop()
@@ -244,7 +244,7 @@ module Yast
     # @param [String] key strnig the widget key
     # @param [Hash] event map event to be handled
     # @return [Symbol] for wizard sequencer or nil
-    def Handle(widget, key, event)
+    def Handle(widget, _key, event)
       widget = deep_copy(widget)
       event = deep_copy(event)
       all_tabs = Ops.get_list(widget, "tabs_list", [])
@@ -270,7 +270,7 @@ module Yast
     # Store function of the widget
     # @param [String] key strnig the widget key
     # @param [Hash] event map that caused widget data storing
-    def Store(key, event)
+    def Store(_key, event)
       event = deep_copy(event)
       TabStore(@current_tab_map, event)
 
@@ -319,7 +319,7 @@ module Yast
     # Validate function of the widget
     # @param [String] key strnig the widget key
     # @param [Hash] event map that caused widget data storing
-    def Validate(key, event)
+    def Validate(_key, event)
       event = deep_copy(event)
       TabValidate(@current_tab_map, event)
     end

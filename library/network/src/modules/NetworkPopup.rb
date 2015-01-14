@@ -59,7 +59,7 @@ module Yast
     # @param [Array<String>] items	a list of items
     # @param [String] selected	preselected a value in the list
     # @return		one item or nil
-    def ChooseItem(title, items, selected)
+    def ChooseItem(_title, items, selected)
       items = deep_copy(items)
       item = nil
 

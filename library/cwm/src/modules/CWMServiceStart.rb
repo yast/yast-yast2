@@ -126,7 +126,7 @@ module Yast
     # Init function of the widget
     # @param [Hash{String => Object}] widget a widget description map
     # @param [String] key strnig the widget key
-    def AutoStartInit(widget, key)
+    def AutoStartInit(widget, _key)
       widget = deep_copy(widget)
       if !UI.WidgetExists(Id("_cwm_service_startup"))
         Builtins.y2error("Widget _cwm_service_startup does not exist")
@@ -165,7 +165,7 @@ module Yast
     # @param [Hash{String => Object}] widget a widget description map
     # @param [String] key strnig the widget key
     # @param [Hash] event map that caused widget data storing
-    def AutoStartStore(widget, key, event)
+    def AutoStartStore(widget, _key, event)
       widget = deep_copy(widget)
       event = deep_copy(event)
       if !UI.WidgetExists(Id("_cwm_service_startup"))
@@ -414,7 +414,7 @@ module Yast
     # @param [String] key strnig the widget key
     # @param event_id any the ID of the occurred event
     # @return always nil
-    def StartStopHandle(widget, key, event)
+    def StartStopHandle(widget, _key, event)
       widget = deep_copy(widget)
       event = deep_copy(event)
       event_id = Ops.get(event, "ID")
@@ -458,7 +458,7 @@ module Yast
     # Init function of the widget
     # @param [Hash{String => Object}] widget a widget description map
     # @param [String] key strnig the widget key
-    def StartStopInit(widget, key)
+    def StartStopInit(widget, _key)
       widget = deep_copy(widget)
       @last_status = nil
       @service_is_running =
@@ -680,7 +680,7 @@ module Yast
     # Init function of the widget
     # @param [Hash{String => Object}] widget a widget description map
     # @param [String] key strnig the widget key
-    def LdapInit(widget, key)
+    def LdapInit(widget, _key)
       widget = deep_copy(widget)
       UpdateLdapWidget(widget)
 
@@ -692,7 +692,7 @@ module Yast
     # @param [String] key strnig the widget key
     # @param [Hash] event map event to be handled
     # @return [Symbol] for wizard sequencer or nil
-    def LdapHandle(widget, key, event)
+    def LdapHandle(widget, _key, event)
       widget = deep_copy(widget)
       event = deep_copy(event)
       ret = Ops.get(event, "ID")

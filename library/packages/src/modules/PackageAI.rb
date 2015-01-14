@@ -98,7 +98,7 @@ module Yast
       true
     end
 
-    def Available(package)
+    def Available(_package)
       true
     end
 

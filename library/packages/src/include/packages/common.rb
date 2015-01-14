@@ -34,7 +34,7 @@
 # <a href="../index.html">.../docs/index.html</a>.
 module Yast
   module PackagesCommonInclude
-    def initialize_packages_common(include_target)
+    def initialize_packages_common(_include_target)
       textdomain "base"
 
       Yast.import "Label"

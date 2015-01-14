@@ -44,7 +44,7 @@ module Yast
     def Keys(m)
       m = deep_copy(m)
       return [] if m == nil || m == {}
-      Builtins.maplist(m) { |var, val| var }
+      Builtins.maplist(m) { |var, _val| var }
     end
 
     # Return all values from the map
@@ -53,7 +53,7 @@ module Yast
     def Values(m)
       m = deep_copy(m)
       return [] if m == nil || m == {}
-      Builtins.maplist(m) { |var, val| val }
+      Builtins.maplist(m) { |_var, val| val }
     end
 
     # Switch map keys to lower case

@@ -1127,7 +1127,7 @@ module Yast
     # @example
     #	SetTitleIcon ("yast-dns-server");
     #
-    def SetTitleIcon(icon_name)
+    def SetTitleIcon(_icon_name)
       nil
     end
 
@@ -1179,7 +1179,7 @@ module Yast
     #	// Reads "Icon" entry from there
     #	// Sets the icon.
     #	SetDesktopIcon ("lan")
-    def SetDesktopIcon(file)
+    def SetDesktopIcon(_file)
       true
     end
 

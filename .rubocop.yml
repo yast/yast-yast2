@@ -9,16 +9,6 @@
 inherit_from:
   /usr/share/YaST2/data/devtools/data/rubocop_yast_style.yml
 
-# Offense count: 35
-# Cop supports --auto-correct.
-Lint/UnusedBlockArgument:
-  Enabled: false
-
-# Offense count: 129
-# Cop supports --auto-correct.
-Lint/UnusedMethodArgument:
-  Enabled: false
-
 # Offense count: 81
 Lint/UselessAssignment:
   Enabled: false

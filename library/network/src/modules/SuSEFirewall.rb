@@ -2795,7 +2795,7 @@ module Yast
       all_used_services = []
 
       # trying all possible (known) services
-      Builtins.foreach(SuSEFirewallServices.GetSupportedServices) do |service_id, service_name|
+      Builtins.foreach(SuSEFirewallServices.GetSupportedServices) do |service_id, _service_name|
         # only when the service is allowed in zone - remove all its needed ports
         if IsServiceSupportedInZone(service_id, zone) == true
           # all needed ports etc for service/protocol

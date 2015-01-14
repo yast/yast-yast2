@@ -513,7 +513,7 @@ module Yast
     #  for being available on the medias before adding to the list
     # @return a list of all kernel packages (including the base package) that
     #  are to be installed together with the base package
-    def ComputePackagesForBase(base, check_avail)
+    def ComputePackagesForBase(base, _check_avail)
       # Note: kernel-*-nongpl packages have been dropped, use base only
       ret = [base]
 
@@ -596,7 +596,7 @@ module Yast
       return true unless module_to_be_loaded?(name)
 
       Builtins.y2milestone("Removing module to be loaded at boot: %1", name)
-      @modules_to_load.each do |key, val|
+      @modules_to_load.each do |_key, val|
         val.delete(name)
       end
     end

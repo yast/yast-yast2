@@ -275,7 +275,7 @@ module Yast
     def RemoveModule(modname)
       Read() if !(@was_read || Mode.config)
       @modules = Builtins.filter(@modules) { |k| k != modname }
-      @modules_settings = Builtins.filter(@modules_settings) do |k, v|
+      @modules_settings = Builtins.filter(@modules_settings) do |k, _v|
         k != modname
       end
       @changed = true
@@ -289,7 +289,7 @@ module Yast
       @modules = Builtins.filter(@modules) do |m|
         !Builtins.contains(getModulesToSkip, m)
       end
-      @modules_settings = Builtins.filter(@modules_settings) do |k, v|
+      @modules_settings = Builtins.filter(@modules_settings) do |k, _v|
         !Builtins.contains(getModulesToSkip, k)
       end
       @changed = true

@@ -382,7 +382,7 @@ module Yast
     def GetType(dev)
       type = GetTypeFromIfcfgOrName(dev, nil)
 
-      Builtins.foreach(@Devices) do |dev_type, confs|
+      Builtins.foreach(@Devices) do |_dev_type, confs|
         ifcfg = Ops.get(confs, dev, {})
         type = GetTypeFromIfcfgOrName(dev, ifcfg) if !IsEmpty(ifcfg)
       end
@@ -765,7 +765,7 @@ module Yast
         ")[0-9]*$"
       )
       Builtins.y2debug("regex=%1", regex)
-      devices = Builtins.filter(devices) do |file, devmap|
+      devices = Builtins.filter(devices) do |file, _devmap|
         Builtins.regexpmatch(file, regex) == true
       end
       Builtins.y2debug("devices=%1", devices)
@@ -786,7 +786,7 @@ module Yast
         ")[0-9]*$"
       )
       Builtins.y2debug("regex=%1", regex)
-      devices = Builtins.filter(devices) do |file, devmap|
+      devices = Builtins.filter(devices) do |file, _devmap|
         Builtins.regexpmatch(file, regex) != true
       end
       Builtins.y2debug("devices=%1", devices)
@@ -1559,7 +1559,7 @@ module Yast
     def GetIP(device)
       Select(device)
       ips = [GetValue(device, "IPADDR")]
-      Builtins.foreach(Ops.get_map(@Current, "_aliases", {})) do |key, value|
+      Builtins.foreach(Ops.get_map(@Current, "_aliases", {})) do |_key, value|
         ips = Builtins.add(ips, Ops.get_string(value, "IPADDR", ""))
       end
       deep_copy(ips)
@@ -1571,7 +1571,7 @@ module Yast
     # @return [Array] of devices with key=val
     def Locate(key, val)
       ret = []
-      Builtins.maplist(@Devices) do |typ, devsmap|
+      Builtins.maplist(@Devices) do |_typ, devsmap|
         Builtins.maplist(
           Convert.convert(devsmap, from: "map", to: "map <string, map>")
         ) do |device, devmap|
@@ -1590,7 +1590,7 @@ module Yast
     # @return [Array] of devices with key!=val
     def LocateNOT(key, val)
       ret = []
-      Builtins.maplist(@Devices) do |typ, devsmap|
+      Builtins.maplist(@Devices) do |_typ, devsmap|
         Builtins.maplist(
           Convert.convert(devsmap, from: "map", to: "map <string, map>")
         ) do |device, devmap|
@@ -1670,7 +1670,7 @@ module Yast
     def List(devregex)
       ret = []
       if devregex == "" || devregex == nil
-        Builtins.maplist(@Devices) do |t, d|
+        Builtins.maplist(@Devices) do |_t, d|
           Builtins.maplist(
             Convert.convert(
               Map.Keys(d),
@@ -1712,7 +1712,7 @@ module Yast
       devices = List("")
 
       # Find the fastest device
-      Builtins.foreach(@FastestTypes) { |num, type| Builtins.foreach(devices) do |dev|
+      Builtins.foreach(@FastestTypes) { |_num, type| Builtins.foreach(devices) do |dev|
         if ret == "" &&
             Builtins.regexpmatch(
               dev,
@@ -1729,7 +1729,7 @@ module Yast
 
     def FastestType(name)
       ret = ""
-      Builtins.maplist(@FastestTypes) do |num, type|
+      Builtins.maplist(@FastestTypes) do |_num, type|
         regex = Ops.get(@DeviceRegex, type, "")
         if ret == "" &&
             Builtins.regexpmatch(name, Ops.add(Ops.add("^", regex), "[0-9]*$"))

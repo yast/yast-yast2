@@ -812,7 +812,7 @@ module Yast
       Print(_("Commands:"))
 
       longest = 0
-      Builtins.foreach(Ops.get_map(@modulecommands, "actions", {})) do |action, desc|
+      Builtins.foreach(Ops.get_map(@modulecommands, "actions", {})) do |action, _desc|
         if Ops.greater_than(Builtins.size(action), longest)
           longest = Builtins.size(action)
         end
@@ -1439,9 +1439,9 @@ module Yast
       end
 
       # first do a filtering, then convert to a list of keys
-      cmds = Builtins.maplist(Builtins.filter(options) do |opt, value|
+      cmds = Builtins.maplist(Builtins.filter(options) do |opt, _value|
         Builtins.contains(unique_options, opt)
-      end) { |key, value| key }
+      end) { |key, _value| key }
 
       # if it is OK, quickly return
       return Ops.get_string(cmds, 0) if Builtins.size(cmds) == 1

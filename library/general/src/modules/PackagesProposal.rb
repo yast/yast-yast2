@@ -290,7 +290,7 @@ module Yast
 
       ret = []
 
-      Builtins.foreach(@resolvables_to_install) do |unique_ID, resolvables|
+      Builtins.foreach(@resolvables_to_install) do |_unique_ID, resolvables|
         if Builtins.haskey(resolvables, type)
           ret = Builtins.sort(
             Convert.convert(

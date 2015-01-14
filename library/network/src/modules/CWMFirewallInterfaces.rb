@@ -215,7 +215,7 @@ module Yast
     # @param [Array<String>] ifaces a list of interfaces selected by the user
     # @param [Boolean] nm_ifaces_have_to_be_selected defines whether also NetworkManager have to be selected too
     # @return a list of interfaces that will be opened
-    def Selected2Opened(ifaces, nm_ifaces_have_to_be_selected)
+    def Selected2Opened(ifaces, _nm_ifaces_have_to_be_selected)
       ifaces = deep_copy(ifaces)
       Builtins.y2milestone("Selected ifaces: %1", ifaces)
       groups = Builtins.maplist(ifaces) do |i|
@@ -292,16 +292,16 @@ module Yast
       service_status = {}
 
       ifaces_info = SuSEFirewall.GetServicesInZones(services)
-      Builtins.foreach(ifaces_info) { |s, status| Builtins.foreach(status) do |iface, en|
+      Builtins.foreach(ifaces_info) { |_s, status| Builtins.foreach(status) do |iface, en|
         Ops.set(
           service_status,
           iface,
           Ops.get(service_status, iface, true) && en
         )
       end }
-      service_status = Builtins.filter(service_status) { |iface, en| en == true }
+      service_status = Builtins.filter(service_status) { |_iface, en| en == true }
       Builtins.y2milestone("Status: %1", service_status)
-      @allowed_interfaces = Builtins.maplist(service_status) do |iface, en|
+      @allowed_interfaces = Builtins.maplist(service_status) do |iface, _en|
         iface
       end
 
@@ -403,7 +403,7 @@ module Yast
     # Init function of the widget
     # @param [Hash{String => Object}] widget a widget description map
     # @param [String] key strnig the widget key
-    def InterfacesInit(widget, key)
+    def InterfacesInit(widget, _key)
       widget = deep_copy(widget)
       # set the list of ifaces
       InitAllInterfacesList() if @all_interfaces == nil
@@ -431,7 +431,7 @@ module Yast
     # @param [String] key strnig the widget key
     # @param [Hash] event map event to be handled
     # @return [Symbol] for wizard sequencer or nil
-    def InterfacesHandle(widget, key, event)
+    def InterfacesHandle(widget, _key, event)
       widget = deep_copy(widget)
       event = deep_copy(event)
       event_id = Ops.get(event, "ID")
@@ -454,7 +454,7 @@ module Yast
     # @param [Hash{String => Object}] widget a widget description map
     # @param [String] key strnig the widget key
     # @param [Hash] event map that caused widget data storing
-    def InterfacesStore(widget, key, event)
+    def InterfacesStore(widget, _key, event)
       widget = deep_copy(widget)
       event = deep_copy(event)
       @allowed_interfaces = Convert.convert(
@@ -473,7 +473,7 @@ module Yast
     # @param [String] key strnig the widget key
     # @param [Hash] event map event that caused the validation
     # @return true if validation succeeded, false otherwise
-    def InterfacesValidate(widget, key, event)
+    def InterfacesValidate(widget, _key, event)
       widget = deep_copy(widget)
       event = deep_copy(event)
       ifaces = Convert.convert(
@@ -821,7 +821,7 @@ module Yast
 
     # Initialize the open firewall widget
     # @param [Hash{String => Object}] widget a map describing the whole widget
-    def OpenFirewallInit(widget, key)
+    def OpenFirewallInit(widget, _key)
       widget = deep_copy(widget)
       if !UI.WidgetExists(Id("_cwm_open_firewall"))
         Builtins.y2error("Firewall widget doesn't exist")
@@ -856,7 +856,7 @@ module Yast
     # Store function of the widget
     # @param [String] key strnig the widget key
     # @param [Hash] event map that caused widget data storing
-    def OpenFirewallStore(widget, key, event)
+    def OpenFirewallStore(widget, _key, event)
       widget = deep_copy(widget)
       event = deep_copy(event)
       if !UI.WidgetExists(Id("_cwm_open_firewall"))
@@ -882,7 +882,7 @@ module Yast
     # @param [String] key strnig the widget key
     # @param event_id any the ID of the occurred event
     # @return always nil
-    def OpenFirewallHandle(widget, key, event)
+    def OpenFirewallHandle(widget, _key, event)
       widget = deep_copy(widget)
       event = deep_copy(event)
       event_id = Ops.get(event, "ID")
@@ -898,7 +898,7 @@ module Yast
         if handle_firewall_details != nil
           ret = handle_firewall_details.call
         else
-          w = Builtins.filter(widget) { |k, v| "services" == k }
+          w = Builtins.filter(widget) { |k, _v| "services" == k }
           DisplayDetailsPopup(w)
         end
         UpdateFirewallStatus()
@@ -967,7 +967,7 @@ module Yast
     # Check if the widget was modified
     # @param [String] key strnig the widget key
     # @return [Boolean] true if widget was modified
-    def OpenFirewallModified(key)
+    def OpenFirewallModified(_key)
       @configuration_changed
     end
 

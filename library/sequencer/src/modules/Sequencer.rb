@@ -50,7 +50,7 @@ module Yast
     # @see WS documentation for the format of aliases map
     def WS_testall(aliases)
       aliases = deep_copy(aliases)
-      Builtins.maplist(aliases) { |id, func| Builtins.eval(func) }
+      Builtins.maplist(aliases) { |_id, func| Builtins.eval(func) }
     end
 
     # Check correct types in maps and alias presence for sequence.
@@ -164,7 +164,7 @@ module Yast
       ret = Builtins.flatten([ret, ret0])
 
       # check that all aliases are used
-      ret0 = Builtins.maplist(aliases) do |key, val|
+      ret0 = Builtins.maplist(aliases) do |key, _val|
         if !Builtins.haskey(sequence, key)
           Builtins.y2warning(2, "sequencer check: alias not used: %1", key) 
           # return false;

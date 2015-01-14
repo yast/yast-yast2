@@ -288,7 +288,7 @@ module Yast
     # @param [String] name service name
     # @param [Boolean] force pass "--force" (workaround for #17608, #27370)
     # @return success state
-    def serviceDisable name, force
+    def serviceDisable name, _force
       deprecate("use `disable` instead")
 
       unit = SystemdService.find(name)
@@ -414,7 +414,7 @@ module Yast
     # Get list of enabled services in a runlevel
     # @param [Fixnum] runlevel requested runlevel number (0-6, -1 = Single)
     # @return [Array<String>] enabled services
-    def EnabledServices runlevel
+    def EnabledServices _runlevel
       deprecate("use `SystemdService.all.select(&:enabled?)`")
 
       SystemdService.all.select(&:enabled?).map(&:name)

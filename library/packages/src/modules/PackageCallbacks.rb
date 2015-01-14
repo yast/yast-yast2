@@ -500,7 +500,7 @@ module Yast
     end
 
     #  At start of package install.
-    def StartPackage(name, location, summary, installsize, is_delete)
+    def StartPackage(name, _location, _summary, installsize, is_delete)
       return if !@enable_asterix_package
 
       @_package_name = name
@@ -1456,7 +1456,7 @@ module Yast
       nil
     end
 
-    def SourceProbeProgress(url, value)
+    def SourceProbeProgress(_url, value)
       SourcePopupSetProgress(value)
     end
 
@@ -2243,7 +2243,7 @@ module Yast
       nil
     end
 
-    def StartConvertDB(unused1)
+    def StartConvertDB(_unused1)
       # heading of popup
       heading = _("Checking Package Database")
 
@@ -2274,7 +2274,7 @@ module Yast
       nil
     end
 
-    def ProgressConvertDB(percent, file)
+    def ProgressConvertDB(percent, _file)
       UI.ChangeWidget(Id(:progress), :Value, percent)
 
       nil
@@ -2579,7 +2579,7 @@ module Yast
         UI.WidgetExists(Id(:callback_progress_popup))
     end
 
-    def ProgressStart(id, task, in_percent, is_alive, min, max, val_raw, val_percent)
+    def ProgressStart(id, task, in_percent, is_alive, _min, _max, _val_raw, val_percent)
       Builtins.y2milestone("ProgressStart: %1", id)
 
       @tick_progress = is_alive
@@ -3187,19 +3187,19 @@ module Yast
     #	constructor and callback init
     #=============================================================================
 
-    def DummyProcessStart(param1, param2, param3)
+    def DummyProcessStart(_param1, param2, _param3)
       param2 = deep_copy(param2)
       Builtins.y2debug("Empty ProcessStart callback")
 
       nil
     end
 
-    def DummyBooleanInteger(param1)
+    def DummyBooleanInteger(_param1)
       Builtins.y2debug("Empty generic boolean(integer)->true callback")
       true
     end
 
-    def DummyStringString(param1)
+    def DummyStringString(_param1)
       Builtins.y2debug("Empty generic string(string)->\"\" callback")
       ""
     end
@@ -3226,24 +3226,24 @@ module Yast
       nil
     end
 
-    def DummyStartProvide(param1, param2, param3)
+    def DummyStartProvide(_param1, _param2, _param3)
       Builtins.y2debug("Empty StartProvide callback")
 
       nil
     end
 
-    def DummyDoneProvide(error, reason, name)
+    def DummyDoneProvide(_error, _reason, _name)
       Builtins.y2debug("Empty DoneProvide callback, returning 'I'")
       "I"
     end
 
-    def DummyStartPackage(name, location, summary, installsize, is_delete)
+    def DummyStartPackage(_name, _location, _summary, _installsize, _is_delete)
       Builtins.y2debug("Empty StartPackage callback")
 
       nil
     end
 
-    def DummyDonePackage(error, reason)
+    def DummyDonePackage(_error, _reason)
       Builtins.y2debug("Empty DonePackage callback, returning 'I'")
       "I"
     end
@@ -3274,31 +3274,31 @@ module Yast
       nil
     end
 
-    def DummyVoidString(param1)
+    def DummyVoidString(_param1)
       Builtins.y2debug("Empty generic void(string) callback")
 
       nil
     end
 
-    def DummyVoidInteger(param1)
+    def DummyVoidInteger(_param1)
       Builtins.y2debug("Empty generic void(integer) callback")
 
       nil
     end
 
-    def DummyVoidIntegerString(param1, param2)
+    def DummyVoidIntegerString(_param1, _param2)
       Builtins.y2debug("Empty generic void(integer, string) callback")
 
       nil
     end
 
-    def DummyVoidStringInteger(param1, param2)
+    def DummyVoidStringInteger(_param1, _param2)
       Builtins.y2debug("Empty generic void(string, integer) callback")
 
       nil
     end
 
-    def DummyStringIntegerString(param1, param2)
+    def DummyStringIntegerString(_param1, _param2)
       Builtins.y2debug("Empty generic string(integer, string) callback")
       ""
     end
@@ -3340,12 +3340,12 @@ module Yast
       nil
     end
 
-    def DummySourceCreateError(url, error, description)
+    def DummySourceCreateError(_url, _error, _description)
       Builtins.y2debug("Empty SourceCreateError callback, returning `ABORT")
       :ABORT
     end
 
-    def DummySourceCreateEnd(url, error, description)
+    def DummySourceCreateEnd(_url, _error, _description)
       Builtins.y2debug("Empty SourceCreateEnd callback")
 
       nil
@@ -3373,18 +3373,18 @@ module Yast
       nil
     end
 
-    def DummySourceReportStart(source_id, url, task)
+    def DummySourceReportStart(_source_id, _url, _task)
       Builtins.y2debug("Empty SourceReportStart callback")
 
       nil
     end
 
-    def DummySourceReportError(source_id, url, error, description)
+    def DummySourceReportError(_source_id, _url, _error, _description)
       Builtins.y2debug("Empty SourceReportError callback, returning `ABORT")
       :ABORT
     end
 
-    def DummySourceReportEnd(src_id, url, task, error, description)
+    def DummySourceReportEnd(_src_id, _url, _task, _error, _description)
       Builtins.y2debug("Empty SourceReportEnd callback")
 
       nil
@@ -3419,13 +3419,13 @@ module Yast
       nil
     end
 
-    def DummyProgressStart(id, task, in_percent, is_alive, min, max, val_raw, val_percent)
+    def DummyProgressStart(_id, _task, _in_percent, _is_alive, _min, _max, _val_raw, _val_percent)
       Builtins.y2debug("Empty ProgressStart callback")
 
       nil
     end
 
-    def DummyProgressProgress(id, val_raw, val_percent)
+    def DummyProgressProgress(_id, _val_raw, _val_percent)
       Builtins.y2debug("Empty ProgressProgress callback, returning true")
       true
     end
@@ -3450,18 +3450,18 @@ module Yast
       nil
     end
 
-    def DummyScriptStart(patch_name, patch_version, patch_arch, script_path)
+    def DummyScriptStart(_patch_name, _patch_version, _patch_arch, _script_path)
       Builtins.y2debug("Empty ScriptStart callback")
 
       nil
     end
 
-    def DummyScriptProgress(ping, output)
+    def DummyScriptProgress(_ping, _output)
       Builtins.y2debug("Empty ScriptProgress callback, returning true")
       true
     end
 
-    def DummyMessage(patch_name, patch_version, patch_arch, message)
+    def DummyMessage(_patch_name, _patch_version, _patch_arch, _message)
       Builtins.y2debug("Empty Message callback")
       true # continue
     end
@@ -3506,18 +3506,18 @@ module Yast
       nil
     end
 
-    def DummyStartDownload(url, localfile)
+    def DummyStartDownload(_url, _localfile)
       Builtins.y2debug("Empty StartDownload callback")
 
       nil
     end
 
-    def DummyProgressDownload(percent, bps_avg, bps_current)
+    def DummyProgressDownload(_percent, _bps_avg, _bps_current)
       Builtins.y2debug("Empty ProgressDownload callback, returning true")
       true
     end
 
-    def DummyDoneDownload(error_value, error_text)
+    def DummyDoneDownload(_error_value, _error_text)
       Builtins.y2debug("Empty DoneDownload callback")
 
       nil
