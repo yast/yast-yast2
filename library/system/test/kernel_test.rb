@@ -16,7 +16,7 @@ Yast.import "SCR"
 DEFAULT_DATA_DIR = File.join(File.expand_path(File.dirname(__FILE__)), "data/modules.d")
 
 describe "Kernel" do
-  before (:each) do
+  before do
     log.info "--- test ---"
     stub_const("Yast::KernelClass::MODULES_DIR", DEFAULT_DATA_DIR)
     @default_modules = {

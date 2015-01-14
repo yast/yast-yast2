@@ -9,10 +9,6 @@
 inherit_from:
   /usr/share/YaST2/data/devtools/data/rubocop_yast_style.yml
 
-# Offense count: 3
-Lint/ParenthesesAsGroupedExpression:
-  Enabled: false
-
 # Offense count: 56
 Lint/UnderscorePrefixedVariableName:
   Enabled: false
@@ -46,7 +42,7 @@ Metrics/BlockNesting:
 # Offense count: 84
 # Configuration parameters: CountComments.
 Metrics/ClassLength:
-  Max: 2867
+  Max: 2870
 
 # Offense count: 184
 Metrics/CyclomaticComplexity:
