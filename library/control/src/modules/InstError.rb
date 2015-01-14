@@ -131,7 +131,7 @@ module Yast
               Left(Label(error_text)),
               # `VSpacing (1),
               Left(
-                details == nil ?
+                if details.nil?
                   Label(
                     Builtins.sformat(
                       # TRANSLATORS: part of an error message
@@ -141,8 +141,10 @@ module Yast
                       ),
                       "/var/log/YaST2/y2log"
                     )
-                  ) :
+                  )
+                else
                   MinSize(80, 10, RichText(Opt(:plainText, :hstretch), details))
+                end
               ),
               # `VSpacing (1),
               Left(
@@ -218,14 +220,12 @@ module Yast
           "tail -n 200 /var/log/YaST2/y2log | grep ' <\\(3\\|5\\)> '"
         )
       )
-
+  
+      details = cmd["stdout"] if cmd["exit"] == 0 && !cmd["stdout"].empty?
       ShowErrorPopUp(
         _("Installation Error"),
         error_text,
-        Ops.get_integer(cmd, "exit", -1) == 0 &&
-          Ops.get_string(cmd, "stdout", "") != "" ?
-          Ops.get_string(cmd, "stdout", "") :
-          nil
+        details
       )
 
       nil

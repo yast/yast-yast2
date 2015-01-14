@@ -456,7 +456,7 @@ module Yast
       repo = Pkg.SourceGeneralData(repository)
 
       description_text = Builtins.sformat(
-        item_type == :package ?
+        if item_type == :package
           # popup question, %1 stands for the package name
           # %2 is a repository name
           # %3 is URL of the repository
@@ -468,7 +468,8 @@ module Yast
               "may put the integrity of your system at risk.\n" \
               "\n" \
               "Install it anyway?"
-          ) :
+          )
+        else
           # popup question, %1 stands for the filename
           # %2 is a repository name
           # %3 is URL of the repository
@@ -480,7 +481,8 @@ module Yast
               "system at risk.\n" \
               "\n" \
               "Use it anyway?\n"
-          ),
+          )
+        end,
         item_name,
         Ops.get_locale(repo, "name", _("Unknown")),
         Ops.get_locale(repo, "url", _("Unknown"))
@@ -494,9 +496,11 @@ module Yast
             # popup heading
             VCenter(
               Heading(
-                item_type == :package ?
-                  _("Unsigned Package") :
+                if item_type == :package
+                  _("Unsigned Package")
+                else
                   _("Unsigned File")
+                end
               )
             ),
             HStretch()
@@ -542,7 +546,7 @@ module Yast
     # @return [Boolean] use or don't use ('true' if 'yes')
     def UseItemWithNoChecksum(item_type, item_name, dont_show_dialog_ident)
       description_text = Builtins.sformat(
-        item_type == :package ?
+        if item_type == :package
           # popup question, %1 stands for the package name
           _(
             "No checksum for package %1 was found in the repository.\n" \
@@ -551,7 +555,8 @@ module Yast
               "the integrity of your system at risk.\n" \
               "\n" \
               "Install it anyway?\n"
-          ) :
+          )
+        else
           # popup question, %1 stands for the filename
           _(
             "No checksum for file %1 was found in the repository.\n" \
@@ -560,7 +565,8 @@ module Yast
               "may put the integrity of your system at risk.\n" \
               "\n" \
               "Use it anyway?"
-          ),
+          )
+        end,
         item_name
       )
 
@@ -616,37 +622,43 @@ module Yast
                 Builtins.sformat(_("ID: %1"), Ops.get_string(key, "id", "")),
                 "\n"
               ),
-              Ops.get_string(key, "fingerprint", "") == nil ||
-                Ops.get_string(key, "fingerprint", "") == "" ?
+              if Ops.get_string(key, "fingerprint", "") == nil ||
+                Ops.get_string(key, "fingerprint", "") == ""
                 # Part of the GnuPG key description in popup, %1 is a GnuPG key fingerprint
-                "" :
+                ""
+              else
                 Builtins.sformat(
                   _("Fingerprint: %1") + "\n",
                   StringSplitter(Ops.get_string(key, "fingerprint", ""), " ", 4)
                 )
+              end
             ),
             # Part of the GnuPG key description in popup, %1 is a GnuPG key name
             Builtins.sformat(_("Name: %1"), Ops.get_string(key, "name", ""))
           ),
-          Ops.get_string(key, "created", "") != "" ?
+          if Ops.get_string(key, "created", "") != ""
             Ops.add(
               "\n",
               Builtins.sformat(
                 _("Created: %1"),
                 Ops.get_string(key, "created", "")
               )
-            ) :
+            )
+          else
             ""
+          end
         ),
-        Ops.get_string(key, "expires", "") != "" ?
+        if Ops.get_string(key, "expires", "") != ""
           Ops.add(
             "\n",
             Builtins.sformat(
               _("Expires: %1"),
               Ops.get_string(key, "expires", "")
             )
-          ) :
+          )
+        else
           ""
+        end
       )
     end
 
@@ -717,7 +729,7 @@ module Yast
       repo = Pkg.SourceGeneralData(repository)
 
       description_text = Builtins.sformat(
-        item_type == :package ?
+        if item_type == :package
           # popup question, %1 stands for the package name, %2 for the complete description of the GnuPG key (multiline)
           _(
             "Package %1 from repository %2\n" \
@@ -729,7 +741,8 @@ module Yast
               "for the integrity and security of your system.\n" \
               "\n" \
               "Install it anyway?\n"
-          ) :
+          )
+        else
           # popup question, %1 stands for the filename, %2 for the complete description of the GnuPG key (multiline)
           _(
             "File %1 from repository %2\n" \
@@ -741,7 +754,8 @@ module Yast
               "for the integrity and security of your system.\n" \
               "\n" \
               "Use it anyway?\n"
-          ),
+          )
+        end,
         item_name,
         Ops.get_locale(repo, "name", _("Unknown")),
         Ops.get_locale(repo, "url", _("Unknown")),
@@ -782,7 +796,7 @@ module Yast
     def ItemSignedWithUnknownSignature(item_type, item_name, key_id, dont_show_dialog_ident, repoid)
       repo_url = Ops.get_string(Pkg.SourceGeneralData(repoid), "url", "")
       description_text = Builtins.sformat(
-        item_type == :package ?
+        if item_type == :package
           # popup question, %1 stands for the package name, %2 for the complex multiline description of the GnuPG key
           _(
             "The package %1 is digitally signed\n" \
@@ -793,7 +807,8 @@ module Yast
               "of your system at risk.\n" \
               "\n" \
               "Install it anyway?"
-          ) :
+          )
+        else
           # popup question, %1 stands for the filename, %2 for the complex multiline description of the GnuPG key
           _(
             "The file %1\n" \
@@ -804,11 +819,14 @@ module Yast
               "of your system at risk.\n" \
               "\n" \
               "Use it anyway?"
-          ),
+          )
+        end,
         # TODO: use something like "%1 from %2" and make it translatable
-        repo_url != "" ?
-          Builtins.sformat("%1 (%2)", item_name, repo_url) :
-          item_name,
+        if repo_url != ""
+          Builtins.sformat("%1 (%2)", item_name, repo_url)
+        else
+          item_name
+        end,
         Ops.add(
           "\n",
           # Part of the GnuPG key description in popup, %1 is a GnuPG key ID
@@ -871,7 +889,7 @@ module Yast
     def ItemSignedWithPublicSignature(item_type, item_name, key)
       key = deep_copy(key)
       description_text = Builtins.sformat(
-        item_type == :package ?
+        if item_type == :package
           # popup question, %1 stands for the package name, %2 for the key ID, %3 for the key name
           _(
             "The package %1 is digitally signed\n" \
@@ -883,7 +901,8 @@ module Yast
               "Installing a package from an unknown repository puts\n" \
               "the integrity of your system at risk. It is safest\n" \
               "to skip the package.\n"
-          ) :
+          )
+        else
           # popup question, %1 stands for the filename, %2 for the key ID, %3 for the key name
           _(
             "The file %1 is digitally signed\n" \
@@ -895,7 +914,8 @@ module Yast
               "Installing a file from an unknown repository puts\n" \
               "the integrity of your system at risk. It is safest\n" \
               "to skip it.\n"
-          ),
+          )
+        end,
         item_name,
         Ops.get_string(key, "id", ""),
         Ops.get_string(key, "name", "")
@@ -1006,9 +1026,11 @@ module Yast
         Opt(:decorated),
         HBox(
           # left-side help
-          hide_help ?
-            Empty() :
-            HWeight(3, VBox(RichText(warning_text))),
+          if hide_help
+            Empty()
+          else
+            HWeight(3, VBox(RichText(warning_text)))
+          end,
           HSpacing(1.5),
           # dialog
           HWeight(

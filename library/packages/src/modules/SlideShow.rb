@@ -700,13 +700,13 @@ module Yast
       Builtins.y2milestone("SlideShow contents: %1", contents)
 
       Wizard.SetContents(
-        (Mode.update ?
+        if Mode.update
           # Dialog heading - software packages are being upgraded
           _("Performing Upgrade")
-          :
+        else
           # Dialog heading - software packages are being installed
           _("Performing Installation")
-        ),
+        end,
         contents,
         HelpText(),
         false, # no back button

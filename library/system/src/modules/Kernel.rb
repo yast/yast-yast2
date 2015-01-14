@@ -349,9 +349,7 @@ module Yast
 
         # bugzilla #303842
         if cpuflags != nil
-          cpuflags = Ops.greater_than(Builtins.size(cpuinfo_flags), 0) ?
-            Builtins.splitstring(cpuinfo_flags, " ") :
-            []
+          cpuflags = cpuinfo_flags.empty? ? [] : cpuinfo_flags.split(" ")
         else
           Builtins.y2error("Cannot read cpuflags")
           Builtins.y2milestone(

@@ -716,9 +716,11 @@ module Yast
     def AnyQuestionRichText(headline, richtext, hdim, vdim, yes_button_message, no_button_message, focus)
       yes_button = PushButton(
         Id(:ok),
-        focus == :focus_yes ?
-          Opt(:default, :key_F10, :okButton) :
-          Opt(:key_F10, :okButton),
+        if focus == :focus_yes
+          Opt(:default, :key_F10, :okButton)
+        else
+          Opt(:key_F10, :okButton)
+        end,
         yes_button_message
       )
 
@@ -732,9 +734,11 @@ module Yast
         VSpacing(vdim),
         VBox(
           HSpacing(hdim),
-          Ops.greater_than(Builtins.size(headline), 0) ?
-            Left(Heading(headline)) :
-            Empty(),
+          if Ops.greater_than(Builtins.size(headline), 0)
+            Left(Heading(headline))
+          else
+            Empty()
+          end,
           VSpacing(0.2),
           RichText(richtext),
           ButtonBox(yes_button, no_button)
@@ -904,7 +908,7 @@ module Yast
 
       success = UI.OpenDialog(
         Opt(:decorated),
-        richtext ?
+        if richtext
           popupLayoutInternalRich(
             headline,
             message,
@@ -912,8 +916,10 @@ module Yast
             button_box,
             width,
             height
-          ) :
+          )
+        else
           popupLayoutInternal(headline, message, icon_name, button_box)
+        end
       )
 
       UI.SetFocus(Id(:ok_msg))
@@ -976,7 +982,7 @@ module Yast
 
       success = UI.OpenDialog(
         Opt(:decorated),
-        richtext ?
+        if richtext
           popupLayoutInternalRich(
             headline,
             message,
@@ -984,8 +990,10 @@ module Yast
             button_box,
             width,
             height
-          ) :
+          )
+        else
           popupLayoutInternal(headline, message, icon_name, button_box)
+        end
       )
 
       if success == true

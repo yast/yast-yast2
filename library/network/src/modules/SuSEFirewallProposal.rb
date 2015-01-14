@@ -578,17 +578,19 @@ module Yast
       output = Ops.add(
         Ops.add(
           Ops.add(output, "<li>"),
-          firewall_is_enabled ?
+          if firewall_is_enabled
             # TRANSLATORS: Proposal informative text "Firewall is enabled (disable)" with link around
             # IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
             _(
               "Firewall is enabled (<a href=\"firewall--disable_firewall_in_proposal\">disable</a>)"
-            ) :
+            )
+          else
             # TRANSLATORS: Proposal informative text "Firewall is disabled (enable)" with link around
             # IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
             _(
               "Firewall is disabled (<a href=\"firewall--enable_firewall_in_proposal\">enable</a>)"
             )
+          end
         ),
         "</li>\n"
       )
@@ -617,17 +619,19 @@ module Yast
           output = Ops.add(
             Ops.add(
               Ops.add(output, "<li>"),
-              is_ssh_enabled ?
+              if is_ssh_enabled
                 # TRANSLATORS: Network proposal informative text with link around
                 # IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
                 _(
                   "SSH port is open (<a href=\"firewall--disable_ssh_in_proposal\">close</a>)"
-                ) :
+                )
+              else
                 # TRANSLATORS: Network proposal informative text with link around
                 # IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
                 _(
                   "SSH port is blocked (<a href=\"firewall--enable_ssh_in_proposal\">open</a>)"
                 )
+              end
             ),
             "</li>\n"
           ) 
@@ -699,17 +703,19 @@ module Yast
           output = Ops.add(
             Ops.add(
               Ops.add(output, "<li>"),
-              is_vnc_enabled ?
+              if is_vnc_enabled
                 # TRANSLATORS: Network proposal informative text "Remote Administration (VNC) is enabled" with link around
                 # IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
                 _(
                   "Remote Administration (VNC) ports are open (<a href=\"firewall--disable_vnc_in_proposal\">close</a>)"
-                ) :
+                )
+              else
                 # TRANSLATORS: Network proposal informative text "Remote Administration (VNC) is disabled" with link around
                 # IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
                 _(
                   "Remote Administration (VNC) ports are blocked (<a href=\"firewall--enable_vnc_in_proposal\">open</a>)"
                 )
+              end
             ),
             "</li>\n"
           )
@@ -733,11 +739,13 @@ module Yast
           output = Ops.add(
             Ops.add(
               Ops.add(output, "<li>"),
-              is_iscsi_enabled ?
+              if is_iscsi_enabled
                 # TRANSLATORS: Network proposal informative text
-                _("iSCSI Target ports are open") :
+                _("iSCSI Target ports are open")
+              else
                 # TRANSLATORS: Network proposal informative text
                 _("iSCSI Target ports are blocked")
+              end
             ),
             "</li>\n"
           )

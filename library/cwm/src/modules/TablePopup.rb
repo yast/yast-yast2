@@ -757,11 +757,7 @@ module Yast
           if event_id == :_tp_add
             TableInit(descr, key)
           elsif event_id == :_tp_edit
-            column = Ops.get_boolean(
-              descr,
-              ["_cwm_attrib", "changed_column"],
-              false
-            ) ? 2 : 1
+            column = descr.fetch("_cwm_attrib", {}).fetch("changed_column", false) ? 2 : 1
             UI.ChangeWidget(
               Id(:_tp_table),
               term(:Item, opt_id, column),
@@ -864,30 +860,38 @@ module Yast
       attrib = deep_copy(attrib)
       widget_descr = deep_copy(widget_descr)
       ValidateTableAttr(attrib)
-      add_button = Ops.get_boolean(attrib, "add_delete_buttons", true) ?
-        PushButton(Id(:_tp_add), Opt(:key_F3), Label.AddButton) :
-        HSpacing(0)
-      edit_button = Ops.get_boolean(attrib, "edit_button", true) ?
-        PushButton(Id(:_tp_edit), Opt(:key_F4), Label.EditButton) :
-        HSpacing(0)
-      delete_button = Ops.get_boolean(attrib, "add_delete_buttons", true) ?
-        PushButton(Id(:_tp_delete), Opt(:key_F5), Label.DeleteButton) :
-        HSpacing(0)
-      table_header = Ops.get_boolean(attrib, "changed_column", false) ?
-        Header(
-          # table header, shortcut for changed, keep very short
-          _("Ch."),
-          # table header
-          _("Option"),
-          # table header
-          _("Value")
-        ) :
-        Header(
-          # table header
-          _("Option"),
-          # table header
-          _("Value")
-        )
+      add_button = if Ops.get_boolean(attrib, "add_delete_buttons", true)
+                     PushButton(Id(:_tp_add), Opt(:key_F3), Label.AddButton)
+                   else
+                     HSpacing(0)
+                   end
+      edit_button = if Ops.get_boolean(attrib, "edit_button", true)
+                      PushButton(Id(:_tp_edit), Opt(:key_F4), Label.EditButton)
+                    else
+                      HSpacing(0)
+                    end
+      delete_button = if Ops.get_boolean(attrib, "add_delete_buttons", true)
+                        PushButton(Id(:_tp_delete), Opt(:key_F5), Label.DeleteButton)
+                      else
+                        HSpacing(0)
+                      end
+      table_header = if Ops.get_boolean(attrib, "changed_column", false)
+                       Header(
+                         # table header, shortcut for changed, keep very short
+                         _("Ch."),
+                         # table header
+                         _("Option"),
+                         # table header
+                         _("Value")
+                       )
+                     else
+                       Header(
+                         # table header
+                         _("Option"),
+                         # table header
+                         _("Value")
+                       )
+                     end
 
       replace_point = ReplacePoint(Id(:_tp_table_repl), HSpacing(0))
       # help 1/4
@@ -928,16 +932,18 @@ module Yast
         )
       end
 
-      up_down = Ops.get_boolean(attrib, "up_down_buttons", false) ?
-        VBox(
-          VStretch(),
-          # push button
-          PushButton(Id(:_tp_up), _("&Up")),
-          # push button
-          PushButton(Id(:_tp_down), _("&Down")),
-          VStretch()
-        ) :
-        HSpacing(0)
+      up_down = if Ops.get_boolean(attrib, "up_down_buttons", false)
+                  VBox(
+                    VStretch(),
+                    # push button
+                    PushButton(Id(:_tp_up), _("&Up")),
+                    # push button
+                    PushButton(Id(:_tp_down), _("&Down")),
+                    VStretch()
+                  )
+                else
+                  HSpacing(0)
+                end
 
       ret = Convert.convert(
         Builtins.union(

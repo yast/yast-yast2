@@ -293,13 +293,11 @@ module Yast
 
       UI.OpenDialog(
         Opt(:defaultsize),
-        Ops.greater_or_equal(
-          # Note: size(`opt()) = 0 !!
-          Builtins.size(widget_options),
-          1
-        ) ?
-          PackageSelector(Id(:packages), widget_options, "") :
+        if widget_options.size > 0 # FIXME: add empty? method to Yast::Term
+          PackageSelector(Id(:packages), widget_options, "")
+        else
           PackageSelector(Id(:packages), "")
+        end
       )
 
       result = Convert.to_symbol(UI.RunPkgSelection(Id(:packages)))
@@ -422,9 +420,11 @@ module Yast
       if Builtins.haskey(summary, "success")
         ret = HTML.Para(
           HTML.Heading(
-            Ops.get_boolean(summary, "success", true) ?
-              _("Installation Successfully Finished") :
+            if Ops.get_boolean(summary, "success", true)
+              _("Installation Successfully Finished")
+            else
               _("Package Installation Failed")
+            end
           )
         )
       end

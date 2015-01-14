@@ -1405,9 +1405,11 @@ module Yast
     def RetranslateButtons
       if UI.WidgetExists(Id(:WizardDialog)) == true
         ReplaceButtonBox(
-          UI.WidgetExists(Id(:accept)) ?
-            AbortAcceptButtonBox() :
+          if UI.WidgetExists(Id(:accept))
+            AbortAcceptButtonBox()
+          else
             BackAbortNextButtonBox()
+          end
         ) # Qt wizard
       else
         UI.WizardCommand(term(:RetranslateInternalButtons))

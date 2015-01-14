@@ -598,13 +598,15 @@ module Yast
         help = StartStopHelp(display_save_now)
       end
 
-      save_now_button_term = display_save_now ?
-        PushButton(
-          Id("_cwm_save_settings_now"),
-          Opt(:hstretch),
-          save_now_button
-        ) :
-        VBox()
+      save_now_button_term = if display_save_now
+                               PushButton(
+                                 Id("_cwm_save_settings_now"),
+                                 Opt(:hstretch),
+                                 save_now_button
+                               )
+                             else
+                               VBox()
+                             end
 
       immediate_actions = VBox(
         # Frame label (stoping starting service)

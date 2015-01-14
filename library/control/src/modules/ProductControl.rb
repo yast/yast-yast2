@@ -868,29 +868,33 @@ module Yast
           # Heading
           if Builtins.haskey(m, "heading") &&
               Ops.get_string(m, "label", "") != ""
-            heading = Builtins.haskey(m, "textdomain") ?
-              Builtins.dgettext(
-                Ops.get_string(m, "textdomain", ""),
-                Ops.get_string(m, "label", "")
-              ) :
-              Builtins.dgettext(
-                wizard_textdomain,
-                Ops.get_string(m, "label", "")
-              )
+            heading = if Builtins.haskey(m, "textdomain")
+                        Builtins.dgettext(
+                          Ops.get_string(m, "textdomain", ""),
+                          Ops.get_string(m, "label", "")
+                        )
+                      else
+                        Builtins.dgettext(
+                          wizard_textdomain,
+                          Ops.get_string(m, "label", "")
+                        )
+                      end
 
-            # Label
+          # Label
           elsif Ops.get_string(m, "label", "") != ""
             first_id = Ops.get_string(m, "id", "") if first_id == ""
 
-            label = Builtins.haskey(m, "textdomain") ?
-              Builtins.dgettext(
-                Ops.get_string(m, "textdomain", ""),
-                Ops.get_string(m, "label", "")
-              ) :
-              Builtins.dgettext(
-                wizard_textdomain,
-                Ops.get_string(m, "label", "")
-              )
+            label = if Builtins.haskey(m, "textdomain")
+                      Builtins.dgettext(
+                        Ops.get_string(m, "textdomain", ""),
+                        Ops.get_string(m, "label", "")
+                      )
+                    else
+                      Builtins.dgettext(
+                        wizard_textdomain,
+                        Ops.get_string(m, "label", "")
+                      )
+                    end
 
             id = Ops.get_string(m, "id", "")
             last_label = Ops.get_string(m, "label", "")

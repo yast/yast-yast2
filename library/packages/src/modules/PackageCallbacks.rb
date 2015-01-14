@@ -140,9 +140,11 @@ module Yast
     end
 
     def textmode
-      Mode.commandline ?
-        true :
+      if Mode.commandline
+        true
+      else
         Ops.get_boolean(UI.GetDisplayInfo, "TextMode", false)
+      end
     end
 
     def display_width
@@ -511,9 +513,11 @@ module Yast
       if Mode.commandline
         CommandLine.PrintVerbose(
           Builtins.sformat(
-            is_delete ?
-              _("Uninstalling package %1 (%2)...") :
-              _("Installing package %1 (%2)..."),
+            if is_delete
+              _("Uninstalling package %1 (%2)...")
+            else
+              _("Installing package %1 (%2)...")
+            end,
             @_package_name,
             sz
           )
@@ -576,11 +580,13 @@ module Yast
         )
 
         message = Builtins.sformat(
-          @_deleting_package ?
+          if @_deleting_package
             # error popup during package installation, %1 is the name of the package
-            _("Removal of package %1 failed.") :
+            _("Removal of package %1 failed.")
+          else
             # error popup during package installation, %1 is the name of the package
-            _("Installation of package %1 failed."),
+            _("Installation of package %1 failed.")
+          end,
           @_package_name
         )
 
@@ -793,20 +799,23 @@ module Yast
             side = _("Side B")
           end
           wanted = Ops.shift_right(Ops.add(wanted, 1), 1)
-          wanted_label = url_scheme == "cd" || url_scheme == "dvd" ?
-            # label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
-            # %3 side (e.g. "Side A")
-            Builtins.sformat("%1 (Disc %2, %3)", product, wanted, side) :
-            # label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
-            # %3 side (e.g. "Side A")
-            Builtins.sformat("%1 (Medium %2, %3)", product, wanted, side)
+          wanted_label = if ["cd", "dvd"].include(url_scheme)
+                           # label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
+                           # %3 side (e.g. "Side A")
+                           Builtins.sformat("%1 (Disc %2, %3)", product, wanted, side)
+                         else
+                           # label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
+                           # %3 side (e.g. "Side A")
+                           Builtins.sformat("%1 (Medium %2, %3)", product, wanted, side)
+                         end
         else
-          wanted_label = Builtins.tolower(url_scheme) == "cd" ||
-            Builtins.tolower(url_scheme) == "dvd" ?
-            # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
-            Builtins.sformat(_("%1 (Disc %2)"), product, wanted) :
-            # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
-            Builtins.sformat(_("%1 (Medium %2)"), product, wanted)
+          wanted_label = if ["cd", "dvd"].include(Builtins.tolower(url_scheme))
+                           # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
+                           Builtins.sformat(_("%1 (Disc %2)"), product, wanted)
+                         else
+                           # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
+                           Builtins.sformat(_("%1 (Medium %2)"), product, wanted)
+                         end
         end
       end
 
@@ -924,12 +933,11 @@ module Yast
         # is the maximum retry count reached?
         if Ops.less_than(@current_retry_attempt, @retry_attempts)
           # reset the counter, use logarithmic back-off with maximum limit
-          @current_retry_timeout = Ops.less_than(@current_retry_attempt, 10) ?
-            Ops.multiply(
-              @retry_timeout,
-              Ops.shift_left(1, @current_retry_attempt)
-            ) :
-            @retry_max_timeout
+          @current_retry_timeout = if @current_retry_attempt < 10
+                                     @retry_timeout * (1 << @current_retry_attempt)
+                                   else
+                                     @retry_max_timeout
+                                   end
 
           if Ops.greater_than(@current_retry_timeout, @retry_max_timeout)
             @current_retry_timeout = @retry_max_timeout
@@ -1801,14 +1809,16 @@ module Yast
           # popup heading
           Heading(_("Running Script")),
           VBox(
-            patch_full_name != "" ?
+            if patch_full_name != ""
               HBox(
                 # label, patch name follows
                 Label(Opt(:boldFont), _("Patch: ")),
                 Label(patch_full_name),
                 HStretch()
-              ) :
-              Empty(),
+              )
+            else
+              Empty()
+            end,
             HBox(
               # label, script name follows
               Label(Opt(:boldFont), _("Script: ")),
@@ -2060,9 +2070,11 @@ module Yast
           # do not show the average download rate if the space is limited
           bps_avg = -1 if textmode && Ops.less_than(display_width, 100)
 
-          format = textmode ?
-            Ops.add("%1 - ", @download_file) :
-            Ops.add(@download_file, " - %1")
+          format = if textmode
+                     Ops.add("%1 - ", @download_file)
+                   else
+                     Ops.add(@download_file, " - %1")
+                   end
 
           # progress bar label, %1 is URL with optional download rate
           msg_rate = Builtins.sformat(
@@ -2604,9 +2616,11 @@ module Yast
               VBox(
                 VSpacing(0.5),
                 HSpacing(Id(:callback_progress_popup), @max_size),
-                in_percent ?
-                  ProgressBar(Id(:progress_widget), task, 100, val_percent) :
-                  BusyIndicator(Id(:progress_widget), task, 3000),
+                if in_percent
+                  ProgressBar(Id(:progress_widget), task, 100, val_percent)
+                else
+                  BusyIndicator(Id(:progress_widget), task, 3000)
+                end,
                 VSpacing(0.2),
                 ButtonBox(
                   PushButton(Id(:abort), Opt(:cancelButton), Label.AbortButton)

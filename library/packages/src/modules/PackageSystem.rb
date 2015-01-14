@@ -172,9 +172,11 @@ module Yast
       licenses = Pkg.PkgGetLicensesToConfirm(toinstall)
       if Ops.greater_than(Builtins.size(licenses), 0)
         rt_licenses_l = Builtins.maplist(licenses) do |p, l|
-          Mode.commandline ?
-            Builtins.sformat("%1\n%2", p, l) :
+          if Mode.commandline
+            Builtins.sformat("%1\n%2", p, l)
+          else
             Builtins.sformat("<p><b>%1</b></p>\n%2", p, l)
+          end
         end
 
         accepted = false

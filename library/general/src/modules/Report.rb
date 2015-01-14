@@ -107,10 +107,8 @@ module Yast
         summary,
         Builtins.sformat(
           _("Display Messages: %1"),
-          @display_messages ?
-            # translators: summary if the messages should be displayed
-            _("Yes") :
-            _("No")
+          # translators: summary if the messages should be displayed
+          @display_messages ? _("Yes") : _("No")
         )
       )
       # Report configuration - will have normal messages timeout?
@@ -125,10 +123,8 @@ module Yast
         summary,
         Builtins.sformat(
           _("Log Messages: %1"),
-          @log_messages ?
-            # translators: summary if the messages should be written to log file
-            _("Yes") :
-            _("No")
+          # translators: summary if the messages should be written to log file
+          @log_messages ? _("Yes") : _("No")
         )
       )
       summary = Summary.CloseList(summary)
@@ -141,10 +137,8 @@ module Yast
         summary,
         Builtins.sformat(
           _("Display Warnings: %1"),
-          @display_warnings ?
-            # translators: summary if the warnings should be displayed
-            _("Yes") :
-            _("No")
+          # translators: summary if the warnings should be displayed
+          @display_warnings ? _("Yes") : _("No")
         )
       )
       # Report configuration - will have warning messages timeout?
@@ -159,10 +153,8 @@ module Yast
         summary,
         Builtins.sformat(
           _("Log Warnings: %1"),
-          @log_warnings ?
-            # translators: summary if the warnings should be written to log file
-            _("Yes") :
-            _("No")
+          # translators: summary if the warnings should be written to log file
+          @log_warnings ? _("Yes") : _("No")
         )
       )
       summary = Summary.CloseList(summary)
@@ -175,10 +167,8 @@ module Yast
         summary,
         Builtins.sformat(
           _("Display Errors: %1"),
-          @display_errors ?
-            # translators: summary if the errors should be displayed
-            _("Yes") :
-            _("No")
+          # translators: summary if the errors should be displayed
+          @display_errors ? _("Yes") : _("No")
         )
       )
       # Report configuration - will have error messages timeout?
@@ -193,11 +183,8 @@ module Yast
         summary,
         Builtins.sformat(
           _("Log Errors: %1"),
-          @log_errors ?
-            # translators: summary if the errors should be written to log file
-            _("Yes") :
-            # translators: summary if the errors should be written to log file
-            _("No")
+          # translators: summary if the errors should be written to log file
+          @log_errors ? _("Yes") : _("No")
         )
       )
       summary = Summary.CloseList(summary)

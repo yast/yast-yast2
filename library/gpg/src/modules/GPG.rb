@@ -89,10 +89,8 @@ module Yast
     # @param [String] options additional gpg options
     # @return [String] gpg option string
     def buildGPGcommand(options)
-      home_opt = Ops.greater_than(Builtins.size(@home), 0) ?
-        Builtins.sformat("--homedir '%1' ", String.Quote(@home)) :
-        ""
-      ret = Ops.add(Ops.add("gpg ", home_opt), options)
+      home_opt = @home.empty? ? "" : "--homedir '#{String.Quote(@home)}' "
+      ret = "gpg #{home_opt} #{options}"
       Builtins.y2milestone("gpg command: %1", ret)
 
       ret

@@ -1029,9 +1029,7 @@ module Yast
           # add example if it's present
           if Builtins.haskey(Ops.get(actions, action, {}), "example")
             example = Ops.get(actions, [action, "example"])
-            examples = Ops.is_list?(example) ?
-              Convert.to_list(example) :
-              [example]
+            examples = Array(example)
             actiondescr = Builtins.add(actiondescr, "examples", examples)
           end
           commands = Builtins.add(commands, actiondescr)

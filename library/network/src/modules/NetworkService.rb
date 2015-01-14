@@ -344,19 +344,20 @@ module Yast
       if network_running
         return true
       else
-        error_text = Stage.initial ?
-          _(
-            "No running network detected.\n" \
-            "Restart installation and configure network in Linuxrc\n" \
-            "or continue without network."
-          )
-          :
-          _(
-            "No running network detected.\n" \
-            "Configure network with YaST or Network Manager plug-in\n" \
-            "and start this module again\n" \
-            "or continue without network."
-          )
+        error_text = if Stage.initial
+                       _(
+                         "No running network detected.\n" \
+                         "Restart installation and configure network in Linuxrc\n" \
+                         "or continue without network."
+                       )
+                     else
+                       _(
+                         "No running network detected.\n" \
+                         "Configure network with YaST or Network Manager plug-in\n" \
+                         "and start this module again\n" \
+                         "or continue without network."
+                       )
+                     end
 
         ret = Popup.ContinueCancel(error_text)
 

@@ -289,9 +289,11 @@ module Yast
         SCR.Read(path(".target.string"), sys_type_path)
       )
 
-      sys_type = sys_type != nil ?
-        Builtins.regexpsub(sys_type, "(.*)\n", "\\1") :
-        ""
+      sys_type = if sys_type
+                   Builtins.regexpsub(sys_type, "(.*)\n", "\\1")
+                 else
+                   ""
+                 end
       sys_type = String.CutBlanks(sys_type)
 
       type = nil
@@ -1441,9 +1443,11 @@ module Yast
         return false
       end
 
-      t = !IsEmpty(newdev) ?
-        GetTypeFromIfcfgOrName(name, newdev) :
-        GetType(name)
+      t = if !IsEmpty(newdev)
+            GetTypeFromIfcfgOrName(name, newdev)
+          else
+            GetType(name)
+          end
 
       if name == @Name
         int_type = Ops.get_string(@Current, "INTERFACETYPE", "")

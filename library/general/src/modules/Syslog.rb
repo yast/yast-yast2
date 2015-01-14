@@ -52,9 +52,11 @@ module Yast
           Builtins.sformat(
             "/bin/logger %1 -- %2",
             Builtins.mergestring(options, " "),
-            message == "" ?
-              "" :
+            if message == ""
+              ""
+            else
               Ops.add(Ops.add("'", String.Quote(message)), "'")
+            end
           )
         )
     end

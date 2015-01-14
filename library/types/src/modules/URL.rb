@@ -374,9 +374,11 @@ module Yast
       if Hostname.CheckFQ(Ops.get_string(tokens, "host", "")) ||
           IP.Check(Ops.get_string(tokens, "host", ""))
         # enclose an IPv6 address in square brackets
-        url = IP.Check6(Ops.get_string(tokens, "host", "")) ?
-          Builtins.sformat("%1[%2]", url, Ops.get_string(tokens, "host", "")) :
-          Builtins.sformat("%1%2", url, Ops.get_string(tokens, "host", ""))
+        url = if IP.Check6(Ops.get_string(tokens, "host", ""))
+                Builtins.sformat("%1[%2]", url, Ops.get_string(tokens, "host", ""))
+              else
+                Builtins.sformat("%1%2", url, Ops.get_string(tokens, "host", ""))
+              end
       end
       Builtins.y2debug("url: %1", url)
 

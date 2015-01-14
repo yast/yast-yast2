@@ -165,15 +165,14 @@ module Yast
           "dport"    => Ops.get(rule_splitted, 2, ""),
           "sport"    => Ops.get(rule_splitted, 3, ""),
           # additional options if defined (offset 4 and more)
-          "options"  => Ops.greater_than(
-            options_entries_count,
-            0
-          ) ?
-            Builtins.mergestring(
-              Builtins.sublist(rule_splitted, 4, options_entries_count),
-              ","
-            ) :
-            ""
+          "options"  => if Ops.greater_than(options_entries_count, 0)
+                          Builtins.mergestring(
+                            Builtins.sublist(rule_splitted, 4, options_entries_count),
+                            ","
+                          )
+                        else
+                          ""
+                        end
         }
       end
 

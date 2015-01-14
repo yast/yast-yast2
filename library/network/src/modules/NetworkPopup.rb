@@ -72,10 +72,12 @@ module Yast
         if Ops.greater_than(Builtins.size(device_name), 30)
           device_name = Ops.add(Builtins.substring(device_name, 0, 27), "...")
         end
-        ip_addr = NetworkInterfaces.GetValue(i, "BOOTPROTO") == "dhcp" ?
-          # TRANSLATORS: Informs that the IP address is assigned via DHCP
-          _("DHCP address") :
-          NetworkInterfaces.GetValue(i, "IPADDR")
+        ip_addr = if NetworkInterfaces.GetValue(i, "BOOTPROTO") == "dhcp"
+                    # TRANSLATORS: Informs that the IP address is assigned via DHCP
+                    _("DHCP address")
+                  else
+                    NetworkInterfaces.GetValue(i, "IPADDR")
+                  end
         if ip_addr == nil || ip_addr == ""
           # TRANSLATORS: table item, informing that device has no IP address
           ip_addr = _("No IP address assigned")

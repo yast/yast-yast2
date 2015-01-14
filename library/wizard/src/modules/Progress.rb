@@ -340,9 +340,7 @@ module Yast
 
     def NormalizeIconPath(one_icon, visible)
       if one_icon == nil || one_icon == ""
-        one_icon = visible == true ?
-          FallbackIconVisible() :
-          FallbackIconInvisible()
+        one_icon = visible ? FallbackIconVisible() : FallbackIconInvisible()
       end
 
       if !Builtins.regexpmatch(one_icon, ".[pP][nN][gG]$") &&
@@ -362,9 +360,7 @@ module Yast
 
       if !FileUtils.Exists(one_icon)
         Builtins.y2error("Image %1 doesn't exist, using fallback", one_icon)
-        one_icon = visible == true ?
-          FallbackIconVisible() :
-          FallbackIconInvisible()
+        one_icon = visible ? FallbackIconVisible() : FallbackIconInvisible()
       end
 
       one_icon

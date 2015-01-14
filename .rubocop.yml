@@ -20,7 +20,7 @@ Metrics/BlockNesting:
 # Offense count: 84
 # Configuration parameters: CountComments.
 Metrics/ClassLength:
-  Max: 2870
+  Max: 2880
 
 # Offense count: 184
 Metrics/CyclomaticComplexity:
@@ -80,10 +80,6 @@ Style/FileName:
 # Offense count: 1748
 # Configuration parameters: EnforcedStyle, SupportedStyles.
 Style/MethodName:
-  Enabled: false
-
-# Offense count: 73
-Style/MultilineTernaryOperator:
   Enabled: false
 
 # Offense count: 315
