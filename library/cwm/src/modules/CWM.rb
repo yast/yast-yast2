@@ -569,7 +569,7 @@ module Yast
           )
         elsif widget == :intfield
           min = Ops.get_integer(w, "minimum", 0)
-          max = Ops.get_integer(w, "maximum", 2147483647)
+          max = Ops.get_integer(w, "maximum", 2_147_483_647)
           Ops.set(
             w,
             "widget",

@@ -160,7 +160,7 @@ module Yast
     # @param [Fixnum] ip IPv4 address
     # @return ip address as string
     def ToString(ip)
-      parts = [16777216, 65536, 256, 1].map do |b|
+      parts = [16_777_216, 65_536, 256, 1].map do |b|
         (ip / b) & 255
       end
 
@@ -188,7 +188,7 @@ module Yast
     def ComputeNetwork(ip, mask)
       i = ToInteger(ip)
       m = ToInteger(mask)
-      ToString(Ops.bitwise_and(Ops.bitwise_and(i, m), 4294967295))
+      ToString(Ops.bitwise_and(Ops.bitwise_and(i, m), 4_294_967_295))
     end
 
     # Compute IPv4 broadcast address from ip4 address and network mask.
@@ -201,7 +201,7 @@ module Yast
       i = ToInteger(ip)
       m = ToInteger(mask)
       ToString(
-        Ops.bitwise_and(Ops.bitwise_or(i, Ops.bitwise_not(m)), 4294967295)
+        Ops.bitwise_and(Ops.bitwise_or(i, Ops.bitwise_not(m)), 4_294_967_295)
       )
     end
 

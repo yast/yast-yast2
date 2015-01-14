@@ -15,7 +15,7 @@ describe "HwDetection" do
       "model"          => "Main Memory",
       "old_unique_key" => "4srm.CxwsZFjVASF",
       "resource"       => {
-        "mem"      => [{"active" => true, "length" => 16815341568, "start" => 0}],
+        "mem"      => [{"active" => true, "length" => 16_815_341_568, "start" => 0}],
         "phys_mem" => [{"range" => @ramsize}]
       },
       "sub_class_id"   => 2,
@@ -25,7 +25,7 @@ describe "HwDetection" do
       "class_id"     => 42,
       "sub_class_id" => 42,
       "resource"     => {
-        "mem"      => [{"active" => true, "length" => 16815341568, "start" => 0}],
+        "mem"      => [{"active" => true, "length" => 16_815_341_568, "start" => 0}],
         "phys_mem" => [{"range" => @ramsize}]
       }
     }

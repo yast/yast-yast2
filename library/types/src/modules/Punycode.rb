@@ -55,7 +55,7 @@ module Yast
 
       # cached amount of data should be controled
       @current_cache_size = 0
-      @maximum_cache_size = 32768
+      @maximum_cache_size = 32_768
     end
 
     # Returns the maximum cache size (sum of already converted

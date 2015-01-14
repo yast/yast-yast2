@@ -260,7 +260,7 @@ module Yast
           SCR.Read(path(".process.running"), processID)
         )
         # debugging #165821
-        if Ops.modulo(time_spent, 100000) == 0
+        if Ops.modulo(time_spent, 100_000) == 0
           Builtins.y2milestone("running: %1", running)
           flag = "/tmp/SourceManagerTimeout"
           if SCR.Read(path(".target.size"), flag) != -1

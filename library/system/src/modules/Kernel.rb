@@ -365,7 +365,7 @@ module Yast
           [0, "resource", "phys_mem", 0, "range"],
           0
         )
-        fourGB = 3221225472
+        fourGB = 3_221_225_472
         Builtins.y2milestone("Physical memory %1", memsize)
 
         # for memory > 4GB and PAE support we install kernel-pae,

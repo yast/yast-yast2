@@ -142,7 +142,7 @@ describe "Yast::SlideShow" do
       stages = [
         {"name"=>"disk", "description"=>"Preparing disks...", "value"=>120, "units"=>:sec},
         {"name"=>"images", "description"=>"Deploying Images...", "value"=>0, "units"=>:kb},
-        {"name"=>"packages", "description"=>"Installing Packages...", "value"=>1348246, "units"=>:kb},
+        {"name"=>"packages", "description"=>"Installing Packages...", "value"=>1_348_246, "units"=>:kb},
         {"name"=>"finish", "description"=>"Finishing Basic Installation", "value"=>100, "units"=>:sec}
       ]
 

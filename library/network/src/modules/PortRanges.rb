@@ -48,7 +48,7 @@ module Yast
 
       # Maximal number of port number, they are in the interval 1-65535 included.
       # The very same value should appear in SuSEFirewall::max_port_number.
-      @max_port_number = 65535
+      @max_port_number = 65_535
     end
 
     # Report the error, warning, message only once.
@@ -276,7 +276,7 @@ module Yast
           min_pr
         )
         return ""
-      elsif max_pr.nil? || max_pr == 0 || Ops.greater_than(max_pr, 65535)
+      elsif max_pr.nil? || max_pr == 0 || Ops.greater_than(max_pr, 65_535)
         Builtins.y2error(
           "Wrong definition of the ending port '%1', it must be between 1 and 65535",
           max_pr

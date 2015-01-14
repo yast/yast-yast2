@@ -82,11 +82,6 @@ Style/FileName:
 Style/MethodName:
   Enabled: false
 
-# Offense count: 170
-# Cop supports --auto-correct.
-Style/NumericLiterals:
-  MinDigits: 17
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/PerlBackrefs:
