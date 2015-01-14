@@ -318,7 +318,7 @@ module Yast
           HWeight(
             30,
             ReplacePoint(
-              Id(:helpSpace), #`RichText(`id(`HelpText), "")
+              Id(:helpSpace), # `RichText(`id(`HelpText), "")
               Empty()
             )
           ),

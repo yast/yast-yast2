@@ -55,7 +55,7 @@ module Yast
         Assert.Equal("tap", NetworkInterfaces.GetTypeFromIfcfg(@myvirt))
       end, [], nil) 
 
-      #EOF
+      # EOF
 
       nil
     end

@@ -241,7 +241,7 @@ module Yast
       any_to_install = Pkg.IsAnyResolvable(:package, :to_install) ||
         Pkg.IsAnyResolvable(:patch, :to_install)
 
-      #[int successful, list failed, list remaining, list srcremaining]
+      # [int successful, list failed, list remaining, list srcremaining]
       result = Pkg.PkgCommit(0)
       Builtins.y2debug("PkgCommit: %1", result)
       if result == nil || Ops.get_list(result, 1, []) != []

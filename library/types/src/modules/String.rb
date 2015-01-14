@@ -407,10 +407,10 @@ module Yast
     # Parse string of values - split string to values, quoting and backslash sequences are supported
     # @param [String] options Input string
     # @param [Hash] parameters Parmeter used at parsing - map with keys:
-    #"separator":<string> - value separator (default: " \t"),
-    #"unique":<boolean> - result will not contain any duplicates, first occurance of the string is stored into output (default: false),
-    #"interpret_backslash":<boolean> - convert backslash sequence into one character (e.g. "\\n" => "\n") (default: true)
-    #"remove_whitespace":<boolean> - remove white spaces around values (default: true),
+    # "separator":<string> - value separator (default: " \t"),
+    # "unique":<boolean> - result will not contain any duplicates, first occurance of the string is stored into output (default: false),
+    # "interpret_backslash":<boolean> - convert backslash sequence into one character (e.g. "\\n" => "\n") (default: true)
+    # "remove_whitespace":<boolean> - remove white spaces around values (default: true),
     # @return [Array<String>] List of strings
     def ParseOptions(options, parameters)
       parameters = deep_copy(parameters)
@@ -919,9 +919,9 @@ module Yast
       )
     end
 
-    #////////////////////////////////////////
+    # ////////////////////////////////////////
     # sysconfig metadata related functions //
-    #////////////////////////////////////////
+    # ////////////////////////////////////////
 
     # Get metadata lines from input string
     # @param [String] input Input string - complete comment of a sysconfig variable

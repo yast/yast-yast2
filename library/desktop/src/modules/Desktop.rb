@@ -72,8 +72,8 @@ module Yast
       ret = ""
       fallback = Convert.to_string(SCR.Read(Builtins.add(keypath, key)))
 
-      #check if there are any translation in .desktop file
-      #that is - Name[$lang_code]
+      # check if there are any translation in .desktop file
+      # that is - Name[$lang_code]
       if @LanguageFull != nil || @LanguageFull != ""
         newkey = Builtins.sformat("%1[%2]", key, @LanguageFull)
         ret = Convert.to_string(SCR.Read(Builtins.add(keypath, newkey)))
@@ -86,7 +86,7 @@ module Yast
         return ret if ret != nil && ret != ""
       end
 
-      #no translations in .desktop, check desktop_translations.mo then
+      # no translations in .desktop, check desktop_translations.mo then
       msgid = Builtins.sformat("%1(%2): %3", key, fname, fallback)
       Builtins.y2debug("Looking for key: %1", msgid)
       ret = Builtins.dpgettext(
@@ -95,7 +95,7 @@ module Yast
         msgid
       )
 
-      #probably untranslated - return english name
+      # probably untranslated - return english name
       return fallback if ret == msgid
 
       ret
@@ -364,7 +364,7 @@ module Yast
         )
       )
 
-      #non-existent file requested
+      # non-existent file requested
       if SCR.Dir(path(".yast2.desktop1.v.\"Desktop Entry\"")) == nil
         Builtins.y2error("Unknown desktop file: %1", file)
         SCR.UnregisterAgent(path(".yast2.desktop1"))

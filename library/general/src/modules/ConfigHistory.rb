@@ -467,7 +467,7 @@ module Yast
         )
         return true
       end
-      #ensure the repo exists
+      # ensure the repo exists
       return false if !InitSvnRepository() if !CheckSvnRepository()
       return false if !InitDirectories(Recursive()) if !CheckRepoLinked()
       CheckAllFilesOutOfVersionControl() if Recursive()

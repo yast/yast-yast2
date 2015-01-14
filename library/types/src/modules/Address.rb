@@ -76,7 +76,7 @@ module Yast
     # Describe a valid MAC address
     # @return [String] description of a valid MAC address
     def ValidMAC
-      #describe valid MAC address
+      # describe valid MAC address
       _(
         "A valid MAC address consists of six pairs of hexadecimal\ndigits separated by colons."
       )

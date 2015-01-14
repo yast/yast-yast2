@@ -72,7 +72,7 @@ module Yast
 
       @non_root_modules = []
 
-      #create the list of modules available to non-root users
+      # create the list of modules available to non-root users
       Builtins.foreach(
         Convert.convert(@Modules, from: "map", to: "map <string, map>")
       ) do |name, params|
@@ -98,7 +98,7 @@ module Yast
 
       @modules = Builtins.listmap(@groups) do |gr|
         all_modules = Desktop.ModuleList(gr)
-        #filter out root-only stuff if the user is not root (#246015)
+        # filter out root-only stuff if the user is not root (#246015)
         all_modules = Builtins.filter(all_modules) do |t|
           Builtins.contains(@non_root_modules, Ops.get_string(t, [0, 0], ""))
         end if !@root
@@ -109,7 +109,7 @@ module Yast
       @first = Ops.get(@groups, 0)
       Builtins.y2debug("first=%1", @first)
 
-      #do not show groups containing no modules to the user (#309452)
+      # do not show groups containing no modules to the user (#309452)
       @GroupList = Builtins.filter(@GroupList) do |t|
         group = Ops.get_string(t, [0, 0], "")
         Ops.get(@modules, group) != []
@@ -203,7 +203,7 @@ module Yast
     end
 
     def OpenMenu
-      #check if user is root (#246015)
+      # check if user is root (#246015)
       output = Convert.to_map(
         SCR.Execute(path(".target.bash_output"), "/usr/bin/id --user")
       )
@@ -267,7 +267,7 @@ module Yast
         )
       )
 
-      #show popup when running as non-root
+      # show popup when running as non-root
       if !@root
         Popup.Notify(
           _(
@@ -292,7 +292,7 @@ module Yast
         cmd = ""
         ret = nil
 
-        #Use UI::RunInTerminal in text-mode only (#237332)
+        # Use UI::RunInTerminal in text-mode only (#237332)
         if textmode
           cmd = Builtins.sformat("/sbin/yast %1 %2 >&2", function, argument)
           ret = UI.RunInTerminal(cmd)

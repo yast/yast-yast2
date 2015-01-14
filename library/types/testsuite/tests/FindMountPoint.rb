@@ -28,7 +28,7 @@ module Yast
 
       Yast.import "String"
 
-      #import "Wagon";
+      # import "Wagon";
       DUMP("Test nil")
       TEST(->() { String.FindMountPoint(nil, nil) }, [], nil)
       TEST(->() { String.FindMountPoint(nil, []) }, [], nil)

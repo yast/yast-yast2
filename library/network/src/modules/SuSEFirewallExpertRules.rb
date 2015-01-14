@@ -42,7 +42,7 @@ module Yast
       Yast.import "Netmask"
       Yast.import "IP"
 
-      #**
+      # **
       # Firewall Expert Rulezz
       #
       # ATTENTION: You have to call SuSEFirewall::Read() to read the configuration

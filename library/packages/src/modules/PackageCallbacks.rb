@@ -1862,11 +1862,11 @@ module Yast
       Builtins.y2warning("ScriptProblem: %1", description)
 
       ui = Popup.AnyQuestion3(
-        "", #symbol focus
+        "", # symbol focus
         description,
-        Label.RetryButton, #yes_button_message
+        Label.RetryButton, # yes_button_message
         Label.AbortButton, # no_button_message
-        Label.IgnoreButton, #retry_button_message
+        Label.IgnoreButton, # retry_button_message
         :retry
       )
 

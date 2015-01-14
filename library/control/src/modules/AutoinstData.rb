@@ -39,12 +39,12 @@ module Yast
       #
       # Keyboard
       #
-      #global map keyboard = $[];
+      # global map keyboard = $[];
 
       #
       # Language
       #
-      #global string language = "";
+      # global string language = "";
 
       #
       # Mouse, if not autoprobed
@@ -54,7 +54,7 @@ module Yast
       #
       # Clock Settings
       #
-      #global map Clock = $[];
+      # global map Clock = $[];
 
       # Moved here from AutoinstSoftware.ycp
 

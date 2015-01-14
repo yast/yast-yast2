@@ -129,7 +129,7 @@ module Yast
             0.5,
             VBox(
               Left(Label(error_text)),
-              #`VSpacing (1),
+              # `VSpacing (1),
               Left(
                 details == nil ?
                   Label(
@@ -144,7 +144,7 @@ module Yast
                   ) :
                   MinSize(80, 10, RichText(Opt(:plainText, :hstretch), details))
               ),
-              #`VSpacing (1),
+              # `VSpacing (1),
               Left(
                 Label(
                   Builtins.sformat(

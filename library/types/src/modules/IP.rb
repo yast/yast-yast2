@@ -49,7 +49,7 @@ module Yast
     # Describe a valid IPv4 address
     # @return [String] describtion a valid IPv4 address
     def Valid4
-      #Translators: dot: "."
+      # Translators: dot: "."
       _(
         "A valid IPv4 address consists of four integers\nin the range 0-255 separated by dots."
       )
@@ -67,7 +67,7 @@ module Yast
     # Describe a valid IPv6 address
     # @return [String] describtion a valid IPv4 address
     def Valid6
-      #Translators: colon: ":"
+      # Translators: colon: ":"
       _(
         "A valid IPv6 address consists of up to eight\n" \
           "hexadecimal numbers in the range 0 - FFFF separated by colons.\n" \

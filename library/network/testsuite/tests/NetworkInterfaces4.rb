@@ -22,7 +22,7 @@
 #
 # ***************************************************************************
 module Yast
-  #inject NetworkInterfaces accessor so we can modify Devices
+  # inject NetworkInterfaces accessor so we can modify Devices
   class NetworkInterfacesClass < Module
     attr_accessor :OriginalDevices
   end

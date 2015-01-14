@@ -526,7 +526,7 @@ module Yast
 
         return Builtins.deletechars(Ops.get_string(ret, "stdout", ""), "\n") == "1" ? true : false
       else
-        #Assume all devices are connected in testsuite mode
+        # Assume all devices are connected in testsuite mode
         return true
       end
     end
@@ -870,7 +870,7 @@ module Yast
               )
             )
             devmap = Builtins.remove(devmap, "NETMASK") 
-            #TODO : delete NETMASK from config file
+            # TODO : delete NETMASK from config file
           else
             if Ops.greater_than(
               Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
@@ -890,7 +890,7 @@ module Yast
                 )
               )
               devmap = Builtins.remove(devmap, "PREFIXLEN") 
-              #TODO : delete PREFIXLEN from config file
+              # TODO : delete PREFIXLEN from config file
             end
           end
         end
@@ -925,7 +925,7 @@ module Yast
                   )
                 )
                 amap = Builtins.remove(amap, "NETMASK") 
-                #TODO : delete NETMASK from config file
+                # TODO : delete NETMASK from config file
               else
                 if Ops.greater_than(
                   Builtins.size(Ops.get(amap, "IPADDR", "")),
@@ -945,7 +945,7 @@ module Yast
                     )
                   )
                   amap = Builtins.remove(amap, "PREFIXLEN") 
-                  #TODO : delete PREFIXLEN from config file
+                  # TODO : delete PREFIXLEN from config file
                 end
               end
               Builtins.maplist(amap) do |ak, av|

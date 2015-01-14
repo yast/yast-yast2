@@ -22,7 +22,7 @@
 #
 # ***************************************************************************
 
-#*
+# *
 # There may be different ways to configure the system than YaST, e.g. Chef.
 # It will periodically overwrite files under its control.
 # If it is running, now is a good time to tell the user

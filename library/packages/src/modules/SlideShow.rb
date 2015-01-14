@@ -165,9 +165,9 @@ module Yast
       @_stages = {} # list of the configured stages
       @_current_stage = nil # current stage
 
-      @_rn_tabs = {} #tabs with release notes
-      @_relnotes = {} #texts with release notes, product -> text
-      @_base_product = "" #base product for release notes ordering
+      @_rn_tabs = {} # tabs with release notes
+      @_relnotes = {} # texts with release notes, product -> text
+      @_base_product = "" # base product for release notes ordering
     end
 
     # Set the flag that user requested abort of the installation
@@ -638,7 +638,7 @@ module Yast
       help_text
     end
 
-    #set the release notes for slide show
+    # set the release notes for slide show
     # @param [map<string,string>] map product name -> release notes text
     # @param [string] base product name
     def SetReleaseNotes(relnotes, base_product)
@@ -648,7 +648,7 @@ module Yast
 
     def add_relnotes_for_product product, relnotes, tabs
       id = ProductRelNotesID product
-      #Translators: Tab name, keep short, %s is product name, e.g. SLES
+      # Translators: Tab name, keep short, %s is product name, e.g. SLES
       tabs << Item(Id(id), _("%s Release Notes") % product)
       @_rn_tabs[id] = relnotes
     end

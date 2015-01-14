@@ -48,7 +48,7 @@ module Yast
       Yast.import "Popup"
       Yast.import "Stage"
 
-      #**
+      # **
       #
       # Paths where to download inst-sys extension images are taken
       # from '/etc/install.inf'. An extension image contains the

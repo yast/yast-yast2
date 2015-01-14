@@ -49,7 +49,7 @@ module Yast
     # describe a valid domain name
     # @return description
     def ValidDomain
-      #Translators: dot: ".", hyphen: "-"
+      # Translators: dot: ".", hyphen: "-"
       _(
         "A valid domain name consists of components separated by dots.\n" \
           "Each component contains letters, digits, and hyphens. A hyphen may not\n" \
@@ -60,7 +60,7 @@ module Yast
     # describe a valid host name
     # @return description
     def ValidHost
-      #Translators: hyphen: "-"
+      # Translators: hyphen: "-"
       _(
         "A valid host name consists of letters, digits, and hyphens.\nA host name may not begin or end with a hyphen.\n"
       )
@@ -163,7 +163,7 @@ module Yast
           ""
 
         if fqhostname == "" || fqhostname == nil
-          #last resort (#429792)
+          # last resort (#429792)
           fqhostname = "linux.site"
         end
         Builtins.y2warning("Using fallback hostname %1", fqhostname)
@@ -183,8 +183,8 @@ module Yast
       hostname = ""
       fqhostname = CurrentFQ()
 
-      #current FQDN is IP address - it happens, esp. in inst-sys :)
-      #so let's not cut it into pieces (#415109)
+      # current FQDN is IP address - it happens, esp. in inst-sys :)
+      # so let's not cut it into pieces (#415109)
       if IP.Check(fqhostname)
         hostname = fqhostname
       else
@@ -203,8 +203,8 @@ module Yast
       domain = ""
       fqhostname = CurrentFQ()
 
-      #the same as above, if FQDN is IP address
-      #let's claim domainname as empty (#415109)
+      # the same as above, if FQDN is IP address
+      # let's claim domainname as empty (#415109)
       if !IP.Check(fqhostname)
         data = SplitFQ(fqhostname)
 

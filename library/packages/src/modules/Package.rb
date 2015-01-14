@@ -43,7 +43,7 @@ module Yast
       Yast.import "PackageAI"
       Yast.import "PackageSystem"
 
-      #**
+      # **
       # Packages Manipulation
 
       @FunctionsSystem = {

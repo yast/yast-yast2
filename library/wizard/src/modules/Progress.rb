@@ -150,9 +150,9 @@ module Yast
     end
 
     def IsRunning
-      #Check if any progress bar exists. If it does not, we're not running
-      #(querying progress counter is not enough, a module ran previously
-      #might have failed to reset the counter properly)
+      # Check if any progress bar exists. If it does not, we're not running
+      # (querying progress counter is not enough, a module ran previously
+      # might have failed to reset the counter properly)
       Ops.greater_than(@progress_running, 0) &&
         UI.WidgetExists(:progress_replace_point) == true
     end

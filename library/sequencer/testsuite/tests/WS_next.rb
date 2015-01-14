@@ -44,7 +44,7 @@ module Yast
       TEST(->() { Sequencer.WS_next(@sequence, "begin", :id3) }, [], nil)
       TEST(->() { Sequencer.WS_next(@sequence, "begin", :id3) }, [], nil)
       TEST(->() { Sequencer.WS_next(@sequence, "begin", :id3) }, [], nil)
-      #TEST(``(Sequencer::WS_next(sequence, "ws_start", `next)), [], nil);
+      # TEST(``(Sequencer::WS_next(sequence, "ws_start", `next)), [], nil);
       TEST(->() { Sequencer.WS_next(@sequence, "decide", :yes) }, [], nil)
       TEST(->() { Sequencer.WS_next(@sequence, "decide", :no) }, [], nil)
       TEST(->() { Sequencer.WS_next(@sequence, "end", :finish) }, [], nil)

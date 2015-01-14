@@ -116,7 +116,7 @@ module Yast
       ret
     end
 
-    #************************ generic validators ******************************
+    # ************************ generic validators ******************************
 
     #  Generic regular expression validator.
     #

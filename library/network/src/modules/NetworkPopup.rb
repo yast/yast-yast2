@@ -66,7 +66,7 @@ module Yast
       items = Builtins.maplist(items) do |i|
         device_name = NetworkInterfaces.GetValue(i, "NAME")
         if device_name == nil || device_name == ""
-          #TRANSLATORS: Informs that device name is not known
+          # TRANSLATORS: Informs that device name is not known
           device_name = _("Unknown device")
         end
         if Ops.greater_than(Builtins.size(device_name), 30)
