@@ -38,7 +38,7 @@ module Yast
     # @param [String] input input string
     # @return [String] Unescaped string
     def UnEscape(input)
-      input.gsub(/%([0-9A-Fa-f]{2})/) { $1.to_i(16).chr }.force_encoding(input.encoding)
+      input.gsub(/%([0-9A-Fa-f]{2})/) { Regexp.last_match[1].to_i(16).chr }.force_encoding(input.encoding)
     end
 
   private

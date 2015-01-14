@@ -82,11 +82,6 @@ Style/FileName:
 Style/MethodName:
   Enabled: false
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/PerlBackrefs:
-  Enabled: false
-
 # Offense count: 11
 # Configuration parameters: NamePrefix, NamePrefixBlacklist.
 Style/PredicateName:
