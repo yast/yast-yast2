@@ -255,7 +255,7 @@ module Yast
       script_time_out = Ops.multiply(script_time_out, 1000)
 
       # while continuing is needed and while it is possible
-      while !timed_out
+      until timed_out
         running = Convert.to_boolean(
           SCR.Read(path(".process.running"), processID)
         )

@@ -710,7 +710,7 @@ module Yast
               !Builtins.contains(present, o)
             end
             selected = false
-            while !selected
+            until selected
               opt_key = askForNewOption(add_opts, add_unlisted, descr)
               return nil if opt_key == nil
               if Builtins.contains(present, opt_key)
