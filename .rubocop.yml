@@ -82,10 +82,6 @@ Style/FileName:
 Style/MethodName:
   Enabled: false
 
-# Offense count: 3
-Style/NestedTernaryOperator:
-  Enabled: false
-
 # Offense count: 7
 # Configuration parameters: EnforcedStyle, MinBodyLength, SupportedStyles.
 Style/Next:
