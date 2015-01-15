@@ -73,14 +73,10 @@ Style/Documentation:
 Style/DoubleNegation:
   Enabled: false
 
-# Offense count: 158
-# Configuration parameters: Exclude.
 Style/FileName:
   Include:
     - "library/*/src/lib/**/*.rb"
 
-# Offense count: 1748
-# Configuration parameters: EnforcedStyle, SupportedStyles.
 Style/MethodName:
   Include:
     - "library/*/src/lib/**/*.rb"
@@ -90,11 +86,11 @@ Style/PredicateName:
   Include:
     - "library/*/src/lib/**/*.rb"
 
-# keep it as often methods names are wrong and part of API
+# for old code keep it as often methods names are wrong and part of API
 Style/TrivialAccessors:
-  Enabled: false
+  Include:
+    - "library/*/src/lib/**/*.rb"
 
-# Offense count: 295
-# Configuration parameters: EnforcedStyle, SupportedStyles.
 Style/VariableName:
-  Enabled: false
+  Include:
+    - "library/*/src/lib/**/*.rb"
