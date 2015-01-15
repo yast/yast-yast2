@@ -39,7 +39,7 @@ module Yast
       # map must define id and global help
       TEST(->() { CommandLine.Init({}, []) }, [], nil)
       TEST(->() { CommandLine.Done }, [], nil)
-      TEST(->() { CommandLine.Aborted }, [], nil) 
+      TEST(->() { CommandLine.Aborted }, [], nil)
 
       # EOF
 

@@ -40,7 +40,7 @@ module Yast
 
       # option requires value
       TEST(->() { CommandLine.Init(@cmdline, ["add", "device"]) }, [], nil)
-      TEST(->() { CommandLine.Command }, [], nil) 
+      TEST(->() { CommandLine.Command }, [], nil)
       # EOF
 
       nil

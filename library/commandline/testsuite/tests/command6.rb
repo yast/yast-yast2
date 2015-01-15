@@ -39,7 +39,7 @@ module Yast
 
       # list is non-strict, so any parameter can be passed to it
       TEST(->() { CommandLine.Init(@cmdline, ["list", "eth0"]) }, [], nil)
-      TEST(->() { CommandLine.Command }, [], nil) 
+      TEST(->() { CommandLine.Command }, [], nil)
 
       # EOF
 

@@ -37,7 +37,7 @@ module Yast
       Yast.import "TypeRepository"
 
       # blem is undefined type
-      TEST(->() { TypeRepository.is_a("10.20.0.0", "blem") }, [], nil) 
+      TEST(->() { TypeRepository.is_a("10.20.0.0", "blem") }, [], nil)
 
       # EOF
 

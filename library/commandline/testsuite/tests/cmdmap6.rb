@@ -45,7 +45,7 @@ module Yast
 
       DUMP(CommandLine.modulecommands)
 
-      DUMP(CommandLine.allcommands) 
+      DUMP(CommandLine.allcommands)
 
       # EOF
 

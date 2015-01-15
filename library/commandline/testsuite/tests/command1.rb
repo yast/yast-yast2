@@ -40,7 +40,7 @@ module Yast
 
       # everything OK
       TEST(->() { CommandLine.Init(@cmdline, ["add", "device=eth0"]) }, [], nil)
-      TEST(->() { CommandLine.Command }, [], nil) 
+      TEST(->() { CommandLine.Command }, [], nil)
       # EOF
 
       nil

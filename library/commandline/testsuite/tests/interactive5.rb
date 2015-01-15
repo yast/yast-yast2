@@ -49,7 +49,7 @@ module Yast
         nil
       )
       TEST(->() { CommandLine.Done }, [], nil)
-      TEST(->() { CommandLine.Aborted }, [], nil) 
+      TEST(->() { CommandLine.Aborted }, [], nil)
 
       # EOF
 

@@ -41,7 +41,7 @@ module Yast
       # should be successfull
       TEST(->() { CommandLine.Init(@cmdline, []) }, [], nil)
       TEST(->() { CommandLine.StartGUI }, [], nil)
-      TEST(->() { CommandLine.Done }, [], nil) 
+      TEST(->() { CommandLine.Done }, [], nil)
 
       # EOF
 

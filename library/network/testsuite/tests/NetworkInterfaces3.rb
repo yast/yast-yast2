@@ -54,10 +54,10 @@ module Yast
         nil,
         {}
       ]
-      Builtins.foreach(@ifcfgs) do |ifcfg| 
+      Builtins.foreach(@ifcfgs) do |ifcfg|
         TEST(lambda do
                NetworkInterfaces.ConcealSecrets1(ifcfg)
-             end, [], nil) 
+             end, [], nil)
       end
 
       DUMP("ConcealSecrets:")
@@ -77,10 +77,10 @@ module Yast
         nil,
         {}
       ]
-      Builtins.foreach(@devss) do |devs| 
+      Builtins.foreach(@devss) do |devs|
         TEST(lambda do
                NetworkInterfaces.ConcealSecrets(devs)
-             end, [], nil) 
+             end, [], nil)
       end
 
       nil

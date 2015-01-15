@@ -236,7 +236,7 @@ module Yast
             ret,
             "port_ranges",
             Builtins.add(Ops.get(ret, "port_ranges", []), port)
-          ) 
+          )
           # is a normal port
         else
           # find also aliases
@@ -252,7 +252,7 @@ module Yast
                 from: "list",
                 to:   "list <string>"
               )
-            ) 
+            )
             # only add the port itself
           else
             Ops.set(ret, "ports", Builtins.add(Ops.get(ret, "ports", []), port))
@@ -286,13 +286,13 @@ module Yast
 
       # max and min are the same, this is not a port range
       if min_pr == max_pr
-        return Builtins.tostring(min_pr) 
+        return Builtins.tostring(min_pr)
         # right port range
       elsif Ops.less_than(min_pr, max_pr)
         return Ops.add(
           Ops.add(Builtins.tostring(min_pr), ":"),
           Builtins.tostring(max_pr)
-        ) 
+        )
         # min is bigger than max
       else
         Builtins.y2error(
@@ -334,7 +334,7 @@ module Yast
           # If the port doesn't match the ~port_range...
           if Builtins.tostring(port_number) != port_range
             ret = Builtins.add(ret, port_range)
-          end 
+          end
           # If matches, it isn't added (it is filtered)
           # Modify the port range when the port is included
         elsif PortIsInPortranges(Builtins.tostring(port_number), [port_range])
@@ -350,13 +350,13 @@ module Yast
             ret = Builtins.add(
               ret,
               CreateNewPortRange(Ops.add(port_number, 1), max_pr)
-            ) 
+            )
             # Port matches the max. value of port range
           elsif port_number == max_pr
             ret = Builtins.add(
               ret,
               CreateNewPortRange(min_pr, Ops.subtract(port_number, 1))
-            ) 
+            )
             # Port is inside the port range, split it up
           else
             ret = Builtins.add(
@@ -367,7 +367,7 @@ module Yast
               ret,
               CreateNewPortRange(min_pr, Ops.subtract(port_number, 1))
             )
-          end 
+          end
           # Port isn't in the port range, adding the current port range
         else
           ret = Builtins.add(ret, port_range)
@@ -442,7 +442,7 @@ module Yast
             list_of_ranges = Builtins.add(
               list_of_ranges,
               CreateNewPortRange(Ops.subtract(port_number, 1), port_number)
-            ) 
+            )
             # Port + 1 IS in some port range
           elsif PortIsInPortranges(
             Builtins.tostring(Ops.add(port_number, 1)),
@@ -452,7 +452,7 @@ module Yast
             list_of_ranges = Builtins.add(
               list_of_ranges,
               CreateNewPortRange(port_number, Ops.add(port_number, 1))
-            ) 
+            )
             # Port is not in any port range and also it cannot be joined with any one
           else
             # Port names of this port
@@ -471,7 +471,7 @@ module Yast
               # There are no port names (hmm?), adding port number
               new_list = Builtins.add(new_list, Builtins.tostring(port_number))
             end
-          end 
+          end
           # Port is in a port range
         else
           Builtins.y2milestone(
@@ -562,34 +562,34 @@ module Yast
               # take min_pr & max_pr
               any_change_during_this_loop = true
               new_min = min_pr
-              new_max = max_pr 
+              new_max = max_pr
               # the fist one is inside the second one
             elsif Ops.greater_or_equal(min_pr, this_min_pr) &&
                 Ops.less_or_equal(max_pr, this_max_pr)
               # take this_min_pr & this_max_pr
               any_change_during_this_loop = true
               new_min = this_min_pr
-              new_max = this_max_pr 
+              new_max = this_max_pr
               # the fist one partly covers the second one (by its right side)
             elsif Ops.less_or_equal(min_pr, this_min_pr) &&
                 Ops.greater_or_equal(max_pr, this_min_pr)
               # take min_pr & this_max_pr
               any_change_during_this_loop = true
               new_min = min_pr
-              new_max = this_max_pr 
+              new_max = this_max_pr
               # the second one partly covers the first one (by its left side)
             elsif Ops.greater_or_equal(min_pr, this_min_pr) &&
                 Ops.less_or_equal(max_pr, this_max_pr)
               # take this_min_pr & max_pr
               any_change_during_this_loop = true
               new_min = this_min_pr
-              new_max = max_pr 
+              new_max = max_pr
               # the first one has the second one just next on the right
             elsif Ops.add(max_pr, 1) == this_min_pr
               # take min_pr & this_max_pr
               any_change_during_this_loop = true
               new_min = min_pr
-              new_max = this_max_pr 
+              new_max = this_max_pr
               # the first one has the second one just next on the left side
             elsif Ops.subtract(min_pr, 1) == this_max_pr
               # take this_min_pr & max_pr

@@ -586,10 +586,10 @@ module Yast
         broadcast = GetBroadcastConfiguration(zone)
         # no broadcast allowed for this zone
         if broadcast == "no"
-          Ops.set(allowed_ports, zone, []) 
+          Ops.set(allowed_ports, zone, [])
           # BNC #694782: "yes" is automatically translated by SuSEfirewall2
         elsif broadcast == "yes"
-          Ops.set(allowed_ports, zone, ["yes"]) 
+          Ops.set(allowed_ports, zone, ["yes"])
           # only listed ports allows broadcast
         else
           Ops.set(allowed_ports, zone, Builtins.splitstring(broadcast, " "))
@@ -837,7 +837,7 @@ module Yast
                   Ops.get(allowed_services, "port_ranges", [])
                 )
               )
-            end 
+            end
             # Removing a port range from port ranges
           else
             if !Builtins.contains(already_removed, remove_port)
@@ -1213,7 +1213,7 @@ module Yast
         # trust IPsec is a known zone
         if IsKnownZone(zone)
           zone = GetZoneConfigurationString(zone)
-          Ops.set(@SETTINGS, "FW_IPSEC_TRUST", zone) 
+          Ops.set(@SETTINGS, "FW_IPSEC_TRUST", zone)
           # unknown zone, changing to default value
         else
           defaultv = GetDefaultValue("FW_IPSEC_TRUST")
@@ -1236,7 +1236,7 @@ module Yast
     def GetTrustIPsecAs
       # do not trust
       if Ops.get(@SETTINGS, "FW_IPSEC_TRUST") == "no"
-        return "no" 
+        return "no"
         # default value for 'yes" ~= "INT"
       elsif Ops.get(@SETTINGS, "FW_IPSEC_TRUST") == "yes"
         return "INT"
@@ -1246,7 +1246,7 @@ module Yast
         )
         # trust as named zone (if known)
         if IsKnownZone(zone)
-          return zone 
+          return zone
           # unknown zone, change to default value
         else
           SetModified()
@@ -1617,7 +1617,7 @@ module Yast
       Builtins.foreach(dialup_interfaces) do |interface|
         known_interfaces = Builtins.add(
           known_interfaces,
-          
+
           "id"   => interface,
           "type" => "dialup",
           # using function to get name
@@ -1626,14 +1626,14 @@ module Yast
             "NAME"
           ),
           "zone" => GetZoneOfInterface(interface)
-          
+
         )
       end
 
       Builtins.foreach(non_dialup_interfaces) do |interface|
         known_interfaces = Builtins.add(
           known_interfaces,
-          
+
           "id"   => interface,
           # using function to get name
           "name" => NetworkInterfaces.GetValue(
@@ -1641,7 +1641,7 @@ module Yast
             "NAME"
           ),
           "zone" => GetZoneOfInterface(interface)
-          
+
         )
       end
 
@@ -1886,10 +1886,10 @@ module Yast
 
       # "any" for all zones, this is ugly
       if interface == "any"
-        zones = GetKnownFirewallZones() 
+        zones = GetKnownFirewallZones()
         # string interface is the zone name
       elsif IsKnownZone(interface)
-        zones = Builtins.add(zones, interface) 
+        zones = Builtins.add(zones, interface)
         # interface is the interface name
       else
         interface = GetZoneOfInterface(interface)
@@ -1949,7 +1949,7 @@ module Yast
 
       # "all" means for all known zones
       if interface == "all"
-        zones_affected = GetKnownFirewallZones() 
+        zones_affected = GetKnownFirewallZones()
 
         # zone or interface name
       else
@@ -2026,7 +2026,7 @@ module Yast
 
       # "all" means for all known zones
       if interface == "all"
-        zones_affected = GetKnownFirewallZones() 
+        zones_affected = GetKnownFirewallZones()
 
         # zone or interface name
       else
@@ -2481,7 +2481,7 @@ module Yast
             # TRANSLATORS: Progress step
             _("Read current configuration"),
             # TRANSLATORS: Progress step
-            _("Check possibly conflicting services"),
+            _("Check possibly conflicting services")
           ],
           [
             # TRANSLATORS: Progress step
@@ -2506,7 +2506,7 @@ module Yast
       # get default configuration for autoinstallation
       # if (Mode::installation() || Mode::autoinst()) {
       if Mode.autoinst
-        ReadDefaultConfiguration() 
+        ReadDefaultConfiguration()
         # read current configuration for another cases
       else
         ReadCurrentConfiguration()
@@ -2589,7 +2589,7 @@ module Yast
         # Not started - start it
         if !IsStarted()
           Builtins.y2milestone("Starting firewall services")
-          return StartServices() 
+          return StartServices()
           # Started - restart it
         else
           # modified - restart it, or ...
@@ -2601,7 +2601,7 @@ module Yast
             Builtins.y2milestone("Stopping firewall services")
             StopServices()
             Builtins.y2milestone("Starting firewall services")
-            return StartServices() 
+            return StartServices()
             # not modified - skip restart
           else
             Builtins.y2milestone(
@@ -2609,13 +2609,13 @@ module Yast
             )
             return true
           end
-        end 
+        end
         # Firewall should stop after Write()
       else
         # started - stop
         if IsStarted()
           Builtins.y2milestone("Stopping firewall services")
-          return StopServices() 
+          return StopServices()
           # stopped - skip stopping
         else
           Builtins.y2milestone("Firewall has been stopped already")
@@ -2688,7 +2688,7 @@ module Yast
         # enabling firewall in /etc/init.d/
         if Ops.get_boolean(@SETTINGS, "enable_firewall", false)
           Builtins.y2milestone("Enabling firewall services")
-          return false if !EnableServices() 
+          return false if !EnableServices()
           # disabling firewall in /etc/init.d/
         else
           Builtins.y2milestone("Disabling firewall services")
@@ -2912,11 +2912,11 @@ module Yast
 
         # none iptables rules
         if Ops.greater_than(Builtins.size(iptables_list), 0)
-          any_firewall_running = true 
+          any_firewall_running = true
           # any iptables rules exist
         else
           any_firewall_running = false
-        end 
+        end
         # error running command
       else
         Builtins.y2error(
@@ -3116,7 +3116,7 @@ module Yast
         end
         list_of_rules = Builtins.add(
           list_of_rules,
-          
+
           "source_net" => Ops.get(fw_rul, 0, ""),
           "forward_to" => Ops.get(fw_rul, 1, ""),
           "protocol"   => Builtins.tolower(Ops.get(fw_rul, 2, "")),
@@ -3126,7 +3126,7 @@ module Yast
             Ops.get(fw_rul, 4, Ops.get(fw_rul, 3, ""))
           ),
           "req_ip"     => Builtins.tolower(Ops.get(fw_rul, 5, ""))
-          
+
         )
       end
 
@@ -3214,7 +3214,7 @@ module Yast
               ","
             ),
             requested_ip
-          ) 
+          )
           # port1 -> port2 are same
         elsif redirect_to_port != req_port
           masquerade_rules = Ops.add(

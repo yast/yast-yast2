@@ -257,7 +257,7 @@ module Yast
             strings_out,
             current_index,
             Ops.get(test_cached, string_in, "")
-          ) 
+          )
 
           # Recently converted strings
         else

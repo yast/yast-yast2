@@ -666,7 +666,7 @@ module Yast
 
           return "C" if r == :abort
           return "R" if r == :retry
-        end 
+        end
 
         # default: ignore
       else
@@ -2060,7 +2060,7 @@ module Yast
           # sleep for a wile
           Builtins.sleep(200)
           # remove the progress
-          CommandLine.PrintVerboseNoCR(@clear_string) 
+          CommandLine.PrintVerboseNoCR(@clear_string)
           # print newline when reached 100%
         end
       else
@@ -2596,7 +2596,7 @@ module Yast
         subprogress_type = @tick_progress ? :tick : :progress
         @progress_stack = Builtins.add(
           @progress_stack,
-          "type" => subprogress_type, "task" => task 
+          "type" => subprogress_type, "task" => task
         )
 
         if IsProgressPopup() &&

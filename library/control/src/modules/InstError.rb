@@ -220,7 +220,7 @@ module Yast
           "tail -n 200 /var/log/YaST2/y2log | grep ' <\\(3\\|5\\)> '"
         )
       )
-  
+
       details = cmd["stdout"] if cmd["exit"] == 0 && !cmd["stdout"].empty?
       ShowErrorPopUp(
         _("Installation Error"),

@@ -40,7 +40,7 @@ module Yast
 
       # unknown option
       TEST(->() { CommandLine.Init(@cmdline, ["add", "dev"]) }, [], nil)
-      TEST(->() { CommandLine.Command }, [], nil) 
+      TEST(->() { CommandLine.Command }, [], nil)
       # EOF
 
       nil

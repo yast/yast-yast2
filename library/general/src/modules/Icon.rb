@@ -148,7 +148,7 @@ module Yast
           HSpacing(Ops.get_integer(options, "margin_right", 0))
         )
 
-        return deep_copy(ret) 
+        return deep_copy(ret)
         # no margin defined
       else
         return deep_copy(this_image)

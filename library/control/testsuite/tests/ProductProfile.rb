@@ -37,7 +37,7 @@ module Yast
         @READ,
         {},
         @EX
-      ], 0) 
+      ], 0)
 
       # this would continue to IsCompliant and initialize Pkg::
       # Testsuite::Test (``(ProductProfile::CheckCompliance (2)), [ READ, $[], EX ], 0);

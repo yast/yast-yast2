@@ -230,7 +230,7 @@ module Yast
         repomgmt = !Mode.installation
         # start the package selector
         ret = PackagesUI.RunPackageSelector(
-           "enable_repo_mgr" => repomgmt, "mode" => :summaryMode 
+           "enable_repo_mgr" => repomgmt, "mode" => :summaryMode
         )
 
         Builtins.y2internal("Package selector returned: %1", ret)
@@ -322,7 +322,7 @@ module Yast
         SCR.Read(path(".target.size"), "/usr/bin/rpmqpack"),
         -1
         )
-        @_rpm_query_binary = "/usr/bin/rpmqpack " 
+        @_rpm_query_binary = "/usr/bin/rpmqpack "
         # than rpm itself
       elsif Ops.greater_than(SCR.Read(path(".target.size"), "/bin/rpm"), -1)
         @_rpm_query_binary = "/bin/rpm -q "
@@ -348,7 +348,7 @@ module Yast
             path(".target.bash"),
             Ops.add("rpm -q --whatprovides ", package)
           )
-        ) 
+        )
       # return Pkg::IsProvided (package);
     end
 

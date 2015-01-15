@@ -74,7 +74,7 @@ module Yast
           filename,
           dont_show_dialog_ident,
           repo_id
-        ) 
+        )
         # Return the default value entered by user
       else
         return SignatureCheckDialogs.GetDefaultDialogReturn(
@@ -110,7 +110,7 @@ module Yast
           :file,
           filename,
           dont_show_dialog_ident
-        ) 
+        )
         # Return the default value entered by user
       else
         return SignatureCheckDialogs.GetDefaultDialogReturn(
@@ -212,7 +212,7 @@ module Yast
           keyid,
           dont_show_dialog_ident,
           repoid
-        ) 
+        )
         # Return the default value entered by user
       else
         return SignatureCheckDialogs.GetDefaultDialogReturn(

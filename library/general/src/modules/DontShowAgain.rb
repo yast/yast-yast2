@@ -126,7 +126,7 @@ module Yast
                 )
               end
             end
-          end 
+          end
           # Unknown type
         else
           Ops.set(new_configuration, dont_show_type, records)
@@ -176,7 +176,7 @@ module Yast
         return Ops.get_boolean(
           @current_configuration,
           [q_type, q_ident, q_url, "show_again"]
-        ) 
+        )
         # <--- repositories --->
 
         # Add another types here...
@@ -233,7 +233,7 @@ module Yast
           @current_configuration,
           [q_type, q_ident, q_url, "show_again"],
           new_value
-        ) 
+        )
         # <--- repositories --->
 
         # Add another types here...
@@ -281,13 +281,13 @@ module Yast
         return Ops.get(
           @current_configuration,
           [q_type, q_ident, q_url, "return"]
-        ) 
+        )
 
         # Add another types here...
       else
         Builtins.y2error("'%1' is an unknown type", q_type)
         return nil
-      end 
+      end
       # <--- repositories --->
     end
 
@@ -337,7 +337,7 @@ module Yast
           @current_configuration,
           [q_type, q_ident, q_url, "return"],
           default_return
-        ) 
+        )
         # <--- repositories --->
 
         # Add another types here...

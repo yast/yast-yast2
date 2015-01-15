@@ -340,7 +340,7 @@ module Yast
           term(
             :IniAgent,
             filename,
-            
+
             "options"  => ["read_only"], # rw works but not needed
             "comments" => ["^[ \t]*[;#].*", ";.*", "\\{[^}]*\\}", "^[ \t]*$"],
             "sections" => [
@@ -359,7 +359,7 @@ module Yast
                 ]
               }
             ]
-            
+
           )
         )
       )

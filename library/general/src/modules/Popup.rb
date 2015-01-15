@@ -797,7 +797,7 @@ module Yast
               "Linux will not be installed.\n" \
               "Your hard disk will remain untouched."
           )
-        end 
+        end
         # icon_name = "info";
       elsif severity == :incomplete
         # Warning text for aborting an installation during the install process

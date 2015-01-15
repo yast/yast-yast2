@@ -955,7 +955,7 @@ module Yast
         else
           ret = Ops.add(Ops.add(ret, com_line), "\n")
         end
-      end 
+      end
 
       ret
     end
@@ -1008,7 +1008,7 @@ module Yast
           # add line to the previous lines
           multiline = Ops.add(multiline, part)
         end
-      end 
+      end
 
       Builtins.y2debug(
         "metadata after multiline joining: %1",
@@ -1047,7 +1047,7 @@ module Yast
             Builtins.y2warning("Unknown metadata line: %1", metaline)
           end
         end
-      end 
+      end
 
       Builtins.y2debug("parsed sysconfig comment: %1", ret)
 

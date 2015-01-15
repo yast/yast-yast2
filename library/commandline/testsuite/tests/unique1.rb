@@ -53,7 +53,7 @@ module Yast
           { "add" => "", "share" => "" },
           ["add", "delete"]
         )
-      end, [], nil) 
+      end, [], nil)
 
       # EOF
 

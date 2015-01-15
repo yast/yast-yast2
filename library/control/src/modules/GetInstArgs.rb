@@ -137,7 +137,7 @@ module Yast
     def Buttons(back, next_)
       {
         "enable_back" => back,
-        "enable_next" => next_,
+        "enable_next" => next_
       }
     end
 

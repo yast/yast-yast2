@@ -137,7 +137,7 @@ module Yast
           "test -f /etc/YaST2/ProductFeatures && /bin/rm /etc/YaST2/ProductFeatures"
         )
       end
-      Builtins.foreach(@features) do |group, options| 
+      Builtins.foreach(@features) do |group, options|
         Builtins.foreach(options) do |key, value|
           if Ops.is_map?(value) || Ops.is_list?(value) || Ops.is_symbol?(value)
             Builtins.y2debug("Skipping option %1", key)
@@ -148,7 +148,7 @@ module Yast
               strval
             )
           end
-        end 
+        end
       end
       SCR.Write(path(".product.features"), nil) # flush
 

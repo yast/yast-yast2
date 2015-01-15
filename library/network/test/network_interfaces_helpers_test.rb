@@ -12,7 +12,7 @@ module Yast
   describe NetworkInterfaces do
     context "Parsing device name" do
       DEVICE_DESCS = [
-        { 
+        {
           name:          "",
           alias_id:      "",
           type_by_regex: ""
@@ -45,7 +45,6 @@ module Yast
       ]
 
       DEVICE_DESCS.each do |device_desc|
-          
         device_name = device_desc[:name]
         alias_id = device_desc[:alias_id]
         type_by_regex = device_desc[:type_by_regex]
@@ -55,7 +54,7 @@ module Yast
             expect(NetworkInterfaces.alias_num(device_name)).to be_eql alias_id
           end
         end
-    
+
         describe "#device_type" do
           it "returns type by regex: <#{type_by_regex}> for name: <#{device_name}>" do
             expect(NetworkInterfaces.device_type(device_name)).to be_eql type_by_regex

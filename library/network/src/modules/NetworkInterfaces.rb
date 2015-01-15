@@ -572,29 +572,29 @@ module Yast
     end
 
     #
-    # Canonicalize static ip configuration obtained from sysconfig. (suse#46885) 
-    # 
-    # Static ip configuration formats supported by sysconfig: 
-    # 1) IPADDR=10.0.0.1/8 
-    # 2) IPADDR=10.0.0.1 PREFIXLEN=8 
-    # 3) IPADDR=10.0.0.1 NETMASK=255.0.0.0 
-    # 
-    # Features: 
-    # - IPADDR (in form <ip>/<prefix>) overrides PREFIXLEN,  
-    # - NETMASK is used only if prefix length unspecified) 
-    # - If prefix length and NETMASK are unspecified, 32 is implied. 
-    # 
-    # Canonicalize it to: 
+    # Canonicalize static ip configuration obtained from sysconfig. (suse#46885)
+    #
+    # Static ip configuration formats supported by sysconfig:
+    # 1) IPADDR=10.0.0.1/8
+    # 2) IPADDR=10.0.0.1 PREFIXLEN=8
+    # 3) IPADDR=10.0.0.1 NETMASK=255.0.0.0
+    #
+    # Features:
+    # - IPADDR (in form <ip>/<prefix>) overrides PREFIXLEN,
+    # - NETMASK is used only if prefix length unspecified)
+    # - If prefix length and NETMASK are unspecified, 32 is implied.
+    #
+    # Canonicalize it to:
     # - IPADDR="<ipv4>" PREFIXLEN="<prefix>" NETMASK="<netmask>") in case of IPv4 config
-    # E.g. IPADDR=10.0.0.1 PREFIXLEN=8 NETMASK=255.0.0.0 
+    # E.g. IPADDR=10.0.0.1 PREFIXLEN=8 NETMASK=255.0.0.0
     # - IPADDR="<ipv6>" PREFIXLEN="<prefix>" NETMASK="") in case of IPv6 config
     # E.g. IPADDR=2001:15c0:668e::5 PREFIXLEN=48 NETMASK=""
     #
-    # @param ifcfg     a map with netconfig (ifcfg) configuration for a one device 
-    # @return          a map with IPADDR, NETMASK and PREFIXLEN adjusted if IPADDR is present. 
-    #                  Returns original ifcfg if IPADDR is not present. In case of error, 
+    # @param ifcfg     a map with netconfig (ifcfg) configuration for a one device
+    # @return          a map with IPADDR, NETMASK and PREFIXLEN adjusted if IPADDR is present.
+    #                  Returns original ifcfg if IPADDR is not present. In case of error,
     #                  returns nil.
-    #                  
+    #
     def CanonicalizeIP(ifcfg)
       ifcfg = deep_copy(ifcfg)
       return nil if ifcfg.nil?
@@ -845,7 +845,7 @@ module Yast
           from: "map",
           to:   "map <string, map <string, map <string, any>>>"
         )
-      ) do |typ, devsmap| 
+      ) do |typ, devsmap|
         Builtins.maplist(devsmap) do |config, devmap|
           next if devmap == Ops.get_map(original_devs, [typ, config], {})
           # write sysconfig
@@ -872,7 +872,7 @@ module Yast
                   Netmask.ToBits(Ops.get_string(devmap, "NETMASK", ""))
                 )
               )
-              devmap = Builtins.remove(devmap, "NETMASK") 
+              devmap = Builtins.remove(devmap, "NETMASK")
               # TODO : delete NETMASK from config file
             else
               if Ops.greater_than(
@@ -892,7 +892,7 @@ module Yast
                     Ops.get_string(devmap, "PREFIXLEN", "")
                   )
                 )
-                devmap = Builtins.remove(devmap, "PREFIXLEN") 
+                devmap = Builtins.remove(devmap, "PREFIXLEN")
                 # TODO : delete PREFIXLEN from config file
               end
             end
@@ -927,7 +927,7 @@ module Yast
                       Netmask.ToBits(Ops.get(amap, "NETMASK", ""))
                     )
                   )
-                  amap = Builtins.remove(amap, "NETMASK") 
+                  amap = Builtins.remove(amap, "NETMASK")
                   # TODO : delete NETMASK from config file
                 else
                   if Ops.greater_than(
@@ -947,7 +947,7 @@ module Yast
                         Ops.get(amap, "PREFIXLEN", "")
                       )
                     )
-                    amap = Builtins.remove(amap, "PREFIXLEN") 
+                    amap = Builtins.remove(amap, "PREFIXLEN")
                     # TODO : delete PREFIXLEN from config file
                   end
                 end
@@ -983,7 +983,7 @@ module Yast
             [typ, config],
             Ops.get(@Devices, [typ, config], {})
           )
-        end 
+        end
       end
 
       # Finish him
@@ -1713,7 +1713,7 @@ module Yast
       devices = List("")
 
       # Find the fastest device
-      Builtins.foreach(@FastestTypes) do |_num, type| 
+      Builtins.foreach(@FastestTypes) do |_num, type|
         Builtins.foreach(devices) do |dev|
           if ret == "" &&
               Builtins.regexpmatch(
@@ -1723,7 +1723,7 @@ module Yast
               IsConnected(dev)
             ret = dev
           end
-        end 
+        end
       end
 
       Builtins.y2milestone("ret=%1", ret)

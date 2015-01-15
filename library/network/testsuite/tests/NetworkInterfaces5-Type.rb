@@ -53,7 +53,7 @@ module Yast
       end, [], nil)
       TEST(lambda do
         Assert.Equal("tap", NetworkInterfaces.GetTypeFromIfcfg(@myvirt))
-      end, [], nil) 
+      end, [], nil)
 
       # EOF
 

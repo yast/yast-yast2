@@ -385,7 +385,7 @@ module Yast
       ret = Convert.convert(
         Builtins.union(
           settings,
-          
+
           "widget"        => :custom,
           "custom_widget" => booting,
           "help"          => help,
@@ -397,7 +397,7 @@ module Yast
             method(:AutoStartStoreWrapper),
             "void (string, map)"
           )
-          
+
         ),
         from: "map",
         to:   "map <string, any>"
@@ -646,7 +646,7 @@ module Yast
       ret = Convert.convert(
         Builtins.union(
           settings,
-          
+
           "widget"        => :custom,
           "custom_widget" => immediate_actions,
           "help"          => help,
@@ -664,7 +664,7 @@ module Yast
             "_cwm_stop_service_now",
             "_cwm_save_settings_now"
           ]
-          
+
         ),
         from: "map",
         to:   "map <string, any>"
@@ -792,7 +792,7 @@ module Yast
       ret = Convert.convert(
         Builtins.union(
           settings,
-          
+
           "widget"        => :custom,
           "custom_widget" => ldap_settings,
           "help"          => help,
@@ -805,7 +805,7 @@ module Yast
             "symbol (string, map)"
           ),
           "handle_events" => ["_cwm_use_ldap"]
-          
+
         ),
         from: "map",
         to:   "map <string, any>"

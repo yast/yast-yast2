@@ -189,5 +189,3 @@ module Yast
     end
   end
 end
-
-

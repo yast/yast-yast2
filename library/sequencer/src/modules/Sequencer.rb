@@ -165,7 +165,7 @@ module Yast
       # check that all aliases are used
       ret0 = Builtins.maplist(aliases) do |key, _val|
         if !Builtins.haskey(sequence, key)
-          Builtins.y2warning(2, "sequencer check: alias not used: %1", key) 
+          Builtins.y2warning(2, "sequencer check: alias not used: %1", key)
           # return false;
         end
         true

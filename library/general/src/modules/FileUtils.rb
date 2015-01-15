@@ -280,7 +280,7 @@ module Yast
         Builtins.y2milestone("Path %1 exists", check_path)
         # Directory (path) is a type 'directory'
         if IsDirectory(check_path)
-          return true 
+          return true
           # Directory (path) is not a valid 'directory'
         else
           Builtins.y2warning("Path %1 is not a directory", check_path)
@@ -295,7 +295,7 @@ module Yast
               pathvalue
             )
           )
-        end 
+        end
         # Directory (path) doesn't exist, trying to create it if wanted
       else
         Builtins.y2milestone("Path %1 does not exist", check_path)
@@ -313,7 +313,7 @@ module Yast
               "Directory %1 successfully created",
               check_path
             )
-            return true 
+            return true
             # Failed to create the directory
           else
             Builtins.y2warning("Failed to create directory %1", check_path)
@@ -328,7 +328,7 @@ module Yast
                 pathvalue
               )
             )
-          end 
+          end
           # User doesn't want to create the directory
         else
           Builtins.y2warning(

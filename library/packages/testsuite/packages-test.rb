@@ -89,7 +89,7 @@ module Yast
           @success,
           @failure
         )
-      ) 
+      )
 
       # EOF
 

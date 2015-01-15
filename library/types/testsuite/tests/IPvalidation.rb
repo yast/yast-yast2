@@ -41,7 +41,7 @@ module Yast
       # incorrect IPv4
       TEST(->() { TypeRepository.is_a("10.blem.0.0", "ip") }, [], nil)
       # correct IPv6
-      TEST(->() { TypeRepository.is_a("fe80::250:fcff:fe74:f702", "ip") }, [], nil) 
+      TEST(->() { TypeRepository.is_a("fe80::250:fcff:fe74:f702", "ip") }, [], nil)
 
       # EOF
 

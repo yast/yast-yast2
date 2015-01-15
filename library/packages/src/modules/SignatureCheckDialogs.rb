@@ -95,7 +95,7 @@ module Yast
           "User decision to show dialog '%1' again is '%2'",
           popup_type,
           show_it
-        ) 
+        )
         # store only "don't show"
       else
         Builtins.y2milestone(
@@ -132,11 +132,11 @@ module Yast
 
       # Read the current configuration from system configuration
       stored = DontShowAgain.GetShowQuestionAgain(
-        
+
           "q_type"  => "inst-source",
           "q_ident" => popup_type,
           "q_url"   => popup_url
-        
+
       )
 
       # Stored in the configuration
@@ -193,11 +193,11 @@ module Yast
 
       stored_return = Convert.to_boolean(
         DontShowAgain.GetDefaultReturn(
-          
+
             "q_type"  => "inst-source",
             "q_ident" => popup_type,
             "q_url"   => popup_url
-          
+
         )
       )
 
@@ -218,7 +218,7 @@ module Yast
         Builtins.y2warning(
           "No such UI widget with ID: %1",
           dont_show_dialog_checkboxid
-        ) 
+        )
         # Checkbox selected -> Don't show again
       elsif dont_show_status == true
         Builtins.y2debug(
@@ -231,7 +231,7 @@ module Yast
           dont_show_dialog_ident,
           default_return,
           dont_show_url
-        ) 
+        )
         # Checkbox not selected -> Show again
       else
         SetShowThisPopup(dont_show_dialog_ident, true, dont_show_url)
@@ -392,11 +392,11 @@ module Yast
         # yes button
         if user_input == :yes
           ret = true
-          break 
+          break
           # no button
         elsif user_input == :no
           ret = false
-          break 
+          break
           # closing window uisng [x]
         elsif user_input == :cancel
           ret = nil

@@ -250,7 +250,7 @@ module Yast
 
     def CheckNetworkShared(network)
       if network.nil? || network == ""
-        return false 
+        return false
 
         # all networks
       elsif network == "0/0"
@@ -272,11 +272,11 @@ module Yast
     def CheckNetwork4(network)
       generic_check = CheckNetworkShared(network)
       if !generic_check.nil?
-        return generic_check 
+        return generic_check
 
         # 192.168.0.1, 0.8.55.999
       elsif Check4(network)
-        return true 
+        return true
 
         # 192.168.0.0/20, 0.8.55/158
       elsif Builtins.regexpmatch(
@@ -285,7 +285,7 @@ module Yast
         )
         net_parts = Builtins.splitstring(network, "/")
         return Check4(Ops.get(net_parts, 0, "")) &&
-          Netmask.CheckPrefix4(Ops.get(net_parts, 1, "")) 
+          Netmask.CheckPrefix4(Ops.get(net_parts, 1, ""))
 
         # 192.168.0.0/255.255.255.0, 0.8.55/10.258.12
       elsif Builtins.regexpmatch(
@@ -315,11 +315,11 @@ module Yast
     def CheckNetwork6(network)
       generic_check = CheckNetworkShared(network)
       if !generic_check.nil?
-        return generic_check 
+        return generic_check
 
         # 2001:db8:0::1
       elsif Check6(network)
-        return true 
+        return true
 
         # 2001:db8:0::1/64
       elsif Builtins.regexpmatch(
@@ -334,7 +334,7 @@ module Yast
         )
         net_parts = Builtins.splitstring(network, "/")
         return Check6(Ops.get(net_parts, 0, "")) &&
-          Netmask.Check6(Ops.get(net_parts, 1, "")) 
+          Netmask.Check6(Ops.get(net_parts, 1, ""))
 
         # 2001:db8:0::1/ffff:ffff::0
       elsif Builtins.regexpmatch(

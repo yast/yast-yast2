@@ -351,7 +351,7 @@ module Yast
       # relative path (to Directory::icondir)
       if Builtins.regexpmatch(one_icon, "/") &&
           !Builtins.regexpmatch(one_icon, "^/")
-        one_icon = Ops.add(Directory.icondir, one_icon) 
+        one_icon = Ops.add(Directory.icondir, one_icon)
         # hopefully you know what you do
         # just image name
       elsif !Builtins.regexpmatch(one_icon, "/")

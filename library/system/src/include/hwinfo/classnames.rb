@@ -255,7 +255,7 @@ module Yast
         275 => { "name" => _("Partition") },
         276 => { "name" => _("DSL card") },
         277 => { "name" => _("Bluetooth device") }
-      } 
+      }
 
       # EOF
     end

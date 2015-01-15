@@ -668,7 +668,7 @@ module Yast
           Builtins.foreach(strs) do |line|
             richtext = Ops.add(Ops.add(richtext, line), "<BR>")
           end
-        end 
+        end
 
         richtext = Ops.add(richtext, "</P>")
       end
@@ -685,7 +685,7 @@ module Yast
           Builtins.foreach(strs) do |line|
             richtext = Ops.add(Ops.add(richtext, line), "<BR>")
           end
-        end 
+        end
 
         richtext = Ops.add(richtext, "</P>")
       end
@@ -702,7 +702,7 @@ module Yast
           Builtins.foreach(strs) do |line|
             richtext = Ops.add(Ops.add(richtext, line), "<BR>")
           end
-        end 
+        end
 
         richtext = Ops.add(richtext, "</P>")
       end
@@ -719,7 +719,7 @@ module Yast
           Builtins.foreach(strs) do |line|
             richtext = Ops.add(Ops.add(richtext, line), "<BR>")
           end
-        end 
+        end
 
         richtext = Ops.add(richtext, "</P>")
       end

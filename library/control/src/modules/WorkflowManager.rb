@@ -399,7 +399,7 @@ module Yast
         # A cached copy exists
         if FileUtils.Exists(disk_filename)
           Builtins.y2milestone("Using cached file %1", disk_filename)
-          return disk_filename 
+          return disk_filename
           # Trying to get the file from source
         else
           Builtins.y2milestone("File %1 not cached", disk_filename)
@@ -413,12 +413,12 @@ module Yast
 
           # File exists
           if !use_filename.nil?
-            return StoreWorkflowFile(use_filename, disk_filename) 
+            return StoreWorkflowFile(use_filename, disk_filename)
             # No such file
           else
             return nil
           end
-        end 
+        end
 
         # New workflow types can be added here
       else
@@ -727,7 +727,7 @@ module Yast
         if !found
           if arch_all_prop != {}
             Ops.set(arch_all_prop, "archs", arch)
-            proposal = MergeProposal(arch_all_prop, proposal, prod_name, domain) 
+            proposal = MergeProposal(arch_all_prop, proposal, prod_name, domain)
             # completly new proposal
           else
             Ops.set(proposal, "textdomain", domain)
@@ -882,7 +882,7 @@ module Yast
         if !found
           if arch_all_wf != {}
             Ops.set(arch_all_wf, ["defaults", "archs"], arch)
-            workflow = MergeWorkflow(arch_all_wf, workflow, prod_name, domain) 
+            workflow = MergeWorkflow(arch_all_wf, workflow, prod_name, domain)
             # completly new workflow
           else
             Ops.set(workflow, "textdomain", domain)

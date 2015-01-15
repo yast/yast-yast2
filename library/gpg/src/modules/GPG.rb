@@ -118,7 +118,7 @@ module Yast
       lines = deep_copy(lines)
       ret = {}
 
-      Builtins.foreach(lines) do |line| 
+      Builtins.foreach(lines) do |line|
         Builtins.foreach(@parsing_map) do |regexp, key|
           parsed = Builtins.regexpsub(line, regexp, "\\1")
           if !parsed.nil?
@@ -138,8 +138,8 @@ module Yast
               Ops.set(ret, key, parsed)
             end
           end
-        end 
-      end 
+        end
+      end
 
       Builtins.y2milestone("Parsed key: %1", ret)
 
@@ -172,7 +172,7 @@ module Yast
         else
           key_line_list = Builtins.add(key_line_list, line)
         end
-      end 
+      end
 
       # parse each group to map
       Builtins.foreach(key_lines) do |keylines|
@@ -180,7 +180,7 @@ module Yast
         if Ops.greater_than(Builtins.size(parsed), 0)
           ret = Builtins.add(ret, parsed)
         end
-      end 
+      end
 
       Builtins.y2milestone("Parsed keys: %1", ret)
 

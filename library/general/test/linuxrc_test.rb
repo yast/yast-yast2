@@ -49,7 +49,7 @@ DEFAULT_INSTALL_INF = {
   "XBusID"           => "0:2:0",
   "XkbRules"         => "xfree86",
   "XkbModel"         => "pc104",
-  "umount_result"    => "0",
+  "umount_result"    => "0"
 }
 
 def load_install_inf(defaults_replacement = {})

@@ -181,7 +181,7 @@ module Yast
         end
       end
 
-      UI.CloseDialog 
+      UI.CloseDialog
 
       # EOF
 

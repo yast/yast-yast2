@@ -1538,7 +1538,7 @@ module Yast
       else
         tree = Builtins.add(
           tree,
-          "parent" => parent, "title" => title, "id" => id 
+          "parent" => parent, "title" => title, "id" => id
         )
       end
       deep_copy(tree)

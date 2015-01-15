@@ -43,7 +43,7 @@ module Yast
         CommandLine.Init({ "id" => "", "help" => _("This is testsuite") }, [])
       end, [], nil)
       TEST(->() { CommandLine.Done }, [], nil)
-      TEST(->() { CommandLine.Aborted }, [], nil) 
+      TEST(->() { CommandLine.Aborted }, [], nil)
 
       # EOF
 

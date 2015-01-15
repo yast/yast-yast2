@@ -118,7 +118,7 @@ module Yast
         # replace both upper and lower case escape sequences
         in_ = String.Replace(in_, Builtins.tolower(src), tgt)
         in_ = String.Replace(in_, Builtins.toupper(src), tgt)
-      end 
+      end
 
       # replace % at the end
       in_ = String.Replace(in_, "%25", "%")
@@ -148,7 +148,7 @@ module Yast
       # replace the other reserved characters
       Builtins.foreach(transform) do |src, tgt|
         ret = Builtins.mergestring(Builtins.splitstring(ret, src), tgt)
-      end 
+      end
 
       ret
     end
@@ -535,7 +535,7 @@ module Yast
       # Error
       if params.nil?
         Builtins.y2error("Erroneous (nil) params!")
-        return nil 
+        return nil
         # Empty
       elsif params == ""
         return {}

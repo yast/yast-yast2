@@ -81,79 +81,79 @@ module Yast
 
       TEST(lambda do
         URL.Build(
-          
+
             "scheme" => "ftp",
             "host"   => "ftp.example.com",
             "path"   => "path/to/dir"
-          
+
         )
       end, [], nil)
       TEST(lambda do
         URL.Build(
-          
+
             "scheme" => "ftp",
             "host"   => "ftp.example.com",
             "path"   => "/path/to/dir"
-          
+
         )
       end, [], nil)
       TEST(lambda do
         URL.Build(
-          
+
             "scheme" => "ftp",
             "host"   => "ftp.example.com",
             "path"   => "//path/to/dir"
-          
+
         )
       end, [], nil)
       TEST(lambda do
         URL.Build(
-          
+
             "scheme" => "ftp",
             "host"   => "ftp.example.com",
             "path"   => "///path/to/dir"
-          
+
         )
       end, [], nil)
       TEST(lambda do
         URL.Build(
-          
+
             "scheme" => "ftp",
             "host"   => "ftp.example.com",
             "path"   => "///path/to/dir",
             "query"  => "param1=val1&param2=val2"
-          
+
         )
       end, [], nil)
 
       # bnc #446395 - non-ASCII chars in path must be escaped
       TEST(lambda do
         URL.Build(
-          
+
             "scheme" => "dir",
             "path"   => "/path/to/\u011B\u0161\u010D\u0159\u017E\u00FD\u00E1\u00ED\u00E9/dir"
-          
+
         )
       end, [], nil)
 
       # IPv6 tests
       TEST(lambda do
         URL.Build(
-          
+
             "scheme" => "ftp",
             "host"   => "2001:de8:0:f123::1",
             "path"   => "///path/to/dir"
-          
+
         )
       end, [], nil)
       TEST(lambda do
         URL.Build(
-          
+
             "scheme" => "http",
             "host"   => "2001:de8:0:f123::1",
             "path"   => "///path/to/dir",
             "port"   => "8080"
-          
+
         )
       end, [], nil)
       TEST(->() { URL.Parse("http://[2001:de8:0:f123::1]/path/to/dir") }, [], nil)
@@ -176,14 +176,14 @@ module Yast
       # bnc#491482
       TEST(lambda do
         URL.Build(
-          
+
             "domain" => "workgroup",
             "host"   => "myserver.com",
             "pass"   => "passwd",
             "path"   => "/share$$share/path/on/the/share",
             "scheme" => "smb",
             "user"   => "username"
-          
+
         )
       end, [], nil)
 
@@ -198,7 +198,7 @@ module Yast
       TEST(->() { URL.FormatURL(URL.Parse(@long_url), 15) }, [], nil)
 
       TEST(->() { URL.FormatURL(URL.Parse(@long_url), 45) }, [], nil)
-      TEST(->() { URL.FormatURL(URL.Parse(@long_url), 65) }, [], nil) 
+      TEST(->() { URL.FormatURL(URL.Parse(@long_url), 65) }, [], nil)
 
       # EOF
 

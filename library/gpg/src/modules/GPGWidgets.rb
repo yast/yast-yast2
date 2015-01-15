@@ -87,7 +87,7 @@ module Yast
             Ops.get_string(key, "fingerprint", "")
           )
         )
-      end 
+      end
 
       deep_copy(ret)
     end

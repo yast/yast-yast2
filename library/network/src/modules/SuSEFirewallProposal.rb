@@ -240,10 +240,10 @@ module Yast
         zones
       )
 
-      Builtins.foreach(zones) do |one_zone| 
+      Builtins.foreach(zones) do |one_zone|
         Builtins.foreach(fallback_ports) do |one_port|
           SuSEFirewall.AddService(one_port, "TCP", one_zone)
-        end 
+        end
       end
 
       nil
@@ -292,7 +292,7 @@ module Yast
       Builtins.foreach(SuSEFirewall.GetKnownFirewallZones) do |zone|
         # either service is supported
         if SuSEFirewall.IsServiceSupportedInZone(service, zone)
-          ret = true 
+          ret = true
           # or check for ports
         else
           all_ports = true
@@ -327,10 +327,10 @@ module Yast
 
       # Opening the service for non-dial-up interfaces
       if Ops.greater_than(Builtins.size(non_dial_up_interfaces), 0)
-        OpenServiceInInterfaces(service, fallback_ports, non_dial_up_interfaces) 
+        OpenServiceInInterfaces(service, fallback_ports, non_dial_up_interfaces)
         # Only dial-up network interfaces, there mustn't be any non-dial-up one
       elsif Ops.greater_than(Builtins.size(dial_up_interfaces), 0)
-        OpenServiceInInterfaces(service, fallback_ports, dial_up_interfaces) 
+        OpenServiceInInterfaces(service, fallback_ports, dial_up_interfaces)
         # No network interfaces are known
       elsif Builtins.size(@known_interfaces) == 0
         if SuSEFirewall.IsAnyNetworkInterfaceSupported == true
@@ -404,7 +404,7 @@ module Yast
         SetInterfacesToZone(dial_up_interfaces, "EXT")
         if ProductFeatures.GetBooleanFeature("globals", "firewall_enable_ssh")
           SuSEFirewall.SetServicesForZones([@ssh_service], ["INT", "EXT"], true)
-        end 
+        end
 
         # has non-dial-up and doesn't have dial-up interfaces
       elsif Ops.greater_than(Builtins.size(non_dup_interfaces), 0) &&
@@ -412,7 +412,7 @@ module Yast
         SetInterfacesToZone(non_dup_interfaces, "EXT")
         if ProductFeatures.GetBooleanFeature("globals", "firewall_enable_ssh")
           SuSEFirewall.SetServicesForZones([@ssh_service], ["EXT"], true)
-        end 
+        end
 
         # doesn't have non-dial-up and has dial-up interfaces
       elsif Builtins.size(non_dup_interfaces) == 0 &&
@@ -534,7 +534,7 @@ module Yast
       if !GetChangedByUser()
         Builtins.y2milestone("Calling firewall configuration proposal")
         Reset()
-        ProposeFunctions() 
+        ProposeFunctions()
         # Changed - don't break user's configuration
       else
         Builtins.y2milestone("Calling firewall configuration update proposal")
@@ -634,7 +634,7 @@ module Yast
               end
             ),
             "</li>\n"
-          ) 
+          )
 
           # No known interfaces, but 'any' is supported
           # and ssh is enabled there
@@ -682,7 +682,7 @@ module Yast
               )
             ) do |zone|
               if SuSEFirewall.IsServiceSupportedInZone(@vnc_service, zone) == true
-                is_vnc_enabled = true 
+                is_vnc_enabled = true
                 # checking also fallback ports
               else
                 set_vnc_enabled_to = true

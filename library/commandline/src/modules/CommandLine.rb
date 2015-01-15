@@ -960,11 +960,11 @@ module Yast
         Ops.set(
           doc,
           "listEntries",
-          
+
           "commands" => "command",
           "options"  => "option",
           "examples" => "example"
-          
+
         )
         #	    doc["cdataSections"] = [];
         Ops.set(
@@ -1033,7 +1033,7 @@ module Yast
             actiondescr = Builtins.add(actiondescr, "examples", examples)
           end
           commands = Builtins.add(commands, actiondescr)
-        end 
+        end
 
         Ops.set(exportmap, "commands", commands)
         Ops.set(exportmap, "module", Ops.get_string(@cmdlinespec, "id", ""))
@@ -1598,11 +1598,11 @@ module Yast
       else
         # disable Reports, we handle them on our own
         Report.Import(
-          
+
             "messages" => { "show" => false },
             "warnings" => { "show" => false },
             "errors"   => { "show" => false }
-          
+
         )
 
         # translators: progress message - command line interface ready

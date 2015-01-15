@@ -42,7 +42,7 @@ module Yast
 
       TEST(->() { URLRecode.EscapePath(" !@\#$%^&*()/?+=") }, [], nil)
       TEST(->() { URLRecode.EscapePassword(" !@\#$%^&*()/?+=<>[]|\"") }, [], nil)
-      TEST(->() { URLRecode.EscapeQuery(" !@\#$%^&*()/?+=") }, [], nil) 
+      TEST(->() { URLRecode.EscapeQuery(" !@\#$%^&*()/?+=") }, [], nil)
 
       # EOF
 

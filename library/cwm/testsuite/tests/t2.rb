@@ -121,7 +121,7 @@ module Yast
     def MyCreateTable
       ret = TablePopup.CreateTableDescr(
         {},
-        
+
         "init"     => fun_ref(
           TablePopup.method(:TableInitWrapper),
           "void (string)"
@@ -141,7 +141,7 @@ module Yast
             "string (any, string)"
           )
         }
-        
+
       )
       deep_copy(ret)
     end

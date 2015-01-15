@@ -250,11 +250,11 @@ module Yast
           )
           # there are no interfaces left that would be explicitely mentioned in the EXT zone
           if ifaces_left_explicitely == []
-            next [] 
+            next []
             # Hmm, some interfaces left
           else
             next deep_copy(ifaces_also_supported_by_any)
-          end 
+          end
           # Just report all interfaces mentioned in zone
         else
           next deep_copy(ifaces_also_supported_by_any)
@@ -292,14 +292,14 @@ module Yast
       service_status = {}
 
       ifaces_info = SuSEFirewall.GetServicesInZones(services)
-      Builtins.foreach(ifaces_info) do |_s, status| 
+      Builtins.foreach(ifaces_info) do |_s, status|
         Builtins.foreach(status) do |iface, en|
           Ops.set(
             service_status,
             iface,
             Ops.get(service_status, iface, true) && en
           )
-        end 
+        end
       end
       service_status = Builtins.filter(service_status) { |_iface, en| en == true }
       Builtins.y2milestone("Status: %1", service_status)
@@ -749,7 +749,7 @@ module Yast
       ret = Convert.convert(
         Builtins.union(
           settings,
-          
+
           "widget"            => :custom,
           "custom_widget"     => widget,
           "help"              => help,
@@ -770,7 +770,7 @@ module Yast
             method(:InterfacesValidateWrapper),
             "boolean (string, map)"
           )
-          
+
         ),
         from: "map",
         to:   "map <string, any>"
