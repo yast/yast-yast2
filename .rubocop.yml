@@ -64,9 +64,10 @@ Style/AsciiComments:
 Style/ClassAndModuleCamelCase:
   Enabled: false
 
-# Offense count: 369
+# ensure new code is properly documented
 Style/Documentation:
-  Enabled: false
+  Include:
+    - "library/*/src/lib/**/*.rb"
 
 # keep double negation as conversion to boolean
 Style/DoubleNegation:
@@ -86,9 +87,7 @@ Style/MethodName:
 Style/PredicateName:
   Enabled: false
 
-# Offense count: 32
-# Cop supports --auto-correct.
-# Configuration parameters: ExactNameMatch, AllowPredicates, AllowDSLWriters, Whitelist.
+# keep it as often methods names are wrong and part of API
 Style/TrivialAccessors:
   Enabled: false
 

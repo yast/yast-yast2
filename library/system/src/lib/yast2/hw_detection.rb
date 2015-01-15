@@ -25,14 +25,11 @@
 #
 # Authors:
 #	Ladislav Slezak <lslezak@suse.cz>
-#
-# Summary:
-#	Module for detecting hardware
-#
 
 require "yast"
 
 module Yast2
+  # Module for detecting hardware
   class HwDetection
     include Yast::Logger
 

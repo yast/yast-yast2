@@ -4,8 +4,6 @@ require "ostruct"
 require "forwardable"
 
 module Yast
-  import "Stage"
-
   ###
   #  Use this class always as a parent class for implementing various systemd units.
   #  Do not use it directly for add-hoc implemenation of systemd units.
@@ -32,9 +30,8 @@ module Yast
   #
   #     service.before # ['shutdown.target', 'multi-user.target']
   #
-  ###
-
   class SystemdUnit
+    Yast.import "Stage"
     include Yast::Logger
 
     SUPPORTED_TYPES  = %w( service socket target )
@@ -136,6 +133,7 @@ module Yast
       command_result.exit.zero?
     end
 
+    # Structure holding  properties of systemd unit
     class Properties < OpenStruct
       include Yast::Logger
 

@@ -2,12 +2,14 @@ require "ostruct"
 require "timeout"
 
 module Yast
+  # Exception when systemctl command failed
   class SystemctlError < StandardError
     def initialize(struct)
       super "Systemctl command failed: #{struct}"
     end
   end
 
+  # Wrapper around systemctl command
   module Systemctl
     include Yast::Logger
 
