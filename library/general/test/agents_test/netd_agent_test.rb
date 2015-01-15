@@ -14,7 +14,7 @@ module Yast
     end
 
     describe ".Read" do
-      let(:content) {SCR.Read(Path.new(".etc.xinetd_conf.services"))}
+      let(:content) {SCR.Read(path(".etc.xinetd_conf.services"))}
 
       it "reads content of /etc/xinetd.d and returns array" do
         expect(content).to be_a(Array)

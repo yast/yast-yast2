@@ -15,7 +15,7 @@ describe ".proc.meminfo" do
   end
 
   describe ".Read" do
-    let(:content) { Yast::SCR.Read(Yast::Path.new(".proc.meminfo")) }
+    let(:content) { Yast::SCR.Read(path(".proc.meminfo")) }
 
     it "read content of /proc/meminfo return hash" do
       expect(content).to be_a(Hash)
