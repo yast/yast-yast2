@@ -29,21 +29,18 @@ module UI
   #     end
   #   end
   module EventDispatcher
-    # @internal constant to continue with dispatching
-    CONTINUE_WITH_DISPATCHING = :_dispatcher_continue
-
     # Does UI event dispatching.
     # @return value from exit_dialog method.
     def event_loop
       Yast.import "UI"
-      @_finish_dialog_dispatcher = CONTINUE_WITH_DISPATCHING
+      @_finish_dialog_flag = false
 
       loop do
         input = Yast::UI.UserInput
         if respond_to?(:"#{input}_handler")
           send(:"#{input}_handler")
-          if @_finish_dialog_dispatcher != CONTINUE_WITH_DISPATCHING
-            return @_finish_dialog_dispatcher
+          if @_finish_dialog_flag
+            return @_finish_dialog_value
           end
         else
           raise "Unknown action #{input}"
@@ -54,7 +51,8 @@ module UI
     # Set internal flag to not continue with processing other UI inputs
     # @param return_value[Object] value to return from event_loop
     def finish_dialog(return_value = nil)
-      @_finish_dialog_dispatcher = return_value
+      @_finish_dialog_flag = true
+      @_finish_dialog_value = return_value
     end
 
     # Default handler for cancel which can be also 'x' on dialog window
