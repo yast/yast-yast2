@@ -96,8 +96,3 @@ Style/TrivialAccessors:
 # Configuration parameters: EnforcedStyle, SupportedStyles.
 Style/VariableName:
   Enabled: false
-
-# Offense count: 6
-# Configuration parameters: MaxLineLength.
-Style/WhileUntilModifier:
-  Enabled: false

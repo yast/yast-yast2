@@ -457,9 +457,7 @@ module Yast
         break if which_input == :timed_ok
         if which_input == :timed_stop
           UI.ReplaceWidget(Id(:replace_buttons), button_box)
-          while which_input == :timed_stop
-            which_input = UI.UserInput
-          end
+          which_input = UI.UserInput while which_input == :timed_stop
           break
         end
         timeout_seconds = Ops.subtract(timeout_seconds, 1)
@@ -522,9 +520,7 @@ module Yast
         break if which_input == :timed_ok
         if which_input == :timed_stop
           UI.ReplaceWidget(Id(:replace_buttons), button_box)
-          while which_input == :timed_stop
-            which_input = UI.UserInput
-          end
+          which_input = UI.UserInput while which_input == :timed_stop
           break
         end
         timeout_seconds = Ops.subtract(timeout_seconds, 1)
@@ -1673,9 +1669,7 @@ module Yast
         break if which_input == :timed_ok
         break if which_input == :timed_cancel
         if which_input == :timed_stop
-          while which_input == :timed_stop
-            which_input = UI.UserInput
-          end
+          which_input = UI.UserInput while which_input == :timed_stop
           break
         end
         timeout_seconds = Ops.subtract(timeout_seconds, 1)

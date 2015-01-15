@@ -1711,9 +1711,7 @@ module Yast
       # no - used in the command line mode as input text for yes/no confirmation
       no = _("no")
 
-      while ui != yes && ui != no
-        ui = UserInput(prompt)
-      end
+      ui = UserInput(prompt) while ui != yes && ui != no
 
       ui == yes
     end

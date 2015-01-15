@@ -941,9 +941,8 @@ module Yast
       end
 
       if 0 != @stages
-        while Ops.less_than(@current_stage, @stages)
-          NextStage()
-        end
+        # unwind remaining stages
+        NextStage() while Ops.less_than(@current_stage, @stages)
       end
       if 0 != @steps
         @current_step = @steps

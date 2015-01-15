@@ -586,9 +586,7 @@ module Yast
               )
             )
           )
-          while ret != :close && ret != :cancel
-            ret = UI.UserInput
-          end
+          ret = UI.UserInput while ret != :close && ret != :cancel
           ret = nil
           UI.CloseDialog
         else
