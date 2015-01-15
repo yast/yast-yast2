@@ -66,7 +66,7 @@ module Yast
     def Sum(values)
       return nil unless values
 
-      values.reduce(:+)
+      values.reduce(0, :+)
     end
 
     # Returns the smallest integer in values.
