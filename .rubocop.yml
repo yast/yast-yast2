@@ -76,16 +76,19 @@ Style/DoubleNegation:
 # Offense count: 158
 # Configuration parameters: Exclude.
 Style/FileName:
-  Enabled: false
+  Include:
+    - "library/*/src/lib/**/*.rb"
 
 # Offense count: 1748
 # Configuration parameters: EnforcedStyle, SupportedStyles.
 Style/MethodName:
-  Enabled: false
+  Include:
+    - "library/*/src/lib/**/*.rb"
 
-# keep it as it is part of API
+# keep it as it is part of API for old code
 Style/PredicateName:
-  Enabled: false
+  Include:
+    - "library/*/src/lib/**/*.rb"
 
 # keep it as often methods names are wrong and part of API
 Style/TrivialAccessors:

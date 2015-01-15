@@ -158,7 +158,7 @@ module Yast
         self[:running?]   = sub_state    == "running"
         self[:loaded?]    = load_state   == "loaded"
         self[:not_found?] = load_state   == "not-found"
-        self[:enabled?]   = is_enabled?
+        self[:enabled?]   = read_enabled_state
         self[:supported?] = SUPPORTED_STATES.member?(unit_file_state)
       end
 
@@ -166,7 +166,7 @@ module Yast
 
       # Check the value of #unit_file_state; its value mirrors UnitFileState dbus property
       # @return [Boolean] True if enabled, False if not
-      def is_enabled?
+      def read_enabled_state
         # If UnitFileState property is missing due to e.g. legacy sysvinit service
         # we must use a different way how to get the real status of the service
         if unit_file_state.nil?
