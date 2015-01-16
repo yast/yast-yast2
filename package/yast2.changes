@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 16 16:53:25 UTC 2015 - jreidinger@suse.com
+
+- enable automatic rubocop style checker and adjust code to YaST
+  style guide
+
+-------------------------------------------------------------------
 Wed Jan  7 10:05:55 UTC 2015 - dvaleev@suse.com
 
 - Treat PowerNV platform as CHRP
