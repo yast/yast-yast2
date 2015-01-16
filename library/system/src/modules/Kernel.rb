@@ -310,6 +310,8 @@ module Yast
 
     #---------------------------------------------------------------
 
+    # specifies limit of memory which can be addressed without pae on 32-bit system
+    PAE_LIMIT = 3_221_225_472
     # select kernel depending on architecture and system type.
     #
     # @return [void]
@@ -365,12 +367,11 @@ module Yast
           [0, "resource", "phys_mem", 0, "range"],
           0
         )
-        fourGB = 3_221_225_472
         Builtins.y2milestone("Physical memory %1", memsize)
 
         # for memory > 4GB and PAE support we install kernel-pae,
         # PAE kernel is needed if NX flag exists as well (bnc#467328)
-        if (Ops.greater_or_equal(memsize, fourGB) ||
+        if (Ops.greater_or_equal(memsize, PAE_LIMIT) ||
             Builtins.contains(cpuflags, "nx")) &&
             Builtins.contains(cpuflags, "pae")
           Builtins.y2milestone("Kernel switch: PAE detected")
