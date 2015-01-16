@@ -569,7 +569,7 @@ module Yast
           )
         elsif widget == :intfield
           min = Ops.get_integer(w, "minimum", 0)
-          max = Ops.get_integer(w, "maximum", 2_147_483_647)
+          max = Ops.get_integer(w, "maximum", 2**31 - 1) # libyui support only signed int
           Ops.set(
             w,
             "widget",
@@ -869,7 +869,7 @@ module Yast
     # @param [String] next label of the "Next" button
     # @param [String] back string label of the "Back" button
     # @param [String] abort string label of the "Abort" button
-    # @param [String] help string label of the additional "Help" button (if needed)
+    # @param [String] _help unused parameter since help button cannot be hide anyway
     def AdjustButtons(next_, back, abort, _help)
       next_ = "" if next_.nil?
       back = "" if back.nil?

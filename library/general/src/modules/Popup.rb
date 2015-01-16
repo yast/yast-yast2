@@ -1118,9 +1118,9 @@ module Yast
     # @param headline [String] popup headline (displayed in bold)
     # @param message [String] message with details, displayed below the headline
     # @param block block to execute
-    def Feedback(headline, message, &_block)
+    def Feedback(headline, message, &block)
       ShowFeedback(headline, message)
-      yield
+      block.call
     ensure
       ClearFeedback()
     end

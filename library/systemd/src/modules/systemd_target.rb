@@ -59,13 +59,13 @@ module Yast
       target
     end
 
-    def find!(target_name, _properties = {})
-      find(target_name) || raise(SystemdTargetNotFound, target_name)
+    def find!(target_name, _properties ={})
+      find(target_name, properties) || raise(SystemdTargetNotFound, target_name)
     end
 
-    def all(_properties = {})
+    def all(properties = {})
       targets = Systemctl.target_units.map do |target_unit_name|
-        find(target_unit_name)
+        find(target_unit_name, properties)
       end
       targets.compact
     end

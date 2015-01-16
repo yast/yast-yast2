@@ -119,6 +119,7 @@ module Yast
     end
 
     def InstallKernel(_kernel_modules)
+      # the kernel packages are handled by autoyast on its own
       true
     end
 
