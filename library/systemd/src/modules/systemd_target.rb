@@ -59,7 +59,7 @@ module Yast
       target
     end
 
-    def find!(target_name, _properties ={})
+    def find!(target_name, properties = {})
       find(target_name, properties) || raise(SystemdTargetNotFound, target_name)
     end
 
