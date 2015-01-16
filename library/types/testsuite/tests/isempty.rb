@@ -16,7 +16,7 @@ module Yast
       Assert.Equal(false, TypeRepository.IsEmpty(0.0))
       Assert.Equal(false, TypeRepository.IsEmpty("item"))
       Assert.Equal(false, TypeRepository.IsEmpty(["item"]))
-      Assert.Equal(false, TypeRepository.IsEmpty({ "dummy" => "item" }))
+      Assert.Equal(false, TypeRepository.IsEmpty("dummy" => "item"))
       Assert.Equal(false, TypeRepository.IsEmpty(HBox(Label())))
       Assert.Equal(false, TypeRepository.IsEmpty(false))
       Assert.Equal(false, TypeRepository.IsEmpty(true))

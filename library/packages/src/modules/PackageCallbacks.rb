@@ -74,7 +74,6 @@ module Yast
       # make showLongInfo module-global so it gets remembered (cf. #14018)
       @showLongInfo = false
 
-
       # used to en-/disable StartPackage, ProgressPackage and DonePackage
       @enable_asterix_package = true
 
@@ -111,7 +110,6 @@ module Yast
 
       @vsize_no_details = 1
 
-
       #=============================================================================
       #	MEDIA CHANGE
       #=============================================================================
@@ -135,7 +133,6 @@ module Yast
       # ProgressStart/End events may be nested, remember the types of progresses
       @progress_stack = []
 
-
       @last_stage = 0
 
       @opened_wizard = []
@@ -143,9 +140,11 @@ module Yast
     end
 
     def textmode
-      Mode.commandline ?
-        true :
+      if Mode.commandline
+        true
+      else
         Ops.get_boolean(UI.GetDisplayInfo, "TextMode", false)
+      end
     end
 
     def display_width
@@ -158,7 +157,7 @@ module Yast
         Builtins.y2milestone("Reading config file %1", @conf_file)
         read_conf = Convert.to_map(SCR.Read(path(".target.ycp"), @conf_file))
 
-        @config = read_conf != nil ? read_conf : {}
+        @config = !read_conf.nil? ? read_conf : {}
         Builtins.y2milestone("Current config: %1", @config)
       else
         Builtins.y2milestone(
@@ -167,20 +166,20 @@ module Yast
         )
       end
 
-      @config = {} if @config == nil
+      @config = {} if @config.nil?
 
       nil
     end
 
     def GetConfig(key)
-      LoadConfig() if @config == nil
+      LoadConfig() if @config.nil?
 
       Ops.get(@config, key)
     end
 
     def SetConfig(key, value)
       value = deep_copy(value)
-      LoadConfig() if @config == nil
+      LoadConfig() if @config.nil?
 
       Builtins.y2milestone("Config: setting %1 to %2", key, value)
       Ops.set(@config, key, value)
@@ -263,8 +262,6 @@ module Yast
       nil
     end
 
-
-
     # during file providal
     #
     def ProgressProvide(percent)
@@ -289,8 +286,6 @@ module Yast
       nil
     end
 
-
-
     # creates layout for ChangeMediumPopup
     def LayoutPopup(message, button_box, vertical_size, info_on)
       button_box = deep_copy(button_box)
@@ -300,7 +295,7 @@ module Yast
         HBox(
           # maybe more icon types could be used
           # "info, "warning", "error"
-          Icon.Image("warning", { "margin_right" => 2 }),
+          Icon.Image("warning",  "margin_right" => 2),
           Left(Label(message))
         ),
         VSpacing(0.1),
@@ -349,7 +344,6 @@ module Yast
       false
     end
 
-
     # during file providal
     #  *
     #  // return "I" for ignore
@@ -380,7 +374,6 @@ module Yast
           _("Package %1 is broken, integrity check has failed."),
           name
         )
-
 
         if Mode.commandline
           CommandLine.Print(message)
@@ -438,7 +431,7 @@ module Yast
         end
 
         r = nil
-        begin
+        loop do
           r = UI.UserInput
           if r == :show
             @showLongInfo = ShowLogInfo(message, button_box)
@@ -469,7 +462,8 @@ module Yast
               UI.ReplaceWidget(Id(:info), Empty())
             end
           end
-        end until r == :abort || r == :retry || r == :ignore
+          break if r == :abort || r == :retry || r == :ignore
+        end
 
         Builtins.y2milestone("DoneProvide %1", r)
 
@@ -498,7 +492,6 @@ module Yast
       "I"
     end
 
-
     #  Enable or disable StartPackage, ProgressPackage and DonePackage
     #  callbacks, but only the progress bar and not the final error
     #  message.  Returns old value.
@@ -508,10 +501,8 @@ module Yast
       ret
     end
 
-
-
     #  At start of package install.
-    def StartPackage(name, location, summary, installsize, is_delete)
+    def StartPackage(name, _location, _summary, installsize, is_delete)
       return if !@enable_asterix_package
 
       @_package_name = name
@@ -522,9 +513,11 @@ module Yast
       if Mode.commandline
         CommandLine.PrintVerbose(
           Builtins.sformat(
-            is_delete ?
-              _("Uninstalling package %1 (%2)...") :
-              _("Installing package %1 (%2)..."),
+            if is_delete
+              _("Uninstalling package %1 (%2)...")
+            else
+              _("Installing package %1 (%2)...")
+            end,
             @_package_name,
             sz
           )
@@ -542,7 +535,6 @@ module Yast
 
       nil
     end
-
 
     #  During package install.
     def ProgressPackage(percent)
@@ -564,18 +556,16 @@ module Yast
       true
     end
 
-
     #  After package install.
     #
     #  return "I" for ignore
     #  return "R" for retry
     #  return "C" for abort (not implemented !)
     def DonePackage(error, reason)
-
       # remove invalid characters (bnc#876459)
       if !reason.valid_encoding?
-        reason.encode!('UTF-16', :undef => :replace, :invalid => :replace, :replace => "?")
-        reason.encode!('UTF-8')
+        reason.encode!("UTF-16", undef: :replace, invalid: :replace, replace: "?")
+        reason.encode!("UTF-8")
         log.warn "Invalid byte sequence found, fixed text: #{reason}"
       end
 
@@ -590,11 +580,13 @@ module Yast
         )
 
         message = Builtins.sformat(
-          @_deleting_package ?
+          if @_deleting_package
             # error popup during package installation, %1 is the name of the package
-            _("Removal of package %1 failed.") :
+            _("Removal of package %1 failed.")
+          else
             # error popup during package installation, %1 is the name of the package
-            _("Installation of package %1 failed."),
+            _("Installation of package %1 failed.")
+          end,
           @_package_name
         )
 
@@ -646,7 +638,7 @@ module Yast
           end
 
           r = nil
-          begin
+          loop do
             r = UI.UserInput
             if r == :show
               @showLongInfo = ShowLogInfo(message, button_box)
@@ -656,8 +648,8 @@ module Yast
                 UI.ReplaceWidget(Id(:info), Empty())
               end
             end
-          end until r == :abort || r == :retry || r == :ignore
-
+            break if r == :abort || r == :retry || r == :ignore
+          end
           Builtins.y2milestone("DonePackage %1", r)
 
           UI.CloseDialog
@@ -674,7 +666,7 @@ module Yast
 
           return "C" if r == :abort
           return "R" if r == :retry
-        end 
+        end
 
         # default: ignore
       else
@@ -690,8 +682,8 @@ module Yast
     def CDdevices(preferred)
       cds = Convert.convert(
         SCR.Read(path(".probe.cdrom")),
-        :from => "any",
-        :to   => "list <map>"
+        from: "any",
+        to:   "list <map>"
       )
       ret = []
 
@@ -699,7 +691,7 @@ module Yast
         dev = Ops.get_string(cd, "dev_name", "")
         model = Ops.get_string(cd, "model", "")
         deflt = preferred == dev
-        if dev != nil && dev != "" && model != nil
+        if !dev.nil? && dev != "" && !model.nil?
           ret = Builtins.add(
             ret,
             Item(
@@ -711,7 +703,7 @@ module Yast
             )
           )
         end
-      end if cds != nil
+      end if !cds.nil?
 
       Builtins.y2milestone("Detected CD devices: %1", ret)
 
@@ -723,7 +715,7 @@ module Yast
       autoeject = Convert.to_boolean(UI.QueryWidget(Id(:auto_eject), :Value))
 
       current = Convert.to_boolean(GetConfig("automatic_eject"))
-      current = false if current == nil
+      current = false if current.nil?
 
       if autoeject != current
         SetConfig("automatic_eject", autoeject)
@@ -732,9 +724,6 @@ module Yast
 
       nil
     end
-
-
-
 
     #-------------------------------------------------------------------------
     #
@@ -790,9 +779,9 @@ module Yast
         error =
           # error report
           _(
-            "<p>The repository at the specified URL now provides a different media ID.\n" +
-              "If the URL is correct, this indicates that the repository content has changed. To \n" +
-              "continue using this repository, start <b>Installation Repositories</b> from \n" +
+            "<p>The repository at the specified URL now provides a different media ID.\n" \
+              "If the URL is correct, this indicates that the repository content has changed. To \n" \
+              "continue using this repository, start <b>Installation Repositories</b> from \n" \
               "the YaST control center and refresh the repository.</p>\n"
           )
       end
@@ -810,20 +799,23 @@ module Yast
             side = _("Side B")
           end
           wanted = Ops.shift_right(Ops.add(wanted, 1), 1)
-          wanted_label = url_scheme == "cd" || url_scheme == "dvd" ?
-            # label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
-            # %3 side (e.g. "Side A")
-            Builtins.sformat("%1 (Disc %2, %3)", product, wanted, side) :
-            # label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
-            # %3 side (e.g. "Side A")
-            Builtins.sformat("%1 (Medium %2, %3)", product, wanted, side)
+          wanted_label = if ["cd", "dvd"].include(url_scheme)
+                           # label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
+                           # %3 side (e.g. "Side A")
+                           Builtins.sformat("%1 (Disc %2, %3)", product, wanted, side)
+                         else
+                           # label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
+                           # %3 side (e.g. "Side A")
+                           Builtins.sformat("%1 (Medium %2, %3)", product, wanted, side)
+                         end
         else
-          wanted_label = Builtins.tolower(url_scheme) == "cd" ||
-            Builtins.tolower(url_scheme) == "dvd" ?
-            # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
-            Builtins.sformat(_("%1 (Disc %2)"), product, wanted) :
-            # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
-            Builtins.sformat(_("%1 (Medium %2)"), product, wanted)
+          wanted_label = if ["cd", "dvd"].include(Builtins.tolower(url_scheme))
+                           # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
+                           Builtins.sformat(_("%1 (Disc %2)"), product, wanted)
+                         else
+                           # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
+                           Builtins.sformat(_("%1 (Medium %2)"), product, wanted)
+                         end
         end
       end
 
@@ -834,9 +826,9 @@ module Yast
         # report error while accessing local directory with product (%1 = URL, %2 = "SuSE Linux ...")
         message = Builtins.sformat(
           _(
-            "Cannot access installation media\n" +
-              "%1\n" +
-              "%2.\n" +
+            "Cannot access installation media\n" \
+              "%1\n" \
+              "%2.\n" \
               "Check whether the directory is accessible."
           ),
           URL.HidePassword(url),
@@ -846,18 +838,15 @@ module Yast
         # report error while accessing network media of product (%1 = URL, %2 = "SuSE Linux ...")
         message = Builtins.sformat(
           _(
-            "Cannot access installation media \n" +
-              "%1\n" +
-              "%2.\n" +
+            "Cannot access installation media \n" \
+              "%1\n" \
+              "%2.\n" \
               "Check whether the server is accessible."
           ),
           URL.HidePassword(url),
           wanted_label
         )
       end
-
-      # currently unused
-      media_prompt = _("The correct repository medium could not be mounted.")
 
       # --------------------------------------
       # build up button box
@@ -910,9 +899,8 @@ module Yast
           )
         end
 
-
         auto_eject = Convert.to_boolean(GetConfig("automatic_eject"))
-        auto_eject = false if auto_eject == nil
+        auto_eject = false if auto_eject.nil?
 
         button_box = VBox(
           Left(
@@ -945,12 +933,11 @@ module Yast
         # is the maximum retry count reached?
         if Ops.less_than(@current_retry_attempt, @retry_attempts)
           # reset the counter, use logarithmic back-off with maximum limit
-          @current_retry_timeout = Ops.less_than(@current_retry_attempt, 10) ?
-            Ops.multiply(
-              @retry_timeout,
-              Ops.shift_left(1, @current_retry_attempt)
-            ) :
-            @retry_max_timeout
+          @current_retry_timeout = if @current_retry_attempt < 10
+                                     @retry_timeout * (1 << @current_retry_attempt)
+                                   else
+                                     @retry_max_timeout
+                                   end
 
           if Ops.greater_than(@current_retry_timeout, @retry_max_timeout)
             @current_retry_timeout = @retry_max_timeout
@@ -1041,7 +1028,7 @@ module Yast
       r = nil
 
       eject_device = ""
-      begin
+      loop do
         if doing_auto_retry
           r = UI.TimeoutUserInput(1000)
         else
@@ -1105,8 +1092,8 @@ module Yast
           eject_device = Convert.to_string(r)
           r = :eject
         end
-      end until r == :cancel || r == :retry || r == :eject || r == :skip || r == :ignore ||
-        r == :url
+        break if [:cancel, :retry, :eject, :skip, :ignore, :url].include?(r)
+      end
 
       # remember the state of autoeject option
       if offer_eject_button
@@ -1150,7 +1137,7 @@ module Yast
             d == eject_device
           end
 
-          if found != nil
+          if !found.nil?
             Builtins.y2milestone("Device %1 has index %2", eject_device, dindex)
             return Ops.add("E", Builtins.tostring(dindex))
           else
@@ -1171,7 +1158,6 @@ module Yast
       ""
     end
 
-
     # dummy repository change callback, see SlideShowCallbacks for the real one
     def SourceChange(source, medianr)
       Builtins.y2milestone("SourceChange (%1, %2)", source, medianr)
@@ -1179,7 +1165,6 @@ module Yast
 
       nil
     end
-
 
     def ProcessMessage(msg, max_len)
       words = Builtins.splitstring(msg, " ")
@@ -1194,8 +1179,8 @@ module Yast
         )
         # is it a valid URL?
         if Builtins.contains(
-            ["ftp", "http", "nfs", "file", "dir", "iso", "smb", "disk"],
-            Ops.get_string(parsed, "scheme", "")
+          ["ftp", "http", "nfs", "file", "dir", "iso", "smb", "disk"],
+          Ops.get_string(parsed, "scheme", "")
           )
           # reformat the URL
           w = URL.FormatURL(parsed, max_len)
@@ -1246,8 +1231,8 @@ module Yast
       ui_adjustment = textmode ? 0 : 5
 
       if Ops.greater_than(
-          Builtins.size(text),
-          Ops.subtract(@max_size, ui_adjustment)
+        Builtins.size(text),
+        Ops.subtract(@max_size, ui_adjustment)
         )
         text = ProcessMessage(text, Ops.subtract(@max_size, ui_adjustment))
       end
@@ -1263,8 +1248,8 @@ module Yast
       ui_adjustment = textmode ? 0 : 6
 
       if Ops.greater_than(
-          Builtins.size(text),
-          Ops.add(@max_size, ui_adjustment)
+        Builtins.size(text),
+        Ops.add(@max_size, ui_adjustment)
         )
         text = ProcessMessage(text, Ops.add(@max_size, ui_adjustment))
       end
@@ -1308,7 +1293,6 @@ module Yast
 
       nil
     end
-
 
     def SourceCreateInit
       Builtins.y2milestone("SourceCreateInit")
@@ -1431,8 +1415,6 @@ module Yast
       nil
     end
 
-
-
     def SourceProbeStart(url)
       Builtins.y2milestone("SourceProbeStart: %1", URL.HidePassword(url))
 
@@ -1459,7 +1441,6 @@ module Yast
       nil
     end
 
-
     def SourceProbeFailed(url, type)
       Builtins.y2milestone(
         "Repository %1 is not %2 repository",
@@ -1480,8 +1461,7 @@ module Yast
       nil
     end
 
-
-    def SourceProbeProgress(url, value)
+    def SourceProbeProgress(_url, value)
       SourcePopupSetProgress(value)
     end
 
@@ -1564,7 +1544,6 @@ module Yast
       nil
     end
 
-
     def SourceReportStart(source_id, url, task)
       Builtins.y2milestone(
         "Source report start: src: %1, URL: %2, task: %3",
@@ -1594,7 +1573,6 @@ module Yast
 
       ret
     end
-
 
     def SourceReportError(source_id, url, error, description)
       Builtins.y2milestone(
@@ -1789,19 +1767,18 @@ module Yast
       nil
     end
 
-
     def FormatPatchName(patch_name, patch_version, patch_arch)
-      patch_full_name = patch_name != nil && patch_name != "" ? patch_name : ""
+      patch_full_name = !patch_name.nil? && patch_name != "" ? patch_name : ""
 
       if patch_full_name != ""
-        if patch_version != nil && patch_version != ""
+        if !patch_version.nil? && patch_version != ""
           patch_full_name = Ops.add(
             Ops.add(patch_full_name, "-"),
             patch_version
           )
         end
 
-        if patch_arch != nil && patch_arch != ""
+        if !patch_arch.nil? && patch_arch != ""
           patch_full_name = Ops.add(Ops.add(patch_full_name, "."), patch_arch)
         end
       end
@@ -1832,14 +1809,16 @@ module Yast
           # popup heading
           Heading(_("Running Script")),
           VBox(
-            patch_full_name != "" ?
+            if patch_full_name != ""
               HBox(
                 # label, patch name follows
                 Label(Opt(:boldFont), _("Patch: ")),
                 Label(patch_full_name),
                 HStretch()
-              ) :
-              Empty(),
+              )
+            else
+              Empty()
+            end,
             HBox(
               # label, script name follows
               Label(Opt(:boldFont), _("Script: ")),
@@ -1878,7 +1857,7 @@ module Yast
           Builtins.y2debug("-ping-")
         end
 
-        if output != nil && output != ""
+        if !output.nil? && output != ""
           # add the output to the log widget
           UI.ChangeWidget(Id(:log), :Value, output)
         end
@@ -1893,11 +1872,11 @@ module Yast
       Builtins.y2warning("ScriptProblem: %1", description)
 
       ui = Popup.AnyQuestion3(
-        "", #symbol focus
+        "", # symbol focus
         description,
-        Label.RetryButton, #yes_button_message
+        Label.RetryButton, # yes_button_message
         Label.AbortButton, # no_button_message
-        Label.IgnoreButton, #retry_button_message
+        Label.IgnoreButton, # retry_button_message
         :retry
       )
 
@@ -1954,10 +1933,10 @@ module Yast
             # a popup question with "Continue", "Skip" and "Abort" buttons
             Label(
               _(
-                "The repositories are being refreshed.\n" +
-                  "Continue with refreshing?\n" +
-                  "\n" +
-                  "Note: If the refresh is skipped some packages\n" +
+                "The repositories are being refreshed.\n" \
+                  "Continue with refreshing?\n" \
+                  "\n" \
+                  "Note: If the refresh is skipped some packages\n" \
                   "might be missing or out of date."
               )
             ),
@@ -2043,9 +2022,6 @@ module Yast
         localfile
       )
 
-      # heading of popup
-      heading = _("Downloading")
-
       # reformat the URL
       url_report = URL.FormatURL(URL.Parse(URL.HidePassword(url)), @max_size)
       # remember the URL
@@ -2084,7 +2060,7 @@ module Yast
           # sleep for a wile
           Builtins.sleep(200)
           # remove the progress
-          CommandLine.PrintVerboseNoCR(@clear_string) 
+          CommandLine.PrintVerboseNoCR(@clear_string)
           # print newline when reached 100%
         end
       else
@@ -2094,9 +2070,11 @@ module Yast
           # do not show the average download rate if the space is limited
           bps_avg = -1 if textmode && Ops.less_than(display_width, 100)
 
-          format = textmode ?
-            Ops.add("%1 - ", @download_file) :
-            Ops.add(@download_file, " - %1")
+          format = if textmode
+                     Ops.add("%1 - ", @download_file)
+                   else
+                     Ops.add(@download_file, " - %1")
+                   end
 
           # progress bar label, %1 is URL with optional download rate
           msg_rate = Builtins.sformat(
@@ -2202,7 +2180,6 @@ module Yast
       nil
     end
 
-
     def StartRebuildDB
       # heading of popup
       heading = _("Checking Package Database")
@@ -2211,9 +2188,6 @@ module Yast
       message = _(
         "Rebuilding package database. This process can take some time."
       )
-
-      # progress bar label
-      progress_label = _("Status")
 
       UI.OpenDialog(
         Opt(:decorated),
@@ -2233,13 +2207,11 @@ module Yast
       nil
     end
 
-
     def ProgressRebuildDB(percent)
       UI.ChangeWidget(Id(:progress), :Value, percent)
 
       nil
     end
-
 
     def StopRebuildDB(error_value, error_text)
       if error_value != 0
@@ -2257,11 +2229,9 @@ module Yast
       nil
     end
 
-
     def NotifyRebuildDB
       nil
     end
-
 
     def SetRebuildDBCallbacks
       Pkg.CallbackStartRebuildDb(fun_ref(method(:StartRebuildDB), "void ()"))
@@ -2276,9 +2246,7 @@ module Yast
       nil
     end
 
-
-
-    def StartConvertDB(unused1)
+    def StartConvertDB(_unused1)
       # heading of popup
       heading = _("Checking Package Database")
 
@@ -2309,13 +2277,11 @@ module Yast
       nil
     end
 
-
-    def ProgressConvertDB(percent, file)
+    def ProgressConvertDB(percent, _file)
       UI.ChangeWidget(Id(:progress), :Value, percent)
 
       nil
     end
-
 
     def StopConvertDB(error_value, error_text)
       if error_value != 0
@@ -2333,11 +2299,9 @@ module Yast
       nil
     end
 
-
     def NotifyConvertDB
       nil
     end
-
 
     def SetConvertDBCallbacks
       Pkg.CallbackStartConvertDb(
@@ -2353,8 +2317,6 @@ module Yast
 
       nil
     end
-
-
 
     # Callback for start RPM DB scan event
     def StartScanDb
@@ -2470,7 +2432,7 @@ module Yast
       )
 
       r = nil
-      begin
+      loop do
         r = UI.UserInput
         if r == :show
           show_details = ShowLogInfo(message, button_box)
@@ -2499,7 +2461,8 @@ module Yast
             UI.ReplaceWidget(Id(:info), Empty())
           end
         end
-      end until r == :abort || r == :retry || r == :ignore
+        break if r == :abort || r == :retry || r == :ignore
+      end
 
       Builtins.y2milestone("ErrorScanDb: user input: %1", r)
 
@@ -2537,10 +2500,8 @@ module Yast
       nil
     end
 
-
     def Authentication(url, msg, username, password)
-
-      # FIXME after SLE12 release
+      # FIXME: after SLE12 release
       # The following 'if' block is a workaround for bnc#895719 that should be
       # extracted to a proper private method (not sure if it will work as
       # expected being a callback) and adapted to use normal _() instead of
@@ -2548,10 +2509,10 @@ module Yast
       url_query = URI(url).query
       if url_query
         url_params = Hash[URI.decode_www_form(url_query)]
-        if url_params.has_key?("credentials")
+        if url_params.key?("credentials")
           # Seems to be the url of a registration server, so add the tip to msg
           tip = Builtins.dgettext("registration",
-                                  "Check that this system is known to the registration server.")
+            "Check that this system is known to the registration server.")
           msg = "#{tip}\n#{msg}"
         end
       end
@@ -2621,7 +2582,7 @@ module Yast
         UI.WidgetExists(Id(:callback_progress_popup))
     end
 
-    def ProgressStart(id, task, in_percent, is_alive, min, max, val_raw, val_percent)
+    def ProgressStart(id, task, in_percent, is_alive, _min, _max, _val_raw, val_percent)
       Builtins.y2milestone("ProgressStart: %1", id)
 
       @tick_progress = is_alive
@@ -2635,7 +2596,7 @@ module Yast
         subprogress_type = @tick_progress ? :tick : :progress
         @progress_stack = Builtins.add(
           @progress_stack,
-          { "type" => subprogress_type, "task" => task }
+          "type" => subprogress_type, "task" => task
         )
 
         if IsProgressPopup() &&
@@ -2655,9 +2616,11 @@ module Yast
               VBox(
                 VSpacing(0.5),
                 HSpacing(Id(:callback_progress_popup), @max_size),
-                in_percent ?
-                  ProgressBar(Id(:progress_widget), task, 100, val_percent) :
-                  BusyIndicator(Id(:progress_widget), task, 3000),
+                if in_percent
+                  ProgressBar(Id(:progress_widget), task, 100, val_percent)
+                else
+                  BusyIndicator(Id(:progress_widget), task, 3000)
+                end,
                 VSpacing(0.2),
                 ButtonBox(
                   PushButton(Id(:abort), Opt(:cancelButton), Label.AbortButton)
@@ -2856,7 +2819,6 @@ module Yast
 
       nil
     end
-
 
     def ClearScriptCallbacks
       Pkg.CallbackScriptStart(nil)
@@ -3231,19 +3193,18 @@ module Yast
     #	constructor and callback init
     #=============================================================================
 
-    def DummyProcessStart(param1, param2, param3)
-      param2 = deep_copy(param2)
+    def DummyProcessStart(_param1, _param2, _param3)
       Builtins.y2debug("Empty ProcessStart callback")
 
       nil
     end
 
-    def DummyBooleanInteger(param1)
+    def DummyBooleanInteger(_param1)
       Builtins.y2debug("Empty generic boolean(integer)->true callback")
       true
     end
 
-    def DummyStringString(param1)
+    def DummyStringString(_param1)
       Builtins.y2debug("Empty generic string(string)->\"\" callback")
       ""
     end
@@ -3270,25 +3231,24 @@ module Yast
       nil
     end
 
-
-    def DummyStartProvide(param1, param2, param3)
+    def DummyStartProvide(_param1, _param2, _param3)
       Builtins.y2debug("Empty StartProvide callback")
 
       nil
     end
 
-    def DummyDoneProvide(error, reason, name)
+    def DummyDoneProvide(_error, _reason, _name)
       Builtins.y2debug("Empty DoneProvide callback, returning 'I'")
       "I"
     end
 
-    def DummyStartPackage(name, location, summary, installsize, is_delete)
+    def DummyStartPackage(_name, _location, _summary, _installsize, _is_delete)
       Builtins.y2debug("Empty StartPackage callback")
 
       nil
     end
 
-    def DummyDonePackage(error, reason)
+    def DummyDonePackage(_error, _reason)
       Builtins.y2debug("Empty DonePackage callback, returning 'I'")
       "I"
     end
@@ -3319,31 +3279,31 @@ module Yast
       nil
     end
 
-    def DummyVoidString(param1)
+    def DummyVoidString(_param1)
       Builtins.y2debug("Empty generic void(string) callback")
 
       nil
     end
 
-    def DummyVoidInteger(param1)
+    def DummyVoidInteger(_param1)
       Builtins.y2debug("Empty generic void(integer) callback")
 
       nil
     end
 
-    def DummyVoidIntegerString(param1, param2)
+    def DummyVoidIntegerString(_param1, _param2)
       Builtins.y2debug("Empty generic void(integer, string) callback")
 
       nil
     end
 
-    def DummyVoidStringInteger(param1, param2)
+    def DummyVoidStringInteger(_param1, _param2)
       Builtins.y2debug("Empty generic void(string, integer) callback")
 
       nil
     end
 
-    def DummyStringIntegerString(param1, param2)
+    def DummyStringIntegerString(_param1, _param2)
       Builtins.y2debug("Empty generic string(integer, string) callback")
       ""
     end
@@ -3385,12 +3345,12 @@ module Yast
       nil
     end
 
-    def DummySourceCreateError(url, error, description)
+    def DummySourceCreateError(_url, _error, _description)
       Builtins.y2debug("Empty SourceCreateError callback, returning `ABORT")
       :ABORT
     end
 
-    def DummySourceCreateEnd(url, error, description)
+    def DummySourceCreateEnd(_url, _error, _description)
       Builtins.y2debug("Empty SourceCreateEnd callback")
 
       nil
@@ -3418,16 +3378,18 @@ module Yast
       nil
     end
 
-    def DummySourceReportStart(source_id, url, task)
+    def DummySourceReportStart(_source_id, _url, _task)
       Builtins.y2debug("Empty SourceReportStart callback")
 
       nil
     end
-    def DummySourceReportError(source_id, url, error, description)
+
+    def DummySourceReportError(_source_id, _url, _error, _description)
       Builtins.y2debug("Empty SourceReportError callback, returning `ABORT")
       :ABORT
     end
-    def DummySourceReportEnd(src_id, url, task, error, description)
+
+    def DummySourceReportEnd(_src_id, _url, _task, _error, _description)
       Builtins.y2debug("Empty SourceReportEnd callback")
 
       nil
@@ -3462,12 +3424,13 @@ module Yast
       nil
     end
 
-    def DummyProgressStart(id, task, in_percent, is_alive, min, max, val_raw, val_percent)
+    def DummyProgressStart(_id, _task, _in_percent, _is_alive, _min, _max, _val_raw, _val_percent)
       Builtins.y2debug("Empty ProgressStart callback")
 
       nil
     end
-    def DummyProgressProgress(id, val_raw, val_percent)
+
+    def DummyProgressProgress(_id, _val_raw, _val_percent)
       Builtins.y2debug("Empty ProgressProgress callback, returning true")
       true
     end
@@ -3492,16 +3455,18 @@ module Yast
       nil
     end
 
-    def DummyScriptStart(patch_name, patch_version, patch_arch, script_path)
+    def DummyScriptStart(_patch_name, _patch_version, _patch_arch, _script_path)
       Builtins.y2debug("Empty ScriptStart callback")
 
       nil
     end
-    def DummyScriptProgress(ping, output)
+
+    def DummyScriptProgress(_ping, _output)
       Builtins.y2debug("Empty ScriptProgress callback, returning true")
       true
     end
-    def DummyMessage(patch_name, patch_version, patch_arch, message)
+
+    def DummyMessage(_patch_name, _patch_version, _patch_arch, _message)
       Builtins.y2debug("Empty Message callback")
       true # continue
     end
@@ -3546,16 +3511,18 @@ module Yast
       nil
     end
 
-    def DummyStartDownload(url, localfile)
+    def DummyStartDownload(_url, _localfile)
       Builtins.y2debug("Empty StartDownload callback")
 
       nil
     end
-    def DummyProgressDownload(percent, bps_avg, bps_current)
+
+    def DummyProgressDownload(_percent, _bps_avg, _bps_current)
       Builtins.y2debug("Empty ProgressDownload callback, returning true")
       true
     end
-    def DummyDoneDownload(error_value, error_text)
+
+    def DummyDoneDownload(_error_value, _error_text)
       Builtins.y2debug("Empty DoneDownload callback")
 
       nil
@@ -3583,7 +3550,6 @@ module Yast
 
       nil
     end
-
 
     def RegisterEmptyProgressCallbacks
       SetDummyProcessCallbacks()
@@ -3676,7 +3642,6 @@ module Yast
       nil
     end
 
-
     def RestorePreviousProgressCallbacks
       RestoreProcessCallbacks()
 
@@ -3708,125 +3673,125 @@ module Yast
       nil
     end
 
-    publish :variable => :_provide_popup, :type => "boolean"
-    publish :variable => :_source_popup, :type => "boolean"
-    publish :variable => :_package_popup, :type => "boolean"
-    publish :variable => :_script_popup, :type => "boolean"
-    publish :variable => :_scan_popup, :type => "boolean"
-    publish :variable => :_package_name, :type => "string"
-    publish :variable => :_package_size, :type => "integer"
-    publish :variable => :_deleting_package, :type => "boolean"
-    publish :variable => :_current_source, :type => "integer"
-    publish :function => :StartProvide, :type => "void (string, integer, boolean)"
-    publish :function => :ProgressProvide, :type => "boolean (integer)"
-    publish :function => :ProgressDeltaApply, :type => "void (integer)"
-    publish :function => :LayoutPopup, :type => "term (string, term, integer, boolean)"
-    publish :function => :ShowLogInfo, :type => "boolean (string, term)"
-    publish :function => :DoneProvide, :type => "string (integer, string, string)"
-    publish :function => :EnableAsterixPackage, :type => "boolean (boolean)"
-    publish :function => :StartPackage, :type => "void (string, string, string, integer, boolean)"
-    publish :function => :ProgressPackage, :type => "boolean (integer)"
-    publish :function => :DonePackage, :type => "string (integer, string)"
-    publish :function => :CDdevices, :type => "list <term> (string)"
-    publish :function => :MediaChange, :type => "string (string, string, string, string, integer, string, integer, string, boolean, list <string>, integer)"
-    publish :function => :SourceChange, :type => "void (integer, integer)"
-    publish :function => :SourceCreateInit, :type => "void ()"
-    publish :function => :SourceCreateDestroy, :type => "void ()"
-    publish :function => :SourceCreateStart, :type => "void (string)"
-    publish :function => :SourceCreateProgress, :type => "boolean (integer)"
-    publish :function => :SourceCreateError, :type => "symbol (string, symbol, string)"
-    publish :function => :SourceCreateEnd, :type => "void (string, symbol, string)"
-    publish :function => :SourceProbeStart, :type => "void (string)"
-    publish :function => :SourceProbeFailed, :type => "void (string, string)"
-    publish :function => :SourceProbeSucceeded, :type => "void (string, string)"
-    publish :function => :SourceProbeProgress, :type => "boolean (string, integer)"
-    publish :function => :SourceProbeError, :type => "symbol (string, symbol, string)"
-    publish :function => :SourceProbeEnd, :type => "void (string, symbol, string)"
-    publish :function => :SourceReportStart, :type => "void (integer, string, string)"
-    publish :function => :SourceReportProgress, :type => "boolean (integer)"
-    publish :function => :SourceReportError, :type => "symbol (integer, string, symbol, string)"
-    publish :function => :SourceReportEnd, :type => "void (integer, string, string, symbol, string)"
-    publish :function => :SourceReportInit, :type => "void ()"
-    publish :function => :SourceReportDestroy, :type => "void ()"
-    publish :function => :StartDeltaProvide, :type => "void (string, integer)"
-    publish :function => :StartDeltaApply, :type => "void (string)"
-    publish :function => :StartPatchProvide, :type => "void (string, integer)"
-    publish :function => :FinishPatchDeltaProvide, :type => "void ()"
-    publish :function => :ProblemDeltaDownload, :type => "void (string)"
-    publish :function => :ProblemDeltaApply, :type => "void (string)"
-    publish :function => :ProblemPatchDownload, :type => "void (string)"
-    publish :function => :FormatPatchName, :type => "string (string, string, string)"
-    publish :function => :ScriptStart, :type => "void (string, string, string, string)"
-    publish :function => :ScriptProgress, :type => "boolean (boolean, string)"
-    publish :function => :ScriptProblem, :type => "string (string)"
-    publish :function => :ScriptFinish, :type => "void ()"
-    publish :function => :Message, :type => "boolean (string, string, string, string)"
-    publish :function => :AskAbortRefresh, :type => "symbol ()"
-    publish :function => :IsDownloadProgressPopup, :type => "boolean ()"
-    publish :function => :CloseDownloadProgressPopup, :type => "void ()"
-    publish :function => :InitDownload, :type => "void (string)"
-    publish :function => :DestDownload, :type => "void ()"
-    publish :function => :StartDownload, :type => "void (string, string)"
-    publish :function => :ProgressDownload, :type => "boolean (integer, integer, integer)"
-    publish :function => :DoneDownload, :type => "void (integer, string)"
-    publish :function => :RefreshStarted, :type => "void ()"
-    publish :function => :RefreshDone, :type => "void ()"
-    publish :function => :ClearDownloadCallbacks, :type => "void ()"
-    publish :function => :StartRebuildDB, :type => "void ()"
-    publish :function => :ProgressRebuildDB, :type => "void (integer)"
-    publish :function => :StopRebuildDB, :type => "void (integer, string)"
-    publish :function => :NotifyRebuildDB, :type => "void ()"
-    publish :function => :SetRebuildDBCallbacks, :type => "void ()"
-    publish :function => :StartConvertDB, :type => "void (string)"
-    publish :function => :ProgressConvertDB, :type => "void (integer, string)"
-    publish :function => :StopConvertDB, :type => "void (integer, string)"
-    publish :function => :NotifyConvertDB, :type => "void ()"
-    publish :function => :SetConvertDBCallbacks, :type => "void ()"
-    publish :function => :StartScanDb, :type => "void ()"
-    publish :function => :ProgressScanDb, :type => "boolean (integer)"
-    publish :function => :ErrorScanDb, :type => "string (integer, string)"
-    publish :function => :DoneScanDb, :type => "void (integer, string)"
-    publish :function => :Authentication, :type => "map <string, any> (string, string, string, string)"
-    publish :function => :ProgressStart, :type => "void (integer, string, boolean, boolean, integer, integer, integer, integer)"
-    publish :function => :ProgressEnd, :type => "void (integer)"
-    publish :function => :ProgressProgress, :type => "boolean (integer, integer, integer)"
-    publish :function => :ProcessStart, :type => "void (string, list <string>, string)"
-    publish :function => :ProcessProgress, :type => "boolean (integer)"
-    publish :function => :ProcessNextStage, :type => "void ()"
-    publish :function => :ProcessDone, :type => "void ()"
-    publish :function => :SetMediaCallbacks, :type => "void ()"
-    publish :function => :ClearScriptCallbacks, :type => "void ()"
-    publish :function => :SetScriptCallbacks, :type => "void ()"
-    publish :function => :SetScanDBCallbacks, :type => "void ()"
-    publish :function => :ResetScanDBCallbacks, :type => "void ()"
-    publish :function => :SetDownloadCallbacks, :type => "void ()"
-    publish :function => :ResetDownloadCallbacks, :type => "void ()"
-    publish :function => :SetSourceCreateCallbacks, :type => "void ()"
-    publish :function => :SetSourceProbeCallbacks, :type => "void ()"
-    publish :function => :SetProcessCallbacks, :type => "void ()"
-    publish :function => :SetProvideCallbacks, :type => "void ()"
-    publish :function => :SetPatchCallbacks, :type => "void ()"
-    publish :function => :SetSourceReportCallbacks, :type => "void ()"
-    publish :function => :SetProgressReportCallbacks, :type => "void ()"
-    publish :function => :InitPackageCallbacks, :type => "void ()"
-    publish :function => :SetDummyProcessCallbacks, :type => "void ()"
-    publish :function => :SetDummyProvideCallbacks, :type => "void ()"
-    publish :function => :SetDummyPatchCallbacks, :type => "void ()"
-    publish :function => :SetDummySourceCreateCallbacks, :type => "void ()"
-    publish :function => :SetDummySourceReportCallbacks, :type => "void ()"
-    publish :function => :SetDummyProgressReportCallbacks, :type => "void ()"
-    publish :function => :SetDummyScriptCallbacks, :type => "void ()"
-    publish :function => :SetDummyScanDBCallbacks, :type => "void ()"
-    publish :function => :SetDummyDownloadCallbacks, :type => "void ()"
-    publish :function => :RegisterEmptyProgressCallbacks, :type => "void ()"
-    publish :function => :RestoreProcessCallbacks, :type => "void ()"
-    publish :function => :RestoreProvideCallbacks, :type => "void ()"
-    publish :function => :RestorePatchCallbacks, :type => "void ()"
-    publish :function => :RestoreSourceCreateCallbacks, :type => "void ()"
-    publish :function => :RestoreSourceReportCallbacks, :type => "void ()"
-    publish :function => :RestoreProgressReportCallbacks, :type => "void ()"
-    publish :function => :RestorePreviousProgressCallbacks, :type => "void ()"
-    publish :function => :PackageCallbacks, :type => "void ()"
+    publish variable: :_provide_popup, type: "boolean"
+    publish variable: :_source_popup, type: "boolean"
+    publish variable: :_package_popup, type: "boolean"
+    publish variable: :_script_popup, type: "boolean"
+    publish variable: :_scan_popup, type: "boolean"
+    publish variable: :_package_name, type: "string"
+    publish variable: :_package_size, type: "integer"
+    publish variable: :_deleting_package, type: "boolean"
+    publish variable: :_current_source, type: "integer"
+    publish function: :StartProvide, type: "void (string, integer, boolean)"
+    publish function: :ProgressProvide, type: "boolean (integer)"
+    publish function: :ProgressDeltaApply, type: "void (integer)"
+    publish function: :LayoutPopup, type: "term (string, term, integer, boolean)"
+    publish function: :ShowLogInfo, type: "boolean (string, term)"
+    publish function: :DoneProvide, type: "string (integer, string, string)"
+    publish function: :EnableAsterixPackage, type: "boolean (boolean)"
+    publish function: :StartPackage, type: "void (string, string, string, integer, boolean)"
+    publish function: :ProgressPackage, type: "boolean (integer)"
+    publish function: :DonePackage, type: "string (integer, string)"
+    publish function: :CDdevices, type: "list <term> (string)"
+    publish function: :MediaChange, type: "string (string, string, string, string, integer, string, integer, string, boolean, list <string>, integer)"
+    publish function: :SourceChange, type: "void (integer, integer)"
+    publish function: :SourceCreateInit, type: "void ()"
+    publish function: :SourceCreateDestroy, type: "void ()"
+    publish function: :SourceCreateStart, type: "void (string)"
+    publish function: :SourceCreateProgress, type: "boolean (integer)"
+    publish function: :SourceCreateError, type: "symbol (string, symbol, string)"
+    publish function: :SourceCreateEnd, type: "void (string, symbol, string)"
+    publish function: :SourceProbeStart, type: "void (string)"
+    publish function: :SourceProbeFailed, type: "void (string, string)"
+    publish function: :SourceProbeSucceeded, type: "void (string, string)"
+    publish function: :SourceProbeProgress, type: "boolean (string, integer)"
+    publish function: :SourceProbeError, type: "symbol (string, symbol, string)"
+    publish function: :SourceProbeEnd, type: "void (string, symbol, string)"
+    publish function: :SourceReportStart, type: "void (integer, string, string)"
+    publish function: :SourceReportProgress, type: "boolean (integer)"
+    publish function: :SourceReportError, type: "symbol (integer, string, symbol, string)"
+    publish function: :SourceReportEnd, type: "void (integer, string, string, symbol, string)"
+    publish function: :SourceReportInit, type: "void ()"
+    publish function: :SourceReportDestroy, type: "void ()"
+    publish function: :StartDeltaProvide, type: "void (string, integer)"
+    publish function: :StartDeltaApply, type: "void (string)"
+    publish function: :StartPatchProvide, type: "void (string, integer)"
+    publish function: :FinishPatchDeltaProvide, type: "void ()"
+    publish function: :ProblemDeltaDownload, type: "void (string)"
+    publish function: :ProblemDeltaApply, type: "void (string)"
+    publish function: :ProblemPatchDownload, type: "void (string)"
+    publish function: :FormatPatchName, type: "string (string, string, string)"
+    publish function: :ScriptStart, type: "void (string, string, string, string)"
+    publish function: :ScriptProgress, type: "boolean (boolean, string)"
+    publish function: :ScriptProblem, type: "string (string)"
+    publish function: :ScriptFinish, type: "void ()"
+    publish function: :Message, type: "boolean (string, string, string, string)"
+    publish function: :AskAbortRefresh, type: "symbol ()"
+    publish function: :IsDownloadProgressPopup, type: "boolean ()"
+    publish function: :CloseDownloadProgressPopup, type: "void ()"
+    publish function: :InitDownload, type: "void (string)"
+    publish function: :DestDownload, type: "void ()"
+    publish function: :StartDownload, type: "void (string, string)"
+    publish function: :ProgressDownload, type: "boolean (integer, integer, integer)"
+    publish function: :DoneDownload, type: "void (integer, string)"
+    publish function: :RefreshStarted, type: "void ()"
+    publish function: :RefreshDone, type: "void ()"
+    publish function: :ClearDownloadCallbacks, type: "void ()"
+    publish function: :StartRebuildDB, type: "void ()"
+    publish function: :ProgressRebuildDB, type: "void (integer)"
+    publish function: :StopRebuildDB, type: "void (integer, string)"
+    publish function: :NotifyRebuildDB, type: "void ()"
+    publish function: :SetRebuildDBCallbacks, type: "void ()"
+    publish function: :StartConvertDB, type: "void (string)"
+    publish function: :ProgressConvertDB, type: "void (integer, string)"
+    publish function: :StopConvertDB, type: "void (integer, string)"
+    publish function: :NotifyConvertDB, type: "void ()"
+    publish function: :SetConvertDBCallbacks, type: "void ()"
+    publish function: :StartScanDb, type: "void ()"
+    publish function: :ProgressScanDb, type: "boolean (integer)"
+    publish function: :ErrorScanDb, type: "string (integer, string)"
+    publish function: :DoneScanDb, type: "void (integer, string)"
+    publish function: :Authentication, type: "map <string, any> (string, string, string, string)"
+    publish function: :ProgressStart, type: "void (integer, string, boolean, boolean, integer, integer, integer, integer)"
+    publish function: :ProgressEnd, type: "void (integer)"
+    publish function: :ProgressProgress, type: "boolean (integer, integer, integer)"
+    publish function: :ProcessStart, type: "void (string, list <string>, string)"
+    publish function: :ProcessProgress, type: "boolean (integer)"
+    publish function: :ProcessNextStage, type: "void ()"
+    publish function: :ProcessDone, type: "void ()"
+    publish function: :SetMediaCallbacks, type: "void ()"
+    publish function: :ClearScriptCallbacks, type: "void ()"
+    publish function: :SetScriptCallbacks, type: "void ()"
+    publish function: :SetScanDBCallbacks, type: "void ()"
+    publish function: :ResetScanDBCallbacks, type: "void ()"
+    publish function: :SetDownloadCallbacks, type: "void ()"
+    publish function: :ResetDownloadCallbacks, type: "void ()"
+    publish function: :SetSourceCreateCallbacks, type: "void ()"
+    publish function: :SetSourceProbeCallbacks, type: "void ()"
+    publish function: :SetProcessCallbacks, type: "void ()"
+    publish function: :SetProvideCallbacks, type: "void ()"
+    publish function: :SetPatchCallbacks, type: "void ()"
+    publish function: :SetSourceReportCallbacks, type: "void ()"
+    publish function: :SetProgressReportCallbacks, type: "void ()"
+    publish function: :InitPackageCallbacks, type: "void ()"
+    publish function: :SetDummyProcessCallbacks, type: "void ()"
+    publish function: :SetDummyProvideCallbacks, type: "void ()"
+    publish function: :SetDummyPatchCallbacks, type: "void ()"
+    publish function: :SetDummySourceCreateCallbacks, type: "void ()"
+    publish function: :SetDummySourceReportCallbacks, type: "void ()"
+    publish function: :SetDummyProgressReportCallbacks, type: "void ()"
+    publish function: :SetDummyScriptCallbacks, type: "void ()"
+    publish function: :SetDummyScanDBCallbacks, type: "void ()"
+    publish function: :SetDummyDownloadCallbacks, type: "void ()"
+    publish function: :RegisterEmptyProgressCallbacks, type: "void ()"
+    publish function: :RestoreProcessCallbacks, type: "void ()"
+    publish function: :RestoreProvideCallbacks, type: "void ()"
+    publish function: :RestorePatchCallbacks, type: "void ()"
+    publish function: :RestoreSourceCreateCallbacks, type: "void ()"
+    publish function: :RestoreSourceReportCallbacks, type: "void ()"
+    publish function: :RestoreProgressReportCallbacks, type: "void ()"
+    publish function: :RestorePreviousProgressCallbacks, type: "void ()"
+    publish function: :PackageCallbacks, type: "void ()"
   end
 
   PackageCallbacks = PackageCallbacksClass.new

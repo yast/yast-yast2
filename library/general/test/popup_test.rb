@@ -29,13 +29,12 @@ describe "Popup" do
 
     it "closes the popup even when an exception occurs in the block" do
       # raise an exception in the block
-      expect{Popup.Feedback("Label", "Message") { raise "TEST"}}.to raise_error(RuntimeError, "TEST")
+      expect { Popup.Feedback("Label", "Message") { raise "TEST" } }.to raise_error(RuntimeError, "TEST")
     end
 
     it "raises exception when the block parameter is missing" do
       # no block passed
-      expect{Popup.Feedback("Label", "Message")}.to raise_error(LocalJumpError)
+      expect { Popup.Feedback("Label", "Message") }.to raise_error
     end
   end
-
 end

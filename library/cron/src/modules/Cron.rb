@@ -46,7 +46,6 @@ module Yast
       deep_copy(crontab)
     end
 
-
     # Write crontab contents
     # @param [String] filename
     # @param [Array] blocks
@@ -56,13 +55,6 @@ module Yast
       ret = SCR.Write(path(".cron"), filename, blocks)
       ret
     end
-
-
-
-
-
-
-
 
     # Add a simple cron job with comment and env. variables
     # @param [String] comment
@@ -98,9 +90,9 @@ module Yast
       ret
     end
 
-    publish :function => :Read, :type => "list (string, map)"
-    publish :function => :Write, :type => "boolean (string, list)"
-    publish :function => :AddSimple, :type => "boolean (string, map, string, map, string)"
+    publish function: :Read, type: "list (string, map)"
+    publish function: :Write, type: "boolean (string, list)"
+    publish function: :AddSimple, type: "boolean (string, map, string, map, string)"
   end
 
   Cron = CronClass.new

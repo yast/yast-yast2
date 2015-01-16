@@ -66,9 +66,9 @@ module Yast
       nil
     end
 
-    publish :function => :InitPackageCallbacks, :type => "void ()"
-    publish :function => :SetMediaCallbacks, :type => "void ()"
-    publish :function => :PackageCallbacksInit, :type => "void ()"
+    publish function: :InitPackageCallbacks, type: "void ()"
+    publish function: :SetMediaCallbacks, type: "void ()"
+    publish function: :PackageCallbacksInit, type: "void ()"
   end
 
   PackageCallbacksInit = PackageCallbacksInitClass.new

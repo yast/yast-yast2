@@ -8,7 +8,7 @@
 # $Id$
 module Yast
   module TestsuitedataInclude
-    def initialize_testsuitedata(include_target)
+    def initialize_testsuitedata(_include_target)
       Yast.import "CommandLine"
 
       @cmdline = {

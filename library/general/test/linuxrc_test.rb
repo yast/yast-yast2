@@ -7,51 +7,51 @@ include Yast
 Yast.import "Linuxrc"
 
 DEFAULT_INSTALL_INF = {
-  "Manual" => "0",
-  "Locale" => "xy_XY",
-  "Display" => "Color",
-  "HasPCMCIA" => "0",
-  "NoPCMCIA" => "0",
-  "Sourcemounted" => "1",
-  "SourceType" => "dir",
-  "RepoURL" => "cd:/?device=disk/by-id/ata-VBOX_CD-ROM_VB2-01700376",
-  "InstsysURL" => "boot/x86_64/root",
-  "ZyppRepoURL" => "cd:/?devices=/dev/disk/by-id/ata-VBOX_CD-ROM_VB2-01700376",
-  "InstMode" => "cd",
-  "Device" => "disk/by-id/ata-VBOX_CD-ROM_VB2-01700376",
-  "Cdrom" => "disk/by-id/ata-VBOX_CD-ROM_VB2-01700376",
-  "Partition" => "disk/by-id/ata-VBOX_CD-ROM_VB2-01700376",
-  "Serverdir" => "/",
-  "InitrdModules" => "ata_piix ata_generic cdrom sr_mod st sg thermal_sys thermal",
-  "Options" => "thermal tzp=50",
-  "UpdateDir" => "/linux/suse/x86_64-13.1",
-  "YaST2update" => "0",
-  "Textmode" => "0",
-  "MemFree" => "989888",
-  "VNC" => "0",
-  "UseSSH" => "0",
-  "InitrdID" => "2013-09-17.8c48b884",
-  "WithiSCSI" => "0",
-  "WithFCoE" => "0",
-  "StartShell" => "0",
-  "Y2GDB" => "0",
-  "kexec_reboot" => "1",
-  "UseSax2" => "0",
-  "EFI" => "0",
+  "Manual"           => "0",
+  "Locale"           => "xy_XY",
+  "Display"          => "Color",
+  "HasPCMCIA"        => "0",
+  "NoPCMCIA"         => "0",
+  "Sourcemounted"    => "1",
+  "SourceType"       => "dir",
+  "RepoURL"          => "cd:/?device=disk/by-id/ata-VBOX_CD-ROM_VB2-01700376",
+  "InstsysURL"       => "boot/x86_64/root",
+  "ZyppRepoURL"      => "cd:/?devices=/dev/disk/by-id/ata-VBOX_CD-ROM_VB2-01700376",
+  "InstMode"         => "cd",
+  "Device"           => "disk/by-id/ata-VBOX_CD-ROM_VB2-01700376",
+  "Cdrom"            => "disk/by-id/ata-VBOX_CD-ROM_VB2-01700376",
+  "Partition"        => "disk/by-id/ata-VBOX_CD-ROM_VB2-01700376",
+  "Serverdir"        => "/",
+  "InitrdModules"    => "ata_piix ata_generic cdrom sr_mod st sg thermal_sys thermal",
+  "Options"          => "thermal tzp=50",
+  "UpdateDir"        => "/linux/suse/x86_64-13.1",
+  "YaST2update"      => "0",
+  "Textmode"         => "0",
+  "MemFree"          => "989888",
+  "VNC"              => "0",
+  "UseSSH"           => "0",
+  "InitrdID"         => "2013-09-17.8c48b884",
+  "WithiSCSI"        => "0",
+  "WithFCoE"         => "0",
+  "StartShell"       => "0",
+  "Y2GDB"            => "0",
+  "kexec_reboot"     => "1",
+  "UseSax2"          => "0",
+  "EFI"              => "0",
   "Ignored_featureS" => "import_ssh_keys,import_users",
-  "Cmdline" => "splash=silent vga=0x314",
-  "Keyboard" => "1",
-  "Framebuffer" => "0x0314",
-  "X11i" => "",
-  "XServer" => "fbdev",
-  "XVersion" => "4",
-  "XBusID" => "0:2:0",
-  "XkbRules" => "xfree86",
-  "XkbModel" => "pc104",
-  "umount_result" => "0",
+  "Cmdline"          => "splash=silent vga=0x314",
+  "Keyboard"         => "1",
+  "Framebuffer"      => "0x0314",
+  "X11i"             => "",
+  "XServer"          => "fbdev",
+  "XVersion"         => "4",
+  "XBusID"           => "0:2:0",
+  "XkbRules"         => "xfree86",
+  "XkbModel"         => "pc104",
+  "umount_result"    => "0"
 }
 
-def load_install_inf(defaults_replacement={})
+def load_install_inf(defaults_replacement = {})
   # Default value
   SCR.stub(:Read).and_return nil
 
@@ -76,7 +76,6 @@ def load_install_inf(defaults_replacement={})
 end
 
 describe "Linuxrc" do
-
   before(:each) do
     Linuxrc.ResetInstallInf
   end

@@ -1,13 +1,13 @@
 #!/usr/bin/env rspec
 
-require_relative 'test_helper'
+require_relative "test_helper"
 
 module Yast
   describe SystemdUnit do
     include SystemdSocketStubs
     include SystemdServiceStubs
 
-    def trigger_reloading_properties command
+    def trigger_reloading_properties(command)
       unit = SystemdUnit.new("new.socket")
       properties = unit.properties
       unit.send(command)
@@ -29,7 +29,7 @@ module Yast
           it "returns struct with restricted installation properties" do
             allow_any_instance_of(SystemdUnit).to receive(:command)
               .with("is-enabled sshd.service").and_return(
-                OpenStruct.new('stderr'=>'', 'stdout'=>'enabled', 'exit'=>0)
+                OpenStruct.new("stderr" => "", "stdout" => "enabled", "exit" => 0)
               )
             unit = SystemdUnit.new("sshd.service")
             expect(unit.properties).to be_a(SystemdUnit::InstallationProperties)
@@ -40,17 +40,17 @@ module Yast
             it "returns true if service is enabled" do
               allow_any_instance_of(SystemdUnit).to receive(:command)
                 .with("is-enabled sshd.service").and_return(
-                  OpenStruct.new('stderr'=>'', 'stdout'=>'enabled', 'exit'=>0)
+                  OpenStruct.new("stderr" => "", "stdout" => "enabled", "exit" => 0)
                 )
               unit = SystemdUnit.new("sshd.service")
               expect(unit.enabled?).to be_true
             end
 
             it "returns false if service is disabled" do
-              stub_unit_command(:success=>false)
+              stub_unit_command(success: false)
               allow_any_instance_of(SystemdUnit).to receive(:command)
                 .with("is-enabled sshd.service").and_return(
-                  OpenStruct.new('stderr'=>'', 'stdout'=>'disabled', 'exit'=>1)
+                  OpenStruct.new("stderr" => "", "stdout" => "disabled", "exit" => 1)
                 )
               unit = SystemdUnit.new("sshd.service")
               expect(unit.enabled?).to be_false
@@ -60,8 +60,8 @@ module Yast
 
         context "Unit not found" do
           it "returns struct with restricted installation properties" do
-            stub_services(:service=>'unknown')
-            stub_unit_command(:success=>false)
+            stub_services(service: "unknown")
+            stub_unit_command(success: false)
             unit = SystemdUnit.new("unknown.service")
             expect(unit.properties).to be_a(SystemdUnit::InstallationProperties)
             expect(unit.properties.not_found?).to be_true
@@ -116,7 +116,7 @@ module Yast
       end
 
       it "accepts parameters to extend the default properties" do
-        unit = SystemdUnit.new("iscsid.socket", :requires => "Requires", :wants => "Wants")
+        unit = SystemdUnit.new("iscsid.socket", requires: "Requires", wants: "Wants")
         expect(unit.properties.wants).not_to be_nil
         expect(unit.properties.requires).not_to be_nil
       end
@@ -130,7 +130,7 @@ module Yast
       end
 
       it "returns false if failed" do
-        stub_unit_command(:success=>false)
+        stub_unit_command(success: false)
         unit = SystemdUnit.new("my.socket")
         expect(unit.stop).to be_false
         expect(unit.error).not_to be_empty
@@ -143,13 +143,13 @@ module Yast
 
     describe "#start" do
       it "returns true if starts (activates) the unit" do
-        stub_unit_command(:success=>true)
+        stub_unit_command(success: true)
         unit = SystemdUnit.new("my.socket")
         expect(unit.start).to be_true
       end
 
       it "returns false if failed to start the unit" do
-        stub_unit_command(:success=>false)
+        stub_unit_command(success: false)
         unit = SystemdUnit.new("my.socket")
         expect(unit.start).to be_false
         expect(unit.error).not_to be_empty
@@ -162,13 +162,13 @@ module Yast
 
     describe "#enable" do
       it "returns true if the unit has been enabled successfully" do
-        stub_unit_command(:success=>true)
+        stub_unit_command(success: true)
         unit = SystemdUnit.new("your.socket")
         expect(unit.enable).to be_true
       end
 
       it "returns false if unit fails" do
-        stub_unit_command(:success=>false)
+        stub_unit_command(success: false)
         unit = SystemdUnit.new("your.socket")
         expect(unit.enable).to be_false
       end
@@ -180,13 +180,13 @@ module Yast
 
     describe "#disable" do
       it "returns true if the unit has been disabled successfully" do
-        stub_unit_command(:success=>true)
+        stub_unit_command(success: true)
         unit = SystemdUnit.new("your.socket")
         expect(unit.disable).to be_true
       end
 
       it "returns false if unit disabling fails" do
-        stub_unit_command(:success=>false)
+        stub_unit_command(success: false)
         unit = SystemdUnit.new("your.socket")
         expect(unit.disable).to be_false
       end
@@ -218,7 +218,7 @@ module Yast
       end
 
       it "returns false if the restart fails" do
-        stub_unit_command(:success=>false)
+        stub_unit_command(success: false)
         unit = SystemdUnit.new("sshd.service")
         expect(unit.restart).to be_false
       end
@@ -231,7 +231,7 @@ module Yast
       end
 
       it "returns false if the try_restart fails" do
-        stub_unit_command(:success=>false)
+        stub_unit_command(success: false)
         unit = SystemdUnit.new("sshd.service")
         expect(unit.try_restart).to be_false
       end
@@ -244,7 +244,7 @@ module Yast
       end
 
       it "returns false if the reload fails" do
-        stub_unit_command(:success=>false)
+        stub_unit_command(success: false)
         unit = SystemdUnit.new("sshd.service")
         expect(unit.reload).to be_false
       end
@@ -257,7 +257,7 @@ module Yast
       end
 
       it "returns false if the reload_or_restart action fails" do
-        stub_unit_command(:success=>false)
+        stub_unit_command(success: false)
         unit = SystemdUnit.new("sshd.service")
         expect(unit.reload_or_restart).to be_false
       end
@@ -270,7 +270,7 @@ module Yast
       end
 
       it "returns false if the reload_or_try_restart action fails" do
-        stub_unit_command(:success=>false)
+        stub_unit_command(success: false)
         unit = SystemdUnit.new("sshd.service")
         expect(unit.reload_or_try_restart).to be_false
       end
@@ -278,7 +278,7 @@ module Yast
 
     describe "#error" do
       it "returns empty string if the unit commands succeed" do
-        stub_unit_command(:success=>true)
+        stub_unit_command(success: true)
         unit = SystemdUnit.new("your.socket")
         unit.start
         expect(unit.error).to be_empty
@@ -294,7 +294,7 @@ module Yast
       end
 
       it "returns error string if the unit commands fail" do
-        stub_unit_command(:success=>false)
+        stub_unit_command(success: false)
         unit = SystemdUnit.new("your.socket")
         unit.start
         expect(unit.error).not_to be_empty
@@ -309,6 +309,5 @@ module Yast
         expect(unit.error).not_to be_empty
       end
     end
-
   end
 end

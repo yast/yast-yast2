@@ -98,7 +98,7 @@ module Yast
         }
       ]
 
-      TEST(lambda { WorkflowManager.PrepareProposals(@proposals) }, [], nil)
+      TEST(->() { WorkflowManager.PrepareProposals(@proposals) }, [], nil)
 
       nil
     end

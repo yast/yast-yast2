@@ -29,7 +29,6 @@ module Yast
   # Categorizes the configurations according to type.
   # Presents them one ifcfg at a time through the {#Current} hash.
   class NetworkInterfacesClass < Module
-
     Yast.import "String"
 
     # A single character used to separate alias id
@@ -223,7 +222,7 @@ module Yast
     def ifcfg_part(ifcfg, part)
       return "" if Builtins.regexpmatch(ifcfg, @ifcfg_name_regex) != true
       ret = Builtins.regexpsub(ifcfg, @ifcfg_name_regex, "\\#{part}")
-      ret == nil ? "" : ret
+      ret.nil? ? "" : ret
     end
 
     # Return a device type
@@ -290,20 +289,22 @@ module Yast
         SCR.Read(path(".target.string"), sys_type_path)
       )
 
-      sys_type = sys_type != nil ?
-        Builtins.regexpsub(sys_type, "(.*)\n", "\\1") :
-        ""
+      sys_type = if sys_type
+                   Builtins.regexpsub(sys_type, "(.*)\n", "\\1")
+                 else
+                   ""
+                 end
       sys_type = String.CutBlanks(sys_type)
 
       type = nil
 
       case sys_type
-        when "1"
-          type = GetEthTypeFromSysfs(dev)
-        when "32"
-          type = GetIbTypeFromSysfs(dev)
-        else
-          type = Ops.get(@TypeBySysfs, sys_type)
+      when "1"
+        type = GetEthTypeFromSysfs(dev)
+      when "32"
+        type = GetIbTypeFromSysfs(dev)
+      else
+        type = Ops.get(@TypeBySysfs, sys_type)
       end
 
       Builtins.y2debug(
@@ -361,7 +362,7 @@ module Yast
 
       type = GetTypeFromIfcfg(ifcfg) if IsEmpty(type)
 
-      type = device_type(dev) if type == nil
+      type = device_type(dev) if type.nil?
 
       Builtins.y2debug(
         "GetTypeFromIfcfgOrName: device='%1', type='%2'",
@@ -383,7 +384,7 @@ module Yast
     def GetType(dev)
       type = GetTypeFromIfcfgOrName(dev, nil)
 
-      Builtins.foreach(@Devices) do |dev_type, confs|
+      Builtins.foreach(@Devices) do |_dev_type, confs|
         ifcfg = Ops.get(confs, dev, {})
         type = GetTypeFromIfcfgOrName(dev, ifcfg) if !IsEmpty(ifcfg)
       end
@@ -399,23 +400,23 @@ module Yast
     def GetDeviceTypeName(dev)
       # pppN must be tried before pN, modem before netcard
       if Builtins.regexpmatch(
-          dev,
-          Ops.add("^", Ops.get(@DeviceRegex, "modem", ""))
+        dev,
+        Ops.add("^", Ops.get(@DeviceRegex, "modem", ""))
         )
         return _("Modem")
       elsif Builtins.regexpmatch(
-          dev,
-          Ops.add("^", Ops.get(@DeviceRegex, "netcard", ""))
+        dev,
+        Ops.add("^", Ops.get(@DeviceRegex, "netcard", ""))
         )
         return _("Network Card")
       elsif Builtins.regexpmatch(
-          dev,
-          Ops.add("^", Ops.get(@DeviceRegex, "isdn", ""))
+        dev,
+        Ops.add("^", Ops.get(@DeviceRegex, "isdn", ""))
         )
         return _("ISDN")
       elsif Builtins.regexpmatch(
-          dev,
-          Ops.add("^", Ops.get(@DeviceRegex, "dsl", ""))
+        dev,
+        Ops.add("^", Ops.get(@DeviceRegex, "dsl", ""))
         )
         return _("DSL")
       else
@@ -431,7 +432,7 @@ module Yast
     #
     # Obsolete: It is incompatible with new device naming scheme.
     def device_num(dev)
-      Builtins.y2warning( "Do not use device_num.")
+      Builtins.y2warning("Do not use device_num.")
       ifcfg_part(dev, "2")
     end
 
@@ -451,11 +452,11 @@ module Yast
     # @example device_name("eth", "1") -> "eth1"
     # @example device_name("lo", "") -> "lo"
     def device_name(typ, num)
-      if typ == nil || typ == ""
+      if typ.nil? || typ == ""
         Builtins.y2error("wrong type: %1", typ)
         return nil
       end
-      if num == nil
+      if num.nil?
         Builtins.y2error("wrong number: %1", num)
         return nil
       end
@@ -479,15 +480,15 @@ module Yast
     # @return alias name
     # @example alias_name("eth", "1", "2") -> "eth1#2"
     def alias_name(typ, num, anum)
-      if typ == nil || typ == ""
+      if typ.nil? || typ == ""
         Builtins.y2error("wrong type: %1", typ)
         return nil
       end
-      if num == nil # || num < 0
+      if num.nil? # || num < 0
         Builtins.y2error("wrong number: %1", num)
         return nil
       end
-      if anum == nil || anum == ""
+      if anum.nil? || anum == ""
         Builtins.y2error("wrong alias number: %1", anum)
         return nil
       end
@@ -498,8 +499,8 @@ module Yast
     # @param [String] type device type
     # @return true if hotpluggable
     def IsHotplug(type)
-      return false if type == "" || type == nil
-      return true if HOTPLUG_TYPES.any? {|t| type.end_with?(t)}
+      return false if type == "" || type.nil?
+      return true if HOTPLUG_TYPES.any? { |t| type.end_with?(t) }
       false
     end
 
@@ -527,7 +528,7 @@ module Yast
 
         return Builtins.deletechars(Ops.get_string(ret, "stdout", ""), "\n") == "1" ? true : false
       else
-        #Assume all devices are connected in testsuite mode
+        # Assume all devices are connected in testsuite mode
         return true
       end
     end
@@ -539,12 +540,12 @@ module Yast
     # @example RealType("eth", "usb") -> "eth-usb"
     def RealType(type, hotplug)
       Builtins.y2debug("type=%1", type)
-      if type == "" || type == nil
+      if type == "" || type.nil?
         Builtins.y2error("Wrong type: %1", type)
         return "eth"
       end
 
-      return type if hotplug == "" || hotplug == nil
+      return type if hotplug == "" || hotplug.nil?
 
       realtype = Ops.add(Ops.add(type, "-"), hotplug)
       Builtins.y2debug("realtype=%1", realtype)
@@ -571,32 +572,32 @@ module Yast
     end
 
     #
-    # Canonicalize static ip configuration obtained from sysconfig. (suse#46885) 
-    # 
-    # Static ip configuration formats supported by sysconfig: 
-    # 1) IPADDR=10.0.0.1/8 
-    # 2) IPADDR=10.0.0.1 PREFIXLEN=8 
-    # 3) IPADDR=10.0.0.1 NETMASK=255.0.0.0 
-    # 
-    # Features: 
-    # - IPADDR (in form <ip>/<prefix>) overrides PREFIXLEN,  
-    # - NETMASK is used only if prefix length unspecified) 
-    # - If prefix length and NETMASK are unspecified, 32 is implied. 
-    # 
-    # Canonicalize it to: 
+    # Canonicalize static ip configuration obtained from sysconfig. (suse#46885)
+    #
+    # Static ip configuration formats supported by sysconfig:
+    # 1) IPADDR=10.0.0.1/8
+    # 2) IPADDR=10.0.0.1 PREFIXLEN=8
+    # 3) IPADDR=10.0.0.1 NETMASK=255.0.0.0
+    #
+    # Features:
+    # - IPADDR (in form <ip>/<prefix>) overrides PREFIXLEN,
+    # - NETMASK is used only if prefix length unspecified)
+    # - If prefix length and NETMASK are unspecified, 32 is implied.
+    #
+    # Canonicalize it to:
     # - IPADDR="<ipv4>" PREFIXLEN="<prefix>" NETMASK="<netmask>") in case of IPv4 config
-    # E.g. IPADDR=10.0.0.1 PREFIXLEN=8 NETMASK=255.0.0.0 
+    # E.g. IPADDR=10.0.0.1 PREFIXLEN=8 NETMASK=255.0.0.0
     # - IPADDR="<ipv6>" PREFIXLEN="<prefix>" NETMASK="") in case of IPv6 config
     # E.g. IPADDR=2001:15c0:668e::5 PREFIXLEN=48 NETMASK=""
     #
-    # @param ifcfg     a map with netconfig (ifcfg) configuration for a one device 
-    # @return          a map with IPADDR, NETMASK and PREFIXLEN adjusted if IPADDR is present. 
-    #                  Returns original ifcfg if IPADDR is not present. In case of error, 
+    # @param ifcfg     a map with netconfig (ifcfg) configuration for a one device
+    # @return          a map with IPADDR, NETMASK and PREFIXLEN adjusted if IPADDR is present.
+    #                  Returns original ifcfg if IPADDR is not present. In case of error,
     #                  returns nil.
-    #                  
+    #
     def CanonicalizeIP(ifcfg)
       ifcfg = deep_copy(ifcfg)
-      return nil if ifcfg == nil
+      return nil if ifcfg.nil?
 
       ip_and_prefix = Builtins.splitstring(
         Ops.get_string(ifcfg, "IPADDR", ""),
@@ -617,7 +618,7 @@ module Yast
       # Now we have ipaddr and prefixlen
       # Let's compute the rest
       netmask = ""
-      netmask = Netmask.FromBits(Builtins.tointeger(prefixlen)) if IP.Check4( ipaddr)
+      netmask = Netmask.FromBits(Builtins.tointeger(prefixlen)) if IP.Check4(ipaddr)
 
       Ops.set(ifcfg, "IPADDR", ipaddr)
       Ops.set(ifcfg, "PREFIXLEN", prefixlen)
@@ -632,7 +633,7 @@ module Yast
     # @return ifcfg with secret fields masked out
     def ConcealSecrets1(ifcfg)
       ifcfg = deep_copy(ifcfg)
-      return nil if ifcfg == nil
+      return nil if ifcfg.nil?
       out = Builtins.mapmap(ifcfg) do |k, v|
         v = "CONCEALED" if Builtins.contains(@SensitiveFields, k) && v != ""
         { k => v }
@@ -646,12 +647,12 @@ module Yast
     # @return ifcfgs with secret fields masked out
     def ConcealSecrets(devs)
       devs = deep_copy(devs)
-      return nil if devs == nil
+      return nil if devs.nil?
       out = Builtins.mapmap(
         Convert.convert(
           devs,
-          :from => "map",
-          :to   => "map <string, map <string, map <string, any>>>"
+          from: "map",
+          to:   "map <string, map <string, map <string, any>>>"
         )
       ) do |t, tdevs|
         tout = Builtins.mapmap(tdevs) do |id, ifcfg|
@@ -662,6 +663,18 @@ module Yast
       deep_copy(out)
     end
 
+    # Variables which could be suffixed and thus duplicated
+    LOCALS = [
+      "IPADDR",
+      "REMOTE_IPADDR",
+      "NETMASK",
+      "PREFIXLEN",
+      "BROADCAST",
+      "SCOPE",
+      "LABEL",
+      "IP_OPTIONS"
+    ]
+
     # Read devices from files
     # @return true if sucess
     def Read
@@ -669,21 +682,9 @@ module Yast
 
       @Devices = {}
 
-      # Variables which could be suffixed and thus duplicated
-      _Locals = [
-        "IPADDR",
-        "REMOTE_IPADDR",
-        "NETMASK",
-        "PREFIXLEN",
-        "BROADCAST",
-        "SCOPE",
-        "LABEL",
-        "IP_OPTIONS"
-      ]
-
       # preparation
       allfiles = SCR.Dir(path(".network.section"))
-      allfiles = [] if allfiles == nil
+      allfiles = [] if allfiles.nil?
       devices = Builtins.filter(allfiles) do |file|
         !Builtins.regexpmatch(file, "[~]")
       end
@@ -701,11 +702,11 @@ module Yast
             SCR.Read(Builtins.topath(Ops.add(Ops.add(pth, "."), val)))
           )
           Builtins.y2debug("item=%1", item)
-          next if item == nil
+          next if item.nil?
           # No underscore '_' -> global
           # Also temporarily standard globals
           if Ops.less_than(Builtins.find(val, "_"), 0) ||
-              Builtins.contains(_Locals, val)
+              LOCALS.include?(val)
             Ops.set(config, val, item)
             next
           end
@@ -715,14 +716,14 @@ module Yast
           s = Builtins.substring(s, 1) if Ops.greater_than(Builtins.size(s), 1)
           Builtins.y2milestone("%1:%2:%3", val, v, s)
           # Global
-          if !Builtins.contains(_Locals, v)
+          if !LOCALS.include?(v)
             Ops.set(config, val, item)
           else
-            __aliases = Ops.get_map(config, "_aliases", {})
-            suf = Ops.get_map(__aliases, s, {})
+            aliases = Ops.get_map(config, "_aliases", {})
+            suf = Ops.get_map(aliases, s, {})
             Ops.set(suf, v, item)
-            Ops.set(__aliases, s, suf)
-            Ops.set(config, "_aliases", __aliases)
+            Ops.set(aliases, s, suf)
+            Ops.set(config, "_aliases", aliases)
           end
         end
         Builtins.y2milestone("config=%1", ConcealSecrets1(config))
@@ -730,13 +731,11 @@ module Yast
         caliases = Builtins.mapmap(Ops.get_map(config, "_aliases", {})) do |a, c|
           { a => CanonicalizeIP(c) }
         end
-        if caliases != {} # unconditionally?
-          Ops.set(config, "_aliases", caliases)
-        end
+        Ops.set(config, "_aliases", caliases) if caliases != {} # unconditionally?
         config = CanonicalizeIP(config)
         config = CanonicalizeStartmode(config)
         devtype = GetTypeFromIfcfg(config)
-        devtype = GetType(d) if devtype == nil
+        devtype = GetType(d) if devtype.nil?
         dev = Ops.get(@Devices, devtype, {})
         Ops.set(dev, d, config)
         Ops.set(@Devices, devtype, dev)
@@ -755,11 +754,9 @@ module Yast
       Read()
     end
 
-
-
     def Filter(devices, devregex)
       devices = deep_copy(devices)
-      if devices == nil || devregex == nil || devregex == ""
+      if devices.nil? || devregex.nil? || devregex == ""
         return deep_copy(devices)
       end
 
@@ -768,7 +765,7 @@ module Yast
         ")[0-9]*$"
       )
       Builtins.y2debug("regex=%1", regex)
-      devices = Builtins.filter(devices) do |file, devmap|
+      devices = Builtins.filter(devices) do |file, _devmap|
         Builtins.regexpmatch(file, regex) == true
       end
       Builtins.y2debug("devices=%1", devices)
@@ -780,17 +777,16 @@ module Yast
       Filter(@Devices, devregex)
     end
 
-
     def FilterNOT(devices, devregex)
       devices = deep_copy(devices)
-      return {} if devices == nil || devregex == nil || devregex == ""
+      return {} if devices.nil? || devregex.nil? || devregex == ""
 
       regex = Ops.add(
         Ops.add("^(", Ops.get(@DeviceRegex, devregex, devregex)),
         ")[0-9]*$"
       )
       Builtins.y2debug("regex=%1", regex)
-      devices = Builtins.filter(devices) do |file, devmap|
+      devices = Builtins.filter(devices) do |file, _devmap|
         Builtins.regexpmatch(file, regex) != true
       end
       Builtins.y2debug("devices=%1", devices)
@@ -802,13 +798,13 @@ module Yast
       Builtins.y2debug("Devices=%1", @Devices)
       Builtins.y2debug("Deleted=%1", @Deleted)
 
-      _Devs = Filter(@Devices, devregex)
-      _OriginalDevs = Filter(@OriginalDevices, devregex)
-      Builtins.y2milestone("OriginalDevs=%1", ConcealSecrets(_OriginalDevs))
-      Builtins.y2milestone("Devs=%1", ConcealSecrets(_Devs))
+      devs = Filter(@Devices, devregex)
+      original_devs = Filter(@OriginalDevices, devregex)
+      Builtins.y2milestone("OriginalDevs=%1", ConcealSecrets(original_devs))
+      Builtins.y2milestone("Devs=%1", ConcealSecrets(devs))
 
       # Check for changes
-      if _Devs == _OriginalDevs
+      if devs == original_devs
         Builtins.y2milestone(
           "No changes to %1 devices -> nothing to write",
           devregex
@@ -832,7 +828,7 @@ module Yast
           # look in OriginalDevs because we need to catch all variables
           # of the alias
 
-          dev_aliases = _OriginalDevs[typ][dev]["_aliases"][anum] || {}
+          dev_aliases = original_devs[typ][dev]["_aliases"][anum] || {}
           dev_aliases.keys.each do |key|
             p = base + "#{key}_#{anum}"
             Builtins.y2debug("deleting: %1", p)
@@ -845,45 +841,26 @@ module Yast
       # write all devices
       Builtins.maplist(
         Convert.convert(
-          _Devs,
-          :from => "map",
-          :to   => "map <string, map <string, map <string, any>>>"
+          devs,
+          from: "map",
+          to:   "map <string, map <string, map <string, any>>>"
         )
-      ) { |typ, devsmap| Builtins.maplist(devsmap) do |config, devmap|
-        next if devmap == Ops.get_map(_OriginalDevs, [typ, config], {})
-        # write sysconfig
-        p = Ops.add(Ops.add(".network.value.\"", config), "\".")
-        if Ops.greater_than(
+      ) do |typ, devsmap|
+        Builtins.maplist(devsmap) do |config, devmap|
+          next if devmap == Ops.get_map(original_devs, [typ, config], {})
+          # write sysconfig
+          p = Ops.add(Ops.add(".network.value.\"", config), "\".")
+          if Ops.greater_than(
             Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
             0
-          ) &&
-            Builtins.find(Ops.get_string(devmap, "IPADDR", ""), "/") == -1
-          if Ops.greater_than(
+            ) &&
+              Builtins.find(Ops.get_string(devmap, "IPADDR", ""), "/") == -1
+            if Ops.greater_than(
               Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
               0
-            ) &&
-              Ops.greater_than(
-                Builtins.size(Ops.get_string(devmap, "NETMASK", "")),
-                0
-              )
-            Ops.set(
-              devmap,
-              "IPADDR",
-              Builtins.sformat(
-                "%1/%2",
-                Ops.get_string(devmap, "IPADDR", ""),
-                Netmask.ToBits(Ops.get_string(devmap, "NETMASK", ""))
-              )
-            )
-            devmap = Builtins.remove(devmap, "NETMASK") 
-            #TODO : delete NETMASK from config file
-          else
-            if Ops.greater_than(
-                Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
-                0
               ) &&
                 Ops.greater_than(
-                  Builtins.size(Ops.get_string(devmap, "PREFIXLEN", "")),
+                  Builtins.size(Ops.get_string(devmap, "NETMASK", "")),
                   0
                 )
               Ops.set(
@@ -892,53 +869,53 @@ module Yast
                 Builtins.sformat(
                   "%1/%2",
                   Ops.get_string(devmap, "IPADDR", ""),
-                  Ops.get_string(devmap, "PREFIXLEN", "")
+                  Netmask.ToBits(Ops.get_string(devmap, "NETMASK", ""))
                 )
               )
-              devmap = Builtins.remove(devmap, "PREFIXLEN") 
-              #TODO : delete PREFIXLEN from config file
-            end
-          end
-        end
-        # write all keys to config
-        Builtins.maplist(
-          Convert.convert(
-            Map.Keys(devmap),
-            :from => "list",
-            :to   => "list <string>"
-          )
-        ) do |k|
-          # Write aliases
-          if k == "_aliases"
-            Builtins.maplist(Ops.get_map(devmap, k, {})) do |anum, amap|
-              # Normally defaulting the label would be done
-              # when creating the map, not here when
-              # writing, but we create it in 2 ways so it's
-              # better here. Actually it does not work because
-              # the edit dialog nukes LABEL :-(
-              if Ops.greater_than(Builtins.size(Ops.get(amap, "IPADDR", "")), 0) &&
+              devmap = Builtins.remove(devmap, "NETMASK")
+              # TODO : delete NETMASK from config file
+            else
+              if Ops.greater_than(
+                Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
+                0
+                ) &&
                   Ops.greater_than(
-                    Builtins.size(Ops.get(amap, "NETMASK", "")),
+                    Builtins.size(Ops.get_string(devmap, "PREFIXLEN", "")),
                     0
                   )
                 Ops.set(
-                  amap,
+                  devmap,
                   "IPADDR",
                   Builtins.sformat(
                     "%1/%2",
-                    Ops.get(amap, "IPADDR", ""),
-                    Netmask.ToBits(Ops.get(amap, "NETMASK", ""))
+                    Ops.get_string(devmap, "IPADDR", ""),
+                    Ops.get_string(devmap, "PREFIXLEN", "")
                   )
                 )
-                amap = Builtins.remove(amap, "NETMASK") 
-                #TODO : delete NETMASK from config file
-              else
-                if Ops.greater_than(
-                    Builtins.size(Ops.get(amap, "IPADDR", "")),
-                    0
-                  ) &&
+                devmap = Builtins.remove(devmap, "PREFIXLEN")
+                # TODO : delete PREFIXLEN from config file
+              end
+            end
+          end
+          # write all keys to config
+          Builtins.maplist(
+            Convert.convert(
+              Map.Keys(devmap),
+              from: "list",
+              to:   "list <string>"
+            )
+          ) do |k|
+            # Write aliases
+            if k == "_aliases"
+              Builtins.maplist(Ops.get_map(devmap, k, {})) do |anum, amap|
+                # Normally defaulting the label would be done
+                # when creating the map, not here when
+                # writing, but we create it in 2 ways so it's
+                # better here. Actually it does not work because
+                # the edit dialog nukes LABEL :-(
+                if Ops.greater_than(Builtins.size(Ops.get(amap, "IPADDR", "")), 0) &&
                     Ops.greater_than(
-                      Builtins.size(Ops.get(amap, "PREFIXLEN", "")),
+                      Builtins.size(Ops.get(amap, "NETMASK", "")),
                       0
                     )
                   Ops.set(
@@ -947,49 +924,67 @@ module Yast
                     Builtins.sformat(
                       "%1/%2",
                       Ops.get(amap, "IPADDR", ""),
-                      Ops.get(amap, "PREFIXLEN", "")
+                      Netmask.ToBits(Ops.get(amap, "NETMASK", ""))
                     )
                   )
-                  amap = Builtins.remove(amap, "PREFIXLEN") 
-                  #TODO : delete PREFIXLEN from config file
+                  amap = Builtins.remove(amap, "NETMASK")
+                  # TODO : delete NETMASK from config file
+                else
+                  if Ops.greater_than(
+                    Builtins.size(Ops.get(amap, "IPADDR", "")),
+                    0
+                    ) &&
+                      Ops.greater_than(
+                        Builtins.size(Ops.get(amap, "PREFIXLEN", "")),
+                        0
+                      )
+                    Ops.set(
+                      amap,
+                      "IPADDR",
+                      Builtins.sformat(
+                        "%1/%2",
+                        Ops.get(amap, "IPADDR", ""),
+                        Ops.get(amap, "PREFIXLEN", "")
+                      )
+                    )
+                    amap = Builtins.remove(amap, "PREFIXLEN")
+                    # TODO : delete PREFIXLEN from config file
+                  end
+                end
+                Builtins.maplist(amap) do |ak, av|
+                  akk = Ops.add(Ops.add(ak, "_"), anum)
+                  SCR.Write(Builtins.topath(Ops.add(p, akk)), av) #			    seen_label = seen_label || ak == "LABEL";
                 end
               end
-              Builtins.maplist(amap) do |ak, av|
-                akk = Ops.add(Ops.add(ak, "_"), anum)
-                SCR.Write(Builtins.topath(Ops.add(p, akk)), av) #			    seen_label = seen_label || ak == "LABEL";
-              end
+            else
+              # Write regular keys
+              SCR.Write(
+                Builtins.topath(Ops.add(p, k)),
+                Ops.get_string(devmap, k, "")
+              )
             end
-          else
-            # Write regular keys
+          end
+
+          # 0600 if contains encryption key (#24842)
+          has_key = @SensitiveFields.any? { |k| devmap[k] && !devmap[k].empty? }
+          if has_key
+            Builtins.y2debug("Permission change: %1", config)
             SCR.Write(
-              Builtins.topath(Ops.add(p, k)),
-              Ops.get_string(devmap, k, "")
+              Builtins.add(path(".network.section_private"), config),
+              true
             )
           end
-        end
-
-        # 0600 if contains encryption key (#24842)
-        has_key = Builtins.find(@SensitiveFields) do |k|
-          Ops.get_string(devmap, k, "") != ""
-        end != nil
-        file = Ops.add("/etc/sysconfig/network/ifcfg-", config)
-        if has_key
-          Builtins.y2debug("Permission change: %1", config)
-          SCR.Write(
-            Builtins.add(path(".network.section_private"), config),
-            true
+          @OriginalDevices = {} if @OriginalDevices.nil?
+          if Ops.get(@OriginalDevices, typ).nil?
+            Ops.set(@OriginalDevices, typ, {})
+          end
+          Ops.set(
+            @OriginalDevices,
+            [typ, config],
+            Ops.get(@Devices, [typ, config], {})
           )
         end
-        @OriginalDevices = {} if @OriginalDevices == nil
-        if Ops.get(@OriginalDevices, typ) == nil
-          Ops.set(@OriginalDevices, typ, {})
-        end
-        Ops.set(
-          @OriginalDevices,
-          [typ, config],
-          Ops.get(@Devices, [typ, config], {})
-        )
-      end }
+      end
 
       # Finish him
       SCR.Write(path(".network"), nil)
@@ -1006,16 +1001,16 @@ module Yast
     # @return true on success
     def Import(devregex, devices)
       devices = deep_copy(devices)
-      _Devs = FilterNOT(@Devices, devregex)
-      Builtins.y2debug("Devs=%1", _Devs)
+      devs = FilterNOT(@Devices, devregex)
+      Builtins.y2debug("Devs=%1", devs)
 
       devices = Builtins.mapmap(devices) do |typ, devsmap|
         {
           typ => Builtins.mapmap(
             Convert.convert(
               devsmap,
-              :from => "map",
-              :to   => "map <string, map <string, any>>"
+              from: "map",
+              to:   "map <string, map <string, any>>"
             )
           ) do |num, config|
             config = CanonicalizeIP(config)
@@ -1026,12 +1021,12 @@ module Yast
       end
 
       @Devices = Convert.convert(
-        Builtins.union(_Devs, devices),
-        :from => "map",
-        :to   => "map <string, map <string, map <string, any>>>"
+        Builtins.union(devs, devices),
+        from: "map",
+        to:   "map <string, map <string, map <string, any>>>"
       )
 
-      if devices == nil || devices == {}
+      if devices.nil? || devices == {}
         # devices == $[] is used in lan_auto "Reset" as a way how to
         # rollback changes imported from AY
         @initialized = false
@@ -1076,29 +1071,29 @@ module Yast
       if Arch.s390
         dev_types = Convert.convert(
           Builtins.merge(dev_types, s390_dev_types),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
       else
         if Arch.ia64
           dev_types = Convert.convert(
             Builtins.merge(dev_types, ia64_dev_types),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
         end
 
         dev_types = Convert.convert(
           Builtins.merge(dev_types, s390_unknown_dev_types),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
       end
 
       Builtins.foreach(dev_types) do |device|
         if !Builtins.contains(
-            Builtins.splitstring(Ops.get(@DeviceRegex, "netcard", ""), "|"),
-            device
+          Builtins.splitstring(Ops.get(@DeviceRegex, "netcard", ""), "|"),
+          device
           )
           Builtins.y2error(
             "%1 is not contained in DeviceRegex[\"netcard\"]",
@@ -1282,19 +1277,19 @@ module Yast
     # Export data
     # @return dumped settings (later acceptable by Import())
     def Export(devregex)
-      _Devs = Filter(@Devices, devregex)
-      Builtins.y2debug("Devs=%1", _Devs)
-      Convert.convert(_Devs, :from => "map", :to => "map <string, map>")
+      devs = Filter(@Devices, devregex)
+      Builtins.y2debug("Devs=%1", devs)
+      Convert.convert(devs, from: "map", to: "map <string, map>")
     end
 
     # Were the devices changed?
     # @return true if modified
     def Modified(devregex)
-      _Devs = Filter(@Devices, devregex)
-      _OriginalDevs = Filter(@OriginalDevices, devregex)
-      Builtins.y2debug("OriginalDevs=%1", _OriginalDevs)
-      Builtins.y2debug("Devs=%1", _Devs)
-      _Devs == _OriginalDevs
+      devs = Filter(@Devices, devregex)
+      original_devs = Filter(@OriginalDevices, devregex)
+      Builtins.y2debug("OriginalDevs=%1", original_devs)
+      Builtins.y2debug("Devs=%1", devs)
+      devs == original_devs
     end
 
     def GetFreeDevices(type, num)
@@ -1306,8 +1301,8 @@ module Yast
       Builtins.foreach(
         Convert.convert(
           Map.Keys(Ops.get(@Devices, type, {})),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
       ) do |dev|
         dev = device_num(dev) if Builtins.issubstring(dev, type)
@@ -1347,7 +1342,7 @@ module Yast
       Builtins.y2debug("type=%1", type)
       freedevs = GetFreeDevices(type, 1)
       ret = Ops.get(freedevs, 0)
-      Builtins.y2error("Free device location error: %1", ret) if ret == nil
+      Builtins.y2error("Free device location error: %1", ret) if ret.nil?
       Builtins.y2debug("Free device=%1", ret)
       ret
     end
@@ -1386,7 +1381,7 @@ module Yast
       t = GetType(@Name)
       @Current = Ops.get(@Devices, [t, @Name], {})
       a = alias_num(@Name)
-      if a != nil && a != ""
+      if !a.nil? && a != ""
         @Current = Ops.get_map(@Current, ["_aliases", a], {})
       end
 
@@ -1446,9 +1441,11 @@ module Yast
         return false
       end
 
-      t = !IsEmpty(newdev) ?
-        GetTypeFromIfcfgOrName(name, newdev) :
-        GetType(name)
+      t = if !IsEmpty(newdev)
+            GetTypeFromIfcfgOrName(name, newdev)
+          else
+            GetType(name)
+          end
 
       if name == @Name
         int_type = Ops.get_string(@Current, "INTERFACETYPE", "")
@@ -1510,9 +1507,9 @@ module Yast
     # Called when exiting from the aliases-of-device dialog.
     # #48191
     def DeleteAlias(device, aid)
-      _alias = Builtins.sformat("%1#%2", device, aid)
-      Builtins.y2milestone("Deleting alias: %1", _alias)
-      @Deleted <<  _alias
+      alias_ = Builtins.sformat("%1#%2", device, aid)
+      Builtins.y2milestone("Deleting alias: %1", alias_)
+      @Deleted <<  alias_
       true
     end
 
@@ -1549,7 +1546,7 @@ module Yast
 
     def SetValue(name, key, value)
       return nil unless Edit(name)
-      return false if key == nil || key == "" || value == nil
+      return false if key.nil? || key == "" || value.nil?
 
       @Current[key] = value
 
@@ -1563,12 +1560,11 @@ module Yast
     def GetIP(device)
       Select(device)
       ips = [GetValue(device, "IPADDR")]
-      Builtins.foreach(Ops.get_map(@Current, "_aliases", {})) do |key, value|
+      Builtins.foreach(Ops.get_map(@Current, "_aliases", {})) do |_key, value|
         ips = Builtins.add(ips, Ops.get_string(value, "IPADDR", ""))
       end
       deep_copy(ips)
     end
-
 
     # Locate devices of the given type and value
     # @param [String] key device key
@@ -1576,9 +1572,9 @@ module Yast
     # @return [Array] of devices with key=val
     def Locate(key, val)
       ret = []
-      Builtins.maplist(@Devices) do |typ, devsmap|
+      Builtins.maplist(@Devices) do |_typ, devsmap|
         Builtins.maplist(
-          Convert.convert(devsmap, :from => "map", :to => "map <string, map>")
+          Convert.convert(devsmap, from: "map", to: "map <string, map>")
         ) do |device, devmap|
           if Ops.get_string(devmap, key, "") == val
             ret = Builtins.add(ret, device)
@@ -1595,9 +1591,9 @@ module Yast
     # @return [Array] of devices with key!=val
     def LocateNOT(key, val)
       ret = []
-      Builtins.maplist(@Devices) do |typ, devsmap|
+      Builtins.maplist(@Devices) do |_typ, devsmap|
         Builtins.maplist(
-          Convert.convert(devsmap, :from => "map", :to => "map <string, map>")
+          Convert.convert(devsmap, from: "map", to: "map <string, map>")
         ) do |device, devmap|
           if Ops.get_string(devmap, key, "") != val
             ret = Builtins.add(ret, device)
@@ -1674,13 +1670,13 @@ module Yast
     # @return [Array] of found devices
     def List(devregex)
       ret = []
-      if devregex == "" || devregex == nil
-        Builtins.maplist(@Devices) do |t, d|
+      if devregex == "" || devregex.nil?
+        Builtins.maplist(@Devices) do |_t, d|
           Builtins.maplist(
             Convert.convert(
               Map.Keys(d),
-              :from => "list",
-              :to   => "list <string>"
+              from: "list",
+              to:   "list <string>"
             )
           ) { |device| Ops.set(ret, Builtins.size(ret), device) }
         end
@@ -1695,15 +1691,15 @@ module Yast
             Builtins.maplist(
               Convert.convert(
                 Map.Keys(d),
-                :from => "list",
-                :to   => "list <string>"
+                from: "list",
+                to:   "list <string>"
               )
             ) { |device| Ops.set(ret, Builtins.size(ret), device) }
           end
         end
       end
       ret = Builtins.filter(ret) do |row|
-        next true if row != nil
+        next true if !row.nil?
         Builtins.y2error("Filtering out : %1", row)
         false
       end
@@ -1717,16 +1713,18 @@ module Yast
       devices = List("")
 
       # Find the fastest device
-      Builtins.foreach(@FastestTypes) { |num, type| Builtins.foreach(devices) do |dev|
-        if ret == "" &&
-            Builtins.regexpmatch(
-              dev,
-              Ops.add(Ops.add("^", Ops.get(@DeviceRegex, type, "")), "[0-9]*$")
-            ) &&
-            IsConnected(dev)
-          ret = dev
+      Builtins.foreach(@FastestTypes) do |_num, type|
+        Builtins.foreach(devices) do |dev|
+          if ret == "" &&
+              Builtins.regexpmatch(
+                dev,
+                Ops.add(Ops.add("^", Ops.get(@DeviceRegex, type, "")), "[0-9]*$")
+              ) &&
+              IsConnected(dev)
+            ret = dev
+          end
         end
-      end }
+      end
 
       Builtins.y2milestone("ret=%1", ret)
       ret
@@ -1734,7 +1732,7 @@ module Yast
 
     def FastestType(name)
       ret = ""
-      Builtins.maplist(@FastestTypes) do |num, type|
+      Builtins.maplist(@FastestTypes) do |_num, type|
         regex = Ops.get(@DeviceRegex, type, "")
         if ret == "" &&
             Builtins.regexpmatch(name, Ops.add(Ops.add("^", regex), "[0-9]*$"))
@@ -1780,53 +1778,53 @@ module Yast
       deep_copy(devices)
     end
 
-    publish :variable => :Name, :type => "string"
-    publish :variable => :Current, :type => "map <string, any>"
-    publish :variable => :CardRegex, :type => "map <string, string>"
-    publish :function => :device_type, :type => "string (string)"
-    publish :function => :GetTypeFromIfcfg, :type => "string (map <string, any>)"
-    publish :function => :GetType, :type => "string (string)"
-    publish :function => :GetDeviceTypeName, :type => "string (string)"
-    publish :function => :device_num, :type => "string (string)"
-    publish :function => :alias_num, :type => "string (string)"
-    publish :function => :IsHotplug, :type => "boolean (string)"
-    publish :function => :IsConnected, :type => "boolean (string)"
-    publish :function => :RealType, :type => "string (string, string)"
-    publish :function => :CanonicalizeIP, :type => "map <string, any> (map <string, any>)"
-    publish :function => :ConcealSecrets1, :type => "map (map <string, any>)"
-    publish :function => :ConcealSecrets, :type => "map (map)"
-    publish :function => :Read, :type => "boolean ()"
-    publish :function => :CleanCacheRead, :type => "boolean ()"
-    publish :function => :FilterDevices, :type => "map <string, map> (string)"
-    publish :function => :Write, :type => "boolean (string)"
-    publish :function => :Import, :type => "boolean (string, map <string, map>)"
-    publish :function => :GetDeviceTypes, :type => "list <string> ()"
-    publish :function => :GetDevTypeDescription, :type => "string (string, boolean)"
-    publish :function => :Export, :type => "map <string, map> (string)"
-    publish :function => :GetFreeDevices, :type => "list <string> (string, integer)"
-    publish :function => :GetFreeDevice, :type => "string (string)"
-    publish :function => :Check, :type => "boolean (string)"
-    publish :function => :Select, :type => "boolean (string)"
-    publish :function => :Add, :type => "boolean ()"
-    publish :function => :Edit, :type => "boolean (string)"
-    publish :function => :Delete, :type => "boolean (string)"
-    publish :function => :Delete2, :type => "boolean (string)"
-    publish :function => :DeleteAlias, :type => "boolean (string, string)"
-    publish :function => :Commit, :type => "boolean ()"
-    publish :function => :GetValue, :type => "string (string, string)"
-    publish :function => :SetValue, :type => "boolean (string, string, string)"
-    publish :function => :GetIP, :type => "list <string> (string)"
-    publish :function => :Locate, :type => "list <string> (string, string)"
-    publish :function => :LocateProvider, :type => "boolean (string)"
-    publish :function => :UpdateModemSymlink, :type => "boolean ()"
-    publish :function => :CleanHotplugSymlink, :type => "boolean ()"
-    publish :function => :List, :type => "list <string> (string)"
-    publish :function => :Fastest, :type => "string ()"
-    publish :function => :FastestType, :type => "string (string)"
-    publish :function => :Push, :type => "void ()"
-    publish :function => :Pop, :type => "void ()"
-    publish :function => :ValidCharsIfcfg, :type => "string ()"
-    publish :function => :ListDevicesExcept, :type => "list <string> (string)"
+    publish variable: :Name, type: "string"
+    publish variable: :Current, type: "map <string, any>"
+    publish variable: :CardRegex, type: "map <string, string>"
+    publish function: :device_type, type: "string (string)"
+    publish function: :GetTypeFromIfcfg, type: "string (map <string, any>)"
+    publish function: :GetType, type: "string (string)"
+    publish function: :GetDeviceTypeName, type: "string (string)"
+    publish function: :device_num, type: "string (string)"
+    publish function: :alias_num, type: "string (string)"
+    publish function: :IsHotplug, type: "boolean (string)"
+    publish function: :IsConnected, type: "boolean (string)"
+    publish function: :RealType, type: "string (string, string)"
+    publish function: :CanonicalizeIP, type: "map <string, any> (map <string, any>)"
+    publish function: :ConcealSecrets1, type: "map (map <string, any>)"
+    publish function: :ConcealSecrets, type: "map (map)"
+    publish function: :Read, type: "boolean ()"
+    publish function: :CleanCacheRead, type: "boolean ()"
+    publish function: :FilterDevices, type: "map <string, map> (string)"
+    publish function: :Write, type: "boolean (string)"
+    publish function: :Import, type: "boolean (string, map <string, map>)"
+    publish function: :GetDeviceTypes, type: "list <string> ()"
+    publish function: :GetDevTypeDescription, type: "string (string, boolean)"
+    publish function: :Export, type: "map <string, map> (string)"
+    publish function: :GetFreeDevices, type: "list <string> (string, integer)"
+    publish function: :GetFreeDevice, type: "string (string)"
+    publish function: :Check, type: "boolean (string)"
+    publish function: :Select, type: "boolean (string)"
+    publish function: :Add, type: "boolean ()"
+    publish function: :Edit, type: "boolean (string)"
+    publish function: :Delete, type: "boolean (string)"
+    publish function: :Delete2, type: "boolean (string)"
+    publish function: :DeleteAlias, type: "boolean (string, string)"
+    publish function: :Commit, type: "boolean ()"
+    publish function: :GetValue, type: "string (string, string)"
+    publish function: :SetValue, type: "boolean (string, string, string)"
+    publish function: :GetIP, type: "list <string> (string)"
+    publish function: :Locate, type: "list <string> (string, string)"
+    publish function: :LocateProvider, type: "boolean (string)"
+    publish function: :UpdateModemSymlink, type: "boolean ()"
+    publish function: :CleanHotplugSymlink, type: "boolean ()"
+    publish function: :List, type: "list <string> (string)"
+    publish function: :Fastest, type: "string ()"
+    publish function: :FastestType, type: "string (string)"
+    publish function: :Push, type: "void ()"
+    publish function: :Pop, type: "void ()"
+    publish function: :ValidCharsIfcfg, type: "string ()"
+    publish function: :ListDevicesExcept, type: "list <string> (string)"
   end
 
   NetworkInterfaces = NetworkInterfacesClass.new

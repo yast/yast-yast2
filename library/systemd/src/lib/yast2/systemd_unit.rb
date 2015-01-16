@@ -1,11 +1,9 @@
-require 'yast2/systemctl'
+require "yast2/systemctl"
 
-require 'ostruct'
-require 'forwardable'
+require "ostruct"
+require "forwardable"
 
 module Yast
-  import 'Stage'
-
   ###
   #  Use this class always as a parent class for implementing various systemd units.
   #  Do not use it directly for add-hoc implemenation of systemd units.
@@ -32,9 +30,8 @@ module Yast
   #
   #     service.before # ['shutdown.target', 'multi-user.target']
   #
-  ###
-
   class SystemdUnit
+    Yast.import "Stage"
     include Yast::Logger
 
     SUPPORTED_TYPES  = %w( service socket target )
@@ -57,7 +54,7 @@ module Yast
 
     attr_reader :name, :unit_name, :unit_type, :input_properties, :error, :properties
 
-    def initialize full_unit_name, properties={}
+    def initialize(full_unit_name, properties = {})
       @unit_name, @unit_type = full_unit_name.split(".")
       raise "Missing unit type suffix" unless unit_type
 
@@ -81,7 +78,7 @@ module Yast
     end
 
     def status
-      command("status", :options => "2>&1").stdout
+      command("status", options: "2>&1").stdout
     end
 
     def start
@@ -120,13 +117,13 @@ module Yast
       run_command! { command("reload-or-try-restart") }
     end
 
-    def command command_name, options={}
+    def command(command_name, options = {})
       command = "#{command_name} #{unit_name}.#{unit_type} #{options[:options]}"
       log.info "`#{Systemctl::CONTROL} #{command}`"
       Systemctl.execute(command)
     end
 
-    private
+  private
 
     def run_command!
       error.clear
@@ -136,10 +133,11 @@ module Yast
       command_result.exit.zero?
     end
 
+    # Structure holding  properties of systemd unit
     class Properties < OpenStruct
       include Yast::Logger
 
-      def initialize systemd_unit
+      def initialize(systemd_unit)
         super()
         self[:systemd_unit] = systemd_unit
         raw_output   = load_systemd_properties
@@ -160,15 +158,15 @@ module Yast
         self[:running?]   = sub_state    == "running"
         self[:loaded?]    = load_state   == "loaded"
         self[:not_found?] = load_state   == "not-found"
-        self[:enabled?]   = is_enabled?
+        self[:enabled?]   = read_enabled_state
         self[:supported?] = SUPPORTED_STATES.member?(unit_file_state)
       end
 
-      private
+    private
 
       # Check the value of #unit_file_state; its value mirrors UnitFileState dbus property
       # @return [Boolean] True if enabled, False if not
-      def is_enabled?
+      def read_enabled_state
         # If UnitFileState property is missing due to e.g. legacy sysvinit service
         # we must use a different way how to get the real status of the service
         if unit_file_state.nil?
@@ -187,7 +185,7 @@ module Yast
       # We test for the return value 'enabled' and 'enabled-runtime' to consider
       # a service as enabled.
       # @return [Boolean] True if enabled, False if not
-      def state_name_enabled? state
+      def state_name_enabled?(state)
         ["enabled", "enabled-runtime"].member?(state.strip)
       end
 
@@ -201,7 +199,7 @@ module Yast
         properties = systemd_unit.input_properties.map do |_, property_name|
           " --property=#{property_name} "
         end
-        systemd_unit.command("show", :options => properties.join)
+        systemd_unit.command("show", options: properties.join)
       end
     end
 
@@ -223,10 +221,10 @@ module Yast
     class InstallationProperties < OpenStruct
       include Yast::Logger
 
-      def initialize systemd_unit
+      def initialize(systemd_unit)
         super()
         self[:systemd_unit] = systemd_unit
-        self[:status]       = get_status
+        self[:status]       = read_status
         self[:raw]          = status.stdout
         self[:error]        = status.stderr
         self[:exit]         = status.exit
@@ -234,9 +232,9 @@ module Yast
         self[:not_found?]   = service_missing?
       end
 
-      private
+    private
 
-      def get_status
+      def read_status
         systemd_unit.command("is-enabled")
       end
 

@@ -6,6 +6,3 @@ require_relative "../../systemd/test/test_helper"
 ENV["Y2DIR"] = File.expand_path("../../src", __FILE__)
 
 require "yast"
-
-
-

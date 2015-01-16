@@ -39,7 +39,6 @@ module Yast
       Yast.import "CWM"
       Yast.import "Wizard"
 
-
       # local constants
 
       # Empty tab (just to be used as fallback constant)
@@ -88,7 +87,7 @@ module Yast
       @current_tab_map = Ops.get_map(tos, "ctm", {})
       @previous_tab_map = Ops.get_map(tos, "ptm", {})
       Ops.set(@stack, 0, nil)
-      @stack = Builtins.filter(@stack) { |m| m != nil }
+      @stack = Builtins.filter(@stack) { |m| !m.nil? }
 
       nil
     end
@@ -177,7 +176,7 @@ module Yast
       if UI.HasSpecialWidget(:DumbTab)
         UI.ChangeWidget(Id(:_cwm_tab), :CurrentItem, @current_tab_id)
       else
-        if @previous_tab_id != nil
+        if !@previous_tab_id.nil?
           UI.ChangeWidget(
             Id(@previous_tab_id),
             :Label,
@@ -212,7 +211,7 @@ module Yast
       TabInit(@current_tab_map)
       # allow a handler to enabled/disable widgets before the first real
       # UserInput takes place
-      UI.FakeUserInput({ "ID" => "_cwm_tab_wakeup" })
+      UI.FakeUserInput("ID" => "_cwm_tab_wakeup")
 
       nil
     end
@@ -222,7 +221,7 @@ module Yast
     # Init function of the widget
     # @param [Hash{String => Object}] widget a widget description map
     # @param [String] key strnig the widget key
-    def Init(widget, key)
+    def Init(widget, _key)
       widget = deep_copy(widget)
       Push()
       InitNewTab(Ops.get_string(widget, "initial_tab", ""), widget)
@@ -232,7 +231,7 @@ module Yast
 
     # Clean up function of the widget
     # @param [String] key the widget key (ignored)
-    def CleanUp(key)
+    def CleanUp(_key)
       TabCleanup(@current_tab_map)
       @last_tab_id = @current_tab_id
       Pop()
@@ -245,12 +244,12 @@ module Yast
     # @param [String] key strnig the widget key
     # @param [Hash] event map event to be handled
     # @return [Symbol] for wizard sequencer or nil
-    def Handle(widget, key, event)
+    def Handle(widget, _key, event)
       widget = deep_copy(widget)
       event = deep_copy(event)
       all_tabs = Ops.get_list(widget, "tabs_list", [])
       h_ret = TabHandle(@current_tab_map, event)
-      return h_ret if h_ret != nil
+      return h_ret if !h_ret.nil?
       ret = Ops.get(event, "ID")
       if Ops.is_string?(ret) &&
           Builtins.contains(all_tabs, Convert.to_string(ret)) &&
@@ -271,7 +270,7 @@ module Yast
     # Store function of the widget
     # @param [String] key strnig the widget key
     # @param [Hash] event map that caused widget data storing
-    def Store(key, event)
+    def Store(_key, event)
       event = deep_copy(event)
       TabStore(@current_tab_map, event)
 
@@ -320,7 +319,7 @@ module Yast
     # Validate function of the widget
     # @param [String] key strnig the widget key
     # @param [Hash] event map that caused widget data storing
-    def Validate(key, event)
+    def Validate(_key, event)
       event = deep_copy(event)
       TabValidate(@current_tab_map, event)
     end
@@ -365,8 +364,8 @@ module Yast
         contents = Ops.get_term(v, "contents", VBox())
         widget_names = Convert.convert(
           Ops.get(v, "widget_names") { CWM.StringsOfTerm(contents) },
-          :from => "any",
-          :to   => "list <string>"
+          from: "any",
+          to:   "list <string>"
         )
         # second arg wins
         fallback = Builtins.union(
@@ -406,16 +405,16 @@ module Yast
       }
     end
 
-    publish :function => :Init, :type => "void (map <string, any>, string)"
-    publish :function => :CleanUp, :type => "void (string)"
-    publish :function => :Handle, :type => "symbol (map <string, any>, string, map)"
-    publish :function => :Store, :type => "void (string, map)"
-    publish :function => :InitWrapper, :type => "void (string)"
-    publish :function => :CurrentTab, :type => "string ()"
-    publish :function => :LastTab, :type => "string ()"
-    publish :function => :HandleWrapper, :type => "symbol (string, map)"
-    publish :function => :Validate, :type => "boolean (string, map)"
-    publish :function => :CreateWidget, :type => "map <string, any> (map)"
+    publish function: :Init, type: "void (map <string, any>, string)"
+    publish function: :CleanUp, type: "void (string)"
+    publish function: :Handle, type: "symbol (map <string, any>, string, map)"
+    publish function: :Store, type: "void (string, map)"
+    publish function: :InitWrapper, type: "void (string)"
+    publish function: :CurrentTab, type: "string ()"
+    publish function: :LastTab, type: "string ()"
+    publish function: :HandleWrapper, type: "symbol (string, map)"
+    publish function: :Validate, type: "boolean (string, map)"
+    publish function: :CreateWidget, type: "map <string, any> (map)"
   end
 
   CWMTab = CWMTabClass.new

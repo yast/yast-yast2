@@ -1,0 +1,89 @@
+# use the shared Yast defaults
+inherit_from:
+  /usr/share/YaST2/data/devtools/data/rubocop_yast_style.yml
+
+# Offense count: 493
+Metrics/AbcSize:
+  Max: 446
+
+# Offense count: 51
+Metrics/BlockNesting:
+  Max: 6
+
+# Offense count: 84
+# Configuration parameters: CountComments.
+Metrics/ClassLength:
+  Max: 2880
+
+# Offense count: 184
+Metrics/CyclomaticComplexity:
+  Max: 63
+
+# Offense count: 1820
+# Configuration parameters: AllowURI, URISchemes.
+Metrics/LineLength:
+  Max: 274
+
+# Offense count: 824
+# Configuration parameters: CountComments.
+Metrics/MethodLength:
+  Max: 931
+
+# Offense count: 20
+# Configuration parameters: CountKeywordArgs.
+Metrics/ParameterLists:
+  Max: 11
+
+# Offense count: 179
+Metrics/PerceivedComplexity:
+  Max: 76
+
+# Configuration parameters: EnforcedStyle, SupportedStyles.
+# JR: I personally think that having this variable on class level is much more readable
+# and easier to recognize that access visibility changed
+Style/AccessModifierIndentation:
+  EnforcedStyle: outdent
+
+Style/AccessorMethodName:
+  # keep backward compatibility, but do not allow new code to be non-ruby style
+  Exclude:
+    - library/systemd/src/modules/systemd_target.rb
+
+# Keep non-ascii comments as it contains e.g. examples for Punycode
+Style/AsciiComments:
+  Enabled: false
+
+# UI_ID module is not camel case
+Style/ClassAndModuleCamelCase:
+  Enabled: false
+
+# ensure new code is properly documented
+Style/Documentation:
+  Include:
+    - "library/*/src/lib/**/*.rb"
+
+# keep double negation as conversion to boolean
+Style/DoubleNegation:
+  Enabled: false
+
+Style/FileName:
+  Include:
+    - "library/*/src/lib/**/*.rb"
+
+Style/MethodName:
+  Include:
+    - "library/*/src/lib/**/*.rb"
+
+# keep it as it is part of API for old code
+Style/PredicateName:
+  Include:
+    - "library/*/src/lib/**/*.rb"
+
+# for old code keep it as often methods names are wrong and part of API
+Style/TrivialAccessors:
+  Include:
+    - "library/*/src/lib/**/*.rb"
+
+Style/VariableName:
+  Include:
+    - "library/*/src/lib/**/*.rb"

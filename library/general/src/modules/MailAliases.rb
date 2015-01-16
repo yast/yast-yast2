@@ -104,11 +104,11 @@ module Yast
       if @root_alias != ""
         ret = Builtins.prepend(
           ret,
-          {
-            "alias"        => "root",
-            "destinations" => @root_alias,
-            "comment"      => @root_alias_comment
-          }
+
+          "alias"        => "root",
+          "destinations" => @root_alias,
+          "comment"      => @root_alias_comment
+
         )
       end
       deep_copy(ret)
@@ -167,8 +167,6 @@ module Yast
     # @return success
     # @see #SetRootAlias
     def WriteAliases
-      # aliases
-      alias_path = "aliases"
       a_raw = Builtins.maplist(MergeRootAlias(@aliases)) do |e|
         {
           "comment" => Ops.get_string(e, "comment", ""),
@@ -176,14 +174,9 @@ module Yast
           "value"   => Ops.get_string(e, "destinations", "")
         }
       end
-      #	if (merge_aliases)
-      #	{
-      #	    a_raw = mergeTables (a_raw, MailTable::Read (alias_path));
-      #	}
       MailTable.Write("aliases", a_raw)
       true
     end
-
 
     # ----------------------------------------------------------------
 
@@ -194,7 +187,6 @@ module Yast
       return "" if !ReadAliases()
       @root_alias
     end
-
 
     # For use by the Users package.
     # Does not use the internal state, just calls the agent.
@@ -215,14 +207,14 @@ module Yast
       true
     end
 
-    publish :variable => :aliases, :type => "list <map>"
-    publish :variable => :root_alias, :type => "string"
-    publish :function => :FilterRootAlias, :type => "void ()"
-    publish :function => :ReadAliases, :type => "boolean ()"
-    publish :function => :MergeRootAlias, :type => "list <map> (list <map>)"
-    publish :function => :WriteAliases, :type => "boolean ()"
-    publish :function => :GetRootAlias, :type => "string ()"
-    publish :function => :SetRootAlias, :type => "boolean (string)"
+    publish variable: :aliases, type: "list <map>"
+    publish variable: :root_alias, type: "string"
+    publish function: :FilterRootAlias, type: "void ()"
+    publish function: :ReadAliases, type: "boolean ()"
+    publish function: :MergeRootAlias, type: "list <map> (list <map>)"
+    publish function: :WriteAliases, type: "boolean ()"
+    publish function: :GetRootAlias, type: "string ()"
+    publish function: :SetRootAlias, type: "boolean (string)"
   end
 
   MailAliases = MailAliasesClass.new

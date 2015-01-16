@@ -94,8 +94,8 @@ module Yast
       #  (see BNC #584466 for details)
       Builtins.sformat(
         _(
-          "Cannot write settings to '%1'.\n" +
-            "\n" +
+          "Cannot write settings to '%1'.\n" \
+            "\n" \
             "Reason: %2"
         ),
         destination,
@@ -269,31 +269,31 @@ module Yast
       _("This may take a while.")
     end
 
-    publish :function => :CannotContinueWithoutPackagesInstalled, :type => "string ()"
-    publish :function => :CannotStartService, :type => "string (string)"
-    publish :function => :CannotRestartService, :type => "string (string)"
-    publish :function => :CannotStopService, :type => "string (string)"
-    publish :function => :CannotWriteSettingsTo, :type => "string (string)"
-    publish :function => :CannotWriteSettingsToBecause, :type => "string (string, string)"
-    publish :function => :ErrorWritingFile, :type => "string (string)"
-    publish :function => :ErrorWritingFileBecause, :type => "string (string, string)"
-    publish :function => :CannotOpenFile, :type => "string (string)"
-    publish :function => :CannotOpenFileBecause, :type => "string (string, string)"
-    publish :function => :Finished, :type => "string ()"
-    publish :function => :CheckEnvironment, :type => "string ()"
-    publish :function => :UnknownError, :type => "string (string)"
-    publish :function => :RequiredItem, :type => "string ()"
-    publish :function => :DirectoryDoesNotExistCreate, :type => "string (string)"
-    publish :function => :DomainHasChangedMustReboot, :type => "string ()"
-    publish :function => :DoNotShowMessageAgain, :type => "string ()"
-    publish :function => :CannotAdjustService, :type => "string (string)"
-    publish :function => :MissingParameter, :type => "string (string)"
-    publish :function => :UnableToCreateDirectory, :type => "string (string)"
-    publish :function => :CannotReadCurrentSettings, :type => "string ()"
-    publish :function => :SuSEConfigFailed, :type => "string ()"
-    publish :function => :FailedToInstallPackages, :type => "string ()"
-    publish :function => :updating_configuration, :type => "string ()"
-    publish :function => :takes_a_while, :type => "string ()"
+    publish function: :CannotContinueWithoutPackagesInstalled, type: "string ()"
+    publish function: :CannotStartService, type: "string (string)"
+    publish function: :CannotRestartService, type: "string (string)"
+    publish function: :CannotStopService, type: "string (string)"
+    publish function: :CannotWriteSettingsTo, type: "string (string)"
+    publish function: :CannotWriteSettingsToBecause, type: "string (string, string)"
+    publish function: :ErrorWritingFile, type: "string (string)"
+    publish function: :ErrorWritingFileBecause, type: "string (string, string)"
+    publish function: :CannotOpenFile, type: "string (string)"
+    publish function: :CannotOpenFileBecause, type: "string (string, string)"
+    publish function: :Finished, type: "string ()"
+    publish function: :CheckEnvironment, type: "string ()"
+    publish function: :UnknownError, type: "string (string)"
+    publish function: :RequiredItem, type: "string ()"
+    publish function: :DirectoryDoesNotExistCreate, type: "string (string)"
+    publish function: :DomainHasChangedMustReboot, type: "string ()"
+    publish function: :DoNotShowMessageAgain, type: "string ()"
+    publish function: :CannotAdjustService, type: "string (string)"
+    publish function: :MissingParameter, type: "string (string)"
+    publish function: :UnableToCreateDirectory, type: "string (string)"
+    publish function: :CannotReadCurrentSettings, type: "string ()"
+    publish function: :SuSEConfigFailed, type: "string ()"
+    publish function: :FailedToInstallPackages, type: "string ()"
+    publish function: :updating_configuration, type: "string ()"
+    publish function: :takes_a_while, type: "string ()"
   end
 
   Message = MessageClass.new

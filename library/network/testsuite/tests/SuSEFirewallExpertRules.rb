@@ -51,86 +51,86 @@ module Yast
 
       DUMP("All these should be *valid* (true):")
       Builtins.foreach(@valid_network_definitions) do |check_this|
-        TEST(lambda { SuSEFirewallExpertRules.IsValidNetwork(check_this) }, [], nil)
+        TEST(->() { SuSEFirewallExpertRules.IsValidNetwork(check_this) }, [], nil)
       end
 
       DUMP("All these should be *invalid* (false):")
       Builtins.foreach(@invalid_network_definitions) do |check_this|
-        TEST(lambda { SuSEFirewallExpertRules.IsValidNetwork(check_this) }, [], nil)
+        TEST(->() { SuSEFirewallExpertRules.IsValidNetwork(check_this) }, [], nil)
       end
 
       DUMP("Testing adding/reading expert rules")
       # Rules are empty at the beginning
-      TEST(lambda { SuSEFirewallExpertRules.GetListOfAcceptRules("EXT") }, [], nil)
+      TEST(->() { SuSEFirewallExpertRules.GetListOfAcceptRules("EXT") }, [], nil)
 
       TEST(lambda do
         SuSEFirewallExpertRules.AddNewAcceptRule(
           "EXT",
-          {
-            "network"  => "192.168.0.1/255.255.240.0",
-            "protocol" => "tcp",
-            "sport"    => "22",
-            "options"  => "hitcount=3,blockseconds=60,recentname=ssh"
-          }
+
+          "network"  => "192.168.0.1/255.255.240.0",
+          "protocol" => "tcp",
+          "sport"    => "22",
+          "options"  => "hitcount=3,blockseconds=60,recentname=ssh"
+
         )
       end, [], nil)
-      TEST(lambda { SuSEFirewallExpertRules.GetListOfAcceptRules("EXT") }, [], nil)
+      TEST(->() { SuSEFirewallExpertRules.GetListOfAcceptRules("EXT") }, [], nil)
 
       TEST(lambda do
         SuSEFirewallExpertRules.AddNewAcceptRule(
           "EXT",
-          {
-            "network"  => "192.168.0.1/255.255.240.0",
-            "protocol" => "tcp",
-            "options"  => "whatever=1"
-          }
+
+          "network"  => "192.168.0.1/255.255.240.0",
+          "protocol" => "tcp",
+          "options"  => "whatever=1"
+
         )
       end, [], nil)
-      TEST(lambda { SuSEFirewallExpertRules.GetListOfAcceptRules("EXT") }, [], nil)
+      TEST(->() { SuSEFirewallExpertRules.GetListOfAcceptRules("EXT") }, [], nil)
 
       # Deleting by rule ID (offset in list)
-      TEST(lambda { SuSEFirewallExpertRules.DeleteRuleID("EXT", 0) }, [], nil)
-      TEST(lambda { SuSEFirewallExpertRules.GetListOfAcceptRules("EXT") }, [], nil)
+      TEST(->() { SuSEFirewallExpertRules.DeleteRuleID("EXT", 0) }, [], nil)
+      TEST(->() { SuSEFirewallExpertRules.GetListOfAcceptRules("EXT") }, [], nil)
 
       DUMP("Cannot remove rule that doesn't exist")
       TEST(lambda do
         SuSEFirewallExpertRules.RemoveAcceptRule(
           "EXT",
-          { "network" => "192.168.0.1/255.255.240.0", "protocol" => "tcp" }
+          "network" => "192.168.0.1/255.255.240.0", "protocol" => "tcp"
         )
       end, [], nil)
-      TEST(lambda { SuSEFirewallExpertRules.GetListOfAcceptRules("EXT") }, [], nil)
+      TEST(->() { SuSEFirewallExpertRules.GetListOfAcceptRules("EXT") }, [], nil)
 
       # Now "options" match too
       TEST(lambda do
         SuSEFirewallExpertRules.RemoveAcceptRule(
           "EXT",
-          {
-            "network"  => "192.168.0.1/255.255.240.0",
-            "protocol" => "tcp",
-            "options"  => "whatever=1"
-          }
+
+          "network"  => "192.168.0.1/255.255.240.0",
+          "protocol" => "tcp",
+          "options"  => "whatever=1"
+
         )
       end, [], nil)
-      TEST(lambda { SuSEFirewallExpertRules.GetListOfAcceptRules("EXT") }, [], nil)
+      TEST(->() { SuSEFirewallExpertRules.GetListOfAcceptRules("EXT") }, [], nil)
 
       DUMP("Adding special rule allowed 'from all networks'")
       TEST(lambda do
         SuSEFirewallExpertRules.AddNewAcceptRule(
           "EXT",
-          { "protocol" => "UDP", "sport" => "888" }
+          "protocol" => "UDP", "sport" => "888"
         )
       end, [], nil)
-      TEST(lambda { SuSEFirewallExpertRules.GetListOfAcceptRules("EXT") }, [], nil)
+      TEST(->() { SuSEFirewallExpertRules.GetListOfAcceptRules("EXT") }, [], nil)
 
       # Special all-IPv4-networks-(only) rule
       TEST(lambda do
         SuSEFirewallExpertRules.AddNewAcceptRule(
           "EXT",
-          { "protocol" => "TCP", "sport" => "999", "network" => "0.0.0.0/0" }
+          "protocol" => "TCP", "sport" => "999", "network" => "0.0.0.0/0"
         )
       end, [], nil)
-      TEST(lambda { SuSEFirewallExpertRules.GetListOfAcceptRules("EXT") }, [], nil)
+      TEST(->() { SuSEFirewallExpertRules.GetListOfAcceptRules("EXT") }, [], nil)
 
       DUMP("== Done ==")
 

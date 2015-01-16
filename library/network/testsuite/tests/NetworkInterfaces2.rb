@@ -22,8 +22,7 @@
 #
 # ***************************************************************************
 module Yast
-
-  #inject NetworkInterfaces accessor so we can modify Devices
+  # inject NetworkInterfaces accessor so we can modify Devices
   class NetworkInterfacesClass < Module
     attr_accessor :Devices
     attr_accessor :OriginalDevices
@@ -77,9 +76,9 @@ module Yast
               "STARTMODE" => "manual"
             },
             "escon5"    => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
-            "eth5" =>
-              # "IPADDR_x":"1.1.1.1", "NETMASK_x":"0.0.0.0"
-              { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
+            "eth5"      =>
+                           # "IPADDR_x":"1.1.1.1", "NETMASK_x":"0.0.0.0"
+                           { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
             # 32 bit prefix
             "eth6"      => {
               "BOOTPROTO" => "static",
@@ -105,15 +104,15 @@ module Yast
             "hsi5"      => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
             "ippp5"     => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
             "iucv5"     => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
-            "lo" =>
-              # "IPADDR_1":"7.7.7.7"
-              {
-                "BROADCAST" => "127.255.255.255",
-                "IPADDR"    => "127.0.0.1",
-                "NETMASK"   => "255.0.0.0",
-                "NETWORK"   => "127.0.0.0",
-                "STARTMODE" => "onboot"
-              },
+            "lo"        =>
+                           # "IPADDR_1":"7.7.7.7"
+                           {
+                             "BROADCAST" => "127.255.255.255",
+                             "IPADDR"    => "127.0.0.1",
+                             "NETMASK"   => "255.0.0.0",
+                             "NETWORK"   => "127.0.0.0",
+                             "STARTMODE" => "onboot"
+                           },
             "myri5"     => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
             "ppp5"      => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
             "tr5"       => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" },
@@ -154,17 +153,17 @@ module Yast
       Yast.import "NetworkInterfaces"
 
       DUMP("NetworkInterfaces::Read")
-      TEST(lambda { NetworkInterfaces.Read }, [@READ, {}, @EXEC], nil)
+      TEST(->() { NetworkInterfaces.Read }, [@READ, {}, @EXEC], nil)
       DUMP(Builtins.sformat("all=%1", NetworkInterfaces.Devices))
       NetworkInterfaces.OriginalDevices = nil
 
       DUMP("NetworkInterfaces::Write")
-      TEST(lambda { NetworkInterfaces.Write("eth") }, [@READ], nil)
-      TEST(lambda { NetworkInterfaces.Write("ppp") }, [@READ], nil)
-      TEST(lambda { NetworkInterfaces.Write("ippp") }, [@READ], nil)
-      TEST(lambda { NetworkInterfaces.Write("trx") }, [@READ], nil)
-      TEST(lambda { NetworkInterfaces.Write("atm|tr") }, [@READ], nil)
-      TEST(lambda { NetworkInterfaces.Write("") }, [@READ], nil)
+      TEST(->() { NetworkInterfaces.Write("eth") }, [@READ], nil)
+      TEST(->() { NetworkInterfaces.Write("ppp") }, [@READ], nil)
+      TEST(->() { NetworkInterfaces.Write("ippp") }, [@READ], nil)
+      TEST(->() { NetworkInterfaces.Write("trx") }, [@READ], nil)
+      TEST(->() { NetworkInterfaces.Write("atm|tr") }, [@READ], nil)
+      TEST(->() { NetworkInterfaces.Write("") }, [@READ], nil)
 
       @exported = nil
 
@@ -181,43 +180,43 @@ module Yast
 
       DUMP("NetworkInterfaces::GetFreeDevices")
       NetworkInterfaces.Devices = { "eth" => { "0" => {} } }
-      TEST(lambda { NetworkInterfaces.GetFreeDevices("eth", 2) }, [], nil)
+      TEST(->() { NetworkInterfaces.GetFreeDevices("eth", 2) }, [], nil)
       NetworkInterfaces.Devices = { "eth" => { "1" => {} } }
-      TEST(lambda { NetworkInterfaces.GetFreeDevices("eth", 2) }, [], nil)
+      TEST(->() { NetworkInterfaces.GetFreeDevices("eth", 2) }, [], nil)
       NetworkInterfaces.Devices = { "eth" => { "2" => {} } }
-      TEST(lambda { NetworkInterfaces.GetFreeDevices("eth", 2) }, [], nil)
+      TEST(->() { NetworkInterfaces.GetFreeDevices("eth", 2) }, [], nil)
       NetworkInterfaces.Devices = { "eth-pcmcia" => { "" => {} } }
-      TEST(lambda { NetworkInterfaces.GetFreeDevices("eth-pcmcia", 2) }, [], nil)
+      TEST(->() { NetworkInterfaces.GetFreeDevices("eth-pcmcia", 2) }, [], nil)
       NetworkInterfaces.Devices = { "eth-pcmcia" => { "0" => {} } }
-      TEST(lambda { NetworkInterfaces.GetFreeDevices("eth-pcmcia", 2) }, [], nil)
+      TEST(->() { NetworkInterfaces.GetFreeDevices("eth-pcmcia", 2) }, [], nil)
       NetworkInterfaces.Devices = { "eth-pcmcia" => { "1" => {} } }
-      TEST(lambda { NetworkInterfaces.GetFreeDevices("eth-pcmcia", 2) }, [], nil)
+      TEST(->() { NetworkInterfaces.GetFreeDevices("eth-pcmcia", 2) }, [], nil)
 
       DUMP("NetworkInterfaces::Locate")
       NetworkInterfaces.Devices = {
         "eth" => { "eth0" => { "BOOTPROTO" => "dhcp" } }
       }
-      TEST(lambda { NetworkInterfaces.Locate("BOOTPROTO", "dhcp") }, [], nil)
+      TEST(->() { NetworkInterfaces.Locate("BOOTPROTO", "dhcp") }, [], nil)
       NetworkInterfaces.Devices = {
         "eth" => { "eth0" => { "BOOTPROTO" => "" } }
       }
-      TEST(lambda { NetworkInterfaces.Locate("BOOTPROTO", "dhcp") }, [], nil)
+      TEST(->() { NetworkInterfaces.Locate("BOOTPROTO", "dhcp") }, [], nil)
       NetworkInterfaces.Devices = {
         "eth" => { "eth0" => { "BOOTPROTO" => "static" } }
       }
-      TEST(lambda { NetworkInterfaces.Locate("BOOTPROTO", "dhcp") }, [], nil)
+      TEST(->() { NetworkInterfaces.Locate("BOOTPROTO", "dhcp") }, [], nil)
       NetworkInterfaces.Devices = {
         "eth" => {
           "eth0" => { "BOOTPROTO" => "static" },
           "eth1" => { "BOOTPROTO" => "dhcp" }
         }
       }
-      TEST(lambda { NetworkInterfaces.Locate("BOOTPROTO", "dhcp") }, [], nil)
+      TEST(->() { NetworkInterfaces.Locate("BOOTPROTO", "dhcp") }, [], nil)
       NetworkInterfaces.Devices = {
         "eth" => { "eth0" => { "BOOTPROTO" => "static" } },
         "tr"  => { "tr1" => { "BOOTPROTO" => "dhcp" } }
       }
-      TEST(lambda { NetworkInterfaces.Locate("BOOTPROTO", "dhcp") }, [], nil)
+      TEST(->() { NetworkInterfaces.Locate("BOOTPROTO", "dhcp") }, [], nil)
 
       DUMP("NetworkInterfaces::UpdateModemSymlink")
       NetworkInterfaces.Devices = {
@@ -225,19 +224,19 @@ module Yast
           "arc5" => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" }
         }
       }
-      TEST(lambda { NetworkInterfaces.UpdateModemSymlink }, [], nil)
+      TEST(->() { NetworkInterfaces.UpdateModemSymlink }, [], nil)
       NetworkInterfaces.Devices = {
         "modem" => {
           "modemc5" => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" }
         }
       }
-      TEST(lambda { NetworkInterfaces.UpdateModemSymlink }, [], nil)
+      TEST(->() { NetworkInterfaces.UpdateModemSymlink }, [], nil)
       NetworkInterfaces.Devices = {
         "modem" => {
           "modem5" => { "MODEM_DEVICE" => "", "STARTMODE" => "manual" }
         }
       }
-      TEST(lambda { NetworkInterfaces.UpdateModemSymlink }, [], nil)
+      TEST(->() { NetworkInterfaces.UpdateModemSymlink }, [], nil)
       NetworkInterfaces.Devices = {
         "modem" => {
           "modem5" => {
@@ -246,7 +245,7 @@ module Yast
           }
         }
       }
-      TEST(lambda { NetworkInterfaces.UpdateModemSymlink }, [], nil)
+      TEST(->() { NetworkInterfaces.UpdateModemSymlink }, [], nil)
       NetworkInterfaces.Devices = {
         "modem" => {
           "modem5" => {
@@ -255,45 +254,45 @@ module Yast
           }
         }
       }
-      TEST(lambda { NetworkInterfaces.UpdateModemSymlink }, [], nil)
+      TEST(->() { NetworkInterfaces.UpdateModemSymlink }, [], nil)
       @READ = {
         "target" => {
           "lstat"   => { "islink" => true },
           "symlink" => "/dev/ttyS1"
         }
       }
-      TEST(lambda { NetworkInterfaces.UpdateModemSymlink }, [@READ], nil)
+      TEST(->() { NetworkInterfaces.UpdateModemSymlink }, [@READ], nil)
       @READ = {
         "target" => {
           "lstat"   => { "islink" => true },
           "symlink" => "/dev/ttyS2"
         }
       }
-      TEST(lambda { NetworkInterfaces.UpdateModemSymlink }, [@READ], nil)
+      TEST(->() { NetworkInterfaces.UpdateModemSymlink }, [@READ], nil)
 
       DUMP("NetworkInterfaces::List")
       NetworkInterfaces.Devices = {
         "lo" => { "lo" => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" } }
       }
-      TEST(lambda { NetworkInterfaces.List("modem") }, [], nil)
-      TEST(lambda { NetworkInterfaces.List("netcard") }, [], nil)
-      TEST(lambda { NetworkInterfaces.List("") }, [], nil)
+      TEST(->() { NetworkInterfaces.List("modem") }, [], nil)
+      TEST(->() { NetworkInterfaces.List("netcard") }, [], nil)
+      TEST(->() { NetworkInterfaces.List("") }, [], nil)
       NetworkInterfaces.Devices = {
         "lo"  => { "lo" => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" } },
         "eth" => {
           "eth0" => { "BOOTPROTO" => "DHCP", "STARTMODE" => "manual" }
         }
       }
-      TEST(lambda { NetworkInterfaces.List("modem") }, [], nil)
-      TEST(lambda { NetworkInterfaces.List("netcard") }, [], nil)
-      TEST(lambda { NetworkInterfaces.List("") }, [], nil)
+      TEST(->() { NetworkInterfaces.List("modem") }, [], nil)
+      TEST(->() { NetworkInterfaces.List("netcard") }, [], nil)
+      TEST(->() { NetworkInterfaces.List("") }, [], nil)
       NetworkInterfaces.Devices = {
         "eth" => { "eth0" => { "BOOTPROTO" => "static" } },
         "tr"  => { "tr1" => { "BOOTPROTO" => "dhcp" } }
       }
-      TEST(lambda { NetworkInterfaces.List("modem") }, [], nil)
-      TEST(lambda { NetworkInterfaces.List("netcard") }, [], nil)
-      TEST(lambda { NetworkInterfaces.List("") }, [], nil)
+      TEST(->() { NetworkInterfaces.List("modem") }, [], nil)
+      TEST(->() { NetworkInterfaces.List("netcard") }, [], nil)
+      TEST(->() { NetworkInterfaces.List("") }, [], nil)
 
       nil
     end
