@@ -1,7 +1,6 @@
-require 'yast2/systemd_unit'
+require "yast2/systemd_unit"
 
 module Yast
-
   ###
   # Systemd.target unit control API
   # @example How to find a custom systemd target
@@ -36,7 +35,7 @@ module Yast
   ###
 
   class SystemdTargetNotFound < StandardError
-    def initialize target_name
+    def initialize(target_name)
       super "Target unit '#{target_name}' not found"
     end
   end
@@ -46,9 +45,9 @@ module Yast
 
     UNIT_SUFFIX    = ".target"
     DEFAULT_TARGET = "default.target"
-    PROPERTIES     = { :allow_isolate => "AllowIsolate" }
+    PROPERTIES     = { allow_isolate: "AllowIsolate" }
 
-    def find target_name, properties={}
+    def find(target_name, properties = {})
       target_name += UNIT_SUFFIX unless target_name.end_with?(UNIT_SUFFIX)
       target = Target.new(target_name, PROPERTIES.merge(properties))
 
@@ -60,13 +59,13 @@ module Yast
       target
     end
 
-    def find! target_name, properties={}
-      find(target_name) || raise(SystemdTargetNotFound, target_name)
+    def find!(target_name, properties = {})
+      find(target_name, properties) || raise(SystemdTargetNotFound, target_name)
     end
 
-    def all properties={}
+    def all(properties = {})
       targets = Systemctl.target_units.map do |target_unit_name|
-        find(target_unit_name)
+        find(target_unit_name, properties)
       end
       targets.compact
     end
@@ -78,7 +77,7 @@ module Yast
       find(result.stdout.strip)
     end
 
-    def set_default target
+    def set_default(target)
       target_unit = target.is_a?(Target) ? target : find(target)
 
       unless target_unit
@@ -90,7 +89,6 @@ module Yast
     end
 
     class Target < SystemdUnit
-
       # Disable unsupported methods for target units
       undef_method :start, :stop, :enable, :disable, :restart
 
@@ -98,7 +96,7 @@ module Yast
         # We cannot find out a target properties from /mnt in inst-sys
         # systemctl doesn't return any properties in chroot
         # See bnc#889323
-        ['yes', nil].include?(properties.allow_isolate)
+        ["yes", nil].include?(properties.allow_isolate)
       end
 
       def set_default

@@ -50,7 +50,7 @@ module Yast
     # @see WS documentation for the format of aliases map
     def WS_testall(aliases)
       aliases = deep_copy(aliases)
-      Builtins.maplist(aliases) { |id, func| Builtins.eval(func) }
+      Builtins.maplist(aliases) { |_id, func| Builtins.eval(func) }
     end
 
     # Check correct types in maps and alias presence for sequence.
@@ -63,19 +63,19 @@ module Yast
       ret = []
 
       # check if aliases is not a nil
-      if aliases == nil
+      if aliases.nil?
         Builtins.y2error(2, "sequencer check: aliases is nil")
         return false
       end
 
       # check if sequence is not a nil
-      if sequence == nil
+      if sequence.nil?
         Builtins.y2error(2, "sequencer check: sequence is nil")
         return false
       end
 
       # check if ws_start is in aliases
-      if Ops.get(aliases, "ws_start") != nil
+      if Ops.get(aliases, "ws_start")
         Builtins.y2error(2, "sequencer check: ws_start cannot be an alias name")
         ret = Builtins.add(ret, false)
       else
@@ -123,7 +123,7 @@ module Yast
       ret = Builtins.flatten([ret, ret0])
 
       # check if ws_start is in sequence
-      if Ops.get(sequence, "ws_start") == nil
+      if Ops.get(sequence, "ws_start").nil?
         Builtins.y2error(2, "sequencer check: ws_start needs to be defined")
         ret = Builtins.add(ret, false)
       else
@@ -133,13 +133,13 @@ module Yast
       # check all aliases in sequence
       ret0 = Builtins.maplist(sequence) do |key, val|
         if key == "ws_start"
-          if !Ops.is_symbol?(val) && Ops.get(aliases, val) == nil
+          if !Ops.is_symbol?(val) && Ops.get(aliases, val).nil?
             Builtins.y2error(2, "sequencer check: alias not found: %1", val)
             next false
           else
             next true
           end
-        elsif Ops.get(aliases, key) == nil
+        elsif Ops.get(aliases, key).nil?
           Builtins.y2error(2, "sequencer check: alias not found: %1", key)
           next false
         elsif !Ops.is_map?(val)
@@ -150,31 +150,29 @@ module Yast
             if !Ops.is_symbol?(k)
               Builtins.y2error(2, "sequencer check: not a symbol: %1", k)
               next false
-            elsif !Ops.is_symbol?(v) && Ops.get(aliases, v) == nil
+            elsif !Ops.is_symbol?(v) && Ops.get(aliases, v).nil?
               Builtins.y2error(2, "sequencer check: alias not found: %1", v)
               next false
             else
               next true
             end
           end
-          next false if Builtins.find(ret1) { |n| n == false } != nil
-          next true
+          next ret1.all? { |v| v }
         end
       end
       ret = Builtins.flatten([ret, ret0])
 
       # check that all aliases are used
-      ret0 = Builtins.maplist(aliases) do |key, val|
+      ret0 = Builtins.maplist(aliases) do |key, _val|
         if !Builtins.haskey(sequence, key)
-          Builtins.y2warning(2, "sequencer check: alias not used: %1", key) 
+          Builtins.y2warning(2, "sequencer check: alias not used: %1", key)
           # return false;
         end
         true
       end
       ret = Builtins.flatten([ret, ret0])
 
-      return false if Builtins.find(ret) { |n| n == false } != nil
-      true
+      ret.all? { |v| v }
     end
 
     # Report error and return nil
@@ -190,11 +188,11 @@ module Yast
     # @param [Hash] aliases map of aliases
     # @param [String] alias given alias
     # @return [Yast::Term] belonging to the given alias or nil, if error
-    def WS_alias(aliases, _alias)
+    def WS_alias(aliases, alias_)
       aliases = deep_copy(aliases)
-      found = Ops.get(aliases, _alias)
-      if found == nil
-        return WS_error(Builtins.sformat("Alias not found: %1", _alias))
+      found = Ops.get(aliases, alias_)
+      if found.nil?
+        return WS_error(Builtins.sformat("Alias not found: %1", alias_))
       end
       if Ops.is_list?(found)
         if Ops.less_or_equal(Builtins.size(Convert.to_list(found)), 0)
@@ -202,25 +200,23 @@ module Yast
         end
         found = Ops.get(Convert.to_list(found), 0)
       end
-      if found == nil
+      if found.nil?
         return WS_error(Builtins.sformat("Invalid alias: %1", found))
       end
-      # FIXME: use function pointers
-      #     if (is(found, term))
-      return deep_copy(found)
-      WS_error(Builtins.sformat("Invalid alias: %1", found))
+
+      deep_copy(found)
     end
 
     # Decide if an alias is special
     # @param [Hash] aliases map of aliases
     # @param [String] alias given alias
     # @return true if the given alias is special or nil, if not found
-    def WS_special(aliases, _alias)
+    def WS_special(aliases, alias_)
       aliases = deep_copy(aliases)
-      found = Ops.get(aliases, _alias)
-      if found == nil
+      found = Ops.get(aliases, alias_)
+      if found.nil?
         return Convert.to_boolean(
-          WS_error(Builtins.sformat("Alias not found: %1", _alias))
+          WS_error(Builtins.sformat("Alias not found: %1", alias_))
         )
       end
       ret = false
@@ -240,15 +236,15 @@ module Yast
     def WS_next(sequence, current, ret)
       sequence = deep_copy(sequence)
       found = Ops.get_map(sequence, current)
-      if found == nil
+      if found.nil?
         return WS_error(Builtins.sformat("Current not found: %1", current))
       end
       # string|symbol next
-      _next = Ops.get(found, ret)
-      if _next == nil
+      next_ = Ops.get(found, ret)
+      if next_.nil?
         return WS_error(Builtins.sformat("Symbol not found: %1", ret))
       end
-      deep_copy(_next)
+      deep_copy(next_)
     end
 
     # Run a function from the aliases map
@@ -258,10 +254,9 @@ module Yast
     def WS_run(aliases, id)
       aliases = deep_copy(aliases)
       Builtins.y2debug("Running: %1", id)
-      function = nil
 
       function = WS_alias(aliases, id)
-      if function == nil
+      if function.nil?
         return Convert.to_symbol(WS_error(Builtins.sformat("Bad id: %1", id)))
       end
 
@@ -283,7 +278,7 @@ module Yast
     def WS_push(stack, item)
       stack = deep_copy(stack)
       item = deep_copy(item)
-      return nil if stack == nil
+      return nil if stack.nil?
 
       return Builtins.add(stack, item) if !Builtins.contains(stack, item)
 
@@ -302,7 +297,7 @@ module Yast
     # @return [ new stack, poped value ] or nil if the stack is empty or nil
     def WS_pop(stack)
       stack = deep_copy(stack)
-      return nil if stack == nil
+      return nil if stack.nil?
       num = Builtins.size(stack)
       return nil if Ops.less_than(num, 2)
       newstack = Builtins.remove(stack, Ops.subtract(num, 1))
@@ -325,11 +320,11 @@ module Yast
       stack = []
       # string|symbol current
       current = Ops.get(sequence, "ws_start")
-      if current == nil
+      if current.nil?
         return Convert.to_symbol(WS_error("Starting dialog not found"))
       end
 
-      while true
+      loop do
         if Ops.is_symbol?(current)
           Builtins.y2debug("Finished")
           return Convert.to_symbol(current)
@@ -339,7 +334,7 @@ module Yast
         Builtins.y2debug("stack=%1", stack)
         ret = WS_run(aliases, Convert.to_string(current))
 
-        if ret == nil || !Ops.is_symbol?(ret)
+        if ret.nil? || !Ops.is_symbol?(ret)
           return Convert.to_symbol(
             WS_error(Builtins.sformat("Invalid ret: %1", ret))
           )
@@ -347,7 +342,7 @@ module Yast
           Builtins.y2debug("Back")
           poped = []
           special = true
-          begin
+          loop do
             return :back if Ops.less_than(Builtins.size(stack), 2)
             poped = WS_pop(stack)
             Builtins.y2debug("poped=%1", poped)
@@ -355,7 +350,8 @@ module Yast
             stack = Ops.get_list(poped, 0)
             special = WS_special(aliases, Convert.to_string(current))
             Builtins.y2debug("special=%1", special)
-          end while special
+            break if !special
+          end
         else
           Builtins.y2debug("ret=%1", ret)
           current = WS_next(
@@ -364,7 +360,7 @@ module Yast
             Convert.to_symbol(ret)
           )
           Builtins.y2debug("current=%1", current)
-          if current == nil
+          if current.nil?
             return Convert.to_symbol(
               WS_error(Builtins.sformat("Next not found: %1", current))
             )
@@ -376,17 +372,17 @@ module Yast
       nil
     end
 
-    publish :variable => :docheck, :type => "boolean", :private => true
-    publish :function => :WS_testall, :type => "list (map)", :private => true
-    publish :function => :WS_check, :type => "boolean (map, map)", :private => true
-    publish :function => :WS_error, :type => "any (string)", :private => true
-    publish :function => :WS_alias, :type => "any (map, string)", :private => true
-    publish :function => :WS_special, :type => "boolean (map, string)", :private => true
-    publish :function => :WS_next, :type => "any (map, string, symbol)", :private => true
-    publish :function => :WS_run, :type => "symbol (map, string)", :private => true
-    publish :function => :WS_push, :type => "list (list, any)", :private => true
-    publish :function => :WS_pop, :type => "list (list)", :private => true
-    publish :function => :Run, :type => "symbol (map, map)"
+    publish variable: :docheck, type: "boolean", private: true
+    publish function: :WS_testall, type: "list (map)", private: true
+    publish function: :WS_check, type: "boolean (map, map)", private: true
+    publish function: :WS_error, type: "any (string)", private: true
+    publish function: :WS_alias, type: "any (map, string)", private: true
+    publish function: :WS_special, type: "boolean (map, string)", private: true
+    publish function: :WS_next, type: "any (map, string, symbol)", private: true
+    publish function: :WS_run, type: "symbol (map, string)", private: true
+    publish function: :WS_push, type: "list (list, any)", private: true
+    publish function: :WS_pop, type: "list (list)", private: true
+    publish function: :Run, type: "symbol (map, map)"
   end
 
   Sequencer = SequencerClass.new

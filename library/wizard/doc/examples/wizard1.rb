@@ -32,7 +32,6 @@ module Yast
       Yast.import "UI"
       Yast.import "Wizard"
 
-
       Wizard.CreateDialog
 
       @contents = Label("Wizard contents")

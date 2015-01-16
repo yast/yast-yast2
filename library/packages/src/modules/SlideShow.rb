@@ -136,7 +136,7 @@ module Yast
 
       @current_slide_no = 0
       @slide_start_time = 0
-      @slide_interval = 30 # FIXME constant
+      @slide_interval = 30 # FIXME: constant
       @language = "en"
       @widgets_created = false
       @user_switched_to_details = false
@@ -165,9 +165,9 @@ module Yast
       @_stages = {} # list of the configured stages
       @_current_stage = nil # current stage
 
-      @_rn_tabs = {} #tabs with release notes
-      @_relnotes = {} #texts with release notes, product -> text
-      @_base_product = "" #base product for release notes ordering
+      @_rn_tabs = {} # tabs with release notes
+      @_relnotes = {} # texts with release notes, product -> text
+      @_base_product = "" # base product for release notes ordering
     end
 
     # Set the flag that user requested abort of the installation
@@ -192,7 +192,6 @@ module Yast
       nil
     end
 
-
     # Reset the internal (global) timer.
     #
     def ResetTimer
@@ -200,7 +199,6 @@ module Yast
 
       nil
     end
-
 
     # Stop the internal (global) timer and account elapsed time.
     #
@@ -230,7 +228,6 @@ module Yast
     def ShowingDetails
       @widgets_created && UI.WidgetExists(:detailsPage)
     end
-
 
     # Check if currently the "Slide Show" page is shown
     # @return true if showing details, false otherwise
@@ -401,14 +398,11 @@ module Yast
       nil
     end
 
-
-
     # Check if the dialog is currently set up so the user could switch to the slide page.
     #
     def HaveSlideWidget
       UI.WidgetExists(:dumbTab)
     end
-
 
     # Check if the slide show is available. This must be called before trying
     # to access any slides; some late initialization is done here.
@@ -430,7 +424,6 @@ module Yast
       nil
     end
 
-
     # Set the slide show text.
     # @param [String] text
     #
@@ -439,7 +432,6 @@ module Yast
 
       nil
     end
-
 
     # Set the curent language. Must be called once during initialization.
     #
@@ -450,13 +442,11 @@ module Yast
       nil
     end
 
-
     # Create one single item for the CD statistics table
     #
     def TableItem(id, col1, col2, col3, col4)
       Item(Id(id), col1, col2, col3, col4)
     end
-
 
     # Load a slide image + text.
     # @param [Fixnum] slide_no number of slide to load
@@ -474,7 +464,6 @@ module Yast
 
       nil
     end
-
 
     # Check if the current slide needs to be changed and do that if
     # necessary.
@@ -517,7 +506,6 @@ module Yast
       Builtins.y2debug("widget term: \n%1", widgets)
       deep_copy(widgets)
     end
-
 
     # Construct widgets describing a page with the real slide show
     # (the RichText / HTML page)
@@ -584,7 +572,6 @@ module Yast
       deep_copy(widgets)
     end
 
-
     # Switch from the 'details' view to the 'slide show' view.
     #
     def SwitchToSlideView
@@ -640,7 +627,6 @@ module Yast
       nil
     end
 
-
     # Help text for the dialog
     def HelpText
       # Help text while software packages are being installed (displayed only in rare cases)
@@ -652,7 +638,7 @@ module Yast
       help_text
     end
 
-    #set the release notes for slide show
+    # set the release notes for slide show
     # @param [map<string,string>] map product name -> release notes text
     # @param [string] base product name
     def SetReleaseNotes(relnotes, base_product)
@@ -660,9 +646,9 @@ module Yast
       @_base_product = base_product
     end
 
-    def add_relnotes_for_product product, relnotes, tabs
+    def add_relnotes_for_product(product, relnotes, tabs)
       id = ProductRelNotesID product
-      #Translators: Tab name, keep short, %s is product name, e.g. SLES
+      # Translators: Tab name, keep short, %s is product name, e.g. SLES
       tabs << Item(Id(id), _("%s Release Notes") % product)
       @_rn_tabs[id] = relnotes
     end
@@ -684,7 +670,7 @@ module Yast
         if @_relnotes.key?(@_base_product)
           add_relnotes_for_product @_base_product, @_relnotes[@_base_product], tabs
         end
-	@_relnotes.each do | product, relnotes |
+        @_relnotes.each do | product, relnotes |
           if @_base_product != product
             add_relnotes_for_product product, relnotes, tabs
           end
@@ -714,13 +700,13 @@ module Yast
       Builtins.y2milestone("SlideShow contents: %1", contents)
 
       Wizard.SetContents(
-        (Mode.update ?
+        if Mode.update
           # Dialog heading - software packages are being upgraded
           _("Performing Upgrade")
-          :
+        else
           # Dialog heading - software packages are being installed
           _("Performing Installation")
-        ),
+        end,
         contents,
         HelpText(),
         false, # no back button
@@ -736,8 +722,6 @@ module Yast
 
       nil
     end
-
-
 
     # Open the slide show base dialog with empty work area (placeholder for
     # the image) and CD statistics.
@@ -772,7 +756,6 @@ module Yast
       nil
     end
 
-
     # Initialize generic data to default values
     def Reset
       @current_slide_no = -1
@@ -786,8 +769,6 @@ module Yast
 
       nil
     end
-
-
 
     # Process (slide show) input (button press).
     #
@@ -816,7 +797,6 @@ module Yast
 
       nil
     end
-
 
     # Check for user button presses and handle them. Generic handling to be used in the
     # progress handlers.
@@ -871,7 +851,6 @@ module Yast
 
       nil
     end
-
 
     # Close the slide show dialog.
     #
@@ -993,8 +972,8 @@ module Yast
           )
           Ops.set(stage, "start", start)
           if Ops.greater_than(
-              Ops.add(Ops.get_integer(stage, "size", 0), start),
-              100
+            Ops.add(Ops.get_integer(stage, "size", 0), start),
+            100
             )
             Ops.set(stage, "size", Ops.subtract(100, start))
           end
@@ -1004,7 +983,7 @@ module Yast
         total_size += stage["size"]
         Ops.set(@_stages, Ops.get_string(stage, "name", ""), stage)
         # setup first stage
-        @_current_stage = deep_copy(stage) if @_current_stage == nil
+        @_current_stage = deep_copy(stage) if @_current_stage.nil?
       end
 
       # Because of using integers in the calculation above the sum of the sizes
@@ -1042,59 +1021,59 @@ module Yast
       deep_copy(@_stages)
     end
 
-    publish :variable => :total_time_elapsed, :type => "integer"
-    publish :variable => :start_time, :type => "integer"
-    publish :variable => :initial_recalc_delay, :type => "integer"
-    publish :variable => :recalc_interval, :type => "integer"
-    publish :variable => :next_recalc_time, :type => "integer"
-    publish :variable => :current_slide_no, :type => "integer"
-    publish :variable => :slide_start_time, :type => "integer"
-    publish :variable => :slide_interval, :type => "integer"
-    publish :variable => :language, :type => "string"
-    publish :variable => :widgets_created, :type => "boolean"
-    publish :variable => :user_switched_to_details, :type => "boolean"
-    publish :variable => :opened_own_wizard, :type => "boolean"
-    publish :variable => :inst_log, :type => "string"
-    publish :variable => :debug, :type => "boolean"
-    publish :variable => :textmode, :type => "boolean"
-    publish :variable => :display_width, :type => "integer"
-    publish :variable => :relnotes, :type => "string"
-    publish :function => :ChangeSlideIfNecessary, :type => "void ()"
-    publish :function => :SetUserAbort, :type => "void (boolean)"
-    publish :function => :GetUserAbort, :type => "boolean ()"
-    publish :function => :StartTimer, :type => "void ()"
-    publish :function => :ResetTimer, :type => "void ()"
-    publish :function => :StopTimer, :type => "void ()"
-    publish :function => :ShowingDetails, :type => "boolean ()"
-    publish :function => :ShowingSlide, :type => "boolean ()"
-    publish :function => :ShowingRelNotes, :type => "boolean (symbol)"
-    publish :function => :SubProgressStart, :type => "void (string)"
-    publish :function => :SubProgress, :type => "void (integer, string)"
-    publish :function => :GlobalProgressStart, :type => "void (string)"
-    publish :function => :CurrentStageDescription, :type => "string ()"
-    publish :function => :MoveToStage, :type => "void (string)"
-    publish :function => :StageProgress, :type => "void (integer, string)"
-    publish :function => :SetGlobalProgressLabel, :type => "void (string)"
-    publish :function => :AppendMessageToInstLog, :type => "void (string)"
-    publish :function => :HaveSlideWidget, :type => "boolean ()"
-    publish :function => :CheckForSlides, :type => "void ()"
-    publish :function => :SetLanguage, :type => "void (string)"
-    publish :function => :TableItem, :type => "term (string, string, string, string, string)"
-    publish :function => :SwitchToSlideView, :type => "void ()"
-    publish :function => :SwitchToDetailsView, :type => "void ()"
-    publish :function => :SwitchToReleaseNotesView, :type => "void (symbol)"
-    publish :function => :RebuildDialog, :type => "void ()"
-    publish :function => :Reset, :type => "void ()"
-    publish :function => :HandleInput, :type => "void (any)"
-    publish :function => :GenericHandleInput, :type => "void ()"
-    publish :function => :OpenDialog, :type => "void ()"
-    publish :function => :CloseDialog, :type => "void ()"
-    publish :function => :ShowTable, :type => "void ()"
-    publish :function => :HideTable, :type => "void ()"
-    publish :function => :UpdateTable, :type => "void (list <term>)"
-    publish :function => :Setup, :type => "void (list <map <string, any>>)"
-    publish :function => :GetSetup, :type => "map <string, map <string, any>> ()"
-    publish :function => :SetReleaseNotes, :type => "void (map<string, string>, string)"
+    publish variable: :total_time_elapsed, type: "integer"
+    publish variable: :start_time, type: "integer"
+    publish variable: :initial_recalc_delay, type: "integer"
+    publish variable: :recalc_interval, type: "integer"
+    publish variable: :next_recalc_time, type: "integer"
+    publish variable: :current_slide_no, type: "integer"
+    publish variable: :slide_start_time, type: "integer"
+    publish variable: :slide_interval, type: "integer"
+    publish variable: :language, type: "string"
+    publish variable: :widgets_created, type: "boolean"
+    publish variable: :user_switched_to_details, type: "boolean"
+    publish variable: :opened_own_wizard, type: "boolean"
+    publish variable: :inst_log, type: "string"
+    publish variable: :debug, type: "boolean"
+    publish variable: :textmode, type: "boolean"
+    publish variable: :display_width, type: "integer"
+    publish variable: :relnotes, type: "string"
+    publish function: :ChangeSlideIfNecessary, type: "void ()"
+    publish function: :SetUserAbort, type: "void (boolean)"
+    publish function: :GetUserAbort, type: "boolean ()"
+    publish function: :StartTimer, type: "void ()"
+    publish function: :ResetTimer, type: "void ()"
+    publish function: :StopTimer, type: "void ()"
+    publish function: :ShowingDetails, type: "boolean ()"
+    publish function: :ShowingSlide, type: "boolean ()"
+    publish function: :ShowingRelNotes, type: "boolean (symbol)"
+    publish function: :SubProgressStart, type: "void (string)"
+    publish function: :SubProgress, type: "void (integer, string)"
+    publish function: :GlobalProgressStart, type: "void (string)"
+    publish function: :CurrentStageDescription, type: "string ()"
+    publish function: :MoveToStage, type: "void (string)"
+    publish function: :StageProgress, type: "void (integer, string)"
+    publish function: :SetGlobalProgressLabel, type: "void (string)"
+    publish function: :AppendMessageToInstLog, type: "void (string)"
+    publish function: :HaveSlideWidget, type: "boolean ()"
+    publish function: :CheckForSlides, type: "void ()"
+    publish function: :SetLanguage, type: "void (string)"
+    publish function: :TableItem, type: "term (string, string, string, string, string)"
+    publish function: :SwitchToSlideView, type: "void ()"
+    publish function: :SwitchToDetailsView, type: "void ()"
+    publish function: :SwitchToReleaseNotesView, type: "void (symbol)"
+    publish function: :RebuildDialog, type: "void ()"
+    publish function: :Reset, type: "void ()"
+    publish function: :HandleInput, type: "void (any)"
+    publish function: :GenericHandleInput, type: "void ()"
+    publish function: :OpenDialog, type: "void ()"
+    publish function: :CloseDialog, type: "void ()"
+    publish function: :ShowTable, type: "void ()"
+    publish function: :HideTable, type: "void ()"
+    publish function: :UpdateTable, type: "void (list <term>)"
+    publish function: :Setup, type: "void (list <map <string, any>>)"
+    publish function: :GetSetup, type: "map <string, map <string, any>> ()"
+    publish function: :SetReleaseNotes, type: "void (map<string, string>, string)"
   end
 
   SlideShow = SlideShowClass.new

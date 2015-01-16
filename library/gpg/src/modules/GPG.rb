@@ -43,7 +43,6 @@ module Yast
 
       textdomain "base"
 
-
       # value for --homedir gpg option, empty string means default home directory
       @home = ""
 
@@ -90,10 +89,8 @@ module Yast
     # @param [String] options additional gpg options
     # @return [String] gpg option string
     def buildGPGcommand(options)
-      home_opt = Ops.greater_than(Builtins.size(@home), 0) ?
-        Builtins.sformat("--homedir '%1' ", String.Quote(@home)) :
-        ""
-      ret = Ops.add(Ops.add("gpg ", home_opt), options)
+      home_opt = @home.empty? ? "" : "--homedir '#{String.Quote(@home)}' "
+      ret = "gpg #{home_opt} #{options}"
       Builtins.y2milestone("gpg command: %1", ret)
 
       ret
@@ -103,7 +100,6 @@ module Yast
     # @param [String] options additional gpg options
     # @return [Hash] result of the execution
     def callGPG(options)
-      ret = {}
       command = Ops.add("LC_ALL=en_US.UTF-8 ", buildGPGcommand(options))
 
       ret = Convert.to_map(SCR.Execute(path(".target.bash_output"), command))
@@ -122,27 +118,28 @@ module Yast
       lines = deep_copy(lines)
       ret = {}
 
-      Builtins.foreach(lines) { |line| Builtins.foreach(@parsing_map) do |regexp, key|
-        parsed = Builtins.regexpsub(line, regexp, "\\1")
-        if parsed != nil
-          # there might be more UIDs
-          if key == "uid"
-            Builtins.y2milestone("%1: %2", key, parsed)
-            Ops.set(ret, key, Builtins.add(Ops.get_list(ret, key, []), parsed))
-          else
-            if Builtins.haskey(ret, key)
-              Builtins.y2warning(
-                "Key %1: replacing old value '%2' with '%3'",
-                key,
-                Ops.get_string(ret, key, ""),
-                parsed
-              )
+      Builtins.foreach(lines) do |line|
+        Builtins.foreach(@parsing_map) do |regexp, key|
+          parsed = Builtins.regexpsub(line, regexp, "\\1")
+          if !parsed.nil?
+            # there might be more UIDs
+            if key == "uid"
+              Builtins.y2milestone("%1: %2", key, parsed)
+              Ops.set(ret, key, Builtins.add(Ops.get_list(ret, key, []), parsed))
+            else
+              if Builtins.haskey(ret, key)
+                Builtins.y2warning(
+                  "Key %1: replacing old value '%2' with '%3'",
+                  key,
+                  Ops.get_string(ret, key, ""),
+                  parsed
+                )
+              end
+              Ops.set(ret, key, parsed)
             end
-            Ops.set(ret, key, parsed)
           end
         end
-      end } 
-
+      end
 
       Builtins.y2milestone("Parsed key: %1", ret)
 
@@ -175,11 +172,7 @@ module Yast
         else
           key_line_list = Builtins.add(key_line_list, line)
         end
-      end 
-
-
-      # not needed anymore, save some memory
-      lines = []
+      end
 
       # parse each group to map
       Builtins.foreach(key_lines) do |keylines|
@@ -187,8 +180,7 @@ module Yast
         if Ops.greater_than(Builtins.size(parsed), 0)
           ret = Builtins.add(ret, parsed)
         end
-      end 
-
+      end
 
       Builtins.y2milestone("Parsed keys: %1", ret)
 
@@ -199,7 +191,7 @@ module Yast
     # @return [Array<Hash> public keys: [ $["fingerprint": String key_fingerprint, "id": String key_ID, "uid": Array<String>] user_ids], ...]
     def PublicKeys
       # return the cached values if available
-      return deep_copy(@public_keys) if @public_keys != nil
+      return deep_copy(@public_keys) if !@public_keys.nil?
 
       out = callGPG("--list-keys --fingerprint")
 
@@ -214,7 +206,7 @@ module Yast
     # @return [Array<Hash> public keys: [ $["fingerprint": String key_fingerprint, "id": String key_ID, "uid": Array<String>] user_ids], ...]
     def PrivateKeys
       # return the cached values if available
-      return deep_copy(@private_keys) if @private_keys != nil
+      return deep_copy(@private_keys) if !@private_keys.nil?
 
       out = callGPG("--list-secret-keys --fingerprint")
 
@@ -238,7 +230,7 @@ module Yast
 
       if !text_mode
         if Ops.less_than(SCR.Read(path(".target.size"), xterm), 0)
-          # TODO FIXME
+          # FIXME: do it
           Report.Error(_("Xterm is missing, install xterm package."))
           return false
         end
@@ -309,7 +301,7 @@ module Yast
     #        (with suffix .asc) otherwise binary signature (with suffix .sig) is created
     # @return [Boolean] true if the file has been successfuly signed
     def SignFile(keyid, file, passphrase, ascii_signature)
-      if passphrase == nil || keyid == nil || keyid == "" || file == nil ||
+      if passphrase.nil? || keyid.nil? || keyid == "" || file.nil? ||
           file == ""
         Builtins.y2error(
           "Invalid parameters: keyid: %1, file: %2, passphrase: %3",
@@ -324,10 +316,10 @@ module Yast
       suffix = ascii_signature ? ".asc" : ".sig"
 
       if Ops.greater_or_equal(
-          Convert.to_integer(
-            SCR.Read(path(".target.size"), Ops.add(file, suffix))
-          ),
-          0
+        Convert.to_integer(
+          SCR.Read(path(".target.size"), Ops.add(file, suffix))
+        ),
+        0
         )
         # remove the existing key
         SCR.Execute(
@@ -430,15 +422,15 @@ module Yast
       Ops.get_integer(out, "exit", -1) == 0
     end
 
-    publish :function => :Init, :type => "boolean (string, boolean)"
-    publish :function => :PublicKeys, :type => "list <map> ()"
-    publish :function => :PrivateKeys, :type => "list <map> ()"
-    publish :function => :CreateKey, :type => "boolean ()"
-    publish :function => :SignAsciiDetached, :type => "boolean (string, string, string)"
-    publish :function => :SignDetached, :type => "boolean (string, string, string)"
-    publish :function => :VerifyFile, :type => "boolean (string, string)"
-    publish :function => :ExportAsciiPublicKey, :type => "boolean (string, string)"
-    publish :function => :ExportPublicKey, :type => "boolean (string, string)"
+    publish function: :Init, type: "boolean (string, boolean)"
+    publish function: :PublicKeys, type: "list <map> ()"
+    publish function: :PrivateKeys, type: "list <map> ()"
+    publish function: :CreateKey, type: "boolean ()"
+    publish function: :SignAsciiDetached, type: "boolean (string, string, string)"
+    publish function: :SignDetached, type: "boolean (string, string, string)"
+    publish function: :VerifyFile, type: "boolean (string, string)"
+    publish function: :ExportAsciiPublicKey, type: "boolean (string, string)"
+    publish function: :ExportPublicKey, type: "boolean (string, string)"
   end
 
   GPG = GPGClass.new

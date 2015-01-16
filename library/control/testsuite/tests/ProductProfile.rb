@@ -13,13 +13,13 @@ module Yast
       @EX = { "target" => { "bash_output" => {} } }
 
       # just returns true because of non-installation mode
-      Testsuite.Test(lambda { ProductProfile.CheckCompliance(nil) }, [
+      Testsuite.Test(->() { ProductProfile.CheckCompliance(nil) }, [
         @READ,
         {},
         @EX
       ], 0)
 
-      Testsuite.Test(lambda { ProductProfile.compliance_checked }, [], 0)
+      Testsuite.Test(->() { ProductProfile.compliance_checked }, [], 0)
 
       Yast.import "Mode"
       Mode.SetMode("installation")
@@ -27,17 +27,17 @@ module Yast
       ProductProfile.compliance_checked = { 1 => true }
 
       # exits on compliance_checked test
-      Testsuite.Test(lambda { ProductProfile.CheckCompliance(nil) }, [
+      Testsuite.Test(->() { ProductProfile.CheckCompliance(nil) }, [
         @READ,
         {},
         @EX
       ], 0)
 
-      Testsuite.Test(lambda { ProductProfile.CheckCompliance(1) }, [
+      Testsuite.Test(->() { ProductProfile.CheckCompliance(1) }, [
         @READ,
         {},
         @EX
-      ], 0) 
+      ], 0)
 
       # this would continue to IsCompliant and initialize Pkg::
       # Testsuite::Test (``(ProductProfile::CheckCompliance (2)), [ READ, $[], EX ], 0);

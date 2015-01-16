@@ -25,14 +25,11 @@
 #
 # Authors:
 #	Ladislav Slezak <lslezak@suse.cz>
-#
-# Summary:
-#	Module for detecting hardware
-#
 
 require "yast"
 
 module Yast2
+  # Module for detecting hardware
   class HwDetection
     include Yast::Logger
 
@@ -51,15 +48,15 @@ module Yast2
       memory_size = 0
       memory.each do |info|
         # internal class, main memory
-        if info["class_id"] == MEMORY_CLASS && info["sub_class_id"] == MEMORY_SUBCLASS
-          info.fetch("resource", {}).fetch("phys_mem", []).each do |phys_mem|
-            memory_size += phys_mem.fetch("range", 0)
-          end
+        next if info["class_id"] != MEMORY_CLASS || info["sub_class_id"] != MEMORY_SUBCLASS
+
+        info.fetch("resource", {}).fetch("phys_mem", []).each do |phys_mem|
+          memory_size += phys_mem.fetch("range", 0)
         end
       end
 
-      log.info("Detected memory size: #{memory_size} (#{memory_size/1024/1024}MiB)")
-      return memory_size
+      log.info("Detected memory size: #{memory_size} (#{memory_size / 1024 / 1024}MiB)")
+      memory_size
     end
   end
 end

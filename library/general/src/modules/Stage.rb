@@ -36,7 +36,6 @@ require "yast"
 module Yast
   class StageClass < Module
     def main
-
       textdomain "base"
 
       # Current stage
@@ -46,7 +45,7 @@ module Yast
     # Get the current stage
     # @return [String] the current stage
     def stage
-      if @_stage == nil
+      if @_stage.nil?
         @_stage = "normal"
 
         arg_count = Builtins.size(WFM.Args)
@@ -72,8 +71,8 @@ module Yast
     # @param [String] new_stage string currently processed stage
     def Set(new_stage)
       if !Builtins.contains(
-          ["normal", "initial", "continue", "firstboot", "hardware_probed"],
-          new_stage
+        ["normal", "initial", "continue", "firstboot", "hardware_probed"],
+        new_stage
         )
         Builtins.y2error("Unknown stage %1", new_stage)
       end
@@ -116,13 +115,13 @@ module Yast
       stage == "hardware_probed"
     end
 
-    publish :function => :stage, :type => "string ()"
-    publish :function => :Set, :type => "void (string)"
-    publish :function => :initial, :type => "boolean ()"
-    publish :function => :cont, :type => "boolean ()"
-    publish :function => :firstboot, :type => "boolean ()"
-    publish :function => :normal, :type => "boolean ()"
-    publish :function => :reprobe, :type => "boolean ()"
+    publish function: :stage, type: "string ()"
+    publish function: :Set, type: "void (string)"
+    publish function: :initial, type: "boolean ()"
+    publish function: :cont, type: "boolean ()"
+    publish function: :firstboot, type: "boolean ()"
+    publish function: :normal, type: "boolean ()"
+    publish function: :reprobe, type: "boolean ()"
   end
 
   Stage = StageClass.new

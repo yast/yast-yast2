@@ -41,7 +41,6 @@ module Yast
       Yast.import "ProductFeatures"
       Yast.import "Service"
 
-
       # private variables
 
       # Label saying that service is running
@@ -89,8 +88,8 @@ module Yast
       return if !UI.WidgetExists(Id("_cwm_use_ldap"))
       get_use_ldap = Convert.convert(
         Ops.get(widget, "get_use_ldap"),
-        :from => "any",
-        :to   => "boolean ()"
+        from: "any",
+        to:   "boolean ()"
       )
       use_ldap = get_use_ldap.call
       UI.ChangeWidget(Id("_cwm_use_ldap"), :Value, use_ldap)
@@ -107,8 +106,8 @@ module Yast
       if event_id == "_cwm_use_ldap"
         set_use_ldap = Convert.convert(
           Ops.get(widget, "set_use_ldap"),
-          :from => "any",
-          :to   => "void (boolean)"
+          from: "any",
+          to:   "void (boolean)"
         )
         use_ldap = Convert.to_boolean(
           UI.QueryWidget(Id("_cwm_use_ldap"), :Value)
@@ -127,7 +126,7 @@ module Yast
     # Init function of the widget
     # @param [Hash{String => Object}] widget a widget description map
     # @param [String] key strnig the widget key
-    def AutoStartInit(widget, key)
+    def AutoStartInit(widget, _key)
       widget = deep_copy(widget)
       if !UI.WidgetExists(Id("_cwm_service_startup"))
         Builtins.y2error("Widget _cwm_service_startup does not exist")
@@ -135,8 +134,8 @@ module Yast
       end
       get_auto_start = Convert.convert(
         Ops.get(widget, "get_service_auto_start"),
-        :from => "any",
-        :to   => "boolean ()"
+        from: "any",
+        to:   "boolean ()"
       )
       auto_start = get_auto_start.call
       UI.ChangeWidget(
@@ -147,8 +146,8 @@ module Yast
       if Builtins.haskey(widget, "get_service_start_via_xinetd")
         start_via_xinetd = Convert.convert(
           Ops.get(widget, "get_service_start_via_xinetd"),
-          :from => "any",
-          :to   => "boolean ()"
+          from: "any",
+          to:   "boolean ()"
         )
         if start_via_xinetd.call
           UI.ChangeWidget(
@@ -166,9 +165,8 @@ module Yast
     # @param [Hash{String => Object}] widget a widget description map
     # @param [String] key strnig the widget key
     # @param [Hash] event map that caused widget data storing
-    def AutoStartStore(widget, key, event)
+    def AutoStartStore(widget, _key, _event)
       widget = deep_copy(widget)
-      event = deep_copy(event)
       if !UI.WidgetExists(Id("_cwm_service_startup"))
         Builtins.y2error("Widget _cwm_service_startup does not exist")
         return
@@ -179,15 +177,15 @@ module Yast
 
       set_auto_start = Convert.convert(
         Ops.get(widget, "set_service_auto_start"),
-        :from => "any",
-        :to   => "void (boolean)"
+        from: "any",
+        to:   "void (boolean)"
       )
       set_auto_start.call(auto_start)
       if !auto_start && Builtins.haskey(widget, "set_service_start_via_xinetd")
         start_via_xinetd = Convert.convert(
           Ops.get(widget, "set_service_start_via_xinetd"),
-          :from => "any",
-          :to   => "void (boolean)"
+          from: "any",
+          to:   "void (boolean)"
         )
         start_via_xinetd.call(
           UI.QueryWidget(Id("_cwm_service_startup"), :CurrentButton) ==
@@ -225,8 +223,8 @@ module Yast
       # %2 is eg. "Off -- Start Service Manually"
       # (both without quotes)
       _(
-        "<p><b><big>Service Start</big></b><br>\n" +
-          "To start the service every time your computer is booted, set\n" +
+        "<p><b><big>Service Start</big></b><br>\n" \
+          "To start the service every time your computer is booted, set\n" \
           "<b>%1</b>. Otherwise set <b>%2</b>.</p>"
       )
     end
@@ -241,9 +239,9 @@ module Yast
       # %3 is eg. "Start Service via xinetd"
       # (both without quotes)
       _(
-        "<p><b><big>Service Start</big></b><br>\n" +
-          "To start the service every time your computer is booted, set\n" +
-          "<b>%1</b>. To start the service via the xinetd daemon, set <b>%3</b>.\n" +
+        "<p><b><big>Service Start</big></b><br>\n" \
+          "To start the service every time your computer is booted, set\n" \
+          "<b>%1</b>. To start the service via the xinetd daemon, set <b>%3</b>.\n" \
           "Otherwise set <b>%2</b>.</p>"
       )
     end
@@ -387,22 +385,22 @@ module Yast
       ret = Convert.convert(
         Builtins.union(
           settings,
-          {
-            "widget"        => :custom,
-            "custom_widget" => booting,
-            "help"          => help,
-            "init"          => fun_ref(
-              method(:AutoStartInitWrapper),
-              "void (string)"
-            ),
-            "store"         => fun_ref(
-              method(:AutoStartStoreWrapper),
-              "void (string, map)"
-            )
-          }
+
+          "widget"        => :custom,
+          "custom_widget" => booting,
+          "help"          => help,
+          "init"          => fun_ref(
+            method(:AutoStartInitWrapper),
+            "void (string)"
+          ),
+          "store"         => fun_ref(
+            method(:AutoStartStoreWrapper),
+            "void (string, map)"
+          )
+
         ),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
 
       deep_copy(ret)
@@ -415,7 +413,7 @@ module Yast
     # @param [String] key strnig the widget key
     # @param event_id any the ID of the occurred event
     # @return always nil
-    def StartStopHandle(widget, key, event)
+    def StartStopHandle(widget, _key, event)
       widget = deep_copy(widget)
       event = deep_copy(event)
       event_id = Ops.get(event, "ID")
@@ -423,8 +421,8 @@ module Yast
         if Builtins.haskey(widget, "start_now_action")
           start_now_func = Convert.convert(
             Ops.get(widget, "start_now_action"),
-            :from => "any",
-            :to   => "void ()"
+            from: "any",
+            to:   "void ()"
           )
           start_now_func.call
         else
@@ -435,8 +433,8 @@ module Yast
         if Builtins.haskey(widget, "stop_now_action")
           stop_now_func = Convert.convert(
             Ops.get(widget, "stop_now_action"),
-            :from => "any",
-            :to   => "void ()"
+            from: "any",
+            to:   "void ()"
           )
           stop_now_func.call
         else
@@ -446,8 +444,8 @@ module Yast
       elsif event_id == "_cwm_save_settings_now"
         func = Convert.convert(
           Ops.get(widget, "save_now_action"),
-          :from => "any",
-          :to   => "void ()"
+          from: "any",
+          to:   "void ()"
         )
         func.call
         Builtins.sleep(500)
@@ -459,7 +457,7 @@ module Yast
     # Init function of the widget
     # @param [Hash{String => Object}] widget a widget description map
     # @param [String] key strnig the widget key
-    def StartStopInit(widget, key)
+    def StartStopInit(widget, _key)
       widget = deep_copy(widget)
       @last_status = nil
       @service_is_running =
@@ -504,8 +502,8 @@ module Yast
       # %2 is eg. "Stop the Service Now"
       # (both without quotes)
       help = _(
-        "<p><b><big>Switch On or Off</big></b><br>\n" +
-          "To start or stop the service immediately, use \n" +
+        "<p><b><big>Switch On or Off</big></b><br>\n" \
+          "To start or stop the service immediately, use \n" \
           "<b>%1</b> or <b>%2</b>.</p>"
       )
       if restart_displayed
@@ -600,13 +598,15 @@ module Yast
         help = StartStopHelp(display_save_now)
       end
 
-      save_now_button_term = display_save_now ?
-        PushButton(
-          Id("_cwm_save_settings_now"),
-          Opt(:hstretch),
-          save_now_button
-        ) :
-        VBox()
+      save_now_button_term = if display_save_now
+                               PushButton(
+                                 Id("_cwm_save_settings_now"),
+                                 Opt(:hstretch),
+                                 save_now_button
+                               )
+                             else
+                               VBox()
+                             end
 
       immediate_actions = VBox(
         # Frame label (stoping starting service)
@@ -646,28 +646,28 @@ module Yast
       ret = Convert.convert(
         Builtins.union(
           settings,
-          {
-            "widget"        => :custom,
-            "custom_widget" => immediate_actions,
-            "help"          => help,
-            "init"          => fun_ref(
-              method(:StartStopInitWrapper),
-              "void (string)"
-            ),
-            "handle"        => fun_ref(
-              method(:StartStopHandleWrapper),
-              "symbol (string, map)"
-            ),
-            "handle_events" => [
-              :timeout,
-              "_cwm_start_service_now",
-              "_cwm_stop_service_now",
-              "_cwm_save_settings_now"
-            ]
-          }
+
+          "widget"        => :custom,
+          "custom_widget" => immediate_actions,
+          "help"          => help,
+          "init"          => fun_ref(
+            method(:StartStopInitWrapper),
+            "void (string)"
+          ),
+          "handle"        => fun_ref(
+            method(:StartStopHandleWrapper),
+            "symbol (string, map)"
+          ),
+          "handle_events" => [
+            :timeout,
+            "_cwm_start_service_now",
+            "_cwm_stop_service_now",
+            "_cwm_save_settings_now"
+          ]
+
         ),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
 
       if Builtins.haskey(settings, "service_id")
@@ -681,7 +681,7 @@ module Yast
     # Init function of the widget
     # @param [Hash{String => Object}] widget a widget description map
     # @param [String] key strnig the widget key
-    def LdapInit(widget, key)
+    def LdapInit(widget, _key)
       widget = deep_copy(widget)
       UpdateLdapWidget(widget)
 
@@ -693,7 +693,7 @@ module Yast
     # @param [String] key strnig the widget key
     # @param [Hash] event map event to be handled
     # @return [Symbol] for wizard sequencer or nil
-    def LdapHandle(widget, key, event)
+    def LdapHandle(widget, _key, event)
       widget = deep_copy(widget)
       event = deep_copy(event)
       ret = Ops.get(event, "ID")
@@ -703,7 +703,6 @@ module Yast
       end
       nil
     end
-
 
     # Init function of the widget
     # @param [String] key strnig the widget key
@@ -729,8 +728,8 @@ module Yast
       # help text for LDAP enablement widget
       # %1 is button label, eg. "LDAP Support Active" (without quotes)
       _(
-        "<p><b><big>LDAP Support</big></b><br>\n" +
-          "To store the settings in LDAP instead of native configuration files,\n" +
+        "<p><b><big>LDAP Support</big></b><br>\n" \
+          "To store the settings in LDAP instead of native configuration files,\n" \
           "set <b>%1</b>.</p>"
       )
     end
@@ -793,51 +792,51 @@ module Yast
       ret = Convert.convert(
         Builtins.union(
           settings,
-          {
-            "widget"        => :custom,
-            "custom_widget" => ldap_settings,
-            "help"          => help,
-            "init"          => fun_ref(
-              method(:LdapInitWrapper),
-              "void (string)"
-            ),
-            "handle"        => fun_ref(
-              method(:LdapHandleWrapper),
-              "symbol (string, map)"
-            ),
-            "handle_events" => ["_cwm_use_ldap"]
-          }
+
+          "widget"        => :custom,
+          "custom_widget" => ldap_settings,
+          "help"          => help,
+          "init"          => fun_ref(
+            method(:LdapInitWrapper),
+            "void (string)"
+          ),
+          "handle"        => fun_ref(
+            method(:LdapHandleWrapper),
+            "symbol (string, map)"
+          ),
+          "handle_events" => ["_cwm_use_ldap"]
+
         ),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
 
       deep_copy(ret)
     end
 
-    publish :function => :AutoStartInit, :type => "void (map <string, any>, string)"
-    publish :function => :AutoStartStore, :type => "void (map <string, any>, string, map)"
-    publish :function => :AutoStartInitWrapper, :type => "void (string)"
-    publish :function => :AutoStartStoreWrapper, :type => "void (string, map)"
-    publish :function => :AutoStartHelpTemplate, :type => "string ()"
-    publish :function => :AutoStartHelpXinetdTemplate, :type => "string ()"
-    publish :function => :AutoStartHelp, :type => "string ()"
-    publish :function => :AutoStartXinetdHelp, :type => "string ()"
-    publish :function => :CreateAutoStartWidget, :type => "map <string, any> (map <string, any>)"
-    publish :function => :StartStopHandle, :type => "symbol (map <string, any>, string, map)"
-    publish :function => :StartStopInit, :type => "void (map <string, any>, string)"
-    publish :function => :StartStopHandleWrapper, :type => "symbol (string, map)"
-    publish :function => :StartStopInitWrapper, :type => "void (string)"
-    publish :function => :StartStopHelpTemplate, :type => "string (boolean)"
-    publish :function => :StartStopHelp, :type => "string (boolean)"
-    publish :function => :CreateStartStopWidget, :type => "map <string, any> (map <string, any>)"
-    publish :function => :LdapInit, :type => "void (map <string, any>, string)"
-    publish :function => :LdapHandle, :type => "symbol (map <string, any>, string, map)"
-    publish :function => :LdapInitWrapper, :type => "void (string)"
-    publish :function => :LdapHandleWrapper, :type => "symbol (string, map)"
-    publish :function => :EnableLdapHelpTemplate, :type => "string ()"
-    publish :function => :EnableLdapHelp, :type => "string ()"
-    publish :function => :CreateLdapWidget, :type => "map <string, any> (map <string, any>)"
+    publish function: :AutoStartInit, type: "void (map <string, any>, string)"
+    publish function: :AutoStartStore, type: "void (map <string, any>, string, map)"
+    publish function: :AutoStartInitWrapper, type: "void (string)"
+    publish function: :AutoStartStoreWrapper, type: "void (string, map)"
+    publish function: :AutoStartHelpTemplate, type: "string ()"
+    publish function: :AutoStartHelpXinetdTemplate, type: "string ()"
+    publish function: :AutoStartHelp, type: "string ()"
+    publish function: :AutoStartXinetdHelp, type: "string ()"
+    publish function: :CreateAutoStartWidget, type: "map <string, any> (map <string, any>)"
+    publish function: :StartStopHandle, type: "symbol (map <string, any>, string, map)"
+    publish function: :StartStopInit, type: "void (map <string, any>, string)"
+    publish function: :StartStopHandleWrapper, type: "symbol (string, map)"
+    publish function: :StartStopInitWrapper, type: "void (string)"
+    publish function: :StartStopHelpTemplate, type: "string (boolean)"
+    publish function: :StartStopHelp, type: "string (boolean)"
+    publish function: :CreateStartStopWidget, type: "map <string, any> (map <string, any>)"
+    publish function: :LdapInit, type: "void (map <string, any>, string)"
+    publish function: :LdapHandle, type: "symbol (map <string, any>, string, map)"
+    publish function: :LdapInitWrapper, type: "void (string)"
+    publish function: :LdapHandleWrapper, type: "symbol (string, map)"
+    publish function: :EnableLdapHelpTemplate, type: "string ()"
+    publish function: :EnableLdapHelp, type: "string ()"
+    publish function: :CreateLdapWidget, type: "map <string, any> (map <string, any>)"
   end
 
   CWMServiceStart = CWMServiceStartClass.new

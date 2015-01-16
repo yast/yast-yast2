@@ -72,9 +72,9 @@ module Yast
 
       @non_root_modules = []
 
-      #create the list of modules available to non-root users
+      # create the list of modules available to non-root users
       Builtins.foreach(
-        Convert.convert(@Modules, :from => "map", :to => "map <string, map>")
+        Convert.convert(@Modules, from: "map", to: "map <string, map>")
       ) do |name, params|
         if !(Ops.get_string(params, "X-SuSE-YaST-RootOnly", "false") == "true")
           @non_root_modules = Builtins.add(@non_root_modules, name)
@@ -98,7 +98,7 @@ module Yast
 
       @modules = Builtins.listmap(@groups) do |gr|
         all_modules = Desktop.ModuleList(gr)
-        #filter out root-only stuff if the user is not root (#246015)
+        # filter out root-only stuff if the user is not root (#246015)
         all_modules = Builtins.filter(all_modules) do |t|
           Builtins.contains(@non_root_modules, Ops.get_string(t, [0, 0], ""))
         end if !@root
@@ -106,11 +106,10 @@ module Yast
       end
       Builtins.y2debug("modules=%1", @modules)
 
-
       @first = Ops.get(@groups, 0)
       Builtins.y2debug("first=%1", @first)
 
-      #do not show groups containing no modules to the user (#309452)
+      # do not show groups containing no modules to the user (#309452)
       @GroupList = Builtins.filter(@GroupList) do |t|
         group = Ops.get_string(t, [0, 0], "")
         Ops.get(@modules, group) != []
@@ -131,7 +130,7 @@ module Yast
       ReplaceModuleList(@first)
       UI.SetFocus(Id(:groups))
 
-      while true
+      loop do
         @event = UI.WaitForEvent
         @eventid = Ops.get(@event, "ID")
         # y2debug too constly: y2debug("event=%1", event);
@@ -151,7 +150,7 @@ module Yast
               )
             )
             next
-          elsif ( @eventid == :progs || @eventid == :run ) &&
+          elsif (@eventid == :progs || @eventid == :run) &&
               Ops.get_string(@event, "EventReason", "") == "Activated"
             @program = Convert.to_string(
               UI.QueryWidget(Id(:progs), :CurrentItem)
@@ -182,7 +181,7 @@ module Yast
         end
       end
 
-      UI.CloseDialog 
+      UI.CloseDialog
 
       # EOF
 
@@ -203,9 +202,8 @@ module Yast
       nil
     end
 
-
     def OpenMenu
-      #check if user is root (#246015)
+      # check if user is root (#246015)
       output = Convert.to_map(
         SCR.Execute(path(".target.bash_output"), "/usr/bin/id --user")
       )
@@ -269,7 +267,7 @@ module Yast
         )
       )
 
-      #show popup when running as non-root
+      # show popup when running as non-root
       if !@root
         Popup.Notify(
           _(
@@ -294,7 +292,7 @@ module Yast
         cmd = ""
         ret = nil
 
-        #Use UI::RunInTerminal in text-mode only (#237332)
+        # Use UI::RunInTerminal in text-mode only (#237332)
         if textmode
           cmd = Builtins.sformat("/sbin/yast %1 %2 >&2", function, argument)
           ret = UI.RunInTerminal(cmd)
@@ -317,24 +315,23 @@ module Yast
       false
     end
 
-
     def ShowNcursesHelp
       # NCurses (textmode) Control Center headline
       headline = _("Controlling YaST ncurses with the Keyboard")
 
       # NCurses Control Center help 1/
       help = _(
-        "<p>1) <i>General</i><br>\n" +
-          "Navigate through the dialog elements with [TAB] to go to\n" +
-          "the next element and [SHIFT] (or [ALT]) + [TAB] to move backwards.\n" +
-          "Select or activate elements with [SPACE] or [ENTER].\n" +
+        "<p>1) <i>General</i><br>\n" \
+          "Navigate through the dialog elements with [TAB] to go to\n" \
+          "the next element and [SHIFT] (or [ALT]) + [TAB] to move backwards.\n" \
+          "Select or activate elements with [SPACE] or [ENTER].\n" \
           "Some elements use arrow keys (e.g., to scroll in lists).</p>"
       ) +
         # NCurses Control Center help 2/10
         _(
-          "<p>Tree navigation is also done by arrow keys. To open or close a " +
-          "branch use [SPACE]. For modules showing a tree (might look like a list) " +
-          "of configuration items on the left side use [ENTER] to get corresponding " +
+          "<p>Tree navigation is also done by arrow keys. To open or close a " \
+          "branch use [SPACE]. For modules showing a tree (might look like a list) " \
+          "of configuration items on the left side use [ENTER] to get corresponding " \
           "dialog on the right.</p>"
         ) +
         # NCurses Control Center help 3/10
@@ -347,38 +344,38 @@ module Yast
         ) +
         # NCurses Control Center help 5/10
         _(
-          "<p>2) <i>Substitution of Keystrokes</i><br>\n" +
-            "<p>Because the environment can affect the use of the keyboard,\n" +
-            "there is more than one way to navigate the dialog pages.\n" +
-            "If [TAB] and [SHIFT] (or [ALT]) + [TAB] do not work,\n" +
+          "<p>2) <i>Substitution of Keystrokes</i><br>\n" \
+            "<p>Because the environment can affect the use of the keyboard,\n" \
+            "there is more than one way to navigate the dialog pages.\n" \
+            "If [TAB] and [SHIFT] (or [ALT]) + [TAB] do not work,\n" \
             "move focus forward with [CTRL] + [F] and backward with [CTRL] + [B].</p>"
         ) +
         # NCurses Control Center help 6/10
         _(
-          "<p>If [ALT] + [letter] does not work,\n" +
-            "try [ESC] + [letter]. Example: [ESC] + [H] for [ALT] + [H].\n" +
+          "<p>If [ALT] + [letter] does not work,\n" \
+            "try [ESC] + [letter]. Example: [ESC] + [H] for [ALT] + [H].\n" \
             "[ESC] + [TAB] is also a substitute for [ALT] + [TAB].</p>"
         ) +
         # NCurses Control Center help 7/10
         _(
-          "<p>3) <i>Function Keys</i><br>\n" +
-            "F keys provide a quick access to main functions. " +
-            "The function key bindings for the current dialog are " +
+          "<p>3) <i>Function Keys</i><br>\n" \
+            "F keys provide a quick access to main functions. " \
+            "The function key bindings for the current dialog are " \
             "shown in the bottom line.</p>"
         ) +
         # NCurses Control Center help 8/10
         _("<p>The F keys are usually connected to a certain action:</p>") +
         # NCurses Control Center help 9/10
         _(
-          "F1  = Help<br>\n" +
-            "F2  = Info or Description<br>\n" +
-            "F3  = Add<br>\n" +
-            "F4  = Edit or Configure<br>\n" +
-            "F5  = Delete<br>\n" +
-            "F6  = Test<br>\n" +
-            "F7  = Expert or Advanced<br>\n" +
-            "F8  = Back<br>\n" +
-            "F9  = Abort or Cancel<br>\n" +
+          "F1  = Help<br>\n" \
+            "F2  = Info or Description<br>\n" \
+            "F3  = Add<br>\n" \
+            "F4  = Edit or Configure<br>\n" \
+            "F5  = Delete<br>\n" \
+            "F6  = Test<br>\n" \
+            "F7  = Expert or Advanced<br>\n" \
+            "F8  = Back<br>\n" \
+            "F9  = Abort or Cancel<br>\n" \
             "F10 = OK, Next, Finish, or Accept<br>"
         ) +
         # NCurses Control Center help 10/10
@@ -388,7 +385,6 @@ module Yast
 
       nil
     end
-
 
     def ReplaceModuleList(group)
       # y2debug too costly: y2debug("group=%1", group);

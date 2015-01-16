@@ -41,7 +41,6 @@ module Yast
       Yast.import "Mode"
       Yast.import "Report"
 
-
       # variables
 
       # Item, that is the last selected
@@ -60,10 +59,10 @@ module Yast
       descr = deep_copy(descr)
       toEval = Convert.convert(
         Ops.get(descr, "ids"),
-        :from => "any",
-        :to   => "list (map)"
+        from: "any",
+        to:   "list (map)"
       )
-      return toEval.call(descr) if toEval != nil
+      return toEval.call(descr) if !toEval.nil?
       []
     end
 
@@ -82,7 +81,7 @@ module Yast
       ret = true
       Builtins.foreach(attr) do |k, v|
         type = Ops.get(types, k)
-        if type == nil
+        if type.nil?
           Builtins.y2error("Unknown attribute %1", k)
           ret = false
         else
@@ -91,7 +90,6 @@ module Yast
       end
       ret
     end
-
 
     # Validate type of entry of the option description map
     # Also checks option description maps if present
@@ -164,8 +162,8 @@ module Yast
       Builtins.foreach(options) do |w_key, v|
         des = Convert.convert(
           v,
-          :from => "any",
-          :to   => "map <string, map <string, any>>"
+          from: "any",
+          to:   "map <string, map <string, any>>"
         )
         Builtins.foreach(des) do |group, d|
           if group != "table" && group != "popup"
@@ -187,17 +185,17 @@ module Yast
     def id2key(descr, opt_id)
       descr = deep_copy(descr)
       opt_id = deep_copy(opt_id)
-      if opt_id != nil && Ops.is_string?(opt_id) &&
+      if !opt_id.nil? && Ops.is_string?(opt_id) &&
           Ops.greater_or_equal(Builtins.size(Convert.to_string(opt_id)), 7) &&
           Builtins.substring(Convert.to_string(opt_id), 0, 7) == "____sep"
         return "____sep"
       end
       toEval = Convert.convert(
         Ops.get(descr, "id2key"),
-        :from => "any",
-        :to   => "string (map, any)"
+        from: "any",
+        to:   "string (map, any)"
       )
-      if toEval != nil
+      if !toEval.nil?
         return toEval.call(descr, opt_id)
       else
         return Convert.to_string(opt_id)
@@ -226,7 +224,7 @@ module Yast
         "popup",
         Builtins.add(Ops.get_map(opt_descr, "popup", {}), "_cwm_key", opt_key)
       )
-      if Ops.get(opt_descr, ["popup", "label"]) == nil
+      if Ops.get(opt_descr, ["popup", "label"]).nil?
         Ops.set(
           opt_descr,
           ["popup", "label"],
@@ -293,8 +291,8 @@ module Yast
       if Builtins.haskey(Ops.get_map(opt_descr, "table", {}), "label_func")
         label_func = Convert.convert(
           Ops.get(opt_descr, ["table", "label_func"]),
-          :from => "any",
-          :to   => "string (any, string)"
+          from: "any",
+          to:   "string (any, string)"
         )
         label = label_func.call(opt_id, opt_key)
       end
@@ -311,10 +309,10 @@ module Yast
       opt_key = Ops.get_string(opt_descr, "_cwm_key", "")
       toEval = Convert.convert(
         Ops.get(opt_descr, ["table", "summary"]),
-        :from => "any",
-        :to   => "string (any, string)"
+        from: "any",
+        to:   "string (any, string)"
       )
-      return toEval.call(opt_id, opt_key) if toEval != nil
+      return toEval.call(opt_id, opt_key) if !toEval.nil?
       ""
     end
 
@@ -328,10 +326,10 @@ module Yast
       opt_key = Ops.get_string(opt_descr, "_cwm_key", "")
       toEval = Convert.convert(
         Ops.get(opt_descr, ["table", "changed"]),
-        :from => "any",
-        :to   => "boolean (any, string)"
+        from: "any",
+        to:   "boolean (any, string)"
       )
-      return toEval.call(opt_id, opt_key) if toEval != nil
+      return toEval.call(opt_id, opt_key) if !toEval.nil?
       false
     end
 
@@ -345,8 +343,8 @@ module Yast
       descr = deep_copy(descr)
       toEval = Convert.convert(
         Ops.get(descr, "option_delete"),
-        :from => "any",
-        :to   => "boolean (any, string)"
+        from: "any",
+        to:   "boolean (any, string)"
       )
       if nil != toEval
         opt_key = id2key(descr, opt_id)
@@ -402,8 +400,8 @@ module Yast
       descr = deep_copy(descr)
       toEval = Convert.convert(
         Ops.get(descr, "option_move"),
-        :from => "any",
-        :to   => "any (any, string, symbol)"
+        from: "any",
+        to:   "any (any, string, symbol)"
       )
       return toEval.call(opt_id, id2key(descr, opt_id), dir) if nil != toEval
       nil
@@ -416,12 +414,11 @@ module Yast
     def TableRedraw(descr, update_buttons)
       descr = deep_copy(descr)
       id_list = getIdList(descr)
-      if @previous_selected_item == nil
+      if @previous_selected_item.nil?
         @previous_selected_item = Ops.get(id_list, 0)
       end
       entries = Builtins.maplist(id_list) do |opt_id|
         opt_val = ""
-        val = ""
         opt_changed = false
         opt_key = id2key(descr, opt_id)
         opt_descr = key2descr(descr, opt_key)
@@ -543,7 +540,7 @@ module Yast
       popup_descr = CWM.prepareWidget(Ops.get_map(option, "popup", {}))
       widget = Ops.get_term(popup_descr, "widget", VBox())
       help = Ops.get_string(popup_descr, "help", "")
-      help = "" if help == nil
+      help = "" if help.nil?
       contents = HBox(
         HSpacing(1),
         VBox(
@@ -567,49 +564,49 @@ module Yast
       )
       UI.OpenDialog(contents)
       begin
-        if Ops.get(popup_descr, "init") != nil
+        if Ops.get(popup_descr, "init")
           toEval = Convert.convert(
             Ops.get(popup_descr, "init"),
-            :from => "any",
-            :to   => "void (any, string)"
+            from: "any",
+            to:   "void (any, string)"
           )
           toEval.call(opt_id, opt_key)
         end
         ret = nil
-        event_descr = {}
         while ret != :_tp_ok && ret != :_tp_cancel
           event_descr2 = UI.WaitForEvent
           event_descr2 = { "ID" => :_tp_ok } if Mode.test
           ret = Ops.get(event_descr2, "ID")
-          if Ops.get(popup_descr, "handle") != nil
+          if Ops.get(popup_descr, "handle")
             toEval = Convert.convert(
               Ops.get(popup_descr, "handle"),
-              :from => "any",
-              :to   => "void (any, string, map)"
+              from: "any",
+              to:   "void (any, string, map)"
             )
             toEval.call(opt_id, opt_key, event_descr2)
           end
-          if ret == :_tp_ok
-            val_type = Ops.get_symbol(popup_descr, "validate_type")
-            if val_type == :function
-              toEval = Convert.convert(
-                Ops.get(popup_descr, "validate_function"),
-                :from => "any",
-                :to   => "boolean (any, string, map)"
-              )
-              if toEval != nil
-                ret = nil if !toEval.call(opt_id, opt_key, event_descr2)
-              end
-            elsif !CWM.validateWidget(popup_descr, event_descr2, opt_key)
-              ret = nil
+
+          next if ret != :_tp_ok
+
+          val_type = Ops.get_symbol(popup_descr, "validate_type")
+          if val_type == :function
+            toEval = Convert.convert(
+              Ops.get(popup_descr, "validate_function"),
+              from: "any",
+              to:   "boolean (any, string, map)"
+            )
+            if !toEval.nil?
+              ret = nil if !toEval.call(opt_id, opt_key, event_descr2)
             end
+          elsif !CWM.validateWidget(popup_descr, event_descr2, opt_key)
+            ret = nil
           end
         end
-        if ret == :_tp_ok && Ops.get(popup_descr, "store") != nil
+        if ret == :_tp_ok && Ops.get(popup_descr, "store")
           toEval = Convert.convert(
             Ops.get(popup_descr, "store"),
-            :from => "any",
-            :to   => "void (any, string)"
+            from: "any",
+            to:   "void (any, string)"
           )
           toEval.call(opt_id, opt_key)
         end
@@ -618,9 +615,6 @@ module Yast
       end
       Convert.to_symbol(ret)
     end
-
-
-
 
     # functions
 
@@ -717,9 +711,9 @@ module Yast
               !Builtins.contains(present, o)
             end
             selected = false
-            while !selected
+            until selected
               opt_key = askForNewOption(add_opts, add_unlisted, descr)
-              return nil if opt_key == nil
+              return nil if opt_key.nil?
               if Builtins.contains(present, opt_key)
                 Report.Error(
                   # error report
@@ -730,14 +724,14 @@ module Yast
               end
             end
           end
-          return nil if opt_key == nil
+          return nil if opt_key.nil?
         elsif event_id == :_tp_edit
           opt_id = UI.QueryWidget(Id(:_tp_table), :CurrentItem)
           opt_key = id2key(descr, opt_id)
         end
         option_map = key2descr(descr, opt_key)
         toEval = Ops.get(option_map, ["table", "handle"])
-        if toEval != nil
+        if !toEval.nil?
           #		if (is (toEval, symbol))
           if !Ops.is(toEval, "symbol (any, string, map)")
             ret2 = Convert.to_symbol(toEval)
@@ -745,8 +739,8 @@ module Yast
           else
             toEval_c = Convert.convert(
               Ops.get(option_map, ["table", "handle"]),
-              :from => "any",
-              :to   => "symbol (any, string, map)"
+              from: "any",
+              to:   "symbol (any, string, map)"
             )
             ret2 = toEval_c.call(opt_id, opt_key, event_descr)
             return ret2 if ret2 != :_tp_normal
@@ -764,11 +758,7 @@ module Yast
           if event_id == :_tp_add
             TableInit(descr, key)
           elsif event_id == :_tp_edit
-            column = Ops.get_boolean(
-              descr,
-              ["_cwm_attrib", "changed_column"],
-              false
-            ) ? 2 : 1
+            column = descr.fetch("_cwm_attrib", {}).fetch("changed_column", false) ? 2 : 1
             UI.ChangeWidget(
               Id(:_tp_table),
               term(:Item, opt_id, column),
@@ -799,7 +789,7 @@ module Yast
         if key2 == "____sep"
           id_list = getIdList(descr)
           previous_index = 0
-          if @previous_selected_item != nil
+          if !@previous_selected_item.nil?
             previous_index = -1
             Builtins.find(id_list) do |e|
               previous_index = Ops.add(previous_index, 1)
@@ -823,7 +813,6 @@ module Yast
           end
           new_index = Ops.add(current_index, step)
           opt_id = Ops.get(id_list, new_index)
-          key2 = id2key(descr, opt_id)
           UI.ChangeWidget(Id(:_tp_table), :CurrentItem, opt_id)
         end
         @previous_selected_item = deep_copy(opt_id)
@@ -872,36 +861,44 @@ module Yast
       attrib = deep_copy(attrib)
       widget_descr = deep_copy(widget_descr)
       ValidateTableAttr(attrib)
-      add_button = Ops.get_boolean(attrib, "add_delete_buttons", true) ?
-        PushButton(Id(:_tp_add), Opt(:key_F3), Label.AddButton) :
-        HSpacing(0)
-      edit_button = Ops.get_boolean(attrib, "edit_button", true) ?
-        PushButton(Id(:_tp_edit), Opt(:key_F4), Label.EditButton) :
-        HSpacing(0)
-      delete_button = Ops.get_boolean(attrib, "add_delete_buttons", true) ?
-        PushButton(Id(:_tp_delete), Opt(:key_F5), Label.DeleteButton) :
-        HSpacing(0)
-      table_header = Ops.get_boolean(attrib, "changed_column", false) ?
-        Header(
-          # table header, shortcut for changed, keep very short
-          _("Ch."),
-          # table header
-          _("Option"),
-          # table header
-          _("Value")
-        ) :
-        Header(
-          # table header
-          _("Option"),
-          # table header
-          _("Value")
-        )
+      add_button = if Ops.get_boolean(attrib, "add_delete_buttons", true)
+                     PushButton(Id(:_tp_add), Opt(:key_F3), Label.AddButton)
+                   else
+                     HSpacing(0)
+                   end
+      edit_button = if Ops.get_boolean(attrib, "edit_button", true)
+                      PushButton(Id(:_tp_edit), Opt(:key_F4), Label.EditButton)
+                    else
+                      HSpacing(0)
+                    end
+      delete_button = if Ops.get_boolean(attrib, "add_delete_buttons", true)
+                        PushButton(Id(:_tp_delete), Opt(:key_F5), Label.DeleteButton)
+                      else
+                        HSpacing(0)
+                      end
+      table_header = if Ops.get_boolean(attrib, "changed_column", false)
+                       Header(
+                         # table header, shortcut for changed, keep very short
+                         _("Ch."),
+                         # table header
+                         _("Option"),
+                         # table header
+                         _("Value")
+                       )
+                     else
+                       Header(
+                         # table header
+                         _("Option"),
+                         # table header
+                         _("Value")
+                       )
+                     end
 
       replace_point = ReplacePoint(Id(:_tp_table_repl), HSpacing(0))
       # help 1/4
       help = _(
-        "<p><b><big>Editing the Settings</big></b><br>\n" +
-          "To edit the settings, choose the appropriate\n" +
+        "<p><b><big>Editing the Settings</big></b><br>\n" \
+          "To edit the settings, choose the appropriate\n" \
           "entry of the table then click <b>Edit</b>.</p>"
       )
       if Ops.get_boolean(attrib, "add_delete_buttons", true)
@@ -929,23 +926,25 @@ module Yast
         help = Ops.add(
           help,
           _(
-            "<p>To reorder the options, select an option\n" +
-              "and use <b>Up</b> and <b>Down</b> to move it up or down\n" +
+            "<p>To reorder the options, select an option\n" \
+              "and use <b>Up</b> and <b>Down</b> to move it up or down\n" \
               "in the list.</p>"
           )
         )
       end
 
-      up_down = Ops.get_boolean(attrib, "up_down_buttons", false) ?
-        VBox(
-          VStretch(),
-          # push button
-          PushButton(Id(:_tp_up), _("&Up")),
-          # push button
-          PushButton(Id(:_tp_down), _("&Down")),
-          VStretch()
-        ) :
-        HSpacing(0)
+      up_down = if Ops.get_boolean(attrib, "up_down_buttons", false)
+                  VBox(
+                    VStretch(),
+                    # push button
+                    PushButton(Id(:_tp_up), _("&Up")),
+                    # push button
+                    PushButton(Id(:_tp_down), _("&Down")),
+                    VStretch()
+                  )
+                else
+                  HSpacing(0)
+                end
 
       ret = Convert.convert(
         Builtins.union(
@@ -982,8 +981,8 @@ module Yast
           },
           widget_descr
         ),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
 
       if !Builtins.haskey(ret, "init")
@@ -1004,21 +1003,21 @@ module Yast
       deep_copy(ret)
     end
 
-    publish :function => :id2key, :type => "string (map <string, any>, any)"
-    publish :function => :key2descr, :type => "map <string, any> (map <string, any>, string)"
-    publish :function => :updateOptionMap, :type => "map <string, any> (map <string, any>, map)"
-    publish :function => :tableEntryChanged, :type => "boolean (any, map <string, any>)"
-    publish :function => :deleteTableItem, :type => "boolean (any, map <string, any>)"
-    publish :function => :updateButtons, :type => "void (map <string, any>, map <string, any>)"
-    publish :function => :askForNewOption, :type => "string (list, boolean, map <string, any>)"
-    publish :function => :singleOptionEditPopup, :type => "symbol (map <string, any>)"
-    publish :function => :DisableTable, :type => "void (map <string, any>)"
-    publish :function => :EnableTable, :type => "void (map <string, any>)"
-    publish :function => :TableInit, :type => "void (map <string, any>, string)"
-    publish :function => :TableHandle, :type => "symbol (map <string, any>, string, map)"
-    publish :function => :TableInitWrapper, :type => "void (string)"
-    publish :function => :TableHandleWrapper, :type => "symbol (string, map)"
-    publish :function => :CreateTableDescr, :type => "map <string, any> (map <string, any>, map <string, any>)"
+    publish function: :id2key, type: "string (map <string, any>, any)"
+    publish function: :key2descr, type: "map <string, any> (map <string, any>, string)"
+    publish function: :updateOptionMap, type: "map <string, any> (map <string, any>, map)"
+    publish function: :tableEntryChanged, type: "boolean (any, map <string, any>)"
+    publish function: :deleteTableItem, type: "boolean (any, map <string, any>)"
+    publish function: :updateButtons, type: "void (map <string, any>, map <string, any>)"
+    publish function: :askForNewOption, type: "string (list, boolean, map <string, any>)"
+    publish function: :singleOptionEditPopup, type: "symbol (map <string, any>)"
+    publish function: :DisableTable, type: "void (map <string, any>)"
+    publish function: :EnableTable, type: "void (map <string, any>)"
+    publish function: :TableInit, type: "void (map <string, any>, string)"
+    publish function: :TableHandle, type: "symbol (map <string, any>, string, map)"
+    publish function: :TableInitWrapper, type: "void (string)"
+    publish function: :TableHandleWrapper, type: "symbol (string, map)"
+    publish function: :CreateTableDescr, type: "map <string, any> (map <string, any>, map <string, any>)"
   end
 
   TablePopup = TablePopupClass.new

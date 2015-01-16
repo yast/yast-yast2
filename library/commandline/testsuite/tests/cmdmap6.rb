@@ -39,13 +39,13 @@ module Yast
       Yast.import "CommandLine"
 
       # test of the resulting maps
-      TEST(lambda { CommandLine.Init(@cmdline, []) }, [], nil)
-      TEST(lambda { CommandLine.Done }, [], nil)
-      TEST(lambda { CommandLine.Aborted }, [], nil)
+      TEST(->() { CommandLine.Init(@cmdline, []) }, [], nil)
+      TEST(->() { CommandLine.Done }, [], nil)
+      TEST(->() { CommandLine.Aborted }, [], nil)
 
       DUMP(CommandLine.modulecommands)
 
-      DUMP(CommandLine.allcommands) 
+      DUMP(CommandLine.allcommands)
 
       # EOF
 

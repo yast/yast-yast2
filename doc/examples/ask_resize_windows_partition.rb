@@ -31,12 +31,14 @@ module Yast
     def main
       Yast.import "Popup"
 
-      @long_text = "Resizing the windows partition works well in most cases,\n" +
-        "but there are pathological cases where this might fail.\n" + "\n" +
-        "You might lose all data on that disk. So please make sure\n" +
-        "you have an up-to-date backup of all relevant data\n" +
-        "for disaster recovery.\n" + "\n" +
-        "If you are unsure, it might be a good idea to abort the installation\n" +
+      @long_text = "Resizing the windows partition works well in most cases,\n" \
+        "but there are pathological cases where this might fail.\n" \
+        "\n" \
+        "You might lose all data on that disk. So please make sure\n" \
+        "you have an up-to-date backup of all relevant data\n" \
+        "for disaster recovery.\n" \
+        "\n" \
+        "If you are unsure, it might be a good idea to abort the installation\n" \
         "right now and make a backup."
 
       @answer = Popup.YesNoHeadline("Resize Windows Partition?", @long_text)

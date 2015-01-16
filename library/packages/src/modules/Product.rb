@@ -32,7 +32,6 @@ require "yast"
 
 module Yast
   class ProductClass < Module
-
     include Yast::Logger
 
     def main
@@ -98,10 +97,10 @@ module Yast
       products = Pkg.ResolvableProperties("", :product, "") || []
 
       # For all (not only base) products
-      # TODO FIXME: filling release notes is a nasty side effect of searching the base product,
+      # FIXME: filling release notes is a nasty side effect of searching the base product,
       # it should be handled separately...
       required_status = use_installed_products? ? :installed : :selected
-      fill_up_relnotes(products.select{ |p| p["status"] == required_status })
+      fill_up_relnotes(products.select { |p| p["status"] == required_status })
 
       # Use only base products
       products.select! do |p|
@@ -194,7 +193,7 @@ module Yast
       set_property(:version, OSRelease.ReleaseVersion)
       set_property(:name, OSRelease.ReleaseInformation)
 
-      return OS_RELEASE_PROPERTIES.all?{ |key| !get_property(key).nil? and !get_property(key).empty? }
+      OS_RELEASE_PROPERTIES.all? { |key| !get_property(key).nil? && !get_property(key).empty? }
     end
 
     # Uses products information to fill up release-notes variables
@@ -203,11 +202,11 @@ module Yast
       release_notes_to_product = {}
 
       products.map do |p|
-        if p["relnotes_url"] != ""
-          url = p["relnotes_url"]
-          all_release_notes << url
-          release_notes_to_product[url] = (p["display_name"] || "")
-        end
+        next if p["relnotes_url"] == ""
+
+        url = p["relnotes_url"]
+        all_release_notes << url
+        release_notes_to_product[url] = (p["display_name"] || "")
       end
 
       set_property(:relnotesurl_all, all_release_notes)
@@ -278,18 +277,18 @@ module Yast
       end
     end
 
-    publish :function => :name, :type => "string ()"
-    publish :function => :short_name, :type => "string ()"
-    publish :function => :version, :type => "string ()"
-    publish :function => :vendor, :type => "string ()"
-    publish :function => :relnotesurl, :type => "string ()"
-    publish :function => :relnotesurl_all, :type => "list <string> ()"
-    publish :function => :product_of_relnotes, :type => "map <string, string> ()"
-    publish :function => :run_you, :type => "boolean ()"
-    publish :function => :flags, :type => "list ()"
+    publish function: :name, type: "string ()"
+    publish function: :short_name, type: "string ()"
+    publish function: :version, type: "string ()"
+    publish function: :vendor, type: "string ()"
+    publish function: :relnotesurl, type: "string ()"
+    publish function: :relnotesurl_all, type: "list <string> ()"
+    publish function: :product_of_relnotes, type: "map <string, string> ()"
+    publish function: :run_you, type: "boolean ()"
+    publish function: :flags, type: "list ()"
 
-    publish :function => :FindBaseProducts, :type => "list <map <string, any>> ()"
-    publish :function => :ReadProducts, :type => "void ()"
+    publish function: :FindBaseProducts, type: "list <map <string, any>> ()"
+    publish function: :ReadProducts, type: "void ()"
   end
 
   Product = ProductClass.new
