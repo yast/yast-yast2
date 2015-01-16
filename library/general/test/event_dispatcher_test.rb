@@ -20,7 +20,7 @@ class TestDialog
     begin
       return event_loop
     ensure
-       Yast::UI.CloseDialog
+      Yast::UI.CloseDialog
     end
   end
 
@@ -38,7 +38,6 @@ class TestDialog
 end
 
 describe UI::EventDispatcher do
-
   subject { TestDialog.new }
 
   def mock_ui_events(*events)
@@ -64,7 +63,7 @@ describe UI::EventDispatcher do
     it "raise exception if handler is not defined" do
       mock_ui_events(:unknown)
 
-      expect{subject.event_loop}.to raise_error
+      expect { subject.event_loop }.to raise_error
     end
   end
 

@@ -192,7 +192,6 @@ module Yast
           file_content = _("File not found.")
         end
 
-
         # Fill the LogView with file content
         UI.ChangeWidget(Id(:log), :Value, file_content)
 

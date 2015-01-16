@@ -19,7 +19,7 @@ describe ::Installation::AutoClient do
   describe ".run" do
     it "raise ArgumentError exception if unknown first argument is passed" do
       allow(Yast::WFM).to receive(:Args).and_return(["Unknown", {}])
-      expect{::Installation::AutoClient.run}.to raise_error(ArgumentError)
+      expect { ::Installation::AutoClient.run }.to raise_error(ArgumentError)
     end
 
     context "first client argument is Import" do
@@ -32,14 +32,14 @@ describe ::Installation::AutoClient do
       end
 
       it "passes argument hash to abstract method" do
-        test_params = { :a => :b, :c => :d }
+        test_params = { a: :b, c: :d }
         allow(Yast::WFM).to receive(:Args).and_return(["Import", test_params])
 
         expect(subject.run).to eq test_params
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect{::Installation::AutoClient.run}.to raise_error(NotImplementedError)
+        expect { ::Installation::AutoClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -53,7 +53,7 @@ describe ::Installation::AutoClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect{::Installation::AutoClient.run}.to raise_error(NotImplementedError)
+        expect { ::Installation::AutoClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -67,7 +67,7 @@ describe ::Installation::AutoClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect{::Installation::AutoClient.run}.to raise_error(NotImplementedError)
+        expect { ::Installation::AutoClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -81,7 +81,7 @@ describe ::Installation::AutoClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect{::Installation::AutoClient.run}.to raise_error(NotImplementedError)
+        expect { ::Installation::AutoClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -95,7 +95,7 @@ describe ::Installation::AutoClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect{::Installation::AutoClient.run}.to raise_error(NotImplementedError)
+        expect { ::Installation::AutoClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -109,7 +109,7 @@ describe ::Installation::AutoClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect{::Installation::AutoClient.run}.to raise_error(NotImplementedError)
+        expect { ::Installation::AutoClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -123,7 +123,7 @@ describe ::Installation::AutoClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect{::Installation::AutoClient.run}.to raise_error(NotImplementedError)
+        expect { ::Installation::AutoClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -137,7 +137,7 @@ describe ::Installation::AutoClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect{::Installation::AutoClient.run}.to raise_error(NotImplementedError)
+        expect { ::Installation::AutoClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -151,7 +151,7 @@ describe ::Installation::AutoClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect{::Installation::AutoClient.run}.to raise_error(NotImplementedError)
+        expect { ::Installation::AutoClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -165,7 +165,7 @@ describe ::Installation::AutoClient do
       end
 
       it "just log if optional abstract method not defined" do
-        expect{::Installation::AutoClient.run}.to_not raise_error
+        expect { ::Installation::AutoClient.run }.to_not raise_error
       end
 
       it "returns empty array if optional abstract method not defined" do

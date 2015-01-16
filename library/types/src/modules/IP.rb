@@ -30,7 +30,7 @@
 # $Id$
 require "yast"
 require "resolv"
-require 'ipaddr'
+require "ipaddr"
 
 module Yast
   class IPClass < Module
@@ -62,15 +62,9 @@ module Yast
     # @param [String] ip IPv4 address
     # @return true if correct
     def Check4(ip)
-<<<<<<< HEAD
       IPAddr.new(ip).ipv4?
     rescue
       false
-=======
-      return false if ip.nil?
-
-      !Resolv::IPv4::Regex.match(ip).nil?
->>>>>>> origin/SLE-12-GA
     end
 
     # Describe a valid IPv6 address
@@ -88,28 +82,9 @@ module Yast
     # @param [String] ip IPv6 address
     # @return true if correct
     def Check6(ip)
-<<<<<<< HEAD
       IPAddr.new(ip).ipv6?
     rescue
       false
-=======
-      return false if ip.nil?
-
-      res = !Resolv::IPv6::Regex.match(ip).nil?
-
-      # workaround for compressed address as it is hard to check correct number
-      # in compressed ip using regexp only
-      if res && ip.include?("::")
-        prefix, suffix = ip.split("::")
-        elements = prefix.split(":")
-        contain_ipv4 = ip.include? "."
-        elements += suffix.split(":") if suffix
-        max_elements = contain_ipv4 ? 6 : 7
-        return elements.size <= max_elements
-      end
-
-      res
->>>>>>> origin/SLE-12-GA
     end
 
     # If param contains IPv6 in one of its various forms, extracts it.
@@ -166,28 +141,14 @@ module Yast
     # @return ip address as integer
     def ToInteger(ip)
       return nil unless Check4(ip)
-<<<<<<< HEAD
       IPAddr.new(ip).to_i
-=======
-
-      parts = ip.split(".")
-      parts.reduce(0) { |a, e| (a << 8) + e.to_i }
->>>>>>> origin/SLE-12-GA
     end
 
     # Convert IPv4 address from integer to string
     # @param [Fixnum] ip IPv4 address
     # @return ip address as string
     def ToString(ip)
-<<<<<<< HEAD
       IPAddr.new(ip, Socket::AF_INET).to_s
-=======
-      parts = [16_777_216, 65_536, 256, 1].map do |b|
-        (ip / b) & 255
-      end
-
-      parts.join(".")
->>>>>>> origin/SLE-12-GA
     end
 
     # Converts IPv4 address from string to hex format
@@ -198,7 +159,7 @@ module Yast
     def ToHex(ip)
       int = ToInteger(ip)
       return nil unless int
-      "%08X" % int
+      format("%08X", int)
     end
 
     # Compute IPv4 network address from ip4 address and network mask.
@@ -238,7 +199,7 @@ module Yast
     def IPv4ToBits(ipv4)
       int = ToInteger(ipv4)
       return nil unless int
-      "%032b" % int
+      format("%032b", int)
     end
 
     # Converts 32 bit binary number to its IPv4 representation.
@@ -279,54 +240,24 @@ module Yast
     #   CheckNetwork("172.55.0.0/33") -> false
     def CheckNetwork4(network)
       generic_check = CheckNetworkShared(network)
-<<<<<<< HEAD
-      if generic_check != nil
+      if !generic_check.nil?
         return generic_check
 
       # 192.168.0.0/20, 0.8.55/158
       elsif network =~ Regexp.new("^[" + @ValidChars4 + "]+/[0-9]+$")
         net_parts = network.split("/")
         return Check4(net_parts[0]) &&
-               Netmask.CheckPrefix4(net_parts[1])
+          Netmask.CheckPrefix4(net_parts[1])
 
       # 192.168.0.0/255.255.255.0, 0.8.55/10.258.12
       elsif network =~ Regexp.new("^[" + @ValidChars4 + "]+/[" + @ValidChars4 + "]+$")
         net_parts = network.split("/")
         return Check4(net_parts[0]) &&
-               Netmask.Check4(net_parts[1])
+          Netmask.Check4(net_parts[1])
 
       # 192.168.0.1, 0.8.55.999
       elsif Check4(network)
         return true
-=======
-      if !generic_check.nil?
-        return generic_check
-
-        # 192.168.0.1, 0.8.55.999
-      elsif Check4(network)
-        return true
-
-        # 192.168.0.0/20, 0.8.55/158
-      elsif Builtins.regexpmatch(
-        network,
-        Ops.add(Ops.add("^[", @ValidChars4), "]+/[0-9]+$")
-        )
-        net_parts = Builtins.splitstring(network, "/")
-        return Check4(Ops.get(net_parts, 0, "")) &&
-          Netmask.CheckPrefix4(Ops.get(net_parts, 1, ""))
-
-        # 192.168.0.0/255.255.255.0, 0.8.55/10.258.12
-      elsif Builtins.regexpmatch(
-        network,
-        Ops.add(
-          Ops.add(Ops.add(Ops.add("^[", @ValidChars4), "]+/["), @ValidChars4),
-          "]+$"
-        )
-        )
-        net_parts = Builtins.splitstring(network, "/")
-        return Check4(Ops.get(net_parts, 0, "")) &&
-          Netmask.Check4(Ops.get(net_parts, 1, ""))
->>>>>>> origin/SLE-12-GA
       end
 
       false
@@ -343,60 +274,24 @@ module Yast
     #   CheckNetwork("::1/257") -> false
     def CheckNetwork6(network)
       generic_check = CheckNetworkShared(network)
-<<<<<<< HEAD
-      if generic_check != nil
+      if !generic_check.nil?
         return generic_check
 
         # 2001:db8:0::1/64
       elsif network =~ Regexp.new("^[" + @ValidChars6 + "]+/[" + Netmask.ValidChars6 + "]*$")
         net_parts = network.split("/")
         return Check6(net_parts[0]) &&
-               Netmask.Check6(net_parts[1])
+          Netmask.Check6(net_parts[1])
 
         # 2001:db8:0::1/ffff:ffff::0
       elsif network =~ Regexp.new("^[" + @ValidChars6 + "]+/[" + @ValidChars6 + "]+$")
         net_parts = network.split("/")
         return Check6(net_parts[0]) &&
-               Check6(net_parts[1])
-                # 2001:db8:0::1
+          Check6(net_parts[1])
+      # 2001:db8:0::1
 
       elsif Check6(network)
         return true
-=======
-      if !generic_check.nil?
-        return generic_check
-
-        # 2001:db8:0::1
-      elsif Check6(network)
-        return true
-
-        # 2001:db8:0::1/64
-      elsif Builtins.regexpmatch(
-        network,
-        Ops.add(
-          Ops.add(
-            Ops.add(Ops.add("^[", @ValidChars6), "]+/["),
-            Netmask.ValidChars6
-          ),
-          "]+$"
-        )
-        )
-        net_parts = Builtins.splitstring(network, "/")
-        return Check6(Ops.get(net_parts, 0, "")) &&
-          Netmask.Check6(Ops.get(net_parts, 1, ""))
-
-        # 2001:db8:0::1/ffff:ffff::0
-      elsif Builtins.regexpmatch(
-        network,
-        Ops.add(
-          Ops.add(Ops.add(Ops.add("^[", @ValidChars6), "]+/["), @ValidChars6),
-          "]+$"
-        )
-        )
-        net_parts = Builtins.splitstring(network, "/")
-        return Check6(Ops.get(net_parts, 0, "")) &&
-          Check6(Ops.get(net_parts, 1, ""))
->>>>>>> origin/SLE-12-GA
       end
 
       false

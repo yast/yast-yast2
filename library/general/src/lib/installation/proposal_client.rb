@@ -56,7 +56,7 @@ module Installation
     # The only part needed in client rb file.
     # @return response from abstract methods
     def self.run
-      self.new.run
+      new.run
     end
 
     # Dispatches to abstract method based on passed Arguments to client
@@ -146,7 +146,7 @@ module Installation
     #     Help text for this module which appears in the standard dialog
     #     help (particular helps for modules sorted by presentation order).
     #
-    def make_proposal(attrs)
+    def make_proposal(_attrs)
       raise NotImplementedError, "Calling abstract method 'make_proposal'"
     end
 
@@ -198,10 +198,9 @@ module Installation
     #     This module just caused a change of the installation language.
     #     This is only relevant for the "language" module.
     #
-    def ask_user(attrs)
+    def ask_user(_attrs)
       raise NotImplementedError, "Calling abstract method 'ask_user'"
     end
-
 
     # An abstract method to return human readable titles both for the RichText
     # (HTML) widget and for menu entries. It also specifies an ID which is used
