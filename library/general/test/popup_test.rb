@@ -35,7 +35,7 @@ describe "Popup" do
 
     it "raises exception when the block parameter is missing" do
       # no block passed
-      expect { Popup.Feedback("Label", "Message") }.to raise_error(LocalJumpError)
+      expect { Popup.Feedback("Label", "Message") }.to raise_error
     end
   end
 end
