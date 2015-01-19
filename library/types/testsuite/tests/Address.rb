@@ -32,10 +32,10 @@ module Yast
       Yast.import "Address"
 
       DUMP("Address::Check")
-      TEST(lambda { Address.Check(nil) }, [@READ], nil)
-      TEST(lambda { Address.Check("") }, [@READ], nil)
-      TEST(lambda { Address.Check("1.2.3.4") }, [@READ], nil)
-      TEST(lambda { Address.Check("::1") }, [@READ], nil)
+      TEST(->() { Address.Check(nil) }, [@READ], nil)
+      TEST(->() { Address.Check("") }, [@READ], nil)
+      TEST(->() { Address.Check("1.2.3.4") }, [@READ], nil)
+      TEST(->() { Address.Check("::1") }, [@READ], nil)
 
       nil
     end

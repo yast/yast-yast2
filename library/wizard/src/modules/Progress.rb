@@ -150,9 +150,9 @@ module Yast
     end
 
     def IsRunning
-      #Check if any progress bar exists. If it does not, we're not running
-      #(querying progress counter is not enough, a module ran previously
-      #might have failed to reset the counter properly)
+      # Check if any progress bar exists. If it does not, we're not running
+      # (querying progress counter is not enough, a module ran previously
+      # might have failed to reset the counter properly)
       Ops.greater_than(@progress_running, 0) &&
         UI.WidgetExists(:progress_replace_point) == true
     end
@@ -233,7 +233,7 @@ module Yast
       @progress_val = Ops.get_integer(state, "progress_val", 0)
 
       pb_value = Ops.get_integer(state, "progress_value", 0)
-      pb_value = Ops.add(pb_value == nil ? 0 : pb_value, 1)
+      pb_value = Ops.add(pb_value.nil? ? 0 : pb_value, 1)
 
       # refresh the progress widget, add one step for the embedded progress
       UI.ReplaceWidget(
@@ -339,10 +339,8 @@ module Yast
     end
 
     def NormalizeIconPath(one_icon, visible)
-      if one_icon == nil || one_icon == ""
-        one_icon = visible == true ?
-          FallbackIconVisible() :
-          FallbackIconInvisible()
+      if one_icon.nil? || one_icon == ""
+        one_icon = visible ? FallbackIconVisible() : FallbackIconInvisible()
       end
 
       if !Builtins.regexpmatch(one_icon, ".[pP][nN][gG]$") &&
@@ -353,7 +351,7 @@ module Yast
       # relative path (to Directory::icondir)
       if Builtins.regexpmatch(one_icon, "/") &&
           !Builtins.regexpmatch(one_icon, "^/")
-        one_icon = Ops.add(Directory.icondir, one_icon) 
+        one_icon = Ops.add(Directory.icondir, one_icon)
         # hopefully you know what you do
         # just image name
       elsif !Builtins.regexpmatch(one_icon, "/")
@@ -362,9 +360,7 @@ module Yast
 
       if !FileUtils.Exists(one_icon)
         Builtins.y2error("Image %1 doesn't exist, using fallback", one_icon)
-        one_icon = visible == true ?
-          FallbackIconVisible() :
-          FallbackIconInvisible()
+        one_icon = visible ? FallbackIconVisible() : FallbackIconInvisible()
       end
 
       one_icon
@@ -382,7 +378,6 @@ module Yast
 
       ret = HBox(HSpacing(2))
       i = -1
-      one_icon = ""
 
       number_of_stages = Ops.subtract(number_of_stages, 1)
 
@@ -671,7 +666,6 @@ module Yast
       nil
     end
 
-
     # Function adds icon-support to progress dialog.
     # Parameters are the same as for Progress::New() function with one parameter added.
     #
@@ -730,7 +724,7 @@ module Yast
     # @param integer current step ID
     def HighlightProgressIcon(step_id)
       if @has_icon_progress_bar
-        @last_highlighted_icon = -1 if @last_highlighted_icon == nil
+        @last_highlighted_icon = -1 if @last_highlighted_icon.nil?
 
         # some steps might have been skipped, change all (not changed yet)
         # icons one by one
@@ -784,9 +778,9 @@ module Yast
         Ops.divide(
           Ops.multiply(
             100.0,
-            Convert.convert(progress_value, :from => "integer", :to => "float")
+            Convert.convert(progress_value, from: "integer", to: "float")
           ),
-          Convert.convert(@progress_max, :from => "integer", :to => "float")
+          Convert.convert(@progress_max, from: "integer", to: "float")
         )
       )
 
@@ -828,7 +822,6 @@ module Yast
 
       # do not update the UI in a nested progress
       return if Ops.greater_than(StackSize(), 0)
-
 
       if Mode.commandline
         if Ops.less_than(@current_stage, @stages) &&
@@ -916,7 +909,6 @@ module Yast
       nil
     end
 
-
     # Jumps to the next stage and sets step to st.
     # @param [Fixnum] st new progress bar value
     def NextStageStep(st)
@@ -949,9 +941,8 @@ module Yast
       end
 
       if 0 != @stages
-        while Ops.less_than(@current_stage, @stages)
-          NextStage()
-        end
+        # unwind remaining stages
+        NextStage() while Ops.less_than(@current_stage, @stages)
       end
       if 0 != @steps
         @current_step = @steps
@@ -1051,28 +1042,28 @@ module Yast
       nil
     end
 
-    publish :function => :IsRunning, :type => "boolean ()"
-    publish :function => :CurrentSubprogressType, :type => "symbol ()"
-    publish :function => :SubprogressTitle, :type => "void (string)"
-    publish :function => :SubprogressValue, :type => "void (integer)"
-    publish :function => :SubprogressType, :type => "void (symbol, integer)"
-    publish :function => :set, :type => "boolean (boolean)"
-    publish :function => :status, :type => "boolean ()"
-    publish :function => :off, :type => "void ()"
-    publish :function => :on, :type => "void ()"
-    publish :function => :New, :type => "void (string, string, integer, list <string>, list, string)"
-    publish :function => :NewProgressIcons, :type => "void (string, string, integer, list <string>, list, string, list <list <string>>)"
-    publish :function => :Simple, :type => "void (string, string, integer, string)"
-    publish :function => :NextStep, :type => "void ()"
-    publish :function => :NextStage, :type => "void ()"
-    publish :function => :Step, :type => "void (integer)"
-    publish :function => :Stage, :type => "void (integer, string, integer)"
-    publish :function => :NextStageStep, :type => "void (integer)"
-    publish :function => :Title, :type => "void (string)"
-    publish :function => :Finish, :type => "void ()"
-    publish :function => :OpenSuperior, :type => "void (string, list <string>)"
-    publish :function => :CloseSuperior, :type => "void ()"
-    publish :function => :StepSuperior, :type => "void ()"
+    publish function: :IsRunning, type: "boolean ()"
+    publish function: :CurrentSubprogressType, type: "symbol ()"
+    publish function: :SubprogressTitle, type: "void (string)"
+    publish function: :SubprogressValue, type: "void (integer)"
+    publish function: :SubprogressType, type: "void (symbol, integer)"
+    publish function: :set, type: "boolean (boolean)"
+    publish function: :status, type: "boolean ()"
+    publish function: :off, type: "void ()"
+    publish function: :on, type: "void ()"
+    publish function: :New, type: "void (string, string, integer, list <string>, list, string)"
+    publish function: :NewProgressIcons, type: "void (string, string, integer, list <string>, list, string, list <list <string>>)"
+    publish function: :Simple, type: "void (string, string, integer, string)"
+    publish function: :NextStep, type: "void ()"
+    publish function: :NextStage, type: "void ()"
+    publish function: :Step, type: "void (integer)"
+    publish function: :Stage, type: "void (integer, string, integer)"
+    publish function: :NextStageStep, type: "void (integer)"
+    publish function: :Title, type: "void (string)"
+    publish function: :Finish, type: "void ()"
+    publish function: :OpenSuperior, type: "void (string, list <string>)"
+    publish function: :CloseSuperior, type: "void ()"
+    publish function: :StepSuperior, type: "void ()"
   end
 
   Progress = ProgressClass.new

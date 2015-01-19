@@ -27,7 +27,7 @@ module Installation
     # The only part needed in client rb file.
     # @return response from abstract methods
     def self.run
-      self.new.run
+      new.run
     end
 
     # Dispatches to abstract method based on passed Arguments to client
@@ -69,7 +69,7 @@ module Installation
     # `X-SuSE-YaST-AutoInstDataType`
     # @param profile [Hash, Array] profile data specific to this module.
     # @return true on success
-    def import(profile)
+    def import(_profile)
       raise NotImplementedError, "Calling abstract method 'import'"
     end
 
@@ -100,7 +100,6 @@ module Installation
     def change
       raise NotImplementedError, "Calling abstract method 'change'"
     end
-
 
     # Write settings to the target system.
     # @return [Boolean] true on success

@@ -1,6 +1,6 @@
-require 'pathname'
-require 'ostruct'
-require 'yast'
+require "pathname"
+require "ostruct"
+require "yast"
 
 ## Description
 #
@@ -59,7 +59,6 @@ require 'yast'
 
 module Yast
   class HooksClass < Module
-
     include Yast::Logger
 
     attr_reader :hooks, :last, :search_path
@@ -67,12 +66,12 @@ module Yast
     private :hooks
 
     def initialize
-      textdomain 'base'
+      textdomain "base"
       @hooks = {}
       @search_path = SearchPath.new
     end
 
-    def run hook_name
+    def run(hook_name)
       hook_name = hook_name.to_s
       raise "Hook name not specified" if hook_name.empty?
 
@@ -81,7 +80,7 @@ module Yast
       @last = hook
     end
 
-    def find hook_name
+    def find(hook_name)
       hooks[hook_name]
     end
 
@@ -89,13 +88,13 @@ module Yast
       hooks.values
     end
 
-    def exists? hook_name
+    def exists?(hook_name)
       !!find(hook_name)
     end
 
-    private
+  private
 
-    def create hook_name, source_file
+    def create(hook_name, source_file)
       if hooks[hook_name]
         log.warn "Hook '#{hook_name}' has already been run from #{hooks[hook_name].caller_path}"
         hooks[hook_name]
@@ -105,7 +104,7 @@ module Yast
     end
 
     class SearchPath
-      DEFAULT_DIR = '/var/lib/YaST2/hooks'
+      DEFAULT_DIR = "/var/lib/YaST2/hooks"
 
       attr_reader :path
 
@@ -113,7 +112,7 @@ module Yast
         set_default_path
       end
 
-      def join! new_path
+      def join!(new_path)
         @path = path.join(new_path)
       end
 
@@ -121,7 +120,7 @@ module Yast
         set_default_path
       end
 
-      def set new_path
+      def set(new_path)
         @path = Pathname.new(new_path)
       end
 
@@ -141,7 +140,7 @@ module Yast
         end
       end
 
-      private
+    private
 
       def set_default_path
         @path = Pathname.new(DEFAULT_DIR)
@@ -153,18 +152,18 @@ module Yast
 
       attr_reader :name, :results, :files, :caller_path, :search_path
 
-      def initialize name, caller_path, search_path
+      def initialize(name, caller_path, search_path)
         log.debug "Creating hook '#{name}' from '#{self.caller_path}'"
         search_path.verify!
         @search_path = search_path
         @name = name
-        @files = find_hook_files(name).map {|path| HookFile.new(path) }
-        @caller_path = caller_path.split(':in').first
+        @files = find_hook_files(name).map { |path| HookFile.new(path) }
+        @caller_path = caller_path.split(":in").first
       end
 
       def execute
         Builtins.y2milestone "Executing hook '#{name}'"
-        files.each &:execute
+        files.each(&:execute)
       end
 
       def used?
@@ -172,27 +171,27 @@ module Yast
       end
 
       def results
-        files.map &:result
+        files.map(&:result)
       end
 
       def succeeded?
-        files.all? &:succeeded?
+        files.all?(&:succeeded?)
       end
 
       def failed?
         !succeeded?
       end
 
-      private
+    private
 
-      def find_hook_files hook_name
+      def find_hook_files(hook_name)
         log.debug "Searching for hook files in '#{search_path}'..."
         hook_files = search_path.children.select do |file|
           file.basename.fnmatch?("#{hook_name}_[0-9][0-9]_*")
         end
         unless hook_files.empty?
-          log.info "Found #{hook_files.size} hook files: " +
-            "#{hook_files.map {|f| f.basename.to_s}.join(', ')}"
+          log.info "Found #{hook_files.size} hook files: " \
+            "#{hook_files.map { |f| f.basename.to_s }.join(", ")}"
         end
         hook_files.sort
       end
@@ -203,7 +202,7 @@ module Yast
 
       attr_reader :path, :content, :result
 
-      def initialize path
+      def initialize(path)
         @path = path
       end
 
@@ -221,11 +220,11 @@ module Yast
       end
 
       def output
-        return '' unless result
+        return "" unless result
         output = []
         output << "STDERR: #{result.stderr.strip}" unless result.stderr.empty?
         output << "STDOUT: #{result.stdout.strip}" unless result.stdout.empty?
-        output.join('; ')
+        output.join("; ")
       end
 
       def succeeded?

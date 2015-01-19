@@ -43,9 +43,9 @@ module Yast
         )
       )
 
-      LogViewCore.Start(Id(:log), { "file" => @file, "grep" => @grep })
+      LogViewCore.Start(Id(:log),  "file" => @file, "grep" => @grep)
 
-      while true
+      loop do
         @widget = UI.TimeoutUserInput(250)
 
         if @widget == :timeout

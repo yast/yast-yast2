@@ -24,7 +24,6 @@
 module Yast
   class ProgressClient1Client < Client
     def main
-
       # an example client which uses Progress::
 
       Yast.import "Progress"

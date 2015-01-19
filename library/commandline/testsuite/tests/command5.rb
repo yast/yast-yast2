@@ -38,8 +38,8 @@ module Yast
       Yast.import "CommandLine"
 
       # unknown option
-      TEST(lambda { CommandLine.Init(@cmdline, ["add", "ip=10.20.a.b"]) }, [], nil)
-      TEST(lambda { CommandLine.Command }, [], nil) 
+      TEST(->() { CommandLine.Init(@cmdline, ["add", "ip=10.20.a.b"]) }, [], nil)
+      TEST(->() { CommandLine.Command }, [], nil)
 
       # EOF
 

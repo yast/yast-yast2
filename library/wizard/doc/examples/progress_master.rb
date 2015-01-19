@@ -24,7 +24,6 @@
 module Yast
   class ProgressMasterClient < Client
     def main
-
       # call progress_client1 and progress_client2
       # display detailed progress of both clients
 

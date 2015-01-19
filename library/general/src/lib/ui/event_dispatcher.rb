@@ -39,9 +39,7 @@ module UI
         input = Yast::UI.UserInput
         if respond_to?(:"#{input}_handler")
           send(:"#{input}_handler")
-          if @_finish_dialog_flag
-            return @_finish_dialog_value
-          end
+          return @_finish_dialog_value if @_finish_dialog_flag
         else
           raise "Unknown action #{input}"
         end

@@ -41,7 +41,6 @@ require "yast"
 module Yast
   class HWConfigClass < Module
     def main
-
       textdomain "base"
     end
 
@@ -51,7 +50,7 @@ module Yast
       # read all files
       all = SCR.Dir(path(".sysconfig.hardware.section"))
 
-      all = [] if all == nil
+      all = [] if all.nil?
 
       modules = Builtins.filter(all) do |file|
         !Builtins.regexpmatch(file, "[~]")
@@ -84,7 +83,7 @@ module Yast
 
       Builtins.maplist(vars) do |var|
         item = Convert.to_string(SCR.Read(Ops.add(p, var)))
-        Ops.set(ret, var, item) if item != nil
+        Ops.set(ret, var, item) if !item.nil?
       end
 
       deep_copy(ret)
@@ -160,15 +159,15 @@ module Yast
       SCR.Write(path(".sysconfig.hardware"), nil)
     end
 
-    publish :function => :ConfigFiles, :type => "list <string> ()"
-    publish :function => :Variables, :type => "list <string> (string)"
-    publish :function => :Values, :type => "map <string, string> (string)"
-    publish :function => :SetValue, :type => "boolean (string, string, string)"
-    publish :function => :GetValue, :type => "string (string, string)"
-    publish :function => :SetComment, :type => "boolean (string, string, string)"
-    publish :function => :GetComment, :type => "string (string, string)"
-    publish :function => :RemoveConfig, :type => "boolean (string)"
-    publish :function => :Flush, :type => "boolean ()"
+    publish function: :ConfigFiles, type: "list <string> ()"
+    publish function: :Variables, type: "list <string> (string)"
+    publish function: :Values, type: "map <string, string> (string)"
+    publish function: :SetValue, type: "boolean (string, string, string)"
+    publish function: :GetValue, type: "string (string, string)"
+    publish function: :SetComment, type: "boolean (string, string, string)"
+    publish function: :GetComment, type: "string (string, string)"
+    publish function: :RemoveConfig, type: "boolean (string)"
+    publish function: :Flush, type: "boolean ()"
   end
 
   HWConfig = HWConfigClass.new

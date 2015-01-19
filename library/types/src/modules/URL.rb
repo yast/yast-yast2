@@ -41,9 +41,7 @@ module Yast
       Yast.import "IP"
       Yast.import "URLRecode"
 
-      # TODO:
-      # - read URI(3)
-      # - esp. compare the regex mentioned in the URI(3) with ours:
+      # TODO: read URI(3), esp. compare the regex mentioned in the URI(3) with ours:
       #   my($scheme, $authority, $path, $query, $fragment) =
       #   $uri =~ m|^(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?|;
 
@@ -53,7 +51,6 @@ module Yast
       # for details see RFC2616 and RFC2396
       #
       @ValidChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.:_-/%@"
-
 
       # Transform map used for (un)escaping characters in username/password part of an URL.
       # It doesn't contain '%' because this character must be used in a particular
@@ -112,22 +109,21 @@ module Yast
     #	URL::UnEscapeString ("http%3a%2f%2fsome.nice.url%2f%3awith%3a%2f%24p#ci%26l%2fch%40rs%2f", URL::transform_map_passwd)
     #		-> http://some.nice.url/:with:/$p#ci&l/ch@rs/
 
-    def UnEscapeString(_in, transform)
+    def UnEscapeString(in_, transform)
       transform = deep_copy(transform)
-      return "" if _in == nil || _in == ""
+      return "" if in_.nil? || in_ == ""
 
       # replace the other reserved characters
       Builtins.foreach(transform) do |tgt, src|
         # replace both upper and lower case escape sequences
-        _in = String.Replace(_in, Builtins.tolower(src), tgt)
-        _in = String.Replace(_in, Builtins.toupper(src), tgt)
-      end 
-
+        in_ = String.Replace(in_, Builtins.tolower(src), tgt)
+        in_ = String.Replace(in_, Builtins.toupper(src), tgt)
+      end
 
       # replace % at the end
-      _in = String.Replace(_in, "%25", "%")
+      in_ = String.Replace(in_, "%25", "%")
 
-      _in
+      in_
     end
 
     # Escape reserved characters in string used as a part of URL (e.g. '%' => '%25', '@' => '%40'...)
@@ -140,20 +136,19 @@ module Yast
     #	URL::EscapeString ("http://some.nice.url/:with:/$p#ci&l/ch@rs/", URL::transform_map_passwd)
     #		-> http%3a%2f%2fsome.nice.url%2f%3awith%3a%2f%24p#ci%26l%2fch%40rs%2f
 
-    def EscapeString(_in, transform)
+    def EscapeString(in_, transform)
       transform = deep_copy(transform)
       ret = ""
 
-      return ret if _in == nil || _in == ""
+      return ret if in_.nil? || in_ == ""
 
       # replace % at first
-      ret = Builtins.mergestring(Builtins.splitstring(_in, "%"), "%25")
+      ret = Builtins.mergestring(Builtins.splitstring(in_, "%"), "%25")
 
       # replace the other reserved characters
       Builtins.foreach(transform) do |src, tgt|
         ret = Builtins.mergestring(Builtins.splitstring(ret, src), tgt)
-      end 
-
+      end
 
       ret
     end
@@ -176,21 +171,21 @@ module Yast
       Builtins.y2debug("url=%1", url)
 
       # We don't parse empty URLs
-      return {} if url == nil || Ops.less_than(Builtins.size(url), 1)
+      return {} if url.nil? || Ops.less_than(Builtins.size(url), 1)
 
       # Extract basic URL parts: scheme://host/path?question#part
       rawtokens = Builtins.regexptokenize(
         url,
-        "^" +
-          # 0,1: http://
-          "(([^:/?#]+):[/]{0,2})?" +
-          # 2: user:pass@www.suse.cz:23
-          "([^/?#]*)?" +
-          # 3: /some/path
-          "([^?#]*)?" +
-          # 4,5: ?question
-          "(\\?([^#]*))?" +
-          # 6,7: #fragment
+        # 0,1: http://
+        # 2: user:pass@www.suse.cz:23
+        # 3: /some/path
+        # 4,5: ?question
+        # 6,7: #fragment
+        "^" \
+          "(([^:/?#]+):[/]{0,2})?" \
+          "([^/?#]*)?" \
+          "([^?#]*)?" \
+          "(\\?([^#]*))?" \
           "(#(.*))?"
       )
       Builtins.y2debug("rawtokens=%1", rawtokens)
@@ -219,13 +214,13 @@ module Yast
       # Extract username:pass@host:port
       userpass = Builtins.regexptokenize(
         Ops.get_string(rawtokens, 2, ""),
-        "^" +
-          # 0,1,2,3: user:pass@
-          "(([^@:]+)(:([^@:]+))?@)?" +
-          # 4,5,6,7: hostname|[xxx]
-          "(([^:@]+))" +
-          # FIXME "(([^:@]+)|(\\[([^]]+)\\]))" +
-          # 8,9: port
+        # 0,1,2,3: user:pass@
+        # 4,5,6,7: hostname|[xxx]
+        # FIXME: "(([^:@]+)|(\\[([^]]+)\\]))" +
+        # 8,9: port
+        "^" \
+          "(([^@:]+)(:([^@:]+))?@)?" \
+          "(([^:@]+))" \
           "(:([^:@]+))?"
       )
       Builtins.y2debug("userpass=%1", userpass)
@@ -257,12 +252,12 @@ module Yast
       # check if there is an IPv6 address
       host6 = Builtins.regexpsub(hostport6, "^\\[(.*)\\]", "\\1")
 
-      if host6 != nil && host6 != ""
+      if !host6.nil? && host6 != ""
         Builtins.y2milestone("IPv6 host detected: %1", host6)
         Ops.set(tokens, "host", host6)
         port6 = Builtins.regexpsub(hostport6, "^\\[.*\\]:(.*)", "\\1")
         Builtins.y2debug("port: %1", port6)
-        Ops.set(tokens, "port", port6 != nil ? port6 : "")
+        Ops.set(tokens, "port", !port6.nil? ? port6 : "")
       end
 
       # some exceptions for samba scheme (there is optional extra option "domain")
@@ -290,10 +285,10 @@ module Yast
     # @see also perl-URI: URI(3)
     def Check(url)
       # We don't allow empty URLs
-      return false if url == nil || Ops.less_than(Builtins.size(url), 1)
+      return false if url.nil? || Ops.less_than(Builtins.size(url), 1)
 
       # We don't allow URLs with spaces
-      return false if Builtins.search(url, " ") != nil
+      return false if url.include?(" ")
 
       tokens = Parse(url)
 
@@ -301,8 +296,8 @@ module Yast
 
       # Check "scheme"  : "http"
       if !Builtins.regexpmatch(
-          Ops.get_string(tokens, "scheme", ""),
-          "^[[:alpha:]]*$"
+        Ops.get_string(tokens, "scheme", ""),
+        "^[[:alpha:]]*$"
         )
         return false
       end
@@ -332,7 +327,6 @@ module Yast
       true
     end
 
-
     # Build URL from tokens as parsed with Parse
     # @param map token as returned from Parse
     # @return [String] url, empty string if invalid data is used to build the url.
@@ -346,8 +340,8 @@ module Yast
       Builtins.y2debug("URL::Build(): input: %1", tokens)
 
       if Builtins.regexpmatch(
-          Ops.get_string(tokens, "scheme", ""),
-          "^[[:alpha:]]*$"
+        Ops.get_string(tokens, "scheme", ""),
+        "^[[:alpha:]]*$"
         )
         # if (tokens["scheme"]:"" == "samba") url="smb";
         # 		else
@@ -380,9 +374,11 @@ module Yast
       if Hostname.CheckFQ(Ops.get_string(tokens, "host", "")) ||
           IP.Check(Ops.get_string(tokens, "host", ""))
         # enclose an IPv6 address in square brackets
-        url = IP.Check6(Ops.get_string(tokens, "host", "")) ?
-          Builtins.sformat("%1[%2]", url, Ops.get_string(tokens, "host", "")) :
-          Builtins.sformat("%1%2", url, Ops.get_string(tokens, "host", ""))
+        url = if IP.Check6(Ops.get_string(tokens, "host", ""))
+                Builtins.sformat("%1[%2]", url, Ops.get_string(tokens, "host", ""))
+              else
+                Builtins.sformat("%1%2", url, Ops.get_string(tokens, "host", ""))
+              end
       end
       Builtins.y2debug("url: %1", url)
 
@@ -429,7 +425,6 @@ module Yast
       end
       Builtins.y2debug("url: %1", url)
 
-
       query_map = MakeMapFromParams(Ops.get_string(tokens, "query", ""))
 
       if Ops.get_string(tokens, "scheme", "") == "smb" &&
@@ -438,7 +433,7 @@ module Yast
             0
           ) &&
           Ops.get(query_map, "workgroup", "") !=
-            Ops.get_string(tokens, "domain", "")
+              Ops.get_string(tokens, "domain", "")
         Ops.set(query_map, "workgroup", Ops.get_string(tokens, "domain", ""))
 
         Ops.set(tokens, "query", MakeParamsFromMap(query_map))
@@ -538,9 +533,9 @@ module Yast
     #      ]
     def MakeMapFromParams(params)
       # Error
-      if params == nil
+      if params.nil?
         Builtins.y2error("Erroneous (nil) params!")
-        return nil 
+        return nil
         # Empty
       elsif params == ""
         return {}
@@ -549,7 +544,7 @@ module Yast
       params_list = Builtins.splitstring(params, "&")
 
       params_list = Builtins.filter(params_list) do |one_param|
-        one_param != "" && one_param != nil
+        one_param != "" && !one_param.nil?
       end
 
       ret = {}
@@ -559,7 +554,7 @@ module Yast
 
       Builtins.foreach(params_list) do |one_param|
         eq_pos = Builtins.search(one_param, "=")
-        if eq_pos == nil
+        if eq_pos.nil?
           Ops.set(ret, one_param, "")
         else
           opt = Builtins.substring(one_param, 0, eq_pos)
@@ -591,11 +586,11 @@ module Yast
       Builtins.mergestring(
         # ["key" : "value", ...] -> ["key=value", ...]
         Builtins.maplist(params_map) do |key, value|
-          if value == nil
+          if value.nil?
             Builtins.y2warning("Empty value for key %1", key)
             value = ""
           end
-          if key == nil || key == ""
+          if key.nil? || key == ""
             Builtins.y2error("Empty key (will be skipped)")
             next ""
           end
@@ -619,7 +614,7 @@ module Yast
         "(.*)(://[^/:]*):[^/@]*@(.*)",
         "\\1\\2:PASSWORD@\\3"
       )
-      subd == nil ? url : subd
+      subd.nil? ? url : subd
     end
 
     # Hide password token in parsed URL (by URL::Parse()) - the password is replaced by 'PASSWORD' string.
@@ -639,20 +634,20 @@ module Yast
       deep_copy(ret)
     end
 
-    publish :variable => :ValidChars, :type => "string"
-    publish :variable => :transform_map_passwd, :type => "map <string, string>"
-    publish :variable => :transform_map_filename, :type => "map <string, string>"
-    publish :variable => :transform_map_query, :type => "map <string, string>"
-    publish :function => :UnEscapeString, :type => "string (string, map <string, string>)"
-    publish :function => :EscapeString, :type => "string (string, map <string, string>)"
-    publish :function => :MakeMapFromParams, :type => "map <string, string> (string)"
-    publish :function => :MakeParamsFromMap, :type => "string (map <string, string>)"
-    publish :function => :Parse, :type => "map (string)"
-    publish :function => :Check, :type => "boolean (string)"
-    publish :function => :Build, :type => "string (map)"
-    publish :function => :FormatURL, :type => "string (map, integer)"
-    publish :function => :HidePassword, :type => "string (string)"
-    publish :function => :HidePasswordToken, :type => "map (map)"
+    publish variable: :ValidChars, type: "string"
+    publish variable: :transform_map_passwd, type: "map <string, string>"
+    publish variable: :transform_map_filename, type: "map <string, string>"
+    publish variable: :transform_map_query, type: "map <string, string>"
+    publish function: :UnEscapeString, type: "string (string, map <string, string>)"
+    publish function: :EscapeString, type: "string (string, map <string, string>)"
+    publish function: :MakeMapFromParams, type: "map <string, string> (string)"
+    publish function: :MakeParamsFromMap, type: "string (map <string, string>)"
+    publish function: :Parse, type: "map (string)"
+    publish function: :Check, type: "boolean (string)"
+    publish function: :Build, type: "string (map)"
+    publish function: :FormatURL, type: "string (map, integer)"
+    publish function: :HidePassword, type: "string (string)"
+    publish function: :HidePasswordToken, type: "map (map)"
   end
 
   URL = URLClass.new

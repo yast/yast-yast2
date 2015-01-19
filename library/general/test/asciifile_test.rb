@@ -54,7 +54,7 @@ EOS
         end
 
         describe "comment lines" do
-          subject (:comment) { result[2] }
+          subject(:comment) { result[2] }
 
           it "have a true 'comment' key" do
             expect(comment["comment"]).to be_true
@@ -66,7 +66,7 @@ EOS
         end
 
         describe "regular non-comment lines" do
-          subject (:regular) { result[1] }
+          subject(:regular) { result[1] }
 
           it "have a falsy 'comment' key" do
             expect(regular["comment"]).to be_false

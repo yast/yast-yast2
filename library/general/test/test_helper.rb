@@ -4,7 +4,7 @@ ENV["Y2DIR"] = inc_dirs.join(":")
 
 require "yast"
 
-def set_root_path(directory)
+def assign_root_path(directory)
   check_version = false
   handle = Yast::WFM.SCROpen("chroot=#{directory}:scr", check_version)
   Yast::WFM.SCRSetDefault(handle)

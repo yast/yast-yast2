@@ -210,7 +210,6 @@ module Yast
       # FATE #300970: Firewall support for SMB browsing
       @broadcast_related_module = "nf_conntrack_netbios_ns"
 
-
       # Variable for ReportOnlyOnce() function
       @report_only_once = []
 
@@ -257,7 +256,7 @@ module Yast
     # Returns whether records in variable should be written one record on one line.
     # @return [Boolean] if wolpr
     def WriteOneRecordPerLine(key_name)
-      return true if key_name == nil && key_name == ""
+      return true if key_name.nil? && key_name == ""
 
       Builtins.contains(@one_line_per_record, key_name)
     end
@@ -371,13 +370,13 @@ module Yast
           SCR.Read(Builtins.add(path(".sysconfig.SuSEfirewall2"), variable))
         )
         # if value is undefined, get default value
-        value = GetDefaultValue(variable) if value == nil || value == ""
+        value = GetDefaultValue(variable) if value.nil? || value == ""
         # BNC #426000
         # backslash at the end
         if Builtins.regexpmatch(value, "[ \t]*\\\\[ \t]*\n")
           rules = Builtins.splitstring(value, "\\ \t\n")
           rules = Builtins.filter(rules) do |one_rule|
-            one_rule != nil && one_rule != ""
+            !one_rule.nil? && one_rule != ""
           end
           value = Builtins.mergestring(rules, " ")
         end
@@ -587,10 +586,10 @@ module Yast
         broadcast = GetBroadcastConfiguration(zone)
         # no broadcast allowed for this zone
         if broadcast == "no"
-          Ops.set(allowed_ports, zone, []) 
+          Ops.set(allowed_ports, zone, [])
           # BNC #694782: "yes" is automatically translated by SuSEfirewall2
         elsif broadcast == "yes"
-          Ops.set(allowed_ports, zone, ["yes"]) 
+          Ops.set(allowed_ports, zone, ["yes"])
           # only listed ports allows broadcast
         else
           Ops.set(allowed_ports, zone, Builtins.splitstring(broadcast, " "))
@@ -656,16 +655,14 @@ module Yast
           Ops.get(allowed_ports_divided, "port_ranges", []) == []
         return false
       end
-      # clean up the memory a bit
-      allowed_ports_map = nil
 
       is_allowed = true
       # checking all needed ports;
       Builtins.foreach(needed_ports) do |needed_port|
         # allowed ports don't contain the needed one and also portranges don't
         if !Builtins.contains(
-            Ops.get(allowed_ports_divided, "ports", []),
-            needed_port
+          Ops.get(allowed_ports_divided, "ports", []),
+          needed_port
           ) &&
             !PortRanges.PortIsInPortranges(
               needed_port,
@@ -801,11 +798,11 @@ module Yast
             next
           end
           remove_these_ports = PortAliases.GetListOfServiceAliases(remove_port)
-          remove_these_ports = [remove_port] if remove_these_ports == nil
+          remove_these_ports = [remove_port] if remove_these_ports.nil?
           remove_ports_with_aliases = Convert.convert(
             Builtins.union(remove_ports_with_aliases, remove_these_ports),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
         end
         remove_ports = deep_copy(remove_ports_with_aliases)
@@ -840,7 +837,7 @@ module Yast
                   Ops.get(allowed_services, "port_ranges", [])
                 )
               )
-            end 
+            end
             # Removing a port range from port ranges
           else
             if !Builtins.contains(already_removed, remove_port)
@@ -863,8 +860,8 @@ module Yast
           Ops.get(allowed_services, "ports", []),
           Ops.get(allowed_services, "port_ranges", [])
         ),
-        :from => "list",
-        :to   => "list <string>"
+        from: "list",
+        to:   "list <string>"
       )
       allowed_services_all = PortRanges.FlattenServices(
         allowed_services_all,
@@ -898,8 +895,8 @@ module Yast
 
       allowed_services = Convert.convert(
         Builtins.union(allowed_services, add_ports),
-        :from => "list",
-        :to   => "list <string>"
+        from: "list",
+        to:   "list <string>"
       )
       allowed_services = PortRanges.FlattenServices(allowed_services, protocol)
 
@@ -918,7 +915,7 @@ module Yast
     def RemoveServiceDefinedByPackageFromZone(service, zone)
       return nil if !IsKnownZone(zone)
 
-      if service == nil
+      if service.nil?
         Builtins.y2error("Service Id can't be nil!")
         return nil
       elsif Builtins.regexpmatch(service, "^service:.*")
@@ -956,7 +953,7 @@ module Yast
     def AddServiceDefinedByPackageIntoZone(service, zone)
       return nil if !IsKnownZone(zone)
 
-      if service == nil
+      if service.nil?
         Builtins.y2error("Service Id can't be nil!")
         return nil
       elsif Builtins.regexpmatch(service, "^service:.*")
@@ -992,7 +989,7 @@ module Yast
     def RemoveServiceSupportFromZone(service, zone)
       needed = SuSEFirewallServices.GetNeededPortsAndProtocols(service)
       # unknown service
-      if needed == nil
+      if needed.nil?
         Builtins.y2error("Undefined service '%1'", service)
         return nil
       end
@@ -1038,7 +1035,7 @@ module Yast
     def AddServiceSupportIntoZone(service, zone)
       needed = SuSEFirewallServices.GetNeededPortsAndProtocols(service)
       # unknown service
-      if needed == nil
+      if needed.nil?
         Builtins.y2error("Undefined service '%1'", service)
         return nil
       end
@@ -1084,7 +1081,7 @@ module Yast
     #
     # @param [Boolean] new_status, 'true' if packages should be offered for installation
     def SetInstallPackagesIfMissing(new_status)
-      if new_status == nil
+      if new_status.nil?
         Builtins.y2error("Wrong value: %1", new_status)
         return
       end
@@ -1216,7 +1213,7 @@ module Yast
         # trust IPsec is a known zone
         if IsKnownZone(zone)
           zone = GetZoneConfigurationString(zone)
-          Ops.set(@SETTINGS, "FW_IPSEC_TRUST", zone) 
+          Ops.set(@SETTINGS, "FW_IPSEC_TRUST", zone)
           # unknown zone, changing to default value
         else
           defaultv = GetDefaultValue("FW_IPSEC_TRUST")
@@ -1239,7 +1236,7 @@ module Yast
     def GetTrustIPsecAs
       # do not trust
       if Ops.get(@SETTINGS, "FW_IPSEC_TRUST") == "no"
-        return "no" 
+        return "no"
         # default value for 'yes" ~= "INT"
       elsif Ops.get(@SETTINGS, "FW_IPSEC_TRUST") == "yes"
         return "INT"
@@ -1249,7 +1246,7 @@ module Yast
         )
         # trust as named zone (if known)
         if IsKnownZone(zone)
-          return zone 
+          return zone
           # unknown zone, change to default value
         else
           SetModified()
@@ -1403,7 +1400,6 @@ module Yast
       end
     end
 
-
     # Function determines if all SuSEFirewall scripts are enabled in
     # init scripts /etc/init.d/ now.
     # For configuration "enabled" status use GetEnableService().
@@ -1502,10 +1498,10 @@ module Yast
         Report.Error(
           Builtins.sformat(
             _(
-              "Interface '%1' is included in multiple firewall zones.\n" +
-                "Continuing with configuration can produce errors.\n" +
-                "\n" +
-                "It is recommended to leave the configuration and repair it manually in\n" +
+              "Interface '%1' is included in multiple firewall zones.\n" \
+                "Continuing with configuration can produce errors.\n" \
+                "\n" \
+                "It is recommended to leave the configuration and repair it manually in\n" \
                 "the file '/etc/sysconfig/SuSEFirewall'."
             ),
             interface
@@ -1532,7 +1528,7 @@ module Yast
 
       Builtins.foreach(interfaces) do |interface|
         zone = GetZoneOfInterface(interface)
-        zones = Builtins.add(zones, zone) if zone != nil
+        zones = Builtins.add(zones, zone) if !zone.nil?
       end
 
       Builtins.toset(zones)
@@ -1564,7 +1560,7 @@ module Yast
           # interface is explicitely mentioned in some zone
           zone = GetZoneOfInterface(interface)
         end
-        zones = Builtins.add(zones, zone) if zone != nil
+        zones = Builtins.add(zones, zone) if !zone.nil?
       end
 
       Builtins.toset(zones)
@@ -1583,11 +1579,11 @@ module Yast
 
       # All dial-up interfaces
       dialup_interfaces = NetworkInterfaces.List("dialup")
-      dialup_interfaces = [] if dialup_interfaces == nil
+      dialup_interfaces = [] if dialup_interfaces.nil?
 
       # bugzilla #303858 - wrong values from NetworkInterfaces
       dialup_interfaces = Builtins.filter(dialup_interfaces) do |one_iface|
-        if one_iface == nil || one_iface == ""
+        if one_iface.nil? || one_iface == ""
           Builtins.y2error("Wrong interface definition '%1'", one_iface)
           next false
         end
@@ -1601,11 +1597,11 @@ module Yast
 
       # All non-dial-up interfaces
       non_dialup_interfaces = NetworkInterfaces.List("")
-      non_dialup_interfaces = [] if non_dialup_interfaces == nil
+      non_dialup_interfaces = [] if non_dialup_interfaces.nil?
 
       # bugzilla #303858 - wrong values from NetworkInterfaces
       non_dialup_interfaces = Builtins.filter(non_dialup_interfaces) do |one_iface|
-        if one_iface == nil || one_iface == ""
+        if one_iface.nil? || one_iface == ""
           Builtins.y2error("Wrong interface definition '%1'", one_iface)
           next false
         end
@@ -1621,31 +1617,31 @@ module Yast
       Builtins.foreach(dialup_interfaces) do |interface|
         known_interfaces = Builtins.add(
           known_interfaces,
-          {
-            "id"   => interface,
-            "type" => "dialup",
-            # using function to get name
-            "name" => NetworkInterfaces.GetValue(
-              interface,
-              "NAME"
-            ),
-            "zone" => GetZoneOfInterface(interface)
-          }
+
+          "id"   => interface,
+          "type" => "dialup",
+          # using function to get name
+          "name" => NetworkInterfaces.GetValue(
+            interface,
+            "NAME"
+          ),
+          "zone" => GetZoneOfInterface(interface)
+
         )
       end
 
       Builtins.foreach(non_dialup_interfaces) do |interface|
         known_interfaces = Builtins.add(
           known_interfaces,
-          {
-            "id"   => interface,
-            # using function to get name
-            "name" => NetworkInterfaces.GetValue(
-              interface,
-              "NAME"
-            ),
-            "zone" => GetZoneOfInterface(interface)
-          }
+
+          "id"   => interface,
+          # using function to get name
+          "name" => NetworkInterfaces.GetValue(
+            interface,
+            "NAME"
+          ),
+          "zone" => GetZoneOfInterface(interface)
+
         )
       end
 
@@ -1748,7 +1744,7 @@ module Yast
 
       DecreaseVerbosity()
       # removing all appearances of interface in zones, excepting current_zone==new_zone
-      while current_zone != nil && current_zone != zone
+      while !current_zone.nil? && current_zone != zone
         # interface is in any zone already, removing it at first
         RemoveInterfaceFromZone(interface, current_zone) if current_zone != zone
         current_zone = GetZoneOfInterface(interface)
@@ -1807,8 +1803,8 @@ module Yast
       Builtins.foreach(GetKnownFirewallZones()) do |zone|
         firewall_configured_devices = Convert.convert(
           Builtins.union(firewall_configured_devices, GetInterfacesInZone(zone)),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
       end
 
@@ -1858,8 +1854,8 @@ module Yast
       if Ops.greater_than(Builtins.size(interfaces_covered_by_any), 0)
         interfaces_in_zone = Convert.convert(
           Builtins.union(interfaces_in_zone, interfaces_covered_by_any),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
       end
 
@@ -1890,14 +1886,14 @@ module Yast
 
       # "any" for all zones, this is ugly
       if interface == "any"
-        zones = GetKnownFirewallZones() 
+        zones = GetKnownFirewallZones()
         # string interface is the zone name
       elsif IsKnownZone(interface)
-        zones = Builtins.add(zones, interface) 
+        zones = Builtins.add(zones, interface)
         # interface is the interface name
       else
         interface = GetZoneOfInterface(interface)
-        zones = Builtins.add(zones, interface) if interface != nil
+        zones = Builtins.add(zones, interface) if !interface.nil?
       end
 
       # SuSEFirewall feature FW_PROTECT_FROM_INT
@@ -1937,7 +1933,6 @@ module Yast
     #	AddService ("ssh", "TCP", "EXT")
     #	AddService ("ssh", "TCP", "dsl0")
     def AddService(service, protocol, interface)
-      success = false
       Builtins.y2milestone(
         "Adding service %1, protocol %2 to %3",
         service,
@@ -1954,7 +1949,7 @@ module Yast
 
       # "all" means for all known zones
       if interface == "all"
-        zones_affected = GetKnownFirewallZones() 
+        zones_affected = GetKnownFirewallZones()
 
         # zone or interface name
       else
@@ -1963,7 +1958,7 @@ module Yast
           # interface is probably interface-name, checking for respective zone
           interface = GetZoneOfInterface(interface)
           # interface is not assigned to any zone
-          if interface == nil
+          if interface.nil?
             # TRANSLATORS: Error message, %1 = interface name (like eth0)
             Report.Error(
               Builtins.sformat(
@@ -2015,7 +2010,6 @@ module Yast
     #  is the same as
     #	RemoveService ("ssh", "TCP", "DMZ") -> true
     def RemoveService(service, protocol, interface)
-      success = false
       Builtins.y2milestone(
         "Removing service %1, protocol %2 from %3",
         service,
@@ -2032,7 +2026,7 @@ module Yast
 
       # "all" means for all known zones
       if interface == "all"
-        zones_affected = GetKnownFirewallZones() 
+        zones_affected = GetKnownFirewallZones()
 
         # zone or interface name
       else
@@ -2040,7 +2034,7 @@ module Yast
           # interface is probably interface-name, checking for respective zone
           interface = GetZoneOfInterface(interface)
           # interface is not assigned to any zone
-          if interface == nil
+          if interface.nil?
             # TRANSLATORS: Error message, %1 = interface name (like eth0)
             Report.Error(
               Builtins.sformat(
@@ -2062,7 +2056,6 @@ module Yast
 
       SetModified()
 
-
       # Adding service support into each mentioned zone
       Builtins.foreach(zones_affected) do |zone|
         # if the service is allowed
@@ -2079,6 +2072,7 @@ module Yast
 
       true
     end
+
     def ArePortsOrServicesAllowed(needed_ports, protocol, zone, check_for_aliases)
       needed_ports = deep_copy(needed_ports)
       are_allowed = true
@@ -2132,7 +2126,7 @@ module Yast
     def IsServiceDefinedByPackageSupportedInZone(service, zone)
       return nil if !IsKnownZone(zone)
 
-      if service == nil
+      if service.nil?
         Builtins.y2error("Service Id can't be nil!")
         return nil
       elsif Builtins.regexpmatch(service, "^service:.*")
@@ -2256,7 +2250,7 @@ module Yast
         # zone of interface
         zone_used = GetZoneOfInterface(interface)
         # interface can be unassigned
-        next if zone_used == nil || zone_used == ""
+        next if zone_used.nil? || zone_used == ""
         Ops.set(
           interface_in_zone,
           zone_used,
@@ -2487,7 +2481,7 @@ module Yast
             # TRANSLATORS: Progress step
             _("Read current configuration"),
             # TRANSLATORS: Progress step
-            _("Check possibly conflicting services"),
+            _("Check possibly conflicting services")
           ],
           [
             # TRANSLATORS: Progress step
@@ -2507,19 +2501,12 @@ module Yast
       # Always call NI::Read, bnc #396646
       NetworkInterfaces.Read
 
-      if Mode.installation
-        # Allways modified for installation, allways save the final state
-        # fixing bug #67355
-        # SetModified();
-        make_parser_happy = true
-      end
-
       Progress.NextStage if have_progress
 
       # get default configuration for autoinstallation
       # if (Mode::installation() || Mode::autoinst()) {
       if Mode.autoinst
-        ReadDefaultConfiguration() 
+        ReadDefaultConfiguration()
         # read current configuration for another cases
       else
         ReadCurrentConfiguration()
@@ -2564,13 +2551,13 @@ module Yast
           GetDefaultValue(fw_rule)
         end
         # easy case
-        next if listed_services == nil || listed_services == ""
+        next if listed_services.nil? || listed_services == ""
         # something listed but it still might be empty definition
         services_list = Builtins.splitstring(listed_services, " \n\t")
         services_list = Builtins.filter(services_list) do |service|
           service != ""
         end
-        if Ops.greater_than(Builtins.size(listed_services), 0)
+        if Ops.greater_than(Builtins.size(services_list), 0)
           ret = true
           raise Break
         end
@@ -2592,7 +2579,7 @@ module Yast
       # Moreover, it is not needed. Firewall gets started via dependency on multi-user.target
       # when second stage is over.
       if Mode.installation
-        Builtins.y2milestone( "Do not touch firewall services during installation")
+        Builtins.y2milestone("Do not touch firewall services during installation")
 
         return true
       end
@@ -2602,7 +2589,7 @@ module Yast
         # Not started - start it
         if !IsStarted()
           Builtins.y2milestone("Starting firewall services")
-          return StartServices() 
+          return StartServices()
           # Started - restart it
         else
           # modified - restart it, or ...
@@ -2614,7 +2601,7 @@ module Yast
             Builtins.y2milestone("Stopping firewall services")
             StopServices()
             Builtins.y2milestone("Starting firewall services")
-            return StartServices() 
+            return StartServices()
             # not modified - skip restart
           else
             Builtins.y2milestone(
@@ -2622,13 +2609,13 @@ module Yast
             )
             return true
           end
-        end 
+        end
         # Firewall should stop after Write()
       else
         # started - stop
         if IsStarted()
           Builtins.y2milestone("Stopping firewall services")
-          return StopServices() 
+          return StopServices()
           # stopped - skip stopping
         else
           Builtins.y2milestone("Firewall has been stopped already")
@@ -2701,7 +2688,7 @@ module Yast
         # enabling firewall in /etc/init.d/
         if Ops.get_boolean(@SETTINGS, "enable_firewall", false)
           Builtins.y2milestone("Enabling firewall services")
-          return false if !EnableServices() 
+          return false if !EnableServices()
           # disabling firewall in /etc/init.d/
         else
           Builtins.y2milestone("Disabling firewall services")
@@ -2779,8 +2766,6 @@ module Yast
     # @example
     #	GetAdditionalServices("TCP", "EXT") -> ["53", "128"]
     def GetAdditionalServices(protocol, zone)
-      additional_services = []
-
       if !IsSupportedProtocol(protocol)
         Builtins.y2error("Unknown protocol '%1'", protocol)
         return nil
@@ -2797,7 +2782,7 @@ module Yast
       all_used_services = []
 
       # trying all possible (known) services
-      Builtins.foreach(SuSEFirewallServices.GetSupportedServices) do |service_id, service_name|
+      Builtins.foreach(SuSEFirewallServices.GetSupportedServices) do |service_id, _service_name|
         # only when the service is allowed in zone - remove all its needed ports
         if IsServiceSupportedInZone(service_id, zone) == true
           # all needed ports etc for service/protocol
@@ -2818,8 +2803,8 @@ module Yast
                 all_used_services,
                 PortAliases.GetListOfServiceAliases(remove_port)
               ),
-              :from => "list",
-              :to   => "list <string>"
+              from: "list",
+              to:   "list <string>"
             )
           end
         end
@@ -2927,11 +2912,11 @@ module Yast
 
         # none iptables rules
         if Ops.greater_than(Builtins.size(iptables_list), 0)
-          any_firewall_running = true 
+          any_firewall_running = true
           # any iptables rules exist
         else
           any_firewall_running = false
-        end 
+        end
         # error running command
       else
         Builtins.y2error(
@@ -3131,17 +3116,17 @@ module Yast
         end
         list_of_rules = Builtins.add(
           list_of_rules,
-          {
-            "source_net" => Ops.get(fw_rul, 0, ""),
-            "forward_to" => Ops.get(fw_rul, 1, ""),
-            "protocol"   => Builtins.tolower(Ops.get(fw_rul, 2, "")),
-            "req_port"   => Builtins.tolower(Ops.get(fw_rul, 3, "")),
-            # to_port is req_port when undefined
-            "to_port"    => Builtins.tolower(
-              Ops.get(fw_rul, 4, Ops.get(fw_rul, 3, ""))
-            ),
-            "req_ip"     => Builtins.tolower(Ops.get(fw_rul, 5, ""))
-          }
+
+          "source_net" => Ops.get(fw_rul, 0, ""),
+          "forward_to" => Ops.get(fw_rul, 1, ""),
+          "protocol"   => Builtins.tolower(Ops.get(fw_rul, 2, "")),
+          "req_port"   => Builtins.tolower(Ops.get(fw_rul, 3, "")),
+          # to_port is req_port when undefined
+          "to_port"    => Builtins.tolower(
+            Ops.get(fw_rul, 4, Ops.get(fw_rul, 3, ""))
+          ),
+          "req_ip"     => Builtins.tolower(Ops.get(fw_rul, 5, ""))
+
         )
       end
 
@@ -3181,9 +3166,6 @@ module Yast
 
       nil
     end
-
-
-
 
     # Adds forward into masquerade rule.
     #
@@ -3232,7 +3214,7 @@ module Yast
               ","
             ),
             requested_ip
-          ) 
+          )
           # port1 -> port2 are same
         elsif redirect_to_port != req_port
           masquerade_rules = Ops.add(
@@ -3439,7 +3421,7 @@ module Yast
     def SetFirewallKernelModules(k_modules)
       k_modules = deep_copy(k_modules)
       k_modules = Builtins.filter(k_modules) do |one_module|
-        if one_module == nil
+        if one_module.nil?
           Builtins.y2error(
             "List of modules %1 contains 'nil'! It will be ignored.",
             k_modules
@@ -3482,7 +3464,7 @@ module Yast
 
       if protocol == ""
         return ""
-      elsif Ops.get(@protocol_translations, protocol) == nil
+      elsif Ops.get(@protocol_translations, protocol).nil?
         Builtins.y2error("Unknown protocol: %1", protocol)
         # table item, %1 stands for the buggy protocol name
         return Builtins.sformat(_("Unknown protocol (%1)"), protocol)
@@ -3536,7 +3518,7 @@ module Yast
         return
       end
 
-      ruleset = Builtins.filter(ruleset) { |one_rule| one_rule != nil }
+      ruleset = Builtins.filter(ruleset) { |one_rule| !one_rule.nil? }
 
       SetModified()
 
@@ -3548,13 +3530,14 @@ module Yast
 
       nil
     end
+
     def CheckKernelModules
       needs_additional_module = false
 
       Builtins.foreach(GetKnownFirewallZones()) do |one_zone|
         if Ops.greater_or_equal(
-            Builtins.size(GetServicesAcceptRelated(one_zone)),
-            0
+          Builtins.size(GetServicesAcceptRelated(one_zone)),
+          0
           )
           Builtins.y2milestone("Some ServicesAcceptRelated are defined")
           needs_additional_module = true
@@ -3747,152 +3730,152 @@ module Yast
       nil
     end
 
-    publish :variable => :FIREWALL_PACKAGE, :type => "const string"
-    publish :variable => :configuration_has_been_read, :type => "boolean", :private => true
-    publish :variable => :special_all_interface_string, :type => "string"
-    publish :variable => :max_port_number, :type => "integer"
-    publish :variable => :special_all_interface_zone, :type => "string"
-    publish :variable => :SETTINGS, :type => "map <string, any>", :private => true
-    publish :variable => :modified, :type => "boolean", :private => true
-    publish :variable => :is_running, :type => "boolean", :private => true
-    publish :variable => :DEFAULT_SETTINGS, :type => "map <string, string>", :private => true
-    publish :variable => :verbose_level, :type => "integer", :private => true
-    publish :variable => :known_firewall_zones, :type => "list <string>", :private => true
-    publish :variable => :zone_names, :type => "map <string, string>", :private => true
-    publish :variable => :int_zone_shortname, :type => "string", :private => true
-    publish :variable => :supported_protocols, :type => "list <string>", :private => true
-    publish :variable => :service_defined_by, :type => "list <string>", :private => true
-    publish :variable => :allowed_conflict_services, :type => "map <string, list <string>>", :private => true
-    publish :variable => :firewall_service, :type => "string", :private => true
-    publish :variable => :SuSEFirewall_variables, :type => "list <string>", :private => true
-    publish :variable => :one_line_per_record, :type => "list <string>", :private => true
-    publish :variable => :broadcast_related_module, :type => "string", :private => true
-    publish :function => :WriteOneRecordPerLine, :type => "boolean (string)", :private => true
-    publish :function => :SetModified, :type => "void ()"
-    publish :function => :ResetModified, :type => "void ()"
-    publish :function => :GetKnownFirewallZones, :type => "list <string> ()"
-    publish :function => :IsServiceSupportedInZone, :type => "boolean (string, string)"
-    publish :function => :GetSpecialInterfacesInZone, :type => "list <string> (string)"
-    publish :function => :AddSpecialInterfaceIntoZone, :type => "void (string, string)"
-    publish :variable => :report_only_once, :type => "list <string>", :private => true
-    publish :function => :ReportOnlyOnce, :type => "boolean (string)", :private => true
-    publish :function => :IsAnyNetworkInterfaceSupported, :type => "boolean ()"
-    publish :function => :GetListOfSuSEFirewallVariables, :type => "list <string> ()", :private => true
-    publish :function => :IncreaseVerbosity, :type => "void ()", :private => true
-    publish :function => :DecreaseVerbosity, :type => "void ()", :private => true
-    publish :function => :IsVerbose, :type => "boolean ()", :private => true
-    publish :function => :GetDefaultValue, :type => "string (string)", :private => true
-    publish :function => :ReadSysconfigSuSEFirewall, :type => "void (list <string>)", :private => true
-    publish :function => :ResetSysconfigSuSEFirewall, :type => "void (list <string>)", :private => true
-    publish :function => :WriteSysconfigSuSEFirewall, :type => "boolean (list <string>)", :private => true
-    publish :function => :IsSupportedProtocol, :type => "boolean (string)", :private => true
-    publish :function => :IsKnownZone, :type => "boolean (string)", :private => true
-    publish :function => :GetZoneConfigurationString, :type => "string (string)", :private => true
-    publish :function => :GetConfigurationStringZone, :type => "string (string)", :private => true
-    publish :function => :GetAllowedServicesForZoneProto, :type => "list <string> (string, string)", :private => true
-    publish :function => :SetAllowedServicesForZoneProto, :type => "void (list <string>, string, string)", :private => true
-    publish :function => :GetBroadcastConfiguration, :type => "string (string)", :private => true
-    publish :function => :SetBroadcastConfiguration, :type => "void (string, string)", :private => true
-    publish :function => :GetBroadcastAllowedPorts, :type => "map <string, list <string>> ()"
-    publish :function => :SetBroadcastAllowedPorts, :type => "void (map <string, list <string>>)"
-    publish :function => :IsBroadcastAllowed, :type => "boolean (list <string>, string)", :private => true
-    publish :function => :RemoveAllowedBroadcast, :type => "void (list <string>, string)", :private => true
-    publish :function => :AddAllowedBroadcast, :type => "void (list <string>, string)", :private => true
-    publish :function => :RemoveServiceFromProtocolZone, :type => "boolean (string, string, string)", :private => true
-    publish :function => :RemoveAllowedPortsOrServices, :type => "void (list <string>, string, string, boolean)", :private => true
-    publish :function => :AddAllowedPortsOrServices, :type => "void (list <string>, string, string)", :private => true
-    publish :function => :RemoveServiceDefinedByPackageFromZone, :type => "void (string, string)", :private => true
-    publish :function => :AddServiceDefinedByPackageIntoZone, :type => "void (string, string)", :private => true
-    publish :function => :RemoveServiceSupportFromZone, :type => "void (string, string)", :private => true
-    publish :function => :AddServiceSupportIntoZone, :type => "void (string, string)", :private => true
-    publish :variable => :check_and_install_package, :type => "boolean", :private => true
-    publish :function => :SetInstallPackagesIfMissing, :type => "void (boolean)"
-    publish :variable => :needed_packages_installed, :type => "boolean", :private => true
-    publish :function => :SuSEFirewallIsInstalled, :type => "boolean ()"
-    publish :variable => :fw_service_can_be_configured, :type => "boolean", :private => true
-    publish :function => :GetModified, :type => "boolean ()"
-    publish :function => :ResetReadFlag, :type => "void ()"
-    publish :function => :GetZoneFullName, :type => "string (string)"
-    publish :function => :SetProtectFromInternalZone, :type => "void (boolean)"
-    publish :function => :GetProtectFromInternalZone, :type => "boolean ()"
-    publish :function => :SetSupportRoute, :type => "void (boolean)"
-    publish :function => :GetSupportRoute, :type => "boolean ()"
-    publish :function => :SetTrustIPsecAs, :type => "void (string)"
-    publish :function => :GetTrustIPsecAs, :type => "string ()"
-    publish :function => :GetStartService, :type => "boolean ()"
-    publish :function => :SetStartService, :type => "void (boolean)"
-    publish :function => :GetEnableService, :type => "boolean ()"
-    publish :function => :SetEnableService, :type => "void (boolean)"
-    publish :function => :StartServices, :type => "boolean ()"
-    publish :function => :StopServices, :type => "boolean ()"
-    publish :function => :EnableServices, :type => "boolean ()"
-    publish :function => :DisableServices, :type => "boolean ()"
-    publish :function => :IsEnabled, :type => "boolean ()"
-    publish :function => :IsStarted, :type => "boolean ()"
-    publish :function => :Export, :type => "map <string, any> ()"
-    publish :function => :Import, :type => "void (map <string, any>)"
-    publish :function => :IsInterfaceInZone, :type => "boolean (string, string)"
-    publish :function => :GetZoneOfInterface, :type => "string (string)"
-    publish :function => :GetZonesOfInterfaces, :type => "list <string> (list <string>)"
-    publish :function => :GetInterfacesInZoneSupportingAnyFeature, :type => "list <string> (string)"
-    publish :function => :GetZonesOfInterfacesWithAnyFeatureSupported, :type => "list <string> (list <string>)"
-    publish :function => :GetAllKnownInterfaces, :type => "list <map <string, string>> ()"
-    publish :function => :GetAllNonDialUpInterfaces, :type => "list <string> ()"
-    publish :function => :GetAllDialUpInterfaces, :type => "list <string> ()"
-    publish :function => :GetListOfKnownInterfaces, :type => "list <string> ()"
-    publish :function => :RemoveInterfaceFromZone, :type => "void (string, string)"
-    publish :function => :AddInterfaceIntoZone, :type => "void (string, string)"
-    publish :function => :GetInterfacesInZone, :type => "list <string> (string)"
-    publish :function => :GetFirewallInterfaces, :type => "list <string> ()"
-    publish :function => :InterfacesSupportedByAnyFeature, :type => "list <string> (string)"
-    publish :function => :ArePortsOrServicesAllowed, :type => "boolean (list <string>, string, string, boolean)", :private => true
-    publish :function => :HaveService, :type => "boolean (string, string, string)"
-    publish :function => :AddService, :type => "boolean (string, string, string)"
-    publish :function => :RemoveService, :type => "boolean (string, string, string)"
-    publish :function => :IsServiceDefinedByPackageSupportedInZone, :type => "boolean (string, string)", :private => true
-    publish :function => :GetServicesInZones, :type => "map <string, map <string, boolean>> (list <string>)"
-    publish :function => :GetServices, :type => "map <string, map <string, boolean>> (list <string>)"
-    publish :function => :SetServicesForZones, :type => "boolean (list <string>, list <string>, boolean)"
-    publish :function => :SetServices, :type => "boolean (list <string>, list <string>, boolean)"
-    publish :function => :ReadDefaultConfiguration, :type => "void ()", :private => true
-    publish :function => :ReadCurrentConfiguration, :type => "void ()", :private => true
-    publish :variable => :converted_to_services_dbp_file, :type => "string", :private => true
-    publish :variable => :already_converted, :type => "boolean", :private => true
-    publish :function => :ConvertToServicesDefinedByPackages, :type => "void ()"
-    publish :function => :FillUpEmptyConfig, :type => "void ()", :private => true
-    publish :function => :Read, :type => "boolean ()"
-    publish :function => :AnyRPCServiceInConfiguration, :type => "boolean ()", :private => true
-    publish :function => :ActivateConfiguration, :type => "boolean ()"
-    publish :function => :WriteConfiguration, :type => "boolean ()"
-    publish :function => :CheckKernelModules, :type => "void ()", :private => true
-    publish :function => :WriteOnly, :type => "boolean ()"
-    publish :function => :Write, :type => "boolean ()"
-    publish :function => :SaveAndRestartService, :type => "boolean ()"
-    publish :function => :GetAdditionalServices, :type => "list <string> (string, string)"
-    publish :function => :SetAdditionalServices, :type => "void (string, string, list <string>)"
-    publish :function => :IsOtherFirewallRunning, :type => "boolean ()"
-    publish :function => :GetFirewallInterfacesMap, :type => "map <string, list <string>> ()"
-    publish :function => :RemoveSpecialInterfaceFromZone, :type => "void (string, string)"
-    publish :function => :GetMasquerade, :type => "boolean ()"
-    publish :function => :SetMasquerade, :type => "void (boolean)"
-    publish :function => :GetListOfForwardsIntoMasquerade, :type => "list <map <string, string>> ()"
-    publish :function => :RemoveForwardIntoMasqueradeRule, :type => "void (integer)"
-    publish :function => :AddForwardIntoMasqueradeRule, :type => "void (string, string, string, string, string, string)"
-    publish :function => :GetLoggingSettings, :type => "string (string)"
-    publish :function => :SetLoggingSettings, :type => "void (string, string)"
-    publish :function => :GetIgnoreLoggingBroadcast, :type => "string (string)"
-    publish :function => :SetIgnoreLoggingBroadcast, :type => "void (string, string)"
-    publish :function => :AddXenSupport, :type => "void ()"
-    publish :function => :GetAcceptExpertRules, :type => "string (string)"
-    publish :function => :SetAcceptExpertRules, :type => "boolean (string, string)"
-    publish :function => :GetFirewallKernelModules, :type => "list <string> ()"
-    publish :function => :SetFirewallKernelModules, :type => "void (list <string>)"
-    publish :variable => :protocol_translations, :type => "map <string, string>", :private => true
-    publish :function => :GetProtocolTranslatedName, :type => "string (string)"
-    publish :function => :GetServicesAcceptRelated, :type => "list <string> (string)"
-    publish :function => :SetServicesAcceptRelated, :type => "void (string, list <string>)"
-    publish :function => :RemoveOldAllowedServiceFromZone, :type => "void (map <string, any>, string)", :private => true
-    publish :variable => :needed_packages_installed, :type => "boolean"
+    publish variable: :FIREWALL_PACKAGE, type: "const string"
+    publish variable: :configuration_has_been_read, type: "boolean", private: true
+    publish variable: :special_all_interface_string, type: "string"
+    publish variable: :max_port_number, type: "integer"
+    publish variable: :special_all_interface_zone, type: "string"
+    publish variable: :SETTINGS, type: "map <string, any>", private: true
+    publish variable: :modified, type: "boolean", private: true
+    publish variable: :is_running, type: "boolean", private: true
+    publish variable: :DEFAULT_SETTINGS, type: "map <string, string>", private: true
+    publish variable: :verbose_level, type: "integer", private: true
+    publish variable: :known_firewall_zones, type: "list <string>", private: true
+    publish variable: :zone_names, type: "map <string, string>", private: true
+    publish variable: :int_zone_shortname, type: "string", private: true
+    publish variable: :supported_protocols, type: "list <string>", private: true
+    publish variable: :service_defined_by, type: "list <string>", private: true
+    publish variable: :allowed_conflict_services, type: "map <string, list <string>>", private: true
+    publish variable: :firewall_service, type: "string", private: true
+    publish variable: :SuSEFirewall_variables, type: "list <string>", private: true
+    publish variable: :one_line_per_record, type: "list <string>", private: true
+    publish variable: :broadcast_related_module, type: "string", private: true
+    publish function: :WriteOneRecordPerLine, type: "boolean (string)", private: true
+    publish function: :SetModified, type: "void ()"
+    publish function: :ResetModified, type: "void ()"
+    publish function: :GetKnownFirewallZones, type: "list <string> ()"
+    publish function: :IsServiceSupportedInZone, type: "boolean (string, string)"
+    publish function: :GetSpecialInterfacesInZone, type: "list <string> (string)"
+    publish function: :AddSpecialInterfaceIntoZone, type: "void (string, string)"
+    publish variable: :report_only_once, type: "list <string>", private: true
+    publish function: :ReportOnlyOnce, type: "boolean (string)", private: true
+    publish function: :IsAnyNetworkInterfaceSupported, type: "boolean ()"
+    publish function: :GetListOfSuSEFirewallVariables, type: "list <string> ()", private: true
+    publish function: :IncreaseVerbosity, type: "void ()", private: true
+    publish function: :DecreaseVerbosity, type: "void ()", private: true
+    publish function: :IsVerbose, type: "boolean ()", private: true
+    publish function: :GetDefaultValue, type: "string (string)", private: true
+    publish function: :ReadSysconfigSuSEFirewall, type: "void (list <string>)", private: true
+    publish function: :ResetSysconfigSuSEFirewall, type: "void (list <string>)", private: true
+    publish function: :WriteSysconfigSuSEFirewall, type: "boolean (list <string>)", private: true
+    publish function: :IsSupportedProtocol, type: "boolean (string)", private: true
+    publish function: :IsKnownZone, type: "boolean (string)", private: true
+    publish function: :GetZoneConfigurationString, type: "string (string)", private: true
+    publish function: :GetConfigurationStringZone, type: "string (string)", private: true
+    publish function: :GetAllowedServicesForZoneProto, type: "list <string> (string, string)", private: true
+    publish function: :SetAllowedServicesForZoneProto, type: "void (list <string>, string, string)", private: true
+    publish function: :GetBroadcastConfiguration, type: "string (string)", private: true
+    publish function: :SetBroadcastConfiguration, type: "void (string, string)", private: true
+    publish function: :GetBroadcastAllowedPorts, type: "map <string, list <string>> ()"
+    publish function: :SetBroadcastAllowedPorts, type: "void (map <string, list <string>>)"
+    publish function: :IsBroadcastAllowed, type: "boolean (list <string>, string)", private: true
+    publish function: :RemoveAllowedBroadcast, type: "void (list <string>, string)", private: true
+    publish function: :AddAllowedBroadcast, type: "void (list <string>, string)", private: true
+    publish function: :RemoveServiceFromProtocolZone, type: "boolean (string, string, string)", private: true
+    publish function: :RemoveAllowedPortsOrServices, type: "void (list <string>, string, string, boolean)", private: true
+    publish function: :AddAllowedPortsOrServices, type: "void (list <string>, string, string)", private: true
+    publish function: :RemoveServiceDefinedByPackageFromZone, type: "void (string, string)", private: true
+    publish function: :AddServiceDefinedByPackageIntoZone, type: "void (string, string)", private: true
+    publish function: :RemoveServiceSupportFromZone, type: "void (string, string)", private: true
+    publish function: :AddServiceSupportIntoZone, type: "void (string, string)", private: true
+    publish variable: :check_and_install_package, type: "boolean", private: true
+    publish function: :SetInstallPackagesIfMissing, type: "void (boolean)"
+    publish variable: :needed_packages_installed, type: "boolean", private: true
+    publish function: :SuSEFirewallIsInstalled, type: "boolean ()"
+    publish variable: :fw_service_can_be_configured, type: "boolean", private: true
+    publish function: :GetModified, type: "boolean ()"
+    publish function: :ResetReadFlag, type: "void ()"
+    publish function: :GetZoneFullName, type: "string (string)"
+    publish function: :SetProtectFromInternalZone, type: "void (boolean)"
+    publish function: :GetProtectFromInternalZone, type: "boolean ()"
+    publish function: :SetSupportRoute, type: "void (boolean)"
+    publish function: :GetSupportRoute, type: "boolean ()"
+    publish function: :SetTrustIPsecAs, type: "void (string)"
+    publish function: :GetTrustIPsecAs, type: "string ()"
+    publish function: :GetStartService, type: "boolean ()"
+    publish function: :SetStartService, type: "void (boolean)"
+    publish function: :GetEnableService, type: "boolean ()"
+    publish function: :SetEnableService, type: "void (boolean)"
+    publish function: :StartServices, type: "boolean ()"
+    publish function: :StopServices, type: "boolean ()"
+    publish function: :EnableServices, type: "boolean ()"
+    publish function: :DisableServices, type: "boolean ()"
+    publish function: :IsEnabled, type: "boolean ()"
+    publish function: :IsStarted, type: "boolean ()"
+    publish function: :Export, type: "map <string, any> ()"
+    publish function: :Import, type: "void (map <string, any>)"
+    publish function: :IsInterfaceInZone, type: "boolean (string, string)"
+    publish function: :GetZoneOfInterface, type: "string (string)"
+    publish function: :GetZonesOfInterfaces, type: "list <string> (list <string>)"
+    publish function: :GetInterfacesInZoneSupportingAnyFeature, type: "list <string> (string)"
+    publish function: :GetZonesOfInterfacesWithAnyFeatureSupported, type: "list <string> (list <string>)"
+    publish function: :GetAllKnownInterfaces, type: "list <map <string, string>> ()"
+    publish function: :GetAllNonDialUpInterfaces, type: "list <string> ()"
+    publish function: :GetAllDialUpInterfaces, type: "list <string> ()"
+    publish function: :GetListOfKnownInterfaces, type: "list <string> ()"
+    publish function: :RemoveInterfaceFromZone, type: "void (string, string)"
+    publish function: :AddInterfaceIntoZone, type: "void (string, string)"
+    publish function: :GetInterfacesInZone, type: "list <string> (string)"
+    publish function: :GetFirewallInterfaces, type: "list <string> ()"
+    publish function: :InterfacesSupportedByAnyFeature, type: "list <string> (string)"
+    publish function: :ArePortsOrServicesAllowed, type: "boolean (list <string>, string, string, boolean)", private: true
+    publish function: :HaveService, type: "boolean (string, string, string)"
+    publish function: :AddService, type: "boolean (string, string, string)"
+    publish function: :RemoveService, type: "boolean (string, string, string)"
+    publish function: :IsServiceDefinedByPackageSupportedInZone, type: "boolean (string, string)", private: true
+    publish function: :GetServicesInZones, type: "map <string, map <string, boolean>> (list <string>)"
+    publish function: :GetServices, type: "map <string, map <string, boolean>> (list <string>)"
+    publish function: :SetServicesForZones, type: "boolean (list <string>, list <string>, boolean)"
+    publish function: :SetServices, type: "boolean (list <string>, list <string>, boolean)"
+    publish function: :ReadDefaultConfiguration, type: "void ()", private: true
+    publish function: :ReadCurrentConfiguration, type: "void ()", private: true
+    publish variable: :converted_to_services_dbp_file, type: "string", private: true
+    publish variable: :already_converted, type: "boolean", private: true
+    publish function: :ConvertToServicesDefinedByPackages, type: "void ()"
+    publish function: :FillUpEmptyConfig, type: "void ()", private: true
+    publish function: :Read, type: "boolean ()"
+    publish function: :AnyRPCServiceInConfiguration, type: "boolean ()", private: true
+    publish function: :ActivateConfiguration, type: "boolean ()"
+    publish function: :WriteConfiguration, type: "boolean ()"
+    publish function: :CheckKernelModules, type: "void ()", private: true
+    publish function: :WriteOnly, type: "boolean ()"
+    publish function: :Write, type: "boolean ()"
+    publish function: :SaveAndRestartService, type: "boolean ()"
+    publish function: :GetAdditionalServices, type: "list <string> (string, string)"
+    publish function: :SetAdditionalServices, type: "void (string, string, list <string>)"
+    publish function: :IsOtherFirewallRunning, type: "boolean ()"
+    publish function: :GetFirewallInterfacesMap, type: "map <string, list <string>> ()"
+    publish function: :RemoveSpecialInterfaceFromZone, type: "void (string, string)"
+    publish function: :GetMasquerade, type: "boolean ()"
+    publish function: :SetMasquerade, type: "void (boolean)"
+    publish function: :GetListOfForwardsIntoMasquerade, type: "list <map <string, string>> ()"
+    publish function: :RemoveForwardIntoMasqueradeRule, type: "void (integer)"
+    publish function: :AddForwardIntoMasqueradeRule, type: "void (string, string, string, string, string, string)"
+    publish function: :GetLoggingSettings, type: "string (string)"
+    publish function: :SetLoggingSettings, type: "void (string, string)"
+    publish function: :GetIgnoreLoggingBroadcast, type: "string (string)"
+    publish function: :SetIgnoreLoggingBroadcast, type: "void (string, string)"
+    publish function: :AddXenSupport, type: "void ()"
+    publish function: :GetAcceptExpertRules, type: "string (string)"
+    publish function: :SetAcceptExpertRules, type: "boolean (string, string)"
+    publish function: :GetFirewallKernelModules, type: "list <string> ()"
+    publish function: :SetFirewallKernelModules, type: "void (list <string>)"
+    publish variable: :protocol_translations, type: "map <string, string>", private: true
+    publish function: :GetProtocolTranslatedName, type: "string (string)"
+    publish function: :GetServicesAcceptRelated, type: "list <string> (string)"
+    publish function: :SetServicesAcceptRelated, type: "void (string, list <string>)"
+    publish function: :RemoveOldAllowedServiceFromZone, type: "void (map <string, any>, string)", private: true
+    publish variable: :needed_packages_installed, type: "boolean"
   end
 
   SuSEFirewall = SuSEFirewallClass.new

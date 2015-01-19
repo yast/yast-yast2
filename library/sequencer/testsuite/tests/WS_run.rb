@@ -27,15 +27,15 @@ module Yast
       Yast.include self, "testsuite.rb"
       Yast.import "Sequencer"
 
-      @aliases = { "1" => lambda { f1 }, "2" => lambda { f2 }, "3" => lambda do
+      @aliases = { "1" => ->() { f1 }, "2" => ->() { f2 }, "3" => lambda do
         f3
       end }
 
-      TEST(lambda { Sequencer.WS_run({}, "blah") }, [], nil)
-      TEST(lambda { Sequencer.WS_run(@aliases, "blah") }, [], nil)
-      TEST(lambda { Sequencer.WS_run(@aliases, "1") }, [], nil)
-      TEST(lambda { Sequencer.WS_run(@aliases, "2") }, [], nil)
-      TEST(lambda { Sequencer.WS_run(@aliases, "3") }, [], nil)
+      TEST(->() { Sequencer.WS_run({}, "blah") }, [], nil)
+      TEST(->() { Sequencer.WS_run(@aliases, "blah") }, [], nil)
+      TEST(->() { Sequencer.WS_run(@aliases, "1") }, [], nil)
+      TEST(->() { Sequencer.WS_run(@aliases, "2") }, [], nil)
+      TEST(->() { Sequencer.WS_run(@aliases, "3") }, [], nil)
 
       nil
     end
@@ -43,9 +43,11 @@ module Yast
     def f1
       "1"
     end
+
     def f2
       2
     end
+
     def f3
       :id3
     end

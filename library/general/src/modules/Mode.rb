@@ -87,7 +87,6 @@ module Yast
   # </table>
   class ModeClass < Module
     def main
-
       textdomain "base"
 
       # Current mode
@@ -130,20 +129,20 @@ module Yast
 
       # only use the /etc/install.inf agent when file is present
       # and installation is being processed
-      # FIXME remove the part below and let it be set in clients
+      # FIXME: remove the part below and let it be set in clients
       if @_mode == "installation" &&
           SCR.Read(path(".target.size"), "/etc/install.inf") != -1
 
-        autoinst = SCR.Read(path(".etc.install_inf.AutoYaST")) != nil
+        autoinst = !SCR.Read(path(".etc.install_inf.AutoYaST")).nil?
         @_mode = "autoinstallation" if autoinst
 
-        repair = SCR.Read(path(".etc.install_inf.Repair")) != nil
+        repair = !SCR.Read(path(".etc.install_inf.Repair")).nil?
         @_mode = "repair" if repair
 
-        update = SCR.Read(path(".etc.install_inf.Upgrade")) != nil
+        update = !SCR.Read(path(".etc.install_inf.Upgrade")).nil?
         @_mode = "update" if update
 
-        autoupgrade = SCR.Read(path(".etc.install_inf.AutoUpgrade")) != nil
+        autoupgrade = !SCR.Read(path(".etc.install_inf.AutoUpgrade")).nil?
         @_mode = "autoupgrade" if autoupgrade
       end
 
@@ -155,27 +154,27 @@ module Yast
     # Returns the current mode name. It's one of
     # "installation", "normal", "update", "repair", "autoinstallation", "autoinst_config"
     def mode
-      Initialize() if @_mode == nil
+      Initialize() if @_mode.nil?
 
       @_mode
     end
 
     # Setter for {#mode}.
     def SetMode(new_mode)
-      Initialize() if @_mode == nil
+      Initialize() if @_mode.nil?
 
       if !Builtins.contains(
-          [
-            "installation",
-            "update",
-            "normal",
-            "repair",
-            "autoinstallation",
-            "autoinst_config",
-            "live_installation",
-            "autoupgrade"
-          ],
-          new_mode
+        [
+          "installation",
+          "update",
+          "normal",
+          "repair",
+          "autoinstallation",
+          "autoinst_config",
+          "live_installation",
+          "autoupgrade"
+        ],
+        new_mode
         )
         Builtins.y2error("Unknown mode %1", new_mode)
       end
@@ -189,11 +188,11 @@ module Yast
     # test mode definitions
 
     def testMode
-      Initialize() if @_test == nil
+      Initialize() if @_test.nil?
       if !@test_autochecked
         # bnc#243624#c13: Y2ALLGLOBAL is set by yast2-testsuite/skel/runtest.sh
-        if Builtins.getenv("Y2MODETEST") != nil ||
-            Builtins.getenv("Y2ALLGLOBAL") != nil
+        if !Builtins.getenv("Y2MODETEST").nil? ||
+            !Builtins.getenv("Y2ALLGLOBAL").nil?
           @_test = "testsuite"
         end
         @test_autochecked = true
@@ -204,11 +203,11 @@ module Yast
 
     # Setter for {#testMode}
     def SetTest(new_test_mode)
-      Initialize() if @_test == nil
+      Initialize() if @_test.nil?
 
       if !Builtins.contains(
-          ["none", "test", "demo", "screenshot", "testsuite"],
-          new_test_mode
+        ["none", "test", "demo", "screenshot", "testsuite"],
+        new_test_mode
         )
         Builtins.y2error("Unknown test mode %1", new_test_mode)
       end
@@ -326,26 +325,26 @@ module Yast
       ui == "commandline"
     end
 
-    publish :function => :Initialize, :type => "void ()"
-    publish :function => :mode, :type => "string ()"
-    publish :function => :SetMode, :type => "void (string)"
-    publish :function => :commandline, :type => "boolean ()"
-    publish :function => :testMode, :type => "string ()"
-    publish :function => :SetTest, :type => "void (string)"
-    publish :function => :ui, :type => "string ()"
-    publish :function => :SetUI, :type => "void (string)"
-    publish :function => :installation, :type => "boolean ()"
-    publish :function => :live_installation, :type => "boolean ()"
-    publish :function => :update, :type => "boolean ()"
-    publish :function => :Depeche, :type => "boolean ()"
-    publish :function => :normal, :type => "boolean ()"
-    publish :function => :repair, :type => "boolean ()"
-    publish :function => :autoinst, :type => "boolean ()"
-    publish :function => :autoupgrade, :type => "boolean ()"
-    publish :function => :config, :type => "boolean ()"
-    publish :function => :test, :type => "boolean ()"
-    publish :function => :screen_shot, :type => "boolean ()"
-    publish :function => :testsuite, :type => "boolean ()"
+    publish function: :Initialize, type: "void ()"
+    publish function: :mode, type: "string ()"
+    publish function: :SetMode, type: "void (string)"
+    publish function: :commandline, type: "boolean ()"
+    publish function: :testMode, type: "string ()"
+    publish function: :SetTest, type: "void (string)"
+    publish function: :ui, type: "string ()"
+    publish function: :SetUI, type: "void (string)"
+    publish function: :installation, type: "boolean ()"
+    publish function: :live_installation, type: "boolean ()"
+    publish function: :update, type: "boolean ()"
+    publish function: :Depeche, type: "boolean ()"
+    publish function: :normal, type: "boolean ()"
+    publish function: :repair, type: "boolean ()"
+    publish function: :autoinst, type: "boolean ()"
+    publish function: :autoupgrade, type: "boolean ()"
+    publish function: :config, type: "boolean ()"
+    publish function: :test, type: "boolean ()"
+    publish function: :screen_shot, type: "boolean ()"
+    publish function: :testsuite, type: "boolean ()"
   end
 
   Mode = ModeClass.new

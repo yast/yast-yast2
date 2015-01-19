@@ -38,7 +38,7 @@ module Yast
       Yast.import "Report"
 
       # disable use of UI
-      Report.Import({ "errors" => { "show" => false, "log" => true } })
+      Report.Import("errors" => { "show" => false, "log" => true })
 
       # fail: add and delete are mutually exclusive
       TEST(lambda do
@@ -53,7 +53,7 @@ module Yast
           { "add" => "", "share" => "" },
           ["add", "delete"]
         )
-      end, [], nil) 
+      end, [], nil)
 
       # EOF
 

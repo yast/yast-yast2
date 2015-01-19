@@ -27,10 +27,10 @@ module Yast
       Yast.include self, "testsuite.rb"
       Yast.import "Sequencer"
 
-      TEST(lambda { Sequencer.WS_push(nil, 4) }, [], nil)
-      TEST(lambda { Sequencer.WS_push([], 4) }, [], nil)
-      TEST(lambda { Sequencer.WS_push([1, 3, 5, 7, 9, 11], 4) }, [], nil)
-      TEST(lambda { Sequencer.WS_push([1, 3, 5, 7, 9, 11], 7) }, [], nil)
+      TEST(->() { Sequencer.WS_push(nil, 4) }, [], nil)
+      TEST(->() { Sequencer.WS_push([], 4) }, [], nil)
+      TEST(->() { Sequencer.WS_push([1, 3, 5, 7, 9, 11], 4) }, [], nil)
+      TEST(->() { Sequencer.WS_push([1, 3, 5, 7, 9, 11], 7) }, [], nil)
 
       nil
     end

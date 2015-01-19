@@ -76,7 +76,7 @@ module Yast
     # Is the SVN history in use?
     # @return [Boolean] true to log to SVN
     def UseSvn
-      if @use_svn == nil
+      if @use_svn.nil?
         @use_svn = Convert.to_string(
           SCR.Read(path(".sysconfig.yast2.STORE_CONFIG_IN_SUBVERSION"))
         ) == "yes"
@@ -86,7 +86,7 @@ module Yast
     end
 
     def Recursive
-      if @store_whole_subtree == nil
+      if @store_whole_subtree.nil?
         @store_whole_subtree = Convert.to_string(
           SCR.Read(path(".sysconfig.yast2.SUBVERSION_ADD_DIRS_RECURSIVE"))
         ) == "yes"
@@ -310,8 +310,7 @@ module Yast
               )
             )
         end
-        @commit_needed = @commit_needed ||
-          Ops.greater_than(Builtins.size(files), 0)
+        @commit_needed ||= Ops.greater_than(Builtins.size(files), 0)
         if Ops.greater_than(Builtins.size(files), 0)
           param = Builtins.mergestring(files, " ")
           out = Convert.to_map(
@@ -361,7 +360,7 @@ module Yast
           success = false
         end
       end
-      @commit_needed = true # TODO check if really necessary
+      @commit_needed = true # TODO: check if really necessary
       Builtins.y2milestone("Finished successfuly: %1", success)
       success
     end
@@ -408,7 +407,7 @@ module Yast
           success = false
         end
       end
-      @commit_needed = true # TODO check if really necessary
+      @commit_needed = true # TODO: check if really necessary
       Builtins.y2milestone("Finished successfuly: %1", success)
       success
     end
@@ -467,7 +466,7 @@ module Yast
         )
         return true
       end
-      #ensure the repo exists
+      # ensure the repo exists
       return false if !InitSvnRepository() if !CheckSvnRepository()
       return false if !InitDirectories(Recursive()) if !CheckRepoLinked()
       CheckAllFilesOutOfVersionControl() if Recursive()
@@ -501,7 +500,7 @@ module Yast
       success = RemoveDeletedFiles() && success
       success = false if !UpdateCheckout()
       success = DoCommit(module_name) && success
-      true
+      success
     end
 
     # Initialize specified files for version control; useful when
@@ -556,9 +555,9 @@ module Yast
       success
     end
 
-    publish :function => :Init, :type => "boolean ()"
-    publish :function => :CommitChanges, :type => "boolean (string)"
-    publish :function => :InitFiles, :type => "boolean (list <string>)"
+    publish function: :Init, type: "boolean ()"
+    publish function: :CommitChanges, type: "boolean (string)"
+    publish function: :InitFiles, type: "boolean (list <string>)"
   end
 
   ConfigHistory = ConfigHistoryClass.new
