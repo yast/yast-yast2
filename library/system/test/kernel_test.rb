@@ -9,11 +9,9 @@ Yast.import "Kernel"
 Yast.import "FileUtils"
 
 describe "Kernel" do
-  let(:stubbed_modules_dir) {
-    File.join(File.expand_path(File.dirname(__FILE__)), "data", "modules.d")
-  }
+  let(:stubbed_modules_dir) { File.join(File.dirname(__FILE__), "data", "modules.d") }
 
-  before (:each) do
+  before do
     log.info "--- test ---"
     stub_const("Yast::KernelClass::MODULES_DIR", stubbed_modules_dir)
     @default_modules = {

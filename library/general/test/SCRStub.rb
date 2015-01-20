@@ -1,19 +1,6 @@
+require "rspec"
+
 # Helpers for stubbing several agent operations.
-#
-# Must be included in the configure section of RSpec.
-#
-# @example usage
-#     RSpec.configure do |c|
-#       c.include SCRStub
-#     end
-#
-#     describe "Keyboard" do
-#       it "uses loadkeys" do
-#         expect_to_execute(/loadkeys/)
-#         Keyboard.Set
-#       end
-#     end
-#
 module SCRStub
   # Shortcut for generating Yast::Path objects
   #
@@ -28,9 +15,9 @@ module SCRStub
   # Raises an exception if something goes wrong.
   #
   # @param [#to_s] directory to use as '/' for SCR calls
-  def set_root_path(directory)
+  def change_scr_root(directory)
     # On first call, store the default handler in the stack
-    @scr_handles ||= [ Yast::WFM.SCRGetDefault ]
+    @scr_handles ||= [Yast::WFM.SCRGetDefault]
 
     check_version = false
     handle = Yast::WFM.SCROpen("chroot=#{directory}:scr", check_version)
@@ -41,13 +28,13 @@ module SCRStub
   end
 
   # Resets the SCR calls to prior behaviour, closing the SCR instance open by
-  # the last call to #set_root_path.
+  # the last call to #change_scr_root.
   #
-  # Raises an exception if #set_root_path has not been called before or if the
+  # Raises an exception if #change_scr_root has not been called before or if the
   # corresponding instance has already been closed.
   #
-  # @see #set_root_path
-  def reset_root_path
+  # @see #change_scr_root
+  def reset_scr_root
     if @scr_handles.nil? || @scr_handles.size < 2
       raise "The SCR instance cannot be closed, it's the last remaining one"
     end
@@ -60,4 +47,8 @@ module SCRStub
     Yast::WFM.SCRClose(default_handle)
     Yast::WFM.SCRSetDefault(@scr_handles.last)
   end
+end
+
+RSpec.configure do |c|
+  c.include SCRStub
 end

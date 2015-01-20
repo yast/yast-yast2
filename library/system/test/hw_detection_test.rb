@@ -38,7 +38,7 @@ describe "HwDetection" do
 
     it "sums detected memory sizes" do
       expect(Yast::SCR).to receive(:Read).with(path(".probe.memory")).and_return([@memory, @memory])
-      expect(Yast2::HwDetection.memory).to eq(2*@ramsize)
+      expect(Yast2::HwDetection.memory).to eq(2 * @ramsize)
     end
 
     it "ignores non-memory devices" do
@@ -48,7 +48,7 @@ describe "HwDetection" do
 
     it "raises exception when detection fails" do
       expect(Yast::SCR).to receive(:Read).with(path(".probe.memory")).and_return(nil)
-      expect{Yast2::HwDetection.memory}.to raise_error
+      expect { Yast2::HwDetection.memory }.to raise_error
     end
   end
 end
