@@ -2,7 +2,7 @@ require "yast"
 require "ui/event_dispatcher"
 
 module UI
-  # Base class for dialogs in Yast. Include usefull modules and provides
+  # Base class for dialogs in Yast. Includes useful modules and provides
   # glue between them
   # @example simple OK/cancel dialog
   #   class OKDialog < UI::Dialog

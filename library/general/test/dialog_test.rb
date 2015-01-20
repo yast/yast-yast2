@@ -56,7 +56,7 @@ describe UI::Dialog do
     end
 
     it "ensure dialog is closed even if exception is raised in event loop" do
-      mock_ui_events(:ok)
+      mock_ui_events(:invalid_event)
       expect(Yast::UI).to receive(:CloseDialog)
 
       begin
