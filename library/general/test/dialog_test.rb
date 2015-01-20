@@ -52,23 +52,27 @@ describe UI::Dialog do
     it "raise exception if dialog opening failed" do
       allow(Yast::UI).to receive(:OpenDialog).and_return(false)
 
-      expect{subject.run}.to raise_error
+      expect { subject.run }.to raise_error
     end
 
     it "ensure dialog is closed even if exception is raised in event loop" do
       mock_ui_events(:ok)
       expect(Yast::UI).to receive(:CloseDialog)
 
-      subject.run rescue "expected"
+      begin
+        subject.run
+      rescue
+        "expected"
+      end
     end
 
     it "raise NoMethodError if abstract method dialog_content is not implemented" do
-      expect{UI::Dialog.run}.to raise_error(NoMethodError)
+      expect { UI::Dialog.run }.to raise_error(NoMethodError)
     end
 
     it "pass dialog options if defined" do
       expect(Yast::UI).to receive(:OpenDialog).and_return(true)
-        .with(Yast::Term.new(:opt, :defaultsize), anything())
+        .with(Yast::Term.new(:opt, :defaultsize), anything)
 
       TestDialog2.run
     end

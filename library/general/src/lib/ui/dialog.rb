@@ -26,7 +26,7 @@ module UI
   #
   #   # run dialog
   #   OKDialog.run
-
+  #
   class Dialog
     # we want event dispatching in dialog
     include EventDispatcher
