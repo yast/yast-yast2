@@ -1,6 +1,33 @@
 require "rspec"
 
 # Helpers for stubbing several agent operations.
+#
+# Requiring the 'scr_stub' file will automatically register SCRStub as a
+# RSpec extension.
+#
+# @example usage
+#
+# require 'scr_stub'
+#
+# describe YaST::SCR do
+#   before do
+#     chroot = File.join(File.dirname(__FILE__), "test_chroot")
+#     change_scr_root(chroot)
+#   end
+#
+#   after do
+#     reset_scr_root
+#   end
+#
+#   describe "#Read" do
+#     it "works with the .proc.meminfo path"
+#       # This uses the #path helper from SCRStub and
+#       # reads from ./test_chroot/proc/meminfo
+#       values = Yast::SCR.Read(path(".proc.meminfo"))
+#       expect(values).to include("key" => "value")
+#     end
+#   end
+# end
 module SCRStub
   # Shortcut for generating Yast::Path objects
   #
