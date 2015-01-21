@@ -18,7 +18,6 @@ module_DATA = \
   modules/Distro.rb \
   modules/XVersion.rb \
   modules/Summary.rb \
-  modules/Syslog.rb \
   modules/UIHelper.rb \
   modules/DontShowAgain.rb \
   modules/Report.rb \
