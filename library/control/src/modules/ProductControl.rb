@@ -1104,22 +1104,6 @@ module Yast
       deep_copy(final_proposals)
     end
 
-    # Get Proposal list that can not be changed by the user.
-    # @return [Array<String>] list of locked proposals
-    def getLockedProposals(stage, mode, proptype)
-      props = getMatchingProposal(stage, mode, proptype)
-      locked_proposals = Builtins.maplist(
-        Ops.get_list(props, [0, "locked_modules"], [])
-      ) do |p|
-        if !Builtins.issubstring(p, "_proposal")
-          next Ops.add(p, "_proposal")
-        else
-          next p
-        end
-      end
-      deep_copy(locked_proposals)
-    end
-
     # Return text domain
     def getProposalTextDomain
       current_proposal_textdomain = Ops.get_string(
@@ -1660,7 +1644,6 @@ module Yast
     publish function: :UpdateWizardSteps, type: "void (list <map>)"
     publish function: :RetranslateWizardSteps, type: "void ()"
     publish function: :getProposals, type: "list <list> (string, string, string)"
-    publish function: :getLockedProposals, type: "list <string> (string, string, string)"
     publish function: :getProposalTextDomain, type: "string ()"
     publish function: :getProposalProperties, type: "map (string, string, string)"
     publish function: :GetTranslatedText, type: "string (string)"
