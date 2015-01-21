@@ -2,7 +2,6 @@
 
 module_DATA = \
   modules/Linuxrc.rb \
-  modules/ConfigHistory.rb \
   modules/Message.rb \
   modules/Misc.rb \
   modules/Icon.rb \
