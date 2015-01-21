@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan 21 15:50:26 UTC 2015 - cwh@suse.com
+
+- Removed icons from all kinds of popups (bnc#875201)
+- 3.1.117
+
+-------------------------------------------------------------------
 Fri Jan 16 16:53:25 UTC 2015 - jreidinger@suse.com
 
 - enable automatic rubocop style checker and adjust code to YaST
