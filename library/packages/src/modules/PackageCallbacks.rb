@@ -129,7 +129,9 @@ module Yast
       @last_stage = 0
 
       @opened_wizard = []
-      PackageCallbacks()
+
+      Builtins.y2milestone("PackageCallbacks constructor")
+      InitPackageCallbacks()
     end
 
     def textmode
@@ -3574,15 +3576,6 @@ module Yast
       ResetScanDBCallbacks()
 
       ResetDownloadCallbacks()
-
-      nil
-    end
-
-    # constructor
-
-    def PackageCallbacks
-      Builtins.y2milestone("PackageCallbacks constructor")
-      InitPackageCallbacks()
 
       nil
     end
