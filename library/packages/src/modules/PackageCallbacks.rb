@@ -75,7 +75,6 @@ module Yast
       @enable_asterix_package = true
 
       @provide_aborted = false
-      @source_aborted = false
 
       @back_string = ""
       @clear_string = Ops.add(Ops.add(@back_string, "          "), @back_string)
@@ -489,9 +488,10 @@ module Yast
       "I"
     end
 
-    #  Enable or disable StartPackage, ProgressPackage and DonePackage
-    #  callbacks, but only the progress bar and not the final error
-    #  message.  Returns old value.
+    # Enable or disable StartPackage, ProgressPackage and DonePackage
+    # callbacks, but only the progress bar and not the final error
+    # message.  Returns old value.
+    # @note nasty hack for inst_do_net_test client. Remove it when client disappear
     def EnableAsterixPackage(f)
       ret = @enable_asterix_package
       @enable_asterix_package = f
