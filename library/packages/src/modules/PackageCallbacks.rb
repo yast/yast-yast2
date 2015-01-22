@@ -103,8 +103,6 @@ module Yast
       @current_retry_timeout = RETRY_TIMEOUT
       @current_retry_attempt = 0
 
-      @vsize_no_details = 1
-
       #=============================================================================
       #	MEDIA CHANGE
       #=============================================================================
@@ -282,7 +280,8 @@ module Yast
     end
 
     # creates layout for ChangeMediumPopup
-    def LayoutPopup(message, button_box, vertical_size, info_on)
+    def LayoutPopup(message, button_box, info_on)
+      vertical_size = info_on ? 10 : 1
       button_box = deep_copy(button_box)
       dialog_layout = VBox(
         HSpacing(50), # enforce width
@@ -325,14 +324,14 @@ module Yast
         UI.CloseDialog
         UI.OpenDialog(
           Opt(:decorated),
-          LayoutPopup(message, buttonbox, 10, true)
+          LayoutPopup(message, buttonbox, true)
         )
         return true
       else
         UI.CloseDialog
         UI.OpenDialog(
           Opt(:decorated),
-          LayoutPopup(message, buttonbox, @vsize_no_details, false)
+          LayoutPopup(message, buttonbox, false)
         )
         UI.ReplaceWidget(Id(:info), Empty())
       end
@@ -408,7 +407,7 @@ module Yast
         if @showLongInfo
           UI.OpenDialog(
             Opt(:decorated),
-            LayoutPopup(message, button_box, 10, true)
+            LayoutPopup(message, button_box, true)
           )
           UI.ReplaceWidget(
             Id(:info),
@@ -420,7 +419,7 @@ module Yast
         else
           UI.OpenDialog(
             Opt(:decorated),
-            LayoutPopup(message, button_box, @vsize_no_details, false)
+            LayoutPopup(message, button_box, false)
           )
           UI.ReplaceWidget(Id(:info), Empty())
         end
@@ -622,13 +621,13 @@ module Yast
           if @showLongInfo
             UI.OpenDialog(
               Opt(:decorated),
-              LayoutPopup(message, button_box, 10, true)
+              LayoutPopup(message, button_box, true)
             )
             UI.ReplaceWidget(Id(:info), RichText(Opt(:plainText), reason))
           else
             UI.OpenDialog(
               Opt(:decorated),
-              LayoutPopup(message, button_box, @vsize_no_details, false)
+              LayoutPopup(message, button_box, false)
             )
             UI.ReplaceWidget(Id(:info), Empty())
           end
@@ -977,13 +976,13 @@ module Yast
 
       Builtins.y2debug(
         "Opening Dialog: %1",
-        LayoutPopup(message, button_box, 10, true)
+        LayoutPopup(message, button_box, true)
       )
 
       if @showLongInfo
         UI.OpenDialog(
           Opt(:decorated),
-          LayoutPopup(message, button_box, 10, true)
+          LayoutPopup(message, button_box, true)
         )
         # TextEntry label
         UI.ReplaceWidget(
@@ -997,7 +996,7 @@ module Yast
       else
         UI.OpenDialog(
           Opt(:decorated),
-          LayoutPopup(message, button_box, @vsize_no_details, false)
+          LayoutPopup(message, button_box, false)
         )
         UI.ReplaceWidget(Id(:info), Empty())
       end
@@ -2394,7 +2393,7 @@ module Yast
 
       UI.OpenDialog(
         Opt(:decorated),
-        LayoutPopup(message, button_box, @vsize_no_details, false)
+        LayoutPopup(message, button_box, false)
       )
 
       r = nil
@@ -3647,7 +3646,6 @@ module Yast
     publish function: :StartProvide, type: "void (string, integer, boolean)"
     publish function: :ProgressProvide, type: "boolean (integer)"
     publish function: :ProgressDeltaApply, type: "void (integer)"
-    publish function: :LayoutPopup, type: "term (string, term, integer, boolean)"
     publish function: :ShowLogInfo, type: "boolean (string, term)"
     publish function: :DoneProvide, type: "string (integer, string, string)"
     publish function: :EnableAsterixPackage, type: "boolean (boolean)"
