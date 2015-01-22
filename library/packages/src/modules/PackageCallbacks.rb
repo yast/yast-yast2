@@ -44,7 +44,6 @@ module Yast
 
       textdomain "base"
 
-      Yast.import "Installation"
       Yast.import "Directory"
       Yast.import "Label"
       Yast.import "Mode"
@@ -53,7 +52,6 @@ module Yast
       Yast.import "URL"
       Yast.import "CommandLine"
       Yast.import "String"
-      Yast.import "Report"
       Yast.import "Icon"
       Yast.import "Wizard"
       Yast.import "Progress"
@@ -3762,6 +3760,9 @@ module Yast
     publish function: :RestoreProgressReportCallbacks, type: "void ()"
     publish function: :RestorePreviousProgressCallbacks, type: "void ()"
     publish function: :PackageCallbacks, type: "void ()"
+
+  private
+
   end
 
   PackageCallbacks = PackageCallbacksClass.new
