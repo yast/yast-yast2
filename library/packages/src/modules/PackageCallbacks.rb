@@ -76,7 +76,7 @@ module Yast
 
       @provide_aborted = false
 
-      @back_string = ""
+      @back_string = "\b\b\b\b\b\b\b\b\b\b"
       @clear_string = Ops.add(Ops.add(@back_string, "          "), @back_string)
 
       # max. length of the text in the repository popup window
