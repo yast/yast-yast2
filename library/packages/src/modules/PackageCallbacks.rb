@@ -758,21 +758,18 @@ module Yast
         current_device
       )
 
-      url_tokens = URL.Parse(url)
-      url_scheme = Ops.get_string(url_tokens, "scheme", "")
-      url_scheme = Builtins.tolower(url_scheme)
+      url_scheme = Ops.get_string(URL.Parse(url), "scheme", "").downcase
 
       # true if it makes sense to offer an eject button (for cd/dvd only ...)
-      offer_eject_button = url_scheme == "cd" || url_scheme == "dvd"
+      is_disc = ["cd", "dvd"].include?(url_scheme)
 
       # do automatic eject
-      if offer_eject_button &&
-          Convert.to_boolean(GetConfig("automatic_eject")) == true
-        if !@doing_eject
-          Builtins.y2milestone("Automatically ejecting the medium...")
-          @doing_eject = true
-          return "E"
-        end
+      if is_disc &&
+          GetConfig("automatic_eject") &&
+          !@doing_eject
+        Builtins.y2milestone("Automatically ejecting the medium...")
+        @doing_eject = true
+        return "E"
       end
 
       if Builtins.issubstring(error, "ERROR(InstSrc:E_bad_id)")
@@ -799,7 +796,7 @@ module Yast
             side = _("Side B")
           end
           wanted = Ops.shift_right(Ops.add(wanted, 1), 1)
-          wanted_label = if ["cd", "dvd"].include(url_scheme)
+          wanted_label = if is_disc
                            # label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
                            # %3 side (e.g. "Side A")
                            Builtins.sformat("%1 (Disc %2, %3)", product, wanted, side)
@@ -809,7 +806,7 @@ module Yast
                            Builtins.sformat("%1 (Medium %2, %3)", product, wanted, side)
                          end
         else
-          wanted_label = if ["cd", "dvd"].include(Builtins.tolower(url_scheme))
+          wanted_label = if is_disc
                            # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
                            Builtins.sformat(_("%1 (Disc %2)"), product, wanted)
                          else
@@ -834,7 +831,7 @@ module Yast
           URL.HidePassword(url),
           wanted_label
         )
-      elsif url_scheme != "cd" && url_scheme != "dvd"
+      elsif !is_disc
         # report error while accessing network media of product (%1 = URL, %2 = "SuSE Linux ...")
         message = Builtins.sformat(
           _(
@@ -856,29 +853,20 @@ module Yast
       )
 
       if current == -1 # wrong media id, offer "Ignore"
-        button_box = Builtins.add(
-          button_box,
-          PushButton(Id(:ignore), Opt(:customButton), Label.IgnoreButton)
-        )
+        button_box.params << PushButton(Id(:ignore), Opt(:customButton), Label.IgnoreButton)
       end
 
-      button_box = Builtins.add(
-        button_box,
-        PushButton(
-          Id(:cancel),
-          Opt(:cancelButton),
-          @autorefreshing ? _("Skip Autorefresh") : Label.AbortButton
-        )
-      )
+      button_box.params << PushButton(
+        Id(:cancel),
+        Opt(:cancelButton),
+        @autorefreshing ? _("Skip Autorefresh") : Label.AbortButton
+                           )
 
       # push button label during media change popup, user can skip
       # this media (CD) so no packages from this media will be installed
-      button_box = Builtins.add(
-        button_box,
-        PushButton(Id(:skip), Opt(:customButton), _("&Skip"))
-      )
+      button_box.params << PushButton(Id(:skip), Opt(:customButton), _("&Skip"))
 
-      if offer_eject_button
+      if is_disc
         if !@doing_eject
           @detected_cd_devices = CDdevices(Ops.get(devices, current_device, ""))
         end
@@ -893,14 +881,10 @@ module Yast
           button_box = HBox(button_box, MenuButton(_("&Eject"), cds))
         else
           # push button label - in the media change popup, user can eject the CD/DVD
-          button_box = Builtins.add(
-            button_box,
-            PushButton(Id(:eject), Opt(:customButton), _("&Eject"))
-          )
+          button_box.params << PushButton(Id(:eject), Opt(:customButton), _("&Eject"))
         end
 
-        auto_eject = Convert.to_boolean(GetConfig("automatic_eject"))
-        auto_eject = false if auto_eject.nil?
+        auto_eject = GetConfig("automatic_eject") || false
 
         button_box = VBox(
           Left(
@@ -1029,25 +1013,20 @@ module Yast
 
       eject_device = ""
       loop do
-        if doing_auto_retry
-          r = UI.TimeoutUserInput(1000)
-        else
-          r = UI.UserInput
-        end
+        r = doing_auto_retry ? UI.TimeoutUserInput(1000) : UI.UserInput
 
         # timout in autoretry mode?
         if doing_auto_retry
           if r == :timeout
             # decrease timeout counter
-            @current_retry_timeout = Ops.subtract(@current_retry_timeout, 1)
+            @current_retry_timeout -= 1
 
             if @current_retry_timeout == 0
               Builtins.y2milestone("The time is out, doing automatic retry...")
               # do the retry
               r = :retry
 
-              # decrease attempt counter
-              @current_retry_attempt = Ops.add(@current_retry_attempt, 1)
+              @current_retry_attempt += 1
             else
               # popup string - refresh the displayed counter
               UI.ChangeWidget(
@@ -1086,20 +1065,16 @@ module Yast
               r = :url
             end
           end
-        elsif Ops.is_string?(r) &&
-            Builtins.regexpmatch(Convert.to_string(r), "^/dev/")
+        elsif r.is_a?(::String) && r.start_with?("/dev/")
           Builtins.y2milestone("Eject request for %1", r)
-          eject_device = Convert.to_string(r)
+          eject_device = r
           r = :eject
         end
         break if [:cancel, :retry, :eject, :skip, :ignore, :url].include?(r)
       end
 
-      # remember the state of autoeject option
-      if offer_eject_button
-        # check and save the autoeject configuration if needed
-        CheckAndSaveAutoEject()
-      end
+      # check and save the autoeject configuration if needed
+      CheckAndSaveAutoEject() if is_disc
 
       Builtins.y2milestone("MediaChange %1", r)
 
@@ -1110,7 +1085,10 @@ module Yast
         @_provide_popup = false
       end
 
-      if r == :cancel
+      case r
+      when :ignore then "I"
+      when :skip then "S"
+      when :cancel
         # abort during autorefresh should abort complete autorefresh, not only the failed repo
         if @autorefreshing
           @autorefreshing_aborted = true
@@ -1119,43 +1097,35 @@ module Yast
           @provide_aborted = true
         end
 
-        return "C"
-      end
-      return "I" if r == :ignore
-      return "S" if r == :skip
-      if r == :eject
+        "C"
+      when :eject
         @doing_eject = true
 
-        if eject_device == ""
-          return "E"
-        else
-          # get the index in the list
-          dindex = -1
+        return "E" if eject_device == ""
+        # get the index in the list
+        dindex = -1
 
-          found = Builtins.find(devices) do |d|
-            dindex = Ops.add(dindex, 1)
-            d == eject_device
-          end
-
-          if !found.nil?
-            Builtins.y2milestone("Device %1 has index %2", eject_device, dindex)
-            return Ops.add("E", Builtins.tostring(dindex))
-          else
-            Builtins.y2warning(
-              "Device %1 not found in the list, using default",
-              eject_device
-            )
-            return "E"
-          end
+        found = Builtins.find(devices) do |d|
+          dindex = Ops.add(dindex, 1)
+          d == eject_device
         end
-      end
 
-      if r == :url
+        if found
+          Builtins.y2milestone("Device %1 has index %2", eject_device, dindex)
+          return "E#{dindex}"
+        else
+          Builtins.y2warning(
+            "Device %1 not found in the list, using default",
+            eject_device
+          )
+          return "E"
+        end
+      when :url
         Builtins.y2milestone("Redirecting to: %1", URL.HidePassword(url))
-        return url
+        url
+      else
+        ""
       end
-
-      ""
     end
 
     # dummy repository change callback, see SlideShowCallbacks for the real one

@@ -225,26 +225,6 @@ module Yast
       deep_copy(ret)
     end
 
-    # Returns map of wanted lines
-    #
-    # @param [ArgRef<Hash>] file content
-    # @param [Array<Integer>] lines		rows (counted from 1 to n)
-    # @return [Hash<Fixnum, Hash>]	hash with wanted lines
-    def GetLines(file, lines)
-      lines = deep_copy(lines)
-      ret = {}
-      Builtins.foreach(lines) do |num|
-        if Builtins.haskey(Ops.get_map(file.value, "l", {}), num)
-          file_ref = arg_ref(file.value)
-          AssertLineValid(file_ref, num)
-          file.value = file_ref.value
-          Ops.set(ret, num, Ops.get_map(file.value, ["l", num], {}))
-        end
-      end
-      Builtins.y2milestone("lines %1 ret %2", lines, ret)
-      deep_copy(ret)
-    end
-
     # Returns map of wanted line
     #
     # @param [ArgRef<Hash>] file content
@@ -403,7 +383,6 @@ module Yast
     publish function: :SetDelimiter, type: "void (map &, string)"
     publish function: :ReadFile, type: "void (map &, string)"
     publish function: :FindLineField, type: "list <integer> (map, integer, string)"
-    publish function: :GetLines, type: "map <integer, map> (map &, list <integer>)"
     publish function: :GetLine, type: "map (map &, integer)"
     publish function: :NumLines, type: "integer (map)"
     publish function: :ChangeLineField, type: "void (map &, integer, integer, string)"

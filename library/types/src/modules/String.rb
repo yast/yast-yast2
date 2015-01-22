@@ -499,24 +499,18 @@ module Yast
                 "r"  => " ", # CR
                 "t"  => "\t", # tab
                 "v"  => "v", # vertical tab
-                "\\" => "\\"
-              } # backslash
+                "\\" => "\\", # backslash
+                # backslash will be removed later,
+                # double quote and escaped double quote have to be different
+                # as it have different meaning
+                "\"" => "\\\""
+              }
 
-              if Builtins.haskey(backslash_seq, nextcharacter) == true
-                character = Ops.get_string(
-                  backslash_seq,
-                  nextcharacter,
-                  "DUMMY"
-                )
+              if backslash_seq[nextcharacter]
+                character = backslash_seq[nextcharacter]
               else
-                if nextcharacter != "\""
-                  # ignore backslash in invalid backslash sequence
-                  character = nextcharacter
-                else
-                  # backslash will be removed later,
-                  # double quote and escaped double quote have to different yet
-                  character = "\\\""
-                end
+                # ignore backslash in invalid backslash sequence
+                character = nextcharacter
               end
 
               Builtins.y2debug("backslash sequence: '%1'", character)
@@ -550,11 +544,7 @@ module Yast
           # after double quoted string - handle non-separator chars after double quote
           elsif state == :in_quoted_string_after_dblqt
             if Builtins.issubstring(separator, character) == true
-              if unique == true
-                ret = Builtins.add(ret, str) if !Builtins.contains(ret, str)
-              else
-                ret = Builtins.add(ret, str)
-              end
+              ret = Builtins.add(ret, str) if !unique || !Builtins.contains(ret, str)
 
               str = ""
               state = :out_of_string
@@ -578,11 +568,7 @@ module Yast
 
               str = CutBlanks(str) if remove_whitespace == true
 
-              if unique == true
-                ret = Builtins.add(ret, str) if !Builtins.contains(ret, str)
-              else
-                ret = Builtins.add(ret, str)
-              end
+              ret = Builtins.add(ret, str) if !unique || !Builtins.contains(ret, str)
 
               str = ""
             elsif character == "\\\""
