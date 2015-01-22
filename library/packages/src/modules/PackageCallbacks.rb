@@ -42,10 +42,13 @@ module Yast
     CLEAR_PROGRESS_TEXT = "\b"*10 + " "*10 + "\b"*10
     # max. length of the text in the repository popup window
     MAX_POPUP_TEXT_SIZE = 60
-    # seconds for automatic retry after a timeout
+    # base in seconds for automatic retry after a timeout,
+    # it will be logarithmic increased upto {RETRY_MAX_TIMEOUT}
     RETRY_TIMEOUT = 30
     # number of automatic retries
     RETRY_ATTEMPTS = 100
+    # max. retry timeout (15 minutes)
+    RETRY_MAX_TIMEOUT = 15 * 60
 
     def main
       Yast.import "Pkg"
@@ -94,9 +97,6 @@ module Yast
 
       # auto ejecting is in progress
       @doing_eject = false
-
-      # max. retry timeout (15 minutes)
-      @retry_max_timeout = 15 * 60
 
       # current values for retry functionality
       @retry_url = ""
@@ -916,11 +916,11 @@ module Yast
           @current_retry_timeout = if @current_retry_attempt < 10
                                      RETRY_TIMEOUT * (1 << @current_retry_attempt)
                                    else
-                                     @retry_max_timeout
+                                     RETRY_MAX_TIMEOUT
                                    end
 
-          if Ops.greater_than(@current_retry_timeout, @retry_max_timeout)
-            @current_retry_timeout = @retry_max_timeout
+          if Ops.greater_than(@current_retry_timeout, RETRY_MAX_TIMEOUT)
+            @current_retry_timeout = RETRY_MAX_TIMEOUT
           end
 
           button_box = VBox(
