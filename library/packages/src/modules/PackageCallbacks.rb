@@ -1026,7 +1026,6 @@ module Yast
               # do the retry
               r = :retry
 
-              # decrease attempt counter
               @current_retry_attempt += 1
             else
               # popup string - refresh the displayed counter
