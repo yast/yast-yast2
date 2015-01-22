@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jan 22 13:21:45 UTC 2015 - jsrain@suse.cz
+
+- added handling of new created configuration files (bsc#860856)
+
+-------------------------------------------------------------------
 Fri Jan 16 16:53:25 UTC 2015 - jreidinger@suse.com
 
 - enable automatic rubocop style checker and adjust code to YaST

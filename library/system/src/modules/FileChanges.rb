@@ -221,9 +221,61 @@ module Yast
       true
     end
 
+    # Check if any of the possibly new created files is really new
+    # Issue a question whether to continue if such file was manually created
+    # @param [Array<String>] files a list of files to check
+    # @return [Boolean] true if either none was changed or user agreed
+    #  to continue
+
+    def CheckNewCreatedFiles(files)
+      new_files = files - @file_checksums.keys
+
+      if new_files.size > 0
+        # Continue/Cancel question, %s is a file name
+        msg = _("File %s has been created manually.\nYaST might lose this file.")
+        if new_files.size > 1
+          # Continue/Cancel question, %s is a comma separated list of file names
+          msg = _(
+            "Files %s have been created manually.\nYaST might lose these files."
+          )
+        end
+        msg = msg % new_files.join(", ")
+        popup_file = "/filechecks_non_verbose"
+        popup_file_path = File.join(Directory.vardir, popup_file)
+        if !FileUtils.Exists(popup_file_path)
+          content = VBox(
+            Label(msg),
+            Left(CheckBox(Id(:disable), Message.DoNotShowMessageAgain())),
+            ButtonBox(
+              PushButton(Id(:ok), Opt(:okButton), Label.ContinueButton()),
+              PushButton(Id(:cancel), Opt(:cancelButton), Label.CancelButton())
+            )
+          )
+          UI.OpenDialog(content)
+          UI.SetFocus(:ok)
+          ret = UI.UserInput
+          Builtins.y2milestone("ret = %1", ret)
+          if ret == :ok && UI.QueryWidget(:disable, :Value)
+            Builtins.y2milestone("Disabled checksum popups")
+            SCR.Write(
+              path(".target.string"),
+              popup_file_path,
+              ""
+            )
+          end
+          UI.CloseDialog
+          return ret == :ok
+        else
+          return true
+        end
+      end
+      return true
+    end
+
     publish function: :FileChanged, type: "boolean (string)"
     publish function: :StoreFileCheckSum, type: "void (string)"
     publish function: :CheckFiles, type: "boolean (list <string>)"
+    publish function: :CheckNewCreatedFiles, type: "boolean (list <string>)"
   end
 
   FileChanges = FileChangesClass.new
