@@ -110,6 +110,23 @@ module Yast
         @EXEC
       ], nil)
 
+      TEST(->() { FileChanges.CheckNewCreatedFiles([]) },[
+        @READ,
+        @WRITE,
+        @EXEC
+      ], true)
+
+      Ops.set(
+        @READ,
+        ["target", "stat", "/var/lib/YaST2/filechecks_non_verbose"],
+        {}
+      )
+      TEST(->() { FileChanges.CheckNewCreatedFiles(["/etc/apache2/vhosts.d/vhost1"]) },[
+        @READ,
+        @WRITE,
+        @EXEC
+      ], true)
+
       nil
     end
   end

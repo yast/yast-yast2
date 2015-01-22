@@ -57,6 +57,7 @@ module Yast
       Yast.import "Popup"
       Yast.import "Directory"
       Yast.import "Label"
+      Yast.import "FileUtils"
 
       @data_file = "/var/lib/YaST2/file_checksums.ycp"
 
