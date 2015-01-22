@@ -38,7 +38,10 @@ module Yast
   class PackageCallbacksClass < Module
     include Yast::Logger
 
+    # text to clean progress bar in command line
     CLEAR_PROGRESS_TEXT = "\b"*10 + " "*10 + "\b"*10
+    # max. length of the text in the repository popup window
+    MAX_POPUP_TEXT_SIZE = 60
 
     def main
       Yast.import "Pkg"
@@ -77,9 +80,6 @@ module Yast
       @enable_asterix_package = true
 
       @provide_aborted = false
-
-      # max. length of the text in the repository popup window
-      @max_size = 60
 
       @autorefreshing = false
       @autorefreshing_aborted = false
@@ -1179,7 +1179,7 @@ module Yast
       if @_source_open == 0
         UI.OpenDialog(
           VBox(
-            HSpacing(@max_size),
+            HSpacing(MAX_POPUP_TEXT_SIZE),
             Heading(Id(:label_source_popup), Opt(:hstretch), " "),
             ProgressBar(Id(:progress), " ", 100, 0)
           )
@@ -1198,9 +1198,9 @@ module Yast
 
       if Ops.greater_than(
         Builtins.size(text),
-        Ops.subtract(@max_size, ui_adjustment)
+        Ops.subtract(MAX_POPUP_TEXT_SIZE, ui_adjustment)
         )
-        text = ProcessMessage(text, Ops.subtract(@max_size, ui_adjustment))
+        text = ProcessMessage(text, Ops.subtract(MAX_POPUP_TEXT_SIZE, ui_adjustment))
       end
 
       UI.ChangeWidget(:label_source_popup, :Value, text)
@@ -1215,9 +1215,9 @@ module Yast
 
       if Ops.greater_than(
         Builtins.size(text),
-        Ops.add(@max_size, ui_adjustment)
+        Ops.add(MAX_POPUP_TEXT_SIZE, ui_adjustment)
         )
-        text = ProcessMessage(text, Ops.add(@max_size, ui_adjustment))
+        text = ProcessMessage(text, Ops.add(MAX_POPUP_TEXT_SIZE, ui_adjustment))
       end
 
       # refresh the label in the popup
@@ -1989,7 +1989,7 @@ module Yast
       )
 
       # reformat the URL
-      url_report = URL.FormatURL(URL.Parse(URL.HidePassword(url)), @max_size)
+      url_report = URL.FormatURL(URL.Parse(URL.HidePassword(url)), MAX_POPUP_TEXT_SIZE)
       # remember the URL
       @download_file = url_report
 
@@ -2581,7 +2581,7 @@ module Yast
               HSpacing(1),
               VBox(
                 VSpacing(0.5),
-                HSpacing(Id(:callback_progress_popup), @max_size),
+                HSpacing(Id(:callback_progress_popup), MAX_POPUP_TEXT_SIZE),
                 if in_percent
                   ProgressBar(Id(:progress_widget), task, 100, val_percent)
                 else
