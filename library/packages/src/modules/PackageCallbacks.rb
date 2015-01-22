@@ -134,27 +134,6 @@ module Yast
       InitPackageCallbacks()
     end
 
-    def GetConfig(key)
-      load_config if @config.nil?
-
-      Ops.get(@config, key)
-    end
-
-    def SetConfig(key, value)
-      value = deep_copy(value)
-      load_config if @config.nil?
-
-      Builtins.y2milestone("Config: setting %1 to %2", key, value)
-      Ops.set(@config, key, value)
-
-      nil
-    end
-
-    def SaveConfig
-      Builtins.y2milestone("Saving the current config to %1", @conf_file)
-      SCR.Write(path(".target.ycp"), @conf_file, @config)
-    end
-
     #--------------------------------------------------------------------------
     # defaults
 
@@ -635,14 +614,11 @@ module Yast
 
     # check and save the autoeject configuration if needed
     def CheckAndSaveAutoEject
-      autoeject = Convert.to_boolean(UI.QueryWidget(Id(:auto_eject), :Value))
+      new_value = UI.QueryWidget(Id(:auto_eject), :Value)
+      current = autoeject
 
-      current = Convert.to_boolean(GetConfig("automatic_eject"))
-      current = false if current.nil?
-
-      if autoeject != current
-        SetConfig("automatic_eject", autoeject)
-        SaveConfig()
+      if new_value != autoeject
+        store_autoeject(new_value)
       end
 
       nil
@@ -687,9 +663,7 @@ module Yast
       is_disc = ["cd", "dvd"].include?(url_scheme)
 
       # do automatic eject
-      if is_disc &&
-          GetConfig("automatic_eject") &&
-          !@doing_eject
+      if is_disc && autoeject && !@doing_eject
         Builtins.y2milestone("Automatically ejecting the medium...")
         @doing_eject = true
         return "E"
@@ -807,14 +781,12 @@ module Yast
           button_box.params << PushButton(Id(:eject), Opt(:customButton), _("&Eject"))
         end
 
-        auto_eject = GetConfig("automatic_eject") || false
-
         button_box = VBox(
           Left(
             CheckBox(
               Id(:auto_eject),
               _("A&utomatically Eject CD or DVD Medium"),
-              auto_eject
+              autoeject
             )
           ),
           button_box
@@ -3729,7 +3701,20 @@ module Yast
       end
     end
 
+    def autoeject
+      load_config unless @config
 
+      @config[autoeject] || false
+    end
+
+    def store_autoeject(value)
+      load_config unless @config
+
+      log.info "Config: store automatic_eject to #{value}"
+      @config["automatic_eject"] = value
+
+      SCR.Write(path(".target.ycp"), @conf_file, @config)
+    end
   end
 
   PackageCallbacks = PackageCallbacksClass.new
