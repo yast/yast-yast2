@@ -122,7 +122,6 @@ module Yast
       @tick_progress = false
       @val_progress = false
       @current_tick = 0
-      @progress_task = ""
 
       # ProgressStart/End events may be nested, remember the types of progresses
       @progress_stack = []
@@ -2506,7 +2505,6 @@ module Yast
       @tick_progress = is_alive
       @val_progress = !in_percent && !is_alive
       @current_tick = 0
-      @progress_task = task
 
       if Mode.commandline
         CommandLine.Print(task)
