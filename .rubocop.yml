@@ -24,7 +24,7 @@ Metrics/ParameterLists:
   Max: 11
 
 Metrics/PerceivedComplexity:
-  Max: 76
+  Max: 70
 
 # Configuration parameters: EnforcedStyle, SupportedStyles.
 # JR: I personally think that having this variable on class level is much more readable
