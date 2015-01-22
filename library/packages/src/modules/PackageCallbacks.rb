@@ -49,6 +49,8 @@ module Yast
     RETRY_ATTEMPTS = 100
     # max. retry timeout (15 minutes)
     RETRY_MAX_TIMEOUT = 15 * 60
+    # symbols for ticking in cmd line
+    TICK_LABELS = ["/", "-", "\\", "|"]
 
     def main
       Yast.import "Pkg"
@@ -109,7 +111,7 @@ module Yast
 
       @detected_cd_devices = []
 
-      # reference couter to the open popup window
+      # reference counter to the open popup window
       @_source_open = 0
 
       @download_file = ""
@@ -117,7 +119,6 @@ module Yast
       # TODO: use the ID in the prgress popup callbacks,
       # then callbacks may be nested...
 
-      @tick_labels = ["/", "-", "\\", "|"]
       @tick_progress = false
       @val_progress = false
       @current_tick = 0
@@ -265,9 +266,7 @@ module Yast
         return !@provide_aborted
       elsif Mode.commandline
         # there is no popup window, but command line mode is set
-        CommandLine.PrintVerboseNoCR(
-          Ops.add(CLEAR_PROGRESS_TEXT, Builtins.sformat("%1%%", percent))
-        )
+        CommandLine.PrintVerboseNoCR(CLEAR_PROGRESS_TEXT + "#{percent}%")
       end
       true
     end
@@ -285,14 +284,14 @@ module Yast
         UI.CloseDialog
         UI.OpenDialog(
           Opt(:decorated),
-          LayoutPopup(message, buttonbox, true)
+          layout_popup(message, buttonbox, true)
         )
         return true
       else
         UI.CloseDialog
         UI.OpenDialog(
           Opt(:decorated),
-          LayoutPopup(message, buttonbox, false)
+          layout_popup(message, buttonbox, false)
         )
         UI.ReplaceWidget(Id(:info), Empty())
       end
@@ -368,7 +367,7 @@ module Yast
         if @showLongInfo
           UI.OpenDialog(
             Opt(:decorated),
-            LayoutPopup(message, button_box, true)
+            layout_popup(message, button_box, true)
           )
           UI.ReplaceWidget(
             Id(:info),
@@ -380,7 +379,7 @@ module Yast
         else
           UI.OpenDialog(
             Opt(:decorated),
-            LayoutPopup(message, button_box, false)
+            layout_popup(message, button_box, false)
           )
           UI.ReplaceWidget(Id(:info), Empty())
         end
@@ -498,8 +497,7 @@ module Yast
         UI.ChangeWidget(Id(:progress), :Value, percent)
         return UI.PollInput != :abort
       elsif Mode.commandline
-        CommandLine.PrintVerboseNoCR(
-          Ops.add(CLEAR_PROGRESS_TEXT, Builtins.sformat("%1%%", percent))
+        CommandLine.PrintVerboseNoCR(CLEAR_PROGRESS_TEXT + "#{percent}%")
         )
         if percent == 100
           # sleep for a wile
@@ -582,13 +580,13 @@ module Yast
           if @showLongInfo
             UI.OpenDialog(
               Opt(:decorated),
-              LayoutPopup(message, button_box, true)
+              layout_popup(message, button_box, true)
             )
             UI.ReplaceWidget(Id(:info), RichText(Opt(:plainText), reason))
           else
             UI.OpenDialog(
               Opt(:decorated),
-              LayoutPopup(message, button_box, false)
+              layout_popup(message, button_box, false)
             )
             UI.ReplaceWidget(Id(:info), Empty())
           end
@@ -937,13 +935,13 @@ module Yast
 
       Builtins.y2debug(
         "Opening Dialog: %1",
-        LayoutPopup(message, button_box, true)
+        layout_popup(message, button_box, true)
       )
 
       if @showLongInfo
         UI.OpenDialog(
           Opt(:decorated),
-          LayoutPopup(message, button_box, true)
+          layout_popup(message, button_box, true)
         )
         # TextEntry label
         UI.ReplaceWidget(
@@ -957,7 +955,7 @@ module Yast
       else
         UI.OpenDialog(
           Opt(:decorated),
-          LayoutPopup(message, button_box, false)
+          layout_popup(message, button_box, false)
         )
         UI.ReplaceWidget(Id(:info), Empty())
       end
@@ -1979,9 +1977,7 @@ module Yast
       end
 
       if Mode.commandline
-        CommandLine.PrintVerboseNoCR(
-          Ops.add(CLEAR_PROGRESS_TEXT, Builtins.sformat("%1%%", percent))
-        )
+        CommandLine.PrintVerboseNoCR(CLEAR_PROGRESS_TEXT + "#{percent}%")
         if percent == 100
           # sleep for a wile
           Builtins.sleep(200)
@@ -2292,8 +2288,7 @@ module Yast
     # Callback for RPM DB scan progress
     def ProgressScanDb(value)
       if Mode.commandline
-        CommandLine.PrintVerboseNoCR(
-          Ops.add(CLEAR_PROGRESS_TEXT, Builtins.sformat("%1%%", value))
+        CommandLine.PrintVerboseNoCR(CLEAR_PROGRESS_TEXT + "#{value}%")
         )
       else
         if @_scan_popup && UI.WidgetExists(Id(:label_scanDB_popup))
@@ -2354,7 +2349,7 @@ module Yast
 
       UI.OpenDialog(
         Opt(:decorated),
-        LayoutPopup(message, button_box, false)
+        layout_popup(message, button_box, false)
       )
 
       r = nil
@@ -2494,10 +2489,7 @@ module Yast
     end
 
     def NextTick
-      @current_tick = Ops.add(@current_tick, 1)
-      if Ops.greater_or_equal(@current_tick, Builtins.size(@tick_labels))
-        @current_tick = 0
-      end
+      @current_tick = (@current_tick + 1) % TICK_LABELS
 
       nil
     end
@@ -2599,13 +2591,11 @@ module Yast
 
       if Mode.commandline
         if @tick_progress
-          tick_label = Ops.get(@tick_labels, @current_tick, "/")
-          CommandLine.PrintVerboseNoCR(Ops.add(CLEAR_PROGRESS_TEXT, tick_label))
+          tick_label = TICK_LABELS[@current_tick]
+          CommandLine.PrintVerboseNoCR(CLEAR_PROGRESS_TEXT + tick_label)
           NextTick()
         else
-          CommandLine.PrintVerboseNoCR(
-            Ops.add(CLEAR_PROGRESS_TEXT, Builtins.sformat("%1%%", val_percent))
-          )
+          CommandLine.PrintVerboseNoCR(CLEAR_PROGRESS_TEXT + "#{val_percent}%")
         end
       else
         if IsProgressPopup()
@@ -3717,10 +3707,9 @@ module Yast
   private
 
     # creates layout for ChangeMediumPopup
-    def LayoutPopup(message, button_box, info_on)
+    def layout_popup(message, button_box, info_on)
       vertical_size = info_on ? 10 : 1
-      button_box = deep_copy(button_box)
-      dialog_layout = VBox(
+      VBox(
         HSpacing(50), # enforce width
         VSpacing(0.1),
         HBox(
@@ -3752,7 +3741,6 @@ module Yast
         HBox(HSpacing(0.1), button_box, HSpacing(0.1)),
         VSpacing(0.2)
       )
-      deep_copy(dialog_layout)
     end
   end
 
