@@ -44,6 +44,8 @@ module Yast
     MAX_POPUP_TEXT_SIZE = 60
     # seconds for automatic retry after a timeout
     RETRY_TIMEOUT = 30
+    # number of automatic retries
+    RETRY_ATTEMPTS = 100
 
     def main
       Yast.import "Pkg"
@@ -93,8 +95,6 @@ module Yast
       # auto ejecting is in progress
       @doing_eject = false
 
-      # number of automatic retries
-      @retry_attempts = 100
       # max. retry timeout (15 minutes)
       @retry_max_timeout = 15 * 60
 
@@ -911,7 +911,7 @@ module Yast
         end
 
         # is the maximum retry count reached?
-        if Ops.less_than(@current_retry_attempt, @retry_attempts)
+        if Ops.less_than(@current_retry_attempt, RETRY_ATTEMPTS)
           # reset the counter, use logarithmic back-off with maximum limit
           @current_retry_timeout = if @current_retry_attempt < 10
                                      RETRY_TIMEOUT * (1 << @current_retry_attempt)
@@ -933,7 +933,7 @@ module Yast
         else
           Builtins.y2warning(
             "Max. autoretry count (%1) reached, giving up...",
-            @retry_attempts
+            RETRY_ATTEMPTS
           )
         end
       end
