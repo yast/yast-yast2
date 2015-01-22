@@ -59,7 +59,6 @@ module Yast
       Yast.import "SignatureCheckCallbacks"
 
       @_provide_popup = false
-      @_source_popup = false
       @_package_popup = false
       @_script_popup = false
       @_scan_popup = false
@@ -3641,11 +3640,7 @@ module Yast
       nil
     end
 
-    publish variable: :_provide_popup, type: "boolean"
-    publish variable: :_source_popup, type: "boolean"
-    publish variable: :_package_popup, type: "boolean"
-    publish variable: :_script_popup, type: "boolean"
-    publish variable: :_scan_popup, type: "boolean"
+    # all published variables used only by specific slideshow callbacks module
     publish variable: :_package_name, type: "string"
     publish variable: :_package_size, type: "integer"
     publish variable: :_deleting_package, type: "boolean"

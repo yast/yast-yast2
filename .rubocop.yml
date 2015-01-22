@@ -9,10 +9,10 @@ Metrics/BlockNesting:
   Max: 5
 
 Metrics/ClassLength:
-  Max: 2880
+  Max: 2409
 
 Metrics/CyclomaticComplexity:
-  Max: 63
+  Max: 59
 
 Metrics/LineLength:
   Max: 274
@@ -24,7 +24,7 @@ Metrics/ParameterLists:
   Max: 11
 
 Metrics/PerceivedComplexity:
-  Max: 70
+  Max: 65
 
 # Configuration parameters: EnforcedStyle, SupportedStyles.
 # JR: I personally think that having this variable on class level is much more readable
