@@ -137,28 +137,6 @@ module Yast
     #--------------------------------------------------------------------------
     # defaults
 
-    def ProgressBox(heading, name, sz)
-      progressbox = VBox(
-        HSpacing(40),
-        # popup heading
-        Heading(heading),
-        Left(
-          HBox(
-            VBox(
-              Left(Label(Opt(:boldFont), _("Package: "))),
-              Left(Label(Opt(:boldFont), _("Size: ")))
-            ),
-            VBox(Left(Label(name)), Left(Label(sz)))
-          )
-        ),
-        ProgressBar(Id(:progress), " ", 100, 0),
-        ButtonBox(
-          PushButton(Id(:abort), Opt(:key_F9, :cancelButton), Label.AbortButton)
-        )
-      )
-      deep_copy(progressbox)
-    end
-
     def FullScreen
       return false if Mode.commandline
 
@@ -194,7 +172,7 @@ module Yast
             )
           else
             # popup heading
-            providebox = ProgressBox(_("Downloading Package"), name, sz)
+            providebox = progress_box(_("Downloading Package"), name, sz)
             UI.OpenDialog(providebox)
             @_provide_popup = true
           end
@@ -426,7 +404,7 @@ module Yast
           )
         )
       else
-        packagebox = ProgressBox(
+        packagebox = progress_box(
           is_delete ? _("Uninstalling Package") : _("Installing Package"),
           @_package_name,
           sz
@@ -1545,7 +1523,7 @@ module Yast
       else
         UI.CloseDialog if @_provide_popup
         # popup heading
-        providebox = ProgressBox(_("Downloading Delta RPM package"), name, sz)
+        providebox = progress_box(_("Downloading Delta RPM package"), name, sz)
         UI.OpenDialog(providebox)
         @_provide_popup = true
       end
@@ -1594,7 +1572,7 @@ module Yast
       else
         UI.CloseDialog if @_provide_popup
         # popup heading
-        providebox = ProgressBox(_("Downloading Patch RPM Package"), name, sz)
+        providebox = progress_box(_("Downloading Patch RPM Package"), name, sz)
         UI.OpenDialog(providebox)
         @_provide_popup = true
       end
@@ -3715,6 +3693,29 @@ module Yast
 
       SCR.Write(path(".target.ycp"), @conf_file, @config)
     end
+
+    def progress_box(heading, name, sz)
+      VBox(
+        HSpacing(40),
+        # popup heading
+        Heading(heading),
+        Left(
+          HBox(
+            VBox(
+              Left(Label(Opt(:boldFont), _("Package: "))),
+              Left(Label(Opt(:boldFont), _("Size: ")))
+            ),
+            VBox(Left(Label(name)), Left(Label(sz)))
+          )
+        ),
+        ProgressBar(Id(:progress), " ", 100, 0),
+        ButtonBox(
+          PushButton(Id(:abort), Opt(:key_F9, :cancelButton), Label.AbortButton)
+        )
+      )
+    end
+
+
   end
 
   PackageCallbacks = PackageCallbacksClass.new
