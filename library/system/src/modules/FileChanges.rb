@@ -269,7 +269,7 @@ module Yast
           return true
         end
       end
-      return true
+      true
     end
 
     publish function: :FileChanged, type: "boolean (string)"
