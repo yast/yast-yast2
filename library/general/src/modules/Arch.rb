@@ -62,7 +62,7 @@ module Yast
     # ************************************************************
     # system architecture
 
-    # Returns full architecture type (one of i386, sparc, sparc64, mips, mips64, ppc, ppc64, alpha, s390_32, s390_64, ia64, x86_64, aarch64)
+    # Returns full architecture type (one of i386, sparc, sparc64, ppc, ppc64, alpha, s390_32, s390_64, ia64, x86_64, aarch64)
     #
     # @return [String] architecture
     def architecture
@@ -98,27 +98,6 @@ module Yast
     # @see #sparc64
     def sparc
       sparc32 || sparc64
-    end
-
-    # true for all 32bit mips architectures
-    # @see #mips
-    # @see #mips64
-    def mips32
-      architecture == "mips"
-    end
-
-    # true for all 64bit mips architectures
-    # @see #mips
-    # @see #mips32
-    def mips64
-      architecture == "mips64"
-    end
-
-    # true for all mips architectures (32 or 64 bit)
-    # @see #mips32
-    # @see #mips64
-    def mips
-      mips32 || mips64
     end
 
     # true for all 32bit ppc architectures
@@ -183,14 +162,12 @@ module Yast
       architecture == "aarch64"
     end
 
-    # Returns general architecture type (one of sparc, mips, ppc, s390, i386, alpha, ia64, x86_64, aarch64)
+    # Returns general architecture type (one of sparc, ppc, s390, i386, alpha, ia64, x86_64, aarch64)
     #
     # @return [String] arch_short
     def arch_short
       if sparc
         return "sparc"
-      elsif mips
-        return "mips"
       elsif ppc
         return "ppc"
       elsif s390
@@ -505,7 +482,7 @@ module Yast
     # @see #Installation::x11_setup_needed
     def x11_setup_needed
       # disable X11 setup after initial boot
-      return false if board_iseries || s390 || mips
+      return false if board_iseries || s390
       true
     end
 
@@ -514,21 +491,16 @@ module Yast
     publish function: :sparc32, type: "boolean ()"
     publish function: :sparc64, type: "boolean ()"
     publish function: :sparc, type: "boolean ()"
-    publish function: :mips32, type: "boolean ()"
-    publish function: :mips64, type: "boolean ()"
-    publish function: :mips, type: "boolean ()"
     publish function: :ppc32, type: "boolean ()"
     publish function: :ppc64, type: "boolean ()"
     publish function: :ppc, type: "boolean ()"
     publish function: :alpha, type: "boolean ()"
-    publish function: :s390_32, type: "boolean ()"
     publish function: :s390_64, type: "boolean ()"
     publish function: :s390, type: "boolean ()"
     publish function: :ia64, type: "boolean ()"
     publish function: :x86_64, type: "boolean ()"
     publish function: :aarch64, type: "boolean ()"
     publish function: :arch_short, type: "string ()"
-    publish function: :board_compatible, type: "string ()"
     publish function: :board_mac, type: "boolean ()"
     publish function: :board_mac_new, type: "boolean ()"
     publish function: :board_mac_old, type: "boolean ()"
@@ -544,7 +516,6 @@ module Yast
     publish function: :is_xen0, type: "boolean ()"
     publish function: :is_xenU, type: "boolean ()"
     publish function: :is_kvm, type: "boolean ()"
-    publish function: :setSMP, type: "void (boolean)"
     publish function: :has_smp, type: "boolean ()"
     publish function: :x11_setup_needed, type: "boolean ()"
   end

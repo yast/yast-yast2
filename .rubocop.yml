@@ -2,41 +2,29 @@
 inherit_from:
   /usr/share/YaST2/data/devtools/data/rubocop_yast_style.yml
 
-# Offense count: 493
 Metrics/AbcSize:
   Max: 446
 
-# Offense count: 51
 Metrics/BlockNesting:
-  Max: 6
+  Max: 5
 
-# Offense count: 84
-# Configuration parameters: CountComments.
 Metrics/ClassLength:
   Max: 2880
 
-# Offense count: 184
 Metrics/CyclomaticComplexity:
   Max: 63
 
-# Offense count: 1820
-# Configuration parameters: AllowURI, URISchemes.
 Metrics/LineLength:
   Max: 274
 
-# Offense count: 824
-# Configuration parameters: CountComments.
 Metrics/MethodLength:
   Max: 931
 
-# Offense count: 20
-# Configuration parameters: CountKeywordArgs.
 Metrics/ParameterLists:
   Max: 11
 
-# Offense count: 179
 Metrics/PerceivedComplexity:
-  Max: 76
+  Max: 70
 
 # Configuration parameters: EnforcedStyle, SupportedStyles.
 # JR: I personally think that having this variable on class level is much more readable
