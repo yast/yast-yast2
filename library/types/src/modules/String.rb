@@ -501,7 +501,8 @@ module Yast
                 "v"  => "v", # vertical tab
                 "\\" => "\\", # backslash
                 # backslash will be removed later,
-                # double quote and escaped double quote have to different yet
+                # double quote and escaped double quote have to be different
+                # as it have different meaning
                 "\"" => "\\\""
               }
 
