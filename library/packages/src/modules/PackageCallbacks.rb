@@ -134,47 +134,15 @@ module Yast
       InitPackageCallbacks()
     end
 
-    def textmode
-      if Mode.commandline
-        true
-      else
-        Ops.get_boolean(UI.GetDisplayInfo, "TextMode", false)
-      end
-    end
-
-    def display_width
-      Mode.commandline ? 0 : Ops.get_integer(UI.GetDisplayInfo, "Width", 0)
-    end
-
-    # functions related to the persistent storage
-    def LoadConfig
-      if FileUtils.Exists(@conf_file) && FileUtils.IsFile(@conf_file)
-        Builtins.y2milestone("Reading config file %1", @conf_file)
-        read_conf = Convert.to_map(SCR.Read(path(".target.ycp"), @conf_file))
-
-        @config = !read_conf.nil? ? read_conf : {}
-        Builtins.y2milestone("Current config: %1", @config)
-      else
-        Builtins.y2milestone(
-          "No configuration found (file %1 is missing)",
-          @conf_file
-        )
-      end
-
-      @config = {} if @config.nil?
-
-      nil
-    end
-
     def GetConfig(key)
-      LoadConfig() if @config.nil?
+      load_config if @config.nil?
 
       Ops.get(@config, key)
     end
 
     def SetConfig(key, value)
       value = deep_copy(value)
-      LoadConfig() if @config.nil?
+      load_config if @config.nil?
 
       Builtins.y2milestone("Config: setting %1 to %2", key, value)
       Ops.set(@config, key, value)
@@ -3733,6 +3701,35 @@ module Yast
         VSpacing(0.2)
       )
     end
+
+    def textmode
+      if Mode.commandline
+        true
+      else
+        UI.GetDisplayInfo["TextMode"]
+      end
+    end
+
+    def display_width
+      Mode.commandline ? 0 : Ops.get_integer(UI.GetDisplayInfo, "Width", 0)
+    end
+
+    # functions related to the persistent storage
+    def load_config
+      @config = {}
+
+      if FileUtils.IsFile(@conf_file)
+        log.info "Reading config file #{@conf_file}"
+        read_conf = SCR.Read(path(".target.ycp"), @conf_file)
+
+        @config = read_conf if read_conf.is_a?(::Hash)
+        log.info "Current config: #{@config}"
+      else
+        log.info "No configuration found (file #{@conf_file} is missing)",
+      end
+    end
+
+
   end
 
   PackageCallbacks = PackageCallbacksClass.new
