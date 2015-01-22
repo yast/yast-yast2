@@ -42,6 +42,8 @@ module Yast
     CLEAR_PROGRESS_TEXT = "\b"*10 + " "*10 + "\b"*10
     # max. length of the text in the repository popup window
     MAX_POPUP_TEXT_SIZE = 60
+    # seconds for automatic retry after a timeout
+    RETRY_TIMEOUT = 30
 
     def main
       Yast.import "Pkg"
@@ -85,14 +87,12 @@ module Yast
       @autorefreshing_aborted = false
 
       # Location of the persistent storage
-      @conf_file = Ops.add(Directory.vardir, "/package_callbacks.conf")
+      @conf_file = File.join(Directory.vardir, "/package_callbacks.conf")
       @config = nil
 
       # auto ejecting is in progress
       @doing_eject = false
 
-      # seconds for automatic retry after a timeout
-      @retry_timeout = 30
       # number of automatic retries
       @retry_attempts = 100
       # max. retry timeout (15 minutes)
@@ -100,7 +100,7 @@ module Yast
 
       # current values for retry functionality
       @retry_url = ""
-      @current_retry_timeout = @retry_timeout
+      @current_retry_timeout = RETRY_TIMEOUT
       @current_retry_attempt = 0
 
       @vsize_no_details = 1
@@ -914,7 +914,7 @@ module Yast
         if Ops.less_than(@current_retry_attempt, @retry_attempts)
           # reset the counter, use logarithmic back-off with maximum limit
           @current_retry_timeout = if @current_retry_attempt < 10
-                                     @retry_timeout * (1 << @current_retry_attempt)
+                                     RETRY_TIMEOUT * (1 << @current_retry_attempt)
                                    else
                                      @retry_max_timeout
                                    end
