@@ -38,6 +38,8 @@ module Yast
   class PackageCallbacksClass < Module
     include Yast::Logger
 
+    CLEAR_PROGRESS_TEXT = "\b"*10 + " "*10 + "\b"*10
+
     def main
       Yast.import "Pkg"
       Yast.import "UI"
@@ -75,9 +77,6 @@ module Yast
       @enable_asterix_package = true
 
       @provide_aborted = false
-
-      @back_string = "\b\b\b\b\b\b\b\b\b\b"
-      @clear_string = Ops.add(Ops.add(@back_string, "          "), @back_string)
 
       # max. length of the text in the repository popup window
       @max_size = 60
@@ -269,7 +268,7 @@ module Yast
       elsif Mode.commandline
         # there is no popup window, but command line mode is set
         CommandLine.PrintVerboseNoCR(
-          Ops.add(@clear_string, Builtins.sformat("%1%%", percent))
+          Ops.add(CLEAR_PROGRESS_TEXT, Builtins.sformat("%1%%", percent))
         )
       end
       true
@@ -355,7 +354,7 @@ module Yast
 
       if Mode.commandline
         # remove the progress
-        CommandLine.PrintVerboseNoCR(@clear_string)
+        CommandLine.PrintVerboseNoCR(CLEAR_PROGRESS_TEXT)
       end
 
       if @provide_aborted
@@ -540,13 +539,13 @@ module Yast
         return UI.PollInput != :abort
       elsif Mode.commandline
         CommandLine.PrintVerboseNoCR(
-          Ops.add(@clear_string, Builtins.sformat("%1%%", percent))
+          Ops.add(CLEAR_PROGRESS_TEXT, Builtins.sformat("%1%%", percent))
         )
         if percent == 100
           # sleep for a wile
           Builtins.sleep(200)
           # remove the progress
-          CommandLine.PrintVerboseNoCR(@clear_string)
+          CommandLine.PrintVerboseNoCR(CLEAR_PROGRESS_TEXT)
         end
       end
 
@@ -2021,13 +2020,13 @@ module Yast
 
       if Mode.commandline
         CommandLine.PrintVerboseNoCR(
-          Ops.add(@clear_string, Builtins.sformat("%1%%", percent))
+          Ops.add(CLEAR_PROGRESS_TEXT, Builtins.sformat("%1%%", percent))
         )
         if percent == 100
           # sleep for a wile
           Builtins.sleep(200)
           # remove the progress
-          CommandLine.PrintVerboseNoCR(@clear_string)
+          CommandLine.PrintVerboseNoCR(CLEAR_PROGRESS_TEXT)
           # print newline when reached 100%
         end
       else
@@ -2334,7 +2333,7 @@ module Yast
     def ProgressScanDb(value)
       if Mode.commandline
         CommandLine.PrintVerboseNoCR(
-          Ops.add(@clear_string, Builtins.sformat("%1%%", value))
+          Ops.add(CLEAR_PROGRESS_TEXT, Builtins.sformat("%1%%", value))
         )
       else
         if @_scan_popup && UI.WidgetExists(Id(:label_scanDB_popup))
@@ -2641,11 +2640,11 @@ module Yast
       if Mode.commandline
         if @tick_progress
           tick_label = Ops.get(@tick_labels, @current_tick, "/")
-          CommandLine.PrintVerboseNoCR(Ops.add(@clear_string, tick_label))
+          CommandLine.PrintVerboseNoCR(Ops.add(CLEAR_PROGRESS_TEXT, tick_label))
           NextTick()
         else
           CommandLine.PrintVerboseNoCR(
-            Ops.add(@clear_string, Builtins.sformat("%1%%", val_percent))
+            Ops.add(CLEAR_PROGRESS_TEXT, Builtins.sformat("%1%%", val_percent))
           )
         end
       else
