@@ -48,7 +48,6 @@ module Yast
       Yast.import "Mode"
       Yast.import "Directory"
       Yast.import "String"
-      Yast.import "Icon"
 
       @feedback_open = false
 
@@ -67,23 +66,13 @@ module Yast
     #
     # @param [String] headline	headline to show or Popup::NoHeadline()
     # @param [String] message	message text to show
-    # @param [String] icon_name	icon name (with full path) or Popup::NoIcon()
     # @param [Yast::Term] button_box	term with one or more buttons
     # @param [String] label		second label with id `label which can be used e.g. for time out value displaying
     #
     # @return [Yast::Term] the layout contents as a term
-    def popupLayoutInternalTypeWithLabel(headline, message, icon_name, button_box, label, richtext, width, height)
+    def popupLayoutInternalTypeWithLabel(headline, message, button_box, label, richtext, width, height)
       button_box = deep_copy(button_box)
       content = Empty()
-      icon = Empty()
-
-      if Ops.greater_than(Builtins.size(icon_name), 0)
-        ui_capabilities = UI.GetDisplayInfo
-
-        if Ops.get_boolean(ui_capabilities, "HasImageSupport", false)
-          icon = Image(icon_name, "")
-        end
-      end
 
       rt = VWeight(
         1,
@@ -106,29 +95,21 @@ module Yast
       if Ops.greater_than(Builtins.size(headline), 0)
         content = VBox(
           VSpacing(0.4),
-          HBox(
-            Top(icon),
-            HSpacing(1),
-            VBox(
-              Left(Heading(headline)),
-              VSpacing(0.2),
-              richtext ? rt : Left(Label(message)),
-              VSpacing(0.2),
-              !label.nil? && label != "" ? Label(Id(:label), label) : Empty()
-            )
+          VBox(
+            Left(Heading(headline)),
+            VSpacing(0.2),
+            richtext ? rt : Left(Label(message)),
+            VSpacing(0.2),
+            !label.nil? && label != "" ? Label(Id(:label), label) : Empty()
           )
         ) # no headline
       else
         content = VBox(
           VSpacing(0.4),
-          HBox(
-            Top(icon),
-            HSpacing(1),
-            VBox(
-              richtext ? rt : VCenter(Label(message)),
-              VSpacing(0.2),
-              !label.nil? && label != "" ? Label(Id(:label), label) : Empty()
-            )
+          VBox(
+            richtext ? rt : VCenter(Label(message)),
+            VSpacing(0.2),
+            !label.nil? && label != "" ? Label(Id(:label), label) : Empty()
           )
         )
       end
@@ -150,12 +131,11 @@ module Yast
     end
 
     # Internal function - wrapper for popupLayoutInternalTypeWithLabel call
-    def popupLayoutInternal(headline, message, icon_name, button_box)
+    def popupLayoutInternal(headline, message, button_box)
       button_box = deep_copy(button_box)
       popupLayoutInternalTypeWithLabel(
         headline,
         message,
-        icon_name,
         button_box,
         nil,
         false,
@@ -165,12 +145,11 @@ module Yast
     end
 
     # Internal function - wrapper for popupLayoutInternalTypeWithLabel call
-    def popupLayoutInternalRich(headline, message, icon_name, button_box, width, height)
+    def popupLayoutInternalRich(headline, message, button_box, width, height)
       button_box = deep_copy(button_box)
       popupLayoutInternalTypeWithLabel(
         headline,
         message,
-        icon_name,
         button_box,
         nil,
         true,
@@ -186,12 +165,11 @@ module Yast
     #
     # @param [String] headline	optional headline or Popup::NoHeadline()
     # @param [String] message	the message (maybe multi-line) to display.
-    # @param [String] icon_name	icon name (with full path) or Popup::NoIcon()
     # @param [Fixnum] timeout	After timeout seconds dialog will be automatically closed
     #
     # @return [void]
     #
-    def anyTimedMessageTypeInternal(headline, message, icon_name, timeout, richtext, width, height)
+    def anyTimedMessageTypeInternal(headline, message, timeout, richtext, width, height)
       button_box = ButtonBox(
         # FIXME: BNC #422612, Use `opt(`noSanityCheck) later
         PushButton(Id(:stop), Opt(:cancelButton), Label.StopButton),
@@ -203,7 +181,6 @@ module Yast
         popupLayoutInternalTypeWithLabel(
           headline,
           message,
-          icon_name,
           button_box,
           Builtins.sformat("%1", timeout),
           richtext,
@@ -239,11 +216,10 @@ module Yast
     end
 
     # Internal function - wrapper for anyTimedMessageTypeInternal call
-    def anyTimedMessageInternal(headline, message, icon_name, timeout)
+    def anyTimedMessageInternal(headline, message, timeout)
       anyTimedMessageTypeInternal(
         headline,
         message,
-        icon_name,
         timeout,
         false,
         0,
@@ -254,11 +230,10 @@ module Yast
     end
 
     # Internal function - wrapper for anyTimedMessageTypeInternal call
-    def anyTimedRichMessageInternal(headline, message, icon_name, timeout, width, height)
+    def anyTimedRichMessageInternal(headline, message, timeout, width, height)
       anyTimedMessageTypeInternal(
         headline,
         message,
-        icon_name,
         timeout,
         true,
         width,
@@ -275,12 +250,6 @@ module Yast
     #
     # @return empty string ("")
     def NoHeadline
-      ""
-    end
-
-    # Indicator for empty icon for popups that can have one - for code readability.
-    #
-    def NoIcon
       ""
     end
 
@@ -351,7 +320,6 @@ module Yast
         popupLayoutInternal(
           headline,
           message,
-          Icon.IconPath("question"),
           button_box
         )
       )
@@ -398,7 +366,6 @@ module Yast
         popupLayoutInternal(
           headline,
           message,
-          Icon.IconPath("error"),
           button_box
         )
       )
@@ -448,7 +415,7 @@ module Yast
 
       success = UI.OpenDialog(
         Opt(:decorated),
-        popupLayoutInternal(headline, message, Icon.IconPath("question"), timed)
+        popupLayoutInternal(headline, message, timed)
       )
 
       while Ops.greater_than(timeout_seconds, 0)
@@ -511,7 +478,7 @@ module Yast
 
       success = UI.OpenDialog(
         Opt(:decorated),
-        popupLayoutInternal(headline, message, Icon.IconPath("error"), timed)
+        popupLayoutInternal(headline, message, timed)
       )
 
       while Ops.greater_than(timeout_seconds, 0)
@@ -775,8 +742,6 @@ module Yast
       abort_button = _("&Abort Installation")
       # Button that will continue with the installation
       continue_button = _("&Continue Installation")
-      # Dialog icon
-      icon_name = "warning"
 
       if severity == :painless
         if Mode.repair
@@ -794,7 +759,6 @@ module Yast
               "Your hard disk will remain untouched."
           )
         end
-        # icon_name = "info";
       elsif severity == :incomplete
         # Warning text for aborting an installation during the install process
         # - After some installation steps have been performed - e.g.
@@ -829,7 +793,6 @@ module Yast
         popupLayoutInternal(
           NoHeadline(),
           message,
-          Icon.IconPath(icon_name),
           button_box
         )
       )
@@ -896,7 +859,7 @@ module Yast
     # @param [String] headline	optional headline or Popup::NoHeadline()
     # @param [String] message	the message (maybe multi-line) to display.
     # @param [String] details	the detailed information text
-    def anyMessageDetailsInternalType(headline, message, details, icon_name, richtext, width, height)
+    def anyMessageDetailsInternalType(headline, message, details, richtext, width, height)
       button_box = ButtonBox(
         PushButton(Id(:ok_msg), Opt(:default, :okButton), Label.OKButton),
         # FIXME: BNC #422612, Use `opt(`noSanityCheck) later
@@ -910,13 +873,12 @@ module Yast
           popupLayoutInternalRich(
             headline,
             message,
-            icon_name,
             button_box,
             width,
             height
           )
         else
-          popupLayoutInternal(headline, message, icon_name, button_box)
+          popupLayoutInternal(headline, message, button_box)
         end
       )
 
@@ -969,7 +931,7 @@ module Yast
     #
     # @param [String] headline	optional headline or Popup::NoHeadline()
     # @param [String] message	the message (maybe multi-line) to display.
-    def anyMessageInternalType(headline, message, icon_name, richtext, width, height)
+    def anyMessageInternalType(headline, message, richtext, width, height)
       button_box = ButtonBox(
         PushButton(
           Id(:ok_msg),
@@ -984,13 +946,12 @@ module Yast
           popupLayoutInternalRich(
             headline,
             message,
-            icon_name,
             button_box,
             width,
             height
           )
         else
-          popupLayoutInternal(headline, message, icon_name, button_box)
+          popupLayoutInternal(headline, message, button_box)
         end
       )
 
@@ -1004,26 +965,25 @@ module Yast
     end
 
     # Internal function - wrapper for anyMessageInternal call
-    def anyMessageInternal(headline, message, icon_name)
-      anyMessageInternalType(headline, message, icon_name, false, 0, 0)
+    def anyMessageInternal(headline, message)
+      anyMessageInternalType(headline, message, false, 0, 0)
 
       nil
     end
 
     # Internal function - wrapper for anyMessageInternal call
-    def anyMessageInternalRich(headline, message, icon_name, width, height)
-      anyMessageInternalType(headline, message, icon_name, true, width, height)
+    def anyMessageInternalRich(headline, message, width, height)
+      anyMessageInternalType(headline, message, true, width, height)
 
       nil
     end
 
     # Internal function - wrapper for anyMessageDetailsInternalType call
-    def anyMessageDetailsInternal(headline, message, details, icon_name)
+    def anyMessageDetailsInternal(headline, message, details)
       anyMessageDetailsInternalType(
         headline,
         message,
         details,
-        icon_name,
         false,
         0,
         0
@@ -1039,7 +999,7 @@ module Yast
     #
     # @param [String] headline	optional headline or Popup::NoHeadline()
     # @param [String] message	the message (maybe multi-line) to display.
-    def anyRichMessageInternal(headline, message, icon_name, width, height)
+    def anyRichMessageInternal(headline, message, width, height)
       button_box = ButtonBox(
         PushButton(Id(:ok_msg), Opt(:default, :key_F10), Label.OKButton)
       )
@@ -1049,7 +1009,6 @@ module Yast
         popupLayoutInternalRich(
           headline,
           message,
-          icon_name,
           button_box,
           width,
           height
@@ -1072,9 +1031,8 @@ module Yast
     #
     # @param [String] headline	optional headline or Popup::NoHeadline()
     # @param [String] message	the message (maybe multi-line) to display.
-    # @param icon_name	icon name (with full path) or Popup::NoIcon()
     def AnyMessage(headline, message)
-      anyMessageInternal(headline, message, Icon.IconPath("info"))
+      anyMessageInternal(headline, message)
 
       nil
     end
@@ -1101,7 +1059,6 @@ module Yast
         popupLayoutInternal(
           headline,
           message,
-          Icon.IconPath("warning"),
           button_box
         )
       )
@@ -1138,7 +1095,7 @@ module Yast
     # @see #Warning
     # @see #Error
     def Message(message)
-      anyMessageInternal(NoHeadline(), message, Icon.IconPath("info"))
+      anyMessageInternal(NoHeadline(), message)
 
       nil
     end
@@ -1150,7 +1107,6 @@ module Yast
       anyMessageInternalRich(
         NoHeadline(),
         message,
-        Icon.IconPath("info"),
         @default_width,
         @default_height
       )
@@ -1167,7 +1123,6 @@ module Yast
       anyMessageInternalRich(
         NoHeadline(),
         message,
-        Icon.IconPath("info"),
         width,
         height
       )
@@ -1183,7 +1138,6 @@ module Yast
       anyTimedMessageInternal(
         NoHeadline(),
         message,
-        Icon.IconPath("info"),
         timeout_seconds
       )
 
@@ -1198,7 +1152,6 @@ module Yast
       anyTimedRichMessageInternal(
         NoHeadline(),
         message,
-        Icon.IconPath("info"),
         timeout_seconds,
         @default_width,
         @default_height
@@ -1217,7 +1170,6 @@ module Yast
       anyTimedRichMessageInternal(
         NoHeadline(),
         message,
-        Icon.IconPath("info"),
         timeout_seconds,
         width,
         height
@@ -1237,8 +1189,7 @@ module Yast
       anyMessageDetailsInternal(
         NoHeadline(),
         message,
-        details,
-        Icon.IconPath("info")
+        details
       )
 
       nil
@@ -1257,7 +1208,7 @@ module Yast
     # @see #Error
     # @see #AnyMessage
     def Warning(message)
-      anyMessageInternal(Label.WarningMsg, message, Icon.IconPath("warning"))
+      anyMessageInternal(Label.WarningMsg, message)
 
       nil
     end
@@ -1269,7 +1220,6 @@ module Yast
       anyMessageInternalRich(
         Label.WarningMsg,
         message,
-        Icon.IconPath("warning"),
         @default_width,
         @default_height
       )
@@ -1286,7 +1236,6 @@ module Yast
       anyMessageInternalRich(
         Label.WarningMsg,
         message,
-        Icon.IconPath("warning"),
         width,
         height
       )
@@ -1308,7 +1257,6 @@ module Yast
       anyTimedMessageInternal(
         Label.WarningMsg,
         message,
-        Icon.IconPath("warning"),
         timeout_seconds
       )
 
@@ -1323,7 +1271,6 @@ module Yast
       anyTimedRichMessageInternal(
         Label.WarningMsg,
         message,
-        Icon.IconPath("warning"),
         timeout_seconds,
         @default_width,
         @default_height
@@ -1342,7 +1289,6 @@ module Yast
       anyTimedRichMessageInternal(
         Label.WarningMsg,
         message,
-        Icon.IconPath("warning"),
         timeout_seconds,
         width,
         height
@@ -1362,8 +1308,7 @@ module Yast
       anyMessageDetailsInternal(
         Label.WarningMsg,
         message,
-        details,
-        Icon.IconPath("warning")
+        details
       )
 
       nil
@@ -1387,12 +1332,11 @@ module Yast
         anyMessageInternalRich(
           Label.ErrorMsg,
           message,
-          Icon.IconPath("error"),
           @default_width,
           @default_height
         )
       else
-        anyMessageInternal(Label.ErrorMsg, message, Icon.IconPath("error"))
+        anyMessageInternal(Label.ErrorMsg, message)
       end
 
       nil
@@ -1405,7 +1349,6 @@ module Yast
       anyMessageInternalRich(
         Label.ErrorMsg,
         message,
-        Icon.IconPath("error"),
         @default_width,
         @default_height
       )
@@ -1422,7 +1365,6 @@ module Yast
       anyMessageInternalRich(
         Label.ErrorMsg,
         message,
-        Icon.IconPath("error"),
         width,
         height
       )
@@ -1444,7 +1386,6 @@ module Yast
       anyTimedMessageInternal(
         Label.ErrorMsg,
         message,
-        Icon.IconPath("error"),
         timeout_seconds
       )
 
@@ -1459,7 +1400,6 @@ module Yast
       anyTimedRichMessageInternal(
         Label.ErrorMsg,
         message,
-        Icon.IconPath("error"),
         timeout_seconds,
         @default_width,
         @default_height
@@ -1478,7 +1418,6 @@ module Yast
       anyTimedRichMessageInternal(
         Label.ErrorMsg,
         message,
-        Icon.IconPath("error"),
         timeout_seconds,
         width,
         height
@@ -1498,8 +1437,7 @@ module Yast
       anyMessageDetailsInternal(
         Label.ErrorMsg,
         message,
-        details,
-        Icon.IconPath("error")
+        details
       )
 
       nil
@@ -1516,7 +1454,7 @@ module Yast
     # @see #Message
     # @see #AnyMessage
     def Notify(message)
-      anyMessageInternal("", message, Icon.IconPath("info"))
+      anyMessageInternal("", message)
 
       nil
     end
@@ -1528,7 +1466,6 @@ module Yast
       anyMessageInternalRich(
         NoHeadline(),
         message,
-        Icon.IconPath("info"),
         @default_width,
         @default_height
       )
@@ -1545,7 +1482,6 @@ module Yast
       anyMessageInternalRich(
         NoHeadline(),
         message,
-        Icon.IconPath("info"),
         width,
         height
       )
@@ -1561,7 +1497,6 @@ module Yast
       anyTimedMessageInternal(
         NoHeadline(),
         message,
-        Icon.IconPath("info"),
         timeout_seconds
       )
 
@@ -1576,7 +1511,6 @@ module Yast
       anyTimedRichMessageInternal(
         NoHeadline(),
         message,
-        Icon.IconPath("info"),
         timeout_seconds,
         @default_width,
         @default_height
@@ -1595,7 +1529,6 @@ module Yast
       anyTimedRichMessageInternal(
         NoHeadline(),
         message,
-        Icon.IconPath("info"),
         timeout_seconds,
         width,
         height
@@ -1614,8 +1547,7 @@ module Yast
       anyMessageDetailsInternal(
         NoHeadline(),
         message,
-        details,
-        Icon.IconPath("info")
+        details
       )
 
       nil
@@ -1763,7 +1695,6 @@ module Yast
         popupLayoutInternal(
           headline,
           message,
-          Icon.IconPath("question"),
           button_box
         )
       )
@@ -1985,7 +1916,6 @@ module Yast
     publish variable: :switch_to_richtext, type: "boolean"
     publish variable: :too_many_lines, type: "integer"
     publish function: :NoHeadline, type: "string ()"
-    publish function: :NoIcon, type: "string ()"
     publish function: :AnyQuestion, type: "boolean (string, string, string, string, symbol)"
     publish function: :ErrorAnyQuestion, type: "boolean (string, string, string, string, symbol)"
     publish function: :TimedAnyQuestion, type: "boolean (string, string, string, string, symbol, integer)"
