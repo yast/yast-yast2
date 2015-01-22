@@ -279,45 +279,6 @@ module Yast
       nil
     end
 
-    # creates layout for ChangeMediumPopup
-    def LayoutPopup(message, button_box, info_on)
-      vertical_size = info_on ? 10 : 1
-      button_box = deep_copy(button_box)
-      dialog_layout = VBox(
-        HSpacing(50), # enforce width
-        VSpacing(0.1),
-        HBox(
-          # maybe more icon types could be used
-          # "info, "warning", "error"
-          Icon.Image("warning",  "margin_right" => 2),
-          Left(Label(message))
-        ),
-        VSpacing(0.1),
-        HBox(
-          HSpacing(0.6),
-          Left(
-            CheckBox(
-              Id(:show),
-              Opt(:notify),
-              # check box
-              _("Show &details"),
-              info_on
-            )
-          )
-        ),
-        VSpacing(0.4),
-        HBox(
-          VSpacing(vertical_size),
-          HSpacing(0.1),
-          ReplacePoint(Id(:info), Empty()),
-          HSpacing(0.1)
-        ),
-        HBox(HSpacing(0.1), button_box, HSpacing(0.1)),
-        VSpacing(0.2)
-      )
-      deep_copy(dialog_layout)
-    end
-
     def ShowLogInfo(message, buttonbox)
       buttonbox = deep_copy(buttonbox)
       if UI.QueryWidget(Id(:show), :Value) == true
@@ -3755,6 +3716,44 @@ module Yast
 
   private
 
+    # creates layout for ChangeMediumPopup
+    def LayoutPopup(message, button_box, info_on)
+      vertical_size = info_on ? 10 : 1
+      button_box = deep_copy(button_box)
+      dialog_layout = VBox(
+        HSpacing(50), # enforce width
+        VSpacing(0.1),
+        HBox(
+          # maybe more icon types could be used
+          # "info, "warning", "error"
+          Icon.Image("warning",  "margin_right" => 2),
+          Left(Label(message))
+        ),
+        VSpacing(0.1),
+        HBox(
+          HSpacing(0.6),
+          Left(
+            CheckBox(
+              Id(:show),
+              Opt(:notify),
+              # check box
+              _("Show &details"),
+              info_on
+            )
+          )
+        ),
+        VSpacing(0.4),
+        HBox(
+          VSpacing(vertical_size),
+          HSpacing(0.1),
+          ReplacePoint(Id(:info), Empty()),
+          HSpacing(0.1)
+        ),
+        HBox(HSpacing(0.1), button_box, HSpacing(0.1)),
+        VSpacing(0.2)
+      )
+      deep_copy(dialog_layout)
+    end
   end
 
   PackageCallbacks = PackageCallbacksClass.new
