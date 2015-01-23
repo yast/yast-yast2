@@ -110,7 +110,7 @@ module Yast
         @EXEC
       ], nil)
 
-      TEST(->() { FileChanges.CheckNewCreatedFiles([]) },[
+      TEST(->() { FileChanges.CheckNewCreatedFiles([]) }, [
         @READ,
         @WRITE,
         @EXEC
@@ -121,7 +121,7 @@ module Yast
         ["target", "stat", "/var/lib/YaST2/filechecks_non_verbose"],
         {}
       )
-      TEST(->() { FileChanges.CheckNewCreatedFiles(["/etc/apache2/vhosts.d/vhost1"]) },[
+      TEST(->() { FileChanges.CheckNewCreatedFiles(["/etc/apache2/vhosts.d/vhost1"]) }, [
         @READ,
         @WRITE,
         @EXEC
