@@ -2,6 +2,7 @@
 Thu Jan 22 13:21:45 UTC 2015 - jsrain@suse.cz
 
 - added handling of new created configuration files (bsc#860856)
+- 3.1.118
 
 -------------------------------------------------------------------
 Wed Jan 21 15:50:26 UTC 2015 - cwh@suse.com
