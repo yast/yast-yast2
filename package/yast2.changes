@@ -5,6 +5,15 @@ Wed Jan 21 15:50:26 UTC 2015 - cwh@suse.com
 - 3.1.117
 
 -------------------------------------------------------------------
+Tue Jan 20 09:55:48 UTC 2015 - jreidinger@suse.com
+
+- remove unused module for tracking config history in svn
+- remove unused module for writing to system log that is obsolete
+  by systemd
+- remove never used feature to lock proposal by administrator
+- improve the most horrible nesting of blocks in code
+
+-------------------------------------------------------------------
 Fri Jan 16 16:53:25 UTC 2015 - jreidinger@suse.com
 
 - enable automatic rubocop style checker and adjust code to YaST
