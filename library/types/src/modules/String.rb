@@ -44,7 +44,7 @@ module Yast
       @calnum = Ops.add(@calpha, @cdigit)
       @cpunct = "!\"\#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
       @cgraph = Ops.add(@calnum, @cpunct)
-      @cspace = "  \n\t"
+      @cspace = "\f\r\n\t\013"
       @cprint = Ops.add(@cspace, @cgraph)
 
       # 64 characters is the base undeline length
@@ -492,11 +492,11 @@ module Yast
               # backslah sequences
               backslash_seq = {
                 "a"  => "a", # alert
-                "b"  => "", # backspace
+                "b"  => "\b", # backspace
                 "e"  => "e", # escape
-                "f"  => "", # FF
+                "f"  => "\f", # FF
                 "n"  => "\n", # NL
-                "r"  => " ", # CR
+                "r"  => "\b", # CR
                 "t"  => "\t", # tab
                 "v"  => "v", # vertical tab
                 "\\" => "\\"
