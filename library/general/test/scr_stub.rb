@@ -75,3 +75,7 @@ module SCRStub
     Yast::WFM.SCRSetDefault(@scr_handles.last)
   end
 end
+
+RSpec.configure do |c|
+  c.include SCRStub
+end

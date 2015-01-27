@@ -4,7 +4,3 @@ ENV["Y2DIR"] = inc_dirs.join(":")
 
 require "yast"
 require_relative "scr_stub"
-
-RSpec.configure do |c|
-  c.include SCRStub
-end
