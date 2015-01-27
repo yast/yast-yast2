@@ -41,7 +41,6 @@ module Yast
 
       textdomain "base"
 
-      Yast.import "Icon"
       Yast.import "Label"
       Yast.import "Mode"
       Yast.import "Popup"
@@ -55,19 +54,19 @@ module Yast
 
     # Confirm hardware detection (only in manual installation)
     # @param [String] class hardware class (network cards)
-    # @param [String] icon_name name of the icon. If nil, generic hardware icon will be used
+    # @param [String] icon_name deprecated
     # @return true on continue
     def Detection(class_, icon_name)
+      if !icon_name.nil?
+        Builtins.y2warning(-1, "Parameter 'icon_name' is deprecated.")
+      end
+
       return true if Linuxrc.manual != true
 
       # L3: no interaction in AY, just re-probe (bnc#568653)
       return true if Mode.autoinst == true || Mode.autoupgrade == true
 
       return true if Arch.s390
-
-      icon_name = "yast-hardware" if icon_name.nil?
-
-      icon = Icon.Image(icon_name, {})
 
       result = Ops.get(@detection_cache, class_)
       if !result.nil?
@@ -107,7 +106,7 @@ module Yast
                       HVCenter(
                         Label(_("YaST will detect the following hardware:"))
                       ),
-                      HVCenter(HBox(icon, HSpacing(0.5), Heading(class_))),
+                      HVCenter(Heading(class_)),
                       VSpacing(0.5)
                     )
                   )

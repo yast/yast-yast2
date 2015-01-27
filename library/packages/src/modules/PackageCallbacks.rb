@@ -54,7 +54,6 @@ module Yast
       Yast.import "CommandLine"
       Yast.import "String"
       Yast.import "Report"
-      Yast.import "Icon"
       Yast.import "Wizard"
       Yast.import "Progress"
       Yast.import "FileUtils"
@@ -292,12 +291,7 @@ module Yast
       dialog_layout = VBox(
         HSpacing(50), # enforce width
         VSpacing(0.1),
-        HBox(
-          # maybe more icon types could be used
-          # "info, "warning", "error"
-          Icon.Image("warning",  "margin_right" => 2),
-          Left(Label(message))
-        ),
+        Left(Label(message)),
         VSpacing(0.1),
         HBox(
           HSpacing(0.6),

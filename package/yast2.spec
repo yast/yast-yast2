@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.1.118
+Version:        3.1.119
 Release:        0
 URL:            https://github.com/yast/yast-yast2
 
