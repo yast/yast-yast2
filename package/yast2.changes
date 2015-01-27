@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 27 11:51:54 UTC 2015 - cwh@suse.com
+
+- Removed more icons from other dialogs (bnc#875201)
+- 3.1.119
+
+-------------------------------------------------------------------
 Thu Jan 22 13:21:45 UTC 2015 - jsrain@suse.cz
 
 - added handling of new created configuration files (bsc#860856)
