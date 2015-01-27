@@ -1,24 +1,19 @@
 #!/usr/bin/env rspec
 
-top_srcdir = File.expand_path("../../../..", __FILE__)
-inc_dirs = Dir.glob("#{top_srcdir}/library/*/src")
-ENV["Y2DIR"] = inc_dirs.join(":")
-
-require "yast"
+require_relative "test_helper"
 require "tmpdir"
 
 include Yast::Logger
 
 Yast.import "Kernel"
 Yast.import "FileUtils"
-Yast.import "SCR"
-
-DEFAULT_DATA_DIR = File.join(File.expand_path(File.dirname(__FILE__)), "data/modules.d")
 
 describe "Kernel" do
+  let(:stubbed_modules_dir) { File.join(File.dirname(__FILE__), "data", "modules.d") }
+
   before do
     log.info "--- test ---"
-    stub_const("Yast::KernelClass::MODULES_DIR", DEFAULT_DATA_DIR)
+    stub_const("Yast::KernelClass::MODULES_DIR", stubbed_modules_dir)
     @default_modules = {
       Yast::KernelClass::MODULES_CONF_FILE => [],
       "MODULES_LOADED_ON_BOOT.conf"        => ["module-a", "module-b"],
@@ -103,7 +98,7 @@ describe "Kernel" do
     describe "when modules.d directory exists" do
       it "stores all modules to be loaded to configuration files and returns true" do
         Dir.mktmpdir do |tmpdir|
-          FileUtils.cp_r(DEFAULT_DATA_DIR + "/.", tmpdir)
+          FileUtils.cp_r(stubbed_modules_dir + "/.", tmpdir)
 
           stub_const("Yast::KernelClass::MODULES_DIR", tmpdir)
           Yast::Kernel.reset_modules_to_load
