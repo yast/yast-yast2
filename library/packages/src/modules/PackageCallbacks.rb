@@ -189,26 +189,6 @@ module Yast
       nil
     end
 
-    def ShowLogInfo(message, buttonbox)
-      buttonbox = deep_copy(buttonbox)
-      if UI.QueryWidget(Id(:show), :Value) == true
-        UI.CloseDialog
-        UI.OpenDialog(
-          Opt(:decorated),
-          layout_popup(message, buttonbox, true)
-        )
-        return true
-      else
-        UI.CloseDialog
-        UI.OpenDialog(
-          Opt(:decorated),
-          layout_popup(message, buttonbox, false)
-        )
-        UI.ReplaceWidget(Id(:info), Empty())
-      end
-      false
-    end
-
     # during file providal
     #  *
     #  // return "I" for ignore
@@ -299,7 +279,7 @@ module Yast
         loop do
           r = UI.UserInput
           if r == :show
-            @showLongInfo = ShowLogInfo(message, button_box)
+            @showLongInfo = show_log_info(message, button_box)
             if @showLongInfo
               error_symbol = "ERROR"
 
@@ -505,7 +485,7 @@ module Yast
           loop do
             r = UI.UserInput
             if r == :show
-              @showLongInfo = ShowLogInfo(message, button_box)
+              @showLongInfo = show_log_info(message, button_box)
               if @showLongInfo
                 UI.ReplaceWidget(Id(:info), RichText(Opt(:plainText), reason))
               else
@@ -900,7 +880,7 @@ module Yast
         end
 
         if r == :show
-          @showLongInfo = ShowLogInfo(message, button_box)
+          @showLongInfo = show_log_info(message, button_box)
           if @showLongInfo
             # TextEntry label
             UI.ReplaceWidget(
@@ -2258,7 +2238,7 @@ module Yast
       loop do
         r = UI.UserInput
         if r == :show
-          show_details = ShowLogInfo(message, button_box)
+          show_details = show_log_info(message, button_box)
           if show_details
             error_symbol = "UNKNOWN"
 
@@ -3631,6 +3611,27 @@ module Yast
         String.FormatTime(timeout)
       )
     end
+
+    def show_log_info(message, buttonbox)
+      if UI.QueryWidget(Id(:show), :Value)
+        UI.CloseDialog
+        UI.OpenDialog(
+          Opt(:decorated),
+          layout_popup(message, buttonbox, true)
+        )
+        return true
+      else
+        UI.CloseDialog
+        UI.OpenDialog(
+          Opt(:decorated),
+          layout_popup(message, buttonbox, false)
+        )
+        UI.ReplaceWidget(Id(:info), Empty())
+        return false
+      end
+    end
+
+
   end
 
   PackageCallbacks = PackageCallbacksClass.new
