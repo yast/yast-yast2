@@ -3596,7 +3596,7 @@ module Yast
       words = words.map do |w|
         parsed = URL.Parse(w)
         req_size = max_len - (msg.size - w.size)
-        # is it a valid URL?
+        # is it a valid URL? TODO move to URL this check
         if ["ftp", "http", "nfs", "file", "dir", "iso", "smb", "disk"].include?(parsed["scheme"])
           # reformat the URL
           w = URL.FormatURL(parsed, max_len)
