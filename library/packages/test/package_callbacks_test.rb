@@ -133,7 +133,42 @@ describe Yast::PackageCallbacks do
       mode = double(:commandline => true )
       stub_const("Yast::Mode", mode)
 
+      expect(subject.send(:full_screen)).to eq false
+    end
+
+    # TODO better description, but why it check this widget?
+    it "returns if there is progress replace point" do
+      ui = double(:WidgetExists => true )
+      stub_const("Yast::UI", ui)
+
       expect(subject.send(:full_screen)).to eq true
+    end
+  end
+
+  describe "#cd_devices" do
+    it "returns detected devices as list of Item terms" do
+      allow(Yast::SCR).to receive(:Read).and_return([
+        { "dev_name" => "/dev/sr0", "model" => "Cool" },
+        { "dev_name" => "/dev/sr1", "model" => "Less Cool" },
+        { "dev_name" => "/dev/sr2", "model" => "Borring" }
+      ])
+
+      expect(subject.send(:cd_devices, "/dev/sr0").size).to eq 3
+      expect(subject.send(:cd_devices, "/dev/sr0").first).to be_a Yast::Term
+      expect(subject.send(:cd_devices, "/dev/sr0").first.value).to eq :item
+    end
+
+    it "add special mark for preferred device" do
+      allow(Yast::SCR).to receive(:Read).and_return([
+        { "dev_name" => "/dev/sr0", "model" => "Cool" },
+        { "dev_name" => "/dev/sr1", "model" => "Less Cool" },
+        { "dev_name" => "/dev/sr2", "model" => "Borring" }
+      ])
+      cds = subject.send(:cd_devices, "/dev/sr0")
+
+      found = cds.any? { |i| i.include? "\u27A4 Cool (/dev/sr0)" }
+
+      expect(found).to eq true
     end
   end
 end
