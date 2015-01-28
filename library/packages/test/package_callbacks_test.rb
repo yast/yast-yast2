@@ -90,4 +90,50 @@ describe Yast::PackageCallbacks do
       expect(checkbox2.params.last).to eq false
     end
   end
+
+  describe "#progress_box" do
+    it "returns yast term with box content" do
+      expect(subject.send(:progress_box, "head", "aaa_base", "10MiB"))
+        .to be_a Yast::Term
+    end
+
+    it "write to Heading passed heading parameter" do
+      content = subject.send(:progress_box, "head", "aaa_base", "10MiB")
+
+      heading = content.nested_find { |e| e == Heading("head") }
+
+      expect(heading).to_not eq nil
+    end
+
+    it "adds passed name to Label" do
+      content = subject.send(:progress_box, "head", "aaa_base", "10MiB")
+
+      label = content.nested_find { |e| e == Label("aaa_base") }
+
+      expect(label).to_not eq nil
+    end
+
+    it "adds passed sz to Label" do
+      content = subject.send(:progress_box, "head", "aaa_base", "10MiB")
+
+      label = content.nested_find { |e| e == Label("10MiB") }
+
+      expect(label).to_not eq nil
+    end
+  end
+
+  describe "retry_label" do
+    it "returns localized string with text and passed timeout" do
+      expect(subject.send(:retry_label, 15)).to be_a ::String
+    end
+  end
+
+  describe "full_screen" do
+    it "returns false if running in CLI" do
+      mode = double(:commandline => true )
+      stub_const("Yast::Mode", mode)
+
+      expect(subject.send(:full_screen)).to eq true
+    end
+  end
 end
