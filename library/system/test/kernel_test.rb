@@ -88,7 +88,7 @@ describe "Kernel" do
       it "tries to create the missing directory and returns false if it fails" do
         expect(Yast::FileUtils).to receive(:Exists).twice.and_return(false)
         expect(Yast::SCR).to receive(:Execute).with(
-          Yast::Path.new(".target.mkdir"),
+          path(".target.mkdir"),
           anything
         ).and_return(false)
         expect(Yast::Kernel.SaveModulesToLoad).to eq(false)

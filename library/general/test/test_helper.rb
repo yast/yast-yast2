@@ -3,4 +3,4 @@ inc_dirs = Dir.glob("#{top_srcdir}/library/*/src")
 ENV["Y2DIR"] = inc_dirs.join(":")
 
 require "yast"
-require_relative "scr_stub"
+require "yast/rspec"
