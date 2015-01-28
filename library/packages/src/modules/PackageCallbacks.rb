@@ -523,18 +523,6 @@ module Yast
       "I"
     end
 
-    # check and save the autoeject configuration if needed
-    def CheckAndSaveAutoEject
-      new_value = UI.QueryWidget(Id(:auto_eject), :Value)
-      current = autoeject
-
-      if new_value != autoeject
-        store_autoeject(new_value)
-      end
-
-      nil
-    end
-
     #-------------------------------------------------------------------------
     #
     # media change callback
@@ -880,7 +868,7 @@ module Yast
       end
 
       # check and save the autoeject configuration if needed
-      CheckAndSaveAutoEject() if is_disc
+      remember_autoeject() if is_disc
 
       Builtins.y2milestone("MediaChange %1", r)
 
@@ -3630,6 +3618,18 @@ module Yast
 
       deep_copy(ret)
     end
+
+    # check and save the autoeject configuration if needed
+    def remember_autoeject
+      new_value = UI.QueryWidget(Id(:auto_eject), :Value)
+      current = autoeject
+
+      if new_value != autoeject
+        store_autoeject(new_value)
+      end
+
+      nil
+
   end
 
   PackageCallbacks = PackageCallbacksClass.new
