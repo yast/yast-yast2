@@ -523,37 +523,6 @@ module Yast
       "I"
     end
 
-    def CDdevices(preferred)
-      cds = Convert.convert(
-        SCR.Read(path(".probe.cdrom")),
-        from: "any",
-        to:   "list <map>"
-      )
-      ret = []
-
-      Builtins.foreach(cds) do |cd|
-        dev = Ops.get_string(cd, "dev_name", "")
-        model = Ops.get_string(cd, "model", "")
-        deflt = preferred == dev
-        if !dev.nil? && dev != "" && !model.nil?
-          ret = Builtins.add(
-            ret,
-            Item(
-              Id(dev),
-              Ops.add(
-                Ops.add(deflt ? "\u27A4 " : "", model),
-                Builtins.sformat(" (%1)", dev)
-              )
-            )
-          )
-        end
-      end if !cds.nil?
-
-      Builtins.y2milestone("Detected CD devices: %1", ret)
-
-      deep_copy(ret)
-    end
-
     # check and save the autoeject configuration if needed
     def CheckAndSaveAutoEject
       new_value = UI.QueryWidget(Id(:auto_eject), :Value)
@@ -707,7 +676,7 @@ module Yast
 
       if is_disc
         if !@doing_eject
-          @detected_cd_devices = CDdevices(Ops.get(devices, current_device, ""))
+          @detected_cd_devices = cd_devices(Ops.get(devices, current_device, ""))
         end
 
         # detect the CD/DVD devices if the ejecting is not in progress,
@@ -3631,7 +3600,36 @@ module Yast
       end
     end
 
+    def cd_devices(preferred)
+      cds = Convert.convert(
+        SCR.Read(path(".probe.cdrom")),
+        from: "any",
+        to:   "list <map>"
+      )
+      ret = []
 
+      Builtins.foreach(cds) do |cd|
+        dev = Ops.get_string(cd, "dev_name", "")
+        model = Ops.get_string(cd, "model", "")
+        deflt = preferred == dev
+        if !dev.nil? && dev != "" && !model.nil?
+          ret = Builtins.add(
+            ret,
+            Item(
+              Id(dev),
+              Ops.add(
+                Ops.add(deflt ? "\u27A4 " : "", model),
+                Builtins.sformat(" (%1)", dev)
+              )
+            )
+          )
+        end
+      end if !cds.nil?
+
+      log.info "Detected CD devices: #{ret}"
+
+      deep_copy(ret)
+    end
   end
 
   PackageCallbacks = PackageCallbacksClass.new
