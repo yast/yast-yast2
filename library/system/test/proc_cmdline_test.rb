@@ -9,12 +9,8 @@ describe "SCR" do
       let(:expected_list) { %w(biosdevname=1 initrd=initrd install=hd:/// splash=silent) }
       let(:read_list) { Yast::SCR.Read(path(".proc.cmdline")).sort }
 
-      before do
-        change_scr_root(File.join(data_dir, chroot))
-      end
-
-      after do
-        reset_scr_root
+      around do |example|
+        change_scr_root(File.join(data_dir, chroot), &example)
       end
 
       context "processing a simple file" do

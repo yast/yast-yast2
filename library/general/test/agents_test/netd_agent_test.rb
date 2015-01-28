@@ -3,13 +3,9 @@ require "yast"
 
 module Yast
   describe ".etc.xinetd_conf.services" do
-    before :each do
+    around :each do |example|
       root = File.join(File.dirname(__FILE__), "test_root")
-      assign_root_path(root)
-    end
-
-    after :each do
-      reset_root_path
+      change_scr_root(root, &example)
     end
 
     describe ".Read" do

@@ -4,13 +4,9 @@ require_relative "../test_helper"
 require "yast"
 
 describe ".proc.meminfo" do
-  before :each do
+  around :each do |example|
     root = File.join(File.dirname(__FILE__), "test_root")
-    change_scr_root(root)
-  end
-
-  after :each do
-    reset_scr_root
+    change_scr_root(root, &example)
   end
 
   describe ".Read" do

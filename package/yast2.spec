@@ -41,6 +41,8 @@ BuildRequires:  fdupes
 
 # For running RSpec tests during build
 BuildRequires:  rubygem(rspec)
+# To have specific RSpec extensions available
+BuildRequires:       yast2-ruby-bindings >= 3.1.26
 
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
 PreReq:         %fillup_prereq
