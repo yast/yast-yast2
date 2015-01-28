@@ -424,7 +424,6 @@ module Yast
         return UI.PollInput != :abort
       elsif Mode.commandline
         CommandLine.PrintVerboseNoCR(CLEAR_PROGRESS_TEXT + "#{percent}%")
-        )
         if percent == 100
           # sleep for a wile
           Builtins.sleep(200)
@@ -2208,7 +2207,6 @@ module Yast
     def ProgressScanDb(value)
       if Mode.commandline
         CommandLine.PrintVerboseNoCR(CLEAR_PROGRESS_TEXT + "#{value}%")
-        )
       else
         if @_scan_popup && UI.WidgetExists(Id(:label_scanDB_popup))
           UI.ChangeWidget(Id(:progress), :Value, value)
@@ -3675,7 +3673,7 @@ module Yast
         @config = read_conf if read_conf.is_a?(::Hash)
         log.info "Current config: #{@config}"
       else
-        log.info "No configuration found (file #{@conf_file} is missing)",
+        log.info "No configuration found (file #{@conf_file} is missing)"
       end
     end
 
