@@ -1,10 +1,7 @@
 #!/usr/bin/env rspec
 
-top_srcdir = File.expand_path("../../../..", __FILE__)
-inc_dirs = Dir.glob("#{top_srcdir}/library/*/src")
-ENV["Y2DIR"] = inc_dirs.join(":")
+require_relative "test_helper"
 
-require "yast"
 require "yaml"
 
 # Important: Loads data in constructor
@@ -38,11 +35,11 @@ PRODUCTS_FROM_ZYPP = load_zypp("products.yml").freeze
 def stub_defaults
   log.info "--------- Running test ---------"
   Yast::Product.send(:reset)
-  Yast::PackageSystem.stub(:EnsureTargetInit).and_return(true)
-  Yast::PackageSystem.stub(:EnsureSourceInit).and_return(true)
-  Yast::Pkg.stub(:PkgSolve).and_return(true)
-  Yast::PackageLock.stub(:Check).and_return(true)
-  Yast::Pkg.stub(:ResolvableProperties).with("", :product, "").and_return(PRODUCTS_FROM_ZYPP.dup)
+  allow(Yast::PackageSystem).to receive(:EnsureTargetInit).and_return(true)
+  allow(Yast::PackageSystem).to receive(:EnsureSourceInit).and_return(true)
+  allow(Yast::Pkg).to receive(:PkgSolve).and_return(true)
+  allow(Yast::PackageLock).to receive(:Check).and_return(true)
+  allow(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "").and_return(PRODUCTS_FROM_ZYPP.dup)
 end
 
 # Describes Product handling as a whole (due to lazy loading and internal caching),
@@ -54,13 +51,13 @@ describe "Yast::Product (integration)" do
 
   context "while called in installation system without os-release file" do
     before(:each) do
-      Yast::Stage.stub(:stage).and_return("initial")
-      Yast::OSRelease.stub(:os_release_exists?).and_return(false)
+      allow(Yast::Stage).to receive(:stage).and_return("initial")
+      allow(Yast::OSRelease).to receive(:os_release_exists?).and_return(false)
     end
 
     describe "when the mode is Installation" do
       it "reads product information from zypp and fills up internal variables" do
-        Yast::Mode.stub(:mode).and_return("installation")
+        allow(Yast::Mode).to receive(:mode).and_return("installation")
 
         expect(Yast::Product.name).to eq("openSUSE (SELECTED)")
         expect(Yast::Product.short_name).to eq("openSUSE")
@@ -70,7 +67,7 @@ describe "Yast::Product (integration)" do
 
     describe "when the mode is Update" do
       it "reads product information from zypp and fills up internal variables" do
-        Yast::Mode.stub(:mode).and_return("update")
+        allow(Yast::Mode).to receive(:mode).and_return("update")
 
         expect(Yast::Product.name).to eq("openSUSE (SELECTED)")
         expect(Yast::Product.short_name).to eq("openSUSE")
@@ -81,9 +78,9 @@ describe "Yast::Product (integration)" do
 
   context "while called on a running system with os-release file" do
     before(:each) do
-      Yast::Stage.stub(:stage).and_return("normal")
-      Yast::Mode.stub(:mode).and_return("normal")
-      Yast::OSRelease.stub(:os_release_exists?).and_return(true)
+      allow(Yast::Stage).to receive(:stage).and_return("normal")
+      allow(Yast::Mode).to receive(:mode).and_return("normal")
+      allow(Yast::OSRelease).to receive(:os_release_exists?).and_return(true)
     end
 
     # This is the default behavior
@@ -91,9 +88,9 @@ describe "Yast::Product (integration)" do
       it "reads product information from OSRelease and fills up internal variables" do
         release_info = "Happy Feet 2.0"
 
-        Yast::OSRelease.stub(:ReleaseName).and_return("anything")
-        Yast::OSRelease.stub(:ReleaseVersion).and_return("anything")
-        Yast::OSRelease.stub(:ReleaseInformation).and_return(release_info)
+        allow(Yast::OSRelease).to receive(:ReleaseName).and_return("anything")
+        allow(Yast::OSRelease).to receive(:ReleaseVersion).and_return("anything")
+        allow(Yast::OSRelease).to receive(:ReleaseInformation).and_return(release_info)
 
         expect(Yast::Product.name).to eq(release_info)
       end
@@ -105,9 +102,9 @@ describe "Yast::Product (integration)" do
         release_name = "Happy Feet"
         release_version = "1.0.1"
 
-        Yast::OSRelease.stub(:ReleaseName).and_return(release_name)
-        Yast::OSRelease.stub(:ReleaseVersion).and_return(release_version)
-        Yast::OSRelease.stub(:ReleaseInformation).and_return("")
+        allow(Yast::OSRelease).to receive(:ReleaseName).and_return(release_name)
+        allow(Yast::OSRelease).to receive(:ReleaseVersion).and_return(release_version)
+        allow(Yast::OSRelease).to receive(:ReleaseInformation).and_return("")
 
         expect(Yast::Product.short_name).to eq("openSUSE")
         expect(Yast::Product.version).to eq("13.1")
@@ -118,9 +115,9 @@ describe "Yast::Product (integration)" do
 
   context "while called on a running system without os-release file" do
     before(:each) do
-      Yast::Stage.stub(:stage).and_return("normal")
-      Yast::Mode.stub(:mode).and_return("normal")
-      Yast::OSRelease.stub(:os_release_exists?).and_return(false)
+      allow(Yast::Stage).to receive(:stage).and_return("normal")
+      allow(Yast::Mode).to receive(:mode).and_return("normal")
+      allow(Yast::OSRelease).to receive(:os_release_exists?).and_return(false)
     end
 
     it "reads product information from zypp and fills up internal variables" do
@@ -139,9 +136,9 @@ describe Yast::Product do
 
   context "while called in installation without os-release file" do
     before(:each) do
-      Yast::OSRelease.stub(:os_release_exists?).and_return(false)
-      Yast::Stage.stub(:stage).and_return("initial")
-      Yast::Mode.stub(:mode).and_return("installation")
+      allow(Yast::OSRelease).to receive(:os_release_exists?).and_return(false)
+      allow(Yast::Stage).to receive(:stage).and_return("initial")
+      allow(Yast::Mode).to receive(:mode).and_return("installation")
     end
 
     describe "#name" do
@@ -216,13 +213,13 @@ describe Yast::Product do
     release_info = "#{release_name} #{release_version} (Banana Juice)"
 
     before(:each) do
-      Yast::OSRelease.stub(:os_release_exists?).and_return(true)
-      Yast::Stage.stub(:stage).and_return("normal")
-      Yast::Mode.stub(:mode).and_return("normal")
+      allow(Yast::OSRelease).to receive(:os_release_exists?).and_return(true)
+      allow(Yast::Stage).to receive(:stage).and_return("normal")
+      allow(Yast::Mode).to receive(:mode).and_return("normal")
 
-      Yast::OSRelease.stub(:ReleaseName).and_return(release_name)
-      Yast::OSRelease.stub(:ReleaseVersion).and_return(release_version)
-      Yast::OSRelease.stub(:ReleaseInformation).and_return(release_info)
+      allow(Yast::OSRelease).to receive(:ReleaseName).and_return(release_name)
+      allow(Yast::OSRelease).to receive(:ReleaseVersion).and_return(release_version)
+      allow(Yast::OSRelease).to receive(:ReleaseInformation).and_return(release_info)
     end
 
     describe "#name" do
@@ -288,14 +285,14 @@ describe Yast::Product do
 
   context "while called on a broken system (no os-release, no zypp information)" do
     before(:each) do
-      Yast::OSRelease.stub(:os_release_exists?).and_return(false)
-      Yast::Pkg.stub(:ResolvableProperties).with("", :product, "").and_return([])
+      allow(Yast::OSRelease).to receive(:os_release_exists?).and_return(false)
+      allow(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "").and_return([])
     end
 
     context "in installation" do
       it "reports that no base product was found" do
-        Yast::Stage.stub(:stage).and_return("initial")
-        Yast::Mode.stub(:mode).and_return("installation")
+        allow(Yast::Stage).to receive(:stage).and_return("initial")
+        allow(Yast::Mode).to receive(:mode).and_return("installation")
 
         SUPPORTED_METHODS.each do |method_name|
           log.info "Yast::Product.#{method_name}"
@@ -311,8 +308,8 @@ describe Yast::Product do
 
     context "on a running system" do
       it "reports that no base product was found" do
-        Yast::Stage.stub(:stage).and_return("normal")
-        Yast::Mode.stub(:mode).and_return("normal")
+        allow(Yast::Stage).to receive(:stage).and_return("normal")
+        allow(Yast::Mode).to receive(:mode).and_return("normal")
 
         SUPPORTED_METHODS.each do |method_name|
           log.info "Yast::Product.#{method_name}"
