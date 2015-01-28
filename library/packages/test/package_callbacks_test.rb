@@ -8,14 +8,14 @@ describe Yast::PackageCallbacks do
   subject { Yast::PackageCallbacks }
 
   describe "#textmode" do
-    it "returns if runned as CLI" do
+    it "returns true if runned as CLI" do
       mode = double(:commandline => true )
       stub_const("Yast::Mode", mode)
 
       expect(subject.send(:textmode)).to eq true
     end
 
-    it "returns if running in TUI" do
+    it "returns true if running in TUI" do
       ui = double(:GetDisplayInfo => { "TextMode" => true })
       stub_const("Yast::UI", ui)
 
@@ -27,6 +27,29 @@ describe Yast::PackageCallbacks do
       stub_const("Yast::UI", ui)
 
       expect(subject.send(:textmode)).to eq false
+    end
+  end
+
+  describe "#display_width" do
+    it "returns 0 if runned as CLI" do
+      mode = double(:commandline => true )
+      stub_const("Yast::Mode", mode)
+
+      expect(subject.send(:display_width)).to eq 0
+    end
+
+    it "returns value from display info" do
+      ui = double(:GetDisplayInfo => { "Width" => 480 })
+      stub_const("Yast::UI", ui)
+
+      expect(subject.send(:display_width)).to eq 480
+    end
+
+    it "returns 0 if value missing in display info" do
+      ui = double(:GetDisplayInfo => {})
+      stub_const("Yast::UI", ui)
+
+      expect(subject.send(:display_width)).to eq 0
     end
   end
 

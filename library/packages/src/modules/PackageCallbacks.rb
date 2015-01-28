@@ -3447,10 +3447,12 @@ module Yast
       )
     end
 
+    # TODO looks like generic enough to not be here
     def textmode
       Mode.commandline || UI.GetDisplayInfo["TextMode"]
     end
 
+    # TODO looks like generic enough to not be here
     def display_width
       Mode.commandline ? 0 : Ops.get_integer(UI.GetDisplayInfo, "Width", 0)
     end
