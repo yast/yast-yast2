@@ -3448,11 +3448,7 @@ module Yast
     end
 
     def textmode
-      if Mode.commandline
-        true
-      else
-        UI.GetDisplayInfo["TextMode"]
-      end
+      Mode.commandline || UI.GetDisplayInfo["TextMode"]
     end
 
     def display_width
