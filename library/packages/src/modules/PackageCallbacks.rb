@@ -930,49 +930,6 @@ module Yast
       nil
     end
 
-    def ProcessMessage(msg, max_len)
-      words = Builtins.splitstring(msg, " ")
-
-      Builtins.y2debug("words: %1", words)
-
-      words = Builtins.maplist(words) do |w|
-        parsed = URL.Parse(w)
-        req_size = Ops.subtract(
-          max_len,
-          Ops.subtract(Builtins.size(msg), Builtins.size(w))
-        )
-        # is it a valid URL?
-        if Builtins.contains(
-          ["ftp", "http", "nfs", "file", "dir", "iso", "smb", "disk"],
-          Ops.get_string(parsed, "scheme", "")
-          )
-          # reformat the URL
-          w = URL.FormatURL(parsed, max_len)
-        else
-          if Builtins.substring(w, 0, 1) == "/"
-            parts = Builtins.splitstring(w, "/")
-
-            if Ops.greater_or_equal(Builtins.size(parts), 3)
-              w = String.FormatFilename(w, req_size)
-            end
-          end
-        end
-        w
-      end
-
-      ret = Builtins.mergestring(words, " ")
-
-      if ret != msg
-        Builtins.y2milestone(
-          "URL conversion: '%1' converted to '%2'",
-          URL.HidePassword(msg),
-          URL.HidePassword(ret)
-        )
-      end
-
-      ret
-    end
-
     def OpenSourcePopup
       if @_source_open == 0
         UI.OpenDialog(
@@ -998,7 +955,7 @@ module Yast
         Builtins.size(text),
         Ops.subtract(MAX_POPUP_TEXT_SIZE, ui_adjustment)
         )
-        text = ProcessMessage(text, Ops.subtract(MAX_POPUP_TEXT_SIZE, ui_adjustment))
+        text = process_message(text, Ops.subtract(MAX_POPUP_TEXT_SIZE, ui_adjustment))
       end
 
       UI.ChangeWidget(:label_source_popup, :Value, text)
@@ -1015,7 +972,7 @@ module Yast
         Builtins.size(text),
         Ops.add(MAX_POPUP_TEXT_SIZE, ui_adjustment)
         )
-        text = ProcessMessage(text, Ops.add(MAX_POPUP_TEXT_SIZE, ui_adjustment))
+        text = process_message(text, Ops.add(MAX_POPUP_TEXT_SIZE, ui_adjustment))
       end
 
       # refresh the label in the popup
@@ -3629,7 +3586,40 @@ module Yast
       end
 
       nil
+    end
 
+    def process_message(msg, max_len)
+      words = msg.split(" ")
+
+      log.info "words: %{words}"
+
+      words = words.map do |w|
+        parsed = URL.Parse(w)
+        req_size = max_len - (msg.size - w.size)
+        # is it a valid URL?
+        if ["ftp", "http", "nfs", "file", "dir", "iso", "smb", "disk"].include?(parsed["scheme"])
+          # reformat the URL
+          w = URL.FormatURL(parsed, max_len)
+        else
+          if w.start_with?("/")
+            parts = w.split("/")
+
+            if parts.size > 2 # why this number?
+              w = String.FormatFilename(w, req_size)
+            end
+          end
+        end
+        w
+      end
+
+      ret = words.join(" ")
+
+      if ret != msg
+        log.info "URL conversion: '#{URL.HidePassword(msg)}' converted to '#{URL.HidePassword(ret)}%2'"
+      end
+
+      ret
+    end
   end
 
   PackageCallbacks = PackageCallbacksClass.new
