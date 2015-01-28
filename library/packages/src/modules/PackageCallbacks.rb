@@ -137,21 +137,6 @@ module Yast
     #--------------------------------------------------------------------------
     # defaults
 
-    def FullScreen
-      return false if Mode.commandline
-
-      ret = UI.WidgetExists(:progress_replace_point)
-      Builtins.y2debug("Running in fullscreen mode: %1", ret)
-      ret
-    end
-
-    def RetryLabel(timeout)
-      Builtins.sformat(
-        _("Remaining time to automatic retry: %1"),
-        String.FormatTime(timeout)
-      )
-    end
-
     # at start of file providal
     #
     def StartProvide(name, archivesize, remote)
@@ -165,7 +150,7 @@ module Yast
         else
           UI.CloseDialog if @_provide_popup
 
-          if FullScreen()
+          if full_screen()
             Progress.SubprogressType(:progress, 100)
             Progress.SubprogressTitle(
               Builtins.sformat(_("Downloading package %1 (%2)..."), name, sz)
@@ -801,7 +786,7 @@ module Yast
 
           button_box = VBox(
             # failed download will be automatically retried after the timeout, %1 = formatted time (MM:SS format)
-            Left(Label(Id(:auto_retry), RetryLabel(@current_retry_timeout))),
+            Left(Label(Id(:auto_retry), retry_label(@current_retry_timeout))),
             button_box
           )
 
@@ -904,7 +889,7 @@ module Yast
               UI.ChangeWidget(
                 Id(:auto_retry),
                 :Label,
-                RetryLabel(@current_retry_timeout)
+                retry_label(@current_retry_timeout)
               )
             end
           else
@@ -1821,7 +1806,7 @@ module Yast
 
     def InitDownload(task)
       if !Mode.commandline
-        if !FullScreen() && !IsDownloadProgressPopup()
+        if !full_screen() && !IsDownloadProgressPopup()
           # heading of popup
           heading = _("Downloading")
 
@@ -1852,7 +1837,7 @@ module Yast
     end
 
     def DestDownload
-      CloseDownloadProgressPopup() if !FullScreen()
+      CloseDownloadProgressPopup() if !full_screen()
 
       nil
     end
@@ -1879,7 +1864,7 @@ module Yast
           # change the label
           UI.ChangeWidget(Id(:progress), :Label, message)
           UI.ChangeWidget(Id(:progress), :Value, 0)
-        elsif FullScreen()
+        elsif full_screen()
           Progress.SubprogressType(:progress, 100)
           Progress.SubprogressTitle(message)
         end
@@ -1923,7 +1908,7 @@ module Yast
           )
         end
 
-        if FullScreen()
+        if full_screen()
           Progress.SubprogressValue(percent)
 
           if Ops.greater_than(Builtins.size(msg_rate), 0)
@@ -2166,7 +2151,7 @@ module Yast
         # progress message (command line mode)
         CommandLine.PrintVerbose(_("Reading RPM database..."))
       else
-        if !FullScreen()
+        if !full_screen()
           UI.OpenDialog(
             VBox(
               HSpacing(60),
@@ -2215,7 +2200,7 @@ module Yast
           Builtins.y2warning("Scan DB aborted") if !cont
 
           return cont
-        elsif FullScreen()
+        elsif full_screen()
           Progress.Step(value)
         end
       end
@@ -2330,7 +2315,7 @@ module Yast
         if @_scan_popup && UI.WidgetExists(Id(:label_scanDB_popup))
           UI.CloseDialog
           @_scan_popup = false
-        elsif !FullScreen()
+        elsif !full_screen()
           Builtins.y2error("The toplevel dialog is not a scan DB popup!")
         end
       end
@@ -2440,7 +2425,7 @@ module Yast
           UI.CloseDialog
         end
 
-        if FullScreen()
+        if full_screen()
           Progress.SubprogressType(subprogress_type, 100)
           Progress.SubprogressTitle(task)
         else
@@ -2481,7 +2466,7 @@ module Yast
 
       if !Mode.commandline && IsProgressPopup()
         UI.CloseDialog if Builtins.size(@progress_stack) == 0
-      elsif FullScreen()
+      elsif full_screen()
         if Ops.greater_than(Builtins.size(@progress_stack), 0)
           progress_type = Ops.get_symbol(
             @progress_stack,
@@ -2532,7 +2517,7 @@ module Yast
             )
             return false
           end
-        elsif FullScreen()
+        elsif full_screen()
           # fullscreen callbacks
           Progress.SubprogressValue(val_percent)
         end
@@ -3631,7 +3616,21 @@ module Yast
       )
     end
 
+    def full_screen
+      return false if Mode.commandline
 
+      ret = UI.WidgetExists(:progress_replace_point)
+      log.debug "Running in fullscreen mode: #{ret}"
+
+      ret
+    end
+
+    def retry_label(timeout)
+      Builtins.sformat(
+        _("Remaining time to automatic retry: %1"),
+        String.FormatTime(timeout)
+      )
+    end
   end
 
   PackageCallbacks = PackageCallbacksClass.new
