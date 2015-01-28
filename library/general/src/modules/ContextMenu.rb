@@ -40,7 +40,7 @@ module Yast
       Convert.to_symbol(UI.UserInput)
     end
 
-    publish :function => :Simple, :type => "symbol (list <term>)"
+    publish function: :Simple, type: "symbol (list <term>)"
   end
 
   ContextMenu = ContextMenuClass.new

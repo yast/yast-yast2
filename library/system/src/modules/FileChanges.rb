@@ -66,18 +66,18 @@ module Yast
     # Read the data file containing file checksums
     def ReadSettings
       if Ops.less_or_equal(
-          Convert.to_integer(SCR.Read(path(".target.size"), @data_file)),
-          0
+        Convert.to_integer(SCR.Read(path(".target.size"), @data_file)),
+        0
         )
         @file_checksums = {}
         return
       end
       @file_checksums = Convert.convert(
         SCR.Read(path(".target.ycp"), @data_file),
-        :from => "any",
-        :to   => "map <string, string>"
+        from: "any",
+        to:   "map <string, string>"
       )
-      @file_checksums = {} if @file_checksums == nil
+      @file_checksums = {} if @file_checksums.nil?
 
       nil
     end
@@ -221,9 +221,9 @@ module Yast
       true
     end
 
-    publish :function => :FileChanged, :type => "boolean (string)"
-    publish :function => :StoreFileCheckSum, :type => "void (string)"
-    publish :function => :CheckFiles, :type => "boolean (list <string>)"
+    publish function: :FileChanged, type: "boolean (string)"
+    publish function: :StoreFileCheckSum, type: "void (string)"
+    publish function: :CheckFiles, type: "boolean (list <string>)"
   end
 
   FileChanges = FileChangesClass.new

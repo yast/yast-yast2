@@ -79,20 +79,19 @@ module Yast
       # test behavior of modules loaded on boot
       DUMP("----------------------------------------")
 
-
-      TEST(lambda { Kernel.HidePasswords(nil) }, [@READ, @WRITE, @EXEC], 0)
-      TEST(lambda { Kernel.HidePasswords("") }, [@READ, @WRITE, @EXEC], 0)
-      TEST(lambda { Kernel.HidePasswords("ABC=213 DEF=324") }, [
+      TEST(->() { Kernel.HidePasswords(nil) }, [@READ, @WRITE, @EXEC], 0)
+      TEST(->() { Kernel.HidePasswords("") }, [@READ, @WRITE, @EXEC], 0)
+      TEST(->() { Kernel.HidePasswords("ABC=213 DEF=324") }, [
         @READ,
         @WRITE,
         @EXEC
       ], 0)
-      TEST(lambda { Kernel.HidePasswords(" ABC=213  DEF=324 ") }, [
+      TEST(->() { Kernel.HidePasswords(" ABC=213  DEF=324 ") }, [
         @READ,
         @WRITE,
         @EXEC
       ], 0)
-      TEST(lambda { Kernel.HidePasswords("ABC=213 DEF=324 FTPPASSWORD=pass") }, [
+      TEST(->() { Kernel.HidePasswords("ABC=213 DEF=324 FTPPASSWORD=pass") }, [
         @READ,
         @WRITE,
         @EXEC

@@ -1,4 +1,21 @@
 -------------------------------------------------------------------
+Mon Jan 26 14:16:20 UTC 2015 - jreidinger@suse.com
+
+- fixed \r, \f, \v and \b  characters lost during conversion to
+  Ruby
+
+-------------------------------------------------------------------
+Fri Jan 16 16:53:25 UTC 2015 - jreidinger@suse.com
+
+- enable automatic rubocop style checker and adjust code to YaST
+  style guide
+
+-------------------------------------------------------------------
+Wed Jan  7 10:05:55 UTC 2015 - dvaleev@suse.com
+
+- Treat PowerNV platform as CHRP
+
+-------------------------------------------------------------------
 Fri Oct 31 07:10:48 UTC 2014 - jreidinger@suse.com
 
 - do not crash for non-english locale if log file does not exist

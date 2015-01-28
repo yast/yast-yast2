@@ -64,7 +64,7 @@ module Yast
 
       Builtins.y2milestone("SelectedPrivateKey: %1", @selected_key)
 
-      if @selected_key != nil && @selected_key != ""
+      if !@selected_key.nil? && @selected_key != ""
         GPGWidgets.AskPassphrasePopup(GPGWidgets.SelectedPrivateKey)
       end
 

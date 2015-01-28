@@ -32,7 +32,6 @@ require "yast"
 module Yast
   class CommandLineClass < Module
     def main
-
       Yast.import "Directory"
       Yast.import "Mode"
       Yast.import "Popup"
@@ -141,7 +140,6 @@ module Yast
       # Remember the command line specification for later use
       @cmdlinespec = {}
 
-
       # string: command line interface is not supported
       @nosupport = _(
         "This YaST2 module does not support the command line interface."
@@ -158,7 +156,7 @@ module Yast
       return if !Mode.commandline
 
       # avoid using of uninitialized value in .dev.tty perl agent
-      if s == nil
+      if s.nil?
         Builtins.y2warning("CommandLine::Print: invalid argument (nil)")
         return
       end
@@ -218,7 +216,6 @@ module Yast
       nil
     end
 
-
     #  Print a Table
     #
     #  Print a table using Print(). Format of table is as libyui but not all features
@@ -232,7 +229,7 @@ module Yast
       aligns = []
       widths = []
 
-      _Process = lambda do |line|
+      process = lambda do |line|
         line = deep_copy(line)
         ret = []
         anys = Builtins.argsof(line)
@@ -250,7 +247,7 @@ module Yast
         deep_copy(ret)
       end
 
-      _GetAligns = lambda do |header2|
+      get_aligns = lambda do |header2|
         header2 = deep_copy(header2)
         anys = Builtins.argsof(header2)
         Builtins.foreach(Integer.Range(Builtins.size(anys))) do |i|
@@ -264,7 +261,7 @@ module Yast
         nil
       end
 
-      _UpdateWidths = lambda do |columns|
+      update_widths = lambda do |columns|
         columns = deep_copy(columns)
         Builtins.foreach(Integer.Range(Builtins.size(columns))) do |i|
           Ops.set(
@@ -279,9 +276,9 @@ module Yast
         nil
       end
 
-      _PrintLine = lambda do |line|
+      print_line = lambda do |line|
         line = deep_copy(line)
-        columns = _Process.call(line)
+        columns = process.call(line)
         Builtins.foreach(Integer.Range(Builtins.size(columns))) do |i|
           Ops.set(
             columns,
@@ -299,29 +296,28 @@ module Yast
         nil
       end
 
-      _UpdateWidths.call(_Process.call(header))
-      Builtins.foreach(content) { |row| _UpdateWidths.call(_Process.call(row)) }
+      update_widths.call(process.call(header))
+      Builtins.foreach(content) { |row| update_widths.call(process.call(row)) }
 
-      _PrintLine.call(header)
+      print_line.call(header)
 
-      _GetAligns.call(header)
+      get_aligns.call(header)
 
       Print(Builtins.mergestring(Builtins.maplist(widths) do |width|
         String.Repeat("-", width)
       end, "-+-"))
 
-      Builtins.foreach(content) { |row| _PrintLine.call(row) }
+      Builtins.foreach(content) { |row| print_line.call(row) }
 
       nil
     end
-
 
     # Print an Error Message
     #
     # Print an error message and add the description how to get the help.
     # @param [String] message	error message to be printed. Use nil for no message
     def Error(message)
-      Print(message) if message != nil
+      Print(message) if !message.nil?
 
       if @interactive
         # translators: default error message for command line
@@ -432,12 +428,11 @@ module Yast
       )
       Builtins.y2debug("Using non-strict check for %1", command) if non_strict
 
-
       # check (and convert data types)
       Builtins.maplist(givenoptions) do |o, val|
         v = Convert.to_string(val)
         next if ret != true
-        if Ops.get(cmdoptions, o) == nil
+        if Ops.get(cmdoptions, o).nil?
           if !non_strict
             # translators: error message, %1 is a command, %2 is the wrong option given by the user
             Print(
@@ -481,7 +476,7 @@ module Yast
               end
             elsif opttype == "integer"
               i = Builtins.tointeger(v)
-              ret = i != nil
+              ret = !i.nil?
               if ret != true
                 # translators: error message, %2 is the value given
                 Print(
@@ -595,7 +590,7 @@ module Yast
       command = Ops.get_map(@allcommands, ["actions", action], {})
       # translators: the command does not provide any help
       commandhelp = Ops.get(command, "help")
-      commandhelp = _("No help available") if commandhelp == nil
+      commandhelp = _("No help available") if commandhelp.nil?
       has_string_option = false
       # Process <command> "help"
       # translators: %1 is the command name
@@ -606,7 +601,7 @@ module Yast
         Print(Builtins.sformat("    %1", commandhelp))
       elsif Ops.is(commandhelp, "list <string>")
         Builtins.foreach(
-          Convert.convert(commandhelp, :from => "any", :to => "list <string>")
+          Convert.convert(commandhelp, from: "any", to: "list <string>")
         ) { |e| Print(Builtins.sformat("    %1", e)) }
       end
 
@@ -648,7 +643,6 @@ module Yast
         end
       end
 
-
       Builtins.foreach(opts) do |opt|
         op = Ops.get_map(allopts, opt, {})
         t = Ops.get_string(op, "type", "")
@@ -673,8 +667,8 @@ module Yast
             helptext = Ops.get(
               Convert.convert(
                 opthelp,
-                :from => "any",
-                :to   => "map <string, string>"
+                from: "any",
+                to:   "map <string, string>"
               ),
               action,
               ""
@@ -686,7 +680,7 @@ module Yast
               String.Pad("", longestarg)
             )
             helptext = Builtins.mergestring(
-              Convert.convert(opthelp, :from => "any", :to => "list <string>"),
+              Convert.convert(opthelp, from: "any", to: "list <string>"),
               delim
             )
           else
@@ -724,7 +718,7 @@ module Yast
           Print(Builtins.sformat("        %1", example))
         elsif Ops.is(example, "list <string>")
           Builtins.foreach(
-            Convert.convert(example, :from => "any", :to => "list <string>")
+            Convert.convert(example, from: "any", to: "list <string>")
           ) { |e| Print(Builtins.sformat("        %1", e)) }
         else
           Builtins.y2error("Unsupported data type - value: %1", example)
@@ -818,7 +812,7 @@ module Yast
       Print(_("Commands:"))
 
       longest = 0
-      Builtins.foreach(Ops.get_map(@modulecommands, "actions", {})) do |action, desc|
+      Builtins.foreach(Ops.get_map(@modulecommands, "actions", {})) do |action, _desc|
         if Ops.greater_than(Builtins.size(action), longest)
           longest = Builtins.size(action)
         end
@@ -895,7 +889,7 @@ module Yast
       command = deep_copy(command)
       # handle help for specific command
       # this needs to be before general help, so "help help" works
-      if Ops.get(command, ["options", "help"]) != nil
+      if Ops.get(command, ["options", "help"])
         PrintHead()
         PrintActionHelp(Ops.get_string(command, "command", ""))
         return true
@@ -950,7 +944,7 @@ module Yast
 
         xmlfilename = Ops.get_string(command, ["options", "xmlfile"], "")
 
-        if xmlfilename == nil || xmlfilename == ""
+        if xmlfilename.nil? || xmlfilename == ""
           # error message - command line option xmlfile is missing
           Print(
             _(
@@ -966,11 +960,11 @@ module Yast
         Ops.set(
           doc,
           "listEntries",
-          {
-            "commands" => "command",
-            "options"  => "option",
-            "examples" => "example"
-          }
+
+          "commands" => "command",
+          "options"  => "option",
+          "examples" => "example"
+
         )
         #	    doc["cdataSections"] = [];
         Ops.set(
@@ -1003,8 +997,8 @@ module Yast
             help = Builtins.mergestring(
               Convert.convert(
                 help_value,
-                :from => "any",
-                :to   => "list <string>"
+                from: "any",
+                to:   "list <string>"
               ),
               "\n"
             )
@@ -1035,14 +1029,11 @@ module Yast
           # add example if it's present
           if Builtins.haskey(Ops.get(actions, action, {}), "example")
             example = Ops.get(actions, [action, "example"])
-            examples = Ops.is_list?(example) ?
-              Convert.to_list(example) :
-              [example]
+            examples = Array(example)
             actiondescr = Builtins.add(actiondescr, "examples", examples)
           end
           commands = Builtins.add(commands, actiondescr)
-        end 
-
+        end
 
         Ops.set(exportmap, "commands", commands)
         Ops.set(exportmap, "module", Ops.get_string(@cmdlinespec, "id", ""))
@@ -1114,8 +1105,8 @@ module Yast
 
       # help texts for actions
       if Builtins.haskey(cmdlineinfo, "actions")
-        Builtins.foreach(Ops.get_map(cmdlineinfo, "actions", {})) do |action, _def|
-          if !Builtins.haskey(_def, "help")
+        Builtins.foreach(Ops.get_map(cmdlineinfo, "actions", {})) do |action, def_|
+          if !Builtins.haskey(def_, "help")
             Builtins.y2error(
               "Command line specification does not define help for action '%1'",
               action
@@ -1130,8 +1121,8 @@ module Yast
 
       # help for options
       if Builtins.haskey(cmdlineinfo, "options")
-        Builtins.foreach(Ops.get_map(cmdlineinfo, "options", {})) do |option, _def|
-          if !Builtins.haskey(_def, "help")
+        Builtins.foreach(Ops.get_map(cmdlineinfo, "options", {})) do |option, def_|
+          if !Builtins.haskey(def_, "help")
             Builtins.y2error(
               "Command line specification does not define help for option '%1'",
               option
@@ -1142,9 +1133,9 @@ module Yast
             @aborted = true
           end
           # check that regex and enum have defined typespec
-          if (Ops.get_string(_def, "type", "") == "regex" ||
-              Ops.get_string(_def, "type", "") == "enum") &&
-              !Builtins.haskey(_def, "typespec")
+          if (Ops.get_string(def_, "type", "") == "regex" ||
+              Ops.get_string(def_, "type", "") == "enum") &&
+              !Builtins.haskey(def_, "typespec")
             Builtins.y2error(
               "Command line specification does not define typespec for option '%1'",
               option
@@ -1159,11 +1150,11 @@ module Yast
 
       # mappings - check for existing actions and options
       if Builtins.haskey(cmdlineinfo, "mappings")
-        Builtins.foreach(Ops.get_map(cmdlineinfo, "mappings", {})) do |mapaction, _def|
+        Builtins.foreach(Ops.get_map(cmdlineinfo, "mappings", {})) do |mapaction, def_|
           # is this action defined?
           if !Builtins.haskey(
-              Ops.get_map(cmdlineinfo, "actions", {}),
-              mapaction
+            Ops.get_map(cmdlineinfo, "actions", {}),
+            mapaction
             )
             Builtins.y2error(
               "Command line specification maps undefined action '%1'",
@@ -1174,12 +1165,12 @@ module Yast
             @done = true
             @aborted = true
           end
-          Builtins.foreach(_def) do |mapopt|
+          Builtins.foreach(def_) do |mapopt|
             next if !Ops.is_string?(mapopt)
             # is this option defined?
             if !Builtins.haskey(
-                Ops.get_map(cmdlineinfo, "options", {}),
-                Convert.to_string(mapopt)
+              Ops.get_map(cmdlineinfo, "options", {}),
+              Convert.to_string(mapopt)
               )
               Builtins.y2error(
                 "Command line specification maps undefined option '%1' for action '%2'",
@@ -1237,7 +1228,7 @@ module Yast
         Print("")
 
         help = Ops.get_string(cmdlineinfo, "help", "")
-        if help != nil && help != ""
+        if !help.nil? && help != ""
           Print(Ops.get_string(cmdlineinfo, "help", ""))
           Print("")
         end
@@ -1279,8 +1270,8 @@ module Yast
     # @return [Array<String>] the list of command line parts, nil for end of file
     def Scan
       res = Convert.to_string(SCR.Read(path(".dev.tty")))
-      return nil if res == nil
-      String.ParseOptions(res, { "separator" => " " })
+      return nil if res.nil?
+      String.ParseOptions(res,  "separator" => " ")
     end
 
     # Set prompt and read input from command line
@@ -1352,20 +1343,20 @@ module Yast
       else
         # if in interactive mode, ask user for input
         if @interactive
-          begin
+          loop do
             newcommand = []
-            begin
-              newcommand = Scan()
-            end while Builtins.size(newcommand) == 0
+            newcommand = Scan() while Builtins.size(newcommand) == 0
 
             # EOF reached
-            if newcommand == nil
+            if newcommand.nil?
               @done = true
               return { "command" => "exit" }
             end
 
             @commandcache = Parse(newcommand)
-          end while ProcessSystemCommands(@commandcache) && !@done
+            break if !ProcessSystemCommands(@commandcache)
+            break if @done
+          end
 
           if @done
             if @aborted
@@ -1446,9 +1437,9 @@ module Yast
       end
 
       # first do a filtering, then convert to a list of keys
-      cmds = Builtins.maplist(Builtins.filter(options) do |opt, value|
+      cmds = Builtins.maplist(Builtins.filter(options) do |opt, _value|
         Builtins.contains(unique_options, opt)
-      end) { |key, value| key }
+      end) { |key, _value| key }
 
       # if it is OK, quickly return
       return Ops.get_string(cmds, 0) if Builtins.size(cmds) == 1
@@ -1522,7 +1513,6 @@ module Yast
       ret
     end
 
-
     def RunMapFunction(funct, arg)
       funct = deep_copy(funct)
       arg = deep_copy(arg)
@@ -1564,7 +1554,7 @@ module Yast
       ret = true
 
       initialized = false
-      if Ops.get(commandline, "initialize") == nil
+      if Ops.get(commandline, "initialize").nil?
         # no initialization routine
         # set initialized state to true => call finish handler at the end in command line mode
         initialized = true
@@ -1585,8 +1575,8 @@ module Yast
         if Ops.is(Ops.get(commandline, "guihandler"), "symbol ()")
           exec = Convert.convert(
             Ops.get(commandline, "guihandler"),
-            :from => "any",
-            :to   => "symbol ()"
+            from: "any",
+            to:   "symbol ()"
           )
           symbol_ret = exec.call
           Builtins.y2debug("GUI handler ret=%1", symbol_ret)
@@ -1598,8 +1588,8 @@ module Yast
               "guihandler",
               fun_ref(method(:fake_false), "boolean ()")
             ),
-            :from => "any",
-            :to   => "boolean ()"
+            from: "any",
+            to:   "boolean ()"
           )
           ret = exec.call
           Builtins.y2debug("GUI handler ret=%1", ret)
@@ -1608,27 +1598,17 @@ module Yast
       else
         # disable Reports, we handle them on our own
         Report.Import(
-          {
+
             "messages" => { "show" => false },
             "warnings" => { "show" => false },
             "errors"   => { "show" => false }
-          }
+
         )
 
         # translators: progress message - command line interface ready
         PrintVerbose(_("Ready"))
 
-        ret = true
-
-        # Init variables
-        command = ""
-        flags = []
-        options = {}
-        exit = ""
-        l = []
-
-
-        while !Done()
+        until Done()
           m = Command()
           command = Ops.get_string(m, "command", "exit")
           options = Ops.get_map(m, "options", {})
@@ -1638,7 +1618,7 @@ module Yast
             # check whether command is defined in the map (i.e. it is not predefined command or invalid command)
             # and start initialization if it's defined
             if Builtins.haskey(Ops.get_map(commandline, "actions", {}), command) &&
-                Ops.get(commandline, "initialize") != nil
+                Ops.get(commandline, "initialize")
               # non-GUI handling
               PrintVerbose(_("Initializing"))
               ret2 = RunFunction(
@@ -1648,8 +1628,8 @@ module Yast
                     "initialize",
                     fun_ref(method(:fake_false), "boolean ()")
                   ),
-                  :from => "any",
-                  :to   => "boolean ()"
+                  from: "any",
+                  to:   "boolean ()"
                 )
               )
 
@@ -1664,12 +1644,12 @@ module Yast
 
           exec = Convert.convert(
             Ops.get(commandline, ["actions", command, "handler"]),
-            :from => "any",
-            :to   => "boolean (map <string, string>)"
+            from: "any",
+            to:   "boolean (map <string, string>)"
           )
 
           # there is a handler, execute the action
-          if exec != nil
+          if !exec.nil?
             res = RunMapFunction(exec, options)
 
             # if it is not interactive, abort on errors
@@ -1685,7 +1665,7 @@ module Yast
         ret = !Aborted()
       end
 
-      if ret && Ops.get(commandline, "finish") != nil && initialized
+      if ret && Ops.get(commandline, "finish") && initialized
         # translators: Progress message - the command line interface is about to finish
         PrintVerbose(_("Finishing"))
         ret = RunFunction(
@@ -1695,8 +1675,8 @@ module Yast
               "finish",
               fun_ref(method(:fake_false), "boolean ()")
             ),
-            :from => "any",
-            :to   => "boolean ()"
+            from: "any",
+            to:   "boolean ()"
           )
         )
         if !ret
@@ -1731,9 +1711,7 @@ module Yast
       # no - used in the command line mode as input text for yes/no confirmation
       no = _("no")
 
-      while ui != yes && ui != no
-        ui = UserInput(prompt)
-      end
+      ui = UserInput(prompt) while ui != yes && ui != no
 
       ui == yes
     end
@@ -1744,47 +1722,47 @@ module Yast
       @verbose
     end
 
-    publish :variable => :cmdlineprompt, :type => "string", :private => true
-    publish :variable => :systemcommands, :type => "map <string, map <string, any>>", :private => true
-    publish :variable => :modulecommands, :type => "map", :private => true
-    publish :variable => :allcommands, :type => "map", :private => true
-    publish :variable => :interactive, :type => "boolean", :private => true
-    publish :variable => :done, :type => "boolean", :private => true
-    publish :variable => :aborted, :type => "boolean", :private => true
-    publish :variable => :commandcache, :type => "map <string, any>", :private => true
-    publish :variable => :verbose, :type => "boolean", :private => true
-    publish :variable => :cmdlinespec, :type => "map", :private => true
-    publish :variable => :nosupport, :type => "string", :private => true
-    publish :function => :PrintInternal, :type => "void (string, boolean)", :private => true
-    publish :function => :Print, :type => "void (string)"
-    publish :function => :PrintNoCR, :type => "void (string)"
-    publish :function => :PrintVerbose, :type => "void (string)"
-    publish :function => :PrintVerboseNoCR, :type => "void (string)"
-    publish :function => :PrintTable, :type => "void (term, list <term>)"
-    publish :function => :Error, :type => "void (string)"
-    publish :function => :Parse, :type => "map <string, any> (list)"
-    publish :function => :PrintHead, :type => "void ()", :private => true
-    publish :function => :PrintActionHelp, :type => "void (string)", :private => true
-    publish :function => :PrintGeneralHelp, :type => "void ()", :private => true
-    publish :function => :ProcessSystemCommands, :type => "boolean (map)", :private => true
-    publish :function => :Init, :type => "boolean (map, list)"
-    publish :function => :Scan, :type => "list <string> ()"
-    publish :function => :GetInput, :type => "string (string, symbol)", :private => true
-    publish :function => :UserInput, :type => "string (string)"
-    publish :function => :PasswordInput, :type => "string (string)"
-    publish :function => :Command, :type => "map ()"
-    publish :function => :StartGUI, :type => "boolean ()"
-    publish :function => :Interactive, :type => "boolean ()"
-    publish :function => :Aborted, :type => "boolean ()"
-    publish :function => :Abort, :type => "void ()"
-    publish :function => :Done, :type => "boolean ()"
-    publish :function => :UniqueOption, :type => "string (map <string, string>, list)"
-    publish :function => :fake_false, :type => "boolean ()", :private => true
-    publish :function => :RunFunction, :type => "boolean (boolean ())", :private => true
-    publish :function => :RunMapFunction, :type => "boolean (boolean (map <string, string>), map <string, string>)", :private => true
-    publish :function => :Run, :type => "any (map)"
-    publish :function => :YesNo, :type => "boolean ()"
-    publish :function => :Verbose, :type => "boolean ()"
+    publish variable: :cmdlineprompt, type: "string", private: true
+    publish variable: :systemcommands, type: "map <string, map <string, any>>", private: true
+    publish variable: :modulecommands, type: "map", private: true
+    publish variable: :allcommands, type: "map", private: true
+    publish variable: :interactive, type: "boolean", private: true
+    publish variable: :done, type: "boolean", private: true
+    publish variable: :aborted, type: "boolean", private: true
+    publish variable: :commandcache, type: "map <string, any>", private: true
+    publish variable: :verbose, type: "boolean", private: true
+    publish variable: :cmdlinespec, type: "map", private: true
+    publish variable: :nosupport, type: "string", private: true
+    publish function: :PrintInternal, type: "void (string, boolean)", private: true
+    publish function: :Print, type: "void (string)"
+    publish function: :PrintNoCR, type: "void (string)"
+    publish function: :PrintVerbose, type: "void (string)"
+    publish function: :PrintVerboseNoCR, type: "void (string)"
+    publish function: :PrintTable, type: "void (term, list <term>)"
+    publish function: :Error, type: "void (string)"
+    publish function: :Parse, type: "map <string, any> (list)"
+    publish function: :PrintHead, type: "void ()", private: true
+    publish function: :PrintActionHelp, type: "void (string)", private: true
+    publish function: :PrintGeneralHelp, type: "void ()", private: true
+    publish function: :ProcessSystemCommands, type: "boolean (map)", private: true
+    publish function: :Init, type: "boolean (map, list)"
+    publish function: :Scan, type: "list <string> ()"
+    publish function: :GetInput, type: "string (string, symbol)", private: true
+    publish function: :UserInput, type: "string (string)"
+    publish function: :PasswordInput, type: "string (string)"
+    publish function: :Command, type: "map ()"
+    publish function: :StartGUI, type: "boolean ()"
+    publish function: :Interactive, type: "boolean ()"
+    publish function: :Aborted, type: "boolean ()"
+    publish function: :Abort, type: "void ()"
+    publish function: :Done, type: "boolean ()"
+    publish function: :UniqueOption, type: "string (map <string, string>, list)"
+    publish function: :fake_false, type: "boolean ()", private: true
+    publish function: :RunFunction, type: "boolean (boolean ())", private: true
+    publish function: :RunMapFunction, type: "boolean (boolean (map <string, string>), map <string, string>)", private: true
+    publish function: :Run, type: "any (map)"
+    publish function: :YesNo, type: "boolean ()"
+    publish function: :Verbose, type: "boolean ()"
   end
 
   CommandLine = CommandLineClass.new

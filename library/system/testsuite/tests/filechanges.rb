@@ -79,7 +79,7 @@ module Yast
       Yast.import "Mode"
 
       Mode.SetTest("testsuite")
-      TEST(lambda { FileChanges.FileChanged("/etc/ntp.conf") }, [
+      TEST(->() { FileChanges.FileChanged("/etc/ntp.conf") }, [
         @READ,
         @WRITE,
         @EXECL
@@ -94,7 +94,7 @@ module Yast
         }
       }
 
-      TEST(lambda { FileChanges.FileChanged("/etc/ntp.conf") }, [
+      TEST(->() { FileChanges.FileChanged("/etc/ntp.conf") }, [
         @READ,
         @WRITE,
         @EXEC
@@ -104,7 +104,7 @@ module Yast
         ["target", "ycp", "/etc/ntp.conf"],
         "f210720e1362615ac0ecc544b35abb73  /etc/ntp.conf"
       )
-      TEST(lambda { FileChanges.FileChanged("/etc/ntp.conf") }, [
+      TEST(->() { FileChanges.FileChanged("/etc/ntp.conf") }, [
         @READ,
         @WRITE,
         @EXEC

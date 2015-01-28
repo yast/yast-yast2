@@ -32,7 +32,7 @@
 # Use module Sequencer instead.
 module Yast
   module WizardSequencerInclude
-    def initialize_wizard_sequencer(include_target)
+    def initialize_wizard_sequencer(_include_target)
       Yast.import "Sequencer"
     end
 

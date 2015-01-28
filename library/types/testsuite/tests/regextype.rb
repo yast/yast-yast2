@@ -36,8 +36,8 @@ module Yast
 
       Yast.import "TypeRepository"
 
-      TEST(lambda { TypeRepository.regex_validator("^[abc]+.*m$", "blem") }, [], nil)
-      TEST(lambda { TypeRepository.regex_validator("^[abc]+.*m$", "blec") }, [], nil) 
+      TEST(->() { TypeRepository.regex_validator("^[abc]+.*m$", "blem") }, [], nil)
+      TEST(->() { TypeRepository.regex_validator("^[abc]+.*m$", "blec") }, [], nil)
 
       # EOF
 

@@ -78,7 +78,7 @@ module Yast
           Ops.get_string(descr, "_cwm_key", "")
         )
       )
-      if opt_id == nil
+      if opt_id.nil?
         DUMP("nil branch, returning a")
         return "a"
       end

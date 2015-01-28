@@ -44,9 +44,8 @@ module Yast
       @calnum = Ops.add(@calpha, @cdigit)
       @cpunct = "!\"\#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
       @cgraph = Ops.add(@calnum, @cpunct)
-      @cspace = "  \n\t"
+      @cspace = "\f\r\n\t\v"
       @cprint = Ops.add(@cspace, @cgraph)
-
 
       # 64 characters is the base undeline length
       @base_underline = "----------------------------------------------------------------"
@@ -61,7 +60,7 @@ module Yast
     # @return quoted string
     # @example quote("a'b") -> "a'\''b"
     def Quote(var)
-      return "" if var == nil || var == ""
+      return "" if var.nil? || var == ""
       Builtins.mergestring(Builtins.splitstring(var, "'"), "'\\''")
     end
 
@@ -70,7 +69,7 @@ module Yast
     # @return unquoted string
     # @see #quote
     def UnQuote(var)
-      return "" if var == nil || var == ""
+      return "" if var.nil? || var == ""
       Builtins.y2debug("var=%1", var)
       while Builtins.regexpmatch(var, "'\\\\''")
         var = Builtins.regexpsub(var, "(.*)'\\\\''(.*)", "\\1'\\2")
@@ -82,7 +81,7 @@ module Yast
     # Optional formatted text
     # @return sformat (f, s) if s is neither empty or nil, else ""
     def OptFormat(f, s)
-      s == "" || s == nil ? "" : Builtins.sformat(f, s)
+      s == "" || s.nil? ? "" : Builtins.sformat(f, s)
     end
 
     # Optional parenthesized text
@@ -104,7 +103,6 @@ module Yast
       NonEmpty(Builtins.splitstring(s, "\n"))
     end
 
-
     # @param [Boolean] value boolean
     # @return [Boolean] value as "Yes" or "No"
     def YesNo(value)
@@ -116,7 +114,6 @@ module Yast
         return _("No")
       end
     end
-
 
     # Return a pretty description of a byte count
     #
@@ -137,7 +134,7 @@ module Yast
     # @example FormatSizeWithPrecision(4096, 2, false) -> "4.00 KiB"
     # @example FormatSizeWithPrecision(1024*1024, 2, true) -> "1 MiB"
     def FormatSizeWithPrecision(bytes, precision, omit_zeroes)
-      return "" if bytes == nil
+      return "" if bytes.nil?
 
       units = [
         # Byte abbreviated
@@ -162,7 +159,7 @@ module Yast
         index = Ops.add(index, 1)
       end
 
-      if precision == nil
+      if precision.nil?
         precision = 0
       elsif Ops.less_than(precision, 0)
         # auto precision - depends on the suffix, but max. 3 decimal digits
@@ -176,21 +173,21 @@ module Yast
         while Ops.greater_than(i, 0)
           max_difference = Ops.divide(
             max_difference,
-            Convert.convert(10, :from => "integer", :to => "float")
+            Convert.convert(10, from: "integer", to: "float")
           )
           i = Ops.subtract(i, 1)
         end
 
         if Ops.less_than(
-            Ops.subtract(
-              whole,
-              Convert.convert(
-                Builtins.tointeger(whole),
-                :from => "integer",
-                :to   => "float"
-              )
-            ),
-            max_difference
+          Ops.subtract(
+            whole,
+            Convert.convert(
+              Builtins.tointeger(whole),
+              from: "integer",
+              to:   "float"
+            )
+          ),
+          max_difference
           )
           precision = 0
         end
@@ -215,7 +212,7 @@ module Yast
     #
     # @example FormatSize(23456767890) -> "223.70 MiB"
     def FormatSize(bytes)
-      return "" if bytes == nil
+      return "" if bytes.nil?
 
       # automatic precision, don't print trailing zeroes for sizes < 1MiB
       FormatSizeWithPrecision(bytes, -1, Ops.less_than(bytes, 1 << 20))
@@ -278,11 +275,12 @@ module Yast
     # @return [String] number as two-digit string
     #
     def FormatTwoDigits(x)
-      Ops.less_than(x, 10) && Ops.greater_or_equal(x, 0) ?
-        Builtins.sformat("0%1", x) :
+      if Ops.less_than(x, 10) && Ops.greater_or_equal(x, 0)
+        Builtins.sformat("0%1", x)
+      else
         Builtins.sformat("%1", x)
+      end
     end
-
 
     # Format an integer seconds value with min:sec or hours:min:sec
     # @param [Fixnum] seconds time (in seconds)
@@ -314,10 +312,10 @@ module Yast
     # @return stripped string
     # @example CutBlanks("  any  input     ") -> "any  input"
     def CutBlanks(input)
-      return "" if input == nil || Ops.less_than(Builtins.size(input), 1)
+      return "" if input.nil? || Ops.less_than(Builtins.size(input), 1)
 
       pos1 = Builtins.findfirstnotof(input, " \t")
-      return "" if pos1 == nil
+      return "" if pos1.nil?
 
       pos2 = Builtins.findlastnotof(input, " \t")
 
@@ -333,13 +331,12 @@ module Yast
     # @param [String] input number that might contain leadig zero
     # @return [String] that has leading zeros removed
     def CutZeros(input)
-      return "" if input == nil || Ops.less_than(Builtins.size(input), 1)
+      return "" if input.nil? || Ops.less_than(Builtins.size(input), 1)
       return input if !Builtins.regexpmatch(input, "^0.*")
       output = Builtins.regexpsub(input, "^0+(.*)$", "\\1")
       return "0" if Ops.less_than(Builtins.size(output), 1)
       output
     end
-
 
     # Repeat a string
     #
@@ -349,7 +346,7 @@ module Yast
     # @param input number number of repetitions
     # @return [String] repeated string
     def Repeat(text, number)
-      text = "" if text == nil
+      text = "" if text.nil?
 
       ret = ""
 
@@ -360,7 +357,6 @@ module Yast
 
       ret
     end
-
 
     # Add the padding character around the text to make it long enough
     #
@@ -373,7 +369,7 @@ module Yast
     # @param [Symbol] alignment alignment to use, either `left or `right
     # @return padded text
     def SuperPad(text, length, padding, alignment)
-      text = "" if text == nil
+      text = "" if text.nil?
 
       pad = Repeat(padding, Ops.subtract(length, Builtins.size(text)))
 
@@ -383,7 +379,6 @@ module Yast
         return Ops.add(text, pad)
       end
     end
-
 
     # Add spaces after the text to make it long enough
     #
@@ -414,10 +409,10 @@ module Yast
     # Parse string of values - split string to values, quoting and backslash sequences are supported
     # @param [String] options Input string
     # @param [Hash] parameters Parmeter used at parsing - map with keys:
-    #"separator":<string> - value separator (default: " \t"),
-    #"unique":<boolean> - result will not contain any duplicates, first occurance of the string is stored into output (default: false),
-    #"interpret_backslash":<boolean> - convert backslash sequence into one character (e.g. "\\n" => "\n") (default: true)
-    #"remove_whitespace":<boolean> - remove white spaces around values (default: true),
+    # "separator":<string> - value separator (default: " \t"),
+    # "unique":<boolean> - result will not contain any duplicates, first occurance of the string is stored into output (default: false),
+    # "interpret_backslash":<boolean> - convert backslash sequence into one character (e.g. "\\n" => "\n") (default: true)
+    # "remove_whitespace":<boolean> - remove white spaces around values (default: true),
     # @return [Array<String>] List of strings
     def ParseOptions(options, parameters)
       parameters = deep_copy(parameters)
@@ -445,7 +440,7 @@ module Yast
         remove_whitespace
       )
 
-      return [] if options == nil
+      return [] if options.nil?
 
       # two algorithms are used:
       # first is much faster, but only usable if string
@@ -453,7 +448,7 @@ module Yast
       # and backslash sequences are not interpreted
       # second is more general, but of course slower
 
-      if Builtins.findfirstof(options, "\"") == nil &&
+      if Builtins.findfirstof(options, "\"").nil? &&
           interpret_backslash == false
         # easy case - no qouting, don't interpres backslash sequences => use splitstring
         values = Builtins.splitstring(options, separator)
@@ -496,14 +491,14 @@ module Yast
 
               # backslah sequences
               backslash_seq = {
-                "a"  => "a", # alert
-                "b"  => "", # backspace
-                "e"  => "e", # escape
-                "f"  => "", # FF
+                "a"  => "\a", # alert
+                "b"  => "\b", # backspace
+                "e"  => "\e", # escape
+                "f"  => "\f", # FF
                 "n"  => "\n", # NL
-                "r"  => " ", # CR
+                "r"  => "\r", # CR
                 "t"  => "\t", # tab
-                "v"  => "v", # vertical tab
+                "v"  => "\v", # vertical tab
                 "\\" => "\\"
               } # backslash
 
@@ -536,7 +531,7 @@ module Yast
             # ignore separator or white space at the beginning of the string
             if Builtins.issubstring(separator, character) == true ||
                 remove_whitespace == true &&
-                  (character == " " || character == "\t")
+                    (character == " " || character == "\t")
               index = Ops.add(index, 1)
               next
             # start of a quoted string
@@ -628,7 +623,6 @@ module Yast
         end
       end
 
-
       Builtins.y2debug("Parsed values: %1", ret)
 
       deep_copy(ret)
@@ -644,11 +638,11 @@ module Yast
     # @param [Boolean] glob flag if only first or every occuring match should be removed
     # @return [String] that has matches removed
     def CutRegexMatch(input, regex, glob)
-      return "" if input == nil || Ops.less_than(Builtins.size(input), 1)
+      return "" if input.nil? || Ops.less_than(Builtins.size(input), 1)
       output = input
       if Builtins.regexpmatch(output, regex)
         p = Builtins.regexppos(output, regex)
-        begin
+        loop do
           output = Ops.add(
             Builtins.substring(output, 0, Ops.get_integer(p, 0, 0)),
             Builtins.substring(
@@ -657,7 +651,9 @@ module Yast
             )
           )
           p = Builtins.regexppos(output, regex)
-        end while glob && Ops.greater_than(Builtins.size(p), 0)
+          break unless glob
+          break unless Ops.greater_than(Builtins.size(p), 0)
+        end
       end
       output
     end
@@ -925,17 +921,15 @@ module Yast
       )
     end
 
-
-
-    #////////////////////////////////////////
+    # ////////////////////////////////////////
     # sysconfig metadata related functions //
-    #////////////////////////////////////////
+    # ////////////////////////////////////////
 
     # Get metadata lines from input string
     # @param [String] input Input string - complete comment of a sysconfig variable
     # @return [Array<String>] Metadata lines in list
     def GetMetaDataLines(input)
-      return [] if input == nil || input == ""
+      return [] if input.nil? || input == ""
 
       lines = Builtins.splitstring(input, "\n")
       Builtins.filter(lines) { |line| Builtins.regexpmatch(line, "^##.*") }
@@ -945,7 +939,7 @@ module Yast
     # @param [String] input Input string - complete comment of a sysconfig variable
     # @return [String] Comment used as variable description
     def GetCommentLines(input)
-      return "" if input == nil || input == ""
+      return "" if input.nil? || input == ""
 
       lines = Builtins.splitstring(input, "\n")
 
@@ -953,7 +947,7 @@ module Yast
 
       Builtins.foreach(lines) do |line|
         com_line = Builtins.regexpsub(line, "^#([^#].*)", "\\1")
-        if com_line == nil
+        if com_line.nil?
           # add empty lines
           if Builtins.regexpmatch(line, "^#[ \t]*$") == true
             ret = Ops.add(ret, "\n")
@@ -961,8 +955,7 @@ module Yast
         else
           ret = Ops.add(Ops.add(ret, com_line), "\n")
         end
-      end 
-
+      end
 
       ret
     end
@@ -983,15 +976,15 @@ module Yast
       # join multi line metadata lines
       Builtins.foreach(metalines) do |metaline|
         if Builtins.substring(
-            metaline,
-            Ops.subtract(Builtins.size(metaline), 1),
-            1
+          metaline,
+          Ops.subtract(Builtins.size(metaline), 1),
+          1
           ) != "\\"
           if multiline != ""
             # this not first multiline so remove comment mark
             without_comment = Builtins.regexpsub(metaline, "^##(.*)", "\\1")
 
-            metaline = without_comment if without_comment != nil
+            metaline = without_comment if !without_comment.nil?
           end
           joined_multilines = Builtins.add(
             joined_multilines,
@@ -1009,14 +1002,13 @@ module Yast
             # this not first multiline so remove comment mark
             without_comment = Builtins.regexpsub(part, "^##(.*)", "\\1")
 
-            part = without_comment if without_comment != nil
+            part = without_comment if !without_comment.nil?
           end
 
           # add line to the previous lines
           multiline = Ops.add(multiline, part)
         end
-      end 
-
+      end
 
       Builtins.y2debug(
         "metadata after multiline joining: %1",
@@ -1032,7 +1024,7 @@ module Yast
         colon_pos = Builtins.findfirstof(meta, ":")
         tag = ""
         val = ""
-        if colon_pos == nil
+        if colon_pos.nil?
           # colon is missing
           tag = meta
         else
@@ -1055,8 +1047,7 @@ module Yast
             Builtins.y2warning("Unknown metadata line: %1", metaline)
           end
         end
-      end 
-
+      end
 
       Builtins.y2debug("parsed sysconfig comment: %1", ret)
 
@@ -1069,14 +1060,14 @@ module Yast
     # @param [String] target the new string which is used instead of source
     # @return [String] result
     def Replace(s, source, target)
-      return nil if s == nil
+      return nil if s.nil?
 
-      if source == nil || source == ""
+      if source.nil? || source == ""
         Builtins.y2warning("invalid parameter source: %1", source)
         return s
       end
 
-      if target == nil
+      if target.nil?
         Builtins.y2warning("invalid parameter target: %1", target)
         return s
       end
@@ -1085,8 +1076,8 @@ module Yast
       while Ops.greater_or_equal(pos, 0)
         tmp = Ops.add(Builtins.substring(s, 0, pos), target)
         if Ops.greater_than(
-            Builtins.size(s),
-            Ops.add(pos, Builtins.size(source))
+          Builtins.size(s),
+          Ops.add(pos, Builtins.size(source))
           )
           tmp = Ops.add(
             tmp,
@@ -1137,14 +1128,14 @@ module Yast
               ),
               Ops.add(" \n", split_string)
             )
-            if split_at != nil
+            if !split_at.nil?
               split_at = Ops.add(split_at, 1)
             else
               split_at = Builtins.findlastof(
                 Builtins.substring(word, 0, width),
                 Ops.add(" \n", split_string)
               )
-              if split_at != nil
+              if !split_at.nil?
                 split_at = Ops.add(split_at, 1)
               else
                 split_at = Ops.subtract(avail, Builtins.size(wsep))
@@ -1249,7 +1240,7 @@ module Yast
       end
 
       ret = ""
-      begin
+      loop do
         # put the ellipsis in the middle of the path
         ellipsis = Ops.divide(Builtins.size(dir), 2)
 
@@ -1266,7 +1257,8 @@ module Yast
           # the size is OK
           break
         end
-      end while Ops.greater_than(Builtins.size(dir), 0)
+        break unless Ops.greater_than(Builtins.size(dir), 0)
+      end
 
       ret
     end
@@ -1298,14 +1290,14 @@ module Yast
     # @return string a mount point from the input list or "/" if not found
     def FindMountPoint(dir, dirs)
       dirs = deep_copy(dirs)
-      while dir != nil && dir != "" && !Builtins.contains(dirs, dir)
+      while !dir.nil? && dir != "" && !Builtins.contains(dirs, dir)
         # strip the last path component and try it again
         comps = Builtins.splitstring(dir, "/")
         comps = Builtins.remove(comps, Ops.subtract(Builtins.size(comps), 1))
         dir = Builtins.mergestring(comps, "/")
       end
 
-      dir = "/" if dir == nil || dir == ""
+      dir = "/" if dir.nil? || dir == ""
 
       dir
     end
@@ -1324,52 +1316,52 @@ module Yast
       Builtins.mergestring(Builtins.splitstring(str, chars), glue)
     end
 
-    publish :function => :Quote, :type => "string (string)"
-    publish :function => :UnQuote, :type => "string (string)"
-    publish :function => :OptFormat, :type => "string (string, string)"
-    publish :function => :OptParens, :type => "string (string)"
-    publish :function => :NonEmpty, :type => "list <string> (list <string>)"
-    publish :function => :NewlineItems, :type => "list <string> (string)"
-    publish :function => :YesNo, :type => "string (boolean)"
-    publish :function => :FormatSizeWithPrecision, :type => "string (integer, integer, boolean)"
-    publish :function => :FormatSize, :type => "string (integer)"
-    publish :function => :FormatRate, :type => "string (integer)"
-    publish :function => :FormatRateMessage, :type => "string (string, integer, integer)"
-    publish :function => :FormatTime, :type => "string (integer)"
-    publish :function => :CutBlanks, :type => "string (string)"
-    publish :function => :CutZeros, :type => "string (string)"
-    publish :function => :Repeat, :type => "string (string, integer)"
-    publish :function => :SuperPad, :type => "string (string, integer, string, symbol)"
-    publish :function => :Pad, :type => "string (string, integer)"
-    publish :function => :PadZeros, :type => "string (string, integer)"
-    publish :function => :ParseOptions, :type => "list <string> (string, map)"
-    publish :function => :CutRegexMatch, :type => "string (string, string, boolean)"
-    publish :function => :EscapeTags, :type => "string (string)"
-    publish :function => :FirstChunk, :type => "string (string, string)"
-    publish :function => :CUpper, :type => "string ()"
-    publish :function => :CLower, :type => "string ()"
-    publish :function => :CAlpha, :type => "string ()"
-    publish :function => :CDigit, :type => "string ()"
-    publish :function => :CXdigit, :type => "string ()"
-    publish :function => :CAlnum, :type => "string ()"
-    publish :function => :CPunct, :type => "string ()"
-    publish :function => :CGraph, :type => "string ()"
-    publish :function => :CSpace, :type => "string ()"
-    publish :function => :CPrint, :type => "string ()"
-    publish :function => :ValidCharsFilename, :type => "string ()"
-    publish :function => :TextTable, :type => "string (list <string>, list <list <string>>, map <string, any>)"
-    publish :function => :UnderlinedHeader, :type => "string (string, integer)"
-    publish :function => :GetMetaDataLines, :type => "list <string> (string)"
-    publish :function => :GetCommentLines, :type => "string (string)"
-    publish :function => :ParseSysconfigComment, :type => "map <string, string> (string)"
-    publish :function => :Replace, :type => "string (string, string, string)"
-    publish :function => :WrapAt, :type => "string (string, integer, string)"
-    publish :function => :Random, :type => "string (integer)"
-    publish :function => :FormatFilename, :type => "string (string, integer)"
-    publish :function => :RemoveShortcut, :type => "string (string)"
-    publish :function => :StartsWith, :type => "boolean (string, string)"
-    publish :function => :FindMountPoint, :type => "string (string, list <string>)"
-    publish :function => :ReplaceWith, :type => "string (string, string, string)"
+    publish function: :Quote, type: "string (string)"
+    publish function: :UnQuote, type: "string (string)"
+    publish function: :OptFormat, type: "string (string, string)"
+    publish function: :OptParens, type: "string (string)"
+    publish function: :NonEmpty, type: "list <string> (list <string>)"
+    publish function: :NewlineItems, type: "list <string> (string)"
+    publish function: :YesNo, type: "string (boolean)"
+    publish function: :FormatSizeWithPrecision, type: "string (integer, integer, boolean)"
+    publish function: :FormatSize, type: "string (integer)"
+    publish function: :FormatRate, type: "string (integer)"
+    publish function: :FormatRateMessage, type: "string (string, integer, integer)"
+    publish function: :FormatTime, type: "string (integer)"
+    publish function: :CutBlanks, type: "string (string)"
+    publish function: :CutZeros, type: "string (string)"
+    publish function: :Repeat, type: "string (string, integer)"
+    publish function: :SuperPad, type: "string (string, integer, string, symbol)"
+    publish function: :Pad, type: "string (string, integer)"
+    publish function: :PadZeros, type: "string (string, integer)"
+    publish function: :ParseOptions, type: "list <string> (string, map)"
+    publish function: :CutRegexMatch, type: "string (string, string, boolean)"
+    publish function: :EscapeTags, type: "string (string)"
+    publish function: :FirstChunk, type: "string (string, string)"
+    publish function: :CUpper, type: "string ()"
+    publish function: :CLower, type: "string ()"
+    publish function: :CAlpha, type: "string ()"
+    publish function: :CDigit, type: "string ()"
+    publish function: :CXdigit, type: "string ()"
+    publish function: :CAlnum, type: "string ()"
+    publish function: :CPunct, type: "string ()"
+    publish function: :CGraph, type: "string ()"
+    publish function: :CSpace, type: "string ()"
+    publish function: :CPrint, type: "string ()"
+    publish function: :ValidCharsFilename, type: "string ()"
+    publish function: :TextTable, type: "string (list <string>, list <list <string>>, map <string, any>)"
+    publish function: :UnderlinedHeader, type: "string (string, integer)"
+    publish function: :GetMetaDataLines, type: "list <string> (string)"
+    publish function: :GetCommentLines, type: "string (string)"
+    publish function: :ParseSysconfigComment, type: "map <string, string> (string)"
+    publish function: :Replace, type: "string (string, string, string)"
+    publish function: :WrapAt, type: "string (string, integer, string)"
+    publish function: :Random, type: "string (integer)"
+    publish function: :FormatFilename, type: "string (string, integer)"
+    publish function: :RemoveShortcut, type: "string (string)"
+    publish function: :StartsWith, type: "boolean (string, string)"
+    publish function: :FindMountPoint, type: "string (string, list <string>)"
+    publish function: :ReplaceWith, type: "string (string, string, string)"
   end
 
   String = StringClass.new

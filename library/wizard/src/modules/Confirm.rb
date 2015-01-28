@@ -57,7 +57,7 @@ module Yast
     # @param [String] class hardware class (network cards)
     # @param [String] icon_name name of the icon. If nil, generic hardware icon will be used
     # @return true on continue
-    def Detection(_class, icon_name)
+    def Detection(class_, icon_name)
       return true if Linuxrc.manual != true
 
       # L3: no interaction in AY, just re-probe (bnc#568653)
@@ -65,15 +65,15 @@ module Yast
 
       return true if Arch.s390
 
-      icon_name = "yast-hardware" if icon_name == nil
+      icon_name = "yast-hardware" if icon_name.nil?
 
       icon = Icon.Image(icon_name, {})
 
-      result = Ops.get(@detection_cache, _class)
-      if result != nil
+      result = Ops.get(@detection_cache, class_)
+      if !result.nil?
         Builtins.y2milestone(
           "Detection cached result: %1 -> %2",
-          _class,
+          class_,
           result
         )
         return result
@@ -107,7 +107,7 @@ module Yast
                       HVCenter(
                         Label(_("YaST will detect the following hardware:"))
                       ),
-                      HVCenter(HBox(icon, HSpacing(0.5), Heading(_class))),
+                      HVCenter(HBox(icon, HSpacing(0.5), Heading(class_))),
                       VSpacing(0.5)
                     )
                   )
@@ -145,11 +145,11 @@ module Yast
 
       result = true
       if ret != :continue
-        Builtins.y2milestone("Detection skipped: %1", _class)
+        Builtins.y2milestone("Detection skipped: %1", class_)
         result = false
       end
 
-      Ops.set(@detection_cache, _class, result)
+      Ops.set(@detection_cache, class_, result)
       result
     end
 
@@ -164,8 +164,8 @@ module Yast
     # @return true if running as root
     def MustBeRoot
       if Ops.less_or_equal(
-          Convert.to_integer(SCR.Read(path(".target.size"), "/usr/bin/id")),
-          0
+        Convert.to_integer(SCR.Read(path(".target.size"), "/usr/bin/id")),
+        0
         )
         if !Stage.initial
           Builtins.y2warning("/usr/bin/id not existing, supposing to be root")
@@ -181,9 +181,9 @@ module Yast
 
       # Message in a continue/cancel popup
       pop = _(
-        "This module must be run as root.\n" +
-          "If you continue now, the module may not function properly.\n" +
-          "For example, some settings can be read improperly\n" +
+        "This module must be run as root.\n" \
+          "If you continue now, the module may not function properly.\n" \
+          "For example, some settings can be read improperly\n" \
           "and it is unlikely that settings can be written.\n"
       )
 
@@ -223,10 +223,10 @@ module Yast
       )
     end
 
-    publish :function => :Detection, :type => "boolean (string, string)"
-    publish :function => :MustBeRoot, :type => "boolean ()"
-    publish :function => :DeleteSelected, :type => "boolean ()"
-    publish :function => :Delete, :type => "boolean (string)"
+    publish function: :Detection, type: "boolean (string, string)"
+    publish function: :MustBeRoot, type: "boolean ()"
+    publish function: :DeleteSelected, type: "boolean ()"
+    publish function: :Delete, type: "boolean (string)"
   end
 
   Confirm = ConfirmClass.new

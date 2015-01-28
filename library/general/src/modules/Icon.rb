@@ -45,7 +45,7 @@ module Yast
     end
 
     def LazyInit
-      return if @has_image_support != nil
+      return if !@has_image_support.nil?
 
       display_info = UI.GetDisplayInfo
       @has_image_support = Ops.get_boolean(
@@ -82,7 +82,7 @@ module Yast
 
       icon_path = nil
 
-      if Ops.get(@icons_map, icon_type) != nil
+      if Ops.get(@icons_map, icon_type)
         icon_path = Ops.add(
           @icon_32x32_path,
           Ops.get(@icons_map, icon_type, "")
@@ -133,11 +133,9 @@ module Yast
       return Empty() if !@has_image_support
 
       icon_id = Ops.get(options, "id")
-      icon_id = Builtins.sformat("icon_id_%1", icon_type) if icon_id == nil
+      icon_id = Builtins.sformat("icon_id_%1", icon_type) if icon_id.nil?
 
       icon_label = Ops.get_string(options, "label", icon_type)
-
-      ret = nil
 
       this_image = term(:Image, Id(icon_id), IconPath(icon_type), icon_label)
 
@@ -150,7 +148,7 @@ module Yast
           HSpacing(Ops.get_integer(options, "margin_right", 0))
         )
 
-        return deep_copy(ret) 
+        return deep_copy(ret)
         # no margin defined
       else
         return deep_copy(this_image)
@@ -187,12 +185,12 @@ module Yast
       Image("info", {})
     end
 
-    publish :function => :IconPath, :type => "string (string)"
-    publish :function => :Image, :type => "term (string, map <string, any>)"
-    publish :function => :Simple, :type => "term (string)"
-    publish :function => :Warning, :type => "term ()"
-    publish :function => :Error, :type => "term ()"
-    publish :function => :Info, :type => "term ()"
+    publish function: :IconPath, type: "string (string)"
+    publish function: :Image, type: "term (string, map <string, any>)"
+    publish function: :Simple, type: "term (string)"
+    publish function: :Warning, type: "term ()"
+    publish function: :Error, type: "term ()"
+    publish function: :Info, type: "term ()"
   end
 
   Icon = IconClass.new

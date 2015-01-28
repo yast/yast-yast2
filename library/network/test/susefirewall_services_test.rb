@@ -47,10 +47,10 @@ describe Yast::SuSEFirewallServices do
 
   describe "#service_details" do
     it "returns non-empty service definition" do
-      Yast::SuSEFirewallServices.stub(:all_services).and_return({
-        "service:dns-server"  => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge({"tcp_ports" => ["a", "b"]}),
-        "service:dhcp-server" => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge({"udp_ports" => ["x", "y"]}),
-      })
+      Yast::SuSEFirewallServices.stub(:all_services).and_return(
+                                                                  "service:dns-server"  => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge("tcp_ports" => ["a", "b"]),
+                                                                  "service:dhcp-server" => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge("udp_ports" => ["x", "y"])
+                                                                )
       expect(Yast::SuSEFirewallServices.service_details("service:dns-server")).not_to be_nil
       expect(Yast::SuSEFirewallServices.service_details("service:dns-server")["tcp_ports"]).to eq(["a", "b"])
     end
@@ -68,12 +68,12 @@ describe Yast::SuSEFirewallServices do
       setup_data_dir
 
       # Listing services directly from test-dir
-      services_on_disk = Dir.entries(SERVICES_DATA_PATH).reject{
-        |s| Yast::SuSEFirewallServicesClass::IGNORED_SERVICES.include?(s)
-      }
-      services_on_disk.map!{
-        |s| Yast::SuSEFirewallServicesClass::DEFINED_BY_PKG_PREFIX + s
-      }
+      services_on_disk = Dir.entries(SERVICES_DATA_PATH).reject do |s|
+        Yast::SuSEFirewallServicesClass::IGNORED_SERVICES.include?(s)
+      end
+      services_on_disk.map! do |s|
+        Yast::SuSEFirewallServicesClass::DEFINED_BY_PKG_PREFIX + s
+      end
 
       services = Yast::SuSEFirewallServices.all_services
       expect(services.keys.sort).to eq(services_on_disk.sort)
@@ -91,9 +91,7 @@ describe Yast::SuSEFirewallServices do
     end
 
     it "does not throw an exception if service does not exist" do
-      expect {
-        expect(Yast::SuSEFirewallServices.IsKnownService("unknown-service"))
-      }.not_to raise_error
+      expect { Yast::SuSEFirewallServices.IsKnownService("unknown-service") }.not_to raise_error
     end
   end
 
@@ -150,9 +148,9 @@ describe Yast::SuSEFirewallServices do
 
         expect(service_details.is_a?(Hash)).to be_true
 
-        expect(service_details["tcp_ports"]).not_to       be_empty
-        expect(service_details["udp_ports"]).not_to       be_empty
-        expect(service_details["ip_protocols"]).not_to    be_empty
+        expect(service_details["tcp_ports"]).not_to be_empty
+        expect(service_details["udp_ports"]).not_to be_empty
+        expect(service_details["ip_protocols"]).not_to be_empty
         expect(service_details["broadcast_ports"]).not_to be_empty
 
         expect(service_details["rpc_ports"]).to be_empty
@@ -210,5 +208,4 @@ describe Yast::SuSEFirewallServices do
       expect(old_services.is_a?(Hash)).to be_true
     end
   end
-
 end

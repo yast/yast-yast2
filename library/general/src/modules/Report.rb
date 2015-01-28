@@ -70,7 +70,6 @@ module Yast
       @log_messages = true
       @log_yesno_messages = true
 
-
       @message_settings = {}
       @error_settings = {}
       @warning_settings = {}
@@ -94,9 +93,6 @@ module Yast
       @modified
     end
 
-
-
-
     # Summary of current settings
     # @return Html formatted configuration summary
     def Summary
@@ -111,10 +107,8 @@ module Yast
         summary,
         Builtins.sformat(
           _("Display Messages: %1"),
-          @display_messages ?
-            # translators: summary if the messages should be displayed
-            _("Yes") :
-            _("No")
+          # translators: summary if the messages should be displayed
+          @display_messages ? _("Yes") : _("No")
         )
       )
       # Report configuration - will have normal messages timeout?
@@ -129,10 +123,8 @@ module Yast
         summary,
         Builtins.sformat(
           _("Log Messages: %1"),
-          @log_messages ?
-            # translators: summary if the messages should be written to log file
-            _("Yes") :
-            _("No")
+          # translators: summary if the messages should be written to log file
+          @log_messages ? _("Yes") : _("No")
         )
       )
       summary = Summary.CloseList(summary)
@@ -145,10 +137,8 @@ module Yast
         summary,
         Builtins.sformat(
           _("Display Warnings: %1"),
-          @display_warnings ?
-            # translators: summary if the warnings should be displayed
-            _("Yes") :
-            _("No")
+          # translators: summary if the warnings should be displayed
+          @display_warnings ? _("Yes") : _("No")
         )
       )
       # Report configuration - will have warning messages timeout?
@@ -163,10 +153,8 @@ module Yast
         summary,
         Builtins.sformat(
           _("Log Warnings: %1"),
-          @log_warnings ?
-            # translators: summary if the warnings should be written to log file
-            _("Yes") :
-            _("No")
+          # translators: summary if the warnings should be written to log file
+          @log_warnings ? _("Yes") : _("No")
         )
       )
       summary = Summary.CloseList(summary)
@@ -179,10 +167,8 @@ module Yast
         summary,
         Builtins.sformat(
           _("Display Errors: %1"),
-          @display_errors ?
-            # translators: summary if the errors should be displayed
-            _("Yes") :
-            _("No")
+          # translators: summary if the errors should be displayed
+          @display_errors ? _("Yes") : _("No")
         )
       )
       # Report configuration - will have error messages timeout?
@@ -197,11 +183,8 @@ module Yast
         summary,
         Builtins.sformat(
           _("Log Errors: %1"),
-          @log_errors ?
-            # translators: summary if the errors should be written to log file
-            _("Yes") :
-            # translators: summary if the errors should be written to log file
-            _("No")
+          # translators: summary if the errors should be written to log file
+          @log_errors ? _("Yes") : _("No")
         )
       )
       summary = Summary.CloseList(summary)
@@ -221,8 +204,6 @@ module Yast
       # summary = Summary::CloseList(summary);
       summary
     end
-
-
 
     # Get all the Report configuration from a map.
     #
@@ -269,7 +250,6 @@ module Yast
 
       true
     end
-
 
     # Dump the Report settings to a map, for autoinstallation use.
     # @return [Hash] Map with settings
@@ -321,7 +301,6 @@ module Yast
       nil
     end
 
-
     # Clear stored warnings
     # @return [void]
     def ClearWarnings
@@ -329,7 +308,6 @@ module Yast
 
       nil
     end
-
 
     # Clear all stored messages (errors, messages and warnings)
     # @return [void]
@@ -360,16 +338,11 @@ module Yast
       Builtins.size(@warnings)
     end
 
-
     # Return number of stored errors
     # @return [Fixnum] number of errors
     def NumErrors
       Builtins.size(@errors)
     end
-
-
-
-
 
     # Question with headline and Yes/No Buttons
     # @param [String] headline Popup Headline
@@ -407,11 +380,6 @@ module Yast
       ret
     end
 
-
-
-
-
-
     # Question with headline and Yes/No Buttons
     # @param [String] headline Popup Headline
     # @param [String] message Popup Message
@@ -447,7 +415,6 @@ module Yast
       @yesno_messages = Builtins.add(@yesno_messages, message)
       ret
     end
-
 
     # Store new message text
     # @param [String] message_string message text, it can contain new line characters ("\n")
@@ -545,7 +512,6 @@ module Yast
       nil
     end
 
-
     # Display and record error string.
     #
     # @note Displaying can be globally disabled using Display* methods.
@@ -589,7 +555,6 @@ module Yast
       nil
     end
 
-
     # Error popup dialog can displayed immediately when new error is stored.
     #
     # This function enables or diables popuping of dialogs.
@@ -603,7 +568,6 @@ module Yast
       nil
     end
 
-
     # Warning popup dialog can displayed immediately when new warningr is stored.
     #
     # This function enables or diables popuping of dialogs.
@@ -616,8 +580,6 @@ module Yast
       @timeout_warnings = timeout
       nil
     end
-
-
 
     # Message popup dialog can be displayed immediately when a new message  is stored.
     #
@@ -646,7 +608,6 @@ module Yast
       @timeout_yesno_messages = timeout
       nil
     end
-
 
     # Set warnings logging to .y2log file
     # @param [Boolean] log if log is true then warning messages will be logged
@@ -683,7 +644,6 @@ module Yast
       nil
     end
 
-
     # Create rich text string from stored warning, message or error messages.
     #
     # Every new line character "\n" is replaced by string "[BR]".
@@ -708,8 +668,7 @@ module Yast
           Builtins.foreach(strs) do |line|
             richtext = Ops.add(Ops.add(richtext, line), "<BR>")
           end
-        end 
-
+        end
 
         richtext = Ops.add(richtext, "</P>")
       end
@@ -726,8 +685,7 @@ module Yast
           Builtins.foreach(strs) do |line|
             richtext = Ops.add(Ops.add(richtext, line), "<BR>")
           end
-        end 
-
+        end
 
         richtext = Ops.add(richtext, "</P>")
       end
@@ -744,8 +702,7 @@ module Yast
           Builtins.foreach(strs) do |line|
             richtext = Ops.add(Ops.add(richtext, line), "<BR>")
           end
-        end 
-
+        end
 
         richtext = Ops.add(richtext, "</P>")
       end
@@ -762,51 +719,50 @@ module Yast
           Builtins.foreach(strs) do |line|
             richtext = Ops.add(Ops.add(richtext, line), "<BR>")
           end
-        end 
-
+        end
 
         richtext = Ops.add(richtext, "</P>")
       end
       richtext
     end
 
-    publish :variable => :message_settings, :type => "map"
-    publish :variable => :error_settings, :type => "map"
-    publish :variable => :warning_settings, :type => "map"
-    publish :variable => :yesno_message_settings, :type => "map"
-    publish :variable => :modified, :type => "boolean"
-    publish :function => :SetModified, :type => "void ()"
-    publish :function => :GetModified, :type => "boolean ()"
-    publish :function => :Summary, :type => "string ()"
-    publish :function => :Import, :type => "boolean (map)"
-    publish :function => :Export, :type => "map ()"
-    publish :function => :ClearYesNoMessages, :type => "void ()"
-    publish :function => :ClearMessages, :type => "void ()"
-    publish :function => :ClearErrors, :type => "void ()"
-    publish :function => :ClearWarnings, :type => "void ()"
-    publish :function => :ClearAll, :type => "void ()"
-    publish :function => :NumYesNoMessages, :type => "integer ()"
-    publish :function => :NumMessages, :type => "integer ()"
-    publish :function => :NumWarnings, :type => "integer ()"
-    publish :function => :NumErrors, :type => "integer ()"
-    publish :function => :AnyQuestion, :type => "boolean (string, string, string, string, symbol)"
-    publish :function => :ErrorAnyQuestion, :type => "boolean (string, string, string, string, symbol)"
-    publish :function => :Message, :type => "void (string)"
-    publish :function => :LongMessage, :type => "void (string)"
-    publish :function => :ShowText, :type => "void (string, string)"
-    publish :function => :Warning, :type => "void (string)"
-    publish :function => :LongWarning, :type => "void (string)"
-    publish :function => :Error, :type => "void (string)"
-    publish :function => :LongError, :type => "void (string)"
-    publish :function => :DisplayErrors, :type => "void (boolean, integer)"
-    publish :function => :DisplayWarnings, :type => "void (boolean, integer)"
-    publish :function => :DisplayMessages, :type => "void (boolean, integer)"
-    publish :function => :DisplayYesNoMessages, :type => "void (boolean, integer)"
-    publish :function => :LogWarnings, :type => "void (boolean)"
-    publish :function => :LogYesNoMessages, :type => "void (boolean)"
-    publish :function => :LogMessages, :type => "void (boolean)"
-    publish :function => :LogErrors, :type => "void (boolean)"
-    publish :function => :GetMessages, :type => "string (boolean, boolean, boolean, boolean)"
+    publish variable: :message_settings, type: "map"
+    publish variable: :error_settings, type: "map"
+    publish variable: :warning_settings, type: "map"
+    publish variable: :yesno_message_settings, type: "map"
+    publish variable: :modified, type: "boolean"
+    publish function: :SetModified, type: "void ()"
+    publish function: :GetModified, type: "boolean ()"
+    publish function: :Summary, type: "string ()"
+    publish function: :Import, type: "boolean (map)"
+    publish function: :Export, type: "map ()"
+    publish function: :ClearYesNoMessages, type: "void ()"
+    publish function: :ClearMessages, type: "void ()"
+    publish function: :ClearErrors, type: "void ()"
+    publish function: :ClearWarnings, type: "void ()"
+    publish function: :ClearAll, type: "void ()"
+    publish function: :NumYesNoMessages, type: "integer ()"
+    publish function: :NumMessages, type: "integer ()"
+    publish function: :NumWarnings, type: "integer ()"
+    publish function: :NumErrors, type: "integer ()"
+    publish function: :AnyQuestion, type: "boolean (string, string, string, string, symbol)"
+    publish function: :ErrorAnyQuestion, type: "boolean (string, string, string, string, symbol)"
+    publish function: :Message, type: "void (string)"
+    publish function: :LongMessage, type: "void (string)"
+    publish function: :ShowText, type: "void (string, string)"
+    publish function: :Warning, type: "void (string)"
+    publish function: :LongWarning, type: "void (string)"
+    publish function: :Error, type: "void (string)"
+    publish function: :LongError, type: "void (string)"
+    publish function: :DisplayErrors, type: "void (boolean, integer)"
+    publish function: :DisplayWarnings, type: "void (boolean, integer)"
+    publish function: :DisplayMessages, type: "void (boolean, integer)"
+    publish function: :DisplayYesNoMessages, type: "void (boolean, integer)"
+    publish function: :LogWarnings, type: "void (boolean)"
+    publish function: :LogYesNoMessages, type: "void (boolean)"
+    publish function: :LogMessages, type: "void (boolean)"
+    publish function: :LogErrors, type: "void (boolean)"
+    publish function: :GetMessages, type: "string (boolean, boolean, boolean, boolean)"
   end
 
   Report = ReportClass.new

@@ -63,12 +63,12 @@ module Yast
       if FileUtils.Exists(txt_path)
         slide_list = Convert.convert(
           SCR.Read(path(".target.dir"), txt_path),
-          :from => "any",
-          :to   => "list <string>"
+          from: "any",
+          to:   "list <string>"
         )
       end
 
-      if slide_list == nil
+      if slide_list.nil?
         Builtins.y2error("Directory %1 does not exist", txt_path)
         if Ops.greater_than(Builtins.size(lang), 2)
           lang = Builtins.substring(lang, 0, 2)
@@ -77,14 +77,14 @@ module Yast
           if FileUtils.Exists(txt_path)
             slide_list = Convert.convert(
               SCR.Read(path(".target.dir"), txt_path),
-              :from => "any",
-              :to   => "list <string>"
+              from: "any",
+              to:   "list <string>"
             )
           end
         end
       end
 
-      if slide_list == nil
+      if slide_list.nil?
         Builtins.y2milestone("Slideshow directory %1 does not exist", txt_path)
       else
         Builtins.y2milestone(
@@ -104,7 +104,7 @@ module Yast
         )
       end
 
-      if slide_list != nil && Ops.greater_than(Builtins.size(slide_list), 0) # Slide texts found
+      if !slide_list.nil? && Ops.greater_than(Builtins.size(slide_list), 0) # Slide texts found
         @slide_txt_path = txt_path
         @slide_pic_path = Ops.add(@slide_base_path, "/pic")
 
@@ -129,7 +129,6 @@ module Yast
       deep_copy(slide_list)
     end
 
-
     # Check if showing slides is supported.
     #
     # Not to be confused with HaveSlides() which checks if there are slides available.
@@ -138,7 +137,7 @@ module Yast
     def HaveSlideSupport
       disp = UI.GetDisplayInfo
 
-      if disp != nil && # This shouldn't happen, but who knows?
+      if !disp.nil? && # This shouldn't happen, but who knows?
           Ops.get_boolean(disp, "HasImageSupport", false) &&
           Ops.greater_or_equal(Ops.get_integer(disp, "DefaultWidth", -1), 800) &&
           Ops.greater_or_equal(Ops.get_integer(disp, "DefaultHeight", -1), 600) &&
@@ -148,7 +147,6 @@ module Yast
         return false
       end
     end
-
 
     # Check if slides are available.
     #
@@ -175,19 +173,18 @@ module Yast
       #
       # Fix <img src> tags: Replace image path with current slide_pic_path
       #
-      while true
+      loop do
         replaced = Builtins.regexpsub(
           text,
           "(.*)&imagedir;(.*)",
           Builtins.sformat("\\1%1\\2", @slide_pic_path)
         )
-        break if replaced == nil
+        break if replaced.nil?
         text = replaced
       end
 
       text
     end
-
 
     # Set the slide show directory
     def SetSlideDir(dir)
@@ -226,17 +223,17 @@ module Yast
       true
     end
 
-    publish :variable => :slides, :type => "list <string>"
-    publish :variable => :slide_base_path, :type => "string"
-    publish :variable => :slide_txt_path, :type => "string"
-    publish :variable => :slide_pic_path, :type => "string"
-    publish :variable => :fallback_lang, :type => "string"
-    publish :function => :HaveSlideSupport, :type => "boolean ()"
-    publish :function => :HaveSlides, :type => "boolean ()"
-    publish :function => :LoadSlideFile, :type => "string (string)"
-    publish :function => :SetSlideDir, :type => "void (string)"
-    publish :function => :LoadSlides, :type => "void (string)"
-    publish :function => :CheckBasePath, :type => "boolean ()"
+    publish variable: :slides, type: "list <string>"
+    publish variable: :slide_base_path, type: "string"
+    publish variable: :slide_txt_path, type: "string"
+    publish variable: :slide_pic_path, type: "string"
+    publish variable: :fallback_lang, type: "string"
+    publish function: :HaveSlideSupport, type: "boolean ()"
+    publish function: :HaveSlides, type: "boolean ()"
+    publish function: :LoadSlideFile, type: "string (string)"
+    publish function: :SetSlideDir, type: "void (string)"
+    publish function: :LoadSlides, type: "void (string)"
+    publish function: :CheckBasePath, type: "boolean ()"
   end
 
   Slides = SlidesClass.new

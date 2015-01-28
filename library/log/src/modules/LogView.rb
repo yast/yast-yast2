@@ -96,7 +96,7 @@ module Yast
 
     # Kill processes running on the backgrouns
     # @param [String] key log widget key
-    def KillBackgroundProcess(key)
+    def KillBackgroundProcess(_key)
       LogViewCore.Stop
 
       nil
@@ -107,8 +107,8 @@ module Yast
     def LogSelectionHelp
       # help for the log widget, part 1, alt. 1
       _(
-        "<p><b><big>Displayed Log</big></b><br>\n" +
-          "Use <b>Log</b> to select the log to display. It will be displayed in\n" +
+        "<p><b><big>Displayed Log</big></b><br>\n" \
+          "Use <b>Log</b> to select the log to display. It will be displayed in\n" \
           "the field below.</p>\n"
       )
     end
@@ -128,8 +128,8 @@ module Yast
       # help for the log widget, part 2, alt. 1, %1 is a menu button label
       Builtins.sformat(
         _(
-          "<p>\n" +
-            "To process advanced actions or save the log into a file, click <b>%1</b>\n" +
+          "<p>\n" \
+            "To process advanced actions or save the log into a file, click <b>%1</b>\n" \
             "and select the action to process.</p>"
         ),
         label
@@ -143,8 +143,8 @@ module Yast
       # help for the log widget, part 2, alt. 2, %1 is a menu button label
       Builtins.sformat(
         _(
-          "<p>\n" +
-            "To process advanced actions, click <b>%1</b>\n" +
+          "<p>\n" \
+            "To process advanced actions, click <b>%1</b>\n" \
             "and select the action to process.</p>"
         ),
         label
@@ -156,12 +156,11 @@ module Yast
     def SaveHelp
       # help for the log widget, part 2, alt. 3
       _(
-        "<p>\n" +
-          "To save the log into a file, click <b>Save Log</b> and select the file\n" +
+        "<p>\n" \
+          "To save the log into a file, click <b>Save Log</b> and select the file\n" \
           "to which to save the log.</p>\n"
       )
     end
-
 
     # Get the help of the widget
     # @param [Fixnum] logs integer count of displayed logs
@@ -170,10 +169,10 @@ module Yast
     def CreateHelp(logs, parameters)
       parameters = deep_copy(parameters)
       help = Ops.get_string(parameters, "help", "")
-      return help if help != "" && help != nil
+      return help if help != "" && !help.nil?
 
       adv_button = Ops.get_string(parameters, "mb_label", "")
-      if adv_button == "" || adv_button == nil
+      if adv_button == "" || adv_button.nil?
         # menu button
         adv_button = _("Ad&vanced")
       end
@@ -183,10 +182,10 @@ module Yast
       end
 
       save = Ops.get_boolean(parameters, "save", false)
-      save = false if save == nil
+      save = false if save.nil?
 
       actions_lst = Ops.get_list(parameters, "actions", [])
-      actions_lst = [] if actions_lst == nil
+      actions_lst = [] if actions_lst.nil?
       actions = Builtins.size(actions_lst)
 
       actions = Ops.add(actions, 1) if save
@@ -243,7 +242,6 @@ module Yast
       deep_copy(selection_combo)
     end
 
-
     # Get the widget with the menu button with actions to be processed on the log
     # @param [Array<Array>] actions a list of all actions
     # @param [Boolean] save boolean true if the log should be offered to be saved
@@ -270,13 +268,13 @@ module Yast
 
       if Ops.greater_than(Builtins.size(menubutton), 1)
         menubutton = Builtins.filter(menubutton) do |m|
-          Ops.is_list?(m) && Ops.get(Convert.to_list(m), 0) != nil
+          m.is_a?(Array) && m.first
         end
         menubutton = Builtins.maplist(menubutton) do |m|
           ml = Convert.to_list(m)
           Item(Id(Ops.get(ml, 0)), Ops.get_string(ml, 1, ""))
         end
-        mb_label = _("Ad&vanced") if mb_label == "" || mb_label == nil
+        mb_label = _("Ad&vanced") if mb_label == "" || mb_label.nil?
         return MenuButton(Id(:_cwm_log_menu), mb_label, menubutton)
       elsif Builtins.size(menubutton) == 1
         return PushButton(
@@ -287,18 +285,15 @@ module Yast
       Empty()
     end
 
-
     # Get the buttons below the box with the log
     # @param [Boolean] popup boolean true if running in popup (and Close is needed)
     # @param [Hash{String => Object}] glob_param a map of global parameters of the log widget
     # @param [Array<Hash{String => Object>}] log_maps a list of maps describing all the logs
     # @return [Yast::Term] the widget with buttons
-    def GetButtonsBelowLog(popup, glob_param, log_maps)
+    def GetButtonsBelowLog(popup, glob_param, _log_maps)
       glob_param = deep_copy(glob_param)
-      log_maps = deep_copy(log_maps)
       left = Empty()
       center = Empty()
-      right = Empty()
 
       if popup
         center = PushButton(Id(:close), Opt(:key_F9), Label.CloseButton)
@@ -364,7 +359,7 @@ module Yast
     # Initialize the displayed log
     # @param [String] key log widget key
     # @param [String] key table widget key
-    def LogInit(key)
+    def LogInit(_key)
       @param = CWM.GetProcessedWidget
       @current_index = Ops.get_integer(@param, "_cwm_default_index", 0)
       @mb_actions = Ops.get_list(@param, "_cwm_button_actions", [])
@@ -381,7 +376,7 @@ module Yast
     # @param [String] key log widget key
     # @param [Hash] event map event to handle
     # @return [Symbol] always nil
-    def LogHandle(key, event)
+    def LogHandle(_key, event)
       event = deep_copy(event)
       @param = CWM.GetProcessedWidget
       LogViewCore.Update(Id(:_cwm_log))
@@ -394,7 +389,7 @@ module Yast
           "*.log",
           _("Save Log as...")
         )
-        if filename != nil
+        if !filename.nil?
           SCR.Write(
             path(".target.string"),
             filename,
@@ -402,14 +397,14 @@ module Yast
           )
         end
       # other operation specified by user
-      elsif ret != nil && Ops.is_integer?(ret)
+      elsif !ret.nil? && Ops.is_integer?(ret)
         iret = Convert.to_integer(ret)
         func = Convert.convert(
           Ops.get(@mb_actions, [iret, 1]),
-          :from => "any",
-          :to   => "void ()"
+          from: "any",
+          to:   "void ()"
         )
-        func.call if func != nil
+        func.call if !func.nil?
         if Ops.get(@mb_actions, [iret, 2]) == true
           KillBackgroundProcess(nil)
           UI.ChangeWidget(Id(:_cwm_log), :Value, "")
@@ -422,7 +417,6 @@ module Yast
       end
       nil
     end
-
 
     # Get the map with the log view widget
     # @param [Hash{String => Object}] parameters map parameters of the widget to be created, will be
@@ -511,9 +505,7 @@ module Yast
       )
     end
 
-
     # old functions for displaying log as a popup
-
 
     # Main function for displaying logs
     # @param [Hash{String => Object}] parameters map description of parameters, with following keys
@@ -550,7 +542,6 @@ module Yast
       @param = deep_copy(parameters)
 
       # menubutton
-      mb_label = Ops.get_locale(@param, "mb_label", _("Ad&vanced"))
       log_label = Ops.get_locale(@param, "log_label", _("&Log"))
 
       @logs = [@param]
@@ -595,9 +586,7 @@ module Yast
               )
             )
           )
-          while ret != :close && ret != :cancel
-            ret = UI.UserInput
-          end
+          ret = UI.UserInput while ret != :close && ret != :cancel
           ret = nil
           UI.CloseDialog
         else
@@ -612,7 +601,7 @@ module Yast
     # Display specified file, list 100 lines
     # @param [String] file string filename of file with the log
     def DisplaySimple(file)
-      Display({ "file" => file })
+      Display("file" => file)
 
       nil
     end
@@ -621,22 +610,22 @@ module Yast
     # @param [String] file string filename of file with the log
     # @param [String] grep string basic regular expression to be grepped in file
     def DisplayFiltered(file, grep)
-      Display({ "file" => file, "grep" => grep })
+      Display("file" => file, "grep" => grep)
 
       nil
     end
 
-    publish :function => :LogSelectionHelp, :type => "string ()"
-    publish :function => :SingleLogHelp, :type => "string ()"
-    publish :function => :AdvancedSaveHelp, :type => "string (string)"
-    publish :function => :AdvancedHelp, :type => "string (string)"
-    publish :function => :SaveHelp, :type => "string ()"
-    publish :function => :LogInit, :type => "void (string)"
-    publish :function => :LogHandle, :type => "symbol (string, map)"
-    publish :function => :CreateWidget, :type => "map (map <string, any>, list <map <string, any>>)"
-    publish :function => :Display, :type => "void (map <string, any>)"
-    publish :function => :DisplaySimple, :type => "void (string)"
-    publish :function => :DisplayFiltered, :type => "void (string, string)"
+    publish function: :LogSelectionHelp, type: "string ()"
+    publish function: :SingleLogHelp, type: "string ()"
+    publish function: :AdvancedSaveHelp, type: "string (string)"
+    publish function: :AdvancedHelp, type: "string (string)"
+    publish function: :SaveHelp, type: "string ()"
+    publish function: :LogInit, type: "void (string)"
+    publish function: :LogHandle, type: "symbol (string, map)"
+    publish function: :CreateWidget, type: "map (map <string, any>, list <map <string, any>>)"
+    publish function: :Display, type: "void (map <string, any>)"
+    publish function: :DisplaySimple, type: "void (string)"
+    publish function: :DisplayFiltered, type: "void (string, string)"
   end
 
   LogView = LogViewClass.new
