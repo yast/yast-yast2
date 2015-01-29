@@ -1,8 +1,4 @@
-require "rspec"
-
-ENV["Y2DIR"] = File.expand_path("../../src", __FILE__) unless ENV["Y2DIR"]
-
-require "yast"
+require_relative "../../../test/test_helper.rb"
 
 require "yast2/systemd_unit"
 
