@@ -1443,30 +1443,7 @@ module Yast
       nil
     end
 
-    # at start of patch providal
-    #
-    def StartPatchProvide(name, archivesize)
-      sz = String.FormatSizeWithPrecision(archivesize, 2, false)
-      if Mode.commandline
-        CommandLine.PrintVerbose(
-            Builtins.sformat(
-              _("Downloading patch RPM package %1 (%2)..."),
-              name,
-              sz
-              )
-            )
-      else
-        UI.CloseDialog if @_provide_popup
-        # popup heading
-        providebox = progress_box(_("Downloading Patch RPM Package"), name, sz)
-        UI.OpenDialog(providebox)
-        @_provide_popup = true
-      end
-
-      nil
-    end
-
-    def FinishPatchDeltaProvide
+    def FinishDeltaProvide
       if @_provide_popup
         UI.CloseDialog
         @_provide_popup = false
@@ -1476,22 +1453,15 @@ module Yast
     end
 
     def ProblemDeltaDownload(descr)
-      FinishPatchDeltaProvide() # close popup
+      FinishDeltaProvide() # close popup
       Builtins.y2milestone("Failed to download delta RPM: %1", descr)
 
       nil
     end
 
     def ProblemDeltaApply(descr)
-      FinishPatchDeltaProvide() # close popup
+      FinishDeltaProvide() # close popup
       Builtins.y2milestone("Failed to apply delta RPM: %1", descr)
-
-      nil
-    end
-
-    def ProblemPatchDownload(descr)
-      FinishPatchDeltaProvide() # close popup
-      Builtins.y2milestone("Failed to download patch RPM: %1", descr)
 
       nil
     end
@@ -2727,7 +2697,7 @@ module Yast
           fun_ref(method(:ProblemDeltaDownload), "void (string)")
           )
       Pkg.CallbackFinishDeltaDownload(
-          fun_ref(method(:FinishPatchDeltaProvide), "void ()")
+          fun_ref(method(:FinishDeltaProvide), "void ()")
           )
 
       Pkg.CallbackStartDeltaApply(
@@ -2740,20 +2710,7 @@ module Yast
           fun_ref(method(:ProblemDeltaApply), "void (string)")
           )
       Pkg.CallbackFinishDeltaApply(
-          fun_ref(method(:FinishPatchDeltaProvide), "void ()")
-          )
-
-      Pkg.CallbackStartPatchDownload(
-          fun_ref(method(:StartPatchProvide), "void (string, integer)")
-          )
-      Pkg.CallbackProgressPatchDownload(
-          fun_ref(method(:ProgressProvide), "boolean (integer)")
-          )
-      Pkg.CallbackProblemPatchDownload(
-          fun_ref(method(:ProblemPatchDownload), "void (string)")
-          )
-      Pkg.CallbackFinishPatchDownload(
-          fun_ref(method(:FinishPatchDeltaProvide), "void ()")
+          fun_ref(method(:FinishDeltaProvide), "void ()")
           )
 
       nil
@@ -3050,17 +3007,6 @@ module Yast
           )
       Pkg.CallbackFinishDeltaApply(fun_ref(method(:DummyVoid), "void ()"))
 
-      Pkg.CallbackStartPatchDownload(
-          fun_ref(method(:DummyVoidStringInteger), "void (string, integer)")
-          )
-      Pkg.CallbackProgressPatchDownload(
-          fun_ref(method(:DummyBooleanInteger), "boolean (integer)")
-          )
-      Pkg.CallbackProblemPatchDownload(
-          fun_ref(method(:DummyVoidString), "void (string)")
-          )
-      Pkg.CallbackFinishPatchDownload(fun_ref(method(:DummyVoid), "void ()"))
-
       nil
     end
 
@@ -3322,11 +3268,6 @@ module Yast
       Pkg.CallbackProgressDeltaApply(nil)
       Pkg.CallbackProblemDeltaApply(nil)
       Pkg.CallbackFinishDeltaApply(nil)
-
-      Pkg.CallbackStartPatchDownload(nil)
-      Pkg.CallbackProgressPatchDownload(nil)
-      Pkg.CallbackProblemPatchDownload(nil)
-      Pkg.CallbackFinishPatchDownload(nil)
 
       nil
     end
