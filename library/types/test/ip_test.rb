@@ -23,7 +23,7 @@ describe Yast::IP do
 
     VALID_IP4S.each do |valid_ip4|
       it "returns true for valid IPv4 '#{valid_ip4}'" do
-        expect(subject.Check4(valid_ip4)).to be_truthy
+        expect(subject.Check4(valid_ip4)).to eq(true)
       end
     end
 
@@ -37,16 +37,16 @@ describe Yast::IP do
 
     INVALID_IP4S.each do |invalid_ip4|
       it "returns false for invalid IPv4 '#{invalid_ip4}'" do
-        expect(subject.Check4(invalid_ip4)).to be_falsey
+        expect(subject.Check4(invalid_ip4)).to eq(false)
       end
     end
 
     it "returns false for empty argument" do
-      expect(subject.Check4("")).to be_falsey
+      expect(subject.Check4("")).to eq(false)
     end
 
     it "returns false for nil argument" do
-      expect(subject.Check4(nil)).to be_falsey
+      expect(subject.Check4(nil)).to eq(false)
     end
   end
 
@@ -70,7 +70,7 @@ describe Yast::IP do
 
     VALID_IP6S.each do |valid_ip6|
       it "returns true for valid IPv6 '#{valid_ip6}'" do
-        expect(subject.Check6(valid_ip6)).to be_truthy
+        expect(subject.Check6(valid_ip6)).to eq(true)
       end
     end
 
@@ -91,16 +91,16 @@ describe Yast::IP do
 
     INVALID_IP6S.each do |invalid_ip6|
       it "returns false for invalid IPv6 '#{invalid_ip6}" do
-        expect(subject.Check6(invalid_ip6)).to be_falsey
+        expect(subject.Check6(invalid_ip6)).to eq(false)
       end
     end
 
     it "returns false for empty argument" do
-      expect(subject.Check6("")).to be_falsey
+      expect(subject.Check6("")).to eq(false)
     end
 
     it "returns false for nil argument" do
-      expect(subject.Check6(nil)).to be_falsey
+      expect(subject.Check6(nil)).to eq(false)
     end
   end
 

@@ -83,84 +83,84 @@ describe Yast::Linuxrc do
   describe "#serial_console" do
     it "returns true if 'Console' is found in install.inf" do
       load_install_inf("Console" => "/dev/console")
-      expect(subject.serial_console).to be_truthy
+      expect(subject.serial_console).to eq(true)
     end
 
     it "returns false if 'Console' is not found in install.inf" do
       load_install_inf("Console" => nil)
-      expect(subject.serial_console).to be_falsey
+      expect(subject.serial_console).to eq(false)
     end
   end
 
   describe "#braille" do
     it "returns true if 'Braille' is found in install.inf" do
       load_install_inf("Braille" => "/dev/braille")
-      expect(subject.braille).to be_truthy
+      expect(subject.braille).to eq(true)
     end
 
     it "returns false if 'Braille' is not found in install.inf" do
       load_install_inf("Braille" => nil)
-      expect(subject.braille).to be_falsey
+      expect(subject.braille).to eq(false)
     end
   end
 
   describe "#vnc" do
     it "returns true if 'VNC' is set to '1' in install.inf" do
       load_install_inf("VNC" => "1")
-      expect(subject.vnc).to be_truthy
+      expect(subject.vnc).to eq(true)
     end
 
     it "returns false if 'VNC' is not set to '1' in install.inf" do
       load_install_inf("VNC" => "0")
-      expect(subject.vnc).to be_falsey
+      expect(subject.vnc).to eq(false)
     end
   end
 
   describe "#display_ip" do
     it "returns true if 'Display_IP' is found in install.inf" do
       load_install_inf("Display_IP" => "1.2.3.4")
-      expect(subject.display_ip).to be_truthy
+      expect(subject.display_ip).to eq(true)
     end
 
     it "returns false if 'Display_IP' is not found in install.inf" do
       load_install_inf("Display_IP" => nil)
-      expect(subject.display_ip).to be_falsey
+      expect(subject.display_ip).to eq(false)
     end
   end
 
   describe "#usessh" do
     it "returns true if 'UseSSH' is set to '1' in install.inf" do
       load_install_inf("UseSSH" => "1")
-      expect(subject.usessh).to be_truthy
+      expect(subject.usessh).to eq(true)
     end
 
     it "returns false if 'UseSSH' is not set to '1' in install.inf" do
       load_install_inf("UseSSH" => "0")
-      expect(subject.usessh).to be_falsey
+      expect(subject.usessh).to eq(false)
     end
   end
 
   describe "#useiscsi" do
     it "returns true if 'WithiSCSI' is set to '1' in install.inf" do
       load_install_inf("WithiSCSI" => "1")
-      expect(subject.useiscsi).to be_truthy
+      expect(subject.useiscsi).to eq(true)
     end
 
     it "returns false if 'WithiSCSI' is not set to '1' in install.inf" do
       load_install_inf("WithiSCSI" => "0")
-      expect(subject.useiscsi).to be_falsey
+      expect(subject.useiscsi).to eq(false)
     end
   end
 
   describe "#text" do
     it "returns true if 'Textmode' is set to '1' in install.inf" do
       load_install_inf("Textmode" => "1")
-      expect(subject.text).to be_truthy
+      expect(subject.text).to eq(true)
     end
 
     it "returns false if 'Textmode' is not set to '1' in install.inf" do
       load_install_inf("Textmode" => "0")
-      expect(subject.text).to be_falsey
+      expect(subject.text).to eq(false)
     end
   end
 

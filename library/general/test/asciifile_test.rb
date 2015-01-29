@@ -67,7 +67,7 @@ EOS
           subject(:regular) { result[1] }
 
           it "have a falsy 'comment' key" do
-            expect(regular["comment"]).to be_falsey
+            expect(!regular["comment"]).to eq(true)
           end
 
           it "have a copy in 'line' key" do

@@ -28,11 +28,11 @@ describe Yast::SuSEFirewall do
         expect(Yast::PackageSystem).to receive(:Installed).and_return(false, true).twice
 
         # Selected
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_truthy
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
         # Not selected and not installed
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_falsey
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
         # Not selected, but installed
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_truthy
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
       end
     end
 
@@ -44,15 +44,15 @@ describe Yast::SuSEFirewall do
         # Value is cached
         expect(Yast::PackageSystem).to receive(:CheckAndInstallPackages).and_return(true, false).twice
 
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_truthy
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_truthy
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_truthy
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
 
         reset_SuSEFirewallIsInstalled_cache
 
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_falsey
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_falsey
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_falsey
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
       end
     end
 
@@ -64,15 +64,15 @@ describe Yast::SuSEFirewall do
         # Value is cached
         expect(Yast::PackageSystem).to receive(:Installed).and_return(false, true).twice
 
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_falsey
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_falsey
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_falsey
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
 
         reset_SuSEFirewallIsInstalled_cache
 
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_truthy
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_truthy
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_truthy
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
       end
     end
   end
