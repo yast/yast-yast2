@@ -56,7 +56,7 @@ module Yast
       it "returns true if the service is running" do
         service = SystemdService.find "sshd"
         expect(service).to respond_to(:running?)
-        expect(service.running?).to be_truthy
+        expect(service.running?).to eq(true)
       end
     end
 
@@ -74,7 +74,7 @@ module Yast
         service = SystemdService.find("sshd")
         allow(SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
         expect(service).not_to receive(:command) # SystemdUnit#command
-        expect(service.start).to be_truthy
+        expect(service.start).to eq(true)
       end
     end
 
@@ -87,7 +87,7 @@ module Yast
         expect(service).to receive(:stop).ordered.and_call_original
         expect(service).to receive(:start).ordered.and_call_original
         expect(service).not_to receive(:command) # SystemdUnit#command
-        expect(service.restart).to be_truthy
+        expect(service.restart).to eq(true)
       end
     end
 
@@ -97,7 +97,7 @@ module Yast
         service = SystemdService.find("sshd")
         allow(SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
         expect(service).not_to receive(:command) # SystemdUnit#command
-        expect(service.stop).to be_truthy
+        expect(service.stop).to eq(true)
       end
     end
   end

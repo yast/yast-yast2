@@ -55,7 +55,7 @@ EOS
           subject(:comment) { result[2] }
 
           it "have a true 'comment' key" do
-            expect(comment["comment"]).to be_truthy
+            expect(comment["comment"]).to eq(true)
           end
 
           it "have a copy in 'line' key, including the comment start" do
