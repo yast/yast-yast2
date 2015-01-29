@@ -2,16 +2,14 @@
 
 require_relative "test_helper"
 
-include Yast
-
 Yast.import "AsciiFile"
 
 def stub_file_reading(filename, contents)
-  SCR.stub(:Read)
+  allow(Yast::SCR).to receive(:Read)
     .with(path(".target.size"), filename)
     .and_return contents.length
 
-  SCR.stub(:Read)
+  allow(Yast::SCR).to receive(:Read)
     .with(path(".target.string"), filename)
     .and_return contents
 end
@@ -28,16 +26,16 @@ EOS
     let(:fstab_ref) do
       stub_file_reading(FSTAB_FILENAME, FSTAB_CONTENTS)
       fstab = {}
-      fstab_ref = arg_ref(fstab)
-      AsciiFile.SetComment(fstab_ref, "^[ \t]*#")
-      AsciiFile.SetDelimiter(fstab_ref, " \t")
-      AsciiFile.SetListWidth(fstab_ref, [20, 20, 10, 21, 1, 1])
+      fstab_ref = Yast::ArgRef.new(fstab)
+      Yast::AsciiFile.SetComment(fstab_ref, "^[ \t]*#")
+      Yast::AsciiFile.SetDelimiter(fstab_ref, " \t")
+      Yast::AsciiFile.SetListWidth(fstab_ref, [20, 20, 10, 21, 1, 1])
       fstab_ref
     end
 
     describe "#ReadFile" do
       before(:each) do
-        AsciiFile.ReadFile(fstab_ref, FSTAB_FILENAME)
+        Yast::AsciiFile.ReadFile(fstab_ref, FSTAB_FILENAME)
       end
 
       # note that the result is `fstab["l"]`
@@ -57,7 +55,7 @@ EOS
           subject(:comment) { result[2] }
 
           it "have a true 'comment' key" do
-            expect(comment["comment"]).to be_true
+            expect(comment["comment"]).to be_truthy
           end
 
           it "have a copy in 'line' key, including the comment start" do
@@ -69,7 +67,7 @@ EOS
           subject(:regular) { result[1] }
 
           it "have a falsy 'comment' key" do
-            expect(regular["comment"]).to be_false
+            expect(regular["comment"]).to be_falsey
           end
 
           it "have a copy in 'line' key" do

@@ -48,13 +48,13 @@ module Yast
     describe "#listening?" do
       it "returns true if the socket is accepting connections" do
         socket = SystemdSocket.find "iscsid"
-        expect(socket.listening?).to be_true
+        expect(socket.listening?).to be_truthy
       end
 
       it "returns false if the socket is dead" do
         socket = SystemdSocket.find "iscsid"
         socket.properties.sub_state = "dead"
-        expect(socket.listening?).to be_false
+        expect(socket.listening?).to be_falsey
       end
     end
   end

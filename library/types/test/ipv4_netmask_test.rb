@@ -1,6 +1,6 @@
 #!/usr/bin/env rspec
 
-require "test_helper"
+require_relative "test_helper"
 
 Yast.import "Netmask"
 

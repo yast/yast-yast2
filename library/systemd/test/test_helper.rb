@@ -23,7 +23,7 @@ module SystemctlStubs
   end
 
   def stub_execute(success: true)
-    Yast::Systemctl.stub(:execute).and_return(
+    allow(Yast::Systemctl).to receive(:execute).and_return(
       OpenStruct.new \
       stdout: "success",
       stderr: (success ? "" : "failure"),
@@ -32,7 +32,7 @@ module SystemctlStubs
   end
 
   def stub_socket_unit_files
-    Yast::Systemctl.stub(:list_unit_files).and_return(<<LIST
+    allow(Yast::Systemctl).to receive(:list_unit_files).and_return(<<LIST
 iscsid.socket                disabled
 avahi-daemon.socket          enabled
 cups.socket                  enabled
@@ -43,7 +43,7 @@ LIST
   end
 
   def stub_service_unit_files
-    Yast::Systemctl.stub(:list_unit_files).and_return(<<LIST
+    allow(Yast::Systemctl).to receive(:list_unit_files).and_return(<<LIST
 single.service                             masked
 smartd.service                             disabled
 smb.service                                disabled
@@ -55,7 +55,7 @@ LIST
   end
 
   def stub_target_unit_files
-    Yast::Systemctl.stub(:list_unit_files).and_return(<<LIST
+    allow(Yast::Systemctl).to receive(:list_unit_files).and_return(<<LIST
 graphical.target          enabled
 halt.target               disabled
 hibernate.target          static
@@ -69,7 +69,7 @@ LIST
   end
 
   def stub_service_units
-    Yast::Systemctl.stub(:list_units).and_return(<<LIST
+    allow(Yast::Systemctl).to receive(:list_units).and_return(<<LIST
 rsyslog.service                       loaded active   running System Logging Service
 scsidev.service                       not-found inactive dead    scsidev.service
 sendmail.service                      not-found inactive dead    sendmail.service
@@ -81,7 +81,7 @@ LIST
   end
 
   def stub_socket_units
-    Yast::Systemctl.stub(:list_units).and_return(<<LIST
+    allow(Yast::Systemctl).to receive(:list_units).and_return(<<LIST
 iscsid.socket                loaded active   listening Open-iSCSI iscsid Socket
 avahi-daemon.socket          loaded active   running   Avahi mDNS/DNS-SD Stack Activation Socket
 cups.socket                  loaded inactive dead      CUPS Printing Service Sockets
@@ -94,7 +94,7 @@ LIST
   end
 
   def stub_target_units
-    Yast::Systemctl.stub(:list_units).and_return(<<LIST
+    allow(Yast::Systemctl).to receive(:list_units).and_return(<<LIST
 getty.target           loaded active   active Login Prompts
 graphical.target       loaded inactive dead   Graphical Interface
 local-fs-pre.target    loaded active   active Local File Systems (Pre)
@@ -110,9 +110,8 @@ end
 
 module SystemdUnitStubs
   def stub_unit_command(success: true)
-    Yast::SystemdUnit
-      .any_instance
-      .stub(:command)
+    allow_any_instance_of(Yast::SystemdUnit)
+      .to receive(:command)
       .and_return(
         OpenStruct.new \
         stdout: "",
@@ -138,9 +137,8 @@ module SystemdSocketStubs
     stub_unit_command
     stub_systemctl(:socket)
     properties = load_socket_properties(socket)
-    Yast::SystemdUnit::Properties
-      .any_instance
-      .stub(:load_systemd_properties)
+    allow_any_instance_of(Yast::SystemdUnit::Properties)
+      .to receive(:load_systemd_properties)
       .and_return(properties)
   end
 end
@@ -153,9 +151,8 @@ module SystemdServiceStubs
     stub_unit_command
     stub_systemctl(:service)
     properties = load_service_properties(service)
-    Yast::SystemdUnit::Properties
-      .any_instance
-      .stub(:load_systemd_properties)
+    allow_any_instance_of(Yast::SystemdUnit::Properties)
+      .to receive(:load_systemd_properties)
       .and_return(properties)
   end
 
@@ -176,9 +173,8 @@ module SystemdTargetStubs
     stub_unit_command
     stub_systemctl(:target)
     properties = load_target_properties(target)
-    Yast::SystemdUnit::Properties
-      .any_instance
-      .stub(:load_systemd_properties)
+    allow_any_instance_of(Yast::SystemdUnit::Properties)
+      .to receive(:load_systemd_properties)
       .and_return(properties)
   end
 
