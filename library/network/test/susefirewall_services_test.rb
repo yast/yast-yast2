@@ -1,3 +1,5 @@
+#!/usr/bin/env rspec
+
 require_relative "test_helper"
 
 Yast.import "SuSEFirewallServices"
