@@ -1,8 +1,35 @@
 -------------------------------------------------------------------
+Tue Jan 27 14:16:20 UTC 2015 - jreidinger@suse.com
+
+- fixed \r, \f, \v and \b  characters lost during conversion to
+  Ruby
+
+-------------------------------------------------------------------
+Tue Jan 27 11:51:54 UTC 2015 - cwh@suse.com
+
+- Removed more icons from other dialogs (bnc#875201)
+- 3.1.119
+
+-------------------------------------------------------------------
+Thu Jan 22 13:21:45 UTC 2015 - jsrain@suse.cz
+
+- added handling of new created configuration files (bsc#860856)
+- 3.1.118
+
+-------------------------------------------------------------------
 Wed Jan 21 15:50:26 UTC 2015 - cwh@suse.com
 
 - Removed icons from all kinds of popups (bnc#875201)
 - 3.1.117
+
+-------------------------------------------------------------------
+Tue Jan 20 09:55:48 UTC 2015 - jreidinger@suse.com
+
+- remove unused module for tracking config history in svn
+- remove unused module for writing to system log that is obsolete
+  by systemd
+- remove never used feature to lock proposal by administrator
+- improve the most horrible nesting of blocks in code
 
 -------------------------------------------------------------------
 Fri Jan 16 16:53:25 UTC 2015 - jreidinger@suse.com

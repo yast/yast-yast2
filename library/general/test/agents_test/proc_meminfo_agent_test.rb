@@ -4,17 +4,13 @@ require_relative "../test_helper"
 require "yast"
 
 describe ".proc.meminfo" do
-  before :each do
+  around :each do |example|
     root = File.join(File.dirname(__FILE__), "test_root")
-    assign_root_path(root)
-  end
-
-  after :each do
-    reset_root_path
+    change_scr_root(root, &example)
   end
 
   describe ".Read" do
-    let(:content) { Yast::SCR.Read(Yast::Path.new(".proc.meminfo")) }
+    let(:content) { Yast::SCR.Read(path(".proc.meminfo")) }
 
     it "read content of /proc/meminfo return hash" do
       expect(content).to be_a(Hash)

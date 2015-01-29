@@ -4,7 +4,7 @@ require_relative "test_helper"
 
 require "ui/event_dispatcher"
 
-class TestDialog
+class DispatcherTestDialog
   include Yast::UIShortcuts
   include UI::EventDispatcher
   Yast.import "UI"
@@ -38,7 +38,7 @@ class TestDialog
 end
 
 describe UI::EventDispatcher do
-  subject { TestDialog.new }
+  subject { DispatcherTestDialog.new }
 
   def mock_ui_events(*events)
     allow(Yast::UI).to receive(:UserInput).and_return(*events)
