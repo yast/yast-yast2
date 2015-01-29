@@ -9,21 +9,21 @@ describe Yast::PackageCallbacks do
 
   describe "#textmode" do
     it "returns true if runned as CLI" do
-      mode = double(:commandline => true )
+      mode = double(commandline: true)
       stub_const("Yast::Mode", mode)
 
       expect(subject.send(:textmode)).to eq true
     end
 
     it "returns true if running in TUI" do
-      ui = double(:GetDisplayInfo => { "TextMode" => true })
+      ui = double(GetDisplayInfo: { "TextMode" => true })
       stub_const("Yast::UI", ui)
 
       expect(subject.send(:textmode)).to eq true
     end
 
     it "returns false in other cases" do
-      ui = double(:GetDisplayInfo => { "TextMode" => false })
+      ui = double(GetDisplayInfo: { "TextMode" => false })
       stub_const("Yast::UI", ui)
 
       expect(subject.send(:textmode)).to eq false
@@ -32,21 +32,21 @@ describe Yast::PackageCallbacks do
 
   describe "#display_width" do
     it "returns 0 if runned as CLI" do
-      mode = double(:commandline => true )
+      mode = double(commandline: true)
       stub_const("Yast::Mode", mode)
 
       expect(subject.send(:display_width)).to eq 0
     end
 
     it "returns value from display info" do
-      ui = double(:GetDisplayInfo => { "Width" => 480 })
+      ui = double(GetDisplayInfo: { "Width" => 480 })
       stub_const("Yast::UI", ui)
 
       expect(subject.send(:display_width)).to eq 480
     end
 
     it "returns 0 if value missing in display info" do
-      ui = double(:GetDisplayInfo => {})
+      ui = double(GetDisplayInfo: {})
       stub_const("Yast::UI", ui)
 
       expect(subject.send(:display_width)).to eq 0
@@ -81,7 +81,7 @@ describe Yast::PackageCallbacks do
       content1 = subject.send(:layout_popup, "msg", ButtonBox(), true)
       content2 = subject.send(:layout_popup, "msg", ButtonBox(), false)
 
-      checkbox_find = Proc.new { |e| e.is_a?(Yast::Term) && e.value == :CheckBox }
+      checkbox_find = proc { |e| e.is_a?(Yast::Term) && e.value == :CheckBox }
 
       checkbox1 = content1.nested_find(&checkbox_find)
       checkbox2 = content2.nested_find(&checkbox_find)
@@ -130,15 +130,15 @@ describe Yast::PackageCallbacks do
 
   describe "full_screen" do
     it "returns false if running in CLI" do
-      mode = double(:commandline => true )
+      mode = double(commandline: true)
       stub_const("Yast::Mode", mode)
 
       expect(subject.send(:full_screen)).to eq false
     end
 
-    # TODO better description, but why it check this widget?
+    # TODO: better description, but why it check this widget?
     it "returns if there is progress replace point" do
-      ui = double(:WidgetExists => true )
+      ui = double(WidgetExists: true)
       stub_const("Yast::UI", ui)
 
       expect(subject.send(:full_screen)).to eq true

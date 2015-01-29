@@ -39,7 +39,7 @@ module Yast
     include Yast::Logger
 
     # text to clean progress bar in command line
-    CLEAR_PROGRESS_TEXT = "\b"*10 + " "*10 + "\b"*10
+    CLEAR_PROGRESS_TEXT = "\b" * 10 + " " * 10 + "\b" * 10
     # max. length of the text in the repository popup window
     MAX_POPUP_TEXT_SIZE = 60
     # base in seconds for automatic retry after a timeout,
@@ -150,7 +150,7 @@ module Yast
         else
           UI.CloseDialog if @_provide_popup
 
-          if full_screen()
+          if full_screen
             Progress.SubprogressType(:progress, 100)
             Progress.SubprogressTitle(
               Builtins.sformat(_("Downloading package %1 (%2)..."), name, sz)
@@ -868,7 +868,7 @@ module Yast
       end
 
       # check and save the autoeject configuration if needed
-      remember_autoeject() if is_disc
+      remember_autoeject if is_disc
 
       Builtins.y2milestone("MediaChange %1", r)
 
@@ -1700,7 +1700,7 @@ module Yast
 
     def InitDownload(task)
       if !Mode.commandline
-        if !full_screen() && !IsDownloadProgressPopup()
+        if !full_screen && !IsDownloadProgressPopup()
           # heading of popup
           heading = _("Downloading")
 
@@ -1731,7 +1731,7 @@ module Yast
     end
 
     def DestDownload
-      CloseDownloadProgressPopup() if !full_screen()
+      CloseDownloadProgressPopup() if !full_screen
 
       nil
     end
@@ -1758,7 +1758,7 @@ module Yast
           # change the label
           UI.ChangeWidget(Id(:progress), :Label, message)
           UI.ChangeWidget(Id(:progress), :Value, 0)
-        elsif full_screen()
+        elsif full_screen
           Progress.SubprogressType(:progress, 100)
           Progress.SubprogressTitle(message)
         end
@@ -1802,7 +1802,7 @@ module Yast
           )
         end
 
-        if full_screen()
+        if full_screen
           Progress.SubprogressValue(percent)
 
           if Ops.greater_than(Builtins.size(msg_rate), 0)
@@ -2045,7 +2045,7 @@ module Yast
         # progress message (command line mode)
         CommandLine.PrintVerbose(_("Reading RPM database..."))
       else
-        if !full_screen()
+        if !full_screen
           UI.OpenDialog(
             VBox(
               HSpacing(60),
@@ -2094,7 +2094,7 @@ module Yast
           Builtins.y2warning("Scan DB aborted") if !cont
 
           return cont
-        elsif full_screen()
+        elsif full_screen
           Progress.Step(value)
         end
       end
@@ -2209,7 +2209,7 @@ module Yast
         if @_scan_popup && UI.WidgetExists(Id(:label_scanDB_popup))
           UI.CloseDialog
           @_scan_popup = false
-        elsif !full_screen()
+        elsif !full_screen
           Builtins.y2error("The toplevel dialog is not a scan DB popup!")
         end
       end
@@ -2319,7 +2319,7 @@ module Yast
           UI.CloseDialog
         end
 
-        if full_screen()
+        if full_screen
           Progress.SubprogressType(subprogress_type, 100)
           Progress.SubprogressTitle(task)
         else
@@ -2360,7 +2360,7 @@ module Yast
 
       if !Mode.commandline && IsProgressPopup()
         UI.CloseDialog if Builtins.size(@progress_stack) == 0
-      elsif full_screen()
+      elsif full_screen
         if Ops.greater_than(Builtins.size(@progress_stack), 0)
           progress_type = Ops.get_symbol(
             @progress_stack,
@@ -2411,7 +2411,7 @@ module Yast
             )
             return false
           end
-        elsif full_screen()
+        elsif full_screen
           # fullscreen callbacks
           Progress.SubprogressValue(val_percent)
         end
@@ -3447,12 +3447,12 @@ module Yast
       )
     end
 
-    # TODO looks like generic enough to not be here
+    # TODO: looks like generic enough to not be here
     def textmode
       Mode.commandline || UI.GetDisplayInfo["TextMode"]
     end
 
-    # TODO looks like generic enough to not be here
+    # TODO: looks like generic enough to not be here
     def display_width
       Mode.commandline ? 0 : Ops.get_integer(UI.GetDisplayInfo, "Width", 0)
     end
@@ -3577,13 +3577,8 @@ module Yast
     # check and save the autoeject configuration if needed
     def remember_autoeject
       new_value = UI.QueryWidget(Id(:auto_eject), :Value)
-      current = autoeject
 
-      if new_value != autoeject
-        store_autoeject(new_value)
-      end
-
-      nil
+      store_autoeject(new_value) if new_value != autoeject
     end
 
     def process_message(msg, max_len)
@@ -3594,7 +3589,7 @@ module Yast
       words = words.map do |w|
         parsed = URL.Parse(w)
         req_size = max_len - (msg.size - w.size)
-        # is it a valid URL? TODO move to URL this check
+        # is it a valid URL? TODO: move to URL this check
         if ["ftp", "http", "nfs", "file", "dir", "iso", "smb", "disk"].include?(parsed["scheme"])
           # reformat the URL
           w = URL.FormatURL(parsed, max_len)
@@ -3602,9 +3597,7 @@ module Yast
           if w.start_with?("/")
             parts = w.split("/")
 
-            if parts.size > 2 # why this number?
-              w = String.FormatFilename(w, req_size)
-            end
+            w = String.FormatFilename(w, req_size) if parts.size > 2 # why this number?
           end
         end
         w
