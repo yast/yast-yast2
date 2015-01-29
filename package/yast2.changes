@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jan 29 10:21:26 UTC 2015 - jreidinger@suse.com
+
+- remove depreacated legacy Patch callbacks 
+
+-------------------------------------------------------------------
 Tue Jan 27 14:16:20 UTC 2015 - jreidinger@suse.com
 
 - fixed \r, \f, \v and \b  characters lost during conversion to
