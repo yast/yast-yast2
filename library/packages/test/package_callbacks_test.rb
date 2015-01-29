@@ -170,5 +170,12 @@ describe Yast::PackageCallbacks do
 
       expect(found).to eq true
     end
+
+    it "return empty array if probing failed" do
+      allow(Yast::SCR).to receive(:Read).and_return(nil)
+      cds = subject.send(:cd_devices, "/dev/sr0")
+
+      expect(cds).to eq []
+    end
   end
 end
