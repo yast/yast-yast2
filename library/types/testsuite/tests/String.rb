@@ -27,13 +27,6 @@ module Yast
       Yast.include self, "testsuite.rb"
       Yast.import "String"
 
-      DUMP("String::Quote")
-      TEST(->() { String.Quote(nil) }, [], nil)
-      TEST(->() { String.Quote("") }, [], nil)
-      TEST(->() { String.Quote("a") }, [], nil)
-      TEST(->() { String.Quote("a'b") }, [], nil)
-      TEST(->() { String.Quote("a'b'c") }, [], nil)
-
       DUMP("String::UnQuote")
       TEST(->() { String.UnQuote(nil) }, [], nil)
       TEST(->() { String.UnQuote("") }, [], nil)
