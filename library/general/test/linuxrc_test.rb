@@ -2,8 +2,6 @@
 
 require_relative "test_helper"
 
-include Yast
-
 Yast.import "Linuxrc"
 
 DEFAULT_INSTALL_INF = {
@@ -53,138 +51,140 @@ DEFAULT_INSTALL_INF = {
 
 def load_install_inf(defaults_replacement = {})
   # Default value
-  SCR.stub(:Read).and_return nil
+  allow(Yast::SCR).to receive(:Read).and_return nil
 
-  SCR.stub(:Read)
+  allow(Yast::SCR).to receive(:Read)
     .with(path(".target.size"))
     .and_return 1
 
   # Default value
-  SCR.stub(:Dir).and_return nil
+  allow(Yast::SCR).to receive(:Dir).and_return nil
 
   install_inf = DEFAULT_INSTALL_INF.merge(defaults_replacement)
 
-  SCR.stub(:Dir)
+  allow(Yast::SCR).to receive(:Dir)
     .with(path(".etc.install_inf"))
     .and_return install_inf.keys
 
   install_inf.keys.each do |key|
-    Yast::SCR.stub(:Read)
+    allow(Yast::SCR).to receive(:Read)
       .with(path(".etc.install_inf.#{key}"))
       .and_return install_inf[key]
   end
 end
 
-describe "Linuxrc" do
+describe Yast::Linuxrc do
+  subject { Yast::Linuxrc }
+
   before(:each) do
-    Linuxrc.ResetInstallInf
+    Yast::Linuxrc.ResetInstallInf
   end
 
   describe "#serial_console" do
     it "returns true if 'Console' is found in install.inf" do
       load_install_inf("Console" => "/dev/console")
-      expect(Linuxrc.serial_console).to be_true
+      expect(subject.serial_console).to eq(true)
     end
 
     it "returns false if 'Console' is not found in install.inf" do
       load_install_inf("Console" => nil)
-      expect(Linuxrc.serial_console).to be_false
+      expect(subject.serial_console).to eq(false)
     end
   end
 
   describe "#braille" do
     it "returns true if 'Braille' is found in install.inf" do
       load_install_inf("Braille" => "/dev/braille")
-      expect(Linuxrc.braille).to be_true
+      expect(subject.braille).to eq(true)
     end
 
     it "returns false if 'Braille' is not found in install.inf" do
       load_install_inf("Braille" => nil)
-      expect(Linuxrc.braille).to be_false
+      expect(subject.braille).to eq(false)
     end
   end
 
   describe "#vnc" do
     it "returns true if 'VNC' is set to '1' in install.inf" do
       load_install_inf("VNC" => "1")
-      expect(Linuxrc.vnc).to be_true
+      expect(subject.vnc).to eq(true)
     end
 
     it "returns false if 'VNC' is not set to '1' in install.inf" do
       load_install_inf("VNC" => "0")
-      expect(Linuxrc.vnc).to be_false
+      expect(subject.vnc).to eq(false)
     end
   end
 
   describe "#display_ip" do
     it "returns true if 'Display_IP' is found in install.inf" do
       load_install_inf("Display_IP" => "1.2.3.4")
-      expect(Linuxrc.display_ip).to be_true
+      expect(subject.display_ip).to eq(true)
     end
 
     it "returns false if 'Display_IP' is not found in install.inf" do
       load_install_inf("Display_IP" => nil)
-      expect(Linuxrc.display_ip).to be_false
+      expect(subject.display_ip).to eq(false)
     end
   end
 
   describe "#usessh" do
     it "returns true if 'UseSSH' is set to '1' in install.inf" do
       load_install_inf("UseSSH" => "1")
-      expect(Linuxrc.usessh).to be_true
+      expect(subject.usessh).to eq(true)
     end
 
     it "returns false if 'UseSSH' is not set to '1' in install.inf" do
       load_install_inf("UseSSH" => "0")
-      expect(Linuxrc.usessh).to be_false
+      expect(subject.usessh).to eq(false)
     end
   end
 
   describe "#useiscsi" do
     it "returns true if 'WithiSCSI' is set to '1' in install.inf" do
       load_install_inf("WithiSCSI" => "1")
-      expect(Linuxrc.useiscsi).to be_true
+      expect(subject.useiscsi).to eq(true)
     end
 
     it "returns false if 'WithiSCSI' is not set to '1' in install.inf" do
       load_install_inf("WithiSCSI" => "0")
-      expect(Linuxrc.useiscsi).to be_false
+      expect(subject.useiscsi).to eq(false)
     end
   end
 
   describe "#text" do
     it "returns true if 'Textmode' is set to '1' in install.inf" do
       load_install_inf("Textmode" => "1")
-      expect(Linuxrc.text).to be_true
+      expect(subject.text).to eq(true)
     end
 
     it "returns false if 'Textmode' is not set to '1' in install.inf" do
       load_install_inf("Textmode" => "0")
-      expect(Linuxrc.text).to be_false
+      expect(subject.text).to eq(false)
     end
   end
 
   describe "#InstallInf" do
     it "returns locale defined in install.inf" do
       load_install_inf
-      expect(Linuxrc.InstallInf("Locale")).to be_equal(DEFAULT_INSTALL_INF["Locale"])
+      expect(subject.InstallInf("Locale")).to be_equal(DEFAULT_INSTALL_INF["Locale"])
     end
 
     it "returns nil if value for unknown key is requested" do
       load_install_inf
-      expect(Linuxrc.InstallInf("Unknown Key Requested")).to be_nil
+      expect(subject.InstallInf("Unknown Key Requested")).to be_nil
     end
 
     it "returns nil if value for 'nil' key is requested" do
       load_install_inf
-      expect(Linuxrc.InstallInf(nil)).to be_nil
+      expect(subject.InstallInf(nil)).to be_nil
     end
   end
 
   describe "#keys" do
     it "returns all keys defined in install.inf" do
       load_install_inf
-      expect(Linuxrc.keys.sort).to eq(DEFAULT_INSTALL_INF.keys.sort)
+      expect(subject.keys.sort).to eq(DEFAULT_INSTALL_INF.keys.sort)
     end
   end
 end

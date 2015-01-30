@@ -1,6 +1,7 @@
 # YaST - The Basic Libraries #
 
 [![Travis Build](https://travis-ci.org/yast/yast-yast2.svg?branch=master)](https://travis-ci.org/yast/yast-yast2)
+[![Coverage Status](https://img.shields.io/coveralls/yast/yast-yast2.svg)](https://coveralls.io/r/yast/yast-yast2?branch=master)
 [![Jenkins Build](http://img.shields.io/jenkins/s/https/ci.opensuse.org/yast-yast2-master.svg)](https://ci.opensuse.org/view/Yast/job/yast-yast2-master/)
 [![Code Climate](https://codeclimate.com/github/yast/yast-yast2/badges/gpa.svg)](https://codeclimate.com/github/yast/yast-yast2)
 

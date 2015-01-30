@@ -1,19 +1,15 @@
 #!/usr/bin/env rspec
 
-ENV["Y2DIR"] = File.expand_path("../../src", __FILE__)
+require_relative "test_helper"
 
-require "yast"
+Yast.import "IP"
 
-include Yast
-
-describe "Yast::IP" do
-  before(:all) do
-    Yast.import "IP"
-  end
+describe Yast::IP do
+  subject { Yast::IP }
 
   describe "#Valid4" do
     it "must return valid IPv4 description" do
-      expect(IP.Valid4).not_to be_empty
+      expect(subject.Valid4).not_to be_empty
     end
   end
 
@@ -27,7 +23,7 @@ describe "Yast::IP" do
 
     VALID_IP4S.each do |valid_ip4|
       it "returns true for valid IPv4 '#{valid_ip4}'" do
-        expect(IP.Check4(valid_ip4)).to be_true
+        expect(subject.Check4(valid_ip4)).to eq(true)
       end
     end
 
@@ -41,16 +37,16 @@ describe "Yast::IP" do
 
     INVALID_IP4S.each do |invalid_ip4|
       it "returns false for invalid IPv4 '#{invalid_ip4}'" do
-        expect(IP.Check4(invalid_ip4)).to be_false
+        expect(subject.Check4(invalid_ip4)).to eq(false)
       end
     end
 
     it "returns false for empty argument" do
-      expect(IP.Check4("")).to be_false
+      expect(subject.Check4("")).to eq(false)
     end
 
     it "returns false for nil argument" do
-      expect(IP.Check4(nil)).to be_false
+      expect(subject.Check4(nil)).to eq(false)
     end
   end
 
@@ -74,7 +70,7 @@ describe "Yast::IP" do
 
     VALID_IP6S.each do |valid_ip6|
       it "returns true for valid IPv6 '#{valid_ip6}'" do
-        expect(IP.Check6(valid_ip6)).to be_true
+        expect(subject.Check6(valid_ip6)).to eq(true)
       end
     end
 
@@ -95,16 +91,16 @@ describe "Yast::IP" do
 
     INVALID_IP6S.each do |invalid_ip6|
       it "returns false for invalid IPv6 '#{invalid_ip6}" do
-        expect(IP.Check6(invalid_ip6)).to be_false
+        expect(subject.Check6(invalid_ip6)).to eq(false)
       end
     end
 
     it "returns false for empty argument" do
-      expect(IP.Check6("")).to be_false
+      expect(subject.Check6("")).to eq(false)
     end
 
     it "returns false for nil argument" do
-      expect(IP.Check6(nil)).to be_false
+      expect(subject.Check6(nil)).to eq(false)
     end
   end
 
@@ -121,19 +117,19 @@ describe "Yast::IP" do
         # in 32bits arch IP#ToInteger returns Bignum, so equal? returns false
         # and eql? has to be used
         # in 64bits arch the result is Fixnum and the problem do not appear
-        expect(IP.ToInteger(k)).to eq v
+        expect(subject.ToInteger(k)).to eq v
       end
     end
 
     it "returns nil if value is not valid IPv4 in dotted format" do
-      expect(IP.ToInteger("foobar")).to eq nil
+      expect(subject.ToInteger("foobar")).to eq nil
     end
   end
 
   describe "#ToString" do
     RESULT_MAP_INT.each_pair do |k, v|
       it "it returns #{k} for #{v}" do
-        expect(IP.ToString(v)).to eq k
+        expect(subject.ToString(v)).to eq k
       end
     end
   end
@@ -148,12 +144,12 @@ describe "Yast::IP" do
 
     RESULT_MAP_HEX.each_pair do |k, v|
       it "returns #{v} for valid #{k}" do
-        expect(IP.ToHex(k)).to eq v
+        expect(subject.ToHex(k)).to eq v
       end
     end
 
     it "returns nil if value is not valid IPv4 in dotted format" do
-      expect(IP.ToHex("foobar")).to eq nil
+      expect(subject.ToHex("foobar")).to eq nil
     end
   end
 
@@ -165,138 +161,138 @@ describe "Yast::IP" do
   describe "#IPv4ToBits" do
     RESULT_MAP_BITS.each_pair do |k, v|
       it "returns bitmap for #{k}" do
-        expect(IP.IPv4ToBits(k)).to eq v
+        expect(subject.IPv4ToBits(k)).to eq v
       end
     end
 
     it "returns nil if value is not valid IPv4" do
-      expect(IP.IPv4ToBits("blabla")).to eq nil
+      expect(subject.IPv4ToBits("blabla")).to eq nil
     end
   end
 
   describe "#BitsToIPv4" do
     RESULT_MAP_BITS.each_pair do |k, v|
       it "returns #{k} for #{v}" do
-        expect(IP.BitsToIPv4(v)).to eq k
+        expect(subject.BitsToIPv4(v)).to eq k
       end
     end
 
     it "returns nil if length of bitmap is not 32" do
-      expect(IP.BitsToIPv4("101")).to eq nil
+      expect(subject.BitsToIPv4("101")).to eq nil
     end
 
     it "returns nil if value is not valid bitmap with 0 or 1 only" do
-      expect(IP.BitsToIPv4("foobar")).to eq nil
+      expect(subject.BitsToIPv4("foobar")).to eq nil
     end
   end
 
   describe "#reserved4" do
     it "raises exception for invalid IPv4 address" do
-      expect { IP.reserved4(nil) }.to raise_error(RuntimeError)
-      expect { IP.reserved4("0.0.0") }.to raise_error(RuntimeError)
+      expect { subject.reserved4(nil) }.to raise_error(RuntimeError)
+      expect { subject.reserved4("0.0.0") }.to raise_error(RuntimeError)
     end
 
     it "returns true for address in 0.0.0.0/8 (RFC#1700)" do
-      expect(IP.reserved4("0.0.0.0")).to be_equal true
-      expect(IP.reserved4("0.1.0.0")).to be_equal true
-      expect(IP.reserved4("0.0.1.0")).to be_equal true
-      expect(IP.reserved4("0.0.0.1")).to be_equal true
-      expect(IP.reserved4("0.255.255.255")).to be_equal true
+      expect(subject.reserved4("0.0.0.0")).to be_equal true
+      expect(subject.reserved4("0.1.0.0")).to be_equal true
+      expect(subject.reserved4("0.0.1.0")).to be_equal true
+      expect(subject.reserved4("0.0.0.1")).to be_equal true
+      expect(subject.reserved4("0.255.255.255")).to be_equal true
     end
 
     it "returns true for address in 10.0.0.0/8 (RFC#1918)" do
-      expect(IP.reserved4("10.0.0.0")).to be_equal true
-      expect(IP.reserved4("10.1.0.0")).to be_equal true
-      expect(IP.reserved4("10.0.1.0")).to be_equal true
-      expect(IP.reserved4("10.0.0.1")).to be_equal true
-      expect(IP.reserved4("10.255.255.255")).to be_equal true
+      expect(subject.reserved4("10.0.0.0")).to be_equal true
+      expect(subject.reserved4("10.1.0.0")).to be_equal true
+      expect(subject.reserved4("10.0.1.0")).to be_equal true
+      expect(subject.reserved4("10.0.0.1")).to be_equal true
+      expect(subject.reserved4("10.255.255.255")).to be_equal true
     end
 
     it "returns true for address in 172.16.0.0/12 (RFC#1918)" do
-      expect(IP.reserved4("172.16.0.0")).to be_equal true
-      expect(IP.reserved4("172.25.152.153")).to be_equal true
-      expect(IP.reserved4("172.31.255.255")).to be_equal true
+      expect(subject.reserved4("172.16.0.0")).to be_equal true
+      expect(subject.reserved4("172.25.152.153")).to be_equal true
+      expect(subject.reserved4("172.31.255.255")).to be_equal true
     end
 
     it "returns true for address in 192.168.0.0/16 (RFC#1918)" do
-      expect(IP.reserved4("192.168.0.0")).to be_equal true
-      expect(IP.reserved4("192.168.152.153")).to be_equal true
-      expect(IP.reserved4("192.168.255.255")).to be_equal true
+      expect(subject.reserved4("192.168.0.0")).to be_equal true
+      expect(subject.reserved4("192.168.152.153")).to be_equal true
+      expect(subject.reserved4("192.168.255.255")).to be_equal true
     end
 
     it "returns true for address in 100.64.0.0/10 (RFC#6598)" do
-      expect(IP.reserved4("100.64.0.0")).to be_equal true
-      expect(IP.reserved4("100.100.0.0")).to be_equal true
-      expect(IP.reserved4("100.111.111.111")).to be_equal true
-      expect(IP.reserved4("100.127.255.255")).to be_equal true
+      expect(subject.reserved4("100.64.0.0")).to be_equal true
+      expect(subject.reserved4("100.100.0.0")).to be_equal true
+      expect(subject.reserved4("100.111.111.111")).to be_equal true
+      expect(subject.reserved4("100.127.255.255")).to be_equal true
     end
 
     it "returns true for address in 127.0.0.0/8 (RFC#5735)" do
-      expect(IP.reserved4("127.168.0.0")).to be_equal true
-      expect(IP.reserved4("127.100.0.0")).to be_equal true
-      expect(IP.reserved4("127.111.111.111")).to be_equal true
-      expect(IP.reserved4("127.255.255.255")).to be_equal true
+      expect(subject.reserved4("127.168.0.0")).to be_equal true
+      expect(subject.reserved4("127.100.0.0")).to be_equal true
+      expect(subject.reserved4("127.111.111.111")).to be_equal true
+      expect(subject.reserved4("127.255.255.255")).to be_equal true
     end
 
     it "returns true for address in 169.254.0.0/16 (RFC#5735)" do
-      expect(IP.reserved4("169.254.0.0")).to be_equal true
-      expect(IP.reserved4("169.254.0.0")).to be_equal true
-      expect(IP.reserved4("169.254.111.111")).to be_equal true
-      expect(IP.reserved4("169.254.255.255")).to be_equal true
+      expect(subject.reserved4("169.254.0.0")).to be_equal true
+      expect(subject.reserved4("169.254.0.0")).to be_equal true
+      expect(subject.reserved4("169.254.111.111")).to be_equal true
+      expect(subject.reserved4("169.254.255.255")).to be_equal true
     end
 
     it "returns true for address in 192.0.0.0/29 (RFC#6333)" do
-      expect(IP.reserved4("192.0.0.0")).to be_equal true
-      expect(IP.reserved4("192.0.0.4")).to be_equal true
-      expect(IP.reserved4("192.0.0.7")).to be_equal true
+      expect(subject.reserved4("192.0.0.0")).to be_equal true
+      expect(subject.reserved4("192.0.0.4")).to be_equal true
+      expect(subject.reserved4("192.0.0.7")).to be_equal true
     end
 
     it "returns true for address in 192.0.2.0/24 (RFC#5737)" do
-      expect(IP.reserved4("192.0.2.0")).to be_equal true
-      expect(IP.reserved4("192.0.2.124")).to be_equal true
-      expect(IP.reserved4("192.0.2.255")).to be_equal true
+      expect(subject.reserved4("192.0.2.0")).to be_equal true
+      expect(subject.reserved4("192.0.2.124")).to be_equal true
+      expect(subject.reserved4("192.0.2.255")).to be_equal true
     end
 
     it "returns true for address in 192.88.99.0/24 (RFC#3068)" do
-      expect(IP.reserved4("192.88.99.0")).to be_equal true
-      expect(IP.reserved4("192.88.99.124")).to be_equal true
-      expect(IP.reserved4("192.88.99.255")).to be_equal true
+      expect(subject.reserved4("192.88.99.0")).to be_equal true
+      expect(subject.reserved4("192.88.99.124")).to be_equal true
+      expect(subject.reserved4("192.88.99.255")).to be_equal true
     end
 
     it "returns true for address in 192.18.0.0/15 (RFC#2544)" do
-      expect(IP.reserved4("192.18.0.0")).to be_equal true
-      expect(IP.reserved4("192.19.0.0")).to be_equal true
-      expect(IP.reserved4("192.19.255.255")).to be_equal true
+      expect(subject.reserved4("192.18.0.0")).to be_equal true
+      expect(subject.reserved4("192.19.0.0")).to be_equal true
+      expect(subject.reserved4("192.19.255.255")).to be_equal true
     end
 
     it "returns true for address in 198.51.100.0/24 (RFC#5737)" do
-      expect(IP.reserved4("198.51.100.0")).to be_equal true
-      expect(IP.reserved4("198.51.100.124")).to be_equal true
-      expect(IP.reserved4("198.51.100.255")).to be_equal true
+      expect(subject.reserved4("198.51.100.0")).to be_equal true
+      expect(subject.reserved4("198.51.100.124")).to be_equal true
+      expect(subject.reserved4("198.51.100.255")).to be_equal true
     end
 
     it "returns true for address in 203.0.113.0/24 (RFC#5737)" do
-      expect(IP.reserved4("203.0.113.0")).to be_equal true
-      expect(IP.reserved4("203.0.113.124")).to be_equal true
-      expect(IP.reserved4("203.0.113.255")).to be_equal true
+      expect(subject.reserved4("203.0.113.0")).to be_equal true
+      expect(subject.reserved4("203.0.113.124")).to be_equal true
+      expect(subject.reserved4("203.0.113.255")).to be_equal true
     end
 
     it "returns true for address in 224.0.0.0/4 (RFC#5771)" do
-      expect(IP.reserved4("224.0.0.0")).to be_equal true
-      expect(IP.reserved4("230.0.113.124")).to be_equal true
-      expect(IP.reserved4("239.255.255.255")).to be_equal true
+      expect(subject.reserved4("224.0.0.0")).to be_equal true
+      expect(subject.reserved4("230.0.113.124")).to be_equal true
+      expect(subject.reserved4("239.255.255.255")).to be_equal true
     end
 
     it "returns true for address in 240.0.0.0/4 (RFC#5735)" do
-      expect(IP.reserved4("240.0.0.0")).to be_equal true
-      expect(IP.reserved4("250.0.113.124")).to be_equal true
-      expect(IP.reserved4("255.255.255.255")).to be_equal true
+      expect(subject.reserved4("240.0.0.0")).to be_equal true
+      expect(subject.reserved4("250.0.113.124")).to be_equal true
+      expect(subject.reserved4("255.255.255.255")).to be_equal true
     end
 
     it "returns false for address not reserved by any RFC" do
-      expect(IP.reserved4("8.8.8.8")).to be_equal false
-      expect(IP.reserved4("77.75.76.3")).to be_equal false
-      expect(IP.reserved4("130.57.5.70")).to be_equal false
+      expect(subject.reserved4("8.8.8.8")).to be_equal false
+      expect(subject.reserved4("77.75.76.3")).to be_equal false
+      expect(subject.reserved4("130.57.5.70")).to be_equal false
     end
   end
 end

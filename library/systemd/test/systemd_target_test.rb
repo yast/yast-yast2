@@ -63,7 +63,7 @@ module Yast
 
     describe ".get_default" do
       it "returns the unit object of the currently set default target" do
-        Systemctl.stub(:execute).with("get-default").and_return(
+        allow(Systemctl).to receive(:execute).with("get-default").and_return(
           OpenStruct.new("exit" => 0, "stdout" => "graphical.target", "stderr" => "")
         )
         target = SystemdTarget.get_default
@@ -77,12 +77,12 @@ module Yast
       it "returns true if the default target has been has for the parameter successfully" do
         expect(Systemctl).to receive(:execute).with("set-default --force graphical.target")
           .and_return(OpenStruct.new("exit" => 0, "stdout" => "", "stderr" => ""))
-        expect(SystemdTarget.set_default("graphical")).to be_true
+        expect(SystemdTarget.set_default("graphical")).to eq(true)
       end
 
       it "returns false if the default target has not been set" do
         stub_targets(target: "unknown")
-        expect(SystemdTarget.set_default("unknown")).to be_false
+        expect(SystemdTarget.set_default("unknown")).to eq(false)
       end
     end
 
@@ -91,13 +91,13 @@ module Yast
         expect(Systemctl).to receive(:execute).with("set-default --force graphical.target")
           .and_return(OpenStruct.new("exit" => 0, "stdout" => "", "stderr" => ""))
         target = SystemdTarget.find("graphical")
-        expect(target.set_default).to be_true
+        expect(target.set_default).to eq(true)
       end
 
       it "returns false if the target unit has not been set as default target" do
         stub_targets(target: "network")
         target = SystemdTarget.find("network")
-        expect(target.set_default).to be_false
+        expect(target.set_default).to eq(false)
       end
 
       context "when target properties cannot be found out (e.g. in chroot)" do
@@ -106,7 +106,7 @@ module Yast
             .and_return(OpenStruct.new("exit" => 0, "stdout" => "", "stderr" => ""))
           stub_targets(target: "multi-user-in-installation")
           target = SystemdTarget.find("multi-user-in-installation")
-          expect(target.set_default).to be_true
+          expect(target.set_default).to eq(true)
         end
       end
     end
@@ -114,20 +114,20 @@ module Yast
     describe "#allow_isolate?" do
       it "returns true if the unit is allowed to be isolated" do
         target = SystemdTarget.find("graphical")
-        expect(target.allow_isolate?).to be_true
+        expect(target.allow_isolate?).to eq(true)
       end
 
       it "returns false if the unit is not allowed to be isolated" do
         stub_targets(target: "network")
         target = SystemdTarget.find("network")
-        expect(target.allow_isolate?).to be_false
+        expect(target.allow_isolate?).to eq(false)
       end
 
       context "when target properties cannot be found out (e.g. in chroot)" do
         it "returns true" do
           stub_targets(target: "multi-user-in-installation")
           target = SystemdTarget.find("multi-user-in-installation")
-          expect(target.allow_isolate?).to be_true
+          expect(target.allow_isolate?).to eq(true)
         end
       end
     end

@@ -12,15 +12,15 @@ describe Yast::OSRelease do
   describe "#ReleaseInformation" do
     context "when product name contains code name, architecture, etc." do
       it "returns product name if release file exists" do
-        Yast::FileUtils.stub(:Exists).and_return(true)
-        Yast::Misc.stub(:CustomSysconfigRead).and_return("openSUSE 13.1 (Bottle) (x86_64)")
+        allow(Yast::FileUtils).to receive(:Exists).and_return(true)
+        allow(Yast::Misc).to receive(:CustomSysconfigRead).and_return("openSUSE 13.1 (Bottle) (x86_64)")
         expect(Yast::OSRelease.ReleaseInformation("/mnt")).to eq "openSUSE 13.1"
       end
     end
 
     context "when the os-release file doesn't exist" do
       it "throws exception Yast::OSReleaseFileMissingError" do
-        Yast::FileUtils.stub(:Exists).and_return(false)
+        allow(Yast::FileUtils).to receive(:Exists).and_return(false)
         expect { Yast::OSRelease.ReleaseInformation("/mnt") }.to raise_error(
           Yast::OSReleaseFileMissingError
         )

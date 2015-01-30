@@ -1,10 +1,4 @@
-#!/usr/bin/env rspec
-
-top_srcdir = File.expand_path("../../../..", __FILE__)
-inc_dirs = Dir.glob("#{top_srcdir}/library/*/src")
-ENV["Y2DIR"] = inc_dirs.join(":")
-
-require "yast"
+require_relative "test_helper"
 
 Yast.import "Mode"
 Yast.import "PackageSystem"
@@ -34,11 +28,11 @@ describe Yast::SuSEFirewall do
         expect(Yast::PackageSystem).to receive(:Installed).and_return(false, true).twice
 
         # Selected
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
         # Not selected and not installed
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
         # Not selected, but installed
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
       end
     end
 
@@ -50,15 +44,15 @@ describe Yast::SuSEFirewall do
         # Value is cached
         expect(Yast::PackageSystem).to receive(:CheckAndInstallPackages).and_return(true, false).twice
 
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
 
         reset_SuSEFirewallIsInstalled_cache
 
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
       end
     end
 
@@ -70,15 +64,15 @@ describe Yast::SuSEFirewall do
         # Value is cached
         expect(Yast::PackageSystem).to receive(:Installed).and_return(false, true).twice
 
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
 
         reset_SuSEFirewallIsInstalled_cache
 
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
       end
     end
   end
