@@ -307,19 +307,15 @@ module Yast
       end
     end
 
-    # Remove blanks at begin and end of input string.
+    # Remove spaces and tabs at begin and end of input string.
     # @param [String] input string to be stripped
     # @return stripped string
-    # @example CutBlanks("  any  input     ") -> "any  input"
+    # @deprecated if remove also \n then use {::String#strip}, otherwise simple sub is enough
+    # @example CutBlanks("  \tany  input     ") -> "any  input"
     def CutBlanks(input)
-      return "" if input.nil? || Ops.less_than(Builtins.size(input), 1)
+      return "" if input.nil?
 
-      pos1 = Builtins.findfirstnotof(input, " \t")
-      return "" if pos1.nil?
-
-      pos2 = Builtins.findlastnotof(input, " \t")
-
-      Builtins.substring(input, pos1, Ops.add(Ops.subtract(pos2, pos1), 1))
+      input.sub(/\A[ \t]*(.*[^ \t])[ \t]*\z/, "\\1")
     end
 
     # Remove any leading zeros
