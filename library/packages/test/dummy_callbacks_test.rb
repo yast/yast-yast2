@@ -6,7 +6,7 @@ require "packages/dummy_callbacks"
 
 class FakePkg
   class << self
-    def method_missing(met, *args, &block)
+    def method_missing(_met, *args, &_block)
       signature = args.first.signature
       if signature.include?("()")
         args_count = 0
@@ -26,7 +26,6 @@ describe Packages::DummyCallbacks do
   end
 
   it "registers valid methods to Pkg" do
-    expect{Packages::DummyCallbacks.register}.to_not raise_error
+    expect { Packages::DummyCallbacks.register }.to_not raise_error
   end
 end
-

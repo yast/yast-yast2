@@ -1,6 +1,8 @@
 require "yast"
 
 module Packages
+  # Empty callbacks for package bindings. To register empty bindings in Yast::Pkg just call
+  # {Package::DummyCallbacks.register}
   class DummyCallbacks
     class << self
       include Yast::Logger
@@ -20,6 +22,7 @@ module Packages
       end
 
     private
+
       def fun_ref(*args)
         Yast::FunRef.new(*args)
       end
@@ -355,7 +358,6 @@ module Packages
 
         nil
       end
-
     end
   end
 end
