@@ -340,17 +340,11 @@ module Yast
     # @param input string to repeat
     # @param input number number of repetitions
     # @return [String] repeated string
+    # @deprecated use {::String#operator*} instead
     def Repeat(text, number)
-      text = "" if text.nil?
+      return "" if text.nil? || number.nil? || number < 1
 
-      ret = ""
-
-      while Ops.greater_than(number, 0)
-        ret = Ops.add(ret, text)
-        number = Ops.subtract(number, 1)
-      end
-
-      ret
+      text * number
     end
 
     # Add the padding character around the text to make it long enough
