@@ -358,14 +358,15 @@ module Yast
     # @param [Symbol] alignment alignment to use, either `left or `right
     # @return padded text
     def SuperPad(text, length, padding, alignment)
-      text = "" if text.nil?
+      text ||= ""
+      return text if length.nil? || text.size >= length || padding.nil?
 
-      pad = Repeat(padding, Ops.subtract(length, Builtins.size(text)))
+      pad = padding * (length - text.size)
 
       if alignment == :right
-        return Ops.add(pad, text)
+        return pad + text
       else
-        return Ops.add(text, pad)
+        return text + pad
       end
     end
 
