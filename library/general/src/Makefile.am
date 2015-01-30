@@ -90,6 +90,7 @@ ylib2_DATA = \
   lib/ui/dialog.rb \
   lib/ui/event_dispatcher.rb
 
-EXTRA_DIST = $(module_DATA) $(client_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ydata_DATA) $(fillup_DATA) $(ylib_DATA)
+EXTRA_DIST = $(module_DATA) $(client_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ydata_DATA) $(fillup_DATA) $(ylib_DATA) $(ylib2_DATA)
+
 
 include $(top_srcdir)/Makefile.am.common
