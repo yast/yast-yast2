@@ -33,6 +33,7 @@ describe Yast::String do
       expect(subject.UnQuote("a")).to eq "a"
       expect(subject.UnQuote("a'\\''b")).to eq "a'b"
       expect(subject.UnQuote("a'\\''b'\\''c")).to eq "a'b'c"
+      expect(subject.UnQuote("a'\\'''\\''b'\\''c")).to eq "a''b'c"
     end
   end
 

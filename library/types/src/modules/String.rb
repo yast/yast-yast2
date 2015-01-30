@@ -31,6 +31,8 @@ require "yast"
 
 module Yast
   class StringClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -60,8 +62,9 @@ module Yast
     # @return quoted string
     # @example quote("a'b") -> "a'\''b"
     def Quote(var)
-      return "" if var.nil? || var == ""
-      Builtins.mergestring(Builtins.splitstring(var, "'"), "'\\''")
+      return "" if var.nil?
+
+      var.gsub("'", "'\\\\''")
     end
 
     # Unquote a string with 's (quoted with quote)
@@ -69,13 +72,10 @@ module Yast
     # @return unquoted string
     # @see #quote
     def UnQuote(var)
-      return "" if var.nil? || var == ""
-      Builtins.y2debug("var=%1", var)
-      while Builtins.regexpmatch(var, "'\\\\''")
-        var = Builtins.regexpsub(var, "(.*)'\\\\''(.*)", "\\1'\\2")
-        Builtins.y2debug("var=%1", var)
-      end
-      var
+      return "" if var.nil?
+      log.debug "var=#{var}"
+
+      var.gsub("'\\''", "'")
     end
 
     # Optional formatted text
