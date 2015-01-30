@@ -133,6 +133,10 @@ module Packages
         nil
       end
 
+      def void_string_ref
+        fun_ref(method(:void_string), "void (string)")
+      end
+
       def string_integer_string(_param1, _param2)
         log.debug "Empty generic string(integer, string) callback"
         ""
@@ -143,20 +147,14 @@ module Packages
             fun_ref(method(:void_string_integer), "void (string, integer)")
             )
         Yast::Pkg.CallbackProgressDeltaDownload(boolean_integer_ref)
-        Yast::Pkg.CallbackProblemDeltaDownload(
-            fun_ref(method(:void_string), "void (string)")
-            )
+        Yast::Pkg.CallbackProblemDeltaDownload(void_string_ref)
         Yast::Pkg.CallbackFinishDeltaDownload(void_ref)
 
-        Yast::Pkg.CallbackStartDeltaApply(
-            fun_ref(method(:void_string), "void (string)")
-            )
+        Yast::Pkg.CallbackStartDeltaApply(void_string_ref)
         Yast::Pkg.CallbackProgressDeltaApply(
             fun_ref(method(:void_integer), "void (integer)")
             )
-        Yast::Pkg.CallbackProblemDeltaApply(
-            fun_ref(method(:void_string), "void (string)")
-            )
+        Yast::Pkg.CallbackProblemDeltaApply(void_string_ref)
         Yast::Pkg.CallbackFinishDeltaApply(void_ref)
 
         nil
@@ -174,9 +172,7 @@ module Packages
       end
 
       def register_source_create_callbacks
-        Yast::Pkg.CallbackSourceCreateStart(
-            fun_ref(method(:void_string), "void (string)")
-            )
+        Yast::Pkg.CallbackSourceCreateStart(void_string_ref)
         Yast::Pkg.CallbackSourceCreateProgress(boolean_integer_ref)
         Yast::Pkg.CallbackSourceCreateError(
             fun_ref(
@@ -340,9 +336,7 @@ module Packages
       end
 
       def register_download_callbacks
-        Yast::Pkg.CallbackInitDownload(
-            fun_ref(method(:void_string), "void (string)")
-            )
+        Yast::Pkg.CallbackInitDownload(void_string_ref)
         Yast::Pkg.CallbackStartDownload(
             fun_ref(method(:start_download), "void (string, string)")
             )
