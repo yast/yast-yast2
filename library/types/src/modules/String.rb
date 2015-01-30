@@ -326,12 +326,11 @@ module Yast
     #
     # @param [String] input number that might contain leadig zero
     # @return [String] that has leading zeros removed
+    # @deprecated if conversion to integer is needed in decimal use {::String#to_i}
     def CutZeros(input)
-      return "" if input.nil? || Ops.less_than(Builtins.size(input), 1)
-      return input if !Builtins.regexpmatch(input, "^0.*")
-      output = Builtins.regexpsub(input, "^0+(.*)$", "\\1")
-      return "0" if Ops.less_than(Builtins.size(output), 1)
-      output
+      return "" if input.nil?
+
+      input.sub(/\A0*([0-9])/, "\\1")
     end
 
     # Repeat a string
