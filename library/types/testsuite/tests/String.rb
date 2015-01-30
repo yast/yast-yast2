@@ -27,38 +27,6 @@ module Yast
       Yast.include self, "testsuite.rb"
       Yast.import "String"
 
-      DUMP("String::SuperPad")
-      TEST(lambda do
-        Builtins.mergestring(
-          ["\"", String.SuperPad(nil, 2, nil, :left), "\""],
-          ""
-        )
-      end, [], nil)
-      TEST(lambda do
-        Builtins.mergestring(
-          ["\"", String.SuperPad("a", 8, ".", :left), "\""],
-          ""
-        )
-      end, [], nil)
-      TEST(lambda do
-        Builtins.mergestring(
-          ["\"", String.SuperPad("abc", 8, ".", :left), "\""],
-          ""
-        )
-      end, [], nil)
-      TEST(lambda do
-        Builtins.mergestring(
-          ["\"", String.SuperPad("a", 8, ".", :right), "\""],
-          ""
-        )
-      end, [], nil)
-      TEST(lambda do
-        Builtins.mergestring(
-          ["\"", String.SuperPad("abc", 8, ".", :right), "\""],
-          ""
-        )
-      end, [], nil)
-
       DUMP("String::Pad")
       TEST(->() { Builtins.mergestring(["\"", String.Pad(nil, 2), "\""], "") }, [], nil)
       TEST(->() { Builtins.mergestring(["\"", String.Pad("", 2), "\""], "") }, [], nil)

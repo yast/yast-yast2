@@ -149,4 +149,26 @@ describe Yast::String do
       expect(subject.Repeat("a", 5)).to eq "aaaaa"
     end
   end
+
+  describe ".SuperPad" do
+    it "returns length times repeated padding if nil is passed as text" do
+      expect(subject.SuperPad(nil, 5, ".", :right)).to eq "....."
+    end
+
+    it "returns text if is nil passed as padding" do
+      expect(subject.SuperPad("test", 5, nil, :right)).to eq "test"
+    end
+
+    it "returns text if is nil is passed as lenght" do
+      expect(subject.SuperPad("test", nil, ".", :right)).to eq "test"
+    end
+
+    it "returns text prefixed by padding to make lenght requested if alignment is :right" do
+      expect(subject.SuperPad("test", 5, ".", :right)).to eq ".test"
+    end
+
+    it "returns text suffixed by padding to make lenght requested if alignment is not :right" do
+      expect(subject.SuperPad("test", 5, ".", :left)).to eq "test."
+    end
+  end
 end
