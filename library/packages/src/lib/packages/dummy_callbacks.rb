@@ -8,15 +8,15 @@ module Packages
       def register
         Yast.import "Pkg"
 
-        SetdummyProcessCallbacks()
-        SetdummyProvideCallbacks()
-        SetdummyPatchCallbacks()
-        SetdummySourceCreateCallbacks()
-        SetdummySourceReportCallbacks()
-        SetdummyProgressReportCallbacks()
-        SetdummyScriptCallbacks()
-        SetdummyScanDBCallbacks()
-        SetdummyDownloadCallbacks()
+        register_process_callbacks
+        register_provide_callbacks
+        register_patch_callbacks
+        register_source_create_callbacks
+        register_source_report_callbacks
+        register_progress_report_callbacks
+        register_script_callbacks
+        register_scandb_callbacks
+        register_download_callbacks
       end
 
     private
@@ -43,7 +43,7 @@ module Packages
         log.debug "Empty generic void() callback"
       end
 
-      def SetdummyProcessCallbacks
+      def register_process_callbacks
         Yast::Pkg.CallbackProcessStart(
             fun_ref(
               method(:dummy_process_start),
@@ -81,7 +81,7 @@ module Packages
         "I"
       end
 
-      def SetdummyProvideCallbacks
+      def register_provide_callbacks
         Yast::Pkg.CallbackStartProvide(
             fun_ref(method(:dummy_start_provide), "void (string, integer, boolean)")
             )
@@ -136,7 +136,7 @@ module Packages
         ""
       end
 
-      def SetdummyPatchCallbacks
+      def register_patch_callbacks
         Yast::Pkg.CallbackStartDeltaDownload(
             fun_ref(method(:dummy_void_string_integer), "void (string, integer)")
             )
@@ -173,7 +173,7 @@ module Packages
         nil
       end
 
-      def SetdummySourceCreateCallbacks
+      def register_source_create_callbacks
         Yast::Pkg.CallbackSourceCreateStart(
             fun_ref(method(:dummy_void_string), "void (string)")
             )
@@ -212,7 +212,7 @@ module Packages
         nil
       end
 
-      def SetdummySourceReportCallbacks
+      def register_source_report_callbacks
         # source report callbacks
         Yast::Pkg.CallbackSourceReportStart(
             fun_ref(
@@ -252,7 +252,7 @@ module Packages
         true
       end
 
-      def SetdummyProgressReportCallbacks
+      def register_progress_report_callbacks
         Yast::Pkg.CallbackProgressReportStart(
             fun_ref(
               method(:dummy_progress_start),
@@ -288,7 +288,7 @@ module Packages
         true # continue
       end
 
-      def SetdummyScriptCallbacks
+      def register_script_callbacks
         Yast::Pkg.CallbackScriptStart(
             fun_ref(
               method(:dummy_script_start),
@@ -313,7 +313,7 @@ module Packages
         nil
       end
 
-      def SetdummyScanDBCallbacks
+      def register_scandb_callbacks
         Yast::Pkg.CallbackStartScanDb(fun_ref(method(:dummy_void), "void ()"))
         Yast::Pkg.CallbackProgressScanDb(
             fun_ref(method(:dummy_boolean_integer), "boolean (integer)")
@@ -345,7 +345,7 @@ module Packages
         nil
       end
 
-      def SetdummyDownloadCallbacks
+      def register_download_callbacks
         Yast::Pkg.CallbackInitDownload(
             fun_ref(method(:dummy_void_string), "void (string)")
             )
