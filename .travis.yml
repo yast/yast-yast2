@@ -13,4 +13,6 @@ script:
     - make -s
     - sudo make -s install
     - make -s check
+    # make test coverage report
+    - COVERAGE=1 rake test:unit
 
