@@ -39,8 +39,8 @@ module Yast
       Yast.import "CommandLine"
 
       # unknown option
-      TEST(lambda { CommandLine.Init(@cmdline, ["add", "dev"]) }, [], nil)
-      TEST(lambda { CommandLine.Command }, [], nil) 
+      TEST(->() { CommandLine.Init(@cmdline, ["add", "dev"]) }, [], nil)
+      TEST(->() { CommandLine.Command }, [], nil)
       # EOF
 
       nil

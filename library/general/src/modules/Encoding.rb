@@ -66,12 +66,12 @@ module Yast
       @console = Convert.to_string(
         SCR.Read(path(".sysconfig.console.CONSOLE_ENCODING"))
       )
-      @console = "" if @console == nil
+      @console = "" if @console.nil?
 
       m = Convert.to_map(
         SCR.Execute(path(".target.bash_output"), "locale -k charmap")
       )
-      m = {} if m == nil
+      m = {} if m.nil?
 
       out = Builtins.splitstring(Ops.get_string(m, "stdout", ""), "\n")
       Builtins.y2milestone("list %1", out)
@@ -126,14 +126,12 @@ module Yast
       ret
     end
 
-
-
     # Get Code Page
     # @param [String] enc Encoding
     # @return [String]
     def GetCodePage(enc)
       code = Ops.get_string(@enc_map, enc, "")
-      if Builtins.size(code) == 0 && @lang != nil
+      if Builtins.size(code) == 0 && !@lang.nil?
         l = Builtins.substring(@lang, 0, 5)
         code = Ops.get_string(@lang_map, l, "")
       end
@@ -146,7 +144,6 @@ module Yast
       code
     end
 
-
     # Constructor
     # does nothing in initial mode
     # restores console encoding from /etc/sysconfig
@@ -156,16 +153,16 @@ module Yast
       nil
     end
 
-    publish :variable => :console, :type => "string"
-    publish :variable => :lang, :type => "string"
-    publish :variable => :utf8, :type => "boolean"
-    publish :function => :Restore, :type => "string ()"
-    publish :function => :SetEncLang, :type => "void (string)"
-    publish :function => :GetEncLang, :type => "string ()"
-    publish :function => :SetUtf8Lang, :type => "void (boolean)"
-    publish :function => :GetUtf8Lang, :type => "boolean ()"
-    publish :function => :GetCodePage, :type => "string (string)"
-    publish :function => :Encoding, :type => "void ()"
+    publish variable: :console, type: "string"
+    publish variable: :lang, type: "string"
+    publish variable: :utf8, type: "boolean"
+    publish function: :Restore, type: "string ()"
+    publish function: :SetEncLang, type: "void (string)"
+    publish function: :GetEncLang, type: "string ()"
+    publish function: :SetUtf8Lang, type: "void (boolean)"
+    publish function: :GetUtf8Lang, type: "boolean ()"
+    publish function: :GetCodePage, type: "string (string)"
+    publish function: :Encoding, type: "void ()"
   end
 
   Encoding = EncodingClass.new

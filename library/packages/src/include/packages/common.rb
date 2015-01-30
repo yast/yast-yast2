@@ -34,7 +34,7 @@
 # <a href="../index.html">.../docs/index.html</a>.
 module Yast
   module PackagesCommonInclude
-    def initialize_packages_common(include_target)
+    def initialize_packages_common(_include_target)
       textdomain "base"
 
       Yast.import "Label"
@@ -53,13 +53,13 @@ module Yast
 
       which = Builtins.find(packages) do |p|
         avail = Available(p)
-        error = true if avail == nil
+        error = true if avail.nil?
         !avail
       end
 
       return nil if error
 
-      which == nil
+      which.nil?
     end
 
     # Is any of these packages available?
@@ -71,13 +71,13 @@ module Yast
 
       which = Builtins.find(packages) do |p|
         avail = Available(p)
-        error = true if avail == nil
+        error = true if avail.nil?
         avail
       end
 
       return nil if error
 
-      which != nil
+      !which.nil?
     end
 
     # Are all of these packages installed?
@@ -86,7 +86,7 @@ module Yast
     def InstalledAll(packages)
       packages = deep_copy(packages)
       which = Builtins.find(packages) { |p| !Installed(p) }
-      which == nil
+      which.nil?
     end
 
     # Is any of these packages installed?
@@ -95,7 +95,7 @@ module Yast
     def InstalledAny(packages)
       packages = deep_copy(packages)
       which = Builtins.find(packages) { |p| Installed(p) }
-      which != nil
+      !which.nil?
     end
 
     def AskPackages(packs, install)
@@ -103,9 +103,12 @@ module Yast
       pkgs = Builtins.mergestring(packs, ", ")
       # the message is followed by list of required packages
       text = Ops.add(
-        (install ?
-          _("These packages need to be installed:") :
-          _("These packages need to be removed:")) + " ",
+        (if install
+           _("These packages need to be installed:")
+         else
+           _("These packages need to be removed:")
+         end
+        ) + " ",
         pkgs
       )
       CommandLine.Print(text)
@@ -137,26 +140,26 @@ module Yast
         text = Ops.add(text, Builtins.sformat("%1<br>", p))
       end
 
-      if message != nil
+      if !message.nil?
         text = Builtins.sformat(message, Builtins.mergestring(packs, ", "))
       end
 
-      doit = Mode.commandline ?
-        CommandLine.Interactive ? AskPackages(packs, install) : true :
-        Popup.AnyQuestionRichText(
-          "",
-          text,
-          40,
-          10,
-          # labels changed for bug #215195
-          #	Label::ContinueButton (), Label::CancelButton (),
-          # push button label
-          install ?
-            Label.InstallButton :
-            _("&Uninstall"),
-          Label.CancelButton,
-          :focus_yes
-        )
+      doit = if Mode.commandline
+               CommandLine.Interactive ? AskPackages(packs, install) : true
+             else
+               Popup.AnyQuestionRichText(
+                 "",
+                 text,
+                 40,
+                 10,
+                 # labels changed for bug #215195
+                 #	Label::ContinueButton (), Label::CancelButton (),
+                 # push button label
+                 install ? Label.InstallButton : _("&Uninstall"),
+                 Label.CancelButton,
+                 :focus_yes
+               )
+             end
 
       if doit
         @last_op_canceled = false
@@ -221,7 +224,6 @@ module Yast
       packages = deep_copy(packages)
       RemoveAllMsg(packages, nil)
     end
-
 
     # Return result of the last operation
     # Use immediately after calling any Package*:: function

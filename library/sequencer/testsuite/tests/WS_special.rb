@@ -28,15 +28,15 @@ module Yast
       Yast.import "Sequencer"
 
       @Aliases = {
-        "normal"    => lambda { Normal() },
-        "special_n" => [lambda { SpecialN() }, false],
-        "special_y" => [lambda { SpecialY() }, true]
+        "normal"    => ->() { Normal() },
+        "special_n" => [->() { SpecialN() }, false],
+        "special_y" => [->() { SpecialY() }, true]
       }
 
-      TEST(lambda { Sequencer.WS_special(@Aliases, "normal") }, [], nil)
-      TEST(lambda { Sequencer.WS_special(@Aliases, "special_n") }, [], nil)
-      TEST(lambda { Sequencer.WS_special(@Aliases, "special_y") }, [], nil)
-      TEST(lambda { Sequencer.WS_special(@Aliases, "missing") }, [], nil)
+      TEST(->() { Sequencer.WS_special(@Aliases, "normal") }, [], nil)
+      TEST(->() { Sequencer.WS_special(@Aliases, "special_n") }, [], nil)
+      TEST(->() { Sequencer.WS_special(@Aliases, "special_y") }, [], nil)
+      TEST(->() { Sequencer.WS_special(@Aliases, "missing") }, [], nil)
 
       nil
     end
@@ -44,9 +44,11 @@ module Yast
     def Normal
       1
     end
+
     def SpecialN
       1
     end
+
     def SpecialY
       1
     end

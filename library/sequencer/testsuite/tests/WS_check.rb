@@ -31,14 +31,14 @@ module Yast
         :x  => "x",
         "1" => "1",
         "2" => [],
-        "3" => [lambda { f1 }],
+        "3" => [->() { f1 }],
         "4" => ["4", :x],
-        "5" => [lambda { f2 }, "5"],
-        "6" => [lambda { f3 }, true],
-        "7" => [lambda { f4 }, false],
-        "8" => lambda { f5 },
-        "9" => lambda { f6 },
-        "A" => lambda { f7 }
+        "5" => [->() { f2 }, "5"],
+        "6" => [->() { f3 }, true],
+        "7" => [->() { f4 }, false],
+        "8" => ->() { f5 },
+        "9" => ->() { f6 },
+        "A" => ->() { f7 }
       }
 
       @sequence1 = {
@@ -56,15 +56,15 @@ module Yast
         "6"        => {}
       }
 
-      TEST(lambda { Sequencer.WS_check({}, {}) }, [], nil)
-      TEST(lambda { Sequencer.WS_check(@aliases1, @sequence1) }, [], nil)
+      TEST(->() { Sequencer.WS_check({}, {}) }, [], nil)
+      TEST(->() { Sequencer.WS_check(@aliases1, @sequence1) }, [], nil)
 
-      TEST(lambda { Sequencer.WS_check({}, { "ws_start" => :ws_finish }) }, [], nil)
+      TEST(->() { Sequencer.WS_check({},  "ws_start" => :ws_finish) }, [], nil)
 
       @clicks = nil
       @cur = -1
       Yast.include self, "Wizard.rb"
-      TEST(lambda { Sequencer.WS_check(aliases, sequence) }, [], nil)
+      TEST(->() { Sequencer.WS_check(aliases, sequence) }, [], nil)
 
       nil
     end
@@ -72,9 +72,11 @@ module Yast
     def f1
       "1"
     end
+
     def f2
       2
     end
+
     def f3
       :id3
     end
@@ -82,12 +84,15 @@ module Yast
     def f4
       1
     end
+
     def f5
       1
     end
+
     def f6
       1
     end
+
     def f7
       1
     end

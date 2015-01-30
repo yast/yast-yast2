@@ -33,7 +33,6 @@ module Yast
       Yast.import "Label"
       Yast.import "Popup"
 
-
       UI.OpenDialog(
         VBox(
           PushButton(Id(:msg), Opt(:hstretch), "&Message Popup"),
@@ -66,44 +65,45 @@ module Yast
         )
       )
 
-
       @button_id = :dummy
       @ok = false
-      begin
+      loop do
         @button_id = Convert.to_symbol(UI.UserInput)
 
-        if @button_id == :msg
+        case @button_id
+        when :msg
           Popup.Message("Hello, world!")
-        elsif @button_id == :notify
+        when :notify
           Popup.Notify("Notify the world!")
-        elsif @button_id == :warn
+        when :warn
           Popup.Warning("This is the only world we have!")
-        elsif @button_id == :err
+        when :err
           Popup.Error("Cannot delete world -\nthis is the only world we have!")
-        elsif @button_id == :timed_msg
+        when :timed_msg
           Popup.TimedMessage("Just some seconds left to save the world...", 20)
-        elsif @button_id == :timed_warn
+        when :timed_warn
           Popup.TimedWarning("Time is running out to save the world...", 20)
-        elsif @button_id == :timed_err
+        when :timed_err
           Popup.TimedError("This world will be deleted...", 20)
-        elsif @button_id == :yesNo
+        when :yesNo
           @ok = Popup.YesNo("Really delete world?")
-        elsif @button_id == :contCancel
+        when :contCancel
           @ok = Popup.ContinueCancel("World will be deleted.")
-        elsif @button_id == :abort
+        when :abort
           @ok = Popup.ReallyAbort(false)
-        elsif @button_id == :abort_ch
+        when :abort_ch
           @ok = Popup.ReallyAbort(true)
-        elsif @button_id == :show_file
+        when :show_file
           Popup.ShowFile("Boot Messages", "/var/log/boot.msg")
-        elsif @button_id == :show_text
+        when :show_text
           @text = Convert.to_string(
             SCR.Read(path(".target.string"), "/var/log/boot.msg")
           )
           Popup.ShowText("Boot Messages", @text)
+        when :close
+          break
         end
-      end while @button_id != :close
-
+      end
 
       UI.CloseDialog
 

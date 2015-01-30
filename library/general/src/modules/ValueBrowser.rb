@@ -85,7 +85,6 @@ module Yast
       end
     end
 
-
     # Creates tree with contents of variable. This function creates the tree items and
     # returns them as term. This offers using the generated output in your behavior,
     # such as data-structure browser with editor. Heavy recursion...
@@ -95,7 +94,7 @@ module Yast
     def BrowseTreeHelper(variable, indent)
       variable = deep_copy(variable)
       simple = FormatSimpleType(variable, indent)
-      if simple != nil
+      if !simple.nil?
         return Item(simple)
       elsif Ops.is_list?(variable)
         items = []
@@ -170,7 +169,7 @@ module Yast
     def DebugBrowseHelper(variable, indent)
       variable = deep_copy(variable)
       simple = FormatSimpleType(variable, indent)
-      if simple != nil
+      if !simple.nil?
         Builtins.y2debug("%1", simple)
       elsif Ops.is_list?(variable)
         Builtins.foreach(Convert.to_list(variable)) do |i|
@@ -207,10 +206,10 @@ module Yast
       nil
     end
 
-    publish :function => :BrowseTreeHelper, :type => "term (any, string)"
-    publish :function => :BrowseTree, :type => "void (any)"
-    publish :function => :DebugBrowseHelper, :type => "void (any, string)"
-    publish :function => :DebugBrowse, :type => "void (any)"
+    publish function: :BrowseTreeHelper, type: "term (any, string)"
+    publish function: :BrowseTree, type: "void (any)"
+    publish function: :DebugBrowseHelper, type: "void (any, string)"
+    publish function: :DebugBrowse, type: "void (any)"
   end
 
   ValueBrowser = ValueBrowserClass.new

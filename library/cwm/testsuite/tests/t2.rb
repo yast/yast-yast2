@@ -49,13 +49,12 @@ module Yast
       Yast.import "Report"
 
       # disable use of UI
-      Report.Import({ "errors" => { "show" => false, "log" => true } })
+      Report.Import("errors" => { "show" => false, "log" => true })
 
       Yast.include self, "testfunc.rb"
       Yast.import "Mode"
 
       Mode.SetTest("testsuite")
-
 
       @functions = {
         "init"  => fun_ref(method(:generic_init), "void (string)"),
@@ -79,14 +78,14 @@ module Yast
       DUMP("=========================================")
       DUMP("Handle")
 
-      @ret = CWM.handleWidgets(@widget_data, { "ID" => :_tp_edit })
+      @ret = CWM.handleWidgets(@widget_data,  "ID" => :_tp_edit)
       DUMP(Builtins.sformat("Returned %1", @ret))
       Ops.set(
         @widget_data,
         [0, "options", "a", "table", "handle"],
         fun_ref(method(:a_handle), "symbol (any, string, map)")
       )
-      @ret = CWM.handleWidgets(@widget_data, { "ID" => :_tp_edit })
+      @ret = CWM.handleWidgets(@widget_data,  "ID" => :_tp_edit)
       DUMP(Builtins.sformat("Returned %1", @ret))
 
       DUMP("=========================================")
@@ -122,27 +121,27 @@ module Yast
     def MyCreateTable
       ret = TablePopup.CreateTableDescr(
         {},
-        {
-          "init"     => fun_ref(
-            TablePopup.method(:TableInitWrapper),
-            "void (string)"
-          ),
-          "handle"   => fun_ref(
-            TablePopup.method(:TableHandleWrapper),
-            "symbol (string, map)"
-          ),
-          "ids"      => fun_ref(method(:getIdList), "list (map)"),
-          "id2key"   => fun_ref(method(:id2key), "string (map, any)"),
-          "options"  => @popups,
-          "fallback" => {
-            "init"    => fun_ref(method(:fallback_init), "void (any, string)"),
-            "store"   => fun_ref(method(:fallback_store), "void (any, string)"),
-            "summary" => fun_ref(
-              method(:fallback_summary),
-              "string (any, string)"
-            )
-          }
+
+        "init"     => fun_ref(
+          TablePopup.method(:TableInitWrapper),
+          "void (string)"
+        ),
+        "handle"   => fun_ref(
+          TablePopup.method(:TableHandleWrapper),
+          "symbol (string, map)"
+        ),
+        "ids"      => fun_ref(method(:getIdList), "list (map)"),
+        "id2key"   => fun_ref(method(:id2key), "string (map, any)"),
+        "options"  => @popups,
+        "fallback" => {
+          "init"    => fun_ref(method(:fallback_init), "void (any, string)"),
+          "store"   => fun_ref(method(:fallback_store), "void (any, string)"),
+          "summary" => fun_ref(
+            method(:fallback_summary),
+            "string (any, string)"
+          )
         }
+
       )
       deep_copy(ret)
     end

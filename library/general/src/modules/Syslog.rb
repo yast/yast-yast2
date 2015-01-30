@@ -33,7 +33,6 @@ require "yast"
 module Yast
   class SyslogClass < Module
     def main
-
       Yast.import "String"
     end
 
@@ -53,9 +52,11 @@ module Yast
           Builtins.sformat(
             "/bin/logger %1 -- %2",
             Builtins.mergestring(options, " "),
-            message == "" ?
-              "" :
+            if message == ""
+              ""
+            else
               Ops.add(Ops.add("'", String.Quote(message)), "'")
+            end
           )
         )
     end
@@ -67,8 +68,8 @@ module Yast
       ComplexLog(message, [])
     end
 
-    publish :function => :ComplexLog, :type => "boolean (string, list <string>)"
-    publish :function => :Log, :type => "boolean (string)"
+    publish function: :ComplexLog, type: "boolean (string, list <string>)"
+    publish function: :Log, type: "boolean (string)"
   end
 
   Syslog = SyslogClass.new

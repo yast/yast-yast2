@@ -117,7 +117,7 @@ module Yast
     # architecture
     # @return a list of modules
     def getModulesToSkip
-      if @modules_to_skip == nil
+      if @modules_to_skip.nil?
         # usb and cdrom modules dont belong to initrd,
         # they're loaded by hotplug
         @modules_to_skip = [
@@ -137,8 +137,8 @@ module Yast
           ppc_modules_to_skip = ["reiserfs", "ext3", "jbd"]
           @modules_to_skip = Convert.convert(
             Builtins.merge(@modules_to_skip, ppc_modules_to_skip),
-            :from => "list",
-            :to   => "list <string>"
+            from: "list",
+            to:   "list <string>"
           )
         end
         # currently no disk controller modules are known to fail in initrd (bnc#719696), list removed
@@ -175,7 +175,7 @@ module Yast
       s_modnames = Convert.to_string(
         SCR.Read(path(".sysconfig.kernel.INITRD_MODULES"))
       )
-      s_modnames = "" if s_modnames == nil
+      s_modnames = "" if s_modnames.nil?
       @modules = Builtins.splitstring(s_modnames, " ")
       @modules = Builtins.filter(@modules) { |m| m != "" }
       Builtins.foreach(@modules) do |m|
@@ -204,7 +204,7 @@ module Yast
         tmp_mods = Convert.to_string(
           SCR.Read(path(".etc.install_inf.InitrdModules"))
         )
-        if tmp_mods != nil && tmp_mods != ""
+        if !tmp_mods.nil? && tmp_mods != ""
           @modules = Builtins.splitstring(tmp_mods, " ")
         end
         @was_read = true
@@ -213,9 +213,9 @@ module Yast
       end
       if !Builtins.contains(ListModules(), modname) ||
           modname == "aic7xxx" &&
-            !Builtins.contains(ListModules(), "aic7xxx_old") ||
+              !Builtins.contains(ListModules(), "aic7xxx_old") ||
           modname == "aic7xxx_old" &&
-            !Builtins.contains(ListModules(), "aic7xxx")
+              !Builtins.contains(ListModules(), "aic7xxx")
         if !Builtins.contains(getModulesToSkip, modname)
           @changed = true
           Ops.set(@modules_to_store, modname, true)
@@ -275,7 +275,7 @@ module Yast
     def RemoveModule(modname)
       Read() if !(@was_read || Mode.config)
       @modules = Builtins.filter(@modules) { |k| k != modname }
-      @modules_settings = Builtins.filter(@modules_settings) do |k, v|
+      @modules_settings = Builtins.filter(@modules_settings) do |k, _v|
         k != modname
       end
       @changed = true
@@ -289,7 +289,7 @@ module Yast
       @modules = Builtins.filter(@modules) do |m|
         !Builtins.contains(getModulesToSkip, m)
       end
-      @modules_settings = Builtins.filter(@modules_settings) do |k, v|
+      @modules_settings = Builtins.filter(@modules_settings) do |k, _v|
         !Builtins.contains(getModulesToSkip, k)
       end
       @changed = true
@@ -298,11 +298,11 @@ module Yast
     end
 
     # Display error popup with log
-    # FIXME this is copy-paste from ../routines/popups.ycp
+    # FIXME: this is copy-paste from ../routines/popups.ycp
     # @param [String] header string error header
     # @param [String] log string logfile contents
     def errorWithLogPopup(header, log)
-      log = "" if log == nil
+      log = "" if log.nil?
       text = RichText(Opt(:plainText), log)
       UI.OpenDialog(
         Opt(:decorated),
@@ -318,12 +318,11 @@ module Yast
       )
 
       UI.SetFocus(Id(:ok_help))
-      r = UI.UserInput
+      UI.UserInput
       UI.CloseDialog
 
       nil
     end
-
 
     # write settings to sysconfig, rebuild initrd images
     # @return true on success
@@ -357,7 +356,7 @@ module Yast
         s_modnames = Convert.to_string(
           SCR.Read(path(".sysconfig.kernel.INITRD_MODULES"))
         )
-        s_modnames = "" if s_modnames == nil
+        s_modnames = "" if s_modnames.nil?
         s_modules = Builtins.splitstring(s_modnames, " ")
         s_modules = Builtins.filter(s_modules) do |m|
           !Builtins.contains(@read_modules, m)
@@ -378,14 +377,14 @@ module Yast
         "/usr/bin/touch /etc/sysconfig/bootloader"
       )
 
-      # TODO FIXME: the modules are not written, remove them completely,
+      # FIXME: the modules are not written, remove them completely,
       # for now just log them without any change
       mods = Builtins.mergestring(ListModules(), " ")
       log.warn "Ignoring configured kernel modules: #{mods}" unless mods.empty?
 
       # recreate initrd
       param = ""
-      if @splash != "" && @splash != nil &&
+      if @splash != "" && !@splash.nil? &&
           Ops.less_than(
             0,
             Convert.to_integer(
@@ -398,13 +397,13 @@ module Yast
         param = Builtins.sformat("-s %1", @splash)
       end
       if SCR.Execute(
-          path(".target.bash"),
-          Builtins.sformat(
-            "/sbin/mkinitrd %1 %2 >> %3 2>&1",
-            param,
-            @additional_parameters,
-            Ops.add(Directory.logdir, "/y2logmkinitrd")
-          )
+        path(".target.bash"),
+        Builtins.sformat(
+          "/sbin/mkinitrd %1 %2 >> %3 2>&1",
+          param,
+          @additional_parameters,
+          Ops.add(Directory.logdir, "/y2logmkinitrd")
+        )
         ) != 0
         log = Convert.to_string(
           SCR.Read(
@@ -422,10 +421,10 @@ module Yast
     def VgaModes
       all_modes = Convert.convert(
         SCR.Read(path(".probe.framebuffer")),
-        :from => "any",
-        :to   => "list <map>"
+        from: "any",
+        to:   "list <map>"
       )
-      if all_modes == nil || Builtins.size(all_modes) == 0
+      if all_modes.nil? || Builtins.size(all_modes) == 0
         Builtins.y2warning("Probing VGA modes failed, using fallback list")
         all_modes = deep_copy(@known_modes)
       end
@@ -475,22 +474,22 @@ module Yast
       nil
     end
 
-    publish :variable => :changed, :type => "boolean"
-    publish :function => :getModulesToSkip, :type => "list <string> ()"
-    publish :function => :Reset, :type => "void ()"
-    publish :function => :Read, :type => "boolean ()"
-    publish :function => :ListModules, :type => "list <string> ()"
-    publish :function => :AddModule, :type => "void (string, string)"
-    publish :function => :Export, :type => "map ()"
-    publish :function => :Import, :type => "void (map)"
-    publish :function => :RemoveModule, :type => "void (string)"
-    publish :function => :Update, :type => "void ()"
-    publish :function => :errorWithLogPopup, :type => "void (string, string)"
-    publish :function => :Write, :type => "boolean ()"
-    publish :function => :VgaModes, :type => "list <map> ()"
-    publish :function => :setSplash, :type => "void (string)"
-    publish :function => :AdditionalParameters, :type => "string ()"
-    publish :function => :SetAdditionalParameters, :type => "void (string)"
+    publish variable: :changed, type: "boolean"
+    publish function: :getModulesToSkip, type: "list <string> ()"
+    publish function: :Reset, type: "void ()"
+    publish function: :Read, type: "boolean ()"
+    publish function: :ListModules, type: "list <string> ()"
+    publish function: :AddModule, type: "void (string, string)"
+    publish function: :Export, type: "map ()"
+    publish function: :Import, type: "void (map)"
+    publish function: :RemoveModule, type: "void (string)"
+    publish function: :Update, type: "void ()"
+    publish function: :errorWithLogPopup, type: "void (string, string)"
+    publish function: :Write, type: "boolean ()"
+    publish function: :VgaModes, type: "list <map> ()"
+    publish function: :setSplash, type: "void (string)"
+    publish function: :AdditionalParameters, type: "string ()"
+    publish function: :SetAdditionalParameters, type: "void (string)"
   end
 
   Initrd = InitrdClass.new

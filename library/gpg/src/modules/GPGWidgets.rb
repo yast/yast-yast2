@@ -87,8 +87,7 @@ module Yast
             Ops.get_string(key, "fingerprint", "")
           )
         )
-      end 
-
+      end
 
       deep_copy(ret)
     end
@@ -101,7 +100,7 @@ module Yast
       if key == "select_private_key"
         UI.ChangeWidget(Id(:gpg_priv_table), :Items, GPGItems(true))
 
-        if @_selected_id_private_key != nil
+        if !@_selected_id_private_key.nil?
           UI.ChangeWidget(
             Id(:gpg_priv_table),
             :CurrentItem,
@@ -121,7 +120,7 @@ module Yast
       if key == "select_public_key"
         UI.ChangeWidget(Id(:gpg_public_table), :Items, GPGItems(false))
 
-        if @_selected_id_public_key != nil
+        if !@_selected_id_public_key.nil?
           UI.ChangeWidget(
             Id(:gpg_public_table),
             :CurrentItem,
@@ -284,9 +283,9 @@ module Yast
         "handle_events" => ["create_new_key"],
         "handle"        => fun_ref(method(:GpgNewKey), "symbol (string, map)"),
         "help"          => _(
-          "<p><big><b>Create a new GPG key</b></big><br>\n" +
-            "<tt>gpg --gen-key</tt> is started, see <tt>gpg</tt> manual pager for more information.\n" +
-            "Press Ctrl+C to cancel.\n" +
+          "<p><big><b>Create a new GPG key</b></big><br>\n" \
+            "<tt>gpg --gen-key</tt> is started, see <tt>gpg</tt> manual pager for more information.\n" \
+            "Press Ctrl+C to cancel.\n" \
             "</p>"
         )
       }
@@ -394,7 +393,7 @@ module Yast
 
       UI.OpenDialog(contents)
       UI.SetFocus(Id(:passphrase))
-      ret = CWM.Run(w, {})
+      CWM.Run(w, {})
       UI.CloseDialog
 
       @passphrase
@@ -410,13 +409,13 @@ module Yast
       }
     end
 
-    publish :function => :SetSelectedPrivateKey, :type => "void (string)"
-    publish :function => :SetSelectedPublicKey, :type => "void (string)"
-    publish :function => :SelectedPrivateKey, :type => "string ()"
-    publish :function => :Passphrase, :type => "string ()"
-    publish :function => :AskPassphraseWidget, :type => "map <string, map <string, any>> (string)"
-    publish :function => :AskPassphrasePopup, :type => "string (string)"
-    publish :function => :Widgets, :type => "map <string, map <string, any>> ()"
+    publish function: :SetSelectedPrivateKey, type: "void (string)"
+    publish function: :SetSelectedPublicKey, type: "void (string)"
+    publish function: :SelectedPrivateKey, type: "string ()"
+    publish function: :Passphrase, type: "string ()"
+    publish function: :AskPassphraseWidget, type: "map <string, map <string, any>> (string)"
+    publish function: :AskPassphrasePopup, type: "string (string)"
+    publish function: :Widgets, type: "map <string, map <string, any>> ()"
   end
 
   GPGWidgets = GPGWidgetsClass.new

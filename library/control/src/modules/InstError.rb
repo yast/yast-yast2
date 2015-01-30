@@ -72,7 +72,7 @@ module Yast
         _("Save y2logs to...")
       )
 
-      return nil if savelogsto == nil
+      return nil if savelogsto.nil?
 
       # Busy message, %1 is replaced with a filename
       UI.OpenDialog(
@@ -129,9 +129,9 @@ module Yast
             0.5,
             VBox(
               Left(Label(error_text)),
-              #`VSpacing (1),
+              # `VSpacing (1),
               Left(
-                details == nil ?
+                if details.nil?
                   Label(
                     Builtins.sformat(
                       # TRANSLATORS: part of an error message
@@ -141,10 +141,12 @@ module Yast
                       ),
                       "/var/log/YaST2/y2log"
                     )
-                  ) :
+                  )
+                else
                   MinSize(80, 10, RichText(Opt(:plainText, :hstretch), details))
+                end
               ),
-              #`VSpacing (1),
+              # `VSpacing (1),
               Left(
                 Label(
                   Builtins.sformat(
@@ -153,8 +155,8 @@ module Yast
                     # %2 - directory where YaST logs are stored
                     # %3 - link to the Yast Bug Reporting HOWTO Web page
                     _(
-                      "This is worth reporting a bug at %1.\n" +
-                        "Please, attach also all YaST logs stored in the '%2' directory.\n" +
+                      "This is worth reporting a bug at %1.\n" \
+                        "Please, attach also all YaST logs stored in the '%2' directory.\n" \
                         "See %3 for more information about YaST logs."
                     ),
                     "http://bugzilla.novell.com/",
@@ -192,7 +194,7 @@ module Yast
 
       uret = nil
 
-      while true
+      loop do
         uret = UI.UserInput
 
         if uret == :save_y2logs
@@ -219,20 +221,18 @@ module Yast
         )
       )
 
+      details = cmd["stdout"] if cmd["exit"] == 0 && !cmd["stdout"].empty?
       ShowErrorPopUp(
         _("Installation Error"),
         error_text,
-        Ops.get_integer(cmd, "exit", -1) == 0 &&
-          Ops.get_string(cmd, "stdout", "") != "" ?
-          Ops.get_string(cmd, "stdout", "") :
-          nil
+        details
       )
 
       nil
     end
 
-    publish :function => :ShowErrorPopUp, :type => "void (string, string, string)"
-    publish :function => :ShowErrorPopupWithLogs, :type => "void (string)"
+    publish function: :ShowErrorPopUp, type: "void (string, string, string)"
+    publish function: :ShowErrorPopupWithLogs, type: "void (string)"
   end
 
   InstError = InstErrorClass.new
