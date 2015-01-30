@@ -27,17 +27,6 @@ module Yast
       Yast.include self, "testsuite.rb"
       Yast.import "String"
 
-      DUMP("String::Repeat")
-      TEST(lambda do
-        Builtins.mergestring(["\"", String.Repeat(nil, 2), "\""], "")
-      end, [], nil)
-      TEST(lambda do
-        Builtins.mergestring(["\"", String.Repeat(".", 8), "\""], "")
-      end, [], nil)
-      TEST(lambda do
-        Builtins.mergestring(["\"", String.Repeat(".", -1), "\""], "")
-      end, [], nil)
-
       DUMP("String::SuperPad")
       TEST(lambda do
         Builtins.mergestring(

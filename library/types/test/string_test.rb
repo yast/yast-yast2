@@ -130,4 +130,23 @@ describe Yast::String do
       end
     end
   end
+
+  describe ".Repeat" do
+    it "returns empty string is nil passed as text" do
+      expect(subject.Repeat(nil, 5)).to eq ""
+    end
+
+    it "returns empty string if nil passed as number" do
+      expect(subject.Repeat("a", nil)).to eq ""
+    end
+
+    it "returns empty string if number is zero or negative" do
+      expect(subject.Repeat("a", 0)).to eq ""
+      expect(subject.Repeat("a", -1)).to eq ""
+    end
+
+    it "returns string text repeated number times" do
+      expect(subject.Repeat("a", 5)).to eq "aaaaa"
+    end
+  end
 end
