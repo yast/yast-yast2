@@ -93,6 +93,7 @@ describe Yast::String do
     end
 
     CUT_BLANKS_DATA = {
+      ""              => "",
       "abc"           => "abc",
       " abc"          => "abc",
       "abc "          => "abc",
@@ -106,6 +107,26 @@ describe Yast::String do
     it "remove trailing and prepending whitespace" do
       CUT_BLANKS_DATA.each do |arg, res|
         expect(subject.CutBlanks(arg)).to eq res
+      end
+    end
+  end
+
+  describe ".CutZeros" do
+    it "return empty string for nil" do
+      expect(subject.CutZeros(nil)).to eq ""
+    end
+
+    CUT_ZEROS_DATA = {
+      ""    => "",
+      "1"   => "1",
+      "01"  => "1",
+      "001" => "1",
+      "0"   => "0",
+      "00"  => "0"
+    }
+    it "removes prepended zeros" do
+      CUT_ZEROS_DATA.each do |arg, res|
+        expect(subject.CutZeros(arg)).to eq res
       end
     end
   end

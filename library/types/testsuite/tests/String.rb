@@ -27,15 +27,6 @@ module Yast
       Yast.include self, "testsuite.rb"
       Yast.import "String"
 
-      DUMP("String::CutZeros")
-      TEST(->() { String.CutZeros(nil) }, [], nil)
-      TEST(->() { String.CutZeros("") }, [], nil)
-      TEST(->() { String.CutZeros("1") }, [], nil)
-      TEST(->() { String.CutZeros("01") }, [], nil)
-      TEST(->() { String.CutZeros("001") }, [], nil)
-      TEST(->() { String.CutZeros("0") }, [], nil)
-      TEST(->() { String.CutZeros("00") }, [], nil)
-
       DUMP("String::Repeat")
       TEST(lambda do
         Builtins.mergestring(["\"", String.Repeat(nil, 2), "\""], "")
