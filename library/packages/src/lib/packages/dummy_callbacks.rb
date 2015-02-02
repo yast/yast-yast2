@@ -63,7 +63,7 @@ module Packages
             )
         Yast::Pkg.CallbackProcessProgress(boolean_integer_ref)
         Yast::Pkg.CallbackProcessNextStage(void_ref)
-        Yast::Pkg.CallbackProcess_done(void_ref)
+        Yast::Pkg.CallbackProcessDone(void_ref)
 
         nil
       end
@@ -95,7 +95,7 @@ module Packages
             fun_ref(method(:start_provide), "void (string, integer, boolean)")
             )
         Yast::Pkg.CallbackProgressProvide(boolean_integer_ref)
-        Yast::Pkg.Callback_doneProvide(
+        Yast::Pkg.CallbackDoneProvide(
             fun_ref(method(:done_provide), "string (integer, string, string)")
             )
         Yast::Pkg.CallbackStartPackage(
@@ -105,7 +105,7 @@ module Packages
               )
             )
         Yast::Pkg.CallbackProgressPackage(boolean_integer_ref)
-        Yast::Pkg.Callback_donePackage(
+        Yast::Pkg.CallbackDonePackage(
             fun_ref(method(:done_package), "string (integer, string)")
             )
 
