@@ -7,6 +7,8 @@ before_install:
     - wget https://raw.githubusercontent.com/yast/yast-devtools/master/travis-tools/travis_setup.sh
     - sh ./travis_setup.sh -p "rake yast2-core yast2-devtools yast2-testsuite yast2-ruby-bindings yast2 yast2-pkg-bindings" -g "rspec:2.14.1 yast-rake gettext simplecov coveralls rubocop:0.28.0"
 script:
+    - export LANG=C
+    - export LC_ALL=C
     - locale
     - rake check:pot
     - rubocop
