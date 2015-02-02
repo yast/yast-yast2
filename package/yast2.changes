@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb  2 08:27:21 UTC 2015 - jreidinger@suse.com
+
+- fix typo in method call to package bindings (found by openQA)
+- separate dummy Pkg callbacks from common ones
+- 3.1.120
+
+-------------------------------------------------------------------
 Thu Jan 29 10:21:26 UTC 2015 - jreidinger@suse.com
 
 - remove depreacated legacy Patch callbacks 
