@@ -9,7 +9,6 @@ before_install:
 script:
     - export LANG=C
     - export LC_ALL=C
-    - locale
     - rake check:pot
     - rubocop
     - make -s -f Makefile.cvs
