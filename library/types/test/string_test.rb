@@ -172,6 +172,11 @@ describe Yast::String do
     it "returns text suffixed by padding to make lenght requested if alignment is not :right" do
       expect(subject.SuperPad("test", 5, ".", :left)).to eq "test."
     end
+
+    # FIXME: looks like bug
+    it "if padding is more then one character then it is counted in length as one" do
+      expect(subject.SuperPad("test", 6, "abc", :left)).to eq "testabcabc"
+    end
   end
 
   describe ".Pad" do
