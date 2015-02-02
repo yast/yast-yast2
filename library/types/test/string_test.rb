@@ -173,4 +173,171 @@ describe Yast::String do
       expect(subject.SuperPad("test", 5, ".", :left)).to eq "test."
     end
   end
+
+  describe ".Pad" do
+    it "Adds spaces after text to have it long as length" do
+      expect(subject.Pad("test", 5)).to eq "test "
+      expect(subject.Pad("test", 4)).to eq "test"
+      expect(subject.Pad("test ", 7)).to eq "test   "
+    end
+
+    it "Returns text if length is negative or zero" do
+      expect(subject.Pad("test", -1)).to eq "test"
+      expect(subject.Pad("test", 0)).to eq "test"
+    end
+
+    it "Returns string full of spaces length long if text is nil or empty" do
+      expect(subject.Pad("", 5)).to eq "     "
+      expect(subject.Pad(nil, 5)).to eq "     "
+    end
+  end
+
+  describe ".PadZeros" do
+    it "Adds zeros before text to have it long as length" do
+      expect(subject.PadZeros("1", 5)).to eq "00001"
+      expect(subject.PadZeros("12", 5)).to eq "00012"
+      expect(subject.PadZeros("12345", 5)).to eq "12345"
+    end
+
+    it "Returns text if length is negative or zero" do
+      expect(subject.PadZeros("12", -1)).to eq "12"
+      expect(subject.PadZeros("12", 0)).to eq "12"
+    end
+
+    it "Returns string full of zeros length long if text is nil or empty" do
+      expect(subject.PadZeros("", 5)).to eq "00000"
+      expect(subject.PadZeros(nil, 5)).to eq "00000"
+    end
+  end
+
+  describe ".ParseOptions" do
+    it "parse key=value map separated by space or tab by default" do
+      expect(subject.ParseOptions("a=3\tb=2", {})).to eq ["a=3", "b=2"]
+      expect(subject.ParseOptions("a=3 b=2", {})).to eq ["a=3", "b=2"]
+      expect(subject.ParseOptions("a=", {})).to eq ["a="]
+    end
+
+    it "allows to specify as separator different value" do
+      expect(subject.ParseOptions("a=3,b=2", "separator" => ",")).to eq ["a=3", "b=2"]
+    end
+
+    it "allows to specify if values should be unique" do
+      expect(subject.ParseOptions("1 1 2", "unique" => false)).to eq ["1", "1", "2"]
+      expect(subject.ParseOptions("1 1 2", "unique" => true)).to eq ["1", "2"]
+    end
+
+    it "allows to specify if additional whitespaces should be removed" do
+      expect(subject.ParseOptions(" 1 ,  2", "remove_whitespace" => true, "separator" => ",")).to eq ["1", "2"]
+      expect(subject.ParseOptions(" 1 ,  2", "remove_whitespace" => false, "separator" => ",")).to eq [" 1 ", "  2"]
+    end
+
+    it "allows to specify if backslash should be interpreted" do
+      expect(subject.ParseOptions("a=\\n", "interpret_backslash" => true)).to eq ["a=\n"]
+      expect(subject.ParseOptions("a=\\n", "interpret_backslash" => false)).to eq ["a=\\n"]
+    end
+
+    it "returns empty array if nil passed as options" do
+      expect(subject.ParseOptions(nil, {})).to eq []
+    end
+
+    it "returns empty array if empty string passed as options" do
+      expect(subject.ParseOptions("", {})).to eq []
+    end
+
+    it "returns empty array if string containing only separator passed as options" do
+      expect(subject.ParseOptions("  \t  ", {})).to eq []
+    end
+  end
+
+  describe ".CutRegexMatch" do
+    it "returns string with first match of given regexp removed when glob is set to false" do
+      expect(subject.CutRegexMatch("ab123cd56", "[0-9]+", false)).to eq "abcd56"
+    end
+
+    it "returns string with all matches of given regexp removed when glob is set to true" do
+      expect(subject.CutRegexMatch("ab123cd56", "[0-9]+", true)).to eq "abcd"
+    end
+
+    it "returns input when no match of regex found" do
+      expect(subject.CutRegexMatch("ab123cd56", "[A-Z]+", false)).to eq "ab123cd56"
+    end
+
+    it "returns empty string if input is nil" do
+      expect(subject.CutRegexMatch(nil, "[A-Z]+", false)).to eq ""
+    end
+
+    it "returns input if regex is nil" do
+      expect(subject.CutRegexMatch("ab123cd56", nil, false)).to eq "ab123cd56"
+    end
+  end
+
+  describe ".EscapeTags" do
+    it "escapes html/xml tags" do
+      expect(subject.EscapeTags("<font size='2'><b>text & another</b></font>")).to eq(
+        "&lt;font size='2'&gt;&lt;b&gt;text &amp; another&lt;/b&gt;&lt;/font&gt;"
+      )
+    end
+
+    it "returns nil if nil passed" do
+      expect(subject.EscapeTags(nil)).to eq nil
+    end
+  end
+
+  describe ".StartsWith" do
+    it "checks if string str start with string test" do
+      expect(subject.StartsWith("Hello world", "Hello")).to eq true
+      expect(subject.StartsWith("Hello", "Hello")).to eq true
+      expect(subject.StartsWith("Hello", "hello")).to eq false
+      expect(subject.StartsWith("Hello", "World")).to eq false
+    end
+
+    it "returns false if str is nil" do
+      expect(subject.StartsWith(nil, "hello")).to eq false
+    end
+
+    it "returns false if test is nil" do
+      expect(subject.StartsWith("hello", nil)).to eq false
+    end
+
+    it "returns false if both params are nil" do
+      expect(subject.StartsWith(nil, nil)).to eq false
+    end
+  end
+
+  describe ".RemoveShortcut" do
+    it "returns string with removed a UI key shortcuts from label" do
+      expect(subject.RemoveShortcut("Hello")).to eq "Hello"
+      expect(subject.RemoveShortcut("&Hello")).to eq "Hello"
+      expect(subject.RemoveShortcut("He&llo")).to eq "Hello"
+      expect(subject.RemoveShortcut("&He&llo")).to eq "&Hello" # FIXME: Why? this looks like bug
+      expect(subject.RemoveShortcut("&&He&llo")).to eq "&&Hello"
+      expect(subject.RemoveShortcut("&&Hello")).to eq "&&Hello"
+      expect(subject.RemoveShortcut("&&&Hello")).to eq "&&Hello"
+      expect(subject.RemoveShortcut("&&&&Hello")).to eq "&&&&Hello"
+    end
+
+    it "returns nil if label is nil" do
+      expect(subject.RemoveShortcut(nil)).to eq nil
+    end
+  end
+
+  describe ".ReplaceWith" do
+    it "returns string with all characters in chars replaced by glue" do
+      expect(subject.ReplaceWith("a\nb\tc d", "\n\t ", "-")).to eq "a-b-c-d"
+      expect(subject.ReplaceWith("a\nb\tc d", "\n\t ", "")).to eq "abcd"
+    end
+
+    it "returns nil if str is nil" do
+      expect(subject.ReplaceWith(nil, " ", "")).to eq nil
+    end
+
+    it "returns nil if chars is nil" do
+      expect(subject.ReplaceWith("abc", nil, "")).to eq nil
+    end
+
+    it "returns nil if glue is nil" do
+      expect(subject.ReplaceWith("abc", "a", nil)).to eq nil
+      expect(subject.ReplaceWith("abc", "d", nil)).to eq nil
+    end
+  end
 end
