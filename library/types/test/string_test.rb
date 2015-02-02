@@ -345,4 +345,19 @@ describe Yast::String do
       expect(subject.ReplaceWith("abc", "d", nil)).to eq nil
     end
   end
+
+  describe ".OptFormat" do
+    it "returns sformated parameters, but it allows only one parameter" do
+      expect(subject.OptFormat("%1 a", 5)).to eq "5 a"
+    end
+
+    it "returns empty string if parameter is nil or empty" do
+      expect(subject.OptFormat("%1 a", nil)).to eq ""
+      expect(subject.OptFormat("%1 a", "")).to eq ""
+    end
+
+    it "returns nil if format string is nil" do
+      expect(subject.OptFormat(nil, 5)).to eq nil
+    end
+  end
 end
