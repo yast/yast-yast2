@@ -546,4 +546,187 @@ describe Yast::String do
       )
     end
   end
+
+  describe ".UnderlinedHeader" do
+    it "returns underlined text" do
+      expected_output = "abc\n---"
+
+      expect(subject.UnderlinedHeader("abc", 0)).to eq expected_output
+    end
+
+    it "use left padding to indent text" do
+      expected_output = "  abc\n  ---"
+
+      expect(subject.UnderlinedHeader("abc", 2)).to eq expected_output
+    end
+
+    it "returns nil if nil passed as text" do
+      expect(subject.UnderlinedHeader(nil, 0)).to eq nil
+    end
+
+    it "acts like if padding is zero if nil passed as padding" do
+      expected_output = "abc\n---"
+
+      expect(subject.UnderlinedHeader("abc", nil)).to eq expected_output
+    end
+  end
+
+  describe ".GetMetaDataLines" do
+    it "returns list of lines with metadata of sysconfig" do
+      sysconfig_lines = "## Path:       System/Bootloader\n" \
+                        "## Description: Bootloader configuration\n" \
+                        "## Type:        yesno\n" \
+                        "## Default:     no\n" \
+                        "#\n" \
+                        "# Should the boot cycle detection be used to\n" \
+                        "# avoid unconditional reboot cycles of not\n" \
+                        "# supervised system.\n" \
+                        "#\n" \
+                        "CYCLE_DETECTION=\"no\"\n"
+      expected_output = [
+        "## Path:       System/Bootloader",
+        "## Description: Bootloader configuration",
+        "## Type:        yesno",
+        "## Default:     no"
+      ]
+
+      expect(subject.GetMetaDataLines(sysconfig_lines)).to eq expected_output
+    end
+
+    it "returns empty array when nil passed" do
+      expect(subject.GetMetaDataLines(nil)).to eq []
+    end
+  end
+
+  describe ".GetCommentLines" do
+    it "returns string with sysconfig comment without leading # and without metadata" do
+      sysconfig_lines = "## Path:       System/Bootloader\n" \
+                        "## Description: Bootloader configuration\n" \
+                        "## Type:        yesno\n" \
+                        "## Default:     no\n" \
+                        "#\n" \
+                        "# Should the boot cycle detection be used to\n" \
+                        "# avoid unconditional reboot cycles of not\n" \
+                        "# supervised system.\n" \
+                        "#\n" \
+                        "CYCLE_DETECTION=\"no\"\n"
+      expected_output = "\n" \
+                        " Should the boot cycle detection be used to\n" \
+                        " avoid unconditional reboot cycles of not\n" \
+                        " supervised system.\n" \
+                        "\n"
+
+      expect(subject.GetCommentLines(sysconfig_lines)).to eq expected_output
+    end
+
+    it "returns empty string if nil passed" do
+      expect(subject.GetCommentLines(nil)).to eq ""
+    end
+  end
+
+  describe ".ParseSysconfigComment" do
+    it "returns hash with parsed sysconfig metadata" do
+      comment = "## Path:       System/Bootloader\n" \
+                "## Description: Bootloader configuration\n" \
+                "## Type:        yesno\n" \
+                "## Default:     no\n" \
+                "#\n" \
+                "# Should the boot cycle detection be used to\n" \
+                "# avoid unconditional reboot cycles of not\n" \
+                "# supervised system.\n" \
+                "#\n" \
+                "CYCLE_DETECTION=\"no\"\n"
+
+      expected_output = { "Path"        => "System/Bootloader",
+                          "Description" => "Bootloader configuration",
+                          "Type"        => "yesno",
+                          "Default"     => "no"
+                        }
+      expect(subject.ParseSysconfigComment(comment)).to eq expected_output
+    end
+
+    it "supports multiline metadata" do
+      line = "## Type:        a,b,\\\n" \
+             "##c,d"
+
+      expected_output = { "Type" => "a,b,c,d" }
+      expect(subject.ParseSysconfigComment(line)).to eq expected_output
+    end
+  end
+
+  describe ".Replace" do
+    it "returns string with all source substring replaced by target" do
+      arg = "abcdabcdab"
+      expected_output = "12cd12cd12"
+
+      expect(subject.Replace(arg, "ab", "12")).to eq expected_output
+    end
+
+    it "return nil if text is nil" do
+      expect(subject.Replace(nil, "ab", "12")).to eq nil
+    end
+
+    it "returns unmodified text if source is nil" do
+      expect(subject.Replace("abc", nil, "12")).to eq "abc"
+    end
+
+    it "returns unmodified text if target is nil" do
+      expect(subject.Replace("abc", "ab", nil)).to eq "abc"
+    end
+  end
+
+  describe ".WrapAt" do
+    it "wraps text with to have maximum given length" do
+      long_text = "word " * 100
+
+      expected_result = (("word " * 16).strip + "\n") * 6 + ("word " * 4).strip
+
+      expect(subject.WrapAt(long_text, 80, "")).to eq expected_result
+    end
+
+    it "allows to specify splitter for long words" do
+      long_word = "abc-" * 100
+
+      expected_result = (("abc-" * 20 + "\n") * 5).chomp
+
+      expect(subject.WrapAt(long_word, 80, "-")).to eq expected_result
+    end
+
+    it "returns empty string if text is nil" do
+      expect(subject.WrapAt(nil, 80, "-")).to eq ""
+    end
+
+    it "returns nil string if length is nil" do
+      expect(subject.WrapAt("abc" * 500, nil, "-")).to eq nil
+    end
+
+    it "acts like empty split_string if it is nil" do
+      long_text = "word " * 100
+
+      expected_result = (("word " * 16).strip + "\n") * 6 + ("word " * 4).strip
+
+      expect(subject.WrapAt(long_text, 80, nil)).to eq expected_result
+    end
+
+    it "returns empty string if text and length are nil" do
+      expect(subject.WrapAt(nil, nil, nil)).to eq ""
+    end
+  end
+
+  describe ".Random" do
+    it "generates random 36-base number with given length" do
+      Yast::Builtins.srandom(50) # ensure we get same number
+
+      expect(subject.Random(10)).to eq "fzlhifr6e4"
+    end
+
+    it "generates empty string if non-positive number passed" do
+      expect(subject.Random(0)).to eq ""
+      expect(subject.Random(-10)).to eq ""
+    end
+
+    it "generates empty string if nil as len passed" do
+      expect(subject.Random(nil)).to eq ""
+    end
+  end
 end
