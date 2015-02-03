@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb  3 10:15:13 UTC 2015 - ancor@suse.com
+
+- Better handling of line breaks in system log viewer (bnc#912169)
+- 3.1.109.1
+
+-------------------------------------------------------------------
 Mon Jan 26 14:16:20 UTC 2015 - jreidinger@suse.com
 
 - fixed \r, \f, \v and \b  characters lost during conversion to
