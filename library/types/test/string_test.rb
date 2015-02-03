@@ -76,9 +76,8 @@ describe Yast::String do
       expect(subject.FormatSizeWithPrecision(1025 << 30, 3, false)).to eq "1.001 TiB"
     end
 
-    it "returns bytes with precision based on suffix if negative precision passed" do
-      expect(subject.FormatSizeWithPrecision(1025 << 30, -1, false)).to eq "1.001 TiB"
-      expect(subject.FormatSizeWithPrecision(1025, -1, false)).to eq "1.0 KiB"
+    it "returns bytes with zero precision if nil precision passed" do
+      expect(subject.FormatSizeWithPrecision(1025 << 30, nil, false)).to eq "1 TiB"
     end
 
     it "omit trailing zeros if omit_zeroes is passed as true" do
@@ -226,6 +225,16 @@ describe Yast::String do
       expect(subject.ParseOptions("a=3,b=2", "separator" => ",")).to eq ["a=3", "b=2"]
     end
 
+    it "respects quoted strings" do
+      expect(subject.ParseOptions("\"a=3 b=2\" c=3", {})).to eq ["a=3 b=2", "c=3"]
+      expect(subject.ParseOptions("\"a=3 \\\"b=2\" c=3", {})).to eq ["a=3 \"b=2", "c=3"]
+      expect(subject.ParseOptions("\"a=3 \"b=2 c=3", {})).to eq ["a=3 b=2", "c=3"]
+    end
+
+    it "returns as if there is quote at the end if there is unfinished quoted string" do
+      expect(subject.ParseOptions("\"a=3 b=2 c=3", {})).to eq ["a=3 b=2 c=3"]
+    end
+
     it "allows to specify if values should be unique" do
       expect(subject.ParseOptions("1 1 2", "unique" => false)).to eq ["1", "1", "2"]
       expect(subject.ParseOptions("1 1 2", "unique" => true)).to eq ["1", "2"]
@@ -239,6 +248,14 @@ describe Yast::String do
     it "allows to specify if backslash should be interpreted" do
       expect(subject.ParseOptions("a=\\n", "interpret_backslash" => true)).to eq ["a=\n"]
       expect(subject.ParseOptions("a=\\n", "interpret_backslash" => false)).to eq ["a=\\n"]
+    end
+
+    it "removes backslash from invalid sequestion if backslash is interpretted" do
+      expect(subject.ParseOptions("a=\\q", "interpret_backslash" => true)).to eq ["a=q"]
+    end
+
+    it "keeps trailing backslash if backslash is interpretted" do
+      expect(subject.ParseOptions("a=\\", "interpret_backslash" => true)).to eq ["a=\\"]
     end
 
     it "returns empty array if nil passed as options" do
@@ -358,6 +375,175 @@ describe Yast::String do
 
     it "returns nil if format string is nil" do
       expect(subject.OptFormat(nil, 5)).to eq nil
+    end
+  end
+
+  describe ".OptParens" do
+    it "returns parameter in parens and with space prefix" do
+      expect(subject.OptParens(5)).to eq " (5)"
+    end
+
+    it "returns empty string if parameter is nil or empty" do
+      expect(subject.OptParens(nil)).to eq ""
+      expect(subject.OptParens("")).to eq ""
+    end
+  end
+
+  describe ".NonEmpty" do
+    it "filters out empty strings from array" do
+      expect(subject.NonEmpty(["a", "", "b", "", nil])).to eq ["a", "b", nil]
+    end
+
+    it "returns nil if nil passed" do
+      expect(subject.NonEmpty(nil)).to eq nil
+    end
+  end
+
+  describe ".NewlineItems" do
+    it "returns list of lines from string containing \\n" do
+      expect(subject.NewlineItems("a\nb\nc")).to eq ["a", "b", "c"]
+    end
+
+    it "removes from list all empty lines" do
+      expect(subject.NewlineItems("a\n\n")).to eq ["a"]
+    end
+
+    it "returns nil if nil passed" do
+      expect(subject.NewlineItems(nil)).to eq nil
+    end
+  end
+
+  describe ".YesNo" do
+    it "returns translated \"Yes\" if param is true" do
+      expect(subject.YesNo(true)).to eq "Yes"
+    end
+
+    it "returns translated \"No\" if param is false" do
+      expect(subject.YesNo(false)).to eq "No"
+    end
+
+    it "returns translated \"No\" if param is nil" do
+      expect(subject.YesNo(nil)).to eq "No"
+    end
+  end
+
+  describe ".FormatRate" do
+    it "returns pretty description of number passed as download rate" do
+      expect(subject.FormatRate(1025 << 20)).to eq "1.001 GiB/s"
+    end
+
+    # FIXME: looks like bug
+    it "returns \"/s\" if nil is passed" do
+      expect(subject.FormatRate(nil)).to eq "/s"
+    end
+  end
+
+  describe ".FormatRateMessage" do
+    it "returns text with %1 replaced by formated rate for average and current download " do
+      expect(subject.FormatRateMessage("Downloading %1", 1 << 20, 1 << 10)).to eq "Downloading 1 KiB/s (on average 1.00 MiB/s)"
+    end
+
+    it "returns text with %1 replaced by format current rate string if avg_rate is zero" do
+      expect(subject.FormatRateMessage("Downloading %1", 0, 1 << 10)).to eq "Downloading 1 KiB/s"
+    end
+
+    # FIXME: looks like bug as download can have parts when it is paused
+    it "returns text with %1 replaced by empty string if current rate is zero" do
+      expect(subject.FormatRateMessage("Downloading %1", 1 << 10, 0)).to eq "Downloading "
+    end
+
+    it "returns text with %1 replaced by empty string if current rate and avg_rate are zeros" do
+      expect(subject.FormatRateMessage("Downloading %1", 0, 0)).to eq "Downloading "
+    end
+  end
+
+  describe ".FormatTwoDigits" do
+    it "returns string with input if number has at least two digits" do
+      expect(subject.FormatTwoDigits(15)).to eq "15"
+      expect(subject.FormatTwoDigits(150)).to eq "150"
+    end
+
+    it "returns string with number prefixed by zero if param is non-negative and single digit" do
+      expect(subject.FormatTwoDigits(0)).to eq "00"
+      expect(subject.FormatTwoDigits(5)).to eq "05"
+    end
+
+    it "returns string with input if number is negative" do
+      expect(subject.FormatTwoDigits(-100)).to eq "-100"
+      expect(subject.FormatTwoDigits(-5)).to eq "-5"
+    end
+  end
+
+  describe ".FormatTime" do
+    it "returns string with minutes and seconds if less then one hour" do
+      expect(subject.FormatTime(1801)).to eq "30:01"
+    end
+
+    it "returns string with hours, minutes and seconds if above one hour" do
+      expect(subject.FormatTime(11_801)).to eq "3:16:41"
+    end
+
+    it "returns empty string if negative number passed" do
+      expect(subject.FormatTime(-1)).to eq ""
+    end
+
+    # FIXME: looks like bug
+    it "returns \"nil:nil:nil\" string if nil passed" do
+      expect(subject.FormatTime(nil)).to eq "nil:nil:nil"
+    end
+  end
+
+  describe ".FirstChunk" do
+    it "returns first part s splitted by any of separators" do
+      expect(subject.FirstChunk("a b", " ")).to eq "a"
+      expect(subject.FirstChunk("a b", "\n\t ")).to eq "a"
+    end
+
+    it "returns s string if there is no match of separators" do
+      expect(subject.FirstChunk("a b", "\t")).to eq "a b"
+    end
+
+    it "returns empty string if s is nil" do
+      expect(subject.FirstChunk(nil, "\t")).to eq ""
+    end
+
+    it "returns empty string if separators is nil" do
+      expect(subject.FirstChunk("a b", nil)).to eq ""
+    end
+  end
+
+  describe ".TextTable" do
+    it "returns string with ascii formatted table" do
+      expected_table = "    h1    h2 \n" \
+                       "    ---------\n" \
+                       "    a1    a2 \n" \
+                       "    bb10  bb2"
+
+      expect(subject.TextTable(["h1", "h2"], [["a1", "a2"], ["bb10", "bb2"]], {})).to eq(
+        expected_table
+      )
+    end
+
+    it "it allows to specify horizontal padding by integer" do
+      expected_table = "    h1        h2 \n" \
+                       "    -------------\n" \
+                       "    a1        a2 \n" \
+                       "    bb10      bb2"
+
+      expect(subject.TextTable(["h1", "h2"], [["a1", "a2"], ["bb10", "bb2"]], "horizontal_padding" => 6)).to eq(
+        expected_table
+      )
+    end
+
+    it "it allows to specify table left padding by integer" do
+      expected_table = "      h1    h2 \n" \
+                       "      ---------\n" \
+                       "      a1    a2 \n" \
+                       "      bb10  bb2"
+
+      expect(subject.TextTable(["h1", "h2"], [["a1", "a2"], ["bb10", "bb2"]], "table_left_padding" => 6)).to eq(
+        expected_table
+      )
     end
   end
 end
