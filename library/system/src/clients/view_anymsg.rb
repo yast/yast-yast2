@@ -186,8 +186,8 @@ module Yast
           # remove ANSI color escape sequences
           file_content.gsub!(/\e\[(\d|;|\[)+m/, "")
           # remove remaining ASCII control characters (ASCII 0-31 and 127 (DEL))
-          # (except new line, CR = 0xd)
-          file_content.tr!("\u0000-\u000c\u000e-\u001f\u007f", "")
+          # except new line (LF = 0xa) and carriage return (CR = 0xd)
+          file_content.tr!("\u0000-\u0009\u000b\u000c\u000e-\u001f\u007f", "")
         else
           file_content = _("File not found.")
         end
