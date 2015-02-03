@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb  3 10:15:13 UTC 2015 - ancor@suse.com
+
+- Better handling of line breaks in system log viewer (bnc#912169)
+- 3.1.121
+
+-------------------------------------------------------------------
 Mon Feb  2 08:27:21 UTC 2015 - jreidinger@suse.com
 
 - fix typo in method call to package bindings (found by openQA)
