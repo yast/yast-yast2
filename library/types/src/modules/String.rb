@@ -33,23 +33,22 @@ module Yast
   class StringClass < Module
     include Yast::Logger
 
+    # @note it is ascii chars only
+    UPPER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    LOWER_CHARS = "abcdefghijklmnopqrstuvwxyz"
+    ALPHA_CHARS = UPPER_CHARS + LOWER_CHARS
+    DIGIT_CHARS = "0123456789"
+    ALPHA_NUM_CHARS = ALPHA_CHARS + DIGIT_CHARS
+    PUNCT_CHARS = "!\"\#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
+    GRAPHICAL_CHARS = ALPHA_NUM_CHARS + PUNCT_CHARS
+    SPACE_CHARS = "\f\r\n\t\v"
+    PRINTABLE_CHARS = SPACE_CHARS + GRAPHICAL_CHARS
+
+    BASE_UNDERLINE = "----------------------------------------------------------------"
     def main
       textdomain "base"
 
-      # character sets, suitable for ValidChars
-
-      @cupper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-      @clower = "abcdefghijklmnopqrstuvwxyz"
-      @calpha = Ops.add(@cupper, @clower)
-      @cdigit = "0123456789"
-      @calnum = Ops.add(@calpha, @cdigit)
-      @cpunct = "!\"\#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
-      @cgraph = Ops.add(@calnum, @cpunct)
-      @cspace = "\f\r\n\t\v"
-      @cprint = Ops.add(@cspace, @cgraph)
-
       # 64 characters is the base undeline length
-      @base_underline = "----------------------------------------------------------------"
     end
 
     # Quote a string with 's
@@ -637,32 +636,32 @@ module Yast
 
     # The 26 lowercase ASCII letters
     def CLower
-      @clower
+      LOWER_CHARS
     end
 
     # The 52 upper and lowercase ASCII letters
     def CAlpha
-      @calpha
+      ALPHA_CHARS
     end
 
     # Digits: 0123456789
     def CDigit
-      @cdigit
+      DIGIT_CHARS
     end
 
     # The 62 upper and lowercase ASCII letters and digits
     def CAlnum
-      @calnum
+      ALPHA_NUM_CHARS
     end
 
     # Printable ASCII charcters except whitespace, 33-126
     def CGraph
-      @cgraph
+      GRAPHICAL_CHARS
     end
 
     # Printable ASCII characters including whitespace
     def CPrint
-      @cprint
+      PRINTABLE_CHARS
     end
 
     # Characters valid in a filename (not pathname).
@@ -737,9 +736,9 @@ module Yast
     # @param	integer length of underline
     # @return	string /length/ long underline
     def CreateUnderline(length)
-      underline = @base_underline
+      underline = BASE_UNDERLINE
       while Ops.less_than(Builtins.size(underline), length)
-        underline = Ops.add(underline, @base_underline)
+        underline = Ops.add(underline, BASE_UNDERLINE)
       end
       underline = Builtins.substring(underline, 0, length)
 
@@ -898,7 +897,7 @@ module Yast
     # @return random string of 0-9 and a-z
     def Random(len)
       return "" if Ops.less_or_equal(len, 0)
-      digits = Ops.add(@cdigit, @clower) # uses the character classes from above
+      digits = DIGIT_CHARS + LOWER_CHARS # uses the character classes from above
       base = Builtins.size(digits)
       max = 1
       i = len
