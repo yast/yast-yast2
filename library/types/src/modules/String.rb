@@ -671,103 +671,6 @@ module Yast
       Builtins.deletechars(CGraph(), "/")
     end
 
-    # - hidden for documentation -
-    #
-    # Local function for finding longest records in the table.
-    #
-    # @param	list <list <string> > table items
-    # @return	list <integer> longest records by columns
-    def FindLongestRecords(items)
-      items = deep_copy(items)
-      longest = []
-
-      # searching all rows
-      Builtins.foreach(items) do |row|
-        # starting with column 0
-        col_counter = 0
-        # testing all columns on the row
-        Builtins.foreach(row) do |col|
-          col_size = Builtins.size(col)
-          # found longer record for this column
-          if Ops.greater_than(col_size, Ops.get(longest, col_counter, -1))
-            Ops.set(longest, col_counter, col_size)
-          end
-          # next column
-          col_counter = Ops.add(col_counter, 1)
-        end
-      end
-
-      deep_copy(longest)
-    end
-
-    # - hidden for documentation -
-    #
-    # Local function creates table row.
-    #
-    # @param	list <string> row items
-    # @param	list <integer> columns lengths
-    # @param	integer record horizontal padding
-    # @return	string padded table row
-    def CreateTableRow(row_items, cols_lenghts, horizontal_padding)
-      row_items = deep_copy(row_items)
-      cols_lenghts = deep_copy(cols_lenghts)
-      row = ""
-
-      col_counter = 0
-      records_count = Ops.subtract(Builtins.size(row_items), 1)
-
-      Builtins.foreach(row_items) do |record|
-        padding = Ops.get(cols_lenghts, col_counter, 0)
-        if Ops.less_than(col_counter, records_count)
-          padding = Ops.add(padding, horizontal_padding)
-        end
-        row = Ops.add(row, Pad(record, padding))
-        col_counter = Ops.add(col_counter, 1)
-      end
-
-      row
-    end
-
-    # - hidden for documentation -
-    #
-    # Local function returns underline string /length/ long.
-    #
-    # @param	integer length of underline
-    # @return	string /length/ long underline
-    def CreateUnderline(length)
-      return "" unless length
-
-      "-" * length
-    end
-
-    # - hidden for documentation -
-    #
-    # Local function for creating header underline for table.
-    # It uses maximal lengths of records defined in cols_lenghts.
-    #
-    # @param	list <integer> maximal lengths of records in columns
-    # @param	integer horizontal padding of records
-    # @return	string table header underline
-    def CreateTableHeaderUnderline(cols_lenghts, horizontal_padding)
-      cols_lenghts = deep_copy(cols_lenghts)
-      col_counter = 0
-      # count of added paddings
-      records_count = Ops.subtract(Builtins.size(cols_lenghts), 1)
-      # total length of underline
-      total_size = 0
-
-      Builtins.foreach(cols_lenghts) do |col_size|
-        total_size = Ops.add(total_size, col_size)
-        # adding padding where necessary
-        if Ops.less_than(col_counter, records_count)
-          total_size = Ops.add(total_size, horizontal_padding)
-        end
-        col_counter = Ops.add(col_counter, 1)
-      end
-
-      CreateUnderline(total_size)
-    end
-
     # Function creates text table without using HTML tags.
     # (Useful for commandline)
     # Undefined option uses the default one.
@@ -795,7 +698,7 @@ module Yast
         4
       )
 
-      cols_lenghts = FindLongestRecords(Builtins.add(items, header))
+      cols_lenghts = find_longest_records(Builtins.add(items, header))
 
       # whole table is left-padded
       table_left_padding = Pad("", current_table_left_padding)
@@ -806,14 +709,14 @@ module Yast
       table = Ops.add(
         Ops.add(
           Ops.add(table, table_left_padding),
-          CreateTableRow(header, cols_lenghts, current_horizontal_padding)
+          table_row(header, cols_lenghts, current_horizontal_padding)
         ),
         "\n"
       )
       table = Ops.add(
         Ops.add(
           Ops.add(table, table_left_padding),
-          CreateTableHeaderUnderline(cols_lenghts, current_horizontal_padding)
+          table_header_underline(cols_lenghts, current_horizontal_padding)
         ),
         "\n"
       )
@@ -822,7 +725,7 @@ module Yast
         table = Ops.add(
           Ops.add(
             Ops.add(table, table_left_padding),
-            CreateTableRow(row, cols_lenghts, current_horizontal_padding)
+            table_row(row, cols_lenghts, current_horizontal_padding)
           ),
           Ops.less_than(rows_counter, rows_count) ? "\n" : ""
         )
@@ -843,7 +746,7 @@ module Yast
           Ops.add(Ops.add(Pad("", left_padding), header_line), "\n"),
           Pad("", left_padding)
         ),
-        CreateUnderline(Builtins.size(header_line))
+        underline(Builtins.size(header_line))
       )
     end
 
@@ -1069,6 +972,95 @@ module Yast
       # covert a number to download rate string
       # %1 is string - size in bytes, B, KiB, MiB, GiB or TiB
       Builtins.sformat(_("%1/s"), FormatSize(bytes_per_second))
+    end
+
+    # Local function returns underline string /length/ long.
+    #
+    # @param	integer length of underline
+    # @return	string /length/ long underline
+    def underline(length)
+      return "" unless length
+
+      "-" * length
+    end
+
+    # Local function for creating header underline for table.
+    # It uses maximal lengths of records defined in cols_lenghts.
+    #
+    # @param	list <integer> maximal lengths of records in columns
+    # @param	integer horizontal padding of records
+    # @return	string table header underline
+    def table_header_underline(cols_lenghts, horizontal_padding)
+      cols_lenghts = deep_copy(cols_lenghts)
+      col_counter = 0
+      # count of added paddings
+      records_count = Ops.subtract(Builtins.size(cols_lenghts), 1)
+      # total length of underline
+      total_size = 0
+
+      Builtins.foreach(cols_lenghts) do |col_size|
+        total_size = Ops.add(total_size, col_size)
+        # adding padding where necessary
+        if Ops.less_than(col_counter, records_count)
+          total_size = Ops.add(total_size, horizontal_padding)
+        end
+        col_counter = Ops.add(col_counter, 1)
+      end
+
+      underline(total_size)
+    end
+
+    # Local function for finding longest records in the table.
+    #
+    # @param	list <list <string> > table items
+    # @return	list <integer> longest records by columns
+    def find_longest_records(items)
+      items = deep_copy(items)
+      longest = []
+
+      # searching all rows
+      Builtins.foreach(items) do |row|
+        # starting with column 0
+        col_counter = 0
+        # testing all columns on the row
+        Builtins.foreach(row) do |col|
+          col_size = Builtins.size(col)
+          # found longer record for this column
+          if Ops.greater_than(col_size, Ops.get(longest, col_counter, -1))
+            Ops.set(longest, col_counter, col_size)
+          end
+          # next column
+          col_counter = Ops.add(col_counter, 1)
+        end
+      end
+
+      deep_copy(longest)
+    end
+
+    # Local function creates table row.
+    #
+    # @param	list <string> row items
+    # @param	list <integer> columns lengths
+    # @param	integer record horizontal padding
+    # @return	string padded table row
+    def table_row(row_items, cols_lenghts, horizontal_padding)
+      row_items = deep_copy(row_items)
+      cols_lenghts = deep_copy(cols_lenghts)
+      row = ""
+
+      col_counter = 0
+      records_count = Ops.subtract(Builtins.size(row_items), 1)
+
+      Builtins.foreach(row_items) do |record|
+        padding = Ops.get(cols_lenghts, col_counter, 0)
+        if Ops.less_than(col_counter, records_count)
+          padding = Ops.add(padding, horizontal_padding)
+        end
+        row = Ops.add(row, Pad(record, padding))
+        col_counter = Ops.add(col_counter, 1)
+      end
+
+      row
     end
   end
 
