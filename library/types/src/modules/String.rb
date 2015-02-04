@@ -892,91 +892,6 @@ module Yast
       s
     end
 
-    # Returns text wrapped at defined margin. Very useful for translated strings
-    # used for pop-up windows or dialogs where you can't know the width. It
-    # controls the maximum width of the string so the text should allways fit into
-    # the minimal ncurses window. If you expect some long words, such us URLs or
-    # words with a hyphen inside, you can also set the additional split-characters
-    # to "/-". Then the function can wrap the word also after these characters.
-    # This function description was wrapped using the function String::WrapAt().
-    #
-    # @example String::WrapAt("Some very long text",30,"/-");
-    #
-    # @param [String] text to be wrapped
-    # @param integer maximum width of the wrapped text
-    # @param string additional split-characters such as "-" or "/"
-    # @return [String] wrapped string
-    def WrapAt(text, width, split_string)
-      new_string = ""
-      avail = width # characters available in this line
-      lsep = "" # set to "\n" when at the beginning of a new line
-      wsep = "" # set to " " after words, unless at the beginning
-
-      Builtins.foreach(Builtins.splitstring(text, " \n")) do |word|
-        while Ops.greater_than(Builtins.size(word), 0)
-          # decide where to split the current word
-          split_at = 0
-          if Ops.less_or_equal(Builtins.size(word), width)
-            split_at = Builtins.size(word)
-          else
-            split_at = Builtins.findlastof(
-              Builtins.substring(
-                word,
-                0,
-                Ops.subtract(avail, Builtins.size(wsep))
-              ),
-              Ops.add(" \n", split_string)
-            )
-            if !split_at.nil?
-              split_at = Ops.add(split_at, 1)
-            else
-              split_at = Builtins.findlastof(
-                Builtins.substring(word, 0, width),
-                Ops.add(" \n", split_string)
-              )
-              if !split_at.nil?
-                split_at = Ops.add(split_at, 1)
-              else
-                split_at = Ops.subtract(avail, Builtins.size(wsep))
-              end
-            end
-          end
-
-          # decide whether it fits into the same line or must go on
-          # a separate line
-          if Ops.greater_than(Ops.add(Builtins.size(wsep), split_at), avail)
-            if Ops.greater_than(Builtins.size(new_string), 0)
-              new_string = Ops.add(new_string, "\n")
-            end
-            avail = width
-            wsep = ""
-            lsep = ""
-          end
-
-          # add the next word or partial word
-          new_string = Ops.add(
-            Ops.add(Ops.add(new_string, lsep), wsep),
-            Builtins.substring(word, 0, split_at)
-          )
-          avail = Ops.subtract(
-            Ops.subtract(avail, Builtins.size(wsep)),
-            split_at
-          )
-          wsep = ""
-          lsep = ""
-          if avail == 0
-            avail = width
-            lsep = "\n"
-          elsif split_at == Builtins.size(word)
-            wsep = " "
-          end
-          word = Builtins.substring(word, split_at)
-        end
-      end
-
-      new_string
-    end
-
     # Make a random base-36 number.
     # srandom should be called beforehand.
     # @param [Fixnum] len string length
@@ -1145,7 +1060,6 @@ module Yast
     publish function: :TextTable, type: "string (list <string>, list <list <string>>, map <string, any>)"
     publish function: :UnderlinedHeader, type: "string (string, integer)"
     publish function: :Replace, type: "string (string, string, string)"
-    publish function: :WrapAt, type: "string (string, integer, string)"
     publish function: :Random, type: "string (integer)"
     publish function: :FormatFilename, type: "string (string, integer)"
     publish function: :RemoveShortcut, type: "string (string)"

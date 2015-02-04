@@ -566,44 +566,6 @@ describe Yast::String do
     end
   end
 
-  describe ".WrapAt" do
-    it "wraps text with to have maximum given length" do
-      long_text = "word " * 100
-
-      expected_result = (("word " * 16).strip + "\n") * 6 + ("word " * 4).strip
-
-      expect(subject.WrapAt(long_text, 80, "")).to eq expected_result
-    end
-
-    it "allows to specify splitter for long words" do
-      long_word = "abc-" * 100
-
-      expected_result = (("abc-" * 20 + "\n") * 5).chomp
-
-      expect(subject.WrapAt(long_word, 80, "-")).to eq expected_result
-    end
-
-    it "returns empty string if text is nil" do
-      expect(subject.WrapAt(nil, 80, "-")).to eq ""
-    end
-
-    it "returns nil string if length is nil" do
-      expect(subject.WrapAt("abc" * 500, nil, "-")).to eq nil
-    end
-
-    it "acts like empty split_string if it is nil" do
-      long_text = "word " * 100
-
-      expected_result = (("word " * 16).strip + "\n") * 6 + ("word " * 4).strip
-
-      expect(subject.WrapAt(long_text, 80, nil)).to eq expected_result
-    end
-
-    it "returns empty string if text and length are nil" do
-      expect(subject.WrapAt(nil, nil, nil)).to eq ""
-    end
-  end
-
   describe ".Random" do
     it "generates random 36-base number with given length" do
       Yast::Builtins.srandom(50) # ensure we get same number
