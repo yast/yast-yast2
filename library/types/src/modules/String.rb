@@ -42,7 +42,6 @@ module Yast
       @clower = "abcdefghijklmnopqrstuvwxyz"
       @calpha = Ops.add(@cupper, @clower)
       @cdigit = "0123456789"
-      @cxdigit = Ops.add(@cdigit, "ABCDEFabcdef")
       @calnum = Ops.add(@calpha, @cdigit)
       @cpunct = "!\"\#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
       @cgraph = Ops.add(@calnum, @cpunct)
@@ -659,11 +658,6 @@ module Yast
       Ops.get(l, 0, "")
     end
 
-    # The 26 uppercase ASCII letters
-    def CUpper
-      @cupper
-    end
-
     # The 26 lowercase ASCII letters
     def CLower
       @clower
@@ -679,29 +673,14 @@ module Yast
       @cdigit
     end
 
-    # Hexadecimal digits: 0123456789ABCDEFabcdef
-    def CXdigit
-      @cxdigit
-    end
-
     # The 62 upper and lowercase ASCII letters and digits
     def CAlnum
       @calnum
     end
 
-    # The ASCII printable non-blank non-alphanumeric characters
-    def CPunct
-      @cpunct
-    end
-
     # Printable ASCII charcters except whitespace, 33-126
     def CGraph
       @cgraph
-    end
-
-    # ASCII whitespace: SPACE CR LF HT VT FF
-    def CSpace
-      @cspace
     end
 
     # Printable ASCII characters including whitespace
@@ -1314,15 +1293,11 @@ module Yast
     publish function: :CutRegexMatch, type: "string (string, string, boolean)"
     publish function: :EscapeTags, type: "string (string)"
     publish function: :FirstChunk, type: "string (string, string)"
-    publish function: :CUpper, type: "string ()"
     publish function: :CLower, type: "string ()"
     publish function: :CAlpha, type: "string ()"
     publish function: :CDigit, type: "string ()"
-    publish function: :CXdigit, type: "string ()"
     publish function: :CAlnum, type: "string ()"
-    publish function: :CPunct, type: "string ()"
     publish function: :CGraph, type: "string ()"
-    publish function: :CSpace, type: "string ()"
     publish function: :CPrint, type: "string ()"
     publish function: :ValidCharsFilename, type: "string ()"
     publish function: :TextTable, type: "string (list <string>, list <list <string>>, map <string, any>)"
