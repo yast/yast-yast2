@@ -729,4 +729,53 @@ describe Yast::String do
       expect(subject.Random(nil)).to eq ""
     end
   end
+
+  describe ".FormatFilename" do
+    it "returns truncated middle part of directory to fit len" do
+      expect(subject.FormatFilename("/really/long/file/name", 15)).to eq "/.../file/name"
+      expect(subject.FormatFilename("/really/long/file/name", 10)).to eq "/.../name"
+    end
+
+    it "returns whole file_path if it fit len" do
+      expect(subject.FormatFilename("/really/long/file/name", 50)).to eq "/really/long/file/name"
+    end
+
+    it "never removes the last part of name" do
+      expect(subject.FormatFilename("/really/long/file/name", 3)).to eq ".../name"
+    end
+
+    it "can remove first part of path" do
+      expect(subject.FormatFilename("/really/long/file/name", 5)).to eq ".../name"
+    end
+
+    it "returns nil if file_path is nil" do
+      expect(subject.FormatFilename(nil, 5)).to eq nil
+    end
+
+    it "returns file_len truncated by second path element if len is nil" do
+      expect(subject.FormatFilename("/really/long/file/name", nil)).to eq "/really/.../file/name"
+    end
+  end
+
+  describe ".FindMountPoint" do
+    it "returns mount point where dir belongs to" do
+      mount_points = ["/", "/boot", "/var"]
+
+      expect(subject.FindMountPoint("/boot/grub2", mount_points)).to eq "/boot"
+      expect(subject.FindMountPoint("/var", mount_points)).to eq "/var"
+      expect(subject.FindMountPoint("/usr", mount_points)).to eq "/"
+    end
+
+    it "returns \"/\" if dir is nil or empty" do
+      mount_points = ["/", "/boot", "/var"]
+
+      expect(subject.FindMountPoint("", mount_points)).to eq "/"
+      expect(subject.FindMountPoint(nil, mount_points)).to eq "/"
+    end
+
+    it "returns \"/\" if dirs are empty or nil" do
+      expect(subject.FindMountPoint("/usr", [])).to eq "/"
+      expect(subject.FindMountPoint("/usr", nil)).to eq "/"
+    end
+  end
 end
