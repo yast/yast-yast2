@@ -343,26 +343,6 @@ describe Yast::String do
     end
   end
 
-  describe ".ReplaceWith" do
-    it "returns string with all characters in chars replaced by glue" do
-      expect(subject.ReplaceWith("a\nb\tc d", "\n\t ", "-")).to eq "a-b-c-d"
-      expect(subject.ReplaceWith("a\nb\tc d", "\n\t ", "")).to eq "abcd"
-    end
-
-    it "returns nil if str is nil" do
-      expect(subject.ReplaceWith(nil, " ", "")).to eq nil
-    end
-
-    it "returns nil if chars is nil" do
-      expect(subject.ReplaceWith("abc", nil, "")).to eq nil
-    end
-
-    it "returns nil if glue is nil" do
-      expect(subject.ReplaceWith("abc", "a", nil)).to eq nil
-      expect(subject.ReplaceWith("abc", "d", nil)).to eq nil
-    end
-  end
-
   describe ".OptParens" do
     it "returns parameter in parens and with space prefix" do
       expect(subject.OptParens(5)).to eq " (5)"

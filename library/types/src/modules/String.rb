@@ -1016,20 +1016,6 @@ module Yast
       dir
     end
 
-    # Replaces all characters in a given string with some other string or character
-    #
-    # @param (string) input string
-    # @param (string) all characters to replace
-    # @param (string) replace with
-    # @param (string) string with replaced characters
-    #
-    # @example
-    #   // Replace whitespace characters with dashes
-    #   ReplaceWith ("a\nb\tc d", "\n\t ", "-") -> "a-b-c-d"
-    def ReplaceWith(str, chars, glue)
-      Builtins.mergestring(Builtins.splitstring(str, chars), glue)
-    end
-
     publish function: :Quote, type: "string (string)"
     publish function: :UnQuote, type: "string (string)"
     publish function: :OptParens, type: "string (string)"
@@ -1065,7 +1051,6 @@ module Yast
     publish function: :RemoveShortcut, type: "string (string)"
     publish function: :StartsWith, type: "boolean (string, string)"
     publish function: :FindMountPoint, type: "string (string, list <string>)"
-    publish function: :ReplaceWith, type: "string (string, string, string)"
 
   private
 
