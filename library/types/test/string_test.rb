@@ -412,17 +412,6 @@ describe Yast::String do
     end
   end
 
-  describe ".FormatRate" do
-    it "returns pretty description of number passed as download rate" do
-      expect(subject.FormatRate(1025 << 20)).to eq "1.001 GiB/s"
-    end
-
-    # FIXME: looks like bug
-    it "returns \"/s\" if nil is passed" do
-      expect(subject.FormatRate(nil)).to eq "/s"
-    end
-  end
-
   describe ".FormatRateMessage" do
     it "returns text with %1 replaced by formated rate for average and current download " do
       expect(subject.FormatRateMessage("Downloading %1", 1 << 20, 1 << 10)).to eq "Downloading 1 KiB/s (on average 1.00 MiB/s)"

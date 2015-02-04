@@ -211,23 +211,6 @@ module Yast
       FormatSizeWithPrecision(bytes, -1, Ops.less_than(bytes, 1 << 20))
     end
 
-    # Return a pretty description of a download rate
-    #
-    # Return a pretty description of a download rate, with two fraction digits
-    # and using B/s, KiB/s, MiB/s, GiB/s or TiB/s as unit as appropriate.
-    #
-    # @param [Fixnum] bytes_per_second download rate (in B/s)
-    # @return formatted string
-    #
-    # @example FormatRate(6780) -> ""
-    # @example FormatRate(0) -> ""
-    # @example FormatRate(895321) -> ""
-    def FormatRate(bytes_per_second)
-      # covert a number to download rate string
-      # %1 is string - size in bytes, B, KiB, MiB, GiB or TiB
-      Builtins.sformat(_("%1/s"), FormatSize(bytes_per_second))
-    end
-
     # Add a download rate status to a message.
     #
     # Add the current and the average download rate to the message.
@@ -241,7 +224,7 @@ module Yast
       rate = ""
 
       if Ops.greater_than(curr_bps, 0)
-        rate = FormatRate(curr_bps)
+        rate = format_rate(curr_bps)
 
         if Ops.greater_than(avg_bps, 0)
           # format download rate message: %1 = the current download rate (e.g. "242.6kB/s")
@@ -250,7 +233,7 @@ module Yast
           rate = Builtins.sformat(
             _("%1 (on average %2)"),
             rate,
-            FormatRate(avg_bps)
+            format_rate(avg_bps)
           )
         end
       end
@@ -1140,7 +1123,6 @@ module Yast
     publish function: :YesNo, type: "string (boolean)"
     publish function: :FormatSizeWithPrecision, type: "string (integer, integer, boolean)"
     publish function: :FormatSize, type: "string (integer)"
-    publish function: :FormatRate, type: "string (integer)"
     publish function: :FormatRateMessage, type: "string (string, integer, integer)"
     publish function: :FormatTime, type: "string (integer)"
     publish function: :CutBlanks, type: "string (string)"
@@ -1177,6 +1159,23 @@ module Yast
     # @return sformat (f, s) if s is neither empty or nil, else ""
     def opt_format(f, s)
       s == "" || s.nil? ? "" : Builtins.sformat(f, s)
+    end
+
+    # Return a pretty description of a download rate
+    #
+    # Return a pretty description of a download rate, with two fraction digits
+    # and using B/s, KiB/s, MiB/s, GiB/s or TiB/s as unit as appropriate.
+    #
+    # @param [Fixnum] bytes_per_second download rate (in B/s)
+    # @return formatted string
+    #
+    # @example format_rate(6780) -> ""
+    # @example format_rate(0) -> ""
+    # @example format_rate(895321) -> ""
+    def format_rate(bytes_per_second)
+      # covert a number to download rate string
+      # %1 is string - size in bytes, B, KiB, MiB, GiB or TiB
+      Builtins.sformat(_("%1/s"), FormatSize(bytes_per_second))
     end
   end
 
