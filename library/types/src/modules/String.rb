@@ -44,7 +44,6 @@ module Yast
     SPACE_CHARS = "\f\r\n\t\v"
     PRINTABLE_CHARS = SPACE_CHARS + GRAPHICAL_CHARS
 
-    BASE_UNDERLINE = "----------------------------------------------------------------"
     def main
       textdomain "base"
 
@@ -736,13 +735,9 @@ module Yast
     # @param	integer length of underline
     # @return	string /length/ long underline
     def CreateUnderline(length)
-      underline = BASE_UNDERLINE
-      while Ops.less_than(Builtins.size(underline), length)
-        underline = Ops.add(underline, BASE_UNDERLINE)
-      end
-      underline = Builtins.substring(underline, 0, length)
+      return "" unless length
 
-      underline
+      "-" * length
     end
 
     # - hidden for documentation -
