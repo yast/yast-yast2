@@ -1015,26 +1015,18 @@ module Yast
     # @param	list <list <string> > table items
     # @return	list <integer> longest records by columns
     def find_longest_records(items)
-      items = deep_copy(items)
-      longest = []
+      return [] unless items
 
       # searching all rows
-      Builtins.foreach(items) do |row|
-        # starting with column 0
-        col_counter = 0
-        # testing all columns on the row
-        Builtins.foreach(row) do |col|
-          col_size = Builtins.size(col)
-          # found longer record for this column
-          if Ops.greater_than(col_size, Ops.get(longest, col_counter, -1))
-            Ops.set(longest, col_counter, col_size)
-          end
-          # next column
-          col_counter = Ops.add(col_counter, 1)
+      items.each_with_object([]) do |row, result|
+        next unless row
+
+        row.each_with_index do |e, i|
+          size = e ? e.size : 0
+          result[i] ||= size
+          result[i] = size if size > result[i]
         end
       end
-
-      deep_copy(longest)
     end
 
     # Local function creates table row.
