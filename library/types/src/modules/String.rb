@@ -77,16 +77,10 @@ module Yast
       var.gsub("'\\''", "'")
     end
 
-    # Optional formatted text
-    # @return sformat (f, s) if s is neither empty or nil, else ""
-    def OptFormat(f, s)
-      s == "" || s.nil? ? "" : Builtins.sformat(f, s)
-    end
-
     # Optional parenthesized text
     # @return " (Foo)" if Foo is neither empty or nil, else ""
     def OptParens(s)
-      OptFormat(" (%1)", s)
+      opt_format(" (%1)", s)
     end
 
     # @param [Array<String>] l a list of strings
@@ -1140,7 +1134,6 @@ module Yast
 
     publish function: :Quote, type: "string (string)"
     publish function: :UnQuote, type: "string (string)"
-    publish function: :OptFormat, type: "string (string, string)"
     publish function: :OptParens, type: "string (string)"
     publish function: :NonEmpty, type: "list <string> (list <string>)"
     publish function: :NewlineItems, type: "list <string> (string)"
@@ -1177,6 +1170,14 @@ module Yast
     publish function: :StartsWith, type: "boolean (string, string)"
     publish function: :FindMountPoint, type: "string (string, list <string>)"
     publish function: :ReplaceWith, type: "string (string, string, string)"
+
+  private
+
+    # Optional formatted text
+    # @return sformat (f, s) if s is neither empty or nil, else ""
+    def opt_format(f, s)
+      s == "" || s.nil? ? "" : Builtins.sformat(f, s)
+    end
   end
 
   String = StringClass.new
