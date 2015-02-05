@@ -516,21 +516,18 @@ module Yast
     # @param [Boolean] glob flag if only first or every occuring match should be removed
     # @return [String] that has matches removed
     def CutRegexMatch(input, regex, glob)
-      return "" if input.nil? || Ops.less_than(Builtins.size(input), 1)
+      return "" if input.nil? || input.empty?
       output = input
       if Builtins.regexpmatch(output, regex)
         p = Builtins.regexppos(output, regex)
         loop do
-          output = Ops.add(
-            Builtins.substring(output, 0, Ops.get_integer(p, 0, 0)),
-            Builtins.substring(
-              output,
-              Ops.add(Ops.get_integer(p, 0, 0), Ops.get_integer(p, 1, 0))
-            )
-          )
+          first_index = p[0]
+          lenght = p[1] || 0
+
+          output = output[0, first_index] + output[(first_index + lenght)..-1]
           p = Builtins.regexppos(output, regex)
           break unless glob
-          break unless Ops.greater_than(Builtins.size(p), 0)
+          break if p.empty?
         end
       end
       output
