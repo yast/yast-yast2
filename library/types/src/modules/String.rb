@@ -714,7 +714,8 @@ module Yast
     # @param [Fixnum] len requested maximum lenght of the output
     # @return [String] Truncated file name
     def FormatFilename(file_path, len)
-      return file_path if Ops.less_or_equal(Builtins.size(file_path), len)
+      return nil unless file_path
+      return file_path if len && len > file_path.size
 
       dir = Builtins.splitstring(file_path, "/")
       file = Ops.get(dir, Ops.subtract(Builtins.size(dir), 1), "")
