@@ -451,6 +451,7 @@ describe Yast::String do
     it "returns first part s splitted by any of separators" do
       expect(subject.FirstChunk("a b", " ")).to eq "a"
       expect(subject.FirstChunk("a b", "\n\t ")).to eq "a"
+      expect(subject.FirstChunk("abc def", "\n\t ")).to eq "abc"
     end
 
     it "returns s string if there is no match of separators" do

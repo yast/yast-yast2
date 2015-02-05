@@ -557,8 +557,8 @@ module Yast
     # @param [String] separators characters which delimit components
     # @return first component or ""
     def FirstChunk(s, separators)
-      l = Builtins.splitstring(s, separators)
-      Ops.get(l, 0, "")
+      return "" if !s || !separators
+      s[/\A[^#{separators}]*/]
     end
 
     # The 26 lowercase ASCII letters
