@@ -227,22 +227,23 @@ module Yast
     # @return [String] formatted string (empty for negative values)
     #
     def FormatTime(seconds)
-      return "" if Ops.less_than(seconds, 0)
+      return "nil:nil:nil" unless seconds # funny backward compatibility
+      return "" if seconds < 0
 
-      if Ops.less_than(seconds, 3600) # Less than one hour
+      if seconds < 3600 # Less than one hour
         return Builtins.sformat(
           "%1:%2",
-          FormatTwoDigits(Ops.divide(seconds, 60)),
-          FormatTwoDigits(Ops.modulo(seconds, 60))
+          FormatTwoDigits(seconds / 60),
+          FormatTwoDigits(seconds % 60)
         ) # More than one hour - we don't hope this will ever happen, but who knows?
       else
-        hours = Ops.divide(seconds, 3600)
-        seconds = Ops.modulo(seconds, 3600)
+        hours = seconds / 3600
+        seconds = seconds % 3600
         return Builtins.sformat(
           "%1:%2:%3",
           hours,
-          FormatTwoDigits(Ops.divide(seconds, 60)),
-          FormatTwoDigits(Ops.modulo(seconds, 60))
+          FormatTwoDigits(seconds / 60),
+          FormatTwoDigits(seconds % 60)
         )
       end
     end
