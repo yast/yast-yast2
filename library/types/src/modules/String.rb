@@ -218,11 +218,8 @@ module Yast
     # @return [String] number as two-digit string
     #
     def FormatTwoDigits(x)
-      if Ops.less_than(x, 10) && Ops.greater_or_equal(x, 0)
-        Builtins.sformat("0%1", x)
-      else
-        Builtins.sformat("%1", x)
-      end
+      msg = (0..10).member?(x) ? "0%1" : "%1"
+      Builtins.sformat(msg, x)
     end
 
     # Format an integer seconds value with min:sec or hours:min:sec
