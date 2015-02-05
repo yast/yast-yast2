@@ -46,8 +46,6 @@ module Yast
 
     def main
       textdomain "base"
-
-      # 64 characters is the base undeline length
     end
 
     # Quote a string with 's
@@ -84,8 +82,8 @@ module Yast
     # @param [Array<String>] l a list of strings
     # @return only non-"" items
     def NonEmpty(l)
-      l = deep_copy(l)
-      Builtins.filter(l) { |i| i != "" }
+      return nil unless l
+      l.reject { |i| i == "" }
     end
 
     # @param [String] s \n-terminated items
