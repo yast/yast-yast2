@@ -89,7 +89,9 @@ module Yast
     # @param [String] s \n-terminated items
     # @return the items as a list, with empty lines removed
     def NewlineItems(s)
-      NonEmpty(Builtins.splitstring(s, "\n"))
+      return nil unless s
+
+      NonEmpty(s.split("\n"))
     end
 
     # @param [Boolean] value boolean
