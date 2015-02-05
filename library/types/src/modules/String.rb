@@ -684,52 +684,31 @@ module Yast
     # Items: [ [ "1", "aaa", "Samsung Calex" ], [ "2", "bbb", "Trivial Trinitron" ] ]
     # Possible Options: horizontal_padding (for columns), table_left_padding (for table)
     def TextTable(header, items, options)
-      header = deep_copy(header)
-      items = deep_copy(items)
-      options = deep_copy(options)
-      current_horizontal_padding = Ops.get_integer(
-        options,
-        "horizontal_padding",
-        2
-      )
-      current_table_left_padding = Ops.get_integer(
-        options,
-        "table_left_padding",
-        4
-      )
+      options ||= {}
+      items ||= []
+      current_horizontal_padding = options["horizontal_padding"] || 2
+      current_table_left_padding = options["table_left_padding"] || 4
 
       cols_lenghts = find_longest_records(Builtins.add(items, header))
 
       # whole table is left-padded
       table_left_padding = Pad("", current_table_left_padding)
       # the last row has no newline
-      rows_count = Builtins.size(items)
+      rows_count = items.size
       table = ""
 
-      table = Ops.add(
-        Ops.add(
-          Ops.add(table, table_left_padding),
-          table_row(header, cols_lenghts, current_horizontal_padding)
-        ),
-        "\n"
-      )
-      table = Ops.add(
-        Ops.add(
-          Ops.add(table, table_left_padding),
-          table_header_underline(cols_lenghts, current_horizontal_padding)
-        ),
-        "\n"
-      )
-      rows_counter = 1
-      Builtins.foreach(items) do |row|
-        table = Ops.add(
-          Ops.add(
-            Ops.add(table, table_left_padding),
-            table_row(row, cols_lenghts, current_horizontal_padding)
-          ),
-          Ops.less_than(rows_counter, rows_count) ? "\n" : ""
-        )
-        rows_counter = Ops.add(rows_counter, 1)
+      table << table_left_padding
+      table << table_row(header, cols_lenghts, current_horizontal_padding)
+      table << "\n"
+
+      table << table_left_padding
+      table << table_header_underline(cols_lenghts, current_horizontal_padding)
+      table << "\n"
+
+      items.each_with_index do |row, rows_counter|
+        table << table_left_padding
+        table << table_row(row, cols_lenghts, current_horizontal_padding)
+        table <<  "\n" if (rows_counter+1) < rows_count
       end
       table
     end
@@ -1035,20 +1014,16 @@ module Yast
     # @param	integer record horizontal padding
     # @return	string padded table row
     def table_row(row_items, cols_lenghts, horizontal_padding)
-      row_items = deep_copy(row_items)
-      cols_lenghts = deep_copy(cols_lenghts)
       row = ""
+      row_items ||= []
 
-      col_counter = 0
-      records_count = Ops.subtract(Builtins.size(row_items), 1)
+      records_count = row_items.size - 1
 
-      Builtins.foreach(row_items) do |record|
-        padding = Ops.get(cols_lenghts, col_counter, 0)
-        if Ops.less_than(col_counter, records_count)
-          padding = Ops.add(padding, horizontal_padding)
-        end
-        row = Ops.add(row, Pad(record, padding))
-        col_counter = Ops.add(col_counter, 1)
+      row_items.each_with_index do |record, col_counter|
+        padding = cols_lenghts[col_counter] || 0
+        padding += horizontal_padding if col_counter < records_count
+
+        row << Pad(record, padding)
       end
 
       row

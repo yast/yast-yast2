@@ -499,6 +499,23 @@ describe Yast::String do
         expected_table
       )
     end
+
+    it "returns header only if items param is nil" do
+      expected_table = "    h1  h2\n" \
+                       "    ------\n" \
+
+      expect(subject.TextTable(["h1", "h2"], nil, {})).to eq expected_table
+    end
+
+    it "returns table without header if header param is nil" do
+      expected_table = "    \n" \
+                       "    ---------\n" \
+                       "    a1    a2 \n" \
+                       "    bb10  bb2"
+
+      expect(subject.TextTable(nil, [["a1", "a2"], ["bb10", "bb2"]], {})).to eq expected_table
+    end
+
   end
 
   describe ".UnderlinedHeader" do
