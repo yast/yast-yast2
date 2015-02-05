@@ -97,13 +97,8 @@ module Yast
     # @param [Boolean] value boolean
     # @return [Boolean] value as "Yes" or "No"
     def YesNo(value)
-      if value
-        # human text for Boolean value
-        return _("Yes")
-      else
-        # human text for Boolean value
-        return _("No")
-      end
+      # TRANSLATORS: human text for Boolean value
+      value ? _("Yes") : _("No")
     end
 
     # Return a pretty description of a byte count
