@@ -139,7 +139,7 @@ module Yast
       whole = bytes.to_f
 
       while (whole >= 1024.0 || whole <= -1024.0) && (index + 1) < units.size
-        whole = whole / 1024.0
+        whole /= 1024.0
         index += 1
       end
 
@@ -674,7 +674,7 @@ module Yast
       items.each_with_index do |row, rows_counter|
         table << table_left_padding
         table << table_row(row, cols_lenghts, current_horizontal_padding)
-        table <<  "\n" if (rows_counter+1) < rows_count
+        table <<  "\n" if (rows_counter + 1) < rows_count
       end
       table
     end
@@ -944,9 +944,7 @@ module Yast
       cols_lenghts.each_with_index do |col_size, col_counter|
         total_size += col_size
         # adding padding where necessary
-        if col_counter < records_count
-          total_size += horizontal_padding
-        end
+        total_size += horizontal_padding if col_counter < records_count
       end
 
       underline(total_size)

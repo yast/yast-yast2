@@ -515,7 +515,6 @@ describe Yast::String do
 
       expect(subject.TextTable(nil, [["a1", "a2"], ["bb10", "bb2"]], {})).to eq expected_table
     end
-
   end
 
   describe ".UnderlinedHeader" do
