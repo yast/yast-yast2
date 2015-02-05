@@ -550,6 +550,13 @@ describe Yast::String do
       expect(subject.Replace(arg, "ab", "12")).to eq expected_output
     end
 
+    it "recursice replace parts if replacement create again source matching" do
+      arg = "abbaabbaa"
+      expected_output = "bbbbaaaaa"
+
+      expect(subject.Replace(arg, "ab", "ba")).to eq expected_output
+    end
+
     it "return nil if text is nil" do
       expect(subject.Replace(nil, "ab", "12")).to eq nil
     end

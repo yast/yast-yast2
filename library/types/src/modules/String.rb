@@ -652,7 +652,7 @@ module Yast
       left_padding ||= 0
 
       Pad("", left_padding) + header_line + "\n" +
-        Pad("", left_padding) + underline(Builtins.size(header_line))
+        Pad("", left_padding) + underline(header_line.size)
     end
 
     # Replace substring in a string. All substrings source are replaced by string target.
@@ -673,22 +673,16 @@ module Yast
         return s
       end
 
-      pos = Builtins.find(s, source)
-      while Ops.greater_or_equal(pos, 0)
-        tmp = Ops.add(Builtins.substring(s, 0, pos), target)
-        if Ops.greater_than(
-          Builtins.size(s),
-          Ops.add(pos, Builtins.size(source))
-          )
-          tmp = Ops.add(
-            tmp,
-            Builtins.substring(s, Ops.add(pos, Builtins.size(source)))
-          )
+      pos = s.index(source)
+      while pos
+        tmp = s[0, pos] + target
+        if s.size > (pos + source.size)
+          tmp << s[(pos + source.size)..-1]
         end
 
         s = tmp
 
-        pos = Builtins.find(s, source)
+        pos = s.index(source)
       end
 
       s
