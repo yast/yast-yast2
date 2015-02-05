@@ -170,7 +170,7 @@ module Yast
     #
     # @example FormatSize(23456767890) -> "223.70 MiB"
     def FormatSize(bytes)
-      return "" if bytes.nil?
+      return "" unless bytes
 
       # automatic precision, don't print trailing zeroes for sizes < 1MiB
       FormatSizeWithPrecision(bytes, -1, Ops.less_than(bytes, 1 << 20))
