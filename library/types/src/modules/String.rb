@@ -596,7 +596,7 @@ module Yast
     # characters are allowed.
     # @return [String] for ValidChars
     def ValidCharsFilename
-      Builtins.deletechars(CGraph(), "/")
+      GRAPHICAL_CHARS.delete("/")
     end
 
     # Function creates text table without using HTML tags.
