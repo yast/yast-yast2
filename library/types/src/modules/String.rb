@@ -346,32 +346,18 @@ module Yast
     # "remove_whitespace":<boolean> - remove white spaces around values (default: true),
     # @return [Array<String>] List of strings
     def ParseOptions(options, parameters)
-      parameters = deep_copy(parameters)
+      parameters ||= {}
       ret = []
 
       # parsing options
-      separator = Ops.get_string(parameters, "separator", " \t")
-      unique = Ops.get_boolean(parameters, "unique", false)
-      interpret_backslash = Ops.get_boolean(
-        parameters,
-        "interpret_backslash",
-        true
-      )
-      remove_whitespace = Ops.get_boolean(parameters, "remove_whitespace", true)
+      separator = parameters["separator"] || " \t"
+      unique = parameters.fetch("unique", false)
+      interpret_backslash = parameters.fetch("interpret_backslash", true)
+      remove_whitespace = parameters.fetch("remove_whitespace", true)
 
-      Builtins.y2debug(
-        "Input: string: '%1', parameters: %2",
-        options,
-        parameters
-      )
-      Builtins.y2debug(
-        "Used values: separator: '%1', unique: %2, remove_whitespace: %3",
-        separator,
-        unique,
-        remove_whitespace
-      )
+      log.debug "Input: string: '#{options}', parameters: %{parameters}"
 
-      return [] if options.nil?
+      return [] unless options
 
       # two algorithms are used:
       # first is much faster, but only usable if string
@@ -379,18 +365,13 @@ module Yast
       # and backslash sequences are not interpreted
       # second is more general, but of course slower
 
-      if Builtins.findfirstof(options, "\"").nil? &&
-          interpret_backslash == false
+      if options.include?("\"") && !interpret_backslash
         # easy case - no qouting, don't interpres backslash sequences => use splitstring
-        values = Builtins.splitstring(options, separator)
+        values = options.split(/[#{separator}]/)
 
-        Builtins.foreach(values) do |v|
+        values.each do |v|
           v = CutBlanks(v) if remove_whitespace == true
-          if unique == true
-            ret = Builtins.add(ret, v) if !Builtins.contains(ret, v)
-          else
-            ret = Builtins.add(ret, v)
-          end
+          ret << v if !unique || !ret.include?(v)
         end
       else
         # quoting is used or backslash interpretation is enabled
@@ -404,21 +385,16 @@ module Yast
         # parsed value - buffer
         str = ""
 
-        while Ops.less_than(index, Builtins.size(options))
-          character = Builtins.substring(options, index, 1)
+        while index < options.size
+          character = options[index]
 
-          Builtins.y2debug(
-            "character: %1 state: %2 index: %3",
-            character,
-            state,
-            index
-          )
+          log.debug "character: #{character} state: #{state} index: #{index}"
 
           # interpret backslash sequence
-          if character == "\\" && interpret_backslash == true
-            if Ops.less_than(Ops.add(index, 1), Builtins.size(options))
-              nextcharacter = Builtins.substring(options, Ops.add(index, 1), 1)
-              index = Ops.add(index, 1)
+          if character == "\\" && interpret_backslash
+            nextcharacter = options[index + 1]
+            if nextcharacter
+              index += 1
 
               # backslah sequences
               backslash_seq = {
@@ -444,20 +420,16 @@ module Yast
                 character = nextcharacter
               end
 
-              Builtins.y2debug("backslash sequence: '%1'", character)
+              log.debug "backslash sequence: '#{character}'"
             else
-              Builtins.y2warning(
-                "Missing character after backslash (\\) at the end of string"
-              )
+              log.warn "Missing character after backslash (\\) at the end of string"
             end
           end
 
           if state == :out_of_string
             # ignore separator or white space at the beginning of the string
-            if Builtins.issubstring(separator, character) == true ||
-                remove_whitespace == true &&
-                    (character == " " || character == "\t")
-              index = Ops.add(index, 1)
+            if separator.include?(character) || remove_whitespace && character =~ /[ \t]/
+              index += 1
               next
             # start of a quoted string
             elsif character == "\""
@@ -474,75 +446,64 @@ module Yast
             end
           # after double quoted string - handle non-separator chars after double quote
           elsif state == :in_quoted_string_after_dblqt
-            if Builtins.issubstring(separator, character) == true
-              ret = Builtins.add(ret, str) if !unique || !Builtins.contains(ret, str)
+            if separator.include?(character)
+              ret << str if !unique || !Builtins.contains(ret, str)
 
               str = ""
               state = :out_of_string
             elsif character == "\\\""
-              str = Ops.add(str, "\"")
+              str << "\""
             else
-              str = Ops.add(str, character)
+              str << character
             end
           elsif state == :in_quoted_string
             if character == "\""
               # end of quoted string
               state = :in_quoted_string_after_dblqt
             elsif character == "\\\""
-              str = Ops.add(str, "\"")
+              str << "\""
             else
-              str = Ops.add(str, character)
+              str << character
             end
           elsif state == :in_string
-            if Builtins.issubstring(separator, character) == true
+            if separator.include?(character)
               state = :out_of_string
 
-              str = CutBlanks(str) if remove_whitespace == true
+              str = CutBlanks(str) if remove_whitespace
 
-              ret = Builtins.add(ret, str) if !unique || !Builtins.contains(ret, str)
+              ret << str if !unique || !ret.include?(str)
 
               str = ""
             elsif character == "\\\""
-              str = Ops.add(str, "\"")
+              str << "\""
             else
-              str = Ops.add(str, character)
+              str << character
             end
           end
 
-          index = Ops.add(index, 1)
+          index += 1
         end
 
         # error - still in quoted string
         if state == :in_quoted_string || state == :in_quoted_string_after_dblqt
           if state == :in_quoted_string
-            Builtins.y2warning(
-              "Missing trainling double quote character(\") in input: '%1'",
-              options
-            )
+            log.warn "Missing trainling double quote character(\") in input: '#{options}'"
           end
 
-          if unique == true
-            ret = Builtins.add(ret, str) if !Builtins.contains(ret, str)
-          else
-            ret = Builtins.add(ret, str)
-          end
+          ret << str if !unique || !ret.include?(str)
         end
 
         # process last string in the buffer
         if state == :in_string
           str = CutBlanks(str) if remove_whitespace
 
-          if unique == true
-            ret = Builtins.add(ret, str) if !Builtins.contains(ret, str)
-          else
-            ret = Builtins.add(ret, str)
-          end
+          ret << str if !unique || !ret.include?(str)
         end
       end
 
-      Builtins.y2debug("Parsed values: %1", ret)
+      log.debug "Parsed values: #{ret}"
 
-      deep_copy(ret)
+      ret
     end
 
     # Remove first or every match of given regular expression from a string
