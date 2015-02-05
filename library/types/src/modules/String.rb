@@ -693,25 +693,11 @@ module Yast
     # @param [Fixnum] len string length
     # @return random string of 0-9 and a-z
     def Random(len)
-      return "" if Ops.less_or_equal(len, 0)
+      return "" if !len || len <= 0
       digits = DIGIT_CHARS + LOWER_CHARS # uses the character classes from above
-      base = Builtins.size(digits)
-      max = 1
-      i = len
-      while Ops.greater_than(i, 0)
-        max = Ops.multiply(max, base)
-        i = Ops.subtract(i, 1)
-      end
-      rnum = Builtins.random(max)
-      ret = ""
-      i = len
-      while Ops.greater_than(i, 0)
-        digit = Ops.modulo(rnum, base)
-        rnum = Ops.divide(rnum, base)
-        ret = Ops.add(ret, Builtins.substring(digits, digit, 1))
-        i = Ops.subtract(i, 1)
-      end
-      ret
+      ret = Array.new(len) { digits[rand(digits.size)] }
+
+      ret.join("")
     end
 
     # Format file name - truncate the middle part of the directory to fit to the reqested lenght.

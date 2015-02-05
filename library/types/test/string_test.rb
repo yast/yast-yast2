@@ -574,7 +574,7 @@ describe Yast::String do
     it "generates random 36-base number with given length" do
       Yast::Builtins.srandom(50) # ensure we get same number
 
-      expect(subject.Random(10)).to eq "fzlhifr6e4"
+      expect(subject.Random(10)).to eq "wbxu466m52"
     end
 
     it "generates empty string if non-positive number passed" do
