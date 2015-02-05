@@ -136,53 +136,25 @@ module Yast
       ]
 
       index = 0
-      whole = Builtins.tofloat(bytes)
+      whole = bytes.to_f
 
-      while (Ops.greater_or_equal(whole, 1024.0) ||
-          Ops.less_or_equal(whole, -1024.0)) &&
-          Ops.less_than(Ops.add(index, 1), Builtins.size(units))
-        whole = Ops.divide(whole, 1024.0)
-        index = Ops.add(index, 1)
+      while (whole >= 1024.0 || whole <= -1024.0) && (index + 1) < units.size
+        whole = whole / 1024.0
+        index += 1
       end
 
-      if precision.nil?
-        precision = 0
-      elsif Ops.less_than(precision, 0)
-        # auto precision - depends on the suffix, but max. 3 decimal digits
-        precision = Ops.less_or_equal(index, 3) ? index : 3
-      end
+      precision ||= 0
+      # auto precision - depends on the suffix, but max. 3 decimal digits
+      precision = index < 3 ? index : 3 if precision < 0
 
       if omit_zeroes == true
         max_difference = 0.9
-        i = precision
+        max_difference /= (10.0 * precision)
 
-        while Ops.greater_than(i, 0)
-          max_difference = Ops.divide(
-            max_difference,
-            Convert.convert(10, from: "integer", to: "float")
-          )
-          i = Ops.subtract(i, 1)
-        end
-
-        if Ops.less_than(
-          Ops.subtract(
-            whole,
-            Convert.convert(
-              Builtins.tointeger(whole),
-              from: "integer",
-              to:   "float"
-            )
-          ),
-          max_difference
-          )
-          precision = 0
-        end
+        precision = 0 if (whole - whole.round).abs < max_difference
       end
 
-      Ops.add(
-        Ops.add(Builtins::Float.tolstring(whole, precision), " "),
-        Ops.get_string(units, index, "")
-      )
+      Builtins::Float.tolstring(whole, precision) + " " + units[index]
     end
 
     # Return a pretty description of a byte count
