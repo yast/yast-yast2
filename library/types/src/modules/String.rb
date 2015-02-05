@@ -541,9 +541,12 @@ module Yast
     # @param [String] text to escape
     # @return [String]	escaped text
     def EscapeTags(text)
-      text = Builtins.mergestring(Builtins.splitstring(text, "&"), "&amp;")
-      text = Builtins.mergestring(Builtins.splitstring(text, "<"), "&lt;")
-      text = Builtins.mergestring(Builtins.splitstring(text, ">"), "&gt;")
+      return nil unless text
+      text = text.dup
+
+      text.gsub!("&", "&amp;")
+      text.gsub!("<", "&lt;")
+      text.gsub!(">", "&gt;")
 
       text
     end
