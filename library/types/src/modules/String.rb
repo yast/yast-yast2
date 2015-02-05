@@ -991,20 +991,19 @@ module Yast
     # @param	integer horizontal padding of records
     # @return	string table header underline
     def table_header_underline(cols_lenghts, horizontal_padding)
-      cols_lenghts = deep_copy(cols_lenghts)
-      col_counter = 0
+      horizontal_padding ||= 0
+
       # count of added paddings
-      records_count = Ops.subtract(Builtins.size(cols_lenghts), 1)
+      records_count = cols_lenghts.size - 1
       # total length of underline
       total_size = 0
 
-      Builtins.foreach(cols_lenghts) do |col_size|
-        total_size = Ops.add(total_size, col_size)
+      cols_lenghts.each_with_index do |col_size, col_counter|
+        total_size += col_size
         # adding padding where necessary
-        if Ops.less_than(col_counter, records_count)
-          total_size = Ops.add(total_size, horizontal_padding)
+        if col_counter < records_count
+          total_size += horizontal_padding
         end
-        col_counter = Ops.add(col_counter, 1)
       end
 
       underline(total_size)
