@@ -187,11 +187,13 @@ module Yast
     # @return [String] formatted message
     def FormatRateMessage(text, avg_bps, curr_bps)
       rate = ""
+      curr_bps ||= 0
+      avg_bps ||= 0
 
-      if Ops.greater_than(curr_bps, 0)
+      if curr_bps > 0
         rate = format_rate(curr_bps)
 
-        if Ops.greater_than(avg_bps, 0)
+        if avg_bps > 0
           # format download rate message: %1 = the current download rate (e.g. "242.6kB/s")
           # %2 is the average download rate (e.g. "228.3kB/s")
           # to translators: keep translation of "on average" as short as possible
