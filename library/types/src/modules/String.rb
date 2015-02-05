@@ -720,13 +720,11 @@ module Yast
     # @param	integer left padding
     # @return	[String] underlined header line
     def UnderlinedHeader(header_line, left_padding)
-      Ops.add(
-        Ops.add(
-          Ops.add(Ops.add(Pad("", left_padding), header_line), "\n"),
-          Pad("", left_padding)
-        ),
-        underline(Builtins.size(header_line))
-      )
+      return nil unless header_line
+      left_padding ||= 0
+
+      Pad("", left_padding) + header_line + "\n" +
+        Pad("", left_padding) + underline(Builtins.size(header_line))
     end
 
     # Replace substring in a string. All substrings source are replaced by string target.
