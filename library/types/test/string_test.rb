@@ -606,6 +606,7 @@ describe Yast::String do
   describe ".FormatFilename" do
     it "returns truncated middle part of directory to fit len" do
       expect(subject.FormatFilename("/really/long/file/name", 15)).to eq "/.../file/name"
+      expect(subject.FormatFilename("/really/long/file/name/", 15)).to eq "/.../file/name/"
       expect(subject.FormatFilename("/really/long/file/name", 10)).to eq "/.../name"
     end
 

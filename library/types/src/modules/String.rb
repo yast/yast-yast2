@@ -720,44 +720,38 @@ module Yast
       return nil unless file_path
       return file_path if len && len > file_path.size
 
-      dir = Builtins.splitstring(file_path, "/")
-      file = Ops.get(dir, Ops.subtract(Builtins.size(dir), 1), "")
-      dir = Builtins.remove(dir, Ops.subtract(Builtins.size(dir), 1))
+      dir = file_path.split("/", -1)
+      file = dir.pop
 
       # there is a slash at the end, add the directory name
       if file == ""
-        file = Ops.add(
-          Ops.get(dir, Ops.subtract(Builtins.size(dir), 1), ""),
-          "/"
-        )
-        dir = Builtins.remove(dir, Ops.subtract(Builtins.size(dir), 1))
+        file = dir.pop + "/"
       end
 
-      if Ops.less_or_equal(Builtins.size(Builtins.mergestring(dir, "/")), 3) ||
-          Builtins.size(dir) == 0
+      if dir.join("/").size <= 3
         # the path is short, replacing by ... cannot help
         return file_path
       end
 
       ret = ""
       loop do
-        # put the ellipsis in the middle of the path
-        ellipsis = Ops.divide(Builtins.size(dir), 2)
-
         # ellipsis - used to replace part of text to make it shorter
         # example: "/really/very/long/file/name", "/.../file/name")
-        Ops.set(dir, ellipsis, _("..."))
+        ellipsis = _("...")
+        dir[dir.size/2] = ellipsis
 
-        ret = Builtins.mergestring(Builtins.add(dir, file), "/")
+        ret = (dir + [file]).join("/")
 
-        if Ops.greater_than(Builtins.size(ret), len)
+        break unless len # funny backward compatibility that for nil len remove one element
+
+        if ret.size > len
           # still too long, remove the ellipsis and start a new iteration
-          dir = Builtins.remove(dir, ellipsis)
+          dir.delete(ellipsis)
         else
           # the size is OK
           break
         end
-        break unless Ops.greater_than(Builtins.size(dir), 0)
+        break if dir.empty?
       end
 
       ret
