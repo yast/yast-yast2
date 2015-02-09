@@ -676,9 +676,7 @@ module Yast
       pos = s.index(source)
       while pos
         tmp = s[0, pos] + target
-        if s.size > (pos + source.size)
-          tmp << s[(pos + source.size)..-1]
-        end
+        tmp << s[(pos + source.size)..-1] if s.size > (pos + source.size)
 
         s = tmp
 
