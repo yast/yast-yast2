@@ -581,8 +581,8 @@ describe Yast::String do
     end
 
     it "raises exception if target include source" do
-      expect{subject.Replace("abc", "ab", "abcde")}.to raise_exception
-      expect{subject.Replace("abc", "ab", "ab")}.to raise_exception
+      expect { subject.Replace("abc", "ab", "abcde") }.to raise_exception
+      expect { subject.Replace("abc", "ab", "ab") }.to raise_exception
     end
   end
 
