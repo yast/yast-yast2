@@ -173,7 +173,7 @@ describe Yast::String do
     end
 
     # FIXME: looks like bug
-    it "if padding is more then one character then it is counted in length as one" do
+    it "presumming padding is only one character long otherwise it creates longer string" do
       expect(subject.SuperPad("test", 6, "abc", :left)).to eq "testabcabc"
     end
   end
@@ -250,7 +250,7 @@ describe Yast::String do
       expect(subject.ParseOptions("a=\\n", "interpret_backslash" => false)).to eq ["a=\\n"]
     end
 
-    it "removes backslash from invalid sequestion if backslash is interpretted" do
+    it "removes backslash from invalid sequention if backslash is interpretted" do
       expect(subject.ParseOptions("a=\\q", "interpret_backslash" => true)).to eq ["a=q"]
     end
 
@@ -381,20 +381,30 @@ describe Yast::String do
   describe ".YesNo" do
     it "returns translated \"Yes\" if param is true" do
       expect(subject.YesNo(true)).to eq "Yes"
+
+      allow(subject).to receive(:_).and_return "Ano"
+      expect(subject.YesNo(true)).to eq "Ano"
     end
 
     it "returns translated \"No\" if param is false" do
       expect(subject.YesNo(false)).to eq "No"
+
+      allow(subject).to receive(:_).and_return "Ne"
+      expect(subject.YesNo(true)).to eq "Ne"
     end
 
     it "returns translated \"No\" if param is nil" do
       expect(subject.YesNo(nil)).to eq "No"
+
+      allow(subject).to receive(:_).and_return "Ne"
+      expect(subject.YesNo(true)).to eq "Ne"
     end
   end
 
   describe ".FormatRateMessage" do
     it "returns text with %1 replaced by formated rate for average and current download " do
       expect(subject.FormatRateMessage("Downloading %1", 1 << 20, 1 << 10)).to eq "Downloading 1 KiB/s (on average 1.00 MiB/s)"
+      expect(subject.FormatRateMessage("Downloading %1", 1025 << 20, 1025 << 30)).to eq "Downloading 1.001 TiB/s (on average 1.001 GiB/s)"
     end
 
     it "returns text with %1 replaced by format current rate string if avg_rate is zero" do
@@ -593,7 +603,7 @@ describe Yast::String do
       expect(subject.FormatFilename("/really/long/file/name", 10)).to eq "/.../name"
     end
 
-    it "returns whole file_path if it fit len" do
+    it "returns whole file_path if it fits len" do
       expect(subject.FormatFilename("/really/long/file/name", 50)).to eq "/really/long/file/name"
     end
 
@@ -621,6 +631,7 @@ describe Yast::String do
       expect(subject.FindMountPoint("/boot/grub2", mount_points)).to eq "/boot"
       expect(subject.FindMountPoint("/var", mount_points)).to eq "/var"
       expect(subject.FindMountPoint("/usr", mount_points)).to eq "/"
+      expect(subject.FindMountPoint("/usr", ["/var"])).to eq "/"
     end
 
     it "returns \"/\" if dir is nil or empty" do
