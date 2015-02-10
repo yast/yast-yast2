@@ -561,7 +561,7 @@ describe Yast::String do
       expect(subject.Replace(arg, "ab", "12")).to eq expected_output
     end
 
-    it "recursice replace parts if replacement create again source matching" do
+    it "recursive replace parts if replacement create again source matching" do
       arg = "abbaabbaa"
       expected_output = "bbbbaaaaa"
 
