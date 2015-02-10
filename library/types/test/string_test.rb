@@ -173,7 +173,7 @@ describe Yast::String do
     end
 
     # FIXME: looks like bug
-    it "presumming padding is only one character long otherwise it creates longer string" do
+    it "creates a longer string if padding is more then one character long" do
       expect(subject.SuperPad("test", 6, "abc", :left)).to eq "testabcabc"
     end
   end
