@@ -579,6 +579,11 @@ describe Yast::String do
     it "returns unmodified text if target is nil" do
       expect(subject.Replace("abc", "ab", nil)).to eq "abc"
     end
+
+    it "raises exception if target include source" do
+      expect{subject.Replace("abc", "ab", "abcde")}.to raise_exception
+      expect{subject.Replace("abc", "ab", "ab")}.to raise_exception
+    end
   end
 
   describe ".Random" do

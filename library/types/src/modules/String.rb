@@ -673,6 +673,11 @@ module Yast
         return s
       end
 
+      # avoid infinite loop even if it break backward compatibility
+      if target.include?(source)
+        raise "Target #{target} include #{source} which will lead to infinite loop"
+      end
+
       pos = s.index(source)
       while pos
         tmp = s[0, pos] + target
