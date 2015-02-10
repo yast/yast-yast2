@@ -355,7 +355,7 @@ module Yast
       interpret_backslash = parameters.fetch("interpret_backslash", true)
       remove_whitespace = parameters.fetch("remove_whitespace", true)
 
-      log.debug "Input: string: '#{options}', parameters: %{parameters}"
+      log.debug "Input: string: '#{options}', parameters: #{parameters}"
 
       return [] unless options
 
