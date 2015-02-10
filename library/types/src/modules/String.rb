@@ -218,7 +218,7 @@ module Yast
     # @return [String] number as two-digit string
     #
     def FormatTwoDigits(x)
-      msg = (0..10).member?(x) ? "0%1" : "%1"
+      msg = (0..9).member?(x) ? "0%1" : "%1"
       Builtins.sformat(msg, x)
     end
 

@@ -423,6 +423,7 @@ describe Yast::String do
 
   describe ".FormatTwoDigits" do
     it "returns string with input if number has at least two digits" do
+      expect(subject.FormatTwoDigits(10)).to eq "10"
       expect(subject.FormatTwoDigits(15)).to eq "15"
       expect(subject.FormatTwoDigits(150)).to eq "150"
     end
