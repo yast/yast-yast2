@@ -724,9 +724,7 @@ module Yast
       file = dir.pop
 
       # there is a slash at the end, add the directory name
-      if file == ""
-        file = dir.pop + "/"
-      end
+      file = dir.pop + "/" if file == ""
 
       if dir.join("/").size <= 3
         # the path is short, replacing by ... cannot help
@@ -738,7 +736,7 @@ module Yast
         # ellipsis - used to replace part of text to make it shorter
         # example: "/really/very/long/file/name", "/.../file/name")
         ellipsis = _("...")
-        dir[dir.size/2] = ellipsis
+        dir[dir.size / 2] = ellipsis
 
         ret = (dir + [file]).join("/")
 
