@@ -799,7 +799,7 @@ module Yast
             side = _("Side B")
           end
           wanted = Ops.shift_right(Ops.add(wanted, 1), 1)
-          wanted_label = if ["cd", "dvd"].include(url_scheme)
+          wanted_label = if ["cd", "dvd"].include?(url_scheme)
                            # label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
                            # %3 side (e.g. "Side A")
                            Builtins.sformat("%1 (Disc %2, %3)", product, wanted, side)
@@ -809,7 +809,7 @@ module Yast
                            Builtins.sformat("%1 (Medium %2, %3)", product, wanted, side)
                          end
         else
-          wanted_label = if ["cd", "dvd"].include(Builtins.tolower(url_scheme))
+          wanted_label = if ["cd", "dvd"].include?(Builtins.tolower(url_scheme))
                            # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
                            Builtins.sformat(_("%1 (Disc %2)"), product, wanted)
                          else
