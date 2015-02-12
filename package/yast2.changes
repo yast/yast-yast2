@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Feb 12 14:06:24 UTC 2015 - ancor@suse.com
+
+- Fixed a crash (introduced in a recent update) when a media is
+  requested during packages management (bnc#917606).
+- 3.1.108.2
+
+-------------------------------------------------------------------
 Tue Feb  3 10:15:13 UTC 2015 - ancor@suse.com
 
 - Better handling of line breaks in system log viewer (bnc#912169)
