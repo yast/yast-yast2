@@ -54,7 +54,7 @@ Building and Submitting the Package
 ===================================
 
 Before submitting any change please read our [contribution
-guidelines](CONTRIBUTING.md).
+guidelines](http://yastgithubio.readthedocs.org/en/latest/contributing/).
 
 See the generic YaST documentation how to 
 [build](doc/README_Generic_Autotools.md#building-the-package)
