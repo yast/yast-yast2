@@ -2,7 +2,8 @@
 YaST &lt;FOO&gt; Module
 =======================
 
-<!-- Adapt the used badges, keep the order unchanged so it is unified for all repositories -->
+<!-- Adapt the used badges, keep the order unchanged so it is unified for all repositories.
+  To use the badges replace "foo" by the real repository name.  -->
 [![Travis Build](https://travis-ci.org/yast/yast-foo.svg?branch=master)](https://travis-ci.org/yast/yast-foobar)
 [![Jenkins Build](http://img.shields.io/jenkins/s/https/ci.opensuse.org/yast-foo-master.svg)](https://ci.opensuse.org/view/Yast/job/yast-foo-master/)
 [![Coverage Status](https://img.shields.io/coveralls/yast/yast-foobar.svg)](https://coveralls.io/r/yast/yast-foobar?branch=master)
@@ -47,9 +48,9 @@ To get the source code, clone the GitHub repository:
 
     $ git clone https://github.com/yast/<repository>.git
 
-Alternatively, you can fork the repository and clone your fork. This is most
-useful if you plan to contribute into the project and you do not have push
-permission to the repository.
+If you want to contribute into the project you can
+[fork](https://help.github.com/articles/fork-a-repo/) the repository and clone your fork.
+
 
 Development Environment
 =======================

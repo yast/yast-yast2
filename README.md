@@ -24,9 +24,8 @@ To get the source code, clone the GitHub repository:
 
     $ git clone https://github.com/yast/yast-yast2.git
 
-Alternatively, you can fork the repository and clone your fork. This is most
-useful if you plan to contribute into the project and you do not have push
-permission to the repository.
+If you want to contribute into the project you can
+[fork](https://help.github.com/articles/fork-a-repo/) the repository and clone your fork.
 
 
 Development
