@@ -36,9 +36,8 @@ This YaST module configures ....
 Development
 ===========
 
-This module is developed as part of YaST. See the generic
-[development documentation](README_Generic.md#yast-development-documentation) and
-[development environment](README_Generic.md#development-environment) description.
+This module is developed as part of YaST. See the
+[development documentation](http://yastgithubio.readthedocs.org/en/latest/development/).
 
 
 Getting the Sources
@@ -59,17 +58,6 @@ Development Environment
 > otherwise remove this section.*
 
 
-Installing and Starting the Module
-===================================
-
-<!-- select the appropriate link depending whether rake or make is used -->
-See [the generic building, installing](README_Generic_Rake.md#building-and-installaing)
-and [running](README_Generic_Rake.md#starting-the-module) documentation.
-
-See [the generic building, installing](README_Generic_Autotools.md#building-and-installaing)
-and [running](README_Generic_Autotools.md#starting-the-module) documentation.
-
-
 Testing Environment
 ===================
 
@@ -78,26 +66,6 @@ Testing Environment
 
 > *Example: for iSCSI client you might describe (or link) how to setup an iSCSI server
 > so it could be used by the client module.*
-
-
-Tests and Continuous Integration
-================================
-
-The tests are also run at a CI server, see
-the [generic CI documentation](README_Generic.md#continuous-integration)
-
-
-Building and Submitting the Package
-===================================
-
-Before submitting any change please read our [contribution
-guidelines](CONTRIBUTING.md).
-
-<!-- select the appropriate link depending whether rake or make is used -->
-See the generic YaST documentation how to
-[build](README_Generic_Autotools.md#building-the-package)
-[build](README_Generic_Rake.md#building-the-package)
-a package and [submit](README_Generic.md#submitting-the-package) it to the Open Build Service (OBS).
 
 
 Troubleshooting

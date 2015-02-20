@@ -16,13 +16,6 @@ Provided Functionality
 
 See [the generated yardoc documentation](http://www.rubydoc.info/github/yast/yast-yast2) at rubydoc.info.
 
-Development
-===========
-
-This module is developed as part of YaST. See the generic
-[development documentation](doc/README_Generic.md#yast-development-documentation) and
-[development environment](doc/README_Generic.md#development-environment) description.
-
 
 Getting the Sources
 ===================
@@ -36,29 +29,11 @@ useful if you plan to contribute into the project and you do not have push
 permission to the repository.
 
 
-Installing the Library
-======================
+Development
+===========
 
-See [the generic building and installing](doc/README_Generic_Autotools.md#building-and-installaing)
-documentation.
-
-
-Tests and Continuous Integration
-================================
-
-The tests are also run at a CI server, see
-the [generic CI documentation](doc/README_Generic.md#continuous-integration)
-
-
-Building and Submitting the Package
-===================================
-
-Before submitting any change please read our [contribution
-guidelines](http://yastgithubio.readthedocs.org/en/latest/contributing/).
-
-See the generic YaST documentation how to 
-[build](doc/README_Generic_Autotools.md#building-the-package)
- a package and [submit](doc/README_Generic.md#submitting-the-package) it to the Open Build Service (OBS).
+This module is developed as part of YaST. See the
+[development documentation](http://yastgithubio.readthedocs.org/en/latest/development/).
 
 
 Contact
