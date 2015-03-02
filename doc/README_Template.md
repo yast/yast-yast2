@@ -15,6 +15,25 @@ YaST &lt;FOO&gt; Module
 >  *Keep the file reasonably short, if some section becomes too long put the details in
 >  a separate file and link the content from here. Remove the unneeded sections.*
 
+> **This file should describe the module for developers, like:**
+> * What is the project good for - what does it actually do (and how),
+>   what it cannot do (unsupported scenarios), limitations
+> * Links to the documentation, high level and low level descriptions
+>   (e.g. RFC, wikipedia articles, man pages, project documentation,
+>   openSUSE wiki), terminology
+> * How to fetch the source code (if something outside Git is needed it
+>   should be mentioned)
+> * What prerequisites are needed to build the sources (external
+>   libraries, gems, scripts, …)
+> * How to build the sources (make/rake commands…)
+> * How to setup a testing environment (e.g. iSCSI target for iSCSI client)
+> * How to run the code to test a change (esp. needed for non trivial
+>   projects like linuxrc)
+> * How to run automated tests
+> * How to build a package for submission
+> * How to submit the package (if it needs some manual steps)
+> * Troubleshooting (how to solve typical problems) 
+
 
 Description
 ============
