@@ -1377,7 +1377,7 @@ module Yast
         if Ops.less_than(@current_step, Ops.subtract(Builtins.size(modules), 1)) &&
             !Stage.initial
           if !Convert.to_boolean(
-              SCR.Execute(path(".target.remove"), Installation.current_step)
+            SCR.Execute(path(".target.remove"), Installation.current_step)
             )
             Builtins.y2error("Error removing step identifier")
           end

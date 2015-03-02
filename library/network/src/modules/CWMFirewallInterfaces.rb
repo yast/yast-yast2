@@ -517,12 +517,12 @@ module Yast
       if Builtins.size(ifaces) == 0
         # question popup
         if !Popup.YesNo(
-            _(
-              "No interface is selected. Service will not\n" \
-                "be available for other computers.\n" \
-                "\n" \
-                "Continue?"
-            )
+          _(
+            "No interface is selected. Service will not\n" \
+              "be available for other computers.\n" \
+              "\n" \
+              "Continue?"
+          )
           )
           return false
         end
@@ -545,17 +545,17 @@ module Yast
       if Ops.greater_than(Builtins.size(added_ifaces), 0)
         ifaces_list = Builtins.mergestring(added_ifaces, "\n")
         if !Popup.YesNo(
-            Builtins.sformat(
-              # yes-no popup
-              _(
-                "Because of SuSE Firewall settings, the port\n" \
-                  "on the following interfaces will additionally be open:\n" \
-                  "%1\n" \
-                  "\n" \
-                  "Continue?"
-              ),
-              ifaces_list
-            )
+          Builtins.sformat(
+            # yes-no popup
+            _(
+              "Because of SuSE Firewall settings, the port\n" \
+                "on the following interfaces will additionally be open:\n" \
+                "%1\n" \
+                "\n" \
+                "Continue?"
+            ),
+            ifaces_list
+          )
           )
           return false
         end
@@ -564,17 +564,17 @@ module Yast
       if Ops.greater_than(Builtins.size(removed_ifaces), 0)
         ifaces_list = Builtins.mergestring(removed_ifaces, "\n")
         if !Popup.YesNo(
-            Builtins.sformat(
-              # yes-no popup
-              _(
-                "Because of SuSE Firewall settings, the port\n" \
-                  "on the following interfaces cannot be opened:\n" \
-                  "%1\n" \
-                  "\n" \
-                  "Continue?"
-              ),
-              ifaces_list
-            )
+          Builtins.sformat(
+            # yes-no popup
+            _(
+              "Because of SuSE Firewall settings, the port\n" \
+                "on the following interfaces cannot be opened:\n" \
+                "%1\n" \
+                "\n" \
+                "Continue?"
+            ),
+            ifaces_list
+          )
           )
           return false
         end
@@ -619,16 +619,16 @@ module Yast
         ifaces_list = Builtins.mergestring(@buggy_ifaces, "\n")
         # yes-no popup
         if Popup.YesNo(
-            Builtins.sformat(
-              _(
-                "Because of SuSE Firewall settings, the port\n" \
-                  "on the following interfaces cannot be opened:\n" \
-                  "%1\n" \
-                  "\n" \
-                  "Continue?"
-              ),
-              ifaces_list
-            )
+          Builtins.sformat(
+            _(
+              "Because of SuSE Firewall settings, the port\n" \
+                "on the following interfaces cannot be opened:\n" \
+                "%1\n" \
+                "\n" \
+                "Continue?"
+            ),
+            ifaces_list
+          )
           )
           # all known ifaces are buggy
           if Builtins.size(@buggy_ifaces) == Builtins.size(all_ifaces)

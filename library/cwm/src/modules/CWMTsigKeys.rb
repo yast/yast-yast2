@@ -372,7 +372,7 @@ module Yast
         if Key2File(key2) != ""
           # yes-no popup
           if !Popup.YesNo(
-              _("The key with the specified ID exists and is used.\nRemove it?")
+            _("The key with the specified ID exists and is used.\nRemove it?")
             )
             return nil
           else
@@ -392,9 +392,9 @@ module Yast
             )
           # yes-no popup
           if Popup.YesNo(
-              _(
-                "A key with the specified ID was found\non your disk. Remove it?"
-              )
+            _(
+              "A key with the specified ID was found\non your disk. Remove it?"
+            )
             )
             SCR.Execute(
               path(".target.bash"),
@@ -459,11 +459,11 @@ module Yast
         if Ops.greater_than(Builtins.size(coliding_files), 0)
           # yes-no popup
           if !Popup.YesNo(
-              _(
-                "The specified file contains a TSIG key with the same\n" \
-                  "identifier as some of already present keys.\n" \
-                  "Old keys will be removed. Continue?"
-              )
+            _(
+              "The specified file contains a TSIG key with the same\n" \
+                "identifier as some of already present keys.\n" \
+                "Old keys will be removed. Continue?"
+            )
             )
             return nil
           else

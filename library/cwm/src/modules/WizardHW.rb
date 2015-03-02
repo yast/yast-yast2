@@ -338,19 +338,19 @@ module Yast
       # now run the dialog via CWM with handler set
       CWM.ShowAndRun(
 
-          "widget_descr" => widget_descr,
-          "widget_names" => ["wizard_hw"],
-          "contents"     => VBox("wizard_hw"),
-          "caption"      => title,
-          "abort_button" => Ops.get_string(settings, "abort_button") do
-            Label.AbortButton
-          end,
-          "back_button"  => Ops.get_string(settings, "back_button") do
-            Label.BackButton
-          end,
-          "next_button"  => Ops.get_string(settings, "next_button") do
-            Label.NextButton
-          end
+        "widget_descr" => widget_descr,
+        "widget_names" => ["wizard_hw"],
+        "contents"     => VBox("wizard_hw"),
+        "caption"      => title,
+        "abort_button" => Ops.get_string(settings, "abort_button") do
+          Label.AbortButton
+        end,
+        "back_button"  => Ops.get_string(settings, "back_button") do
+          Label.BackButton
+        end,
+        "next_button"  => Ops.get_string(settings, "next_button") do
+          Label.NextButton
+        end
 
       )
     end

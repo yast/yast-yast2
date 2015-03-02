@@ -300,12 +300,12 @@ module Yast
       else
         Builtins.y2milestone("Path %1 does not exist", check_path)
         if Popup.YesNo(
-            Builtins.sformat(
-              # TRANSLATORS: question popup (with yes / no buttons). A user entered non-existent path
-              # for a share, %1 is entered path
-              _("The path %1 does not exist.\nCreate it now?\n"),
-              pathvalue
-            )
+          Builtins.sformat(
+            # TRANSLATORS: question popup (with yes / no buttons). A user entered non-existent path
+            # for a share, %1 is entered path
+            _("The path %1 does not exist.\nCreate it now?\n"),
+            pathvalue
+          )
           )
           # Directory creation successful
           if Convert.to_boolean(SCR.Execute(path(".target.mkdir"), check_path))

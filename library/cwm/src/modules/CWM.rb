@@ -957,13 +957,13 @@ module Yast
       fallback = deep_copy(fallback)
       ShowAndRun(
 
-          "widget_names"       => widget_names,
-          "widget_descr"       => widget_descr,
-          "contents"           => contents,
-          "caption"            => caption,
-          "back_button"        => back_button,
-          "next_button"        => next_button,
-          "fallback_functions" => fallback
+        "widget_names"       => widget_names,
+        "widget_descr"       => widget_descr,
+        "contents"           => contents,
+        "caption"            => caption,
+        "back_button"        => back_button,
+        "next_button"        => next_button,
+        "fallback_functions" => fallback
 
       )
     end

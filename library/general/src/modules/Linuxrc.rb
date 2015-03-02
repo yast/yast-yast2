@@ -167,14 +167,14 @@ module Yast
           if WFM.Read(path(".local.size"), inst_if_file) != -1
             Builtins.y2milestone("Copying %1 to %2", inst_if_file, root)
             if Convert.to_integer(
-                WFM.Execute(
-                  path(".local.bash"),
-                  Builtins.sformat(
-                    "grep -vi '^Sourcemounted' '%1' > %2/%1; chmod 0600 %2/%1",
-                    inst_if_file,
-                    root
-                  )
+              WFM.Execute(
+                path(".local.bash"),
+                Builtins.sformat(
+                  "grep -vi '^Sourcemounted' '%1' > %2/%1; chmod 0600 %2/%1",
+                  inst_if_file,
+                  root
                 )
+              )
               ) != 0
               Builtins.y2error(
                 "Cannot SaveInstallInf %1 to %2",

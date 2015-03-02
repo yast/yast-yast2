@@ -133,9 +133,9 @@ module Yast
       # Read the current configuration from system configuration
       stored = DontShowAgain.GetShowQuestionAgain(
 
-          "q_type"  => "inst-source",
-          "q_ident" => popup_type,
-          "q_url"   => popup_url
+        "q_type"  => "inst-source",
+        "q_ident" => popup_type,
+        "q_url"   => popup_url
 
       )
 
@@ -194,9 +194,9 @@ module Yast
       stored_return = Convert.to_boolean(
         DontShowAgain.GetDefaultReturn(
 
-            "q_type"  => "inst-source",
-            "q_ident" => popup_type,
-            "q_url"   => popup_url
+          "q_type"  => "inst-source",
+          "q_ident" => popup_type,
+          "q_url"   => popup_url
 
         )
       )
