@@ -24,6 +24,10 @@ scrconf_DATA = \
 agent_SCRIPTS = \
   servers_non_y2/ag_showexports
 
-EXTRA_DIST = $(module_DATA) $(scrconf_DATA) $(agent_SCRIPTS)
+ylibdir = @ylibdir@/network
+ylib_DATA = \
+  lib/network/firewalld.rb
+
+EXTRA_DIST = $(module_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ylib_DATA)
 
 include $(top_srcdir)/Makefile.am.common
