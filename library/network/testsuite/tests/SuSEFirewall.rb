@@ -401,7 +401,7 @@ module Yast
       ], nil)
       TEST(lambda do
         SuSEFirewall.SetBroadcastAllowedPorts(
-           "INT" => [], "DMZ" => ["5", "3", "1"], "EXT" => ["22", "33", "44"]
+          "INT" => [], "DMZ" => ["5", "3", "1"], "EXT" => ["22", "33", "44"]
         )
       end, [
         @READ,

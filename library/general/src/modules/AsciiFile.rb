@@ -271,7 +271,7 @@ module Yast
         i = 0
         while Ops.less_than(i, field)
           if Builtins.size(
-              Ops.get_string(file.value, ["l", line, "fields", i], "")
+            Ops.get_string(file.value, ["l", line, "fields", i], "")
             ) == 0
             Ops.set(file.value, ["l", line, "fields", i], "")
           end

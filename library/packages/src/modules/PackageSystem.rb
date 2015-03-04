@@ -230,7 +230,7 @@ module Yast
         repomgmt = !Mode.installation
         # start the package selector
         ret = PackagesUI.RunPackageSelector(
-           "enable_repo_mgr" => repomgmt, "mode" => :summaryMode
+          "enable_repo_mgr" => repomgmt, "mode" => :summaryMode
         )
 
         Builtins.y2internal("Package selector returned: %1", ret)

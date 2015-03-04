@@ -227,7 +227,7 @@ module Yast
         )
 
         if Convert.to_integer(
-            SCR.Execute(path(".target.bash"), convert_command)
+          SCR.Execute(path(".target.bash"), convert_command)
           ) != 0
           Builtins.y2error("Conversion failed!")
         else

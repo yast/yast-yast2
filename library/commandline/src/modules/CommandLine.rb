@@ -1599,9 +1599,9 @@ module Yast
         # disable Reports, we handle them on our own
         Report.Import(
 
-            "messages" => { "show" => false },
-            "warnings" => { "show" => false },
-            "errors"   => { "show" => false }
+          "messages" => { "show" => false },
+          "warnings" => { "show" => false },
+          "errors"   => { "show" => false }
 
         )
 

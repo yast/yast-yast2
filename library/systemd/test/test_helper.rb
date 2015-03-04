@@ -25,9 +25,9 @@ module SystemctlStubs
   def stub_execute(success: true)
     allow(Yast::Systemctl).to receive(:execute).and_return(
       OpenStruct.new \
-      stdout: "success",
-      stderr: (success ? "" : "failure"),
-      exit:   (success ? 0  : 1)
+        stdout: "success",
+        stderr: (success ? "" : "failure"),
+        exit:   (success ? 0  : 1)
     )
   end
 
@@ -114,9 +114,9 @@ module SystemdUnitStubs
       .to receive(:command)
       .and_return(
         OpenStruct.new \
-        stdout: "",
-        stderr: (success ? "" : "failure"),
-        exit:   (success ? 0  : 1)
+          stdout: "",
+          stderr: (success ? "" : "failure"),
+          exit:   (success ? 0  : 1)
       )
   end
 end

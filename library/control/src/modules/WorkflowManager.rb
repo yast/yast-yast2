@@ -1239,7 +1239,7 @@ module Yast
       end
 
       if !UpdateInstFinish(
-          Ops.get_map(update_file, ["update", "inst_finish"], {})
+        Ops.get_map(update_file, ["update", "inst_finish"], {})
         )
         Builtins.y2error("Adding inst_finish steps failed")
         return false
