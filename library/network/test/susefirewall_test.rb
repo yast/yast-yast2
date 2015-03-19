@@ -111,7 +111,7 @@ describe Yast::SuSEFirewall do
       subject.main # Resets module configuration
 
       allow(Yast::FileUtils).to receive(:Exists)
-        .with(Yast::SuSEFirewallClass::CONFIG_FILE)
+        .with(Yast::SuSEFirewall2Class::CONFIG_FILE)
         .and_return(package_installed)
       allow(subject).to receive(:SuSEFirewallIsInstalled)
         .and_return(config_exists)
