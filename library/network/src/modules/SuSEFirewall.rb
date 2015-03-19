@@ -31,6 +31,7 @@
 #
 # Module for handling SuSEfirewall2.
 require "yast"
+require "network/firewalld"
 
 module Yast
   # Factory for construction of appropriate firewall object based on
@@ -38,6 +39,15 @@ module Yast
   class FirewallClass < Module
     def self.create
       SuSEFirewall2Class.new
+    end
+  end
+
+  # ----------------------------------------------------------------------------
+  # SuSEFirewalld Class. Trying to provide relevent pieces of SF2 functionality via
+  # firewalld.
+  class SuSEFirewalldClass < Module
+    include Firewalld
+    def initialize
     end
   end
 
