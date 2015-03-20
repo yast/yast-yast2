@@ -154,10 +154,72 @@ module Yast
   # ----------------------------------------------------------------------------
   # SuSEFirewalld Class. Trying to provide relevent pieces of SF2 functionality via
   # firewalld.
-  class SuSEFirewalldClass < Module
+  class SuSEFirewalldClass < FirewallClass
     include Firewalld
-    def initialize
+    attr_reader :special_all_interface_zone
+
+    # Valid attributes for firewalld zones
+    # :interfaces = [Array<String>]
+    # :masquerade = Boolean
+    # :modified   = [Set<Symbols>]
+    # :ports      = [Array<String>]
+    # :protocols  = [Array<String>]
+    # :services   = [Array<String>]
+    @@zone_attributes = [:interfaces, :masquerade, :modified, :ports, :protocols, :services]
+    # {enable,start}_firewall are "inherited" from SF2 so we can't use symbols
+    # there without having to change all the SF2 callers.
+    @@key_settings = ["enable_firewall", "logging", "start_firewall"]
+
+    # We need that for the tests. Nothing else should access the API
+    # directly
+    def api
+      @fwd_api
     end
+
+    def initialize
+      # firewalld API interface.
+      @fwd_api = FirewalldAPI.create
+      # firewalld service
+      @firewall_service = "firewalld"
+      # firewalld package
+      @FIREWALL_PACKAGE = "firewalld"
+      # firewall settings map
+      @SETTINGS = {}
+      # Zone which works with the special_all_interface_string string. In our case,
+      # we don't want to deal with this just yet. FIXME
+      @special_all_interface_zone = ""
+    end
+
+    # Function which attempts to convert a sf2_service name to a firewalld
+    # equivalent.
+    def sf2_to_firewalld_service(service)
+      # First, let's strip off 'service:' from service name if present.
+      if service.include?("service:")
+        tmp_service = service.partition(":")[2]
+      else
+        tmp_service = service
+      end
+
+      sf2_to_firewalld_map = {
+        # netbios is covered in the samba service file
+        "netbios-server"    => ["samba"],
+        "nfs-client"        => ["nfs"],
+        "nfs-kernel-server" => ["mountd", "nfs", "rpc-bind"],
+        "samba-server"      => ["samba"],
+        "sshd"              => ["ssh"]
+      }
+
+      if sf2_to_firewalld_map.key?(tmp_service)
+        sf2_to_firewalld_map[tmp_service]
+      else
+        [tmp_service]
+      end
+    end
+
+    publish variable: :firewall_service, type: "string", private: true
+    publish variable: :FIREWALL_PACKAGE, type: "const string"
+    publish variable: :SETTINGS, type: "map <string, any>", private: true
+    publish variable: :special_all_interface_zone, type: "string"
   end
 
   # ----------------------------------------------------------------------------
