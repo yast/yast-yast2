@@ -1089,6 +1089,83 @@ module Yast
       super(services)
     end
 
+    # Function sets status for several services in several firewall zones.
+    #
+    # @param	list <string> service ids
+    # @param	list <string> firewall zones (EXT|INT|DMZ...)
+    # @param	boolean new status of services
+    # @return	nil
+    #
+    # @example
+    #	SetServicesForZones (["samba-server", "service:irc-server"], ["DMZ", "EXT"], false);
+    #	SetServicesForZones (["samba-server", "service:irc-server"], ["EXT", "DMZ"], true);
+    #
+    # @see #GetServicesInZones()
+    # @see #GetServices()
+    def SetServicesForZones(services_ids, firewall_zones, new_status)
+      Yast.import "SuSEFirewallServices"
+
+      services_ids = deep_copy(services_ids)
+      zones = deep_copy(firewall_zones)
+
+      tmp_services_ids = deep_copy(services_ids)
+      services_ids = []
+      tmp_services_ids.each do |service|
+        sf2_to_firewalld_service(service).each do |s|
+          services_ids << s
+        end
+      end
+
+      # setting for each service
+      services_ids.each do |service|
+        # Service is not supported by firewalld.
+        # We can only do such error checking if backend is running
+        if IsStarted() && !@fwd_api.service_supported?(service)
+          Builtins.y2error("Undefined service '#{service}'")
+          raise(SuSEFirewalServiceNotFound, "Service with name '#{service}' does not exist")
+        end
+        zones.each do |zone|
+          # Add/remove service to/from zone only if zone is not 'trusted',
+          # 'blocked' or 'drop'. For these zones there is no need to
+          # explicitly add/remove
+          # services as all connections are by default accepted.
+          next if ["block", "drop", "trusted"].include?(zone)
+
+          # zone must be known one
+          if !IsKnownZone(zone)
+            Builtins.y2error(
+              "Zone '%1' is unknown firewall zone, skipping...",
+              zone
+            )
+            next
+          end
+
+          if new_status == true # enable
+            Builtins.y2milestone(
+              "Adding '%1' into '%2' zone",
+              service, zone
+            )
+            # Only add it if it is not there
+            if !in_zone_attr?(zone, :services, service)
+              add_to_zone_attr(zone, :services, service)
+              SetModified()
+              add_zone_modified(zone, :services)
+            end
+          else # disable
+            Builtins.y2milestone(
+              "Removing '%1' from '%2' zone",
+              service, zone
+            )
+            del_from_zone_attr(zone, :services, service)
+            SetModified()
+            add_zone_modified(zone, :services)
+          end
+        end
+      end
+
+      nil
+    end
+
   private
 
     def set_zone_modified(zone, zone_params)
@@ -1256,6 +1333,7 @@ module Yast
     publish function: :GetModified, type: "boolean ()"
     publish function: :GetZonesOfInterfacesWithAnyFeatureSupported, type: "list <string> (list <string>)"
     publish function: :SetServices, type: "boolean (list <string>, list <string>, boolean)"
+    publish function: :SetServicesForZones, type: "boolean (list <string>, list <string>, boolean)"
   end
 
   # ----------------------------------------------------------------------------
@@ -3108,7 +3186,7 @@ module Yast
     # @param	list <string> service ids
     # @param	list <string> firewall zones (EXT|INT|DMZ...)
     # @param	boolean new status of services
-    # @return	[Boolean] if successfull
+    # @return	nil
     #
     # @example
     #	SetServicesForZones (["samba-server", "service:irc-server"], ["DMZ", "EXT"], false);
@@ -3117,11 +3195,6 @@ module Yast
     # @see #GetServicesInZones()
     # @see #GetServices()
     def SetServicesForZones(services_ids, firewall_zones, new_status)
-      # no groups == all groups
-      if Builtins.size(firewall_zones) == 0
-        firewall_zones = GetKnownFirewallZones()
-      end
-
       # setting for each service
       Builtins.foreach(services_ids) do |service_id|
         Builtins.foreach(firewall_zones) do |firewall_zone|
