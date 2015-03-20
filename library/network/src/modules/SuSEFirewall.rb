@@ -369,6 +369,39 @@ module Yast
       deep_copy(known_interfaces)
     end
 
+    # Function returns list of zones of requested interfaces
+    #
+    # @param [Array<String>] interfaces
+    # @return	[Array<String>] firewall zones
+    #
+    # @example
+    #	GetZonesOfInterfaces (["eth1","eth4"]) -> ["DMZ", "EXT"]
+    def GetZonesOfInterfaces(interfaces)
+      interfaces = deep_copy(interfaces)
+      zones = []
+      zone = ""
+
+      Builtins.foreach(interfaces) do |interface|
+        zone = GetZoneOfInterface(interface)
+        zones = Builtins.add(zones, zone) if !zone.nil?
+      end
+
+      Builtins.toset(zones)
+    end
+
+    # Function returns localized name of the zone identified by zone shortname.
+    #
+    # @param	string short name
+    # @return	[String] zone name
+    #
+    # @example
+    #  LANG=en_US GetZoneFullName ("EXT") -> "External Zone"
+    #  LANG=cs_CZ GetZoneFullName ("EXT") -> "Externí Zóna"
+    def GetZoneFullName(zone)
+      # TRANSLATORS: Firewall zone full-name, used as combo box item or dialog title
+      Ops.get(@zone_names, zone, _("Unknown Zone"))
+    end
+
     # Create appropriate firewall instance based on factors such as which backends
     # are available and/or running/selected.
     #
@@ -466,6 +499,37 @@ module Yast
       # list of known firewall zones
       @known_firewall_zones = ["block", "dmz", "drop", "external", "home",
                                "internal", "public", "trusted", "work"]
+      # map defines zone name for all known firewall zones
+      @zone_names =  {
+        # TRANSLATORS: Firewall zone name - used in combo box or dialog title
+        "block"    => _(
+          "Block Zone"
+        ),
+        "dmz"      => _(
+          "Demilitarized Zone"
+        ),
+        "drop"     => _(
+          "Drop Zone"
+        ),
+        "external" => _(
+          "External Zone"
+        ),
+        "home"     => _(
+          "Home Zone"
+        ),
+        "internal" => _(
+          "Internal Zone"
+        ),
+        "public"   => _(
+          "Public Zone"
+        ),
+        "trusted"  => _(
+          "Trusted Zone"
+        ),
+        "work"     => _(
+          "Work Zone"
+        )
+      }
 
       # Zone which works with the special_all_interface_string string. In our case,
       # we don't want to deal with this just yet. FIXME
@@ -738,6 +802,32 @@ module Yast
       true
     end
 
+    # Function returns if the interface is in zone.
+    #
+    # @param [String] interface
+    # @param	string firewall zone
+    # @return	[Boolean] is in zone
+    #
+    # @example IsInterfaceInZone ("eth-id-01:11:DA:9C:8A:2F", "INT") -> false
+    def IsInterfaceInZone(interface, zone)
+      interfaces = get_zone_attr(zone, :interfaces)
+      interfaces.include?(interface)
+    end
+
+    # Function returns the firewall zone of interface, nil if no zone includes
+    # the interface. Firewalld does not allow an interface to be in more than
+    # one zone, so no error detection for this case is needed.
+    #
+    # @param string interface
+    # @return string zone, or nil
+    def GetZoneOfInterface(interface)
+      GetKnownFirewallZones().each do |zone|
+        return zone if IsInterfaceInZone(interface, zone)
+      end
+
+      nil
+    end
+
   private
 
     def set_zone_modified(zone, zone_params)
@@ -868,6 +958,7 @@ module Yast
     publish variable: :SETTINGS, type: "map <string, any>", private: true
     publish variable: :known_firewall_zones, type: "list <string>", private: true
     publish variable: :special_all_interface_zone, type: "string"
+    publish variable: :zone_names, type: "map <string, string>", private: true
     publish function: :GetStartService, type: "boolean ()"
     publish function: :SetStartService, type: "void (boolean)"
     publish function: :GetEnableService, type: "boolean ()"
@@ -887,6 +978,10 @@ module Yast
     publish function: :Export, type: "map <string, any> ()"
     publish function: :Import, type: "void (map <string, any>)"
     publish function: :GetAllKnownInterfaces, type: "list <map <string, string>> ()"
+    publish function: :GetZoneOfInterface, type: "string (string)"
+    publish function: :IsInterfaceInZone, type: "boolean (string, string)"
+    publish function: :GetZonesOfInterfaces, type: "list <string> (list <string>)"
+    publish function: :GetZoneFullName, type: "string (string)"
   end
 
   # ----------------------------------------------------------------------------
@@ -1996,19 +2091,6 @@ module Yast
       nil
     end
 
-    # Function returns localized name of the zone identified by zone shortname.
-    #
-    # @param	string short name
-    # @return	[String] zone name
-    #
-    # @example
-    #  LANG=en_US GetZoneFullName ("EXT") -> "External Zone"
-    #  LANG=cs_CZ GetZoneFullName ("EXT") -> "Externí Zóna"
-    def GetZoneFullName(zone)
-      # TRANSLATORS: Firewall zone full-name, used as combo box item or dialog title
-      Ops.get(@zone_names, zone, _("Unknown Zone"))
-    end
-
     # Function sets if firewall should be protected from internal zone.
     #
     # @param	boolean set to be protected from internal zone
@@ -2196,26 +2278,6 @@ module Yast
       # return the first existence of interface in zones
       # if it is not presented anywhere, nil is returned
       Ops.get_string(interface_zone, 0)
-    end
-
-    # Function returns list of zones of requested interfaces
-    #
-    # @param [Array<String>] interfaces
-    # @return	[Array<String>] firewall zones
-    #
-    # @example
-    #	GetZonesOfInterfaces (["eth1","eth4"]) -> ["DMZ", "EXT"]
-    def GetZonesOfInterfaces(interfaces)
-      interfaces = deep_copy(interfaces)
-      zones = []
-      zone = ""
-
-      Builtins.foreach(interfaces) do |interface|
-        zone = GetZoneOfInterface(interface)
-        zones = Builtins.add(zones, zone) if !zone.nil?
-      end
-
-      Builtins.toset(zones)
     end
 
     # Function returns list of zones of requested interfaces.
