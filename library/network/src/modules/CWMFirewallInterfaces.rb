@@ -1095,7 +1095,7 @@ module Yast
       end
       firewall_settings = VBox(
         Frame(
-          _("Firewall Settings"),
+          _("Firewall Settings for %{firewall}") % { firewall: SuSEFirewall.firewall_service },
           VBox(
             Left(firewall_settings),
             Left(
