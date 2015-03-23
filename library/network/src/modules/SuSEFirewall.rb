@@ -43,6 +43,9 @@ module Yast
   # Factory for construction of appropriate firewall object based on
   # desired backend.
   class FirewallClass < Module
+    # @return [String] the systemd service name: "firewalld" or "SuSEfirewall2"
+    attr_reader :firewall_service
+
     Yast.import "NetworkInterfaces"
     Yast.import "PackageSystem"
 
@@ -457,7 +460,7 @@ module Yast
     #
     # **Structure:**
     #
-    #     [ $[ "id":"modem0", "name":"Askey 815C", "type":"dialup", "zone":"EXT" ], ... ]
+    #     [ $[ "id":"modem1", "name":"Askey 815C", "type":"dialup", "zone":"EXT" ], ... ]
     #
     # @return	[Array<Hash{String => String>}]
     # @return [Array<Hash{String => String>}] of all interfaces
