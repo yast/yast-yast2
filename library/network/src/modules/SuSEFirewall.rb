@@ -867,6 +867,16 @@ module Yast
       nil
     end
 
+    def sf2_to_firewalld_zone(zone)
+      sf2_to_firewalld_map = {
+        "INT" => "trusted",
+        "EXT" => "external",
+        "DMZ" => "dmz"
+      }
+
+      sf2_to_firewalld_map[zone] || zone
+    end
+
     def Read
       # Do not read it again and again
       # to avoid overwritting live configuration.
