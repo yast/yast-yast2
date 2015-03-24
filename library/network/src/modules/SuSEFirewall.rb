@@ -780,6 +780,9 @@ module Yast
       # By default needed packages are just checked, not installed
       @check_and_install_package = false
 
+      # internal zone identification - useful for protect-from-internal
+      @int_zone_shortname = "internal"
+
     end
 
     # Function which attempts to convert a sf2_service name to a firewalld
@@ -1116,6 +1119,16 @@ module Yast
 
       true
     end
+
+    # Function returns if firewall is protected from internal zone. For
+    # firewalld, we just return true since the internal zone is treated
+    # like any other zone.
+    #
+    # @return	[Boolean] if protected from internal
+    def GetProtectFromInternalZone
+      true
+    end
+
     # Function returns list of known interfaces in requested zone.
     # Special strings like 'any' or 'auto' and unknown interfaces are removed from list.
     #
@@ -1415,6 +1428,7 @@ module Yast
     publish function: :SuSEFirewallIsInstalled, type: "boolean ()"
     publish function: :SetInstallPackagesIfMissing, type: "void (boolean)"
     publish function: :SaveAndRestartService, type: "boolean ()"
+    publish function: :GetProtectFromInternalZone, type: "boolean ()"
   end
 
   # ----------------------------------------------------------------------------
