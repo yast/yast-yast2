@@ -246,7 +246,7 @@ the autoinstallation workflow. The rest of the checkpoints listed above should n
 ## Report an issue
 
 In case you followed the notes above and you are still having an issue with executing your
-script, please create a bug at http://bugzilla.novell.com.
+script, please create a bug at http://bugzilla.suse.com.
 
 If you are missing something important in this documentation or you have a question,
 please send your query to yast-devel mailing list yast-devel@opensuse.org.

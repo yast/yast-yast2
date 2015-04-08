@@ -159,7 +159,7 @@ module Yast
                         "Please, attach also all YaST logs stored in the '%2' directory.\n" \
                         "See %3 for more information about YaST logs."
                     ),
-                    "http://bugzilla.novell.com/",
+                    "http://bugzilla.suse.com/",
                     "/var/log/YaST2/",
                     # link to the Yast Bug Reporting HOWTO
                     # for translators: use the localized page for your language if it exists,
