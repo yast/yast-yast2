@@ -1436,7 +1436,7 @@ module Yast
                 "See %5 for more information about YaST logs.",
               Builtins.symbolof(argterm),
               "/var/log/YaST2/y2log",
-              "http://bugzilla.novell.com/",
+              "http://bugzilla.suse.com/",
               "/var/log/YaST2/",
               # link to the Yast Bug Reporting HOWTO
               # for translators: use the localized page for your language if it exists,
