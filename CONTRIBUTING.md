@@ -71,7 +71,7 @@ functional changes into one commit. When writing commit messages, adhere to
 [widely used
 conventions](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
 
-If your commit is related to a bug in Buzgilla or an issue on GitHub, make sure
+If your commit is related to a bug in Bugzilla or an issue on GitHub, make sure
 you mention it in the commit message for cross-reference. Use format like
 bnc#775814 or gh#yast/yast-foo#42. See also [GitHub
 autolinking](https://help.github.com/articles/github-flavored-markdown#references)
