@@ -58,17 +58,17 @@ Auto prefix:
   AutoYaST. If not specified then no autoyast support is availabel, otherwise
   possible values are:
 
-** *all* Full auto-installation support, including the AutoYaST interface and
-   writing configurations during autoinstall.
+  * *all* Full auto-installation support, including the AutoYaST interface and
+    writing configurations during autoinstall.
 
-** *write* Write only support. No integration into AutoYaST interface.
+  * *write* Write only support. No integration into AutoYaST interface.
 
-** *configure* Configuration only support. Normally used only with parts related
-   to installation like partitioning and general options which have no run-time
-   module with support for auto-installation. Data is written using the common
-   installation process and modules available in YaST2
+  * *configure* Configuration only support. Normally used only with parts related
+    to installation like partitioning and general options which have no run-time
+    module with support for auto-installation. Data is written using the common
+    installation process and modules available in YaST2
 
-* *X-SuSE-YaST-AutoInstPath* 
+* *X-SuSE-YaST-AutoInstPath* Deprecated option. Do nothing.
 
 * *X-SuSE-YaST-AutoInstClient* Name of the client to call. By default it is
   `{module name}_auto`.
