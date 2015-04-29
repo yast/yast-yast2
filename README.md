@@ -16,6 +16,11 @@ Provided Functionality
 
 See [the generated yardoc documentation](http://www.rubydoc.info/github/yast/yast-yast2) at rubydoc.info.
 
+It contain some general overview of yast2 parts:
+
+* [Desktop Files](doc/desktop_file.md)
+* [Installation Hooks](library/general/doc/Hooks.md)
+
 
 Getting the Sources
 ===================
