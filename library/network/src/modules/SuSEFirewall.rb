@@ -202,7 +202,7 @@ module Yast
         "FW_CONFIGURATIONS_INT",
         "FW_CONFIGURATIONS_DMZ",
         # bsc#916376: Ports need to be open already during boot
-        "FW_BOOT_FULL_INIT",
+        "FW_BOOT_FULL_INIT"
       ]
 
       @one_line_per_record = [

@@ -465,8 +465,6 @@ module Yast
       nil
     end
 
-
-
     # <!-- SuSEFirewall LOCAL FUNCTIONS //-->
 
     # <!-- SuSEFirewall GLOBAL FUNCTIONS //-->
