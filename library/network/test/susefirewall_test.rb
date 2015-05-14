@@ -1,3 +1,5 @@
+#!/usr/bin/env rspec
+
 require_relative "test_helper"
 
 Yast.import "Mode"
@@ -5,8 +7,6 @@ Yast.import "PackageSystem"
 Yast.import "Pkg"
 Yast.import "SuSEFirewall"
 Yast.import "Stage"
-
-FW_PACKAGE = "SuSEfirewall2"
 
 def reset_SuSEFirewallIsInstalled_cache
   Yast::SuSEFirewall.needed_packages_installed = nil
@@ -74,6 +74,15 @@ describe Yast::SuSEFirewall do
         expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
         expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
       end
+    end
+  end
+
+  describe "#full_init_on_boot" do
+    it "sets whether SuSEfirewall2_init should do the full init on boot and returns the current state" do
+      expect(Yast::SuSEFirewall.full_init_on_boot(true)).to eq(true)
+      expect(Yast::SuSEFirewall.GetModified()).to eq(true)
+      expect(Yast::SuSEFirewall.full_init_on_boot(false)).to eq(false)
+      expect(Yast::SuSEFirewall.GetModified()).to eq(true)
     end
   end
 end
