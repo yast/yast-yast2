@@ -1,10 +1,6 @@
 #! /usr/bin/env rspec
 
-inc_dirs = Dir.glob("../../../library/*/src")
-inc_dirs.map { |inc_dir| File.expand_path(inc_dir, __FILE__) }
-ENV["Y2DIR"] = inc_dirs.join(":")
-
-require "yast"
+require_relative "test_helper"
 
 Yast.import "NetworkService"
 
