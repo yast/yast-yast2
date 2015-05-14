@@ -197,7 +197,9 @@ module Yast
         # FATE #300687: Ports for SuSEfirewall added via packages
         "FW_CONFIGURATIONS_EXT",
         "FW_CONFIGURATIONS_INT",
-        "FW_CONFIGURATIONS_DMZ"
+        "FW_CONFIGURATIONS_DMZ",
+        # bsc#916376: Ports need to be open already during boot
+        "FW_BOOT_FULL_INIT"
       ]
 
       @one_line_per_record = [
@@ -3730,6 +3732,17 @@ module Yast
       nil
     end
 
+    # Sets whether ports need to be open already during boot
+    # bsc#916376
+    #
+    # @param [Boolean] new state
+    # @return [Boolean] current state
+    def full_init_on_boot(new_state)
+      @SETTINGS["FW_BOOT_FULL_INIT"] = new_state ? "yes" : "no"
+      SetModified()
+      @SETTINGS["FW_BOOT_FULL_INIT"] == "yes"
+    end
+
     publish variable: :FIREWALL_PACKAGE, type: "const string"
     publish variable: :configuration_has_been_read, type: "boolean", private: true
     publish variable: :special_all_interface_string, type: "string"
@@ -3876,6 +3889,7 @@ module Yast
     publish function: :SetServicesAcceptRelated, type: "void (string, list <string>)"
     publish function: :RemoveOldAllowedServiceFromZone, type: "void (map <string, any>, string)", private: true
     publish variable: :needed_packages_installed, type: "boolean"
+    publish function: :full_init_on_boot, type: "boolean (boolean)"
   end
 
   SuSEFirewall = SuSEFirewallClass.new
