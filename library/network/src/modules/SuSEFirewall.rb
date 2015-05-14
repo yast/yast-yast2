@@ -38,9 +38,6 @@ module Yast
 
     include Yast::Logger
 
-    YES = "yes"
-    NO  = "no"
-
     def main
       textdomain "base"
 
@@ -3741,9 +3738,9 @@ module Yast
     # @param [Boolean] new state
     # @return [Boolean] current state
     def full_init_on_boot(new_state)
-      @SETTINGS["FW_BOOT_FULL_INIT"] = new_state ? YES : NO
+      @SETTINGS["FW_BOOT_FULL_INIT"] = new_state ? "yes" : "no"
       SetModified()
-      @SETTINGS["FW_BOOT_FULL_INIT"] == YES
+      @SETTINGS["FW_BOOT_FULL_INIT"] == "yes"
     end
 
     publish variable: :FIREWALL_PACKAGE, type: "const string"
