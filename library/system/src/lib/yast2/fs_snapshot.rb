@@ -47,6 +47,8 @@ module Yast2
   # class is intended to be used during installation/update so it uses the
   # Snapper's CLI because the DBus interface is not available at that time.
   class FsSnapshot
+    include Yast::Logger
+
     FIND_CONFIG_CMD = "/usr/bin/snapper --no-dbus list-configs | grep \"^root \" >/dev/null"
     CREATE_CONFIG_CMD = "/usr/bin/snapper --no-dbus create-config -f btrfs /"
     CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --description \"%s\""
@@ -61,6 +63,7 @@ module Yast2
     # @return [true,false] true if it's configured; false otherwise.
     def self.configured?
       out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), FIND_CONFIG_CMD)
+      log.info("Checking if Snapper is configured: \"#{FIND_CONFIG_CMD}\" returned: #{out}")
       out["exit"] == 0
     end
 
@@ -70,7 +73,10 @@ module Yast2
     def self.configure
       unless configured?
         out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), CREATE_CONFIG_CMD)
-        raise SnapperConfigurationFailed unless out["exit"] == 0
+        unless out["exit"] == 0
+          log.error("Snapper configuration failed: #{CREATE_CONFIG_CMD} returned: #{out}")
+          raise SnapperConfigurationFailed
+        end
       end
       true
     end
@@ -85,9 +91,12 @@ module Yast2
     def self.create(description)
       raise SnapperNotConfigured unless configured?
 
-      out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), CREATE_SNAPSHOT_CMD % description)
+      cmd = CREATE_SNAPSHOT_CMD % description
+      out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), cmd)
       if out["exit"] == 0
         find(out["stdout"].to_i) # The CREATE_SNAPSHOT_CMD returns the number of the new snapshot.
+      else
+        log.error "Snapshot could not be created: #{CREATE_SNAPSHOT_CMD} returned: #{out}"
       end
     end
 
@@ -101,9 +110,14 @@ module Yast2
 
       out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), LIST_SNAPSHOTS_CMD)
       lines = out["stdout"].lines.grep(VALID_LINE_REGEX) # relevant lines from output.
+      log.info("Retrieving snapshots list: #{LIST_SNAPSHOTS_CMD}. Found #{lines.size} snapshot(s).")
       lines.map do |line|
         data = line.split("|").map(&:strip)
-        timestamp = (DateTime.parse(data[3]) rescue nil)
+        begin
+          timestamp = DateTime.parse(data[3])
+        rescue ArgumentError
+          timestamp = nil
+        end
         new(data[1].to_i, data[0].to_sym, data[2].to_i, timestamp, data[4],
           data[5].to_s.to_sym, data[6])
       end

@@ -4,11 +4,16 @@ require_relative "test_helper"
 require "yast2/fs_snapshot"
 
 describe Yast2::FsSnapshot do
+  def logger
+    described_class.log
+  end
+
   CREATE_CONFIG = "/usr/bin/snapper --no-dbus create-config -f btrfs /"
   FIND_CONFIG = "/usr/bin/snapper --no-dbus list-configs | grep \"^root \" >/dev/null"
   LIST_SNAPSHOTS = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus list"
 
   describe ".configure" do
+
     before do
       allow(described_class).to receive(:configured?).and_return(configured)
     end
@@ -23,10 +28,12 @@ describe Yast2::FsSnapshot do
         expect(described_class.configure).to eq(true)
       end
 
-      it "tries to create the configuration and raises and exception if it wasn't successful" do
+      it "tries to create the configuration and raises an exception if it wasn't successful" do
         expect(Yast::SCR).to receive(:Execute)
           .with(path(".target.bash_output"), CREATE_CONFIG)
           .and_return("stdout" => "", "exit" => 1)
+
+        expect(logger).to receive(:error).with(/Snapper configuration failed/)
         expect { described_class.configure }.to raise_error(Yast2::SnapperConfigurationFailed)
       end
     end
@@ -53,6 +60,7 @@ describe Yast2::FsSnapshot do
       let(:find_code) { 1 }
 
       it "returns false" do
+        expect(logger).to receive(:info).with(/Checking if Snapper is configured/)
         expect(described_class.configured?).to eq(false)
       end
     end
@@ -85,7 +93,8 @@ describe Yast2::FsSnapshot do
       context "when snapshot creation fails" do
         let(:output) { { "stdout" => "", "exit" => 1 } }
 
-        it "returns nil" do
+        it "logs the error and returns nil" do
+          expect(logger).to receive(:error).with(/Snapshot could not be created/)
           expect(described_class.create("some-description")).to be_nil
         end
       end
@@ -132,6 +141,7 @@ describe Yast2::FsSnapshot do
         let(:output_path) { File.expand_path("../fixtures/snapper-list.txt", __FILE__) }
 
         it "should return the snapshots and log about how many were found" do
+          expect(logger).to receive(:info).with(/Found 5 snapshot/)
           snapshots = described_class.all
           expect(snapshots).to be_kind_of(Array)
           expect(snapshots.size).to eq(5)
