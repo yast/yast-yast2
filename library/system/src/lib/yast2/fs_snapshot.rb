@@ -29,6 +29,12 @@
 require "yast"
 
 module Yast2
+  class SnapperNotConfigured < StandardError
+    def initialize
+      super "Snapper is not configured."
+    end
+  end
+
   # Class for managing filesystem snapshots. It's important to note that this
   # class is intended to be used during installation/update so it uses the
   # Snapper's CLI because the DBus interface is not available at that time.
@@ -62,13 +68,16 @@ module Yast2
 
     # Creates a new snapshot
     #
+    # It raises and exception if Snapper is not configured.
+    #
     # @param description [String] Snapshot's description.
-    # @return [FsSnapshot,nil] The created snapshot if operation was successful.
-    #                          Otherwise, it returns nil.
+    # @return [FsSnapshot,nil] The created snapshot if the operation was
+    #                          successful. Otherwise, it returns nil.
     def self.create(description)
+      raise SnapperNotConfigured unless configured?
       out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), CREATE_SNAPSHOT_CMD % description)
       if out["exit"] == 0
-        find(out["stdout"].to_i)
+        find(out["stdout"].to_i) # The CREATE_SNAPSHOT_CMD returns the number of the new snapshot.
       else
         nil
       end
@@ -76,10 +85,13 @@ module Yast2
 
     # Returns all snapshots
     #
+    # It raises and exception if Snapper is not configured.
+    #
     # @return [Array<FsSnapshot>] All snapshots that exist in the system.
     def self.all
+      raise SnapperNotConfigured unless configured?
       out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), LIST_SNAPSHOTS_CMD)
-      lines = out["stdout"].split(/\n/)[2..-1] # relevant lines
+      lines = out["stdout"].split(/\n/)[2..-1] # relevant lines from output.
       lines.map do |line|
         data = line.split(/\s*\|\s*/)
         timestamp = data[3] == "" ? nil : DateTime.parse(data[3])
@@ -90,9 +102,12 @@ module Yast2
 
     # Finds an snapshot by its number
     #
+    # It raises and exception if Snapper is not configured.
+    #
     # @param nubmer [Fixnum] Number of the snapshot to search for.
     # @return [FsSnapshot,nil] The snapshot with the number +number+ if found.
     #                          Otherwise, it returns nil.
+    # @see FsSnapshot.all
     def self.find(number)
       all.find { |s| s.number == number }
     end
