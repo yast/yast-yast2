@@ -13,7 +13,6 @@ describe Yast2::FsSnapshot do
   LIST_SNAPSHOTS = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus list"
 
   describe ".configure" do
-
     before do
       allow(described_class).to receive(:configured?).and_return(configured)
     end

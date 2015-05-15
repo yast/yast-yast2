@@ -32,16 +32,15 @@ module Yast2
   # Represents the fact that Snapper is not configured for "/" (root).
   class SnapperNotConfigured < StandardError
     def initialize
-      super "Snapper is not configured yet. " \
-        "You could call FsSnapshot.configure to set it up."
+      super "Programming error: Snapper is not configured yet."
     end
   end
 
   # Snapper could not be configured.
   class SnapperConfigurationFailed < StandardError
     def initialize(command = nil)
-      msg = "Snapper could not be configured."
-      msg << " Command failed: #{command}"
+      msg = "Programming error: Snapper could not be configured."
+      msg << " Command failed: #{command}" unless command.nil?
       super msg
     end
   end
