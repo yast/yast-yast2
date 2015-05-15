@@ -23,11 +23,11 @@ describe Yast2::FsSnapshot do
         expect(described_class.configure).to eq(true)
       end
 
-      it "tries to create the configuration and returns false if it wasn't successful" do
+      it "tries to create the configuration and raises and exception if it wasn't successful" do
         expect(Yast::SCR).to receive(:Execute)
           .with(path(".target.bash_output"), CREATE_CONFIG)
           .and_return("stdout" => "", "exit" => 1)
-        expect(described_class.configure).to eq(false)
+        expect { described_class.configure }.to raise_error(Yast2::SnapperConfigurationFailed)
       end
     end
 
@@ -131,7 +131,7 @@ describe Yast2::FsSnapshot do
       context "given some snapshots exist" do
         let(:output_path) { File.expand_path("../fixtures/snapper-list.txt", __FILE__) }
 
-        it "should return the snapshots" do
+        it "should return the snapshots and log about how many were found" do
           snapshots = described_class.all
           expect(snapshots).to be_kind_of(Array)
           expect(snapshots.size).to eq(5)
@@ -178,10 +178,10 @@ describe Yast2::FsSnapshot do
           snapshot = described_class.find(4)
           expect(snapshot.number).to eq(4)
           expect(snapshot.snapshot_type).to eq(:post)
-          expect(snapshot.previous).to eq(3)
+          expect(snapshot.previous_number).to eq(3)
           expect(snapshot.timestamp).to eq(DateTime.parse("Wed 13 May 2015 05:03:13 PM WEST"))
           expect(snapshot.user).to eq("root")
-          expect(snapshot.cleanup).to eq(:number)
+          expect(snapshot.cleanup_algo).to eq(:number)
           expect(snapshot.description).to eq("zypp(zypper)")
         end
       end
@@ -200,6 +200,16 @@ describe Yast2::FsSnapshot do
         expect { described_class.create("some-description") }
           .to raise_error(Yast2::SnapperNotConfigured)
       end
+    end
+  end
+
+  describe "#previous" do
+    subject(:fs_snapshot) { described_class.new(1, :single, 10, DateTime.now, "root", "number", "") }
+    let(:dummy_snapshot) { double("snapshot") }
+
+    it "returns the previous snapshot" do
+      expect(described_class).to receive(:find).with(10).and_return(dummy_snapshot)
+      expect(fs_snapshot.previous).to eq(dummy_snapshot)
     end
   end
 end

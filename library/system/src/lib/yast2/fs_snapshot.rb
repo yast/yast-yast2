@@ -36,6 +36,13 @@ module Yast2
     end
   end
 
+  # Snapper could not be configured.
+  class SnapperConfigurationFailed < StandardError
+    def initialize
+      super "Snapper could not be configured."
+    end
+  end
+
   # Class for managing filesystem snapshots. It's important to note that this
   # class is intended to be used during installation/update so it uses the
   # Snapper's CLI because the DBus interface is not available at that time.
@@ -44,8 +51,10 @@ module Yast2
     CREATE_CONFIG_CMD = "/usr/bin/snapper --no-dbus create-config -f btrfs /"
     CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --description \"%s\""
     LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus list"
+    VALID_LINE_REGEX = /\A\w+\s+\| \d+/
 
-    attr_reader :number, :snapshot_type, :previous, :timestamp, :user, :cleanup, :description
+    attr_reader :number, :snapshot_type, :previous_number, :timestamp, :user,
+      :cleanup_algo, :description
 
     # Determines whether snapper is configured or not
     #
@@ -59,12 +68,11 @@ module Yast2
     #
     # @return [true,false] true if it's configured; false otherwise.
     def self.configure
-      if configured?
-        true
-      else
+      unless configured?
         out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), CREATE_CONFIG_CMD)
-        out["exit"] == 0
+        raise SnapperConfigurationFailed unless out["exit"] == 0
       end
+      true
     end
 
     # Creates a new snapshot
@@ -76,6 +84,7 @@ module Yast2
     #                          successful. Otherwise, it returns nil.
     def self.create(description)
       raise SnapperNotConfigured unless configured?
+
       out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), CREATE_SNAPSHOT_CMD % description)
       if out["exit"] == 0
         find(out["stdout"].to_i) # The CREATE_SNAPSHOT_CMD returns the number of the new snapshot.
@@ -89,11 +98,12 @@ module Yast2
     # @return [Array<FsSnapshot>] All snapshots that exist in the system.
     def self.all
       raise SnapperNotConfigured unless configured?
+
       out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), LIST_SNAPSHOTS_CMD)
-      lines = out["stdout"].split(/\n/)[2..-1] # relevant lines from output.
+      lines = out["stdout"].lines.grep(VALID_LINE_REGEX) # relevant lines from output.
       lines.map do |line|
-        data = line.split(/\s*\|\s*/)
-        timestamp = data[3] == "" ? nil : DateTime.parse(data[3])
+        data = line.split("|").map(&:strip)
+        timestamp = (DateTime.parse(data[3]) rescue nil)
         new(data[1].to_i, data[0].to_sym, data[2].to_i, timestamp, data[4],
           data[5].to_s.to_sym, data[6])
       end
@@ -111,14 +121,18 @@ module Yast2
       all.find { |s| s.number == number }
     end
 
-    def initialize(number, snapshot_type, previous, timestamp, user, cleanup, description)
+    def initialize(number, snapshot_type, previous_number, timestamp, user, cleanup_algo, description)
       @number = number
       @snapshot_type = snapshot_type
-      @previous = previous
+      @previous_number = previous_number
       @timestamp = timestamp
       @user = user
-      @cleanup = cleanup
+      @cleanup_algo = cleanup_algo
       @description = description
+    end
+
+    def previous
+      @previous ||= FsSnapshot.find(@previous_number)
     end
   end
 end
