@@ -29,6 +29,7 @@
 require "yast"
 
 module Yast2
+  # Represents the fact that Snapper is not configured for "/" (root).
   class SnapperNotConfigured < StandardError
     def initialize
       super "Snapper is not configured."
@@ -78,8 +79,6 @@ module Yast2
       out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), CREATE_SNAPSHOT_CMD % description)
       if out["exit"] == 0
         find(out["stdout"].to_i) # The CREATE_SNAPSHOT_CMD returns the number of the new snapshot.
-      else
-        nil
       end
     end
 
@@ -96,7 +95,7 @@ module Yast2
         data = line.split(/\s*\|\s*/)
         timestamp = data[3] == "" ? nil : DateTime.parse(data[3])
         new(data[1].to_i, data[0].to_sym, data[2].to_i, timestamp, data[4],
-            data[5].to_s.to_sym, data[6])
+          data[5].to_s.to_sym, data[6])
       end
     end
 

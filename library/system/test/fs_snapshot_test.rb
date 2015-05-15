@@ -1,7 +1,6 @@
 #!/usr/bin/env rspec
 
 require_relative "test_helper"
-#require_relative "../src/lib/yast2/fs_snapshot"
 require "yast2/fs_snapshot"
 
 describe Yast2::FsSnapshot do
@@ -18,16 +17,16 @@ describe Yast2::FsSnapshot do
       let(:configured) { false }
 
       it "tries to create the configuration and returns true if it was successful" do
-        expect(Yast::SCR).to receive(:Execute).
-          with(path(".target.bash_output"), CREATE_CONFIG).
-          and_return({"stdout" => "", "exit" => 0})
+        expect(Yast::SCR).to receive(:Execute)
+          .with(path(".target.bash_output"), CREATE_CONFIG)
+          .and_return("stdout" => "", "exit" => 0)
         expect(described_class.configure).to eq(true)
       end
 
       it "tries to create the configuration and returns false if it wasn't successful" do
-        expect(Yast::SCR).to receive(:Execute).
-          with(path(".target.bash_output"), CREATE_CONFIG).
-          and_return({"stdout" => "", "exit" => 1})
+        expect(Yast::SCR).to receive(:Execute)
+          .with(path(".target.bash_output"), CREATE_CONFIG)
+          .and_return("stdout" => "", "exit" => 1)
         expect(described_class.configure).to eq(false)
       end
     end
@@ -36,8 +35,8 @@ describe Yast2::FsSnapshot do
       let(:configured) { true }
 
       it "does not try to create the configuration and returns true" do
-        expect(Yast::SCR).to_not receive(:Execute).
-          with(path(".target.bash_output"), CREATE_CONFIG)
+        expect(Yast::SCR).to_not receive(:Execute)
+          .with(path(".target.bash_output"), CREATE_CONFIG)
         expect(described_class.configure).to eq(true)
       end
     end
@@ -45,9 +44,9 @@ describe Yast2::FsSnapshot do
 
   describe ".configured?" do
     before do
-      allow(Yast::SCR).to receive(:Execute).
-        with(path(".target.bash_output"), FIND_CONFIG).
-        and_return({ "stdout" => "", "exit" => find_code})
+      allow(Yast::SCR).to receive(:Execute)
+        .with(path(".target.bash_output"), FIND_CONFIG)
+        .and_return("stdout" => "", "exit" => find_code)
     end
 
     context "when snapper's configuration does not exist" do
@@ -78,9 +77,9 @@ describe Yast2::FsSnapshot do
       let(:configured) { true }
 
       before do
-        allow(Yast::SCR).to receive(:Execute).
-          with(path(".target.bash_output"), CREATE_SNAPSHOT).
-          and_return(output)
+        allow(Yast::SCR).to receive(:Execute)
+          .with(path(".target.bash_output"), CREATE_SNAPSHOT)
+          .and_return(output)
       end
 
       context "when snapshot creation fails" do
@@ -93,11 +92,11 @@ describe Yast2::FsSnapshot do
 
       context "when snapshot creation is successful" do
         let(:output) { { "stdout" => "2", "exit" => 0 } }
-        let(:dummy_snapshot) { double('snapshot') }
+        let(:dummy_snapshot) { double("snapshot") }
 
         it "returns the created snapshot" do
-          expect(described_class).to receive(:find).with(2).
-            and_return(dummy_snapshot)
+          expect(described_class).to receive(:find).with(2)
+            .and_return(dummy_snapshot)
           snapshot = described_class.create("some-description")
           expect(snapshot).to be(dummy_snapshot)
         end
@@ -108,8 +107,8 @@ describe Yast2::FsSnapshot do
       let(:configured) { false }
 
       it "raises an exception" do
-        expect { described_class.create("some-description") }.
-          to raise_error(Yast2::SnapperNotConfigured)
+        expect { described_class.create("some-description") }
+          .to raise_error(Yast2::SnapperNotConfigured)
       end
     end
   end
@@ -124,9 +123,9 @@ describe Yast2::FsSnapshot do
       let(:output) { File.read(output_path) }
 
       before do
-        allow(Yast::SCR).to receive(:Execute).
-          with(path('.target.bash_output'), LIST_SNAPSHOTS).
-          and_return({ "stdout" => output, "exit" => 0 })
+        allow(Yast::SCR).to receive(:Execute)
+          .with(path(".target.bash_output"), LIST_SNAPSHOTS)
+          .and_return("stdout" => output, "exit" => 0)
       end
 
       context "given some snapshots exist" do
@@ -152,8 +151,8 @@ describe Yast2::FsSnapshot do
       let(:configured) { false }
 
       it "raises an exception" do
-        expect { described_class.create("some-description") }.
-          to raise_error(Yast2::SnapperNotConfigured)
+        expect { described_class.create("some-description") }
+          .to raise_error(Yast2::SnapperNotConfigured)
       end
     end
   end
@@ -169,9 +168,9 @@ describe Yast2::FsSnapshot do
       let(:output_path) { File.expand_path("../fixtures/snapper-list.txt", __FILE__) }
 
       before do
-        allow(Yast::SCR).to receive(:Execute).
-          with(path('.target.bash_output'), LIST_SNAPSHOTS).
-          and_return({ "stdout" => output, "exit" => 0 })
+        allow(Yast::SCR).to receive(:Execute)
+          .with(path(".target.bash_output"), LIST_SNAPSHOTS)
+          .and_return("stdout" => output, "exit" => 0)
       end
 
       context "when a snapshot with that number exists" do
@@ -198,8 +197,8 @@ describe Yast2::FsSnapshot do
       let(:configured) { false }
 
       it "raises an exception" do
-        expect { described_class.create("some-description") }.
-          to raise_error(Yast2::SnapperNotConfigured)
+        expect { described_class.create("some-description") }
+          .to raise_error(Yast2::SnapperNotConfigured)
       end
     end
   end
