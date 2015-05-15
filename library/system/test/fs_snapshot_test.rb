@@ -141,7 +141,7 @@ describe Yast2::FsSnapshot do
         let(:output_path) { File.expand_path("../fixtures/snapper-list.txt", __FILE__) }
 
         it "should return the snapshots and log about how many were found" do
-          expect(logger).to receive(:info).with(/Found 5 snapshot/)
+          expect(logger).to receive(:info).with(/Retrieving snapshots list/)
           snapshots = described_class.all
           expect(snapshots).to be_kind_of(Array)
           expect(snapshots.size).to eq(5)

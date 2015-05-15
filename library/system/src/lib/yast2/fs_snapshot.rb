@@ -32,14 +32,17 @@ module Yast2
   # Represents the fact that Snapper is not configured for "/" (root).
   class SnapperNotConfigured < StandardError
     def initialize
-      super "Snapper is not configured."
+      super "Snapper is not configured yet. " \
+        "You could call FsSnapshot.configure to set it up."
     end
   end
 
   # Snapper could not be configured.
   class SnapperConfigurationFailed < StandardError
-    def initialize
-      super "Snapper could not be configured."
+    def initialize(command = nil)
+      msg = "Snapper could not be configured."
+      msg << " Command failed: #{command}"
+      super msg
     end
   end
 
@@ -75,7 +78,7 @@ module Yast2
         out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), CREATE_CONFIG_CMD)
         unless out["exit"] == 0
           log.error("Snapper configuration failed: #{CREATE_CONFIG_CMD} returned: #{out}")
-          raise SnapperConfigurationFailed
+          raise SnapperConfigurationFailed, CREATE_CONFIG_CMD
         end
       end
       true
@@ -110,7 +113,7 @@ module Yast2
 
       out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), LIST_SNAPSHOTS_CMD)
       lines = out["stdout"].lines.grep(VALID_LINE_REGEX) # relevant lines from output.
-      log.info("Retrieving snapshots list: #{LIST_SNAPSHOTS_CMD}. Found #{lines.size} snapshot(s).")
+      log.info("Retrieving snapshots list: #{LIST_SNAPSHOTS_CMD} returned: #{out}")
       lines.map do |line|
         data = line.split("|").map(&:strip)
         begin
