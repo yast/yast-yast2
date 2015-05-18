@@ -771,8 +771,6 @@ module Yast
       { "output" => output, "warning" => warning }
     end
 
-  private
-
     # Proposes firewall settings for iSCSI
     def propose_iscsi
       log.info "iSCSI has been used during installation, opening #{@iscsi_target_service} service"
@@ -781,6 +779,8 @@ module Yast
 
       # bsc#916376: ports need to be open already during boot
       SuSEFirewall.full_init_on_boot(true)
+
+      nil
     end
 
     publish function: :OpenServiceOnNonDialUpInterfaces, type: "void (string, list <string>)"
@@ -791,6 +791,7 @@ module Yast
     publish function: :Reset, type: "void ()"
     publish function: :Propose, type: "void ()"
     publish function: :ProposalSummary, type: "map <string, string> ()"
+    publish function: :propose_iscsi, type: "void ()"
   end
 
   SuSEFirewallProposal = SuSEFirewallProposalClass.new
