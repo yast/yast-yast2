@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon May 18 08:32:06 UTC 2015 - mfilka@suse.com
+
+- bnc#851769, bnc#913722
+  - fixed reading bridge configuration
+  - thanks to Waldemar Spitz <wspitz@uni-bonn.de>
+- 2.17.138
+
+-------------------------------------------------------------------
 Wed Jan 14 11:35:22 UTC 2015 - mfilka@suse.com
 
 - bnc#900383 - ported several fixes for device renaming
