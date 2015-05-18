@@ -27,6 +27,7 @@
 #	Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 require "yast"
+require "date"
 
 module Yast2
   # Represents the fact that Snapper is not configured for "/" (root).
