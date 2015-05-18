@@ -37,15 +37,6 @@ module Yast2
     end
   end
 
-  # Snapper could not be configured.
-  class SnapperConfigurationFailed < StandardError
-    def initialize(command = nil)
-      msg = "Programming error: Snapper could not be configured."
-      msg << " Command failed: #{command}" unless command.nil?
-      super msg
-    end
-  end
-
   # Class for managing filesystem snapshots. It's important to note that this
   # class is intended to be used during installation/update so it uses the
   # Snapper's CLI because the DBus interface is not available at that time.
@@ -53,7 +44,6 @@ module Yast2
     include Yast::Logger
 
     FIND_CONFIG_CMD = "/usr/bin/snapper --no-dbus list-configs | grep \"^root \" >/dev/null"
-    CREATE_CONFIG_CMD = "/usr/bin/snapper --no-dbus create-config -f btrfs /"
     CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --description \"%s\""
     LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus list"
     VALID_LINE_REGEX = /\A\w+\s+\| \d+/
@@ -68,20 +58,6 @@ module Yast2
       out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), FIND_CONFIG_CMD)
       log.info("Checking if Snapper is configured: \"#{FIND_CONFIG_CMD}\" returned: #{out}")
       out["exit"] == 0
-    end
-
-    # Configures snapper
-    #
-    # @return [true,false] true if it's configured; false otherwise.
-    def self.configure
-      unless configured?
-        out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), CREATE_CONFIG_CMD)
-        unless out["exit"] == 0
-          log.error("Snapper configuration failed: #{CREATE_CONFIG_CMD} returned: #{out}")
-          raise SnapperConfigurationFailed, CREATE_CONFIG_CMD
-        end
-      end
-      true
     end
 
     # Creates a new snapshot

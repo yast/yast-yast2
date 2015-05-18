@@ -8,45 +8,8 @@ describe Yast2::FsSnapshot do
     described_class.log
   end
 
-  CREATE_CONFIG = "/usr/bin/snapper --no-dbus create-config -f btrfs /"
   FIND_CONFIG = "/usr/bin/snapper --no-dbus list-configs | grep \"^root \" >/dev/null"
   LIST_SNAPSHOTS = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus list"
-
-  describe ".configure" do
-    before do
-      allow(described_class).to receive(:configured?).and_return(configured)
-    end
-
-    context "when no configuration exists" do
-      let(:configured) { false }
-
-      it "tries to create the configuration and returns true if it was successful" do
-        expect(Yast::SCR).to receive(:Execute)
-          .with(path(".target.bash_output"), CREATE_CONFIG)
-          .and_return("stdout" => "", "exit" => 0)
-        expect(described_class.configure).to eq(true)
-      end
-
-      it "tries to create the configuration and raises an exception if it wasn't successful" do
-        expect(Yast::SCR).to receive(:Execute)
-          .with(path(".target.bash_output"), CREATE_CONFIG)
-          .and_return("stdout" => "", "exit" => 1)
-
-        expect(logger).to receive(:error).with(/Snapper configuration failed/)
-        expect { described_class.configure }.to raise_error(Yast2::SnapperConfigurationFailed)
-      end
-    end
-
-    context "when configuration exists" do
-      let(:configured) { true }
-
-      it "does not try to create the configuration and returns true" do
-        expect(Yast::SCR).to_not receive(:Execute)
-          .with(path(".target.bash_output"), CREATE_CONFIG)
-        expect(described_class.configure).to eq(true)
-      end
-    end
-  end
 
   describe ".configured?" do
     before do
