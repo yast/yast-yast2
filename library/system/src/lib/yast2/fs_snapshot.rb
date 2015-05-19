@@ -97,23 +97,15 @@ module Yast2
 
     # Creates a new 'post' snapshot
     #
-    # Each 'post' snapshot corresponds with a 'pre' one. If the number of the
-    # 'pre' snapshot is not given, it will try to figure out that number.
+    # Each 'post' snapshot corresponds with a 'pre' one.
     #
     # @param description     [String] Snapshot's description.
     # @param previous_number [Fixnum] Number of the previous snapshot
     # @return [FsSnapshot] The created snapshot.
     #
     # @see FsSnapshot.create
-    def self.create_post(description, previous_number = nil)
-      previous =
-        if previous_number
-          find(previous_number)
-        else
-          last = all.reverse_each.find { |s| s.snapshot_type == :pre || s.snapshot_type == :post }
-          (last && last.snapshot_type == :pre) ? last : nil
-        end
-
+    def self.create_post(description, previous_number)
+      previous = find(previous_number)
       if previous
         create(:post, description, previous)
       else

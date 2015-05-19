@@ -147,9 +147,7 @@ describe Yast2::FsSnapshot do
     context "when snapper is configured" do
       let(:configured) { true }
 
-      let(:post_snapshot) { double("snapshot", snapshot_type: :post, number: 3) }
       let(:pre_snapshot) { double("snapshot", snapshot_type: :pre, number: 2) }
-      let(:single_snapshot) { double("snapshot", snapshot_type: :single) }
       let(:dummy_snapshot) { double("snapshot") }
       let(:snapshots) { [pre_snapshot] }
       let(:output) { { "stdout" => "3", "exit" => 0 } }
@@ -162,30 +160,11 @@ describe Yast2::FsSnapshot do
           .and_return(snapshots)
       end
 
-      context "when snapshot creation fails" do
-        let(:output) { { "stdout" => "", "exit" => 1 } }
+      context "when previous snapshot exists" do
+        let(:snapshots) { [pre_snapshot] }
 
-        it "logs the error and raises an exception" do
-          expect(logger).to receive(:error).with(/Snapshot could not be created/)
-          expect { described_class.create_post("some-description") }
-            .to raise_error(Yast2::SnapshotCreationFailed)
-        end
-      end
-
-      context "when snapshot creation is successful" do
-        it "returns the created snapshot" do
-          expect(described_class).to receive(:find).with(3)
-            .and_return(dummy_snapshot)
-          snapshot = described_class.create_post("some-description")
-          expect(snapshot).to be(dummy_snapshot)
-        end
-      end
-
-      context "when the number of the previous snapshot is given" do
-        context "when that snapshot exists" do
-          let(:snapshots) { [pre_snapshot] }
-
-          it "creates a 'post' snapshot matching the previous one" do
+        context "when snapshot creation is successful" do
+          it "returns the created snapshot" do
             allow(Yast2::FsSnapshot).to receive(:find).with(pre_snapshot.number)
               .and_return(pre_snapshot)
             expect(Yast2::FsSnapshot).to receive(:find).with(3)
@@ -195,50 +174,22 @@ describe Yast2::FsSnapshot do
           end
         end
 
-        context "when that snapshot does not exist" do
+        context "when snapshot creation fails" do
+          let(:output) { { "stdout" => "", "exit" => 1 } }
+
           it "logs the error and raises an exception" do
-            expect(logger).to receive(:error).with(/Previous filesystem snapshot was not found/)
-            expect { described_class.create_post("some-description", 100) }
-              .to raise_error(Yast2::PreviousSnapshotNotFound)
+            expect(logger).to receive(:error).with(/Snapshot could not be created/)
+            expect { described_class.create_post("some-description", pre_snapshot.number) }
+              .to raise_error(Yast2::SnapshotCreationFailed)
           end
         end
       end
 
-      context "when the number of the previous snapshot is not given" do
-        context "when last snapshot is of type 'pre'" do
-          let(:snapshots) { [pre_snapshot] }
-
-          it "creates a 'post' matching that 'pre'" do
-            allow(Yast2::FsSnapshot).to receive(:find).with(pre_snapshot.number)
-              .and_return(pre_snapshot)
-            expect(Yast2::FsSnapshot).to receive(:find).with(3)
-              .and_return(dummy_snapshot)
-            expect(described_class.create_post("some-description"))
-              .to be(dummy_snapshot)
-          end
-        end
-
-        context "when last snapshot is of type 'post'" do
-          let(:snapshots) { [pre_snapshot, post_snapshot] }
-
-          it "raises and exception" do
-            expect(logger).to receive(:error).with(/Previous filesystem snapshot was not found/)
-            expect { described_class.create_post("some-description") }
-              .to raise_error(Yast2::PreviousSnapshotNotFound)
-          end
-        end
-
-        context "when last 'pre' is followed only by 'single' snapshots" do
-          let(:snapshots) { [pre_snapshot, single_snapshot] }
-
-          it "creates a 'post' matching that 'pre'" do
-            allow(Yast2::FsSnapshot).to receive(:find).with(pre_snapshot.number)
-              .and_return(pre_snapshot)
-            expect(Yast2::FsSnapshot).to receive(:find).with(3)
-              .and_return(dummy_snapshot)
-            expect(described_class.create_post("some-description"))
-              .to be(dummy_snapshot)
-          end
+      context "when previous snapshot does not exist" do
+        it "logs the error and raises an exception" do
+          expect(logger).to receive(:error).with(/Previous filesystem snapshot was not found/)
+          expect { described_class.create_post("some-description", 100) }
+            .to raise_error(Yast2::PreviousSnapshotNotFound)
         end
       end
     end
@@ -247,7 +198,7 @@ describe Yast2::FsSnapshot do
       let(:configured) { false }
 
       it "raises an exception" do
-        expect { described_class.create_post("some-description") }
+        expect { described_class.create_post("some-description", 1) }
           .to raise_error(Yast2::SnapperNotConfigured)
       end
     end
