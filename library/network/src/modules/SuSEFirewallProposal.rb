@@ -234,16 +234,20 @@ module Yast
     # @param list <string> fallback TCP ports
     # @param [Array<String>] zones
     def EnableFallbackPorts(fallback_ports, zones)
-      fallback_ports = deep_copy(fallback_ports)
-      zones = deep_copy(zones)
+      known_zones = SuSEFirewall.GetKnownFirewallZones()
+
       Builtins.y2warning(
         "Enabling fallback ports: %1 in zones: %2",
         fallback_ports,
         zones
       )
 
-      Builtins.foreach(zones) do |one_zone|
-        Builtins.foreach(fallback_ports) do |one_port|
+      zones.each do |one_zone|
+        unless known_zones.include?(one_zone)
+          log.error "Unknown firewall zone #{one_zone}"
+          next
+        end
+        fallback_ports.each do |one_port|
           SuSEFirewall.AddService(one_port, "TCP", one_zone)
         end
       end
@@ -274,9 +278,8 @@ module Yast
         SuSEFirewall.SetServicesForZones([service], zones, true)
       end
 
-      if SuSEFirewallServices.IsKnownService(service) != true ||
-          ServiceEnabled(service, interfaces) != true
-        EnableFallbackPorts(fallback_ports, interfaces)
+      if !SuSEFirewallServices.IsKnownService(service) || !ServiceEnabled(service, zones)
+        EnableFallbackPorts(fallback_ports, zones)
       end
 
       nil
