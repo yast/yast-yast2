@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May 19 16:23:47 CEST 2015 - locilka@suse.com
+
+- Fixed proposal to open fallback ports for services (bsc#916376)
+- 3.1.108.5
+
+-------------------------------------------------------------------
 Mon May 18 10:32:24 CEST 2015 - locilka@suse.com
 
 - Making SuSEFirewallProposal.propose_iscsi function public
