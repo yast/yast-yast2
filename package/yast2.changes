@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May 19 04:56:13 UTC 2015 - igonzalezsosa@suse.com
+
+- Add a class FsSnapshot for managing filesystem snapshots
+  (fate#317973).
+
+-------------------------------------------------------------------
 Tue Feb  3 10:15:13 UTC 2015 - ancor@suse.com
 
 - Better handling of line breaks in system log viewer (bnc#912169)
