@@ -296,12 +296,22 @@ describe Yast2::FsSnapshot do
   end
 
   describe "#previous" do
-    subject(:fs_snapshot) { described_class.new(1, :single, 10, DateTime.now, "root", "number", "") }
-    let(:dummy_snapshot) { double("snapshot") }
+    context "given a previous snapshot" do
+      subject(:fs_snapshot) { described_class.new(1, :single, 10, DateTime.now, "root", "number", "") }
+      let(:dummy_snapshot) { double("snapshot") }
 
-    it "returns the previous snapshot" do
-      expect(described_class).to receive(:find).with(10).and_return(dummy_snapshot)
-      expect(fs_snapshot.previous).to eq(dummy_snapshot)
+      it "returns the previous snapshot" do
+        expect(described_class).to receive(:find).with(10).and_return(dummy_snapshot)
+        expect(fs_snapshot.previous).to eq(dummy_snapshot)
+      end
+    end
+
+    context "given no previous snapshot" do
+      subject(:fs_snapshot) { described_class.new(1, :single, nil, DateTime.now, "root", "number", "") }
+
+      it "returns nil" do
+        expect(fs_snapshot.previous).to be_nil
+      end
     end
   end
 end

@@ -157,7 +157,8 @@ module Yast2
           log.warn("Error when parsing date/time: #{timestamp}")
           timestamp = nil
         end
-        new(data[1].to_i, data[0].to_sym, data[2].to_i, timestamp, data[4],
+        previous_number = data[2] == "" ? nil : data[2].to_i
+        new(data[1].to_i, data[0].to_sym, previous_number, timestamp, data[4],
           data[5].to_sym, data[6])
       end
     end
@@ -197,8 +198,11 @@ module Yast2
       @description = description
     end
 
+    # Returns the previous snapshot
+    #
+    # @return [FsSnapshot, nil] Object representing the previous snapshot.
     def previous
-      @previous ||= FsSnapshot.find(@previous_number)
+      @previous ||= @previous_number ? FsSnapshot.find(@previous_number) : nil
     end
   end
 end
