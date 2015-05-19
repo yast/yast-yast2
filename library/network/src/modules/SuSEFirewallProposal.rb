@@ -244,7 +244,7 @@ module Yast
 
       zones.each do |one_zone|
         unless known_zones.include?(one_zone)
-          log.error "Unknown firewall zone #{one_zone}"
+          raise "Unknown firewall zone #{one_zone}"
           next
         end
         fallback_ports.each do |one_port|

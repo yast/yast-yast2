@@ -43,4 +43,26 @@ describe Yast::SuSEFirewallProposal do
       Yast::SuSEFirewallProposal.propose_iscsi
     end
   end
+
+  describe "#EnableFallbackPorts" do
+    before(:each) do
+      allow(Yast::SuSEFirewall).to receive(:GetKnownFirewallZones).and_return(["EXT", "INT", "DMZ"])
+    end
+
+    context "when opening ports in known firewall zones" do
+      it "opens given ports in firewall in given zones" do
+        expect(Yast::SuSEFirewall).to receive(:AddService).with(/port.*/, "TCP", /(EXT|DMZ)/).exactly(4).times
+
+        Yast::SuSEFirewallProposal.EnableFallbackPorts(["port1","port2"], ["EXT", "DMZ"])
+      end
+    end
+
+    context "when opening ports in unknown firewall zones" do
+      it "throws an exception" do
+        expect {
+          Yast::SuSEFirewallProposal.EnableFallbackPorts(["port1","port2"], ["UNKNOWN_ZONE"])
+        }.to raise_error(/UNKNOWN_ZONE/)
+      end
+    end
+  end
 end
