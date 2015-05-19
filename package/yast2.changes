@@ -5,6 +5,20 @@ Tue May 19 04:56:13 UTC 2015 - igonzalezsosa@suse.com
   (fate#317973).
 
 -------------------------------------------------------------------
+Mon May 18 10:32:24 CEST 2015 - locilka@suse.com
+
+- Making SuSEFirewallProposal.propose_iscsi function public
+  (bsc#916376)
+- 3.1.123
+
+-------------------------------------------------------------------
+Wed May 13 15:03:50 CEST 2015 - locilka@suse.com
+
+- Propose SuSEfirewal2 to fully initialize (e.g. open ports)
+  already in the init phase to allow using iSCSI (bsc#916376)
+- 3.1.122
+
+-------------------------------------------------------------------
 Tue Feb  3 10:15:13 UTC 2015 - ancor@suse.com
 
 - Better handling of line breaks in system log viewer (bnc#912169)

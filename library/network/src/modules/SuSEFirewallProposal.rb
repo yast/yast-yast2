@@ -33,6 +33,8 @@ require "yast"
 
 module Yast
   class SuSEFirewallProposalClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -456,16 +458,7 @@ module Yast
 
       # BNC #766300 - Automatically propose opening iscsi-target port
       # when installing with withiscsi=1
-      if Linuxrc.useiscsi
-        Builtins.y2milestone(
-          "iSCSI has been used during installation, opening %1 service",
-          @iscsi_target_service
-        )
-        OpenServiceOnNonDialUpInterfaces(
-          @iscsi_target_service,
-          @iscsi_target_fallback_ports
-        )
-      end
+      propose_iscsi if Linuxrc.useiscsi
 
       SetKnownInterfaces(SuSEFirewall.GetListOfKnownInterfaces)
 
@@ -778,6 +771,18 @@ module Yast
       { "output" => output, "warning" => warning }
     end
 
+    # Proposes firewall settings for iSCSI
+    def propose_iscsi
+      log.info "iSCSI has been used during installation, opening #{@iscsi_target_service} service"
+
+      OpenServiceOnNonDialUpInterfaces(@iscsi_target_service, @iscsi_target_fallback_ports)
+
+      # bsc#916376: ports need to be open already during boot
+      SuSEFirewall.full_init_on_boot(true)
+
+      nil
+    end
+
     publish function: :OpenServiceOnNonDialUpInterfaces, type: "void (string, list <string>)"
     publish function: :SetChangedByUser, type: "void (boolean)"
     publish function: :GetChangedByUser, type: "boolean ()"
@@ -786,6 +791,7 @@ module Yast
     publish function: :Reset, type: "void ()"
     publish function: :Propose, type: "void ()"
     publish function: :ProposalSummary, type: "map <string, string> ()"
+    publish function: :propose_iscsi, type: "void ()"
   end
 
   SuSEFirewallProposal = SuSEFirewallProposalClass.new
