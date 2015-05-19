@@ -198,6 +198,8 @@ module Yast2
       @description = description
     end
 
+    private_class_method :new
+
     # Returns the previous snapshot
     #
     # @return [FsSnapshot, nil] Object representing the previous snapshot.

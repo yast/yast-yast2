@@ -296,18 +296,26 @@ describe Yast2::FsSnapshot do
   end
 
   describe "#previous" do
+    let(:output) { File.read(output_path) }
+    let(:output_path) { File.expand_path("../fixtures/snapper-list.txt", __FILE__) }
+
+    before do
+      allow(Yast2::FsSnapshot).to receive(:configured?).and_return(true)
+      allow(Yast::SCR).to receive(:Execute)
+        .with(path(".target.bash_output"), LIST_SNAPSHOTS)
+        .and_return("stdout" => output, "exit" => 0)
+    end
+
     context "given a previous snapshot" do
-      subject(:fs_snapshot) { described_class.new(1, :single, 10, DateTime.now, "root", "number", "") }
-      let(:dummy_snapshot) { double("snapshot") }
+      subject(:fs_snapshot) { Yast2::FsSnapshot.find(4) }
 
       it "returns the previous snapshot" do
-        expect(described_class).to receive(:find).with(10).and_return(dummy_snapshot)
-        expect(fs_snapshot.previous).to eq(dummy_snapshot)
+        expect(fs_snapshot.previous.number).to eq(3)
       end
     end
 
     context "given no previous snapshot" do
-      subject(:fs_snapshot) { described_class.new(1, :single, nil, DateTime.now, "root", "number", "") }
+      subject(:fs_snapshot) { Yast2::FsSnapshot.find(3) }
 
       it "returns nil" do
         expect(fs_snapshot.previous).to be_nil
