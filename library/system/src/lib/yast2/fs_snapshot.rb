@@ -37,6 +37,18 @@ module Yast2
     end
   end
 
+  class PreviousSnapshotNotFound < StandardError
+    def initialize
+      super "Previous snapshot was not found."
+    end
+  end
+
+  class SnapshotCreationFailed < StandardError
+    def initialize
+      super "Filesystem snapshot could not be created."
+    end
+  end
+
   # Class for managing filesystem snapshots. It's important to note that this
   # class is intended to be used during installation/update so it uses the
   # Snapper's CLI because the DBus interface is not available at that time.
@@ -44,7 +56,7 @@ module Yast2
     include Yast::Logger
 
     FIND_CONFIG_CMD = "/usr/bin/snapper --no-dbus list-configs | grep \"^root \" >/dev/null"
-    CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --description \"%s\""
+    CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --snapshot-type %s --description \"%s\""
     LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus list"
     VALID_LINE_REGEX = /\A\w+\s+\| \d+/
 
@@ -60,22 +72,74 @@ module Yast2
       out["exit"] == 0
     end
 
-    # Creates a new snapshot
-    #
-    # It raises and exception if Snapper is not configured.
+    # Creates a new 'single' snapshot
     #
     # @param description [String] Snapshot's description.
-    # @return [FsSnapshot,nil] The created snapshot if the operation was
-    #                          successful. Otherwise, it returns nil.
-    def self.create(description)
+    # @return [FsSnapshot] The created snapshot.
+    #
+    # @see FsSnapshot.create
+    def self.create_single(description)
+      create(:single, description)
+    end
+
+    # Creates a new 'pre' snapshot
+    #
+    # @param description [String] Snapshot's description.
+    # @return [FsSnapshot] The created snapshot.
+    #
+    # @see FsSnapshot.create
+    def self.create_pre(description)
+      create(:pre, description)
+    end
+
+    # Creates a new 'post' snapshot
+    #
+    # Each 'post' snapshot corresponds with a 'pre' one. If the number of the
+    # 'pre' snapshot is not given, it will try to figure out that number.
+    #
+    # @param description     [String] Snapshot's description.
+    # @param previous_number [Fixnum] Number of the previous snapshot
+    # @return [FsSnapshot] The created snapshot.
+    #
+    # @see FsSnapshot.create
+    def self.create_post(description, previous_number = nil)
+      previous =
+        if previous_number.nil?
+          last = all.reverse.find { |s| s.snapshot_type == :pre || s.snapshot_type == :post }
+          (last && last.snapshot_type == :pre) ? last : nil
+        else
+          find(previous_number)
+        end
+
+      if previous
+        create(:post, description, previous)
+      else
+        log.error "Previous filesystem snapshot was not found"
+        raise PreviousSnapshotNotFound
+      end
+    end
+
+    # Creates a new snapshot
+    #
+    # It raises and exception if Snapper is not configured or if snapshot
+    # creation fails.
+    #
+    # @param snapshot_type [Symbol]    Snapshot's type: :pre, :post or :single.
+    # @param description   [String]    Snapshot's description.
+    # @param previous      [FsSnashot] Previous snapshot.
+    # @return [FsSnapshot] The created snapshot if the operation was
+    #                      successful.
+    private_class_method def self.create(snapshot_type, description, previous = nil)
       raise SnapperNotConfigured unless configured?
 
-      cmd = CREATE_SNAPSHOT_CMD % description
+      cmd = CREATE_SNAPSHOT_CMD % [snapshot_type, description]
+      cmd << " --pre-num %s" % previous.number unless previous.nil?
       out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), cmd)
       if out["exit"] == 0
         find(out["stdout"].to_i) # The CREATE_SNAPSHOT_CMD returns the number of the new snapshot.
       else
-        log.error "Snapshot could not be created: #{CREATE_SNAPSHOT_CMD} returned: #{out}"
+        log.error "Snapshot could not be created: #{cmd} returned: #{out}"
+        raise SnapshotCreationFailed
       end
     end
 
