@@ -37,12 +37,15 @@ module Yast2
     end
   end
 
+  # Represents that does not exist a suitable 'pre' snapshot for a new 'post'
+  # snapshot.
   class PreviousSnapshotNotFound < StandardError
     def initialize
       super "Previous snapshot was not found."
     end
   end
 
+  # Represents the fact that the snapshot could not be created.
   class SnapshotCreationFailed < StandardError
     def initialize
       super "Filesystem snapshot could not be created."
