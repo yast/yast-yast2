@@ -174,6 +174,19 @@ module Yast2
       all.find { |s| s.number == number }
     end
 
+    # FsSnapshot constructor
+    #
+    # This method is not intended to be called by users of FsSnapshot class.
+    # Instead, class methods must be used.
+    #
+    # @param number          [Fixnum]        Snapshot's number.
+    # @param snapshot_type   [Symbol]        Snapshot's type: :pre, :post or :single.
+    # @param previous_number [Fixnum]        Previous snapshot's number.
+    # @param timestamp       [DateTime]      Timestamp
+    # @param user            [String]        Snapshot's owner username.
+    # @param cleanup_algo    [String]        Clean-up algorithm.
+    # @param description     [String]        Snapshot's description.
+    # @return [FsSnapshot] New FsSnapshot object.
     def initialize(number, snapshot_type, previous_number, timestamp, user, cleanup_algo, description)
       @number = number
       @snapshot_type = snapshot_type
