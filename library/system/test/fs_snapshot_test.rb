@@ -147,11 +147,11 @@ describe Yast2::FsSnapshot do
     context "when snapper is configured" do
       let(:configured) { true }
 
-      let(:post_snapshot) { double("snapshot", snapshot_type: :post, number: 3)}
-      let(:pre_snapshot) { double("snapshot", snapshot_type: :pre, number: 2 )}
+      let(:post_snapshot) { double("snapshot", snapshot_type: :post, number: 3) }
+      let(:pre_snapshot) { double("snapshot", snapshot_type: :pre, number: 2) }
       let(:single_snapshot) { double("snapshot", snapshot_type: :single) }
       let(:dummy_snapshot) { double("snapshot") }
-      let(:snapshots) { [ pre_snapshot ] }
+      let(:snapshots) { [pre_snapshot] }
       let(:output) { { "stdout" => "3", "exit" => 0 } }
 
       before do

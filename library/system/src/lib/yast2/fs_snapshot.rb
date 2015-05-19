@@ -107,11 +107,11 @@ module Yast2
     # @see FsSnapshot.create
     def self.create_post(description, previous_number = nil)
       previous =
-        if previous_number.nil?
-          last = all.reverse.find { |s| s.snapshot_type == :pre || s.snapshot_type == :post }
-          (last && last.snapshot_type == :pre) ? last : nil
-        else
+        if previous_number
           find(previous_number)
+        else
+          last = all.reverse_each.find { |s| s.snapshot_type == :pre || s.snapshot_type == :post }
+          (last && last.snapshot_type == :pre) ? last : nil
         end
 
       if previous
@@ -124,7 +124,7 @@ module Yast2
 
     # Creates a new snapshot
     #
-    # It raises and exception if Snapper is not configured or if snapshot
+    # It raises an exception if Snapper is not configured or if snapshot
     # creation fails.
     #
     # @param snapshot_type [Symbol]    Snapshot's type: :pre, :post or :single.
@@ -135,8 +135,8 @@ module Yast2
     private_class_method def self.create(snapshot_type, description, previous = nil)
       raise SnapperNotConfigured unless configured?
 
-      cmd = CREATE_SNAPSHOT_CMD % [snapshot_type, description]
-      cmd << " --pre-num %s" % previous.number unless previous.nil?
+      cmd = format(CREATE_SNAPSHOT_CMD, snapshot_type, description)
+      cmd << format(" --pre-num %s", previous.number) if previous
       out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), cmd)
       if out["exit"] == 0
         find(out["stdout"].to_i) # The CREATE_SNAPSHOT_CMD returns the number of the new snapshot.
@@ -148,7 +148,7 @@ module Yast2
 
     # Returns all snapshots
     #
-    # It raises and exception if Snapper is not configured.
+    # It raises an exception if Snapper is not configured.
     #
     # @return [Array<FsSnapshot>] All snapshots that exist in the system.
     def self.all
@@ -162,16 +162,17 @@ module Yast2
         begin
           timestamp = DateTime.parse(data[3])
         rescue ArgumentError
+          log.warn("Error when parsing date/time: #{timestamp}")
           timestamp = nil
         end
         new(data[1].to_i, data[0].to_sym, data[2].to_i, timestamp, data[4],
-          data[5].to_s.to_sym, data[6])
+          data[5].to_sym, data[6])
       end
     end
 
-    # Finds an snapshot by its number
+    # Finds a snapshot by its number
     #
-    # It raises and exception if Snapper is not configured.
+    # It raises an exception if Snapper is not configured.
     #
     # @param nubmer [Fixnum] Number of the snapshot to search for.
     # @return [FsSnapshot,nil] The snapshot with the number +number+ if found.
