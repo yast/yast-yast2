@@ -38,7 +38,7 @@ describe Yast::SuSEFirewallProposal do
 
     it "proposes opening iscsi-target firewall service and full firewall initialization on boot" do
       expect(Yast::SuSEFirewall).to receive(:full_init_on_boot).and_return(true)
-      expect(Yast::SuSEFirewall).to receive(:SetServicesForZones).with(["service:iscsitarget"], ["EXT"], true).and_return(true)
+      expect(Yast::SuSEFirewall).to receive(:SetServicesForZones).with(["service:target"], ["EXT"], true).and_return(true)
 
       Yast::SuSEFirewallProposal.propose_iscsi
     end

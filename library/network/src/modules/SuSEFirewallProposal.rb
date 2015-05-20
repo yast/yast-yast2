@@ -65,8 +65,10 @@ module Yast
 
       @ssh_service = "service:sshd"
 
-      @iscsi_target_service = "service:iscsitarget"
+      # bsc#916376 iSCSI Target Daemon
+      @iscsi_target_service = "service:target"
 
+      # bsc#916376 Fallback ports used when iSCSI service file is not installed
       @iscsi_target_fallback_ports = ["iscsi-target"]
     end
 
