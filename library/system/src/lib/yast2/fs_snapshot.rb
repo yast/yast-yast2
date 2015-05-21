@@ -124,7 +124,7 @@ module Yast2
     # @param previous      [FsSnashot] Previous snapshot.
     # @return [FsSnapshot] The created snapshot if the operation was
     #                      successful.
-    private_class_method def self.create(snapshot_type, description, previous = nil)
+    def self.create(snapshot_type, description, previous = nil)
       raise SnapperNotConfigured unless configured?
 
       cmd = format(CREATE_SNAPSHOT_CMD, snapshot_type, description)
@@ -137,6 +137,7 @@ module Yast2
         raise SnapshotCreationFailed
       end
     end
+    private_class_method :create
 
     # Returns all snapshots
     #
