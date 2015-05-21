@@ -33,14 +33,32 @@ describe Yast::SuSEFirewallProposal do
       allow(Yast::SuSEFirewall).to receive(:GetAllNonDialUpInterfaces).and_return(["eth44", "eth55"])
       allow(Yast::SuSEFirewall).to receive(:GetZonesOfInterfaces).and_return(["EXT"])
       allow(Yast::SuSEFirewallServices).to receive(:IsKnownService).and_return(true)
-      allow(Yast::SuSEFirewallProposal).to receive(:ServiceEnabled).and_return(true)
     end
 
-    it "proposes opening iscsi-target firewall service and full firewall initialization on boot" do
-      expect(Yast::SuSEFirewall).to receive(:full_init_on_boot).and_return(true)
-      expect(Yast::SuSEFirewall).to receive(:SetServicesForZones).with(["service:target"], ["EXT"], true).and_return(true)
+    context "when firewall service exists on the current system" do
+      before do
+        allow(Yast::SuSEFirewallServices).to receive(:IsKnownService).and_return(true)
+      end
 
-      Yast::SuSEFirewallProposal.propose_iscsi
+      it "proposes opening iscsi-target firewall service and full firewall initialization on boot" do
+        expect(Yast::SuSEFirewall).to receive(:full_init_on_boot).and_return(true)
+        expect(Yast::SuSEFirewall).to receive(:SetServicesForZones).with(["service:target"], ["EXT"], true).and_return(true)
+
+        Yast::SuSEFirewallProposal.propose_iscsi
+      end
+    end
+
+    context "when firewall service does not exist on the current system" do
+      before do
+        allow(Yast::SuSEFirewallServices).to receive(:IsKnownService).and_return(false)
+      end
+
+      it "proposes opening fallback ports in firewall and full firewall initialization on boot" do
+        expect(Yast::SuSEFirewall).to receive(:full_init_on_boot).and_return(true)
+        expect(Yast::SuSEFirewallProposal).to receive(:EnableFallbackPorts).with(["iscsi-target"], ["EXT"]).and_return(nil)
+
+        Yast::SuSEFirewallProposal.propose_iscsi
+      end
     end
   end
 
@@ -60,8 +78,8 @@ describe Yast::SuSEFirewallProposal do
     context "when opening ports in unknown firewall zones" do
       it "throws an exception" do
         expect {
-          Yast::SuSEFirewallProposal.EnableFallbackPorts(["port1","port2"], ["UNKNOWN_ZONE"])
-        }.to raise_error(/UNKNOWN_ZONE/)
+          Yast::SuSEFirewallProposal.EnableFallbackPorts(["port1","port2"], ["UNKNOWN_ZONE1", "UZ2"])
+        }.to raise_error(/UNKNOWN_ZONE1.*UZ2/)
       end
     end
   end
