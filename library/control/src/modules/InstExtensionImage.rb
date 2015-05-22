@@ -337,6 +337,23 @@ module Yast
       nil
     end
 
+    # Load a rpm package from the media into the inst-sys and ensure its
+    # unloading after end of block.
+    # @param [String] package to load
+    # @param [Proc] Block to be yield
+    # @raises [RuntimeError] when package loading failed
+    def with_extension(package, &block)
+      loading_msg = format(_("Loading to memory package '%s'"), package)
+      res = LoadExtension(package, loading_msg)
+      raise "Failed to load package. Please check logs." unless res
+      begin
+        block.call
+      ensure
+        unloading_msg = format(_("Removing from memory package '%s'"), package)
+        UnLoadExtension(package, unloading_msg)
+      end
+    end
+
     # Load a rpm package from the media into the inst-sys
     # @param [String] package	The path to package to be loaded (by default,
     # the package is expected in the /boot/<arch>/ directory of the media
