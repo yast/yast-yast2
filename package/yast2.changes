@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May 19 04:56:13 UTC 2015 - igonzalezsosa@suse.com
+
+- Add a class FsSnapshot for managing filesystem snapshots
+  (fate#317973).
+
+-------------------------------------------------------------------
 Mon May 18 10:32:24 CEST 2015 - locilka@suse.com
 
 - Making SuSEFirewallProposal.propose_iscsi function public
