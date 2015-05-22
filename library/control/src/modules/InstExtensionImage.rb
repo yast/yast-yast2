@@ -342,6 +342,12 @@ module Yast
     # @param [String] package to load
     # @param [Proc] Block to be yield
     # @raises [RuntimeError] when package loading failed
+    #
+    # @example
+    #   InstExtensionImage.with_extension("snapper") do
+    #      WFM.Execute(path(".local.bash"), "snapper magic")
+    #   end
+    #
     def with_extension(package, &block)
       loading_msg = format(_("Loading to memory package '%s'"), package)
       res = LoadExtension(package, loading_msg)
