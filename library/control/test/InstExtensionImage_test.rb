@@ -20,7 +20,7 @@ describe Yast::InstExtensionImage do
       expect(subject.LoadExtension("", "msg")).to eq false
     end
 
-    it "returns true immediatelly if package is already loaded" do
+    it "returns true immediately if package is already loaded" do
       subject.instance_variable_set("@integrated_extensions", ["snapper"])
       expect(subject.LoadExtension("snapper", "msg")).to eq true
     end
@@ -61,7 +61,7 @@ describe Yast::InstExtensionImage do
       expect(subject.UnLoadExtension("", "msg")).to eq false
     end
 
-    it "returns true immediatelly if package is already unloaded" do
+    it "returns true immediately if package is already unloaded" do
       subject.instance_variable_set("@integrated_extensions", [])
       expect(subject.UnLoadExtension("snapper", "msg")).to eq true
     end
@@ -95,7 +95,7 @@ describe Yast::InstExtensionImage do
       subject.instance_variable_set("@integrated_extensions", [])
     end
 
-    it "loads package, execute block and unload package" do
+    it "loads package, executes block and unload package" do
       expect(Yast::WFM).to receive(:Execute)
         .with(path(".local.bash_output"), "extend 'snapper'")
         .and_return("exit" => 0)
@@ -111,7 +111,7 @@ describe Yast::InstExtensionImage do
       expect(res).to eq true
     end
 
-    it "raise exception if package loading failed" do
+    it "raises exception if package loading fails" do
       expect(Yast::WFM).to receive(:Execute)
         .with(path(".local.bash_output"), "extend 'snapper'")
         .and_return("exit" => 1)
@@ -119,7 +119,7 @@ describe Yast::InstExtensionImage do
       expect { subject.with_extension("snapper") {} }.to raise_error
     end
 
-    it "unloads extension even if block raise exception" do
+    it "unloads extension even if block raises exception" do
       expect(Yast::WFM).to receive(:Execute)
         .with(path(".local.bash_output"), "extend 'snapper'")
         .and_return("exit" => 0)
