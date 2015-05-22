@@ -7,7 +7,7 @@ describe Yast::InstExtensionImage do
 
   describe ".LoadExtension" do
     before do
-      #clean internal cache of already loaded extension
+      # clean internal cache of already loaded extension
       subject.instance_variable_set("@integrated_extensions", [])
     end
     it "returns false if package is nil" do
@@ -34,7 +34,6 @@ describe Yast::InstExtensionImage do
         .with(path(".local.bash_output"), "extend 'snapper'")
         .and_return("exit" => 0)
 
-
       subject.LoadExtension("snapper", "msg")
     end
 
@@ -42,7 +41,6 @@ describe Yast::InstExtensionImage do
       expect(Yast::WFM).to receive(:Execute)
         .with(path(".local.bash_output"), "extend 'snapper'")
         .and_return("exit" => 1)
-
 
       expect(subject.LoadExtension("snapper", "msg")).to eq false
     end
@@ -77,7 +75,6 @@ describe Yast::InstExtensionImage do
         .with(path(".local.bash_output"), "extend -r 'snapper'")
         .and_return("exit" => 0)
 
-
       subject.UnLoadExtension("snapper", "msg")
     end
 
@@ -86,14 +83,13 @@ describe Yast::InstExtensionImage do
         .with(path(".local.bash_output"), "extend -r 'snapper'")
         .and_return("exit" => 1)
 
-
       expect(subject.UnLoadExtension("snapper", "msg")).to eq false
     end
   end
 
   describe ".with_extension" do
     before do
-      #clean internal cache of already loaded extension
+      # clean internal cache of already loaded extension
       subject.instance_variable_set("@integrated_extensions", [])
     end
 
@@ -118,7 +114,7 @@ describe Yast::InstExtensionImage do
         .with(path(".local.bash_output"), "extend 'snapper'")
         .and_return("exit" => 1)
 
-      expect{ subject.with_extension("snapper") { ; } }.to raise_error
+      expect { subject.with_extension("snapper") {} }.to raise_error
     end
 
     it "unloads extension even if block raise exception" do
@@ -129,7 +125,7 @@ describe Yast::InstExtensionImage do
         .with(path(".local.bash_output"), "extend -r 'snapper'")
         .and_return("exit" => 0)
 
-      expect{ subject.with_extension("snapper") { raise "expected" } }.to raise_error
+      expect { subject.with_extension("snapper") { raise "expected" } }.to raise_error
     end
   end
 end
