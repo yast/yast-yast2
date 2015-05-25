@@ -83,4 +83,50 @@ describe Yast::SuSEFirewallProposal do
       end
     end
   end
+
+  describe "#OpenServiceInInterfaces" do
+    let(:network_interfaces) { ["eth-x", "eth-y"] }
+    let(:interfaces_zones) { ["ZONE1", "ZONE2"] }
+    let(:all_zones) { ["ZONE1", "ZONE2", "ZONE3"] }
+    let(:firewall_service) { "service:fw_service_x" }
+    let(:fallback_ports) { ["p1", "p2", "p3"] }
+
+    before(:each) do
+      # Default behavior: Interfaces are assigned to zones, there are more known zones,
+      # given firewall service exists
+      allow(Yast::SuSEFirewall).to receive(:GetZonesOfInterfaces).and_return(interfaces_zones)
+      allow(Yast::SuSEFirewall).to receive(:GetKnownFirewallZones).and_return(all_zones)
+      allow(Yast::SuSEFirewallServices).to receive(:IsKnownService).and_return(true)
+    end
+
+    context "when network interfaces are assigned to some zone(s)" do
+      it "open service in firewall in zones that include given interfaces" do
+        expect(Yast::SuSEFirewall).to receive(:SetServicesForZones).with([firewall_service], interfaces_zones, true)
+        Yast::SuSEFirewallProposal.OpenServiceInInterfaces(firewall_service, fallback_ports, network_interfaces)
+      end
+    end
+
+    context "when network interfaces are not assigned to any zone" do
+      it "opens service in firewall in all zones" do
+        allow(Yast::SuSEFirewall).to receive(:GetZonesOfInterfaces).and_return([])
+        expect(Yast::SuSEFirewall).to receive(:SetServicesForZones).with([firewall_service], all_zones, true)
+        Yast::SuSEFirewallProposal.OpenServiceInInterfaces(firewall_service, fallback_ports, network_interfaces)
+      end
+    end
+
+    context "when given firewall service is known" do
+      it "opens service in firewall in zones that include given interfaces" do
+        expect(Yast::SuSEFirewall).to receive(:SetServicesForZones).with([firewall_service], interfaces_zones, true)
+        Yast::SuSEFirewallProposal.OpenServiceInInterfaces(firewall_service, fallback_ports, network_interfaces)
+      end
+    end
+
+    context "when given service is unknown" do
+      it "opens given fallback ports in zones that include given interfaces" do
+        allow(Yast::SuSEFirewallServices).to receive(:IsKnownService).and_return(false)
+        expect(Yast::SuSEFirewallProposal).to receive(:EnableFallbackPorts).with(fallback_ports, interfaces_zones)
+        Yast::SuSEFirewallProposal.OpenServiceInInterfaces(firewall_service, fallback_ports, network_interfaces)
+      end
+    end
+  end
 end
