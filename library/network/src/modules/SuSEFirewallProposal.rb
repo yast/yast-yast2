@@ -64,12 +64,6 @@ module Yast
       @vnc_service = "service:xorg-x11-server"
 
       @ssh_service = "service:sshd"
-
-      # bsc#916376 iSCSI Target Daemon
-      @iscsi_target_service = "service:target"
-
-      # bsc#916376 Fallback ports used when iSCSI service file is not installed
-      @iscsi_target_fallback_ports = ["iscsi-target"]
     end
 
     # <!-- SuSEFirewall LOCAL VARIABLES //-->
@@ -452,8 +446,6 @@ module Yast
         SuSEFirewall.AddXenSupport
       end
 
-      # BNC #766300 - Automatically propose opening iscsi-target port
-      # when installing with withiscsi=1
       propose_iscsi if Linuxrc.useiscsi
 
       SetKnownInterfaces(SuSEFirewall.GetListOfKnownInterfaces)
@@ -769,9 +761,7 @@ module Yast
 
     # Proposes firewall settings for iSCSI
     def propose_iscsi
-      log.info "iSCSI has been used during installation, opening #{@iscsi_target_service} service"
-
-      OpenServiceOnNonDialUpInterfaces(@iscsi_target_service, @iscsi_target_fallback_ports)
+      log.info "iSCSI has been used during installation, proposing FW full_init_on_boot"
 
       # bsc#916376: ports need to be open already during boot
       SuSEFirewall.full_init_on_boot(true)

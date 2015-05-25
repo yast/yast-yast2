@@ -29,36 +29,10 @@ describe Yast::SuSEFirewallProposal do
   end
 
   describe "#propose_iscsi" do
-    before(:each) do
-      allow(Yast::SuSEFirewall).to receive(:GetAllNonDialUpInterfaces).and_return(["eth44", "eth55"])
-      allow(Yast::SuSEFirewall).to receive(:GetZonesOfInterfaces).and_return(["EXT"])
-      allow(Yast::SuSEFirewallServices).to receive(:IsKnownService).and_return(true)
-    end
+    it "proposes full firewall initialization on boot" do
+      expect(Yast::SuSEFirewall).to receive(:full_init_on_boot).and_return(true)
 
-    context "when firewall service exists on the current system" do
-      before do
-        allow(Yast::SuSEFirewallServices).to receive(:IsKnownService).and_return(true)
-      end
-
-      it "proposes opening iscsi-target firewall service and full firewall initialization on boot" do
-        expect(Yast::SuSEFirewall).to receive(:full_init_on_boot).and_return(true)
-        expect(Yast::SuSEFirewall).to receive(:SetServicesForZones).with(["service:target"], ["EXT"], true).and_return(true)
-
-        Yast::SuSEFirewallProposal.propose_iscsi
-      end
-    end
-
-    context "when firewall service does not exist on the current system" do
-      before do
-        allow(Yast::SuSEFirewallServices).to receive(:IsKnownService).and_return(false)
-      end
-
-      it "proposes opening fallback ports in firewall and full firewall initialization on boot" do
-        expect(Yast::SuSEFirewall).to receive(:full_init_on_boot).and_return(true)
-        expect(Yast::SuSEFirewallProposal).to receive(:EnableFallbackPorts).with(["iscsi-target"], ["EXT"]).and_return(nil)
-
-        Yast::SuSEFirewallProposal.propose_iscsi
-      end
+      Yast::SuSEFirewallProposal.propose_iscsi
     end
   end
 
