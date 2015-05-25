@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon May 25 14:04:51 CEST 2015 - locilka@suse.com
+
+- Fixed proposal to open fallback ports for services (bsc#916376)
+- Removed opening iSCSI ports from firewall proposal (bsc#916376)
+- 3.1.125
+
+-------------------------------------------------------------------
 Fri May 22 12:32:27 UTC 2015 - jreidinger@suse.com
 
 - InstExtensionImage: add block variant for loading extension
