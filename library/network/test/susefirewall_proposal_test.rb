@@ -55,7 +55,7 @@ describe Yast::SuSEFirewallProposal do
 
     context "when opening ports in unknown firewall zones" do
       it "throws an exception" do
-        method_call = Proc.new { subject.EnableFallbackPorts(fallback_ports, ["UNKNOWN_ZONE1", "UZ2"]) }
+        method_call = proc { subject.EnableFallbackPorts(fallback_ports, ["UNKNOWN_ZONE1", "UZ2"]) }
         expect { method_call.call }.to raise_error(/UNKNOWN_ZONE1.*UZ2/)
       end
     end
