@@ -252,6 +252,7 @@ module Yast
 
     # Function opens service for network interfaces given as the third parameter.
     # Fallback ports are used if the given service is uknown.
+    # If interfaces are not assigned to any firewall zone, all zones will be used.
     #
     # @see OpenServiceOnNonDialUpInterfaces for more info.
     #
@@ -263,11 +264,14 @@ module Yast
       interfaces = deep_copy(interfaces)
       zones = SuSEFirewall.GetZonesOfInterfaces(interfaces)
 
+      # Interfaces might not be assigned to any zone yet, use all zones
+      zones = SuSEFirewall.GetKnownFirewallZones() if zones.empty?
+
       if SuSEFirewallServices.IsKnownService(service)
         log.info "Opening service #{service} on interfaces #{interfaces} (zones #{zones})"
         SuSEFirewall.SetServicesForZones([service], zones, true)
       else
-        log.warn "Unknown service #{service}"
+        log.warn "Unknown service #{service}, enabling fallback ports"
         EnableFallbackPorts(fallback_ports, zones)
       end
 
