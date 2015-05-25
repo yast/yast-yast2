@@ -64,10 +64,6 @@ module Yast
       @vnc_service = "service:xorg-x11-server"
 
       @ssh_service = "service:sshd"
-
-      @iscsi_target_service = "service:iscsitarget"
-
-      @iscsi_target_fallback_ports = ["iscsi-target"]
     end
 
     # <!-- SuSEFirewall LOCAL VARIABLES //-->
@@ -234,16 +230,13 @@ module Yast
     # @param list <string> fallback TCP ports
     # @param [Array<String>] zones
     def EnableFallbackPorts(fallback_ports, zones)
-      fallback_ports = deep_copy(fallback_ports)
-      zones = deep_copy(zones)
-      Builtins.y2warning(
-        "Enabling fallback ports: %1 in zones: %2",
-        fallback_ports,
-        zones
-      )
+      known_zones = SuSEFirewall.GetKnownFirewallZones()
+      unknown_zones = zones - known_zones
+      raise "Unknown firewall zones #{unknown_zones}" unless unknown_zones.empty?
 
-      Builtins.foreach(zones) do |one_zone|
-        Builtins.foreach(fallback_ports) do |one_port|
+      log.info "Enabling fallback ports: #{fallback_ports} in zones: #{zones}"
+      zones.each do |one_zone|
+        fallback_ports.each do |one_port|
           SuSEFirewall.AddService(one_port, "TCP", one_zone)
         end
       end
@@ -253,6 +246,7 @@ module Yast
 
     # Function opens service for network interfaces given as the third parameter.
     # Fallback ports are used if the given service is uknown.
+    # If interfaces are not assigned to any firewall zone, all zones will be used.
     #
     # @see OpenServiceOnNonDialUpInterfaces for more info.
     #
@@ -264,19 +258,15 @@ module Yast
       interfaces = deep_copy(interfaces)
       zones = SuSEFirewall.GetZonesOfInterfaces(interfaces)
 
-      if SuSEFirewallServices.IsKnownService(service)
-        Builtins.y2milestone(
-          "Opening service %1 on interfaces %2 (zones %3)",
-          service,
-          interfaces,
-          zones
-        )
-        SuSEFirewall.SetServicesForZones([service], zones, true)
-      end
+      # Interfaces might not be assigned to any zone yet, use all zones
+      zones = SuSEFirewall.GetKnownFirewallZones() if zones.empty?
 
-      if SuSEFirewallServices.IsKnownService(service) != true ||
-          ServiceEnabled(service, interfaces) != true
-        EnableFallbackPorts(fallback_ports, interfaces)
+      if SuSEFirewallServices.IsKnownService(service)
+        log.info "Opening service #{service} on interfaces #{interfaces} (zones #{zones})"
+        SuSEFirewall.SetServicesForZones([service], zones, true)
+      else
+        log.warn "Unknown service #{service}, enabling fallback ports"
+        EnableFallbackPorts(fallback_ports, zones)
       end
 
       nil
@@ -456,8 +446,6 @@ module Yast
         SuSEFirewall.AddXenSupport
       end
 
-      # BNC #766300 - Automatically propose opening iscsi-target port
-      # when installing with withiscsi=1
       propose_iscsi if Linuxrc.useiscsi
 
       SetKnownInterfaces(SuSEFirewall.GetListOfKnownInterfaces)
@@ -773,9 +761,7 @@ module Yast
 
     # Proposes firewall settings for iSCSI
     def propose_iscsi
-      log.info "iSCSI has been used during installation, opening #{@iscsi_target_service} service"
-
-      OpenServiceOnNonDialUpInterfaces(@iscsi_target_service, @iscsi_target_fallback_ports)
+      log.info "iSCSI has been used during installation, proposing FW full_init_on_boot"
 
       # bsc#916376: ports need to be open already during boot
       SuSEFirewall.full_init_on_boot(true)
