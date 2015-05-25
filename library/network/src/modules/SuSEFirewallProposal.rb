@@ -231,7 +231,7 @@ module Yast
     # @param [Array<String>] zones
     def EnableFallbackPorts(fallback_ports, zones)
       known_zones = SuSEFirewall.GetKnownFirewallZones()
-      unknown_zones = zones.reject{|zone| known_zones.include?(zone)}
+      unknown_zones = zones - known_zones
       raise "Unknown firewall zones #{unknown_zones}" unless unknown_zones.empty?
 
       log.info "Enabling fallback ports: #{fallback_ports} in zones: #{zones}"
