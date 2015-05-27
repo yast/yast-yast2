@@ -38,7 +38,7 @@ describe Yast2::FsSnapshot do
 
   describe ".create_single" do
     CREATE_SINGLE_SNAPSHOT = "/usr/lib/snapper/installation-helper --step 5 "\
-      "--snapshot-type single --description \"some-description\""
+      "--root-prefix=/ --snapshot-type single --description \"some-description\""
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
@@ -88,7 +88,7 @@ describe Yast2::FsSnapshot do
 
   describe ".create_pre" do
     CREATE_PRE_SNAPSHOT = "/usr/lib/snapper/installation-helper --step 5 "\
-      "--snapshot-type pre --description \"some-description\""
+      "--root-prefix=/ --snapshot-type pre --description \"some-description\""
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
@@ -138,7 +138,8 @@ describe Yast2::FsSnapshot do
 
   describe ".create_post" do
     CREATE_POST_SNAPSHOT = "/usr/lib/snapper/installation-helper --step 5 "\
-      "--snapshot-type post --description \"some-description\" --pre-num 2"
+      "--root-prefix=/ --snapshot-type post --description \"some-description\" "\
+      "--pre-num 2"
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)

@@ -59,8 +59,10 @@ module Yast2
     include Yast::Logger
 
     FIND_CONFIG_CMD = "/usr/bin/snapper --no-dbus list-configs | grep \"^root \" >/dev/null"
-    CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --snapshot-type %s --description \"%s\""
+    FIND_CONFIG_IN_ROOT_CMD = "/usr/bin/snapper --no-dbus --root=%{root} list-configs | grep \"^root \" >/dev/null"
+    CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --root-prefix=%{root} --snapshot-type %{snapshot_type} --description \"%{description}\""
     LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus list"
+    LIST_SNAPSHOTS_IN_ROOT_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=%{root} list"
     VALID_LINE_REGEX = /\A\w+\s+\| \d+/
 
     attr_reader :number, :snapshot_type, :previous_number, :timestamp, :user,
@@ -70,7 +72,14 @@ module Yast2
     #
     # @return [true,false] true if it's configured; false otherwise.
     def self.configured?
-      out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), FIND_CONFIG_CMD)
+      if non_switched_installation?
+        with_snapper do
+          out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"),
+            FIND_CONFIG_IN_ROOT_CMD % { root: target_root })
+        end
+      else
+        out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), FIND_CONFIG_CMD)
+      end
       log.info("Checking if Snapper is configured: \"#{FIND_CONFIG_CMD}\" returned: #{out}")
       out["exit"] == 0
     end
@@ -127,9 +136,22 @@ module Yast2
     def self.create(snapshot_type, description, previous = nil)
       raise SnapperNotConfigured unless configured?
 
-      cmd = format(CREATE_SNAPSHOT_CMD, snapshot_type, description)
-      cmd << format(" --pre-num %s", previous.number) if previous
-      out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), cmd)
+      root = non_switched_installation? ? target_root : "/"
+      cmd = format(CREATE_SNAPSHOT_CMD,
+        {
+          root: root,
+          snapshot_type: snapshot_type,
+          description: description
+        }
+      )
+      cmd << " --pre-num #{previous.number}" if previous
+      if non_switched_installation?
+        with_snapper do
+          out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), cmd)
+        end
+      else
+        out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), cmd)
+      end
       if out["exit"] == 0
         find(out["stdout"].to_i) # The CREATE_SNAPSHOT_CMD returns the number of the new snapshot.
       else
@@ -139,6 +161,29 @@ module Yast2
     end
     private_class_method :create
 
+    def self.non_switched_installation?
+      Yast.import "Stage"
+      return false unless Yast::Stage.initial
+
+      return !Yast::WFM.scr_chrooted?
+    end
+    private_class_method :non_switched_installation?
+
+    def self.with_snapper(&block)
+      Yast.import "InstExtensionImage"
+      Yast::InstExtensionImage.with_extension("snapper") do
+        block.call
+      end
+    end
+    private_class_method :with_snapper
+
+    def self.target_root
+      Yast.import "Installation"
+
+      Yast::Installation.destdir
+    end
+    private_class_method :target_root
+
     # Returns all snapshots
     #
     # It raises an exception if Snapper is not configured.
@@ -147,7 +192,14 @@ module Yast2
     def self.all
       raise SnapperNotConfigured unless configured?
 
-      out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), LIST_SNAPSHOTS_CMD)
+      if non_switched_installation?
+        out = Yast::SCR.Execute(
+          Yast::Path.new(".target.bash_output"),
+          format(LIST_SNAPSHOTS_IN_ROOT_CMD, root: target_root)
+        )
+      else
+        out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), LIST_SNAPSHOTS_CMD)
+      end
       lines = out["stdout"].lines.grep(VALID_LINE_REGEX) # relevant lines from output.
       log.info("Retrieving snapshots list: #{LIST_SNAPSHOTS_CMD} returned: #{out}")
       lines.map do |line|
