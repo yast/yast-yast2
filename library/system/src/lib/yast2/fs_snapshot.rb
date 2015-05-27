@@ -152,6 +152,7 @@ module Yast2
     end
     private_class_method :create
 
+    # detects if module runs in initial stage before scr is switched to target system
     def self.non_switched_installation?
       Yast.import "Stage"
       return false unless Yast::Stage.initial
@@ -160,6 +161,7 @@ module Yast2
     end
     private_class_method :non_switched_installation?
 
+    # ensures that for local SCR snapper is available in insts-sys
     def self.with_snapper(&block)
       return block.call unless non_switched_installation?
 
@@ -170,6 +172,7 @@ module Yast2
     end
     private_class_method :with_snapper
 
+    # Gets target directory on which should snapper operate
     def self.target_root
       return "/" unless non_switched_installation?
 

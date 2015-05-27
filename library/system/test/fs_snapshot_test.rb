@@ -9,6 +9,7 @@ describe Yast2::FsSnapshot do
   end
 
   FIND_CONFIG = "/usr/bin/snapper --no-dbus --root=/ list-configs | grep \"^root \" >/dev/null"
+  FIND__IN_ROOT_CONFIG = "/usr/bin/snapper --no-dbus --root=/mnt list-configs | grep \"^root \" >/dev/null"
   LIST_SNAPSHOTS = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=/ list"
 
   describe ".configured?" do
@@ -31,6 +32,40 @@ describe Yast2::FsSnapshot do
       let(:find_code) { 0 }
 
       it "returns false" do
+        expect(described_class.configured?).to eq(true)
+      end
+    end
+
+    context "in initial stage before scr switched" do
+      let(:find_code) { 0 }
+      before do
+        Yast.import "Stage"
+        allow(Yast::Stage).to receive(:initial).and_return true
+
+
+        allow(Yast::SCR).to receive(:Execute)
+          .with(path(".target.bash_output"), FIND__IN_ROOT_CONFIG)
+          .and_return("stdout" => "", "exit" => 0)
+
+        Yast.import "InstExtensionImage"
+        allow(Yast::InstExtensionImage).to receive(:with_extension) do |&block|
+          block.call
+        end
+      end
+
+      it "ensures snapper is available" do
+        expect(Yast::InstExtensionImage).to receive(:with_extension) do |&block|
+          block.call
+        end
+
+        described_class.configured?
+      end
+
+      it "detects snapper configuration in installation target dir" do
+        expect(Yast::SCR).to receive(:Execute)
+          .with(path(".target.bash_output"), FIND__IN_ROOT_CONFIG)
+          .and_return("stdout" => "", "exit" => 0)
+
         expect(described_class.configured?).to eq(true)
       end
     end
