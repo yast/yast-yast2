@@ -68,6 +68,9 @@ describe Yast2::FsSnapshotStore do
 
   context "in initial stage before SCR switched" do
     it "use path on mounted target system" do
+      Yast.import "Installation"
+      Yast::Installation.destdir = "/mnt"
+
       Yast.import "Stage"
       allow(Yast::Stage).to receive(:initial).and_return(true)
 
