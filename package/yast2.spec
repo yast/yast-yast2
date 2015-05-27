@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.1.125
+Version:        3.1.126
 Release:        0
 URL:            https://github.com/yast/yast-yast2
 
@@ -41,8 +41,8 @@ BuildRequires:  fdupes
 
 # For running RSpec tests during build
 BuildRequires:  rubygem(rspec)
-# To have specific RSpec extensions available
-BuildRequires:       yast2-ruby-bindings >= 3.1.26
+# To have scr_chrooted? call available
+BuildRequires:       yast2-ruby-bindings >= 3.1.33
 
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
 PreReq:         %fillup_prereq
@@ -117,7 +117,7 @@ Provides:       yast2-packager:/usr/lib/YaST2/servers_non_y2/ag_anyxml
 Provides:       yast2-dns-server:/usr/share/YaST2/modules/DnsServerAPI.pm
 Provides:       yast2-mail-aliases
 
-Requires:       yast2-ruby-bindings >= 1.0.0
+Requires:       yast2-ruby-bindings >= 3.1.33
 
 Summary:        YaST2 - Main Package
 
