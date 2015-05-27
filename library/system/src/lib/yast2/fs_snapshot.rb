@@ -72,7 +72,7 @@ module Yast2
     def self.configured?
       out = with_snapper do
         Yast::SCR.Execute(Yast::Path.new(".target.bash_output"),
-          format(FIND_CONFIG_CMD, { root: target_root })
+          format(FIND_CONFIG_CMD, root: target_root)
         )
       end
 
@@ -133,11 +133,9 @@ module Yast2
       raise SnapperNotConfigured unless configured?
 
       cmd = format(CREATE_SNAPSHOT_CMD,
-        {
-          root: target_root,
-          snapshot_type: snapshot_type,
-          description: description
-        }
+        root:          target_root,
+        snapshot_type: snapshot_type,
+        description:   description
       )
       cmd << " --pre-num #{previous.number}" if previous
 
@@ -158,7 +156,7 @@ module Yast2
       Yast.import "Stage"
       return false unless Yast::Stage.initial
 
-      return !Yast::WFM.scr_chrooted?
+      !Yast::WFM.scr_chrooted?
     end
     private_class_method :non_switched_installation?
 
