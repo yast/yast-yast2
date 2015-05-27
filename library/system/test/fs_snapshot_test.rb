@@ -8,8 +8,8 @@ describe Yast2::FsSnapshot do
     described_class.log
   end
 
-  FIND_CONFIG = "/usr/bin/snapper --no-dbus list-configs | grep \"^root \" >/dev/null"
-  LIST_SNAPSHOTS = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus list"
+  FIND_CONFIG = "/usr/bin/snapper --no-dbus --root=/ list-configs | grep \"^root \" >/dev/null"
+  LIST_SNAPSHOTS = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=/ list"
 
   describe ".configured?" do
     before do
