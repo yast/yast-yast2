@@ -42,7 +42,6 @@ describe Yast2::FsSnapshot do
         Yast.import "Stage"
         allow(Yast::Stage).to receive(:initial).and_return true
 
-
         allow(Yast::SCR).to receive(:Execute)
           .with(path(".target.bash_output"), FIND__IN_ROOT_CONFIG)
           .and_return("stdout" => "", "exit" => 0)
