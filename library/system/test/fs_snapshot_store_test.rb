@@ -15,7 +15,7 @@ describe Yast2::FsSnapshotStore do
       described_class.save("test", 42)
     end
 
-    it "raise exception if writing failed" do
+    it "raises exception if writing failed" do
       expect(Yast::SCR).to receive(:Write).with(
         path(".target.string"),
         "/var/lib/YaST2/pre_snapshot_test.id",
@@ -36,7 +36,7 @@ describe Yast2::FsSnapshotStore do
       expect(described_class.load("test")).to eq 42
     end
 
-    it "raise exception if reading failed" do
+    it "raises exception if reading failed" do
       expect(Yast::SCR).to receive(:Read).with(
         path(".target.string"),
         "/var/lib/YaST2/pre_snapshot_test.id"
@@ -45,7 +45,7 @@ describe Yast2::FsSnapshotStore do
       expect { described_class.load("test") }.to raise_error(/Failed to read/)
     end
 
-    it "raise exception if file content is not number" do
+    it "raises exception if file content is not number" do
       expect(Yast::SCR).to receive(:Read).with(
         path(".target.string"),
         "/var/lib/YaST2/pre_snapshot_test.id"
