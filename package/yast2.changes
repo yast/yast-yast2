@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May 27 14:36:47 UTC 2015 - jreidinger@suse.com
+
+- Add persistent storage for fs pre snapshots (fate#317973)
+- 3.1.126
+
+-------------------------------------------------------------------
 Mon May 25 14:04:51 CEST 2015 - locilka@suse.com
 
 - Fixed proposal to open fallback ports for services (bsc#916376)

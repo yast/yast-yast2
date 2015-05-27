@@ -8,8 +8,9 @@ describe Yast2::FsSnapshot do
     described_class.log
   end
 
-  FIND_CONFIG = "/usr/bin/snapper --no-dbus list-configs | grep \"^root \" >/dev/null"
-  LIST_SNAPSHOTS = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus list"
+  FIND_CONFIG = "/usr/bin/snapper --no-dbus --root=/ list-configs | grep \"^root \" >/dev/null"
+  FIND_IN_ROOT_CONFIG = "/usr/bin/snapper --no-dbus --root=/mnt list-configs | grep \"^root \" >/dev/null"
+  LIST_SNAPSHOTS = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=/ list"
 
   describe ".configured?" do
     before do
@@ -34,11 +35,47 @@ describe Yast2::FsSnapshot do
         expect(described_class.configured?).to eq(true)
       end
     end
+
+    context "in initial stage before scr switched" do
+      let(:find_code) { 0 }
+      before do
+        Yast.import "Installation"
+        Yast::Installation.destdir = "/mnt"
+
+        Yast.import "Stage"
+        allow(Yast::Stage).to receive(:initial).and_return true
+
+        allow(Yast::SCR).to receive(:Execute)
+          .with(path(".target.bash_output"), FIND_IN_ROOT_CONFIG)
+          .and_return("stdout" => "", "exit" => 0)
+
+        Yast.import "InstExtensionImage"
+        allow(Yast::InstExtensionImage).to receive(:with_extension) do |&block|
+          block.call
+        end
+      end
+
+      it "ensures snapper is available" do
+        expect(Yast::InstExtensionImage).to receive(:with_extension) do |&block|
+          block.call
+        end
+
+        described_class.configured?
+      end
+
+      it "detects snapper configuration in installation target dir" do
+        expect(Yast::SCR).to receive(:Execute)
+          .with(path(".target.bash_output"), FIND_IN_ROOT_CONFIG)
+          .and_return("stdout" => "", "exit" => 0)
+
+        expect(described_class.configured?).to eq(true)
+      end
+    end
   end
 
   describe ".create_single" do
     CREATE_SINGLE_SNAPSHOT = "/usr/lib/snapper/installation-helper --step 5 "\
-      "--snapshot-type single --description \"some-description\""
+      "--root-prefix=/ --snapshot-type single --description \"some-description\""
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
@@ -88,7 +125,7 @@ describe Yast2::FsSnapshot do
 
   describe ".create_pre" do
     CREATE_PRE_SNAPSHOT = "/usr/lib/snapper/installation-helper --step 5 "\
-      "--snapshot-type pre --description \"some-description\""
+      "--root-prefix=/ --snapshot-type pre --description \"some-description\""
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
@@ -138,7 +175,8 @@ describe Yast2::FsSnapshot do
 
   describe ".create_post" do
     CREATE_POST_SNAPSHOT = "/usr/lib/snapper/installation-helper --step 5 "\
-      "--snapshot-type post --description \"some-description\" --pre-num 2"
+      "--root-prefix=/ --snapshot-type post --description \"some-description\" "\
+      "--pre-num 2"
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
