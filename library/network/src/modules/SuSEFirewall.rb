@@ -1305,6 +1305,36 @@ module Yast
       nil
     end
 
+    # Function returns list of special strings like 'any' or 'auto' and unknown interfaces.
+    # This function is only valid for SF2. For firewalld, we return an empty array.
+    #
+    # @param [String] zone
+    # @return	[Array<String>] special strings or unknown interfaces
+    #
+    # @example
+    #	GetSpecialInterfacesInZone("EXT") -> ["any", "unknown-1", "wrong-3"]
+    def GetSpecialInterfacesInZone(zone)
+      []
+    end
+
+    # Function removes special string from defined zone. For firewalld we
+    # return nil.
+    #
+    # @param [String] interface
+    # @param [String] zone
+    def RemoveSpecialInterfaceFromZone(interface, zone)
+     nil
+    end
+
+    # Functions adds special string into defined zone. For firewalld we
+    # return nil.
+    #
+    # @param [String] interface
+    # @param [String] zone
+    def AddSpecialInterfaceIntoZone(interface, zone)
+      nil
+    end
+
   private
 
     def set_zone_modified(zone, zone_params)
@@ -1481,6 +1511,9 @@ module Yast
     publish function: :GetProtectFromInternalZone, type: "boolean ()"
     publish function: :GetMasquerade, type: "boolean (string)"
     publish function: :SetMasquerade, type: "void (boolean, string)"
+    publish function: :GetSpecialInterfacesInZone, type: "list <string> (string)"
+    publish function: :RemoveSpecialInterfaceFromZone, type: "void (string, string)"
+    publish function: :AddSpecialInterfaceIntoZone, type: "void (string, string)"
   end
 
   # ----------------------------------------------------------------------------
