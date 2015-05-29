@@ -200,7 +200,7 @@ module Yast2
       log.info("Retrieving snapshots list: #{LIST_SNAPSHOTS_CMD} returned: #{out}")
       lines.each_with_object([]) do |line, snapshots|
         data = line.split("|").map(&:strip)
-        next if data[1] == "0"
+        next if data[1] == "0" # Ignores 'current' snapshot (id = 0) because it's not a real snapshot
         begin
           timestamp = DateTime.parse(data[3])
         rescue ArgumentError
