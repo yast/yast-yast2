@@ -264,7 +264,7 @@ describe Yast2::FsSnapshot do
           expect(logger).to receive(:info).with(/Retrieving snapshots list/)
           snapshots = described_class.all
           expect(snapshots).to be_kind_of(Array)
-          expect(snapshots.size).to eq(5)
+          expect(snapshots.size).to eq(4)
         end
       end
 

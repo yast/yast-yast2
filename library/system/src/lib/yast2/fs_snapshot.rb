@@ -198,8 +198,9 @@ module Yast2
       end
       lines = out["stdout"].lines.grep(VALID_LINE_REGEX) # relevant lines from output.
       log.info("Retrieving snapshots list: #{LIST_SNAPSHOTS_CMD} returned: #{out}")
-      lines.map do |line|
+      lines.each_with_object([]) do |line, snapshots|
         data = line.split("|").map(&:strip)
+        next if data[1] == "0"
         begin
           timestamp = DateTime.parse(data[3])
         rescue ArgumentError
@@ -207,8 +208,8 @@ module Yast2
           timestamp = nil
         end
         previous_number = data[2] == "" ? nil : data[2].to_i
-        new(data[1].to_i, data[0].to_sym, previous_number, timestamp, data[4],
-          data[5].to_sym, data[6])
+        snapshots << new(data[1].to_i, data[0].to_sym, previous_number, timestamp,
+          data[4], data[5].to_sym, data[6])
       end
     end
 
