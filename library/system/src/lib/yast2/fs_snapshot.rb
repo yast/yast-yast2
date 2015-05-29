@@ -201,7 +201,7 @@ module Yast2
       lines.map do |line|
         data = line.split("|").map(&:strip)
         begin
-          timestamp = DateTime.parse(data[3])
+          timestamp = data[3] == "" ? nil : DateTime.parse(data[3])
         rescue ArgumentError
           log.warn("Error when parsing date/time: #{timestamp}")
           timestamp = nil
