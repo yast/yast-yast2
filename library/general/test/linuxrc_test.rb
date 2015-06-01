@@ -187,4 +187,30 @@ describe Yast::Linuxrc do
       expect(subject.keys.sort).to eq(DEFAULT_INSTALL_INF.keys.sort)
     end
   end
+
+  describe "#value_for" do
+    context "when key is defined in install.inf (Linuxrc commandline)" do
+      it "returns value for given key" do
+        load_install_inf({
+          "test_1" => "123",
+          "T-E-S-T-2" => "456",
+          "TeSt3" => "678",
+          "Cmdline" => "test4=890 test5=10,11,12",
+        })
+
+        expect(subject.value_for("test_1")).to eq("123")
+        expect(subject.value_for("TEsT2")).to eq("456")
+        expect(subject.value_for("T_e_St_3")).to eq("678")
+        expect(subject.value_for("T.e.s.t-4")).to eq("890")
+        expect(subject.value_for("test5")).to eq("10,11,12")
+      end
+    end
+
+    context "when key is not defined in install.inf (Linuxrc commandline)" do
+      it "returns nil" do
+        load_install_inf
+        expect(subject.value_for("this-key-is-not-defined")).to eq(nil)
+      end
+    end
+  end
 end
