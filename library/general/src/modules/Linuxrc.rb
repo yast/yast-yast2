@@ -211,6 +211,31 @@ module Yast
       true
     end
 
+    # Returns value of a given Linxurc key/feature defined on commandline
+    # and written into install.inf
+    #
+    # @param [String] key
+    # @return [String] value of a given key
+    def value_for(feature_key)
+      ReadInstallInf()
+
+      feature_key = polish(feature_key)
+      install_inf_features = deep_copy(@install_inf)
+
+      # Some values written on Linuxrc commandline are not know to Linuxrc
+      # Unless they are also mentioned as `PTOptions`, they will appear as "Cmdline" entry
+      cmdline_values = install_inf_features.fetch("Cmdline", "").split.map do |cmdline_entry|
+        key_val = cmdline_entry.split("=")
+        install_inf_features[key_val[0]] = key_val[1]
+      end
+
+      matching_keys = install_inf_features.keys.select{|key| polish(key) == feature_key}
+      return nil if matching_keys.empty?
+
+      # The last key wins as in Linuxrc
+      matching_keys.map{|key| install_inf_features[key]}.last
+    end
+
     publish function: :ResetInstallInf, type: "void ()"
     publish function: :InstallInf, type: "string (string)"
     publish function: :manual, type: "boolean ()"
@@ -224,6 +249,18 @@ module Yast
     publish function: :WriteYaSTInf, type: "void (map <string, string>)"
     publish function: :SaveInstallInf, type: "boolean (string)"
     publish function: :keys, type: "list <string> ()"
+    publish function: :value_for, type: "string (string)"
+
+  private
+
+    # Removes characters ignored by Linuxrc and turns all to downcase
+    #
+    # @param [String]
+    # @return [String]
+    def polish(key)
+      key.downcase.tr("-_\.", "")
+    end
+
   end
 
   Linuxrc = LinuxrcClass.new
