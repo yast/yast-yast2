@@ -222,18 +222,18 @@ module Yast
       feature_key = polish(feature_key)
       install_inf_features = deep_copy(@install_inf)
 
-      # Some values written on Linuxrc commandline are not know to Linuxrc
+      # Some values written on Linuxrc commandline are not known to Linuxrc
       # Unless they are also mentioned as `PTOptions`, they will appear as "Cmdline" entry
-      cmdline_values = install_inf_features.fetch("Cmdline", "").split.map do |cmdline_entry|
+      install_inf_features.fetch("Cmdline", "").split.map do |cmdline_entry|
         key_val = cmdline_entry.split("=")
         install_inf_features[key_val[0]] = key_val[1]
       end
 
-      matching_keys = install_inf_features.keys.select{|key| polish(key) == feature_key}
+      matching_keys = install_inf_features.keys.select { |key| polish(key) == feature_key }
       return nil if matching_keys.empty?
 
       # The last key wins as in Linuxrc
-      matching_keys.map{|key| install_inf_features[key]}.last
+      matching_keys.map { |key| install_inf_features[key] }.last
     end
 
     publish function: :ResetInstallInf, type: "void ()"
@@ -260,7 +260,6 @@ module Yast
     def polish(key)
       key.downcase.tr("-_\.", "")
     end
-
   end
 
   Linuxrc = LinuxrcClass.new

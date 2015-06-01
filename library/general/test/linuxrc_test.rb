@@ -191,12 +191,12 @@ describe Yast::Linuxrc do
   describe "#value_for" do
     context "when key is defined in install.inf (Linuxrc commandline)" do
       it "returns value for given key" do
-        load_install_inf({
-          "test_1" => "123",
+        load_install_inf(
+          "test_1"    => "123",
           "T-E-S-T-2" => "456",
-          "TeSt3" => "678",
-          "Cmdline" => "test4=890 test5=10,11,12",
-        })
+          "TeSt3"     => "678",
+          "Cmdline"   => "test4=890 test5=10,11,12"
+        )
 
         expect(subject.value_for("test_1")).to eq("123")
         expect(subject.value_for("TEsT2")).to eq("456")
