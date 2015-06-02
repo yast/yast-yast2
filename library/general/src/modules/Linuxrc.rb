@@ -215,25 +215,23 @@ module Yast
     # and written into install.inf
     #
     # @param [String] key
-    # @return [String] value of a given key
+    # @return [String, nil] value of a given key or `nil` if not found
     def value_for(feature_key)
       ReadInstallInf()
-
       feature_key = polish(feature_key)
-      install_inf_features = deep_copy(@install_inf)
 
-      # Some values written on Linuxrc commandline are not known to Linuxrc
-      # Unless they are also mentioned as `PTOptions`, they will appear as "Cmdline" entry
-      install_inf_features.fetch("Cmdline", "").split.map do |cmdline_entry|
-        key_val = cmdline_entry.split("=")
-        install_inf_features[key_val[0]] = key_val[1]
+      # at first check the keys in install.inf
+      install_inf_key, install_inf_val = @install_inf.find { |k, _v| polish(k) == feature_key }
+      return install_inf_val if install_inf_key
+
+      # then check the command line
+      ret = nil
+      @install_inf.fetch("Cmdline", "").split.each do |cmdline_entry|
+        key, val = cmdline_entry.split("=", 2)
+        ret = val if polish(key) == feature_key
       end
 
-      matching_keys = install_inf_features.keys.select { |key| polish(key) == feature_key }
-      return nil if matching_keys.empty?
-
-      # The last key wins as in Linuxrc
-      matching_keys.map { |key| install_inf_features[key] }.last
+      ret
     end
 
     publish function: :ResetInstallInf, type: "void ()"
@@ -258,7 +256,7 @@ module Yast
     # @param [String]
     # @return [String]
     def polish(key)
-      key.downcase.tr("-_\.", "")
+      key.downcase.tr("-_\\.", "")
     end
   end
 

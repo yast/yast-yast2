@@ -204,6 +204,23 @@ describe Yast::Linuxrc do
         expect(subject.value_for("T.e.s.t-4")).to eq("890")
         expect(subject.value_for("test5")).to eq("10,11,12")
       end
+
+      it "parses commandline with '=' in the value" do
+        url = "http://example.com?bar=42"
+        load_install_inf(
+          "Cmdline"   => "test6=#{url}"
+        )
+
+        expect(subject.value_for("test_6")).to eq(url)
+      end
+
+      it "returns the last matching value from command line" do
+        load_install_inf(
+          "Cmdline"   => "test7=foo test.7=bar test__7=baz"
+        )
+
+        expect(subject.value_for("test_7")).to eq("baz")
+      end
     end
 
     context "when key is not defined in install.inf (Linuxrc commandline)" do
