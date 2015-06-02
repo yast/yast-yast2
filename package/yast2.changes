@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Jun  2 16:42:43 CEST 2015 - locilka@suse.com
+
+- Implemented possibility to temporarily disable creating
+  snapshots via parameter on Linuxrc commandline:
+    disable_snapshots=(single|around|all)
+  or using their comma-separated combination (fate#317973)
+- 3.1.129
+
+-------------------------------------------------------------------
 Tue Jun  2 11:26:50 UTC 2015 - jreidinger@suse.com
 
 - reduce count of extending inst-sys with snapper for snapshotting
