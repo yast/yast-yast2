@@ -109,13 +109,16 @@ module Yast2
       end
     end
 
-    # Creates a new 'single' snapshot
+    # Creates a new 'single' snapshot unless disabled by user
     #
     # @param description [String] Snapshot's description.
     # @return [FsSnapshot] The created snapshot.
     #
     # @see FsSnapshot.create
+    # @see FsSnapshot.create_snapshot?
     def self.create_single(description)
+      return nil unless create_snapshot?(:single)
+
       create(:single, description)
     end
 
@@ -125,11 +128,14 @@ module Yast2
     # @return [FsSnapshot] The created snapshot.
     #
     # @see FsSnapshot.create
+    # @see FsSnapshot.create_snapshot?
     def self.create_pre(description)
+      return nil unless create_snapshot?(:around)
+
       create(:pre, description)
     end
 
-    # Creates a new 'post' snapshot
+    # Creates a new 'post' snapshot unless disabled by user
     #
     # Each 'post' snapshot corresponds with a 'pre' one.
     #
@@ -138,8 +144,12 @@ module Yast2
     # @return [FsSnapshot] The created snapshot.
     #
     # @see FsSnapshot.create
+    # @see FsSnapshot.create_snapshot?
     def self.create_post(description, previous_number)
+      return nil unless create_snapshot?(:around)
+
       previous = find(previous_number)
+
       if previous
         create(:post, description, previous)
       else
@@ -148,7 +158,7 @@ module Yast2
       end
     end
 
-    # Creates a new snapshot
+    # Creates a new snapshot unless disabled by user
     #
     # It raises an exception if Snapper is not configured or if snapshot
     # creation fails.

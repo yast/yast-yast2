@@ -84,10 +84,12 @@ describe Yast2::FsSnapshot do
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
+      allow(Yast2::FsSnapshot).to receive(:create_snapshot?).and_return(create_snapshot)
     end
 
     context "when snapper is configured" do
       let(:configured) { true }
+      let(:create_snapshot) { true }
 
       before do
         allow(Yast::SCR).to receive(:Execute)
@@ -120,10 +122,20 @@ describe Yast2::FsSnapshot do
 
     context "when snapper is not configured" do
       let(:configured) { false }
+      let(:create_snapshot) { true }
 
       it "raises an exception" do
         expect { described_class.create_single("some-description") }
           .to raise_error(Yast2::SnapperNotConfigured)
+      end
+    end
+
+    context "when creating snapshots is disabled" do
+      let(:configured) { false }
+      let(:create_snapshot) { false }
+
+      it "returns nil" do
+        expect(described_class.create_single("some-description")).to eq(nil)
       end
     end
   end
@@ -134,10 +146,12 @@ describe Yast2::FsSnapshot do
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
+      allow(Yast2::FsSnapshot).to receive(:create_snapshot?).and_return(create_snapshot)
     end
 
     context "when snapper is configured" do
       let(:configured) { true }
+      let(:create_snapshot) { true }
 
       before do
         allow(Yast::SCR).to receive(:Execute)
@@ -170,10 +184,20 @@ describe Yast2::FsSnapshot do
 
     context "when snapper is not configured" do
       let(:configured) { false }
+      let(:create_snapshot) { true }
 
       it "raises an exception" do
         expect { described_class.create_pre("some-description") }
           .to raise_error(Yast2::SnapperNotConfigured)
+      end
+    end
+
+    context "when creating snapshots is disabled" do
+      let(:configured) { false }
+      let(:create_snapshot) { false }
+
+      it "returns nil" do
+        expect(described_class.create_pre("some-description")).to eq(nil)
       end
     end
   end
@@ -185,10 +209,12 @@ describe Yast2::FsSnapshot do
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
+      allow(Yast2::FsSnapshot).to receive(:create_snapshot?).and_return(create_snapshot)
     end
 
     context "when snapper is configured" do
       let(:configured) { true }
+      let(:create_snapshot) { true }
 
       let(:pre_snapshot) { double("snapshot", snapshot_type: :pre, number: 2) }
       let(:dummy_snapshot) { double("snapshot") }
@@ -239,10 +265,20 @@ describe Yast2::FsSnapshot do
 
     context "when snapper is not configured" do
       let(:configured) { false }
+      let(:create_snapshot) { true }
 
       it "raises an exception" do
         expect { described_class.create_post("some-description", 1) }
           .to raise_error(Yast2::SnapperNotConfigured)
+      end
+    end
+
+    context "when creating snapshots is disabled" do
+      let(:configured) { false }
+      let(:create_snapshot) { false }
+
+      it "returns nil" do
+        expect(described_class.create_post("some-description", 999)).to eq(nil)
       end
     end
   end
