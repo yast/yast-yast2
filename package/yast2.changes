@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun  2 11:26:50 UTC 2015 - jreidinger@suse.com
+
+- reduce count of extending snapper for snapshotting (fate#317973)
+- 3.1.128
+
+-------------------------------------------------------------------
 Mon Jun  1 16:23:37 CEST 2015 - locilka@suse.com
 
 - Added Linuxrc.value_for (fate#317973)

@@ -70,6 +70,8 @@ module Yast2
     #
     # @return [true,false] true if it's configured; false otherwise.
     def self.configured?
+      return @configured unless @configured.nil?
+
       out = with_snapper do
         Yast::SCR.Execute(Yast::Path.new(".target.bash_output"),
           format(FIND_CONFIG_CMD, root: target_root)
@@ -77,7 +79,7 @@ module Yast2
       end
 
       log.info("Checking if Snapper is configured: \"#{FIND_CONFIG_CMD}\" returned: #{out}")
-      out["exit"] == 0
+      @configured = out["exit"] == 0
     end
 
     # Creates a new 'single' snapshot
