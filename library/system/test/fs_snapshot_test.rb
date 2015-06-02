@@ -12,6 +12,11 @@ describe Yast2::FsSnapshot do
   FIND_IN_ROOT_CONFIG = "/usr/bin/snapper --no-dbus --root=/mnt list-configs | grep \"^root \" >/dev/null"
   LIST_SNAPSHOTS = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=/ list"
 
+  before do
+    # reset configured cache
+    described_class.instance_variable_set("@configured", nil)
+  end
+
   describe ".configured?" do
     before do
       allow(Yast::SCR).to receive(:Execute)
