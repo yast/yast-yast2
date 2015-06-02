@@ -1,7 +1,8 @@
 -------------------------------------------------------------------
 Tue Jun  2 11:26:50 UTC 2015 - jreidinger@suse.com
 
-- reduce count of extending snapper for snapshotting (fate#317973)
+- reduce count of extending inst-sys with snapper for snapshotting
+  (fate#317973)
 - 3.1.128
 
 -------------------------------------------------------------------
