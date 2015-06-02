@@ -122,37 +122,59 @@ Really continue?"));
 	    (cont ? "to continue":"not to continue")
 	);
 	already_asked_for_NetworkManager = true;
-	
+
 	return cont;
     } else {
 	return true;
     }
 }
 
+/**
+ * Checks if IPv4 network is running
+ */
+global boolean isNetworkv4Running()
+{
+    const string ip_cmd = "ip addr|grep -v '127.0.0\\|inet6'|grep -c inet";
+    integer net = (integer)SCR::Execute(.target.bash, ip_cmd);
 
-// test for IPv4
-global boolean isNetworkRunning(){
- integer net = (integer)SCR::Execute(.target.bash,
-                "ip addr|grep -v '127.0.0\\|inet6'|grep -c inet");
- if (net==0) {
-  y2milestone ("Network is running ...");
-  return true;
- } else {
-	 y2milestone("Network is not running ...");
-	 return false;
-        }
+    if(net==0)
+    {
+        y2milestone ("IPv6 network is running ...");
+        return true;
+    }
+    else
+    {
+        y2milestone("IPv6 network is not running ...");
+        return false;
+    }
 }
-// test for IPv6
-global boolean isNetworkv6Running(){
- integer net = (integer)SCR::Execute(.target.bash,
-                "ip addr|grep -v 'inet6 ::1\\|inet6 fe80'|grep -c inet6");
- if (net==0) {
-  y2milestone ("Network is running ...");
-  return true;
- } else {
-	 y2milestone("Network is not running ...");
-	 return false;
-        }
+
+/**
+ * Checks if IPv6 network is running
+ */
+global boolean isNetworkv6Running()
+{
+    const string ip_cmd = "ip addr|grep -v 'inet6 ::1\\|inet6 fe80'|grep -c inet6";
+    integer net = (integer)SCR::Execute(.target.bash, ip_cmd);
+
+    if(net==0)
+    {
+        y2milestone ("IPv6 network is running ...");
+        return true;
+    }
+    else
+    {
+        y2milestone("IPv6 network is not running ...");
+	return false;
+    }
+}
+
+/**
+ * Checks if IPv4 or IPv6 network is running
+ */
+global boolean isNetworkRunning()
+{
+    return isNetworkv4Running() || isNetworkv6Running();
 }
 
 /**
