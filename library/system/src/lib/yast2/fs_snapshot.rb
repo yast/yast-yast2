@@ -58,6 +58,8 @@ module Yast2
   class FsSnapshot
     include Yast::Logger
 
+    Yast.import "Linuxrc"
+
     FIND_CONFIG_CMD = "/usr/bin/snapper --no-dbus --root=%{root} list-configs | grep \"^root \" >/dev/null"
     CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --root-prefix=%{root} --snapshot-type %{snapshot_type} --description \"%{description}\""
     LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=%{root} list"
@@ -80,6 +82,31 @@ module Yast2
 
       log.info("Checking if Snapper is configured: \"#{FIND_CONFIG_CMD}\" returned: #{out}")
       @configured = out["exit"] == 0
+    end
+
+    # Returns whether creating the given snapshot type is allowed
+    # Information is taken from Linuxrc (DISABLE_SNAPSHOTS)
+    #   * "all" - all snapshot types are temporarily disabled
+    #   * "around" - before and after calling YaST
+    #   * "single" - single snapshot at a given point
+    #
+    # @param [Symbol] one of :around (for :post and :pre snapshots) or :single
+    # @return [Boolean] if snapshot should be created
+    def self.create_snapshot?(snapshot_type)
+      disable_snapshots = Yast::Linuxrc.get_value(Yast::LinuxrcClass::DISABLE_SNAPSHOTS)
+
+      # Feature is not defined on Linuxrc commandline
+      return true if disable_snapshots.nil? || disable_snapshots.empty?
+
+      disable_snapshots = disable_snapshots.downcase.tr("-_.", "").split(",").map(&:to_sym)
+
+      if [:around, :single].include?(snapshot_type)
+        return false if disable_snapshots.include?(:all)
+        return !disable_snapshots.include?(snapshot_type)
+      else
+        raise ArgumentError, "Unsupported snapshot type #{snapshot_type.inspect}, " \
+          << "supported are :around and :single"
+      end
     end
 
     # Creates a new 'single' snapshot

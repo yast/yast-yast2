@@ -31,6 +31,10 @@ require "yast"
 
 module Yast
   class LinuxrcClass < Module
+    # Disables filesystem snapshots (fate#317973)
+    # Possible values: all, post, pre, single
+    DISABLE_SNAPSHOTS = "disable_snapshots"
+
     def main
       Yast.import "Mode"
       Yast.import "Stage"
