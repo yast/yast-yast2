@@ -98,14 +98,14 @@ module Yast2
       # Feature is not defined on Linuxrc commandline
       return true if disable_snapshots.nil? || disable_snapshots.empty?
 
-      disable_snapshots = disable_snapshots.downcase.tr("-_.", "").split(",").map(&:to_sym)
+      disable_snapshots = disable_snapshots.downcase.tr("-_.", "").split(",")
 
       if [:around, :single].include?(snapshot_type)
-        return false if disable_snapshots.include?(:all)
-        return !disable_snapshots.include?(snapshot_type)
+        return false if disable_snapshots.include?("all")
+        return !disable_snapshots.include?(snapshot_type.to_s)
       else
         raise ArgumentError, "Unsupported snapshot type #{snapshot_type.inspect}, " \
-          << "supported are :around and :single"
+              "supported are :around and :single"
       end
     end
 
