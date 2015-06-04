@@ -409,15 +409,15 @@ describe Yast2::FsSnapshot do
 
     context "when single value is defined on Linuxrc commandline" do
       it "returns whether given snapshot type is allowed" do
-        allow(Yast::Linuxrc).to receive(:get_value).with(/snapshot/).and_return("around")
+        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("around")
         expect(described_class.create_snapshot?(:around)).to eq(false)
         expect(described_class.create_snapshot?(:single)).to eq(true)
 
-        allow(Yast::Linuxrc).to receive(:get_value).with(/snapshot/).and_return("single")
+        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("single")
         expect(described_class.create_snapshot?(:around)).to eq(true)
         expect(described_class.create_snapshot?(:single)).to eq(false)
 
-        allow(Yast::Linuxrc).to receive(:get_value).with(/snapshot/).and_return("all")
+        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("all")
         expect(described_class.create_snapshot?(:around)).to eq(false)
         expect(described_class.create_snapshot?(:single)).to eq(false)
       end
@@ -425,11 +425,11 @@ describe Yast2::FsSnapshot do
 
     context "when more values are defined on Linuxrc commandline" do
       it "returns whether given snapshot type is not within disabled snapshots types" do
-        allow(Yast::Linuxrc).to receive(:get_value).with(/snapshot/).and_return("single,around")
+        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("single,around")
         expect(described_class.create_snapshot?(:around)).to eq(false)
         expect(described_class.create_snapshot?(:single)).to eq(false)
 
-        allow(Yast::Linuxrc).to receive(:get_value).with(/snapshot/).and_return("all,around")
+        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("all,around")
         expect(described_class.create_snapshot?(:around)).to eq(false)
         expect(described_class.create_snapshot?(:single)).to eq(false)
       end
@@ -437,11 +437,11 @@ describe Yast2::FsSnapshot do
 
     context "when no value is defined on Linuxrc commandline" do
       it "returns that any snapshots are allowed" do
-        allow(Yast::Linuxrc).to receive(:get_value).with(/snapshot/).and_return(nil)
+        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return(nil)
         expect(described_class.create_snapshot?(:around)).to eq(true)
         expect(described_class.create_snapshot?(:single)).to eq(true)
 
-        allow(Yast::Linuxrc).to receive(:get_value).with(/snapshot/).and_return("")
+        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("")
         expect(described_class.create_snapshot?(:around)).to eq(true)
         expect(described_class.create_snapshot?(:single)).to eq(true)
       end
@@ -449,7 +449,7 @@ describe Yast2::FsSnapshot do
 
     context "when called with unsupported parameter value" do
       it "throws an ArgumentError exception" do
-        allow(Yast::Linuxrc).to receive(:get_value).with(/snapshot/).and_return("all")
+        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("all")
         expect { described_class.create_snapshot?(:some) }.to raise_error(ArgumentError, /:some/)
       end
     end
