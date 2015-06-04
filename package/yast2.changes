@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun  4 12:04:32 UTC 2015 - igonzalezsosa@suse.com
+
+- Fix a typo when calling Linuxrc.value_for method
+- 3.1.130
+
+-------------------------------------------------------------------
 Tue Jun  2 16:42:43 CEST 2015 - locilka@suse.com
 
 - Implemented possibility to temporarily disable creating
