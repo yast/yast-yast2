@@ -93,7 +93,7 @@ module Yast2
     # @param [Symbol] one of :around (for :post and :pre snapshots) or :single
     # @return [Boolean] if snapshot should be created
     def self.create_snapshot?(snapshot_type)
-      disable_snapshots = Yast::Linuxrc.get_value(Yast::LinuxrcClass::DISABLE_SNAPSHOTS)
+      disable_snapshots = Yast::Linuxrc.value_for(Yast::LinuxrcClass::DISABLE_SNAPSHOTS)
 
       # Feature is not defined on Linuxrc commandline
       return true if disable_snapshots.nil? || disable_snapshots.empty?
