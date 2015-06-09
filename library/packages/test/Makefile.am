@@ -1,6 +1,7 @@
 TESTS = \
   commit_result_test.rb \
   dummy_callbacks_test.rb \
+  file_conflict_callbacks_test.rb \
   package_callbacks_test.rb \
   packages_ui_test.rb \
   product_test.rb \
