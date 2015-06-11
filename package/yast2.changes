@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jun 11 14:22:04 UTC 2015 - ancor@suse.com
+
+- Added new method Directory.find_data_file (needed for the
+  implementation of fate#318425)
+- Deprecated Directory.datadir and Directory.ydatadir
+- 3.1.131
+
+-------------------------------------------------------------------
 Thu Jun  4 12:04:32 UTC 2015 - igonzalezsosa@suse.com
 
 - Fix a typo when calling Linuxrc.value_for method
