@@ -2,6 +2,7 @@ TESTS = \
   asciifile_test.rb \
   auto_client_test.rb \
   dialog_test.rb \
+  directory_test.rb \
   event_dispatcher_test.rb \
   finish_client_test.rb \
   hooks_test.rb \
