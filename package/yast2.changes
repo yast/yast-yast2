@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jun 11 18:43:10 UTC 2015 - mfilka@suse.com
+
+- fate#318804
+  - dropped no longer used group from YaST Control Centre
+- 3.1.132
+
+-------------------------------------------------------------------
 Thu Jun 11 14:22:04 UTC 2015 - ancor@suse.com
 
 - Added new method Directory.find_data_file (needed for the
