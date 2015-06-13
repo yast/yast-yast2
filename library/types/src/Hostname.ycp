@@ -149,7 +149,7 @@ global define string CurrentFQ() {
 	if ( fqhostname == "" || fqhostname == nil )
 	{
 	    //last resort (#429792)
-	    fqhostname = "linux.site";
+	    fqhostname = "linux.suse";
 	}
 	y2warning("Using fallback hostname %1", fqhostname);
     }
