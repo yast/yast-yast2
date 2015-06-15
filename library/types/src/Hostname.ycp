@@ -25,6 +25,8 @@ global string ValidChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP
 global string ValidCharsDomain = ValidChars + ".";
 global string ValidCharsFQ = ValidCharsDomain;
 
+global const string DEFAULT_DOMAIN = "suse";
+
 /**
  * describe a valid domain name
  * @return description
@@ -148,8 +150,8 @@ global define string CurrentFQ() {
 
 	if ( fqhostname == "" || fqhostname == nil )
 	{
-	    //last resort (#429792)
-	    fqhostname = "linux.site";
+            //last resort (#429792)
+            fqhostname = "linux." + DEFAULT_DOMAIN;
 	}
 	y2warning("Using fallback hostname %1", fqhostname);
     }
