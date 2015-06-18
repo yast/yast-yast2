@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jun 18 14:08:32 UTC 2015 - ancor@suse.com
+
+- Changed implementaton of view_anymsg to rely more on standard
+  Yast mechanisms (bnc#935192)
+- 3.1.133
+
+-------------------------------------------------------------------
 Thu Jun 11 18:43:10 UTC 2015 - mfilka@suse.com
 
 - fate#318804
