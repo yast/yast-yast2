@@ -28,7 +28,9 @@
 # Author: Klaus Kaempf <kkaempf@suse.de>
 #
 # $Id$
-#
+
+require "yast/core_ext"
+
 # Reads a \n separated list of filenames from
 # /var/lib/YaST2/filenames
 # Lines starting with "#" are ignored (comments)
@@ -44,6 +46,8 @@
 # The default is either given as WFM::Args(0) or is the file last viewed.
 module Yast
   class ViewAnymsgClient < Client
+    using Yast::CoreExt::AnsiString
+
     def main
       Yast.import "UI"
       textdomain "base"
@@ -184,7 +188,7 @@ module Yast
 
         if file_content
           # remove ANSI color escape sequences
-          file_content.gsub!(/\e\[(\d|;|\[)+m/, "")
+          file_content.remove_ansi_sequences
           # remove remaining ASCII control characters (ASCII 0-31 and 127 (DEL))
           # except new line (LF = 0xa) and carriage return (CR = 0xd)
           file_content.tr!("\u0000-\u0009\u000b\u000c\u000e-\u001f\u007f", "")
