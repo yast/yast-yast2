@@ -84,16 +84,6 @@ PKGMGR_AUTO_CHECK="yes"
 PKGMGR_VERIFY_SYSTEM="no"
 
 ## Type: list(yes,no)
-## Default: "no"
-#
-# By default the recommended packages for already installed packages are not taken into
-# account, i.e. they are not automatically selected for installation.
-# Set this option to "yes" if you want to reevaluate which packages are recommended, e.g. to
-# get the language dependent packages for an additional language or hardware related packages
-# if the hardware has changed.
-PKGMGR_REEVALUATE_RECOMMENDED="no"
-
-## Type: list(yes,no)
 ## Default: "yes"
 #
 # Install also the weak, recommended, dependencies.
