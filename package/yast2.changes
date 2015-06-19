@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Jun 19 13:14:01 UTC 2015 - mvidner@suse.com
+
+- Added /etc/sysconfig/yast2:PKGMGR_RECOMMENDED=yes to control
+  whether the YaST packager UI installs recommended dependencies
+  (boo#900853).
+- 3.1.134
+
+-------------------------------------------------------------------
 Thu Jun 18 14:08:32 UTC 2015 - ancor@suse.com
 
 - Changed implementaton of view_anymsg to rely more on standard
