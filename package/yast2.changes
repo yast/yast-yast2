@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jun 22 14:52:04 UTC 2015 - cwh@suse.com
+
+- bnc#922765
+  - changed default TLD from .site to .suse
+- 3.1.134 
+
+-------------------------------------------------------------------
 Thu Jun 18 14:08:32 UTC 2015 - ancor@suse.com
 
 - Changed implementaton of view_anymsg to rely more on standard

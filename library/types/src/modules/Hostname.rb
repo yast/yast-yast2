@@ -44,6 +44,7 @@ module Yast
       @ValidChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-"
       @ValidCharsDomain = Ops.add(@ValidChars, ".")
       @ValidCharsFQ = @ValidCharsDomain
+      @DefaultDomain = "suse"
     end
 
     # describe a valid domain name
@@ -165,7 +166,7 @@ module Yast
 
         if fqhostname == "" || fqhostname.nil?
           # last resort (#429792)
-          fqhostname = "linux.site"
+          fqhostname = "linux.#{@DefaultDomain}"
         end
         Builtins.y2warning("Using fallback hostname %1", fqhostname)
       else
@@ -221,6 +222,7 @@ module Yast
     publish variable: :ValidChars, type: "string"
     publish variable: :ValidCharsDomain, type: "string"
     publish variable: :ValidCharsFQ, type: "string"
+    publish variable: :DefaultDomain, type: "string"
     publish function: :ValidDomain, type: "string ()"
     publish function: :ValidHost, type: "string ()"
     publish function: :ValidFQ, type: "string ()"
