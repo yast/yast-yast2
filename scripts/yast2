@@ -14,10 +14,11 @@
 # the configuration and administration menu.
 
 # FATE#317637, bsc#877447: In installation system, we call the installer
-# program directly
+# script directly and then exit
 if [ -f /.instsys.config ]; then
   echo "Starting Installer"
-  exit `/usr/lib/YaST2/startup/YaST2.First-Stage`
+  /usr/lib/YaST2/startup/YaST2.First-Stage
+  exit $?
 fi
 
 export PATH=/sbin:/usr/sbin:$PATH
