@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jun 25 15:50:46 CEST 2015 - locilka@suse.com
+
+- Starting the Installer (YaST2.First-Stage) directly from yast2
+  startup script if we are in inst-sys (FATE#317637, bnc#877447)
+- 3.1.135
+
+-------------------------------------------------------------------
 Mon Jun 22 14:52:04 UTC 2015 - cwh@suse.com
 
 - bnc#922765
