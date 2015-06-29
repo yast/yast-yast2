@@ -44,7 +44,7 @@ module Yast
       @ValidChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-"
       @ValidCharsDomain = Ops.add(@ValidChars, ".")
       @ValidCharsFQ = @ValidCharsDomain
-      @DefaultDomain = "suse"
+      @DefaultDomain = ""
     end
 
     # describe a valid domain name
@@ -113,10 +113,13 @@ module Yast
     end
 
     # Split FQ hostname to hostname and domain name
+    #
+    # If domain is not defined, returns empty string.
+    #
     # @param [String] fqhostname FQ hostname
-    # @return [Array] of hostname and domain name
+    # @return [Array] of hostname and domain name or empty in case of error
     # @example Hostname::SplitFQ("ftp.suse.cz") -> ["ftp", "suse.cz"]
-    # @example Hostname::SplitFQ("ftp") -> ["ftp"]
+    # @example Hostname::SplitFQ("ftp") -> ["ftp", ""]
     def SplitFQ(fqhostname)
       if fqhostname == "" || fqhostname.nil?
         Builtins.y2error("Bad FQ hostname: %1", fqhostname)
@@ -130,10 +133,8 @@ module Yast
       if !dot.nil?
         hn = Builtins.substring(fqhostname, 0, dot)
         dn = Builtins.substring(fqhostname, Ops.add(dot, 1))
-        return [hn, dn]
       else
         hn = fqhostname
-        return [hn]
       end
 
       [hn, dn]
@@ -158,8 +159,8 @@ module Yast
         SCR.Execute(path(".target.bash_output"), "hostname --fqdn")
       )
       if hostname_data.nil? || Ops.get_integer(hostname_data, "exit", -1) != 0
-        fqhostname = if SCR.Read(path(".target.stat"), "/etc/HOSTNAME").empty?
-                       SCR.Read(path(".target.string"), "/etc/HOSTNAME")
+        fqhostname = if SCR.Read(path(".target.stat"), "/etc/hostname").empty?
+                       SCR.Read(path(".target.string"), "/etc/hostname")
                      else
                        ""
                      end
