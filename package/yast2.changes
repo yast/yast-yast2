@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Mon Jun 29 07:35:21 UTC 2015 - mfilka@suse.com
+
+- bnc#858908
+  - use /etc/hostname instead of /etc/HOSTNAME
+- bnc#922765, bnc#923990
+  - do not propose TLD
+- 3.1.136
+
+-------------------------------------------------------------------
 Thu Jun 25 15:50:46 CEST 2015 - locilka@suse.com
 
 - Starting the Installer (YaST2.First-Stage) directly from yast2
