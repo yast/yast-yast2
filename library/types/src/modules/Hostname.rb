@@ -113,10 +113,13 @@ module Yast
     end
 
     # Split FQ hostname to hostname and domain name
+    #
+    # If domain is not defined, returns empty string.
+    #
     # @param [String] fqhostname FQ hostname
-    # @return [Array] of hostname and domain name
+    # @return [Array] of hostname and domain name or empty in case of error
     # @example Hostname::SplitFQ("ftp.suse.cz") -> ["ftp", "suse.cz"]
-    # @example Hostname::SplitFQ("ftp") -> ["ftp"]
+    # @example Hostname::SplitFQ("ftp") -> ["ftp", ""]
     def SplitFQ(fqhostname)
       if fqhostname == "" || fqhostname.nil?
         Builtins.y2error("Bad FQ hostname: %1", fqhostname)
@@ -130,10 +133,8 @@ module Yast
       if !dot.nil?
         hn = Builtins.substring(fqhostname, 0, dot)
         dn = Builtins.substring(fqhostname, Ops.add(dot, 1))
-        return [hn, dn]
       else
         hn = fqhostname
-        return [hn]
       end
 
       [hn, dn]
