@@ -65,6 +65,9 @@ module Yast2
     LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=%{root} list"
     VALID_LINE_REGEX = /\A\w+\s+\| \d+/
 
+    # Predefined snapshot cleanup strategies (the user can define custom ones, too)
+    CLEANUP_STRATEGY = { number: "number", timeline: "timeline" }
+
     attr_reader :number, :snapshot_type, :previous_number, :timestamp, :user,
       :cleanup_algo, :description
 
@@ -111,15 +114,17 @@ module Yast2
 
     # Creates a new 'single' snapshot unless disabled by user
     #
-    # @param description [String] Snapshot's description.
+    # @param description [String]  Snapshot's description.
+    # @param cleanup     [String]  Cleanup strategy (:number, :timeline, nil)
+    # @param important   [boolean] Add "important" to userdata?
     # @return [FsSnapshot] The created snapshot.
     #
     # @see FsSnapshot.create
     # @see FsSnapshot.create_snapshot?
-    def self.create_single(description)
+    def self.create_single(description, cleanup: nil, important: false)
       return nil unless create_snapshot?(:single)
 
-      create(:single, description)
+      create(:single, description, cleanup: cleanup, important: important)
     end
 
     # Creates a new 'pre' snapshot
@@ -139,19 +144,21 @@ module Yast2
     #
     # Each 'post' snapshot corresponds with a 'pre' one.
     #
-    # @param description     [String] Snapshot's description.
-    # @param previous_number [Fixnum] Number of the previous snapshot
+    # @param description     [String]  Snapshot's description.
+    # @param previous_number [Fixnum]  Number of the previous snapshot
+    # @param cleanup         [String]  Cleanup strategy (:number, :timeline, nil)
+    # @param important       [boolean] Add "important" to userdata?
     # @return [FsSnapshot] The created snapshot.
     #
     # @see FsSnapshot.create
     # @see FsSnapshot.create_snapshot?
-    def self.create_post(description, previous_number)
+    def self.create_post(description, previous_number, cleanup: nil, important: false)
       return nil unless create_snapshot?(:around)
 
       previous = find(previous_number)
 
       if previous
-        create(:post, description, previous)
+        create(:post, description, previous: previous, cleanup: cleanup, important: important)
       else
         log.error "Previous filesystem snapshot was not found"
         raise PreviousSnapshotNotFound
@@ -166,9 +173,11 @@ module Yast2
     # @param snapshot_type [Symbol]    Snapshot's type: :pre, :post or :single.
     # @param description   [String]    Snapshot's description.
     # @param previous      [FsSnashot] Previous snapshot.
+    # @param cleanup       [String]    Cleanup strategy (:number, :timeline, nil)
+    # @param important     [boolean]   Add "important" to userdata?
     # @return [FsSnapshot] The created snapshot if the operation was
     #                      successful.
-    def self.create(snapshot_type, description, previous = nil)
+    def self.create(snapshot_type, description, previous: nil, cleanup: nil, important: false)
       raise SnapperNotConfigured unless configured?
 
       cmd = format(CREATE_SNAPSHOT_CMD,
@@ -177,8 +186,15 @@ module Yast2
         description:   description
       )
       cmd << " --pre-num #{previous.number}" if previous
+      cmd << " --userdata \"important=yes\"" if important
+
+      if cleanup
+        strategy = CLEANUP_STRATEGY[cleanup]
+        cmd << " --cleanup \"#{strategy}\"" if strategy
+      end
 
       out = with_snapper do
+        log.info("Executing: \"#{cmd}\"")
         Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), cmd)
       end
 
