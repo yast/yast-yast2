@@ -41,4 +41,4 @@ Return	true
 Dump	Hostname::SplitFQ
 Return	["ftp", "suse.cz"]
 Return	["123", "com"]
-Return	["beholder"]
+Return	["beholder", ""]
