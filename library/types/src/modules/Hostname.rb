@@ -44,7 +44,7 @@ module Yast
       @ValidChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-"
       @ValidCharsDomain = Ops.add(@ValidChars, ".")
       @ValidCharsFQ = @ValidCharsDomain
-      @DefaultDomain = "suse"
+      @DefaultDomain = ""
     end
 
     # describe a valid domain name
