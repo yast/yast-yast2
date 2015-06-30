@@ -84,6 +84,9 @@ module Yast
             "help" => _(
               "Abort interactive mode without saving the changes"
             )
+          },
+          "please-crash" => {
+            "help" => "Simulates an internal error"
           }
         },
         "options"  => {
@@ -915,6 +918,10 @@ module Yast
         return true
       end
 
+      if Ops.get_string(command, "command", "") == "please-crash"
+        raise "Crashing as requested"
+      end
+
       if Ops.get_string(command, "command", "") == "help"
         # don't print header when custom help is defined
         PrintHead() if !Builtins.haskey(@modulecommands, "customhelp")
@@ -1599,9 +1606,9 @@ module Yast
         # disable Reports, we handle them on our own
         Report.Import(
 
-            "messages" => { "show" => false },
-            "warnings" => { "show" => false },
-            "errors"   => { "show" => false }
+          "messages" => { "show" => false },
+          "warnings" => { "show" => false },
+          "errors"   => { "show" => false }
 
         )
 
@@ -1694,6 +1701,13 @@ module Yast
       Builtins.y2milestone("----------------------------------------")
 
       ret
+    ensure
+      Builtins.y2milestone("Re-enabling reports")
+      Report.Import(
+        "messages" => { "show" => true },
+        "warnings" => { "show" => true },
+        "errors"   => { "show" => true }
+      )
     end
 
     # Ask user, commandline equivalent of Popup::YesNo()
