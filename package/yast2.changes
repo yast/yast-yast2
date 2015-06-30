@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Tue Jun 30 14:08:54 UTC 2015 - mvidner@suse.com
+
+- Added /etc/sysconfig/yast2:PKGMGR_RECOMMENDED=yes to control
+  whether the YaST packager UI installs recommended dependencies
+  (boo#900853).
+- Removed /etc/sysconfig/yast2:PKGMGR_REEVALUATE_RECOMMENDED,
+  making the setting not persistent (boo#902394).
+- 3.1.137
+
+-------------------------------------------------------------------
 Mon Jun 29 07:35:21 UTC 2015 - mfilka@suse.com
 
 - bnc#858908
