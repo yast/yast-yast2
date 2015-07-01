@@ -1164,7 +1164,6 @@ module Yast
       # fallback name for the dialog title
       name = Ops.get(description, "Name", _("Module"))
 
-
       Builtins.y2debug("Set dialog title: %1", name)
       SetDialogTitle(name)
 
