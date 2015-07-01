@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.1.129
+Version:        3.1.138
 Release:        0
 URL:            https://github.com/yast/yast-yast2
 
@@ -41,8 +41,8 @@ BuildRequires:  fdupes
 
 # For running RSpec tests during build
 BuildRequires:  rubygem(rspec)
-# To have scr_chrooted? call available
-BuildRequires:       yast2-ruby-bindings >= 3.1.33
+# To have Yast::CoreExt::AnsiString
+BuildRequires:       yast2-ruby-bindings >= 3.1.36
 
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
 PreReq:         %fillup_prereq

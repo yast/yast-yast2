@@ -58,6 +58,8 @@ module Yast2
   class FsSnapshot
     include Yast::Logger
 
+    Yast.import "Linuxrc"
+
     FIND_CONFIG_CMD = "/usr/bin/snapper --no-dbus --root=%{root} list-configs | grep \"^root \" >/dev/null"
     CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --root-prefix=%{root} --snapshot-type %{snapshot_type} --description \"%{description}\""
     LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=%{root} list"
@@ -82,13 +84,41 @@ module Yast2
       @configured = out["exit"] == 0
     end
 
-    # Creates a new 'single' snapshot
+    # Returns whether creating the given snapshot type is allowed
+    # Information is taken from Linuxrc (DISABLE_SNAPSHOTS)
+    #   * "all" - all snapshot types are temporarily disabled
+    #   * "around" - before and after calling YaST
+    #   * "single" - single snapshot at a given point
+    #
+    # @param [Symbol] one of :around (for :post and :pre snapshots) or :single
+    # @return [Boolean] if snapshot should be created
+    def self.create_snapshot?(snapshot_type)
+      disable_snapshots = Yast::Linuxrc.value_for(Yast::LinuxrcClass::DISABLE_SNAPSHOTS)
+
+      # Feature is not defined on Linuxrc commandline
+      return true if disable_snapshots.nil? || disable_snapshots.empty?
+
+      disable_snapshots = disable_snapshots.downcase.tr("-_.", "").split(",")
+
+      if [:around, :single].include?(snapshot_type)
+        return false if disable_snapshots.include?("all")
+        return !disable_snapshots.include?(snapshot_type.to_s)
+      else
+        raise ArgumentError, "Unsupported snapshot type #{snapshot_type.inspect}, " \
+              "supported are :around and :single"
+      end
+    end
+
+    # Creates a new 'single' snapshot unless disabled by user
     #
     # @param description [String] Snapshot's description.
     # @return [FsSnapshot] The created snapshot.
     #
     # @see FsSnapshot.create
+    # @see FsSnapshot.create_snapshot?
     def self.create_single(description)
+      return nil unless create_snapshot?(:single)
+
       create(:single, description)
     end
 
@@ -98,11 +128,14 @@ module Yast2
     # @return [FsSnapshot] The created snapshot.
     #
     # @see FsSnapshot.create
+    # @see FsSnapshot.create_snapshot?
     def self.create_pre(description)
+      return nil unless create_snapshot?(:around)
+
       create(:pre, description)
     end
 
-    # Creates a new 'post' snapshot
+    # Creates a new 'post' snapshot unless disabled by user
     #
     # Each 'post' snapshot corresponds with a 'pre' one.
     #
@@ -111,8 +144,12 @@ module Yast2
     # @return [FsSnapshot] The created snapshot.
     #
     # @see FsSnapshot.create
+    # @see FsSnapshot.create_snapshot?
     def self.create_post(description, previous_number)
+      return nil unless create_snapshot?(:around)
+
       previous = find(previous_number)
+
       if previous
         create(:post, description, previous)
       else
@@ -121,7 +158,7 @@ module Yast2
       end
     end
 
-    # Creates a new snapshot
+    # Creates a new snapshot unless disabled by user
     #
     # It raises an exception if Snapper is not configured or if snapshot
     # creation fails.

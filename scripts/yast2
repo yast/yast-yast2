@@ -13,6 +13,14 @@
 # wise ncurses. It starts then the module 'menu' which implements
 # the configuration and administration menu.
 
+# FATE#317637, bsc#877447: In installation system, we call the installer
+# script directly and then exit
+if [ -f /.instsys.config ]; then
+  echo "Starting Installer"
+  /usr/lib/YaST2/startup/YaST2.First-Stage
+  exit $?
+fi
+
 export PATH=/sbin:/usr/sbin:$PATH
 
 # make sure the system ruby is used, bnc#845897
