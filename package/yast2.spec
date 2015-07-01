@@ -31,7 +31,7 @@ Source1:        yast2-rpmlintrc
 BuildRequires:  perl-XML-Writer update-desktop-files yast2-perl-bindings yast2-testsuite
 BuildRequires:  yast2-devtools >= 3.1.10
 # Needed already in build time
-BuildRequires:  yast2-core >= 2.18.12 yast2-pkg-bindings >= 2.20.3 yast2-ycp-ui-bindings >= 2.18.4
+BuildRequires:  yast2-core >= 2.18.12 yast2-pkg-bindings >= 2.20.3 yast2-ycp-ui-bindings >= 3.1.8
 
 # Needed for tests
 BuildRequires:  grep
@@ -50,9 +50,8 @@ PreReq:         %fillup_prereq
 # ag_ini section_private
 # ag_ini with (un)quoting support
 Requires:       yast2-core >= 2.23.0
-# Mod_UI
-# new UI::OpenContextMenu
-Requires:       yast2-ycp-ui-bindings >= 2.18.4
+# new UI::SetApplicationIcon
+Requires:       yast2-ycp-ui-bindings >= 3.1.8
 
 # changed StartPackage callback signature
 Requires:       yast2-pkg-bindings >= 2.20.3
