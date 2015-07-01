@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul  1 13:46:26 UTC 2015 - jreidinger@suse.com
+
+- fix using desktop icon for yast(bnc#894220)
+- 3.1.138
+
+-------------------------------------------------------------------
 Tue Jun 30 14:08:54 UTC 2015 - mvidner@suse.com
 
 - Added /etc/sysconfig/yast2:PKGMGR_RECOMMENDED=yes to control

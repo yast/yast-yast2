@@ -63,6 +63,12 @@ module Yast
       # Cannot be handled by libyui for NCurses
       @relnotes_button_label = ""
       @relnotes_button_id = ""
+
+      @icon_dir = File.join(Directory.themedir, "current", "icons",
+        "22x22", "apps")
+      default_icon_path = File.join(@icon_dir, "yast.png")
+
+      UI.SetApplicationIcon(default_icon_path)
     end
 
     def haveFancyUI
@@ -1168,8 +1174,6 @@ module Yast
     # Desktop file is placed in a special directory (/usr/share/applications/YaST2).
     # Parameter file is realative to that directory without ".desktop" suffix.
     # Warning: There are no desktop files in inst-sys. Use "SetTitleIcon" instead.
-    # @note do nothing. Title icon do not provide additional value
-    # and is distracting
     #
     # @param [String] file Icon name
     # @return [Boolean] true on success
@@ -1179,7 +1183,17 @@ module Yast
     #	// Reads "Icon" entry from there
     #	// Sets the icon.
     #	SetDesktopIcon ("lan")
-    def SetDesktopIcon(_file)
+    def SetDesktopIcon(file)
+      description = Desktop.ParseSingleDesktopFile(file)
+
+      icon = description["icon"]
+
+      return false unless icon
+
+      icon_path = File.join(@icon_path, icon + ".png")
+
+      UI.SetApplicationIcon(icon_path)
+
       true
     end
 
@@ -1188,7 +1202,6 @@ module Yast
     # Desktop file is placed in a special directory (/usr/share/applications/YaST2).
     # Parameter file is realative to that directory without ".desktop" suffix.
     # Warning: There are no desktop files in inst-sys.
-    # @deprecated Use SetDesktopTitle only as icon setting is removed
     #
     # @param [String] file desktop file name
     # @return [Boolean] true on success
@@ -1199,8 +1212,6 @@ module Yast
     #	// Sets the icon, sets the dialog title
     #	SetDialogTitleAndIcon ("lan")
     def SetDesktopTitleAndIcon(file)
-      result = true
-
       description = Desktop.ParseSingleDesktopFile(file)
 
       # fallback name for the dialog title
@@ -1209,7 +1220,9 @@ module Yast
       Builtins.y2debug("Set dialog title: %1", name)
       SetDialogTitle(name)
 
-      result && Builtins.haskey(description, "Name")
+      SetDesktopIcon(file)
+
+      Builtins.haskey(description, "Name")
     end
 
     # PRIVATE - Replace the entire Wizard button box with a new one.
