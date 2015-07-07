@@ -127,7 +127,7 @@ describe Yast2::FsSnapshot do
         let(:dummy_snapshot) { double("snapshot") }
         let(:snapshot_command) { CREATE_SINGLE_SNAPSHOT + OPTION_CLEANUP_NUMBER }
 
-        it "returns the created snapshot" do
+        it "creates a snapshot with that strategy" do
           expect(described_class).to receive(:find).with(2)
             .and_return(dummy_snapshot)
           snapshot = described_class.create_single("some-description", cleanup: :number)
@@ -140,7 +140,7 @@ describe Yast2::FsSnapshot do
         let(:dummy_snapshot) { double("snapshot") }
         let(:snapshot_command) { CREATE_SINGLE_SNAPSHOT + OPTION_IMPORTANT }
 
-        it "returns the created snapshot" do
+        it "creates a snapshot marked as important" do
           expect(described_class).to receive(:find).with(2)
             .and_return(dummy_snapshot)
           snapshot = described_class.create_single("some-description", important: true)
@@ -153,7 +153,7 @@ describe Yast2::FsSnapshot do
         let(:dummy_snapshot) { double("snapshot") }
         let(:snapshot_command) { CREATE_SINGLE_SNAPSHOT + OPTION_IMPORTANT + OPTION_CLEANUP_NUMBER }
 
-        it "returns the created snapshot" do
+        it "creates a snapshot with that strategy that is marked as important" do
           expect(described_class).to receive(:find).with(2)
             .and_return(dummy_snapshot)
           snapshot = described_class.create_single("some-description", cleanup: :number, important: true)
