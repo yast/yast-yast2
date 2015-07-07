@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul  6 18:02:27 CEST 2015 - shundhammer@suse.de
+
+- Cleanup for snapshots made during installation (bnc#935923)
+- 3.1.139 
+
+-------------------------------------------------------------------
 Wed Jul  1 13:46:26 UTC 2015 - jreidinger@suse.com
 
 - fix using desktop icon for yast(bnc#894220)
