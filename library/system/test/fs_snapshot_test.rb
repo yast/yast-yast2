@@ -160,7 +160,6 @@ describe Yast2::FsSnapshot do
           expect(snapshot).to be(dummy_snapshot)
         end
       end
-
     end
 
     context "when snapper is not configured" do
