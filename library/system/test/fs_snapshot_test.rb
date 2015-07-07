@@ -83,7 +83,7 @@ describe Yast2::FsSnapshot do
       "--root-prefix=/ --snapshot-type single --description \"some-description\""
     OPTION_CLEANUP_NUMBER = " --cleanup \"number\""
     OPTION_IMPORTANT = " --userdata \"important=yes\""
-    
+
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
       allow(Yast2::FsSnapshot).to receive(:create_snapshot?).with(:single).and_return(create_snapshot)
@@ -143,7 +143,7 @@ describe Yast2::FsSnapshot do
         it "returns the created snapshot" do
           expect(described_class).to receive(:find).with(2)
             .and_return(dummy_snapshot)
-          snapshot = described_class.create_single("some-description", important: true )
+          snapshot = described_class.create_single("some-description", important: true)
           expect(snapshot).to be(dummy_snapshot)
         end
       end
@@ -160,7 +160,7 @@ describe Yast2::FsSnapshot do
           expect(snapshot).to be(dummy_snapshot)
         end
       end
-      
+
     end
 
     context "when snapper is not configured" do
