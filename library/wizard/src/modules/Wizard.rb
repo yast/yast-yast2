@@ -1186,6 +1186,8 @@ module Yast
     def SetDesktopIcon(file)
       description = Desktop.ParseSingleDesktopFile(file)
 
+      return false unless description
+
       icon = description["icon"]
 
       return false unless icon
