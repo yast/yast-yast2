@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jul  9 15:37:27 UTC 2015 - jreidinger@suse.com
+
+- do not crash if desktop file does not exist for setting icon
+  (bnc#937549)
+- 3.1.140
+
+-------------------------------------------------------------------
 Mon Jul  6 18:02:27 CEST 2015 - shundhammer@suse.de
 
 - Cleanup for snapshots made during installation (bnc#935923)
