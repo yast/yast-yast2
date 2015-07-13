@@ -26,8 +26,10 @@ module ConfigFile
     def self.serialize(data)
       data.each_with_object("") do |pair, res|
         key, content = pair
-        content[:comments].each do |comment|
-          res << "# #{comment}\n"
+        if content[:comments]
+          content[:comments].each do |comment|
+            res << "# #{comment}\n"
+          end
         end
         prefix = content[:commented_out] ? "#" : ""
         res << "#{prefix}#{key}=#{content[:value]}\n"

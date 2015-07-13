@@ -8,6 +8,7 @@ module ConfigFile
   class GrubModel < BaseModel
     def initialize(file_class: File)
       super(PARSER, PATH, file_class: file_class)
+      self.data = {}
     end
 
     def os_prober_enabled?
@@ -37,7 +38,7 @@ module ConfigFile
 
     def enable_recovery_entry(kernel_params)
       data["GRUB_DISABLE_RECOVERY"] ||= {}
-      data["GRUB_DISABLE_RECOVERY"][:value] = "true"
+      data["GRUB_DISABLE_RECOVERY"][:value] = "false"
       data["GRUB_DISABLE_RECOVERY"][:commented_out] = false
       data["GRUB_CMDLINE_LINUX_RECOVERY"] ||= {}
       data["GRUB_CMDLINE_LINUX_RECOVERY"][:value] = kernel_params
