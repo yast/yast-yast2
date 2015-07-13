@@ -1,5 +1,5 @@
 module ConfigFile
-  class Keyvalue_Parser
+  class KeyvalueParser
     def self.parse(raw_string)
       previous_comments = []
       raw_string.lines.each_with_object({}) do |line, res|

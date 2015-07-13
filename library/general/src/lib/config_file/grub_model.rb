@@ -1,13 +1,13 @@
-require "config_file/config_file"
-require "config_file/keyvalue_parser"
+require "config_file/base_model"
+require "config_file/key_value_parser"
 
 module ConfigFile
-  PARSER = Keyvalue_Parser
+  PARSER = KeyvalueParser
   PATH = "/etc/default/grub"
 
-  class GrubConfig < ConfigFile
+  class GrubModel < BaseModel
     def initialize(file_class: File)
-      super(PARSER, PATH, file_class: file_class) 
+      super(PARSER, PATH, file_class: file_class)
     end
 
     def os_prober_enabled?
