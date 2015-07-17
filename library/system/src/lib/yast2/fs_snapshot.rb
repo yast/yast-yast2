@@ -77,11 +77,10 @@ module Yast2
     def self.configured?
       return @configured unless @configured.nil?
 
-      out = with_snapper do
-        Yast::SCR.Execute(Yast::Path.new(".target.bash_output"),
-          format(FIND_CONFIG_CMD, root: target_root)
-        )
-      end
+      out = Yast::SCR.Execute(
+        Yast::Path.new(".target.bash_output"),
+        format(FIND_CONFIG_CMD, root: target_root)
+      )
 
       log.info("Checking if Snapper is configured: \"#{FIND_CONFIG_CMD}\" returned: #{out}")
       @configured = out["exit"] == 0
@@ -193,10 +192,8 @@ module Yast2
         cmd << " --cleanup \"#{strategy}\"" if strategy
       end
 
-      out = with_snapper do
-        log.info("Executing: \"#{cmd}\"")
-        Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), cmd)
-      end
+      log.info("Executing: \"#{cmd}\"")
+      out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), cmd)
 
       if out["exit"] == 0
         find(out["stdout"].to_i) # The CREATE_SNAPSHOT_CMD returns the number of the new snapshot.
@@ -216,17 +213,6 @@ module Yast2
     end
     private_class_method :non_switched_installation?
 
-    # ensures that for local SCR snapper is available in insts-sys
-    def self.with_snapper(&block)
-      return block.call unless non_switched_installation?
-
-      Yast.import "InstExtensionImage"
-      Yast::InstExtensionImage.with_extension("snapper") do
-        block.call
-      end
-    end
-    private_class_method :with_snapper
-
     # Gets target directory on which should snapper operate
     def self.target_root
       return "/" unless non_switched_installation?
@@ -245,12 +231,10 @@ module Yast2
     def self.all
       raise SnapperNotConfigured unless configured?
 
-      out = with_snapper do
-        Yast::SCR.Execute(
-          Yast::Path.new(".target.bash_output"),
-          format(LIST_SNAPSHOTS_CMD, root: target_root)
-        )
-      end
+      out = Yast::SCR.Execute(
+        Yast::Path.new(".target.bash_output"),
+        format(LIST_SNAPSHOTS_CMD, root: target_root)
+      )
       lines = out["stdout"].lines.grep(VALID_LINE_REGEX) # relevant lines from output.
       log.info("Retrieving snapshots list: #{LIST_SNAPSHOTS_CMD} returned: #{out}")
       lines.each_with_object([]) do |line, snapshots|
