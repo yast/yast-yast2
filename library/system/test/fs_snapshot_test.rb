@@ -12,6 +12,8 @@ describe Yast2::FsSnapshot do
   FIND_IN_ROOT_CONFIG = "/usr/bin/snapper --no-dbus --root=/mnt list-configs | grep \"^root \" >/dev/null"
   LIST_SNAPSHOTS = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=/ list"
 
+  let(:dummy_snapshot) { double("snapshot") }
+
   before do
     # reset configured cache
     described_class.instance_variable_set("@configured", nil)
@@ -112,7 +114,6 @@ describe Yast2::FsSnapshot do
 
       context "when snapshot creation is successful" do
         let(:output) { { "stdout" => "2", "exit" => 0 } }
-        let(:dummy_snapshot) { double("snapshot") }
 
         it "returns the created snapshot" do
           expect(described_class).to receive(:find).with(2)
@@ -124,7 +125,6 @@ describe Yast2::FsSnapshot do
 
       context "when a cleanup strategy is set" do
         let(:output) { { "stdout" => "2", "exit" => 0 } }
-        let(:dummy_snapshot) { double("snapshot") }
         let(:snapshot_command) { CREATE_SINGLE_SNAPSHOT + OPTION_CLEANUP_NUMBER }
 
         it "creates a snapshot with that strategy" do
@@ -137,7 +137,6 @@ describe Yast2::FsSnapshot do
 
       context "when a snapshot is important" do
         let(:output) { { "stdout" => "2", "exit" => 0 } }
-        let(:dummy_snapshot) { double("snapshot") }
         let(:snapshot_command) { CREATE_SINGLE_SNAPSHOT + OPTION_IMPORTANT }
 
         it "creates a snapshot marked as important" do
@@ -150,7 +149,6 @@ describe Yast2::FsSnapshot do
 
       context "when it's both important and a cleanup strategy is set" do
         let(:output) { { "stdout" => "2", "exit" => 0 } }
-        let(:dummy_snapshot) { double("snapshot") }
         let(:snapshot_command) { CREATE_SINGLE_SNAPSHOT + OPTION_IMPORTANT + OPTION_CLEANUP_NUMBER }
 
         it "creates a snapshot with that strategy that is marked as important" do
@@ -214,7 +212,6 @@ describe Yast2::FsSnapshot do
 
       context "when snapshot creation is successful" do
         let(:output) { { "stdout" => "2", "exit" => 0 } }
-        let(:dummy_snapshot) { double("snapshot") }
 
         it "returns the created snapshot" do
           expect(described_class).to receive(:find).with(2)
@@ -226,7 +223,6 @@ describe Yast2::FsSnapshot do
 
       context "when a cleanup strategy is set" do
         let(:output) { { "stdout" => "2", "exit" => 0 } }
-        let(:dummy_snapshot) { double("snapshot") }
         let(:snapshot_command) { CREATE_PRE_SNAPSHOT + OPTION_CLEANUP_NUMBER }
 
         it "creates a pre snapshot with that strategy" do
@@ -239,7 +235,6 @@ describe Yast2::FsSnapshot do
 
       context "when a snapshot is important" do
         let(:output) { { "stdout" => "2", "exit" => 0 } }
-        let(:dummy_snapshot) { double("snapshot") }
         let(:snapshot_command) { CREATE_PRE_SNAPSHOT + OPTION_IMPORTANT }
 
         it "creates a pre snapshot marked as important" do
@@ -252,7 +247,6 @@ describe Yast2::FsSnapshot do
 
       context "when it's both important and a cleanup strategy is set" do
         let(:output) { { "stdout" => "2", "exit" => 0 } }
-        let(:dummy_snapshot) { double("snapshot") }
         let(:snapshot_command) { CREATE_PRE_SNAPSHOT + OPTION_IMPORTANT + OPTION_CLEANUP_NUMBER }
 
         it "creates a pre snapshot with that strategy that is marked as important" do
@@ -299,7 +293,6 @@ describe Yast2::FsSnapshot do
       let(:create_snapshot) { true }
 
       let(:pre_snapshot) { double("snapshot", snapshot_type: :pre, number: 2) }
-      let(:dummy_snapshot) { double("snapshot") }
       let(:snapshots) { [pre_snapshot] }
       let(:output) { { "stdout" => "3", "exit" => 0 } }
 
