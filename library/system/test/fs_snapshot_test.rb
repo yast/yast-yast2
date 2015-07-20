@@ -55,19 +55,6 @@ describe Yast2::FsSnapshot do
         allow(Yast::SCR).to receive(:Execute)
           .with(path(".target.bash_output"), FIND_IN_ROOT_CONFIG)
           .and_return("stdout" => "", "exit" => 0)
-
-        Yast.import "InstExtensionImage"
-        allow(Yast::InstExtensionImage).to receive(:with_extension) do |&block|
-          block.call
-        end
-      end
-
-      it "ensures snapper is available" do
-        expect(Yast::InstExtensionImage).to receive(:with_extension) do |&block|
-          block.call
-        end
-
-        described_class.configured?
       end
 
       it "detects snapper configuration in installation target dir" do
