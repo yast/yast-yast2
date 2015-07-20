@@ -134,10 +134,10 @@ module Yast2
     #
     # @see FsSnapshot.create
     # @see FsSnapshot.create_snapshot?
-    def self.create_pre(description)
+    def self.create_pre(description, cleanup: nil, important: false)
       return nil unless create_snapshot?(:around)
 
-      create(:pre, description)
+      create(:pre, description, cleanup: cleanup, important: important)
     end
 
     # Creates a new 'post' snapshot unless disabled by user
