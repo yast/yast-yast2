@@ -36,7 +36,7 @@ module UI
       @_finish_dialog_flag = false
 
       loop do
-        input = Yast::UI.UserInput
+        input = user_input
         if respond_to?(:"#{input}_handler")
           send(:"#{input}_handler")
           return @_finish_dialog_value if @_finish_dialog_flag
@@ -44,6 +44,44 @@ module UI
           raise "Unknown action #{input}"
         end
       end
+    end
+
+    # Methods gets input for event dispatching
+    # Its main purpose is to allow change user input obtaining method like
+    # using user input with timeout.
+    # @example use user input with timeout
+    #    class OKDialog
+    #     include Yast::UIShortcuts
+    #     include Yast::Logger
+    #     include UI::EventDispatcher
+    #     Yast.import "UI"
+    #
+    #     def user_input
+    #       Yast::UI.TimeoutUserInput(1000)
+    #     end
+    #
+    #     def run
+    #       return nil unless Yast::UI.OpenDialog(
+    #         HBox(
+    #           PushButton(Id(:ok), "OK"),
+    #           PushButton(Id(:cancel), "Cancel")
+    #         )
+    #       )
+    #       begin
+    #         return event_loop
+    #       ensure
+    #          Yast::UI.CloseDialog
+    #       end
+    #     end
+    #
+    #     def ok_handler
+    #       finish_dialog(:ok)
+    #       log.info "OK button pressed"
+    #     end
+    #   end
+
+    def user_input
+      Yast::UI.UserInput
     end
 
     # Set internal flag to not continue with processing other UI inputs
