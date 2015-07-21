@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jul 21 14:44:04 UTC 2015 - jreidinger@suse.com
+
+- Allow Dialog class to support alternative ways how to get user
+  input (needed for yast2-vnc module) (bnc#938944)
+- 3.1.142
+
+-------------------------------------------------------------------
 Fri Jul 17 08:28:41 UTC 2015 - igonzalezsosa@suse.com
 
 - Do not try to load snapper extension as it does not exists anymore
@@ -16,7 +23,7 @@ Thu Jul  9 15:37:27 UTC 2015 - jreidinger@suse.com
 Mon Jul  6 18:02:27 CEST 2015 - shundhammer@suse.de
 
 - Cleanup for snapshots made during installation (bnc#935923)
-- 3.1.139 
+- 3.1.139
 
 -------------------------------------------------------------------
 Wed Jul  1 13:46:26 UTC 2015 - jreidinger@suse.com
