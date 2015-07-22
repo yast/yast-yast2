@@ -46,7 +46,7 @@ module UI
       end
     end
 
-    # Reads input for next event dispathing
+    # Reads input for next event dispath
     # Can be redefined to modify the way of getting user input, like introducing a timeout.
     # Default implementation uses Yast::UI.UserInput which waits indefinitely for user input.
     # @example use user input with timeout
