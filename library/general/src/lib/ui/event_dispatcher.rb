@@ -46,9 +46,9 @@ module UI
       end
     end
 
-    # Methods gets input for event dispatching
-    # Its main purpose is to allow change user input obtaining method like
-    # using user input with timeout.
+    # Reads input for next event dispathing
+    # Can be redefined to modify the way of getting user input, like introducing a timeout.
+    # Default implementation uses Yast::UI.UserInput which waits indefinitely for user input.
     # @example use user input with timeout
     #    class OKDialog
     #     include Yast::UIShortcuts
