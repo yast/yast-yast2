@@ -1491,45 +1491,13 @@ module Yast
       Ops.get_string(cmds, 0)
     end
 
-    def fake_false
-      false
-    end
-
-    def RunFunction(funct)
-      funct = deep_copy(funct)
-      Report.ClearAll
-      my_funct = deep_copy(funct)
-      ret = my_funct.call
-      report = Report.GetMessages(
-        Ops.greater_than(Report.NumWarnings, 0),
-        Ops.greater_than(Report.NumErrors, 0),
-        Ops.greater_than(Report.NumMessages, 0),
-        Ops.greater_than(Report.NumYesNoMessages, 0)
-      )
-      if Ops.greater_than(Builtins.size(report), 0)
-        Yast.import "RichText"
-        Print(RichText.Rich2Plain(report))
+    def run_if_exists(commandline, index)
+      meth = commandline[index]
+      if meth
+        meth.call
+      else
+        false
       end
-      ret
-    end
-
-    def RunMapFunction(funct, arg)
-      funct = deep_copy(funct)
-      arg = deep_copy(arg)
-      Report.ClearAll
-      my_funct = deep_copy(funct)
-      ret = my_funct.call(arg)
-      report = Report.GetMessages(
-        Ops.greater_than(Report.NumWarnings, 0),
-        Ops.greater_than(Report.NumErrors, 0),
-        Ops.greater_than(Report.NumMessages, 0),
-        Ops.greater_than(Report.NumYesNoMessages, 0)
-      )
-      if Ops.greater_than(Builtins.size(report), 0)
-        Yast.import "RichText"
-        Print(RichText.Rich2Plain(report))
-      end
-      ret
     end
 
     # Parse the Command Line
@@ -1596,15 +1564,6 @@ module Yast
           return ret
         end
       else
-        # disable Reports, we handle them on our own
-        Report.Import(
-
-          "messages" => { "show" => false },
-          "warnings" => { "show" => false },
-          "errors"   => { "show" => false }
-
-        )
-
         # translators: progress message - command line interface ready
         PrintVerbose(_("Ready"))
 
@@ -1621,18 +1580,7 @@ module Yast
                 Ops.get(commandline, "initialize")
               # non-GUI handling
               PrintVerbose(_("Initializing"))
-              ret2 = RunFunction(
-                Convert.convert(
-                  Ops.get(
-                    commandline,
-                    "initialize",
-                    fun_ref(method(:fake_false), "boolean ()")
-                  ),
-                  from: "any",
-                  to:   "boolean ()"
-                )
-              )
-
+              ret2 = run_if_exists(commandline, "initialize")
               if !ret2
                 Builtins.y2milestone("Module initialization failed")
                 return false
@@ -1650,7 +1598,7 @@ module Yast
 
           # there is a handler, execute the action
           if !exec.nil?
-            res = RunMapFunction(exec, options)
+            res = exec.call(options)
 
             # if it is not interactive, abort on errors
             Abort() if !Interactive() && res == false
@@ -1668,17 +1616,7 @@ module Yast
       if ret && Ops.get(commandline, "finish") && initialized
         # translators: Progress message - the command line interface is about to finish
         PrintVerbose(_("Finishing"))
-        ret = RunFunction(
-          Convert.convert(
-            Ops.get(
-              commandline,
-              "finish",
-              fun_ref(method(:fake_false), "boolean ()")
-            ),
-            from: "any",
-            to:   "boolean ()"
-          )
-        )
+        ret = run_if_exists(commandline, "finish")
         if !ret
           Builtins.y2milestone("Module finishing failed")
           return false
@@ -1757,9 +1695,6 @@ module Yast
     publish function: :Abort, type: "void ()"
     publish function: :Done, type: "boolean ()"
     publish function: :UniqueOption, type: "string (map <string, string>, list)"
-    publish function: :fake_false, type: "boolean ()", private: true
-    publish function: :RunFunction, type: "boolean (boolean ())", private: true
-    publish function: :RunMapFunction, type: "boolean (boolean (map <string, string>), map <string, string>)", private: true
     publish function: :Run, type: "any (map)"
     publish function: :YesNo, type: "boolean ()"
     publish function: :Verbose, type: "boolean ()"
