@@ -164,7 +164,7 @@ module Installation
     #     help (particular helps for modules sorted by presentation order).
     #
     #   * **`"trigger"`** [Hash, nil] defines circumstances when the proposal
-    #     should be called again at the end. For intance, when partitioning or
+    #     should be called again at the end. For instance, when partitioning or
     #     software selection changes. Mandatory keys of the trigger are:
     #       * **`"expect"`** [Hash] containing _string_ `class` and _string_
     #         `method` that will be called and its result compared with `value`.
