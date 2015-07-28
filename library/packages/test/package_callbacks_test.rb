@@ -15,7 +15,7 @@ describe Yast::PackageCallbacks do
     before do
       allow(Yast::Mode).to receive(:commandline).and_return commandline
       allow(Yast::UI).to receive(:GetDisplayInfo)
-        .and_return({"TextMode" => display_textmode})
+        .and_return("TextMode" => display_textmode)
     end
 
     context "running in CLI" do

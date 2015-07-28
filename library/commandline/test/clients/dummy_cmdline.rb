@@ -9,9 +9,9 @@ module Yast
         "help"       => "Dummy test client",
         "id"         => "dummy",
         "initialize" => fun_ref(method(:init), "boolean ()"),
-        "finish"     => Proc.new { puts "Finish called"; true },
+        "finish"     => proc { puts "Finish called" },
         "actions"    => {
-          "echo"   => {
+          "echo"  => {
             # Commandline command help
             "help"    => _(
               "Prints the passed argument"
@@ -22,7 +22,7 @@ module Yast
               "boolean (map <string, string>)"
             )
           },
-          "crash"   => {
+          "crash" => {
             # Commandline command help
             "help"    => _(
               "Raises an exception"
@@ -59,7 +59,7 @@ module Yast
       true
     end
 
-    def crash_handler(options)
+    def crash_handler(*)
       raise "I crashed"
     end
   end
