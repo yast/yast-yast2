@@ -1,8 +1,8 @@
 -------------------------------------------------------------------
 Tue Jul 28 10:50:05 UTC 2015 - ancor@suse.com
 
-- Properly display error information when running in command line
-  mode (bnc#939565).
+- Properly display information about exceptions when running in
+  command line mode (bnc#939565).
 - Fixed a bug preventing Yast::CommandLine to be executed twice
   in the same script.
 - 3.1.143

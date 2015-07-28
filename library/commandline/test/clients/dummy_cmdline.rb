@@ -30,7 +30,7 @@ module Yast
             "example" => "dummy crash",
             "handler" => fun_ref(
               method(:crash_handler),
-              "boolean ()"
+              "boolean (map <string, string>)"
             )
           }
         },
@@ -59,7 +59,7 @@ module Yast
       true
     end
 
-    def crash_handler(*)
+    def crash_handler(_options)
       raise "I crashed"
     end
   end

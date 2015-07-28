@@ -1491,15 +1491,6 @@ module Yast
       Ops.get_string(cmds, 0)
     end
 
-    def run_if_exists(commandline, index)
-      meth = commandline[index]
-      if meth
-        meth.call
-      else
-        false
-      end
-    end
-
     # Parse the Command Line
     #
     # Function to parse the command line, start a GUI or handle interactive and
@@ -1581,7 +1572,7 @@ module Yast
                 Ops.get(commandline, "initialize")
               # non-GUI handling
               PrintVerbose(_("Initializing"))
-              ret2 = run_if_exists(commandline, "initialize")
+              ret2 = commandline["initialize"].call
               if !ret2
                 Builtins.y2milestone("Module initialization failed")
                 return false
@@ -1617,7 +1608,7 @@ module Yast
       if ret && Ops.get(commandline, "finish") && initialized
         # translators: Progress message - the command line interface is about to finish
         PrintVerbose(_("Finishing"))
-        ret = run_if_exists(commandline, "finish")
+        ret = commandline["finish"].call
         if !ret
           Builtins.y2milestone("Module finishing failed")
           return false
