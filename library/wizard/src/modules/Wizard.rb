@@ -1852,7 +1852,7 @@ module Yast
     publish function: :CreateMenu, type: "void (list <map>)"
     publish function: :SetProductName, type: "void (string)"
 
-    protected
+  protected
 
     # Sets the icon and opens a wizard dialog with the content specified as
     # arguments
