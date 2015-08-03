@@ -1865,6 +1865,9 @@ module Yast
     end
 
     # Sets the application icon according to the value of @icon_name
+    #
+    # This should be called only immediately before opening a dialog; premature
+    # UI calls can interfere with the CommandLine mode.
     def set_icon
       icon_path = File.join(@icon_dir, "#{@icon_name}.png")
       UI.SetApplicationIcon(icon_path)
