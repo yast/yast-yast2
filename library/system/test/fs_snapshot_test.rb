@@ -12,6 +12,8 @@ describe Yast2::FsSnapshot do
   FIND_IN_ROOT_CONFIG = "/usr/bin/snapper --no-dbus --root=/mnt list-configs | grep \"^root \" >/dev/null"
   LIST_SNAPSHOTS = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=/ list"
 
+  let(:dummy_snapshot) { double("snapshot") }
+
   before do
     # reset configured cache
     described_class.instance_variable_set("@configured", nil)
@@ -53,19 +55,6 @@ describe Yast2::FsSnapshot do
         allow(Yast::SCR).to receive(:Execute)
           .with(path(".target.bash_output"), FIND_IN_ROOT_CONFIG)
           .and_return("stdout" => "", "exit" => 0)
-
-        Yast.import "InstExtensionImage"
-        allow(Yast::InstExtensionImage).to receive(:with_extension) do |&block|
-          block.call
-        end
-      end
-
-      it "ensures snapper is available" do
-        expect(Yast::InstExtensionImage).to receive(:with_extension) do |&block|
-          block.call
-        end
-
-        described_class.configured?
       end
 
       it "detects snapper configuration in installation target dir" do
@@ -81,6 +70,8 @@ describe Yast2::FsSnapshot do
   describe ".create_single" do
     CREATE_SINGLE_SNAPSHOT = "/usr/lib/snapper/installation-helper --step 5 "\
       "--root-prefix=/ --snapshot-type single --description \"some-description\""
+    OPTION_CLEANUP_NUMBER = " --cleanup \"number\""
+    OPTION_IMPORTANT = " --userdata \"important=yes\""
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
@@ -90,10 +81,11 @@ describe Yast2::FsSnapshot do
     context "when snapper is configured" do
       let(:configured) { true }
       let(:create_snapshot) { true }
+      let(:snapshot_command) { CREATE_SINGLE_SNAPSHOT }
 
       before do
         allow(Yast::SCR).to receive(:Execute)
-          .with(path(".target.bash_output"), CREATE_SINGLE_SNAPSHOT)
+          .with(path(".target.bash_output"), snapshot_command)
           .and_return(output)
       end
 
@@ -109,12 +101,47 @@ describe Yast2::FsSnapshot do
 
       context "when snapshot creation is successful" do
         let(:output) { { "stdout" => "2", "exit" => 0 } }
-        let(:dummy_snapshot) { double("snapshot") }
 
         it "returns the created snapshot" do
           expect(described_class).to receive(:find).with(2)
             .and_return(dummy_snapshot)
           snapshot = described_class.create_single("some-description")
+          expect(snapshot).to be(dummy_snapshot)
+        end
+      end
+
+      context "when a cleanup strategy is set" do
+        let(:output) { { "stdout" => "2", "exit" => 0 } }
+        let(:snapshot_command) { CREATE_SINGLE_SNAPSHOT + OPTION_CLEANUP_NUMBER }
+
+        it "creates a snapshot with that strategy" do
+          expect(described_class).to receive(:find).with(2)
+            .and_return(dummy_snapshot)
+          snapshot = described_class.create_single("some-description", cleanup: :number)
+          expect(snapshot).to be(dummy_snapshot)
+        end
+      end
+
+      context "when a snapshot is important" do
+        let(:output) { { "stdout" => "2", "exit" => 0 } }
+        let(:snapshot_command) { CREATE_SINGLE_SNAPSHOT + OPTION_IMPORTANT }
+
+        it "creates a snapshot marked as important" do
+          expect(described_class).to receive(:find).with(2)
+            .and_return(dummy_snapshot)
+          snapshot = described_class.create_single("some-description", important: true)
+          expect(snapshot).to be(dummy_snapshot)
+        end
+      end
+
+      context "when it's both important and a cleanup strategy is set" do
+        let(:output) { { "stdout" => "2", "exit" => 0 } }
+        let(:snapshot_command) { CREATE_SINGLE_SNAPSHOT + OPTION_IMPORTANT + OPTION_CLEANUP_NUMBER }
+
+        it "creates a snapshot with that strategy that is marked as important" do
+          expect(described_class).to receive(:find).with(2)
+            .and_return(dummy_snapshot)
+          snapshot = described_class.create_single("some-description", cleanup: :number, important: true)
           expect(snapshot).to be(dummy_snapshot)
         end
       end
@@ -152,10 +179,11 @@ describe Yast2::FsSnapshot do
     context "when snapper is configured" do
       let(:configured) { true }
       let(:create_snapshot) { true }
+      let(:snapshot_command) { CREATE_PRE_SNAPSHOT }
 
       before do
         allow(Yast::SCR).to receive(:Execute)
-          .with(path(".target.bash_output"), CREATE_PRE_SNAPSHOT)
+          .with(path(".target.bash_output"), snapshot_command)
           .and_return(output)
       end
 
@@ -171,12 +199,47 @@ describe Yast2::FsSnapshot do
 
       context "when snapshot creation is successful" do
         let(:output) { { "stdout" => "2", "exit" => 0 } }
-        let(:dummy_snapshot) { double("snapshot") }
 
         it "returns the created snapshot" do
           expect(described_class).to receive(:find).with(2)
             .and_return(dummy_snapshot)
           snapshot = described_class.create_pre("some-description")
+          expect(snapshot).to be(dummy_snapshot)
+        end
+      end
+
+      context "when a cleanup strategy is set" do
+        let(:output) { { "stdout" => "2", "exit" => 0 } }
+        let(:snapshot_command) { CREATE_PRE_SNAPSHOT + OPTION_CLEANUP_NUMBER }
+
+        it "creates a pre snapshot with that strategy" do
+          expect(described_class).to receive(:find).with(2)
+            .and_return(dummy_snapshot)
+          snapshot = described_class.create_pre("some-description", cleanup: :number)
+          expect(snapshot).to be(dummy_snapshot)
+        end
+      end
+
+      context "when a snapshot is important" do
+        let(:output) { { "stdout" => "2", "exit" => 0 } }
+        let(:snapshot_command) { CREATE_PRE_SNAPSHOT + OPTION_IMPORTANT }
+
+        it "creates a pre snapshot marked as important" do
+          expect(described_class).to receive(:find).with(2)
+            .and_return(dummy_snapshot)
+          snapshot = described_class.create_pre("some-description", important: true)
+          expect(snapshot).to be(dummy_snapshot)
+        end
+      end
+
+      context "when it's both important and a cleanup strategy is set" do
+        let(:output) { { "stdout" => "2", "exit" => 0 } }
+        let(:snapshot_command) { CREATE_PRE_SNAPSHOT + OPTION_IMPORTANT + OPTION_CLEANUP_NUMBER }
+
+        it "creates a pre snapshot with that strategy that is marked as important" do
+          expect(described_class).to receive(:find).with(2)
+            .and_return(dummy_snapshot)
+          snapshot = described_class.create_pre("some-description", important: true, cleanup: :number)
           expect(snapshot).to be(dummy_snapshot)
         end
       end
@@ -217,7 +280,6 @@ describe Yast2::FsSnapshot do
       let(:create_snapshot) { true }
 
       let(:pre_snapshot) { double("snapshot", snapshot_type: :pre, number: 2) }
-      let(:dummy_snapshot) { double("snapshot") }
       let(:snapshots) { [pre_snapshot] }
       let(:output) { { "stdout" => "3", "exit" => 0 } }
 

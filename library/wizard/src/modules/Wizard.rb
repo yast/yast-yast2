@@ -63,6 +63,10 @@ module Yast
       # Cannot be handled by libyui for NCurses
       @relnotes_button_label = ""
       @relnotes_button_id = ""
+
+      @icon_dir = File.join(Directory.themedir, "current", "icons",
+        "22x22", "apps")
+      @icon_name = "yast"
     end
 
     def haveFancyUI
@@ -415,6 +419,8 @@ module Yast
     #
     def OpenDialog(dialog)
       dialog = deep_copy(dialog)
+
+      set_icon
       UI.OpenDialog(Opt(:wizardDialog), dialog)
       if ! @relnotes_button_id.empty?
         ShowReleaseNotesButton(@relnotes_button_label, @relnotes_button_id)
@@ -428,16 +434,13 @@ module Yast
     #
     def OpenNextBackDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            :back,
-            Label.BackButton,
-            :abort,
-            Label.AbortButton,
-            :next,
-            Label.NextButton
-          )
+        open_wizard_dialog(
+          :back,
+          Label.BackButton,
+          :abort,
+          Label.AbortButton,
+          :next,
+          Label.NextButton
         )
       else
         OpenDialog(NextBackDialog())
@@ -452,16 +455,13 @@ module Yast
     #
     def OpenAcceptDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            :no_back_button,
-            "",
-            :cancel,
-            Label.CancelButton,
-            :accept,
-            Label.AcceptButton
-          )
+        open_wizard_dialog(
+          :no_back_button,
+          "",
+          :cancel,
+          Label.CancelButton,
+          :accept,
+          Label.AcceptButton
         )
 
         # Don't let sloppy calls to Wizard::SetContents() disable this button by accident
@@ -479,16 +479,13 @@ module Yast
     #
     def OpenOKDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            :no_back_button,
-            "",
-            :cancel,
-            Label.CancelButton,
-            :ok,
-            Label.OKButton
-          )
+        open_wizard_dialog(
+          :no_back_button,
+          "",
+          :cancel,
+          Label.CancelButton,
+          :ok,
+          Label.OKButton
         )
 
         # Don't let sloppy calls to Wizard::SetContents() disable this button by accident
@@ -506,16 +503,13 @@ module Yast
     #
     def OpenAbortApplyFinishDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            :apply,
-            _("&Apply"),
-            :abort,
-            Label.AbortButton,
-            :finish,
-            Label.FinishButton
-          )
+        open_wizard_dialog(
+          :apply,
+          _("&Apply"),
+          :abort,
+          Label.AbortButton,
+          :finish,
+          Label.FinishButton
         )
       else
         OpenDialog(GenericDialog(AbortApplyFinishButtonBox()))
@@ -529,17 +523,14 @@ module Yast
     #
     def OpenAcceptStepsDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            Opt(:stepsEnabled),
-            :no_back_button,
-            "",
-            :cancel,
-            Label.CancelButton,
-            :accept,
-            Label.AcceptButton
-          )
+        open_wizard_dialog(
+          Opt(:stepsEnabled),
+          :no_back_button,
+          "",
+          :cancel,
+          Label.CancelButton,
+          :accept,
+          Label.AcceptButton
         )
 
         # Don't let sloppy calls to Wizard::SetContents() disable this button by accident
@@ -555,17 +546,14 @@ module Yast
     #
     def OpenAcceptAbortStepsDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            Opt(:stepsEnabled),
-            :no_back_button,
-            "",
-            :abort,
-            Label.AbortButton,
-            :accept,
-            Label.AcceptButton
-          )
+        open_wizard_dialog(
+          Opt(:stepsEnabled),
+          :no_back_button,
+          "",
+          :abort,
+          Label.AbortButton,
+          :accept,
+          Label.AcceptButton
         )
 
         # Don't let sloppy calls to Wizard::SetContents() disable this button by accident
@@ -581,17 +569,14 @@ module Yast
     #
     def OpenNextBackStepsDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            Opt(:stepsEnabled),
-            :back,
-            Label.BackButton,
-            :abort,
-            Label.AbortButton,
-            :next,
-            Label.NextButton
-          )
+        open_wizard_dialog(
+          Opt(:stepsEnabled),
+          :back,
+          Label.BackButton,
+          :abort,
+          Label.AbortButton,
+          :next,
+          Label.NextButton
         )
       else
         OpenNextBackDialog()
@@ -605,17 +590,14 @@ module Yast
     # the installation visual design
     def OpenLeftTitleNextBackDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            Opt(:titleOnLeft),
-            :back,
-            Label.BackButton,
-            :abort,
-            Label.AbortButton,
-            :next,
-            Label.NextButton
-          )
+        open_wizard_dialog(
+          Opt(:titleOnLeft),
+          :back,
+          Label.BackButton,
+          :abort,
+          Label.AbortButton,
+          :next,
+          Label.NextButton
         )
       else
         OpenNextBackDialog()
@@ -647,6 +629,7 @@ module Yast
       button_box = deep_copy(button_box)
       button_box = BackAbortNextButtonBox() if button_box.nil?
 
+      set_icon
       UI.OpenDialog(Opt(:wizardDialog), GenericDialog(button_box))
 
       if !help_space_contents.nil?
@@ -992,16 +975,13 @@ module Yast
     #
     def OpenCancelOKDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            :back,
-            Label.BackButton,
-            :abort,
-            Label.CancelButton,
-            :next,
-            Label.OKButton
-          )
+        open_wizard_dialog(
+          :back,
+          Label.BackButton,
+          :abort,
+          Label.CancelButton,
+          :next,
+          Label.OKButton
         )
         HideBackButton()
       else
@@ -1168,8 +1148,6 @@ module Yast
     # Desktop file is placed in a special directory (/usr/share/applications/YaST2).
     # Parameter file is realative to that directory without ".desktop" suffix.
     # Warning: There are no desktop files in inst-sys. Use "SetTitleIcon" instead.
-    # @note do nothing. Title icon do not provide additional value
-    # and is distracting
     #
     # @param [String] file Icon name
     # @return [Boolean] true on success
@@ -1179,7 +1157,18 @@ module Yast
     #	// Reads "Icon" entry from there
     #	// Sets the icon.
     #	SetDesktopIcon ("lan")
-    def SetDesktopIcon(_file)
+    def SetDesktopIcon(file)
+      description = Desktop.ParseSingleDesktopFile(file)
+
+      return false unless description
+
+      icon = description["icon"]
+
+      return false unless icon
+
+      @icon_name = icon
+      set_icon
+
       true
     end
 
@@ -1188,7 +1177,6 @@ module Yast
     # Desktop file is placed in a special directory (/usr/share/applications/YaST2).
     # Parameter file is realative to that directory without ".desktop" suffix.
     # Warning: There are no desktop files in inst-sys.
-    # @deprecated Use SetDesktopTitle only as icon setting is removed
     #
     # @param [String] file desktop file name
     # @return [Boolean] true on success
@@ -1199,8 +1187,6 @@ module Yast
     #	// Sets the icon, sets the dialog title
     #	SetDialogTitleAndIcon ("lan")
     def SetDesktopTitleAndIcon(file)
-      result = true
-
       description = Desktop.ParseSingleDesktopFile(file)
 
       # fallback name for the dialog title
@@ -1209,7 +1195,9 @@ module Yast
       Builtins.y2debug("Set dialog title: %1", name)
       SetDialogTitle(name)
 
-      result && Builtins.haskey(description, "Name")
+      SetDesktopIcon(file)
+
+      Builtins.haskey(description, "Name")
     end
 
     # PRIVATE - Replace the entire Wizard button box with a new one.
@@ -1495,17 +1483,14 @@ module Yast
     #
     def OpenTreeNextBackDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            Opt(:treeEnabled),
-            :back,
-            Label.BackButton,
-            :abort,
-            Label.AbortButton,
-            :next,
-            Label.NextButton
-          )
+        open_wizard_dialog(
+          Opt(:treeEnabled),
+          :back,
+          Label.BackButton,
+          :abort,
+          Label.AbortButton,
+          :next,
+          Label.NextButton
         )
       else
         OpenDialog(GenericTreeDialog(BackAbortNextButtonBox()))
@@ -1866,6 +1851,27 @@ module Yast
     publish function: :AddMenuEntry, type: "list <map> (list <map>, string, string, string)"
     publish function: :CreateMenu, type: "void (list <map>)"
     publish function: :SetProductName, type: "void (string)"
+
+  protected
+
+    # Sets the icon and opens a wizard dialog with the content specified as
+    # arguments
+    def open_wizard_dialog(*args)
+      set_icon
+      UI.OpenDialog(
+        Opt(:wizardDialog),
+        Wizard(*args)
+      )
+    end
+
+    # Sets the application icon according to the value of @icon_name
+    #
+    # This should be called only immediately before opening a dialog; premature
+    # UI calls can interfere with the CommandLine mode.
+    def set_icon
+      icon_path = File.join(@icon_dir, "#{@icon_name}.png")
+      UI.SetApplicationIcon(icon_path)
+    end
   end
 
   Wizard = WizardClass.new
