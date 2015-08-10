@@ -166,6 +166,7 @@ module Yast
         "FW_PROTECT_FROM_INT",
         # global routing, masquerading
         "FW_ROUTE",
+        "FW_STOP_KEEP_ROUTING_STATE",
         "FW_MASQUERADE",
         "FW_FORWARD_MASQ",
         "FW_FORWARD_ALWAYS_INOUT_DEV",
