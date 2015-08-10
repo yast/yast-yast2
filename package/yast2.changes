@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Aug 10 07:37:45 UTC 2015 - mfilka@suse.com
+
+- bnc#916013
+  - keeps routing state when firewall is enabled/disabled
+- 3.1.145 
+
+-------------------------------------------------------------------
 Mon Aug  3 14:29:05 UTC 2015 - ancor@suse.com
 
 - Fixed a conflict between Wizard and CommandLine components that
