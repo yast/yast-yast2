@@ -218,7 +218,7 @@ string GetEthTypeFromSysfs( string dev)
     else if( FileUtils::Exists( sys_dir_path + "phy80211") )
         return "wlan";
     else if( FileUtils::Exists( sys_dir_path + "bridge") )
-        return "bridge";
+        return "br";
     else if( FileUtils::Exists( sys_dir_path + "bonding") )
         return "bond";
     else if( FileUtils::Exists( sys_dir_path + "tun_flags") )
