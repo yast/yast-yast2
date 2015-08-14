@@ -90,6 +90,7 @@ module Yast
         "FW_LOG_DROP_CRIT"           => "yes",
         "FW_PROTECT_FROM_INT"        => "no",
         "FW_ROUTE"                   => "no",
+        "FW_STOP_KEEP_ROUTING_STATE" => "no",
         "FW_MASQUERADE"              => "no",
         "FW_ALLOW_FW_TRACEROUTE"     => "yes",
         "FW_ALLOW_PING_FW"           => "yes",
@@ -165,6 +166,7 @@ module Yast
         "FW_PROTECT_FROM_INT",
         # global routing, masquerading
         "FW_ROUTE",
+        "FW_STOP_KEEP_ROUTING_STATE",
         "FW_MASQUERADE",
         "FW_FORWARD_MASQ",
         "FW_FORWARD_ALWAYS_INOUT_DEV",
@@ -1185,8 +1187,10 @@ module Yast
       SetModified()
 
       if set_route
+        Ops.set(@SETTINGS, "FW_STOP_KEEP_ROUTING_STATE", "yes")
         Ops.set(@SETTINGS, "FW_ROUTE", "yes")
       else
+        Ops.set(@SETTINGS, "FW_STOP_KEEP_ROUTING_STATE", "no")
         Ops.set(@SETTINGS, "FW_ROUTE", "no")
       end
 
