@@ -85,4 +85,24 @@ describe Yast::SuSEFirewall do
       expect(Yast::SuSEFirewall.GetModified()).to eq(true)
     end
   end
+
+  describe "#SetSupportRoute" do
+    context "when enabling routing" do
+      it "sets FW_ROUTE and FW_STOP_KEEP_ROUTING_STATE to 'yes'" do
+        subject.SetSupportRoute(true)
+        settings = subject.Export
+        expect(settings["FW_ROUTE"]).to eq("yes")
+        expect(settings["FW_STOP_KEEP_ROUTING_STATE"]).to eq("yes")
+      end
+    end
+
+    context "when disabling routing" do
+      it "sets FW_ROUTE and FW_STOP_KEEP_ROUTING_STATE to 'no'" do
+        subject.SetSupportRoute(false)
+        settings = subject.Export
+        expect(settings["FW_ROUTE"]).to eq("no")
+        expect(settings["FW_STOP_KEEP_ROUTING_STATE"]).to eq("no")
+      end
+    end
+  end
 end
