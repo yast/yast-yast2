@@ -9,6 +9,7 @@ describe "Hostname#CurrentFQ" do
     TEST_HOSTNAME = "host.suse.cz"
 
     Yast.import "Hostname"
+    Yast.import "FileUtils"
 
     allow(Yast::SCR)
       .to receive(:Execute)
@@ -16,12 +17,12 @@ describe "Hostname#CurrentFQ" do
       .and_return(nil)
     allow(Yast::SCR)
       .to receive(:Read)
-      .with(path(".target.stat"), "/etc/hostname")
-      .and_return("exists")
-    allow(Yast::SCR)
-      .to receive(:Read)
       .with(path(".target.string"), "/etc/hostname")
       .and_return(TEST_HOSTNAME)
+    allow(Yast::FileUtils)
+      .to receive(:Exists)
+      .with("/etc/hostname")
+      .and_return(true)
 
     expect(Yast::Hostname.CurrentFQ).to eq TEST_HOSTNAME
   end

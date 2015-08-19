@@ -37,6 +37,7 @@ module Yast
 
       Yast.import "IP"
       Yast.import "String"
+      Yast.import "FileUtils"
 
       # i18n characters in domain names are still not allowed
       #
@@ -159,7 +160,7 @@ module Yast
         SCR.Execute(path(".target.bash_output"), "hostname --fqdn")
       )
       if hostname_data.nil? || Ops.get_integer(hostname_data, "exit", -1) != 0
-        fqhostname = if !SCR.Read(path(".target.stat"), "/etc/hostname").empty?
+        fqhostname = if FileUtils.Exists("/etc/hostname")
                        SCR.Read(path(".target.string"), "/etc/hostname")
                      else
                        ""

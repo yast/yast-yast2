@@ -1,3 +1,4 @@
+Read	.target.tmpdir "/tmp"
 Return	$["fragment":"part", "host":"www.suse.cz", "pass":"pass", "path":"/path/index.html", "port":"80", "query":"question", "scheme":"http", "user":"name"]
 Return	
 Return	
