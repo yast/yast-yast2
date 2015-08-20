@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Aug 20 08:18:47 UTC 2015 - lslezak@suse.cz
+
+- "yast2" script - handle also the reboot flag the same way as
+  the installation script (bsc#942461)
+- 3.1.147
+
+-------------------------------------------------------------------
 Wed Aug 19 07:44:30 UTC 2015 - mfilka@suse.com
 
 - bnc#941881
