@@ -437,6 +437,12 @@ else
 	fi
     done
     snapshot_post $module
+
+    # check the reboot flag
+    if [ -f /var/lib/YaST2/reboot ];then
+        rm -f /var/lib/YaST2/reboot
+        /sbin/shutdown -r now
+    fi
 fi
 
 if [ "$UID" = 0 ]; then
