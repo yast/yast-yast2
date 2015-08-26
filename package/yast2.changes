@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Aug 26 15:17:35 UTC 2015 - igonzalezsosa@suse.com
+
+- Add a Mode#auto method
+
+-------------------------------------------------------------------
 Wed Aug 26 15:09:06 CEST 2015 - schubi@suse.de
 
 - Checking cpuinfo_flags correctly while evaluating kernel packages
