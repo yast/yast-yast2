@@ -362,7 +362,7 @@ module Yast
         cpuflags = []
 
         # bugzilla #303842
-        if !cpuflags.nil?
+        if !cpuinfo_flags.nil?
           cpuflags = cpuinfo_flags.empty? ? [] : cpuinfo_flags.split(" ")
         else
           Builtins.y2error("Cannot read cpuflags")
