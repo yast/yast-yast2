@@ -53,15 +53,15 @@ module Yast
   #
   # It has these mutually exclusive values and corresponding boolean queries:
   # <table>
-  # <tr><th> {#mode} value </th>    <th colspan=2> boolean shortcut   </th></tr>
-  # <tr><td> normal </td>           <td colspan=2> {#normal}          </td></tr>
+  # <tr><th> {#mode} value </th>    <th colspan=3> boolean shortcut   </th></tr>
+  # <tr><td> normal </td>           <td colspan=3> {#normal}          </td></tr>
   # <tr><td> installation </td>     <td rowspan=3> {#installation}    </td></tr>
-  # <tr><td> autoinstallation </td> <td>         {#autoinst} (short!) </td></tr>
-  # <tr><td> live_installation </td><td>         {#live_installation} </td></tr>
-  # <tr><td> autoinst_config </td>  <td colspan=2> {#config}          </td></tr>
+  # <tr><td> live_installation </td><td colspan=2>         {#live_installation} </td></tr>
+  # <tr><td> autoinstallation </td> <td colspan=1>         {#autoinst} (short!) </td><td rowspan=2>#auto</td></tr>
+  # <tr><td> autoupgrade </td>      <td colspan=2> {#autoupgrade}     </td></tr>
+  # <tr><td> autoinst_config </td>  <td colspan=3> {#config}          </td></tr>
   # <tr><td> update </td>           <td rowspan=2> {#update}          </td></tr>
-  # <tr><td> autoupgrade </td>      <td>           {#autoupgrade}     </td></tr>
-  # <tr><td> repair (obsolete) </td><td colspan=2> {#repair}          </td></tr>
+  # <tr><td> repair (obsolete) </td><td colspan=3> {#repair}          </td></tr>
   # </table>
   #
   # # *UI* mode
@@ -282,6 +282,11 @@ module Yast
     # which is consistent with {#installation} being exclusive with {#update}.
     def autoupgrade
       mode == "autoupgrade"
+    end
+
+    # Doing auto-installation or auto-upgrade with AutoYaST.
+    def auto
+      autoinst || autoupgrade
     end
 
     # Configuration for {#autoinst}, usually in the running system.

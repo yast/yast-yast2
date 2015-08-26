@@ -238,6 +238,39 @@ describe Yast::Mode do
     end
   end
 
+  describe "#auto" do
+    context "when Mode.autoinst is true" do
+      before do
+        allow(Yast::Mode).to receive(:autoinst).and_return(true)
+      end
+
+      it "returns true" do
+        expect(Yast::Mode.auto).to eq(true)
+      end
+    end
+
+    context "when Mode.autoupgrade is true" do
+      before do
+        allow(Yast::Mode).to receive(:autoupgrade).and_return(true)
+      end
+
+      it "returns true" do
+        expect(Yast::Mode.auto).to eq(true)
+      end
+    end
+
+    context "when Mode.autoinst and Mode.autoupgrade are false" do
+      before do
+        allow(Yast::Mode).to receive(:autoinst).and_return(false)
+        allow(Yast::Mode).to receive(:autoupgrade).and_return(false)
+      end
+
+      it "returns false" do
+        expect(Yast::Mode.auto).to eq(false)
+      end
+    end
+  end
+
   describe "#config" do
     before do
       Yast::Mode.SetMode(mode)
