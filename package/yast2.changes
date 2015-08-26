@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Aug 26 19:25:07 UTC 2015 - mfilka@suse.com
+
+- bnc#897129
+  - AutoYaST will no longer ignore firewall settings if
+    keep_install_network is enabled
+- 3.1.108.8
+
+-------------------------------------------------------------------
 Wed Aug 26 15:27:51 CEST 2015 - schubi@suse.de
 
 - Checking cpuinfo_flags correctly while evaluating kernel packages
