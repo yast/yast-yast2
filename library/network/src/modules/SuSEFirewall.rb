@@ -1453,10 +1453,10 @@ module Yast
     #
     # @param	map <string, any> with configuration
     def Import(import_settings)
-      import_settings = deep_copy(import_settings)
-      SetModified()
-
       @SETTINGS = deep_copy(import_settings)
+      @configuration_has_been_read = true
+
+      SetModified()
 
       nil
     end
