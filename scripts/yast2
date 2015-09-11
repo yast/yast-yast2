@@ -182,7 +182,7 @@ SNAPPERBIN=/usr/bin/snapper
 
 snapshot_pre()
 {
-    if [ "$1" != "menu" ] ; then
+    if [ "$1" != "menu" -a "$1" != "migration" ]; then
 	if [ "$USE_SNAPPER" = "yes" -a -x $SNAPPERBIN ] ; then
 	    SNAPSHOT_NUMBER=`$SNAPPERBIN create --type=pre --cleanup-algorithm=number --print-number --description="yast $1"`
 	fi
@@ -191,7 +191,7 @@ snapshot_pre()
 
 snapshot_post()
 {
-    if [ "$1" != "menu" ] ; then
+    if [ "$1" != "menu" -a "$1" != "migration" ]; then
 	if [ "$USE_SNAPPER" = "yes" -a -x $SNAPPERBIN ] ; then
 	    $SNAPPERBIN create --type=post --cleanup-algorithm=number --pre-number=$SNAPSHOT_NUMBER
 	fi
