@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep 11 18:38:11 UTC 2015 - lslezak@suse.cz
+
+- Avoid too many snapshots created during the online migration
+  (bsc#944019)
+
+-------------------------------------------------------------------
 Wed Aug 26 19:25:07 UTC 2015 - mfilka@suse.com
 
 - bnc#897129
