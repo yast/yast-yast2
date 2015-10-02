@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Oct  2 10:25:17 UTC 2015 - ancor@suse.com
+
+- UI component for services handling moved from yast2-dns-server
+  to yast2 (fate#318771)
+- 3.1.151
+
+-------------------------------------------------------------------
 Wed Sep 30 13:22:50 UTC 2015 - lslezak@suse.cz
 
 - Properly format the package license in the confirmation dialog
